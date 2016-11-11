@@ -11,6 +11,7 @@ function get( url, params )
 		return '';
 
 	return fetch(API_HOST + url, {
+		credentials: 'include'
 	}).then( function(  response ) {
 		return response.json();
 	})
@@ -37,9 +38,12 @@ function runSyncCommand( functionName, params )
 
 	return fetch(API_HOST + url, {
 
+		credentials: 'include'
+
 		// method		: 'POST',
 		// redirect	: 'follow'
 		// ,
+
 		// headers: new Headers({
 		// 	'Content-Type': 'application/json'
 		// })
