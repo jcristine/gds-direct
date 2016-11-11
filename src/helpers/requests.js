@@ -2,7 +2,20 @@
 
 let $ = require('jquery');
 
-import {END_POINT_URL} from  '../constants'
+import {END_POINT_URL, API_HOST} from  '../constants'
+
+
+function get( url, params )
+{
+	if (!url )
+		return '';
+
+	return fetch(API_HOST + url, {
+	}).then( function(  response ) {
+		return response.json();
+	})
+}
+
 
 function runSyncCommand( functionName, params )
 {
@@ -22,7 +35,7 @@ function runSyncCommand( functionName, params )
 
 	url += '&data=' + get + '&function=' + functionName;
 
-	return fetch(url, {
+	return fetch(API_HOST + url, {
 
 		// method		: 'POST',
 		// redirect	: 'follow'
@@ -90,7 +103,8 @@ function runSyncCommand2( functionName, params )
 }
 
 export default {
-	runSyncCommand : runSyncCommand
+	runSyncCommand	: runSyncCommand,
+	get 			: get
 };
 
 // module.exports = Actions;

@@ -2,105 +2,156 @@
 
 import TerminalPlugin from '../middleware/terminal.js';
 
-import {TERMINAL_HEIGHT, TERMINAL_SPLIT_HEIGHT} from '../constants.js';
-import {bufferBtn, splitBtn} 					from '../components/buttons.js';
+import {
+	TERMINAL_HEIGHT,
+	TERMINAL_SPLIT_HEIGHT
+} from '../constants.js';
 
-import sideMenu from './sideMenu.js'
+import {bufferBtn, splitBtn} from '../components/buttons.js';
+import sideMenu from './sideMenu.js';
 
-let Root 		= document.getElementById('root');
+let isSplit;
 
-let MainScreen, SplitScreen, context, terminalAppender;
-
-const Terminal = {};
-
-Terminal.create = function( className = '', withSplit = '' )
+function splitHandler()
 {
-	let TerminalInst = document.createElement('div');
-	TerminalInst.className = className;
+	isSplit = !isSplit;
 
-	let Menu = document.createElement('div');
-	Menu.className = 'text-right wrapper-sm menu';
-
-	Menu.appendChild(
-		bufferBtn().make()
-	);
-
-	if (withSplit == 1)
+	if ( Main.terminals.length == 1 )
 	{
-		Menu.appendChild( splitBtn );
-
-		splitBtn.addEventListener('click', (e) => {
-			!SplitScreen ? this.split() : this.unSplit();
+		Main.add({
+			className	: 'border-top',
+			split 		: 'no',
+			height 		: TERMINAL_SPLIT_HEIGHT+'px'
 		});
 	}
 
-	TerminalInst.appendChild( Menu );
-	let plugin = TerminalPlugin.init( TerminalInst );
+	if (isSplit)
+	{
+		Main.terminals[1].show();
+		Main.minimizeAll();
+	} else
+	{
+		Main.maximizeAll();
+		Main.terminals[1].hide();
+	}
+}
 
-	plugin.focus();
+class Terminal {
 
-	// terminalAppender.appendChild( TerminalInst );
-	document.getElementById('terminals').appendChild( TerminalInst );
-	return TerminalInst;
-};
+	constructor( params )
+	{
+		this.params 	= params;
+		this.context 	= document.createElement('div');
+		this.context.className = params.className;
+		this.context.style.height = params.height + 'px';
 
-Terminal.main = function()
-{
-	MainScreen = this.create('', 1);
-	MainScreen.style.height 	= TERMINAL_HEIGHT;
+		this.menu 	= document.createElement('div');
+		this.menu.className = 'text-right wrapper-sm menu';
+	}
 
-	return MainScreen;
-};
+	render()
+	{
+		document.getElementById('terminalContainer').appendChild( this.context );
+		this.context.appendChild( this.menu );
+	}
 
-Terminal.split = function () {
-	SplitScreen = SplitScreen || this.create( 'border-top' );
-	MainScreen.style.height 	= TERMINAL_SPLIT_HEIGHT;
-	SplitScreen.style.height 	= TERMINAL_SPLIT_HEIGHT;
-	return SplitScreen;
-};
+	create()
+	{
+		this.render();
 
-Terminal.unSplit = function () {
-	SplitScreen.parentElement.removeChild(SplitScreen);
-	SplitScreen = '';
-	MainScreen.style.height 	= TERMINAL_HEIGHT;
-};
+		this.menu.appendChild(
+			bufferBtn().make( () => {
+				plugin.focus();
+			})
+		);
 
-Terminal.render  = function () {
-	context = document.createElement("section");
-	context.className = 'terminal-wrap clearfix';
+		if (this.params.split == 1)
+		{
+			this.menu.appendChild( splitBtn );
+			splitBtn.addEventListener('click', splitHandler);
+		}
 
-	// let header = document.createElement('header');
-	// header.className = 'title-bar';
-	// header.innerHTML = 'Terminal Sabre';
-	//
-	// let body = document.createElement('section');
-	// body.className = 't-d-table';
-	//
-	// terminalAppender = document.createElement('div');
-	// terminalAppender.className = 't-d-cell';
-	//
-	// let panel = document.createElement('div');
-	// panel.className = 't-d-cell panel-right';
-	//
-	// context.appendChild( header );
-	// context.appendChild( body );
-	//
-	// body.appendChild( terminalAppender );
-	// body.appendChild( panel );
+		let plugin = TerminalPlugin.init( this.context );
+		// plugin.focus();
+	}
 
-	context.innerHTML = `
-			<header class="title-bar">Terminal Sabre</header>
-			<div class="t-d-table">
-				<div id="terminals" class="t-d-cell"></div>
-				<div id="sideMenu" class="t-d-cell panel-right"></div>
-			</div>
-	`;
+	hide()
+	{
+		this.context.style.display = 'none';
+	}
 
-	Root.appendChild( context );
-	document.getElementById('sideMenu').appendChild( sideMenu );
+	show()
+	{
+		this.context.style.display = '';
+	}
 
-	// View
-	return context;
-};
+	minimize()
+	{
+		this.context.style.height = TERMINAL_SPLIT_HEIGHT+'px';
+	}
 
-export default Terminal;
+	maximize()
+	{
+		this.context.style.height = TERMINAL_HEIGHT+'px';
+	}
+}
+
+class TerminalWrap {
+
+	constructor()
+	{
+		this.terminals = [];
+	}
+
+	render( rootId )
+	{
+		let Root 	= document.getElementById( rootId );
+
+		Root.insertAdjacentHTML('beforeend',
+			`<section class="terminal-wrap clearfix">
+				<header class="title-bar">Terminal Sabre</header>
+				<div class="t-d-table">
+					<div id="terminalContainer" class="t-d-cell"></div>
+					<div id="sideMenu" class="t-d-cell panel-right"></div>
+				</div>
+			</section>`
+		);
+
+		document.getElementById('sideMenu').appendChild( sideMenu.render() );
+	}
+
+	add ( params = {} )
+	{
+		let terminal = new Terminal({
+			className 	: params.className 	|| '',
+			split		: params.split 		|| 1,
+			height		: params.height 	|| TERMINAL_HEIGHT
+		});
+
+		terminal.create();
+		this.terminals.push( terminal );
+	}
+
+	minimizeAll()
+	{
+		this.terminals.map(function (obj) {
+			obj.minimize()
+		})
+	}
+
+	maximizeAll()
+	{
+		this.terminals.map(function (obj) {
+			obj.maximize()
+		})
+	}
+
+	remove ()
+	{
+
+	}
+}
+
+let Main = new TerminalWrap();
+
+export default Main;

@@ -2,21 +2,21 @@
 
 import Terminal from './components/terminal';
 
-// let Root 		= document.getElementById('root');
-let Status 		= {};
+let apiData = window.apiData || {};
 
-let Context = {
+let Context		= {
+	init()
+	{
+		let rootId = apiData.htmlRootId || 'rootTerminal';
+		Terminal.render( rootId );
 
-	init() {
-		Terminal.render()
+		if (apiData.styleSheets)
+			require( '../../sabre/public/main.css' )
 	},
 
-	createTerminal() {
-		Status = {
-			mainScreen : 1
-		};
-
-		Terminal.main();
+	createTerminal()
+	{
+		Terminal.add();
 	}
 };
 

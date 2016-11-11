@@ -8,16 +8,13 @@ splitBtn.innerHTML = '<i class="fa fa-fw fa-columns t-bold"></i>';
 function bufferBtn()
 {
 	return {
-		make( terminalPlugin )
+		make( callback )
 		{
 			let buffer = document.createElement("button");
 
 			buffer.innerHTML = '<i class="fa fa-fw fa-clipboard"></i>';
 			buffer.className = "btn btn-primary btn-rounded t-f-size-14";
-
-			buffer.addEventListener ("click", function() {
-				console.log('buffer', terminalPlugin);
-			});
+			buffer.addEventListener ("click", callback);
 
 			return buffer;
 		}
