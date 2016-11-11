@@ -451,14 +451,11 @@
 	});
 	var TERMINAL_HEIGHT = exports.TERMINAL_HEIGHT = '650';
 	var TERMINAL_SPLIT_HEIGHT = exports.TERMINAL_SPLIT_HEIGHT = '325';
-	
-	// export const END_POINT_URL	 		= '../?id=sabre/terminal&her=1';
-	
 	var INFO_DATA_URL = exports.INFO_DATA_URL = '?id=sabre/terminal&getInfoData=1';
 	var END_POINT_URL = exports.END_POINT_URL = '?id=sabre/terminal&her=1';
 	var TIME_FORMAT = exports.TIME_FORMAT = '12';
 	var ACCOUNT = exports.ACCOUNT = 'training';
-	var API_HOST = exports.API_HOST = 'http://intranet.dyninno.net/~artur/CMS1ee/';
+	var API_HOST = exports.API_HOST = '';
 
 /***/ },
 /* 9 */
