@@ -7,7 +7,7 @@ import {
 	TERMINAL_SPLIT_HEIGHT
 } from '../constants.js';
 
-import {bufferBtn, splitBtn} from '../components/buttons.js';
+import {bufferBtn, splitBtn, fullScreen} from '../components/buttons.js';
 import sideMenu from './sideMenu.js';
 
 let isSplit;
@@ -60,7 +60,7 @@ class Terminal {
 		this.render();
 
 		this.menu.appendChild(
-			bufferBtn().make( () => {
+			bufferBtn().make( function () {
 				plugin.focus();
 			})
 		);
@@ -69,6 +69,15 @@ class Terminal {
 		{
 			this.menu.appendChild( splitBtn );
 			splitBtn.addEventListener('click', splitHandler);
+		}
+
+		if (this.params.split == 1)
+		{
+			this.menu.appendChild(
+				fullScreen().make( function () {
+					Main.full();
+				})
+			);
 		}
 
 		let plugin = TerminalPlugin.init( this.context );
@@ -148,10 +157,21 @@ class TerminalWrap {
 
 	remove ()
 	{
+	}
 
+	full ()
+	{
+		this.fullSet = !this.fullSet;
+
+		if ( this.fullSet )
+		{
+			document.getElementById('terminalContainer').className += ' fullScreen';
+			return '';
+		}
+
+		document.getElementById('terminalContainer').className = document.getElementById('terminalContainer').className.replace('fullScreen', '')
 	}
 }
 
 let Main = new TerminalWrap();
-
 export default Main;

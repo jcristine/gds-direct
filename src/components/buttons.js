@@ -30,6 +30,24 @@ minimize.addEventListener ("click", function() {
 	console.log(root);
 });
 
+
+function fullScreen()
+{
+	return {
+		make( callback )
+		{
+			let buffer = document.createElement("button");
+
+			buffer.innerHTML = '<i class="fa fa-fw fa-arrows-alt"></i>';
+			buffer.className = "btn btn-purple btn-rounded t-f-size-14";
+			buffer.addEventListener ("click", callback);
+
+			return buffer;
+		}
+	}
+}
+
 export { splitBtn };
 export { minimize };
 export { bufferBtn };
+export { fullScreen };

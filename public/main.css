@@ -573,3 +573,14 @@ fieldset[disabled] .terminal-wrap .btn-white.active {
 .terminal-wrap .wrapper-sm {
   padding: 5px 10px;
 }
+.terminal-wrap .fullScreen {
+  position: absolute;
+  height: 100%;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+}
+.terminal-wrap .fullScreen .terminal {
+  height: 100% !important;
+}
