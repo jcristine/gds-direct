@@ -2,103 +2,153 @@
 
 let $					= require('jquery');
 window.$ 				= window.jQuery = $;
-let terminal 			= require('jquery.terminal/js/jquery.terminal');
+
+let jqTerminal 			= require('jquery.terminal/js/jquery.terminal');
 let Helpers				= require('../helpers/helpers');
 
 import SabreSession from '../modules/sabreSession';
 
-let TerminalPlugin = function()
+export default class TerminalPlugin
 {
-	return {
+	constructor( context, name )
+	{
+		this.context	= context;
+		this.name		= name;
+		this.terminal 	= null;
 
-		init : function (Context) {
+		this.init();
+	}
 
-			$(Context).on('keypress',function (evt) {
-				if (evt.which && !evt.ctrlKey)
-				{
-					let ch = Helpers.substitutePrintableChar( String.fromCharCode( evt.which ) );
+	getPlugin()
+	{
+		return this.terminal;
+	}
 
-					if (ch)
-					{
-						term.insert(ch);
-						return false;
-					}
-				}
-			});
+	static parseInput( evt, terminal )
+	{
+		//console.log('parse input bla common', terminal );
+		//console.log( this );
 
-			$(Context).on('keydown', function (evt) {
-				if ((evt.which === 83 || evt.which === 87) && evt.ctrlKey) { // CTRL+S || CTRL+W
-					term.clear();
-					return false;
-				} else if (evt.which === 68 && evt.ctrlKey) { // CTRL+D
-					return false;
-				} else if (evt.which === 76 && evt.ctrlKey) { // CTRL+L
-					return false;
-				} else if (evt.which === 82 && evt.ctrlKey) { // CTRL+R
-					return false;
-				}
-			});
+		if ( !terminal.enabled() ) // keypress fires globaly on all terminals;
+			return false;
 
-			let term = $(Context).terminal(function(command, terminal) {
+		if (evt.which && !evt.ctrlKey)
+		{
+			let ch = Helpers.substitutePrintableChar( String.fromCharCode( evt.which ) );
 
-				let outputCache = [];
-
-				if (command === '')
-				{
-					terminal.echo('');
-				}
-				else if (command === 'MD')
-				{
-					terminal.echo( outputCache.length > 0 ?  outputCache.shift() : '‡NOTHING TO SCROLL‡' );
-				}
-				else
-				{
-					try {
-						terminal.set_prompt('');
-
-						SabreSession.runCommand(command).then( ( response = {} ) => {
-
-							let result = response['data'];
-
-							if (result.prompt)
-								terminal.set_prompt( result.prompt );
-
-							if ( result.clearScreen )
-								terminal.clear();
-
-							if ( result.output )
-							{
-								outputCache = Helpers.makeCachedParts(result.output);
-								terminal.echo(outputCache.shift());
-							}
-						});
-
-					} catch(e)
-					{
-						alert(' something went wrong ');
-						terminal.error( new String(e) );
-					}
-				}
-			},
-
+			if (ch)
 			{
-				greetings	: false,
-				name		: 'sabre_terminal',
-				disabled	: true,
-				prompt		: '',
-				onInit		: function(terminal)
-				{
-					SabreSession.startSession();
-					// let startSessionOutput = SabreSession.startSession();
-					//terminal.echo('>' + startSessionOutput['emulationCommand']);
-					//terminal.echo(startSessionOutput['emulationCommandOutput']);
-				}
-			});
-
-			return term;
+				terminal.insert(ch);
+				return false;
+			}
 		}
 	}
-}();
 
-export default TerminalPlugin;
+	static parseKeyBinds( evt, terminal )
+	{
+		//console.log( "AAAA", terminal );
 
+		if ( (evt.which === 83 || evt.which === 87) && evt.ctrlKey )
+		{
+			//console.log("BBBB", terminal);
+			// CTRL+S || CTRL+W;
+
+			terminal.clear();
+			return false;
+
+		} else if (evt.which === 68 && evt.ctrlKey)
+		{
+			// CTRL+D
+			return false;
+		} else if (evt.which === 76 && evt.ctrlKey)
+		{
+			// CTRL+L
+			return false;
+		} else if (evt.which === 82 && evt.ctrlKey)
+		{
+			// CTRL+R
+			return false;
+		}
+	}
+
+	onInit( terminal )
+	{
+		//console.log( 'ON INIT ' , this)
+		//SabreSession.startSession();
+		// let startSessionOutput = SabreSession.startSession();
+		//terminal.echo('>' + startSessionOutput['emulationCommand']);
+		//terminal.echo(startSessionOutput['emulationCommandOutput']);
+	}
+
+	init()
+	{
+		this.terminal = $(this.context).terminal( this.commandParser, {
+			greetings	: '',
+			name		: 'sabre_terminal' + this.name,
+			prompt		: '>',
+
+			//enabled		: false,
+
+			keypress	: TerminalPlugin.parseInput,
+			keydown		: TerminalPlugin.parseKeyBinds,
+			onInit		: this.onInit
+			//,
+			//
+			//onTerminalChange	: function () {
+			//	console.log(' terminal change 1')
+			//},
+			//
+			//exceptionHandler	 : function () {
+			//	console.log('exc', arguments)
+			//}
+		});
+	}
+
+	commandParser( command, terminal )
+	{
+		//console.log(' commandParser ',  command, terminal )
+
+		let outputCache = [];
+
+		if (command === '')
+		{
+			terminal.echo('');
+		}
+		else if ( command === 'MD' )
+		{
+			terminal.echo( outputCache.length > 0 ?  outputCache.shift() : '‡NOTHING TO SCROLL‡' );
+		}
+		else
+		{
+			try {
+				terminal.set_prompt('');
+
+				SabreSession
+					.runCommand(command)
+					.then( ( response = {} ) => {
+
+						let result = response['data'];
+
+						if ( result['prompt'] )
+							terminal.set_prompt( result['prompt'] );
+
+						if ( result['clearScreen'] )
+							terminal.clear();
+
+						if ( result['output'] )
+						{
+							outputCache = Helpers.makeCachedParts( result['output'] );
+							terminal.echo( outputCache.shift() );
+						}
+
+					});
+
+			} catch(e)
+			{
+				alert(' something went wrong ');
+				//terminal.error( new String(e) );
+			}
+		}
+
+	}
+}

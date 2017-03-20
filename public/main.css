@@ -4,40 +4,25 @@
  *  __ / // // // // // _  // _// // / / // _  // _//     // //  \/ // _ \/ /
  * /  / // // // // // ___// / / // / / // ___// / / / / // // /\  // // / /__
  * \___//____ \\___//____//_/ _\_  / /_//____//_/ /_/ /_//_//_/ /_/ \__\_\___/
- *           \/              /____/                              version 0.11.11
+ *           \/              /____/                              version DEV
  * http://terminal.jcubic.pl
  *
  * This file is part of jQuery Terminal.
  *
- * Copyright (c) 2011-2016 Jakub Jankiewicz <http://jcubic.pl>
+ * Copyright (c) 2011-2017 Jakub Jankiewicz <http://jcubic.pl>
  * Released under the MIT license
  *
- * Date: Fri, 07 Oct 2016 19:35:06 +0000
+ * Date: Tue, 14 Mar 2017 16:16:27 +0000
  */
-.terminal .terminal-output .format,
-.cmd .format,
-.cmd .prompt,
-.cmd .prompt div,
-.terminal .terminal-output div div {
-  display: inline-block;
+.terminal .terminal-output .format, .cmd .format,
+.cmd .prompt, .cmd .prompt div, .terminal .terminal-output div div{
+    display: inline-block;
 }
-.terminal h1,
-.terminal h2,
-.terminal h3,
-.terminal h4,
-.terminal h5,
-.terminal h6,
-.terminal pre,
-.cmd {
-  margin: 0;
+.terminal h1, .terminal h2, .terminal h3, .terminal h4, .terminal h5, .terminal h6, .terminal pre, .cmd {
+    margin: 0;
 }
-.terminal h1,
-.terminal h2,
-.terminal h3,
-.terminal h4,
-.terminal h5,
-.terminal h6 {
-  line-height: 1.2em;
+.terminal h1, .terminal h2, .terminal h3, .terminal h4, .terminal h5, .terminal h6 {
+    line-height: 1.2em;
 }
 /*
 .cmd .mask {
@@ -48,182 +33,289 @@
 }
 */
 .cmd .clipboard {
-  position: absolute;
-  left: -16px;
-  top: 0;
-  width: 10px;
-  height: 16px;
-  /* this seems to work after all on Android */
-  /*left: -99999px;
-	clip: rect(1px,1px,1px,1px);
-	/* on desktop textarea appear when paste */
-  /*
-	opacity: 0.01;
-	filter: alpha(opacity = 0.01);
-	filter: progid:DXImageTransform.Microsoft.Alpha(opacity=0.01);
-	*/
-  background: transparent;
-  border: none;
-  color: transparent;
-  outline: none;
-  padding: 0;
-  resize: none;
-  z-index: 0;
-  overflow: hidden;
+    position: absolute;
+    left: -16px;
+    top: 0;
+    width: 20px;
+    height: 16px;
+    /* this seems to work after all on Android */
+    /*left: -99999px;
+    clip: rect(1px,1px,1px,1px);
+    /* on desktop textarea appear when paste */
+    /*
+    opacity: 0.01;
+    filter: alpha(opacity = 0.01);
+    filter: progid:DXImageTransform.Microsoft.Alpha(opacity=0.01);
+    */
+    background: transparent;
+    border: none;
+    color: transparent;
+    outline: none;
+    padding: 0;
+    resize: none;
+    z-index: 0;
+    overflow: hidden;
 }
 .terminal .error {
-  color: #f00;
+    color: #f00;
 }
 .terminal {
-  padding: 10px;
-  position: relative;
-  /*overflow: hidden;*/
-  overflow: auto;
+    position: relative;
+    /*overflow: hidden;*/
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+.terminal > div {
+    height: 100%;
 }
 .cmd {
-  padding: 0;
-  height: 1.3em;
-  position: relative;
-  /*margin-top: 3px; */
+    padding: 0;
+    height: 1.3em;
+    position: relative;
+    /*margin-top: 3px; */
 }
-.terminal .inverted,
-.cmd .inverted,
-.cmd .cursor.blink {
-  background-color: #aaa;
-  color: #000;
+.terminal .inverted, .cmd .inverted {
+    background-color: #aaa;
+    color: #000;
+}
+.cmd .cursor {
+    border-bottom: 3px solid transparent;
+    margin-bottom: -3px;
+    background-clip: content-box;
 }
 .cmd .cursor.blink {
-  -webkit-animation: terminal-blink 1s infinite steps(1, start);
-  -moz-animation: terminal-blink 1s infinite steps(1, start);
-  -ms-animation: terminal-blink 1s infinite steps(1, start);
-  animation: terminal-blink 1s infinite steps(1, start);
+    -webkit-animation: terminal-blink 1s infinite steps(1, start);
+       -moz-animation: terminal-blink 1s infinite steps(1, start);
+        -ms-animation: terminal-blink 1s infinite steps(1, start);
+            animation: terminal-blink 1s infinite steps(1, start);
+    border-left: 1px solid transparent;
+    margin-left: -1px;
+}
+.bar.terminal .inverted, .bar.cmd .inverted {
+    border-left-color: #aaa;
 }
 @-webkit-keyframes terminal-blink {
-  0%,
-  100% {
-    background-color: #000;
-    color: #aaa;
+  0%, 100% {
+      background-color: #000;
+      color: #aaa;
   }
   50% {
-    background-color: #bbb;
-    color: #000;
+      background-color: #bbb;
+      color: #000;
   }
 }
+
 @-ms-keyframes terminal-blink {
-  0%,
-  100% {
-    background-color: #000;
-    color: #aaa;
+  0%, 100% {
+      background-color: #000;
+      color: #aaa;
   }
   50% {
-    background-color: #bbb;
-    color: #000;
+      background-color: #bbb;
+      color: #000;
   }
 }
+
 @-moz-keyframes terminal-blink {
-  0%,
-  100% {
-    background-color: #000;
-    color: #aaa;
+  0%, 100% {
+      background-color: #000;
+      color: #aaa;
   }
   50% {
-    background-color: #bbb;
-    color: #000;
+      background-color: #bbb;
+      color: #000;
   }
 }
 @keyframes terminal-blink {
-  0%,
-  100% {
-    background-color: #000;
-    color: #aaa;
+  0%, 100% {
+      background-color: #000;
+      color: #aaa;
   }
   50% {
-    background-color: #bbb;
-    /* not #aaa because it's seems there is Google Chrome bug */
-    color: #000;
+      background-color: #bbb; /* not #aaa because it's seems there is Google Chrome bug */
+      color: #000;
   }
 }
-.terminal .terminal-output div div,
-.cmd .prompt {
-  display: block;
-  line-height: 14px;
-  height: auto;
+@-webkit-keyframes terminal-bar {
+  0%, 100% {
+      border-left-color: #aaa;
+  }
+  50% {
+      border-left-color: #000;
+  }
+}
+@-ms-keyframes terminal-bar {
+  0%, 100% {
+      border-left-color: #aaa;
+  }
+  50% {
+      border-left-color: #000;
+  }
+}
+@-moz-keyframes terminal-bar {
+  0%, 100% {
+      border-left-color: #aaa;
+  }
+  50% {
+      border-left-color: #000;
+  }
+}
+@keyframes terminal-bar {
+  0%, 100% {
+      border-left-color: #aaa;
+  }
+  50% {
+      border-left-color: #000;
+  }
+}
+@-webkit-keyframes terminal-underline {
+  0%, 100% {
+      border-bottom-color: #aaa;
+      position: relative;
+      top: 2px;
+      line-height: 11px;
+      border-left: none;
+      margin: 0;
+  }
+  50% {
+      border-bottom-color: #000;
+      position: relative;
+      top: 2px;
+      line-height: 11px;
+      border-left: none;
+      margin: 0;
+  }
+}
+@-ms-keyframes terminal-underline {
+  0%, 100% {
+      border-bottom-color: #aaa;
+      position: relative;
+      top: 2px;
+      line-height: 11px;
+      border-left: none;
+      margin: 0;
+  }
+  50% {
+      border-bottom-color: #000;
+      position: relative;
+      top: 2px;
+      line-height: 11px;
+      border-left: none;
+      margin: 0;
+  }
+}
+@-moz-keyframes terminal-underline {
+  0%, 100% {
+      border-bottom-color: #aaa;
+      position: relative;
+      top: 2px;
+      line-height: 11px;
+      border-left: none;
+      margin: 0;
+  }
+  50% {
+      border-bottom-color: #000;
+      position: relative;
+      top: 2px;
+      line-height: 11px;
+      border-left: none;
+      margin: 0;
+  }
+}
+@keyframes terminal-underline {
+  0%, 100% {
+      border-bottom-color: #aaa;
+      position: relative;
+      top: 2px;
+      line-height: 11px;
+      border-left: none;
+      margin: 0;
+  }
+  50% {
+      border-bottom-color: #000;
+      position: relative;
+      top: 2px;
+      line-height: 11px;
+      border-left: none;
+      margin: 0;
+  }
+}
+.terminal .terminal-output div div, .cmd .prompt {
+    display: block;
+    line-height: 14px;
+    height: auto;
 }
 .cmd .prompt {
-  float: left;
+    float: left;
 }
-.terminal,
-.cmd {
-  font-family: monospace;
-  /*font-family: FreeMono, monospace; this don't work on Android */
-  color: #aaa;
-  background-color: #000;
-  font-size: 12px;
-  line-height: 14px;
+.terminal, .cmd {
+    font-family: monospace;
+    /*font-family: FreeMono, monospace; this don't work on Android */
+    color: #aaa;
+    background-color: #000;
+    font-size: 12px;
+    line-height: 14px;
+    box-sizing: border-box;
+}
+.cmd div {
+    float: left;
+    clear: both;
+}
+.cmd div + span {
+    clear: both;
+}
+.cmd .prompt + div {
+    clear: right;
 }
 .terminal-output > div {
-  /*padding-top: 3px;*/
-  min-height: 14px;
+    /*padding-top: 3px;*/
+    min-height: 14px;
 }
 .terminal-output > div > div * {
-  word-wrap: break-word;
-  /* when echo html */
+    overflow-wrap: break-word; /* when echo html */
+    word-wrap: break-word;
 }
 .terminal .terminal-output div span {
-  display: inline-block;
+    display: inline-block;
 }
 .cmd span {
-  float: left;
-  /*display: inline-block; */
+    float: left;
 }
 /* fix double style of selecting text in terminal */
-.terminal-output span,
-.terminal-output a,
-.cmd div,
-.cmd span,
-.terminal td,
-.terminal pre,
-.terminal h1,
-.terminal h2,
-.terminal h3,
-.terminal h4,
-.terminal h5,
-.terminal h6 {
-  -webkit-touch-callout: initial;
-  -webkit-user-select: initial;
-  -khtml-user-select: initial;
-  -moz-user-select: initial;
-  -ms-user-select: initial;
-  user-select: initial;
+.terminal-output span, .terminal-output a, .cmd div, .cmd span, .terminal td,
+.terminal pre, .terminal h1, .terminal h2, .terminal h3, .terminal h4,
+.terminal h5, .terminal h6 {
+    -webkit-touch-callout: initial;
+    -webkit-user-select: text;
+    -khtml-user-select: text;
+    -moz-user-select: text;
+    -ms-user-select: text;
+    user-select: text;
 }
-.terminal,
-.terminal-output,
-.terminal-output div {
-  -webkit-touch-callout: none;
-  -webkit-user-select: none;
-  -khtml-user-select: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
-  user-select: none;
+.terminal, .terminal-output, .terminal-output div {
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
 }
 /* firefox hack */
 @-moz-document url-prefix() {
-  .terminal,
-  .terminal-output,
-  .terminal-output div {
-    -webkit-touch-callout: initial;
-    -webkit-user-select: initial;
-    -khtml-user-select: initial;
-    -moz-user-select: initial;
-    -ms-user-select: initial;
-    user-select: initial;
-  }
+    .terminal, .terminal-output, .terminal-output div {
+        -webkit-touch-callout: initial;
+        -webkit-user-select: initial;
+        -khtml-user-select: initial;
+        -moz-user-select: initial;
+        -ms-user-select: initial;
+        user-select: initial;
+    }
 }
 .terminal table {
-  border-collapse: collapse;
+    border-collapse: collapse;
 }
 .terminal td {
-  border: 1px solid #aaa;
+    border: 1px solid #aaa;
 }
 .terminal h1::-moz-selection,
 .terminal h2::-moz-selection,
@@ -238,9 +330,12 @@
 .terminal .terminal-output div div a::-moz-selection,
 .cmd div::-moz-selection,
 .cmd > span::-moz-selection,
+.cmd > span span::-moz-selection,
+.cmd > div::-moz-selection,
+.cmd > div span::-moz-selection,
 .cmd .prompt span::-moz-selection {
-  background-color: #aaa;
-  color: #000;
+    background-color: #aaa;
+    color: #000;
 }
 /* this don't work in Chrome
 .terminal tr td::-moz-selection {
@@ -263,56 +358,515 @@
 .terminal .terminal-output div span::selection,
 .cmd div::selection,
 .cmd > span::selection,
+.cmd > span span::selection,
+.cmd > div::selection,
+.cmd > div span::selection,
 .cmd .prompt span::selection {
-  background-color: #aaa;
-  color: #000;
+    /*
+     * use rgba to fix transparent selection in chrome
+     * http://stackoverflow.com/questions/7224445/css3-selection-behaves-differently-in-ff-chrome
+     */
+    background-color: rgba(170, 170, 170, 0.99);
+    color: #000;
 }
-.terminal .terminal-output div.error,
-.terminal .terminal-output div.error div {
-  color: red;
+.terminal .terminal-output div.error, .terminal .terminal-output div.error div {
+    color: red;
 }
 .tilda {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  z-index: 1100;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 1100;
 }
 .clear {
-  clear: both;
+    clear: both;
 }
 .terminal a {
-  color: #0F60FF;
+    color: #0F60FF;
 }
 .terminal a:hover {
-  color: red;
+    color: red;
 }
-body {
-  margin: 0;
-  background: #451919;
+.terminal iframe {
+    position: absolute;
+    left: 0;
+    top: -100%;
+    width: 100%;
+    height: 100%;
+    margin: 1px 0 0;
+    border: none;
+    opacity: 0;
+    pointer-events: none;
+    box-sizing: border-box;
 }
-.terminal-wrap {
-  font-family: "Lucida Grande", sans-serif;
-  font-size: 11px;
-  color: #414141;
-  border-radius: 6px;
-  margin: 20px;
-  box-shadow: inset rgba(255, 255, 255, 0.7) 0 1px 1px;
+.terminal, .terminal iframe {
+    padding: 10px; /* we get width of the terminal from iframe so it need to have the same padding */
 }
-.terminal-wrap .title-bar {
-  padding: 5px 0;
-  text-align: center;
-  text-shadow: rgba(255, 255, 255, 0.8) 0 1px 0;
-  background-image: -webkit-linear-gradient(top, #e8e8e8, #bcbbbc);
-  background-image: -moz-linear-gradient(top, #e8e8e8, #bcbbbc);
-  background-image: linear-gradient(top, #e8e8e8, #bcbbbc);
+@supports (--css: variables) {
+    .terminal, .cmd {
+        color: var(--color, #aaa);
+        background-color: var(--background, #000);
+    }
+    .terminal, .cmd, .terminal .terminal-output div div, .cmd .prompt {
+        font-size: calc(var(--size, 1) * 12px);
+        line-height: calc(var(--size, 1) * 14px);
+    }
+    .terminal .inverted, .cmd .inverted {
+        background-color: var(--color, #aaa);
+        color: var(--background, #000);
+    }
+    .cmd .cursor.blink {
+        -webkit-animation: var(--animation, terminal-blink) 1s infinite steps(1, start);
+           -moz-animation: var(--animation, terminal-blink) 1s infinite steps(1, start);
+            -ms-animation: var(--animation, terminal-blink) 1s infinite steps(1, start);
+                animation: var(--animation, terminal-blink) 1s infinite steps(1, start);
+        color: var(--color, #aaa);
+        background-color: var(--background, #000);
+        margin-bottom: -3px;
+    }
+    .terminal h1::-moz-selection,
+    .terminal h2::-moz-selection,
+    .terminal h3::-moz-selection,
+    .terminal h4::-moz-selection,
+    .terminal h5::-moz-selection,
+    .terminal h6::-moz-selection,
+    .terminal pre::-moz-selection,
+    .terminal td::-moz-selection,
+    .terminal .terminal-output div div::-moz-selection,
+    .terminal .terminal-output div span::-moz-selection,
+    .terminal .terminal-output div div a::-moz-selection,
+    .cmd div::-moz-selection,
+    .cmd > span::-moz-selection,
+    .cmd > span span::-moz-selection,
+    .cmd > div::-moz-selection,
+    .cmd > div span::-moz-selection,
+    .cmd .prompt span::-moz-selection {
+        background-color: var(--color, #aaa);
+        color: var(--background, #000);
+    }
+    .terminal h1::selection,
+    .terminal h2::selection,
+    .terminal h3::selection,
+    .terminal h4::selection,
+    .terminal h5::selection,
+    .terminal h6::selection,
+    .terminal pre::selection,
+    .terminal td::selection,
+    .terminal .terminal-output div div::selection,
+    .terminal .terminal-output div div a::selection,
+    .terminal .terminal-output div span::selection,
+    .cmd div::selection,
+    .cmd > span::selection,
+    .cmd > span span::selection,
+    .cmd > div::selection,
+    .cmd > div span::selection,
+    .cmd .prompt span::selection {
+        background-color: var(--color, rgba(170, 170, 170, 0.99));
+        color: var(--background, #000);
+    }
+    @-webkit-keyframes terminal-blink {
+      0%, 100% {
+          background-color: var(--background, #000);
+          color: var(--color, #aaa);
+      }
+      50% {
+          background-color: var(--color, #aaa);
+          color: var(--background, #000);
+      }
+    }
+
+    @-ms-keyframes terminal-blink {
+      0%, 100% {
+          background-color: var(--background, #000);
+          color: var(--color, #aaa);
+      }
+      50% {
+          background-color: var(--color, #aaa);
+          color: var(--background, #000);
+      }
+    }
+    @-moz-keyframes terminal-blink {
+      0%, 100% {
+          background-color: var(--background, #000);
+          color: var(--color, #aaa);
+      }
+      50% {
+          background-color: var(--color, #aaa);
+          color: var(--background, #000);
+      }
+    }
+    @keyframes terminal-blink {
+      0%, 100% {
+          background-color: var(--background, #000);
+          color: var(--color, #aaa);
+      }
+      50% {
+          background-color: var(--color, #aaa);
+          color: var(--background, #000);
+      }
+    }
+    @-webkit-keyframes terminal-bar {
+      0%, 100% {
+          border-left-color: var(--background, #000);
+      }
+      50% {
+          border-left-color: var(--color, #aaa);
+      }
+    }
+    @-ms-keyframes terminal-bar {
+      0%, 100% {
+          border-left-color: var(--background, #000);
+      }
+      50% {
+          border-left-color: var(--color, #aaa);
+      }
+    }
+    @-moz-keyframes terminal-bar {
+      0%, 100% {
+          border-left-color: var(--background, #000);
+      }
+      50% {
+          border-left-color: var(--color, #aaa);
+      }
+    }
+    @keyframes terminal-bar {
+      0%, 100% {
+          border-left-color: var(--background, #000);
+      }
+      50% {
+          border-left-color: var(--color, #aaa);
+      }
+    }
+    @-webkit-keyframes terminal-underline {
+      0%, 100% {
+          border-bottom-color: var(--color, #aaa);
+          position: relative;
+          top: 2px;
+          line-height: 11px;
+          border-left: none;
+          margin: 0;
+      }
+      50% {
+          border-bottom-color: var(--background, #000);
+          position: relative;
+          top: 2px;
+          line-height: 11px;
+          border-left: none;
+          margin: 0;
+      }
+    }
+    @-ms-keyframes terminal-underline {
+      0%, 100% {
+          border-bottom-color: var(--background, #000);
+          position: relative;
+          top: 2px;
+          line-height: 11px;
+          border-left: none;
+          margin: 0;
+      }
+      50% {
+          border-bottom-color: var(--color, #aaa);
+          position: relative;
+          top: 2px;
+          line-height: 11px;
+          border-left: none;
+          margin: 0;
+      }
+    }
+    @-moz-keyframes terminal-underline {
+      0%, 100% {
+          border-bottom-color: var(--background, #000);
+          position: relative;
+          top: 2px;
+          line-height: 11px;
+          border-left: none;
+          margin: 0;
+      }
+      50% {
+          border-bottom-color: var(--color, #aaa);
+          position: relative;
+          top: 2px;
+          line-height: 11px;
+          border-left: none;
+          margin: 0;
+      }
+    }
+    @keyframes terminal-underline {
+      0%, 100% {
+          border-bottom-color: var(--background, #000);
+          position: relative;
+          top: 2px;
+          line-height: 11px;
+          border-left: none;
+          margin: 0;
+      }
+      50% {
+          border-bottom-color: var(--color, #aaa);
+          position: relative;
+          top: 2px;
+          line-height: 11px;
+          border-left: none;
+          margin: 0;
+      }
+    }
 }
-.terminal-wrap .menu {
+.drop-element, .drop-element:after, .drop-element:before, .drop-element *, .drop-element *:after, .drop-element *:before {
+  box-sizing: border-box; }
+
+.drop-element {
   position: absolute;
-  right: 3px;
-  z-index: 2;
+  display: none; }
+  .drop-element.drop-open {
+    display: block; }
+
+.drop-element.drop-theme-arrows {
+  max-width: 100%;
+  max-height: 100%; }
+  .drop-element.drop-theme-arrows .drop-content {
+    border-radius: 5px;
+    position: relative;
+    font-family: inherit;
+    background: #eee;
+    color: #444;
+    padding: 1em;
+    font-size: 1.1em;
+    line-height: 1.5em;
+    -webkit-transform: translateZ(0);
+            transform: translateZ(0);
+    -webkit-filter: drop-shadow(0 1px 4px rgba(0, 0, 0, 0.2));
+            filter: drop-shadow(0 1px 4px rgba(0, 0, 0, 0.2)); }
+    .drop-element.drop-theme-arrows .drop-content:before {
+      content: "";
+      display: block;
+      position: absolute;
+      width: 0;
+      height: 0;
+      border-color: transparent;
+      border-width: 16px;
+      border-style: solid; }
+  .drop-element.drop-theme-arrows.drop-element-attached-bottom.drop-element-attached-center .drop-content {
+    margin-bottom: 16px; }
+    .drop-element.drop-theme-arrows.drop-element-attached-bottom.drop-element-attached-center .drop-content:before {
+      top: 100%;
+      left: 50%;
+      margin-left: -16px;
+      border-top-color: #eee; }
+  .drop-element.drop-theme-arrows.drop-element-attached-top.drop-element-attached-center .drop-content {
+    margin-top: 16px; }
+    .drop-element.drop-theme-arrows.drop-element-attached-top.drop-element-attached-center .drop-content:before {
+      bottom: 100%;
+      left: 50%;
+      margin-left: -16px;
+      border-bottom-color: #eee; }
+  .drop-element.drop-theme-arrows.drop-element-attached-right.drop-element-attached-middle .drop-content {
+    margin-right: 16px; }
+    .drop-element.drop-theme-arrows.drop-element-attached-right.drop-element-attached-middle .drop-content:before {
+      left: 100%;
+      top: 50%;
+      margin-top: -16px;
+      border-left-color: #eee; }
+  .drop-element.drop-theme-arrows.drop-element-attached-left.drop-element-attached-middle .drop-content {
+    margin-left: 16px; }
+    .drop-element.drop-theme-arrows.drop-element-attached-left.drop-element-attached-middle .drop-content:before {
+      right: 100%;
+      top: 50%;
+      margin-top: -16px;
+      border-right-color: #eee; }
+  .drop-element.drop-theme-arrows.drop-element-attached-top.drop-element-attached-left.drop-target-attached-bottom .drop-content {
+    margin-top: 16px; }
+    .drop-element.drop-theme-arrows.drop-element-attached-top.drop-element-attached-left.drop-target-attached-bottom .drop-content:before {
+      bottom: 100%;
+      left: 16px;
+      border-bottom-color: #eee; }
+  .drop-element.drop-theme-arrows.drop-element-attached-top.drop-element-attached-right.drop-target-attached-bottom .drop-content {
+    margin-top: 16px; }
+    .drop-element.drop-theme-arrows.drop-element-attached-top.drop-element-attached-right.drop-target-attached-bottom .drop-content:before {
+      bottom: 100%;
+      right: 16px;
+      border-bottom-color: #eee; }
+  .drop-element.drop-theme-arrows.drop-element-attached-bottom.drop-element-attached-left.drop-target-attached-top .drop-content {
+    margin-bottom: 16px; }
+    .drop-element.drop-theme-arrows.drop-element-attached-bottom.drop-element-attached-left.drop-target-attached-top .drop-content:before {
+      top: 100%;
+      left: 16px;
+      border-top-color: #eee; }
+  .drop-element.drop-theme-arrows.drop-element-attached-bottom.drop-element-attached-right.drop-target-attached-top .drop-content {
+    margin-bottom: 16px; }
+    .drop-element.drop-theme-arrows.drop-element-attached-bottom.drop-element-attached-right.drop-target-attached-top .drop-content:before {
+      top: 100%;
+      right: 16px;
+      border-top-color: #eee; }
+  .drop-element.drop-theme-arrows.drop-element-attached-top.drop-element-attached-right.drop-target-attached-left .drop-content {
+    margin-right: 16px; }
+    .drop-element.drop-theme-arrows.drop-element-attached-top.drop-element-attached-right.drop-target-attached-left .drop-content:before {
+      top: 16px;
+      left: 100%;
+      border-left-color: #eee; }
+  .drop-element.drop-theme-arrows.drop-element-attached-top.drop-element-attached-left.drop-target-attached-right .drop-content {
+    margin-left: 16px; }
+    .drop-element.drop-theme-arrows.drop-element-attached-top.drop-element-attached-left.drop-target-attached-right .drop-content:before {
+      top: 16px;
+      right: 100%;
+      border-right-color: #eee; }
+  .drop-element.drop-theme-arrows.drop-element-attached-bottom.drop-element-attached-right.drop-target-attached-left .drop-content {
+    margin-right: 16px; }
+    .drop-element.drop-theme-arrows.drop-element-attached-bottom.drop-element-attached-right.drop-target-attached-left .drop-content:before {
+      bottom: 16px;
+      left: 100%;
+      border-left-color: #eee; }
+  .drop-element.drop-theme-arrows.drop-element-attached-bottom.drop-element-attached-left.drop-target-attached-right .drop-content {
+    margin-left: 16px; }
+    .drop-element.drop-theme-arrows.drop-element-attached-bottom.drop-element-attached-left.drop-target-attached-right .drop-content:before {
+      bottom: 16px;
+      right: 100%;
+      border-right-color: #eee; }
+.drop-element, .drop-element:after, .drop-element:before, .drop-element *, .drop-element *:after, .drop-element *:before {
+  box-sizing: border-box; }
+
+.drop-element {
+  position: absolute;
+  display: none; }
+  .drop-element.drop-open {
+    display: block; }
+
+.drop-element.drop-theme-hubspot-popovers {
+  max-width: 100%;
+  max-height: 100%; }
+  .drop-element.drop-theme-hubspot-popovers .drop-content {
+    border-radius: 5px;
+    position: relative;
+    font-family: inherit;
+    background: #ebebeb;
+    color: #444;
+    padding: 1em;
+    font-size: 1.1em;
+    line-height: 1.5em; }
+    .drop-element.drop-theme-hubspot-popovers .drop-content:before {
+      content: "";
+      display: block;
+      position: absolute;
+      width: 0;
+      height: 0;
+      border-color: transparent;
+      border-width: 10px;
+      border-style: solid; }
+  .drop-element.drop-theme-hubspot-popovers.drop-element-attached-bottom.drop-element-attached-center .drop-content {
+    margin-bottom: 10px; }
+    .drop-element.drop-theme-hubspot-popovers.drop-element-attached-bottom.drop-element-attached-center .drop-content:before {
+      top: 100%;
+      left: 50%;
+      margin-left: -10px;
+      border-top-color: #ebebeb; }
+  .drop-element.drop-theme-hubspot-popovers.drop-element-attached-top.drop-element-attached-center .drop-content {
+    margin-top: 10px; }
+    .drop-element.drop-theme-hubspot-popovers.drop-element-attached-top.drop-element-attached-center .drop-content:before {
+      bottom: 100%;
+      left: 50%;
+      margin-left: -10px;
+      border-bottom-color: #ebebeb; }
+  .drop-element.drop-theme-hubspot-popovers.drop-element-attached-right.drop-element-attached-middle .drop-content {
+    margin-right: 10px; }
+    .drop-element.drop-theme-hubspot-popovers.drop-element-attached-right.drop-element-attached-middle .drop-content:before {
+      left: 100%;
+      top: 50%;
+      margin-top: -10px;
+      border-left-color: #ebebeb; }
+  .drop-element.drop-theme-hubspot-popovers.drop-element-attached-left.drop-element-attached-middle .drop-content {
+    margin-left: 10px; }
+    .drop-element.drop-theme-hubspot-popovers.drop-element-attached-left.drop-element-attached-middle .drop-content:before {
+      right: 100%;
+      top: 50%;
+      margin-top: -10px;
+      border-right-color: #ebebeb; }
+  .drop-element.drop-theme-hubspot-popovers.drop-element-attached-top.drop-element-attached-left.drop-target-attached-bottom .drop-content {
+    margin-top: 10px; }
+    .drop-element.drop-theme-hubspot-popovers.drop-element-attached-top.drop-element-attached-left.drop-target-attached-bottom .drop-content:before {
+      bottom: 100%;
+      left: 10px;
+      border-bottom-color: #ebebeb; }
+  .drop-element.drop-theme-hubspot-popovers.drop-element-attached-top.drop-element-attached-right.drop-target-attached-bottom .drop-content {
+    margin-top: 10px; }
+    .drop-element.drop-theme-hubspot-popovers.drop-element-attached-top.drop-element-attached-right.drop-target-attached-bottom .drop-content:before {
+      bottom: 100%;
+      right: 10px;
+      border-bottom-color: #ebebeb; }
+  .drop-element.drop-theme-hubspot-popovers.drop-element-attached-bottom.drop-element-attached-left.drop-target-attached-top .drop-content {
+    margin-bottom: 10px; }
+    .drop-element.drop-theme-hubspot-popovers.drop-element-attached-bottom.drop-element-attached-left.drop-target-attached-top .drop-content:before {
+      top: 100%;
+      left: 10px;
+      border-top-color: #ebebeb; }
+  .drop-element.drop-theme-hubspot-popovers.drop-element-attached-bottom.drop-element-attached-right.drop-target-attached-top .drop-content {
+    margin-bottom: 10px; }
+    .drop-element.drop-theme-hubspot-popovers.drop-element-attached-bottom.drop-element-attached-right.drop-target-attached-top .drop-content:before {
+      top: 100%;
+      right: 10px;
+      border-top-color: #ebebeb; }
+  .drop-element.drop-theme-hubspot-popovers.drop-element-attached-top.drop-element-attached-right.drop-target-attached-left .drop-content {
+    margin-right: 10px; }
+    .drop-element.drop-theme-hubspot-popovers.drop-element-attached-top.drop-element-attached-right.drop-target-attached-left .drop-content:before {
+      top: 10px;
+      left: 100%;
+      border-left-color: #ebebeb; }
+  .drop-element.drop-theme-hubspot-popovers.drop-element-attached-top.drop-element-attached-left.drop-target-attached-right .drop-content {
+    margin-left: 10px; }
+    .drop-element.drop-theme-hubspot-popovers.drop-element-attached-top.drop-element-attached-left.drop-target-attached-right .drop-content:before {
+      top: 10px;
+      right: 100%;
+      border-right-color: #ebebeb; }
+  .drop-element.drop-theme-hubspot-popovers.drop-element-attached-bottom.drop-element-attached-right.drop-target-attached-left .drop-content {
+    margin-right: 10px; }
+    .drop-element.drop-theme-hubspot-popovers.drop-element-attached-bottom.drop-element-attached-right.drop-target-attached-left .drop-content:before {
+      bottom: 10px;
+      left: 100%;
+      border-left-color: #ebebeb; }
+  .drop-element.drop-theme-hubspot-popovers.drop-element-attached-bottom.drop-element-attached-left.drop-target-attached-right .drop-content {
+    margin-left: 10px; }
+    .drop-element.drop-theme-hubspot-popovers.drop-element-attached-bottom.drop-element-attached-left.drop-target-attached-right .drop-content:before {
+      bottom: 10px;
+      right: 100%;
+      border-right-color: #ebebeb; }
+
+.drop-element.drop-theme-hubspot-popovers .drop-content {
+  box-shadow: 0 3px 7px rgba(0, 0, 0, 0.2);
+  border-radius: 2px;
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  padding: 3px;
+  font-size: 13px; }
+  .drop-element.drop-theme-hubspot-popovers .drop-content .drop-content-inner {
+    border: 1px solid #dbdbdb;
+    padding: 14px;
+    background: #fff;
+    overflow: hidden;
+    width: 280px; }
+    .drop-element.drop-theme-hubspot-popovers .drop-content .drop-content-inner .title {
+      font-size: 18px;
+      margin-top: 0;
+      margin-bottom: 12px;
+      font-weight: normal;
+      line-height: 1; }
+    .drop-element.drop-theme-hubspot-popovers .drop-content .drop-content-inner p:last-child {
+      margin-bottom: 0; }
+body.terminalBody {
+  margin: 0;
 }
-.terminal-wrap .btn {
+.matrix-table td {
+  padding: 15px;
+  border: 1px solid #CCC;
+  cursor: pointer;
+}
+.matrix-table td:hover {
+  background-color: #7a43b6;
+}
+#rootTerminal {
+  height: 100%;
+  background: #fff;
+}
+#rootTerminal * {
+  box-sizing: border-box;
+}
+#rootTerminal .btn {
   display: inline-block;
   margin-bottom: 0;
   text-align: center;
@@ -323,264 +877,200 @@ body {
   border: 1px solid transparent;
   white-space: nowrap;
   padding: 6px 12px;
-  font-size: 11px;
   line-height: 1.545454;
   border-radius: 2px;
   font-weight: bold;
+  font-size: 14px;
 }
-.terminal-wrap .btn + .btn {
-  margin-left: 5px;
-}
-.terminal-wrap .btn-block {
-  width: 100%;
-}
-.terminal-wrap .btn-success {
-  color: #fff !important;
-  background-color: #5cb85c;
-  border-color: #5cb85c;
-}
-.terminal-wrap .btn-success:hover,
-.terminal-wrap .btn-success:focus,
-.terminal-wrap .btn-success:active,
-.terminal-wrap .btn-success.active,
-.open .dropdown-toggle.terminal-wrap .btn-success {
-  color: #fff !important;
-  background-color: #47a447;
-  border-color: #419641;
-}
-.terminal-wrap .btn-success:active,
-.terminal-wrap .btn-success.active,
-.open .dropdown-toggle.terminal-wrap .btn-success {
-  background-image: none;
-}
-.terminal-wrap .btn-success.disabled,
-.terminal-wrap .btn-success[disabled],
-fieldset[disabled] .terminal-wrap .btn-success,
-.terminal-wrap .btn-success.disabled:hover,
-.terminal-wrap .btn-success[disabled]:hover,
-fieldset[disabled] .terminal-wrap .btn-success:hover,
-.terminal-wrap .btn-success.disabled:focus,
-.terminal-wrap .btn-success[disabled]:focus,
-fieldset[disabled] .terminal-wrap .btn-success:focus,
-.terminal-wrap .btn-success.disabled:active,
-.terminal-wrap .btn-success[disabled]:active,
-fieldset[disabled] .terminal-wrap .btn-success:active,
-.terminal-wrap .btn-success.disabled.active,
-.terminal-wrap .btn-success[disabled].active,
-fieldset[disabled] .terminal-wrap .btn-success.active {
-  background-color: #5cb85c;
-  border-color: #5cb85c;
-}
-.terminal-wrap .btn-primary {
+#rootTerminal .btn-primary {
   color: #fff !important;
   background-color: #3C506F;
   border-color: #3C506F;
 }
-.terminal-wrap .btn-primary:hover,
-.terminal-wrap .btn-primary:focus,
-.terminal-wrap .btn-primary:active,
-.terminal-wrap .btn-primary.active,
-.open .dropdown-toggle.terminal-wrap .btn-primary {
+#rootTerminal .btn-primary:hover,
+#rootTerminal .btn-primary:focus,
+#rootTerminal .btn-primary:active,
+#rootTerminal .btn-primary.active,
+.open .dropdown-toggle#rootTerminal .btn-primary {
   color: #fff !important;
   background-color: #2e3d55;
   border-color: #273347;
 }
-.terminal-wrap .btn-primary:active,
-.terminal-wrap .btn-primary.active,
-.open .dropdown-toggle.terminal-wrap .btn-primary {
+#rootTerminal .btn-primary:active,
+#rootTerminal .btn-primary.active,
+.open .dropdown-toggle#rootTerminal .btn-primary {
   background-image: none;
 }
-.terminal-wrap .btn-primary.disabled,
-.terminal-wrap .btn-primary[disabled],
-fieldset[disabled] .terminal-wrap .btn-primary,
-.terminal-wrap .btn-primary.disabled:hover,
-.terminal-wrap .btn-primary[disabled]:hover,
-fieldset[disabled] .terminal-wrap .btn-primary:hover,
-.terminal-wrap .btn-primary.disabled:focus,
-.terminal-wrap .btn-primary[disabled]:focus,
-fieldset[disabled] .terminal-wrap .btn-primary:focus,
-.terminal-wrap .btn-primary.disabled:active,
-.terminal-wrap .btn-primary[disabled]:active,
-fieldset[disabled] .terminal-wrap .btn-primary:active,
-.terminal-wrap .btn-primary.disabled.active,
-.terminal-wrap .btn-primary[disabled].active,
-fieldset[disabled] .terminal-wrap .btn-primary.active {
+#rootTerminal .btn-primary.disabled,
+#rootTerminal .btn-primary[disabled],
+fieldset[disabled] #rootTerminal .btn-primary,
+#rootTerminal .btn-primary.disabled:hover,
+#rootTerminal .btn-primary[disabled]:hover,
+fieldset[disabled] #rootTerminal .btn-primary:hover,
+#rootTerminal .btn-primary.disabled:focus,
+#rootTerminal .btn-primary[disabled]:focus,
+fieldset[disabled] #rootTerminal .btn-primary:focus,
+#rootTerminal .btn-primary.disabled:active,
+#rootTerminal .btn-primary[disabled]:active,
+fieldset[disabled] #rootTerminal .btn-primary:active,
+#rootTerminal .btn-primary.disabled.active,
+#rootTerminal .btn-primary[disabled].active,
+fieldset[disabled] #rootTerminal .btn-primary.active {
   background-color: #3C506F;
   border-color: #3C506F;
 }
-.terminal-wrap .btn-purple {
+#rootTerminal .btn-purple {
   color: #fff !important;
   background-color: #863F88;
   border-color: #863F88;
 }
-.terminal-wrap .btn-purple:hover,
-.terminal-wrap .btn-purple:focus,
-.terminal-wrap .btn-purple:active,
-.terminal-wrap .btn-purple.active,
-.open .dropdown-toggle.terminal-wrap .btn-purple {
+#rootTerminal .btn-purple:hover,
+#rootTerminal .btn-purple:focus,
+#rootTerminal .btn-purple:active,
+#rootTerminal .btn-purple.active,
+.open .dropdown-toggle#rootTerminal .btn-purple {
   color: #fff !important;
   background-color: #6b326c;
   border-color: #5d2c5e;
 }
-.terminal-wrap .btn-purple:active,
-.terminal-wrap .btn-purple.active,
-.open .dropdown-toggle.terminal-wrap .btn-purple {
+#rootTerminal .btn-purple:active,
+#rootTerminal .btn-purple.active,
+.open .dropdown-toggle#rootTerminal .btn-purple {
   background-image: none;
 }
-.terminal-wrap .btn-purple.disabled,
-.terminal-wrap .btn-purple[disabled],
-fieldset[disabled] .terminal-wrap .btn-purple,
-.terminal-wrap .btn-purple.disabled:hover,
-.terminal-wrap .btn-purple[disabled]:hover,
-fieldset[disabled] .terminal-wrap .btn-purple:hover,
-.terminal-wrap .btn-purple.disabled:focus,
-.terminal-wrap .btn-purple[disabled]:focus,
-fieldset[disabled] .terminal-wrap .btn-purple:focus,
-.terminal-wrap .btn-purple.disabled:active,
-.terminal-wrap .btn-purple[disabled]:active,
-fieldset[disabled] .terminal-wrap .btn-purple:active,
-.terminal-wrap .btn-purple.disabled.active,
-.terminal-wrap .btn-purple[disabled].active,
-fieldset[disabled] .terminal-wrap .btn-purple.active {
+#rootTerminal .btn-purple.disabled,
+#rootTerminal .btn-purple[disabled],
+fieldset[disabled] #rootTerminal .btn-purple,
+#rootTerminal .btn-purple.disabled:hover,
+#rootTerminal .btn-purple[disabled]:hover,
+fieldset[disabled] #rootTerminal .btn-purple:hover,
+#rootTerminal .btn-purple.disabled:focus,
+#rootTerminal .btn-purple[disabled]:focus,
+fieldset[disabled] #rootTerminal .btn-purple:focus,
+#rootTerminal .btn-purple.disabled:active,
+#rootTerminal .btn-purple[disabled]:active,
+fieldset[disabled] #rootTerminal .btn-purple:active,
+#rootTerminal .btn-purple.disabled.active,
+#rootTerminal .btn-purple[disabled].active,
+fieldset[disabled] #rootTerminal .btn-purple.active {
   background-color: #863F88;
   border-color: #863F88;
 }
-.terminal-wrap .btn-white {
-  color: #717171 !important;
-  background-color: #fff;
-  border-color: #e1e1e1;
-}
-.terminal-wrap .btn-white:hover,
-.terminal-wrap .btn-white:focus,
-.terminal-wrap .btn-white:active,
-.terminal-wrap .btn-white.active,
-.open .dropdown-toggle.terminal-wrap .btn-white {
-  color: #717171 !important;
-  background-color: #ebebeb;
-  border-color: #c2c2c2;
-}
-.terminal-wrap .btn-white:active,
-.terminal-wrap .btn-white.active,
-.open .dropdown-toggle.terminal-wrap .btn-white {
-  background-image: none;
-}
-.terminal-wrap .btn-white.disabled,
-.terminal-wrap .btn-white[disabled],
-fieldset[disabled] .terminal-wrap .btn-white,
-.terminal-wrap .btn-white.disabled:hover,
-.terminal-wrap .btn-white[disabled]:hover,
-fieldset[disabled] .terminal-wrap .btn-white:hover,
-.terminal-wrap .btn-white.disabled:focus,
-.terminal-wrap .btn-white[disabled]:focus,
-fieldset[disabled] .terminal-wrap .btn-white:focus,
-.terminal-wrap .btn-white.disabled:active,
-.terminal-wrap .btn-white[disabled]:active,
-fieldset[disabled] .terminal-wrap .btn-white:active,
-.terminal-wrap .btn-white.disabled.active,
-.terminal-wrap .btn-white[disabled].active,
-fieldset[disabled] .terminal-wrap .btn-white.active {
-  background-color: #fff;
-  border-color: #e1e1e1;
-}
-.terminal-wrap .clear:before,
-.terminal-wrap .clear:after {
-  content: " ";
-  /* 1 */
-  display: table;
-  /* 2 */
-}
-.terminal-wrap .clear:after {
-  clear: both;
-}
-.terminal-wrap .container {
-  padding: 50px;
-}
-.terminal-wrap .heading {
-  border: 1px solid #e1e1e1;
-  padding: 10px;
-  font-weight: bold;
-}
-.terminal-wrap .list {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-}
-.terminal-wrap .list li {
-  padding: 10px 0;
-}
-.terminal-wrap .menu {
-  padding: 10px 0;
-  text-align: right;
-}
-.terminal-wrap .border-top {
-  border-top: 1px solid #2D2D2D;
-}
-.terminal-wrap .panel-right {
-  width: 20%;
-  background: #fff;
-  padding: 15px;
-}
-.terminal-wrap .pull-left {
-  float: left;
-}
-.terminal-wrap .pull-right {
-  float: left;
-}
-.terminal-wrap .table {
-  border: 1px solid #e1e1e1;
-  font-size: 11px;
-  width: 100%;
-  border-collapse: collapse;
-  text-align: center;
-}
-.terminal-wrap .table thead th {
-  background: #e1e1e1;
-  font-weight: bold;
-}
-.terminal-wrap .table th {
-  font-weight: bold;
-}
-.terminal-wrap .table th,
-.terminal-wrap .table td {
-  padding: 10px 5px;
-}
-.terminal-wrap .terminal {
-  cursor: text;
-}
-.terminal-wrap .text-center {
-  text-align: center;
-}
-.terminal-wrap .text-right {
-  text-align: right;
-}
-.terminal-wrap .t-d-table {
-  display: table;
-  width: 100%;
-}
-.terminal-wrap .t-d-row {
-  display: table-row;
-}
-.terminal-wrap .t-d-cell {
-  vertical-align: top;
+#rootTerminal .t-d-cell {
   display: table-cell;
 }
-.terminal-wrap .t-f-size-14 {
-  font-size: 14px;
-}
-.terminal-wrap .t-bold {
-  font-weight: bold;
-}
-.terminal-wrap .wrapper-sm {
-  padding: 5px 10px;
-}
-.terminal-wrap .fullScreen {
-  position: absolute;
+.terminal-wrap {
+  color: #414141;
+  width: 100%;
   height: 100%;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
 }
-.terminal-wrap .fullScreen .terminal {
-  height: 100% !important;
+.terminal-wrap > .term-header {
+  font-size: 12px;
+  height: 2%;
+  text-align: center;
+  text-shadow: rgba(255, 255, 255, 0.8) 0 1px 0;
+  background-image: -webkit-linear-gradient(top, #e8e8e8, #bcbbbc);
+  background-image: -moz-linear-gradient(top, #e8e8e8, #bcbbbc);
+  background-image: linear-gradient(top, #e8e8e8, #bcbbbc);
 }
+.terminal-wrap > .term-body {
+  width: 100%;
+  height: 98%;
+  display: table;
+}
+.terminal-wrap > .term-body .left {
+  position: relative;
+}
+.terminal-wrap > .term-body .left table {
+  height: 100%;
+  width: 100%;
+  border-collapse: collapse;
+  border-spacing: 0;
+  background: #000;
+}
+.terminal-wrap > .term-body .left table tr td {
+  border-right: 3px solid #fff;
+  border-top: 3px solid #fff;
+  vertical-align: top;
+}
+.terminal-wrap > .term-body .left table tr td:last-child {
+  border-right: 0;
+}
+.terminal-wrap > .term-body .left table tr:first-child td {
+  border-top: 0;
+}
+.terminal-wrap > .term-body .menu {
+  width: 20%;
+  vertical-align: top;
+  padding: 10px;
+}
+.terminal-wrap > .term-body .menu article {
+  padding: 20px 0 0 0;
+}
+.terminal-wrap > .term-body .menu .label {
+  font-weight: bold;
+  font-size: 12px;
+  padding: 10px 0;
+}
+.terminal-wrap > .term-body.minimized .menu {
+  width: 10%;
+}
+.terminal-wrap > .term-body.minimized .menu .btn {
+  display: block;
+  width: 100%;
+  margin: 5px 0;
+}
+.terminal-wrap > .term-body.minimized .menu .label {
+  font-size: 10px;
+}
+.terminal-wrap > .term-body.minimized .menu article {
+  padding: 10px;
+}
+.terminal-wrap > .term-body.t-f-size-2x .terminal {
+  --size: 2;
+}
+.terminal-wrap .actions-btn-menu {
+  position: absolute;
+  padding: 10px;
+  z-index: 1;
+  right: 7px;
+}
+.terminal-wrap .terminal {
+  height: 100%;
+  max-height: 100%;
+  width: 100%;
+  padding: 0;
+  overflow: auto;
+}
+.terminal-wrap .terminal iframe {
+  position: static;
+  display: none;
+}
+.terminal-wrap .t-matrix-h-0 td {
+  height: 100%;
+}
+.terminal-wrap .t-matrix-h-1 td {
+  height: 50%;
+}
+.terminal-wrap .t-matrix-h-2 td {
+  height: 33.33%;
+}
+.terminal-wrap .t-matrix-h-3 td {
+  height: 25%;
+  max-height: 25%;
+  min-height: 25%;
+}
+.terminal-wrap .t-matrix-w-0 td {
+  width: 100%;
+}
+.terminal-wrap .t-matrix-w-1 td {
+  width: 50%;
+}
+.terminal-wrap .t-matrix-w-2 td {
+  width: 33.33%;
+}
+.terminal-wrap .t-matrix-w-3 td {
+  width: 25%;
+}
+
+/*# sourceMappingURL=main.css.map*/

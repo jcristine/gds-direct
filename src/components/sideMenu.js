@@ -107,7 +107,7 @@ let SideMenu = (function()
 			ul.className = 'list';
 
 			getData();
-			return sideMenu
+			return sideMenu;
 		}
 	}
 }());

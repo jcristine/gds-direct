@@ -1,24 +1,26 @@
 'use strict';
 
-import Terminal from './components/terminal';
+import Container from './components/container';
 
 let apiData = window.apiData || {};
 
 let Context		= {
+
 	init()
 	{
 		let rootId = apiData.htmlRootId || 'rootTerminal';
-		Terminal.render( rootId );
+		Container.render( rootId );
 
-		if (apiData.styleSheets)
-			require( '../../sabre/public/main.css' )
+		//if (apiData.styleSheets)
+		//	require( '../../sabre/public/main.css' );
+
+		Container.attachTerminals();
 	},
 
 	createTerminal()
 	{
-		Terminal.add();
+		Container.attachTerminals();
 	}
 };
 
 Context.init();
-Context.createTerminal();

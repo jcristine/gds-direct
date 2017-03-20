@@ -2,176 +2,64 @@
 
 import TerminalPlugin from '../middleware/terminal.js';
 
-import {
-	TERMINAL_HEIGHT,
-	TERMINAL_SPLIT_HEIGHT
-} from '../constants.js';
-
-import {bufferBtn, splitBtn, fullScreen} from '../components/buttons.js';
-import sideMenu from './sideMenu.js';
-
-let isSplit;
-
-function splitHandler()
-{
-	isSplit = !isSplit;
-
-	if ( Main.terminals.length == 1 )
-	{
-		Main.add({
-			className	: 'border-top',
-			split 		: 'no',
-			height 		: TERMINAL_SPLIT_HEIGHT+'px'
-		});
-	}
-
-	if (isSplit)
-	{
-		Main.terminals[1].show();
-		Main.minimizeAll();
-	} else
-	{
-		Main.maximizeAll();
-		Main.terminals[1].hide();
-	}
-}
-
-class Terminal {
+export default class Terminal {
 
 	constructor( params )
 	{
-		this.params 	= params;
-		this.context 	= document.createElement('div');
-		this.context.className = params.className;
-		this.context.style.height = params.height + 'px';
+		this.params 				= params;
+		this.context 				= document.createElement('div');
+		
+		this.plugin 				= null;
+		this.context.className 		= 'terminal';
 
-		this.menu 	= document.createElement('div');
-		this.menu.className = 'text-right wrapper-sm menu';
+		this.params.parentContext.appendChild( this.context );
+		//this.parent					= params.parentContext;
+	}
+	
+	getContext()
+	{
+		return this.context;
 	}
 
 	render()
 	{
-		document.getElementById('terminalContainer').appendChild( this.context );
-		this.context.appendChild( this.menu );
+		//document.getElementById('terminalContainer').appendChild( this.context );
+		//this.context.appendChild( this.menu );
+	}
+
+	destroy()
+	{
+		this.plugin.getPlugin().destroy()
 	}
 
 	create()
 	{
-		this.render();
-
-		this.menu.appendChild(
-			bufferBtn().make( function () {
-				plugin.focus();
-			})
-		);
-
-		if (this.params.split == 1)
-		{
-			this.menu.appendChild( splitBtn );
-			splitBtn.addEventListener('click', splitHandler);
-		}
-
-		if (this.params.split == 1)
-		{
-			this.menu.appendChild(
-				fullScreen().make( function () {
-					Main.full();
-				})
-			);
-		}
-
-		let plugin = TerminalPlugin.init( this.context );
-		// plugin.focus();
+		this.plugin = new TerminalPlugin( this.context, this.params['name'] );
 	}
-
-	hide()
+	
+	focus()
 	{
-		this.context.style.display = 'none';
+		//console.log(' focus focus ', this.params)
+		//this.plugin.getWindow().focus();
 	}
 
-	show()
-	{
-		this.context.style.display = '';
-	}
-
-	minimize()
-	{
-		this.context.style.height = TERMINAL_SPLIT_HEIGHT+'px';
-	}
-
-	maximize()
-	{
-		this.context.style.height = TERMINAL_HEIGHT+'px';
-	}
+	//hide()
+	//{
+	//	this.context.style.display = 'none';
+	//}
+	//
+	//show()
+	//{
+	//	this.context.style.display = '';
+	//}
+	//
+	//minimize()
+	//{
+	//	this.context.style.height = TERMINAL_SPLIT_HEIGHT+'px';
+	//}
+	//
+	//maximize()
+	//{
+	//	this.context.style.height = TERMINAL_HEIGHT+'px';
+	//}
 }
-
-class TerminalWrap {
-
-	constructor()
-	{
-		this.terminals = [];
-	}
-
-	render( rootId )
-	{
-		let Root 	= document.getElementById( rootId );
-
-		Root.insertAdjacentHTML('beforeend',
-			`<section class="terminal-wrap clearfix">
-				<header class="title-bar">Terminal Sabre</header>
-				<div class="t-d-table">
-					<div id="terminalContainer" class="t-d-cell"></div>
-					<div id="sideMenu" class="t-d-cell panel-right"></div>
-				</div>
-			</section>`
-		);
-
-		document.getElementById('sideMenu').appendChild( sideMenu.render() );
-	}
-
-	add ( params = {} )
-	{
-		let terminal = new Terminal({
-			className 	: params.className 	|| '',
-			split		: params.split 		|| 1,
-			height		: params.height 	|| TERMINAL_HEIGHT
-		});
-
-		terminal.create();
-		this.terminals.push( terminal );
-	}
-
-	minimizeAll()
-	{
-		this.terminals.map(function (obj) {
-			obj.minimize()
-		})
-	}
-
-	maximizeAll()
-	{
-		this.terminals.map(function (obj) {
-			obj.maximize()
-		})
-	}
-
-	remove ()
-	{
-	}
-
-	full ()
-	{
-		this.fullSet = !this.fullSet;
-
-		if ( this.fullSet )
-		{
-			document.getElementById('terminalContainer').className += ' fullScreen';
-			return '';
-		}
-
-		document.getElementById('terminalContainer').className = document.getElementById('terminalContainer').className.replace('fullScreen', '')
-	}
-}
-
-let Main = new TerminalWrap();
-export default Main;

@@ -45,9 +45,12 @@ function makeCachedParts(txt)
 	});
 }
 
-let Helpers = {
+//let Helpers = {
+//	makeCachedParts 		:	makeCachedParts,
+//	substitutePrintableChar :	substitutePrintableChar
+//};
+
+module.exports = {
 	makeCachedParts 		:	makeCachedParts,
 	substitutePrintableChar :	substitutePrintableChar
 };
-
-module.exports = Helpers;

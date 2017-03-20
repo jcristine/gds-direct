@@ -54,7 +54,7 @@ export default ( function () {
 		{
 			// console.log('making runCommand call');
 
-			if (cmd == 'MD')
+			if (cmd === 'MD')
 				return this.cachedOutput.shift();
 
 			return Requests.runSyncCommand('runCommand', {'sessionToken': sessionToken, 'command': cmd});
