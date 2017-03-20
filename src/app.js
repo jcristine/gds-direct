@@ -2,10 +2,9 @@
 
 import Container from './components/container';
 
-let apiData = window.apiData || {};
+const apiData = window.apiData || {};
 
-let Context		= {
-
+const Context = {
 	init()
 	{
 		let rootId = apiData.htmlRootId || 'rootTerminal';
@@ -14,12 +13,7 @@ let Context		= {
 		//if (apiData.styleSheets)
 		//	require( '../../sabre/public/main.css' );
 
-		Container.attachTerminals();
-	},
-
-	createTerminal()
-	{
-		Container.attachTerminals();
+		//Container.attachTerminals();
 	}
 };
 

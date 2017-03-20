@@ -11,22 +11,16 @@ export default class Terminal {
 		
 		this.plugin 				= null;
 		this.context.className 		= 'terminal';
-
 		this.params.parentContext.appendChild( this.context );
-		//this.parent					= params.parentContext;
+
+		//console.log( '================' );
+		//console.log( this.params.parentContext.clientHeight );
+		//console.log( this.params.parentContext.offsetHeight );
+		//console.log( this.params.parentContext.scrollHeight );
+
+		this.context.style.height	= this.params.parentContext.clientHeight + 'px';
 	}
 	
-	getContext()
-	{
-		return this.context;
-	}
-
-	render()
-	{
-		//document.getElementById('terminalContainer').appendChild( this.context );
-		//this.context.appendChild( this.menu );
-	}
-
 	destroy()
 	{
 		this.plugin.getPlugin().destroy()
@@ -42,24 +36,4 @@ export default class Terminal {
 		//console.log(' focus focus ', this.params)
 		//this.plugin.getWindow().focus();
 	}
-
-	//hide()
-	//{
-	//	this.context.style.display = 'none';
-	//}
-	//
-	//show()
-	//{
-	//	this.context.style.display = '';
-	//}
-	//
-	//minimize()
-	//{
-	//	this.context.style.height = TERMINAL_SPLIT_HEIGHT+'px';
-	//}
-	//
-	//maximize()
-	//{
-	//	this.context.style.height = TERMINAL_HEIGHT+'px';
-	//}
 }

@@ -956,6 +956,43 @@ fieldset[disabled] #rootTerminal .btn-purple.active {
   background-color: #863F88;
   border-color: #863F88;
 }
+#rootTerminal .btn-warning {
+  color: #fff !important;
+  background-color: #5cb85c;
+  border-color: #5cb85c;
+}
+#rootTerminal .btn-warning:hover,
+#rootTerminal .btn-warning:focus,
+#rootTerminal .btn-warning:active,
+#rootTerminal .btn-warning.active,
+.open .dropdown-toggle#rootTerminal .btn-warning {
+  color: #fff !important;
+  background-color: #47a447;
+  border-color: #419641;
+}
+#rootTerminal .btn-warning:active,
+#rootTerminal .btn-warning.active,
+.open .dropdown-toggle#rootTerminal .btn-warning {
+  background-image: none;
+}
+#rootTerminal .btn-warning.disabled,
+#rootTerminal .btn-warning[disabled],
+fieldset[disabled] #rootTerminal .btn-warning,
+#rootTerminal .btn-warning.disabled:hover,
+#rootTerminal .btn-warning[disabled]:hover,
+fieldset[disabled] #rootTerminal .btn-warning:hover,
+#rootTerminal .btn-warning.disabled:focus,
+#rootTerminal .btn-warning[disabled]:focus,
+fieldset[disabled] #rootTerminal .btn-warning:focus,
+#rootTerminal .btn-warning.disabled:active,
+#rootTerminal .btn-warning[disabled]:active,
+fieldset[disabled] #rootTerminal .btn-warning:active,
+#rootTerminal .btn-warning.disabled.active,
+#rootTerminal .btn-warning[disabled].active,
+fieldset[disabled] #rootTerminal .btn-warning.active {
+  background-color: #5cb85c;
+  border-color: #5cb85c;
+}
 #rootTerminal .t-d-cell {
   display: table-cell;
 }
@@ -972,6 +1009,7 @@ fieldset[disabled] #rootTerminal .btn-purple.active {
   background-image: -webkit-linear-gradient(top, #e8e8e8, #bcbbbc);
   background-image: -moz-linear-gradient(top, #e8e8e8, #bcbbbc);
   background-image: linear-gradient(top, #e8e8e8, #bcbbbc);
+  border-top: 1px solid #ccc;
 }
 .terminal-wrap > .term-body {
   width: 100%;
@@ -1003,14 +1041,20 @@ fieldset[disabled] #rootTerminal .btn-purple.active {
   width: 20%;
   vertical-align: top;
   padding: 10px;
+  color: #414141;
+  background: #fff;
 }
 .terminal-wrap > .term-body .menu article {
-  padding: 20px 0 0 0;
+  padding: 10px 0 0 0;
 }
 .terminal-wrap > .term-body .menu .label {
   font-weight: bold;
   font-size: 12px;
   padding: 10px 0;
+  color: #414141;
+}
+.terminal-wrap > .term-body .menu .buttons .btn {
+  margin-right: 5px;
 }
 .terminal-wrap > .term-body.minimized .menu {
   width: 10%;
@@ -1021,10 +1065,9 @@ fieldset[disabled] #rootTerminal .btn-purple.active {
   margin: 5px 0;
 }
 .terminal-wrap > .term-body.minimized .menu .label {
+  text-align: center;
   font-size: 10px;
-}
-.terminal-wrap > .term-body.minimized .menu article {
-  padding: 10px;
+  display: block;
 }
 .terminal-wrap > .term-body.t-f-size-2x .terminal {
   --size: 2;
@@ -1036,8 +1079,6 @@ fieldset[disabled] #rootTerminal .btn-purple.active {
   right: 7px;
 }
 .terminal-wrap .terminal {
-  height: 100%;
-  max-height: 100%;
   width: 100%;
   padding: 0;
   overflow: auto;
@@ -1045,20 +1086,6 @@ fieldset[disabled] #rootTerminal .btn-purple.active {
 .terminal-wrap .terminal iframe {
   position: static;
   display: none;
-}
-.terminal-wrap .t-matrix-h-0 td {
-  height: 100%;
-}
-.terminal-wrap .t-matrix-h-1 td {
-  height: 50%;
-}
-.terminal-wrap .t-matrix-h-2 td {
-  height: 33.33%;
-}
-.terminal-wrap .t-matrix-h-3 td {
-  height: 25%;
-  max-height: 25%;
-  min-height: 25%;
 }
 .terminal-wrap .t-matrix-w-0 td {
   width: 100%;

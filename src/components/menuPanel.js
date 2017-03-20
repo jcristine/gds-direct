@@ -74,14 +74,19 @@ export default class MenuPanel
 		let context 		= document.createElement('article');
 		context.innerHTML 	= '<div class="label">Change Active Session</div>';
 
+		let btnGroup		= document.createElement('div');
+		btnGroup.className 	= 'buttons';
+
 		[1,2,3].map(( value ) => {
+
 			let button = document.createElement('button');
-			button.className = 'btn btn-sm btn-purple';
+			button.className = 'btn btn-sm btn-purple font-bold';
 			button.innerHTML = value;
 
-			context.appendChild( button );
+			btnGroup.appendChild( button );
 		});
 
+		context.appendChild(btnGroup);
 		return context;
 
 	}
@@ -91,19 +96,26 @@ export default class MenuPanel
 		let context 		= document.createElement('article');
 		context.innerHTML 	= '<div class="label">Switch Language</div>';
 
+		let btnGroup		= document.createElement('div');
+		btnGroup.className 	= 'buttons';
+
 		['sabre','apollo'].map(( value ) => {
 			let button = document.createElement('button');
-			button.className = 'btn btn-sm btn-purple';
+			button.className = 'btn btn-sm btn-warning  font-bold';
 			button.innerHTML = value;
 
-			context.appendChild( button );
+			btnGroup.appendChild( button );
 		});
 
+		context.appendChild(btnGroup);
 		return context;
 	}
 
-	static build()
+	static settingsButtons()
 	{
+		let context 		= document.createElement('article');
+		//context.className 	= 'btn-group';
+
 		[
 			MenuPanel.toggle(),
 			MenuPanel.fontSize(),
@@ -116,6 +128,12 @@ export default class MenuPanel
 			)
 		});
 
+		return context;
+	}
+
+	static build()
+	{
+		context.appendChild( this.settingsButtons() );
 		context.appendChild( this.activeSession() );
 		context.appendChild( this.PccLanguage() );
 	}

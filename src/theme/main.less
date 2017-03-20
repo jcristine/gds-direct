@@ -1,9 +1,9 @@
-@import "../../node_modules/jquery.terminal/css/jquery.terminal.css";
 @import "variables.less";
 @import "mixins.less";
 
-@import '../../node_modules/tether-drop/dist/css/drop-theme-arrows.css';
-@import '../../node_modules/tether-drop/dist/css/drop-theme-hubspot-popovers.css';
+@import "~jquery.terminal/css/jquery.terminal.css";
+@import '~tether-drop/dist/css/drop-theme-arrows.css';
+@import '~tether-drop/dist/css/drop-theme-hubspot-popovers.css';
 
 body.terminalBody {
 	margin: 0;
@@ -58,6 +58,10 @@ body.terminalBody {
 		.button-variant(#fff, @brand-purple, @brand-purple);
 	}
 
+	.btn-warning {
+		.button-variant(#fff, @brand-success, @brand-success);
+	}
+
 	.t-d-cell {
 		display: table-cell;
 	}
@@ -81,6 +85,7 @@ body.terminalBody {
 		background-image: -webkit-linear-gradient(top, #e8e8e8, #bcbbbc);
 		background-image: -moz-linear-gradient(top, #e8e8e8, #bcbbbc);
 		background-image: linear-gradient(top, #e8e8e8, #bcbbbc);
+		border-top : 1px solid #ccc;
 	}
 
 	& > .term-body {
@@ -124,16 +129,24 @@ body.terminalBody {
 			width: 20%;
 			vertical-align: top;
 			padding: 10px;
+			color: #414141;
+			background: #fff;
 
 			article {
-				padding: 20px 0 0 0;
-				//text-align: center;
+				padding: 10px 0 0 0;
 			}
 
 			.label {
 				font-weight: bold;
 				font-size: 12px;
 				padding: 10px 0;
+				color: #414141;
+			}
+
+			.buttons {
+				.btn {
+					margin-right: 5px;
+				}
 			}
 		}
 
@@ -148,11 +161,13 @@ body.terminalBody {
 				}
 
 				.label {
+					text-align: center;
 					font-size: 10px;
+					display: block;
 				}
 
 				article {
-					padding: 10px;
+					//padding: 10px;
 				}
 			}
 		}
@@ -173,9 +188,9 @@ body.terminalBody {
 	}
 
 	.terminal {
-		//cursor: text;
-		height : 100%;
-		max-height: 100%;
+		//height : 100%;
+		//max-height: 100%;
+
 		width:100%;
 		padding: 0;
 		overflow: auto;
@@ -187,34 +202,34 @@ body.terminalBody {
 		}
 	}
 
-	.t-matrix-h-0
-	{
-		td {
-			height: 100%;
-		}
-	}
-	.t-matrix-h-1
-	{
-		td {
-			height: 50%;
-		}
-	}
-
-	.t-matrix-h-2
-	{
-		td {
-			height: 33.33%;
-		}
-	}
-
-	.t-matrix-h-3
-	{
-		td {
-			height: 25%;
-			max-height: 25%;
-			min-height: 25%;
-		}
-	}
+	//.t-matrix-h-0
+	//{
+	//	td {
+	//		height: 100%;
+	//	}
+	//}
+	//.t-matrix-h-1
+	//{
+	//	td {
+	//		height: 50%;
+	//	}
+	//}
+	//
+	//.t-matrix-h-2
+	//{
+	//	td {
+	//		height: 33.33%;
+	//	}
+	//}
+	//
+	//.t-matrix-h-3
+	//{
+	//	td {
+	//		height: 25%;
+	//		max-height: 25%;
+	//		min-height: 25%;
+	//	}
+	//}
 
 	.t-matrix-w-0
 	{

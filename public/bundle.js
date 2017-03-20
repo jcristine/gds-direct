@@ -68,7 +68,7 @@
 /* 0 */
 /***/ function(module, exports, __webpack_require__) {
 
-/* WEBPACK VAR INJECTION */(function(setImmediate, clearImmediate) {var nextTick = __webpack_require__(17).nextTick;
+/* WEBPACK VAR INJECTION */(function(setImmediate, clearImmediate) {var nextTick = __webpack_require__(7).nextTick;
 var apply = Function.prototype.apply;
 var slice = Array.prototype.slice;
 var immediateIds = {};
@@ -148,24 +148,6 @@ exports.clearImmediate = typeof clearImmediate === "function" ? clearImmediate :
 
 /***/ },
 /* 1 */
-/***/ function(module, exports) {
-
-"use strict";
-'use strict';
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-var TERMINAL_HEIGHT = exports.TERMINAL_HEIGHT = '650';
-var TERMINAL_SPLIT_HEIGHT = exports.TERMINAL_SPLIT_HEIGHT = '325';
-var INFO_DATA_URL = exports.INFO_DATA_URL = '?id=sabre/terminal&getInfoData=1';
-var END_POINT_URL = exports.END_POINT_URL = '?id=sabre/terminal&her=1';
-var TIME_FORMAT = exports.TIME_FORMAT = '12';
-var ACCOUNT = exports.ACCOUNT = 'training';
-var API_HOST = exports.API_HOST = '';
-
-/***/ },
-/* 2 */
 /***/ function(module, exports, __webpack_require__) {
 
 var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
@@ -10391,14 +10373,14 @@ return jQuery;
 
 
 /***/ },
-/* 3 */
+/* 2 */
 /***/ function(module, exports, __webpack_require__) {
 
 var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*! tether-drop 1.4.1 */
 
 (function(root, factory) {
   if (true) {
-    !(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(18)], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory), __WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ? (__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+    !(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory), __WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ? (__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
   } else if (typeof exports === 'object') {
     module.exports = factory(require('tether'));
   } else {
@@ -10957,1116 +10939,67 @@ return Drop;
 
 
 /***/ },
-/* 4 */
+/* 3 */
 /***/ function(module, exports, __webpack_require__) {
 
 "use strict";
+const TERMINAL_HEIGHT 		= '650';
+/* unused harmony export TERMINAL_HEIGHT */
+
+const TERMINAL_SPLIT_HEIGHT 	= '325';
+/* unused harmony export TERMINAL_SPLIT_HEIGHT */
+
+const INFO_DATA_URL 	 		= '?id=sabre/terminal&getInfoData=1';
+/* unused harmony export INFO_DATA_URL */
+
+const END_POINT_URL	 		= '?id=sabre/terminal&her=1';
+/* harmony export (immutable) */ exports["b"] = END_POINT_URL;
+
+const TIME_FORMAT 			= '12';
+/* harmony export (immutable) */ exports["c"] = TIME_FORMAT;
+
+const ACCOUNT 				= 'training';
+/* harmony export (immutable) */ exports["d"] = ACCOUNT;
+
+const API_HOST 				= '';
+/* harmony export (immutable) */ exports["a"] = API_HOST;
+
+
+/***/ },
+/* 4 */
+/***/ function(module, exports) {
+
+// removed by extract-text-webpack-plugin
+
+/***/ },
+/* 5 */
+/***/ function(module, exports, __webpack_require__) {
+
+"use strict";
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__components_container__ = __webpack_require__(11);
 'use strict';
 
-var _container = __webpack_require__(7);
 
-var _container2 = _interopRequireDefault(_container);
 
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+const apiData = window.apiData || {};
 
-var apiData = window.apiData || {};
-
-var Context = {
-	init: function init() {
-		var rootId = apiData.htmlRootId || 'rootTerminal';
-		_container2.default.render(rootId);
+const Context = {
+	init()
+	{
+		let rootId = apiData.htmlRootId || 'rootTerminal';
+		__WEBPACK_IMPORTED_MODULE_0__components_container__["a" /* default */].render( rootId );
 
 		//if (apiData.styleSheets)
 		//	require( '../../sabre/public/main.css' );
 
-		_container2.default.attachTerminals();
-	},
-	createTerminal: function createTerminal() {
-		_container2.default.attachTerminals();
+		//Container.attachTerminals();
 	}
 };
 
 Context.init();
 
 /***/ },
-/* 5 */
-/***/ function(module, exports) {
-
-// removed by extract-text-webpack-plugin
-
-/***/ },
 /* 6 */
-/***/ function(module, exports, __webpack_require__) {
-
-"use strict";
-'use strict';
-
-Object.defineProperty(exports, "__esModule", {
-	value: true
-});
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-var _terminalMatrix = __webpack_require__(10);
-
-var _terminalMatrix2 = _interopRequireDefault(_terminalMatrix);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-var context = document.createElement('div');
-context.className = 'actions-btn-menu';
-
-var Button = function () {
-	function Button() {
-		_classCallCheck(this, Button);
-
-		this.context = document.createElement('button');
-		this.context.id = 'addTerminalBtn';
-		this.context.type = 'button';
-		this.context.className = 'btn btn-purple';
-
-		this.context.innerHTML = '<i class="fa fa-columns"></i>';
-		//this.context.addEventListener('click', params.click);
-	}
-
-	_createClass(Button, [{
-		key: 'getContext',
-		value: function getContext() {
-			return this.context;
-		}
-	}]);
-
-	return Button;
-}();
-
-var ActionsMenu = function () {
-	function ActionsMenu() {
-		_classCallCheck(this, ActionsMenu);
-	}
-
-	_createClass(ActionsMenu, null, [{
-		key: 'init',
-		value: function init(params) {
-			this.settings = params;
-			this.addTerminalButton();
-		}
-	}, {
-		key: 'addTerminalButton',
-		value: function addTerminalButton() {
-			var button = new Button({});
-
-			var table = new _terminalMatrix2.default({
-				button: button.getContext(),
-				onClick: this.settings.addEvent
-			});
-
-			table.build();
-			context.appendChild(button.getContext());
-		}
-	}, {
-		key: 'getContext',
-		value: function getContext() {
-			return context;
-		}
-	}]);
-
-	return ActionsMenu;
-}();
-
-exports.default = ActionsMenu;
-
-/***/ },
-/* 7 */
-/***/ function(module, exports, __webpack_require__) {
-
-"use strict";
-'use strict';
-
-Object.defineProperty(exports, "__esModule", {
-	value: true
-});
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-var _terminal = __webpack_require__(11);
-
-var _terminal2 = _interopRequireDefault(_terminal);
-
-var _actionsMenu = __webpack_require__(6);
-
-var _actionsMenu2 = _interopRequireDefault(_actionsMenu);
-
-var _menuPanel = __webpack_require__(8);
-
-var _menuPanel2 = _interopRequireDefault(_menuPanel);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-var terminalList = [],
-    Root = void 0,
-    table = void 0,
-    context = void 0,
-    termTableWrap = void 0;
-
-var Table = function () {
-	var context = void 0;
-
-	function constructor() {
-		context = document.createElement('table');
-	}
-
-	function makeRow() {
-		var row = document.createElement('tr');
-		context.appendChild(row);
-
-		return row;
-	}
-
-	function makeCell(row) {
-		var cell = document.createElement('td');
-		row.appendChild(cell);
-
-		return cell;
-	}
-
-	function _draw(rowIndex, cellIndex) {
-		context.classList = ' t-matrix-h-' + rowIndex + ' t-matrix-w-' + cellIndex;
-		context.innerHTML = '';
-
-		var row = void 0,
-		    cells = [];
-
-		for (var i = 0; i <= rowIndex; i++) {
-			row = makeRow();
-
-			for (var y = 0; y <= cellIndex; y++) {
-				cells.push(makeCell(row));
-			}
-		}
-
-		return cells;
-	}
-
-	function _getContext() {
-		return context;
-	}
-
-	constructor();
-
-	return {
-		draw: _draw,
-		getContext: _getContext
-	};
-}();
-
-var Container = function () {
-	function Container() {
-		_classCallCheck(this, Container);
-	}
-
-	_createClass(Container, null, [{
-		key: 'createContext',
-		value: function createContext() {
-			context = document.createElement('section');
-			context.className = 'terminal-wrap clearfix';
-		}
-	}, {
-		key: 'createHeader',
-		value: function createHeader() {
-			var header = document.createElement('header');
-			header.className = 'term-header';
-			header.innerHTML = 'Terminal Sabre';
-
-			context.appendChild(header);
-			return header;
-		}
-	}, {
-		key: 'createWrapper',
-		value: function createWrapper() {
-			termTableWrap = document.createElement('div');
-			termTableWrap.className = 'term-body';
-
-			var leftSide = document.createElement('aside');
-			leftSide.className = 't-d-cell left';
-
-			_actionsMenu2.default.init({
-				addEvent: this.attachTerminals.bind(this)
-			});
-
-			leftSide.appendChild(_actionsMenu2.default.getContext());
-			leftSide.appendChild(Table.getContext());
-
-			var rightSide = document.createElement('aside');
-			rightSide.className = 't-d-cell menu';
-
-			rightSide.appendChild(_menuPanel2.default.render(termTableWrap));
-
-			termTableWrap.appendChild(leftSide);
-			termTableWrap.appendChild(rightSide);
-
-			context.appendChild(termTableWrap);
-		}
-	}, {
-		key: 'render',
-		value: function render(rootId) {
-			Root = Root || document.getElementById(rootId);
-
-			this.createContext();
-			this.createHeader();
-			this.createWrapper();
-
-			Root.appendChild(context);
-		}
-	}, {
-		key: 'clearPrev',
-		value: function clearPrev() {
-			terminalList.map(function (instance) {
-				instance.destroy();
-			});
-
-			terminalList = [];
-		}
-	}, {
-		key: 'attachTerminals',
-		value: function attachTerminals() {
-			var rowIndex = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 0;
-			var cellIndex = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 0;
-
-			this.clearPrev();
-			var cells = Table.draw(rowIndex, cellIndex);
-			cells.map(this.createTerminal);
-		}
-	}, {
-		key: 'createTerminal',
-		value: function createTerminal(cell, index) {
-			var terminal = new _terminal2.default({
-				name: index,
-				parentContext: cell
-			});
-
-			terminal.create();
-			terminalList.push(terminal);
-		}
-	}]);
-
-	return Container;
-}();
-
-exports.default = Container;
-
-/***/ },
-/* 8 */
-/***/ function(module, exports, __webpack_require__) {
-
-"use strict";
-'use strict';
-
-Object.defineProperty(exports, "__esModule", {
-	value: true
-});
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-var _history = __webpack_require__(9);
-
-var _history2 = _interopRequireDefault(_history);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-var context = void 0;
-
-context = document.createElement('aside');
-context.className = 'sideMenu';
-
-var parentContext = void 0;
-
-function createBtn() {
-	var btn = document.createElement('button');
-	btn.type = 'button';
-	btn.className = 'btn btn-primary';
-
-	return btn;
-}
-
-var MenuPanel = function () {
-	function MenuPanel() {
-		_classCallCheck(this, MenuPanel);
-	}
-
-	_createClass(MenuPanel, null, [{
-		key: 'toggle',
-		value: function toggle() {
-			var btn = createBtn();
-			btn.innerHTML = '<i class="fa fa-bars"></i>';
-
-			btn.addEventListener('click', function () {
-				parentContext.classList.toggle('minimized');
-			});
-
-			return btn;
-		}
-	}, {
-		key: 'fontSize',
-		value: function fontSize() {
-			var btn = createBtn();
-			btn.innerHTML = '<i class="fa fa-font"></i>';
-
-			btn.addEventListener('click', function () {
-				parentContext.classList.toggle('t-f-size-2x');
-			});
-
-			return btn;
-		}
-	}, {
-		key: 'history',
-		value: function history() {
-			var btn = createBtn();
-			btn.innerHTML = '<i class="fa fa-history"></i>';
-
-			var popover = new _history2.default({
-				button: btn
-			});
-
-			popover.build();
-
-			return btn;
-		}
-	}, {
-		key: 'settings',
-		value: function settings() {
-			var btn = createBtn();
-			btn.innerHTML = '<i class="fa fa-gears"></i>';
-
-			btn.addEventListener('click', function () {});
-
-			return btn;
-		}
-	}, {
-		key: 'activeSession',
-		value: function activeSession() {
-			var context = document.createElement('article');
-			context.innerHTML = '<div class="label">Change Active Session</div>';
-
-			[1, 2, 3].map(function (value) {
-				var button = document.createElement('button');
-				button.className = 'btn btn-sm btn-purple';
-				button.innerHTML = value;
-
-				context.appendChild(button);
-			});
-
-			return context;
-		}
-	}, {
-		key: 'PccLanguage',
-		value: function PccLanguage() {
-			var context = document.createElement('article');
-			context.innerHTML = '<div class="label">Switch Language</div>';
-
-			['sabre', 'apollo'].map(function (value) {
-				var button = document.createElement('button');
-				button.className = 'btn btn-sm btn-purple';
-				button.innerHTML = value;
-
-				context.appendChild(button);
-			});
-
-			return context;
-		}
-	}, {
-		key: 'build',
-		value: function build() {
-			[MenuPanel.toggle(), MenuPanel.fontSize(), MenuPanel.history(), MenuPanel.settings()].map(function (button) {
-				context.appendChild(button);
-			});
-
-			context.appendChild(this.activeSession());
-			context.appendChild(this.PccLanguage());
-		}
-	}, {
-		key: 'render',
-		value: function render(parent) {
-			parentContext = parent;
-			MenuPanel.build();
-			return context;
-		}
-	}]);
-
-	return MenuPanel;
-}();
-
-exports.default = MenuPanel;
-
-/***/ },
-/* 9 */
-/***/ function(module, exports, __webpack_require__) {
-
-"use strict";
-'use strict';
-
-Object.defineProperty(exports, "__esModule", {
-	value: true
-});
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-var _tetherDrop = __webpack_require__(3);
-
-var _tetherDrop2 = _interopRequireDefault(_tetherDrop);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-var popContext = void 0;
-
-var History = function () {
-	function History(params) {
-		_classCallCheck(this, History);
-
-		this.context = document.createElement('div');
-
-		this.settings = params;
-
-		popContext = new _tetherDrop2.default({
-			target: params['button'],
-			content: this.getContext(),
-			classes: 'drop-theme-arrows',
-			position: 'bottom right',
-			openOn: 'click'
-		});
-	}
-
-	_createClass(History, [{
-		key: 'build',
-		value: function build(list) {
-			list = list || ['No History'];
-
-			this.context.innerHTML = list.map(function (value) {
-				return '<div>' + value + '</div>';
-			});
-		}
-	}, {
-		key: 'getContext',
-		value: function getContext() {
-			return this.context;
-		}
-	}]);
-
-	return History;
-}();
-
-exports.default = History;
-
-/***/ },
-/* 10 */
-/***/ function(module, exports, __webpack_require__) {
-
-"use strict";
-'use strict';
-
-Object.defineProperty(exports, "__esModule", {
-	value: true
-});
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-var _tetherDrop = __webpack_require__(3);
-
-var _tetherDrop2 = _interopRequireDefault(_tetherDrop);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-var popContext = void 0;
-
-//function popover()
-//{
-//}
-
-var Matrix = function () {
-	function Matrix(params) {
-		_classCallCheck(this, Matrix);
-
-		this.context = document.createElement('table');
-		this.context.className = 'matrix-table';
-
-		this.settings = params;
-
-		popContext = new _tetherDrop2.default({
-			target: params['button'],
-			content: this.getContext(),
-			classes: 'drop-theme-arrows',
-			position: 'bottom right',
-			openOn: 'click'
-		});
-	}
-
-	_createClass(Matrix, [{
-		key: 'makeRow',
-		value: function makeRow(rowIndex) {
-			var _this = this;
-
-			var row = document.createElement('tr');
-			row.className = rowIndex + '-tr';
-
-			this.context.appendChild(row);
-
-			[0, 1, 2, 3].map(function (index) {
-				return row.appendChild(_this.makeCell(index, rowIndex));
-			});
-		}
-	}, {
-		key: 'makeCell',
-		value: function makeCell(cellIndex, rowIndex) {
-			var _this2 = this;
-
-			var cell = document.createElement('td');
-			cell.className = cellIndex + '-td';
-
-			cell.addEventListener('click', function () {
-				popContext.close();
-				_this2.settings.onClick(rowIndex, cellIndex);
-			});
-
-			return cell;
-		}
-	}, {
-		key: 'build',
-		value: function build() {
-
-			[0, 1, 2, 3].map(this.makeRow, this);
-		}
-	}, {
-		key: 'getContext',
-		value: function getContext() {
-			console.log(' build ', this.context);
-			return this.context;
-		}
-	}]);
-
-	return Matrix;
-}();
-
-exports.default = Matrix;
-
-/***/ },
-/* 11 */
-/***/ function(module, exports, __webpack_require__) {
-
-"use strict";
-'use strict';
-
-Object.defineProperty(exports, "__esModule", {
-	value: true
-});
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-var _terminal = __webpack_require__(14);
-
-var _terminal2 = _interopRequireDefault(_terminal);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-var Terminal = function () {
-	function Terminal(params) {
-		_classCallCheck(this, Terminal);
-
-		this.params = params;
-		this.context = document.createElement('div');
-
-		this.plugin = null;
-		this.context.className = 'terminal';
-
-		this.params.parentContext.appendChild(this.context);
-		//this.parent					= params.parentContext;
-	}
-
-	_createClass(Terminal, [{
-		key: 'getContext',
-		value: function getContext() {
-			return this.context;
-		}
-	}, {
-		key: 'render',
-		value: function render() {
-			//document.getElementById('terminalContainer').appendChild( this.context );
-			//this.context.appendChild( this.menu );
-		}
-	}, {
-		key: 'destroy',
-		value: function destroy() {
-			this.plugin.getPlugin().destroy();
-		}
-	}, {
-		key: 'create',
-		value: function create() {
-			this.plugin = new _terminal2.default(this.context, this.params['name']);
-		}
-	}, {
-		key: 'focus',
-		value: function focus() {}
-		//console.log(' focus focus ', this.params)
-		//this.plugin.getWindow().focus();
-
-
-		//hide()
-		//{
-		//	this.context.style.display = 'none';
-		//}
-		//
-		//show()
-		//{
-		//	this.context.style.display = '';
-		//}
-		//
-		//minimize()
-		//{
-		//	this.context.style.height = TERMINAL_SPLIT_HEIGHT+'px';
-		//}
-		//
-		//maximize()
-		//{
-		//	this.context.style.height = TERMINAL_HEIGHT+'px';
-		//}
-
-	}]);
-
-	return Terminal;
-}();
-
-exports.default = Terminal;
-
-/***/ },
-/* 12 */
-/***/ function(module, exports) {
-
-"use strict";
-'use strict';
-
-function chunk(arr, limit) {
-	var result = [];
-
-	while (arr.length > limit) {
-		result.push(arr.slice(0, limit));
-		arr = arr.slice(limit);
-	}
-
-	if (arr.length > 0) result.push(arr);
-
-	return result;
-}
-
-function substitutePrintableChar(ch) {
-	var sabreLayout = {
-		'\'': '‡',
-		'[': '¤',
-		'=': '*',
-		'\\': '§'
-	};
-
-	if (sabreLayout[ch]) return sabreLayout[ch];
-
-	return ch.toUpperCase();
-}
-
-function splitLines(txt) {
-	return txt.split(/\r?\n/);
-}
-
-function makeCachedParts(txt) {
-	var lines = splitLines(txt);
-
-	return chunk(lines, 20).map(function (sectionLines) {
-		return sectionLines.join('\n');
-	});
-}
-
-//let Helpers = {
-//	makeCachedParts 		:	makeCachedParts,
-//	substitutePrintableChar :	substitutePrintableChar
-//};
-
-module.exports = {
-	makeCachedParts: makeCachedParts,
-	substitutePrintableChar: substitutePrintableChar
-};
-
-/***/ },
-/* 13 */
-/***/ function(module, exports, __webpack_require__) {
-
-"use strict";
-'use strict';
-
-Object.defineProperty(exports, "__esModule", {
-	value: true
-});
-
-var _constants = __webpack_require__(1);
-
-var $ = __webpack_require__(2);
-
-function get(url, params) {
-	if (!url) return '';
-
-	return fetch(_constants.API_HOST + url, {
-		credentials: 'include'
-	}).then(function (response) {
-		return response.json();
-	});
-}
-
-function runSyncCommand(functionName, params) {
-	var url = _constants.END_POINT_URL;
-
-	var data = {
-		'function': functionName,
-		'params': params
-	};
-
-	// body: JSON.stringify({
-	// 	email: document.getElementById('email').value
-	// 	answer: document.getElementById('answer').value
-	// })
-
-	var get = JSON.stringify(data, true);
-
-	url += '&data=' + get + '&function=' + functionName;
-
-	return fetch(_constants.API_HOST + url, {
-
-		credentials: 'include'
-
-		// method		: 'POST',
-		// redirect	: 'follow'
-		// ,
-
-		// headers: new Headers({
-		// 	'Content-Type': 'application/json'
-		// })
-
-		// {method: "post", headers: {"content-type": "application/x-www-form-urlencoded"}
-
-	}).then(function (response) {
-		return response.json();
-	});
-}
-
-function runSyncCommand2(functionName, params) {
-	var url = _constants.END_POINT_URL;
-
-	var data = {
-		'function': functionName,
-		'params': params
-	};
-
-	console.log('???', url + '&function=' + functionName);
-
-	//
-	// get( END_POINT_URL ).then(function(response) {
-	// 	console.log("Success!", response);
-	// }, function(error) {
-	// 	console.error("Failed!", error);
-	// });
-
-	return $.ajax({
-		type: 'POST',
-		url: url + '&function=' + functionName,
-
-		// crossDomain		: true,
-		// async			: false,
-		// dataType		: 'json',
-		//
-		// headers			: {
-		// 	'X-Requested-With': 'XMLHttpRequest'
-		// },
-		//
-
-		data: {
-			data: JSON.stringify(data, true)
-		},
-
-		complete: function complete(responseData, textStatus, jqXHR) {
-			console.log(' completed ');
-			// result = responseData;
-		},
-
-		fail: function fail(responseData, textStatus, errorThrown) {
-			console.log(' fail ;');
-			console.log(responseData);
-			console.log(responseData.responseText);
-			alert('POST failed.');
-		}
-	});
-}
-
-exports.default = {
-	runSyncCommand: runSyncCommand,
-	get: get
-};
-
-// module.exports = Actions;
-
-/***/ },
-/* 14 */
-/***/ function(module, exports, __webpack_require__) {
-
-"use strict";
-'use strict';
-
-Object.defineProperty(exports, "__esModule", {
-	value: true
-});
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-var _sabreSession = __webpack_require__(15);
-
-var _sabreSession2 = _interopRequireDefault(_sabreSession);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-var $ = __webpack_require__(2);
-window.$ = window.jQuery = $;
-
-var jqTerminal = __webpack_require__(16);
-var Helpers = __webpack_require__(12);
-
-var TerminalPlugin = function () {
-	function TerminalPlugin(context, name) {
-		_classCallCheck(this, TerminalPlugin);
-
-		this.context = context;
-		this.name = name;
-		this.terminal = null;
-
-		this.init();
-	}
-
-	_createClass(TerminalPlugin, [{
-		key: 'getPlugin',
-		value: function getPlugin() {
-			return this.terminal;
-		}
-	}, {
-		key: 'onInit',
-		value: function onInit(terminal) {
-			//console.log( 'ON INIT ' , this)
-			//SabreSession.startSession();
-			// let startSessionOutput = SabreSession.startSession();
-			//terminal.echo('>' + startSessionOutput['emulationCommand']);
-			//terminal.echo(startSessionOutput['emulationCommandOutput']);
-		}
-	}, {
-		key: 'init',
-		value: function init() {
-			this.terminal = $(this.context).terminal(this.commandParser, {
-				greetings: '',
-				name: 'sabre_terminal' + this.name,
-				prompt: '>',
-
-				//enabled		: false,
-
-				keypress: TerminalPlugin.parseInput,
-				keydown: TerminalPlugin.parseKeyBinds,
-				onInit: this.onInit
-				//,
-				//
-				//onTerminalChange	: function () {
-				//	console.log(' terminal change 1')
-				//},
-				//
-				//exceptionHandler	 : function () {
-				//	console.log('exc', arguments)
-				//}
-			});
-		}
-	}, {
-		key: 'commandParser',
-		value: function commandParser(command, terminal) {
-			//console.log(' commandParser ',  command, terminal )
-
-			var outputCache = [];
-
-			if (command === '') {
-				terminal.echo('');
-			} else if (command === 'MD') {
-				terminal.echo(outputCache.length > 0 ? outputCache.shift() : '‡NOTHING TO SCROLL‡');
-			} else {
-				try {
-					terminal.set_prompt('');
-
-					_sabreSession2.default.runCommand(command).then(function () {
-						var response = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
-
-
-						var result = response['data'];
-
-						if (result['prompt']) terminal.set_prompt(result['prompt']);
-
-						if (result['clearScreen']) terminal.clear();
-
-						if (result['output']) {
-							outputCache = Helpers.makeCachedParts(result['output']);
-							terminal.echo(outputCache.shift());
-						}
-					});
-				} catch (e) {
-					alert(' something went wrong ');
-					//terminal.error( new String(e) );
-				}
-			}
-		}
-	}], [{
-		key: 'parseInput',
-		value: function parseInput(evt, terminal) {
-			//console.log('parse input bla common', terminal );
-			//console.log( this );
-
-			if (!terminal.enabled()) // keypress fires globaly on all terminals;
-				return false;
-
-			if (evt.which && !evt.ctrlKey) {
-				var ch = Helpers.substitutePrintableChar(String.fromCharCode(evt.which));
-
-				if (ch) {
-					terminal.insert(ch);
-					return false;
-				}
-			}
-		}
-	}, {
-		key: 'parseKeyBinds',
-		value: function parseKeyBinds(evt, terminal) {
-			//console.log( "AAAA", terminal );
-
-			if ((evt.which === 83 || evt.which === 87) && evt.ctrlKey) {
-				//console.log("BBBB", terminal);
-				// CTRL+S || CTRL+W;
-
-				terminal.clear();
-				return false;
-			} else if (evt.which === 68 && evt.ctrlKey) {
-				// CTRL+D
-				return false;
-			} else if (evt.which === 76 && evt.ctrlKey) {
-				// CTRL+L
-				return false;
-			} else if (evt.which === 82 && evt.ctrlKey) {
-				// CTRL+R
-				return false;
-			}
-		}
-	}]);
-
-	return TerminalPlugin;
-}();
-
-exports.default = TerminalPlugin;
-
-/***/ },
-/* 15 */
-/***/ function(module, exports, __webpack_require__) {
-
-"use strict";
-'use strict';
-
-Object.defineProperty(exports, "__esModule", {
-	value: true
-});
-
-var _constants = __webpack_require__(1);
-
-var _requests = __webpack_require__(13);
-
-var _requests2 = _interopRequireDefault(_requests);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-exports.default = function () {
-
-	var sessionToken = void 0;
-
-	return {
-
-		// startSession2	: function()
-		// {
-		// 	// let result = runSyncCommand('startSession', {'timeFormat': TIME_FORMAT, 'account': ACCOUNT});
-		//
-		// 	let post = {
-		// 		timeFormat	: TIME_FORMAT,
-		// 		account		: ACCOUNT
-		// 	};
-		//
-		// 	let promise = Requests.runSyncCommand('startSession',  post);
-		//
-		// 	promise.done( function ( response ) {
-		// 		sessionToken = response['data']['sessionToken'];
-		// 		return response['data'];
-		// 	}).fail( function () {
-		// 		console.log('fail :((((')
-		// 	});
-		//
-		// 	// return false;
-		// },
-
-		startSession: function startSession() {
-			var post = {
-				timeFormat: _constants.TIME_FORMAT,
-				account: _constants.ACCOUNT
-			};
-
-			var promise = _requests2.default.runSyncCommand('startSession', post);
-
-			promise.then(function (response) {
-				console.log(response);
-				sessionToken = response['data']['sessionToken'];
-				return response['data'];
-			}).catch(function (err) {
-				console.error('oh shit Error', err);
-			});
-		},
-
-		cachedOutput: '',
-
-		runCommand: function runCommand(cmd) {
-			// console.log('making runCommand call');
-
-			if (cmd === 'MD') return this.cachedOutput.shift();
-
-			return _requests2.default.runSyncCommand('runCommand', { 'sessionToken': sessionToken, 'command': cmd });
-
-			// throw 'Failed to execute, session has timed outp';
-		},
-
-		endSession: function endSession() {
-
-			// console.log('making endSession call');
-
-			var result = _requests2.default.runSyncCommand('endSession', { 'sessionToken': sessionToken });
-
-			if (result['success']) return true;
-
-			// throw new Exception('Failed to execute, session has timed oupt');
-		}
-	};
-}();
-
-/***/ },
-/* 16 */
 /***/ function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(global, setImmediate) {/**@license
@@ -17960,10 +16893,10 @@ exports.default = function () {
     }; // terminal plugin
 })(jQuery);
 
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(19), __webpack_require__(0).setImmediate))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(9), __webpack_require__(0).setImmediate))
 
 /***/ },
-/* 17 */
+/* 7 */
 /***/ function(module, exports) {
 
 // shim for using process in browser
@@ -18149,7 +17082,7 @@ process.umask = function() { return 0; };
 
 
 /***/ },
-/* 18 */
+/* 8 */
 /***/ function(module, exports, __webpack_require__) {
 
 var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_RESULT__;/*! tether 1.4.0 */
@@ -19966,7 +18899,7 @@ return Tether;
 
 
 /***/ },
-/* 19 */
+/* 9 */
 /***/ function(module, exports) {
 
 var g;
@@ -19991,11 +18924,1009 @@ module.exports = g;
 
 
 /***/ },
+/* 10 */
+/***/ function(module, exports, __webpack_require__) {
+
+"use strict";
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__popovers_terminalMatrix__ = __webpack_require__(14);
+'use strict';
+
+
+
+let context 		= document.createElement('div');
+context.className 	= 'actions-btn-menu';
+
+class Button
+{
+	constructor()
+	{
+		this.context 			= document.createElement('button');
+		this.context.id 		= 'addTerminalBtn';
+		this.context.type		= 'button';
+		this.context.className 	= 'btn btn-purple';
+
+		this.context.innerHTML	= '<i class="fa fa-columns"></i>';
+		//this.context.addEventListener('click', params.click);
+	}
+	
+	getContext()
+	{
+		return this.context;
+	}
+}
+
+class ActionsMenu {
+
+	static init( params )
+	{
+		this.settings = params;
+		this.addTerminalButton();
+	}
+
+	static addTerminalButton()
+	{
+		let button = new Button({});
+
+		let table = new __WEBPACK_IMPORTED_MODULE_0__popovers_terminalMatrix__["a" /* default */]({
+			button	: button.getContext(),
+			onClick : this.settings.addEvent
+		});
+
+		table.build();
+		context.appendChild( button.getContext() );
+	}
+	
+	static getContext()
+	{
+		return context;
+	}
+}
+/* harmony export (immutable) */ exports["a"] = ActionsMenu;
+
+
+/***/ },
+/* 11 */
+/***/ function(module, exports, __webpack_require__) {
+
+"use strict";
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__terminal_js__ = __webpack_require__(15);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__actionsMenu_js__ = __webpack_require__(10);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__menuPanel_js__ = __webpack_require__(12);
+'use strict';
+
+
+
+
+
+let terminalList = [], Root, table, context, termTableWrap;
+
+let Table = (function()
+{
+	let context;
+
+	function constructor()
+	{
+		context = document.createElement('table');
+	}
+	
+	function makeRow()
+	{
+		let row 			= document.createElement('tr');
+		context.appendChild( row );
+
+		return row;
+	}
+	
+	function makeCell( row, rowCount )
+	{
+		let cell 	= document.createElement('td');
+		let height	= termTableWrap.clientHeight / ( parseInt(rowCount) + 1 );
+
+		//console.log( document.querySelector('#mainContent') )
+		//console.log( document.querySelector('#mainContent') )
+		//console.log( document.querySelector('.terminal-wrap').scrollHeight )
+
+		//console.log( termTableWrap.querySelector('table') )
+		//console.log( termTableWrap.querySelector('table').clientHeight )
+		//console.log( termTableWrap.querySelector('table').offsetHeight )
+		//console.log( termTableWrap.querySelector('table').scrollHeight )
+
+		//console.log( '????????????????????????' );
+		//console.log( termTableWrap.parentNode.clientHeight );
+
+		//console.log( termTableWrap.clientHeight / ( parseInt(rowCount) + 1 ) );
+		//console.log( height );
+		//console.log( termTableWrap.clientHeight );
+		//console.log( termTableWrap.offsetHeight );
+		//console.log( termTableWrap.scrollHeight );
+
+		row.appendChild( cell );
+		cell.style.height = height + 'px';
+
+		return cell;
+	}
+
+	function _draw( rowIndex, cellIndex )
+	{
+		context.classList = ( ' t-matrix-h-' + rowIndex + ' t-matrix-w-' + cellIndex );
+		context.innerHTML = '';
+
+		let row, cells = [];
+
+		for (let i = 0; i<= rowIndex; i++ )
+		{
+			row = makeRow();
+
+			for (let y = 0; y <= cellIndex; y++ )
+			{
+				cells.push( makeCell(row, rowIndex) );
+			}
+		}
+
+		return cells;
+	}
+	
+	function _getContext()
+	{
+		return context;
+	}
+
+	constructor();
+	
+	return {
+		draw 		: _draw,
+		getContext 	: _getContext
+	}
+}());
+
+class Container {
+
+	static createContext()
+	{
+		context 			= document.createElement('section');
+		context.className	= 'terminal-wrap clearfix';
+	}
+
+	static createHeader()
+	{
+		let header 			= document.createElement('header');
+		header.className 	= 'term-header';
+		header.innerHTML 	= 'Terminal Sabre';
+
+		context.appendChild( header );
+		return header;
+	}
+
+	static createWrapper()
+	{
+		termTableWrap 				= document.createElement('div');
+		termTableWrap.className 	= 'term-body minimized';
+
+		context.appendChild( termTableWrap );
+
+		let leftSide 				= document.createElement('aside');
+		leftSide.className			= 't-d-cell left';
+
+		__WEBPACK_IMPORTED_MODULE_1__actionsMenu_js__["a" /* default */].init({
+			addEvent : this.attachTerminals
+		});
+
+		leftSide.appendChild( __WEBPACK_IMPORTED_MODULE_1__actionsMenu_js__["a" /* default */].getContext() );
+		leftSide.appendChild( Table.getContext() );
+
+		let rightSide 				= document.createElement('aside');
+		rightSide.className 		= 't-d-cell menu';
+
+		rightSide.appendChild( __WEBPACK_IMPORTED_MODULE_2__menuPanel_js__["a" /* default */].render( termTableWrap ) );
+
+		termTableWrap.appendChild( leftSide );
+		termTableWrap.appendChild( rightSide );
+	}
+
+	static render( rootId )
+	{
+		Root = Root || document.getElementById( rootId );
+
+		this.createContext();
+		this.createHeader();
+		this.createWrapper();
+
+		Root.appendChild( context );
+		Container.attachTerminals();
+	}
+
+	static clearPrev()
+	{
+		terminalList.map( function ( instance ) {
+			instance.destroy();
+		});
+
+		terminalList = [];
+	}
+
+	static attachTerminals( rowIndex = 0, cellIndex = 0)
+	{
+		Container.clearPrev();
+
+		let cells = Table.draw(rowIndex, cellIndex);
+		cells.map( Container.createTerminal );
+	}
+
+	static createTerminal( cell, index )
+	{
+		let terminal = new __WEBPACK_IMPORTED_MODULE_0__terminal_js__["a" /* default */]({
+			name 			: index,
+			parentContext	: cell
+		});
+
+		terminal.create();
+		terminalList.push( terminal );
+	}
+}
+/* harmony export (immutable) */ exports["a"] = Container;
+
+
+/***/ },
+/* 12 */
+/***/ function(module, exports, __webpack_require__) {
+
+"use strict";
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__popovers_history__ = __webpack_require__(13);
+'use strict';
+
+
+
+let context;
+
+context 			= document.createElement('aside');
+context.className 	= 'sideMenu';
+
+let parentContext;
+
+function createBtn()
+{
+	let btn 		= document.createElement('button');
+	btn.type		= 'button';
+	btn.className 	= 'btn btn-primary';
+
+	return btn;
+}
+
+class MenuPanel
+{
+	static toggle()
+	{
+		let btn 		= createBtn();
+		btn.innerHTML 	= '<i class="fa fa-bars"></i>';
+
+		btn.addEventListener('click', () => {
+			parentContext.classList.toggle('minimized');
+		});
+
+		return btn;
+	}
+
+	static fontSize()
+	{
+		let btn 		= createBtn();
+		btn.innerHTML 	= '<i class="fa fa-font"></i>';
+
+		btn.addEventListener('click', () => {
+			parentContext.classList.toggle('t-f-size-2x');
+		});
+
+		return btn;
+	}
+
+	static history()
+	{
+		let btn 		= createBtn();
+		btn.innerHTML 	= '<i class="fa fa-history"></i>';
+
+		let popover = new __WEBPACK_IMPORTED_MODULE_0__popovers_history__["a" /* default */]({
+			button	: btn
+		});
+
+		popover.build();
+
+		return btn;
+	}
+
+	static settings()
+	{
+		let btn 		= createBtn();
+		btn.innerHTML 	= '<i class="fa fa-gears"></i>';
+
+		btn.addEventListener('click', () => {
+		});
+
+		return btn;
+	}
+
+	static activeSession()
+	{
+		let context 		= document.createElement('article');
+		context.innerHTML 	= '<div class="label">Change Active Session</div>';
+
+		let btnGroup		= document.createElement('div');
+		btnGroup.className 	= 'buttons';
+
+		[1,2,3].map(( value ) => {
+
+			let button = document.createElement('button');
+			button.className = 'btn btn-sm btn-purple font-bold';
+			button.innerHTML = value;
+
+			btnGroup.appendChild( button );
+		});
+
+		context.appendChild(btnGroup);
+		return context;
+
+	}
+
+	static PccLanguage()
+	{
+		let context 		= document.createElement('article');
+		context.innerHTML 	= '<div class="label">Switch Language</div>';
+
+		let btnGroup		= document.createElement('div');
+		btnGroup.className 	= 'buttons';
+
+		['sabre','apollo'].map(( value ) => {
+			let button = document.createElement('button');
+			button.className = 'btn btn-sm btn-warning  font-bold';
+			button.innerHTML = value;
+
+			btnGroup.appendChild( button );
+		});
+
+		context.appendChild(btnGroup);
+		return context;
+	}
+
+	static settingsButtons()
+	{
+		let context 		= document.createElement('article');
+		//context.className 	= 'btn-group';
+
+		[
+			MenuPanel.toggle(),
+			MenuPanel.fontSize(),
+			MenuPanel.history(),
+			MenuPanel.settings(),
+
+		].map(( button ) => {
+			context.appendChild(
+				button
+			)
+		});
+
+		return context;
+	}
+
+	static build()
+	{
+		context.appendChild( this.settingsButtons() );
+		context.appendChild( this.activeSession() );
+		context.appendChild( this.PccLanguage() );
+	}
+
+	static render( parent )
+	{
+		parentContext = parent;
+		MenuPanel.build();
+		return context;
+	}
+
+}
+/* harmony export (immutable) */ exports["a"] = MenuPanel;
+
+
+
+/***/ },
+/* 13 */
+/***/ function(module, exports, __webpack_require__) {
+
+"use strict";
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_tether_drop__ = __webpack_require__(2);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_tether_drop___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_tether_drop__);
+'use strict';
+
+
+
+let popContext;
+
+class History
+{
+	constructor( params )
+	{
+		this.context 			= document.createElement('div');
+
+		this.settings = params;
+
+		popContext = new __WEBPACK_IMPORTED_MODULE_0_tether_drop___default.a({
+			target		: params['button'],
+			content		: this.getContext(),
+			classes		: 'drop-theme-arrows',
+			position	: 'bottom right',
+			openOn		: 'click'
+		});
+	}
+
+	build( list )
+	{
+		list = list || ['No History'];
+
+		this.context.innerHTML = list.map( function ( value ) {
+			return `<div>${value}</div>`
+		})
+	}
+
+	getContext()
+	{
+		return this.context;
+	}
+}
+
+/* harmony default export */ exports["a"] = History;
+
+/***/ },
+/* 14 */
+/***/ function(module, exports, __webpack_require__) {
+
+"use strict";
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_tether_drop__ = __webpack_require__(2);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_tether_drop___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_tether_drop__);
+'use strict';
+
+
+
+let popContext;
+
+class Matrix
+{
+	constructor( params )
+	{
+		this.context 			= document.createElement('table');
+		this.context.className	= 'matrix-table';
+
+		this.settings = params;
+
+		popContext = new __WEBPACK_IMPORTED_MODULE_0_tether_drop___default.a({
+			target		: params['button'],
+			content		: this.getContext(),
+			classes		: 'drop-theme-arrows',
+			position	: 'bottom right',
+			openOn		: 'click'
+		});
+	}
+
+	makeRow( rowIndex )
+	{
+		let row 		= document.createElement('tr');
+		row.className 	= rowIndex + '-tr';
+
+		this.context.appendChild( row );
+
+		[ 0, 1, 2, 3 ].map((index) => {
+			return row.appendChild( this.makeCell( index, rowIndex ) )
+		});
+	}
+
+	makeCell( cellIndex, rowIndex )
+	{
+		let cell 		= document.createElement('td');
+		cell.className 	= cellIndex + '-td';
+
+		cell.addEventListener( 'click', () => {
+			popContext.close();
+			this.settings.onClick( rowIndex, cellIndex );
+		});
+
+		return cell;
+	}
+
+	build()
+	{
+		[ 0, 1, 2, 3].map( this.makeRow , this )
+	}
+
+	getContext()
+	{
+		return this.context;
+	}
+}
+
+/* harmony default export */ exports["a"] = Matrix;
+
+/***/ },
+/* 15 */
+/***/ function(module, exports, __webpack_require__) {
+
+"use strict";
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__middleware_terminal_js__ = __webpack_require__(18);
+'use strict';
+
+
+
+class Terminal {
+
+	constructor( params )
+	{
+		this.params 				= params;
+		this.context 				= document.createElement('div');
+		
+		this.plugin 				= null;
+		this.context.className 		= 'terminal';
+		this.params.parentContext.appendChild( this.context );
+
+		//console.log( '================' );
+		//console.log( this.params.parentContext.clientHeight );
+		//console.log( this.params.parentContext.offsetHeight );
+		//console.log( this.params.parentContext.scrollHeight );
+
+		this.context.style.height	= this.params.parentContext.clientHeight + 'px';
+	}
+	
+	destroy()
+	{
+		this.plugin.getPlugin().destroy()
+	}
+
+	create()
+	{
+		this.plugin = new __WEBPACK_IMPORTED_MODULE_0__middleware_terminal_js__["a" /* default */]( this.context, this.params['name'] );
+	}
+	
+	focus()
+	{
+		//console.log(' focus focus ', this.params)
+		//this.plugin.getWindow().focus();
+	}
+}
+/* harmony export (immutable) */ exports["a"] = Terminal;
+
+
+/***/ },
+/* 16 */
+/***/ function(module, exports) {
+
+"use strict";
+'use strict';
+
+function chunk(arr, limit) {
+	let result = [];
+
+	while (arr.length > limit)
+	{
+		result.push(arr.slice(0, limit));
+		arr = arr.slice(limit);
+	}
+
+	if (arr.length > 0)
+		result.push(arr);
+
+	return result;
+
+}
+
+function substitutePrintableChar(ch)
+{
+	let sabreLayout = {
+		'\'': '‡',
+		'[': '¤',
+		'=': '*',
+		'\\': '§',
+	};
+
+	if (sabreLayout[ch])
+		return sabreLayout[ch];
+
+	return ch.toUpperCase();
+}
+
+function splitLines(txt)
+{
+	return txt.split(/\r?\n/);
+}
+
+function makeCachedParts(txt)
+{
+	let lines = splitLines(txt);
+
+	return chunk(lines, 20).map(function(sectionLines){
+		return sectionLines.join('\n');
+	});
+}
+
+//let Helpers = {
+//	makeCachedParts 		:	makeCachedParts,
+//	substitutePrintableChar :	substitutePrintableChar
+//};
+
+module.exports = {
+	makeCachedParts 		:	makeCachedParts,
+	substitutePrintableChar :	substitutePrintableChar
+};
+
+/***/ },
+/* 17 */
+/***/ function(module, exports, __webpack_require__) {
+
+"use strict";
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__constants__ = __webpack_require__(3);
+'use strict';
+
+let $ = __webpack_require__(1);
+
+
+
+
+function get( url, params )
+{
+	if (!url )
+		return '';
+
+	return fetch(__WEBPACK_IMPORTED_MODULE_0__constants__["a" /* API_HOST */] + url, {
+		credentials: 'include'
+	}).then( function(  response ) {
+		return response.json();
+	})
+}
+
+
+function runSyncCommand( functionName, params )
+{
+	let url 	= __WEBPACK_IMPORTED_MODULE_0__constants__["b" /* END_POINT_URL */];
+
+	let data 	= {
+		'function'	: functionName,
+		'params'	: params
+	};
+
+	// body: JSON.stringify({
+	// 	email: document.getElementById('email').value
+	// 	answer: document.getElementById('answer').value
+	// })
+
+	let get = JSON.stringify(data, true);
+
+	url += '&data=' + get + '&function=' + functionName;
+
+	return fetch(__WEBPACK_IMPORTED_MODULE_0__constants__["a" /* API_HOST */] + url, {
+
+		credentials: 'include'
+
+		// method		: 'POST',
+		// redirect	: 'follow'
+		// ,
+
+		// headers: new Headers({
+		// 	'Content-Type': 'application/json'
+		// })
+
+		// {method: "post", headers: {"content-type": "application/x-www-form-urlencoded"}
+
+	}).then( function( response ) {
+		return response.json();
+	})
+}
+
+function runSyncCommand2( functionName, params )
+{
+	let url 	= __WEBPACK_IMPORTED_MODULE_0__constants__["b" /* END_POINT_URL */];
+
+	let data 	= {
+		'function'	: functionName,
+		'params'	: params
+	};
+
+	console.log('???', url + '&function='+ functionName);
+
+	//
+	// get( END_POINT_URL ).then(function(response) {
+	// 	console.log("Success!", response);
+	// }, function(error) {
+	// 	console.error("Failed!", error);
+	// });
+
+	return $.ajax({
+		type			: 'POST',
+		url				: url + '&function='+ functionName,
+
+		// crossDomain		: true,
+		// async			: false,
+		// dataType		: 'json',
+		//
+		// headers			: {
+		// 	'X-Requested-With': 'XMLHttpRequest'
+		// },
+		//
+
+		data			: {
+			data: JSON.stringify(data, true)
+		},
+
+		complete			: function(responseData, textStatus, jqXHR)
+		{
+			console.log(' completed ');
+			// result = responseData;
+		},
+
+		fail			: function (responseData, textStatus, errorThrown)
+		{
+			console.log(' fail ;');
+			console.log(responseData);
+			console.log(responseData.responseText);
+			alert('POST failed.');
+		}
+	});
+}
+
+/* harmony default export */ exports["a"] = {
+	runSyncCommand	: runSyncCommand,
+	get 			: get
+};
+
+// module.exports = Actions;
+
+/***/ },
+/* 18 */
+/***/ function(module, exports, __webpack_require__) {
+
+"use strict";
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__modules_sabreSession__ = __webpack_require__(19);
+'use strict';
+
+let $					= __webpack_require__(1);
+window.$ 				= window.jQuery = $;
+
+let jqTerminal 			= __webpack_require__(6);
+let Helpers				= __webpack_require__(16);
+
+
+
+class TerminalPlugin
+{
+	constructor( context, name )
+	{
+		this.context	= context;
+		this.name		= name;
+		this.terminal 	= null;
+
+		this.init();
+	}
+
+	getPlugin()
+	{
+		return this.terminal;
+	}
+
+	static parseInput( evt, terminal )
+	{
+		//console.log('parse input bla common', terminal );
+		//console.log( this );
+
+		if ( !terminal.enabled() ) // keypress fires globaly on all terminals;
+			return false;
+
+		if (evt.which && !evt.ctrlKey)
+		{
+			let ch = Helpers.substitutePrintableChar( String.fromCharCode( evt.which ) );
+
+			if (ch)
+			{
+				terminal.insert(ch);
+				return false;
+			}
+		}
+	}
+
+	static parseKeyBinds( evt, terminal )
+	{
+		//console.log( "AAAA", terminal );
+
+		if ( (evt.which === 83 || evt.which === 87) && evt.ctrlKey )
+		{
+			//console.log("BBBB", terminal);
+			// CTRL+S || CTRL+W;
+
+			terminal.clear();
+			return false;
+
+		} else if (evt.which === 68 && evt.ctrlKey)
+		{
+			// CTRL+D
+			return false;
+		} else if (evt.which === 76 && evt.ctrlKey)
+		{
+			// CTRL+L
+			return false;
+		} else if (evt.which === 82 && evt.ctrlKey)
+		{
+			// CTRL+R
+			return false;
+		}
+	}
+
+	onInit( terminal )
+	{
+		//console.log( 'ON INIT ' , this)
+		//SabreSession.startSession();
+		// let startSessionOutput = SabreSession.startSession();
+		//terminal.echo('>' + startSessionOutput['emulationCommand']);
+		//terminal.echo(startSessionOutput['emulationCommandOutput']);
+	}
+
+	init()
+	{
+		this.terminal = $(this.context).terminal( this.commandParser, {
+			greetings	: '',
+			name		: 'sabre_terminal' + this.name,
+			prompt		: '>',
+
+			//enabled		: false,
+
+			keypress	: TerminalPlugin.parseInput,
+			keydown		: TerminalPlugin.parseKeyBinds,
+			onInit		: this.onInit
+			//,
+			//
+			//onTerminalChange	: function () {
+			//	console.log(' terminal change 1')
+			//},
+			//
+			//exceptionHandler	 : function () {
+			//	console.log('exc', arguments)
+			//}
+		});
+	}
+
+	commandParser( command, terminal )
+	{
+		//console.log(' commandParser ',  command, terminal )
+
+		let outputCache = [];
+
+		if (command === '')
+		{
+			terminal.echo('');
+		}
+		else if ( command === 'MD' )
+		{
+			terminal.echo( outputCache.length > 0 ?  outputCache.shift() : '‡NOTHING TO SCROLL‡' );
+		}
+		else
+		{
+			try {
+				terminal.set_prompt('');
+
+				__WEBPACK_IMPORTED_MODULE_0__modules_sabreSession__["a" /* default */]
+					.runCommand(command)
+					.then( ( response = {} ) => {
+
+						let result = response['data'];
+
+						if ( result['prompt'] )
+							terminal.set_prompt( result['prompt'] );
+
+						if ( result['clearScreen'] )
+							terminal.clear();
+
+						if ( result['output'] )
+						{
+							outputCache = Helpers.makeCachedParts( result['output'] );
+							terminal.echo( outputCache.shift() );
+						}
+
+					});
+
+			} catch(e)
+			{
+				alert(' something went wrong ');
+				//terminal.error( new String(e) );
+			}
+		}
+
+	}
+}
+/* harmony export (immutable) */ exports["a"] = TerminalPlugin;
+
+
+/***/ },
+/* 19 */
+/***/ function(module, exports, __webpack_require__) {
+
+"use strict";
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__constants__ = __webpack_require__(3);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__helpers_requests__ = __webpack_require__(17);
+'use strict';
+
+
+
+
+/* harmony default export */ exports["a"] = function () {
+
+	let sessionToken;
+
+	return {
+
+		// startSession2	: function()
+		// {
+		// 	// let result = runSyncCommand('startSession', {'timeFormat': TIME_FORMAT, 'account': ACCOUNT});
+		//
+		// 	let post = {
+		// 		timeFormat	: TIME_FORMAT,
+		// 		account		: ACCOUNT
+		// 	};
+		//
+		// 	let promise = Requests.runSyncCommand('startSession',  post);
+		//
+		// 	promise.done( function ( response ) {
+		// 		sessionToken = response['data']['sessionToken'];
+		// 		return response['data'];
+		// 	}).fail( function () {
+		// 		console.log('fail :((((')
+		// 	});
+		//
+		// 	// return false;
+		// },
+
+		startSession	: function()
+		{
+			let post = {
+				timeFormat	: __WEBPACK_IMPORTED_MODULE_0__constants__["c" /* TIME_FORMAT */],
+				account		: __WEBPACK_IMPORTED_MODULE_0__constants__["d" /* ACCOUNT */]
+			};
+
+			let promise = __WEBPACK_IMPORTED_MODULE_1__helpers_requests__["a" /* default */].runSyncCommand('startSession',  post);
+
+			promise.then( function( response ) {
+				console.log( response )
+				sessionToken = response['data']['sessionToken'];
+				return response['data'];
+			}).catch(function(err) {
+				console.error('oh shit Error', err);
+			});
+		},
+
+		cachedOutput	: '',
+
+		runCommand		: function(cmd)
+		{
+			// console.log('making runCommand call');
+
+			if (cmd === 'MD')
+				return this.cachedOutput.shift();
+
+			return __WEBPACK_IMPORTED_MODULE_1__helpers_requests__["a" /* default */].runSyncCommand('runCommand', {'sessionToken': sessionToken, 'command': cmd});
+
+			// throw 'Failed to execute, session has timed outp';
+		},
+
+		endSession: function()
+		{
+
+			// console.log('making endSession call');
+
+			let result = __WEBPACK_IMPORTED_MODULE_1__helpers_requests__["a" /* default */].runSyncCommand('endSession', {'sessionToken': sessionToken});
+
+			if (result['success'])
+				return true;
+
+			// throw new Exception('Failed to execute, session has timed oupt');
+		}
+	}
+
+}();
+
+/***/ },
 /* 20 */
 /***/ function(module, exports, __webpack_require__) {
 
-__webpack_require__(4);
-module.exports = __webpack_require__(5);
+__webpack_require__(5);
+module.exports = __webpack_require__(4);
 
 
 /***/ }

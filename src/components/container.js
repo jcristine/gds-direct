@@ -23,10 +23,31 @@ let Table = (function()
 		return row;
 	}
 	
-	function makeCell( row )
+	function makeCell( row, rowCount )
 	{
-		let cell 		= document.createElement('td');
+		let cell 	= document.createElement('td');
+		let height	= termTableWrap.clientHeight / ( parseInt(rowCount) + 1 );
+
+		//console.log( document.querySelector('#mainContent') )
+		//console.log( document.querySelector('#mainContent') )
+		//console.log( document.querySelector('.terminal-wrap').scrollHeight )
+
+		//console.log( termTableWrap.querySelector('table') )
+		//console.log( termTableWrap.querySelector('table').clientHeight )
+		//console.log( termTableWrap.querySelector('table').offsetHeight )
+		//console.log( termTableWrap.querySelector('table').scrollHeight )
+
+		//console.log( '????????????????????????' );
+		//console.log( termTableWrap.parentNode.clientHeight );
+
+		//console.log( termTableWrap.clientHeight / ( parseInt(rowCount) + 1 ) );
+		//console.log( height );
+		//console.log( termTableWrap.clientHeight );
+		//console.log( termTableWrap.offsetHeight );
+		//console.log( termTableWrap.scrollHeight );
+
 		row.appendChild( cell );
+		cell.style.height = height + 'px';
 
 		return cell;
 	}
@@ -44,7 +65,7 @@ let Table = (function()
 
 			for (let y = 0; y <= cellIndex; y++ )
 			{
-				cells.push( makeCell(row) );
+				cells.push( makeCell(row, rowIndex) );
 			}
 		}
 
@@ -85,13 +106,15 @@ export default class Container {
 	static createWrapper()
 	{
 		termTableWrap 				= document.createElement('div');
-		termTableWrap.className 	= 'term-body';
+		termTableWrap.className 	= 'term-body minimized';
+
+		context.appendChild( termTableWrap );
 
 		let leftSide 				= document.createElement('aside');
 		leftSide.className			= 't-d-cell left';
 
 		ActionsMenu.init({
-			addEvent : this.attachTerminals.bind( this )
+			addEvent : this.attachTerminals
 		});
 
 		leftSide.appendChild( ActionsMenu.getContext() );
@@ -104,8 +127,6 @@ export default class Container {
 
 		termTableWrap.appendChild( leftSide );
 		termTableWrap.appendChild( rightSide );
-
-		context.appendChild( termTableWrap );
 	}
 
 	static render( rootId )
@@ -117,6 +138,7 @@ export default class Container {
 		this.createWrapper();
 
 		Root.appendChild( context );
+		Container.attachTerminals();
 	}
 
 	static clearPrev()
@@ -130,9 +152,10 @@ export default class Container {
 
 	static attachTerminals( rowIndex = 0, cellIndex = 0)
 	{
-		this.clearPrev();
+		Container.clearPrev();
+
 		let cells = Table.draw(rowIndex, cellIndex);
-		cells.map( this.createTerminal );
+		cells.map( Container.createTerminal );
 	}
 
 	static createTerminal( cell, index )

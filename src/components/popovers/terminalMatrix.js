@@ -4,10 +4,6 @@ import Drop 	from 'tether-drop';
 
 let popContext;
 
-//function popover()
-//{
-//}
-
 class Matrix
 {
 	constructor( params )
@@ -25,7 +21,7 @@ class Matrix
 			openOn		: 'click'
 		});
 	}
-	
+
 	makeRow( rowIndex )
 	{
 		let row 		= document.createElement('tr');
@@ -37,7 +33,7 @@ class Matrix
 			return row.appendChild( this.makeCell( index, rowIndex ) )
 		});
 	}
-	
+
 	makeCell( cellIndex, rowIndex )
 	{
 		let cell 		= document.createElement('td');
@@ -50,16 +46,14 @@ class Matrix
 
 		return cell;
 	}
-	
+
 	build()
 	{
-
-
 		[ 0, 1, 2, 3].map( this.makeRow , this )
 	}
 
 	getContext()
-	{console.log(' build ', this.context);
+	{
 		return this.context;
 	}
 }
