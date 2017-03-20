@@ -1009,7 +1009,6 @@ fieldset[disabled] #rootTerminal .btn-warning.active {
   background-image: -webkit-linear-gradient(top, #e8e8e8, #bcbbbc);
   background-image: -moz-linear-gradient(top, #e8e8e8, #bcbbbc);
   background-image: linear-gradient(top, #e8e8e8, #bcbbbc);
-  border-top: 1px solid #ccc;
 }
 .terminal-wrap > .term-body {
   width: 100%;

@@ -1,6 +1,6 @@
 'use strict';
 
-import Container from './components/container';
+import Container from './components/containerMain';
 
 const apiData = window.apiData || {};
 

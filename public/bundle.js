@@ -10976,7 +10976,7 @@ const API_HOST 				= '';
 /***/ function(module, exports, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__components_container__ = __webpack_require__(11);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__components_containerMain__ = __webpack_require__(11);
 'use strict';
 
 
@@ -10987,7 +10987,7 @@ const Context = {
 	init()
 	{
 		let rootId = apiData.htmlRootId || 'rootTerminal';
-		__WEBPACK_IMPORTED_MODULE_0__components_container__["a" /* default */].render( rootId );
+		__WEBPACK_IMPORTED_MODULE_0__components_containerMain__["a" /* default */].render( rootId );
 
 		//if (apiData.styleSheets)
 		//	require( '../../sabre/public/main.css' );
@@ -18989,9 +18989,9 @@ class ActionsMenu {
 /***/ function(module, exports, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__terminal_js__ = __webpack_require__(15);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__actionsMenu_js__ = __webpack_require__(10);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__menuPanel_js__ = __webpack_require__(12);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__terminal__ = __webpack_require__(15);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__actionsMenu__ = __webpack_require__(10);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__menuPanel__ = __webpack_require__(12);
 'use strict';
 
 
@@ -19008,7 +19008,7 @@ let Table = (function()
 	{
 		context = document.createElement('table');
 	}
-	
+
 	function makeRow()
 	{
 		let row 			= document.createElement('tr');
@@ -19016,32 +19016,14 @@ let Table = (function()
 
 		return row;
 	}
-	
+
 	function makeCell( row, rowCount )
 	{
 		let cell 	= document.createElement('td');
 		let height	= termTableWrap.clientHeight / ( parseInt(rowCount) + 1 );
 
-		//console.log( document.querySelector('#mainContent') )
-		//console.log( document.querySelector('#mainContent') )
-		//console.log( document.querySelector('.terminal-wrap').scrollHeight )
-
-		//console.log( termTableWrap.querySelector('table') )
-		//console.log( termTableWrap.querySelector('table').clientHeight )
-		//console.log( termTableWrap.querySelector('table').offsetHeight )
-		//console.log( termTableWrap.querySelector('table').scrollHeight )
-
-		//console.log( '????????????????????????' );
-		//console.log( termTableWrap.parentNode.clientHeight );
-
-		//console.log( termTableWrap.clientHeight / ( parseInt(rowCount) + 1 ) );
-		//console.log( height );
-		//console.log( termTableWrap.clientHeight );
-		//console.log( termTableWrap.offsetHeight );
-		//console.log( termTableWrap.scrollHeight );
-
 		row.appendChild( cell );
-		cell.style.height = height + 'px';
+		cell.style.height = Math.floor(height)+ 'px';
 
 		return cell;
 	}
@@ -19065,14 +19047,14 @@ let Table = (function()
 
 		return cells;
 	}
-	
+
 	function _getContext()
 	{
 		return context;
 	}
 
 	constructor();
-	
+
 	return {
 		draw 		: _draw,
 		getContext 	: _getContext
@@ -19107,17 +19089,17 @@ class Container {
 		let leftSide 				= document.createElement('aside');
 		leftSide.className			= 't-d-cell left';
 
-		__WEBPACK_IMPORTED_MODULE_1__actionsMenu_js__["a" /* default */].init({
+		__WEBPACK_IMPORTED_MODULE_1__actionsMenu__["a" /* default */].init({
 			addEvent : this.attachTerminals
 		});
 
-		leftSide.appendChild( __WEBPACK_IMPORTED_MODULE_1__actionsMenu_js__["a" /* default */].getContext() );
+		leftSide.appendChild( __WEBPACK_IMPORTED_MODULE_1__actionsMenu__["a" /* default */].getContext() );
 		leftSide.appendChild( Table.getContext() );
 
 		let rightSide 				= document.createElement('aside');
 		rightSide.className 		= 't-d-cell menu';
 
-		rightSide.appendChild( __WEBPACK_IMPORTED_MODULE_2__menuPanel_js__["a" /* default */].render( termTableWrap ) );
+		rightSide.appendChild( __WEBPACK_IMPORTED_MODULE_2__menuPanel__["a" /* default */].render( termTableWrap ) );
 
 		termTableWrap.appendChild( leftSide );
 		termTableWrap.appendChild( rightSide );
@@ -19154,7 +19136,7 @@ class Container {
 
 	static createTerminal( cell, index )
 	{
-		let terminal = new __WEBPACK_IMPORTED_MODULE_0__terminal_js__["a" /* default */]({
+		let terminal = new __WEBPACK_IMPORTED_MODULE_0__terminal__["a" /* default */]({
 			name 			: index,
 			parentContext	: cell
 		});
@@ -19164,6 +19146,7 @@ class Container {
 	}
 }
 /* harmony export (immutable) */ exports["a"] = Container;
+
 
 
 /***/ },
@@ -19349,7 +19332,7 @@ class History
 			target		: params['button'],
 			content		: this.getContext(),
 			classes		: 'drop-theme-arrows',
-			position	: 'bottom right',
+			position	: 'bottom center',
 			openOn		: 'click'
 		});
 	}
@@ -19445,7 +19428,7 @@ class Matrix
 /***/ function(module, exports, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__middleware_terminal_js__ = __webpack_require__(18);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__middleware_terminal__ = __webpack_require__(18);
 'use strict';
 
 
@@ -19476,7 +19459,7 @@ class Terminal {
 
 	create()
 	{
-		this.plugin = new __WEBPACK_IMPORTED_MODULE_0__middleware_terminal_js__["a" /* default */]( this.context, this.params['name'] );
+		this.plugin = new __WEBPACK_IMPORTED_MODULE_0__middleware_terminal__["a" /* default */]( this.context, this.params['name'] );
 	}
 	
 	focus()

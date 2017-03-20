@@ -1,15 +1,17 @@
 {
   "name": "sabre terminal",
   "version": "0.0.0",
-  "description": "",
+  "description": "sabre terminal",
   "main": "index.js",
+  "repository": "sabre terminal",
+  "author": "unknown",
+  "license": "BSD-2-Clause",
+
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "webpack-dev-server --progress --inline --hot",
     "build": "webpack --progress"
   },
-  "author": "",
-  "license": "BSD-2-Clause",
 
   "devDependencies": {
     "autoprefixer-loader": "^2.0.0",
@@ -25,12 +27,12 @@
     "node-libs-browser": "^0.5.2",
     "style-loader": "^0.12.3",
     "url-loader": "~0.5.7",
-    "webpack": "^2.1.0-beta.25"
+    "webpack": "^2.1.0-beta.25",
+    "jquery": "~3.1.1",
+    "tether-drop": "^1.4.2"
   },
 
   "dependencies": {
-    "jquery": "~3.1.1",
-    "tether-drop": "^1.4.2",
     "jquery.terminal": "^1.0.14"
   }
 }

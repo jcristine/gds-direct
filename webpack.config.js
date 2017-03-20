@@ -3,15 +3,15 @@
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
 
 const extractLess = new ExtractTextPlugin({
-	filename: 'public/main.css',
+	filename: 'public/main.css'
 });
 
 
 module.exports = {
 
 	entry: [
-		"./src/app.js"
-		,"./src/theme/main.less"
+		"./src/app.js6",
+		"./src/theme/main.less"
 	],
 
 	output: {
@@ -19,13 +19,18 @@ module.exports = {
 	},
 
 	// debug	: true,
-	 devtool: 'source-map',
+
+	devtool: 'source-map',
+
+	resolve : {
+		extensions : ['.js', '.json', '.js6']
+	},
 
 	module: {
 
 		loaders: [
 			{
-				test		: /\.js$/,
+				test		: /\.js6$/,
 				exclude		: /node_modules/,
 				loader		: 'babel-loader',
 				query		: {
@@ -57,8 +62,11 @@ module.exports = {
 		}]
 	},
 
+	//externals: {
+	//	jquery: 'jquery'
+	//},
+
 	plugins: [
-		//new ExtractTextPlugin('public/main.css')
 		extractLess
 	]
 };

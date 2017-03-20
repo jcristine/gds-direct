@@ -1,6 +1,6 @@
 'use strict';
 
-import TerminalPlugin from '../middleware/terminal.js';
+import TerminalPlugin from '../middleware/terminal';
 
 export default class Terminal {
 

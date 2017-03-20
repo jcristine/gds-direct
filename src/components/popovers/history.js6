@@ -16,7 +16,7 @@ class History
 			target		: params['button'],
 			content		: this.getContext(),
 			classes		: 'drop-theme-arrows',
-			position	: 'bottom right',
+			position	: 'bottom center',
 			openOn		: 'click'
 		});
 	}

@@ -1,8 +1,8 @@
 'use strict';
 
-import Terminal 	from './terminal.js';
-import ActionsMenu 	from './actionsMenu.js';
-import MenuPanel 	from './menuPanel.js';
+import Terminal 	from './terminal';
+import ActionsMenu 	from './actionsMenu';
+import MenuPanel 	from './menuPanel';
 
 let terminalList = [], Root, table, context, termTableWrap;
 
@@ -14,7 +14,7 @@ let Table = (function()
 	{
 		context = document.createElement('table');
 	}
-	
+
 	function makeRow()
 	{
 		let row 			= document.createElement('tr');
@@ -22,32 +22,14 @@ let Table = (function()
 
 		return row;
 	}
-	
+
 	function makeCell( row, rowCount )
 	{
 		let cell 	= document.createElement('td');
 		let height	= termTableWrap.clientHeight / ( parseInt(rowCount) + 1 );
 
-		//console.log( document.querySelector('#mainContent') )
-		//console.log( document.querySelector('#mainContent') )
-		//console.log( document.querySelector('.terminal-wrap').scrollHeight )
-
-		//console.log( termTableWrap.querySelector('table') )
-		//console.log( termTableWrap.querySelector('table').clientHeight )
-		//console.log( termTableWrap.querySelector('table').offsetHeight )
-		//console.log( termTableWrap.querySelector('table').scrollHeight )
-
-		//console.log( '????????????????????????' );
-		//console.log( termTableWrap.parentNode.clientHeight );
-
-		//console.log( termTableWrap.clientHeight / ( parseInt(rowCount) + 1 ) );
-		//console.log( height );
-		//console.log( termTableWrap.clientHeight );
-		//console.log( termTableWrap.offsetHeight );
-		//console.log( termTableWrap.scrollHeight );
-
 		row.appendChild( cell );
-		cell.style.height = height + 'px';
+		cell.style.height = Math.floor(height)+ 'px';
 
 		return cell;
 	}
@@ -71,14 +53,14 @@ let Table = (function()
 
 		return cells;
 	}
-	
+
 	function _getContext()
 	{
 		return context;
 	}
 
 	constructor();
-	
+
 	return {
 		draw 		: _draw,
 		getContext 	: _getContext
