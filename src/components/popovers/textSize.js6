@@ -1,0 +1,53 @@
+'use strict';
+
+import Drop from 'tether-drop';
+
+let popContext;
+let CLASS_NAME = 'term-f-size-';
+
+class History
+{
+	constructor( params )
+	{
+		this.context 			= document.createElement('ul');
+		this.context.className 	= 'list-group m-b-none';
+
+		this.settings 			= params;
+		this.activeClass		= '';
+
+		popContext = new Drop({
+			target		: params['button'],
+			content		: this.getContext(),
+			classes		: 'drop-theme-arrows',
+			position	: 'bottom center',
+			openOn		: 'click'
+		});
+	}
+
+	build( list )
+	{
+		[ '1', '2', '3', '4'].forEach( ( value ) => {
+
+			let button 			= document.createElement('button');
+			button.className 	= 'list-group-item';
+			button.innerHTML 	= value + 'x';
+
+			button.addEventListener('click', () => {
+				if ( this.activeClass )
+					this.settings.parent.classList.toggle( this.activeClass );
+
+				this.activeClass = CLASS_NAME + value;
+				this.settings.parent.classList.toggle( this.activeClass );
+			});
+
+			this.context.appendChild( button );
+		})
+	}
+
+	getContext()
+	{
+		return this.context;
+	}
+}
+
+export default History;

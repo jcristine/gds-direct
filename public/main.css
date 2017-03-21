@@ -1068,8 +1068,14 @@ fieldset[disabled] #rootTerminal .btn-warning.active {
   font-size: 10px;
   display: block;
 }
-.terminal-wrap > .term-body.t-f-size-2x .terminal {
+.terminal-wrap > .term-body.term-f-size-4 .terminal {
   --size: 2;
+}
+.terminal-wrap > .term-body.term-f-size-3 .terminal {
+  --size: 1.5;
+}
+.terminal-wrap > .term-body.term-f-size-2 .terminal {
+  --size: 1.25;
 }
 .terminal-wrap .actions-btn-menu {
   position: absolute;

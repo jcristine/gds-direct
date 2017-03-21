@@ -91,7 +91,6 @@ body.terminalBody {
 		height: 98%;
 		display: table;
 
-
 		.left {
 			position: relative;
 
@@ -130,9 +129,9 @@ body.terminalBody {
 			color: #414141;
 			background: #fff;
 
-			article {
+			//article {
 				//padding: 10px 0 0 0;
-			}
+			//}
 
 			.label {
 				font-weight: bold;
@@ -164,15 +163,30 @@ body.terminalBody {
 					display: block;
 				}
 
-				article {
+				//article {
 					//padding: 10px;
-				}
+				//}
 			}
 		}
 
-		&.t-f-size-2x {
+		&.term-f-size-4
+		{
 			.terminal {
-				--size:2;
+				--size: 2;
+			}
+		}
+
+		&.term-f-size-3
+		{
+			.terminal {
+				--size: 1.5;
+			}
+		}
+
+		&.term-f-size-2
+		{
+			.terminal {
+				--size: 1.25;
 			}
 		}
 	}

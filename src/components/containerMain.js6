@@ -36,7 +36,7 @@ let Table = (function()
 
 	function _draw( rowIndex, cellIndex )
 	{
-		context.classList = ( ' t-matrix-h-' + rowIndex + ' t-matrix-w-' + cellIndex );
+		context.classList = ( ' t-matrix-w-' + cellIndex );
 		context.innerHTML = '';
 
 		let row, cells = [];

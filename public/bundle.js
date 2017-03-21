@@ -68,7 +68,7 @@
 /* 0 */
 /***/ function(module, exports, __webpack_require__) {
 
-/* WEBPACK VAR INJECTION */(function(setImmediate, clearImmediate) {var nextTick = __webpack_require__(7).nextTick;
+/* WEBPACK VAR INJECTION */(function(setImmediate, clearImmediate) {var nextTick = __webpack_require__(8).nextTick;
 var apply = Function.prototype.apply;
 var slice = Array.prototype.slice;
 var immediateIds = {};
@@ -10380,7 +10380,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 
 (function(root, factory) {
   if (true) {
-    !(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory), __WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ? (__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+    !(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(9)], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory), __WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ? (__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
   } else if (typeof exports === 'object') {
     module.exports = factory(require('tether'));
   } else {
@@ -10943,6 +10943,53 @@ return Drop;
 /***/ function(module, exports, __webpack_require__) {
 
 "use strict";
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_tether_drop__ = __webpack_require__(2);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_tether_drop___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_tether_drop__);
+'use strict';
+
+
+
+let popContext;
+
+class History
+{
+	constructor( params )
+	{
+		this.context 			= document.createElement('div');
+
+		this.settings = params;
+
+		popContext = new __WEBPACK_IMPORTED_MODULE_0_tether_drop___default.a({
+			target		: params['button'],
+			content		: this.getContext(),
+			classes		: 'drop-theme-arrows',
+			position	: 'bottom center',
+			openOn		: 'click'
+		});
+	}
+
+	build( list )
+	{
+		list = list || ['No History'];
+
+		this.context.innerHTML = list.map( function ( value ) {
+			return `<div>${value}</div>`
+		})
+	}
+
+	getContext()
+	{
+		return this.context;
+	}
+}
+
+/* harmony default export */ exports["a"] = History;
+
+/***/ },
+/* 4 */
+/***/ function(module, exports, __webpack_require__) {
+
+"use strict";
 const TERMINAL_HEIGHT 		= '650';
 /* unused harmony export TERMINAL_HEIGHT */
 
@@ -10966,17 +11013,17 @@ const API_HOST 				= '';
 
 
 /***/ },
-/* 4 */
+/* 5 */
 /***/ function(module, exports) {
 
 // removed by extract-text-webpack-plugin
 
 /***/ },
-/* 5 */
+/* 6 */
 /***/ function(module, exports, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__components_containerMain__ = __webpack_require__(11);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__components_containerMain__ = __webpack_require__(12);
 'use strict';
 
 
@@ -10999,7 +11046,7 @@ const Context = {
 Context.init();
 
 /***/ },
-/* 6 */
+/* 7 */
 /***/ function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(global, setImmediate) {/**@license
@@ -16893,10 +16940,10 @@ Context.init();
     }; // terminal plugin
 })(jQuery);
 
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(9), __webpack_require__(0).setImmediate))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(10), __webpack_require__(0).setImmediate))
 
 /***/ },
-/* 7 */
+/* 8 */
 /***/ function(module, exports) {
 
 // shim for using process in browser
@@ -17082,7 +17129,7 @@ process.umask = function() { return 0; };
 
 
 /***/ },
-/* 8 */
+/* 9 */
 /***/ function(module, exports, __webpack_require__) {
 
 var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_RESULT__;/*! tether 1.4.0 */
@@ -18899,7 +18946,7 @@ return Tether;
 
 
 /***/ },
-/* 9 */
+/* 10 */
 /***/ function(module, exports) {
 
 var g;
@@ -18924,7 +18971,7 @@ module.exports = g;
 
 
 /***/ },
-/* 10 */
+/* 11 */
 /***/ function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -18985,13 +19032,13 @@ class ActionsMenu {
 
 
 /***/ },
-/* 11 */
+/* 12 */
 /***/ function(module, exports, __webpack_require__) {
 
 "use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__terminal__ = __webpack_require__(15);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__actionsMenu__ = __webpack_require__(10);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__menuPanel__ = __webpack_require__(12);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__actionsMenu__ = __webpack_require__(11);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__menuPanel__ = __webpack_require__(13);
 'use strict';
 
 
@@ -19030,7 +19077,7 @@ let Table = (function()
 
 	function _draw( rowIndex, cellIndex )
 	{
-		context.classList = ( ' t-matrix-h-' + rowIndex + ' t-matrix-w-' + cellIndex );
+		context.classList = ( ' t-matrix-w-' + cellIndex );
 		context.innerHTML = '';
 
 		let row, cells = [];
@@ -19150,12 +19197,14 @@ class Container {
 
 
 /***/ },
-/* 12 */
+/* 13 */
 /***/ function(module, exports, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__popovers_history__ = __webpack_require__(13);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__popovers_history__ = __webpack_require__(3);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__popovers_textSize__ = __webpack_require__(29);
 'use strict';
+
 
 
 
@@ -19196,10 +19245,17 @@ class MenuPanel
 		let btn 		= createBtn();
 		btn.innerHTML 	= '<i class="fa fa-font"></i>';
 
-		btn.addEventListener('click', () => {
-			parentContext.classList.toggle('t-f-size-2x');
-			btn.classList.toggle('active');
+		let popover = new __WEBPACK_IMPORTED_MODULE_1__popovers_textSize__["a" /* default */]({
+			button	: btn,
+			parent	: parentContext
 		});
+
+		popover.build();
+
+		// btn.addEventListener('click', () => {
+		// 	parentContext.classList.toggle('t-f-size-2x');
+		// 	btn.classList.toggle('active');
+		// });
 
 		return btn;
 	}
@@ -19272,8 +19328,6 @@ class MenuPanel
 
 		let buttons = ['APOLLO','SABRE'].map(( value ) => {
 
-			// console.log( State )
-
 			let button		 = document.createElement('button');
 			button.className = 'btn btn-sm btn-mint font-bold';
 			button.innerHTML = value;
@@ -19291,7 +19345,6 @@ class MenuPanel
 	static settingsButtons()
 	{
 		let context 		= document.createElement('article');
-		//context.className 	= 'btn-group';
 
 		[
 			MenuPanel.toggle(),
@@ -19321,58 +19374,9 @@ class MenuPanel
 		MenuPanel.build();
 		return context;
 	}
-
 }
 /* harmony export (immutable) */ exports["a"] = MenuPanel;
 
-
-
-/***/ },
-/* 13 */
-/***/ function(module, exports, __webpack_require__) {
-
-"use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_tether_drop__ = __webpack_require__(2);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_tether_drop___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_tether_drop__);
-'use strict';
-
-
-
-let popContext;
-
-class History
-{
-	constructor( params )
-	{
-		this.context 			= document.createElement('div');
-
-		this.settings = params;
-
-		popContext = new __WEBPACK_IMPORTED_MODULE_0_tether_drop___default.a({
-			target		: params['button'],
-			content		: this.getContext(),
-			classes		: 'drop-theme-arrows',
-			position	: 'bottom center',
-			openOn		: 'click'
-		});
-	}
-
-	build( list )
-	{
-		list = list || ['No History'];
-
-		this.context.innerHTML = list.map( function ( value ) {
-			return `<div>${value}</div>`
-		})
-	}
-
-	getContext()
-	{
-		return this.context;
-	}
-}
-
-/* harmony default export */ exports["a"] = History;
 
 /***/ },
 /* 14 */
@@ -19575,7 +19579,7 @@ module.exports = {
 /***/ function(module, exports, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__constants__ = __webpack_require__(3);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__constants__ = __webpack_require__(4);
 'use strict';
 
 let $ = __webpack_require__(1);
@@ -19702,7 +19706,7 @@ function runSyncCommand2( functionName, params )
 let $					= __webpack_require__(1);
 window.$ 				= window.jQuery = $;
 
-let jqTerminal 			= __webpack_require__(6);
+let jqTerminal 			= __webpack_require__(7);
 let Helpers				= __webpack_require__(16);
 
 
@@ -19856,7 +19860,7 @@ class TerminalPlugin
 /***/ function(module, exports, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__constants__ = __webpack_require__(3);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__constants__ = __webpack_require__(4);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__helpers_requests__ = __webpack_require__(17);
 'use strict';
 
@@ -19942,9 +19946,78 @@ class TerminalPlugin
 /* 20 */
 /***/ function(module, exports, __webpack_require__) {
 
-__webpack_require__(5);
-module.exports = __webpack_require__(4);
+__webpack_require__(6);
+module.exports = __webpack_require__(5);
 
+
+/***/ },
+/* 21 */,
+/* 22 */,
+/* 23 */,
+/* 24 */,
+/* 25 */,
+/* 26 */,
+/* 27 */,
+/* 28 */,
+/* 29 */
+/***/ function(module, exports, __webpack_require__) {
+
+"use strict";
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_tether_drop__ = __webpack_require__(2);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_tether_drop___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_tether_drop__);
+'use strict';
+
+
+
+let popContext;
+let CLASS_NAME = 'term-f-size-';
+
+class History
+{
+	constructor( params )
+	{
+		this.context 			= document.createElement('ul');
+		this.context.className 	= 'list-group m-b-none';
+
+		this.settings 			= params;
+		this.activeClass		= '';
+
+		popContext = new __WEBPACK_IMPORTED_MODULE_0_tether_drop___default.a({
+			target		: params['button'],
+			content		: this.getContext(),
+			classes		: 'drop-theme-arrows',
+			position	: 'bottom center',
+			openOn		: 'click'
+		});
+	}
+
+	build( list )
+	{
+		[ '1', '2', '3', '4'].forEach( ( value ) => {
+
+			let button 			= document.createElement('button');
+			button.className 	= 'list-group-item';
+			button.innerHTML 	= value + 'x';
+
+			button.addEventListener('click', () => {
+				if ( this.activeClass )
+					this.settings.parent.classList.toggle( this.activeClass );
+
+				this.activeClass = CLASS_NAME + value;
+				this.settings.parent.classList.toggle( this.activeClass );
+			});
+
+			this.context.appendChild( button );
+		})
+	}
+
+	getContext()
+	{
+		return this.context;
+	}
+}
+
+/* harmony default export */ exports["a"] = History;
 
 /***/ }
 /******/ ]);

@@ -1,6 +1,7 @@
 'use strict';
 
 import History 	from './popovers/history';
+import TextSize from './popovers/textSize';
 
 let context;
 
@@ -39,10 +40,17 @@ export default class MenuPanel
 		let btn 		= createBtn();
 		btn.innerHTML 	= '<i class="fa fa-font"></i>';
 
-		btn.addEventListener('click', () => {
-			parentContext.classList.toggle('t-f-size-2x');
-			btn.classList.toggle('active');
+		let popover = new TextSize({
+			button	: btn,
+			parent	: parentContext
 		});
+
+		popover.build();
+
+		// btn.addEventListener('click', () => {
+		// 	parentContext.classList.toggle('t-f-size-2x');
+		// 	btn.classList.toggle('active');
+		// });
 
 		return btn;
 	}
@@ -132,7 +140,6 @@ export default class MenuPanel
 	static settingsButtons()
 	{
 		let context 		= document.createElement('article');
-		//context.className 	= 'btn-group';
 
 		[
 			MenuPanel.toggle(),
@@ -162,5 +169,4 @@ export default class MenuPanel
 		MenuPanel.build();
 		return context;
 	}
-
 }
