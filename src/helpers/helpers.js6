@@ -13,7 +13,6 @@ function chunk(arr, limit) {
 		result.push(arr);
 
 	return result;
-
 }
 
 function substitutePrintableChar(ch)
@@ -44,11 +43,6 @@ function makeCachedParts(txt)
 		return sectionLines.join('\n');
 	});
 }
-
-//let Helpers = {
-//	makeCachedParts 		:	makeCachedParts,
-//	substitutePrintableChar :	substitutePrintableChar
-//};
 
 module.exports = {
 	makeCachedParts 		:	makeCachedParts,

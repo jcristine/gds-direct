@@ -24,9 +24,11 @@ export default class MenuPanel
 	{
 		let btn 		= createBtn();
 		btn.innerHTML 	= '<i class="fa fa-bars"></i>';
+		btn.className 	+= ' active';
 
 		btn.addEventListener('click', () => {
 			parentContext.classList.toggle('minimized');
+			btn.classList.toggle('active');
 		});
 
 		return btn;
@@ -39,6 +41,7 @@ export default class MenuPanel
 
 		btn.addEventListener('click', () => {
 			parentContext.classList.toggle('t-f-size-2x');
+			btn.classList.toggle('active');
 		});
 
 		return btn;
@@ -64,6 +67,7 @@ export default class MenuPanel
 		btn.innerHTML 	= '<i class="fa fa-gears"></i>';
 
 		btn.addEventListener('click', () => {
+
 		});
 
 		return btn;
@@ -77,18 +81,28 @@ export default class MenuPanel
 		let btnGroup		= document.createElement('div');
 		btnGroup.className 	= 'buttons';
 
-		[1,2,3].map(( value ) => {
+		let active;
 
-			let button = document.createElement('button');
-			button.className = 'btn btn-sm btn-purple font-bold';
-			button.innerHTML = value;
+		let buttons = [1,2,3].map(( value ) => {
+			let button 			= document.createElement('button');
+			button.className	= 'btn btn-sm btn-purple font-bold';
+			button.innerHTML	= value;
+
+			button.addEventListener('click', () => {
+				active.classList.remove('active');
+				button.classList.toggle('active');
+				active = button;
+			});
 
 			btnGroup.appendChild( button );
+			return button;
 		});
+
+		active = buttons[0];
+		active.className += ' active';
 
 		context.appendChild(btnGroup);
 		return context;
-
 	}
 
 	static PccLanguage()
@@ -99,13 +113,17 @@ export default class MenuPanel
 		let btnGroup		= document.createElement('div');
 		btnGroup.className 	= 'buttons';
 
-		['sabre','apollo'].map(( value ) => {
-			let button = document.createElement('button');
-			button.className = 'btn btn-sm btn-warning  font-bold';
+		let buttons = ['APOLLO','SABRE'].map(( value ) => {
+
+			let button		 = document.createElement('button');
+			button.className = 'btn btn-sm btn-mint font-bold';
 			button.innerHTML = value;
 
 			btnGroup.appendChild( button );
+			return button;
 		});
+
+		buttons[0].className += ' active';
 
 		context.appendChild(btnGroup);
 		return context;

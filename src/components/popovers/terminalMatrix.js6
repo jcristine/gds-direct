@@ -3,6 +3,9 @@
 import Drop 	from 'tether-drop';
 
 let popContext;
+let cellObj = [];
+
+const ACTIVE_CLASS = 'bg-purple';
 
 class Matrix
 {
@@ -17,7 +20,7 @@ class Matrix
 			target		: params['button'],
 			content		: this.getContext(),
 			classes		: 'drop-theme-arrows',
-			position	: 'bottom right',
+			position	: 'bottom center',
 			openOn		: 'click'
 		});
 	}
@@ -25,23 +28,43 @@ class Matrix
 	makeRow( rowIndex )
 	{
 		let row 		= document.createElement('tr');
-		row.className 	= rowIndex + '-tr';
-
 		this.context.appendChild( row );
 
+		cellObj.push([]);
+
 		[ 0, 1, 2, 3 ].map((index) => {
-			return row.appendChild( this.makeCell( index, rowIndex ) )
+			return row.appendChild(
+				this.makeCell( index, rowIndex )
+			)
 		});
 	}
 
 	makeCell( cellIndex, rowIndex )
 	{
 		let cell 		= document.createElement('td');
-		cell.className 	= cellIndex + '-td';
+
+		cellObj[rowIndex].push(cell);
 
 		cell.addEventListener( 'click', () => {
 			popContext.close();
 			this.settings.onClick( rowIndex, cellIndex );
+		});
+
+		cell.addEventListener('mouseover', function () {
+			for ( let i=0; i <= rowIndex; i++ )
+			{
+				cellObj[i].slice(0, cellIndex + 1 ).map(function (cell) {
+					cell.classList.toggle(ACTIVE_CLASS);
+				})
+			}
+		});
+
+		let context = this.context;
+
+		cell.addEventListener('mouseleave', function () {
+			[].map.call(context.querySelectorAll( '.' + ACTIVE_CLASS) , function ( cell ) {
+				cell.classList.toggle(ACTIVE_CLASS);
+			});
 		});
 
 		return cell;

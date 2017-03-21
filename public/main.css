@@ -997,11 +997,14 @@ fieldset[disabled] #rootTerminal .btn-warning.active {
   display: table-cell;
 }
 .terminal-wrap {
+  position: relative;
+  border-top: 1px solid #bdbdbd;
   color: #414141;
   width: 100%;
   height: 100%;
 }
 .terminal-wrap > .term-header {
+  font-family: "Lucida Grande", sans-serif;
   font-size: 12px;
   height: 2%;
   text-align: center;
@@ -1043,9 +1046,6 @@ fieldset[disabled] #rootTerminal .btn-warning.active {
   color: #414141;
   background: #fff;
 }
-.terminal-wrap > .term-body .menu article {
-  padding: 10px 0 0 0;
-}
 .terminal-wrap > .term-body .menu .label {
   font-weight: bold;
   font-size: 12px;
@@ -1056,7 +1056,7 @@ fieldset[disabled] #rootTerminal .btn-warning.active {
   margin-right: 5px;
 }
 .terminal-wrap > .term-body.minimized .menu {
-  width: 10%;
+  width: 5%;
 }
 .terminal-wrap > .term-body.minimized .menu .btn {
   display: block;
@@ -1078,9 +1078,13 @@ fieldset[disabled] #rootTerminal .btn-warning.active {
   right: 7px;
 }
 .terminal-wrap .terminal {
+  color: #fff;
   width: 100%;
   padding: 0;
   overflow: auto;
+}
+.terminal-wrap .terminal .cmd {
+  color: #fff;
 }
 .terminal-wrap .terminal iframe {
   position: static;

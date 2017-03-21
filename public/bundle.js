@@ -18945,7 +18945,7 @@ class Button
 		this.context.type		= 'button';
 		this.context.className 	= 'btn btn-purple';
 
-		this.context.innerHTML	= '<i class="fa fa-columns"></i>';
+		this.context.innerHTML	= '<i class="fa fa-th-large t-f-size-14"></i>';
 		//this.context.addEventListener('click', params.click);
 	}
 	
@@ -19181,9 +19181,11 @@ class MenuPanel
 	{
 		let btn 		= createBtn();
 		btn.innerHTML 	= '<i class="fa fa-bars"></i>';
+		btn.className 	+= ' active';
 
 		btn.addEventListener('click', () => {
 			parentContext.classList.toggle('minimized');
+			btn.classList.toggle('active');
 		});
 
 		return btn;
@@ -19196,6 +19198,7 @@ class MenuPanel
 
 		btn.addEventListener('click', () => {
 			parentContext.classList.toggle('t-f-size-2x');
+			btn.classList.toggle('active');
 		});
 
 		return btn;
@@ -19221,6 +19224,7 @@ class MenuPanel
 		btn.innerHTML 	= '<i class="fa fa-gears"></i>';
 
 		btn.addEventListener('click', () => {
+
 		});
 
 		return btn;
@@ -19234,18 +19238,28 @@ class MenuPanel
 		let btnGroup		= document.createElement('div');
 		btnGroup.className 	= 'buttons';
 
-		[1,2,3].map(( value ) => {
+		let active;
 
-			let button = document.createElement('button');
-			button.className = 'btn btn-sm btn-purple font-bold';
-			button.innerHTML = value;
+		let buttons = [1,2,3].map(( value ) => {
+			let button 			= document.createElement('button');
+			button.className	= 'btn btn-sm btn-purple font-bold';
+			button.innerHTML	= value;
+
+			button.addEventListener('click', () => {
+				active.classList.remove('active');
+				button.classList.toggle('active');
+				active = button;
+			});
 
 			btnGroup.appendChild( button );
+			return button;
 		});
+
+		active = buttons[0];
+		active.className += ' active';
 
 		context.appendChild(btnGroup);
 		return context;
-
 	}
 
 	static PccLanguage()
@@ -19256,13 +19270,19 @@ class MenuPanel
 		let btnGroup		= document.createElement('div');
 		btnGroup.className 	= 'buttons';
 
-		['sabre','apollo'].map(( value ) => {
-			let button = document.createElement('button');
-			button.className = 'btn btn-sm btn-warning  font-bold';
+		let buttons = ['APOLLO','SABRE'].map(( value ) => {
+
+			// console.log( State )
+
+			let button		 = document.createElement('button');
+			button.className = 'btn btn-sm btn-mint font-bold';
 			button.innerHTML = value;
 
 			btnGroup.appendChild( button );
+			return button;
 		});
+
+		buttons[0].className += ' active';
 
 		context.appendChild(btnGroup);
 		return context;
@@ -19366,6 +19386,9 @@ class History
 
 
 let popContext;
+let cellObj = [];
+
+const ACTIVE_CLASS = 'bg-purple';
 
 class Matrix
 {
@@ -19380,7 +19403,7 @@ class Matrix
 			target		: params['button'],
 			content		: this.getContext(),
 			classes		: 'drop-theme-arrows',
-			position	: 'bottom right',
+			position	: 'bottom center',
 			openOn		: 'click'
 		});
 	}
@@ -19388,23 +19411,43 @@ class Matrix
 	makeRow( rowIndex )
 	{
 		let row 		= document.createElement('tr');
-		row.className 	= rowIndex + '-tr';
-
 		this.context.appendChild( row );
 
+		cellObj.push([]);
+
 		[ 0, 1, 2, 3 ].map((index) => {
-			return row.appendChild( this.makeCell( index, rowIndex ) )
+			return row.appendChild(
+				this.makeCell( index, rowIndex )
+			)
 		});
 	}
 
 	makeCell( cellIndex, rowIndex )
 	{
 		let cell 		= document.createElement('td');
-		cell.className 	= cellIndex + '-td';
+
+		cellObj[rowIndex].push(cell);
 
 		cell.addEventListener( 'click', () => {
 			popContext.close();
 			this.settings.onClick( rowIndex, cellIndex );
+		});
+
+		cell.addEventListener('mouseover', function () {
+			for ( let i=0; i <= rowIndex; i++ )
+			{
+				cellObj[i].slice(0, cellIndex + 1 ).map(function (cell) {
+					cell.classList.toggle(ACTIVE_CLASS);
+				})
+			}
+		});
+
+		let context = this.context;
+
+		cell.addEventListener('mouseleave', function () {
+			[].map.call(context.querySelectorAll( '.' + ACTIVE_CLASS) , function ( cell ) {
+				cell.classList.toggle(ACTIVE_CLASS);
+			});
 		});
 
 		return cell;
@@ -19491,7 +19534,6 @@ function chunk(arr, limit) {
 		result.push(arr);
 
 	return result;
-
 }
 
 function substitutePrintableChar(ch)
@@ -19522,11 +19564,6 @@ function makeCachedParts(txt)
 		return sectionLines.join('\n');
 	});
 }
-
-//let Helpers = {
-//	makeCachedParts 		:	makeCachedParts,
-//	substitutePrintableChar :	substitutePrintableChar
-//};
 
 module.exports = {
 	makeCachedParts 		:	makeCachedParts,
@@ -19677,6 +19714,7 @@ class TerminalPlugin
 		this.context	= context;
 		this.name		= name;
 		this.terminal 	= null;
+		this.outputCache = [];
 
 		this.init();
 	}
@@ -19688,10 +19726,10 @@ class TerminalPlugin
 
 	static parseInput( evt, terminal )
 	{
-		//console.log('parse input bla common', terminal );
-		//console.log( this );
+		if ( !terminal.enabled() ) // key press fires globally on all terminals;
+			return false;
 
-		if ( !terminal.enabled() ) // keypress fires globaly on all terminals;
+		if (evt.which === 13)
 			return false;
 
 		if (evt.which && !evt.ctrlKey)
@@ -19708,8 +19746,6 @@ class TerminalPlugin
 
 	static parseKeyBinds( evt, terminal )
 	{
-		//console.log( "AAAA", terminal );
-
 		if ( (evt.which === 83 || evt.which === 87) && evt.ctrlKey )
 		{
 			//console.log("BBBB", terminal);
@@ -19745,6 +19781,7 @@ class TerminalPlugin
 	init()
 	{
 		this.terminal = $(this.context).terminal( this.commandParser, {
+
 			greetings	: '',
 			name		: 'sabre_terminal' + this.name,
 			prompt		: '>',
@@ -19753,7 +19790,8 @@ class TerminalPlugin
 
 			keypress	: TerminalPlugin.parseInput,
 			keydown		: TerminalPlugin.parseKeyBinds,
-			onInit		: this.onInit
+
+			// onInit		: this.onInit
 			//,
 			//
 			//onTerminalChange	: function () {
@@ -19768,22 +19806,18 @@ class TerminalPlugin
 
 	commandParser( command, terminal )
 	{
-		//console.log(' commandParser ',  command, terminal )
-
-		let outputCache = [];
-
-		if (command === '')
+		if ( !command || command === '' )
 		{
-			terminal.echo('');
+			// terminal.echo('');
 		}
 		else if ( command === 'MD' )
 		{
-			terminal.echo( outputCache.length > 0 ?  outputCache.shift() : '‡NOTHING TO SCROLL‡' );
+			terminal.echo( this.outputCache.length > 0 ?  this.outputCache.shift() : '‡NOTHING TO SCROLL‡' );
 		}
 		else
 		{
 			try {
-				terminal.set_prompt('');
+				// terminal.set_prompt('');
 
 				__WEBPACK_IMPORTED_MODULE_0__modules_sabreSession__["a" /* default */]
 					.runCommand(command)
@@ -19799,8 +19833,8 @@ class TerminalPlugin
 
 						if ( result['output'] )
 						{
-							outputCache = Helpers.makeCachedParts( result['output'] );
-							terminal.echo( outputCache.shift() );
+							this.outputCache = Helpers.makeCachedParts( result['output'] );
+							terminal.echo( this.outputCache.shift() );
 						}
 
 					});

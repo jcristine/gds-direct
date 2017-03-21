@@ -15,6 +15,7 @@ export default class TerminalPlugin
 		this.context	= context;
 		this.name		= name;
 		this.terminal 	= null;
+		this.outputCache = [];
 
 		this.init();
 	}
@@ -26,10 +27,10 @@ export default class TerminalPlugin
 
 	static parseInput( evt, terminal )
 	{
-		//console.log('parse input bla common', terminal );
-		//console.log( this );
+		if ( !terminal.enabled() ) // key press fires globally on all terminals;
+			return false;
 
-		if ( !terminal.enabled() ) // keypress fires globaly on all terminals;
+		if (evt.which === 13)
 			return false;
 
 		if (evt.which && !evt.ctrlKey)
@@ -46,8 +47,6 @@ export default class TerminalPlugin
 
 	static parseKeyBinds( evt, terminal )
 	{
-		//console.log( "AAAA", terminal );
-
 		if ( (evt.which === 83 || evt.which === 87) && evt.ctrlKey )
 		{
 			//console.log("BBBB", terminal);
@@ -83,6 +82,7 @@ export default class TerminalPlugin
 	init()
 	{
 		this.terminal = $(this.context).terminal( this.commandParser, {
+
 			greetings	: '',
 			name		: 'sabre_terminal' + this.name,
 			prompt		: '>',
@@ -91,7 +91,8 @@ export default class TerminalPlugin
 
 			keypress	: TerminalPlugin.parseInput,
 			keydown		: TerminalPlugin.parseKeyBinds,
-			onInit		: this.onInit
+
+			// onInit		: this.onInit
 			//,
 			//
 			//onTerminalChange	: function () {
@@ -106,22 +107,18 @@ export default class TerminalPlugin
 
 	commandParser( command, terminal )
 	{
-		//console.log(' commandParser ',  command, terminal )
-
-		let outputCache = [];
-
-		if (command === '')
+		if ( !command || command === '' )
 		{
-			terminal.echo('');
+			// terminal.echo('');
 		}
 		else if ( command === 'MD' )
 		{
-			terminal.echo( outputCache.length > 0 ?  outputCache.shift() : '‡NOTHING TO SCROLL‡' );
+			terminal.echo( this.outputCache.length > 0 ?  this.outputCache.shift() : '‡NOTHING TO SCROLL‡' );
 		}
 		else
 		{
 			try {
-				terminal.set_prompt('');
+				// terminal.set_prompt('');
 
 				SabreSession
 					.runCommand(command)
@@ -137,8 +134,8 @@ export default class TerminalPlugin
 
 						if ( result['output'] )
 						{
-							outputCache = Helpers.makeCachedParts( result['output'] );
-							terminal.echo( outputCache.shift() );
+							this.outputCache = Helpers.makeCachedParts( result['output'] );
+							terminal.echo( this.outputCache.shift() );
 						}
 
 					});
