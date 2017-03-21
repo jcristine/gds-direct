@@ -10987,30 +10987,9 @@ class History
 
 /***/ },
 /* 4 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ function(module, exports) {
 
-"use strict";
-const TERMINAL_HEIGHT 		= '650';
-/* unused harmony export TERMINAL_HEIGHT */
-
-const TERMINAL_SPLIT_HEIGHT 	= '325';
-/* unused harmony export TERMINAL_SPLIT_HEIGHT */
-
-const INFO_DATA_URL 	 		= '?id=sabre/terminal&getInfoData=1';
-/* unused harmony export INFO_DATA_URL */
-
-const END_POINT_URL	 		= '?id=sabre/terminal&her=1';
-/* harmony export (immutable) */ exports["b"] = END_POINT_URL;
-
-const TIME_FORMAT 			= '12';
-/* harmony export (immutable) */ exports["c"] = TIME_FORMAT;
-
-const ACCOUNT 				= 'training';
-/* harmony export (immutable) */ exports["d"] = ACCOUNT;
-
-const API_HOST 				= '';
-/* harmony export (immutable) */ exports["a"] = API_HOST;
-
+throw new Error("Module build failed: Error: ENOENT: no such file or directory, open '/mnt/nfs/public_html/CMS1ee/sabre/src/constants.js'");
 
 /***/ },
 /* 5 */
@@ -19296,7 +19275,7 @@ class MenuPanel
 
 		let active;
 
-		let buttons = [1,2,3].map(( value ) => {
+		let buttons = ['A','B','C'].map(( value ) => {
 			let button 			= document.createElement('button');
 			button.className	= 'btn btn-sm btn-purple font-bold';
 			button.innerHTML	= value;
@@ -19574,6 +19553,7 @@ module.exports = {
 
 "use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__constants__ = __webpack_require__(4);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__constants___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__constants__);
 'use strict';
 
 let $ = __webpack_require__(1);
@@ -19586,7 +19566,7 @@ function get( url, params )
 	if (!url )
 		return '';
 
-	return fetch(__WEBPACK_IMPORTED_MODULE_0__constants__["a" /* API_HOST */] + url, {
+	return fetch(__WEBPACK_IMPORTED_MODULE_0__constants__["API_HOST"] + url, {
 		credentials: 'include'
 	}).then( function(  response ) {
 		return response.json();
@@ -19596,7 +19576,7 @@ function get( url, params )
 
 function runSyncCommand( functionName, params )
 {
-	let url 	= __WEBPACK_IMPORTED_MODULE_0__constants__["b" /* END_POINT_URL */];
+	let url 	= __WEBPACK_IMPORTED_MODULE_0__constants__["END_POINT_URL"];
 
 	let data 	= {
 		'function'	: functionName,
@@ -19612,7 +19592,7 @@ function runSyncCommand( functionName, params )
 
 	url += '&data=' + get + '&function=' + functionName;
 
-	return fetch(__WEBPACK_IMPORTED_MODULE_0__constants__["a" /* API_HOST */] + url, {
+	return fetch(__WEBPACK_IMPORTED_MODULE_0__constants__["API_HOST"] + url, {
 
 		credentials: 'include'
 
@@ -19633,7 +19613,7 @@ function runSyncCommand( functionName, params )
 
 function runSyncCommand2( functionName, params )
 {
-	let url 	= __WEBPACK_IMPORTED_MODULE_0__constants__["b" /* END_POINT_URL */];
+	let url 	= __WEBPACK_IMPORTED_MODULE_0__constants__["END_POINT_URL"];
 
 	let data 	= {
 		'function'	: functionName,
@@ -19861,6 +19841,7 @@ class TerminalPlugin
 
 "use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__constants__ = __webpack_require__(4);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__constants___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__constants__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__helpers_requests__ = __webpack_require__(17);
 'use strict';
 
@@ -19879,8 +19860,8 @@ class Session
 		// console.log('start');
 
 		__WEBPACK_IMPORTED_MODULE_1__helpers_requests__["a" /* default */].runSyncCommand('startSession',  {
-			timeFormat	: __WEBPACK_IMPORTED_MODULE_0__constants__["c" /* TIME_FORMAT */],
-			account		: __WEBPACK_IMPORTED_MODULE_0__constants__["d" /* ACCOUNT */]
+			timeFormat	: __WEBPACK_IMPORTED_MODULE_0__constants__["TIME_FORMAT"],
+			account		: __WEBPACK_IMPORTED_MODULE_0__constants__["ACCOUNT"]
 		})
 			.then( function( response ) {
 				// console.log( response );

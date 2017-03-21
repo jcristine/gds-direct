@@ -91,7 +91,7 @@ export default class MenuPanel
 
 		let active;
 
-		let buttons = [1,2,3].map(( value ) => {
+		let buttons = ['A','B','C'].map(( value ) => {
 			let button 			= document.createElement('button');
 			button.className	= 'btn btn-sm btn-purple font-bold';
 			button.innerHTML	= value;
