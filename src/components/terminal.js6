@@ -6,29 +6,23 @@ export default class Terminal {
 
 	constructor( params )
 	{
-		this.params 				= params;
-		this.context 				= document.createElement('div');
-		
 		this.plugin 				= null;
+		this.settings 				= params;
+		this.context 				= document.createElement('div');
 		this.context.className 		= 'terminal';
-		this.params.parentContext.appendChild( this.context );
+		this.context.style.height	= this.settings.parentContext.clientHeight + 'px';
 
-		//console.log( '================' );
-		//console.log( this.params.parentContext.clientHeight );
-		//console.log( this.params.parentContext.offsetHeight );
-		//console.log( this.params.parentContext.scrollHeight );
-
-		this.context.style.height	= this.params.parentContext.clientHeight + 'px';
+		this.settings.parentContext.appendChild( this.context );
 	}
 	
 	destroy()
 	{
-		this.plugin.getPlugin().destroy()
+		this.plugin.getPlugin().destroy();
 	}
 
 	create()
 	{
-		this.plugin = new TerminalPlugin( this.context, this.params['name'] );
+		this.plugin = new TerminalPlugin( this.context, this.settings['name'] );
 	}
 	
 	focus()

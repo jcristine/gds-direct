@@ -6,7 +6,7 @@ window.$ 				= window.jQuery = $;
 let jqTerminal 			= require('jquery.terminal/js/jquery.terminal');
 let Helpers				= require('../helpers/helpers');
 
-import SabreSession from '../modules/sabreSession';
+import Session from '../modules/sabreSession';
 
 export default class TerminalPlugin
 {
@@ -16,6 +16,10 @@ export default class TerminalPlugin
 		this.name		= name;
 		this.terminal 	= null;
 		this.outputCache = [];
+
+		this.session = new Session({
+			terminalIndex	: name
+		});
 
 		this.init();
 	}
@@ -70,25 +74,25 @@ export default class TerminalPlugin
 		}
 	}
 
-	onInit( terminal )
-	{
-		//console.log( 'ON INIT ' , this)
+	// onInit( terminal )
+	// {
+	// 	console.log( 'ON INIT ' , this)
 		//SabreSession.startSession();
 		// let startSessionOutput = SabreSession.startSession();
 		//terminal.echo('>' + startSessionOutput['emulationCommand']);
 		//terminal.echo(startSessionOutput['emulationCommandOutput']);
-	}
+	// }
 
 	init()
 	{
-		this.terminal = $(this.context).terminal( this.commandParser, {
+		this.terminal = $(this.context).terminal( this.commandParser.bind(this), {
 
 			greetings	: '',
-			name		: 'sabre_terminal' + this.name,
+			// name		: `sabre_terminal_${this.name}`,
+
+			name		: this.name,
 			prompt		: '>',
-
 			//enabled		: false,
-
 			keypress	: TerminalPlugin.parseInput,
 			keydown		: TerminalPlugin.parseKeyBinds,
 
@@ -110,42 +114,44 @@ export default class TerminalPlugin
 		if ( !command || command === '' )
 		{
 			// terminal.echo('');
+			return false;
 		}
-		else if ( command === 'MD' )
+
+		if ( command === 'MD' )
 		{
 			terminal.echo( this.outputCache.length > 0 ?  this.outputCache.shift() : '‡NOTHING TO SCROLL‡' );
+			return false;
 		}
-		else
+
+		this.session
+			.run({
+				cmd : command
+			})
+			.then( this.parseBackEnd.bind(this) )
+			.catch( this.parseError );
+	}
+
+	parseBackEnd( response = {} )
+	{
+		let result = response['data'];
+
+		if ( result['prompt'] )
+			this.terminal.set_prompt( result['prompt'] );
+
+		if ( result['clearScreen'] )
+			this.terminal.clear();
+
+		if ( result['output'] )
 		{
-			try {
-				// terminal.set_prompt('');
-
-				SabreSession
-					.runCommand(command)
-					.then( ( response = {} ) => {
-
-						let result = response['data'];
-
-						if ( result['prompt'] )
-							terminal.set_prompt( result['prompt'] );
-
-						if ( result['clearScreen'] )
-							terminal.clear();
-
-						if ( result['output'] )
-						{
-							this.outputCache = Helpers.makeCachedParts( result['output'] );
-							terminal.echo( this.outputCache.shift() );
-						}
-
-					});
-
-			} catch(e)
-			{
-				alert(' something went wrong ');
-				//terminal.error( new String(e) );
-			}
+			this.outputCache = Helpers.makeCachedParts( result['output'] );
+			this.terminal.echo( this.outputCache.shift() );
 		}
+	}
 
+	parseError()
+	{
+		alert(' something went wrong ');
+		console.warn(' error', arguments )
+		//terminal.error( new String(e) );
 	}
 }

@@ -19484,29 +19484,23 @@ class Terminal {
 
 	constructor( params )
 	{
-		this.params 				= params;
-		this.context 				= document.createElement('div');
-		
 		this.plugin 				= null;
+		this.settings 				= params;
+		this.context 				= document.createElement('div');
 		this.context.className 		= 'terminal';
-		this.params.parentContext.appendChild( this.context );
+		this.context.style.height	= this.settings.parentContext.clientHeight + 'px';
 
-		//console.log( '================' );
-		//console.log( this.params.parentContext.clientHeight );
-		//console.log( this.params.parentContext.offsetHeight );
-		//console.log( this.params.parentContext.scrollHeight );
-
-		this.context.style.height	= this.params.parentContext.clientHeight + 'px';
+		this.settings.parentContext.appendChild( this.context );
 	}
 	
 	destroy()
 	{
-		this.plugin.getPlugin().destroy()
+		this.plugin.getPlugin().destroy();
 	}
 
 	create()
 	{
-		this.plugin = new __WEBPACK_IMPORTED_MODULE_0__middleware_terminal__["a" /* default */]( this.context, this.params['name'] );
+		this.plugin = new __WEBPACK_IMPORTED_MODULE_0__middleware_terminal__["a" /* default */]( this.context, this.settings['name'] );
 	}
 	
 	focus()
@@ -19720,6 +19714,10 @@ class TerminalPlugin
 		this.terminal 	= null;
 		this.outputCache = [];
 
+		this.session = new __WEBPACK_IMPORTED_MODULE_0__modules_sabreSession__["a" /* default */]({
+			terminalIndex	: name
+		});
+
 		this.init();
 	}
 
@@ -19773,25 +19771,25 @@ class TerminalPlugin
 		}
 	}
 
-	onInit( terminal )
-	{
-		//console.log( 'ON INIT ' , this)
+	// onInit( terminal )
+	// {
+	// 	console.log( 'ON INIT ' , this)
 		//SabreSession.startSession();
 		// let startSessionOutput = SabreSession.startSession();
 		//terminal.echo('>' + startSessionOutput['emulationCommand']);
 		//terminal.echo(startSessionOutput['emulationCommandOutput']);
-	}
+	// }
 
 	init()
 	{
-		this.terminal = $(this.context).terminal( this.commandParser, {
+		this.terminal = $(this.context).terminal( this.commandParser.bind(this), {
 
 			greetings	: '',
-			name		: 'sabre_terminal' + this.name,
+			// name		: `sabre_terminal_${this.name}`,
+
+			name		: this.name,
 			prompt		: '>',
-
 			//enabled		: false,
-
 			keypress	: TerminalPlugin.parseInput,
 			keydown		: TerminalPlugin.parseKeyBinds,
 
@@ -19813,43 +19811,45 @@ class TerminalPlugin
 		if ( !command || command === '' )
 		{
 			// terminal.echo('');
+			return false;
 		}
-		else if ( command === 'MD' )
+
+		if ( command === 'MD' )
 		{
 			terminal.echo( this.outputCache.length > 0 ?  this.outputCache.shift() : '‡NOTHING TO SCROLL‡' );
+			return false;
 		}
-		else
+
+		this.session
+			.run({
+				cmd : command
+			})
+			.then( this.parseBackEnd.bind(this) )
+			.catch( this.parseError );
+	}
+
+	parseBackEnd( response = {} )
+	{
+		let result = response['data'];
+
+		if ( result['prompt'] )
+			this.terminal.set_prompt( result['prompt'] );
+
+		if ( result['clearScreen'] )
+			this.terminal.clear();
+
+		if ( result['output'] )
 		{
-			try {
-				// terminal.set_prompt('');
-
-				__WEBPACK_IMPORTED_MODULE_0__modules_sabreSession__["a" /* default */]
-					.runCommand(command)
-					.then( ( response = {} ) => {
-
-						let result = response['data'];
-
-						if ( result['prompt'] )
-							terminal.set_prompt( result['prompt'] );
-
-						if ( result['clearScreen'] )
-							terminal.clear();
-
-						if ( result['output'] )
-						{
-							this.outputCache = Helpers.makeCachedParts( result['output'] );
-							terminal.echo( this.outputCache.shift() );
-						}
-
-					});
-
-			} catch(e)
-			{
-				alert(' something went wrong ');
-				//terminal.error( new String(e) );
-			}
+			this.outputCache = Helpers.makeCachedParts( result['output'] );
+			this.terminal.echo( this.outputCache.shift() );
 		}
+	}
 
+	parseError()
+	{
+		alert(' something went wrong ');
+		console.warn(' error', arguments )
+		//terminal.error( new String(e) );
 	}
 }
 /* harmony export (immutable) */ exports["a"] = TerminalPlugin;
@@ -19867,80 +19867,52 @@ class TerminalPlugin
 
 
 
-/* harmony default export */ exports["a"] = function () {
+class Session
+{
+	constructor( params )
+	{
+		this.settings = params;
+	}
+	
+	start()
+	{
+		// console.log('start');
 
-	let sessionToken;
-
-	return {
-
-		// startSession2	: function()
-		// {
-		// 	// let result = runSyncCommand('startSession', {'timeFormat': TIME_FORMAT, 'account': ACCOUNT});
-		//
-		// 	let post = {
-		// 		timeFormat	: TIME_FORMAT,
-		// 		account		: ACCOUNT
-		// 	};
-		//
-		// 	let promise = Requests.runSyncCommand('startSession',  post);
-		//
-		// 	promise.done( function ( response ) {
-		// 		sessionToken = response['data']['sessionToken'];
-		// 		return response['data'];
-		// 	}).fail( function () {
-		// 		console.log('fail :((((')
-		// 	});
-		//
-		// 	// return false;
-		// },
-
-		startSession	: function()
-		{
-			let post = {
-				timeFormat	: __WEBPACK_IMPORTED_MODULE_0__constants__["c" /* TIME_FORMAT */],
-				account		: __WEBPACK_IMPORTED_MODULE_0__constants__["d" /* ACCOUNT */]
-			};
-
-			let promise = __WEBPACK_IMPORTED_MODULE_1__helpers_requests__["a" /* default */].runSyncCommand('startSession',  post);
-
-			promise.then( function( response ) {
-				console.log( response )
-				sessionToken = response['data']['sessionToken'];
+		__WEBPACK_IMPORTED_MODULE_1__helpers_requests__["a" /* default */].runSyncCommand('startSession',  {
+			timeFormat	: __WEBPACK_IMPORTED_MODULE_0__constants__["c" /* TIME_FORMAT */],
+			account		: __WEBPACK_IMPORTED_MODULE_0__constants__["d" /* ACCOUNT */]
+		})
+			.then( function( response ) {
+				// console.log( response );
+				// sessionToken = response['data']['sessionToken'];
 				return response['data'];
-			}).catch(function(err) {
+			})
+			.catch(function(err) {
 				console.error('oh shit Error', err);
 			});
-		},
-
-		cachedOutput	: '',
-
-		runCommand		: function(cmd)
-		{
-			// console.log('making runCommand call');
-
-			if (cmd === 'MD')
-				return this.cachedOutput.shift();
-
-			return __WEBPACK_IMPORTED_MODULE_1__helpers_requests__["a" /* default */].runSyncCommand('runCommand', {'sessionToken': sessionToken, 'command': cmd});
-
-			// throw 'Failed to execute, session has timed outp';
-		},
-
-		endSession: function()
-		{
-
-			// console.log('making endSession call');
-
-			let result = __WEBPACK_IMPORTED_MODULE_1__helpers_requests__["a" /* default */].runSyncCommand('endSession', {'sessionToken': sessionToken});
-
-			if (result['success'])
-				return true;
-
-			// throw new Exception('Failed to execute, session has timed oupt');
-		}
 	}
 
-}();
+	run( params )
+	{
+		// console.log( this.settings  );
+
+		return __WEBPACK_IMPORTED_MODULE_1__helpers_requests__["a" /* default */].runSyncCommand('runCommand', {
+			sessionToken	: this.settings['sessionToken'],
+			command			: params['cmd'],
+			terminalIndex	: this.settings['terminalIndex']
+		});
+	}
+
+	end()
+	{
+		let result = __WEBPACK_IMPORTED_MODULE_1__helpers_requests__["a" /* default */].runSyncCommand('endSession', {'sessionToken': sessionToken});
+
+		if (result['success'])
+			return true;
+	}
+}
+/* harmony export (immutable) */ exports["a"] = Session;
+
 
 /***/ },
 /* 20 */
