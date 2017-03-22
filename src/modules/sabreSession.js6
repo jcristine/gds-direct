@@ -12,14 +12,11 @@ export default class Session
 	
 	start()
 	{
-		// console.log('start');
-
 		Requests.runSyncCommand('startSession',  {
 			timeFormat	: TIME_FORMAT,
 			account		: ACCOUNT
 		})
 			.then( function( response ) {
-				// console.log( response );
 				// sessionToken = response['data']['sessionToken'];
 				return response['data'];
 			})
@@ -30,12 +27,11 @@ export default class Session
 
 	run( params )
 	{
-		// console.log( this.settings  );
-
 		return Requests.runSyncCommand('runCommand', {
 			sessionToken	: this.settings['sessionToken'],
+			sessionIndex	: 1,
 			command			: params['cmd'],
-			terminalIndex	: this.settings['terminalIndex']
+			terminalIndex	: parseInt( this.settings['terminalIndex']) + 1
 		});
 	}
 
