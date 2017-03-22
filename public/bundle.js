@@ -19085,8 +19085,14 @@ class Container {
 
 		context.appendChild( termTableWrap );
 
-		let leftSide 				= document.createElement('aside');
-		leftSide.className			= 't-d-cell left';
+		termTableWrap.appendChild(  this.createTableMatrix() );
+		termTableWrap.appendChild( this.createRightMenu() );
+	}
+
+	static createTableMatrix()
+	{
+		let leftSide 		= document.createElement('aside');
+		leftSide.className	= 't-d-cell left';
 
 		__WEBPACK_IMPORTED_MODULE_1__actionsMenu__["a" /* default */].init({
 			addEvent : this.attachTerminals
@@ -19095,13 +19101,16 @@ class Container {
 		leftSide.appendChild( __WEBPACK_IMPORTED_MODULE_1__actionsMenu__["a" /* default */].getContext() );
 		leftSide.appendChild( Table.getContext() );
 
-		let rightSide 				= document.createElement('aside');
-		rightSide.className 		= 't-d-cell menu';
+		return leftSide;
+	}
+
+	static createRightMenu()
+	{
+		let rightSide 		= document.createElement('aside');
+		rightSide.className = 't-d-cell menu';
 
 		rightSide.appendChild( __WEBPACK_IMPORTED_MODULE_2__menuPanel__["a" /* default */].render( termTableWrap ) );
-
-		termTableWrap.appendChild( leftSide );
-		termTableWrap.appendChild( rightSide );
+		return rightSide;
 	}
 
 	static render( rootId )
@@ -19140,7 +19149,7 @@ class Container {
 			parentContext	: cell
 		});
 
-		terminal.create();
+		// terminal.create();
 		terminalList.push( terminal );
 	}
 }
@@ -19549,18 +19558,40 @@ class Terminal {
 		this.context 				= document.createElement('div');
 		this.context.className 		= 'terminal';
 		this.context.style.height	= this.settings.parentContext.clientHeight + 'px';
+		this.context.innerHTML 		= '>';
+
+		this.context.addEventListener('click', () => {
+
+			console.log('2 click click click click ');
+			
+
+			if (!this.plugin)
+			{
+				this.context.innerHTML = '';
+				this.plugin = new __WEBPACK_IMPORTED_MODULE_0__middleware_terminal__["a" /* default */]( this.context, this.settings['name'] );
+			}
+
+		});
 
 		this.settings.parentContext.appendChild( this.context );
 	}
 	
 	destroy()
 	{
-		this.plugin.getPlugin().destroy();
+		if (this.plugin)
+			this.plugin.getPlugin().destroy();
+	}
+
+	initPlugin()
+	{
+		// console.log( this );
+		// this.plugin = new TerminalPlugin( this.context, this.settings['name'] );
+		// this.context.removeEventListener('click', this.initPlugin);
 	}
 
 	create()
 	{
-		this.plugin = new __WEBPACK_IMPORTED_MODULE_0__middleware_terminal__["a" /* default */]( this.context, this.settings['name'] );
+		// this.plugin = new TerminalPlugin( this.context, this.settings['name'] );
 	}
 	
 	focus()
@@ -19965,7 +19996,9 @@ class Session
 
 	end()
 	{
-		let result = __WEBPACK_IMPORTED_MODULE_1__helpers_requests__["a" /* default */].runSyncCommand('endSession', {'sessionToken': sessionToken});
+		let result = __WEBPACK_IMPORTED_MODULE_1__helpers_requests__["a" /* default */].runSyncCommand('endSession', {
+			sessionToken: this.settings['sessionToken']
+		});
 
 		if (result['success'])
 			return true;

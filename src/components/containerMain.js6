@@ -92,8 +92,14 @@ export default class Container {
 
 		context.appendChild( termTableWrap );
 
-		let leftSide 				= document.createElement('aside');
-		leftSide.className			= 't-d-cell left';
+		termTableWrap.appendChild(  this.createTableMatrix() );
+		termTableWrap.appendChild( this.createRightMenu() );
+	}
+
+	static createTableMatrix()
+	{
+		let leftSide 		= document.createElement('aside');
+		leftSide.className	= 't-d-cell left';
 
 		ActionsMenu.init({
 			addEvent : this.attachTerminals
@@ -102,13 +108,16 @@ export default class Container {
 		leftSide.appendChild( ActionsMenu.getContext() );
 		leftSide.appendChild( Table.getContext() );
 
-		let rightSide 				= document.createElement('aside');
-		rightSide.className 		= 't-d-cell menu';
+		return leftSide;
+	}
+
+	static createRightMenu()
+	{
+		let rightSide 		= document.createElement('aside');
+		rightSide.className = 't-d-cell menu';
 
 		rightSide.appendChild( MenuPanel.render( termTableWrap ) );
-
-		termTableWrap.appendChild( leftSide );
-		termTableWrap.appendChild( rightSide );
+		return rightSide;
 	}
 
 	static render( rootId )
@@ -147,7 +156,7 @@ export default class Container {
 			parentContext	: cell
 		});
 
-		terminal.create();
+		// terminal.create();
 		terminalList.push( terminal );
 	}
 }

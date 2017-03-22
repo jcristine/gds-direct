@@ -41,7 +41,9 @@ export default class Session
 
 	end()
 	{
-		let result = Requests.runSyncCommand('endSession', {'sessionToken': sessionToken});
+		let result = Requests.runSyncCommand('endSession', {
+			sessionToken: this.settings['sessionToken']
+		});
 
 		if (result['success'])
 			return true;

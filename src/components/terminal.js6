@@ -11,18 +11,35 @@ export default class Terminal {
 		this.context 				= document.createElement('div');
 		this.context.className 		= 'terminal';
 		this.context.style.height	= this.settings.parentContext.clientHeight + 'px';
+		this.context.innerHTML 		= '>';
+
+		this.context.addEventListener('click', () => {
+			if (!this.plugin)
+			{
+				this.context.innerHTML = '';
+				this.plugin = new TerminalPlugin( this.context, this.settings['name'] );
+			}
+		});
 
 		this.settings.parentContext.appendChild( this.context );
 	}
 	
 	destroy()
 	{
-		this.plugin.getPlugin().destroy();
+		if (this.plugin)
+			this.plugin.getPlugin().destroy();
+	}
+
+	initPlugin()
+	{
+		// console.log( this );
+		// this.plugin = new TerminalPlugin( this.context, this.settings['name'] );
+		// this.context.removeEventListener('click', this.initPlugin);
 	}
 
 	create()
 	{
-		this.plugin = new TerminalPlugin( this.context, this.settings['name'] );
+		// this.plugin = new TerminalPlugin( this.context, this.settings['name'] );
 	}
 	
 	focus()
