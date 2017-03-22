@@ -19164,7 +19164,6 @@ class Container {
 
 			terminalList.push( terminal );
 		}
-
 	}
 }
 /* harmony export (immutable) */ exports["a"] = Container;
@@ -19601,8 +19600,12 @@ class Terminal {
 	{
 		this.settings.parentContext = parentNode;
 		this.context.style.height	= this.settings.parentContext.clientHeight + 'px';
-		
+		this.context.style.width	= this.settings.parentContext.clientWidth + 'px';
+
 		this.settings.parentContext.appendChild( this.context );
+
+		if (this.plugin)
+			this.plugin.getPlugin().resize();
 	}
 
 	initPlugin()

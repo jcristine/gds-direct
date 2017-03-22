@@ -171,6 +171,5 @@ export default class Container {
 
 			terminalList.push( terminal );
 		}
-
 	}
 }
