@@ -7,13 +7,43 @@ const apiData = window.apiData || {};
 const Context = {
 	init()
 	{
-		let rootId = apiData.htmlRootId || 'rootTerminal';
-		Container.render( rootId );
+		let rootId = apiData['htmlRootId'] || 'rootTerminal';
+		Container.init( rootId );
 
 		//if (apiData.styleSheets)
 		//	require( '../../sabre/public/main.css' );
 		//Container.attachTerminals();
+	},
+
+	changeSession( params )
+	{
+
 	}
 };
+
+window.TerminalState = {
+
+	state			: {},
+
+	currentSession	: null,
+
+	changeSession 	: function ( params )
+	{
+		this.currentSession = params;
+		Container.changeSession( params )
+	},
+
+	change		: function ( params )
+	{
+		// console.log( params , 'paaaa');
+		// console.log( this.state , 'paaaa');
+
+		this.state = Object.assign( this.state, params );
+		Container.render( this.state.matrix );
+
+		// console.log( this.state );
+	}
+};
+
 
 Context.init();

@@ -78,7 +78,7 @@ export default class Container {
 	static createContext()
 	{
 		context 			= document.createElement('section');
-		context.className	= 'terminal-wrap clearfix';
+		context.className	= 'terminal-wrap-custom clearfix';
 	}
 
 	static createHeader()
@@ -94,7 +94,7 @@ export default class Container {
 	static createWrapper()
 	{
 		termTableWrap 				= document.createElement('div');
-		termTableWrap.className 	= 'term-body minimized';
+		termTableWrap.className 	= 'term-body minimized term-f-size-a4';
 
 		context.appendChild( termTableWrap );
 
@@ -108,7 +108,7 @@ export default class Container {
 		leftSide.className	= 't-d-cell left';
 
 		ActionsMenu.init({
-			addEvent : this.attachTerminals
+			addEvent : Container.attachTerminals
 		});
 
 		leftSide.appendChild( ActionsMenu.getContext() );
@@ -126,7 +126,7 @@ export default class Container {
 		return rightSide;
 	}
 
-	static render( rootId )
+	static init( rootId )
 	{
 		Root = Root || document.getElementById( rootId );
 
@@ -135,7 +135,7 @@ export default class Container {
 		this.createWrapper();
 
 		Root.appendChild( context );
-		Container.attachTerminals();
+		this.attachTerminals();
 	}
 
 	static clearPrev()
@@ -149,9 +149,21 @@ export default class Container {
 		// terminalList = [];
 	}
 
-	static attachTerminals( rowIndex = 0, cellIndex = 0)
+	static attachTerminals( rowIndex = 0, cellIndex = 0 )
+	{
+		window.TerminalState.change({
+			matrix : {
+				rows 	: rowIndex,
+				cells	: cellIndex
+			}
+		});
+	}
+
+	static render( params )
 	{
 		Container.clearPrev();
+
+		let rowIndex = params.rows, cellIndex = params.cells;
 
 		let cells = TerminalCellMatrix.draw(rowIndex, cellIndex);
 		cells.map( Container.createTerminal );
@@ -171,5 +183,10 @@ export default class Container {
 
 			terminalList.push( terminal );
 		}
+	}
+
+	static changeSession( params )
+	{
+		console.log(' change session ', params )
 	}
 }

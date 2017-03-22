@@ -33,11 +33,21 @@ class History
 			button.innerHTML 	= value + 'x';
 
 			button.addEventListener('click', () => {
+
+				let body = document.querySelector('body');
+
 				if ( this.activeClass )
-					this.settings.parent.classList.toggle( this.activeClass );
+					body.classList.toggle( this.activeClass );
+					// this.settings.parent.classList.toggle( this.activeClass );
 
 				this.activeClass = CLASS_NAME + value;
-				this.settings.parent.classList.toggle( this.activeClass );
+
+				body.classList.toggle( this.activeClass );
+				// this.settings.parent.classList.toggle( this.activeClass );
+
+				window.TerminalState.change({
+					fontSize : value
+				});
 			});
 
 			this.context.appendChild( button );

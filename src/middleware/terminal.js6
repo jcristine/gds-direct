@@ -86,7 +86,6 @@ export default class TerminalPlugin
 	init()
 	{
 		this.terminal = $(this.context).terminal( this.commandParser.bind(this), {
-
 			greetings	: '',
 			// name		: `sabre_terminal_${this.name}`,
 
@@ -94,7 +93,11 @@ export default class TerminalPlugin
 			prompt		: '>',
 			//enabled		: false,
 			keypress	: TerminalPlugin.parseInput,
-			keydown		: TerminalPlugin.parseKeyBinds,
+			keydown		: TerminalPlugin.parseKeyBinds
+			// numChars	: false
+
+			// wrap		: false,
+			// outputLimit : 3
 
 			// onInit		: this.onInit
 			//,
@@ -111,6 +114,9 @@ export default class TerminalPlugin
 
 	commandParser( command, terminal )
 	{
+		// console.log( terminal.rows() );
+		// console.log( terminal.cols() );
+
 		if ( !command || command === '' )
 		{
 			// terminal.echo('');

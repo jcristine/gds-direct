@@ -10986,14 +10986,44 @@ const apiData = window.apiData || {};
 const Context = {
 	init()
 	{
-		let rootId = apiData.htmlRootId || 'rootTerminal';
-		__WEBPACK_IMPORTED_MODULE_0__components_containerMain__["a" /* default */].render( rootId );
+		let rootId = apiData['htmlRootId'] || 'rootTerminal';
+		__WEBPACK_IMPORTED_MODULE_0__components_containerMain__["a" /* default */].init( rootId );
 
 		//if (apiData.styleSheets)
 		//	require( '../../sabre/public/main.css' );
 		//Container.attachTerminals();
+	},
+
+	changeSession( params )
+	{
+
 	}
 };
+
+window.TerminalState = {
+
+	state			: {},
+
+	currentSession	: null,
+
+	changeSession 	: function ( params )
+	{
+		this.currentSession = params;
+		__WEBPACK_IMPORTED_MODULE_0__components_containerMain__["a" /* default */].changeSession( params )
+	},
+
+	change		: function ( params )
+	{
+		// console.log( params , 'paaaa');
+		// console.log( this.state , 'paaaa');
+
+		this.state = Object.assign( this.state, params );
+		__WEBPACK_IMPORTED_MODULE_0__components_containerMain__["a" /* default */].render( this.state.matrix );
+
+		// console.log( this.state );
+	}
+};
+
 
 Context.init();
 
@@ -19071,7 +19101,7 @@ class Container {
 	static createContext()
 	{
 		context 			= document.createElement('section');
-		context.className	= 'terminal-wrap clearfix';
+		context.className	= 'terminal-wrap-custom clearfix';
 	}
 
 	static createHeader()
@@ -19087,7 +19117,7 @@ class Container {
 	static createWrapper()
 	{
 		termTableWrap 				= document.createElement('div');
-		termTableWrap.className 	= 'term-body minimized';
+		termTableWrap.className 	= 'term-body minimized term-f-size-a4';
 
 		context.appendChild( termTableWrap );
 
@@ -19101,7 +19131,7 @@ class Container {
 		leftSide.className	= 't-d-cell left';
 
 		__WEBPACK_IMPORTED_MODULE_1__actionsMenu__["a" /* default */].init({
-			addEvent : this.attachTerminals
+			addEvent : Container.attachTerminals
 		});
 
 		leftSide.appendChild( __WEBPACK_IMPORTED_MODULE_1__actionsMenu__["a" /* default */].getContext() );
@@ -19119,7 +19149,7 @@ class Container {
 		return rightSide;
 	}
 
-	static render( rootId )
+	static init( rootId )
 	{
 		Root = Root || document.getElementById( rootId );
 
@@ -19128,7 +19158,7 @@ class Container {
 		this.createWrapper();
 
 		Root.appendChild( context );
-		Container.attachTerminals();
+		this.attachTerminals();
 	}
 
 	static clearPrev()
@@ -19142,9 +19172,21 @@ class Container {
 		// terminalList = [];
 	}
 
-	static attachTerminals( rowIndex = 0, cellIndex = 0)
+	static attachTerminals( rowIndex = 0, cellIndex = 0 )
+	{
+		window.TerminalState.change({
+			matrix : {
+				rows 	: rowIndex,
+				cells	: cellIndex
+			}
+		});
+	}
+
+	static render( params )
 	{
 		Container.clearPrev();
+
+		let rowIndex = params.rows, cellIndex = params.cells;
 
 		let cells = TerminalCellMatrix.draw(rowIndex, cellIndex);
 		cells.map( Container.createTerminal );
@@ -19164,6 +19206,11 @@ class Container {
 
 			terminalList.push( terminal );
 		}
+	}
+
+	static changeSession( params )
+	{
+		console.log(' change session ', params )
 	}
 }
 /* harmony export (immutable) */ exports["a"] = Container;
@@ -19270,7 +19317,8 @@ class MenuPanel
 
 		let active;
 
-		let buttons = ['A','B','C'].map(( value ) => {
+		let buttons = ['A','B','C'].map(( value, index ) => {
+
 			let button 			= document.createElement('button');
 			button.className	= 'btn btn-sm btn-purple font-bold';
 			button.innerHTML	= value;
@@ -19279,6 +19327,10 @@ class MenuPanel
 				active.classList.remove('active');
 				button.classList.toggle('active');
 				active = button;
+
+				window.TerminalState.change({
+					sessionIndex : index
+				});
 			});
 
 			btnGroup.appendChild( button );
@@ -19533,11 +19585,21 @@ class History
 			button.innerHTML 	= value + 'x';
 
 			button.addEventListener('click', () => {
+
+				let body = document.querySelector('body');
+
 				if ( this.activeClass )
-					this.settings.parent.classList.toggle( this.activeClass );
+					body.classList.toggle( this.activeClass );
+					// this.settings.parent.classList.toggle( this.activeClass );
 
 				this.activeClass = CLASS_NAME + value;
-				this.settings.parent.classList.toggle( this.activeClass );
+
+				body.classList.toggle( this.activeClass );
+				// this.settings.parent.classList.toggle( this.activeClass );
+
+				window.TerminalState.change({
+					fontSize : value
+				});
 			});
 
 			this.context.appendChild( button );
@@ -19572,6 +19634,8 @@ class Terminal {
 		this.context.className 		= 'terminal';
 
 		this.context.style.height	= this.settings.parentContext.clientHeight + 'px';
+		this.context.style.width	= this.settings.parentContext.clientWidth + 'px';		
+
 		this.context.innerHTML 		= '>';
 
 		this.context.addEventListener('click', () => {
@@ -19599,6 +19663,7 @@ class Terminal {
 	reattach( parentNode )
 	{
 		this.settings.parentContext = parentNode;
+
 		this.context.style.height	= this.settings.parentContext.clientHeight + 'px';
 		this.context.style.width	= this.settings.parentContext.clientWidth + 'px';
 
@@ -19900,7 +19965,6 @@ class TerminalPlugin
 	init()
 	{
 		this.terminal = $(this.context).terminal( this.commandParser.bind(this), {
-
 			greetings	: '',
 			// name		: `sabre_terminal_${this.name}`,
 
@@ -19908,7 +19972,11 @@ class TerminalPlugin
 			prompt		: '>',
 			//enabled		: false,
 			keypress	: TerminalPlugin.parseInput,
-			keydown		: TerminalPlugin.parseKeyBinds,
+			keydown		: TerminalPlugin.parseKeyBinds
+			// numChars	: false
+
+			// wrap		: false,
+			// outputLimit : 3
 
 			// onInit		: this.onInit
 			//,
@@ -19925,6 +19993,9 @@ class TerminalPlugin
 
 	commandParser( command, terminal )
 	{
+		// console.log( terminal.rows() );
+		// console.log( terminal.cols() );
+
 		if ( !command || command === '' )
 		{
 			// terminal.echo('');

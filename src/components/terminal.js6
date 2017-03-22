@@ -12,6 +12,8 @@ export default class Terminal {
 		this.context.className 		= 'terminal';
 
 		this.context.style.height	= this.settings.parentContext.clientHeight + 'px';
+		this.context.style.width	= this.settings.parentContext.clientWidth + 'px';		
+
 		this.context.innerHTML 		= '>';
 
 		this.context.addEventListener('click', () => {
@@ -39,6 +41,7 @@ export default class Terminal {
 	reattach( parentNode )
 	{
 		this.settings.parentContext = parentNode;
+
 		this.context.style.height	= this.settings.parentContext.clientHeight + 'px';
 		this.context.style.width	= this.settings.parentContext.clientWidth + 'px';
 

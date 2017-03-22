@@ -91,7 +91,8 @@ export default class MenuPanel
 
 		let active;
 
-		let buttons = ['A','B','C'].map(( value ) => {
+		let buttons = ['A','B','C'].map(( value, index ) => {
+
 			let button 			= document.createElement('button');
 			button.className	= 'btn btn-sm btn-purple font-bold';
 			button.innerHTML	= value;
@@ -100,6 +101,10 @@ export default class MenuPanel
 				active.classList.remove('active');
 				button.classList.toggle('active');
 				active = button;
+
+				window.TerminalState.change({
+					sessionIndex : index
+				});
 			});
 
 			btnGroup.appendChild( button );

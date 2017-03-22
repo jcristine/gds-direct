@@ -67,7 +67,35 @@ body.terminalBody {
 	}
 }
 
-.terminal-wrap {
+.term-f-size-4
+{
+    .terminal {
+        --size: 2;
+    }
+}
+
+.term-f-size-3
+{
+    .terminal {
+        --size: 1.5;
+    }
+}
+
+.term-f-size-2
+{
+    .terminal {
+        --size: 1.25;
+    }
+}
+
+//.terminal,
+//.cmd, .terminal .terminal-output div div,
+//.cmd .prompt {
+//    font-size: 40px;
+//    line-height: 48px;
+//}
+
+.terminal-wrap-custom {
 	position: relative;
     border-top: 1px solid #bdbdbd;
 	color: #414141;
@@ -169,26 +197,7 @@ body.terminalBody {
 			}
 		}
 
-		&.term-f-size-4
-		{
-			.terminal {
-				--size: 2;
-			}
-		}
 
-		&.term-f-size-3
-		{
-			.terminal {
-				--size: 1.5;
-			}
-		}
-
-		&.term-f-size-2
-		{
-			.terminal {
-				--size: 1.25;
-			}
-		}
 	}
 
 	.actions-btn-menu {
