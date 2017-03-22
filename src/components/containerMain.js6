@@ -140,20 +140,18 @@ export default class Container {
 
 	static clearPrev()
 	{
-		terminalList.map( function ( instance ) {
-			instance.destroy();
-		});
+		// terminalList.map( function ( instance ) {
+			// console.log( instance )
+			// instance.detach();
+		// });
 
 		TerminalCellMatrix.clear();
-		terminalList = [];
+		// terminalList = [];
 	}
 
 	static attachTerminals( rowIndex = 0, cellIndex = 0)
 	{
 		Container.clearPrev();
-
-		// console.log( terminalList );
-		// console.log( rowIndex, cellIndex  );
 
 		let cells = TerminalCellMatrix.draw(rowIndex, cellIndex);
 		cells.map( Container.createTerminal );
@@ -161,14 +159,18 @@ export default class Container {
 
 	static createTerminal( cell, index )
 	{
-		// console.log( index );
+		if ( terminalList[index] )
+		{
+			terminalList[index].reattach( cell );
+		} else
+		{
+			let terminal = new Terminal({
+				name 			: index,
+				parentContext	: cell
+			});
 
-		let terminal = new Terminal({
-			name 			: index,
-			parentContext	: cell
-		});
+			terminalList.push( terminal );
+		}
 
-		// terminal.create();
-		terminalList.push( terminal );
 	}
 }

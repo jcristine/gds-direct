@@ -19133,20 +19133,18 @@ class Container {
 
 	static clearPrev()
 	{
-		terminalList.map( function ( instance ) {
-			instance.destroy();
-		});
+		// terminalList.map( function ( instance ) {
+			// console.log( instance )
+			// instance.detach();
+		// });
 
 		TerminalCellMatrix.clear();
-		terminalList = [];
+		// terminalList = [];
 	}
 
 	static attachTerminals( rowIndex = 0, cellIndex = 0)
 	{
 		Container.clearPrev();
-
-		// console.log( terminalList );
-		// console.log( rowIndex, cellIndex  );
 
 		let cells = TerminalCellMatrix.draw(rowIndex, cellIndex);
 		cells.map( Container.createTerminal );
@@ -19154,15 +19152,19 @@ class Container {
 
 	static createTerminal( cell, index )
 	{
-		// console.log( index );
+		if ( terminalList[index] )
+		{
+			terminalList[index].reattach( cell );
+		} else
+		{
+			let terminal = new __WEBPACK_IMPORTED_MODULE_0__terminal__["a" /* default */]({
+				name 			: index,
+				parentContext	: cell
+			});
 
-		let terminal = new __WEBPACK_IMPORTED_MODULE_0__terminal__["a" /* default */]({
-			name 			: index,
-			parentContext	: cell
-		});
+			terminalList.push( terminal );
+		}
 
-		// terminal.create();
-		terminalList.push( terminal );
 	}
 }
 /* harmony export (immutable) */ exports["a"] = Container;
@@ -19569,6 +19571,7 @@ class Terminal {
 		this.settings 				= params;
 		this.context 				= document.createElement('div');
 		this.context.className 		= 'terminal';
+
 		this.context.style.height	= this.settings.parentContext.clientHeight + 'px';
 		this.context.innerHTML 		= '>';
 
@@ -19587,6 +19590,19 @@ class Terminal {
 	{
 		if (this.plugin)
 			this.plugin.getPlugin().destroy();
+	}
+
+	detach()
+	{
+		console.log(' detach ', this);
+	}
+
+	reattach( parentNode )
+	{
+		this.settings.parentContext = parentNode;
+		this.context.style.height	= this.settings.parentContext.clientHeight + 'px';
+		
+		this.settings.parentContext.appendChild( this.context );
 	}
 
 	initPlugin()

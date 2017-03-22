@@ -10,6 +10,7 @@ export default class Terminal {
 		this.settings 				= params;
 		this.context 				= document.createElement('div');
 		this.context.className 		= 'terminal';
+
 		this.context.style.height	= this.settings.parentContext.clientHeight + 'px';
 		this.context.innerHTML 		= '>';
 
@@ -28,6 +29,19 @@ export default class Terminal {
 	{
 		if (this.plugin)
 			this.plugin.getPlugin().destroy();
+	}
+
+	detach()
+	{
+		console.log(' detach ', this);
+	}
+
+	reattach( parentNode )
+	{
+		this.settings.parentContext = parentNode;
+		this.context.style.height	= this.settings.parentContext.clientHeight + 'px';
+		
+		this.settings.parentContext.appendChild( this.context );
 	}
 
 	initPlugin()
