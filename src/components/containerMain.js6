@@ -6,7 +6,7 @@ import MenuPanel 	from './menuPanel';
 
 let terminalList = [], Root, table, context, termTableWrap;
 
-let Table = (function()
+let TerminalCellMatrix = (function()
 {
 	let context;
 
@@ -37,7 +37,7 @@ let Table = (function()
 	function _draw( rowIndex, cellIndex )
 	{
 		context.classList = ( ' t-matrix-w-' + cellIndex );
-		context.innerHTML = '';
+		// context.innerHTML = '';
 
 		let row, cells = [];
 
@@ -59,10 +59,16 @@ let Table = (function()
 		return context;
 	}
 
+	function _clear()
+	{
+		context.innerHTML = '';
+	}
+
 	constructor();
 
 	return {
 		draw 		: _draw,
+		clear 		: _clear,
 		getContext 	: _getContext
 	}
 }());
@@ -106,7 +112,7 @@ export default class Container {
 		});
 
 		leftSide.appendChild( ActionsMenu.getContext() );
-		leftSide.appendChild( Table.getContext() );
+		leftSide.appendChild( TerminalCellMatrix.getContext() );
 
 		return leftSide;
 	}
@@ -138,6 +144,7 @@ export default class Container {
 			instance.destroy();
 		});
 
+		TerminalCellMatrix.clear();
 		terminalList = [];
 	}
 
@@ -145,12 +152,17 @@ export default class Container {
 	{
 		Container.clearPrev();
 
-		let cells = Table.draw(rowIndex, cellIndex);
+		// console.log( terminalList );
+		// console.log( rowIndex, cellIndex  );
+
+		let cells = TerminalCellMatrix.draw(rowIndex, cellIndex);
 		cells.map( Container.createTerminal );
 	}
 
 	static createTerminal( cell, index )
 	{
+		// console.log( index );
+
 		let terminal = new Terminal({
 			name 			: index,
 			parentContext	: cell

@@ -18999,7 +18999,7 @@ class ActionsMenu {
 
 let terminalList = [], Root, table, context, termTableWrap;
 
-let Table = (function()
+let TerminalCellMatrix = (function()
 {
 	let context;
 
@@ -19030,7 +19030,7 @@ let Table = (function()
 	function _draw( rowIndex, cellIndex )
 	{
 		context.classList = ( ' t-matrix-w-' + cellIndex );
-		context.innerHTML = '';
+		// context.innerHTML = '';
 
 		let row, cells = [];
 
@@ -19052,10 +19052,16 @@ let Table = (function()
 		return context;
 	}
 
+	function _clear()
+	{
+		context.innerHTML = '';
+	}
+
 	constructor();
 
 	return {
 		draw 		: _draw,
+		clear 		: _clear,
 		getContext 	: _getContext
 	}
 }());
@@ -19099,7 +19105,7 @@ class Container {
 		});
 
 		leftSide.appendChild( __WEBPACK_IMPORTED_MODULE_1__actionsMenu__["a" /* default */].getContext() );
-		leftSide.appendChild( Table.getContext() );
+		leftSide.appendChild( TerminalCellMatrix.getContext() );
 
 		return leftSide;
 	}
@@ -19131,6 +19137,7 @@ class Container {
 			instance.destroy();
 		});
 
+		TerminalCellMatrix.clear();
 		terminalList = [];
 	}
 
@@ -19138,12 +19145,17 @@ class Container {
 	{
 		Container.clearPrev();
 
-		let cells = Table.draw(rowIndex, cellIndex);
+		// console.log( terminalList );
+		// console.log( rowIndex, cellIndex  );
+
+		let cells = TerminalCellMatrix.draw(rowIndex, cellIndex);
 		cells.map( Container.createTerminal );
 	}
 
 	static createTerminal( cell, index )
 	{
+		// console.log( index );
+
 		let terminal = new __WEBPACK_IMPORTED_MODULE_0__terminal__["a" /* default */]({
 			name 			: index,
 			parentContext	: cell
@@ -19561,16 +19573,11 @@ class Terminal {
 		this.context.innerHTML 		= '>';
 
 		this.context.addEventListener('click', () => {
-
-			console.log('2 click click click click ');
-			
-
 			if (!this.plugin)
 			{
 				this.context.innerHTML = '';
 				this.plugin = new __WEBPACK_IMPORTED_MODULE_0__middleware_terminal__["a" /* default */]( this.context, this.settings['name'] );
 			}
-
 		});
 
 		this.settings.parentContext.appendChild( this.context );
@@ -19967,14 +19974,11 @@ class Session
 	
 	start()
 	{
-		// console.log('start');
-
 		__WEBPACK_IMPORTED_MODULE_1__helpers_requests__["a" /* default */].runSyncCommand('startSession',  {
 			timeFormat	: __WEBPACK_IMPORTED_MODULE_0__constants__["c" /* TIME_FORMAT */],
 			account		: __WEBPACK_IMPORTED_MODULE_0__constants__["d" /* ACCOUNT */]
 		})
 			.then( function( response ) {
-				// console.log( response );
 				// sessionToken = response['data']['sessionToken'];
 				return response['data'];
 			})
@@ -19985,12 +19989,11 @@ class Session
 
 	run( params )
 	{
-		// console.log( this.settings  );
-
 		return __WEBPACK_IMPORTED_MODULE_1__helpers_requests__["a" /* default */].runSyncCommand('runCommand', {
 			sessionToken	: this.settings['sessionToken'],
+			sessionIndex	: 1,
 			command			: params['cmd'],
-			terminalIndex	: this.settings['terminalIndex']
+			terminalIndex	: parseInt( this.settings['terminalIndex']) + 1
 		});
 	}
 
