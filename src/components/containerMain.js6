@@ -156,7 +156,7 @@ export default class Container {
 
 	static render( params )
 	{
-		console.log('render222@@@', params );
+		// console.log('render222@@@', params );
 
 		let { rows : rowIndex , cells: cellIndex} = params.matrix;
 

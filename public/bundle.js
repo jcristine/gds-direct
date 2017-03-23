@@ -806,7 +806,7 @@ window.TerminalState = {
 		switch (action)
 		{
 			case 'CHANGE_GDS':
-				// this.state.matrix 	= this.sessions[ sIndex ].matrix || { rows : 1, cells : 1 };
+				this.state.matrix 	= this.sessions[ sIndex ].matrix || { rows : 1, cells : 1 };
 			break;
 
 			case 'CHANGE_SESSION' :
@@ -8979,7 +8979,7 @@ class Container {
 
 	static render( params )
 	{
-		console.log('render222@@@', params );
+		// console.log('render222@@@', params );
 
 		let { rows : rowIndex , cells: cellIndex} = params.matrix;
 
@@ -9180,7 +9180,6 @@ class MenuPanel
 	static activeSession()
 	{
 		let state = window.TerminalState.state;
-		console.log( state );
 
 		let apollo = new __WEBPACK_IMPORTED_MODULE_2__menu_sessionButtons__["a" /* default */]({
 			gds 		: 'apollo',
