@@ -29,7 +29,7 @@ export default class Session
 	{
 		return Requests.runSyncCommand('runCommand', {
 			sessionToken	: this.settings['sessionToken'],
-			sessionIndex	: 1,
+			sessionIndex	: parseInt(this.settings['sessionIndex']) + 1,
 			command			: params['cmd'],
 			terminalIndex	: parseInt( this.settings['terminalIndex']) + 1,
 			provider		: 'apollo'

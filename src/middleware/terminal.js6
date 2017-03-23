@@ -10,15 +10,16 @@ import Session from '../modules/sabreSession';
 
 export default class TerminalPlugin
 {
-	constructor( context, name )
+	constructor( params )
 	{
-		this.context	= context;
-		this.name		= name;
+		this.context	= params.context;
+		this.name		= params.name;
 		this.terminal 	= null;
 		this.outputCache = [];
 
 		this.session = new Session({
-			terminalIndex	: name
+			terminalIndex	: params.name,
+			sessionIndex	: params.sessionIndex
 		});
 
 		this.init();

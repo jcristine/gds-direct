@@ -19201,6 +19201,7 @@ class Container {
 				{
 					let terminal = new __WEBPACK_IMPORTED_MODULE_0__terminal__["a" /* default */]({
 						name 			: index,
+						sessionIndex	: params.sessionIndex,
 						parentContext	: cell
 					});
 
@@ -19641,7 +19642,12 @@ class Terminal {
 			if (!this.plugin)
 			{
 				this.context.innerHTML = '';
-				this.plugin = new __WEBPACK_IMPORTED_MODULE_0__middleware_terminal__["a" /* default */]( this.context, this.settings['name'] );
+
+				this.plugin = new __WEBPACK_IMPORTED_MODULE_0__middleware_terminal__["a" /* default */]({
+					context 		: this.context,
+					name 			: this.settings['name'],
+					sessionIndex 	: this.settings['sessionIndex']
+				});
 			}
 		});
 
@@ -19888,15 +19894,16 @@ let Helpers				= __webpack_require__(17);
 
 class TerminalPlugin
 {
-	constructor( context, name )
+	constructor( params )
 	{
-		this.context	= context;
-		this.name		= name;
+		this.context	= params.context;
+		this.name		= params.name;
 		this.terminal 	= null;
 		this.outputCache = [];
 
 		this.session = new __WEBPACK_IMPORTED_MODULE_0__modules_sabreSession__["a" /* default */]({
-			terminalIndex	: name
+			terminalIndex	: params.name,
+			sessionIndex	: params.sessionIndex
 		});
 
 		this.init();
@@ -20080,7 +20087,7 @@ class Session
 	{
 		return __WEBPACK_IMPORTED_MODULE_1__helpers_requests__["a" /* default */].runSyncCommand('runCommand', {
 			sessionToken	: this.settings['sessionToken'],
-			sessionIndex	: 1,
+			sessionIndex	: parseInt(this.settings['sessionIndex']) + 1,
 			command			: params['cmd'],
 			terminalIndex	: parseInt( this.settings['terminalIndex']) + 1,
 			provider		: 'apollo'

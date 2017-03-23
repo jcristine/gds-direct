@@ -20,7 +20,12 @@ export default class Terminal {
 			if (!this.plugin)
 			{
 				this.context.innerHTML = '';
-				this.plugin = new TerminalPlugin( this.context, this.settings['name'] );
+
+				this.plugin = new TerminalPlugin({
+					context 		: this.context,
+					name 			: this.settings['name'],
+					sessionIndex 	: this.settings['sessionIndex']
+				});
 			}
 		});
 

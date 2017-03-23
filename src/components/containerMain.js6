@@ -177,6 +177,7 @@ export default class Container {
 				{
 					let terminal = new Terminal({
 						name 			: index,
+						sessionIndex	: params.sessionIndex,
 						parentContext	: cell
 					});
 
