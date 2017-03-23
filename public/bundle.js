@@ -11018,7 +11018,8 @@ window.TerminalState = {
 		// console.log( this.state , 'paaaa');
 
 		this.state = Object.assign( this.state, params );
-		__WEBPACK_IMPORTED_MODULE_0__components_containerMain__["a" /* default */].render( this.state.matrix );
+
+		__WEBPACK_IMPORTED_MODULE_0__components_containerMain__["a" /* default */].render( this.state );
 
 		// console.log( this.state );
 	}
@@ -19027,6 +19028,8 @@ class ActionsMenu {
 
 
 
+let inSession = [];
+
 let terminalList = [], Root, table, context, termTableWrap;
 
 let TerminalCellMatrix = (function()
@@ -19060,7 +19063,6 @@ let TerminalCellMatrix = (function()
 	function _draw( rowIndex, cellIndex )
 	{
 		context.classList = ( ' t-matrix-w-' + cellIndex );
-		// context.innerHTML = '';
 
 		let row, cells = [];
 
@@ -19090,13 +19092,25 @@ let TerminalCellMatrix = (function()
 	constructor();
 
 	return {
-		draw 		: _draw,
+		getCells	: _draw,
 		clear 		: _clear,
 		getContext 	: _getContext
 	}
 }());
 
 class Container {
+
+	static init( rootId )
+	{
+		Root = Root || document.getElementById( rootId );
+
+		this.createContext();
+		this.createHeader();
+		this.createWrapper();
+
+		Root.appendChild( context );
+		this.attachTerminals();
+	}
 
 	static createContext()
 	{
@@ -19149,27 +19163,9 @@ class Container {
 		return rightSide;
 	}
 
-	static init( rootId )
-	{
-		Root = Root || document.getElementById( rootId );
-
-		this.createContext();
-		this.createHeader();
-		this.createWrapper();
-
-		Root.appendChild( context );
-		this.attachTerminals();
-	}
-
 	static clearPrev()
 	{
-		// terminalList.map( function ( instance ) {
-			// console.log( instance )
-			// instance.detach();
-		// });
-
 		TerminalCellMatrix.clear();
-		// terminalList = [];
 	}
 
 	static attachTerminals( rowIndex = 0, cellIndex = 0 )
@@ -19178,39 +19174,42 @@ class Container {
 			matrix : {
 				rows 	: rowIndex,
 				cells	: cellIndex
-			}
+			},
+
+			sessionIndex : 0
 		});
 	}
 
 	static render( params )
 	{
+		let { rows : rowIndex , cells: cellIndex} = params.matrix;
+
 		Container.clearPrev();
 
-		let rowIndex = params.rows, cellIndex = params.cells;
+		terminalList = inSession[ params.sessionIndex ] || [];
 
-		let cells = TerminalCellMatrix.draw(rowIndex, cellIndex);
-		cells.map( Container.createTerminal );
-	}
+		TerminalCellMatrix
+			.getCells(rowIndex, cellIndex)
+			// .map( Container.createTerminal );
 
-	static createTerminal( cell, index )
-	{
-		if ( terminalList[index] )
-		{
-			terminalList[index].reattach( cell );
-		} else
-		{
-			let terminal = new __WEBPACK_IMPORTED_MODULE_0__terminal__["a" /* default */]({
-				name 			: index,
-				parentContext	: cell
+			.map( ( cell, index ) => {
+
+				if ( terminalList[index] )
+				{
+					terminalList[index].reattach( cell );
+				} else
+				{
+					let terminal = new __WEBPACK_IMPORTED_MODULE_0__terminal__["a" /* default */]({
+						name 			: index,
+						parentContext	: cell
+					});
+
+					terminalList.push( terminal );
+				}
+
 			});
 
-			terminalList.push( terminal );
-		}
-	}
-
-	static changeSession( params )
-	{
-		console.log(' change session ', params )
+		inSession[ params.sessionIndex ] = terminalList;
 	}
 }
 /* harmony export (immutable) */ exports["a"] = Container;
@@ -20083,7 +20082,8 @@ class Session
 			sessionToken	: this.settings['sessionToken'],
 			sessionIndex	: 1,
 			command			: params['cmd'],
-			terminalIndex	: parseInt( this.settings['terminalIndex']) + 1
+			terminalIndex	: parseInt( this.settings['terminalIndex']) + 1,
+			provider		: 'apollo'
 		});
 	}
 

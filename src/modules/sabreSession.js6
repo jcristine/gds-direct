@@ -31,7 +31,8 @@ export default class Session
 			sessionToken	: this.settings['sessionToken'],
 			sessionIndex	: 1,
 			command			: params['cmd'],
-			terminalIndex	: parseInt( this.settings['terminalIndex']) + 1
+			terminalIndex	: parseInt( this.settings['terminalIndex']) + 1,
+			provider		: 'apollo'
 		});
 	}
 

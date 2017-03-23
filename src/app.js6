@@ -39,7 +39,8 @@ window.TerminalState = {
 		// console.log( this.state , 'paaaa');
 
 		this.state = Object.assign( this.state, params );
-		Container.render( this.state.matrix );
+
+		Container.render( this.state );
 
 		// console.log( this.state );
 	}
