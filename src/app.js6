@@ -9,42 +9,57 @@ const Context = {
 	{
 		let rootId = apiData['htmlRootId'] || 'rootTerminal';
 		Container.init( rootId );
-
-		//if (apiData.styleSheets)
-		//	require( '../../sabre/public/main.css' );
-		//Container.attachTerminals();
-	},
-
-	changeSession( params )
-	{
-
 	}
 };
 
 window.TerminalState = {
 
-	state			: {},
+	state			: {
+
+		gds 			: 'apollo',
+
+		sessionIndex	: 0,
+
+		matrix			: {
+			rows 	: 1,
+			cells 	: 1
+		},
+
+		fontSize	: 1,
+		language	: 'apollo',
+	},
+
+	sessions		: {},
 
 	currentSession	: null,
 
-	changeSession 	: function ( params )
+	change( params, action )
 	{
-		this.currentSession = params;
-		Container.changeSession( params )
-	},
-
-	change		: function ( params )
-	{
-		// console.log( params , 'paaaa');
-		// console.log( this.state , 'paaaa');
-
 		this.state = Object.assign( this.state, params );
 
-		Container.render( this.state );
+		// console.log( 'wtg2', params );
+		// console.log( 'sessions223:', this.sessions );
+		// Actions( action, params );
 
-		// console.log( this.state );
+		let sIndex 				= ( this.state['sessionIndex'] || 0 ) + '-' + this.state.gds;
+		this.sessions[ sIndex ] = this.sessions[ sIndex ] || {};
+
+		switch (action)
+		{
+			case 'CHANGE_SESSION':
+				this.state.matrix 	= this.sessions[ sIndex ].matrix || { rows : 1, cells : 1 };
+			break;
+
+			case 'CHANGE_MATRIX' :
+				this.sessions[ sIndex ].matrix = this.state.matrix;
+			break;
+
+			// default:
+			// return;
+		}
+
+		Container.render( this.state );
 	}
 };
-
 
 Context.init();

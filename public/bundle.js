@@ -10988,43 +10988,58 @@ const Context = {
 	{
 		let rootId = apiData['htmlRootId'] || 'rootTerminal';
 		__WEBPACK_IMPORTED_MODULE_0__components_containerMain__["a" /* default */].init( rootId );
-
-		//if (apiData.styleSheets)
-		//	require( '../../sabre/public/main.css' );
-		//Container.attachTerminals();
-	},
-
-	changeSession( params )
-	{
-
 	}
 };
 
 window.TerminalState = {
 
-	state			: {},
+	state			: {
+
+		gds 			: 'apollo',
+
+		sessionIndex	: 0,
+
+		matrix			: {
+			rows 	: 1,
+			cells 	: 1
+		},
+
+		fontSize	: 1,
+		language	: 'apollo',
+	},
+
+	sessions		: {},
 
 	currentSession	: null,
 
-	changeSession 	: function ( params )
+	change( params, action )
 	{
-		this.currentSession = params;
-		__WEBPACK_IMPORTED_MODULE_0__components_containerMain__["a" /* default */].changeSession( params )
-	},
-
-	change		: function ( params )
-	{
-		// console.log( params , 'paaaa');
-		// console.log( this.state , 'paaaa');
-
 		this.state = Object.assign( this.state, params );
 
-		__WEBPACK_IMPORTED_MODULE_0__components_containerMain__["a" /* default */].render( this.state );
+		// console.log( 'wtg2', params );
+		// console.log( 'sessions223:', this.sessions );
+		// Actions( action, params );
 
-		// console.log( this.state );
+		let sIndex 				= ( this.state['sessionIndex'] || 0 ) + '-' + this.state.gds;
+		this.sessions[ sIndex ] = this.sessions[ sIndex ] || {};
+
+		switch (action)
+		{
+			case 'CHANGE_SESSION':
+				this.state.matrix 	= this.sessions[ sIndex ].matrix || { rows : 1, cells : 1 };
+			break;
+
+			case 'CHANGE_MATRIX' :
+				this.sessions[ sIndex ].matrix = this.state.matrix;
+			break;
+
+			// default:
+			// return;
+		}
+
+		__WEBPACK_IMPORTED_MODULE_0__components_containerMain__["a" /* default */].render( this.state );
 	}
 };
-
 
 Context.init();
 
@@ -19168,30 +19183,32 @@ class Container {
 		TerminalCellMatrix.clear();
 	}
 
-	static attachTerminals( rowIndex = 0, cellIndex = 0 )
+	static attachTerminals( rowIndex = 1, cellIndex = 1 )
 	{
 		window.TerminalState.change({
 			matrix : {
 				rows 	: rowIndex,
 				cells	: cellIndex
-			},
+			}
+		}, 'CHANGE_MATRIX');
 
-			sessionIndex : 0
-		});
+		// window.TerminalState.change({})
 	}
 
 	static render( params )
 	{
+		console.log('render222@@@', params );
+
 		let { rows : rowIndex , cells: cellIndex} = params.matrix;
 
 		Container.clearPrev();
 
-		terminalList = inSession[ params.sessionIndex ] || [];
+		let sessionKey = params['sessionIndex'] + params['gds'];
+
+		terminalList = inSession[ sessionKey ] || [];
 
 		TerminalCellMatrix
 			.getCells(rowIndex, cellIndex)
-			// .map( Container.createTerminal );
-
 			.map( ( cell, index ) => {
 
 				if ( terminalList[index] )
@@ -19202,15 +19219,16 @@ class Container {
 					let terminal = new __WEBPACK_IMPORTED_MODULE_0__terminal__["a" /* default */]({
 						name 			: index,
 						sessionIndex	: params.sessionIndex,
+						gds				: params.gds,
+						// language		: params.language,
 						parentContext	: cell
 					});
 
 					terminalList.push( terminal );
 				}
-
 			});
 
-		inSession[ params.sessionIndex ] = terminalList;
+		inSession[ sessionKey ] = terminalList;
 	}
 }
 /* harmony export (immutable) */ exports["a"] = Container;
@@ -19243,6 +19261,54 @@ function createBtn()
 	btn.className 	= 'btn btn-primary';
 
 	return btn;
+}
+
+class SessionKeys
+{
+	constructor( params )
+	{
+		this.context = document.createElement('div');
+		this.settings = params;
+	}
+
+	makeButtons(value, index)
+	{
+		let button 			= document.createElement('button');
+		button.className	= 'btn btn-sm btn-purple font-bold';
+		button.innerHTML	= value;
+
+		button.addEventListener('click', () => {
+			// active.classList.remove('active');
+			// button.classList.toggle('active');
+			// active = button;
+
+			window.TerminalState.change({
+				sessionIndex 	: index,
+				gds				: this.settings.gds
+			}, 'CHANGE_SESSION');
+
+		});
+
+		this.context.appendChild( button );
+		return button;
+	}
+
+	makeTitle()
+	{
+		let title 		= document.createElement('div');
+		title.className	= 'font-bold text-center';
+		title.innerHTML = this.settings['gds'];
+
+		this.context.appendChild( title );
+	}
+
+	render()
+	{
+		this.makeTitle();
+
+		['A', 'B', 'C'].map( this.makeButtons.bind( this ) );
+		return this.context;
+	}
 }
 
 class MenuPanel
@@ -19309,10 +19375,19 @@ class MenuPanel
 
 	static activeSession()
 	{
+		let apollo = new SessionKeys({
+			gds : 'apollo'
+		});
+
+		let sabre = new SessionKeys({
+			gds : 'sabre'
+		});
+
 		let context 		= document.createElement('article');
+
 		context.innerHTML 	= '<div class="label">Change Active Session</div>';
 
-		let btnGroup		= document.createElement('div');
+		/*let btnGroup		= document.createElement('div');
 		btnGroup.className 	= 'buttons';
 
 		let active;
@@ -19340,11 +19415,16 @@ class MenuPanel
 		active = buttons[0];
 		active.className += ' active';
 
-		context.appendChild(btnGroup);
+		context.appendChild(btnGroup);*/
+
+		context.appendChild( apollo.render() );
+		context.appendChild( sabre.render() );
+		// console.log('?')
+
 		return context;
 	}
 
-	static PccLanguage()
+	static InputLanguage()
 	{
 		let context 		= document.createElement('article');
 		context.innerHTML 	= '<div class="label">Switch Language</div>';
@@ -19391,7 +19471,7 @@ class MenuPanel
 	{
 		context.appendChild( this.settingsButtons() );
 		context.appendChild( this.activeSession() );
-		context.appendChild( this.PccLanguage() );
+		context.appendChild( this.InputLanguage() );
 	}
 
 	static render( parent )
@@ -19585,17 +19665,16 @@ class History
 			button.innerHTML 	= value + 'x';
 
 			button.addEventListener('click', () => {
+				popContext.close();
 
 				let body = document.querySelector('body');
 
 				if ( this.activeClass )
 					body.classList.toggle( this.activeClass );
-					// this.settings.parent.classList.toggle( this.activeClass );
 
 				this.activeClass = CLASS_NAME + value;
 
 				body.classList.toggle( this.activeClass );
-				// this.settings.parent.classList.toggle( this.activeClass );
 
 				window.TerminalState.change({
 					fontSize : value
@@ -19646,7 +19725,9 @@ class Terminal {
 				this.plugin = new __WEBPACK_IMPORTED_MODULE_0__middleware_terminal__["a" /* default */]({
 					context 		: this.context,
 					name 			: this.settings['name'],
-					sessionIndex 	: this.settings['sessionIndex']
+					sessionIndex 	: this.settings['sessionIndex'],
+					gds 			: this.settings['gds'],
+					// language 		: this.settings['language']
 				});
 			}
 		});
@@ -19676,24 +19757,6 @@ class Terminal {
 
 		if (this.plugin)
 			this.plugin.getPlugin().resize();
-	}
-
-	initPlugin()
-	{
-		// console.log( this );
-		// this.plugin = new TerminalPlugin( this.context, this.settings['name'] );
-		// this.context.removeEventListener('click', this.initPlugin);
-	}
-
-	create()
-	{
-		// this.plugin = new TerminalPlugin( this.context, this.settings['name'] );
-	}
-	
-	focus()
-	{
-		//console.log(' focus focus ', this.params)
-		//this.plugin.getWindow().focus();
 	}
 }
 /* harmony export (immutable) */ exports["a"] = Terminal;
@@ -19903,7 +19966,9 @@ class TerminalPlugin
 
 		this.session = new __WEBPACK_IMPORTED_MODULE_0__modules_sabreSession__["a" /* default */]({
 			terminalIndex	: params.name,
-			sessionIndex	: params.sessionIndex
+			sessionIndex	: params.sessionIndex,
+			gds				: params.gds,
+			// language		: params.language,
 		});
 
 		this.init();
@@ -20086,11 +20151,12 @@ class Session
 	run( params )
 	{
 		return __WEBPACK_IMPORTED_MODULE_1__helpers_requests__["a" /* default */].runSyncCommand('runCommand', {
-			sessionToken	: this.settings['sessionToken'],
+			// sessionToken	: this.settings['sessionToken'],
 			sessionIndex	: parseInt(this.settings['sessionIndex']) + 1,
 			command			: params['cmd'],
 			terminalIndex	: parseInt( this.settings['terminalIndex']) + 1,
-			provider		: 'apollo'
+			gds				: this.settings['gds'],
+			language		: window.TerminalState.state.language,
 		});
 	}
 

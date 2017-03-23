@@ -33,17 +33,16 @@ class History
 			button.innerHTML 	= value + 'x';
 
 			button.addEventListener('click', () => {
+				popContext.close();
 
 				let body = document.querySelector('body');
 
 				if ( this.activeClass )
 					body.classList.toggle( this.activeClass );
-					// this.settings.parent.classList.toggle( this.activeClass );
 
 				this.activeClass = CLASS_NAME + value;
 
 				body.classList.toggle( this.activeClass );
-				// this.settings.parent.classList.toggle( this.activeClass );
 
 				window.TerminalState.change({
 					fontSize : value

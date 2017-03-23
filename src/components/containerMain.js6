@@ -144,30 +144,32 @@ export default class Container {
 		TerminalCellMatrix.clear();
 	}
 
-	static attachTerminals( rowIndex = 0, cellIndex = 0 )
+	static attachTerminals( rowIndex = 1, cellIndex = 1 )
 	{
 		window.TerminalState.change({
 			matrix : {
 				rows 	: rowIndex,
 				cells	: cellIndex
-			},
+			}
+		}, 'CHANGE_MATRIX');
 
-			sessionIndex : 0
-		});
+		// window.TerminalState.change({})
 	}
 
 	static render( params )
 	{
+		console.log('render222@@@', params );
+
 		let { rows : rowIndex , cells: cellIndex} = params.matrix;
 
 		Container.clearPrev();
 
-		terminalList = inSession[ params.sessionIndex ] || [];
+		let sessionKey = params['sessionIndex'] + params['gds'];
+
+		terminalList = inSession[ sessionKey ] || [];
 
 		TerminalCellMatrix
 			.getCells(rowIndex, cellIndex)
-			// .map( Container.createTerminal );
-
 			.map( ( cell, index ) => {
 
 				if ( terminalList[index] )
@@ -178,14 +180,15 @@ export default class Container {
 					let terminal = new Terminal({
 						name 			: index,
 						sessionIndex	: params.sessionIndex,
+						gds				: params.gds,
+						// language		: params.language,
 						parentContext	: cell
 					});
 
 					terminalList.push( terminal );
 				}
-
 			});
 
-		inSession[ params.sessionIndex ] = terminalList;
+		inSession[ sessionKey ] = terminalList;
 	}
 }

@@ -19,6 +19,54 @@ function createBtn()
 	return btn;
 }
 
+class SessionKeys
+{
+	constructor( params )
+	{
+		this.context = document.createElement('div');
+		this.settings = params;
+	}
+
+	makeButtons(value, index)
+	{
+		let button 			= document.createElement('button');
+		button.className	= 'btn btn-sm btn-purple font-bold';
+		button.innerHTML	= value;
+
+		button.addEventListener('click', () => {
+			// active.classList.remove('active');
+			// button.classList.toggle('active');
+			// active = button;
+
+			window.TerminalState.change({
+				sessionIndex 	: index,
+				gds				: this.settings.gds
+			}, 'CHANGE_SESSION');
+
+		});
+
+		this.context.appendChild( button );
+		return button;
+	}
+
+	makeTitle()
+	{
+		let title 		= document.createElement('div');
+		title.className	= 'font-bold text-center';
+		title.innerHTML = this.settings['gds'];
+
+		this.context.appendChild( title );
+	}
+
+	render()
+	{
+		this.makeTitle();
+
+		['A', 'B', 'C'].map( this.makeButtons.bind( this ) );
+		return this.context;
+	}
+}
+
 export default class MenuPanel
 {
 	static toggle()
@@ -83,10 +131,19 @@ export default class MenuPanel
 
 	static activeSession()
 	{
+		let apollo = new SessionKeys({
+			gds : 'apollo'
+		});
+
+		let sabre = new SessionKeys({
+			gds : 'sabre'
+		});
+
 		let context 		= document.createElement('article');
+
 		context.innerHTML 	= '<div class="label">Change Active Session</div>';
 
-		let btnGroup		= document.createElement('div');
+		/*let btnGroup		= document.createElement('div');
 		btnGroup.className 	= 'buttons';
 
 		let active;
@@ -114,11 +171,16 @@ export default class MenuPanel
 		active = buttons[0];
 		active.className += ' active';
 
-		context.appendChild(btnGroup);
+		context.appendChild(btnGroup);*/
+
+		context.appendChild( apollo.render() );
+		context.appendChild( sabre.render() );
+		// console.log('?')
+
 		return context;
 	}
 
-	static PccLanguage()
+	static InputLanguage()
 	{
 		let context 		= document.createElement('article');
 		context.innerHTML 	= '<div class="label">Switch Language</div>';
@@ -165,7 +227,7 @@ export default class MenuPanel
 	{
 		context.appendChild( this.settingsButtons() );
 		context.appendChild( this.activeSession() );
-		context.appendChild( this.PccLanguage() );
+		context.appendChild( this.InputLanguage() );
 	}
 
 	static render( parent )

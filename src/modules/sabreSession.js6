@@ -28,11 +28,12 @@ export default class Session
 	run( params )
 	{
 		return Requests.runSyncCommand('runCommand', {
-			sessionToken	: this.settings['sessionToken'],
+			// sessionToken	: this.settings['sessionToken'],
 			sessionIndex	: parseInt(this.settings['sessionIndex']) + 1,
 			command			: params['cmd'],
 			terminalIndex	: parseInt( this.settings['terminalIndex']) + 1,
-			provider		: 'apollo'
+			gds				: this.settings['gds'],
+			language		: window.TerminalState.state.language,
 		});
 	}
 

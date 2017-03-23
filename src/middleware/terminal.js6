@@ -19,7 +19,9 @@ export default class TerminalPlugin
 
 		this.session = new Session({
 			terminalIndex	: params.name,
-			sessionIndex	: params.sessionIndex
+			sessionIndex	: params.sessionIndex,
+			gds				: params.gds,
+			// language		: params.language,
 		});
 
 		this.init();
