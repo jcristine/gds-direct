@@ -62,9 +62,9 @@ module.exports = {
 		}]
 	},
 
-	// externals: {
-	// 	jquery: 'jquery'
-	// },
+	externals: {
+		jquery: 'jQuery'
+	},
 
 	plugins: [
 		extractLess
