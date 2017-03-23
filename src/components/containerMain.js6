@@ -111,7 +111,7 @@ export default class Container {
 
 		context.appendChild( termTableWrap );
 
-		termTableWrap.appendChild(  this.createTableMatrix() );
+		termTableWrap.appendChild( this.createTableMatrix() );
 		termTableWrap.appendChild( this.createRightMenu() );
 	}
 
@@ -135,7 +135,7 @@ export default class Container {
 		let rightSide 		= document.createElement('aside');
 		rightSide.className = 't-d-cell menu';
 
-		rightSide.appendChild( MenuPanel.render( termTableWrap ) );
+		rightSide.appendChild( MenuPanel.render() );
 		return rightSide;
 	}
 
@@ -152,8 +152,6 @@ export default class Container {
 				cells	: cellIndex
 			}
 		}, 'CHANGE_MATRIX');
-
-		// window.TerminalState.change({})
 	}
 
 	static render( params )
@@ -167,6 +165,8 @@ export default class Container {
 		let sessionKey = params['sessionIndex'] + params['gds'];
 
 		terminalList = inSession[ sessionKey ] || [];
+
+		MenuPanel.render();
 
 		TerminalCellMatrix
 			.getCells(rowIndex, cellIndex)

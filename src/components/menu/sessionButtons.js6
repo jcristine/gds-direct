@@ -1,0 +1,69 @@
+'use strict';
+
+export default class SessionKeys
+{
+	constructor( params )
+	{
+		this.context = document.createElement('div');
+		this.settings = params;
+	}
+
+	makeButton(value, index)
+	{
+		let button 			= document.createElement('button');
+		button.className	= 'btn btn-sm btn-purple font-bold';
+		button.innerHTML	= value;
+
+		if (this.settings.session === index)
+		{
+			button.className += ' active';
+		}
+
+		if ( !this.settings.active )
+		{
+			button.className += ' hidden';
+		}
+
+		button.addEventListener('click', () => {
+			button.classList.toggle('active');
+
+			window.TerminalState.change({
+				sessionIndex 	: index,
+				gds				: this.settings.gds
+			}, 'CHANGE_SESSION');
+		});
+
+		return button;
+	}
+
+	getButtons()
+	{
+		return ['A', 'B', 'C'].map( this.makeButton.bind( this ) );
+	}
+
+	getTrigger()
+	{
+		let button 			= document.createElement('button');
+		button.className	= 'btn btn-sm btn-mint font-bold' + ( this.settings['active'] ? ' active' : '' );
+		button.innerHTML	= this.settings['gds'];
+
+		button.addEventListener('click', () => {
+			window.TerminalState.change({
+				gds				: this.settings.gds
+			}, 'CHANGE_GDS');
+		});
+
+		return button;
+	}
+
+	render()
+	{
+		this.context.appendChild( this.getTrigger() );
+
+		this.getButtons().map( ( button ) => {
+			this.context.appendChild( button );
+		});
+
+		return this.context;
+	}
+}

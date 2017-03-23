@@ -1012,6 +1012,18 @@ fieldset[disabled] #rootTerminal .btn-warning.active {
   width: 100%;
   height: 100%;
 }
+.terminal-wrap-custom .active:before {
+  content: "\F00C";
+  font: normal normal normal 11px/1 FontAwesome;
+  position: absolute;
+  top: 8px;
+  left: 7px;
+  font-size: 9px;
+  z-index: 3;
+}
+.terminal-wrap-custom .btn.active {
+  position: relative;
+}
 .terminal-wrap-custom > .term-header {
   font-family: "Lucida Grande", sans-serif;
   font-size: 12px;

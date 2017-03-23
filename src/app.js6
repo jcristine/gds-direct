@@ -46,7 +46,11 @@ window.TerminalState = {
 
 		switch (action)
 		{
-			case 'CHANGE_SESSION':
+			case 'CHANGE_GDS':
+				// this.state.matrix 	= this.sessions[ sIndex ].matrix || { rows : 1, cells : 1 };
+			break;
+
+			case 'CHANGE_SESSION' :
 				this.state.matrix 	= this.sessions[ sIndex ].matrix || { rows : 1, cells : 1 };
 			break;
 
