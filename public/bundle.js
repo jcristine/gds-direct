@@ -61,7 +61,7 @@
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 22);
+/******/ 	return __webpack_require__(__webpack_require__.s = 23);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -9476,7 +9476,7 @@ class TextSize
 /***/ function(module, exports, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__middleware_terminal__ = __webpack_require__(20);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__middleware_terminal__ = __webpack_require__(21);
 'use strict';
 
 
@@ -9620,374 +9620,6 @@ module.exports = {
 
 /***/ },
 /* 19 */
-/***/ function(module, exports, __webpack_require__) {
-
-"use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__constants__ = __webpack_require__(2);
-'use strict';
-
-let $ = __webpack_require__(3);
-
-
-
-
-function get( url, params )
-{
-	if (!url )
-		return '';
-
-	return fetch(__WEBPACK_IMPORTED_MODULE_0__constants__["a" /* API_HOST */] + url, {
-		credentials: 'include'
-	}).then( function(  response ) {
-		return response.json();
-	})
-}
-
-
-function runSyncCommand( functionName, params )
-{
-	let url 	= __WEBPACK_IMPORTED_MODULE_0__constants__["b" /* END_POINT_URL */];
-
-	let data 	= {
-		'function'	: functionName,
-		'params'	: params
-	};
-
-	// body: JSON.stringify({
-	// 	email: document.getElementById('email').value
-	// 	answer: document.getElementById('answer').value
-	// })
-
-	let get = JSON.stringify(data, true);
-
-	url += '&data=' + get + '&function=' + functionName;
-
-	return fetch(__WEBPACK_IMPORTED_MODULE_0__constants__["a" /* API_HOST */] + url, {
-
-		credentials: 'include'
-
-		// method		: 'POST',
-		// redirect	: 'follow'
-		// ,
-
-		// headers: new Headers({
-		// 	'Content-Type': 'application/json'
-		// })
-
-		// {method: "post", headers: {"content-type": "application/x-www-form-urlencoded"}
-
-	}).then( function( response ) {
-		return response.json();
-	})
-}
-
-function runSyncCommand2( functionName, params )
-{
-	let url 	= __WEBPACK_IMPORTED_MODULE_0__constants__["b" /* END_POINT_URL */];
-
-	let data 	= {
-		'function'	: functionName,
-		'params'	: params
-	};
-
-	console.log('???', url + '&function='+ functionName);
-
-	//
-	// get( END_POINT_URL ).then(function(response) {
-	// 	console.log("Success!", response);
-	// }, function(error) {
-	// 	console.error("Failed!", error);
-	// });
-
-	return $.ajax({
-		type			: 'POST',
-		url				: url + '&function='+ functionName,
-
-		// crossDomain		: true,
-		// async			: false,
-		// dataType		: 'json',
-		//
-		// headers			: {
-		// 	'X-Requested-With': 'XMLHttpRequest'
-		// },
-		//
-
-		data			: {
-			data: JSON.stringify(data, true)
-		},
-
-		complete			: function(responseData, textStatus, jqXHR)
-		{
-			console.log(' completed ');
-			// result = responseData;
-		},
-
-		fail			: function (responseData, textStatus, errorThrown)
-		{
-			console.log(' fail ;');
-			console.log(responseData);
-			console.log(responseData.responseText);
-			alert('POST failed.');
-		}
-	});
-}
-
-/* harmony default export */ exports["a"] = {
-	runSyncCommand	: runSyncCommand,
-	get 			: get
-};
-
-// module.exports = Actions;
-
-/***/ },
-/* 20 */
-/***/ function(module, exports, __webpack_require__) {
-
-"use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__modules_sabreSession__ = __webpack_require__(21);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__helpers_keyBinding__ = __webpack_require__(31);
-'use strict';
-
-let $					= __webpack_require__(3);
-window.$ 				= window.jQuery = $;
-
-let jqTerminal 			= __webpack_require__(6);
-let Helpers				= __webpack_require__(18);
-
-
-
-
-class TerminalPlugin
-{
-	constructor( params )
-	{
-		this.context	= params.context;
-		this.name		= params.name;
-		this.terminal 	= null;
-		this.outputCache = [];
-
-		this.session = new __WEBPACK_IMPORTED_MODULE_0__modules_sabreSession__["a" /* default */]({
-			terminalIndex	: params.name,
-			sessionIndex	: params.sessionIndex,
-			gds				: params.gds,
-			// language		: params.language,
-		});
-
-		this.init();
-	}
-
-	getPlugin()
-	{
-		return this.terminal;
-	}
-
-	static parseInput( evt, terminal )
-	{
-		if ( !terminal.enabled() ) // key press fires globally on all terminals;
-			return false;
-
-		if (evt.which === 13)
-			return false;
-
-		if (evt.which && !evt.ctrlKey)
-		{
-			let ch = Helpers.substitutePrintableChar( String.fromCharCode( evt.which ) );
-
-			if (ch)
-			{
-				terminal.insert(ch);
-				return false;
-			}
-		}
-	}
-
-	static parseKeyBinds( evt, terminal )
-	{
-		if ( !__WEBPACK_IMPORTED_MODULE_1__helpers_keyBinding__["a" /* default */].parse( evt, terminal ) )
-		{
-			return false;
-		}
-	}
-
-	// onInit( terminal )
-	// {
-	// 	console.log( 'ON INIT ' , this)
-		//SabreSession.startSession();
-		// let startSessionOutput = SabreSession.startSession();
-		//terminal.echo('>' + startSessionOutput['emulationCommand']);
-		//terminal.echo(startSessionOutput['emulationCommandOutput']);
-	// }
-
-	init()
-	{
-		this.terminal = $(this.context).terminal( this.commandParser.bind(this), {
-			greetings	: '',
-			// name		: `sabre_terminal_${this.name}`,
-
-			name		: this.name,
-			prompt		: '>',
-			//enabled		: false,
-			keypress	: TerminalPlugin.parseInput,
-			keydown		: TerminalPlugin.parseKeyBinds
-			// numChars	: false
-
-			// wrap		: false,
-			// outputLimit : 3
-
-			// onInit		: this.onInit
-			//,
-			//
-			//onTerminalChange	: function () {
-			//	console.log(' terminal change 1')
-			//},
-			//
-			//exceptionHandler	 : function () {
-			//	console.log('exc', arguments)
-			//}
-		});
-	}
-
-	commandParser( command, terminal )
-	{
-		// console.log( terminal.rows() );
-		// console.log( terminal.cols() );
-
-		if ( !command || command === '' )
-		{
-			// terminal.echo('');
-			return false;
-		}
-
-		if ( command === 'MD' )
-		{
-			terminal.echo( this.outputCache.length > 0 ?  this.outputCache.shift() : '‡NOTHING TO SCROLL‡' );
-			return false;
-		}
-
-		if ( command === 'MU' )
-		{
-			terminal.echo( this.outputCache.length > 0 ?  this.outputCache.shift() : '‡NOTHING TO SCROLL‡' );
-			return false;
-		}
-
-		terminal.pause();
-
-		this.session
-			.run({
-				cmd : command
-			})
-			.then( this.parseBackEnd.bind(this) )
-			.then( function () {
-				terminal.resume();
-			})
-			.catch( this.parseError.bind(this) );
-	}
-
-	parseBackEnd( response = {} )
-	{
-		let result = response['data'];
-
-		if ( result['prompt'] )
-			this.terminal.set_prompt( result['prompt'] );
-
-		if ( result['clearScreen'] )
-			this.terminal.clear();
-
-		if ( result['output'] )
-		{
-			this.outputCache = Helpers.makeCachedParts( result['output'], this.terminal.rows() );
-			this.terminal.echo( this.outputCache.shift() );
-		}
-	}
-
-	parseError(e)
-	{
-		this.terminal.resume();
-		// alert(' something went wrong ');
-		console.error(' error', arguments );
-		this.terminal.error( String(e) );
-	}
-}
-/* harmony export (immutable) */ exports["a"] = TerminalPlugin;
-
-
-/***/ },
-/* 21 */
-/***/ function(module, exports, __webpack_require__) {
-
-"use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__constants__ = __webpack_require__(2);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__helpers_requests__ = __webpack_require__(19);
-'use strict';
-
-
-
-
-class Session
-{
-	constructor( params )
-	{
-		this.settings = params;
-	}
-	
-	start()
-	{
-		__WEBPACK_IMPORTED_MODULE_1__helpers_requests__["a" /* default */].runSyncCommand('startSession',  {
-			timeFormat	: __WEBPACK_IMPORTED_MODULE_0__constants__["c" /* TIME_FORMAT */],
-			account		: __WEBPACK_IMPORTED_MODULE_0__constants__["d" /* ACCOUNT */]
-		})
-			.then( function( response ) {
-				// sessionToken = response['data']['sessionToken'];
-				return response['data'];
-			})
-			.catch(function(err) {
-				console.error('oh shit Error', err);
-			});
-	}
-
-	run( params )
-	{
-		return __WEBPACK_IMPORTED_MODULE_1__helpers_requests__["a" /* default */].runSyncCommand('runCommand', {
-			// sessionToken	: this.settings['sessionToken'],
-			sessionIndex	: parseInt(this.settings['sessionIndex']) + 1,
-			command			: params['cmd'],
-			terminalIndex	: parseInt( this.settings['terminalIndex']) + 1,
-			gds				: this.settings['gds'],
-			language		: window.TerminalState.state.language,
-		});
-	}
-
-	end()
-	{
-		let result = __WEBPACK_IMPORTED_MODULE_1__helpers_requests__["a" /* default */].runSyncCommand('endSession', {
-			sessionToken: this.settings['sessionToken']
-		});
-
-		if (result['success'])
-			return true;
-	}
-}
-/* harmony export (immutable) */ exports["a"] = Session;
-
-
-/***/ },
-/* 22 */
-/***/ function(module, exports, __webpack_require__) {
-
-__webpack_require__(5);
-module.exports = __webpack_require__(4);
-
-
-/***/ },
-/* 23 */,
-/* 24 */,
-/* 25 */,
-/* 26 */,
-/* 27 */,
-/* 28 */,
-/* 29 */,
-/* 30 */,
-/* 31 */
 /***/ function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -10163,6 +9795,366 @@ class KeyBinding
 	}
 }
 /* harmony export (immutable) */ exports["a"] = KeyBinding;
+
+
+/***/ },
+/* 20 */
+/***/ function(module, exports, __webpack_require__) {
+
+"use strict";
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__constants__ = __webpack_require__(2);
+'use strict';
+
+let $ = __webpack_require__(3);
+
+
+
+
+function get( url, params )
+{
+	if (!url )
+		return '';
+
+	return fetch(__WEBPACK_IMPORTED_MODULE_0__constants__["a" /* API_HOST */] + url, {
+		credentials: 'include'
+	}).then( function(  response ) {
+		return response.json();
+	})
+}
+
+
+function runSyncCommand( functionName, params )
+{
+	let url 	= __WEBPACK_IMPORTED_MODULE_0__constants__["b" /* END_POINT_URL */];
+
+	let data 	= {
+		'function'	: functionName,
+		'params'	: params
+	};
+
+	// body: JSON.stringify({
+	// 	email: document.getElementById('email').value
+	// 	answer: document.getElementById('answer').value
+	// })
+
+	let get 		= JSON.stringify(data, true);
+
+	let formData 	= new FormData();
+	formData.append( "data", get );
+
+	url += '&function=' + functionName;
+	// url += '&data=' + get + '&function=' + functionName;
+
+	// let myHeaders = new Headers({
+	// 	"Content-Type": "application/x-www-form-urlencoded; charset=UTF-8"
+		// "Content-Length": content.length.toString(),
+		// "X-Custom-Header": "ProcessThisImmediately",
+	// });
+
+	return fetch(__WEBPACK_IMPORTED_MODULE_0__constants__["a" /* API_HOST */] + url, {
+		credentials	: 'include',
+		body		: formData,
+		method		: 'POST',
+	}).then( function( response ) {
+		return response.json();
+	})
+}
+
+function runSyncCommand2( functionName, params )
+{
+	let url 	= __WEBPACK_IMPORTED_MODULE_0__constants__["b" /* END_POINT_URL */];
+
+	let data 	= {
+		'function'	: functionName,
+		'params'	: params
+	};
+
+	console.log('???', url + '&function='+ functionName);
+
+	//
+	// get( END_POINT_URL ).then(function(response) {
+	// 	console.log("Success!", response);
+	// }, function(error) {
+	// 	console.error("Failed!", error);
+	// });
+
+	return $.ajax({
+		type			: 'POST',
+		url				: url + '&function='+ functionName,
+
+		// crossDomain		: true,
+		// async			: false,
+		// dataType		: 'json',
+		//
+		// headers			: {
+		// 	'X-Requested-With': 'XMLHttpRequest'
+		// },
+		//
+
+		data			: {
+			data: JSON.stringify(data, true)
+		},
+
+		complete			: function(responseData, textStatus, jqXHR)
+		{
+			console.log(' completed ');
+			// result = responseData;
+		},
+
+		fail			: function (responseData, textStatus, errorThrown)
+		{
+			console.log(' fail ;');
+			console.log(responseData);
+			console.log(responseData.responseText);
+			alert('POST failed.');
+		}
+	});
+}
+
+/* harmony default export */ exports["a"] = {
+	runSyncCommand	: runSyncCommand,
+	get 			: get
+};
+
+// module.exports = Actions;
+
+/***/ },
+/* 21 */
+/***/ function(module, exports, __webpack_require__) {
+
+"use strict";
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__modules_sabreSession__ = __webpack_require__(22);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__helpers_keyBinding__ = __webpack_require__(19);
+'use strict';
+
+let $					= __webpack_require__(3);
+window.$ 				= window.jQuery = $;
+
+let jqTerminal 			= __webpack_require__(6);
+let Helpers				= __webpack_require__(18);
+
+
+
+
+class TerminalPlugin
+{
+	constructor( params )
+	{
+		this.context	= params.context;
+		this.name		= params.name;
+		this.terminal 	= null;
+		this.outputCache = [];
+
+		this.session = new __WEBPACK_IMPORTED_MODULE_0__modules_sabreSession__["a" /* default */]({
+			terminalIndex	: params.name,
+			sessionIndex	: params.sessionIndex,
+			gds				: params.gds,
+			// language		: params.language,
+		});
+
+		this.init();
+	}
+
+	getPlugin()
+	{
+		return this.terminal;
+	}
+
+	static parseInput( evt, terminal )
+	{
+		if ( !terminal.enabled() ) // key press fires globally on all terminals;
+			return false;
+
+		if (evt.which === 13)
+			return false;
+
+		if (evt.which && !evt.ctrlKey)
+		{
+			let ch = Helpers.substitutePrintableChar( String.fromCharCode( evt.which ) );
+
+			if (ch)
+			{
+				terminal.insert(ch);
+				return false;
+			}
+		}
+	}
+
+	static parseKeyBinds( evt, terminal )
+	{
+		if ( !__WEBPACK_IMPORTED_MODULE_1__helpers_keyBinding__["a" /* default */].parse( evt, terminal ) )
+		{
+			return false;
+		}
+	}
+
+	// onInit( terminal )
+	// {
+	// 	console.log( 'ON INIT ' , this)
+		//SabreSession.startSession();
+		// let startSessionOutput = SabreSession.startSession();
+		//terminal.echo('>' + startSessionOutput['emulationCommand']);
+		//terminal.echo(startSessionOutput['emulationCommandOutput']);
+	// }
+
+	init()
+	{
+		this.terminal = $(this.context).terminal( this.commandParser.bind(this), {
+			greetings	: '',
+			// name		: `sabre_terminal_${this.name}`,
+
+			name		: this.name,
+			prompt		: '>',
+			//enabled		: false,
+			keypress	: TerminalPlugin.parseInput,
+			keydown		: TerminalPlugin.parseKeyBinds
+			// numChars	: false
+
+			// wrap		: false,
+			// outputLimit : 3
+
+			// onInit		: this.onInit
+			//,
+			//
+			//onTerminalChange	: function () {
+			//	console.log(' terminal change 1')
+			//},
+			//
+			//exceptionHandler	 : function () {
+			//	console.log('exc', arguments)
+			//}
+		});
+	}
+
+	commandParser( command, terminal )
+	{
+		// console.log( terminal.rows() );
+		// console.log( terminal.cols() );
+
+		if ( !command || command === '' )
+		{
+			// terminal.echo('');
+			return false;
+		}
+
+		if ( command === 'MD' )
+		{
+			terminal.echo( this.outputCache.length > 0 ?  this.outputCache.shift() : '‡NOTHING TO SCROLL‡' );
+			return false;
+		}
+
+		if ( command === 'MU' )
+		{
+			terminal.echo( this.outputCache.length > 0 ?  this.outputCache.shift() : '‡NOTHING TO SCROLL‡' );
+			return false;
+		}
+
+		terminal.pause();
+
+		this.session
+			.run({
+				cmd : command
+			})
+			.then( this.parseBackEnd.bind(this) )
+			.then( function () {
+				terminal.resume();
+			})
+			.catch( this.parseError.bind(this) );
+	}
+
+	parseBackEnd( response = {} )
+	{
+		let result = response['data'];
+
+		if ( result['prompt'] )
+			this.terminal.set_prompt( result['prompt'] );
+
+		if ( result['clearScreen'] )
+			this.terminal.clear();
+
+		if ( result['output'] )
+		{
+			this.outputCache = Helpers.makeCachedParts( result['output'], this.terminal.rows() );
+			this.terminal.echo( this.outputCache.shift() );
+		}
+	}
+
+	parseError(e)
+	{
+		this.terminal.resume();
+		// alert(' something went wrong ');
+		console.error(' error', arguments );
+		this.terminal.error( String(e) );
+	}
+}
+/* harmony export (immutable) */ exports["a"] = TerminalPlugin;
+
+
+/***/ },
+/* 22 */
+/***/ function(module, exports, __webpack_require__) {
+
+"use strict";
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__constants__ = __webpack_require__(2);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__helpers_requests__ = __webpack_require__(20);
+'use strict';
+
+
+
+
+class Session
+{
+	constructor( params )
+	{
+		this.settings = params;
+	}
+	
+	start()
+	{
+		__WEBPACK_IMPORTED_MODULE_1__helpers_requests__["a" /* default */].runSyncCommand('startSession',  {
+			timeFormat	: __WEBPACK_IMPORTED_MODULE_0__constants__["c" /* TIME_FORMAT */],
+			account		: __WEBPACK_IMPORTED_MODULE_0__constants__["d" /* ACCOUNT */]
+		})
+			.then( function( response ) {
+				// sessionToken = response['data']['sessionToken'];
+				return response['data'];
+			})
+			.catch(function(err) {
+				console.error('oh shit Error', err);
+			});
+	}
+
+	run( params )
+	{
+		return __WEBPACK_IMPORTED_MODULE_1__helpers_requests__["a" /* default */].runSyncCommand('runCommand', {
+			// sessionToken	: this.settings['sessionToken'],
+			sessionIndex	: parseInt(this.settings['sessionIndex']) + 1,
+			command			: params['cmd'],
+			terminalIndex	: parseInt( this.settings['terminalIndex']) + 1,
+			gds				: this.settings['gds'],
+			language		: window.TerminalState.state.language,
+		});
+	}
+
+	end()
+	{
+		let result = __WEBPACK_IMPORTED_MODULE_1__helpers_requests__["a" /* default */].runSyncCommand('endSession', {
+			sessionToken: this.settings['sessionToken']
+		});
+
+		if (result['success'])
+			return true;
+	}
+}
+/* harmony export (immutable) */ exports["a"] = Session;
+
+
+/***/ },
+/* 23 */
+/***/ function(module, exports, __webpack_require__) {
+
+__webpack_require__(5);
+module.exports = __webpack_require__(4);
 
 
 /***/ }
