@@ -9877,12 +9877,18 @@ class TerminalPlugin
 			return false;
 		}
 
+		terminal.pause();
+
 		this.session
 			.run({
 				cmd : command
 			})
 			.then( this.parseBackEnd.bind(this) )
-			.catch( this.parseError );
+			.then( function () {
+				terminal.resume();
+				console.log('done');
+			})
+			.catch( this.parseError.bind(this) );
 	}
 
 	parseBackEnd( response = {} )
@@ -9902,11 +9908,12 @@ class TerminalPlugin
 		}
 	}
 
-	parseError()
+	parseError(e)
 	{
-		alert(' something went wrong ');
-		console.warn(' error', arguments )
-		//terminal.error( new String(e) );
+		this.terminal.resume();
+		// alert(' something went wrong ');
+		console.error(' error', arguments );
+		this.terminal.error( String(e) );
 	}
 }
 /* harmony export (immutable) */ exports["a"] = TerminalPlugin;

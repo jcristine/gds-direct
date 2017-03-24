@@ -1,8 +1,8 @@
 {
-  "name": "sabre terminal",
+  "name": "sabreTerminal",
   "version": "0.0.0",
   "description": "sabre terminal",
-  "main": "index.js",
+  "main": "index.html",
   "repository": "sabre terminal",
   "author": "unknown",
   "license": "BSD-2-Clause",
@@ -10,7 +10,8 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "webpack-dev-server --progress --inline --hot",
-    "build": "webpack --progress"
+    "build": "webpack --progress",
+    "watch": "webpack --progress --watch"
   },
 
   "devDependencies": {
