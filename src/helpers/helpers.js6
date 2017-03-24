@@ -47,8 +47,6 @@ function makeCachedParts(txt)
 {
 	let lines = splitLines(txt);
 
-	console.log( lines );
-
 	return chunk(lines, 20).map(function(sectionLines){
 		return sectionLines.join('\n');
 	});

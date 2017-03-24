@@ -723,10 +723,10 @@ const TERMINAL_HEIGHT 		= '650';
 const TERMINAL_SPLIT_HEIGHT 	= '325';
 /* unused harmony export TERMINAL_SPLIT_HEIGHT */
 
-const INFO_DATA_URL 	 		= '?id=sabre/terminal&getInfoData=1';
+const INFO_DATA_URL 	 		= '?id=terminal/middleware&getInfoData=1';
 /* unused harmony export INFO_DATA_URL */
 
-const END_POINT_URL	 		= '?id=sabre/terminal&her=1';
+const END_POINT_URL	 		= '?id=terminal/middleware';
 /* harmony export (immutable) */ exports["b"] = END_POINT_URL;
 
 const TIME_FORMAT 			= '12';
@@ -9605,8 +9605,6 @@ function splitLines(txt)
 function makeCachedParts(txt)
 {
 	let lines = splitLines(txt);
-
-	console.log( lines );
 
 	return chunk(lines, 20).map(function(sectionLines){
 		return sectionLines.join('\n');
