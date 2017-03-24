@@ -18,7 +18,6 @@ function createBtn()
 	return btn;
 }
 
-
 export default class MenuPanel
 {
 	static toggle()
@@ -98,23 +97,28 @@ export default class MenuPanel
 
 	static InputLanguage()
 	{
+		let state 			= window.TerminalState.state;
+
 		let context 		= document.createElement('article');
 		context.innerHTML 	= '<div class="label">Input Language</div>';
 
 		let btnGroup		= document.createElement('div');
-		btnGroup.className 	= 'buttons';
+		// btnGroup.className 	= 'buttons';
 
-		let buttons = ['APOLLO','SABRE'].map(( value ) => {
+		['APOLLO','SABRE'].forEach(( value ) => {
 
 			let button		 = document.createElement('button');
-			button.className = 'btn btn-sm btn-gold font-bold';
+			button.className = 'btn btn-sm btn-gold font-bold ' + ( state.language === value ? 'active' : '');
 			button.innerHTML = value;
 
-			btnGroup.appendChild( button );
-			return button;
-		});
+			button.addEventListener('click', function () {
+				window.TerminalState.change({
+					language : value
+				});
+			});
 
-		buttons[0].className += ' active';
+			btnGroup.appendChild( button );
+		});
 
 		context.appendChild(btnGroup);
 		return context;

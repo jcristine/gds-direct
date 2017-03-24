@@ -785,7 +785,7 @@ window.TerminalState = {
 		},
 
 		fontSize	: 1,
-		language	: 'apollo',
+		language	: 'APOLLO'
 	},
 
 	sessions		: {},
@@ -9124,7 +9124,6 @@ function createBtn()
 	return btn;
 }
 
-
 class MenuPanel
 {
 	static toggle()
@@ -9204,23 +9203,28 @@ class MenuPanel
 
 	static InputLanguage()
 	{
+		let state 			= window.TerminalState.state;
+
 		let context 		= document.createElement('article');
 		context.innerHTML 	= '<div class="label">Input Language</div>';
 
 		let btnGroup		= document.createElement('div');
-		btnGroup.className 	= 'buttons';
+		// btnGroup.className 	= 'buttons';
 
-		let buttons = ['APOLLO','SABRE'].map(( value ) => {
+		['APOLLO','SABRE'].forEach(( value ) => {
 
 			let button		 = document.createElement('button');
-			button.className = 'btn btn-sm btn-gold font-bold';
+			button.className = 'btn btn-sm btn-gold font-bold ' + ( state.language === value ? 'active' : '');
 			button.innerHTML = value;
 
-			btnGroup.appendChild( button );
-			return button;
-		});
+			button.addEventListener('click', function () {
+				window.TerminalState.change({
+					language : value
+				});
+			});
 
-		buttons[0].className += ' active';
+			btnGroup.appendChild( button );
+		});
 
 		context.appendChild(btnGroup);
 		return context;
@@ -9486,8 +9490,20 @@ class Terminal {
 		this.context 				= document.createElement('div');
 		this.context.className 		= 'terminal';
 
+		// let offsets = this.settings.parentContext.getBoundingClientRect();
+
 		this.context.style.height	= this.settings.parentContext.clientHeight + 'px';
-		this.context.style.width	= this.settings.parentContext.clientWidth + 'px';		
+		this.context.style.width	= this.settings.parentContext.clientWidth + 'px';
+
+
+		// this.context.style.height	= offsets.height + 'px';
+		// this.context.style.width	= offsets.width + 'px';
+
+		// console.log( this.settings.parentContext.clientHeight );
+		// console.log( this.settings.parentContext.clientWidth );
+		// console.log( offsets.height );
+		// console.log( '==' );
+		// console.log( this.settings.parentContext.getClientRects() );
 
 		this.context.innerHTML 		= '>';
 
@@ -9530,7 +9546,7 @@ class Terminal {
 		this.settings.parentContext.appendChild( this.context );
 
 		if (this.plugin)
-			this.plugin.getPlugin().resize();
+			this.plugin.getPlugin().resize().scroll_to_bottom();
 	}
 }
 /* harmony export (immutable) */ exports["a"] = Terminal;

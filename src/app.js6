@@ -26,7 +26,7 @@ window.TerminalState = {
 		},
 
 		fontSize	: 1,
-		language	: 'apollo',
+		language	: 'APOLLO'
 	},
 
 	sessions		: {},

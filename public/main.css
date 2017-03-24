@@ -1007,7 +1007,6 @@ fieldset[disabled] #rootTerminal .btn-warning.active {
 }
 .terminal-wrap-custom {
   position: relative;
-  border-top: 1px solid #bdbdbd;
   color: #414141;
   width: 100%;
   height: 100%;
@@ -1063,7 +1062,7 @@ fieldset[disabled] #rootTerminal .btn-warning.active {
 .terminal-wrap-custom > .term-body .menu {
   width: 20%;
   vertical-align: top;
-  padding: 10px;
+  padding: 7px;
   color: #414141;
   background: #fff;
 }
@@ -1082,7 +1081,7 @@ fieldset[disabled] #rootTerminal .btn-warning.active {
 .terminal-wrap-custom > .term-body.minimized .menu .btn {
   display: block;
   width: 100%;
-  margin: 5px 0;
+  margin: 0 0 5px 0;
 }
 .terminal-wrap-custom > .term-body.minimized .menu .label {
   text-align: center;
@@ -1099,6 +1098,7 @@ fieldset[disabled] #rootTerminal .btn-warning.active {
   color: #fff;
   width: 100%;
   padding: 0;
+  padding-left: 5px;
   overflow: auto;
 }
 .terminal-wrap-custom .terminal .cmd {

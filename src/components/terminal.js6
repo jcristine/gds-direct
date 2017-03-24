@@ -11,8 +11,20 @@ export default class Terminal {
 		this.context 				= document.createElement('div');
 		this.context.className 		= 'terminal';
 
+		// let offsets = this.settings.parentContext.getBoundingClientRect();
+
 		this.context.style.height	= this.settings.parentContext.clientHeight + 'px';
-		this.context.style.width	= this.settings.parentContext.clientWidth + 'px';		
+		this.context.style.width	= this.settings.parentContext.clientWidth + 'px';
+
+
+		// this.context.style.height	= offsets.height + 'px';
+		// this.context.style.width	= offsets.width + 'px';
+
+		// console.log( this.settings.parentContext.clientHeight );
+		// console.log( this.settings.parentContext.clientWidth );
+		// console.log( offsets.height );
+		// console.log( '==' );
+		// console.log( this.settings.parentContext.getClientRects() );
 
 		this.context.innerHTML 		= '>';
 
