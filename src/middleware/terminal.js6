@@ -131,7 +131,6 @@ export default class TerminalPlugin
 			.then( this.parseBackEnd.bind(this) )
 			.then( function () {
 				terminal.resume();
-				console.log('done');
 			})
 			.catch( this.parseError.bind(this) );
 	}

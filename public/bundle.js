@@ -9879,7 +9879,6 @@ class TerminalPlugin
 			.then( this.parseBackEnd.bind(this) )
 			.then( function () {
 				terminal.resume();
-				console.log('done');
 			})
 			.catch( this.parseError.bind(this) );
 	}
@@ -10002,7 +10001,7 @@ class KeyBinding
 		let isApollo	= window.TerminalState.state.language === 'APOLLO';
 
 		// console.log( isApollo );
-		console.log(keymap);
+		// console.log(keymap);
 		// return true;
 
 		if ( evt.ctrlKey )

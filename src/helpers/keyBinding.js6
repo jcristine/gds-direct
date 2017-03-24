@@ -8,7 +8,7 @@ export default class KeyBinding
 		let isApollo	= window.TerminalState.state.language === 'APOLLO';
 
 		// console.log( isApollo );
-		console.log(keymap);
+		// console.log(keymap);
 		// return true;
 
 		if ( evt.ctrlKey )
