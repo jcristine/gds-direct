@@ -1,0 +1,171 @@
+'use strict';
+
+export default class KeyBinding
+{
+	static parse(evt, terminal)
+	{
+		let keymap 		= evt.which;
+		let isApollo	= window.TerminalState.state.language === 'APOLLO';
+
+		// console.log( isApollo );
+		console.log(keymap);
+		// return true;
+
+		if ( evt.ctrlKey )
+		{
+			switch (keymap)
+			{
+				case 8: // CTRL+S || CTRL+W || CTRL + backSpace;
+				case 87:
+				case 83:
+					terminal.clear();
+					return false;
+				break;
+
+				case 68 :
+					// CTRL+D
+					return false;
+				break;
+
+				case 76 :
+					// CTRL+L
+					return false;
+				break;
+
+				case 82 :
+					// CTRL+R
+					return false;
+				break;
+
+				case 120 :
+					// F9
+					// Template for Apollo: ¤:5S(paxOrder) (sellPrice) N1 (netPrice) F1 (fareAmount)
+					// Example for Apollo: ¤:5S1 985.00 N1 720.00 F1 500.00
+					// Template for Sabre: 5S(paxOrder) (sellPrice) N1 (netPrice) F1 (fareAmount)
+					// Example for Sabre: 5S1 985.00 N1 720.00 F1 500.00
+
+					return false;
+				break;
+
+				case 38 :
+					// Up arrow
+					// Last performed format
+
+					return false;
+				break;
+
+				case 40 :
+					// down arrow
+					//Next performed format, by default returns to the first format and than each one by one.
+
+					return false;
+				break;
+
+				case 112 :
+					// f1
+					// Apollo template: S*CTY/(City Code}
+					// Apollo example: S*CTY/RIX
+					// Sabre template: W/*(City Code)
+ 					// Sabre example: W/*RIX
+
+					return false;
+				break;
+
+				case 113 :
+					// f2
+					// Apollo template: S*AIR/(Airline Code)
+					// Apollo example: S*AIR/RIX
+					// Sabre template: W/*(Airline Code)
+					 // Sabre example: W/*BT
+
+					return false;
+				break;
+
+				default:
+					console.log(' default ');
+			}
+		}
+
+		if ( evt.shiftKey )
+		{
+			switch (keymap)
+			{
+				case 120 :
+					// F9
+					// Template for Apollo: P:(agencyLocation)AS/(agencyPhone) (freeText)
+					// Example for Apollo: P:SFOAS/800-750-2238 ASAP CUSTOMER SUPPORT
+					// Template for Sabre: 9(agencyPhone)-A
+					// Example for Sabre: 91-800-750-2238-A
+
+					return false;
+				break;
+
+				case 117: //F6
+					// Apollo example: SEM/2G55/AG
+					// Sabre example: AAA6IIF
+					return false;
+				break;
+
+				case 118: //F7
+					// Apollo example: SEM/2G2H/AG
+					// Sabre example: AAADK8H
+					return false;
+				break;
+
+				case 119: //F8
+					// Apollo example: SEM/2BQ6/AG
+					// Sabre example: AAAW8K7
+					return false;
+				break;
+
+				default :
+			}
+		}
+
+		if ( evt.altKey )
+		{
+			switch (keymap)
+			{
+				case 8: // + backSpace;
+					terminal.clear();
+					return false;
+				break;
+
+				default :
+			}
+		}
+
+		switch (keymap)
+		{
+			case 34 : // page down
+				terminal.exec('MD');
+				return false;
+			break;
+
+			case 33 : //page up
+				terminal.exec('MU');
+				return false;
+			break;
+
+			case 123 :
+				// console.log('f12');
+				terminal.exec(  ( isApollo ? 'R:' : '6')  + window.apiData.auth.login.toUpperCase() );
+				return false;
+			break;
+
+			case 119 :
+				// console.log('f8');
+				// Template for Apollo: ¤:3SSRDOCSYYHK1/N(paxOrder)/////(paxDob)/(paxG)//(paxLast)/(paxFirst)
+				// Example fro Apollo: ¤:3SSRDOCSYYHK1/N1/////05MAR90/F//LAST/FIRST
+				// Template for Sabre: 3DOCSA/DB/(paxDob)/(paxG)/(paxLast)/(paxFirst)-(paxOrder)
+				// Example for Sabre: 3DOCSA/DB/05MAR90/F/LASTNAME/NAME-1.1
+
+				return false;
+			break;
+
+			default:
+		}
+
+		return true;
+	}
+}

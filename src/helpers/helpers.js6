@@ -18,11 +18,14 @@ function chunk(arr, limit) {
 
 function substitutePrintableChar(ch)
 {
+	let isApollo	= window.TerminalState.state.language === 'APOLLO';
+
 	let sabreLayout = {
 		'\'': '‡',
 		'[': '¤',
 		'=': '*',
 		'\\': '§',
+		// shift + ","
 	};
 
 	let apolloLayout = {
@@ -32,10 +35,9 @@ function substitutePrintableChar(ch)
 		'`': '>',
 	};
 
-	if (sabreLayout[ch])
-		return sabreLayout[ch];
+	let layout = isApollo ? apolloLayout : sabreLayout;
 
-	return ch.toUpperCase();
+	return layout[ch] || ch.toUpperCase();
 }
 
 function splitLines(txt)
@@ -43,11 +45,11 @@ function splitLines(txt)
 	return txt.split(/\r?\n/);
 }
 
-function makeCachedParts(txt)
+function makeCachedParts(txt, rows)
 {
 	let lines = splitLines(txt);
 
-	return chunk(lines, 20).map(function(sectionLines){
+	return chunk(lines, (rows || 20) ).map(function(sectionLines){
 		return sectionLines.join('\n');
 	});
 }

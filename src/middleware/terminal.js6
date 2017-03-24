@@ -6,7 +6,8 @@ window.$ 				= window.jQuery = $;
 let jqTerminal 			= require('jquery.terminal/js/jquery.terminal');
 let Helpers				= require('../helpers/helpers');
 
-import Session from '../modules/sabreSession';
+import Session 		from '../modules/sabreSession';
+import KeyBinding	from '../helpers/keyBinding';
 
 export default class TerminalPlugin
 {
@@ -54,25 +55,8 @@ export default class TerminalPlugin
 
 	static parseKeyBinds( evt, terminal )
 	{
-		if ( (evt.which === 83 || evt.which === 87) && evt.ctrlKey )
+		if ( !KeyBinding.parse( evt, terminal ) )
 		{
-			//console.log("BBBB", terminal);
-			// CTRL+S || CTRL+W;
-
-			terminal.clear();
-			return false;
-
-		} else if (evt.which === 68 && evt.ctrlKey)
-		{
-			// CTRL+D
-			return false;
-		} else if (evt.which === 76 && evt.ctrlKey)
-		{
-			// CTRL+L
-			return false;
-		} else if (evt.which === 82 && evt.ctrlKey)
-		{
-			// CTRL+R
 			return false;
 		}
 	}
@@ -132,6 +116,12 @@ export default class TerminalPlugin
 			return false;
 		}
 
+		if ( command === 'MU' )
+		{
+			terminal.echo( this.outputCache.length > 0 ?  this.outputCache.shift() : '‡NOTHING TO SCROLL‡' );
+			return false;
+		}
+
 		terminal.pause();
 
 		this.session
@@ -158,7 +148,7 @@ export default class TerminalPlugin
 
 		if ( result['output'] )
 		{
-			this.outputCache = Helpers.makeCachedParts( result['output'] );
+			this.outputCache = Helpers.makeCachedParts( result['output'], this.terminal.rows() );
 			this.terminal.echo( this.outputCache.shift() );
 		}
 	}

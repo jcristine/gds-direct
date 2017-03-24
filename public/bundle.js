@@ -9577,11 +9577,14 @@ function chunk(arr, limit) {
 
 function substitutePrintableChar(ch)
 {
+	let isApollo	= window.TerminalState.state.language === 'APOLLO';
+
 	let sabreLayout = {
 		'\'': '‡',
 		'[': '¤',
 		'=': '*',
 		'\\': '§',
+		// shift + ","
 	};
 
 	let apolloLayout = {
@@ -9591,10 +9594,9 @@ function substitutePrintableChar(ch)
 		'`': '>',
 	};
 
-	if (sabreLayout[ch])
-		return sabreLayout[ch];
+	let layout = isApollo ? apolloLayout : sabreLayout;
 
-	return ch.toUpperCase();
+	return layout[ch] || ch.toUpperCase();
 }
 
 function splitLines(txt)
@@ -9602,11 +9604,11 @@ function splitLines(txt)
 	return txt.split(/\r?\n/);
 }
 
-function makeCachedParts(txt)
+function makeCachedParts(txt, rows)
 {
 	let lines = splitLines(txt);
 
-	return chunk(lines, 20).map(function(sectionLines){
+	return chunk(lines, (rows || 20) ).map(function(sectionLines){
 		return sectionLines.join('\n');
 	});
 }
@@ -9743,6 +9745,7 @@ function runSyncCommand2( functionName, params )
 
 "use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__modules_sabreSession__ = __webpack_require__(21);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__helpers_keyBinding__ = __webpack_require__(31);
 'use strict';
 
 let $					= __webpack_require__(3);
@@ -9750,6 +9753,7 @@ window.$ 				= window.jQuery = $;
 
 let jqTerminal 			= __webpack_require__(6);
 let Helpers				= __webpack_require__(18);
+
 
 
 
@@ -9799,25 +9803,8 @@ class TerminalPlugin
 
 	static parseKeyBinds( evt, terminal )
 	{
-		if ( (evt.which === 83 || evt.which === 87) && evt.ctrlKey )
+		if ( !__WEBPACK_IMPORTED_MODULE_1__helpers_keyBinding__["a" /* default */].parse( evt, terminal ) )
 		{
-			//console.log("BBBB", terminal);
-			// CTRL+S || CTRL+W;
-
-			terminal.clear();
-			return false;
-
-		} else if (evt.which === 68 && evt.ctrlKey)
-		{
-			// CTRL+D
-			return false;
-		} else if (evt.which === 76 && evt.ctrlKey)
-		{
-			// CTRL+L
-			return false;
-		} else if (evt.which === 82 && evt.ctrlKey)
-		{
-			// CTRL+R
 			return false;
 		}
 	}
@@ -9877,6 +9864,12 @@ class TerminalPlugin
 			return false;
 		}
 
+		if ( command === 'MU' )
+		{
+			terminal.echo( this.outputCache.length > 0 ?  this.outputCache.shift() : '‡NOTHING TO SCROLL‡' );
+			return false;
+		}
+
 		terminal.pause();
 
 		this.session
@@ -9903,7 +9896,7 @@ class TerminalPlugin
 
 		if ( result['output'] )
 		{
-			this.outputCache = Helpers.makeCachedParts( result['output'] );
+			this.outputCache = Helpers.makeCachedParts( result['output'], this.terminal.rows() );
 			this.terminal.echo( this.outputCache.shift() );
 		}
 	}
@@ -9984,6 +9977,193 @@ class Session
 
 __webpack_require__(5);
 module.exports = __webpack_require__(4);
+
+
+/***/ },
+/* 23 */,
+/* 24 */,
+/* 25 */,
+/* 26 */,
+/* 27 */,
+/* 28 */,
+/* 29 */,
+/* 30 */,
+/* 31 */
+/***/ function(module, exports, __webpack_require__) {
+
+"use strict";
+'use strict';
+
+class KeyBinding
+{
+	static parse(evt, terminal)
+	{
+		let keymap 		= evt.which;
+		let isApollo	= window.TerminalState.state.language === 'APOLLO';
+
+		// console.log( isApollo );
+		console.log(keymap);
+		// return true;
+
+		if ( evt.ctrlKey )
+		{
+			switch (keymap)
+			{
+				case 8: // CTRL+S || CTRL+W || CTRL + backSpace;
+				case 87:
+				case 83:
+					terminal.clear();
+					return false;
+				break;
+
+				case 68 :
+					// CTRL+D
+					return false;
+				break;
+
+				case 76 :
+					// CTRL+L
+					return false;
+				break;
+
+				case 82 :
+					// CTRL+R
+					return false;
+				break;
+
+				case 120 :
+					// F9
+					// Template for Apollo: ¤:5S(paxOrder) (sellPrice) N1 (netPrice) F1 (fareAmount)
+					// Example for Apollo: ¤:5S1 985.00 N1 720.00 F1 500.00
+					// Template for Sabre: 5S(paxOrder) (sellPrice) N1 (netPrice) F1 (fareAmount)
+					// Example for Sabre: 5S1 985.00 N1 720.00 F1 500.00
+
+					return false;
+				break;
+
+				case 38 :
+					// Up arrow
+					// Last performed format
+
+					return false;
+				break;
+
+				case 40 :
+					// down arrow
+					//Next performed format, by default returns to the first format and than each one by one.
+
+					return false;
+				break;
+
+				case 112 :
+					// f1
+					// Apollo template: S*CTY/(City Code}
+					// Apollo example: S*CTY/RIX
+					// Sabre template: W/*(City Code)
+ 					// Sabre example: W/*RIX
+
+					return false;
+				break;
+
+				case 113 :
+					// f2
+					// Apollo template: S*AIR/(Airline Code)
+					// Apollo example: S*AIR/RIX
+					// Sabre template: W/*(Airline Code)
+					 // Sabre example: W/*BT
+
+					return false;
+				break;
+
+				default:
+					console.log(' default ');
+			}
+		}
+
+		if ( evt.shiftKey )
+		{
+			switch (keymap)
+			{
+				case 120 :
+					// F9
+					// Template for Apollo: P:(agencyLocation)AS/(agencyPhone) (freeText)
+					// Example for Apollo: P:SFOAS/800-750-2238 ASAP CUSTOMER SUPPORT
+					// Template for Sabre: 9(agencyPhone)-A
+					// Example for Sabre: 91-800-750-2238-A
+
+					return false;
+				break;
+
+				case 117: //F6
+					// Apollo example: SEM/2G55/AG
+					// Sabre example: AAA6IIF
+					return false;
+				break;
+
+				case 118: //F7
+					// Apollo example: SEM/2G2H/AG
+					// Sabre example: AAADK8H
+					return false;
+				break;
+
+				case 119: //F8
+					// Apollo example: SEM/2BQ6/AG
+					// Sabre example: AAAW8K7
+					return false;
+				break;
+
+				default :
+			}
+		}
+
+		if ( evt.altKey )
+		{
+			switch (keymap)
+			{
+				case 8: // + backSpace;
+					terminal.clear();
+					return false;
+				break;
+
+				default :
+			}
+		}
+
+		switch (keymap)
+		{
+			case 34 : // page down
+				terminal.exec('MD');
+				return false;
+			break;
+
+			case 33 : //page up
+				terminal.exec('MU');
+				return false;
+			break;
+
+			case 123 :
+				// console.log('f12');
+				terminal.exec(  ( isApollo ? 'R:' : '6')  + window.apiData.auth.login.toUpperCase() );
+				return false;
+			break;
+
+			case 119 :
+				// console.log('f8');
+				// Template for Apollo: ¤:3SSRDOCSYYHK1/N(paxOrder)/////(paxDob)/(paxG)//(paxLast)/(paxFirst)
+				// Example fro Apollo: ¤:3SSRDOCSYYHK1/N1/////05MAR90/F//LAST/FIRST
+				// Template for Sabre: 3DOCSA/DB/(paxDob)/(paxG)/(paxLast)/(paxFirst)-(paxOrder)
+				// Example for Sabre: 3DOCSA/DB/05MAR90/F/LASTNAME/NAME-1.1
+
+				return false;
+			break;
+
+			default:
+		}
+
+		return true;
+	}
+}
+/* harmony export (immutable) */ exports["a"] = KeyBinding;
 
 
 /***/ }

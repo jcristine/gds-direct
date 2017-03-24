@@ -32,24 +32,24 @@ function runSyncCommand( functionName, params )
 	// 	answer: document.getElementById('answer').value
 	// })
 
-	let get = JSON.stringify(data, true);
+	let get 		= JSON.stringify(data, true);
 
-	url += '&data=' + get + '&function=' + functionName;
+	let formData 	= new FormData();
+	formData.append( "data", get );
+
+	url += '&function=' + functionName;
+	// url += '&data=' + get + '&function=' + functionName;
+
+	// let myHeaders = new Headers({
+	// 	"Content-Type": "application/x-www-form-urlencoded; charset=UTF-8"
+		// "Content-Length": content.length.toString(),
+		// "X-Custom-Header": "ProcessThisImmediately",
+	// });
 
 	return fetch(API_HOST + url, {
-
-		credentials: 'include'
-
-		// method		: 'POST',
-		// redirect	: 'follow'
-		// ,
-
-		// headers: new Headers({
-		// 	'Content-Type': 'application/json'
-		// })
-
-		// {method: "post", headers: {"content-type": "application/x-www-form-urlencoded"}
-
+		credentials	: 'include',
+		body		: formData,
+		method		: 'POST',
 	}).then( function( response ) {
 		return response.json();
 	})
