@@ -98,7 +98,7 @@ export default class Container {
 	{
 		let header 			= document.createElement('header');
 		header.className 	= 'term-header';
-		header.innerHTML 	= 'Terminal Sabre';
+		header.innerHTML 	= 'Terminal';
 
 		context.appendChild( header );
 		return header;

@@ -50,6 +50,10 @@ window.TerminalState = {
 				this.state.matrix 	= this.sessions[ sIndex ].matrix || { rows : 1, cells : 1 };
 			break;
 
+			case 'CHANGE_FONT_SIZE':
+				// this.state.matrix 	= this.sessions[ sIndex ].matrix || { rows : 1, cells : 1 };
+			break;
+
 			case 'CHANGE_SESSION' :
 				this.state.matrix 	= this.sessions[ sIndex ].matrix || { rows : 1, cells : 1 };
 			break;

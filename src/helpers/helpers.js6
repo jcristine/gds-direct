@@ -1,6 +1,7 @@
 'use strict';
 
 function chunk(arr, limit) {
+
 	let result = [];
 
 	while (arr.length > limit)
@@ -24,6 +25,13 @@ function substitutePrintableChar(ch)
 		'\\': '§',
 	};
 
+	let apolloLayout = {
+		'[': '¤',
+		']': '$',
+		'=': '*',
+		'`': '>',
+	};
+
 	if (sabreLayout[ch])
 		return sabreLayout[ch];
 
@@ -38,6 +46,8 @@ function splitLines(txt)
 function makeCachedParts(txt)
 {
 	let lines = splitLines(txt);
+
+	console.log( lines );
 
 	return chunk(lines, 20).map(function(sectionLines){
 		return sectionLines.join('\n');

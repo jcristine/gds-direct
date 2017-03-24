@@ -37,7 +37,7 @@ export default class MenuPanel
 	static fontSize()
 	{
 		let btn 		= createBtn();
-		btn.innerHTML 	= '<i class="fa fa-font"></i>';
+		btn.innerHTML 	= '<i class="fa fa-text-height"></i>';
 
 		let popover = new TextSize({
 			button	: btn

@@ -3,7 +3,9 @@
 import Drop from 'tether-drop';
 
 let popContext;
-let CLASS_NAME = 'term-f-size-';
+let CLASS_NAME 	= 'term-f-size-';
+// let activeClass;
+let bodyDef		= document.querySelector('body').className;
 
 class TextSize
 {
@@ -33,20 +35,14 @@ class TextSize
 			button.innerHTML 	= value + 'x';
 
 			button.addEventListener('click', () => {
+
 				popContext.close();
 
-				let body = document.querySelector('body');
-
-				if ( this.activeClass )
-					body.classList.toggle( this.activeClass );
-
-				this.activeClass = CLASS_NAME + value;
-
-				body.classList.toggle( this.activeClass );
+				document.querySelector('body').className = bodyDef + ' ' + CLASS_NAME + value ;
 
 				window.TerminalState.change({
 					fontSize : value
-				});
+				}, 'CHANGE_FONT_SIZE');
 			});
 
 			this.context.appendChild( button );

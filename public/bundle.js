@@ -809,6 +809,10 @@ window.TerminalState = {
 				this.state.matrix 	= this.sessions[ sIndex ].matrix || { rows : 1, cells : 1 };
 			break;
 
+			case 'CHANGE_FONT_SIZE':
+				// this.state.matrix 	= this.sessions[ sIndex ].matrix || { rows : 1, cells : 1 };
+			break;
+
 			case 'CHANGE_SESSION' :
 				this.state.matrix 	= this.sessions[ sIndex ].matrix || { rows : 1, cells : 1 };
 			break;
@@ -8774,7 +8778,7 @@ class Button
 		this.context.type		= 'button';
 		this.context.className 	= 'btn btn-purple';
 
-		this.context.innerHTML	= '<i class="fa fa-th-large t-f-size-14"></i>';
+		this.context.innerHTML	= '<i class="fa fa-th-large t-f-size-14 v-middle"></i>';
 		//this.context.addEventListener('click', params.click);
 	}
 	
@@ -8921,7 +8925,7 @@ class Container {
 	{
 		let header 			= document.createElement('header');
 		header.className 	= 'term-header';
-		header.innerHTML 	= 'Terminal Sabre';
+		header.innerHTML 	= 'Terminal';
 
 		context.appendChild( header );
 		return header;
@@ -9143,7 +9147,7 @@ class MenuPanel
 	static fontSize()
 	{
 		let btn 		= createBtn();
-		btn.innerHTML 	= '<i class="fa fa-font"></i>';
+		btn.innerHTML 	= '<i class="fa fa-text-height"></i>';
 
 		let popover = new __WEBPACK_IMPORTED_MODULE_1__popovers_textSize__["a" /* default */]({
 			button	: btn
@@ -9413,7 +9417,9 @@ class Matrix
 
 
 let popContext;
-let CLASS_NAME = 'term-f-size-';
+let CLASS_NAME 	= 'term-f-size-';
+// let activeClass;
+let bodyDef		= document.querySelector('body').className;
 
 class TextSize
 {
@@ -9443,20 +9449,14 @@ class TextSize
 			button.innerHTML 	= value + 'x';
 
 			button.addEventListener('click', () => {
+
 				popContext.close();
 
-				let body = document.querySelector('body');
-
-				if ( this.activeClass )
-					body.classList.toggle( this.activeClass );
-
-				this.activeClass = CLASS_NAME + value;
-
-				body.classList.toggle( this.activeClass );
+				document.querySelector('body').className = bodyDef + ' ' + CLASS_NAME + value ;
 
 				window.TerminalState.change({
 					fontSize : value
-				});
+				}, 'CHANGE_FONT_SIZE');
 			});
 
 			this.context.appendChild( button );
@@ -9560,6 +9560,7 @@ class Terminal {
 'use strict';
 
 function chunk(arr, limit) {
+
 	let result = [];
 
 	while (arr.length > limit)
@@ -9583,6 +9584,13 @@ function substitutePrintableChar(ch)
 		'\\': '§',
 	};
 
+	let apolloLayout = {
+		'[': '¤',
+		']': '$',
+		'=': '*',
+		'`': '>',
+	};
+
 	if (sabreLayout[ch])
 		return sabreLayout[ch];
 
@@ -9597,6 +9605,8 @@ function splitLines(txt)
 function makeCachedParts(txt)
 {
 	let lines = splitLines(txt);
+
+	console.log( lines );
 
 	return chunk(lines, 20).map(function(sectionLines){
 		return sectionLines.join('\n');
