@@ -10037,17 +10037,17 @@ class TerminalPlugin
 			return false;
 		}
 
-		if ( command === 'MD' )
-		{
-			terminal.echo( this.outputCache.length > 0 ?  this.outputCache.shift() : '‡NOTHING TO SCROLL‡' );
-			return false;
-		}
-
-		if ( command === 'MU' )
-		{
-			terminal.echo( this.outputCache.length > 0 ?  this.outputCache.shift() : '‡NOTHING TO SCROLL‡' );
-			return false;
-		}
+		// if ( command === 'MD' )
+		// {
+		// 	terminal.echo( this.outputCache.length > 0 ?  this.outputCache.shift() : '‡NOTHING TO SCROLL‡' );
+		// 	return false;
+		// }
+        //
+		// if ( command === 'MU' )
+		// {
+		// 	terminal.echo( this.outputCache.length > 0 ?  this.outputCache.shift() : '‡NOTHING TO SCROLL‡' );
+		// 	return false;
+		// }
 
 		terminal.pause();
 
