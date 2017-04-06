@@ -2,9 +2,6 @@
 
 import Container from './components/containerMain';
 
-// const cliSpinners = require('cli-spinners');
-// console.log(cliSpinners.dots);
-
 const apiData = window.apiData || {};
 
 const Context = {

@@ -712,9 +712,6 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
 
 
-// const cliSpinners = require('cli-spinners');
-// console.log(cliSpinners.dots);
-
 const apiData = window.apiData || {};
 
 const Context = {
@@ -9253,7 +9250,7 @@ class SessionKeys
 
 	getButtons()
 	{
-		return ['A', 'B', 'C'].map( this.makeButton.bind( this ) );
+		return ['A', 'B', 'C', 'D', 'E'].map( this.makeButton.bind( this ) );
 	}
 
 	getTrigger()
@@ -10120,9 +10117,7 @@ window.$ 				= window.jQuery = $;
 let jqTerminal 			= __webpack_require__(6);
 let Helpers				= __webpack_require__(19);
 
-const cliSpinners = __webpack_require__(33);
-console.log(cliSpinners);
-
+const cliSpinners 		= __webpack_require__(33);
 
 
 
@@ -10134,7 +10129,7 @@ class Spinner
 		this.timer 		= false;
 		this.terminal 	= terminal;
 		this.promt 		= false;
-		this.spinner	= cliSpinners.line;
+		this.spinner	= cliSpinners.simpleDots;
 
 		this.frameCounter = 0;
 	}
@@ -10170,11 +10165,14 @@ class TerminalPlugin
 {
 	constructor( params )
 	{
+		this.settings 	= params;
 		this.context	= params.context;
 		this.name		= params.name;
 		this.terminal 	= null;
-		this.outputCache = [];
-		this.animation	 = false;
+
+		this.outputCache 	= [];
+		this.animation	 	= false;
+		this.hiddenBuff		= '';
 
 		this.session = new __WEBPACK_IMPORTED_MODULE_0__modules_sabreSession__["a" /* default */]({
 			terminalIndex	: params.name,
@@ -10196,12 +10194,14 @@ class TerminalPlugin
 		if ( !terminal.enabled() ) // key press fires globally on all terminals;
 			return false;
 
-		if (evt.which === 13)
+		let keyCode = evt.keyCode || evt.which;
+
+		if (keyCode === 13)
 			return false;
 
-		if (evt.which && !evt.ctrlKey)
+		if (keyCode && !evt.ctrlKey)
 		{
-			let ch = Helpers.substitutePrintableChar( String.fromCharCode( evt.which ) );
+			let ch = Helpers.substitutePrintableChar( String.fromCharCode( keyCode ) );
 
 			if (ch)
 			{
@@ -10214,7 +10214,10 @@ class TerminalPlugin
 	parseKeyBinds( evt, terminal )
 	{
 		if ( this.animation )
+		{
+			this.hiddenBuff += String.fromCharCode( evt.keyCode || evt.which );
 			return false;
+		}
 
 		if ( !__WEBPACK_IMPORTED_MODULE_1__helpers_keyBinding__["a" /* default */].parse( evt, terminal ) )
 		{
@@ -10297,7 +10300,7 @@ class TerminalPlugin
 			return false;
 		}
 
-		if ( command === 'MD' )
+		if ( this.settings.gds === 'sabre' && command === 'MD' )
 		{
 			terminal.echo( this.outputCache.length > 0 ?  this.outputCache.shift() : '‡NOTHING TO SCROLL‡' );
 			return false;
@@ -10319,11 +10322,11 @@ class TerminalPlugin
 			})
 
 			.then( ( response = {} ) => {
-
-				console.log('stop');
-
 				this.spinner.end();
-				this.animation = false;
+
+				terminal.insert( this.hiddenBuff );
+				this.animation 	= false;
+				this.hiddenBuff = '';
 
 				return response;
 			})
@@ -10354,9 +10357,13 @@ class TerminalPlugin
 
 	parseError(e)
 	{
+		console.log('errrrrrr');
+
 		this.spinner.end();
 		this.terminal.resume();
+
 		// alert(' something went wrong ');
+
 		console.error(' error', arguments );
 		this.terminal.error( String(e) );
 	}

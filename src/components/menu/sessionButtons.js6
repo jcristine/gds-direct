@@ -38,7 +38,7 @@ export default class SessionKeys
 
 	getButtons()
 	{
-		return ['A', 'B', 'C'].map( this.makeButton.bind( this ) );
+		return ['A', 'B', 'C', 'D', 'E'].map( this.makeButton.bind( this ) );
 	}
 
 	getTrigger()
