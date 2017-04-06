@@ -33,16 +33,18 @@
 /******/ 	// expose the module cache
 /******/ 	__webpack_require__.c = installedModules;
 /******/
-/******/ 	// identity function for calling harmory imports with the correct context
+/******/ 	// identity function for calling harmony imports with the correct context
 /******/ 	__webpack_require__.i = function(value) { return value; };
 /******/
-/******/ 	// define getter function for harmory exports
+/******/ 	// define getter function for harmony exports
 /******/ 	__webpack_require__.d = function(exports, name, getter) {
-/******/ 		Object.defineProperty(exports, name, {
-/******/ 			configurable: false,
-/******/ 			enumerable: true,
-/******/ 			get: getter
-/******/ 		});
+/******/ 		if(!__webpack_require__.o(exports, name)) {
+/******/ 			Object.defineProperty(exports, name, {
+/******/ 				configurable: false,
+/******/ 				enumerable: true,
+/******/ 				get: getter
+/******/ 			});
+/******/ 		}
 /******/ 	};
 /******/
 /******/ 	// getDefaultExport function for compatibility with non-harmony modules
@@ -61,18 +63,21 @@
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 23);
+/******/ 	return __webpack_require__(__webpack_require__.s = 24);
 /******/ })
 /************************************************************************/
 /******/ ([
 /* 0 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*! tether-drop 1.4.1 */
 
 (function(root, factory) {
   if (true) {
-    !(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory), __WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ? (__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+    !(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(9)], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory),
+				__WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ?
+				(__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__),
+				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
   } else if (typeof exports === 'object') {
     module.exports = factory(require('tether'));
   } else {
@@ -630,91 +635,36 @@ return Drop;
 }));
 
 
-/***/ },
+/***/ }),
 /* 1 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports) {
 
-/* WEBPACK VAR INJECTION */(function(setImmediate, clearImmediate) {var nextTick = __webpack_require__(7).nextTick;
-var apply = Function.prototype.apply;
-var slice = Array.prototype.slice;
-var immediateIds = {};
-var nextImmediateId = 0;
+var g;
 
-// DOM APIs, for completeness
+// This works in non-strict mode
+g = (function() {
+	return this;
+})();
 
-exports.setTimeout = function() {
-  return new Timeout(apply.call(setTimeout, window, arguments), clearTimeout);
-};
-exports.setInterval = function() {
-  return new Timeout(apply.call(setInterval, window, arguments), clearInterval);
-};
-exports.clearTimeout =
-exports.clearInterval = function(timeout) { timeout.close(); };
-
-function Timeout(id, clearFn) {
-  this._id = id;
-  this._clearFn = clearFn;
+try {
+	// This works if eval is allowed (see CSP)
+	g = g || Function("return this")() || (1,eval)("this");
+} catch(e) {
+	// This works if the window reference is available
+	if(typeof window === "object")
+		g = window;
 }
-Timeout.prototype.unref = Timeout.prototype.ref = function() {};
-Timeout.prototype.close = function() {
-  this._clearFn.call(window, this._id);
-};
 
-// Does not start the time, just sets up the members needed.
-exports.enroll = function(item, msecs) {
-  clearTimeout(item._idleTimeoutId);
-  item._idleTimeout = msecs;
-};
+// g can still be undefined, but nothing to do about it...
+// We return undefined, instead of nothing here, so it's
+// easier to handle this case. if(!global) { ...}
 
-exports.unenroll = function(item) {
-  clearTimeout(item._idleTimeoutId);
-  item._idleTimeout = -1;
-};
+module.exports = g;
 
-exports._unrefActive = exports.active = function(item) {
-  clearTimeout(item._idleTimeoutId);
 
-  var msecs = item._idleTimeout;
-  if (msecs >= 0) {
-    item._idleTimeoutId = setTimeout(function onTimeout() {
-      if (item._onTimeout)
-        item._onTimeout();
-    }, msecs);
-  }
-};
-
-// That's not how node.js implements it but the exposed api is the same.
-exports.setImmediate = typeof setImmediate === "function" ? setImmediate : function(fn) {
-  var id = nextImmediateId++;
-  var args = arguments.length < 2 ? false : slice.call(arguments, 1);
-
-  immediateIds[id] = true;
-
-  nextTick(function onNextTick() {
-    if (immediateIds[id]) {
-      // fn.call() is faster so we optimize for the common use-case
-      // @see http://jsperf.com/call-apply-segu
-      if (args) {
-        fn.apply(null, args);
-      } else {
-        fn.call(null);
-      }
-      // Prevent ids from leaking
-      exports.clearImmediate(id);
-    }
-  });
-
-  return id;
-};
-
-exports.clearImmediate = typeof clearImmediate === "function" ? clearImmediate : function(id) {
-  delete immediateIds[id];
-};
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1).setImmediate, __webpack_require__(1).clearImmediate))
-
-/***/ },
+/***/ }),
 /* 2 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 const TERMINAL_HEIGHT 		= '650';
@@ -727,39 +677,43 @@ const INFO_DATA_URL 	 		= '?id=terminal/middleware&getInfoData=1';
 /* unused harmony export INFO_DATA_URL */
 
 const END_POINT_URL	 		= '?id=terminal/middleware';
-/* harmony export (immutable) */ exports["b"] = END_POINT_URL;
+/* harmony export (immutable) */ __webpack_exports__["d"] = END_POINT_URL;
 
 const TIME_FORMAT 			= '12';
-/* harmony export (immutable) */ exports["c"] = TIME_FORMAT;
+/* harmony export (immutable) */ __webpack_exports__["a"] = TIME_FORMAT;
 
 const ACCOUNT 				= 'training';
-/* harmony export (immutable) */ exports["d"] = ACCOUNT;
+/* harmony export (immutable) */ __webpack_exports__["b"] = ACCOUNT;
 
 const API_HOST 				= '';
-/* harmony export (immutable) */ exports["a"] = API_HOST;
+/* harmony export (immutable) */ __webpack_exports__["c"] = API_HOST;
 
 
-/***/ },
+/***/ }),
 /* 3 */
-/***/ function(module, exports) {
+/***/ (function(module, exports) {
 
 module.exports = jQuery;
 
-/***/ },
+/***/ }),
 /* 4 */
-/***/ function(module, exports) {
+/***/ (function(module, exports) {
 
 // removed by extract-text-webpack-plugin
 
-/***/ },
+/***/ }),
 /* 5 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__components_containerMain__ = __webpack_require__(11);
-'use strict';
+Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__components_containerMain__ = __webpack_require__(12);
 
 
+
+
+// const cliSpinners = require('cli-spinners');
+// console.log(cliSpinners.dots);
 
 const apiData = window.apiData || {};
 
@@ -831,9 +785,9 @@ window.TerminalState = {
 
 Context.init();
 
-/***/ },
+/***/ }),
 /* 6 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(global, setImmediate) {/**@license
  *       __ _____                     ________                              __
@@ -6726,11 +6680,11 @@ Context.init();
     }; // terminal plugin
 })(jQuery);
 
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(9), __webpack_require__(1).setImmediate))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1), __webpack_require__(10).setImmediate))
 
-/***/ },
+/***/ }),
 /* 7 */
-/***/ function(module, exports) {
+/***/ (function(module, exports) {
 
 // shim for using process in browser
 var process = module.exports = {};
@@ -6914,15 +6868,212 @@ process.chdir = function (dir) {
 process.umask = function() { return 0; };
 
 
-/***/ },
+/***/ }),
 /* 8 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
+
+/* WEBPACK VAR INJECTION */(function(global, process) {(function (global, undefined) {
+    "use strict";
+
+    if (global.setImmediate) {
+        return;
+    }
+
+    var nextHandle = 1; // Spec says greater than zero
+    var tasksByHandle = {};
+    var currentlyRunningATask = false;
+    var doc = global.document;
+    var registerImmediate;
+
+    function setImmediate(callback) {
+      // Callback can either be a function or a string
+      if (typeof callback !== "function") {
+        callback = new Function("" + callback);
+      }
+      // Copy function arguments
+      var args = new Array(arguments.length - 1);
+      for (var i = 0; i < args.length; i++) {
+          args[i] = arguments[i + 1];
+      }
+      // Store and register the task
+      var task = { callback: callback, args: args };
+      tasksByHandle[nextHandle] = task;
+      registerImmediate(nextHandle);
+      return nextHandle++;
+    }
+
+    function clearImmediate(handle) {
+        delete tasksByHandle[handle];
+    }
+
+    function run(task) {
+        var callback = task.callback;
+        var args = task.args;
+        switch (args.length) {
+        case 0:
+            callback();
+            break;
+        case 1:
+            callback(args[0]);
+            break;
+        case 2:
+            callback(args[0], args[1]);
+            break;
+        case 3:
+            callback(args[0], args[1], args[2]);
+            break;
+        default:
+            callback.apply(undefined, args);
+            break;
+        }
+    }
+
+    function runIfPresent(handle) {
+        // From the spec: "Wait until any invocations of this algorithm started before this one have completed."
+        // So if we're currently running a task, we'll need to delay this invocation.
+        if (currentlyRunningATask) {
+            // Delay by doing a setTimeout. setImmediate was tried instead, but in Firefox 7 it generated a
+            // "too much recursion" error.
+            setTimeout(runIfPresent, 0, handle);
+        } else {
+            var task = tasksByHandle[handle];
+            if (task) {
+                currentlyRunningATask = true;
+                try {
+                    run(task);
+                } finally {
+                    clearImmediate(handle);
+                    currentlyRunningATask = false;
+                }
+            }
+        }
+    }
+
+    function installNextTickImplementation() {
+        registerImmediate = function(handle) {
+            process.nextTick(function () { runIfPresent(handle); });
+        };
+    }
+
+    function canUsePostMessage() {
+        // The test against `importScripts` prevents this implementation from being installed inside a web worker,
+        // where `global.postMessage` means something completely different and can't be used for this purpose.
+        if (global.postMessage && !global.importScripts) {
+            var postMessageIsAsynchronous = true;
+            var oldOnMessage = global.onmessage;
+            global.onmessage = function() {
+                postMessageIsAsynchronous = false;
+            };
+            global.postMessage("", "*");
+            global.onmessage = oldOnMessage;
+            return postMessageIsAsynchronous;
+        }
+    }
+
+    function installPostMessageImplementation() {
+        // Installs an event handler on `global` for the `message` event: see
+        // * https://developer.mozilla.org/en/DOM/window.postMessage
+        // * http://www.whatwg.org/specs/web-apps/current-work/multipage/comms.html#crossDocumentMessages
+
+        var messagePrefix = "setImmediate$" + Math.random() + "$";
+        var onGlobalMessage = function(event) {
+            if (event.source === global &&
+                typeof event.data === "string" &&
+                event.data.indexOf(messagePrefix) === 0) {
+                runIfPresent(+event.data.slice(messagePrefix.length));
+            }
+        };
+
+        if (global.addEventListener) {
+            global.addEventListener("message", onGlobalMessage, false);
+        } else {
+            global.attachEvent("onmessage", onGlobalMessage);
+        }
+
+        registerImmediate = function(handle) {
+            global.postMessage(messagePrefix + handle, "*");
+        };
+    }
+
+    function installMessageChannelImplementation() {
+        var channel = new MessageChannel();
+        channel.port1.onmessage = function(event) {
+            var handle = event.data;
+            runIfPresent(handle);
+        };
+
+        registerImmediate = function(handle) {
+            channel.port2.postMessage(handle);
+        };
+    }
+
+    function installReadyStateChangeImplementation() {
+        var html = doc.documentElement;
+        registerImmediate = function(handle) {
+            // Create a <script> element; its readystatechange event will be fired asynchronously once it is inserted
+            // into the document. Do so, thus queuing up the task. Remember to clean up once it's been called.
+            var script = doc.createElement("script");
+            script.onreadystatechange = function () {
+                runIfPresent(handle);
+                script.onreadystatechange = null;
+                html.removeChild(script);
+                script = null;
+            };
+            html.appendChild(script);
+        };
+    }
+
+    function installSetTimeoutImplementation() {
+        registerImmediate = function(handle) {
+            setTimeout(runIfPresent, 0, handle);
+        };
+    }
+
+    // If supported, we should attach to the prototype of global, since that is where setTimeout et al. live.
+    var attachTo = Object.getPrototypeOf && Object.getPrototypeOf(global);
+    attachTo = attachTo && attachTo.setTimeout ? attachTo : global;
+
+    // Don't get fooled by e.g. browserify environments.
+    if ({}.toString.call(global.process) === "[object process]") {
+        // For Node.js before 0.9
+        installNextTickImplementation();
+
+    } else if (canUsePostMessage()) {
+        // For non-IE10 modern browsers
+        installPostMessageImplementation();
+
+    } else if (global.MessageChannel) {
+        // For web workers, where supported
+        installMessageChannelImplementation();
+
+    } else if (doc && "onreadystatechange" in doc.createElement("script")) {
+        // For IE 6–8
+        installReadyStateChangeImplementation();
+
+    } else {
+        // For older browsers
+        installSetTimeoutImplementation();
+    }
+
+    attachTo.setImmediate = setImmediate;
+    attachTo.clearImmediate = clearImmediate;
+}(typeof self === "undefined" ? typeof global === "undefined" ? this : global : self));
+
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1), __webpack_require__(7)))
+
+/***/ }),
+/* 9 */
+/***/ (function(module, exports, __webpack_require__) {
 
 var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_RESULT__;/*! tether 1.4.0 */
 
 (function(root, factory) {
   if (true) {
-    !(__WEBPACK_AMD_DEFINE_FACTORY__ = (factory), __WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ? (__WEBPACK_AMD_DEFINE_FACTORY__.call(exports, __webpack_require__, exports, module)) : __WEBPACK_AMD_DEFINE_FACTORY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+    !(__WEBPACK_AMD_DEFINE_FACTORY__ = (factory),
+				__WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ?
+				(__WEBPACK_AMD_DEFINE_FACTORY__.call(exports, __webpack_require__, exports, module)) :
+				__WEBPACK_AMD_DEFINE_FACTORY__),
+				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
   } else if (typeof exports === 'object') {
     module.exports = factory(require, exports, module);
   } else {
@@ -8731,38 +8882,72 @@ return Tether;
 }));
 
 
-/***/ },
-/* 9 */
-/***/ function(module, exports) {
-
-var g;
-
-// This works in non-strict mode
-g = (function() { return this; })();
-
-try {
-	// This works if eval is allowed (see CSP)
-	g = g || Function("return this")() || (1,eval)("this");
-} catch(e) {
-	// This works if the window reference is available
-	if(typeof window === "object")
-		g = window;
-}
-
-// g can still be undefined, but nothing to do about it...
-// We return undefined, instead of nothing here, so it's
-// easier to handle this case. if(!global) { ...}
-
-module.exports = g;
-
-
-/***/ },
+/***/ }),
 /* 10 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
+
+var apply = Function.prototype.apply;
+
+// DOM APIs, for completeness
+
+exports.setTimeout = function() {
+  return new Timeout(apply.call(setTimeout, window, arguments), clearTimeout);
+};
+exports.setInterval = function() {
+  return new Timeout(apply.call(setInterval, window, arguments), clearInterval);
+};
+exports.clearTimeout =
+exports.clearInterval = function(timeout) {
+  if (timeout) {
+    timeout.close();
+  }
+};
+
+function Timeout(id, clearFn) {
+  this._id = id;
+  this._clearFn = clearFn;
+}
+Timeout.prototype.unref = Timeout.prototype.ref = function() {};
+Timeout.prototype.close = function() {
+  this._clearFn.call(window, this._id);
+};
+
+// Does not start the time, just sets up the members needed.
+exports.enroll = function(item, msecs) {
+  clearTimeout(item._idleTimeoutId);
+  item._idleTimeout = msecs;
+};
+
+exports.unenroll = function(item) {
+  clearTimeout(item._idleTimeoutId);
+  item._idleTimeout = -1;
+};
+
+exports._unrefActive = exports.active = function(item) {
+  clearTimeout(item._idleTimeoutId);
+
+  var msecs = item._idleTimeout;
+  if (msecs >= 0) {
+    item._idleTimeoutId = setTimeout(function onTimeout() {
+      if (item._onTimeout)
+        item._onTimeout();
+    }, msecs);
+  }
+};
+
+// setimmediate attaches itself to the global object
+__webpack_require__(8);
+exports.setImmediate = setImmediate;
+exports.clearImmediate = clearImmediate;
+
+
+/***/ }),
+/* 11 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__popovers_terminalMatrix__ = __webpack_require__(15);
-'use strict';
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__popovers_terminalMatrix__ = __webpack_require__(16);
+
 
 
 
@@ -8814,18 +8999,18 @@ class ActionsMenu {
 		return context;
 	}
 }
-/* harmony export (immutable) */ exports["a"] = ActionsMenu;
+/* harmony export (immutable) */ __webpack_exports__["a"] = ActionsMenu;
 
 
-/***/ },
-/* 11 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ }),
+/* 12 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__terminal__ = __webpack_require__(17);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__actionsMenu__ = __webpack_require__(10);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__menuPanel__ = __webpack_require__(13);
-'use strict';
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__terminal__ = __webpack_require__(18);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__actionsMenu__ = __webpack_require__(11);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__menuPanel__ = __webpack_require__(14);
+
 
 
 
@@ -9019,16 +9204,16 @@ class Container {
 		inSession[ sessionKey ] = terminalList;
 	}
 }
-/* harmony export (immutable) */ exports["a"] = Container;
+/* harmony export (immutable) */ __webpack_exports__["a"] = Container;
 
 
 
-/***/ },
-/* 12 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ }),
+/* 13 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-'use strict';
+
 
 class SessionKeys
 {
@@ -9097,18 +9282,18 @@ class SessionKeys
 		return this.context;
 	}
 }
-/* harmony export (immutable) */ exports["a"] = SessionKeys;
+/* harmony export (immutable) */ __webpack_exports__["a"] = SessionKeys;
 
 
-/***/ },
-/* 13 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ }),
+/* 14 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__popovers_history__ = __webpack_require__(14);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__popovers_textSize__ = __webpack_require__(16);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__menu_sessionButtons__ = __webpack_require__(12);
-'use strict';
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__popovers_history__ = __webpack_require__(15);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__popovers_textSize__ = __webpack_require__(17);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__menu_sessionButtons__ = __webpack_require__(13);
+
 
 
 
@@ -9263,17 +9448,17 @@ class MenuPanel
 		return context;
 	}
 }
-/* harmony export (immutable) */ exports["a"] = MenuPanel;
+/* harmony export (immutable) */ __webpack_exports__["a"] = MenuPanel;
 
 
-/***/ },
-/* 14 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ }),
+/* 15 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_tether_drop__ = __webpack_require__(0);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_tether_drop___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_tether_drop__);
-'use strict';
+
 
 
 
@@ -9311,16 +9496,16 @@ class History
 	}
 }
 
-/* harmony default export */ exports["a"] = History;
+/* harmony default export */ __webpack_exports__["a"] = (History);
 
-/***/ },
-/* 15 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ }),
+/* 16 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_tether_drop__ = __webpack_require__(0);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_tether_drop___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_tether_drop__);
-'use strict';
+
 
 
 
@@ -9403,16 +9588,16 @@ class Matrix
 	}
 }
 
-/* harmony default export */ exports["a"] = Matrix;
+/* harmony default export */ __webpack_exports__["a"] = (Matrix);
 
-/***/ },
-/* 16 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ }),
+/* 17 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_tether_drop__ = __webpack_require__(0);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_tether_drop___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_tether_drop__);
-'use strict';
+
 
 
 
@@ -9469,15 +9654,15 @@ class TextSize
 	}
 }
 
-/* harmony default export */ exports["a"] = TextSize;
+/* harmony default export */ __webpack_exports__["a"] = (TextSize);
 
-/***/ },
-/* 17 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ }),
+/* 18 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__middleware_terminal__ = __webpack_require__(21);
-'use strict';
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__middleware_terminal__ = __webpack_require__(22);
+
 
 
 
@@ -9549,15 +9734,15 @@ class Terminal {
 			this.plugin.getPlugin().resize().scroll_to_bottom();
 	}
 }
-/* harmony export (immutable) */ exports["a"] = Terminal;
+/* harmony export (immutable) */ __webpack_exports__["a"] = Terminal;
 
 
-/***/ },
-/* 18 */
-/***/ function(module, exports) {
+/***/ }),
+/* 19 */
+/***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
-'use strict';
+
 
 function chunk(arr, limit) {
 
@@ -9584,6 +9769,7 @@ function substitutePrintableChar(ch)
 		'[': '¤',
 		'=': '*',
 		'\\': '§',
+		',': '+',
 		// shift + ","
 	};
 
@@ -9592,6 +9778,7 @@ function substitutePrintableChar(ch)
 		']': '$',
 		'=': '*',
 		'`': '>',
+		',': '+',
 	};
 
 	let layout = isApollo ? apolloLayout : sabreLayout;
@@ -9618,12 +9805,12 @@ module.exports = {
 	substitutePrintableChar :	substitutePrintableChar
 };
 
-/***/ },
-/* 19 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ }),
+/* 20 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-'use strict';
+
 
 class KeyBinding
 {
@@ -9794,16 +9981,16 @@ class KeyBinding
 		return true;
 	}
 }
-/* harmony export (immutable) */ exports["a"] = KeyBinding;
+/* harmony export (immutable) */ __webpack_exports__["a"] = KeyBinding;
 
 
-/***/ },
-/* 20 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ }),
+/* 21 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__constants__ = __webpack_require__(2);
-'use strict';
+
 
 let $ = __webpack_require__(3);
 
@@ -9815,7 +10002,7 @@ function get( url, params )
 	if (!url )
 		return '';
 
-	return fetch(__WEBPACK_IMPORTED_MODULE_0__constants__["a" /* API_HOST */] + url, {
+	return fetch(__WEBPACK_IMPORTED_MODULE_0__constants__["c" /* API_HOST */] + url, {
 		credentials: 'include'
 	}).then( function(  response ) {
 		return response.json();
@@ -9825,7 +10012,7 @@ function get( url, params )
 
 function runSyncCommand( functionName, params )
 {
-	let url 	= __WEBPACK_IMPORTED_MODULE_0__constants__["b" /* END_POINT_URL */];
+	let url 	= __WEBPACK_IMPORTED_MODULE_0__constants__["d" /* END_POINT_URL */];
 
 	let data 	= {
 		'function'	: functionName,
@@ -9851,7 +10038,7 @@ function runSyncCommand( functionName, params )
 		// "X-Custom-Header": "ProcessThisImmediately",
 	// });
 
-	return fetch(__WEBPACK_IMPORTED_MODULE_0__constants__["a" /* API_HOST */] + url, {
+	return fetch(__WEBPACK_IMPORTED_MODULE_0__constants__["c" /* API_HOST */] + url, {
 		credentials	: 'include',
 		body		: formData,
 		method		: 'POST',
@@ -9862,7 +10049,7 @@ function runSyncCommand( functionName, params )
 
 function runSyncCommand2( functionName, params )
 {
-	let url 	= __WEBPACK_IMPORTED_MODULE_0__constants__["b" /* END_POINT_URL */];
+	let url 	= __WEBPACK_IMPORTED_MODULE_0__constants__["d" /* END_POINT_URL */];
 
 	let data 	= {
 		'function'	: functionName,
@@ -9911,30 +10098,73 @@ function runSyncCommand2( functionName, params )
 	});
 }
 
-/* harmony default export */ exports["a"] = {
+/* harmony default export */ __webpack_exports__["a"] = ({
 	runSyncCommand	: runSyncCommand,
 	get 			: get
-};
+});
 
 // module.exports = Actions;
 
-/***/ },
-/* 21 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ }),
+/* 22 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__modules_sabreSession__ = __webpack_require__(22);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__helpers_keyBinding__ = __webpack_require__(19);
-'use strict';
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__modules_sabreSession__ = __webpack_require__(23);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__helpers_keyBinding__ = __webpack_require__(20);
+
 
 let $					= __webpack_require__(3);
 window.$ 				= window.jQuery = $;
 
 let jqTerminal 			= __webpack_require__(6);
-let Helpers				= __webpack_require__(18);
+let Helpers				= __webpack_require__(19);
+
+const cliSpinners = __webpack_require__(33);
+console.log(cliSpinners);
 
 
 
+
+
+class Spinner
+{
+	constructor( terminal )
+	{
+		this.timer 		= false;
+		this.terminal 	= terminal;
+		this.promt 		= false;
+		this.spinner	= cliSpinners.line;
+
+		this.frameCounter = 0;
+	}
+
+	set()
+	{
+		let text = this.spinner.frames[this.frameCounter++ % this.spinner.frames.length];
+		this.terminal.set_prompt(text);
+	}
+
+	start()
+	{
+		this.terminal.find('.cursor').hide();
+		this.prompt 	= this.terminal.get_prompt();
+
+		this.set();
+		this.timer 		= setInterval( this.set.bind(this), this.spinner.interval);
+	}
+
+	end()
+	{
+		clearInterval( this.timer );
+
+		setTimeout(() => {
+			clearInterval( this.timer );
+			this.terminal.set_prompt( this.prompt );
+			this.terminal.find('.cursor').show();
+		}, 0);
+	}
+}
 
 class TerminalPlugin
 {
@@ -9944,6 +10174,7 @@ class TerminalPlugin
 		this.name		= params.name;
 		this.terminal 	= null;
 		this.outputCache = [];
+		this.animation	 = false;
 
 		this.session = new __WEBPACK_IMPORTED_MODULE_0__modules_sabreSession__["a" /* default */]({
 			terminalIndex	: params.name,
@@ -9960,7 +10191,7 @@ class TerminalPlugin
 		return this.terminal;
 	}
 
-	static parseInput( evt, terminal )
+	parseInput( evt, terminal )
 	{
 		if ( !terminal.enabled() ) // key press fires globally on all terminals;
 			return false;
@@ -9980,8 +10211,11 @@ class TerminalPlugin
 		}
 	}
 
-	static parseKeyBinds( evt, terminal )
+	parseKeyBinds( evt, terminal )
 	{
+		if ( this.animation )
+			return false;
+
 		if ( !__WEBPACK_IMPORTED_MODULE_1__helpers_keyBinding__["a" /* default */].parse( evt, terminal ) )
 		{
 			return false;
@@ -10005,9 +10239,10 @@ class TerminalPlugin
 
 			name		: this.name,
 			prompt		: '>',
-			//enabled		: false,
-			keypress	: TerminalPlugin.parseInput,
-			keydown		: TerminalPlugin.parseKeyBinds
+
+			keypress	: this.parseInput.bind(this),
+			keydown		: this.parseKeyBinds.bind(this),
+
 			// numChars	: false
 
 			// wrap		: false,
@@ -10024,12 +10259,37 @@ class TerminalPlugin
 			//	console.log('exc', arguments)
 			//}
 		});
+
+		this.spinner = new Spinner( this.terminal );
 	}
+
+	// spinner( terminal )
+	// {
+	// 	let animation 	= true;
+	// 	let i 			= 0;
+	//
+	// 	let spinner 	= cliSpinners.circle;
+	// 	let prompt 		= terminal.get_prompt();
+	//
+	// 	function set()
+	// 	{
+	// 		let text = spinner.frames[i++ % spinner.frames.length];
+	// 		terminal.set_prompt(text);
+	// 	}
+	//
+	// 	terminal.find('.cursor').hide();
+	// 	set();
+	//
+	// 	let timer = setInterval(set, spinner.interval);
+	// }
 
 	commandParser( command, terminal )
 	{
 		// console.log( terminal.rows() );
 		// console.log( terminal.cols() );
+
+		if (this.animation)
+			return false;
 
 		if ( !command || command === '' )
 		{
@@ -10037,24 +10297,37 @@ class TerminalPlugin
 			return false;
 		}
 
-		// if ( command === 'MD' )
-		// {
-		// 	terminal.echo( this.outputCache.length > 0 ?  this.outputCache.shift() : '‡NOTHING TO SCROLL‡' );
-		// 	return false;
-		// }
-        //
-		// if ( command === 'MU' )
-		// {
-		// 	terminal.echo( this.outputCache.length > 0 ?  this.outputCache.shift() : '‡NOTHING TO SCROLL‡' );
-		// 	return false;
-		// }
+		if ( command === 'MD' )
+		{
+			terminal.echo( this.outputCache.length > 0 ?  this.outputCache.shift() : '‡NOTHING TO SCROLL‡' );
+			return false;
+		}
 
-		terminal.pause();
+		if ( command === 'MU' )
+		{
+			terminal.echo( this.outputCache.length > 0 ?  this.outputCache.shift() : '‡NOTHING TO SCROLL‡' );
+			return false;
+		}
+
+		this.spinner.start();
+		this.animation 	= true;
+		// terminal.pause();
 
 		this.session
 			.run({
 				cmd : command
 			})
+
+			.then( ( response = {} ) => {
+
+				console.log('stop');
+
+				this.spinner.end();
+				this.animation = false;
+
+				return response;
+			})
+
 			.then( this.parseBackEnd.bind(this) )
 			.then( function () {
 				terminal.resume();
@@ -10081,23 +10354,24 @@ class TerminalPlugin
 
 	parseError(e)
 	{
+		this.spinner.end();
 		this.terminal.resume();
 		// alert(' something went wrong ');
 		console.error(' error', arguments );
 		this.terminal.error( String(e) );
 	}
 }
-/* harmony export (immutable) */ exports["a"] = TerminalPlugin;
+/* harmony export (immutable) */ __webpack_exports__["a"] = TerminalPlugin;
 
 
-/***/ },
-/* 22 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ }),
+/* 23 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__constants__ = __webpack_require__(2);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__helpers_requests__ = __webpack_require__(20);
-'use strict';
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__helpers_requests__ = __webpack_require__(21);
+
 
 
 
@@ -10112,8 +10386,8 @@ class Session
 	start()
 	{
 		__WEBPACK_IMPORTED_MODULE_1__helpers_requests__["a" /* default */].runSyncCommand('startSession',  {
-			timeFormat	: __WEBPACK_IMPORTED_MODULE_0__constants__["c" /* TIME_FORMAT */],
-			account		: __WEBPACK_IMPORTED_MODULE_0__constants__["d" /* ACCOUNT */]
+			timeFormat	: __WEBPACK_IMPORTED_MODULE_0__constants__["a" /* TIME_FORMAT */],
+			account		: __WEBPACK_IMPORTED_MODULE_0__constants__["b" /* ACCOUNT */]
 		})
 			.then( function( response ) {
 				// sessionToken = response['data']['sessionToken'];
@@ -10146,17 +10420,871 @@ class Session
 			return true;
 	}
 }
-/* harmony export (immutable) */ exports["a"] = Session;
+/* harmony export (immutable) */ __webpack_exports__["a"] = Session;
 
 
-/***/ },
-/* 23 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ }),
+/* 24 */
+/***/ (function(module, exports, __webpack_require__) {
 
 __webpack_require__(5);
 module.exports = __webpack_require__(4);
 
 
-/***/ }
+/***/ }),
+/* 25 */,
+/* 26 */,
+/* 27 */,
+/* 28 */,
+/* 29 */,
+/* 30 */,
+/* 31 */,
+/* 32 */,
+/* 33 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+module.exports = __webpack_require__(34);
+
+
+/***/ }),
+/* 34 */
+/***/ (function(module, exports) {
+
+module.exports = {
+	"dots": {
+		"interval": 80,
+		"frames": [
+			"⠋",
+			"⠙",
+			"⠹",
+			"⠸",
+			"⠼",
+			"⠴",
+			"⠦",
+			"⠧",
+			"⠇",
+			"⠏"
+		]
+	},
+	"dots2": {
+		"interval": 80,
+		"frames": [
+			"⣾",
+			"⣽",
+			"⣻",
+			"⢿",
+			"⡿",
+			"⣟",
+			"⣯",
+			"⣷"
+		]
+	},
+	"dots3": {
+		"interval": 80,
+		"frames": [
+			"⠋",
+			"⠙",
+			"⠚",
+			"⠞",
+			"⠖",
+			"⠦",
+			"⠴",
+			"⠲",
+			"⠳",
+			"⠓"
+		]
+	},
+	"dots4": {
+		"interval": 80,
+		"frames": [
+			"⠄",
+			"⠆",
+			"⠇",
+			"⠋",
+			"⠙",
+			"⠸",
+			"⠰",
+			"⠠",
+			"⠰",
+			"⠸",
+			"⠙",
+			"⠋",
+			"⠇",
+			"⠆"
+		]
+	},
+	"dots5": {
+		"interval": 80,
+		"frames": [
+			"⠋",
+			"⠙",
+			"⠚",
+			"⠒",
+			"⠂",
+			"⠂",
+			"⠒",
+			"⠲",
+			"⠴",
+			"⠦",
+			"⠖",
+			"⠒",
+			"⠐",
+			"⠐",
+			"⠒",
+			"⠓",
+			"⠋"
+		]
+	},
+	"dots6": {
+		"interval": 80,
+		"frames": [
+			"⠁",
+			"⠉",
+			"⠙",
+			"⠚",
+			"⠒",
+			"⠂",
+			"⠂",
+			"⠒",
+			"⠲",
+			"⠴",
+			"⠤",
+			"⠄",
+			"⠄",
+			"⠤",
+			"⠴",
+			"⠲",
+			"⠒",
+			"⠂",
+			"⠂",
+			"⠒",
+			"⠚",
+			"⠙",
+			"⠉",
+			"⠁"
+		]
+	},
+	"dots7": {
+		"interval": 80,
+		"frames": [
+			"⠈",
+			"⠉",
+			"⠋",
+			"⠓",
+			"⠒",
+			"⠐",
+			"⠐",
+			"⠒",
+			"⠖",
+			"⠦",
+			"⠤",
+			"⠠",
+			"⠠",
+			"⠤",
+			"⠦",
+			"⠖",
+			"⠒",
+			"⠐",
+			"⠐",
+			"⠒",
+			"⠓",
+			"⠋",
+			"⠉",
+			"⠈"
+		]
+	},
+	"dots8": {
+		"interval": 80,
+		"frames": [
+			"⠁",
+			"⠁",
+			"⠉",
+			"⠙",
+			"⠚",
+			"⠒",
+			"⠂",
+			"⠂",
+			"⠒",
+			"⠲",
+			"⠴",
+			"⠤",
+			"⠄",
+			"⠄",
+			"⠤",
+			"⠠",
+			"⠠",
+			"⠤",
+			"⠦",
+			"⠖",
+			"⠒",
+			"⠐",
+			"⠐",
+			"⠒",
+			"⠓",
+			"⠋",
+			"⠉",
+			"⠈",
+			"⠈"
+		]
+	},
+	"dots9": {
+		"interval": 80,
+		"frames": [
+			"⢹",
+			"⢺",
+			"⢼",
+			"⣸",
+			"⣇",
+			"⡧",
+			"⡗",
+			"⡏"
+		]
+	},
+	"dots10": {
+		"interval": 80,
+		"frames": [
+			"⢄",
+			"⢂",
+			"⢁",
+			"⡁",
+			"⡈",
+			"⡐",
+			"⡠"
+		]
+	},
+	"dots11": {
+		"interval": 100,
+		"frames": [
+			"⠁",
+			"⠂",
+			"⠄",
+			"⡀",
+			"⢀",
+			"⠠",
+			"⠐",
+			"⠈"
+		]
+	},
+	"dots12": {
+		"interval": 80,
+		"frames": [
+			"⢀⠀",
+			"⡀⠀",
+			"⠄⠀",
+			"⢂⠀",
+			"⡂⠀",
+			"⠅⠀",
+			"⢃⠀",
+			"⡃⠀",
+			"⠍⠀",
+			"⢋⠀",
+			"⡋⠀",
+			"⠍⠁",
+			"⢋⠁",
+			"⡋⠁",
+			"⠍⠉",
+			"⠋⠉",
+			"⠋⠉",
+			"⠉⠙",
+			"⠉⠙",
+			"⠉⠩",
+			"⠈⢙",
+			"⠈⡙",
+			"⢈⠩",
+			"⡀⢙",
+			"⠄⡙",
+			"⢂⠩",
+			"⡂⢘",
+			"⠅⡘",
+			"⢃⠨",
+			"⡃⢐",
+			"⠍⡐",
+			"⢋⠠",
+			"⡋⢀",
+			"⠍⡁",
+			"⢋⠁",
+			"⡋⠁",
+			"⠍⠉",
+			"⠋⠉",
+			"⠋⠉",
+			"⠉⠙",
+			"⠉⠙",
+			"⠉⠩",
+			"⠈⢙",
+			"⠈⡙",
+			"⠈⠩",
+			"⠀⢙",
+			"⠀⡙",
+			"⠀⠩",
+			"⠀⢘",
+			"⠀⡘",
+			"⠀⠨",
+			"⠀⢐",
+			"⠀⡐",
+			"⠀⠠",
+			"⠀⢀",
+			"⠀⡀"
+		]
+	},
+	"line": {
+		"interval": 130,
+		"frames": [
+			"-",
+			"\\",
+			"|",
+			"/"
+		]
+	},
+	"line2": {
+		"interval": 100,
+		"frames": [
+			"⠂",
+			"-",
+			"–",
+			"—",
+			"–",
+			"-"
+		]
+	},
+	"pipe": {
+		"interval": 100,
+		"frames": [
+			"┤",
+			"┘",
+			"┴",
+			"└",
+			"├",
+			"┌",
+			"┬",
+			"┐"
+		]
+	},
+	"simpleDots": {
+		"interval": 400,
+		"frames": [
+			".  ",
+			".. ",
+			"...",
+			"   "
+		]
+	},
+	"simpleDotsScrolling": {
+		"interval": 200,
+		"frames": [
+			".  ",
+			".. ",
+			"...",
+			" ..",
+			"  .",
+			"   "
+		]
+	},
+	"star": {
+		"interval": 70,
+		"frames": [
+			"✶",
+			"✸",
+			"✹",
+			"✺",
+			"✹",
+			"✷"
+		]
+	},
+	"star2": {
+		"interval": 80,
+		"frames": [
+			"+",
+			"x",
+			"*"
+		]
+	},
+	"flip": {
+		"interval": 70,
+		"frames": [
+			"_",
+			"_",
+			"_",
+			"-",
+			"`",
+			"`",
+			"'",
+			"´",
+			"-",
+			"_",
+			"_",
+			"_"
+		]
+	},
+	"hamburger": {
+		"interval": 100,
+		"frames": [
+			"☱",
+			"☲",
+			"☴"
+		]
+	},
+	"growVertical": {
+		"interval": 120,
+		"frames": [
+			"▁",
+			"▃",
+			"▄",
+			"▅",
+			"▆",
+			"▇",
+			"▆",
+			"▅",
+			"▄",
+			"▃"
+		]
+	},
+	"growHorizontal": {
+		"interval": 120,
+		"frames": [
+			"▏",
+			"▎",
+			"▍",
+			"▌",
+			"▋",
+			"▊",
+			"▉",
+			"▊",
+			"▋",
+			"▌",
+			"▍",
+			"▎"
+		]
+	},
+	"balloon": {
+		"interval": 140,
+		"frames": [
+			" ",
+			".",
+			"o",
+			"O",
+			"@",
+			"*",
+			" "
+		]
+	},
+	"balloon2": {
+		"interval": 120,
+		"frames": [
+			".",
+			"o",
+			"O",
+			"°",
+			"O",
+			"o",
+			"."
+		]
+	},
+	"noise": {
+		"interval": 100,
+		"frames": [
+			"▓",
+			"▒",
+			"░"
+		]
+	},
+	"bounce": {
+		"interval": 120,
+		"frames": [
+			"⠁",
+			"⠂",
+			"⠄",
+			"⠂"
+		]
+	},
+	"boxBounce": {
+		"interval": 120,
+		"frames": [
+			"▖",
+			"▘",
+			"▝",
+			"▗"
+		]
+	},
+	"boxBounce2": {
+		"interval": 100,
+		"frames": [
+			"▌",
+			"▀",
+			"▐",
+			"▄"
+		]
+	},
+	"triangle": {
+		"interval": 50,
+		"frames": [
+			"◢",
+			"◣",
+			"◤",
+			"◥"
+		]
+	},
+	"arc": {
+		"interval": 100,
+		"frames": [
+			"◜",
+			"◠",
+			"◝",
+			"◞",
+			"◡",
+			"◟"
+		]
+	},
+	"circle": {
+		"interval": 120,
+		"frames": [
+			"◡",
+			"⊙",
+			"◠"
+		]
+	},
+	"squareCorners": {
+		"interval": 180,
+		"frames": [
+			"◰",
+			"◳",
+			"◲",
+			"◱"
+		]
+	},
+	"circleQuarters": {
+		"interval": 120,
+		"frames": [
+			"◴",
+			"◷",
+			"◶",
+			"◵"
+		]
+	},
+	"circleHalves": {
+		"interval": 50,
+		"frames": [
+			"◐",
+			"◓",
+			"◑",
+			"◒"
+		]
+	},
+	"squish": {
+		"interval": 100,
+		"frames": [
+			"╫",
+			"╪"
+		]
+	},
+	"toggle": {
+		"interval": 250,
+		"frames": [
+			"⊶",
+			"⊷"
+		]
+	},
+	"toggle2": {
+		"interval": 80,
+		"frames": [
+			"▫",
+			"▪"
+		]
+	},
+	"toggle3": {
+		"interval": 120,
+		"frames": [
+			"□",
+			"■"
+		]
+	},
+	"toggle4": {
+		"interval": 100,
+		"frames": [
+			"■",
+			"□",
+			"▪",
+			"▫"
+		]
+	},
+	"toggle5": {
+		"interval": 100,
+		"frames": [
+			"▮",
+			"▯"
+		]
+	},
+	"toggle6": {
+		"interval": 300,
+		"frames": [
+			"ဝ",
+			"၀"
+		]
+	},
+	"toggle7": {
+		"interval": 80,
+		"frames": [
+			"⦾",
+			"⦿"
+		]
+	},
+	"toggle8": {
+		"interval": 100,
+		"frames": [
+			"◍",
+			"◌"
+		]
+	},
+	"toggle9": {
+		"interval": 100,
+		"frames": [
+			"◉",
+			"◎"
+		]
+	},
+	"toggle10": {
+		"interval": 100,
+		"frames": [
+			"㊂",
+			"㊀",
+			"㊁"
+		]
+	},
+	"toggle11": {
+		"interval": 50,
+		"frames": [
+			"⧇",
+			"⧆"
+		]
+	},
+	"toggle12": {
+		"interval": 120,
+		"frames": [
+			"☗",
+			"☖"
+		]
+	},
+	"toggle13": {
+		"interval": 80,
+		"frames": [
+			"=",
+			"*",
+			"-"
+		]
+	},
+	"arrow": {
+		"interval": 100,
+		"frames": [
+			"←",
+			"↖",
+			"↑",
+			"↗",
+			"→",
+			"↘",
+			"↓",
+			"↙"
+		]
+	},
+	"arrow2": {
+		"interval": 80,
+		"frames": [
+			"⬆️ ",
+			"↗️ ",
+			"➡️ ",
+			"↘️ ",
+			"⬇️ ",
+			"↙️ ",
+			"⬅️ ",
+			"↖️ "
+		]
+	},
+	"arrow3": {
+		"interval": 120,
+		"frames": [
+			"▹▹▹▹▹",
+			"▸▹▹▹▹",
+			"▹▸▹▹▹",
+			"▹▹▸▹▹",
+			"▹▹▹▸▹",
+			"▹▹▹▹▸"
+		]
+	},
+	"bouncingBar": {
+		"interval": 80,
+		"frames": [
+			"[    ]",
+			"[   =]",
+			"[  ==]",
+			"[ ===]",
+			"[====]",
+			"[=== ]",
+			"[==  ]",
+			"[=   ]"
+		]
+	},
+	"bouncingBall": {
+		"interval": 80,
+		"frames": [
+			"( ●    )",
+			"(  ●   )",
+			"(   ●  )",
+			"(    ● )",
+			"(     ●)",
+			"(    ● )",
+			"(   ●  )",
+			"(  ●   )",
+			"( ●    )",
+			"(●     )"
+		]
+	},
+	"smiley": {
+		"interval": 200,
+		"frames": [
+			"😄 ",
+			"😝 "
+		]
+	},
+	"monkey": {
+		"interval": 300,
+		"frames": [
+			"🙈 ",
+			"🙈 ",
+			"🙉 ",
+			"🙊 "
+		]
+	},
+	"hearts": {
+		"interval": 100,
+		"frames": [
+			"💛 ",
+			"💙 ",
+			"💜 ",
+			"💚 ",
+			"❤️ "
+		]
+	},
+	"clock": {
+		"interval": 100,
+		"frames": [
+			"🕐 ",
+			"🕑 ",
+			"🕒 ",
+			"🕓 ",
+			"🕔 ",
+			"🕕 ",
+			"🕖 ",
+			"🕗 ",
+			"🕘 ",
+			"🕙 ",
+			"🕚 "
+		]
+	},
+	"earth": {
+		"interval": 180,
+		"frames": [
+			"🌍 ",
+			"🌎 ",
+			"🌏 "
+		]
+	},
+	"moon": {
+		"interval": 80,
+		"frames": [
+			"🌑 ",
+			"🌒 ",
+			"🌓 ",
+			"🌔 ",
+			"🌕 ",
+			"🌖 ",
+			"🌗 ",
+			"🌘 "
+		]
+	},
+	"runner": {
+		"interval": 140,
+		"frames": [
+			"🚶 ",
+			"🏃 "
+		]
+	},
+	"pong": {
+		"interval": 80,
+		"frames": [
+			"▐⠂       ▌",
+			"▐⠈       ▌",
+			"▐ ⠂      ▌",
+			"▐ ⠠      ▌",
+			"▐  ⡀     ▌",
+			"▐  ⠠     ▌",
+			"▐   ⠂    ▌",
+			"▐   ⠈    ▌",
+			"▐    ⠂   ▌",
+			"▐    ⠠   ▌",
+			"▐     ⡀  ▌",
+			"▐     ⠠  ▌",
+			"▐      ⠂ ▌",
+			"▐      ⠈ ▌",
+			"▐       ⠂▌",
+			"▐       ⠠▌",
+			"▐       ⡀▌",
+			"▐      ⠠ ▌",
+			"▐      ⠂ ▌",
+			"▐     ⠈  ▌",
+			"▐     ⠂  ▌",
+			"▐    ⠠   ▌",
+			"▐    ⡀   ▌",
+			"▐   ⠠    ▌",
+			"▐   ⠂    ▌",
+			"▐  ⠈     ▌",
+			"▐  ⠂     ▌",
+			"▐ ⠠      ▌",
+			"▐ ⡀      ▌",
+			"▐⠠       ▌"
+		]
+	},
+	"shark": {
+		"interval": 120,
+		"frames": [
+			"▐|\\____________▌",
+			"▐_|\\___________▌",
+			"▐__|\\__________▌",
+			"▐___|\\_________▌",
+			"▐____|\\________▌",
+			"▐_____|\\_______▌",
+			"▐______|\\______▌",
+			"▐_______|\\_____▌",
+			"▐________|\\____▌",
+			"▐_________|\\___▌",
+			"▐__________|\\__▌",
+			"▐___________|\\_▌",
+			"▐____________|\\▌",
+			"▐____________/|▌",
+			"▐___________/|_▌",
+			"▐__________/|__▌",
+			"▐_________/|___▌",
+			"▐________/|____▌",
+			"▐_______/|_____▌",
+			"▐______/|______▌",
+			"▐_____/|_______▌",
+			"▐____/|________▌",
+			"▐___/|_________▌",
+			"▐__/|__________▌",
+			"▐_/|___________▌",
+			"▐/|____________▌"
+		]
+	},
+	"dqpb": {
+		"interval": 100,
+		"frames": [
+			"d",
+			"q",
+			"p",
+			"b"
+		]
+	}
+};
+
+/***/ })
 /******/ ]);
 //# sourceMappingURL=bundle.js.map

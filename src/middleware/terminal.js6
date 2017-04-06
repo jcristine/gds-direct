@@ -6,8 +6,51 @@ window.$ 				= window.jQuery = $;
 let jqTerminal 			= require('jquery.terminal/js/jquery.terminal');
 let Helpers				= require('../helpers/helpers');
 
+const cliSpinners = require('cli-spinners');
+console.log(cliSpinners);
+
+
 import Session 		from '../modules/sabreSession';
 import KeyBinding	from '../helpers/keyBinding';
+
+class Spinner
+{
+	constructor( terminal )
+	{
+		this.timer 		= false;
+		this.terminal 	= terminal;
+		this.promt 		= false;
+		this.spinner	= cliSpinners.line;
+
+		this.frameCounter = 0;
+	}
+
+	set()
+	{
+		let text = this.spinner.frames[this.frameCounter++ % this.spinner.frames.length];
+		this.terminal.set_prompt(text);
+	}
+
+	start()
+	{
+		this.terminal.find('.cursor').hide();
+		this.prompt 	= this.terminal.get_prompt();
+
+		this.set();
+		this.timer 		= setInterval( this.set.bind(this), this.spinner.interval);
+	}
+
+	end()
+	{
+		clearInterval( this.timer );
+
+		setTimeout(() => {
+			clearInterval( this.timer );
+			this.terminal.set_prompt( this.prompt );
+			this.terminal.find('.cursor').show();
+		}, 0);
+	}
+}
 
 export default class TerminalPlugin
 {
@@ -17,6 +60,7 @@ export default class TerminalPlugin
 		this.name		= params.name;
 		this.terminal 	= null;
 		this.outputCache = [];
+		this.animation	 = false;
 
 		this.session = new Session({
 			terminalIndex	: params.name,
@@ -33,7 +77,7 @@ export default class TerminalPlugin
 		return this.terminal;
 	}
 
-	static parseInput( evt, terminal )
+	parseInput( evt, terminal )
 	{
 		if ( !terminal.enabled() ) // key press fires globally on all terminals;
 			return false;
@@ -53,8 +97,11 @@ export default class TerminalPlugin
 		}
 	}
 
-	static parseKeyBinds( evt, terminal )
+	parseKeyBinds( evt, terminal )
 	{
+		if ( this.animation )
+			return false;
+
 		if ( !KeyBinding.parse( evt, terminal ) )
 		{
 			return false;
@@ -78,9 +125,10 @@ export default class TerminalPlugin
 
 			name		: this.name,
 			prompt		: '>',
-			//enabled		: false,
-			keypress	: TerminalPlugin.parseInput,
-			keydown		: TerminalPlugin.parseKeyBinds
+
+			keypress	: this.parseInput.bind(this),
+			keydown		: this.parseKeyBinds.bind(this),
+
 			// numChars	: false
 
 			// wrap		: false,
@@ -97,12 +145,37 @@ export default class TerminalPlugin
 			//	console.log('exc', arguments)
 			//}
 		});
+
+		this.spinner = new Spinner( this.terminal );
 	}
+
+	// spinner( terminal )
+	// {
+	// 	let animation 	= true;
+	// 	let i 			= 0;
+	//
+	// 	let spinner 	= cliSpinners.circle;
+	// 	let prompt 		= terminal.get_prompt();
+	//
+	// 	function set()
+	// 	{
+	// 		let text = spinner.frames[i++ % spinner.frames.length];
+	// 		terminal.set_prompt(text);
+	// 	}
+	//
+	// 	terminal.find('.cursor').hide();
+	// 	set();
+	//
+	// 	let timer = setInterval(set, spinner.interval);
+	// }
 
 	commandParser( command, terminal )
 	{
 		// console.log( terminal.rows() );
 		// console.log( terminal.cols() );
+
+		if (this.animation)
+			return false;
 
 		if ( !command || command === '' )
 		{
@@ -122,12 +195,25 @@ export default class TerminalPlugin
 			return false;
 		}
 
-		terminal.pause();
+		this.spinner.start();
+		this.animation 	= true;
+		// terminal.pause();
 
 		this.session
 			.run({
 				cmd : command
 			})
+
+			.then( ( response = {} ) => {
+
+				console.log('stop');
+
+				this.spinner.end();
+				this.animation = false;
+
+				return response;
+			})
+
 			.then( this.parseBackEnd.bind(this) )
 			.then( function () {
 				terminal.resume();
@@ -154,6 +240,7 @@ export default class TerminalPlugin
 
 	parseError(e)
 	{
+		this.spinner.end();
 		this.terminal.resume();
 		// alert(' something went wrong ');
 		console.error(' error', arguments );
