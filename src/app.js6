@@ -41,7 +41,8 @@ window.TerminalState = {
 		// console.log( 'sessions223:', this.sessions );
 		// Actions( action, params );
 
-		let sIndex 				= ( this.state['sessionIndex'] || 0 ) + '-' + this.state.gds;
+		// let sIndex 				= ( this.state['sessionIndex'] || 0 ) + '-' + this.state.gds;
+		let sIndex 				= ( 0 ) + '-' + this.state.gds;
 		this.sessions[ sIndex ] = this.sessions[ sIndex ] || {};
 
 		switch (action)

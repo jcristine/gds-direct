@@ -162,7 +162,8 @@ export default class Container {
 
 		Container.clearPrev();
 
-		let sessionKey = params['sessionIndex'] + params['gds'];
+		// let sessionKey = params['sessionIndex'] + params['gds'];
+		let sessionKey = 0 + params['gds'];
 
 		terminalList = inSession[ sessionKey ] || [];
 

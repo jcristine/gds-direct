@@ -63,7 +63,7 @@
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 24);
+/******/ 	return __webpack_require__(__webpack_require__.s = 28);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -74,7 +74,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 
 (function(root, factory) {
   if (true) {
-    !(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(9)], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory),
+    !(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(12)], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory),
 				__WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ?
 				(__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__),
 				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
@@ -707,7 +707,7 @@ module.exports = jQuery;
 
 "use strict";
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__components_containerMain__ = __webpack_require__(12);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__components_containerMain__ = __webpack_require__(16);
 
 
 
@@ -751,7 +751,8 @@ window.TerminalState = {
 		// console.log( 'sessions223:', this.sessions );
 		// Actions( action, params );
 
-		let sIndex 				= ( this.state['sessionIndex'] || 0 ) + '-' + this.state.gds;
+		// let sIndex 				= ( this.state['sessionIndex'] || 0 ) + '-' + this.state.gds;
+		let sIndex 				= ( 0 ) + '-' + this.state.gds;
 		this.sessions[ sIndex ] = this.sessions[ sIndex ] || {};
 
 		switch (action)
@@ -784,6 +785,852 @@ Context.init();
 
 /***/ }),
 /* 6 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+module.exports = __webpack_require__(7);
+
+
+/***/ }),
+/* 7 */
+/***/ (function(module, exports) {
+
+module.exports = {
+	"dots": {
+		"interval": 80,
+		"frames": [
+			"⠋",
+			"⠙",
+			"⠹",
+			"⠸",
+			"⠼",
+			"⠴",
+			"⠦",
+			"⠧",
+			"⠇",
+			"⠏"
+		]
+	},
+	"dots2": {
+		"interval": 80,
+		"frames": [
+			"⣾",
+			"⣽",
+			"⣻",
+			"⢿",
+			"⡿",
+			"⣟",
+			"⣯",
+			"⣷"
+		]
+	},
+	"dots3": {
+		"interval": 80,
+		"frames": [
+			"⠋",
+			"⠙",
+			"⠚",
+			"⠞",
+			"⠖",
+			"⠦",
+			"⠴",
+			"⠲",
+			"⠳",
+			"⠓"
+		]
+	},
+	"dots4": {
+		"interval": 80,
+		"frames": [
+			"⠄",
+			"⠆",
+			"⠇",
+			"⠋",
+			"⠙",
+			"⠸",
+			"⠰",
+			"⠠",
+			"⠰",
+			"⠸",
+			"⠙",
+			"⠋",
+			"⠇",
+			"⠆"
+		]
+	},
+	"dots5": {
+		"interval": 80,
+		"frames": [
+			"⠋",
+			"⠙",
+			"⠚",
+			"⠒",
+			"⠂",
+			"⠂",
+			"⠒",
+			"⠲",
+			"⠴",
+			"⠦",
+			"⠖",
+			"⠒",
+			"⠐",
+			"⠐",
+			"⠒",
+			"⠓",
+			"⠋"
+		]
+	},
+	"dots6": {
+		"interval": 80,
+		"frames": [
+			"⠁",
+			"⠉",
+			"⠙",
+			"⠚",
+			"⠒",
+			"⠂",
+			"⠂",
+			"⠒",
+			"⠲",
+			"⠴",
+			"⠤",
+			"⠄",
+			"⠄",
+			"⠤",
+			"⠴",
+			"⠲",
+			"⠒",
+			"⠂",
+			"⠂",
+			"⠒",
+			"⠚",
+			"⠙",
+			"⠉",
+			"⠁"
+		]
+	},
+	"dots7": {
+		"interval": 80,
+		"frames": [
+			"⠈",
+			"⠉",
+			"⠋",
+			"⠓",
+			"⠒",
+			"⠐",
+			"⠐",
+			"⠒",
+			"⠖",
+			"⠦",
+			"⠤",
+			"⠠",
+			"⠠",
+			"⠤",
+			"⠦",
+			"⠖",
+			"⠒",
+			"⠐",
+			"⠐",
+			"⠒",
+			"⠓",
+			"⠋",
+			"⠉",
+			"⠈"
+		]
+	},
+	"dots8": {
+		"interval": 80,
+		"frames": [
+			"⠁",
+			"⠁",
+			"⠉",
+			"⠙",
+			"⠚",
+			"⠒",
+			"⠂",
+			"⠂",
+			"⠒",
+			"⠲",
+			"⠴",
+			"⠤",
+			"⠄",
+			"⠄",
+			"⠤",
+			"⠠",
+			"⠠",
+			"⠤",
+			"⠦",
+			"⠖",
+			"⠒",
+			"⠐",
+			"⠐",
+			"⠒",
+			"⠓",
+			"⠋",
+			"⠉",
+			"⠈",
+			"⠈"
+		]
+	},
+	"dots9": {
+		"interval": 80,
+		"frames": [
+			"⢹",
+			"⢺",
+			"⢼",
+			"⣸",
+			"⣇",
+			"⡧",
+			"⡗",
+			"⡏"
+		]
+	},
+	"dots10": {
+		"interval": 80,
+		"frames": [
+			"⢄",
+			"⢂",
+			"⢁",
+			"⡁",
+			"⡈",
+			"⡐",
+			"⡠"
+		]
+	},
+	"dots11": {
+		"interval": 100,
+		"frames": [
+			"⠁",
+			"⠂",
+			"⠄",
+			"⡀",
+			"⢀",
+			"⠠",
+			"⠐",
+			"⠈"
+		]
+	},
+	"dots12": {
+		"interval": 80,
+		"frames": [
+			"⢀⠀",
+			"⡀⠀",
+			"⠄⠀",
+			"⢂⠀",
+			"⡂⠀",
+			"⠅⠀",
+			"⢃⠀",
+			"⡃⠀",
+			"⠍⠀",
+			"⢋⠀",
+			"⡋⠀",
+			"⠍⠁",
+			"⢋⠁",
+			"⡋⠁",
+			"⠍⠉",
+			"⠋⠉",
+			"⠋⠉",
+			"⠉⠙",
+			"⠉⠙",
+			"⠉⠩",
+			"⠈⢙",
+			"⠈⡙",
+			"⢈⠩",
+			"⡀⢙",
+			"⠄⡙",
+			"⢂⠩",
+			"⡂⢘",
+			"⠅⡘",
+			"⢃⠨",
+			"⡃⢐",
+			"⠍⡐",
+			"⢋⠠",
+			"⡋⢀",
+			"⠍⡁",
+			"⢋⠁",
+			"⡋⠁",
+			"⠍⠉",
+			"⠋⠉",
+			"⠋⠉",
+			"⠉⠙",
+			"⠉⠙",
+			"⠉⠩",
+			"⠈⢙",
+			"⠈⡙",
+			"⠈⠩",
+			"⠀⢙",
+			"⠀⡙",
+			"⠀⠩",
+			"⠀⢘",
+			"⠀⡘",
+			"⠀⠨",
+			"⠀⢐",
+			"⠀⡐",
+			"⠀⠠",
+			"⠀⢀",
+			"⠀⡀"
+		]
+	},
+	"line": {
+		"interval": 130,
+		"frames": [
+			"-",
+			"\\",
+			"|",
+			"/"
+		]
+	},
+	"line2": {
+		"interval": 100,
+		"frames": [
+			"⠂",
+			"-",
+			"–",
+			"—",
+			"–",
+			"-"
+		]
+	},
+	"pipe": {
+		"interval": 100,
+		"frames": [
+			"┤",
+			"┘",
+			"┴",
+			"└",
+			"├",
+			"┌",
+			"┬",
+			"┐"
+		]
+	},
+	"simpleDots": {
+		"interval": 400,
+		"frames": [
+			".  ",
+			".. ",
+			"...",
+			"   "
+		]
+	},
+	"simpleDotsScrolling": {
+		"interval": 200,
+		"frames": [
+			".  ",
+			".. ",
+			"...",
+			" ..",
+			"  .",
+			"   "
+		]
+	},
+	"star": {
+		"interval": 70,
+		"frames": [
+			"✶",
+			"✸",
+			"✹",
+			"✺",
+			"✹",
+			"✷"
+		]
+	},
+	"star2": {
+		"interval": 80,
+		"frames": [
+			"+",
+			"x",
+			"*"
+		]
+	},
+	"flip": {
+		"interval": 70,
+		"frames": [
+			"_",
+			"_",
+			"_",
+			"-",
+			"`",
+			"`",
+			"'",
+			"´",
+			"-",
+			"_",
+			"_",
+			"_"
+		]
+	},
+	"hamburger": {
+		"interval": 100,
+		"frames": [
+			"☱",
+			"☲",
+			"☴"
+		]
+	},
+	"growVertical": {
+		"interval": 120,
+		"frames": [
+			"▁",
+			"▃",
+			"▄",
+			"▅",
+			"▆",
+			"▇",
+			"▆",
+			"▅",
+			"▄",
+			"▃"
+		]
+	},
+	"growHorizontal": {
+		"interval": 120,
+		"frames": [
+			"▏",
+			"▎",
+			"▍",
+			"▌",
+			"▋",
+			"▊",
+			"▉",
+			"▊",
+			"▋",
+			"▌",
+			"▍",
+			"▎"
+		]
+	},
+	"balloon": {
+		"interval": 140,
+		"frames": [
+			" ",
+			".",
+			"o",
+			"O",
+			"@",
+			"*",
+			" "
+		]
+	},
+	"balloon2": {
+		"interval": 120,
+		"frames": [
+			".",
+			"o",
+			"O",
+			"°",
+			"O",
+			"o",
+			"."
+		]
+	},
+	"noise": {
+		"interval": 100,
+		"frames": [
+			"▓",
+			"▒",
+			"░"
+		]
+	},
+	"bounce": {
+		"interval": 120,
+		"frames": [
+			"⠁",
+			"⠂",
+			"⠄",
+			"⠂"
+		]
+	},
+	"boxBounce": {
+		"interval": 120,
+		"frames": [
+			"▖",
+			"▘",
+			"▝",
+			"▗"
+		]
+	},
+	"boxBounce2": {
+		"interval": 100,
+		"frames": [
+			"▌",
+			"▀",
+			"▐",
+			"▄"
+		]
+	},
+	"triangle": {
+		"interval": 50,
+		"frames": [
+			"◢",
+			"◣",
+			"◤",
+			"◥"
+		]
+	},
+	"arc": {
+		"interval": 100,
+		"frames": [
+			"◜",
+			"◠",
+			"◝",
+			"◞",
+			"◡",
+			"◟"
+		]
+	},
+	"circle": {
+		"interval": 120,
+		"frames": [
+			"◡",
+			"⊙",
+			"◠"
+		]
+	},
+	"squareCorners": {
+		"interval": 180,
+		"frames": [
+			"◰",
+			"◳",
+			"◲",
+			"◱"
+		]
+	},
+	"circleQuarters": {
+		"interval": 120,
+		"frames": [
+			"◴",
+			"◷",
+			"◶",
+			"◵"
+		]
+	},
+	"circleHalves": {
+		"interval": 50,
+		"frames": [
+			"◐",
+			"◓",
+			"◑",
+			"◒"
+		]
+	},
+	"squish": {
+		"interval": 100,
+		"frames": [
+			"╫",
+			"╪"
+		]
+	},
+	"toggle": {
+		"interval": 250,
+		"frames": [
+			"⊶",
+			"⊷"
+		]
+	},
+	"toggle2": {
+		"interval": 80,
+		"frames": [
+			"▫",
+			"▪"
+		]
+	},
+	"toggle3": {
+		"interval": 120,
+		"frames": [
+			"□",
+			"■"
+		]
+	},
+	"toggle4": {
+		"interval": 100,
+		"frames": [
+			"■",
+			"□",
+			"▪",
+			"▫"
+		]
+	},
+	"toggle5": {
+		"interval": 100,
+		"frames": [
+			"▮",
+			"▯"
+		]
+	},
+	"toggle6": {
+		"interval": 300,
+		"frames": [
+			"ဝ",
+			"၀"
+		]
+	},
+	"toggle7": {
+		"interval": 80,
+		"frames": [
+			"⦾",
+			"⦿"
+		]
+	},
+	"toggle8": {
+		"interval": 100,
+		"frames": [
+			"◍",
+			"◌"
+		]
+	},
+	"toggle9": {
+		"interval": 100,
+		"frames": [
+			"◉",
+			"◎"
+		]
+	},
+	"toggle10": {
+		"interval": 100,
+		"frames": [
+			"㊂",
+			"㊀",
+			"㊁"
+		]
+	},
+	"toggle11": {
+		"interval": 50,
+		"frames": [
+			"⧇",
+			"⧆"
+		]
+	},
+	"toggle12": {
+		"interval": 120,
+		"frames": [
+			"☗",
+			"☖"
+		]
+	},
+	"toggle13": {
+		"interval": 80,
+		"frames": [
+			"=",
+			"*",
+			"-"
+		]
+	},
+	"arrow": {
+		"interval": 100,
+		"frames": [
+			"←",
+			"↖",
+			"↑",
+			"↗",
+			"→",
+			"↘",
+			"↓",
+			"↙"
+		]
+	},
+	"arrow2": {
+		"interval": 80,
+		"frames": [
+			"⬆️ ",
+			"↗️ ",
+			"➡️ ",
+			"↘️ ",
+			"⬇️ ",
+			"↙️ ",
+			"⬅️ ",
+			"↖️ "
+		]
+	},
+	"arrow3": {
+		"interval": 120,
+		"frames": [
+			"▹▹▹▹▹",
+			"▸▹▹▹▹",
+			"▹▸▹▹▹",
+			"▹▹▸▹▹",
+			"▹▹▹▸▹",
+			"▹▹▹▹▸"
+		]
+	},
+	"bouncingBar": {
+		"interval": 80,
+		"frames": [
+			"[    ]",
+			"[   =]",
+			"[  ==]",
+			"[ ===]",
+			"[====]",
+			"[=== ]",
+			"[==  ]",
+			"[=   ]"
+		]
+	},
+	"bouncingBall": {
+		"interval": 80,
+		"frames": [
+			"( ●    )",
+			"(  ●   )",
+			"(   ●  )",
+			"(    ● )",
+			"(     ●)",
+			"(    ● )",
+			"(   ●  )",
+			"(  ●   )",
+			"( ●    )",
+			"(●     )"
+		]
+	},
+	"smiley": {
+		"interval": 200,
+		"frames": [
+			"😄 ",
+			"😝 "
+		]
+	},
+	"monkey": {
+		"interval": 300,
+		"frames": [
+			"🙈 ",
+			"🙈 ",
+			"🙉 ",
+			"🙊 "
+		]
+	},
+	"hearts": {
+		"interval": 100,
+		"frames": [
+			"💛 ",
+			"💙 ",
+			"💜 ",
+			"💚 ",
+			"❤️ "
+		]
+	},
+	"clock": {
+		"interval": 100,
+		"frames": [
+			"🕐 ",
+			"🕑 ",
+			"🕒 ",
+			"🕓 ",
+			"🕔 ",
+			"🕕 ",
+			"🕖 ",
+			"🕗 ",
+			"🕘 ",
+			"🕙 ",
+			"🕚 "
+		]
+	},
+	"earth": {
+		"interval": 180,
+		"frames": [
+			"🌍 ",
+			"🌎 ",
+			"🌏 "
+		]
+	},
+	"moon": {
+		"interval": 80,
+		"frames": [
+			"🌑 ",
+			"🌒 ",
+			"🌓 ",
+			"🌔 ",
+			"🌕 ",
+			"🌖 ",
+			"🌗 ",
+			"🌘 "
+		]
+	},
+	"runner": {
+		"interval": 140,
+		"frames": [
+			"🚶 ",
+			"🏃 "
+		]
+	},
+	"pong": {
+		"interval": 80,
+		"frames": [
+			"▐⠂       ▌",
+			"▐⠈       ▌",
+			"▐ ⠂      ▌",
+			"▐ ⠠      ▌",
+			"▐  ⡀     ▌",
+			"▐  ⠠     ▌",
+			"▐   ⠂    ▌",
+			"▐   ⠈    ▌",
+			"▐    ⠂   ▌",
+			"▐    ⠠   ▌",
+			"▐     ⡀  ▌",
+			"▐     ⠠  ▌",
+			"▐      ⠂ ▌",
+			"▐      ⠈ ▌",
+			"▐       ⠂▌",
+			"▐       ⠠▌",
+			"▐       ⡀▌",
+			"▐      ⠠ ▌",
+			"▐      ⠂ ▌",
+			"▐     ⠈  ▌",
+			"▐     ⠂  ▌",
+			"▐    ⠠   ▌",
+			"▐    ⡀   ▌",
+			"▐   ⠠    ▌",
+			"▐   ⠂    ▌",
+			"▐  ⠈     ▌",
+			"▐  ⠂     ▌",
+			"▐ ⠠      ▌",
+			"▐ ⡀      ▌",
+			"▐⠠       ▌"
+		]
+	},
+	"shark": {
+		"interval": 120,
+		"frames": [
+			"▐|\\____________▌",
+			"▐_|\\___________▌",
+			"▐__|\\__________▌",
+			"▐___|\\_________▌",
+			"▐____|\\________▌",
+			"▐_____|\\_______▌",
+			"▐______|\\______▌",
+			"▐_______|\\_____▌",
+			"▐________|\\____▌",
+			"▐_________|\\___▌",
+			"▐__________|\\__▌",
+			"▐___________|\\_▌",
+			"▐____________|\\▌",
+			"▐____________/|▌",
+			"▐___________/|_▌",
+			"▐__________/|__▌",
+			"▐_________/|___▌",
+			"▐________/|____▌",
+			"▐_______/|_____▌",
+			"▐______/|______▌",
+			"▐_____/|_______▌",
+			"▐____/|________▌",
+			"▐___/|_________▌",
+			"▐__/|__________▌",
+			"▐_/|___________▌",
+			"▐/|____________▌"
+		]
+	},
+	"dqpb": {
+		"interval": 100,
+		"frames": [
+			"d",
+			"q",
+			"p",
+			"b"
+		]
+	}
+};
+
+/***/ }),
+/* 8 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(global, setImmediate) {/**@license
@@ -6677,10 +7524,141 @@ Context.init();
     }; // terminal plugin
 })(jQuery);
 
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1), __webpack_require__(10).setImmediate))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1), __webpack_require__(13).setImmediate))
 
 /***/ }),
-/* 7 */
+/* 9 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_RESULT__;/* global define, KeyboardEvent, module */
+
+(function () {
+
+  var keyboardeventKeyPolyfill = {
+    polyfill: polyfill,
+    keys: {
+      3: 'Cancel',
+      6: 'Help',
+      8: 'Backspace',
+      9: 'Tab',
+      12: 'Clear',
+      13: 'Enter',
+      16: 'Shift',
+      17: 'Control',
+      18: 'Alt',
+      19: 'Pause',
+      20: 'CapsLock',
+      27: 'Escape',
+      28: 'Convert',
+      29: 'NonConvert',
+      30: 'Accept',
+      31: 'ModeChange',
+      32: ' ',
+      33: 'PageUp',
+      34: 'PageDown',
+      35: 'End',
+      36: 'Home',
+      37: 'ArrowLeft',
+      38: 'ArrowUp',
+      39: 'ArrowRight',
+      40: 'ArrowDown',
+      41: 'Select',
+      42: 'Print',
+      43: 'Execute',
+      44: 'PrintScreen',
+      45: 'Insert',
+      46: 'Delete',
+      48: ['0', ')'],
+      49: ['1', '!'],
+      50: ['2', '@'],
+      51: ['3', '#'],
+      52: ['4', '$'],
+      53: ['5', '%'],
+      54: ['6', '^'],
+      55: ['7', '&'],
+      56: ['8', '*'],
+      57: ['9', '('],
+      91: 'OS',
+      93: 'ContextMenu',
+      144: 'NumLock',
+      145: 'ScrollLock',
+      181: 'VolumeMute',
+      182: 'VolumeDown',
+      183: 'VolumeUp',
+      186: [';', ':'],
+      187: ['=', '+'],
+      188: [',', '<'],
+      189: ['-', '_'],
+      190: ['.', '>'],
+      191: ['/', '?'],
+      192: ['`', '~'],
+      219: ['[', '{'],
+      220: ['\\', '|'],
+      221: [']', '}'],
+      222: ["'", '"'],
+      224: 'Meta',
+      225: 'AltGraph',
+      246: 'Attn',
+      247: 'CrSel',
+      248: 'ExSel',
+      249: 'EraseEof',
+      250: 'Play',
+      251: 'ZoomOut'
+    }
+  };
+
+  // Function keys (F1-24).
+  var i;
+  for (i = 1; i < 25; i++) {
+    keyboardeventKeyPolyfill.keys[111 + i] = 'F' + i;
+  }
+
+  // Printable ASCII characters.
+  var letter = '';
+  for (i = 65; i < 91; i++) {
+    letter = String.fromCharCode(i);
+    keyboardeventKeyPolyfill.keys[i] = [letter.toLowerCase(), letter.toUpperCase()];
+  }
+
+  function polyfill () {
+    if (!('KeyboardEvent' in window) ||
+        'key' in KeyboardEvent.prototype) {
+      return false;
+    }
+
+    // Polyfill `key` on `KeyboardEvent`.
+    var proto = {
+      get: function (x) {
+        var key = keyboardeventKeyPolyfill.keys[this.which || this.keyCode];
+
+        if (Array.isArray(key)) {
+          key = key[+this.shiftKey];
+        }
+
+        return key;
+      }
+    };
+    Object.defineProperty(KeyboardEvent.prototype, 'key', proto);
+    return proto;
+  }
+
+  if (true) {
+    !(__WEBPACK_AMD_DEFINE_FACTORY__ = (keyboardeventKeyPolyfill),
+				__WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ?
+				(__WEBPACK_AMD_DEFINE_FACTORY__.call(exports, __webpack_require__, exports, module)) :
+				__WEBPACK_AMD_DEFINE_FACTORY__),
+				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+  } else if (typeof exports !== 'undefined' && typeof module !== 'undefined') {
+    module.exports = keyboardeventKeyPolyfill;
+  } else if (window) {
+    window.keyboardeventKeyPolyfill = keyboardeventKeyPolyfill;
+  }
+
+})();
+
+
+/***/ }),
+/* 10 */
 /***/ (function(module, exports) {
 
 // shim for using process in browser
@@ -6866,7 +7844,7 @@ process.umask = function() { return 0; };
 
 
 /***/ }),
-/* 8 */
+/* 11 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(global, process) {(function (global, undefined) {
@@ -7056,10 +8034,10 @@ process.umask = function() { return 0; };
     attachTo.clearImmediate = clearImmediate;
 }(typeof self === "undefined" ? typeof global === "undefined" ? this : global : self));
 
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1), __webpack_require__(7)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1), __webpack_require__(10)))
 
 /***/ }),
-/* 9 */
+/* 12 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_RESULT__;/*! tether 1.4.0 */
@@ -8880,7 +9858,7 @@ return Tether;
 
 
 /***/ }),
-/* 10 */
+/* 13 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var apply = Function.prototype.apply;
@@ -8933,17 +9911,484 @@ exports._unrefActive = exports.active = function(item) {
 };
 
 // setimmediate attaches itself to the global object
-__webpack_require__(8);
+__webpack_require__(11);
 exports.setImmediate = setImmediate;
 exports.clearImmediate = clearImmediate;
 
 
 /***/ }),
-/* 11 */
+/* 14 */
+/***/ (function(module, exports) {
+
+(function(self) {
+  'use strict';
+
+  if (self.fetch) {
+    return
+  }
+
+  var support = {
+    searchParams: 'URLSearchParams' in self,
+    iterable: 'Symbol' in self && 'iterator' in Symbol,
+    blob: 'FileReader' in self && 'Blob' in self && (function() {
+      try {
+        new Blob()
+        return true
+      } catch(e) {
+        return false
+      }
+    })(),
+    formData: 'FormData' in self,
+    arrayBuffer: 'ArrayBuffer' in self
+  }
+
+  if (support.arrayBuffer) {
+    var viewClasses = [
+      '[object Int8Array]',
+      '[object Uint8Array]',
+      '[object Uint8ClampedArray]',
+      '[object Int16Array]',
+      '[object Uint16Array]',
+      '[object Int32Array]',
+      '[object Uint32Array]',
+      '[object Float32Array]',
+      '[object Float64Array]'
+    ]
+
+    var isDataView = function(obj) {
+      return obj && DataView.prototype.isPrototypeOf(obj)
+    }
+
+    var isArrayBufferView = ArrayBuffer.isView || function(obj) {
+      return obj && viewClasses.indexOf(Object.prototype.toString.call(obj)) > -1
+    }
+  }
+
+  function normalizeName(name) {
+    if (typeof name !== 'string') {
+      name = String(name)
+    }
+    if (/[^a-z0-9\-#$%&'*+.\^_`|~]/i.test(name)) {
+      throw new TypeError('Invalid character in header field name')
+    }
+    return name.toLowerCase()
+  }
+
+  function normalizeValue(value) {
+    if (typeof value !== 'string') {
+      value = String(value)
+    }
+    return value
+  }
+
+  // Build a destructive iterator for the value list
+  function iteratorFor(items) {
+    var iterator = {
+      next: function() {
+        var value = items.shift()
+        return {done: value === undefined, value: value}
+      }
+    }
+
+    if (support.iterable) {
+      iterator[Symbol.iterator] = function() {
+        return iterator
+      }
+    }
+
+    return iterator
+  }
+
+  function Headers(headers) {
+    this.map = {}
+
+    if (headers instanceof Headers) {
+      headers.forEach(function(value, name) {
+        this.append(name, value)
+      }, this)
+    } else if (Array.isArray(headers)) {
+      headers.forEach(function(header) {
+        this.append(header[0], header[1])
+      }, this)
+    } else if (headers) {
+      Object.getOwnPropertyNames(headers).forEach(function(name) {
+        this.append(name, headers[name])
+      }, this)
+    }
+  }
+
+  Headers.prototype.append = function(name, value) {
+    name = normalizeName(name)
+    value = normalizeValue(value)
+    var oldValue = this.map[name]
+    this.map[name] = oldValue ? oldValue+','+value : value
+  }
+
+  Headers.prototype['delete'] = function(name) {
+    delete this.map[normalizeName(name)]
+  }
+
+  Headers.prototype.get = function(name) {
+    name = normalizeName(name)
+    return this.has(name) ? this.map[name] : null
+  }
+
+  Headers.prototype.has = function(name) {
+    return this.map.hasOwnProperty(normalizeName(name))
+  }
+
+  Headers.prototype.set = function(name, value) {
+    this.map[normalizeName(name)] = normalizeValue(value)
+  }
+
+  Headers.prototype.forEach = function(callback, thisArg) {
+    for (var name in this.map) {
+      if (this.map.hasOwnProperty(name)) {
+        callback.call(thisArg, this.map[name], name, this)
+      }
+    }
+  }
+
+  Headers.prototype.keys = function() {
+    var items = []
+    this.forEach(function(value, name) { items.push(name) })
+    return iteratorFor(items)
+  }
+
+  Headers.prototype.values = function() {
+    var items = []
+    this.forEach(function(value) { items.push(value) })
+    return iteratorFor(items)
+  }
+
+  Headers.prototype.entries = function() {
+    var items = []
+    this.forEach(function(value, name) { items.push([name, value]) })
+    return iteratorFor(items)
+  }
+
+  if (support.iterable) {
+    Headers.prototype[Symbol.iterator] = Headers.prototype.entries
+  }
+
+  function consumed(body) {
+    if (body.bodyUsed) {
+      return Promise.reject(new TypeError('Already read'))
+    }
+    body.bodyUsed = true
+  }
+
+  function fileReaderReady(reader) {
+    return new Promise(function(resolve, reject) {
+      reader.onload = function() {
+        resolve(reader.result)
+      }
+      reader.onerror = function() {
+        reject(reader.error)
+      }
+    })
+  }
+
+  function readBlobAsArrayBuffer(blob) {
+    var reader = new FileReader()
+    var promise = fileReaderReady(reader)
+    reader.readAsArrayBuffer(blob)
+    return promise
+  }
+
+  function readBlobAsText(blob) {
+    var reader = new FileReader()
+    var promise = fileReaderReady(reader)
+    reader.readAsText(blob)
+    return promise
+  }
+
+  function readArrayBufferAsText(buf) {
+    var view = new Uint8Array(buf)
+    var chars = new Array(view.length)
+
+    for (var i = 0; i < view.length; i++) {
+      chars[i] = String.fromCharCode(view[i])
+    }
+    return chars.join('')
+  }
+
+  function bufferClone(buf) {
+    if (buf.slice) {
+      return buf.slice(0)
+    } else {
+      var view = new Uint8Array(buf.byteLength)
+      view.set(new Uint8Array(buf))
+      return view.buffer
+    }
+  }
+
+  function Body() {
+    this.bodyUsed = false
+
+    this._initBody = function(body) {
+      this._bodyInit = body
+      if (!body) {
+        this._bodyText = ''
+      } else if (typeof body === 'string') {
+        this._bodyText = body
+      } else if (support.blob && Blob.prototype.isPrototypeOf(body)) {
+        this._bodyBlob = body
+      } else if (support.formData && FormData.prototype.isPrototypeOf(body)) {
+        this._bodyFormData = body
+      } else if (support.searchParams && URLSearchParams.prototype.isPrototypeOf(body)) {
+        this._bodyText = body.toString()
+      } else if (support.arrayBuffer && support.blob && isDataView(body)) {
+        this._bodyArrayBuffer = bufferClone(body.buffer)
+        // IE 10-11 can't handle a DataView body.
+        this._bodyInit = new Blob([this._bodyArrayBuffer])
+      } else if (support.arrayBuffer && (ArrayBuffer.prototype.isPrototypeOf(body) || isArrayBufferView(body))) {
+        this._bodyArrayBuffer = bufferClone(body)
+      } else {
+        throw new Error('unsupported BodyInit type')
+      }
+
+      if (!this.headers.get('content-type')) {
+        if (typeof body === 'string') {
+          this.headers.set('content-type', 'text/plain;charset=UTF-8')
+        } else if (this._bodyBlob && this._bodyBlob.type) {
+          this.headers.set('content-type', this._bodyBlob.type)
+        } else if (support.searchParams && URLSearchParams.prototype.isPrototypeOf(body)) {
+          this.headers.set('content-type', 'application/x-www-form-urlencoded;charset=UTF-8')
+        }
+      }
+    }
+
+    if (support.blob) {
+      this.blob = function() {
+        var rejected = consumed(this)
+        if (rejected) {
+          return rejected
+        }
+
+        if (this._bodyBlob) {
+          return Promise.resolve(this._bodyBlob)
+        } else if (this._bodyArrayBuffer) {
+          return Promise.resolve(new Blob([this._bodyArrayBuffer]))
+        } else if (this._bodyFormData) {
+          throw new Error('could not read FormData body as blob')
+        } else {
+          return Promise.resolve(new Blob([this._bodyText]))
+        }
+      }
+
+      this.arrayBuffer = function() {
+        if (this._bodyArrayBuffer) {
+          return consumed(this) || Promise.resolve(this._bodyArrayBuffer)
+        } else {
+          return this.blob().then(readBlobAsArrayBuffer)
+        }
+      }
+    }
+
+    this.text = function() {
+      var rejected = consumed(this)
+      if (rejected) {
+        return rejected
+      }
+
+      if (this._bodyBlob) {
+        return readBlobAsText(this._bodyBlob)
+      } else if (this._bodyArrayBuffer) {
+        return Promise.resolve(readArrayBufferAsText(this._bodyArrayBuffer))
+      } else if (this._bodyFormData) {
+        throw new Error('could not read FormData body as text')
+      } else {
+        return Promise.resolve(this._bodyText)
+      }
+    }
+
+    if (support.formData) {
+      this.formData = function() {
+        return this.text().then(decode)
+      }
+    }
+
+    this.json = function() {
+      return this.text().then(JSON.parse)
+    }
+
+    return this
+  }
+
+  // HTTP methods whose capitalization should be normalized
+  var methods = ['DELETE', 'GET', 'HEAD', 'OPTIONS', 'POST', 'PUT']
+
+  function normalizeMethod(method) {
+    var upcased = method.toUpperCase()
+    return (methods.indexOf(upcased) > -1) ? upcased : method
+  }
+
+  function Request(input, options) {
+    options = options || {}
+    var body = options.body
+
+    if (input instanceof Request) {
+      if (input.bodyUsed) {
+        throw new TypeError('Already read')
+      }
+      this.url = input.url
+      this.credentials = input.credentials
+      if (!options.headers) {
+        this.headers = new Headers(input.headers)
+      }
+      this.method = input.method
+      this.mode = input.mode
+      if (!body && input._bodyInit != null) {
+        body = input._bodyInit
+        input.bodyUsed = true
+      }
+    } else {
+      this.url = String(input)
+    }
+
+    this.credentials = options.credentials || this.credentials || 'omit'
+    if (options.headers || !this.headers) {
+      this.headers = new Headers(options.headers)
+    }
+    this.method = normalizeMethod(options.method || this.method || 'GET')
+    this.mode = options.mode || this.mode || null
+    this.referrer = null
+
+    if ((this.method === 'GET' || this.method === 'HEAD') && body) {
+      throw new TypeError('Body not allowed for GET or HEAD requests')
+    }
+    this._initBody(body)
+  }
+
+  Request.prototype.clone = function() {
+    return new Request(this, { body: this._bodyInit })
+  }
+
+  function decode(body) {
+    var form = new FormData()
+    body.trim().split('&').forEach(function(bytes) {
+      if (bytes) {
+        var split = bytes.split('=')
+        var name = split.shift().replace(/\+/g, ' ')
+        var value = split.join('=').replace(/\+/g, ' ')
+        form.append(decodeURIComponent(name), decodeURIComponent(value))
+      }
+    })
+    return form
+  }
+
+  function parseHeaders(rawHeaders) {
+    var headers = new Headers()
+    rawHeaders.split(/\r?\n/).forEach(function(line) {
+      var parts = line.split(':')
+      var key = parts.shift().trim()
+      if (key) {
+        var value = parts.join(':').trim()
+        headers.append(key, value)
+      }
+    })
+    return headers
+  }
+
+  Body.call(Request.prototype)
+
+  function Response(bodyInit, options) {
+    if (!options) {
+      options = {}
+    }
+
+    this.type = 'default'
+    this.status = 'status' in options ? options.status : 200
+    this.ok = this.status >= 200 && this.status < 300
+    this.statusText = 'statusText' in options ? options.statusText : 'OK'
+    this.headers = new Headers(options.headers)
+    this.url = options.url || ''
+    this._initBody(bodyInit)
+  }
+
+  Body.call(Response.prototype)
+
+  Response.prototype.clone = function() {
+    return new Response(this._bodyInit, {
+      status: this.status,
+      statusText: this.statusText,
+      headers: new Headers(this.headers),
+      url: this.url
+    })
+  }
+
+  Response.error = function() {
+    var response = new Response(null, {status: 0, statusText: ''})
+    response.type = 'error'
+    return response
+  }
+
+  var redirectStatuses = [301, 302, 303, 307, 308]
+
+  Response.redirect = function(url, status) {
+    if (redirectStatuses.indexOf(status) === -1) {
+      throw new RangeError('Invalid status code')
+    }
+
+    return new Response(null, {status: status, headers: {location: url}})
+  }
+
+  self.Headers = Headers
+  self.Request = Request
+  self.Response = Response
+
+  self.fetch = function(input, init) {
+    return new Promise(function(resolve, reject) {
+      var request = new Request(input, init)
+      var xhr = new XMLHttpRequest()
+
+      xhr.onload = function() {
+        var options = {
+          status: xhr.status,
+          statusText: xhr.statusText,
+          headers: parseHeaders(xhr.getAllResponseHeaders() || '')
+        }
+        options.url = 'responseURL' in xhr ? xhr.responseURL : options.headers.get('X-Request-URL')
+        var body = 'response' in xhr ? xhr.response : xhr.responseText
+        resolve(new Response(body, options))
+      }
+
+      xhr.onerror = function() {
+        reject(new TypeError('Network request failed'))
+      }
+
+      xhr.ontimeout = function() {
+        reject(new TypeError('Network request failed'))
+      }
+
+      xhr.open(request.method, request.url, true)
+
+      if (request.credentials === 'include') {
+        xhr.withCredentials = true
+      }
+
+      if ('responseType' in xhr && support.blob) {
+        xhr.responseType = 'blob'
+      }
+
+      request.headers.forEach(function(value, name) {
+        xhr.setRequestHeader(name, value)
+      })
+
+      xhr.send(typeof request._bodyInit === 'undefined' ? null : request._bodyInit)
+    })
+  }
+  self.fetch.polyfill = true
+})(typeof self !== 'undefined' ? self : this);
+
+
+/***/ }),
+/* 15 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__popovers_terminalMatrix__ = __webpack_require__(16);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__popovers_terminalMatrix__ = __webpack_require__(20);
 
 
 
@@ -9000,13 +10445,13 @@ class ActionsMenu {
 
 
 /***/ }),
-/* 12 */
+/* 16 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__terminal__ = __webpack_require__(18);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__actionsMenu__ = __webpack_require__(11);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__menuPanel__ = __webpack_require__(14);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__terminal__ = __webpack_require__(22);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__actionsMenu__ = __webpack_require__(15);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__menuPanel__ = __webpack_require__(18);
 
 
 
@@ -9171,7 +10616,8 @@ class Container {
 
 		Container.clearPrev();
 
-		let sessionKey = params['sessionIndex'] + params['gds'];
+		// let sessionKey = params['sessionIndex'] + params['gds'];
+		let sessionKey = 0 + params['gds'];
 
 		terminalList = inSession[ sessionKey ] || [];
 
@@ -9206,7 +10652,7 @@ class Container {
 
 
 /***/ }),
-/* 13 */
+/* 17 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -9237,12 +10683,12 @@ class SessionKeys
 		}
 
 		button.addEventListener('click', () => {
-			button.classList.toggle('active');
+			// button.classList.toggle('active');
 
 			window.TerminalState.change({
 				sessionIndex 	: index,
 				gds				: this.settings.gds
-			}, 'CHANGE_SESSION');
+			}, 'CHANGE_SESSION_BY_MENU');
 		});
 
 		return button;
@@ -9283,13 +10729,13 @@ class SessionKeys
 
 
 /***/ }),
-/* 14 */
+/* 18 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__popovers_history__ = __webpack_require__(15);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__popovers_textSize__ = __webpack_require__(17);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__menu_sessionButtons__ = __webpack_require__(13);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__popovers_history__ = __webpack_require__(19);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__popovers_textSize__ = __webpack_require__(21);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__menu_sessionButtons__ = __webpack_require__(17);
 
 
 
@@ -9449,7 +10895,7 @@ class MenuPanel
 
 
 /***/ }),
-/* 15 */
+/* 19 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -9496,7 +10942,7 @@ class History
 /* harmony default export */ __webpack_exports__["a"] = (History);
 
 /***/ }),
-/* 16 */
+/* 20 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -9588,7 +11034,7 @@ class Matrix
 /* harmony default export */ __webpack_exports__["a"] = (Matrix);
 
 /***/ }),
-/* 17 */
+/* 21 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -9654,11 +11100,11 @@ class TextSize
 /* harmony default export */ __webpack_exports__["a"] = (TextSize);
 
 /***/ }),
-/* 18 */
+/* 22 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__middleware_terminal__ = __webpack_require__(22);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__middleware_terminal__ = __webpack_require__(26);
 
 
 
@@ -9735,7 +11181,7 @@ class Terminal {
 
 
 /***/ }),
-/* 19 */
+/* 23 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -9803,7 +11249,7 @@ module.exports = {
 };
 
 /***/ }),
-/* 20 */
+/* 24 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -9982,14 +11428,15 @@ class KeyBinding
 
 
 /***/ }),
-/* 21 */
+/* 25 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__constants__ = __webpack_require__(2);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_whatwg_fetch__ = __webpack_require__(14);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_whatwg_fetch___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1_whatwg_fetch__);
 
-
-let $ = __webpack_require__(3);
+// let $ = require('jquery');
 
 
 
@@ -10044,80 +11491,29 @@ function runSyncCommand( functionName, params )
 	})
 }
 
-function runSyncCommand2( functionName, params )
-{
-	let url 	= __WEBPACK_IMPORTED_MODULE_0__constants__["d" /* END_POINT_URL */];
-
-	let data 	= {
-		'function'	: functionName,
-		'params'	: params
-	};
-
-	console.log('???', url + '&function='+ functionName);
-
-	//
-	// get( END_POINT_URL ).then(function(response) {
-	// 	console.log("Success!", response);
-	// }, function(error) {
-	// 	console.error("Failed!", error);
-	// });
-
-	return $.ajax({
-		type			: 'POST',
-		url				: url + '&function='+ functionName,
-
-		// crossDomain		: true,
-		// async			: false,
-		// dataType		: 'json',
-		//
-		// headers			: {
-		// 	'X-Requested-With': 'XMLHttpRequest'
-		// },
-		//
-
-		data			: {
-			data: JSON.stringify(data, true)
-		},
-
-		complete			: function(responseData, textStatus, jqXHR)
-		{
-			console.log(' completed ');
-			// result = responseData;
-		},
-
-		fail			: function (responseData, textStatus, errorThrown)
-		{
-			console.log(' fail ;');
-			console.log(responseData);
-			console.log(responseData.responseText);
-			alert('POST failed.');
-		}
-	});
-}
-
 /* harmony default export */ __webpack_exports__["a"] = ({
 	runSyncCommand	: runSyncCommand,
 	get 			: get
 });
 
-// module.exports = Actions;
-
 /***/ }),
-/* 22 */
+/* 26 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__modules_sabreSession__ = __webpack_require__(23);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__helpers_keyBinding__ = __webpack_require__(20);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__modules_sabreSession__ = __webpack_require__(27);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__helpers_keyBinding__ = __webpack_require__(24);
 
 
 let $					= __webpack_require__(3);
 window.$ 				= window.jQuery = $;
 
-let jqTerminal 			= __webpack_require__(6);
-let Helpers				= __webpack_require__(19);
+let jqTerminal 			= __webpack_require__(8);
+let Helpers				= __webpack_require__(23);
 
-const cliSpinners 		= __webpack_require__(33);
+__webpack_require__(9).polyfill();
+
+const cliSpinners 		= __webpack_require__(6);
 
 
 
@@ -10142,6 +11538,9 @@ class Spinner
 
 	start()
 	{
+		if (this.timer)
+			this.end();
+
 		this.terminal.find('.cursor').hide();
 		this.prompt 	= this.terminal.get_prompt();
 
@@ -10153,11 +11552,13 @@ class Spinner
 	{
 		clearInterval( this.timer );
 
-		setTimeout(() => {
+		// setTimeout(() => {
 			clearInterval( this.timer );
 			this.terminal.set_prompt( this.prompt );
 			this.terminal.find('.cursor').show();
-		}, 0);
+
+			this.timer = false;
+		// }, 0);
 	}
 }
 
@@ -10172,7 +11573,7 @@ class TerminalPlugin
 
 		this.outputCache 	= [];
 		this.animation	 	= false;
-		this.hiddenBuff		= '';
+		this.hiddenBuff		= [];
 
 		this.session = new __WEBPACK_IMPORTED_MODULE_0__modules_sabreSession__["a" /* default */]({
 			terminalIndex	: params.name,
@@ -10195,28 +11596,65 @@ class TerminalPlugin
 			return false;
 
 		let keyCode = evt.keyCode || evt.which;
+		let ch 		= false;
 
 		if (keyCode === 13)
 			return false;
 
+		// console.log(' blaaaa aaa ', String.fromCharCode( keyCode ) );
+
 		if (keyCode && !evt.ctrlKey)
 		{
-			let ch = Helpers.substitutePrintableChar( String.fromCharCode( keyCode ) );
+			ch = Helpers.substitutePrintableChar( String.fromCharCode( keyCode ) );
 
-			if (ch)
+			// if (ch)
+			// {
+			//
+			// }
+		}
+
+		if ( this.animation )
+		{
+			// console.log( this.hiddenBuff.length );
+
+			if ( this.hiddenBuff.length === 0 )
 			{
-				terminal.insert(ch);
-				return false;
+				this.hiddenBuff.push('');
 			}
+
+			this.hiddenBuff[ this.hiddenBuff.length - 1 ] += ch;
+
+			// this.hiddenBuff += ch;
+			return false;
+		}
+
+		if (ch)
+		{
+			terminal.insert(ch);
+			return false;
 		}
 	}
 
 	parseKeyBinds( evt, terminal )
 	{
+		let keyCode = evt.keyCode || evt.which;
+
 		if ( this.animation )
 		{
-			this.hiddenBuff += String.fromCharCode( evt.keyCode || evt.which );
-			return false;
+			if ( keyCode === 13 )
+			{
+				// console.log(' command to ryb ' , this.hiddenBuff );
+				this.hiddenBuff.push('');
+
+				// this.spinner.end();
+				// terminal.exec( this.hiddenBuff );
+				// this.hiddenBuff = '';
+
+				return false;
+			}
+
+			// this.hiddenBuff += String.fromCharCode( keyCode );
+			// return false;
 		}
 
 		if ( !__WEBPACK_IMPORTED_MODULE_1__helpers_keyBinding__["a" /* default */].parse( evt, terminal ) )
@@ -10238,7 +11676,6 @@ class TerminalPlugin
 	{
 		this.terminal = $(this.context).terminal( this.commandParser.bind(this), {
 			greetings	: '',
-			// name		: `sabre_terminal_${this.name}`,
 
 			name		: this.name,
 			prompt		: '>',
@@ -10266,33 +11703,10 @@ class TerminalPlugin
 		this.spinner = new Spinner( this.terminal );
 	}
 
-	// spinner( terminal )
-	// {
-	// 	let animation 	= true;
-	// 	let i 			= 0;
-	//
-	// 	let spinner 	= cliSpinners.circle;
-	// 	let prompt 		= terminal.get_prompt();
-	//
-	// 	function set()
-	// 	{
-	// 		let text = spinner.frames[i++ % spinner.frames.length];
-	// 		terminal.set_prompt(text);
-	// 	}
-	//
-	// 	terminal.find('.cursor').hide();
-	// 	set();
-	//
-	// 	let timer = setInterval(set, spinner.interval);
-	// }
-
 	commandParser( command, terminal )
 	{
 		// console.log( terminal.rows() );
 		// console.log( terminal.cols() );
-
-		if (this.animation)
-			return false;
 
 		if ( !command || command === '' )
 		{
@@ -10312,6 +11726,20 @@ class TerminalPlugin
 			return false;
 		}
 
+		let sessionChange = ['SA', 'SB', 'SC', 'SD', 'SE' ].indexOf( command );
+
+		if ( sessionChange !== -1 )
+		{
+			// console.log( command.replace('S', '') );
+			// console.log( sessionChange );
+
+			window.TerminalState.change({
+				sessionIndex 	: sessionChange,
+				gds				: this.settings.gds
+			}, 'CHANGE_SESSION');
+
+		}
+
 		this.spinner.start();
 		this.animation 	= true;
 		// terminal.pause();
@@ -10323,18 +11751,27 @@ class TerminalPlugin
 
 			.then( ( response = {} ) => {
 				this.spinner.end();
-
-				terminal.insert( this.hiddenBuff );
+				// terminal.insert( this.hiddenBuff );
 				this.animation 	= false;
-				this.hiddenBuff = '';
-
 				return response;
 			})
 
 			.then( this.parseBackEnd.bind(this) )
-			.then( function () {
-				terminal.resume();
+			.then( () => {
+
+				this.hiddenBuff.map( ( command ) => {
+					if (command)
+						terminal.exec( command );
+
+				});
+
+				this.hiddenBuff = [];
 			})
+
+			// .then( function () {
+			// 	terminal.resume();
+			// })
+
 			.catch( this.parseError.bind(this) );
 	}
 
@@ -10360,8 +11797,8 @@ class TerminalPlugin
 		console.log('errrrrrr');
 
 		this.spinner.end();
-		this.terminal.resume();
 
+		// this.terminal.resume();
 		// alert(' something went wrong ');
 
 		console.error(' error', arguments );
@@ -10372,12 +11809,12 @@ class TerminalPlugin
 
 
 /***/ }),
-/* 23 */
+/* 27 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__constants__ = __webpack_require__(2);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__helpers_requests__ = __webpack_require__(21);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__helpers_requests__ = __webpack_require__(25);
 
 
 
@@ -10431,866 +11868,12 @@ class Session
 
 
 /***/ }),
-/* 24 */
+/* 28 */
 /***/ (function(module, exports, __webpack_require__) {
 
 __webpack_require__(5);
 module.exports = __webpack_require__(4);
 
-
-/***/ }),
-/* 25 */,
-/* 26 */,
-/* 27 */,
-/* 28 */,
-/* 29 */,
-/* 30 */,
-/* 31 */,
-/* 32 */,
-/* 33 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-module.exports = __webpack_require__(34);
-
-
-/***/ }),
-/* 34 */
-/***/ (function(module, exports) {
-
-module.exports = {
-	"dots": {
-		"interval": 80,
-		"frames": [
-			"⠋",
-			"⠙",
-			"⠹",
-			"⠸",
-			"⠼",
-			"⠴",
-			"⠦",
-			"⠧",
-			"⠇",
-			"⠏"
-		]
-	},
-	"dots2": {
-		"interval": 80,
-		"frames": [
-			"⣾",
-			"⣽",
-			"⣻",
-			"⢿",
-			"⡿",
-			"⣟",
-			"⣯",
-			"⣷"
-		]
-	},
-	"dots3": {
-		"interval": 80,
-		"frames": [
-			"⠋",
-			"⠙",
-			"⠚",
-			"⠞",
-			"⠖",
-			"⠦",
-			"⠴",
-			"⠲",
-			"⠳",
-			"⠓"
-		]
-	},
-	"dots4": {
-		"interval": 80,
-		"frames": [
-			"⠄",
-			"⠆",
-			"⠇",
-			"⠋",
-			"⠙",
-			"⠸",
-			"⠰",
-			"⠠",
-			"⠰",
-			"⠸",
-			"⠙",
-			"⠋",
-			"⠇",
-			"⠆"
-		]
-	},
-	"dots5": {
-		"interval": 80,
-		"frames": [
-			"⠋",
-			"⠙",
-			"⠚",
-			"⠒",
-			"⠂",
-			"⠂",
-			"⠒",
-			"⠲",
-			"⠴",
-			"⠦",
-			"⠖",
-			"⠒",
-			"⠐",
-			"⠐",
-			"⠒",
-			"⠓",
-			"⠋"
-		]
-	},
-	"dots6": {
-		"interval": 80,
-		"frames": [
-			"⠁",
-			"⠉",
-			"⠙",
-			"⠚",
-			"⠒",
-			"⠂",
-			"⠂",
-			"⠒",
-			"⠲",
-			"⠴",
-			"⠤",
-			"⠄",
-			"⠄",
-			"⠤",
-			"⠴",
-			"⠲",
-			"⠒",
-			"⠂",
-			"⠂",
-			"⠒",
-			"⠚",
-			"⠙",
-			"⠉",
-			"⠁"
-		]
-	},
-	"dots7": {
-		"interval": 80,
-		"frames": [
-			"⠈",
-			"⠉",
-			"⠋",
-			"⠓",
-			"⠒",
-			"⠐",
-			"⠐",
-			"⠒",
-			"⠖",
-			"⠦",
-			"⠤",
-			"⠠",
-			"⠠",
-			"⠤",
-			"⠦",
-			"⠖",
-			"⠒",
-			"⠐",
-			"⠐",
-			"⠒",
-			"⠓",
-			"⠋",
-			"⠉",
-			"⠈"
-		]
-	},
-	"dots8": {
-		"interval": 80,
-		"frames": [
-			"⠁",
-			"⠁",
-			"⠉",
-			"⠙",
-			"⠚",
-			"⠒",
-			"⠂",
-			"⠂",
-			"⠒",
-			"⠲",
-			"⠴",
-			"⠤",
-			"⠄",
-			"⠄",
-			"⠤",
-			"⠠",
-			"⠠",
-			"⠤",
-			"⠦",
-			"⠖",
-			"⠒",
-			"⠐",
-			"⠐",
-			"⠒",
-			"⠓",
-			"⠋",
-			"⠉",
-			"⠈",
-			"⠈"
-		]
-	},
-	"dots9": {
-		"interval": 80,
-		"frames": [
-			"⢹",
-			"⢺",
-			"⢼",
-			"⣸",
-			"⣇",
-			"⡧",
-			"⡗",
-			"⡏"
-		]
-	},
-	"dots10": {
-		"interval": 80,
-		"frames": [
-			"⢄",
-			"⢂",
-			"⢁",
-			"⡁",
-			"⡈",
-			"⡐",
-			"⡠"
-		]
-	},
-	"dots11": {
-		"interval": 100,
-		"frames": [
-			"⠁",
-			"⠂",
-			"⠄",
-			"⡀",
-			"⢀",
-			"⠠",
-			"⠐",
-			"⠈"
-		]
-	},
-	"dots12": {
-		"interval": 80,
-		"frames": [
-			"⢀⠀",
-			"⡀⠀",
-			"⠄⠀",
-			"⢂⠀",
-			"⡂⠀",
-			"⠅⠀",
-			"⢃⠀",
-			"⡃⠀",
-			"⠍⠀",
-			"⢋⠀",
-			"⡋⠀",
-			"⠍⠁",
-			"⢋⠁",
-			"⡋⠁",
-			"⠍⠉",
-			"⠋⠉",
-			"⠋⠉",
-			"⠉⠙",
-			"⠉⠙",
-			"⠉⠩",
-			"⠈⢙",
-			"⠈⡙",
-			"⢈⠩",
-			"⡀⢙",
-			"⠄⡙",
-			"⢂⠩",
-			"⡂⢘",
-			"⠅⡘",
-			"⢃⠨",
-			"⡃⢐",
-			"⠍⡐",
-			"⢋⠠",
-			"⡋⢀",
-			"⠍⡁",
-			"⢋⠁",
-			"⡋⠁",
-			"⠍⠉",
-			"⠋⠉",
-			"⠋⠉",
-			"⠉⠙",
-			"⠉⠙",
-			"⠉⠩",
-			"⠈⢙",
-			"⠈⡙",
-			"⠈⠩",
-			"⠀⢙",
-			"⠀⡙",
-			"⠀⠩",
-			"⠀⢘",
-			"⠀⡘",
-			"⠀⠨",
-			"⠀⢐",
-			"⠀⡐",
-			"⠀⠠",
-			"⠀⢀",
-			"⠀⡀"
-		]
-	},
-	"line": {
-		"interval": 130,
-		"frames": [
-			"-",
-			"\\",
-			"|",
-			"/"
-		]
-	},
-	"line2": {
-		"interval": 100,
-		"frames": [
-			"⠂",
-			"-",
-			"–",
-			"—",
-			"–",
-			"-"
-		]
-	},
-	"pipe": {
-		"interval": 100,
-		"frames": [
-			"┤",
-			"┘",
-			"┴",
-			"└",
-			"├",
-			"┌",
-			"┬",
-			"┐"
-		]
-	},
-	"simpleDots": {
-		"interval": 400,
-		"frames": [
-			".  ",
-			".. ",
-			"...",
-			"   "
-		]
-	},
-	"simpleDotsScrolling": {
-		"interval": 200,
-		"frames": [
-			".  ",
-			".. ",
-			"...",
-			" ..",
-			"  .",
-			"   "
-		]
-	},
-	"star": {
-		"interval": 70,
-		"frames": [
-			"✶",
-			"✸",
-			"✹",
-			"✺",
-			"✹",
-			"✷"
-		]
-	},
-	"star2": {
-		"interval": 80,
-		"frames": [
-			"+",
-			"x",
-			"*"
-		]
-	},
-	"flip": {
-		"interval": 70,
-		"frames": [
-			"_",
-			"_",
-			"_",
-			"-",
-			"`",
-			"`",
-			"'",
-			"´",
-			"-",
-			"_",
-			"_",
-			"_"
-		]
-	},
-	"hamburger": {
-		"interval": 100,
-		"frames": [
-			"☱",
-			"☲",
-			"☴"
-		]
-	},
-	"growVertical": {
-		"interval": 120,
-		"frames": [
-			"▁",
-			"▃",
-			"▄",
-			"▅",
-			"▆",
-			"▇",
-			"▆",
-			"▅",
-			"▄",
-			"▃"
-		]
-	},
-	"growHorizontal": {
-		"interval": 120,
-		"frames": [
-			"▏",
-			"▎",
-			"▍",
-			"▌",
-			"▋",
-			"▊",
-			"▉",
-			"▊",
-			"▋",
-			"▌",
-			"▍",
-			"▎"
-		]
-	},
-	"balloon": {
-		"interval": 140,
-		"frames": [
-			" ",
-			".",
-			"o",
-			"O",
-			"@",
-			"*",
-			" "
-		]
-	},
-	"balloon2": {
-		"interval": 120,
-		"frames": [
-			".",
-			"o",
-			"O",
-			"°",
-			"O",
-			"o",
-			"."
-		]
-	},
-	"noise": {
-		"interval": 100,
-		"frames": [
-			"▓",
-			"▒",
-			"░"
-		]
-	},
-	"bounce": {
-		"interval": 120,
-		"frames": [
-			"⠁",
-			"⠂",
-			"⠄",
-			"⠂"
-		]
-	},
-	"boxBounce": {
-		"interval": 120,
-		"frames": [
-			"▖",
-			"▘",
-			"▝",
-			"▗"
-		]
-	},
-	"boxBounce2": {
-		"interval": 100,
-		"frames": [
-			"▌",
-			"▀",
-			"▐",
-			"▄"
-		]
-	},
-	"triangle": {
-		"interval": 50,
-		"frames": [
-			"◢",
-			"◣",
-			"◤",
-			"◥"
-		]
-	},
-	"arc": {
-		"interval": 100,
-		"frames": [
-			"◜",
-			"◠",
-			"◝",
-			"◞",
-			"◡",
-			"◟"
-		]
-	},
-	"circle": {
-		"interval": 120,
-		"frames": [
-			"◡",
-			"⊙",
-			"◠"
-		]
-	},
-	"squareCorners": {
-		"interval": 180,
-		"frames": [
-			"◰",
-			"◳",
-			"◲",
-			"◱"
-		]
-	},
-	"circleQuarters": {
-		"interval": 120,
-		"frames": [
-			"◴",
-			"◷",
-			"◶",
-			"◵"
-		]
-	},
-	"circleHalves": {
-		"interval": 50,
-		"frames": [
-			"◐",
-			"◓",
-			"◑",
-			"◒"
-		]
-	},
-	"squish": {
-		"interval": 100,
-		"frames": [
-			"╫",
-			"╪"
-		]
-	},
-	"toggle": {
-		"interval": 250,
-		"frames": [
-			"⊶",
-			"⊷"
-		]
-	},
-	"toggle2": {
-		"interval": 80,
-		"frames": [
-			"▫",
-			"▪"
-		]
-	},
-	"toggle3": {
-		"interval": 120,
-		"frames": [
-			"□",
-			"■"
-		]
-	},
-	"toggle4": {
-		"interval": 100,
-		"frames": [
-			"■",
-			"□",
-			"▪",
-			"▫"
-		]
-	},
-	"toggle5": {
-		"interval": 100,
-		"frames": [
-			"▮",
-			"▯"
-		]
-	},
-	"toggle6": {
-		"interval": 300,
-		"frames": [
-			"ဝ",
-			"၀"
-		]
-	},
-	"toggle7": {
-		"interval": 80,
-		"frames": [
-			"⦾",
-			"⦿"
-		]
-	},
-	"toggle8": {
-		"interval": 100,
-		"frames": [
-			"◍",
-			"◌"
-		]
-	},
-	"toggle9": {
-		"interval": 100,
-		"frames": [
-			"◉",
-			"◎"
-		]
-	},
-	"toggle10": {
-		"interval": 100,
-		"frames": [
-			"㊂",
-			"㊀",
-			"㊁"
-		]
-	},
-	"toggle11": {
-		"interval": 50,
-		"frames": [
-			"⧇",
-			"⧆"
-		]
-	},
-	"toggle12": {
-		"interval": 120,
-		"frames": [
-			"☗",
-			"☖"
-		]
-	},
-	"toggle13": {
-		"interval": 80,
-		"frames": [
-			"=",
-			"*",
-			"-"
-		]
-	},
-	"arrow": {
-		"interval": 100,
-		"frames": [
-			"←",
-			"↖",
-			"↑",
-			"↗",
-			"→",
-			"↘",
-			"↓",
-			"↙"
-		]
-	},
-	"arrow2": {
-		"interval": 80,
-		"frames": [
-			"⬆️ ",
-			"↗️ ",
-			"➡️ ",
-			"↘️ ",
-			"⬇️ ",
-			"↙️ ",
-			"⬅️ ",
-			"↖️ "
-		]
-	},
-	"arrow3": {
-		"interval": 120,
-		"frames": [
-			"▹▹▹▹▹",
-			"▸▹▹▹▹",
-			"▹▸▹▹▹",
-			"▹▹▸▹▹",
-			"▹▹▹▸▹",
-			"▹▹▹▹▸"
-		]
-	},
-	"bouncingBar": {
-		"interval": 80,
-		"frames": [
-			"[    ]",
-			"[   =]",
-			"[  ==]",
-			"[ ===]",
-			"[====]",
-			"[=== ]",
-			"[==  ]",
-			"[=   ]"
-		]
-	},
-	"bouncingBall": {
-		"interval": 80,
-		"frames": [
-			"( ●    )",
-			"(  ●   )",
-			"(   ●  )",
-			"(    ● )",
-			"(     ●)",
-			"(    ● )",
-			"(   ●  )",
-			"(  ●   )",
-			"( ●    )",
-			"(●     )"
-		]
-	},
-	"smiley": {
-		"interval": 200,
-		"frames": [
-			"😄 ",
-			"😝 "
-		]
-	},
-	"monkey": {
-		"interval": 300,
-		"frames": [
-			"🙈 ",
-			"🙈 ",
-			"🙉 ",
-			"🙊 "
-		]
-	},
-	"hearts": {
-		"interval": 100,
-		"frames": [
-			"💛 ",
-			"💙 ",
-			"💜 ",
-			"💚 ",
-			"❤️ "
-		]
-	},
-	"clock": {
-		"interval": 100,
-		"frames": [
-			"🕐 ",
-			"🕑 ",
-			"🕒 ",
-			"🕓 ",
-			"🕔 ",
-			"🕕 ",
-			"🕖 ",
-			"🕗 ",
-			"🕘 ",
-			"🕙 ",
-			"🕚 "
-		]
-	},
-	"earth": {
-		"interval": 180,
-		"frames": [
-			"🌍 ",
-			"🌎 ",
-			"🌏 "
-		]
-	},
-	"moon": {
-		"interval": 80,
-		"frames": [
-			"🌑 ",
-			"🌒 ",
-			"🌓 ",
-			"🌔 ",
-			"🌕 ",
-			"🌖 ",
-			"🌗 ",
-			"🌘 "
-		]
-	},
-	"runner": {
-		"interval": 140,
-		"frames": [
-			"🚶 ",
-			"🏃 "
-		]
-	},
-	"pong": {
-		"interval": 80,
-		"frames": [
-			"▐⠂       ▌",
-			"▐⠈       ▌",
-			"▐ ⠂      ▌",
-			"▐ ⠠      ▌",
-			"▐  ⡀     ▌",
-			"▐  ⠠     ▌",
-			"▐   ⠂    ▌",
-			"▐   ⠈    ▌",
-			"▐    ⠂   ▌",
-			"▐    ⠠   ▌",
-			"▐     ⡀  ▌",
-			"▐     ⠠  ▌",
-			"▐      ⠂ ▌",
-			"▐      ⠈ ▌",
-			"▐       ⠂▌",
-			"▐       ⠠▌",
-			"▐       ⡀▌",
-			"▐      ⠠ ▌",
-			"▐      ⠂ ▌",
-			"▐     ⠈  ▌",
-			"▐     ⠂  ▌",
-			"▐    ⠠   ▌",
-			"▐    ⡀   ▌",
-			"▐   ⠠    ▌",
-			"▐   ⠂    ▌",
-			"▐  ⠈     ▌",
-			"▐  ⠂     ▌",
-			"▐ ⠠      ▌",
-			"▐ ⡀      ▌",
-			"▐⠠       ▌"
-		]
-	},
-	"shark": {
-		"interval": 120,
-		"frames": [
-			"▐|\\____________▌",
-			"▐_|\\___________▌",
-			"▐__|\\__________▌",
-			"▐___|\\_________▌",
-			"▐____|\\________▌",
-			"▐_____|\\_______▌",
-			"▐______|\\______▌",
-			"▐_______|\\_____▌",
-			"▐________|\\____▌",
-			"▐_________|\\___▌",
-			"▐__________|\\__▌",
-			"▐___________|\\_▌",
-			"▐____________|\\▌",
-			"▐____________/|▌",
-			"▐___________/|_▌",
-			"▐__________/|__▌",
-			"▐_________/|___▌",
-			"▐________/|____▌",
-			"▐_______/|_____▌",
-			"▐______/|______▌",
-			"▐_____/|_______▌",
-			"▐____/|________▌",
-			"▐___/|_________▌",
-			"▐__/|__________▌",
-			"▐_/|___________▌",
-			"▐/|____________▌"
-		]
-	},
-	"dqpb": {
-		"interval": 100,
-		"frames": [
-			"d",
-			"q",
-			"p",
-			"b"
-		]
-	}
-};
 
 /***/ })
 /******/ ]);

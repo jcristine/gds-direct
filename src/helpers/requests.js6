@@ -1,9 +1,8 @@
 'use strict';
-
-let $ = require('jquery');
+// let $ = require('jquery');
 
 import {END_POINT_URL, API_HOST} from  '../constants'
-
+import 'whatwg-fetch'
 
 function get( url, params )
 {
@@ -55,60 +54,7 @@ function runSyncCommand( functionName, params )
 	})
 }
 
-function runSyncCommand2( functionName, params )
-{
-	let url 	= END_POINT_URL;
-
-	let data 	= {
-		'function'	: functionName,
-		'params'	: params
-	};
-
-	console.log('???', url + '&function='+ functionName);
-
-	//
-	// get( END_POINT_URL ).then(function(response) {
-	// 	console.log("Success!", response);
-	// }, function(error) {
-	// 	console.error("Failed!", error);
-	// });
-
-	return $.ajax({
-		type			: 'POST',
-		url				: url + '&function='+ functionName,
-
-		// crossDomain		: true,
-		// async			: false,
-		// dataType		: 'json',
-		//
-		// headers			: {
-		// 	'X-Requested-With': 'XMLHttpRequest'
-		// },
-		//
-
-		data			: {
-			data: JSON.stringify(data, true)
-		},
-
-		complete			: function(responseData, textStatus, jqXHR)
-		{
-			console.log(' completed ');
-			// result = responseData;
-		},
-
-		fail			: function (responseData, textStatus, errorThrown)
-		{
-			console.log(' fail ;');
-			console.log(responseData);
-			console.log(responseData.responseText);
-			alert('POST failed.');
-		}
-	});
-}
-
 export default {
 	runSyncCommand	: runSyncCommand,
 	get 			: get
 };
-
-// module.exports = Actions;

@@ -6,6 +6,8 @@ window.$ 				= window.jQuery = $;
 let jqTerminal 			= require('jquery.terminal/js/jquery.terminal');
 let Helpers				= require('../helpers/helpers');
 
+require('keyboardevent-key-polyfill').polyfill();
+
 const cliSpinners 		= require('cli-spinners');
 
 import Session 		from '../modules/sabreSession';
@@ -31,6 +33,9 @@ class Spinner
 
 	start()
 	{
+		if (this.timer)
+			this.end();
+
 		this.terminal.find('.cursor').hide();
 		this.prompt 	= this.terminal.get_prompt();
 
@@ -42,11 +47,13 @@ class Spinner
 	{
 		clearInterval( this.timer );
 
-		setTimeout(() => {
+		// setTimeout(() => {
 			clearInterval( this.timer );
 			this.terminal.set_prompt( this.prompt );
 			this.terminal.find('.cursor').show();
-		}, 0);
+
+			this.timer = false;
+		// }, 0);
 	}
 }
 
@@ -61,7 +68,7 @@ export default class TerminalPlugin
 
 		this.outputCache 	= [];
 		this.animation	 	= false;
-		this.hiddenBuff		= '';
+		this.hiddenBuff		= [];
 
 		this.session = new Session({
 			terminalIndex	: params.name,
@@ -84,28 +91,65 @@ export default class TerminalPlugin
 			return false;
 
 		let keyCode = evt.keyCode || evt.which;
+		let ch 		= false;
 
 		if (keyCode === 13)
 			return false;
 
+		// console.log(' blaaaa aaa ', String.fromCharCode( keyCode ) );
+
 		if (keyCode && !evt.ctrlKey)
 		{
-			let ch = Helpers.substitutePrintableChar( String.fromCharCode( keyCode ) );
+			ch = Helpers.substitutePrintableChar( String.fromCharCode( keyCode ) );
 
-			if (ch)
+			// if (ch)
+			// {
+			//
+			// }
+		}
+
+		if ( this.animation )
+		{
+			// console.log( this.hiddenBuff.length );
+
+			if ( this.hiddenBuff.length === 0 )
 			{
-				terminal.insert(ch);
-				return false;
+				this.hiddenBuff.push('');
 			}
+
+			this.hiddenBuff[ this.hiddenBuff.length - 1 ] += ch;
+
+			// this.hiddenBuff += ch;
+			return false;
+		}
+
+		if (ch)
+		{
+			terminal.insert(ch);
+			return false;
 		}
 	}
 
 	parseKeyBinds( evt, terminal )
 	{
+		let keyCode = evt.keyCode || evt.which;
+
 		if ( this.animation )
 		{
-			this.hiddenBuff += String.fromCharCode( evt.keyCode || evt.which );
-			return false;
+			if ( keyCode === 13 )
+			{
+				// console.log(' command to ryb ' , this.hiddenBuff );
+				this.hiddenBuff.push('');
+
+				// this.spinner.end();
+				// terminal.exec( this.hiddenBuff );
+				// this.hiddenBuff = '';
+
+				return false;
+			}
+
+			// this.hiddenBuff += String.fromCharCode( keyCode );
+			// return false;
 		}
 
 		if ( !KeyBinding.parse( evt, terminal ) )
@@ -127,7 +171,6 @@ export default class TerminalPlugin
 	{
 		this.terminal = $(this.context).terminal( this.commandParser.bind(this), {
 			greetings	: '',
-			// name		: `sabre_terminal_${this.name}`,
 
 			name		: this.name,
 			prompt		: '>',
@@ -155,33 +198,10 @@ export default class TerminalPlugin
 		this.spinner = new Spinner( this.terminal );
 	}
 
-	// spinner( terminal )
-	// {
-	// 	let animation 	= true;
-	// 	let i 			= 0;
-	//
-	// 	let spinner 	= cliSpinners.circle;
-	// 	let prompt 		= terminal.get_prompt();
-	//
-	// 	function set()
-	// 	{
-	// 		let text = spinner.frames[i++ % spinner.frames.length];
-	// 		terminal.set_prompt(text);
-	// 	}
-	//
-	// 	terminal.find('.cursor').hide();
-	// 	set();
-	//
-	// 	let timer = setInterval(set, spinner.interval);
-	// }
-
 	commandParser( command, terminal )
 	{
 		// console.log( terminal.rows() );
 		// console.log( terminal.cols() );
-
-		if (this.animation)
-			return false;
 
 		if ( !command || command === '' )
 		{
@@ -201,6 +221,20 @@ export default class TerminalPlugin
 			return false;
 		}
 
+		let sessionChange = ['SA', 'SB', 'SC', 'SD', 'SE' ].indexOf( command );
+
+		if ( sessionChange !== -1 )
+		{
+			// console.log( command.replace('S', '') );
+			// console.log( sessionChange );
+
+			window.TerminalState.change({
+				sessionIndex 	: sessionChange,
+				gds				: this.settings.gds
+			}, 'CHANGE_SESSION');
+
+		}
+
 		this.spinner.start();
 		this.animation 	= true;
 		// terminal.pause();
@@ -212,18 +246,27 @@ export default class TerminalPlugin
 
 			.then( ( response = {} ) => {
 				this.spinner.end();
-
-				terminal.insert( this.hiddenBuff );
+				// terminal.insert( this.hiddenBuff );
 				this.animation 	= false;
-				this.hiddenBuff = '';
-
 				return response;
 			})
 
 			.then( this.parseBackEnd.bind(this) )
-			.then( function () {
-				terminal.resume();
+			.then( () => {
+
+				this.hiddenBuff.map( ( command ) => {
+					if (command)
+						terminal.exec( command );
+
+				});
+
+				this.hiddenBuff = [];
 			})
+
+			// .then( function () {
+			// 	terminal.resume();
+			// })
+
 			.catch( this.parseError.bind(this) );
 	}
 
@@ -249,8 +292,8 @@ export default class TerminalPlugin
 		console.log('errrrrrr');
 
 		this.spinner.end();
-		this.terminal.resume();
 
+		// this.terminal.resume();
 		// alert(' something went wrong ');
 
 		console.error(' error', arguments );

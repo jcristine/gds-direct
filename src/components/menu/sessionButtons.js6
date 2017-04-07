@@ -25,12 +25,12 @@ export default class SessionKeys
 		}
 
 		button.addEventListener('click', () => {
-			button.classList.toggle('active');
+			// button.classList.toggle('active');
 
 			window.TerminalState.change({
 				sessionIndex 	: index,
 				gds				: this.settings.gds
-			}, 'CHANGE_SESSION');
+			}, 'CHANGE_SESSION_BY_MENU');
 		});
 
 		return button;
