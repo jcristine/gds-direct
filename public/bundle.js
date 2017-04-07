@@ -10717,7 +10717,7 @@ class SessionKeys
 		let button 			= document.createElement('button');
 		button.className	= 'btn btn-sm btn-purple font-bold';
 		button.innerHTML	= value;
-		button.innerHTML	+= ' <span class="">' + ( window.TerminalState.getPcc()[index] || '' ) + '</span>';
+		button.innerHTML	+= ' <span class="small text-lowercase">' + ( window.TerminalState.getPcc()[index] || '' ) + '</span>';
 
 		if (this.settings.session === index)
 		{
