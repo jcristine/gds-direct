@@ -13,6 +13,7 @@ export default class SessionKeys
 		let button 			= document.createElement('button');
 		button.className	= 'btn btn-sm btn-purple font-bold';
 		button.innerHTML	= value;
+		button.innerHTML	+= ' <span class="">' + ( window.TerminalState.getPcc()[index] || '' ) + '</span>';
 
 		if (this.settings.session === index)
 		{
@@ -25,12 +26,6 @@ export default class SessionKeys
 		}
 
 		button.addEventListener('click', () => {
-			// button.classList.toggle('active');
-
-			// if ( !$.terminal.active() )
-			// 	return false;
-			// $.terminal.active().exec('S' + value );
-
 			window.TerminalState.change({
 				sessionIndex 	: index,
 				gds				: this.settings.gds,
@@ -65,9 +60,10 @@ export default class SessionKeys
 	{
 		this.context.appendChild( this.getTrigger() );
 
-		this.getButtons().map( ( button ) => {
-			this.context.appendChild( button );
-		});
+		if (this.settings.active)
+			this.getButtons().map( ( button ) => {
+				this.context.appendChild( button );
+			});
 
 		return this.context;
 	}

@@ -14,11 +14,13 @@ const Context = {
 
 let Gds = {
 	'apollo' : {
-		session : 0
+		session : 0,
+		pcc		: {}
 	},
 
 	'sabre'	: {
-		session : 0
+		session : 0,
+		pcc		: {}
 	}
 };
 
@@ -44,13 +46,14 @@ window.TerminalState = {
 
 	currentSession	: null,
 
+	getPcc()
+	{
+		return Gds[this.state.gds].pcc;
+	},
+
 	change( params, action )
 	{
 		this.state = Object.assign( this.state, params );
-
-		// console.log( 'wtg2', params );
-		// console.log( 'sessions223:', this.sessions );
-		// Actions( action, params );
 
 		// let sIndex 				= ( this.state['sessionIndex'] || 0 ) + '-' + this.state.gds;
 		let sIndex 				= ( 0 ) + '-' + this.state.gds;
@@ -69,11 +72,7 @@ window.TerminalState = {
 			break;
 
 			case 'CHANGE_SESSION' :
-
-				// console.log(this.state.gds);
-
 				Gds[this.state.gds]['session'] = this.state.sessionIndex;
-				this.state.matrix 	= this.sessions[ sIndex ].matrix || { rows : 1, cells : 1 };
 			break;
 
 			case 'CHANGE_SESSION_BY_MENU' :
@@ -84,8 +83,9 @@ window.TerminalState = {
 				} else
 				{
 					alert('no terminal window are active');
-					return false;
 				}
+
+				return false;
 			break;
 
 			case 'CHANGE_MATRIX' :
@@ -97,11 +97,16 @@ window.TerminalState = {
 				return false;
 			break;
 
+			case 'CHANGE_PCC' :
+				Gds[this.state.gds]['pcc'][this.state.sessionIndex] = params.pcc;
+				// Gds[this.state.gds]['activeTerminal'] = this.state.activeTerminal;
+				Container.menuRender();
+				return false;
+			break;
+
 			// default:
 			// return;
 		}
-
-		// console.log(this.state);
 
 		Container.render( this.state );
 	}

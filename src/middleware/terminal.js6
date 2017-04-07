@@ -178,19 +178,13 @@ export default class TerminalPlugin
 			keypress	: this.parseInput.bind(this),
 			keydown		: this.parseKeyBinds.bind(this),
 
-
-
 			onInit		: function ( terminal) {
-				console.log('on init', terminal )
-
 				window.TerminalState.change({
 					activeTerminal 	: terminal
 				}, 'CHANGE_ACTIVE_TERMINAL');
 			},
 
 			onTerminalChange		: function ( terminal) {
-				console.log('on focus ccc', terminal );
-
 				window.TerminalState.change({
 					activeTerminal 	: terminal
 				}, 'CHANGE_ACTIVE_TERMINAL');
@@ -243,18 +237,10 @@ export default class TerminalPlugin
 
 		if ( sessionChange !== -1 )
 		{
-			// console.log( command.replace('S', '') );
-			// console.log( sessionChange );
-
 			window.TerminalState.change({
 				sessionIndex 	: sessionChange,
 				gds				: this.settings.gds
 			}, 'CHANGE_SESSION');
-
-		} else {
-
-
-
 		}
 
 		this.spinner.start();
@@ -306,6 +292,13 @@ export default class TerminalPlugin
 		{
 			this.outputCache = Helpers.makeCachedParts( result['output'], this.terminal.rows() );
 			this.terminal.echo( this.outputCache.shift() );
+		}
+
+		if ( !result['pcc'] )
+		{
+			window.TerminalState.change({
+				pcc : 'PCC',
+			}, 'CHANGE_PCC');
 		}
 	}
 

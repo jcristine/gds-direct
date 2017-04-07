@@ -724,11 +724,13 @@ const Context = {
 
 let Gds = {
 	'apollo' : {
-		session : 0
+		session : 0,
+		pcc		: {}
 	},
 
 	'sabre'	: {
-		session : 0
+		session : 0,
+		pcc		: {}
 	}
 };
 
@@ -754,13 +756,14 @@ window.TerminalState = {
 
 	currentSession	: null,
 
+	getPcc()
+	{
+		return Gds[this.state.gds].pcc;
+	},
+
 	change( params, action )
 	{
 		this.state = Object.assign( this.state, params );
-
-		// console.log( 'wtg2', params );
-		// console.log( 'sessions223:', this.sessions );
-		// Actions( action, params );
 
 		// let sIndex 				= ( this.state['sessionIndex'] || 0 ) + '-' + this.state.gds;
 		let sIndex 				= ( 0 ) + '-' + this.state.gds;
@@ -779,11 +782,7 @@ window.TerminalState = {
 			break;
 
 			case 'CHANGE_SESSION' :
-
-				// console.log(this.state.gds);
-
 				Gds[this.state.gds]['session'] = this.state.sessionIndex;
-				this.state.matrix 	= this.sessions[ sIndex ].matrix || { rows : 1, cells : 1 };
 			break;
 
 			case 'CHANGE_SESSION_BY_MENU' :
@@ -794,8 +793,9 @@ window.TerminalState = {
 				} else
 				{
 					alert('no terminal window are active');
-					return false;
 				}
+
+				return false;
 			break;
 
 			case 'CHANGE_MATRIX' :
@@ -807,11 +807,16 @@ window.TerminalState = {
 				return false;
 			break;
 
+			case 'CHANGE_PCC' :
+				Gds[this.state.gds]['pcc'][this.state.sessionIndex] = params.pcc;
+				// Gds[this.state.gds]['activeTerminal'] = this.state.activeTerminal;
+				__WEBPACK_IMPORTED_MODULE_0__components_containerMain__["a" /* default */].menuRender();
+				return false;
+			break;
+
 			// default:
 			// return;
 		}
-
-		// console.log(this.state);
 
 		__WEBPACK_IMPORTED_MODULE_0__components_containerMain__["a" /* default */].render( this.state );
 	}
@@ -10625,7 +10630,7 @@ class Container {
 		let rightSide 		= document.createElement('aside');
 		rightSide.className = 't-d-cell menu';
 
-		rightSide.appendChild( __WEBPACK_IMPORTED_MODULE_2__menuPanel__["a" /* default */].render() );
+		rightSide.appendChild( __WEBPACK_IMPORTED_MODULE_2__menuPanel__["a" /* default */].getContext() );
 		return rightSide;
 	}
 
@@ -10642,6 +10647,11 @@ class Container {
 				cells	: cellIndex
 			}
 		}, 'CHANGE_MATRIX');
+	}
+
+	static menuRender()
+	{
+		__WEBPACK_IMPORTED_MODULE_2__menuPanel__["a" /* default */].render();
 	}
 
 	static render( params )
@@ -10707,6 +10717,7 @@ class SessionKeys
 		let button 			= document.createElement('button');
 		button.className	= 'btn btn-sm btn-purple font-bold';
 		button.innerHTML	= value;
+		button.innerHTML	+= ' <span class="">' + ( window.TerminalState.getPcc()[index] || '' ) + '</span>';
 
 		if (this.settings.session === index)
 		{
@@ -10719,12 +10730,6 @@ class SessionKeys
 		}
 
 		button.addEventListener('click', () => {
-			// button.classList.toggle('active');
-
-			// if ( !$.terminal.active() )
-			// 	return false;
-			// $.terminal.active().exec('S' + value );
-
 			window.TerminalState.change({
 				sessionIndex 	: index,
 				gds				: this.settings.gds,
@@ -10759,9 +10764,10 @@ class SessionKeys
 	{
 		this.context.appendChild( this.getTrigger() );
 
-		this.getButtons().map( ( button ) => {
-			this.context.appendChild( button );
-		});
+		if (this.settings.active)
+			this.getButtons().map( ( button ) => {
+				this.context.appendChild( button );
+			});
 
 		return this.context;
 	}
@@ -10816,7 +10822,7 @@ class MenuPanel
 	static fontSize()
 	{
 		let btn 		= createBtn();
-		btn.innerHTML 	= '<i class="fa fa-text-height"></i>';
+		btn.innerHTML 	= '<i class="fa fa-text-height t-f-size-14"></i>';
 
 		let popover = new __WEBPACK_IMPORTED_MODULE_1__popovers_textSize__["a" /* default */]({
 			button	: btn
@@ -10830,7 +10836,7 @@ class MenuPanel
 	static history()
 	{
 		let btn 		= createBtn();
-		btn.innerHTML 	= '<i class="fa fa-history"></i>';
+		btn.innerHTML 	= '<i class="fa fa-history t-f-size-14"></i>';
 
 		let popover = new __WEBPACK_IMPORTED_MODULE_0__popovers_history__["a" /* default */]({
 			button	: btn
@@ -10843,7 +10849,7 @@ class MenuPanel
 	static settings()
 	{
 		let btn 		= createBtn();
-		btn.innerHTML 	= '<i class="fa fa-gears"></i>';
+		btn.innerHTML 	= '<i class="fa fa-gears t-f-size-14"></i>';
 
 		btn.addEventListener('click', () => {});
 		return btn;
@@ -10918,6 +10924,11 @@ class MenuPanel
 			)
 		});
 
+		return context;
+	}
+
+	static getContext()
+	{
 		return context;
 	}
 
@@ -11263,6 +11274,7 @@ function substitutePrintableChar(ch)
 		'=': '*',
 		'`': '>',
 		',': '+',
+		';': ':',
 	};
 
 	let layout = isApollo ? apolloLayout : sabreLayout;
@@ -11296,6 +11308,12 @@ module.exports = {
 "use strict";
 
 
+/*window.addEventListener("beforeunload", function (e) {
+	let confirmationMessage = "\o/";
+	(e || window.event).returnValue = confirmationMessage; //Gecko + IE
+	return confirmationMessage;                            //Webkit, Safari, Chrome
+});*/
+
 class KeyBinding
 {
 	static parse(evt, terminal)
@@ -11307,13 +11325,17 @@ class KeyBinding
 		// console.log(keymap);
 		// return true;
 
-		if ( evt.ctrlKey )
+		if ( evt.ctrlKey || evt.metaKey )
 		{
+			// evt.preventDefault();
+
 			switch (keymap)
 			{
 				case 8: // CTRL+S || CTRL+W || CTRL + backSpace;
 				case 87:
 				case 83:
+					// evt.preventDefault();
+					// console.log('wwwww');
 					terminal.clear();
 					return false;
 				break;
@@ -11724,19 +11746,13 @@ class TerminalPlugin
 			keypress	: this.parseInput.bind(this),
 			keydown		: this.parseKeyBinds.bind(this),
 
-
-
 			onInit		: function ( terminal) {
-				console.log('on init', terminal )
-
 				window.TerminalState.change({
 					activeTerminal 	: terminal
 				}, 'CHANGE_ACTIVE_TERMINAL');
 			},
 
 			onTerminalChange		: function ( terminal) {
-				console.log('on focus ccc', terminal );
-
 				window.TerminalState.change({
 					activeTerminal 	: terminal
 				}, 'CHANGE_ACTIVE_TERMINAL');
@@ -11789,18 +11805,10 @@ class TerminalPlugin
 
 		if ( sessionChange !== -1 )
 		{
-			// console.log( command.replace('S', '') );
-			// console.log( sessionChange );
-
 			window.TerminalState.change({
 				sessionIndex 	: sessionChange,
 				gds				: this.settings.gds
 			}, 'CHANGE_SESSION');
-
-		} else {
-
-
-
 		}
 
 		this.spinner.start();
@@ -11852,6 +11860,13 @@ class TerminalPlugin
 		{
 			this.outputCache = Helpers.makeCachedParts( result['output'], this.terminal.rows() );
 			this.terminal.echo( this.outputCache.shift() );
+		}
+
+		if ( !result['pcc'] )
+		{
+			window.TerminalState.change({
+				pcc : 'PCC',
+			}, 'CHANGE_PCC');
 		}
 	}
 

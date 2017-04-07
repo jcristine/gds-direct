@@ -135,7 +135,7 @@ export default class Container {
 		let rightSide 		= document.createElement('aside');
 		rightSide.className = 't-d-cell menu';
 
-		rightSide.appendChild( MenuPanel.render() );
+		rightSide.appendChild( MenuPanel.getContext() );
 		return rightSide;
 	}
 
@@ -152,6 +152,11 @@ export default class Container {
 				cells	: cellIndex
 			}
 		}, 'CHANGE_MATRIX');
+	}
+
+	static menuRender()
+	{
+		MenuPanel.render();
 	}
 
 	static render( params )

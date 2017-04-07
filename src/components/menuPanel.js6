@@ -2,7 +2,7 @@
 
 import History 			from './popovers/history';
 import TextSize 		from './popovers/textSize';
-import sessionButtons	from './menu/sessionButtons';
+import SessionButtons	from './menu/sessionButtons';
 
 let context 		= document.createElement('aside');
 context.className 	= 'sideMenu';
@@ -37,7 +37,7 @@ export default class MenuPanel
 	static fontSize()
 	{
 		let btn 		= createBtn();
-		btn.innerHTML 	= '<i class="fa fa-text-height"></i>';
+		btn.innerHTML 	= '<i class="fa fa-text-height t-f-size-14"></i>';
 
 		let popover = new TextSize({
 			button	: btn
@@ -51,7 +51,7 @@ export default class MenuPanel
 	static history()
 	{
 		let btn 		= createBtn();
-		btn.innerHTML 	= '<i class="fa fa-history"></i>';
+		btn.innerHTML 	= '<i class="fa fa-history t-f-size-14"></i>';
 
 		let popover = new History({
 			button	: btn
@@ -64,7 +64,7 @@ export default class MenuPanel
 	static settings()
 	{
 		let btn 		= createBtn();
-		btn.innerHTML 	= '<i class="fa fa-gears"></i>';
+		btn.innerHTML 	= '<i class="fa fa-gears t-f-size-14"></i>';
 
 		btn.addEventListener('click', () => {});
 		return btn;
@@ -74,13 +74,13 @@ export default class MenuPanel
 	{
 		let state = window.TerminalState.state;
 
-		let apollo = new sessionButtons({
+		let apollo = new SessionButtons({
 			gds 		: 'apollo',
 			active		: state.gds === 'apollo',
 			session		: state.sessionIndex
 		});
 
-		let sabre = new sessionButtons({
+		let sabre = new SessionButtons({
 			gds 		: 'sabre',
 			active		: state.gds === 'sabre',
 			session		: state.sessionIndex
@@ -139,6 +139,11 @@ export default class MenuPanel
 			)
 		});
 
+		return context;
+	}
+
+	static getContext()
+	{
 		return context;
 	}
 
