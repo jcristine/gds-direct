@@ -12,6 +12,16 @@ const Context = {
 	}
 };
 
+let Gds = {
+	'apollo' : {
+		session : 0
+	},
+
+	'sabre'	: {
+		session : 0
+	}
+};
+
 window.TerminalState = {
 
 	state			: {
@@ -26,7 +36,8 @@ window.TerminalState = {
 		},
 
 		fontSize	: 1,
-		language	: 'APOLLO'
+		language	: 'APOLLO',
+		activeTerminal : ''
 	},
 
 	sessions		: {},
@@ -48,24 +59,49 @@ window.TerminalState = {
 		switch (action)
 		{
 			case 'CHANGE_GDS':
-				this.state.matrix 	= this.sessions[ sIndex ].matrix || { rows : 1, cells : 1 };
-			break;
+				this.state.matrix 			= this.sessions[ sIndex ].matrix || { rows : 1, cells : 1 };
+				this.state.sessionIndex 	= Gds[this.state.gds]['session'];
+				this.state.activeTerminal 	= Gds[this.state.gds]['activeTerminal'];
+				break;
 
 			case 'CHANGE_FONT_SIZE':
 				// this.state.matrix 	= this.sessions[ sIndex ].matrix || { rows : 1, cells : 1 };
 			break;
 
 			case 'CHANGE_SESSION' :
+
+				// console.log(this.state.gds);
+
+				Gds[this.state.gds]['session'] = this.state.sessionIndex;
 				this.state.matrix 	= this.sessions[ sIndex ].matrix || { rows : 1, cells : 1 };
+			break;
+
+			case 'CHANGE_SESSION_BY_MENU' :
+
+				if (this.state.activeTerminal)
+				{
+					this.state.activeTerminal.exec( params.command );
+				} else
+				{
+					alert('no terminal window are active');
+					return false;
+				}
 			break;
 
 			case 'CHANGE_MATRIX' :
 				this.sessions[ sIndex ].matrix = this.state.matrix;
 			break;
 
+			case 'CHANGE_ACTIVE_TERMINAL' :
+				Gds[this.state.gds]['activeTerminal'] = this.state.activeTerminal;
+				return false;
+			break;
+
 			// default:
 			// return;
 		}
+
+		// console.log(this.state);
 
 		Container.render( this.state );
 	}

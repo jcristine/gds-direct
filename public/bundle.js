@@ -722,6 +722,16 @@ const Context = {
 	}
 };
 
+let Gds = {
+	'apollo' : {
+		session : 0
+	},
+
+	'sabre'	: {
+		session : 0
+	}
+};
+
 window.TerminalState = {
 
 	state			: {
@@ -736,7 +746,8 @@ window.TerminalState = {
 		},
 
 		fontSize	: 1,
-		language	: 'APOLLO'
+		language	: 'APOLLO',
+		activeTerminal : ''
 	},
 
 	sessions		: {},
@@ -758,24 +769,49 @@ window.TerminalState = {
 		switch (action)
 		{
 			case 'CHANGE_GDS':
-				this.state.matrix 	= this.sessions[ sIndex ].matrix || { rows : 1, cells : 1 };
-			break;
+				this.state.matrix 			= this.sessions[ sIndex ].matrix || { rows : 1, cells : 1 };
+				this.state.sessionIndex 	= Gds[this.state.gds]['session'];
+				this.state.activeTerminal 	= Gds[this.state.gds]['activeTerminal'];
+				break;
 
 			case 'CHANGE_FONT_SIZE':
 				// this.state.matrix 	= this.sessions[ sIndex ].matrix || { rows : 1, cells : 1 };
 			break;
 
 			case 'CHANGE_SESSION' :
+
+				// console.log(this.state.gds);
+
+				Gds[this.state.gds]['session'] = this.state.sessionIndex;
 				this.state.matrix 	= this.sessions[ sIndex ].matrix || { rows : 1, cells : 1 };
+			break;
+
+			case 'CHANGE_SESSION_BY_MENU' :
+
+				if (this.state.activeTerminal)
+				{
+					this.state.activeTerminal.exec( params.command );
+				} else
+				{
+					alert('no terminal window are active');
+					return false;
+				}
 			break;
 
 			case 'CHANGE_MATRIX' :
 				this.sessions[ sIndex ].matrix = this.state.matrix;
 			break;
 
+			case 'CHANGE_ACTIVE_TERMINAL' :
+				Gds[this.state.gds]['activeTerminal'] = this.state.activeTerminal;
+				return false;
+			break;
+
 			// default:
 			// return;
 		}
+
+		// console.log(this.state);
 
 		__WEBPACK_IMPORTED_MODULE_0__components_containerMain__["a" /* default */].render( this.state );
 	}
@@ -10685,9 +10721,14 @@ class SessionKeys
 		button.addEventListener('click', () => {
 			// button.classList.toggle('active');
 
+			// if ( !$.terminal.active() )
+			// 	return false;
+			// $.terminal.active().exec('S' + value );
+
 			window.TerminalState.change({
 				sessionIndex 	: index,
-				gds				: this.settings.gds
+				gds				: this.settings.gds,
+				command			: 'S' + value
 			}, 'CHANGE_SESSION_BY_MENU');
 		});
 
@@ -11683,6 +11724,24 @@ class TerminalPlugin
 			keypress	: this.parseInput.bind(this),
 			keydown		: this.parseKeyBinds.bind(this),
 
+
+
+			onInit		: function ( terminal) {
+				console.log('on init', terminal )
+
+				window.TerminalState.change({
+					activeTerminal 	: terminal
+				}, 'CHANGE_ACTIVE_TERMINAL');
+			},
+
+			onTerminalChange		: function ( terminal) {
+				console.log('on focus ccc', terminal );
+
+				window.TerminalState.change({
+					activeTerminal 	: terminal
+				}, 'CHANGE_ACTIVE_TERMINAL');
+			}
+
 			// numChars	: false
 
 			// wrap		: false,
@@ -11737,6 +11796,10 @@ class TerminalPlugin
 				sessionIndex 	: sessionChange,
 				gds				: this.settings.gds
 			}, 'CHANGE_SESSION');
+
+		} else {
+
+
 
 		}
 

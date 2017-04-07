@@ -27,9 +27,14 @@ export default class SessionKeys
 		button.addEventListener('click', () => {
 			// button.classList.toggle('active');
 
+			// if ( !$.terminal.active() )
+			// 	return false;
+			// $.terminal.active().exec('S' + value );
+
 			window.TerminalState.change({
 				sessionIndex 	: index,
-				gds				: this.settings.gds
+				gds				: this.settings.gds,
+				command			: 'S' + value
 			}, 'CHANGE_SESSION_BY_MENU');
 		});
 

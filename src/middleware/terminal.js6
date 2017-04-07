@@ -178,6 +178,24 @@ export default class TerminalPlugin
 			keypress	: this.parseInput.bind(this),
 			keydown		: this.parseKeyBinds.bind(this),
 
+
+
+			onInit		: function ( terminal) {
+				console.log('on init', terminal )
+
+				window.TerminalState.change({
+					activeTerminal 	: terminal
+				}, 'CHANGE_ACTIVE_TERMINAL');
+			},
+
+			onTerminalChange		: function ( terminal) {
+				console.log('on focus ccc', terminal );
+
+				window.TerminalState.change({
+					activeTerminal 	: terminal
+				}, 'CHANGE_ACTIVE_TERMINAL');
+			}
+
 			// numChars	: false
 
 			// wrap		: false,
@@ -232,6 +250,10 @@ export default class TerminalPlugin
 				sessionIndex 	: sessionChange,
 				gds				: this.settings.gds
 			}, 'CHANGE_SESSION');
+
+		} else {
+
+
 
 		}
 
