@@ -11637,6 +11637,7 @@ class TerminalPlugin
 		this.outputCache 	= [];
 		this.animation	 	= false;
 		this.hiddenBuff		= [];
+		this.hiddenCommand	= '';
 
 		this.session = new __WEBPACK_IMPORTED_MODULE_0__modules_sabreSession__["a" /* default */]({
 			terminalIndex	: params.name,
@@ -11664,30 +11665,31 @@ class TerminalPlugin
 		if (keyCode === 13)
 			return false;
 
-		// console.log(' blaaaa aaa ', String.fromCharCode( keyCode ) );
-
 		if (keyCode && !evt.ctrlKey)
 		{
 			ch = Helpers.substitutePrintableChar( String.fromCharCode( keyCode ) );
-
-			// if (ch)
-			// {
-			//
-			// }
 		}
+
+		// if ( this.animation )
+		// {
+		// 	if ( this.hiddenBuff.length === 0 )
+		// 	{
+		// 		this.hiddenBuff.push('');
+		// 	}
+		//
+		// 	this.hiddenBuff[ this.hiddenBuff.length - 1 ] += ch;
+		//
+		// 	return false;
+		// }
 
 		if ( this.animation )
 		{
-			// console.log( this.hiddenBuff.length );
+			// if ( this.hiddenBuff.length === 0 )
+			// {
+			// 	this.hiddenBuff.push('');
+			// }
 
-			if ( this.hiddenBuff.length === 0 )
-			{
-				this.hiddenBuff.push('');
-			}
-
-			this.hiddenBuff[ this.hiddenBuff.length - 1 ] += ch;
-
-			// this.hiddenBuff += ch;
+			this.hiddenCommand += ch;
 			return false;
 		}
 
@@ -11706,18 +11708,12 @@ class TerminalPlugin
 		{
 			if ( keyCode === 13 )
 			{
-				// console.log(' command to ryb ' , this.hiddenBuff );
-				this.hiddenBuff.push('');
+				// console.log('hidden push');
 
-				// this.spinner.end();
-				// terminal.exec( this.hiddenBuff );
-				// this.hiddenBuff = '';
-
+				this.hiddenBuff.push( this.hiddenCommand );
+				this.hiddenCommand = '';
 				return false;
 			}
-
-			// this.hiddenBuff += String.fromCharCode( keyCode );
-			// return false;
 		}
 
 		if ( !__WEBPACK_IMPORTED_MODULE_1__helpers_keyBinding__["a" /* default */].parse( evt, terminal ) )
@@ -11746,13 +11742,15 @@ class TerminalPlugin
 			keypress	: this.parseInput.bind(this),
 			keydown		: this.parseKeyBinds.bind(this),
 
-			onInit		: function ( terminal) {
+			onInit		: function ( terminal )
+			{
 				window.TerminalState.change({
 					activeTerminal 	: terminal
 				}, 'CHANGE_ACTIVE_TERMINAL');
 			},
 
-			onTerminalChange		: function ( terminal) {
+			onTerminalChange		: function ( terminal )
+			{
 				window.TerminalState.change({
 					activeTerminal 	: terminal
 				}, 'CHANGE_ACTIVE_TERMINAL');
@@ -11822,7 +11820,6 @@ class TerminalPlugin
 
 			.then( ( response = {} ) => {
 				this.spinner.end();
-				// terminal.insert( this.hiddenBuff );
 				this.animation 	= false;
 				return response;
 			})
@@ -11830,13 +11827,22 @@ class TerminalPlugin
 			.then( this.parseBackEnd.bind(this) )
 			.then( () => {
 
-				this.hiddenBuff.map( ( command ) => {
-					if (command)
-						terminal.exec( command );
+				// console.log(this.hiddenBuff);
 
-				});
+				if (this.hiddenBuff.length)
+				{
+					let cmd = this.hiddenBuff.shift();
 
-				this.hiddenBuff = [];
+					if ( cmd )
+						terminal.exec( cmd );
+				} else
+				{
+					if ( this.hiddenCommand )
+					{
+						terminal.insert( this.hiddenCommand );
+						this.hiddenCommand = '';
+					}
+				}
 			})
 
 			// .then( function () {
@@ -11872,8 +11878,7 @@ class TerminalPlugin
 
 	parseError(e)
 	{
-		console.log('errrrrrr');
-
+		// console.log('errrrrrr');
 		this.spinner.end();
 
 		// this.terminal.resume();
