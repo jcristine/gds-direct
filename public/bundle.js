@@ -11864,8 +11864,16 @@ class TerminalPlugin
 
 		if ( result['output'] )
 		{
-			this.outputCache = Helpers.makeCachedParts( result['output'], this.terminal.rows() );
-			this.terminal.echo( this.outputCache.shift() );
+
+			if (this.settings.gds === 'sabre')
+			{
+				this.outputCache = Helpers.makeCachedParts( result['output'], this.terminal.rows() );
+				this.terminal.echo( this.outputCache.shift() );
+			} else
+			{
+				this.terminal.echo( result['output'] );
+			}
+
 		}
 
 		if ( !result['pcc'] )
