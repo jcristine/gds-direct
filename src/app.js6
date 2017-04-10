@@ -99,7 +99,6 @@ window.TerminalState = {
 
 			case 'CHANGE_PCC' :
 				Gds[this.state.gds]['pcc'][this.state.sessionIndex] = params.pcc;
-				// Gds[this.state.gds]['activeTerminal'] = this.state.activeTerminal;
 				Container.menuRender();
 				return false;
 			break;

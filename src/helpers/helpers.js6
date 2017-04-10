@@ -1,7 +1,7 @@
 'use strict';
 
-function chunk(arr, limit) {
-
+/*function chunk(arr, limit)
+{
 	let result = [];
 
 	while (arr.length > limit)
@@ -14,13 +14,13 @@ function chunk(arr, limit) {
 		result.push(arr);
 
 	return result;
-}
+}*/
 
 function substitutePrintableChar(ch)
 {
 	let isApollo	= window.TerminalState.state.language === 'APOLLO';
 
-	let sabreLayout = {
+	const sabreLayout = {
 		'\'': '‡',
 		'[': '¤',
 		'=': '*',
@@ -29,7 +29,7 @@ function substitutePrintableChar(ch)
 		// shift + ","
 	};
 
-	let apolloLayout = {
+	const apolloLayout = {
 		'[': '¤',
 		']': '$',
 		'=': '*',
@@ -38,9 +38,16 @@ function substitutePrintableChar(ch)
 		';': ':',
 	};
 
-	let layout = isApollo ? apolloLayout : sabreLayout;
+	const layout = isApollo ? apolloLayout : sabreLayout;
 
 	return layout[ch] || ch.toUpperCase();
+}
+
+function chunk(arr, limit)
+{
+	return arr.map( (line, index) => {
+		return (index%limit) ? [] : arr.slice( index , index + limit );
+	}).filter( ( data ) => { return !!data.length });
 }
 
 function splitLines(txt)
@@ -48,16 +55,21 @@ function splitLines(txt)
 	return txt.split(/\r?\n/);
 }
 
-function makeCachedParts(txt, rows)
+function makeCachedParts(txt, rows = 20, cols)
 {
-	let lines = splitLines(txt);
+	const lines = splitLines(txt);
 
-	return chunk(lines, (rows || 20) ).map(function(sectionLines){
-		return sectionLines.join('\n');
-	});
+	// lines.map( ( line, index ) => {
+		// console.log( line, index );
+		// console.log( line.length, cols );
+		// let b = line.match(/(.{1,20})/g);
+		// console.log(b);
+	// });
+
+	return chunk(lines, rows).map( (sectionLines) => sectionLines.join('\n') );
 }
 
-module.exports = {
+export default {
 	makeCachedParts 		:	makeCachedParts,
 	substitutePrintableChar :	substitutePrintableChar
-};
+}

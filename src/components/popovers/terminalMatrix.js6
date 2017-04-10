@@ -53,7 +53,7 @@ class Matrix
 		cell.addEventListener('mouseover', function () {
 			for ( let i=0; i <= rowIndex; i++ )
 			{
-				cellObj[i].slice(0, cellIndex + 1 ).map(function (cell) {
+				cellObj[i].slice(0, cellIndex + 1 ).forEach( (cell) =>  {
 					cell.classList.toggle(ACTIVE_CLASS);
 				})
 			}
@@ -62,7 +62,7 @@ class Matrix
 		let context = this.context;
 
 		cell.addEventListener('mouseleave', function () {
-			[].map.call(context.querySelectorAll( '.' + ACTIVE_CLASS) , function ( cell ) {
+			[].forEach.call(context.querySelectorAll( '.' + ACTIVE_CLASS) , ( cell ) => {
 				cell.classList.toggle(ACTIVE_CLASS);
 			});
 		});

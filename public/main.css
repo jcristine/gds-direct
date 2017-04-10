@@ -851,6 +851,9 @@
 body.terminalBody {
   margin: 0;
 }
+.cmd .cursor {
+  border: 0;
+}
 .matrix-table td {
   padding: 15px;
   border: 1px solid #CCC;

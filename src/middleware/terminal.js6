@@ -4,58 +4,14 @@ let $					= require('jquery');
 window.$ 				= window.jQuery = $;
 
 let jqTerminal 			= require('jquery.terminal/js/jquery.terminal');
-let Helpers				= require('../helpers/helpers');
 
 require('keyboardevent-key-polyfill').polyfill();
 
-const cliSpinners 		= require('cli-spinners');
-
+import Helpers 		from '../helpers/helpers';
+import Pagination 	from '../modules/pagination';
 import Session 		from '../modules/sabreSession';
+import Spinner 		from '../modules/spinner';
 import KeyBinding	from '../helpers/keyBinding';
-
-class Spinner
-{
-	constructor( terminal )
-	{
-		this.timer 		= false;
-		this.terminal 	= terminal;
-		this.promt 		= false;
-		this.spinner	= cliSpinners.simpleDots;
-
-		this.frameCounter = 0;
-	}
-
-	set()
-	{
-		let text = this.spinner.frames[this.frameCounter++ % this.spinner.frames.length];
-		this.terminal.set_prompt(text);
-	}
-
-	start()
-	{
-		if (this.timer)
-			this.end();
-
-		this.terminal.find('.cursor').hide();
-		this.prompt 	= this.terminal.get_prompt();
-
-		this.set();
-		this.timer 		= setInterval( this.set.bind(this), this.spinner.interval);
-	}
-
-	end()
-	{
-		clearInterval( this.timer );
-
-		// setTimeout(() => {
-			clearInterval( this.timer );
-			this.terminal.set_prompt( this.prompt );
-			this.terminal.find('.cursor').show();
-
-			this.timer = false;
-		// }, 0);
-	}
-}
 
 export default class TerminalPlugin
 {
@@ -71,12 +27,16 @@ export default class TerminalPlugin
 		this.hiddenBuff		= [];
 		this.hiddenCommand	= '';
 
+		this.allowManualPaging = params.gds === 'sabre';
+		this.allowManualPaging = true;
+
 		this.session = new Session({
 			terminalIndex	: params.name,
 			sessionIndex	: params.sessionIndex,
-			gds				: params.gds,
-			// language		: params.language,
+			gds				: params.gds
 		});
+
+		this.pagination = new Pagination();
 
 		this.init();
 	}
@@ -98,36 +58,18 @@ export default class TerminalPlugin
 			return false;
 
 		if (keyCode && !evt.ctrlKey)
-		{
 			ch = Helpers.substitutePrintableChar( String.fromCharCode( keyCode ) );
-		}
-
-		// if ( this.animation )
-		// {
-		// 	if ( this.hiddenBuff.length === 0 )
-		// 	{
-		// 		this.hiddenBuff.push('');
-		// 	}
-		//
-		// 	this.hiddenBuff[ this.hiddenBuff.length - 1 ] += ch;
-		//
-		// 	return false;
-		// }
-
-		if ( this.animation )
-		{
-			// if ( this.hiddenBuff.length === 0 )
-			// {
-			// 	this.hiddenBuff.push('');
-			// }
-
-			this.hiddenCommand += ch;
-			return false;
-		}
 
 		if (ch)
 		{
-			terminal.insert(ch);
+			if ( this.animation )
+			{
+				this.hiddenCommand += ch;
+			} else
+			{
+				terminal.insert(ch);
+			}
+
 			return false;
 		}
 	}
@@ -140,8 +82,6 @@ export default class TerminalPlugin
 		{
 			if ( keyCode === 13 )
 			{
-				// console.log('hidden push');
-
 				this.hiddenBuff.push( this.hiddenCommand );
 				this.hiddenCommand = '';
 				return false;
@@ -188,18 +128,6 @@ export default class TerminalPlugin
 				}, 'CHANGE_ACTIVE_TERMINAL');
 			}
 
-			// numChars	: false
-
-			// wrap		: false,
-			// outputLimit : 3
-
-			// onInit		: this.onInit
-			//,
-			//
-			//onTerminalChange	: function () {
-			//	console.log(' terminal change 1')
-			//},
-			//
 			//exceptionHandler	 : function () {
 			//	console.log('exc', arguments)
 			//}
@@ -210,25 +138,38 @@ export default class TerminalPlugin
 
 	commandParser( command, terminal )
 	{
-		// console.log( terminal.rows() );
-		// console.log( terminal.cols() );
-
 		if ( !command || command === '' )
-		{
-			// terminal.echo('');
 			return false;
-		}
 
-		if ( this.settings.gds === 'sabre' && command === 'MD' )
-		{
-			terminal.echo( this.outputCache.length > 0 ?  this.outputCache.shift() : '‡NOTHING TO SCROLL‡' );
-			return false;
-		}
+		// console.log( this.allowManualPaging );
+		// console.log( 'rows', terminal.rows() );
+		// console.log( 'cols', terminal.cols() );
 
-		if ( command === 'MU' )
+		if ( this.allowManualPaging )
 		{
-			terminal.echo( this.outputCache.length > 0 ?  this.outputCache.shift() : '‡NOTHING TO SCROLL‡' );
-			return false;
+			switch (command)
+			{
+				case 'MD' :
+					terminal.echo( this.pagination.next().print() );
+				return false;
+
+				case 'MU' :
+					terminal.echo( this.pagination.prev().print() );
+				return false;
+
+				case 'MDA' :
+					terminal.echo( this.pagination.printAll() );
+				return false;
+
+				case 'MDA5' :
+					return false;
+
+				case 'MDA20' :
+					return false;
+
+				// default :
+					// return '';
+			}
 		}
 
 		let sessionChange = ['SA', 'SB', 'SC', 'SD', 'SE' ].indexOf( command );
@@ -243,7 +184,6 @@ export default class TerminalPlugin
 
 		this.spinner.start();
 		this.animation 	= true;
-		// terminal.pause();
 
 		this.session
 			.run({
@@ -258,8 +198,6 @@ export default class TerminalPlugin
 
 			.then( this.parseBackEnd.bind(this) )
 			.then( () => {
-
-				// console.log(this.hiddenBuff);
 
 				if (this.hiddenBuff.length)
 				{
@@ -276,17 +214,12 @@ export default class TerminalPlugin
 					}
 				}
 			})
-
-			// .then( function () {
-			// 	terminal.resume();
-			// })
-
 			.catch( this.parseError.bind(this) );
 	}
 
 	parseBackEnd( response = {} )
 	{
-		let result = response['data'];
+		let result = response['data'], output = '';
 
 		if ( result['prompt'] )
 			this.terminal.set_prompt( result['prompt'] );
@@ -296,15 +229,16 @@ export default class TerminalPlugin
 
 		if ( result['output'] )
 		{
+			output = result['output'];
 
-			if (this.settings.gds === 'sabre')
+			if ( this.allowManualPaging )
 			{
-				this.outputCache = Helpers.makeCachedParts( result['output'], this.terminal.rows() );
-				this.terminal.echo( this.outputCache.shift() );
-			} else
-			{
-				this.terminal.echo( result['output'] );
+				output = this.pagination
+					.bindOutput( output, this.terminal.rows() - 1, this.terminal.cols() )
+					.print();
 			}
+
+			this.terminal.echo( output );
 		}
 
 		if ( result['pcc'] )

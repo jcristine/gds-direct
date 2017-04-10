@@ -1,16 +1,16 @@
 'use strict';
 
-/*window.addEventListener("beforeunload", function (e) {
+window.addEventListener("beforeunload", function (e) {
 	let confirmationMessage = "\o/";
 	(e || window.event).returnValue = confirmationMessage; //Gecko + IE
 	return confirmationMessage;                            //Webkit, Safari, Chrome
-});*/
+});
 
 export default class KeyBinding
 {
 	static parse(evt, terminal)
 	{
-		let keymap 		= evt.which;
+		let keymap 		= evt.keyCode || evt.which;
 		let isApollo	= window.TerminalState.state.language === 'APOLLO';
 
 		// console.log( isApollo );
@@ -26,8 +26,7 @@ export default class KeyBinding
 				case 8: // CTRL+S || CTRL+W || CTRL + backSpace;
 				case 87:
 				case 83:
-					// evt.preventDefault();
-					// console.log('wwwww');
+					evt.preventDefault();
 					terminal.clear();
 					return false;
 				break;
@@ -44,6 +43,7 @@ export default class KeyBinding
 
 				case 82 :
 					// CTRL+R
+					// terminal.insert('cccc');
 					return false;
 				break;
 
@@ -125,6 +125,12 @@ export default class KeyBinding
 				case 119: //F8
 					// Apollo example: SEM/2BQ6/AG
 					// Sabre example: AAAW8K7
+					return false;
+				break;
+
+				case 187: //+
+				case 188: //,
+					terminal.insert('+*');
 					return false;
 				break;
 
