@@ -28,7 +28,7 @@ export default class TerminalPlugin
 		this.hiddenCommand	= '';
 
 		this.allowManualPaging = params.gds === 'sabre';
-		this.allowManualPaging = true;
+		// this.allowManualPaging = true;
 
 		this.session = new Session({
 			terminalIndex	: params.name,
