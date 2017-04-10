@@ -305,10 +305,9 @@ export default class TerminalPlugin
 			{
 				this.terminal.echo( result['output'] );
 			}
-
 		}
 
-		if ( !result['pcc'] )
+		if ( result['pcc'] )
 		{
 			window.TerminalState.change({
 				pcc : 'PCC',
