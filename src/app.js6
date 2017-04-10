@@ -24,6 +24,19 @@ let Gds = {
 	}
 };
 
+let retrievedObject;
+
+if ( localStorage.getItem('matrix') )
+{
+	retrievedObject = JSON.parse( localStorage.getItem('matrix') )
+} else
+{
+	retrievedObject = {
+		rows 	: 3,
+		cells 	: 3
+	}
+}
+
 window.TerminalState = {
 
 	state			: {
@@ -32,13 +45,11 @@ window.TerminalState = {
 
 		sessionIndex	: 0,
 
-		matrix			: {
-			rows 	: 1,
-			cells 	: 1
-		},
+		matrix			: retrievedObject,
 
 		fontSize	: 1,
 		language	: 'APOLLO',
+
 		activeTerminal : ''
 	},
 
@@ -65,7 +76,7 @@ window.TerminalState = {
 				this.state.matrix 			= this.sessions[ sIndex ].matrix || { rows : 1, cells : 1 };
 				this.state.sessionIndex 	= Gds[this.state.gds]['session'];
 				this.state.activeTerminal 	= Gds[this.state.gds]['activeTerminal'];
-				break;
+			break;
 
 			case 'CHANGE_FONT_SIZE':
 				// this.state.matrix 	= this.sessions[ sIndex ].matrix || { rows : 1, cells : 1 };
@@ -89,6 +100,7 @@ window.TerminalState = {
 			break;
 
 			case 'CHANGE_MATRIX' :
+				localStorage.setItem('matrix', JSON.stringify(this.state.matrix) );
 				this.sessions[ sIndex ].matrix = this.state.matrix;
 			break;
 

@@ -85,7 +85,7 @@ export default class Container {
 		this.createWrapper();
 
 		Root.appendChild( context );
-		this.attachTerminals();
+		window.TerminalState.change({}, 'CHANGE_MATRIX');
 	}
 
 	static createContext()

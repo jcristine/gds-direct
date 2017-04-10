@@ -714,7 +714,7 @@ const API_HOST 				= '';
 
 function substitutePrintableChar(ch)
 {
-	let isApollo	= window.TerminalState.state.language === 'APOLLO';
+	const isApollo	= window.TerminalState.state.language === 'APOLLO';
 
 	const sabreLayout = {
 		'\'': '‡',
@@ -751,18 +751,21 @@ function splitLines(txt)
 	return txt.split(/\r?\n/);
 }
 
-function makeCachedParts(txt, rows = 20, cols)
+function makeCachedParts(txt, maxRowLimit = 20, maxCharLimit)
 {
 	const lines = splitLines(txt);
 
-	// lines.map( ( line, index ) => {
-		// console.log( line, index );
-		// console.log( line.length, cols );
-		// let b = line.match(/(.{1,20})/g);
-		// console.log(b);
-	// });
+	let chunkByCharLimit = [];
 
-	return chunk(lines, rows).map( (sectionLines) => sectionLines.join('\n') );
+	lines.forEach( (line) => {
+		const regex = new RegExp(`(.{1,${maxCharLimit}})`, 'gi');
+
+		let lineArr = line.match(regex);
+		chunkByCharLimit = chunkByCharLimit.concat(lineArr);
+	});
+
+	return chunk(chunkByCharLimit, maxRowLimit).map( (sectionLines) => sectionLines.join('\n') );
+	// return chunk(lines, rows).map( (sectionLines) => sectionLines.join('\n') );
 }
 
 /* harmony default export */ __webpack_exports__["a"] = ({
@@ -809,6 +812,19 @@ let Gds = {
 	}
 };
 
+let retrievedObject;
+
+if ( localStorage.getItem('matrix') )
+{
+	retrievedObject = JSON.parse( localStorage.getItem('matrix') )
+} else
+{
+	retrievedObject = {
+		rows 	: 3,
+		cells 	: 3
+	}
+}
+
 window.TerminalState = {
 
 	state			: {
@@ -817,13 +833,11 @@ window.TerminalState = {
 
 		sessionIndex	: 0,
 
-		matrix			: {
-			rows 	: 1,
-			cells 	: 1
-		},
+		matrix			: retrievedObject,
 
 		fontSize	: 1,
 		language	: 'APOLLO',
+
 		activeTerminal : ''
 	},
 
@@ -850,7 +864,7 @@ window.TerminalState = {
 				this.state.matrix 			= this.sessions[ sIndex ].matrix || { rows : 1, cells : 1 };
 				this.state.sessionIndex 	= Gds[this.state.gds]['session'];
 				this.state.activeTerminal 	= Gds[this.state.gds]['activeTerminal'];
-				break;
+			break;
 
 			case 'CHANGE_FONT_SIZE':
 				// this.state.matrix 	= this.sessions[ sIndex ].matrix || { rows : 1, cells : 1 };
@@ -874,6 +888,7 @@ window.TerminalState = {
 			break;
 
 			case 'CHANGE_MATRIX' :
+				localStorage.setItem('matrix', JSON.stringify(this.state.matrix) );
 				this.sessions[ sIndex ].matrix = this.state.matrix;
 			break;
 
@@ -10656,7 +10671,7 @@ class Container {
 		this.createWrapper();
 
 		Root.appendChild( context );
-		this.attachTerminals();
+		window.TerminalState.change({}, 'CHANGE_MATRIX');
 	}
 
 	static createContext()
@@ -10770,7 +10785,6 @@ class Container {
 	}
 }
 /* harmony export (immutable) */ __webpack_exports__["a"] = Container;
-
 
 
 /***/ }),

@@ -18,7 +18,7 @@
 
 function substitutePrintableChar(ch)
 {
-	let isApollo	= window.TerminalState.state.language === 'APOLLO';
+	const isApollo	= window.TerminalState.state.language === 'APOLLO';
 
 	const sabreLayout = {
 		'\'': '‡',
@@ -55,18 +55,21 @@ function splitLines(txt)
 	return txt.split(/\r?\n/);
 }
 
-function makeCachedParts(txt, rows = 20, cols)
+function makeCachedParts(txt, maxRowLimit = 20, maxCharLimit)
 {
 	const lines = splitLines(txt);
 
-	// lines.map( ( line, index ) => {
-		// console.log( line, index );
-		// console.log( line.length, cols );
-		// let b = line.match(/(.{1,20})/g);
-		// console.log(b);
-	// });
+	let chunkByCharLimit = [];
 
-	return chunk(lines, rows).map( (sectionLines) => sectionLines.join('\n') );
+	lines.forEach( (line) => {
+		const regex = new RegExp(`(.{1,${maxCharLimit}})`, 'gi');
+
+		let lineArr = line.match(regex);
+		chunkByCharLimit = chunkByCharLimit.concat(lineArr);
+	});
+
+	return chunk(chunkByCharLimit, maxRowLimit).map( (sectionLines) => sectionLines.join('\n') );
+	// return chunk(lines, rows).map( (sectionLines) => sectionLines.join('\n') );
 }
 
 export default {
