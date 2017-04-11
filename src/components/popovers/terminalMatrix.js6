@@ -1,6 +1,6 @@
 'use strict';
 
-import Drop 	from 'tether-drop';
+import Drop from 'tether-drop';
 
 let popContext;
 let cellObj = [];
@@ -41,28 +41,32 @@ class Matrix
 
 	makeCell( cellIndex, rowIndex )
 	{
-		let cell 		= document.createElement('td');
+		const cell = document.createElement('td');
 
 		cellObj[rowIndex].push(cell);
 
 		cell.addEventListener( 'click', () => {
 			popContext.close();
-			this.settings.onClick( rowIndex, cellIndex );
+
+			window.TerminalState.change({
+				matrix : {
+					rows 	: rowIndex,
+					cells	: cellIndex
+				}
+			}, 'CHANGE_MATRIX');
 		});
 
-		cell.addEventListener('mouseover', function () {
-			for ( let i=0; i <= rowIndex; i++ )
+		cell.addEventListener('mouseover', () => {
+			for ( let i = 0; i <= rowIndex; i++ )
 			{
-				cellObj[i].slice(0, cellIndex + 1 ).forEach( (cell) =>  {
+				cellObj[i].slice(0, cellIndex + 1 ).forEach( (cell) => {
 					cell.classList.toggle(ACTIVE_CLASS);
 				})
 			}
 		});
 
-		let context = this.context;
-
-		cell.addEventListener('mouseleave', function () {
-			[].forEach.call(context.querySelectorAll( '.' + ACTIVE_CLASS) , ( cell ) => {
+		cell.addEventListener('mouseleave', () => {
+			[].forEach.call( this.context.querySelectorAll( '.' + ACTIVE_CLASS) , ( cell ) => {
 				cell.classList.toggle(ACTIVE_CLASS);
 			});
 		});

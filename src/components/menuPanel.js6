@@ -77,13 +77,15 @@ export default class MenuPanel
 		let apollo = new SessionButtons({
 			gds 		: 'apollo',
 			active		: state.gds === 'apollo',
-			session		: state.sessionIndex
+			session		: state.sessionIndex,
+			terminal	: state.activeTerminal
 		});
 
 		let sabre = new SessionButtons({
 			gds 		: 'sabre',
 			active		: state.gds === 'sabre',
-			session		: state.sessionIndex
+			session		: state.sessionIndex,
+			terminal	: state.activeTerminal
 		});
 
 		let context 		= document.createElement('article');

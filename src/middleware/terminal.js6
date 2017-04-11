@@ -20,12 +20,12 @@ export default class TerminalPlugin
 		this.settings 	= params;
 		this.context	= params.context;
 		this.name		= params.name;
-		this.terminal 	= null;
 
 		this.outputCache 	= [];
 		this.animation	 	= false;
 		this.hiddenBuff		= [];
 		this.hiddenCommand	= '';
+		this.cmdLineOffset	= 0;
 
 		this.allowManualPaging = params.gds === 'sabre';
 		// this.allowManualPaging = true;
@@ -38,7 +38,8 @@ export default class TerminalPlugin
 
 		this.pagination = new Pagination();
 
-		this.init();
+		this.terminal 	= this.init();
+		this.spinner 	= new Spinner( this.terminal );
 	}
 
 	getPlugin()
@@ -89,51 +90,62 @@ export default class TerminalPlugin
 		}
 
 		if ( !KeyBinding.parse( evt, terminal ) )
-		{
 			return false;
-		}
 	}
 
-	// onInit( terminal )
-	// {
-	// 	console.log( 'ON INIT ' , this)
-		//SabreSession.startSession();
-		// let startSessionOutput = SabreSession.startSession();
-		//terminal.echo('>' + startSessionOutput['emulationCommand']);
-		//terminal.echo(startSessionOutput['emulationCommandOutput']);
-	// }
+	changeActiveTerm( terminal )
+	{
+		window.TerminalState.change({
+			activeTerminal 	: terminal
+		}, 'CHANGE_ACTIVE_TERMINAL');
+	}
 
 	init()
 	{
 		this.terminal = $(this.context).terminal( this.commandParser.bind(this), {
-			greetings	: '',
+			greetings		: '',
+			name			: this.name,
+			prompt			: '>',
+			scrollOnEcho	: false,
 
-			name		: this.name,
-			prompt		: '>',
+			keypress		: this.parseInput.bind(this),
+			keydown			: this.parseKeyBinds.bind(this),
 
-			keypress	: this.parseInput.bind(this),
-			keydown		: this.parseKeyBinds.bind(this),
+			onInit			: this.changeActiveTerm,
+			onTerminalChange: this.changeActiveTerm,
 
-			onInit		: function ( terminal )
-			{
-				window.TerminalState.change({
-					activeTerminal 	: terminal
-				}, 'CHANGE_ACTIVE_TERMINAL');
-			},
+			keymap			: {
 
-			onTerminalChange		: function ( terminal )
-			{
-				window.TerminalState.change({
-					activeTerminal 	: terminal
-				}, 'CHANGE_ACTIVE_TERMINAL');
+				'CTRL+W' : function ()
+				{
+					console.log(' wwww ');
+				},
+
+				'CTRL+J' : function ()
+				{
+					console.log(' JJJJ ', arguments );
+				},
+
 			}
-
 			//exceptionHandler	 : function () {
 			//	console.log('exc', arguments)
 			//}
 		});
 
-		this.spinner = new Spinner( this.terminal );
+		return this.terminal;
+	}
+
+	checkArea( command )
+	{
+		const sessionChange = window.TerminalState.getSessionAreaMap().indexOf( command );
+
+		if ( sessionChange !== -1 )
+		{
+			window.TerminalState.change({
+				sessionIndex 	: sessionChange,
+				gds				: this.settings.gds
+			}, 'CHANGE_SESSION');
+		}
 	}
 
 	commandParser( command, terminal )
@@ -141,7 +153,6 @@ export default class TerminalPlugin
 		if ( !command || command === '' )
 			return false;
 
-		// console.log( this.allowManualPaging );
 		// console.log( 'rows', terminal.rows() );
 		// console.log( 'cols', terminal.cols() );
 
@@ -172,19 +183,17 @@ export default class TerminalPlugin
 			}
 		}
 
-		let sessionChange = ['SA', 'SB', 'SC', 'SD', 'SE' ].indexOf( command );
-
-		if ( sessionChange !== -1 )
-		{
-			window.TerminalState.change({
-				sessionIndex 	: sessionChange,
-				gds				: this.settings.gds
-			}, 'CHANGE_SESSION');
-		}
+		// this.checkArea( command );
 
 		this.spinner.start();
-		this.animation 	= true;
+		this.animation 		= true;
+		this.cmdLineOffset 	= this.terminal.cmd()[0].offsetTop;
 
+		this.sendRequest(command);
+	}
+
+	sendRequest( command )
+	{
 		this.session
 			.run({
 				cmd : command
@@ -204,15 +213,17 @@ export default class TerminalPlugin
 					let cmd = this.hiddenBuff.shift();
 
 					if ( cmd )
-						terminal.exec( cmd );
+						this.terminal.exec( cmd );
 				} else
 				{
 					if ( this.hiddenCommand )
 					{
-						terminal.insert( this.hiddenCommand );
+						this.terminal.insert( this.hiddenCommand );
 						this.hiddenCommand = '';
 					}
 				}
+
+				this.checkArea( command );
 			})
 			.catch( this.parseError.bind(this) );
 	}
@@ -239,6 +250,9 @@ export default class TerminalPlugin
 			}
 
 			this.terminal.echo( output );
+
+			this.terminal.scroll();
+			this.terminal.scroll( this.cmdLineOffset );
 		}
 
 		if ( result['pcc'] )

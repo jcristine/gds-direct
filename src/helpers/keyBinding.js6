@@ -1,10 +1,12 @@
 'use strict';
 
+/*
 window.addEventListener("beforeunload", function (e) {
 	let confirmationMessage = "\o/";
 	(e || window.event).returnValue = confirmationMessage; //Gecko + IE
 	return confirmationMessage;                            //Webkit, Safari, Chrome
 });
+*/
 
 export default class KeyBinding
 {
@@ -12,10 +14,7 @@ export default class KeyBinding
 	{
 		let keymap 		= evt.keyCode || evt.which;
 		let isApollo	= window.TerminalState.state.language === 'APOLLO';
-
-		// console.log( isApollo );
 		// console.log(keymap);
-		// return true;
 
 		if ( evt.ctrlKey || evt.metaKey )
 		{
@@ -24,7 +23,7 @@ export default class KeyBinding
 			switch (keymap)
 			{
 				case 8: // CTRL+S || CTRL+W || CTRL + backSpace;
-				case 87:
+				// case 87:
 				case 83:
 					evt.preventDefault();
 					terminal.clear();

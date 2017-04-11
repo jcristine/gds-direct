@@ -13,9 +13,7 @@ class Button
 		this.context.id 		= 'addTerminalBtn';
 		this.context.type		= 'button';
 		this.context.className 	= 'btn btn-purple';
-
 		this.context.innerHTML	= '<i class="fa fa-th-large t-f-size-14 v-middle"></i>';
-		//this.context.addEventListener('click', params.click);
 	}
 	
 	getContext()
@@ -26,9 +24,8 @@ class Button
 
 export default class ActionsMenu {
 
-	static init( params )
+	static init()
 	{
-		this.settings = params;
 		this.addTerminalButton();
 	}
 
@@ -37,8 +34,7 @@ export default class ActionsMenu {
 		let button = new Button({});
 
 		let table = new Matrix({
-			button	: button.getContext(),
-			onClick : this.settings.addEvent
+			button	: button.getContext()
 		});
 
 		table.build();

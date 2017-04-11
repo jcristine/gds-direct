@@ -4,11 +4,9 @@ import Terminal 	from './terminal';
 import ActionsMenu 	from './actionsMenu';
 import MenuPanel 	from './menuPanel';
 
-let inSession = [];
+let inSession = [], terminalList = [], Root, termTableWrap;
 
-let terminalList = [], Root, table, context, termTableWrap;
-
-let TerminalCellMatrix = (function()
+const TerminalCellMatrix = (function()
 {
 	let context;
 
@@ -84,14 +82,14 @@ export default class Container {
 		this.createHeader();
 		this.createWrapper();
 
-		Root.appendChild( context );
+		Root.appendChild( this.context );
 		window.TerminalState.change({}, 'CHANGE_MATRIX');
 	}
 
 	static createContext()
 	{
-		context 			= document.createElement('section');
-		context.className	= 'terminal-wrap-custom clearfix';
+		this.context 			= document.createElement('section');
+		this.context.className	= 'terminal-wrap-custom clearfix';
 	}
 
 	static createHeader()
@@ -100,16 +98,16 @@ export default class Container {
 		header.className 	= 'term-header';
 		header.innerHTML 	= 'Terminal';
 
-		context.appendChild( header );
+		this.context.appendChild( header );
 		return header;
 	}
 
 	static createWrapper()
 	{
 		termTableWrap 				= document.createElement('div');
-		termTableWrap.className 	= 'term-body minimized term-f-size-a4';
+		termTableWrap.className 	= 'term-body minimized';
 
-		context.appendChild( termTableWrap );
+		this.context.appendChild( termTableWrap );
 
 		termTableWrap.appendChild( this.createTableMatrix() );
 		termTableWrap.appendChild( this.createRightMenu() );
@@ -120,9 +118,7 @@ export default class Container {
 		let leftSide 		= document.createElement('aside');
 		leftSide.className	= 't-d-cell left';
 
-		ActionsMenu.init({
-			addEvent : Container.attachTerminals
-		});
+		ActionsMenu.init();
 
 		leftSide.appendChild( ActionsMenu.getContext() );
 		leftSide.appendChild( TerminalCellMatrix.getContext() );
@@ -144,16 +140,6 @@ export default class Container {
 		TerminalCellMatrix.clear();
 	}
 
-	static attachTerminals( rowIndex = 1, cellIndex = 1 )
-	{
-		window.TerminalState.change({
-			matrix : {
-				rows 	: rowIndex,
-				cells	: cellIndex
-			}
-		}, 'CHANGE_MATRIX');
-	}
-
 	static menuRender()
 	{
 		MenuPanel.render();
@@ -161,21 +147,19 @@ export default class Container {
 
 	static render( params )
 	{
-		// console.log('render222@@@', params );
+		const sessionKey = params['gds'];
+		const { rows : rowIndex , cells: cellIndex} = params.matrix;
 
-		let { rows : rowIndex , cells: cellIndex} = params.matrix;
+		termTableWrap.className 	= 'term-body minimized' + ' ' + params.gds;
 
-		Container.clearPrev();
-
-		// let sessionKey = params['sessionIndex'] + params['gds'];
-		let sessionKey = 0 + params['gds'];
+		this.clearPrev();
+		this.menuRender();
 
 		terminalList = inSession[ sessionKey ] || [];
 
-		MenuPanel.render();
-
 		TerminalCellMatrix
 			.getCells(rowIndex, cellIndex)
+
 			.map( ( cell, index ) => {
 
 				if ( terminalList[index] )

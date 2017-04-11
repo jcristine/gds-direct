@@ -16,20 +16,21 @@ export default class SessionKeys
 		button.innerHTML	+= ' <span class="small text-lowercase">' + ( window.TerminalState.getPcc()[index] || '' ) + '</span>';
 
 		if (this.settings.session === index)
-		{
 			button.className += ' active';
-		}
 
 		if ( !this.settings.active )
-		{
 			button.className += ' hidden';
-		}
+
+		button.disabled = ! (!!this.settings.terminal);
 
 		button.addEventListener('click', () => {
+
+			[].forEach.call(document.querySelectorAll('.sideMenu .btn'), function ( btn ) {
+				btn.disabled = true;
+			});
+
 			window.TerminalState.change({
-				sessionIndex 	: index,
-				gds				: this.settings.gds,
-				command			: 'S' + value
+				sessionIndex 	: index
 			}, 'CHANGE_SESSION_BY_MENU');
 		});
 
@@ -49,7 +50,7 @@ export default class SessionKeys
 
 		button.addEventListener('click', () => {
 			window.TerminalState.change({
-				gds				: this.settings.gds
+				gds	: this.settings.gds
 			}, 'CHANGE_GDS');
 		});
 

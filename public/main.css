@@ -1116,9 +1116,13 @@ fieldset[disabled] #rootTerminal .btn-warning.active {
 }
 .terminal-wrap-custom .terminal,
 .terminal-wrap-custom .cmd {
-  background: #252525;
+  background: #191a1b;
   color: #fff;
   font-weight: bold;
+}
+.terminal-wrap-custom .sabre .terminal,
+.terminal-wrap-custom .sabre .cmd {
+  background: #263033;
 }
 .terminal-wrap-custom .t-matrix-w-0 td {
   width: 100%;
@@ -1132,5 +1136,43 @@ fieldset[disabled] #rootTerminal .btn-warning.active {
 .terminal-wrap-custom .t-matrix-w-3 td {
   width: 25%;
 }
+/*
+@keyframes blink {
+    0% { opacity: 1; }
+    25% { opacity: 0; }
+    50% { opacity: 0; }
+    100% { opacity: 1; }
+}
+@-webkit-keyframes blink {
+    0% { opacity: 1; }
+    25% { opacity: 0; }
+    50% { opacity: 0; }
+    100% { opacity: 1; }
+}
+@-ms-keyframes blink {
+    0% { opacity: 1; }
+    25% { opacity: 0; }
+    50% { opacity: 0; }
+    100% { opacity: 1; }
+}
+@-moz-keyframes blink {
+    0% { opacity: 1; }
+    25% { opacity: 0; }
+    50% { opacity: 0; }
+    100% { opacity: 1; }
+}
+.cmd .cursor.blink {
+    background: @cursor-color;
+    -webkit-animation: blink 1s infinite linear;
+    -moz-animation: blink 1s infinite linear;
+    -ms-animation: blink 1s infinite linear;
+    animation: blink 1s linear infinite;
+
+    -webkit-box-shadow: 0 0 5px @cursor-box-shadow;
+    -moz-box-shadow: 0 0 5px @cursor-box-shadow;
+    -ms-box-shadow: 0 0 5px @cursor-box-shadow;
+    -o-box-shadow: 0 0 5px @cursor-box-shadow;
+    box-shadow: 0 0 5px @cursor-box-shadow;
+}*/
 
 /*# sourceMappingURL=main.css.map*/

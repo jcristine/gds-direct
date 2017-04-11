@@ -50,10 +50,6 @@ body.terminalBody {
 		border-radius: 2px;
 		font-weight:  bold;
 		font-size: 14px;
-
-		//& +.btn {
-		//	margin-left: 5px;
-		//}
 	}
 
 	.btn-primary {
@@ -95,7 +91,8 @@ body.terminalBody {
 }
 
 .terminal-wrap-custom {
-	position: relative;
+
+    position: relative;
 	color: #414141;
 
 	width : 100%;
@@ -241,10 +238,19 @@ body.terminalBody {
 	}
 
 	.terminal, .cmd {
-		background: #252525;
+		background: @terminal-bg;
 		color :#fff;
 		font-weight: bold;
 	}
+
+
+    .sabre {
+        .terminal, .cmd{
+            background: @terminal-sabre-bg;
+        }
+    }
+
+
 
 	.t-matrix-w-0
 	{
@@ -273,3 +279,42 @@ body.terminalBody {
 		}
 	}
 }
+
+/*
+@keyframes blink {
+    0% { opacity: 1; }
+    25% { opacity: 0; }
+    50% { opacity: 0; }
+    100% { opacity: 1; }
+}
+@-webkit-keyframes blink {
+    0% { opacity: 1; }
+    25% { opacity: 0; }
+    50% { opacity: 0; }
+    100% { opacity: 1; }
+}
+@-ms-keyframes blink {
+    0% { opacity: 1; }
+    25% { opacity: 0; }
+    50% { opacity: 0; }
+    100% { opacity: 1; }
+}
+@-moz-keyframes blink {
+    0% { opacity: 1; }
+    25% { opacity: 0; }
+    50% { opacity: 0; }
+    100% { opacity: 1; }
+}
+.cmd .cursor.blink {
+    background: @cursor-color;
+    -webkit-animation: blink 1s infinite linear;
+    -moz-animation: blink 1s infinite linear;
+    -ms-animation: blink 1s infinite linear;
+    animation: blink 1s linear infinite;
+
+    -webkit-box-shadow: 0 0 5px @cursor-box-shadow;
+    -moz-box-shadow: 0 0 5px @cursor-box-shadow;
+    -ms-box-shadow: 0 0 5px @cursor-box-shadow;
+    -o-box-shadow: 0 0 5px @cursor-box-shadow;
+    box-shadow: 0 0 5px @cursor-box-shadow;
+}*/
