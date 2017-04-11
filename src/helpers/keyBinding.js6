@@ -14,7 +14,7 @@ export default class KeyBinding
 	{
 		let keymap 		= evt.keyCode || evt.which;
 		let isApollo	= window.TerminalState.state.language === 'APOLLO';
-		// console.log(keymap);
+		console.log(keymap);
 
 		if ( evt.ctrlKey || evt.metaKey )
 		{
@@ -22,9 +22,9 @@ export default class KeyBinding
 
 			switch (keymap)
 			{
-				case 8: // CTRL+S || CTRL+W || CTRL + backSpace;
+				case 8: //  CTRL + backSpace; || CTRL+W || CTRL + S
 				// case 87:
-				case 83:
+				// case 83:
 					evt.preventDefault();
 					terminal.clear();
 					return false;

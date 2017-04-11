@@ -836,8 +836,6 @@ window.TerminalState = {
 		activeTerminal	: ''
 	},
 
-	// sessions			: {},
-
 	getPcc()
 	{
 		return Gds[this.state.gds].pcc;
@@ -846,6 +844,11 @@ window.TerminalState = {
 	getSessionAreaMap()
 	{
 		return this.state.language === 'APOLLO' ? ['SA', 'SB', 'SC', 'SD', 'SE' ] : ['¤A', '¤B', '¤C', '¤D', '¤E'];
+	},
+
+	purgeScreens()
+	{
+		__WEBPACK_IMPORTED_MODULE_0__components_containerMain__["a" /* default */].purgeScreens();
 	},
 
 	change( params, action )
@@ -892,7 +895,6 @@ window.TerminalState = {
 			break;
 		}
 
-		console.log(' render ', action, this.state);
 		__WEBPACK_IMPORTED_MODULE_0__components_containerMain__["a" /* default */].render( this.state );
 	}
 };
@@ -10719,6 +10721,14 @@ class Container {
 		TerminalCellMatrix.clear();
 	}
 
+	static purgeScreens()
+	{
+		terminalList.forEach( ( terminal ) => {
+			if (terminal.plugin)
+				terminal.plugin.terminal.clear();
+		})
+	}
+
 	static menuRender()
 	{
 		__WEBPACK_IMPORTED_MODULE_2__menuPanel__["a" /* default */].render();
@@ -11327,7 +11337,7 @@ class KeyBinding
 	{
 		let keymap 		= evt.keyCode || evt.which;
 		let isApollo	= window.TerminalState.state.language === 'APOLLO';
-		// console.log(keymap);
+		console.log(keymap);
 
 		if ( evt.ctrlKey || evt.metaKey )
 		{
@@ -11335,9 +11345,9 @@ class KeyBinding
 
 			switch (keymap)
 			{
-				case 8: // CTRL+S || CTRL+W || CTRL + backSpace;
+				case 8: //  CTRL + backSpace; || CTRL+W || CTRL + S
 				// case 87:
-				case 83:
+				// case 83:
 					evt.preventDefault();
 					terminal.clear();
 					return false;
@@ -11697,14 +11707,19 @@ class TerminalPlugin
 
 			keymap			: {
 
-				'CTRL+W' : function ()
+				'CTRL+W'()
 				{
 					console.log(' wwww ');
 				},
 
-				'CTRL+J' : function ()
+				'CTRL+J'()
 				{
 					console.log(' JJJJ ', arguments );
+				},
+
+				'CTRL+S'()
+				{
+					window.TerminalState.purgeScreens();
 				},
 
 			}

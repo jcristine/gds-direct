@@ -140,6 +140,14 @@ export default class Container {
 		TerminalCellMatrix.clear();
 	}
 
+	static purgeScreens()
+	{
+		terminalList.forEach( ( terminal ) => {
+			if (terminal.plugin)
+				terminal.plugin.terminal.clear();
+		})
+	}
+
 	static menuRender()
 	{
 		MenuPanel.render();

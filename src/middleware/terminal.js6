@@ -116,14 +116,19 @@ export default class TerminalPlugin
 
 			keymap			: {
 
-				'CTRL+W' : function ()
+				'CTRL+W'()
 				{
 					console.log(' wwww ');
 				},
 
-				'CTRL+J' : function ()
+				'CTRL+J'()
 				{
 					console.log(' JJJJ ', arguments );
+				},
+
+				'CTRL+S'()
+				{
+					window.TerminalState.purgeScreens();
 				},
 
 			}

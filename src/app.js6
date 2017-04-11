@@ -48,8 +48,6 @@ window.TerminalState = {
 		activeTerminal	: ''
 	},
 
-	// sessions			: {},
-
 	getPcc()
 	{
 		return Gds[this.state.gds].pcc;
@@ -58,6 +56,11 @@ window.TerminalState = {
 	getSessionAreaMap()
 	{
 		return this.state.language === 'APOLLO' ? ['SA', 'SB', 'SC', 'SD', 'SE' ] : ['¤A', '¤B', '¤C', '¤D', '¤E'];
+	},
+
+	purgeScreens()
+	{
+		Container.purgeScreens();
 	},
 
 	change( params, action )
@@ -104,7 +107,6 @@ window.TerminalState = {
 			break;
 		}
 
-		console.log(' render ', action, this.state);
 		Container.render( this.state );
 	}
 };
