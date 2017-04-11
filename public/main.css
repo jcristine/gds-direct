@@ -1111,6 +1111,9 @@ fieldset[disabled] #rootTerminal .btn-warning.active {
   position: static;
   display: none;
 }
+.terminal-wrap-custom .terminal .command {
+  color: yellow;
+}
 .terminal-wrap-custom .terminal,
 .terminal-wrap-custom .cmd {
   background: #252525;
