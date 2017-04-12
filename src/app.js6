@@ -48,6 +48,11 @@ window.TerminalState = {
 		activeTerminal	: ''
 	},
 
+	getMatrix()
+	{
+		return this.state.matrix;
+	},
+
 	getPcc()
 	{
 		return Gds[this.state.gds].pcc;

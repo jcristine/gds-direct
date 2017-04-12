@@ -7,6 +7,9 @@ let jqTerminal 			= require('jquery.terminal/js/jquery.terminal');
 
 require('keyboardevent-key-polyfill').polyfill();
 
+import Noty from 'noty';
+
+
 import Helpers 		from '../helpers/helpers';
 import Pagination 	from '../modules/pagination';
 import Session 		from '../modules/sabreSession';
@@ -21,7 +24,7 @@ export default class TerminalPlugin
 		this.context	= params.context;
 		this.name		= params.name;
 
-		this.outputCache 	= [];
+		// this.outputCache 	= [];
 		this.animation	 	= false;
 		this.hiddenBuff		= [];
 		this.hiddenCommand	= '';
@@ -256,11 +259,31 @@ export default class TerminalPlugin
 			// if ( result['clearScreen'] )
 			// 	this.terminal.clear();
 
-			if (result['clearScreen'])
+			if ( result['clearScreen'] && window.TerminalState.getMatrix().rows !== 0 )
 			{
+				new Noty({
+					text	: 'Clear Screen is On',
+					// theme	: 'bootstrap-v3',
+					layout 	: 'bottomRight',
+					timeout : 1000,
+					// progressBar: true,
+					// type : 'info'
+				}).show();
+
 				this.terminal.scroll();
 				this.terminal.scroll( this.cmdLineOffset );
 			}
+		}
+
+		if ( result['canCreatePQ'] )
+		{
+			// console.log(' can create PQ ');
+
+			new Noty({
+				text	: 'Can create PQ',
+				layout 	: 'bottomRight',
+				timeout : 1000
+			}).show();
 		}
 
 		if ( result['pcc'] )
