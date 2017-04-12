@@ -63,6 +63,14 @@ window.TerminalState = {
 		return this.state.language === 'APOLLO' ? ['SA', 'SB', 'SC', 'SD', 'SE' ] : ['¤A', '¤B', '¤C', '¤D', '¤E'];
 	},
 
+	getBuffer( gds, terminalId )
+	{
+		if ( window.apiData && window.apiData.buffer && window.apiData.buffer.gds )
+			return window.apiData.buffer['gds'][gds]['terminals'][terminalId];
+
+		return false;
+	},
+
 	purgeScreens()
 	{
 		Container.purgeScreens();

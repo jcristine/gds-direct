@@ -857,6 +857,14 @@ window.TerminalState = {
 		return this.state.language === 'APOLLO' ? ['SA', 'SB', 'SC', 'SD', 'SE' ] : ['¤A', '¤B', '¤C', '¤D', '¤E'];
 	},
 
+	getBuffer( gds, terminalId )
+	{
+		if ( window.apiData && window.apiData.buffer && window.apiData.buffer.gds )
+			return window.apiData.buffer['gds'][gds]['terminals'][terminalId];
+
+		return false;
+	},
+
 	purgeScreens()
 	{
 		__WEBPACK_IMPORTED_MODULE_0__components_containerMain__["a" /* default */].purgeScreens();
@@ -12298,7 +12306,7 @@ class Terminal {
 		this.settings 				= params;
 		this.context 				= document.createElement('div');
 		this.context.className 		= 'terminal';
-		this.buffer 				= false;
+		// this.buffer 				= false;
 
 		// let offsets = this.settings.parentContext.getBoundingClientRect();
 
@@ -12310,11 +12318,7 @@ class Terminal {
 		// console.log( this.settings.parentContext.getClientRects() );
 
 		const backEndId = parseInt( this.settings['name'] ) + 1;
-
-		if ( window.apiData.buffer && window.apiData.buffer.gds )
-		{
-			this.buffer = window.apiData.buffer['gds'][params.gds]['terminals'][backEndId];
-		}
+		this.buffer		= window.TerminalState.getBuffer(params.gds, backEndId );
 
 		// this.context.innerHTML = '>';
 
