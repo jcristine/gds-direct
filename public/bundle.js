@@ -11787,7 +11787,7 @@ class TerminalPlugin
 		return this.terminal;
 	}
 
-	checkArea( command )
+	switchArea( command )
 	{
 		const sessionChange = window.TerminalState.getSessionAreaMap().indexOf( command );
 
@@ -11862,7 +11862,7 @@ class TerminalPlugin
 
 				if (this.hiddenBuff.length)
 				{
-					let cmd = this.hiddenBuff.shift();
+					const cmd = this.hiddenBuff.shift();
 
 					if ( cmd )
 						this.terminal.exec( cmd );
@@ -11875,7 +11875,7 @@ class TerminalPlugin
 					}
 				}
 
-				this.checkArea( command );
+				this.switchArea( command );
 			})
 			.catch( this.parseError.bind(this) );
 	}
@@ -11884,11 +11884,8 @@ class TerminalPlugin
 	{
 		let result = response['data'], output = '';
 
-		if ( result['prompt'] )
-			this.terminal.set_prompt( result['prompt'] );
-
-		if ( result['clearScreen'] )
-			this.terminal.clear();
+		// if ( result['prompt'] )
+		// 	this.terminal.set_prompt( result['prompt'] );
 
 		if ( result['output'] )
 		{
@@ -11902,6 +11899,9 @@ class TerminalPlugin
 			}
 
 			this.terminal.echo( output );
+
+			// if ( result['clearScreen'] )
+			// 	this.terminal.clear();
 
 			if (result['clearScreen'])
 			{
