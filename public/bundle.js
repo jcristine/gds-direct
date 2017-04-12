@@ -12104,6 +12104,8 @@ class History
 			target		: params['button'],
 			content		: this.getContext(),
 			classes		: 'drop-theme-arrows',
+			// classes		: 'drop-theme-hubspot-popovers',
+			// classes		: 'drop-theme-basic',
 			position	: 'bottom center',
 			openOn		: 'click'
 		});
