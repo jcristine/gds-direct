@@ -806,7 +806,7 @@ const Context = {
 	}
 };
 
-let Gds = {
+const Gds = {
 	'apollo' : {
 		session : 0,
 		pcc		: {}
@@ -831,48 +831,70 @@ if ( localStorage.getItem('matrix') )
 	}
 }
 
-window.TerminalState = {
+class TerminalState
+{
+	constructor()
+	{
+		this.areaList = ['A', 'B', 'C', 'D', 'E'];
 
-	state			: {
-		gds 			: 'apollo',
-		sessionIndex	: 0,
-		matrix			: retrievedObject,
-		fontSize		: 1,
-		language		: 'APOLLO',
-		activeTerminal	: ''
-	},
+		Gds['apollo']['session']	= this.areaList.indexOf( apiData.settings['gds']['apollo']['currentArea'] );
+		Gds['sabre']['session'] 	= this.areaList.indexOf( apiData.settings['gds']['sabre']['currentArea'] );
+
+		this.state = {
+			gds 			: 'apollo',
+			sessionIndex	: Gds['apollo']['session'],
+			matrix			: retrievedObject,
+			fontSize		: 1,
+			language		: 'APOLLO',
+			activeTerminal	: ''
+		};
+
+		// this.state.sessionIndex = this.getArea();
+	}
 
 	getMatrix()
 	{
 		return this.state.matrix;
-	},
+	}
 
 	getPcc()
 	{
 		return Gds[this.state.gds].pcc;
-	},
+	}
 
 	getSessionAreaMap()
 	{
-		return this.state.language === 'APOLLO' ? ['SA', 'SB', 'SC', 'SD', 'SE' ] : ['¤A', '¤B', '¤C', '¤D', '¤E'];
-	},
+		const key = this.state.language === 'APOLLO' ? 'S': '¤';
+
+		return this.areaList.map( ( char ) => key + char );
+		// return this.state.language === 'APOLLO' ? ['SA', 'SB', 'SC', 'SD', 'SE' ] : ['¤A', '¤B', '¤C', '¤D', '¤E'];
+	}
+
+	// getArea()
+	// {
+	// 	const map 			= this.getSessionAreaMap();
+	// 	const specialChar 	= this.state.language === 'APOLLO' ? 'S' : '¤';
+	// 	const index 		= map.indexOf( specialChar + apiData['settings']['gds']['apollo']['currentArea'] );
+	//
+	// 	return index === -1 ? 0 : index;
+	// }
 
 	getBuffer( gds, terminalId )
 	{
-		if ( window.apiData && window.apiData.buffer && window.apiData.buffer.gds )
-			return window.apiData.buffer['gds'][gds]['terminals'][terminalId];
+		if ( apiData && apiData.buffer && apiData.buffer.gds && apiData.buffer.gds[gds] )
+			return apiData.buffer['gds'][gds]['terminals'][terminalId];
 
 		return false;
-	},
+	}
 
 	purgeScreens()
 	{
 		__WEBPACK_IMPORTED_MODULE_0__components_containerMain__["a" /* default */].purgeScreens();
-	},
+	}
 
 	change( params, action )
 	{
-		this.state 				= Object.assign( this.state, params );
+		this.state = Object.assign( this.state, params );
 
 		switch (action)
 		{
@@ -916,7 +938,9 @@ window.TerminalState = {
 
 		__WEBPACK_IMPORTED_MODULE_0__components_containerMain__["a" /* default */].render( this.state );
 	}
-};
+}
+
+window.TerminalState = new TerminalState();
 
 let resizeTimeout;
 
@@ -927,8 +951,7 @@ window.onresize = function() {
 
 	resizeTimeout = setTimeout( () => {
 		window.TerminalState.change({});
-	}, 100 );
-
+	}, 150 );
 };
 
 Context.init();
