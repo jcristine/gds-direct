@@ -10,40 +10,73 @@ export default class Terminal {
 		this.settings 				= params;
 		this.context 				= document.createElement('div');
 		this.context.className 		= 'terminal';
+		this.buffer 				= false;
 
 		// let offsets = this.settings.parentContext.getBoundingClientRect();
 
 		this.context.style.height	= this.settings.parentContext.clientHeight + 'px';
 		this.context.style.width	= this.settings.parentContext.clientWidth + 'px';
 
-
-		// this.context.style.height	= offsets.height + 'px';
-		// this.context.style.width	= offsets.width + 'px';
-
 		// console.log( this.settings.parentContext.clientHeight );
 		// console.log( this.settings.parentContext.clientWidth );
-		// console.log( offsets.height );
-		// console.log( '==' );
 		// console.log( this.settings.parentContext.getClientRects() );
 
-		this.context.innerHTML 		= '>';
+		const backEndId = parseInt( this.settings['name'] ) + 1;
 
-		this.context.addEventListener('click', () => {
+		if ( window.apiData.buffer && window.apiData.buffer.gds )
+		{
+			this.buffer = window.apiData.buffer['gds'][params.gds]['terminals'][backEndId];
+		}
+
+		// this.context.innerHTML = '>';
+
+		this.context.onclick = () => {
 			if (!this.plugin)
 			{
-				this.context.innerHTML = '';
-
-				this.plugin = new TerminalPlugin({
-					context 		: this.context,
-					name 			: this.settings['name'],
-					sessionIndex 	: this.settings['sessionIndex'],
-					gds 			: this.settings['gds'],
-					// language 		: this.settings['language']
-				});
+				this.init();
 			}
-		});
+		};
 
 		this.settings.parentContext.appendChild( this.context );
+
+		if ( this.buffer )
+		{
+			const buffered = this.buffer['buffering'].map( (record) => {
+				return `<div class="command">${record.request}</div> <pre style="white-space: pre-line">${record.output}</pre>`;
+			}).join('');
+
+			this.context.innerHTML = `<div class="terminal-output">${ buffered } > </div>`;
+			this.context.scrollTop = this.context.scrollHeight;
+			// this.init();
+		}
+	}
+
+	init()
+	{
+		this.context.innerHTML = '';
+
+		this.plugin = new TerminalPlugin({
+			context 		: this.context,
+			name 			: this.settings['name'],
+			sessionIndex 	: this.settings['sessionIndex'],
+			gds 			: this.settings['gds']
+		});
+
+		this.insertBuffer();
+	}
+
+	insertBuffer()
+	{
+		if ( !this.buffer )
+			return false;
+
+		this.buffer['buffering'].forEach( (record) => {
+			this.plugin.terminal.echo(record.request, { finalize : function ( div ) {
+				div[0].className = 'command';
+			}});
+
+			this.plugin.terminal.echo(record.output);
+		});
 	}
 	
 	destroy()
@@ -67,6 +100,24 @@ export default class Terminal {
 		this.settings.parentContext.appendChild( this.context );
 
 		if (this.plugin)
+		{
 			this.plugin.getPlugin().resize().scroll_to_bottom();
+		} else
+		{
+			this.context.scrollTop = this.context.scrollHeight;
+		}
+	}
+
+	clear()
+	{
+		if (this.plugin)
+		{
+			this.plugin.terminal.clear();
+		} else
+		{
+			this.context.innerHTML = '';
+		}
+
+		this.buffer = '';
 	}
 }

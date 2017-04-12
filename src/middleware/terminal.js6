@@ -256,14 +256,17 @@ export default class TerminalPlugin
 
 			this.terminal.echo( output );
 
-			this.terminal.scroll();
-			this.terminal.scroll( this.cmdLineOffset );
+			if (result['clearScreen'])
+			{
+				this.terminal.scroll();
+				this.terminal.scroll( this.cmdLineOffset );
+			}
 		}
 
 		if ( result['pcc'] )
 		{
 			window.TerminalState.change({
-				pcc : 'PCC',
+				pcc : result['pcc'],
 			}, 'CHANGE_PCC');
 		}
 	}

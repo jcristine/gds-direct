@@ -746,26 +746,32 @@ function chunk(arr, limit)
 	}).filter( ( data ) => { return !!data.length });
 }
 
-function splitLines(txt)
-{
-	return txt.split(/\r?\n/);
-}
 
 function makeCachedParts(txt, maxRowLimit = 20, maxCharLimit)
 {
-	const lines = splitLines(txt);
+	const chunkByCharLimit = splitIntoLines( txt, maxCharLimit );
+	return chunk(chunkByCharLimit, maxRowLimit).map( (sectionLines) => sectionLines.join('\n') );
+	// return chunk(lines, rows).map( (sectionLines) => sectionLines.join('\n') );
+}
 
-	let chunkByCharLimit = [];
+function splitIntoLines( txt, maxCharLimit )
+{
+	const lines 		= splitLines(txt);
+	const regex 		= new RegExp(`(.{1,${maxCharLimit}})`, 'gi');
+
+	let chunkByCharLimit= [];
 
 	lines.forEach( (line) => {
-		const regex = new RegExp(`(.{1,${maxCharLimit}})`, 'gi');
-
 		let lineArr = line.match(regex);
 		chunkByCharLimit = chunkByCharLimit.concat(lineArr);
 	});
 
-	return chunk(chunkByCharLimit, maxRowLimit).map( (sectionLines) => sectionLines.join('\n') );
-	// return chunk(lines, rows).map( (sectionLines) => sectionLines.join('\n') );
+	return chunkByCharLimit;
+}
+
+function splitLines(txt)
+{
+	return txt.split(/\r?\n/);
 }
 
 /* harmony default export */ __webpack_exports__["a"] = ({
@@ -10724,8 +10730,7 @@ class Container {
 	static purgeScreens()
 	{
 		terminalList.forEach( ( terminal ) => {
-			if (terminal.plugin)
-				terminal.plugin.terminal.clear();
+			terminal.clear();
 		})
 	}
 
@@ -11253,40 +11258,73 @@ class Terminal {
 		this.settings 				= params;
 		this.context 				= document.createElement('div');
 		this.context.className 		= 'terminal';
+		this.buffer 				= false;
 
 		// let offsets = this.settings.parentContext.getBoundingClientRect();
 
 		this.context.style.height	= this.settings.parentContext.clientHeight + 'px';
 		this.context.style.width	= this.settings.parentContext.clientWidth + 'px';
 
-
-		// this.context.style.height	= offsets.height + 'px';
-		// this.context.style.width	= offsets.width + 'px';
-
 		// console.log( this.settings.parentContext.clientHeight );
 		// console.log( this.settings.parentContext.clientWidth );
-		// console.log( offsets.height );
-		// console.log( '==' );
 		// console.log( this.settings.parentContext.getClientRects() );
 
-		this.context.innerHTML 		= '>';
+		const backEndId = parseInt( this.settings['name'] ) + 1;
 
-		this.context.addEventListener('click', () => {
+		if ( window.apiData.buffer && window.apiData.buffer.gds )
+		{
+			this.buffer = window.apiData.buffer['gds'][params.gds]['terminals'][backEndId];
+		}
+
+		// this.context.innerHTML = '>';
+
+		this.context.onclick = () => {
 			if (!this.plugin)
 			{
-				this.context.innerHTML = '';
-
-				this.plugin = new __WEBPACK_IMPORTED_MODULE_0__middleware_terminal__["a" /* default */]({
-					context 		: this.context,
-					name 			: this.settings['name'],
-					sessionIndex 	: this.settings['sessionIndex'],
-					gds 			: this.settings['gds'],
-					// language 		: this.settings['language']
-				});
+				this.init();
 			}
-		});
+		};
 
 		this.settings.parentContext.appendChild( this.context );
+
+		if ( this.buffer )
+		{
+			const buffered = this.buffer['buffering'].map( (record) => {
+				return `<div class="command">${record.request}</div> <pre style="white-space: pre-line">${record.output}</pre>`;
+			}).join('');
+
+			this.context.innerHTML = `<div class="terminal-output">${ buffered } > </div>`;
+			this.context.scrollTop = this.context.scrollHeight;
+			// this.init();
+		}
+	}
+
+	init()
+	{
+		this.context.innerHTML = '';
+
+		this.plugin = new __WEBPACK_IMPORTED_MODULE_0__middleware_terminal__["a" /* default */]({
+			context 		: this.context,
+			name 			: this.settings['name'],
+			sessionIndex 	: this.settings['sessionIndex'],
+			gds 			: this.settings['gds']
+		});
+
+		this.insertBuffer();
+	}
+
+	insertBuffer()
+	{
+		if ( !this.buffer )
+			return false;
+
+		this.buffer['buffering'].forEach( (record) => {
+			this.plugin.terminal.echo(record.request, { finalize : function ( div ) {
+				div[0].className = 'command';
+			}});
+
+			this.plugin.terminal.echo(record.output);
+		});
 	}
 	
 	destroy()
@@ -11310,7 +11348,25 @@ class Terminal {
 		this.settings.parentContext.appendChild( this.context );
 
 		if (this.plugin)
+		{
 			this.plugin.getPlugin().resize().scroll_to_bottom();
+		} else
+		{
+			this.context.scrollTop = this.context.scrollHeight;
+		}
+	}
+
+	clear()
+	{
+		if (this.plugin)
+		{
+			this.plugin.terminal.clear();
+		} else
+		{
+			this.context.innerHTML = '';
+		}
+
+		this.buffer = '';
 	}
 }
 /* harmony export (immutable) */ __webpack_exports__["a"] = Terminal;
@@ -11847,14 +11903,17 @@ class TerminalPlugin
 
 			this.terminal.echo( output );
 
-			this.terminal.scroll();
-			this.terminal.scroll( this.cmdLineOffset );
+			if (result['clearScreen'])
+			{
+				this.terminal.scroll();
+				this.terminal.scroll( this.cmdLineOffset );
+			}
 		}
 
 		if ( result['pcc'] )
 		{
 			window.TerminalState.change({
-				pcc : 'PCC',
+				pcc : result['pcc'],
 			}, 'CHANGE_PCC');
 		}
 	}

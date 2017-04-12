@@ -143,8 +143,7 @@ export default class Container {
 	static purgeScreens()
 	{
 		terminalList.forEach( ( terminal ) => {
-			if (terminal.plugin)
-				terminal.plugin.terminal.clear();
+			terminal.clear();
 		})
 	}
 

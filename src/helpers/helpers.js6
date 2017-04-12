@@ -50,26 +50,32 @@ function chunk(arr, limit)
 	}).filter( ( data ) => { return !!data.length });
 }
 
-function splitLines(txt)
-{
-	return txt.split(/\r?\n/);
-}
 
 function makeCachedParts(txt, maxRowLimit = 20, maxCharLimit)
 {
-	const lines = splitLines(txt);
+	const chunkByCharLimit = splitIntoLines( txt, maxCharLimit );
+	return chunk(chunkByCharLimit, maxRowLimit).map( (sectionLines) => sectionLines.join('\n') );
+	// return chunk(lines, rows).map( (sectionLines) => sectionLines.join('\n') );
+}
 
-	let chunkByCharLimit = [];
+function splitIntoLines( txt, maxCharLimit )
+{
+	const lines 		= splitLines(txt);
+	const regex 		= new RegExp(`(.{1,${maxCharLimit}})`, 'gi');
+
+	let chunkByCharLimit= [];
 
 	lines.forEach( (line) => {
-		const regex = new RegExp(`(.{1,${maxCharLimit}})`, 'gi');
-
 		let lineArr = line.match(regex);
 		chunkByCharLimit = chunkByCharLimit.concat(lineArr);
 	});
 
-	return chunk(chunkByCharLimit, maxRowLimit).map( (sectionLines) => sectionLines.join('\n') );
-	// return chunk(lines, rows).map( (sectionLines) => sectionLines.join('\n') );
+	return chunkByCharLimit;
+}
+
+function splitLines(txt)
+{
+	return txt.split(/\r?\n/);
 }
 
 export default {
