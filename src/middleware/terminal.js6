@@ -292,7 +292,7 @@ export default class TerminalPlugin
 				}
 
 				this.terminal.scroll();
-				this.terminal.scroll( this.cmdLineOffset + 1 );
+				this.terminal.scroll( this.cmdLineOffset - 3); // TEST
 			}
 			else
 			{
