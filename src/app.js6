@@ -121,6 +121,10 @@ class TerminalState
 
 			case 'CHANGE_SESSION_BY_MENU' :
 				let command = this.getSessionAreaMap()[params.sessionIndex];
+
+				// console.log(this.state.sessionIndex ) ;
+				// console.log( this.state.activeTerminal.name() );
+
 				this.state.activeTerminal.exec( command );
 
 				return false;

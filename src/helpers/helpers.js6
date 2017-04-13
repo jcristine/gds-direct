@@ -43,22 +43,26 @@ function substitutePrintableChar(ch)
 	return layout[ch] || ch.toUpperCase();
 }
 
-function chunk(arr, limit)
+function chunkIntoPages( linesArr , rowsPerScreen )
 {
-	return arr.map( (line, index) => {
-		return (index%limit) ? [] : arr.slice( index , index + limit );
-	}).filter( ( data ) => { return !!data.length });
+	return linesArr.map(
+		(line, lineIndex) => lineIndex % rowsPerScreen ? [] : linesArr.slice( lineIndex , lineIndex + rowsPerScreen )
+	)
+	.filter(
+		( data ) => !!data.length
+	);
 }
 
-
-function makeCachedParts(txt, maxRowLimit = 20, maxCharLimit)
+function _makePages(txt, rowsPerScreen = 20, maxCharLimit)
 {
 	const chunkByCharLimit = splitIntoLines( txt, maxCharLimit );
-	return chunk(chunkByCharLimit, maxRowLimit).map( (sectionLines) => sectionLines.join('\n') );
-	// return chunk(lines, rows).map( (sectionLines) => sectionLines.join('\n') );
+
+	return chunkIntoPages(chunkByCharLimit, rowsPerScreen).map(
+		(sectionLines) => sectionLines.join('\n')
+	);
 }
 
-function splitIntoLines( txt, maxCharLimit )
+function _splitIntoLinesArr( txt, maxCharLimit )
 {
 	const lines 		= splitLines(txt);
 	const regex 		= new RegExp(`(.{1,${maxCharLimit}})`, 'gi');
@@ -79,6 +83,7 @@ function splitLines(txt)
 }
 
 export default {
-	makeCachedParts 		:	makeCachedParts,
-	substitutePrintableChar :	substitutePrintableChar
+	makeCachedParts 		:	_makePages,
+	substitutePrintableChar :	substitutePrintableChar,
+	getLines 				:	_splitIntoLinesArr,
 }

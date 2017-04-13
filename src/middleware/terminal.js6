@@ -7,9 +7,7 @@ let jqTerminal 			= require('jquery.terminal/js/jquery.terminal');
 
 require('keyboardevent-key-polyfill').polyfill();
 
-import Noty from 'noty';
-
-
+import Noty 		from 'noty';
 import Helpers 		from '../helpers/helpers';
 import Pagination 	from '../modules/pagination';
 import Session 		from '../modules/sabreSession';
@@ -80,6 +78,15 @@ export default class TerminalPlugin
 
 	parseKeyBinds( evt, terminal )
 	{
+		if ( this.bottomOutput && !this.typed )
+		{
+			$( this.bottomOutput ).find('div').first().remove();
+			this.typed = true;
+
+			// this.bottomOutput.innerHTML = '';
+			// this.bottomOutput = '';
+		}
+
 		let keyCode = evt.keyCode || evt.which;
 
 		if ( this.animation )
@@ -191,7 +198,10 @@ export default class TerminalPlugin
 			}
 		}
 
-		// this.checkArea( command );
+		if ( this.bottomOutput )
+		{
+			$( this.bottomOutput ).find('div').first().remove();
+		}
 
 		this.spinner.start();
 		this.animation 		= true;
@@ -254,36 +264,50 @@ export default class TerminalPlugin
 					.print();
 			}
 
-			this.terminal.echo( output );
-
-			// if ( result['clearScreen'] )
-			// 	this.terminal.clear();
+			const outputLines 	= Helpers.getLines( result['output'], this.terminal.cols() );
 
 			if ( result['clearScreen'] && window.TerminalState.getMatrix().rows !== 0 )
 			{
-				new Noty({
-					text	: 'Clear Screen is On',
-					// theme	: 'bootstrap-v3',
-					layout 	: 'bottomRight',
-					timeout : 1000,
-					// progressBar: true,
-					// type : 'info'
-				}).show();
+				this.debug( 'Clear Screen is On' );
+
+				const linesToAdd	= this.terminal.rows() - outputLines.length;
+
+				if ( this.bottomOutput )
+				{
+					this.bottomOutput.remove();
+				}
+
+				this.terminal.echo( output );
+
+				if ( linesToAdd > 0 )
+				{
+					this.typed = false;
+
+					this.bottomOutput 			= document.createElement('div');
+					this.bottomOutput.innerHTML = new Array( linesToAdd ).fill('<div><span>&nbsp;</span></div>').join('');
+					this.terminal.cmd().after( this.bottomOutput );
+
+					// const empty	= new Array( linesToAdd - 1 ).fill(' ');
+					// output		= empty.concat( outputLines).join('\n');
+				}
 
 				this.terminal.scroll();
-				this.terminal.scroll( this.cmdLineOffset );
+				this.terminal.scroll( this.cmdLineOffset + 1 );
+			}
+			else
+			{
+				for (let i = 1; i <= outputLines.length; i++)
+				{
+					$( this.bottomOutput ).find('div').first().remove();
+				}
+
+				this.terminal.echo( output );
 			}
 		}
 
 		if ( result['canCreatePQ'] )
 		{
-			// console.log(' can create PQ ');
-
-			new Noty({
-				text	: 'Can create PQ',
-				layout 	: 'bottomRight',
-				timeout : 1000
-			}).show();
+			this.debug( 'Can create PQ' );
 		}
 
 		if ( result['pcc'] )
@@ -292,6 +316,17 @@ export default class TerminalPlugin
 				pcc : result['pcc'],
 			}, 'CHANGE_PCC');
 		}
+	}
+
+	debug( txt )
+	{
+		new Noty({
+			text	: `DEBUG : ${txt}`,
+			layout 	: 'bottomRight',
+			timeout : 1000
+			// theme	: 'bootstrap-v4',
+			// type 	: 'info'
+		}).show();
 	}
 
 	parseError(e)

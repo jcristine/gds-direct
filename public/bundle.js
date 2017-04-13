@@ -739,22 +739,26 @@ function substitutePrintableChar(ch)
 	return layout[ch] || ch.toUpperCase();
 }
 
-function chunk(arr, limit)
+function chunkIntoPages( linesArr , rowsPerScreen )
 {
-	return arr.map( (line, index) => {
-		return (index%limit) ? [] : arr.slice( index , index + limit );
-	}).filter( ( data ) => { return !!data.length });
+	return linesArr.map(
+		(line, lineIndex) => lineIndex % rowsPerScreen ? [] : linesArr.slice( lineIndex , lineIndex + rowsPerScreen )
+	)
+	.filter(
+		( data ) => !!data.length
+	);
 }
 
-
-function makeCachedParts(txt, maxRowLimit = 20, maxCharLimit)
+function _makePages(txt, rowsPerScreen = 20, maxCharLimit)
 {
 	const chunkByCharLimit = splitIntoLines( txt, maxCharLimit );
-	return chunk(chunkByCharLimit, maxRowLimit).map( (sectionLines) => sectionLines.join('\n') );
-	// return chunk(lines, rows).map( (sectionLines) => sectionLines.join('\n') );
+
+	return chunkIntoPages(chunkByCharLimit, rowsPerScreen).map(
+		(sectionLines) => sectionLines.join('\n')
+	);
 }
 
-function splitIntoLines( txt, maxCharLimit )
+function _splitIntoLinesArr( txt, maxCharLimit )
 {
 	const lines 		= splitLines(txt);
 	const regex 		= new RegExp(`(.{1,${maxCharLimit}})`, 'gi');
@@ -775,8 +779,9 @@ function splitLines(txt)
 }
 
 /* harmony default export */ __webpack_exports__["a"] = ({
-	makeCachedParts 		:	makeCachedParts,
-	substitutePrintableChar :	substitutePrintableChar
+	makeCachedParts 		:	_makePages,
+	substitutePrintableChar :	substitutePrintableChar,
+	getLines 				:	_splitIntoLinesArr,
 });
 
 /***/ }),
@@ -915,6 +920,10 @@ class TerminalState
 
 			case 'CHANGE_SESSION_BY_MENU' :
 				let command = this.getSessionAreaMap()[params.sessionIndex];
+
+				// console.log(this.state.sessionIndex ) ;
+				// console.log( this.state.activeTerminal.name() );
+
 				this.state.activeTerminal.exec( command );
 
 				return false;
@@ -12462,7 +12471,7 @@ class KeyBinding
 	{
 		let keymap 		= evt.keyCode || evt.which;
 		let isApollo	= window.TerminalState.state.language === 'APOLLO';
-		console.log(keymap);
+		// console.log(keymap);
 
 		if ( evt.ctrlKey || evt.metaKey )
 		{
@@ -12732,8 +12741,6 @@ __webpack_require__(9).polyfill();
 
 
 
-
-
 class TerminalPlugin
 {
 	constructor( params )
@@ -12798,6 +12805,15 @@ class TerminalPlugin
 
 	parseKeyBinds( evt, terminal )
 	{
+		if ( this.bottomOutput && !this.typed )
+		{
+			$( this.bottomOutput ).find('div').first().remove();
+			this.typed = true;
+
+			// this.bottomOutput.innerHTML = '';
+			// this.bottomOutput = '';
+		}
+
 		let keyCode = evt.keyCode || evt.which;
 
 		if ( this.animation )
@@ -12909,7 +12925,10 @@ class TerminalPlugin
 			}
 		}
 
-		// this.checkArea( command );
+		if ( this.bottomOutput )
+		{
+			$( this.bottomOutput ).find('div').first().remove();
+		}
 
 		this.spinner.start();
 		this.animation 		= true;
@@ -12972,36 +12991,50 @@ class TerminalPlugin
 					.print();
 			}
 
-			this.terminal.echo( output );
-
-			// if ( result['clearScreen'] )
-			// 	this.terminal.clear();
+			const outputLines 	= __WEBPACK_IMPORTED_MODULE_1__helpers_helpers__["a" /* default */].getLines( result['output'], this.terminal.cols() );
 
 			if ( result['clearScreen'] && window.TerminalState.getMatrix().rows !== 0 )
 			{
-				new __WEBPACK_IMPORTED_MODULE_0_noty___default.a({
-					text	: 'Clear Screen is On',
-					// theme	: 'bootstrap-v3',
-					layout 	: 'bottomRight',
-					timeout : 1000,
-					// progressBar: true,
-					// type : 'info'
-				}).show();
+				this.debug( 'Clear Screen is On' );
+
+				const linesToAdd	= this.terminal.rows() - outputLines.length;
+
+				if ( this.bottomOutput )
+				{
+					this.bottomOutput.remove();
+				}
+
+				this.terminal.echo( output );
+
+				if ( linesToAdd > 0 )
+				{
+					this.typed = false;
+
+					this.bottomOutput 			= document.createElement('div');
+					this.bottomOutput.innerHTML = new Array( linesToAdd ).fill('<div><span>&nbsp;</span></div>').join('');
+					this.terminal.cmd().after( this.bottomOutput );
+
+					// const empty	= new Array( linesToAdd - 1 ).fill(' ');
+					// output		= empty.concat( outputLines).join('\n');
+				}
 
 				this.terminal.scroll();
-				this.terminal.scroll( this.cmdLineOffset );
+				this.terminal.scroll( this.cmdLineOffset + 1 );
+			}
+			else
+			{
+				for (let i = 1; i <= outputLines.length; i++)
+				{
+					$( this.bottomOutput ).find('div').first().remove();
+				}
+
+				this.terminal.echo( output );
 			}
 		}
 
 		if ( result['canCreatePQ'] )
 		{
-			// console.log(' can create PQ ');
-
-			new __WEBPACK_IMPORTED_MODULE_0_noty___default.a({
-				text	: 'Can create PQ',
-				layout 	: 'bottomRight',
-				timeout : 1000
-			}).show();
+			this.debug( 'Can create PQ' );
 		}
 
 		if ( result['pcc'] )
@@ -13010,6 +13043,17 @@ class TerminalPlugin
 				pcc : result['pcc'],
 			}, 'CHANGE_PCC');
 		}
+	}
+
+	debug( txt )
+	{
+		new __WEBPACK_IMPORTED_MODULE_0_noty___default.a({
+			text	: `DEBUG : ${txt}`,
+			layout 	: 'bottomRight',
+			timeout : 1000
+			// theme	: 'bootstrap-v4',
+			// type 	: 'info'
+		}).show();
 	}
 
 	parseError(e)
