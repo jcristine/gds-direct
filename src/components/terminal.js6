@@ -41,7 +41,8 @@ export default class Terminal {
 				return `<div class="command">${record.request}</div> <pre style="white-space: pre-line">${record.output}</pre>`;
 			}).join('');
 
-			this.context.innerHTML = `<div class="terminal-output">${ buffered } > </div>`;
+			this.context.innerHTML = `<div class="terminal-wrapper"><div class="terminal-output">${ buffered } > </div></div>`;
+			// this.context.innerHTML = `<div class="terminal-output">${ buffered } > </div></div>`;
 			this.context.scrollTop = this.context.scrollHeight;
 			// this.init();
 		}

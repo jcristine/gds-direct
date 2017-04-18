@@ -41,13 +41,13 @@ class TerminalState
 {
 	constructor()
 	{
-		this.areaList = ['A', 'B', 'C', 'D', 'E'];
+		this.areaList = ['A', 'B', 'C', 'D', 'E', 'F'];
 
 		Gds['apollo']['session']	= this.areaList.indexOf( apiData.settings['gds']['apollo']['currentArea'] );
 		Gds['sabre']['session'] 	= this.areaList.indexOf( apiData.settings['gds']['sabre']['currentArea'] );
 
 		this.state = {
-			gds 			: 'apollo',
+			gds 			: apiData.settings.common.currentGds || 'apollo',
 			sessionIndex	: Gds['apollo']['session'],
 			matrix			: retrievedObject,
 			fontSize		: 1,
@@ -70,8 +70,8 @@ class TerminalState
 
 	getSessionAreaMap()
 	{
-		const key = this.state.language === 'APOLLO' ? 'S': '¤';
-
+		// const key = this.state.language === 'APOLLO' ? 'S': '¤';
+		const key = this.state.gds === 'apollo' ? 'S': '¤';
 		return this.areaList.map( ( char ) => key + char );
 		// return this.state.language === 'APOLLO' ? ['SA', 'SB', 'SC', 'SD', 'SE' ] : ['¤A', '¤B', '¤C', '¤D', '¤E'];
 	}

@@ -840,13 +840,16 @@ class TerminalState
 {
 	constructor()
 	{
-		this.areaList = ['A', 'B', 'C', 'D', 'E'];
+		this.areaList = ['A', 'B', 'C', 'D', 'E', 'F'];
+
+		// console.log( apiData.settings.common.currentGds );
 
 		Gds['apollo']['session']	= this.areaList.indexOf( apiData.settings['gds']['apollo']['currentArea'] );
 		Gds['sabre']['session'] 	= this.areaList.indexOf( apiData.settings['gds']['sabre']['currentArea'] );
 
+
 		this.state = {
-			gds 			: 'apollo',
+			gds 			: apiData.settings.common.currentGds || 'apollo',
 			sessionIndex	: Gds['apollo']['session'],
 			matrix			: retrievedObject,
 			fontSize		: 1,
@@ -864,13 +867,14 @@ class TerminalState
 
 	getPcc()
 	{
+		console.log(' get pcc ', Gds[this.state.gds].pcc)
 		return Gds[this.state.gds].pcc;
 	}
 
 	getSessionAreaMap()
 	{
-		const key = this.state.language === 'APOLLO' ? 'S': '¤';
-
+		// const key = this.state.language === 'APOLLO' ? 'S': '¤';
+		const key = this.state.gds === 'apollo' ? 'S': '¤';
 		return this.areaList.map( ( char ) => key + char );
 		// return this.state.language === 'APOLLO' ? ['SA', 'SB', 'SC', 'SD', 'SE' ] : ['¤A', '¤B', '¤C', '¤D', '¤E'];
 	}
@@ -940,6 +944,9 @@ class TerminalState
 			break;
 
 			case 'CHANGE_PCC' :
+
+				console.log('CHANGE PCC');
+
 				Gds[this.state.gds]['pcc'][this.state.sessionIndex] = params.pcc;
 				return __WEBPACK_IMPORTED_MODULE_0__components_containerMain__["a" /* default */].menuRender();
 			break;
@@ -11905,7 +11912,8 @@ class SessionKeys
 
 	getButtons()
 	{
-		return ['A', 'B', 'C', 'D', 'E'].map( this.makeButton.bind( this ) );
+		return this.settings.list.map( this.makeButton.bind( this ) );
+		// return ['A', 'B', 'C', 'D', 'E'].map( this.makeButton.bind( this ) );
 	}
 
 	getTrigger()
@@ -12020,20 +12028,23 @@ class MenuPanel
 
 	static activeSession()
 	{
-		let state = window.TerminalState.state;
+		const state = window.TerminalState.state;
 
-		let apollo = new __WEBPACK_IMPORTED_MODULE_2__menu_sessionButtons__["a" /* default */]({
+		const apollo = new __WEBPACK_IMPORTED_MODULE_2__menu_sessionButtons__["a" /* default */]({
 			gds 		: 'apollo',
 			active		: state.gds === 'apollo',
 			session		: state.sessionIndex,
-			terminal	: state.activeTerminal
+			terminal	: state.activeTerminal,
+
+			list		: ['A', 'B', 'C', 'D', 'E']
 		});
 
-		let sabre = new __WEBPACK_IMPORTED_MODULE_2__menu_sessionButtons__["a" /* default */]({
+		const sabre = new __WEBPACK_IMPORTED_MODULE_2__menu_sessionButtons__["a" /* default */]({
 			gds 		: 'sabre',
 			active		: state.gds === 'sabre',
 			session		: state.sessionIndex,
-			terminal	: state.activeTerminal
+			terminal	: state.activeTerminal,
+			list		: ['A', 'B', 'C', 'D', 'E', 'F']
 		});
 
 		let context 		= document.createElement('article');
@@ -12371,7 +12382,8 @@ class Terminal {
 				return `<div class="command">${record.request}</div> <pre style="white-space: pre-line">${record.output}</pre>`;
 			}).join('');
 
-			this.context.innerHTML = `<div class="terminal-output">${ buffered } > </div>`;
+			this.context.innerHTML = `<div class="terminal-wrapper"><div class="terminal-output">${ buffered } > </div></div>`;
+			// this.context.innerHTML = `<div class="terminal-output">${ buffered } > </div></div>`;
 			this.context.scrollTop = this.context.scrollHeight;
 			// this.init();
 		}
@@ -12981,19 +12993,19 @@ class TerminalPlugin
 					.print();
 
 				this.terminal.echo( output );
-				return '';
-			}
-
-			this.outputLiner.prepare( result['output'] );
-
-			if ( result['clearScreen'] && window.TerminalState.getMatrix().rows !== 0 ) // if 1 row of terminals don't
+			} else
 			{
-				this.debug( 'Clear Screen is On' );
-				this.outputLiner.removeEmptyLines().printOutput().countEmptyLines().attachEmpty().scroll();
-			}
-			else
-			{
-				this.outputLiner.reduceEmpty().attachEmpty().printOutput();
+				this.outputLiner.prepare( result['output'] );
+
+				if ( result['clearScreen'] && window.TerminalState.getMatrix().rows !== 0 ) // if 1 row of terminals don't
+				{
+					this.debug( 'Clear Screen is On' );
+					this.outputLiner.removeEmptyLines().printOutput().countEmptyLines().attachEmpty().scroll();
+				}
+				else
+				{
+					this.outputLiner.reduceEmpty().attachEmpty().printOutput();
+				}
 			}
 		}
 

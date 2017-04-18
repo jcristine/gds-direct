@@ -72,20 +72,23 @@ export default class MenuPanel
 
 	static activeSession()
 	{
-		let state = window.TerminalState.state;
+		const state = window.TerminalState.state;
 
-		let apollo = new SessionButtons({
+		const apollo = new SessionButtons({
 			gds 		: 'apollo',
 			active		: state.gds === 'apollo',
 			session		: state.sessionIndex,
-			terminal	: state.activeTerminal
+			terminal	: state.activeTerminal,
+
+			list		: ['A', 'B', 'C', 'D', 'E']
 		});
 
-		let sabre = new SessionButtons({
+		const sabre = new SessionButtons({
 			gds 		: 'sabre',
 			active		: state.gds === 'sabre',
 			session		: state.sessionIndex,
-			terminal	: state.activeTerminal
+			terminal	: state.activeTerminal,
+			list		: ['A', 'B', 'C', 'D', 'E', 'F']
 		});
 
 		let context 		= document.createElement('article');

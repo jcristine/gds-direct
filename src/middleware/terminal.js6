@@ -252,19 +252,19 @@ export default class TerminalPlugin
 					.print();
 
 				this.terminal.echo( output );
-				return '';
-			}
-
-			this.outputLiner.prepare( result['output'] );
-
-			if ( result['clearScreen'] && window.TerminalState.getMatrix().rows !== 0 ) // if 1 row of terminals don't
+			} else
 			{
-				this.debug( 'Clear Screen is On' );
-				this.outputLiner.removeEmptyLines().printOutput().countEmptyLines().attachEmpty().scroll();
-			}
-			else
-			{
-				this.outputLiner.reduceEmpty().attachEmpty().printOutput();
+				this.outputLiner.prepare( result['output'] );
+
+				if ( result['clearScreen'] && window.TerminalState.getMatrix().rows !== 0 ) // if 1 row of terminals don't
+				{
+					this.debug( 'Clear Screen is On' );
+					this.outputLiner.removeEmptyLines().printOutput().countEmptyLines().attachEmpty().scroll();
+				}
+				else
+				{
+					this.outputLiner.reduceEmpty().attachEmpty().printOutput();
+				}
 			}
 		}
 
