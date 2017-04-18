@@ -12,7 +12,7 @@ import Pagination 	from '../modules/pagination';
 import Session 		from '../modules/sabreSession';
 import Spinner 		from '../modules/spinner';
 import KeyBinding	from '../helpers/keyBinding';
-import OutputLiner	from '../helpers/outputLiner';
+import OutputLiner	from '../modules/output';
 
 export default class TerminalPlugin
 {

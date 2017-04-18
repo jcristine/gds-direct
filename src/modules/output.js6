@@ -1,0 +1,100 @@
+'use strict';
+
+import Helpers from '../helpers/helpers';
+
+export default class Output
+{
+	constructor( terminal )
+	{
+		this.terminal		= terminal;
+
+		this.context 		= '';
+		this.emptyLines 	= 0;
+		this.outputStrings	= '';
+		this.cmdLineOffset 	= '';
+	}
+
+	removeEmptyLine()
+	{
+		if ( this.emptyLines > 0 )
+		{
+			this.emptyLines--;
+			this.attachEmpty( this.emptyLines );
+		}
+	}
+
+	countEmptyLines()
+	{
+		const outputCount 	= this.getOutputLength();
+		const rowsCount 	= this.terminal.rows();
+
+		if (outputCount < rowsCount)
+			this.emptyLines = rowsCount - outputCount - 1; // screen rows - output - cmdLine;
+
+		return this;
+	}
+
+	getOutputLength()
+	{
+		return Helpers.getLines( this.outputStrings, this.terminal.cols() ).length;
+	}
+
+	empty()
+	{
+		if ( this.context )
+		{
+			this.context.innerHTML = '';
+			this.emptyLines = 0;
+		}
+
+		return this;
+	}
+
+	printOutput()
+	{
+		this.cmdLineOffset 	= this.terminal.cmd()[0].offsetTop;
+
+		this.terminal.echo( this.outputStrings );
+		return this;
+	}
+
+	reduceEmpty()
+	{
+		if (this.emptyLines > 0)
+			this.emptyLines -= this.getOutputLength();
+
+		return this;
+	}
+
+	attachEmpty()
+	{
+		if (this.emptyLines === 0 )
+			return this;
+
+		const appended = !!this.context;
+
+		this.context 			= this.context || document.createElement('div');
+		this.context.innerHTML 	= new Array( this.emptyLines ).fill('<div><span>&nbsp;</span></div>').join('');
+
+		if ( !appended )
+			this.terminal.cmd().after( this.context );
+
+		return this;
+	}
+
+	prepare( output )
+	{
+		this.outputStrings 	= output;
+	}
+
+	scroll()
+	{
+		if (this.emptyLines === 0)
+		{
+			this.terminal.scroll().scroll( this.cmdLineOffset ); // to first line, to desired line //TEST
+		} else
+		{
+			this.terminal.scroll_to_bottom(); // to first line, to desired line //TEST
+		}
+	}
+}

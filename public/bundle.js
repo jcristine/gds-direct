@@ -12725,7 +12725,7 @@ function runSyncCommand( functionName, params )
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__modules_sabreSession__ = __webpack_require__(28);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__modules_spinner__ = __webpack_require__(29);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__helpers_keyBinding__ = __webpack_require__(24);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__helpers_outputLiner__ = __webpack_require__(40);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__modules_output__ = __webpack_require__(40);
 
 
 let $					= __webpack_require__(30);
@@ -12769,7 +12769,7 @@ class TerminalPlugin
 		this.terminal 	= this.init();
 		this.spinner 	= new __WEBPACK_IMPORTED_MODULE_4__modules_spinner__["a" /* default */]( this.terminal );
 
-		this.outputLiner = new __WEBPACK_IMPORTED_MODULE_6__helpers_outputLiner__["a" /* default */]( this.terminal );
+		this.outputLiner = new __WEBPACK_IMPORTED_MODULE_6__modules_output__["a" /* default */]( this.terminal );
 	}
 
 	getPlugin()
@@ -13237,7 +13237,7 @@ module.exports = __webpack_require__(4);
 
 
 
-class OutputLiner
+class Output
 {
 	constructor( terminal )
 	{
@@ -13333,7 +13333,7 @@ class OutputLiner
 		}
 	}
 }
-/* harmony export (immutable) */ __webpack_exports__["a"] = OutputLiner;
+/* harmony export (immutable) */ __webpack_exports__["a"] = Output;
 
 
 /***/ })
