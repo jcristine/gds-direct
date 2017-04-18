@@ -14,7 +14,7 @@ export default class KeyBinding
 	{
 		let keymap 		= evt.keyCode || evt.which;
 		let isApollo	= window.TerminalState.state.language === 'APOLLO';
-		console.log(keymap);
+		// console.log(keymap);
 
 		if ( evt.ctrlKey || evt.metaKey )
 		{

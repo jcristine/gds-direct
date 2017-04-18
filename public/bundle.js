@@ -63,7 +63,7 @@
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 31);
+/******/ 	return __webpack_require__(__webpack_require__.s = 32);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -637,60 +637,6 @@ return Drop;
 
 /***/ }),
 /* 1 */
-/***/ (function(module, exports) {
-
-var g;
-
-// This works in non-strict mode
-g = (function() {
-	return this;
-})();
-
-try {
-	// This works if eval is allowed (see CSP)
-	g = g || Function("return this")() || (1,eval)("this");
-} catch(e) {
-	// This works if the window reference is available
-	if(typeof window === "object")
-		g = window;
-}
-
-// g can still be undefined, but nothing to do about it...
-// We return undefined, instead of nothing here, so it's
-// easier to handle this case. if(!global) { ...}
-
-module.exports = g;
-
-
-/***/ }),
-/* 2 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-const TERMINAL_HEIGHT 		= '650';
-/* unused harmony export TERMINAL_HEIGHT */
-
-const TERMINAL_SPLIT_HEIGHT 	= '325';
-/* unused harmony export TERMINAL_SPLIT_HEIGHT */
-
-const INFO_DATA_URL 	 		= '?id=terminal/middleware&getInfoData=1';
-/* unused harmony export INFO_DATA_URL */
-
-const END_POINT_URL	 		= '?id=terminal/middleware';
-/* harmony export (immutable) */ __webpack_exports__["d"] = END_POINT_URL;
-
-const TIME_FORMAT 			= '12';
-/* harmony export (immutable) */ __webpack_exports__["a"] = TIME_FORMAT;
-
-const ACCOUNT 				= 'training';
-/* harmony export (immutable) */ __webpack_exports__["b"] = ACCOUNT;
-
-const API_HOST 				= '';
-/* harmony export (immutable) */ __webpack_exports__["c"] = API_HOST;
-
-
-/***/ }),
-/* 3 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -783,6 +729,60 @@ function splitLines(txt)
 	substitutePrintableChar :	substitutePrintableChar,
 	getLines 				:	_splitIntoLinesArr,
 });
+
+/***/ }),
+/* 2 */
+/***/ (function(module, exports) {
+
+var g;
+
+// This works in non-strict mode
+g = (function() {
+	return this;
+})();
+
+try {
+	// This works if eval is allowed (see CSP)
+	g = g || Function("return this")() || (1,eval)("this");
+} catch(e) {
+	// This works if the window reference is available
+	if(typeof window === "object")
+		g = window;
+}
+
+// g can still be undefined, but nothing to do about it...
+// We return undefined, instead of nothing here, so it's
+// easier to handle this case. if(!global) { ...}
+
+module.exports = g;
+
+
+/***/ }),
+/* 3 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+const TERMINAL_HEIGHT 		= '650';
+/* unused harmony export TERMINAL_HEIGHT */
+
+const TERMINAL_SPLIT_HEIGHT 	= '325';
+/* unused harmony export TERMINAL_SPLIT_HEIGHT */
+
+const INFO_DATA_URL 	 		= '?id=terminal/middleware&getInfoData=1';
+/* unused harmony export INFO_DATA_URL */
+
+const END_POINT_URL	 		= '?id=terminal/middleware';
+/* harmony export (immutable) */ __webpack_exports__["d"] = END_POINT_URL;
+
+const TIME_FORMAT 			= '12';
+/* harmony export (immutable) */ __webpack_exports__["a"] = TIME_FORMAT;
+
+const ACCOUNT 				= 'training';
+/* harmony export (immutable) */ __webpack_exports__["b"] = ACCOUNT;
+
+const API_HOST 				= '';
+/* harmony export (immutable) */ __webpack_exports__["c"] = API_HOST;
+
 
 /***/ }),
 /* 4 */
@@ -7706,7 +7706,7 @@ module.exports = {
     }; // terminal plugin
 })(jQuery);
 
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1), __webpack_require__(14).setImmediate))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2), __webpack_require__(14).setImmediate))
 
 /***/ }),
 /* 9 */
@@ -9251,7 +9251,7 @@ process.umask = function() { return 0; };
     attachTo.clearImmediate = clearImmediate;
 }(typeof self === "undefined" ? typeof global === "undefined" ? this : global : self));
 
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1), __webpack_require__(11)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2), __webpack_require__(11)))
 
 /***/ }),
 /* 13 */
@@ -12471,7 +12471,7 @@ class KeyBinding
 	{
 		let keymap 		= evt.keyCode || evt.which;
 		let isApollo	= window.TerminalState.state.language === 'APOLLO';
-		console.log(keymap);
+		// console.log(keymap);
 
 		if ( evt.ctrlKey || evt.metaKey )
 		{
@@ -12649,7 +12649,7 @@ class KeyBinding
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__constants__ = __webpack_require__(2);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__constants__ = __webpack_require__(3);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_whatwg_fetch__ = __webpack_require__(15);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_whatwg_fetch___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1_whatwg_fetch__);
 
@@ -12720,15 +12720,15 @@ function runSyncCommand( functionName, params )
 "use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_noty__ = __webpack_require__(10);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_noty___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_noty__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__helpers_helpers__ = __webpack_require__(3);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__modules_pagination__ = __webpack_require__(27);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__modules_sabreSession__ = __webpack_require__(28);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__modules_spinner__ = __webpack_require__(29);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__helpers_helpers__ = __webpack_require__(1);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__modules_pagination__ = __webpack_require__(28);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__modules_sabreSession__ = __webpack_require__(29);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__modules_spinner__ = __webpack_require__(30);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__helpers_keyBinding__ = __webpack_require__(24);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__modules_output__ = __webpack_require__(40);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__modules_output__ = __webpack_require__(27);
 
 
-let $					= __webpack_require__(30);
+let $					= __webpack_require__(31);
 window.$ 				= window.jQuery = $;
 
 __webpack_require__(8);
@@ -12919,7 +12919,7 @@ class TerminalPlugin
 
 		this.spinner.start();
 
-		this.outputLiner.removeEmptyLine(); // loader
+		this.outputLiner.removeEmptyLine().attachEmpty(); // loader
 		this.animation = true;
 
 		this.sendRequest(command);
@@ -12986,7 +12986,7 @@ class TerminalPlugin
 			{
 
 				this.debug( 'Clear Screen is On' );
-				this.outputLiner.empty().printOutput().countEmptyLines().attachEmpty().scroll();
+				this.outputLiner.removeEmptyLines().printOutput().countEmptyLines().attachEmpty().scroll();
 			}
 			else
 			{
@@ -13038,7 +13038,115 @@ class TerminalPlugin
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__helpers_helpers__ = __webpack_require__(3);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__helpers_helpers__ = __webpack_require__(1);
+
+
+
+
+class Output
+{
+	constructor( terminal )
+	{
+		this.terminal		= terminal;
+
+		this.context 		= '';
+		this.emptyLines 	= 0;
+		this.outputStrings	= '';
+		this.cmdLineOffset 	= '';
+	}
+
+	removeEmptyLine()
+	{
+		if ( this.emptyLines > 0 )
+			this.emptyLines--;
+
+		return this;
+	}
+
+	removeEmptyLines()
+	{
+		if ( this.context )
+		{
+			this.context.innerHTML = '';
+			this.emptyLines = 0;
+		}
+
+		return this;
+	}
+
+	countEmptyLines()
+	{
+		const outputCount 	= this.getOutputLength();
+		const rowsCount 	= this.terminal.rows();
+
+		if (outputCount < rowsCount)
+			this.emptyLines = rowsCount - outputCount - 1; // screen rows - output - cmdLine;
+
+		return this;
+	}
+
+	getOutputLength()
+	{
+		return __WEBPACK_IMPORTED_MODULE_0__helpers_helpers__["a" /* default */].getLines( this.outputStrings, this.terminal.cols() ).length;
+	}
+
+	printOutput()
+	{
+		this.cmdLineOffset 	= this.terminal.cmd()[0].offsetTop;
+
+		this.terminal.echo( this.outputStrings );
+		return this;
+	}
+
+	reduceEmpty()
+	{
+		if (this.emptyLines > 0)
+			this.emptyLines -= this.getOutputLength();
+
+		return this;
+	}
+
+	attachEmpty()
+	{
+		if (this.emptyLines === 0 )
+			return this;
+
+		const appended = !!this.context;
+
+		this.context 			= this.context || document.createElement('div');
+		this.context.innerHTML 	= new Array( this.emptyLines ).fill('<div><span>&nbsp;</span></div>').join('');
+
+		if ( !appended )
+			this.terminal.cmd().after( this.context );
+
+		return this;
+	}
+
+	prepare( output )
+	{
+		this.outputStrings 	= output;
+	}
+
+	scroll()
+	{
+		if (this.emptyLines === 0)
+		{
+			this.terminal.scroll().scroll( this.cmdLineOffset ); // to first line, to desired line //TEST
+		} else
+		{
+			this.terminal.scroll_to_bottom(); // to first line, to desired line //TEST
+		}
+	}
+}
+/* harmony export (immutable) */ __webpack_exports__["a"] = Output;
+
+
+/***/ }),
+/* 28 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__helpers_helpers__ = __webpack_require__(1);
 
 
 
@@ -13092,11 +13200,11 @@ class Pagination
 
 
 /***/ }),
-/* 28 */
+/* 29 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__constants__ = __webpack_require__(2);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__constants__ = __webpack_require__(3);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__helpers_requests__ = __webpack_require__(25);
 
 
@@ -13151,7 +13259,7 @@ class Session
 
 
 /***/ }),
-/* 29 */
+/* 30 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -13206,134 +13314,17 @@ class Spinner
 
 
 /***/ }),
-/* 30 */
+/* 31 */
 /***/ (function(module, exports) {
 
 module.exports = jQuery;
 
 /***/ }),
-/* 31 */
+/* 32 */
 /***/ (function(module, exports, __webpack_require__) {
 
 __webpack_require__(5);
 module.exports = __webpack_require__(4);
-
-
-/***/ }),
-/* 32 */,
-/* 33 */,
-/* 34 */,
-/* 35 */,
-/* 36 */,
-/* 37 */,
-/* 38 */,
-/* 39 */,
-/* 40 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__helpers_helpers__ = __webpack_require__(3);
-
-
-
-
-class Output
-{
-	constructor( terminal )
-	{
-		this.terminal		= terminal;
-
-		this.context 		= '';
-		this.emptyLines 	= 0;
-		this.outputStrings	= '';
-		this.cmdLineOffset 	= '';
-	}
-
-	removeEmptyLine()
-	{
-		if ( this.emptyLines > 0 )
-		{
-			this.emptyLines--;
-			this.attachEmpty( this.emptyLines );
-		}
-	}
-
-	countEmptyLines()
-	{
-		const outputCount 	= this.getOutputLength();
-		const rowsCount 	= this.terminal.rows();
-
-		if (outputCount < rowsCount)
-			this.emptyLines = rowsCount - outputCount - 1; // screen rows - output - cmdLine;
-
-		return this;
-	}
-
-	getOutputLength()
-	{
-		return __WEBPACK_IMPORTED_MODULE_0__helpers_helpers__["a" /* default */].getLines( this.outputStrings, this.terminal.cols() ).length;
-	}
-
-	empty()
-	{
-		if ( this.context )
-		{
-			this.context.innerHTML = '';
-			this.emptyLines = 0;
-		}
-
-		return this;
-	}
-
-	printOutput()
-	{
-		this.cmdLineOffset 	= this.terminal.cmd()[0].offsetTop;
-
-		this.terminal.echo( this.outputStrings );
-		return this;
-	}
-
-	reduceEmpty()
-	{
-		if (this.emptyLines > 0)
-			this.emptyLines -= this.getOutputLength();
-
-		return this;
-	}
-
-	attachEmpty()
-	{
-		if (this.emptyLines === 0 )
-			return this;
-
-		const appended = !!this.context;
-
-		this.context 			= this.context || document.createElement('div');
-		this.context.innerHTML 	= new Array( this.emptyLines ).fill('<div><span>&nbsp;</span></div>').join('');
-
-		if ( !appended )
-			this.terminal.cmd().after( this.context );
-
-		return this;
-	}
-
-	prepare( output )
-	{
-		this.outputStrings 	= output;
-	}
-
-	scroll()
-	{
-		if (this.emptyLines === 0)
-		{
-			this.terminal.scroll().scroll( this.cmdLineOffset ); // to first line, to desired line //TEST
-		} else
-		{
-			this.terminal.scroll_to_bottom(); // to first line, to desired line //TEST
-		}
-	}
-}
-/* harmony export (immutable) */ __webpack_exports__["a"] = Output;
 
 
 /***/ })

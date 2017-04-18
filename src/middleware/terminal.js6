@@ -191,7 +191,7 @@ export default class TerminalPlugin
 
 		this.spinner.start();
 
-		this.outputLiner.removeEmptyLine(); // loader
+		this.outputLiner.removeEmptyLine().attachEmpty(); // loader
 		this.animation = true;
 
 		this.sendRequest(command);
@@ -258,7 +258,7 @@ export default class TerminalPlugin
 			{
 
 				this.debug( 'Clear Screen is On' );
-				this.outputLiner.empty().printOutput().countEmptyLines().attachEmpty().scroll();
+				this.outputLiner.removeEmptyLines().printOutput().countEmptyLines().attachEmpty().scroll();
 			}
 			else
 			{

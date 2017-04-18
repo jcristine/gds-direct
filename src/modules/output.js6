@@ -17,10 +17,20 @@ export default class Output
 	removeEmptyLine()
 	{
 		if ( this.emptyLines > 0 )
-		{
 			this.emptyLines--;
-			this.attachEmpty( this.emptyLines );
+
+		return this;
+	}
+
+	removeEmptyLines()
+	{
+		if ( this.context )
+		{
+			this.context.innerHTML = '';
+			this.emptyLines = 0;
 		}
+
+		return this;
 	}
 
 	countEmptyLines()
@@ -37,17 +47,6 @@ export default class Output
 	getOutputLength()
 	{
 		return Helpers.getLines( this.outputStrings, this.terminal.cols() ).length;
-	}
-
-	empty()
-	{
-		if ( this.context )
-		{
-			this.context.innerHTML = '';
-			this.emptyLines = 0;
-		}
-
-		return this;
 	}
 
 	printOutput()
