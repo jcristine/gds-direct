@@ -55,7 +55,7 @@ function chunkIntoPages( linesArr , rowsPerScreen )
 
 function _makePages(txt, rowsPerScreen = 20, maxCharLimit)
 {
-	const chunkByCharLimit = splitIntoLines( txt, maxCharLimit );
+	const chunkByCharLimit = _splitIntoLinesArr( txt, maxCharLimit );
 
 	return chunkIntoPages(chunkByCharLimit, rowsPerScreen).map(
 		(sectionLines) => sectionLines.join('\n')

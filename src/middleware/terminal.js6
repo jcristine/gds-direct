@@ -3,8 +3,7 @@
 let $					= require('jquery');
 window.$ 				= window.jQuery = $;
 
-let jqTerminal 			= require('jquery.terminal/js/jquery.terminal');
-
+require('jquery.terminal/js/jquery.terminal');
 require('keyboardevent-key-polyfill').polyfill();
 
 import Noty 		from 'noty';
@@ -13,6 +12,7 @@ import Pagination 	from '../modules/pagination';
 import Session 		from '../modules/sabreSession';
 import Spinner 		from '../modules/spinner';
 import KeyBinding	from '../helpers/keyBinding';
+import OutputLiner	from '../helpers/outputLiner';
 
 export default class TerminalPlugin
 {
@@ -22,11 +22,10 @@ export default class TerminalPlugin
 		this.context	= params.context;
 		this.name		= params.name;
 
-		// this.outputCache 	= [];
 		this.animation	 	= false;
 		this.hiddenBuff		= [];
 		this.hiddenCommand	= '';
-		this.cmdLineOffset	= 0;
+		// this.cmdLineOffset	= 0;
 
 		this.allowManualPaging = params.gds === 'sabre';
 		// this.allowManualPaging = true;
@@ -37,10 +36,12 @@ export default class TerminalPlugin
 			gds				: params.gds
 		});
 
-		this.pagination = new Pagination();
+		this.pagination = new Pagination( this.terminal );
 
 		this.terminal 	= this.init();
 		this.spinner 	= new Spinner( this.terminal );
+
+		this.outputLiner = new OutputLiner( this.terminal );
 	}
 
 	getPlugin()
@@ -48,7 +49,7 @@ export default class TerminalPlugin
 		return this.terminal;
 	}
 
-	parseInput( evt, terminal )
+	parseChar( evt, terminal )
 	{
 		if ( !terminal.enabled() ) // key press fires globally on all terminals;
 			return false;
@@ -78,15 +79,6 @@ export default class TerminalPlugin
 
 	parseKeyBinds( evt, terminal )
 	{
-		if ( this.bottomOutput && !this.typed )
-		{
-			$( this.bottomOutput ).find('div').first().remove();
-			this.typed = true;
-
-			// this.bottomOutput.innerHTML = '';
-			// this.bottomOutput = '';
-		}
-
 		let keyCode = evt.keyCode || evt.which;
 
 		if ( this.animation )
@@ -118,17 +110,16 @@ export default class TerminalPlugin
 			prompt			: '>',
 			scrollOnEcho	: false,
 
-			keypress		: this.parseInput.bind(this),
+			keypress		: this.parseChar.bind(this),
 			keydown			: this.parseKeyBinds.bind(this),
 
 			onInit			: this.changeActiveTerm,
 			onTerminalChange: this.changeActiveTerm,
 
 			keymap			: {
-
 				'CTRL+W'()
 				{
-					console.log(' wwww ');
+					alert('ctrl + w');
 				},
 
 				'CTRL+J'()
@@ -140,8 +131,8 @@ export default class TerminalPlugin
 				{
 					window.TerminalState.purgeScreens();
 				},
-
 			}
+
 			//exceptionHandler	 : function () {
 			//	console.log('exc', arguments)
 			//}
@@ -163,7 +154,7 @@ export default class TerminalPlugin
 		}
 	}
 
-	commandParser( command, terminal )
+	commandParser( command, terminal ) //pressed enter
 	{
 		if ( !command || command === '' )
 			return false;
@@ -198,14 +189,10 @@ export default class TerminalPlugin
 			}
 		}
 
-		if ( this.bottomOutput )
-		{
-			$( this.bottomOutput ).find('div').first().remove();
-		}
-
 		this.spinner.start();
-		this.animation 		= true;
-		this.cmdLineOffset 	= this.terminal.cmd()[0].offsetTop;
+
+		this.outputLiner.removeEmptyLine(); // loader
+		this.animation = true;
 
 		this.sendRequest(command);
 	}
@@ -243,65 +230,39 @@ export default class TerminalPlugin
 
 				this.switchArea( command );
 			})
-			.catch( this.parseError.bind(this) );
+			// .catch( this.parseError.bind(this) );
 	}
 
 	parseBackEnd( response = {} )
 	{
-		let result = response['data'], output = '';
+		const result = response['data'];
 
 		// if ( result['prompt'] )
 		// 	this.terminal.set_prompt( result['prompt'] );
 
 		if ( result['output'] )
 		{
-			output = result['output'];
-
 			if ( this.allowManualPaging )
 			{
-				output = this.pagination
-					.bindOutput( output, this.terminal.rows() - 1, this.terminal.cols() )
+				const output = this.pagination
+					.bindOutput( result['output'], this.terminal.rows() - 1, this.terminal.cols() )
 					.print();
-			}
-
-			const outputLines 	= Helpers.getLines( result['output'], this.terminal.cols() );
-
-			if ( result['clearScreen'] && window.TerminalState.getMatrix().rows !== 0 )
-			{
-				this.debug( 'Clear Screen is On' );
-
-				const linesToAdd	= this.terminal.rows() - outputLines.length;
-
-				if ( this.bottomOutput )
-				{
-					this.bottomOutput.remove();
-				}
 
 				this.terminal.echo( output );
+				return '';
+			}
 
-				if ( linesToAdd > 0 )
-				{
-					this.typed = false;
+			this.outputLiner.prepare( result['output'] );
 
-					this.bottomOutput 			= document.createElement('div');
-					this.bottomOutput.innerHTML = new Array( linesToAdd ).fill('<div><span>&nbsp;</span></div>').join('');
-					this.terminal.cmd().after( this.bottomOutput );
+			if ( result['clearScreen'] && window.TerminalState.getMatrix().rows !== 0 ) // if 1 row of terminals don't
+			{
 
-					// const empty	= new Array( linesToAdd - 1 ).fill(' ');
-					// output		= empty.concat( outputLines).join('\n');
-				}
-
-				this.terminal.scroll();
-				this.terminal.scroll( this.cmdLineOffset - 3); // TEST
+				this.debug( 'Clear Screen is On' );
+				this.outputLiner.empty().printOutput().countEmptyLines().attachEmpty().scroll();
 			}
 			else
 			{
-				for (let i = 1; i <= outputLines.length; i++)
-				{
-					$( this.bottomOutput ).find('div').first().remove();
-				}
-
-				this.terminal.echo( output );
+				this.outputLiner.reduceEmpty().attachEmpty().printOutput();
 			}
 		}
 

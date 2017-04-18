@@ -751,7 +751,7 @@ function chunkIntoPages( linesArr , rowsPerScreen )
 
 function _makePages(txt, rowsPerScreen = 20, maxCharLimit)
 {
-	const chunkByCharLimit = splitIntoLines( txt, maxCharLimit );
+	const chunkByCharLimit = _splitIntoLinesArr( txt, maxCharLimit );
 
 	return chunkIntoPages(chunkByCharLimit, rowsPerScreen).map(
 		(sectionLines) => sectionLines.join('\n')
@@ -12471,7 +12471,7 @@ class KeyBinding
 	{
 		let keymap 		= evt.keyCode || evt.which;
 		let isApollo	= window.TerminalState.state.language === 'APOLLO';
-		// console.log(keymap);
+		console.log(keymap);
 
 		if ( evt.ctrlKey || evt.metaKey )
 		{
@@ -12480,7 +12480,7 @@ class KeyBinding
 			switch (keymap)
 			{
 				case 8: //  CTRL + backSpace; || CTRL+W || CTRL + S
-				// case 87:
+				case 87:
 				// case 83:
 					evt.preventDefault();
 					terminal.clear();
@@ -12725,14 +12725,15 @@ function runSyncCommand( functionName, params )
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__modules_sabreSession__ = __webpack_require__(28);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__modules_spinner__ = __webpack_require__(29);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__helpers_keyBinding__ = __webpack_require__(24);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__helpers_outputLiner__ = __webpack_require__(40);
 
 
 let $					= __webpack_require__(30);
 window.$ 				= window.jQuery = $;
 
-let jqTerminal 			= __webpack_require__(8);
-
+__webpack_require__(8);
 __webpack_require__(9).polyfill();
+
 
 
 
@@ -12749,11 +12750,10 @@ class TerminalPlugin
 		this.context	= params.context;
 		this.name		= params.name;
 
-		// this.outputCache 	= [];
 		this.animation	 	= false;
 		this.hiddenBuff		= [];
 		this.hiddenCommand	= '';
-		this.cmdLineOffset	= 0;
+		// this.cmdLineOffset	= 0;
 
 		this.allowManualPaging = params.gds === 'sabre';
 		// this.allowManualPaging = true;
@@ -12764,10 +12764,12 @@ class TerminalPlugin
 			gds				: params.gds
 		});
 
-		this.pagination = new __WEBPACK_IMPORTED_MODULE_2__modules_pagination__["a" /* default */]();
+		this.pagination = new __WEBPACK_IMPORTED_MODULE_2__modules_pagination__["a" /* default */]( this.terminal );
 
 		this.terminal 	= this.init();
 		this.spinner 	= new __WEBPACK_IMPORTED_MODULE_4__modules_spinner__["a" /* default */]( this.terminal );
+
+		this.outputLiner = new __WEBPACK_IMPORTED_MODULE_6__helpers_outputLiner__["a" /* default */]( this.terminal );
 	}
 
 	getPlugin()
@@ -12775,7 +12777,7 @@ class TerminalPlugin
 		return this.terminal;
 	}
 
-	parseInput( evt, terminal )
+	parseChar( evt, terminal )
 	{
 		if ( !terminal.enabled() ) // key press fires globally on all terminals;
 			return false;
@@ -12805,15 +12807,6 @@ class TerminalPlugin
 
 	parseKeyBinds( evt, terminal )
 	{
-		if ( this.bottomOutput && !this.typed )
-		{
-			$( this.bottomOutput ).find('div').first().remove();
-			this.typed = true;
-
-			// this.bottomOutput.innerHTML = '';
-			// this.bottomOutput = '';
-		}
-
 		let keyCode = evt.keyCode || evt.which;
 
 		if ( this.animation )
@@ -12845,17 +12838,16 @@ class TerminalPlugin
 			prompt			: '>',
 			scrollOnEcho	: false,
 
-			keypress		: this.parseInput.bind(this),
+			keypress		: this.parseChar.bind(this),
 			keydown			: this.parseKeyBinds.bind(this),
 
 			onInit			: this.changeActiveTerm,
 			onTerminalChange: this.changeActiveTerm,
 
 			keymap			: {
-
 				'CTRL+W'()
 				{
-					console.log(' wwww ');
+					alert('ctrl + w');
 				},
 
 				'CTRL+J'()
@@ -12867,8 +12859,8 @@ class TerminalPlugin
 				{
 					window.TerminalState.purgeScreens();
 				},
-
 			}
+
 			//exceptionHandler	 : function () {
 			//	console.log('exc', arguments)
 			//}
@@ -12890,7 +12882,7 @@ class TerminalPlugin
 		}
 	}
 
-	commandParser( command, terminal )
+	commandParser( command, terminal ) //pressed enter
 	{
 		if ( !command || command === '' )
 			return false;
@@ -12925,14 +12917,10 @@ class TerminalPlugin
 			}
 		}
 
-		if ( this.bottomOutput )
-		{
-			$( this.bottomOutput ).find('div').first().remove();
-		}
-
 		this.spinner.start();
-		this.animation 		= true;
-		this.cmdLineOffset 	= this.terminal.cmd()[0].offsetTop;
+
+		this.outputLiner.removeEmptyLine(); // loader
+		this.animation = true;
 
 		this.sendRequest(command);
 	}
@@ -12970,65 +12958,39 @@ class TerminalPlugin
 
 				this.switchArea( command );
 			})
-			.catch( this.parseError.bind(this) );
+			// .catch( this.parseError.bind(this) );
 	}
 
 	parseBackEnd( response = {} )
 	{
-		let result = response['data'], output = '';
+		const result = response['data'];
 
 		// if ( result['prompt'] )
 		// 	this.terminal.set_prompt( result['prompt'] );
 
 		if ( result['output'] )
 		{
-			output = result['output'];
-
 			if ( this.allowManualPaging )
 			{
-				output = this.pagination
-					.bindOutput( output, this.terminal.rows() - 1, this.terminal.cols() )
+				const output = this.pagination
+					.bindOutput( result['output'], this.terminal.rows() - 1, this.terminal.cols() )
 					.print();
-			}
-
-			const outputLines 	= __WEBPACK_IMPORTED_MODULE_1__helpers_helpers__["a" /* default */].getLines( result['output'], this.terminal.cols() );
-
-			if ( result['clearScreen'] && window.TerminalState.getMatrix().rows !== 0 )
-			{
-				this.debug( 'Clear Screen is On' );
-
-				const linesToAdd	= this.terminal.rows() - outputLines.length;
-
-				if ( this.bottomOutput )
-				{
-					this.bottomOutput.remove();
-				}
 
 				this.terminal.echo( output );
+				return '';
+			}
 
-				if ( linesToAdd > 0 )
-				{
-					this.typed = false;
+			this.outputLiner.prepare( result['output'] );
 
-					this.bottomOutput 			= document.createElement('div');
-					this.bottomOutput.innerHTML = new Array( linesToAdd ).fill('<div><span>&nbsp;</span></div>').join('');
-					this.terminal.cmd().after( this.bottomOutput );
+			if ( result['clearScreen'] && window.TerminalState.getMatrix().rows !== 0 ) // if 1 row of terminals don't
+			{
 
-					// const empty	= new Array( linesToAdd - 1 ).fill(' ');
-					// output		= empty.concat( outputLines).join('\n');
-				}
-
-				this.terminal.scroll();
-				this.terminal.scroll( this.cmdLineOffset + 1 );
+				this.debug( 'Clear Screen is On' );
+				this.outputLiner.empty().printOutput().countEmptyLines().attachEmpty().scroll();
 			}
 			else
 			{
-				for (let i = 1; i <= outputLines.length; i++)
-				{
-					$( this.bottomOutput ).find('div').first().remove();
-				}
-
-				this.terminal.echo( output );
+				this.outputLiner.reduceEmpty().attachEmpty().printOutput();
 			}
 		}
 
@@ -13255,6 +13217,123 @@ module.exports = jQuery;
 
 __webpack_require__(5);
 module.exports = __webpack_require__(4);
+
+
+/***/ }),
+/* 32 */,
+/* 33 */,
+/* 34 */,
+/* 35 */,
+/* 36 */,
+/* 37 */,
+/* 38 */,
+/* 39 */,
+/* 40 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__helpers_helpers__ = __webpack_require__(3);
+
+
+
+
+class OutputLiner
+{
+	constructor( terminal )
+	{
+		this.terminal		= terminal;
+
+		this.context 		= '';
+		this.emptyLines 	= 0;
+		this.outputStrings	= '';
+		this.cmdLineOffset 	= '';
+	}
+
+	removeEmptyLine()
+	{
+		if ( this.emptyLines > 0 )
+		{
+			this.emptyLines--;
+			this.attachEmpty( this.emptyLines );
+		}
+	}
+
+	countEmptyLines()
+	{
+		const outputCount 	= this.getOutputLength();
+		const rowsCount 	= this.terminal.rows();
+
+		if (outputCount < rowsCount)
+			this.emptyLines = rowsCount - outputCount - 1; // screen rows - output - cmdLine;
+
+		return this;
+	}
+
+	getOutputLength()
+	{
+		return __WEBPACK_IMPORTED_MODULE_0__helpers_helpers__["a" /* default */].getLines( this.outputStrings, this.terminal.cols() ).length;
+	}
+
+	empty()
+	{
+		if ( this.context )
+		{
+			this.context.innerHTML = '';
+			this.emptyLines = 0;
+		}
+
+		return this;
+	}
+
+	printOutput()
+	{
+		this.cmdLineOffset 	= this.terminal.cmd()[0].offsetTop;
+
+		this.terminal.echo( this.outputStrings );
+		return this;
+	}
+
+	reduceEmpty()
+	{
+		if (this.emptyLines > 0)
+			this.emptyLines -= this.getOutputLength();
+
+		return this;
+	}
+
+	attachEmpty()
+	{
+		if (this.emptyLines === 0 )
+			return this;
+
+		const appended = !!this.context;
+
+		this.context 			= this.context || document.createElement('div');
+		this.context.innerHTML 	= new Array( this.emptyLines ).fill('<div><span>&nbsp;</span></div>').join('');
+
+		if ( !appended )
+			this.terminal.cmd().after( this.context );
+
+		return this;
+	}
+
+	prepare( output )
+	{
+		this.outputStrings 	= output;
+	}
+
+	scroll()
+	{
+		if (this.emptyLines === 0)
+		{
+			this.terminal.scroll().scroll( this.cmdLineOffset ); // to first line, to desired line //TEST
+		} else
+		{
+			this.terminal.scroll_to_bottom(); // to first line, to desired line //TEST
+		}
+	}
+}
+/* harmony export (immutable) */ __webpack_exports__["a"] = OutputLiner;
 
 
 /***/ })
