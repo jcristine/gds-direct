@@ -12439,6 +12439,7 @@ class Terminal {
 		if (this.plugin)
 		{
 			this.plugin.terminal.clear();
+			this.plugin.terminal.cmd().set('');
 		} else
 		{
 			this.context.innerHTML = '';
@@ -12832,6 +12833,8 @@ class TerminalPlugin
 
 	init()
 	{
+		const session = this.session;
+
 		this.terminal = $(this.context).terminal( this.commandParser.bind(this), {
 			greetings		: '',
 			name			: this.name,
@@ -12857,6 +12860,7 @@ class TerminalPlugin
 
 				'CTRL+S'()
 				{
+					session.clearBuffer();
 					window.TerminalState.purgeScreens();
 				},
 			}
@@ -12932,7 +12936,7 @@ class TerminalPlugin
 				cmd : command
 			})
 
-			.then( ( response = {} ) => {
+			.then( response => {
 				this.spinner.end();
 				this.animation 	= false;
 				return response;
@@ -12958,7 +12962,7 @@ class TerminalPlugin
 
 				this.switchArea( command );
 			})
-			// .catch( this.parseError.bind(this) );
+			.catch( this.parseError.bind(this) );
 	}
 
 	parseBackEnd( response = {} )
@@ -12984,7 +12988,6 @@ class TerminalPlugin
 
 			if ( result['clearScreen'] && window.TerminalState.getMatrix().rows !== 0 ) // if 1 row of terminals don't
 			{
-
 				this.debug( 'Clear Screen is On' );
 				this.outputLiner.removeEmptyLines().printOutput().countEmptyLines().attachEmpty().scroll();
 			}
@@ -13253,6 +13256,13 @@ class Session
 
 		if (result['success'])
 			return true;
+	}
+
+	clearBuffer()
+	{
+		this.run({
+			cmd : 'clearBuffer'
+		});
 	}
 }
 /* harmony export (immutable) */ __webpack_exports__["a"] = Session;

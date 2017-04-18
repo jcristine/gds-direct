@@ -46,4 +46,11 @@ export default class Session
 		if (result['success'])
 			return true;
 	}
+
+	clearBuffer()
+	{
+		this.run({
+			cmd : 'clearBuffer'
+		});
+	}
 }

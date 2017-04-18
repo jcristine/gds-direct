@@ -109,6 +109,7 @@ export default class Terminal {
 		if (this.plugin)
 		{
 			this.plugin.terminal.clear();
+			this.plugin.terminal.cmd().set('');
 		} else
 		{
 			this.context.innerHTML = '';

@@ -104,6 +104,8 @@ export default class TerminalPlugin
 
 	init()
 	{
+		const session = this.session;
+
 		this.terminal = $(this.context).terminal( this.commandParser.bind(this), {
 			greetings		: '',
 			name			: this.name,
@@ -129,6 +131,7 @@ export default class TerminalPlugin
 
 				'CTRL+S'()
 				{
+					session.clearBuffer();
 					window.TerminalState.purgeScreens();
 				},
 			}
@@ -204,7 +207,7 @@ export default class TerminalPlugin
 				cmd : command
 			})
 
-			.then( ( response = {} ) => {
+			.then( response => {
 				this.spinner.end();
 				this.animation 	= false;
 				return response;
@@ -230,7 +233,7 @@ export default class TerminalPlugin
 
 				this.switchArea( command );
 			})
-			// .catch( this.parseError.bind(this) );
+			.catch( this.parseError.bind(this) );
 	}
 
 	parseBackEnd( response = {} )
@@ -256,7 +259,6 @@ export default class TerminalPlugin
 
 			if ( result['clearScreen'] && window.TerminalState.getMatrix().rows !== 0 ) // if 1 row of terminals don't
 			{
-
 				this.debug( 'Clear Screen is On' );
 				this.outputLiner.removeEmptyLines().printOutput().countEmptyLines().attachEmpty().scroll();
 			}
