@@ -65,7 +65,7 @@ export default class Session
 	clearBuffer()
 	{
 		return this.makeRequest( 'runInternalCommand', {
-			cmd : 'clearBuffer'
+			command : 'clearBuffer'
 		});
 	}
 }

@@ -13233,7 +13233,7 @@ class Session
 
 	makeRequest( command, params )
 	{
-		return __WEBPACK_IMPORTED_MODULE_1__helpers_requests__["a" /* default */].runSyncCommand( command, params )
+		return __WEBPACK_IMPORTED_MODULE_1__helpers_requests__["a" /* default */].runSyncCommand( command, params );
 	}
 	
 	start()
@@ -13286,7 +13286,7 @@ class Session
 	clearBuffer()
 	{
 		return this.makeRequest( 'runInternalCommand', {
-			cmd : 'clearBuffer'
+			command : 'clearBuffer'
 		});
 	}
 }
