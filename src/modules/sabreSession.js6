@@ -34,6 +34,9 @@ export default class Session
 			terminalIndex	: parseInt( this.settings['terminalIndex']) + 1,
 			gds				: this.settings['gds'],
 			language		: window.TerminalState.state.language,
+			terminalData	: {
+				rId	: window.apiData['terminalData']
+			}
 		});
 	}
 

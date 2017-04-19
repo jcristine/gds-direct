@@ -13002,9 +13002,14 @@ class TerminalPlugin
 			}
 		}
 
-		if ( result['canCreatePQ'] )
+		if ( result['canCreatePq'] )
 		{
 			this.debug( 'Can create PQ' );
+		}
+
+		if ( result['tabCommands'] )
+		{
+			this.debug( 'Found tab commands' );
 		}
 
 		if ( result['pcc'] )
@@ -13250,6 +13255,9 @@ class Session
 			terminalIndex	: parseInt( this.settings['terminalIndex']) + 1,
 			gds				: this.settings['gds'],
 			language		: window.TerminalState.state.language,
+			terminalData	: {
+				rId	: window.apiData['terminalData']
+			}
 		});
 	}
 

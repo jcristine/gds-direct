@@ -268,9 +268,14 @@ export default class TerminalPlugin
 			}
 		}
 
-		if ( result['canCreatePQ'] )
+		if ( result['canCreatePq'] )
 		{
 			this.debug( 'Can create PQ' );
+		}
+
+		if ( result['tabCommands'] )
+		{
+			this.debug( 'Found tab commands' );
 		}
 
 		if ( result['pcc'] )
