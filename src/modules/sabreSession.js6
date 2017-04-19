@@ -9,6 +9,11 @@ export default class Session
 	{
 		this.settings = params;
 	}
+
+	makeRequest( command, params )
+	{
+		return Requests.runSyncCommand( command, params );
+	}
 	
 	start()
 	{
@@ -27,17 +32,24 @@ export default class Session
 
 	run( params )
 	{
-		return Requests.runSyncCommand('runCommand', {
+		const rData = {
 			// sessionToken	: this.settings['sessionToken'],
+
 			sessionIndex	: parseInt(this.settings['sessionIndex']) + 1,
+			terminalIndex	: parseInt(this.settings['terminalIndex']) + 1,
+
 			command			: params['cmd'],
-			terminalIndex	: parseInt( this.settings['terminalIndex']) + 1,
+
 			gds				: this.settings['gds'],
 			language		: window.TerminalState.state.language,
+
 			terminalData	: {
 				rId	: window.apiData['terminalData']
 			}
-		});
+		};
+
+		return this.makeRequest( 'runCommand', rData );
+		// return Requests.runSyncCommand('runCommand', );
 	}
 
 	end()
@@ -52,7 +64,7 @@ export default class Session
 
 	clearBuffer()
 	{
-		this.run({
+		return this.makeRequest( 'runInternalCommand', {
 			cmd : 'clearBuffer'
 		});
 	}

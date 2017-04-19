@@ -13007,7 +13007,7 @@ class TerminalPlugin
 			this.debug( 'Can create PQ' );
 		}
 
-		if ( result['tabCommands'] )
+		if ( result['tabCommands'] && result['tabCommands'].length )
 		{
 			this.debug( 'Found tab commands' );
 		}
@@ -13230,6 +13230,11 @@ class Session
 	{
 		this.settings = params;
 	}
+
+	makeRequest( command, params )
+	{
+		return __WEBPACK_IMPORTED_MODULE_1__helpers_requests__["a" /* default */].runSyncCommand( command, params )
+	}
 	
 	start()
 	{
@@ -13248,17 +13253,24 @@ class Session
 
 	run( params )
 	{
-		return __WEBPACK_IMPORTED_MODULE_1__helpers_requests__["a" /* default */].runSyncCommand('runCommand', {
+		const rData = {
 			// sessionToken	: this.settings['sessionToken'],
+
 			sessionIndex	: parseInt(this.settings['sessionIndex']) + 1,
+			terminalIndex	: parseInt(this.settings['terminalIndex']) + 1,
+
 			command			: params['cmd'],
-			terminalIndex	: parseInt( this.settings['terminalIndex']) + 1,
+
 			gds				: this.settings['gds'],
 			language		: window.TerminalState.state.language,
+
 			terminalData	: {
 				rId	: window.apiData['terminalData']
 			}
-		});
+		};
+
+		return this.makeRequest( 'runCommand', rData );
+		// return Requests.runSyncCommand('runCommand', );
 	}
 
 	end()
@@ -13273,7 +13285,7 @@ class Session
 
 	clearBuffer()
 	{
-		this.run({
+		return this.makeRequest( 'runInternalCommand', {
 			cmd : 'clearBuffer'
 		});
 	}

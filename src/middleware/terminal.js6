@@ -273,7 +273,7 @@ export default class TerminalPlugin
 			this.debug( 'Can create PQ' );
 		}
 
-		if ( result['tabCommands'] )
+		if ( result['tabCommands'] && result['tabCommands'].length )
 		{
 			this.debug( 'Found tab commands' );
 		}
