@@ -842,11 +842,8 @@ class TerminalState
 	{
 		this.areaList = ['A', 'B', 'C', 'D', 'E', 'F'];
 
-		// console.log( apiData.settings.common.currentGds );
-
 		Gds['apollo']['session']	= this.areaList.indexOf( apiData.settings['gds']['apollo']['currentArea'] );
 		Gds['sabre']['session'] 	= this.areaList.indexOf( apiData.settings['gds']['sabre']['currentArea'] );
-
 
 		this.state = {
 			gds 			: apiData.settings.common.currentGds || 'apollo',
@@ -867,7 +864,6 @@ class TerminalState
 
 	getPcc()
 	{
-		console.log(' get pcc ', Gds[this.state.gds].pcc)
 		return Gds[this.state.gds].pcc;
 	}
 
@@ -944,9 +940,6 @@ class TerminalState
 			break;
 
 			case 'CHANGE_PCC' :
-
-				console.log('CHANGE PCC');
-
 				Gds[this.state.gds]['pcc'][this.state.sessionIndex] = params.pcc;
 				return __WEBPACK_IMPORTED_MODULE_0__components_containerMain__["a" /* default */].menuRender();
 			break;
@@ -12979,7 +12972,7 @@ class TerminalPlugin
 
 	parseBackEnd( response = {} )
 	{
-		const result = response['data'];
+		const result = response['data'] || {};
 
 		// if ( result['prompt'] )
 		// 	this.terminal.set_prompt( result['prompt'] );

@@ -238,7 +238,7 @@ export default class TerminalPlugin
 
 	parseBackEnd( response = {} )
 	{
-		const result = response['data'];
+		const result = response['data'] || {};
 
 		// if ( result['prompt'] )
 		// 	this.terminal.set_prompt( result['prompt'] );
