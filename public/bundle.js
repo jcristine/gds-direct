@@ -13116,7 +13116,7 @@ class Output
 
 	attachEmpty()
 	{
-		if (this.emptyLines === 0 )
+		if (this.emptyLines <= 0 )
 			return this;
 
 		const appended = !!this.context;
