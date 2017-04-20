@@ -63,7 +63,7 @@
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 32);
+/******/ 	return __webpack_require__(__webpack_require__.s = 33);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -12705,10 +12705,10 @@ function runSyncCommand( functionName, params )
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__modules_spinner__ = __webpack_require__(30);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__helpers_keyBinding__ = __webpack_require__(24);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__modules_output__ = __webpack_require__(27);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__modules_tabManager__ = __webpack_require__(41);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__modules_tabManager__ = __webpack_require__(31);
 
 
-let $					= __webpack_require__(31);
+let $					= __webpack_require__(32);
 window.$ 				= window.jQuery = $;
 
 __webpack_require__(8);
@@ -12728,8 +12728,8 @@ const Debug = txt => {
 		text	: `DEBUG : ${txt}`,
 		layout 	: 'bottomRight',
 		timeout : 1000,
-		theme	: 'bootstrap-v4',
-		type 	: 'info'
+		theme	: 'relax',
+		type 	: 'warning'
 	}).show();
 };
 
@@ -13331,28 +13331,6 @@ class Spinner
 
 /***/ }),
 /* 31 */
-/***/ (function(module, exports) {
-
-module.exports = jQuery;
-
-/***/ }),
-/* 32 */
-/***/ (function(module, exports, __webpack_require__) {
-
-__webpack_require__(5);
-module.exports = __webpack_require__(4);
-
-
-/***/ }),
-/* 33 */,
-/* 34 */,
-/* 35 */,
-/* 36 */,
-/* 37 */,
-/* 38 */,
-/* 39 */,
-/* 40 */,
-/* 41 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -13408,6 +13386,20 @@ class TabManager
 	}
 }
 /* harmony export (immutable) */ __webpack_exports__["a"] = TabManager;
+
+
+/***/ }),
+/* 32 */
+/***/ (function(module, exports) {
+
+module.exports = jQuery;
+
+/***/ }),
+/* 33 */
+/***/ (function(module, exports, __webpack_require__) {
+
+__webpack_require__(5);
+module.exports = __webpack_require__(4);
 
 
 /***/ })

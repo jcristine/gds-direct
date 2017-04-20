@@ -20,8 +20,8 @@ const Debug = txt => {
 		text	: `DEBUG : ${txt}`,
 		layout 	: 'bottomRight',
 		timeout : 1000,
-		theme	: 'bootstrap-v4',
-		type 	: 'info'
+		theme	: 'relax',
+		type 	: 'warning'
 	}).show();
 };
 
