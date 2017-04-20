@@ -158,7 +158,7 @@ export default class Container {
 		const sessionKey = params['gds'];
 		const { rows : rowIndex , cells: cellIndex} = params.matrix;
 
-		termTableWrap.className 	= 'term-body minimized' + ' ' + params.gds;
+		termTableWrap.className = `term-body minimized ${sessionKey}`;
 
 		this.clearPrev();
 		this.menuRender();
@@ -167,7 +167,6 @@ export default class Container {
 
 		TerminalCellMatrix
 			.getCells(rowIndex, cellIndex)
-
 			.map( ( cell, index ) => {
 
 				if ( terminalList[index] )
@@ -175,15 +174,12 @@ export default class Container {
 					terminalList[index].reattach( cell );
 				} else
 				{
-					let terminal = new Terminal({
+					terminalList.push( new Terminal({
 						name 			: index,
 						sessionIndex	: params.sessionIndex,
 						gds				: params.gds,
-						// language		: params.language,
 						parentContext	: cell
-					});
-
-					terminalList.push( terminal );
+					}) );
 				}
 			});
 

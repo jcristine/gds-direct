@@ -25,22 +25,14 @@ export default class Terminal {
 		};
 
 		if ( this.buffer )
-		{
-			const buffered = this.buffer['buffering'].map( (record) => {
-				return `<div class="command">${record.request}</div> <pre zstyle="white-space: pre-line">${record.output}</pre>`;
-			}).join('');
-
-			this.context.innerHTML = `<div class="terminal-wrapper"><div class="terminal-output">${buffered}</div></div>`;
-			this.context.scrollTop = this.context.scrollHeight;
-		}
+			this.makeBuffer();
 
 		this.settings.parentContext.appendChild( this.context );
+		this.context.scrollTop = this.context.scrollHeight;
 	}
 
 	init()
 	{
-		// this.context.innerHTML = '';
-
 		this.plugin = new TerminalPlugin({
 			context 		: this.context,
 			name 			: this.settings['name'],
@@ -50,8 +42,19 @@ export default class Terminal {
 
 		this.context.style.height = calculateHeight(this.plugin.terminal) + 'px';
 		this.plugin.terminal.scroll_to_bottom();
+	}
 
-		// this.insertBuffer();
+	makeBuffer()
+	{
+		const buffered = this.buffer['buffering'].map( record => {
+			return `<div class="command">${record.request}</div><pre>${record.output}</pre>`;
+		}).join('');
+
+		this.bufferDiv 				= document.createElement('div');
+		this.bufferDiv.className	= 'terminal-wrapper';
+		this.bufferDiv.innerHTML 	= `<div class="terminal-output">${buffered}</div>`;
+
+		this.context.appendChild( this.bufferDiv );
 	}
 
 	insertBuffer()
@@ -73,11 +76,6 @@ export default class Terminal {
 		if (this.plugin)
 			this.plugin.getPlugin().destroy();
 	}
-
-	// detach()
-	// {
-	// 	console.log(' detach ', this);
-	// }
 
 	reattach( parentNode )
 	{
@@ -104,9 +102,12 @@ export default class Terminal {
 		{
 			this.plugin.terminal.clear();
 			this.plugin.terminal.cmd().set('');
-		} else
+		}
+
+		if (this.bufferDiv)
 		{
-			this.context.innerHTML = '';
+			this.context.removeChild(this.bufferDiv);
+			this.bufferDiv = false;
 		}
 
 		this.buffer = '';

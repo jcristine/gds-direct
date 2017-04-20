@@ -14,6 +14,16 @@ import Spinner 		from '../modules/spinner';
 import KeyBinding	from '../helpers/keyBinding';
 import OutputLiner	from '../modules/output';
 
+const Debug = txt => {
+	new Noty({
+		text	: `DEBUG : ${txt}`,
+		layout 	: 'bottomRight',
+		timeout : 1000
+		// theme	: 'bootstrap-v4',
+		// type 	: 'info'
+	}).show();
+};
+
 export default class TerminalPlugin
 {
 	constructor( params )
@@ -25,10 +35,8 @@ export default class TerminalPlugin
 		this.animation	 	= false;
 		this.hiddenBuff		= [];
 		this.hiddenCommand	= '';
-		// this.cmdLineOffset	= 0;
 
 		this.allowManualPaging = params.gds === 'sabre';
-		// this.allowManualPaging = true;
 
 		this.session = new Session({
 			terminalIndex	: params.name,
@@ -51,8 +59,6 @@ export default class TerminalPlugin
 
 	parseChar( evt, terminal )
 	{
-		console.log('char')
-
 		if ( !terminal.enabled() ) // key press fires globally on all terminals;
 			return false;
 
@@ -104,15 +110,19 @@ export default class TerminalPlugin
 		}, 'CHANGE_ACTIVE_TERMINAL');
 	}
 
+	clearBuf()
+	{
+		// const request = this.session.clearBuffer().then( ( response ) => { console.log(' done ', response ) });
+		window.TerminalState.purgeScreens();
+	}
+
 	init()
 	{
-		const session = this.session;
-
 		this.terminal = $(this.context).terminal( this.commandParser.bind(this), {
 			greetings		: '',
 			name			: this.name,
 			prompt			: '>',
-			scrollOnEcho	: false,
+			// scrollOnEcho	: false,
 
 			keypress		: this.parseChar.bind(this),
 			keydown			: this.parseKeyBinds.bind(this),
@@ -121,26 +131,15 @@ export default class TerminalPlugin
 			onTerminalChange: this.changeActiveTerm,
 
 			keymap			: {
-				'CTRL+W'()
-				{
-					alert('ctrl + w');
-				},
+				'CTRL+S' : () => {
+					this.clearBuf()
+				}
+			},
 
-				'CTRL+J'()
-				{
-					console.log(' JJJJ ', arguments );
-				},
-
-				'CTRL+S'()
-				{
-					session.clearBuffer();
-					window.TerminalState.purgeScreens();
-				},
+			exceptionHandler( err )
+			{
+				console.warn('exc', err)
 			}
-
-			//exceptionHandler	 : function () {
-			//	console.log('exc', arguments)
-			//}
 		});
 
 		return this.terminal;
@@ -153,8 +152,9 @@ export default class TerminalPlugin
 		if ( sessionChange !== -1 )
 		{
 			window.TerminalState.change({
-				sessionIndex 	: sessionChange,
-				gds				: this.settings.gds
+				sessionIndex 	: sessionChange
+				// ,
+				// gds				: this.settings.gds
 			}, 'CHANGE_SESSION');
 		}
 	}
@@ -163,9 +163,6 @@ export default class TerminalPlugin
 	{
 		if ( !command || command === '' )
 			return false;
-
-		// console.log( 'rows', terminal.rows() );
-		// console.log( 'cols', terminal.cols() );
 
 		if ( this.allowManualPaging )
 		{
@@ -188,15 +185,12 @@ export default class TerminalPlugin
 
 				case 'MDA20' :
 					return false;
-
-				// default :
-					// return '';
 			}
 		}
 
 		this.spinner.start();
 
-		this.outputLiner.removeEmptyLine().attachEmpty(); // loader
+		this.outputLiner.reduceEmpty( 1 ).attachEmpty(); // loader
 		this.animation = true;
 
 		this.sendRequest(command);
@@ -242,9 +236,6 @@ export default class TerminalPlugin
 	{
 		const result = response['data'] || {};
 
-		// if ( result['prompt'] )
-		// 	this.terminal.set_prompt( result['prompt'] );
-
 		if ( result['output'] )
 		{
 			if ( this.allowManualPaging )
@@ -260,7 +251,7 @@ export default class TerminalPlugin
 
 				if ( result['clearScreen'] && window.TerminalState.getMatrix().rows !== 0 ) // if 1 row of terminals don't
 				{
-					this.debug( 'Clear Screen is On' );
+					Debug( 'Clear Screen is On' );
 					this.outputLiner.removeEmptyLines().printOutput().countEmptyLines().attachEmpty().scroll();
 				}
 				else
@@ -271,42 +262,20 @@ export default class TerminalPlugin
 		}
 
 		if ( result['canCreatePq'] )
-		{
-			this.debug( 'Can create PQ' );
-		}
+			Debug( 'CAN CREATE PCC' );
 
 		if ( result['tabCommands'] && result['tabCommands'].length )
-		{
-			this.debug( 'Found tab commands' );
-		}
+			Debug( 'FOUND TAB COMMANDS' );
 
 		if ( result['pcc'] )
-		{
 			window.TerminalState.change({
 				pcc : result['pcc'],
 			}, 'CHANGE_PCC');
-		}
 	}
-
-	debug( txt )
-	{
-		new Noty({
-			text	: `DEBUG : ${txt}`,
-			layout 	: 'bottomRight',
-			timeout : 1000
-			// theme	: 'bootstrap-v4',
-			// type 	: 'info'
-		}).show();
-	}
-
+	
 	parseError(e)
 	{
-		// console.log('errrrrrr');
 		this.spinner.end();
-
-		// this.terminal.resume();
-		// alert(' something went wrong ');
-
 		console.error(' error', arguments );
 		this.terminal.error( String(e) );
 	}

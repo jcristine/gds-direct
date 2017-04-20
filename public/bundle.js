@@ -11674,9 +11674,9 @@ const TerminalCellMatrix = (function()
 
 	function makeCell( row, rowCount )
 	{
-		let cell 	= document.createElement('td');
-		cell.className = 'v-middle';
-		let height	= termTableWrap.clientHeight / ( parseInt(rowCount) + 1 );
+		let cell 		= document.createElement('td');
+		cell.className 	= 'v-middle';
+		let height		= termTableWrap.clientHeight / ( parseInt(rowCount) + 1 );
 
 		row.appendChild( cell );
 		cell.style.height = Math.floor(height)+ 'px';
@@ -11807,7 +11807,7 @@ class Container {
 		const sessionKey = params['gds'];
 		const { rows : rowIndex , cells: cellIndex} = params.matrix;
 
-		termTableWrap.className 	= 'term-body minimized' + ' ' + params.gds;
+		termTableWrap.className = `term-body minimized ${sessionKey}`;
 
 		this.clearPrev();
 		this.menuRender();
@@ -11816,7 +11816,6 @@ class Container {
 
 		TerminalCellMatrix
 			.getCells(rowIndex, cellIndex)
-
 			.map( ( cell, index ) => {
 
 				if ( terminalList[index] )
@@ -11824,15 +11823,12 @@ class Container {
 					terminalList[index].reattach( cell );
 				} else
 				{
-					let terminal = new __WEBPACK_IMPORTED_MODULE_0__terminal__["a" /* default */]({
+					terminalList.push( new __WEBPACK_IMPORTED_MODULE_0__terminal__["a" /* default */]({
 						name 			: index,
 						sessionIndex	: params.sessionIndex,
 						gds				: params.gds,
-						// language		: params.language,
 						parentContext	: cell
-					});
-
-					terminalList.push( terminal );
+					}) );
 				}
 			});
 
@@ -12321,7 +12317,6 @@ class TextSize
 
 const calculateHeight =  terminal => (terminal.find('.cursor').height() * terminal.rows() );
 
-
 class Terminal {
 
 	constructor( params )
@@ -12343,22 +12338,14 @@ class Terminal {
 		};
 
 		if ( this.buffer )
-		{
-			const buffered = this.buffer['buffering'].map( (record) => {
-				return `<div class="command">${record.request}</div> <pre zstyle="white-space: pre-line">${record.output}</pre>`;
-			}).join('');
-
-			this.context.innerHTML = `<div class="terminal-wrapper"><div class="terminal-output">${buffered}</div></div>`;
-			this.context.scrollTop = this.context.scrollHeight;
-		}
+			this.makeBuffer();
 
 		this.settings.parentContext.appendChild( this.context );
+		this.context.scrollTop = this.context.scrollHeight;
 	}
 
 	init()
 	{
-		// this.context.innerHTML = '';
-
 		this.plugin = new __WEBPACK_IMPORTED_MODULE_0__middleware_terminal__["a" /* default */]({
 			context 		: this.context,
 			name 			: this.settings['name'],
@@ -12367,11 +12354,20 @@ class Terminal {
 		});
 
 		this.context.style.height = calculateHeight(this.plugin.terminal) + 'px';
-
-
 		this.plugin.terminal.scroll_to_bottom();
+	}
 
-		// this.insertBuffer();
+	makeBuffer()
+	{
+		const buffered = this.buffer['buffering'].map( record => {
+			return `<div class="command">${record.request}</div><pre>${record.output}</pre>`;
+		}).join('');
+
+		this.bufferDiv 				= document.createElement('div');
+		this.bufferDiv.className	= 'terminal-wrapper';
+		this.bufferDiv.innerHTML 	= `<div class="terminal-output">${buffered}</div>`;
+
+		this.context.appendChild( this.bufferDiv );
 	}
 
 	insertBuffer()
@@ -12393,11 +12389,6 @@ class Terminal {
 		if (this.plugin)
 			this.plugin.getPlugin().destroy();
 	}
-
-	// detach()
-	// {
-	// 	console.log(' detach ', this);
-	// }
 
 	reattach( parentNode )
 	{
@@ -12424,9 +12415,12 @@ class Terminal {
 		{
 			this.plugin.terminal.clear();
 			this.plugin.terminal.cmd().set('');
-		} else
+		}
+
+		if (this.bufferDiv)
 		{
-			this.context.innerHTML = '';
+			this.context.removeChild(this.bufferDiv);
+			this.bufferDiv = false;
 		}
 
 		this.buffer = '';
@@ -12727,6 +12721,16 @@ __webpack_require__(9).polyfill();
 
 
 
+const Debug = txt => {
+	new __WEBPACK_IMPORTED_MODULE_0_noty___default.a({
+		text	: `DEBUG : ${txt}`,
+		layout 	: 'bottomRight',
+		timeout : 1000
+		// theme	: 'bootstrap-v4',
+		// type 	: 'info'
+	}).show();
+};
+
 class TerminalPlugin
 {
 	constructor( params )
@@ -12738,10 +12742,8 @@ class TerminalPlugin
 		this.animation	 	= false;
 		this.hiddenBuff		= [];
 		this.hiddenCommand	= '';
-		// this.cmdLineOffset	= 0;
 
 		this.allowManualPaging = params.gds === 'sabre';
-		// this.allowManualPaging = true;
 
 		this.session = new __WEBPACK_IMPORTED_MODULE_3__modules_sabreSession__["a" /* default */]({
 			terminalIndex	: params.name,
@@ -12764,8 +12766,6 @@ class TerminalPlugin
 
 	parseChar( evt, terminal )
 	{
-		console.log('char')
-
 		if ( !terminal.enabled() ) // key press fires globally on all terminals;
 			return false;
 
@@ -12817,15 +12817,19 @@ class TerminalPlugin
 		}, 'CHANGE_ACTIVE_TERMINAL');
 	}
 
+	clearBuf()
+	{
+		// const request = this.session.clearBuffer().then( ( response ) => { console.log(' done ', response ) });
+		window.TerminalState.purgeScreens();
+	}
+
 	init()
 	{
-		const session = this.session;
-
 		this.terminal = $(this.context).terminal( this.commandParser.bind(this), {
 			greetings		: '',
 			name			: this.name,
 			prompt			: '>',
-			scrollOnEcho	: false,
+			// scrollOnEcho	: false,
 
 			keypress		: this.parseChar.bind(this),
 			keydown			: this.parseKeyBinds.bind(this),
@@ -12834,26 +12838,15 @@ class TerminalPlugin
 			onTerminalChange: this.changeActiveTerm,
 
 			keymap			: {
-				'CTRL+W'()
-				{
-					alert('ctrl + w');
-				},
+				'CTRL+S' : () => {
+					this.clearBuf()
+				}
+			},
 
-				'CTRL+J'()
-				{
-					console.log(' JJJJ ', arguments );
-				},
-
-				'CTRL+S'()
-				{
-					session.clearBuffer();
-					window.TerminalState.purgeScreens();
-				},
+			exceptionHandler( err )
+			{
+				console.warn('exc', err)
 			}
-
-			//exceptionHandler	 : function () {
-			//	console.log('exc', arguments)
-			//}
 		});
 
 		return this.terminal;
@@ -12866,8 +12859,9 @@ class TerminalPlugin
 		if ( sessionChange !== -1 )
 		{
 			window.TerminalState.change({
-				sessionIndex 	: sessionChange,
-				gds				: this.settings.gds
+				sessionIndex 	: sessionChange
+				// ,
+				// gds				: this.settings.gds
 			}, 'CHANGE_SESSION');
 		}
 	}
@@ -12876,9 +12870,6 @@ class TerminalPlugin
 	{
 		if ( !command || command === '' )
 			return false;
-
-		// console.log( 'rows', terminal.rows() );
-		// console.log( 'cols', terminal.cols() );
 
 		if ( this.allowManualPaging )
 		{
@@ -12901,15 +12892,12 @@ class TerminalPlugin
 
 				case 'MDA20' :
 					return false;
-
-				// default :
-					// return '';
 			}
 		}
 
 		this.spinner.start();
 
-		this.outputLiner.removeEmptyLine().attachEmpty(); // loader
+		this.outputLiner.reduceEmpty( 1 ).attachEmpty(); // loader
 		this.animation = true;
 
 		this.sendRequest(command);
@@ -12955,13 +12943,8 @@ class TerminalPlugin
 	{
 		const result = response['data'] || {};
 
-		// if ( result['prompt'] )
-		// 	this.terminal.set_prompt( result['prompt'] );
-
 		if ( result['output'] )
 		{
-			// result['output'] = $.terminal.encode( '<a class="text-danger">test</a>' + result['output'] );
-
 			if ( this.allowManualPaging )
 			{
 				const output = this.pagination
@@ -12975,7 +12958,7 @@ class TerminalPlugin
 
 				if ( result['clearScreen'] && window.TerminalState.getMatrix().rows !== 0 ) // if 1 row of terminals don't
 				{
-					this.debug( 'Clear Screen is On' );
+					Debug( 'Clear Screen is On' );
 					this.outputLiner.removeEmptyLines().printOutput().countEmptyLines().attachEmpty().scroll();
 				}
 				else
@@ -12986,42 +12969,20 @@ class TerminalPlugin
 		}
 
 		if ( result['canCreatePq'] )
-		{
-			this.debug( 'Can create PQ' );
-		}
+			Debug( 'CAN CREATE PCC' );
 
 		if ( result['tabCommands'] && result['tabCommands'].length )
-		{
-			this.debug( 'Found tab commands' );
-		}
+			Debug( 'FOUND TAB COMMANDS' );
 
 		if ( result['pcc'] )
-		{
 			window.TerminalState.change({
 				pcc : result['pcc'],
 			}, 'CHANGE_PCC');
-		}
 	}
-
-	debug( txt )
-	{
-		new __WEBPACK_IMPORTED_MODULE_0_noty___default.a({
-			text	: `DEBUG : ${txt}`,
-			layout 	: 'bottomRight',
-			timeout : 1000
-			// theme	: 'bootstrap-v4',
-			// type 	: 'info'
-		}).show();
-	}
-
+	
 	parseError(e)
 	{
-		// console.log('errrrrrr');
 		this.spinner.end();
-
-		// this.terminal.resume();
-		// alert(' something went wrong ');
-
 		console.error(' error', arguments );
 		this.terminal.error( String(e) );
 	}
@@ -13045,26 +13006,28 @@ class Output
 	{
 		this.terminal		= terminal;
 
-		this.context 		= '';
+		this.context 		= document.createElement('div');
 		this.emptyLines 	= 0;
 		this.outputStrings	= '';
 		this.cmdLineOffset 	= '';
+
+		this.terminal.cmd().after( this.context );
 	}
 
-	removeEmptyLine()
-	{
-		if ( this.emptyLines > 0 )
-			this.emptyLines--;
-
-		return this;
-	}
+	// removeEmptyLine()
+	// {
+	// 	if ( this.emptyLines > 0 )
+	// 		this.emptyLines--;
+	//
+	// 	return this;
+	// }
 
 	removeEmptyLines()
 	{
 		if ( this.context )
 		{
-			this.context.innerHTML = '';
-			this.emptyLines = 0;
+			this.context.innerHTML	= '';
+			this.emptyLines 		= 0;
 		}
 
 		return this;
@@ -13089,25 +13052,23 @@ class Output
 	printOutput()
 	{
 		this.cmdLineOffset 	= this.terminal.cmd()[0].offsetTop;
-
-		// const output = this.outputStrings;
-
 		this.terminal.echo( this.outputStrings );
 
 		// this.terminal.echo( this.outputStrings, {
-		//
 		// 	finalize 	: function ( div ) {
 		// 		div[0].innerHTML = $.terminal.escape_formatting( output );
 		// 	}
-		//
 		// } );
 		return this;
 	}
 
-	reduceEmpty()
+	reduceEmpty( lineCount )
 	{
 		if (this.emptyLines > 0)
-			this.emptyLines -= this.getOutputLength();
+			this.emptyLines -= lineCount || this.getOutputLength();
+
+		if ( this.emptyLines < 0 )
+			this.emptyLines = 0;
 
 		return this;
 	}
@@ -13117,13 +13078,7 @@ class Output
 		if (this.emptyLines <= 0 )
 			return this;
 
-		const appended = !!this.context;
-
-		this.context 			= this.context || document.createElement('div');
-		this.context.innerHTML 	= new Array( this.emptyLines ).fill('<div><span>&nbsp;</span></div>').join('');
-
-		if ( !appended )
-			this.terminal.cmd().after( this.context );
+		this.context.innerHTML = new Array( this.emptyLines ).fill('<div><span>&nbsp;</span></div>').join('');
 
 		return this;
 	}
@@ -13257,9 +13212,7 @@ class Session
 			gds				: this.settings['gds'],
 			language		: window.TerminalState.state.language,
 
-			terminalData	: {
-				rId	: window.apiData['terminalData']
-			}
+			terminalData	: window.apiData['terminalData']
 		};
 
 		return this.makeRequest( 'runCommand', rData );

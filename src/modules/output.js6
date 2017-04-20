@@ -8,26 +8,28 @@ export default class Output
 	{
 		this.terminal		= terminal;
 
-		this.context 		= '';
+		this.context 		= document.createElement('div');
 		this.emptyLines 	= 0;
 		this.outputStrings	= '';
 		this.cmdLineOffset 	= '';
+
+		this.terminal.cmd().after( this.context );
 	}
 
-	removeEmptyLine()
-	{
-		if ( this.emptyLines > 0 )
-			this.emptyLines--;
-
-		return this;
-	}
+	// removeEmptyLine()
+	// {
+	// 	if ( this.emptyLines > 0 )
+	// 		this.emptyLines--;
+	//
+	// 	return this;
+	// }
 
 	removeEmptyLines()
 	{
 		if ( this.context )
 		{
-			this.context.innerHTML = '';
-			this.emptyLines = 0;
+			this.context.innerHTML	= '';
+			this.emptyLines 		= 0;
 		}
 
 		return this;
@@ -52,7 +54,6 @@ export default class Output
 	printOutput()
 	{
 		this.cmdLineOffset 	= this.terminal.cmd()[0].offsetTop;
-
 		this.terminal.echo( this.outputStrings );
 
 		// this.terminal.echo( this.outputStrings, {
@@ -63,10 +64,13 @@ export default class Output
 		return this;
 	}
 
-	reduceEmpty()
+	reduceEmpty( lineCount )
 	{
 		if (this.emptyLines > 0)
-			this.emptyLines -= this.getOutputLength();
+			this.emptyLines -= lineCount || this.getOutputLength();
+
+		if ( this.emptyLines < 0 )
+			this.emptyLines = 0;
 
 		return this;
 	}
@@ -76,13 +80,7 @@ export default class Output
 		if (this.emptyLines <= 0 )
 			return this;
 
-		const appended = !!this.context;
-
-		this.context 			= this.context || document.createElement('div');
-		this.context.innerHTML 	= new Array( this.emptyLines ).fill('<div><span>&nbsp;</span></div>').join('');
-
-		if ( !appended )
-			this.terminal.cmd().after( this.context );
+		this.context.innerHTML = new Array( this.emptyLines ).fill('<div><span>&nbsp;</span></div>').join('');
 
 		return this;
 	}

@@ -43,9 +43,7 @@ export default class Session
 			gds				: this.settings['gds'],
 			language		: window.TerminalState.state.language,
 
-			terminalData	: {
-				rId	: window.apiData['terminalData']
-			}
+			terminalData	: window.apiData['terminalData']
 		};
 
 		return this.makeRequest( 'runCommand', rData );
