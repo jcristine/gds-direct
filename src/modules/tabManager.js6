@@ -6,10 +6,11 @@ export default class TabManager
 		this.list	= [];
 	}
 
-	reset( list = [])
+	reset( list = [], output )
 	{
 		this.list 	= list;
 		this.index 	= 0;
+		this.output = output;
 	}
 
 	next()
@@ -24,5 +25,23 @@ export default class TabManager
 	{
 		console.log( this.list );
 		return this.list[ this.index ] || false;
+	}
+
+	formatOutput( cmd )
+	{
+		return this.output.replace(cmd, `[[;red;blue]${cmd}]`);
+	}
+
+	run()
+	{
+		const cmd = this.getCommand();
+
+		if (cmd)
+		{
+			this.next();
+			return [ cmd, this.formatOutput( cmd ) ];
+		}
+
+		return [];
 	}
 }

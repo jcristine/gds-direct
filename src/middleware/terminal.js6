@@ -141,14 +141,13 @@ export default class TerminalPlugin
 
 				'TAB' : () =>
 				{
-					const cmd = this.tabCommands.getCommand();
+					const [cmd, formatted] = this.tabCommands.run();
 
 					if (cmd)
 					{
 						this.terminal.cmd().set( cmd );
-						this.tabCommands.next();
+						this.terminal.update(this.terminal.last_index(), formatted );
 					}
-
 				}
 			},
 
@@ -281,7 +280,7 @@ export default class TerminalPlugin
 		if ( result['tabCommands'] && result['tabCommands'].length )
 			Debug( 'FOUND TAB COMMANDS' );
 
-		this.tabCommands.reset( result['tabCommands'] );
+		this.tabCommands.reset( result['tabCommands'], result['output'] );
 
 		if ( result['pcc'] )
 			window.TerminalState.change({pcc : result['pcc']}, 'CHANGE_PCC');

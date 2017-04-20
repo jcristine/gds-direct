@@ -16,14 +16,6 @@ export default class Output
 		this.terminal.cmd().after( this.context );
 	}
 
-	// removeEmptyLine()
-	// {
-	// 	if ( this.emptyLines > 0 )
-	// 		this.emptyLines--;
-	//
-	// 	return this;
-	// }
-
 	removeEmptyLines()
 	{
 		if ( this.context )
@@ -54,7 +46,9 @@ export default class Output
 	printOutput()
 	{
 		this.cmdLineOffset 	= this.terminal.cmd()[0].offsetTop;
-		this.terminal.echo( this.outputStrings );
+
+		// this.terminal.echo( this.outputStrings, {raw : 1});
+		this.terminal.echo( this.outputStrings);
 
 		// this.terminal.echo( this.outputStrings, {
 		// 	finalize 	: function ( div ) {

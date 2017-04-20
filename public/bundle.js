@@ -12849,14 +12849,13 @@ class TerminalPlugin
 
 				'TAB' : () =>
 				{
-					const cmd = this.tabCommands.getCommand();
+					const [cmd, formatted] = this.tabCommands.run();
 
 					if (cmd)
 					{
 						this.terminal.cmd().set( cmd );
-						this.tabCommands.next();
+						this.terminal.update(this.terminal.last_index(), formatted );
 					}
-
 				}
 			},
 
@@ -12989,7 +12988,7 @@ class TerminalPlugin
 		if ( result['tabCommands'] && result['tabCommands'].length )
 			Debug( 'FOUND TAB COMMANDS' );
 
-		this.tabCommands.reset( result['tabCommands'] );
+		this.tabCommands.reset( result['tabCommands'], result['output'] );
 
 		if ( result['pcc'] )
 			window.TerminalState.change({pcc : result['pcc']}, 'CHANGE_PCC');
@@ -13029,14 +13028,6 @@ class Output
 		this.terminal.cmd().after( this.context );
 	}
 
-	// removeEmptyLine()
-	// {
-	// 	if ( this.emptyLines > 0 )
-	// 		this.emptyLines--;
-	//
-	// 	return this;
-	// }
-
 	removeEmptyLines()
 	{
 		if ( this.context )
@@ -13067,7 +13058,9 @@ class Output
 	printOutput()
 	{
 		this.cmdLineOffset 	= this.terminal.cmd()[0].offsetTop;
-		this.terminal.echo( this.outputStrings );
+
+		// this.terminal.echo( this.outputStrings, {raw : 1});
+		this.terminal.echo( this.outputStrings);
 
 		// this.terminal.echo( this.outputStrings, {
 		// 	finalize 	: function ( div ) {
@@ -13344,10 +13337,11 @@ class TabManager
 		this.list	= [];
 	}
 
-	reset( list = [])
+	reset( list = [], output )
 	{
 		this.list 	= list;
 		this.index 	= 0;
+		this.output = output;
 	}
 
 	next()
@@ -13362,6 +13356,24 @@ class TabManager
 	{
 		console.log( this.list );
 		return this.list[ this.index ] || false;
+	}
+
+	formatOutput( cmd )
+	{
+		return this.output.replace(cmd, `[[;red;blue]${cmd}]`);
+	}
+
+	run()
+	{
+		const cmd = this.getCommand();
+
+		if (cmd)
+		{
+			this.next();
+			return [ cmd, this.formatOutput( cmd ) ];
+		}
+
+		return [];
 	}
 }
 /* harmony export (immutable) */ __webpack_exports__["a"] = TabManager;
