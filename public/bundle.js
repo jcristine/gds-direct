@@ -12975,9 +12975,12 @@ class TerminalPlugin
 				this.terminal.echo( output );
 			} else
 			{
-				Debug( 'IN DEVELOPMENT!!!!!!!!!!!' );
+				// Debug( 'IN DEVELOPMENT!!!!!!!!!!!' );
 
 				const clearScreen = result['clearScreen'] && window.TerminalState.getMatrix().rows !== 0;
+
+				if (clearScreen)
+					Debug( 'DEBUG: CLEAR SCREEN' );
 
 				this.outputLiner
 					.prepare( result['output'], clearScreen );
