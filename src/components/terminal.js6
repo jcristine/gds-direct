@@ -2,7 +2,7 @@
 
 import TerminalPlugin from '../middleware/terminal';
 
-const calculateHeight =  terminal => (terminal.find('.cursor').height() * terminal.rows() );
+const calculateHeight = terminal => (terminal.find('.cursor').height() * terminal.rows() );
 
 export default class Terminal {
 
@@ -56,26 +56,26 @@ export default class Terminal {
 
 		this.context.appendChild( this.bufferDiv );
 	}
-
-	insertBuffer()
-	{
-		if ( !this.buffer )
-			return false;
-
-		this.buffer['buffering'].forEach( (record) => {
-			this.plugin.terminal.echo(record.request, { finalize : function ( div ) {
-				div[0].className = 'command';
-			}});
-
-			this.plugin.terminal.echo(record.output);
-		});
-	}
+	//
+	// insertBuffer()
+	// {
+	// 	if ( !this.buffer )
+	// 		return false;
+	//
+	// 	this.buffer['buffering'].forEach( (record) => {
+	// 		this.plugin.terminal.echo(record.request, { finalize : function ( div ) {
+	// 			div[0].className = 'command';
+	// 		}});
+	//
+	// 		this.plugin.terminal.echo(record.output);
+	// 	});
+	// }
 	
-	destroy()
-	{
-		if (this.plugin)
-			this.plugin.getPlugin().destroy();
-	}
+	// destroy()
+	// {
+	// 	if (this.plugin)
+	// 		this.plugin.getPlugin().destroy();
+	// }
 
 	reattach( parentNode )
 	{
@@ -88,8 +88,8 @@ export default class Terminal {
 
 		if (this.plugin)
 		{
-			this.plugin.getPlugin().resize().scroll_to_bottom();
 			this.context.style.height = calculateHeight(this.plugin.terminal) + 'px';
+			this.plugin.resize();
 		} else
 		{
 			this.context.scrollTop = this.context.scrollHeight;

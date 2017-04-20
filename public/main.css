@@ -1469,6 +1469,9 @@ fieldset[disabled] #rootTerminal .btn-warning.active {
   color: #fff;
   font-weight: bold;
 }
+.terminal-wrap-custom .cmd + div {
+  background: red;
+}
 .terminal-wrap-custom .terminal-wrapper {
   height: auto;
 }

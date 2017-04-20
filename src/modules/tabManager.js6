@@ -11,6 +11,11 @@ export default class TabManager
 		this.list 	= list;
 		this.index 	= 0;
 		this.output = output;
+
+		if (list.length)
+		{
+			this.list.push('');
+		}
 	}
 
 	next()
@@ -23,23 +28,22 @@ export default class TabManager
 
 	getCommand()
 	{
-		console.log( this.list );
-		return this.list[ this.index ] || false;
+		return this.list[ this.index ];
 	}
 
 	formatOutput( cmd )
 	{
-		return this.output.replace(cmd, `[[;red;blue]${cmd}]`);
+		return cmd ? this.output.replace(cmd, `[[;red;blue]${cmd}]`) : this.output;
 	}
 
-	run()
+	run( replace )
 	{
 		const cmd = this.getCommand();
 
-		if (cmd)
+		if ( cmd !== undefined )
 		{
+			replace([ cmd, this.formatOutput( cmd ) ]);
 			this.next();
-			return [ cmd, this.formatOutput( cmd ) ];
 		}
 
 		return [];

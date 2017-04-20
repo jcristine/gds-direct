@@ -14,26 +14,43 @@ export default class Output
 		this.cmdLineOffset 	= '';
 
 		this.terminal.cmd().after( this.context );
+
+		this.clearScreen 	= false;
 	}
 
-	removeEmptyLines()
+	prepare( output, clearScreen = false )
 	{
-		if ( this.context )
-		{
-			this.context.innerHTML	= '';
-			this.emptyLines 		= 0;
-		}
+		this.outputStrings 		= output;
+		this.clearScreen		= clearScreen;
 
-		return this;
+		// console.log( clearScreen );
+		// console.log( this.emptyLines );
+		// console.log( this.getOutputLength() );
+
+		const noClearScreen	= () => this.emptyLines > 0 ? this.emptyLines - this.getOutputLength() : 0 ;
+		const isClearScreen = () => this.terminal.rows() - this.getOutputLength() - 1;
+
+		this.emptyLines 	= clearScreen ? isClearScreen() : noClearScreen();
+
+		if (this.emptyLines < 0 )
+			this.emptyLines = 0;
+
+		// console.log('?????', this.emptyLines );
+
+		this.printOutput().attachEmpty().scroll();
 	}
 
-	countEmptyLines()
+	reset()
 	{
-		const outputCount 	= this.getOutputLength();
-		const rowsCount 	= this.terminal.rows();
+		this.prepare( this.outputStrings, this.clearScreen );
+	}
 
-		if (outputCount < rowsCount)
-			this.emptyLines = rowsCount - outputCount - 1; // screen rows - output - cmdLine;
+	attachEmpty()
+	{
+		this.context.innerHTML = '';
+
+		if (this.emptyLines > 0 )
+			this.context.innerHTML = new Array( this.emptyLines ).fill('<div><span>&nbsp;</span></div>').join('');
 
 		return this;
 	}
@@ -46,42 +63,9 @@ export default class Output
 	printOutput()
 	{
 		this.cmdLineOffset 	= this.terminal.cmd()[0].offsetTop;
-
 		// this.terminal.echo( this.outputStrings, {raw : 1});
 		this.terminal.echo( this.outputStrings);
-
-		// this.terminal.echo( this.outputStrings, {
-		// 	finalize 	: function ( div ) {
-		// 		div[0].innerHTML = $.terminal.escape_formatting( output );
-		// 	}
-		// } );
 		return this;
-	}
-
-	reduceEmpty( lineCount )
-	{
-		if (this.emptyLines > 0)
-			this.emptyLines -= lineCount || this.getOutputLength();
-
-		if ( this.emptyLines < 0 )
-			this.emptyLines = 0;
-
-		return this;
-	}
-
-	attachEmpty()
-	{
-		if (this.emptyLines <= 0 )
-			return this;
-
-		this.context.innerHTML = new Array( this.emptyLines ).fill('<div><span>&nbsp;</span></div>').join('');
-
-		return this;
-	}
-
-	prepare( output )
-	{
-		this.outputStrings 	= output;
 	}
 
 	scroll()
@@ -92,6 +76,47 @@ export default class Output
 		} else
 		{
 			this.terminal.scroll_to_bottom(); // to first line, to desired line //TEST
+			// this.terminal[0].scrollTop = this.terminal[0].scrollHeight;
 		}
 	}
+
+	// addEmptyLines()
+	// {
+	// 	const emptyLines 		= this.countEmptyLines();
+	// 	this.context.innerHTML 	= emptyHtml( emptyLines );
+	//
+	// 	return this;
+	// }
+
+	// countEmptyLines()
+	// {
+	// 	const outputCount 		= this.getOutputLength();
+	// 	const rowsCount 		= this.terminal.rows();
+	//
+	// 	return this.emptyLines = rowsCount - outputCount - 1;
+	// }
+
+	// removeEmptyLines()
+	// {
+	// 	if ( this.context )
+	// 	{
+	// 		this.context.innerHTML	= '';
+	// 		this.emptyLines 		= 0;
+	// 	}
+	//
+	// 	return this;
+	// }
+
+	// reduceEmpty( lineCount )
+	// {
+	// 	if (this.emptyLines > 0)
+	// 		this.emptyLines -= lineCount || this.getOutputLength();
+	//
+	// 	if ( this.emptyLines < 0 )
+	// 		this.emptyLines = 0;
+	//
+	// 	return this;
+	// }
+
+
 }

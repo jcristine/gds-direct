@@ -19,9 +19,9 @@ const Debug = txt => {
 	new Noty({
 		text	: `DEBUG : ${txt}`,
 		layout 	: 'bottomRight',
-		timeout : 1000
-		// theme	: 'bootstrap-v4',
-		// type 	: 'info'
+		timeout : 1000,
+		theme	: 'bootstrap-v4',
+		type 	: 'info'
 	}).show();
 };
 
@@ -47,9 +47,9 @@ export default class TerminalPlugin
 
 		this.pagination = new Pagination( this.terminal );
 
-		this.terminal 	= this.init();
-		this.spinner 	= new Spinner( this.terminal );
+		this.terminal 		= this.init();
 
+		this.spinner 		= new Spinner( this.terminal );
 		this.outputLiner 	= new OutputLiner( this.terminal );
 		this.tabCommands	= new TabManager();
 	}
@@ -118,9 +118,29 @@ export default class TerminalPlugin
 		window.TerminalState.purgeScreens();
 	}
 
+	tabPressed()
+	{
+		const replace = ( terminal ) => {
+
+			return ( [cmd, formatted] ) => {
+				terminal.cmd().set( cmd );
+				terminal.update( terminal.last_index(), formatted );
+			}
+
+		};
+
+		this.tabCommands.run( replace(this.terminal) );
+	}
+
+	resize()
+	{
+		this.terminal.resize();
+		this.outputLiner.reset();
+	}
+
 	init()
 	{
-		this.terminal = $(this.context).terminal( this.commandParser.bind(this), {
+		return $(this.context).terminal( this.commandParser.bind(this), {
 			greetings		: '',
 			name			: this.name,
 			prompt			: '>',
@@ -133,22 +153,8 @@ export default class TerminalPlugin
 			onTerminalChange: this.changeActiveTerm,
 
 			keymap			: {
-
-				'CTRL+S' : () =>
-				{
-					this.clearBuf()
-				},
-
-				'TAB' : () =>
-				{
-					const [cmd, formatted] = this.tabCommands.run();
-
-					if (cmd)
-					{
-						this.terminal.cmd().set( cmd );
-						this.terminal.update(this.terminal.last_index(), formatted );
-					}
-				}
+				'CTRL+S': () => this.clearBuf(),
+				'TAB'	: () => this.tabPressed()
 			},
 
 			exceptionHandler( err )
@@ -156,8 +162,6 @@ export default class TerminalPlugin
 				console.warn('exc', err)
 			}
 		});
-
-		return this.terminal;
 	}
 
 	switchArea( command )
@@ -175,7 +179,10 @@ export default class TerminalPlugin
 	commandParser( command, terminal ) //pressed enter
 	{
 		if ( !command || command === '' )
+		{
+			this.outputLiner.prepare( '' );
 			return false;
+		}
 
 		if ( this.allowManualPaging )
 		{
@@ -203,7 +210,7 @@ export default class TerminalPlugin
 
 		this.spinner.start();
 
-		this.outputLiner.reduceEmpty( 1 ).attachEmpty(); // loader
+		this.outputLiner.prepare( '' );
 		this.animation = true;
 
 		this.sendRequest(command);
@@ -251,7 +258,7 @@ export default class TerminalPlugin
 
 		if ( result['output'] )
 		{
-			if ( this.allowManualPaging )
+			if ( this.allowManualPaging ) // sabre
 			{
 				const output = this.pagination
 					.bindOutput( result['output'], this.terminal.rows() - 1, this.terminal.cols() )
@@ -260,17 +267,12 @@ export default class TerminalPlugin
 				this.terminal.echo( output );
 			} else
 			{
-				this.outputLiner.prepare( result['output'] );
+				Debug( 'IN DEVELOPMENT!!!!!!!!!!!' );
 
-				if ( result['clearScreen'] && window.TerminalState.getMatrix().rows !== 0 ) // if 1 row of terminals don't
-				{
-					Debug( 'Clear Screen is On' );
-					this.outputLiner.removeEmptyLines().printOutput().countEmptyLines().attachEmpty().scroll();
-				}
-				else
-				{
-					this.outputLiner.reduceEmpty().attachEmpty().printOutput();
-				}
+				const clearScreen = result['clearScreen'] && window.TerminalState.getMatrix().rows !== 0;
+
+				this.outputLiner
+					.prepare( result['output'], clearScreen );
 			}
 		}
 

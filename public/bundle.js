@@ -12315,7 +12315,7 @@ class TextSize
 
 
 
-const calculateHeight =  terminal => (terminal.find('.cursor').height() * terminal.rows() );
+const calculateHeight = terminal => (terminal.find('.cursor').height() * terminal.rows() );
 
 class Terminal {
 
@@ -12369,26 +12369,26 @@ class Terminal {
 
 		this.context.appendChild( this.bufferDiv );
 	}
-
-	insertBuffer()
-	{
-		if ( !this.buffer )
-			return false;
-
-		this.buffer['buffering'].forEach( (record) => {
-			this.plugin.terminal.echo(record.request, { finalize : function ( div ) {
-				div[0].className = 'command';
-			}});
-
-			this.plugin.terminal.echo(record.output);
-		});
-	}
+	//
+	// insertBuffer()
+	// {
+	// 	if ( !this.buffer )
+	// 		return false;
+	//
+	// 	this.buffer['buffering'].forEach( (record) => {
+	// 		this.plugin.terminal.echo(record.request, { finalize : function ( div ) {
+	// 			div[0].className = 'command';
+	// 		}});
+	//
+	// 		this.plugin.terminal.echo(record.output);
+	// 	});
+	// }
 	
-	destroy()
-	{
-		if (this.plugin)
-			this.plugin.getPlugin().destroy();
-	}
+	// destroy()
+	// {
+	// 	if (this.plugin)
+	// 		this.plugin.getPlugin().destroy();
+	// }
 
 	reattach( parentNode )
 	{
@@ -12401,8 +12401,8 @@ class Terminal {
 
 		if (this.plugin)
 		{
-			this.plugin.getPlugin().resize().scroll_to_bottom();
 			this.context.style.height = calculateHeight(this.plugin.terminal) + 'px';
+			this.plugin.resize();
 		} else
 		{
 			this.context.scrollTop = this.context.scrollHeight;
@@ -12727,9 +12727,9 @@ const Debug = txt => {
 	new __WEBPACK_IMPORTED_MODULE_0_noty___default.a({
 		text	: `DEBUG : ${txt}`,
 		layout 	: 'bottomRight',
-		timeout : 1000
-		// theme	: 'bootstrap-v4',
-		// type 	: 'info'
+		timeout : 1000,
+		theme	: 'bootstrap-v4',
+		type 	: 'info'
 	}).show();
 };
 
@@ -12755,9 +12755,9 @@ class TerminalPlugin
 
 		this.pagination = new __WEBPACK_IMPORTED_MODULE_2__modules_pagination__["a" /* default */]( this.terminal );
 
-		this.terminal 	= this.init();
-		this.spinner 	= new __WEBPACK_IMPORTED_MODULE_4__modules_spinner__["a" /* default */]( this.terminal );
+		this.terminal 		= this.init();
 
+		this.spinner 		= new __WEBPACK_IMPORTED_MODULE_4__modules_spinner__["a" /* default */]( this.terminal );
 		this.outputLiner 	= new __WEBPACK_IMPORTED_MODULE_6__modules_output__["a" /* default */]( this.terminal );
 		this.tabCommands	= new __WEBPACK_IMPORTED_MODULE_7__modules_tabManager__["a" /* default */]();
 	}
@@ -12826,9 +12826,29 @@ class TerminalPlugin
 		window.TerminalState.purgeScreens();
 	}
 
+	tabPressed()
+	{
+		const replace = ( terminal ) => {
+
+			return ( [cmd, formatted] ) => {
+				terminal.cmd().set( cmd );
+				terminal.update( terminal.last_index(), formatted );
+			}
+
+		};
+
+		this.tabCommands.run( replace(this.terminal) );
+	}
+
+	resize()
+	{
+		this.terminal.resize();
+		this.outputLiner.reset();
+	}
+
 	init()
 	{
-		this.terminal = $(this.context).terminal( this.commandParser.bind(this), {
+		return $(this.context).terminal( this.commandParser.bind(this), {
 			greetings		: '',
 			name			: this.name,
 			prompt			: '>',
@@ -12841,22 +12861,8 @@ class TerminalPlugin
 			onTerminalChange: this.changeActiveTerm,
 
 			keymap			: {
-
-				'CTRL+S' : () =>
-				{
-					this.clearBuf()
-				},
-
-				'TAB' : () =>
-				{
-					const [cmd, formatted] = this.tabCommands.run();
-
-					if (cmd)
-					{
-						this.terminal.cmd().set( cmd );
-						this.terminal.update(this.terminal.last_index(), formatted );
-					}
-				}
+				'CTRL+S': () => this.clearBuf(),
+				'TAB'	: () => this.tabPressed()
 			},
 
 			exceptionHandler( err )
@@ -12864,8 +12870,6 @@ class TerminalPlugin
 				console.warn('exc', err)
 			}
 		});
-
-		return this.terminal;
 	}
 
 	switchArea( command )
@@ -12883,7 +12887,10 @@ class TerminalPlugin
 	commandParser( command, terminal ) //pressed enter
 	{
 		if ( !command || command === '' )
+		{
+			this.outputLiner.prepare( '' );
 			return false;
+		}
 
 		if ( this.allowManualPaging )
 		{
@@ -12911,7 +12918,7 @@ class TerminalPlugin
 
 		this.spinner.start();
 
-		this.outputLiner.reduceEmpty( 1 ).attachEmpty(); // loader
+		this.outputLiner.prepare( '' );
 		this.animation = true;
 
 		this.sendRequest(command);
@@ -12959,7 +12966,7 @@ class TerminalPlugin
 
 		if ( result['output'] )
 		{
-			if ( this.allowManualPaging )
+			if ( this.allowManualPaging ) // sabre
 			{
 				const output = this.pagination
 					.bindOutput( result['output'], this.terminal.rows() - 1, this.terminal.cols() )
@@ -12968,17 +12975,12 @@ class TerminalPlugin
 				this.terminal.echo( output );
 			} else
 			{
-				this.outputLiner.prepare( result['output'] );
+				Debug( 'IN DEVELOPMENT!!!!!!!!!!!' );
 
-				if ( result['clearScreen'] && window.TerminalState.getMatrix().rows !== 0 ) // if 1 row of terminals don't
-				{
-					Debug( 'Clear Screen is On' );
-					this.outputLiner.removeEmptyLines().printOutput().countEmptyLines().attachEmpty().scroll();
-				}
-				else
-				{
-					this.outputLiner.reduceEmpty().attachEmpty().printOutput();
-				}
+				const clearScreen = result['clearScreen'] && window.TerminalState.getMatrix().rows !== 0;
+
+				this.outputLiner
+					.prepare( result['output'], clearScreen );
 			}
 		}
 
@@ -13026,26 +13028,43 @@ class Output
 		this.cmdLineOffset 	= '';
 
 		this.terminal.cmd().after( this.context );
+
+		this.clearScreen 	= false;
 	}
 
-	removeEmptyLines()
+	prepare( output, clearScreen = false )
 	{
-		if ( this.context )
-		{
-			this.context.innerHTML	= '';
-			this.emptyLines 		= 0;
-		}
+		this.outputStrings 		= output;
+		this.clearScreen		= clearScreen;
 
-		return this;
+		// console.log( clearScreen );
+		// console.log( this.emptyLines );
+		// console.log( this.getOutputLength() );
+
+		const noClearScreen	= () => this.emptyLines > 0 ? this.emptyLines - this.getOutputLength() : 0 ;
+		const isClearScreen = () => this.terminal.rows() - this.getOutputLength() - 1;
+
+		this.emptyLines 	= clearScreen ? isClearScreen() : noClearScreen();
+
+		if (this.emptyLines < 0 )
+			this.emptyLines = 0;
+
+		// console.log('?????', this.emptyLines );
+
+		this.printOutput().attachEmpty().scroll();
 	}
 
-	countEmptyLines()
+	reset()
 	{
-		const outputCount 	= this.getOutputLength();
-		const rowsCount 	= this.terminal.rows();
+		this.prepare( this.outputStrings, this.clearScreen );
+	}
 
-		if (outputCount < rowsCount)
-			this.emptyLines = rowsCount - outputCount - 1; // screen rows - output - cmdLine;
+	attachEmpty()
+	{
+		this.context.innerHTML = '';
+
+		if (this.emptyLines > 0 )
+			this.context.innerHTML = new Array( this.emptyLines ).fill('<div><span>&nbsp;</span></div>').join('');
 
 		return this;
 	}
@@ -13058,42 +13077,9 @@ class Output
 	printOutput()
 	{
 		this.cmdLineOffset 	= this.terminal.cmd()[0].offsetTop;
-
 		// this.terminal.echo( this.outputStrings, {raw : 1});
 		this.terminal.echo( this.outputStrings);
-
-		// this.terminal.echo( this.outputStrings, {
-		// 	finalize 	: function ( div ) {
-		// 		div[0].innerHTML = $.terminal.escape_formatting( output );
-		// 	}
-		// } );
 		return this;
-	}
-
-	reduceEmpty( lineCount )
-	{
-		if (this.emptyLines > 0)
-			this.emptyLines -= lineCount || this.getOutputLength();
-
-		if ( this.emptyLines < 0 )
-			this.emptyLines = 0;
-
-		return this;
-	}
-
-	attachEmpty()
-	{
-		if (this.emptyLines <= 0 )
-			return this;
-
-		this.context.innerHTML = new Array( this.emptyLines ).fill('<div><span>&nbsp;</span></div>').join('');
-
-		return this;
-	}
-
-	prepare( output )
-	{
-		this.outputStrings 	= output;
 	}
 
 	scroll()
@@ -13104,8 +13090,49 @@ class Output
 		} else
 		{
 			this.terminal.scroll_to_bottom(); // to first line, to desired line //TEST
+			// this.terminal[0].scrollTop = this.terminal[0].scrollHeight;
 		}
 	}
+
+	// addEmptyLines()
+	// {
+	// 	const emptyLines 		= this.countEmptyLines();
+	// 	this.context.innerHTML 	= emptyHtml( emptyLines );
+	//
+	// 	return this;
+	// }
+
+	// countEmptyLines()
+	// {
+	// 	const outputCount 		= this.getOutputLength();
+	// 	const rowsCount 		= this.terminal.rows();
+	//
+	// 	return this.emptyLines = rowsCount - outputCount - 1;
+	// }
+
+	// removeEmptyLines()
+	// {
+	// 	if ( this.context )
+	// 	{
+	// 		this.context.innerHTML	= '';
+	// 		this.emptyLines 		= 0;
+	// 	}
+	//
+	// 	return this;
+	// }
+
+	// reduceEmpty( lineCount )
+	// {
+	// 	if (this.emptyLines > 0)
+	// 		this.emptyLines -= lineCount || this.getOutputLength();
+	//
+	// 	if ( this.emptyLines < 0 )
+	// 		this.emptyLines = 0;
+	//
+	// 	return this;
+	// }
+
+
 }
 /* harmony export (immutable) */ __webpack_exports__["a"] = Output;
 
@@ -13342,6 +13369,11 @@ class TabManager
 		this.list 	= list;
 		this.index 	= 0;
 		this.output = output;
+
+		if (list.length)
+		{
+			this.list.push('');
+		}
 	}
 
 	next()
@@ -13354,23 +13386,22 @@ class TabManager
 
 	getCommand()
 	{
-		console.log( this.list );
-		return this.list[ this.index ] || false;
+		return this.list[ this.index ];
 	}
 
 	formatOutput( cmd )
 	{
-		return this.output.replace(cmd, `[[;red;blue]${cmd}]`);
+		return cmd ? this.output.replace(cmd, `[[;red;blue]${cmd}]`) : this.output;
 	}
 
-	run()
+	run( replace )
 	{
 		const cmd = this.getCommand();
 
-		if (cmd)
+		if ( cmd !== undefined )
 		{
+			replace([ cmd, this.formatOutput( cmd ) ]);
 			this.next();
-			return [ cmd, this.formatOutput( cmd ) ];
 		}
 
 		return [];
