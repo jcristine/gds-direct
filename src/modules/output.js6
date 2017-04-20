@@ -54,6 +54,12 @@ export default class Output
 		this.cmdLineOffset 	= this.terminal.cmd()[0].offsetTop;
 
 		this.terminal.echo( this.outputStrings );
+
+		// this.terminal.echo( this.outputStrings, {
+		// 	finalize 	: function ( div ) {
+		// 		div[0].innerHTML = $.terminal.escape_formatting( output );
+		// 	}
+		// } );
 		return this;
 	}
 

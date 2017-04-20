@@ -846,15 +846,13 @@ class TerminalState
 		Gds['sabre']['session'] 	= this.areaList.indexOf( apiData.settings['gds']['sabre']['currentArea'] );
 
 		this.state = {
-			gds 			: apiData.settings.common.currentGds || 'apollo',
+			gds 			: apiData.settings.common['currentGds'] || 'apollo',
 			sessionIndex	: Gds['apollo']['session'],
 			matrix			: retrievedObject,
 			fontSize		: 1,
 			language		: 'APOLLO',
 			activeTerminal	: ''
 		};
-
-		// this.state.sessionIndex = this.getArea();
 	}
 
 	getMatrix()
@@ -869,20 +867,9 @@ class TerminalState
 
 	getSessionAreaMap()
 	{
-		// const key = this.state.language === 'APOLLO' ? 'S': '¤';
 		const key = this.state.gds === 'apollo' ? 'S': '¤';
-		return this.areaList.map( ( char ) => key + char );
-		// return this.state.language === 'APOLLO' ? ['SA', 'SB', 'SC', 'SD', 'SE' ] : ['¤A', '¤B', '¤C', '¤D', '¤E'];
+		return this.areaList.map( char => key + char );
 	}
-
-	// getArea()
-	// {
-	// 	const map 			= this.getSessionAreaMap();
-	// 	const specialChar 	= this.state.language === 'APOLLO' ? 'S' : '¤';
-	// 	const index 		= map.indexOf( specialChar + apiData['settings']['gds']['apollo']['currentArea'] );
-	//
-	// 	return index === -1 ? 0 : index;
-	// }
 
 	getBuffer( gds, terminalId )
 	{
@@ -920,12 +907,7 @@ class TerminalState
 
 			case 'CHANGE_SESSION_BY_MENU' :
 				let command = this.getSessionAreaMap()[params.sessionIndex];
-
-				// console.log(this.state.sessionIndex ) ;
-				// console.log( this.state.activeTerminal.name() );
-
 				this.state.activeTerminal.exec( command );
-
 				return false;
 			break;
 
@@ -11693,6 +11675,7 @@ const TerminalCellMatrix = (function()
 	function makeCell( row, rowCount )
 	{
 		let cell 	= document.createElement('td');
+		cell.className = 'v-middle';
 		let height	= termTableWrap.clientHeight / ( parseInt(rowCount) + 1 );
 
 		row.appendChild( cell );
@@ -12336,6 +12319,9 @@ class TextSize
 
 
 
+const calculateHeight =  terminal => (terminal.find('.cursor').height() * terminal.rows() );
+
+
 class Terminal {
 
 	constructor( params )
@@ -12344,47 +12330,34 @@ class Terminal {
 		this.settings 				= params;
 		this.context 				= document.createElement('div');
 		this.context.className 		= 'terminal';
-		// this.buffer 				= false;
-
-		// let offsets = this.settings.parentContext.getBoundingClientRect();
 
 		this.context.style.height	= this.settings.parentContext.clientHeight + 'px';
 		this.context.style.width	= this.settings.parentContext.clientWidth + 'px';
 
-		// console.log( this.settings.parentContext.clientHeight );
-		// console.log( this.settings.parentContext.clientWidth );
-		// console.log( this.settings.parentContext.getClientRects() );
-
 		const backEndId = parseInt( this.settings['name'] ) + 1;
 		this.buffer		= window.TerminalState.getBuffer(params.gds, backEndId );
 
-		// this.context.innerHTML = '>';
-
 		this.context.onclick = () => {
 			if (!this.plugin)
-			{
 				this.init();
-			}
 		};
-
-		this.settings.parentContext.appendChild( this.context );
 
 		if ( this.buffer )
 		{
 			const buffered = this.buffer['buffering'].map( (record) => {
-				return `<div class="command">${record.request}</div> <pre style="white-space: pre-line">${record.output}</pre>`;
+				return `<div class="command">${record.request}</div> <pre zstyle="white-space: pre-line">${record.output}</pre>`;
 			}).join('');
 
-			this.context.innerHTML = `<div class="terminal-wrapper"><div class="terminal-output">${ buffered } > </div></div>`;
-			// this.context.innerHTML = `<div class="terminal-output">${ buffered } > </div></div>`;
+			this.context.innerHTML = `<div class="terminal-wrapper"><div class="terminal-output">${buffered}</div></div>`;
 			this.context.scrollTop = this.context.scrollHeight;
-			// this.init();
 		}
+
+		this.settings.parentContext.appendChild( this.context );
 	}
 
 	init()
 	{
-		this.context.innerHTML = '';
+		// this.context.innerHTML = '';
 
 		this.plugin = new __WEBPACK_IMPORTED_MODULE_0__middleware_terminal__["a" /* default */]({
 			context 		: this.context,
@@ -12393,7 +12366,12 @@ class Terminal {
 			gds 			: this.settings['gds']
 		});
 
-		this.insertBuffer();
+		this.context.style.height = calculateHeight(this.plugin.terminal) + 'px';
+
+
+		this.plugin.terminal.scroll_to_bottom();
+
+		// this.insertBuffer();
 	}
 
 	insertBuffer()
@@ -12416,10 +12394,10 @@ class Terminal {
 			this.plugin.getPlugin().destroy();
 	}
 
-	detach()
-	{
-		console.log(' detach ', this);
-	}
+	// detach()
+	// {
+	// 	console.log(' detach ', this);
+	// }
 
 	reattach( parentNode )
 	{
@@ -12433,6 +12411,7 @@ class Terminal {
 		if (this.plugin)
 		{
 			this.plugin.getPlugin().resize().scroll_to_bottom();
+			this.context.style.height = calculateHeight(this.plugin.terminal) + 'px';
 		} else
 		{
 			this.context.scrollTop = this.context.scrollHeight;
@@ -12785,6 +12764,8 @@ class TerminalPlugin
 
 	parseChar( evt, terminal )
 	{
+		console.log('char')
+
 		if ( !terminal.enabled() ) // key press fires globally on all terminals;
 			return false;
 
@@ -12979,6 +12960,8 @@ class TerminalPlugin
 
 		if ( result['output'] )
 		{
+			// result['output'] = $.terminal.encode( '<a class="text-danger">test</a>' + result['output'] );
+
 			if ( this.allowManualPaging )
 			{
 				const output = this.pagination
@@ -13107,7 +13090,17 @@ class Output
 	{
 		this.cmdLineOffset 	= this.terminal.cmd()[0].offsetTop;
 
+		// const output = this.outputStrings;
+
 		this.terminal.echo( this.outputStrings );
+
+		// this.terminal.echo( this.outputStrings, {
+		//
+		// 	finalize 	: function ( div ) {
+		// 		div[0].innerHTML = $.terminal.escape_formatting( output );
+		// 	}
+		//
+		// } );
 		return this;
 	}
 

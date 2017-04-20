@@ -51,6 +51,8 @@ export default class TerminalPlugin
 
 	parseChar( evt, terminal )
 	{
+		console.log('char')
+
 		if ( !terminal.enabled() ) // key press fires globally on all terminals;
 			return false;
 

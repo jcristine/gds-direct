@@ -25,8 +25,9 @@ const TerminalCellMatrix = (function()
 
 	function makeCell( row, rowCount )
 	{
-		let cell 	= document.createElement('td');
-		let height	= termTableWrap.clientHeight / ( parseInt(rowCount) + 1 );
+		let cell 		= document.createElement('td');
+		cell.className 	= 'v-middle';
+		let height		= termTableWrap.clientHeight / ( parseInt(rowCount) + 1 );
 
 		row.appendChild( cell );
 		cell.style.height = Math.floor(height)+ 'px';

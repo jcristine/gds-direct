@@ -47,15 +47,13 @@ class TerminalState
 		Gds['sabre']['session'] 	= this.areaList.indexOf( apiData.settings['gds']['sabre']['currentArea'] );
 
 		this.state = {
-			gds 			: apiData.settings.common.currentGds || 'apollo',
+			gds 			: apiData.settings.common['currentGds'] || 'apollo',
 			sessionIndex	: Gds['apollo']['session'],
 			matrix			: retrievedObject,
 			fontSize		: 1,
 			language		: 'APOLLO',
 			activeTerminal	: ''
 		};
-
-		// this.state.sessionIndex = this.getArea();
 	}
 
 	getMatrix()
@@ -70,20 +68,9 @@ class TerminalState
 
 	getSessionAreaMap()
 	{
-		// const key = this.state.language === 'APOLLO' ? 'S': '¤';
 		const key = this.state.gds === 'apollo' ? 'S': '¤';
-		return this.areaList.map( ( char ) => key + char );
-		// return this.state.language === 'APOLLO' ? ['SA', 'SB', 'SC', 'SD', 'SE' ] : ['¤A', '¤B', '¤C', '¤D', '¤E'];
+		return this.areaList.map( char => key + char );
 	}
-
-	// getArea()
-	// {
-	// 	const map 			= this.getSessionAreaMap();
-	// 	const specialChar 	= this.state.language === 'APOLLO' ? 'S' : '¤';
-	// 	const index 		= map.indexOf( specialChar + apiData['settings']['gds']['apollo']['currentArea'] );
-	//
-	// 	return index === -1 ? 0 : index;
-	// }
 
 	getBuffer( gds, terminalId )
 	{
@@ -121,12 +108,7 @@ class TerminalState
 
 			case 'CHANGE_SESSION_BY_MENU' :
 				let command = this.getSessionAreaMap()[params.sessionIndex];
-
-				// console.log(this.state.sessionIndex ) ;
-				// console.log( this.state.activeTerminal.name() );
-
 				this.state.activeTerminal.exec( command );
-
 				return false;
 			break;
 
