@@ -831,8 +831,8 @@ if ( localStorage.getItem('matrix') )
 } else
 {
 	retrievedObject = {
-		rows 	: 3,
-		cells 	: 3
+		rows 	: 1,
+		cells 	: 1
 	}
 }
 
@@ -12762,10 +12762,10 @@ class TerminalPlugin
 		this.tabCommands	= new __WEBPACK_IMPORTED_MODULE_7__modules_tabManager__["a" /* default */]();
 	}
 
-	getPlugin()
-	{
-		return this.terminal;
-	}
+	// getPlugin()
+	// {
+	// 	return this.terminal;
+	// }
 
 	parseChar( evt, terminal )
 	{

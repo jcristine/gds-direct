@@ -54,10 +54,10 @@ export default class TerminalPlugin
 		this.tabCommands	= new TabManager();
 	}
 
-	getPlugin()
-	{
-		return this.terminal;
-	}
+	// getPlugin()
+	// {
+	// 	return this.terminal;
+	// }
 
 	parseChar( evt, terminal )
 	{
