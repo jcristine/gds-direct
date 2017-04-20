@@ -12705,6 +12705,7 @@ function runSyncCommand( functionName, params )
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__modules_spinner__ = __webpack_require__(30);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__helpers_keyBinding__ = __webpack_require__(24);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__modules_output__ = __webpack_require__(27);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__modules_tabManager__ = __webpack_require__(41);
 
 
 let $					= __webpack_require__(31);
@@ -12712,6 +12713,7 @@ window.$ 				= window.jQuery = $;
 
 __webpack_require__(8);
 __webpack_require__(9).polyfill();
+
 
 
 
@@ -12756,7 +12758,8 @@ class TerminalPlugin
 		this.terminal 	= this.init();
 		this.spinner 	= new __WEBPACK_IMPORTED_MODULE_4__modules_spinner__["a" /* default */]( this.terminal );
 
-		this.outputLiner = new __WEBPACK_IMPORTED_MODULE_6__modules_output__["a" /* default */]( this.terminal );
+		this.outputLiner 	= new __WEBPACK_IMPORTED_MODULE_6__modules_output__["a" /* default */]( this.terminal );
+		this.tabCommands	= new __WEBPACK_IMPORTED_MODULE_7__modules_tabManager__["a" /* default */]();
 	}
 
 	getPlugin()
@@ -12838,8 +12841,22 @@ class TerminalPlugin
 			onTerminalChange: this.changeActiveTerm,
 
 			keymap			: {
-				'CTRL+S' : () => {
+
+				'CTRL+S' : () =>
+				{
 					this.clearBuf()
+				},
+
+				'TAB' : () =>
+				{
+					const cmd = this.tabCommands.getCommand();
+
+					if (cmd)
+					{
+						this.terminal.cmd().set( cmd );
+						this.tabCommands.next();
+					}
+
 				}
 			},
 
@@ -12860,8 +12877,6 @@ class TerminalPlugin
 		{
 			window.TerminalState.change({
 				sessionIndex 	: sessionChange
-				// ,
-				// gds				: this.settings.gds
 			}, 'CHANGE_SESSION');
 		}
 	}
@@ -12974,10 +12989,10 @@ class TerminalPlugin
 		if ( result['tabCommands'] && result['tabCommands'].length )
 			Debug( 'FOUND TAB COMMANDS' );
 
+		this.tabCommands.reset( result['tabCommands'] );
+
 		if ( result['pcc'] )
-			window.TerminalState.change({
-				pcc : result['pcc'],
-			}, 'CHANGE_PCC');
+			window.TerminalState.change({pcc : result['pcc']}, 'CHANGE_PCC');
 	}
 	
 	parseError(e)
@@ -13306,6 +13321,50 @@ module.exports = jQuery;
 
 __webpack_require__(5);
 module.exports = __webpack_require__(4);
+
+
+/***/ }),
+/* 33 */,
+/* 34 */,
+/* 35 */,
+/* 36 */,
+/* 37 */,
+/* 38 */,
+/* 39 */,
+/* 40 */,
+/* 41 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+class TabManager
+{
+	constructor()
+	{
+		this.index 	= 0;
+		this.list	= [];
+	}
+
+	reset( list = [])
+	{
+		this.list 	= list;
+		this.index 	= 0;
+	}
+
+	next()
+	{
+		this.index++;
+
+		if ( this.list.length <= this.index )
+			this.index = 0;
+	}
+
+	getCommand()
+	{
+		console.log( this.list );
+		return this.list[ this.index ] || false;
+	}
+}
+/* harmony export (immutable) */ __webpack_exports__["a"] = TabManager;
 
 
 /***/ })

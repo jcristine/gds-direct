@@ -13,6 +13,7 @@ import Session 		from '../modules/sabreSession';
 import Spinner 		from '../modules/spinner';
 import KeyBinding	from '../helpers/keyBinding';
 import OutputLiner	from '../modules/output';
+import TabManager	from '../modules/tabManager';
 
 const Debug = txt => {
 	new Noty({
@@ -49,7 +50,8 @@ export default class TerminalPlugin
 		this.terminal 	= this.init();
 		this.spinner 	= new Spinner( this.terminal );
 
-		this.outputLiner = new OutputLiner( this.terminal );
+		this.outputLiner 	= new OutputLiner( this.terminal );
+		this.tabCommands	= new TabManager();
 	}
 
 	getPlugin()
@@ -131,8 +133,22 @@ export default class TerminalPlugin
 			onTerminalChange: this.changeActiveTerm,
 
 			keymap			: {
-				'CTRL+S' : () => {
+
+				'CTRL+S' : () =>
+				{
 					this.clearBuf()
+				},
+
+				'TAB' : () =>
+				{
+					const cmd = this.tabCommands.getCommand();
+
+					if (cmd)
+					{
+						this.terminal.cmd().set( cmd );
+						this.tabCommands.next();
+					}
+
 				}
 			},
 
@@ -153,8 +169,6 @@ export default class TerminalPlugin
 		{
 			window.TerminalState.change({
 				sessionIndex 	: sessionChange
-				// ,
-				// gds				: this.settings.gds
 			}, 'CHANGE_SESSION');
 		}
 	}
@@ -267,10 +281,10 @@ export default class TerminalPlugin
 		if ( result['tabCommands'] && result['tabCommands'].length )
 			Debug( 'FOUND TAB COMMANDS' );
 
+		this.tabCommands.reset( result['tabCommands'] );
+
 		if ( result['pcc'] )
-			window.TerminalState.change({
-				pcc : result['pcc'],
-			}, 'CHANGE_PCC');
+			window.TerminalState.change({pcc : result['pcc']}, 'CHANGE_PCC');
 	}
 	
 	parseError(e)
