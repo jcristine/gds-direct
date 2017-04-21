@@ -3,6 +3,7 @@
 import History 			from './popovers/history';
 import TextSize 		from './popovers/textSize';
 import SessionButtons	from './menu/sessionButtons';
+import PqButton			from './menu/pqButton';
 
 let context 		= document.createElement('aside');
 context.className 	= 'sideMenu';
@@ -159,6 +160,9 @@ export default class MenuPanel
 		context.appendChild( this.settingsButtons() );
 		context.appendChild( this.activeSession() );
 		context.appendChild( this.InputLanguage() );
+		context.appendChild( PqButton.render({
+			active : !!window.TerminalState.state.activeTerminal
+		}) );
 
 		return context;
 	}

@@ -63,7 +63,7 @@
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 33);
+/******/ 	return __webpack_require__(__webpack_require__.s = 34);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -924,6 +924,18 @@ class TerminalState
 			case 'CHANGE_PCC' :
 				Gds[this.state.gds]['pcc'][this.state.sessionIndex] = params.pcc;
 				return __WEBPACK_IMPORTED_MODULE_0__components_containerMain__["a" /* default */].menuRender();
+			break;
+
+			case 'PQ_MODAL_SHOW' :
+
+				if (this.state.activeTerminal)
+				{
+					apiData.pqModal.show({
+						reservationDumpClean : this.state.activeTerminal.get_output()
+					});
+				}
+
+				return false;
 			break;
 		}
 
@@ -11587,7 +11599,7 @@ exports.clearImmediate = clearImmediate;
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__popovers_terminalMatrix__ = __webpack_require__(21);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__popovers_terminalMatrix__ = __webpack_require__(22);
 
 
 
@@ -11644,9 +11656,9 @@ class ActionsMenu {
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__terminal__ = __webpack_require__(23);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__terminal__ = __webpack_require__(24);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__actionsMenu__ = __webpack_require__(16);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__menuPanel__ = __webpack_require__(19);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__menuPanel__ = __webpack_require__(20);
 
 
 
@@ -11843,6 +11855,45 @@ class Container {
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
+let button;
+
+class PqButton
+{
+	static makeButton(value, index)
+	{
+		let button 			= document.createElement('button');
+		button.className	= 'btn btn-sm btn-purple font-bold';
+		button.innerHTML	= 'PQ';
+
+		// button.disabled = ! (!!this.settings.terminal);
+
+		button.onclick = () => {
+			window.TerminalState.change({}, 'PQ_MODAL_SHOW')
+		};
+
+		return button;
+	}
+
+	static props( params = {} )
+	{
+		button.disabled = !params.active;
+	}
+
+	static render( params )
+	{
+		button = button || this.makeButton();
+		this.props( params );
+		return button;
+	}
+}
+/* harmony export (immutable) */ __webpack_exports__["a"] = PqButton;
+
+
+/***/ }),
+/* 19 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
 
 
 class SessionKeys
@@ -11919,13 +11970,15 @@ class SessionKeys
 
 
 /***/ }),
-/* 19 */
+/* 20 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__popovers_history__ = __webpack_require__(20);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__popovers_textSize__ = __webpack_require__(22);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__menu_sessionButtons__ = __webpack_require__(18);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__popovers_history__ = __webpack_require__(21);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__popovers_textSize__ = __webpack_require__(23);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__menu_sessionButtons__ = __webpack_require__(19);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__menu_pqButton__ = __webpack_require__(18);
+
 
 
 
@@ -12087,6 +12140,9 @@ class MenuPanel
 		context.appendChild( this.settingsButtons() );
 		context.appendChild( this.activeSession() );
 		context.appendChild( this.InputLanguage() );
+		context.appendChild( __WEBPACK_IMPORTED_MODULE_3__menu_pqButton__["a" /* default */].render({
+			active : !!window.TerminalState.state.activeTerminal
+		}) );
 
 		return context;
 	}
@@ -12095,7 +12151,7 @@ class MenuPanel
 
 
 /***/ }),
-/* 20 */
+/* 21 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -12144,7 +12200,7 @@ class History
 /* harmony default export */ __webpack_exports__["a"] = (History);
 
 /***/ }),
-/* 21 */
+/* 22 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -12240,7 +12296,7 @@ class Matrix
 /* harmony default export */ __webpack_exports__["a"] = (Matrix);
 
 /***/ }),
-/* 22 */
+/* 23 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -12306,11 +12362,11 @@ class TextSize
 /* harmony default export */ __webpack_exports__["a"] = (TextSize);
 
 /***/ }),
-/* 23 */
+/* 24 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__middleware_terminal__ = __webpack_require__(26);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__middleware_terminal__ = __webpack_require__(27);
 
 
 
@@ -12430,7 +12486,7 @@ class Terminal {
 
 
 /***/ }),
-/* 24 */
+/* 25 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -12624,7 +12680,7 @@ class KeyBinding
 
 
 /***/ }),
-/* 25 */
+/* 26 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -12693,22 +12749,22 @@ function runSyncCommand( functionName, params )
 });
 
 /***/ }),
-/* 26 */
+/* 27 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_noty__ = __webpack_require__(10);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_noty___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_noty__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__helpers_helpers__ = __webpack_require__(1);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__modules_pagination__ = __webpack_require__(28);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__modules_sabreSession__ = __webpack_require__(29);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__modules_spinner__ = __webpack_require__(30);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__helpers_keyBinding__ = __webpack_require__(24);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__modules_output__ = __webpack_require__(27);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__modules_tabManager__ = __webpack_require__(31);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__modules_pagination__ = __webpack_require__(29);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__modules_sabreSession__ = __webpack_require__(30);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__modules_spinner__ = __webpack_require__(31);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__helpers_keyBinding__ = __webpack_require__(25);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__modules_output__ = __webpack_require__(28);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__modules_tabManager__ = __webpack_require__(32);
 
 
-let $					= __webpack_require__(32);
+let $					= __webpack_require__(33);
 window.$ 				= window.jQuery = $;
 
 __webpack_require__(8);
@@ -13010,7 +13066,7 @@ class TerminalPlugin
 
 
 /***/ }),
-/* 27 */
+/* 28 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -13141,7 +13197,7 @@ class Output
 
 
 /***/ }),
-/* 28 */
+/* 29 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -13199,12 +13255,12 @@ class Pagination
 
 
 /***/ }),
-/* 29 */
+/* 30 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__constants__ = __webpack_require__(3);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__helpers_requests__ = __webpack_require__(25);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__helpers_requests__ = __webpack_require__(26);
 
 
 
@@ -13278,7 +13334,7 @@ class Session
 
 
 /***/ }),
-/* 30 */
+/* 31 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -13333,7 +13389,7 @@ class Spinner
 
 
 /***/ }),
-/* 31 */
+/* 32 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -13348,6 +13404,7 @@ class TabManager
 	reset( list = [], output )
 	{
 		this.list 	= list;
+
 		this.index 	= 0;
 		this.output = output;
 
@@ -13372,7 +13429,16 @@ class TabManager
 
 	formatOutput( cmd )
 	{
-		return cmd ? this.output.replace(cmd, `[[;red;blue]${cmd}]`) : this.output;
+		if (cmd)
+		{
+			cmd = `>${cmd}`;
+			const index = this.output.indexOf( cmd ) + cmd.length;
+			return this.output.substr(0, index) + `[[;red;blue;]·]` +  this.output.substr( (index + 1 ) , this.output.length)
+
+		}
+
+		return this.output;
+		// return cmd ? this.output.replace(cmd, `[[;red;blue;]>${cmd}.]`) : this.output;
 	}
 
 	run( replace )
@@ -13392,13 +13458,13 @@ class TabManager
 
 
 /***/ }),
-/* 32 */
+/* 33 */
 /***/ (function(module, exports) {
 
 module.exports = jQuery;
 
 /***/ }),
-/* 33 */
+/* 34 */
 /***/ (function(module, exports, __webpack_require__) {
 
 __webpack_require__(5);

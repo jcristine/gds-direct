@@ -126,6 +126,18 @@ class TerminalState
 				Gds[this.state.gds]['pcc'][this.state.sessionIndex] = params.pcc;
 				return Container.menuRender();
 			break;
+
+			case 'PQ_MODAL_SHOW' :
+
+				if (this.state.activeTerminal)
+				{
+					apiData.pqModal.show({
+						reservationDumpClean : this.state.activeTerminal.get_output()
+					});
+				}
+
+				return false;
+			break;
 		}
 
 		Container.render( this.state );

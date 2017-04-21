@@ -9,6 +9,7 @@ export default class TabManager
 	reset( list = [], output )
 	{
 		this.list 	= list;
+
 		this.index 	= 0;
 		this.output = output;
 
@@ -33,7 +34,16 @@ export default class TabManager
 
 	formatOutput( cmd )
 	{
-		return cmd ? this.output.replace(cmd, `[[;red;blue]${cmd}]`) : this.output;
+		if (cmd)
+		{
+			cmd = `>${cmd}`;
+			const index = this.output.indexOf( cmd ) + cmd.length;
+			return this.output.substr(0, index) + `[[;red;blue;]·]` +  this.output.substr( (index + 1 ) , this.output.length)
+
+		}
+
+		return this.output;
+		// return cmd ? this.output.replace(cmd, `[[;red;blue;]>${cmd}.]`) : this.output;
 	}
 
 	run( replace )
