@@ -12,30 +12,25 @@ const Context = {
 	}
 };
 
-const Gds = {
-	'apollo' : {
-		session : 0,
-		pcc		: {}
-	},
+// apiData.settings = {
+// 	common 	: 'apollo',
+// 	gds 	: {
+// 		apollo 	: {},
+// 		sabre 	: {}
+// 	}
+// };
 
-	'sabre'	: {
-		session : 0,
-		pcc		: {}
-	}
+const gdsSettings = {
+	sessionIndex 	: 0,
+	pcc				: {},
+	matrix			: { rows: 1, cells : 1},
+	activeTerminal	: null
 };
 
-let retrievedObject;
-
-if ( localStorage.getItem('matrix') )
-{
-	retrievedObject = JSON.parse( localStorage.getItem('matrix') )
-} else
-{
-	retrievedObject = {
-		rows 	: 1,
-		cells 	: 1
-	}
-}
+const Gds = {
+	'apollo' 	: Object.assign({}, gdsSettings),
+	'sabre'		: Object.assign({}, gdsSettings),
+};
 
 class TerminalState
 {
@@ -43,13 +38,16 @@ class TerminalState
 	{
 		this.areaList = ['A', 'B', 'C', 'D', 'E', 'F'];
 
-		Gds['apollo']['session']	= this.areaList.indexOf( apiData.settings['gds']['apollo']['currentArea'] );
-		Gds['sabre']['session'] 	= this.areaList.indexOf( apiData.settings['gds']['sabre']['currentArea'] );
+		Gds['apollo']['sessionIndex']	= this.areaList.indexOf( apiData.settings['gds']['apollo']['currentArea'] );
+		Gds['sabre']['sessionIndex'] 	= this.areaList.indexOf( apiData.settings['gds']['sabre']['currentArea'] );
+
+		const saved		= localStorage.getItem('matrix');
+		const curGds	= apiData.settings.common['currentGds'] || 'apollo';
 
 		this.state = {
-			gds 			: apiData.settings.common['currentGds'] || 'apollo',
-			sessionIndex	: Gds['apollo']['session'],
-			matrix			: retrievedObject,
+			gds 			: curGds,
+			sessionIndex	: Gds[curGds]['sessionIndex'],
+			matrix			: saved ? JSON.parse( saved ) : {rows : 1, cells : 1},
 			fontSize		: 1,
 			language		: 'APOLLO',
 			activeTerminal	: ''
@@ -89,12 +87,14 @@ class TerminalState
 	{
 		this.state = Object.assign( this.state, params );
 
+		const gds = this.state.gds;
+
 		switch (action)
 		{
 			case 'CHANGE_GDS':
-				this.state.matrix 			= Gds[this.state.gds]['matrix'] || { rows : 1, cells : 1 };
-				this.state.sessionIndex 	= Gds[this.state.gds]['session'];
-				this.state.activeTerminal 	= Gds[this.state.gds]['activeTerminal'];
+				this.state.matrix 			= Gds[gds]['matrix'];
+				this.state.sessionIndex 	= Gds[gds]['sessionIndex'];
+				this.state.activeTerminal 	= Gds[gds]['activeTerminal'];
 			break;
 
 			case 'CHANGE_FONT_SIZE':
@@ -102,7 +102,7 @@ class TerminalState
 			break;
 
 			case 'CHANGE_SESSION' :
-				Gds[this.state.gds]['session'] = this.state.sessionIndex;
+				Gds[gds]['sessionIndex'] = this.state.sessionIndex;
 				return Container.menuRender();
 			break;
 
@@ -114,21 +114,20 @@ class TerminalState
 
 			case 'CHANGE_MATRIX' :
 				localStorage.setItem('matrix', JSON.stringify(this.state.matrix) );
-				Gds[this.state.gds]['matrix'] = this.state.matrix;
+				Gds[gds]['matrix'] = this.state.matrix;
 			break;
 
 			case 'CHANGE_ACTIVE_TERMINAL' :
-				Gds[this.state.gds]['activeTerminal'] = this.state.activeTerminal;
+				Gds[gds]['activeTerminal'] = this.state.activeTerminal;
 				return Container.menuRender();
 			break;
 
 			case 'CHANGE_PCC' :
-				Gds[this.state.gds]['pcc'][this.state.sessionIndex] = params.pcc;
+				Gds[gds]['pcc'][this.state.sessionIndex] = params.pcc;
 				return Container.menuRender();
 			break;
 
 			case 'PQ_MODAL_SHOW' :
-
 				if (this.state.activeTerminal)
 				{
 					apiData.pqModal.show({
