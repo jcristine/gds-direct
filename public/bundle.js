@@ -12140,7 +12140,7 @@ class MenuPanel
 		context.appendChild( this.activeSession() );
 		context.appendChild( this.InputLanguage() );
 		context.appendChild( __WEBPACK_IMPORTED_MODULE_3__menu_pqButton__["a" /* default */].render({
-			active : !!window.TerminalState.state.activeTerminal
+			active : window.TerminalState.state.activeTerminal && window.apiData.rId
 		}) );
 
 		return context;

@@ -161,7 +161,7 @@ export default class MenuPanel
 		context.appendChild( this.activeSession() );
 		context.appendChild( this.InputLanguage() );
 		context.appendChild( PqButton.render({
-			active : !!window.TerminalState.state.activeTerminal
+			active : window.TerminalState.state.activeTerminal && window.apiData.rId
 		}) );
 
 		return context;
