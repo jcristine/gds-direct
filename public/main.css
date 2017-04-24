@@ -1197,7 +1197,54 @@
   color: #2c662d;
   box-shadow: 0 0 0 1px #a3c293 inset, 0 0 0 0 transparent; }
 
-/*# sourceMappingURL=noty.css.map*/body.terminalBody {
+/*# sourceMappingURL=noty.css.map*/.term-f-size-4 .terminal {
+  --size: 2;
+}
+.term-f-size-3 .terminal {
+  --size: 1.5;
+}
+.term-f-size-2 .terminal {
+  --size: 1.25;
+}
+.terminal-wrap-custom .t-matrix-w-0 td {
+  width: 100%;
+}
+.terminal-wrap-custom .t-matrix-w-1 td {
+  width: 50%;
+}
+.terminal-wrap-custom .t-matrix-w-2 td {
+  width: 33.33%;
+}
+.terminal-wrap-custom .t-matrix-w-3 td {
+  width: 25%;
+}
+.terminal-wrap-custom > .term-body .left table {
+  background: #191a1b;
+}
+.terminal-wrap-custom > .term-body .left .terminal,
+.terminal-wrap-custom > .term-body .left .cmd {
+  background: #191a1b;
+}
+.terminal-wrap-custom > .term-body .terminal {
+  --background: #191a1b;
+}
+.terminal-wrap-custom > .term-body .cmd {
+  background: #191a1b;
+}
+.terminal-wrap-custom > .term-body.sabre .left table {
+  background: #263033;
+}
+.terminal-wrap-custom > .term-body.sabre .left .terminal,
+.terminal-wrap-custom > .term-body.sabre .left .cmd {
+  background: #263033;
+}
+.terminal-wrap-custom > .term-body.sabre .terminal {
+  --background: #263033;
+}
+.terminal-wrap-custom > .term-body.sabre .cmd {
+  background: #263033;
+}
+body.terminalBody {
   margin: 0;
 }
 .cmd .cursor {
@@ -1210,152 +1257,6 @@
 }
 .matrix-table td:hover {
   background-color: #7a43b6;
-}
-#rootTerminal {
-  height: 100%;
-  background: #fff;
-}
-#rootTerminal * {
-  box-sizing: border-box;
-}
-#rootTerminal .btn {
-  display: inline-block;
-  margin-bottom: 0;
-  text-align: center;
-  vertical-align: middle;
-  touch-action: manipulation;
-  cursor: pointer;
-  background-image: none;
-  border: 1px solid transparent;
-  white-space: nowrap;
-  padding: 6px 12px;
-  line-height: 1.545454;
-  border-radius: 2px;
-  font-weight: bold;
-  font-size: 14px;
-}
-#rootTerminal .btn-primary {
-  color: #fff !important;
-  background-color: #3C506F;
-  border-color: #3C506F;
-}
-#rootTerminal .btn-primary:hover,
-#rootTerminal .btn-primary:focus,
-#rootTerminal .btn-primary:active,
-#rootTerminal .btn-primary.active,
-.open .dropdown-toggle#rootTerminal .btn-primary {
-  color: #fff !important;
-  background-color: #2e3d55;
-  border-color: #273347;
-}
-#rootTerminal .btn-primary:active,
-#rootTerminal .btn-primary.active,
-.open .dropdown-toggle#rootTerminal .btn-primary {
-  background-image: none;
-}
-#rootTerminal .btn-primary.disabled,
-#rootTerminal .btn-primary[disabled],
-fieldset[disabled] #rootTerminal .btn-primary,
-#rootTerminal .btn-primary.disabled:hover,
-#rootTerminal .btn-primary[disabled]:hover,
-fieldset[disabled] #rootTerminal .btn-primary:hover,
-#rootTerminal .btn-primary.disabled:focus,
-#rootTerminal .btn-primary[disabled]:focus,
-fieldset[disabled] #rootTerminal .btn-primary:focus,
-#rootTerminal .btn-primary.disabled:active,
-#rootTerminal .btn-primary[disabled]:active,
-fieldset[disabled] #rootTerminal .btn-primary:active,
-#rootTerminal .btn-primary.disabled.active,
-#rootTerminal .btn-primary[disabled].active,
-fieldset[disabled] #rootTerminal .btn-primary.active {
-  background-color: #3C506F;
-  border-color: #3C506F;
-}
-#rootTerminal .btn-purple {
-  color: #fff !important;
-  background-color: #863F88;
-  border-color: #863F88;
-}
-#rootTerminal .btn-purple:hover,
-#rootTerminal .btn-purple:focus,
-#rootTerminal .btn-purple:active,
-#rootTerminal .btn-purple.active,
-.open .dropdown-toggle#rootTerminal .btn-purple {
-  color: #fff !important;
-  background-color: #6b326c;
-  border-color: #5d2c5e;
-}
-#rootTerminal .btn-purple:active,
-#rootTerminal .btn-purple.active,
-.open .dropdown-toggle#rootTerminal .btn-purple {
-  background-image: none;
-}
-#rootTerminal .btn-purple.disabled,
-#rootTerminal .btn-purple[disabled],
-fieldset[disabled] #rootTerminal .btn-purple,
-#rootTerminal .btn-purple.disabled:hover,
-#rootTerminal .btn-purple[disabled]:hover,
-fieldset[disabled] #rootTerminal .btn-purple:hover,
-#rootTerminal .btn-purple.disabled:focus,
-#rootTerminal .btn-purple[disabled]:focus,
-fieldset[disabled] #rootTerminal .btn-purple:focus,
-#rootTerminal .btn-purple.disabled:active,
-#rootTerminal .btn-purple[disabled]:active,
-fieldset[disabled] #rootTerminal .btn-purple:active,
-#rootTerminal .btn-purple.disabled.active,
-#rootTerminal .btn-purple[disabled].active,
-fieldset[disabled] #rootTerminal .btn-purple.active {
-  background-color: #863F88;
-  border-color: #863F88;
-}
-#rootTerminal .btn-warning {
-  color: #fff !important;
-  background-color: #5cb85c;
-  border-color: #5cb85c;
-}
-#rootTerminal .btn-warning:hover,
-#rootTerminal .btn-warning:focus,
-#rootTerminal .btn-warning:active,
-#rootTerminal .btn-warning.active,
-.open .dropdown-toggle#rootTerminal .btn-warning {
-  color: #fff !important;
-  background-color: #47a447;
-  border-color: #419641;
-}
-#rootTerminal .btn-warning:active,
-#rootTerminal .btn-warning.active,
-.open .dropdown-toggle#rootTerminal .btn-warning {
-  background-image: none;
-}
-#rootTerminal .btn-warning.disabled,
-#rootTerminal .btn-warning[disabled],
-fieldset[disabled] #rootTerminal .btn-warning,
-#rootTerminal .btn-warning.disabled:hover,
-#rootTerminal .btn-warning[disabled]:hover,
-fieldset[disabled] #rootTerminal .btn-warning:hover,
-#rootTerminal .btn-warning.disabled:focus,
-#rootTerminal .btn-warning[disabled]:focus,
-fieldset[disabled] #rootTerminal .btn-warning:focus,
-#rootTerminal .btn-warning.disabled:active,
-#rootTerminal .btn-warning[disabled]:active,
-fieldset[disabled] #rootTerminal .btn-warning:active,
-#rootTerminal .btn-warning.disabled.active,
-#rootTerminal .btn-warning[disabled].active,
-fieldset[disabled] #rootTerminal .btn-warning.active {
-  background-color: #5cb85c;
-  border-color: #5cb85c;
-}
-#rootTerminal .t-d-cell {
-  display: table-cell;
-}
-.term-f-size-4 .terminal {
-  --size: 2;
-}
-.term-f-size-3 .terminal {
-  --size: 1.5;
-}
-.term-f-size-2 .terminal {
-  --size: 1.25;
 }
 .terminal-wrap-custom {
   position: relative;
@@ -1374,17 +1275,6 @@ fieldset[disabled] #rootTerminal .btn-warning.active {
 }
 .terminal-wrap-custom .btn.active {
   position: relative;
-}
-.terminal-wrap-custom > .term-header {
-  display: none;
-  font-family: "Lucida Grande", sans-serif;
-  font-size: 12px;
-  height: 2%;
-  text-align: center;
-  text-shadow: rgba(255, 255, 255, 0.8) 0 1px 0;
-  background-image: -webkit-linear-gradient(top, #e8e8e8, #bcbbbc);
-  background-image: -moz-linear-gradient(top, #e8e8e8, #bcbbbc);
-  background-image: linear-gradient(top, #e8e8e8, #bcbbbc);
 }
 .terminal-wrap-custom > .term-body {
   width: 100%;
@@ -1456,37 +1346,16 @@ fieldset[disabled] #rootTerminal .btn-warning.active {
 .terminal-wrap-custom .terminal .cmd {
   color: #fff;
 }
-.terminal-wrap-custom .terminal iframe {
-  position: static;
-  display: none;
-}
 .terminal-wrap-custom .terminal .command {
   color: yellow;
 }
 .terminal-wrap-custom .terminal,
 .terminal-wrap-custom .cmd {
-  background: #191a1b;
   color: #fff;
   font-weight: bold;
 }
 .terminal-wrap-custom .terminal-wrapper {
   height: auto;
-}
-.terminal-wrap-custom .sabre .terminal,
-.terminal-wrap-custom .sabre .cmd {
-  background: #263033;
-}
-.terminal-wrap-custom .t-matrix-w-0 td {
-  width: 100%;
-}
-.terminal-wrap-custom .t-matrix-w-1 td {
-  width: 50%;
-}
-.terminal-wrap-custom .t-matrix-w-2 td {
-  width: 33.33%;
-}
-.terminal-wrap-custom .t-matrix-w-3 td {
-  width: 25%;
 }
 /*
 @keyframes blink {

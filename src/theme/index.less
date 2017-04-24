@@ -1,0 +1,41 @@
+#rootTerminal {
+    * {
+        box-sizing: border-box;
+    }
+
+    height: 100%;
+    background: #fff;
+
+    .btn {
+        display: inline-block;
+        margin-bottom: 0;
+        text-align: center;
+        vertical-align: middle;
+        touch-action: manipulation;
+        cursor: pointer;
+        background-image: none;
+        border: 1px solid transparent;
+        white-space: nowrap;
+        padding: 6px 12px;
+        line-height: 1.545454;
+        border-radius: 2px;
+        font-weight:  bold;
+        font-size: 14px;
+    }
+
+    .btn-primary {
+        .button-variant(#fff, @brand-primary, @brand-primary);
+    }
+
+    .btn-purple {
+        .button-variant(#fff, @brand-purple, @brand-purple);
+    }
+
+    .btn-warning {
+        .button-variant(#fff, @brand-success, @brand-success);
+    }
+
+    .t-d-cell {
+        display: table-cell;
+    }
+}

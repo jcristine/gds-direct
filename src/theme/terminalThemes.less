@@ -1,0 +1,45 @@
+.terminal-wrap-custom {
+
+    & > .term-body {
+
+        .left {
+            table {
+                background: @terminal-bg;
+            }
+
+            .terminal, .cmd{
+                background: @terminal-bg;
+            }
+        }
+
+        .terminal {
+            --background: @terminal-bg;
+        }
+
+        .cmd {
+            background: @terminal-bg;
+        }
+    }
+
+    & > .term-body.sabre {
+
+        .left {
+            table {
+                background: @terminal-sabre-bg;
+            }
+
+            .terminal, .cmd{
+                background: @terminal-sabre-bg;
+            }
+        }
+
+        .terminal {
+            --background: @terminal-sabre-bg;
+        }
+
+        .cmd {
+            background: @terminal-sabre-bg;
+        }
+
+    }
+}

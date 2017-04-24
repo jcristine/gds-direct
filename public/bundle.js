@@ -11672,7 +11672,8 @@ const TerminalCellMatrix = (function()
 
 	function constructor()
 	{
-		context = document.createElement('table');
+		context 			= document.createElement('table');
+		context.className 	= 'terminals-table';
 	}
 
 	function makeRow()
@@ -11740,7 +11741,7 @@ class Container {
 		Root = Root || document.getElementById( rootId );
 
 		this.createContext();
-		this.createHeader();
+		// this.createHeader();
 		this.createWrapper();
 
 		Root.appendChild( this.context );
@@ -11753,7 +11754,7 @@ class Container {
 		this.context.className	= 'terminal-wrap-custom clearfix';
 	}
 
-	static createHeader()
+	/*static createHeader()
 	{
 		let header 			= document.createElement('header');
 		header.className 	= 'term-header';
@@ -11761,7 +11762,7 @@ class Container {
 
 		this.context.appendChild( header );
 		return header;
-	}
+	}*/
 
 	static createWrapper()
 	{
