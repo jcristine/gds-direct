@@ -1814,11 +1814,11 @@ module.exports = {
  *  __ / // // // // // _  // _// // / / // _  // _//     // //  \/ // _ \/ /
  * /  / // // // // // ___// / / // / / // ___// / / / / // // /\  // // / /__
  * \___//____ \\___//____//_/ _\_  / /_//____//_/ /_/ /_//_//_/ /_/ \__\_\___/
- *           \/              /____/                              version 1.0.14
+ *           \/              /____/                              version 1.2.0
  *
  * This file is part of jQuery Terminal. http://terminal.jcubic.pl
  *
- * Copyright (c) 2010-2017 Jakub Jankiewicz <http://jcubic.pl>
+ * Copyright (c) 2010-2017 Jakub Jankiewicz <http://jcubic.pl/me>
  * Released under the MIT license
  *
  * Contains:
@@ -1841,7 +1841,7 @@ module.exports = {
  * Copyright (c) 2007-2013 Alexandru Marasteanu <hello at alexei dot ro>
  * licensed under 3 clause BSD license
  *
- * Date: Tue, 14 Mar 2017 16:16:26 +0000
+ * Date: Fri, 21 Apr 2017 16:18:04 +0000
  */
 
 /* TODO:
@@ -1857,7 +1857,8 @@ module.exports = {
  * NOTE: json-rpc don't need promises and delegate resume/pause because only
  *       exec can call it and exec call interpreter that work with resume/pause
  */
-
+/* global location, jQuery, setTimeout, window, global, localStorage, sprintf,
+          setImmediate */
 /* eslint-disable */
 (function(ctx) {
     var sprintf = function() {
@@ -2467,6 +2468,15 @@ module.exports = {
     };
     /* eslint-enable */
     // -----------------------------------------------------------------------
+    // :: hide elements from screen readers
+    // -----------------------------------------------------------------------
+    function a11y_hide(element) {
+        element.attr({
+            role: 'presentation',
+            'aria-hidden': 'true'
+        });
+    }
+    // -----------------------------------------------------------------------
     // :: Split string to array of strings with the same length
     // -----------------------------------------------------------------------
     function str_parts(str, length) {
@@ -2694,12 +2704,15 @@ module.exports = {
         self.addClass('cmd');
         self.append('<span class="prompt"></span><span></span>' +
                     '<span class="cursor">&nbsp;</span><span></span>');
+        // a11y: don't read command it's in textarea that's in focus
+        a11y_hide(self.find('span').not(':eq(0)'));
         // on mobile the only way to hide textarea on desktop it's needed because
         // textarea show up after focus
         //self.append('<span class="mask"></mask>');
         var clip = $('<textarea>').attr({
             autocapitalize: 'off',
-            spellcheck: 'false'
+            spellcheck: 'false',
+            tabindex: 1
         }).addClass('clipboard').appendTo(self);
         // we don't need this but leave it as a comment just in case
         //var contentEditable = $('<div contentEditable></div>')
@@ -2750,7 +2763,8 @@ module.exports = {
             } else {
                 try_pos = col - prompt_len;
             }
-            var text = command.replace(/\t/g, '\x00\x00\x00\x00');
+            // tabs are 4 spaces and newline don't show up in results
+            var text = command.replace(/\t/g, '\x00\x00\x00\x00').replace(/\n/, '');
             var before = text.slice(0, try_pos);
             var len = before.replace(/\x00{4}/g, '\t').replace(/\x00+/, '').length;
             return len > command.length ? command.length : len;
@@ -2775,7 +2789,11 @@ module.exports = {
                         combo.push('ALT');
                     }
                     if (e.key) {
-                        combo.push(key);
+                        if (key === 'DEL') { // IE11
+                            combo.push('DELETE');
+                        } else {
+                            combo.push(key);
+                        }
                     }
                     return combo.join('+');
                 }
@@ -2921,8 +2939,10 @@ module.exports = {
                 // don't work in Chromium (can't prevent close tab)
                 if (command !== '' && position !== 0) {
                     var m = command.slice(0, position).match(/([^ ]+ *$)/);
-                    kill_text = self['delete'](-m[0].length);
-                    text_to_clipboard(self, kill_text);
+                    if (m[0].length) {
+                        kill_text = self['delete'](-m[0].length);
+                        text_to_clipboard(self, kill_text);
+                    }
                 }
                 return false;
             },
@@ -2943,8 +2963,10 @@ module.exports = {
             'CTRL+V': paste_event,
             'META+V': paste_event,
             'CTRL+K': function() {
-                kill_text = self['delete'](command.length - position);
-                text_to_clipboard(self, kill_text);
+                if (command.length - position) {
+                    kill_text = self['delete'](command.length - position);
+                    text_to_clipboard(self, kill_text);
+                }
                 return false;
             },
             'CTRL+U': function() {
@@ -3011,9 +3033,9 @@ module.exports = {
             var focus = clip.is(':focus');
             if (enabled) {
                 if (!focus) {
-                    clip.focus();
+                    clip.trigger('focus', [true]);
                     self.oneTime(10, function() {
-                        clip.focus();
+                        clip.trigger('focus', [true]);
                     });
                 }
             } else if (focus) {
@@ -3631,6 +3653,9 @@ module.exports = {
         if (options.enabled === undefined || options.enabled === true) {
             self.enable();
         }
+        if (!options.history) {
+            history.disable();
+        }
         var first_up_history = true;
         // prevent_keypress - hack for Android that was inserting characters on
         // backspace
@@ -3659,18 +3684,17 @@ module.exports = {
             } catch (exception) {}
             text = clip.val();
             no_keypress = true;
-            if (enabled) {
-                if ($.isFunction(options.keydown)) {
-                    result = options.keydown(e);
-                    if (result !== undefined) {
-                        //prevent_keypress = true;
-                        return result;
-                    }
+            var key = get_key(e);
+            if ($.isFunction(options.keydown)) {
+                result = options.keydown(e);
+                if (result !== undefined) {
+                    //prevent_keypress = true;
+                    return result;
                 }
-                var key = get_key(e);
-
+            }
+            if (enabled) {
                 // CTRL+V don't fire keypress in IE11
-                skip_insert = ['CTRL+V'].indexOf(key) !== -1;
+                skip_insert = ['CTRL+V', 'META+V'].indexOf(key) !== -1;
                 if (e.which !== 38 && !(e.which === 80 && e.ctrlKey)) {
                     first_up_history = true;
                 }
@@ -3708,6 +3732,9 @@ module.exports = {
             }
         }
         var doc = $(document.documentElement || window);
+
+        console.log( doc );
+
         self.keymap(options.keymap);
         function keypress_event(e) {
             var result;
@@ -3719,8 +3746,14 @@ module.exports = {
             if (prevent_keypress) {
                 return;
             }
-            if (!reverse_search && $.isFunction(options.keypress)) {
+            if ($.isFunction(options.keypress)) {
                 result = options.keypress(e);
+
+                console.log( result );
+
+                if (result !== undefined) {
+                    return result;
+                }
             }
             // key polyfill is not correct for keypress
             // https://github.com/cvan/keyboardevent-key-polyfill/issues/15
@@ -3734,30 +3767,26 @@ module.exports = {
             if (key.toUpperCase() === 'SPACEBAR') { // fix IE issue
                 key = ' ';
             }
-            if (result === undefined || result) {
-                if (enabled) {
-                    if ($.inArray(e.which, [13, 0, 8]) > -1) {
-                        if (e.keyCode === 123) { // for F12 which === 0
-                            return;
-                        }
-                        return false;
-                    // which === 100 - d
-                    } else if (key && (!e.ctrlKey || (e.ctrlKey && e.ctrlKey)) &&
-                               (!(e.altKey && e.which === 100) || e.altKey) &&
-                               !dead_key) {
-                        // dead_key are handled by input event
-                        if (reverse_search) {
-                            rev_search_str += key;
-                            reverse_history_search();
-                            draw_reverse_prompt();
-                        } else {
-                            self.insert(key);
-                        }
-                        return false;
+            if (enabled) {
+                if ($.inArray(e.which, [13, 0, 8]) > -1) {
+                    if (e.keyCode === 123) { // for F12 which === 0
+                        return;
                     }
+                    return false;
+                    // which === 100 - d
+                } else if (key && (!e.ctrlKey || (e.ctrlKey && e.ctrlKey)) &&
+                           (!(e.altKey && e.which === 100) || e.altKey) &&
+                           !dead_key) {
+                    // dead_key are handled by input event
+                    if (reverse_search) {
+                        rev_search_str += key;
+                        reverse_history_search();
+                        draw_reverse_prompt();
+                    } else {
+                        self.insert(key);
+                    }
+                    return false;
                 }
-            } else {
-                return result;
             }
         }
         function input() {
@@ -3905,12 +3934,12 @@ module.exports = {
     var format_begin_re = /(\[\[[!gbiuso]*;[^;]*;[^\]]*\])/i;
     var format_start_re = /^(\[\[[!gbiuso]*;[^;]*;[^\]]*\])/i;
     var format_last_re = /\[\[[!gbiuso]*;[^;]*;[^\]]*\]?$/i;
-    var format_exec_re = /(\[\[(?:[^\]]|\\\])*\]\])/;
+    var format_exec_re = /(\[\[(?:[^\]]|\\\])+\]\])/;
     var float_re = /^[-+]?[0-9]*\.?[0-9]+([eE][-+]?[0-9]+)?$/;
     var re_re = /^\/((?:\\\/|[^/]|\[[^\]]*\/[^\]]*\])+)\/([gimy]*)$/;
     /* eslint-enable */
     $.terminal = {
-        version: '1.0.14',
+        version: '1.2.0',
         // colors from http://www.w3.org/wiki/CSS/Properties/color/keywords
         color_names: [
             'transparent', 'currentcolor', 'black', 'silver', 'gray', 'white',
@@ -4203,6 +4232,9 @@ module.exports = {
                                         result += 'rel="noreferrer" ';
                                     }
                                 }
+                                // make focus to terminal textarea that will enable
+                                // terminal when pressing tab and terminal is disabled
+                                result += 'tabindex="1000" ';
                             } else {
                                 result = '<span';
                             }
@@ -4567,7 +4599,7 @@ module.exports = {
     // -----------------------------------------------------------------------
     var version_set = !$.terminal.version.match(/^\{\{/);
     var copyright = 'Copyright (c) 2011-2017 Jakub Jankiewicz <http://jcubic' +
-        '.pl>';
+        '.pl/me>';
     var version_string = version_set ? ' v. ' + $.terminal.version : ' ';
     // regex is for placing version string aligned to the right
     var reg = new RegExp(' {' + version_string.length + '}$');
@@ -4621,6 +4653,7 @@ module.exports = {
         checkArity: true,
         raw: false,
         exceptionHandler: null,
+        pauseEvents: true,
         memory: false,
         cancelableAjax: true,
         processArguments: true,
@@ -5434,7 +5467,8 @@ module.exports = {
         // ---------------------------------------------------------------------
         function show_greetings() {
             if (settings.greetings === undefined) {
-                self.echo(self.signature);
+                // signature have ascii art so it's not suite for screen readers
+                self.echo(self.signature, {finalize: a11y_hide});
             } else if (settings.greetings) {
                 var type = typeof settings.greetings;
                 if (type === 'string') {
@@ -5450,6 +5484,9 @@ module.exports = {
         // :: Display prompt and last command
         // ---------------------------------------------------------------------
         function echo_command(command) {
+            if (typeof command === 'undefined') {
+                command = self.get_command();
+            }
             var prompt = command_line.prompt();
             var mask = command_line.mask();
             switch (typeof mask) {
@@ -5466,7 +5503,7 @@ module.exports = {
             }
             var options = {
                 finalize: function(div) {
-                    div.addClass('command');
+                    a11y_hide(div.addClass('command'));
                 }
             };
             if ($.isFunction(prompt)) {
@@ -5882,40 +5919,53 @@ module.exports = {
             // Prevent to be executed by cmd: CTRL+D, TAB, CTRL+TAB (if more
             // then one terminal)
             var result, i;
-            if (!self.paused() && self.enabled()) {
-                result = user_key_down(e);
-                if (result !== undefined) {
-                    return result;
-                }
-                if (e.which !== 9) { // not a TAB
-                    tab_count = 0;
-                }
-                self.attr({scrollTop: self.attr('scrollHeight')});
-            } else if (e.which === 68 && e.ctrlKey) { // CTRL+D (if paused)
-                result = user_key_down(e);
-                if (result !== undefined) {
-                    return result;
-                }
-                if (requests.length) {
-                    for (i = requests.length; i--;) {
-                        var r = requests[i];
-                        if (r.readyState !== 4) {
-                            try {
-                                r.abort();
-                            } catch (error) {
-                                if ($.isFunction(settings.exceptionHandler)) {
-                                    settings.exceptionHandler.call(self, e, 'AJAX ABORT');
-                                } else {
-                                    self.error(strings.ajaxAbortError);
-                                }
-                            }
+            if (self.enabled()) {
+                if (!self.paused()) {
+                    result = user_key_down(e);
+                    if (result !== undefined) {
+                        return result;
+                    }
+                    if (e.which !== 9) { // not a TAB
+                        tab_count = 0;
+                    }
+                    self.attr({scrollTop: self.attr('scrollHeight')});
+                } else {
+                    if (!settings.pauseEvents) {
+                        result = user_key_down(e);
+                        if (result !== undefined) {
+                            return result;
                         }
                     }
-                    requests = [];
-                    // only resume if there are ajax calls
-                    self.resume();
+                    if (e.which === 68 && e.ctrlKey) { // CTRL+D (if paused)
+                        if (settings.pauseEvents) {
+                            result = user_key_down(e);
+                            if (result !== undefined) {
+                                return result;
+                            }
+                        }
+                        if (requests.length) {
+                            for (i = requests.length; i--;) {
+                                var r = requests[i];
+                                if (r.readyState !== 4) {
+                                    try {
+                                        r.abort();
+                                    } catch (error) {
+                                        if ($.isFunction(settings.exceptionHandler)) {
+                                            settings.exceptionHandler.call(self,
+                                                                           e,
+                                                                           'AJAX ABORT');
+                                        } else {
+                                            self.error(strings.ajaxAbortError);
+                                        }
+                                    }
+                                }
+                            }
+                            requests = [];
+                        }
+                        self.resume();
+                    }
+                    return false;
                 }
-                return false;
             }
         }
         function ready(defer) {
@@ -5976,6 +6026,9 @@ module.exports = {
         var enabled = settings.enabled, frozen = false;
         var paused = false;
         var autologin = true; // set to false of onBeforeLogin return false
+        var interpreters;
+        var command_line;
+        var old_enabled;
         // -----------------------------------------------------------------
         // TERMINAL METHODS
         // -----------------------------------------------------------------
@@ -6316,6 +6369,7 @@ module.exports = {
                     if (++tab_count >= 2) {
                         tab_count = 0;
                         if (options.echo) {
+                            echo_command();
                             var text = matched.reverse().join('\t');
                             self.echo($.terminal.escape_brackets(text), {
                                 keepWords: true
@@ -6587,7 +6641,9 @@ module.exports = {
                         self.resize();
                     }
                     cmd_ready(function ready() {
-                        command_line.enable();
+                        if (!self.paused()) {
+                            command_line.enable();
+                        }
                         enabled = true;
                     });
                 }
@@ -6665,11 +6721,11 @@ module.exports = {
             // -------------------------------------------------------------
             // :: Insert text into the command line after the cursor
             // -------------------------------------------------------------
-            insert: function(string) {
+            insert: function(string, stay) {
                 if (typeof string === 'string') {
                     when_ready(function ready() {
                         var bottom = self.is_bottom();
-                        command_line.insert(string);
+                        command_line.insert(string, stay);
                         if (settings.scrollOnEcho || bottom) {
                             scroll_to_bottom();
                         }
@@ -6790,8 +6846,8 @@ module.exports = {
                                 display_exception(e, 'USER:echo(finalize)');
                             }
                         } else {
-                            $('<div/>').html(line).
-                                appendTo(wrapper).width('100%');
+                            $('<div/>').html(line)
+                                .appendTo(wrapper).width('100%');
                         }
                     });
                     if (settings.outputLimit >= 0) {
@@ -6883,6 +6939,14 @@ module.exports = {
                             keepWords: false,
                             formatters: true
                         }, options || {});
+                        if (locals.raw) {
+                            (function(finalize) {
+                                locals.finalize = function(div) {
+                                    div.addClass('raw');
+                                    finalize(div);
+                                };
+                            })(locals.finalize);
+                        }
                         if (locals.flush) {
                             // flush buffer if there was no flush after previous echo
                             if (output_buffer.length) {
@@ -7256,11 +7320,13 @@ module.exports = {
                 when_ready(function ready() {
                     var prefix = self.prefix_name() + '_';
                     var names = storage.get(prefix + 'interpreters');
-                    $.each($.parseJSON(names), function(_, name) {
-                        storage.remove(name + '_commands');
-                        storage.remove(name + '_token');
-                        storage.remove(name + '_login');
-                    });
+                    if (names) {
+                        $.each($.parseJSON(names), function(_, name) {
+                            storage.remove(name + '_commands');
+                            storage.remove(name + '_token');
+                            storage.remove(name + '_login');
+                        });
+                    }
                     command_line.purge();
                     storage.remove(prefix + 'interpreters');
                 });
@@ -7351,7 +7417,8 @@ module.exports = {
         });
         var wrapper = $('<div class="terminal-wrapper"/>').appendTo(self);
         var iframe = $('<iframe/>').appendTo(wrapper);
-        output = $('<div>').addClass('terminal-output').appendTo(wrapper);
+        output = $('<div>').addClass('terminal-output').attr('role', 'log')
+            .appendTo(wrapper);
         self.addClass('terminal');
         // before login event
         if (settings.login && $.isFunction(settings.onBeforeLogin)) {
@@ -7383,9 +7450,11 @@ module.exports = {
                                                  settings.login);
         }
         terminals.append(self);
-        var interpreters;
-        var command_line;
-        var old_enabled;
+        self.on('focus.terminal', 'textarea', function(e, skip) {
+            if (!enabled && !skip) {
+                self.enable();
+            }
+        });
         function focus_terminal() {
             if (old_enabled) {
                 self.focus();
@@ -12816,6 +12885,9 @@ class TerminalPlugin
 		this.spinner 		= new __WEBPACK_IMPORTED_MODULE_4__modules_spinner__["a" /* default */]( this.terminal );
 		this.outputLiner 	= new __WEBPACK_IMPORTED_MODULE_6__modules_output__["a" /* default */]( this.terminal );
 		this.tabCommands	= new __WEBPACK_IMPORTED_MODULE_7__modules_tabManager__["a" /* default */]();
+
+		// THIS IS DIRTY HACK. WHY? TERMINAL PLUGIN key_press func is SO BUGGY AND GLOBAL
+		this.terminal.cmd().find('textarea').keypress( this.parseChar.bind(this) )
 	}
 
 	// getPlugin()
@@ -12823,10 +12895,10 @@ class TerminalPlugin
 	// 	return this.terminal;
 	// }
 
-	parseChar( evt, terminal )
+	parseChar( evt )
 	{
-		if ( !terminal.enabled() ) // key press fires globally on all terminals;
-			return false;
+		// if ( !terminal.enabled() ) // key press fires globally on all terminals;
+		// 	return false;
 
 		let keyCode = evt.keyCode || evt.which;
 		let ch 		= false;
@@ -12844,7 +12916,7 @@ class TerminalPlugin
 				this.hiddenCommand += ch;
 			} else
 			{
-				terminal.insert(ch);
+				this.terminal.insert(ch);
 			}
 
 			return false;
@@ -12910,7 +12982,7 @@ class TerminalPlugin
 			prompt			: '>',
 			// scrollOnEcho	: false,
 
-			keypress		: this.parseChar.bind(this),
+			// keypress		: this.parseChar.bind(this), // BUGGY BUGGY, assign on document wtf???
 			keydown			: this.parseKeyBinds.bind(this),
 
 			onInit			: this.changeActiveTerm,

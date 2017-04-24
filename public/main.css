@@ -12,7 +12,7 @@
  * Copyright (c) 2011-2017 Jakub Jankiewicz <http://jcubic.pl>
  * Released under the MIT license
  *
- * Date: Tue, 14 Mar 2017 16:16:27 +0000
+ * Date: Fri, 21 Apr 2017 16:18:05 +0000
  */
 .terminal .terminal-output .format, .cmd .format,
 .cmd .prompt, .cmd .prompt div, .terminal .terminal-output div div{
@@ -173,7 +173,7 @@
       border-bottom-color: #aaa;
       position: relative;
       top: 2px;
-      line-height: 11px;
+      line-height: 12px;
       border-left: none;
       margin: 0;
   }
@@ -181,7 +181,7 @@
       border-bottom-color: #000;
       position: relative;
       top: 2px;
-      line-height: 11px;
+      line-height: 12px;
       border-left: none;
       margin: 0;
   }
@@ -191,7 +191,7 @@
       border-bottom-color: #aaa;
       position: relative;
       top: 2px;
-      line-height: 11px;
+      line-height: 12px;
       border-left: none;
       margin: 0;
   }
@@ -199,7 +199,7 @@
       border-bottom-color: #000;
       position: relative;
       top: 2px;
-      line-height: 11px;
+      line-height: 12px;
       border-left: none;
       margin: 0;
   }
@@ -209,7 +209,7 @@
       border-bottom-color: #aaa;
       position: relative;
       top: 2px;
-      line-height: 11px;
+      line-height: 12px;
       border-left: none;
       margin: 0;
   }
@@ -543,7 +543,7 @@
           border-bottom-color: var(--color, #aaa);
           position: relative;
           top: 2px;
-          line-height: 11px;
+          line-height: calc(var(--size, 1) * 12px);
           border-left: none;
           margin: 0;
       }
@@ -551,7 +551,7 @@
           border-bottom-color: var(--background, #000);
           position: relative;
           top: 2px;
-          line-height: 11px;
+          line-height: calc(var(--size, 1) * 12px);
           border-left: none;
           margin: 0;
       }
@@ -561,7 +561,7 @@
           border-bottom-color: var(--background, #000);
           position: relative;
           top: 2px;
-          line-height: 11px;
+          line-height: calc(var(--size, 1) * 12px);
           border-left: none;
           margin: 0;
       }
@@ -569,7 +569,7 @@
           border-bottom-color: var(--color, #aaa);
           position: relative;
           top: 2px;
-          line-height: 11px;
+          line-height: calc(var(--size, 1) * 12px);
           border-left: none;
           margin: 0;
       }
@@ -579,7 +579,7 @@
           border-bottom-color: var(--background, #000);
           position: relative;
           top: 2px;
-          line-height: 11px;
+          line-height: calc(var(--size, 1) * 12px);
           border-left: none;
           margin: 0;
       }
@@ -587,7 +587,7 @@
           border-bottom-color: var(--color, #aaa);
           position: relative;
           top: 2px;
-          line-height: 11px;
+          line-height: calc(var(--size, 1) * 12px);
           border-left: none;
           margin: 0;
       }
@@ -597,7 +597,7 @@
           border-bottom-color: var(--background, #000);
           position: relative;
           top: 2px;
-          line-height: 11px;
+          line-height: calc(var(--size, 1) * 12px);
           border-left: none;
           margin: 0;
       }
@@ -605,7 +605,7 @@
           border-bottom-color: var(--color, #aaa);
           position: relative;
           top: 2px;
-          line-height: 11px;
+          line-height: calc(var(--size, 1) * 12px);
           border-left: none;
           margin: 0;
       }
@@ -1218,30 +1218,18 @@
 .terminal-wrap-custom .t-matrix-w-3 td {
   width: 25%;
 }
-.terminal-wrap-custom > .term-body .left table {
+.term-body table {
   background: #191a1b;
 }
-.terminal-wrap-custom > .term-body .left .terminal,
-.terminal-wrap-custom > .term-body .left .cmd {
-  background: #191a1b;
-}
-.terminal-wrap-custom > .term-body .terminal {
+.term-body .terminal {
   --background: #191a1b;
-}
-.terminal-wrap-custom > .term-body .cmd {
   background: #191a1b;
 }
-.terminal-wrap-custom > .term-body.sabre .left table {
+.term-body.sabre table {
   background: #263033;
 }
-.terminal-wrap-custom > .term-body.sabre .left .terminal,
-.terminal-wrap-custom > .term-body.sabre .left .cmd {
-  background: #263033;
-}
-.terminal-wrap-custom > .term-body.sabre .terminal {
+.term-body.sabre .terminal {
   --background: #263033;
-}
-.terminal-wrap-custom > .term-body.sabre .cmd {
   background: #263033;
 }
 body.terminalBody {
@@ -1289,7 +1277,6 @@ body.terminalBody {
   width: 100%;
   border-collapse: collapse;
   border-spacing: 0;
-  background: #000;
 }
 .terminal-wrap-custom > .term-body .left table tr td {
   border-right: 3px solid #fff;

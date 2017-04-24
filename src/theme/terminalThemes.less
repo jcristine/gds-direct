@@ -1,45 +1,23 @@
-.terminal-wrap-custom {
-
-    & > .term-body {
-
-        .left {
-            table {
-                background: @terminal-bg;
-            }
-
-            .terminal, .cmd{
-                background: @terminal-bg;
-            }
-        }
-
-        .terminal {
-            --background: @terminal-bg;
-        }
-
-        .cmd {
-            background: @terminal-bg;
-        }
+.term-body
+{
+    table {
+        background: @terminal-bg;
     }
 
-    & > .term-body.sabre {
+    .terminal {
+        --background: @terminal-bg;
+        background: @terminal-bg;
+    }
+}
 
-        .left {
-            table {
-                background: @terminal-sabre-bg;
-            }
+.term-body.sabre {
 
-            .terminal, .cmd{
-                background: @terminal-sabre-bg;
-            }
-        }
+    table {
+        background: @terminal-sabre-bg;
+    }
 
-        .terminal {
-            --background: @terminal-sabre-bg;
-        }
-
-        .cmd {
-            background: @terminal-sabre-bg;
-        }
-
+    .terminal {
+        --background: @terminal-sabre-bg;
+        background: @terminal-sabre-bg;
     }
 }

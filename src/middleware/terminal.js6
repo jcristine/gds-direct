@@ -52,6 +52,9 @@ export default class TerminalPlugin
 		this.spinner 		= new Spinner( this.terminal );
 		this.outputLiner 	= new OutputLiner( this.terminal );
 		this.tabCommands	= new TabManager();
+
+		// THIS IS DIRTY HACK. WHY? TERMINAL PLUGIN key_press func is SO BUGGY AND GLOBAL
+		this.terminal.cmd().find('textarea').keypress( this.parseChar.bind(this) )
 	}
 
 	// getPlugin()
@@ -59,10 +62,10 @@ export default class TerminalPlugin
 	// 	return this.terminal;
 	// }
 
-	parseChar( evt, terminal )
+	parseChar( evt )
 	{
-		if ( !terminal.enabled() ) // key press fires globally on all terminals;
-			return false;
+		// if ( !terminal.enabled() ) // key press fires globally on all terminals;
+		// 	return false;
 
 		let keyCode = evt.keyCode || evt.which;
 		let ch 		= false;
@@ -80,7 +83,7 @@ export default class TerminalPlugin
 				this.hiddenCommand += ch;
 			} else
 			{
-				terminal.insert(ch);
+				this.terminal.insert(ch);
 			}
 
 			return false;
@@ -146,7 +149,7 @@ export default class TerminalPlugin
 			prompt			: '>',
 			// scrollOnEcho	: false,
 
-			keypress		: this.parseChar.bind(this),
+			// keypress		: this.parseChar.bind(this), // BUGGY BUGGY, assign on document wtf???
 			keydown			: this.parseKeyBinds.bind(this),
 
 			onInit			: this.changeActiveTerm,
