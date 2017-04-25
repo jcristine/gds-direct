@@ -1,5 +1,7 @@
 let button;
 
+import Requests from '../../helpers/requests'
+
 export default class PqButton
 {
 	static makeButton(value, index)
@@ -11,7 +13,37 @@ export default class PqButton
 		// button.disabled = ! (!!this.settings.terminal);
 
 		button.onclick = () => {
-			window.TerminalState.change({}, 'PQ_MODAL_SHOW')
+
+			/*makeRequest( command, params )
+			{
+				return Requests.runSyncCommand( command, params );
+			}
+
+			run( params )
+			{
+				const rData = {
+					// sessionToken	: this.settings['sessionToken'],
+
+					sessionIndex	: parseInt(this.settings['sessionIndex']) + 1,
+					terminalIndex	: parseInt(this.settings['terminalIndex']) + 1,
+
+					command			: params['cmd'],
+
+					gds				: this.settings['gds'],
+					language		: window.TerminalState.state.language,
+
+					terminalData	: window.apiData['terminalData']
+				};
+
+				return this.makeRequest( 'runCommand', rData );
+				// return Requests.runSyncCommand('runCommand', );
+			}*/
+
+			// Requests.get('terminal/getPqData').then( () => {
+			// 	console.log('aa', arguments );
+				window.TerminalState.change({}, 'PQ_MODAL_SHOW')
+			// });
+
 		};
 
 		return button;

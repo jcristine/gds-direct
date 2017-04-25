@@ -128,6 +128,7 @@ class TerminalState
 			break;
 
 			case 'PQ_MODAL_SHOW' :
+
 				if (this.state.activeTerminal)
 				{
 					apiData.pqModal.show({

@@ -13,12 +13,15 @@ export default class KeyBinding
 	static parse(evt, terminal)
 	{
 		let keymap 		= evt.keyCode || evt.which;
-		let isApollo	= window.TerminalState.state.language === 'APOLLO';
+		let isApollo	= window.TerminalState.state.gds === 'apollo';
+
 		// console.log(keymap);
+
+		// evt.preventDefault();
+		// evt.stopPropagation();
 
 		if ( evt.ctrlKey || evt.metaKey )
 		{
-			// evt.preventDefault();
 
 			switch (keymap)
 			{
@@ -31,6 +34,7 @@ export default class KeyBinding
 				break;
 
 				case 68 :
+					console.log('dddd');
 					// CTRL+D
 					return false;
 				break;
@@ -52,7 +56,8 @@ export default class KeyBinding
 					// Example for Apollo: ¤:5S1 985.00 N1 720.00 F1 500.00
 					// Template for Sabre: 5S(paxOrder) (sellPrice) N1 (netPrice) F1 (fareAmount)
 					// Example for Sabre: 5S1 985.00 N1 720.00 F1 500.00
-
+					evt.preventDefault();
+					console.log('F9');
 					return false;
 				break;
 
@@ -77,6 +82,7 @@ export default class KeyBinding
 					// Sabre template: W/*(City Code)
  					// Sabre example: W/*RIX
 
+					console.log('???');
 					return false;
 				break;
 
@@ -87,6 +93,9 @@ export default class KeyBinding
 					// Sabre template: W/*(Airline Code)
 					 // Sabre example: W/*BT
 
+					console.log('@@@@@')
+
+					terminal.insert( isApollo ? 'S*AIR/' : 'W/*' );
 					return false;
 				break;
 
@@ -99,37 +108,30 @@ export default class KeyBinding
 		{
 			switch (keymap)
 			{
-				case 120 :
-					// F9
-					// Template for Apollo: P:(agencyLocation)AS/(agencyPhone) (freeText)
-					// Example for Apollo: P:SFOAS/800-750-2238 ASAP CUSTOMER SUPPORT
-					// Template for Sabre: 9(agencyPhone)-A
-					// Example for Sabre: 91-800-750-2238-A
-
+				case 120 : //f9
+					let cmd = isApollo ? 'P:SFOAS/800-750-2238 ASAP CUSTOMER SUPPORT' : '91-800-750-2238-A';
+					terminal.exec(cmd);
 					return false;
 				break;
 
 				case 117: //F6
-					// Apollo example: SEM/2G55/AG
-					// Sabre example: AAA6IIF
+					terminal.exec(isApollo ? 'SEM/2G55/AG' : 'AAA6IIF');
 					return false;
 				break;
 
 				case 118: //F7
-					// Apollo example: SEM/2G2H/AG
-					// Sabre example: AAADK8H
+					terminal.exec(isApollo ? 'SEM/2G2H/AG' : 'AAADK8H');
 					return false;
 				break;
 
 				case 119: //F8
-					// Apollo example: SEM/2BQ6/AG
-					// Sabre example: AAAW8K7
+					terminal.exec(isApollo ? 'SEM/2BQ6/AG' : 'AAAW8K7');
 					return false;
 				break;
 
 				case 187: //+
 				case 188: //,
-					terminal.insert('+*');
+					terminal.insert('+');
 					return false;
 				break;
 
@@ -168,12 +170,26 @@ export default class KeyBinding
 				return false;
 			break;
 
-			case 119 :
-				// console.log('f8');
-				// Template for Apollo: ¤:3SSRDOCSYYHK1/N(paxOrder)/////(paxDob)/(paxG)//(paxLast)/(paxFirst)
-				// Example fro Apollo: ¤:3SSRDOCSYYHK1/N1/////05MAR90/F//LAST/FIRST
-				// Template for Sabre: 3DOCSA/DB/(paxDob)/(paxG)/(paxLast)/(paxFirst)-(paxOrder)
-				// Example for Sabre: 3DOCSA/DB/05MAR90/F/LASTNAME/NAME-1.1
+			case 119 : //f8
+
+				let cmd = {};
+
+				if (isApollo)
+				{
+					cmd = {
+						pos 	: '¤:3SSRDOCSYYHK1/N'.length,
+						cmd		: '¤:3SSRDOCSYYHK1/N ///// DMMMYY/ //          /          / '
+					}
+				} else
+				{
+					cmd = {
+						pos		: '3DOCSA/DB/'.length,
+						cmd		: '3DOCSA/DB/DDMMMYY/      /        /        -'
+					}
+				}
+
+				terminal.insert( cmd.cmd );
+				terminal.cmd().position( cmd.pos );
 
 				return false;
 			break;

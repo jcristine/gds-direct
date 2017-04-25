@@ -74,7 +74,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 
 (function(root, factory) {
   if (true) {
-    !(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(13)], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory),
+    !(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(14)], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory),
 				__WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ?
 				(__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__),
 				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
@@ -661,6 +661,7 @@ return Drop;
 function substitutePrintableChar(ch)
 {
 	const isApollo	= window.TerminalState.state.language === 'APOLLO';
+	// const isApollo	= window.TerminalState.state.gds === 'apollo';
 
 	const sabreLayout = {
 		'\'': '‡',
@@ -678,9 +679,15 @@ function substitutePrintableChar(ch)
 		'`': '>',
 		',': '+',
 		';': ':',
+		'\\': false,
 	};
 
 	const layout = isApollo ? apolloLayout : sabreLayout;
+
+	if ( layout[ch] === false )
+	{
+		return false;
+	}
 
 	return layout[ch] || ch.toUpperCase();
 }
@@ -762,8 +769,7 @@ module.exports = g;
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-//const END_POINT_URL	 		= '?id=terminal/middleware';
-const END_POINT_URL	 		= 'terminal/command?';
+const END_POINT_URL	 		= '?id=terminal/middleware';
 /* harmony export (immutable) */ __webpack_exports__["d"] = END_POINT_URL;
 
 const TIME_FORMAT 			= '12';
@@ -778,17 +784,73 @@ const API_HOST 				= '';
 
 /***/ }),
 /* 4 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__constants__ = __webpack_require__(3);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_whatwg_fetch__ = __webpack_require__(16);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_whatwg_fetch___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1_whatwg_fetch__);
+
+
+
+
+
+function get( url )
+{
+	if (!url )
+		return '';
+
+	return fetch(__WEBPACK_IMPORTED_MODULE_0__constants__["c" /* API_HOST */] + url, {
+		credentials: 'include'
+	}).then( function( response ) {
+		return response.json();
+	})
+}
+
+
+function runSyncCommand( functionName, params )
+{
+	let url 	= window.apiData.getCommandUrl || __WEBPACK_IMPORTED_MODULE_0__constants__["d" /* END_POINT_URL */];
+
+	let data 	= {
+		'function'	: functionName,
+		'params'	: params
+	};
+
+	let get 		= JSON.stringify(data, true);
+
+	let formData 	= new FormData();
+	formData.append( "data", get );
+
+	url += '&function=' + functionName;
+
+	return fetch(__WEBPACK_IMPORTED_MODULE_0__constants__["c" /* API_HOST */] + url, {
+		credentials	: 'include',
+		body		: formData,
+		method		: 'POST',
+	}).then( function( response ) {
+		return response.json();
+	})
+}
+
+/* harmony default export */ __webpack_exports__["a"] = ({
+	runSyncCommand	: runSyncCommand,
+	get 			: get
+});
+
+/***/ }),
+/* 5 */
 /***/ (function(module, exports) {
 
 // removed by extract-text-webpack-plugin
 
 /***/ }),
-/* 5 */
+/* 6 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__components_containerMain__ = __webpack_require__(17);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__components_containerMain__ = __webpack_require__(18);
 
 
 
@@ -919,6 +981,7 @@ class TerminalState
 			break;
 
 			case 'PQ_MODAL_SHOW' :
+
 				if (this.state.activeTerminal)
 				{
 					apiData.pqModal.show({
@@ -951,16 +1014,16 @@ window.onresize = function() {
 Context.init();
 
 /***/ }),
-/* 6 */
+/* 7 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
-module.exports = __webpack_require__(7);
+module.exports = __webpack_require__(8);
 
 
 /***/ }),
-/* 7 */
+/* 8 */
 /***/ (function(module, exports) {
 
 module.exports = {
@@ -1797,7 +1860,7 @@ module.exports = {
 };
 
 /***/ }),
-/* 8 */
+/* 9 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(global, setImmediate) {/**@license
@@ -7757,10 +7820,10 @@ module.exports = {
     }; // terminal plugin
 })(jQuery);
 
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2), __webpack_require__(14).setImmediate))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2), __webpack_require__(15).setImmediate))
 
 /***/ }),
-/* 9 */
+/* 10 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_RESULT__;/* global define, KeyboardEvent, module */
@@ -7891,7 +7954,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_RESULT__;/* global defi
 
 
 /***/ }),
-/* 10 */
+/* 11 */
 /***/ (function(module, exports, __webpack_require__) {
 
 (function webpackUniversalModuleDefinition(root, factory) {
@@ -8926,7 +8989,7 @@ module.exports = exports['default'];
 //# sourceMappingURL=noty.js.map
 
 /***/ }),
-/* 11 */
+/* 12 */
 /***/ (function(module, exports) {
 
 // shim for using process in browser
@@ -9112,7 +9175,7 @@ process.umask = function() { return 0; };
 
 
 /***/ }),
-/* 12 */
+/* 13 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(global, process) {(function (global, undefined) {
@@ -9302,10 +9365,10 @@ process.umask = function() { return 0; };
     attachTo.clearImmediate = clearImmediate;
 }(typeof self === "undefined" ? typeof global === "undefined" ? this : global : self));
 
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2), __webpack_require__(11)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2), __webpack_require__(12)))
 
 /***/ }),
-/* 13 */
+/* 14 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_RESULT__;/*! tether 1.4.0 */
@@ -11126,7 +11189,7 @@ return Tether;
 
 
 /***/ }),
-/* 14 */
+/* 15 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var apply = Function.prototype.apply;
@@ -11179,13 +11242,13 @@ exports._unrefActive = exports.active = function(item) {
 };
 
 // setimmediate attaches itself to the global object
-__webpack_require__(12);
+__webpack_require__(13);
 exports.setImmediate = setImmediate;
 exports.clearImmediate = clearImmediate;
 
 
 /***/ }),
-/* 15 */
+/* 16 */
 /***/ (function(module, exports) {
 
 (function(self) {
@@ -11652,11 +11715,11 @@ exports.clearImmediate = clearImmediate;
 
 
 /***/ }),
-/* 16 */
+/* 17 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__popovers_terminalMatrix__ = __webpack_require__(22);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__popovers_terminalMatrix__ = __webpack_require__(23);
 
 
 
@@ -11709,13 +11772,13 @@ class ActionsMenu {
 
 
 /***/ }),
-/* 17 */
+/* 18 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__terminal__ = __webpack_require__(24);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__actionsMenu__ = __webpack_require__(16);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__menuPanel__ = __webpack_require__(20);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__terminal__ = __webpack_require__(25);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__actionsMenu__ = __webpack_require__(17);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__menuPanel__ = __webpack_require__(21);
 
 
 
@@ -11909,11 +11972,14 @@ class Container {
 
 
 /***/ }),
-/* 18 */
+/* 19 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__helpers_requests__ = __webpack_require__(4);
 let button;
+
+
 
 class PqButton
 {
@@ -11926,7 +11992,37 @@ class PqButton
 		// button.disabled = ! (!!this.settings.terminal);
 
 		button.onclick = () => {
-			window.TerminalState.change({}, 'PQ_MODAL_SHOW')
+
+			/*makeRequest( command, params )
+			{
+				return Requests.runSyncCommand( command, params );
+			}
+
+			run( params )
+			{
+				const rData = {
+					// sessionToken	: this.settings['sessionToken'],
+
+					sessionIndex	: parseInt(this.settings['sessionIndex']) + 1,
+					terminalIndex	: parseInt(this.settings['terminalIndex']) + 1,
+
+					command			: params['cmd'],
+
+					gds				: this.settings['gds'],
+					language		: window.TerminalState.state.language,
+
+					terminalData	: window.apiData['terminalData']
+				};
+
+				return this.makeRequest( 'runCommand', rData );
+				// return Requests.runSyncCommand('runCommand', );
+			}*/
+
+			// Requests.get('terminal/getPqData').then( () => {
+			// 	console.log('aa', arguments );
+				window.TerminalState.change({}, 'PQ_MODAL_SHOW')
+			// });
+
 		};
 
 		return button;
@@ -11948,7 +12044,7 @@ class PqButton
 
 
 /***/ }),
-/* 19 */
+/* 20 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -12028,14 +12124,14 @@ class SessionKeys
 
 
 /***/ }),
-/* 20 */
+/* 21 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__popovers_history__ = __webpack_require__(21);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__popovers_textSize__ = __webpack_require__(23);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__menu_sessionButtons__ = __webpack_require__(19);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__menu_pqButton__ = __webpack_require__(18);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__popovers_history__ = __webpack_require__(22);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__popovers_textSize__ = __webpack_require__(24);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__menu_sessionButtons__ = __webpack_require__(20);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__menu_pqButton__ = __webpack_require__(19);
 
 
 
@@ -12209,7 +12305,7 @@ class MenuPanel
 
 
 /***/ }),
-/* 21 */
+/* 22 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -12258,7 +12354,7 @@ class History
 /* harmony default export */ __webpack_exports__["a"] = (History);
 
 /***/ }),
-/* 22 */
+/* 23 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -12354,7 +12450,7 @@ class Matrix
 /* harmony default export */ __webpack_exports__["a"] = (Matrix);
 
 /***/ }),
-/* 23 */
+/* 24 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -12420,7 +12516,7 @@ class TextSize
 /* harmony default export */ __webpack_exports__["a"] = (TextSize);
 
 /***/ }),
-/* 24 */
+/* 25 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -12544,7 +12640,7 @@ class Terminal {
 
 
 /***/ }),
-/* 25 */
+/* 26 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -12563,12 +12659,15 @@ class KeyBinding
 	static parse(evt, terminal)
 	{
 		let keymap 		= evt.keyCode || evt.which;
-		let isApollo	= window.TerminalState.state.language === 'APOLLO';
+		let isApollo	= window.TerminalState.state.gds === 'apollo';
+
 		// console.log(keymap);
+
+		// evt.preventDefault();
+		// evt.stopPropagation();
 
 		if ( evt.ctrlKey || evt.metaKey )
 		{
-			// evt.preventDefault();
 
 			switch (keymap)
 			{
@@ -12581,6 +12680,7 @@ class KeyBinding
 				break;
 
 				case 68 :
+					console.log('dddd');
 					// CTRL+D
 					return false;
 				break;
@@ -12602,7 +12702,8 @@ class KeyBinding
 					// Example for Apollo: ¤:5S1 985.00 N1 720.00 F1 500.00
 					// Template for Sabre: 5S(paxOrder) (sellPrice) N1 (netPrice) F1 (fareAmount)
 					// Example for Sabre: 5S1 985.00 N1 720.00 F1 500.00
-
+					evt.preventDefault();
+					console.log('F9');
 					return false;
 				break;
 
@@ -12627,6 +12728,7 @@ class KeyBinding
 					// Sabre template: W/*(City Code)
  					// Sabre example: W/*RIX
 
+					console.log('???');
 					return false;
 				break;
 
@@ -12637,6 +12739,9 @@ class KeyBinding
 					// Sabre template: W/*(Airline Code)
 					 // Sabre example: W/*BT
 
+					console.log('@@@@@')
+
+					terminal.insert( isApollo ? 'S*AIR/' : 'W/*' );
 					return false;
 				break;
 
@@ -12649,37 +12754,30 @@ class KeyBinding
 		{
 			switch (keymap)
 			{
-				case 120 :
-					// F9
-					// Template for Apollo: P:(agencyLocation)AS/(agencyPhone) (freeText)
-					// Example for Apollo: P:SFOAS/800-750-2238 ASAP CUSTOMER SUPPORT
-					// Template for Sabre: 9(agencyPhone)-A
-					// Example for Sabre: 91-800-750-2238-A
-
+				case 120 : //f9
+					let cmd = isApollo ? 'P:SFOAS/800-750-2238 ASAP CUSTOMER SUPPORT' : '91-800-750-2238-A';
+					terminal.exec(cmd);
 					return false;
 				break;
 
 				case 117: //F6
-					// Apollo example: SEM/2G55/AG
-					// Sabre example: AAA6IIF
+					terminal.exec(isApollo ? 'SEM/2G55/AG' : 'AAA6IIF');
 					return false;
 				break;
 
 				case 118: //F7
-					// Apollo example: SEM/2G2H/AG
-					// Sabre example: AAADK8H
+					terminal.exec(isApollo ? 'SEM/2G2H/AG' : 'AAADK8H');
 					return false;
 				break;
 
 				case 119: //F8
-					// Apollo example: SEM/2BQ6/AG
-					// Sabre example: AAAW8K7
+					terminal.exec(isApollo ? 'SEM/2BQ6/AG' : 'AAAW8K7');
 					return false;
 				break;
 
 				case 187: //+
 				case 188: //,
-					terminal.insert('+*');
+					terminal.insert('+');
 					return false;
 				break;
 
@@ -12718,12 +12816,26 @@ class KeyBinding
 				return false;
 			break;
 
-			case 119 :
-				// console.log('f8');
-				// Template for Apollo: ¤:3SSRDOCSYYHK1/N(paxOrder)/////(paxDob)/(paxG)//(paxLast)/(paxFirst)
-				// Example fro Apollo: ¤:3SSRDOCSYYHK1/N1/////05MAR90/F//LAST/FIRST
-				// Template for Sabre: 3DOCSA/DB/(paxDob)/(paxG)/(paxLast)/(paxFirst)-(paxOrder)
-				// Example for Sabre: 3DOCSA/DB/05MAR90/F/LASTNAME/NAME-1.1
+			case 119 : //f8
+
+				let cmd = {};
+
+				if (isApollo)
+				{
+					cmd = {
+						pos 	: '¤:3SSRDOCSYYHK1/N'.length,
+						cmd		: '¤:3SSRDOCSYYHK1/N ///// DMMMYY/ //          /          / '
+					}
+				} else
+				{
+					cmd = {
+						pos		: '3DOCSA/DB/'.length,
+						cmd		: '3DOCSA/DB/DDMMMYY/      /        /        -'
+					}
+				}
+
+				terminal.insert( cmd.cmd );
+				terminal.cmd().position( cmd.pos );
 
 				return false;
 			break;
@@ -12738,73 +12850,17 @@ class KeyBinding
 
 
 /***/ }),
-/* 26 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__constants__ = __webpack_require__(3);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_whatwg_fetch__ = __webpack_require__(15);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_whatwg_fetch___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1_whatwg_fetch__);
-
-
-
-
-
-function get( url )
-{
-	if (!url )
-		return '';
-
-	return fetch(__WEBPACK_IMPORTED_MODULE_0__constants__["c" /* API_HOST */] + url, {
-		credentials: 'include'
-	}).then( function(  response ) {
-		return response.json();
-	})
-}
-
-
-function runSyncCommand( functionName, params )
-{
-	let url 	= window.apiData.getCommandUrl || __WEBPACK_IMPORTED_MODULE_0__constants__["d" /* END_POINT_URL */];
-
-	let data 	= {
-		'function'	: functionName,
-		'params'	: params
-	};
-
-	let get 		= JSON.stringify(data, true);
-
-	let formData 	= new FormData();
-	formData.append( "data", get );
-
-	url += '&function=' + functionName;
-
-	return fetch(__WEBPACK_IMPORTED_MODULE_0__constants__["c" /* API_HOST */] + url, {
-		credentials	: 'include',
-		body		: formData,
-		method		: 'POST',
-	}).then( function( response ) {
-		return response.json();
-	})
-}
-
-/* harmony default export */ __webpack_exports__["a"] = ({
-	runSyncCommand	: runSyncCommand,
-	get 			: get
-});
-
-/***/ }),
 /* 27 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_noty__ = __webpack_require__(10);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_noty__ = __webpack_require__(11);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_noty___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_noty__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__helpers_helpers__ = __webpack_require__(1);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__modules_pagination__ = __webpack_require__(29);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__modules_sabreSession__ = __webpack_require__(30);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__modules_spinner__ = __webpack_require__(31);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__helpers_keyBinding__ = __webpack_require__(25);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__helpers_keyBinding__ = __webpack_require__(26);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__modules_output__ = __webpack_require__(28);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__modules_tabManager__ = __webpack_require__(32);
 
@@ -12812,8 +12868,8 @@ function runSyncCommand( functionName, params )
 let $					= __webpack_require__(33);
 window.$ 				= window.jQuery = $;
 
-__webpack_require__(8);
-__webpack_require__(9).polyfill();
+__webpack_require__(9);
+__webpack_require__(10).polyfill();
 
 
 
@@ -12902,6 +12958,9 @@ class TerminalPlugin
 			}
 
 			return false;
+		} else
+		{
+			return false;
 		}
 	}
 
@@ -12971,8 +13030,8 @@ class TerminalPlugin
 			onTerminalChange: this.changeActiveTerm,
 
 			keymap			: {
-				'CTRL+S': () => this.clearBuf(),
-				'TAB'	: () => this.tabPressed()
+				'CTRL+S'	: () => this.clearBuf(),
+				'TAB'		: () => this.tabPressed()
 			},
 
 			exceptionHandler( err )
@@ -13314,7 +13373,7 @@ class Pagination
 
 "use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__constants__ = __webpack_require__(3);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__helpers_requests__ = __webpack_require__(26);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__helpers_requests__ = __webpack_require__(4);
 
 
 
@@ -13394,7 +13453,7 @@ class Session
 "use strict";
 
 
-const cliSpinners 		= __webpack_require__(6);
+const cliSpinners 		= __webpack_require__(7);
 
 class Spinner
 {
@@ -13521,8 +13580,8 @@ module.exports = jQuery;
 /* 34 */
 /***/ (function(module, exports, __webpack_require__) {
 
-__webpack_require__(5);
-module.exports = __webpack_require__(4);
+__webpack_require__(6);
+module.exports = __webpack_require__(5);
 
 
 /***/ })

@@ -10,7 +10,7 @@ function get( url )
 
 	return fetch(API_HOST + url, {
 		credentials: 'include'
-	}).then( function(  response ) {
+	}).then( function( response ) {
 		return response.json();
 	})
 }

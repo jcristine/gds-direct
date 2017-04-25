@@ -93,6 +93,9 @@ export default class TerminalPlugin
 			}
 
 			return false;
+		} else
+		{
+			return false;
 		}
 	}
 
@@ -162,8 +165,8 @@ export default class TerminalPlugin
 			onTerminalChange: this.changeActiveTerm,
 
 			keymap			: {
-				'CTRL+S': () => this.clearBuf(),
-				'TAB'	: () => this.tabPressed()
+				'CTRL+S'	: () => this.clearBuf(),
+				'TAB'		: () => this.tabPressed()
 			},
 
 			exceptionHandler( err )

@@ -19,6 +19,7 @@
 function substitutePrintableChar(ch)
 {
 	const isApollo	= window.TerminalState.state.language === 'APOLLO';
+	// const isApollo	= window.TerminalState.state.gds === 'apollo';
 
 	const sabreLayout = {
 		'\'': '‡',
@@ -36,9 +37,13 @@ function substitutePrintableChar(ch)
 		'`': '>',
 		',': '+',
 		';': ':',
+		'\\': false,
 	};
 
 	const layout = isApollo ? apolloLayout : sabreLayout;
+
+	if ( layout[ch] === false )
+		return false;
 
 	return layout[ch] || ch.toUpperCase();
 }
