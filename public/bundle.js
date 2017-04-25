@@ -3733,7 +3733,6 @@ module.exports = {
         }
         var doc = $(document.documentElement || window);
 
-        console.log( doc );
 
         self.keymap(options.keymap);
         function keypress_event(e) {
@@ -3748,8 +3747,6 @@ module.exports = {
             }
             if ($.isFunction(options.keypress)) {
                 result = options.keypress(e);
-
-                console.log( result );
 
                 if (result !== undefined) {
                     return result;
@@ -12887,7 +12884,7 @@ class TerminalPlugin
 		this.tabCommands	= new __WEBPACK_IMPORTED_MODULE_7__modules_tabManager__["a" /* default */]();
 
 		// THIS IS DIRTY HACK. WHY? TERMINAL PLUGIN key_press func is SO BUGGY AND GLOBAL
-		this.terminal.cmd().find('textarea').keypress( this.parseChar.bind(this) )
+		// this.terminal.cmd().find('textarea.clipboard').keypress( this.parseChar.bind(this) )
 	}
 
 	// getPlugin()
@@ -12895,10 +12892,16 @@ class TerminalPlugin
 	// 	return this.terminal;
 	// }
 
-	parseChar( evt )
+	parseChar( evt, terminal )
 	{
-		// if ( !terminal.enabled() ) // key press fires globally on all terminals;
-		// 	return false;
+		if ( evt.target.nodeName === 'BODY')
+			return false;
+
+		if (terminal.cmd().find('textarea')[0] !== evt.target)
+			return undefined;
+
+		if ( !terminal.enabled() ) // key press fires globally on all terminals;
+			return false;
 
 		let keyCode = evt.keyCode || evt.which;
 		let ch 		= false;
@@ -12916,7 +12919,7 @@ class TerminalPlugin
 				this.hiddenCommand += ch;
 			} else
 			{
-				this.terminal.insert(ch);
+				terminal.insert(ch);
 			}
 
 			return false;
@@ -12980,9 +12983,9 @@ class TerminalPlugin
 			greetings		: '',
 			name			: this.name,
 			prompt			: '>',
-			// scrollOnEcho	: false,
 
-			// keypress		: this.parseChar.bind(this), // BUGGY BUGGY, assign on document wtf???
+			// scrollOnEcho	: false,
+			keypress		: this.parseChar, // BUGGY BUGGY, assign on document wtf???
 			keydown			: this.parseKeyBinds.bind(this),
 
 			onInit			: this.changeActiveTerm,
