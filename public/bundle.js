@@ -762,7 +762,8 @@ module.exports = g;
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-const END_POINT_URL	 		= '?id=terminal/middleware';
+//const END_POINT_URL	 		= '?id=terminal/middleware';
+const END_POINT_URL	 		= 'terminal/command?';
 /* harmony export (immutable) */ __webpack_exports__["d"] = END_POINT_URL;
 
 const TIME_FORMAT 			= '12';
