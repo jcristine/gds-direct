@@ -1,10 +1,9 @@
 'use strict';
-// let $ = require('jquery');
 
 import {END_POINT_URL, API_HOST} from  '../constants'
 import 'whatwg-fetch'
 
-function get( url, params )
+function get( url )
 {
 	if (!url )
 		return '';
@@ -19,17 +18,12 @@ function get( url, params )
 
 function runSyncCommand( functionName, params )
 {
-	let url 	= END_POINT_URL;
+	let url 	= window.apiData.getCommandUrl || END_POINT_URL;
 
 	let data 	= {
 		'function'	: functionName,
 		'params'	: params
 	};
-
-	// body: JSON.stringify({
-	// 	email: document.getElementById('email').value
-	// 	answer: document.getElementById('answer').value
-	// })
 
 	let get 		= JSON.stringify(data, true);
 
@@ -37,13 +31,6 @@ function runSyncCommand( functionName, params )
 	formData.append( "data", get );
 
 	url += '&function=' + functionName;
-	// url += '&data=' + get + '&function=' + functionName;
-
-	// let myHeaders = new Headers({
-	// 	"Content-Type": "application/x-www-form-urlencoded; charset=UTF-8"
-		// "Content-Length": content.length.toString(),
-		// "X-Custom-Header": "ProcessThisImmediately",
-	// });
 
 	return fetch(API_HOST + url, {
 		credentials	: 'include',

@@ -762,15 +762,6 @@ module.exports = g;
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-const TERMINAL_HEIGHT 		= '650';
-/* unused harmony export TERMINAL_HEIGHT */
-
-const TERMINAL_SPLIT_HEIGHT 	= '325';
-/* unused harmony export TERMINAL_SPLIT_HEIGHT */
-
-const INFO_DATA_URL 	 		= '?id=terminal/middleware&getInfoData=1';
-/* unused harmony export INFO_DATA_URL */
-
 const END_POINT_URL	 		= '?id=terminal/middleware';
 /* harmony export (immutable) */ __webpack_exports__["d"] = END_POINT_URL;
 
@@ -12754,12 +12745,11 @@ class KeyBinding
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_whatwg_fetch__ = __webpack_require__(15);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_whatwg_fetch___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1_whatwg_fetch__);
 
-// let $ = require('jquery');
 
 
 
 
-function get( url, params )
+function get( url )
 {
 	if (!url )
 		return '';
@@ -12774,17 +12764,12 @@ function get( url, params )
 
 function runSyncCommand( functionName, params )
 {
-	let url 	= __WEBPACK_IMPORTED_MODULE_0__constants__["d" /* END_POINT_URL */];
+	let url 	= window.apiData.getCommandUrl || __WEBPACK_IMPORTED_MODULE_0__constants__["d" /* END_POINT_URL */];
 
 	let data 	= {
 		'function'	: functionName,
 		'params'	: params
 	};
-
-	// body: JSON.stringify({
-	// 	email: document.getElementById('email').value
-	// 	answer: document.getElementById('answer').value
-	// })
 
 	let get 		= JSON.stringify(data, true);
 
@@ -12792,13 +12777,6 @@ function runSyncCommand( functionName, params )
 	formData.append( "data", get );
 
 	url += '&function=' + functionName;
-	// url += '&data=' + get + '&function=' + functionName;
-
-	// let myHeaders = new Headers({
-	// 	"Content-Type": "application/x-www-form-urlencoded; charset=UTF-8"
-		// "Content-Length": content.length.toString(),
-		// "X-Custom-Header": "ProcessThisImmediately",
-	// });
 
 	return fetch(__WEBPACK_IMPORTED_MODULE_0__constants__["c" /* API_HOST */] + url, {
 		credentials	: 'include',
