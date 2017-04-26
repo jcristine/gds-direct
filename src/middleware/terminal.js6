@@ -93,10 +93,10 @@ export default class TerminalPlugin
 			}
 
 			return false;
-		} else
-		{
-			return false;
 		}
+
+		if (ch === false)
+			return false;
 	}
 
 	parseKeyBinds( evt, terminal )

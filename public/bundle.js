@@ -685,9 +685,7 @@ function substitutePrintableChar(ch)
 	const layout = isApollo ? apolloLayout : sabreLayout;
 
 	if ( layout[ch] === false )
-	{
 		return false;
-	}
 
 	return layout[ch] || ch.toUpperCase();
 }
@@ -12958,10 +12956,10 @@ class TerminalPlugin
 			}
 
 			return false;
-		} else
-		{
-			return false;
 		}
+
+		if (ch === false)
+			return false;
 	}
 
 	parseKeyBinds( evt, terminal )
