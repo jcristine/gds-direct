@@ -12926,14 +12926,6 @@ class TerminalPlugin
 
 	parseChar( evt, terminal )
 	{
-		console.log(' parse CHar ');
-
-		if ( this.f8Reader.getIsActive() )
-		{
-			this.f8Reader.keyPressed( evt );
-			return false;
-		}
-
 		// key press fires globally on all terminals;
 		if ( evt.target.nodeName === 'BODY')
 			return false;
@@ -12944,14 +12936,24 @@ class TerminalPlugin
 		if ( !terminal.enabled() )
 			return false;
 
+		if ( this.f8Reader.getIsActive() )
+		{
+			this.f8Reader.keyPressed( evt );
+			return false;
+		}
+
 		let keyCode = evt.keyCode || evt.which;
-		let ch 		= false;
 
 		if (keyCode === 13)
 			return false;
 
+		let ch 		= false;
+
 		if (keyCode && !evt.ctrlKey)
 			ch = __WEBPACK_IMPORTED_MODULE_1__helpers_helpers__["a" /* default */].substitutePrintableChar( String.fromCharCode( keyCode ) );
+
+		if (!ch)
+			return ch;
 
 		if (ch)
 		{
@@ -13159,8 +13161,6 @@ class TerminalPlugin
 				this.terminal.echo( output );
 			} else
 			{
-				// Debug( 'IN DEVELOPMENT!!!!!!!!!!!' );
-
 				const clearScreen = result['clearScreen'] && window.TerminalState.getMatrix().rows !== 0;
 
 				if (clearScreen)
