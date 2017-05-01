@@ -10,10 +10,10 @@ window.addEventListener("beforeunload", function (e) {
 
 export default class KeyBinding
 {
-	static parse(evt, terminal)
+	static parse(evt, terminal, plugin)
 	{
-		let keymap 		= evt.keyCode || evt.which;
-		let isApollo	= window.TerminalState.state.gds === 'apollo';
+		const keymap 	= evt.keyCode || evt.which;
+		const isApollo	= window.TerminalState.state.gds === 'apollo';
 
 		// console.log(keymap);
 
@@ -93,8 +93,6 @@ export default class KeyBinding
 					// Sabre template: W/*(Airline Code)
 					 // Sabre example: W/*BT
 
-					console.log('@@@@@')
-
 					terminal.insert( isApollo ? 'S*AIR/' : 'W/*' );
 					return false;
 				break;
@@ -170,7 +168,7 @@ export default class KeyBinding
 				return false;
 			break;
 
-			case 119 : //f8
+			/*case 119 : //f8
 
 				let cmd = {};
 
@@ -178,21 +176,27 @@ export default class KeyBinding
 				{
 					cmd = {
 						pos 	: '¤:3SSRDOCSYYHK1/N'.length,
-						cmd		: '¤:3SSRDOCSYYHK1/N ///// DMMMYY/ //          /          / '
+						cmd		: '¤:3SSRDOCSYYHK1/N ///// DMMMYY/ //          /          / ',
+						rules	: [
+							'¤:3SSRDOCSYYHK1/N',
+							'DMMMYY'
+						]
 					}
 				} else
 				{
 					cmd = {
 						pos		: '3DOCSA/DB/'.length,
-						cmd		: '3DOCSA/DB/DDMMMYY/      /        /        -'
+						cmd		: '3DOCSA/DB/DDMMMYY/      /        /        -',
+						rules	: [
+							'3DOCSA/DB/'
+						]
 					}
 				}
 
-				terminal.insert( cmd.cmd );
-				terminal.cmd().position( cmd.pos );
+				plugin.lockF8( cmd );
 
 				return false;
-			break;
+			break;*/
 
 			default:
 		}

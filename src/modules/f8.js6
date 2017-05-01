@@ -1,0 +1,89 @@
+const rules = {
+	apollo : {
+		pos 	: '¤:3SSRDOCSYYHK1/N'.length,
+		cmd		: '¤:3SSRDOCSYYHK1/N ///// DMMMYY/ //          /          / ',
+		rules	: [
+			'¤:3SSRDOCSYYHK1/N',
+			'DMMMYY'
+		]
+	},
+
+	sabre 	: {
+		pos		: '3DOCSA/DB/'.length,
+		cmd		: '3DOCSA/DB/DDMMMYY/      /        /        -',
+		rules	: [
+			'3DOCSA/DB/'
+		]
+	}
+};
+
+export default class F8Reader
+{
+	constructor( terminal )
+	{
+		this.index		= 0;
+		this.terminal 	= terminal;
+		this.isActive 	= false;
+		this.canReplace	= false;
+	}
+
+	getIsActive()
+	{
+		return this.isActive;
+	}
+
+	nextTabPos()
+	{
+		const cmd	= this.currentCmd.cmd;
+		const slice	= this.currentCmd.rules[ this.index ];
+
+		return cmd.indexOf( slice ) + ( this.index === 0 ?  slice.length : 0);
+	}
+
+	tabPressed()
+	{
+		this.canReplace = true;
+		this.terminal.cmd().position( this.nextTabPos() );
+
+		if ( !this.currentCmd.rules[ this.index] )
+		{
+			this.isActive 	= false;
+			this.canReplace = false;
+			this.index 		= 0;
+		}
+
+		this.index++;
+		console.log(this.currentCmd.rules[ this.index])
+	}
+
+	keyPressed( evt )
+	{
+		const char		= String.fromCharCode( evt.keyCode || evt.which );
+		const curPos 	= this.terminal.cmd().position();
+		const oldCmd 	= this.terminal.get_command();
+
+		if (oldCmd.substr(curPos, 1) === "/")
+		{
+			this.canReplace = false;
+		}
+
+		if ( !this.canReplace )
+			return false;
+
+		// todo helper spec chars;
+		const newCmd = oldCmd.substr(0, curPos) + char + oldCmd.substr(curPos + 1);
+
+		this.terminal.set_command(newCmd);
+		this.terminal.cmd().position( curPos + 1 );
+	}
+
+	tie()
+	{
+		this.currentCmd	= rules[window.TerminalState.state.gds];
+		this.index 		= 0;
+		this.isActive		= true;
+
+		this.terminal.insert( this.currentCmd.cmd );
+		this.tabPressed();
+	}
+}

@@ -15,7 +15,7 @@ export default class TabManager
 
 		if (list.length)
 		{
-			this.list.push('');
+			this.list.push(''); // empty command line
 		}
 	}
 
@@ -34,7 +34,7 @@ export default class TabManager
 
 	formatOutput( cmd )
 	{
-		if (cmd)
+		if (cmd) // last element in the array is an empty string
 		{
 			cmd = `>${cmd}`;
 			const index = this.output.indexOf( cmd ) + cmd.length;
@@ -43,7 +43,6 @@ export default class TabManager
 		}
 
 		return this.output;
-		// return cmd ? this.output.replace(cmd, `[[;red;blue;]>${cmd}.]`) : this.output;
 	}
 
 	run( replace )

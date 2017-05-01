@@ -63,7 +63,7 @@
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 34);
+/******/ 	return __webpack_require__(__webpack_require__.s = 35);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -12654,10 +12654,10 @@ window.addEventListener("beforeunload", function (e) {
 
 class KeyBinding
 {
-	static parse(evt, terminal)
+	static parse(evt, terminal, plugin)
 	{
-		let keymap 		= evt.keyCode || evt.which;
-		let isApollo	= window.TerminalState.state.gds === 'apollo';
+		const keymap 	= evt.keyCode || evt.which;
+		const isApollo	= window.TerminalState.state.gds === 'apollo';
 
 		// console.log(keymap);
 
@@ -12737,8 +12737,6 @@ class KeyBinding
 					// Sabre template: W/*(Airline Code)
 					 // Sabre example: W/*BT
 
-					console.log('@@@@@')
-
 					terminal.insert( isApollo ? 'S*AIR/' : 'W/*' );
 					return false;
 				break;
@@ -12814,7 +12812,7 @@ class KeyBinding
 				return false;
 			break;
 
-			case 119 : //f8
+			/*case 119 : //f8
 
 				let cmd = {};
 
@@ -12822,21 +12820,27 @@ class KeyBinding
 				{
 					cmd = {
 						pos 	: '¤:3SSRDOCSYYHK1/N'.length,
-						cmd		: '¤:3SSRDOCSYYHK1/N ///// DMMMYY/ //          /          / '
+						cmd		: '¤:3SSRDOCSYYHK1/N ///// DMMMYY/ //          /          / ',
+						rules	: [
+							'¤:3SSRDOCSYYHK1/N',
+							'DMMMYY'
+						]
 					}
 				} else
 				{
 					cmd = {
 						pos		: '3DOCSA/DB/'.length,
-						cmd		: '3DOCSA/DB/DDMMMYY/      /        /        -'
+						cmd		: '3DOCSA/DB/DDMMMYY/      /        /        -',
+						rules	: [
+							'3DOCSA/DB/'
+						]
 					}
 				}
 
-				terminal.insert( cmd.cmd );
-				terminal.cmd().position( cmd.pos );
+				plugin.lockF8( cmd );
 
 				return false;
-			break;
+			break;*/
 
 			default:
 		}
@@ -12855,19 +12859,21 @@ class KeyBinding
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_noty__ = __webpack_require__(11);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_noty___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_noty__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__helpers_helpers__ = __webpack_require__(1);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__modules_pagination__ = __webpack_require__(29);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__modules_sabreSession__ = __webpack_require__(30);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__modules_spinner__ = __webpack_require__(31);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__modules_pagination__ = __webpack_require__(30);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__modules_sabreSession__ = __webpack_require__(31);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__modules_spinner__ = __webpack_require__(32);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__helpers_keyBinding__ = __webpack_require__(26);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__modules_output__ = __webpack_require__(28);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__modules_tabManager__ = __webpack_require__(32);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__modules_output__ = __webpack_require__(29);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__modules_tabManager__ = __webpack_require__(33);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_8__modules_f8__ = __webpack_require__(28);
 
 
-let $					= __webpack_require__(33);
+let $					= __webpack_require__(34);
 window.$ 				= window.jQuery = $;
 
 __webpack_require__(9);
 __webpack_require__(10).polyfill();
+
 
 
 
@@ -12915,25 +12921,27 @@ class TerminalPlugin
 		this.spinner 		= new __WEBPACK_IMPORTED_MODULE_4__modules_spinner__["a" /* default */]( this.terminal );
 		this.outputLiner 	= new __WEBPACK_IMPORTED_MODULE_6__modules_output__["a" /* default */]( this.terminal );
 		this.tabCommands	= new __WEBPACK_IMPORTED_MODULE_7__modules_tabManager__["a" /* default */]();
-
-		// THIS IS DIRTY HACK. WHY? TERMINAL PLUGIN key_press func is SO BUGGY AND GLOBAL
-		// this.terminal.cmd().find('textarea.clipboard').keypress( this.parseChar.bind(this) )
+		this.f8Reader		= new __WEBPACK_IMPORTED_MODULE_8__modules_f8__["a" /* default */]( this.terminal );
 	}
-
-	// getPlugin()
-	// {
-	// 	return this.terminal;
-	// }
 
 	parseChar( evt, terminal )
 	{
+		console.log(' parse CHar ');
+
+		if ( this.f8Reader.getIsActive() )
+		{
+			this.f8Reader.keyPressed( evt );
+			return false;
+		}
+
+		// key press fires globally on all terminals;
 		if ( evt.target.nodeName === 'BODY')
 			return false;
 
 		if (terminal.cmd().find('textarea')[0] !== evt.target)
 			return undefined;
 
-		if ( !terminal.enabled() ) // key press fires globally on all terminals;
+		if ( !terminal.enabled() )
 			return false;
 
 		let keyCode = evt.keyCode || evt.which;
@@ -12958,6 +12966,7 @@ class TerminalPlugin
 			return false;
 		}
 
+		// in pressed "\" case
 		if (ch === false)
 			return false;
 	}
@@ -12976,7 +12985,7 @@ class TerminalPlugin
 			}
 		}
 
-		if ( !__WEBPACK_IMPORTED_MODULE_5__helpers_keyBinding__["a" /* default */].parse( evt, terminal ) )
+		if ( !__WEBPACK_IMPORTED_MODULE_5__helpers_keyBinding__["a" /* default */].parse( evt, terminal, this ) )
 			return false;
 	}
 
@@ -12995,6 +13004,12 @@ class TerminalPlugin
 
 	tabPressed()
 	{
+		if ( this.f8Reader.getIsActive() )
+		{
+			this.f8Reader.tabPressed();
+			return false;
+		}
+
 		const replace = ( terminal ) => {
 
 			return ( [cmd, formatted] ) => {
@@ -13021,15 +13036,17 @@ class TerminalPlugin
 			prompt			: '>',
 
 			// scrollOnEcho	: false,
-			keypress		: this.parseChar, // BUGGY BUGGY, assign on document wtf???
+			keypress		: this.parseChar.bind(this), // BUGGY BUGGY, assign on document wtf???
 			keydown			: this.parseKeyBinds.bind(this),
 
 			onInit			: this.changeActiveTerm,
 			onTerminalChange: this.changeActiveTerm,
 
+			// for hard scenario shortcut, others in keymap helper
 			keymap			: {
 				'CTRL+S'	: () => this.clearBuf(),
-				'TAB'		: () => this.tabPressed()
+				'TAB'		: () => this.tabPressed(),
+				'F8'		: () => this.f8Reader.tie(),
 			},
 
 			exceptionHandler( err )
@@ -13181,6 +13198,103 @@ class TerminalPlugin
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
+const rules = {
+	apollo : {
+		pos 	: '¤:3SSRDOCSYYHK1/N'.length,
+		cmd		: '¤:3SSRDOCSYYHK1/N ///// DMMMYY/ //          /          / ',
+		rules	: [
+			'¤:3SSRDOCSYYHK1/N',
+			'DMMMYY'
+		]
+	},
+
+	sabre 	: {
+		pos		: '3DOCSA/DB/'.length,
+		cmd		: '3DOCSA/DB/DDMMMYY/      /        /        -',
+		rules	: [
+			'3DOCSA/DB/'
+		]
+	}
+};
+
+class F8Reader
+{
+	constructor( terminal )
+	{
+		this.index		= 0;
+		this.terminal 	= terminal;
+		this.isActive 	= false;
+		this.canReplace	= false;
+	}
+
+	getIsActive()
+	{
+		return this.isActive;
+	}
+
+	nextTabPos()
+	{
+		const cmd	= this.currentCmd.cmd;
+		const slice	= this.currentCmd.rules[ this.index ];
+
+		return cmd.indexOf( slice ) + ( this.index === 0 ?  slice.length : 0);
+	}
+
+	tabPressed()
+	{
+		this.canReplace = true;
+		this.terminal.cmd().position( this.nextTabPos() );
+
+		if ( !this.currentCmd.rules[ this.index] )
+		{
+			this.isActive 	= false;
+			this.canReplace = false;
+			this.index 		= 0;
+		}
+
+		this.index++;
+		console.log(this.currentCmd.rules[ this.index])
+	}
+
+	keyPressed( evt )
+	{
+		const char		= String.fromCharCode( evt.keyCode || evt.which );
+		const curPos 	= this.terminal.cmd().position();
+		const oldCmd 	= this.terminal.get_command();
+
+		if (oldCmd.substr(curPos, 1) === "/")
+		{
+			this.canReplace = false;
+		}
+
+		if ( !this.canReplace )
+			return false;
+
+		// todo helper spec chars;
+		const newCmd = oldCmd.substr(0, curPos) + char + oldCmd.substr(curPos + 1);
+
+		this.terminal.set_command(newCmd);
+		this.terminal.cmd().position( curPos + 1 );
+	}
+
+	tie()
+	{
+		this.currentCmd	= rules[window.TerminalState.state.gds];
+		this.index 		= 0;
+		this.isActive		= true;
+
+		this.terminal.insert( this.currentCmd.cmd );
+		this.tabPressed();
+	}
+}
+/* harmony export (immutable) */ __webpack_exports__["a"] = F8Reader;
+
+
+/***/ }),
+/* 29 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__helpers_helpers__ = __webpack_require__(1);
 
 
@@ -13308,7 +13422,7 @@ class Output
 
 
 /***/ }),
-/* 29 */
+/* 30 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -13366,7 +13480,7 @@ class Pagination
 
 
 /***/ }),
-/* 30 */
+/* 31 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -13445,7 +13559,7 @@ class Session
 
 
 /***/ }),
-/* 31 */
+/* 32 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -13500,7 +13614,7 @@ class Spinner
 
 
 /***/ }),
-/* 32 */
+/* 33 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -13521,7 +13635,7 @@ class TabManager
 
 		if (list.length)
 		{
-			this.list.push('');
+			this.list.push(''); // empty command line
 		}
 	}
 
@@ -13540,7 +13654,7 @@ class TabManager
 
 	formatOutput( cmd )
 	{
-		if (cmd)
+		if (cmd) // last element in the array is an empty string
 		{
 			cmd = `>${cmd}`;
 			const index = this.output.indexOf( cmd ) + cmd.length;
@@ -13549,7 +13663,6 @@ class TabManager
 		}
 
 		return this.output;
-		// return cmd ? this.output.replace(cmd, `[[;red;blue;]>${cmd}.]`) : this.output;
 	}
 
 	run( replace )
@@ -13569,13 +13682,13 @@ class TabManager
 
 
 /***/ }),
-/* 33 */
+/* 34 */
 /***/ (function(module, exports) {
 
 module.exports = jQuery;
 
 /***/ }),
-/* 34 */
+/* 35 */
 /***/ (function(module, exports, __webpack_require__) {
 
 __webpack_require__(6);
