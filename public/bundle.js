@@ -12156,13 +12156,13 @@ class TerminalsMatrix
 
 	static getDimension( rowCount, cellCount, container = false )
 	{
-		console.log( this.context.parentNode.clientWidth );
+		// console.log( this.context.parentNode.clientWidth );
 
 		let parent = this.context.parentNode;
 
 		if (container)
 		{
-			console.log('?');
+			// console.log('?');
 			parent = container;
 		}
 
@@ -12290,8 +12290,7 @@ class Container {
 		else
 		{
 			// console.log( document.getElementById(terminalContext) )
-
-			console.log( this.context.clientWidth );
+			// console.log( this.context.clientWidth );
 
 			this.resizeScreens( TerminalsMatrix.getDimension(rowIndex + 1 , cellIndex + 1, this.context) );
 			return false;
@@ -12975,9 +12974,6 @@ class Terminal {
 
 		if (this.plugin)
 		{
-			// console.log(terminal.find('.cursor').height() * terminal.rows());
-			// this.context.style.height = calculateHeight(this.plugin.terminal) + 'px';
-
 			this.plugin.resize();
 
 			this.context.style.height = calculateHeight(this.plugin.terminal) + 'px';

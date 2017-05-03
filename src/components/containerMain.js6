@@ -19,11 +19,21 @@ class TerminalsMatrix
 		return this;
 	}
 
-	static getDimension( rowCount, cellCount )
+	static getDimension( rowCount, cellCount, container = false )
 	{
+		// console.log( this.context.parentNode.clientWidth );
+
+		let parent = this.context.parentNode;
+
+		if (container)
+		{
+			// console.log('?');
+			parent = container;
+		}
+
 		return {
-			height	: Math.floor(this.context.parentNode.clientHeight / rowCount),
-			width 	: Math.floor(this.context.parentNode.clientWidth / cellCount)
+			height	: Math.floor(parent.clientHeight / rowCount),
+			width 	: Math.floor(parent.clientWidth / cellCount)
 		}
 	}
 
@@ -144,7 +154,10 @@ export default class Container {
 		}
 		else
 		{
-			this.resizeScreens( TerminalsMatrix.getDimension(rowIndex + 1 , cellIndex + 1) );
+			// console.log( document.getElementById(terminalContext) )
+			// console.log( this.context.clientWidth );
+
+			this.resizeScreens( TerminalsMatrix.getDimension(rowIndex + 1 , cellIndex + 1, this.context) );
 			return false;
 		}
 
