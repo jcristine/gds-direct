@@ -1,0 +1,16 @@
+.t-d-cell {
+    display: table-cell;
+    height : 100%;
+}
+
+/*//& > .term-header {*/
+      /*//	display: none;*/
+      /*//   font-family: "Lucida Grande", sans-serif;*/
+      /*//	font-size: 12px;*/
+      /*//	height: 2%;*/
+      /*//	text-align: center;*/
+      /*//	text-shadow: rgba(255, 255, 255, 0.8) 0 1px 0;*/
+      /*//	background-image: -webkit-linear-gradient(top, #e8e8e8, #bcbbbc);*/
+      /*//	background-image: -moz-linear-gradient(top, #e8e8e8, #bcbbbc);*/
+      /*//	background-image: linear-gradient(top, #e8e8e8, #bcbbbc);*/
+      /*//}*/

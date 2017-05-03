@@ -1232,11 +1232,11 @@
   --background: #263033;
   background: #263033;
 }
-body.terminalBody {
-  margin: 0;
-}
 .cmd .cursor {
   border: 0;
+}
+#terminalContext {
+  width: 100%;
 }
 .matrix-table td {
   padding: 15px;
@@ -1252,7 +1252,10 @@ body.terminalBody {
   width: 100%;
   height: 100%;
 }
-.terminal-wrap-custom .active:before {
+.terminal-wrap-custom .btn.active {
+  position: relative;
+}
+.terminal-wrap-custom .btn.active:before {
   content: "\F00C";
   font: normal normal normal 11px/1 FontAwesome;
   position: absolute;
@@ -1261,13 +1264,13 @@ body.terminalBody {
   font-size: 9px;
   z-index: 3;
 }
-.terminal-wrap-custom .btn.active {
-  position: relative;
-}
 .terminal-wrap-custom > .term-body {
   width: 100%;
   height: 100%;
   display: table;
+}
+.terminal-wrap-custom > .term-body .t-d-cell {
+  width: 100%;
 }
 .terminal-wrap-custom > .term-body .left {
   position: relative;
@@ -1323,24 +1326,27 @@ body.terminalBody {
   padding: 10px;
   z-index: 1;
   right: 7px;
+  top: 0;
 }
 .terminal-wrap-custom .terminal {
   width: 100%;
   padding: 2px 0 0 5px;
   overflow: auto;
+  font-weight: bold;
+  color: #fff;
 }
 .terminal-wrap-custom .terminal .cmd {
   color: #fff;
+  font-weight: bold;
+}
+.terminal-wrap-custom .terminal iframe {
+  position: static;
+  display: none;
 }
 .terminal-wrap-custom .terminal .command {
   color: yellow;
 }
-.terminal-wrap-custom .terminal,
-.terminal-wrap-custom .cmd {
-  color: #fff;
-  font-weight: bold;
-}
-.terminal-wrap-custom .terminal-wrapper {
+.terminal-wrap-custom div.terminal-wrapper {
   height: auto;
 }
 /*

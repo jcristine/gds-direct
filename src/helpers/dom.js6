@@ -1,0 +1,11 @@
+
+export default ( str ) => {
+
+	const [node, className] = str.split('.');
+
+	const element = document.createElement( node );
+	element.className = className;
+
+	return element;
+
+};

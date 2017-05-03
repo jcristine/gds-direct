@@ -56,9 +56,9 @@ export default class F8Reader
 		console.log(this.currentCmd.rules[ this.index])
 	}
 
-	keyPressed( evt )
+	keyPressed( char )
 	{
-		const char		= String.fromCharCode( evt.keyCode || evt.which );
+		// const char		= String.fromCharCode( evt.keyCode || evt.which );
 		const curPos 	= this.terminal.cmd().position();
 		const oldCmd 	= this.terminal.get_command();
 

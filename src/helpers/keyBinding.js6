@@ -10,10 +10,13 @@ window.addEventListener("beforeunload", function (e) {
 
 export default class KeyBinding
 {
-	static parse(evt, terminal, plugin)
+	static parse(evt, terminal)
 	{
 		const keymap 	= evt.keyCode || evt.which;
 		const isApollo	= window.TerminalState.state.gds === 'apollo';
+
+		// if ( keymap === 13 )
+		// 	return false;
 
 		// console.log(keymap);
 
@@ -22,7 +25,6 @@ export default class KeyBinding
 
 		if ( evt.ctrlKey || evt.metaKey )
 		{
-
 			switch (keymap)
 			{
 				case 8: //  CTRL + backSpace; || CTRL+W || CTRL + S

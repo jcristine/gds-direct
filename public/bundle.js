@@ -63,18 +63,128 @@
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 35);
+/******/ 	return __webpack_require__(__webpack_require__.s = 37);
 /******/ })
 /************************************************************************/
 /******/ ([
 /* 0 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+
+
+/*function chunk(arr, limit)
+{
+	let result = [];
+
+	while (arr.length > limit)
+	{
+		result.push(arr.slice(0, limit));
+		arr = arr.slice(limit);
+	}
+
+	if (arr.length > 0)
+		result.push(arr);
+
+	return result;
+}*/
+
+function substitutePrintableChar(evt, isApollo)
+{
+	// const isApollo	= window.TerminalState.state.language === 'APOLLO';
+	// const isApollo	= window.TerminalState.state.gds === 'apollo';
+
+	const keyCode	= evt.keyCode || evt.which;
+
+	if ( keyCode === 13 )
+	{
+		return false;
+	}
+
+	const ch 		= String.fromCharCode(keyCode);
+
+	if (!ch)
+		return false;
+
+	const sabreLayout = {
+		'\'': '‡',
+		'[': '¤',
+		'=': '*',
+		'\\': '§',
+		',': '+',
+		// shift + ","
+	};
+
+	const apolloLayout = {
+		'[': '¤',
+		']': '$',
+		'=': '*',
+		'`': '>',
+		',': '+',
+		';': ':',
+		'\\': false
+	};
+
+	const layout = isApollo ? apolloLayout : sabreLayout;
+
+	return layout[ch] !== undefined ? layout[ch] : ch.toUpperCase();
+}
+
+function chunkIntoPages( linesArr , rowsPerScreen )
+{
+	return linesArr.map(
+		(line, lineIndex) => lineIndex % rowsPerScreen ? [] : linesArr.slice( lineIndex , lineIndex + rowsPerScreen )
+	)
+	.filter(
+		( data ) => !!data.length
+	);
+}
+
+function _makePages(txt, rowsPerScreen = 20, maxCharLimit)
+{
+	const chunkByCharLimit = _splitIntoLinesArr( txt, maxCharLimit );
+
+	return chunkIntoPages(chunkByCharLimit, rowsPerScreen).map(
+		(sectionLines) => sectionLines.join('\n')
+	);
+}
+
+function _splitIntoLinesArr( txt, maxCharLimit )
+{
+	const lines 		= splitLines(txt);
+	const regex 		= new RegExp(`(.{1,${maxCharLimit}})`, 'gi');
+
+	let chunkByCharLimit= [];
+
+	lines.forEach( (line) => {
+		let lineArr = line.match(regex);
+		chunkByCharLimit = chunkByCharLimit.concat(lineArr);
+	});
+
+	return chunkByCharLimit;
+}
+
+function splitLines(txt)
+{
+	return txt.split(/\r?\n/);
+}
+
+/* harmony default export */ __webpack_exports__["a"] = ({
+	makeCachedParts 		:	_makePages,
+	substitutePrintableChar :	substitutePrintableChar,
+	getLines 				:	_splitIntoLinesArr,
+	splitLines 				:	splitLines,
+});
+
+/***/ }),
+/* 1 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*! tether-drop 1.4.1 */
 
 (function(root, factory) {
   if (true) {
-    !(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(14)], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory),
+    !(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(16)], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory),
 				__WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ?
 				(__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__),
 				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
@@ -636,107 +746,63 @@ return Drop;
 
 
 /***/ }),
-/* 1 */
+/* 2 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__constants__ = __webpack_require__(4);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_whatwg_fetch__ = __webpack_require__(18);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_whatwg_fetch___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1_whatwg_fetch__);
 
 
-/*function chunk(arr, limit)
+
+
+
+function get( url )
 {
-	let result = [];
+	if (!url )
+		return '';
 
-	while (arr.length > limit)
-	{
-		result.push(arr.slice(0, limit));
-		arr = arr.slice(limit);
-	}
+	return fetch( url, {
+		credentials: 'include'
+	}).then( function( response ) {
+		return response.json();
+	})
+}
 
-	if (arr.length > 0)
-		result.push(arr);
 
-	return result;
-}*/
-
-function substitutePrintableChar(ch)
+function runSyncCommand( functionName, params )
 {
-	const isApollo	= window.TerminalState.state.language === 'APOLLO';
-	// const isApollo	= window.TerminalState.state.gds === 'apollo';
+	let url 	= window.apiData.getCommandUrl || __WEBPACK_IMPORTED_MODULE_0__constants__["a" /* END_POINT_URL */];
 
-	const sabreLayout = {
-		'\'': '‡',
-		'[': '¤',
-		'=': '*',
-		'\\': '§',
-		',': '+',
-		// shift + ","
+	let data 	= {
+		'function'	: functionName,
+		'params'	: params
 	};
 
-	const apolloLayout = {
-		'[': '¤',
-		']': '$',
-		'=': '*',
-		'`': '>',
-		',': '+',
-		';': ':',
-		'\\': false,
-	};
+	let get 		= JSON.stringify(data, true);
 
-	const layout = isApollo ? apolloLayout : sabreLayout;
+	let formData 	= new FormData();
+	formData.append( "data", get );
 
-	if ( layout[ch] === false )
-		return false;
+	url += '&function=' + functionName;
 
-	return layout[ch] || ch.toUpperCase();
-}
-
-function chunkIntoPages( linesArr , rowsPerScreen )
-{
-	return linesArr.map(
-		(line, lineIndex) => lineIndex % rowsPerScreen ? [] : linesArr.slice( lineIndex , lineIndex + rowsPerScreen )
-	)
-	.filter(
-		( data ) => !!data.length
-	);
-}
-
-function _makePages(txt, rowsPerScreen = 20, maxCharLimit)
-{
-	const chunkByCharLimit = _splitIntoLinesArr( txt, maxCharLimit );
-
-	return chunkIntoPages(chunkByCharLimit, rowsPerScreen).map(
-		(sectionLines) => sectionLines.join('\n')
-	);
-}
-
-function _splitIntoLinesArr( txt, maxCharLimit )
-{
-	const lines 		= splitLines(txt);
-	const regex 		= new RegExp(`(.{1,${maxCharLimit}})`, 'gi');
-
-	let chunkByCharLimit= [];
-
-	lines.forEach( (line) => {
-		let lineArr = line.match(regex);
-		chunkByCharLimit = chunkByCharLimit.concat(lineArr);
-	});
-
-	return chunkByCharLimit;
-}
-
-function splitLines(txt)
-{
-	return txt.split(/\r?\n/);
+	return fetch(__WEBPACK_IMPORTED_MODULE_0__constants__["b" /* API_HOST */] + url, {
+		credentials	: 'include',
+		body		: formData,
+		method		: 'POST',
+	}).then( function( response ) {
+		return response.json();
+	})
 }
 
 /* harmony default export */ __webpack_exports__["a"] = ({
-	makeCachedParts 		:	_makePages,
-	substitutePrintableChar :	substitutePrintableChar,
-	getLines 				:	_splitIntoLinesArr,
+	runSyncCommand	: runSyncCommand,
+	get 			: get
 });
 
 /***/ }),
-/* 2 */
+/* 3 */
 /***/ (function(module, exports) {
 
 var g;
@@ -763,92 +829,55 @@ module.exports = g;
 
 
 /***/ }),
-/* 3 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-const END_POINT_URL	 		= '?id=terminal/middleware';
-/* harmony export (immutable) */ __webpack_exports__["d"] = END_POINT_URL;
-
-const TIME_FORMAT 			= '12';
-/* harmony export (immutable) */ __webpack_exports__["a"] = TIME_FORMAT;
-
-const ACCOUNT 				= 'training';
-/* harmony export (immutable) */ __webpack_exports__["b"] = ACCOUNT;
-
-const API_HOST 				= '';
-/* harmony export (immutable) */ __webpack_exports__["c"] = API_HOST;
-
-
-/***/ }),
 /* 4 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__constants__ = __webpack_require__(3);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_whatwg_fetch__ = __webpack_require__(16);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_whatwg_fetch___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1_whatwg_fetch__);
+const END_POINT_URL	 		= '?id=terminal/middleware';
+/* harmony export (immutable) */ __webpack_exports__["a"] = END_POINT_URL;
 
+const TIME_FORMAT 			= '12';
+/* harmony export (immutable) */ __webpack_exports__["c"] = TIME_FORMAT;
 
+const ACCOUNT 				= 'training';
+/* harmony export (immutable) */ __webpack_exports__["d"] = ACCOUNT;
 
+const API_HOST 				= '';
+/* harmony export (immutable) */ __webpack_exports__["b"] = API_HOST;
 
-
-function get( url )
-{
-	if (!url )
-		return '';
-
-	return fetch(__WEBPACK_IMPORTED_MODULE_0__constants__["c" /* API_HOST */] + url, {
-		credentials: 'include'
-	}).then( function( response ) {
-		return response.json();
-	})
-}
-
-
-function runSyncCommand( functionName, params )
-{
-	let url 	= window.apiData.getCommandUrl || __WEBPACK_IMPORTED_MODULE_0__constants__["d" /* END_POINT_URL */];
-
-	let data 	= {
-		'function'	: functionName,
-		'params'	: params
-	};
-
-	let get 		= JSON.stringify(data, true);
-
-	let formData 	= new FormData();
-	formData.append( "data", get );
-
-	url += '&function=' + functionName;
-
-	return fetch(__WEBPACK_IMPORTED_MODULE_0__constants__["c" /* API_HOST */] + url, {
-		credentials	: 'include',
-		body		: formData,
-		method		: 'POST',
-	}).then( function( response ) {
-		return response.json();
-	})
-}
-
-/* harmony default export */ __webpack_exports__["a"] = ({
-	runSyncCommand	: runSyncCommand,
-	get 			: get
-});
 
 /***/ }),
 /* 5 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+
+/* harmony default export */ __webpack_exports__["a"] = (( str ) => {
+
+	const [node, className] = str.split('.');
+
+	const element = document.createElement( node );
+	element.className = className;
+
+	return element;
+
+});
+
+/***/ }),
+/* 6 */
 /***/ (function(module, exports) {
 
 // removed by extract-text-webpack-plugin
 
 /***/ }),
-/* 6 */
+/* 7 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__components_containerMain__ = __webpack_require__(18);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__components_containerMain__ = __webpack_require__(20);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__helpers_requests_js6__ = __webpack_require__(2);
+
 
 
 
@@ -862,14 +891,6 @@ const Context = {
 		__WEBPACK_IMPORTED_MODULE_0__components_containerMain__["a" /* default */].init( rootId );
 	}
 };
-
-// apiData.settings = {
-// 	common 	: 'apollo',
-// 	gds 	: {
-// 		apollo 	: {},
-// 		sabre 	: {}
-// 	}
-// };
 
 const gdsSettings = {
 	sessionIndex 	: 0,
@@ -934,7 +955,12 @@ class TerminalState
 		__WEBPACK_IMPORTED_MODULE_0__components_containerMain__["a" /* default */].purgeScreens();
 	}
 
-	change( params, action )
+	isLanguageApollo()
+	{
+		return this.state.language === 'APOLLO';
+	}
+
+	change( params = {}, action )
 	{
 		this.state = Object.assign( this.state, params );
 
@@ -979,12 +1005,16 @@ class TerminalState
 			break;
 
 			case 'PQ_MODAL_SHOW' :
-
 				if (this.state.activeTerminal)
 				{
-					apiData.pqModal.show({
-						reservationDumpClean : this.state.activeTerminal.get_output()
-					});
+					__WEBPACK_IMPORTED_MODULE_1__helpers_requests_js6__["a" /* default */].get( 'terminal/pricequote?rId= ' + apiData['rId'] ).then( response => {
+						apiData.pqModal.show({
+							dump 	: response.data.output,
+							onClose : () => { __WEBPACK_IMPORTED_MODULE_0__components_containerMain__["a" /* default */].render( this.state )}
+						});
+
+						__WEBPACK_IMPORTED_MODULE_0__components_containerMain__["a" /* default */].render( Object.assign({}, this.state, { hideMenu : true}) );
+					})
 				}
 
 				return false;
@@ -1004,24 +1034,22 @@ window.onresize = function() {
 	if (resizeTimeout)
 		clearInterval(resizeTimeout);
 
-	resizeTimeout = setTimeout( () => {
-		window.TerminalState.change({});
-	}, 150 );
+	resizeTimeout = setTimeout( () => window.TerminalState.change(), 150 );
 };
 
 Context.init();
 
 /***/ }),
-/* 7 */
+/* 8 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
-module.exports = __webpack_require__(8);
+module.exports = __webpack_require__(9);
 
 
 /***/ }),
-/* 8 */
+/* 9 */
 /***/ (function(module, exports) {
 
 module.exports = {
@@ -1858,7 +1886,7 @@ module.exports = {
 };
 
 /***/ }),
-/* 9 */
+/* 10 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(global, setImmediate) {/**@license
@@ -3789,6 +3817,7 @@ module.exports = {
 
         self.keymap(options.keymap);
         function keypress_event(e) {
+
             var result;
             no_keypress = false;
             if ((e.ctrlKey || e.metaKey) && [99, 118, 86].indexOf(e.which) !== -1) {
@@ -4580,6 +4609,7 @@ module.exports = {
             width: span.width(),
             height: span.outerHeight()
         };
+
         temp.remove();
         return result;
     }
@@ -7818,10 +7848,335 @@ module.exports = {
     }; // terminal plugin
 })(jQuery);
 
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2), __webpack_require__(15).setImmediate))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(3), __webpack_require__(17).setImmediate))
 
 /***/ }),
-/* 10 */
+/* 11 */
+/***/ (function(module, exports) {
+
+/**@license
+ *       __ _____                     ________                              __
+ *      / // _  /__ __ _____ ___ __ _/__  ___/__ ___ ______ __ __  __ ___  / /
+ *  __ / // // // // // _  // _// // / / // _  // _//     // //  \/ // _ \/ /
+ * /  / // // // // // ___// / / // / / // ___// / / / / // // /\  // // / /__
+ * \___//____ \\___//____//_/ _\_  / /_//____//_/ /_/ /_//_//_/ /_/ \__\_\___/
+ *           \/              /____/
+ * http://terminal.jcubic.pl
+ *
+ * This is example of how to create custom formatter for jQuery Terminal
+ *
+ * Copyright (c) 2014-2016 Jakub Jankiewicz <http://jcubic.pl/me>
+ * Released under the MIT license
+ *
+ */
+/* global jQuery */
+(function($) {
+    if (!$.terminal) {
+        throw new Error('$.terminal is not defined');
+    }
+    // ---------------------------------------------------------------------
+    // :: Replace overtyping (from man) formatting with terminal formatting
+    // ---------------------------------------------------------------------
+    $.terminal.overtyping = function(string) {
+        return string.replace(/((?:_\x08.|.\x08_)+)/g, function(full) {
+            var striped = full.replace(/_x08|\x08_|_\u0008|\u0008_/g, '');
+            return '[[u;;]' + striped + ']';
+        }).replace(/((?:.\x08.)+)/g, function(full) {
+            return '[[b;#fff;]' + full.replace(/(.)(?:\x08|\u0008)\1/g,
+                                               function(full, g) {
+                                                   return g;
+                                               }) + ']';
+        });
+    };
+    // ---------------------------------------------------------------------
+    // :: Html colors taken from ANSI formatting in Linux Terminal
+    // ---------------------------------------------------------------------
+    $.terminal.ansi_colors = {
+        normal: {
+            black: '#000',
+            red: '#A00',
+            green: '#008400',
+            yellow: '#A50',
+            blue: '#00A',
+            magenta: '#A0A',
+            cyan: '#0AA',
+            white: '#AAA'
+        },
+        faited: {
+            black: '#000',
+            red: '#640000',
+            green: '#006100',
+            yellow: '#737300',
+            blue: '#000087',
+            magenta: '#650065',
+            cyan: '#008787',
+            white: '#818181'
+        },
+        bold: {
+            black: '#000',
+            red: '#F55',
+            green: '#44D544',
+            yellow: '#FF5',
+            blue: '#55F',
+            magenta: '#F5F',
+            cyan: '#5FF',
+            white: '#FFF'
+        },
+        // XTerm 8-bit pallete
+        palette: [
+            '#000000', '#AA0000', '#00AA00', '#AA5500', '#0000AA', '#AA00AA',
+            '#00AAAA', '#AAAAAA', '#555555', '#FF5555', '#55FF55', '#FFFF55',
+            '#5555FF', '#FF55FF', '#55FFFF', '#FFFFFF', '#000000', '#00005F',
+            '#000087', '#0000AF', '#0000D7', '#0000FF', '#005F00', '#005F5F',
+            '#005F87', '#005FAF', '#005FD7', '#005FFF', '#008700', '#00875F',
+            '#008787', '#0087AF', '#0087D7', '#0087FF', '#00AF00', '#00AF5F',
+            '#00AF87', '#00AFAF', '#00AFD7', '#00AFFF', '#00D700', '#00D75F',
+            '#00D787', '#00D7AF', '#00D7D7', '#00D7FF', '#00FF00', '#00FF5F',
+            '#00FF87', '#00FFAF', '#00FFD7', '#00FFFF', '#5F0000', '#5F005F',
+            '#5F0087', '#5F00AF', '#5F00D7', '#5F00FF', '#5F5F00', '#5F5F5F',
+            '#5F5F87', '#5F5FAF', '#5F5FD7', '#5F5FFF', '#5F8700', '#5F875F',
+            '#5F8787', '#5F87AF', '#5F87D7', '#5F87FF', '#5FAF00', '#5FAF5F',
+            '#5FAF87', '#5FAFAF', '#5FAFD7', '#5FAFFF', '#5FD700', '#5FD75F',
+            '#5FD787', '#5FD7AF', '#5FD7D7', '#5FD7FF', '#5FFF00', '#5FFF5F',
+            '#5FFF87', '#5FFFAF', '#5FFFD7', '#5FFFFF', '#870000', '#87005F',
+            '#870087', '#8700AF', '#8700D7', '#8700FF', '#875F00', '#875F5F',
+            '#875F87', '#875FAF', '#875FD7', '#875FFF', '#878700', '#87875F',
+            '#878787', '#8787AF', '#8787D7', '#8787FF', '#87AF00', '#87AF5F',
+            '#87AF87', '#87AFAF', '#87AFD7', '#87AFFF', '#87D700', '#87D75F',
+            '#87D787', '#87D7AF', '#87D7D7', '#87D7FF', '#87FF00', '#87FF5F',
+            '#87FF87', '#87FFAF', '#87FFD7', '#87FFFF', '#AF0000', '#AF005F',
+            '#AF0087', '#AF00AF', '#AF00D7', '#AF00FF', '#AF5F00', '#AF5F5F',
+            '#AF5F87', '#AF5FAF', '#AF5FD7', '#AF5FFF', '#AF8700', '#AF875F',
+            '#AF8787', '#AF87AF', '#AF87D7', '#AF87FF', '#AFAF00', '#AFAF5F',
+            '#AFAF87', '#AFAFAF', '#AFAFD7', '#AFAFFF', '#AFD700', '#AFD75F',
+            '#AFD787', '#AFD7AF', '#AFD7D7', '#AFD7FF', '#AFFF00', '#AFFF5F',
+            '#AFFF87', '#AFFFAF', '#AFFFD7', '#AFFFFF', '#D70000', '#D7005F',
+            '#D70087', '#D700AF', '#D700D7', '#D700FF', '#D75F00', '#D75F5F',
+            '#D75F87', '#D75FAF', '#D75FD7', '#D75FFF', '#D78700', '#D7875F',
+            '#D78787', '#D787AF', '#D787D7', '#D787FF', '#D7AF00', '#D7AF5F',
+            '#D7AF87', '#D7AFAF', '#D7AFD7', '#D7AFFF', '#D7D700', '#D7D75F',
+            '#D7D787', '#D7D7AF', '#D7D7D7', '#D7D7FF', '#D7FF00', '#D7FF5F',
+            '#D7FF87', '#D7FFAF', '#D7FFD7', '#D7FFFF', '#FF0000', '#FF005F',
+            '#FF0087', '#FF00AF', '#FF00D7', '#FF00FF', '#FF5F00', '#FF5F5F',
+            '#FF5F87', '#FF5FAF', '#FF5FD7', '#FF5FFF', '#FF8700', '#FF875F',
+            '#FF8787', '#FF87AF', '#FF87D7', '#FF87FF', '#FFAF00', '#FFAF5F',
+            '#FFAF87', '#FFAFAF', '#FFAFD7', '#FFAFFF', '#FFD700', '#FFD75F',
+            '#FFD787', '#FFD7AF', '#FFD7D7', '#FFD7FF', '#FFFF00', '#FFFF5F',
+            '#FFFF87', '#FFFFAF', '#FFFFD7', '#FFFFFF', '#080808', '#121212',
+            '#1C1C1C', '#262626', '#303030', '#3A3A3A', '#444444', '#4E4E4E',
+            '#585858', '#626262', '#6C6C6C', '#767676', '#808080', '#8A8A8A',
+            '#949494', '#9E9E9E', '#A8A8A8', '#B2B2B2', '#BCBCBC', '#C6C6C6',
+            '#D0D0D0', '#DADADA', '#E4E4E4', '#EEEEEE'
+        ]
+    };
+    // ---------------------------------------------------------------------
+    // :: Replace ANSI formatting with terminal formatting
+    // ---------------------------------------------------------------------
+    $.terminal.from_ansi = (function() {
+        var color_list = {
+            30: 'black',
+            31: 'red',
+            32: 'green',
+            33: 'yellow',
+            34: 'blue',
+            35: 'magenta',
+            36: 'cyan',
+            37: 'white',
+
+            39: 'inherit' // default color
+        };
+        var background_list = {
+            40: 'black',
+            41: 'red',
+            42: 'green',
+            43: 'yellow',
+            44: 'blue',
+            45: 'magenta',
+            46: 'cyan',
+            47: 'white',
+
+            49: 'transparent' // default background
+        };
+        function format_ansi(code) {
+            var controls = code.split(';');
+            var num;
+            var faited = false;
+            var reverse = false;
+            var bold = false;
+            var styles = [];
+            var output_color = '';
+            var output_background = '';
+            var _8bit_color = false;
+            var _8bit_background = false;
+            var process_8bit = false;
+            var palette = $.terminal.ansi_colors.palette;
+            function set_styles(num) {
+                switch (num) {
+                    case 1:
+                        styles.push('b');
+                        bold = true;
+                        faited = false;
+                        break;
+                    case 4:
+                        styles.push('u');
+                        break;
+                    case 3:
+                        styles.push('i');
+                        break;
+                    case 5:
+                        process_8bit = true;
+                        break;
+                    case 38:
+                        _8bit_color = true;
+                        break;
+                    case 48:
+                        _8bit_background = true;
+                        break;
+                    case 2:
+                        faited = true;
+                        bold = false;
+                        break;
+                    case 7:
+                        reverse = true;
+                        break;
+                    default:
+                        if (controls.indexOf('5') === -1) {
+                            if (color_list[num]) {
+                                output_color = color_list[num];
+                            }
+                            if (background_list[num]) {
+                                output_background = background_list[num];
+                            }
+                        }
+                }
+            }
+            for (var i in controls) {
+                if (controls.hasOwnProperty(i)) {
+                    num = parseInt(controls[i], 10);
+                    if (process_8bit && (_8bit_background || _8bit_color)) {
+                        if (_8bit_color && palette[num]) {
+                            output_color = palette[num];
+                        }
+                        if (_8bit_background && palette[num]) {
+                            output_background = palette[num];
+                        }
+                    } else {
+                        set_styles(num);
+                    }
+                }
+            }
+            if (reverse) {
+                if (output_color || output_background) {
+                    var tmp = output_background;
+                    output_background = output_color;
+                    output_color = tmp;
+                } else {
+                    output_color = 'black';
+                    output_background = 'white';
+                }
+            }
+            var colors, color, background, backgrounds;
+            if (bold) {
+                colors = backgrounds = $.terminal.ansi_colors.bold;
+            } else if (faited) {
+                colors = backgrounds = $.terminal.ansi_colors.faited;
+            } else {
+                colors = backgrounds = $.terminal.ansi_colors.normal;
+            }
+            if (_8bit_color) {
+                color = output_color;
+            } else if (output_color === 'inherit') {
+                color = output_color;
+            } else {
+                color = colors[output_color];
+            }
+            if (_8bit_background) {
+                background = output_background;
+            } else if (output_background === 'transparent') {
+                background = output_background;
+            } else {
+                background = backgrounds[output_background];
+            }
+            return [styles.join(''), color, background];
+        }
+        return function(input) {
+            //merge multiple codes
+            /*input = input.replace(/((?:\x1B\[[0-9;]*[A-Za-z])*)/g, function(group) {
+              return group.replace(/m\x1B\[/g, ';');
+              });*/
+            var splitted = input.split(/(\x1B\[[0-9;]*[A-Za-z])/g);
+            if (splitted.length === 1) {
+                return input;
+            }
+            var output = [];
+            //skip closing at the begining
+            if (splitted.length > 3) {
+                var str = splitted.slice(0, 3).join('');
+                if (str.match(/^\[0*m$/)) {
+                    splitted = splitted.slice(3);
+                }
+            }
+            var prev_color, prev_background, code, match;
+            var inside = false;
+            for (var i = 0; i < splitted.length; ++i) {
+                match = splitted[i].match(/^\x1B\[([0-9;]*)([A-Za-z])$/);
+                if (match) {
+                    switch (match[2]) {
+                        case 'm':
+                            if (+match[1] !== 0) {
+                                code = format_ansi(match[1]);
+                            }
+                            if (inside) {
+                                output.push(']');
+                                if (+match[1] === 0) {
+                                    //just closing
+                                    inside = false;
+                                    prev_color = prev_background = '';
+                                } else {
+                                    // someone forget to close - move to next
+                                    code[1] = code[1] || prev_color;
+                                    code[2] = code[2] || prev_background;
+                                    output.push('[[' + code.join(';') + ']');
+                                    // store colors to next use
+                                    if (code[1]) {
+                                        prev_color = code[1];
+                                    }
+                                    if (code[2]) {
+                                        prev_background = code[2];
+                                    }
+                                }
+                            } else if (+match[1] !== 0) {
+                                inside = true;
+                                code[1] = code[1] || prev_color;
+                                code[2] = code[2] || prev_background;
+                                output.push('[[' + code.join(';') + ']');
+                                // store colors to next use
+                                if (code[1]) {
+                                    prev_color = code[1];
+                                }
+                                if (code[2]) {
+                                    prev_background = code[2];
+                                }
+                            }
+                            break;
+                    }
+                } else {
+                    output.push(splitted[i]);
+                }
+            }
+            if (inside) {
+                output.push(']');
+            }
+            return output.join(''); //.replace(/\[\[[^\]]+\]\]/g, '');
+        };
+    })();
+    $.terminal.defaults.formatters.push($.terminal.overtyping);
+    $.terminal.defaults.formatters.push($.terminal.from_ansi);
+})(jQuery);
+
+
+/***/ }),
+/* 12 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_RESULT__;/* global define, KeyboardEvent, module */
@@ -7952,7 +8307,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_RESULT__;/* global defi
 
 
 /***/ }),
-/* 11 */
+/* 13 */
 /***/ (function(module, exports, __webpack_require__) {
 
 (function webpackUniversalModuleDefinition(root, factory) {
@@ -8987,7 +9342,7 @@ module.exports = exports['default'];
 //# sourceMappingURL=noty.js.map
 
 /***/ }),
-/* 12 */
+/* 14 */
 /***/ (function(module, exports) {
 
 // shim for using process in browser
@@ -9173,7 +9528,7 @@ process.umask = function() { return 0; };
 
 
 /***/ }),
-/* 13 */
+/* 15 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(global, process) {(function (global, undefined) {
@@ -9363,10 +9718,10 @@ process.umask = function() { return 0; };
     attachTo.clearImmediate = clearImmediate;
 }(typeof self === "undefined" ? typeof global === "undefined" ? this : global : self));
 
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2), __webpack_require__(12)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(3), __webpack_require__(14)))
 
 /***/ }),
-/* 14 */
+/* 16 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_RESULT__;/*! tether 1.4.0 */
@@ -11187,7 +11542,7 @@ return Tether;
 
 
 /***/ }),
-/* 15 */
+/* 17 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var apply = Function.prototype.apply;
@@ -11240,13 +11595,13 @@ exports._unrefActive = exports.active = function(item) {
 };
 
 // setimmediate attaches itself to the global object
-__webpack_require__(13);
+__webpack_require__(15);
 exports.setImmediate = setImmediate;
 exports.clearImmediate = clearImmediate;
 
 
 /***/ }),
-/* 16 */
+/* 18 */
 /***/ (function(module, exports) {
 
 (function(self) {
@@ -11713,11 +12068,11 @@ exports.clearImmediate = clearImmediate;
 
 
 /***/ }),
-/* 17 */
+/* 19 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__popovers_terminalMatrix__ = __webpack_require__(23);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__popovers_terminalMatrix__ = __webpack_require__(25);
 
 
 
@@ -11770,162 +12125,128 @@ class ActionsMenu {
 
 
 /***/ }),
-/* 18 */
+/* 20 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__terminal__ = __webpack_require__(25);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__actionsMenu__ = __webpack_require__(17);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__menuPanel__ = __webpack_require__(21);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__terminal__ = __webpack_require__(27);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__actionsMenu__ = __webpack_require__(19);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__menuPanel__ = __webpack_require__(23);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__helpers_dom__ = __webpack_require__(5);
 
 
 
 
 
 
-let inSession = [], terminalList = [], Root, termTableWrap;
 
-const TerminalCellMatrix = (function()
+
+class TerminalsMatrix
 {
-	let context;
-
-	function constructor()
+	static makeRow()
 	{
-		context 			= document.createElement('table');
-		context.className 	= 'terminals-table';
+		return document.createElement('tr');
 	}
 
-	function makeRow()
+	static clear()
 	{
-		let row 			= document.createElement('tr');
-		context.appendChild( row );
-
-		return row;
+		this.context.innerHTML = '';
+		return this;
 	}
 
-	function makeCell( row, rowCount )
+	static getDimension( rowCount, cellCount )
 	{
-		let cell 		= document.createElement('td');
-		cell.className 	= 'v-middle';
-		let height		= termTableWrap.clientHeight / ( parseInt(rowCount) + 1 );
-
-		row.appendChild( cell );
-		cell.style.height = Math.floor(height)+ 'px';
-
-		return cell;
-	}
-
-	function _draw( rowIndex, cellIndex )
-	{
-		context.classList = ( ' t-matrix-w-' + cellIndex );
-
-		let row, cells = [];
-
-		for (let i = 0; i<= rowIndex; i++ )
-		{
-			row = makeRow();
-
-			for (let y = 0; y <= cellIndex; y++ )
-			{
-				cells.push( makeCell(row, rowIndex) );
-			}
+		return {
+			height	: Math.floor(this.context.parentNode.clientHeight / rowCount),
+			width 	: Math.floor(this.context.parentNode.clientWidth / cellCount)
 		}
-
-		return cells;
 	}
 
-	function _getContext()
+	static makeCells( rowCount, cellCount )
 	{
-		return context;
-	}
+		let resCells 	= [];
 
-	function _clear()
-	{
-		context.innerHTML = '';
-	}
+		rowCount++;
+		cellCount++;
 
-	constructor();
+		const { height, width } = this.getDimension(rowCount, cellCount);
 
-	return {
-		getCells	: _draw,
-		clear 		: _clear,
-		getContext 	: _getContext
+		const makeCells = row => {
+
+			const makeCell = () => {
+				const cell 			= __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_3__helpers_dom__["a" /* default */])('td.v-middle');
+				cell.style.height 	= height + 'px';
+				cell.style.width 	= width + 'px';
+
+				return cell;
+			};
+
+			[ ...new Array(cellCount) ].map(makeCell).forEach( (cell) => {
+				row.appendChild(cell);
+				resCells.push(cell);
+			});
+
+			return row;
+		};
+
+		[ ...new Array(rowCount) ]
+			.map( this.makeRow )
+			.map( makeCells )
+			.map( row => this.context.appendChild(row) );
+
+		return resCells;
 	}
-}());
+}
+
+TerminalsMatrix.context = '';
+
+let inSession = [], terminalList = [], termTableWrap, RightSide, LeftSide, matrix = {};
+
 
 class Container {
 
 	static init( rootId )
 	{
-		Root = Root || document.getElementById( rootId );
+		const Root = document.getElementById( rootId );
 
-		this.createContext();
-		// this.createHeader();
 		this.createWrapper();
 
 		Root.appendChild( this.context );
+
 		window.TerminalState.change({}, 'CHANGE_MATRIX');
 	}
 
-	static createContext()
-	{
-		this.context 			= document.createElement('section');
-		this.context.className	= 'terminal-wrap-custom clearfix';
-	}
-
-	/*static createHeader()
-	{
-		let header 			= document.createElement('header');
-		header.className 	= 'term-header';
-		header.innerHTML 	= 'Terminal';
-
-		this.context.appendChild( header );
-		return header;
-	}*/
-
 	static createWrapper()
 	{
-		termTableWrap 				= document.createElement('div');
-		termTableWrap.className 	= 'term-body minimized';
+		this.context 	= __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_3__helpers_dom__["a" /* default */])('section.terminal-wrap-custom');
+		termTableWrap 	= __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_3__helpers_dom__["a" /* default */])('div.term-body minimized');
+
+		LeftSide 		= __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_3__helpers_dom__["a" /* default */])('aside.t-d-cell left');
+		RightSide 		= __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_3__helpers_dom__["a" /* default */])('aside.t-d-cell menu');
 
 		this.context.appendChild( termTableWrap );
 
-		termTableWrap.appendChild( this.createTableMatrix() );
-		termTableWrap.appendChild( this.createRightMenu() );
-	}
+		termTableWrap.appendChild( LeftSide );
+		termTableWrap.appendChild( RightSide );
 
-	static createTableMatrix()
-	{
-		let leftSide 		= document.createElement('aside');
-		leftSide.className	= 't-d-cell left';
+		RightSide.appendChild( __WEBPACK_IMPORTED_MODULE_2__menuPanel__["a" /* default */].getContext() );
+
+		TerminalsMatrix.context = __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_3__helpers_dom__["a" /* default */])('table.terminals-table');
+
+		LeftSide.appendChild( TerminalsMatrix.context );
 
 		__WEBPACK_IMPORTED_MODULE_1__actionsMenu__["a" /* default */].init();
-
-		leftSide.appendChild( __WEBPACK_IMPORTED_MODULE_1__actionsMenu__["a" /* default */].getContext() );
-		leftSide.appendChild( TerminalCellMatrix.getContext() );
-
-		return leftSide;
-	}
-
-	static createRightMenu()
-	{
-		let rightSide 		= document.createElement('aside');
-		rightSide.className = 't-d-cell menu';
-
-		rightSide.appendChild( __WEBPACK_IMPORTED_MODULE_2__menuPanel__["a" /* default */].getContext() );
-		return rightSide;
-	}
-
-	static clearPrev()
-	{
-		TerminalCellMatrix.clear();
+		LeftSide.appendChild( __WEBPACK_IMPORTED_MODULE_1__actionsMenu__["a" /* default */].getContext() );
 	}
 
 	static purgeScreens()
 	{
-		terminalList.forEach( ( terminal ) => {
-			terminal.clear();
-		})
+		terminalList.forEach( terminal => { terminal.clear(); });
+	}
+
+	static resizeScreens( dimensions )
+	{
+		terminalList.forEach( terminal => terminal.resize( dimensions ) );
 	}
 
 	static menuRender()
@@ -11933,34 +12254,56 @@ class Container {
 		__WEBPACK_IMPORTED_MODULE_2__menuPanel__["a" /* default */].render();
 	}
 
+	static hasMatrixChanged( newMatrix )
+	{
+		return JSON.stringify(newMatrix) !== JSON.stringify(matrix)
+	}
+
+	static gdsHasChanged( gds )
+	{
+		return this.gds !== gds;
+	}
+
 	static render( params )
 	{
 		const sessionKey = params['gds'];
+		RightSide.classList.toggle('hidden', !!params.hideMenu);
+
+		this.menuRender();
+
 		const { rows : rowIndex , cells: cellIndex} = params.matrix;
 
-		termTableWrap.className = `term-body minimized ${sessionKey}`;
+		if ( this.hasMatrixChanged( params.matrix ) )
+		{
+			matrix = Object.assign( {}, params.matrix);
+		}
+		else
+		{
+			this.resizeScreens( TerminalsMatrix.getDimension(rowIndex + 1 , cellIndex + 1) );
+			return false;
+		}
 
-		this.clearPrev();
-		this.menuRender();
+		if ( this.gdsHasChanged( params.matrix ) )
+		{
+			this.gds 				= sessionKey;
+			termTableWrap.className = `term-body minimized ${sessionKey}`; // change gds styles
+		}
 
 		terminalList = inSession[ sessionKey ] || [];
 
-		TerminalCellMatrix
-			.getCells(rowIndex, cellIndex)
-			.map( ( cell, index ) => {
+		TerminalsMatrix
+			.clear()
+			.makeCells(rowIndex, cellIndex)
+			.forEach(( cell, index ) => {
 
-				if ( terminalList[index] )
-				{
-					terminalList[index].reattach( cell );
-				} else
-				{
-					terminalList.push( new __WEBPACK_IMPORTED_MODULE_0__terminal__["a" /* default */]({
-						name 			: index,
-						sessionIndex	: params.sessionIndex,
-						gds				: params.gds,
-						parentContext	: cell
-					}) );
-				}
+				terminalList[index] = terminalList[index] || new __WEBPACK_IMPORTED_MODULE_0__terminal__["a" /* default */]({
+					name 			: index,
+					sessionIndex	: params.sessionIndex,
+					gds				: params.gds,
+					buffer			: window.TerminalState.getBuffer( sessionKey, index + 1 )
+				});
+
+				terminalList[index].reattach( cell );
 			});
 
 		inSession[ sessionKey ] = terminalList;
@@ -11970,11 +12313,11 @@ class Container {
 
 
 /***/ }),
-/* 19 */
+/* 21 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__helpers_requests__ = __webpack_require__(4);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__helpers_requests__ = __webpack_require__(2);
 let button;
 
 
@@ -12042,7 +12385,7 @@ class PqButton
 
 
 /***/ }),
-/* 20 */
+/* 22 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -12122,14 +12465,14 @@ class SessionKeys
 
 
 /***/ }),
-/* 21 */
+/* 23 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__popovers_history__ = __webpack_require__(22);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__popovers_textSize__ = __webpack_require__(24);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__menu_sessionButtons__ = __webpack_require__(20);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__menu_pqButton__ = __webpack_require__(19);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__popovers_history__ = __webpack_require__(24);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__popovers_textSize__ = __webpack_require__(26);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__menu_sessionButtons__ = __webpack_require__(22);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__menu_pqButton__ = __webpack_require__(21);
 
 
 
@@ -12303,11 +12646,11 @@ class MenuPanel
 
 
 /***/ }),
-/* 22 */
+/* 24 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_tether_drop__ = __webpack_require__(0);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_tether_drop__ = __webpack_require__(1);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_tether_drop___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_tether_drop__);
 
 
@@ -12352,11 +12695,11 @@ class History
 /* harmony default export */ __webpack_exports__["a"] = (History);
 
 /***/ }),
-/* 23 */
+/* 25 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_tether_drop__ = __webpack_require__(0);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_tether_drop__ = __webpack_require__(1);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_tether_drop___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_tether_drop__);
 
 
@@ -12448,11 +12791,11 @@ class Matrix
 /* harmony default export */ __webpack_exports__["a"] = (Matrix);
 
 /***/ }),
-/* 24 */
+/* 26 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_tether_drop__ = __webpack_require__(0);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_tether_drop__ = __webpack_require__(1);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_tether_drop___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_tether_drop__);
 
 
@@ -12514,16 +12857,22 @@ class TextSize
 /* harmony default export */ __webpack_exports__["a"] = (TextSize);
 
 /***/ }),
-/* 25 */
+/* 27 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__middleware_terminal__ = __webpack_require__(27);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__middleware_terminal__ = __webpack_require__(29);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__helpers_dom__ = __webpack_require__(5);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__helpers_helpers__ = __webpack_require__(0);
 
 
 
 
-const calculateHeight = terminal => (terminal.find('.cursor').height() * terminal.rows() );
+
+
+__webpack_require__(11);
+
+const calculateHeight = terminal => (terminal.find('.cursor').height() * terminal.rows());
 
 class Terminal {
 
@@ -12531,25 +12880,10 @@ class Terminal {
 	{
 		this.plugin 				= null;
 		this.settings 				= params;
-		this.context 				= document.createElement('div');
-		this.context.className 		= 'terminal';
+		this.context 				= __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_1__helpers_dom__["a" /* default */])('div.terminal');
 
-		this.context.style.height	= this.settings.parentContext.clientHeight + 'px';
-		this.context.style.width	= this.settings.parentContext.clientWidth + 'px';
-
-		const backEndId = parseInt( this.settings['name'] ) + 1;
-		this.buffer		= window.TerminalState.getBuffer(params.gds, backEndId );
-
-		this.context.onclick = () => {
-			if (!this.plugin)
-				this.init();
-		};
-
-		if ( this.buffer )
-			this.makeBuffer();
-
-		this.settings.parentContext.appendChild( this.context );
-		this.context.scrollTop = this.context.scrollHeight;
+		this.makeBuffer( params.buffer );
+		this.context.onclick = () => { if (!this.plugin) this.init(); };
 	}
 
 	init()
@@ -12565,18 +12899,36 @@ class Terminal {
 		this.plugin.terminal.scroll_to_bottom();
 	}
 
-	makeBuffer()
+	makeBuffer( buf )
 	{
-		const buffered = this.buffer['buffering'].map( record => {
+		if (!buf)
+			return false;
+
+		/*const buffered = buf['buffering'].map( record => {
+
+			const output = $.terminal.split_equal( record.output ).map( str => `<div style="width: 100%">${ $.terminal.overtyping(str) }</div>`).join('');
+
+			// console.log( $.terminal.split_equal( record.output ) );
+			// const output = $.terminal.format( record.output )
+			// console.log( output )
+
+			return `<div class="command">${record.request}</div>${output}`;
+			// return `<div class="command">${record.request}</div><pre>${record.output}</pre>`;
+			//return `<div class="command">${record.request}</div>${output}`;
+			// return `<div class="command">${record.request}</div> ${ $.terminal.format( record.output ) } `;
+		}).join('');*/
+
+
+		const buffered = buf['buffering'].map( record => {
 			return `<div class="command">${record.request}</div><pre>${record.output}</pre>`;
 		}).join('');
 
-		this.bufferDiv 				= document.createElement('div');
-		this.bufferDiv.className	= 'terminal-wrapper';
-		this.bufferDiv.innerHTML 	= `<div class="terminal-output">${buffered}</div>`;
+		this.bufferDiv 				= __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_1__helpers_dom__["a" /* default */])('article.terminal-wrapper');
+		this.bufferDiv.innerHTML 	= `<div class="terminal-output">${$.terminal.format( buffered )}</div>`;
 
 		this.context.appendChild( this.bufferDiv );
 	}
+
 	//
 	// insertBuffer()
 	// {
@@ -12600,19 +12952,69 @@ class Terminal {
 
 	reattach( parentNode )
 	{
+		// let cursor, cursorWrap;
+
 		this.settings.parentContext = parentNode;
-
-		this.context.style.height	= this.settings.parentContext.clientHeight + 'px';
-		this.context.style.width	= this.settings.parentContext.clientWidth + 'px';
-
-		this.settings.parentContext.appendChild( this.context );
 
 		if (this.plugin)
 		{
-			this.context.style.height = calculateHeight(this.plugin.terminal) + 'px';
+			// console.log(terminal.find('.cursor').height() * terminal.rows());
+			// this.context.style.height = calculateHeight(this.plugin.terminal) + 'px';
+
 			this.plugin.resize();
-		} else
+			// this.plugin.terminal.scroll_to_bottom();
+		}
+		else
 		{
+			/*cursorWrap 			= Dom('div.cmd');
+			cursor 				= Dom('span.cursor');
+			cursor.innerHTML 	= '&nbsp;';
+
+			cursorWrap.appendChild( cursor );
+			this.context.appendChild( cursorWrap );*/
+
+			this.context.style.height	= parentNode.clientHeight 	+ 'px';
+			this.context.style.width	= parentNode.clientWidth 	+ 'px';
+		}
+
+		this.settings.parentContext.appendChild( this.context );
+
+		// if (cursor)
+		// {
+			// const h =  Math.floor( parentNode.clientHeight / cursor.clientHeight );
+			// this.context.style.height = (cursor.clientHeight * h)  + 'px';
+			//
+			// cursorWrap.parentNode.removeChild( cursorWrap );
+
+		this.context.scrollTop = this.context.scrollHeight;
+		// }
+	}
+
+	resize( dimensions )
+	{
+		// this.settings.parentContext.style.height	= dimensions.height + 'px';
+		// this.settings.parentContext.style.width		= dimensions.width 	+ 'px';
+		// this.context.style.height	= this.settings.parentContext.clientHeight 	+ 'px';
+		// this.context.style.width	= this.settings.parentContext.clientWidth 	+ 'px';
+
+		if (this.plugin)
+		{
+			// this.plugin.resize( dimensions.width, dimensions.height );
+
+			this.plugin.resize();
+
+			this.context.style.height = calculateHeight(this.plugin.terminal) + 'px';
+			this.plugin.terminal.scroll_to_bottom();
+		}
+
+		else
+		{
+			/*this.settings.parentContext.style.height	= dimensions.height + 'px';
+			this.settings.parentContext.style.width		= dimensions.width 	+ 'px';
+
+			this.context.style.height	= this.settings.parentContext.clientHeight 	+ 'px';
+			this.context.style.width	= this.settings.parentContext.clientWidth 	+ 'px';*/
+
 			this.context.scrollTop = this.context.scrollHeight;
 		}
 	}
@@ -12638,7 +13040,7 @@ class Terminal {
 
 
 /***/ }),
-/* 26 */
+/* 28 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -12654,10 +13056,13 @@ window.addEventListener("beforeunload", function (e) {
 
 class KeyBinding
 {
-	static parse(evt, terminal, plugin)
+	static parse(evt, terminal)
 	{
 		const keymap 	= evt.keyCode || evt.which;
 		const isApollo	= window.TerminalState.state.gds === 'apollo';
+
+		// if ( keymap === 13 )
+		// 	return false;
 
 		// console.log(keymap);
 
@@ -12666,7 +13071,6 @@ class KeyBinding
 
 		if ( evt.ctrlKey || evt.metaKey )
 		{
-
 			switch (keymap)
 			{
 				case 8: //  CTRL + backSpace; || CTRL+W || CTRL + S
@@ -12852,27 +13256,27 @@ class KeyBinding
 
 
 /***/ }),
-/* 27 */
+/* 29 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_noty__ = __webpack_require__(11);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_noty__ = __webpack_require__(13);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_noty___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_noty__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__helpers_helpers__ = __webpack_require__(1);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__modules_pagination__ = __webpack_require__(30);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__modules_sabreSession__ = __webpack_require__(31);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__modules_spinner__ = __webpack_require__(32);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__helpers_keyBinding__ = __webpack_require__(26);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__modules_output__ = __webpack_require__(29);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__modules_tabManager__ = __webpack_require__(33);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_8__modules_f8__ = __webpack_require__(28);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__helpers_helpers__ = __webpack_require__(0);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__modules_pagination__ = __webpack_require__(32);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__modules_sabreSession__ = __webpack_require__(33);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__modules_spinner__ = __webpack_require__(34);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__helpers_keyBinding__ = __webpack_require__(28);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__modules_output__ = __webpack_require__(31);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__modules_tabManager__ = __webpack_require__(35);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_8__modules_f8__ = __webpack_require__(30);
 
 
-let $					= __webpack_require__(34);
+let $					= __webpack_require__(36);
 window.$ 				= window.jQuery = $;
 
-__webpack_require__(9);
-__webpack_require__(10).polyfill();
+__webpack_require__(10);
+__webpack_require__(12).polyfill();
 
 
 
@@ -12902,7 +13306,7 @@ class TerminalPlugin
 		this.context	= params.context;
 		this.name		= params.name;
 
-		this.animation	 	= false;
+		// this.animation	 	= false;
 		this.hiddenBuff		= [];
 		this.hiddenCommand	= '';
 
@@ -12914,10 +13318,9 @@ class TerminalPlugin
 			gds				: params.gds
 		});
 
-		this.pagination = new __WEBPACK_IMPORTED_MODULE_2__modules_pagination__["a" /* default */]( this.terminal );
-
 		this.terminal 		= this.init();
 
+		this.pagination 	= new __WEBPACK_IMPORTED_MODULE_2__modules_pagination__["a" /* default */]( this.terminal );
 		this.spinner 		= new __WEBPACK_IMPORTED_MODULE_4__modules_spinner__["a" /* default */]( this.terminal );
 		this.outputLiner 	= new __WEBPACK_IMPORTED_MODULE_6__modules_output__["a" /* default */]( this.terminal );
 		this.tabCommands	= new __WEBPACK_IMPORTED_MODULE_7__modules_tabManager__["a" /* default */]();
@@ -12926,76 +13329,73 @@ class TerminalPlugin
 
 	parseChar( evt, terminal )
 	{
-		// key press fires globally on all terminals;
-		if ( evt.target.nodeName === 'BODY')
-			return false;
+		// return false;
+		// console.log(' parse Key HOHOHO', evt.target.nodeName);
 
-		if (terminal.cmd().find('textarea')[0] !== evt.target)
+		// key press fires globally on all terminals;
+
+		if ( evt.target.nodeName !== 'TEXTAREA' )
+			return undefined;
+
+		if ( terminal.cmd().find('textarea')[0] !== evt.target )
 			return undefined;
 
 		if ( !terminal.enabled() )
+			return undefined;
+
+		const ch = __WEBPACK_IMPORTED_MODULE_1__helpers_helpers__["a" /* default */].substitutePrintableChar( evt, window.TerminalState.isLanguageApollo() );
+
+		if (!ch) // don't insert empty char further
+		{
 			return false;
+		}
 
 		if ( this.f8Reader.getIsActive() )
 		{
-			this.f8Reader.keyPressed( evt );
+			this.f8Reader.keyPressed( ch );
 			return false;
 		}
 
-		let keyCode = evt.keyCode || evt.which;
-
-		if (keyCode === 13)
-			return false;
-
-		let ch 		= false;
-
-		if (keyCode && !evt.ctrlKey)
-			ch = __WEBPACK_IMPORTED_MODULE_1__helpers_helpers__["a" /* default */].substitutePrintableChar( String.fromCharCode( keyCode ) );
-
-		if (!ch)
-			return ch;
-
-		if (ch)
-		{
-			if ( this.animation )
-			{
-				this.hiddenCommand += ch;
-			} else
-			{
-				terminal.insert(ch);
-			}
-
-			return false;
-		}
-
-		// in pressed "\" case
-		if (ch === false)
-			return false;
+		terminal.insert( ch );
+		return false;
 	}
 
 	parseKeyBinds( evt, terminal )
 	{
-		let keyCode = evt.keyCode || evt.which;
-
-		if ( this.animation )
+		// let keyCode = evt.keyCode || evt.which;
+		// if (keyCode === 13)
+		// {
+		// 	return false;
+		// }
+		/*if ( this.spinner.isActive() && keyCode === 13 )
 		{
-			if ( keyCode === 13 )
-			{
-				this.hiddenBuff.push( this.hiddenCommand );
-				this.hiddenCommand = '';
-				return false;
-			}
-		}
+			this.hiddenBuff.push( this.hiddenCommand );
+			this.hiddenCommand = '';
 
-		if ( !__WEBPACK_IMPORTED_MODULE_5__helpers_keyBinding__["a" /* default */].parse( evt, terminal, this ) )
 			return false;
+		}*/
+
+		// const cmd = KeyBinding.parse( evt, terminal );
+
+		if ( !__WEBPACK_IMPORTED_MODULE_5__helpers_keyBinding__["a" /* default */].parse( evt, terminal ) )
+			return false;
+	}
+
+	switchArea( command )
+	{
+		const sessionChange = window.TerminalState.getSessionAreaMap().indexOf( command );
+
+		if ( sessionChange !== -1 )
+		{
+			window.TerminalState.change({
+				sessionIndex 	: sessionChange
+			}, 'CHANGE_SESSION');
+		}
 	}
 
 	changeActiveTerm( terminal )
 	{
-		window.TerminalState.change({
-			activeTerminal 	: terminal
-		}, 'CHANGE_ACTIVE_TERMINAL');
+		window.TerminalState.change({ activeTerminal : terminal }, 'CHANGE_ACTIVE_TERMINAL');
 	}
 
 	clearBuf()
@@ -13024,15 +13424,17 @@ class TerminalPlugin
 		this.tabCommands.run( replace(this.terminal) );
 	}
 
-	resize()
+	resize( w, h )
 	{
+		// this.terminal.resize( w, h );
 		this.terminal.resize();
-		this.outputLiner.reset();
+		this.outputLiner.recalculate();
 	}
 
 	init()
 	{
 		return $(this.context).terminal( this.commandParser.bind(this), {
+
 			greetings		: '',
 			name			: this.name,
 			prompt			: '>',
@@ -13043,6 +13445,16 @@ class TerminalPlugin
 
 			onInit			: this.changeActiveTerm,
 			onTerminalChange: this.changeActiveTerm,
+
+			memory			: true,
+
+			onBeforeCommand : ( terminal, command ) => {
+				if ( this.spinner.isActive()  )
+				{
+					this.hiddenBuff.push( command );
+					return false;
+				}
+			},
 
 			// for hard scenario shortcut, others in keymap helper
 			keymap			: {
@@ -13058,25 +13470,12 @@ class TerminalPlugin
 		});
 	}
 
-	switchArea( command )
-	{
-		const sessionChange = window.TerminalState.getSessionAreaMap().indexOf( command );
-
-		if ( sessionChange !== -1 )
-		{
-			window.TerminalState.change({
-				sessionIndex 	: sessionChange
-			}, 'CHANGE_SESSION');
-		}
-	}
-
 	commandParser( command, terminal ) //pressed enter
 	{
+		this.outputLiner.prepare('');
+
 		if ( !command || command === '' )
-		{
-			this.outputLiner.prepare( '' );
 			return false;
-		}
 
 		if ( this.allowManualPaging )
 		{
@@ -13104,10 +13503,33 @@ class TerminalPlugin
 
 		this.spinner.start();
 
-		this.outputLiner.prepare( '' );
-		this.animation = true;
+		// this.outputLiner.prepare( '' );
+
+		/*setTimeout( () => {
+			this.spinner.end();
+			this.loopCmdStack();
+			this.parseBackEnd({
+				data	: {
+					output 		: 'THIS IS ONLY A TEST TEST TES TEST',
+					clearScreen : true
+				}
+			})
+		}, 1000 );*/
 
 		this.sendRequest(command);
+
+		return false;
+	}
+
+	loopCmdStack()
+	{
+		if (this.hiddenBuff.length)
+		{
+			const cmd = this.hiddenBuff.shift();
+
+			if ( cmd )
+				this.terminal.exec( cmd );
+		}
 	}
 
 	sendRequest( command )
@@ -13119,14 +13541,13 @@ class TerminalPlugin
 
 			.then( response => {
 				this.spinner.end();
-				this.animation 	= false;
 				return response;
 			})
 
 			.then( this.parseBackEnd.bind(this) )
 			.then( () => {
 
-				if (this.hiddenBuff.length)
+				/*if (this.hiddenBuff.length)
 				{
 					const cmd = this.hiddenBuff.shift();
 
@@ -13139,8 +13560,9 @@ class TerminalPlugin
 						this.terminal.insert( this.hiddenCommand );
 						this.hiddenCommand = '';
 					}
-				}
+				}*/
 
+				this.loopCmdStack();
 				this.switchArea( command );
 			})
 			.catch( this.parseError.bind(this) );
@@ -13163,24 +13585,29 @@ class TerminalPlugin
 			{
 				const clearScreen = result['clearScreen'] && window.TerminalState.getMatrix().rows !== 0;
 
-				if (clearScreen)
-					Debug( 'DEBUG: CLEAR SCREEN' );
-
 				this.outputLiner
 					.prepare( result['output'], clearScreen );
 			}
 		}
+
+		this.tabCommands.reset( result['tabCommands'], result['output'] );
+
+		if ( result['pcc'] )
+			window.TerminalState.change({pcc : result['pcc']}, 'CHANGE_PCC');
+
+		this.debugOutput( result );
+	}
+
+	debugOutput( result )
+	{
+		if (result['clearScreen'])
+			Debug( 'DEBUG: CLEAR SCREEN' );
 
 		if ( result['canCreatePq'] )
 			Debug( 'CAN CREATE PCC' );
 
 		if ( result['tabCommands'] && result['tabCommands'].length )
 			Debug( 'FOUND TAB COMMANDS' );
-
-		this.tabCommands.reset( result['tabCommands'], result['output'] );
-
-		if ( result['pcc'] )
-			window.TerminalState.change({pcc : result['pcc']}, 'CHANGE_PCC');
 	}
 	
 	parseError(e)
@@ -13194,7 +13621,7 @@ class TerminalPlugin
 
 
 /***/ }),
-/* 28 */
+/* 30 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -13256,9 +13683,9 @@ class F8Reader
 		console.log(this.currentCmd.rules[ this.index])
 	}
 
-	keyPressed( evt )
+	keyPressed( char )
 	{
-		const char		= String.fromCharCode( evt.keyCode || evt.which );
+		// const char		= String.fromCharCode( evt.keyCode || evt.which );
 		const curPos 	= this.terminal.cmd().position();
 		const oldCmd 	= this.terminal.get_command();
 
@@ -13291,11 +13718,11 @@ class F8Reader
 
 
 /***/ }),
-/* 29 */
+/* 31 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__helpers_helpers__ = __webpack_require__(1);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__helpers_helpers__ = __webpack_require__(0);
 
 
 
@@ -13316,31 +13743,34 @@ class Output
 		this.clearScreen 	= false;
 	}
 
-	prepare( output, clearScreen = false )
+	countEmpty()
 	{
-		this.outputStrings 		= output;
-		this.clearScreen		= clearScreen;
-
-		// console.log( clearScreen );
-		// console.log( this.emptyLines );
-		// console.log( this.getOutputLength() );
-
 		const noClearScreen	= () => this.emptyLines > 0 ? this.emptyLines - this.getOutputLength() : 0 ;
-		const isClearScreen = () => this.terminal.rows() - this.getOutputLength() - 1;
+		const isClearScreen = () => this.terminal.rows() - ( this.getOutputLength() + 1 );
 
-		this.emptyLines 	= clearScreen ? isClearScreen() : noClearScreen();
+		this.emptyLines 	= this.clearScreen ? isClearScreen() : noClearScreen();
+
+		// console.log( this.terminal.rows() );
+		// console.log( this.getOutputLength() );
+		// console.log( this.emptyLines );
 
 		if (this.emptyLines < 0 )
 			this.emptyLines = 0;
 
-		// console.log('?????', this.emptyLines );
-
-		this.printOutput().attachEmpty().scroll();
+		return this;
 	}
 
-	reset()
+	prepare( output, clearScreen = false )
 	{
-		this.prepare( this.outputStrings, this.clearScreen );
+		this.outputStrings 	= output;
+		this.clearScreen	= clearScreen;
+
+		this.countEmpty().printOutput().attachEmpty().scroll();
+	}
+
+	recalculate()
+	{
+		this.countEmpty().attachEmpty().scroll();
 	}
 
 	attachEmpty()
@@ -13348,13 +13778,14 @@ class Output
 		this.context.innerHTML = '';
 
 		if (this.emptyLines > 0 )
-			this.context.innerHTML = new Array( this.emptyLines ).fill('<div><span>&nbsp;</span></div>').join('');
+			this.context.innerHTML = [ ...new Array(  this.emptyLines + 1  ) ].join('<div><span>&nbsp;</span></div>');
 
 		return this;
 	}
 
 	getOutputLength()
 	{
+		// console.log( this.outputStrings, this.terminal, this.terminal.cols() );
 		return __WEBPACK_IMPORTED_MODULE_0__helpers_helpers__["a" /* default */].getLines( this.outputStrings, this.terminal.cols() ).length;
 	}
 
@@ -13377,56 +13808,16 @@ class Output
 			// this.terminal[0].scrollTop = this.terminal[0].scrollHeight;
 		}
 	}
-
-	// addEmptyLines()
-	// {
-	// 	const emptyLines 		= this.countEmptyLines();
-	// 	this.context.innerHTML 	= emptyHtml( emptyLines );
-	//
-	// 	return this;
-	// }
-
-	// countEmptyLines()
-	// {
-	// 	const outputCount 		= this.getOutputLength();
-	// 	const rowsCount 		= this.terminal.rows();
-	//
-	// 	return this.emptyLines = rowsCount - outputCount - 1;
-	// }
-
-	// removeEmptyLines()
-	// {
-	// 	if ( this.context )
-	// 	{
-	// 		this.context.innerHTML	= '';
-	// 		this.emptyLines 		= 0;
-	// 	}
-	//
-	// 	return this;
-	// }
-
-	// reduceEmpty( lineCount )
-	// {
-	// 	if (this.emptyLines > 0)
-	// 		this.emptyLines -= lineCount || this.getOutputLength();
-	//
-	// 	if ( this.emptyLines < 0 )
-	// 		this.emptyLines = 0;
-	//
-	// 	return this;
-	// }
-
-
 }
 /* harmony export (immutable) */ __webpack_exports__["a"] = Output;
 
 
 /***/ }),
-/* 30 */
+/* 32 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__helpers_helpers__ = __webpack_require__(1);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__helpers_helpers__ = __webpack_require__(0);
 
 
 
@@ -13480,12 +13871,12 @@ class Pagination
 
 
 /***/ }),
-/* 31 */
+/* 33 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__constants__ = __webpack_require__(3);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__helpers_requests__ = __webpack_require__(4);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__constants__ = __webpack_require__(4);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__helpers_requests__ = __webpack_require__(2);
 
 
 
@@ -13506,8 +13897,8 @@ class Session
 	start()
 	{
 		__WEBPACK_IMPORTED_MODULE_1__helpers_requests__["a" /* default */].runSyncCommand('startSession',  {
-			timeFormat	: __WEBPACK_IMPORTED_MODULE_0__constants__["a" /* TIME_FORMAT */],
-			account		: __WEBPACK_IMPORTED_MODULE_0__constants__["b" /* ACCOUNT */]
+			timeFormat	: __WEBPACK_IMPORTED_MODULE_0__constants__["c" /* TIME_FORMAT */],
+			account		: __WEBPACK_IMPORTED_MODULE_0__constants__["d" /* ACCOUNT */]
 		})
 			.then( function( response ) {
 				// sessionToken = response['data']['sessionToken'];
@@ -13559,13 +13950,13 @@ class Session
 
 
 /***/ }),
-/* 32 */
+/* 34 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 
 
-const cliSpinners 		= __webpack_require__(7);
+const cliSpinners 		= __webpack_require__(8);
 
 class Spinner
 {
@@ -13573,7 +13964,7 @@ class Spinner
 	{
 		this.timer 		= false;
 		this.terminal 	= terminal;
-		this.promt 		= false;
+		this.prompt 	= '';
 		this.spinner	= cliSpinners.simpleDots;
 
 		this.frameCounter = 0;
@@ -13581,7 +13972,7 @@ class Spinner
 
 	set()
 	{
-		let text = this.spinner.frames[this.frameCounter++ % this.spinner.frames.length];
+		const text = this.spinner.frames[this.frameCounter++ % this.spinner.frames.length];
 		this.terminal.set_prompt(text);
 	}
 
@@ -13591,6 +13982,8 @@ class Spinner
 			this.end();
 
 		this.terminal.find('.cursor').hide();
+		this.terminal.set_mask('');
+
 		this.prompt 	= this.terminal.get_prompt();
 
 		this.set();
@@ -13601,20 +13994,24 @@ class Spinner
 	{
 		clearInterval( this.timer );
 
-		// setTimeout(() => {
-		clearInterval( this.timer );
 		this.terminal.set_prompt( this.prompt );
+
 		this.terminal.find('.cursor').show();
+		this.terminal.set_mask(false);
 
 		this.timer = false;
-		// }, 0);
+	}
+
+	isActive()
+	{
+		return !!this.timer;
 	}
 }
 /* harmony export (immutable) */ __webpack_exports__["a"] = Spinner;
 
 
 /***/ }),
-/* 33 */
+/* 35 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -13682,17 +14079,17 @@ class TabManager
 
 
 /***/ }),
-/* 34 */
+/* 36 */
 /***/ (function(module, exports) {
 
 module.exports = jQuery;
 
 /***/ }),
-/* 35 */
+/* 37 */
 /***/ (function(module, exports, __webpack_require__) {
 
-__webpack_require__(6);
-module.exports = __webpack_require__(5);
+__webpack_require__(7);
+module.exports = __webpack_require__(6);
 
 
 /***/ })

@@ -3,150 +3,115 @@
 import Terminal 	from './terminal';
 import ActionsMenu 	from './actionsMenu';
 import MenuPanel 	from './menuPanel';
+import Dom			from '../helpers/dom';
 
-let inSession = [], terminalList = [], Root, termTableWrap;
 
-const TerminalCellMatrix = (function()
+class TerminalsMatrix
 {
-	let context;
-
-	function constructor()
+	static makeRow()
 	{
-		context 			= document.createElement('table');
-		context.className 	= 'terminals-table';
+		return document.createElement('tr');
 	}
 
-	function makeRow()
+	static clear()
 	{
-		let row 			= document.createElement('tr');
-		context.appendChild( row );
-
-		return row;
+		this.context.innerHTML = '';
+		return this;
 	}
 
-	function makeCell( row, rowCount )
+	static getDimension( rowCount, cellCount )
 	{
-		let cell 		= document.createElement('td');
-		cell.className 	= 'v-middle';
-		let height		= termTableWrap.clientHeight / ( parseInt(rowCount) + 1 );
-
-		row.appendChild( cell );
-		cell.style.height = Math.floor(height)+ 'px';
-
-		return cell;
-	}
-
-	function _draw( rowIndex, cellIndex )
-	{
-		context.classList = ( ' t-matrix-w-' + cellIndex );
-
-		let row, cells = [];
-
-		for (let i = 0; i<= rowIndex; i++ )
-		{
-			row = makeRow();
-
-			for (let y = 0; y <= cellIndex; y++ )
-			{
-				cells.push( makeCell(row, rowIndex) );
-			}
+		return {
+			height	: Math.floor(this.context.parentNode.clientHeight / rowCount),
+			width 	: Math.floor(this.context.parentNode.clientWidth / cellCount)
 		}
-
-		return cells;
 	}
 
-	function _getContext()
+	static makeCells( rowCount, cellCount )
 	{
-		return context;
-	}
+		let resCells 	= [];
 
-	function _clear()
-	{
-		context.innerHTML = '';
-	}
+		rowCount++;
+		cellCount++;
 
-	constructor();
+		const { height, width } = this.getDimension(rowCount, cellCount);
 
-	return {
-		getCells	: _draw,
-		clear 		: _clear,
-		getContext 	: _getContext
+		const makeCells = row => {
+
+			const makeCell = () => {
+				const cell 			= Dom('td.v-middle');
+				cell.style.height 	= height + 'px';
+				cell.style.width 	= width + 'px';
+
+				return cell;
+			};
+
+			[ ...new Array(cellCount) ].map(makeCell).forEach( (cell) => {
+				row.appendChild(cell);
+				resCells.push(cell);
+			});
+
+			return row;
+		};
+
+		[ ...new Array(rowCount) ]
+			.map( this.makeRow )
+			.map( makeCells )
+			.map( row => this.context.appendChild(row) );
+
+		return resCells;
 	}
-}());
+}
+
+TerminalsMatrix.context = '';
+
+let inSession = [], terminalList = [], termTableWrap, RightSide, LeftSide, matrix = {};
+
 
 export default class Container {
 
 	static init( rootId )
 	{
-		Root = Root || document.getElementById( rootId );
+		const Root = document.getElementById( rootId );
 
-		this.createContext();
-		// this.createHeader();
 		this.createWrapper();
 
 		Root.appendChild( this.context );
+
 		window.TerminalState.change({}, 'CHANGE_MATRIX');
 	}
 
-	static createContext()
-	{
-		this.context 			= document.createElement('section');
-		this.context.className	= 'terminal-wrap-custom clearfix';
-	}
-
-	/*static createHeader()
-	{
-		let header 			= document.createElement('header');
-		header.className 	= 'term-header';
-		header.innerHTML 	= 'Terminal';
-
-		this.context.appendChild( header );
-		return header;
-	}*/
-
 	static createWrapper()
 	{
-		termTableWrap 				= document.createElement('div');
-		termTableWrap.className 	= 'term-body minimized';
+		this.context 	= Dom('section.terminal-wrap-custom');
+		termTableWrap 	= Dom('div.term-body minimized');
+
+		LeftSide 		= Dom('aside.t-d-cell left');
+		RightSide 		= Dom('aside.t-d-cell menu');
 
 		this.context.appendChild( termTableWrap );
 
-		termTableWrap.appendChild( this.createTableMatrix() );
-		termTableWrap.appendChild( this.createRightMenu() );
-	}
+		termTableWrap.appendChild( LeftSide );
+		termTableWrap.appendChild( RightSide );
 
-	static createTableMatrix()
-	{
-		let leftSide 		= document.createElement('aside');
-		leftSide.className	= 't-d-cell left';
+		RightSide.appendChild( MenuPanel.getContext() );
+
+		TerminalsMatrix.context = Dom('table.terminals-table');
+
+		LeftSide.appendChild( TerminalsMatrix.context );
 
 		ActionsMenu.init();
-
-		leftSide.appendChild( ActionsMenu.getContext() );
-		leftSide.appendChild( TerminalCellMatrix.getContext() );
-
-		return leftSide;
-	}
-
-	static createRightMenu()
-	{
-		let rightSide 		= document.createElement('aside');
-		rightSide.className = 't-d-cell menu';
-
-		rightSide.appendChild( MenuPanel.getContext() );
-		return rightSide;
-	}
-
-	static clearPrev()
-	{
-		TerminalCellMatrix.clear();
+		LeftSide.appendChild( ActionsMenu.getContext() );
 	}
 
 	static purgeScreens()
 	{
-		terminalList.forEach( ( terminal ) => {
-			terminal.clear();
-		})
+		terminalList.forEach( terminal => { terminal.clear(); });
+	}
+
+	static resizeScreens( dimensions )
+	{
+		terminalList.forEach( terminal => terminal.resize( dimensions ) );
 	}
 
 	static menuRender()
@@ -154,34 +119,56 @@ export default class Container {
 		MenuPanel.render();
 	}
 
+	static hasMatrixChanged( newMatrix )
+	{
+		return JSON.stringify(newMatrix) !== JSON.stringify(matrix)
+	}
+
+	static gdsHasChanged( gds )
+	{
+		return this.gds !== gds;
+	}
+
 	static render( params )
 	{
 		const sessionKey = params['gds'];
+		RightSide.classList.toggle('hidden', !!params.hideMenu);
+
+		this.menuRender();
+
 		const { rows : rowIndex , cells: cellIndex} = params.matrix;
 
-		termTableWrap.className = `term-body minimized ${sessionKey}`;
+		if ( this.hasMatrixChanged( params.matrix ) )
+		{
+			matrix = Object.assign( {}, params.matrix);
+		}
+		else
+		{
+			this.resizeScreens( TerminalsMatrix.getDimension(rowIndex + 1 , cellIndex + 1) );
+			return false;
+		}
 
-		this.clearPrev();
-		this.menuRender();
+		if ( this.gdsHasChanged( params.matrix ) )
+		{
+			this.gds 				= sessionKey;
+			termTableWrap.className = `term-body minimized ${sessionKey}`; // change gds styles
+		}
 
 		terminalList = inSession[ sessionKey ] || [];
 
-		TerminalCellMatrix
-			.getCells(rowIndex, cellIndex)
-			.map( ( cell, index ) => {
+		TerminalsMatrix
+			.clear()
+			.makeCells(rowIndex, cellIndex)
+			.forEach(( cell, index ) => {
 
-				if ( terminalList[index] )
-				{
-					terminalList[index].reattach( cell );
-				} else
-				{
-					terminalList.push( new Terminal({
-						name 			: index,
-						sessionIndex	: params.sessionIndex,
-						gds				: params.gds,
-						parentContext	: cell
-					}) );
-				}
+				terminalList[index] = terminalList[index] || new Terminal({
+					name 			: index,
+					sessionIndex	: params.sessionIndex,
+					gds				: params.gds,
+					buffer			: window.TerminalState.getBuffer( sessionKey, index + 1 )
+				});
+
+				terminalList[index].reattach( cell );
 			});
 
 		inSession[ sessionKey ] = terminalList;

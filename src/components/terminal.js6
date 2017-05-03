@@ -1,8 +1,12 @@
 'use strict';
 
-import TerminalPlugin from '../middleware/terminal';
+import TerminalPlugin	from '../middleware/terminal';
+import Dom				from '../helpers/dom';
+import Helper			from '../helpers/helpers';
 
-const calculateHeight = terminal => (terminal.find('.cursor').height() * terminal.rows() );
+require('../../node_modules/jquery.terminal/js/unix_formatting');
+
+const calculateHeight = terminal => (terminal.find('.cursor').height() * terminal.rows());
 
 export default class Terminal {
 
@@ -10,25 +14,10 @@ export default class Terminal {
 	{
 		this.plugin 				= null;
 		this.settings 				= params;
-		this.context 				= document.createElement('div');
-		this.context.className 		= 'terminal';
+		this.context 				= Dom('div.terminal');
 
-		this.context.style.height	= this.settings.parentContext.clientHeight + 'px';
-		this.context.style.width	= this.settings.parentContext.clientWidth + 'px';
-
-		const backEndId = parseInt( this.settings['name'] ) + 1;
-		this.buffer		= window.TerminalState.getBuffer(params.gds, backEndId );
-
-		this.context.onclick = () => {
-			if (!this.plugin)
-				this.init();
-		};
-
-		if ( this.buffer )
-			this.makeBuffer();
-
-		this.settings.parentContext.appendChild( this.context );
-		this.context.scrollTop = this.context.scrollHeight;
+		this.makeBuffer( params.buffer );
+		this.context.onclick = () => { if (!this.plugin) this.init(); };
 	}
 
 	init()
@@ -44,18 +33,36 @@ export default class Terminal {
 		this.plugin.terminal.scroll_to_bottom();
 	}
 
-	makeBuffer()
+	makeBuffer( buf )
 	{
-		const buffered = this.buffer['buffering'].map( record => {
+		if (!buf)
+			return false;
+
+		/*const buffered = buf['buffering'].map( record => {
+
+			const output = $.terminal.split_equal( record.output ).map( str => `<div style="width: 100%">${ $.terminal.overtyping(str) }</div>`).join('');
+
+			// console.log( $.terminal.split_equal( record.output ) );
+			// const output = $.terminal.format( record.output )
+			// console.log( output )
+
+			return `<div class="command">${record.request}</div>${output}`;
+			// return `<div class="command">${record.request}</div><pre>${record.output}</pre>`;
+			//return `<div class="command">${record.request}</div>${output}`;
+			// return `<div class="command">${record.request}</div> ${ $.terminal.format( record.output ) } `;
+		}).join('');*/
+
+
+		const buffered = buf['buffering'].map( record => {
 			return `<div class="command">${record.request}</div><pre>${record.output}</pre>`;
 		}).join('');
 
-		this.bufferDiv 				= document.createElement('div');
-		this.bufferDiv.className	= 'terminal-wrapper';
-		this.bufferDiv.innerHTML 	= `<div class="terminal-output">${buffered}</div>`;
+		this.bufferDiv 				= Dom('article.terminal-wrapper');
+		this.bufferDiv.innerHTML 	= `<div class="terminal-output">${$.terminal.format( buffered )}</div>`;
 
 		this.context.appendChild( this.bufferDiv );
 	}
+
 	//
 	// insertBuffer()
 	// {
@@ -79,19 +86,69 @@ export default class Terminal {
 
 	reattach( parentNode )
 	{
+		// let cursor, cursorWrap;
+
 		this.settings.parentContext = parentNode;
-
-		this.context.style.height	= this.settings.parentContext.clientHeight + 'px';
-		this.context.style.width	= this.settings.parentContext.clientWidth + 'px';
-
-		this.settings.parentContext.appendChild( this.context );
 
 		if (this.plugin)
 		{
-			this.context.style.height = calculateHeight(this.plugin.terminal) + 'px';
+			// console.log(terminal.find('.cursor').height() * terminal.rows());
+			// this.context.style.height = calculateHeight(this.plugin.terminal) + 'px';
+
 			this.plugin.resize();
-		} else
+			// this.plugin.terminal.scroll_to_bottom();
+		}
+		else
 		{
+			/*cursorWrap 			= Dom('div.cmd');
+			cursor 				= Dom('span.cursor');
+			cursor.innerHTML 	= '&nbsp;';
+
+			cursorWrap.appendChild( cursor );
+			this.context.appendChild( cursorWrap );*/
+
+			this.context.style.height	= parentNode.clientHeight 	+ 'px';
+			this.context.style.width	= parentNode.clientWidth 	+ 'px';
+		}
+
+		this.settings.parentContext.appendChild( this.context );
+
+		// if (cursor)
+		// {
+			// const h =  Math.floor( parentNode.clientHeight / cursor.clientHeight );
+			// this.context.style.height = (cursor.clientHeight * h)  + 'px';
+			//
+			// cursorWrap.parentNode.removeChild( cursorWrap );
+
+		this.context.scrollTop = this.context.scrollHeight;
+		// }
+	}
+
+	resize( dimensions )
+	{
+		// this.settings.parentContext.style.height	= dimensions.height + 'px';
+		// this.settings.parentContext.style.width		= dimensions.width 	+ 'px';
+		// this.context.style.height	= this.settings.parentContext.clientHeight 	+ 'px';
+		// this.context.style.width	= this.settings.parentContext.clientWidth 	+ 'px';
+
+		if (this.plugin)
+		{
+			// this.plugin.resize( dimensions.width, dimensions.height );
+
+			this.plugin.resize();
+
+			this.context.style.height = calculateHeight(this.plugin.terminal) + 'px';
+			this.plugin.terminal.scroll_to_bottom();
+		}
+
+		else
+		{
+			/*this.settings.parentContext.style.height	= dimensions.height + 'px';
+			this.settings.parentContext.style.width		= dimensions.width 	+ 'px';
+
+			this.context.style.height	= this.settings.parentContext.clientHeight 	+ 'px';
+			this.context.style.width	= this.settings.parentContext.clientWidth 	+ 'px';*/
+
 			this.context.scrollTop = this.context.scrollHeight;
 		}
 	}

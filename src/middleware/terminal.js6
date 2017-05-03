@@ -34,7 +34,7 @@ export default class TerminalPlugin
 		this.context	= params.context;
 		this.name		= params.name;
 
-		this.animation	 	= false;
+		// this.animation	 	= false;
 		this.hiddenBuff		= [];
 		this.hiddenCommand	= '';
 
@@ -46,10 +46,9 @@ export default class TerminalPlugin
 			gds				: params.gds
 		});
 
-		this.pagination = new Pagination( this.terminal );
-
 		this.terminal 		= this.init();
 
+		this.pagination 	= new Pagination( this.terminal );
 		this.spinner 		= new Spinner( this.terminal );
 		this.outputLiner 	= new OutputLiner( this.terminal );
 		this.tabCommands	= new TabManager();
@@ -58,76 +57,73 @@ export default class TerminalPlugin
 
 	parseChar( evt, terminal )
 	{
-		// key press fires globally on all terminals;
-		if ( evt.target.nodeName === 'BODY')
-			return false;
+		// return false;
+		// console.log(' parse Key HOHOHO', evt.target.nodeName);
 
-		if (terminal.cmd().find('textarea')[0] !== evt.target)
+		// key press fires globally on all terminals;
+
+		if ( evt.target.nodeName !== 'TEXTAREA' )
+			return undefined;
+
+		if ( terminal.cmd().find('textarea')[0] !== evt.target )
 			return undefined;
 
 		if ( !terminal.enabled() )
+			return undefined;
+
+		const ch = Helpers.substitutePrintableChar( evt, window.TerminalState.isLanguageApollo() );
+
+		if (!ch) // don't insert empty char further
+		{
 			return false;
+		}
 
 		if ( this.f8Reader.getIsActive() )
 		{
-			this.f8Reader.keyPressed( evt );
+			this.f8Reader.keyPressed( ch );
 			return false;
 		}
 
-		let keyCode = evt.keyCode || evt.which;
-
-		if (keyCode === 13)
-			return false;
-
-		let ch 		= false;
-
-		if (keyCode && !evt.ctrlKey)
-			ch = Helpers.substitutePrintableChar( String.fromCharCode( keyCode ) );
-
-		if (!ch)
-			return ch;
-
-		if (ch)
-		{
-			if ( this.animation )
-			{
-				this.hiddenCommand += ch;
-			} else
-			{
-				terminal.insert(ch);
-			}
-
-			return false;
-		}
-
-		// in pressed "\" case
-		if (ch === false)
-			return false;
+		terminal.insert( ch );
+		return false;
 	}
 
 	parseKeyBinds( evt, terminal )
 	{
-		let keyCode = evt.keyCode || evt.which;
-
-		if ( this.animation )
+		// let keyCode = evt.keyCode || evt.which;
+		// if (keyCode === 13)
+		// {
+		// 	return false;
+		// }
+		/*if ( this.spinner.isActive() && keyCode === 13 )
 		{
-			if ( keyCode === 13 )
-			{
-				this.hiddenBuff.push( this.hiddenCommand );
-				this.hiddenCommand = '';
-				return false;
-			}
-		}
+			this.hiddenBuff.push( this.hiddenCommand );
+			this.hiddenCommand = '';
 
-		if ( !KeyBinding.parse( evt, terminal, this ) )
 			return false;
+		}*/
+
+		// const cmd = KeyBinding.parse( evt, terminal );
+
+		if ( !KeyBinding.parse( evt, terminal ) )
+			return false;
+	}
+
+	switchArea( command )
+	{
+		const sessionChange = window.TerminalState.getSessionAreaMap().indexOf( command );
+
+		if ( sessionChange !== -1 )
+		{
+			window.TerminalState.change({
+				sessionIndex 	: sessionChange
+			}, 'CHANGE_SESSION');
+		}
 	}
 
 	changeActiveTerm( terminal )
 	{
-		window.TerminalState.change({
-			activeTerminal 	: terminal
-		}, 'CHANGE_ACTIVE_TERMINAL');
+		window.TerminalState.change({ activeTerminal : terminal }, 'CHANGE_ACTIVE_TERMINAL');
 	}
 
 	clearBuf()
@@ -156,15 +152,17 @@ export default class TerminalPlugin
 		this.tabCommands.run( replace(this.terminal) );
 	}
 
-	resize()
+	resize( w, h )
 	{
+		// this.terminal.resize( w, h );
 		this.terminal.resize();
-		this.outputLiner.reset();
+		this.outputLiner.recalculate();
 	}
 
 	init()
 	{
 		return $(this.context).terminal( this.commandParser.bind(this), {
+
 			greetings		: '',
 			name			: this.name,
 			prompt			: '>',
@@ -175,6 +173,16 @@ export default class TerminalPlugin
 
 			onInit			: this.changeActiveTerm,
 			onTerminalChange: this.changeActiveTerm,
+
+			memory			: true,
+
+			onBeforeCommand : ( terminal, command ) => {
+				if ( this.spinner.isActive()  )
+				{
+					this.hiddenBuff.push( command );
+					return false;
+				}
+			},
 
 			// for hard scenario shortcut, others in keymap helper
 			keymap			: {
@@ -190,25 +198,12 @@ export default class TerminalPlugin
 		});
 	}
 
-	switchArea( command )
-	{
-		const sessionChange = window.TerminalState.getSessionAreaMap().indexOf( command );
-
-		if ( sessionChange !== -1 )
-		{
-			window.TerminalState.change({
-				sessionIndex 	: sessionChange
-			}, 'CHANGE_SESSION');
-		}
-	}
-
 	commandParser( command, terminal ) //pressed enter
 	{
+		this.outputLiner.prepare('');
+
 		if ( !command || command === '' )
-		{
-			this.outputLiner.prepare( '' );
 			return false;
-		}
 
 		if ( this.allowManualPaging )
 		{
@@ -236,10 +231,33 @@ export default class TerminalPlugin
 
 		this.spinner.start();
 
-		this.outputLiner.prepare( '' );
-		this.animation = true;
+		// this.outputLiner.prepare( '' );
+
+		/*setTimeout( () => {
+			this.spinner.end();
+			this.loopCmdStack();
+			this.parseBackEnd({
+				data	: {
+					output 		: 'THIS IS ONLY A TEST TEST TES TEST',
+					clearScreen : true
+				}
+			})
+		}, 1000 );*/
 
 		this.sendRequest(command);
+
+		return false;
+	}
+
+	loopCmdStack()
+	{
+		if (this.hiddenBuff.length)
+		{
+			const cmd = this.hiddenBuff.shift();
+
+			if ( cmd )
+				this.terminal.exec( cmd );
+		}
 	}
 
 	sendRequest( command )
@@ -251,14 +269,13 @@ export default class TerminalPlugin
 
 			.then( response => {
 				this.spinner.end();
-				this.animation 	= false;
 				return response;
 			})
 
 			.then( this.parseBackEnd.bind(this) )
 			.then( () => {
 
-				if (this.hiddenBuff.length)
+				/*if (this.hiddenBuff.length)
 				{
 					const cmd = this.hiddenBuff.shift();
 
@@ -271,8 +288,9 @@ export default class TerminalPlugin
 						this.terminal.insert( this.hiddenCommand );
 						this.hiddenCommand = '';
 					}
-				}
+				}*/
 
+				this.loopCmdStack();
 				this.switchArea( command );
 			})
 			.catch( this.parseError.bind(this) );
@@ -295,24 +313,29 @@ export default class TerminalPlugin
 			{
 				const clearScreen = result['clearScreen'] && window.TerminalState.getMatrix().rows !== 0;
 
-				if (clearScreen)
-					Debug( 'DEBUG: CLEAR SCREEN' );
-
 				this.outputLiner
 					.prepare( result['output'], clearScreen );
 			}
 		}
+
+		this.tabCommands.reset( result['tabCommands'], result['output'] );
+
+		if ( result['pcc'] )
+			window.TerminalState.change({pcc : result['pcc']}, 'CHANGE_PCC');
+
+		this.debugOutput( result );
+	}
+
+	debugOutput( result )
+	{
+		if (result['clearScreen'])
+			Debug( 'DEBUG: CLEAR SCREEN' );
 
 		if ( result['canCreatePq'] )
 			Debug( 'CAN CREATE PCC' );
 
 		if ( result['tabCommands'] && result['tabCommands'].length )
 			Debug( 'FOUND TAB COMMANDS' );
-
-		this.tabCommands.reset( result['tabCommands'], result['output'] );
-
-		if ( result['pcc'] )
-			window.TerminalState.change({pcc : result['pcc']}, 'CHANGE_PCC');
 	}
 	
 	parseError(e)

@@ -8,7 +8,7 @@ export default class Spinner
 	{
 		this.timer 		= false;
 		this.terminal 	= terminal;
-		this.promt 		= false;
+		this.prompt 	= '';
 		this.spinner	= cliSpinners.simpleDots;
 
 		this.frameCounter = 0;
@@ -16,7 +16,7 @@ export default class Spinner
 
 	set()
 	{
-		let text = this.spinner.frames[this.frameCounter++ % this.spinner.frames.length];
+		const text = this.spinner.frames[this.frameCounter++ % this.spinner.frames.length];
 		this.terminal.set_prompt(text);
 	}
 
@@ -26,6 +26,8 @@ export default class Spinner
 			this.end();
 
 		this.terminal.find('.cursor').hide();
+		this.terminal.set_mask('');
+
 		this.prompt 	= this.terminal.get_prompt();
 
 		this.set();
@@ -36,12 +38,16 @@ export default class Spinner
 	{
 		clearInterval( this.timer );
 
-		// setTimeout(() => {
-		clearInterval( this.timer );
 		this.terminal.set_prompt( this.prompt );
+
 		this.terminal.find('.cursor').show();
+		this.terminal.set_mask(false);
 
 		this.timer = false;
-		// }, 0);
+	}
+
+	isActive()
+	{
+		return !!this.timer;
 	}
 }

@@ -1,6 +1,7 @@
 'use strict';
 
 import Container from './components/containerMain';
+import Request	 from './helpers/requests.js6';
 
 const apiData = window.apiData || {};
 
@@ -11,14 +12,6 @@ const Context = {
 		Container.init( rootId );
 	}
 };
-
-// apiData.settings = {
-// 	common 	: 'apollo',
-// 	gds 	: {
-// 		apollo 	: {},
-// 		sabre 	: {}
-// 	}
-// };
 
 const gdsSettings = {
 	sessionIndex 	: 0,
@@ -83,7 +76,12 @@ class TerminalState
 		Container.purgeScreens();
 	}
 
-	change( params, action )
+	isLanguageApollo()
+	{
+		return this.state.language === 'APOLLO';
+	}
+
+	change( params = {}, action )
 	{
 		this.state = Object.assign( this.state, params );
 
@@ -128,12 +126,16 @@ class TerminalState
 			break;
 
 			case 'PQ_MODAL_SHOW' :
-
 				if (this.state.activeTerminal)
 				{
-					apiData.pqModal.show({
-						reservationDumpClean : this.state.activeTerminal.get_output()
-					});
+					Request.get( 'terminal/pricequote?rId= ' + apiData['rId'] ).then( response => {
+						apiData.pqModal.show({
+							dump 	: response.data.output,
+							onClose : () => { Container.render( this.state )}
+						});
+
+						Container.render( Object.assign({}, this.state, { hideMenu : true}) );
+					})
 				}
 
 				return false;
@@ -153,9 +155,7 @@ window.onresize = function() {
 	if (resizeTimeout)
 		clearInterval(resizeTimeout);
 
-	resizeTimeout = setTimeout( () => {
-		window.TerminalState.change({});
-	}, 150 );
+	resizeTimeout = setTimeout( () => window.TerminalState.change(), 150 );
 };
 
 Context.init();

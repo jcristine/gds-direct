@@ -16,10 +16,22 @@
 	return result;
 }*/
 
-function substitutePrintableChar(ch)
+function substitutePrintableChar(evt, isApollo)
 {
-	const isApollo	= window.TerminalState.state.language === 'APOLLO';
+	// const isApollo	= window.TerminalState.state.language === 'APOLLO';
 	// const isApollo	= window.TerminalState.state.gds === 'apollo';
+
+	const keyCode	= evt.keyCode || evt.which;
+
+	if ( keyCode === 13 )
+	{
+		return false;
+	}
+
+	const ch 		= String.fromCharCode(keyCode);
+
+	if (!ch)
+		return false;
 
 	const sabreLayout = {
 		'\'': '‡',
@@ -37,15 +49,12 @@ function substitutePrintableChar(ch)
 		'`': '>',
 		',': '+',
 		';': ':',
-		'\\': false,
+		'\\': false
 	};
 
 	const layout = isApollo ? apolloLayout : sabreLayout;
 
-	if ( layout[ch] === false )
-		return false;
-
-	return layout[ch] || ch.toUpperCase();
+	return layout[ch] !== undefined ? layout[ch] : ch.toUpperCase();
 }
 
 function chunkIntoPages( linesArr , rowsPerScreen )
@@ -91,4 +100,5 @@ export default {
 	makeCachedParts 		:	_makePages,
 	substitutePrintableChar :	substitutePrintableChar,
 	getLines 				:	_splitIntoLinesArr,
+	splitLines 				:	splitLines,
 }

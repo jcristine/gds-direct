@@ -8,7 +8,7 @@ function get( url )
 	if (!url )
 		return '';
 
-	return fetch(API_HOST + url, {
+	return fetch( url, {
 		credentials: 'include'
 	}).then( function( response ) {
 		return response.json();

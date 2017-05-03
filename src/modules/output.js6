@@ -18,31 +18,34 @@ export default class Output
 		this.clearScreen 	= false;
 	}
 
-	prepare( output, clearScreen = false )
+	countEmpty()
 	{
-		this.outputStrings 		= output;
-		this.clearScreen		= clearScreen;
-
-		// console.log( clearScreen );
-		// console.log( this.emptyLines );
-		// console.log( this.getOutputLength() );
-
 		const noClearScreen	= () => this.emptyLines > 0 ? this.emptyLines - this.getOutputLength() : 0 ;
-		const isClearScreen = () => this.terminal.rows() - this.getOutputLength() - 1;
+		const isClearScreen = () => this.terminal.rows() - ( this.getOutputLength() + 1 );
 
-		this.emptyLines 	= clearScreen ? isClearScreen() : noClearScreen();
+		this.emptyLines 	= this.clearScreen ? isClearScreen() : noClearScreen();
+
+		// console.log( this.terminal.rows() );
+		// console.log( this.getOutputLength() );
+		// console.log( this.emptyLines );
 
 		if (this.emptyLines < 0 )
 			this.emptyLines = 0;
 
-		// console.log('?????', this.emptyLines );
-
-		this.printOutput().attachEmpty().scroll();
+		return this;
 	}
 
-	reset()
+	prepare( output, clearScreen = false )
 	{
-		this.prepare( this.outputStrings, this.clearScreen );
+		this.outputStrings 	= output;
+		this.clearScreen	= clearScreen;
+
+		this.countEmpty().printOutput().attachEmpty().scroll();
+	}
+
+	recalculate()
+	{
+		this.countEmpty().attachEmpty().scroll();
 	}
 
 	attachEmpty()
@@ -50,13 +53,14 @@ export default class Output
 		this.context.innerHTML = '';
 
 		if (this.emptyLines > 0 )
-			this.context.innerHTML = new Array( this.emptyLines ).fill('<div><span>&nbsp;</span></div>').join('');
+			this.context.innerHTML = [ ...new Array(  this.emptyLines + 1  ) ].join('<div><span>&nbsp;</span></div>');
 
 		return this;
 	}
 
 	getOutputLength()
 	{
+		// console.log( this.outputStrings, this.terminal, this.terminal.cols() );
 		return Helpers.getLines( this.outputStrings, this.terminal.cols() ).length;
 	}
 
@@ -79,44 +83,4 @@ export default class Output
 			// this.terminal[0].scrollTop = this.terminal[0].scrollHeight;
 		}
 	}
-
-	// addEmptyLines()
-	// {
-	// 	const emptyLines 		= this.countEmptyLines();
-	// 	this.context.innerHTML 	= emptyHtml( emptyLines );
-	//
-	// 	return this;
-	// }
-
-	// countEmptyLines()
-	// {
-	// 	const outputCount 		= this.getOutputLength();
-	// 	const rowsCount 		= this.terminal.rows();
-	//
-	// 	return this.emptyLines = rowsCount - outputCount - 1;
-	// }
-
-	// removeEmptyLines()
-	// {
-	// 	if ( this.context )
-	// 	{
-	// 		this.context.innerHTML	= '';
-	// 		this.emptyLines 		= 0;
-	// 	}
-	//
-	// 	return this;
-	// }
-
-	// reduceEmpty( lineCount )
-	// {
-	// 	if (this.emptyLines > 0)
-	// 		this.emptyLines -= lineCount || this.getOutputLength();
-	//
-	// 	if ( this.emptyLines < 0 )
-	// 		this.emptyLines = 0;
-	//
-	// 	return this;
-	// }
-
-
 }
