@@ -12154,11 +12154,21 @@ class TerminalsMatrix
 		return this;
 	}
 
-	static getDimension( rowCount, cellCount )
+	static getDimension( rowCount, cellCount, container = false )
 	{
+		console.log( this.context.parentNode.clientWidth );
+
+		let parent = this.context.parentNode;
+
+		if (container)
+		{
+			console.log('?');
+			parent = container;
+		}
+
 		return {
-			height	: Math.floor(this.context.parentNode.clientHeight / rowCount),
-			width 	: Math.floor(this.context.parentNode.clientWidth / cellCount)
+			height	: Math.floor(parent.clientHeight / rowCount),
+			width 	: Math.floor(parent.clientWidth / cellCount)
 		}
 	}
 
@@ -12279,7 +12289,11 @@ class Container {
 		}
 		else
 		{
-			this.resizeScreens( TerminalsMatrix.getDimension(rowIndex + 1 , cellIndex + 1) );
+			// console.log( document.getElementById(terminalContext) )
+
+			console.log( this.context.clientWidth );
+
+			this.resizeScreens( TerminalsMatrix.getDimension(rowIndex + 1 , cellIndex + 1, this.context) );
 			return false;
 		}
 
@@ -12956,13 +12970,18 @@ class Terminal {
 
 		this.settings.parentContext = parentNode;
 
+		this.context.style.height	= parentNode.clientHeight 	+ 'px';
+		this.context.style.width	= parentNode.clientWidth 	+ 'px';
+
 		if (this.plugin)
 		{
 			// console.log(terminal.find('.cursor').height() * terminal.rows());
 			// this.context.style.height = calculateHeight(this.plugin.terminal) + 'px';
 
 			this.plugin.resize();
-			// this.plugin.terminal.scroll_to_bottom();
+
+			this.context.style.height = calculateHeight(this.plugin.terminal) + 'px';
+			this.plugin.terminal.scroll_to_bottom();
 		}
 		else
 		{
@@ -12973,8 +12992,7 @@ class Terminal {
 			cursorWrap.appendChild( cursor );
 			this.context.appendChild( cursorWrap );*/
 
-			this.context.style.height	= parentNode.clientHeight 	+ 'px';
-			this.context.style.width	= parentNode.clientWidth 	+ 'px';
+			// console.log(parentNode.clientHeight);
 		}
 
 		this.settings.parentContext.appendChild( this.context );

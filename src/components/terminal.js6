@@ -90,13 +90,15 @@ export default class Terminal {
 
 		this.settings.parentContext = parentNode;
 
+		this.context.style.height	= parentNode.clientHeight 	+ 'px';
+		this.context.style.width	= parentNode.clientWidth 	+ 'px';
+
 		if (this.plugin)
 		{
-			// console.log(terminal.find('.cursor').height() * terminal.rows());
-			// this.context.style.height = calculateHeight(this.plugin.terminal) + 'px';
-
 			this.plugin.resize();
-			// this.plugin.terminal.scroll_to_bottom();
+
+			this.context.style.height = calculateHeight(this.plugin.terminal) + 'px';
+			this.plugin.terminal.scroll_to_bottom();
 		}
 		else
 		{
@@ -107,8 +109,7 @@ export default class Terminal {
 			cursorWrap.appendChild( cursor );
 			this.context.appendChild( cursorWrap );*/
 
-			this.context.style.height	= parentNode.clientHeight 	+ 'px';
-			this.context.style.width	= parentNode.clientWidth 	+ 'px';
+			// console.log(parentNode.clientHeight);
 		}
 
 		this.settings.parentContext.appendChild( this.context );
