@@ -876,21 +876,13 @@ const API_HOST 				= '';
 "use strict";
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__components_containerMain__ = __webpack_require__(20);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__helpers_requests_js6__ = __webpack_require__(2);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__helpers_requests__ = __webpack_require__(2);
 
 
 
 
 
 const apiData = window.apiData || {};
-
-const Context = {
-	init()
-	{
-		let rootId = apiData['htmlRootId'] || 'rootTerminal';
-		__WEBPACK_IMPORTED_MODULE_0__components_containerMain__["a" /* default */].init( rootId );
-	}
-};
 
 const gdsSettings = {
 	sessionIndex 	: 0,
@@ -901,7 +893,7 @@ const gdsSettings = {
 
 const Gds = {
 	'apollo' 	: Object.assign({}, gdsSettings),
-	'sabre'		: Object.assign({}, gdsSettings),
+	'sabre'		: Object.assign({}, gdsSettings)
 };
 
 class TerminalState
@@ -922,7 +914,8 @@ class TerminalState
 			matrix			: saved ? JSON.parse( saved ) : {rows : 1, cells : 1},
 			fontSize		: 1,
 			language		: 'APOLLO',
-			activeTerminal	: ''
+			activeTerminal	: '',
+			hideMenu		: false
 		};
 	}
 
@@ -995,6 +988,9 @@ class TerminalState
 			break;
 
 			case 'CHANGE_ACTIVE_TERMINAL' :
+
+				// console.log(' change active terminal');
+
 				if (Gds[gds]['activeTerminal'])
 					Gds[gds]['activeTerminal'][0].parentNode.classList.remove('active');
 
@@ -1012,19 +1008,16 @@ class TerminalState
 			case 'PQ_MODAL_SHOW' :
 				if (this.state.activeTerminal)
 				{
-					__WEBPACK_IMPORTED_MODULE_1__helpers_requests_js6__["a" /* default */].get( 'terminal/priceQuote?rId=' + apiData['rId'] + '&gds=' + gds ).then( response => {
+					__WEBPACK_IMPORTED_MODULE_1__helpers_requests__["a" /* default */].get( 'terminal/priceQuote?rId=' + apiData['rId'] + '&gds=' + gds ).then( response => {
 
 						apiData.pqModal.show({
 							dump 	: response.data.output,
-							onClose : () => { __WEBPACK_IMPORTED_MODULE_0__components_containerMain__["a" /* default */].render( this.state )}
+							onClose : () => {
+								__WEBPACK_IMPORTED_MODULE_0__components_containerMain__["a" /* default */].render( Object.assign({}, this.state, { hideMenu : false } ) );
+							}
 						});
 
-						// setTimeout( () => {
-						// 	console.log('Open pq ');
-							__WEBPACK_IMPORTED_MODULE_0__components_containerMain__["a" /* default */].render( Object.assign({}, this.state, { hideMenu : true}) );
-						// } , 1000)
-
-
+						__WEBPACK_IMPORTED_MODULE_0__components_containerMain__["a" /* default */].render( this.state );
 					})
 				}
 
@@ -1035,6 +1028,12 @@ class TerminalState
 		__WEBPACK_IMPORTED_MODULE_0__components_containerMain__["a" /* default */].render( this.state );
 	}
 }
+
+// let optionsDefault 	= {};
+// let xz 				= { zz : 1 };
+// let test = { ...optionsDefault, visibilityFilter: 1 };
+// console.log( test );
+//
 
 window.TerminalState = new TerminalState();
 
@@ -1048,7 +1047,8 @@ window.onresize = function() {
 	resizeTimeout = setTimeout( () => window.TerminalState.change(), 150 );
 };
 
-Context.init();
+__WEBPACK_IMPORTED_MODULE_0__components_containerMain__["a" /* default */].init( apiData['htmlRootId'] || 'rootTerminal' );
+
 
 /***/ }),
 /* 8 */
@@ -12297,9 +12297,9 @@ class Container {
 	{
 		gdsKey = params['gds'];
 
-		gdsSession[ gdsKey ] = gdsSession[ gdsKey ] ? gdsSession[ gdsKey ] : [];
+		gdsSession[ gdsKey ] = gdsSession[ gdsKey ] || [];
 
-		RightSide.classList.toggle('hidden', !!params.hideMenu);
+		RightSide.classList.toggle('hidden', params.hideMenu );
 		this.menuRender();
 
 		const { rows : rowIndex , cells: cellIndex} = params.matrix;
@@ -12382,7 +12382,7 @@ class PqButton
 
 			// Requests.get('terminal/getPqData').then( () => {
 			// 	console.log('aa', arguments );
-				window.TerminalState.change({}, 'PQ_MODAL_SHOW')
+				window.TerminalState.change({ hideMenu : true }, 'PQ_MODAL_SHOW')
 			// });
 
 		};

@@ -41,7 +41,7 @@ export default class PqButton
 
 			// Requests.get('terminal/getPqData').then( () => {
 			// 	console.log('aa', arguments );
-				window.TerminalState.change({}, 'PQ_MODAL_SHOW')
+				window.TerminalState.change({ hideMenu : true }, 'PQ_MODAL_SHOW')
 			// });
 
 		};

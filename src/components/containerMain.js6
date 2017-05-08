@@ -151,9 +151,9 @@ export default class Container {
 	{
 		gdsKey = params['gds'];
 
-		gdsSession[ gdsKey ] = gdsSession[ gdsKey ] ? gdsSession[ gdsKey ] : [];
+		gdsSession[ gdsKey ] = gdsSession[ gdsKey ] || [];
 
-		RightSide.classList.toggle('hidden', !!params.hideMenu);
+		RightSide.classList.toggle('hidden', params.hideMenu );
 		this.menuRender();
 
 		const { rows : rowIndex , cells: cellIndex} = params.matrix;

@@ -1,17 +1,9 @@
 'use strict';
 
 import Container from './components/containerMain';
-import Request	 from './helpers/requests.js6';
+import Request	 from './helpers/requests';
 
 const apiData = window.apiData || {};
-
-const Context = {
-	init()
-	{
-		let rootId = apiData['htmlRootId'] || 'rootTerminal';
-		Container.init( rootId );
-	}
-};
 
 const gdsSettings = {
 	sessionIndex 	: 0,
@@ -22,7 +14,7 @@ const gdsSettings = {
 
 const Gds = {
 	'apollo' 	: Object.assign({}, gdsSettings),
-	'sabre'		: Object.assign({}, gdsSettings),
+	'sabre'		: Object.assign({}, gdsSettings)
 };
 
 class TerminalState
@@ -43,7 +35,8 @@ class TerminalState
 			matrix			: saved ? JSON.parse( saved ) : {rows : 1, cells : 1},
 			fontSize		: 1,
 			language		: 'APOLLO',
-			activeTerminal	: ''
+			activeTerminal	: '',
+			hideMenu		: false
 		};
 	}
 
@@ -116,6 +109,9 @@ class TerminalState
 			break;
 
 			case 'CHANGE_ACTIVE_TERMINAL' :
+
+				// console.log(' change active terminal');
+
 				if (Gds[gds]['activeTerminal'])
 					Gds[gds]['activeTerminal'][0].parentNode.classList.remove('active');
 
@@ -137,15 +133,12 @@ class TerminalState
 
 						apiData.pqModal.show({
 							dump 	: response.data.output,
-							onClose : () => { Container.render( this.state )}
+							onClose : () => {
+								Container.render( Object.assign({}, this.state, { hideMenu : false } ) );
+							}
 						});
 
-						// setTimeout( () => {
-						// 	console.log('Open pq ');
-							Container.render( Object.assign({}, this.state, { hideMenu : true}) );
-						// } , 1000)
-
-
+						Container.render( this.state );
 					})
 				}
 
@@ -156,6 +149,12 @@ class TerminalState
 		Container.render( this.state );
 	}
 }
+
+// let optionsDefault 	= {};
+// let xz 				= { zz : 1 };
+// let test = { ...optionsDefault, visibilityFilter: 1 };
+// console.log( test );
+//
 
 window.TerminalState = new TerminalState();
 
@@ -169,4 +168,4 @@ window.onresize = function() {
 	resizeTimeout = setTimeout( () => window.TerminalState.change(), 150 );
 };
 
-Context.init();
+Container.init( apiData['htmlRootId'] || 'rootTerminal' );
