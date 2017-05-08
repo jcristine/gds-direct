@@ -53,7 +53,7 @@ export default class Terminal {
 		}).join('');*/
 
 		const buffered = buf['buffering'].map( record => {
-			return `<div class="command">${record.request}</div><pre style="white-space: pre-wrap">${record.output}</pre>`;
+			return `<div class="command">${record.command}</div><pre style="white-space: pre-wrap">${record.output}</pre>`;
 		}).join('');
 
 		this.bufferDiv 				= Dom('article.terminal-wrapper');

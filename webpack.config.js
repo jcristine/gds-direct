@@ -63,7 +63,10 @@ module.exports = {
 	},
 
 	externals: {
-		jquery: 'jQuery'
+		jquery			: 'jQuery'
+		// 'tether-drop' 	: 'Drop',
+		// 'noty' 			: 'Noty'
+		// import Drop from 'tether-drop';
 	},
 
 	plugins: [
