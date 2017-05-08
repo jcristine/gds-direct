@@ -67,9 +67,12 @@ class TerminalsMatrix
 
 	static appendTerminals( params )
 	{
-		// console.log( arguments );
-
 		this.resCells.forEach(( cell, index ) => {
+
+			if( params.activeTerminal && index === params.activeTerminal.name() )
+			{
+				cell.classList.add('active');
+			}
 
 			gdsSession[ gdsKey ][index] = gdsSession[ gdsKey ][index] || new Terminal({
 				name 			: index,

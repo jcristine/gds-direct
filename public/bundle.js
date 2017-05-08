@@ -1012,9 +1012,7 @@ class TerminalState
 
 						apiData.pqModal.show({
 							dump 	: response.data.output,
-							onClose : () => {
-								__WEBPACK_IMPORTED_MODULE_0__components_containerMain__["a" /* default */].render( Object.assign({}, this.state, { hideMenu : false } ) );
-							}
+							onClose : () => this.change({hideMenu: false})
 						});
 
 						__WEBPACK_IMPORTED_MODULE_0__components_containerMain__["a" /* default */].render( this.state );
@@ -12213,9 +12211,12 @@ class TerminalsMatrix
 
 	static appendTerminals( params )
 	{
-		// console.log( arguments );
-
 		this.resCells.forEach(( cell, index ) => {
+
+			if( params.activeTerminal && index === params.activeTerminal.name() )
+			{
+				cell.classList.add('active');
+			}
 
 			gdsSession[ gdsKey ][index] = gdsSession[ gdsKey ][index] || new __WEBPACK_IMPORTED_MODULE_0__terminal__["a" /* default */]({
 				name 			: index,

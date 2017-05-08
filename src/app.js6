@@ -133,9 +133,7 @@ class TerminalState
 
 						apiData.pqModal.show({
 							dump 	: response.data.output,
-							onClose : () => {
-								Container.render( Object.assign({}, this.state, { hideMenu : false } ) );
-							}
+							onClose : () => this.change({hideMenu: false})
 						});
 
 						Container.render( this.state );
