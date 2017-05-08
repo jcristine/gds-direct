@@ -154,8 +154,13 @@ export default class TerminalPlugin
 
 	resize( w, h )
 	{
-		// this.terminal.resize( w, h );
-		this.terminal.resize();
+		this.terminal.resize( w, h );
+		// this.terminal.resize();
+		// this.outputLiner.recalculate();
+	}
+
+	emptyLinesRecalculate()
+	{
 		this.outputLiner.recalculate();
 	}
 

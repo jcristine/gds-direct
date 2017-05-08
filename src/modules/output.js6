@@ -60,7 +60,6 @@ export default class Output
 
 	getOutputLength()
 	{
-		// console.log( this.outputStrings, this.terminal, this.terminal.cols() );
 		return Helpers.getLines( this.outputStrings, this.terminal.cols() ).length;
 	}
 

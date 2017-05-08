@@ -2,11 +2,11 @@
 
 import TerminalPlugin	from '../middleware/terminal';
 import Dom				from '../helpers/dom';
-import Helper			from '../helpers/helpers';
+// import Helper			from '../helpers/helpers';
 
 require('../../node_modules/jquery.terminal/js/unix_formatting');
 
-const calculateHeight = terminal => (terminal.find('.cursor').height() * terminal.rows());
+// const calculateHeight = terminal => (terminal.find('.cursor').height() * terminal.rows());
 
 export default class Terminal {
 
@@ -29,8 +29,8 @@ export default class Terminal {
 			gds 			: this.settings['gds']
 		});
 
-		this.context.style.height = calculateHeight(this.plugin.terminal) + 'px';
-		this.plugin.terminal.scroll_to_bottom();
+		// this.context.style.height = calculateHeight(this.plugin.terminal) + 'px';
+		// this.plugin.terminal.scroll_to_bottom();
 	}
 
 	makeBuffer( buf )
@@ -52,9 +52,8 @@ export default class Terminal {
 			// return `<div class="command">${record.request}</div> ${ $.terminal.format( record.output ) } `;
 		}).join('');*/
 
-
 		const buffered = buf['buffering'].map( record => {
-			return `<div class="command">${record.request}</div><pre>${record.output}</pre>`;
+			return `<div class="command">${record.request}</div><pre style="white-space: pre-wrap">${record.output}</pre>`;
 		}).join('');
 
 		this.bufferDiv 				= Dom('article.terminal-wrapper');
@@ -84,74 +83,55 @@ export default class Terminal {
 	// 		this.plugin.getPlugin().destroy();
 	// }
 
-	reattach( parentNode )
+	getLineHeight()
 	{
-		// let cursor, cursorWrap;
+		const tempCmd 		= Dom('div.terminal-wrapper');
+		tempCmd.innerHTML 	= '<div class="cmd"><span class="cursor">&nbsp;</span></div>';
+
+		this.context.appendChild( tempCmd );
+
+		const cursor = tempCmd.querySelector('.cursor');
+		const height = cursor.clientHeight;
+
+		this.context.removeChild( tempCmd );
+
+		return height;
+	}
+
+	calculateHeight()
+	{
+		const getLineHeight = this.getLineHeight();
+		const rowsNumber 	= Math.floor( this.settings.parentContext.clientHeight / getLineHeight );
+
+		return getLineHeight * rowsNumber;
+	}
+
+	reattach( parentNode, dimensions )
+	{
+		// console.log(' ratach ', dimensions);
 
 		this.settings.parentContext = parentNode;
 
-		this.context.style.height	= parentNode.clientHeight 	+ 'px';
-		this.context.style.width	= parentNode.clientWidth 	+ 'px';
+		parentNode.style.height		= dimensions.height + 'px';
+		parentNode.style.width		= dimensions.width	+ 'px';
+
+		this.context.style.width	= parentNode.clientWidth	+ 'px';
+		this.context.style.height	= parentNode.clientHeight	+ 'px';
 
 		if (this.plugin)
 		{
 			this.plugin.resize();
-
-			this.context.style.height = calculateHeight(this.plugin.terminal) + 'px';
-			this.plugin.terminal.scroll_to_bottom();
-		}
-		else
-		{
-			/*cursorWrap 			= Dom('div.cmd');
-			cursor 				= Dom('span.cursor');
-			cursor.innerHTML 	= '&nbsp;';
-
-			cursorWrap.appendChild( cursor );
-			this.context.appendChild( cursorWrap );*/
-
-			// console.log(parentNode.clientHeight);
 		}
 
 		this.settings.parentContext.appendChild( this.context );
-
-		// if (cursor)
-		// {
-			// const h =  Math.floor( parentNode.clientHeight / cursor.clientHeight );
-			// this.context.style.height = (cursor.clientHeight * h)  + 'px';
-			//
-			// cursorWrap.parentNode.removeChild( cursorWrap );
-
-		this.context.scrollTop = this.context.scrollHeight;
-		// }
-	}
-
-	resize( dimensions )
-	{
-		// this.settings.parentContext.style.height	= dimensions.height + 'px';
-		// this.settings.parentContext.style.width		= dimensions.width 	+ 'px';
-		// this.context.style.height	= this.settings.parentContext.clientHeight 	+ 'px';
-		// this.context.style.width	= this.settings.parentContext.clientWidth 	+ 'px';
+		this.context.style.height = this.calculateHeight() + 'px';
 
 		if (this.plugin)
 		{
-			// this.plugin.resize( dimensions.width, dimensions.height );
-
-			this.plugin.resize();
-
-			this.context.style.height = calculateHeight(this.plugin.terminal) + 'px';
-			this.plugin.terminal.scroll_to_bottom();
+			this.plugin.emptyLinesRecalculate();
 		}
 
-		else
-		{
-			/*this.settings.parentContext.style.height	= dimensions.height + 'px';
-			this.settings.parentContext.style.width		= dimensions.width 	+ 'px';
-
-			this.context.style.height	= this.settings.parentContext.clientHeight 	+ 'px';
-			this.context.style.width	= this.settings.parentContext.clientWidth 	+ 'px';*/
-
-			this.context.scrollTop = this.context.scrollHeight;
-		}
+		this.context.scrollTop = this.context.scrollHeight;
 	}
 
 	clear()

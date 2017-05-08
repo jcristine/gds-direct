@@ -116,7 +116,12 @@ class TerminalState
 			break;
 
 			case 'CHANGE_ACTIVE_TERMINAL' :
+				if (Gds[gds]['activeTerminal'])
+					Gds[gds]['activeTerminal'][0].parentNode.classList.remove('active');
+
 				Gds[gds]['activeTerminal'] = this.state.activeTerminal;
+				Gds[gds]['activeTerminal'][0].parentNode.classList.add('active');
+
 				return Container.menuRender();
 			break;
 
@@ -128,13 +133,19 @@ class TerminalState
 			case 'PQ_MODAL_SHOW' :
 				if (this.state.activeTerminal)
 				{
-					Request.get( 'terminal/pricequote?rId= ' + apiData['rId'] ).then( response => {
+					Request.get( 'terminal/pricequote?rId=' + apiData['rId'] + '&gds=' + gds ).then( response => {
+
 						apiData.pqModal.show({
 							dump 	: response.data.output,
 							onClose : () => { Container.render( this.state )}
 						});
 
-						Container.render( Object.assign({}, this.state, { hideMenu : true}) );
+						// setTimeout( () => {
+						// 	console.log('Open pq ');
+							Container.render( Object.assign({}, this.state, { hideMenu : true}) );
+						// } , 1000)
+
+
 					})
 				}
 

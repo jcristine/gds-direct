@@ -5,7 +5,6 @@ import ActionsMenu 	from './actionsMenu';
 import MenuPanel 	from './menuPanel';
 import Dom			from '../helpers/dom';
 
-
 class TerminalsMatrix
 {
 	static makeRow()
@@ -19,17 +18,9 @@ class TerminalsMatrix
 		return this;
 	}
 
-	static getDimension( rowCount, cellCount, container = false )
+	static getDimension( rowCount, cellCount )
 	{
-		// console.log( this.context.parentNode.clientWidth );
-
 		let parent = this.context.parentNode;
-
-		if (container)
-		{
-			// console.log('?');
-			parent = container;
-		}
 
 		return {
 			height	: Math.floor(parent.clientHeight / rowCount),
@@ -44,16 +35,14 @@ class TerminalsMatrix
 		rowCount++;
 		cellCount++;
 
-		const { height, width } = this.getDimension(rowCount, cellCount);
+		// const { height, width } = this.getDimension(rowCount, cellCount);
+
+		this.dimensions = this.getDimension(rowCount, cellCount);
 
 		const makeCells = row => {
 
 			const makeCell = () => {
-				const cell 			= Dom('td.v-middle');
-				cell.style.height 	= height + 'px';
-				cell.style.width 	= width + 'px';
-
-				return cell;
+				return Dom('td.v-middle');
 			};
 
 			[ ...new Array(cellCount) ].map(makeCell).forEach( (cell) => {
@@ -69,13 +58,35 @@ class TerminalsMatrix
 			.map( makeCells )
 			.map( row => this.context.appendChild(row) );
 
-		return resCells;
+		// return resCells;
+
+		this.resCells = resCells;
+
+		return this;
+	}
+
+	static appendTerminals( params )
+	{
+		// console.log( arguments );
+
+		this.resCells.forEach(( cell, index ) => {
+
+			gdsSession[ gdsKey ][index] = gdsSession[ gdsKey ][index] || new Terminal({
+				name 			: index,
+				sessionIndex	: params.sessionIndex,
+				gds				: params.gds,
+				buffer			: window.TerminalState.getBuffer( gdsKey, index + 1 )
+			});
+
+			gdsSession[ gdsKey ][index].reattach( cell , this.dimensions);
+		});
 	}
 }
 
-TerminalsMatrix.context = '';
+// TerminalsMatrix.context = '';
+TerminalsMatrix.context = Dom('table.terminals-table');
 
-let inSession = [], terminalList = [], termTableWrap, RightSide, LeftSide, matrix = {};
+let gdsSession = [], termTableWrap, RightSide, LeftSide, matrix = {}, gdsKey;
 
 
 export default class Container {
@@ -105,9 +116,6 @@ export default class Container {
 		termTableWrap.appendChild( RightSide );
 
 		RightSide.appendChild( MenuPanel.getContext() );
-
-		TerminalsMatrix.context = Dom('table.terminals-table');
-
 		LeftSide.appendChild( TerminalsMatrix.context );
 
 		ActionsMenu.init();
@@ -116,12 +124,12 @@ export default class Container {
 
 	static purgeScreens()
 	{
-		terminalList.forEach( terminal => { terminal.clear(); });
+		gdsSession[ gdsKey ].forEach( terminal => { terminal.clear(); });
 	}
 
 	static resizeScreens( dimensions )
 	{
-		terminalList.forEach( terminal => terminal.resize( dimensions ) );
+		gdsSession[ gdsKey ].forEach( terminal => terminal.resize( dimensions ) );
 	}
 
 	static menuRender()
@@ -141,49 +149,38 @@ export default class Container {
 
 	static render( params )
 	{
-		const sessionKey = params['gds'];
-		RightSide.classList.toggle('hidden', !!params.hideMenu);
+		gdsKey = params['gds'];
 
+		gdsSession[ gdsKey ] = gdsSession[ gdsKey ] ? gdsSession[ gdsKey ] : [];
+
+		RightSide.classList.toggle('hidden', !!params.hideMenu);
 		this.menuRender();
 
 		const { rows : rowIndex , cells: cellIndex} = params.matrix;
 
-		if ( this.hasMatrixChanged( params.matrix ) )
+		/*if ( this.hasMatrixChanged( params.matrix ) )
 		{
 			matrix = Object.assign( {}, params.matrix);
 		}
 		else
 		{
-			// console.log( document.getElementById(terminalContext) )
-			// console.log( this.context.clientWidth );
-
 			this.resizeScreens( TerminalsMatrix.getDimension(rowIndex + 1 , cellIndex + 1, this.context) );
 			return false;
-		}
+		}*/
 
 		if ( this.gdsHasChanged( params.matrix ) )
 		{
-			this.gds 				= sessionKey;
-			termTableWrap.className = `term-body minimized ${sessionKey}`; // change gds styles
+			this.gds 				= gdsKey;
+			termTableWrap.className = `term-body minimized ${gdsKey}`; // change gds styles
 		}
 
-		terminalList = inSession[ sessionKey ] || [];
+		// TerminalsMatrix.clear();
+		// const dimensions = TerminalsMatrix.getDimension(rowIndex + 1 , cellIndex + 1);
+		// console.log(dimensions, 'dimensions');
 
 		TerminalsMatrix
 			.clear()
 			.makeCells(rowIndex, cellIndex)
-			.forEach(( cell, index ) => {
-
-				terminalList[index] = terminalList[index] || new Terminal({
-					name 			: index,
-					sessionIndex	: params.sessionIndex,
-					gds				: params.gds,
-					buffer			: window.TerminalState.getBuffer( sessionKey, index + 1 )
-				});
-
-				terminalList[index].reattach( cell );
-			});
-
-		inSession[ sessionKey ] = terminalList;
+			.appendTerminals( params );
 	}
 }

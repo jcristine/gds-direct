@@ -995,7 +995,12 @@ class TerminalState
 			break;
 
 			case 'CHANGE_ACTIVE_TERMINAL' :
+				if (Gds[gds]['activeTerminal'])
+					Gds[gds]['activeTerminal'][0].parentNode.classList.remove('active');
+
 				Gds[gds]['activeTerminal'] = this.state.activeTerminal;
+				Gds[gds]['activeTerminal'][0].parentNode.classList.add('active');
+
 				return __WEBPACK_IMPORTED_MODULE_0__components_containerMain__["a" /* default */].menuRender();
 			break;
 
@@ -1007,13 +1012,19 @@ class TerminalState
 			case 'PQ_MODAL_SHOW' :
 				if (this.state.activeTerminal)
 				{
-					__WEBPACK_IMPORTED_MODULE_1__helpers_requests_js6__["a" /* default */].get( 'terminal/pricequote?rId= ' + apiData['rId'] ).then( response => {
+					__WEBPACK_IMPORTED_MODULE_1__helpers_requests_js6__["a" /* default */].get( 'terminal/pricequote?rId=' + apiData['rId'] + '&gds=' + gds ).then( response => {
+
 						apiData.pqModal.show({
 							dump 	: response.data.output,
 							onClose : () => { __WEBPACK_IMPORTED_MODULE_0__components_containerMain__["a" /* default */].render( this.state )}
 						});
 
-						__WEBPACK_IMPORTED_MODULE_0__components_containerMain__["a" /* default */].render( Object.assign({}, this.state, { hideMenu : true}) );
+						// setTimeout( () => {
+						// 	console.log('Open pq ');
+							__WEBPACK_IMPORTED_MODULE_0__components_containerMain__["a" /* default */].render( Object.assign({}, this.state, { hideMenu : true}) );
+						// } , 1000)
+
+
 					})
 				}
 
@@ -12140,7 +12151,6 @@ class ActionsMenu {
 
 
 
-
 class TerminalsMatrix
 {
 	static makeRow()
@@ -12154,17 +12164,9 @@ class TerminalsMatrix
 		return this;
 	}
 
-	static getDimension( rowCount, cellCount, container = false )
+	static getDimension( rowCount, cellCount )
 	{
-		// console.log( this.context.parentNode.clientWidth );
-
 		let parent = this.context.parentNode;
-
-		if (container)
-		{
-			// console.log('?');
-			parent = container;
-		}
 
 		return {
 			height	: Math.floor(parent.clientHeight / rowCount),
@@ -12179,16 +12181,14 @@ class TerminalsMatrix
 		rowCount++;
 		cellCount++;
 
-		const { height, width } = this.getDimension(rowCount, cellCount);
+		// const { height, width } = this.getDimension(rowCount, cellCount);
+
+		this.dimensions = this.getDimension(rowCount, cellCount);
 
 		const makeCells = row => {
 
 			const makeCell = () => {
-				const cell 			= __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_3__helpers_dom__["a" /* default */])('td.v-middle');
-				cell.style.height 	= height + 'px';
-				cell.style.width 	= width + 'px';
-
-				return cell;
+				return __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_3__helpers_dom__["a" /* default */])('td.v-middle');
 			};
 
 			[ ...new Array(cellCount) ].map(makeCell).forEach( (cell) => {
@@ -12204,13 +12204,35 @@ class TerminalsMatrix
 			.map( makeCells )
 			.map( row => this.context.appendChild(row) );
 
-		return resCells;
+		// return resCells;
+
+		this.resCells = resCells;
+
+		return this;
+	}
+
+	static appendTerminals( params )
+	{
+		// console.log( arguments );
+
+		this.resCells.forEach(( cell, index ) => {
+
+			gdsSession[ gdsKey ][index] = gdsSession[ gdsKey ][index] || new __WEBPACK_IMPORTED_MODULE_0__terminal__["a" /* default */]({
+				name 			: index,
+				sessionIndex	: params.sessionIndex,
+				gds				: params.gds,
+				buffer			: window.TerminalState.getBuffer( gdsKey, index + 1 )
+			});
+
+			gdsSession[ gdsKey ][index].reattach( cell , this.dimensions);
+		});
 	}
 }
 
-TerminalsMatrix.context = '';
+// TerminalsMatrix.context = '';
+TerminalsMatrix.context = __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_3__helpers_dom__["a" /* default */])('table.terminals-table');
 
-let inSession = [], terminalList = [], termTableWrap, RightSide, LeftSide, matrix = {};
+let gdsSession = [], termTableWrap, RightSide, LeftSide, matrix = {}, gdsKey;
 
 
 class Container {
@@ -12240,9 +12262,6 @@ class Container {
 		termTableWrap.appendChild( RightSide );
 
 		RightSide.appendChild( __WEBPACK_IMPORTED_MODULE_2__menuPanel__["a" /* default */].getContext() );
-
-		TerminalsMatrix.context = __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_3__helpers_dom__["a" /* default */])('table.terminals-table');
-
 		LeftSide.appendChild( TerminalsMatrix.context );
 
 		__WEBPACK_IMPORTED_MODULE_1__actionsMenu__["a" /* default */].init();
@@ -12251,12 +12270,12 @@ class Container {
 
 	static purgeScreens()
 	{
-		terminalList.forEach( terminal => { terminal.clear(); });
+		gdsSession[ gdsKey ].forEach( terminal => { terminal.clear(); });
 	}
 
 	static resizeScreens( dimensions )
 	{
-		terminalList.forEach( terminal => terminal.resize( dimensions ) );
+		gdsSession[ gdsKey ].forEach( terminal => terminal.resize( dimensions ) );
 	}
 
 	static menuRender()
@@ -12276,50 +12295,39 @@ class Container {
 
 	static render( params )
 	{
-		const sessionKey = params['gds'];
-		RightSide.classList.toggle('hidden', !!params.hideMenu);
+		gdsKey = params['gds'];
 
+		gdsSession[ gdsKey ] = gdsSession[ gdsKey ] ? gdsSession[ gdsKey ] : [];
+
+		RightSide.classList.toggle('hidden', !!params.hideMenu);
 		this.menuRender();
 
 		const { rows : rowIndex , cells: cellIndex} = params.matrix;
 
-		if ( this.hasMatrixChanged( params.matrix ) )
+		/*if ( this.hasMatrixChanged( params.matrix ) )
 		{
 			matrix = Object.assign( {}, params.matrix);
 		}
 		else
 		{
-			// console.log( document.getElementById(terminalContext) )
-			// console.log( this.context.clientWidth );
-
 			this.resizeScreens( TerminalsMatrix.getDimension(rowIndex + 1 , cellIndex + 1, this.context) );
 			return false;
-		}
+		}*/
 
 		if ( this.gdsHasChanged( params.matrix ) )
 		{
-			this.gds 				= sessionKey;
-			termTableWrap.className = `term-body minimized ${sessionKey}`; // change gds styles
+			this.gds 				= gdsKey;
+			termTableWrap.className = `term-body minimized ${gdsKey}`; // change gds styles
 		}
 
-		terminalList = inSession[ sessionKey ] || [];
+		// TerminalsMatrix.clear();
+		// const dimensions = TerminalsMatrix.getDimension(rowIndex + 1 , cellIndex + 1);
+		// console.log(dimensions, 'dimensions');
 
 		TerminalsMatrix
 			.clear()
 			.makeCells(rowIndex, cellIndex)
-			.forEach(( cell, index ) => {
-
-				terminalList[index] = terminalList[index] || new __WEBPACK_IMPORTED_MODULE_0__terminal__["a" /* default */]({
-					name 			: index,
-					sessionIndex	: params.sessionIndex,
-					gds				: params.gds,
-					buffer			: window.TerminalState.getBuffer( sessionKey, index + 1 )
-				});
-
-				terminalList[index].reattach( cell );
-			});
-
-		inSession[ sessionKey ] = terminalList;
+			.appendTerminals( params );
 	}
 }
 /* harmony export (immutable) */ __webpack_exports__["a"] = Container;
@@ -12876,16 +12884,15 @@ class TextSize
 "use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__middleware_terminal__ = __webpack_require__(29);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__helpers_dom__ = __webpack_require__(5);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__helpers_helpers__ = __webpack_require__(0);
 
 
 
 
-
+// import Helper			from '../helpers/helpers';
 
 __webpack_require__(11);
 
-const calculateHeight = terminal => (terminal.find('.cursor').height() * terminal.rows());
+// const calculateHeight = terminal => (terminal.find('.cursor').height() * terminal.rows());
 
 class Terminal {
 
@@ -12908,8 +12915,8 @@ class Terminal {
 			gds 			: this.settings['gds']
 		});
 
-		this.context.style.height = calculateHeight(this.plugin.terminal) + 'px';
-		this.plugin.terminal.scroll_to_bottom();
+		// this.context.style.height = calculateHeight(this.plugin.terminal) + 'px';
+		// this.plugin.terminal.scroll_to_bottom();
 	}
 
 	makeBuffer( buf )
@@ -12931,9 +12938,8 @@ class Terminal {
 			// return `<div class="command">${record.request}</div> ${ $.terminal.format( record.output ) } `;
 		}).join('');*/
 
-
 		const buffered = buf['buffering'].map( record => {
-			return `<div class="command">${record.request}</div><pre>${record.output}</pre>`;
+			return `<div class="command">${record.request}</div><pre style="white-space: pre-wrap">${record.output}</pre>`;
 		}).join('');
 
 		this.bufferDiv 				= __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_1__helpers_dom__["a" /* default */])('article.terminal-wrapper');
@@ -12963,74 +12969,55 @@ class Terminal {
 	// 		this.plugin.getPlugin().destroy();
 	// }
 
-	reattach( parentNode )
+	getLineHeight()
 	{
-		// let cursor, cursorWrap;
+		const tempCmd 		= __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_1__helpers_dom__["a" /* default */])('div.terminal-wrapper');
+		tempCmd.innerHTML 	= '<div class="cmd"><span class="cursor">&nbsp;</span></div>';
+
+		this.context.appendChild( tempCmd );
+
+		const cursor = tempCmd.querySelector('.cursor');
+		const height = cursor.clientHeight;
+
+		this.context.removeChild( tempCmd );
+
+		return height;
+	}
+
+	calculateHeight()
+	{
+		const getLineHeight = this.getLineHeight();
+		const rowsNumber 	= Math.floor( this.settings.parentContext.clientHeight / getLineHeight );
+
+		return getLineHeight * rowsNumber;
+	}
+
+	reattach( parentNode, dimensions )
+	{
+		// console.log(' ratach ', dimensions);
 
 		this.settings.parentContext = parentNode;
 
-		this.context.style.height	= parentNode.clientHeight 	+ 'px';
-		this.context.style.width	= parentNode.clientWidth 	+ 'px';
+		parentNode.style.height		= dimensions.height + 'px';
+		parentNode.style.width		= dimensions.width	+ 'px';
+
+		this.context.style.width	= parentNode.clientWidth	+ 'px';
+		this.context.style.height	= parentNode.clientHeight	+ 'px';
 
 		if (this.plugin)
 		{
 			this.plugin.resize();
-
-			this.context.style.height = calculateHeight(this.plugin.terminal) + 'px';
-			this.plugin.terminal.scroll_to_bottom();
-		}
-		else
-		{
-			/*cursorWrap 			= Dom('div.cmd');
-			cursor 				= Dom('span.cursor');
-			cursor.innerHTML 	= '&nbsp;';
-
-			cursorWrap.appendChild( cursor );
-			this.context.appendChild( cursorWrap );*/
-
-			// console.log(parentNode.clientHeight);
 		}
 
 		this.settings.parentContext.appendChild( this.context );
-
-		// if (cursor)
-		// {
-			// const h =  Math.floor( parentNode.clientHeight / cursor.clientHeight );
-			// this.context.style.height = (cursor.clientHeight * h)  + 'px';
-			//
-			// cursorWrap.parentNode.removeChild( cursorWrap );
-
-		this.context.scrollTop = this.context.scrollHeight;
-		// }
-	}
-
-	resize( dimensions )
-	{
-		// this.settings.parentContext.style.height	= dimensions.height + 'px';
-		// this.settings.parentContext.style.width		= dimensions.width 	+ 'px';
-		// this.context.style.height	= this.settings.parentContext.clientHeight 	+ 'px';
-		// this.context.style.width	= this.settings.parentContext.clientWidth 	+ 'px';
+		this.context.style.height = this.calculateHeight() + 'px';
 
 		if (this.plugin)
 		{
-			// this.plugin.resize( dimensions.width, dimensions.height );
-
-			this.plugin.resize();
-
-			this.context.style.height = calculateHeight(this.plugin.terminal) + 'px';
-			this.plugin.terminal.scroll_to_bottom();
+			this.plugin.emptyLinesRecalculate();
 		}
 
-		else
-		{
-			/*this.settings.parentContext.style.height	= dimensions.height + 'px';
-			this.settings.parentContext.style.width		= dimensions.width 	+ 'px';
-
-			this.context.style.height	= this.settings.parentContext.clientHeight 	+ 'px';
-			this.context.style.width	= this.settings.parentContext.clientWidth 	+ 'px';*/
-
-			this.context.scrollTop = this.context.scrollHeight;
-		}
+		this.context.scrollTop = this.context.scrollHeight;
 	}
 
 	clear()
@@ -13440,8 +13427,13 @@ class TerminalPlugin
 
 	resize( w, h )
 	{
-		// this.terminal.resize( w, h );
-		this.terminal.resize();
+		this.terminal.resize( w, h );
+		// this.terminal.resize();
+		// this.outputLiner.recalculate();
+	}
+
+	emptyLinesRecalculate()
+	{
 		this.outputLiner.recalculate();
 	}
 
@@ -13799,7 +13791,6 @@ class Output
 
 	getOutputLength()
 	{
-		// console.log( this.outputStrings, this.terminal, this.terminal.cols() );
 		return __WEBPACK_IMPORTED_MODULE_0__helpers_helpers__["a" /* default */].getLines( this.outputStrings, this.terminal.cols() ).length;
 	}
 
