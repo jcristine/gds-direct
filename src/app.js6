@@ -133,7 +133,7 @@ class TerminalState
 			case 'PQ_MODAL_SHOW' :
 				if (this.state.activeTerminal)
 				{
-					Request.get( 'terminal/pricequote?rId=' + apiData['rId'] + '&gds=' + gds ).then( response => {
+					Request.get( 'terminal/priceQuote?rId=' + apiData['rId'] + '&gds=' + gds ).then( response => {
 
 						apiData.pqModal.show({
 							dump 	: response.data.output,

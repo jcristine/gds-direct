@@ -68,116 +68,6 @@
 /************************************************************************/
 /******/ ([
 /* 0 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-
-
-/*function chunk(arr, limit)
-{
-	let result = [];
-
-	while (arr.length > limit)
-	{
-		result.push(arr.slice(0, limit));
-		arr = arr.slice(limit);
-	}
-
-	if (arr.length > 0)
-		result.push(arr);
-
-	return result;
-}*/
-
-function substitutePrintableChar(evt, isApollo)
-{
-	// const isApollo	= window.TerminalState.state.language === 'APOLLO';
-	// const isApollo	= window.TerminalState.state.gds === 'apollo';
-
-	const keyCode	= evt.keyCode || evt.which;
-
-	if ( keyCode === 13 )
-	{
-		return false;
-	}
-
-	const ch 		= String.fromCharCode(keyCode);
-
-	if (!ch)
-		return false;
-
-	const sabreLayout = {
-		'\'': '‡',
-		'[': '¤',
-		'=': '*',
-		'\\': '§',
-		',': '+',
-		// shift + ","
-	};
-
-	const apolloLayout = {
-		'[': '¤',
-		']': '$',
-		'=': '*',
-		'`': '>',
-		',': '+',
-		';': ':',
-		'\\': false
-	};
-
-	const layout = isApollo ? apolloLayout : sabreLayout;
-
-	return layout[ch] !== undefined ? layout[ch] : ch.toUpperCase();
-}
-
-function chunkIntoPages( linesArr , rowsPerScreen )
-{
-	return linesArr.map(
-		(line, lineIndex) => lineIndex % rowsPerScreen ? [] : linesArr.slice( lineIndex , lineIndex + rowsPerScreen )
-	)
-	.filter(
-		( data ) => !!data.length
-	);
-}
-
-function _makePages(txt, rowsPerScreen = 20, maxCharLimit)
-{
-	const chunkByCharLimit = _splitIntoLinesArr( txt, maxCharLimit );
-
-	return chunkIntoPages(chunkByCharLimit, rowsPerScreen).map(
-		(sectionLines) => sectionLines.join('\n')
-	);
-}
-
-function _splitIntoLinesArr( txt, maxCharLimit )
-{
-	const lines 		= splitLines(txt);
-	const regex 		= new RegExp(`(.{1,${maxCharLimit}})`, 'gi');
-
-	let chunkByCharLimit= [];
-
-	lines.forEach( (line) => {
-		let lineArr = line.match(regex);
-		chunkByCharLimit = chunkByCharLimit.concat(lineArr);
-	});
-
-	return chunkByCharLimit;
-}
-
-function splitLines(txt)
-{
-	return txt.split(/\r?\n/);
-}
-
-/* harmony default export */ __webpack_exports__["a"] = ({
-	makeCachedParts 		:	_makePages,
-	substitutePrintableChar :	substitutePrintableChar,
-	getLines 				:	_splitIntoLinesArr,
-	splitLines 				:	splitLines,
-});
-
-/***/ }),
-/* 1 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*! tether-drop 1.4.1 */
@@ -746,6 +636,116 @@ return Drop;
 
 
 /***/ }),
+/* 1 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+
+
+/*function chunk(arr, limit)
+{
+	let result = [];
+
+	while (arr.length > limit)
+	{
+		result.push(arr.slice(0, limit));
+		arr = arr.slice(limit);
+	}
+
+	if (arr.length > 0)
+		result.push(arr);
+
+	return result;
+}*/
+
+function substitutePrintableChar(evt, isApollo)
+{
+	// const isApollo	= window.TerminalState.state.language === 'APOLLO';
+	// const isApollo	= window.TerminalState.state.gds === 'apollo';
+
+	const keyCode	= evt.keyCode || evt.which;
+
+	if ( keyCode === 13 )
+	{
+		return false;
+	}
+
+	const ch 		= String.fromCharCode(keyCode);
+
+	if (!ch)
+		return false;
+
+	const sabreLayout = {
+		'\'': '‡',
+		'[': '¤',
+		'=': '*',
+		'\\': '§',
+		',': '+',
+		// shift + ","
+	};
+
+	const apolloLayout = {
+		'[': '¤',
+		']': '$',
+		'=': '*',
+		'`': '>',
+		',': '+',
+		';': ':',
+		'\\': false
+	};
+
+	const layout = isApollo ? apolloLayout : sabreLayout;
+
+	return layout[ch] !== undefined ? layout[ch] : ch.toUpperCase();
+}
+
+function chunkIntoPages( linesArr , rowsPerScreen )
+{
+	return linesArr.map(
+		(line, lineIndex) => lineIndex % rowsPerScreen ? [] : linesArr.slice( lineIndex , lineIndex + rowsPerScreen )
+	)
+	.filter(
+		( data ) => !!data.length
+	);
+}
+
+function _makePages(txt, rowsPerScreen = 20, maxCharLimit)
+{
+	const chunkByCharLimit = _splitIntoLinesArr( txt, maxCharLimit );
+
+	return chunkIntoPages(chunkByCharLimit, rowsPerScreen).map(
+		(sectionLines) => sectionLines.join('\n')
+	);
+}
+
+function _splitIntoLinesArr( txt, maxCharLimit )
+{
+	const lines 		= splitLines(txt);
+	const regex 		= new RegExp(`(.{1,${maxCharLimit}})`, 'gi');
+
+	let chunkByCharLimit= [];
+
+	lines.forEach( (line) => {
+		let lineArr = line.match(regex);
+		chunkByCharLimit = chunkByCharLimit.concat(lineArr);
+	});
+
+	return chunkByCharLimit;
+}
+
+function splitLines(txt)
+{
+	return txt.split(/\r?\n/);
+}
+
+/* harmony default export */ __webpack_exports__["a"] = ({
+	makeCachedParts 		:	_makePages,
+	substitutePrintableChar :	substitutePrintableChar,
+	getLines 				:	_splitIntoLinesArr,
+	splitLines 				:	splitLines,
+});
+
+/***/ }),
 /* 2 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
@@ -1012,7 +1012,7 @@ class TerminalState
 			case 'PQ_MODAL_SHOW' :
 				if (this.state.activeTerminal)
 				{
-					__WEBPACK_IMPORTED_MODULE_1__helpers_requests_js6__["a" /* default */].get( 'terminal/pricequote?rId=' + apiData['rId'] + '&gds=' + gds ).then( response => {
+					__WEBPACK_IMPORTED_MODULE_1__helpers_requests_js6__["a" /* default */].get( 'terminal/priceQuote?rId=' + apiData['rId'] + '&gds=' + gds ).then( response => {
 
 						apiData.pqModal.show({
 							dump 	: response.data.output,
@@ -12671,7 +12671,7 @@ class MenuPanel
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_tether_drop__ = __webpack_require__(1);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_tether_drop__ = __webpack_require__(0);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_tether_drop___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_tether_drop__);
 
 
@@ -12720,7 +12720,7 @@ class History
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_tether_drop__ = __webpack_require__(1);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_tether_drop__ = __webpack_require__(0);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_tether_drop___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_tether_drop__);
 
 
@@ -12816,7 +12816,7 @@ class Matrix
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_tether_drop__ = __webpack_require__(1);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_tether_drop__ = __webpack_require__(0);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_tether_drop___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_tether_drop__);
 
 
@@ -13263,7 +13263,7 @@ class KeyBinding
 "use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_noty__ = __webpack_require__(13);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_noty___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_noty__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__helpers_helpers__ = __webpack_require__(0);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__helpers_helpers__ = __webpack_require__(1);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__modules_pagination__ = __webpack_require__(32);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__modules_sabreSession__ = __webpack_require__(33);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__modules_spinner__ = __webpack_require__(34);
@@ -13728,7 +13728,7 @@ class F8Reader
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__helpers_helpers__ = __webpack_require__(0);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__helpers_helpers__ = __webpack_require__(1);
 
 
 
@@ -13822,7 +13822,7 @@ class Output
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__helpers_helpers__ = __webpack_require__(0);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__helpers_helpers__ = __webpack_require__(1);
 
 
 
