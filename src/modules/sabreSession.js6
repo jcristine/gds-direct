@@ -9,11 +9,6 @@ export default class Session
 	{
 		this.settings = params;
 	}
-
-	// makeRequest(  params )
-	// {
-	// 	return Requests.runSyncCommand( params );
-	// }
 	
 	start()
 	{
@@ -34,10 +29,9 @@ export default class Session
 	{
 		const rData = {
 			// sessionToken	: this.settings['sessionToken'],
+			// sessionIndex	: parseInt(this.settings['sessionIndex']) + 1,
 
-			sessionIndex	: parseInt(this.settings['sessionIndex']) + 1,
 			terminalIndex	: parseInt(this.settings['terminalIndex']) + 1,
-
 			command			: params['cmd'],
 
 			gds				: this.settings['gds'],
@@ -47,7 +41,6 @@ export default class Session
 		};
 
 		return Requests.runSyncCommand( rData );
-		// return this.makeRequest( rData );
 	}
 
 	end()
@@ -62,20 +55,6 @@ export default class Session
 
 	clearBuffer()
 	{
-		// return this.makeRequest( 'runInternalCommand', {
-		// 	command : 'clearBuffer'
-		// });
-
-		return fetch("terminal/clearBuffer",
-		{
-			credentials	: 'include',
-			method		: "GET"
-			// ,
-			// body	: formData
-		})
-		.then( response => {
-			console.log(' done ', response);
-		})
-
+		return Requests.get('terminal/clearBuffer');
 	}
 }
