@@ -952,7 +952,7 @@ class TerminalState
 	purgeScreens()
 	{
 		__WEBPACK_IMPORTED_MODULE_0__components_containerMain__["a" /* default */].purgeScreens();
-		__WEBPACK_IMPORTED_MODULE_1__helpers_requests__["a" /* default */].get(`terminal/clearBuffer?gds=${this.state.gds}`);
+		__WEBPACK_IMPORTED_MODULE_1__helpers_requests__["a" /* default */].get(`terminal/clearBuffer?gds=${this.state.gds}&rId=${apiData.rId}`);
 	}
 
 	isLanguageApollo()

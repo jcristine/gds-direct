@@ -71,7 +71,7 @@ class TerminalState
 	purgeScreens()
 	{
 		Container.purgeScreens();
-		Request.get(`terminal/clearBuffer?gds=${this.state.gds}`);
+		Request.get(`terminal/clearBuffer?gds=${this.state.gds}&rId=${apiData.rId}`);
 	}
 
 	isLanguageApollo()
