@@ -891,19 +891,22 @@ const gdsSettings = {
 	activeTerminal	: null
 };
 
+const areaList	= ['A', 'B', 'C', 'D', 'E', 'F'];
+
 const Gds = {
-	'apollo' 	: Object.assign({}, gdsSettings),
-	'sabre'		: Object.assign({}, gdsSettings)
+	'apollo' 	: Object.assign({}, gdsSettings, {'sessionIndex' : areaList.indexOf(apiData.settings['gds']['apollo']['currentArea']) }),
+	'sabre'		: Object.assign({}, gdsSettings, {'sessionIndex' : areaList.indexOf(apiData.settings['gds']['sabre']['currentArea']) })
 };
 
 class TerminalState
 {
 	constructor()
 	{
-		this.areaList = ['A', 'B', 'C', 'D', 'E', 'F'];
+		// this.areaList = ['A', 'B', 'C', 'D', 'E', 'F'];
 
-		Gds['apollo']['sessionIndex']	= this.areaList.indexOf( apiData.settings['gds']['apollo']['currentArea'] );
-		Gds['sabre']['sessionIndex'] 	= this.areaList.indexOf( apiData.settings['gds']['sabre']['currentArea'] );
+		// Gds['apollo']['sessionIndex']	= this.areaList.indexOf( apiData.settings['gds']['apollo']['currentArea'] );
+		// Gds['sabre']['sessionIndex'] 	= this.areaList.indexOf( apiData.settings['gds']['sabre']['currentArea'] );
+		// console.log(Gds['apollo']['sessionIndex'])
 
 		const saved		= localStorage.getItem('matrix');
 		const curGds	= apiData.settings.common['currentGds'] || 'apollo';
@@ -911,10 +914,12 @@ class TerminalState
 		this.state = {
 			gds 			: curGds,
 			sessionIndex	: Gds[curGds]['sessionIndex'],
+
 			matrix			: saved ? JSON.parse( saved ) : {rows : 1, cells : 1},
-			fontSize		: 1,
 			language		: 'APOLLO',
 			activeTerminal	: '',
+
+			fontSize		: 1,
 			hideMenu		: false
 		};
 	}
@@ -932,7 +937,7 @@ class TerminalState
 	getSessionAreaMap()
 	{
 		const key = this.state.gds === 'apollo' ? 'S': '¤';
-		return this.areaList.map( char => key + char );
+		return areaList.map( char => key + char );
 	}
 
 	getBuffer( gds, terminalId )
@@ -1008,15 +1013,32 @@ class TerminalState
 			case 'PQ_MODAL_SHOW' :
 				if (this.state.activeTerminal)
 				{
-					__WEBPACK_IMPORTED_MODULE_1__helpers_requests__["a" /* default */].get( 'terminal/priceQuote?rId=' + apiData['rId'] + '&gds=' + gds ).then( response => {
+					__WEBPACK_IMPORTED_MODULE_1__helpers_requests__["a" /* default */].get( 'terminal/priceQuote?rId=' + apiData['rId'] + '&gds=' + gds )
 
-						apiData.pqModal.show({
-							dump 	: response.data.output,
-							onClose : () => this.change({hideMenu: false})
-						});
+						.then( response => {
 
-						__WEBPACK_IMPORTED_MODULE_0__components_containerMain__["a" /* default */].render( this.state );
-					})
+							apiData.pqModal.show({
+								dump 	: response.data.output,
+								onClose	: () => this.change({hideMenu: false})
+								// ,
+								// onSubmit: ( formData ) => {
+
+									// console.log(' on submit ', formData);
+
+									// fetch("terminal/form",
+									// 	{
+									// 		method	: "POST",
+									// 		body	: formData
+									// 	})
+									// 	.then(() => {
+									// 		console.log(' done ');
+									// 	})
+
+								// }
+							});
+
+							__WEBPACK_IMPORTED_MODULE_0__components_containerMain__["a" /* default */].render( this.state );
+						})
 				}
 
 				return false;
@@ -12925,20 +12947,6 @@ class Terminal {
 		if (!buf)
 			return false;
 
-		/*const buffered = buf['buffering'].map( record => {
-
-			const output = $.terminal.split_equal( record.output ).map( str => `<div style="width: 100%">${ $.terminal.overtyping(str) }</div>`).join('');
-
-			// console.log( $.terminal.split_equal( record.output ) );
-			// const output = $.terminal.format( record.output )
-			// console.log( output )
-
-			return `<div class="command">${record.request}</div>${output}`;
-			// return `<div class="command">${record.request}</div><pre>${record.output}</pre>`;
-			//return `<div class="command">${record.request}</div>${output}`;
-			// return `<div class="command">${record.request}</div> ${ $.terminal.format( record.output ) } `;
-		}).join('');*/
-
 		const buffered = buf['buffering'].map( record => {
 			return `<div class="command">${record.command}</div><pre style="white-space: pre-wrap">${record.output}</pre>`;
 		}).join('');
@@ -12962,12 +12970,6 @@ class Terminal {
 	//
 	// 		this.plugin.terminal.echo(record.output);
 	// 	});
-	// }
-	
-	// destroy()
-	// {
-	// 	if (this.plugin)
-	// 		this.plugin.getPlugin().destroy();
 	// }
 
 	getLineHeight()

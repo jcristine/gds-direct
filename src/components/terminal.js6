@@ -38,20 +38,6 @@ export default class Terminal {
 		if (!buf)
 			return false;
 
-		/*const buffered = buf['buffering'].map( record => {
-
-			const output = $.terminal.split_equal( record.output ).map( str => `<div style="width: 100%">${ $.terminal.overtyping(str) }</div>`).join('');
-
-			// console.log( $.terminal.split_equal( record.output ) );
-			// const output = $.terminal.format( record.output )
-			// console.log( output )
-
-			return `<div class="command">${record.request}</div>${output}`;
-			// return `<div class="command">${record.request}</div><pre>${record.output}</pre>`;
-			//return `<div class="command">${record.request}</div>${output}`;
-			// return `<div class="command">${record.request}</div> ${ $.terminal.format( record.output ) } `;
-		}).join('');*/
-
 		const buffered = buf['buffering'].map( record => {
 			return `<div class="command">${record.command}</div><pre style="white-space: pre-wrap">${record.output}</pre>`;
 		}).join('');
@@ -75,12 +61,6 @@ export default class Terminal {
 	//
 	// 		this.plugin.terminal.echo(record.output);
 	// 	});
-	// }
-	
-	// destroy()
-	// {
-	// 	if (this.plugin)
-	// 		this.plugin.getPlugin().destroy();
 	// }
 
 	getLineHeight()

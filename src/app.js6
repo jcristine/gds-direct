@@ -12,19 +12,22 @@ const gdsSettings = {
 	activeTerminal	: null
 };
 
+const areaList	= ['A', 'B', 'C', 'D', 'E', 'F'];
+
 const Gds = {
-	'apollo' 	: Object.assign({}, gdsSettings),
-	'sabre'		: Object.assign({}, gdsSettings)
+	'apollo' 	: Object.assign({}, gdsSettings, {'sessionIndex' : areaList.indexOf(apiData.settings['gds']['apollo']['currentArea']) }),
+	'sabre'		: Object.assign({}, gdsSettings, {'sessionIndex' : areaList.indexOf(apiData.settings['gds']['sabre']['currentArea']) })
 };
 
 class TerminalState
 {
 	constructor()
 	{
-		this.areaList = ['A', 'B', 'C', 'D', 'E', 'F'];
+		// this.areaList = ['A', 'B', 'C', 'D', 'E', 'F'];
 
-		Gds['apollo']['sessionIndex']	= this.areaList.indexOf( apiData.settings['gds']['apollo']['currentArea'] );
-		Gds['sabre']['sessionIndex'] 	= this.areaList.indexOf( apiData.settings['gds']['sabre']['currentArea'] );
+		// Gds['apollo']['sessionIndex']	= this.areaList.indexOf( apiData.settings['gds']['apollo']['currentArea'] );
+		// Gds['sabre']['sessionIndex'] 	= this.areaList.indexOf( apiData.settings['gds']['sabre']['currentArea'] );
+		// console.log(Gds['apollo']['sessionIndex'])
 
 		const saved		= localStorage.getItem('matrix');
 		const curGds	= apiData.settings.common['currentGds'] || 'apollo';
@@ -32,10 +35,12 @@ class TerminalState
 		this.state = {
 			gds 			: curGds,
 			sessionIndex	: Gds[curGds]['sessionIndex'],
+
 			matrix			: saved ? JSON.parse( saved ) : {rows : 1, cells : 1},
-			fontSize		: 1,
 			language		: 'APOLLO',
 			activeTerminal	: '',
+
+			fontSize		: 1,
 			hideMenu		: false
 		};
 	}
@@ -53,7 +58,7 @@ class TerminalState
 	getSessionAreaMap()
 	{
 		const key = this.state.gds === 'apollo' ? 'S': '¤';
-		return this.areaList.map( char => key + char );
+		return areaList.map( char => key + char );
 	}
 
 	getBuffer( gds, terminalId )
@@ -129,15 +134,32 @@ class TerminalState
 			case 'PQ_MODAL_SHOW' :
 				if (this.state.activeTerminal)
 				{
-					Request.get( 'terminal/priceQuote?rId=' + apiData['rId'] + '&gds=' + gds ).then( response => {
+					Request.get( 'terminal/priceQuote?rId=' + apiData['rId'] + '&gds=' + gds )
 
-						apiData.pqModal.show({
-							dump 	: response.data.output,
-							onClose : () => this.change({hideMenu: false})
-						});
+						.then( response => {
 
-						Container.render( this.state );
-					})
+							apiData.pqModal.show({
+								dump 	: response.data.output,
+								onClose	: () => this.change({hideMenu: false})
+								// ,
+								// onSubmit: ( formData ) => {
+
+									// console.log(' on submit ', formData);
+
+									// fetch("terminal/form",
+									// 	{
+									// 		method	: "POST",
+									// 		body	: formData
+									// 	})
+									// 	.then(() => {
+									// 		console.log(' done ');
+									// 	})
+
+								// }
+							});
+
+							Container.render( this.state );
+						})
 				}
 
 				return false;
