@@ -897,8 +897,8 @@ const gdsSettings = {
 };
 
 const Gds = {
-	'apollo': Object.assign({}, gdsSettings, {'sessionIndex' : __WEBPACK_IMPORTED_MODULE_2__constants__["a" /* AREA_LIST */].indexOf(apiData.settings['gds']['apollo']['currentArea']) }),
-	'sabre'	: Object.assign({}, gdsSettings, {'sessionIndex' : __WEBPACK_IMPORTED_MODULE_2__constants__["a" /* AREA_LIST */].indexOf(apiData.settings['gds']['sabre']['currentArea']) })
+	'apollo': Object.assign({}, gdsSettings, {'sessionIndex' : __WEBPACK_IMPORTED_MODULE_2__constants__["a" /* AREA_LIST */].indexOf(apiData.settings['gds']['apollo']['area']) }),
+	'sabre'	: Object.assign({}, gdsSettings, {'sessionIndex' : __WEBPACK_IMPORTED_MODULE_2__constants__["a" /* AREA_LIST */].indexOf(apiData.settings['gds']['sabre']['area']) })
 };
 
 // const KEEP_ALIVE_REFRESH = 60000;
