@@ -102,7 +102,6 @@ export default class TerminalPlugin
 
 	changeActiveTerm( activeTerminal )
 	{
-		console.log('CHANGE ACTIVE TERMINAL', activeTerminal);
 		window.TerminalState.change({ activeTerminal }, 'CHANGE_ACTIVE_TERMINAL');
 	}
 

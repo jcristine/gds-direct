@@ -42,7 +42,7 @@ class TerminalState
 			canAddPq		: false
 		};
 
-		setInterval( () => Request.get(`terminal/keepAlive?rId=${apiData.rId}`), KEEP_ALIVE_REFRESH );
+		setInterval( () => Request.get(`terminal/keepAlive?rId=${apiData.rId}&gds=${this.state.gds}`), KEEP_ALIVE_REFRESH );
 	}
 
 	getMatrix()
@@ -115,8 +115,7 @@ class TerminalState
 			break;
 
 			case 'CHANGE_ACTIVE_TERMINAL' :
-
-				console.log(' change active terminal');
+				// console.log(' change active terminal');
 
 				if (Gds[gds]['activeTerminal'])
 					Gds[gds]['activeTerminal'][0].parentNode.classList.remove('active');

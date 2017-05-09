@@ -148,8 +148,6 @@ export default class MenuPanel
 
 	static render({canAddPq})
 	{
-		console.log('menu panel render', canAddPq );
-
 		// let start = new Date().getTime();
 		// console.log(' re render ');
 

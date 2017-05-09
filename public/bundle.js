@@ -923,7 +923,7 @@ class TerminalState
 			canAddPq		: false
 		};
 
-		setInterval( () => __WEBPACK_IMPORTED_MODULE_1__helpers_requests__["a" /* default */].get(`terminal/keepAlive?rId=${apiData.rId}`), __WEBPACK_IMPORTED_MODULE_2__constants__["b" /* KEEP_ALIVE_REFRESH */] );
+		setInterval( () => __WEBPACK_IMPORTED_MODULE_1__helpers_requests__["a" /* default */].get(`terminal/keepAlive?rId=${apiData.rId}&gds=${this.state.gds}`), __WEBPACK_IMPORTED_MODULE_2__constants__["b" /* KEEP_ALIVE_REFRESH */] );
 	}
 
 	getMatrix()
@@ -996,8 +996,7 @@ class TerminalState
 			break;
 
 			case 'CHANGE_ACTIVE_TERMINAL' :
-
-				console.log(' change active terminal');
+				// console.log(' change active terminal');
 
 				if (Gds[gds]['activeTerminal'])
 					Gds[gds]['activeTerminal'][0].parentNode.classList.remove('active');
@@ -12613,8 +12612,6 @@ class MenuPanel
 
 	static render({canAddPq})
 	{
-		console.log('menu panel render', canAddPq );
-
 		// let start = new Date().getTime();
 		// console.log(' re render ');
 
@@ -13336,7 +13333,6 @@ class TerminalPlugin
 
 	changeActiveTerm( activeTerminal )
 	{
-		console.log('CHANGE ACTIVE TERMINAL', activeTerminal);
 		window.TerminalState.change({ activeTerminal }, 'CHANGE_ACTIVE_TERMINAL');
 	}
 
