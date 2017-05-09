@@ -10,10 +10,10 @@ export default class Session
 		this.settings = params;
 	}
 
-	makeRequest(  params )
-	{
-		return Requests.runSyncCommand( params );
-	}
+	// makeRequest(  params )
+	// {
+	// 	return Requests.runSyncCommand( params );
+	// }
 	
 	start()
 	{
@@ -46,7 +46,7 @@ export default class Session
 			terminalData	: window.apiData['terminalData']
 		};
 
-		return Requests.runSyncCommand( params );
+		return Requests.runSyncCommand( rData );
 		// return this.makeRequest( rData );
 	}
 
