@@ -7,7 +7,7 @@ let cellObj = [];
 
 const ACTIVE_CLASS = 'bg-purple';
 
-class Matrix
+export default class Matrix
 {
 	constructor( params )
 	{
@@ -16,73 +16,85 @@ class Matrix
 
 		this.settings = params;
 
-		popContext = new Drop({
-			target		: params['button'],
-			content		: this.getContext(),
-			classes		: 'drop-theme-arrows',
-			position	: 'bottom center',
-			openOn		: 'click'
-		});
-	}
+		params['button'].onclick = () => {
+			this.build();
 
-	makeRow( rowIndex )
-	{
-		let row 		= document.createElement('tr');
-		this.context.appendChild( row );
-
-		cellObj.push([]);
-
-		[ 0, 1, 2, 3 ].map((index) => {
-			return row.appendChild(
-				this.makeCell( index, rowIndex )
-			)
-		});
-	}
-
-	makeCell( cellIndex, rowIndex )
-	{
-		const cell = document.createElement('td');
-
-		cellObj[rowIndex].push(cell);
-
-		cell.addEventListener( 'click', () => {
-			popContext.close();
-
-			window.TerminalState.change({
-				matrix : {
-					rows 	: rowIndex,
-					cells	: cellIndex
-				}
-			}, 'CHANGE_MATRIX');
-		});
-
-		cell.addEventListener('mouseover', () => {
-			for ( let i = 0; i <= rowIndex; i++ )
-			{
-				cellObj[i].slice(0, cellIndex + 1 ).forEach( (cell) => {
-					cell.classList.toggle(ACTIVE_CLASS);
-				})
-			}
-		});
-
-		cell.addEventListener('mouseleave', () => {
-			[].forEach.call( this.context.querySelectorAll( '.' + ACTIVE_CLASS) , ( cell ) => {
-				cell.classList.toggle(ACTIVE_CLASS);
+			popContext = new Drop({
+				target		: params['button'],
+				content		: this.getContext(),
+				classes		: 'drop-theme-arrows',
+				position	: 'bottom center',
+				openOn		: 'click'
 			});
-		});
 
-		return cell;
-	}
-
-	build()
-	{
-		[ 0, 1, 2, 3].map( this.makeRow , this )
+			params['button'].onclick = false;
+			params['button'].click();
+		}
 	}
 
 	getContext()
 	{
 		return this.context;
 	}
-}
 
-export default Matrix;
+	build()
+	{
+		[0, 1, 2, 3]
+			.map( this._rows )
+			.map( this._cells, this )
+			.map( this._toTable, this );
+	}
+
+	_rows()
+	{
+		cellObj.push([]);
+		return document.createElement('tr');
+	}
+
+	_cells( row, rIndex )
+	{
+		[0, 1, 2, 3].map( cIndex => {
+			row.appendChild( this._cell( rIndex, cIndex) );
+		});
+
+		return row;
+	}
+
+	_cell( rIndex, cIndex)
+	{
+		const cell = document.createElement('td');
+
+		cellObj[rIndex].push(cell);
+
+		cell.addEventListener( 'click', () => {
+			popContext.close();
+
+			window.TerminalState.change({
+				matrix : {
+					rows 	: rIndex,
+					cells	: cIndex
+				}
+			}, 'CHANGE_MATRIX');
+		});
+
+		cell.addEventListener('mouseover', () => {
+
+			for ( let i = 0; i <= rIndex; i++ )
+			{
+				cellObj[i].slice(0, cIndex + 1 ).forEach( cell => cell.classList.toggle(ACTIVE_CLASS) )
+			}
+
+		});
+
+		cell.addEventListener('mouseleave', () => {
+			[].forEach.call( this.context.querySelectorAll( '.' + ACTIVE_CLASS) , cell => cell.classList.toggle(ACTIVE_CLASS) );
+		});
+
+		return cell;
+	}
+
+	_toTable( row )
+	{
+		this.context.appendChild( row );
+	}
+}

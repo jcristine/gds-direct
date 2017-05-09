@@ -35,8 +35,6 @@ class TerminalsMatrix
 		rowCount++;
 		cellCount++;
 
-		// const { height, width } = this.getDimension(rowCount, cellCount);
-
 		this.dimensions = this.getDimension(rowCount, cellCount);
 
 		const makeCells = row => {
@@ -58,10 +56,7 @@ class TerminalsMatrix
 			.map( makeCells )
 			.map( row => this.context.appendChild(row) );
 
-		// return resCells;
-
 		this.resCells = resCells;
-
 		return this;
 	}
 
@@ -86,7 +81,6 @@ class TerminalsMatrix
 	}
 }
 
-// TerminalsMatrix.context = '';
 TerminalsMatrix.context = Dom('table.terminals-table');
 
 let gdsSession = [], termTableWrap, RightSide, LeftSide, matrix = {}, gdsKey;
@@ -121,8 +115,7 @@ export default class Container {
 		RightSide.appendChild( MenuPanel.getContext() );
 		LeftSide.appendChild( TerminalsMatrix.context );
 
-		ActionsMenu.init();
-		LeftSide.appendChild( ActionsMenu.getContext() );
+		LeftSide.appendChild( ActionsMenu.init().getContext() );
 	}
 
 	static purgeScreens()

@@ -16,29 +16,24 @@ function get( url )
 }
 
 
-function runSyncCommand( functionName, params )
+function runSyncCommand( params )
 {
+	// let url 	= (window.apiData.getCommandUrl || END_POINT_URL)  + '&function=' + functionName;
 	let url 	= window.apiData.getCommandUrl || END_POINT_URL;
 
-	let data 	= {
-		'function'	: functionName,
-		'params'	: params
-	};
+	// const data 	= ;
+	// console.log( data );
 
-	let get 		= JSON.stringify(data, true);
+	const formData 	= new FormData();
+	formData.append( "data", JSON.stringify({ params }, true) );
 
-	let formData 	= new FormData();
-	formData.append( "data", get );
-
-	url += '&function=' + functionName;
+	// url += '&function=' + functionName;
 
 	return fetch(API_HOST + url, {
 		credentials	: 'include',
 		body		: formData,
 		method		: 'POST',
-	}).then( function( response ) {
-		return response.json();
-	})
+	}).then( response  => response.json() )
 }
 
 export default {

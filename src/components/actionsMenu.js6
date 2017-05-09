@@ -1,18 +1,17 @@
 'use strict';
 
 import Matrix 	from './popovers/terminalMatrix';
+import Dom		from '../helpers/dom';
 
-let context 		= document.createElement('div');
-context.className 	= 'actions-btn-menu';
+let context;
 
 class Button
 {
 	constructor()
 	{
-		this.context 			= document.createElement('button');
+		this.context 			= Dom('button.btn btn-purple');
 		this.context.id 		= 'addTerminalBtn';
 		this.context.type		= 'button';
-		this.context.className 	= 'btn btn-purple';
 		this.context.innerHTML	= '<i class="fa fa-th-large t-f-size-14 v-middle"></i>';
 	}
 	
@@ -26,18 +25,18 @@ export default class ActionsMenu {
 
 	static init()
 	{
+		context = Dom('div.actions-btn-menu');
 		this.addTerminalButton();
+
+		return this;
 	}
 
 	static addTerminalButton()
 	{
-		let button = new Button({});
 
-		let table = new Matrix({
-			button	: button.getContext()
-		});
+		const button 	= new Button({});
 
-		table.build();
+		const table = new Matrix({ button : button.getContext() });
 		context.appendChild( button.getContext() );
 	}
 	

@@ -23,12 +23,6 @@ class TerminalState
 {
 	constructor()
 	{
-		// this.areaList = ['A', 'B', 'C', 'D', 'E', 'F'];
-
-		// Gds['apollo']['sessionIndex']	= this.areaList.indexOf( apiData.settings['gds']['apollo']['currentArea'] );
-		// Gds['sabre']['sessionIndex'] 	= this.areaList.indexOf( apiData.settings['gds']['sabre']['currentArea'] );
-		// console.log(Gds['apollo']['sessionIndex'])
-
 		const saved		= localStorage.getItem('matrix');
 		const curGds	= apiData.settings.common['currentGds'] || 'apollo';
 
@@ -115,7 +109,7 @@ class TerminalState
 
 			case 'CHANGE_ACTIVE_TERMINAL' :
 
-				// console.log(' change active terminal');
+				console.log(' change active terminal');
 
 				if (Gds[gds]['activeTerminal'])
 					Gds[gds]['activeTerminal'][0].parentNode.classList.remove('active');
@@ -141,21 +135,6 @@ class TerminalState
 							apiData.pqModal.show({
 								dump 	: response.data.output,
 								onClose	: () => this.change({hideMenu: false})
-								// ,
-								// onSubmit: ( formData ) => {
-
-									// console.log(' on submit ', formData);
-
-									// fetch("terminal/form",
-									// 	{
-									// 		method	: "POST",
-									// 		body	: formData
-									// 	})
-									// 	.then(() => {
-									// 		console.log(' done ');
-									// 	})
-
-								// }
 							});
 
 							Container.render( this.state );

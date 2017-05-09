@@ -34,9 +34,8 @@ export default class TerminalPlugin
 		this.context	= params.context;
 		this.name		= params.name;
 
-		// this.animation	 	= false;
 		this.hiddenBuff		= [];
-		this.hiddenCommand	= '';
+		// this.hiddenCommand	= '';
 
 		this.allowManualPaging = params.gds === 'sabre';
 
@@ -57,9 +56,6 @@ export default class TerminalPlugin
 
 	parseChar( evt, terminal )
 	{
-		// return false;
-		// console.log(' parse Key HOHOHO', evt.target.nodeName);
-
 		// key press fires globally on all terminals;
 
 		if ( evt.target.nodeName !== 'TEXTAREA' )
@@ -128,7 +124,7 @@ export default class TerminalPlugin
 
 	clearBuf()
 	{
-		// const request = this.session.clearBuffer().then( ( response ) => { console.log(' done ', response ) });
+		const request = this.session.clearBuffer().then( response => { console.log(' done ', response ) });
 		window.TerminalState.purgeScreens();
 	}
 
@@ -279,22 +275,6 @@ export default class TerminalPlugin
 
 			.then( this.parseBackEnd.bind(this) )
 			.then( () => {
-
-				/*if (this.hiddenBuff.length)
-				{
-					const cmd = this.hiddenBuff.shift();
-
-					if ( cmd )
-						this.terminal.exec( cmd );
-				} else
-				{
-					if ( this.hiddenCommand )
-					{
-						this.terminal.insert( this.hiddenCommand );
-						this.hiddenCommand = '';
-					}
-				}*/
-
 				this.loopCmdStack();
 				this.switchArea( command );
 			})

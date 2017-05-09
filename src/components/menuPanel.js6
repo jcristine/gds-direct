@@ -4,17 +4,15 @@ import History 			from './popovers/history';
 import TextSize 		from './popovers/textSize';
 import SessionButtons	from './menu/sessionButtons';
 import PqButton			from './menu/pqButton';
+import Dom				from '../helpers/dom';
 
-let context 		= document.createElement('aside');
-context.className 	= 'sideMenu';
-
+let context = Dom('aside.sideMenu');
 let parentContext;
 
 function createBtn()
 {
-	let btn 		= document.createElement('button');
+	let btn 		= Dom('button.btn btn-primary');
 	btn.type		= 'button';
-	btn.className 	= 'btn btn-primary';
 
 	return btn;
 }
@@ -106,15 +104,12 @@ export default class MenuPanel
 		let state 			= window.TerminalState.state;
 
 		let context 		= document.createElement('article');
-		context.innerHTML 	= '<div class="label">Input Language</div>';
-
 		let btnGroup		= document.createElement('div');
-		// btnGroup.className 	= 'buttons';
 
-		['APOLLO','SABRE'].forEach(( value ) => {
+		['APOLLO','SABRE'].forEach( value => {
 
-			let button		 = document.createElement('button');
-			button.className = 'btn btn-sm btn-gold font-bold ' + ( state.language === value ? 'active' : '');
+			const button = Dom('button.btn btn-sm btn-gold font-bold' + ( state.language === value ? ' active' : '') );
+
 			button.innerHTML = value;
 
 			button.addEventListener('click', function () {
@@ -126,6 +121,7 @@ export default class MenuPanel
 			btnGroup.appendChild( button );
 		});
 
+		context.innerHTML = '<div class="label">Input Language</div>';
 		context.appendChild(btnGroup);
 		return context;
 	}
@@ -155,6 +151,8 @@ export default class MenuPanel
 
 	static render()
 	{
+		console.log(' re render ');
+
 		context.innerHTML = '';
 
 		context.appendChild( this.settingsButtons() );
