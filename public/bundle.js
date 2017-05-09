@@ -657,6 +657,30 @@ return Drop;
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
+const END_POINT_URL	 		= 'terminal/command?';
+/* harmony export (immutable) */ __webpack_exports__["e"] = END_POINT_URL;
+
+const TIME_FORMAT 			= '12';
+/* harmony export (immutable) */ __webpack_exports__["c"] = TIME_FORMAT;
+
+const ACCOUNT 				= 'training';
+/* harmony export (immutable) */ __webpack_exports__["d"] = ACCOUNT;
+
+const API_HOST 				= '';
+/* harmony export (immutable) */ __webpack_exports__["f"] = API_HOST;
+
+const KEEP_ALIVE_REFRESH 	= 60000;
+/* harmony export (immutable) */ __webpack_exports__["b"] = KEEP_ALIVE_REFRESH;
+
+const AREA_LIST 				= ['A', 'B', 'C', 'D', 'E', 'F'];
+/* harmony export (immutable) */ __webpack_exports__["a"] = AREA_LIST;
+
+
+/***/ }),
+/* 3 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
 
 
 /*function chunk(arr, limit)
@@ -763,7 +787,7 @@ function splitLines(txt)
 });
 
 /***/ }),
-/* 3 */
+/* 4 */
 /***/ (function(module, exports) {
 
 var g;
@@ -790,29 +814,11 @@ module.exports = g;
 
 
 /***/ }),
-/* 4 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-const END_POINT_URL	 		= 'terminal/command?';
-/* harmony export (immutable) */ __webpack_exports__["a"] = END_POINT_URL;
-
-const TIME_FORMAT 			= '12';
-/* harmony export (immutable) */ __webpack_exports__["c"] = TIME_FORMAT;
-
-const ACCOUNT 				= 'training';
-/* harmony export (immutable) */ __webpack_exports__["d"] = ACCOUNT;
-
-const API_HOST 				= '';
-/* harmony export (immutable) */ __webpack_exports__["b"] = API_HOST;
-
-
-/***/ }),
 /* 5 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__constants__ = __webpack_require__(4);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__constants__ = __webpack_require__(2);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_whatwg_fetch__ = __webpack_require__(18);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_whatwg_fetch___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1_whatwg_fetch__);
 
@@ -836,7 +842,7 @@ function get( url )
 function runSyncCommand( params )
 {
 	// let url 	= (window.apiData.getCommandUrl || END_POINT_URL)  + '&function=' + functionName;
-	let url 	= window.apiData.getCommandUrl || __WEBPACK_IMPORTED_MODULE_0__constants__["a" /* END_POINT_URL */];
+	let url 	= window.apiData.getCommandUrl || __WEBPACK_IMPORTED_MODULE_0__constants__["e" /* END_POINT_URL */];
 
 	// const data 	= ;
 	// console.log( data );
@@ -846,7 +852,7 @@ function runSyncCommand( params )
 
 	// url += '&function=' + functionName;
 
-	return fetch(__WEBPACK_IMPORTED_MODULE_0__constants__["b" /* API_HOST */] + url, {
+	return fetch(__WEBPACK_IMPORTED_MODULE_0__constants__["f" /* API_HOST */] + url, {
 		credentials	: 'include',
 		body		: formData,
 		method		: 'POST',
@@ -872,10 +878,14 @@ function runSyncCommand( params )
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__components_containerMain__ = __webpack_require__(20);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__helpers_requests__ = __webpack_require__(5);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__constants__ = __webpack_require__(2);
 
 
 
 
+
+
+// console.log(KEEP_ALIVE_REFRESH)
 
 const apiData = window.apiData || {};
 
@@ -886,12 +896,12 @@ const gdsSettings = {
 	activeTerminal	: null
 };
 
-const areaList	= ['A', 'B', 'C', 'D', 'E', 'F'];
-
 const Gds = {
-	'apollo' 	: Object.assign({}, gdsSettings, {'sessionIndex' : areaList.indexOf(apiData.settings['gds']['apollo']['currentArea']) }),
-	'sabre'		: Object.assign({}, gdsSettings, {'sessionIndex' : areaList.indexOf(apiData.settings['gds']['sabre']['currentArea']) })
+	'apollo' 	: Object.assign({}, gdsSettings, {'sessionIndex' : __WEBPACK_IMPORTED_MODULE_2__constants__["a" /* AREA_LIST */].indexOf(apiData.settings['gds']['apollo']['currentArea']) }),
+	'sabre'		: Object.assign({}, gdsSettings, {'sessionIndex' : __WEBPACK_IMPORTED_MODULE_2__constants__["a" /* AREA_LIST */].indexOf(apiData.settings['gds']['sabre']['currentArea']) })
 };
+
+// const KEEP_ALIVE_REFRESH = 60000;
 
 class TerminalState
 {
@@ -911,6 +921,8 @@ class TerminalState
 			fontSize		: 1,
 			hideMenu		: false
 		};
+
+		setInterval( () => __WEBPACK_IMPORTED_MODULE_1__helpers_requests__["a" /* default */].get(`terminal/keepAlive?rId=${apiData.rId}`), __WEBPACK_IMPORTED_MODULE_2__constants__["b" /* KEEP_ALIVE_REFRESH */] );
 	}
 
 	getMatrix()
@@ -926,7 +938,7 @@ class TerminalState
 	getSessionAreaMap()
 	{
 		const key = this.state.gds === 'apollo' ? 'S': '¤';
-		return areaList.map( char => key + char );
+		return __WEBPACK_IMPORTED_MODULE_2__constants__["a" /* AREA_LIST */].map( char => key + char );
 	}
 
 	getBuffer( gds, terminalId )
@@ -7853,7 +7865,7 @@ module.exports = {
     }; // terminal plugin
 })(jQuery);
 
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(3), __webpack_require__(17).setImmediate))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(4), __webpack_require__(17).setImmediate))
 
 /***/ }),
 /* 11 */
@@ -9723,7 +9735,7 @@ process.umask = function() { return 0; };
     attachTo.clearImmediate = clearImmediate;
 }(typeof self === "undefined" ? typeof global === "undefined" ? this : global : self));
 
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(3), __webpack_require__(14)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(4), __webpack_require__(14)))
 
 /***/ }),
 /* 16 */
@@ -13213,7 +13225,7 @@ class KeyBinding
 "use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_noty__ = __webpack_require__(13);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_noty___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_noty__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__helpers_helpers__ = __webpack_require__(2);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__helpers_helpers__ = __webpack_require__(3);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__modules_pagination__ = __webpack_require__(32);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__modules_sabreSession__ = __webpack_require__(33);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__modules_spinner__ = __webpack_require__(34);
@@ -13658,7 +13670,7 @@ class F8Reader
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__helpers_helpers__ = __webpack_require__(2);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__helpers_helpers__ = __webpack_require__(3);
 
 
 
@@ -13752,7 +13764,7 @@ class Output
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__helpers_helpers__ = __webpack_require__(2);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__helpers_helpers__ = __webpack_require__(3);
 
 
 
@@ -13810,7 +13822,7 @@ class Pagination
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__constants__ = __webpack_require__(4);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__constants__ = __webpack_require__(2);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__helpers_requests__ = __webpack_require__(5);
 
 

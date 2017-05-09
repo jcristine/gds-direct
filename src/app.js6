@@ -2,6 +2,9 @@
 
 import Container from './components/containerMain';
 import Request	 from './helpers/requests';
+import {KEEP_ALIVE_REFRESH, AREA_LIST} from './constants';
+
+// console.log(KEEP_ALIVE_REFRESH)
 
 const apiData = window.apiData || {};
 
@@ -12,12 +15,12 @@ const gdsSettings = {
 	activeTerminal	: null
 };
 
-const areaList	= ['A', 'B', 'C', 'D', 'E', 'F'];
-
 const Gds = {
-	'apollo' 	: Object.assign({}, gdsSettings, {'sessionIndex' : areaList.indexOf(apiData.settings['gds']['apollo']['currentArea']) }),
-	'sabre'		: Object.assign({}, gdsSettings, {'sessionIndex' : areaList.indexOf(apiData.settings['gds']['sabre']['currentArea']) })
+	'apollo' 	: Object.assign({}, gdsSettings, {'sessionIndex' : AREA_LIST.indexOf(apiData.settings['gds']['apollo']['currentArea']) }),
+	'sabre'		: Object.assign({}, gdsSettings, {'sessionIndex' : AREA_LIST.indexOf(apiData.settings['gds']['sabre']['currentArea']) })
 };
+
+// const KEEP_ALIVE_REFRESH = 60000;
 
 class TerminalState
 {
@@ -37,6 +40,8 @@ class TerminalState
 			fontSize		: 1,
 			hideMenu		: false
 		};
+
+		setInterval( () => Request.get(`terminal/keepAlive?rId=${apiData.rId}`), KEEP_ALIVE_REFRESH );
 	}
 
 	getMatrix()
@@ -52,7 +57,7 @@ class TerminalState
 	getSessionAreaMap()
 	{
 		const key = this.state.gds === 'apollo' ? 'S': '¤';
-		return areaList.map( char => key + char );
+		return AREA_LIST.map( char => key + char );
 	}
 
 	getBuffer( gds, terminalId )
