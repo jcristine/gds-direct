@@ -897,8 +897,8 @@ const gdsSettings = {
 };
 
 const Gds = {
-	'apollo' 	: Object.assign({}, gdsSettings, {'sessionIndex' : __WEBPACK_IMPORTED_MODULE_2__constants__["a" /* AREA_LIST */].indexOf(apiData.settings['gds']['apollo']['currentArea']) }),
-	'sabre'		: Object.assign({}, gdsSettings, {'sessionIndex' : __WEBPACK_IMPORTED_MODULE_2__constants__["a" /* AREA_LIST */].indexOf(apiData.settings['gds']['sabre']['currentArea']) })
+	'apollo': Object.assign({}, gdsSettings, {'sessionIndex' : __WEBPACK_IMPORTED_MODULE_2__constants__["a" /* AREA_LIST */].indexOf(apiData.settings['gds']['apollo']['currentArea']) }),
+	'sabre'	: Object.assign({}, gdsSettings, {'sessionIndex' : __WEBPACK_IMPORTED_MODULE_2__constants__["a" /* AREA_LIST */].indexOf(apiData.settings['gds']['sabre']['currentArea']) })
 };
 
 // const KEEP_ALIVE_REFRESH = 60000;
@@ -952,6 +952,7 @@ class TerminalState
 	purgeScreens()
 	{
 		__WEBPACK_IMPORTED_MODULE_0__components_containerMain__["a" /* default */].purgeScreens();
+		__WEBPACK_IMPORTED_MODULE_1__helpers_requests__["a" /* default */].get(`terminal/clearBuffer?gds=${this.state.gds}`);
 	}
 
 	isLanguageApollo()
@@ -13342,24 +13343,24 @@ class TerminalPlugin
 
 	switchArea( command )
 	{
-		const sessionChange = window.TerminalState.getSessionAreaMap().indexOf( command );
+		const sessionIndex = window.TerminalState.getSessionAreaMap().indexOf( command );
 
-		if ( sessionChange !== -1 )
+		if ( sessionIndex !== -1 )
 		{
-			window.TerminalState.change({
-				sessionIndex 	: sessionChange
-			}, 'CHANGE_SESSION');
+			window.TerminalState.change({ sessionIndex }, 'CHANGE_SESSION');
 		}
 	}
 
-	changeActiveTerm( terminal )
+	changeActiveTerm( activeTerminal )
 	{
-		window.TerminalState.change({ activeTerminal : terminal }, 'CHANGE_ACTIVE_TERMINAL');
+		window.TerminalState.change({ activeTerminal }, 'CHANGE_ACTIVE_TERMINAL');
 	}
 
 	clearBuf()
 	{
-		const request = this.session.clearBuffer().then( response => { console.log(' done ', response ) });
+		// this.session
+		// 	.clearBuffer();
+
 		window.TerminalState.purgeScreens();
 	}
 
@@ -13371,7 +13372,7 @@ class TerminalPlugin
 			return false;
 		}
 
-		const replace = ( terminal ) => {
+		const replace = terminal => {
 
 			return ( [cmd, formatted] ) => {
 				terminal.cmd().set( cmd );
@@ -13412,7 +13413,7 @@ class TerminalPlugin
 
 			memory			: true,
 
-			onBeforeCommand : ( terminal, command ) => {
+			onBeforeCommand : ( terminal, command ) => { // is using
 				if ( this.spinner.isActive()  )
 				{
 					this.hiddenBuff.push( command );
@@ -13879,10 +13880,10 @@ class Session
 			return true;
 	}
 
-	clearBuffer()
-	{
-		return __WEBPACK_IMPORTED_MODULE_1__helpers_requests__["a" /* default */].get('terminal/clearBuffer');
-	}
+	// clearBuffer( gds )
+	// {
+	// 	return Requests.get(`terminal/clearBuffer?gds=${gds}`);
+	// }
 }
 /* harmony export (immutable) */ __webpack_exports__["a"] = Session;
 

@@ -53,8 +53,8 @@ export default class Session
 			return true;
 	}
 
-	clearBuffer()
-	{
-		return Requests.get('terminal/clearBuffer');
-	}
+	// clearBuffer( gds )
+	// {
+	// 	return Requests.get(`terminal/clearBuffer?gds=${gds}`);
+	// }
 }
