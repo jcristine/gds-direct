@@ -12471,6 +12471,8 @@ function createBtn()
 	return btn;
 }
 
+let SettingsContext;
+
 class MenuPanel
 {
 	static toggle()
@@ -12544,7 +12546,7 @@ class MenuPanel
 			list		: ['A', 'B', 'C', 'D', 'E', 'F']
 		});
 
-		let context 		= document.createElement('article');
+		const context 		= document.createElement('article');
 		context.innerHTML 	= '<div class="label">Session</div>';
 
 		context.appendChild( apollo.render() );
@@ -12555,47 +12557,42 @@ class MenuPanel
 
 	static InputLanguage()
 	{
-		let state 			= window.TerminalState.state;
+		const context 	= document.createElement('article');
+		// const btnGroup	= document.createElement('div');
 
-		let context 		= document.createElement('article');
-		let btnGroup		= document.createElement('div');
+		context.innerHTML = '<div class="label">Input Language</div>';
 
 		['APOLLO','SABRE'].forEach( value => {
 
-			const button = __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_4__helpers_dom__["a" /* default */])('button.btn btn-sm btn-gold font-bold' + ( state.language === value ? ' active' : '') );
+			const button = __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_4__helpers_dom__["a" /* default */])('button.btn btn-sm btn-gold font-bold' + ( window.TerminalState.state.language === value ? ' active' : '') );
 
 			button.innerHTML = value;
+			button.addEventListener('click', () => window.TerminalState.change({ language : value }) );
 
-			button.addEventListener('click', function () {
-				window.TerminalState.change({
-					language : value
-				});
-			});
-
-			btnGroup.appendChild( button );
+			context.appendChild( button );
 		});
 
-		context.innerHTML = '<div class="label">Input Language</div>';
-		context.appendChild(btnGroup);
+
+		// context.appendChild(btnGroup);
+
 		return context;
 	}
 
 	static settingsButtons()
 	{
-		let context 		= document.createElement('article');
+		if (SettingsContext)
+			return SettingsContext;
+
+		SettingsContext	= document.createElement('article');
 
 		[
 			// MenuPanel.toggle(),
 			MenuPanel.fontSize(),
 			MenuPanel.history(),
 			MenuPanel.settings()
-		].map(( button ) => {
-			context.appendChild(
-				button
-			)
-		});
+		].map( button => SettingsContext.appendChild( button ) );
 
-		return context;
+		return SettingsContext;
 	}
 
 	static getContext()
@@ -12605,8 +12602,9 @@ class MenuPanel
 
 	static render()
 	{
-		console.log(' re render ');
+		// let start = new Date().getTime();
 
+		// console.log(' re render ');
 		context.innerHTML = '';
 
 		context.appendChild( this.settingsButtons() );
@@ -12615,6 +12613,8 @@ class MenuPanel
 		context.appendChild( __WEBPACK_IMPORTED_MODULE_3__menu_pqButton__["a" /* default */].render({
 			active : window.TerminalState.state.activeTerminal && window.apiData.rId
 		}) );
+
+		// console.log('draw done', new Date().getTime() - start);
 
 		return context;
 	}
@@ -13823,11 +13823,6 @@ class Session
 	{
 		this.settings = params;
 	}
-
-	// makeRequest(  params )
-	// {
-	// 	return Requests.runSyncCommand( params );
-	// }
 	
 	start()
 	{
@@ -13848,10 +13843,9 @@ class Session
 	{
 		const rData = {
 			// sessionToken	: this.settings['sessionToken'],
+			// sessionIndex	: parseInt(this.settings['sessionIndex']) + 1,
 
-			sessionIndex	: parseInt(this.settings['sessionIndex']) + 1,
 			terminalIndex	: parseInt(this.settings['terminalIndex']) + 1,
-
 			command			: params['cmd'],
 
 			gds				: this.settings['gds'],
@@ -13861,7 +13855,6 @@ class Session
 		};
 
 		return __WEBPACK_IMPORTED_MODULE_1__helpers_requests__["a" /* default */].runSyncCommand( rData );
-		// return this.makeRequest( rData );
 	}
 
 	end()
@@ -13876,21 +13869,7 @@ class Session
 
 	clearBuffer()
 	{
-		// return this.makeRequest( 'runInternalCommand', {
-		// 	command : 'clearBuffer'
-		// });
-
-		return fetch("terminal/clearBuffer",
-		{
-			credentials	: 'include',
-			method		: "GET"
-			// ,
-			// body	: formData
-		})
-		.then( response => {
-			console.log(' done ', response);
-		})
-
+		return __WEBPACK_IMPORTED_MODULE_1__helpers_requests__["a" /* default */].get('terminal/clearBuffer');
 	}
 }
 /* harmony export (immutable) */ __webpack_exports__["a"] = Session;

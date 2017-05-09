@@ -17,6 +17,8 @@ function createBtn()
 	return btn;
 }
 
+let SettingsContext;
+
 export default class MenuPanel
 {
 	static toggle()
@@ -90,7 +92,7 @@ export default class MenuPanel
 			list		: ['A', 'B', 'C', 'D', 'E', 'F']
 		});
 
-		let context 		= document.createElement('article');
+		const context 		= document.createElement('article');
 		context.innerHTML 	= '<div class="label">Session</div>';
 
 		context.appendChild( apollo.render() );
@@ -101,47 +103,42 @@ export default class MenuPanel
 
 	static InputLanguage()
 	{
-		let state 			= window.TerminalState.state;
+		const context 	= document.createElement('article');
+		// const btnGroup	= document.createElement('div');
 
-		let context 		= document.createElement('article');
-		let btnGroup		= document.createElement('div');
+		context.innerHTML = '<div class="label">Input Language</div>';
 
 		['APOLLO','SABRE'].forEach( value => {
 
-			const button = Dom('button.btn btn-sm btn-gold font-bold' + ( state.language === value ? ' active' : '') );
+			const button = Dom('button.btn btn-sm btn-gold font-bold' + ( window.TerminalState.state.language === value ? ' active' : '') );
 
 			button.innerHTML = value;
+			button.addEventListener('click', () => window.TerminalState.change({ language : value }) );
 
-			button.addEventListener('click', function () {
-				window.TerminalState.change({
-					language : value
-				});
-			});
-
-			btnGroup.appendChild( button );
+			context.appendChild( button );
 		});
 
-		context.innerHTML = '<div class="label">Input Language</div>';
-		context.appendChild(btnGroup);
+
+		// context.appendChild(btnGroup);
+
 		return context;
 	}
 
 	static settingsButtons()
 	{
-		let context 		= document.createElement('article');
+		if (SettingsContext)
+			return SettingsContext;
+
+		SettingsContext	= document.createElement('article');
 
 		[
 			// MenuPanel.toggle(),
 			MenuPanel.fontSize(),
 			MenuPanel.history(),
 			MenuPanel.settings()
-		].map(( button ) => {
-			context.appendChild(
-				button
-			)
-		});
+		].map( button => SettingsContext.appendChild( button ) );
 
-		return context;
+		return SettingsContext;
 	}
 
 	static getContext()
@@ -151,8 +148,9 @@ export default class MenuPanel
 
 	static render()
 	{
-		console.log(' re render ');
+		// let start = new Date().getTime();
 
+		// console.log(' re render ');
 		context.innerHTML = '';
 
 		context.appendChild( this.settingsButtons() );
@@ -161,6 +159,8 @@ export default class MenuPanel
 		context.appendChild( PqButton.render({
 			active : window.TerminalState.state.activeTerminal && window.apiData.rId
 		}) );
+
+		// console.log('draw done', new Date().getTime() - start);
 
 		return context;
 	}
