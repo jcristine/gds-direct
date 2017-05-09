@@ -38,7 +38,8 @@ class TerminalState
 			activeTerminal	: '',
 
 			fontSize		: 1,
-			hideMenu		: false
+			hideMenu		: false,
+			canAddPq		: false
 		};
 
 		setInterval( () => Request.get(`terminal/keepAlive?rId=${apiData.rId}`), KEEP_ALIVE_REFRESH );
@@ -99,7 +100,7 @@ class TerminalState
 
 			case 'CHANGE_SESSION' :
 				Gds[gds]['sessionIndex'] = this.state.sessionIndex;
-				return Container.menuRender();
+				return Container.menuRender( this.state );
 			break;
 
 			case 'CHANGE_SESSION_BY_MENU' :
@@ -123,12 +124,16 @@ class TerminalState
 				Gds[gds]['activeTerminal'] = this.state.activeTerminal;
 				Gds[gds]['activeTerminal'][0].parentNode.classList.add('active');
 
-				return Container.menuRender();
+				return Container.menuRender( this.state );
 			break;
 
 			case 'CHANGE_PCC' :
 				Gds[gds]['pcc'][this.state.sessionIndex] = params.pcc;
-				return Container.menuRender();
+				return Container.menuRender( this.state );
+			break;
+
+			case 'ACTIVATE_PQ' :
+				return Container.menuRender( this.state );
 			break;
 
 			case 'PQ_MODAL_SHOW' :

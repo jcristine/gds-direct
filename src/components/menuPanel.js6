@@ -67,7 +67,7 @@ export default class MenuPanel
 		let btn 		= createBtn();
 		btn.innerHTML 	= '<i class="fa fa-gears t-f-size-14"></i>';
 
-		btn.addEventListener('click', () => {});
+		// btn.addEventListener('click', () => {});
 		return btn;
 	}
 
@@ -146,19 +146,19 @@ export default class MenuPanel
 		return context;
 	}
 
-	static render()
+	static render({canAddPq})
 	{
-		// let start = new Date().getTime();
+		console.log('menu panel render', canAddPq );
 
+		// let start = new Date().getTime();
 		// console.log(' re render ');
+
 		context.innerHTML = '';
 
 		context.appendChild( this.settingsButtons() );
 		context.appendChild( this.activeSession() );
 		context.appendChild( this.InputLanguage() );
-		context.appendChild( PqButton.render({
-			active : window.TerminalState.state.activeTerminal && window.apiData.rId
-		}) );
+		context.appendChild( PqButton.render( {canAddPq}) );
 
 		// console.log('draw done', new Date().getTime() - start);
 

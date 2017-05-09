@@ -919,7 +919,8 @@ class TerminalState
 			activeTerminal	: '',
 
 			fontSize		: 1,
-			hideMenu		: false
+			hideMenu		: false,
+			canAddPq		: false
 		};
 
 		setInterval( () => __WEBPACK_IMPORTED_MODULE_1__helpers_requests__["a" /* default */].get(`terminal/keepAlive?rId=${apiData.rId}`), __WEBPACK_IMPORTED_MODULE_2__constants__["b" /* KEEP_ALIVE_REFRESH */] );
@@ -980,7 +981,7 @@ class TerminalState
 
 			case 'CHANGE_SESSION' :
 				Gds[gds]['sessionIndex'] = this.state.sessionIndex;
-				return __WEBPACK_IMPORTED_MODULE_0__components_containerMain__["a" /* default */].menuRender();
+				return __WEBPACK_IMPORTED_MODULE_0__components_containerMain__["a" /* default */].menuRender( this.state );
 			break;
 
 			case 'CHANGE_SESSION_BY_MENU' :
@@ -1004,12 +1005,16 @@ class TerminalState
 				Gds[gds]['activeTerminal'] = this.state.activeTerminal;
 				Gds[gds]['activeTerminal'][0].parentNode.classList.add('active');
 
-				return __WEBPACK_IMPORTED_MODULE_0__components_containerMain__["a" /* default */].menuRender();
+				return __WEBPACK_IMPORTED_MODULE_0__components_containerMain__["a" /* default */].menuRender( this.state );
 			break;
 
 			case 'CHANGE_PCC' :
 				Gds[gds]['pcc'][this.state.sessionIndex] = params.pcc;
-				return __WEBPACK_IMPORTED_MODULE_0__components_containerMain__["a" /* default */].menuRender();
+				return __WEBPACK_IMPORTED_MODULE_0__components_containerMain__["a" /* default */].menuRender( this.state );
+			break;
+
+			case 'ACTIVATE_PQ' :
+				return __WEBPACK_IMPORTED_MODULE_0__components_containerMain__["a" /* default */].menuRender( this.state );
 			break;
 
 			case 'PQ_MODAL_SHOW' :
@@ -12276,19 +12281,19 @@ class Container {
 		gdsSession[ gdsKey ].forEach( terminal => { terminal.clear(); });
 	}
 
+	static hasMatrixChanged( newMatrix )
+	{
+		return JSON.stringify(newMatrix) !== JSON.stringify(matrix)
+	}
+
 	static resizeScreens( dimensions )
 	{
 		gdsSession[ gdsKey ].forEach( terminal => terminal.resize( dimensions ) );
 	}
 
-	static menuRender()
+	static menuRender( {canAddPq : canAddPq} )
 	{
-		__WEBPACK_IMPORTED_MODULE_2__menuPanel__["a" /* default */].render();
-	}
-
-	static hasMatrixChanged( newMatrix )
-	{
-		return JSON.stringify(newMatrix) !== JSON.stringify(matrix)
+		__WEBPACK_IMPORTED_MODULE_2__menuPanel__["a" /* default */].render( { canAddPq } );
 	}
 
 	static gdsHasChanged( gds )
@@ -12303,7 +12308,10 @@ class Container {
 		gdsSession[ gdsKey ] = gdsSession[ gdsKey ] || [];
 
 		RightSide.classList.toggle('hidden', params.hideMenu );
-		this.menuRender();
+
+		// const  { canAddPq : canAddPq } = params;
+
+		this.menuRender(params);
 
 		const { rows : rowIndex , cells: cellIndex} = params.matrix;
 
@@ -12347,11 +12355,9 @@ class PqButton
 {
 	static makeButton(value, index)
 	{
-		let button 			= document.createElement('button');
+		const button 		= document.createElement('button');
 		button.className	= 'btn btn-sm btn-purple font-bold';
 		button.innerHTML	= 'PQ';
-
-		// button.disabled = ! (!!this.settings.terminal);
 
 		button.onclick = () => {
 			window.TerminalState.change({ hideMenu : true }, 'PQ_MODAL_SHOW')
@@ -12360,15 +12366,10 @@ class PqButton
 		return button;
 	}
 
-	static props( params = {} )
+	static render( { canAddPq } )
 	{
-		button.disabled = !params.active;
-	}
-
-	static render( params )
-	{
-		button = button || this.makeButton();
-		this.props( params );
+		button 			= button || this.makeButton();
+		button.disabled = !canAddPq;
 		return button;
 	}
 }
@@ -12380,22 +12381,32 @@ class PqButton
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__helpers_dom__ = __webpack_require__(0);
+
 
 
 class SessionKeys
 {
 	constructor( params )
 	{
-		this.context = document.createElement('div');
-		this.settings = params;
+		this.context 	= document.createElement('div');
+		this.settings 	= params;
+		this.collection	= [];
+		this.trigger	= [];
+	}
+
+	disableAll()
+	{
+		this.collection.map( btn => btn.disabled = true );
 	}
 
 	makeButton(value, index)
 	{
-		let button 			= document.createElement('button');
-		button.className	= 'btn btn-sm btn-purple font-bold';
+		const button 		= __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0__helpers_dom__["a" /* default */])('button.btn btn-sm btn-purple font-bold');
 		button.innerHTML	= value;
-		button.innerHTML	+= ' <span class="small text-lowercase">' + ( window.TerminalState.getPcc()[index] || '' ) + '</span>';
+
+		if (window.TerminalState.getPcc()[index])
+			button.innerHTML += `<span class="pcc-label">${window.TerminalState.getPcc()[index]}</span>`;
 
 		if (this.settings.session === index)
 			button.className += ' active';
@@ -12403,17 +12414,13 @@ class SessionKeys
 		if ( !this.settings.active )
 			button.className += ' hidden';
 
-		button.disabled = ! (!!this.settings.terminal);
+		button.disabled = !this.settings.terminal;
 
 		button.addEventListener('click', () => {
 
-			[].forEach.call(document.querySelectorAll('.sideMenu .btn'), function ( btn ) {
-				btn.disabled = true;
-			});
+			this.disableAll();
+			window.TerminalState.change({ sessionIndex : index }, 'CHANGE_SESSION_BY_MENU');
 
-			window.TerminalState.change({
-				sessionIndex 	: index
-			}, 'CHANGE_SESSION_BY_MENU');
 		});
 
 		return button;
@@ -12422,22 +12429,15 @@ class SessionKeys
 	getButtons()
 	{
 		return this.settings.list.map( this.makeButton.bind( this ) );
-		// return ['A', 'B', 'C', 'D', 'E'].map( this.makeButton.bind( this ) );
 	}
 
 	getTrigger()
 	{
-		let button 			= document.createElement('button');
-		button.className	= 'btn btn-sm btn-mint font-bold' + ( this.settings['active'] ? ' active' : '' );
-		button.innerHTML	= this.settings['gds'];
+		this.trigger 			= __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0__helpers_dom__["a" /* default */])('button.btn btn-sm btn-mint font-bold' + ( this.settings['active'] ? ' active' : '' ));
+		this.trigger.innerHTML	= this.settings['gds'];
 
-		button.addEventListener('click', () => {
-			window.TerminalState.change({
-				gds	: this.settings.gds
-			}, 'CHANGE_GDS');
-		});
-
-		return button;
+		this.trigger.addEventListener('click', () => window.TerminalState.change({ gds : this.settings.gds }, 'CHANGE_GDS') );
+		return this.trigger;
 	}
 
 	render()
@@ -12445,9 +12445,7 @@ class SessionKeys
 		this.context.appendChild( this.getTrigger() );
 
 		if (this.settings.active)
-			this.getButtons().map( ( button ) => {
-				this.context.appendChild( button );
-			});
+			this.collection = this.getButtons().map( button => this.context.appendChild( button ) );
 
 		return this.context;
 	}
@@ -12534,7 +12532,7 @@ class MenuPanel
 		let btn 		= createBtn();
 		btn.innerHTML 	= '<i class="fa fa-gears t-f-size-14"></i>';
 
-		btn.addEventListener('click', () => {});
+		// btn.addEventListener('click', () => {});
 		return btn;
 	}
 
@@ -12613,19 +12611,19 @@ class MenuPanel
 		return context;
 	}
 
-	static render()
+	static render({canAddPq})
 	{
-		// let start = new Date().getTime();
+		console.log('menu panel render', canAddPq );
 
+		// let start = new Date().getTime();
 		// console.log(' re render ');
+
 		context.innerHTML = '';
 
 		context.appendChild( this.settingsButtons() );
 		context.appendChild( this.activeSession() );
 		context.appendChild( this.InputLanguage() );
-		context.appendChild( __WEBPACK_IMPORTED_MODULE_3__menu_pqButton__["a" /* default */].render({
-			active : window.TerminalState.state.activeTerminal && window.apiData.rId
-		}) );
+		context.appendChild( __WEBPACK_IMPORTED_MODULE_3__menu_pqButton__["a" /* default */].render( {canAddPq}) );
 
 		// console.log('draw done', new Date().getTime() - start);
 
@@ -13236,7 +13234,7 @@ class KeyBinding
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_8__modules_f8__ = __webpack_require__(30);
 
 
-let $					= __webpack_require__(36);
+const $					= __webpack_require__(36);
 window.$ 				= window.jQuery = $;
 
 __webpack_require__(10);
@@ -13322,21 +13320,6 @@ class TerminalPlugin
 
 	parseKeyBinds( evt, terminal )
 	{
-		// let keyCode = evt.keyCode || evt.which;
-		// if (keyCode === 13)
-		// {
-		// 	return false;
-		// }
-		/*if ( this.spinner.isActive() && keyCode === 13 )
-		{
-			this.hiddenBuff.push( this.hiddenCommand );
-			this.hiddenCommand = '';
-
-			return false;
-		}*/
-
-		// const cmd = KeyBinding.parse( evt, terminal );
-
 		if ( !__WEBPACK_IMPORTED_MODULE_5__helpers_keyBinding__["a" /* default */].parse( evt, terminal ) )
 			return false;
 	}
@@ -13347,20 +13330,18 @@ class TerminalPlugin
 
 		if ( sessionIndex !== -1 )
 		{
-			window.TerminalState.change({ sessionIndex }, 'CHANGE_SESSION');
+			window.TerminalState.change({sessionIndex}, 'CHANGE_SESSION');
 		}
 	}
 
 	changeActiveTerm( activeTerminal )
 	{
+		console.log('CHANGE ACTIVE TERMINAL', activeTerminal);
 		window.TerminalState.change({ activeTerminal }, 'CHANGE_ACTIVE_TERMINAL');
 	}
 
 	clearBuf()
 	{
-		// this.session
-		// 	.clearBuffer();
-
 		window.TerminalState.purgeScreens();
 	}
 
@@ -13411,7 +13392,7 @@ class TerminalPlugin
 			onInit			: this.changeActiveTerm,
 			onTerminalChange: this.changeActiveTerm,
 
-			memory			: true,
+			// memory			: true,
 
 			onBeforeCommand : ( terminal, command ) => { // is using
 				if ( this.spinner.isActive()  )
@@ -13543,6 +13524,9 @@ class TerminalPlugin
 
 		if ( result['pcc'] )
 			window.TerminalState.change({pcc : result['pcc']}, 'CHANGE_PCC');
+
+		if ( result['canCreatePq'] )
+			window.TerminalState.change({canAddPq : true});
 
 		this.debugOutput( result );
 	}

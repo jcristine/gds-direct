@@ -123,19 +123,19 @@ export default class Container {
 		gdsSession[ gdsKey ].forEach( terminal => { terminal.clear(); });
 	}
 
+	static hasMatrixChanged( newMatrix )
+	{
+		return JSON.stringify(newMatrix) !== JSON.stringify(matrix)
+	}
+
 	static resizeScreens( dimensions )
 	{
 		gdsSession[ gdsKey ].forEach( terminal => terminal.resize( dimensions ) );
 	}
 
-	static menuRender()
+	static menuRender( {canAddPq : canAddPq} )
 	{
-		MenuPanel.render();
-	}
-
-	static hasMatrixChanged( newMatrix )
-	{
-		return JSON.stringify(newMatrix) !== JSON.stringify(matrix)
+		MenuPanel.render( { canAddPq } );
 	}
 
 	static gdsHasChanged( gds )
@@ -150,7 +150,10 @@ export default class Container {
 		gdsSession[ gdsKey ] = gdsSession[ gdsKey ] || [];
 
 		RightSide.classList.toggle('hidden', params.hideMenu );
-		this.menuRender();
+
+		// const  { canAddPq : canAddPq } = params;
+
+		this.menuRender(params);
 
 		const { rows : rowIndex , cells: cellIndex} = params.matrix;
 

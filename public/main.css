@@ -1335,6 +1335,17 @@
   right: 7px;
   top: 0;
 }
+.terminal-wrap-custom .pcc-label {
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  border: 1px solid;
+  padding: 0 3px;
+  background: #fff;
+  color: #511551;
+  border-radius: 15px;
+  font-size: 10px;
+}
 .terminal-wrap-custom .terminal {
   width: 100%;
   height: 100%;

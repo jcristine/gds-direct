@@ -4,11 +4,9 @@ export default class PqButton
 {
 	static makeButton(value, index)
 	{
-		let button 			= document.createElement('button');
+		const button 		= document.createElement('button');
 		button.className	= 'btn btn-sm btn-purple font-bold';
 		button.innerHTML	= 'PQ';
-
-		// button.disabled = ! (!!this.settings.terminal);
 
 		button.onclick = () => {
 			window.TerminalState.change({ hideMenu : true }, 'PQ_MODAL_SHOW')
@@ -17,15 +15,10 @@ export default class PqButton
 		return button;
 	}
 
-	static props( params = {} )
+	static render( { canAddPq } )
 	{
-		button.disabled = !params.active;
-	}
-
-	static render( params )
-	{
-		button = button || this.makeButton();
-		this.props( params );
+		button 			= button || this.makeButton();
+		button.disabled = !canAddPq;
 		return button;
 	}
 }

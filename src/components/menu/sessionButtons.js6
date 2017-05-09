@@ -1,19 +1,28 @@
 'use strict';
+import Dom	from '../../helpers/dom';
 
 export default class SessionKeys
 {
 	constructor( params )
 	{
-		this.context = document.createElement('div');
-		this.settings = params;
+		this.context 	= document.createElement('div');
+		this.settings 	= params;
+		this.collection	= [];
+		this.trigger	= [];
+	}
+
+	disableAll()
+	{
+		this.collection.map( btn => btn.disabled = true );
 	}
 
 	makeButton(value, index)
 	{
-		let button 			= document.createElement('button');
-		button.className	= 'btn btn-sm btn-purple font-bold';
+		const button 		= Dom('button.btn btn-sm btn-purple font-bold');
 		button.innerHTML	= value;
-		button.innerHTML	+= ' <span class="small text-lowercase">' + ( window.TerminalState.getPcc()[index] || '' ) + '</span>';
+
+		if (window.TerminalState.getPcc()[index])
+			button.innerHTML += `<span class="pcc-label">${window.TerminalState.getPcc()[index]}</span>`;
 
 		if (this.settings.session === index)
 			button.className += ' active';
@@ -21,17 +30,13 @@ export default class SessionKeys
 		if ( !this.settings.active )
 			button.className += ' hidden';
 
-		button.disabled = ! (!!this.settings.terminal);
+		button.disabled = !this.settings.terminal;
 
 		button.addEventListener('click', () => {
 
-			[].forEach.call(document.querySelectorAll('.sideMenu .btn'), function ( btn ) {
-				btn.disabled = true;
-			});
+			this.disableAll();
+			window.TerminalState.change({ sessionIndex : index }, 'CHANGE_SESSION_BY_MENU');
 
-			window.TerminalState.change({
-				sessionIndex 	: index
-			}, 'CHANGE_SESSION_BY_MENU');
 		});
 
 		return button;
@@ -40,22 +45,15 @@ export default class SessionKeys
 	getButtons()
 	{
 		return this.settings.list.map( this.makeButton.bind( this ) );
-		// return ['A', 'B', 'C', 'D', 'E'].map( this.makeButton.bind( this ) );
 	}
 
 	getTrigger()
 	{
-		let button 			= document.createElement('button');
-		button.className	= 'btn btn-sm btn-mint font-bold' + ( this.settings['active'] ? ' active' : '' );
-		button.innerHTML	= this.settings['gds'];
+		this.trigger 			= Dom('button.btn btn-sm btn-mint font-bold' + ( this.settings['active'] ? ' active' : '' ));
+		this.trigger.innerHTML	= this.settings['gds'];
 
-		button.addEventListener('click', () => {
-			window.TerminalState.change({
-				gds	: this.settings.gds
-			}, 'CHANGE_GDS');
-		});
-
-		return button;
+		this.trigger.addEventListener('click', () => window.TerminalState.change({ gds : this.settings.gds }, 'CHANGE_GDS') );
+		return this.trigger;
 	}
 
 	render()
@@ -63,9 +61,7 @@ export default class SessionKeys
 		this.context.appendChild( this.getTrigger() );
 
 		if (this.settings.active)
-			this.getButtons().map( ( button ) => {
-				this.context.appendChild( button );
-			});
+			this.collection = this.getButtons().map( button => this.context.appendChild( button ) );
 
 		return this.context;
 	}
