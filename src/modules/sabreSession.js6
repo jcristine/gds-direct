@@ -10,14 +10,14 @@ export default class Session
 		this.settings = params;
 	}
 
-	makeRequest( command, params )
+	makeRequest(  params )
 	{
-		return Requests.runSyncCommand( command, params );
+		return Requests.runSyncCommand( params );
 	}
 	
 	start()
 	{
-		Requests.runSyncCommand('startSession',  {
+		Requests.runSyncCommand('startSession', {
 			timeFormat	: TIME_FORMAT,
 			account		: ACCOUNT
 		})
@@ -46,8 +46,8 @@ export default class Session
 			terminalData	: window.apiData['terminalData']
 		};
 
-		return this.makeRequest( 'runCommand', rData );
-		// return Requests.runSyncCommand('runCommand', );
+		return Requests.runSyncCommand( params );
+		// return this.makeRequest( rData );
 	}
 
 	end()
@@ -62,8 +62,20 @@ export default class Session
 
 	clearBuffer()
 	{
-		return this.makeRequest( 'runInternalCommand', {
-			command : 'clearBuffer'
-		});
+		// return this.makeRequest( 'runInternalCommand', {
+		// 	command : 'clearBuffer'
+		// });
+
+		return fetch("terminal/clearBuffer",
+		{
+			credentials	: 'include',
+			method		: "GET"
+			// ,
+			// body	: formData
+		})
+		.then( response => {
+			console.log(' done ', response);
+		})
+
 	}
 }
