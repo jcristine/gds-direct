@@ -18,7 +18,7 @@ export default class SessionKeys
 
 	makeButton(value, index)
 	{
-		const button 		= Dom('button.btn btn-sm btn-purple font-bold');
+		const button 		= Dom('button.btn btn-sm btn-purple font-bold pos-rlt');
 		button.innerHTML	= value;
 
 		if (window.TerminalState.getPcc()[index])

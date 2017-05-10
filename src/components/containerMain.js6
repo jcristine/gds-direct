@@ -5,6 +5,8 @@ import ActionsMenu 	from './actionsMenu';
 import MenuPanel 	from './menuPanel';
 import Dom			from '../helpers/dom';
 
+let gdsSession = [];
+
 class TerminalsMatrix
 {
 	static makeRow()
@@ -20,7 +22,7 @@ class TerminalsMatrix
 
 	static getDimension( rowCount, cellCount )
 	{
-		let parent = this.context.parentNode;
+		const parent = this.context.parentNode;
 
 		return {
 			height	: Math.floor(parent.clientHeight / rowCount),
@@ -28,7 +30,7 @@ class TerminalsMatrix
 		}
 	}
 
-	static makeCells( rowCount, cellCount )
+	static makeCells({rows : rowCount, cells : cellCount})
 	{
 		let resCells 	= [];
 
@@ -60,31 +62,91 @@ class TerminalsMatrix
 		return this;
 	}
 
-	static appendTerminals( params )
+	static appendTerminals({sessionIndex, gds, activeTerminal})
 	{
+		gdsSession[ gds ] = gdsSession[ gds ] || [];
+
 		this.resCells.forEach(( cell, index ) => {
 
-			if( params.activeTerminal && index === params.activeTerminal.name() )
+			if( activeTerminal && index === activeTerminal.name() )
 			{
 				cell.classList.add('active');
 			}
 
-			gdsSession[ gdsKey ][index] = gdsSession[ gdsKey ][index] || new Terminal({
+			gdsSession[ gds ][index] = gdsSession[ gds ][index] || new Terminal({
 				name 			: index,
-				sessionIndex	: params.sessionIndex,
-				gds				: params.gds,
-				buffer			: window.TerminalState.getBuffer( gdsKey, index + 1 )
+				sessionIndex	: sessionIndex,
+				gds				: gds,
+				buffer			: window.TerminalState.getBuffer( gds, index + 1 )
 			});
 
-			gdsSession[ gdsKey ][index].reattach( cell , this.dimensions);
+			// draw or redraw
+			gdsSession[ gds ][index].reattach( cell , this.dimensions );
 		});
+	}
+
+	static purgeScreens( gds )
+	{
+		gdsSession[ gds ].forEach( terminal => { terminal.clear(); });
 	}
 }
 
 TerminalsMatrix.context = Dom('table.terminals-table');
 
-let gdsSession = [], termTableWrap, RightSide, LeftSide, matrix = {}, gdsKey;
 
+
+class RightMenu
+{
+	static init()
+	{
+		this.context = Dom('aside.t-d-cell menu');
+		this.context.appendChild( MenuPanel.getContext() );
+	}
+
+	static render({canAddPq, hideMenu})
+	{
+		MenuPanel.render({canAddPq});
+		this.context.classList.toggle('hidden', hideMenu );
+	}
+
+	static getContext()
+	{
+		return this.context;
+	}
+}
+
+class Wrapper
+{
+	static init()
+	{
+		this.context = Dom('div.term-body minimized');
+		this.context.appendChild( MenuPanel.getContext() );
+
+		const LeftSide 	= Dom('aside.t-d-cell left');
+		LeftSide.appendChild( TerminalsMatrix.context );
+		LeftSide.appendChild( ActionsMenu.init().getContext() );
+
+		RightMenu.init();
+		this.context.appendChild( LeftSide );
+		this.context.appendChild( RightMenu.getContext() );
+	}
+
+	static render({gds, hideMenu, canAddPq})
+	{
+		if ( this.gds !== gds )
+		{
+			this.gds 				= gds;
+			this.context.className = `term-body minimized ${gds}`; // change gds styles
+		}
+
+		RightMenu.render({ hideMenu, canAddPq });
+	}
+
+	static getContext()
+	{
+		return this.context;
+	}
+}
 
 export default class Container {
 
@@ -92,94 +154,40 @@ export default class Container {
 	{
 		const Root = document.getElementById( rootId );
 
-		this.createWrapper();
+		Wrapper.init();
 
-		Root.appendChild( this.context );
+		const context = Dom('section.terminal-wrap-custom');
+		context.appendChild( Wrapper.getContext() );
 
-		window.TerminalState.change({}, 'CHANGE_MATRIX');
+		Root.appendChild( context );
 	}
 
-	static createWrapper()
+	static purgeScreens( gds )
 	{
-		this.context 	= Dom('section.terminal-wrap-custom');
-		termTableWrap 	= Dom('div.term-body minimized');
-
-		LeftSide 		= Dom('aside.t-d-cell left');
-		RightSide 		= Dom('aside.t-d-cell menu');
-
-		this.context.appendChild( termTableWrap );
-
-		termTableWrap.appendChild( LeftSide );
-		termTableWrap.appendChild( RightSide );
-
-		RightSide.appendChild( MenuPanel.getContext() );
-		LeftSide.appendChild( TerminalsMatrix.context );
-
-		LeftSide.appendChild( ActionsMenu.init().getContext() );
+		TerminalsMatrix.purgeScreens( gds );
 	}
 
-	static purgeScreens()
+	static menuRender({canAddPq, hideMenu})
 	{
-		gdsSession[ gdsKey ].forEach( terminal => { terminal.clear(); });
-	}
-
-	static hasMatrixChanged( newMatrix )
-	{
-		return JSON.stringify(newMatrix) !== JSON.stringify(matrix)
-	}
-
-	static resizeScreens( dimensions )
-	{
-		gdsSession[ gdsKey ].forEach( terminal => terminal.resize( dimensions ) );
-	}
-
-	static menuRender( {canAddPq : canAddPq} )
-	{
-		MenuPanel.render( { canAddPq } );
-	}
-
-	static gdsHasChanged( gds )
-	{
-		return this.gds !== gds;
+		RightMenu.render({
+			canAddPq,
+			hideMenu
+		});
 	}
 
 	static render( params )
 	{
-		gdsKey = params['gds'];
 
-		gdsSession[ gdsKey ] = gdsSession[ gdsKey ] || [];
 
-		RightSide.classList.toggle('hidden', params.hideMenu );
-
-		// const  { canAddPq : canAddPq } = params;
-
-		this.menuRender(params);
-
-		const { rows : rowIndex , cells: cellIndex} = params.matrix;
-
-		/*if ( this.hasMatrixChanged( params.matrix ) )
-		{
-			matrix = Object.assign( {}, params.matrix);
-		}
-		else
-		{
-			this.resizeScreens( TerminalsMatrix.getDimension(rowIndex + 1 , cellIndex + 1, this.context) );
-			return false;
-		}*/
-
-		if ( this.gdsHasChanged( params.matrix ) )
-		{
-			this.gds 				= gdsKey;
-			termTableWrap.className = `term-body minimized ${gdsKey}`; // change gds styles
-		}
-
-		// TerminalsMatrix.clear();
-		// const dimensions = TerminalsMatrix.getDimension(rowIndex + 1 , cellIndex + 1);
-		// console.log(dimensions, 'dimensions');
+		Wrapper.render({
+			gds 		: params.gds,
+			hideMenu 	: params.hideMenu,
+			canAddPq 	: params.canAddPq
+		});
 
 		TerminalsMatrix
 			.clear()
-			.makeCells(rowIndex, cellIndex)
+			.makeCells( params.matrix )
 			.appendTerminals( params );
 	}
 }

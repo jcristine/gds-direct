@@ -658,16 +658,16 @@ return Drop;
 
 "use strict";
 const END_POINT_URL	 		= 'terminal/command?';
-/* harmony export (immutable) */ __webpack_exports__["e"] = END_POINT_URL;
+/* harmony export (immutable) */ __webpack_exports__["c"] = END_POINT_URL;
 
 const TIME_FORMAT 			= '12';
-/* harmony export (immutable) */ __webpack_exports__["c"] = TIME_FORMAT;
+/* unused harmony export TIME_FORMAT */
 
 const ACCOUNT 				= 'training';
-/* harmony export (immutable) */ __webpack_exports__["d"] = ACCOUNT;
+/* unused harmony export ACCOUNT */
 
 const API_HOST 				= '';
-/* harmony export (immutable) */ __webpack_exports__["f"] = API_HOST;
+/* harmony export (immutable) */ __webpack_exports__["d"] = API_HOST;
 
 const KEEP_ALIVE_REFRESH 	= 60000;
 /* harmony export (immutable) */ __webpack_exports__["b"] = KEEP_ALIVE_REFRESH;
@@ -842,7 +842,7 @@ function get( url )
 function runSyncCommand( params )
 {
 	// let url 	= (window.apiData.getCommandUrl || END_POINT_URL)  + '&function=' + functionName;
-	let url 	= window.apiData.getCommandUrl || __WEBPACK_IMPORTED_MODULE_0__constants__["e" /* END_POINT_URL */];
+	let url 	= window.apiData.getCommandUrl || __WEBPACK_IMPORTED_MODULE_0__constants__["c" /* END_POINT_URL */];
 
 	// const data 	= ;
 	// console.log( data );
@@ -852,7 +852,7 @@ function runSyncCommand( params )
 
 	// url += '&function=' + functionName;
 
-	return fetch(__WEBPACK_IMPORTED_MODULE_0__constants__["f" /* API_HOST */] + url, {
+	return fetch(__WEBPACK_IMPORTED_MODULE_0__constants__["d" /* API_HOST */] + url, {
 		credentials	: 'include',
 		body		: formData,
 		method		: 'POST',
@@ -952,7 +952,7 @@ class TerminalState
 
 	purgeScreens()
 	{
-		__WEBPACK_IMPORTED_MODULE_0__components_containerMain__["a" /* default */].purgeScreens();
+		__WEBPACK_IMPORTED_MODULE_0__components_containerMain__["a" /* default */].purgeScreens( this.state.gds );
 		__WEBPACK_IMPORTED_MODULE_1__helpers_requests__["a" /* default */].get(`terminal/clearBuffer?gds=${this.state.gds}&rId=${apiData.rId}`);
 	}
 
@@ -1059,6 +1059,7 @@ window.onresize = function() {
 };
 
 __WEBPACK_IMPORTED_MODULE_0__components_containerMain__["a" /* default */].init( apiData['htmlRootId'] || 'rootTerminal' );
+window.TerminalState.change({}, 'CHANGE_MATRIX');
 
 
 /***/ }),
@@ -12162,6 +12163,8 @@ class ActionsMenu {
 
 
 
+let gdsSession = [];
+
 class TerminalsMatrix
 {
 	static makeRow()
@@ -12177,7 +12180,7 @@ class TerminalsMatrix
 
 	static getDimension( rowCount, cellCount )
 	{
-		let parent = this.context.parentNode;
+		const parent = this.context.parentNode;
 
 		return {
 			height	: Math.floor(parent.clientHeight / rowCount),
@@ -12185,7 +12188,7 @@ class TerminalsMatrix
 		}
 	}
 
-	static makeCells( rowCount, cellCount )
+	static makeCells({rows : rowCount, cells : cellCount})
 	{
 		let resCells 	= [];
 
@@ -12217,31 +12220,91 @@ class TerminalsMatrix
 		return this;
 	}
 
-	static appendTerminals( params )
+	static appendTerminals({sessionIndex, gds, activeTerminal})
 	{
+		gdsSession[ gds ] = gdsSession[ gds ] || [];
+
 		this.resCells.forEach(( cell, index ) => {
 
-			if( params.activeTerminal && index === params.activeTerminal.name() )
+			if( activeTerminal && index === activeTerminal.name() )
 			{
 				cell.classList.add('active');
 			}
 
-			gdsSession[ gdsKey ][index] = gdsSession[ gdsKey ][index] || new __WEBPACK_IMPORTED_MODULE_0__terminal__["a" /* default */]({
+			gdsSession[ gds ][index] = gdsSession[ gds ][index] || new __WEBPACK_IMPORTED_MODULE_0__terminal__["a" /* default */]({
 				name 			: index,
-				sessionIndex	: params.sessionIndex,
-				gds				: params.gds,
-				buffer			: window.TerminalState.getBuffer( gdsKey, index + 1 )
+				sessionIndex	: sessionIndex,
+				gds				: gds,
+				buffer			: window.TerminalState.getBuffer( gds, index + 1 )
 			});
 
-			gdsSession[ gdsKey ][index].reattach( cell , this.dimensions);
+			// draw or redraw
+			gdsSession[ gds ][index].reattach( cell , this.dimensions );
 		});
+	}
+
+	static purgeScreens( gds )
+	{
+		gdsSession[ gds ].forEach( terminal => { terminal.clear(); });
 	}
 }
 
 TerminalsMatrix.context = __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_3__helpers_dom__["a" /* default */])('table.terminals-table');
 
-let gdsSession = [], termTableWrap, RightSide, LeftSide, matrix = {}, gdsKey;
 
+
+class RightMenu
+{
+	static init()
+	{
+		this.context = __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_3__helpers_dom__["a" /* default */])('aside.t-d-cell menu');
+		this.context.appendChild( __WEBPACK_IMPORTED_MODULE_2__menuPanel__["a" /* default */].getContext() );
+	}
+
+	static render({canAddPq, hideMenu})
+	{
+		__WEBPACK_IMPORTED_MODULE_2__menuPanel__["a" /* default */].render({canAddPq});
+		this.context.classList.toggle('hidden', hideMenu );
+	}
+
+	static getContext()
+	{
+		return this.context;
+	}
+}
+
+class Wrapper
+{
+	static init()
+	{
+		this.context = __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_3__helpers_dom__["a" /* default */])('div.term-body minimized');
+		this.context.appendChild( __WEBPACK_IMPORTED_MODULE_2__menuPanel__["a" /* default */].getContext() );
+
+		const LeftSide 	= __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_3__helpers_dom__["a" /* default */])('aside.t-d-cell left');
+		LeftSide.appendChild( TerminalsMatrix.context );
+		LeftSide.appendChild( __WEBPACK_IMPORTED_MODULE_1__actionsMenu__["a" /* default */].init().getContext() );
+
+		RightMenu.init();
+		this.context.appendChild( LeftSide );
+		this.context.appendChild( RightMenu.getContext() );
+	}
+
+	static render({gds, hideMenu, canAddPq})
+	{
+		if ( this.gds !== gds )
+		{
+			this.gds 				= gds;
+			this.context.className = `term-body minimized ${gds}`; // change gds styles
+		}
+
+		RightMenu.render({ hideMenu, canAddPq });
+	}
+
+	static getContext()
+	{
+		return this.context;
+	}
+}
 
 class Container {
 
@@ -12249,94 +12312,40 @@ class Container {
 	{
 		const Root = document.getElementById( rootId );
 
-		this.createWrapper();
+		Wrapper.init();
 
-		Root.appendChild( this.context );
+		const context = __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_3__helpers_dom__["a" /* default */])('section.terminal-wrap-custom');
+		context.appendChild( Wrapper.getContext() );
 
-		window.TerminalState.change({}, 'CHANGE_MATRIX');
+		Root.appendChild( context );
 	}
 
-	static createWrapper()
+	static purgeScreens( gds )
 	{
-		this.context 	= __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_3__helpers_dom__["a" /* default */])('section.terminal-wrap-custom');
-		termTableWrap 	= __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_3__helpers_dom__["a" /* default */])('div.term-body minimized');
-
-		LeftSide 		= __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_3__helpers_dom__["a" /* default */])('aside.t-d-cell left');
-		RightSide 		= __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_3__helpers_dom__["a" /* default */])('aside.t-d-cell menu');
-
-		this.context.appendChild( termTableWrap );
-
-		termTableWrap.appendChild( LeftSide );
-		termTableWrap.appendChild( RightSide );
-
-		RightSide.appendChild( __WEBPACK_IMPORTED_MODULE_2__menuPanel__["a" /* default */].getContext() );
-		LeftSide.appendChild( TerminalsMatrix.context );
-
-		LeftSide.appendChild( __WEBPACK_IMPORTED_MODULE_1__actionsMenu__["a" /* default */].init().getContext() );
+		TerminalsMatrix.purgeScreens( gds );
 	}
 
-	static purgeScreens()
+	static menuRender({canAddPq, hideMenu})
 	{
-		gdsSession[ gdsKey ].forEach( terminal => { terminal.clear(); });
-	}
-
-	static hasMatrixChanged( newMatrix )
-	{
-		return JSON.stringify(newMatrix) !== JSON.stringify(matrix)
-	}
-
-	static resizeScreens( dimensions )
-	{
-		gdsSession[ gdsKey ].forEach( terminal => terminal.resize( dimensions ) );
-	}
-
-	static menuRender( {canAddPq : canAddPq} )
-	{
-		__WEBPACK_IMPORTED_MODULE_2__menuPanel__["a" /* default */].render( { canAddPq } );
-	}
-
-	static gdsHasChanged( gds )
-	{
-		return this.gds !== gds;
+		RightMenu.render({
+			canAddPq,
+			hideMenu
+		});
 	}
 
 	static render( params )
 	{
-		gdsKey = params['gds'];
 
-		gdsSession[ gdsKey ] = gdsSession[ gdsKey ] || [];
 
-		RightSide.classList.toggle('hidden', params.hideMenu );
-
-		// const  { canAddPq : canAddPq } = params;
-
-		this.menuRender(params);
-
-		const { rows : rowIndex , cells: cellIndex} = params.matrix;
-
-		/*if ( this.hasMatrixChanged( params.matrix ) )
-		{
-			matrix = Object.assign( {}, params.matrix);
-		}
-		else
-		{
-			this.resizeScreens( TerminalsMatrix.getDimension(rowIndex + 1 , cellIndex + 1, this.context) );
-			return false;
-		}*/
-
-		if ( this.gdsHasChanged( params.matrix ) )
-		{
-			this.gds 				= gdsKey;
-			termTableWrap.className = `term-body minimized ${gdsKey}`; // change gds styles
-		}
-
-		// TerminalsMatrix.clear();
-		// const dimensions = TerminalsMatrix.getDimension(rowIndex + 1 , cellIndex + 1);
-		// console.log(dimensions, 'dimensions');
+		Wrapper.render({
+			gds 		: params.gds,
+			hideMenu 	: params.hideMenu,
+			canAddPq 	: params.canAddPq
+		});
 
 		TerminalsMatrix
 			.clear()
-			.makeCells(rowIndex, cellIndex)
+			.makeCells( params.matrix )
 			.appendTerminals( params );
 	}
 }
@@ -12401,7 +12410,7 @@ class SessionKeys
 
 	makeButton(value, index)
 	{
-		const button 		= __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0__helpers_dom__["a" /* default */])('button.btn btn-sm btn-purple font-bold');
+		const button 		= __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0__helpers_dom__["a" /* default */])('button.btn btn-sm btn-purple font-bold pos-rlt');
 		button.innerHTML	= value;
 
 		if (window.TerminalState.getPcc()[index])
@@ -13223,7 +13232,7 @@ class KeyBinding
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_noty___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_noty__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__helpers_helpers__ = __webpack_require__(3);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__modules_pagination__ = __webpack_require__(32);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__modules_sabreSession__ = __webpack_require__(33);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__modules_session__ = __webpack_require__(47);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__modules_spinner__ = __webpack_require__(34);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__helpers_keyBinding__ = __webpack_require__(28);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__modules_output__ = __webpack_require__(31);
@@ -13261,6 +13270,8 @@ class TerminalPlugin
 {
 	constructor( params )
 	{
+		// console.log( params );
+
 		this.settings 	= params;
 		this.context	= params.context;
 		this.name		= params.name;
@@ -13270,7 +13281,7 @@ class TerminalPlugin
 
 		this.allowManualPaging = params.gds === 'sabre';
 
-		this.session = new __WEBPACK_IMPORTED_MODULE_3__modules_sabreSession__["a" /* default */]({
+		this.session = new __WEBPACK_IMPORTED_MODULE_3__modules_session__["a" /* default */]({
 			terminalIndex	: params.name,
 			sessionIndex	: params.sessionIndex,
 			gds				: params.gds
@@ -13799,76 +13810,7 @@ class Pagination
 
 
 /***/ }),
-/* 33 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__constants__ = __webpack_require__(2);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__helpers_requests__ = __webpack_require__(5);
-
-
-
-
-
-class Session
-{
-	constructor( params )
-	{
-		this.settings = params;
-	}
-	
-	start()
-	{
-		__WEBPACK_IMPORTED_MODULE_1__helpers_requests__["a" /* default */].runSyncCommand('startSession', {
-			timeFormat	: __WEBPACK_IMPORTED_MODULE_0__constants__["c" /* TIME_FORMAT */],
-			account		: __WEBPACK_IMPORTED_MODULE_0__constants__["d" /* ACCOUNT */]
-		})
-			.then( function( response ) {
-				// sessionToken = response['data']['sessionToken'];
-				return response['data'];
-			})
-			.catch(function(err) {
-				console.error('oh shit Error', err);
-			});
-	}
-
-	run( params )
-	{
-		const rData = {
-			// sessionToken	: this.settings['sessionToken'],
-			// sessionIndex	: parseInt(this.settings['sessionIndex']) + 1,
-
-			terminalIndex	: parseInt(this.settings['terminalIndex']) + 1,
-			command			: params['cmd'],
-
-			gds				: this.settings['gds'],
-			language		: window.TerminalState.state.language,
-
-			terminalData	: window.apiData['terminalData']
-		};
-
-		return __WEBPACK_IMPORTED_MODULE_1__helpers_requests__["a" /* default */].runSyncCommand( rData );
-	}
-
-	end()
-	{
-		let result = __WEBPACK_IMPORTED_MODULE_1__helpers_requests__["a" /* default */].runSyncCommand('endSession', {
-			sessionToken: this.settings['sessionToken']
-		});
-
-		if (result['success'])
-			return true;
-	}
-
-	// clearBuffer( gds )
-	// {
-	// 	return Requests.get(`terminal/clearBuffer?gds=${gds}`);
-	// }
-}
-/* harmony export (immutable) */ __webpack_exports__["a"] = Session;
-
-
-/***/ }),
+/* 33 */,
 /* 34 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
@@ -14009,6 +13951,80 @@ module.exports = jQuery;
 
 __webpack_require__(7);
 module.exports = __webpack_require__(6);
+
+
+/***/ }),
+/* 38 */,
+/* 39 */,
+/* 40 */,
+/* 41 */,
+/* 42 */,
+/* 43 */,
+/* 44 */,
+/* 45 */,
+/* 46 */,
+/* 47 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__helpers_requests__ = __webpack_require__(5);
+
+
+// import { TIME_FORMAT, ACCOUNT } from '../constants';
+
+
+class Session
+{
+	constructor( params )
+	{
+		this.settings = params;
+	}
+
+	run( params )
+	{
+		const rData = {
+			terminalIndex	: parseInt(this.settings['terminalIndex']) + 1,
+			command			: params['cmd'],
+			gds				: this.settings['gds'],
+			language		: window.TerminalState.state.language,
+			terminalData	: window.apiData['terminalData']
+		};
+
+		return __WEBPACK_IMPORTED_MODULE_0__helpers_requests__["a" /* default */].runSyncCommand( rData );
+	}
+
+	/*start()
+	{
+		Requests.runSyncCommand('startSession', {
+			timeFormat	: TIME_FORMAT,
+			account		: ACCOUNT
+		})
+			.then( function( response ) {
+				return response['data'];
+			})
+			.catch(function(err) {
+				console.error('oh shit Error', err);
+			});
+	}
+
+
+
+	end()
+	{
+		let result = Requests.runSyncCommand('endSession', {
+			sessionToken: this.settings['sessionToken']
+		});
+
+		if (result['success'])
+			return true;
+	}*/
+
+	// clearBuffer( gds )
+	// {
+	// 	return Requests.get(`terminal/clearBuffer?gds=${gds}`);
+	// }
+}
+/* harmony export (immutable) */ __webpack_exports__["a"] = Session;
 
 
 /***/ })

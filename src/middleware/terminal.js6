@@ -9,7 +9,7 @@ require('keyboardevent-key-polyfill').polyfill();
 import Noty 		from 'noty';
 import Helpers 		from '../helpers/helpers';
 import Pagination 	from '../modules/pagination';
-import Session 		from '../modules/sabreSession';
+import Session 		from '../modules/session';
 import Spinner 		from '../modules/spinner';
 import KeyBinding	from '../helpers/keyBinding';
 import OutputLiner	from '../modules/output';
@@ -30,6 +30,8 @@ export default class TerminalPlugin
 {
 	constructor( params )
 	{
+		// console.log( params );
+
 		this.settings 	= params;
 		this.context	= params.context;
 		this.name		= params.name;

@@ -1,14 +1,42 @@
+.terminal-wrap-custom {
+
+    .terminal {
+        .cmd {
+            height: 14px;
+        }
+
+        .cmd .clipboard {
+            height: 14px;
+        }
+    }
+
+}
+
+
 .term-f-size-4
 {
     .terminal {
         --size: 2;
+
+        .cmd {
+            height: calc( 2 * 14px);
+        }
     }
 }
+
 
 .term-f-size-3
 {
     .terminal {
         --size: 1.5;
+
+        .cmd {
+            height: calc( 1.5 * 14px);
+        }
+
+        .cmd .clipboard {
+            height: calc( 1.5 * 14px);
+        }
     }
 }
 
@@ -16,7 +44,17 @@
 {
     .terminal {
         --size: 1.25;
+
+        .cmd {
+            height: calc(  1.25 * 14px);
+        }
+
+        .cmd .clipboard {
+            height: calc(  1.25 * 14px);
+        }
     }
+
+
 }
 
 .terminal-wrap-custom {

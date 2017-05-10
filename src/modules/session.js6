@@ -1,6 +1,6 @@
 'use strict';
 
-import { TIME_FORMAT, ACCOUNT } from '../constants';
+// import { TIME_FORMAT, ACCOUNT } from '../constants';
 import Requests 				from '../helpers/requests';
 
 export default class Session
@@ -9,15 +9,27 @@ export default class Session
 	{
 		this.settings = params;
 	}
-	
-	start()
+
+	run( params )
+	{
+		const rData = {
+			terminalIndex	: parseInt(this.settings['terminalIndex']) + 1,
+			command			: params['cmd'],
+			gds				: this.settings['gds'],
+			language		: window.TerminalState.state.language,
+			terminalData	: window.apiData['terminalData']
+		};
+
+		return Requests.runSyncCommand( rData );
+	}
+
+	/*start()
 	{
 		Requests.runSyncCommand('startSession', {
 			timeFormat	: TIME_FORMAT,
 			account		: ACCOUNT
 		})
 			.then( function( response ) {
-				// sessionToken = response['data']['sessionToken'];
 				return response['data'];
 			})
 			.catch(function(err) {
@@ -25,23 +37,7 @@ export default class Session
 			});
 	}
 
-	run( params )
-	{
-		const rData = {
-			// sessionToken	: this.settings['sessionToken'],
-			// sessionIndex	: parseInt(this.settings['sessionIndex']) + 1,
 
-			terminalIndex	: parseInt(this.settings['terminalIndex']) + 1,
-			command			: params['cmd'],
-
-			gds				: this.settings['gds'],
-			language		: window.TerminalState.state.language,
-
-			terminalData	: window.apiData['terminalData']
-		};
-
-		return Requests.runSyncCommand( rData );
-	}
 
 	end()
 	{
@@ -51,7 +47,7 @@ export default class Session
 
 		if (result['success'])
 			return true;
-	}
+	}*/
 
 	// clearBuffer( gds )
 	// {

@@ -71,7 +71,7 @@ class TerminalState
 
 	purgeScreens()
 	{
-		Container.purgeScreens();
+		Container.purgeScreens( this.state.gds );
 		Request.get(`terminal/clearBuffer?gds=${this.state.gds}&rId=${apiData.rId}`);
 	}
 
@@ -178,3 +178,4 @@ window.onresize = function() {
 };
 
 Container.init( apiData['htmlRootId'] || 'rootTerminal' );
+window.TerminalState.change({}, 'CHANGE_MATRIX');

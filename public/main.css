@@ -1197,14 +1197,35 @@
   color: #2c662d;
   box-shadow: 0 0 0 1px #a3c293 inset, 0 0 0 0 transparent; }
 
-/*# sourceMappingURL=noty.css.map*/.term-f-size-4 .terminal {
+/*# sourceMappingURL=noty.css.map*/.terminal-wrap-custom .terminal .cmd {
+  height: 14px;
+}
+.terminal-wrap-custom .terminal .cmd .clipboard {
+  height: 14px;
+}
+.term-f-size-4 .terminal {
   --size: 2;
+}
+.term-f-size-4 .terminal .cmd {
+  height: calc(28px);
 }
 .term-f-size-3 .terminal {
   --size: 1.5;
 }
+.term-f-size-3 .terminal .cmd {
+  height: calc(21px);
+}
+.term-f-size-3 .terminal .cmd .clipboard {
+  height: calc(21px);
+}
 .term-f-size-2 .terminal {
   --size: 1.25;
+}
+.term-f-size-2 .terminal .cmd {
+  height: calc(17.5px);
+}
+.term-f-size-2 .terminal .cmd .clipboard {
+  height: calc(17.5px);
 }
 .terminal-wrap-custom .t-matrix-w-0 td {
   width: 100%;
