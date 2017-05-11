@@ -12985,9 +12985,10 @@ class SessionKeys
 "use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__popovers_history__ = __webpack_require__(25);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__popovers_textSize__ = __webpack_require__(27);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__menu_sessionButtons__ = __webpack_require__(23);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__menu_pqButton__ = __webpack_require__(22);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__helpers_dom__ = __webpack_require__(0);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__popovers_settings__ = __webpack_require__(51);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__menu_sessionButtons__ = __webpack_require__(23);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__menu_pqButton__ = __webpack_require__(22);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__helpers_dom__ = __webpack_require__(0);
 
 
 
@@ -12996,15 +12997,8 @@ class SessionKeys
 
 
 
-const context = __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_4__helpers_dom__["a" /* default */])('aside.sideMenu');
 
-function createBtn()
-{
-	const btn 	= __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_4__helpers_dom__["a" /* default */])('button.btn btn-primary');
-	btn.type	= 'button';
-
-	return btn;
-}
+const context = __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_5__helpers_dom__["a" /* default */])('aside.sideMenu');
 
 let SettingsContext;
 
@@ -13032,18 +13026,17 @@ class MenuPanel
 
 	static settings()
 	{
-		let btn 		= createBtn();
-		btn.innerHTML 	= '<i class="fa fa-gears t-f-size-14"></i>';
-
-		// btn.addEventListener('click', () => {});
-		return btn;
+		return new __WEBPACK_IMPORTED_MODULE_2__popovers_settings__["a" /* default */]({
+			icon		: '<i class="fa fa-gears t-f-size-14"></i>',
+			onSelect	: value => window.TerminalState.execCmd( value )
+		}).getTrigger();
 	}
 
 	static activeSession()
 	{
 		const state = window.TerminalState.state;
 
-		const apollo = new __WEBPACK_IMPORTED_MODULE_2__menu_sessionButtons__["a" /* default */]({
+		const apollo = new __WEBPACK_IMPORTED_MODULE_3__menu_sessionButtons__["a" /* default */]({
 			gds 		: 'apollo',
 			active		: state.gds === 'apollo',
 			session		: state.sessionIndex,
@@ -13052,7 +13045,7 @@ class MenuPanel
 			list		: ['A', 'B', 'C', 'D', 'E']
 		});
 
-		const sabre = new __WEBPACK_IMPORTED_MODULE_2__menu_sessionButtons__["a" /* default */]({
+		const sabre = new __WEBPACK_IMPORTED_MODULE_3__menu_sessionButtons__["a" /* default */]({
 			gds 		: 'sabre',
 			active		: state.gds === 'sabre',
 			session		: state.sessionIndex,
@@ -13078,7 +13071,7 @@ class MenuPanel
 
 		['APOLLO','SABRE'].forEach( value => {
 
-			const button = __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_4__helpers_dom__["a" /* default */])('button.btn btn-sm btn-gold font-bold' + ( window.TerminalState.state.language === value ? ' active' : '') );
+			const button = __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_5__helpers_dom__["a" /* default */])('button.btn btn-sm btn-gold font-bold' + ( window.TerminalState.state.language === value ? ' active' : '') );
 
 			button.innerHTML = value;
 			button.addEventListener('click', () => window.TerminalState.change({ language : value }) );
@@ -13123,7 +13116,7 @@ class MenuPanel
 		context.appendChild( this.settingsButtons() );
 		context.appendChild( this.activeSession() );
 		context.appendChild( this.InputLanguage() );
-		context.appendChild( __WEBPACK_IMPORTED_MODULE_3__menu_pqButton__["a" /* default */].render( {canAddPq}) );
+		context.appendChild( __WEBPACK_IMPORTED_MODULE_4__menu_pqButton__["a" /* default */].render( {canAddPq}) );
 
 		// console.log('draw done', new Date().getTime() - start);
 
@@ -14527,6 +14520,58 @@ module.exports = jQuery;
 
 __webpack_require__(8);
 module.exports = __webpack_require__(7);
+
+
+/***/ }),
+/* 39 */,
+/* 40 */,
+/* 41 */,
+/* 42 */,
+/* 43 */,
+/* 44 */,
+/* 45 */,
+/* 46 */,
+/* 47 */,
+/* 48 */,
+/* 49 */,
+/* 50 */,
+/* 51 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__helpers_dom__ = __webpack_require__(0);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__modules_buttonPopover__ = __webpack_require__(6);
+
+
+
+
+
+class Settings extends __WEBPACK_IMPORTED_MODULE_1__modules_buttonPopover__["a" /* default */]
+{
+	constructor( params )
+	{
+		super( params );
+
+		this.popContent = __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0__helpers_dom__["a" /* default */])('div');
+		this.makeTrigger();
+
+		this.popContent.innerHTML = '<div class="wrapper"> In Development </div>';
+	}
+
+	getPopContent()
+	{
+		// this.build();
+		return this.popContent;
+	}
+
+	// build()
+	// {
+	// 	Request.get('', true).then( ( response = ['No History'] ) => {
+	// 	});
+	// }
+}
+/* harmony export (immutable) */ __webpack_exports__["a"] = Settings;
+
 
 
 /***/ })

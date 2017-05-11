@@ -1,0 +1,29 @@
+'use strict';
+
+import Dom 				from '../../helpers/dom';
+import ButtonPopOver	from '../../modules/buttonPopover';
+
+export default class Settings extends ButtonPopOver
+{
+	constructor( params )
+	{
+		super( params );
+
+		this.popContent = Dom('div');
+		this.makeTrigger();
+
+		this.popContent.innerHTML = '<div class="wrapper"> In Development </div>';
+	}
+
+	getPopContent()
+	{
+		// this.build();
+		return this.popContent;
+	}
+
+	// build()
+	// {
+	// 	Request.get('', true).then( ( response = ['No History'] ) => {
+	// 	});
+	// }
+}

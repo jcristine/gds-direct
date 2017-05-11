@@ -2,19 +2,12 @@
 
 import History 			from './popovers/history';
 import TextSize 		from './popovers/textSize';
+import Settings 		from './popovers/settings';
 import SessionButtons	from './menu/sessionButtons';
 import PqButton			from './menu/pqButton';
 import Dom				from '../helpers/dom';
 
 const context = Dom('aside.sideMenu');
-
-function createBtn()
-{
-	const btn 	= Dom('button.btn btn-primary');
-	btn.type	= 'button';
-
-	return btn;
-}
 
 let SettingsContext;
 
@@ -42,11 +35,10 @@ export default class MenuPanel
 
 	static settings()
 	{
-		let btn 		= createBtn();
-		btn.innerHTML 	= '<i class="fa fa-gears t-f-size-14"></i>';
-
-		// btn.addEventListener('click', () => {});
-		return btn;
+		return new Settings({
+			icon		: '<i class="fa fa-gears t-f-size-14"></i>',
+			onSelect	: value => window.TerminalState.execCmd( value )
+		}).getTrigger();
 	}
 
 	static activeSession()
