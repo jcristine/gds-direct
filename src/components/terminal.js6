@@ -2,7 +2,6 @@
 
 import TerminalPlugin	from '../middleware/terminal';
 import Dom				from '../helpers/dom';
-// import Helper			from '../helpers/helpers';
 
 require('../../node_modules/jquery.terminal/js/unix_formatting');
 
@@ -93,10 +92,10 @@ export default class Terminal {
 		this.settings.parentContext = parentNode;
 
 		parentNode.style.height		= dimensions.height + 'px';
-		parentNode.style.width		= dimensions.width	+ 'px';
+		// parentNode.style.width		= dimensions.width	+ 'px';
 
-		this.context.style.width	= parentNode.clientWidth	+ 'px';
 		this.context.style.height	= parentNode.clientHeight	+ 'px';
+		this.context.style.width	= parentNode.clientWidth	+ 'px';
 
 		if (this.plugin)
 		{

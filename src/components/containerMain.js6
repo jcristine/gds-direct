@@ -60,7 +60,7 @@ class TerminalsMatrix
 
 		this.resCells = resCells;
 
-		// this.context.className = 'terminals-table ' + 't-matrix-w-' + ( cellCount - 1 )
+		this.context.className = 'terminals-table ' + 't-matrix-w-' + ( cellCount - 1 );
 
 		return this;
 	}

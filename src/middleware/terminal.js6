@@ -102,6 +102,8 @@ export default class TerminalPlugin
 
 	parseKeyBinds( evt, terminal )
 	{
+		// console.log(' key bind !')
+
 		if ( !KeyBinding.parse( evt, terminal ) )
 		{
 			return false;
