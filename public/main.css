@@ -1378,13 +1378,11 @@
 .terminal-wrap-custom .terminal .cmd {
   color: #fff;
   font-weight: bold;
-}
-.terminal-wrap-custom .terminal iframe {
-  position: static;
-  display: none;
+  text-transform: uppercase;
 }
 .terminal-wrap-custom .terminal .command {
   color: yellow;
+  text-transform: uppercase;
 }
 .terminal-wrap-custom div.terminal-wrapper {
   height: auto;

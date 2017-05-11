@@ -7,7 +7,6 @@ require('jquery.terminal/js/jquery.terminal');
 require('keyboardevent-key-polyfill').polyfill();
 
 import Noty 		from 'noty';
-import Helpers 		from '../helpers/helpers';
 import Pagination 	from '../modules/pagination';
 import Session 		from '../modules/session';
 import Spinner 		from '../modules/spinner';
@@ -15,6 +14,8 @@ import KeyBinding	from '../helpers/keyBinding';
 import OutputLiner	from '../modules/output';
 import TabManager	from '../modules/tabManager';
 import F8Reader		from '../modules/f8';
+
+import {getReplacement, substitutePrintableChar} from '../helpers/helpers';
 
 const Debug = txt => {
 	new Noty({
@@ -58,10 +59,17 @@ export default class TerminalPlugin
 
 	parseChar( evt, terminal )
 	{
+		console.log(' parse char ');
+
 		// key press fires globally on all terminals;
+		// return false;
+
+		// console.log( evt.target.nodeName );
 
 		if ( evt.target.nodeName !== 'TEXTAREA' )
 			return undefined;
+
+		// console.log('zest 1');
 
 		if ( terminal.cmd().find('textarea')[0] !== evt.target )
 			return undefined;
@@ -69,12 +77,16 @@ export default class TerminalPlugin
 		if ( !terminal.enabled() )
 			return undefined;
 
-		const ch = Helpers.substitutePrintableChar( evt, window.TerminalState.isLanguageApollo() );
+		// console.log(' zest' );
+
+		const ch = substitutePrintableChar( evt, window.TerminalState.isLanguageApollo() );
 
 		if (!ch) // don't insert empty char further
 		{
 			return false;
 		}
+
+		console.log( '???', this.f8Reader.getIsActive() );
 
 		if ( this.f8Reader.getIsActive() )
 		{
@@ -82,14 +94,41 @@ export default class TerminalPlugin
 			return false;
 		}
 
+		// console.log( ch );
 		terminal.insert( ch );
+
 		return false;
 	}
 
 	parseKeyBinds( evt, terminal )
 	{
 		if ( !KeyBinding.parse( evt, terminal ) )
+		{
 			return false;
+		}
+
+		const replacement = getReplacement( evt, window.TerminalState.isLanguageApollo() );
+
+		if ( this.f8Reader.getIsActive() )
+		{
+			console.log( this.terminal.get_command() );
+
+			// console.log("ZZZ", this.f8Reader.getIsActive())
+			// this.f8Reader.keyPressed( replacement );
+			// return false;
+		}
+
+		if ( replacement )
+		{
+			// console.log( replacement);
+			terminal.insert( replacement );
+			return false;
+		}
+
+		if (replacement === false)
+		{
+			return false;
+		}
 	}
 
 	switchArea( command )
@@ -153,7 +192,7 @@ export default class TerminalPlugin
 			prompt			: '>',
 
 			// scrollOnEcho	: false,
-			keypress		: this.parseChar.bind(this), // BUGGY BUGGY, assign on document wtf???
+			// keypress		: this.parseChar.bind(this), // BUGGY BUGGY, assign on document wtf???
 			keydown			: this.parseKeyBinds.bind(this),
 
 			onInit			: this.changeActiveTerm,
@@ -174,6 +213,7 @@ export default class TerminalPlugin
 				'CTRL+S'	: () => this.clearBuf(),
 				'TAB'		: () => this.tabPressed(),
 				'F8'		: () => this.f8Reader.tie(),
+				'F5'		: () => false,
 			},
 
 			exceptionHandler( err )
@@ -249,7 +289,7 @@ export default class TerminalPlugin
 	{
 		this.session
 			.run({
-				cmd : command
+				cmd : command.toUpperCase()
 			})
 
 			.then( response => {

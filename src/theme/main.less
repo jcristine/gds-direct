@@ -87,17 +87,12 @@
 					}
 
 					td:last-child {
-
-                        //.terminal {
-                            border-right: 0;
-                        //}
+                        border-right: 0;
 					}
 
 					&:first-child {
 						td {
-                            //.terminal {
-                                border-top:0;
-                            //}
+                            border-top:0;
 						}
 					}
 				}
@@ -170,28 +165,41 @@
         height: 100%;
 
         padding: 2px 0 0 5px;
-        //padding: 0 0 0 5px;
         overflow: auto;
         font-weight: bold;
         color :#fff;
 
-        //border-right: 3px solid #fff;
-        //border-top: 3px solid #fff;
-
         .cmd {
             color :#fff;
             font-weight: bold;
+            text-transform: uppercase;
         }
 
-		iframe
-		{
-			position: static;
-			display: none;
-		}
+		//iframe
+		//{
+		//	position: static;
+		//	display: none;
+         //
+         //   width: 100%;
+		//}
 
         .command {
             color : yellow;
+            text-transform: uppercase;
         }
+
+        //.terminal-wrapper
+        //{
+        //    width: 100%;
+        //}
+        //
+        //div {
+        //    width: 100%;
+        //}
+        //
+        //pre {
+        //    width: 100%;
+        //}
 	}
 
     .cmd+div // for tests

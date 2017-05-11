@@ -59,6 +59,9 @@ class TerminalsMatrix
 			.map( row => this.context.appendChild(row) );
 
 		this.resCells = resCells;
+
+		// this.context.className = 'terminals-table ' + 't-matrix-w-' + ( cellCount - 1 )
+
 		return this;
 	}
 

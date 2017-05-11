@@ -16,41 +16,58 @@
 	return result;
 }*/
 
-function substitutePrintableChar(evt, isApollo)
-{
-	// const isApollo	= window.TerminalState.state.language === 'APOLLO';
-	// const isApollo	= window.TerminalState.state.gds === 'apollo';
+const common = {
+	'[': '¤',
+	'=': '*',
+	',': '+',
+};
 
+const sabreLayout = Object.assign({}, common, {
+	'\'': '‡',
+	'\\': '§',
+	// shift + ","
+});
+
+const apolloLayout = Object.assign({}, common, {
+	']': '$',
+	'`': '>',
+	';': ':',
+	'\\': false
+});
+
+const _to_ascii = {
+	'188': '44',
+	'109': '45',
+	'190': '46',
+	'191': '47',
+	'192': '96',
+	'220': '92',
+	'222': '39',
+	'221': '93',
+	'219': '91',
+	'173': '45',
+	'187': '61', //IE Key codes
+	'186': '59', //IE Key codes
+	'189': '45'  //IE Key codes
+};
+
+export function getReplacement( evt, isApollo )
+{
+	const char = String.fromCharCode(_to_ascii[ evt.keyCode || evt.which ] );
+	return isApollo ? apolloLayout[char] : sabreLayout[char];
+}
+
+export function substitutePrintableChar(evt, isApollo)
+{
 	const keyCode	= evt.keyCode || evt.which;
 
 	if ( keyCode === 13 )
-	{
 		return false;
-	}
 
-	const ch 		= String.fromCharCode(keyCode);
+	const ch = String.fromCharCode(keyCode);
 
 	if (!ch)
 		return false;
-
-	const sabreLayout = {
-		'\'': '‡',
-		'[': '¤',
-		'=': '*',
-		'\\': '§',
-		',': '+',
-		// shift + ","
-	};
-
-	const apolloLayout = {
-		'[': '¤',
-		']': '$',
-		'=': '*',
-		'`': '>',
-		',': '+',
-		';': ':',
-		'\\': false
-	};
 
 	const layout = isApollo ? apolloLayout : sabreLayout;
 
@@ -76,7 +93,7 @@ function _makePages(txt, rowsPerScreen = 20, maxCharLimit)
 	);
 }
 
-function _splitIntoLinesArr( txt, maxCharLimit )
+export function _splitIntoLinesArr( txt, maxCharLimit )
 {
 	const lines 		= splitLines(txt);
 	const regex 		= new RegExp(`(.{1,${maxCharLimit}})`, 'gi');
@@ -97,8 +114,9 @@ function splitLines(txt)
 }
 
 export default {
-	makeCachedParts 		:	_makePages,
-	substitutePrintableChar :	substitutePrintableChar,
-	getLines 				:	_splitIntoLinesArr,
-	splitLines 				:	splitLines,
+	makeCachedParts 		: _makePages,
+	substitutePrintableChar : substitutePrintableChar,
+	getLines 				: _splitIntoLinesArr,
+	splitLines 				: splitLines,
+	getReplacement 			: getReplacement,
 }

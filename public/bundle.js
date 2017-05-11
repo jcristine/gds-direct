@@ -657,30 +657,9 @@ return Drop;
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-const END_POINT_URL	 		= 'terminal/command?';
-/* harmony export (immutable) */ __webpack_exports__["c"] = END_POINT_URL;
-
-const TIME_FORMAT 			= '12';
-/* unused harmony export TIME_FORMAT */
-
-const ACCOUNT 				= 'training';
-/* unused harmony export ACCOUNT */
-
-const API_HOST 				= '';
-/* harmony export (immutable) */ __webpack_exports__["d"] = API_HOST;
-
-const KEEP_ALIVE_REFRESH 	= 60000;
-/* harmony export (immutable) */ __webpack_exports__["b"] = KEEP_ALIVE_REFRESH;
-
-const AREA_LIST 				= ['A', 'B', 'C', 'D', 'E', 'F'];
-/* harmony export (immutable) */ __webpack_exports__["a"] = AREA_LIST;
-
-
-/***/ }),
-/* 3 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
+/* harmony export (immutable) */ __webpack_exports__["b"] = getReplacement;
+/* harmony export (immutable) */ __webpack_exports__["a"] = substitutePrintableChar;
+/* unused harmony export _splitIntoLinesArr */
 
 
 /*function chunk(arr, limit)
@@ -699,41 +678,58 @@ const AREA_LIST 				= ['A', 'B', 'C', 'D', 'E', 'F'];
 	return result;
 }*/
 
+const common = {
+	'[': '¤',
+	'=': '*',
+	',': '+',
+};
+
+const sabreLayout = Object.assign({}, common, {
+	'\'': '‡',
+	'\\': '§',
+	// shift + ","
+});
+
+const apolloLayout = Object.assign({}, common, {
+	']': '$',
+	'`': '>',
+	';': ':',
+	'\\': false
+});
+
+const _to_ascii = {
+	'188': '44',
+	'109': '45',
+	'190': '46',
+	'191': '47',
+	'192': '96',
+	'220': '92',
+	'222': '39',
+	'221': '93',
+	'219': '91',
+	'173': '45',
+	'187': '61', //IE Key codes
+	'186': '59', //IE Key codes
+	'189': '45'  //IE Key codes
+};
+
+function getReplacement( evt, isApollo )
+{
+	const char = String.fromCharCode(_to_ascii[ evt.keyCode || evt.which ] );
+	return isApollo ? apolloLayout[char] : sabreLayout[char];
+}
+
 function substitutePrintableChar(evt, isApollo)
 {
-	// const isApollo	= window.TerminalState.state.language === 'APOLLO';
-	// const isApollo	= window.TerminalState.state.gds === 'apollo';
-
 	const keyCode	= evt.keyCode || evt.which;
 
 	if ( keyCode === 13 )
-	{
 		return false;
-	}
 
-	const ch 		= String.fromCharCode(keyCode);
+	const ch = String.fromCharCode(keyCode);
 
 	if (!ch)
 		return false;
-
-	const sabreLayout = {
-		'\'': '‡',
-		'[': '¤',
-		'=': '*',
-		'\\': '§',
-		',': '+',
-		// shift + ","
-	};
-
-	const apolloLayout = {
-		'[': '¤',
-		']': '$',
-		'=': '*',
-		'`': '>',
-		',': '+',
-		';': ':',
-		'\\': false
-	};
 
 	const layout = isApollo ? apolloLayout : sabreLayout;
 
@@ -779,15 +775,16 @@ function splitLines(txt)
 	return txt.split(/\r?\n/);
 }
 
-/* harmony default export */ __webpack_exports__["a"] = ({
-	makeCachedParts 		:	_makePages,
-	substitutePrintableChar :	substitutePrintableChar,
-	getLines 				:	_splitIntoLinesArr,
-	splitLines 				:	splitLines,
+/* harmony default export */ __webpack_exports__["c"] = ({
+	makeCachedParts 		: _makePages,
+	substitutePrintableChar : substitutePrintableChar,
+	getLines 				: _splitIntoLinesArr,
+	splitLines 				: splitLines,
+	getReplacement 			: getReplacement,
 });
 
 /***/ }),
-/* 4 */
+/* 3 */
 /***/ (function(module, exports) {
 
 var g;
@@ -814,11 +811,35 @@ module.exports = g;
 
 
 /***/ }),
+/* 4 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+const END_POINT_URL	 		= 'terminal/command?';
+/* harmony export (immutable) */ __webpack_exports__["c"] = END_POINT_URL;
+
+const TIME_FORMAT 			= '12';
+/* unused harmony export TIME_FORMAT */
+
+const ACCOUNT 				= 'training';
+/* unused harmony export ACCOUNT */
+
+const API_HOST 				= '';
+/* harmony export (immutable) */ __webpack_exports__["d"] = API_HOST;
+
+const KEEP_ALIVE_REFRESH 	= 60000;
+/* harmony export (immutable) */ __webpack_exports__["b"] = KEEP_ALIVE_REFRESH;
+
+const AREA_LIST 				= ['A', 'B', 'C', 'D', 'E', 'F'];
+/* harmony export (immutable) */ __webpack_exports__["a"] = AREA_LIST;
+
+
+/***/ }),
 /* 5 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__constants__ = __webpack_require__(2);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__constants__ = __webpack_require__(4);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_whatwg_fetch__ = __webpack_require__(18);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_whatwg_fetch___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1_whatwg_fetch__);
 
@@ -878,7 +899,7 @@ function runSyncCommand( params )
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__components_containerMain__ = __webpack_require__(20);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__helpers_requests__ = __webpack_require__(5);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__constants__ = __webpack_require__(2);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__constants__ = __webpack_require__(4);
 
 
 
@@ -1019,17 +1040,9 @@ class TerminalState
 			case 'PQ_MODAL_SHOW' :
 				if (this.state.activeTerminal)
 				{
-					__WEBPACK_IMPORTED_MODULE_1__helpers_requests__["a" /* default */].get( 'terminal/priceQuote?rId=' + apiData['rId'] + '&gds=' + gds )
-
-						.then( response => {
-
-							apiData.pqModal.show({
-								dump 	: response.data.output,
-								onClose	: () => this.change({hideMenu: false})
-							});
-
-							__WEBPACK_IMPORTED_MODULE_0__components_containerMain__["a" /* default */].render( this.state );
-						})
+					apiData.pqModal.show({
+						onClose	: () => this.change({hideMenu: false})
+					}).then( () => __WEBPACK_IMPORTED_MODULE_0__components_containerMain__["a" /* default */].render( this.state ) );
 				}
 
 				return false;
@@ -7871,7 +7884,7 @@ module.exports = {
     }; // terminal plugin
 })(jQuery);
 
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(4), __webpack_require__(17).setImmediate))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(3), __webpack_require__(17).setImmediate))
 
 /***/ }),
 /* 11 */
@@ -9741,7 +9754,7 @@ process.umask = function() { return 0; };
     attachTo.clearImmediate = clearImmediate;
 }(typeof self === "undefined" ? typeof global === "undefined" ? this : global : self));
 
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(4), __webpack_require__(14)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(3), __webpack_require__(14)))
 
 /***/ }),
 /* 16 */
@@ -12217,6 +12230,9 @@ class TerminalsMatrix
 			.map( row => this.context.appendChild(row) );
 
 		this.resCells = resCells;
+
+		// this.context.className = 'terminals-table ' + 't-matrix-w-' + ( cellCount - 1 )
+
 		return this;
 	}
 
@@ -13230,14 +13246,14 @@ class KeyBinding
 "use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_noty__ = __webpack_require__(13);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_noty___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_noty__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__helpers_helpers__ = __webpack_require__(3);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__modules_pagination__ = __webpack_require__(32);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__modules_session__ = __webpack_require__(47);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__modules_spinner__ = __webpack_require__(34);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__helpers_keyBinding__ = __webpack_require__(28);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__modules_output__ = __webpack_require__(31);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__modules_tabManager__ = __webpack_require__(35);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_8__modules_f8__ = __webpack_require__(30);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__modules_pagination__ = __webpack_require__(32);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__modules_session__ = __webpack_require__(33);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__modules_spinner__ = __webpack_require__(34);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__helpers_keyBinding__ = __webpack_require__(28);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__modules_output__ = __webpack_require__(31);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__modules_tabManager__ = __webpack_require__(35);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__modules_f8__ = __webpack_require__(30);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_8__helpers_helpers__ = __webpack_require__(2);
 
 
 const $					= __webpack_require__(36);
@@ -13245,6 +13261,7 @@ window.$ 				= window.jQuery = $;
 
 __webpack_require__(10);
 __webpack_require__(12).polyfill();
+
 
 
 
@@ -13281,7 +13298,7 @@ class TerminalPlugin
 
 		this.allowManualPaging = params.gds === 'sabre';
 
-		this.session = new __WEBPACK_IMPORTED_MODULE_3__modules_session__["a" /* default */]({
+		this.session = new __WEBPACK_IMPORTED_MODULE_2__modules_session__["a" /* default */]({
 			terminalIndex	: params.name,
 			sessionIndex	: params.sessionIndex,
 			gds				: params.gds
@@ -13289,19 +13306,26 @@ class TerminalPlugin
 
 		this.terminal 		= this.init();
 
-		this.pagination 	= new __WEBPACK_IMPORTED_MODULE_2__modules_pagination__["a" /* default */]( this.terminal );
-		this.spinner 		= new __WEBPACK_IMPORTED_MODULE_4__modules_spinner__["a" /* default */]( this.terminal );
-		this.outputLiner 	= new __WEBPACK_IMPORTED_MODULE_6__modules_output__["a" /* default */]( this.terminal );
-		this.tabCommands	= new __WEBPACK_IMPORTED_MODULE_7__modules_tabManager__["a" /* default */]();
-		this.f8Reader		= new __WEBPACK_IMPORTED_MODULE_8__modules_f8__["a" /* default */]( this.terminal );
+		this.pagination 	= new __WEBPACK_IMPORTED_MODULE_1__modules_pagination__["a" /* default */]( this.terminal );
+		this.spinner 		= new __WEBPACK_IMPORTED_MODULE_3__modules_spinner__["a" /* default */]( this.terminal );
+		this.outputLiner 	= new __WEBPACK_IMPORTED_MODULE_5__modules_output__["a" /* default */]( this.terminal );
+		this.tabCommands	= new __WEBPACK_IMPORTED_MODULE_6__modules_tabManager__["a" /* default */]();
+		this.f8Reader		= new __WEBPACK_IMPORTED_MODULE_7__modules_f8__["a" /* default */]( this.terminal );
 	}
 
 	parseChar( evt, terminal )
 	{
+		console.log(' parse char ');
+
 		// key press fires globally on all terminals;
+		// return false;
+
+		// console.log( evt.target.nodeName );
 
 		if ( evt.target.nodeName !== 'TEXTAREA' )
 			return undefined;
+
+		// console.log('zest 1');
 
 		if ( terminal.cmd().find('textarea')[0] !== evt.target )
 			return undefined;
@@ -13309,12 +13333,16 @@ class TerminalPlugin
 		if ( !terminal.enabled() )
 			return undefined;
 
-		const ch = __WEBPACK_IMPORTED_MODULE_1__helpers_helpers__["a" /* default */].substitutePrintableChar( evt, window.TerminalState.isLanguageApollo() );
+		// console.log(' zest' );
+
+		const ch = __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_8__helpers_helpers__["a" /* substitutePrintableChar */])( evt, window.TerminalState.isLanguageApollo() );
 
 		if (!ch) // don't insert empty char further
 		{
 			return false;
 		}
+
+		console.log( '???', this.f8Reader.getIsActive() );
 
 		if ( this.f8Reader.getIsActive() )
 		{
@@ -13322,14 +13350,41 @@ class TerminalPlugin
 			return false;
 		}
 
+		// console.log( ch );
 		terminal.insert( ch );
+
 		return false;
 	}
 
 	parseKeyBinds( evt, terminal )
 	{
-		if ( !__WEBPACK_IMPORTED_MODULE_5__helpers_keyBinding__["a" /* default */].parse( evt, terminal ) )
+		if ( !__WEBPACK_IMPORTED_MODULE_4__helpers_keyBinding__["a" /* default */].parse( evt, terminal ) )
+		{
 			return false;
+		}
+
+		const replacement = __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_8__helpers_helpers__["b" /* getReplacement */])( evt, window.TerminalState.isLanguageApollo() );
+
+		if ( this.f8Reader.getIsActive() )
+		{
+			console.log( this.terminal.get_command() );
+
+			// console.log("ZZZ", this.f8Reader.getIsActive())
+			// this.f8Reader.keyPressed( replacement );
+			// return false;
+		}
+
+		if ( replacement )
+		{
+			// console.log( replacement);
+			terminal.insert( replacement );
+			return false;
+		}
+
+		if (replacement === false)
+		{
+			return false;
+		}
 	}
 
 	switchArea( command )
@@ -13393,7 +13448,7 @@ class TerminalPlugin
 			prompt			: '>',
 
 			// scrollOnEcho	: false,
-			keypress		: this.parseChar.bind(this), // BUGGY BUGGY, assign on document wtf???
+			// keypress		: this.parseChar.bind(this), // BUGGY BUGGY, assign on document wtf???
 			keydown			: this.parseKeyBinds.bind(this),
 
 			onInit			: this.changeActiveTerm,
@@ -13414,6 +13469,7 @@ class TerminalPlugin
 				'CTRL+S'	: () => this.clearBuf(),
 				'TAB'		: () => this.tabPressed(),
 				'F8'		: () => this.f8Reader.tie(),
+				'F5'		: () => false,
 			},
 
 			exceptionHandler( err )
@@ -13489,7 +13545,7 @@ class TerminalPlugin
 	{
 		this.session
 			.run({
-				cmd : command
+				cmd : command.toUpperCase()
 			})
 
 			.then( response => {
@@ -13662,7 +13718,7 @@ class F8Reader
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__helpers_helpers__ = __webpack_require__(3);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__helpers_helpers__ = __webpack_require__(2);
 
 
 
@@ -13725,7 +13781,7 @@ class Output
 
 	getOutputLength()
 	{
-		return __WEBPACK_IMPORTED_MODULE_0__helpers_helpers__["a" /* default */].getLines( this.outputStrings, this.terminal.cols() ).length;
+		return __WEBPACK_IMPORTED_MODULE_0__helpers_helpers__["c" /* default */].getLines( this.outputStrings, this.terminal.cols() ).length;
 	}
 
 	printOutput()
@@ -13756,7 +13812,7 @@ class Output
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__helpers_helpers__ = __webpack_require__(3);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__helpers_helpers__ = __webpack_require__(2);
 
 
 
@@ -13774,7 +13830,7 @@ class Pagination
 	{
 		this.page 	= 0;
 		this.output = output;
-		this.cache 	= __WEBPACK_IMPORTED_MODULE_0__helpers_helpers__["a" /* default */].makeCachedParts( output, rows, cols );
+		this.cache 	= __WEBPACK_IMPORTED_MODULE_0__helpers_helpers__["c" /* default */].makeCachedParts( output, rows, cols );
 
 		// console.log(this.cache );
 		return this;
@@ -13810,7 +13866,71 @@ class Pagination
 
 
 /***/ }),
-/* 33 */,
+/* 33 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__helpers_requests__ = __webpack_require__(5);
+
+
+// import { TIME_FORMAT, ACCOUNT } from '../constants';
+
+
+class Session
+{
+	constructor( params )
+	{
+		this.settings = params;
+	}
+
+	run( params )
+	{
+		const rData = {
+			terminalIndex	: parseInt(this.settings['terminalIndex']) + 1,
+			command			: params['cmd'],
+			gds				: this.settings['gds'],
+			language		: window.TerminalState.state.language,
+			terminalData	: window.apiData['terminalData']
+		};
+
+		return __WEBPACK_IMPORTED_MODULE_0__helpers_requests__["a" /* default */].runSyncCommand( rData );
+	}
+
+	/*start()
+	{
+		Requests.runSyncCommand('startSession', {
+			timeFormat	: TIME_FORMAT,
+			account		: ACCOUNT
+		})
+			.then( function( response ) {
+				return response['data'];
+			})
+			.catch(function(err) {
+				console.error('oh shit Error', err);
+			});
+	}
+
+
+
+	end()
+	{
+		let result = Requests.runSyncCommand('endSession', {
+			sessionToken: this.settings['sessionToken']
+		});
+
+		if (result['success'])
+			return true;
+	}*/
+
+	// clearBuffer( gds )
+	// {
+	// 	return Requests.get(`terminal/clearBuffer?gds=${gds}`);
+	// }
+}
+/* harmony export (immutable) */ __webpack_exports__["a"] = Session;
+
+
+/***/ }),
 /* 34 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
@@ -13951,80 +14071,6 @@ module.exports = jQuery;
 
 __webpack_require__(7);
 module.exports = __webpack_require__(6);
-
-
-/***/ }),
-/* 38 */,
-/* 39 */,
-/* 40 */,
-/* 41 */,
-/* 42 */,
-/* 43 */,
-/* 44 */,
-/* 45 */,
-/* 46 */,
-/* 47 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__helpers_requests__ = __webpack_require__(5);
-
-
-// import { TIME_FORMAT, ACCOUNT } from '../constants';
-
-
-class Session
-{
-	constructor( params )
-	{
-		this.settings = params;
-	}
-
-	run( params )
-	{
-		const rData = {
-			terminalIndex	: parseInt(this.settings['terminalIndex']) + 1,
-			command			: params['cmd'],
-			gds				: this.settings['gds'],
-			language		: window.TerminalState.state.language,
-			terminalData	: window.apiData['terminalData']
-		};
-
-		return __WEBPACK_IMPORTED_MODULE_0__helpers_requests__["a" /* default */].runSyncCommand( rData );
-	}
-
-	/*start()
-	{
-		Requests.runSyncCommand('startSession', {
-			timeFormat	: TIME_FORMAT,
-			account		: ACCOUNT
-		})
-			.then( function( response ) {
-				return response['data'];
-			})
-			.catch(function(err) {
-				console.error('oh shit Error', err);
-			});
-	}
-
-
-
-	end()
-	{
-		let result = Requests.runSyncCommand('endSession', {
-			sessionToken: this.settings['sessionToken']
-		});
-
-		if (result['success'])
-			return true;
-	}*/
-
-	// clearBuffer( gds )
-	// {
-	// 	return Requests.get(`terminal/clearBuffer?gds=${gds}`);
-	// }
-}
-/* harmony export (immutable) */ __webpack_exports__["a"] = Session;
 
 
 /***/ })
