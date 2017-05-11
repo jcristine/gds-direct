@@ -1,0 +1,49 @@
+'use strict';
+
+import Drop		from 'tether-drop';
+import Dom 		from '../helpers/dom';
+
+// classes		: 'drop-theme-arrows',
+// classes		: 'drop-theme-hubspot-popovers',
+// classes		: 'drop-theme-basic',
+
+export default class ButtonPopOver
+{
+	constructor( params )
+	{
+		this.settings 	= params;
+	}
+
+	makeTrigger()
+	{
+		this.trigger 			= Dom('button.btn btn-primary');
+		this.trigger.onclick 	= this.makePopover.bind(this);
+		this.trigger.innerHTML	= this.settings.icon;
+
+		return this.trigger;
+	}
+
+	makePopover()
+	{
+		this.popover = this.popover || new Drop({
+				target		: this.getTrigger(),
+				content		: this.getPopContent(),
+				classes		: 'drop-theme-hubspot-popovers',
+				position	: 'left top',
+				openOn		: 'click'
+			});
+
+		this.trigger.onclick = false;
+		this.trigger.click();
+	}
+
+	getTrigger()
+	{
+		return this.trigger;
+	}
+
+	getPopContent()
+	{
+		console.log('please overwrite in child');
+	}
+}

@@ -6,9 +6,9 @@
 @import "terminalThemes.less";
 
 @import '~tether-drop/dist/css/drop-theme-arrows.css';
-//@import '~tether-drop/dist/css/drop-theme-hubspot-popovers.css';
-//@import '~tether-drop/dist/css/drop-theme-twipsy.css';
-//@import '~tether-drop/dist/css/drop-theme-basic.css';
+@import '~tether-drop/dist/css/drop-theme-hubspot-popovers.css';
+@import '~tether-drop/dist/css/drop-theme-twipsy.css';
+@import '~tether-drop/dist/css/drop-theme-basic.css';
 
 @import '~noty/lib/noty.css';
 
@@ -31,6 +31,19 @@
 			background-color: #7a43b6;
 		}
 	}
+}
+
+.historyContext
+{
+    max-height: 400px;
+    overflow: auto;
+    padding: 10px;
+
+    a {
+        padding: 3px;
+        display: block;
+        font-size: 11px;
+    }
 }
 
 .terminal-wrap-custom {

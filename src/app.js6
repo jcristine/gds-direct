@@ -75,6 +75,12 @@ class TerminalState
 		Request.get(`terminal/clearBuffer?gds=${this.state.gds}&rId=${apiData.rId}`);
 	}
 
+	execCmd( cmd = '')
+	{
+		if (this.state.activeTerminal && cmd)
+			this.state.activeTerminal.exec( cmd );
+	}
+
 	isLanguageApollo()
 	{
 		return this.state.language === 'APOLLO';
@@ -94,9 +100,9 @@ class TerminalState
 				this.state.activeTerminal 	= Gds[gds]['activeTerminal'];
 			break;
 
-			case 'CHANGE_FONT_SIZE':
+			// case 'CHANGE_FONT_SIZE':
 				// this.state.matrix 	= this.sessions[ sIndex ].matrix || { rows : 1, cells : 1 };
-			break;
+			// break;
 
 			case 'CHANGE_SESSION' :
 				Gds[gds]['sessionIndex'] = this.state.sessionIndex;

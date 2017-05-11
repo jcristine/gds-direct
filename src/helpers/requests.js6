@@ -3,16 +3,19 @@
 import {END_POINT_URL, API_HOST} from  '../constants'
 import 'whatwg-fetch'
 
-function get( url )
+function get( url, defParams )
 {
-	if (!url )
+	if (!url)
 		return '';
 
-	return fetch( url, {
-		credentials: 'include'
-	}).then( function( response ) {
-		return response.json();
-	})
+	if (defParams)
+	{
+		url += '?rId='+ window.apiData.rId;
+	}
+
+	const params = { credentials: 'include' };
+
+	return fetch( url, params ).then( response => response.json() )
 }
 
 

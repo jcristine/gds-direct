@@ -48,9 +48,4 @@ export default class Session
 		if (result['success'])
 			return true;
 	}*/
-
-	// clearBuffer( gds )
-	// {
-	// 	return Requests.get(`terminal/clearBuffer?gds=${gds}`);
-	// }
 }

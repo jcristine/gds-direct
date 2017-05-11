@@ -1,57 +1,38 @@
 'use strict';
 
-import Drop from 'tether-drop';
+import Dom 			 from '../../helpers/dom';
+import ButtonPopOver from '../../modules/buttonPopover';
 
-let popContext;
-let CLASS_NAME 	= 'term-f-size-';
-// let activeClass;
-let bodyDef		= document.querySelector('body').className;
-
-class TextSize
+class TextSize extends ButtonPopOver
 {
 	constructor( params )
 	{
-		this.context 			= document.createElement('ul');
-		this.context.className 	= 'list-group m-b-none';
+		super( params );
 
-		this.settings 			= params;
-		this.activeClass		= '';
+		this.popContent = Dom('div');
+		this.makeTrigger();
+	}
 
-		popContext = new Drop({
-			target		: params['button'],
-			content		: this.getContext(),
-			classes		: 'drop-theme-arrows',
-			position	: 'bottom center',
-			openOn		: 'click'
-		});
+	getPopContent()
+	{
+		this.build();
+		return this.popContent;
 	}
 
 	build( list )
 	{
-		[ '1', '2', '3', '4'].forEach( ( value ) => {
+		[ '1', '2', '3', '4'].forEach( value => {
 
-			let button 			= document.createElement('button');
-			button.className 	= 'list-group-item';
-			button.innerHTML 	= value + 'x';
+			const button 		= Dom('button.list-group-item');
+			button.innerHTML	= value + 'x';
 
 			button.addEventListener('click', () => {
-
-				popContext.close();
-
-				document.querySelector('body').className = bodyDef + ' ' + CLASS_NAME + value ;
-
-				window.TerminalState.change({
-					fontSize : value
-				}, 'CHANGE_FONT_SIZE');
+				this.popover.close();
+				this.settings.onSelect( value );
 			});
 
-			this.context.appendChild( button );
+			this.popContent.appendChild( button );
 		})
-	}
-
-	getContext()
-	{
-		return this.context;
 	}
 }
 

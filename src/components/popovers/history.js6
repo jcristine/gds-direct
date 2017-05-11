@@ -1,40 +1,40 @@
 'use strict';
 
-import Drop from 'tether-drop';
+import Request			from '../../helpers/requests';
+import Dom 				from '../../helpers/dom';
+import ButtonPopOver	from '../../modules/buttonPopover';
 
-let popContext;
-
-class History
+class History extends ButtonPopOver
 {
 	constructor( params )
 	{
-		this.context 			= document.createElement('div');
+		super( params );
 
-		this.settings = params;
+		this.popContent = Dom('div.historyContext');
+		this.makeTrigger();
+	}
 
-		popContext = new Drop({
-			target		: params['button'],
-			content		: this.getContext(),
-			classes		: 'drop-theme-arrows',
-			// classes		: 'drop-theme-hubspot-popovers',
-			// classes		: 'drop-theme-basic',
-			position	: 'bottom center',
-			openOn		: 'click'
+	getPopContent()
+	{
+		this.build();
+		return this.popContent;
+	}
+
+	makeShortcut( value )
+	{
+		const el = Dom('a.t-pointer');
+
+		el.innerHTML 	= value;
+		el.onclick 		= this.settings.onSelect.bind(null, value);
+
+		this.popContent.appendChild( el );
+	}
+
+	build()
+	{
+		Request.get('terminal/lastCommands', true).then( ( response = ['No History'] ) => {
+			response.data.map( this.makeShortcut, this );
 		});
-	}
-
-	build( list )
-	{
-		list = list || ['No History'];
-
-		this.context.innerHTML = list.map( function ( value ) {
-			return `<div>${value}</div>`
-		})
-	}
-
-	getContext()
-	{
-		return this.context;
 	}
 }
 
