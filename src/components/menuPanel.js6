@@ -41,26 +41,27 @@ export default class MenuPanel
 		}).getTrigger();
 	}
 
-	static activeSession()
+	static activeSession( {gds, sessionIndex, activeTerminal} )
 	{
-		const state = window.TerminalState.state;
+		const defParams = { gds, sessionIndex, activeTerminal };
 
-		const apollo = new SessionButtons({
-			gds 		: 'apollo',
-			active		: state.gds === 'apollo',
-			session		: state.sessionIndex,
-			terminal	: state.activeTerminal,
+		defParams.onAreaChange 	= sessionIndex => {
+			window.TerminalState.change( {sessionIndex}, 'CHANGE_SESSION_BY_MENU');
+		};
 
-			list		: ['A', 'B', 'C', 'D', 'E']
-		});
+		defParams.onGdsChange 	= gds => {
+			window.TerminalState.change( {gds}, 'CHANGE_GDS');
+		};
 
-		const sabre = new SessionButtons({
-			gds 		: 'sabre',
-			active		: state.gds === 'sabre',
-			session		: state.sessionIndex,
-			terminal	: state.activeTerminal,
-			list		: ['A', 'B', 'C', 'D', 'E', 'F']
-		});
+		const apollo 	= new SessionButtons( Object.assign( {}, defParams, {
+			name : 'apollo',
+			list : ['A', 'B', 'C', 'D', 'E']
+		}));
+
+		const sabre 	= new SessionButtons( Object.assign( {}, defParams, {
+			name : 'sabre',
+			list : ['A', 'B', 'C', 'D', 'E', 'F' ]
+		}));
 
 		const context 		= document.createElement('article');
 		context.innerHTML 	= '<div class="label">Session</div>';
@@ -74,7 +75,6 @@ export default class MenuPanel
 	static InputLanguage()
 	{
 		const context 	= document.createElement('article');
-		// const btnGroup	= document.createElement('div');
 
 		context.innerHTML = '<div class="label">Input Language</div>';
 
@@ -87,9 +87,6 @@ export default class MenuPanel
 
 			context.appendChild( button );
 		});
-
-
-		// context.appendChild(btnGroup);
 
 		return context;
 	}
@@ -116,16 +113,18 @@ export default class MenuPanel
 		return context;
 	}
 
-	static render( {canAddPq} )
+	static render(params)
 	{
+		// console.log( 'zzz', params );
+
 		// let start = new Date().getTime();
-		console.log(' re render ');
+		// console.log(' re render ');
 		context.innerHTML = '';
 
-		context.appendChild( this.settingsButtons() );
-		context.appendChild( this.activeSession() );
+		context.appendChild( this.settingsButtons( params ) );
+		context.appendChild( this.activeSession( params ) );
 		context.appendChild( this.InputLanguage() );
-		context.appendChild( PqButton.render( {canAddPq}) );
+		context.appendChild( PqButton.render( params ) );
 
 		// console.log('draw done', new Date().getTime() - start);
 

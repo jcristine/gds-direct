@@ -122,7 +122,6 @@ export default class TerminalPlugin
 
 		if ( replacement )
 		{
-			// console.log( replacement);
 			terminal.insert( replacement );
 			return false;
 		}

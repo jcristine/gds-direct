@@ -1,10 +1,8 @@
 'use strict';
 
-import Container from './components/containerMain';
-import Request	 from './helpers/requests';
-import {KEEP_ALIVE_REFRESH, AREA_LIST} from './constants';
-
-// console.log(KEEP_ALIVE_REFRESH)
+import Container 						from './components/containerMain';
+import Request							from './helpers/requests';
+import {KEEP_ALIVE_REFRESH, AREA_LIST} 	from './constants';
 
 const apiData = window.apiData || {};
 
@@ -19,8 +17,6 @@ const Gds = {
 	'apollo': Object.assign({}, gdsSettings, {'sessionIndex' : AREA_LIST.indexOf(apiData.settings['gds']['apollo']['area']) }),
 	'sabre'	: Object.assign({}, gdsSettings, {'sessionIndex' : AREA_LIST.indexOf(apiData.settings['gds']['sabre']['area']) })
 };
-
-// const KEEP_ALIVE_REFRESH = 60000;
 
 class TerminalState
 {
@@ -42,7 +38,9 @@ class TerminalState
 			canAddPq		: false
 		};
 
-		setInterval( () => Request.get(`terminal/keepAlive?rId=${apiData.rId}&gds=${this.state.gds}`), KEEP_ALIVE_REFRESH );
+		// Request.get(`terminal/keepAlive`, true);
+
+		setInterval( () => Request.get(`terminal/keepAlive`, true), KEEP_ALIVE_REFRESH );
 	}
 
 	getMatrix()
@@ -88,7 +86,8 @@ class TerminalState
 
 	change( params = {}, action )
 	{
-		this.state = Object.assign( this.state, params );
+		this.state = Object.assign( {}, this.state, params );
+		// console.log( this.state );
 
 		const gds = this.state.gds;
 
@@ -99,10 +98,6 @@ class TerminalState
 				this.state.sessionIndex 	= Gds[gds]['sessionIndex'];
 				this.state.activeTerminal 	= Gds[gds]['activeTerminal'];
 			break;
-
-			// case 'CHANGE_FONT_SIZE':
-				// this.state.matrix 	= this.sessions[ sIndex ].matrix || { rows : 1, cells : 1 };
-			// break;
 
 			case 'CHANGE_SESSION' :
 				Gds[gds]['sessionIndex'] = this.state.sessionIndex;
@@ -156,12 +151,6 @@ class TerminalState
 		Container.render( this.state );
 	}
 }
-
-// let optionsDefault 	= {};
-// let xz 				= { zz : 1 };
-// let test = { ...optionsDefault, visibilityFilter: 1 };
-// console.log( test );
-//
 
 window.TerminalState = new TerminalState();
 

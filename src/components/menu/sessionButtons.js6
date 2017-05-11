@@ -9,11 +9,12 @@ export default class SessionKeys
 		this.settings 	= params;
 		this.collection	= [];
 		this.trigger	= [];
+		this.active		= params.name === params.gds;
 	}
 
-	disableAll()
+	getButtons()
 	{
-		this.collection.map( btn => btn.disabled = true );
+		return this.settings.list.map( this.makeButton, this );
 	}
 
 	makeButton(value, index)
@@ -21,38 +22,38 @@ export default class SessionKeys
 		const button 		= Dom('button.btn btn-sm btn-purple font-bold pos-rlt');
 		button.innerHTML	= value;
 
-		if (window.TerminalState.getPcc()[index])
+		if ( window.TerminalState.getPcc()[index] )
 			button.innerHTML += `<span class="pcc-label">${window.TerminalState.getPcc()[index]}</span>`;
 
-		if (this.settings.session === index)
+		if ( this.settings.sessionIndex === index )
 			button.className += ' active';
 
-		if ( !this.settings.active )
-			button.className += ' hidden';
+		// if ( !this.active )
+		// 	button.className += ' hidden';
 
-		button.disabled = !this.settings.terminal;
+		button.disabled = !this.settings.activeTerminal;
 
 		button.addEventListener('click', () => {
-
 			this.disableAll();
-			window.TerminalState.change({ sessionIndex : index }, 'CHANGE_SESSION_BY_MENU');
-
+			this.settings.onAreaChange( index );
 		});
 
 		return button;
 	}
 
-	getButtons()
+	disableAll()
 	{
-		return this.settings.list.map( this.makeButton.bind( this ) );
+		this.collection.map( btn => btn.disabled = true );
 	}
 
 	getTrigger()
 	{
-		this.trigger 			= Dom('button.btn btn-sm btn-mint font-bold' + ( this.settings['active'] ? ' active' : '' ));
-		this.trigger.innerHTML	= this.settings['gds'];
+		this.trigger 			= Dom('button.btn btn-sm btn-mint font-bold' + ( this.active ? ' active' : '' ));
+		this.trigger.innerHTML	= this.settings['name'];
 
-		this.trigger.addEventListener('click', () => window.TerminalState.change({ gds : this.settings.gds }, 'CHANGE_GDS') );
+		if (!this.active)
+			this.trigger.addEventListener('click', () => this.settings.onGdsChange( this.settings['name'] ) );
+
 		return this.trigger;
 	}
 
@@ -60,7 +61,7 @@ export default class SessionKeys
 	{
 		this.context.appendChild( this.getTrigger() );
 
-		if (this.settings.active)
+		if (this.active)
 			this.collection = this.getButtons().map( button => this.context.appendChild( button ) );
 
 		return this.context;

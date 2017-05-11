@@ -63,7 +63,7 @@
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 38);
+/******/ 	return __webpack_require__(__webpack_require__.s = 39);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -221,7 +221,7 @@ function splitLines(txt)
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__constants__ = __webpack_require__(5);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__constants__ = __webpack_require__(6);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_whatwg_fetch__ = __webpack_require__(19);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_whatwg_fetch___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1_whatwg_fetch__);
 
@@ -272,6 +272,66 @@ function runSyncCommand( params )
 
 /***/ }),
 /* 3 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_tether_drop__ = __webpack_require__(4);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_tether_drop___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_tether_drop__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__helpers_dom__ = __webpack_require__(0);
+
+
+
+
+
+// classes		: 'drop-theme-arrows',
+// classes		: 'drop-theme-hubspot-popovers',
+// classes		: 'drop-theme-basic',
+
+class ButtonPopOver
+{
+	constructor( params )
+	{
+		this.settings 	= params;
+	}
+
+	makeTrigger()
+	{
+		this.trigger 			= __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_1__helpers_dom__["a" /* default */])('button.btn btn-primary');
+		this.trigger.onclick 	= this.makePopover.bind(this);
+		this.trigger.innerHTML	= this.settings.icon;
+
+		return this.trigger;
+	}
+
+	makePopover()
+	{
+		this.popover = this.popover || new __WEBPACK_IMPORTED_MODULE_0_tether_drop___default.a({
+				target		: this.getTrigger(),
+				content		: this.getPopContent(),
+				classes		: 'drop-theme-hubspot-popovers',
+				position	: 'left top',
+				openOn		: 'click'
+			});
+
+		this.trigger.onclick = false;
+		this.trigger.click();
+	}
+
+	getTrigger()
+	{
+		return this.trigger;
+	}
+
+	getPopContent()
+	{
+		console.log('please overwrite in child');
+	}
+}
+/* harmony export (immutable) */ __webpack_exports__["a"] = ButtonPopOver;
+
+
+/***/ }),
+/* 4 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*! tether-drop 1.4.1 */
@@ -840,7 +900,7 @@ return Drop;
 
 
 /***/ }),
-/* 4 */
+/* 5 */
 /***/ (function(module, exports) {
 
 var g;
@@ -867,7 +927,7 @@ module.exports = g;
 
 
 /***/ }),
-/* 5 */
+/* 6 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -891,66 +951,6 @@ const AREA_LIST 				= ['A', 'B', 'C', 'D', 'E', 'F'];
 
 
 /***/ }),
-/* 6 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_tether_drop__ = __webpack_require__(3);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_tether_drop___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_tether_drop__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__helpers_dom__ = __webpack_require__(0);
-
-
-
-
-
-// classes		: 'drop-theme-arrows',
-// classes		: 'drop-theme-hubspot-popovers',
-// classes		: 'drop-theme-basic',
-
-class ButtonPopOver
-{
-	constructor( params )
-	{
-		this.settings 	= params;
-	}
-
-	makeTrigger()
-	{
-		this.trigger 			= __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_1__helpers_dom__["a" /* default */])('button.btn btn-primary');
-		this.trigger.onclick 	= this.makePopover.bind(this);
-		this.trigger.innerHTML	= this.settings.icon;
-
-		return this.trigger;
-	}
-
-	makePopover()
-	{
-		this.popover = this.popover || new __WEBPACK_IMPORTED_MODULE_0_tether_drop___default.a({
-				target		: this.getTrigger(),
-				content		: this.getPopContent(),
-				classes		: 'drop-theme-hubspot-popovers',
-				position	: 'left top',
-				openOn		: 'click'
-			});
-
-		this.trigger.onclick = false;
-		this.trigger.click();
-	}
-
-	getTrigger()
-	{
-		return this.trigger;
-	}
-
-	getPopContent()
-	{
-		console.log('please overwrite in child');
-	}
-}
-/* harmony export (immutable) */ __webpack_exports__["a"] = ButtonPopOver;
-
-
-/***/ }),
 /* 7 */
 /***/ (function(module, exports) {
 
@@ -964,14 +964,12 @@ class ButtonPopOver
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__components_containerMain__ = __webpack_require__(21);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__helpers_requests__ = __webpack_require__(2);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__constants__ = __webpack_require__(5);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__constants__ = __webpack_require__(6);
 
 
 
 
 
-
-// console.log(KEEP_ALIVE_REFRESH)
 
 const apiData = window.apiData || {};
 
@@ -986,8 +984,6 @@ const Gds = {
 	'apollo': Object.assign({}, gdsSettings, {'sessionIndex' : __WEBPACK_IMPORTED_MODULE_2__constants__["a" /* AREA_LIST */].indexOf(apiData.settings['gds']['apollo']['area']) }),
 	'sabre'	: Object.assign({}, gdsSettings, {'sessionIndex' : __WEBPACK_IMPORTED_MODULE_2__constants__["a" /* AREA_LIST */].indexOf(apiData.settings['gds']['sabre']['area']) })
 };
-
-// const KEEP_ALIVE_REFRESH = 60000;
 
 class TerminalState
 {
@@ -1009,7 +1005,9 @@ class TerminalState
 			canAddPq		: false
 		};
 
-		setInterval( () => __WEBPACK_IMPORTED_MODULE_1__helpers_requests__["a" /* default */].get(`terminal/keepAlive?rId=${apiData.rId}&gds=${this.state.gds}`), __WEBPACK_IMPORTED_MODULE_2__constants__["b" /* KEEP_ALIVE_REFRESH */] );
+		// Request.get(`terminal/keepAlive`, true);
+
+		setInterval( () => __WEBPACK_IMPORTED_MODULE_1__helpers_requests__["a" /* default */].get(`terminal/keepAlive`, true), __WEBPACK_IMPORTED_MODULE_2__constants__["b" /* KEEP_ALIVE_REFRESH */] );
 	}
 
 	getMatrix()
@@ -1055,7 +1053,8 @@ class TerminalState
 
 	change( params = {}, action )
 	{
-		this.state = Object.assign( this.state, params );
+		this.state = Object.assign( {}, this.state, params );
+		// console.log( this.state );
 
 		const gds = this.state.gds;
 
@@ -1066,10 +1065,6 @@ class TerminalState
 				this.state.sessionIndex 	= Gds[gds]['sessionIndex'];
 				this.state.activeTerminal 	= Gds[gds]['activeTerminal'];
 			break;
-
-			// case 'CHANGE_FONT_SIZE':
-				// this.state.matrix 	= this.sessions[ sIndex ].matrix || { rows : 1, cells : 1 };
-			// break;
 
 			case 'CHANGE_SESSION' :
 				Gds[gds]['sessionIndex'] = this.state.sessionIndex;
@@ -1124,12 +1119,6 @@ class TerminalState
 	}
 }
 
-// let optionsDefault 	= {};
-// let xz 				= { zz : 1 };
-// let test = { ...optionsDefault, visibilityFilter: 1 };
-// console.log( test );
-//
-
 window.TerminalState = new TerminalState();
 
 let resizeTimeout;
@@ -1144,7 +1133,6 @@ window.onresize = function() {
 
 __WEBPACK_IMPORTED_MODULE_0__components_containerMain__["a" /* default */].init( apiData['htmlRootId'] || 'rootTerminal' );
 window.TerminalState.change({}, 'CHANGE_MATRIX');
-
 
 /***/ }),
 /* 9 */
@@ -2002,7 +1990,7 @@ module.exports = {
  *  __ / // // // // // _  // _// // / / // _  // _//     // //  \/ // _ \/ /
  * /  / // // // // // ___// / / // / / // ___// / / / / // // /\  // // / /__
  * \___//____ \\___//____//_/ _\_  / /_//____//_/ /_/ /_//_//_/ /_/ \__\_\___/
- *           \/              /____/                              version 1.4.0
+ *           \/              /____/                              version 1.2.0
  *
  * This file is part of jQuery Terminal. http://terminal.jcubic.pl
  *
@@ -2029,7 +2017,7 @@ module.exports = {
  * Copyright (c) 2007-2013 Alexandru Marasteanu <hello at alexei dot ro>
  * licensed under 3 clause BSD license
  *
- * Date: Wed, 10 May 2017 07:23:33 +0000
+ * Date: Fri, 21 Apr 2017 16:18:04 +0000
  */
 
 /* TODO:
@@ -2045,8 +2033,8 @@ module.exports = {
  * NOTE: json-rpc don't need promises and delegate resume/pause because only
  *       exec can call it and exec call interpreter that work with resume/pause
  */
-/* global location jQuery setTimeout window global localStorage sprintf
-          setImmediate IntersectionObserver MutationObserver*/
+/* global location, jQuery, setTimeout, window, global, localStorage, sprintf,
+          setImmediate */
 /* eslint-disable */
 (function(ctx) {
     var sprintf = function() {
@@ -2184,24 +2172,6 @@ module.exports = {
 (function($, undefined) {
     'use strict';
     // -----------------------------------------------------------------------
-    // :: Replacemenet for jQuery 2 deferred objects
-    // -----------------------------------------------------------------------
-    function DelayQueue() {
-        var callbacks = $.Callbacks();
-        var resolved = false;
-        this.resolve = function() {
-            callbacks.fire();
-            resolved = true;
-        };
-        this.add = function(fn) {
-            if (resolved) {
-                fn();
-            } else {
-                callbacks.add(fn);
-            }
-        };
-    }
-    // -----------------------------------------------------------------------
     // :: map object to object
     // -----------------------------------------------------------------------
     $.omap = function(o, fn) {
@@ -2211,9 +2181,6 @@ module.exports = {
         });
         return result;
     };
-    // -----------------------------------------------------------------------
-    // :: Deep clone of objects and arrays
-    // -----------------------------------------------------------------------
     var Clone = {
         clone_object: function(object) {
             var tmp = {};
@@ -2676,100 +2643,6 @@ module.exports = {
         return pos;
     };
     /* eslint-enable */
-    var requestAnimationFrame =
-        window.requestAnimationFrame ||
-        window.mozRequestAnimationFrame ||
-        window.webkitRequestAnimationFrame ||
-        function(fn) {
-            return window.setTimeout(fn, 20);
-        };
-    // -----------------------------------------------------------------------
-    // :: Cross-browser resize element plugin
-    // :: Taken from ResizeSensor.js file from marcj/css-element-queries (MIT license)
-    // :: not all jQuerifided
-    // -----------------------------------------------------------------------
-    $.fn.resizer = function(callback) {
-        var unbind = arguments[0] === "unbind";
-        if (!unbind && !$.isFunction(callback)) {
-            throw new Error(
-                'Invalid argument, it need to a function of string "unbind".'
-            );
-        }
-        return this.each(function() {
-            var $this = $(this);
-            if (unbind) {
-                $(this).removeData('callbacks').find('.resizer').remove();
-            } else if ($this.data('callbacks')) {
-                $(this).data('callbacks').push(callback);
-            } else {
-                $this.data('callbacks', [callback]);
-                var self = this;
-                var resizer = $('<div/>').addClass('resizer').appendTo(this)[0];
-                var style =
-                    'position: absolute; left: 0; top: 0; right: 0; bottom: 0; ' +
-                    'overflow: hidden; z-index: -1; visibility: hidden;';
-                var styleChild = 'position: absolute; left: 0; top: 0; transition: 0s;';
-                resizer.style.cssText = style;
-                resizer.innerHTML =
-                    '<div class="resize-sensor-expand" style="' + style + '">' +
-                    '<div style="' + styleChild + '"></div>' + "</div>" +
-                    '<div class="resize-sensor-shrink" style="' + style + '">' +
-                    '<div style="' + styleChild + ' width: 200%; height: 200%"></div>' +
-                    "</div>";
-
-                var expand = resizer.childNodes[0];
-                var expandChild = expand.childNodes[0];
-                var shrink = resizer.childNodes[1];
-                var dirty, rafId, newWidth, newHeight;
-                var lastWidth = self.offsetWidth;
-                var lastHeight = self.offsetHeight;
-
-                var reset = function() {
-                    expandChild.style.width = '100000px';
-                    expandChild.style.height = '100000px';
-
-                    expand.scrollLeft = 100000;
-                    expand.scrollTop = 100000;
-
-                    shrink.scrollLeft = 100000;
-                    shrink.scrollTop = 100000;
-                };
-
-                reset();
-
-                var onResized = function() {
-                    rafId = 0;
-
-                    if (!dirty) {
-                        return;
-                    }
-
-                    lastWidth = newWidth;
-                    lastHeight = newHeight;
-                    var callbacks = $this.data('callbacks');
-                    if (callbacks && callbacks.length) {
-                        callbacks.forEach(function(fn) {
-                            fn();
-                        });
-                    }
-                };
-
-                var onScroll = function() {
-                    newWidth = self.offsetWidth;
-                    newHeight = self.offsetHeight;
-                    dirty = newWidth !== lastWidth || newHeight !== lastHeight;
-
-                    if (dirty && !rafId) {
-                        rafId = requestAnimationFrame(onResized);
-                    }
-
-                    reset();
-                };
-                $(expand).on("scroll", onScroll);
-                $(shrink).on("scroll", onScroll);
-            }
-        });
-    };
     // -----------------------------------------------------------------------
     // :: hide elements from screen readers
     // -----------------------------------------------------------------------
@@ -2856,12 +2729,6 @@ module.exports = {
                     return data[index];
                 }
             },
-            map: function(fn) {
-                return data.filter(Boolean).map(fn);
-            },
-            forEach: function(fn) {
-                data.filter(Boolean).forEach(fn);
-            },
             append: function(item) {
                 data.push(item);
             }
@@ -2918,7 +2785,7 @@ module.exports = {
             data = [];
         } else {
             data = $.Storage.get(storage_key);
-            data = data ? JSON.parse(data) : [];
+            data = data ? $.parseJSON(data) : [];
         }
         var pos = data.length - 1;
         $.extend(this, {
@@ -3452,11 +3319,9 @@ module.exports = {
         // :: Recalculate number of characters in command line
         // ---------------------------------------------------------------------
         function change_num_chars() {
-            var $prompt = self.find('.prompt').text('&nbsp;');
             var W = self.width();
-            var w = $prompt[0].getBoundingClientRect().width;
+            var w = cursor[0].getBoundingClientRect().width;
             num_chars = Math.floor(W / w);
-            draw_prompt();
         }
         // ---------------------------------------------------------------------
         // :: Split String that fit into command line where first line need to
@@ -3499,8 +3364,6 @@ module.exports = {
         // :: format end encode the string
         // ---------------------------------------------------------------------
         function format(string) {
-            // we don't want to format command when user type formatting in
-            string = $.terminal.escape_formatting(string);
             var formatters = $.terminal.defaults.formatters;
             for (var i = 0; i < formatters.length; ++i) {
                 try {
@@ -3845,6 +3708,7 @@ module.exports = {
             destroy: function() {
                 doc.unbind('keypress.cmd', keypress_event);
                 doc.unbind('keydown.cmd', keydown_event);
+                doc.unbind('paste.cmd', paste);
                 doc.unbind('input.cmd', input);
                 self.stopTime('blink', blink);
                 self.find('.cursor').next().remove().end().prev().remove().
@@ -4122,7 +3986,7 @@ module.exports = {
             }
         }
         doc.bind('keypress.cmd', keypress_event).bind('keydown.cmd', keydown_event).
-            unbind('input.cmd', input);
+            bind('input.cmd', input);
         (function() {
             var isDragging = false;
             var was_down = false;
@@ -4206,20 +4070,14 @@ module.exports = {
     })();
     // -------------------------------------------------------------------------
     function process_command(string, fn) {
-        var array = string.match(command_re) || [];
+        var array = fn(string);
         if (array.length) {
             var name = array.shift();
-            var args = $.map(array, fn);
-            var quotes = $.map(array, function(arg) {
-                var m = arg.match(/^(['"]).*\1$/);
-                return m && m[1] || '';
-            });
             var rest = string.substring(name.length).trim();
             return {
                 command: string,
                 name: name,
-                args: args,
-                args_quotes: quotes,
+                args: array,
                 rest: rest
             };
         } else {
@@ -4227,7 +4085,6 @@ module.exports = {
                 command: string,
                 name: '',
                 args: [],
-                args_quotes: quotes,
                 rest: ''
             };
         }
@@ -4243,17 +4100,16 @@ module.exports = {
     var url_re = /(\bhttps?:\/\/(?:(?:(?!&[^;]+;)|(?=&amp;))[^\s"'<>\][)])+\b)/gi;
     var url_nf_re = /\b(https?:\/\/(?:(?:(?!&[^;]+;)|(?=&amp;))[^\s"'<>\][)])+)\b(?![^[\]]*])/gi;
     var email_re = /((([^<>('")[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,})))/g;
-    var command_re = /((?:"[^"\\]*(?:\\[\S\s][^"\\]*)*"|'[^'\\]*(?:\\[\S\s][^'\\]*)*'|\/[^\/\\]*(?:\\[\S\s][^\/\\]*)*\/[gimy]*(?=\s|$)|(?:\\\s|\S))+)(?=\s|$)/gi;
+    var command_re = /('(?:[^']|\\')*'|"(\\"|[^"])*"|(?:\/(\\\/|[^/])+\/[gimy]*)(?=:? |$)|(\\\s|\S)+|[\w-]+)/gi;
     var format_begin_re = /(\[\[[!gbiuso]*;[^;]*;[^\]]*\])/i;
     var format_start_re = /^(\[\[[!gbiuso]*;[^;]*;[^\]]*\])/i;
-    var format_end_re = /\[\[[!gbiuso]*;[^;]*;[^\]]*\]?$/i;
+    var format_last_re = /\[\[[!gbiuso]*;[^;]*;[^\]]*\]?$/i;
     var format_exec_re = /(\[\[(?:[^\]]|\\\])+\]\])/;
     var float_re = /^[-+]?[0-9]*\.?[0-9]+([eE][-+]?[0-9]+)?$/;
     var re_re = /^\/((?:\\\/|[^/]|\[[^\]]*\/[^\]]*\])+)\/([gimy]*)$/;
-    var unclosed_strings_re = /^(?=((?:[^"']+|"[^"\\]*(?:\\[^][^"\\]*)*"|'[^'\\]*(?:\\[^][^'\\]*)*')*))\1./;
     /* eslint-enable */
     $.terminal = {
-        version: '1.4.0',
+        version: '1.2.0',
         // colors from http://www.w3.org/wiki/CSS/Properties/color/keywords
         color_names: [
             'transparent', 'currentcolor', 'black', 'silver', 'gray', 'white',
@@ -4292,7 +4148,7 @@ module.exports = {
         // ---------------------------------------------------------------------
         // :: Validate html color (it can be name or hex)
         // ---------------------------------------------------------------------
-        valid_color: function valid_color(color) {
+        valid_color: function(color) {
             if (color.match(color_hex_re)) {
                 return true;
             } else {
@@ -4301,16 +4157,10 @@ module.exports = {
             }
         },
         // ---------------------------------------------------------------------
-        // :: function check if given string contain invalid strings
-        // ---------------------------------------------------------------------
-        unclosed_strings: function unclosed_strings(string) {
-            return !!string.match(unclosed_strings_re);
-        },
-        // ---------------------------------------------------------------------
         // :: Escape all special regex characters, so it can be use as regex to
         // :: match exact string that contain those characters
         // ---------------------------------------------------------------------
-        escape_regex: function escape_regex(str) {
+        escape_regex: function(str) {
             if (typeof str === 'string') {
                 var special = /([-\\^$[\]()+{}?*.|])/g;
                 return str.replace(special, '\\$1');
@@ -4319,150 +4169,34 @@ module.exports = {
         // ---------------------------------------------------------------------
         // :: test if string contain formatting
         // ---------------------------------------------------------------------
-        have_formatting: function have_formatting(str) {
+        have_formatting: function(str) {
             return typeof str === 'string' && !!str.match(format_exist_re);
         },
-        is_formatting: function is_formatting(str) {
+        is_formatting: function(str) {
             return typeof str === 'string' && !!str.match(format_full_re);
         },
         // ---------------------------------------------------------------------
         // :: return array of formatting and text between them
         // ---------------------------------------------------------------------
-        format_split: function format_split(str) {
-            return str.split(format_split_re).filter(Boolean);
+        format_split: function(str) {
+            return str.split(format_split_re);
         },
         // ---------------------------------------------------------------------
-        // :: helper function used by substring and split_equal it loop over
-        // :: string and execute callback with text count and other data
+        // :: split text into lines with equal length so each line can be
+        // :: rendered separately (text formatting can be longer then a line).
         // ---------------------------------------------------------------------
-        iterate_formatting: function iterate_formatting(string, callback) {
-            function is_space() {
-                return string.substring(i - 6, i) === '&nbsp;' ||
-                    string.substring(i - 1, i) === ' ';
-            }
+        split_equal: function(str, length, words) {
             var formatting = false;
             var in_text = false;
-            var count = 0;
-            var match;
-            var space = -1;
-            for (var i = 0; i < string.length; i++) {
-                match = string.substring(i).match(format_start_re);
-                if (match) {
-                    formatting = match[1];
-                    in_text = false;
-                } else if (formatting) {
-                    if (string[i] === ']') {
-                        if (in_text) {
-                            formatting = '';
-                            in_text = false;
-                        } else {
-                            in_text = true;
-                        }
-                    }
-                } else {
-                    in_text = true;
-                }
-                var not_formatting = (formatting && in_text) || !formatting;
-                var opening = string[i] === '[' && string[i + 1] === '[';
-                if (is_space() && (not_formatting || opening)) {
-                    space = i;
-                }
-                var braket = string[i].match(/[[\]]/);
-                if (not_formatting) {
-                    if (string[i] === '&') { // treat entity as one character
-                        match = string.substring(i).match(/^(&[^;]+;)/);
-                        if (!match) {
-                            // should never happen if used by terminal,
-                            // because it always calls $.terminal.encode
-                            // before this function
-                            throw new Error('Unclosed html entity at char ' + (i + 1));
-                        }
-                        i += match[1].length - 2; // because continue adds 1 to i
-                        // here was code for issue #77 but it work without it
-                        // after refactoring and it would be hard to run this code
-                        // in this general function, maybe call callback one more time
-                        /*
-                        if (i === string.length - 1) {
-                            result.push(output + m[1]);
-                        }
-                        */
-                        continue;
-                    } else if (string[i] === ']' && string[i - 1] === '\\') {
-                        // escape \] counts as one character
-                        --count;
-                    } else if (!braket) {
-                        ++count;
-                    }
-                }
-                if (!braket && not_formatting) {
-                    var data = {
-                        count: count,
-                        index: i,
-                        formatting: formatting,
-                        text: in_text,
-                        space: space
-                    };
-                    var ret = callback(data);
-                    if (ret === false) {
-                        break;
-                    } else if (ret) {
-                        if (ret.count !== undefined) {
-                            count = ret.count;
-                        }
-                        if (ret.space !== undefined) {
-                            space = ret.space;
-                        }
-                        if (ret.index !== undefined) {
-                            i = ret.index;
-                        }
-                    }
-                }
-            }
-        },
-        // ---------------------------------------------------------------------
-        // :: formatting aware substring function
-        // ---------------------------------------------------------------------
-        substring: function substring(string, start_index, end_index) {
-            if (!$.terminal.have_formatting(string)) {
-                return string.substring(start_index, end_index);
-            }
-            var start;
-            var end = string.length;
-            var start_formatting = '';
-            var end_formatting = '';
-            $.terminal.iterate_formatting(string, function(data) {
-                if (data.count === start_index + 1) {
-                    start = data.index;
-                    if (data.formatting) {
-                        start_formatting = data.formatting;
-                    }
-                } else if (end_index && data.count === end_index + 1) {
-                    end = data.index;
-                    end_formatting = data.formatting;
-                }
-            });
-            string = start_formatting + string.substring(start, end);
-            if (end_formatting) {
-                string += ']';
-            }
-            return string;
-        },
-        // ---------------------------------------------------------------------
-        // :: add format text as 5th paramter to formatting it's used for
-        // :: data attribute in format function
-        // ---------------------------------------------------------------------
-        normalize: function normalize(string) {
-            return string.replace(format_re, function(_, format, text) {
-                if (text === '') {
-                    return '';
-                }
+            var prev_format = '';
+            var result = [];
+            // add format text as 5th paramter to formatting it's used for
+            // data attribute in format function
+            var array = str.replace(format_re, function(_, format, text) {
                 var semicolons = format.match(/;/g).length;
                 // missing semicolons
                 if (semicolons >= 4) {
-                    var args = format.split(/;/);
-                    var start = args.slice(0, 4).join(';');
-                    var arg = args.slice(4).join(';');
-                    return '[[' + start + ';' + (arg || text) + ']' + text + ']';
+                    return _;
                 } else if (semicolons === 2) {
                     semicolons = ';;';
                 } else if (semicolons === 3) {
@@ -4476,16 +4210,25 @@ module.exports = {
                 var safe = text.replace(/\\\]/g, '&#93;').replace(/\n/g, '\\n').
                     replace(/&nbsp;/g, ' ');
                 return '[[' + format + semicolons + safe + ']' + text + ']';
-            });
-        },
-        // ---------------------------------------------------------------------
-        // :: split text into lines with equal length so each line can be
-        // :: rendered separately (text formatting can be longer then a line).
-        // ---------------------------------------------------------------------
-        split_equal: function split_equal(str, length, keep_words) {
-            var prev_format = '';
-            var result = [];
-            var array = $.terminal.normalize(str).split(/\n/g);
+            }).split(/\n/g);
+            function is_space() {
+                return line.substring(j - 6, j) === '&nbsp;' ||
+                    line.substring(j - 1, j) === ' ';
+            }
+            // Fix output if formatting not closed
+            function fix_close() {
+                var matched = output.match(format_re);
+                if (matched) {
+                    var last = matched[matched.length - 1];
+                    if (last[last.length - 1] !== ']') {
+                        prev_format = last.match(format_begin_re)[1];
+                        output += ']';
+                    } else if (output.match(format_last_re)) {
+                        output = output.replace(format_last_re, '');
+                        prev_format = last.match(format_begin_re)[1];
+                    }
+                }
+            }
             for (var i = 0, len = array.length; i < len; ++i) {
                 if (array[i] === '') {
                     result.push('');
@@ -4493,124 +4236,100 @@ module.exports = {
                 }
                 var line = array[i];
                 var first_index = 0;
+                var count = 0;
                 var output;
-                var line_length = line.length;
-                $.terminal.iterate_formatting(line, function(data) {
-                    // we don't iterate over last closing bracket
-                    var last_bracket = data.index === line_length - 2 &&
-                        line[data.index + 1] === ']';
-                    var last_iteraction = data.index === line_length - 1 || last_bracket;
-                    if (data.count === length || last_iteraction) {
-                        if (keep_words) {
-                            var text = $.terminal.strip(line.substring(data.space));
-                            // replace html entities with characters
-                            text = $('<span>' + text + '</span>').text();
-                            // real length, not counting formatting
-                            var text_len = text.length;
-                            text = text.substring(0, data.index + length + 1);
-                            var can_break = false;
-                            if (text.match(/\s/) || data.index + length + 1 > text_len) {
-                                can_break = true;
-                            }
-                        }
-                        // if words is true we split at last space and make next loop
-                        // continue where the space where located
-                        if (keep_words && !last_bracket && data.space !== -1 &&
-                            data.index !== line_length - 1 && can_break) {
-                            output = line.substring(first_index, data.space);
-                            var new_index = data.space - 1;
+                var space = -1;
+                for (var j = 0, jlen = line.length; j < jlen; ++j) {
+                    if (line.substring(j).match(format_start_re)) {
+                        formatting = true;
+                        in_text = false;
+                    } else if (formatting && line[j] === ']') {
+                        if (in_text) {
+                            formatting = false;
+                            in_text = false;
                         } else {
-                            output = line.substring(first_index, data.index + 1);
+                            in_text = true;
                         }
-                        if (keep_words) {
+                    } else if ((formatting && in_text) || !formatting) {
+                        if (line[j] === '&') { // treat entity as one character
+                            var m = line.substring(j).match(/^(&[^;]+;)/);
+                            if (!m) {
+                                // should never happen if used by terminal,
+                                // because it always calls $.terminal.encode
+                                // before this function
+                                throw new Error('Unclosed html entity in line ' +
+                                                (i + 1) + ' at char ' + (j + 1));
+                            }
+                            j += m[1].length - 2; // because continue adds 1 to j
+                            // if entity is at the end there is no next loop
+                            // issue #77
+                            if (j === jlen - 1) {
+                                result.push(output + m[1]);
+                            }
+                            continue;
+                        } else if (line[j] === ']' && line[j - 1] === '\\') {
+                            // escape \] counts as one character
+                            --count;
+                        } else {
+                            ++count;
+                        }
+                    }
+                    if (is_space() && ((formatting && in_text) || !formatting ||
+                                      (line[j] === '[' && line[j + 1] === '['))) {
+                        space = j;
+                    }
+                    if ((count === length || j === jlen - 1) &&
+                        ((formatting && in_text) || !formatting)) {
+                        var text = $.terminal.strip(line.substring(space));
+                        text = $('<span>' + text + '</span>').text();
+                        var text_len = text.length;
+                        text = text.substring(0, j + length + 1);
+                        var can_break = !!text.match(/\s/) || j + length + 1 > text_len;
+                        if (words && space !== -1 && j !== jlen - 1 && can_break) {
+                            output = line.substring(first_index, space);
+                            j = space - 1;
+                        } else {
+                            output = line.substring(first_index, j + 1);
+                        }
+                        if (words) {
                             output = output.replace(/(&nbsp;|\s)+$/g, '');
                         }
-                        first_index = (new_index || data.index) + 1;
-                        // prev_format added in fix_close function
+                        space = -1;
+                        first_index = j + 1;
+                        count = 0;
                         if (prev_format) {
-                            var closed_formatting = output.match(/^[^\]]*\]/);
                             output = prev_format + output;
-                            if (closed_formatting) {
+                            if (output.match(']')) {
                                 prev_format = '';
                             }
                         }
-                        if (last_bracket) {
-                            output += ']';
-                            prev_format = '';
-                        }
-                        var matched = output.match(format_re);
-                        if (matched) {
-                            var last = matched[matched.length - 1];
-                            if (last[last.length - 1] !== ']') {
-                                prev_format = last.match(format_begin_re)[1];
-                                output += ']';
-                            } else if (output.match(format_end_re)) {
-                                output = output.replace(format_end_re, '');
-                                prev_format = last.match(format_begin_re)[1];
-                            }
-                        }
+                        fix_close();
                         result.push(output);
-                        // modify loop by returing new data
-                        return {index: new_index, count: 0, space: -1};
                     }
-                });
+                }
             }
             return result;
         },
         // ---------------------------------------------------------------------
         // :: Encode formating as html for insertion into DOM
         // ---------------------------------------------------------------------
-        encode: function encode(str) {
+        encode: function(str) {
             // don't escape entities
             str = str.replace(/&(?!#[0-9]+;|[a-zA-Z]+;)/g, '&amp;');
             return str.replace(/</g, '&lt;').replace(/>/g, '&gt;')
                 .replace(/ /g, '&nbsp;')
                 .replace(/\t/g, '&nbsp;&nbsp;&nbsp;&nbsp;');
         },
-        // -----------------------------------------------------------------------
-        // :: Default formatter that allow for nested formatting, example:
-        // :: [[;;#000]hello [[;#f00;]red] world]
-        // -----------------------------------------------------------------------
-        nested_formatting: function nested_formatting(string) {
-            if (!$.terminal.have_formatting(string)) {
-                return string;
-            }
-            var stack = [];
-            var re = /(\[\[(?:[^\]]|\\\])+\](?:[^\][]|\\\])+\]?)/;
-            var format_re = /(\[\[(?:[^\]]|\\\])+\])[\s\S]*/;
-            return string.split(re).filter(Boolean).map(function(string) {
-                if (string.match(/^\[\[/)) {
-                    if (!$.terminal.is_formatting(string)) {
-                        string += ']';
-                        stack.push(string.replace(format_re, '$1'));
-                    }
-                } else {
-                    var pop = false;
-                    if (string.match(/\]/)) {
-                        pop = true;
-                    }
-                    if (stack.length) {
-                        string = stack[stack.length - 1] + string;
-                    }
-                    if (pop) {
-                        stack.pop();
-                    } else if (stack.length) {
-                        string += ']';
-                    }
-                }
-                return string;
-            }).join('');
-        },
         // ---------------------------------------------------------------------
         // :: safe function that will render text as it is
         // ---------------------------------------------------------------------
-        escape_formatting: function escape_formatting(string) {
+        escape_formatting: function(string) {
             return $.terminal.escape_brackets($.terminal.encode(string));
         },
         // ---------------------------------------------------------------------
         // :: Replace terminal formatting with html
         // ---------------------------------------------------------------------
-        format: function format(str, options) {
+        format: function(str, options) {
             var settings = $.extend({}, {
                 linksNoReferrer: false
             }, options || {});
@@ -4716,116 +4435,95 @@ module.exports = {
         // ---------------------------------------------------------------------
         // :: Replace brackets with html entities
         // ---------------------------------------------------------------------
-        escape_brackets: function escape_brackets(string) {
+        escape_brackets: function(string) {
             return string.replace(/\[/g, '&#91;').replace(/\]/g, '&#93;');
         },
         // ---------------------------------------------------------------------
         // :: Remove formatting from text
         // ---------------------------------------------------------------------
-        strip: function strip(str) {
-            str = str.replace(format_parts_re, '$6');
-            return str.replace(/(\\?)([[\]])/g, function(whole, slash) {
-                if (slash) {
-                    return whole;
-                } else {
-                    return '';
-                }
-            });
+        strip: function(str) {
+            return str.replace(format_parts_re, '$6');
         },
         // ---------------------------------------------------------------------
         // :: Return active terminal
         // ---------------------------------------------------------------------
-        active: function active() {
+        active: function() {
             return terminals.front();
         },
         // ---------------------------------------------------------------------
         // :: Implmentation detail id is always length of terminals Cycle
         // ---------------------------------------------------------------------
-        last_id: function last_id() {
+        last_id: function() {
             var len = terminals.length();
             if (len) {
                 return len - 1;
             }
         },
         // ---------------------------------------------------------------------
-        // :: Function that works with strings like 'asd' 'asd\' asd' "asd asd"
-        // :: asd\ 123 -n -b / [^ ]+ / /\s+/ asd\ a it creates a regex and
-        // :: numbers and replaces escape characters in double quotes
-        // :: if strict is set to false it only strips single and double quotes
-        // :: and escapes spaces
+        // :: Function splits arguments and works with strings like
+        // :: 'asd' 'asd\' asd' "asd asd" asd\ 123 -n -b / [^ ]+ / /\s+/ asd\ a
+        // :: it creates a regex and numbers and replaces escape characters in
+        // :: double quotes
         // ---------------------------------------------------------------------
-        parse_argument: function parse_argument(arg, strict) {
-            function parse_string(string) {
-                // remove quotes if before are even number of slashes
-                // we don't remove slases becuase they are handled by JSON.parse
-                string = string.replace(/((^|[^\\])(?:\\\\)*)['"]/g, '$1');
-                // use build in function to parse rest of escaped characters
-                return JSON.parse('"' + string + '"');
-            }
-            if (strict === false) {
+        parse_arguments: function(string) {
+            return $.map(string.match(command_re) || [], function(arg) {
+                var regex = arg.match(re_re);
+                if (regex) {
+                    return new RegExp(regex[1], regex[2]);
+                } else if (arg[0] === "'" && arg[arg.length - 1] === "'" &&
+                           arg.length > 1) {
+                    return arg.replace(/^'|'$/g, '');
+                } else if (arg[0] === '"' && arg[arg.length - 1] === '"' &&
+                           arg.length > 1) {
+                    return $.parseJSON(arg);
+                } else if (arg.match(/^-?[0-9]+$/)) {
+                    return parseInt(arg, 10);
+                } else if (arg.match(float_re)) {
+                    return parseFloat(arg);
+                } else if (arg.match(/^['"]$/)) {
+                    return '';
+                } else {
+                    return arg.replace(/\\(['"() ])/g, '$1');
+                }
+            });
+        },
+        // ---------------------------------------------------------------------
+        // :: Split arguments: it only strips single and double quotes and
+        // :: escapes spaces
+        // ---------------------------------------------------------------------
+        split_arguments: function(string) {
+            return $.map(string.match(command_re) || [], function(arg) {
                 if (arg[0] === "'" && arg[arg.length - 1] === "'") {
                     return arg.replace(/^'|'$/g, '');
                 } else if (arg[0] === '"' && arg[arg.length - 1] === '"') {
                     return arg.replace(/^"|"$/g, '').replace(/\\([" ])/g, '$1');
                 } else if (arg.match(/\/.*\/[gimy]*$/)) {
                     return arg;
-                } else if (arg.match(/['"]]/)) {
-                    // part of arg is in quote
-                    return parse_string(arg);
                 } else {
                     return arg.replace(/\\ /g, ' ');
                 }
-            }
-            var regex = arg.match(re_re);
-            if (regex) {
-                return new RegExp(regex[1], regex[2]);
-            } else if (arg.match(/['"]/)) {
-                return parse_string(arg);
-            } else if (arg.match(/^-?[0-9]+$/)) {
-                return parseInt(arg, 10);
-            } else if (arg.match(float_re)) {
-                return parseFloat(arg);
-            } else {
-                return arg.replace(/\\(['"() ])/g, '$1');
-            }
-        },
-        // ---------------------------------------------------------------------
-        // :: function split and parse arguments
-        // ---------------------------------------------------------------------
-        parse_arguments: function parse_arguments(string) {
-            return $.map(string.match(command_re) || [], $.terminal.parse_argument);
-        },
-        // ---------------------------------------------------------------------
-        // :: Function split and strips single and double quotes
-        // :: and escapes spaces
-        // ---------------------------------------------------------------------
-        split_arguments: function(string) {
-            return $.map(string.match(command_re) || [], function(arg) {
-                return $.terminal.parse_argument(arg, false);
             });
         },
         // ---------------------------------------------------------------------
         // :: Function that returns an object {name,args}. Arguments are parsed
         // :: using the function parse_arguments
         // ---------------------------------------------------------------------
-        parse_command: function parse_command(string) {
-            return process_command(string, $.terminal.parse_argument);
+        parse_command: function(string) {
+            return process_command(string, $.terminal.parse_arguments);
         },
         // ---------------------------------------------------------------------
         // :: Same as parse_command but arguments are parsed using split_arguments
         // ---------------------------------------------------------------------
         split_command: function(string) {
-            return process_command(string, function(arg) {
-                return $.terminal.parse_argument(arg, false);
-            });
+            return process_command(string, $.terminal.split_arguments);
         },
         // ---------------------------------------------------------------------
         // :: function executed for each text inside [{ .... }]
         // ---------------------------------------------------------------------
-        extended_command: function extended_command(term, string) {
+        extended_command: function(term, string) {
             try {
                 change_hash = false;
-                term.exec(string, true).done(function() {
+                term.exec(string, true).then(function() {
                     change_hash = true;
                 });
             } catch (e) {
@@ -4877,11 +4575,10 @@ module.exports = {
     $.fn.scroll_element.defaults = {
         lines: 2000,
         pre: {
-            'font-size': '100px',
+            'font-size': '14px',
             'white-space': 'pre' // just in case if user overwrite css for pre tag
         }
     };
-    // -----------------------------------------------------------------------
     function is_key_native() {
         if (!('KeyboardEvent' in window && 'key' in window.KeyboardEvent.prototype)) {
             return false;
@@ -4895,10 +4592,7 @@ module.exports = {
         if (console && console.warn) {
             console.warn(msg);
         } else {
-            // prevent catching in outer try..catch
-            setTimeout(function() {
-                throw new Error('WARN: ' + msg);
-            }, 0);
+            throw new Error('WARN: ' + msg);
         }
     }
     // -----------------------------------------------------------------------
@@ -4935,13 +4629,13 @@ module.exports = {
         };
         return $.ajax({
             url: options.url,
-            beforeSend: function beforeSend(jxhr, settings) {
+            beforeSend: function(jxhr, settings) {
                 if ($.isFunction(options.request)) {
                     options.request(jxhr, request);
                 }
                 settings.data = JSON.stringify(request);
             },
-            success: function success(response, status, jqXHR) {
+            success: function(response, status, jqXHR) {
                 var content_type = jqXHR.getResponseHeader('Content-Type');
                 if (!content_type.match(/(application|text)\/json/)) {
                     warn('Response Content-Type is neither application/json' +
@@ -4949,7 +4643,7 @@ module.exports = {
                 }
                 var json;
                 try {
-                    json = JSON.parse(response);
+                    json = $.parseJSON(response);
                 } catch (e) {
                     if (options.error) {
                         options.error(jqXHR, 'Invalid JSON', e);
@@ -5000,11 +4694,11 @@ module.exports = {
     // -----------------------------------------------------------------------
     function char_size() {
         var temp = $('<div class="terminal temp"><div class="cmd"><span cla' +
-                     'ss="prompt">&nbsp;</span></div></div>').appendTo('body');
-        var rect = temp.find('span')[0].getBoundingClientRect();
+                     'ss="cursor">&nbsp;</span></div></div>').appendTo('body');
+        var span = temp.find('span');
         var result = {
-            width: rect.width,
-            height: rect.height
+            width: span.width(),
+            height: span.outerHeight()
         };
         temp.remove();
         return result;
@@ -5013,16 +4707,35 @@ module.exports = {
     // :: calculate numbers of characters
     // -----------------------------------------------------------------------
     function get_num_chars(terminal) {
-        var width = terminal.find('.terminal-fill').width();
-        var result = Math.floor(width / char_size().width);
-        // random number to not get NaN in node but big enough to not wrap exception
-        return result || 1000;
+        var temp = $('<div class="terminal wrap"><span class="cursor">' +
+                     '&nbsp;</span></div>').appendTo('body').css('padding', 0);
+        var span = temp.find('span');
+        var width = span[0].getBoundingClientRect().width;
+        var result = Math.floor(terminal.find('iframe').width() / width);
+        temp.remove();
+        return result;
     }
     // -----------------------------------------------------------------------
     // :: Calculate number of lines that fit without scroll
     // -----------------------------------------------------------------------
     function get_num_rows(terminal) {
-        return Math.floor(terminal.find('.terminal-fill').height() / char_size().height);
+        return Math.floor(terminal.height() / char_size().height);
+    }
+    // -----------------------------------------------------------------------
+    // :: Get Selected Text (this is internal because it return text even if
+    // :: it's outside of terminal, is used to paste text to the terminal)
+    // -----------------------------------------------------------------------
+    function get_selected_text() {
+        if (window.getSelection || document.getSelection) {
+            var selection = (window.getSelection || document.getSelection)();
+            if (selection.text) {
+                return selection.text;
+            } else {
+                return selection.toString();
+            }
+        } else if (document.selection) {
+            return document.selection.createRange().text;
+        }
     }
     // -----------------------------------------------------------------------
     // :: try to copy given DOM element text to clipboard
@@ -5116,7 +4829,7 @@ module.exports = {
         processArguments: true,
         linksNoReferrer: false,
         processRPCResponse: null,
-        completionEscape: true,
+        Token: true, // where this came from?
         convertLinks: true,
         extra: {},
         historyState: false,
@@ -5125,7 +4838,7 @@ module.exports = {
         scrollOnEcho: true,
         login: null,
         outputLimit: -1,
-        formatters: [$.terminal.nested_formatting],
+        formatters: [],
         onAjaxError: null,
         scrollBottomOffset: 20,
         wordAutocomplete: true,
@@ -5175,8 +4888,7 @@ module.exports = {
             password: 'password',
             recursiveCall: 'Recursive call detected, skip',
             notAString: '%s function: argument is not a string',
-            redrawError: 'Internal error, wrong position in cmd redraw',
-            invalidStrings: 'Command %s have unclosed strings'
+            redrawError: 'Internal error, wrong position in cmd redraw'
         }
     };
     // -------------------------------------------------------------------------
@@ -5222,10 +4934,7 @@ module.exports = {
         // :: helper function
         // ---------------------------------------------------------------------
         function get_processed_command(command) {
-            if ($.terminal.unclosed_strings(command)) {
-                var string = $.terminal.escape_brackets(command);
-                throw new Error(sprintf(strings().invalidStrings, "`" + string + "`"));
-            } else if ($.isFunction(settings.processArguments)) {
+            if ($.isFunction(settings.processArguments)) {
                 return process_command(command, settings.processArguments);
             } else if (settings.processArguments) {
                 return $.terminal.parse_command(command);
@@ -5305,21 +5014,21 @@ module.exports = {
                     url: url,
                     method: method,
                     params: params,
-                    request: function request(jxhr, request) {
+                    request: function(jxhr, request) {
                         try {
                             settings.request.apply(self, jxhr, request, self);
                         } catch (e) {
                             display_exception(e, 'USER');
                         }
                     },
-                    response: function response(jxhr, response) {
+                    response: function(jxhr, response) {
                         try {
                             settings.response.apply(self, jxhr, response, self);
                         } catch (e) {
                             display_exception(e, 'USER');
                         }
                     },
-                    success: function success(json) {
+                    success: function(json) {
                         if (json.error) {
                             display_json_rpc_error(json.error);
                         } else if ($.isFunction(settings.processRPCResponse)) {
@@ -5355,7 +5064,7 @@ module.exports = {
                     } else {
                         // should never happen
                         terminal.error('&#91;AUTH&#93; ' +
-                                       strings().noTokenError);
+                                       strings.noTokenError);
                     }
                 }
             };
@@ -5400,7 +5109,7 @@ module.exports = {
                 if (type === 'function') {
                     if (arity && val.length !== command.args.length) {
                         self.error('&#91;Arity&#93; ' +
-                                   sprintf(strings().wrongArity,
+                                   sprintf(strings.wrongArity,
                                            command.name,
                                            val.length,
                                            command.args.length));
@@ -5425,7 +5134,7 @@ module.exports = {
                 } else if ($.isFunction(settings.onCommandNotFound)) {
                     settings.onCommandNotFound.call(self, user_command, self);
                 } else {
-                    terminal.error(sprintf(strings().commandNotFound, command.name));
+                    terminal.error(sprintf(strings.commandNotFound, command.name));
                 }
             };
         }
@@ -5436,7 +5145,7 @@ module.exports = {
                 settings.onAjaxError.call(self, xhr, status, error);
             } else if (status !== 'abort') {
                 self.error('&#91;AJAX&#93; ' + status + ' - ' +
-                           strings().serverResponse + ':\n' +
+                           strings.serverResponse + ':\n' +
                            $.terminal.escape_brackets(xhr.responseText));
             }
         }
@@ -5477,7 +5186,7 @@ module.exports = {
                             if (settings.checkArity && proc.params &&
                                 proc.params.length !== args_len) {
                                 self.error('&#91;Arity&#93; ' +
-                                           sprintf(strings().wrongArity,
+                                           sprintf(strings.wrongArity,
                                                    proc.name,
                                                    proc.params.length,
                                                    args_len));
@@ -5489,7 +5198,7 @@ module.exports = {
                                         args = [token].concat(args);
                                     } else {
                                         self.error('&#91;AUTH&#93; ' +
-                                                   strings().noTokenError);
+                                                   strings.noTokenError);
                                     }
                                 }
                                 $.jrpc({
@@ -5549,21 +5258,21 @@ module.exports = {
                 method: 'system.describe',
                 params: [],
                 success: response,
-                request: function request(jxhr, request) {
+                request: function(jxhr, request) {
                     try {
                         settings.request.call(self, jxhr, request, self);
                     } catch (e) {
                         display_exception(e, 'USER');
                     }
                 },
-                response: function response(jxhr, response) {
+                response: function(jxhr, response) {
                     try {
                         settings.response.call(self, jxhr, response, self);
                     } catch (e) {
                         display_exception(e, 'USER');
                     }
                 },
-                error: function error() {
+                error: function() {
                     success(null);
                 }
             });
@@ -5590,7 +5299,7 @@ module.exports = {
                                 if (++rpc_count === 1) {
                                     fn_interpreter = make_basic_json_rpc(first, login);
                                 } else {
-                                    self.error(strings().oneRPCWithIgnore);
+                                    self.error(strings.oneRPCWithIgnore);
                                 }
                                 recur(rest, success);
                             } else {
@@ -5603,7 +5312,7 @@ module.exports = {
                                             login
                                         );
                                     } else {
-                                        self.error(strings().oneRPCWithIgnore);
+                                        self.error(strings.oneRPCWithIgnore);
                                     }
                                     self.resume();
                                     recur(rest, success);
@@ -5611,7 +5320,7 @@ module.exports = {
                             }
                         } else if (type === 'function') {
                             if (fn_interpreter) {
-                                self.error(strings().oneInterpreterFunction);
+                                self.error(strings.oneInterpreterFunction);
                             } else {
                                 fn_interpreter = first;
                             }
@@ -5688,21 +5397,21 @@ module.exports = {
                     url: url,
                     method: method,
                     params: [user, passwd],
-                    request: function request(jxhr, request) {
+                    request: function(jxhr, request) {
                         try {
                             settings.request.call(self, jxhr, request, self);
                         } catch (e) {
                             display_exception(e, 'USER');
                         }
                     },
-                    response: function response(jxhr, response) {
+                    response: function(jxhr, response) {
                         try {
                             settings.response.call(self, jxhr, response, self);
                         } catch (e) {
                             display_exception(e, 'USER');
                         }
                     },
-                    success: function success(response) {
+                    success: function(response) {
                         if (!response.error && response.result) {
                             callback(response.result);
                         } else {
@@ -5755,7 +5464,9 @@ module.exports = {
         function validate(label, object) {
             try {
                 if ($.isFunction(object)) {
-                    object.call(self, $.noop, self);
+                    object(function() {
+                        // don't care
+                    });
                 } else if (typeof object !== 'string') {
                     var msg = label + ' must be string or function';
                     throw msg;
@@ -5858,7 +5569,7 @@ module.exports = {
                             string = string.replace(/^\[\[|\]\]$/g, '');
                             if (line_settings.exec) {
                                 if (prev_command && prev_command.command === string) {
-                                    self.error(strings().recursiveCall);
+                                    self.error(strings.recursiveCall);
                                 } else {
                                     $.terminal.extended_command(self, string);
                                 }
@@ -5891,8 +5602,7 @@ module.exports = {
             command_line.resize(num_chars);
             // we don't want reflow while processing lines
             var detached_output = output.empty().detach();
-            var lines_to_show = [];
-            // Dead code
+            var lines_to_show;
             if (settings.outputLimit >= 0) {
                 // flush will limit lines but if there is lot of
                 // lines we don't need to show them and then remove
@@ -5903,30 +5613,13 @@ module.exports = {
                 } else {
                     limit = settings.outputLimit;
                 }
-                lines.forEach(function(line) {
-                    var string = $.type(line[0]) === 'function' ? line[0]() : line[0];
-                    string = $.type(string) === 'string' ? string : String(string);
-                    if (string.length > num_chars) {
-                        var options = line[1];
-                        var splitted = $.terminal.split_equal(
-                            string,
-                            num_chars,
-                            options.keepWords
-                        );
-                        lines_to_show = lines_to_show.concat(splitted.map(function(line) {
-                            return [line, options];
-                        }));
-                    } else {
-                        lines_to_show.push(line);
-                    }
-                });
-                lines_to_show = lines_to_show.slice(lines_to_show.length - limit - 1);
+                lines_to_show = lines.slice(lines.length - limit - 1);
             } else {
                 lines_to_show = lines;
             }
             try {
                 output_buffer = [];
-                $.each(lines, function(i, line) {
+                $.each(lines_to_show, function(i, line) {
                     process_line.apply(null, line); // line is an array
                 });
                 command_line.before(detached_output); // reinsert output
@@ -5953,7 +5646,7 @@ module.exports = {
                 } else if (type === 'function') {
                     settings.greetings.call(self, self.echo);
                 } else {
-                    self.error(strings().wrongGreetings);
+                    self.error(strings.wrongGreetings);
                 }
             }
         }
@@ -5979,7 +5672,7 @@ module.exports = {
                     break;
             }
             var options = {
-                finalize: function finalize(div) {
+                finalize: function(div) {
                     a11y_hide(div.addClass('command'));
                 }
             };
@@ -5998,7 +5691,7 @@ module.exports = {
             // spec [terminal_id, state_index, command]
             var terminal = terminals.get()[spec[0]];
             if (!terminal) {
-                throw new Error(strings().invalidTerminalId);
+                throw new Error(strings.invalidTerminalId);
             }
             var command_idx = spec[1];
             if (save_state[command_idx]) { // state exists
@@ -6008,7 +5701,7 @@ module.exports = {
                 change_hash = false;
                 var command = spec[2];
                 if (command) {
-                    terminal.exec(command).done(function() {
+                    terminal.exec(command).then(function() {
                         change_hash = true;
                         save_state[command_idx] = terminal.export_view();
                     });
@@ -6123,7 +5816,7 @@ module.exports = {
                     if (result !== undefined) {
                         // auto pause/resume when user return promises
                         self.pause(settings.softPause);
-                        return $.when(result).done(function(result) {
+                        return $.when(result).then(function(result) {
                             // don't echo result if user echo something
                             if (result && position === lines.length - 1) {
                                 display_object(result);
@@ -6185,7 +5878,7 @@ module.exports = {
             var storage_key = self.prefix_name() + '_interpreters';
             var names = storage.get(storage_key);
             if (names) {
-                names = JSON.parse(names);
+                names = $.parseJSON(names);
             } else {
                 names = [];
             }
@@ -6225,7 +5918,7 @@ module.exports = {
                 }));
             }
             command_line.set('');
-            init_queue.resolve();
+            init_defer.resolve();
             if (!silent && $.isFunction(interpreter.onStart)) {
                 interpreter.onStart.call(self, self);
             }
@@ -6236,7 +5929,7 @@ module.exports = {
                 try {
                     if (location.hash) {
                         var hash = location.hash.replace(/^#/, '');
-                        hash_commands = JSON.parse(decodeURIComponent(hash));
+                        hash_commands = $.parseJSON(decodeURIComponent(hash));
                     } else {
                         hash_commands = [];
                     }
@@ -6290,28 +5983,6 @@ module.exports = {
         // ---------------------------------------------------------------------
         function ghost() {
             return in_login || command_line.mask() !== false;
-        }
-        // ---------------------------------------------------------------------
-        // :: return string that are common in all elements of the array
-        // ---------------------------------------------------------------------
-        function common_string(string, array) {
-            if (!array.length) {
-                return '';
-            }
-            var found = false;
-            loop:
-            for (var j = string.length; j < array[0].length; ++j) {
-                for (var i = 1; i < array.length; ++i) {
-                    if (array[0].charAt(j) !== array[i].charAt(j)) {
-                        break loop;
-                    }
-                }
-                found = true;
-            }
-            if (found) {
-                return array[0].slice(0, j);
-            }
-            return '';
         }
         // ---------------------------------------------------------------------
         // :: Keydown event handler
@@ -6370,27 +6041,24 @@ module.exports = {
                         case 'function':
                             var string = self.before_cursor(settings.wordAutocomplete);
                             if (completion.length === 3) {
-                                var error = new Error(strings().comletionParameters);
+                                var error = new Error(strings.comletionParameters);
                                 display_exception(error, 'USER');
                                 return false;
                             }
                             completion.call(self, string, function(commands) {
                                 self.complete(commands, {
-                                    echo: true,
-                                    word: settings.wordAutocomplete,
-                                    escape: settings.completionEscape
+                                    echo: true
                                 });
                             });
                             break;
                         case 'array':
                             self.complete(completion, {
-                                echo: true,
-                                word: settings.wordAutocomplete,
-                                escape: settings.completionEscape
+                                echo: true
                             });
                             break;
                         default:
-                            throw new Error(strings().invalidCompletion);
+                            // terminal will not catch this because it's an event
+                            throw new Error(strings.invalidCompletion);
                     }
                 } else {
                     orignal();
@@ -6457,7 +6125,7 @@ module.exports = {
                                                                            e,
                                                                            'AJAX ABORT');
                                         } else {
-                                            self.error(strings().ajaxAbortError);
+                                            self.error(strings.ajaxAbortError);
                                         }
                                     }
                                 }
@@ -6470,13 +6138,14 @@ module.exports = {
                 }
             }
         }
-        function ready(queue) {
+        function ready(defer) {
             return function(fun) {
-                queue.add(fun);
+                if (defer.state() !== 'resolved') {
+                    defer.then(fun.bind(self));
+                } else {
+                    fun.call(self);
+                }
             };
-        }
-        function strings() {
-            return $.extend({}, $.terminal.defaults.strings, settings.strings);
         }
         // ---------------------------------------------------------------------
         var self = this;
@@ -6492,7 +6161,7 @@ module.exports = {
             return self.data('terminal');
         }
         if (self.length === 0) {
-            throw new Error(sprintf(strings().invalidSelector, self.selector));
+            throw sprintf($.terminal.defaults.strings.invalidSelector, self.selector);
         }
         // var names = []; // stack if interpreter names
         var scroll_object;
@@ -6509,10 +6178,10 @@ module.exports = {
         var num_rows; // number of lines that fit without scrollbar
         var command; // for tab completion
         var logins = new Stack(); // stack of logins
-        var command_queue = new DelayQueue();
-        var init_queue = new DelayQueue();
-        var when_ready = ready(init_queue);
-        var cmd_ready = ready(command_queue);
+        var command_defer = $.Deferred();
+        var init_defer = $.Deferred();
+        var when_ready = ready(init_defer);
+        var cmd_ready = ready(command_defer);
         var in_login = false;// some Methods should not be called when login
         // TODO: Try to use mutex like counter for pause/resume
         var onPause = $.noop;// used to indicate that user call pause onInit
@@ -6523,14 +6192,13 @@ module.exports = {
                                 {name: self.selector},
                                 options || {});
         var storage = new StorageHelper(settings.memory);
+        var strings = $.extend({}, $.terminal.defaults.strings, settings.strings);
         var enabled = settings.enabled, frozen = false;
         var paused = false;
-        var autologin = true; // set to false if onBeforeLogin return false
+        var autologin = true; // set to false of onBeforeLogin return false
         var interpreters;
         var command_line;
         var old_enabled;
-        var visibility_observer;
-        var mutation_observer;
         // -----------------------------------------------------------------
         // TERMINAL METHODS
         // -----------------------------------------------------------------
@@ -6581,7 +6249,7 @@ module.exports = {
             // -------------------------------------------------------------
             import_view: function(view) {
                 if (in_login) {
-                    throw new Error(sprintf(strings().notWhileLogin, 'import_view'));
+                    throw new Error(sprintf(strings.notWhileLogin, 'import_view'));
                 }
                 if ($.isFunction(settings.onImport)) {
                     try {
@@ -6642,7 +6310,7 @@ module.exports = {
                         (function recur() {
                             var cmd = command.shift();
                             if (cmd) {
-                                self.exec(cmd, silent).done(recur);
+                                self.exec(cmd, silent).then(recur);
                             } else {
                                 d.resolve();
                             }
@@ -6655,7 +6323,7 @@ module.exports = {
                         // commands may return promise from user code
                         // it will resolve exec promise when user promise
                         // is resolved
-                        commands(command, silent, true).done(function() {
+                        commands(command, silent, true).then(function() {
                             d.resolve(self);
                         });
                     }
@@ -6681,10 +6349,10 @@ module.exports = {
             login: function(auth, infinite, success, error) {
                 logins.push([].slice.call(arguments));
                 if (in_login) {
-                    throw new Error(sprintf(strings().notWhileLogin, 'login'));
+                    throw new Error(sprintf(strings.notWhileLogin, 'login'));
                 }
                 if (!$.isFunction(auth)) {
-                    throw new Error(strings().loginIsNotAFunction);
+                    throw new Error(strings.loginIsNotAFunction);
                 }
                 in_login = true;
                 if (self.token() && self.level() === 1 && !autologin) {
@@ -6725,13 +6393,13 @@ module.exports = {
                     } else {
                         if (infinite) {
                             if (!silent) {
-                                self.error(strings().wrongPasswordTryAgain);
+                                self.error(strings.wrongPasswordTryAgain);
                             }
                             self.pop(undefined, true).set_mask(false);
                         } else {
                             in_login = false;
                             if (!silent) {
-                                self.error(strings().wrongPassword);
+                                self.error(strings.wrongPassword);
                             }
                             self.pop(undefined, true).pop(undefined, true);
                         }
@@ -6755,11 +6423,11 @@ module.exports = {
                             display_exception(e, 'AUTH');
                         }
                     }, {
-                        prompt: strings().password + ': ',
+                        prompt: strings.password + ': ',
                         name: 'password'
                     });
                 }, {
-                    prompt: strings().login + ': ',
+                    prompt: strings.login + ': ',
                     name: 'login'
                 });
                 return self;
@@ -6816,22 +6484,19 @@ module.exports = {
             complete: function(commands, options) {
                 options = $.extend({
                     word: true,
-                    echo: false,
-                    escape: true
+                    echo: false
                 }, options || {});
                 // cursor can be in the middle of the command
                 // so we need to get the text before the cursor
                 var string = self.before_cursor(options.word).replace(/\\"/g, '"');
                 var quote = false;
-                if (options.word) {
-                    if (string.match(/^"/)) {
-                        quote = '"';
-                    } else if (string.match(/^'/)) {
-                        quote = "'";
-                    }
-                    if (quote) {
-                        string = string.replace(/^["']/, '');
-                    }
+                if (string.match(/^"/)) {
+                    quote = '"';
+                } else if (string.match(/^'/)) {
+                    quote = "'";
+                }
+                if (quote) {
+                    string = string.replace(/^["']/, '');
                 }
                 // local copy
                 commands = commands.slice();
@@ -6850,10 +6515,8 @@ module.exports = {
                         return;
                     }
                 }
-                var safe = $.terminal.escape_regex(string);
-                if (options.escape) {
-                    safe = safe.replace(/\\(["'() ])/g, '\\?$1');
-                }
+                var safe = $.terminal.escape_regex(string)
+                    .replace(/\\(["'() ])/g, '\\?$1');
                 var regex = new RegExp('^' + safe);
                 var matched = [];
                 for (var i = commands.length; i--;) {
@@ -6862,7 +6525,7 @@ module.exports = {
                         if (quote === '"') {
                             match = match.replace(/"/g, '\\"');
                         }
-                        if (!quote && options.escape) {
+                        if (!quote) {
                             match = match.replace(/(["'() ])/g, '\\$1');
                         }
                         matched.push(match);
@@ -6884,9 +6547,19 @@ module.exports = {
                             return true;
                         }
                     } else {
-                        var common = common_string(string, matched);
-                        if (common) {
-                            self.insert(common.replace(regex, ''));
+                        var found = false;
+                        var j;
+                        loop:
+                        for (j = string.length; j < matched[0].length; ++j) {
+                            for (i = 1; i < matched.length; ++i) {
+                                if (matched[0].charAt(j) !== matched[i].charAt(j)) {
+                                    break loop;
+                                }
+                            }
+                            found = true;
+                        }
+                        if (found) {
+                            self.insert(matched[0].slice(0, j).replace(regex, ''));
                             command = self.before_cursor(options.word);
                             return true;
                         }
@@ -6983,26 +6656,14 @@ module.exports = {
             // :: the terminal
             // -------------------------------------------------------------
             cols: function() {
-                if (settings.numChars) {
-                    return settings.numChars;
-                }
-                if (!num_chars) {
-                    num_chars = get_num_chars(self);
-                }
-                return num_chars;
+                return settings.numChars ? settings.numChars : get_num_chars(self);
             },
             // -------------------------------------------------------------
             // :: Return the number of lines that fit into the height of the
             // :: terminal
             // -------------------------------------------------------------
             rows: function() {
-                if (settings.numRows) {
-                    return settings.numRows;
-                }
-                if (!num_rows) {
-                    num_rows = get_num_rows(self);
-                }
-                return num_rows;
+                return settings.numRows ? settings.numRows : get_num_rows(self);
             },
             // -------------------------------------------------------------
             // :: Return the History object
@@ -7051,7 +6712,7 @@ module.exports = {
                     return self;
                 } else {
                     /*if (!is_scrolled_into_view(self)) {
-                       self.enable();
+                        self.enable();
                         $('html,body').animate({
                             scrollTop: offsetTop-50
                         }, 500);
@@ -7105,14 +6766,7 @@ module.exports = {
                     } else {
                         var front = terminals.front();
                         if (front !== self) {
-                            // there should be only from terminal enabled but tests
-                            // sometime fail because there where more them one
-                            // where cursor have blink class
-                            terminals.forEach(function(terminal) {
-                                if (terminal !== self && terminal.enabled()) {
-                                    terminal.disable();
-                                }
-                            });
+                            front.disable();
                             if (!silent) {
                                 try {
                                     settings.onTerminalChange.call(self, self);
@@ -7186,15 +6840,25 @@ module.exports = {
             // -------------------------------------------------------------
             signature: function() {
                 var cols = self.cols();
-                for (var i = signatures.length; i--;) {
-                    var lenghts = signatures[i].map(function(line) {
-                        return line.length;
-                    });
-                    if (Math.max.apply(null, lenghts) <= cols) {
-                        return signatures[i].join('\n') + '\n';
-                    }
+                var i;
+                if (cols < 15) {
+                    i = null;
+                } else if (cols < 35) {
+                    i = 0;
+                } else if (cols < 55) {
+                    i = 1;
+                } else if (cols < 64) {
+                    i = 2;
+                } else if (cols < 75) {
+                    i = 3;
+                } else {
+                    i = 4;
                 }
-                return '';
+                if (i !== null) {
+                    return signatures[i].join('\n') + '\n';
+                } else {
+                    return '';
+                }
             },
             // -------------------------------------------------------------
             // :: Return the version number
@@ -7238,7 +6902,7 @@ module.exports = {
                     });
                     return self;
                 } else {
-                    throw new Error(sprintf(strings().notAString, 'insert'));
+                    throw new Error(sprintf(strings.notAString, 'insert'));
                 }
             },
             // -------------------------------------------------------------
@@ -7307,8 +6971,8 @@ module.exports = {
                     }
                     width = self.width();
                     height = self.height();
-                    var new_num_chars = get_num_chars(self);
-                    var new_num_rows = get_num_rows(self);
+                    var new_num_chars = self.cols();
+                    var new_num_rows = self.rows();
                     // only if number of chars changed
                     if (new_num_chars !== num_chars ||
                         new_num_rows !== num_rows) {
@@ -7317,7 +6981,7 @@ module.exports = {
                         redraw();
                         var top = interpreters.top();
                         if ($.isFunction(top.resize)) {
-                            top.resize.call(self, self);
+                            top.resize(self);
                         } else if ($.isFunction(settings.onResize)) {
                             settings.onResize.call(self, self);
                         }
@@ -7340,7 +7004,17 @@ module.exports = {
                         } else if ($.isFunction(line)) {
                             // this is finalize function from echo
                             wrapper.appendTo(output);
-                            line(wrapper);
+                            try {
+                                line(wrapper);
+                                /* this don't work with resize
+                                   line(wrapper, function(user_finalize) {
+                                   // TODO:
+                                   // user_finalize need to be save in line object
+                                   user_finalize(wrapper);
+                                   });*/
+                            } catch (e) {
+                                display_exception(e, 'USER:echo(finalize)');
+                            }
                         } else {
                             $('<div/>').html(line)
                                 .appendTo(wrapper).width('100%');
@@ -7354,7 +7028,7 @@ module.exports = {
                             limit = settings.outputLimit;
                         }
                         var $lines = output.find('div div');
-                        if ($lines.length + 1 > limit) {
+                        if ($lines.length > limit) {
                             var max = $lines.length - limit + 1;
                             var for_remove = $lines.slice(0, max);
                             // you can't get parent if you remove the
@@ -7470,17 +7144,12 @@ module.exports = {
                         }
                     }
                 }
-                try {
-                    if (options && $.isFunction(options.finalize)) {
-                        options.finalize($('<div/>'));
-                    }
-                    if ($.isFunction(string.then)) {
-                        $.when(string).done(echo);
-                    } else {
-                        echo(string);
-                    }
-                } catch (e) {
-                    display_exception(e, 'USER:echo(finalize)');
+                string = string || '';
+                var type = $.type(string);
+                if (type === 'function' || type === 'string') {
+                    echo(string);
+                } else {
+                    $.when(string).then(echo);
                 }
                 return self;
             },
@@ -7564,7 +7233,7 @@ module.exports = {
             // -------------------------------------------------------------
             logout: function(local) {
                 if (in_login) {
-                    throw new Error(sprintf(strings().notWhileLogin, 'logout'));
+                    throw new Error(sprintf(strings.notWhileLogin, 'logout'));
                 }
                 when_ready(function ready() {
                     if (local) {
@@ -7737,9 +7406,6 @@ module.exports = {
                 if (interpreters.size() === 1) {
                     top = interpreters.top();
                     if (settings.login) {
-                        if (!silent) {
-                            settings.onPop.call(self, top, null, self);
-                        }
                         global_logout();
                         if ($.isFunction(settings.onExit)) {
                             try {
@@ -7749,7 +7415,10 @@ module.exports = {
                             }
                         }
                     } else {
-                        self.error(strings().canExitError);
+                        self.error(strings.canExitError);
+                    }
+                    if (!silent) {
+                        settings.onPop.call(self, top, null, self);
                     }
                 } else {
                     if (token) {
@@ -7762,7 +7431,7 @@ module.exports = {
                         settings.onPop.call(self, current, top);
                     }
                     // we check in case if you don't pop from password interpreter
-                    if (in_login && self.get_prompt() !== strings().login + ': ') {
+                    if (in_login && self.get_prompt() !== strings.login + ': ') {
                         in_login = false;
                     }
                     if ($.isFunction(current.onExit)) {
@@ -7822,7 +7491,7 @@ module.exports = {
                     var prefix = self.prefix_name() + '_';
                     var names = storage.get(prefix + 'interpreters');
                     if (names) {
-                        $.each(JSON.parse(names), function(_, name) {
+                        $.each($.parseJSON(names), function(_, name) {
                             storage.remove(name + '_commands');
                             storage.remove(name + '_token');
                             storage.remove(name + '_login');
@@ -7845,9 +7514,8 @@ module.exports = {
                     wrapper.remove();
                     $(document).unbind('.terminal_' + self.id());
                     $(window).unbind('.terminal_' + self.id());
-                    self.unbind('click wheel mousewheel mousedown mouseup');
-                    self.removeData('terminal').removeClass('terminal').
-                        unbind('.terminal');
+                    self.unbind('click mousewheel mousedown mouseup');
+                    self.removeData('terminal').removeClass('terminal');
                     if (settings.width) {
                         self.css('width', '');
                     }
@@ -7856,15 +7524,8 @@ module.exports = {
                     }
                     $(window).off('blur', blur_terminal).
                         off('focus', focus_terminal);
-                    self.find('.terminal-fill').remove();
+                    iframe.remove();
                     terminals.remove(terminal_id);
-                    if (visibility_observer) {
-                        visibility_observer.unobserve(self[0]);
-                    }
-                    if (mutation_observer) {
-                        mutation_observer.disconnect();
-                    }
-                    self.resizer('unbind');
                     if (!terminals.length()) {
                         $(window).off('hashchange');
                     }
@@ -7925,7 +7586,7 @@ module.exports = {
             requests.push(xhr);
         });
         var wrapper = $('<div class="terminal-wrapper"/>').appendTo(self);
-        $('<div class="terminal-fill"/>').appendTo(self);
+        var iframe = $('<iframe/>').appendTo(wrapper);
         output = $('<div>').addClass('terminal-output').attr('role', 'log')
             .appendTo(wrapper);
         self.addClass('terminal');
@@ -7959,7 +7620,6 @@ module.exports = {
                                                  settings.login);
         }
         terminals.append(self);
-        //terminals.set(self);
         self.on('focus.terminal', 'textarea', function(e, skip) {
             if (!enabled && !skip) {
                 self.enable();
@@ -7974,32 +7634,6 @@ module.exports = {
             old_enabled = enabled;
             self.disable();
         }
-        function paste_event(e) {
-            e = e.originalEvent;
-            // we don't care about browser that don't support clipboard data
-            // those browser simple will not have this feature normal paste
-            // is cross-browser and it's handled by cmd plugin
-            if (e.clipboardData) {
-                var items = e.clipboardData.items;
-                if (items) {
-                    for (var i = 0; i < items.length; i++) {
-                        if (items[i].type.indexOf('image') !== -1) {
-                            var blob = items[i].getAsFile();
-                            var URL = window.URL || window.webkitURL;
-                            var source = URL.createObjectURL(blob);
-                            self.echo('<img src="' + source + '"/>', {raw: true});
-                        } else if (items[i].type.indexOf('text/plain') !== -1) {
-                            items[i].getAsString(self.insert);
-                        }
-                    }
-                } else if (e.clipboardData.getData) {
-                    var text = e.clipboardData.getData('text/plain');
-                    self.insert(text);
-                }
-                return false;
-            }
-        }
-        $(document).on('paste.terminal_' + self.id(), paste_event);
         make_interpreter(init_interpreter, !!settings.login, function(itrp) {
             if (settings.completion && typeof settings.completion !== 'boolean' ||
                 !settings.completion) {
@@ -8104,9 +7738,6 @@ module.exports = {
                         } else {
                             target = parents.andSelf();
                         }
-                        if (e.originalEvent.button === 2) {
-                            return;
-                        }
                         self.oneTime(1, function() {
                             $(window).on('mousemove.terminal_' + self.id(), function() {
                                 isDragging = true;
@@ -8147,28 +7778,6 @@ module.exports = {
                         self.stopTime('click_' + self.id());
                     });
                 })();
-                (function() {
-                    var clip = self.find('textarea');
-                    self.on('mousedown.terminal', function(e) {
-                        if (e.originalEvent.button === 2) {
-                            if (!self.enabled()) {
-                                self.enable();
-                            }
-                            e.preventDefault();
-                            var offset = command_line.offset();
-                            clip.css({
-                                left: e.pageX - offset.left - 5,
-                                top: e.pageY - offset.top - 5
-                            });
-                        }
-                    });
-                    // contextmenu is fired after mousedown
-                    self.bind('contextmenu', function() {
-                        self.oneTime(100, function() {
-                            clip.css({left: '', top: ''});
-                        });
-                    });
-                })();
             }
             self.delegate('.exception a', 'click', function(e) {
                 // .on('click', '.exception a', function(e) {
@@ -8179,6 +7788,12 @@ module.exports = {
                     print_line(href);
                 }
             });
+            self.mousedown(function(e) {
+                if (e.which === 2) {
+                    var selected = get_selected_text();
+                    self.insert(selected);
+                }
+            });
             if (self.is(':visible')) {
                 num_chars = self.cols();
                 command_line.resize(num_chars);
@@ -8186,7 +7801,7 @@ module.exports = {
             }
             // -------------------------------------------------------------
             // Run Login
-            command_queue.resolve();
+            command_defer.resolve();
             if (settings.login) {
                 self.login(settings.login, true, initialize);
             } else {
@@ -8204,49 +7819,18 @@ module.exports = {
                     old_width = width;
                 }
             }
-            if (self.is(':visible')) {
-                self.resizer(resize);
-            }
-            function observe_visibility() {
-                if (visibility_observer) {
-                    visibility_observer.unobserve(self[0]);
+            self.oneTime(100, function() {
+                // idea taken from https://github.com/developit/simple-element
+                // -resize-detector
+                function bind() {
+                    iframe[0].contentWindow.onresize = resize;
                 }
-                visibility_observer = new IntersectionObserver(function(entries) {
-                    if (entries[0].intersectionRatio) {
-                        self.resizer('unbind').resizer(resize);
-                        resize();
-                    } else {
-                        self.disable();
-                    }
-                }, {
-                    root: document.body
-                });
-                visibility_observer.observe(self[0]);
-            }
-            var in_dom = !!self.closest('body').length;
-            var MutationObsrv = window.MutationObserver || window.WebKitMutationObserver;
-            if (window.IntersectionObserver) {
-                if (MutationObsrv) {
-                    mutation_observer = new MutationObsrv(function() {
-                        if (self.closest('body').length) {
-                            if (!in_dom) {
-                                self.scroll_to_bottom();
-                                observe_visibility();
-                            }
-                            in_dom = true;
-                        } else if (in_dom) {
-                            in_dom = false;
-                        }
-                    });
-                    mutation_observer.observe(document.body, {childList: true});
+                if (iframe.is(':visible')) {
+                    bind();
+                } else {
+                    iframe.on('load', bind);
                 }
-                // check if element is in the DOM if not running IntersectionObserver
-                // don't make sense
-                if (in_dom) {
-                    observe_visibility();
-                }
-
-            }
+            });
             // -------------------------------------------------------------
             // :: helper
             function exec_spec(spec) {
@@ -8258,14 +7842,14 @@ module.exports = {
                             if (paused) {
                                 var defer = $.Deferred();
                                 resume_callbacks.push(function() {
-                                    return terminal.exec(spec[2]).done(function() {
+                                    return terminal.exec(spec[2]).then(function() {
                                         terminal.save_state(spec[2], true, spec[1]);
                                         defer.resolve();
                                     });
                                 });
                                 return defer.promise();
                             } else {
-                                return terminal.exec(spec[2]).done(function() {
+                                return terminal.exec(spec[2]).then(function() {
                                     terminal.save_state(spec[2], true, spec[1]);
                                 });
                             }
@@ -8290,12 +7874,12 @@ module.exports = {
                         try {
                             var hash = location.hash.replace(/^#/, '');
                             // yes no var - local inside terminal
-                            hash_commands = JSON.parse(decodeURIComponent(hash));
+                            hash_commands = $.parseJSON(decodeURIComponent(hash));
                             var i = 0;
                             (function recur() {
                                 var spec = hash_commands[i++];
                                 if (spec) {
-                                    exec_spec(spec).done(recur);
+                                    exec_spec(spec).then(recur);
                                 } else {
                                     change_hash = true;
                                 }
@@ -8312,69 +7896,40 @@ module.exports = {
             }
             // change_hash = true; // exec can now change hash
             // -------------------------------------------------------------
-            var shift = false;
-            $(document).bind('keydown.terminal_' + self.id(), function(e) {
-                if (e.shiftKey) {
-                    shift = true;
-                }
-            }).bind('keyup.terminal_' + self.id(), function(e) {
-                // in Google Chromium/Linux shiftKey is false
-                if (e.shiftKey || e.which === 16) {
-                    shift = false;
-                }
-            });
-            // this could work without calling scroll on wheel event but we
-            // need to for cases where you have mouse wheel work differently
-            // like with less command that scroll text
-            function mousewheel(event, delta) {
-                if (!shift) {
-                    var interpreter = interpreters.top();
-                    var ret;
-                    if ($.isFunction(interpreter.mousewheel)) {
-                        ret = interpreter.mousewheel(event, delta, self);
-                        if (ret === false) {
-                            return;
-                        }
-                    } else if ($.isFunction(settings.mousewheel)) {
-                        ret = settings.mousewheel(event, delta, self);
-                        if (ret === false) {
-                            return;
-                        }
-                    }
-                    if (delta > 0) {
-                        self.scroll(-40);
-                    } else {
-                        self.scroll(40);
-                    }
-                }
-            }
             if ($.event.special.mousewheel) {
-                // we keep mousewheel plugin just in case
-                self.on('mousewheel', function(event, delta) {
-                    mousewheel(event, delta);
-                    event.preventDefault();
-                });
-            } else {
-                // detection take from:
-                // https://developer.mozilla.org/en-US/docs/Web/Events/wheel
-                var event;
-                if ("onwheel" in document.createElement("div")) {
-                    event = "wheel"; // Modern browsers support "wheel"
-                } else if (document.onmousewheel !== undefined) {
-                    event = "mousewheel"; // Webkit and IE support at least "mousewheel"
-                } else {
-                    // let's assume that remaining browsers are older Firefox
-                    event = "DOMMouseScroll";
-                }
-                self.on(event, function(e) {
-                    var delta;
-                    if (event === 'mousewheel') {
-                        delta = - 1 / 40 * e.originalEvent.wheelDelta;
-                    } else {
-                        delta = e.originalEvent.deltaY || e.originalEvent.detail;
+                var shift = false;
+                $(document).bind('keydown.terminal_' + self.id(), function(e) {
+                    if (e.shiftKey) {
+                        shift = true;
                     }
-                    mousewheel(e, -delta);
-                    return false;
+                }).bind('keyup.terminal_' + self.id(), function(e) {
+                    // in Google Chromium/Linux shiftKey is false
+                    if (e.shiftKey || e.which === 16) {
+                        shift = false;
+                    }
+                });
+                self.mousewheel(function(event, delta) {
+                    if (!shift) {
+                        var interpreter = interpreters.top();
+                        var ret;
+                        if ($.isFunction(interpreter.mousewheel)) {
+                            ret = interpreter.mousewheel(event, delta, self);
+                            if (ret === false) {
+                                return;
+                            }
+                        } else if ($.isFunction(settings.mousewheel)) {
+                            ret = settings.mousewheel(event, delta, self);
+                            if (ret === false) {
+                                return;
+                            }
+                        }
+                        if (delta > 0) {
+                            self.scroll(-40);
+                        } else {
+                            self.scroll(40);
+                        }
+                        // event.preventDefault();
+                    }
                 });
             }
         }); // make_interpreter
@@ -8383,7 +7938,7 @@ module.exports = {
     }; // terminal plugin
 })(jQuery);
 
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(4), __webpack_require__(18).setImmediate))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(5), __webpack_require__(18).setImmediate))
 
 /***/ }),
 /* 12 */
@@ -8412,7 +7967,7 @@ module.exports = {
     // ---------------------------------------------------------------------
     // :: Replace overtyping (from man) formatting with terminal formatting
     // ---------------------------------------------------------------------
-    $.terminal.overtyping = function overtyping(string) {
+    $.terminal.overtyping = function(string) {
         return string.replace(/((?:_\x08.|.\x08_)+)/g, function(full) {
             var striped = full.replace(/_x08|\x08_|_\u0008|\u0008_/g, '');
             return '[[u;;]' + striped + ']';
@@ -8634,7 +8189,7 @@ module.exports = {
             }
             return [styles.join(''), color, background];
         }
-        return function from_ansi(input) {
+        return function(input) {
             //merge multiple codes
             /*input = input.replace(/((?:\x1B\[[0-9;]*[A-Za-z])*)/g, function(group) {
               return group.replace(/m\x1B\[/g, ';');
@@ -8705,8 +8260,8 @@ module.exports = {
             return output.join(''); //.replace(/\[\[[^\]]+\]\]/g, '');
         };
     })();
-    $.terminal.defaults.formatters.unshift($.terminal.overtyping);
-    $.terminal.defaults.formatters.unshift($.terminal.from_ansi);
+    $.terminal.defaults.formatters.push($.terminal.overtyping);
+    $.terminal.defaults.formatters.push($.terminal.from_ansi);
 })(jQuery);
 
 
@@ -10253,7 +9808,7 @@ process.umask = function() { return 0; };
     attachTo.clearImmediate = clearImmediate;
 }(typeof self === "undefined" ? typeof global === "undefined" ? this : global : self));
 
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(4), __webpack_require__(15)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(5), __webpack_require__(15)))
 
 /***/ }),
 /* 17 */
@@ -12607,7 +12162,7 @@ exports.clearImmediate = clearImmediate;
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__popovers_terminalMatrix__ = __webpack_require__(26);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__popovers_terminalMatrix__ = __webpack_require__(27);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__helpers_dom__ = __webpack_require__(0);
 
 
@@ -12664,7 +12219,7 @@ class ActionsMenu {
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__terminal__ = __webpack_require__(28);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__terminal__ = __webpack_require__(29);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__actionsMenu__ = __webpack_require__(20);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__menuPanel__ = __webpack_require__(24);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__helpers_dom__ = __webpack_require__(0);
@@ -12746,11 +12301,11 @@ class TerminalsMatrix
 				cell.classList.add('active');
 			}
 
-			gdsSession[ gds ][index] = gdsSession[ gds ][index] || new __WEBPACK_IMPORTED_MODULE_0__terminal__["a" /* default */]({
+			gdsSession[gds][index] = gdsSession[gds][index] || new __WEBPACK_IMPORTED_MODULE_0__terminal__["a" /* default */]({
 				name 			: index,
 				sessionIndex	: sessionIndex,
 				gds				: gds,
-				buffer			: window.TerminalState.getBuffer( gds, index + 1 )
+				buffer			: window.TerminalState.getBuffer(gds, index + 1)
 			});
 
 			// draw or redraw
@@ -12772,12 +12327,13 @@ class RightMenu
 	{
 		this.context = __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_3__helpers_dom__["a" /* default */])('aside.t-d-cell menu');
 		this.context.appendChild( __WEBPACK_IMPORTED_MODULE_2__menuPanel__["a" /* default */].getContext() );
+		return this;
 	}
 
-	static render({canAddPq, hideMenu})
+	static render( params )
 	{
-		__WEBPACK_IMPORTED_MODULE_2__menuPanel__["a" /* default */].render({canAddPq});
-		this.context.classList.toggle('hidden', hideMenu );
+		__WEBPACK_IMPORTED_MODULE_2__menuPanel__["a" /* default */].render( params );
+		this.context.classList.toggle('hidden', params.hideMenu );
 	}
 
 	static getContext()
@@ -12797,20 +12353,23 @@ class Wrapper
 		LeftSide.appendChild( TerminalsMatrix.context );
 		LeftSide.appendChild( __WEBPACK_IMPORTED_MODULE_1__actionsMenu__["a" /* default */].init().getContext() );
 
-		RightMenu.init();
 		this.context.appendChild( LeftSide );
-		this.context.appendChild( RightMenu.getContext() );
+		this.context.appendChild( RightMenu.init().getContext() );
+
+		return this;
 	}
 
-	static render({gds, hideMenu, canAddPq})
+	static render( params )
 	{
+		const gds = params.gds;
+
 		if ( this.gds !== gds )
 		{
 			this.gds 				= gds;
 			this.context.className = `term-body minimized ${gds}`; // change gds styles
 		}
 
-		RightMenu.render({ hideMenu, canAddPq });
+		RightMenu.render( params );
 	}
 
 	static getContext()
@@ -12825,14 +12384,11 @@ class Container {
 	{
 		const Root = document.getElementById( rootId );
 
-		this.state = {
-			className : 'terminal-wrap-custom'
-		};
+		this.state = { className : 'terminal-wrap-custom' };
 
-		Wrapper.init();
 
 		this.context = __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_3__helpers_dom__["a" /* default */])(`section.${this.state.className}`);
-		this.context.appendChild( Wrapper.getContext() );
+		this.context.appendChild( Wrapper.init().getContext() );
 
 		Root.appendChild( this.context );
 	}
@@ -12842,23 +12398,24 @@ class Container {
 		TerminalsMatrix.purgeScreens( gds );
 	}
 
-	static menuRender({canAddPq, hideMenu})
+	static menuRender( params )
 	{
-		RightMenu.render({
-			canAddPq,
-			hideMenu
-		});
+		RightMenu.render( params );
 	}
 
 	static render( params )
 	{
 		this.context.className = this.state.className + ' term-f-size-' + params.fontSize;
 
-		Wrapper.render({
-			gds 		: params.gds,
-			hideMenu 	: params.hideMenu,
-			canAddPq 	: params.canAddPq
-		});
+		// Wrapper.render({
+		// 	gds 			: params.gds,
+		// 	hideMenu 		: params.hideMenu,
+		// 	canAddPq 		: params.canAddPq
+		// 	sessionIndex 	: params.sessionIndex
+		// 	activeTerminal 	: params.activeTerminal
+		// });
+
+		Wrapper.render( params );
 
 		TerminalsMatrix
 			.clear()
@@ -12918,11 +12475,12 @@ class SessionKeys
 		this.settings 	= params;
 		this.collection	= [];
 		this.trigger	= [];
+		this.active		= params.name === params.gds;
 	}
 
-	disableAll()
+	getButtons()
 	{
-		this.collection.map( btn => btn.disabled = true );
+		return this.settings.list.map( this.makeButton, this );
 	}
 
 	makeButton(value, index)
@@ -12930,38 +12488,38 @@ class SessionKeys
 		const button 		= __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0__helpers_dom__["a" /* default */])('button.btn btn-sm btn-purple font-bold pos-rlt');
 		button.innerHTML	= value;
 
-		if (window.TerminalState.getPcc()[index])
+		if ( window.TerminalState.getPcc()[index] )
 			button.innerHTML += `<span class="pcc-label">${window.TerminalState.getPcc()[index]}</span>`;
 
-		if (this.settings.session === index)
+		if ( this.settings.sessionIndex === index )
 			button.className += ' active';
 
-		if ( !this.settings.active )
-			button.className += ' hidden';
+		// if ( !this.active )
+		// 	button.className += ' hidden';
 
-		button.disabled = !this.settings.terminal;
+		button.disabled = !this.settings.activeTerminal;
 
 		button.addEventListener('click', () => {
-
 			this.disableAll();
-			window.TerminalState.change({ sessionIndex : index }, 'CHANGE_SESSION_BY_MENU');
-
+			this.settings.onAreaChange( index );
 		});
 
 		return button;
 	}
 
-	getButtons()
+	disableAll()
 	{
-		return this.settings.list.map( this.makeButton.bind( this ) );
+		this.collection.map( btn => btn.disabled = true );
 	}
 
 	getTrigger()
 	{
-		this.trigger 			= __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0__helpers_dom__["a" /* default */])('button.btn btn-sm btn-mint font-bold' + ( this.settings['active'] ? ' active' : '' ));
-		this.trigger.innerHTML	= this.settings['gds'];
+		this.trigger 			= __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0__helpers_dom__["a" /* default */])('button.btn btn-sm btn-mint font-bold' + ( this.active ? ' active' : '' ));
+		this.trigger.innerHTML	= this.settings['name'];
 
-		this.trigger.addEventListener('click', () => window.TerminalState.change({ gds : this.settings.gds }, 'CHANGE_GDS') );
+		if (!this.active)
+			this.trigger.addEventListener('click', () => this.settings.onGdsChange( this.settings['name'] ) );
+
 		return this.trigger;
 	}
 
@@ -12969,7 +12527,7 @@ class SessionKeys
 	{
 		this.context.appendChild( this.getTrigger() );
 
-		if (this.settings.active)
+		if (this.active)
 			this.collection = this.getButtons().map( button => this.context.appendChild( button ) );
 
 		return this.context;
@@ -12984,8 +12542,8 @@ class SessionKeys
 
 "use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__popovers_history__ = __webpack_require__(25);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__popovers_textSize__ = __webpack_require__(27);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__popovers_settings__ = __webpack_require__(51);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__popovers_textSize__ = __webpack_require__(28);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__popovers_settings__ = __webpack_require__(26);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__menu_sessionButtons__ = __webpack_require__(23);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__menu_pqButton__ = __webpack_require__(22);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__helpers_dom__ = __webpack_require__(0);
@@ -13032,26 +12590,27 @@ class MenuPanel
 		}).getTrigger();
 	}
 
-	static activeSession()
+	static activeSession( {gds, sessionIndex, activeTerminal} )
 	{
-		const state = window.TerminalState.state;
+		const defParams = { gds, sessionIndex, activeTerminal };
 
-		const apollo = new __WEBPACK_IMPORTED_MODULE_3__menu_sessionButtons__["a" /* default */]({
-			gds 		: 'apollo',
-			active		: state.gds === 'apollo',
-			session		: state.sessionIndex,
-			terminal	: state.activeTerminal,
+		defParams.onAreaChange 	= sessionIndex => {
+			window.TerminalState.change( {sessionIndex}, 'CHANGE_SESSION_BY_MENU');
+		};
 
-			list		: ['A', 'B', 'C', 'D', 'E']
-		});
+		defParams.onGdsChange 	= gds => {
+			window.TerminalState.change( {gds}, 'CHANGE_GDS');
+		};
 
-		const sabre = new __WEBPACK_IMPORTED_MODULE_3__menu_sessionButtons__["a" /* default */]({
-			gds 		: 'sabre',
-			active		: state.gds === 'sabre',
-			session		: state.sessionIndex,
-			terminal	: state.activeTerminal,
-			list		: ['A', 'B', 'C', 'D', 'E', 'F']
-		});
+		const apollo 	= new __WEBPACK_IMPORTED_MODULE_3__menu_sessionButtons__["a" /* default */]( Object.assign( {}, defParams, {
+			name : 'apollo',
+			list : ['A', 'B', 'C', 'D', 'E']
+		}));
+
+		const sabre 	= new __WEBPACK_IMPORTED_MODULE_3__menu_sessionButtons__["a" /* default */]( Object.assign( {}, defParams, {
+			name : 'sabre',
+			list : ['A', 'B', 'C', 'D', 'E', 'F' ]
+		}));
 
 		const context 		= document.createElement('article');
 		context.innerHTML 	= '<div class="label">Session</div>';
@@ -13065,7 +12624,6 @@ class MenuPanel
 	static InputLanguage()
 	{
 		const context 	= document.createElement('article');
-		// const btnGroup	= document.createElement('div');
 
 		context.innerHTML = '<div class="label">Input Language</div>';
 
@@ -13078,9 +12636,6 @@ class MenuPanel
 
 			context.appendChild( button );
 		});
-
-
-		// context.appendChild(btnGroup);
 
 		return context;
 	}
@@ -13107,16 +12662,18 @@ class MenuPanel
 		return context;
 	}
 
-	static render( {canAddPq} )
+	static render(params)
 	{
+		// console.log( 'zzz', params );
+
 		// let start = new Date().getTime();
-		console.log(' re render ');
+		// console.log(' re render ');
 		context.innerHTML = '';
 
-		context.appendChild( this.settingsButtons() );
-		context.appendChild( this.activeSession() );
+		context.appendChild( this.settingsButtons( params ) );
+		context.appendChild( this.activeSession( params ) );
 		context.appendChild( this.InputLanguage() );
-		context.appendChild( __WEBPACK_IMPORTED_MODULE_4__menu_pqButton__["a" /* default */].render( {canAddPq}) );
+		context.appendChild( __WEBPACK_IMPORTED_MODULE_4__menu_pqButton__["a" /* default */].render( params ) );
 
 		// console.log('draw done', new Date().getTime() - start);
 
@@ -13133,7 +12690,7 @@ class MenuPanel
 "use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__helpers_requests__ = __webpack_require__(2);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__helpers_dom__ = __webpack_require__(0);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__modules_buttonPopover__ = __webpack_require__(6);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__modules_buttonPopover__ = __webpack_require__(3);
 
 
 
@@ -13181,7 +12738,47 @@ class History extends __WEBPACK_IMPORTED_MODULE_2__modules_buttonPopover__["a" /
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_tether_drop__ = __webpack_require__(3);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__helpers_dom__ = __webpack_require__(0);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__modules_buttonPopover__ = __webpack_require__(3);
+
+
+
+
+
+class Settings extends __WEBPACK_IMPORTED_MODULE_1__modules_buttonPopover__["a" /* default */]
+{
+	constructor( params )
+	{
+		super( params );
+
+		this.popContent = __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0__helpers_dom__["a" /* default */])('div');
+		this.makeTrigger();
+
+		this.popContent.innerHTML = '<div class="wrapper"> In Development </div>';
+	}
+
+	getPopContent()
+	{
+		// this.build();
+		return this.popContent;
+	}
+
+	// build()
+	// {
+	// 	Request.get('', true).then( ( response = ['No History'] ) => {
+	// 	});
+	// }
+}
+/* harmony export (immutable) */ __webpack_exports__["a"] = Settings;
+
+
+
+/***/ }),
+/* 27 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_tether_drop__ = __webpack_require__(4);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_tether_drop___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_tether_drop__);
 
 
@@ -13287,12 +12884,12 @@ class Matrix
 
 
 /***/ }),
-/* 27 */
+/* 28 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__helpers_dom__ = __webpack_require__(0);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__modules_buttonPopover__ = __webpack_require__(6);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__modules_buttonPopover__ = __webpack_require__(3);
 
 
 
@@ -13334,11 +12931,11 @@ class TextSize extends __WEBPACK_IMPORTED_MODULE_1__modules_buttonPopover__["a" 
 /* harmony default export */ __webpack_exports__["a"] = (TextSize);
 
 /***/ }),
-/* 28 */
+/* 29 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__middleware_terminal__ = __webpack_require__(30);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__middleware_terminal__ = __webpack_require__(31);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__helpers_dom__ = __webpack_require__(0);
 
 
@@ -13476,7 +13073,7 @@ class Terminal {
 
 
 /***/ }),
-/* 29 */
+/* 30 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -13692,23 +13289,23 @@ class KeyBinding
 
 
 /***/ }),
-/* 30 */
+/* 31 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_noty__ = __webpack_require__(14);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_noty___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_noty__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__modules_pagination__ = __webpack_require__(33);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__modules_session__ = __webpack_require__(34);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__modules_spinner__ = __webpack_require__(35);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__helpers_keyBinding__ = __webpack_require__(29);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__modules_output__ = __webpack_require__(32);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__modules_tabManager__ = __webpack_require__(36);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__modules_f8__ = __webpack_require__(31);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__modules_pagination__ = __webpack_require__(34);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__modules_session__ = __webpack_require__(35);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__modules_spinner__ = __webpack_require__(36);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__helpers_keyBinding__ = __webpack_require__(30);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__modules_output__ = __webpack_require__(33);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__modules_tabManager__ = __webpack_require__(37);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__modules_f8__ = __webpack_require__(32);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_8__helpers_helpers__ = __webpack_require__(1);
 
 
-const $					= __webpack_require__(37);
+const $					= __webpack_require__(38);
 window.$ 				= window.jQuery = $;
 
 __webpack_require__(11);
@@ -13830,7 +13427,6 @@ class TerminalPlugin
 
 		if ( replacement )
 		{
-			// console.log( replacement);
 			terminal.insert( replacement );
 			return false;
 		}
@@ -14071,7 +13667,7 @@ class TerminalPlugin
 
 
 /***/ }),
-/* 31 */
+/* 32 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -14168,7 +13764,7 @@ class F8Reader
 
 
 /***/ }),
-/* 32 */
+/* 33 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -14262,7 +13858,7 @@ class Output
 
 
 /***/ }),
-/* 33 */
+/* 34 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -14320,7 +13916,7 @@ class Pagination
 
 
 /***/ }),
-/* 34 */
+/* 35 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -14380,7 +13976,7 @@ class Session
 
 
 /***/ }),
-/* 35 */
+/* 36 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -14441,7 +14037,7 @@ class Spinner
 
 
 /***/ }),
-/* 36 */
+/* 37 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -14509,69 +14105,17 @@ class TabManager
 
 
 /***/ }),
-/* 37 */
+/* 38 */
 /***/ (function(module, exports) {
 
 module.exports = jQuery;
 
 /***/ }),
-/* 38 */
+/* 39 */
 /***/ (function(module, exports, __webpack_require__) {
 
 __webpack_require__(8);
 module.exports = __webpack_require__(7);
-
-
-/***/ }),
-/* 39 */,
-/* 40 */,
-/* 41 */,
-/* 42 */,
-/* 43 */,
-/* 44 */,
-/* 45 */,
-/* 46 */,
-/* 47 */,
-/* 48 */,
-/* 49 */,
-/* 50 */,
-/* 51 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__helpers_dom__ = __webpack_require__(0);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__modules_buttonPopover__ = __webpack_require__(6);
-
-
-
-
-
-class Settings extends __WEBPACK_IMPORTED_MODULE_1__modules_buttonPopover__["a" /* default */]
-{
-	constructor( params )
-	{
-		super( params );
-
-		this.popContent = __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0__helpers_dom__["a" /* default */])('div');
-		this.makeTrigger();
-
-		this.popContent.innerHTML = '<div class="wrapper"> In Development </div>';
-	}
-
-	getPopContent()
-	{
-		// this.build();
-		return this.popContent;
-	}
-
-	// build()
-	// {
-	// 	Request.get('', true).then( ( response = ['No History'] ) => {
-	// 	});
-	// }
-}
-/* harmony export (immutable) */ __webpack_exports__["a"] = Settings;
-
 
 
 /***/ })
