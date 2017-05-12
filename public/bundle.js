@@ -102,7 +102,10 @@
 // classes		: 'drop-theme-hubspot-popovers',
 // classes		: 'drop-theme-basic',
 
-const CLASS_NAME = 'drop-theme-hubspot-popovers';
+// const CLASS_NAME = 'drop-theme-hubspot-popovers';
+const CLASS_NAME = 'drop-theme-twipsy';
+// const CLASS_NAME = 'drop-theme-arrows-bounce';
+// const CLASS_NAME = 'drop-theme-arrows-bounce-dark';
 // const CLASS_NAME = 'drop-theme-basic';
 // const CLASS_NAME = 'drop-theme-arrows';
 
