@@ -90,7 +90,7 @@ class TerminalsMatrix
 
 	static purgeScreens( gds )
 	{
-		gdsSession[ gds ].forEach( terminal => { terminal.clear(); });
+		gdsSession[ gds ].forEach( terminal => terminal.clear() );
 	}
 }
 
@@ -173,10 +173,10 @@ export default class Container {
 		TerminalsMatrix.purgeScreens( gds );
 	}
 
-	static menuRender( params )
-	{
-		RightMenu.render( params );
-	}
+	// static menuRender( params )
+	// {
+	// 	RightMenu.render( params );
+	// }
 
 	static render( params )
 	{
@@ -190,11 +190,14 @@ export default class Container {
 		// 	activeTerminal 	: params.activeTerminal
 		// });
 
-		Wrapper.render( params );
+		const {hideMenu, canAddPq} = params;
+		const p = { gds : params.gdsObj.name, hideMenu, canAddPq, sessionIndex  : params.gdsObj.sessionIndex, activeTerminal : params.gdsObj.activeTerminal };
+
+		Wrapper.render( p );
 
 		TerminalsMatrix
 			.clear()
-			.makeCells( params.matrix )
-			.appendTerminals( params );
+			.makeCells( params.gdsObj.matrix )
+			.appendTerminals( p );
 	}
 }

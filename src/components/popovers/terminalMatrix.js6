@@ -69,12 +69,10 @@ export default class Matrix
 		cell.addEventListener( 'click', () => {
 			popContext.close();
 
-			window.TerminalState.change({
-				matrix : {
-					rows 	: rIndex,
-					cells	: cIndex
-				}
-			}, 'CHANGE_MATRIX');
+			window.TerminalState.action( 'CHANGE_MATRIX', {
+				rows 	: rIndex,
+				cells	: cIndex
+			});
 		});
 
 		cell.addEventListener('mouseover', () => {

@@ -8,9 +8,7 @@ export default class PqButton
 		button.className	= 'btn btn-sm btn-purple font-bold';
 		button.innerHTML	= 'PQ';
 
-		button.onclick = () => {
-			window.TerminalState.change({ hideMenu : true }, 'PQ_MODAL_SHOW')
-		};
+		button.onclick = () => window.TerminalState.action('PQ_MODAL_SHOW', {});
 
 		return button;
 	}

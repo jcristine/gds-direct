@@ -971,149 +971,201 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
 
 
-const apiData = window.apiData || {};
+const apiData	= window.apiData || {};
+const saved		= localStorage.getItem('matrix');
 
 const gdsSettings = {
 	sessionIndex 	: 0,
 	pcc				: {},
-	matrix			: { rows: 1, cells : 1},
+	matrix			: saved ? JSON.parse( saved ) : {rows : 1, cells : 1},
 	activeTerminal	: null
 };
 
 const Gds = {
-	'apollo': Object.assign({}, gdsSettings, {'sessionIndex' : __WEBPACK_IMPORTED_MODULE_2__constants__["a" /* AREA_LIST */].indexOf(apiData.settings['gds']['apollo']['area']) }),
-	'sabre'	: Object.assign({}, gdsSettings, {'sessionIndex' : __WEBPACK_IMPORTED_MODULE_2__constants__["a" /* AREA_LIST */].indexOf(apiData.settings['gds']['sabre']['area']) })
+	apollo: Object.assign({}, gdsSettings, {
+		name 			: 'apollo',
+		sessionIndex 	: __WEBPACK_IMPORTED_MODULE_2__constants__["a" /* AREA_LIST */].indexOf(apiData.settings['gds']['apollo']['area'])
+	}),
+
+	sabre	: Object.assign({}, gdsSettings, {
+		name 			: 'sabre',
+		sessionIndex 	: __WEBPACK_IMPORTED_MODULE_2__constants__["a" /* AREA_LIST */].indexOf(apiData.settings['gds']['sabre']['area'])
+	})
 };
 
 class TerminalState
 {
 	constructor()
 	{
-		const saved		= localStorage.getItem('matrix');
-		const curGds	= apiData.settings.common['currentGds'] || 'apollo';
+		const curGds = apiData.settings.common['currentGds'] || 'apollo';
 
 		this.state = {
-			gds 			: curGds,
-			sessionIndex	: Gds[curGds]['sessionIndex'],
-
-			matrix			: saved ? JSON.parse( saved ) : {rows : 1, cells : 1},
 			language		: 'APOLLO',
-			activeTerminal	: '',
-
 			fontSize		: 1,
 			hideMenu		: false,
-			canAddPq		: false
+			canAddPq		: false,
+
+			gdsObj			: Gds[curGds]
 		};
 
 		// Request.get(`terminal/keepAlive`, true);
-
 		setInterval( () => __WEBPACK_IMPORTED_MODULE_1__helpers_requests__["a" /* default */].get(`terminal/keepAlive`, true), __WEBPACK_IMPORTED_MODULE_2__constants__["b" /* KEEP_ALIVE_REFRESH */] );
 	}
 
 	getMatrix()
 	{
-		return this.state.matrix;
+		return this.state.gdsObj.matrix;
 	}
 
 	getPcc()
 	{
-		return Gds[this.state.gds].pcc;
+		return this.state.gdsObj.pcc;
+	}
+
+	getActiveTerminal()
+	{
+		return this.state.gdsObj['activeTerminal'];
+	}
+
+	getGds()
+	{
+		return this.state.gdsObj['name'];
+	}
+
+	getLanguage()
+	{
+		return this.state['language'];
+	}
+
+	getAreaIndex()
+	{
+		return this.state.gdsObj['sessionIndex'];
 	}
 
 	getSessionAreaMap()
 	{
-		const key = this.state.gds === 'apollo' ? 'S': '¤';
+		const key = this.getGds() === 'apollo' ? 'S': '¤';
 		return __WEBPACK_IMPORTED_MODULE_2__constants__["a" /* AREA_LIST */].map( char => key + char );
 	}
 
 	getBuffer( gds, terminalId )
 	{
-		if ( apiData && apiData.buffer && apiData.buffer.gds && apiData.buffer.gds[gds] )
-			return apiData.buffer['gds'][gds]['terminals'][terminalId];
+		const buffer = apiData.buffer;
+
+		if ( apiData && buffer && buffer.gds && buffer.gds[gds] )
+			return buffer['gds'][gds]['terminals'][terminalId];
 
 		return false;
 	}
 
 	purgeScreens()
 	{
-		__WEBPACK_IMPORTED_MODULE_0__components_containerMain__["a" /* default */].purgeScreens( this.state.gds );
-		__WEBPACK_IMPORTED_MODULE_1__helpers_requests__["a" /* default */].get(`terminal/clearBuffer?gds=${this.state.gds}&rId=${apiData.rId}`);
+		__WEBPACK_IMPORTED_MODULE_0__components_containerMain__["a" /* default */].purgeScreens( this.getGds() );
+		__WEBPACK_IMPORTED_MODULE_1__helpers_requests__["a" /* default */].get(`terminal/clearBuffer`, true);
 	}
 
-	execCmd( cmd = '')
+	execCmd( cmd = '' )
 	{
-		if (this.state.activeTerminal && cmd)
-			this.state.activeTerminal.exec( cmd );
+		const terminal = this.getActiveTerminal();
+
+		if (terminal && cmd)
+			terminal.exec( cmd );
 	}
 
 	isLanguageApollo()
 	{
-		return this.state.language === 'APOLLO';
+		return this.getLanguage() === 'APOLLO';
 	}
 
-	change( params = {}, action )
+	action( action, params )
 	{
-		this.state = Object.assign( {}, this.state, params );
-		// console.log( this.state );
-
-		const gds = this.state.gds;
-
 		switch (action)
 		{
 			case 'CHANGE_GDS':
-				this.state.matrix 			= Gds[gds]['matrix'];
-				this.state.sessionIndex 	= Gds[gds]['sessionIndex'];
-				this.state.activeTerminal 	= Gds[gds]['activeTerminal'];
+				Gds[ this.getGds() ] = this.state.gdsObj;
+
+				this.change({
+					gds		: params,
+					gdsObj 	: Gds[params]
+				});
 			break;
 
 			case 'CHANGE_SESSION' :
-				Gds[gds]['sessionIndex'] = this.state.sessionIndex;
-				return __WEBPACK_IMPORTED_MODULE_0__components_containerMain__["a" /* default */].menuRender( this.state );
+
+				this.change({
+					gdsObj : Object.assign( {}, this.state.gdsObj, {sessionIndex : params} )
+				});
+
+				// return Container.menuRender( this.state );
 			break;
 
 			case 'CHANGE_SESSION_BY_MENU' :
-				let command = this.getSessionAreaMap()[params.sessionIndex];
-				this.state.activeTerminal.exec( command );
-				return false;
+
+				console.log( params );
+
+				const command = this.getSessionAreaMap()[params];
+				const xz = this.getActiveTerminal().exec( command );
+
+				console.log( xz );
+				// return false;
+
 			break;
 
-			case 'CHANGE_MATRIX' :
-				localStorage.setItem('matrix', JSON.stringify(this.state.matrix) );
-				Gds[gds]['matrix'] = this.state.matrix;
+			case 'CHANGE_MATRIX':
+
+				localStorage.setItem('matrix', JSON.stringify( params ) );
+
+				this.change({
+					gdsObj : Object.assign( {}, this.state.gdsObj, {matrix : params} )
+				});
+
 			break;
 
 			case 'CHANGE_ACTIVE_TERMINAL' :
-				// console.log(' change active terminal');
 
-				if (Gds[gds]['activeTerminal'])
-					Gds[gds]['activeTerminal'][0].parentNode.classList.remove('active');
+				// TODO :: optimize
 
-				Gds[gds]['activeTerminal'] = this.state.activeTerminal;
-				Gds[gds]['activeTerminal'][0].parentNode.classList.add('active');
+				this.change({
+					gdsObj : Object.assign( {}, this.state.gdsObj, { activeTerminal : params } )
+				});
 
-				return __WEBPACK_IMPORTED_MODULE_0__components_containerMain__["a" /* default */].menuRender( this.state );
+				// todo move to
+				// params[0].parentNode.classList.add('active');
+				// return false;
+
 			break;
 
 			case 'CHANGE_PCC' :
-				Gds[gds]['pcc'][this.state.sessionIndex] = params.pcc;
-				return __WEBPACK_IMPORTED_MODULE_0__components_containerMain__["a" /* default */].menuRender( this.state );
+				this.state.gdsObj['pcc'][ this.getAreaIndex() ] = params;
+				this.change({});
 			break;
 
-			case 'ACTIVATE_PQ' :
-				return __WEBPACK_IMPORTED_MODULE_0__components_containerMain__["a" /* default */].menuRender( this.state );
-			break;
+			// case 'ACTIVATE_PQ' :
+			// break;
 
 			case 'PQ_MODAL_SHOW' :
-				if (this.state.activeTerminal)
+
+				if (this.state.gdsObj.activeTerminal)
 				{
 					apiData.pqModal.show({
-						onClose	: () => this.change({hideMenu: false})
-					}).then( () => __WEBPACK_IMPORTED_MODULE_0__components_containerMain__["a" /* default */].render( this.state ) );
+						onClose	: () => this.change( {hideMenu: false} )
+					})
+
+					.then( () => {
+						this.change({hideMenu: true});
+					});
 				}
 
 				return false;
 			break;
 		}
+	}
+
+	change( params = {} )
+	{
+		this.state = Object.assign( {}, this.state, params );
+
+		console.log(' change ', params);
 
 		__WEBPACK_IMPORTED_MODULE_0__components_containerMain__["a" /* default */].render( this.state );
 	}
@@ -1132,7 +1184,7 @@ window.onresize = function() {
 };
 
 __WEBPACK_IMPORTED_MODULE_0__components_containerMain__["a" /* default */].init( apiData['htmlRootId'] || 'rootTerminal' );
-window.TerminalState.change({}, 'CHANGE_MATRIX');
+window.TerminalState.change({}, '');
 
 /***/ }),
 /* 9 */
@@ -12315,7 +12367,7 @@ class TerminalsMatrix
 
 	static purgeScreens( gds )
 	{
-		gdsSession[ gds ].forEach( terminal => { terminal.clear(); });
+		gdsSession[ gds ].forEach( terminal => terminal.clear() );
 	}
 }
 
@@ -12398,10 +12450,10 @@ class Container {
 		TerminalsMatrix.purgeScreens( gds );
 	}
 
-	static menuRender( params )
-	{
-		RightMenu.render( params );
-	}
+	// static menuRender( params )
+	// {
+	// 	RightMenu.render( params );
+	// }
 
 	static render( params )
 	{
@@ -12415,12 +12467,15 @@ class Container {
 		// 	activeTerminal 	: params.activeTerminal
 		// });
 
-		Wrapper.render( params );
+		const {hideMenu, canAddPq} = params;
+		const p = { gds : params.gdsObj.name, hideMenu, canAddPq, sessionIndex  : params.gdsObj.sessionIndex, activeTerminal : params.gdsObj.activeTerminal };
+
+		Wrapper.render( p );
 
 		TerminalsMatrix
 			.clear()
-			.makeCells( params.matrix )
-			.appendTerminals( params );
+			.makeCells( params.gdsObj.matrix )
+			.appendTerminals( p );
 	}
 }
 /* harmony export (immutable) */ __webpack_exports__["a"] = Container;
@@ -12441,9 +12496,7 @@ class PqButton
 		button.className	= 'btn btn-sm btn-purple font-bold';
 		button.innerHTML	= 'PQ';
 
-		button.onclick = () => {
-			window.TerminalState.change({ hideMenu : true }, 'PQ_MODAL_SHOW')
-		};
+		button.onclick = () => window.TerminalState.action('PQ_MODAL_SHOW', {});
 
 		return button;
 	}
@@ -12494,13 +12547,10 @@ class SessionKeys
 		if ( this.settings.sessionIndex === index )
 			button.className += ' active';
 
-		// if ( !this.active )
-		// 	button.className += ' hidden';
-
 		button.disabled = !this.settings.activeTerminal;
 
 		button.addEventListener('click', () => {
-			this.disableAll();
+			// this.disableAll();
 			this.settings.onAreaChange( index );
 		});
 
@@ -12585,8 +12635,7 @@ class MenuPanel
 	static settings()
 	{
 		return new __WEBPACK_IMPORTED_MODULE_2__popovers_settings__["a" /* default */]({
-			icon		: '<i class="fa fa-gears t-f-size-14"></i>',
-			onSelect	: value => window.TerminalState.execCmd( value )
+			icon		: '<i class="fa fa-gears t-f-size-14"></i>'
 		}).getTrigger();
 	}
 
@@ -12594,12 +12643,14 @@ class MenuPanel
 	{
 		const defParams = { gds, sessionIndex, activeTerminal };
 
+		// console.log( defParams )
+
 		defParams.onAreaChange 	= sessionIndex => {
-			window.TerminalState.change( {sessionIndex}, 'CHANGE_SESSION_BY_MENU');
+			window.TerminalState.action('CHANGE_SESSION_BY_MENU', sessionIndex);
 		};
 
 		defParams.onGdsChange 	= gds => {
-			window.TerminalState.change( {gds}, 'CHANGE_GDS');
+			window.TerminalState.action('CHANGE_GDS', gds);
 		};
 
 		const apollo 	= new __WEBPACK_IMPORTED_MODULE_3__menu_sessionButtons__["a" /* default */]( Object.assign( {}, defParams, {
@@ -12629,7 +12680,7 @@ class MenuPanel
 
 		['APOLLO','SABRE'].forEach( value => {
 
-			const button = __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_5__helpers_dom__["a" /* default */])('button.btn btn-sm btn-gold font-bold' + ( window.TerminalState.state.language === value ? ' active' : '') );
+			const button = __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_5__helpers_dom__["a" /* default */])('button.btn btn-sm btn-gold font-bold' + ( window.TerminalState.getLanguage() === value ? ' active' : '') );
 
 			button.innerHTML = value;
 			button.addEventListener('click', () => window.TerminalState.change({ language : value }) );
@@ -12665,9 +12716,9 @@ class MenuPanel
 	static render(params)
 	{
 		// console.log( 'zzz', params );
-
 		// let start = new Date().getTime();
 		// console.log(' re render ');
+
 		context.innerHTML = '';
 
 		context.appendChild( this.settingsButtons( params ) );
@@ -12851,12 +12902,10 @@ class Matrix
 		cell.addEventListener( 'click', () => {
 			popContext.close();
 
-			window.TerminalState.change({
-				matrix : {
-					rows 	: rIndex,
-					cells	: cIndex
-				}
-			}, 'CHANGE_MATRIX');
+			window.TerminalState.action( 'CHANGE_MATRIX', {
+				rows 	: rIndex,
+				cells	: cIndex
+			});
 		});
 
 		cell.addEventListener('mouseover', () => {
@@ -13092,7 +13141,7 @@ class KeyBinding
 	static parse(evt, terminal)
 	{
 		const keymap 	= evt.keyCode || evt.which;
-		const isApollo	= window.TerminalState.state.gds === 'apollo';
+		const isApollo	= window.TerminalState.getGds() === 'apollo';
 
 		// if ( keymap === 13 )
 		// 	return false;
@@ -13440,16 +13489,17 @@ class TerminalPlugin
 	switchArea( command )
 	{
 		const sessionIndex = window.TerminalState.getSessionAreaMap().indexOf( command );
+		console.log( '????', command );
 
 		if ( sessionIndex !== -1 )
 		{
-			window.TerminalState.change({sessionIndex}, 'CHANGE_SESSION');
+			window.TerminalState.action('CHANGE_SESSION', sessionIndex);
 		}
 	}
 
 	changeActiveTerm( activeTerminal )
 	{
-		window.TerminalState.change({ activeTerminal }, 'CHANGE_ACTIVE_TERMINAL');
+		window.TerminalState.action('CHANGE_ACTIVE_TERMINAL', activeTerminal );
 	}
 
 	clearBuf()
@@ -13606,9 +13656,10 @@ class TerminalPlugin
 			.then( this.parseBackEnd.bind(this) )
 			.then( () => {
 				this.loopCmdStack();
-				this.switchArea( command );
+				this.switchArea( command.toUpperCase() );
 			})
-			.catch( this.parseError.bind(this) );
+
+			// .catch( this.parseError.bind(this) );
 	}
 
 	parseBackEnd( response = {} )
@@ -13636,7 +13687,7 @@ class TerminalPlugin
 		this.tabCommands.reset( result['tabCommands'], result['output'] );
 
 		if ( result['pcc'] )
-			window.TerminalState.change({pcc : result['pcc']}, 'CHANGE_PCC');
+			window.TerminalState.action( 'CHANGE_PCC', result['pcc'] );
 
 		if ( result['canCreatePq'] )
 			window.TerminalState.change({canAddPq : true});
@@ -13658,9 +13709,9 @@ class TerminalPlugin
 	
 	parseError(e)
 	{
-		this.spinner.end();
-		console.error(' error', arguments );
-		this.terminal.error( String(e) );
+		// this.spinner.end();
+		// console.error(' error', arguments );
+		// this.terminal.error( String(e) );
 	}
 }
 /* harmony export (immutable) */ __webpack_exports__["a"] = TerminalPlugin;
@@ -13752,9 +13803,9 @@ class F8Reader
 
 	tie()
 	{
-		this.currentCmd	= rules[window.TerminalState.state.gds];
+		this.currentCmd	= rules[window.TerminalState.getGds()];
 		this.index 		= 0;
-		this.isActive		= true;
+		this.isActive	= true;
 
 		this.terminal.insert( this.currentCmd.cmd );
 		this.tabPressed();
@@ -13939,7 +13990,7 @@ class Session
 			terminalIndex	: parseInt(this.settings['terminalIndex']) + 1,
 			command			: params['cmd'],
 			gds				: this.settings['gds'],
-			language		: window.TerminalState.state.language,
+			language		: window.TerminalState.getLanguage(),
 			terminalData	: window.apiData['terminalData']
 		};
 
@@ -13959,8 +14010,6 @@ class Session
 				console.error('oh shit Error', err);
 			});
 	}
-
-
 
 	end()
 	{

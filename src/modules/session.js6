@@ -16,7 +16,7 @@ export default class Session
 			terminalIndex	: parseInt(this.settings['terminalIndex']) + 1,
 			command			: params['cmd'],
 			gds				: this.settings['gds'],
-			language		: window.TerminalState.state.language,
+			language		: window.TerminalState.getLanguage(),
 			terminalData	: window.apiData['terminalData']
 		};
 
@@ -36,8 +36,6 @@ export default class Session
 				console.error('oh shit Error', err);
 			});
 	}
-
-
 
 	end()
 	{

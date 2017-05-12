@@ -79,9 +79,9 @@ export default class F8Reader
 
 	tie()
 	{
-		this.currentCmd	= rules[window.TerminalState.state.gds];
+		this.currentCmd	= rules[window.TerminalState.getGds()];
 		this.index 		= 0;
-		this.isActive		= true;
+		this.isActive	= true;
 
 		this.terminal.insert( this.currentCmd.cmd );
 		this.tabPressed();

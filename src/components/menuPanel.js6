@@ -36,8 +36,7 @@ export default class MenuPanel
 	static settings()
 	{
 		return new Settings({
-			icon		: '<i class="fa fa-gears t-f-size-14"></i>',
-			onSelect	: value => window.TerminalState.execCmd( value )
+			icon		: '<i class="fa fa-gears t-f-size-14"></i>'
 		}).getTrigger();
 	}
 
@@ -45,12 +44,14 @@ export default class MenuPanel
 	{
 		const defParams = { gds, sessionIndex, activeTerminal };
 
+		// console.log( defParams )
+
 		defParams.onAreaChange 	= sessionIndex => {
-			window.TerminalState.change( {sessionIndex}, 'CHANGE_SESSION_BY_MENU');
+			window.TerminalState.action('CHANGE_SESSION_BY_MENU', sessionIndex);
 		};
 
 		defParams.onGdsChange 	= gds => {
-			window.TerminalState.change( {gds}, 'CHANGE_GDS');
+			window.TerminalState.action('CHANGE_GDS', gds);
 		};
 
 		const apollo 	= new SessionButtons( Object.assign( {}, defParams, {
@@ -80,7 +81,7 @@ export default class MenuPanel
 
 		['APOLLO','SABRE'].forEach( value => {
 
-			const button = Dom('button.btn btn-sm btn-gold font-bold' + ( window.TerminalState.state.language === value ? ' active' : '') );
+			const button = Dom('button.btn btn-sm btn-gold font-bold' + ( window.TerminalState.getLanguage() === value ? ' active' : '') );
 
 			button.innerHTML = value;
 			button.addEventListener('click', () => window.TerminalState.change({ language : value }) );
@@ -116,9 +117,9 @@ export default class MenuPanel
 	static render(params)
 	{
 		// console.log( 'zzz', params );
-
 		// let start = new Date().getTime();
 		// console.log(' re render ');
+
 		context.innerHTML = '';
 
 		context.appendChild( this.settingsButtons( params ) );

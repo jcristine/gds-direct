@@ -4,149 +4,201 @@ import Container 						from './components/containerMain';
 import Request							from './helpers/requests';
 import {KEEP_ALIVE_REFRESH, AREA_LIST} 	from './constants';
 
-const apiData = window.apiData || {};
+const apiData	= window.apiData || {};
+const saved		= localStorage.getItem('matrix');
 
 const gdsSettings = {
 	sessionIndex 	: 0,
 	pcc				: {},
-	matrix			: { rows: 1, cells : 1},
+	matrix			: saved ? JSON.parse( saved ) : {rows : 1, cells : 1},
 	activeTerminal	: null
 };
 
 const Gds = {
-	'apollo': Object.assign({}, gdsSettings, {'sessionIndex' : AREA_LIST.indexOf(apiData.settings['gds']['apollo']['area']) }),
-	'sabre'	: Object.assign({}, gdsSettings, {'sessionIndex' : AREA_LIST.indexOf(apiData.settings['gds']['sabre']['area']) })
+	apollo: Object.assign({}, gdsSettings, {
+		name 			: 'apollo',
+		sessionIndex 	: AREA_LIST.indexOf(apiData.settings['gds']['apollo']['area'])
+	}),
+
+	sabre	: Object.assign({}, gdsSettings, {
+		name 			: 'sabre',
+		sessionIndex 	: AREA_LIST.indexOf(apiData.settings['gds']['sabre']['area'])
+	})
 };
 
 class TerminalState
 {
 	constructor()
 	{
-		const saved		= localStorage.getItem('matrix');
-		const curGds	= apiData.settings.common['currentGds'] || 'apollo';
+		const curGds = apiData.settings.common['currentGds'] || 'apollo';
 
 		this.state = {
-			gds 			: curGds,
-			sessionIndex	: Gds[curGds]['sessionIndex'],
-
-			matrix			: saved ? JSON.parse( saved ) : {rows : 1, cells : 1},
 			language		: 'APOLLO',
-			activeTerminal	: '',
-
 			fontSize		: 1,
 			hideMenu		: false,
-			canAddPq		: false
+			canAddPq		: false,
+
+			gdsObj			: Gds[curGds]
 		};
 
 		// Request.get(`terminal/keepAlive`, true);
-
 		setInterval( () => Request.get(`terminal/keepAlive`, true), KEEP_ALIVE_REFRESH );
 	}
 
 	getMatrix()
 	{
-		return this.state.matrix;
+		return this.state.gdsObj.matrix;
 	}
 
 	getPcc()
 	{
-		return Gds[this.state.gds].pcc;
+		return this.state.gdsObj.pcc;
+	}
+
+	getActiveTerminal()
+	{
+		return this.state.gdsObj['activeTerminal'];
+	}
+
+	getGds()
+	{
+		return this.state.gdsObj['name'];
+	}
+
+	getLanguage()
+	{
+		return this.state['language'];
+	}
+
+	getAreaIndex()
+	{
+		return this.state.gdsObj['sessionIndex'];
 	}
 
 	getSessionAreaMap()
 	{
-		const key = this.state.gds === 'apollo' ? 'S': '¤';
+		const key = this.getGds() === 'apollo' ? 'S': '¤';
 		return AREA_LIST.map( char => key + char );
 	}
 
 	getBuffer( gds, terminalId )
 	{
-		if ( apiData && apiData.buffer && apiData.buffer.gds && apiData.buffer.gds[gds] )
-			return apiData.buffer['gds'][gds]['terminals'][terminalId];
+		const buffer = apiData.buffer;
+
+		if ( apiData && buffer && buffer.gds && buffer.gds[gds] )
+			return buffer['gds'][gds]['terminals'][terminalId];
 
 		return false;
 	}
 
 	purgeScreens()
 	{
-		Container.purgeScreens( this.state.gds );
-		Request.get(`terminal/clearBuffer?gds=${this.state.gds}&rId=${apiData.rId}`);
+		Container.purgeScreens( this.getGds() );
+		Request.get(`terminal/clearBuffer`, true);
 	}
 
-	execCmd( cmd = '')
+	execCmd( cmd = '' )
 	{
-		if (this.state.activeTerminal && cmd)
-			this.state.activeTerminal.exec( cmd );
+		const terminal = this.getActiveTerminal();
+
+		if (terminal && cmd)
+			terminal.exec( cmd );
 	}
 
 	isLanguageApollo()
 	{
-		return this.state.language === 'APOLLO';
+		return this.getLanguage() === 'APOLLO';
 	}
 
-	change( params = {}, action )
+	action( action, params )
 	{
-		this.state = Object.assign( {}, this.state, params );
-		// console.log( this.state );
-
-		const gds = this.state.gds;
-
 		switch (action)
 		{
 			case 'CHANGE_GDS':
-				this.state.matrix 			= Gds[gds]['matrix'];
-				this.state.sessionIndex 	= Gds[gds]['sessionIndex'];
-				this.state.activeTerminal 	= Gds[gds]['activeTerminal'];
+				Gds[ this.getGds() ] = this.state.gdsObj;
+
+				this.change({
+					gds		: params,
+					gdsObj 	: Gds[params]
+				});
 			break;
 
 			case 'CHANGE_SESSION' :
-				Gds[gds]['sessionIndex'] = this.state.sessionIndex;
-				return Container.menuRender( this.state );
+
+				this.change({
+					gdsObj : Object.assign( {}, this.state.gdsObj, {sessionIndex : params} )
+				});
+
+				// return Container.menuRender( this.state );
 			break;
 
 			case 'CHANGE_SESSION_BY_MENU' :
-				let command = this.getSessionAreaMap()[params.sessionIndex];
-				this.state.activeTerminal.exec( command );
-				return false;
+
+				console.log( params );
+
+				const command = this.getSessionAreaMap()[params];
+				const xz = this.getActiveTerminal().exec( command );
+
+				console.log( xz );
+				// return false;
+
 			break;
 
-			case 'CHANGE_MATRIX' :
-				localStorage.setItem('matrix', JSON.stringify(this.state.matrix) );
-				Gds[gds]['matrix'] = this.state.matrix;
+			case 'CHANGE_MATRIX':
+
+				localStorage.setItem('matrix', JSON.stringify( params ) );
+
+				this.change({
+					gdsObj : Object.assign( {}, this.state.gdsObj, {matrix : params} )
+				});
+
 			break;
 
 			case 'CHANGE_ACTIVE_TERMINAL' :
-				// console.log(' change active terminal');
 
-				if (Gds[gds]['activeTerminal'])
-					Gds[gds]['activeTerminal'][0].parentNode.classList.remove('active');
+				// TODO :: optimize
 
-				Gds[gds]['activeTerminal'] = this.state.activeTerminal;
-				Gds[gds]['activeTerminal'][0].parentNode.classList.add('active');
+				this.change({
+					gdsObj : Object.assign( {}, this.state.gdsObj, { activeTerminal : params } )
+				});
 
-				return Container.menuRender( this.state );
+				// todo move to
+				// params[0].parentNode.classList.add('active');
+				// return false;
+
 			break;
 
 			case 'CHANGE_PCC' :
-				Gds[gds]['pcc'][this.state.sessionIndex] = params.pcc;
-				return Container.menuRender( this.state );
+				this.state.gdsObj['pcc'][ this.getAreaIndex() ] = params;
+				this.change({});
 			break;
 
-			case 'ACTIVATE_PQ' :
-				return Container.menuRender( this.state );
-			break;
+			// case 'ACTIVATE_PQ' :
+			// break;
 
 			case 'PQ_MODAL_SHOW' :
-				if (this.state.activeTerminal)
+
+				if (this.state.gdsObj.activeTerminal)
 				{
 					apiData.pqModal.show({
-						onClose	: () => this.change({hideMenu: false})
-					}).then( () => Container.render( this.state ) );
+						onClose	: () => this.change( {hideMenu: false} )
+					})
+
+					.then( () => {
+						this.change({hideMenu: true});
+					});
 				}
 
 				return false;
 			break;
 		}
+	}
+
+	change( params = {} )
+	{
+		this.state = Object.assign( {}, this.state, params );
+
+		console.log(' change ', params);
 
 		Container.render( this.state );
 	}
@@ -165,4 +217,4 @@ window.onresize = function() {
 };
 
 Container.init( apiData['htmlRootId'] || 'rootTerminal' );
-window.TerminalState.change({}, 'CHANGE_MATRIX');
+window.TerminalState.change({}, '');

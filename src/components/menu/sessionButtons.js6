@@ -28,13 +28,10 @@ export default class SessionKeys
 		if ( this.settings.sessionIndex === index )
 			button.className += ' active';
 
-		// if ( !this.active )
-		// 	button.className += ' hidden';
-
 		button.disabled = !this.settings.activeTerminal;
 
 		button.addEventListener('click', () => {
-			this.disableAll();
+			// this.disableAll();
 			this.settings.onAreaChange( index );
 		});
 
