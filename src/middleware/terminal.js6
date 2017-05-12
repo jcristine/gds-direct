@@ -335,8 +335,8 @@ export default class TerminalPlugin
 		if ( result['pcc'] )
 			window.TerminalState.action( 'CHANGE_PCC', result['pcc'] );
 
-		if ( result['canCreatePq'] )
-			window.TerminalState.change({canAddPq : true});
+		// if ( result['canCreatePq'] )
+		window.TerminalState.action( 'CAN_CREATE_PQ', result['canCreatePq'] );
 
 		this.debugOutput( result );
 	}

@@ -13,10 +13,10 @@ export default class PqButton
 		return button;
 	}
 
-	static render( { canAddPq } )
+	static render( { canCreatePq } )
 	{
 		button 			= button || this.makeButton();
-		button.disabled = !canAddPq;
+		button.disabled = !canCreatePq;
 		return button;
 	}
 }

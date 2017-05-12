@@ -11,22 +11,21 @@ const gdsSettings = {
 	sessionIndex 	: 0,
 	pcc				: {},
 	matrix			: saved ? JSON.parse( saved ) : {rows : 1, cells : 1},
-	activeTerminal	: null
+	activeTerminal	: null,
+	canCreatePq		: false
 };
 
 const Gds = {
 	apollo: Object.assign({}, gdsSettings, {
 		name 			: 'apollo',
-		// pcc				: {
-		// 	2 : 'test',
-		// },
-
-		sessionIndex 	: AREA_LIST.indexOf(apiData.settings['gds']['apollo']['area'])
+		sessionIndex 	: AREA_LIST.indexOf(apiData.settings['gds']['apollo']['area']),
+		canCreatePq		: !!apiData.settings['gds']['apollo']['canCreatePq']
 	}),
 
 	sabre	: Object.assign({}, gdsSettings, {
 		name 			: 'sabre',
-		sessionIndex 	: AREA_LIST.indexOf(apiData.settings['gds']['sabre']['area'])
+		sessionIndex 	: AREA_LIST.indexOf(apiData.settings['gds']['sabre']['area']),
+		canCreatePq		: !!apiData.settings['gds']['sabre']['canCreatePq']
 	})
 };
 
@@ -40,7 +39,6 @@ class TerminalState
 			language		: 'APOLLO',
 			fontSize		: 1,
 			hideMenu		: false,
-			canAddPq		: false,
 
 			gdsObj			: Gds[curGds]
 		};
@@ -122,8 +120,8 @@ class TerminalState
 
 				Gds[ this.getGds() ] = this.state.gdsObj;
 
-				console.log( 'gds params', Gds[params] );
-				console.log( 'gds params', this.state.gdsObj );
+				// console.log( 'gds params', Gds[params] );
+				// console.log( 'gds params', this.state.gdsObj );
 
 				this.change({
 					gds		: params,
@@ -148,7 +146,7 @@ class TerminalState
 				const command	= this.getSessionAreaMap()[params];
 				const xz		= this.getActiveTerminal().exec( command );
 
-				console.log( '!!!', xz );
+				// console.log( '!!!', xz );
 				// return false;
 
 			break;
@@ -187,10 +185,28 @@ class TerminalState
 					})
 				});
 
-				break;
+			break;
 
 			// case 'ACTIVATE_PQ' :
 			// break;
+
+			case 'CAN_CREATE_PQ' :
+
+				// console.log("SSSSS", params);
+				// console.log("SSSSS", this.state.gdsObj.canCreatePq);
+
+				if (this.state.gdsObj.canCreatePq !== params )
+				{
+					this.change({
+						gdsObj : Object.assign( {}, this.state.gdsObj, { canCreatePq : params } )
+					});
+
+					// console.log( 'trigger BTN ');
+				}
+
+				return false;
+
+			break;
 
 			case 'PQ_MODAL_SHOW' :
 

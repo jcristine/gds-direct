@@ -4073,22 +4073,21 @@ const gdsSettings = {
 	sessionIndex 	: 0,
 	pcc				: {},
 	matrix			: saved ? JSON.parse( saved ) : {rows : 1, cells : 1},
-	activeTerminal	: null
+	activeTerminal	: null,
+	canCreatePq		: false
 };
 
 const Gds = {
 	apollo: Object.assign({}, gdsSettings, {
 		name 			: 'apollo',
-		// pcc				: {
-		// 	2 : 'test',
-		// },
-
-		sessionIndex 	: __WEBPACK_IMPORTED_MODULE_2__constants__["a" /* AREA_LIST */].indexOf(apiData.settings['gds']['apollo']['area'])
+		sessionIndex 	: __WEBPACK_IMPORTED_MODULE_2__constants__["a" /* AREA_LIST */].indexOf(apiData.settings['gds']['apollo']['area']),
+		canCreatePq		: !!apiData.settings['gds']['apollo']['canCreatePq']
 	}),
 
 	sabre	: Object.assign({}, gdsSettings, {
 		name 			: 'sabre',
-		sessionIndex 	: __WEBPACK_IMPORTED_MODULE_2__constants__["a" /* AREA_LIST */].indexOf(apiData.settings['gds']['sabre']['area'])
+		sessionIndex 	: __WEBPACK_IMPORTED_MODULE_2__constants__["a" /* AREA_LIST */].indexOf(apiData.settings['gds']['sabre']['area']),
+		canCreatePq		: !!apiData.settings['gds']['sabre']['canCreatePq']
 	})
 };
 
@@ -4102,7 +4101,6 @@ class TerminalState
 			language		: 'APOLLO',
 			fontSize		: 1,
 			hideMenu		: false,
-			canAddPq		: false,
 
 			gdsObj			: Gds[curGds]
 		};
@@ -4184,8 +4182,8 @@ class TerminalState
 
 				Gds[ this.getGds() ] = this.state.gdsObj;
 
-				console.log( 'gds params', Gds[params] );
-				console.log( 'gds params', this.state.gdsObj );
+				// console.log( 'gds params', Gds[params] );
+				// console.log( 'gds params', this.state.gdsObj );
 
 				this.change({
 					gds		: params,
@@ -4210,7 +4208,7 @@ class TerminalState
 				const command	= this.getSessionAreaMap()[params];
 				const xz		= this.getActiveTerminal().exec( command );
 
-				console.log( '!!!', xz );
+				// console.log( '!!!', xz );
 				// return false;
 
 			break;
@@ -4249,10 +4247,28 @@ class TerminalState
 					})
 				});
 
-				break;
+			break;
 
 			// case 'ACTIVATE_PQ' :
 			// break;
+
+			case 'CAN_CREATE_PQ' :
+
+				// console.log("SSSSS", params);
+				// console.log("SSSSS", this.state.gdsObj.canCreatePq);
+
+				if (this.state.gdsObj.canCreatePq !== params )
+				{
+					this.change({
+						gdsObj : Object.assign( {}, this.state.gdsObj, { canCreatePq : params } )
+					});
+
+					// console.log( 'trigger BTN ');
+				}
+
+				return false;
+
+			break;
 
 			case 'PQ_MODAL_SHOW' :
 
@@ -14543,8 +14559,15 @@ class Container {
 		// 	activeTerminal 	: params.activeTerminal
 		// });
 
-		const {hideMenu, canAddPq} = params;
-		const p = { gds : params.gdsObj.name, hideMenu, canAddPq, sessionIndex  : params.gdsObj.sessionIndex, activeTerminal : params.gdsObj.activeTerminal };
+		const {hideMenu} = params;
+
+		const p = {
+			hideMenu,
+			gds 			: params.gdsObj['name'],
+			canCreatePq 	: params.gdsObj.canCreatePq,
+			sessionIndex  	: params.gdsObj.sessionIndex,
+			activeTerminal 	: params.gdsObj.activeTerminal
+		};
 
 		Wrapper.render( p );
 
@@ -14577,10 +14600,10 @@ class PqButton
 		return button;
 	}
 
-	static render( { canAddPq } )
+	static render( { canCreatePq } )
 	{
 		button 			= button || this.makeButton();
-		button.disabled = !canAddPq;
+		button.disabled = !canCreatePq;
 		return button;
 	}
 }
@@ -15767,8 +15790,8 @@ class TerminalPlugin
 		if ( result['pcc'] )
 			window.TerminalState.action( 'CHANGE_PCC', result['pcc'] );
 
-		if ( result['canCreatePq'] )
-			window.TerminalState.change({canAddPq : true});
+		// if ( result['canCreatePq'] )
+		window.TerminalState.action( 'CAN_CREATE_PQ', result['canCreatePq'] );
 
 		this.debugOutput( result );
 	}

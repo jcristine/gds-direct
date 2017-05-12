@@ -190,8 +190,15 @@ export default class Container {
 		// 	activeTerminal 	: params.activeTerminal
 		// });
 
-		const {hideMenu, canAddPq} = params;
-		const p = { gds : params.gdsObj.name, hideMenu, canAddPq, sessionIndex  : params.gdsObj.sessionIndex, activeTerminal : params.gdsObj.activeTerminal };
+		const {hideMenu} = params;
+
+		const p = {
+			hideMenu,
+			gds 			: params.gdsObj['name'],
+			canCreatePq 	: params.gdsObj.canCreatePq,
+			sessionIndex  	: params.gdsObj.sessionIndex,
+			activeTerminal 	: params.gdsObj.activeTerminal
+		};
 
 		Wrapper.render( p );
 
