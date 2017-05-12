@@ -14315,46 +14315,42 @@ exports.clearImmediate = clearImmediate;
 
 
 
-let context;
 
-class Button
-{
-	constructor()
-	{
-		this.context 			= __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_1__helpers_dom__["a" /* default */])('button.btn btn-purple');
-		this.context.id 		= 'addTerminalBtn';
-		this.context.type		= 'button';
-		this.context.innerHTML	= '<i class="fa fa-th-large t-f-size-14 v-middle"></i>';
-	}
-	
-	getContext()
-	{
-		return this.context;
-	}
-}
+// class Button
+// {
+// 	constructor()
+// 	{
+// 		this.context 			= Dom('button.btn btn-purple');
+// 		this.context.id 		= 'addTerminalBtn';
+// 		this.context.type		= 'button';
+// 		this.context.innerHTML	= '<i class="fa fa-th-large t-f-size-14 v-middle"></i>';
+// 	}
+//
+// 	getContext()
+// 	{
+// 		return this.context;
+// 	}
+// }
 
 class ActionsMenu {
 
 	static init()
 	{
-		context = __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_1__helpers_dom__["a" /* default */])('div.actions-btn-menu');
-		this.addTerminalButton();
+		this.context = __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_1__helpers_dom__["a" /* default */])('div.actions-btn-menu');
+
+		const matrix =  new __WEBPACK_IMPORTED_MODULE_0__popovers_terminalMatrix__["a" /* default */]({
+			icon		: '<i class="fa fa-th-large t-f-size-14"></i>',
+			// onSelect	: value => { window.TerminalState.change({fontSize : value}) }
+		}).getTrigger();
+
+		this.context.appendChild( matrix );
 
 		return this;
-	}
-
-	static addTerminalButton()
-	{
-
-		const button 	= new Button({});
-
-		const table = new __WEBPACK_IMPORTED_MODULE_0__popovers_terminalMatrix__["a" /* default */]({ button : button.getContext() });
-		context.appendChild( button.getContext() );
 	}
 	
 	static getContext()
 	{
-		return context;
+		return this.context;
 	}
 }
 /* harmony export (immutable) */ __webpack_exports__["a"] = ActionsMenu;
@@ -14941,45 +14937,31 @@ class Settings extends __WEBPACK_IMPORTED_MODULE_1__modules_buttonPopover__["a" 
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_tether_drop__ = __webpack_require__(5);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_tether_drop___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_tether_drop__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__helpers_dom__ = __webpack_require__(0);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__modules_buttonPopover__ = __webpack_require__(3);
 
 
 
 
-let popContext;
+
 let cellObj = [];
 
 const ACTIVE_CLASS = 'bg-purple';
 
-class Matrix
+class Matrix extends __WEBPACK_IMPORTED_MODULE_1__modules_buttonPopover__["a" /* default */]
 {
 	constructor( params )
 	{
-		this.context 			= document.createElement('table');
-		this.context.className	= 'matrix-table';
+		super( params );
 
-		this.settings = params;
-
-		params['button'].onclick = () => {
-			this.build();
-
-			popContext = new __WEBPACK_IMPORTED_MODULE_0_tether_drop___default.a({
-				target		: params['button'],
-				content		: this.getContext(),
-				classes		: 'drop-theme-arrows',
-				position	: 'bottom center',
-				openOn		: 'click'
-			});
-
-			params['button'].onclick = false;
-			params['button'].click();
-		}
+		this.popContent = __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0__helpers_dom__["a" /* default */])('table.matrix-table');
+		this.makeTrigger();
 	}
 
-	getContext()
+	getPopContent()
 	{
-		return this.context;
+		this.build();
+		return this.popContent;
 	}
 
 	build()
@@ -14998,10 +14980,7 @@ class Matrix
 
 	_cells( row, rIndex )
 	{
-		[0, 1, 2, 3].map( cIndex => {
-			row.appendChild( this._cell( rIndex, cIndex) );
-		});
-
+		[0, 1, 2, 3].map( cIndex => row.appendChild( this._cell( rIndex, cIndex) ) );
 		return row;
 	}
 
@@ -15012,7 +14991,7 @@ class Matrix
 		cellObj[rIndex].push(cell);
 
 		cell.addEventListener( 'click', () => {
-			popContext.close();
+			this.popover.close();
 
 			window.TerminalState.action( 'CHANGE_MATRIX', {
 				rows 	: rIndex,
@@ -15030,7 +15009,7 @@ class Matrix
 		});
 
 		cell.addEventListener('mouseleave', () => {
-			[].forEach.call( this.context.querySelectorAll( '.' + ACTIVE_CLASS) , cell => cell.classList.toggle(ACTIVE_CLASS) );
+			[].forEach.call( this.popContent.querySelectorAll( '.' + ACTIVE_CLASS) , cell => cell.classList.toggle(ACTIVE_CLASS) );
 		});
 
 		return cell;
@@ -15038,7 +15017,7 @@ class Matrix
 
 	_toTable( row )
 	{
-		this.context.appendChild( row );
+		this.popContent.appendChild( row );
 	}
 }
 /* harmony export (immutable) */ __webpack_exports__["a"] = Matrix;

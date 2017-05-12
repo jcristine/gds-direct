@@ -3,45 +3,41 @@
 import Matrix 	from './popovers/terminalMatrix';
 import Dom		from '../helpers/dom';
 
-let context;
 
-class Button
-{
-	constructor()
-	{
-		this.context 			= Dom('button.btn btn-purple');
-		this.context.id 		= 'addTerminalBtn';
-		this.context.type		= 'button';
-		this.context.innerHTML	= '<i class="fa fa-th-large t-f-size-14 v-middle"></i>';
-	}
-	
-	getContext()
-	{
-		return this.context;
-	}
-}
+// class Button
+// {
+// 	constructor()
+// 	{
+// 		this.context 			= Dom('button.btn btn-purple');
+// 		this.context.id 		= 'addTerminalBtn';
+// 		this.context.type		= 'button';
+// 		this.context.innerHTML	= '<i class="fa fa-th-large t-f-size-14 v-middle"></i>';
+// 	}
+//
+// 	getContext()
+// 	{
+// 		return this.context;
+// 	}
+// }
 
 export default class ActionsMenu {
 
 	static init()
 	{
-		context = Dom('div.actions-btn-menu');
-		this.addTerminalButton();
+		this.context = Dom('div.actions-btn-menu');
+
+		const matrix =  new Matrix({
+			icon		: '<i class="fa fa-th-large t-f-size-14"></i>',
+			// onSelect	: value => { window.TerminalState.change({fontSize : value}) }
+		}).getTrigger();
+
+		this.context.appendChild( matrix );
 
 		return this;
-	}
-
-	static addTerminalButton()
-	{
-
-		const button 	= new Button({});
-
-		const table = new Matrix({ button : button.getContext() });
-		context.appendChild( button.getContext() );
 	}
 	
 	static getContext()
 	{
-		return context;
+		return this.context;
 	}
 }

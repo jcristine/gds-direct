@@ -1,40 +1,26 @@
 'use strict';
 
-import Drop from 'tether-drop';
+import Dom 			 	from '../../helpers/dom';
+import ButtonPopOver	from '../../modules/buttonPopover';
 
-let popContext;
 let cellObj = [];
 
 const ACTIVE_CLASS = 'bg-purple';
 
-export default class Matrix
+export default class Matrix extends ButtonPopOver
 {
 	constructor( params )
 	{
-		this.context 			= document.createElement('table');
-		this.context.className	= 'matrix-table';
+		super( params );
 
-		this.settings = params;
-
-		params['button'].onclick = () => {
-			this.build();
-
-			popContext = new Drop({
-				target		: params['button'],
-				content		: this.getContext(),
-				classes		: 'drop-theme-arrows',
-				position	: 'bottom center',
-				openOn		: 'click'
-			});
-
-			params['button'].onclick = false;
-			params['button'].click();
-		}
+		this.popContent = Dom('table.matrix-table');
+		this.makeTrigger();
 	}
 
-	getContext()
+	getPopContent()
 	{
-		return this.context;
+		this.build();
+		return this.popContent;
 	}
 
 	build()
@@ -53,10 +39,7 @@ export default class Matrix
 
 	_cells( row, rIndex )
 	{
-		[0, 1, 2, 3].map( cIndex => {
-			row.appendChild( this._cell( rIndex, cIndex) );
-		});
-
+		[0, 1, 2, 3].map( cIndex => row.appendChild( this._cell( rIndex, cIndex) ) );
 		return row;
 	}
 
@@ -67,7 +50,7 @@ export default class Matrix
 		cellObj[rIndex].push(cell);
 
 		cell.addEventListener( 'click', () => {
-			popContext.close();
+			this.popover.close();
 
 			window.TerminalState.action( 'CHANGE_MATRIX', {
 				rows 	: rIndex,
@@ -85,7 +68,7 @@ export default class Matrix
 		});
 
 		cell.addEventListener('mouseleave', () => {
-			[].forEach.call( this.context.querySelectorAll( '.' + ACTIVE_CLASS) , cell => cell.classList.toggle(ACTIVE_CLASS) );
+			[].forEach.call( this.popContent.querySelectorAll( '.' + ACTIVE_CLASS) , cell => cell.classList.toggle(ACTIVE_CLASS) );
 		});
 
 		return cell;
@@ -93,6 +76,6 @@ export default class Matrix
 
 	_toTable( row )
 	{
-		this.context.appendChild( row );
+		this.popContent.appendChild( row );
 	}
 }
