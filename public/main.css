@@ -1809,6 +1809,13 @@
   right: 7px;
   top: 0;
 }
+.terminal-wrap-custom .actions-btn-menu .btn {
+  padding: 3px 8px;
+}
+.terminal-wrap-custom .actions-btn-menu .btn i {
+  font-size: 23px;
+  vertical-align: middle;
+}
 .terminal-wrap-custom .pcc-label {
   position: absolute;
   top: -5px;

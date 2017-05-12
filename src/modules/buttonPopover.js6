@@ -7,6 +7,10 @@ import Dom 		from '../helpers/dom';
 // classes		: 'drop-theme-hubspot-popovers',
 // classes		: 'drop-theme-basic',
 
+const CLASS_NAME = 'drop-theme-hubspot-popovers';
+// const CLASS_NAME = 'drop-theme-basic';
+// const CLASS_NAME = 'drop-theme-arrows';
+
 export default class ButtonPopOver
 {
 	constructor( params )
@@ -28,7 +32,7 @@ export default class ButtonPopOver
 		this.popover = this.popover || new Drop({
 				target		: this.getTrigger(),
 				content		: this.getPopContent(),
-				classes		: 'drop-theme-hubspot-popovers',
+				classes		: CLASS_NAME,
 				position	: 'left top',
 				openOn		: 'click'
 			});
