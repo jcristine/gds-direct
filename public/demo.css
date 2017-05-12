@@ -3,6 +3,10 @@
     height : 100%;
 }
 
+.pos-rlt {
+    position: relative;
+}
+
 /*//& > .term-header {*/
       /*//	display: none;*/
       /*//   font-family: "Lucida Grande", sans-serif;*/

@@ -17,6 +17,10 @@ const gdsSettings = {
 const Gds = {
 	apollo: Object.assign({}, gdsSettings, {
 		name 			: 'apollo',
+		// pcc				: {
+		// 	2 : 'test',
+		// },
+
 		sessionIndex 	: AREA_LIST.indexOf(apiData.settings['gds']['apollo']['area'])
 	}),
 
@@ -115,15 +119,20 @@ class TerminalState
 		switch (action)
 		{
 			case 'CHANGE_GDS':
+
 				Gds[ this.getGds() ] = this.state.gdsObj;
+
+				console.log( 'gds params', Gds[params] );
+				console.log( 'gds params', this.state.gdsObj );
 
 				this.change({
 					gds		: params,
 					gdsObj 	: Gds[params]
 				});
+
 			break;
 
-			case 'CHANGE_SESSION' :
+			case 'CHANGE_SESSION_AREA' :
 
 				this.change({
 					gdsObj : Object.assign( {}, this.state.gdsObj, {sessionIndex : params} )
@@ -134,12 +143,12 @@ class TerminalState
 
 			case 'CHANGE_SESSION_BY_MENU' :
 
-				console.log( params );
+				// console.log( params );
 
-				const command = this.getSessionAreaMap()[params];
-				const xz = this.getActiveTerminal().exec( command );
+				const command	= this.getSessionAreaMap()[params];
+				const xz		= this.getActiveTerminal().exec( command );
 
-				console.log( xz );
+				console.log( '!!!', xz );
 				// return false;
 
 			break;
@@ -155,7 +164,6 @@ class TerminalState
 			break;
 
 			case 'CHANGE_ACTIVE_TERMINAL' :
-
 				// TODO :: optimize
 
 				this.change({
@@ -165,13 +173,21 @@ class TerminalState
 				// todo move to
 				// params[0].parentNode.classList.add('active');
 				// return false;
-
 			break;
 
 			case 'CHANGE_PCC' :
-				this.state.gdsObj['pcc'][ this.getAreaIndex() ] = params;
-				this.change({});
-			break;
+
+				const area = this.getAreaIndex();
+
+				this.change({
+					gdsObj : Object.assign({}, this.state.gdsObj, {
+						pcc : {
+							[area] : params
+						}
+					})
+				});
+
+				break;
 
 			// case 'ACTIVATE_PQ' :
 			// break;

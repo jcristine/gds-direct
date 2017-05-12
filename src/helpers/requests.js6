@@ -1,7 +1,31 @@
 'use strict';
 
-import {END_POINT_URL, API_HOST} from  '../constants'
+import {END_POINT_URL, API_HOST}	from  '../constants'
+import Noty 						from 'noty';
 import 'whatwg-fetch'
+
+const Debug = txt => {
+	new Noty({
+		text	: `SERVER ERROR : ${txt}`,
+		layout 	: 'bottomRight',
+		timeout : 5000,
+		// theme	: 'relax',
+		type 	: 'error'
+	}).show();
+};
+
+function ask( url, params)
+{
+	return fetch( url, params )
+
+		.then( response => response.json() )
+		.catch( err => {
+
+			Debug( err );
+			console.error( '?????????', err );
+
+		});
+}
 
 function get( url, defParams )
 {
@@ -15,7 +39,8 @@ function get( url, defParams )
 
 	const params = { credentials: 'include' };
 
-	return fetch( url, params ).then( response => response.json() )
+	return ask( url, params );
+	// return fetch( url, params ).then( response => response.json() )
 }
 
 
@@ -32,11 +57,19 @@ function runSyncCommand( params )
 
 	// url += '&function=' + functionName;
 
-	return fetch(API_HOST + url, {
+	return ask( API_HOST + url, {
 		credentials	: 'include',
 		body		: formData,
 		method		: 'POST',
-	}).then( response  => response.json() )
+	});
+
+	/*return fetch(API_HOST + url, {
+		credentials	: 'include',
+		body		: formData,
+		method		: 'POST',
+	}).then( response  => response.json() ).catch(
+		() => { console.log(' fu ')
+	})*/
 }
 
 export default {
