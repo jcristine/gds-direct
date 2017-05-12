@@ -187,14 +187,16 @@ class TerminalState
 				// console.log("SSSSS", params);
 				// console.log("SSSSS", this.state.gdsObj.canCreatePq);
 
-				if (this.state.gdsObj.canCreatePq !== params.canCreatePq )
-				{
+				// if (this.state.gdsObj.canCreatePq !== params.canCreatePq)
+				// {
+
+				// OPTIMIZE
 					this.change({
 						gdsObj : Object.assign( {}, this.state.gdsObj, params )
 					});
 
 					// console.log( 'trigger BTN ');
-				}
+				// }
 
 				return false;
 
