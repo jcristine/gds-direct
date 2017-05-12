@@ -149,11 +149,6 @@ export default class TerminalPlugin
 		window.TerminalState.action('CHANGE_ACTIVE_TERMINAL', activeTerminal );
 	}
 
-	// clearBuf()
-	// {
-	// 	window.TerminalState.purgeScreens();
-	// }
-
 	tabPressed()
 	{
 		if ( this.f8Reader.getIsActive() )
@@ -331,11 +326,16 @@ export default class TerminalPlugin
 
 		this.tabCommands.reset( result['tabCommands'], result['output'] );
 
+		// todo :: optimize
+
 		if ( result['pcc'] )
 			window.TerminalState.action( 'CHANGE_PCC', result['pcc'] );
 
 		// if ( result['canCreatePq'] )
-		window.TerminalState.action( 'CAN_CREATE_PQ', result['canCreatePq'] );
+		window.TerminalState.action( 'CAN_CREATE_PQ', {
+			canCreatePq 		: result['canCreatePq'],
+			canCreatePqErrors 	: result['canCreatePqErrors']
+		});
 
 		this.debugOutput( result );
 	}

@@ -3687,10 +3687,10 @@ class TerminalState
 				// console.log("SSSSS", params);
 				// console.log("SSSSS", this.state.gdsObj.canCreatePq);
 
-				if (this.state.gdsObj.canCreatePq !== params )
+				if (this.state.gdsObj.canCreatePq !== params.canCreatePq )
 				{
 					this.change({
-						gdsObj : Object.assign( {}, this.state.gdsObj, { canCreatePq : params } )
+						gdsObj : Object.assign( {}, this.state.gdsObj, params )
 					});
 
 					// console.log( 'trigger BTN ');
@@ -3705,8 +3705,15 @@ class TerminalState
 				if (!this.state.gdsObj.canCreatePq)
 					return false;
 
+				/*if (this.state.gdsObj.canCreatePqErrors)
+				{
+					alert( this.state.gdsObj.canCreatePqErrors.join('<br>') );
+					return false;
+				}*/
+
 				apiData.pqModal.show({
-					onClose	: () => this.change( {hideMenu: false} )
+					canCreatePqErrors 	: this.state.gdsObj.canCreatePqErrors,
+					onClose				: () => this.change( {hideMenu: false} )
 				})
 
 				.then( () => this.change({hideMenu: true}) );
@@ -3720,6 +3727,7 @@ class TerminalState
 				if (term)
 				{
 					window.activePlugin.hiddenBuff = ['A/V/13SEPSEAMNL+DL', '01Y1*', '*R', '$BB'];
+					// window.activePlugin.hiddenBuff = ['A10JUNKIVRIX', '01E1K2', '$BB'];
 					window.activePlugin.loopCmdStack();
 				}
 
@@ -3731,9 +3739,7 @@ class TerminalState
 	change( params = {} )
 	{
 		this.state = Object.assign( {}, this.state, params );
-
 		console.log(' change ', params);
-
 		__WEBPACK_IMPORTED_MODULE_0__components_containerMain__["a" /* default */].render( this.state );
 	}
 }
@@ -15585,11 +15591,6 @@ class TerminalPlugin
 		window.TerminalState.action('CHANGE_ACTIVE_TERMINAL', activeTerminal );
 	}
 
-	// clearBuf()
-	// {
-	// 	window.TerminalState.purgeScreens();
-	// }
-
 	tabPressed()
 	{
 		if ( this.f8Reader.getIsActive() )
@@ -15767,11 +15768,16 @@ class TerminalPlugin
 
 		this.tabCommands.reset( result['tabCommands'], result['output'] );
 
+		// todo :: optimize
+
 		if ( result['pcc'] )
 			window.TerminalState.action( 'CHANGE_PCC', result['pcc'] );
 
 		// if ( result['canCreatePq'] )
-		window.TerminalState.action( 'CAN_CREATE_PQ', result['canCreatePq'] );
+		window.TerminalState.action( 'CAN_CREATE_PQ', {
+			canCreatePq 		: result['canCreatePq'],
+			canCreatePqErrors 	: result['canCreatePqErrors']
+		});
 
 		this.debugOutput( result );
 	}
