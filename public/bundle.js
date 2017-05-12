@@ -4182,9 +4182,6 @@ class TerminalState
 
 				Gds[ this.getGds() ] = this.state.gdsObj;
 
-				// console.log( 'gds params', Gds[params] );
-				// console.log( 'gds params', this.state.gdsObj );
-
 				this.change({
 					gds		: params,
 					gdsObj 	: Gds[params]
@@ -4236,7 +4233,6 @@ class TerminalState
 			break;
 
 			case 'CHANGE_PCC' :
-
 				const area = this.getAreaIndex();
 
 				this.change({
@@ -4246,7 +4242,6 @@ class TerminalState
 						}
 					})
 				});
-
 			break;
 
 			// case 'ACTIVATE_PQ' :
@@ -4272,16 +4267,15 @@ class TerminalState
 
 			case 'PQ_MODAL_SHOW' :
 
-				if (this.state.gdsObj.activeTerminal)
-				{
-					apiData.pqModal.show({
-						onClose	: () => this.change( {hideMenu: false} )
-					})
+				if (!this.state.gdsObj.canCreatePq)
+					return false;
 
-					.then( () => this.change({hideMenu: true}) );
-				}
+				apiData.pqModal.show({
+					onClose	: () => this.change( {hideMenu: false} )
+				})
 
-				return false;
+				.then( () => this.change({hideMenu: true}) );
+
 			break;
 
 			case 'PQ_MACROS' :
