@@ -15116,7 +15116,7 @@ class Terminal {
 			return false;
 
 		const buffered = buf['buffering'].map( record => {
-			return `<div class="command">${record.command}</div><pre style="white-space: pre-wrap">${record.output}</pre>`;
+			return `<div class="command">${record.command}</div><pre style="white-space: pre-wrap; overflow: hidden">${record.output}</pre>`;
 		}).join('');
 
 		this.bufferDiv 				= __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_1__helpers_dom__["a" /* default */])('article.terminal-wrapper');
