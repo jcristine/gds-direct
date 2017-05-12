@@ -4278,9 +4278,20 @@ class TerminalState
 						onClose	: () => this.change( {hideMenu: false} )
 					})
 
-					.then( () => {
-						this.change({hideMenu: true});
-					});
+					.then( () => this.change({hideMenu: true}) );
+				}
+
+				return false;
+			break;
+
+			case 'PQ_MACROS' :
+
+				const term = this.getActiveTerminal();
+
+				if (term)
+				{
+					window.activePlugin.hiddenBuff = ['A/V/13SEPSEAMNL+DL', '01Y1*', '*R', '$BB'];
+					window.activePlugin.loopCmdStack();
 				}
 
 				return false;
@@ -14814,9 +14825,17 @@ class MenuPanel
 		return context;
 	}
 
+	static tests()
+	{
+		this.macros = __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_5__helpers_dom__["a" /* default */])('span.btn btn-warning font-bold');
+		this.macros.innerHTML 	= 'test pq';
+		this.macros.onclick 	= () => { window.TerminalState.action('PQ_MACROS') };
+
+		return this.macros;
+	}
+
 	static render(params)
 	{
-		// console.log( 'zzz', params );
 		// let start = new Date().getTime();
 		// console.log(' re render ');
 
@@ -14827,8 +14846,9 @@ class MenuPanel
 		context.appendChild( this.InputLanguage() );
 		context.appendChild( __WEBPACK_IMPORTED_MODULE_4__menu_pqButton__["a" /* default */].render( params ) );
 
-		// console.log('draw done', new Date().getTime() - start);
+		context.appendChild( this.macros || this.tests() );
 
+		// console.log('draw done', new Date().getTime() - start);
 		return context;
 	}
 }
@@ -15600,13 +15620,14 @@ class TerminalPlugin
 
 	changeActiveTerm( activeTerminal )
 	{
+		window.activePlugin = this; // SO SO
 		window.TerminalState.action('CHANGE_ACTIVE_TERMINAL', activeTerminal );
 	}
 
-	clearBuf()
-	{
-		window.TerminalState.purgeScreens();
-	}
+	// clearBuf()
+	// {
+	// 	window.TerminalState.purgeScreens();
+	// }
 
 	tabPressed()
 	{
@@ -15631,8 +15652,6 @@ class TerminalPlugin
 	resize( w, h )
 	{
 		this.terminal.resize( w, h );
-		// this.terminal.resize();
-		// this.outputLiner.recalculate();
 	}
 
 	emptyLinesRecalculate()
@@ -15652,8 +15671,8 @@ class TerminalPlugin
 			// keypress		: this.parseChar.bind(this), // BUGGY BUGGY, assign on document wtf???
 			keydown			: this.parseKeyBinds.bind(this),
 
-			onInit			: this.changeActiveTerm,
-			onTerminalChange: this.changeActiveTerm,
+			onInit			: this.changeActiveTerm.bind(this),
+			onTerminalChange: this.changeActiveTerm.bind(this),
 
 			// memory			: true,
 
@@ -15667,7 +15686,7 @@ class TerminalPlugin
 
 			// for hard scenario shortcut, others in keymap helper
 			keymap			: {
-				'CTRL+S'	: () => this.clearBuf(),
+				'CTRL+S'	: () => window.TerminalState.purgeScreens(),
 				'TAB'		: () => this.tabPressed(),
 				'F8'		: () => this.f8Reader.tie(),
 				'F5'		: () => false,

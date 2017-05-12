@@ -114,9 +114,17 @@ export default class MenuPanel
 		return context;
 	}
 
+	static tests()
+	{
+		this.macros = Dom('span.btn btn-warning font-bold');
+		this.macros.innerHTML 	= 'test pq';
+		this.macros.onclick 	= () => { window.TerminalState.action('PQ_MACROS') };
+
+		return this.macros;
+	}
+
 	static render(params)
 	{
-		// console.log( 'zzz', params );
 		// let start = new Date().getTime();
 		// console.log(' re render ');
 
@@ -127,8 +135,9 @@ export default class MenuPanel
 		context.appendChild( this.InputLanguage() );
 		context.appendChild( PqButton.render( params ) );
 
-		// console.log('draw done', new Date().getTime() - start);
+		context.appendChild( this.macros || this.tests() );
 
+		// console.log('draw done', new Date().getTime() - start);
 		return context;
 	}
 }

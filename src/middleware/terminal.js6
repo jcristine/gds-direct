@@ -145,13 +145,14 @@ export default class TerminalPlugin
 
 	changeActiveTerm( activeTerminal )
 	{
+		window.activePlugin = this; // SO SO
 		window.TerminalState.action('CHANGE_ACTIVE_TERMINAL', activeTerminal );
 	}
 
-	clearBuf()
-	{
-		window.TerminalState.purgeScreens();
-	}
+	// clearBuf()
+	// {
+	// 	window.TerminalState.purgeScreens();
+	// }
 
 	tabPressed()
 	{
@@ -176,8 +177,6 @@ export default class TerminalPlugin
 	resize( w, h )
 	{
 		this.terminal.resize( w, h );
-		// this.terminal.resize();
-		// this.outputLiner.recalculate();
 	}
 
 	emptyLinesRecalculate()
@@ -197,8 +196,8 @@ export default class TerminalPlugin
 			// keypress		: this.parseChar.bind(this), // BUGGY BUGGY, assign on document wtf???
 			keydown			: this.parseKeyBinds.bind(this),
 
-			onInit			: this.changeActiveTerm,
-			onTerminalChange: this.changeActiveTerm,
+			onInit			: this.changeActiveTerm.bind(this),
+			onTerminalChange: this.changeActiveTerm.bind(this),
 
 			// memory			: true,
 
@@ -212,7 +211,7 @@ export default class TerminalPlugin
 
 			// for hard scenario shortcut, others in keymap helper
 			keymap			: {
-				'CTRL+S'	: () => this.clearBuf(),
+				'CTRL+S'	: () => window.TerminalState.purgeScreens(),
 				'TAB'		: () => this.tabPressed(),
 				'F8'		: () => this.f8Reader.tie(),
 				'F5'		: () => false,

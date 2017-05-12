@@ -216,9 +216,20 @@ class TerminalState
 						onClose	: () => this.change( {hideMenu: false} )
 					})
 
-					.then( () => {
-						this.change({hideMenu: true});
-					});
+					.then( () => this.change({hideMenu: true}) );
+				}
+
+				return false;
+			break;
+
+			case 'PQ_MACROS' :
+
+				const term = this.getActiveTerminal();
+
+				if (term)
+				{
+					window.activePlugin.hiddenBuff = ['A/V/13SEPSEAMNL+DL', '01Y1*', '*R', '$BB'];
+					window.activePlugin.loopCmdStack();
 				}
 
 				return false;
