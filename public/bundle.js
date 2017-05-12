@@ -4077,18 +4077,15 @@ const gdsSettings = {
 	canCreatePq		: false
 };
 
-const Gds = {
-	apollo: Object.assign({}, gdsSettings, {
-		name 			: 'apollo',
-		sessionIndex 	: __WEBPACK_IMPORTED_MODULE_2__constants__["a" /* AREA_LIST */].indexOf(apiData.settings['gds']['apollo']['area']),
-		canCreatePq		: !!apiData.settings['gds']['apollo']['canCreatePq']
-	}),
+const extendGds = name => ({
+	name 			: name,
+	sessionIndex 	: __WEBPACK_IMPORTED_MODULE_2__constants__["a" /* AREA_LIST */].indexOf(apiData.settings['gds'][name]['area']),
+	canCreatePq		: !!apiData.settings['gds'][name]['canCreatePq']
+});
 
-	sabre	: Object.assign({}, gdsSettings, {
-		name 			: 'sabre',
-		sessionIndex 	: __WEBPACK_IMPORTED_MODULE_2__constants__["a" /* AREA_LIST */].indexOf(apiData.settings['gds']['sabre']['area']),
-		canCreatePq		: !!apiData.settings['gds']['sabre']['canCreatePq']
-	})
+const Gds = {
+	apollo	: Object.assign({}, gdsSettings, extendGds('apollo')),
+	sabre	: Object.assign({}, gdsSettings, extendGds('sabre'))
 };
 
 class TerminalState
