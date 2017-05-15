@@ -14,12 +14,6 @@ class History extends ButtonPopOver
 		this.makeTrigger();
 	}
 
-	getPopContent()
-	{
-		this.build();
-		return this.popContent;
-	}
-
 	makeShortcut( value )
 	{
 		const el = Dom('a.t-pointer');

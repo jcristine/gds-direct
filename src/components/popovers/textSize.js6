@@ -8,15 +8,7 @@ class TextSize extends ButtonPopOver
 	constructor( params )
 	{
 		super( params );
-
-		this.popContent = Dom('div');
 		this.makeTrigger();
-	}
-
-	getPopContent()
-	{
-		this.build();
-		return this.popContent;
 	}
 
 	build( list )

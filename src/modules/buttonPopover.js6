@@ -19,6 +19,7 @@ export default class ButtonPopOver
 	constructor( params )
 	{
 		this.settings 	= params;
+		this.popContent = this.popContent = Dom('div');
 	}
 
 	makeTrigger()
@@ -40,6 +41,9 @@ export default class ButtonPopOver
 				openOn		: 'click'
 			});
 
+		if (this.settings.onOpen)
+			this.popover.on('open', this.settings.onOpen );
+
 		this.trigger.onclick = false;
 		this.trigger.click();
 	}
@@ -51,6 +55,12 @@ export default class ButtonPopOver
 
 	getPopContent()
 	{
-		console.log('please overwrite in child');
+		this.build();
+		return this.popContent;
+	}
+
+	build()
+	{
+		console.warn( 'Build Popover method undefined in child component ')
 	}
 }

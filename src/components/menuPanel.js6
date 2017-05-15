@@ -5,6 +5,7 @@ import TextSize 		from './popovers/textSize';
 import Settings 		from './popovers/settings';
 import SessionButtons	from './menu/sessionButtons';
 import PqButton			from './menu/pqButton';
+import DevButtons		from './menu/devButtons';
 import Dom				from '../helpers/dom';
 
 const context = Dom('aside.sideMenu');
@@ -116,11 +117,8 @@ export default class MenuPanel
 
 	static tests()
 	{
-		this.macros = Dom('span.btn btn-warning font-bold');
-		this.macros.innerHTML 	= 'test pq';
-		this.macros.onclick 	= () => { window.TerminalState.action('PQ_MACROS') };
-
-		return this.macros;
+		this.devButtons = this.devButtons || new DevButtons().getContext();
+		return this.devButtons;
 	}
 
 	static render(params)
@@ -135,7 +133,7 @@ export default class MenuPanel
 		context.appendChild( this.InputLanguage() );
 		context.appendChild( PqButton.render( params ) );
 
-		context.appendChild( this.macros || this.tests() );
+		context.appendChild( this.devButtons || this.tests() );
 
 		// console.log('draw done', new Date().getTime() - start);
 		return context;

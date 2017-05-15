@@ -63,7 +63,7 @@
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 39);
+/******/ 	return __webpack_require__(__webpack_require__.s = 40);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -114,6 +114,7 @@ class ButtonPopOver
 	constructor( params )
 	{
 		this.settings 	= params;
+		this.popContent = this.popContent = __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_1__helpers_dom__["a" /* default */])('div');
 	}
 
 	makeTrigger()
@@ -135,6 +136,9 @@ class ButtonPopOver
 				openOn		: 'click'
 			});
 
+		if (this.settings.onOpen)
+			this.popover.on('open', this.settings.onOpen );
+
 		this.trigger.onclick = false;
 		this.trigger.click();
 	}
@@ -146,7 +150,13 @@ class ButtonPopOver
 
 	getPopContent()
 	{
-		console.log('please overwrite in child');
+		this.build();
+		return this.popContent;
+	}
+
+	build()
+	{
+		console.warn( 'Build Popover method undefined in child component ')
 	}
 }
 /* harmony export (immutable) */ __webpack_exports__["a"] = ButtonPopOver;
@@ -3615,6 +3625,7 @@ class TerminalState
 		{
 			case 'CHANGE_GDS':
 
+				// replace the gds and save
 				Gds[ this.getGds() ] = this.state.gdsObj;
 
 				this.change({
@@ -3704,6 +3715,7 @@ class TerminalState
 
 			case 'PQ_MODAL_SHOW' :
 
+
 				if (!this.state.gdsObj.canCreatePq)
 					return false;
 
@@ -3722,14 +3734,28 @@ class TerminalState
 
 			break;
 
-			case 'PQ_MACROS' :
+			// case 'PQ_MACROS' :
+			//
+			// 	let term = this.getActiveTerminal();
+			//
+			// 	if (term)
+			// 	{
+			// 		window.activePlugin.hiddenBuff = ['A/V/13SEPSEAMNL+DL', '01Y1*', '*R', '$BB'];
+			// 		// window.activePlugin.hiddenBuff = ['A10JUNKIVRIX', '01E1K2', '$BB'];
+			// 		window.activePlugin.loopCmdStack();
+			// 	}
+			//
+			// 	return false;
+			// break;
 
-				const term = this.getActiveTerminal();
+			case 'DEV_CMD_STACK_RUN' :
+				let term = this.getActiveTerminal();
 
 				if (term)
 				{
-					window.activePlugin.hiddenBuff = ['A/V/13SEPSEAMNL+DL', '01Y1*', '*R', '$BB'];
-					// window.activePlugin.hiddenBuff = ['A10JUNKIVRIX', '01E1K2', '$BB'];
+					console.log( params );
+
+					window.activePlugin.hiddenBuff = params;
 					window.activePlugin.loopCmdStack();
 				}
 
@@ -14323,7 +14349,7 @@ exports.clearImmediate = clearImmediate;
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__popovers_terminalMatrix__ = __webpack_require__(27);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__popovers_terminalMatrix__ = __webpack_require__(28);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__helpers_dom__ = __webpack_require__(0);
 
 
@@ -14360,9 +14386,9 @@ class ActionsMenu {
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__terminal__ = __webpack_require__(29);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__terminal__ = __webpack_require__(30);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__actionsMenu__ = __webpack_require__(20);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__menuPanel__ = __webpack_require__(24);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__menuPanel__ = __webpack_require__(25);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__helpers_dom__ = __webpack_require__(0);
 
 
@@ -14546,6 +14572,8 @@ class Container {
 
 	static render( params )
 	{
+		console.log(' reRender ', params )
+
 		this.context.className = this.state.className + ' term-f-size-' + params.fontSize;
 
 		// Wrapper.render({
@@ -14582,6 +14610,83 @@ class Container {
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__helpers_dom__ = __webpack_require__(0);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__modules_buttonPopover__ = __webpack_require__(1);
+
+
+
+
+class CommandsBuffer extends __WEBPACK_IMPORTED_MODULE_1__modules_buttonPopover__["a" /* default */]
+{
+	constructor( params )
+	{
+		super( params );
+
+		this.settings.onOpen = () => this.area.focus();
+		this.makeTrigger();
+	}
+
+	build()
+	{
+		const area 		= __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0__helpers_dom__["a" /* default */])('textarea.form-control');
+		const btn 		= __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0__helpers_dom__["a" /* default */])('button.btn btn-sm btn-warning btn-block');
+		btn.innerHTML	= 'Run';
+
+		area.rows 	= 20;
+		area.cells 	= 20;
+
+		btn.onclick 	= () => {
+			const cmd = area.value.trim().split(/\s+/);
+			window.TerminalState.action('DEV_CMD_STACK_RUN', cmd)
+		};
+
+		this.popContent.appendChild( area );
+		this.popContent.appendChild( btn );
+
+		this.area = area;
+	}
+}
+
+class DevButtons
+{
+	constructor()
+	{
+		this.context = __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0__helpers_dom__["a" /* default */])('div');
+		this.context.appendChild ( this.AddPqMacros() );
+		this.context.appendChild ( this.commandsBuffer() );
+	}
+
+	AddPqMacros()
+	{
+		this.macros 			= __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0__helpers_dom__["a" /* default */])('span.btn btn-primary font-bold');
+		this.macros.innerHTML 	= 'test pq';
+		this.macros.onclick 	= () => {
+			window.TerminalState.action('DEV_CMD_STACK_RUN', ['A/V/13SEPSEAMNL+DL', '01Y1*', '*R', '$BB']);
+		};
+
+		return this.macros;
+	}
+
+	commandsBuffer()
+	{
+		return this.commandsBuffer = new CommandsBuffer({
+			icon		: '<span>Dev Buf</span>'
+		}).getTrigger();
+	}
+
+	getContext()
+	{
+		return this.context;
+	}
+}
+/* harmony export (immutable) */ __webpack_exports__["a"] = DevButtons;
+
+
+/***/ }),
+/* 23 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
 let button;
 
 class PqButton
@@ -14608,7 +14713,7 @@ class PqButton
 
 
 /***/ }),
-/* 23 */
+/* 24 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -14685,16 +14790,17 @@ class SessionKeys
 
 
 /***/ }),
-/* 24 */
+/* 25 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__popovers_history__ = __webpack_require__(25);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__popovers_textSize__ = __webpack_require__(28);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__popovers_settings__ = __webpack_require__(26);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__menu_sessionButtons__ = __webpack_require__(23);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__menu_pqButton__ = __webpack_require__(22);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__helpers_dom__ = __webpack_require__(0);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__popovers_history__ = __webpack_require__(26);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__popovers_textSize__ = __webpack_require__(29);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__popovers_settings__ = __webpack_require__(27);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__menu_sessionButtons__ = __webpack_require__(24);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__menu_pqButton__ = __webpack_require__(23);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__menu_devButtons__ = __webpack_require__(22);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__helpers_dom__ = __webpack_require__(0);
 
 
 
@@ -14704,7 +14810,8 @@ class SessionKeys
 
 
 
-const context = __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_5__helpers_dom__["a" /* default */])('aside.sideMenu');
+
+const context = __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_6__helpers_dom__["a" /* default */])('aside.sideMenu');
 
 let SettingsContext;
 
@@ -14778,7 +14885,7 @@ class MenuPanel
 
 		['APOLLO','SABRE'].forEach( value => {
 
-			const button = __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_5__helpers_dom__["a" /* default */])('button.btn btn-sm btn-gold font-bold' + ( window.TerminalState.getLanguage() === value ? ' active' : '') );
+			const button = __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_6__helpers_dom__["a" /* default */])('button.btn btn-sm btn-gold font-bold' + ( window.TerminalState.getLanguage() === value ? ' active' : '') );
 
 			button.innerHTML = value;
 			button.addEventListener('click', () => window.TerminalState.change({ language : value }) );
@@ -14813,11 +14920,8 @@ class MenuPanel
 
 	static tests()
 	{
-		this.macros = __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_5__helpers_dom__["a" /* default */])('span.btn btn-warning font-bold');
-		this.macros.innerHTML 	= 'test pq';
-		this.macros.onclick 	= () => { window.TerminalState.action('PQ_MACROS') };
-
-		return this.macros;
+		this.devButtons = this.devButtons || new __WEBPACK_IMPORTED_MODULE_5__menu_devButtons__["a" /* default */]().getContext();
+		return this.devButtons;
 	}
 
 	static render(params)
@@ -14832,7 +14936,7 @@ class MenuPanel
 		context.appendChild( this.InputLanguage() );
 		context.appendChild( __WEBPACK_IMPORTED_MODULE_4__menu_pqButton__["a" /* default */].render( params ) );
 
-		context.appendChild( this.macros || this.tests() );
+		context.appendChild( this.devButtons || this.tests() );
 
 		// console.log('draw done', new Date().getTime() - start);
 		return context;
@@ -14842,7 +14946,7 @@ class MenuPanel
 
 
 /***/ }),
-/* 25 */
+/* 26 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -14863,12 +14967,6 @@ class History extends __WEBPACK_IMPORTED_MODULE_2__modules_buttonPopover__["a" /
 
 		this.popContent = __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_1__helpers_dom__["a" /* default */])('div.historyContext');
 		this.makeTrigger();
-	}
-
-	getPopContent()
-	{
-		this.build();
-		return this.popContent;
 	}
 
 	makeShortcut( value )
@@ -14892,7 +14990,7 @@ class History extends __WEBPACK_IMPORTED_MODULE_2__modules_buttonPopover__["a" /
 /* harmony default export */ __webpack_exports__["a"] = (History);
 
 /***/ }),
-/* 26 */
+/* 27 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -14909,16 +15007,10 @@ class Settings extends __WEBPACK_IMPORTED_MODULE_1__modules_buttonPopover__["a" 
 	{
 		super( params );
 
-		this.popContent = __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0__helpers_dom__["a" /* default */])('div');
+		// this.popContent = Dom('div');
 		this.makeTrigger();
 
 		this.popContent.innerHTML = '<div class="wrapper"> In Development </div>';
-	}
-
-	getPopContent()
-	{
-		// this.build();
-		return this.popContent;
 	}
 
 	// build()
@@ -14932,7 +15024,7 @@ class Settings extends __WEBPACK_IMPORTED_MODULE_1__modules_buttonPopover__["a" 
 
 
 /***/ }),
-/* 27 */
+/* 28 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -14955,12 +15047,6 @@ class Matrix extends __WEBPACK_IMPORTED_MODULE_1__modules_buttonPopover__["a" /*
 
 		this.popContent = __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0__helpers_dom__["a" /* default */])('table.matrix-table');
 		this.makeTrigger();
-	}
-
-	getPopContent()
-	{
-		this.build();
-		return this.popContent;
 	}
 
 	build()
@@ -15023,7 +15109,7 @@ class Matrix extends __WEBPACK_IMPORTED_MODULE_1__modules_buttonPopover__["a" /*
 
 
 /***/ }),
-/* 28 */
+/* 29 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -15039,15 +15125,7 @@ class TextSize extends __WEBPACK_IMPORTED_MODULE_1__modules_buttonPopover__["a" 
 	constructor( params )
 	{
 		super( params );
-
-		this.popContent = __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0__helpers_dom__["a" /* default */])('div');
 		this.makeTrigger();
-	}
-
-	getPopContent()
-	{
-		this.build();
-		return this.popContent;
 	}
 
 	build( list )
@@ -15070,11 +15148,11 @@ class TextSize extends __WEBPACK_IMPORTED_MODULE_1__modules_buttonPopover__["a" 
 /* harmony default export */ __webpack_exports__["a"] = (TextSize);
 
 /***/ }),
-/* 29 */
+/* 30 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__middleware_terminal__ = __webpack_require__(31);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__middleware_terminal__ = __webpack_require__(32);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__helpers_dom__ = __webpack_require__(0);
 
 
@@ -15212,7 +15290,7 @@ class Terminal {
 
 
 /***/ }),
-/* 30 */
+/* 31 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -15428,23 +15506,23 @@ class KeyBinding
 
 
 /***/ }),
-/* 31 */
+/* 32 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_noty__ = __webpack_require__(4);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_noty___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_noty__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__modules_pagination__ = __webpack_require__(34);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__modules_session__ = __webpack_require__(35);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__modules_spinner__ = __webpack_require__(36);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__helpers_keyBinding__ = __webpack_require__(30);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__modules_output__ = __webpack_require__(33);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__modules_tabManager__ = __webpack_require__(37);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__modules_f8__ = __webpack_require__(32);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__modules_pagination__ = __webpack_require__(35);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__modules_session__ = __webpack_require__(36);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__modules_spinner__ = __webpack_require__(37);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__helpers_keyBinding__ = __webpack_require__(31);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__modules_output__ = __webpack_require__(34);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__modules_tabManager__ = __webpack_require__(38);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__modules_f8__ = __webpack_require__(33);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_8__helpers_helpers__ = __webpack_require__(2);
 
 
-const $					= __webpack_require__(38);
+const $					= __webpack_require__(39);
 window.$ 				= window.jQuery = $;
 
 __webpack_require__(11);
@@ -15807,7 +15885,7 @@ class TerminalPlugin
 
 
 /***/ }),
-/* 32 */
+/* 33 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -15904,7 +15982,7 @@ class F8Reader
 
 
 /***/ }),
-/* 33 */
+/* 34 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -15998,7 +16076,7 @@ class Output
 
 
 /***/ }),
-/* 34 */
+/* 35 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -16056,7 +16134,7 @@ class Pagination
 
 
 /***/ }),
-/* 35 */
+/* 36 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -16114,7 +16192,7 @@ class Session
 
 
 /***/ }),
-/* 36 */
+/* 37 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -16175,7 +16253,7 @@ class Spinner
 
 
 /***/ }),
-/* 37 */
+/* 38 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -16243,13 +16321,13 @@ class TabManager
 
 
 /***/ }),
-/* 38 */
+/* 39 */
 /***/ (function(module, exports) {
 
 module.exports = jQuery;
 
 /***/ }),
-/* 39 */
+/* 40 */
 /***/ (function(module, exports, __webpack_require__) {
 
 __webpack_require__(8);

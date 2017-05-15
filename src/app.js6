@@ -115,6 +115,7 @@ class TerminalState
 		{
 			case 'CHANGE_GDS':
 
+				// replace the gds and save
 				Gds[ this.getGds() ] = this.state.gdsObj;
 
 				this.change({
@@ -204,6 +205,7 @@ class TerminalState
 
 			case 'PQ_MODAL_SHOW' :
 
+
 				if (!this.state.gdsObj.canCreatePq)
 					return false;
 
@@ -222,14 +224,28 @@ class TerminalState
 
 			break;
 
-			case 'PQ_MACROS' :
+			// case 'PQ_MACROS' :
+			//
+			// 	let term = this.getActiveTerminal();
+			//
+			// 	if (term)
+			// 	{
+			// 		window.activePlugin.hiddenBuff = ['A/V/13SEPSEAMNL+DL', '01Y1*', '*R', '$BB'];
+			// 		// window.activePlugin.hiddenBuff = ['A10JUNKIVRIX', '01E1K2', '$BB'];
+			// 		window.activePlugin.loopCmdStack();
+			// 	}
+			//
+			// 	return false;
+			// break;
 
-				const term = this.getActiveTerminal();
+			case 'DEV_CMD_STACK_RUN' :
+				let term = this.getActiveTerminal();
 
 				if (term)
 				{
-					window.activePlugin.hiddenBuff = ['A/V/13SEPSEAMNL+DL', '01Y1*', '*R', '$BB'];
-					// window.activePlugin.hiddenBuff = ['A10JUNKIVRIX', '01E1K2', '$BB'];
+					console.log( params );
+
+					window.activePlugin.hiddenBuff = params;
 					window.activePlugin.loopCmdStack();
 				}
 

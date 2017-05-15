@@ -180,6 +180,8 @@ export default class Container {
 
 	static render( params )
 	{
+		console.log(' reRender ', params )
+
 		this.context.className = this.state.className + ' term-f-size-' + params.fontSize;
 
 		// Wrapper.render({

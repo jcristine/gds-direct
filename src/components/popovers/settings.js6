@@ -9,16 +9,10 @@ export default class Settings extends ButtonPopOver
 	{
 		super( params );
 
-		this.popContent = Dom('div');
+		// this.popContent = Dom('div');
 		this.makeTrigger();
 
 		this.popContent.innerHTML = '<div class="wrapper"> In Development </div>';
-	}
-
-	getPopContent()
-	{
-		// this.build();
-		return this.popContent;
 	}
 
 	// build()

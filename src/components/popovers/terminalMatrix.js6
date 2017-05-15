@@ -17,12 +17,6 @@ export default class Matrix extends ButtonPopOver
 		this.makeTrigger();
 	}
 
-	getPopContent()
-	{
-		this.build();
-		return this.popContent;
-	}
-
 	build()
 	{
 		[0, 1, 2, 3]
