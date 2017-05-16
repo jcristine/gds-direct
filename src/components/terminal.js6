@@ -21,15 +21,17 @@ export default class Terminal {
 
 	init()
 	{
+		// this.context.innerHTML = '';
+
 		this.plugin = new TerminalPlugin({
 			context 		: this.context,
 			name 			: this.settings['name'],
 			sessionIndex 	: this.settings['sessionIndex'],
-			gds 			: this.settings['gds']
+			gds 			: this.settings['gds'],
+			numOfRows 		: this.numOfRows
 		});
 
-		// this.context.style.height = calculateHeight(this.plugin.terminal) + 'px';
-		// this.plugin.terminal.scroll_to_bottom();
+		// this.insertBuffer();
 	}
 
 	makeBuffer( buf )
@@ -39,6 +41,7 @@ export default class Terminal {
 
 		const buffered = buf['buffering'].map( record => {
 			return `<div class="command">${record.command}</div><pre style="white-space: pre-wrap; overflow: hidden">${record.output}</pre>`;
+			// return `<div class="command">${record.command}</div><div>${record.output}</div>`;
 		}).join('');
 
 		this.bufferDiv 				= Dom('article.terminal-wrapper');
@@ -47,42 +50,23 @@ export default class Terminal {
 		this.context.appendChild( this.bufferDiv );
 	}
 
-	//
-	// insertBuffer()
-	// {
-	// 	if ( !this.buffer )
-	// 		return false;
-	//
-	// 	this.buffer['buffering'].forEach( (record) => {
-	// 		this.plugin.terminal.echo(record.request, { finalize : function ( div ) {
-	// 			div[0].className = 'command';
-	// 		}});
-	//
-	// 		this.plugin.terminal.echo(record.output);
-	// 	});
-	// }
-
-	getLineHeight()
+	insertBuffer()
 	{
-		const tempCmd 		= Dom('div.terminal-wrapper');
-		tempCmd.innerHTML 	= '<div class="cmd"><span class="cursor">&nbsp;</span></div>';
+		if ( !this.settings.buffer )
+			return false;
 
-		this.context.appendChild( tempCmd );
+		this.settings.buffer['buffering'].forEach( (record) => {
+			this.plugin.terminal.echo(record.command, { finalize : function ( div ) {
+				div[0].className = 'command';
+			}});
 
-		const cursor = tempCmd.querySelector('.cursor');
-		const height = cursor.clientHeight;
-
-		this.context.removeChild( tempCmd );
-
-		return height;
+			this.plugin.terminal.echo(record.output);
+		});
 	}
 
-	calculateHeight()
+	calculateNumOfRows( lineHeight )
 	{
-		const getLineHeight = this.getLineHeight();
-		const rowsNumber 	= Math.floor( this.settings.parentContext.clientHeight / getLineHeight );
-
-		return getLineHeight * rowsNumber;
+		return Math.floor( this.settings.parentContext.clientHeight / lineHeight );
 	}
 
 	reattach( parentNode, dimensions )
@@ -91,26 +75,63 @@ export default class Terminal {
 
 		this.settings.parentContext = parentNode;
 
+		// this.calculateNumOfRows(this.settings.char.)
+
 		parentNode.style.height		= dimensions.height + 'px';
-		// parentNode.style.width		= dimensions.width	+ 'px';
+
+		parentNode.style.width		= dimensions.width	+ 'px';
+		// parentNode.style.maxWidth	= dimensions.width	+ 'px';
 
 		this.context.style.height	= parentNode.clientHeight	+ 'px';
-		this.context.style.width	= parentNode.clientWidth	+ 'px';
+		this.context.style.width	= (parentNode.clientWidth - 1)	+ 'px';
+		// this.context.style.maxWidth	= parentNode.clientWidth	+ 'px';
 
-		if (this.plugin)
+		/*console.log('dimen', dimensions.width);
+		console.log('dimen', parentNode.clientWidth);
+		console.log('dimen', parentNode.offsetWidth);*/
+
+		// console.log( 'zz', dimensions )
+
+		const numOfRows 	= this.calculateNumOfRows( dimensions.char.height );
+		let isEqual			= JSON.stringify(dimensions) === JSON.stringify(this.settings.dimensions);
+
+		// console.log( 'is?', isEqual );
+		// console.log('numOfChars ', dimensions.char.width );
+		// console.log('numOfChars ', numOfChars );
+		// console.log('numOfChars width ', parentNode.clientWidth );
+		// console.log('numOfChars width ', this.context.clientWidth );
+		// console.log('numOfChars ', '===' );
+
+		this.numOfRows = numOfRows;
+
+		// isEqual = true;
+
+		if (!isEqual && this.plugin)
 		{
+			console.log("RESIZE");
 			this.plugin.resize();
 		}
 
+		this.context.style.height = (numOfRows * dimensions.char.height ) + 'px';
 		this.settings.parentContext.appendChild( this.context );
-		this.context.style.height = this.calculateHeight() + 'px';
 
-		if (this.plugin)
+		const numOfChars	= Math.floor( this.context.clientWidth / dimensions.char.width );
+
+		// console.log(numOfChars);
+		// console.log( 'numOfChars', parentNode.clientWidth );
+		// console.log( 'numOfChars', this.context.clientWidth );
+		// console.log( 'numOfChars', this.context.style.width);
+		// console.log('numOfChars width !!', this.context.clientWidth );
+
+		if (!isEqual && this.plugin)
 		{
-			this.plugin.emptyLinesRecalculate();
+			// console.log( 'recalculate' );
+			// console.log( 'numOfChars', numOfChars )
+			this.plugin.emptyLinesRecalculate( numOfRows, numOfChars );
 		}
 
 		this.context.scrollTop = this.context.scrollHeight;
+		this.settings.dimensions = dimensions;
 	}
 
 	clear()

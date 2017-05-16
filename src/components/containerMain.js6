@@ -20,13 +20,36 @@ class TerminalsMatrix
 		return this;
 	}
 
+	static createTempTerminal()
+	{
+		const tempCmd 		= Dom('div.terminal temp-terminal');
+		tempCmd.innerHTML 	= '<div class="cmd"><span class="cursor">&nbsp;</span></div>';
+
+		this.context.parentNode.appendChild( tempCmd );
+		return tempCmd;
+	}
+
+	static getLineHeight()
+	{
+		this.tempTerminal 	= this.tempTerminal || this.createTempTerminal();
+
+		// console.log( this.tempTerminal.querySelector('.cursor').getBoundingClientRect() );
+
+		const  { width, height } = this.tempTerminal.querySelector('.cursor').getBoundingClientRect();
+
+		return { width, height };
+		// return this.tempTerminal.querySelector('.cursor').clientHeight;
+	}
+
 	static getDimension( rowCount, cellCount )
 	{
 		const parent = this.context.parentNode;
 
 		return {
-			height	: Math.floor(parent.clientHeight / rowCount),
-			width 	: Math.floor(parent.clientWidth / cellCount)
+			height		: Math.floor(parent.clientHeight / rowCount),
+			width 		: Math.floor(parent.clientWidth / cellCount),
+			// lineHeight	: this.getLineHeight(),
+			char		: this.getLineHeight()
 		}
 	}
 
@@ -80,7 +103,8 @@ class TerminalsMatrix
 				name 			: index,
 				sessionIndex	: sessionIndex,
 				gds				: gds,
-				buffer			: window.TerminalState.getBuffer(gds, index + 1)
+				buffer			: window.TerminalState.getBuffer(gds, index + 1),
+				dimensions		: this.dimensions
 			});
 
 			// draw or redraw
@@ -173,14 +197,9 @@ export default class Container {
 		TerminalsMatrix.purgeScreens( gds );
 	}
 
-	// static menuRender( params )
-	// {
-	// 	RightMenu.render( params );
-	// }
-
 	static render( params )
 	{
-		console.log(' reRender ', params )
+		// console.log(' reRender ', params )
 
 		this.context.className = this.state.className + ' term-f-size-' + params.fontSize;
 

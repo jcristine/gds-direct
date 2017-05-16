@@ -135,15 +135,8 @@ class TerminalState
 			break;
 
 			case 'CHANGE_SESSION_BY_MENU' :
-
-				// console.log( params );
-
 				const command	= this.getSessionAreaMap()[params];
-				const xz		= this.getActiveTerminal().exec( command );
-
-				// console.log( '!!!', xz );
-				// return false;
-
+				this.getActiveTerminal().exec( command );
 			break;
 
 			case 'CHANGE_MATRIX':
@@ -204,8 +197,6 @@ class TerminalState
 			break;
 
 			case 'PQ_MODAL_SHOW' :
-
-
 				if (!this.state.gdsObj.canCreatePq)
 					return false;
 

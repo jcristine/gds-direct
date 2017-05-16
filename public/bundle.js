@@ -167,8 +167,8 @@ class ButtonPopOver
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony export (immutable) */ __webpack_exports__["b"] = getReplacement;
-/* harmony export (immutable) */ __webpack_exports__["a"] = substitutePrintableChar;
+/* harmony export (immutable) */ __webpack_exports__["a"] = getReplacement;
+/* unused harmony export substitutePrintableChar */
 /* unused harmony export _splitIntoLinesArr */
 
 
@@ -285,7 +285,7 @@ function splitLines(txt)
 	return txt.split(/\r?\n/);
 }
 
-/* harmony default export */ __webpack_exports__["c"] = ({
+/* harmony default export */ __webpack_exports__["b"] = ({
 	makeCachedParts 		: _makePages,
 	substitutePrintableChar : substitutePrintableChar,
 	getLines 				: _splitIntoLinesArr,
@@ -3645,15 +3645,8 @@ class TerminalState
 			break;
 
 			case 'CHANGE_SESSION_BY_MENU' :
-
-				// console.log( params );
-
 				const command	= this.getSessionAreaMap()[params];
-				const xz		= this.getActiveTerminal().exec( command );
-
-				// console.log( '!!!', xz );
-				// return false;
-
+				this.getActiveTerminal().exec( command );
 			break;
 
 			case 'CHANGE_MATRIX':
@@ -3714,8 +3707,6 @@ class TerminalState
 			break;
 
 			case 'PQ_MODAL_SHOW' :
-
-
 				if (!this.state.gdsObj.canCreatePq)
 					return false;
 
@@ -14412,13 +14403,36 @@ class TerminalsMatrix
 		return this;
 	}
 
+	static createTempTerminal()
+	{
+		const tempCmd 		= __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_3__helpers_dom__["a" /* default */])('div.terminal temp-terminal');
+		tempCmd.innerHTML 	= '<div class="cmd"><span class="cursor">&nbsp;</span></div>';
+
+		this.context.parentNode.appendChild( tempCmd );
+		return tempCmd;
+	}
+
+	static getLineHeight()
+	{
+		this.tempTerminal 	= this.tempTerminal || this.createTempTerminal();
+
+		// console.log( this.tempTerminal.querySelector('.cursor').getBoundingClientRect() );
+
+		const  { width, height } = this.tempTerminal.querySelector('.cursor').getBoundingClientRect();
+
+		return { width, height };
+		// return this.tempTerminal.querySelector('.cursor').clientHeight;
+	}
+
 	static getDimension( rowCount, cellCount )
 	{
 		const parent = this.context.parentNode;
 
 		return {
-			height	: Math.floor(parent.clientHeight / rowCount),
-			width 	: Math.floor(parent.clientWidth / cellCount)
+			height		: Math.floor(parent.clientHeight / rowCount),
+			width 		: Math.floor(parent.clientWidth / cellCount),
+			// lineHeight	: this.getLineHeight(),
+			char		: this.getLineHeight()
 		}
 	}
 
@@ -14472,7 +14486,8 @@ class TerminalsMatrix
 				name 			: index,
 				sessionIndex	: sessionIndex,
 				gds				: gds,
-				buffer			: window.TerminalState.getBuffer(gds, index + 1)
+				buffer			: window.TerminalState.getBuffer(gds, index + 1),
+				dimensions		: this.dimensions
 			});
 
 			// draw or redraw
@@ -14565,14 +14580,9 @@ class Container {
 		TerminalsMatrix.purgeScreens( gds );
 	}
 
-	// static menuRender( params )
-	// {
-	// 	RightMenu.render( params );
-	// }
-
 	static render( params )
 	{
-		console.log(' reRender ', params )
+		// console.log(' reRender ', params )
 
 		this.context.className = this.state.className + ' term-f-size-' + params.fontSize;
 
@@ -15177,15 +15187,17 @@ class Terminal {
 
 	init()
 	{
+		// this.context.innerHTML = '';
+
 		this.plugin = new __WEBPACK_IMPORTED_MODULE_0__middleware_terminal__["a" /* default */]({
 			context 		: this.context,
 			name 			: this.settings['name'],
 			sessionIndex 	: this.settings['sessionIndex'],
-			gds 			: this.settings['gds']
+			gds 			: this.settings['gds'],
+			numOfRows 		: this.numOfRows
 		});
 
-		// this.context.style.height = calculateHeight(this.plugin.terminal) + 'px';
-		// this.plugin.terminal.scroll_to_bottom();
+		// this.insertBuffer();
 	}
 
 	makeBuffer( buf )
@@ -15195,6 +15207,7 @@ class Terminal {
 
 		const buffered = buf['buffering'].map( record => {
 			return `<div class="command">${record.command}</div><pre style="white-space: pre-wrap; overflow: hidden">${record.output}</pre>`;
+			// return `<div class="command">${record.command}</div><div>${record.output}</div>`;
 		}).join('');
 
 		this.bufferDiv 				= __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_1__helpers_dom__["a" /* default */])('article.terminal-wrapper');
@@ -15203,42 +15216,23 @@ class Terminal {
 		this.context.appendChild( this.bufferDiv );
 	}
 
-	//
-	// insertBuffer()
-	// {
-	// 	if ( !this.buffer )
-	// 		return false;
-	//
-	// 	this.buffer['buffering'].forEach( (record) => {
-	// 		this.plugin.terminal.echo(record.request, { finalize : function ( div ) {
-	// 			div[0].className = 'command';
-	// 		}});
-	//
-	// 		this.plugin.terminal.echo(record.output);
-	// 	});
-	// }
-
-	getLineHeight()
+	insertBuffer()
 	{
-		const tempCmd 		= __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_1__helpers_dom__["a" /* default */])('div.terminal-wrapper');
-		tempCmd.innerHTML 	= '<div class="cmd"><span class="cursor">&nbsp;</span></div>';
+		if ( !this.settings.buffer )
+			return false;
 
-		this.context.appendChild( tempCmd );
+		this.settings.buffer['buffering'].forEach( (record) => {
+			this.plugin.terminal.echo(record.command, { finalize : function ( div ) {
+				div[0].className = 'command';
+			}});
 
-		const cursor = tempCmd.querySelector('.cursor');
-		const height = cursor.clientHeight;
-
-		this.context.removeChild( tempCmd );
-
-		return height;
+			this.plugin.terminal.echo(record.output);
+		});
 	}
 
-	calculateHeight()
+	calculateNumOfRows( lineHeight )
 	{
-		const getLineHeight = this.getLineHeight();
-		const rowsNumber 	= Math.floor( this.settings.parentContext.clientHeight / getLineHeight );
-
-		return getLineHeight * rowsNumber;
+		return Math.floor( this.settings.parentContext.clientHeight / lineHeight );
 	}
 
 	reattach( parentNode, dimensions )
@@ -15247,26 +15241,63 @@ class Terminal {
 
 		this.settings.parentContext = parentNode;
 
+		// this.calculateNumOfRows(this.settings.char.)
+
 		parentNode.style.height		= dimensions.height + 'px';
-		// parentNode.style.width		= dimensions.width	+ 'px';
+
+		parentNode.style.width		= dimensions.width	+ 'px';
+		// parentNode.style.maxWidth	= dimensions.width	+ 'px';
 
 		this.context.style.height	= parentNode.clientHeight	+ 'px';
-		this.context.style.width	= parentNode.clientWidth	+ 'px';
+		this.context.style.width	= (parentNode.clientWidth - 1)	+ 'px';
+		// this.context.style.maxWidth	= parentNode.clientWidth	+ 'px';
 
-		if (this.plugin)
+		/*console.log('dimen', dimensions.width);
+		console.log('dimen', parentNode.clientWidth);
+		console.log('dimen', parentNode.offsetWidth);*/
+
+		// console.log( 'zz', dimensions )
+
+		const numOfRows 	= this.calculateNumOfRows( dimensions.char.height );
+		let isEqual			= JSON.stringify(dimensions) === JSON.stringify(this.settings.dimensions);
+
+		// console.log( 'is?', isEqual );
+		// console.log('numOfChars ', dimensions.char.width );
+		// console.log('numOfChars ', numOfChars );
+		// console.log('numOfChars width ', parentNode.clientWidth );
+		// console.log('numOfChars width ', this.context.clientWidth );
+		// console.log('numOfChars ', '===' );
+
+		this.numOfRows = numOfRows;
+
+		// isEqual = true;
+
+		if (!isEqual && this.plugin)
 		{
+			console.log("RESIZE");
 			this.plugin.resize();
 		}
 
+		this.context.style.height = (numOfRows * dimensions.char.height ) + 'px';
 		this.settings.parentContext.appendChild( this.context );
-		this.context.style.height = this.calculateHeight() + 'px';
 
-		if (this.plugin)
+		const numOfChars	= Math.floor( this.context.clientWidth / dimensions.char.width );
+
+		// console.log(numOfChars);
+		// console.log( 'numOfChars', parentNode.clientWidth );
+		// console.log( 'numOfChars', this.context.clientWidth );
+		// console.log( 'numOfChars', this.context.style.width);
+		// console.log('numOfChars width !!', this.context.clientWidth );
+
+		if (!isEqual && this.plugin)
 		{
-			this.plugin.emptyLinesRecalculate();
+			// console.log( 'recalculate' );
+			// console.log( 'numOfChars', numOfChars )
+			this.plugin.emptyLinesRecalculate( numOfRows, numOfChars );
 		}
 
 		this.context.scrollTop = this.context.scrollHeight;
+		this.settings.dimensions = dimensions;
 	}
 
 	clear()
@@ -15553,14 +15584,11 @@ class TerminalPlugin
 {
 	constructor( params )
 	{
-		// console.log( params );
-
 		this.settings 	= params;
 		this.context	= params.context;
 		this.name		= params.name;
 
 		this.hiddenBuff		= [];
-		// this.hiddenCommand	= '';
 
 		this.allowManualPaging = params.gds === 'sabre';
 
@@ -15574,70 +15602,26 @@ class TerminalPlugin
 
 		this.pagination 	= new __WEBPACK_IMPORTED_MODULE_1__modules_pagination__["a" /* default */]( this.terminal );
 		this.spinner 		= new __WEBPACK_IMPORTED_MODULE_3__modules_spinner__["a" /* default */]( this.terminal );
+
 		this.outputLiner 	= new __WEBPACK_IMPORTED_MODULE_5__modules_output__["a" /* default */]( this.terminal );
+		this.outputLiner.setNumRows(params.numOfRows);
+
 		this.tabCommands	= new __WEBPACK_IMPORTED_MODULE_6__modules_tabManager__["a" /* default */]();
 		this.f8Reader		= new __WEBPACK_IMPORTED_MODULE_7__modules_f8__["a" /* default */]( this.terminal );
 	}
 
-	parseChar( evt, terminal )
-	{
-		console.log(' parse char ');
-
-		// key press fires globally on all terminals;
-		// return false;
-
-		// console.log( evt.target.nodeName );
-
-		if ( evt.target.nodeName !== 'TEXTAREA' )
-			return undefined;
-
-		// console.log('zest 1');
-
-		if ( terminal.cmd().find('textarea')[0] !== evt.target )
-			return undefined;
-
-		if ( !terminal.enabled() )
-			return undefined;
-
-		// console.log(' zest' );
-
-		const ch = __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_8__helpers_helpers__["a" /* substitutePrintableChar */])( evt, window.TerminalState.isLanguageApollo() );
-
-		if (!ch) // don't insert empty char further
-		{
-			return false;
-		}
-
-		console.log( '???', this.f8Reader.getIsActive() );
-
-		if ( this.f8Reader.getIsActive() )
-		{
-			this.f8Reader.keyPressed( ch );
-			return false;
-		}
-
-		// console.log( ch );
-		terminal.insert( ch );
-
-		return false;
-	}
-
 	parseKeyBinds( evt, terminal )
 	{
-		// console.log(' key bind !')
-
 		if ( !__WEBPACK_IMPORTED_MODULE_4__helpers_keyBinding__["a" /* default */].parse( evt, terminal ) )
 		{
 			return false;
 		}
 
-		const replacement = __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_8__helpers_helpers__["b" /* getReplacement */])( evt, window.TerminalState.isLanguageApollo() );
+		const replacement = __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_8__helpers_helpers__["a" /* getReplacement */])( evt, window.TerminalState.isLanguageApollo() );
 
 		if ( this.f8Reader.getIsActive() )
 		{
-			console.log( this.terminal.get_command() );
-
-			// console.log("ZZZ", this.f8Reader.getIsActive())
+			// console.log( this.terminal.get_command() );
 			// this.f8Reader.keyPressed( replacement );
 			// return false;
 		}
@@ -15657,7 +15641,7 @@ class TerminalPlugin
 	switchArea( command )
 	{
 		const sessionIndex = window.TerminalState.getSessionAreaMap().indexOf( command );
-		console.log( 'Seitch area ', command, sessionIndex );
+		// console.log( 'Seitch area ', command, sessionIndex );
 
 		if ( sessionIndex !== -1 )
 		{
@@ -15696,13 +15680,15 @@ class TerminalPlugin
 		this.terminal.resize( w, h );
 	}
 
-	emptyLinesRecalculate()
+	emptyLinesRecalculate( numOfRows, numOfChars )
 	{
-		this.outputLiner.recalculate();
+		this.outputLiner.setNumRows(numOfRows).setNumChars(numOfChars).recalculate();
 	}
 
 	init()
 	{
+		//caveats terminal.rows() - everytime appends div with cursor span - not too smooth for performance
+
 		return $(this.context).terminal( this.commandParser.bind(this), {
 
 			greetings		: '',
@@ -15716,6 +15702,7 @@ class TerminalPlugin
 			onInit			: this.changeActiveTerm.bind(this),
 			onTerminalChange: this.changeActiveTerm.bind(this),
 
+			// numRows			: 2,
 			// memory			: true,
 
 			onBeforeCommand : ( terminal, command ) => { // is using
@@ -15773,8 +15760,6 @@ class TerminalPlugin
 		}
 
 		this.spinner.start();
-
-		// this.outputLiner.prepare( '' );
 
 		/*setTimeout( () => {
 			this.spinner.end();
@@ -15851,7 +15836,9 @@ class TerminalPlugin
 		// todo :: optimize
 
 		if ( result['pcc'] )
+		{
 			window.TerminalState.action( 'CHANGE_PCC', result['pcc'] );
+		}
 
 		// if ( result['canCreatePq'] )
 		window.TerminalState.action( 'CAN_CREATE_PQ', {
@@ -16005,15 +15992,38 @@ class Output
 		this.terminal.cmd().after( this.context );
 
 		this.clearScreen 	= false;
+		this.numRows		= 0;
+	}
+
+	setNumRows( numRows )
+	{
+		// console.log('setting numRows' , numRows)
+
+		this.numRows = numRows;
+		return this;
+	}
+
+	setNumChars( numOfChars )
+	{
+		this.numOfChars = numOfChars;
+		return this;
 	}
 
 	countEmpty()
 	{
+		if (!this.numRows)
+		{
+			console.warn('No num rows !!!!!!!!!!!!');
+		}
+
+		let numOfRows = this.numRows || this.terminal.rows(); //  this.terminal.rows() - slow dom append cursor to body
+
 		const noClearScreen	= () => this.emptyLines > 0 ? this.emptyLines - this.getOutputLength() : 0 ;
-		const isClearScreen = () => this.terminal.rows() - ( this.getOutputLength() + 1 );
+		const isClearScreen = () => numOfRows - ( this.getOutputLength() + 2 ); // 2 = cmd line + command name
 
 		this.emptyLines 	= this.clearScreen ? isClearScreen() : noClearScreen();
 
+		// console.log( ' ==== ' );
 		// console.log( this.terminal.rows() );
 		// console.log( this.getOutputLength() );
 		// console.log( this.emptyLines );
@@ -16049,7 +16059,12 @@ class Output
 
 	getOutputLength()
 	{
-		return __WEBPACK_IMPORTED_MODULE_0__helpers_helpers__["c" /* default */].getLines( this.outputStrings, this.terminal.cols() ).length;
+		const chars = this.numOfChars || this.terminal.cols();
+
+		// console.log('zzz', this.terminal.cols() );
+		// console.log('zzz', chars  );
+
+		return __WEBPACK_IMPORTED_MODULE_0__helpers_helpers__["b" /* default */].getLines( this.outputStrings, chars ).length;
 	}
 
 	printOutput()
@@ -16098,7 +16113,7 @@ class Pagination
 	{
 		this.page 	= 0;
 		this.output = output;
-		this.cache 	= __WEBPACK_IMPORTED_MODULE_0__helpers_helpers__["c" /* default */].makeCachedParts( output, rows, cols );
+		this.cache 	= __WEBPACK_IMPORTED_MODULE_0__helpers_helpers__["b" /* default */].makeCachedParts( output, rows, cols );
 
 		// console.log(this.cache );
 		return this;

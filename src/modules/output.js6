@@ -16,15 +16,38 @@ export default class Output
 		this.terminal.cmd().after( this.context );
 
 		this.clearScreen 	= false;
+		this.numRows		= 0;
+	}
+
+	setNumRows( numRows )
+	{
+		// console.log('setting numRows' , numRows)
+
+		this.numRows = numRows;
+		return this;
+	}
+
+	setNumChars( numOfChars )
+	{
+		this.numOfChars = numOfChars;
+		return this;
 	}
 
 	countEmpty()
 	{
+		if (!this.numRows)
+		{
+			console.warn('No num rows !!!!!!!!!!!!');
+		}
+
+		let numOfRows = this.numRows || this.terminal.rows(); //  this.terminal.rows() - slow dom append cursor to body
+
 		const noClearScreen	= () => this.emptyLines > 0 ? this.emptyLines - this.getOutputLength() : 0 ;
-		const isClearScreen = () => this.terminal.rows() - ( this.getOutputLength() + 1 );
+		const isClearScreen = () => numOfRows - ( this.getOutputLength() + 2 ); // 2 = cmd line + command name
 
 		this.emptyLines 	= this.clearScreen ? isClearScreen() : noClearScreen();
 
+		// console.log( ' ==== ' );
 		// console.log( this.terminal.rows() );
 		// console.log( this.getOutputLength() );
 		// console.log( this.emptyLines );
@@ -60,7 +83,12 @@ export default class Output
 
 	getOutputLength()
 	{
-		return Helpers.getLines( this.outputStrings, this.terminal.cols() ).length;
+		const chars = this.numOfChars || this.terminal.cols();
+
+		// console.log('zzz', this.terminal.cols() );
+		// console.log('zzz', chars  );
+
+		return Helpers.getLines( this.outputStrings, chars ).length;
 	}
 
 	printOutput()

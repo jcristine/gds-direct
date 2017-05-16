@@ -31,14 +31,11 @@ export default class TerminalPlugin
 {
 	constructor( params )
 	{
-		// console.log( params );
-
 		this.settings 	= params;
 		this.context	= params.context;
 		this.name		= params.name;
 
 		this.hiddenBuff		= [];
-		// this.hiddenCommand	= '';
 
 		this.allowManualPaging = params.gds === 'sabre';
 
@@ -52,58 +49,16 @@ export default class TerminalPlugin
 
 		this.pagination 	= new Pagination( this.terminal );
 		this.spinner 		= new Spinner( this.terminal );
+
 		this.outputLiner 	= new OutputLiner( this.terminal );
+		this.outputLiner.setNumRows(params.numOfRows);
+
 		this.tabCommands	= new TabManager();
 		this.f8Reader		= new F8Reader( this.terminal );
 	}
 
-	parseChar( evt, terminal )
-	{
-		console.log(' parse char ');
-
-		// key press fires globally on all terminals;
-		// return false;
-
-		// console.log( evt.target.nodeName );
-
-		if ( evt.target.nodeName !== 'TEXTAREA' )
-			return undefined;
-
-		// console.log('zest 1');
-
-		if ( terminal.cmd().find('textarea')[0] !== evt.target )
-			return undefined;
-
-		if ( !terminal.enabled() )
-			return undefined;
-
-		// console.log(' zest' );
-
-		const ch = substitutePrintableChar( evt, window.TerminalState.isLanguageApollo() );
-
-		if (!ch) // don't insert empty char further
-		{
-			return false;
-		}
-
-		console.log( '???', this.f8Reader.getIsActive() );
-
-		if ( this.f8Reader.getIsActive() )
-		{
-			this.f8Reader.keyPressed( ch );
-			return false;
-		}
-
-		// console.log( ch );
-		terminal.insert( ch );
-
-		return false;
-	}
-
 	parseKeyBinds( evt, terminal )
 	{
-		// console.log(' key bind !')
-
 		if ( !KeyBinding.parse( evt, terminal ) )
 		{
 			return false;
@@ -113,9 +68,7 @@ export default class TerminalPlugin
 
 		if ( this.f8Reader.getIsActive() )
 		{
-			console.log( this.terminal.get_command() );
-
-			// console.log("ZZZ", this.f8Reader.getIsActive())
+			// console.log( this.terminal.get_command() );
 			// this.f8Reader.keyPressed( replacement );
 			// return false;
 		}
@@ -135,7 +88,7 @@ export default class TerminalPlugin
 	switchArea( command )
 	{
 		const sessionIndex = window.TerminalState.getSessionAreaMap().indexOf( command );
-		console.log( 'Seitch area ', command, sessionIndex );
+		// console.log( 'Seitch area ', command, sessionIndex );
 
 		if ( sessionIndex !== -1 )
 		{
@@ -174,13 +127,15 @@ export default class TerminalPlugin
 		this.terminal.resize( w, h );
 	}
 
-	emptyLinesRecalculate()
+	emptyLinesRecalculate( numOfRows, numOfChars )
 	{
-		this.outputLiner.recalculate();
+		this.outputLiner.setNumRows(numOfRows).setNumChars(numOfChars).recalculate();
 	}
 
 	init()
 	{
+		//caveats terminal.rows() - everytime appends div with cursor span - not too smooth for performance
+
 		return $(this.context).terminal( this.commandParser.bind(this), {
 
 			greetings		: '',
@@ -194,6 +149,7 @@ export default class TerminalPlugin
 			onInit			: this.changeActiveTerm.bind(this),
 			onTerminalChange: this.changeActiveTerm.bind(this),
 
+			// numRows			: 2,
 			// memory			: true,
 
 			onBeforeCommand : ( terminal, command ) => { // is using
@@ -251,8 +207,6 @@ export default class TerminalPlugin
 		}
 
 		this.spinner.start();
-
-		// this.outputLiner.prepare( '' );
 
 		/*setTimeout( () => {
 			this.spinner.end();
@@ -329,7 +283,9 @@ export default class TerminalPlugin
 		// todo :: optimize
 
 		if ( result['pcc'] )
+		{
 			window.TerminalState.action( 'CHANGE_PCC', result['pcc'] );
+		}
 
 		// if ( result['canCreatePq'] )
 		window.TerminalState.action( 'CAN_CREATE_PQ', {
