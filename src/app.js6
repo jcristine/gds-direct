@@ -197,6 +197,7 @@ class TerminalState
 			break;
 
 			case 'PQ_MODAL_SHOW' :
+
 				if (!this.state.gdsObj.canCreatePq)
 					return false;
 
