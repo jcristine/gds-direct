@@ -281,7 +281,6 @@ export default class TerminalPlugin
 		this.tabCommands.reset( result['tabCommands'], result['output'] );
 
 		// todo :: optimize
-
 		if ( result['pcc'] )
 		{
 			window.TerminalState.action( 'CHANGE_PCC', result['pcc'] );

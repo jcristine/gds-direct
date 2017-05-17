@@ -21,6 +21,10 @@ class History extends ButtonPopOver
 		el.innerHTML 	= value;
 		el.onclick 		= this.settings.onSelect.bind(null, value);
 
+		el.addEventListener('click', () => {
+			this.popover.close();
+		});
+
 		this.popContent.appendChild( el );
 	}
 

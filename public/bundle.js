@@ -3707,6 +3707,7 @@ class TerminalState
 			break;
 
 			case 'PQ_MODAL_SHOW' :
+
 				if (!this.state.gdsObj.canCreatePq)
 					return false;
 
@@ -14392,11 +14393,6 @@ let gdsSession = [];
 
 class TerminalsMatrix
 {
-	static makeRow()
-	{
-		return document.createElement('tr');
-	}
-
 	static clear()
 	{
 		this.context.innerHTML = '';
@@ -14414,14 +14410,10 @@ class TerminalsMatrix
 
 	static getLineHeight()
 	{
-		this.tempTerminal 	= this.tempTerminal || this.createTempTerminal();
-
-		// console.log( this.tempTerminal.querySelector('.cursor').getBoundingClientRect() );
+		this.tempTerminal = this.tempTerminal || this.createTempTerminal();
 
 		const  { width, height } = this.tempTerminal.querySelector('.cursor').getBoundingClientRect();
-
 		return { width, height };
-		// return this.tempTerminal.querySelector('.cursor').clientHeight;
 	}
 
 	static getDimension( rowCount, cellCount )
@@ -14431,67 +14423,54 @@ class TerminalsMatrix
 		return {
 			height		: Math.floor(parent.clientHeight / rowCount),
 			width 		: Math.floor(parent.clientWidth / cellCount),
-			// lineHeight	: this.getLineHeight(),
 			char		: this.getLineHeight()
 		}
 	}
 
-	static makeCells({rows : rowCount, cells : cellCount})
+	static makeCells(rowCount,  cellCount)
 	{
-		let resCells 	= [];
-
-		rowCount++;
-		cellCount++;
-
-		this.dimensions = this.getDimension(rowCount, cellCount);
-
-		const makeCells = row => {
-
-			const makeCell = () => {
-				return __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_3__helpers_dom__["a" /* default */])('td.v-middle');
-			};
-
-			[ ...new Array(cellCount) ].map(makeCell).forEach( (cell) => {
-				row.appendChild(cell);
-				resCells.push(cell);
-			});
-
+		const makeRow 	= () 	=> {
+			const row = __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_3__helpers_dom__["a" /* default */])('tr');
+			this.context.appendChild( row );
 			return row;
 		};
 
-		[ ...new Array(rowCount) ]
-			.map( this.makeRow )
-			.map( makeCells )
-			.map( row => this.context.appendChild(row) );
+		const makeCells = row 	=> {
 
-		this.resCells = resCells;
+			return [ ...new Array(cellCount) ]
+
+				.map( () => {
+					const cell = __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_3__helpers_dom__["a" /* default */])('td.v-middle');
+					row.appendChild(cell);
+					return cell;
+				});
+		};
+
+		const cells 	= [ ...new Array(rowCount) ].map( makeRow ).map( makeCells );
+
+		this.resCells	= [].concat.apply( [], cells ); // join arrays into one
 
 		this.context.className = 'terminals-table ' + 't-matrix-w-' + ( cellCount - 1 );
 
 		return this;
 	}
 
-	static appendTerminals({sessionIndex, gds, activeTerminal})
+	static appendTerminals({sessionIndex, gds})
 	{
 		gdsSession[ gds ] = gdsSession[ gds ] || [];
 
 		this.resCells.forEach(( cell, index ) => {
-
-			if( activeTerminal && index === activeTerminal.name() )
-			{
-				cell.classList.add('active');
-			}
 
 			gdsSession[gds][index] = gdsSession[gds][index] || new __WEBPACK_IMPORTED_MODULE_0__terminal__["a" /* default */]({
 				name 			: index,
 				sessionIndex	: sessionIndex,
 				gds				: gds,
 				buffer			: window.TerminalState.getBuffer(gds, index + 1),
-				dimensions		: this.dimensions
+				dimensions		: this.props.dimensions
 			});
 
 			// draw or redraw
-			gdsSession[ gds ][index].reattach( cell , this.dimensions );
+			gdsSession[ gds ][index].reattach( cell , this.props.dimensions );
 		});
 	}
 
@@ -14499,9 +14478,55 @@ class TerminalsMatrix
 	{
 		gdsSession[ gds ].forEach( terminal => terminal.clear() );
 	}
+
+	static render( params )
+	{
+		let {rows : rowCount, cells : cellCount} = params.cellMatrix;
+
+		rowCount++;
+		cellCount++;
+
+		const props = {
+			gds			: params.gds,
+			dimensions 	: this.getDimension(rowCount, cellCount)
+		};
+
+		// console.log( props );
+
+		if ( JSON.stringify(props) !== JSON.stringify(this.props) )
+		{
+			this.props = props;
+			this.clear().makeCells( rowCount, cellCount ).appendTerminals( params );
+		} else
+		{
+			console.log(" SAME M F ");
+
+
+
+			if (this.activeCell)
+			{
+				this.activeCell.classList.remove('active');
+			}
+
+			this.resCells.forEach( (cell, index) => {
+
+				if ( params.activeTerminal && index === params.activeTerminal.name() )
+				{
+					this.activeCell = cell;
+					cell.classList.add('active');
+				}
+
+
+			});
+		}
+	}
 }
 
 TerminalsMatrix.context = __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_3__helpers_dom__["a" /* default */])('table.terminals-table');
+TerminalsMatrix.props 	= {
+	gds			: '',
+	dimensions 	: {}
+};
 
 class RightMenu
 {
@@ -14552,6 +14577,7 @@ class Wrapper
 		}
 
 		RightMenu.render( params );
+		TerminalsMatrix.render( params );
 	}
 
 	static getContext()
@@ -14586,14 +14612,6 @@ class Container {
 
 		this.context.className = this.state.className + ' term-f-size-' + params.fontSize;
 
-		// Wrapper.render({
-		// 	gds 			: params.gds,
-		// 	hideMenu 		: params.hideMenu,
-		// 	canAddPq 		: params.canAddPq
-		// 	sessionIndex 	: params.sessionIndex
-		// 	activeTerminal 	: params.activeTerminal
-		// });
-
 		const {hideMenu} = params;
 
 		const p = {
@@ -14601,15 +14619,11 @@ class Container {
 			gds 			: params.gdsObj['name'],
 			canCreatePq 	: params.gdsObj.canCreatePq,
 			sessionIndex  	: params.gdsObj.sessionIndex,
-			activeTerminal 	: params.gdsObj.activeTerminal
+			activeTerminal 	: params.gdsObj.activeTerminal,
+			cellMatrix		: params.gdsObj.matrix
 		};
 
 		Wrapper.render( p );
-
-		TerminalsMatrix
-			.clear()
-			.makeCells( params.gdsObj.matrix )
-			.appendTerminals( p );
 	}
 }
 /* harmony export (immutable) */ __webpack_exports__["a"] = Container;
@@ -14986,6 +15000,10 @@ class History extends __WEBPACK_IMPORTED_MODULE_2__modules_buttonPopover__["a" /
 		el.innerHTML 	= value;
 		el.onclick 		= this.settings.onSelect.bind(null, value);
 
+		el.addEventListener('click', () => {
+			this.popover.close();
+		});
+
 		this.popContent.appendChild( el );
 	}
 
@@ -15237,6 +15255,25 @@ class Terminal {
 
 	reattach( parentNode, dimensions )
 	{
+		let isEqual	= JSON.stringify(dimensions) === JSON.stringify(this.settings.dimensions);
+
+		console.log( 'no refresh', isEqual );
+
+		// console.log(' pisec ');
+
+		// if (isEqual && this.plugin)
+		// {
+		// 	console.log("NO RENDER PLEASE");
+		//
+		// 	this.settings.parentContext = parentNode;
+		// 	parentNode.style.height		= dimensions.height + 'px';
+		// 	parentNode.style.width		= dimensions.width	+ 'px';
+		//
+		// 	this.settings.parentContext.appendChild( this.context );
+		//
+		// 	return false;
+		// }
+
 		// console.log(' ratach ', dimensions);
 
 		this.settings.parentContext = parentNode;
@@ -15244,7 +15281,6 @@ class Terminal {
 		// this.calculateNumOfRows(this.settings.char.)
 
 		parentNode.style.height		= dimensions.height + 'px';
-
 		parentNode.style.width		= dimensions.width	+ 'px';
 		// parentNode.style.maxWidth	= dimensions.width	+ 'px';
 
@@ -15259,7 +15295,6 @@ class Terminal {
 		// console.log( 'zz', dimensions )
 
 		const numOfRows 	= this.calculateNumOfRows( dimensions.char.height );
-		let isEqual			= JSON.stringify(dimensions) === JSON.stringify(this.settings.dimensions);
 
 		// console.log( 'is?', isEqual );
 		// console.log('numOfChars ', dimensions.char.width );
@@ -15296,7 +15331,10 @@ class Terminal {
 			this.plugin.emptyLinesRecalculate( numOfRows, numOfChars );
 		}
 
-		this.context.scrollTop = this.context.scrollHeight;
+		// clear screen scroll to line want work either
+		// if (!this.plugin)
+			this.context.scrollTop = this.context.scrollHeight;
+
 		this.settings.dimensions = dimensions;
 	}
 
@@ -15834,7 +15872,6 @@ class TerminalPlugin
 		this.tabCommands.reset( result['tabCommands'], result['output'] );
 
 		// todo :: optimize
-
 		if ( result['pcc'] )
 		{
 			window.TerminalState.action( 'CHANGE_PCC', result['pcc'] );
@@ -16016,17 +16053,18 @@ class Output
 			console.warn('No num rows !!!!!!!!!!!!');
 		}
 
-		let numOfRows = this.numRows || this.terminal.rows(); //  this.terminal.rows() - slow dom append cursor to body
+		const numOfRows = this.numRows || this.terminal.rows(); //  this.terminal.rows() - slow dom append cursor to body
 
 		const noClearScreen	= () => this.emptyLines > 0 ? this.emptyLines - this.getOutputLength() : 0 ;
 		const isClearScreen = () => numOfRows - ( this.getOutputLength() + 2 ); // 2 = cmd line + command name
 
 		this.emptyLines 	= this.clearScreen ? isClearScreen() : noClearScreen();
 
-		// console.log( ' ==== ' );
+		console.log( ' ==== ' );
 		// console.log( this.terminal.rows() );
-		// console.log( this.getOutputLength() );
-		// console.log( this.emptyLines );
+		console.log( numOfRows );
+		console.log( this.getOutputLength() );
+		console.log( this.emptyLines );
 
 		if (this.emptyLines < 0 )
 			this.emptyLines = 0;
@@ -16079,6 +16117,7 @@ class Output
 	{
 		if (this.emptyLines === 0)
 		{
+			// console.log('!!', this.cmdLineOffset);
 			this.terminal.scroll().scroll( this.cmdLineOffset ); // to first line, to desired line //TEST
 		} else
 		{

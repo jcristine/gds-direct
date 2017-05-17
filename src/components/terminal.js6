@@ -71,6 +71,25 @@ export default class Terminal {
 
 	reattach( parentNode, dimensions )
 	{
+		let isEqual	= JSON.stringify(dimensions) === JSON.stringify(this.settings.dimensions);
+
+		// console.log( 'no refresh', isEqual );
+
+		// console.log(' pisec ');
+
+		// if (isEqual && this.plugin)
+		// {
+		// 	console.log("NO RENDER PLEASE");
+		//
+		// 	this.settings.parentContext = parentNode;
+		// 	parentNode.style.height		= dimensions.height + 'px';
+		// 	parentNode.style.width		= dimensions.width	+ 'px';
+		//
+		// 	this.settings.parentContext.appendChild( this.context );
+		//
+		// 	return false;
+		// }
+
 		// console.log(' ratach ', dimensions);
 
 		this.settings.parentContext = parentNode;
@@ -78,7 +97,6 @@ export default class Terminal {
 		// this.calculateNumOfRows(this.settings.char.)
 
 		parentNode.style.height		= dimensions.height + 'px';
-
 		parentNode.style.width		= dimensions.width	+ 'px';
 		// parentNode.style.maxWidth	= dimensions.width	+ 'px';
 
@@ -93,7 +111,6 @@ export default class Terminal {
 		// console.log( 'zz', dimensions )
 
 		const numOfRows 	= this.calculateNumOfRows( dimensions.char.height );
-		let isEqual			= JSON.stringify(dimensions) === JSON.stringify(this.settings.dimensions);
 
 		// console.log( 'is?', isEqual );
 		// console.log('numOfChars ', dimensions.char.width );
@@ -130,7 +147,10 @@ export default class Terminal {
 			this.plugin.emptyLinesRecalculate( numOfRows, numOfChars );
 		}
 
-		this.context.scrollTop = this.context.scrollHeight;
+		// clear screen scroll to line want work either
+		// if (!this.plugin)
+			this.context.scrollTop = this.context.scrollHeight;
+
 		this.settings.dimensions = dimensions;
 	}
 

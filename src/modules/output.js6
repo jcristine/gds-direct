@@ -40,7 +40,7 @@ export default class Output
 			console.warn('No num rows !!!!!!!!!!!!');
 		}
 
-		let numOfRows = this.numRows || this.terminal.rows(); //  this.terminal.rows() - slow dom append cursor to body
+		const numOfRows = this.numRows || this.terminal.rows(); //  this.terminal.rows() - slow dom append cursor to body
 
 		const noClearScreen	= () => this.emptyLines > 0 ? this.emptyLines - this.getOutputLength() : 0 ;
 		const isClearScreen = () => numOfRows - ( this.getOutputLength() + 2 ); // 2 = cmd line + command name
@@ -49,6 +49,7 @@ export default class Output
 
 		// console.log( ' ==== ' );
 		// console.log( this.terminal.rows() );
+		// console.log( numOfRows );
 		// console.log( this.getOutputLength() );
 		// console.log( this.emptyLines );
 
