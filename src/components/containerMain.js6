@@ -107,16 +107,12 @@ class TerminalsMatrix
 			dimensions 	: this.getDimension(rowCount, cellCount)
 		};
 
-		// console.log( props );
-
 		if ( JSON.stringify(props) !== JSON.stringify(this.props) )
 		{
 			this.props = props;
 			this.clear().makeCells( rowCount, cellCount ).appendTerminals( params );
 		} else
 		{
-			console.log(" SAME M F ");
-
 			if (this.activeCell)
 			{
 				this.activeCell.classList.remove('active');
@@ -129,8 +125,6 @@ class TerminalsMatrix
 					this.activeCell = cell;
 					cell.classList.add('active');
 				}
-
-
 			});
 		}
 	}

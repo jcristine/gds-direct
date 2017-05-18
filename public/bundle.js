@@ -14491,18 +14491,12 @@ class TerminalsMatrix
 			dimensions 	: this.getDimension(rowCount, cellCount)
 		};
 
-		// console.log( props );
-
 		if ( JSON.stringify(props) !== JSON.stringify(this.props) )
 		{
 			this.props = props;
 			this.clear().makeCells( rowCount, cellCount ).appendTerminals( params );
 		} else
 		{
-			console.log(" SAME M F ");
-
-
-
 			if (this.activeCell)
 			{
 				this.activeCell.classList.remove('active');
@@ -14515,8 +14509,6 @@ class TerminalsMatrix
 					this.activeCell = cell;
 					cell.classList.add('active');
 				}
-
-
 			});
 		}
 	}
@@ -15257,7 +15249,7 @@ class Terminal {
 	{
 		let isEqual	= JSON.stringify(dimensions) === JSON.stringify(this.settings.dimensions);
 
-		console.log( 'no refresh', isEqual );
+		// console.log( 'no refresh', isEqual );
 
 		// console.log(' pisec ');
 
@@ -16060,11 +16052,11 @@ class Output
 
 		this.emptyLines 	= this.clearScreen ? isClearScreen() : noClearScreen();
 
-		console.log( ' ==== ' );
+		// console.log( ' ==== ' );
 		// console.log( this.terminal.rows() );
-		console.log( numOfRows );
-		console.log( this.getOutputLength() );
-		console.log( this.emptyLines );
+		// console.log( numOfRows );
+		// console.log( this.getOutputLength() );
+		// console.log( this.emptyLines );
 
 		if (this.emptyLines < 0 )
 			this.emptyLines = 0;
@@ -16117,7 +16109,6 @@ class Output
 	{
 		if (this.emptyLines === 0)
 		{
-			// console.log('!!', this.cmdLineOffset);
 			this.terminal.scroll().scroll( this.cmdLineOffset ); // to first line, to desired line //TEST
 		} else
 		{
