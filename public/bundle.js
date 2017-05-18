@@ -3693,8 +3693,7 @@ class TerminalState
 
 				const gds = Object.assign({}, this.state.gdsObj, {pcc : pcc});
 
-				console.log( gds );
-
+				// console.log( gds );
 				// const ccc = Object.assign({}, this.state.gdsObj, cc);
 				// console.log( cc );
 
@@ -15255,12 +15254,18 @@ class Terminal {
 			return false;
 
 		const buffered = buf['buffering'].map( record => {
-			return `<div class="command">${record.command}</div><pre style="white-space: pre-wrap; overflow: hidden">${record.output}</pre>`;
+			return `<div class="command">
+						<div style="100%">
+							<span>${record.command}</span>
+						</div>
+					</div>
+					<pre style="white-space: pre-wrap; overflow: hidden">${ $.terminal.format( record.output )} </pre>`;
 			// return `<div class="command">${record.command}</div><div>${record.output}</div>`;
 		}).join('');
 
 		this.bufferDiv 				= __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_1__helpers_dom__["a" /* default */])('article.terminal-wrapper');
-		this.bufferDiv.innerHTML 	= `<div class="terminal-output">${$.terminal.format( buffered )}</div>`;
+		// this.bufferDiv.innerHTML 	= `<div class="terminal-output"> ${ $.terminal.format( buffered ) } </div>`;
+		this.bufferDiv.innerHTML 	= `<div class="terminal-output"> ${ buffered } </div>`;
 
 		this.context.appendChild( this.bufferDiv );
 	}
@@ -16109,6 +16114,10 @@ class Output
 	{
 		const chars = this.numOfChars || this.terminal.cols();
 
+		// console.log(' num of chars ', this.numOfChars );
+		// console.log(' num of chars ', this.terminal.cols() );
+		// console.log(' num of chars ', chars );
+
 		// console.log('zzz', this.terminal.cols() );
 		// console.log('zzz', chars  );
 
@@ -16277,7 +16286,7 @@ class Spinner
 		this.terminal 	= terminal;
 		this.prompt 	= '';
 		this.spinner	= cliSpinners.simpleDots;
-
+		this.spinner.interval = 550;
 		this.frameCounter = 0;
 	}
 

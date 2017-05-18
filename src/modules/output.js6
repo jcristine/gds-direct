@@ -91,6 +91,10 @@ export default class Output
 	{
 		const chars = this.numOfChars || this.terminal.cols();
 
+		// console.log(' num of chars ', this.numOfChars );
+		// console.log(' num of chars ', this.terminal.cols() );
+		// console.log(' num of chars ', chars );
+
 		// console.log('zzz', this.terminal.cols() );
 		// console.log('zzz', chars  );
 

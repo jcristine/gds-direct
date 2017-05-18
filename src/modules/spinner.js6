@@ -10,7 +10,7 @@ export default class Spinner
 		this.terminal 	= terminal;
 		this.prompt 	= '';
 		this.spinner	= cliSpinners.simpleDots;
-
+		this.spinner.interval = 550;
 		this.frameCounter = 0;
 	}
 

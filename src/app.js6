@@ -182,8 +182,7 @@ class TerminalState
 
 				const gds = Object.assign({}, this.state.gdsObj, {pcc : pcc});
 
-				console.log( gds );
-
+				// console.log( gds );
 				// const ccc = Object.assign({}, this.state.gdsObj, cc);
 				// console.log( cc );
 

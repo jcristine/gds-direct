@@ -40,12 +40,18 @@ export default class Terminal {
 			return false;
 
 		const buffered = buf['buffering'].map( record => {
-			return `<div class="command">${record.command}</div><pre style="white-space: pre-wrap; overflow: hidden">${record.output}</pre>`;
+			return `<div class="command">
+						<div style="100%">
+							<span>${record.command}</span>
+						</div>
+					</div>
+					<pre style="white-space: pre-wrap; overflow: hidden">${ $.terminal.format( record.output )} </pre>`;
 			// return `<div class="command">${record.command}</div><div>${record.output}</div>`;
 		}).join('');
 
 		this.bufferDiv 				= Dom('article.terminal-wrapper');
-		this.bufferDiv.innerHTML 	= `<div class="terminal-output">${$.terminal.format( buffered )}</div>`;
+		// this.bufferDiv.innerHTML 	= `<div class="terminal-output"> ${ $.terminal.format( buffered ) } </div>`;
+		this.bufferDiv.innerHTML 	= `<div class="terminal-output"> ${ buffered } </div>`;
 
 		this.context.appendChild( this.bufferDiv );
 	}
