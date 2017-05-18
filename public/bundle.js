@@ -15578,13 +15578,13 @@ __webpack_require__(13).polyfill();
 
 
 
-const Debug = txt => {
+const Debug = (txt, type) => {
 	new __WEBPACK_IMPORTED_MODULE_0_noty___default.a({
 		text	: `DEBUG : <strong>${txt}</strong>`,
-		layout 	: 'bottomLeft',
+		layout 	: 'bottomCenter',
 		timeout : 1500,
 		theme	: 'metroui',
-		type 	: 'info'
+		type 	: type || 'info'
 	}).show();
 };
 
@@ -15859,13 +15859,13 @@ class TerminalPlugin
 	debugOutput( result )
 	{
 		if (result['clearScreen'])
-			Debug( 'DEBUG: CLEAR SCREEN' );
+			Debug( 'DEBUG: CLEAR SCREEN', 'info' );
 
 		if ( result['canCreatePq'] )
-			Debug( 'CAN CREATE PCC' );
+			Debug( 'CAN CREATE PCC' , 'warning');
 
 		if ( result['tabCommands'] && result['tabCommands'].length )
-			Debug( 'FOUND TAB COMMANDS' );
+			Debug( 'FOUND TAB COMMANDS', 'success' );
 	}
 	
 	parseError(e)
