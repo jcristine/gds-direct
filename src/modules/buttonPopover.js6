@@ -24,7 +24,7 @@ export default class ButtonPopOver
 
 	makeTrigger()
 	{
-		this.trigger 			= Dom('button.btn btn-primary');
+		this.trigger 			= Dom('button.btn btn-primary font-bold');
 		this.trigger.onclick 	= this.makePopover.bind(this);
 		this.trigger.innerHTML	= this.settings.icon;
 

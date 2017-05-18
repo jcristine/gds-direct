@@ -119,7 +119,7 @@ class ButtonPopOver
 
 	makeTrigger()
 	{
-		this.trigger 			= __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_1__helpers_dom__["a" /* default */])('button.btn btn-primary');
+		this.trigger 			= __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_1__helpers_dom__["a" /* default */])('button.btn btn-primary font-bold');
 		this.trigger.onclick 	= this.makePopover.bind(this);
 		this.trigger.innerHTML	= this.settings.icon;
 
@@ -14650,15 +14650,16 @@ class CommandsBuffer extends __WEBPACK_IMPORTED_MODULE_1__modules_buttonPopover_
 	build()
 	{
 		const area 		= __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0__helpers_dom__["a" /* default */])('textarea.form-control');
-		const btn 		= __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0__helpers_dom__["a" /* default */])('button.btn btn-sm btn-warning btn-block');
+		const btn 		= __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0__helpers_dom__["a" /* default */])('button.btn btn-sm btn-primary btn-block m-t font-bold');
 		btn.innerHTML	= 'Run';
 
-		area.rows 	= 20;
-		area.cells 	= 20;
+		area.rows 	= 15;
+		area.cols 	= 20;
 
 		btn.onclick 	= () => {
 			const cmd = area.value.trim().split(/\s+/);
-			window.TerminalState.action('DEV_CMD_STACK_RUN', cmd)
+			window.TerminalState.action('DEV_CMD_STACK_RUN', cmd);
+			this.popover.close();
 		};
 
 		this.popContent.appendChild( area );
@@ -14680,7 +14681,7 @@ class DevButtons
 	AddPqMacros()
 	{
 		this.macros 			= __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0__helpers_dom__["a" /* default */])('span.btn btn-primary font-bold');
-		this.macros.innerHTML 	= 'test pq';
+		this.macros.innerHTML 	= 'Test pq';
 		this.macros.onclick 	= () => {
 			window.TerminalState.action('DEV_CMD_STACK_RUN', ['A/V/13SEPSEAMNL+DL', '01Y1*', '*R', '$BB']);
 		};
@@ -14691,7 +14692,7 @@ class DevButtons
 	commandsBuffer()
 	{
 		return this.commandsBuffer = new CommandsBuffer({
-			icon		: '<span>Dev Buf</span>'
+			icon		: `<span>Dev Buf</span>`
 		}).getTrigger();
 	}
 
@@ -15255,18 +15256,15 @@ class Terminal {
 		// let isEqual	= JSON.stringify(dimensions) === JSON.stringify(this.settings.dimensions);
 		const isEqual = true;
 
-		// console.log( 'no refresh', isEqual );
-
 		this.settings.parentContext = parentNode;
 
 		parentNode.style.height		= dimensions.height + 'px';
 		parentNode.style.width		= dimensions.width	+ 'px';
 
-		this.context.style.height	= parentNode.clientHeight	+ 'px';
-		this.context.style.width	= (parentNode.clientWidth - 1)	+ 'px';
+		this.context.style.height	= parentNode.clientHeight + 'px';
+		this.context.style.width	= (parentNode.clientWidth - 1) + 'px';
 
-		const numOfRows 			= this.calculateNumOfRows( dimensions.char.height );
-		this.numOfRows 				= numOfRows;
+		this.numOfRows 				= this.calculateNumOfRows( dimensions.char.height );
 
 		if (!isEqual && this.plugin)
 		{
@@ -15274,7 +15272,7 @@ class Terminal {
 			this.plugin.resize();
 		}
 
-		this.context.style.height = (numOfRows * dimensions.char.height) + 'px';
+		this.context.style.height = (this.numOfRows * dimensions.char.height) + 'px';
 		this.settings.parentContext.appendChild( this.context );
 
 		const numOfChars	= Math.floor( this.context.clientWidth / dimensions.char.width );
@@ -15287,7 +15285,7 @@ class Terminal {
 
 		if (!isEqual && this.plugin)
 		{
-			this.plugin.emptyLinesRecalculate( numOfRows, numOfChars );
+			this.plugin.emptyLinesRecalculate( this.numOfRows, numOfChars );
 		}
 
 		this.context.scrollTop = this.context.scrollHeight;

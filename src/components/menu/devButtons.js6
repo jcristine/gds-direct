@@ -15,15 +15,16 @@ class CommandsBuffer extends ButtonPopOver
 	build()
 	{
 		const area 		= Dom('textarea.form-control');
-		const btn 		= Dom('button.btn btn-sm btn-warning btn-block');
+		const btn 		= Dom('button.btn btn-sm btn-primary btn-block m-t font-bold');
 		btn.innerHTML	= 'Run';
 
-		area.rows 	= 20;
-		area.cells 	= 20;
+		area.rows 	= 15;
+		area.cols 	= 20;
 
 		btn.onclick 	= () => {
 			const cmd = area.value.trim().split(/\s+/);
-			window.TerminalState.action('DEV_CMD_STACK_RUN', cmd)
+			window.TerminalState.action('DEV_CMD_STACK_RUN', cmd);
+			this.popover.close();
 		};
 
 		this.popContent.appendChild( area );
@@ -45,7 +46,7 @@ export default class DevButtons
 	AddPqMacros()
 	{
 		this.macros 			= Dom('span.btn btn-primary font-bold');
-		this.macros.innerHTML 	= 'test pq';
+		this.macros.innerHTML 	= 'Test pq';
 		this.macros.onclick 	= () => {
 			window.TerminalState.action('DEV_CMD_STACK_RUN', ['A/V/13SEPSEAMNL+DL', '01Y1*', '*R', '$BB']);
 		};
@@ -56,7 +57,7 @@ export default class DevButtons
 	commandsBuffer()
 	{
 		return this.commandsBuffer = new CommandsBuffer({
-			icon		: '<span>Dev Buf</span>'
+			icon		: `<span>Dev Buf</span>`
 		}).getTrigger();
 	}
 

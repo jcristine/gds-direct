@@ -79,11 +79,10 @@ export default class Terminal {
 		parentNode.style.height		= dimensions.height + 'px';
 		parentNode.style.width		= dimensions.width	+ 'px';
 
-		this.context.style.height	= parentNode.clientHeight	+ 'px';
-		this.context.style.width	= (parentNode.clientWidth - 1)	+ 'px';
+		this.context.style.height	= parentNode.clientHeight + 'px';
+		this.context.style.width	= (parentNode.clientWidth - 1) + 'px';
 
-		const numOfRows 			= this.calculateNumOfRows( dimensions.char.height );
-		this.numOfRows 				= numOfRows;
+		this.numOfRows 				= this.calculateNumOfRows( dimensions.char.height );
 
 		if (!isEqual && this.plugin)
 		{
@@ -91,7 +90,7 @@ export default class Terminal {
 			this.plugin.resize();
 		}
 
-		this.context.style.height = (numOfRows * dimensions.char.height) + 'px';
+		this.context.style.height = (this.numOfRows * dimensions.char.height) + 'px';
 		this.settings.parentContext.appendChild( this.context );
 
 		const numOfChars	= Math.floor( this.context.clientWidth / dimensions.char.width );
@@ -104,7 +103,7 @@ export default class Terminal {
 
 		if (!isEqual && this.plugin)
 		{
-			this.plugin.emptyLinesRecalculate( numOfRows, numOfChars );
+			this.plugin.emptyLinesRecalculate( this.numOfRows, numOfChars );
 		}
 
 		this.context.scrollTop = this.context.scrollHeight;
