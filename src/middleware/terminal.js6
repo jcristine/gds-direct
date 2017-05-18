@@ -15,15 +15,15 @@ import OutputLiner	from '../modules/output';
 import TabManager	from '../modules/tabManager';
 import F8Reader		from '../modules/f8';
 
-import {getReplacement, substitutePrintableChar} from '../helpers/helpers';
+import {getReplacement} from '../helpers/helpers';
 
 const Debug = txt => {
 	new Noty({
-		text	: `DEBUG : ${txt}`,
-		layout 	: 'bottomRight',
-		timeout : 1000,
-		theme	: 'relax',
-		type 	: 'warning'
+		text	: `DEBUG : <strong>${txt}</strong>`,
+		layout 	: 'bottomLeft',
+		timeout : 1500,
+		theme	: 'metroui',
+		type 	: 'info'
 	}).show();
 };
 
@@ -127,9 +127,9 @@ export default class TerminalPlugin
 		this.terminal.resize( w, h );
 	}
 
-	emptyLinesRecalculate( numOfRows, numOfChars )
+	emptyLinesRecalculate( numOfRows, numOfChars, charHeight )
 	{
-		this.outputLiner.setNumRows(numOfRows).setNumChars(numOfChars).recalculate();
+		this.outputLiner.setNumRows(numOfRows).setNumChars(numOfChars).setCharHeight(charHeight).recalculate();
 	}
 
 	init()

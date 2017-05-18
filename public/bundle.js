@@ -14494,9 +14494,11 @@ class TerminalsMatrix
 			wrapWidth	: Container.context.clientWidth
 		};
 
+		// console.log( props );
+
 		if ( stringify(props) !== stringify(this.props) )
 		{
-			// console.log("RERENDER ALL");
+			console.log("RERENDER ALL");
 
 			this.props = props;
 			this.clear().makeCells( rowCount, cellCount ).appendTerminals( params );
@@ -14761,31 +14763,41 @@ class SessionKeys
 
 	makeButton(value, index)
 	{
-		// console.log(' make buttons ', window.TerminalState.state )
+		// console.log( ' make bytton ')
 
 		const button 		= __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0__helpers_dom__["a" /* default */])('button.btn btn-sm btn-purple font-bold pos-rlt');
 		button.innerHTML	= value;
 
-		if ( window.TerminalState.getPcc()[index] )
-			button.innerHTML += `<span class="pcc-label">${window.TerminalState.getPcc()[index]}</span>`;
+		const pcc 		= window.TerminalState.getPcc()[index];
+		const isActive 	= this.settings.sessionIndex === index;
 
-		if ( this.settings.sessionIndex === index )
+		if ( pcc )
+			button.innerHTML += `<span class="pcc-label">${pcc}</span>`;
+
+		if ( isActive )
 			button.className += ' active';
 
-		button.disabled = !this.settings.activeTerminal;
+		button.disabled = !this.settings.activeTerminal || isActive;
 
 		button.addEventListener('click', () => {
-			// this.disableAll();
+
+			if (isActive)
+			{
+				alert('This is active');
+				return false;
+			}
+
+			button.disabled = true;
 			this.settings.onAreaChange( index );
 		});
 
 		return button;
 	}
 
-	disableAll()
-	{
-		this.collection.map( btn => btn.disabled = true );
-	}
+	// disableAll()
+	// {
+	// 	this.collection.map( btn => btn.disabled = true );
+	// }
 
 	getTrigger()
 	{
@@ -15254,7 +15266,7 @@ class Terminal {
 	reattach( parentNode, dimensions )
 	{
 		// let isEqual	= JSON.stringify(dimensions) === JSON.stringify(this.settings.dimensions);
-		const isEqual = true;
+		// const isEqual = true;
 
 		this.settings.parentContext = parentNode;
 
@@ -15266,7 +15278,7 @@ class Terminal {
 
 		this.numOfRows 				= this.calculateNumOfRows( dimensions.char.height );
 
-		if (!isEqual && this.plugin)
+		if (this.plugin)
 		{
 			console.log("RESIZE");
 			this.plugin.resize();
@@ -15277,15 +15289,18 @@ class Terminal {
 
 		const numOfChars	= Math.floor( this.context.clientWidth / dimensions.char.width );
 
+		// console.log( numOfChars );
+		// console.log( this.numOfRows );
+
 		// console.log(numOfChars);
 		// console.log( 'numOfChars', parentNode.clientWidth );
 		// console.log( 'numOfChars', this.context.clientWidth );
 		// console.log( 'numOfChars', this.context.style.width);
 		// console.log('numOfChars width !!', this.context.clientWidth );
 
-		if (!isEqual && this.plugin)
+		if (this.plugin)
 		{
-			this.plugin.emptyLinesRecalculate( this.numOfRows, numOfChars );
+			this.plugin.emptyLinesRecalculate( this.numOfRows, numOfChars, dimensions.char.height );
 		}
 
 		this.context.scrollTop = this.context.scrollHeight;
@@ -15565,11 +15580,11 @@ __webpack_require__(13).polyfill();
 
 const Debug = txt => {
 	new __WEBPACK_IMPORTED_MODULE_0_noty___default.a({
-		text	: `DEBUG : ${txt}`,
-		layout 	: 'bottomRight',
-		timeout : 1000,
-		theme	: 'relax',
-		type 	: 'warning'
+		text	: `DEBUG : <strong>${txt}</strong>`,
+		layout 	: 'bottomLeft',
+		timeout : 1500,
+		theme	: 'metroui',
+		type 	: 'info'
 	}).show();
 };
 
@@ -15673,9 +15688,9 @@ class TerminalPlugin
 		this.terminal.resize( w, h );
 	}
 
-	emptyLinesRecalculate( numOfRows, numOfChars )
+	emptyLinesRecalculate( numOfRows, numOfChars, charHeight )
 	{
-		this.outputLiner.setNumRows(numOfRows).setNumChars(numOfChars).recalculate();
+		this.outputLiner.setNumRows(numOfRows).setNumChars(numOfChars).setCharHeight(charHeight).recalculate();
 	}
 
 	init()
@@ -15999,6 +16014,12 @@ class Output
 		return this;
 	}
 
+	setCharHeight( charHeight )
+	{
+		this.charHeight = charHeight;
+		return this;
+	}
+
 	countEmpty()
 	{
 		if (!this.numRows)
@@ -16035,6 +16056,7 @@ class Output
 
 	recalculate()
 	{
+		console.log(' recalculate ');
 		this.countEmpty().attachEmpty().scroll();
 	}
 
@@ -16060,8 +16082,14 @@ class Output
 
 	printOutput()
 	{
-		this.cmdLineOffset 	= this.terminal.cmd()[0].offsetTop;
-		// this.terminal.echo( this.outputStrings, {raw : 1});
+		// console.log('?????', this.charHeight);
+
+		this.cmdLineOffset 	= this.terminal.cmd()[0].offsetTop  - ( this.charHeight ? this.charHeight : 0);
+
+		// console.log('scroll offset');
+		// console.log(this.terminal.scrollBottomOffset);
+		// console.log(this.cmdLineOffset);
+
 		this.terminal.echo( this.outputStrings);
 		return this;
 	}

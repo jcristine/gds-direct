@@ -72,7 +72,7 @@ export default class Terminal {
 	reattach( parentNode, dimensions )
 	{
 		// let isEqual	= JSON.stringify(dimensions) === JSON.stringify(this.settings.dimensions);
-		const isEqual = true;
+		// const isEqual = true;
 
 		this.settings.parentContext = parentNode;
 
@@ -84,7 +84,7 @@ export default class Terminal {
 
 		this.numOfRows 				= this.calculateNumOfRows( dimensions.char.height );
 
-		if (!isEqual && this.plugin)
+		if (this.plugin)
 		{
 			console.log("RESIZE");
 			this.plugin.resize();
@@ -95,15 +95,18 @@ export default class Terminal {
 
 		const numOfChars	= Math.floor( this.context.clientWidth / dimensions.char.width );
 
+		// console.log( numOfChars );
+		// console.log( this.numOfRows );
+
 		// console.log(numOfChars);
 		// console.log( 'numOfChars', parentNode.clientWidth );
 		// console.log( 'numOfChars', this.context.clientWidth );
 		// console.log( 'numOfChars', this.context.style.width);
 		// console.log('numOfChars width !!', this.context.clientWidth );
 
-		if (!isEqual && this.plugin)
+		if (this.plugin)
 		{
-			this.plugin.emptyLinesRecalculate( this.numOfRows, numOfChars );
+			this.plugin.emptyLinesRecalculate( this.numOfRows, numOfChars, dimensions.char.height );
 		}
 
 		this.context.scrollTop = this.context.scrollHeight;

@@ -31,6 +31,12 @@ export default class Output
 		return this;
 	}
 
+	setCharHeight( charHeight )
+	{
+		this.charHeight = charHeight;
+		return this;
+	}
+
 	countEmpty()
 	{
 		if (!this.numRows)
@@ -67,6 +73,7 @@ export default class Output
 
 	recalculate()
 	{
+		console.log(' recalculate ');
 		this.countEmpty().attachEmpty().scroll();
 	}
 
@@ -92,8 +99,14 @@ export default class Output
 
 	printOutput()
 	{
-		this.cmdLineOffset 	= this.terminal.cmd()[0].offsetTop;
-		// this.terminal.echo( this.outputStrings, {raw : 1});
+		// console.log('?????', this.charHeight);
+
+		this.cmdLineOffset 	= this.terminal.cmd()[0].offsetTop  - ( this.charHeight ? this.charHeight : 0);
+
+		// console.log('scroll offset');
+		// console.log(this.terminal.scrollBottomOffset);
+		// console.log(this.cmdLineOffset);
+
 		this.terminal.echo( this.outputStrings);
 		return this;
 	}

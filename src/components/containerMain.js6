@@ -110,9 +110,11 @@ class TerminalsMatrix
 			wrapWidth	: Container.context.clientWidth
 		};
 
+		// console.log( props );
+
 		if ( stringify(props) !== stringify(this.props) )
 		{
-			// console.log("RERENDER ALL");
+			console.log("RERENDER ALL");
 
 			this.props = props;
 			this.clear().makeCells( rowCount, cellCount ).appendTerminals( params );

@@ -19,31 +19,41 @@ export default class SessionKeys
 
 	makeButton(value, index)
 	{
-		// console.log(' make buttons ', window.TerminalState.state )
+		// console.log( ' make bytton ')
 
 		const button 		= Dom('button.btn btn-sm btn-purple font-bold pos-rlt');
 		button.innerHTML	= value;
 
-		if ( window.TerminalState.getPcc()[index] )
-			button.innerHTML += `<span class="pcc-label">${window.TerminalState.getPcc()[index]}</span>`;
+		const pcc 		= window.TerminalState.getPcc()[index];
+		const isActive 	= this.settings.sessionIndex === index;
 
-		if ( this.settings.sessionIndex === index )
+		if ( pcc )
+			button.innerHTML += `<span class="pcc-label">${pcc}</span>`;
+
+		if ( isActive )
 			button.className += ' active';
 
-		button.disabled = !this.settings.activeTerminal;
+		button.disabled = !this.settings.activeTerminal || isActive;
 
 		button.addEventListener('click', () => {
-			// this.disableAll();
+
+			if (isActive)
+			{
+				alert('This is active');
+				return false;
+			}
+
+			button.disabled = true;
 			this.settings.onAreaChange( index );
 		});
 
 		return button;
 	}
 
-	disableAll()
-	{
-		this.collection.map( btn => btn.disabled = true );
-	}
+	// disableAll()
+	// {
+	// 	this.collection.map( btn => btn.disabled = true );
+	// }
 
 	getTrigger()
 	{
