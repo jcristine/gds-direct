@@ -7,6 +7,8 @@ import Dom			from '../helpers/dom';
 
 let gdsSession = [];
 
+const stringify = JSON.stringify;
+
 class TerminalsMatrix
 {
 	static clear()
@@ -104,11 +106,14 @@ class TerminalsMatrix
 
 		const props = {
 			gds			: params.gds,
-			dimensions 	: this.getDimension(rowCount, cellCount)
+			dimensions 	: this.getDimension(rowCount, cellCount),
+			wrapWidth	: Container.context.clientWidth
 		};
 
-		if ( JSON.stringify(props) !== JSON.stringify(this.props) )
+		if ( stringify(props) !== stringify(this.props) )
 		{
+			// console.log("RERENDER ALL");
+
 			this.props = props;
 			this.clear().makeCells( rowCount, cellCount ).appendTerminals( params );
 		} else

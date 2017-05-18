@@ -1495,12 +1495,8 @@
   z-index: 3;
 }
 .terminal-wrap-custom > .term-body {
-  width: 100%;
   height: 100%;
   display: table;
-}
-.terminal-wrap-custom > .term-body .t-d-cell {
-  width: 100%;
 }
 .terminal-wrap-custom > .term-body .left {
   position: relative;

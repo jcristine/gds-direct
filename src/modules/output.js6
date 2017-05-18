@@ -21,8 +21,6 @@ export default class Output
 
 	setNumRows( numRows )
 	{
-		// console.log('setting numRows' , numRows)
-
 		this.numRows = numRows;
 		return this;
 	}
@@ -40,7 +38,7 @@ export default class Output
 			console.warn('No num rows !!!!!!!!!!!!');
 		}
 
-		const numOfRows = this.numRows || this.terminal.rows(); //  this.terminal.rows() - slow dom append cursor to body
+		const numOfRows = this.numRows || this.terminal.rows(); //this.terminal.rows() - slow dom append cursor to body
 
 		const noClearScreen	= () => this.emptyLines > 0 ? this.emptyLines - this.getOutputLength() : 0 ;
 		const isClearScreen = () => numOfRows - ( this.getOutputLength() + 2 ); // 2 = cmd line + command name

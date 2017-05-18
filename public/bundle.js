@@ -14391,6 +14391,8 @@ class ActionsMenu {
 
 let gdsSession = [];
 
+const stringify = JSON.stringify;
+
 class TerminalsMatrix
 {
 	static clear()
@@ -14488,11 +14490,14 @@ class TerminalsMatrix
 
 		const props = {
 			gds			: params.gds,
-			dimensions 	: this.getDimension(rowCount, cellCount)
+			dimensions 	: this.getDimension(rowCount, cellCount),
+			wrapWidth	: Container.context.clientWidth
 		};
 
-		if ( JSON.stringify(props) !== JSON.stringify(this.props) )
+		if ( stringify(props) !== stringify(this.props) )
 		{
+			// console.log("RERENDER ALL");
+
 			this.props = props;
 			this.clear().makeCells( rowCount, cellCount ).appendTerminals( params );
 		} else
@@ -15247,57 +15252,21 @@ class Terminal {
 
 	reattach( parentNode, dimensions )
 	{
-		let isEqual	= JSON.stringify(dimensions) === JSON.stringify(this.settings.dimensions);
+		// let isEqual	= JSON.stringify(dimensions) === JSON.stringify(this.settings.dimensions);
+		const isEqual = true;
 
 		// console.log( 'no refresh', isEqual );
 
-		// console.log(' pisec ');
-
-		// if (isEqual && this.plugin)
-		// {
-		// 	console.log("NO RENDER PLEASE");
-		//
-		// 	this.settings.parentContext = parentNode;
-		// 	parentNode.style.height		= dimensions.height + 'px';
-		// 	parentNode.style.width		= dimensions.width	+ 'px';
-		//
-		// 	this.settings.parentContext.appendChild( this.context );
-		//
-		// 	return false;
-		// }
-
-		// console.log(' ratach ', dimensions);
-
 		this.settings.parentContext = parentNode;
-
-		// this.calculateNumOfRows(this.settings.char.)
 
 		parentNode.style.height		= dimensions.height + 'px';
 		parentNode.style.width		= dimensions.width	+ 'px';
-		// parentNode.style.maxWidth	= dimensions.width	+ 'px';
 
 		this.context.style.height	= parentNode.clientHeight	+ 'px';
 		this.context.style.width	= (parentNode.clientWidth - 1)	+ 'px';
-		// this.context.style.maxWidth	= parentNode.clientWidth	+ 'px';
 
-		/*console.log('dimen', dimensions.width);
-		console.log('dimen', parentNode.clientWidth);
-		console.log('dimen', parentNode.offsetWidth);*/
-
-		// console.log( 'zz', dimensions )
-
-		const numOfRows 	= this.calculateNumOfRows( dimensions.char.height );
-
-		// console.log( 'is?', isEqual );
-		// console.log('numOfChars ', dimensions.char.width );
-		// console.log('numOfChars ', numOfChars );
-		// console.log('numOfChars width ', parentNode.clientWidth );
-		// console.log('numOfChars width ', this.context.clientWidth );
-		// console.log('numOfChars ', '===' );
-
-		this.numOfRows = numOfRows;
-
-		// isEqual = true;
+		const numOfRows 			= this.calculateNumOfRows( dimensions.char.height );
+		this.numOfRows 				= numOfRows;
 
 		if (!isEqual && this.plugin)
 		{
@@ -15305,7 +15274,7 @@ class Terminal {
 			this.plugin.resize();
 		}
 
-		this.context.style.height = (numOfRows * dimensions.char.height ) + 'px';
+		this.context.style.height = (numOfRows * dimensions.char.height) + 'px';
 		this.settings.parentContext.appendChild( this.context );
 
 		const numOfChars	= Math.floor( this.context.clientWidth / dimensions.char.width );
@@ -15318,14 +15287,10 @@ class Terminal {
 
 		if (!isEqual && this.plugin)
 		{
-			// console.log( 'recalculate' );
-			// console.log( 'numOfChars', numOfChars )
 			this.plugin.emptyLinesRecalculate( numOfRows, numOfChars );
 		}
 
-		// clear screen scroll to line want work either
-		// if (!this.plugin)
-			this.context.scrollTop = this.context.scrollHeight;
+		this.context.scrollTop = this.context.scrollHeight;
 
 		this.settings.dimensions = dimensions;
 	}
@@ -16026,8 +15991,6 @@ class Output
 
 	setNumRows( numRows )
 	{
-		// console.log('setting numRows' , numRows)
-
 		this.numRows = numRows;
 		return this;
 	}
@@ -16045,7 +16008,7 @@ class Output
 			console.warn('No num rows !!!!!!!!!!!!');
 		}
 
-		const numOfRows = this.numRows || this.terminal.rows(); //  this.terminal.rows() - slow dom append cursor to body
+		const numOfRows = this.numRows || this.terminal.rows(); //this.terminal.rows() - slow dom append cursor to body
 
 		const noClearScreen	= () => this.emptyLines > 0 ? this.emptyLines - this.getOutputLength() : 0 ;
 		const isClearScreen = () => numOfRows - ( this.getOutputLength() + 2 ); // 2 = cmd line + command name
