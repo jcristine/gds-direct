@@ -140,7 +140,8 @@ class ButtonPopOver
 			this.popover.on('open', this.settings.onOpen );
 
 		this.trigger.onclick = false;
-		this.trigger.click();
+		this.popover.open();
+		// this.trigger.click();
 	}
 
 	getTrigger()
@@ -3621,6 +3622,8 @@ class TerminalState
 
 	action( action, params )
 	{
+		console.log(action);
+
 		switch (action)
 		{
 			case 'CHANGE_GDS':
@@ -3672,24 +3675,43 @@ class TerminalState
 			break;
 
 			case 'CHANGE_PCC' :
+
 				const area = this.getAreaIndex();
 
-				this.change({
-					gdsObj : Object.assign({}, this.state.gdsObj, {
-						pcc : {
-							[area] : params
-						}
-					})
+				// console.log( this.state.gdsObj.pcc )
+
+				// const cc = {
+				// 	gdsObj : {
+				// 		pcc : Object.assign({}, this.state.gdsObj.pcc, {
+				// 			3 : 'ddd'
+				// 		})
+				// }};
+
+				const pcc = Object.assign({}, this.state.gdsObj.pcc, {
+					[area] : params
 				});
+
+				const gds = Object.assign({}, this.state.gdsObj, {pcc : pcc});
+
+				console.log( gds );
+
+				// const ccc = Object.assign({}, this.state.gdsObj, cc);
+				// console.log( cc );
+
+				this.change({ gdsObj : gds });
+
+				/*
+				this.change({
+					gdsObj : Object.assign({}, this.state.gdsObj.pcc, {
+						[area] : params
+					})
+				});*/
 			break;
 
 			// case 'ACTIVATE_PQ' :
 			// break;
 
 			case 'CAN_CREATE_PQ' :
-
-				// console.log("SSSSS", params);
-				// console.log("SSSSS", this.state.gdsObj.canCreatePq);
 
 				// if (this.state.gdsObj.canCreatePq !== params.canCreatePq)
 				// {
@@ -3698,8 +3720,6 @@ class TerminalState
 					this.change({
 						gdsObj : Object.assign( {}, this.state.gdsObj, params )
 					});
-
-					// console.log( 'trigger BTN ');
 				// }
 
 				return false;
@@ -14457,22 +14477,29 @@ class TerminalsMatrix
 		return this;
 	}
 
-	static appendTerminals({sessionIndex, gds})
+	static appendTerminals({sessionIndex, gds, activeTerminal}, needToRender)
 	{
 		gdsSession[ gds ] = gdsSession[ gds ] || [];
 
 		this.resCells.forEach(( cell, index ) => {
 
-			gdsSession[gds][index] = gdsSession[gds][index] || new __WEBPACK_IMPORTED_MODULE_0__terminal__["a" /* default */]({
-				name 			: index,
-				sessionIndex	: sessionIndex,
-				gds				: gds,
-				buffer			: window.TerminalState.getBuffer(gds, index + 1),
-				dimensions		: this.props.dimensions
-			});
+			const isActive = activeTerminal && index === activeTerminal.name();
 
-			// draw or redraw
-			gdsSession[ gds ][index].reattach( cell , this.props.dimensions );
+			cell.classList.toggle('active', isActive);
+
+			if (needToRender)
+			{
+				gdsSession[gds][index] = gdsSession[gds][index] || new __WEBPACK_IMPORTED_MODULE_0__terminal__["a" /* default */]({
+						name 			: index,
+						sessionIndex	: sessionIndex,
+						gds				: gds,
+						buffer			: window.TerminalState.getBuffer(gds, index + 1),
+						dimensions		: this.props.dimensions
+					});
+
+				// draw or redraw
+				gdsSession[ gds ][index].reattach( cell , this.props.dimensions );
+			}
 		});
 	}
 
@@ -14494,30 +14521,17 @@ class TerminalsMatrix
 			wrapWidth	: Container.context.clientWidth
 		};
 
-		// console.log( props );
+		const needToRender = stringify(props) !== stringify(this.props);
 
-		if ( stringify(props) !== stringify(this.props) )
+		if ( needToRender )
 		{
 			console.log("RERENDER ALL");
 
 			this.props = props;
-			this.clear().makeCells( rowCount, cellCount ).appendTerminals( params );
-		} else
-		{
-			if (this.activeCell)
-			{
-				this.activeCell.classList.remove('active');
-			}
-
-			this.resCells.forEach( (cell, index) => {
-
-				if ( params.activeTerminal && index === params.activeTerminal.name() )
-				{
-					this.activeCell = cell;
-					cell.classList.add('active');
-				}
-			});
+			this.clear().makeCells( rowCount, cellCount );
 		}
+
+		this.appendTerminals( params, needToRender );
 	}
 }
 
@@ -15000,7 +15014,9 @@ class History extends __WEBPACK_IMPORTED_MODULE_2__modules_buttonPopover__["a" /
 		super( params );
 
 		this.popContent = __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_1__helpers_dom__["a" /* default */])('div.historyContext');
-		this.makeTrigger();
+		const btn = this.makeTrigger();
+
+		btn.addEventListener( 'click', this.askServer.bind(this) );
 	}
 
 	makeShortcut( value )
@@ -15017,11 +15033,16 @@ class History extends __WEBPACK_IMPORTED_MODULE_2__modules_buttonPopover__["a" /
 		this.popContent.appendChild( el );
 	}
 
-	build()
+	askServer()
 	{
 		__WEBPACK_IMPORTED_MODULE_0__helpers_requests__["a" /* default */].get('terminal/lastCommands', true).then( ( response = ['No History'] ) => {
 			response.data.map( this.makeShortcut, this );
 		});
+	}
+
+	build()
+	{
+		return false;
 	}
 }
 
@@ -15190,7 +15211,7 @@ class TextSize extends __WEBPACK_IMPORTED_MODULE_1__modules_buttonPopover__["a" 
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__middleware_terminal__ = __webpack_require__(32);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__middleware_plugin__ = __webpack_require__(32);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__helpers_dom__ = __webpack_require__(0);
 
 
@@ -15217,7 +15238,7 @@ class Terminal {
 	{
 		// this.context.innerHTML = '';
 
-		this.plugin = new __WEBPACK_IMPORTED_MODULE_0__middleware_terminal__["a" /* default */]({
+		this.plugin = new __WEBPACK_IMPORTED_MODULE_0__middleware_plugin__["a" /* default */]({
 			context 		: this.context,
 			name 			: this.settings['name'],
 			sessionIndex 	: this.settings['sessionIndex'],
@@ -15799,6 +15820,7 @@ class TerminalPlugin
 	sendRequest( command )
 	{
 		this.session
+
 			.run({
 				cmd : command.toUpperCase()
 			})
@@ -15808,10 +15830,18 @@ class TerminalPlugin
 				return response;
 			})
 
-			.then( this.parseBackEnd.bind(this) )
+			/*.then( ( response ) => {
+				this.switchArea( command.toUpperCase() );
+				return response;
+			})*/
+
+			.then( response  => {
+				this.switchArea( command.toUpperCase() );
+				this.parseBackEnd( response )
+			})
+
 			.then( () => {
 				this.loopCmdStack();
-				this.switchArea( command.toUpperCase() );
 			})
 
 			// .catch( this.parseError.bind(this) );
@@ -15841,17 +15871,19 @@ class TerminalPlugin
 
 		this.tabCommands.reset( result['tabCommands'], result['output'] );
 
+		let updateParams = {
+			canCreatePq 		: result['canCreatePq'],
+			canCreatePqErrors 	: result['canCreatePqErrors']
+		};
+
 		// todo :: optimize
 		if ( result['pcc'] )
 		{
 			window.TerminalState.action( 'CHANGE_PCC', result['pcc'] );
 		}
 
-		// if ( result['canCreatePq'] )
-		window.TerminalState.action( 'CAN_CREATE_PQ', {
-			canCreatePq 		: result['canCreatePq'],
-			canCreatePqErrors 	: result['canCreatePqErrors']
-		});
+		// window.TerminalState.action( 'CHANGE_PCC', 'zzz' );
+		window.TerminalState.action( 'CAN_CREATE_PQ', updateParams);
 
 		this.debugOutput( result );
 	}
@@ -15862,10 +15894,13 @@ class TerminalPlugin
 			Debug( 'DEBUG: CLEAR SCREEN', 'info' );
 
 		if ( result['canCreatePq'] )
-			Debug( 'CAN CREATE PCC' , 'warning');
+			Debug( 'CAN CREATE PQ' , 'warning');
 
 		if ( result['tabCommands'] && result['tabCommands'].length )
 			Debug( 'FOUND TAB COMMANDS', 'success' );
+
+		if ( result['pcc'] )
+			Debug( 'CHANGE PCC', 'success' );
 	}
 	
 	parseError(e)

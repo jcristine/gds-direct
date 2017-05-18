@@ -45,7 +45,8 @@ export default class ButtonPopOver
 			this.popover.on('open', this.settings.onOpen );
 
 		this.trigger.onclick = false;
-		this.trigger.click();
+		this.popover.open();
+		// this.trigger.click();
 	}
 
 	getTrigger()

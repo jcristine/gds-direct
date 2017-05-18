@@ -111,6 +111,8 @@ class TerminalState
 
 	action( action, params )
 	{
+		console.log(action);
+
 		switch (action)
 		{
 			case 'CHANGE_GDS':
@@ -162,24 +164,43 @@ class TerminalState
 			break;
 
 			case 'CHANGE_PCC' :
+
 				const area = this.getAreaIndex();
 
-				this.change({
-					gdsObj : Object.assign({}, this.state.gdsObj, {
-						pcc : {
-							[area] : params
-						}
-					})
+				// console.log( this.state.gdsObj.pcc )
+
+				// const cc = {
+				// 	gdsObj : {
+				// 		pcc : Object.assign({}, this.state.gdsObj.pcc, {
+				// 			3 : 'ddd'
+				// 		})
+				// }};
+
+				const pcc = Object.assign({}, this.state.gdsObj.pcc, {
+					[area] : params
 				});
+
+				const gds = Object.assign({}, this.state.gdsObj, {pcc : pcc});
+
+				console.log( gds );
+
+				// const ccc = Object.assign({}, this.state.gdsObj, cc);
+				// console.log( cc );
+
+				this.change({ gdsObj : gds });
+
+				/*
+				this.change({
+					gdsObj : Object.assign({}, this.state.gdsObj.pcc, {
+						[area] : params
+					})
+				});*/
 			break;
 
 			// case 'ACTIVATE_PQ' :
 			// break;
 
 			case 'CAN_CREATE_PQ' :
-
-				// console.log("SSSSS", params);
-				// console.log("SSSSS", this.state.gdsObj.canCreatePq);
 
 				// if (this.state.gdsObj.canCreatePq !== params.canCreatePq)
 				// {
@@ -188,8 +209,6 @@ class TerminalState
 					this.change({
 						gdsObj : Object.assign( {}, this.state.gdsObj, params )
 					});
-
-					// console.log( 'trigger BTN ');
 				// }
 
 				return false;

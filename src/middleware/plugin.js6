@@ -238,6 +238,7 @@ export default class TerminalPlugin
 	sendRequest( command )
 	{
 		this.session
+
 			.run({
 				cmd : command.toUpperCase()
 			})
@@ -247,10 +248,18 @@ export default class TerminalPlugin
 				return response;
 			})
 
-			.then( this.parseBackEnd.bind(this) )
+			/*.then( ( response ) => {
+				this.switchArea( command.toUpperCase() );
+				return response;
+			})*/
+
+			.then( response  => {
+				this.switchArea( command.toUpperCase() );
+				this.parseBackEnd( response )
+			})
+
 			.then( () => {
 				this.loopCmdStack();
-				this.switchArea( command.toUpperCase() );
 			})
 
 			// .catch( this.parseError.bind(this) );
@@ -280,17 +289,19 @@ export default class TerminalPlugin
 
 		this.tabCommands.reset( result['tabCommands'], result['output'] );
 
+		let updateParams = {
+			canCreatePq 		: result['canCreatePq'],
+			canCreatePqErrors 	: result['canCreatePqErrors']
+		};
+
 		// todo :: optimize
 		if ( result['pcc'] )
 		{
 			window.TerminalState.action( 'CHANGE_PCC', result['pcc'] );
 		}
 
-		// if ( result['canCreatePq'] )
-		window.TerminalState.action( 'CAN_CREATE_PQ', {
-			canCreatePq 		: result['canCreatePq'],
-			canCreatePqErrors 	: result['canCreatePqErrors']
-		});
+		// window.TerminalState.action( 'CHANGE_PCC', 'zzz' );
+		window.TerminalState.action( 'CAN_CREATE_PQ', updateParams);
 
 		this.debugOutput( result );
 	}
@@ -301,10 +312,13 @@ export default class TerminalPlugin
 			Debug( 'DEBUG: CLEAR SCREEN', 'info' );
 
 		if ( result['canCreatePq'] )
-			Debug( 'CAN CREATE PCC' , 'warning');
+			Debug( 'CAN CREATE PQ' , 'warning');
 
 		if ( result['tabCommands'] && result['tabCommands'].length )
 			Debug( 'FOUND TAB COMMANDS', 'success' );
+
+		if ( result['pcc'] )
+			Debug( 'CHANGE PCC', 'success' );
 	}
 	
 	parseError(e)

@@ -73,22 +73,29 @@ class TerminalsMatrix
 		return this;
 	}
 
-	static appendTerminals({sessionIndex, gds})
+	static appendTerminals({sessionIndex, gds, activeTerminal}, needToRender)
 	{
 		gdsSession[ gds ] = gdsSession[ gds ] || [];
 
 		this.resCells.forEach(( cell, index ) => {
 
-			gdsSession[gds][index] = gdsSession[gds][index] || new Terminal({
-				name 			: index,
-				sessionIndex	: sessionIndex,
-				gds				: gds,
-				buffer			: window.TerminalState.getBuffer(gds, index + 1),
-				dimensions		: this.props.dimensions
-			});
+			const isActive = activeTerminal && index === activeTerminal.name();
 
-			// draw or redraw
-			gdsSession[ gds ][index].reattach( cell , this.props.dimensions );
+			cell.classList.toggle('active', isActive);
+
+			if (needToRender)
+			{
+				gdsSession[gds][index] = gdsSession[gds][index] || new Terminal({
+						name 			: index,
+						sessionIndex	: sessionIndex,
+						gds				: gds,
+						buffer			: window.TerminalState.getBuffer(gds, index + 1),
+						dimensions		: this.props.dimensions
+					});
+
+				// draw or redraw
+				gdsSession[ gds ][index].reattach( cell , this.props.dimensions );
+			}
 		});
 	}
 
@@ -110,30 +117,17 @@ class TerminalsMatrix
 			wrapWidth	: Container.context.clientWidth
 		};
 
-		// console.log( props );
+		const needToRender = stringify(props) !== stringify(this.props);
 
-		if ( stringify(props) !== stringify(this.props) )
+		if ( needToRender )
 		{
 			console.log("RERENDER ALL");
 
 			this.props = props;
-			this.clear().makeCells( rowCount, cellCount ).appendTerminals( params );
-		} else
-		{
-			if (this.activeCell)
-			{
-				this.activeCell.classList.remove('active');
-			}
-
-			this.resCells.forEach( (cell, index) => {
-
-				if ( params.activeTerminal && index === params.activeTerminal.name() )
-				{
-					this.activeCell = cell;
-					cell.classList.add('active');
-				}
-			});
+			this.clear().makeCells( rowCount, cellCount );
 		}
+
+		this.appendTerminals( params, needToRender );
 	}
 }
 

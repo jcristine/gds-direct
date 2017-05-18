@@ -11,7 +11,9 @@ class History extends ButtonPopOver
 		super( params );
 
 		this.popContent = Dom('div.historyContext');
-		this.makeTrigger();
+		const btn = this.makeTrigger();
+
+		btn.addEventListener( 'click', this.askServer.bind(this) );
 	}
 
 	makeShortcut( value )
@@ -28,11 +30,16 @@ class History extends ButtonPopOver
 		this.popContent.appendChild( el );
 	}
 
-	build()
+	askServer()
 	{
 		Request.get('terminal/lastCommands', true).then( ( response = ['No History'] ) => {
 			response.data.map( this.makeShortcut, this );
 		});
+	}
+
+	build()
+	{
+		return false;
 	}
 }
 
