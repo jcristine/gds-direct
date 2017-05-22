@@ -3678,33 +3678,15 @@ class TerminalState
 
 				const area = this.getAreaIndex();
 
-				// console.log( this.state.gdsObj.pcc )
-
-				// const cc = {
-				// 	gdsObj : {
-				// 		pcc : Object.assign({}, this.state.gdsObj.pcc, {
-				// 			3 : 'ddd'
-				// 		})
-				// }};
-
 				const pcc = Object.assign({}, this.state.gdsObj.pcc, {
 					[area] : params
 				});
 
 				const gds = Object.assign({}, this.state.gdsObj, {pcc : pcc});
 
-				// console.log( gds );
-				// const ccc = Object.assign({}, this.state.gdsObj, cc);
-				// console.log( cc );
 
 				this.change({ gdsObj : gds });
 
-				/*
-				this.change({
-					gdsObj : Object.assign({}, this.state.gdsObj.pcc, {
-						[area] : params
-					})
-				});*/
 			break;
 
 			// case 'ACTIVATE_PQ' :
@@ -15315,6 +15297,8 @@ class Terminal {
 
 		const numOfChars	= Math.floor( this.context.clientWidth / dimensions.char.width );
 
+		// console.log('bb', numOfChars)
+
 		// console.log( numOfChars );
 		// console.log( this.numOfRows );
 
@@ -16114,6 +16098,10 @@ class Output
 	{
 		const chars = this.numOfChars || this.terminal.cols();
 
+		// console.log( chars )
+		// console.log( this.numOfChars )
+		// console.log( this.terminal.cols() )
+
 		// console.log(' num of chars ', this.numOfChars );
 		// console.log(' num of chars ', this.terminal.cols() );
 		// console.log(' num of chars ', chars );
@@ -16134,7 +16122,7 @@ class Output
 		// console.log(this.terminal.scrollBottomOffset);
 		// console.log(this.cmdLineOffset);
 
-		this.terminal.echo( this.outputStrings);
+		this.terminal.echo(this.outputStrings);
 		return this;
 	}
 

@@ -101,6 +101,8 @@ export default class Terminal {
 
 		const numOfChars	= Math.floor( this.context.clientWidth / dimensions.char.width );
 
+		// console.log('bb', numOfChars)
+
 		// console.log( numOfChars );
 		// console.log( this.numOfRows );
 

@@ -167,33 +167,15 @@ class TerminalState
 
 				const area = this.getAreaIndex();
 
-				// console.log( this.state.gdsObj.pcc )
-
-				// const cc = {
-				// 	gdsObj : {
-				// 		pcc : Object.assign({}, this.state.gdsObj.pcc, {
-				// 			3 : 'ddd'
-				// 		})
-				// }};
-
 				const pcc = Object.assign({}, this.state.gdsObj.pcc, {
 					[area] : params
 				});
 
 				const gds = Object.assign({}, this.state.gdsObj, {pcc : pcc});
 
-				// console.log( gds );
-				// const ccc = Object.assign({}, this.state.gdsObj, cc);
-				// console.log( cc );
 
 				this.change({ gdsObj : gds });
 
-				/*
-				this.change({
-					gdsObj : Object.assign({}, this.state.gdsObj.pcc, {
-						[area] : params
-					})
-				});*/
 			break;
 
 			// case 'ACTIVATE_PQ' :

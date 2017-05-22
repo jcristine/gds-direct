@@ -91,6 +91,10 @@ export default class Output
 	{
 		const chars = this.numOfChars || this.terminal.cols();
 
+		// console.log( chars )
+		// console.log( this.numOfChars )
+		// console.log( this.terminal.cols() )
+
 		// console.log(' num of chars ', this.numOfChars );
 		// console.log(' num of chars ', this.terminal.cols() );
 		// console.log(' num of chars ', chars );
@@ -111,7 +115,7 @@ export default class Output
 		// console.log(this.terminal.scrollBottomOffset);
 		// console.log(this.cmdLineOffset);
 
-		this.terminal.echo( this.outputStrings);
+		this.terminal.echo(this.outputStrings);
 		return this;
 	}
 
