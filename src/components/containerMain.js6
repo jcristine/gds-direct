@@ -5,9 +5,8 @@ import ActionsMenu 	from './actionsMenu';
 import MenuPanel 	from './menuPanel';
 import Dom			from '../helpers/dom';
 
-let gdsSession = [];
-
-const stringify = JSON.stringify;
+const gdsSession	= [];
+const stringify 	= JSON.stringify;
 
 class TerminalsMatrix
 {
@@ -121,7 +120,7 @@ class TerminalsMatrix
 
 		if ( needToRender )
 		{
-			console.log("RERENDER ALL");
+			// console.log("RERENDER ALL");
 
 			this.props = props;
 			this.clear().makeCells( rowCount, cellCount );

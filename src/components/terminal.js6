@@ -5,8 +5,6 @@ import Dom				from '../helpers/dom';
 
 require('../../node_modules/jquery.terminal/js/unix_formatting');
 
-// const calculateHeight = terminal => (terminal.find('.cursor').height() * terminal.rows());
-
 export default class Terminal {
 
 	constructor( params )
@@ -50,8 +48,7 @@ export default class Terminal {
 		}).join('');
 
 		this.bufferDiv 				= Dom('article.terminal-wrapper');
-		// this.bufferDiv.innerHTML 	= `<div class="terminal-output"> ${ $.terminal.format( buffered ) } </div>`;
-		this.bufferDiv.innerHTML 	= `<div class="terminal-output"> ${ buffered } </div>`;
+		this.bufferDiv.innerHTML 	= `<div class="terminal-output"> ${buffered} </div>`;
 
 		this.context.appendChild( this.bufferDiv );
 	}
@@ -77,9 +74,6 @@ export default class Terminal {
 
 	reattach( parentNode, dimensions )
 	{
-		// let isEqual	= JSON.stringify(dimensions) === JSON.stringify(this.settings.dimensions);
-		// const isEqual = true;
-
 		this.settings.parentContext = parentNode;
 
 		parentNode.style.height		= dimensions.height + 'px';
@@ -102,10 +96,8 @@ export default class Terminal {
 		const numOfChars	= Math.floor( this.context.clientWidth / dimensions.char.width );
 
 		// console.log('bb', numOfChars)
-
 		// console.log( numOfChars );
 		// console.log( this.numOfRows );
-
 		// console.log(numOfChars);
 		// console.log( 'numOfChars', parentNode.clientWidth );
 		// console.log( 'numOfChars', this.context.clientWidth );

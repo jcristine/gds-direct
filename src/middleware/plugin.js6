@@ -57,20 +57,21 @@ export default class TerminalPlugin
 		this.f8Reader		= new F8Reader( this.terminal );
 	}
 
+	/*
+	* return false if char is don't belong cmd
+	* */
 	parseKeyBinds( evt, terminal )
 	{
 		if ( !KeyBinding.parse( evt, terminal ) )
-		{
 			return false;
-		}
 
 		const replacement = getReplacement( evt, window.TerminalState.isLanguageApollo() );
 
 		if ( this.f8Reader.getIsActive() )
 		{
-			// console.log( this.terminal.get_command() );
+			console.log('f8 is active', this.terminal.get_command() );
 			// this.f8Reader.keyPressed( replacement );
-			// return false;
+			return false;
 		}
 
 		if ( replacement )
@@ -79,21 +80,16 @@ export default class TerminalPlugin
 			return false;
 		}
 
-		if (replacement === false)
-		{
+		if (replacement === false) // do not print nothing if char is forbiden
 			return false;
-		}
 	}
 
 	switchArea( command )
 	{
 		const sessionIndex = window.TerminalState.getSessionAreaMap().indexOf( command );
-		// console.log( 'Seitch area ', command, sessionIndex );
 
 		if ( sessionIndex !== -1 )
-		{
 			window.TerminalState.action('CHANGE_SESSION_AREA', sessionIndex);
-		}
 	}
 
 	changeActiveTerm( activeTerminal )
@@ -105,21 +101,15 @@ export default class TerminalPlugin
 	tabPressed()
 	{
 		if ( this.f8Reader.getIsActive() )
-		{
-			this.f8Reader.tabPressed();
-			return false;
-		}
+			return this.f8Reader.tabPressed();
 
-		const replace = terminal => {
+		this.tabCommands.run( this.updateOutput.bind(this) );
+	}
 
-			return ( [cmd, formatted] ) => {
-				terminal.cmd().set( cmd );
-				terminal.update( terminal.last_index(), formatted );
-			}
-
-		};
-
-		this.tabCommands.run( replace(this.terminal) );
+	updateOutput([cmd, str])
+	{
+		this.terminal.update( -1,  str );
+		this.terminal.cmd().set( cmd );
 	}
 
 	resize( w, h )
@@ -132,6 +122,15 @@ export default class TerminalPlugin
 		this.outputLiner.setNumRows(numOfRows).setNumChars(numOfChars).setCharHeight(charHeight).recalculate();
 	}
 
+	checkBeforeEnter( terminal, command )
+	{
+		if ( this.spinner.isActive() )
+		{
+			this.hiddenBuff.push( command );
+			return false;
+		}
+	}
+
 	init()
 	{
 		//caveats terminal.rows() - everytime appends div with cursor span - not too smooth for performance
@@ -142,6 +141,8 @@ export default class TerminalPlugin
 			name			: this.name,
 			prompt			: '>',
 
+			// numRows			: 2,
+			// memory			: true,
 			// scrollOnEcho	: false,
 			// keypress		: this.parseChar.bind(this), // BUGGY BUGGY, assign on document wtf???
 			keydown			: this.parseKeyBinds.bind(this),
@@ -149,16 +150,7 @@ export default class TerminalPlugin
 			onInit			: this.changeActiveTerm.bind(this),
 			onTerminalChange: this.changeActiveTerm.bind(this),
 
-			// numRows			: 2,
-			// memory			: true,
-
-			onBeforeCommand : ( terminal, command ) => { // is using
-				if ( this.spinner.isActive()  )
-				{
-					this.hiddenBuff.push( command );
-					return false;
-				}
-			},
+			onBeforeCommand : this.checkBeforeEnter.bind(this),
 
 			// for hard scenario shortcut, others in keymap helper
 			keymap			: {
@@ -170,13 +162,15 @@ export default class TerminalPlugin
 
 			exceptionHandler( err )
 			{
-				console.warn('exc', err)
+				console.warn('exc', err);
 			}
 		});
 	}
 
 	commandParser( command, terminal ) //pressed enter
 	{
+		// console.log('comand parse')
+
 		this.outputLiner.prepare('');
 
 		if ( !command || command === '' )
@@ -205,8 +199,6 @@ export default class TerminalPlugin
 					return false;
 			}
 		}
-
-		this.spinner.start();
 
 		/*setTimeout( () => {
 			this.spinner.end();
@@ -237,8 +229,9 @@ export default class TerminalPlugin
 
 	sendRequest( command )
 	{
-		this.session
+		this.spinner.start();
 
+		this.session
 			.run({
 				cmd : command.toUpperCase()
 			})
@@ -248,29 +241,27 @@ export default class TerminalPlugin
 				return response;
 			})
 
-			/*.then( ( response ) => {
-				this.switchArea( command.toUpperCase() );
-				return response;
-			})*/
-
 			.then( response  => {
 				this.switchArea( command.toUpperCase() );
-				this.parseBackEnd( response )
+				this.parseBackEnd( response, command )
 			})
 
-			.then( () => {
-				this.loopCmdStack();
-			})
-
-			// .catch( this.parseError.bind(this) );
+			.then( () => this.loopCmdStack() )
 	}
 
-	parseBackEnd( response = {} )
+	parseBackEnd( response = {}, command )
 	{
 		const result = response['data'] || {};
 
 		if ( result['output'] )
 		{
+			if ( result['output'].trim() === '*')
+			{
+				this.terminal.update(-2, '');
+				this.terminal.cmd().set(command + ' *');
+				return false;
+			}
+
 			if ( this.allowManualPaging ) // sabre
 			{
 				const output = this.pagination
@@ -280,16 +271,16 @@ export default class TerminalPlugin
 				this.terminal.echo( output );
 			} else
 			{
+				// if 1 rows of terminal do not perform clear screen
 				const clearScreen = result['clearScreen'] && window.TerminalState.getMatrix().rows !== 0;
 
-				this.outputLiner
-					.prepare( result['output'], clearScreen );
+				this.outputLiner.prepare( result['output'], clearScreen );
 			}
 		}
 
 		this.tabCommands.reset( result['tabCommands'], result['output'] );
 
-		let updateParams = {
+		const updateParams = {
 			canCreatePq 		: result['canCreatePq'],
 			canCreatePqErrors 	: result['canCreatePqErrors']
 		};

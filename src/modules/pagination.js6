@@ -1,6 +1,6 @@
 'use strict';
 
-import Helpers 	from '../helpers/helpers';
+import {makePages} from '../helpers/helpers';
 
 export default class Pagination
 {
@@ -15,7 +15,7 @@ export default class Pagination
 	{
 		this.page 	= 0;
 		this.output = output;
-		this.cache 	= Helpers.makeCachedParts( output, rows, cols );
+		this.cache 	= makePages( output, rows, cols );
 
 		// console.log(this.cache );
 		return this;

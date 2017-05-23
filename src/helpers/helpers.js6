@@ -1,21 +1,5 @@
 'use strict';
 
-/*function chunk(arr, limit)
-{
-	let result = [];
-
-	while (arr.length > limit)
-	{
-		result.push(arr.slice(0, limit));
-		arr = arr.slice(limit);
-	}
-
-	if (arr.length > 0)
-		result.push(arr);
-
-	return result;
-}*/
-
 const common = {
 	'[': '¤',
 	'=': '*',
@@ -57,7 +41,7 @@ export function getReplacement( evt, isApollo )
 	return isApollo ? apolloLayout[char] : sabreLayout[char];
 }
 
-export function substitutePrintableChar(evt, isApollo)
+/*export function substitutePrintableChar(evt, isApollo)
 {
 	const keyCode	= evt.keyCode || evt.which;
 
@@ -72,7 +56,7 @@ export function substitutePrintableChar(evt, isApollo)
 	const layout = isApollo ? apolloLayout : sabreLayout;
 
 	return layout[ch] !== undefined ? layout[ch] : ch.toUpperCase();
-}
+}*/
 
 function chunkIntoPages( linesArr , rowsPerScreen )
 {
@@ -84,16 +68,16 @@ function chunkIntoPages( linesArr , rowsPerScreen )
 	);
 }
 
-function _makePages(txt, rowsPerScreen = 20, maxCharLimit)
+export function makePages(txt, rowsPerScreen = 20, maxCharLimit)
 {
-	const chunkByCharLimit = _splitIntoLinesArr( txt, maxCharLimit );
+	const chunkByCharLimit = splitIntoLinesArr( txt, maxCharLimit );
 
 	return chunkIntoPages(chunkByCharLimit, rowsPerScreen).map(
 		(sectionLines) => sectionLines.join('\n')
 	);
 }
 
-export function _splitIntoLinesArr( txt, maxCharLimit )
+export function splitIntoLinesArr( txt, maxCharLimit )
 {
 	const lines 		= splitLines(txt);
 	const regex 		= new RegExp(`(.{1,${maxCharLimit}})`, 'gi');
@@ -111,12 +95,4 @@ export function _splitIntoLinesArr( txt, maxCharLimit )
 function splitLines(txt)
 {
 	return txt.split(/\r?\n/);
-}
-
-export default {
-	makeCachedParts 		: _makePages,
-	substitutePrintableChar : substitutePrintableChar,
-	getLines 				: _splitIntoLinesArr,
-	splitLines 				: splitLines,
-	getReplacement 			: getReplacement,
 }

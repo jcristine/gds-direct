@@ -169,25 +169,9 @@ class ButtonPopOver
 
 "use strict";
 /* harmony export (immutable) */ __webpack_exports__["a"] = getReplacement;
-/* unused harmony export substitutePrintableChar */
-/* unused harmony export _splitIntoLinesArr */
+/* harmony export (immutable) */ __webpack_exports__["c"] = makePages;
+/* harmony export (immutable) */ __webpack_exports__["b"] = splitIntoLinesArr;
 
-
-/*function chunk(arr, limit)
-{
-	let result = [];
-
-	while (arr.length > limit)
-	{
-		result.push(arr.slice(0, limit));
-		arr = arr.slice(limit);
-	}
-
-	if (arr.length > 0)
-		result.push(arr);
-
-	return result;
-}*/
 
 const common = {
 	'[': '¤',
@@ -230,7 +214,7 @@ function getReplacement( evt, isApollo )
 	return isApollo ? apolloLayout[char] : sabreLayout[char];
 }
 
-function substitutePrintableChar(evt, isApollo)
+/*export function substitutePrintableChar(evt, isApollo)
 {
 	const keyCode	= evt.keyCode || evt.which;
 
@@ -245,7 +229,7 @@ function substitutePrintableChar(evt, isApollo)
 	const layout = isApollo ? apolloLayout : sabreLayout;
 
 	return layout[ch] !== undefined ? layout[ch] : ch.toUpperCase();
-}
+}*/
 
 function chunkIntoPages( linesArr , rowsPerScreen )
 {
@@ -257,16 +241,16 @@ function chunkIntoPages( linesArr , rowsPerScreen )
 	);
 }
 
-function _makePages(txt, rowsPerScreen = 20, maxCharLimit)
+function makePages(txt, rowsPerScreen = 20, maxCharLimit)
 {
-	const chunkByCharLimit = _splitIntoLinesArr( txt, maxCharLimit );
+	const chunkByCharLimit = splitIntoLinesArr( txt, maxCharLimit );
 
 	return chunkIntoPages(chunkByCharLimit, rowsPerScreen).map(
 		(sectionLines) => sectionLines.join('\n')
 	);
 }
 
-function _splitIntoLinesArr( txt, maxCharLimit )
+function splitIntoLinesArr( txt, maxCharLimit )
 {
 	const lines 		= splitLines(txt);
 	const regex 		= new RegExp(`(.{1,${maxCharLimit}})`, 'gi');
@@ -285,14 +269,6 @@ function splitLines(txt)
 {
 	return txt.split(/\r?\n/);
 }
-
-/* harmony default export */ __webpack_exports__["b"] = ({
-	makeCachedParts 		: _makePages,
-	substitutePrintableChar : substitutePrintableChar,
-	getLines 				: _splitIntoLinesArr,
-	splitLines 				: splitLines,
-	getReplacement 			: getReplacement,
-});
 
 /***/ }),
 /* 3 */
@@ -14390,9 +14366,8 @@ class ActionsMenu {
 
 
 
-let gdsSession = [];
-
-const stringify = JSON.stringify;
+const gdsSession	= [];
+const stringify 	= JSON.stringify;
 
 class TerminalsMatrix
 {
@@ -14506,7 +14481,7 @@ class TerminalsMatrix
 
 		if ( needToRender )
 		{
-			console.log("RERENDER ALL");
+			// console.log("RERENDER ALL");
 
 			this.props = props;
 			this.clear().makeCells( rowCount, cellCount );
@@ -15201,8 +15176,6 @@ class TextSize extends __WEBPACK_IMPORTED_MODULE_1__modules_buttonPopover__["a" 
 
 __webpack_require__(12);
 
-// const calculateHeight = terminal => (terminal.find('.cursor').height() * terminal.rows());
-
 class Terminal {
 
 	constructor( params )
@@ -15246,8 +15219,7 @@ class Terminal {
 		}).join('');
 
 		this.bufferDiv 				= __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_1__helpers_dom__["a" /* default */])('article.terminal-wrapper');
-		// this.bufferDiv.innerHTML 	= `<div class="terminal-output"> ${ $.terminal.format( buffered ) } </div>`;
-		this.bufferDiv.innerHTML 	= `<div class="terminal-output"> ${ buffered } </div>`;
+		this.bufferDiv.innerHTML 	= `<div class="terminal-output"> ${buffered} </div>`;
 
 		this.context.appendChild( this.bufferDiv );
 	}
@@ -15273,9 +15245,6 @@ class Terminal {
 
 	reattach( parentNode, dimensions )
 	{
-		// let isEqual	= JSON.stringify(dimensions) === JSON.stringify(this.settings.dimensions);
-		// const isEqual = true;
-
 		this.settings.parentContext = parentNode;
 
 		parentNode.style.height		= dimensions.height + 'px';
@@ -15298,10 +15267,8 @@ class Terminal {
 		const numOfChars	= Math.floor( this.context.clientWidth / dimensions.char.width );
 
 		// console.log('bb', numOfChars)
-
 		// console.log( numOfChars );
 		// console.log( this.numOfRows );
-
 		// console.log(numOfChars);
 		// console.log( 'numOfChars', parentNode.clientWidth );
 		// console.log( 'numOfChars', this.context.clientWidth );
@@ -15628,20 +15595,21 @@ class TerminalPlugin
 		this.f8Reader		= new __WEBPACK_IMPORTED_MODULE_7__modules_f8__["a" /* default */]( this.terminal );
 	}
 
+	/*
+	* return false if char is don't belong cmd
+	* */
 	parseKeyBinds( evt, terminal )
 	{
 		if ( !__WEBPACK_IMPORTED_MODULE_4__helpers_keyBinding__["a" /* default */].parse( evt, terminal ) )
-		{
 			return false;
-		}
 
 		const replacement = __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_8__helpers_helpers__["a" /* getReplacement */])( evt, window.TerminalState.isLanguageApollo() );
 
 		if ( this.f8Reader.getIsActive() )
 		{
-			// console.log( this.terminal.get_command() );
+			console.log('f8 is active', this.terminal.get_command() );
 			// this.f8Reader.keyPressed( replacement );
-			// return false;
+			return false;
 		}
 
 		if ( replacement )
@@ -15650,21 +15618,16 @@ class TerminalPlugin
 			return false;
 		}
 
-		if (replacement === false)
-		{
+		if (replacement === false) // do not print nothing if char is forbiden
 			return false;
-		}
 	}
 
 	switchArea( command )
 	{
 		const sessionIndex = window.TerminalState.getSessionAreaMap().indexOf( command );
-		// console.log( 'Seitch area ', command, sessionIndex );
 
 		if ( sessionIndex !== -1 )
-		{
 			window.TerminalState.action('CHANGE_SESSION_AREA', sessionIndex);
-		}
 	}
 
 	changeActiveTerm( activeTerminal )
@@ -15676,21 +15639,15 @@ class TerminalPlugin
 	tabPressed()
 	{
 		if ( this.f8Reader.getIsActive() )
-		{
-			this.f8Reader.tabPressed();
-			return false;
-		}
+			return this.f8Reader.tabPressed();
 
-		const replace = terminal => {
+		this.tabCommands.run( this.updateOutput.bind(this) );
+	}
 
-			return ( [cmd, formatted] ) => {
-				terminal.cmd().set( cmd );
-				terminal.update( terminal.last_index(), formatted );
-			}
-
-		};
-
-		this.tabCommands.run( replace(this.terminal) );
+	updateOutput([cmd, str])
+	{
+		this.terminal.update( -1,  str );
+		this.terminal.cmd().set( cmd );
 	}
 
 	resize( w, h )
@@ -15703,6 +15660,15 @@ class TerminalPlugin
 		this.outputLiner.setNumRows(numOfRows).setNumChars(numOfChars).setCharHeight(charHeight).recalculate();
 	}
 
+	checkBeforeEnter( terminal, command )
+	{
+		if ( this.spinner.isActive() )
+		{
+			this.hiddenBuff.push( command );
+			return false;
+		}
+	}
+
 	init()
 	{
 		//caveats terminal.rows() - everytime appends div with cursor span - not too smooth for performance
@@ -15713,6 +15679,8 @@ class TerminalPlugin
 			name			: this.name,
 			prompt			: '>',
 
+			// numRows			: 2,
+			// memory			: true,
 			// scrollOnEcho	: false,
 			// keypress		: this.parseChar.bind(this), // BUGGY BUGGY, assign on document wtf???
 			keydown			: this.parseKeyBinds.bind(this),
@@ -15720,16 +15688,7 @@ class TerminalPlugin
 			onInit			: this.changeActiveTerm.bind(this),
 			onTerminalChange: this.changeActiveTerm.bind(this),
 
-			// numRows			: 2,
-			// memory			: true,
-
-			onBeforeCommand : ( terminal, command ) => { // is using
-				if ( this.spinner.isActive()  )
-				{
-					this.hiddenBuff.push( command );
-					return false;
-				}
-			},
+			onBeforeCommand : this.checkBeforeEnter.bind(this),
 
 			// for hard scenario shortcut, others in keymap helper
 			keymap			: {
@@ -15741,13 +15700,15 @@ class TerminalPlugin
 
 			exceptionHandler( err )
 			{
-				console.warn('exc', err)
+				console.warn('exc', err);
 			}
 		});
 	}
 
 	commandParser( command, terminal ) //pressed enter
 	{
+		// console.log('comand parse')
+
 		this.outputLiner.prepare('');
 
 		if ( !command || command === '' )
@@ -15776,8 +15737,6 @@ class TerminalPlugin
 					return false;
 			}
 		}
-
-		this.spinner.start();
 
 		/*setTimeout( () => {
 			this.spinner.end();
@@ -15808,8 +15767,9 @@ class TerminalPlugin
 
 	sendRequest( command )
 	{
-		this.session
+		this.spinner.start();
 
+		this.session
 			.run({
 				cmd : command.toUpperCase()
 			})
@@ -15819,29 +15779,27 @@ class TerminalPlugin
 				return response;
 			})
 
-			/*.then( ( response ) => {
-				this.switchArea( command.toUpperCase() );
-				return response;
-			})*/
-
 			.then( response  => {
 				this.switchArea( command.toUpperCase() );
-				this.parseBackEnd( response )
+				this.parseBackEnd( response, command )
 			})
 
-			.then( () => {
-				this.loopCmdStack();
-			})
-
-			// .catch( this.parseError.bind(this) );
+			.then( () => this.loopCmdStack() )
 	}
 
-	parseBackEnd( response = {} )
+	parseBackEnd( response = {}, command )
 	{
 		const result = response['data'] || {};
 
 		if ( result['output'] )
 		{
+			if ( result['output'].trim() === '*')
+			{
+				this.terminal.update(-2, '');
+				this.terminal.cmd().set(command + ' *');
+				return false;
+			}
+
 			if ( this.allowManualPaging ) // sabre
 			{
 				const output = this.pagination
@@ -15851,16 +15809,16 @@ class TerminalPlugin
 				this.terminal.echo( output );
 			} else
 			{
+				// if 1 rows of terminal do not perform clear screen
 				const clearScreen = result['clearScreen'] && window.TerminalState.getMatrix().rows !== 0;
 
-				this.outputLiner
-					.prepare( result['output'], clearScreen );
+				this.outputLiner.prepare( result['output'], clearScreen );
 			}
 		}
 
 		this.tabCommands.reset( result['tabCommands'], result['output'] );
 
-		let updateParams = {
+		const updateParams = {
 			canCreatePq 		: result['canCreatePq'],
 			canCreatePqErrors 	: result['canCreatePqErrors']
 		};
@@ -16109,18 +16067,12 @@ class Output
 		// console.log('zzz', this.terminal.cols() );
 		// console.log('zzz', chars  );
 
-		return __WEBPACK_IMPORTED_MODULE_0__helpers_helpers__["b" /* default */].getLines( this.outputStrings, chars ).length;
+		return __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0__helpers_helpers__["b" /* splitIntoLinesArr */])( this.outputStrings, chars ).length;
 	}
 
 	printOutput()
 	{
-		// console.log('?????', this.charHeight);
-
 		this.cmdLineOffset 	= this.terminal.cmd()[0].offsetTop  - ( this.charHeight ? this.charHeight : 0);
-
-		// console.log('scroll offset');
-		// console.log(this.terminal.scrollBottomOffset);
-		// console.log(this.cmdLineOffset);
 
 		this.terminal.echo(this.outputStrings);
 		return this;
@@ -16164,7 +16116,7 @@ class Pagination
 	{
 		this.page 	= 0;
 		this.output = output;
-		this.cache 	= __WEBPACK_IMPORTED_MODULE_0__helpers_helpers__["b" /* default */].makeCachedParts( output, rows, cols );
+		this.cache 	= __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0__helpers_helpers__["c" /* makePages */])( output, rows, cols );
 
 		// console.log(this.cache );
 		return this;

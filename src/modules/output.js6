@@ -1,6 +1,6 @@
 'use strict';
 
-import Helpers from '../helpers/helpers';
+import {splitIntoLinesArr} from '../helpers/helpers';
 
 export default class Output
 {
@@ -102,18 +102,12 @@ export default class Output
 		// console.log('zzz', this.terminal.cols() );
 		// console.log('zzz', chars  );
 
-		return Helpers.getLines( this.outputStrings, chars ).length;
+		return splitIntoLinesArr( this.outputStrings, chars ).length;
 	}
 
 	printOutput()
 	{
-		// console.log('?????', this.charHeight);
-
 		this.cmdLineOffset 	= this.terminal.cmd()[0].offsetTop  - ( this.charHeight ? this.charHeight : 0);
-
-		// console.log('scroll offset');
-		// console.log(this.terminal.scrollBottomOffset);
-		// console.log(this.cmdLineOffset);
 
 		this.terminal.echo(this.outputStrings);
 		return this;
