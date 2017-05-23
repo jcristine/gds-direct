@@ -54,25 +54,34 @@ export default class TerminalPlugin
 		this.outputLiner.setNumRows(params.numOfRows);
 
 		this.tabCommands	= new TabManager();
-		this.f8Reader		= new F8Reader( this.terminal );
+
+		this.f8Reader		= new F8Reader({
+			terminal	: this.terminal,
+			gds			: params.gds
+		});
 	}
 
 	/*
 	* return false if char is don't belong cmd
 	* */
+
 	parseKeyBinds( evt, terminal )
 	{
 		if ( !KeyBinding.parse( evt, terminal ) )
 			return false;
 
-		const replacement = getReplacement( evt, window.TerminalState.isLanguageApollo() );
-
-		if ( this.f8Reader.getIsActive() )
+		if ( this.f8Reader.getIsActive() ) // ignore Tab press
 		{
-			console.log('f8 is active', this.terminal.get_command() );
-			// this.f8Reader.keyPressed( replacement );
-			return false;
+			if (evt.which === 13)
+			{
+				this.f8Reader.execCommand();
+				return false;
+			}
+
+			this.f8Reader.replaceChar();
 		}
+
+		const replacement = getReplacement( evt, window.TerminalState.isLanguageApollo() );
 
 		if ( replacement )
 		{
@@ -101,7 +110,7 @@ export default class TerminalPlugin
 	tabPressed()
 	{
 		if ( this.f8Reader.getIsActive() )
-			return this.f8Reader.tabPressed();
+			return this.f8Reader.jumpToNextPos();
 
 		this.tabCommands.run( this.updateOutput.bind(this) );
 	}
@@ -120,15 +129,6 @@ export default class TerminalPlugin
 	emptyLinesRecalculate( numOfRows, numOfChars, charHeight )
 	{
 		this.outputLiner.setNumRows(numOfRows).setNumChars(numOfChars).setCharHeight(charHeight).recalculate();
-	}
-
-	checkBeforeEnter( terminal, command )
-	{
-		if ( this.spinner.isActive() )
-		{
-			this.hiddenBuff.push( command );
-			return false;
-		}
 	}
 
 	init()
@@ -167,10 +167,17 @@ export default class TerminalPlugin
 		});
 	}
 
+	checkBeforeEnter( terminal, command )
+	{
+		if ( this.spinner.isActive() )
+		{
+			this.hiddenBuff.push( command );
+			return false;
+		}
+	}
+
 	commandParser( command, terminal ) //pressed enter
 	{
-		// console.log('comand parse')
-
 		this.outputLiner.prepare('');
 
 		if ( !command || command === '' )
@@ -257,8 +264,8 @@ export default class TerminalPlugin
 		{
 			if ( result['output'].trim() === '*')
 			{
-				this.terminal.update(-2, '');
-				this.terminal.cmd().set(command + ' *');
+				this.terminal.update( -2 , '');
+				this.terminal.set_command(command + ' *');
 				return false;
 			}
 

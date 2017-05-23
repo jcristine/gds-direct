@@ -1,10 +1,19 @@
 const rules = {
 	apollo : {
 		pos 	: '¤:3SSRDOCSYYHK1/N'.length,
-		cmd		: '¤:3SSRDOCSYYHK1/N ///// DMMMYY/ //          /          / ',
+		cmd		: '¤:3SSRDOCSYYHK1/N ///// DMMMYY/ //          /          /',
+
 		rules	: [
-			'¤:3SSRDOCSYYHK1/N',
-			'DMMMYY'
+			' /////',
+			// '¤:3SSRDOCSYYHK1/N',
+			' DMMMYY',
+			' // ',
+			'          /',
+			'          /',
+		],
+
+		arrow	: [
+
 		]
 	},
 
@@ -19,12 +28,15 @@ const rules = {
 
 export default class F8Reader
 {
-	constructor( terminal )
+	constructor( {terminal, gds} )
 	{
 		this.index		= 0;
 		this.terminal 	= terminal;
 		this.isActive 	= false;
-		this.canReplace	= false;
+		// this.canReplace	= false;
+		this.gds		= gds;
+
+		this.currentCmd	= rules[gds];
 	}
 
 	getIsActive()
@@ -32,58 +44,64 @@ export default class F8Reader
 		return this.isActive;
 	}
 
-	nextTabPos()
+	getNextTabPos()
 	{
-		const cmd	= this.currentCmd.cmd;
-		const slice	= this.currentCmd.rules[ this.index ];
-
-		return cmd.indexOf( slice ) + ( this.index === 0 ?  slice.length : 0);
+		const subStr = this.currentCmd.rules[ this.index ];
+		return this.terminal.get_command().indexOf( subStr ); // + ( this.index === 0 ? subStr.length : 0 );
 	}
 
-	tabPressed()
+	jumpToNextPos()
 	{
-		this.canReplace = true;
-		this.terminal.cmd().position( this.nextTabPos() );
+		this.terminal.cmd().position( this.getNextTabPos() );
 
-		if ( !this.currentCmd.rules[ this.index] )
+		if ( !this.currentCmd.rules[this.index] )
 		{
 			this.isActive 	= false;
-			this.canReplace = false;
 			this.index 		= 0;
 		}
 
 		this.index++;
-		console.log(this.currentCmd.rules[ this.index])
 	}
 
-	keyPressed( char )
+	replaceChar()
 	{
-		// const char		= String.fromCharCode( evt.keyCode || evt.which );
-		const curPos 	= this.terminal.cmd().position();
-		const oldCmd 	= this.terminal.get_command();
+		/*const curPos 			= this.terminal.cmd().position();
+		const oldCmd 			= this.terminal.get_command();
 
-		if (oldCmd.substr(curPos, 1) === "/")
-		{
-			this.canReplace = false;
-		}
+		const charToReplace 	= oldCmd.substr(curPos, 1);
 
-		if ( !this.canReplace )
+		if (charToReplace === '/')
 			return false;
 
-		// todo helper spec chars;
-		const newCmd = oldCmd.substr(0, curPos) + char + oldCmd.substr(curPos + 1);
+		const newCmd = oldCmd.substr(0, curPos) + oldCmd.substr(curPos + 1);
 
 		this.terminal.set_command(newCmd);
-		this.terminal.cmd().position( curPos + 1 );
+		this.terminal.cmd().position( curPos );*/
+
+		const curPos 			= this.terminal.cmd().position();
+		const charToReplace 	= this.terminal.get_command().substr(curPos, 1);
+
+		if (charToReplace === '/')
+			return false;
+
+		this.terminal.cmd().delete(+1);
 	}
 
 	tie()
 	{
-		this.currentCmd	= rules[window.TerminalState.getGds()];
 		this.index 		= 0;
 		this.isActive	= true;
 
-		this.terminal.insert( this.currentCmd.cmd );
-		this.tabPressed();
+		this.terminal.set_command( this.currentCmd.cmd );
+		this.jumpToNextPos();
+	}
+
+	execCommand()
+	{
+		const cmd = this.terminal.before_cursor();
+		this.terminal.cmd().set('');
+
+		this.isActive	= false; // BEWARE of dead loop!
+		this.terminal.exec(cmd);
 	}
 }

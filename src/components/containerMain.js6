@@ -85,12 +85,12 @@ class TerminalsMatrix
 			if (needToRender)
 			{
 				gdsSession[gds][index] = gdsSession[gds][index] || new Terminal({
-						name 			: index,
-						sessionIndex	: sessionIndex,
-						gds				: gds,
-						buffer			: window.TerminalState.getBuffer(gds, index + 1),
-						dimensions		: this.props.dimensions
-					});
+					name 			: index,
+					sessionIndex	: sessionIndex,
+					gds				: gds,
+					buffer			: window.TerminalState.getBuffer(gds, index + 1),
+					dimensions		: this.props.dimensions
+				});
 
 				// draw or redraw
 				gdsSession[ gds ][index].reattach( cell , this.props.dimensions );
@@ -202,7 +202,6 @@ export default class Container {
 
 		this.state = { className : 'terminal-wrap-custom' };
 
-
 		this.context = Dom(`section.${this.state.className}`);
 		this.context.appendChild( Wrapper.init().getContext() );
 
@@ -216,8 +215,6 @@ export default class Container {
 
 	static render( params )
 	{
-		// console.log(' reRender ', params )
-
 		this.context.className = this.state.className + ' term-f-size-' + params.fontSize;
 
 		const {hideMenu} = params;

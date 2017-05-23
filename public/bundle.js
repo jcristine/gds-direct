@@ -14446,12 +14446,12 @@ class TerminalsMatrix
 			if (needToRender)
 			{
 				gdsSession[gds][index] = gdsSession[gds][index] || new __WEBPACK_IMPORTED_MODULE_0__terminal__["a" /* default */]({
-						name 			: index,
-						sessionIndex	: sessionIndex,
-						gds				: gds,
-						buffer			: window.TerminalState.getBuffer(gds, index + 1),
-						dimensions		: this.props.dimensions
-					});
+					name 			: index,
+					sessionIndex	: sessionIndex,
+					gds				: gds,
+					buffer			: window.TerminalState.getBuffer(gds, index + 1),
+					dimensions		: this.props.dimensions
+				});
 
 				// draw or redraw
 				gdsSession[ gds ][index].reattach( cell , this.props.dimensions );
@@ -14563,7 +14563,6 @@ class Container {
 
 		this.state = { className : 'terminal-wrap-custom' };
 
-
 		this.context = __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_3__helpers_dom__["a" /* default */])(`section.${this.state.className}`);
 		this.context.appendChild( Wrapper.init().getContext() );
 
@@ -14577,8 +14576,6 @@ class Container {
 
 	static render( params )
 	{
-		// console.log(' reRender ', params )
-
 		this.context.className = this.state.className + ' term-f-size-' + params.fontSize;
 
 		const {hideMenu} = params;
@@ -15592,25 +15589,34 @@ class TerminalPlugin
 		this.outputLiner.setNumRows(params.numOfRows);
 
 		this.tabCommands	= new __WEBPACK_IMPORTED_MODULE_6__modules_tabManager__["a" /* default */]();
-		this.f8Reader		= new __WEBPACK_IMPORTED_MODULE_7__modules_f8__["a" /* default */]( this.terminal );
+
+		this.f8Reader		= new __WEBPACK_IMPORTED_MODULE_7__modules_f8__["a" /* default */]({
+			terminal	: this.terminal,
+			gds			: params.gds
+		});
 	}
 
 	/*
 	* return false if char is don't belong cmd
 	* */
+
 	parseKeyBinds( evt, terminal )
 	{
 		if ( !__WEBPACK_IMPORTED_MODULE_4__helpers_keyBinding__["a" /* default */].parse( evt, terminal ) )
 			return false;
 
-		const replacement = __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_8__helpers_helpers__["a" /* getReplacement */])( evt, window.TerminalState.isLanguageApollo() );
-
-		if ( this.f8Reader.getIsActive() )
+		if ( this.f8Reader.getIsActive() ) // ignore Tab press
 		{
-			console.log('f8 is active', this.terminal.get_command() );
-			// this.f8Reader.keyPressed( replacement );
-			return false;
+			if (evt.which === 13)
+			{
+				this.f8Reader.execCommand();
+				return false;
+			}
+
+			this.f8Reader.replaceChar();
 		}
+
+		const replacement = __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_8__helpers_helpers__["a" /* getReplacement */])( evt, window.TerminalState.isLanguageApollo() );
 
 		if ( replacement )
 		{
@@ -15639,7 +15645,7 @@ class TerminalPlugin
 	tabPressed()
 	{
 		if ( this.f8Reader.getIsActive() )
-			return this.f8Reader.tabPressed();
+			return this.f8Reader.jumpToNextPos();
 
 		this.tabCommands.run( this.updateOutput.bind(this) );
 	}
@@ -15658,15 +15664,6 @@ class TerminalPlugin
 	emptyLinesRecalculate( numOfRows, numOfChars, charHeight )
 	{
 		this.outputLiner.setNumRows(numOfRows).setNumChars(numOfChars).setCharHeight(charHeight).recalculate();
-	}
-
-	checkBeforeEnter( terminal, command )
-	{
-		if ( this.spinner.isActive() )
-		{
-			this.hiddenBuff.push( command );
-			return false;
-		}
 	}
 
 	init()
@@ -15705,10 +15702,17 @@ class TerminalPlugin
 		});
 	}
 
+	checkBeforeEnter( terminal, command )
+	{
+		if ( this.spinner.isActive() )
+		{
+			this.hiddenBuff.push( command );
+			return false;
+		}
+	}
+
 	commandParser( command, terminal ) //pressed enter
 	{
-		// console.log('comand parse')
-
 		this.outputLiner.prepare('');
 
 		if ( !command || command === '' )
@@ -15795,8 +15799,8 @@ class TerminalPlugin
 		{
 			if ( result['output'].trim() === '*')
 			{
-				this.terminal.update(-2, '');
-				this.terminal.cmd().set(command + ' *');
+				this.terminal.update( -2 , '');
+				this.terminal.set_command(command + ' *');
 				return false;
 			}
 
@@ -15868,10 +15872,19 @@ class TerminalPlugin
 const rules = {
 	apollo : {
 		pos 	: '¤:3SSRDOCSYYHK1/N'.length,
-		cmd		: '¤:3SSRDOCSYYHK1/N ///// DMMMYY/ //          /          / ',
+		cmd		: '¤:3SSRDOCSYYHK1/N ///// DMMMYY/ //          /          /',
+
 		rules	: [
-			'¤:3SSRDOCSYYHK1/N',
-			'DMMMYY'
+			' /////',
+			// '¤:3SSRDOCSYYHK1/N',
+			' DMMMYY',
+			' // ',
+			'          /',
+			'          /',
+		],
+
+		arrow	: [
+
 		]
 	},
 
@@ -15886,12 +15899,15 @@ const rules = {
 
 class F8Reader
 {
-	constructor( terminal )
+	constructor( {terminal, gds} )
 	{
 		this.index		= 0;
 		this.terminal 	= terminal;
 		this.isActive 	= false;
-		this.canReplace	= false;
+		// this.canReplace	= false;
+		this.gds		= gds;
+
+		this.currentCmd	= rules[gds];
 	}
 
 	getIsActive()
@@ -15899,59 +15915,65 @@ class F8Reader
 		return this.isActive;
 	}
 
-	nextTabPos()
+	getNextTabPos()
 	{
-		const cmd	= this.currentCmd.cmd;
-		const slice	= this.currentCmd.rules[ this.index ];
-
-		return cmd.indexOf( slice ) + ( this.index === 0 ?  slice.length : 0);
+		const subStr = this.currentCmd.rules[ this.index ];
+		return this.terminal.get_command().indexOf( subStr ); // + ( this.index === 0 ? subStr.length : 0 );
 	}
 
-	tabPressed()
+	jumpToNextPos()
 	{
-		this.canReplace = true;
-		this.terminal.cmd().position( this.nextTabPos() );
+		this.terminal.cmd().position( this.getNextTabPos() );
 
-		if ( !this.currentCmd.rules[ this.index] )
+		if ( !this.currentCmd.rules[this.index] )
 		{
 			this.isActive 	= false;
-			this.canReplace = false;
 			this.index 		= 0;
 		}
 
 		this.index++;
-		console.log(this.currentCmd.rules[ this.index])
 	}
 
-	keyPressed( char )
+	replaceChar()
 	{
-		// const char		= String.fromCharCode( evt.keyCode || evt.which );
-		const curPos 	= this.terminal.cmd().position();
-		const oldCmd 	= this.terminal.get_command();
+		/*const curPos 			= this.terminal.cmd().position();
+		const oldCmd 			= this.terminal.get_command();
 
-		if (oldCmd.substr(curPos, 1) === "/")
-		{
-			this.canReplace = false;
-		}
+		const charToReplace 	= oldCmd.substr(curPos, 1);
 
-		if ( !this.canReplace )
+		if (charToReplace === '/')
 			return false;
 
-		// todo helper spec chars;
-		const newCmd = oldCmd.substr(0, curPos) + char + oldCmd.substr(curPos + 1);
+		const newCmd = oldCmd.substr(0, curPos) + oldCmd.substr(curPos + 1);
 
 		this.terminal.set_command(newCmd);
-		this.terminal.cmd().position( curPos + 1 );
+		this.terminal.cmd().position( curPos );*/
+
+		const curPos 			= this.terminal.cmd().position();
+		const charToReplace 	= this.terminal.get_command().substr(curPos, 1);
+
+		if (charToReplace === '/')
+			return false;
+
+		this.terminal.cmd().delete(+1);
 	}
 
 	tie()
 	{
-		this.currentCmd	= rules[window.TerminalState.getGds()];
 		this.index 		= 0;
 		this.isActive	= true;
 
-		this.terminal.insert( this.currentCmd.cmd );
-		this.tabPressed();
+		this.terminal.set_command( this.currentCmd.cmd );
+		this.jumpToNextPos();
+	}
+
+	execCommand()
+	{
+		const cmd = this.terminal.before_cursor();
+		this.terminal.cmd().set('');
+
+		this.isActive	= false; // BEWARE of dead loop!
+		this.terminal.exec(cmd);
 	}
 }
 /* harmony export (immutable) */ __webpack_exports__["a"] = F8Reader;
