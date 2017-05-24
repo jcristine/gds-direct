@@ -1380,9 +1380,7 @@
 
 .noty_theme__nest.noty_type__success {
   background-color: #06D6A0;
-  color: #fff; }
-
-/*# sourceMappingURL=noty.css.map*/.terminal-wrap-custom .terminal .cmd {
+  color: #fff; }.terminal-wrap-custom .terminal .cmd {
   height: 14px;
 }
 .terminal-wrap-custom .terminal .cmd .clipboard {
@@ -1471,10 +1469,10 @@
   overflow-y: auto;
   padding: 10px 20px 10px 10px;
 }
-.historyContext a {
+.historyContext label {
+  color: #717171;
   padding: 3px;
-  display: block;
-  font-size: 13px;
+  font-size: 11px;
 }
 .terminal-wrap-custom {
   position: relative;

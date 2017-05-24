@@ -29,8 +29,8 @@ export default class MenuPanel
 	static history()
 	{
 		return new History({
-			icon		: '<i class="fa fa-history t-f-size-14"></i>',
-			onSelect	: value => window.TerminalState.execCmd( value )
+			icon			: '<i class="fa fa-history t-f-size-14"></i>',
+			onHistorySelect	: value => { console.log('?????'); window.TerminalState.execCmd( value ) }
 		}).getTrigger();
 	}
 

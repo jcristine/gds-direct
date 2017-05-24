@@ -1,10 +1,11 @@
 //var path = require('path');
-//var webpack = require('webpack');
+const webpack 			= require('webpack');
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
-
-const extractLess = new ExtractTextPlugin({
+const extractLess 		= new ExtractTextPlugin({
 	filename: 'public/main.css'
 });
+
+const UglifyJSPlugin = require('uglifyjs-webpack-plugin');
 
 
 module.exports = {
@@ -19,51 +20,46 @@ module.exports = {
 	},
 
 	// debug	: true,
-
 	devtool: 'source-map',
 
 	resolve : {
-		extensions : ['.js', '.json', '.js6']
+		extensions 	: ['.js', '.json', '.js6', 'es6'],
 
-		// modules		: [
-		// 	'src/' // baseUrl
-		// ]
+		modules		: [
+			"node_modules"
+		]
 	},
 
 	module: {
 
-		loaders: [
-			{
-				test		: /\.js6$/,
-				exclude		: /node_modules/,
-				loader		: 'babel-loader',
-				query		: {
-					presets:['es2015']
-				}
-			}
-			//,
-			//
-			//{
-			//	test: /.less$/,
-			//	loader: ExtractTextPlugin.extract({
-			//		fallback: 'style-loader',
-			//		use		: "css-loader!less-loader"
-			//	})
-			//}
-		],
+		rules: [
+			// {
+			// 	test: /\.(js|es6)$/,
+			// 	exclude: /(node_modules|bower_components)/,
+			// 	use: {
+			// 		loader: 'babel-loader',
+			// 		options: {
+			// 			presets: ['']
+			// 		}
+			// 	}
+			// },
 
-		rules: [{
-			test: /\.less$/,
-			use: extractLess.extract({
-				use: [{
-					loader: "css-loader"
-				}, {
-					loader: "less-loader"
-				}],
-				// use style-loader in development
-				fallback: "style-loader"
-			})
-		}]
+			{
+				test: /\.(js6|es6)$/,
+				loader: 'babel-loader',
+				query: {
+					presets: [ "babel-preset-es2015" ].map(require.resolve)
+				}
+			},
+
+			{
+				test: /\.less$/,
+				use: extractLess.extract({
+					use		: [{loader: "css-loader"}, {loader: "less-loader"}],
+					fallback: "style-loader"
+				})
+			}
+		]
 	},
 
 	externals: {
@@ -75,5 +71,6 @@ module.exports = {
 
 	plugins: [
 		extractLess
+		// ,new UglifyJSPlugin()
 	]
 };

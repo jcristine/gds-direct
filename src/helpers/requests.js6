@@ -2,7 +2,7 @@
 
 import {END_POINT_URL, API_HOST}	from  '../constants'
 import Noty 						from 'noty';
-import 'whatwg-fetch'
+import 'whatwg-fetch';
 
 const Debug = txt => {
 	new Noty({
@@ -17,13 +17,10 @@ const Debug = txt => {
 function ask( url, params)
 {
 	return fetch( url, params )
-
 		.then( response => response.json() )
 		.catch( err => {
-
 			Debug( err );
 			console.error( '?????????', err );
-
 		});
 }
 
@@ -46,30 +43,16 @@ function get( url, defParams )
 
 function runSyncCommand( params )
 {
-	// let url 	= (window.apiData.getCommandUrl || END_POINT_URL)  + '&function=' + functionName;
 	let url 	= window.apiData.getCommandUrl || END_POINT_URL;
-
-	// const data 	= ;
-	// console.log( data );
 
 	const formData 	= new FormData();
 	formData.append( "data", JSON.stringify({ params }, true) );
-
-	// url += '&function=' + functionName;
 
 	return ask( API_HOST + url, {
 		credentials	: 'include',
 		body		: formData,
 		method		: 'POST',
 	});
-
-	/*return fetch(API_HOST + url, {
-		credentials	: 'include',
-		body		: formData,
-		method		: 'POST',
-	}).then( response  => response.json() ).catch(
-		() => { console.log(' fu ')
-	})*/
 }
 
 export default {

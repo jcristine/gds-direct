@@ -96,12 +96,17 @@ class TerminalState
 		Request.get(`terminal/clearBuffer`, true);
 	}
 
-	execCmd( cmd = '' )
+	execCmd( params )
 	{
-		const terminal = this.getActiveTerminal();
+		const term = this.getActiveTerminal();
 
-		if (terminal && cmd)
-			terminal.exec( cmd );
+		if (term)
+		{
+			window.activePlugin.hiddenBuff = params;
+			window.activePlugin.loopCmdStack();
+		}
+
+		return false;
 	}
 
 	isLanguageApollo()
@@ -111,7 +116,7 @@ class TerminalState
 
 	action( action, params )
 	{
-		console.log(action);
+		// console.log(action);
 
 		switch (action)
 		{
@@ -157,14 +162,9 @@ class TerminalState
 				this.change({
 					gdsObj : Object.assign( {}, this.state.gdsObj, { activeTerminal : params } )
 				});
-
-				// todo move to
-				// params[0].parentNode.classList.add('active');
-				// return false;
 			break;
 
 			case 'CHANGE_PCC' :
-
 				const area = this.getAreaIndex();
 
 				const pcc = Object.assign({}, this.state.gdsObj.pcc, {
@@ -173,27 +173,17 @@ class TerminalState
 
 				const gds = Object.assign({}, this.state.gdsObj, {pcc : pcc});
 
-
 				this.change({ gdsObj : gds });
-
 			break;
-
-			// case 'ACTIVATE_PQ' :
-			// break;
 
 			case 'CAN_CREATE_PQ' :
 
-				// if (this.state.gdsObj.canCreatePq !== params.canCreatePq)
-				// {
-
 				// OPTIMIZE
-					this.change({
-						gdsObj : Object.assign( {}, this.state.gdsObj, params )
-					});
-				// }
+				this.change({
+					gdsObj : Object.assign( {}, this.state.gdsObj, params )
+				});
 
 				return false;
-
 			break;
 
 			case 'PQ_MODAL_SHOW' :
@@ -213,7 +203,6 @@ class TerminalState
 				})
 
 				.then( () => this.change({hideMenu: true}) );
-
 			break;
 
 			// case 'PQ_MACROS' :
@@ -231,16 +220,8 @@ class TerminalState
 			// break;
 
 			case 'DEV_CMD_STACK_RUN' :
-				let term = this.getActiveTerminal();
 
-				if (term)
-				{
-					console.log( params );
-
-					window.activePlugin.hiddenBuff = params;
-					window.activePlugin.loopCmdStack();
-				}
-
+				this.execCmd( params );
 				return false;
 			break;
 		}
@@ -265,6 +246,9 @@ window.onresize = function() {
 
 	resizeTimeout = setTimeout( () => window.TerminalState.change(), 150 );
 };
+
+// let a = { a : 1 };
+// console.log({ ...a, b : 2 });
 
 Container.init( apiData['htmlRootId'] || 'rootTerminal' );
 window.TerminalState.change({}, '');

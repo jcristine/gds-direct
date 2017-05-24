@@ -4,6 +4,8 @@ import Request			from '../../helpers/requests';
 import Dom 				from '../../helpers/dom';
 import ButtonPopOver	from '../../modules/buttonPopover';
 
+let buffer = [];
+
 class History extends ButtonPopOver
 {
 	constructor( params )
@@ -18,23 +20,55 @@ class History extends ButtonPopOver
 
 	makeShortcut( value )
 	{
-		const el = Dom('a.t-pointer');
+		const el 	= Dom('label.t-pointer');
+
+		const cb 	= Dom('input');
+		cb.type 	= 'checkbox';
+		cb.onclick	= () => {
+			buffer.push( value );
+			console.log( value );
+		};
 
 		el.innerHTML 	= value;
-		el.onclick 		= this.settings.onSelect.bind(null, value);
+		el.addEventListener('click', () => cb.click() );
 
-		el.addEventListener('click', () => {
-			this.popover.close();
-		});
+		const wrap = Dom('div');
+		wrap.appendChild( cb );
+		wrap.appendChild( el );
+
+		this.popContent.appendChild( wrap );
+	}
+
+	makeLaunchBtn()
+	{
+		const el 		= Dom('button.btn btn-sm btn-success');
+		el.innerHTML 	= 'Perform';
+
+		el.onclick = this.settings.onHistorySelect.bind(null, buffer);
+		el.addEventListener('click', () => this.popover.close() );
 
 		this.popContent.appendChild( el );
 	}
 
+	makeBody( response )
+	{
+		response.data.map( this.makeShortcut, this );
+	}
+
+	finalize()
+	{
+		this.popContent.scrollTop  = this.popContent.scrollHeight;
+	}
+
 	askServer()
 	{
-		Request.get('terminal/lastCommands', true).then( ( response = ['No History'] ) => {
-			response.data.map( this.makeShortcut, this );
-		});
+		buffer 						= [];
+		this.popContent.innerHTML 	= '';
+
+		Request.get('terminal/lastCommands', true)
+			.then( this.makeBody.bind(this) )
+			.then( this.makeLaunchBtn.bind(this) )
+			.then( this.finalize.bind(this) )
 	}
 
 	build()
