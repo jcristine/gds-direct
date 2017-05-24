@@ -69,9 +69,7 @@ export default class Container {
 	{
 		const Root = document.getElementById( rootId );
 
-		this.state = { className : 'terminal-wrap-custom' };
-
-		this.context = Dom(`section.${this.state.className}`);
+		this.context = Dom(`section`);
 		this.context.appendChild( Wrapper.init().getContext() );
 
 		Root.appendChild( this.context );
@@ -84,7 +82,7 @@ export default class Container {
 
 	static render( params )
 	{
-		this.context.className = this.state.className + ' term-f-size-' + params.fontSize;
+		this.context.className = 'terminal-wrap-custom term-f-size-' + params.fontSize;
 
 		const {hideMenu} = params;
 
