@@ -1,6 +1,6 @@
 'use strict';
 
-import {splitIntoLinesArr} from '../helpers/helpers';
+import {splitIntoLinesArr} from '../helpers/helpers.es6';
 
 export default class Output
 {

@@ -1,5 +1,5 @@
-import Dom			from '../helpers/dom.js6';
-import Terminal 	from '../modules/terminal.js6';
+import Dom			from '../helpers/dom.es6';
+import Terminal 	from '../modules/terminal.es6';
 
 const gdsSession	= [];
 const stringify 	= JSON.stringify;

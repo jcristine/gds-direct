@@ -7,15 +7,15 @@ require('jquery.terminal/js/jquery.terminal');
 require('keyboardevent-key-polyfill').polyfill();
 
 import Noty 		from 'noty';
-import Pagination 	from '../modules/pagination';
-import Session 		from '../modules/session';
-import Spinner 		from '../modules/spinner';
-import KeyBinding	from '../helpers/keyBinding';
-import OutputLiner	from '../modules/output';
-import TabManager	from '../modules/tabManager';
-import F8Reader		from '../modules/f8';
+import Pagination 	from '../modules/pagination.es6';
+import Session 		from '../modules/session.es6';
+import Spinner 		from '../modules/spinner.es6';
+import KeyBinding	from '../helpers/keyBinding.es6';
+import OutputLiner	from '../modules/output.es6';
+import TabManager	from '../modules/tabManager.es6';
+import F8Reader		from '../modules/f8.es6';
 
-import {getReplacement} from '../helpers/helpers';
+import {getReplacement} from '../helpers/helpers.es6';
 
 const Debug = (txt, type) => {
 	new Noty({

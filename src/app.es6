@@ -1,8 +1,8 @@
 'use strict';
 
-import Container 						from './components/containerMain';
-import Request							from './helpers/requests';
-import {KEEP_ALIVE_REFRESH, AREA_LIST} 	from './constants';
+import Container 						from './components/containerMain.es6';
+import Requests							from './helpers/requests.es6';
+import {KEEP_ALIVE_REFRESH, AREA_LIST} 	from './constants.es6';
 
 const apiData	= window.apiData || {};
 const saved		= localStorage.getItem('matrix');
@@ -40,8 +40,8 @@ class TerminalState
 			gdsObj			: Gds[curGds]
 		};
 
-		// Request.get(`terminal/keepAlive`, true);
-		setInterval( () => Request.get(`terminal/keepAlive`, true), KEEP_ALIVE_REFRESH );
+		// Requests.get(`terminal/keepAlive`, true);
+		setInterval( () => Requests.get(`terminal/keepAlive`, true), KEEP_ALIVE_REFRESH );
 	}
 
 	getMatrix()
@@ -93,7 +93,7 @@ class TerminalState
 	purgeScreens()
 	{
 		Container.purgeScreens( this.getGds() );
-		Request.get(`terminal/clearBuffer`, true);
+		Requests.get(`terminal/clearBuffer`, true);
 	}
 
 	execCmd( params )

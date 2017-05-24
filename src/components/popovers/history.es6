@@ -1,8 +1,8 @@
 'use strict';
 
-import Request			from '../../helpers/requests';
-import Dom 				from '../../helpers/dom';
-import ButtonPopOver	from '../../modules/buttonPopover';
+import Request			from '../../helpers/requests.es6';
+import Dom 				from '../../helpers/dom.es6';
+import ButtonPopOver	from '../../modules/buttonPopover.es6';
 
 let buffer = [];
 

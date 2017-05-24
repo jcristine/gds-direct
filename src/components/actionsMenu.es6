@@ -1,7 +1,7 @@
 'use strict';
 
-import Matrix 	from './popovers/terminalMatrix';
-import Dom		from '../helpers/dom';
+import Matrix 	from './popovers/terminalMatrix.es6';
+import Dom		from '../helpers/dom.es6';
 
 export default class ActionsMenu {
 

@@ -11,7 +11,7 @@ const UglifyJSPlugin = require('uglifyjs-webpack-plugin');
 module.exports = {
 
 	entry: [
-		"./src/app.js6",
+		"./src/app.es6",
 		"./src/theme/main.less"
 	],
 
@@ -23,7 +23,7 @@ module.exports = {
 	devtool: 'source-map',
 
 	resolve : {
-		extensions 	: ['.js', '.json', '.js6', 'es6'],
+		extensions 	: ['.js', '.json', 'es6'],
 
 		modules		: [
 			"node_modules"
@@ -45,7 +45,7 @@ module.exports = {
 			// },
 
 			{
-				test: /\.(js6|es6)$/,
+				test: /\.es6$/,
 				loader: 'babel-loader',
 				query: {
 					presets: [ "babel-preset-es2015" ].map(require.resolve)

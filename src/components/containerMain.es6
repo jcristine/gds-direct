@@ -1,8 +1,8 @@
 'use strict';
 
-import ActionsMenu 	from './actionsMenu';
-import MenuPanel 	from './menuPanel';
-import Dom			from '../helpers/dom';
+import ActionsMenu 	from './actionsMenu.es6';
+import MenuPanel 	from './menuPanel.es6';
+import Dom			from '../helpers/dom.es6';
 import TerminalMatrix from './terminalMatrix.es6';
 
 class RightMenu

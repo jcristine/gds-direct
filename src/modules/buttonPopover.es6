@@ -1,7 +1,7 @@
 'use strict';
 
 import Drop		from 'tether-drop';
-import Dom 		from '../helpers/dom';
+import Dom 		from '../helpers/dom.es6';
 
 // classes		: 'drop-theme-arrows',
 // classes		: 'drop-theme-hubspot-popovers',

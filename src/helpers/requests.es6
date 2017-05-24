@@ -1,6 +1,6 @@
 'use strict';
 
-import {END_POINT_URL, API_HOST}	from  '../constants'
+import {END_POINT_URL, API_HOST}	from  '../constants.es6'
 import Noty 						from 'noty';
 import 'whatwg-fetch';
 

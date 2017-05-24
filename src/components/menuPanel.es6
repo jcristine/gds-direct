@@ -1,12 +1,12 @@
 'use strict';
 
-import History 			from './popovers/history';
-import TextSize 		from './popovers/textSize';
-import Settings 		from './popovers/settings';
-import SessionButtons	from './menu/sessionButtons';
-import PqButton			from './menu/pqButton';
-import DevButtons		from './menu/devButtons';
-import Dom				from '../helpers/dom';
+import History 			from './popovers/history.es6';
+import TextSize 		from './popovers/textSize.es6';
+import Settings 		from './popovers/settings.es6';
+import SessionButtons	from './menu/sessionButtons.es6';
+import PqButton			from './menu/pqButton.es6';
+import DevButtons		from './menu/devButtons.es6';
+import Dom				from '../helpers/dom.es6';
 
 const context = Dom('aside.sideMenu');
 

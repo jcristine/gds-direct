@@ -1,5 +1,4 @@
-'use strict';
-import Dom	from '../../helpers/dom';
+import Dom	from '../../helpers/dom.es6';
 
 export default class SessionKeys
 {

@@ -1,7 +1,7 @@
 'use strict';
 
-import TerminalPlugin	from '../middleware/plugin';
-import Dom				from '../helpers/dom';
+import TerminalPlugin	from '../middleware/plugin.es6';
+import Dom				from '../helpers/dom.es6';
 
 require('../../node_modules/jquery.terminal/js/unix_formatting');
 

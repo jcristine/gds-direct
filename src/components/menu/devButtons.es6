@@ -1,6 +1,6 @@
 
-import Dom	from '../../helpers/dom';
-import ButtonPopOver	from '../../modules/buttonPopover';
+import Dom	from '../../helpers/dom.es6';
+import ButtonPopOver	from '../../modules/buttonPopover.es6';
 
 class CommandsBuffer extends ButtonPopOver
 {

@@ -1,7 +1,7 @@
 'use strict';
 
 // import { TIME_FORMAT, ACCOUNT } from '../constants';
-import Requests 				from '../helpers/requests';
+import Requests 				from '../helpers/requests.es6';
 
 export default class Session
 {

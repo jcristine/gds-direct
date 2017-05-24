@@ -1,12 +1,10 @@
 'use strict';
 
-/*
 window.addEventListener("beforeunload", function (e) {
 	let confirmationMessage = "\o/";
 	(e || window.event).returnValue = confirmationMessage; //Gecko + IE
 	return confirmationMessage;                            //Webkit, Safari, Chrome
 });
-*/
 
 export default class KeyBinding
 {
