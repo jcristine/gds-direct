@@ -151,21 +151,19 @@ class TerminalState
 				});
 			break;
 
-			case 'CHANGE_PCC' :
+			/*case 'CHANGE_PCC' :
 				const area = this.getAreaIndex();
 
-				const pcc = Object.assign({}, this.state.gdsObj.pcc, {
-					[area] : params
-				});
-
+				const pcc = Object.assign({}, this.state.gdsObj.pcc, {[area] : params});
 				const gds = Object.assign({}, this.state.gdsObj, {pcc : pcc});
 
 				this.change({ gdsObj : gds });
-			break;
+			break;*/
 
-			case 'CAN_CREATE_PQ' :
+			case 'UPDATE_CUR_GDS' :
 
-				// need to OPTIMIZE
+				this.state.gdsObj.pcc[ params.sessionIndex ] = params.lastPcc;
+
 				this.change({
 					gdsObj : Object.assign( {}, this.state.gdsObj, params )
 				});

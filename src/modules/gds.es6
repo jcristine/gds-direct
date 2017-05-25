@@ -41,7 +41,14 @@ export default class GdsSet
 	{
 		const res = {};
 
-		this.gdsList = GDS_LIST.map( name => new Gds( name ).getData() );
+		let list = GDS_LIST;
+
+		if ( !window.apiData.hasPermissions() )
+		{
+			list = list.slice(0, -1);
+		}
+
+		this.gdsList = list.map( name => new Gds( name ).getData() );
 
 		this.gdsList.forEach( ( gds ) => {
 			res[gds.name] = gds;

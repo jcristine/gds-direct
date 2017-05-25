@@ -64,7 +64,6 @@ export default class TerminalPlugin
 	/*
 	* return false if char is don't belong cmd
 	* */
-
 	parseKeyBinds( evt, terminal )
 	{
 		if ( !KeyBinding.parse( evt, terminal ) )
@@ -93,13 +92,13 @@ export default class TerminalPlugin
 			return false;
 	}
 
-	switchArea( command )
-	{
-		const sessionIndex = window.TerminalState.getSessionAreaMap().indexOf( command );
-
-		if ( sessionIndex !== -1 )
-			window.TerminalState.action('CHANGE_SESSION_AREA', sessionIndex);
-	}
+	// switchArea( command )
+	// {
+	// 	const sessionIndex = window.TerminalState.getSessionAreaMap().indexOf( command );
+	//
+	// 	if ( sessionIndex !== -1 )
+	// 		window.TerminalState.action('CHANGE_SESSION_AREA', sessionIndex);
+	// }
 
 	changeActiveTerm( activeTerminal )
 	{
@@ -150,7 +149,6 @@ export default class TerminalPlugin
 			numRows			: this.settings.numOfRows, // plugin calculates it in so shitty slow manner appending cursor to body 3 times per plugin
 			numChars		: this.settings.numOfChars,
 
-			// history			: ['z', 'c'],
 			memory			: true, // dont add to localStorage
 
 			// scrollOnEcho	: false,
@@ -260,7 +258,7 @@ export default class TerminalPlugin
 			})
 
 			.then( response  => {
-				this.switchArea( command.toUpperCase() );
+				// this.switchArea( command.toUpperCase() );
 				this.parseBackEnd( response, command )
 			})
 
@@ -276,14 +274,13 @@ export default class TerminalPlugin
 			if ( result['output'].trim() === '*')
 			{
 				this.terminal.update( -2 , command + ' *');
-				// this.terminal.set_command(command + ' *');
 				return false;
 			}
 
 			if ( this.allowManualPaging ) // sabre
 			{
 				const output = this.pagination
-					.bindOutput( result['output'], this.terminal.rows() - 1, this.terminal.cols() )
+					.bindOutput( result['output'], this.settings.numOfRows - 1, this.settings.numOfChars )
 					.print();
 
 				this.terminal.echo( output );
@@ -298,19 +295,18 @@ export default class TerminalPlugin
 
 		this.tabCommands.reset( result['tabCommands'], result['output'] );
 
-		const updateParams = {
+		window.TerminalState.action( 'UPDATE_CUR_GDS', {
 			canCreatePq 		: result['canCreatePq'],
-			canCreatePqErrors 	: result['canCreatePqErrors']
-		};
+			canCreatePqErrors 	: result['canCreatePqErrors'],
+			sessionIndex		: ['A','B','C','D','E','F'].indexOf(result.area),
+			lastPcc 			: result.pcc
+		});
 
 		// todo :: optimize
-		if ( result['pcc'] )
-		{
-			window.TerminalState.action( 'CHANGE_PCC', result['pcc'] );
-		}
-
-		// window.TerminalState.action( 'CHANGE_PCC', 'zzz' );
-		window.TerminalState.action( 'CAN_CREATE_PQ', updateParams);
+		// if ( result['pcc'] )
+		// {
+		// 	window.TerminalState.action( 'CHANGE_PCC', result['pcc'] );
+		// }
 
 		if ( window.apiData.hasPermissions() )
 			this.debugOutput( result );

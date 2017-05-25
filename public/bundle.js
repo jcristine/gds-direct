@@ -514,7 +514,13 @@ var GdsSet = function () {
 		value: function getList() {
 			var res = {};
 
-			this.gdsList = _constants.GDS_LIST.map(function (name) {
+			var list = _constants.GDS_LIST;
+
+			if (!window.apiData.hasPermissions()) {
+				list = list.slice(0, -1);
+			}
+
+			this.gdsList = list.map(function (name) {
 				return new Gds(name).getData();
 			});
 
@@ -3654,8 +3660,6 @@ var _constants = __webpack_require__(4);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 var apiData = window.apiData || {};
@@ -3810,19 +3814,17 @@ var TerminalState = function () {
 					});
 					break;
 
-				case 'CHANGE_PCC':
-					var area = this.getAreaIndex();
+				/*case 'CHANGE_PCC' :
+    	const area = this.getAreaIndex();
+    		const pcc = Object.assign({}, this.state.gdsObj.pcc, {[area] : params});
+    	const gds = Object.assign({}, this.state.gdsObj, {pcc : pcc});
+    		this.change({ gdsObj : gds });
+    break;*/
 
-					var pcc = Object.assign({}, this.state.gdsObj.pcc, _defineProperty({}, area, params));
+				case 'UPDATE_CUR_GDS':
 
-					var gds = Object.assign({}, this.state.gdsObj, { pcc: pcc });
+					this.state.gdsObj.pcc[params.sessionIndex] = params.lastPcc;
 
-					this.change({ gdsObj: gds });
-					break;
-
-				case 'CAN_CREATE_PQ':
-
-					// need to OPTIMIZE
 					this.change({
 						gdsObj: Object.assign({}, this.state.gdsObj, params)
 					});
@@ -5405,6 +5407,7 @@ var TerminalPlugin = function () {
  * return false if char is don't belong cmd
  * */
 
+
 	_createClass(TerminalPlugin, [{
 		key: 'parseKeyBinds',
 		value: function parseKeyBinds(evt, terminal) {
@@ -5430,13 +5433,15 @@ var TerminalPlugin = function () {
 			if (replacement === false) // do not print nothing if char is forbiden
 				return false;
 		}
-	}, {
-		key: 'switchArea',
-		value: function switchArea(command) {
-			var sessionIndex = window.TerminalState.getSessionAreaMap().indexOf(command);
 
-			if (sessionIndex !== -1) window.TerminalState.action('CHANGE_SESSION_AREA', sessionIndex);
-		}
+		// switchArea( command )
+		// {
+		// 	const sessionIndex = window.TerminalState.getSessionAreaMap().indexOf( command );
+		//
+		// 	if ( sessionIndex !== -1 )
+		// 		window.TerminalState.action('CHANGE_SESSION_AREA', sessionIndex);
+		// }
+
 	}, {
 		key: 'changeActiveTerm',
 		value: function changeActiveTerm(activeTerminal) {
@@ -5488,7 +5493,6 @@ var TerminalPlugin = function () {
 				numRows: this.settings.numOfRows, // plugin calculates it in so shitty slow manner appending cursor to body 3 times per plugin
 				numChars: this.settings.numOfChars,
 
-				// history			: ['z', 'c'],
 				memory: true, // dont add to localStorage
 
 				// scrollOnEcho	: false,
@@ -5597,7 +5601,7 @@ var TerminalPlugin = function () {
 				_this2.spinner.end();
 				return response;
 			}).then(function (response) {
-				_this2.switchArea(command.toUpperCase());
+				// this.switchArea( command.toUpperCase() );
 				_this2.parseBackEnd(response, command);
 			}).then(function () {
 				return _this2.loopCmdStack();
@@ -5614,13 +5618,12 @@ var TerminalPlugin = function () {
 			if (result['output']) {
 				if (result['output'].trim() === '*') {
 					this.terminal.update(-2, command + ' *');
-					// this.terminal.set_command(command + ' *');
 					return false;
 				}
 
 				if (this.allowManualPaging) // sabre
 					{
-						var output = this.pagination.bindOutput(result['output'], this.terminal.rows() - 1, this.terminal.cols()).print();
+						var output = this.pagination.bindOutput(result['output'], this.settings.numOfRows - 1, this.settings.numOfChars).print();
 
 						this.terminal.echo(output);
 					} else {
@@ -5633,18 +5636,18 @@ var TerminalPlugin = function () {
 
 			this.tabCommands.reset(result['tabCommands'], result['output']);
 
-			var updateParams = {
+			window.TerminalState.action('UPDATE_CUR_GDS', {
 				canCreatePq: result['canCreatePq'],
-				canCreatePqErrors: result['canCreatePqErrors']
-			};
+				canCreatePqErrors: result['canCreatePqErrors'],
+				sessionIndex: ['A', 'B', 'C', 'D', 'E', 'F'].indexOf(result.area),
+				lastPcc: result.pcc
+			});
 
 			// todo :: optimize
-			if (result['pcc']) {
-				window.TerminalState.action('CHANGE_PCC', result['pcc']);
-			}
-
-			// window.TerminalState.action( 'CHANGE_PCC', 'zzz' );
-			window.TerminalState.action('CAN_CREATE_PQ', updateParams);
+			// if ( result['pcc'] )
+			// {
+			// 	window.TerminalState.action( 'CHANGE_PCC', result['pcc'] );
+			// }
 
 			if (window.apiData.hasPermissions()) this.debugOutput(result);
 		}
@@ -9962,7 +9965,7 @@ module.exports = {
             height: span.outerHeight()
         };
 
-        console.log( 'append agein ' , result )
+        // console.log( 'append agein ' , result )
 
         temp.remove();
         return result;
@@ -9971,8 +9974,6 @@ module.exports = {
     // :: calculate numbers of characters
     // -----------------------------------------------------------------------
     function get_num_chars(terminal) {
-
-    	console.log('1 append again!!!!!!!!!!!')
 
 		var temp = $('<div class="terminal wrap"><span class="cursor">' +
                      '&nbsp;</span></div>').appendTo('body').css('padding', 0);
@@ -9986,7 +9987,6 @@ module.exports = {
     // :: Calculate number of lines that fit without scroll
     // -----------------------------------------------------------------------
     function get_num_rows(terminal) {
-    	console.log(' fit ');
         return Math.floor(terminal.height() / char_size().height);
     }
     // -----------------------------------------------------------------------
@@ -10886,9 +10886,6 @@ module.exports = {
                 lines_to_show = lines;
             }
             try {
-
-            	console.log("REDRAW")
-
                 output_buffer = [];
                 $.each(lines_to_show, function(i, line) {
                     process_line.apply(null, line); // line is an array
@@ -12232,9 +12229,6 @@ module.exports = {
 
                 if (!self.is(':visible')) {
                     // delay resize if terminal not visible
-
-					console.log('!!!!!!!!!!!!!!!')
-
                     self.stopTime('resize');
                     self.oneTime(500, 'resize', function() {
                         self.resize(width, height);
@@ -12248,15 +12242,8 @@ module.exports = {
                     width = self.width();
                     height = self.height();
 
-
-
-                    console.log('are you?', settings.numChars);
-
                     var new_num_chars = self.cols();
                     var new_num_rows =  self.rows();
-
-					console.log(' are you bitch ??', num_chars);
-					console.log(' are you bitch ??', new_num_chars);
 
                     // only if number of chars changed
                     if (new_num_chars !== num_chars ||
@@ -12332,7 +12319,6 @@ module.exports = {
                         }
                     }
 
-                    console.log('FLUSH')
                     num_rows = get_num_rows(self);
                     if (settings.scrollOnEcho || bottom) {
                         scroll_to_bottom();
