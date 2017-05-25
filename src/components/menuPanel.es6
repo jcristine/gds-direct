@@ -8,6 +8,7 @@ import PqButton			from './menu/pqButton.es6';
 import DevButtons		from './menu/devButtons.es6';
 import Dom				from '../helpers/dom.es6';
 import Component		from '../modules/component';
+import GdsSet 			from '../modules/gds';
 
 let SettingsContext;
 
@@ -46,29 +47,15 @@ export default class MenuPanel extends Component
 	{
 		const defParams = { gds, sessionIndex, activeTerminal };
 
-		defParams.onAreaChange 	= sessionIndex => {
-			window.TerminalState.action('CHANGE_SESSION_BY_MENU', sessionIndex);
-		};
-
-		defParams.onGdsChange 	= gds => {
-			window.TerminalState.action('CHANGE_GDS', gds);
-		};
-
-		const apollo 	= new SessionButtons( Object.assign( {}, defParams, {
-			name : 'apollo',
-			list : ['A', 'B', 'C', 'D', 'E']
-		}));
-
-		const sabre 	= new SessionButtons( Object.assign( {}, defParams, {
-			name : 'sabre',
-			list : ['A', 'B', 'C', 'D', 'E', 'F' ]
-		}));
-
-		const context 		= document.createElement('article');
+		const context 		= Dom('article');
 		context.innerHTML 	= '<div class="label">Session</div>';
 
-		context.appendChild( apollo.render() );
-		context.appendChild( sabre.render() );
+		defParams.onAreaChange 	= sessionIndex => window.TerminalState.action('CHANGE_SESSION_BY_MENU', sessionIndex);
+		defParams.onGdsChange 	= gds => window.TerminalState.action('CHANGE_GDS', gds);
+
+		GdsSet
+			.getAreas(defParams)
+			.map( areasPerGds  => context.appendChild( new SessionButtons( areasPerGds ).render() ) );
 
 		return context;
 	}
@@ -102,7 +89,7 @@ export default class MenuPanel extends Component
 		[
 			this.fontSize(),
 			this.history(),
-			// this.settings()
+			// this.settings() // WILL BE ADDED WHEN TIME COMES
 		].map( button => SettingsContext.appendChild( button ) );
 
 		return SettingsContext;
@@ -124,10 +111,12 @@ export default class MenuPanel extends Component
 		context.appendChild( this.settingsButtons( params ) );
 		context.appendChild( this.activeSession( params ) );
 
-		// context.appendChild( this.InputLanguage() );
+		// context.appendChild( this.InputLanguage() ); // WILL BE ADDED WHEN TIME COMES
 
 		context.appendChild( PqButton.render( params ) );
-		context.appendChild( this.devButtons || this.tests() );
+
+		if ( window.apiData.hasPermissions() )
+			context.appendChild( this.devButtons || this.tests() );
 
 		return context;
 	}

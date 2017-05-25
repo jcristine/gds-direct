@@ -150,7 +150,7 @@ export default class TerminalPlugin
 			numRows			: this.settings.numOfRows, // plugin calculates it in so shitty slow manner appending cursor to body 3 times per plugin
 			numChars		: this.settings.numOfChars,
 
-			history			: ['z', 'c'],
+			// history			: ['z', 'c'],
 			memory			: true, // dont add to localStorage
 
 			// scrollOnEcho	: false,
@@ -312,7 +312,7 @@ export default class TerminalPlugin
 		// window.TerminalState.action( 'CHANGE_PCC', 'zzz' );
 		window.TerminalState.action( 'CAN_CREATE_PQ', updateParams);
 
-		if ( !window.apiData.hasPermissions() )
+		if ( window.apiData.hasPermissions() )
 			this.debugOutput( result );
 	}
 

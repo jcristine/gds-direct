@@ -27,10 +27,12 @@ class Wrapper extends Component
 	{
 		super('div.term-body minimized');
 
+		matrix =  new TerminalMatrix();
+
 		this
 			.observe(
 				new Component('aside.t-d-cell left')
-					.observe( new TerminalMatrix() )
+					.observe( matrix )
 					.append( new ActionsMenu() )
 			)
 

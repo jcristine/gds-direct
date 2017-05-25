@@ -1,30 +1,15 @@
 import ContainerMain					from './components/containerMain.es6';
 import Requests							from './helpers/requests.es6';
+import GdsSet 							from './modules/gds';
 import {KEEP_ALIVE_REFRESH, AREA_LIST} 	from './constants.es6';
 
 const apiData	= window.apiData || {};
-const saved		= localStorage.getItem('matrix');
 
-const Container = new ContainerMain( apiData['htmlRootId'] || 'rootTerminal' );
+const Container 	= new ContainerMain( apiData['htmlRootId'] || 'rootTerminal' );
+// const mergeIntoNew 	= ( current, extendWith ) => Object.assign({}, current, extendWith);
 
-const gdsSettings = {
-	sessionIndex 	: 0,
-	pcc				: {},
-	matrix			: saved ? JSON.parse( saved ) : {rows : 1, cells : 1},
-	activeTerminal	: null,
-	canCreatePq		: false
-};
 
-const extendGds = name => ({
-	name 			: name,
-	sessionIndex 	: AREA_LIST.indexOf(apiData.settings['gds'][name]['area']),
-	canCreatePq		: !!apiData.settings['gds'][name]['canCreatePq']
-});
-
-const Gds = {
-	apollo	: Object.assign({}, gdsSettings, extendGds('apollo')),
-	sabre	: Object.assign({}, gdsSettings, extendGds('sabre'))
-};
+const Gds =GdsSet.getList();
 
 class TerminalState
 {
@@ -128,10 +113,10 @@ class TerminalState
 		switch (action)
 		{
 			case 'CHANGE_GDS':
-
-				// replace the gds and save
+				// save prev gds state
 				Gds[ this.getGds() ] = this.state.gdsObj;
 
+				// replace gds params = index
 				this.change({
 					gds		: params,
 					gdsObj 	: Gds[params]
@@ -180,7 +165,7 @@ class TerminalState
 
 			case 'CAN_CREATE_PQ' :
 
-				// OPTIMIZE
+				// need to OPTIMIZE
 				this.change({
 					gdsObj : Object.assign( {}, this.state.gdsObj, params )
 				});

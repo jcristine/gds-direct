@@ -41,23 +41,6 @@ export function getReplacement( evt, isApollo )
 	return isApollo ? apolloLayout[char] : sabreLayout[char];
 }
 
-/*export function substitutePrintableChar(evt, isApollo)
-{
-	const keyCode	= evt.keyCode || evt.which;
-
-	if ( keyCode === 13 )
-		return false;
-
-	const ch = String.fromCharCode(keyCode);
-
-	if (!ch)
-		return false;
-
-	const layout = isApollo ? apolloLayout : sabreLayout;
-
-	return layout[ch] !== undefined ? layout[ch] : ch.toUpperCase();
-}*/
-
 function chunkIntoPages( linesArr , rowsPerScreen )
 {
 	return linesArr.map(
@@ -91,6 +74,8 @@ export function splitIntoLinesArr( txt, maxCharLimit )
 
 	return chunkByCharLimit;
 }
+
+export const mergeIntoNew = ( current, extendWith ) => Object.assign({}, current, extendWith);
 
 function splitLines(txt)
 {

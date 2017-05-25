@@ -18,8 +18,6 @@ export default class SessionKeys
 
 	makeButton(value, index)
 	{
-		// console.log( ' make bytton ')
-
 		const button 		= Dom('button.btn btn-sm btn-purple font-bold pos-rlt');
 		button.innerHTML	= value;
 
@@ -35,13 +33,6 @@ export default class SessionKeys
 		button.disabled = !this.settings.activeTerminal || isActive;
 
 		button.addEventListener('click', () => {
-
-			if (isActive)
-			{
-				alert('This is active');
-				return false;
-			}
-
 			button.disabled = true;
 			this.settings.onAreaChange( index );
 		});

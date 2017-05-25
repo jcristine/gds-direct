@@ -45,13 +45,15 @@ export default class Terminal {
 			return false;
 
 		const buffered = buf['buffering'].map( record => {
+
+			const output = record.output ? `<pre style="white-space: pre-wrap; overflow: hidden">${ $.terminal.format( record.output )} </pre>` : '';
+
 			return `<div class="command">
 						<div style="100%">
 							<span>${record.command}</span>
 						</div>
 					</div>
-					<pre style="white-space: pre-wrap; overflow: hidden">${ $.terminal.format( record.output )} </pre>`;
-			// return `<div class="command">${record.command}</div><div>${record.output}</div>`;
+					${output}`;
 		}).join('');
 
 		this.bufferDiv 				= Dom('article.terminal-wrapper');
