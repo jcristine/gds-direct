@@ -37,8 +37,7 @@
 	}
 }
 
-.historyContext
-{
+.historyContext  {
     max-height: 400px;
     overflow-y: auto;
     padding: 10px 20px 10px 10px;
@@ -74,19 +73,19 @@
 
 	& > .term-body {
 
-        //width: 100%;
+        width: 100%;
 		height: 100%;
 
         display: table;
 
         .t-d-cell {
-            //width: 100%;
+            //width: 95%;
         }
 
 		.left {
 			position: relative;
 
-			table {
+			&>table {
 				height : 100%;
 				width  : 100%;
 
@@ -136,7 +135,8 @@
 
 		&.minimized {
 			.menu {
-				width: 5%;
+				//width:5%;
+                width: 100px;
 
 				.btn {
 					display: block;
@@ -183,15 +183,11 @@
     }
 
 	.terminal {
-
         //width:100%;
-        height: 100%;
 
-        //padding: 2px 0 0 5px;
+        height: 100%;
         padding: 0;
         padding-left : 2px;
-
-
         overflow: auto;
         font-weight: bold;
         color :#fff;

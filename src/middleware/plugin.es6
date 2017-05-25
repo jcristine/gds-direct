@@ -121,18 +121,24 @@ export default class TerminalPlugin
 		this.terminal.cmd().set( cmd );
 	}
 
-	resize( w, h )
+	resize()
 	{
-		this.terminal.resize( w, h );
+		this.terminal.resize();
 	}
 
 	emptyLinesRecalculate( numOfRows, numOfChars, charHeight )
 	{
-		this.outputLiner.setNumRows(numOfRows).setNumChars(numOfChars).setCharHeight(charHeight).recalculate();
+		this.outputLiner
+			.setNumRows(numOfRows)
+			.setNumChars(numOfChars)
+			.setCharHeight(charHeight)
+			.recalculate();
 	}
 
 	init()
 	{
+		// console.log( 'init', this.settings.numOfRows );
+		// console.log( 'init', this.settings.numOfChars );
 		//caveats terminal.rows() - everytime appends div with cursor span - not too smooth for performance
 
 		return $(this.context).terminal( this.commandParser.bind(this), {
@@ -141,10 +147,13 @@ export default class TerminalPlugin
 			name			: this.name,
 			prompt			: '>',
 
-			// numRows			: 2,
+			numRows			: this.settings.numOfRows, // plugin calculates it in so shitty slow manner appending cursor to body 3 times per plugin
+			numChars		: this.settings.numOfChars,
+
 			// memory			: true,
 			// scrollOnEcho	: false,
 			// keypress		: this.parseChar.bind(this), // BUGGY BUGGY, assign on document wtf???
+
 			keydown			: this.parseKeyBinds.bind(this),
 
 			onInit			: this.changeActiveTerm.bind(this),
@@ -264,8 +273,8 @@ export default class TerminalPlugin
 		{
 			if ( result['output'].trim() === '*')
 			{
-				this.terminal.update( -2 , '');
-				this.terminal.set_command(command + ' *');
+				this.terminal.update( -2 , command + ' *');
+				// this.terminal.set_command(command + ' *');
 				return false;
 			}
 

@@ -1,93 +1,82 @@
 'use strict';
 
-import ActionsMenu 	from './actionsMenu.es6';
-import MenuPanel 	from './menuPanel.es6';
-import Dom			from '../helpers/dom.es6';
-import TerminalMatrix from './terminalMatrix.es6';
+import ActionsMenu 		from './actionsMenu';
+import MenuPanel 		from './menuPanel';
+import TerminalMatrix 	from './terminalMatrix';
+import Component 		from '../modules/component';
 
-class RightMenu
+class RightSide extends Component
 {
-	static init()
+	constructor()
 	{
-		this.context = Dom('aside.t-d-cell menu');
-		this.context.appendChild( MenuPanel.getContext() );
-		return this;
+		super('aside.t-d-cell menu');
+		this.observe( new MenuPanel() );
 	}
 
-	static render( params )
+	_renderer()
 	{
-		MenuPanel.render( params );
-		this.context.classList.toggle('hidden', params.hideMenu );
-	}
-
-	static getContext()
-	{
-		return this.context;
+		this.context.classList.toggle('hidden', this.props.hideMenu );
 	}
 }
 
-class Wrapper
+let matrix;
+
+class Wrapper extends Component
 {
-	static init()
+	constructor()
 	{
-		this.context = Dom('div.term-body minimized');
-		this.context.appendChild( MenuPanel.getContext() );
+		super('div.term-body minimized');
 
-		const LeftSide 	= Dom('aside.t-d-cell left');
-		LeftSide.appendChild( TerminalMatrix.context );
-		LeftSide.appendChild( ActionsMenu.init().getContext() );
+		this
+			.observe(
+				new Component('aside.t-d-cell left')
+					.observe( new TerminalMatrix() )
+					.append( new ActionsMenu() )
+			)
 
-		this.context.appendChild( LeftSide );
-		this.context.appendChild( RightMenu.init().getContext() );
+			.observe(
+				new RightSide()
+			);
 
-		return this;
+		// left.getContext().appendChild(  new ActionsMenu( ) )
 	}
 
-	static render( params )
+	_renderer()
 	{
-		const gds = params.gds;
+		const gds = this.props.gds;
 
 		if ( this.gds !== gds )
 		{
 			this.gds 				= gds;
 			this.context.className = `term-body minimized ${gds}`; // change gds styles
 		}
-
-		RightMenu.render( params );
-		TerminalMatrix.render( params );
-	}
-
-	static getContext()
-	{
-		return this.context;
 	}
 }
 
-export default class Container {
+export default class Container extends Component {
 
-	static init( rootId )
+	constructor( rootId )
 	{
-		const Root = document.getElementById( rootId );
+		super('section');
 
-		this.context = Dom(`section`);
-		this.context.appendChild( Wrapper.init().getContext() );
+		this.observe( new Wrapper() );
 
-		Root.appendChild( this.context );
+		document.getElementById( rootId ).appendChild( this.getContext() );
 	}
 
-	static purgeScreens( gds )
+	purgeScreens( gds )
 	{
-		TerminalMatrix.purgeScreens( gds );
+		matrix.purgeScreens( gds );
 	}
 
-	static render( params )
+	_renderer()
 	{
-		this.context.className = 'terminal-wrap-custom term-f-size-' + params.fontSize;
+		const params = this.props;
 
-		const {hideMenu} = params;
+		this.context.className 	= 'terminal-wrap-custom term-f-size-' + params.fontSize;
 
-		const p = {
-			hideMenu,
+		this.props = {
+			hideMenu		: params.hideMenu,
 			gds 			: params.gdsObj['name'],
 			canCreatePq 	: params.gdsObj.canCreatePq,
 			sessionIndex  	: params.gdsObj.sessionIndex,
@@ -95,7 +84,5 @@ export default class Container {
 			cellMatrix		: params.gdsObj.matrix,
 			containerWidth	: this.context.clientWidth
 		};
-
-		Wrapper.render( p );
 	}
 }

@@ -1,11 +1,11 @@
-'use strict';
-
-import Container 						from './components/containerMain.es6';
+import ContainerMain					from './components/containerMain.es6';
 import Requests							from './helpers/requests.es6';
 import {KEEP_ALIVE_REFRESH, AREA_LIST} 	from './constants.es6';
 
 const apiData	= window.apiData || {};
 const saved		= localStorage.getItem('matrix');
+
+const Container = new ContainerMain( apiData['htmlRootId'] || 'rootTerminal' );
 
 const gdsSettings = {
 	sessionIndex 	: 0,
@@ -36,11 +36,9 @@ class TerminalState
 			language		: 'APOLLO',
 			fontSize		: 1,
 			hideMenu		: false,
-
 			gdsObj			: Gds[curGds]
 		};
 
-		// Requests.get(`terminal/keepAlive`, true);
 		setInterval( () => Requests.get(`terminal/keepAlive`, true), KEEP_ALIVE_REFRESH );
 	}
 
@@ -116,8 +114,6 @@ class TerminalState
 
 	action( action, params )
 	{
-		// console.log(action);
-
 		switch (action)
 		{
 			case 'CHANGE_GDS':
@@ -129,16 +125,12 @@ class TerminalState
 					gds		: params,
 					gdsObj 	: Gds[params]
 				});
-
 			break;
 
 			case 'CHANGE_SESSION_AREA' :
-
 				this.change({
 					gdsObj : Object.assign( {}, this.state.gdsObj, {sessionIndex : params} )
 				});
-
-				// return Container.menuRender( this.state );
 			break;
 
 			case 'CHANGE_SESSION_BY_MENU' :
@@ -158,7 +150,6 @@ class TerminalState
 
 			case 'CHANGE_ACTIVE_TERMINAL' :
 				// TODO :: optimize
-
 				this.change({
 					gdsObj : Object.assign( {}, this.state.gdsObj, { activeTerminal : params } )
 				});
@@ -187,40 +178,17 @@ class TerminalState
 			break;
 
 			case 'PQ_MODAL_SHOW' :
-
 				if (!this.state.gdsObj.canCreatePq)
 					return false;
-
-				/*if (this.state.gdsObj.canCreatePqErrors)
-				{
-					alert( this.state.gdsObj.canCreatePqErrors.join('<br>') );
-					return false;
-				}*/
 
 				apiData.pqModal.show({
 					canCreatePqErrors 	: this.state.gdsObj.canCreatePqErrors,
 					onClose				: () => this.change( {hideMenu: false} )
-				})
+				}).then( () => this.change({hideMenu: true}) );
 
-				.then( () => this.change({hideMenu: true}) );
 			break;
 
-			// case 'PQ_MACROS' :
-			//
-			// 	let term = this.getActiveTerminal();
-			//
-			// 	if (term)
-			// 	{
-			// 		window.activePlugin.hiddenBuff = ['A/V/13SEPSEAMNL+DL', '01Y1*', '*R', '$BB'];
-			// 		// window.activePlugin.hiddenBuff = ['A10JUNKIVRIX', '01E1K2', '$BB'];
-			// 		window.activePlugin.loopCmdStack();
-			// 	}
-			//
-			// 	return false;
-			// break;
-
 			case 'DEV_CMD_STACK_RUN' :
-
 				this.execCmd( params );
 				return false;
 			break;
@@ -230,25 +198,19 @@ class TerminalState
 	change( params = {} )
 	{
 		this.state = Object.assign( {}, this.state, params );
-		console.log(' change ', params);
 		Container.render( this.state );
 	}
 }
 
 window.TerminalState = new TerminalState();
+window.TerminalState.change({}, '');
 
 let resizeTimeout;
 
-window.onresize = function() {
+window.onresize = () => {
 
 	if (resizeTimeout)
 		clearInterval(resizeTimeout);
 
 	resizeTimeout = setTimeout( () => window.TerminalState.change(), 150 );
 };
-
-// let a = { a : 1 };
-// console.log({ ...a, b : 2 });
-
-Container.init( apiData['htmlRootId'] || 'rootTerminal' );
-window.TerminalState.change({}, '');

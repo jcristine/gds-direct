@@ -23,7 +23,7 @@ module.exports = {
 	devtool: 'source-map',
 
 	resolve : {
-		extensions 	: ['.js', '.json', 'es6'],
+		extensions 	: ['.js', '.json', '.es6'],
 
 		modules		: [
 			"node_modules"

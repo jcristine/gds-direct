@@ -9,12 +9,18 @@ export default class Terminal {
 
 	constructor( params )
 	{
-		this.plugin 				= null;
-		this.settings 				= params;
-		this.context 				= Dom('div.terminal');
+		this.plugin 	= null;
+		this.settings 	= params;
+		this.context 	= Dom('div.terminal');
 
 		this.makeBuffer( params.buffer );
-		this.context.onclick = () => { if (!this.plugin) this.init(); };
+
+		this.context.onclick = () => {
+
+			if (!this.plugin)
+				this.init();
+
+		};
 	}
 
 	init()
@@ -26,7 +32,8 @@ export default class Terminal {
 			name 			: this.settings['name'],
 			sessionIndex 	: this.settings['sessionIndex'],
 			gds 			: this.settings['gds'],
-			numOfRows 		: this.numOfRows
+			numOfRows 		: this.numOfRows,
+			numOfChars 		: this.numOfChars
 		});
 
 		// this.insertBuffer();
@@ -72,45 +79,68 @@ export default class Terminal {
 		return Math.floor( this.settings.parentContext.clientHeight / lineHeight );
 	}
 
+	// calculateNumOfChars( lineHeight )
+	// {
+	// 	return Math.floor( this.settings.parentContext.clientHeight / lineHeight );
+	// }
+
 	reattach( parentNode, dimensions )
 	{
+		// console.log(' reatach ');
+
 		this.settings.parentContext = parentNode;
+
+		// console.log( 'AAA' );
+		// console.log( parentNode.clientWidth );
 
 		parentNode.style.height		= dimensions.height + 'px';
 		parentNode.style.width		= dimensions.width	+ 'px';
+
+		// console.log( dimensions );
+		// console.log( window.getComputedStyle( parentNode ).width );
+		// console.log();
+
+		// console.log( document.querySelector('.menu').clientWidth );
+		// console.log( parentNode.clientWidth );
+		// console.log( dimensions );
 
 		this.context.style.height	= parentNode.clientHeight + 'px';
 		this.context.style.width	= (parentNode.clientWidth - 1) + 'px';
 
 		this.numOfRows 				= this.calculateNumOfRows( dimensions.char.height );
+		this.numOfChars				= Math.floor( (dimensions.width - 2) / dimensions.char.width );
+
+		// console.log( 'num rows', this.numOfRows );
+		// console.log( dimensions.width )
+		// console.log( parentNode.clientWidth )
+		// console.log( dimensions.char.height );
+		// console.log( dimensions);
+		// console.log( '====', this.numOfChars );
+
+		this.settings.parentContext.appendChild( this.context );
+
 
 		if (this.plugin)
 		{
-			console.log("RESIZE");
+			this.plugin.terminal.settings().numChars = Math.floor( (dimensions.width - 2) / dimensions.char.width );
+			this.plugin.terminal.settings().numRows  = this.numOfRows;
+
 			this.plugin.resize();
 		}
 
 		this.context.style.height = (this.numOfRows * dimensions.char.height) + 'px';
-		this.settings.parentContext.appendChild( this.context );
 
-		const numOfChars	= Math.floor( this.context.clientWidth / dimensions.char.width );
-
-		// console.log('bb', numOfChars)
-		// console.log( numOfChars );
-		// console.log( this.numOfRows );
-		// console.log(numOfChars);
-		// console.log( 'numOfChars', parentNode.clientWidth );
-		// console.log( 'numOfChars', this.context.clientWidth );
-		// console.log( 'numOfChars', this.context.style.width);
-		// console.log('numOfChars width !!', this.context.clientWidth );
+		// console.log( dimensions.width )
+		// console.log( this.context.clientWidth )
+		// const numOfChars	= Math.floor( this.context.clientWidth / dimensions.char.width );
+		// console.log( '??', numOfChars );
 
 		if (this.plugin)
 		{
-			this.plugin.emptyLinesRecalculate( this.numOfRows, numOfChars, dimensions.char.height );
+			this.plugin.emptyLinesRecalculate( this.numOfRows, this.numOfChars, dimensions.char.height );
 		}
 
 		this.context.scrollTop = this.context.scrollHeight;
-		this.settings.dimensions = dimensions;
 	}
 
 	clear()

@@ -73,7 +73,7 @@ export default class Output
 
 	recalculate()
 	{
-		console.log(' recalculate ');
+		// console.log(' recalculate ');
 		this.countEmpty().attachEmpty().scroll();
 	}
 

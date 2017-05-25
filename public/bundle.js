@@ -63,7 +63,7 @@
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 41);
+/******/ 	return __webpack_require__(__webpack_require__.s = 42);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -106,7 +106,7 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _tetherDrop = __webpack_require__(36);
+var _tetherDrop = __webpack_require__(37);
 
 var _tetherDrop2 = _interopRequireDefault(_tetherDrop);
 
@@ -188,6 +188,85 @@ exports.default = ButtonPopOver;
 
 /***/ }),
 /* 2 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+	value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _dom = __webpack_require__(0);
+
+var _dom2 = _interopRequireDefault(_dom);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var Component = function () {
+	function Component(selector) {
+		_classCallCheck(this, Component);
+
+		this.context = (0, _dom2.default)(selector);
+		this.observers = [];
+	}
+
+	_createClass(Component, [{
+		key: 'observe',
+		value: function observe(component) {
+			this.observers.push(component);
+			this.context.appendChild(component.getContext());
+			return this;
+		}
+	}, {
+		key: 'append',
+		value: function append(component) {
+			this.context.appendChild(component.getContext());
+			return this;
+		}
+	}, {
+		key: 'getContext',
+		value: function getContext() {
+			return this.context;
+		}
+
+		// _renderer()
+		// {
+		// }
+
+	}, {
+		key: 'render',
+		value: function render(params) {
+			var _this = this;
+
+			// console.log('render');
+			// console.log( this._renderer );
+
+			this.props = params;
+
+			if (typeof this._renderer === 'function') {
+				this._renderer();
+			}
+
+			this.observers.map(function (component) {
+				component.render(_this.props);
+			});
+
+			return this.context;
+		}
+	}]);
+
+	return Component;
+}();
+
+exports.default = Component;
+
+/***/ }),
+/* 3 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -293,7 +372,7 @@ function splitLines(txt) {
 }
 
 /***/ }),
-/* 3 */
+/* 4 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -303,13 +382,13 @@ Object.defineProperty(exports, "__esModule", {
 	value: true
 });
 
-var _constants = __webpack_require__(4);
+var _constants = __webpack_require__(5);
 
-var _noty = __webpack_require__(5);
+var _noty = __webpack_require__(6);
 
 var _noty2 = _interopRequireDefault(_noty);
 
-__webpack_require__(39);
+__webpack_require__(40);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -364,7 +443,7 @@ exports.default = {
 };
 
 /***/ }),
-/* 4 */
+/* 5 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -381,7 +460,7 @@ var KEEP_ALIVE_REFRESH = exports.KEEP_ALIVE_REFRESH = 60000;
 var AREA_LIST = exports.AREA_LIST = ['A', 'B', 'C', 'D', 'E', 'F'];
 
 /***/ }),
-/* 5 */
+/* 6 */
 /***/ (function(module, exports, __webpack_require__) {
 
 (function webpackUniversalModuleDefinition(root, factory) {
@@ -3441,7 +3520,7 @@ module.exports = g;
 //# sourceMappingURL=noty.js.map
 
 /***/ }),
-/* 6 */
+/* 7 */
 /***/ (function(module, exports) {
 
 var g;
@@ -3468,7 +3547,7 @@ module.exports = g;
 
 
 /***/ }),
-/* 7 */
+/* 8 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3476,15 +3555,15 @@ module.exports = g;
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _containerMain = __webpack_require__(10);
+var _containerMain = __webpack_require__(11);
 
 var _containerMain2 = _interopRequireDefault(_containerMain);
 
-var _requests = __webpack_require__(3);
+var _requests = __webpack_require__(4);
 
 var _requests2 = _interopRequireDefault(_requests);
 
-var _constants = __webpack_require__(4);
+var _constants = __webpack_require__(5);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -3494,6 +3573,8 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
 var apiData = window.apiData || {};
 var saved = localStorage.getItem('matrix');
+
+var Container = new _containerMain2.default(apiData['htmlRootId'] || 'rootTerminal');
 
 var gdsSettings = {
 	sessionIndex: 0,
@@ -3526,11 +3607,9 @@ var TerminalState = function () {
 			language: 'APOLLO',
 			fontSize: 1,
 			hideMenu: false,
-
 			gdsObj: Gds[curGds]
 		};
 
-		// Requests.get(`terminal/keepAlive`, true);
 		setInterval(function () {
 			return _requests2.default.get('terminal/keepAlive', true);
 		}, _constants.KEEP_ALIVE_REFRESH);
@@ -3586,7 +3665,7 @@ var TerminalState = function () {
 	}, {
 		key: 'purgeScreens',
 		value: function purgeScreens() {
-			_containerMain2.default.purgeScreens(this.getGds());
+			Container.purgeScreens(this.getGds());
 			_requests2.default.get('terminal/clearBuffer', true);
 		}
 	}, {
@@ -3611,8 +3690,6 @@ var TerminalState = function () {
 		value: function action(_action, params) {
 			var _this = this;
 
-			// console.log(action);
-
 			switch (_action) {
 				case 'CHANGE_GDS':
 
@@ -3623,16 +3700,12 @@ var TerminalState = function () {
 						gds: params,
 						gdsObj: Gds[params]
 					});
-
 					break;
 
 				case 'CHANGE_SESSION_AREA':
-
 					this.change({
 						gdsObj: Object.assign({}, this.state.gdsObj, { sessionIndex: params })
 					});
-
-					// return Container.menuRender( this.state );
 					break;
 
 				case 'CHANGE_SESSION_BY_MENU':
@@ -3652,7 +3725,6 @@ var TerminalState = function () {
 
 				case 'CHANGE_ACTIVE_TERMINAL':
 					// TODO :: optimize
-
 					this.change({
 						gdsObj: Object.assign({}, this.state.gdsObj, { activeTerminal: params })
 					});
@@ -3679,14 +3751,7 @@ var TerminalState = function () {
 					break;
 
 				case 'PQ_MODAL_SHOW':
-
 					if (!this.state.gdsObj.canCreatePq) return false;
-
-					/*if (this.state.gdsObj.canCreatePqErrors)
-     {
-     	alert( this.state.gdsObj.canCreatePqErrors.join('<br>') );
-     	return false;
-     }*/
 
 					apiData.pqModal.show({
 						canCreatePqErrors: this.state.gdsObj.canCreatePqErrors,
@@ -3696,24 +3761,10 @@ var TerminalState = function () {
 					}).then(function () {
 						return _this.change({ hideMenu: true });
 					});
+
 					break;
 
-				// case 'PQ_MACROS' :
-				//
-				// 	let term = this.getActiveTerminal();
-				//
-				// 	if (term)
-				// 	{
-				// 		window.activePlugin.hiddenBuff = ['A/V/13SEPSEAMNL+DL', '01Y1*', '*R', '$BB'];
-				// 		// window.activePlugin.hiddenBuff = ['A10JUNKIVRIX', '01E1K2', '$BB'];
-				// 		window.activePlugin.loopCmdStack();
-				// 	}
-				//
-				// 	return false;
-				// break;
-
 				case 'DEV_CMD_STACK_RUN':
-
 					this.execCmd(params);
 					return false;
 					break;
@@ -3725,8 +3776,7 @@ var TerminalState = function () {
 			var params = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
 
 			this.state = Object.assign({}, this.state, params);
-			console.log(' change ', params);
-			_containerMain2.default.render(this.state);
+			Container.render(this.state);
 		}
 	}]);
 
@@ -3734,6 +3784,7 @@ var TerminalState = function () {
 }();
 
 window.TerminalState = new TerminalState();
+window.TerminalState.change({}, '');
 
 var resizeTimeout = void 0;
 
@@ -3746,73 +3797,11 @@ window.onresize = function () {
 	}, 150);
 };
 
-// let a = { a : 1 };
-// console.log({ ...a, b : 2 });
-
-_containerMain2.default.init(apiData['htmlRootId'] || 'rootTerminal');
-window.TerminalState.change({}, '');
-
 /***/ }),
-/* 8 */
+/* 9 */
 /***/ (function(module, exports) {
 
 // removed by extract-text-webpack-plugin
-
-/***/ }),
-/* 9 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-	value: true
-});
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-var _terminalMatrix = __webpack_require__(17);
-
-var _terminalMatrix2 = _interopRequireDefault(_terminalMatrix);
-
-var _dom = __webpack_require__(0);
-
-var _dom2 = _interopRequireDefault(_dom);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-var ActionsMenu = function () {
-	function ActionsMenu() {
-		_classCallCheck(this, ActionsMenu);
-	}
-
-	_createClass(ActionsMenu, null, [{
-		key: 'init',
-		value: function init() {
-			this.context = (0, _dom2.default)('div.actions-btn-menu');
-
-			var matrix = new _terminalMatrix2.default({
-				icon: '<i class="fa fa-th-large"></i>'
-			}).getTrigger();
-
-			matrix.className = 'btn btn-purple';
-
-			this.context.appendChild(matrix);
-			return this;
-		}
-	}, {
-		key: 'getContext',
-		value: function getContext() {
-			return this.context;
-		}
-	}]);
-
-	return ActionsMenu;
-}();
-
-exports.default = ActionsMenu;
 
 /***/ }),
 /* 10 */
@@ -3825,131 +3814,171 @@ Object.defineProperty(exports, "__esModule", {
 	value: true
 });
 
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+var _terminalMatrix = __webpack_require__(18);
 
-var _actionsMenu = __webpack_require__(9);
+var _terminalMatrix2 = _interopRequireDefault(_terminalMatrix);
 
-var _actionsMenu2 = _interopRequireDefault(_actionsMenu);
+var _component = __webpack_require__(2);
 
-var _menuPanel = __webpack_require__(14);
-
-var _menuPanel2 = _interopRequireDefault(_menuPanel);
+var _component2 = _interopRequireDefault(_component);
 
 var _dom = __webpack_require__(0);
 
 var _dom2 = _interopRequireDefault(_dom);
 
-var _terminalMatrix = __webpack_require__(19);
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var ActionsMenu = function (_Component) {
+	_inherits(ActionsMenu, _Component);
+
+	// export default class ActionsMenu{
+
+	function ActionsMenu() {
+		_classCallCheck(this, ActionsMenu);
+
+		// this.context =  Dom('div.actions-btn-menu');
+
+		var _this = _possibleConstructorReturn(this, (ActionsMenu.__proto__ || Object.getPrototypeOf(ActionsMenu)).call(this, 'div.actions-btn-menu'));
+
+		var matrix = new _terminalMatrix2.default({
+			icon: '<i class="fa fa-th-large"></i>'
+		}).getTrigger();
+
+		matrix.className = 'btn btn-purple';
+
+		_this.context.appendChild(matrix);
+		return _this;
+	}
+
+	return ActionsMenu;
+}(_component2.default);
+
+exports.default = ActionsMenu;
+
+/***/ }),
+/* 11 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+	value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _actionsMenu = __webpack_require__(10);
+
+var _actionsMenu2 = _interopRequireDefault(_actionsMenu);
+
+var _menuPanel = __webpack_require__(15);
+
+var _menuPanel2 = _interopRequireDefault(_menuPanel);
+
+var _terminalMatrix = __webpack_require__(20);
 
 var _terminalMatrix2 = _interopRequireDefault(_terminalMatrix);
+
+var _component = __webpack_require__(2);
+
+var _component2 = _interopRequireDefault(_component);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-var RightMenu = function () {
-	function RightMenu() {
-		_classCallCheck(this, RightMenu);
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var RightSide = function (_Component) {
+	_inherits(RightSide, _Component);
+
+	function RightSide() {
+		_classCallCheck(this, RightSide);
+
+		var _this = _possibleConstructorReturn(this, (RightSide.__proto__ || Object.getPrototypeOf(RightSide)).call(this, 'aside.t-d-cell menu'));
+
+		_this.observe(new _menuPanel2.default());
+		return _this;
 	}
 
-	_createClass(RightMenu, null, [{
-		key: 'init',
-		value: function init() {
-			this.context = (0, _dom2.default)('aside.t-d-cell menu');
-			this.context.appendChild(_menuPanel2.default.getContext());
-			return this;
-		}
-	}, {
-		key: 'render',
-		value: function render(params) {
-			_menuPanel2.default.render(params);
-			this.context.classList.toggle('hidden', params.hideMenu);
-		}
-	}, {
-		key: 'getContext',
-		value: function getContext() {
-			return this.context;
+	_createClass(RightSide, [{
+		key: '_renderer',
+		value: function _renderer() {
+			this.context.classList.toggle('hidden', this.props.hideMenu);
 		}
 	}]);
 
-	return RightMenu;
-}();
+	return RightSide;
+}(_component2.default);
 
-var Wrapper = function () {
+var matrix = void 0;
+
+var Wrapper = function (_Component2) {
+	_inherits(Wrapper, _Component2);
+
 	function Wrapper() {
 		_classCallCheck(this, Wrapper);
+
+		var _this2 = _possibleConstructorReturn(this, (Wrapper.__proto__ || Object.getPrototypeOf(Wrapper)).call(this, 'div.term-body minimized'));
+
+		_this2.observe(new _component2.default('aside.t-d-cell left').observe(new _terminalMatrix2.default()).append(new _actionsMenu2.default())).observe(new RightSide());
+
+		// left.getContext().appendChild(  new ActionsMenu( ) )
+		return _this2;
 	}
 
-	_createClass(Wrapper, null, [{
-		key: 'init',
-		value: function init() {
-			this.context = (0, _dom2.default)('div.term-body minimized');
-			this.context.appendChild(_menuPanel2.default.getContext());
-
-			var LeftSide = (0, _dom2.default)('aside.t-d-cell left');
-			LeftSide.appendChild(_terminalMatrix2.default.context);
-			LeftSide.appendChild(_actionsMenu2.default.init().getContext());
-
-			this.context.appendChild(LeftSide);
-			this.context.appendChild(RightMenu.init().getContext());
-
-			return this;
-		}
-	}, {
-		key: 'render',
-		value: function render(params) {
-			var gds = params.gds;
+	_createClass(Wrapper, [{
+		key: '_renderer',
+		value: function _renderer() {
+			var gds = this.props.gds;
 
 			if (this.gds !== gds) {
 				this.gds = gds;
 				this.context.className = 'term-body minimized ' + gds; // change gds styles
 			}
-
-			RightMenu.render(params);
-			_terminalMatrix2.default.render(params);
-		}
-	}, {
-		key: 'getContext',
-		value: function getContext() {
-			return this.context;
 		}
 	}]);
 
 	return Wrapper;
-}();
+}(_component2.default);
 
-var Container = function () {
-	function Container() {
+var Container = function (_Component3) {
+	_inherits(Container, _Component3);
+
+	function Container(rootId) {
 		_classCallCheck(this, Container);
+
+		var _this3 = _possibleConstructorReturn(this, (Container.__proto__ || Object.getPrototypeOf(Container)).call(this, 'section'));
+
+		_this3.observe(new Wrapper());
+
+		document.getElementById(rootId).appendChild(_this3.getContext());
+		return _this3;
 	}
 
-	_createClass(Container, null, [{
-		key: 'init',
-		value: function init(rootId) {
-			var Root = document.getElementById(rootId);
-
-			this.state = { className: 'terminal-wrap-custom' };
-
-			this.context = (0, _dom2.default)('section.' + this.state.className);
-			this.context.appendChild(Wrapper.init().getContext());
-
-			Root.appendChild(this.context);
-		}
-	}, {
+	_createClass(Container, [{
 		key: 'purgeScreens',
 		value: function purgeScreens(gds) {
-			_terminalMatrix2.default.purgeScreens(gds);
+			matrix.purgeScreens(gds);
 		}
 	}, {
-		key: 'render',
-		value: function render(params) {
-			this.context.className = this.state.className + ' term-f-size-' + params.fontSize;
+		key: '_renderer',
+		value: function _renderer() {
+			var params = this.props;
 
-			var hideMenu = params.hideMenu;
+			this.context.className = 'terminal-wrap-custom term-f-size-' + params.fontSize;
 
-
-			var p = {
-				hideMenu: hideMenu,
+			this.props = {
+				hideMenu: params.hideMenu,
 				gds: params.gdsObj['name'],
 				canCreatePq: params.gdsObj.canCreatePq,
 				sessionIndex: params.gdsObj.sessionIndex,
@@ -3957,18 +3986,16 @@ var Container = function () {
 				cellMatrix: params.gdsObj.matrix,
 				containerWidth: this.context.clientWidth
 			};
-
-			Wrapper.render(p);
 		}
 	}]);
 
 	return Container;
-}();
+}(_component2.default);
 
 exports.default = Container;
 
 /***/ }),
-/* 11 */
+/* 12 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -4079,7 +4106,7 @@ var DevButtons = function () {
 exports.default = DevButtons;
 
 /***/ }),
-/* 12 */
+/* 13 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -4130,7 +4157,7 @@ var PqButton = function () {
 exports.default = PqButton;
 
 /***/ }),
-/* 13 */
+/* 14 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -4239,7 +4266,7 @@ var SessionKeys = function () {
 exports.default = SessionKeys;
 
 /***/ }),
-/* 14 */
+/* 15 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -4251,27 +4278,27 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _history = __webpack_require__(15);
+var _history = __webpack_require__(16);
 
 var _history2 = _interopRequireDefault(_history);
 
-var _textSize = __webpack_require__(18);
+var _textSize = __webpack_require__(19);
 
 var _textSize2 = _interopRequireDefault(_textSize);
 
-var _settings = __webpack_require__(16);
+var _settings = __webpack_require__(17);
 
 var _settings2 = _interopRequireDefault(_settings);
 
-var _sessionButtons = __webpack_require__(13);
+var _sessionButtons = __webpack_require__(14);
 
 var _sessionButtons2 = _interopRequireDefault(_sessionButtons);
 
-var _pqButton = __webpack_require__(12);
+var _pqButton = __webpack_require__(13);
 
 var _pqButton2 = _interopRequireDefault(_pqButton);
 
-var _devButtons = __webpack_require__(11);
+var _devButtons = __webpack_require__(12);
 
 var _devButtons2 = _interopRequireDefault(_devButtons);
 
@@ -4279,23 +4306,30 @@ var _dom = __webpack_require__(0);
 
 var _dom2 = _interopRequireDefault(_dom);
 
+var _component = __webpack_require__(2);
+
+var _component2 = _interopRequireDefault(_component);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-var context = (0, _dom2.default)('aside.sideMenu');
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
 var SettingsContext = void 0;
 
-var MenuPanel = function () {
+var MenuPanel = function (_Component) {
+	_inherits(MenuPanel, _Component);
+
 	function MenuPanel() {
 		_classCallCheck(this, MenuPanel);
+
+		return _possibleConstructorReturn(this, (MenuPanel.__proto__ || Object.getPrototypeOf(MenuPanel)).call(this, 'aside.sideMenu'));
 	}
 
-	_createClass(MenuPanel, null, [{
-		key: 'toggle',
-		value: function toggle() {}
-	}, {
+	_createClass(MenuPanel, [{
 		key: 'fontSize',
 		value: function fontSize() {
 			return new _textSize2.default({
@@ -4330,8 +4364,6 @@ var MenuPanel = function () {
 			    activeTerminal = _ref.activeTerminal;
 
 			var defParams = { gds: gds, sessionIndex: sessionIndex, activeTerminal: activeTerminal };
-
-			// console.log( defParams )
 
 			defParams.onAreaChange = function (sessionIndex) {
 				window.TerminalState.action('CHANGE_SESSION_BY_MENU', sessionIndex);
@@ -4387,18 +4419,11 @@ var MenuPanel = function () {
 
 			SettingsContext = document.createElement('article');
 
-			[
-			// MenuPanel.toggle(),
-			MenuPanel.fontSize(), MenuPanel.history(), MenuPanel.settings()].map(function (button) {
+			[this.fontSize(), this.history(), this.settings()].map(function (button) {
 				return SettingsContext.appendChild(button);
 			});
 
 			return SettingsContext;
-		}
-	}, {
-		key: 'getContext',
-		value: function getContext() {
-			return context;
 		}
 	}, {
 		key: 'tests',
@@ -4407,10 +4432,10 @@ var MenuPanel = function () {
 			return this.devButtons;
 		}
 	}, {
-		key: 'render',
-		value: function render(params) {
-			// let start = new Date().getTime();
-			// console.log(' re render ');
+		key: '_renderer',
+		value: function _renderer() {
+			var context = this.getContext();
+			var params = this.props;
 
 			context.innerHTML = '';
 
@@ -4418,21 +4443,19 @@ var MenuPanel = function () {
 			context.appendChild(this.activeSession(params));
 			context.appendChild(this.InputLanguage());
 			context.appendChild(_pqButton2.default.render(params));
-
 			context.appendChild(this.devButtons || this.tests());
 
-			// console.log('draw done', new Date().getTime() - start);
 			return context;
 		}
 	}]);
 
 	return MenuPanel;
-}();
+}(_component2.default);
 
 exports.default = MenuPanel;
 
 /***/ }),
-/* 15 */
+/* 16 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -4444,7 +4467,7 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _requests = __webpack_require__(3);
+var _requests = __webpack_require__(4);
 
 var _requests2 = _interopRequireDefault(_requests);
 
@@ -4550,7 +4573,7 @@ var History = function (_ButtonPopOver) {
 exports.default = History;
 
 /***/ }),
-/* 16 */
+/* 17 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -4604,7 +4627,7 @@ var Settings = function (_ButtonPopOver) {
 exports.default = Settings;
 
 /***/ }),
-/* 17 */
+/* 18 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -4718,7 +4741,7 @@ var Matrix = function (_ButtonPopOver) {
 exports.default = Matrix;
 
 /***/ }),
-/* 18 */
+/* 19 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -4784,7 +4807,7 @@ var TextSize = function (_ButtonPopOver) {
 exports.default = TextSize;
 
 /***/ }),
-/* 19 */
+/* 20 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -4800,74 +4823,99 @@ var _dom = __webpack_require__(0);
 
 var _dom2 = _interopRequireDefault(_dom);
 
-var _terminal = __webpack_require__(28);
+var _terminal = __webpack_require__(29);
 
 var _terminal2 = _interopRequireDefault(_terminal);
+
+var _component = __webpack_require__(2);
+
+var _component2 = _interopRequireDefault(_component);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
 
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 var gdsSession = [];
 var stringify = JSON.stringify;
+var cells = [];
 
-var TerminalsMatrix = function () {
-	function TerminalsMatrix() {
-		_classCallCheck(this, TerminalsMatrix);
+var DimensionCalculator = function () {
+	function DimensionCalculator(context) {
+		_classCallCheck(this, DimensionCalculator);
+
+		this.context = context;
 	}
 
-	_createClass(TerminalsMatrix, null, [{
+	_createClass(DimensionCalculator, [{
+		key: 'calculate',
+		value: function calculate(rowCount, cellCount) {
+			return {
+				height: Math.floor(this.context.clientHeight / rowCount),
+				width: Math.floor(this.context.clientWidth / cellCount),
+				char: this.getLineHeight()
+			};
+		}
+	}, {
+		key: 'getLineHeight',
+		value: function getLineHeight() {
+			var _getBoundingClientRec = (this.cursor || this.getCursor()).getBoundingClientRect(),
+			    width = _getBoundingClientRec.width,
+			    height = _getBoundingClientRec.height;
+
+			return { width: width, height: height };
+		}
+	}, {
+		key: 'getCursor',
+		value: function getCursor() {
+			var tempCmd = (0, _dom2.default)('div.terminal temp-terminal');
+			this.context.appendChild(tempCmd);
+			tempCmd.innerHTML = '<div class="cmd"><span class="cursor">&nbsp;</span></div>';
+
+			return this.cursor = tempCmd.querySelector('.cursor');
+		}
+	}]);
+
+	return DimensionCalculator;
+}();
+
+var TerminalsMatrix = function (_Component) {
+	_inherits(TerminalsMatrix, _Component);
+
+	function TerminalsMatrix() {
+		_classCallCheck(this, TerminalsMatrix);
+
+		return _possibleConstructorReturn(this, (TerminalsMatrix.__proto__ || Object.getPrototypeOf(TerminalsMatrix)).call(this, 'table.terminals-table'));
+	}
+
+	_createClass(TerminalsMatrix, [{
 		key: 'clear',
 		value: function clear() {
 			this.context.innerHTML = '';
 			return this;
 		}
 	}, {
-		key: 'createTempTerminal',
-		value: function createTempTerminal() {
-			var tempCmd = (0, _dom2.default)('div.terminal temp-terminal');
-			tempCmd.innerHTML = '<div class="cmd"><span class="cursor">&nbsp;</span></div>';
-
-			this.context.parentNode.appendChild(tempCmd);
-			return tempCmd;
-		}
-	}, {
-		key: 'getLineHeight',
-		value: function getLineHeight() {
-			this.tempTerminal = this.tempTerminal || this.createTempTerminal();
-
-			var _tempTerminal$querySe = this.tempTerminal.querySelector('.cursor').getBoundingClientRect(),
-			    width = _tempTerminal$querySe.width,
-			    height = _tempTerminal$querySe.height;
-
-			return { width: width, height: height };
-		}
-	}, {
-		key: 'getDimension',
-		value: function getDimension(rowCount, cellCount) {
-			var parent = this.context.parentNode;
-
-			return {
-				height: Math.floor(parent.clientHeight / rowCount),
-				width: Math.floor(parent.clientWidth / cellCount),
-				char: this.getLineHeight()
-			};
+		key: 'getSizes',
+		value: function getSizes() {
+			return this.sizer = this.sizer || new DimensionCalculator(this.getContext().parentNode);
 		}
 	}, {
 		key: 'makeCells',
 		value: function makeCells(rowCount, cellCount) {
-			var _this = this;
+			var _this2 = this;
 
 			var makeRow = function makeRow() {
 				var row = (0, _dom2.default)('tr');
-				_this.context.appendChild(row);
+				_this2.context.appendChild(row);
 				return row;
 			};
 
 			var makeCells = function makeCells(row) {
-
 				return [].concat(_toConsumableArray(new Array(cellCount))).map(function () {
 					var cell = (0, _dom2.default)('td.v-middle');
 					row.appendChild(cell);
@@ -4875,44 +4923,7 @@ var TerminalsMatrix = function () {
 				});
 			};
 
-			var cells = [].concat(_toConsumableArray(new Array(rowCount))).map(makeRow).map(makeCells);
-
-			this.resCells = [].concat.apply([], cells); // join arrays into one
-
-			this.context.className = 'terminals-table ' + 't-matrix-w-' + (cellCount - 1);
-
-			return this;
-		}
-	}, {
-		key: 'appendTerminals',
-		value: function appendTerminals(_ref, needToRender) {
-			var _this2 = this;
-
-			var sessionIndex = _ref.sessionIndex,
-			    gds = _ref.gds,
-			    activeTerminal = _ref.activeTerminal;
-
-			gdsSession[gds] = gdsSession[gds] || [];
-
-			this.resCells.forEach(function (cell, index) {
-
-				var isActive = activeTerminal && index === activeTerminal.name();
-
-				cell.classList.toggle('active', isActive);
-
-				if (needToRender) {
-					gdsSession[gds][index] = gdsSession[gds][index] || new _terminal2.default({
-						name: index,
-						sessionIndex: sessionIndex,
-						gds: gds,
-						buffer: window.TerminalState.getBuffer(gds, index + 1),
-						dimensions: _this2.props.dimensions
-					});
-
-					// draw or redraw
-					gdsSession[gds][index].reattach(cell, _this2.props.dimensions);
-				}
-			});
+			return [].concat.apply([], [].concat(_toConsumableArray(new Array(rowCount))).map(makeRow).map(makeCells));
 		}
 	}, {
 		key: 'purgeScreens',
@@ -4922,53 +4933,84 @@ var TerminalsMatrix = function () {
 			});
 		}
 	}, {
-		key: 'render',
-		value: function render(params) {
-			var _params$cellMatrix = params.cellMatrix,
-			    rowCount = _params$cellMatrix.rows,
-			    cellCount = _params$cellMatrix.cells;
+		key: 'getTerminal',
+		value: function getTerminal(gds, index, props) {
+			return gdsSession[gds][index] = gdsSession[gds][index] || new _terminal2.default(props);
+		}
+	}, {
+		key: 'renderIsNeeded',
+		value: function renderIsNeeded(state) {
+			if (!this.state) return true;
 
+			return stringify(state) !== stringify(this.state);
+		}
+	}, {
+		key: '_renderer',
+		value: function _renderer() {
+			var _this3 = this;
 
-			rowCount++;
-			cellCount++;
+			var params = this.props;
 
-			var props = {
+			// console.log("XXX", params)
+
+			var rowCount = params.cellMatrix.rows + 1;
+			var cellCount = params.cellMatrix.cells + 1;
+
+			gdsSession[params.gds] = gdsSession[params.gds] || [];
+
+			var state = {
 				gds: params.gds,
-				dimensions: this.getDimension(rowCount, cellCount),
-				// wrapWidth	: Container.context.clientWidth
+				dimensions: this.getSizes().calculate(rowCount, cellCount),
 				wrapWidth: params.containerWidth
 			};
 
-			var needToRender = stringify(props) !== stringify(this.props);
+			var needToRender = this.renderIsNeeded(state);
 
 			if (needToRender) {
-				// console.log("RERENDER ALL");
+				this.context.innerHTML = '';
+				this.context.className = 't-matrix-w-' + (cellCount - 1);
 
-				this.props = props;
-				this.clear().makeCells(rowCount, cellCount);
+				this.state = state;
+
+				cells = this.makeCells(rowCount, cellCount);
+
+				cells.forEach(function (cell, index) {
+
+					var props = {
+						name: index,
+						sessionIndex: params.sessionIndex,
+						gds: params.gds, // need for session
+						buffer: window.TerminalState.getBuffer(params.gds, index + 1)
+					};
+
+					_this3.getTerminal(params.gds, index, props).reattach(cell, state.dimensions);
+				});
 			}
 
-			this.appendTerminals(params, needToRender);
+			cells.forEach(function (cell, index) {
+				var isActive = params.activeTerminal && index === params.activeTerminal.name();
+				cell.classList.toggle('active', isActive);
+			});
 		}
 	}]);
 
 	return TerminalsMatrix;
-}();
-
-TerminalsMatrix.context = (0, _dom2.default)('table.terminals-table');
-TerminalsMatrix.props = {
-	gds: '',
-	dimensions: {}
-};
+}(_component2.default);
 
 exports.default = TerminalsMatrix;
 
 /***/ }),
-/* 20 */
+/* 21 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
+
+/*window.addEventListener("beforeunload", function (e) {
+	let confirmationMessage = "TEST";
+	(e || window.event).returnValue = confirmationMessage; //Gecko + IE
+	return confirmationMessage;                            //Webkit, Safari, Chrome
+});*/
 
 Object.defineProperty(exports, "__esModule", {
 	value: true
@@ -4978,19 +5020,13 @@ var _createClass = function () { function defineProperties(target, props) { for 
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-window.addEventListener("beforeunload", function (e) {
-	var confirmationMessage = "\o/";
-	(e || window.event).returnValue = confirmationMessage; //Gecko + IE
-	return confirmationMessage; //Webkit, Safari, Chrome
-});
-
 var KeyBinding = function () {
 	function KeyBinding() {
 		_classCallCheck(this, KeyBinding);
 	}
 
 	_createClass(KeyBinding, null, [{
-		key: "parse",
+		key: 'parse',
 		value: function parse(evt, terminal) {
 			var keymap = evt.keyCode || evt.which;
 			var isApollo = window.TerminalState.getGds() === 'apollo';
@@ -5190,7 +5226,7 @@ var KeyBinding = function () {
 exports.default = KeyBinding;
 
 /***/ }),
-/* 21 */
+/* 22 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -5204,49 +5240,49 @@ var _slicedToArray = function () { function sliceIterator(arr, i) { var _arr = [
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _noty = __webpack_require__(5);
+var _noty = __webpack_require__(6);
 
 var _noty2 = _interopRequireDefault(_noty);
 
-var _pagination = __webpack_require__(24);
+var _pagination = __webpack_require__(25);
 
 var _pagination2 = _interopRequireDefault(_pagination);
 
-var _session = __webpack_require__(25);
+var _session = __webpack_require__(26);
 
 var _session2 = _interopRequireDefault(_session);
 
-var _spinner = __webpack_require__(26);
+var _spinner = __webpack_require__(27);
 
 var _spinner2 = _interopRequireDefault(_spinner);
 
-var _keyBinding = __webpack_require__(20);
+var _keyBinding = __webpack_require__(21);
 
 var _keyBinding2 = _interopRequireDefault(_keyBinding);
 
-var _output = __webpack_require__(23);
+var _output = __webpack_require__(24);
 
 var _output2 = _interopRequireDefault(_output);
 
-var _tabManager = __webpack_require__(27);
+var _tabManager = __webpack_require__(28);
 
 var _tabManager2 = _interopRequireDefault(_tabManager);
 
-var _f = __webpack_require__(22);
+var _f = __webpack_require__(23);
 
 var _f2 = _interopRequireDefault(_f);
 
-var _helpers = __webpack_require__(2);
+var _helpers = __webpack_require__(3);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-var $ = __webpack_require__(40);
+var $ = __webpack_require__(41);
 window.$ = window.jQuery = $;
 
-__webpack_require__(31);
-__webpack_require__(33).polyfill();
+__webpack_require__(32);
+__webpack_require__(34).polyfill();
 
 var Debug = function Debug(txt, type) {
 	new _noty2.default({
@@ -5353,8 +5389,8 @@ var TerminalPlugin = function () {
 		}
 	}, {
 		key: 'resize',
-		value: function resize(w, h) {
-			this.terminal.resize(w, h);
+		value: function resize() {
+			this.terminal.resize();
 		}
 	}, {
 		key: 'emptyLinesRecalculate',
@@ -5366,6 +5402,8 @@ var TerminalPlugin = function () {
 		value: function init() {
 			var _this = this;
 
+			// console.log( 'init', this.settings.numOfRows );
+			// console.log( 'init', this.settings.numOfChars );
 			//caveats terminal.rows() - everytime appends div with cursor span - not too smooth for performance
 
 			return $(this.context).terminal(this.commandParser.bind(this), {
@@ -5374,10 +5412,13 @@ var TerminalPlugin = function () {
 				name: this.name,
 				prompt: '>',
 
-				// numRows			: 2,
+				numRows: this.settings.numOfRows, // plugin calculates it in so shitty slow manner appending cursor to body 3 times per plugin
+				numChars: this.settings.numOfChars,
+
 				// memory			: true,
 				// scrollOnEcho	: false,
 				// keypress		: this.parseChar.bind(this), // BUGGY BUGGY, assign on document wtf???
+
 				keydown: this.parseKeyBinds.bind(this),
 
 				onInit: this.changeActiveTerm.bind(this),
@@ -5497,8 +5538,8 @@ var TerminalPlugin = function () {
 
 			if (result['output']) {
 				if (result['output'].trim() === '*') {
-					this.terminal.update(-2, '');
-					this.terminal.set_command(command + ' *');
+					this.terminal.update(-2, command + ' *');
+					// this.terminal.set_command(command + ' *');
 					return false;
 				}
 
@@ -5558,7 +5599,7 @@ var TerminalPlugin = function () {
 exports.default = TerminalPlugin;
 
 /***/ }),
-/* 22 */
+/* 23 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -5673,7 +5714,7 @@ var F8Reader = function () {
 exports.default = F8Reader;
 
 /***/ }),
-/* 23 */
+/* 24 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -5685,7 +5726,7 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _helpers = __webpack_require__(2);
+var _helpers = __webpack_require__(3);
 
 function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
 
@@ -5769,7 +5810,7 @@ var Output = function () {
 	}, {
 		key: 'recalculate',
 		value: function recalculate() {
-			console.log(' recalculate ');
+			// console.log(' recalculate ');
 			this.countEmpty().attachEmpty().scroll();
 		}
 	}, {
@@ -5825,7 +5866,7 @@ var Output = function () {
 exports.default = Output;
 
 /***/ }),
-/* 24 */
+/* 25 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -5837,7 +5878,7 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _helpers = __webpack_require__(2);
+var _helpers = __webpack_require__(3);
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -5895,7 +5936,7 @@ var Pagination = function () {
 exports.default = Pagination;
 
 /***/ }),
-/* 25 */
+/* 26 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -5909,7 +5950,7 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _requests = __webpack_require__(3);
+var _requests = __webpack_require__(4);
 
 var _requests2 = _interopRequireDefault(_requests);
 
@@ -5968,7 +6009,7 @@ var Session = function () {
 exports.default = Session;
 
 /***/ }),
-/* 26 */
+/* 27 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -5982,7 +6023,7 @@ var _createClass = function () { function defineProperties(target, props) { for 
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-var cliSpinners = __webpack_require__(29);
+var cliSpinners = __webpack_require__(30);
 
 var Spinner = function () {
 	function Spinner(terminal) {
@@ -6040,7 +6081,7 @@ var Spinner = function () {
 exports.default = Spinner;
 
 /***/ }),
-/* 27 */
+/* 28 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -6121,7 +6162,7 @@ var TabManager = function () {
 exports.default = TabManager;
 
 /***/ }),
-/* 28 */
+/* 29 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -6133,7 +6174,7 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _plugin = __webpack_require__(21);
+var _plugin = __webpack_require__(22);
 
 var _plugin2 = _interopRequireDefault(_plugin);
 
@@ -6145,7 +6186,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-__webpack_require__(32);
+__webpack_require__(33);
 
 var Terminal = function () {
 	function Terminal(params) {
@@ -6158,7 +6199,9 @@ var Terminal = function () {
 		this.context = (0, _dom2.default)('div.terminal');
 
 		this.makeBuffer(params.buffer);
+
 		this.context.onclick = function () {
+
 			if (!_this.plugin) _this.init();
 		};
 	}
@@ -6173,7 +6216,8 @@ var Terminal = function () {
 				name: this.settings['name'],
 				sessionIndex: this.settings['sessionIndex'],
 				gds: this.settings['gds'],
-				numOfRows: this.numOfRows
+				numOfRows: this.numOfRows,
+				numOfChars: this.numOfChars
 			});
 
 			// this.insertBuffer();
@@ -6213,44 +6257,67 @@ var Terminal = function () {
 		value: function calculateNumOfRows(lineHeight) {
 			return Math.floor(this.settings.parentContext.clientHeight / lineHeight);
 		}
+
+		// calculateNumOfChars( lineHeight )
+		// {
+		// 	return Math.floor( this.settings.parentContext.clientHeight / lineHeight );
+		// }
+
 	}, {
 		key: 'reattach',
 		value: function reattach(parentNode, dimensions) {
+			// console.log(' reatach ');
+
 			this.settings.parentContext = parentNode;
+
+			// console.log( 'AAA' );
+			// console.log( parentNode.clientWidth );
 
 			parentNode.style.height = dimensions.height + 'px';
 			parentNode.style.width = dimensions.width + 'px';
+
+			// console.log( dimensions );
+			// console.log( window.getComputedStyle( parentNode ).width );
+			// console.log();
+
+			// console.log( document.querySelector('.menu').clientWidth );
+			// console.log( parentNode.clientWidth );
+			// console.log( dimensions );
 
 			this.context.style.height = parentNode.clientHeight + 'px';
 			this.context.style.width = parentNode.clientWidth - 1 + 'px';
 
 			this.numOfRows = this.calculateNumOfRows(dimensions.char.height);
+			this.numOfChars = Math.floor((dimensions.width - 2) / dimensions.char.width);
+
+			// console.log( 'num rows', this.numOfRows );
+			// console.log( dimensions.width )
+			// console.log( parentNode.clientWidth )
+			// console.log( dimensions.char.height );
+			// console.log( dimensions);
+			// console.log( '====', this.numOfChars );
+
+			this.settings.parentContext.appendChild(this.context);
 
 			if (this.plugin) {
-				console.log("RESIZE");
+				this.plugin.terminal.settings().numChars = Math.floor((dimensions.width - 2) / dimensions.char.width);
+				this.plugin.terminal.settings().numRows = this.numOfRows;
+
 				this.plugin.resize();
 			}
 
 			this.context.style.height = this.numOfRows * dimensions.char.height + 'px';
-			this.settings.parentContext.appendChild(this.context);
 
-			var numOfChars = Math.floor(this.context.clientWidth / dimensions.char.width);
-
-			// console.log('bb', numOfChars)
-			// console.log( numOfChars );
-			// console.log( this.numOfRows );
-			// console.log(numOfChars);
-			// console.log( 'numOfChars', parentNode.clientWidth );
-			// console.log( 'numOfChars', this.context.clientWidth );
-			// console.log( 'numOfChars', this.context.style.width);
-			// console.log('numOfChars width !!', this.context.clientWidth );
+			// console.log( dimensions.width )
+			// console.log( this.context.clientWidth )
+			// const numOfChars	= Math.floor( this.context.clientWidth / dimensions.char.width );
+			// console.log( '??', numOfChars );
 
 			if (this.plugin) {
-				this.plugin.emptyLinesRecalculate(this.numOfRows, numOfChars, dimensions.char.height);
+				this.plugin.emptyLinesRecalculate(this.numOfRows, this.numOfChars, dimensions.char.height);
 			}
 
 			this.context.scrollTop = this.context.scrollHeight;
-			this.settings.dimensions = dimensions;
 		}
 	}, {
 		key: 'clear',
@@ -6275,16 +6342,16 @@ var Terminal = function () {
 exports.default = Terminal;
 
 /***/ }),
-/* 29 */
+/* 30 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
-module.exports = __webpack_require__(30);
+module.exports = __webpack_require__(31);
 
 
 /***/ }),
-/* 30 */
+/* 31 */
 /***/ (function(module, exports) {
 
 module.exports = {
@@ -7121,7 +7188,7 @@ module.exports = {
 };
 
 /***/ }),
-/* 31 */
+/* 32 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(global, setImmediate) {/**@license
@@ -9833,6 +9900,7 @@ module.exports = {
     // :: $('<div/>').terminal().echo('foo bar').appendTo('body');
     // -----------------------------------------------------------------------
     function char_size() {
+    	console.log('append again')
         var temp = $('<div class="terminal temp"><div class="cmd"><span cla' +
                      'ss="cursor">&nbsp;</span></div></div>').appendTo('body');
         var span = temp.find('span');
@@ -9847,6 +9915,7 @@ module.exports = {
     // :: calculate numbers of characters
     // -----------------------------------------------------------------------
     function get_num_chars(terminal) {
+		console.log('1 append again')
         var temp = $('<div class="terminal wrap"><span class="cursor">' +
                      '&nbsp;</span></div>').appendTo('body').css('padding', 0);
         var span = temp.find('span');
@@ -9859,6 +9928,7 @@ module.exports = {
     // :: Calculate number of lines that fit without scroll
     // -----------------------------------------------------------------------
     function get_num_rows(terminal) {
+    	console.log(' fit ');
         return Math.floor(terminal.height() / char_size().height);
     }
     // -----------------------------------------------------------------------
@@ -12098,12 +12168,17 @@ module.exports = {
             // :: Recalculate and redraw everything
             // -------------------------------------------------------------
             resize: function(width, height) {
+
                 if (!self.is(':visible')) {
                     // delay resize if terminal not visible
+
+					console.log('!!!!!!!!!!!!!!!')
+
                     self.stopTime('resize');
                     self.oneTime(500, 'resize', function() {
                         self.resize(width, height);
                     });
+
                 } else {
                     if (width && height) {
                         self.width(width);
@@ -12111,8 +12186,17 @@ module.exports = {
                     }
                     width = self.width();
                     height = self.height();
+
+
+
                     var new_num_chars = self.cols();
-                    var new_num_rows = self.rows();
+                    var new_num_rows =  self.rows();
+
+					console.log(' are you bitch ??');
+					console.log(' are you bitch ??', num_chars);
+					console.log(' are you bitch ??', new_num_chars);
+
+
                     // only if number of chars changed
                     if (new_num_chars !== num_chars ||
                         new_num_rows !== num_rows) {
@@ -12128,6 +12212,7 @@ module.exports = {
                         scroll_to_bottom();
                     }
                 }
+
                 return self;
             },
             // -------------------------------------------------------------
@@ -12185,6 +12270,7 @@ module.exports = {
                             });
                         }
                     }
+
                     num_rows = get_num_rows(self);
                     if (settings.scrollOnEcho || bottom) {
                         scroll_to_bottom();
@@ -13078,10 +13164,10 @@ module.exports = {
     }; // terminal plugin
 })(jQuery);
 
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(6), __webpack_require__(38).setImmediate))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(7), __webpack_require__(39).setImmediate))
 
 /***/ }),
-/* 32 */
+/* 33 */
 /***/ (function(module, exports) {
 
 /**@license
@@ -13406,7 +13492,7 @@ module.exports = {
 
 
 /***/ }),
-/* 33 */
+/* 34 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_RESULT__;/* global define, KeyboardEvent, module */
@@ -13537,7 +13623,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_RESULT__;/* global defi
 
 
 /***/ }),
-/* 34 */
+/* 35 */
 /***/ (function(module, exports) {
 
 // shim for using process in browser
@@ -13727,7 +13813,7 @@ process.umask = function() { return 0; };
 
 
 /***/ }),
-/* 35 */
+/* 36 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(global, process) {(function (global, undefined) {
@@ -13917,17 +14003,17 @@ process.umask = function() { return 0; };
     attachTo.clearImmediate = clearImmediate;
 }(typeof self === "undefined" ? typeof global === "undefined" ? this : global : self));
 
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(6), __webpack_require__(34)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(7), __webpack_require__(35)))
 
 /***/ }),
-/* 36 */
+/* 37 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*! tether-drop 1.4.1 */
 
 (function(root, factory) {
   if (true) {
-    !(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(37)], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory),
+    !(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(38)], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory),
 				__WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ?
 				(__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__),
 				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
@@ -14489,7 +14575,7 @@ return Drop;
 
 
 /***/ }),
-/* 37 */
+/* 38 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_RESULT__;/*! tether 1.4.0 */
@@ -16310,7 +16396,7 @@ return Tether;
 
 
 /***/ }),
-/* 38 */
+/* 39 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var apply = Function.prototype.apply;
@@ -16363,13 +16449,13 @@ exports._unrefActive = exports.active = function(item) {
 };
 
 // setimmediate attaches itself to the global object
-__webpack_require__(35);
+__webpack_require__(36);
 exports.setImmediate = setImmediate;
 exports.clearImmediate = clearImmediate;
 
 
 /***/ }),
-/* 39 */
+/* 40 */
 /***/ (function(module, exports) {
 
 (function(self) {
@@ -16836,17 +16922,17 @@ exports.clearImmediate = clearImmediate;
 
 
 /***/ }),
-/* 40 */
+/* 41 */
 /***/ (function(module, exports) {
 
 module.exports = jQuery;
 
 /***/ }),
-/* 41 */
+/* 42 */
 /***/ (function(module, exports, __webpack_require__) {
 
-__webpack_require__(7);
-module.exports = __webpack_require__(8);
+__webpack_require__(8);
+module.exports = __webpack_require__(9);
 
 
 /***/ })

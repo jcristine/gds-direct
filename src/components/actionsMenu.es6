@@ -1,13 +1,17 @@
 'use strict';
 
 import Matrix 	from './popovers/terminalMatrix.es6';
-import Dom		from '../helpers/dom.es6';
+import Component from '../modules/component';
+import Dom from '../helpers/dom';
 
-export default class ActionsMenu {
+export default class ActionsMenu extends Component{
+// export default class ActionsMenu{
 
-	static init()
+	constructor()
 	{
-		this.context = Dom('div.actions-btn-menu');
+		super('div.actions-btn-menu');
+
+		// this.context =  Dom('div.actions-btn-menu');
 
 		const matrix =  new Matrix({
 			icon		: '<i class="fa fa-th-large"></i>',
@@ -17,11 +21,5 @@ export default class ActionsMenu {
 		matrix.className = 'btn btn-purple';
 
 		this.context.appendChild( matrix );
-		return this;
-	}
-	
-	static getContext()
-	{
-		return this.context;
 	}
 }

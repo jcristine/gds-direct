@@ -1,57 +1,71 @@
 import Dom			from '../helpers/dom.es6';
 import Terminal 	from '../modules/terminal.es6';
+import Component 	from '../modules/component.es6';
 
 const gdsSession	= [];
 const stringify 	= JSON.stringify;
+let cells = [];
 
-class TerminalsMatrix
+class DimensionCalculator
 {
-	static clear()
+	constructor( context )
+	{
+		this.context = context;
+	}
+
+	calculate(rowCount, cellCount)
+	{
+		return {
+			height		: Math.floor(this.context.clientHeight / rowCount),
+			width 		: Math.floor(this.context.clientWidth / cellCount),
+			char		: this.getLineHeight()
+		}
+	}
+
+	getLineHeight()
+	{
+		const  { width, height }	= ( this.cursor || this.getCursor() ).getBoundingClientRect();
+		return { width, height };
+	}
+
+	getCursor()
+	{
+		const tempCmd 		= Dom('div.terminal temp-terminal');
+		this.context.appendChild( tempCmd );
+		tempCmd.innerHTML 	= '<div class="cmd"><span class="cursor">&nbsp;</span></div>';
+
+		return this.cursor	= tempCmd.querySelector('.cursor');
+	}
+}
+
+class TerminalsMatrix extends Component
+{
+	constructor()
+	{
+		super('table.terminals-table');
+	}
+
+	clear()
 	{
 		this.context.innerHTML = '';
 		return this;
 	}
 
-	static createTempTerminal()
+	getSizes()
 	{
-		const tempCmd 		= Dom('div.terminal temp-terminal');
-		tempCmd.innerHTML 	= '<div class="cmd"><span class="cursor">&nbsp;</span></div>';
-
-		this.context.parentNode.appendChild( tempCmd );
-		return tempCmd;
+		return this.sizer = this.sizer || new DimensionCalculator( this.getContext().parentNode );
 	}
 
-	static getLineHeight()
+	makeCells(rowCount,  cellCount)
 	{
-		this.tempTerminal = this.tempTerminal || this.createTempTerminal();
-
-		const  { width, height } = this.tempTerminal.querySelector('.cursor').getBoundingClientRect();
-		return { width, height };
-	}
-
-	static getDimension( rowCount, cellCount )
-	{
-		const parent = this.context.parentNode;
-
-		return {
-			height		: Math.floor(parent.clientHeight / rowCount),
-			width 		: Math.floor(parent.clientWidth / cellCount),
-			char		: this.getLineHeight()
-		}
-	}
-
-	static makeCells(rowCount,  cellCount)
-	{
-		const makeRow 	= () 	=> {
+		const makeRow 	= () => {
 			const row = Dom('tr');
 			this.context.appendChild( row );
 			return row;
 		};
 
-		const makeCells = row 	=> {
-
+		const makeCells = row => {
 			return [ ...new Array(cellCount) ]
-
 				.map( () => {
 					const cell = Dom('td.v-middle');
 					row.appendChild(cell);
@@ -59,78 +73,73 @@ class TerminalsMatrix
 				});
 		};
 
-		const cells 	= [ ...new Array(rowCount) ].map( makeRow ).map( makeCells );
-
-		this.resCells	= [].concat.apply( [], cells ); // join arrays into one
-
-		this.context.className = 'terminals-table ' + 't-matrix-w-' + ( cellCount - 1 );
-
-		return this;
+		return [].concat.apply( [], [ ...new Array(rowCount) ].map( makeRow ).map( makeCells ) );
 	}
 
-	static appendTerminals({sessionIndex, gds, activeTerminal}, needToRender)
-	{
-		gdsSession[ gds ] = gdsSession[ gds ] || [];
-
-		this.resCells.forEach(( cell, index ) => {
-
-			const isActive = activeTerminal && index === activeTerminal.name();
-
-			cell.classList.toggle('active', isActive);
-
-			if (needToRender)
-			{
-				gdsSession[gds][index] = gdsSession[gds][index] || new Terminal({
-						name 			: index,
-						sessionIndex	: sessionIndex,
-						gds				: gds,
-						buffer			: window.TerminalState.getBuffer(gds, index + 1),
-						dimensions		: this.props.dimensions
-					});
-
-				// draw or redraw
-				gdsSession[ gds ][index].reattach( cell , this.props.dimensions );
-			}
-		});
-	}
-
-	static purgeScreens( gds )
+	purgeScreens( gds )
 	{
 		gdsSession[ gds ].forEach( terminal => terminal.clear() );
 	}
 
-	static render( params )
+	getTerminal(gds, index, props)
 	{
-		let {rows : rowCount, cells : cellCount} = params.cellMatrix;
+		return gdsSession[gds][index] = gdsSession[gds][index] || new Terminal( props );
+	}
 
-		rowCount++;
-		cellCount++;
+	renderIsNeeded( state )
+	{
+		if (!this.state)
+			return true;
 
-		const props = {
+		return stringify(state) !== stringify(this.state);
+	}
+
+	_renderer()
+	{
+		const params 	= this.props;
+
+		// console.log("XXX", params)
+
+		const rowCount 	= params.cellMatrix.rows 	+ 1;
+		const cellCount = params.cellMatrix.cells 	+ 1;
+
+		gdsSession[ params.gds ] = gdsSession[ params.gds ] || [];
+
+		const state = {
 			gds			: params.gds,
-			dimensions 	: this.getDimension(rowCount, cellCount),
-			// wrapWidth	: Container.context.clientWidth
+			dimensions 	: this.getSizes().calculate(rowCount, cellCount),
 			wrapWidth	: params.containerWidth
 		};
 
-		const needToRender = stringify(props) !== stringify(this.props);
+		const needToRender = this.renderIsNeeded( state );
 
 		if ( needToRender )
 		{
-			// console.log("RERENDER ALL");
+			this.context.innerHTML 	= '';
+			this.context.className 	= 't-matrix-w-' + ( cellCount - 1 );
 
-			this.props = props;
-			this.clear().makeCells( rowCount, cellCount );
+			this.state = state;
+
+			cells = this.makeCells( rowCount, cellCount );
+
+			cells.forEach( ( cell, index ) => {
+
+				const props = {
+					name 			: index,
+					sessionIndex	: params.sessionIndex,
+					gds				: params.gds, // need for session
+					buffer			: window.TerminalState.getBuffer( params.gds, index + 1 )
+				};
+
+				this.getTerminal( params.gds, index, props ).reattach( cell, state.dimensions );
+			});
 		}
 
-		this.appendTerminals( params, needToRender );
+		cells.forEach( (cell, index) => {
+			const isActive = params.activeTerminal && index === params.activeTerminal.name();
+			cell.classList.toggle('active', isActive);
+		});
 	}
 }
-
-TerminalsMatrix.context = Dom('table.terminals-table');
-TerminalsMatrix.props 	= {
-	gds			: '',
-	dimensions 	: {}
-};
 
 export default TerminalsMatrix
