@@ -79,46 +79,28 @@ export default class Terminal {
 		return Math.floor( this.settings.parentContext.clientHeight / lineHeight );
 	}
 
-	// calculateNumOfChars( lineHeight )
-	// {
-	// 	return Math.floor( this.settings.parentContext.clientHeight / lineHeight );
-	// }
-
 	reattach( parentNode, dimensions )
 	{
 		// console.log(' reatach ');
 
 		this.settings.parentContext = parentNode;
 
-		// console.log( 'AAA' );
-		// console.log( parentNode.clientWidth );
-
 		parentNode.style.height		= dimensions.height + 'px';
 		parentNode.style.width		= dimensions.width	+ 'px';
 
 		// console.log( dimensions );
-		// console.log( window.getComputedStyle( parentNode ).width );
-		// console.log();
-
-		// console.log( document.querySelector('.menu').clientWidth );
 		// console.log( parentNode.clientWidth );
-		// console.log( dimensions );
 
 		this.context.style.height	= parentNode.clientHeight + 'px';
-		this.context.style.width	= (parentNode.clientWidth - 1) + 'px';
+		this.context.style.width	= parentNode.clientWidth + 'px';
 
 		this.numOfRows 				= this.calculateNumOfRows( dimensions.char.height );
-		this.numOfChars				= Math.floor( (dimensions.width - 2) / dimensions.char.width );
+		this.numOfChars				= Math.floor( parentNode.clientWidth / Math.ceil(dimensions.char.width) );
 
-		// console.log( 'num rows', this.numOfRows );
-		// console.log( dimensions.width )
-		// console.log( parentNode.clientWidth )
-		// console.log( dimensions.char.height );
-		// console.log( dimensions);
+		// console.log( parentNode.clientWidth , dimensions.char.width);
 		// console.log( '====', this.numOfChars );
 
 		this.settings.parentContext.appendChild( this.context );
-
 
 		if (this.plugin)
 		{
@@ -129,11 +111,6 @@ export default class Terminal {
 		}
 
 		this.context.style.height = (this.numOfRows * dimensions.char.height) + 'px';
-
-		// console.log( dimensions.width )
-		// console.log( this.context.clientWidth )
-		// const numOfChars	= Math.floor( this.context.clientWidth / dimensions.char.width );
-		// console.log( '??', numOfChars );
 
 		if (this.plugin)
 		{

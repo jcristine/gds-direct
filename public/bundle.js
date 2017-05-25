@@ -3648,7 +3648,7 @@ var TerminalState = function () {
 	}, {
 		key: 'getSessionAreaMap',
 		value: function getSessionAreaMap() {
-			var key = this.getGds() === 'apollo' ? 'S' : '¤';
+			var key = this.isGdsApollo() ? 'S' : '¤';
 			return _constants.AREA_LIST.map(function (char) {
 				return key + char;
 			});
@@ -3661,6 +3661,11 @@ var TerminalState = function () {
 			if (apiData && buffer && buffer.gds && buffer.gds[gds]) return buffer['gds'][gds]['terminals'][terminalId];
 
 			return false;
+		}
+	}, {
+		key: 'getHistory',
+		value: function getHistory() {
+			return _requests2.default.get('terminal/lastCommands?rId=' + apiData.rId + '&gds=' + this.getGds(), false);
 		}
 	}, {
 		key: 'purgeScreens',
@@ -3681,9 +3686,15 @@ var TerminalState = function () {
 			return false;
 		}
 	}, {
+		key: 'isGdsApollo',
+		value: function isGdsApollo() {
+			return this.getGds() === 'apollo';
+		}
+	}, {
 		key: 'isLanguageApollo',
 		value: function isLanguageApollo() {
-			return this.getLanguage() === 'APOLLO';
+			return this.isGdsApollo();
+			// return this.getLanguage() === 'APOLLO'; //when time comes uncomment
 		}
 	}, {
 		key: 'action',
@@ -4344,8 +4355,11 @@ var MenuPanel = function (_Component) {
 		value: function history() {
 			return new _history2.default({
 				icon: '<i class="fa fa-history t-f-size-14"></i>',
+				askServer: function askServer() {
+					return window.TerminalState.getHistory();
+				},
 				onHistorySelect: function onHistorySelect(value) {
-					console.log('?????');window.TerminalState.execCmd(value);
+					return window.TerminalState.execCmd(value);
 				}
 			}).getTrigger();
 		}
@@ -4419,7 +4433,7 @@ var MenuPanel = function (_Component) {
 
 			SettingsContext = document.createElement('article');
 
-			[this.fontSize(), this.history(), this.settings()].map(function (button) {
+			[this.fontSize(), this.history()].map(function (button) {
 				return SettingsContext.appendChild(button);
 			});
 
@@ -4441,7 +4455,9 @@ var MenuPanel = function (_Component) {
 
 			context.appendChild(this.settingsButtons(params));
 			context.appendChild(this.activeSession(params));
-			context.appendChild(this.InputLanguage());
+
+			// context.appendChild( this.InputLanguage() );
+
 			context.appendChild(_pqButton2.default.render(params));
 			context.appendChild(this.devButtons || this.tests());
 
@@ -4512,8 +4528,7 @@ var History = function (_ButtonPopOver) {
 			var cb = (0, _dom2.default)('input');
 			cb.type = 'checkbox';
 			cb.onclick = function () {
-				buffer.push(value);
-				console.log(value);
+				return buffer.push(value);
 			};
 
 			el.innerHTML = value;
@@ -4558,7 +4573,7 @@ var History = function (_ButtonPopOver) {
 			buffer = [];
 			this.popContent.innerHTML = '';
 
-			_requests2.default.get('terminal/lastCommands', true).then(this.makeBody.bind(this)).then(this.makeLaunchBtn.bind(this)).then(this.finalize.bind(this));
+			this.settings.askServer().then(this.makeBody.bind(this)).then(this.makeLaunchBtn.bind(this)).then(this.finalize.bind(this));
 		}
 	}, {
 		key: 'build',
@@ -5029,7 +5044,7 @@ var KeyBinding = function () {
 		key: 'parse',
 		value: function parse(evt, terminal) {
 			var keymap = evt.keyCode || evt.which;
-			var isApollo = window.TerminalState.getGds() === 'apollo';
+			var isApollo = window.TerminalState.isGdsApollo();
 
 			// if ( keymap === 13 )
 			// 	return false;
@@ -5415,7 +5430,9 @@ var TerminalPlugin = function () {
 				numRows: this.settings.numOfRows, // plugin calculates it in so shitty slow manner appending cursor to body 3 times per plugin
 				numChars: this.settings.numOfChars,
 
-				// memory			: true,
+				history: ['z', 'c'],
+				memory: true, // dont add to localStorage
+
 				// scrollOnEcho	: false,
 				// keypress		: this.parseChar.bind(this), // BUGGY BUGGY, assign on document wtf???
 
@@ -5571,7 +5588,7 @@ var TerminalPlugin = function () {
 			// window.TerminalState.action( 'CHANGE_PCC', 'zzz' );
 			window.TerminalState.action('CAN_CREATE_PQ', updateParams);
 
-			this.debugOutput(result);
+			if (!window.apiData.hasPermissions()) this.debugOutput(result);
 		}
 	}, {
 		key: 'debugOutput',
@@ -6257,12 +6274,6 @@ var Terminal = function () {
 		value: function calculateNumOfRows(lineHeight) {
 			return Math.floor(this.settings.parentContext.clientHeight / lineHeight);
 		}
-
-		// calculateNumOfChars( lineHeight )
-		// {
-		// 	return Math.floor( this.settings.parentContext.clientHeight / lineHeight );
-		// }
-
 	}, {
 		key: 'reattach',
 		value: function reattach(parentNode, dimensions) {
@@ -6270,31 +6281,19 @@ var Terminal = function () {
 
 			this.settings.parentContext = parentNode;
 
-			// console.log( 'AAA' );
-			// console.log( parentNode.clientWidth );
-
 			parentNode.style.height = dimensions.height + 'px';
 			parentNode.style.width = dimensions.width + 'px';
 
 			// console.log( dimensions );
-			// console.log( window.getComputedStyle( parentNode ).width );
-			// console.log();
-
-			// console.log( document.querySelector('.menu').clientWidth );
 			// console.log( parentNode.clientWidth );
-			// console.log( dimensions );
 
 			this.context.style.height = parentNode.clientHeight + 'px';
-			this.context.style.width = parentNode.clientWidth - 1 + 'px';
+			this.context.style.width = parentNode.clientWidth + 'px';
 
 			this.numOfRows = this.calculateNumOfRows(dimensions.char.height);
-			this.numOfChars = Math.floor((dimensions.width - 2) / dimensions.char.width);
+			this.numOfChars = Math.floor(parentNode.clientWidth / Math.ceil(dimensions.char.width));
 
-			// console.log( 'num rows', this.numOfRows );
-			// console.log( dimensions.width )
-			// console.log( parentNode.clientWidth )
-			// console.log( dimensions.char.height );
-			// console.log( dimensions);
+			// console.log( parentNode.clientWidth , dimensions.char.width);
 			// console.log( '====', this.numOfChars );
 
 			this.settings.parentContext.appendChild(this.context);
@@ -6307,11 +6306,6 @@ var Terminal = function () {
 			}
 
 			this.context.style.height = this.numOfRows * dimensions.char.height + 'px';
-
-			// console.log( dimensions.width )
-			// console.log( this.context.clientWidth )
-			// const numOfChars	= Math.floor( this.context.clientWidth / dimensions.char.width );
-			// console.log( '??', numOfChars );
 
 			if (this.plugin) {
 				this.plugin.emptyLinesRecalculate(this.numOfRows, this.numOfChars, dimensions.char.height);
@@ -9900,7 +9894,6 @@ module.exports = {
     // :: $('<div/>').terminal().echo('foo bar').appendTo('body');
     // -----------------------------------------------------------------------
     function char_size() {
-    	console.log('append again')
         var temp = $('<div class="terminal temp"><div class="cmd"><span cla' +
                      'ss="cursor">&nbsp;</span></div></div>').appendTo('body');
         var span = temp.find('span');
@@ -9908,6 +9901,9 @@ module.exports = {
             width: span.width(),
             height: span.outerHeight()
         };
+
+        console.log( 'append agein ' , result )
+
         temp.remove();
         return result;
     }
@@ -9915,8 +9911,10 @@ module.exports = {
     // :: calculate numbers of characters
     // -----------------------------------------------------------------------
     function get_num_chars(terminal) {
-		console.log('1 append again')
-        var temp = $('<div class="terminal wrap"><span class="cursor">' +
+
+    	console.log('1 append again!!!!!!!!!!!')
+
+		var temp = $('<div class="terminal wrap"><span class="cursor">' +
                      '&nbsp;</span></div>').appendTo('body').css('padding', 0);
         var span = temp.find('span');
         var width = span[0].getBoundingClientRect().width;
@@ -10828,6 +10826,9 @@ module.exports = {
                 lines_to_show = lines;
             }
             try {
+
+            	console.log("REDRAW")
+
                 output_buffer = [];
                 $.each(lines_to_show, function(i, line) {
                     process_line.apply(null, line); // line is an array
@@ -12189,13 +12190,13 @@ module.exports = {
 
 
 
+                    console.log('are you?', settings.numChars);
+
                     var new_num_chars = self.cols();
                     var new_num_rows =  self.rows();
 
-					console.log(' are you bitch ??');
 					console.log(' are you bitch ??', num_chars);
 					console.log(' are you bitch ??', new_num_chars);
-
 
                     // only if number of chars changed
                     if (new_num_chars !== num_chars ||
@@ -12271,6 +12272,7 @@ module.exports = {
                         }
                     }
 
+                    console.log('FLUSH')
                     num_rows = get_num_rows(self);
                     if (settings.scrollOnEcho || bottom) {
                         scroll_to_bottom();

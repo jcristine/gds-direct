@@ -74,7 +74,7 @@ class TerminalState
 
 	getSessionAreaMap()
 	{
-		const key = this.getGds() === 'apollo' ? 'S': '¤';
+		const key = this.isGdsApollo() ? 'S': '¤';
 		return AREA_LIST.map( char => key + char );
 	}
 
@@ -86,6 +86,11 @@ class TerminalState
 			return buffer['gds'][gds]['terminals'][terminalId];
 
 		return false;
+	}
+
+	getHistory()
+	{
+		return Requests.get(`terminal/lastCommands?rId=${apiData.rId}&gds=${this.getGds()}`, false);
 	}
 
 	purgeScreens()
@@ -107,9 +112,15 @@ class TerminalState
 		return false;
 	}
 
+	isGdsApollo()
+	{
+		return this.getGds() === 'apollo';
+	}
+
 	isLanguageApollo()
 	{
-		return this.getLanguage() === 'APOLLO';
+		return this.isGdsApollo();
+		// return this.getLanguage() === 'APOLLO'; //when time comes uncomment
 	}
 
 	action( action, params )

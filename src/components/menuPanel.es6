@@ -30,7 +30,8 @@ export default class MenuPanel extends Component
 	{
 		return new History({
 			icon			: '<i class="fa fa-history t-f-size-14"></i>',
-			onHistorySelect	: value => { console.log('?????'); window.TerminalState.execCmd( value ) }
+			askServer		: () => window.TerminalState.getHistory(),
+			onHistorySelect	: value => window.TerminalState.execCmd( value )
 		}).getTrigger();
 	}
 
@@ -101,7 +102,7 @@ export default class MenuPanel extends Component
 		[
 			this.fontSize(),
 			this.history(),
-			this.settings()
+			// this.settings()
 		].map( button => SettingsContext.appendChild( button ) );
 
 		return SettingsContext;
@@ -122,7 +123,9 @@ export default class MenuPanel extends Component
 
 		context.appendChild( this.settingsButtons( params ) );
 		context.appendChild( this.activeSession( params ) );
-		context.appendChild( this.InputLanguage() );
+
+		// context.appendChild( this.InputLanguage() );
+
 		context.appendChild( PqButton.render( params ) );
 		context.appendChild( this.devButtons || this.tests() );
 

@@ -24,10 +24,7 @@ class History extends ButtonPopOver
 
 		const cb 	= Dom('input');
 		cb.type 	= 'checkbox';
-		cb.onclick	= () => {
-			buffer.push( value );
-			console.log( value );
-		};
+		cb.onclick	= () => buffer.push( value );
 
 		el.innerHTML 	= value;
 		el.addEventListener('click', () => cb.click() );
@@ -65,7 +62,7 @@ class History extends ButtonPopOver
 		buffer 						= [];
 		this.popContent.innerHTML 	= '';
 
-		Request.get('terminal/lastCommands', true)
+		this.settings.askServer()
 			.then( this.makeBody.bind(this) )
 			.then( this.makeLaunchBtn.bind(this) )
 			.then( this.finalize.bind(this) )

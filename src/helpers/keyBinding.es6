@@ -11,7 +11,7 @@ export default class KeyBinding
 	static parse(evt, terminal)
 	{
 		const keymap 	= evt.keyCode || evt.which;
-		const isApollo	= window.TerminalState.getGds() === 'apollo';
+		const isApollo	= window.TerminalState.isGdsApollo();
 
 		// if ( keymap === 13 )
 		// 	return false;
