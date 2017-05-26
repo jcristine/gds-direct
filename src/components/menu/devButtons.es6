@@ -48,8 +48,8 @@ export default class DevButtons
 		this.macros 			= Dom('span.btn btn-primary font-bold');
 		this.macros.innerHTML 	= 'Test pq';
 		this.macros.onclick 	= () => {
-			// window.TerminalState.action('DEV_CMD_STACK_RUN', ['A/V/13SEPSEAMNL+DL', '01Y1*', '*R', '$BB']);
-			window.TerminalState.action('DEV_CMD_STACK_RUN', ['A10JUNKIVRIX', '01Y1Y2', '$B']);
+			window.TerminalState.action('DEV_CMD_STACK_RUN', ['A/V/13SEPSEAMNL+DL', '01k1*', '*R', '$BB']);
+			// window.TerminalState.action('DEV_CMD_STACK_RUN', ['A10JUNKIVRIX', '01Y1Y2', '$B']);
 		};
 
 		return this.macros;

@@ -4177,8 +4177,8 @@ var DevButtons = function () {
 			this.macros = (0, _dom2.default)('span.btn btn-primary font-bold');
 			this.macros.innerHTML = 'Test pq';
 			this.macros.onclick = function () {
-				// window.TerminalState.action('DEV_CMD_STACK_RUN', ['A/V/13SEPSEAMNL+DL', '01Y1*', '*R', '$BB']);
-				window.TerminalState.action('DEV_CMD_STACK_RUN', ['A10JUNKIVRIX', '01Y1Y2', '$B']);
+				window.TerminalState.action('DEV_CMD_STACK_RUN', ['A/V/13SEPSEAMNL+DL', '01k1*', '*R', '$BB']);
+				// window.TerminalState.action('DEV_CMD_STACK_RUN', ['A10JUNKIVRIX', '01Y1Y2', '$B']);
 			};
 
 			return this.macros;
