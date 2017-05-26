@@ -6,6 +6,19 @@
 	return confirmationMessage;                            //Webkit, Safari, Chrome
 });*/
 
+function next( terminal )
+{
+	terminal.cmd().set( terminal.history().current() );
+	terminal.history().previous();
+}
+
+
+function prev( terminal )
+{
+	terminal.cmd().set( terminal.history().current() );
+	terminal.history().next();
+}
+
 export default class KeyBinding
 {
 	static parse(evt, terminal)
@@ -17,7 +30,6 @@ export default class KeyBinding
 		// 	return false;
 
 		// console.log(keymap);
-
 		// evt.preventDefault();
 		// evt.stopPropagation();
 
@@ -64,12 +76,14 @@ export default class KeyBinding
 				case 38 :
 					// Up arrow
 					// Last performed format
+					next( terminal );
 					return false;
 				break;
 
 				case 40 :
 					// down arrow
 					//Next performed format, by default returns to the first format and than each one by one.
+					prev( terminal );
 					return false;
 				break;
 
@@ -135,6 +149,20 @@ export default class KeyBinding
 			{
 				case 8: // + backSpace;
 					terminal.clear();
+					return false;
+				break;
+
+				case 38 :
+					// Up arrow
+					// Last performed format
+					next( terminal );
+					return false;
+				break;
+
+				case 40 :
+					// down arrow
+					//Next performed format, by default returns to the first format and than each one by one.
+					prev( terminal );
 					return false;
 				break;
 

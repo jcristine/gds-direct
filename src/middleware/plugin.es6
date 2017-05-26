@@ -149,7 +149,7 @@ export default class TerminalPlugin
 			numRows			: this.settings.numOfRows, // plugin calculates it in so shitty slow manner appending cursor to body 3 times per plugin
 			numChars		: this.settings.numOfChars,
 
-			memory			: true, // dont add to localStorage
+			// memory			: true, // dont add to localStorage
 
 			// scrollOnEcho	: false,
 			// keypress		: this.parseChar.bind(this), // BUGGY BUGGY, assign on document wtf???
@@ -166,7 +166,7 @@ export default class TerminalPlugin
 				'CTRL+S'	: () => window.TerminalState.purgeScreens(),
 				'TAB'		: () => this.tabPressed(),
 				'F8'		: () => this.f8Reader.tie(),
-				'F5'		: () => false,
+				'F5'		: () => false
 			},
 
 			exceptionHandler( err )

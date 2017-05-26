@@ -4177,7 +4177,7 @@ var DevButtons = function () {
 			this.macros = (0, _dom2.default)('span.btn btn-primary font-bold');
 			this.macros.innerHTML = 'Test pq';
 			this.macros.onclick = function () {
-				window.TerminalState.action('DEV_CMD_STACK_RUN', ['A/V/13SEPSEAMNL+DL', '01k1*', '*R', '$BB']);
+				window.TerminalState.action('DEV_CMD_STACK_RUN', ['A/V/13SEPSEAMNL+DL', '01k1*', '*R', '$BN1+2*C09+3*inf']);
 				// window.TerminalState.action('DEV_CMD_STACK_RUN', ['A10JUNKIVRIX', '01Y1Y2', '$B']);
 			};
 
@@ -5110,6 +5110,16 @@ var _createClass = function () { function defineProperties(target, props) { for 
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
+function next(terminal) {
+	terminal.cmd().set(terminal.history().current());
+	terminal.history().previous();
+}
+
+function prev(terminal) {
+	terminal.cmd().set(terminal.history().current());
+	terminal.history().next();
+}
+
 var KeyBinding = function () {
 	function KeyBinding() {
 		_classCallCheck(this, KeyBinding);
@@ -5125,7 +5135,6 @@ var KeyBinding = function () {
 			// 	return false;
 
 			// console.log(keymap);
-
 			// evt.preventDefault();
 			// evt.stopPropagation();
 
@@ -5170,12 +5179,14 @@ var KeyBinding = function () {
 					case 38:
 						// Up arrow
 						// Last performed format
+						next(terminal);
 						return false;
 						break;
 
 					case 40:
 						// down arrow
 						//Next performed format, by default returns to the first format and than each one by one.
+						prev(terminal);
 						return false;
 						break;
 
@@ -5244,6 +5255,20 @@ var KeyBinding = function () {
 					case 8:
 						// + backSpace;
 						terminal.clear();
+						return false;
+						break;
+
+					case 38:
+						// Up arrow
+						// Last performed format
+						next(terminal);
+						return false;
+						break;
+
+					case 40:
+						// down arrow
+						//Next performed format, by default returns to the first format and than each one by one.
+						prev(terminal);
 						return false;
 						break;
 
@@ -5485,7 +5510,7 @@ var TerminalPlugin = function () {
 				numRows: this.settings.numOfRows, // plugin calculates it in so shitty slow manner appending cursor to body 3 times per plugin
 				numChars: this.settings.numOfChars,
 
-				memory: true, // dont add to localStorage
+				// memory			: true, // dont add to localStorage
 
 				// scrollOnEcho	: false,
 				// keypress		: this.parseChar.bind(this), // BUGGY BUGGY, assign on document wtf???
