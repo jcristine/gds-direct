@@ -157,17 +157,14 @@ class TerminalState
 			break;*/
 
 			case 'UPDATE_CUR_GDS' :
-
 				this.state.gdsObj.pcc[ params.sessionIndex ] = params.lastPcc;
 
 				this.change({
 					gdsObj : Object.assign( {}, this.state.gdsObj, params )
 				});
-
 			break;
 
 			case 'PQ_MODAL_SHOW' :
-
 				if (!this.state.gdsObj.canCreatePq)
 					return false;
 
@@ -177,7 +174,6 @@ class TerminalState
 				}).then( () => {
 					this.change({hideMenu: true});
 				});
-
 			break;
 
 			case 'CLOSE_PQ_WINDOW' :

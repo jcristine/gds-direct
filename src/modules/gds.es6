@@ -25,7 +25,8 @@ class Gds
 		return mergeIntoNew( defaults, {
 			name 			: name,
 			sessionIndex 	: AREA_LIST.indexOf( settings['area'] ),
-			canCreatePq		: !!settings['canCreatePq']
+			// canCreatePq		: !!settings['canCreatePq']
+			canCreatePq		: false
 		})
 	}
 

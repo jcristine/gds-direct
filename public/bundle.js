@@ -497,7 +497,8 @@ var Gds = function () {
 			return (0, _helpers.mergeIntoNew)(defaults, {
 				name: name,
 				sessionIndex: _constants.AREA_LIST.indexOf(settings['area']),
-				canCreatePq: !!settings['canCreatePq']
+				// canCreatePq		: !!settings['canCreatePq']
+				canCreatePq: false
 			});
 		}
 	}, {
@@ -3824,17 +3825,14 @@ var TerminalState = function () {
     break;*/
 
 				case 'UPDATE_CUR_GDS':
-
 					this.state.gdsObj.pcc[params.sessionIndex] = params.lastPcc;
 
 					this.change({
 						gdsObj: Object.assign({}, this.state.gdsObj, params)
 					});
-
 					break;
 
 				case 'PQ_MODAL_SHOW':
-
 					if (!this.state.gdsObj.canCreatePq) return false;
 
 					apiData.pqModal.show({
@@ -3845,7 +3843,6 @@ var TerminalState = function () {
 					}).then(function () {
 						_this.change({ hideMenu: true });
 					});
-
 					break;
 
 				case 'CLOSE_PQ_WINDOW':
@@ -5111,6 +5108,7 @@ var _createClass = function () { function defineProperties(target, props) { for 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 function next(terminal) {
+
 	terminal.cmd().set(terminal.history().previous());
 }
 
