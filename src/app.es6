@@ -8,8 +8,7 @@ const apiData	= window.apiData || {};
 const Container 	= new ContainerMain( apiData['htmlRootId'] || 'rootTerminal' );
 // const mergeIntoNew 	= ( current, extendWith ) => Object.assign({}, current, extendWith);
 
-
-const Gds =GdsSet.getList();
+const Gds = GdsSet.getList();
 
 class TerminalState
 {
@@ -135,17 +134,14 @@ class TerminalState
 			break;
 
 			case 'CHANGE_MATRIX':
-
 				localStorage.setItem('matrix', JSON.stringify( params ) );
 
 				this.change({
 					gdsObj : Object.assign( {}, this.state.gdsObj, {matrix : params} )
 				});
-
 			break;
 
 			case 'CHANGE_ACTIVE_TERMINAL' :
-				// TODO :: optimize
 				this.change({
 					gdsObj : Object.assign( {}, this.state.gdsObj, { activeTerminal : params } )
 				});
@@ -168,18 +164,24 @@ class TerminalState
 					gdsObj : Object.assign( {}, this.state.gdsObj, params )
 				});
 
-				return false;
 			break;
 
 			case 'PQ_MODAL_SHOW' :
+
 				if (!this.state.gdsObj.canCreatePq)
 					return false;
 
 				apiData.pqModal.show({
 					canCreatePqErrors 	: this.state.gdsObj.canCreatePqErrors,
-					onClose				: () => this.change( {hideMenu: false} )
-				}).then( () => this.change({hideMenu: true}) );
+					onClose				: () => this.action( 'CLOSE_PQ_WINDOW')
+				}).then( () => {
+					this.change({hideMenu: true});
+				});
 
+			break;
+
+			case 'CLOSE_PQ_WINDOW' :
+				this.change({ hideMenu: false});
 			break;
 
 			case 'DEV_CMD_STACK_RUN' :
@@ -206,5 +208,5 @@ window.onresize = () => {
 	if (resizeTimeout)
 		clearInterval(resizeTimeout);
 
-	resizeTimeout = setTimeout( () => window.TerminalState.change(), 150 );
+	resizeTimeout = setTimeout( () => window.TerminalState.change(), 50 );
 };

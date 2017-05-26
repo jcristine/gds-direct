@@ -27,20 +27,21 @@ class Wrapper extends Component
 	{
 		super('div.term-body minimized');
 
-		matrix =  new TerminalMatrix();
+		matrix 			= new TerminalMatrix();
+
+		const leftSide 	= new Component('aside.t-d-cell left');
+		const rightSide = new RightSide();
 
 		this
-			.observe(
-				new Component('aside.t-d-cell left')
-					.observe( matrix )
-					.append( new ActionsMenu() )
-			)
+			.append( leftSide )
+			.append( rightSide );
 
-			.observe(
-				new RightSide()
-			);
+		this.addToObserve( rightSide );
+		this.addToObserve( leftSide );
 
-		// left.getContext().appendChild(  new ActionsMenu( ) )
+		leftSide
+			.observe( matrix )
+			.observe( new ActionsMenu() );
 	}
 
 	_renderer()

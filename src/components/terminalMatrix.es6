@@ -109,6 +109,8 @@ class TerminalsMatrix extends Component
 			gds			: params.gds,
 			dimensions 	: this.getSizes().calculate(rowCount, cellCount),
 			wrapWidth	: params.containerWidth
+			,
+			hideMenu	: params.hideMenu
 		};
 
 		const needToRender = this.renderIsNeeded( state );

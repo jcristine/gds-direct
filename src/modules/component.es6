@@ -15,6 +15,12 @@ export default class Component
 		return this;
 	}
 
+	addToObserve( component )
+	{
+		this.observers.push( component );
+		return this;
+	}
+
 	append( component )
 	{
 		this.context.appendChild( component.getContext() );

@@ -92,6 +92,7 @@ export default class Terminal {
 
 		// console.log( dimensions );
 		// console.log( parentNode.clientWidth );
+		// console.log( parentNode.style.width );
 
 		this.context.style.height	= parentNode.clientHeight + 'px';
 		this.context.style.width	= parentNode.clientWidth + 'px';
@@ -99,13 +100,11 @@ export default class Terminal {
 		this.numOfRows 				= this.calculateNumOfRows( dimensions.char.height );
 		this.numOfChars				= Math.floor( parentNode.clientWidth / Math.ceil(dimensions.char.width) );
 
-		// console.log( parentNode.clientWidth , dimensions.char.width);
-		// console.log( '====', this.numOfChars );
-
 		this.settings.parentContext.appendChild( this.context );
 
 		if (this.plugin)
 		{
+			// do not rely on plugin calculating too messy slow and etc.
 			this.plugin.terminal.settings().numChars = Math.floor( (dimensions.width - 2) / dimensions.char.width );
 			this.plugin.terminal.settings().numRows  = this.numOfRows;
 
@@ -115,9 +114,7 @@ export default class Terminal {
 		this.context.style.height = (this.numOfRows * dimensions.char.height) + 'px';
 
 		if (this.plugin)
-		{
 			this.plugin.emptyLinesRecalculate( this.numOfRows, this.numOfChars, dimensions.char.height );
-		}
 
 		this.context.scrollTop = this.context.scrollHeight;
 	}

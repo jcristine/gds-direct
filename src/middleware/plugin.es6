@@ -288,7 +288,6 @@ export default class TerminalPlugin
 			{
 				// if 1 rows of terminal do not perform clear screen
 				const clearScreen = result['clearScreen'] && window.TerminalState.getMatrix().rows !== 0;
-
 				this.outputLiner.prepare( result['output'], clearScreen );
 			}
 		}

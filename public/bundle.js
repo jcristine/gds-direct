@@ -316,6 +316,12 @@ var Component = function () {
 			return this;
 		}
 	}, {
+		key: 'addToObserve',
+		value: function addToObserve(component) {
+			this.observers.push(component);
+			return this;
+		}
+	}, {
 		key: 'append',
 		value: function append(component) {
 			this.context.appendChild(component.getContext());
@@ -3667,7 +3673,6 @@ var apiData = window.apiData || {};
 var Container = new _containerMain2.default(apiData['htmlRootId'] || 'rootTerminal');
 // const mergeIntoNew 	= ( current, extendWith ) => Object.assign({}, current, extendWith);
 
-
 var Gds = _gds2.default.getList();
 
 var TerminalState = function () {
@@ -3798,17 +3803,14 @@ var TerminalState = function () {
 					break;
 
 				case 'CHANGE_MATRIX':
-
 					localStorage.setItem('matrix', JSON.stringify(params));
 
 					this.change({
 						gdsObj: Object.assign({}, this.state.gdsObj, { matrix: params })
 					});
-
 					break;
 
 				case 'CHANGE_ACTIVE_TERMINAL':
-					// TODO :: optimize
 					this.change({
 						gdsObj: Object.assign({}, this.state.gdsObj, { activeTerminal: params })
 					});
@@ -3829,21 +3831,25 @@ var TerminalState = function () {
 						gdsObj: Object.assign({}, this.state.gdsObj, params)
 					});
 
-					return false;
 					break;
 
 				case 'PQ_MODAL_SHOW':
+
 					if (!this.state.gdsObj.canCreatePq) return false;
 
 					apiData.pqModal.show({
 						canCreatePqErrors: this.state.gdsObj.canCreatePqErrors,
 						onClose: function onClose() {
-							return _this.change({ hideMenu: false });
+							return _this.action('CLOSE_PQ_WINDOW');
 						}
 					}).then(function () {
-						return _this.change({ hideMenu: true });
+						_this.change({ hideMenu: true });
 					});
 
+					break;
+
+				case 'CLOSE_PQ_WINDOW':
+					this.change({ hideMenu: false });
 					break;
 
 				case 'DEV_CMD_STACK_RUN':
@@ -3876,7 +3882,7 @@ window.onresize = function () {
 
 	resizeTimeout = setTimeout(function () {
 		return window.TerminalState.change();
-	}, 150);
+	}, 50);
 };
 
 /***/ }),
@@ -4014,9 +4020,15 @@ var Wrapper = function (_Component2) {
 
 		matrix = new _terminalMatrix2.default();
 
-		_this2.observe(new _component2.default('aside.t-d-cell left').observe(matrix).append(new _actionsMenu2.default())).observe(new RightSide());
+		var leftSide = new _component2.default('aside.t-d-cell left');
+		var rightSide = new RightSide();
 
-		// left.getContext().appendChild(  new ActionsMenu( ) )
+		_this2.append(leftSide).append(rightSide);
+
+		_this2.addToObserve(rightSide);
+		_this2.addToObserve(leftSide);
+
+		leftSide.observe(matrix).observe(new _actionsMenu2.default());
 		return _this2;
 	}
 
@@ -5036,7 +5048,9 @@ var TerminalsMatrix = function (_Component) {
 			var state = {
 				gds: params.gds,
 				dimensions: this.getSizes().calculate(rowCount, cellCount),
-				wrapWidth: params.containerWidth
+				wrapWidth: params.containerWidth,
+
+				hideMenu: params.hideMenu
 			};
 
 			var needToRender = this.renderIsNeeded(state);
@@ -5629,7 +5643,6 @@ var TerminalPlugin = function () {
 					} else {
 					// if 1 rows of terminal do not perform clear screen
 					var clearScreen = result['clearScreen'] && window.TerminalState.getMatrix().rows !== 0;
-
 					this.outputLiner.prepare(result['output'], clearScreen);
 				}
 			}
@@ -6349,6 +6362,7 @@ var Terminal = function () {
 
 			// console.log( dimensions );
 			// console.log( parentNode.clientWidth );
+			// console.log( parentNode.style.width );
 
 			this.context.style.height = parentNode.clientHeight + 'px';
 			this.context.style.width = parentNode.clientWidth + 'px';
@@ -6356,12 +6370,10 @@ var Terminal = function () {
 			this.numOfRows = this.calculateNumOfRows(dimensions.char.height);
 			this.numOfChars = Math.floor(parentNode.clientWidth / Math.ceil(dimensions.char.width));
 
-			// console.log( parentNode.clientWidth , dimensions.char.width);
-			// console.log( '====', this.numOfChars );
-
 			this.settings.parentContext.appendChild(this.context);
 
 			if (this.plugin) {
+				// do not rely on plugin calculating too messy slow and etc.
 				this.plugin.terminal.settings().numChars = Math.floor((dimensions.width - 2) / dimensions.char.width);
 				this.plugin.terminal.settings().numRows = this.numOfRows;
 
@@ -6370,9 +6382,7 @@ var Terminal = function () {
 
 			this.context.style.height = this.numOfRows * dimensions.char.height + 'px';
 
-			if (this.plugin) {
-				this.plugin.emptyLinesRecalculate(this.numOfRows, this.numOfChars, dimensions.char.height);
-			}
+			if (this.plugin) this.plugin.emptyLinesRecalculate(this.numOfRows, this.numOfChars, dimensions.char.height);
 
 			this.context.scrollTop = this.context.scrollHeight;
 		}
