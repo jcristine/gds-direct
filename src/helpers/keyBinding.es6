@@ -8,6 +8,7 @@
 
 function next( terminal )
 {
+
 	terminal.cmd().set ( terminal.history().previous() );
 }
 
