@@ -4177,7 +4177,8 @@ var DevButtons = function () {
 			this.macros = (0, _dom2.default)('span.btn btn-primary font-bold');
 			this.macros.innerHTML = 'Test pq';
 			this.macros.onclick = function () {
-				window.TerminalState.action('DEV_CMD_STACK_RUN', ['A/V/13SEPSEAMNL+DL', '01Y1*', '*R', '$BB']);
+				// window.TerminalState.action('DEV_CMD_STACK_RUN', ['A/V/13SEPSEAMNL+DL', '01Y1*', '*R', '$BB']);
+				window.TerminalState.action('DEV_CMD_STACK_RUN', ['A10JUNKIVRIX', '01Y1Y2', '$B']);
 			};
 
 			return this.macros;
@@ -5169,25 +5170,18 @@ var KeyBinding = function () {
 					case 38:
 						// Up arrow
 						// Last performed format
-
 						return false;
 						break;
 
 					case 40:
 						// down arrow
 						//Next performed format, by default returns to the first format and than each one by one.
-
 						return false;
 						break;
 
 					case 112:
 						// f1
-						// Apollo template: S*CTY/(City Code}
-						// Apollo example: S*CTY/RIX
-						// Sabre template: W/*(City Code)
-						// Sabre example: W/*RIX
-
-						console.log('???');
+						terminal.insert(isApollo ? 'S*CTY' : 'W/*');
 						return false;
 						break;
 
@@ -5258,6 +5252,16 @@ var KeyBinding = function () {
 			}
 
 			switch (keymap) {
+				case 186:
+					// ;
+
+					if (!isApollo) {
+						terminal.cmd().delete(-1);
+						return false;
+					}
+
+					break;
+
 				case 34:
 					// page down
 					terminal.exec('MD');
@@ -5275,32 +5279,6 @@ var KeyBinding = function () {
 					terminal.exec((isApollo ? 'R:' : '6') + window.apiData.auth.login.toUpperCase());
 					return false;
 					break;
-
-				/*case 119 : //f8
-    		let cmd = {};
-    		if (isApollo)
-    	{
-    		cmd = {
-    			pos 	: '¤:3SSRDOCSYYHK1/N'.length,
-    			cmd		: '¤:3SSRDOCSYYHK1/N ///// DMMMYY/ //          /          / ',
-    			rules	: [
-    				'¤:3SSRDOCSYYHK1/N',
-    				'DMMMYY'
-    			]
-    		}
-    	} else
-    	{
-    		cmd = {
-    			pos		: '3DOCSA/DB/'.length,
-    			cmd		: '3DOCSA/DB/DDMMMYY/      /        /        -',
-    			rules	: [
-    				'3DOCSA/DB/'
-    			]
-    		}
-    	}
-    		plugin.lockF8( cmd );
-    		return false;
-    break;*/
 
 				default:
 			}

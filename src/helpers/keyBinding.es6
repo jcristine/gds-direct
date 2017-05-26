@@ -64,25 +64,17 @@ export default class KeyBinding
 				case 38 :
 					// Up arrow
 					// Last performed format
-
 					return false;
 				break;
 
 				case 40 :
 					// down arrow
 					//Next performed format, by default returns to the first format and than each one by one.
-
 					return false;
 				break;
 
-				case 112 :
-					// f1
-					// Apollo template: S*CTY/(City Code}
-					// Apollo example: S*CTY/RIX
-					// Sabre template: W/*(City Code)
- 					// Sabre example: W/*RIX
-
-					console.log('???');
+				case 112 :	// f1
+					terminal.insert( isApollo ? 'S*CTY' : 'W/*' );
 					return false;
 				break;
 
@@ -152,6 +144,16 @@ export default class KeyBinding
 
 		switch (keymap)
 		{
+			case 186 : // ;
+
+				if (!isApollo)
+				{
+					terminal.cmd().delete(-1);
+					return false;
+				}
+
+			break;
+
 			case 34 : // page down
 				terminal.exec('MD');
 				return false;
@@ -167,36 +169,6 @@ export default class KeyBinding
 				terminal.exec(  ( isApollo ? 'R:' : '6')  + window.apiData.auth.login.toUpperCase() );
 				return false;
 			break;
-
-			/*case 119 : //f8
-
-				let cmd = {};
-
-				if (isApollo)
-				{
-					cmd = {
-						pos 	: '¤:3SSRDOCSYYHK1/N'.length,
-						cmd		: '¤:3SSRDOCSYYHK1/N ///// DMMMYY/ //          /          / ',
-						rules	: [
-							'¤:3SSRDOCSYYHK1/N',
-							'DMMMYY'
-						]
-					}
-				} else
-				{
-					cmd = {
-						pos		: '3DOCSA/DB/'.length,
-						cmd		: '3DOCSA/DB/DDMMMYY/      /        /        -',
-						rules	: [
-							'3DOCSA/DB/'
-						]
-					}
-				}
-
-				plugin.lockF8( cmd );
-
-				return false;
-			break;*/
 
 			default:
 		}
