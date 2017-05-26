@@ -8,15 +8,12 @@
 
 function next( terminal )
 {
-	terminal.cmd().set( terminal.history().current() );
-	terminal.history().previous();
+	terminal.cmd().set ( terminal.history().previous() );
 }
-
 
 function prev( terminal )
 {
-	terminal.cmd().set( terminal.history().current() );
-	terminal.history().next();
+	terminal.cmd().set( terminal.history().end() ? '' : terminal.history().next() );
 }
 
 export default class KeyBinding

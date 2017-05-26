@@ -5111,13 +5111,11 @@ var _createClass = function () { function defineProperties(target, props) { for 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 function next(terminal) {
-	terminal.cmd().set(terminal.history().current());
-	terminal.history().previous();
+	terminal.cmd().set(terminal.history().previous());
 }
 
 function prev(terminal) {
-	terminal.cmd().set(terminal.history().current());
-	terminal.history().next();
+	terminal.cmd().set(terminal.history().end() ? '' : terminal.history().next());
 }
 
 var KeyBinding = function () {
