@@ -194,7 +194,7 @@ export default class TerminalPlugin
 
 		if ( this.allowManualPaging )
 		{
-			switch (command)
+			switch (command.toUpperCase())
 			{
 				case 'MD' :
 					terminal.echo( this.pagination.next().print() );

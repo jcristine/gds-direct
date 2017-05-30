@@ -5556,7 +5556,7 @@ var TerminalPlugin = function () {
 			if (!command || command === '') return false;
 
 			if (this.allowManualPaging) {
-				switch (command) {
+				switch (command.toUpperCase()) {
 					case 'MD':
 						terminal.echo(this.pagination.next().print());
 						return false;
