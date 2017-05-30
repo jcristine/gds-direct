@@ -9973,9 +9973,6 @@ module.exports = {
             width: span.width(),
             height: span.outerHeight()
         };
-
-        // console.log( 'append agein ' , result )
-
         temp.remove();
         return result;
     }
@@ -9983,8 +9980,7 @@ module.exports = {
     // :: calculate numbers of characters
     // -----------------------------------------------------------------------
     function get_num_chars(terminal) {
-
-		var temp = $('<div class="terminal wrap"><span class="cursor">' +
+        var temp = $('<div class="terminal wrap"><span class="cursor">' +
                      '&nbsp;</span></div>').appendTo('body').css('padding', 0);
         var span = temp.find('span');
         var width = span[0].getBoundingClientRect().width;
@@ -12235,14 +12231,12 @@ module.exports = {
             // :: Recalculate and redraw everything
             // -------------------------------------------------------------
             resize: function(width, height) {
-
                 if (!self.is(':visible')) {
                     // delay resize if terminal not visible
                     self.stopTime('resize');
                     self.oneTime(500, 'resize', function() {
                         self.resize(width, height);
                     });
-
                 } else {
                     if (width && height) {
                         self.width(width);
@@ -12250,10 +12244,8 @@ module.exports = {
                     }
                     width = self.width();
                     height = self.height();
-
                     var new_num_chars = self.cols();
-                    var new_num_rows =  self.rows();
-
+                    var new_num_rows = self.rows();
                     // only if number of chars changed
                     if (new_num_chars !== num_chars ||
                         new_num_rows !== num_rows) {
@@ -12269,7 +12261,6 @@ module.exports = {
                         scroll_to_bottom();
                     }
                 }
-
                 return self;
             },
             // -------------------------------------------------------------
@@ -12327,7 +12318,6 @@ module.exports = {
                             });
                         }
                     }
-
                     num_rows = get_num_rows(self);
                     if (settings.scrollOnEcho || bottom) {
                         scroll_to_bottom();
