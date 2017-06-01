@@ -1,21 +1,21 @@
 'use strict';
 
 const common = {
-	'[': '¤',
-	'=': '*',
-	',': '+',
+	'[': '¤'
 };
 
 const sabreLayout = Object.assign({}, common, {
 	'\'': '‡',
-	'\\': '§',
+	'\\': '§'
 	// shift + ","
 });
 
 const apolloLayout = Object.assign({}, common, {
 	']': '$',
 	'`': '>',
+	'=': '*',
 	';': ':',
+	',': '+',
 	'\\': false
 });
 
@@ -32,12 +32,21 @@ const _to_ascii = {
 	'173': '45',
 	'187': '61', //IE Key codes
 	'186': '59', //IE Key codes
-	'189': '45'  //IE Key codes
+	'189': '45',  //IE Key codes
+
+	'59': '59',  //FF Key codes  ;
+	'61': '61'  //FF Key codes  =
 };
 
 export function getReplacement( evt, isApollo )
 {
+	console.log('getting replacement');
 	const char = String.fromCharCode(_to_ascii[ evt.keyCode || evt.which ] );
+
+	console.log('evt', evt);
+	console.log('evt.keyCode', evt.keyCode);
+	console.log('evt.which', evt.which);
+	console.log('char', char);
 	return isApollo ? apolloLayout[char] : sabreLayout[char];
 }
 

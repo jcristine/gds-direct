@@ -170,7 +170,8 @@ export default class KeyBinding
 
 		switch (keymap)
 		{
-			case 186 : // ;
+			case 59	: // ; firefox
+			case 186: // ; all other browsers
 
 				if (!isApollo)
 				{

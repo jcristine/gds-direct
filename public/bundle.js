@@ -200,20 +200,21 @@ exports.getReplacement = getReplacement;
 exports.makePages = makePages;
 exports.splitIntoLinesArr = splitIntoLinesArr;
 var common = {
-	'[': '¤',
-	'=': '*',
-	',': '+'
+	'[': '¤'
 };
 
 var sabreLayout = Object.assign({}, common, {
 	'\'': '‡',
 	'\\': '§'
+	// shift + ","
 });
 
 var apolloLayout = Object.assign({}, common, {
 	']': '$',
 	'`': '>',
+	'=': '*',
 	';': ':',
+	',': '+',
 	'\\': false
 });
 
@@ -230,11 +231,20 @@ var _to_ascii = {
 	'173': '45',
 	'187': '61', //IE Key codes
 	'186': '59', //IE Key codes
-	'189': '45' //IE Key codes
+	'189': '45', //IE Key codes
+
+	'59': '59', //FF Key codes  ;
+	'61': '61' //FF Key codes  =
 };
 
 function getReplacement(evt, isApollo) {
+	console.log('getting replacement');
 	var char = String.fromCharCode(_to_ascii[evt.keyCode || evt.which]);
+
+	console.log('evt', evt);
+	console.log('evt.keyCode', evt.keyCode);
+	console.log('evt.which', evt.which);
+	console.log('char', char);
 	return isApollo ? apolloLayout[char] : sabreLayout[char];
 }
 
@@ -5273,8 +5283,9 @@ var KeyBinding = function () {
 			}
 
 			switch (keymap) {
+				case 59: // ; firefox
 				case 186:
-					// ;
+					// ; all other browsers
 
 					if (!isApollo) {
 						terminal.cmd().delete(-1);
