@@ -200,7 +200,8 @@ exports.getReplacement = getReplacement;
 exports.makePages = makePages;
 exports.splitIntoLinesArr = splitIntoLinesArr;
 var common = {
-	'[': '¤'
+	'[': '¤',
+	'=': '*'
 };
 
 var sabreLayout = Object.assign({}, common, {
@@ -212,7 +213,6 @@ var sabreLayout = Object.assign({}, common, {
 var apolloLayout = Object.assign({}, common, {
 	']': '$',
 	'`': '>',
-	'=': '*',
 	';': ':',
 	',': '+',
 	'\\': false
@@ -5240,6 +5240,7 @@ var KeyBinding = function () {
 						break;
 
 					case 187: //+
+					case 61: //+ FireFox
 					case 188:
 						//,
 						terminal.insert('+');

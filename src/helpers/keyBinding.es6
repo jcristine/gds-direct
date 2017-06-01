@@ -132,6 +132,7 @@ export default class KeyBinding
 				break;
 
 				case 187: //+
+				case 61 : //+ FireFox
 				case 188: //,
 					terminal.insert('+');
 					return false;

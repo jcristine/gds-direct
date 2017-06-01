@@ -1,7 +1,8 @@
 'use strict';
 
 const common = {
-	'[': '¤'
+	'[': '¤',
+	'=': '*'
 };
 
 const sabreLayout = Object.assign({}, common, {
@@ -13,7 +14,6 @@ const sabreLayout = Object.assign({}, common, {
 const apolloLayout = Object.assign({}, common, {
 	']': '$',
 	'`': '>',
-	'=': '*',
 	';': ':',
 	',': '+',
 	'\\': false
