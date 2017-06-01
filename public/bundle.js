@@ -238,13 +238,7 @@ var _to_ascii = {
 };
 
 function getReplacement(evt, isApollo) {
-	console.log('getting replacement');
 	var char = String.fromCharCode(_to_ascii[evt.keyCode || evt.which]);
-
-	console.log('evt', evt);
-	console.log('evt.keyCode', evt.keyCode);
-	console.log('evt.which', evt.which);
-	console.log('char', char);
 	return isApollo ? apolloLayout[char] : sabreLayout[char];
 }
 
