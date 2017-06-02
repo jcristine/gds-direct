@@ -3865,7 +3865,11 @@ var TerminalState = function () {
 			var params = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
 
 			this.state = Object.assign({}, this.state, params);
-			Container.render(this.state);
+
+			if (window.location.hash === '#terminalNavBtntab') // fixing bug where terminal freezes if i close pq popup while in other tab
+				{
+					Container.render(this.state);
+				}
 		}
 	}]);
 
