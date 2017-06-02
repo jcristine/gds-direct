@@ -5144,7 +5144,8 @@ var KeyBinding = function () {
 					case 87:
 						// case 83:
 						evt.preventDefault();
-						terminal.clear();
+						//terminal.clear();
+						window.TerminalState.purgeScreens();
 						return false;
 						break;
 
