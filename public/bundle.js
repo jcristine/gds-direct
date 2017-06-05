@@ -199,6 +199,7 @@ Object.defineProperty(exports, "__esModule", {
 exports.getReplacement = getReplacement;
 exports.makePages = makePages;
 exports.splitIntoLinesArr = splitIntoLinesArr;
+exports.currDate = currDate;
 var common = {
 	'[': '¤',
 	'=': '*'
@@ -281,6 +282,15 @@ var mergeIntoNew = exports.mergeIntoNew = function mergeIntoNew(current, extendW
 
 function splitLines(txt) {
 	return txt.split(/\r?\n/);
+}
+
+function currDate() {
+	var d = new Date();
+	var date = d.getDate();
+	var getDate = date < 10 ? '0' + date : date;
+	var months = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'];
+
+	return getDate + months[d.getMonth()];
 }
 
 /***/ }),
@@ -5101,19 +5111,21 @@ exports.default = TerminalsMatrix;
 "use strict";
 
 
-/*window.addEventListener("beforeunload", function (e) {
-	let confirmationMessage = "TEST";
-	(e || window.event).returnValue = confirmationMessage; //Gecko + IE
-	return confirmationMessage;                            //Webkit, Safari, Chrome
-});*/
-
 Object.defineProperty(exports, "__esModule", {
 	value: true
 });
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
+var _helpers = __webpack_require__(2);
+
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+/*window.addEventListener("beforeunload", function (e) {
+	let confirmationMessage = "TEST";
+	(e || window.event).returnValue = confirmationMessage; //Gecko + IE
+	return confirmationMessage;                            //Webkit, Safari, Chrome
+});*/
 
 function next(terminal) {
 
@@ -5144,12 +5156,19 @@ var KeyBinding = function () {
 
 			if (evt.ctrlKey || evt.metaKey) {
 				switch (keymap) {
-					case 8: //  CTRL + backSpace; || CTRL+W || CTRL + S
-					case 87:
+					case 8:
+						//  CTRL + backSpace; || CTRL + S
 						// case 83:
 						evt.preventDefault();
 						//terminal.clear();
 						window.TerminalState.purgeScreens();
+						return false;
+						break;
+
+					case 87:
+						//	CTRL+W
+						terminal.clear();
+						//window.TerminalState.purgeScreens();
 						return false;
 						break;
 
@@ -5303,6 +5322,13 @@ var KeyBinding = function () {
 				case 33:
 					//page up
 					terminal.exec('MU');
+					return false;
+					break;
+
+				case 122:
+					// console.log('f11');
+					var d = (0, _helpers.currDate)();
+					terminal.exec((isApollo ? 'T:TAU/' : '7TAW/') + d);
 					return false;
 					break;
 

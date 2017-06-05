@@ -1,5 +1,7 @@
 'use strict';
 
+import {currDate} from './helpers.es6';
+
 /*window.addEventListener("beforeunload", function (e) {
 	let confirmationMessage = "TEST";
 	(e || window.event).returnValue = confirmationMessage; //Gecko + IE
@@ -35,14 +37,20 @@ export default class KeyBinding
 		{
 			switch (keymap)
 			{
-				case 8: //  CTRL + backSpace; || CTRL+W || CTRL + S
-				case 87:
+				case 8: //  CTRL + backSpace; || CTRL + S
 				// case 83:
 					evt.preventDefault();
 					//terminal.clear();
 					window.TerminalState.purgeScreens();
 					return false;
 				break;
+
+				case 87:
+					//	CTRL+W
+					terminal.clear();
+					//window.TerminalState.purgeScreens();
+					return false;
+					break;
 
 				case 68 :
 					console.log('dddd');
@@ -190,6 +198,13 @@ export default class KeyBinding
 
 			case 33 : //page up
 				terminal.exec('MU');
+				return false;
+			break;
+
+			case 122 :
+				// console.log('f11');
+				var d = currDate();
+				terminal.exec(  (isApollo ? 'T:TAU/' : '7TAW/') + d );
 				return false;
 			break;
 

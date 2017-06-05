@@ -84,3 +84,13 @@ function splitLines(txt)
 {
 	return txt.split(/\r?\n/);
 }
+
+export function currDate()
+{
+	let d = new Date;
+	let date = d.getDate();
+	let getDate = date < 10 ? '0' + date : date;
+	let months = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'];
+
+	return getDate + months[d.getMonth()];
+}
