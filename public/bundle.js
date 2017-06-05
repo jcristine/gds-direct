@@ -4533,7 +4533,7 @@ var MenuPanel = function (_Component) {
 			context.appendChild(this.settingsButtons(params));
 			context.appendChild(this.activeSession(params));
 
-			// context.appendChild( this.InputLanguage() ); // WILL BE ADDED WHEN TIME COMES
+			if (!apiData.prod && window.apiData.hasPermissions()) context.appendChild(this.InputLanguage()); // WILL BE ADDED WHEN TIME COMES
 
 			context.appendChild(_pqButton2.default.render(params));
 
