@@ -58,7 +58,15 @@ export default class SessionKeys
 
 	render()
 	{
-		this.context.appendChild( this.getTrigger() );
+		if (this.settings.name !== 'amadeus')
+		{
+			this.context.appendChild( this.getTrigger() );
+		} else {
+			if (window.apiData.hasPermissions())
+			{
+				this.context.appendChild( this.getTrigger() );
+			}
+		}
 
 		if (this.active)
 			this.collection = this.getButtons().map( button => this.context.appendChild( button ) );

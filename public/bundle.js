@@ -4354,7 +4354,13 @@ var SessionKeys = function () {
 		value: function render() {
 			var _this3 = this;
 
-			this.context.appendChild(this.getTrigger());
+			if (this.settings.name !== 'amadeus') {
+				this.context.appendChild(this.getTrigger());
+			} else {
+				if (window.apiData.hasPermissions()) {
+					this.context.appendChild(this.getTrigger());
+				}
+			}
 
 			if (this.active) this.collection = this.getButtons().map(function (button) {
 				return _this3.context.appendChild(button);
