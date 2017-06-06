@@ -23,7 +23,7 @@ class TerminalState
 			gdsObj			: Gds[curGds]
 		};
 
-		setInterval( () => Requests.get(`terminal/keepAlive`, true), KEEP_ALIVE_REFRESH );
+		//setInterval( () => Requests.get(`terminal/keepAlive`, true), KEEP_ALIVE_REFRESH );
 	}
 
 	getMatrix()
