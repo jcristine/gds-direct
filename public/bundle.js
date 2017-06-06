@@ -3703,9 +3703,7 @@ var TerminalState = function () {
 			gdsObj: Gds[curGds]
 		};
 
-		setInterval(function () {
-			return _requests2.default.get('terminal/keepAlive', true);
-		}, _constants.KEEP_ALIVE_REFRESH);
+		//setInterval( () => Requests.get(`terminal/keepAlive`, true), KEEP_ALIVE_REFRESH );
 	}
 
 	_createClass(TerminalState, [{
