@@ -194,8 +194,8 @@ var TerminalState = function () {
 	}, {
 		key: 'isLanguageApollo',
 		value: function isLanguageApollo() {
-			// return this.isGdsApollo();
-			return this.getLanguage() === 'APOLLO'; //when time comes uncomment
+			return this.isGdsApollo();
+			//return this.getLanguage() === 'APOLLO'; //when time comes uncomment
 		}
 	}, {
 		key: 'action',

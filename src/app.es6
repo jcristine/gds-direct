@@ -103,8 +103,8 @@ class TerminalState
 
 	isLanguageApollo()
 	{
-		// return this.isGdsApollo();
-		return this.getLanguage() === 'APOLLO'; //when time comes uncomment
+		return this.isGdsApollo();
+		//return this.getLanguage() === 'APOLLO'; //when time comes uncomment
 	}
 
 	action( action, params )
