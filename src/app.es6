@@ -103,8 +103,12 @@ class TerminalState
 
 	isLanguageApollo()
 	{
-		return this.isGdsApollo();
-		//return this.getLanguage() === 'APOLLO'; //when time comes uncomment
+		if ( !apiData.prod && window.apiData.hasPermissions() )
+		{
+			return this.getLanguage() === 'APOLLO'; //when time comes uncomment
+		} else {
+			return this.isGdsApollo();
+		}
 	}
 
 	action( action, params )
@@ -147,14 +151,14 @@ class TerminalState
 				});
 			break;
 
-			/*case 'CHANGE_PCC' :
+			case 'CHANGE_PCC' :
 				const area = this.getAreaIndex();
 
 				const pcc = Object.assign({}, this.state.gdsObj.pcc, {[area] : params});
 				const gds = Object.assign({}, this.state.gdsObj, {pcc : pcc});
 
 				this.change({ gdsObj : gds });
-			break;*/
+			break;
 
 			case 'UPDATE_CUR_GDS' :
 				this.state.gdsObj.pcc[ params.sessionIndex ] = params.lastPcc;

@@ -91,6 +91,8 @@ var _constants = __webpack_require__(14);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 var apiData = window.apiData || {};
@@ -194,8 +196,11 @@ var TerminalState = function () {
 	}, {
 		key: 'isLanguageApollo',
 		value: function isLanguageApollo() {
-			return this.isGdsApollo();
-			//return this.getLanguage() === 'APOLLO'; //when time comes uncomment
+			if (!apiData.prod && window.apiData.hasPermissions()) {
+				return this.getLanguage() === 'APOLLO'; //when time comes uncomment
+			} else {
+				return this.isGdsApollo();
+			}
 		}
 	}, {
 		key: 'action',
@@ -239,12 +244,14 @@ var TerminalState = function () {
 					});
 					break;
 
-				/*case 'CHANGE_PCC' :
-    	const area = this.getAreaIndex();
-    		const pcc = Object.assign({}, this.state.gdsObj.pcc, {[area] : params});
-    	const gds = Object.assign({}, this.state.gdsObj, {pcc : pcc});
-    		this.change({ gdsObj : gds });
-    break;*/
+				case 'CHANGE_PCC':
+					var area = this.getAreaIndex();
+
+					var pcc = Object.assign({}, this.state.gdsObj.pcc, _defineProperty({}, area, params));
+					var gds = Object.assign({}, this.state.gdsObj, { pcc: pcc });
+
+					this.change({ gdsObj: gds });
+					break;
 
 				case 'UPDATE_CUR_GDS':
 					this.state.gdsObj.pcc[params.sessionIndex] = params.lastPcc;
