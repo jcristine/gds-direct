@@ -4359,12 +4359,8 @@ var SessionKeys = function () {
 		value: function render() {
 			var _this3 = this;
 
-			if (this.settings.name !== 'amadeus') {
+			if (this.settings.name !== 'amadeus' || !apiData.prod && window.apiData.hasPermissions()) {
 				this.context.appendChild(this.getTrigger());
-			} else {
-				if (window.apiData.hasPermissions()) {
-					this.context.appendChild(this.getTrigger());
-				}
 			}
 
 			if (this.active) this.collection = this.getButtons().map(function (button) {
