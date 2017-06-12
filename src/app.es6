@@ -83,6 +83,18 @@ class TerminalState
 		Requests.get(`terminal/clearBuffer`, true);
 	}
 
+	switchTerminals(gds, index, props)
+	{
+		var terminal = Container.getTerminal(gds, index, props);
+
+		if (terminal.plugin !== null)
+		{
+			terminal.plugin.terminal.focus();
+		} else {
+			terminal.context.click()
+		}
+	}
+
 	execCmd( params )
 	{
 		const term = this.getActiveTerminal();

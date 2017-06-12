@@ -3767,6 +3767,17 @@ var TerminalState = function () {
 			_requests2.default.get('terminal/clearBuffer', true);
 		}
 	}, {
+		key: 'switchTerminals',
+		value: function switchTerminals(gds, index, props) {
+			var terminal = Container.getTerminal(gds, index, props);
+
+			if (terminal.plugin !== null) {
+				terminal.plugin.terminal.focus();
+			} else {
+				terminal.context.click();
+			}
+		}
+	}, {
 		key: 'execCmd',
 		value: function execCmd(params) {
 			var term = this.getActiveTerminal();
@@ -4085,6 +4096,11 @@ var Container = function (_Component3) {
 		key: 'purgeScreens',
 		value: function purgeScreens(gds) {
 			matrix.purgeScreens(gds);
+		}
+	}, {
+		key: 'getTerminal',
+		value: function getTerminal(gds, index, props) {
+			return matrix.getTerminal(gds, index, props);
 		}
 	}, {
 		key: '_renderer',
@@ -5143,6 +5159,16 @@ function prev(terminal) {
 	terminal.cmd().set(terminal.history().end() ? '' : terminal.history().next());
 }
 
+function switchTerminal(id) {
+	var gds = window.TerminalState.getGds();
+	var matrix = window.TerminalState.state.gdsObj.matrix;
+	var gridCount = (matrix.cells + 1) * (matrix.rows + 1);
+
+	if (id >= gridCount) return false;
+
+	window.TerminalState.switchTerminals(gds, id);
+}
+
 var KeyBinding = function () {
 	function KeyBinding() {
 		_classCallCheck(this, KeyBinding);
@@ -5235,6 +5261,66 @@ var KeyBinding = function () {
 						// Sabre example: W/*BT
 
 						terminal.insert(isApollo ? 'S*AIR/' : 'W/*');
+						return false;
+						break;
+
+					case 48:
+						// Ctrl + 0
+						switchTerminal(9);
+						return false;
+						break;
+
+					case 49:
+						// Ctrl + 1
+						switchTerminal(0);
+						return false;
+						break;
+
+					case 50:
+						// Ctrl + 2
+						switchTerminal(1);
+						return false;
+						break;
+
+					case 51:
+						// Ctrl + 3
+						switchTerminal(2);
+						return false;
+						break;
+
+					case 52:
+						// Ctrl + 4
+						switchTerminal(3);
+						return false;
+						break;
+
+					case 53:
+						// Ctrl + 5
+						switchTerminal(4);
+						return false;
+						break;
+
+					case 54:
+						// Ctrl + 6
+						switchTerminal(5);
+						return false;
+						break;
+
+					case 55:
+						// Ctrl + 7
+						switchTerminal(6);
+						return false;
+						break;
+
+					case 56:
+						// Ctrl + 8
+						switchTerminal(7);
+						return false;
+						break;
+
+					case 57:
+						// Ctrl + 9
+						switchTerminal(8);
 						return false;
 						break;
 

@@ -72,6 +72,11 @@ export default class Container extends Component {
 		matrix.purgeScreens( gds );
 	}
 
+	getTerminal(gds, index, props)
+	{
+		return matrix.getTerminal(gds, index, props);
+	}
+
 	_renderer()
 	{
 		const params = this.props;
