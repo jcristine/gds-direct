@@ -21,9 +21,9 @@ function prev( terminal )
 
 function switchTerminal(id)
 {
-	var gds			= window.TerminalState.getGds();
-	var matrix		= window.TerminalState.state.gdsObj.matrix;
-	var gridCount	= (matrix.cells + 1) * (matrix.rows + 1);
+	const gds			= window.TerminalState.getGds();
+	const matrix		= window.TerminalState.state.gdsObj.matrix;
+	const gridCount	= (matrix.cells + 1) * (matrix.rows + 1);
 
 	if (id >= gridCount)
 		return false;
@@ -266,7 +266,7 @@ export default class KeyBinding
 
 			case 122 :
 				// console.log('f11');
-				var d = currDate();
+				const d = currDate();
 				terminal.exec(  (isApollo ? 'T:TAU/' : '7TAW/') + d );
 				return false;
 			break;

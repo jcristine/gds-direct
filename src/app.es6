@@ -85,7 +85,7 @@ class TerminalState
 
 	switchTerminals(gds, index, props)
 	{
-		var terminal = Container.getTerminal(gds, index, props);
+		const terminal = Container.getTerminal(gds, index, props);
 
 		if (terminal.plugin !== null)
 		{
