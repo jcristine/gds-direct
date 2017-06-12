@@ -87,10 +87,10 @@ function splitLines(txt)
 
 export function currDate()
 {
-	let d = new Date;
-	let date = d.getDate();
-	let getDate = date < 10 ? '0' + date : date;
-	let months = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'];
+	const d = new Date;
+	const date = d.getDate();
+	const getDate = date < 10 ? '0' + date : date;
+	const months = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'];
 
 	return getDate + months[d.getMonth()];
 }
