@@ -1,22 +1,21 @@
 'use strict';
 
 const common = {
+	'`': '>',
 	'[': '¤',
-	'=': '*'
+	']': '$',
+	'=': '*',
+	';': ':',
+	'\'': '‡',
+	'\\': '§'
 };
 
 const sabreLayout = Object.assign({}, common, {
-	'\'': '‡',
-	'\\': '§'
-	// shift + ","
+
 });
 
 const apolloLayout = Object.assign({}, common, {
-	']': '$',
-	'`': '>',
-	';': ':',
-	',': '+',
-	'\\': false
+	',': '+'
 });
 
 const _to_ascii = {

@@ -108,22 +108,19 @@ exports.makePages = makePages;
 exports.splitIntoLinesArr = splitIntoLinesArr;
 exports.currDate = currDate;
 var common = {
+	'`': '>',
 	'[': '¤',
-	'=': '*'
-};
-
-var sabreLayout = Object.assign({}, common, {
+	']': '$',
+	'=': '*',
+	';': ':',
 	'\'': '‡',
 	'\\': '§'
-	// shift + ","
-});
+};
+
+var sabreLayout = Object.assign({}, common, {});
 
 var apolloLayout = Object.assign({}, common, {
-	']': '$',
-	'`': '>',
-	';': ':',
-	',': '+',
-	'\\': false
+	',': '+'
 });
 
 var _to_ascii = {
