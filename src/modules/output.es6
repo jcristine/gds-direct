@@ -103,7 +103,6 @@ export default class Output
 		// console.log('zzz', chars  );
 
 		const lines = splitIntoLinesArr( this.outputStrings, chars );
-		// console.log( lines );
 
 		return lines.length;
 	}
@@ -112,7 +111,15 @@ export default class Output
 	{
 		this.cmdLineOffset 	= this.terminal.cmd()[0].offsetTop  - ( this.charHeight ? this.charHeight : 0);
 
-		this.terminal.echo(this.outputStrings);
+		const chars = this.numOfChars || this.terminal.cols();
+		const lines = splitIntoLinesArr( this.outputStrings, chars );
+
+		// console.log( 'LINES', lines );
+		// console.log( this.outputStrings )
+		// console.log( lines.join('\n') );
+		// this.terminal.echo(this.outputStrings);
+
+		this.terminal.echo(lines.join('\n'));
 		return this;
 	}
 

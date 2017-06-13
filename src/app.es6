@@ -95,15 +95,18 @@ class TerminalState
 		}
 	}
 
-	execCmd( params )
+	execCmd( commands )
 	{
 		const term = this.getActiveTerminal();
 
 		if (term)
 		{
-			window.activePlugin.hiddenBuff = window.activePlugin.hiddenBuff.concat( params );
+			// console.log( 'hohoho', commands );
+			term.exec( commands );
+
+			// window.activePlugin.hiddenBuff = window.activePlugin.hiddenBuff.concat( params );
 			// console.log('ACTIVE BUFFER', window.activePlugin.hiddenBuff);
-			window.activePlugin.loopCmdStack();
+			// window.activePlugin.loopCmdStack();
 		}
 
 		return false;

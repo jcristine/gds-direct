@@ -102,7 +102,7 @@ export default class TerminalPlugin
 
 	changeActiveTerm( activeTerminal )
 	{
-		window.activePlugin = this; // SO SO
+		window.activePlugin = this; // SO SO DEPRECATED NOW
 		window.TerminalState.action('CHANGE_ACTIVE_TERMINAL', activeTerminal );
 	}
 
@@ -141,6 +141,7 @@ export default class TerminalPlugin
 		//caveats terminal.rows() - everytime appends div with cursor span - not too smooth for performance
 
 		return $(this.context).terminal( this.commandParser.bind(this), {
+			echoCommand		: false,
 
 			greetings		: '',
 			name			: this.name,
@@ -173,100 +174,121 @@ export default class TerminalPlugin
 			{
 				console.warn('exc', err);
 			}
+
 		});
 	}
 
-	checkBeforeEnter( terminal, command )
+	checkSabreCommand( command, terminal )
 	{
-		if ( this.spinner.isActive() )
-		{
-			this.hiddenBuff.push( command );
-			return false;
-		}
-	}
-
-	commandParser( command, terminal ) //pressed enter
-	{
-		this.outputLiner.prepare('');
-
-		if ( !command || command === '' )
-			return false;
-
 		if ( this.allowManualPaging )
 		{
 			switch (command.toUpperCase())
 			{
 				case 'MD' :
 					terminal.echo( this.pagination.next().print() );
-				return false;
+					return true;
 
 				case 'MU' :
 					terminal.echo( this.pagination.prev().print() );
-				return false;
+					return true;
 
 				case 'MDA' :
 					terminal.echo( this.pagination.printAll() );
-				return false;
+					return true;
 
 				case 'MDA5' :
-					return false;
+					return true;
 
 				case 'MDA20' :
-					return false;
+					return true;
 			}
 		}
-
-		/*setTimeout( () => {
-			this.spinner.end();
-			this.loopCmdStack();
-			this.parseBackEnd({
-				data	: {
-					output 		: 'THIS IS ONLY A TEST TEST TES TEST',
-					clearScreen : true
-				}
-			})
-		}, 1000 );*/
-
-		this.sendRequest(command);
 
 		return false;
 	}
 
-	loopCmdStack()
+	/*setTimeout( () => {
+		this.spinner.end();
+		this.loopCmdStack();
+		this.parseBackEnd({
+			data	: {
+				output 		: 'THIS IS ONLY A TEST TEST TES TEST',
+				clearScreen : true
+			}
+		})
+	}, 1000 );*/
+
+	commandParser( command, terminal ) //pressed enter
 	{
-		if (this.hiddenBuff.length)
-		{
-			if (this.session.promise)
-			{
-				this.session.promise.then( () => this.loopCmdStack() );
-				return '';
-			}
-
-			const cmd = this.hiddenBuff.shift();
-
-			if ( cmd )
-			{
-				this.terminal.exec( cmd );
-			}
-		}
+		return false;
 	}
 
-	sendRequest( command )
+	checkBeforeEnter( terminal, command )
 	{
+		// console.log('CHECK BEFORE', terminal, command);
+
+		if ( !command || command === '' )
+		{
+			this.terminal.echo('>');
+			return false;
+		}
+
+		if ( this.checkSabreCommand( command, terminal ) )
+			return command;
+
 		this.spinner.start();
 
-		this.session
-			.run({
-				cmd : command.toUpperCase()
-			})
+		const finish = response => {
+			this.spinner.end();
+			this.parseBackEnd( response, command );
+		};
 
-			.then( response => {
-				this.spinner.end();
-				this.parseBackEnd( response, command )
-			})
+		const before = () => {
+			this.outputLiner.prepare('');
+			this.spinner.start();
+			this.terminal.echo( `[[;yellow;]>${command.toUpperCase()}]` );
+		};
 
-			.then( () => this.loopCmdStack() )
+		this.session.pushCommand( command.toUpperCase(), finish, before );
+
+		this.session.perform();
+
+		return command;
 	}
+
+	// loopCmdStack()
+	// {
+	// 	if (this.hiddenBuff.length)
+	// 	{
+	// 		if (this.session.promise)
+	// 		{
+	// 			this.session.promise.then( () => this.loopCmdStack() );
+	// 			return '';
+	// 		}
+	//
+	// 		const cmd = this.hiddenBuff.shift();
+	//
+	// 		if ( cmd )
+	// 		{
+	// 			this.terminal.exec( cmd );
+	// 		}
+	// 	}
+	// }
+
+	// sendRequest( command )
+	// {
+	// 	return this.session
+	// 		.run({
+	// 			cmd : command.toUpperCase()
+	// 		})
+	//
+	// 		.then( response => {
+	// 			this.spinner.end();
+	// 			this.parseBackEnd( response, command )
+	// 		})
+	//
+	// 		.then( () => this.loopCmdStack() )
+	// }
 
 	parseBackEnd( response = {}, command )
 	{

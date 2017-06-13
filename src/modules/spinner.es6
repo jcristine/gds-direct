@@ -23,7 +23,10 @@ export default class Spinner
 	start()
 	{
 		if (this.timer)
-			this.end();
+		{
+			// this.end();
+			return false;
+		}
 
 		this.terminal.find('.cursor').hide();
 		this.terminal.set_mask('');
