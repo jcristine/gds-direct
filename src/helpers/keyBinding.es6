@@ -61,13 +61,14 @@ export default class KeyBinding
 
 				case 87:
 					//	CTRL+W
-					terminal.clear();
+					// terminal.clear();
+					window.TerminalState.clearTerminal();
 					//window.TerminalState.purgeScreens();
 					return false;
 					break;
 
 				case 68 :
-					console.log('dddd');
+					// console.log('dddd');
 					// CTRL+D
 					return false;
 				break;

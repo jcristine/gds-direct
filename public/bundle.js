@@ -3722,6 +3722,17 @@ var TerminalState = function () {
 			return this.state.gdsObj['activeTerminal'];
 		}
 	}, {
+		key: 'clearTerminal',
+		value: function clearTerminal() {
+			console.log(Container.getTerminal(this.getGds(), this.getAreaIndex()));
+
+			Container.getTerminal(this.getGds(), this.getAreaIndex() - 1).clear();
+
+			// Container.purgeScreen( this.getAreaIndex() );
+			// console.log('??', this.getActiveTerminal());
+			// return this.getActiveTerminal().clear();
+		}
+	}, {
 		key: 'getGds',
 		value: function getGds() {
 			return this.state.gdsObj['name'];
@@ -5210,7 +5221,11 @@ var KeyBinding = function () {
 						break;
 
 					case 68:
-						console.log('dddd');
+						// console.log('dddd');
+						// terminal.clear();
+						// terminal.cmd().set('');
+
+						window.TerminalState.clearTerminal();
 						// CTRL+D
 						return false;
 						break;
@@ -6282,9 +6297,10 @@ var Session = function () {
 				finishStack.shift();
 				beforeStack.shift();
 
-				if (commandStack[0]) {
-					_this.perform(commandStack[0]);
-				}
+				if (commandStack[0]) // recursive self call
+					{
+						_this.perform(commandStack[0]);
+					}
 
 				return response;
 			});

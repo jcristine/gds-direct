@@ -41,7 +41,7 @@ export default class Session
 		return promise;
 	}
 
-	perform(  )
+	perform()
 	{
 		if ( promise )
 			return false;
@@ -58,7 +58,7 @@ export default class Session
 			finishStack.shift();
 			beforeStack.shift();
 
-			if ( commandStack[0] )
+			if ( commandStack[0] ) // recursive self call
 			{
 				this.perform( commandStack[0] );
 			}

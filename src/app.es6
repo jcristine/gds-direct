@@ -41,6 +41,11 @@ class TerminalState
 		return this.state.gdsObj['activeTerminal'];
 	}
 
+	clearTerminal()
+	{
+		Container.getTerminal( this.getGds(), this.getAreaIndex() - 1 ).clear();
+	}
+
 	getGds()
 	{
 		return this.state.gdsObj['name'];
