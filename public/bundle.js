@@ -556,8 +556,8 @@ var GdsSet = function () {
 
 				return (0, _helpers.mergeIntoNew)(defaultsEvents, {
 					name: gds.name,
-					list: gds.name === 'sabre' ? _constants.AREA_LIST : _constants.AREA_LIST.slice(0, -1) //remove F
-				});
+					list: gds.name === 'sabre' ? _constants.AREA_LIST : _constants.AREA_LIST.slice(0, -1 //remove F
+					) });
 			});
 		}
 	}]);
@@ -3724,13 +3724,7 @@ var TerminalState = function () {
 	}, {
 		key: 'clearTerminal',
 		value: function clearTerminal() {
-			console.log(Container.getTerminal(this.getGds(), this.getAreaIndex()));
-
 			Container.getTerminal(this.getGds(), this.getAreaIndex() - 1).clear();
-
-			// Container.purgeScreen( this.getAreaIndex() );
-			// console.log('??', this.getActiveTerminal());
-			// return this.getActiveTerminal().clear();
 		}
 	}, {
 		key: 'getGds',
@@ -3980,6 +3974,7 @@ var ActionsMenu = function (_Component) {
 
 		var matrix = new _terminalMatrix2.default({
 			icon: '<i class="fa fa-th-large"></i>'
+			// onSelect	: value => { window.TerminalState.change({fontSize : value}) }
 		}).getTrigger();
 
 		matrix.className = 'btn btn-purple';
@@ -5215,17 +5210,14 @@ var KeyBinding = function () {
 
 					case 87:
 						//	CTRL+W
-						terminal.clear();
+						// terminal.clear();
+						window.TerminalState.clearTerminal();
 						//window.TerminalState.purgeScreens();
 						return false;
 						break;
 
 					case 68:
 						// console.log('dddd');
-						// terminal.clear();
-						// terminal.cmd().set('');
-
-						window.TerminalState.clearTerminal();
 						// CTRL+D
 						return false;
 						break;
@@ -6475,8 +6467,11 @@ var TabManager = function () {
 			if (cmd) // last element in the array is an empty string
 				{
 					cmd = '>' + cmd;
-					var index = this.output.indexOf(cmd) + cmd.length;
-					return this.output.substr(0, index) + '[[;red;blue;]\xB7]' + this.output.substr(index + 1, this.output.length);
+					var pos = this.output.indexOf(cmd);
+					var index = pos + cmd.length;
+
+					if (pos !== -1) // show this only if command is found
+						return this.output.substr(0, index) + '[[;red;blue;]\xB7]' + this.output.substr(index + 1, this.output.length);
 				}
 
 			return this.output;
@@ -10222,9 +10217,6 @@ module.exports = {
             width: span.width(),
             height: span.outerHeight()
         };
-
-        // console.log( 'append agein ' , result )
-
         temp.remove();
         return result;
     }
@@ -10232,8 +10224,7 @@ module.exports = {
     // :: calculate numbers of characters
     // -----------------------------------------------------------------------
     function get_num_chars(terminal) {
-
-		var temp = $('<div class="terminal wrap"><span class="cursor">' +
+        var temp = $('<div class="terminal wrap"><span class="cursor">' +
                      '&nbsp;</span></div>').appendTo('body').css('padding', 0);
         var span = temp.find('span');
         var width = span[0].getBoundingClientRect().width;
@@ -12484,14 +12475,12 @@ module.exports = {
             // :: Recalculate and redraw everything
             // -------------------------------------------------------------
             resize: function(width, height) {
-
                 if (!self.is(':visible')) {
                     // delay resize if terminal not visible
                     self.stopTime('resize');
                     self.oneTime(500, 'resize', function() {
                         self.resize(width, height);
                     });
-
                 } else {
                     if (width && height) {
                         self.width(width);
@@ -12499,10 +12488,8 @@ module.exports = {
                     }
                     width = self.width();
                     height = self.height();
-
                     var new_num_chars = self.cols();
-                    var new_num_rows =  self.rows();
-
+                    var new_num_rows = self.rows();
                     // only if number of chars changed
                     if (new_num_chars !== num_chars ||
                         new_num_rows !== num_rows) {
@@ -12518,7 +12505,6 @@ module.exports = {
                         scroll_to_bottom();
                     }
                 }
-
                 return self;
             },
             // -------------------------------------------------------------
@@ -12576,7 +12562,6 @@ module.exports = {
                             });
                         }
                     }
-
                     num_rows = get_num_rows(self);
                     if (settings.scrollOnEcho || bottom) {
                         scroll_to_bottom();

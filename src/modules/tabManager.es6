@@ -37,8 +37,11 @@ export default class TabManager
 		if (cmd) // last element in the array is an empty string
 		{
 			cmd = `>${cmd}`;
-			const index = this.output.indexOf( cmd ) + cmd.length;
-			return this.output.substr(0, index) + `[[;red;blue;]·]` +  this.output.substr( (index + 1 ) , this.output.length)
+			const pos = this.output.indexOf( cmd );
+			const index = pos + cmd.length;
+
+			if (pos !== -1) // show this only if command is found
+				return this.output.substr(0, index) + `[[;red;blue;]·]` +  this.output.substr( (index + 1 ) , this.output.length);
 
 		}
 
