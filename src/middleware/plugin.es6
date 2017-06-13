@@ -236,10 +236,18 @@ export default class TerminalPlugin
 	{
 		if (this.hiddenBuff.length)
 		{
+			if (this.session.promise)
+			{
+				this.session.promise.then( () => this.loopCmdStack() );
+				return '';
+			}
+
 			const cmd = this.hiddenBuff.shift();
 
 			if ( cmd )
+			{
 				this.terminal.exec( cmd );
+			}
 		}
 	}
 
@@ -254,11 +262,6 @@ export default class TerminalPlugin
 
 			.then( response => {
 				this.spinner.end();
-				return response;
-			})
-
-			.then( response  => {
-				// this.switchArea( command.toUpperCase() );
 				this.parseBackEnd( response, command )
 			})
 

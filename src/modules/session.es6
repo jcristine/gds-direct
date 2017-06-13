@@ -7,7 +7,8 @@ export default class Session
 {
 	constructor( params )
 	{
-		this.settings = params;
+		this.settings 	= params;
+		this.promise 	= false;
 	}
 
 	run( params )
@@ -20,7 +21,13 @@ export default class Session
 			terminalData	: window.apiData['terminalData']
 		};
 
-		return Requests.runSyncCommand( rData );
+		this.promise = Requests.runSyncCommand( rData );
+
+		this.promise.then( () => {
+			this.promise = false;
+		});
+
+		return this.promise;
 	}
 
 	/*start()

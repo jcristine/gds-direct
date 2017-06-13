@@ -101,7 +101,8 @@ class TerminalState
 
 		if (term)
 		{
-			window.activePlugin.hiddenBuff = params;
+			window.activePlugin.hiddenBuff = window.activePlugin.hiddenBuff.concat( params );
+			// console.log('ACTIVE BUFFER', window.activePlugin.hiddenBuff);
 			window.activePlugin.loopCmdStack();
 		}
 
@@ -146,7 +147,7 @@ class TerminalState
 
 			case 'CHANGE_SESSION_BY_MENU' :
 				const command	= this.getSessionAreaMap()[params];
-				this.getActiveTerminal().exec( command );
+				this.execCmd( [command] );
 			break;
 
 			case 'CHANGE_MATRIX':

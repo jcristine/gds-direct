@@ -102,7 +102,10 @@ export default class Output
 		// console.log('zzz', this.terminal.cols() );
 		// console.log('zzz', chars  );
 
-		return splitIntoLinesArr( this.outputStrings, chars ).length;
+		const lines = splitIntoLinesArr( this.outputStrings, chars );
+		// console.log( lines );
+
+		return lines.length;
 	}
 
 	printOutput()

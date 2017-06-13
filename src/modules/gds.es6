@@ -8,7 +8,8 @@ const defaults	= {
 	pcc				: {},
 	matrix			: saved ? JSON.parse( saved ) : {rows : 1, cells : 1},
 	activeTerminal	: null,
-	canCreatePq		: false
+	canCreatePq		: false,
+	history			: []
 };
 
 class Gds

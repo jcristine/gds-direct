@@ -1,6 +1,7 @@
 'use strict';
 
 import {currDate} from './helpers.es6';
+// import History from '../modules/history.es6';
 
 /*window.addEventListener("beforeunload", function (e) {
 	let confirmationMessage = "TEST";
@@ -10,13 +11,14 @@ import {currDate} from './helpers.es6';
 
 function next( terminal )
 {
-
 	terminal.cmd().set ( terminal.history().previous() );
+	// terminal.cmd().set ( History.previous() );
 }
 
 function prev( terminal )
 {
-	terminal.cmd().set( terminal.history().end() ? '' : terminal.history().next() );
+	// terminal.cmd().set( terminal.history().end() ? '' : terminal.history().next() );
+	// terminal.cmd().set( History.end() ? '' : History.next() );
 }
 
 function switchTerminal(id)

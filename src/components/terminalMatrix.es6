@@ -108,8 +108,7 @@ class TerminalsMatrix extends Component
 		const state = {
 			gds			: params.gds,
 			dimensions 	: this.getSizes().calculate(rowCount, cellCount),
-			wrapWidth	: params.containerWidth
-			,
+			wrapWidth	: params.containerWidth,
 			hideMenu	: params.hideMenu
 		};
 
