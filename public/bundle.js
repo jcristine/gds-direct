@@ -81,6 +81,16 @@ var _slicedToArray = function () { function sliceIterator(arr, i) { var _arr = [
 
 exports.default = Dom;
 function Dom(str) {
+
+	var innerHTML = void 0;
+
+	var matches = str.match(/\[(.*?)\]/);
+
+	if (matches) {
+		innerHTML = matches[1];
+		str = str.replace('[' + innerHTML + ']', '');
+	}
+
 	var _str$split = str.split('.'),
 	    _str$split2 = _slicedToArray(_str$split, 2),
 	    node = _str$split2[0],
@@ -89,6 +99,10 @@ function Dom(str) {
 	var element = document.createElement(node);
 
 	if (className) element.className = className;
+
+	if (innerHTML) {
+		element.innerHTML = innerHTML;
+	}
 
 	return element;
 };
@@ -337,6 +351,11 @@ var Component = function () {
 		value: function append(component) {
 			this.context.appendChild(component.getContext());
 			return this;
+		}
+	}, {
+		key: 'attach',
+		value: function attach(element) {
+			this.context.appendChild(element);
 		}
 	}, {
 		key: 'getContext',
@@ -4310,7 +4329,7 @@ var SessionKeys = function () {
 	function SessionKeys(params) {
 		_classCallCheck(this, SessionKeys);
 
-		this.context = document.createElement('div');
+		this.context = (0, _dom2.default)('div');
 		this.settings = params;
 		this.collection = [];
 		this.trigger = [];
@@ -4330,9 +4349,6 @@ var SessionKeys = function () {
 			var pcc = window.TerminalState.getPcc()[index];
 			var isActive = this.settings.sessionIndex === index;
 
-			// console.log( " MAKE BTN ", index , pcc );
-			// console.log( 'pcc?', pcc );
-
 			var button = (0, _dom2.default)('button.btn btn-sm btn-purple font-bold pos-rlt ' + (isActive ? 'active' : ''));
 			button.innerHTML = value + (pcc ? '<span class="pcc-label">' + pcc + '</span>' : '');
 
@@ -4345,12 +4361,6 @@ var SessionKeys = function () {
 
 			return button;
 		}
-
-		// disableAll()
-		// {
-		// 	this.collection.map( btn => btn.disabled = true );
-		// }
-
 	}, {
 		key: 'getTrigger',
 		value: function getTrigger() {
@@ -4444,31 +4454,31 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-var SettingsContext = void 0;
+var SettingsButtons = function (_Component) {
+	_inherits(SettingsButtons, _Component);
 
-var MenuPanel = function (_Component) {
-	_inherits(MenuPanel, _Component);
+	function SettingsButtons() {
+		_classCallCheck(this, SettingsButtons);
 
-	function MenuPanel() {
-		_classCallCheck(this, MenuPanel);
+		var _this = _possibleConstructorReturn(this, (SettingsButtons.__proto__ || Object.getPrototypeOf(SettingsButtons)).call(this, 'article'));
 
-		return _possibleConstructorReturn(this, (MenuPanel.__proto__ || Object.getPrototypeOf(MenuPanel)).call(this, 'aside.sideMenu'));
+		_this.children().map(function (element) {
+			return _this.context.appendChild(element);
+		});
+		return _this;
 	}
 
-	_createClass(MenuPanel, [{
-		key: 'fontSize',
-		value: function fontSize() {
-			return new _textSize2.default({
+	_createClass(SettingsButtons, [{
+		key: 'children',
+		value: function children() {
+			var textSize = new _textSize2.default({
 				icon: '<i class="fa fa-text-height t-f-size-14"></i>',
 				onSelect: function onSelect(value) {
 					window.TerminalState.change({ fontSize: value });
 				}
 			}).getTrigger();
-		}
-	}, {
-		key: 'history',
-		value: function history() {
-			return new _history2.default({
+
+			var history = new _history2.default({
 				icon: '<i class="fa fa-history t-f-size-14"></i>',
 				askServer: function askServer() {
 					return window.TerminalState.getHistory();
@@ -4477,26 +4487,41 @@ var MenuPanel = function (_Component) {
 					return window.TerminalState.execCmd(value);
 				}
 			}).getTrigger();
+
+			/*const settings	= new Settings({
+   	icon		: '<i class="fa fa-gears t-f-size-14"></i>'
+   }).getTrigger();*/
+
+			return [textSize, history];
 		}
-	}, {
-		key: 'settings',
-		value: function settings() {
-			return new _settings2.default({
-				icon: '<i class="fa fa-gears t-f-size-14"></i>'
-			}).getTrigger();
-		}
-	}, {
-		key: 'activeSession',
-		value: function activeSession(_ref) {
-			var gds = _ref.gds,
-			    sessionIndex = _ref.sessionIndex,
-			    activeTerminal = _ref.activeTerminal;
+	}]);
+
+	return SettingsButtons;
+}(_component2.default);
+
+var GdsAreas = function (_Component2) {
+	_inherits(GdsAreas, _Component2);
+
+	function GdsAreas() {
+		_classCallCheck(this, GdsAreas);
+
+		return _possibleConstructorReturn(this, (GdsAreas.__proto__ || Object.getPrototypeOf(GdsAreas)).call(this, 'article'));
+	}
+
+	_createClass(GdsAreas, [{
+		key: '_renderer',
+		value: function _renderer() {
+			var _this3 = this;
+
+			this.context.innerHTML = '';
+
+			var _props = this.props,
+			    gds = _props.gds,
+			    sessionIndex = _props.sessionIndex,
+			    activeTerminal = _props.activeTerminal;
+
 
 			var defParams = { gds: gds, sessionIndex: sessionIndex, activeTerminal: activeTerminal };
-
-			var context = (0, _dom2.default)('article');
-			context.innerHTML = '<div class="label">Session</div>';
-
 			defParams.onAreaChange = function (sessionIndex) {
 				return window.TerminalState.action('CHANGE_SESSION_BY_MENU', sessionIndex);
 			};
@@ -4504,18 +4529,32 @@ var MenuPanel = function (_Component) {
 				return window.TerminalState.action('CHANGE_GDS', gds);
 			};
 
-			_gds2.default.getAreas(defParams).map(function (areasPerGds) {
-				return context.appendChild(new _sessionButtons2.default(areasPerGds).render());
+			var areas = _gds2.default.getAreas(defParams);
+
+			areas.map(function (areasPerGds) {
+				return _this3.context.appendChild(new _sessionButtons2.default(areasPerGds).render());
 			});
-
-			return context;
 		}
-	}, {
-		key: 'InputLanguage',
-		value: function InputLanguage() {
-			var context = document.createElement('article');
+	}]);
 
-			context.innerHTML = '<div class="label">Input Language</div>';
+	return GdsAreas;
+}(_component2.default);
+
+var LanguageButtons = function (_Component3) {
+	_inherits(LanguageButtons, _Component3);
+
+	function LanguageButtons() {
+		_classCallCheck(this, LanguageButtons);
+
+		return _possibleConstructorReturn(this, (LanguageButtons.__proto__ || Object.getPrototypeOf(LanguageButtons)).call(this, 'article'));
+	}
+
+	_createClass(LanguageButtons, [{
+		key: '_renderer',
+		value: function _renderer() {
+			var _this5 = this;
+
+			this.context.innerHTML = '';
 
 			['APOLLO', 'SABRE'].forEach(function (value) {
 
@@ -4526,50 +4565,69 @@ var MenuPanel = function (_Component) {
 					return window.TerminalState.change({ language: value });
 				});
 
-				context.appendChild(button);
+				_this5.context.appendChild(button);
 			});
-
-			return context;
-		}
-	}, {
-		key: 'settingsButtons',
-		value: function settingsButtons() {
-			if (SettingsContext) return SettingsContext;
-
-			SettingsContext = document.createElement('article');
-
-			[this.fontSize(), this.history()].map(function (button) {
-				return SettingsContext.appendChild(button);
-			});
-
-			return SettingsContext;
-		}
-	}, {
-		key: 'tests',
-		value: function tests() {
-			this.devButtons = this.devButtons || new _devButtons2.default().getContext();
-			return this.devButtons;
-		}
-	}, {
-		key: '_renderer',
-		value: function _renderer() {
-			var context = this.getContext();
-			var params = this.props;
-
-			context.innerHTML = '';
-
-			context.appendChild(this.settingsButtons(params));
-			context.appendChild(this.activeSession(params));
-
-			if (!apiData.prod && window.apiData.hasPermissions()) context.appendChild(this.InputLanguage()); // WILL BE ADDED WHEN TIME COMES
-
-			context.appendChild(_pqButton2.default.render(params));
-
-			if (window.apiData.hasPermissions()) context.appendChild(this.devButtons || this.tests());
-
-			return context;
 		}
 	}]);
+
+	return LanguageButtons;
+}(_component2.default);
+
+var PriceQuote = function (_Component4) {
+	_inherits(PriceQuote, _Component4);
+
+	function PriceQuote() {
+		_classCallCheck(this, PriceQuote);
+
+		return _possibleConstructorReturn(this, (PriceQuote.__proto__ || Object.getPrototypeOf(PriceQuote)).call(this, 'article'));
+	}
+
+	_createClass(PriceQuote, [{
+		key: '_renderer',
+		value: function _renderer() {
+			this.context.appendChild(_pqButton2.default.render(this.props));
+		}
+	}]);
+
+	return PriceQuote;
+}(_component2.default);
+
+var TestsButtons = function (_Component5) {
+	_inherits(TestsButtons, _Component5);
+
+	function TestsButtons() {
+		_classCallCheck(this, TestsButtons);
+
+		var _this7 = _possibleConstructorReturn(this, (TestsButtons.__proto__ || Object.getPrototypeOf(TestsButtons)).call(this, 'article'));
+
+		_this7.context.appendChild(new _devButtons2.default().getContext());
+		return _this7;
+	}
+
+	return TestsButtons;
+}(_component2.default);
+
+var MenuPanel = function (_Component6) {
+	_inherits(MenuPanel, _Component6);
+
+	function MenuPanel() {
+		_classCallCheck(this, MenuPanel);
+
+		var _this8 = _possibleConstructorReturn(this, (MenuPanel.__proto__ || Object.getPrototypeOf(MenuPanel)).call(this, 'aside.sideMenu'));
+
+		_this8.observe(new SettingsButtons());
+
+		_this8.attach((0, _dom2.default)('span.label[Session]'));
+		_this8.observe(new GdsAreas());
+
+		_this8.attach((0, _dom2.default)('span.label[Input Language]'));
+		_this8.observe(new LanguageButtons());
+
+		_this8.observe(new PriceQuote());
+
+		if (window.apiData.hasPermissions()) _this8.observe(new TestsButtons());
+		return _this8;
+	}
 
 	return MenuPanel;
 }(_component2.default);

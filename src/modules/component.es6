@@ -27,6 +27,11 @@ export default class Component
 		return this;
 	}
 
+	attach( element )
+	{
+		this.context.appendChild( element );
+	}
+
 	getContext()
 	{
 		return this.context;
@@ -51,8 +56,6 @@ export default class Component
 		this.observers.map( component => {
 			component.render( this.props )
 		});
-
-
 
 		return this.context;
 	}

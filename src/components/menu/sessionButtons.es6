@@ -4,7 +4,7 @@ export default class SessionKeys
 {
 	constructor( params )
 	{
-		this.context 	= document.createElement('div');
+		this.context 	= Dom('div');
 		this.settings 	= params;
 		this.collection	= [];
 		this.trigger	= [];
@@ -21,9 +21,6 @@ export default class SessionKeys
 		const pcc 		= window.TerminalState.getPcc()[index];
 		const isActive 	= this.settings.sessionIndex === index;
 
-		// console.log( " MAKE BTN ", index , pcc );
-		// console.log( 'pcc?', pcc );
-
 		const button 		= Dom(`button.btn btn-sm btn-purple font-bold pos-rlt ${isActive ? 'active' : ''}`);
 		button.innerHTML	= value + ( pcc ? `<span class="pcc-label">${pcc}</span>` : '');
 
@@ -36,11 +33,6 @@ export default class SessionKeys
 
 		return button;
 	}
-
-	// disableAll()
-	// {
-	// 	this.collection.map( btn => btn.disabled = true );
-	// }
 
 	getTrigger()
 	{

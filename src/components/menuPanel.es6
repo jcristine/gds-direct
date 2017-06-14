@@ -10,61 +10,70 @@ import Dom				from '../helpers/dom.es6';
 import Component		from '../modules/component';
 import GdsSet 			from '../modules/gds';
 
-let SettingsContext;
-
-export default class MenuPanel extends Component
+class SettingsButtons extends Component
 {
 	constructor()
 	{
-		super('aside.sideMenu');
+		super('article');
+		this.children().map( element => this.context.appendChild( element ) );
 	}
 
-	fontSize()
+	children()
 	{
-		return new TextSize({
+		const textSize 	= new TextSize({
 			icon		: '<i class="fa fa-text-height t-f-size-14"></i>',
 			onSelect	: value => { window.TerminalState.change({fontSize : value}) }
 		}).getTrigger();
-	}
 
-	history()
-	{
-		return new History({
+		const history	= new History({
 			icon			: '<i class="fa fa-history t-f-size-14"></i>',
-			askServer		: () => window.TerminalState.getHistory(),
+			askServer		: ()	=> window.TerminalState.getHistory(),
 			onHistorySelect	: value => window.TerminalState.execCmd( value )
 		}).getTrigger();
-	}
 
-	settings()
-	{
-		return new Settings({
+		/*const settings	= new Settings({
 			icon		: '<i class="fa fa-gears t-f-size-14"></i>'
-		}).getTrigger();
+		}).getTrigger();*/
+
+		return [textSize, history];
+	}
+}
+
+class GdsAreas extends Component
+{
+	constructor()
+	{
+		super('article');
 	}
 
-	activeSession( {gds, sessionIndex, activeTerminal} )
+	_renderer()
 	{
-		const defParams = { gds, sessionIndex, activeTerminal };
+		this.context.innerHTML = '';
 
-		const context 		= Dom('article');
-		context.innerHTML 	= '<div class="label">Session</div>';
+		const { gds, sessionIndex, activeTerminal } = this.props;
 
+		const defParams 		= { gds, sessionIndex, activeTerminal };
 		defParams.onAreaChange 	= sessionIndex => window.TerminalState.action('CHANGE_SESSION_BY_MENU', sessionIndex);
 		defParams.onGdsChange 	= gds => window.TerminalState.action('CHANGE_GDS', gds);
 
-		GdsSet
-			.getAreas(defParams)
-			.map( areasPerGds  => context.appendChild( new SessionButtons( areasPerGds ).render() ) );
+		const areas = GdsSet.getAreas(defParams);
 
-		return context;
+		areas.map( areasPerGds => this.context.appendChild(
+			new SessionButtons(areasPerGds).render()
+		));
+	}
+}
+
+class LanguageButtons extends Component {
+
+	constructor()
+	{
+		super('article');
 	}
 
-	InputLanguage()
+	_renderer()
 	{
-		const context 	= document.createElement('article');
-
-		context.innerHTML = '<div class="label">Input Language</div>';
+		this.context.innerHTML = '';
 
 		['APOLLO','SABRE'].forEach( value => {
 
@@ -73,52 +82,50 @@ export default class MenuPanel extends Component
 			button.innerHTML = value;
 			button.addEventListener('click', () => window.TerminalState.change({ language : value }) );
 
-			context.appendChild( button );
+			this.context.appendChild( button );
 		});
-
-		return context;
 	}
+}
 
-	settingsButtons()
+class PriceQuote extends Component {
+
+	constructor()
 	{
-		if (SettingsContext)
-			return SettingsContext;
-
-		SettingsContext	= document.createElement('article');
-
-		[
-			this.fontSize(),
-			this.history(),
-			// this.settings() // WILL BE ADDED WHEN TIME COMES
-		].map( button => SettingsContext.appendChild( button ) );
-
-		return SettingsContext;
-	}
-
-	tests()
-	{
-		this.devButtons = this.devButtons || new DevButtons().getContext();
-		return this.devButtons;
+		super('article');
 	}
 
 	_renderer()
 	{
-		const context 	= this.getContext();
-		const params 	= this.props;
+		this.context.appendChild( PqButton.render( this.props ) )
+	}
+}
 
-		context.innerHTML = '';
+class TestsButtons extends Component {
 
-		context.appendChild( this.settingsButtons( params ) );
-		context.appendChild( this.activeSession( params ) );
+	constructor()
+	{
+		super('article');
+		this.context.appendChild( new DevButtons().getContext() );
+	}
+}
 
-		if ( !apiData.prod && window.apiData.hasPermissions() )
-			context.appendChild( this.InputLanguage() ); // WILL BE ADDED WHEN TIME COMES
+export default class MenuPanel extends Component
+{
+	constructor()
+	{
+		super('aside.sideMenu');
 
-		context.appendChild( PqButton.render( params ) );
+		this.observe( new SettingsButtons() );
+
+		this.attach( Dom('span.label[Session]') );
+		this.observe( new GdsAreas() );
+
+		this.attach( Dom('span.label[Input Language]') );
+		this.observe( new LanguageButtons() );
+
+		this.observe( new PriceQuote() );
 
 		if ( window.apiData.hasPermissions() )
-			context.appendChild( this.devButtons || this.tests() );
-
-		return context;
+			this.observe( new TestsButtons() );
 	}
 }
