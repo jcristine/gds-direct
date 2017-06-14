@@ -1,25 +1,12 @@
 'use strict';
 
-import {currDate} from './helpers.es6';
-// import History from '../modules/history.es6';
+import {currDate} 	from './helpers.es6';
 
 /*window.addEventListener("beforeunload", function (e) {
 	let confirmationMessage = "TEST";
 	(e || window.event).returnValue = confirmationMessage; //Gecko + IE
 	return confirmationMessage;                            //Webkit, Safari, Chrome
 });*/
-
-function next( terminal )
-{
-	terminal.cmd().set ( terminal.history().previous() );
-	// terminal.cmd().set ( History.previous() );
-}
-
-function prev( terminal )
-{
-	// terminal.cmd().set( terminal.history().end() ? '' : terminal.history().next() );
-	// terminal.cmd().set( History.end() ? '' : History.next() );
-}
 
 function switchTerminal(id)
 {
@@ -35,7 +22,7 @@ function switchTerminal(id)
 
 export default class KeyBinding
 {
-	static parse(evt, terminal)
+	static parse(evt, terminal, plugin)
 	{
 		const keymap 	= evt.keyCode || evt.which;
 		const isApollo	= window.TerminalState.isGdsApollo();
@@ -59,28 +46,20 @@ export default class KeyBinding
 					return false;
 				break;
 
-				case 87:
-					//	CTRL+W
-					// terminal.clear();
+				case 87: //	CTRL+W
 					window.TerminalState.clearTerminal();
-					//window.TerminalState.purgeScreens();
-					return false;
-					break;
-
-				case 68 :
-					// console.log('dddd');
-					// CTRL+D
 					return false;
 				break;
 
-				case 76 :
-					// CTRL+L
+				case 68 : // CTRL+D
 					return false;
 				break;
 
-				case 82 :
-					// CTRL+R
-					// terminal.insert('cccc');
+				case 76 : // CTRL+L
+					return false;
+				break;
+
+				case 82 : // CTRL+R
 					return false;
 				break;
 
@@ -95,17 +74,23 @@ export default class KeyBinding
 					return false;
 				break;
 
-				case 38 :
-					// Up arrow
+				case 38 : // Up arrow
 					// Last performed format
-					next( terminal );
+
+					plugin.history.previous().then( command => {
+						terminal.cmd().set( command );
+					});
+
 					return false;
 				break;
 
-				case 40 :
-					// down arrow
+				case 40 : // down arrow
 					//Next performed format, by default returns to the first format and than each one by one.
-					prev( terminal );
+
+					plugin.history.next().then( command => {
+						terminal.cmd().set( command );
+					});
+
 					return false;
 				break;
 
@@ -226,17 +211,21 @@ export default class KeyBinding
 					return false;
 				break;
 
-				case 38 :
-					// Up arrow
+				case 38 : // Up arrow
 					// Last performed format
-					next( terminal );
+					plugin.history.previous().then( command => {
+						terminal.cmd().set( command );
+					});
 					return false;
 				break;
 
-				case 40 :
-					// down arrow
+				case 40 : // down arrow
 					//Next performed format, by default returns to the first format and than each one by one.
-					prev( terminal );
+
+					plugin.history.next().then( command => {
+						terminal.cmd().set( command );
+					});
+
 					return false;
 				break;
 
@@ -264,6 +253,23 @@ export default class KeyBinding
 
 			case 33 : //page up
 				terminal.exec('MU');
+				return false;
+			break;
+
+			case 38 : //UP
+
+				plugin.history.previous().then( command => {
+					terminal.cmd().set( command );
+				});
+
+				return false;
+			break;
+
+			case 40 : //DOWN
+				plugin.history.next().then( command => {
+					terminal.cmd().set( command );
+				});
+
 				return false;
 			break;
 

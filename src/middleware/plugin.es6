@@ -14,6 +14,7 @@ import KeyBinding	from '../helpers/keyBinding.es6';
 import OutputLiner	from '../modules/output.es6';
 import TabManager	from '../modules/tabManager.es6';
 import F8Reader		from '../modules/f8.es6';
+import History 		from '../modules/history.es6';
 
 import {getReplacement} from '../helpers/helpers.es6';
 
@@ -34,8 +35,6 @@ export default class TerminalPlugin
 		this.settings 	= params;
 		this.context	= params.context;
 		this.name		= params.name;
-
-		this.hiddenBuff		= [];
 
 		this.allowManualPaging = params.gds === 'sabre';
 
@@ -59,6 +58,8 @@ export default class TerminalPlugin
 			terminal	: this.terminal,
 			gds			: params.gds
 		});
+
+		this.history 		= new History( params.gds );
 	}
 
 	/*
@@ -66,7 +67,7 @@ export default class TerminalPlugin
 	* */
 	parseKeyBinds( evt, terminal )
 	{
-		if ( !KeyBinding.parse( evt, terminal ) )
+		if ( !KeyBinding.parse( evt, terminal, this ) )
 			return false;
 
 		if ( this.f8Reader.getIsActive() ) // ignore Tab press
@@ -150,7 +151,7 @@ export default class TerminalPlugin
 			numRows			: this.settings.numOfRows, // plugin calculates it in so shitty slow manner appending cursor to body 3 times per plugin
 			numChars		: this.settings.numOfChars,
 
-			// memory			: true, // dont add to localStorage
+			memory			: true, // dont add to localStorage
 
 			// scrollOnEcho	: false,
 			// keypress		: this.parseChar.bind(this), // BUGGY BUGGY, assign on document wtf???
@@ -174,7 +175,6 @@ export default class TerminalPlugin
 			{
 				console.warn('exc', err);
 			}
-
 		});
 	}
 
@@ -225,8 +225,6 @@ export default class TerminalPlugin
 
 	checkBeforeEnter( terminal, command )
 	{
-		// console.log('CHECK BEFORE', terminal, command);
-
 		if ( !command || command === '' )
 		{
 			this.terminal.echo('>');
@@ -237,6 +235,8 @@ export default class TerminalPlugin
 			return command;
 
 		this.spinner.start();
+
+		this.history.add( command );
 
 		const finish = response => {
 			this.spinner.end();
@@ -255,40 +255,6 @@ export default class TerminalPlugin
 
 		return command;
 	}
-
-	// loopCmdStack()
-	// {
-	// 	if (this.hiddenBuff.length)
-	// 	{
-	// 		if (this.session.promise)
-	// 		{
-	// 			this.session.promise.then( () => this.loopCmdStack() );
-	// 			return '';
-	// 		}
-	//
-	// 		const cmd = this.hiddenBuff.shift();
-	//
-	// 		if ( cmd )
-	// 		{
-	// 			this.terminal.exec( cmd );
-	// 		}
-	// 	}
-	// }
-
-	// sendRequest( command )
-	// {
-	// 	return this.session
-	// 		.run({
-	// 			cmd : command.toUpperCase()
-	// 		})
-	//
-	// 		.then( response => {
-	// 			this.spinner.end();
-	// 			this.parseBackEnd( response, command )
-	// 		})
-	//
-	// 		.then( () => this.loopCmdStack() )
-	// }
 
 	parseBackEnd( response = {}, command )
 	{
@@ -323,14 +289,8 @@ export default class TerminalPlugin
 			canCreatePq 		: result['canCreatePq'],
 			canCreatePqErrors 	: result['canCreatePqErrors'],
 			sessionIndex		: ['A','B','C','D','E','F'].indexOf(result.area),
-			lastPcc 			: result.pcc
+			lastPcc 			: result['pcc']
 		});
-
-		// todo :: optimize
-		// if ( result['pcc'] )
-		// {
-		// 	window.TerminalState.action( 'CHANGE_PCC', result['pcc'] );
-		// }
 
 		if ( window.apiData.hasPermissions() )
 			this.debugOutput( result );

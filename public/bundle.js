@@ -63,7 +63,7 @@
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 43);
+/******/ 	return __webpack_require__(__webpack_require__.s = 44);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -210,7 +210,7 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _tetherDrop = __webpack_require__(38);
+var _tetherDrop = __webpack_require__(39);
 
 var _tetherDrop2 = _interopRequireDefault(_tetherDrop);
 
@@ -410,7 +410,7 @@ var _noty = __webpack_require__(7);
 
 var _noty2 = _interopRequireDefault(_noty);
 
-__webpack_require__(41);
+__webpack_require__(42);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -556,8 +556,8 @@ var GdsSet = function () {
 
 				return (0, _helpers.mergeIntoNew)(defaultsEvents, {
 					name: gds.name,
-					list: gds.name === 'sabre' ? _constants.AREA_LIST : _constants.AREA_LIST.slice(0, -1 //remove F
-					) });
+					list: gds.name === 'sabre' ? _constants.AREA_LIST : _constants.AREA_LIST.slice(0, -1) //remove F
+				});
 			});
 		}
 	}]);
@@ -3974,7 +3974,6 @@ var ActionsMenu = function (_Component) {
 
 		var matrix = new _terminalMatrix2.default({
 			icon: '<i class="fa fa-th-large"></i>'
-			// onSelect	: value => { window.TerminalState.change({fontSize : value}) }
 		}).getTrigger();
 
 		matrix.className = 'btn btn-purple';
@@ -4957,7 +4956,7 @@ var _dom = __webpack_require__(0);
 
 var _dom2 = _interopRequireDefault(_dom);
 
-var _terminal = __webpack_require__(30);
+var _terminal = __webpack_require__(31);
 
 var _terminal2 = _interopRequireDefault(_terminal);
 
@@ -5151,23 +5150,11 @@ var _helpers = __webpack_require__(1);
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-// import History from '../modules/history.es6';
-
 /*window.addEventListener("beforeunload", function (e) {
 	let confirmationMessage = "TEST";
 	(e || window.event).returnValue = confirmationMessage; //Gecko + IE
 	return confirmationMessage;                            //Webkit, Safari, Chrome
 });*/
-
-function next(terminal) {
-	terminal.cmd().set(terminal.history().previous());
-	// terminal.cmd().set ( History.previous() );
-}
-
-function prev(terminal) {
-	// terminal.cmd().set( terminal.history().end() ? '' : terminal.history().next() );
-	// terminal.cmd().set( History.end() ? '' : History.next() );
-}
 
 function switchTerminal(id) {
 	var gds = window.TerminalState.getGds();
@@ -5186,7 +5173,7 @@ var KeyBinding = function () {
 
 	_createClass(KeyBinding, null, [{
 		key: 'parse',
-		value: function parse(evt, terminal) {
+		value: function parse(evt, terminal, plugin) {
 			var keymap = evt.keyCode || evt.which;
 			var isApollo = window.TerminalState.isGdsApollo();
 
@@ -5210,14 +5197,11 @@ var KeyBinding = function () {
 
 					case 87:
 						//	CTRL+W
-						// terminal.clear();
 						window.TerminalState.clearTerminal();
-						//window.TerminalState.purgeScreens();
 						return false;
 						break;
 
 					case 68:
-						// console.log('dddd');
 						// CTRL+D
 						return false;
 						break;
@@ -5229,7 +5213,6 @@ var KeyBinding = function () {
 
 					case 82:
 						// CTRL+R
-						// terminal.insert('cccc');
 						return false;
 						break;
 
@@ -5247,14 +5230,22 @@ var KeyBinding = function () {
 					case 38:
 						// Up arrow
 						// Last performed format
-						next(terminal);
+
+						plugin.history.previous().then(function (command) {
+							terminal.cmd().set(command);
+						});
+
 						return false;
 						break;
 
 					case 40:
 						// down arrow
 						//Next performed format, by default returns to the first format and than each one by one.
-						prev(terminal);
+
+						plugin.history.next().then(function (command) {
+							terminal.cmd().set(command);
+						});
+
 						return false;
 						break;
 
@@ -5390,14 +5381,20 @@ var KeyBinding = function () {
 					case 38:
 						// Up arrow
 						// Last performed format
-						next(terminal);
+						plugin.history.previous().then(function (command) {
+							terminal.cmd().set(command);
+						});
 						return false;
 						break;
 
 					case 40:
 						// down arrow
 						//Next performed format, by default returns to the first format and than each one by one.
-						prev(terminal);
+
+						plugin.history.next().then(function (command) {
+							terminal.cmd().set(command);
+						});
+
 						return false;
 						break;
 
@@ -5426,6 +5423,25 @@ var KeyBinding = function () {
 				case 33:
 					//page up
 					terminal.exec('MU');
+					return false;
+					break;
+
+				case 38:
+					//UP
+
+					plugin.history.previous().then(function (command) {
+						terminal.cmd().set(command);
+					});
+
+					return false;
+					break;
+
+				case 40:
+					//DOWN
+					plugin.history.next().then(function (command) {
+						terminal.cmd().set(command);
+					});
+
 					return false;
 					break;
 
@@ -5473,15 +5489,15 @@ var _noty = __webpack_require__(7);
 
 var _noty2 = _interopRequireDefault(_noty);
 
-var _pagination = __webpack_require__(26);
+var _pagination = __webpack_require__(27);
 
 var _pagination2 = _interopRequireDefault(_pagination);
 
-var _session = __webpack_require__(27);
+var _session = __webpack_require__(28);
 
 var _session2 = _interopRequireDefault(_session);
 
-var _spinner = __webpack_require__(28);
+var _spinner = __webpack_require__(29);
 
 var _spinner2 = _interopRequireDefault(_spinner);
 
@@ -5489,11 +5505,11 @@ var _keyBinding = __webpack_require__(22);
 
 var _keyBinding2 = _interopRequireDefault(_keyBinding);
 
-var _output = __webpack_require__(25);
+var _output = __webpack_require__(26);
 
 var _output2 = _interopRequireDefault(_output);
 
-var _tabManager = __webpack_require__(29);
+var _tabManager = __webpack_require__(30);
 
 var _tabManager2 = _interopRequireDefault(_tabManager);
 
@@ -5501,17 +5517,21 @@ var _f = __webpack_require__(24);
 
 var _f2 = _interopRequireDefault(_f);
 
+var _history = __webpack_require__(25);
+
+var _history2 = _interopRequireDefault(_history);
+
 var _helpers = __webpack_require__(1);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-var $ = __webpack_require__(42);
+var $ = __webpack_require__(43);
 window.$ = window.jQuery = $;
 
-__webpack_require__(33);
-__webpack_require__(35).polyfill();
+__webpack_require__(34);
+__webpack_require__(36).polyfill();
 
 var Debug = function Debug(txt, type) {
 	new _noty2.default({
@@ -5530,8 +5550,6 @@ var TerminalPlugin = function () {
 		this.settings = params;
 		this.context = params.context;
 		this.name = params.name;
-
-		this.hiddenBuff = [];
 
 		this.allowManualPaging = params.gds === 'sabre';
 
@@ -5555,6 +5573,8 @@ var TerminalPlugin = function () {
 			terminal: this.terminal,
 			gds: params.gds
 		});
+
+		this.history = new _history2.default(params.gds);
 	}
 
 	/*
@@ -5565,7 +5585,7 @@ var TerminalPlugin = function () {
 	_createClass(TerminalPlugin, [{
 		key: 'parseKeyBinds',
 		value: function parseKeyBinds(evt, terminal) {
-			if (!_keyBinding2.default.parse(evt, terminal)) return false;
+			if (!_keyBinding2.default.parse(evt, terminal, this)) return false;
 
 			if (this.f8Reader.getIsActive()) // ignore Tab press
 				{
@@ -5648,7 +5668,7 @@ var TerminalPlugin = function () {
 				numRows: this.settings.numOfRows, // plugin calculates it in so shitty slow manner appending cursor to body 3 times per plugin
 				numChars: this.settings.numOfChars,
 
-				// memory			: true, // dont add to localStorage
+				memory: true, // dont add to localStorage
 
 				// scrollOnEcho	: false,
 				// keypress		: this.parseChar.bind(this), // BUGGY BUGGY, assign on document wtf???
@@ -5731,8 +5751,6 @@ var TerminalPlugin = function () {
 		value: function checkBeforeEnter(terminal, command) {
 			var _this2 = this;
 
-			// console.log('CHECK BEFORE', terminal, command);
-
 			if (!command || command === '') {
 				this.terminal.echo('>');
 				return false;
@@ -5741,6 +5759,8 @@ var TerminalPlugin = function () {
 			if (this.checkSabreCommand(command, terminal)) return command;
 
 			this.spinner.start();
+
+			this.history.add(command);
 
 			var finish = function finish(response) {
 				_this2.spinner.end();
@@ -5759,41 +5779,6 @@ var TerminalPlugin = function () {
 
 			return command;
 		}
-
-		// loopCmdStack()
-		// {
-		// 	if (this.hiddenBuff.length)
-		// 	{
-		// 		if (this.session.promise)
-		// 		{
-		// 			this.session.promise.then( () => this.loopCmdStack() );
-		// 			return '';
-		// 		}
-		//
-		// 		const cmd = this.hiddenBuff.shift();
-		//
-		// 		if ( cmd )
-		// 		{
-		// 			this.terminal.exec( cmd );
-		// 		}
-		// 	}
-		// }
-
-		// sendRequest( command )
-		// {
-		// 	return this.session
-		// 		.run({
-		// 			cmd : command.toUpperCase()
-		// 		})
-		//
-		// 		.then( response => {
-		// 			this.spinner.end();
-		// 			this.parseBackEnd( response, command )
-		// 		})
-		//
-		// 		.then( () => this.loopCmdStack() )
-		// }
-
 	}, {
 		key: 'parseBackEnd',
 		value: function parseBackEnd() {
@@ -5826,14 +5811,8 @@ var TerminalPlugin = function () {
 				canCreatePq: result['canCreatePq'],
 				canCreatePqErrors: result['canCreatePqErrors'],
 				sessionIndex: ['A', 'B', 'C', 'D', 'E', 'F'].indexOf(result.area),
-				lastPcc: result.pcc
+				lastPcc: result['pcc']
 			});
-
-			// todo :: optimize
-			// if ( result['pcc'] )
-			// {
-			// 	window.TerminalState.action( 'CHANGE_PCC', result['pcc'] );
-			// }
 
 			if (window.apiData.hasPermissions()) this.debugOutput(result);
 		}
@@ -5979,6 +5958,89 @@ exports.default = F8Reader;
 
 /***/ }),
 /* 25 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+	value: true
+});
+exports.default = History;
+var promises = {};
+var commands = {};
+
+function History() {
+	var gds = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 'apollo';
+
+	var pos = false;
+	var length = 0;
+
+	commands[gds] = commands[gds] || [];
+
+	var askServer = function askServer() {
+		return window.TerminalState.getHistory();
+	};
+	var getData = function getData() {
+		// if ( promises[gds] && !pos )
+		// 	pos = commands[gds].length - 1;
+
+		// this will ask server only once per GDS
+		promises[gds] = promises[gds] || new Promise(function (resolve) {
+
+			askServer().then(function (response) {
+				commands[gds] = response.data;
+				pos = commands[gds].length;
+				length = commands[gds].length;
+			}).then(resolve);
+		});
+
+		return promises[gds];
+	};
+
+	var checkIfListUpdated = function checkIfListUpdated() {
+
+		if (commands[gds]) // when new commands were executed update position
+			{
+				if (commands[gds].length !== length) {
+					length = commands[gds].length;
+					pos = length;
+				}
+			}
+	};
+
+	return {
+
+		add: function add(cmd) {
+			if (commands[gds]) commands[gds].push(cmd);
+		},
+
+		next: function next() {
+			if (length === 0) return getData();
+
+			if (pos < commands[gds].length) ++pos;
+
+			checkIfListUpdated();
+
+			return getData().then(function () {
+				return commands[gds][pos] || '';
+			});
+		},
+
+		previous: function previous() {
+			checkIfListUpdated();
+
+			return getData().then(function () {
+				if (pos > 0) --pos;
+
+				return commands[gds][pos];
+			});
+		}
+	};
+}
+
+/***/ }),
+/* 26 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -6140,7 +6202,7 @@ var Output = function () {
 exports.default = Output;
 
 /***/ }),
-/* 26 */
+/* 27 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -6210,7 +6272,7 @@ var Pagination = function () {
 exports.default = Pagination;
 
 /***/ }),
-/* 27 */
+/* 28 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -6337,7 +6399,7 @@ var Session = function () {
 exports.default = Session;
 
 /***/ }),
-/* 28 */
+/* 29 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -6351,7 +6413,7 @@ var _createClass = function () { function defineProperties(target, props) { for 
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-var cliSpinners = __webpack_require__(31);
+var cliSpinners = __webpack_require__(32);
 
 var Spinner = function () {
 	function Spinner(terminal) {
@@ -6412,7 +6474,7 @@ var Spinner = function () {
 exports.default = Spinner;
 
 /***/ }),
-/* 29 */
+/* 30 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -6496,7 +6558,7 @@ var TabManager = function () {
 exports.default = TabManager;
 
 /***/ }),
-/* 30 */
+/* 31 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -6520,7 +6582,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-__webpack_require__(34);
+__webpack_require__(35);
 
 var Terminal = function () {
 	function Terminal(params) {
@@ -6652,16 +6714,16 @@ var Terminal = function () {
 exports.default = Terminal;
 
 /***/ }),
-/* 31 */
+/* 32 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
-module.exports = __webpack_require__(32);
+module.exports = __webpack_require__(33);
 
 
 /***/ }),
-/* 32 */
+/* 33 */
 /***/ (function(module, exports) {
 
 module.exports = {
@@ -7498,7 +7560,7 @@ module.exports = {
 };
 
 /***/ }),
-/* 33 */
+/* 34 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(global, setImmediate) {/**@license
@@ -10217,6 +10279,9 @@ module.exports = {
             width: span.width(),
             height: span.outerHeight()
         };
+
+        // console.log( 'append agein ' , result )
+
         temp.remove();
         return result;
     }
@@ -10224,7 +10289,8 @@ module.exports = {
     // :: calculate numbers of characters
     // -----------------------------------------------------------------------
     function get_num_chars(terminal) {
-        var temp = $('<div class="terminal wrap"><span class="cursor">' +
+
+		var temp = $('<div class="terminal wrap"><span class="cursor">' +
                      '&nbsp;</span></div>').appendTo('body').css('padding', 0);
         var span = temp.find('span');
         var width = span[0].getBoundingClientRect().width;
@@ -12475,12 +12541,14 @@ module.exports = {
             // :: Recalculate and redraw everything
             // -------------------------------------------------------------
             resize: function(width, height) {
+
                 if (!self.is(':visible')) {
                     // delay resize if terminal not visible
                     self.stopTime('resize');
                     self.oneTime(500, 'resize', function() {
                         self.resize(width, height);
                     });
+
                 } else {
                     if (width && height) {
                         self.width(width);
@@ -12488,8 +12556,10 @@ module.exports = {
                     }
                     width = self.width();
                     height = self.height();
+
                     var new_num_chars = self.cols();
-                    var new_num_rows = self.rows();
+                    var new_num_rows =  self.rows();
+
                     // only if number of chars changed
                     if (new_num_chars !== num_chars ||
                         new_num_rows !== num_rows) {
@@ -12505,6 +12575,7 @@ module.exports = {
                         scroll_to_bottom();
                     }
                 }
+
                 return self;
             },
             // -------------------------------------------------------------
@@ -12562,6 +12633,7 @@ module.exports = {
                             });
                         }
                     }
+
                     num_rows = get_num_rows(self);
                     if (settings.scrollOnEcho || bottom) {
                         scroll_to_bottom();
@@ -13455,10 +13527,10 @@ module.exports = {
     }; // terminal plugin
 })(jQuery);
 
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(8), __webpack_require__(40).setImmediate))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(8), __webpack_require__(41).setImmediate))
 
 /***/ }),
-/* 34 */
+/* 35 */
 /***/ (function(module, exports) {
 
 /**@license
@@ -13783,7 +13855,7 @@ module.exports = {
 
 
 /***/ }),
-/* 35 */
+/* 36 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_RESULT__;/* global define, KeyboardEvent, module */
@@ -13914,7 +13986,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_RESULT__;/* global defi
 
 
 /***/ }),
-/* 36 */
+/* 37 */
 /***/ (function(module, exports) {
 
 // shim for using process in browser
@@ -14104,7 +14176,7 @@ process.umask = function() { return 0; };
 
 
 /***/ }),
-/* 37 */
+/* 38 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(global, process) {(function (global, undefined) {
@@ -14294,17 +14366,17 @@ process.umask = function() { return 0; };
     attachTo.clearImmediate = clearImmediate;
 }(typeof self === "undefined" ? typeof global === "undefined" ? this : global : self));
 
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(8), __webpack_require__(36)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(8), __webpack_require__(37)))
 
 /***/ }),
-/* 38 */
+/* 39 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*! tether-drop 1.4.1 */
 
 (function(root, factory) {
   if (true) {
-    !(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(39)], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory),
+    !(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(40)], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory),
 				__WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ?
 				(__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__),
 				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
@@ -14866,7 +14938,7 @@ return Drop;
 
 
 /***/ }),
-/* 39 */
+/* 40 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_RESULT__;/*! tether 1.4.0 */
@@ -16687,7 +16759,7 @@ return Tether;
 
 
 /***/ }),
-/* 40 */
+/* 41 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var apply = Function.prototype.apply;
@@ -16740,13 +16812,13 @@ exports._unrefActive = exports.active = function(item) {
 };
 
 // setimmediate attaches itself to the global object
-__webpack_require__(37);
+__webpack_require__(38);
 exports.setImmediate = setImmediate;
 exports.clearImmediate = clearImmediate;
 
 
 /***/ }),
-/* 41 */
+/* 42 */
 /***/ (function(module, exports) {
 
 (function(self) {
@@ -17213,13 +17285,13 @@ exports.clearImmediate = clearImmediate;
 
 
 /***/ }),
-/* 42 */
+/* 43 */
 /***/ (function(module, exports) {
 
 module.exports = jQuery;
 
 /***/ }),
-/* 43 */
+/* 44 */
 /***/ (function(module, exports, __webpack_require__) {
 
 __webpack_require__(9);

@@ -1,193 +1,78 @@
 'use strict';
 
-import Requests	from '../helpers/requests.es6';
+const promises = {};
+const commands = {};
 
-function History( gds = 'apollo')
+export default function History( gds = 'apollo' )
 {
-	const name 	= 'history';
-	const size 	= 60;
+	let pos 	= false;
+	let length	= 0;
 
-	let enabled 		= true;
+	commands[gds] 	= commands[gds] || [];
 
-	let storage_key 	= '';
+	const askServer = () => window.TerminalState.getHistory();
+	const getData 	= () => {
+		// if ( promises[gds] && !pos )
+		// 	pos = commands[gds].length - 1;
 
-	if (typeof name === 'string' && name !== '')
-	{
-		storage_key = name + '_';
-	}
+		// this will ask server only once per GDS
+		promises[gds] = promises[gds] || new Promise( resolve => {
 
-	storage_key += 'commands';
+			askServer()
+				.then( response => {
+					commands[gds] 	= response.data;
+					pos				= commands[gds].length;
+					length			= commands[gds].length;
+				})
+				.then( resolve );
+		});
 
-	let data 		= [];
-	// let promise 	= new Promise();
+		return promises[gds];
+	};
 
+	const checkIfListUpdated = () => {
 
-	console.log('go');
-
-	function getData()
-	{
-		console.log('getData');
-
-		return promise || function ()
+		if ( commands[gds] ) // when new commands were executed update position
 		{
-			let promise = Requests.get(`terminal/lastCommands?rId=${apiData.rId}&gds=${gds}`, false).then( response => {
-				console.log('response', response.data);
-				this.state.history = response.data
-			});
+			if (commands[gds].length !== length)
+			{
+				length 	= commands[gds].length;
+				pos 	= length;
+			}
 		}
-	}
-
-	// Requests.get(`terminal/lastCommands?rId=${apiData.rId}&gds=${this.getGds()}`, false).then( (response) => {
-	// 	this.state.history = response.data
-	// });
-
-	// let data = window.TerminalState.history || [];
-	// console.log('!!!!!!')
-
-	// if (memory)
-	// {
-	// data = [];
-	// }
-
-	// else
-	// {
-	// 	data = $.Storage.get(storage_key);
-	// 	data = data ? $.parseJSON(data) : [];
-	// }
-
-	let pos = data.length - 1;
+	};
 
 	return {
 
-		append: function(item)
+		add	: function ( cmd )
 		{
-			if (enabled)
-			{
-				if (data[data.length - 1] !== item)
-				{
-					data.push(item);
-
-					if (size && data.length > size)
-					{
-						data = data.slice(-size);
-					}
-
-					pos = data.length - 1;
-
-					// if (!memory)
-					// {
-					// 	$.Storage.set(storage_key, JSON.stringify(data));
-					// }
-				}
-			}
-		},
-
-		set: function(new_data)
-		{
-			if (new_data instanceof Array)
-			{
-				data = new_data;
-
-				// if (!memory)
-				// {
-				// 	$.Storage.set(storage_key, JSON.stringify(data));
-				// }
-			}
-		},
-
-		data: function()
-		{
-			return data;
-		},
-
-		reset: function()
-		{
-			pos = data.length - 1;
-		},
-
-		last: function()
-		{
-			return data[data.length - 1];
-		},
-
-		end: function()
-		{
-			return pos === data.length - 1;
-		},
-
-		position: function()
-		{
-			return pos;
-		},
-
-		current: function()
-		{
-			return data[pos];
+			if ( commands[gds] )
+				commands[gds].push( cmd );
 		},
 
 		next: function()
 		{
-			if (pos < data.length - 1)
-			{
-				++pos;
-			}
+			if ( length === 0 )
+				return getData();
 
-			if (pos !== -1)
-			{
-				return data[pos];
-			}
+			if (pos < commands[gds].length )
+				++pos;
+
+			checkIfListUpdated();
+
+			return getData().then( () => commands[gds][pos] || '' );
 		},
 
 		previous: function()
 		{
-			console.log('previous');
+			checkIfListUpdated();
 
-			let old = pos;
+			return getData().then( () => {
+				if (pos > 0)
+					--pos;
 
-			// if (pos > 0)
-			// {
-			// 	--pos;
-			// }
-			//
-			// if (old !== -1)
-			// {
-				return getData()[pos];
-			// }
-		},
-
-		clear: function()
-		{
-			data = [];
-			this.purge();
-		},
-
-		enabled: function()
-		{
-			return enabled;
-		},
-
-		enable: function()
-		{
-			enabled = true;
-		},
-
-		purge: function()
-		{
-			// if (!memory)
-			// {
-			// 	$.Storage.remove(storage_key);
-			// }
-		},
-
-		disable: function()
-		{
-			enabled = false;
+				return commands[gds][pos];
+			});
 		}
 	}
 }
-
-const h =  new History();
-
-console.log( h );
-
-export default h;
