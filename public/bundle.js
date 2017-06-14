@@ -3744,7 +3744,7 @@ var TerminalState = function () {
 	}, {
 		key: 'clearTerminal',
 		value: function clearTerminal() {
-			Container.getTerminal(this.getGds(), this.getAreaIndex() - 1).clear();
+			window.activePlugin.purge();
 		}
 	}, {
 		key: 'getGds',
@@ -5249,6 +5249,7 @@ var KeyBinding = function () {
 
 					case 68:
 						// CTRL+D
+						// window.TerminalState.clearTerminal();
 						return false;
 						break;
 
@@ -5667,6 +5668,11 @@ var TerminalPlugin = function () {
 		value: function changeActiveTerm(activeTerminal) {
 			window.activePlugin = this; // SO SO DEPRECATED NOW
 			window.TerminalState.action('CHANGE_ACTIVE_TERMINAL', activeTerminal);
+		}
+	}, {
+		key: 'purge',
+		value: function purge() {
+			this.settings.clear();
 		}
 	}, {
 		key: 'tabPressed',
@@ -6652,10 +6658,15 @@ var Terminal = function () {
 	_createClass(Terminal, [{
 		key: 'init',
 		value: function init() {
+			var _this2 = this;
+
 			// this.context.innerHTML = '';
 
 			this.plugin = new _plugin2.default({
 				context: this.context,
+				clear: function clear() {
+					return _this2.clear();
+				},
 				name: this.settings['name'],
 				sessionIndex: this.settings['sessionIndex'],
 				gds: this.settings['gds'],
@@ -6685,16 +6696,16 @@ var Terminal = function () {
 	}, {
 		key: 'insertBuffer',
 		value: function insertBuffer() {
-			var _this2 = this;
+			var _this3 = this;
 
 			if (!this.settings.buffer) return false;
 
 			this.settings.buffer['buffering'].forEach(function (record) {
-				_this2.plugin.terminal.echo(record.command, { finalize: function finalize(div) {
+				_this3.plugin.terminal.echo(record.command, { finalize: function finalize(div) {
 						div[0].className = 'command';
 					} });
 
-				_this2.plugin.terminal.echo(record.output);
+				_this3.plugin.terminal.echo(record.output);
 			});
 		}
 	}, {

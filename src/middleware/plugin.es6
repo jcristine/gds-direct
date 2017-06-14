@@ -107,6 +107,11 @@ export default class TerminalPlugin
 		window.TerminalState.action('CHANGE_ACTIVE_TERMINAL', activeTerminal );
 	}
 
+	purge()
+	{
+		this.settings.clear();
+	}
+
 	tabPressed()
 	{
 		if ( this.f8Reader.getIsActive() )

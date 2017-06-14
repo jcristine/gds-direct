@@ -29,6 +29,7 @@ export default class Terminal {
 
 		this.plugin = new TerminalPlugin({
 			context 		: this.context,
+			clear			: () => this.clear(),
 			name 			: this.settings['name'],
 			sessionIndex 	: this.settings['sessionIndex'],
 			gds 			: this.settings['gds'],

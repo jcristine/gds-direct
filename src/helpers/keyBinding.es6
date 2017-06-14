@@ -52,6 +52,7 @@ export default class KeyBinding
 				break;
 
 				case 68 : // CTRL+D
+					// window.TerminalState.clearTerminal();
 					return false;
 				break;
 

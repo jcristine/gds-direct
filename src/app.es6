@@ -43,7 +43,7 @@ class TerminalState
 
 	clearTerminal()
 	{
-		Container.getTerminal( this.getGds(), this.getAreaIndex() - 1 ).clear();
+		window.activePlugin.purge();
 	}
 
 	getGds()
