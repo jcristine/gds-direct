@@ -16,7 +16,10 @@ const Debug = txt => {
 
 function ask( url, params)
 {
-	return fetch( url, params )
+	if (url.substr(0, 1) !== '/')
+		url = '/' + url;
+
+	return fetch( wwwFullDir + url, params )
 		.then( response => response.json() )
 		.catch( err => {
 			Debug( err );

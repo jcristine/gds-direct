@@ -444,7 +444,9 @@ var Debug = function Debug(txt) {
 };
 
 function ask(url, params) {
-	return fetch(url, params).then(function (response) {
+	if (url.substr(0, 1) !== '/') url = '/' + url;
+
+	return fetch(wwwFullDir + url, params).then(function (response) {
 		return response.json();
 	}).catch(function (err) {
 		Debug(err);
