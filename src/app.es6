@@ -105,16 +105,14 @@ class TerminalState
 		const term = this.getActiveTerminal();
 
 		if (term)
-		{
-			// console.log( 'hohoho', commands );
 			term.exec( commands );
 
-			// window.activePlugin.hiddenBuff = window.activePlugin.hiddenBuff.concat( params );
-			// console.log('ACTIVE BUFFER', window.activePlugin.hiddenBuff);
-			// window.activePlugin.loopCmdStack();
-		}
-
 		return false;
+	}
+
+	getGdsList()
+	{
+		console.log( Gds );
 	}
 
 	isGdsApollo()
@@ -172,21 +170,11 @@ class TerminalState
 				});
 			break;
 
-			case 'CHANGE_PCC' :
-				const area = this.getAreaIndex();
-
-				const pcc = Object.assign({}, this.state.gdsObj.pcc, {[area] : params});
-				const gds = Object.assign({}, this.state.gdsObj, {pcc : pcc});
-
-				this.change({ gdsObj : gds });
-			break;
-
 			case 'UPDATE_CUR_GDS' :
-				this.state.gdsObj.pcc[ params.sessionIndex ] = params.lastPcc;
+				const pcc 	= Object.assign({}, this.state.gdsObj.pcc, { [ params['sessionIndex'] ] : params['lastPcc']} );
+				const gds 	= Object.assign({}, this.state.gdsObj, {pcc : pcc});
 
-				this.change({
-					gdsObj : Object.assign( {}, this.state.gdsObj, params )
-				});
+				this.change({ gdsObj : Object.assign( {}, gds, params ) });
 			break;
 
 			case 'PQ_MODAL_SHOW' :

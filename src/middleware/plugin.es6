@@ -289,7 +289,8 @@ export default class TerminalPlugin
 			canCreatePq 		: result['canCreatePq'],
 			canCreatePqErrors 	: result['canCreatePqErrors'],
 			sessionIndex		: ['A','B','C','D','E','F'].indexOf(result.area),
-			lastPcc 			: result['pcc']
+
+			lastPcc 			: result['pcc'] // TODO:: better deep-merge as pcc { sesionIndex : result[pcc] }
 		});
 
 		if ( window.apiData.hasPermissions() )

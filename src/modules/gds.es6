@@ -26,7 +26,7 @@ class Gds
 		return mergeIntoNew( defaults, {
 			name 			: name,
 			sessionIndex 	: AREA_LIST.indexOf( settings['area'] ),
-			// canCreatePq		: !!settings['canCreatePq']
+			// canCreatePq		: !!settings['canCreatePq'] // for DEV
 			canCreatePq		: false
 		})
 	}
@@ -45,16 +45,14 @@ export default class GdsSet
 
 		let list = GDS_LIST;
 
-		if ( !window.apiData.hasPermissions() )
+		if ( !window.apiData.hasPermissions() ) // AMADEUS FOR DEV
 		{
 			list = list.slice(0, -1);
 		}
 
-		this.gdsList = list.map( name => new Gds( name ).getData() );
+		this.gdsList = list.map( name => new Gds(name).getData() );
 
-		this.gdsList.forEach( ( gds ) => {
-			res[gds.name] = gds;
-		});
+		this.gdsList.forEach( gds => { res[gds.name] = gds; });
 
 		return res;
 	}

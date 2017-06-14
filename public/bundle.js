@@ -509,7 +509,7 @@ var Gds = function () {
 			return (0, _helpers.mergeIntoNew)(defaults, {
 				name: name,
 				sessionIndex: _constants.AREA_LIST.indexOf(settings['area']),
-				// canCreatePq		: !!settings['canCreatePq']
+				// canCreatePq		: !!settings['canCreatePq'] // for DEV
 				canCreatePq: false
 			});
 		}
@@ -535,9 +535,10 @@ var GdsSet = function () {
 
 			var list = _constants.GDS_LIST;
 
-			if (!window.apiData.hasPermissions()) {
-				list = list.slice(0, -1);
-			}
+			if (!window.apiData.hasPermissions()) // AMADEUS FOR DEV
+				{
+					list = list.slice(0, -1);
+				}
 
 			this.gdsList = list.map(function (name) {
 				return new Gds(name).getData();
@@ -3785,16 +3786,14 @@ var TerminalState = function () {
 		value: function execCmd(commands) {
 			var term = this.getActiveTerminal();
 
-			if (term) {
-				// console.log( 'hohoho', commands );
-				term.exec(commands);
-
-				// window.activePlugin.hiddenBuff = window.activePlugin.hiddenBuff.concat( params );
-				// console.log('ACTIVE BUFFER', window.activePlugin.hiddenBuff);
-				// window.activePlugin.loopCmdStack();
-			}
+			if (term) term.exec(commands);
 
 			return false;
+		}
+	}, {
+		key: 'getGdsList',
+		value: function getGdsList() {
+			console.log(Gds);
 		}
 	}, {
 		key: 'isGdsApollo',
@@ -3852,21 +3851,11 @@ var TerminalState = function () {
 					});
 					break;
 
-				case 'CHANGE_PCC':
-					var area = this.getAreaIndex();
-
-					var pcc = Object.assign({}, this.state.gdsObj.pcc, _defineProperty({}, area, params));
+				case 'UPDATE_CUR_GDS':
+					var pcc = Object.assign({}, this.state.gdsObj.pcc, _defineProperty({}, params['sessionIndex'], params['lastPcc']));
 					var gds = Object.assign({}, this.state.gdsObj, { pcc: pcc });
 
-					this.change({ gdsObj: gds });
-					break;
-
-				case 'UPDATE_CUR_GDS':
-					this.state.gdsObj.pcc[params.sessionIndex] = params.lastPcc;
-
-					this.change({
-						gdsObj: Object.assign({}, this.state.gdsObj, params)
-					});
+					this.change({ gdsObj: Object.assign({}, gds, params) });
 					break;
 
 				case 'PQ_MODAL_SHOW':
@@ -4338,15 +4327,14 @@ var SessionKeys = function () {
 		value: function makeButton(value, index) {
 			var _this = this;
 
-			var button = (0, _dom2.default)('button.btn btn-sm btn-purple font-bold pos-rlt');
-			button.innerHTML = value;
-
 			var pcc = window.TerminalState.getPcc()[index];
 			var isActive = this.settings.sessionIndex === index;
 
-			if (pcc) button.innerHTML += '<span class="pcc-label">' + pcc + '</span>';
+			// console.log( " MAKE BTN ", index , pcc );
+			// console.log( 'pcc?', pcc );
 
-			if (isActive) button.className += ' active';
+			var button = (0, _dom2.default)('button.btn btn-sm btn-purple font-bold pos-rlt ' + (isActive ? 'active' : ''));
+			button.innerHTML = value + (pcc ? '<span class="pcc-label">' + pcc + '</span>' : '');
 
 			button.disabled = !this.settings.activeTerminal || isActive;
 
@@ -5811,7 +5799,8 @@ var TerminalPlugin = function () {
 				canCreatePq: result['canCreatePq'],
 				canCreatePqErrors: result['canCreatePqErrors'],
 				sessionIndex: ['A', 'B', 'C', 'D', 'E', 'F'].indexOf(result.area),
-				lastPcc: result['pcc']
+
+				lastPcc: result['pcc'] // TODO:: better deep-merge as pcc { sesionIndex : result[pcc] }
 			});
 
 			if (window.apiData.hasPermissions()) this.debugOutput(result);

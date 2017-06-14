@@ -18,19 +18,16 @@ export default class SessionKeys
 
 	makeButton(value, index)
 	{
-		const button 		= Dom('button.btn btn-sm btn-purple font-bold pos-rlt');
-		button.innerHTML	= value;
-
 		const pcc 		= window.TerminalState.getPcc()[index];
 		const isActive 	= this.settings.sessionIndex === index;
 
-		if ( pcc )
-			button.innerHTML += `<span class="pcc-label">${pcc}</span>`;
+		// console.log( " MAKE BTN ", index , pcc );
+		// console.log( 'pcc?', pcc );
 
-		if ( isActive )
-			button.className += ' active';
+		const button 		= Dom(`button.btn btn-sm btn-purple font-bold pos-rlt ${isActive ? 'active' : ''}`);
+		button.innerHTML	= value + ( pcc ? `<span class="pcc-label">${pcc}</span>` : '');
 
-		button.disabled = !this.settings.activeTerminal || isActive;
+		button.disabled 	= !this.settings.activeTerminal || isActive;
 
 		button.addEventListener('click', () => {
 			button.disabled = true;
