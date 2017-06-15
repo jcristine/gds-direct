@@ -5132,8 +5132,6 @@ var TerminalsMatrix = function (_Component) {
 
 			var params = this.props;
 
-			// console.log("XXX", params)
-
 			var rowCount = params.cellMatrix.rows + 1;
 			var cellCount = params.cellMatrix.cells + 1;
 
@@ -5165,7 +5163,7 @@ var TerminalsMatrix = function (_Component) {
 						buffer: window.TerminalState.getBuffer(params.gds, index + 1)
 					};
 
-					_this3.getTerminal(params.gds, index, props).reattach(cell, state.dimensions);
+					_this3.getTerminal(params.gds, index, props).reattach(cell, _this3.getSizes().calculate(rowCount, cellCount));
 				});
 			}
 
@@ -6687,7 +6685,7 @@ var Terminal = function () {
 
 				var output = record.output ? '<pre style="white-space: pre-wrap; overflow: hidden">' + $.terminal.format(record.output) + ' </pre>' : '';
 
-				return '<div class="command">\n\t\t\t\t\t\t<div style="100%">\n\t\t\t\t\t\t\t<span>' + record.command + '</span>\n\t\t\t\t\t\t</div>\n\t\t\t\t\t</div>\n\t\t\t\t\t' + output;
+				return '<div class="command">\n\t\t\t\t\t\t<div>\n\t\t\t\t\t\t\t<span>' + record.command + '</span>\n\t\t\t\t\t\t</div>\n\t\t\t\t\t</div>\n\t\t\t\t\t' + output;
 			}).join('');
 
 			this.bufferDiv = (0, _dom2.default)('article.terminal-wrapper');
@@ -6748,6 +6746,8 @@ var Terminal = function () {
 			this.context.style.height = this.numOfRows * dimensions.char.height + 'px';
 
 			if (this.plugin) this.plugin.emptyLinesRecalculate(this.numOfRows, this.numOfChars, dimensions.char.height);
+
+			// this.context.style.width	= parentNode.clientWidth + 'px';
 
 			this.context.scrollTop = this.context.scrollHeight;
 		}

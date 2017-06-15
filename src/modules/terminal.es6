@@ -50,7 +50,7 @@ export default class Terminal {
 			const output = record.output ? `<pre style="white-space: pre-wrap; overflow: hidden">${ $.terminal.format( record.output )} </pre>` : '';
 
 			return `<div class="command">
-						<div style="100%">
+						<div>
 							<span>${record.command}</span>
 						</div>
 					</div>
@@ -116,6 +116,8 @@ export default class Terminal {
 
 		if (this.plugin)
 			this.plugin.emptyLinesRecalculate( this.numOfRows, this.numOfChars, dimensions.char.height );
+
+		// this.context.style.width	= parentNode.clientWidth + 'px';
 
 		this.context.scrollTop = this.context.scrollHeight;
 	}

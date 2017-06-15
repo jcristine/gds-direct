@@ -98,8 +98,6 @@ class TerminalsMatrix extends Component
 	{
 		const params 	= this.props;
 
-		// console.log("XXX", params)
-
 		const rowCount 	= params.cellMatrix.rows 	+ 1;
 		const cellCount = params.cellMatrix.cells 	+ 1;
 
@@ -132,7 +130,7 @@ class TerminalsMatrix extends Component
 					buffer			: window.TerminalState.getBuffer( params.gds, index + 1 )
 				};
 
-				this.getTerminal( params.gds, index, props ).reattach( cell, state.dimensions );
+				this.getTerminal( params.gds, index, props ).reattach( cell, this.getSizes().calculate(rowCount, cellCount) );
 			});
 		}
 
