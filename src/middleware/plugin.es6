@@ -161,6 +161,11 @@ export default class TerminalPlugin
 			// scrollOnEcho	: false,
 			// keypress		: this.parseChar.bind(this), // BUGGY BUGGY, assign on document wtf???
 
+			/*keypress		: (e) => { // this function is super shitty prefer not to use it
+				if ( (e.ctrlKey) && [67].indexOf(e.which) !== -1 )
+					return '';
+			},*/
+
 			keydown			: this.parseKeyBinds.bind(this),
 
 			onInit			: this.changeActiveTerm.bind(this),
@@ -171,6 +176,7 @@ export default class TerminalPlugin
 			// for hard scenario shortcut, others in keymap helper
 			keymap			: {
 				'CTRL+S'	: () => window.TerminalState.purgeScreens(),
+				// 'CTRL+C'	: (e) => { console.log(' ??' , e)},
 				'TAB'		: () => this.tabPressed(),
 				'F8'		: () => this.f8Reader.tie(),
 				'F5'		: () => false

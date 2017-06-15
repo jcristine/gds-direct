@@ -4622,8 +4622,11 @@ var MenuPanel = function (_Component6) {
 		_this8.attach((0, _dom2.default)('span.label[Session]'));
 		_this8.observe(new GdsAreas());
 
-		_this8.attach((0, _dom2.default)('span.label[Input Language]'));
-		_this8.observe(new LanguageButtons());
+		if (!apiData.prod && window.apiData.hasPermissions()) // WILL BE ADDED WHEN TIME COMES
+			{
+				_this8.attach((0, _dom2.default)('span.label[Input Language]'));
+				_this8.observe(new LanguageButtons());
+			}
 
 		_this8.observe(new PriceQuote());
 
@@ -5725,6 +5728,11 @@ var TerminalPlugin = function () {
 				// scrollOnEcho	: false,
 				// keypress		: this.parseChar.bind(this), // BUGGY BUGGY, assign on document wtf???
 
+				/*keypress		: (e) => { // this function is super shitty prefer not to use it
+    	if ( (e.ctrlKey) && [67].indexOf(e.which) !== -1 )
+    		return '';
+    },*/
+
 				keydown: this.parseKeyBinds.bind(this),
 
 				onInit: this.changeActiveTerm.bind(this),
@@ -5737,6 +5745,7 @@ var TerminalPlugin = function () {
 					'CTRL+S': function CTRLS() {
 						return window.TerminalState.purgeScreens();
 					},
+					// 'CTRL+C'	: (e) => { console.log(' ??' , e)},
 					'TAB': function TAB() {
 						return _this.tabPressed();
 					},
@@ -10339,9 +10348,6 @@ module.exports = {
             width: span.width(),
             height: span.outerHeight()
         };
-
-        // console.log( 'append agein ' , result )
-
         temp.remove();
         return result;
     }
@@ -10349,8 +10355,7 @@ module.exports = {
     // :: calculate numbers of characters
     // -----------------------------------------------------------------------
     function get_num_chars(terminal) {
-
-		var temp = $('<div class="terminal wrap"><span class="cursor">' +
+        var temp = $('<div class="terminal wrap"><span class="cursor">' +
                      '&nbsp;</span></div>').appendTo('body').css('padding', 0);
         var span = temp.find('span');
         var width = span[0].getBoundingClientRect().width;
@@ -12601,14 +12606,12 @@ module.exports = {
             // :: Recalculate and redraw everything
             // -------------------------------------------------------------
             resize: function(width, height) {
-
                 if (!self.is(':visible')) {
                     // delay resize if terminal not visible
                     self.stopTime('resize');
                     self.oneTime(500, 'resize', function() {
                         self.resize(width, height);
                     });
-
                 } else {
                     if (width && height) {
                         self.width(width);
@@ -12616,10 +12619,8 @@ module.exports = {
                     }
                     width = self.width();
                     height = self.height();
-
                     var new_num_chars = self.cols();
-                    var new_num_rows =  self.rows();
-
+                    var new_num_rows = self.rows();
                     // only if number of chars changed
                     if (new_num_chars !== num_chars ||
                         new_num_rows !== num_rows) {
@@ -12635,7 +12636,6 @@ module.exports = {
                         scroll_to_bottom();
                     }
                 }
-
                 return self;
             },
             // -------------------------------------------------------------
@@ -12693,7 +12693,6 @@ module.exports = {
                             });
                         }
                     }
-
                     num_rows = get_num_rows(self);
                     if (settings.scrollOnEcho || bottom) {
                         scroll_to_bottom();
