@@ -168,6 +168,7 @@ export default class TerminalPlugin
 
 			keydown			: this.parseKeyBinds.bind(this),
 
+
 			onInit			: this.changeActiveTerm.bind(this),
 			onTerminalChange: this.changeActiveTerm.bind(this),
 
