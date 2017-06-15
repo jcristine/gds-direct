@@ -10,7 +10,7 @@ export default class TabManager
 	{
 		this.list 	= list;
 
-		this.index 	= 0;
+		this.index 	= false;
 		this.output = output;
 
 		if (list.length)
@@ -21,10 +21,22 @@ export default class TabManager
 
 	next()
 	{
-		this.index++;
+		this.index = this.index === false ? 0 : this.index + 1;
 
 		if ( this.list.length <= this.index )
 			this.index = 0;
+
+		return this;
+	}
+
+	prev()
+	{
+		this.index--;
+
+		if ( this.index < 0)
+			this.index = this.list.length - 1;
+
+		return this;
 	}
 
 	getCommand()
@@ -36,13 +48,12 @@ export default class TabManager
 	{
 		if (cmd) // last element in the array is an empty string
 		{
-			cmd = `>${cmd}`;
+			cmd 		= `>${cmd}`;
 			const pos = this.output.indexOf( cmd );
 			const index = pos + cmd.length;
 
 			if (pos !== -1) // show this only if command is found
 				return this.output.substr(0, index) + `[[;red;blue;]·]` +  this.output.substr( (index + 1 ) , this.output.length);
-
 		}
 
 		return this.output;
@@ -55,7 +66,6 @@ export default class TabManager
 		if ( cmd !== undefined )
 		{
 			replace([ cmd, this.formatOutput( cmd ) ]);
-			this.next();
 		}
 
 		return [];

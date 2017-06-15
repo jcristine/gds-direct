@@ -122,12 +122,12 @@ class TerminalState
 
 	isLanguageApollo()
 	{
-		if ( !apiData.prod && window.apiData.hasPermissions() )
-		{
+		// if ( !apiData.prod && window.apiData.hasPermissions() )
+		// {
 			return this.getLanguage() === 'APOLLO'; //when time comes uncomment
-		} else {
-			return this.isGdsApollo();
-		}
+		// } else {
+		// 	return this.isGdsApollo();
+		// }
 	}
 
 	action( action, params )

@@ -120,11 +120,11 @@ export default class MenuPanel extends Component
 		this.attach( Dom('span.label[Session]') );
 		this.observe( new GdsAreas() );
 
-		if ( !apiData.prod && window.apiData.hasPermissions() ) // WILL BE ADDED WHEN TIME COMES
-		{
+		// if ( !apiData.prod && window.apiData.hasPermissions() ) // WILL BE ADDED WHEN TIME COMES
+		// {
 			this.attach( Dom('span.label[Input Language]') );
 			this.observe( new LanguageButtons() );
-		}
+		// }
 
 		this.observe( new PriceQuote() );
 

@@ -171,6 +171,11 @@ export default class KeyBinding
 		{
 			switch (keymap)
 			{
+				case 9 : //tab
+					plugin.tabShiftPressed();
+					return false;
+				break;
+
 				case 120 : //f9
 					let cmd = isApollo ? 'P:SFOAS/800-750-2238 ASAP CUSTOMER SUPPORT' : '91-800-750-2238-A';
 					terminal.exec(cmd);

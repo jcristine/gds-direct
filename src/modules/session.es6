@@ -23,7 +23,7 @@ export default class Session
 			terminalIndex	: parseInt(this.settings['terminalIndex']) + 1,
 			command			: params['cmd'],
 			gds				: this.settings['gds'],
-			language		: window.TerminalState.getLanguage(),
+			language		: window.TerminalState.getLanguage().toLowerCase(),
 			terminalData	: window.apiData['terminalData']
 		};
 

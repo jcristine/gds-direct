@@ -117,7 +117,12 @@ export default class TerminalPlugin
 		if ( this.f8Reader.getIsActive() )
 			return this.f8Reader.jumpToNextPos();
 
-		this.tabCommands.run( this.updateOutput.bind(this) );
+		this.tabCommands.next().run( this.updateOutput.bind(this) );
+	}
+
+	tabShiftPressed()
+	{
+		this.tabCommands.prev().run( this.updateOutput.bind(this) );
 	}
 
 	updateOutput([cmd, str])
@@ -142,9 +147,7 @@ export default class TerminalPlugin
 
 	init()
 	{
-		// console.log( 'init', this.settings.numOfRows );
-		// console.log( 'init', this.settings.numOfChars );
-		//caveats terminal.rows() - everytime appends div with cursor span - not too smooth for performance
+		//caveats terminal.rows() - every time appends div with cursor span - not too smooth for performance
 
 		return $(this.context).terminal( this.commandParser.bind(this), {
 			echoCommand		: false,
@@ -168,6 +171,7 @@ export default class TerminalPlugin
 
 			keydown			: this.parseKeyBinds.bind(this),
 
+			// clickTimeout	: 300,
 
 			onInit			: this.changeActiveTerm.bind(this),
 			onTerminalChange: this.changeActiveTerm.bind(this),
@@ -179,6 +183,7 @@ export default class TerminalPlugin
 				'CTRL+S'	: () => window.TerminalState.purgeScreens(),
 				// 'CTRL+C'	: (e) => { console.log(' ??' , e)},
 				'TAB'		: () => this.tabPressed(),
+				// 'SHIFT+TAB'	: () => {; this.tabShiftPressed() }, moved to keyParse
 				'F8'		: () => this.f8Reader.tie(),
 				'F5'		: () => false
 			},

@@ -3824,11 +3824,12 @@ var TerminalState = function () {
 	}, {
 		key: 'isLanguageApollo',
 		value: function isLanguageApollo() {
-			if (!apiData.prod && window.apiData.hasPermissions()) {
-				return this.getLanguage() === 'APOLLO'; //when time comes uncomment
-			} else {
-				return this.isGdsApollo();
-			}
+			// if ( !apiData.prod && window.apiData.hasPermissions() )
+			// {
+			return this.getLanguage() === 'APOLLO'; //when time comes uncomment
+			// } else {
+			// 	return this.isGdsApollo();
+			// }
 		}
 	}, {
 		key: 'action',
@@ -4622,11 +4623,11 @@ var MenuPanel = function (_Component6) {
 		_this8.attach((0, _dom2.default)('span.label[Session]'));
 		_this8.observe(new GdsAreas());
 
-		if (!apiData.prod && window.apiData.hasPermissions()) // WILL BE ADDED WHEN TIME COMES
-			{
-				_this8.attach((0, _dom2.default)('span.label[Input Language]'));
-				_this8.observe(new LanguageButtons());
-			}
+		// if ( !apiData.prod && window.apiData.hasPermissions() ) // WILL BE ADDED WHEN TIME COMES
+		// {
+		_this8.attach((0, _dom2.default)('span.label[Input Language]'));
+		_this8.observe(new LanguageButtons());
+		// }
 
 		_this8.observe(new PriceQuote());
 
@@ -5383,6 +5384,12 @@ var KeyBinding = function () {
 
 			if (evt.shiftKey) {
 				switch (keymap) {
+					case 9:
+						//tab
+						plugin.tabShiftPressed();
+						return false;
+						break;
+
 					case 120:
 						//f9
 						var cmd = isApollo ? 'P:SFOAS/800-750-2238 ASAP CUSTOMER SUPPORT' : '91-800-750-2238-A';
@@ -5682,7 +5689,12 @@ var TerminalPlugin = function () {
 		value: function tabPressed() {
 			if (this.f8Reader.getIsActive()) return this.f8Reader.jumpToNextPos();
 
-			this.tabCommands.run(this.updateOutput.bind(this));
+			this.tabCommands.next().run(this.updateOutput.bind(this));
+		}
+	}, {
+		key: 'tabShiftPressed',
+		value: function tabShiftPressed() {
+			this.tabCommands.prev().run(this.updateOutput.bind(this));
 		}
 	}, {
 		key: 'updateOutput',
@@ -5709,9 +5721,7 @@ var TerminalPlugin = function () {
 		value: function init() {
 			var _this = this;
 
-			// console.log( 'init', this.settings.numOfRows );
-			// console.log( 'init', this.settings.numOfChars );
-			//caveats terminal.rows() - everytime appends div with cursor span - not too smooth for performance
+			//caveats terminal.rows() - every time appends div with cursor span - not too smooth for performance
 
 			return $(this.context).terminal(this.commandParser.bind(this), {
 				echoCommand: false,
@@ -5735,6 +5745,8 @@ var TerminalPlugin = function () {
 
 				keydown: this.parseKeyBinds.bind(this),
 
+				// clickTimeout	: 300,
+
 				onInit: this.changeActiveTerm.bind(this),
 				onTerminalChange: this.changeActiveTerm.bind(this),
 
@@ -5749,6 +5761,7 @@ var TerminalPlugin = function () {
 					'TAB': function TAB() {
 						return _this.tabPressed();
 					},
+					// 'SHIFT+TAB'	: () => {; this.tabShiftPressed() }, moved to keyParse
 					'F8': function F8() {
 						return _this.f8Reader.tie();
 					},
@@ -6377,7 +6390,7 @@ var Session = function () {
 				terminalIndex: parseInt(this.settings['terminalIndex']) + 1,
 				command: params['cmd'],
 				gds: this.settings['gds'],
-				language: window.TerminalState.getLanguage(),
+				language: window.TerminalState.getLanguage().toLowerCase(),
 				terminalData: window.apiData['terminalData']
 			};
 
@@ -6566,7 +6579,7 @@ var TabManager = function () {
 
 			this.list = list;
 
-			this.index = 0;
+			this.index = false;
 			this.output = output;
 
 			if (list.length) {
@@ -6576,9 +6589,20 @@ var TabManager = function () {
 	}, {
 		key: 'next',
 		value: function next() {
-			this.index++;
+			this.index = this.index === false ? 0 : this.index + 1;
 
 			if (this.list.length <= this.index) this.index = 0;
+
+			return this;
+		}
+	}, {
+		key: 'prev',
+		value: function prev() {
+			this.index--;
+
+			if (this.index < 0) this.index = this.list.length - 1;
+
+			return this;
 		}
 	}, {
 		key: 'getCommand',
@@ -6607,7 +6631,6 @@ var TabManager = function () {
 
 			if (cmd !== undefined) {
 				replace([cmd, this.formatOutput(cmd)]);
-				this.next();
 			}
 
 			return [];
