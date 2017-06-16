@@ -17366,7 +17366,6 @@ module.exports = __webpack_require__(10);
 Object.defineProperty(exports, "__esModule", {
 	value: true
 });
-exports.switchTerminal = switchTerminal;
 exports.terminalKeydown = terminalKeydown;
 var gridMaps = {
 	'2x2': {

@@ -245,7 +245,7 @@ const gridMaps = {
 	}
 };
 
-export function switchTerminal(keymap)
+function switchTerminal(keymap)
 {
 	const currentTerminalName	= window.activePlugin.name;
 	const gds					= window.TerminalState.getGds();
