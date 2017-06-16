@@ -1,6 +1,6 @@
 'use strict';
 
-import Request			from '../../helpers/requests.es6';
+// import Request			from '../../helpers/requests.es6';
 import Dom 				from '../../helpers/dom.es6';
 import ButtonPopOver	from '../../modules/buttonPopover.es6';
 
@@ -20,7 +20,7 @@ class History extends ButtonPopOver
 
 	makeShortcut( value )
 	{
-		const el 	= Dom('label.t-pointer');
+		const el 	= Dom('a.t-pointer');
 
 		const cb 	= Dom('input');
 		cb.type 	= 'checkbox';
@@ -29,7 +29,7 @@ class History extends ButtonPopOver
 		el.innerHTML 	= value;
 		el.addEventListener('click', () => cb.click() );
 
-		const wrap = Dom('div');
+		const wrap = Dom('div.m-b-xs');
 		wrap.appendChild( cb );
 		wrap.appendChild( el );
 
@@ -38,7 +38,7 @@ class History extends ButtonPopOver
 
 	makeLaunchBtn()
 	{
-		const el 		= Dom('button.btn btn-sm btn-success');
+		const el 		= Dom('button.btn btn-sm btn-purple font-bold btn-block m-t ');
 		el.innerHTML 	= 'Perform';
 
 		el.onclick = this.settings.onHistorySelect.bind(null, buffer);

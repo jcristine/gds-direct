@@ -4173,6 +4173,8 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
+var STORAGE_KEY = 'dedTerminalBufCmd';
+
 var CommandsBuffer = function (_ButtonPopOver) {
 	_inherits(CommandsBuffer, _ButtonPopOver);
 
@@ -4193,16 +4195,23 @@ var CommandsBuffer = function (_ButtonPopOver) {
 		value: function build() {
 			var _this2 = this;
 
+			var cmd = JSON.parse(window.localStorage.getItem(STORAGE_KEY)) || [];
+
 			var area = (0, _dom2.default)('textarea.form-control');
 			var btn = (0, _dom2.default)('button.btn btn-sm btn-primary btn-block m-t font-bold');
 			btn.innerHTML = 'Run';
+
+			area.value = cmd.join("\n");
 
 			area.rows = 15;
 			area.cols = 20;
 
 			btn.onclick = function () {
 				var cmd = area.value.trim().split(/\s+/);
+
+				window.localStorage.setItem(STORAGE_KEY, JSON.stringify(cmd));
 				window.TerminalState.action('DEV_CMD_STACK_RUN', cmd);
+
 				_this2.popover.close();
 			};
 
@@ -4647,15 +4656,13 @@ exports.default = MenuPanel;
 "use strict";
 
 
+// import Request			from '../../helpers/requests.es6';
+
 Object.defineProperty(exports, "__esModule", {
 	value: true
 });
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-var _requests = __webpack_require__(5);
-
-var _requests2 = _interopRequireDefault(_requests);
 
 var _dom = __webpack_require__(0);
 
@@ -4693,7 +4700,7 @@ var History = function (_ButtonPopOver) {
 	_createClass(History, [{
 		key: 'makeShortcut',
 		value: function makeShortcut(value) {
-			var el = (0, _dom2.default)('label.t-pointer');
+			var el = (0, _dom2.default)('a.t-pointer');
 
 			var cb = (0, _dom2.default)('input');
 			cb.type = 'checkbox';
@@ -4706,7 +4713,7 @@ var History = function (_ButtonPopOver) {
 				return cb.click();
 			});
 
-			var wrap = (0, _dom2.default)('div');
+			var wrap = (0, _dom2.default)('div.m-b-xs');
 			wrap.appendChild(cb);
 			wrap.appendChild(el);
 
@@ -4717,7 +4724,7 @@ var History = function (_ButtonPopOver) {
 		value: function makeLaunchBtn() {
 			var _this2 = this;
 
-			var el = (0, _dom2.default)('button.btn btn-sm btn-success');
+			var el = (0, _dom2.default)('button.btn btn-sm btn-purple font-bold btn-block m-t ');
 			el.innerHTML = 'Perform';
 
 			el.onclick = this.settings.onHistorySelect.bind(null, buffer);

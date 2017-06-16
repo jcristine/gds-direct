@@ -1,6 +1,7 @@
-
 import Dom	from '../../helpers/dom.es6';
 import ButtonPopOver	from '../../modules/buttonPopover.es6';
+
+const STORAGE_KEY = 'dedTerminalBufCmd';
 
 class CommandsBuffer extends ButtonPopOver
 {
@@ -14,16 +15,23 @@ class CommandsBuffer extends ButtonPopOver
 
 	build()
 	{
-		const area 		= Dom('textarea.form-control');
+		const cmd = JSON.parse( window.localStorage.getItem(STORAGE_KEY) ) || [];
+
+		const area 		= Dom(`textarea.form-control`);
 		const btn 		= Dom('button.btn btn-sm btn-primary btn-block m-t font-bold');
 		btn.innerHTML	= 'Run';
+
+		area.value = cmd.join("\n");
 
 		area.rows 	= 15;
 		area.cols 	= 20;
 
 		btn.onclick 	= () => {
 			const cmd = area.value.trim().split(/\s+/);
+
+			window.localStorage.setItem(STORAGE_KEY, JSON.stringify(cmd));
 			window.TerminalState.action('DEV_CMD_STACK_RUN', cmd);
+
 			this.popover.close();
 		};
 

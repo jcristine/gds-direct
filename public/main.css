@@ -1467,12 +1467,15 @@
 .historyContext {
   max-height: 400px;
   overflow-y: auto;
-  padding: 10px 20px 10px 10px;
+  padding: 10px;
 }
-.historyContext label {
-  color: #717171;
-  padding: 3px;
-  font-size: 11px;
+.historyContext input {
+  vertical-align: middle;
+  margin: 0;
+}
+.historyContext a {
+  margin-left: 5px;
+  vertical-align: middle;
 }
 .terminal-wrap-custom {
   position: relative;
