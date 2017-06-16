@@ -13,27 +13,25 @@ class History extends ButtonPopOver
 		super( params );
 
 		this.popContent = Dom('div.historyContext');
-		const btn = this.makeTrigger();
+		const btn 		= this.makeTrigger();
 
 		btn.addEventListener( 'click', this.askServer.bind(this) );
 	}
 
-	makeShortcut( value )
+	makeLi( value )
 	{
-		const el 	= Dom('a.t-pointer');
-
 		const cb 	= Dom('input');
 		cb.type 	= 'checkbox';
 		cb.onclick	= () => buffer.push( value );
 
-		el.innerHTML 	= value;
-		el.addEventListener('click', () => cb.click() );
+		const el 	= Dom(`a.t-pointer[${value}]`);
+		el.onclick 	= () => cb.click();
 
-		const wrap = Dom('div.m-b-xs');
-		wrap.appendChild( cb );
-		wrap.appendChild( el );
+		const li = Dom('li.m-b-xs');
+		li.appendChild( cb );
+		li.appendChild( el );
 
-		this.popContent.appendChild( wrap );
+		this.list.appendChild( li );
 	}
 
 	makeLaunchBtn()
@@ -41,7 +39,7 @@ class History extends ButtonPopOver
 		const el 		= Dom('button.btn btn-sm btn-purple font-bold btn-block m-t ');
 		el.innerHTML 	= 'Perform';
 
-		el.onclick = this.settings.onHistorySelect.bind(null, buffer);
+		el.onclick 		= this.settings.onHistorySelect.bind(null, buffer);
 		el.addEventListener('click', () => this.popover.close() );
 
 		this.popContent.appendChild( el );
@@ -49,12 +47,14 @@ class History extends ButtonPopOver
 
 	makeBody( response )
 	{
-		response.data.map( this.makeShortcut, this );
+		this.list		= Dom('ul.list');
+		response.data.map( this.makeLi, this );
+		this.popContent.appendChild( this.list );
 	}
 
 	finalize()
 	{
-		this.popContent.scrollTop  = this.popContent.scrollHeight;
+		this.list.scrollTop  = this.popContent.scrollHeight;
 	}
 
 	askServer()
