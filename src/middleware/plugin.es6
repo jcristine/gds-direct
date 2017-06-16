@@ -16,7 +16,8 @@ import TabManager	from '../modules/tabManager.es6';
 import F8Reader		from '../modules/f8.es6';
 import History 		from '../modules/history.es6';
 
-import {getReplacement} from '../helpers/helpers.es6';
+import {terminalKeydown}	from '../modules/switchTerminal.es6';
+import {getReplacement}		from '../helpers/helpers.es6';
 
 const Debug = (txt, type) => {
 	new Noty({
@@ -149,7 +150,7 @@ export default class TerminalPlugin
 	{
 		//caveats terminal.rows() - every time appends div with cursor span - not too smooth for performance
 
-		return $(this.context).terminal( this.commandParser.bind(this), {
+		var context =  $(this.context).terminal( this.commandParser.bind(this), {
 			echoCommand		: false,
 
 			greetings		: '',
@@ -193,6 +194,12 @@ export default class TerminalPlugin
 				console.warn('exc', err);
 			}
 		});
+
+		// custom keydown events for each terminal
+		// we introduced this approach because of terminal library adding keydown events to document
+		terminalKeydown(context[0]);
+
+		return context;
 	}
 
 	checkSabreCommand( command, terminal )
