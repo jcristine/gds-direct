@@ -84,7 +84,7 @@ export default class Terminal {
 
 	reattach( parentNode, dimensions )
 	{
-		// console.log(' reatach ');
+		// console.log(' reatach ', dimensions );
 
 		this.settings.parentContext = parentNode;
 
@@ -99,17 +99,21 @@ export default class Terminal {
 		this.context.style.width	= parentNode.clientWidth + 'px';
 
 		this.numOfRows 				= this.calculateNumOfRows( dimensions.char.height );
-		this.numOfChars				= Math.floor( parentNode.clientWidth / Math.ceil(dimensions.char.width) );
+		// this.numOfChars				= Math.floor( parentNode.clientWidth / Math.ceil(dimensions.char.width) );
+		this.numOfChars				= Math.floor( (dimensions.width - 2) / dimensions.char.width );
 
 		this.settings.parentContext.appendChild( this.context );
 
 		if (this.plugin)
 		{
 			// do not rely on plugin calculating too messy slow and etc.
-			this.plugin.terminal.settings().numChars = Math.floor( (dimensions.width - 2) / dimensions.char.width );
-			this.plugin.terminal.settings().numRows  = this.numOfRows;
+			// this.plugin.terminal.settings().numChars = Math.floor( (dimensions.width - 2) / dimensions.char.width );
+			// this.plugin.terminal.settings().numRows  = this.numOfRows;
 
-			this.plugin.resize();
+			this.plugin.resize({
+				numOfChars 	: this.numOfChars,
+				numOfRows 	: this.numOfRows
+			});
 		}
 
 		this.context.style.height = (this.numOfRows * dimensions.char.height) + 'px';

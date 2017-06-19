@@ -3,6 +3,9 @@ import ButtonPopOver	from '../../modules/buttonPopover.es6';
 
 const STORAGE_KEY = 'dedTerminalBufCmd';
 
+// import Terminal		from '../../modules/terminal.es6';
+import FullScreen	from '../../modules/fullscreen.es6';
+
 class CommandsBuffer extends ButtonPopOver
 {
 	constructor( params )
@@ -49,6 +52,7 @@ export default class DevButtons
 		this.context = Dom('div');
 		this.context.appendChild ( this.AddPqMacros() );
 		this.context.appendChild ( this.commandsBuffer() );
+		this.context.appendChild ( this.fullScreen() );
 	}
 
 	AddPqMacros()
@@ -68,6 +72,15 @@ export default class DevButtons
 		return this.commandsBuffer = new CommandsBuffer({
 			icon : `<span>Dev Buf</span>`
 		}).getTrigger();
+	}
+
+	fullScreen()
+	{
+		this.macros 			= Dom('span.btn btn-primary font-bold');
+		this.macros.innerHTML 	= 'Full';
+		this.macros.onclick 	= () => FullScreen.show();
+
+		return this.macros;
 	}
 
 	getContext()

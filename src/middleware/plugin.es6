@@ -94,16 +94,12 @@ export default class TerminalPlugin
 			return false;
 	}
 
-	// switchArea( command )
-	// {
-	// 	const sessionIndex = window.TerminalState.getSessionAreaMap().indexOf( command );
-	//
-	// 	if ( sessionIndex !== -1 )
-	// 		window.TerminalState.action('CHANGE_SESSION_AREA', sessionIndex);
-	// }
 
-	changeActiveTerm( activeTerminal )
+	changeActiveTerm(activeTerminal)
 	{
+		if (this.settings.name === 'fullScreen')
+			return false;
+
 		window.activePlugin = this; // SO SO DEPRECATED NOW
 		window.TerminalState.action('CHANGE_ACTIVE_TERMINAL', activeTerminal );
 	}
@@ -132,8 +128,11 @@ export default class TerminalPlugin
 		this.terminal.cmd().set( cmd );
 	}
 
-	resize()
+	resize( sizes )
 	{
+		this.terminal.settings().numChars = sizes.numOfChars;
+		this.terminal.settings().numRows  = sizes.numOfRows;
+
 		this.terminal.resize();
 	}
 
@@ -150,14 +149,14 @@ export default class TerminalPlugin
 	{
 		//caveats terminal.rows() - every time appends div with cursor span - not too smooth for performance
 
-		var context =  $(this.context).terminal( this.commandParser.bind(this), {
+		const context =  $(this.context).terminal( this.commandParser.bind(this), {
 			echoCommand		: false,
 
 			greetings		: '',
 			name			: this.name,
 			prompt			: '>',
 
-			numRows			: this.settings.numOfRows, // plugin calculates it in so shitty slow manner appending cursor to body 3 times per plugin
+			numRows			: this.settings.numOfRows || 0, // plugin calculates it in so shitty slow manner appending cursor to body 3 times per plugin
 			numChars		: this.settings.numOfChars,
 
 			memory			: true, // dont add to localStorage
@@ -165,14 +164,15 @@ export default class TerminalPlugin
 			// scrollOnEcho	: false,
 			// keypress		: this.parseChar.bind(this), // BUGGY BUGGY, assign on document wtf???
 
-			/*keypress		: (e) => { // this function is super shitty prefer not to use it
-				if ( (e.ctrlKey) && [67].indexOf(e.which) !== -1 )
-					return '';
-			},*/
+			// keypress		: (e) => { // this function is super shitty prefer not to use it
+				// console.log(' key press ');
+				// if ( (e.ctrlKey) && [67].indexOf(e.which) !== -1 )
+				// 	return '';
+			// },
 
 			keydown			: this.parseKeyBinds.bind(this),
 
-			// clickTimeout	: 300,
+			clickTimeout	: 300,
 
 			onInit			: this.changeActiveTerm.bind(this),
 			onTerminalChange: this.changeActiveTerm.bind(this),
@@ -301,6 +301,8 @@ export default class TerminalPlugin
 				this.terminal.echo( output );
 			} else
 			{
+				console.log(result['output']);
+
 				// if 1 rows of terminal do not perform clear screen
 				const clearScreen = result['clearScreen'] && window.TerminalState.getMatrix().rows !== 0;
 				this.outputLiner.prepare( result['output'], clearScreen );

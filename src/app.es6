@@ -184,8 +184,12 @@ class TerminalState
 				apiData.pqModal.show({
 					canCreatePqErrors 	: this.state.gdsObj.canCreatePqErrors,
 					onClose				: () => this.action( 'CLOSE_PQ_WINDOW')
-				}).then( () => {
-					this.change({hideMenu: true});
+				})
+				.then( () => {
+					this.change({hideMenu: true})
+				})
+				.catch( () => {
+					console.log(' catch !!!');
 				});
 			break;
 

@@ -85,7 +85,7 @@ export default class KeyBinding
 				break;
 
 				case 112 :	// f1
-					terminal.insert( isApollo ? 'S*CTY' : 'W/*' );
+					terminal.insert( isApollo ? 'S*CTY/' : 'W/*' );
 					return false;
 				break;
 

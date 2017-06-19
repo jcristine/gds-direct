@@ -130,7 +130,8 @@ class TerminalsMatrix extends Component
 					buffer			: window.TerminalState.getBuffer( params.gds, index + 1 )
 				};
 
-				this.getTerminal( params.gds, index, props ).reattach( cell, this.getSizes().calculate(rowCount, cellCount) );
+				this.getTerminal( params.gds, index, props )
+					.reattach( cell, this.getSizes().calculate(rowCount, cellCount) ); //sometimes calculate doesn't get actual parent context dimensions
 			});
 		}
 
