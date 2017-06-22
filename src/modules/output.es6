@@ -1,6 +1,7 @@
 'use strict';
 
 import {splitIntoLinesArr} from '../helpers/helpers.es6';
+import Dom from '../helpers/dom.es6';
 
 export default class Output
 {
@@ -8,7 +9,7 @@ export default class Output
 	{
 		this.terminal		= terminal;
 
-		this.context 		= document.createElement('div');
+		this.context 		= Dom('div.emptyLinesWrapper');
 		this.emptyLines 	= 0;
 		this.outputStrings	= '';
 		this.cmdLineOffset 	= '';

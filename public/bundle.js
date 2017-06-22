@@ -5607,8 +5607,8 @@ var KeyBinding = function () {
 					// ; all other browsers
 
 					if (!isApollo) {
-						terminal.cmd().delete(-1);
-						return false;
+						// terminal.cmd().delete(-1);
+						// return false;
 					}
 
 					break;
@@ -6020,8 +6020,6 @@ var TerminalPlugin = function () {
 
 						this.terminal.echo(output);
 					} else {
-					console.log(result['output']);
-
 					// if 1 rows of terminal do not perform clear screen
 					var clearScreen = result['clearScreen'] && window.TerminalState.getMatrix().rows !== 0;
 					this.outputLiner.prepare(result['output'], clearScreen);
@@ -6241,8 +6239,13 @@ var FullScreen = function () {
 			terminal.reattach(body, dimensions);
 			terminal.context.innerHTML = window.activePlugin.terminal.get(0).innerHTML;
 
+			// on close there is two cmd lines
 			var cmd = terminal.context.querySelector('.cmd');
 			cmd.parentNode.removeChild(cmd);
+
+			// remove cloned epmty lines
+			var emptyLines = terminal.context.querySelector('.emptyLinesWrapper');
+			emptyLines.parentNode.removeChild(emptyLines);
 
 			terminal.init();
 		}
@@ -6250,6 +6253,11 @@ var FullScreen = function () {
 		key: 'show',
 		value: function show() {
 			var _this = this;
+
+			if (!window.activePlugin) {
+				alert('no terminal selected');
+				return false;
+			}
 
 			var body = this.makeBody();
 
@@ -6374,6 +6382,12 @@ var _createClass = function () { function defineProperties(target, props) { for 
 
 var _helpers = __webpack_require__(1);
 
+var _dom = __webpack_require__(0);
+
+var _dom2 = _interopRequireDefault(_dom);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
 function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -6384,7 +6398,7 @@ var Output = function () {
 
 		this.terminal = terminal;
 
-		this.context = document.createElement('div');
+		this.context = (0, _dom2.default)('div.emptyLinesWrapper');
 		this.emptyLines = 0;
 		this.outputStrings = '';
 		this.cmdLineOffset = '';

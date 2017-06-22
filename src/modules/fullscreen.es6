@@ -39,14 +39,25 @@ export default class FullScreen {
 		terminal.reattach(body, dimensions);
 		terminal.context.innerHTML = window.activePlugin.terminal.get(0).innerHTML;
 
+		// on close there is two cmd lines
 		const cmd = terminal.context.querySelector('.cmd');
 		cmd.parentNode.removeChild( cmd );
+
+		// remove cloned epmty lines
+		const emptyLines = terminal.context.querySelector('.emptyLinesWrapper');
+		emptyLines.parentNode.removeChild( emptyLines );
 
 		terminal.init();
 	}
 
 	static show()
 	{
+		if (!window.activePlugin)
+		{
+			alert('no terminal selected');
+			return false;
+		}
+
 		const body = this.makeBody();
 
 		window.apiData.Modal.make({

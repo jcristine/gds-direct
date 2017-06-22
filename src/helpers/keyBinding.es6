@@ -204,8 +204,8 @@ export default class KeyBinding
 
 				if (!isApollo)
 				{
-					terminal.cmd().delete(-1);
-					return false;
+					// terminal.cmd().delete(-1);
+					// return false;
 				}
 
 			break;
