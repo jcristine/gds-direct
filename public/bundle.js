@@ -4050,7 +4050,7 @@ var TerminalState = function () {
 				case 'PQ_MODAL_SHOW':
 					if (!this.state.gdsObj.canCreatePq) return false;
 
-					apiData.pqModal.show({
+					apiData.pqModal({
 						canCreatePqErrors: this.state.gdsObj.canCreatePqErrors,
 						onClose: function onClose() {
 							return _this.action('CLOSE_PQ_WINDOW');

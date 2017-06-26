@@ -181,13 +181,15 @@ class TerminalState
 				if (!this.state.gdsObj.canCreatePq)
 					return false;
 
-				apiData.pqModal.show({
+				apiData.pqModal({
 					canCreatePqErrors 	: this.state.gdsObj.canCreatePqErrors,
 					onClose				: () => this.action( 'CLOSE_PQ_WINDOW')
 				})
+
 				.then( () => {
 					this.change({hideMenu: true})
 				})
+
 				.catch( () => {
 					console.log(' catch !!!');
 				});
