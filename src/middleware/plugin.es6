@@ -90,6 +90,18 @@ export default class TerminalPlugin
 			return false;
 		}
 
+		// if test+asdsa and cursor on + // execute only before + cmd
+		if (evt.which === 13)
+		{
+			if (terminal.cmd().get()[ terminal.cmd().position()] === '+' )
+			{
+				const cmd = terminal.cmd().get().substring(0, terminal.cmd().position() );
+				terminal.exec(cmd);
+				terminal.cmd().set('');
+				return false;
+			}
+		}
+
 		if (replacement === false) // do not print nothing if char is forbiden
 			return false;
 	}

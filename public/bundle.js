@@ -5805,6 +5805,22 @@ var TerminalPlugin = function () {
 				return false;
 			}
 
+			// if test+asdsa and cursor on + // execute only before + cmd
+			if (evt.which === 13) {
+				// console.log('???');
+				// console.log("!!!", terminal.before_cursor());
+				// console.log("!!!", terminal.cmd().position());
+				// console.log(terminal.cmd().get()[ terminal.cmd().position()])
+
+
+				if (terminal.cmd().get()[terminal.cmd().position()] === '+') {
+					var cmd = terminal.cmd().get().substring(0, terminal.cmd().position());
+					terminal.exec(cmd);
+					terminal.cmd().set('');
+					return false;
+				}
+			}
+
 			if (replacement === false) // do not print nothing if char is forbiden
 				return false;
 		}
@@ -5971,6 +5987,17 @@ var TerminalPlugin = function () {
 		key: 'checkBeforeEnter',
 		value: function checkBeforeEnter(terminal, command) {
 			var _this2 = this;
+
+			// console.log("!!!", command);
+			// console.log("!!!", terminal.before_cursor());
+			// console.log("!!!", terminal.cmd().position());
+			//
+			// return false;
+			//
+			// if (terminal.cmd().get()[ terminal.cmd().position()] === '+' )
+			// {
+			//
+			// }
 
 			if (!command || command === '') {
 				this.terminal.echo('>');
