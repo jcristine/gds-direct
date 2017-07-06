@@ -578,8 +578,8 @@ var GdsSet = function () {
 
 				return (0, _helpers.mergeIntoNew)(defaultsEvents, {
 					name: gds.name,
-					list: gds.name === 'sabre' ? _constants.AREA_LIST : _constants.AREA_LIST.slice(0, -1) //remove F
-				});
+					list: gds.name === 'sabre' ? _constants.AREA_LIST : _constants.AREA_LIST.slice(0, -1 //remove F
+					) });
 			});
 		}
 	}]);
@@ -4154,6 +4154,7 @@ var ActionsMenu = function (_Component) {
 
 		var matrix = new _terminalMatrix2.default({
 			icon: '<i class="fa fa-th-large"></i>'
+			// onSelect	: value => { window.TerminalState.change({fontSize : value}) }
 		}).getTrigger();
 
 		matrix.className = 'btn btn-purple';
@@ -5805,20 +5806,16 @@ var TerminalPlugin = function () {
 				return false;
 			}
 
-			// if test+asdsa and cursor on + // execute only before + cmd
+			// if test>>>asd+sa and cursor on + // execute only between last > and + cmd
 			if (evt.which === 13) {
-				// console.log('???');
-				// console.log("!!!", terminal.before_cursor());
-				// console.log("!!!", terminal.cmd().position());
-				// console.log(terminal.cmd().get()[ terminal.cmd().position()])
+				var cmd = terminal.cmd().get().substring(0, terminal.cmd().position());
+				var lastPromptSignPos = cmd.lastIndexOf('>') + 1;
 
+				if (lastPromptSignPos) cmd = cmd.substring(lastPromptSignPos, cmd.length);
 
-				if (terminal.cmd().get()[terminal.cmd().position()] === '+') {
-					var cmd = terminal.cmd().get().substring(0, terminal.cmd().position());
-					terminal.exec(cmd);
-					terminal.cmd().set('');
-					return false;
-				}
+				terminal.exec(cmd);
+				terminal.cmd().set('');
+				return false;
 			}
 
 			if (replacement === false) // do not print nothing if char is forbiden
@@ -5987,17 +5984,6 @@ var TerminalPlugin = function () {
 		key: 'checkBeforeEnter',
 		value: function checkBeforeEnter(terminal, command) {
 			var _this2 = this;
-
-			// console.log("!!!", command);
-			// console.log("!!!", terminal.before_cursor());
-			// console.log("!!!", terminal.cmd().position());
-			//
-			// return false;
-			//
-			// if (terminal.cmd().get()[ terminal.cmd().position()] === '+' )
-			// {
-			//
-			// }
 
 			if (!command || command === '') {
 				this.terminal.echo('>');
@@ -6260,6 +6246,10 @@ var FullScreen = function () {
 				height: body.clientHeight,
 				width: body.clientWidth,
 				char: ''
+				// char		: {
+				// 	height 		: '',
+				// 	width		: ''
+				// }
 			};
 
 			var terminal = new _terminal2.default(props);

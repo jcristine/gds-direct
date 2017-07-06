@@ -90,16 +90,18 @@ export default class TerminalPlugin
 			return false;
 		}
 
-		// if test+asdsa and cursor on + // execute only before + cmd
+		// if test>>>asd+sa and cursor on + // execute only between last > and + cmd
 		if (evt.which === 13)
 		{
-			if (terminal.cmd().get()[ terminal.cmd().position()] === '+' )
-			{
-				const cmd = terminal.cmd().get().substring(0, terminal.cmd().position() );
-				terminal.exec(cmd);
-				terminal.cmd().set('');
-				return false;
-			}
+			let		cmd					= terminal.cmd().get().substring(0, terminal.cmd().position() );
+			const	lastPromptSignPos	= cmd.lastIndexOf('>') + 1;
+
+			if (lastPromptSignPos)
+				cmd = cmd.substring(lastPromptSignPos, cmd.length);
+
+			terminal.exec(cmd);
+			terminal.cmd().set('');
+			return false;
 		}
 
 		if (replacement === false) // do not print nothing if char is forbiden
