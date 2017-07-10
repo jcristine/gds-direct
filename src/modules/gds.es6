@@ -23,11 +23,15 @@ class Gds
 	{
 		const settings 	= window.apiData.settings['gds'][name] || {};
 
+		if ( !window.apiData.hasPermissions() ) // AMADEUS FOR DEV
+		{
+		}
+
 		return mergeIntoNew( defaults, {
 			name 			: name,
 			sessionIndex 	: AREA_LIST.indexOf( settings['area'] ),
 			// canCreatePq		: !!settings['canCreatePq'] // for DEV
-			canCreatePq		: false
+			canCreatePq		: !window.apiData.hasPermissions() ? false : !!settings['canCreatePq']
 		})
 	}
 

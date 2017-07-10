@@ -90,6 +90,9 @@ export default class TerminalPlugin
 			return false;
 		}
 
+		if (replacement === false) // do not print nothing if char is forbbiden
+			return false;
+
 		// if test>>>asd+sa and cursor on + // execute only between last > and + cmd
 		if (evt.which === 13)
 		{
@@ -99,15 +102,14 @@ export default class TerminalPlugin
 			if (lastPromptSignPos)
 				cmd = cmd.substring(lastPromptSignPos, cmd.length);
 
-			terminal.exec(cmd);
-			terminal.cmd().set('');
-			return false;
+			if (cmd)
+			{
+				terminal.exec(cmd);
+				terminal.cmd().set('');
+				return false;
+			}
 		}
-
-		if (replacement === false) // do not print nothing if char is forbiden
-			return false;
 	}
-
 
 	changeActiveTerm(activeTerminal)
 	{

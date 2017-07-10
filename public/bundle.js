@@ -527,11 +527,14 @@ var Gds = function () {
 		value: function extend(name) {
 			var settings = window.apiData.settings['gds'][name] || {};
 
+			if (!window.apiData.hasPermissions()) // AMADEUS FOR DEV
+				{}
+
 			return (0, _helpers.mergeIntoNew)(defaults, {
 				name: name,
 				sessionIndex: _constants.AREA_LIST.indexOf(settings['area']),
 				// canCreatePq		: !!settings['canCreatePq'] // for DEV
-				canCreatePq: false
+				canCreatePq: !window.apiData.hasPermissions() ? false : !!settings['canCreatePq']
 			});
 		}
 	}, {
@@ -578,8 +581,8 @@ var GdsSet = function () {
 
 				return (0, _helpers.mergeIntoNew)(defaultsEvents, {
 					name: gds.name,
-					list: gds.name === 'sabre' ? _constants.AREA_LIST : _constants.AREA_LIST.slice(0, -1 //remove F
-					) });
+					list: gds.name === 'sabre' ? _constants.AREA_LIST : _constants.AREA_LIST.slice(0, -1) //remove F
+				});
 			});
 		}
 	}]);
@@ -4756,7 +4759,13 @@ var LanguageButtons = function (_Component3) {
 
 			this.context.innerHTML = '';
 
-			['APOLLO', 'SABRE'].forEach(function (value) {
+			var list = ['APOLLO', 'SABRE'];
+
+			if (window.apiData.hasPermissions()) {
+				list.push('AMADEUS');
+			}
+
+			list.forEach(function (value) {
 
 				var button = (0, _dom2.default)('button.btn btn-sm btn-gold font-bold' + (window.TerminalState.getLanguage() === value ? ' active' : ''));
 
@@ -5806,6 +5815,9 @@ var TerminalPlugin = function () {
 				return false;
 			}
 
+			if (replacement === false) // do not print nothing if char is forbbiden
+				return false;
+
 			// if test>>>asd+sa and cursor on + // execute only between last > and + cmd
 			if (evt.which === 13) {
 				var cmd = terminal.cmd().get().substring(0, terminal.cmd().position());
@@ -5813,13 +5825,12 @@ var TerminalPlugin = function () {
 
 				if (lastPromptSignPos) cmd = cmd.substring(lastPromptSignPos, cmd.length);
 
-				terminal.exec(cmd);
-				terminal.cmd().set('');
-				return false;
+				if (cmd) {
+					terminal.exec(cmd);
+					terminal.cmd().set('');
+					return false;
+				}
 			}
-
-			if (replacement === false) // do not print nothing if char is forbiden
-				return false;
 		}
 	}, {
 		key: 'changeActiveTerm',

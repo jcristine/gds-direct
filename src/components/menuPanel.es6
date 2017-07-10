@@ -75,7 +75,14 @@ class LanguageButtons extends Component {
 	{
 		this.context.innerHTML = '';
 
-		['APOLLO','SABRE'].forEach( value => {
+		const list = ['APOLLO','SABRE'];
+
+		if (window.apiData.hasPermissions())
+		{
+			list.push('AMADEUS');
+		}
+
+		list.forEach( value => {
 
 			const button = Dom('button.btn btn-sm btn-gold font-bold' + ( window.TerminalState.getLanguage() === value ? ' active' : '') );
 
