@@ -202,7 +202,8 @@ export default class TerminalPlugin
 				'TAB'		: () => this.tabPressed(),
 				// 'SHIFT+TAB'	: () => {; this.tabShiftPressed() }, moved to keyParse
 				'F8'		: () => this.f8Reader.tie(),
-				'F5'		: () => false
+				'F5'		: () => false,
+				'.'			: () => { return '.' },
 			},
 
 			exceptionHandler( err )
