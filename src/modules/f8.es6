@@ -19,6 +19,14 @@ const rules = {
 		rules	: [
 			'3DOCSA/DB/'
 		]
+	},
+
+	amadeus 	: {
+		pos		: 'SRDOCSYYHK1'.length,
+		cmd		: 'SRDOCSYYHK1-----  DDMMMYY   -     --        -       /P',
+		rules	: [
+			'SRDOCSYYHK1'
+		]
 	}
 };
 
