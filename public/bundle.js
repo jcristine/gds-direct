@@ -562,8 +562,8 @@ var GdsSet = function () {
 
 				return (0, _helpers.mergeIntoNew)(defaultsEvents, {
 					name: gds.name,
-					list: gds.name === 'sabre' ? _constants.AREA_LIST : _constants.AREA_LIST.slice(0, -1 //remove F
-					) });
+					list: gds.name === 'sabre' ? _constants.AREA_LIST : _constants.AREA_LIST.slice(0, -1) //remove F
+				});
 			});
 		}
 	}]);
