@@ -422,6 +422,7 @@ var GDS_LIST = exports.GDS_LIST = ['apollo', 'sabre', 'amadeus'];
 Object.defineProperty(exports, "__esModule", {
 	value: true
 });
+exports.setLink = exports.get = undefined;
 
 var _constants = __webpack_require__(4);
 
@@ -433,17 +434,22 @@ __webpack_require__(44);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
+var Url = void 0;
+
 var Debug = function Debug(txt) {
-	new _noty2.default({
+
+	var notify = new _noty2.default({
 		text: 'SERVER ERROR : ' + txt,
 		layout: 'bottomRight',
 		timeout: 5000,
-		// theme	: 'relax',
 		type: 'error'
-	}).show();
+	});
+
+	notify.show();
 };
 
-function ask(url, params) {
+var Ask = function Ask(url, params) {
+
 	if (url.substr(0, 1) !== '/') url = '/' + url;
 
 	return fetch(wwwFullDir + url, params).then(function (response) {
@@ -452,33 +458,31 @@ function ask(url, params) {
 		Debug(err);
 		console.error('?????????', err);
 	});
-}
+};
 
-function get(url, defParams) {
+var get = exports.get = function get(url, defParams) {
+
 	if (!url) return '';
 
-	if (defParams) {
-		url += '?rId=' + window.apiData.rId;
-	}
+	if (defParams) url += '?rId=' + window.apiData.rId;
 
-	var params = { credentials: 'include' };
+	return Ask(url, { credentials: 'include' });
+};
 
-	return ask(url, params);
-	// return fetch( url, params ).then( response => response.json() )
-}
-
-function runSyncCommand(params) {
-	var url = window.apiData.getCommandUrl || _constants.END_POINT_URL;
-
+var runSyncCommand = function runSyncCommand(params) {
 	var formData = new FormData();
 	formData.append("data", JSON.stringify({ params: params }, true));
 
-	return ask(_constants.API_HOST + url, {
+	return Ask(_constants.API_HOST + Url, {
 		credentials: 'include',
 		body: formData,
 		method: 'POST'
 	});
-}
+};
+
+var setLink = exports.setLink = function setLink(url) {
+	Url = url || _constants.END_POINT_URL;
+};
 
 exports.default = {
 	runSyncCommand: runSyncCommand,
@@ -515,37 +519,21 @@ var defaults = {
 	history: []
 };
 
-var Gds = function () {
-	function Gds(name) {
-		_classCallCheck(this, Gds);
+var getGdsData = function getGdsData(name) {
+	var settings = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
 
-		this.data = this.extend(name);
-	}
 
-	_createClass(Gds, [{
-		key: 'extend',
-		value: function extend(name) {
-			var settings = window.apiData.settings['gds'][name] || {};
+	return (0, _helpers.mergeIntoNew)(defaults, {
 
-			if (!window.apiData.hasPermissions()) // AMADEUS FOR DEV
-				{}
+		name: name,
+		sessionIndex: _constants.AREA_LIST.indexOf(settings['area']),
 
-			return (0, _helpers.mergeIntoNew)(defaults, {
-				name: name,
-				sessionIndex: _constants.AREA_LIST.indexOf(settings['area']),
-				// canCreatePq		: !!settings['canCreatePq'] // for DEV
-				canCreatePq: !window.apiData.hasPermissions() ? false : !!settings['canCreatePq']
-			});
-		}
-	}, {
-		key: 'getData',
-		value: function getData() {
-			return this.data;
-		}
-	}]);
+		// canCreatePq		: !!settings['canCreatePq'] // for DEV
+		// canCreatePq		: !window.TerminalState.hasPermissions() ? false : !!settings['canCreatePq'],
 
-	return Gds;
-}();
+		canCreatePq: false
+	});
+};
 
 var GdsSet = function () {
 	function GdsSet() {
@@ -554,19 +542,12 @@ var GdsSet = function () {
 
 	_createClass(GdsSet, null, [{
 		key: 'getList',
-		value: function getList() {
-			var res = {};
-
-			var list = _constants.GDS_LIST;
-
-			if (!window.apiData.hasPermissions()) // AMADEUS FOR DEV
-				{
-					list = list.slice(0, -1);
-				}
-
+		value: function getList(list, loadedGds) {
 			this.gdsList = list.map(function (name) {
-				return new Gds(name).getData();
+				return getGdsData(name, loadedGds[name]);
 			});
+
+			var res = {};
 
 			this.gdsList.forEach(function (gds) {
 				res[gds.name] = gds;
@@ -581,8 +562,8 @@ var GdsSet = function () {
 
 				return (0, _helpers.mergeIntoNew)(defaultsEvents, {
 					name: gds.name,
-					list: gds.name === 'sabre' ? _constants.AREA_LIST : _constants.AREA_LIST.slice(0, -1) //remove F
-				});
+					list: gds.name === 'sabre' ? _constants.AREA_LIST : _constants.AREA_LIST.slice(0, -1 //remove F
+					) });
 			});
 		}
 	}]);
@@ -632,7 +613,6 @@ var Terminal = function () {
 		this.makeBuffer(params.buffer);
 
 		this.context.onclick = function () {
-
 			if (!_this.plugin) _this.init();
 		};
 	}
@@ -641,8 +621,6 @@ var Terminal = function () {
 		key: 'init',
 		value: function init() {
 			var _this2 = this;
-
-			// this.context.innerHTML = '';
 
 			this.plugin = new _plugin2.default({
 				context: this.context,
@@ -655,8 +633,6 @@ var Terminal = function () {
 				numOfRows: this.numOfRows,
 				numOfChars: this.numOfChars
 			});
-
-			// this.insertBuffer();
 		}
 	}, {
 		key: 'makeBuffer',
@@ -698,16 +674,10 @@ var Terminal = function () {
 	}, {
 		key: 'reattach',
 		value: function reattach(parentNode, dimensions) {
-			// console.log(' reatach ', dimensions );
-
 			this.settings.parentContext = parentNode;
 
 			parentNode.style.height = dimensions.height + 'px';
 			parentNode.style.width = dimensions.width + 'px';
-
-			// console.log( dimensions );
-			// console.log( parentNode.clientWidth );
-			// console.log( parentNode.style.width );
 
 			this.context.style.height = parentNode.clientHeight + 'px';
 			this.context.style.width = parentNode.clientWidth + 'px';
@@ -3853,6 +3823,11 @@ module.exports = g;
 "use strict";
 
 
+Object.defineProperty(exports, "__esModule", {
+	value: true
+});
+exports.TerminalState = undefined;
+
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 var _containerMain = __webpack_require__(13);
@@ -3860,8 +3835,6 @@ var _containerMain = __webpack_require__(13);
 var _containerMain2 = _interopRequireDefault(_containerMain);
 
 var _requests = __webpack_require__(5);
-
-var _requests2 = _interopRequireDefault(_requests);
 
 var _gds = __webpack_require__(6);
 
@@ -3875,30 +3848,73 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-var apiData = window.apiData || {};
+var Container = void 0,
+    Gds = void 0;
 
-var Container = new _containerMain2.default(apiData['htmlRootId'] || 'rootTerminal');
-// const mergeIntoNew 	= ( current, extendWith ) => Object.assign({}, current, extendWith);
+var Terminal = function Terminal(params) {
+	_classCallCheck(this, Terminal);
 
-var Gds = _gds2.default.getList();
+	var list = params.permissions ? _constants.GDS_LIST : _constants.GDS_LIST.slice(0, -1);
+	Gds = _gds2.default.getList(list, params.settings.gds);
+
+	(0, _requests.setLink)(params['commandUrl']);
+
+	var permissions = params.permissions,
+	    buffer = params.buffer,
+	    openPqModal = params.openPqModal,
+	    requestId = params.requestId;
+
+
+	window.TerminalState = new TerminalState({
+		curGds: Gds[params.settings.common['currentGds'] || 'apollo'],
+		permissions: permissions, buffer: buffer, openPqModal: openPqModal, requestId: requestId
+	});
+
+	Container = new _containerMain2.default(params['htmlRootId'] || 'rootTerminal');
+	window.TerminalState.change({}, '');
+};
 
 var TerminalState = function () {
-	function TerminalState() {
+	function TerminalState(params) {
 		_classCallCheck(this, TerminalState);
-
-		var curGds = apiData.settings.common['currentGds'] || 'apollo';
 
 		this.state = {
 			language: 'APOLLO',
 			fontSize: 1,
 			hideMenu: false,
-			gdsObj: Gds[curGds]
+			gdsObj: params.curGds,
+			buffer: params.buffer,
+			requestId: params.requestId
 		};
 
-		//setInterval( () => Requests.get(`terminal/keepAlive`, true), KEEP_ALIVE_REFRESH );
+		this.permissions = params.permissions;
+		this.openPqModal = params.openPqModal;
+
+		this.buffer = {
+			gds: {}
+		};
+
+		if (params.buffer && params.buffer.gds) this.state.buffer = params.buffer.gds;
 	}
 
 	_createClass(TerminalState, [{
+		key: 'showPqModal',
+		value: function showPqModal() {
+			var _this = this;
+
+			return this.openPqModal({
+				canCreatePqErrors: this.state.gdsObj.canCreatePqErrors,
+				onClose: function onClose() {
+					return _this.action('CLOSE_PQ_WINDOW');
+				}
+			});
+		}
+	}, {
+		key: 'hasPermissions',
+		value: function hasPermissions() {
+			return this.permissions;
+		}
+	}, {
 		key: 'getMatrix',
 		value: function getMatrix() {
 			return this.state.gdsObj.matrix;
@@ -3942,35 +3958,24 @@ var TerminalState = function () {
 			});
 		}
 	}, {
-		key: 'getBuffer',
-		value: function getBuffer(gds, terminalId) {
-			var buffer = apiData.buffer;
-
-			if (apiData && buffer && buffer.gds && buffer.gds[gds]) return buffer['gds'][gds]['terminals'][terminalId];
-
-			return false;
-		}
-	}, {
 		key: 'getHistory',
 		value: function getHistory() {
-			return _requests2.default.get('terminal/lastCommands?rId=' + apiData.rId + '&gds=' + this.getGds(), false);
+			return (0, _requests.get)('terminal/lastCommands?rId=' + this.state.requestId + '&gds=' + this.getGds(), false);
 		}
 	}, {
 		key: 'purgeScreens',
 		value: function purgeScreens() {
 			Container.purgeScreens(this.getGds());
-			_requests2.default.get('terminal/clearBuffer', true);
+			(0, _requests.get)('terminal/clearBuffer', true);
 		}
 	}, {
 		key: 'switchTerminals',
 		value: function switchTerminals(gds, index, props) {
 			var terminal = Container.getTerminal(gds, index, props);
 
-			if (terminal.plugin !== null) {
-				terminal.plugin.terminal.focus();
-			} else {
-				terminal.context.click();
-			}
+			if (terminal.plugin !== null) return terminal.plugin.terminal.focus();
+
+			terminal.context.click();
 		}
 	}, {
 		key: 'execCmd',
@@ -3994,17 +3999,12 @@ var TerminalState = function () {
 	}, {
 		key: 'isLanguageApollo',
 		value: function isLanguageApollo() {
-			// if ( !apiData.prod && window.apiData.hasPermissions() )
-			// {
 			return this.getLanguage() === 'APOLLO'; //when time comes uncomment
-			// } else {
-			// 	return this.isGdsApollo();
-			// }
 		}
 	}, {
 		key: 'action',
 		value: function action(_action, params) {
-			var _this = this;
+			var _this2 = this;
 
 			switch (_action) {
 				case 'CHANGE_GDS':
@@ -4053,16 +4053,12 @@ var TerminalState = function () {
 				case 'PQ_MODAL_SHOW':
 					if (!this.state.gdsObj.canCreatePq) return false;
 
-					apiData.pqModal({
-						canCreatePqErrors: this.state.gdsObj.canCreatePqErrors,
-						onClose: function onClose() {
-							return _this.action('CLOSE_PQ_WINDOW');
-						}
-					}).then(function () {
-						_this.change({ hideMenu: true });
+					this.showPqModal().then(function () {
+						return _this2.change({ hideMenu: true });
 					}).catch(function () {
-						console.log(' catch !!!');
+						return console.log(' catch !!!');
 					});
+
 					break;
 
 				case 'CLOSE_PQ_WINDOW':
@@ -4092,8 +4088,10 @@ var TerminalState = function () {
 	return TerminalState;
 }();
 
-window.TerminalState = new TerminalState();
-window.TerminalState.change({}, '');
+exports.TerminalState = TerminalState;
+
+
+window.terminal = Terminal;
 
 var resizeTimeout = void 0;
 
@@ -4307,7 +4305,8 @@ var Container = function (_Component3) {
 				sessionIndex: params.gdsObj.sessionIndex,
 				activeTerminal: params.gdsObj.activeTerminal,
 				cellMatrix: params.gdsObj.matrix,
-				containerWidth: this.context.clientWidth
+				containerWidth: this.context.clientWidth,
+				buffer: params.buffer
 			};
 		}
 	}]);
@@ -4583,7 +4582,7 @@ var SessionKeys = function () {
 		value: function render() {
 			var _this3 = this;
 
-			if (this.settings.name !== 'amadeus' || !apiData.prod && window.apiData.hasPermissions()) {
+			if (this.settings.name !== 'amadeus' || !apiData.prod && window.TerminalState.hasPermissions()) {
 				this.context.appendChild(this.getTrigger());
 			}
 
@@ -4761,7 +4760,7 @@ var LanguageButtons = function (_Component3) {
 
 			var list = ['APOLLO', 'SABRE'];
 
-			if (window.apiData.hasPermissions()) {
+			if (window.TerminalState.hasPermissions()) {
 				list.push('AMADEUS');
 			}
 
@@ -4829,15 +4828,12 @@ var MenuPanel = function (_Component6) {
 		_this8.attach((0, _dom2.default)('span.label[Session]'));
 		_this8.observe(new GdsAreas());
 
-		// if ( !apiData.prod && window.apiData.hasPermissions() ) // WILL BE ADDED WHEN TIME COMES
-		// {
 		_this8.attach((0, _dom2.default)('span.label[Input Language]'));
 		_this8.observe(new LanguageButtons());
-		// }
 
 		_this8.observe(new PriceQuote());
 
-		if (window.apiData.hasPermissions()) _this8.observe(new TestsButtons());
+		if (window.TerminalState.hasPermissions()) _this8.observe(new TestsButtons());
 		return _this8;
 	}
 
@@ -5368,7 +5364,7 @@ var TerminalsMatrix = function (_Component) {
 						name: index,
 						sessionIndex: params.sessionIndex,
 						gds: params.gds, // need for session
-						buffer: window.TerminalState.getBuffer(params.gds, index + 1)
+						buffer: params.buffer ? params.buffer[params.gds]['terminals'][index + 1] : ''
 					};
 
 					_this3.getTerminal(params.gds, index, props).reattach(cell, _this3.getSizes().calculate(rowCount, cellCount)); //sometimes calculate doesn't get actual parent context dimensions
@@ -5420,6 +5416,9 @@ var KeyBinding = function () {
 		value: function parse(evt, terminal, plugin) {
 			var keymap = evt.keyCode || evt.which;
 			var isApollo = window.TerminalState.isGdsApollo();
+			var lang = window.TerminalState.getLanguage();
+
+			var cmd = '';
 
 			// if ( keymap === 13 )
 			// 	return false;
@@ -5496,7 +5495,19 @@ var KeyBinding = function () {
 
 					case 112:
 						// f1
-						terminal.insert(isApollo ? 'S*CTY/' : 'W/*');
+						switch (lang) {
+							case 'APOLLO':
+								cmd = 'S*CTY/';
+								break;
+							case 'AMADEUS':
+								cmd = 'DAC';
+								break;
+
+							default:
+								cmd = 'W/*';
+						}
+
+						terminal.insert(cmd);
 						return false;
 						break;
 
@@ -5507,7 +5518,19 @@ var KeyBinding = function () {
 						// Sabre template: W/*(Airline Code)
 						// Sabre example: W/*BT
 
-						terminal.insert(isApollo ? 'S*AIR/' : 'W/*');
+						switch (lang) {
+							case 'APOLLO':
+								cmd = 'S*AIR/';
+								break;
+							case 'AMADEUS':
+								cmd = 'DNA';
+								break;
+
+							default:
+								cmd = 'W/*';
+						}
+
+						terminal.insert(cmd);
 						return false;
 						break;
 
@@ -5537,7 +5560,18 @@ var KeyBinding = function () {
 				switch (keymap) {
 					case 120:
 						//f9
-						var cmd = isApollo ? 'P:SFOAS/800-750-2238 ASAP CUSTOMER SUPPORT' : '91-800-750-2238-A';
+						switch (lang) {
+							case 'APOLLO':
+								cmd = 'P:SFOAS/800-750-2238 ASAP CUSTOMER SUPPORT';
+								break;
+							case 'AMADEUS':
+								cmd = 'AP SFO 800-750-2238-A';
+								break;
+
+							default:
+								cmd = '91-800-750-2238-A';
+						}
+
 						terminal.exec(cmd);
 						return false;
 						break;
@@ -5657,13 +5691,38 @@ var KeyBinding = function () {
 				case 122:
 					// console.log('f11');
 					var d = (0, _helpers.currDate)();
-					terminal.exec((isApollo ? 'T:TAU/' : '7TAW/') + d);
+
+					switch (lang) {
+						case 'APOLLO':
+							cmd = 'T:TAU/';
+							break;
+						case 'AMADEUS':
+							cmd = 'TKTL';
+							break;
+
+						default:
+							cmd = '7TAW/';
+					}
+
+					terminal.exec(cmd + d);
 					return false;
 					break;
 
 				case 123:
 					// console.log('f12');
-					terminal.exec((isApollo ? 'R:' : '6') + window.apiData.auth.login.toUpperCase());
+					switch (lang) {
+						case 'APOLLO':
+							cmd = 'R:';
+							break;
+						case 'AMADEUS':
+							cmd = 'RF';
+							break;
+
+						default:
+							cmd = '6';
+					}
+
+					terminal.exec(cmd + window.apiData.auth.login.toUpperCase());
 					return false;
 					break;
 
@@ -6063,7 +6122,7 @@ var TerminalPlugin = function () {
 				lastPcc: result['pcc'] // TODO:: better deep-merge as pcc { sesionIndex : result[pcc] }
 			});
 
-			if (window.apiData.hasPermissions()) this.debugOutput(result);
+			if (window.TerminalState.hasPermissions()) this.debugOutput(result);
 		}
 	}, {
 		key: 'debugOutput',
@@ -6119,6 +6178,12 @@ var rules = {
 		pos: '3DOCSA/DB/'.length,
 		cmd: '3DOCSA/DB/DDMMMYY/      /        /        -',
 		rules: ['3DOCSA/DB/']
+	},
+
+	amadeus: {
+		pos: 'SRDOCSYYHK1'.length,
+		cmd: 'SRDOCSYYHK1-----  DDMMMYY   -     --        -       /P',
+		rules: ['SRDOCSYYHK1']
 	}
 };
 

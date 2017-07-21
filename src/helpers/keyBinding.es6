@@ -15,6 +15,9 @@ export default class KeyBinding
 	{
 		const keymap 	= evt.keyCode || evt.which;
 		const isApollo	= window.TerminalState.isGdsApollo();
+		const lang		= window.TerminalState.getLanguage();
+
+		let cmd			= '';
 
 		// if ( keymap === 13 )
 		// 	return false;
@@ -85,7 +88,20 @@ export default class KeyBinding
 				break;
 
 				case 112 :	// f1
-					terminal.insert( isApollo ? 'S*CTY/' : 'W/*' );
+					switch (lang)
+					{
+						case 'APOLLO':
+							cmd = 'S*CTY/';
+							break;
+						case 'AMADEUS':
+							cmd = 'DAC';
+							break;
+
+						default:
+							cmd = 'W/*'
+					}
+
+					terminal.insert( cmd );
 					return false;
 				break;
 
@@ -96,7 +112,20 @@ export default class KeyBinding
 					// Sabre template: W/*(Airline Code)
 					 // Sabre example: W/*BT
 
-					terminal.insert( isApollo ? 'S*AIR/' : 'W/*' );
+					switch (lang)
+					{
+						case 'APOLLO':
+							cmd = 'S*AIR/';
+							break;
+						case 'AMADEUS':
+							cmd = 'DNA';
+							break;
+
+						default:
+							cmd = 'W/*'
+					}
+
+					terminal.insert( cmd );
 					return false;
 				break;
 
@@ -128,7 +157,19 @@ export default class KeyBinding
 			switch (keymap)
 			{
 				case 120 : //f9
-					let cmd = isApollo ? 'P:SFOAS/800-750-2238 ASAP CUSTOMER SUPPORT' : '91-800-750-2238-A';
+					switch (lang)
+					{
+						case 'APOLLO':
+							cmd = 'P:SFOAS/800-750-2238 ASAP CUSTOMER SUPPORT';
+							break;
+						case 'AMADEUS':
+							cmd = 'AP SFO 800-750-2238-A';
+							break;
+
+						default:
+							cmd = '91-800-750-2238-A'
+					}
+
 					terminal.exec(cmd);
 					return false;
 				break;
@@ -240,13 +281,40 @@ export default class KeyBinding
 			case 122 :
 				// console.log('f11');
 				const d = currDate();
-				terminal.exec(  (isApollo ? 'T:TAU/' : '7TAW/') + d );
+
+				switch (lang)
+				{
+					case 'APOLLO':
+						cmd = 'T:TAU/';
+						break;
+					case 'AMADEUS':
+						cmd = 'TKTL';
+						break;
+
+					default:
+						cmd = '7TAW/'
+				}
+
+				terminal.exec(  cmd + d );
 				return false;
 			break;
 
 			case 123 :
 				// console.log('f12');
-				terminal.exec(  ( isApollo ? 'R:' : '6')  + window.apiData.auth.login.toUpperCase() );
+				switch (lang)
+				{
+					case 'APOLLO':
+						cmd = 'R:';
+						break;
+					case 'AMADEUS':
+						cmd = 'RF';
+						break;
+
+					default:
+						cmd = '6'
+				}
+
+				terminal.exec( cmd + window.apiData.auth.login.toUpperCase() );
 				return false;
 			break;
 
