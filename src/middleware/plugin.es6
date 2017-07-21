@@ -334,7 +334,7 @@ export default class TerminalPlugin
 			lastPcc 			: result['pcc'] // TODO:: better deep-merge as pcc { sesionIndex : result[pcc] }
 		});
 
-		if ( window.apiData.hasPermissions() )
+		if ( window.TerminalState.hasPermissions() )
 			this.debugOutput( result );
 	}
 

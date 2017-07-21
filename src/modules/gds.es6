@@ -12,51 +12,32 @@ const defaults	= {
 	history			: []
 };
 
-class Gds
-{
-	constructor( name )
-	{
-		this.data 		= this.extend( name );
-	}
+const getGdsData = (name, settings = {}) => {
 
-	extend( name )
-	{
-		const settings 	= window.apiData.settings['gds'][name] || {};
+	return mergeIntoNew( defaults, {
 
-		if ( !window.apiData.hasPermissions() ) // AMADEUS FOR DEV
-		{
-		}
+		name 			: name,
+		sessionIndex 	: AREA_LIST.indexOf( settings['area'] ),
 
-		return mergeIntoNew( defaults, {
-			name 			: name,
-			sessionIndex 	: AREA_LIST.indexOf( settings['area'] ),
-			// canCreatePq		: !!settings['canCreatePq'] // for DEV
-			canCreatePq		: !window.apiData.hasPermissions() ? false : !!settings['canCreatePq']
-		})
-	}
+		// canCreatePq		: !!settings['canCreatePq'] // for DEV
+		// canCreatePq		: !window.TerminalState.hasPermissions() ? false : !!settings['canCreatePq'],
 
-	getData()
-	{
-		return this.data;
-	}
-}
+		canCreatePq		: false
+	})
+
+};
 
 export default class GdsSet
 {
-	static getList()
+	static getList( list, loadedGds )
 	{
+		this.gdsList = list.map( name => getGdsData(name, loadedGds[name]) );
+
 		const res = {};
 
-		let list = GDS_LIST;
-
-		if ( !window.apiData.hasPermissions() ) // AMADEUS FOR DEV
-		{
-			list = list.slice(0, -1);
-		}
-
-		this.gdsList = list.map( name => new Gds(name).getData() );
-
-		this.gdsList.forEach( gds => { res[gds.name] = gds; });
+		this.gdsList.forEach( gds => {
+			res[gds.name] = gds;
+		});
 
 		return res;
 	}

@@ -47,7 +47,7 @@ export default class SessionKeys
 
 	render()
 	{
-		if ( this.settings.name !== 'amadeus' || (!apiData.prod && window.apiData.hasPermissions()) )
+		if ( this.settings.name !== 'amadeus' || ( !apiData.prod && window.TerminalState.hasPermissions()) )
 		{
 			this.context.appendChild( this.getTrigger() );
 		}

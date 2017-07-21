@@ -16,17 +16,13 @@ export default class Terminal {
 		this.makeBuffer( params.buffer );
 
 		this.context.onclick = () => {
-
 			if (!this.plugin)
 				this.init();
-
 		};
 	}
 
 	init()
 	{
-		// this.context.innerHTML = '';
-
 		this.plugin = new TerminalPlugin({
 			context 		: this.context,
 			clear			: () => this.clear(),
@@ -36,8 +32,6 @@ export default class Terminal {
 			numOfRows 		: this.numOfRows,
 			numOfChars 		: this.numOfChars
 		});
-
-		// this.insertBuffer();
 	}
 
 	makeBuffer( buf )
@@ -84,16 +78,10 @@ export default class Terminal {
 
 	reattach( parentNode, dimensions )
 	{
-		// console.log(' reatach ', dimensions );
-
 		this.settings.parentContext = parentNode;
 
 		parentNode.style.height		= dimensions.height + 'px';
 		parentNode.style.width		= dimensions.width	+ 'px';
-
-		// console.log( dimensions );
-		// console.log( parentNode.clientWidth );
-		// console.log( parentNode.style.width );
 
 		this.context.style.height	= parentNode.clientHeight + 'px';
 		this.context.style.width	= parentNode.clientWidth + 'px';

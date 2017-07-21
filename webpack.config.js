@@ -6,7 +6,7 @@ const extractLess 		= new ExtractTextPlugin({
 });
 
 const UglifyJSPlugin = require('uglifyjs-webpack-plugin');
-
+const BabiliPlugin = require("babili-webpack-plugin");
 
 module.exports = {
 
@@ -71,6 +71,7 @@ module.exports = {
 
 	plugins: [
 		extractLess
+		// ,new BabiliPlugin()
 		// ,new UglifyJSPlugin()
 	]
 };
