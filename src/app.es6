@@ -1,29 +1,67 @@
-import ContainerMain					from './components/containerMain.es6';
-import Requests							from './helpers/requests.es6';
-import GdsSet 							from './modules/gds';
-import {KEEP_ALIVE_REFRESH, AREA_LIST} 	from './constants.es6';
+import ContainerMain	from './components/containerMain.es6';
+import {get, setLink}	from './helpers/requests.es6';
+import GdsSet 			from './modules/gds';
+import {AREA_LIST, GDS_LIST} from './constants.es6';
 
-const apiData	= window.apiData || {};
+let Container, Gds;
 
-const Container 	= new ContainerMain( apiData['htmlRootId'] || 'rootTerminal' );
-// const mergeIntoNew 	= ( current, extendWith ) => Object.assign({}, current, extendWith);
-
-const Gds = GdsSet.getList();
-
-class TerminalState
+class Terminal
 {
-	constructor()
+	constructor( params )
 	{
-		const curGds = apiData.settings.common['currentGds'] || 'apollo';
+		const list = params.permissions ? GDS_LIST : GDS_LIST.slice(0, -1);
+		Gds = GdsSet.getList( list, params.settings.gds );
 
+		setLink( params['commandUrl'] );
+
+		const { permissions, buffer, openPqModal, requestId } = params;
+
+		window.TerminalState = new TerminalState({
+			curGds 		: Gds[params.settings.common['currentGds'] || 'apollo'],
+			permissions, buffer, openPqModal, requestId
+		});
+
+		Container = new ContainerMain( params['htmlRootId'] || 'rootTerminal' );
+		window.TerminalState.change({}, '');
+	}
+}
+
+
+export class TerminalState
+{
+	constructor( params )
+	{
 		this.state = {
-			language		: 'APOLLO',
-			fontSize		: 1,
-			hideMenu		: false,
-			gdsObj			: Gds[curGds]
+			language	: 'APOLLO',
+			fontSize	: 1,
+			hideMenu	: false,
+			gdsObj		: params.curGds,
+			buffer		: params.buffer,
+			requestId	: params.requestId
 		};
 
-		//setInterval( () => Requests.get(`terminal/keepAlive`, true), KEEP_ALIVE_REFRESH );
+		this.permissions	= params.permissions;
+		this.openPqModal	= params.openPqModal;
+
+		this.buffer = {
+			gds : {}
+		};
+
+		if ( params.buffer && params.buffer.gds )
+			this.state.buffer = params.buffer.gds;
+	}
+
+	showPqModal()
+	{
+		return this.openPqModal({
+			canCreatePqErrors 	: this.state.gdsObj.canCreatePqErrors,
+			onClose				: () => this.action( 'CLOSE_PQ_WINDOW')
+		})
+	}
+
+	hasPermissions()
+	{
+		return this.permissions;
 	}
 
 	getMatrix()
@@ -67,25 +105,15 @@ class TerminalState
 		return AREA_LIST.map( char => key + char );
 	}
 
-	getBuffer( gds, terminalId )
-	{
-		const buffer = apiData.buffer;
-
-		if ( apiData && buffer && buffer.gds && buffer.gds[gds] )
-			return buffer['gds'][gds]['terminals'][terminalId];
-
-		return false;
-	}
-
 	getHistory()
 	{
-		return Requests.get(`terminal/lastCommands?rId=${apiData.rId}&gds=${this.getGds()}`, false);
+		return get(`terminal/lastCommands?rId=${this.state.requestId}&gds=${this.getGds()}`, false);
 	}
 
 	purgeScreens()
 	{
 		Container.purgeScreens( this.getGds() );
-		Requests.get(`terminal/clearBuffer`, true);
+		get(`terminal/clearBuffer`, true);
 	}
 
 	switchTerminals(gds, index, props)
@@ -93,11 +121,9 @@ class TerminalState
 		const terminal = Container.getTerminal(gds, index, props);
 
 		if (terminal.plugin !== null)
-		{
-			terminal.plugin.terminal.focus();
-		} else {
-			terminal.context.click()
-		}
+			return terminal.plugin.terminal.focus();
+
+		terminal.context.click();
 	}
 
 	execCmd( commands )
@@ -122,12 +148,7 @@ class TerminalState
 
 	isLanguageApollo()
 	{
-		// if ( !apiData.prod && window.apiData.hasPermissions() )
-		// {
-			return this.getLanguage() === 'APOLLO'; //when time comes uncomment
-		// } else {
-		// 	return this.isGdsApollo();
-		// }
+		return this.getLanguage() === 'APOLLO'; //when time comes uncomment
 	}
 
 	action( action, params )
@@ -181,18 +202,10 @@ class TerminalState
 				if (!this.state.gdsObj.canCreatePq)
 					return false;
 
-				apiData.pqModal({
-					canCreatePqErrors 	: this.state.gdsObj.canCreatePqErrors,
-					onClose				: () => this.action( 'CLOSE_PQ_WINDOW')
-				})
+				this.showPqModal()
+					.then(() => this.change({hideMenu: true}))
+					.catch(() => console.log(' catch !!!') );
 
-				.then( () => {
-					this.change({hideMenu: true})
-				})
-
-				.catch( () => {
-					console.log(' catch !!!');
-				});
 			break;
 
 			case 'CLOSE_PQ_WINDOW' :
@@ -217,8 +230,7 @@ class TerminalState
 	}
 }
 
-window.TerminalState = new TerminalState();
-window.TerminalState.change({}, '');
+window.terminal = Terminal;
 
 let resizeTimeout;
 

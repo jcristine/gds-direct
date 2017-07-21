@@ -90,7 +90,8 @@ export default class Container extends Component {
 			sessionIndex  	: params.gdsObj.sessionIndex,
 			activeTerminal 	: params.gdsObj.activeTerminal,
 			cellMatrix		: params.gdsObj.matrix,
-			containerWidth	: this.context.clientWidth
+			containerWidth	: this.context.clientWidth,
+			buffer			: params.buffer
 		};
 	}
 }

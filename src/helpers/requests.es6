@@ -4,18 +4,23 @@ import {END_POINT_URL, API_HOST}	from  '../constants.es6'
 import Noty 						from 'noty';
 import 'whatwg-fetch';
 
+let Url;
+
 const Debug = txt => {
-	new Noty({
+
+	const notify = new Noty({
 		text	: `SERVER ERROR : ${txt}`,
 		layout 	: 'bottomRight',
 		timeout : 5000,
-		// theme	: 'relax',
 		type 	: 'error'
-	}).show();
+	});
+
+	notify.show();
 };
 
-function ask( url, params)
-{
+
+const Ask = (url, params) => {
+
 	if (url.substr(0, 1) !== '/')
 		url = '/' + url;
 
@@ -25,38 +30,31 @@ function ask( url, params)
 			Debug( err );
 			console.error( '?????????', err );
 		});
-}
+};
 
-function get( url, defParams )
-{
+export const get = (url, defParams) => {
+
 	if (!url)
 		return '';
 
 	if (defParams)
-	{
 		url += '?rId='+ window.apiData.rId;
-	}
 
-	const params = { credentials: 'include' };
+	return Ask( url, { credentials: 'include' });
+};
 
-	return ask( url, params );
-	// return fetch( url, params ).then( response => response.json() )
-}
-
-
-function runSyncCommand( params )
-{
-	let url 	= window.apiData.getCommandUrl || END_POINT_URL;
-
+const runSyncCommand = params => {
 	const formData 	= new FormData();
-	formData.append( "data", JSON.stringify({ params }, true) );
+	formData.append( "data", JSON.stringify( {params}, true) );
 
-	return ask( API_HOST + url, {
+	return Ask( API_HOST + Url, {
 		credentials	: 'include',
 		body		: formData,
 		method		: 'POST',
 	});
-}
+};
+
+export const setLink = url => { Url = url || END_POINT_URL }
 
 export default {
 	runSyncCommand	: runSyncCommand,

@@ -77,7 +77,7 @@ class LanguageButtons extends Component {
 
 		const list = ['APOLLO','SABRE'];
 
-		if (window.apiData.hasPermissions())
+		if (window.TerminalState.hasPermissions())
 		{
 			list.push('AMADEUS');
 		}
@@ -127,15 +127,12 @@ export default class MenuPanel extends Component
 		this.attach( Dom('span.label[Session]') );
 		this.observe( new GdsAreas() );
 
-		// if ( !apiData.prod && window.apiData.hasPermissions() ) // WILL BE ADDED WHEN TIME COMES
-		// {
-			this.attach( Dom('span.label[Input Language]') );
-			this.observe( new LanguageButtons() );
-		// }
+		this.attach( Dom('span.label[Input Language]') );
+		this.observe( new LanguageButtons() );
 
 		this.observe( new PriceQuote() );
 
-		if ( window.apiData.hasPermissions() )
+		if ( window.TerminalState.hasPermissions() )
 			this.observe( new TestsButtons() );
 	}
 }
