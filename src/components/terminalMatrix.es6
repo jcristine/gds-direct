@@ -127,7 +127,7 @@ class TerminalsMatrix extends Component
 					name 			: index,
 					sessionIndex	: params.sessionIndex,
 					gds				: params.gds, // need for session
-					buffer			: params.buffer ? params.buffer[params.gds]['terminals'][index + 1] : ''
+					buffer			: params.buffer && params.buffer[params.gds] ? params.buffer[params.gds]['terminals'][index + 1] : ''
 				};
 
 				this.getTerminal( params.gds, index, props )

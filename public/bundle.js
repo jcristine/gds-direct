@@ -5364,7 +5364,7 @@ var TerminalsMatrix = function (_Component) {
 						name: index,
 						sessionIndex: params.sessionIndex,
 						gds: params.gds, // need for session
-						buffer: params.buffer ? params.buffer[params.gds]['terminals'][index + 1] : ''
+						buffer: params.buffer && params.buffer[params.gds] ? params.buffer[params.gds]['terminals'][index + 1] : ''
 					};
 
 					_this3.getTerminal(params.gds, index, props).reattach(cell, _this3.getSizes().calculate(rowCount, cellCount)); //sometimes calculate doesn't get actual parent context dimensions
