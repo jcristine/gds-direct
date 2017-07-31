@@ -26,8 +26,6 @@ export default class KeyBinding
 		// evt.preventDefault();
 		// evt.stopPropagation();
 
-		console.log(keymap);
-
 		if ( evt.ctrlKey || evt.metaKey )
 		{
 			switch (keymap)

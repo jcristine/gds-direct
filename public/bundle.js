@@ -5427,8 +5427,6 @@ var KeyBinding = function () {
 			// evt.preventDefault();
 			// evt.stopPropagation();
 
-			console.log(keymap);
-
 			if (evt.ctrlKey || evt.metaKey) {
 				switch (keymap) {
 					case 8:
