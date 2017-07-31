@@ -5416,6 +5416,7 @@ var KeyBinding = function () {
 		value: function parse(evt, terminal, plugin) {
 			var keymap = evt.keyCode || evt.which;
 			var isApollo = window.TerminalState.isGdsApollo();
+			var gds = window.TerminalState.getGds();
 			var lang = window.TerminalState.getLanguage();
 
 			var cmd = '';
@@ -5578,8 +5579,8 @@ var KeyBinding = function () {
 
 					case 116:
 						//F5
-						switch (lang) {
-							case 'APOLLO':
+						switch (gds) {
+							case 'apollo':
 								cmd = 'SEM/2G52/AG';
 								break;
 

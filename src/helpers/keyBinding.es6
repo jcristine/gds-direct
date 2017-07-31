@@ -15,6 +15,7 @@ export default class KeyBinding
 	{
 		const keymap 	= evt.keyCode || evt.which;
 		const isApollo	= window.TerminalState.isGdsApollo();
+		const gds		= window.TerminalState.getGds();
 		const lang		= window.TerminalState.getLanguage();
 
 		let cmd			= '';
@@ -175,9 +176,9 @@ export default class KeyBinding
 				break;
 
 				case 116 : //F5
-					switch (lang)
+					switch (gds)
 					{
-						case 'APOLLO':
+						case 'apollo':
 							cmd = 'SEM/2G52/AG';
 							break;
 
