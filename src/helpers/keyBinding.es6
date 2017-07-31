@@ -16,7 +16,6 @@ export default class KeyBinding
 		const keymap 	= evt.keyCode || evt.which;
 		const isApollo	= window.TerminalState.isGdsApollo();
 		const gds		= window.TerminalState.getGds();
-		const lang		= window.TerminalState.getLanguage();
 
 		let cmd			= '';
 
@@ -89,7 +88,7 @@ export default class KeyBinding
 				break;
 
 				case 112 :	// f1
-					switch (lang)
+					switch (gds)
 					{
 						case 'APOLLO':
 							cmd = 'S*CTY/';
@@ -113,7 +112,7 @@ export default class KeyBinding
 					// Sabre template: W/*(Airline Code)
 					 // Sabre example: W/*BT
 
-					switch (lang)
+					switch (gds)
 					{
 						case 'APOLLO':
 							cmd = 'S*AIR/';
@@ -158,7 +157,7 @@ export default class KeyBinding
 			switch (keymap)
 			{
 				case 120 : //f9
-					switch (lang)
+					switch (gds)
 					{
 						case 'APOLLO':
 							cmd = 'P:SFOAS/800-750-2238 ASAP CUSTOMER SUPPORT';
@@ -298,7 +297,7 @@ export default class KeyBinding
 				// console.log('f11');
 				const d = currDate();
 
-				switch (lang)
+				switch (gds)
 				{
 					case 'APOLLO':
 						cmd = 'T:TAU/';
@@ -317,7 +316,7 @@ export default class KeyBinding
 
 			case 123 :
 				// console.log('f12');
-				switch (lang)
+				switch (gds)
 				{
 					case 'APOLLO':
 						cmd = 'R:';

@@ -5417,7 +5417,6 @@ var KeyBinding = function () {
 			var keymap = evt.keyCode || evt.which;
 			var isApollo = window.TerminalState.isGdsApollo();
 			var gds = window.TerminalState.getGds();
-			var lang = window.TerminalState.getLanguage();
 
 			var cmd = '';
 
@@ -5496,7 +5495,7 @@ var KeyBinding = function () {
 
 					case 112:
 						// f1
-						switch (lang) {
+						switch (gds) {
 							case 'APOLLO':
 								cmd = 'S*CTY/';
 								break;
@@ -5519,7 +5518,7 @@ var KeyBinding = function () {
 						// Sabre template: W/*(Airline Code)
 						// Sabre example: W/*BT
 
-						switch (lang) {
+						switch (gds) {
 							case 'APOLLO':
 								cmd = 'S*AIR/';
 								break;
@@ -5561,7 +5560,7 @@ var KeyBinding = function () {
 				switch (keymap) {
 					case 120:
 						//f9
-						switch (lang) {
+						switch (gds) {
 							case 'APOLLO':
 								cmd = 'P:SFOAS/800-750-2238 ASAP CUSTOMER SUPPORT';
 								break;
@@ -5708,7 +5707,7 @@ var KeyBinding = function () {
 					// console.log('f11');
 					var d = (0, _helpers.currDate)();
 
-					switch (lang) {
+					switch (gds) {
 						case 'APOLLO':
 							cmd = 'T:TAU/';
 							break;
@@ -5726,7 +5725,7 @@ var KeyBinding = function () {
 
 				case 123:
 					// console.log('f12');
-					switch (lang) {
+					switch (gds) {
 						case 'APOLLO':
 							cmd = 'R:';
 							break;
