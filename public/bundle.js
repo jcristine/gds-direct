@@ -562,8 +562,8 @@ var GdsSet = function () {
 
 				return (0, _helpers.mergeIntoNew)(defaultsEvents, {
 					name: gds.name,
-					list: gds.name === 'sabre' ? _constants.AREA_LIST : _constants.AREA_LIST.slice(0, -1) //remove F
-				});
+					list: gds.name === 'sabre' ? _constants.AREA_LIST : _constants.AREA_LIST.slice(0, -1 //remove F
+					) });
 			});
 		}
 	}]);
@@ -5427,6 +5427,8 @@ var KeyBinding = function () {
 			// evt.preventDefault();
 			// evt.stopPropagation();
 
+			console.log(keymap);
+
 			if (evt.ctrlKey || evt.metaKey) {
 				switch (keymap) {
 					case 8:
@@ -5570,6 +5572,21 @@ var KeyBinding = function () {
 
 							default:
 								cmd = '91-800-750-2238-A';
+						}
+
+						terminal.exec(cmd);
+						return false;
+						break;
+
+					case 116:
+						//F5
+						switch (lang) {
+							case 'APOLLO':
+								cmd = 'SEM/2G52/AG';
+								break;
+
+							default:
+								cmd = 'AAA5E9H';
 						}
 
 						terminal.exec(cmd);

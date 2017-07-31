@@ -26,6 +26,8 @@ export default class KeyBinding
 		// evt.preventDefault();
 		// evt.stopPropagation();
 
+		console.log(keymap);
+
 		if ( evt.ctrlKey || evt.metaKey )
 		{
 			switch (keymap)
@@ -167,7 +169,22 @@ export default class KeyBinding
 							break;
 
 						default:
-							cmd = '91-800-750-2238-A'
+							cmd = '91-800-750-2238-A';
+					}
+
+					terminal.exec(cmd);
+					return false;
+				break;
+
+				case 116 : //F5
+					switch (lang)
+					{
+						case 'APOLLO':
+							cmd = 'SEM/2G52/AG';
+							break;
+
+						default:
+							cmd = 'AAA5E9H';
 					}
 
 					terminal.exec(cmd);
