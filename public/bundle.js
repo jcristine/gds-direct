@@ -5496,10 +5496,10 @@ var KeyBinding = function () {
 					case 112:
 						// f1
 						switch (gds) {
-							case 'APOLLO':
+							case 'apollo':
 								cmd = 'S*CTY/';
 								break;
-							case 'AMADEUS':
+							case 'amadeus':
 								cmd = 'DAC';
 								break;
 
@@ -5519,10 +5519,10 @@ var KeyBinding = function () {
 						// Sabre example: W/*BT
 
 						switch (gds) {
-							case 'APOLLO':
+							case 'apollo':
 								cmd = 'S*AIR/';
 								break;
-							case 'AMADEUS':
+							case 'amadeus':
 								cmd = 'DNA';
 								break;
 
@@ -5561,10 +5561,10 @@ var KeyBinding = function () {
 					case 120:
 						//f9
 						switch (gds) {
-							case 'APOLLO':
+							case 'apollo':
 								cmd = 'P:SFOAS/800-750-2238 ASAP CUSTOMER SUPPORT';
 								break;
-							case 'AMADEUS':
+							case 'amadeus':
 								cmd = 'AP SFO 800-750-2238-A';
 								break;
 
@@ -5708,10 +5708,10 @@ var KeyBinding = function () {
 					var d = (0, _helpers.currDate)();
 
 					switch (gds) {
-						case 'APOLLO':
+						case 'apollo':
 							cmd = 'T:TAU/';
 							break;
-						case 'AMADEUS':
+						case 'amadeus':
 							cmd = 'TKTL';
 							break;
 
@@ -5726,10 +5726,10 @@ var KeyBinding = function () {
 				case 123:
 					// console.log('f12');
 					switch (gds) {
-						case 'APOLLO':
+						case 'apollo':
 							cmd = 'R:';
 							break;
-						case 'AMADEUS':
+						case 'amadeus':
 							cmd = 'RF';
 							break;
 
