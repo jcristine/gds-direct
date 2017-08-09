@@ -4582,7 +4582,7 @@ var SessionKeys = function () {
 		value: function render() {
 			var _this3 = this;
 
-			if (this.settings.name !== 'amadeus' || !apiData.prod && window.TerminalState.hasPermissions()) {
+			if (this.settings.name !== 'amadeus' || window.TerminalState.hasPermissions()) {
 				this.context.appendChild(this.getTrigger());
 			}
 
