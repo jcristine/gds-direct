@@ -79,7 +79,8 @@ export default class TerminalPlugin
 				return false;
 			}
 
-			this.f8Reader.replaceChar();
+			if (evt.key.length === 1) // ctrl meta alt .. forbid
+				this.f8Reader.replaceChar();
 		}
 
 		const replacement = getReplacement( evt, window.TerminalState.isLanguageApollo() );
