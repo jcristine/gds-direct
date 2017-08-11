@@ -47,10 +47,10 @@ export default class SessionKeys
 
 	render()
 	{
-		if ( this.settings.name !== 'amadeus' || window.TerminalState.hasPermissions() )
-		{
+//		if ( this.settings.name !== 'amadeus' || window.TerminalState.hasPermissions() )
+//		{
 			this.context.appendChild( this.getTrigger() );
-		}
+//		}
 
 		if (this.active)
 			this.collection = this.getButtons().map( button => this.context.appendChild( button ) );
