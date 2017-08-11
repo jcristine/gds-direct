@@ -4582,9 +4582,9 @@ var SessionKeys = function () {
 		value: function render() {
 			var _this3 = this;
 
-			if (this.settings.name !== 'amadeus' || window.TerminalState.hasPermissions()) {
+			// if (this.settings.name !== 'amadeus' || window.TerminalState.hasPermissions()) {
 				this.context.appendChild(this.getTrigger());
-			}
+			// }
 
 			if (this.active) this.collection = this.getButtons().map(function (button) {
 				return _this3.context.appendChild(button);
