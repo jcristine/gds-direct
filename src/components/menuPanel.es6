@@ -75,12 +75,7 @@ class LanguageButtons extends Component {
 	{
 		this.context.innerHTML = '';
 
-		const list = ['APOLLO','SABRE'];
-
-		if (window.TerminalState.hasPermissions())
-		{
-			list.push('AMADEUS');
-		}
+		const list = ['APOLLO','SABRE', 'AMADEUS'];
 
 		list.forEach( value => {
 
