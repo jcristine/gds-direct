@@ -9,8 +9,7 @@ class Terminal
 {
 	constructor( params )
 	{
-		const list = params.permissions ? GDS_LIST : GDS_LIST.slice(0, -1);
-		Gds = GdsSet.getList( list, params.settings.gds );
+		Gds = GdsSet.getList( GDS_LIST, params.settings.gds );
 
 		setLink( params['commandUrl'] );
 

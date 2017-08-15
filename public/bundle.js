@@ -3854,8 +3854,7 @@ var Container = void 0,
 var Terminal = function Terminal(params) {
 	_classCallCheck(this, Terminal);
 
-	var list = params.permissions ? _constants.GDS_LIST : _constants.GDS_LIST.slice(0, -1);
-	Gds = _gds2.default.getList(list, params.settings.gds);
+	Gds = _gds2.default.getList(_constants.GDS_LIST, params.settings.gds);
 
 	(0, _requests.setLink)(params['commandUrl']);
 
@@ -5873,7 +5872,8 @@ var TerminalPlugin = function () {
 						return false;
 					}
 
-					this.f8Reader.replaceChar();
+					if (evt.key.length === 1) // ctrl meta alt .. forbid
+						this.f8Reader.replaceChar();
 				}
 
 			var replacement = (0, _helpers.getReplacement)(evt, window.TerminalState.isLanguageApollo());
