@@ -1360,28 +1360,28 @@
   top: -99999px;
 }
 .term-f-size-4 .terminal {
-  --size: 2;
+  --size: 1.3;
 }
 .term-f-size-4 .terminal .cmd {
-  height: calc(28px);
+  height: calc(18.2px);
 }
 .term-f-size-3 .terminal {
-  --size: 1.5;
+  --size: 1.2;
 }
 .term-f-size-3 .terminal .cmd {
-  height: calc(21px);
+  height: calc(16.8px);
 }
 .term-f-size-3 .terminal .cmd .clipboard {
-  height: calc(21px);
+  height: calc(16.8px);
 }
 .term-f-size-2 .terminal {
-  --size: 1.25;
+  --size: 1.1;
 }
 .term-f-size-2 .terminal .cmd {
-  height: calc(17.5px);
+  height: calc(15.4px);
 }
 .term-f-size-2 .terminal .cmd .clipboard {
-  height: calc(17.5px);
+  height: calc(15.4px);
 }
 .terminal-wrap-custom .t-matrix-w-0 td {
   width: 100%;
