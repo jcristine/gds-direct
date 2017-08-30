@@ -10,9 +10,10 @@ import DevButtons		from './menu/devButtons.es6';
 import Dom				from '../helpers/dom.es6';
 import Component		from '../modules/component';
 import GdsSet 			from '../modules/gds';
-import {cookieSet} 		from '../helpers/cookie';
+import {cookieGet, cookieSet} 		from '../helpers/cookie';
 
-let oldThemeClass = 'terminaltheme_' + apiData['terminalThemes'][0]['id'];
+const agentId		= apiData.auth.id;
+let oldThemeClass	= cookieGet('terminalTheme_' + agentId) || 'terminaltheme_' + apiData['terminalThemes'][0]['id'];
 
 class SettingsButtons extends Component
 {
@@ -35,7 +36,7 @@ class SettingsButtons extends Component
 
 				oldThemeClass = newThemeClass;
 
-				cookieSet('terminalTheme_' + apiData.auth.id, newThemeClass, 30)
+				cookieSet('terminalTheme_' + agentId, newThemeClass, 30)
 			}
 		}).getTrigger();
 
