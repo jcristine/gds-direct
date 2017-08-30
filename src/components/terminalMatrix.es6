@@ -67,7 +67,7 @@ class TerminalsMatrix extends Component
 		const makeCells = row => {
 			return [ ...new Array(cellCount) ]
 				.map( () => {
-					const cell = Dom('td.v-middle');
+					const cell = Dom('td.terminal-cell .v-middle');
 					row.appendChild(cell);
 					return cell;
 				});
@@ -137,7 +137,7 @@ class TerminalsMatrix extends Component
 
 		cells.forEach( (cell, index) => {
 			const isActive = params.activeTerminal && index === params.activeTerminal.name();
-			cell.classList.toggle('active', isActive);
+			cell.classList.toggle('activeWindow', isActive);
 		});
 	}
 }

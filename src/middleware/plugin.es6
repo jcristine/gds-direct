@@ -288,7 +288,7 @@ export default class TerminalPlugin
 		const before = () => {
 			this.outputLiner.prepare('');
 			this.spinner.start();
-			this.terminal.echo( `[[;yellow;]>${command.toUpperCase()}]` );
+			this.terminal.echo( `[[;;;usedCommand;]>${command.toUpperCase()}]` );
 		};
 
 		this.session.pushCommand( command.toUpperCase(), finish, before );

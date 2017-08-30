@@ -1,5 +1,6 @@
 'use strict';
 
+import Theme 			from './popovers/theme.es6';
 import History 			from './popovers/history.es6';
 import TextSize 		from './popovers/textSize.es6';
 import Settings 		from './popovers/settings.es6';
@@ -9,6 +10,9 @@ import DevButtons		from './menu/devButtons.es6';
 import Dom				from '../helpers/dom.es6';
 import Component		from '../modules/component';
 import GdsSet 			from '../modules/gds';
+import {cookieSet} 		from '../helpers/cookie';
+
+let oldThemeClass = '';
 
 class SettingsButtons extends Component
 {
@@ -20,6 +24,22 @@ class SettingsButtons extends Component
 
 	children()
 	{
+		const theme 	= new Theme({
+			icon		: '<i class="fa fa-paint-brush t-f-size-14"></i>',
+			onSelect	: value => {
+				const terminalContext	= document.getElementById('terminalContext');
+				const newThemeClass		= 'terminaltheme_' + value.id;
+
+				if (oldThemeClass)
+					terminalContext.classList.remove(oldThemeClass);
+				terminalContext.classList.add(newThemeClass);
+
+				oldThemeClass = newThemeClass;
+
+				cookieSet('terminalTheme_' + apiData.auth.id, newThemeClass, 30)
+			}
+		}).getTrigger();
+
 		const textSize 	= new TextSize({
 			icon		: '<i class="fa fa-text-height t-f-size-14"></i>',
 			onSelect	: value => { window.TerminalState.change({fontSize : value}) }
@@ -35,7 +55,7 @@ class SettingsButtons extends Component
 			icon		: '<i class="fa fa-gears t-f-size-14"></i>'
 		}).getTrigger();*/
 
-		return [textSize, history];
+		return [theme, textSize, history];
 	}
 }
 

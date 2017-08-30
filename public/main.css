@@ -1395,29 +1395,13 @@
 .terminal-wrap-custom .t-matrix-w-3 td {
   width: 25%;
 }
-.term-body table {
-  background: #191a1b;
-}
-.term-body table td.active {
-  background: #2a2835;
-}
-.term-body table td.active .terminal {
-  --background: #2a2835;
-  background: #2a2835;
-}
-.term-body .terminal {
-  --background: #191a1b;
-  background: #191a1b;
-}
-.term-body.sabre table {
-  background: #263033;
-}
-.term-body.sabre .terminal {
-  --background: #263033;
-  background: #263033;
-}
 .cmd .cursor {
   border: 0;
+}
+.terminal,
+.cmd {
+  color: transparent;
+  background-color: transparent;
 }
 .drop-element.drop-theme-twipsy .drop-content {
   background: #fff;
@@ -1452,7 +1436,6 @@
 }
 .terminal-wrap-custom {
   position: relative;
-  color: #414141;
   width: 100%;
   height: 100%;
 }
@@ -1553,7 +1536,6 @@
   padding: 0;
   padding-left: 2px;
   overflow: auto;
-  color: #fff;
   /*.terminal-wrapper
         {
             overflow: auto;
@@ -1570,7 +1552,6 @@
         }*/
 }
 .terminal-wrap-custom .terminal .cmd {
-  color: #fff;
   font-weight: bold;
   text-transform: uppercase;
 }
@@ -1580,8 +1561,7 @@
   width: 100%;
   padding: 0;
 }
-.terminal-wrap-custom .terminal .command {
-  color: yellow;
+.terminal-wrap-custom .terminal .usedCommand {
   text-transform: uppercase;
 }
 .terminal-wrap-custom .terminal-output div span {
@@ -1589,6 +1569,56 @@
 }
 .terminal-wrap-custom div.terminal-wrapper {
   height: auto;
+}
+.cmd .cursor.blink {
+  -webkit-animation: terminal-blink2 1s infinite steps(1, start);
+  -moz-animation: terminal-blink2 1s infinite steps(1, start);
+  -ms-animation: terminal-blink2 1s infinite steps(1, start);
+  animation: terminal-blink2 1s infinite steps(1, start);
+}
+@-webkit-keyframes terminal-blink2 {
+  0%,
+  100% {
+    background-color: rgba(0, 0, 0, 0.3);
+    color: rgba(255, 255, 255, 0.8);
+  }
+  50% {
+    background-color: rgba(255, 255, 255, 0.3);
+    color: rgba(0, 0, 0, 0.6);
+  }
+}
+@-ms-keyframes terminal-blink2 {
+  0%,
+  100% {
+    background-color: rgba(0, 0, 0, 0.3);
+    color: rgba(255, 255, 255, 0.8);
+  }
+  50% {
+    background-color: rgba(255, 255, 255, 0.3);
+    color: rgba(0, 0, 0, 0.6);
+  }
+}
+@-moz-keyframes terminal-blink2 {
+  0%,
+  100% {
+    background-color: rgba(0, 0, 0, 0.3);
+    color: rgba(255, 255, 255, 0.8);
+  }
+  50% {
+    background-color: rgba(255, 255, 255, 0.3);
+    color: rgba(0, 0, 0, 0.6);
+  }
+}
+@keyframes terminal-blink2 {
+  0%,
+  100% {
+    background-color: rgba(0, 0, 0, 0.3);
+    color: rgba(255, 255, 255, 0.8);
+  }
+  50% {
+    background-color: rgba(255, 255, 255, 0.3);
+    color: rgba(0, 0, 0, 0.6);
+  }
 }
 /*
 @keyframes blink {

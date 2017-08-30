@@ -45,7 +45,7 @@ export default class Terminal {
 
 			return `<div class="command">
 						<div>
-							<span>${record.command}</span>
+							<span class="usedCommand">${record.command}</span>
 						</div>
 					</div>
 					${output}`;
