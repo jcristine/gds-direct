@@ -12,7 +12,7 @@ import Component		from '../modules/component';
 import GdsSet 			from '../modules/gds';
 import {cookieSet} 		from '../helpers/cookie';
 
-let oldThemeClass = '';
+let oldThemeClass = 'terminaltheme_' + apiData['terminalThemes'][0]['id'];
 
 class SettingsButtons extends Component
 {
@@ -30,8 +30,7 @@ class SettingsButtons extends Component
 				const terminalContext	= document.getElementById('terminalContext');
 				const newThemeClass		= 'terminaltheme_' + value.id;
 
-				if (oldThemeClass)
-					terminalContext.classList.remove(oldThemeClass);
+				terminalContext.classList.remove(oldThemeClass);
 				terminalContext.classList.add(newThemeClass);
 
 				oldThemeClass = newThemeClass;
