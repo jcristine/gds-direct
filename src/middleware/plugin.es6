@@ -87,11 +87,10 @@ export default class TerminalPlugin
 
 		if ( replacement )
 		{
-			terminal.insert( replacement );
-			return false;
+			this.replaceCommand = replacement;
 		}
 
-		if (replacement === false) // do not print nothing if char is forbbiden
+		if (replacement === false) // do not print nothing if char is forbidden
 			return false;
 
 		// if test>>>asd+sa and cursor on + // execute only between last > and + cmd
@@ -181,6 +180,17 @@ export default class TerminalPlugin
 			// scrollOnEcho	: false,
 			// keypress		: this.parseChar.bind(this), // BUGGY BUGGY, assign on document wtf???
 
+			keypress		: (e, terminal) => {
+
+				if (this.replaceCommand)
+				{
+					terminal.insert(this.replaceCommand);
+					this.replaceCommand = '';
+					return false;
+				}
+
+			}, // BUGGY BUGGY, assign on document wtf???
+
 			// keypress		: (e) => { // this function is super shitty prefer not to use it
 				// console.log(' key press ');
 				// if ( (e.ctrlKey) && [67].indexOf(e.which) !== -1 )
@@ -204,7 +214,7 @@ export default class TerminalPlugin
 				// 'SHIFT+TAB'	: () => {; this.tabShiftPressed() }, moved to keyParse
 				'F8'		: () => this.f8Reader.tie(),
 				'F5'		: () => false,
-				'.'			: () => { return '.' },
+				'.'			: () => { return '.' }
 			},
 
 			exceptionHandler( err )

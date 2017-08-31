@@ -6005,14 +6005,14 @@ var TerminalPlugin = function () {
 			var replacement = (0, _helpers.getReplacement)(evt, window.TerminalState.isLanguageApollo());
 
 			if (replacement) {
-				terminal.insert(replacement);
-				return false;
+				this.replaceCommand = replacement;
 			}
 
-			if (replacement === false) // do not print nothing if char is forbbiden
+			if (replacement === false) // do not print nothing if char is forbidden
 				return false;
 
 			// if test>>>asd+sa and cursor on + // execute only between last > and + cmd
+
 			if (evt.which === 13) {
 				var cmd = terminal.cmd().get().substring(0, terminal.cmd().position());
 				var lastPromptSignPos = cmd.lastIndexOf('>') + 1;
@@ -6095,6 +6095,15 @@ var TerminalPlugin = function () {
 
 				// scrollOnEcho	: false,
 				// keypress		: this.parseChar.bind(this), // BUGGY BUGGY, assign on document wtf???
+
+				keypress: function keypress(e, terminal) {
+
+					if (_this.replaceCommand) {
+						terminal.insert(_this.replaceCommand);
+						_this.replaceCommand = '';
+						return false;
+					}
+				}, // BUGGY BUGGY, assign on document wtf???
 
 				// keypress		: (e) => { // this function is super shitty prefer not to use it
 				// console.log(' key press ');
