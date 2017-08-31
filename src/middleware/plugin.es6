@@ -300,6 +300,8 @@ export default class TerminalPlugin
 
 	parseBackEnd( response = {}, command )
 	{
+		this.lastCommand = command;
+
 		const result = response['data'] || {};
 
 		if ( result['output'] )

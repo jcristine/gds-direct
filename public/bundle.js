@@ -562,8 +562,8 @@ var GdsSet = function () {
 
 				return (0, _helpers.mergeIntoNew)(defaultsEvents, {
 					name: gds.name,
-					list: gds.name === 'sabre' ? _constants.AREA_LIST : _constants.AREA_LIST.slice(0, -1 //remove F
-					) });
+					list: gds.name === 'sabre' ? _constants.AREA_LIST : _constants.AREA_LIST.slice(0, -1) //remove F
+				});
 			});
 		}
 	}]);
@@ -5787,14 +5787,20 @@ var KeyBinding = function () {
 
 				case 34:
 					// page down
-					terminal.exec('MD');
-					return false;
+
+					if (isApollo && plugin.lastCommand.toLowerCase() === '$bb') {} else {
+						terminal.exec('MD');
+						return false;
+					}
 					break;
 
 				case 33:
 					//page up
-					terminal.exec('MU');
-					return false;
+
+					if (isApollo && plugin.lastCommand.toLowerCase() === '$bb') {} else {
+						terminal.exec('MU');
+						return false;
+					}
 					break;
 
 				case 38:
@@ -6220,6 +6226,8 @@ var TerminalPlugin = function () {
 		value: function parseBackEnd() {
 			var response = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
 			var command = arguments[1];
+
+			this.lastCommand = command;
 
 			var result = response['data'] || {};
 

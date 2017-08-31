@@ -267,13 +267,25 @@ export default class KeyBinding
 			break;
 
 			case 34 : // page down
-				terminal.exec('MD');
-				return false;
+
+				if (isApollo && plugin.lastCommand.toLowerCase() === '$bb')
+				{
+				} else
+				{
+					terminal.exec('MD');
+					return false;
+				}
 			break;
 
 			case 33 : //page up
-				terminal.exec('MU');
-				return false;
+
+				if (isApollo && plugin.lastCommand.toLowerCase() === '$bb')
+				{
+				} else
+				{
+					terminal.exec('MU');
+					return false;
+				}
 			break;
 
 			case 38 : //UP
