@@ -1,5 +1,6 @@
 import Dom		from '../helpers/dom.es6';
 import Terminal	from '../modules/terminal.es6';
+import {cookieGet} 		from '../helpers/cookie';
 
 
 export default class FullScreen {
@@ -9,7 +10,7 @@ export default class FullScreen {
 		if (!window.activePlugin)
 			return false;
 
-		const body 		= Dom('div.terminal-wrap-custom t-f-size-13 text-center t-height-100');
+		const body 		= Dom('div.terminal-wrap-custom terminal-cell t-f-size-13 text-center t-height-100');
 		const body2 	= Dom('div.terminal-body');
 
 		body.appendChild(body2);
@@ -58,11 +59,12 @@ export default class FullScreen {
 			return false;
 		}
 
-		const body = this.makeBody();
+		const themeClass	= cookieGet('terminalTheme_' + apiData.auth.id) || 'terminaltheme_' + apiData['terminalThemes'][0]['id'];
+		const body			= this.makeBody();
 
 		window.apiData.Modal.make({
 			dialog_class	: 'modal-full no-footer',
-			body_class		: 'no-padder',
+			body_class		: 'no-padder ' + themeClass,
 			body			: body,
 			noCloseBtn 		: 1,
 			header			: 'Full Screen'
