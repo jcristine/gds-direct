@@ -268,7 +268,7 @@ export default class KeyBinding
 
 			case 34 : // page down
 
-				if (isApollo && plugin.lastCommand.toLowerCase() === '$bb')
+				if (isApollo && plugin.lastCommand && plugin.lastCommand.substr(0, 2).toLocaleLowerCase() === '$b')
 				{
 				} else
 				{
@@ -279,7 +279,7 @@ export default class KeyBinding
 
 			case 33 : //page up
 
-				if (isApollo && plugin.lastCommand.toLowerCase() === '$bb')
+				if (isApollo && plugin.lastCommand && plugin.lastCommand.substr(0, 2).toLocaleLowerCase() === '$b')
 				{
 				} else
 				{
