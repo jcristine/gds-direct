@@ -474,12 +474,31 @@ var Debug = function Debug(txt) {
 	notify.show();
 };
 
+var showUserMessages = function showUserMessages(response) {
+
+	var userMessages = response['data']['userMessages'] || [];
+
+	userMessages.map(function (msg) {
+		new _noty2.default({
+			text: '<strong>' + msg + '</strong>',
+			layout: 'bottomCenter',
+			timeout: 5000,
+			theme: 'metroui',
+			type: 'warning'
+		}).show();
+	});
+
+	return response;
+};
+
 var Ask = function Ask(url, params) {
 
 	if (url.substr(0, 1) !== '/') url = '/' + url;
 
 	return fetch(wwwFullDir + url, params).then(function (response) {
 		return response.json();
+	}).then(function (response) {
+		return showUserMessages(response);
 	}).catch(function (err) {
 		Debug(err);
 		console.error('?????????', err);
@@ -588,8 +607,8 @@ var GdsSet = function () {
 
 				return (0, _helpers.mergeIntoNew)(defaultsEvents, {
 					name: gds.name,
-					list: gds.name === 'sabre' ? _constants.AREA_LIST : _constants.AREA_LIST.slice(0, -1) //remove F
-				});
+					list: gds.name === 'sabre' ? _constants.AREA_LIST : _constants.AREA_LIST.slice(0, -1 //remove F
+					) });
 			});
 		}
 	}]);
@@ -6012,7 +6031,6 @@ var TerminalPlugin = function () {
 				return false;
 
 			// if test>>>asd+sa and cursor on + // execute only between last > and + cmd
-
 			if (evt.which === 13) {
 				var cmd = terminal.cmd().get().substring(0, terminal.cmd().position());
 				var lastPromptSignPos = cmd.lastIndexOf('>') + 1;

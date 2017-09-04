@@ -18,6 +18,22 @@ const Debug = txt => {
 	notify.show();
 };
 
+const showUserMessages = response => {
+
+	const userMessages = response['data']['userMessages'] || [];
+
+	userMessages.map( msg => {
+		new Noty({
+			text	: `<strong>${msg}</strong>`,
+			layout 	: 'bottomCenter',
+			timeout : 5000,
+			theme	: 'metroui',
+			type 	: 'warning'
+		}).show();
+	} );
+
+	return response;
+};
 
 const Ask = (url, params) => {
 
@@ -26,6 +42,7 @@ const Ask = (url, params) => {
 
 	return fetch( wwwFullDir + url, params )
 		.then( response => response.json() )
+		.then( response => showUserMessages(response) )
 		.catch( err => {
 			Debug( err );
 			console.error( '?????????', err );
