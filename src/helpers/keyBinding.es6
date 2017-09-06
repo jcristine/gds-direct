@@ -267,23 +267,21 @@ export default class KeyBinding
 			break;
 
 			case 34 : // page down
-
-				if (isApollo && plugin.lastCommand && plugin.lastCommand.substr(0, 2).toLocaleLowerCase() === '$b')
-				{
-				} else
-				{
-					terminal.exec('MD');
-					return false;
-				}
-			break;
-
 			case 33 : //page up
 
-				if (isApollo && plugin.lastCommand && plugin.lastCommand.substr(0, 2).toLocaleLowerCase() === '$b')
+				let cmdA = keymap === 33 ? 'MU' : 'MD';
+
+				if (plugin.lastCommand && plugin.lastCommand.toLowerCase() === '$bba')
+				{
+						terminal.exec(cmdA);
+						return false;
+				}
+
+				if (isApollo && plugin.lastCommand && plugin.lastCommand.substr(0, 2).toLowerCase() === '$b')
 				{
 				} else
 				{
-					terminal.exec('MU');
+					terminal.exec(cmdA);
 					return false;
 				}
 			break;

@@ -607,8 +607,8 @@ var GdsSet = function () {
 
 				return (0, _helpers.mergeIntoNew)(defaultsEvents, {
 					name: gds.name,
-					list: gds.name === 'sabre' ? _constants.AREA_LIST : _constants.AREA_LIST.slice(0, -1 //remove F
-					) });
+					list: gds.name === 'sabre' ? _constants.AREA_LIST : _constants.AREA_LIST.slice(0, -1) //remove F
+				});
 			});
 		}
 	}]);
@@ -5804,20 +5804,19 @@ var KeyBinding = function () {
 
 					break;
 
-				case 34:
-					// page down
-
-					if (isApollo && plugin.lastCommand && plugin.lastCommand.substr(0, 2).toLocaleLowerCase() === '$b') {} else {
-						terminal.exec('MD');
-						return false;
-					}
-					break;
-
+				case 34: // page down
 				case 33:
 					//page up
 
-					if (isApollo && plugin.lastCommand && plugin.lastCommand.substr(0, 2).toLocaleLowerCase() === '$b') {} else {
-						terminal.exec('MU');
+					var cmdA = keymap === 33 ? 'MU' : 'MD';
+
+					if (plugin.lastCommand && plugin.lastCommand.toLowerCase() === '$bba') {
+						terminal.exec(cmdA);
+						return false;
+					}
+
+					if (isApollo && plugin.lastCommand && plugin.lastCommand.substr(0, 2).toLowerCase() === '$b') {} else {
+						terminal.exec(cmdA);
 						return false;
 					}
 					break;
