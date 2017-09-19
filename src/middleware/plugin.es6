@@ -79,7 +79,7 @@ export default class TerminalPlugin
 				return false;
 			}
 
-			if (evt.key.length === 1) // ctrl meta alt .. forbid
+			if (evt.key.length === 1 && !evt.ctrlKey) // ctrl meta alt .. forbid
 				this.f8Reader.replaceChar();
 		}
 
@@ -212,7 +212,9 @@ export default class TerminalPlugin
 				// 'CTRL+C'	: (e) => { console.log(' ??' , e)},
 				'TAB'		: () => this.tabPressed(),
 				// 'SHIFT+TAB'	: () => {; this.tabShiftPressed() }, moved to keyParse
-				'F8'		: () => this.f8Reader.tie(),
+				// 'F8'		: () => { this.f8Reader.tie();  return false;},
+				// 'F8'		: () => { this.terminal.cmd().set( '¤:3SSRDOCSYYHK1/N ///// DMMMYY/ //          /          /' );  return false;},
+				'F8'		: () => { this.terminal.cmd().set( this.f8Reader.tie() );  return false;},
 				'F5'		: () => false,
 				'.'			: () => { return '.' }
 			},
@@ -225,8 +227,12 @@ export default class TerminalPlugin
 
 		// custom keydown events for each terminal
 		// we introduced this approach because of terminal library adding keydown events to document
-		terminalKeydown(context[0]);
+		// terminalKeydown(context[0]);
 
+		// setTimeout( () => { context.set_command('test')}, 500);
+		// setTimeout( () => { context.set_command('zzz')}, 1500);
+		// setTimeout( () => { context.set_command('test')}, 500);
+		//
 		return context;
 	}
 

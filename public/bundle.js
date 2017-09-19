@@ -6022,7 +6022,7 @@ var TerminalPlugin = function () {
 						return false;
 					}
 
-					if (evt.key.length === 1) // ctrl meta alt .. forbid
+					if (evt.key.length === 1 && !evt.ctrlKey) // ctrl meta alt .. forbid
 						this.f8Reader.replaceChar();
 				}
 
@@ -6153,8 +6153,10 @@ var TerminalPlugin = function () {
 						return _this.tabPressed();
 					},
 					// 'SHIFT+TAB'	: () => {; this.tabShiftPressed() }, moved to keyParse
+					// 'F8'		: () => { this.f8Reader.tie();  return false;},
+					// 'F8'		: () => { this.terminal.cmd().set( '¤:3SSRDOCSYYHK1/N ///// DMMMYY/ //          /          /' );  return false;},
 					'F8': function F8() {
-						return _this.f8Reader.tie();
+						_this.terminal.cmd().set(_this.f8Reader.tie());return false;
 					},
 					'F5': function F5() {
 						return false;
@@ -6171,8 +6173,12 @@ var TerminalPlugin = function () {
 
 			// custom keydown events for each terminal
 			// we introduced this approach because of terminal library adding keydown events to document
-			(0, _switchTerminal.terminalKeydown)(context[0]);
+			// terminalKeydown(context[0]);
 
+			// setTimeout( () => { context.set_command('test')}, 500);
+			// setTimeout( () => { context.set_command('zzz')}, 1500);
+			// setTimeout( () => { context.set_command('test')}, 500);
+			//
 			return context;
 		}
 	}, {
@@ -8344,7 +8350,7 @@ module.exports = {
  *  __ / // // // // // _  // _// // / / // _  // _//     // //  \/ // _ \/ /
  * /  / // // // // // ___// / / // / / // ___// / / / / // // /\  // // / /__
  * \___//____ \\___//____//_/ _\_  / /_//____//_/ /_/ /_//_//_/ /_/ \__\_\___/
- *           \/              /____/                              version 1.7.0
+ *           \/              /____/                              version 1.7.2
  *
  * This file is part of jQuery Terminal. http://terminal.jcubic.pl
  *
@@ -8371,7 +8377,7 @@ module.exports = {
  * Copyright (c) 2007-2013 Alexandru Marasteanu <hello at alexei dot ro>
  * licensed under 3 clause BSD license
  *
- * Date: Tue, 12 Sep 2017 07:04:06 +0000
+ * Date: Sat, 16 Sep 2017 14:57:35 +0000
  */
 
 /* TODO:
@@ -8629,14 +8635,14 @@ module.exports = {
 
     /* eslint-disable */
     var hasLS = function() {
-      var testKey = 'test', storage = window.localStorage;
-      try {
-        storage.setItem(testKey, '1');
-        storage.removeItem(testKey);
-        return true;
-      } catch (error) {
-        return false;
-      }
+        try {
+            var testKey = 'test', storage = window.localStorage;
+            storage.setItem(testKey, '1');
+            storage.removeItem(testKey);
+            return true;
+        } catch (error) {
+            return false;
+        }
     };
 
     // -----------------------------------------------------------------------
@@ -9543,7 +9549,11 @@ module.exports = {
                     self['delete'](-1);
                 }
                 // for next input after naitve backspace
-                no_keydown = true;
+                // we need timeout because we don't want it to trigger
+                // for current input but next one
+                self.oneTime(1, function() {
+                    no_keydown = true;
+                });
             },
             'TAB': function() {
                 self.insert('\t');
@@ -9752,7 +9762,9 @@ module.exports = {
         function fix_textarea() {
             // delay worked while experimenting
             self.oneTime(10, function() {
-                clip.val(command);
+                if (clip.val() !== command) {
+                    clip.val(command);
+                }
                 if (enabled) {
                     self.oneTime(10, function() {
                         try {
@@ -10773,7 +10785,7 @@ module.exports = {
         }
     }
     $.terminal = {
-        version: '1.7.0',
+        version: '1.7.2',
         // colors from http://www.w3.org/wiki/CSS/Properties/color/keywords
         color_names: [
             'transparent', 'currentcolor', 'black', 'silver', 'gray', 'white',
@@ -13072,7 +13084,11 @@ module.exports = {
             };
         }
         function strings() {
-            return $.extend({}, $.terminal.defaults.strings, settings.strings);
+            return $.extend(
+                {},
+                $.terminal.defaults.strings,
+                settings && settings.strings || {}
+            );
         }
         // ---------------------------------------------------------------------
         var self = this;
@@ -14075,7 +14091,7 @@ module.exports = {
             // :: it use $.when so you can echo a promise
             // -------------------------------------------------------------
             echo: function(string, options) {
-                function echo(string) {
+                function echo(arg) {
                     try {
                         var locals = $.extend({
                             flush: true,
@@ -14099,10 +14115,13 @@ module.exports = {
                             }
                             output_buffer = [];
                         }
-                        process_line(string, locals);
+                        if (typeof arg === 'function') {
+                            arg = arg.bind(self);
+                        }
+                        process_line(arg, locals);
                         // extended commands should be processed only
                         // once in echo and not on redraw
-                        lines.push([string, $.extend(locals, {
+                        lines.push([arg, $.extend(locals, {
                             exec: false
                         })]);
                         if (locals.flush) {
@@ -14521,7 +14540,10 @@ module.exports = {
                 return self;
             },
             // -------------------------------------------------------------
-            scroll_to_bottom: scroll_to_bottom,
+            scroll_to_bottom: function() {
+                scroll_to_bottom();
+                return self;
+            },
             // -------------------------------------------------------------
             // :: return true if terminal div or body is at the bottom
             // :: is use scrollBottomOffset option as margin for the check
@@ -14618,8 +14640,11 @@ module.exports = {
         terminals.append(self);
         self.on('focus.terminal', 'textarea', function(e) {
             // for cases when user press tab to focus terminal
-            if (!self.enabled() && e.originalEvent !== undefined) {
-                self.focus(true);
+            // this is also called when user open context menu and then click
+            // right mouse button on terminal
+            if (e.originalEvent !== undefined) {
+                // if terminal is enabled we need silent focus for multiple terminals
+                self.focus(true, !self.enabled());
             }
         });
         function focus_terminal() {
@@ -14715,8 +14740,13 @@ module.exports = {
                 self.disable();
             }
             function disable(e) {
-                var sender = $(e.target);
-                if (!sender.closest('.terminal').length && self.enabled()) {
+                e = e.originalEvent;
+                // e.terget is body when click outside of context menu to close it
+                // even if you click on terminal
+                var node = document.elementFromPoint(e.pageX, e.pageY);
+                if (!$(node).closest('.terminal').length && self.enabled()) {
+                    // we only need to disable when click outside of terminal
+                    // click on other terminal is handled by focus event
                     self.disable();
                 }
             }
@@ -14766,9 +14796,9 @@ module.exports = {
                         if (get_selected_text() === '') {
                             if (++count === 1) {
                                 if (!frozen) {
+                                    command_line.enable();
                                     if (!enabled) {
                                         self.focus();
-                                        command_line.enable();
                                         count = 0;
                                     } else {
                                         var timeout = settings.clickTimeout;
@@ -14792,7 +14822,7 @@ module.exports = {
                             if (!self.enabled()) {
                                 self.enable();
                             }
-                            e.preventDefault();
+                            //e.preventDefault();
                             var offset = command_line.offset();
                             clip.css({
                                 left: e.pageX - offset.left - 5,
@@ -15020,7 +15050,7 @@ module.exports = {
                         delta = e.originalEvent.deltaY || e.originalEvent.detail;
                     }
                     mousewheel(e, -delta);
-                    return false;
+                    e.preventDefault();
                 });
             }
         }); // make_interpreter
