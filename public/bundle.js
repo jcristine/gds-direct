@@ -8350,7 +8350,7 @@ module.exports = {
  *  __ / // // // // // _  // _// // / / // _  // _//     // //  \/ // _ \/ /
  * /  / // // // // // ___// / / // / / // ___// / / / / // // /\  // // / /__
  * \___//____ \\___//____//_/ _\_  / /_//____//_/ /_/ /_//_//_/ /_/ \__\_\___/
- *           \/              /____/                              version 1.7.2
+ *           \/              /____/                              version 1.7.0
  *
  * This file is part of jQuery Terminal. http://terminal.jcubic.pl
  *
@@ -8377,7 +8377,7 @@ module.exports = {
  * Copyright (c) 2007-2013 Alexandru Marasteanu <hello at alexei dot ro>
  * licensed under 3 clause BSD license
  *
- * Date: Sat, 16 Sep 2017 14:57:35 +0000
+ * Date: Tue, 12 Sep 2017 07:04:06 +0000
  */
 
 /* TODO:
@@ -8635,14 +8635,14 @@ module.exports = {
 
     /* eslint-disable */
     var hasLS = function() {
-        try {
-            var testKey = 'test', storage = window.localStorage;
-            storage.setItem(testKey, '1');
-            storage.removeItem(testKey);
-            return true;
-        } catch (error) {
-            return false;
-        }
+      var testKey = 'test', storage = window.localStorage;
+      try {
+        storage.setItem(testKey, '1');
+        storage.removeItem(testKey);
+        return true;
+      } catch (error) {
+        return false;
+      }
     };
 
     // -----------------------------------------------------------------------
@@ -9549,11 +9549,7 @@ module.exports = {
                     self['delete'](-1);
                 }
                 // for next input after naitve backspace
-                // we need timeout because we don't want it to trigger
-                // for current input but next one
-                self.oneTime(1, function() {
-                    no_keydown = true;
-                });
+                no_keydown = true;
             },
             'TAB': function() {
                 self.insert('\t');
@@ -9762,9 +9758,7 @@ module.exports = {
         function fix_textarea() {
             // delay worked while experimenting
             self.oneTime(10, function() {
-                if (clip.val() !== command) {
-                    clip.val(command);
-                }
+                clip.val(command);
                 if (enabled) {
                     self.oneTime(10, function() {
                         try {
@@ -10785,7 +10779,7 @@ module.exports = {
         }
     }
     $.terminal = {
-        version: '1.7.2',
+        version: '1.7.0',
         // colors from http://www.w3.org/wiki/CSS/Properties/color/keywords
         color_names: [
             'transparent', 'currentcolor', 'black', 'silver', 'gray', 'white',
@@ -13084,11 +13078,7 @@ module.exports = {
             };
         }
         function strings() {
-            return $.extend(
-                {},
-                $.terminal.defaults.strings,
-                settings && settings.strings || {}
-            );
+            return $.extend({}, $.terminal.defaults.strings, settings.strings);
         }
         // ---------------------------------------------------------------------
         var self = this;
@@ -14091,7 +14081,7 @@ module.exports = {
             // :: it use $.when so you can echo a promise
             // -------------------------------------------------------------
             echo: function(string, options) {
-                function echo(arg) {
+                function echo(string) {
                     try {
                         var locals = $.extend({
                             flush: true,
@@ -14115,13 +14105,10 @@ module.exports = {
                             }
                             output_buffer = [];
                         }
-                        if (typeof arg === 'function') {
-                            arg = arg.bind(self);
-                        }
-                        process_line(arg, locals);
+                        process_line(string, locals);
                         // extended commands should be processed only
                         // once in echo and not on redraw
-                        lines.push([arg, $.extend(locals, {
+                        lines.push([string, $.extend(locals, {
                             exec: false
                         })]);
                         if (locals.flush) {
@@ -14540,10 +14527,7 @@ module.exports = {
                 return self;
             },
             // -------------------------------------------------------------
-            scroll_to_bottom: function() {
-                scroll_to_bottom();
-                return self;
-            },
+            scroll_to_bottom: scroll_to_bottom,
             // -------------------------------------------------------------
             // :: return true if terminal div or body is at the bottom
             // :: is use scrollBottomOffset option as margin for the check
@@ -14640,11 +14624,8 @@ module.exports = {
         terminals.append(self);
         self.on('focus.terminal', 'textarea', function(e) {
             // for cases when user press tab to focus terminal
-            // this is also called when user open context menu and then click
-            // right mouse button on terminal
-            if (e.originalEvent !== undefined) {
-                // if terminal is enabled we need silent focus for multiple terminals
-                self.focus(true, !self.enabled());
+            if (!self.enabled() && e.originalEvent !== undefined) {
+                self.focus(true);
             }
         });
         function focus_terminal() {
@@ -14740,13 +14721,8 @@ module.exports = {
                 self.disable();
             }
             function disable(e) {
-                e = e.originalEvent;
-                // e.terget is body when click outside of context menu to close it
-                // even if you click on terminal
-                var node = document.elementFromPoint(e.pageX, e.pageY);
-                if (!$(node).closest('.terminal').length && self.enabled()) {
-                    // we only need to disable when click outside of terminal
-                    // click on other terminal is handled by focus event
+                var sender = $(e.target);
+                if (!sender.closest('.terminal').length && self.enabled()) {
                     self.disable();
                 }
             }
@@ -14796,9 +14772,9 @@ module.exports = {
                         if (get_selected_text() === '') {
                             if (++count === 1) {
                                 if (!frozen) {
-                                    command_line.enable();
                                     if (!enabled) {
                                         self.focus();
+                                        command_line.enable();
                                         count = 0;
                                     } else {
                                         var timeout = settings.clickTimeout;
@@ -14822,7 +14798,7 @@ module.exports = {
                             if (!self.enabled()) {
                                 self.enable();
                             }
-                            //e.preventDefault();
+                            e.preventDefault();
                             var offset = command_line.offset();
                             clip.css({
                                 left: e.pageX - offset.left - 5,
@@ -15050,7 +15026,7 @@ module.exports = {
                         delta = e.originalEvent.deltaY || e.originalEvent.detail;
                     }
                     mousewheel(e, -delta);
-                    e.preventDefault();
+                    return false;
                 });
             }
         }); // make_interpreter
