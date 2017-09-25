@@ -283,7 +283,7 @@ export default class TerminalPlugin
 
 	checkBeforeEnter( terminal, command )
 	{
-		if ( !command || command === '' )
+		if ( !command || command.trim() === '' )
 		{
 			this.terminal.echo('>');
 			return false;
