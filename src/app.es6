@@ -190,6 +190,10 @@ export class TerminalState
 				});
 			break;
 
+			case 'RESET_GDS' :
+				this.change({ gdsObj : Object.assign( {}, this.state.gdsObj, {pcc : {}} ) });
+			break;
+
 			case 'UPDATE_CUR_GDS' :
 				const pcc 	= Object.assign({}, this.state.gdsObj.pcc, { [ params['sessionIndex'] ] : params['lastPcc']} );
 				const gds 	= Object.assign({}, this.state.gdsObj, {pcc : pcc});

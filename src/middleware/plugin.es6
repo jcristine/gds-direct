@@ -345,6 +345,9 @@ export default class TerminalPlugin
 
 		this.tabCommands.reset( result['tabCommands'], result['output'] );
 
+		if (result['startNewSession'])
+			window.TerminalState.action( 'RESET_GDS');
+
 		window.TerminalState.action( 'UPDATE_CUR_GDS', {
 			canCreatePq 		: result['canCreatePq'],
 			canCreatePqErrors 	: result['canCreatePqErrors'],
