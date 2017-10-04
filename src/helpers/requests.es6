@@ -20,17 +20,20 @@ const Debug = txt => {
 
 const showUserMessages = response => {
 
-	const userMessages = response['data']['userMessages'] || [];
+	if (typeof response['data'] !== 'undefined')
+	{
+		const userMessages = response['data']['userMessages'] || [];
 
-	userMessages.map( msg => {
-		new Noty({
-			text	: `<strong>${msg}</strong>`,
-			layout 	: 'bottomCenter',
-			timeout : 5000,
-			theme	: 'metroui',
-			type 	: 'warning'
-		}).show();
-	} );
+		userMessages.map( msg => {
+			new Noty({
+				text	: `<strong>${msg}</strong>`,
+				layout 	: 'bottomCenter',
+				timeout : 5000,
+				theme	: 'metroui',
+				type 	: 'warning'
+			}).show();
+		} );
+	}
 
 	return response;
 };

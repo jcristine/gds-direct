@@ -476,17 +476,19 @@ var Debug = function Debug(txt) {
 
 var showUserMessages = function showUserMessages(response) {
 
-	var userMessages = response['data']['userMessages'] || [];
+	if (typeof response['data'] !== 'undefined') {
+		var userMessages = response['data']['userMessages'] || [];
 
-	userMessages.map(function (msg) {
-		new _noty2.default({
-			text: '<strong>' + msg + '</strong>',
-			layout: 'bottomCenter',
-			timeout: 5000,
-			theme: 'metroui',
-			type: 'warning'
-		}).show();
-	});
+		userMessages.map(function (msg) {
+			new _noty2.default({
+				text: '<strong>' + msg + '</strong>',
+				layout: 'bottomCenter',
+				timeout: 5000,
+				theme: 'metroui',
+				type: 'warning'
+			}).show();
+		});
+	}
 
 	return response;
 };
@@ -4000,6 +4002,13 @@ var TerminalState = function () {
 			return this.state.gdsObj['sessionIndex'];
 		}
 	}, {
+		key: 'getAreaName',
+		value: function getAreaName(index) {
+			var areas = ['A', 'B', 'C', 'D', 'E'];
+
+			return areas[index];
+		}
+	}, {
 		key: 'getSessionAreaMap',
 		value: function getSessionAreaMap() {
 			var key = this.isGdsApollo() ? 'S' : '¤';
@@ -4058,6 +4067,9 @@ var TerminalState = function () {
 
 			switch (_action) {
 				case 'CHANGE_GDS':
+					// save to backend
+					(0, _requests.get)('terminal/saveSetting/gds/' + this.getGds() + '/' + params, false);
+
 					// save prev gds state
 					Gds[this.getGds()] = this.state.gdsObj;
 
@@ -4066,23 +4078,21 @@ var TerminalState = function () {
 						gds: params,
 						gdsObj: Gds[params]
 					});
-
-					(0, _requests.get)('terminal/saveSetting/gds/' + params, false);
 					break;
 
 				case 'CHANGE_SESSION_AREA':
+					(0, _requests.get)('terminal/saveSetting/area/' + this.getGds() + '/' + this.getAreaName(params), false);
+
 					this.change({
 						gdsObj: Object.assign({}, this.state.gdsObj, { sessionIndex: params })
 					});
-
-					(0, _requests.get)('terminal/saveSetting/area/' + params, false);
 					break;
 
 				case 'CHANGE_SESSION_BY_MENU':
+					(0, _requests.get)('terminal/saveSetting/area/' + this.getGds() + '/' + this.getAreaName(params), false);
+
 					var command = this.getSessionAreaMap()[params];
 					this.execCmd([command]);
-
-					(0, _requests.get)('terminal/saveSetting/area/' + params, false);
 					break;
 
 				case 'CHANGE_MATRIX':
@@ -4094,11 +4104,11 @@ var TerminalState = function () {
 					break;
 
 				case 'CHANGE_ACTIVE_TERMINAL':
+					(0, _requests.get)('terminal/saveSetting/terminal/' + this.getGds() + '/' + (params.name() + 1), false);
+
 					this.change({
 						gdsObj: Object.assign({}, this.state.gdsObj, { activeTerminal: params })
 					});
-
-					(0, _requests.get)('terminal/saveSetting/terminal/' + params.name(), false);
 					break;
 
 				case 'RESET_GDS':
@@ -4133,9 +4143,9 @@ var TerminalState = function () {
 					break;
 
 				case 'CHANGE_INPUT_LANGUAGE':
-					this.change({ language: params });
+					(0, _requests.get)('terminal/saveSetting/language/' + this.getGds() + '/' + params, false);
 
-					(0, _requests.get)('terminal/saveSetting/language/' + params, false);
+					this.change({ language: params });
 					break;
 			}
 		}

@@ -98,6 +98,13 @@ export class TerminalState
 		return this.state.gdsObj['sessionIndex'];
 	}
 
+	getAreaName(index)
+	{
+		const areas = ['A', 'B', 'C', 'D', 'E'];
+
+		return areas[index];
+	}
+
 	getSessionAreaMap()
 	{
 		const key = this.isGdsApollo() ? 'S': '¤';
@@ -155,6 +162,9 @@ export class TerminalState
 		switch (action)
 		{
 			case 'CHANGE_GDS':
+				// save to backend
+				get(`terminal/saveSetting/gds/${this.getGds()}/${params}`, false);
+
 				// save prev gds state
 				Gds[ this.getGds() ] = this.state.gdsObj;
 
@@ -163,23 +173,21 @@ export class TerminalState
 					gds		: params,
 					gdsObj 	: Gds[params]
 				});
-
-				get(`terminal/saveSetting/gds/${params}`, false);
 			break;
 
 			case 'CHANGE_SESSION_AREA' :
+				get(`terminal/saveSetting/area/${this.getGds()}/${this.getAreaName(params)}`, false);
+
 				this.change({
 					gdsObj : Object.assign( {}, this.state.gdsObj, {sessionIndex : params} )
 				});
-
-				get(`terminal/saveSetting/area/${params}`, false);
 			break;
 
 			case 'CHANGE_SESSION_BY_MENU' :
+				get(`terminal/saveSetting/area/${this.getGds()}/${this.getAreaName(params)}`, false);
+
 				const command	= this.getSessionAreaMap()[params];
 				this.execCmd( [command] );
-
-				get(`terminal/saveSetting/area/${params}`, false);
 			break;
 
 			case 'CHANGE_MATRIX':
@@ -191,11 +199,11 @@ export class TerminalState
 			break;
 
 			case 'CHANGE_ACTIVE_TERMINAL' :
+				get(`terminal/saveSetting/terminal/${this.getGds()}/${params.name() + 1}`, false);
+
 				this.change({
 					gdsObj : Object.assign( {}, this.state.gdsObj, { activeTerminal : params } )
 				});
-
-				get(`terminal/saveSetting/terminal/${params.name()}`, false);
 			break;
 
 			case 'RESET_GDS' :
@@ -229,9 +237,9 @@ export class TerminalState
 			break;
 
 			case 'CHANGE_INPUT_LANGUAGE' :
-				this.change({ language : params });
+				get(`terminal/saveSetting/language/${this.getGds()}/${params}`, false);
 
-				get(`terminal/saveSetting/language/${params}`, false);
+				this.change({ language : params });
 			break;
 		}
 	}
