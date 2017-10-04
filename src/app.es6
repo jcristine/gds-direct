@@ -163,17 +163,23 @@ export class TerminalState
 					gds		: params,
 					gdsObj 	: Gds[params]
 				});
+
+				get(`terminal/saveSetting/gds/${params}`, false);
 			break;
 
 			case 'CHANGE_SESSION_AREA' :
 				this.change({
 					gdsObj : Object.assign( {}, this.state.gdsObj, {sessionIndex : params} )
 				});
+
+				get(`terminal/saveSetting/area/${params}`, false);
 			break;
 
 			case 'CHANGE_SESSION_BY_MENU' :
 				const command	= this.getSessionAreaMap()[params];
 				this.execCmd( [command] );
+
+				get(`terminal/saveSetting/area/${params}`, false);
 			break;
 
 			case 'CHANGE_MATRIX':
@@ -188,6 +194,8 @@ export class TerminalState
 				this.change({
 					gdsObj : Object.assign( {}, this.state.gdsObj, { activeTerminal : params } )
 				});
+
+				get(`terminal/saveSetting/terminal/${params.name()}`, false);
 			break;
 
 			case 'RESET_GDS' :
@@ -218,6 +226,12 @@ export class TerminalState
 			case 'DEV_CMD_STACK_RUN' :
 				this.execCmd( params );
 				return false;
+			break;
+
+			case 'CHANGE_INPUT_LANGUAGE' :
+				this.change({ language : params });
+
+				get(`terminal/saveSetting/language/${params}`, false);
 			break;
 		}
 	}

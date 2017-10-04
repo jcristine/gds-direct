@@ -4066,17 +4066,23 @@ var TerminalState = function () {
 						gds: params,
 						gdsObj: Gds[params]
 					});
+
+					(0, _requests.get)('terminal/saveSetting/gds/' + params, false);
 					break;
 
 				case 'CHANGE_SESSION_AREA':
 					this.change({
 						gdsObj: Object.assign({}, this.state.gdsObj, { sessionIndex: params })
 					});
+
+					(0, _requests.get)('terminal/saveSetting/area/' + params, false);
 					break;
 
 				case 'CHANGE_SESSION_BY_MENU':
 					var command = this.getSessionAreaMap()[params];
 					this.execCmd([command]);
+
+					(0, _requests.get)('terminal/saveSetting/area/' + params, false);
 					break;
 
 				case 'CHANGE_MATRIX':
@@ -4091,6 +4097,8 @@ var TerminalState = function () {
 					this.change({
 						gdsObj: Object.assign({}, this.state.gdsObj, { activeTerminal: params })
 					});
+
+					(0, _requests.get)('terminal/saveSetting/terminal/' + params.name(), false);
 					break;
 
 				case 'RESET_GDS':
@@ -4122,6 +4130,12 @@ var TerminalState = function () {
 				case 'DEV_CMD_STACK_RUN':
 					this.execCmd(params);
 					return false;
+					break;
+
+				case 'CHANGE_INPUT_LANGUAGE':
+					this.change({ language: params });
+
+					(0, _requests.get)('terminal/saveSetting/language/' + params, false);
 					break;
 			}
 		}
@@ -4842,7 +4856,7 @@ var LanguageButtons = function (_Component3) {
 
 				button.innerHTML = value;
 				button.addEventListener('click', function () {
-					return window.TerminalState.change({ language: value });
+					return window.TerminalState.action('CHANGE_INPUT_LANGUAGE', value);
 				});
 
 				_this5.context.appendChild(button);

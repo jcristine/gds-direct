@@ -102,7 +102,7 @@ class LanguageButtons extends Component {
 			const button = Dom('button.btn btn-sm btn-gold font-bold' + ( window.TerminalState.getLanguage() === value ? ' active' : '') );
 
 			button.innerHTML = value;
-			button.addEventListener('click', () => window.TerminalState.change({ language : value }) );
+			button.addEventListener('click', () => window.TerminalState.action('CHANGE_INPUT_LANGUAGE', value) );
 
 			this.context.appendChild( button );
 		});
