@@ -4104,7 +4104,7 @@ var TerminalState = function () {
 					break;
 
 				case 'CHANGE_ACTIVE_TERMINAL':
-					(0, _requests.get)('terminal/saveSetting/terminal/' + this.getGds() + '/' + (params.name() + 1), false);
+					//(0, _requests.get)('terminal/saveSetting/terminal/' + this.getGds() + '/' + (params.name() + 1), false);
 
 					this.change({
 						gdsObj: Object.assign({}, this.state.gdsObj, { activeTerminal: params })
