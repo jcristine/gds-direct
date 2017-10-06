@@ -4096,7 +4096,9 @@ var TerminalState = function () {
 					break;
 
 				case 'CHANGE_MATRIX':
-					localStorage.setItem('matrix', JSON.stringify(params));
+                    (0, _requests.get)('terminal/saveSetting/matrix/' + this.getGds() + '/' + ((params.cells + 1) + '' + (params.rows + 1)), false);
+
+                    localStorage.setItem('matrix', JSON.stringify(params));
 
 					this.change({
 						gdsObj: Object.assign({}, this.state.gdsObj, { matrix: params })
