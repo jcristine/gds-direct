@@ -227,7 +227,7 @@ export default class TerminalPlugin
 
 		// custom keydown events for each terminal
 		// we introduced this approach because of terminal library adding keydown events to document
-		// terminalKeydown(context[0]);
+		terminalKeydown(context[0]);
 
 		// setTimeout( () => { context.set_command('test')}, 500);
 		// setTimeout( () => { context.set_command('zzz')}, 1500);

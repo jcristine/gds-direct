@@ -4096,9 +4096,7 @@ var TerminalState = function () {
 					break;
 
 				case 'CHANGE_MATRIX':
-                    (0, _requests.get)('terminal/saveSetting/matrix/' + this.getGds() + '/' + ((params.cells + 1) + '' + (params.rows + 1)), false);
-
-                    localStorage.setItem('matrix', JSON.stringify(params));
+					localStorage.setItem('matrix', JSON.stringify(params));
 
 					this.change({
 						gdsObj: Object.assign({}, this.state.gdsObj, { matrix: params })
@@ -4106,7 +4104,7 @@ var TerminalState = function () {
 					break;
 
 				case 'CHANGE_ACTIVE_TERMINAL':
-					//(0, _requests.get)('terminal/saveSetting/terminal/' + this.getGds() + '/' + (params.name() + 1), false);
+					(0, _requests.get)('terminal/saveSetting/terminal/' + this.getGds() + '/' + (params.name() + 1), false);
 
 					this.change({
 						gdsObj: Object.assign({}, this.state.gdsObj, { activeTerminal: params })
@@ -6203,7 +6201,7 @@ var TerminalPlugin = function () {
 
 			// custom keydown events for each terminal
 			// we introduced this approach because of terminal library adding keydown events to document
-			// terminalKeydown(context[0]);
+			(0, _switchTerminal.terminalKeydown)(context[0]);
 
 			// setTimeout( () => { context.set_command('test')}, 500);
 			// setTimeout( () => { context.set_command('zzz')}, 1500);
