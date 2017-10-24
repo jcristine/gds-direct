@@ -302,13 +302,14 @@ function makeDate(d) {
 function getDate() {
 	var d = new Date();
 	var date = d.getDate();
-	var p320 = new Date(d.setDate(date + 320));
-	var p320Date = p320.getDate();
+	var d2 = new Date();
+	var dPlus320 = new Date(d2.setDate(date + 320));
+	var p320Date = dPlus320.getDate();
 	var months = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'];
 
 	return {
 		now: makeDate(date) + months[d.getMonth()],
-		plus320: makeDate(p320Date) + months[p320.getMonth()]
+		plus320: makeDate(p320Date) + months[dPlus320.getMonth()]
 	};
 }
 

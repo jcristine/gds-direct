@@ -93,12 +93,13 @@ export function getDate()
 {
 	const d         = new Date;
 	const date      = d.getDate();
-	const p320      = new Date(d.setDate(date + 320));
-	const p320Date  = p320.getDate();
+	const d2        = new Date();
+	const dPlus320  = new Date(d2.setDate(date + 320));
+	const p320Date  = dPlus320.getDate();
 	const months    = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'];
 
 	return {
 		now         : makeDate(date) + months[d.getMonth()],
-		plus320     : makeDate(p320Date) + months[p320.getMonth()]
+		plus320     : makeDate(p320Date) + months[dPlus320.getMonth()]
 	};
 }
