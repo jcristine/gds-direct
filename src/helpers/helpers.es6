@@ -84,12 +84,21 @@ function splitLines(txt)
 	return txt.split(/\r?\n/);
 }
 
-export function currDate()
+function makeDate(d)
 {
-	const d = new Date;
-	const date = d.getDate();
-	const getDate = date < 10 ? '0' + date : date;
-	const months = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'];
+	return d < 10 ? '0' + d : d;
+}
 
-	return getDate + months[d.getMonth()];
+export function getDate()
+{
+	const d         = new Date;
+	const date      = d.getDate();
+	const p320      = new Date(d.setDate(date + 320));
+	const p320Date  = p320.getDate();
+	const months    = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'];
+
+	return {
+		now         : makeDate(date) + months[d.getMonth()],
+		plus320     : makeDate(p320Date) + months[p320.getMonth()]
+	};
 }

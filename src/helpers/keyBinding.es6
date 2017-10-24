@@ -1,6 +1,6 @@
 'use strict';
 
-import {currDate} 	from './helpers.es6';
+import {getDate} 	from './helpers.es6';
 
 /*window.addEventListener("beforeunload", function (e) {
 	let confirmationMessage = "TEST";
@@ -303,9 +303,33 @@ export default class KeyBinding
 				return false;
 			break;
 
+			case 116 :
+				// console.log('f5');
+				const plus320 = getDate().plus320;
+
+				switch (gds)
+				{
+					case 'apollo':
+						cmd = '0TURZZBK1YYZ' + plus320 + '-RETENTION LINE';
+						break;
+					case 'sabre':
+						cmd = '0OTHYYGK1/RETENTION' + plus320;
+						break;
+					case 'amadeus':
+						cmd = 'RU1AHK1SFO' + plus320 + '/RETENTION';
+						break;
+
+					default:
+						cmd = '0TURZZBK1YYZ'+ plus320 +'-RETENTION LINE'
+				}
+
+				terminal.exec(cmd);
+				return false;
+			break;
+
 			case 122 :
 				// console.log('f11');
-				const d = currDate();
+				const d = getDate().now;
 
 				switch (gds)
 				{

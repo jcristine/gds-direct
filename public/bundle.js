@@ -213,7 +213,7 @@ Object.defineProperty(exports, "__esModule", {
 exports.getReplacement = getReplacement;
 exports.makePages = makePages;
 exports.splitIntoLinesArr = splitIntoLinesArr;
-exports.currDate = currDate;
+exports.getDate = getDate;
 var common = {
 	'`': '>',
 	'[': '¤',
@@ -295,13 +295,21 @@ function splitLines(txt) {
 	return txt.split(/\r?\n/);
 }
 
-function currDate() {
+function makeDate(d) {
+	return d < 10 ? '0' + d : d;
+}
+
+function getDate() {
 	var d = new Date();
 	var date = d.getDate();
-	var getDate = date < 10 ? '0' + date : date;
+	var p320 = new Date(d.setDate(date + 320));
+	var p320Date = p320.getDate();
 	var months = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'];
 
-	return getDate + months[d.getMonth()];
+	return {
+		now: makeDate(date) + months[d.getMonth()],
+		plus320: makeDate(p320Date) + months[p320.getMonth()]
+	};
 }
 
 /***/ }),
@@ -5874,9 +5882,32 @@ var KeyBinding = function () {
 					return false;
 					break;
 
+				case 116:
+					// console.log('f5');
+					var plus320 = (0, _helpers.getDate)().plus320;
+
+					switch (gds) {
+						case 'apollo':
+							cmd = '0TURZZBK1YYZ' + plus320 + '-RETENTION LINE';
+							break;
+						case 'sabre':
+							cmd = '0OTHYYGK1/RETENTION' + plus320;
+							break;
+						case 'amadeus':
+							cmd = 'RU1AHK1SFO' + plus320 + '/RETENTION';
+							break;
+
+						default:
+							cmd = '0TURZZBK1YYZ' + plus320 + '-RETENTION LINE';
+					}
+
+					terminal.exec(cmd);
+					return false;
+					break;
+
 				case 122:
 					// console.log('f11');
-					var d = (0, _helpers.currDate)();
+					var d = (0, _helpers.getDate)().now;
 
 					switch (gds) {
 						case 'apollo':
