@@ -91,7 +91,7 @@ function makeDate(d)
 
 export function getDate()
 {
-	const d         = new Date;
+	const d         = new Date();
 	const date      = d.getDate();
 	const d2        = new Date();
 	const dPlus320  = new Date(d2.setDate(date + 320));
