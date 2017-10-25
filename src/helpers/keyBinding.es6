@@ -6,14 +6,22 @@ import {getDate} 	from './helpers.es6';
 	return confirmationMessage;                            //Webkit, Safari, Chrome
 });*/
 
-export default class KeyBinding
-{
-	static parse(evt, terminal, plugin)
-	{
+const nextCmd = (plugin, terminal) => { //Next performed format, by default returns to the first format and than each one by one.
+	plugin.history.next().then( command => {
+		terminal.cmd().set( command );
+	});
+};
+
+const prevCmd = (plugin, terminal) => {
+	plugin.history.previous().then( command => {
+		terminal.cmd().set( command );
+	});
+};
+
+export const pressedShortcuts = (evt, terminal, plugin) => {
 		const keymap 	= evt.keyCode || evt.which;
 		const isApollo	= window.TerminalState.isGdsApollo();
 		const gds		= window.TerminalState.getGds();
-		let cmd			= '';
 
 		// console.log('key pressed:' ,keymap);
 		// evt.preventDefault();
@@ -23,102 +31,53 @@ export default class KeyBinding
 		{
 			switch (keymap)
 			{
-				case 8: 	//  CTRL + backSpace;
-				case 83: 	//  CTRL + S;
+				case 8:  //CTRL + backSpace;
+				case 83: //CTRL + S;
 					window.TerminalState.purgeScreens();
-					return false;
 				break;
 
-				case 87: //	CTRL+W
+				case 87: //CTRL+W
 					window.TerminalState.clearTerminal();
-					return false;
 				break;
 
-				case 68 : // CTRL+D
-					// console.log('ctrl D');
-					// window.TerminalState.clearTerminal();
-					return false;
-				break;
-
-				case 76 : // CTRL+L
-					return false;
-				break;
-
-				case 82 : // CTRL+R
-					return false;
-				break;
-
-				case 120 : // F9
+				case 68 	: // CTRL+D
+				case 76 	: // CTRL+L
+				case 82 	: // CTRL+R
+				case 120	: // F9
 					// Template for Apollo: ¤:5S(paxOrder) (sellPrice) N1 (netPrice) F1 (fareAmount)
 					// Example for Apollo: ¤:5S1 985.00 N1 720.00 F1 500.00
 					// Template for Sabre: 5S(paxOrder) (sellPrice) N1 (netPrice) F1 (fareAmount)
 					// Example for Sabre: 5S1 985.00 N1 720.00 F1 500.00
-					evt.preventDefault();
-					return false;
+					// evt.preventDefault();
 				break;
 
 				case 38 : // Up arrow
-					// Last performed format
-
-					plugin.history.previous().then( command => {
-						terminal.cmd().set( command );
-					});
-
-					return false;
+					prevCmd(plugin, terminal);
 				break;
 
 				case 40 : // down arrow
-					//Next performed format, by default returns to the first format and than each one by one.
-
-					plugin.history.next().then( command => {
-						terminal.cmd().set( command );
-					});
-
-					return false;
+					nextCmd(plugin, terminal);
 				break;
 
-				case 112 :	// f1
-					switch (gds)
-					{
-						case 'apollo':
-							cmd = 'S*CTY/';
-							break;
-						case 'amadeus':
-							cmd = 'DAC';
-							break;
+				case 112 :	// F1
+					const f1 = {
+						apollo 	: 'S*CTY/',
+						amadeus : 'DAC',
+						sabre 	: 'W/*'
+					};
 
-						default:
-							cmd = 'W/*'
-					}
-
-					terminal.insert( cmd );
-					return false;
+					terminal.insert(f1[gds]);
 				break;
 
-				case 113 :
-					// f2
-					// Apollo template: S*AIR/(Airline Code)
-					// Apollo example: S*AIR/RIX
-					// Sabre template: W/*(Airline Code)
-					 // Sabre example: W/*BT
+				case 113 : // F2
+					const f2 = {
+						apollo 	: 'S*AIR/',
+						amadeus : 'DNA',
+						sabre 	: 'W/*'
+					};
 
-					switch (gds)
-					{
-						case 'apollo':
-							cmd = 'S*AIR/';
-							break;
-						case 'amadeus':
-							cmd = 'DNA';
-							break;
-
-						default:
-							cmd = 'W/*'
-					}
-
-					terminal.insert( cmd );
-					return false;
+					terminal.insert(f2[gds]);
 				break;
-
 
 				// disabling these keys from terminal library to execute
 				// these keys are used in terminalKeydown()
@@ -133,83 +92,60 @@ export default class KeyBinding
 				case 55 :	// Ctrl + 7
 				case 56 :	// Ctrl + 8
 				case 57 :	// Ctrl + 9
-					return false;
 				break;
 
 				default:
-				// 	console.log(' default ');
+					return true;
 			}
 
-			console.log('done !!!');
+			return false;
 		}
 
 		if ( evt.shiftKey )
 		{
 			switch (keymap)
 			{
-				case 120 : //f9
-					switch (gds)
-					{
-						case 'apollo':
-							cmd = 'P:SFOAS/800-750-2238 ASAP CUSTOMER SUPPORT';
-							break;
-						case 'amadeus':
-							cmd = 'AP SFO 800-750-2238-A';
-							break;
+				case 120 : //F9
+					const f9 = {
+						apollo 	: 'P:SFOAS/800-750-2238 ASAP CUSTOMER SUPPORT',
+						amadeus : 'AP SFO 800-750-2238-A',
+						sabre 	: '91-800-750-2238-A'
+					};
 
-						default:
-							cmd = '91-800-750-2238-A';
-					}
-
-					terminal.exec(cmd);
-					return false;
+					terminal.exec(f9[gds]);
 				break;
 
 				case 116 : //F5
-					switch (gds)
-					{
-						case 'apollo':
-							cmd = 'SEM/2G52/AG';
-							break;
-
-						default:
-							cmd = 'AAA5E9H';
-					}
-
-					terminal.exec(cmd);
-					return false;
+					terminal.exec(isApollo ? 'SEM/2G52/AG' : 'AAA5E9H');
 				break;
 
 				case 117: //F6
 					terminal.exec(isApollo ? 'SEM/2G55/AG' : 'AAA6IIF');
-					return false;
 				break;
 
 				case 118: //F7
 					terminal.exec(isApollo ? 'SEM/2G2H/AG' : 'AAADK8H');
-					return false;
 				break;
 
 				case 119: //F8
 					terminal.exec(isApollo ? 'SEM/2BQ6/AG' : 'AAAW8K7');
-					return false;
 				break;
 
 				case 187: //+
 				case 61 : //+ FireFox
 				case 188: //,
 					terminal.insert('+');
-					return false;
 				break;
 
 				// disabling key from terminal library to execute
 				// key is used in terminalKeydown()
 				case 192 :	// Shift + ~
-					return false;
 				break;
 
-				default :
+				default : return true
 			}
+
+			return false;
 		}
 
 		if ( evt.altKey )
@@ -218,146 +154,84 @@ export default class KeyBinding
 			{
 				case 8: // + backSpace;
 					terminal.clear();
-					return false;
 				break;
 
 				case 38 : // Up arrow
-					// Last performed format
-					plugin.history.previous().then( command => {
-						terminal.cmd().set( command );
-					});
-					return false;
+					prevCmd(plugin, terminal);
 				break;
 
 				case 40 : // down arrow
-					//Next performed format, by default returns to the first format and than each one by one.
-
-					plugin.history.next().then( command => {
-						terminal.cmd().set( command );
-					});
-
-					return false;
+					nextCmd(plugin, terminal);
 				break;
 
-				default :
+				default : return true
 			}
+
+			return false;
 		}
 
 		switch (keymap)
 		{
-			case 59	: // ; firefox
+			/*case 59	: // ; firefox
 			case 186: // ; all other browsers
-
 				if (!isApollo)
 				{
 					// terminal.cmd().delete(-1);
 					// return false;
 				}
+			break;*/
 
-			break;
-
-			case 34 : // page down
+			case 34 : //page down
 			case 33 : //page up
+				const cmm 	= plugin.lastCommand ? plugin.lastCommand.toLowerCase() : '';
 
-				let cmdA = keymap === 33 ? 'MU' : 'MD';
+				if (cmm !== '$bba' && isApollo && cmm.substr(0, 2) === '$b')
+					return true;
 
-				if (plugin.lastCommand && plugin.lastCommand.toLowerCase() === '$bba')
-				{
-						terminal.exec(cmdA);
-						return false;
-				}
-
-				if (isApollo && plugin.lastCommand && plugin.lastCommand.substr(0, 2).toLowerCase() === '$b')
-				{
-				} else
-				{
-					terminal.exec(cmdA);
-					return false;
-				}
+				terminal.exec(keymap === 33 ? 'MU' : 'MD');
 			break;
 
 			case 38 : //UP
-
-				plugin.history.previous().then( command => {
-					terminal.cmd().set( command );
-				});
-
-				return false;
+				prevCmd(plugin,terminal);
 			break;
 
 			case 40 : //DOWN
-				plugin.history.next().then( command => {
-					terminal.cmd().set( command );
-				});
-
-				return false;
+				nextCmd(plugin, terminal);
 			break;
 
 			case 116 : // F5
+				const plus320 	= getDate().plus320;
+				const f5 		= {
+					apollo 	: '0TURZZBK1YYZ' + plus320 + '-RETENTION LINE',
+					amadeus : 'RU1AHK1SFO' + plus320 + '/RETENTION',
+					sabre 	: '0OTHYYGK1/RETENTION' + plus320
+				};
 
-				const plus320 = getDate().plus320;
-
-				switch (gds)
-				{
-					case 'apollo':
-						cmd = '0TURZZBK1YYZ' + plus320 + '-RETENTION LINE';
-						break;
-					case 'sabre':
-						cmd = '0OTHYYGK1/RETENTION' + plus320;
-						break;
-					case 'amadeus':
-						cmd = 'RU1AHK1SFO' + plus320 + '/RETENTION';
-						break;
-
-					default:
-						cmd = '0TURZZBK1YYZ'+ plus320 +'-RETENTION LINE'
-				}
-
-				terminal.exec(cmd);
-				return false;
+				terminal.exec(f5[gds]);
 			break;
 
 			case 122 : //F11
-				const d = getDate().now;
+				const f11	= {
+					apollo 	: 'T:TAU/',
+					amadeus : 'TKTL',
+					sabre 	: '7TAW/'
+				};
 
-				switch (gds)
-				{
-					case 'apollo':
-						cmd = 'T:TAU/';
-						break;
-					case 'amadeus':
-						cmd = 'TKTL';
-						break;
-
-					default:
-						cmd = '7TAW/'
-				}
-
-				terminal.exec(  cmd + d );
-				return false;
+				terminal.exec(f11[gds] + getDate().now);
 			break;
 
 			case 123 : //F12
-				switch (gds)
-				{
-					case 'apollo':
-						cmd = 'R:';
-						break;
-					case 'amadeus':
-						cmd = 'RF';
-						break;
+				const f12 = {
+					apollo 	: 'R:',
+					amadeus : 'RF',
+					sabre 	: '6'
+				};
 
-					default:
-						cmd = '6'
-				}
-
-				terminal.exec( cmd + window.apiData.auth.login.toUpperCase() );
-				return false;
+				terminal.exec(f12[gds] + window.apiData.auth.login.toUpperCase());
 			break;
 
-			default:
+			default: return true;
 		}
 
-		return true;
-	}
-}
+		return false;
+};

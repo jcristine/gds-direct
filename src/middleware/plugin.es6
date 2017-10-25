@@ -1,5 +1,3 @@
-'use strict';
-
 const $		= require('jquery');
 window.$ 	= window.jQuery = $;
 
@@ -9,7 +7,7 @@ require('keyboardevent-key-polyfill').polyfill();
 import Pagination 	from '../modules/pagination.es6';
 import Session 		from '../modules/session.es6';
 import Spinner 		from '../modules/spinner.es6';
-import KeyBinding	from '../helpers/keyBinding.es6';
+import {pressedShortcuts} from "../helpers/keyBinding";
 import OutputLiner	from '../modules/output.es6';
 import TabManager	from '../modules/tabManager.es6';
 import F8Reader		from '../modules/f8.es6';
@@ -56,7 +54,9 @@ export default class TerminalPlugin
 	/*return false if char is don't belong cmd*/
 	parseKeyBinds( evt, terminal )
 	{
-		if ( !KeyBinding.parse( evt, terminal, this ) )
+		const hasShortCut = pressedShortcuts( evt, terminal, this );
+
+		if ( !hasShortCut )
 			return false;
 
 		const isEnter = evt.which === 13;
