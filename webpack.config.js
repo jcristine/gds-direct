@@ -1,12 +1,13 @@
 //var path = require('path');
-const webpack 			= require('webpack');
+// const webpack 			= require('webpack');
+
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
 const extractLess 		= new ExtractTextPlugin({
 	filename: 'public/main.css'
 });
 
-const UglifyJSPlugin = require('uglifyjs-webpack-plugin');
-const BabiliPlugin = require("babili-webpack-plugin");
+// const UglifyJSPlugin = require('uglifyjs-webpack-plugin');
+// const BabiliPlugin = require("babili-webpack-plugin");
 
 module.exports = {
 
@@ -23,42 +24,28 @@ module.exports = {
 	devtool: 'source-map',
 
 	resolve : {
-		// extensions 	: ['.js', '.json', '.es6'],
 		extensions 	: ['.js', '.es6'],
-
 		modules		: [
+			// path.resolve(__dirname, "src"),
 			"node_modules"
 		]
 	},
 
 	module: {
-
 		rules: [
-
 			{
-				test: /\.es6$/,
-				exclude: /node_modules/,
-
-				use: {
+				test	: /\.es6$/,
+				exclude	: /node_modules/,
+				use		: {
 					loader: 'babel-loader',
 					options: {
-						presets: ['env'],
-						// plugins: ['transform-runtime']
+						presets: ['env']
 					}
 				}
 			},
-
-			/*{
-				test: /\.es6$/,
-				loader: 'babel-loader',
-				query: {
-					presets: [ "babel-preset-es2015" ].map(require.resolve)
-				}
-			},*/
-
 			{
-				test: /\.less$/,
-				use: extractLess.extract({
+				test	: /\.less$/,
+				use		: extractLess.extract({
 					use		: [{loader: "css-loader"}, {loader: "less-loader"}],
 					fallback: "style-loader"
 				})
@@ -67,10 +54,7 @@ module.exports = {
 	},
 
 	externals: {
-		jquery			: 'jQuery'
-		// 'tether-drop' 	: 'Drop',
-		// 'noty' 			: 'Noty'
-		// import Drop from 'tether-drop';
+		jquery	: 'jQuery'
 	},
 
 	plugins: [

@@ -1,5 +1,3 @@
-'use strict';
-
 import {getDate} 	from './helpers.es6';
 
 /*window.addEventListener("beforeunload", function (e) {
@@ -8,7 +6,6 @@ import {getDate} 	from './helpers.es6';
 	return confirmationMessage;                            //Webkit, Safari, Chrome
 });*/
 
-
 export default class KeyBinding
 {
 	static parse(evt, terminal, plugin)
@@ -16,13 +13,9 @@ export default class KeyBinding
 		const keymap 	= evt.keyCode || evt.which;
 		const isApollo	= window.TerminalState.isGdsApollo();
 		const gds		= window.TerminalState.getGds();
-
 		let cmd			= '';
 
-		// if ( keymap === 13 )
-		// 	return false;
-
-		// console.log(keymap);
+		// console.log('key pressed:' ,keymap);
 		// evt.preventDefault();
 		// evt.stopPropagation();
 
@@ -30,10 +23,8 @@ export default class KeyBinding
 		{
 			switch (keymap)
 			{
-				case 8: //  CTRL + backSpace; || CTRL + S
-				// case 83:
-					evt.preventDefault();
-					//terminal.clear();
+				case 8: 	//  CTRL + backSpace;
+				case 83: 	//  CTRL + S;
 					window.TerminalState.purgeScreens();
 					return false;
 				break;
@@ -44,6 +35,7 @@ export default class KeyBinding
 				break;
 
 				case 68 : // CTRL+D
+					// console.log('ctrl D');
 					// window.TerminalState.clearTerminal();
 					return false;
 				break;
@@ -56,14 +48,12 @@ export default class KeyBinding
 					return false;
 				break;
 
-				case 120 :
-					// F9
+				case 120 : // F9
 					// Template for Apollo: ¤:5S(paxOrder) (sellPrice) N1 (netPrice) F1 (fareAmount)
 					// Example for Apollo: ¤:5S1 985.00 N1 720.00 F1 500.00
 					// Template for Sabre: 5S(paxOrder) (sellPrice) N1 (netPrice) F1 (fareAmount)
 					// Example for Sabre: 5S1 985.00 N1 720.00 F1 500.00
 					evt.preventDefault();
-					console.log('F9');
 					return false;
 				break;
 
@@ -144,12 +134,13 @@ export default class KeyBinding
 				case 56 :	// Ctrl + 8
 				case 57 :	// Ctrl + 9
 					return false;
-					break;
-
+				break;
 
 				default:
-					console.log(' default ');
+				// 	console.log(' default ');
 			}
+
+			console.log('done !!!');
 		}
 
 		if ( evt.shiftKey )
@@ -211,12 +202,11 @@ export default class KeyBinding
 					return false;
 				break;
 
-
 				// disabling key from terminal library to execute
 				// key is used in terminalKeydown()
 				case 192 :	// Shift + ~
 					return false;
-					break;
+				break;
 
 				default :
 			}
@@ -303,8 +293,8 @@ export default class KeyBinding
 				return false;
 			break;
 
-			case 116 :
-				// console.log('f5');
+			case 116 : // F5
+
 				const plus320 = getDate().plus320;
 
 				switch (gds)
@@ -327,8 +317,7 @@ export default class KeyBinding
 				return false;
 			break;
 
-			case 122 :
-				// console.log('f11');
+			case 122 : //F11
 				const d = getDate().now;
 
 				switch (gds)
@@ -348,8 +337,7 @@ export default class KeyBinding
 				return false;
 			break;
 
-			case 123 :
-				// console.log('f12');
+			case 123 : //F12
 				switch (gds)
 				{
 					case 'apollo':

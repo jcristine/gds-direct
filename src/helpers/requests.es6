@@ -1,61 +1,23 @@
-'use strict';
-
 import {END_POINT_URL, API_HOST}	from  '../constants.es6'
 import Noty 						from 'noty';
 import 'whatwg-fetch';
+import {showUserMessages, debugRequest} from "../modules/debug";
 
 const JParam = require('jquery-param');
 
 let Url;
 
-const Debug = txt => {
-
-	const notify = new Noty({
-		text	: `SERVER ERROR : ${txt}`,
-		layout 	: 'bottomRight',
-		timeout : 5000,
-		type 	: 'error'
-	});
-
-	notify.show();
-};
-
-const showUserMessages = response => {
-
-	if (typeof response['data'] !== 'undefined')
-	{
-		const userMessages = response['data']['userMessages'] || [];
-
-		userMessages.map( msg => {
-			new Noty({
-				text	: `<strong>${msg}</strong>`,
-				layout 	: 'bottomCenter',
-				timeout : 5000,
-				theme	: 'metroui',
-				type 	: 'warning'
-			}).show();
-		} );
-	}
-
-	return response;
-};
-
 const Ask = (url, params) => {
-
 	if (url.substr(0, 1) !== '/')
 		url = '/' + url;
 
 	return fetch( wwwFullDir + url, params )
 		.then( response => response.json() )
-		.then( response => showUserMessages(response) )
-		.catch( err => {
-			Debug( err );
-			console.error( '?????????', err );
-		});
+		.then( showUserMessages )
+		.catch( debugRequest );
 };
 
 export const get = (url, defParams) => {
-
 	if (!url)
 		return '';
 

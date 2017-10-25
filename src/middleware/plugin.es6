@@ -1,12 +1,11 @@
 'use strict';
 
-const $					= require('jquery');
-window.$ 				= window.jQuery = $;
+const $		= require('jquery');
+window.$ 	= window.jQuery = $;
 
 require('jquery.terminal/js/jquery.terminal');
 require('keyboardevent-key-polyfill').polyfill();
 
-import Noty 		from 'noty';
 import Pagination 	from '../modules/pagination.es6';
 import Session 		from '../modules/session.es6';
 import Spinner 		from '../modules/spinner.es6';
@@ -15,19 +14,10 @@ import OutputLiner	from '../modules/output.es6';
 import TabManager	from '../modules/tabManager.es6';
 import F8Reader		from '../modules/f8.es6';
 import History 		from '../modules/history.es6';
+import {Debug}		from '../modules/debug';
 
 import {terminalKeydown}	from '../modules/switchTerminal.es6';
 import {getReplacement}		from '../helpers/helpers.es6';
-
-const Debug = (txt, type) => {
-	new Noty({
-		text	: `DEBUG : <strong>${txt}</strong>`,
-		layout 	: 'bottomCenter',
-		timeout : 1500,
-		theme	: 'metroui',
-		type 	: type || 'info'
-	}).show();
-};
 
 export default class TerminalPlugin
 {
@@ -69,9 +59,11 @@ export default class TerminalPlugin
 		if ( !KeyBinding.parse( evt, terminal, this ) )
 			return false;
 
+		const isEnter = evt.which === 13;
+
 		if ( this.f8Reader.getIsActive() ) // ignore Tab press
 		{
-			if (evt.which === 13)
+			if (isEnter)
 			{
 				this.f8Reader.execCommand();
 				return false;
@@ -92,7 +84,7 @@ export default class TerminalPlugin
 			return false;
 
 		// if test>>>asd+sa and cursor on + // execute only between last > and + cmd
-		if (evt.which === 13)
+		if (isEnter)
 		{
 			let		cmd					= terminal.cmd().get().substring(0, terminal.cmd().position() );
 			const	lastPromptSignPos	= cmd.lastIndexOf('>') + 1;
@@ -131,10 +123,10 @@ export default class TerminalPlugin
 		this.tabCommands.next().run( this.updateOutput.bind(this) );
 	}
 
-	tabShiftPressed()
+	/*tabShiftPressed()
 	{
 		this.tabCommands.prev().run( this.updateOutput.bind(this) );
-	}
+	}*/
 
 	updateOutput([cmd, str])
 	{
@@ -172,14 +164,14 @@ export default class TerminalPlugin
 			memory			: true, // do not add to localStorage
 
 			keypress		: (e, terminal) => {
+
 				if (this.replaceCommand)
 				{
 					terminal.insert(this.replaceCommand);
 					this.replaceCommand = '';
 					return false;
 				}
-
-			}, // BUGGY BUGGY, assign on document wtf???
+			},
 
 			keydown			: this.parseKeyBinds.bind(this),
 			clickTimeout	: 300,
@@ -189,11 +181,13 @@ export default class TerminalPlugin
 
 			// for hard scenario shortcut, others in keymap helper
 			keymap			: {
-				'CTRL+S'	: () => window.TerminalState.purgeScreens(),
 				'TAB'		: () => this.tabPressed(),
-				'F8'		: () => { this.terminal.cmd().set( this.f8Reader.tie() );  return false;},
-				'F5'		: () => false,
-				'.'			: () => { return '.' }
+				'F8'		: () => {
+					this.terminal.cmd().set( this.f8Reader.tie() );
+					return false;
+				}
+				// ,
+				// 'F5'		: () => false
 			},
 
 			exceptionHandler( err ) { console.warn('exc', err); }
@@ -224,8 +218,6 @@ export default class TerminalPlugin
 					return true;
 
 				case 'MDA5' :
-					return true;
-
 				case 'MDA20' :
 					return true;
 			}
@@ -234,7 +226,7 @@ export default class TerminalPlugin
 		return false;
 	}
 
-	commandParser( command, terminal ) //pressed enter
+	commandParser() //pressed enter
 	{
 		return false;
 	}
@@ -334,8 +326,8 @@ export default class TerminalPlugin
 		if ( result['pcc'] )
 			Debug( 'CHANGE PCC', 'success' );
 	}
-	
-	parseError(e)
-	{
-	}
+
+	// parseError(e)
+	// {
+	// }
 }
