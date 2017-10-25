@@ -8153,9 +8153,12 @@ var TerminalPlugin = function () {
 
 				// for hard scenario shortcut, others in keymap helper
 				keymap: {
+
 					'TAB': function TAB() {
-						return _this.tabPressed();
+						_this.tabPressed();
+						return false;
 					},
+
 					'F8': function F8() {
 						_this.terminal.cmd().set(_this.f8Reader.tie());
 						return false;
@@ -9702,9 +9705,7 @@ var F8Reader = function () {
 		this.index = 0;
 		this.terminal = terminal;
 		this.isActive = false;
-		// this.canReplace	= false;
 		this.gds = gds;
-
 		this.currentCmd = rules[gds];
 	}
 
@@ -9734,15 +9735,6 @@ var F8Reader = function () {
 	}, {
 		key: 'replaceChar',
 		value: function replaceChar() {
-			/*const curPos 			= this.terminal.cmd().position();
-   const oldCmd 			= this.terminal.get_command();
-   	const charToReplace 	= oldCmd.substr(curPos, 1);
-   	if (charToReplace === '/')
-   	return false;
-   	const newCmd = oldCmd.substr(0, curPos) + oldCmd.substr(curPos + 1);
-   	this.terminal.set_command(newCmd);
-   this.terminal.cmd().position( curPos );*/
-
 			var curPos = this.terminal.cmd().position();
 			var charToReplace = this.terminal.get_command().substr(curPos, 1);
 

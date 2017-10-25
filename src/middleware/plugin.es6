@@ -120,7 +120,11 @@ export default class TerminalPlugin
 		if ( this.f8Reader.getIsActive() )
 			return this.f8Reader.jumpToNextPos();
 
-		this.tabCommands.next().run( this.updateOutput.bind(this) );
+		this.tabCommands
+			.next()
+			.run(
+				this.updateOutput.bind(this)
+			);
 	}
 
 	/*tabShiftPressed()
@@ -181,7 +185,12 @@ export default class TerminalPlugin
 
 			// for hard scenario shortcut, others in keymap helper
 			keymap			: {
-				'TAB'		: () => this.tabPressed(),
+
+				'TAB'		: () => {
+					this.tabPressed();
+					return false;
+				},
+
 				'F8'		: () => {
 					this.terminal.cmd().set( this.f8Reader.tie() );
 					return false;

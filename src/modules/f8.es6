@@ -32,14 +32,12 @@ const rules = {
 
 export default class F8Reader
 {
-	constructor( {terminal, gds} )
+	constructor({terminal, gds})
 	{
 		this.index		= 0;
 		this.terminal 	= terminal;
 		this.isActive 	= false;
-		// this.canReplace	= false;
 		this.gds		= gds;
-
 		this.currentCmd	= rules[gds];
 	}
 
@@ -69,19 +67,6 @@ export default class F8Reader
 
 	replaceChar()
 	{
-		/*const curPos 			= this.terminal.cmd().position();
-		const oldCmd 			= this.terminal.get_command();
-
-		const charToReplace 	= oldCmd.substr(curPos, 1);
-
-		if (charToReplace === '/')
-			return false;
-
-		const newCmd = oldCmd.substr(0, curPos) + oldCmd.substr(curPos + 1);
-
-		this.terminal.set_command(newCmd);
-		this.terminal.cmd().position( curPos );*/
-
 		const curPos 			= this.terminal.cmd().position();
 		const charToReplace 	= this.terminal.get_command().substr(curPos, 1);
 
