@@ -63,9 +63,7 @@ export default class TerminalPlugin
 		this.history 		= new History( params.gds );
 	}
 
-	/*
-	* return false if char is don't belong cmd
-	* */
+	/*return false if char is don't belong cmd*/
 	parseKeyBinds( evt, terminal )
 	{
 		if ( !KeyBinding.parse( evt, terminal, this ) )
@@ -164,24 +162,16 @@ export default class TerminalPlugin
 	init()
 	{
 		//caveats terminal.rows() - every time appends div with cursor span - not too smooth for performance
-
 		const context =  $(this.context).terminal( this.commandParser.bind(this), {
 			echoCommand		: false,
-
 			greetings		: '',
 			name			: this.name,
 			prompt			: '>',
-
 			numRows			: this.settings.numOfRows || 0, // plugin calculates it in so shitty slow manner appending cursor to body 3 times per plugin
 			numChars		: this.settings.numOfChars,
-
-			memory			: true, // dont add to localStorage
-
-			// scrollOnEcho	: false,
-			// keypress		: this.parseChar.bind(this), // BUGGY BUGGY, assign on document wtf???
+			memory			: true, // do not add to localStorage
 
 			keypress		: (e, terminal) => {
-
 				if (this.replaceCommand)
 				{
 					terminal.insert(this.replaceCommand);
@@ -191,48 +181,27 @@ export default class TerminalPlugin
 
 			}, // BUGGY BUGGY, assign on document wtf???
 
-			// keypress		: (e) => { // this function is super shitty prefer not to use it
-				// console.log(' key press ');
-				// if ( (e.ctrlKey) && [67].indexOf(e.which) !== -1 )
-				// 	return '';
-			// },
-
 			keydown			: this.parseKeyBinds.bind(this),
-
 			clickTimeout	: 300,
-
 			onInit			: this.changeActiveTerm.bind(this),
 			onTerminalChange: this.changeActiveTerm.bind(this),
-
 			onBeforeCommand : this.checkBeforeEnter.bind(this),
 
 			// for hard scenario shortcut, others in keymap helper
 			keymap			: {
 				'CTRL+S'	: () => window.TerminalState.purgeScreens(),
-				// 'CTRL+C'	: (e) => { console.log(' ??' , e)},
 				'TAB'		: () => this.tabPressed(),
-				// 'SHIFT+TAB'	: () => {; this.tabShiftPressed() }, moved to keyParse
-				// 'F8'		: () => { this.f8Reader.tie();  return false;},
-				// 'F8'		: () => { this.terminal.cmd().set( '¤:3SSRDOCSYYHK1/N ///// DMMMYY/ //          /          /' );  return false;},
 				'F8'		: () => { this.terminal.cmd().set( this.f8Reader.tie() );  return false;},
 				'F5'		: () => false,
 				'.'			: () => { return '.' }
 			},
 
-			exceptionHandler( err )
-			{
-				console.warn('exc', err);
-			}
+			exceptionHandler( err ) { console.warn('exc', err); }
 		});
 
 		// custom keydown events for each terminal
 		// we introduced this approach because of terminal library adding keydown events to document
 		terminalKeydown(context[0]);
-
-		// setTimeout( () => { context.set_command('test')}, 500);
-		// setTimeout( () => { context.set_command('zzz')}, 1500);
-		// setTimeout( () => { context.set_command('test')}, 500);
-		//
 		return context;
 	}
 
@@ -264,17 +233,6 @@ export default class TerminalPlugin
 
 		return false;
 	}
-
-	/*setTimeout( () => {
-		this.spinner.end();
-		this.loopCmdStack();
-		this.parseBackEnd({
-			data	: {
-				output 		: 'THIS IS ONLY A TEST TEST TES TEST',
-				clearScreen : true
-			}
-		})
-	}, 1000 );*/
 
 	commandParser( command, terminal ) //pressed enter
 	{
@@ -349,11 +307,13 @@ export default class TerminalPlugin
 			window.TerminalState.action( 'RESET_GDS');
 
 		window.TerminalState.action( 'UPDATE_CUR_GDS', {
+			gdsName					: this.settings.gds,
+
 			canCreatePq 		: result['canCreatePq'],
 			canCreatePqErrors 	: result['canCreatePqErrors'],
-			sessionIndex		: ['A','B','C','D','E','F'].indexOf(result.area),
 
-			lastPcc 			: result['pcc'] // TODO:: better deep-merge as pcc { sesionIndex : result[pcc] }
+			sessionIndex		: ['A','B','C','D','E','F'].indexOf(result.area),
+			lastPcc 			: result['pcc']
 		});
 
 		if ( window.TerminalState.hasPermissions() )
@@ -377,8 +337,5 @@ export default class TerminalPlugin
 	
 	parseError(e)
 	{
-		// this.spinner.end();
-		// console.error(' error', arguments );
-		// this.terminal.error( String(e) );
 	}
 }

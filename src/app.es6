@@ -211,6 +211,19 @@ export class TerminalState
 			break;
 
 			case 'UPDATE_CUR_GDS' :
+				const {gdsName, canCreatePq, canCreatePqErrors, sessionIndex, lastPcc} = params;
+
+				Gds[this.getGds()] 	= this.state.gdsObj;
+
+				Gds[gdsName] 		= Object.assign(Gds[gdsName], {canCreatePq, canCreatePqErrors, sessionIndex});
+				Gds[gdsName]['pcc'][sessionIndex] = lastPcc;
+
+				this.change({
+					gdsObj : Object.assign( this.state.gdsObj, Gds[this.getGds()] )
+				});
+			break;
+
+			case 'UPDATE_CUR_GDSOLD' :
 				const pcc 	= Object.assign({}, this.state.gdsObj.pcc, { [ params['sessionIndex'] ] : params['lastPcc']} );
 				const gds 	= Object.assign({}, this.state.gdsObj, {pcc : pcc});
 

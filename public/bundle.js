@@ -33,9 +33,6 @@
 /******/ 	// expose the module cache
 /******/ 	__webpack_require__.c = installedModules;
 /******/
-/******/ 	// identity function for calling harmony imports with the correct context
-/******/ 	__webpack_require__.i = function(value) { return value; };
-/******/
 /******/ 	// define getter function for harmony exports
 /******/ 	__webpack_require__.d = function(exports, name, getter) {
 /******/ 		if(!__webpack_require__.o(exports, name)) {
@@ -63,7 +60,7 @@
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 48);
+/******/ 	return __webpack_require__(__webpack_require__.s = 12);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -120,7 +117,7 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _tetherDrop = __webpack_require__(44);
+var _tetherDrop = __webpack_require__(17);
 
 var _tetherDrop2 = _interopRequireDefault(_tetherDrop);
 
@@ -431,218 +428,10 @@ var GDS_LIST = exports.GDS_LIST = ['apollo', 'sabre', 'amadeus'];
 Object.defineProperty(exports, "__esModule", {
 	value: true
 });
-exports.cookieGet = cookieGet;
-exports.cookieSet = cookieSet;
-function cookieGet(name) {
-	var value = '; ' + document.cookie;
-	var parts = value.split('; ' + name + '=');
-
-	if (parts.length === 2) return parts.pop().split(';').shift();
-}
-
-function cookieSet(name, value, xdays) {
-	var d = new Date();
-	d.setTime(d.getTime() + xdays * 24 * 60 * 60 * 1000);
-	var expires = 'expires=' + d.toUTCString();
-	document.cookie = name + '=' + value + '; ' + expires;
-}
-
-/***/ }),
-/* 6 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-	value: true
-});
-exports.setLink = exports.get = undefined;
-
-var _constants = __webpack_require__(4);
-
-var _noty = __webpack_require__(9);
-
-var _noty2 = _interopRequireDefault(_noty);
-
-__webpack_require__(47);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-var Url = void 0;
-
-var Debug = function Debug(txt) {
-
-	var notify = new _noty2.default({
-		text: 'SERVER ERROR : ' + txt,
-		layout: 'bottomRight',
-		timeout: 5000,
-		type: 'error'
-	});
-
-	notify.show();
-};
-
-var showUserMessages = function showUserMessages(response) {
-
-	if (typeof response['data'] !== 'undefined') {
-		var userMessages = response['data']['userMessages'] || [];
-
-		userMessages.map(function (msg) {
-			new _noty2.default({
-				text: '<strong>' + msg + '</strong>',
-				layout: 'bottomCenter',
-				timeout: 5000,
-				theme: 'metroui',
-				type: 'warning'
-			}).show();
-		});
-	}
-
-	return response;
-};
-
-var Ask = function Ask(url, params) {
-
-	if (url.substr(0, 1) !== '/') url = '/' + url;
-
-	return fetch(wwwFullDir + url, params).then(function (response) {
-		return response.json();
-	}).then(function (response) {
-		return showUserMessages(response);
-	}).catch(function (err) {
-		Debug(err);
-		console.error('?????????', err);
-	});
-};
-
-var get = exports.get = function get(url, defParams) {
-
-	if (!url) return '';
-
-	if (defParams) url += '?rId=' + window.apiData.rId;
-
-	return Ask(url, { credentials: 'include' });
-};
-
-var runSyncCommand = function runSyncCommand(params) {
-	var formData = new FormData();
-	formData.append("data", JSON.stringify({ params: params }, true));
-
-	return Ask(_constants.API_HOST + Url, {
-		credentials: 'include',
-		body: formData,
-		method: 'POST'
-	});
-};
-
-var setLink = exports.setLink = function setLink(url) {
-	Url = url || _constants.END_POINT_URL;
-};
-
-exports.default = {
-	runSyncCommand: runSyncCommand,
-	get: get
-};
-
-/***/ }),
-/* 7 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-	value: true
-});
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _constants = __webpack_require__(4);
-
-var _helpers = __webpack_require__(2);
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-var saved = localStorage.getItem('matrix');
-
-var defaults = {
-	sessionIndex: 0,
-	pcc: {},
-	matrix: saved ? JSON.parse(saved) : { rows: 1, cells: 1 },
-	activeTerminal: null,
-	canCreatePq: false,
-	history: []
-};
-
-var getGdsData = function getGdsData(name) {
-	var settings = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
-
-
-	return (0, _helpers.mergeIntoNew)(defaults, {
-
-		name: name,
-		sessionIndex: _constants.AREA_LIST.indexOf(settings['area']),
-
-		// canCreatePq		: !!settings['canCreatePq'] // for DEV
-		// canCreatePq		: !window.TerminalState.hasPermissions() ? false : !!settings['canCreatePq'],
-
-		canCreatePq: false
-	});
-};
-
-var GdsSet = function () {
-	function GdsSet() {
-		_classCallCheck(this, GdsSet);
-	}
-
-	_createClass(GdsSet, null, [{
-		key: 'getList',
-		value: function getList(list, loadedGds) {
-			this.gdsList = list.map(function (name) {
-				return getGdsData(name, loadedGds[name]);
-			});
-
-			var res = {};
-
-			this.gdsList.forEach(function (gds) {
-				res[gds.name] = gds;
-			});
-
-			return res;
-		}
-	}, {
-		key: 'getAreas',
-		value: function getAreas(defaultsEvents) {
-			return this.gdsList.map(function (gds) {
-
-				return (0, _helpers.mergeIntoNew)(defaultsEvents, {
-					name: gds.name,
-					list: gds.name === 'sabre' ? _constants.AREA_LIST : _constants.AREA_LIST.slice(0, -1 //remove F
-					) });
-			});
-		}
-	}]);
-
-	return GdsSet;
-}();
-
-exports.default = GdsSet;
-
-/***/ }),
-/* 8 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-	value: true
-});
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-var _plugin = __webpack_require__(27);
+var _plugin = __webpack_require__(28);
 
 var _plugin2 = _interopRequireDefault(_plugin);
 
@@ -654,7 +443,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-__webpack_require__(40);
+__webpack_require__(47);
 
 var Terminal = function () {
 	function Terminal(params) {
@@ -786,8 +575,16 @@ var Terminal = function () {
 exports.default = Terminal;
 
 /***/ }),
-/* 9 */
+/* 6 */
 /***/ (function(module, exports, __webpack_require__) {
+
+/* 
+  @package NOTY - Dependency-free notification library 
+  @version version: 3.1.3 
+  @contributors https://github.com/needim/noty/graphs/contributors 
+  @documentation Examples and Documentation - http://needim.github.com/noty 
+  @license Licensed under the MIT licenses: http://www.opensource.org/licenses/mit-license.php 
+*/
 
 (function webpackUniversalModuleDefinition(root, factory) {
 	if(true)
@@ -1300,6 +1097,7 @@ var Defaults = exports.Defaults = {
     afterShow: null,
     onClose: null,
     afterClose: null,
+    onClick: null,
     onHover: null,
     onTemplate: null
   },
@@ -1312,14 +1110,13 @@ var Defaults = exports.Defaults = {
     conditions: []
   },
   modal: false,
-  visibilityControl: true
-};
+  visibilityControl: false
 
-/**
- * @param {string} queueName
- * @return {object}
- */
-function getQueueCounts() {
+  /**
+   * @param {string} queueName
+   * @return {object}
+   */
+};function getQueueCounts() {
   var queueName = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 'global';
 
   var count = 0;
@@ -3156,6 +2953,7 @@ var Noty = function () {
       afterShow: [],
       onClose: [],
       afterClose: [],
+      onClick: [],
       onHover: [],
       onTemplate: []
     };
@@ -3168,6 +2966,7 @@ var Noty = function () {
     this.on('afterShow', this.options.callbacks.afterShow);
     this.on('onClose', this.options.callbacks.onClose);
     this.on('afterClose', this.options.callbacks.afterClose);
+    this.on('onClick', this.options.callbacks.onClick);
     this.on('onHover', this.options.callbacks.onHover);
     this.on('onTemplate', this.options.callbacks.onTemplate);
 
@@ -3202,26 +3001,26 @@ var Noty = function () {
     value: function show() {
       var _this = this;
 
-      if (this.options.killer === true && !API.PageHidden) {
+      if (this.options.killer === true) {
         Noty.closeAll();
-      } else if (typeof this.options.killer === 'string' && !API.PageHidden) {
+      } else if (typeof this.options.killer === 'string') {
         Noty.closeAll(this.options.killer);
-      } else {
-        var queueCounts = API.getQueueCounts(this.options.queue);
+      }
 
-        if (queueCounts.current >= queueCounts.maxVisible || API.PageHidden) {
-          API.addToQueue(this);
+      var queueCounts = API.getQueueCounts(this.options.queue);
 
-          if (API.PageHidden && this.hasSound && Utils.inArray('docHidden', this.options.sounds.conditions)) {
-            Utils.createAudioElements(this);
-          }
+      if (queueCounts.current >= queueCounts.maxVisible || API.PageHidden && this.options.visibilityControl) {
+        API.addToQueue(this);
 
-          if (API.PageHidden && Utils.inArray('docHidden', this.options.titleCount.conditions)) {
-            API.docTitle.increment();
-          }
-
-          return this;
+        if (API.PageHidden && this.hasSound && Utils.inArray('docHidden', this.options.sounds.conditions)) {
+          Utils.createAudioElements(this);
         }
+
+        if (API.PageHidden && Utils.inArray('docHidden', this.options.titleCount.conditions)) {
+          API.docTitle.increment();
+        }
+
+        return this;
       }
 
       API.Store[this.id] = this;
@@ -3272,6 +3071,7 @@ var Noty = function () {
         Utils.addClass(this.barDom, 'noty_close_with_click');
         Utils.addListener(this.barDom, 'click', function (e) {
           Utils.stopPropagation(e);
+          API.fire(_this, 'onClick');
           _this.close();
         }, false);
       }
@@ -3281,6 +3081,9 @@ var Noty = function () {
       }, false);
 
       if (this.options.timeout) Utils.addClass(this.barDom, 'noty_has_timeout');
+      if (this.options.progressBar) {
+        Utils.addClass(this.barDom, 'noty_has_progressbar');
+      }
 
       if (Utils.inArray('button', this.options.closeWith)) {
         Utils.addClass(this.barDom, 'noty_close_with_button');
@@ -3596,7 +3399,7 @@ var Noty = function () {
   }, {
     key: 'version',
     value: function version() {
-      return "3.1.0";
+      return "3.1.3";
     }
 
     /**
@@ -3795,6 +3598,10 @@ process.off = noop;
 process.removeListener = noop;
 process.removeAllListeners = noop;
 process.emit = noop;
+process.prependListener = noop;
+process.prependOnceListener = noop;
+
+process.listeners = function (name) { return [] }
 
 process.binding = function (name) {
     throw new Error('process.binding is not supported');
@@ -3846,7 +3653,114 @@ module.exports = g;
 //# sourceMappingURL=noty.js.map
 
 /***/ }),
-/* 10 */
+/* 7 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+	value: true
+});
+exports.setLink = exports.get = undefined;
+
+var _constants = __webpack_require__(4);
+
+var _noty = __webpack_require__(6);
+
+var _noty2 = _interopRequireDefault(_noty);
+
+__webpack_require__(31);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+var JParam = __webpack_require__(32);
+
+var Url = void 0;
+
+var Debug = function Debug(txt) {
+
+	var notify = new _noty2.default({
+		text: 'SERVER ERROR : ' + txt,
+		layout: 'bottomRight',
+		timeout: 5000,
+		type: 'error'
+	});
+
+	notify.show();
+};
+
+var showUserMessages = function showUserMessages(response) {
+
+	if (typeof response['data'] !== 'undefined') {
+		var userMessages = response['data']['userMessages'] || [];
+
+		userMessages.map(function (msg) {
+			new _noty2.default({
+				text: '<strong>' + msg + '</strong>',
+				layout: 'bottomCenter',
+				timeout: 5000,
+				theme: 'metroui',
+				type: 'warning'
+			}).show();
+		});
+	}
+
+	return response;
+};
+
+var Ask = function Ask(url, params) {
+
+	if (url.substr(0, 1) !== '/') url = '/' + url;
+
+	return fetch(wwwFullDir + url, params).then(function (response) {
+		return response.json();
+	}).then(function (response) {
+		return showUserMessages(response);
+	}).catch(function (err) {
+		Debug(err);
+		console.error('?????????', err);
+	});
+};
+
+var get = exports.get = function get(url, defParams) {
+
+	if (!url) return '';
+
+	if (defParams) url += '?rId=' + window.apiData.rId;
+
+	return Ask(url, { credentials: 'include' });
+};
+
+var runSyncCommand = function runSyncCommand(postData) {
+	return Ask(_constants.API_HOST + Url, {
+		credentials: 'include',
+		body: JParam(postData),
+		method: 'POST',
+		headers: {
+			'Accept': 'application/json, application/xml, text/plain, text/html, .',
+			'Content-Type': 'application/x-www-form-urlencoded; charset=utf-8'
+		}
+	});
+};
+
+var setLink = exports.setLink = function setLink(url) {
+	Url = url || _constants.END_POINT_URL;
+};
+
+exports.default = {
+	runSyncCommand: runSyncCommand,
+	get: get
+};
+
+/***/ }),
+/* 8 */
+/***/ (function(module, exports) {
+
+module.exports = jQuery;
+
+/***/ }),
+/* 9 */
 /***/ (function(module, exports) {
 
 var g;
@@ -3873,13 +3787,125 @@ module.exports = g;
 
 
 /***/ }),
-/* 11 */
-/***/ (function(module, exports) {
+/* 10 */
+/***/ (function(module, exports, __webpack_require__) {
 
-module.exports = jQuery;
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+	value: true
+});
+exports.cookieGet = cookieGet;
+exports.cookieSet = cookieSet;
+function cookieGet(name) {
+	var value = '; ' + document.cookie;
+	var parts = value.split('; ' + name + '=');
+
+	if (parts.length === 2) return parts.pop().split(';').shift();
+}
+
+function cookieSet(name, value, xdays) {
+	var d = new Date();
+	d.setTime(d.getTime() + xdays * 24 * 60 * 60 * 1000);
+	var expires = 'expires=' + d.toUTCString();
+	document.cookie = name + '=' + value + '; ' + expires;
+}
+
+/***/ }),
+/* 11 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+	value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _constants = __webpack_require__(4);
+
+var _helpers = __webpack_require__(2);
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var saved = localStorage.getItem('matrix');
+
+var defaults = {
+	sessionIndex: 0,
+	pcc: {},
+	matrix: saved ? JSON.parse(saved) : { rows: 1, cells: 1 },
+	activeTerminal: null,
+	canCreatePq: false,
+	history: []
+};
+
+var getGdsData = function getGdsData(name) {
+	var settings = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+
+
+	return (0, _helpers.mergeIntoNew)(defaults, {
+
+		name: name,
+		sessionIndex: _constants.AREA_LIST.indexOf(settings['area']),
+
+		// canCreatePq		: !!settings['canCreatePq'] // for DEV
+		// canCreatePq		: !window.TerminalState.hasPermissions() ? false : !!settings['canCreatePq'],
+
+		canCreatePq: false
+	});
+};
+
+var GdsSet = function () {
+	function GdsSet() {
+		_classCallCheck(this, GdsSet);
+	}
+
+	_createClass(GdsSet, null, [{
+		key: 'getList',
+		value: function getList(list, loadedGds) {
+			this.gdsList = list.map(function (name) {
+				return getGdsData(name, loadedGds[name]);
+			});
+
+			var res = {};
+
+			this.gdsList.forEach(function (gds) {
+				res[gds.name] = gds;
+			});
+
+			return res;
+		}
+	}, {
+		key: 'getAreas',
+		value: function getAreas(defaultsEvents) {
+			return this.gdsList.map(function (gds) {
+
+				return (0, _helpers.mergeIntoNew)(defaultsEvents, {
+					name: gds.name,
+					list: gds.name === 'sabre' ? _constants.AREA_LIST : _constants.AREA_LIST.slice(0, -1) //remove F
+				});
+			});
+		}
+	}]);
+
+	return GdsSet;
+}();
+
+exports.default = GdsSet;
 
 /***/ }),
 /* 12 */
+/***/ (function(module, exports, __webpack_require__) {
+
+__webpack_require__(13);
+module.exports = __webpack_require__(49);
+
+
+/***/ }),
+/* 13 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3892,13 +3918,13 @@ exports.TerminalState = undefined;
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _containerMain = __webpack_require__(15);
+var _containerMain = __webpack_require__(14);
 
 var _containerMain2 = _interopRequireDefault(_containerMain);
 
-var _requests = __webpack_require__(6);
+var _requests = __webpack_require__(7);
 
-var _gds = __webpack_require__(7);
+var _gds = __webpack_require__(11);
 
 var _gds2 = _interopRequireDefault(_gds);
 
@@ -4125,6 +4151,24 @@ var TerminalState = function () {
 					break;
 
 				case 'UPDATE_CUR_GDS':
+					var gdsName = params.gdsName,
+					    canCreatePq = params.canCreatePq,
+					    canCreatePqErrors = params.canCreatePqErrors,
+					    sessionIndex = params.sessionIndex,
+					    lastPcc = params.lastPcc;
+
+
+					Gds[this.getGds()] = this.state.gdsObj;
+
+					Gds[gdsName] = Object.assign(Gds[gdsName], { canCreatePq: canCreatePq, canCreatePqErrors: canCreatePqErrors, sessionIndex: sessionIndex });
+					Gds[gdsName]['pcc'][sessionIndex] = lastPcc;
+
+					this.change({
+						gdsObj: Object.assign(this.state.gdsObj, Gds[this.getGds()])
+					});
+					break;
+
+				case 'UPDATE_CUR_GDSOLD':
 					var pcc = Object.assign({}, this.state.gdsObj.pcc, _defineProperty({}, params['sessionIndex'], params['lastPcc']));
 					var gds = Object.assign({}, this.state.gdsObj, { pcc: pcc });
 
@@ -4192,72 +4236,7 @@ window.onresize = function () {
 };
 
 /***/ }),
-/* 13 */
-/***/ (function(module, exports) {
-
-// removed by extract-text-webpack-plugin
-
-/***/ }),
 /* 14 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-	value: true
-});
-
-var _terminalMatrix = __webpack_require__(22);
-
-var _terminalMatrix2 = _interopRequireDefault(_terminalMatrix);
-
-var _component = __webpack_require__(3);
-
-var _component2 = _interopRequireDefault(_component);
-
-var _dom = __webpack_require__(0);
-
-var _dom2 = _interopRequireDefault(_dom);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-var ActionsMenu = function (_Component) {
-	_inherits(ActionsMenu, _Component);
-
-	// export default class ActionsMenu{
-
-	function ActionsMenu() {
-		_classCallCheck(this, ActionsMenu);
-
-		// this.context =  Dom('div.actions-btn-menu');
-
-		var _this = _possibleConstructorReturn(this, (ActionsMenu.__proto__ || Object.getPrototypeOf(ActionsMenu)).call(this, 'div.actions-btn-menu'));
-
-		var matrix = new _terminalMatrix2.default({
-			icon: '<i class="fa fa-th-large"></i>'
-			// onSelect	: value => { window.TerminalState.change({fontSize : value}) }
-		}).getTrigger();
-
-		matrix.className = 'btn btn-purple';
-
-		_this.context.appendChild(matrix);
-		return _this;
-	}
-
-	return ActionsMenu;
-}(_component2.default);
-
-exports.default = ActionsMenu;
-
-/***/ }),
-/* 15 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -4269,7 +4248,7 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _actionsMenu = __webpack_require__(14);
+var _actionsMenu = __webpack_require__(15);
 
 var _actionsMenu2 = _interopRequireDefault(_actionsMenu);
 
@@ -4277,7 +4256,7 @@ var _menuPanel = __webpack_require__(19);
 
 var _menuPanel2 = _interopRequireDefault(_menuPanel);
 
-var _terminalMatrix = __webpack_require__(25);
+var _terminalMatrix = __webpack_require__(48);
 
 var _terminalMatrix2 = _interopRequireDefault(_terminalMatrix);
 
@@ -4404,6 +4383,65 @@ var Container = function (_Component3) {
 exports.default = Container;
 
 /***/ }),
+/* 15 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+	value: true
+});
+
+var _terminalMatrix = __webpack_require__(16);
+
+var _terminalMatrix2 = _interopRequireDefault(_terminalMatrix);
+
+var _component = __webpack_require__(3);
+
+var _component2 = _interopRequireDefault(_component);
+
+var _dom = __webpack_require__(0);
+
+var _dom2 = _interopRequireDefault(_dom);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var ActionsMenu = function (_Component) {
+	_inherits(ActionsMenu, _Component);
+
+	// export default class ActionsMenu{
+
+	function ActionsMenu() {
+		_classCallCheck(this, ActionsMenu);
+
+		// this.context =  Dom('div.actions-btn-menu');
+
+		var _this = _possibleConstructorReturn(this, (ActionsMenu.__proto__ || Object.getPrototypeOf(ActionsMenu)).call(this, 'div.actions-btn-menu'));
+
+		var matrix = new _terminalMatrix2.default({
+			icon: '<i class="fa fa-th-large"></i>'
+			// onSelect	: value => { window.TerminalState.change({fontSize : value}) }
+		}).getTrigger();
+
+		matrix.className = 'btn btn-purple';
+
+		_this.context.appendChild(matrix);
+		return _this;
+	}
+
+	return ActionsMenu;
+}(_component2.default);
+
+exports.default = ActionsMenu;
+
+/***/ }),
 /* 16 */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -4424,10 +4462,6 @@ var _buttonPopover = __webpack_require__(1);
 
 var _buttonPopover2 = _interopRequireDefault(_buttonPopover);
 
-var _fullscreen = __webpack_require__(29);
-
-var _fullscreen2 = _interopRequireDefault(_fullscreen);
-
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -4436,253 +4470,2480 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-var STORAGE_KEY = 'dedTerminalBufCmd';
+var cellObj = [];
 
-// import Terminal		from '../../modules/terminal.es6';
+var ACTIVE_CLASS = 'bg-purple';
 
-var CommandsBuffer = function (_ButtonPopOver) {
-	_inherits(CommandsBuffer, _ButtonPopOver);
+var Matrix = function (_ButtonPopOver) {
+	_inherits(Matrix, _ButtonPopOver);
 
-	function CommandsBuffer(params) {
-		_classCallCheck(this, CommandsBuffer);
+	function Matrix(params) {
+		_classCallCheck(this, Matrix);
 
-		var _this = _possibleConstructorReturn(this, (CommandsBuffer.__proto__ || Object.getPrototypeOf(CommandsBuffer)).call(this, params));
+		var _this = _possibleConstructorReturn(this, (Matrix.__proto__ || Object.getPrototypeOf(Matrix)).call(this, params));
 
-		_this.settings.onOpen = function () {
-			return _this.area.focus();
-		};
+		_this.popContent = (0, _dom2.default)('table.matrix-table');
 		_this.makeTrigger();
 		return _this;
 	}
 
-	_createClass(CommandsBuffer, [{
+	_createClass(Matrix, [{
 		key: 'build',
 		value: function build() {
+			[0, 1, 2, 3].map(this._rows).map(this._cells, this).map(this._toTable, this);
+		}
+	}, {
+		key: '_rows',
+		value: function _rows() {
+			cellObj.push([]);
+			return document.createElement('tr');
+		}
+	}, {
+		key: '_cells',
+		value: function _cells(row, rIndex) {
 			var _this2 = this;
 
-			var cmd = JSON.parse(window.localStorage.getItem(STORAGE_KEY)) || [];
+			[0, 1, 2, 3].map(function (cIndex) {
+				return row.appendChild(_this2._cell(rIndex, cIndex));
+			});
+			return row;
+		}
+	}, {
+		key: '_cell',
+		value: function _cell(rIndex, cIndex) {
+			var _this3 = this;
 
-			var area = (0, _dom2.default)('textarea.form-control');
-			var btn = (0, _dom2.default)('button.btn btn-sm btn-primary btn-block m-t font-bold');
-			btn.innerHTML = 'Run';
+			var cell = document.createElement('td');
 
-			area.value = cmd.join("\n");
+			cellObj[rIndex].push(cell);
 
-			area.rows = 15;
-			area.cols = 20;
+			cell.addEventListener('click', function () {
+				_this3.popover.close();
 
-			btn.onclick = function () {
-				var cmd = area.value.trim().split(/\s+/);
+				window.TerminalState.action('CHANGE_MATRIX', {
+					rows: rIndex,
+					cells: cIndex
+				});
+			});
 
-				window.localStorage.setItem(STORAGE_KEY, JSON.stringify(cmd));
-				window.TerminalState.action('DEV_CMD_STACK_RUN', cmd);
+			cell.addEventListener('mouseover', function () {
 
-				_this2.popover.close();
-			};
+				for (var i = 0; i <= rIndex; i++) {
+					cellObj[i].slice(0, cIndex + 1).forEach(function (cell) {
+						return cell.classList.toggle(ACTIVE_CLASS);
+					});
+				}
+			});
 
-			this.popContent.appendChild(area);
-			this.popContent.appendChild(btn);
+			cell.addEventListener('mouseleave', function () {
+				[].forEach.call(_this3.popContent.querySelectorAll('.' + ACTIVE_CLASS), function (cell) {
+					return cell.classList.toggle(ACTIVE_CLASS);
+				});
+			});
 
-			this.area = area;
+			return cell;
+		}
+	}, {
+		key: '_toTable',
+		value: function _toTable(row) {
+			this.popContent.appendChild(row);
 		}
 	}]);
 
-	return CommandsBuffer;
+	return Matrix;
 }(_buttonPopover2.default);
 
-var DevButtons = function () {
-	function DevButtons() {
-		_classCallCheck(this, DevButtons);
-
-		this.context = (0, _dom2.default)('div');
-		this.context.appendChild(this.AddPqMacros());
-		this.context.appendChild(this.commandsBuffer());
-		this.context.appendChild(this.fullScreen());
-	}
-
-	_createClass(DevButtons, [{
-		key: 'AddPqMacros',
-		value: function AddPqMacros() {
-			this.macros = (0, _dom2.default)('span.btn btn-primary font-bold');
-			this.macros.innerHTML = 'Test pq';
-			this.macros.onclick = function () {
-				window.TerminalState.action('DEV_CMD_STACK_RUN', ['A/V/13SEPSEAMNL+DL', '01k1*', '*R', '$BN1+2*C09+3*inf']);
-				// window.TerminalState.action('DEV_CMD_STACK_RUN', ['A10JUNKIVRIX', '01Y1Y2', '$B']);
-			};
-
-			return this.macros;
-		}
-	}, {
-		key: 'commandsBuffer',
-		value: function commandsBuffer() {
-			return this.commandsBuffer = new CommandsBuffer({
-				icon: '<span>Dev Buf</span>'
-			}).getTrigger();
-		}
-	}, {
-		key: 'fullScreen',
-		value: function fullScreen() {
-			this.macros = (0, _dom2.default)('span.btn btn-primary font-bold');
-			this.macros.innerHTML = 'Full';
-			this.macros.onclick = function () {
-				return _fullscreen2.default.show();
-			};
-
-			return this.macros;
-		}
-	}, {
-		key: 'getContext',
-		value: function getContext() {
-			return this.context;
-		}
-	}]);
-
-	return DevButtons;
-}();
-
-exports.default = DevButtons;
+exports.default = Matrix;
 
 /***/ }),
 /* 17 */
 /***/ (function(module, exports, __webpack_require__) {
 
-"use strict";
+var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*! tether-drop 1.4.1 */
 
+(function(root, factory) {
+  if (true) {
+    !(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(18)], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory),
+				__WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ?
+				(__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__),
+				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+  } else if (typeof exports === 'object') {
+    module.exports = factory(require('tether'));
+  } else {
+    root.Drop = factory(root.Tether);
+  }
+}(this, function(Tether) {
 
-Object.defineProperty(exports, "__esModule", {
-	value: true
+/* global Tether */
+'use strict';
+
+var _bind = Function.prototype.bind;
+
+var _slicedToArray = (function () { function sliceIterator(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i['return']) _i['return'](); } finally { if (_d) throw _e; } } return _arr; } return function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { return sliceIterator(arr, i); } else { throw new TypeError('Invalid attempt to destructure non-iterable instance'); } }; })();
+
+var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+
+var _get = function get(_x2, _x3, _x4) { var _again = true; _function: while (_again) { var object = _x2, property = _x3, receiver = _x4; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x2 = parent; _x3 = property; _x4 = receiver; _again = true; desc = parent = undefined; continue _function; } } else if ('value' in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== 'function' && superClass !== null) { throw new TypeError('Super expression must either be null or a function, not ' + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var _Tether$Utils = Tether.Utils;
+var extend = _Tether$Utils.extend;
+var addClass = _Tether$Utils.addClass;
+var removeClass = _Tether$Utils.removeClass;
+var hasClass = _Tether$Utils.hasClass;
+var Evented = _Tether$Utils.Evented;
+
+function sortAttach(str) {
+  var _str$split = str.split(' ');
+
+  var _str$split2 = _slicedToArray(_str$split, 2);
+
+  var first = _str$split2[0];
+  var second = _str$split2[1];
+
+  if (['left', 'right'].indexOf(first) >= 0) {
+    var _ref = [second, first];
+    first = _ref[0];
+    second = _ref[1];
+  }
+  return [first, second].join(' ');
+}
+
+function removeFromArray(arr, item) {
+  var index = undefined;
+  var results = [];
+  while ((index = arr.indexOf(item)) !== -1) {
+    results.push(arr.splice(index, 1));
+  }
+  return results;
+}
+
+var clickEvents = ['click'];
+if ('ontouchstart' in document.documentElement) {
+  clickEvents.push('touchstart');
+}
+
+var transitionEndEvents = {
+  'WebkitTransition': 'webkitTransitionEnd',
+  'MozTransition': 'transitionend',
+  'OTransition': 'otransitionend',
+  'transition': 'transitionend'
+};
+
+var transitionEndEvent = '';
+for (var _name in transitionEndEvents) {
+  if (({}).hasOwnProperty.call(transitionEndEvents, _name)) {
+    var tempEl = document.createElement('p');
+    if (typeof tempEl.style[_name] !== 'undefined') {
+      transitionEndEvent = transitionEndEvents[_name];
+    }
+  }
+}
+
+var MIRROR_ATTACH = {
+  left: 'right',
+  right: 'left',
+  top: 'bottom',
+  bottom: 'top',
+  middle: 'middle',
+  center: 'center'
+};
+
+var allDrops = {};
+
+// Drop can be included in external libraries.  Calling createContext gives you a fresh
+// copy of drop which won't interact with other copies on the page (beyond calling the document events).
+
+function createContext() {
+  var options = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
+
+  var drop = function drop() {
+    for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
+      args[_key] = arguments[_key];
+    }
+
+    return new (_bind.apply(DropInstance, [null].concat(args)))();
+  };
+
+  extend(drop, {
+    createContext: createContext,
+    drops: [],
+    defaults: {}
+  });
+
+  var defaultOptions = {
+    classPrefix: 'drop',
+    defaults: {
+      position: 'bottom left',
+      openOn: 'click',
+      beforeClose: null,
+      constrainToScrollParent: true,
+      constrainToWindow: true,
+      classes: '',
+      remove: false,
+      openDelay: 0,
+      closeDelay: 50,
+      // inherited from openDelay and closeDelay if not explicitly defined
+      focusDelay: null,
+      blurDelay: null,
+      hoverOpenDelay: null,
+      hoverCloseDelay: null,
+      tetherOptions: {}
+    }
+  };
+
+  extend(drop, defaultOptions, options);
+  extend(drop.defaults, defaultOptions.defaults, options.defaults);
+
+  if (typeof allDrops[drop.classPrefix] === 'undefined') {
+    allDrops[drop.classPrefix] = [];
+  }
+
+  drop.updateBodyClasses = function () {
+    // There is only one body, so despite the context concept, we still iterate through all
+    // drops which share our classPrefix.
+
+    var anyOpen = false;
+    var drops = allDrops[drop.classPrefix];
+    var len = drops.length;
+    for (var i = 0; i < len; ++i) {
+      if (drops[i].isOpened()) {
+        anyOpen = true;
+        break;
+      }
+    }
+
+    if (anyOpen) {
+      addClass(document.body, drop.classPrefix + '-open');
+    } else {
+      removeClass(document.body, drop.classPrefix + '-open');
+    }
+  };
+
+  var DropInstance = (function (_Evented) {
+    _inherits(DropInstance, _Evented);
+
+    function DropInstance(opts) {
+      _classCallCheck(this, DropInstance);
+
+      _get(Object.getPrototypeOf(DropInstance.prototype), 'constructor', this).call(this);
+      this.options = extend({}, drop.defaults, opts);
+      this.target = this.options.target;
+
+      if (typeof this.target === 'undefined') {
+        throw new Error('Drop Error: You must provide a target.');
+      }
+
+      var dataPrefix = 'data-' + drop.classPrefix;
+
+      var contentAttr = this.target.getAttribute(dataPrefix);
+      if (contentAttr && this.options.content == null) {
+        this.options.content = contentAttr;
+      }
+
+      var attrsOverride = ['position', 'openOn'];
+      for (var i = 0; i < attrsOverride.length; ++i) {
+
+        var override = this.target.getAttribute(dataPrefix + '-' + attrsOverride[i]);
+        if (override && this.options[attrsOverride[i]] == null) {
+          this.options[attrsOverride[i]] = override;
+        }
+      }
+
+      if (this.options.classes && this.options.addTargetClasses !== false) {
+        addClass(this.target, this.options.classes);
+      }
+
+      drop.drops.push(this);
+      allDrops[drop.classPrefix].push(this);
+
+      this._boundEvents = [];
+      this.bindMethods();
+      this.setupElements();
+      this.setupEvents();
+      this.setupTether();
+    }
+
+    _createClass(DropInstance, [{
+      key: '_on',
+      value: function _on(element, event, handler) {
+        this._boundEvents.push({ element: element, event: event, handler: handler });
+        element.addEventListener(event, handler);
+      }
+    }, {
+      key: 'bindMethods',
+      value: function bindMethods() {
+        this.transitionEndHandler = this._transitionEndHandler.bind(this);
+      }
+    }, {
+      key: 'setupElements',
+      value: function setupElements() {
+        var _this = this;
+
+        this.drop = document.createElement('div');
+        addClass(this.drop, drop.classPrefix);
+
+        if (this.options.classes) {
+          addClass(this.drop, this.options.classes);
+        }
+
+        this.content = document.createElement('div');
+        addClass(this.content, drop.classPrefix + '-content');
+
+        if (typeof this.options.content === 'function') {
+          var generateAndSetContent = function generateAndSetContent() {
+            // content function might return a string or an element
+            var contentElementOrHTML = _this.options.content.call(_this, _this);
+
+            if (typeof contentElementOrHTML === 'string') {
+              _this.content.innerHTML = contentElementOrHTML;
+            } else if (typeof contentElementOrHTML === 'object') {
+              _this.content.innerHTML = '';
+              _this.content.appendChild(contentElementOrHTML);
+            } else {
+              throw new Error('Drop Error: Content function should return a string or HTMLElement.');
+            }
+          };
+
+          generateAndSetContent();
+          this.on('open', generateAndSetContent.bind(this));
+        } else if (typeof this.options.content === 'object') {
+          this.content.appendChild(this.options.content);
+        } else {
+          this.content.innerHTML = this.options.content;
+        }
+
+        this.drop.appendChild(this.content);
+      }
+    }, {
+      key: 'setupTether',
+      value: function setupTether() {
+        // Tether expects two attachment points, one in the target element, one in the
+        // drop.  We use a single one, and use the order as well, to allow us to put
+        // the drop on either side of any of the four corners.  This magic converts between
+        // the two:
+        var dropAttach = this.options.position.split(' ');
+        dropAttach[0] = MIRROR_ATTACH[dropAttach[0]];
+        dropAttach = dropAttach.join(' ');
+
+        var constraints = [];
+        if (this.options.constrainToScrollParent) {
+          constraints.push({
+            to: 'scrollParent',
+            pin: 'top, bottom',
+            attachment: 'together none'
+          });
+        } else {
+          // To get 'out of bounds' classes
+          constraints.push({
+            to: 'scrollParent'
+          });
+        }
+
+        if (this.options.constrainToWindow !== false) {
+          constraints.push({
+            to: 'window',
+            attachment: 'together'
+          });
+        } else {
+          // To get 'out of bounds' classes
+          constraints.push({
+            to: 'window'
+          });
+        }
+
+        var opts = {
+          element: this.drop,
+          target: this.target,
+          attachment: sortAttach(dropAttach),
+          targetAttachment: sortAttach(this.options.position),
+          classPrefix: drop.classPrefix,
+          offset: '0 0',
+          targetOffset: '0 0',
+          enabled: false,
+          constraints: constraints,
+          addTargetClasses: this.options.addTargetClasses
+        };
+
+        if (this.options.tetherOptions !== false) {
+          this.tether = new Tether(extend({}, opts, this.options.tetherOptions));
+        }
+      }
+    }, {
+      key: 'setupEvents',
+      value: function setupEvents() {
+        var _this2 = this;
+
+        if (!this.options.openOn) {
+          return;
+        }
+
+        if (this.options.openOn === 'always') {
+          setTimeout(this.open.bind(this));
+          return;
+        }
+
+        var events = this.options.openOn.split(' ');
+
+        if (events.indexOf('click') >= 0) {
+          var openHandler = function openHandler(event) {
+            _this2.toggle(event);
+            event.preventDefault();
+          };
+
+          var closeHandler = function closeHandler(event) {
+            if (!_this2.isOpened()) {
+              return;
+            }
+
+            // Clicking inside dropdown
+            if (event.target === _this2.drop || _this2.drop.contains(event.target)) {
+              return;
+            }
+
+            // Clicking target
+            if (event.target === _this2.target || _this2.target.contains(event.target)) {
+              return;
+            }
+
+            _this2.close(event);
+          };
+
+          for (var i = 0; i < clickEvents.length; ++i) {
+            var clickEvent = clickEvents[i];
+            this._on(this.target, clickEvent, openHandler);
+            this._on(document, clickEvent, closeHandler);
+          }
+        }
+
+        var inTimeout = null;
+        var outTimeout = null;
+
+        var inHandler = function inHandler(event) {
+          if (outTimeout !== null) {
+            clearTimeout(outTimeout);
+          } else {
+            inTimeout = setTimeout(function () {
+              _this2.open(event);
+              inTimeout = null;
+            }, (event.type === 'focus' ? _this2.options.focusDelay : _this2.options.hoverOpenDelay) || _this2.options.openDelay);
+          }
+        };
+
+        var outHandler = function outHandler(event) {
+          if (inTimeout !== null) {
+            clearTimeout(inTimeout);
+          } else {
+            outTimeout = setTimeout(function () {
+              _this2.close(event);
+              outTimeout = null;
+            }, (event.type === 'blur' ? _this2.options.blurDelay : _this2.options.hoverCloseDelay) || _this2.options.closeDelay);
+          }
+        };
+
+        if (events.indexOf('hover') >= 0) {
+          this._on(this.target, 'mouseover', inHandler);
+          this._on(this.drop, 'mouseover', inHandler);
+          this._on(this.target, 'mouseout', outHandler);
+          this._on(this.drop, 'mouseout', outHandler);
+        }
+
+        if (events.indexOf('focus') >= 0) {
+          this._on(this.target, 'focus', inHandler);
+          this._on(this.drop, 'focus', inHandler);
+          this._on(this.target, 'blur', outHandler);
+          this._on(this.drop, 'blur', outHandler);
+        }
+      }
+    }, {
+      key: 'isOpened',
+      value: function isOpened() {
+        if (this.drop) {
+          return hasClass(this.drop, drop.classPrefix + '-open');
+        }
+      }
+    }, {
+      key: 'toggle',
+      value: function toggle(event) {
+        if (this.isOpened()) {
+          this.close(event);
+        } else {
+          this.open(event);
+        }
+      }
+    }, {
+      key: 'open',
+      value: function open(event) {
+        var _this3 = this;
+
+        /* eslint no-unused-vars: 0 */
+        if (this.isOpened()) {
+          return;
+        }
+
+        if (!this.drop.parentNode) {
+          document.body.appendChild(this.drop);
+        }
+
+        if (typeof this.tether !== 'undefined') {
+          this.tether.enable();
+        }
+
+        addClass(this.drop, drop.classPrefix + '-open');
+        addClass(this.drop, drop.classPrefix + '-open-transitionend');
+
+        setTimeout(function () {
+          if (_this3.drop) {
+            addClass(_this3.drop, drop.classPrefix + '-after-open');
+          }
+        });
+
+        if (typeof this.tether !== 'undefined') {
+          this.tether.position();
+        }
+
+        this.trigger('open');
+
+        drop.updateBodyClasses();
+      }
+    }, {
+      key: '_transitionEndHandler',
+      value: function _transitionEndHandler(e) {
+        if (e.target !== e.currentTarget) {
+          return;
+        }
+
+        if (!hasClass(this.drop, drop.classPrefix + '-open')) {
+          removeClass(this.drop, drop.classPrefix + '-open-transitionend');
+        }
+        this.drop.removeEventListener(transitionEndEvent, this.transitionEndHandler);
+      }
+    }, {
+      key: 'beforeCloseHandler',
+      value: function beforeCloseHandler(event) {
+        var shouldClose = true;
+
+        if (!this.isClosing && typeof this.options.beforeClose === 'function') {
+          this.isClosing = true;
+          shouldClose = this.options.beforeClose(event, this) !== false;
+        }
+
+        this.isClosing = false;
+
+        return shouldClose;
+      }
+    }, {
+      key: 'close',
+      value: function close(event) {
+        if (!this.isOpened()) {
+          return;
+        }
+
+        if (!this.beforeCloseHandler(event)) {
+          return;
+        }
+
+        removeClass(this.drop, drop.classPrefix + '-open');
+        removeClass(this.drop, drop.classPrefix + '-after-open');
+
+        this.drop.addEventListener(transitionEndEvent, this.transitionEndHandler);
+
+        this.trigger('close');
+
+        if (typeof this.tether !== 'undefined') {
+          this.tether.disable();
+        }
+
+        drop.updateBodyClasses();
+
+        if (this.options.remove) {
+          this.remove(event);
+        }
+      }
+    }, {
+      key: 'remove',
+      value: function remove(event) {
+        this.close(event);
+        if (this.drop.parentNode) {
+          this.drop.parentNode.removeChild(this.drop);
+        }
+      }
+    }, {
+      key: 'position',
+      value: function position() {
+        if (this.isOpened() && typeof this.tether !== 'undefined') {
+          this.tether.position();
+        }
+      }
+    }, {
+      key: 'destroy',
+      value: function destroy() {
+        this.remove();
+
+        if (typeof this.tether !== 'undefined') {
+          this.tether.destroy();
+        }
+
+        for (var i = 0; i < this._boundEvents.length; ++i) {
+          var _boundEvents$i = this._boundEvents[i];
+          var element = _boundEvents$i.element;
+          var _event = _boundEvents$i.event;
+          var handler = _boundEvents$i.handler;
+
+          element.removeEventListener(_event, handler);
+        }
+
+        this._boundEvents = [];
+
+        this.tether = null;
+        this.drop = null;
+        this.content = null;
+        this.target = null;
+
+        removeFromArray(allDrops[drop.classPrefix], this);
+        removeFromArray(drop.drops, this);
+      }
+    }]);
+
+    return DropInstance;
+  })(Evented);
+
+  return drop;
+}
+
+var Drop = createContext();
+
+document.addEventListener('DOMContentLoaded', function () {
+  Drop.updateBodyClasses();
 });
+return Drop;
 
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+}));
 
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-var button = void 0;
-
-var PqButton = function () {
-	function PqButton() {
-		_classCallCheck(this, PqButton);
-	}
-
-	_createClass(PqButton, null, [{
-		key: 'makeButton',
-		value: function makeButton() {
-			var button = document.createElement('button');
-			button.className = 'btn btn-sm btn-mozilla font-bold';
-			button.innerHTML = 'PQ';
-
-			button.onclick = function () {
-				return window.TerminalState.action('PQ_MODAL_SHOW', {});
-			};
-
-			return button;
-		}
-	}, {
-		key: 'render',
-		value: function render(_ref) {
-			var canCreatePq = _ref.canCreatePq;
-
-			button = button || this.makeButton();
-			button.disabled = !canCreatePq;
-			return button;
-		}
-	}]);
-
-	return PqButton;
-}();
-
-exports.default = PqButton;
 
 /***/ }),
 /* 18 */
 /***/ (function(module, exports, __webpack_require__) {
 
-"use strict";
+var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_RESULT__;/*! tether 1.4.0 */
 
+(function(root, factory) {
+  if (true) {
+    !(__WEBPACK_AMD_DEFINE_FACTORY__ = (factory),
+				__WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ?
+				(__WEBPACK_AMD_DEFINE_FACTORY__.call(exports, __webpack_require__, exports, module)) :
+				__WEBPACK_AMD_DEFINE_FACTORY__),
+				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+  } else if (typeof exports === 'object') {
+    module.exports = factory(require, exports, module);
+  } else {
+    root.Tether = factory();
+  }
+}(this, function(require, exports, module) {
 
-Object.defineProperty(exports, "__esModule", {
-	value: true
+'use strict';
+
+var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
+
+var TetherBase = undefined;
+if (typeof TetherBase === 'undefined') {
+  TetherBase = { modules: [] };
+}
+
+var zeroElement = null;
+
+// Same as native getBoundingClientRect, except it takes into account parent <frame> offsets
+// if the element lies within a nested document (<frame> or <iframe>-like).
+function getActualBoundingClientRect(node) {
+  var boundingRect = node.getBoundingClientRect();
+
+  // The original object returned by getBoundingClientRect is immutable, so we clone it
+  // We can't use extend because the properties are not considered part of the object by hasOwnProperty in IE9
+  var rect = {};
+  for (var k in boundingRect) {
+    rect[k] = boundingRect[k];
+  }
+
+  if (node.ownerDocument !== document) {
+    var _frameElement = node.ownerDocument.defaultView.frameElement;
+    if (_frameElement) {
+      var frameRect = getActualBoundingClientRect(_frameElement);
+      rect.top += frameRect.top;
+      rect.bottom += frameRect.top;
+      rect.left += frameRect.left;
+      rect.right += frameRect.left;
+    }
+  }
+
+  return rect;
+}
+
+function getScrollParents(el) {
+  // In firefox if the el is inside an iframe with display: none; window.getComputedStyle() will return null;
+  // https://bugzilla.mozilla.org/show_bug.cgi?id=548397
+  var computedStyle = getComputedStyle(el) || {};
+  var position = computedStyle.position;
+  var parents = [];
+
+  if (position === 'fixed') {
+    return [el];
+  }
+
+  var parent = el;
+  while ((parent = parent.parentNode) && parent && parent.nodeType === 1) {
+    var style = undefined;
+    try {
+      style = getComputedStyle(parent);
+    } catch (err) {}
+
+    if (typeof style === 'undefined' || style === null) {
+      parents.push(parent);
+      return parents;
+    }
+
+    var _style = style;
+    var overflow = _style.overflow;
+    var overflowX = _style.overflowX;
+    var overflowY = _style.overflowY;
+
+    if (/(auto|scroll)/.test(overflow + overflowY + overflowX)) {
+      if (position !== 'absolute' || ['relative', 'absolute', 'fixed'].indexOf(style.position) >= 0) {
+        parents.push(parent);
+      }
+    }
+  }
+
+  parents.push(el.ownerDocument.body);
+
+  // If the node is within a frame, account for the parent window scroll
+  if (el.ownerDocument !== document) {
+    parents.push(el.ownerDocument.defaultView);
+  }
+
+  return parents;
+}
+
+var uniqueId = (function () {
+  var id = 0;
+  return function () {
+    return ++id;
+  };
+})();
+
+var zeroPosCache = {};
+var getOrigin = function getOrigin() {
+  // getBoundingClientRect is unfortunately too accurate.  It introduces a pixel or two of
+  // jitter as the user scrolls that messes with our ability to detect if two positions
+  // are equivilant or not.  We place an element at the top left of the page that will
+  // get the same jitter, so we can cancel the two out.
+  var node = zeroElement;
+  if (!node || !document.body.contains(node)) {
+    node = document.createElement('div');
+    node.setAttribute('data-tether-id', uniqueId());
+    extend(node.style, {
+      top: 0,
+      left: 0,
+      position: 'absolute'
+    });
+
+    document.body.appendChild(node);
+
+    zeroElement = node;
+  }
+
+  var id = node.getAttribute('data-tether-id');
+  if (typeof zeroPosCache[id] === 'undefined') {
+    zeroPosCache[id] = getActualBoundingClientRect(node);
+
+    // Clear the cache when this position call is done
+    defer(function () {
+      delete zeroPosCache[id];
+    });
+  }
+
+  return zeroPosCache[id];
+};
+
+function removeUtilElements() {
+  if (zeroElement) {
+    document.body.removeChild(zeroElement);
+  }
+  zeroElement = null;
+};
+
+function getBounds(el) {
+  var doc = undefined;
+  if (el === document) {
+    doc = document;
+    el = document.documentElement;
+  } else {
+    doc = el.ownerDocument;
+  }
+
+  var docEl = doc.documentElement;
+
+  var box = getActualBoundingClientRect(el);
+
+  var origin = getOrigin();
+
+  box.top -= origin.top;
+  box.left -= origin.left;
+
+  if (typeof box.width === 'undefined') {
+    box.width = document.body.scrollWidth - box.left - box.right;
+  }
+  if (typeof box.height === 'undefined') {
+    box.height = document.body.scrollHeight - box.top - box.bottom;
+  }
+
+  box.top = box.top - docEl.clientTop;
+  box.left = box.left - docEl.clientLeft;
+  box.right = doc.body.clientWidth - box.width - box.left;
+  box.bottom = doc.body.clientHeight - box.height - box.top;
+
+  return box;
+}
+
+function getOffsetParent(el) {
+  return el.offsetParent || document.documentElement;
+}
+
+var _scrollBarSize = null;
+function getScrollBarSize() {
+  if (_scrollBarSize) {
+    return _scrollBarSize;
+  }
+  var inner = document.createElement('div');
+  inner.style.width = '100%';
+  inner.style.height = '200px';
+
+  var outer = document.createElement('div');
+  extend(outer.style, {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    pointerEvents: 'none',
+    visibility: 'hidden',
+    width: '200px',
+    height: '150px',
+    overflow: 'hidden'
+  });
+
+  outer.appendChild(inner);
+
+  document.body.appendChild(outer);
+
+  var widthContained = inner.offsetWidth;
+  outer.style.overflow = 'scroll';
+  var widthScroll = inner.offsetWidth;
+
+  if (widthContained === widthScroll) {
+    widthScroll = outer.clientWidth;
+  }
+
+  document.body.removeChild(outer);
+
+  var width = widthContained - widthScroll;
+
+  _scrollBarSize = { width: width, height: width };
+  return _scrollBarSize;
+}
+
+function extend() {
+  var out = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
+
+  var args = [];
+
+  Array.prototype.push.apply(args, arguments);
+
+  args.slice(1).forEach(function (obj) {
+    if (obj) {
+      for (var key in obj) {
+        if (({}).hasOwnProperty.call(obj, key)) {
+          out[key] = obj[key];
+        }
+      }
+    }
+  });
+
+  return out;
+}
+
+function removeClass(el, name) {
+  if (typeof el.classList !== 'undefined') {
+    name.split(' ').forEach(function (cls) {
+      if (cls.trim()) {
+        el.classList.remove(cls);
+      }
+    });
+  } else {
+    var regex = new RegExp('(^| )' + name.split(' ').join('|') + '( |$)', 'gi');
+    var className = getClassName(el).replace(regex, ' ');
+    setClassName(el, className);
+  }
+}
+
+function addClass(el, name) {
+  if (typeof el.classList !== 'undefined') {
+    name.split(' ').forEach(function (cls) {
+      if (cls.trim()) {
+        el.classList.add(cls);
+      }
+    });
+  } else {
+    removeClass(el, name);
+    var cls = getClassName(el) + (' ' + name);
+    setClassName(el, cls);
+  }
+}
+
+function hasClass(el, name) {
+  if (typeof el.classList !== 'undefined') {
+    return el.classList.contains(name);
+  }
+  var className = getClassName(el);
+  return new RegExp('(^| )' + name + '( |$)', 'gi').test(className);
+}
+
+function getClassName(el) {
+  // Can't use just SVGAnimatedString here since nodes within a Frame in IE have
+  // completely separately SVGAnimatedString base classes
+  if (el.className instanceof el.ownerDocument.defaultView.SVGAnimatedString) {
+    return el.className.baseVal;
+  }
+  return el.className;
+}
+
+function setClassName(el, className) {
+  el.setAttribute('class', className);
+}
+
+function updateClasses(el, add, all) {
+  // Of the set of 'all' classes, we need the 'add' classes, and only the
+  // 'add' classes to be set.
+  all.forEach(function (cls) {
+    if (add.indexOf(cls) === -1 && hasClass(el, cls)) {
+      removeClass(el, cls);
+    }
+  });
+
+  add.forEach(function (cls) {
+    if (!hasClass(el, cls)) {
+      addClass(el, cls);
+    }
+  });
+}
+
+var deferred = [];
+
+var defer = function defer(fn) {
+  deferred.push(fn);
+};
+
+var flush = function flush() {
+  var fn = undefined;
+  while (fn = deferred.pop()) {
+    fn();
+  }
+};
+
+var Evented = (function () {
+  function Evented() {
+    _classCallCheck(this, Evented);
+  }
+
+  _createClass(Evented, [{
+    key: 'on',
+    value: function on(event, handler, ctx) {
+      var once = arguments.length <= 3 || arguments[3] === undefined ? false : arguments[3];
+
+      if (typeof this.bindings === 'undefined') {
+        this.bindings = {};
+      }
+      if (typeof this.bindings[event] === 'undefined') {
+        this.bindings[event] = [];
+      }
+      this.bindings[event].push({ handler: handler, ctx: ctx, once: once });
+    }
+  }, {
+    key: 'once',
+    value: function once(event, handler, ctx) {
+      this.on(event, handler, ctx, true);
+    }
+  }, {
+    key: 'off',
+    value: function off(event, handler) {
+      if (typeof this.bindings === 'undefined' || typeof this.bindings[event] === 'undefined') {
+        return;
+      }
+
+      if (typeof handler === 'undefined') {
+        delete this.bindings[event];
+      } else {
+        var i = 0;
+        while (i < this.bindings[event].length) {
+          if (this.bindings[event][i].handler === handler) {
+            this.bindings[event].splice(i, 1);
+          } else {
+            ++i;
+          }
+        }
+      }
+    }
+  }, {
+    key: 'trigger',
+    value: function trigger(event) {
+      if (typeof this.bindings !== 'undefined' && this.bindings[event]) {
+        var i = 0;
+
+        for (var _len = arguments.length, args = Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
+          args[_key - 1] = arguments[_key];
+        }
+
+        while (i < this.bindings[event].length) {
+          var _bindings$event$i = this.bindings[event][i];
+          var handler = _bindings$event$i.handler;
+          var ctx = _bindings$event$i.ctx;
+          var once = _bindings$event$i.once;
+
+          var context = ctx;
+          if (typeof context === 'undefined') {
+            context = this;
+          }
+
+          handler.apply(context, args);
+
+          if (once) {
+            this.bindings[event].splice(i, 1);
+          } else {
+            ++i;
+          }
+        }
+      }
+    }
+  }]);
+
+  return Evented;
+})();
+
+TetherBase.Utils = {
+  getActualBoundingClientRect: getActualBoundingClientRect,
+  getScrollParents: getScrollParents,
+  getBounds: getBounds,
+  getOffsetParent: getOffsetParent,
+  extend: extend,
+  addClass: addClass,
+  removeClass: removeClass,
+  hasClass: hasClass,
+  updateClasses: updateClasses,
+  defer: defer,
+  flush: flush,
+  uniqueId: uniqueId,
+  Evented: Evented,
+  getScrollBarSize: getScrollBarSize,
+  removeUtilElements: removeUtilElements
+};
+/* globals TetherBase, performance */
+
+'use strict';
+
+var _slicedToArray = (function () { function sliceIterator(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i['return']) _i['return'](); } finally { if (_d) throw _e; } } return _arr; } return function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { return sliceIterator(arr, i); } else { throw new TypeError('Invalid attempt to destructure non-iterable instance'); } }; })();
+
+var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+
+var _get = function get(_x6, _x7, _x8) { var _again = true; _function: while (_again) { var object = _x6, property = _x7, receiver = _x8; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x6 = parent; _x7 = property; _x8 = receiver; _again = true; desc = parent = undefined; continue _function; } } else if ('value' in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== 'function' && superClass !== null) { throw new TypeError('Super expression must either be null or a function, not ' + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+if (typeof TetherBase === 'undefined') {
+  throw new Error('You must include the utils.js file before tether.js');
+}
+
+var _TetherBase$Utils = TetherBase.Utils;
+var getScrollParents = _TetherBase$Utils.getScrollParents;
+var getBounds = _TetherBase$Utils.getBounds;
+var getOffsetParent = _TetherBase$Utils.getOffsetParent;
+var extend = _TetherBase$Utils.extend;
+var addClass = _TetherBase$Utils.addClass;
+var removeClass = _TetherBase$Utils.removeClass;
+var updateClasses = _TetherBase$Utils.updateClasses;
+var defer = _TetherBase$Utils.defer;
+var flush = _TetherBase$Utils.flush;
+var getScrollBarSize = _TetherBase$Utils.getScrollBarSize;
+var removeUtilElements = _TetherBase$Utils.removeUtilElements;
+
+function within(a, b) {
+  var diff = arguments.length <= 2 || arguments[2] === undefined ? 1 : arguments[2];
+
+  return a + diff >= b && b >= a - diff;
+}
+
+var transformKey = (function () {
+  if (typeof document === 'undefined') {
+    return '';
+  }
+  var el = document.createElement('div');
+
+  var transforms = ['transform', 'WebkitTransform', 'OTransform', 'MozTransform', 'msTransform'];
+  for (var i = 0; i < transforms.length; ++i) {
+    var key = transforms[i];
+    if (el.style[key] !== undefined) {
+      return key;
+    }
+  }
+})();
+
+var tethers = [];
+
+var position = function position() {
+  tethers.forEach(function (tether) {
+    tether.position(false);
+  });
+  flush();
+};
+
+function now() {
+  if (typeof performance !== 'undefined' && typeof performance.now !== 'undefined') {
+    return performance.now();
+  }
+  return +new Date();
+}
+
+(function () {
+  var lastCall = null;
+  var lastDuration = null;
+  var pendingTimeout = null;
+
+  var tick = function tick() {
+    if (typeof lastDuration !== 'undefined' && lastDuration > 16) {
+      // We voluntarily throttle ourselves if we can't manage 60fps
+      lastDuration = Math.min(lastDuration - 16, 250);
+
+      // Just in case this is the last event, remember to position just once more
+      pendingTimeout = setTimeout(tick, 250);
+      return;
+    }
+
+    if (typeof lastCall !== 'undefined' && now() - lastCall < 10) {
+      // Some browsers call events a little too frequently, refuse to run more than is reasonable
+      return;
+    }
+
+    if (pendingTimeout != null) {
+      clearTimeout(pendingTimeout);
+      pendingTimeout = null;
+    }
+
+    lastCall = now();
+    position();
+    lastDuration = now() - lastCall;
+  };
+
+  if (typeof window !== 'undefined' && typeof window.addEventListener !== 'undefined') {
+    ['resize', 'scroll', 'touchmove'].forEach(function (event) {
+      window.addEventListener(event, tick);
+    });
+  }
+})();
+
+var MIRROR_LR = {
+  center: 'center',
+  left: 'right',
+  right: 'left'
+};
+
+var MIRROR_TB = {
+  middle: 'middle',
+  top: 'bottom',
+  bottom: 'top'
+};
+
+var OFFSET_MAP = {
+  top: 0,
+  left: 0,
+  middle: '50%',
+  center: '50%',
+  bottom: '100%',
+  right: '100%'
+};
+
+var autoToFixedAttachment = function autoToFixedAttachment(attachment, relativeToAttachment) {
+  var left = attachment.left;
+  var top = attachment.top;
+
+  if (left === 'auto') {
+    left = MIRROR_LR[relativeToAttachment.left];
+  }
+
+  if (top === 'auto') {
+    top = MIRROR_TB[relativeToAttachment.top];
+  }
+
+  return { left: left, top: top };
+};
+
+var attachmentToOffset = function attachmentToOffset(attachment) {
+  var left = attachment.left;
+  var top = attachment.top;
+
+  if (typeof OFFSET_MAP[attachment.left] !== 'undefined') {
+    left = OFFSET_MAP[attachment.left];
+  }
+
+  if (typeof OFFSET_MAP[attachment.top] !== 'undefined') {
+    top = OFFSET_MAP[attachment.top];
+  }
+
+  return { left: left, top: top };
+};
+
+function addOffset() {
+  var out = { top: 0, left: 0 };
+
+  for (var _len = arguments.length, offsets = Array(_len), _key = 0; _key < _len; _key++) {
+    offsets[_key] = arguments[_key];
+  }
+
+  offsets.forEach(function (_ref) {
+    var top = _ref.top;
+    var left = _ref.left;
+
+    if (typeof top === 'string') {
+      top = parseFloat(top, 10);
+    }
+    if (typeof left === 'string') {
+      left = parseFloat(left, 10);
+    }
+
+    out.top += top;
+    out.left += left;
+  });
+
+  return out;
+}
+
+function offsetToPx(offset, size) {
+  if (typeof offset.left === 'string' && offset.left.indexOf('%') !== -1) {
+    offset.left = parseFloat(offset.left, 10) / 100 * size.width;
+  }
+  if (typeof offset.top === 'string' && offset.top.indexOf('%') !== -1) {
+    offset.top = parseFloat(offset.top, 10) / 100 * size.height;
+  }
+
+  return offset;
+}
+
+var parseOffset = function parseOffset(value) {
+  var _value$split = value.split(' ');
+
+  var _value$split2 = _slicedToArray(_value$split, 2);
+
+  var top = _value$split2[0];
+  var left = _value$split2[1];
+
+  return { top: top, left: left };
+};
+var parseAttachment = parseOffset;
+
+var TetherClass = (function (_Evented) {
+  _inherits(TetherClass, _Evented);
+
+  function TetherClass(options) {
+    var _this = this;
+
+    _classCallCheck(this, TetherClass);
+
+    _get(Object.getPrototypeOf(TetherClass.prototype), 'constructor', this).call(this);
+    this.position = this.position.bind(this);
+
+    tethers.push(this);
+
+    this.history = [];
+
+    this.setOptions(options, false);
+
+    TetherBase.modules.forEach(function (module) {
+      if (typeof module.initialize !== 'undefined') {
+        module.initialize.call(_this);
+      }
+    });
+
+    this.position();
+  }
+
+  _createClass(TetherClass, [{
+    key: 'getClass',
+    value: function getClass() {
+      var key = arguments.length <= 0 || arguments[0] === undefined ? '' : arguments[0];
+      var classes = this.options.classes;
+
+      if (typeof classes !== 'undefined' && classes[key]) {
+        return this.options.classes[key];
+      } else if (this.options.classPrefix) {
+        return this.options.classPrefix + '-' + key;
+      } else {
+        return key;
+      }
+    }
+  }, {
+    key: 'setOptions',
+    value: function setOptions(options) {
+      var _this2 = this;
+
+      var pos = arguments.length <= 1 || arguments[1] === undefined ? true : arguments[1];
+
+      var defaults = {
+        offset: '0 0',
+        targetOffset: '0 0',
+        targetAttachment: 'auto auto',
+        classPrefix: 'tether'
+      };
+
+      this.options = extend(defaults, options);
+
+      var _options = this.options;
+      var element = _options.element;
+      var target = _options.target;
+      var targetModifier = _options.targetModifier;
+
+      this.element = element;
+      this.target = target;
+      this.targetModifier = targetModifier;
+
+      if (this.target === 'viewport') {
+        this.target = document.body;
+        this.targetModifier = 'visible';
+      } else if (this.target === 'scroll-handle') {
+        this.target = document.body;
+        this.targetModifier = 'scroll-handle';
+      }
+
+      ['element', 'target'].forEach(function (key) {
+        if (typeof _this2[key] === 'undefined') {
+          throw new Error('Tether Error: Both element and target must be defined');
+        }
+
+        if (typeof _this2[key].jquery !== 'undefined') {
+          _this2[key] = _this2[key][0];
+        } else if (typeof _this2[key] === 'string') {
+          _this2[key] = document.querySelector(_this2[key]);
+        }
+      });
+
+      addClass(this.element, this.getClass('element'));
+      if (!(this.options.addTargetClasses === false)) {
+        addClass(this.target, this.getClass('target'));
+      }
+
+      if (!this.options.attachment) {
+        throw new Error('Tether Error: You must provide an attachment');
+      }
+
+      this.targetAttachment = parseAttachment(this.options.targetAttachment);
+      this.attachment = parseAttachment(this.options.attachment);
+      this.offset = parseOffset(this.options.offset);
+      this.targetOffset = parseOffset(this.options.targetOffset);
+
+      if (typeof this.scrollParents !== 'undefined') {
+        this.disable();
+      }
+
+      if (this.targetModifier === 'scroll-handle') {
+        this.scrollParents = [this.target];
+      } else {
+        this.scrollParents = getScrollParents(this.target);
+      }
+
+      if (!(this.options.enabled === false)) {
+        this.enable(pos);
+      }
+    }
+  }, {
+    key: 'getTargetBounds',
+    value: function getTargetBounds() {
+      if (typeof this.targetModifier !== 'undefined') {
+        if (this.targetModifier === 'visible') {
+          if (this.target === document.body) {
+            return { top: pageYOffset, left: pageXOffset, height: innerHeight, width: innerWidth };
+          } else {
+            var bounds = getBounds(this.target);
+
+            var out = {
+              height: bounds.height,
+              width: bounds.width,
+              top: bounds.top,
+              left: bounds.left
+            };
+
+            out.height = Math.min(out.height, bounds.height - (pageYOffset - bounds.top));
+            out.height = Math.min(out.height, bounds.height - (bounds.top + bounds.height - (pageYOffset + innerHeight)));
+            out.height = Math.min(innerHeight, out.height);
+            out.height -= 2;
+
+            out.width = Math.min(out.width, bounds.width - (pageXOffset - bounds.left));
+            out.width = Math.min(out.width, bounds.width - (bounds.left + bounds.width - (pageXOffset + innerWidth)));
+            out.width = Math.min(innerWidth, out.width);
+            out.width -= 2;
+
+            if (out.top < pageYOffset) {
+              out.top = pageYOffset;
+            }
+            if (out.left < pageXOffset) {
+              out.left = pageXOffset;
+            }
+
+            return out;
+          }
+        } else if (this.targetModifier === 'scroll-handle') {
+          var bounds = undefined;
+          var target = this.target;
+          if (target === document.body) {
+            target = document.documentElement;
+
+            bounds = {
+              left: pageXOffset,
+              top: pageYOffset,
+              height: innerHeight,
+              width: innerWidth
+            };
+          } else {
+            bounds = getBounds(target);
+          }
+
+          var style = getComputedStyle(target);
+
+          var hasBottomScroll = target.scrollWidth > target.clientWidth || [style.overflow, style.overflowX].indexOf('scroll') >= 0 || this.target !== document.body;
+
+          var scrollBottom = 0;
+          if (hasBottomScroll) {
+            scrollBottom = 15;
+          }
+
+          var height = bounds.height - parseFloat(style.borderTopWidth) - parseFloat(style.borderBottomWidth) - scrollBottom;
+
+          var out = {
+            width: 15,
+            height: height * 0.975 * (height / target.scrollHeight),
+            left: bounds.left + bounds.width - parseFloat(style.borderLeftWidth) - 15
+          };
+
+          var fitAdj = 0;
+          if (height < 408 && this.target === document.body) {
+            fitAdj = -0.00011 * Math.pow(height, 2) - 0.00727 * height + 22.58;
+          }
+
+          if (this.target !== document.body) {
+            out.height = Math.max(out.height, 24);
+          }
+
+          var scrollPercentage = this.target.scrollTop / (target.scrollHeight - height);
+          out.top = scrollPercentage * (height - out.height - fitAdj) + bounds.top + parseFloat(style.borderTopWidth);
+
+          if (this.target === document.body) {
+            out.height = Math.max(out.height, 24);
+          }
+
+          return out;
+        }
+      } else {
+        return getBounds(this.target);
+      }
+    }
+  }, {
+    key: 'clearCache',
+    value: function clearCache() {
+      this._cache = {};
+    }
+  }, {
+    key: 'cache',
+    value: function cache(k, getter) {
+      // More than one module will often need the same DOM info, so
+      // we keep a cache which is cleared on each position call
+      if (typeof this._cache === 'undefined') {
+        this._cache = {};
+      }
+
+      if (typeof this._cache[k] === 'undefined') {
+        this._cache[k] = getter.call(this);
+      }
+
+      return this._cache[k];
+    }
+  }, {
+    key: 'enable',
+    value: function enable() {
+      var _this3 = this;
+
+      var pos = arguments.length <= 0 || arguments[0] === undefined ? true : arguments[0];
+
+      if (!(this.options.addTargetClasses === false)) {
+        addClass(this.target, this.getClass('enabled'));
+      }
+      addClass(this.element, this.getClass('enabled'));
+      this.enabled = true;
+
+      this.scrollParents.forEach(function (parent) {
+        if (parent !== _this3.target.ownerDocument) {
+          parent.addEventListener('scroll', _this3.position);
+        }
+      });
+
+      if (pos) {
+        this.position();
+      }
+    }
+  }, {
+    key: 'disable',
+    value: function disable() {
+      var _this4 = this;
+
+      removeClass(this.target, this.getClass('enabled'));
+      removeClass(this.element, this.getClass('enabled'));
+      this.enabled = false;
+
+      if (typeof this.scrollParents !== 'undefined') {
+        this.scrollParents.forEach(function (parent) {
+          parent.removeEventListener('scroll', _this4.position);
+        });
+      }
+    }
+  }, {
+    key: 'destroy',
+    value: function destroy() {
+      var _this5 = this;
+
+      this.disable();
+
+      tethers.forEach(function (tether, i) {
+        if (tether === _this5) {
+          tethers.splice(i, 1);
+        }
+      });
+
+      // Remove any elements we were using for convenience from the DOM
+      if (tethers.length === 0) {
+        removeUtilElements();
+      }
+    }
+  }, {
+    key: 'updateAttachClasses',
+    value: function updateAttachClasses(elementAttach, targetAttach) {
+      var _this6 = this;
+
+      elementAttach = elementAttach || this.attachment;
+      targetAttach = targetAttach || this.targetAttachment;
+      var sides = ['left', 'top', 'bottom', 'right', 'middle', 'center'];
+
+      if (typeof this._addAttachClasses !== 'undefined' && this._addAttachClasses.length) {
+        // updateAttachClasses can be called more than once in a position call, so
+        // we need to clean up after ourselves such that when the last defer gets
+        // ran it doesn't add any extra classes from previous calls.
+        this._addAttachClasses.splice(0, this._addAttachClasses.length);
+      }
+
+      if (typeof this._addAttachClasses === 'undefined') {
+        this._addAttachClasses = [];
+      }
+      var add = this._addAttachClasses;
+
+      if (elementAttach.top) {
+        add.push(this.getClass('element-attached') + '-' + elementAttach.top);
+      }
+      if (elementAttach.left) {
+        add.push(this.getClass('element-attached') + '-' + elementAttach.left);
+      }
+      if (targetAttach.top) {
+        add.push(this.getClass('target-attached') + '-' + targetAttach.top);
+      }
+      if (targetAttach.left) {
+        add.push(this.getClass('target-attached') + '-' + targetAttach.left);
+      }
+
+      var all = [];
+      sides.forEach(function (side) {
+        all.push(_this6.getClass('element-attached') + '-' + side);
+        all.push(_this6.getClass('target-attached') + '-' + side);
+      });
+
+      defer(function () {
+        if (!(typeof _this6._addAttachClasses !== 'undefined')) {
+          return;
+        }
+
+        updateClasses(_this6.element, _this6._addAttachClasses, all);
+        if (!(_this6.options.addTargetClasses === false)) {
+          updateClasses(_this6.target, _this6._addAttachClasses, all);
+        }
+
+        delete _this6._addAttachClasses;
+      });
+    }
+  }, {
+    key: 'position',
+    value: function position() {
+      var _this7 = this;
+
+      var flushChanges = arguments.length <= 0 || arguments[0] === undefined ? true : arguments[0];
+
+      // flushChanges commits the changes immediately, leave true unless you are positioning multiple
+      // tethers (in which case call Tether.Utils.flush yourself when you're done)
+
+      if (!this.enabled) {
+        return;
+      }
+
+      this.clearCache();
+
+      // Turn 'auto' attachments into the appropriate corner or edge
+      var targetAttachment = autoToFixedAttachment(this.targetAttachment, this.attachment);
+
+      this.updateAttachClasses(this.attachment, targetAttachment);
+
+      var elementPos = this.cache('element-bounds', function () {
+        return getBounds(_this7.element);
+      });
+
+      var width = elementPos.width;
+      var height = elementPos.height;
+
+      if (width === 0 && height === 0 && typeof this.lastSize !== 'undefined') {
+        var _lastSize = this.lastSize;
+
+        // We cache the height and width to make it possible to position elements that are
+        // getting hidden.
+        width = _lastSize.width;
+        height = _lastSize.height;
+      } else {
+        this.lastSize = { width: width, height: height };
+      }
+
+      var targetPos = this.cache('target-bounds', function () {
+        return _this7.getTargetBounds();
+      });
+      var targetSize = targetPos;
+
+      // Get an actual px offset from the attachment
+      var offset = offsetToPx(attachmentToOffset(this.attachment), { width: width, height: height });
+      var targetOffset = offsetToPx(attachmentToOffset(targetAttachment), targetSize);
+
+      var manualOffset = offsetToPx(this.offset, { width: width, height: height });
+      var manualTargetOffset = offsetToPx(this.targetOffset, targetSize);
+
+      // Add the manually provided offset
+      offset = addOffset(offset, manualOffset);
+      targetOffset = addOffset(targetOffset, manualTargetOffset);
+
+      // It's now our goal to make (element position + offset) == (target position + target offset)
+      var left = targetPos.left + targetOffset.left - offset.left;
+      var top = targetPos.top + targetOffset.top - offset.top;
+
+      for (var i = 0; i < TetherBase.modules.length; ++i) {
+        var _module2 = TetherBase.modules[i];
+        var ret = _module2.position.call(this, {
+          left: left,
+          top: top,
+          targetAttachment: targetAttachment,
+          targetPos: targetPos,
+          elementPos: elementPos,
+          offset: offset,
+          targetOffset: targetOffset,
+          manualOffset: manualOffset,
+          manualTargetOffset: manualTargetOffset,
+          scrollbarSize: scrollbarSize,
+          attachment: this.attachment
+        });
+
+        if (ret === false) {
+          return false;
+        } else if (typeof ret === 'undefined' || typeof ret !== 'object') {
+          continue;
+        } else {
+          top = ret.top;
+          left = ret.left;
+        }
+      }
+
+      // We describe the position three different ways to give the optimizer
+      // a chance to decide the best possible way to position the element
+      // with the fewest repaints.
+      var next = {
+        // It's position relative to the page (absolute positioning when
+        // the element is a child of the body)
+        page: {
+          top: top,
+          left: left
+        },
+
+        // It's position relative to the viewport (fixed positioning)
+        viewport: {
+          top: top - pageYOffset,
+          bottom: pageYOffset - top - height + innerHeight,
+          left: left - pageXOffset,
+          right: pageXOffset - left - width + innerWidth
+        }
+      };
+
+      var doc = this.target.ownerDocument;
+      var win = doc.defaultView;
+
+      var scrollbarSize = undefined;
+      if (win.innerHeight > doc.documentElement.clientHeight) {
+        scrollbarSize = this.cache('scrollbar-size', getScrollBarSize);
+        next.viewport.bottom -= scrollbarSize.height;
+      }
+
+      if (win.innerWidth > doc.documentElement.clientWidth) {
+        scrollbarSize = this.cache('scrollbar-size', getScrollBarSize);
+        next.viewport.right -= scrollbarSize.width;
+      }
+
+      if (['', 'static'].indexOf(doc.body.style.position) === -1 || ['', 'static'].indexOf(doc.body.parentElement.style.position) === -1) {
+        // Absolute positioning in the body will be relative to the page, not the 'initial containing block'
+        next.page.bottom = doc.body.scrollHeight - top - height;
+        next.page.right = doc.body.scrollWidth - left - width;
+      }
+
+      if (typeof this.options.optimizations !== 'undefined' && this.options.optimizations.moveElement !== false && !(typeof this.targetModifier !== 'undefined')) {
+        (function () {
+          var offsetParent = _this7.cache('target-offsetparent', function () {
+            return getOffsetParent(_this7.target);
+          });
+          var offsetPosition = _this7.cache('target-offsetparent-bounds', function () {
+            return getBounds(offsetParent);
+          });
+          var offsetParentStyle = getComputedStyle(offsetParent);
+          var offsetParentSize = offsetPosition;
+
+          var offsetBorder = {};
+          ['Top', 'Left', 'Bottom', 'Right'].forEach(function (side) {
+            offsetBorder[side.toLowerCase()] = parseFloat(offsetParentStyle['border' + side + 'Width']);
+          });
+
+          offsetPosition.right = doc.body.scrollWidth - offsetPosition.left - offsetParentSize.width + offsetBorder.right;
+          offsetPosition.bottom = doc.body.scrollHeight - offsetPosition.top - offsetParentSize.height + offsetBorder.bottom;
+
+          if (next.page.top >= offsetPosition.top + offsetBorder.top && next.page.bottom >= offsetPosition.bottom) {
+            if (next.page.left >= offsetPosition.left + offsetBorder.left && next.page.right >= offsetPosition.right) {
+              // We're within the visible part of the target's scroll parent
+              var scrollTop = offsetParent.scrollTop;
+              var scrollLeft = offsetParent.scrollLeft;
+
+              // It's position relative to the target's offset parent (absolute positioning when
+              // the element is moved to be a child of the target's offset parent).
+              next.offset = {
+                top: next.page.top - offsetPosition.top + scrollTop - offsetBorder.top,
+                left: next.page.left - offsetPosition.left + scrollLeft - offsetBorder.left
+              };
+            }
+          }
+        })();
+      }
+
+      // We could also travel up the DOM and try each containing context, rather than only
+      // looking at the body, but we're gonna get diminishing returns.
+
+      this.move(next);
+
+      this.history.unshift(next);
+
+      if (this.history.length > 3) {
+        this.history.pop();
+      }
+
+      if (flushChanges) {
+        flush();
+      }
+
+      return true;
+    }
+
+    // THE ISSUE
+  }, {
+    key: 'move',
+    value: function move(pos) {
+      var _this8 = this;
+
+      if (!(typeof this.element.parentNode !== 'undefined')) {
+        return;
+      }
+
+      var same = {};
+
+      for (var type in pos) {
+        same[type] = {};
+
+        for (var key in pos[type]) {
+          var found = false;
+
+          for (var i = 0; i < this.history.length; ++i) {
+            var point = this.history[i];
+            if (typeof point[type] !== 'undefined' && !within(point[type][key], pos[type][key])) {
+              found = true;
+              break;
+            }
+          }
+
+          if (!found) {
+            same[type][key] = true;
+          }
+        }
+      }
+
+      var css = { top: '', left: '', right: '', bottom: '' };
+
+      var transcribe = function transcribe(_same, _pos) {
+        var hasOptimizations = typeof _this8.options.optimizations !== 'undefined';
+        var gpu = hasOptimizations ? _this8.options.optimizations.gpu : null;
+        if (gpu !== false) {
+          var yPos = undefined,
+              xPos = undefined;
+          if (_same.top) {
+            css.top = 0;
+            yPos = _pos.top;
+          } else {
+            css.bottom = 0;
+            yPos = -_pos.bottom;
+          }
+
+          if (_same.left) {
+            css.left = 0;
+            xPos = _pos.left;
+          } else {
+            css.right = 0;
+            xPos = -_pos.right;
+          }
+
+          if (window.matchMedia) {
+            // HubSpot/tether#207
+            var retina = window.matchMedia('only screen and (min-resolution: 1.3dppx)').matches || window.matchMedia('only screen and (-webkit-min-device-pixel-ratio: 1.3)').matches;
+            if (!retina) {
+              xPos = Math.round(xPos);
+              yPos = Math.round(yPos);
+            }
+          }
+
+          css[transformKey] = 'translateX(' + xPos + 'px) translateY(' + yPos + 'px)';
+
+          if (transformKey !== 'msTransform') {
+            // The Z transform will keep this in the GPU (faster, and prevents artifacts),
+            // but IE9 doesn't support 3d transforms and will choke.
+            css[transformKey] += " translateZ(0)";
+          }
+        } else {
+          if (_same.top) {
+            css.top = _pos.top + 'px';
+          } else {
+            css.bottom = _pos.bottom + 'px';
+          }
+
+          if (_same.left) {
+            css.left = _pos.left + 'px';
+          } else {
+            css.right = _pos.right + 'px';
+          }
+        }
+      };
+
+      var moved = false;
+      if ((same.page.top || same.page.bottom) && (same.page.left || same.page.right)) {
+        css.position = 'absolute';
+        transcribe(same.page, pos.page);
+      } else if ((same.viewport.top || same.viewport.bottom) && (same.viewport.left || same.viewport.right)) {
+        css.position = 'fixed';
+        transcribe(same.viewport, pos.viewport);
+      } else if (typeof same.offset !== 'undefined' && same.offset.top && same.offset.left) {
+        (function () {
+          css.position = 'absolute';
+          var offsetParent = _this8.cache('target-offsetparent', function () {
+            return getOffsetParent(_this8.target);
+          });
+
+          if (getOffsetParent(_this8.element) !== offsetParent) {
+            defer(function () {
+              _this8.element.parentNode.removeChild(_this8.element);
+              offsetParent.appendChild(_this8.element);
+            });
+          }
+
+          transcribe(same.offset, pos.offset);
+          moved = true;
+        })();
+      } else {
+        css.position = 'absolute';
+        transcribe({ top: true, left: true }, pos.page);
+      }
+
+      if (!moved) {
+        if (this.options.bodyElement) {
+          this.options.bodyElement.appendChild(this.element);
+        } else {
+          var offsetParentIsBody = true;
+          var currentNode = this.element.parentNode;
+          while (currentNode && currentNode.nodeType === 1 && currentNode.tagName !== 'BODY') {
+            if (getComputedStyle(currentNode).position !== 'static') {
+              offsetParentIsBody = false;
+              break;
+            }
+
+            currentNode = currentNode.parentNode;
+          }
+
+          if (!offsetParentIsBody) {
+            this.element.parentNode.removeChild(this.element);
+            this.element.ownerDocument.body.appendChild(this.element);
+          }
+        }
+      }
+
+      // Any css change will trigger a repaint, so let's avoid one if nothing changed
+      var writeCSS = {};
+      var write = false;
+      for (var key in css) {
+        var val = css[key];
+        var elVal = this.element.style[key];
+
+        if (elVal !== val) {
+          write = true;
+          writeCSS[key] = val;
+        }
+      }
+
+      if (write) {
+        defer(function () {
+          extend(_this8.element.style, writeCSS);
+          _this8.trigger('repositioned');
+        });
+      }
+    }
+  }]);
+
+  return TetherClass;
+})(Evented);
+
+TetherClass.modules = [];
+
+TetherBase.position = position;
+
+var Tether = extend(TetherClass, TetherBase);
+/* globals TetherBase */
+
+'use strict';
+
+var _slicedToArray = (function () { function sliceIterator(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i['return']) _i['return'](); } finally { if (_d) throw _e; } } return _arr; } return function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { return sliceIterator(arr, i); } else { throw new TypeError('Invalid attempt to destructure non-iterable instance'); } }; })();
+
+var _TetherBase$Utils = TetherBase.Utils;
+var getBounds = _TetherBase$Utils.getBounds;
+var extend = _TetherBase$Utils.extend;
+var updateClasses = _TetherBase$Utils.updateClasses;
+var defer = _TetherBase$Utils.defer;
+
+var BOUNDS_FORMAT = ['left', 'top', 'right', 'bottom'];
+
+function getBoundingRect(tether, to) {
+  if (to === 'scrollParent') {
+    to = tether.scrollParents[0];
+  } else if (to === 'window') {
+    to = [pageXOffset, pageYOffset, innerWidth + pageXOffset, innerHeight + pageYOffset];
+  }
+
+  if (to === document) {
+    to = to.documentElement;
+  }
+
+  if (typeof to.nodeType !== 'undefined') {
+    (function () {
+      var node = to;
+      var size = getBounds(to);
+      var pos = size;
+      var style = getComputedStyle(to);
+
+      to = [pos.left, pos.top, size.width + pos.left, size.height + pos.top];
+
+      // Account any parent Frames scroll offset
+      if (node.ownerDocument !== document) {
+        var win = node.ownerDocument.defaultView;
+        to[0] += win.pageXOffset;
+        to[1] += win.pageYOffset;
+        to[2] += win.pageXOffset;
+        to[3] += win.pageYOffset;
+      }
+
+      BOUNDS_FORMAT.forEach(function (side, i) {
+        side = side[0].toUpperCase() + side.substr(1);
+        if (side === 'Top' || side === 'Left') {
+          to[i] += parseFloat(style['border' + side + 'Width']);
+        } else {
+          to[i] -= parseFloat(style['border' + side + 'Width']);
+        }
+      });
+    })();
+  }
+
+  return to;
+}
+
+TetherBase.modules.push({
+  position: function position(_ref) {
+    var _this = this;
+
+    var top = _ref.top;
+    var left = _ref.left;
+    var targetAttachment = _ref.targetAttachment;
+
+    if (!this.options.constraints) {
+      return true;
+    }
+
+    var _cache = this.cache('element-bounds', function () {
+      return getBounds(_this.element);
+    });
+
+    var height = _cache.height;
+    var width = _cache.width;
+
+    if (width === 0 && height === 0 && typeof this.lastSize !== 'undefined') {
+      var _lastSize = this.lastSize;
+
+      // Handle the item getting hidden as a result of our positioning without glitching
+      // the classes in and out
+      width = _lastSize.width;
+      height = _lastSize.height;
+    }
+
+    var targetSize = this.cache('target-bounds', function () {
+      return _this.getTargetBounds();
+    });
+
+    var targetHeight = targetSize.height;
+    var targetWidth = targetSize.width;
+
+    var allClasses = [this.getClass('pinned'), this.getClass('out-of-bounds')];
+
+    this.options.constraints.forEach(function (constraint) {
+      var outOfBoundsClass = constraint.outOfBoundsClass;
+      var pinnedClass = constraint.pinnedClass;
+
+      if (outOfBoundsClass) {
+        allClasses.push(outOfBoundsClass);
+      }
+      if (pinnedClass) {
+        allClasses.push(pinnedClass);
+      }
+    });
+
+    allClasses.forEach(function (cls) {
+      ['left', 'top', 'right', 'bottom'].forEach(function (side) {
+        allClasses.push(cls + '-' + side);
+      });
+    });
+
+    var addClasses = [];
+
+    var tAttachment = extend({}, targetAttachment);
+    var eAttachment = extend({}, this.attachment);
+
+    this.options.constraints.forEach(function (constraint) {
+      var to = constraint.to;
+      var attachment = constraint.attachment;
+      var pin = constraint.pin;
+
+      if (typeof attachment === 'undefined') {
+        attachment = '';
+      }
+
+      var changeAttachX = undefined,
+          changeAttachY = undefined;
+      if (attachment.indexOf(' ') >= 0) {
+        var _attachment$split = attachment.split(' ');
+
+        var _attachment$split2 = _slicedToArray(_attachment$split, 2);
+
+        changeAttachY = _attachment$split2[0];
+        changeAttachX = _attachment$split2[1];
+      } else {
+        changeAttachX = changeAttachY = attachment;
+      }
+
+      var bounds = getBoundingRect(_this, to);
+
+      if (changeAttachY === 'target' || changeAttachY === 'both') {
+        if (top < bounds[1] && tAttachment.top === 'top') {
+          top += targetHeight;
+          tAttachment.top = 'bottom';
+        }
+
+        if (top + height > bounds[3] && tAttachment.top === 'bottom') {
+          top -= targetHeight;
+          tAttachment.top = 'top';
+        }
+      }
+
+      if (changeAttachY === 'together') {
+        if (tAttachment.top === 'top') {
+          if (eAttachment.top === 'bottom' && top < bounds[1]) {
+            top += targetHeight;
+            tAttachment.top = 'bottom';
+
+            top += height;
+            eAttachment.top = 'top';
+          } else if (eAttachment.top === 'top' && top + height > bounds[3] && top - (height - targetHeight) >= bounds[1]) {
+            top -= height - targetHeight;
+            tAttachment.top = 'bottom';
+
+            eAttachment.top = 'bottom';
+          }
+        }
+
+        if (tAttachment.top === 'bottom') {
+          if (eAttachment.top === 'top' && top + height > bounds[3]) {
+            top -= targetHeight;
+            tAttachment.top = 'top';
+
+            top -= height;
+            eAttachment.top = 'bottom';
+          } else if (eAttachment.top === 'bottom' && top < bounds[1] && top + (height * 2 - targetHeight) <= bounds[3]) {
+            top += height - targetHeight;
+            tAttachment.top = 'top';
+
+            eAttachment.top = 'top';
+          }
+        }
+
+        if (tAttachment.top === 'middle') {
+          if (top + height > bounds[3] && eAttachment.top === 'top') {
+            top -= height;
+            eAttachment.top = 'bottom';
+          } else if (top < bounds[1] && eAttachment.top === 'bottom') {
+            top += height;
+            eAttachment.top = 'top';
+          }
+        }
+      }
+
+      if (changeAttachX === 'target' || changeAttachX === 'both') {
+        if (left < bounds[0] && tAttachment.left === 'left') {
+          left += targetWidth;
+          tAttachment.left = 'right';
+        }
+
+        if (left + width > bounds[2] && tAttachment.left === 'right') {
+          left -= targetWidth;
+          tAttachment.left = 'left';
+        }
+      }
+
+      if (changeAttachX === 'together') {
+        if (left < bounds[0] && tAttachment.left === 'left') {
+          if (eAttachment.left === 'right') {
+            left += targetWidth;
+            tAttachment.left = 'right';
+
+            left += width;
+            eAttachment.left = 'left';
+          } else if (eAttachment.left === 'left') {
+            left += targetWidth;
+            tAttachment.left = 'right';
+
+            left -= width;
+            eAttachment.left = 'right';
+          }
+        } else if (left + width > bounds[2] && tAttachment.left === 'right') {
+          if (eAttachment.left === 'left') {
+            left -= targetWidth;
+            tAttachment.left = 'left';
+
+            left -= width;
+            eAttachment.left = 'right';
+          } else if (eAttachment.left === 'right') {
+            left -= targetWidth;
+            tAttachment.left = 'left';
+
+            left += width;
+            eAttachment.left = 'left';
+          }
+        } else if (tAttachment.left === 'center') {
+          if (left + width > bounds[2] && eAttachment.left === 'left') {
+            left -= width;
+            eAttachment.left = 'right';
+          } else if (left < bounds[0] && eAttachment.left === 'right') {
+            left += width;
+            eAttachment.left = 'left';
+          }
+        }
+      }
+
+      if (changeAttachY === 'element' || changeAttachY === 'both') {
+        if (top < bounds[1] && eAttachment.top === 'bottom') {
+          top += height;
+          eAttachment.top = 'top';
+        }
+
+        if (top + height > bounds[3] && eAttachment.top === 'top') {
+          top -= height;
+          eAttachment.top = 'bottom';
+        }
+      }
+
+      if (changeAttachX === 'element' || changeAttachX === 'both') {
+        if (left < bounds[0]) {
+          if (eAttachment.left === 'right') {
+            left += width;
+            eAttachment.left = 'left';
+          } else if (eAttachment.left === 'center') {
+            left += width / 2;
+            eAttachment.left = 'left';
+          }
+        }
+
+        if (left + width > bounds[2]) {
+          if (eAttachment.left === 'left') {
+            left -= width;
+            eAttachment.left = 'right';
+          } else if (eAttachment.left === 'center') {
+            left -= width / 2;
+            eAttachment.left = 'right';
+          }
+        }
+      }
+
+      if (typeof pin === 'string') {
+        pin = pin.split(',').map(function (p) {
+          return p.trim();
+        });
+      } else if (pin === true) {
+        pin = ['top', 'left', 'right', 'bottom'];
+      }
+
+      pin = pin || [];
+
+      var pinned = [];
+      var oob = [];
+
+      if (top < bounds[1]) {
+        if (pin.indexOf('top') >= 0) {
+          top = bounds[1];
+          pinned.push('top');
+        } else {
+          oob.push('top');
+        }
+      }
+
+      if (top + height > bounds[3]) {
+        if (pin.indexOf('bottom') >= 0) {
+          top = bounds[3] - height;
+          pinned.push('bottom');
+        } else {
+          oob.push('bottom');
+        }
+      }
+
+      if (left < bounds[0]) {
+        if (pin.indexOf('left') >= 0) {
+          left = bounds[0];
+          pinned.push('left');
+        } else {
+          oob.push('left');
+        }
+      }
+
+      if (left + width > bounds[2]) {
+        if (pin.indexOf('right') >= 0) {
+          left = bounds[2] - width;
+          pinned.push('right');
+        } else {
+          oob.push('right');
+        }
+      }
+
+      if (pinned.length) {
+        (function () {
+          var pinnedClass = undefined;
+          if (typeof _this.options.pinnedClass !== 'undefined') {
+            pinnedClass = _this.options.pinnedClass;
+          } else {
+            pinnedClass = _this.getClass('pinned');
+          }
+
+          addClasses.push(pinnedClass);
+          pinned.forEach(function (side) {
+            addClasses.push(pinnedClass + '-' + side);
+          });
+        })();
+      }
+
+      if (oob.length) {
+        (function () {
+          var oobClass = undefined;
+          if (typeof _this.options.outOfBoundsClass !== 'undefined') {
+            oobClass = _this.options.outOfBoundsClass;
+          } else {
+            oobClass = _this.getClass('out-of-bounds');
+          }
+
+          addClasses.push(oobClass);
+          oob.forEach(function (side) {
+            addClasses.push(oobClass + '-' + side);
+          });
+        })();
+      }
+
+      if (pinned.indexOf('left') >= 0 || pinned.indexOf('right') >= 0) {
+        eAttachment.left = tAttachment.left = false;
+      }
+      if (pinned.indexOf('top') >= 0 || pinned.indexOf('bottom') >= 0) {
+        eAttachment.top = tAttachment.top = false;
+      }
+
+      if (tAttachment.top !== targetAttachment.top || tAttachment.left !== targetAttachment.left || eAttachment.top !== _this.attachment.top || eAttachment.left !== _this.attachment.left) {
+        _this.updateAttachClasses(eAttachment, tAttachment);
+        _this.trigger('update', {
+          attachment: eAttachment,
+          targetAttachment: tAttachment
+        });
+      }
+    });
+
+    defer(function () {
+      if (!(_this.options.addTargetClasses === false)) {
+        updateClasses(_this.target, addClasses, allClasses);
+      }
+      updateClasses(_this.element, addClasses, allClasses);
+    });
+
+    return { top: top, left: left };
+  }
 });
+/* globals TetherBase */
 
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+'use strict';
 
-var _dom = __webpack_require__(0);
+var _TetherBase$Utils = TetherBase.Utils;
+var getBounds = _TetherBase$Utils.getBounds;
+var updateClasses = _TetherBase$Utils.updateClasses;
+var defer = _TetherBase$Utils.defer;
 
-var _dom2 = _interopRequireDefault(_dom);
+TetherBase.modules.push({
+  position: function position(_ref) {
+    var _this = this;
 
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+    var top = _ref.top;
+    var left = _ref.left;
 
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+    var _cache = this.cache('element-bounds', function () {
+      return getBounds(_this.element);
+    });
 
-var SessionKeys = function () {
-	function SessionKeys(params) {
-		_classCallCheck(this, SessionKeys);
+    var height = _cache.height;
+    var width = _cache.width;
 
-		this.context = (0, _dom2.default)('div');
-		this.settings = params;
-		this.collection = [];
-		this.trigger = [];
-		this.active = params.name === params.gds;
-	}
+    var targetPos = this.getTargetBounds();
 
-	_createClass(SessionKeys, [{
-		key: 'getButtons',
-		value: function getButtons() {
-			return this.settings.list.map(this.makeButton, this);
-		}
-	}, {
-		key: 'makeButton',
-		value: function makeButton(value, index) {
-			var _this = this;
+    var bottom = top + height;
+    var right = left + width;
 
-			var pcc = window.TerminalState.getPcc()[index];
-			var isActive = this.settings.sessionIndex === index;
+    var abutted = [];
+    if (top <= targetPos.bottom && bottom >= targetPos.top) {
+      ['left', 'right'].forEach(function (side) {
+        var targetPosSide = targetPos[side];
+        if (targetPosSide === left || targetPosSide === right) {
+          abutted.push(side);
+        }
+      });
+    }
 
-			var button = (0, _dom2.default)('button.btn btn-sm btn-purple font-bold pos-rlt ' + (isActive ? 'active' : ''));
-			button.innerHTML = value + (pcc ? '<span class="pcc-label">' + pcc + '</span>' : '');
+    if (left <= targetPos.right && right >= targetPos.left) {
+      ['top', 'bottom'].forEach(function (side) {
+        var targetPosSide = targetPos[side];
+        if (targetPosSide === top || targetPosSide === bottom) {
+          abutted.push(side);
+        }
+      });
+    }
 
-			button.disabled = !this.settings.activeTerminal || isActive;
+    var allClasses = [];
+    var addClasses = [];
 
-			button.addEventListener('click', function () {
-				button.disabled = true;
-				_this.settings.onAreaChange(index);
-			});
+    var sides = ['left', 'top', 'right', 'bottom'];
+    allClasses.push(this.getClass('abutted'));
+    sides.forEach(function (side) {
+      allClasses.push(_this.getClass('abutted') + '-' + side);
+    });
 
-			return button;
-		}
-	}, {
-		key: 'getTrigger',
-		value: function getTrigger() {
-			var _this2 = this;
+    if (abutted.length) {
+      addClasses.push(this.getClass('abutted'));
+    }
 
-			this.trigger = (0, _dom2.default)('button.btn btn-sm btn-mint font-bold' + (this.active ? ' active' : ''));
-			this.trigger.innerHTML = this.settings['name'];
+    abutted.forEach(function (side) {
+      addClasses.push(_this.getClass('abutted') + '-' + side);
+    });
 
-			if (!this.active) this.trigger.addEventListener('click', function () {
-				return _this2.settings.onGdsChange(_this2.settings['name']);
-			});
+    defer(function () {
+      if (!(_this.options.addTargetClasses === false)) {
+        updateClasses(_this.target, addClasses, allClasses);
+      }
+      updateClasses(_this.element, addClasses, allClasses);
+    });
 
-			return this.trigger;
-		}
-	}, {
-		key: 'render',
-		value: function render() {
-			var _this3 = this;
+    return true;
+  }
+});
+/* globals TetherBase */
 
-			this.context.appendChild(this.getTrigger());
+'use strict';
 
-			if (this.active) this.collection = this.getButtons().map(function (button) {
-				return _this3.context.appendChild(button);
-			});
+var _slicedToArray = (function () { function sliceIterator(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i['return']) _i['return'](); } finally { if (_d) throw _e; } } return _arr; } return function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { return sliceIterator(arr, i); } else { throw new TypeError('Invalid attempt to destructure non-iterable instance'); } }; })();
 
-			return this.context;
-		}
-	}]);
+TetherBase.modules.push({
+  position: function position(_ref) {
+    var top = _ref.top;
+    var left = _ref.left;
 
-	return SessionKeys;
-}();
+    if (!this.options.shift) {
+      return;
+    }
 
-exports.default = SessionKeys;
+    var shift = this.options.shift;
+    if (typeof this.options.shift === 'function') {
+      shift = this.options.shift.call(this, { top: top, left: left });
+    }
+
+    var shiftTop = undefined,
+        shiftLeft = undefined;
+    if (typeof shift === 'string') {
+      shift = shift.split(' ');
+      shift[1] = shift[1] || shift[0];
+
+      var _shift = shift;
+
+      var _shift2 = _slicedToArray(_shift, 2);
+
+      shiftTop = _shift2[0];
+      shiftLeft = _shift2[1];
+
+      shiftTop = parseFloat(shiftTop, 10);
+      shiftLeft = parseFloat(shiftLeft, 10);
+    } else {
+      shiftTop = shift.top;
+      shiftLeft = shift.left;
+    }
+
+    top += shiftTop;
+    left += shiftLeft;
+
+    return { top: top, left: left };
+  }
+});
+return Tether;
+
+}));
+
 
 /***/ }),
 /* 19 */
@@ -4697,31 +6958,31 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _theme = __webpack_require__(24);
+var _theme = __webpack_require__(20);
 
 var _theme2 = _interopRequireDefault(_theme);
 
-var _history = __webpack_require__(20);
+var _history = __webpack_require__(21);
 
 var _history2 = _interopRequireDefault(_history);
 
-var _textSize = __webpack_require__(23);
+var _textSize = __webpack_require__(22);
 
 var _textSize2 = _interopRequireDefault(_textSize);
 
-var _settings = __webpack_require__(21);
+var _settings = __webpack_require__(23);
 
 var _settings2 = _interopRequireDefault(_settings);
 
-var _sessionButtons = __webpack_require__(18);
+var _sessionButtons = __webpack_require__(24);
 
 var _sessionButtons2 = _interopRequireDefault(_sessionButtons);
 
-var _pqButton = __webpack_require__(17);
+var _pqButton = __webpack_require__(25);
 
 var _pqButton2 = _interopRequireDefault(_pqButton);
 
-var _devButtons = __webpack_require__(16);
+var _devButtons = __webpack_require__(26);
 
 var _devButtons2 = _interopRequireDefault(_devButtons);
 
@@ -4733,11 +6994,11 @@ var _component = __webpack_require__(3);
 
 var _component2 = _interopRequireDefault(_component);
 
-var _gds = __webpack_require__(7);
+var _gds = __webpack_require__(11);
 
 var _gds2 = _interopRequireDefault(_gds);
 
-var _cookie = __webpack_require__(5);
+var _cookie = __webpack_require__(10);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -4954,6 +7215,76 @@ exports.default = MenuPanel;
 "use strict";
 
 
+Object.defineProperty(exports, "__esModule", {
+	value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _dom = __webpack_require__(0);
+
+var _dom2 = _interopRequireDefault(_dom);
+
+var _buttonPopover = __webpack_require__(1);
+
+var _buttonPopover2 = _interopRequireDefault(_buttonPopover);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var Theme = function (_ButtonPopOver) {
+	_inherits(Theme, _ButtonPopOver);
+
+	function Theme(params) {
+		_classCallCheck(this, Theme);
+
+		var _this = _possibleConstructorReturn(this, (Theme.__proto__ || Object.getPrototypeOf(Theme)).call(this, params));
+
+		_this.makeTrigger();
+		return _this;
+	}
+
+	_createClass(Theme, [{
+		key: 'build',
+		value: function build() {
+			var _this2 = this;
+
+			var themeList = window.apiData['terminalThemes'];
+
+			if (themeList.length) {
+				themeList.map(function (value) {
+
+					var button = (0, _dom2.default)('button.list-group-item');
+					button.innerHTML = value.label;
+
+					button.addEventListener('click', function () {
+						_this2.popover.close();
+						_this2.settings.onSelect(value);
+					});
+
+					_this2.popContent.appendChild(button);
+				});
+			}
+		}
+	}]);
+
+	return Theme;
+}(_buttonPopover2.default);
+
+exports.default = Theme;
+
+/***/ }),
+/* 21 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
 // import Request			from '../../helpers/requests.es6';
 
 Object.defineProperty(exports, "__esModule", {
@@ -5063,175 +7394,7 @@ var History = function (_ButtonPopOver) {
 exports.default = History;
 
 /***/ }),
-/* 21 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-	value: true
-});
-
-var _dom = __webpack_require__(0);
-
-var _dom2 = _interopRequireDefault(_dom);
-
-var _buttonPopover = __webpack_require__(1);
-
-var _buttonPopover2 = _interopRequireDefault(_buttonPopover);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-var Settings = function (_ButtonPopOver) {
-	_inherits(Settings, _ButtonPopOver);
-
-	function Settings(params) {
-		_classCallCheck(this, Settings);
-
-		// this.popContent = Dom('div');
-		var _this = _possibleConstructorReturn(this, (Settings.__proto__ || Object.getPrototypeOf(Settings)).call(this, params));
-
-		_this.makeTrigger();
-
-		_this.popContent.innerHTML = '<div class="wrapper"> In Development </div>';
-		return _this;
-	}
-
-	// build()
-	// {
-	// 	Request.get('', true).then( ( response = ['No History'] ) => {
-	// 	});
-	// }
-
-
-	return Settings;
-}(_buttonPopover2.default);
-
-exports.default = Settings;
-
-/***/ }),
 /* 22 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-	value: true
-});
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-var _dom = __webpack_require__(0);
-
-var _dom2 = _interopRequireDefault(_dom);
-
-var _buttonPopover = __webpack_require__(1);
-
-var _buttonPopover2 = _interopRequireDefault(_buttonPopover);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-var cellObj = [];
-
-var ACTIVE_CLASS = 'bg-purple';
-
-var Matrix = function (_ButtonPopOver) {
-	_inherits(Matrix, _ButtonPopOver);
-
-	function Matrix(params) {
-		_classCallCheck(this, Matrix);
-
-		var _this = _possibleConstructorReturn(this, (Matrix.__proto__ || Object.getPrototypeOf(Matrix)).call(this, params));
-
-		_this.popContent = (0, _dom2.default)('table.matrix-table');
-		_this.makeTrigger();
-		return _this;
-	}
-
-	_createClass(Matrix, [{
-		key: 'build',
-		value: function build() {
-			[0, 1, 2, 3].map(this._rows).map(this._cells, this).map(this._toTable, this);
-		}
-	}, {
-		key: '_rows',
-		value: function _rows() {
-			cellObj.push([]);
-			return document.createElement('tr');
-		}
-	}, {
-		key: '_cells',
-		value: function _cells(row, rIndex) {
-			var _this2 = this;
-
-			[0, 1, 2, 3].map(function (cIndex) {
-				return row.appendChild(_this2._cell(rIndex, cIndex));
-			});
-			return row;
-		}
-	}, {
-		key: '_cell',
-		value: function _cell(rIndex, cIndex) {
-			var _this3 = this;
-
-			var cell = document.createElement('td');
-
-			cellObj[rIndex].push(cell);
-
-			cell.addEventListener('click', function () {
-				_this3.popover.close();
-
-				window.TerminalState.action('CHANGE_MATRIX', {
-					rows: rIndex,
-					cells: cIndex
-				});
-			});
-
-			cell.addEventListener('mouseover', function () {
-
-				for (var i = 0; i <= rIndex; i++) {
-					cellObj[i].slice(0, cIndex + 1).forEach(function (cell) {
-						return cell.classList.toggle(ACTIVE_CLASS);
-					});
-				}
-			});
-
-			cell.addEventListener('mouseleave', function () {
-				[].forEach.call(_this3.popContent.querySelectorAll('.' + ACTIVE_CLASS), function (cell) {
-					return cell.classList.toggle(ACTIVE_CLASS);
-				});
-			});
-
-			return cell;
-		}
-	}, {
-		key: '_toTable',
-		value: function _toTable(row) {
-			this.popContent.appendChild(row);
-		}
-	}]);
-
-	return Matrix;
-}(_buttonPopover2.default);
-
-exports.default = Matrix;
-
-/***/ }),
-/* 23 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -5297,7 +7460,203 @@ var TextSize = function (_ButtonPopOver) {
 exports.default = TextSize;
 
 /***/ }),
+/* 23 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+	value: true
+});
+
+var _dom = __webpack_require__(0);
+
+var _dom2 = _interopRequireDefault(_dom);
+
+var _buttonPopover = __webpack_require__(1);
+
+var _buttonPopover2 = _interopRequireDefault(_buttonPopover);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var Settings = function (_ButtonPopOver) {
+	_inherits(Settings, _ButtonPopOver);
+
+	function Settings(params) {
+		_classCallCheck(this, Settings);
+
+		// this.popContent = Dom('div');
+		var _this = _possibleConstructorReturn(this, (Settings.__proto__ || Object.getPrototypeOf(Settings)).call(this, params));
+
+		_this.makeTrigger();
+
+		_this.popContent.innerHTML = '<div class="wrapper"> In Development </div>';
+		return _this;
+	}
+
+	// build()
+	// {
+	// 	Request.get('', true).then( ( response = ['No History'] ) => {
+	// 	});
+	// }
+
+
+	return Settings;
+}(_buttonPopover2.default);
+
+exports.default = Settings;
+
+/***/ }),
 /* 24 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+	value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _dom = __webpack_require__(0);
+
+var _dom2 = _interopRequireDefault(_dom);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var SessionKeys = function () {
+	function SessionKeys(params) {
+		_classCallCheck(this, SessionKeys);
+
+		this.context = (0, _dom2.default)('div');
+		this.settings = params;
+		this.collection = [];
+		this.trigger = [];
+		this.active = params.name === params.gds;
+	}
+
+	_createClass(SessionKeys, [{
+		key: 'getButtons',
+		value: function getButtons() {
+			return this.settings.list.map(this.makeButton, this);
+		}
+	}, {
+		key: 'makeButton',
+		value: function makeButton(value, index) {
+			var _this = this;
+
+			var pcc = window.TerminalState.getPcc()[index];
+			var isActive = this.settings.sessionIndex === index;
+
+			var button = (0, _dom2.default)('button.btn btn-sm btn-purple font-bold pos-rlt ' + (isActive ? 'active' : ''));
+			button.innerHTML = value + (pcc ? '<span class="pcc-label">' + pcc + '</span>' : '');
+
+			button.disabled = !this.settings.activeTerminal || isActive;
+
+			button.addEventListener('click', function () {
+				button.disabled = true;
+				_this.settings.onAreaChange(index);
+			});
+
+			return button;
+		}
+	}, {
+		key: 'getTrigger',
+		value: function getTrigger() {
+			var _this2 = this;
+
+			this.trigger = (0, _dom2.default)('button.btn btn-sm btn-mint font-bold' + (this.active ? ' active' : ''));
+			this.trigger.innerHTML = this.settings['name'];
+
+			if (!this.active) this.trigger.addEventListener('click', function () {
+				return _this2.settings.onGdsChange(_this2.settings['name']);
+			});
+
+			return this.trigger;
+		}
+	}, {
+		key: 'render',
+		value: function render() {
+			var _this3 = this;
+
+			this.context.appendChild(this.getTrigger());
+
+			if (this.active) this.collection = this.getButtons().map(function (button) {
+				return _this3.context.appendChild(button);
+			});
+
+			return this.context;
+		}
+	}]);
+
+	return SessionKeys;
+}();
+
+exports.default = SessionKeys;
+
+/***/ }),
+/* 25 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+	value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var button = void 0;
+
+var PqButton = function () {
+	function PqButton() {
+		_classCallCheck(this, PqButton);
+	}
+
+	_createClass(PqButton, null, [{
+		key: 'makeButton',
+		value: function makeButton() {
+			var button = document.createElement('button');
+			button.className = 'btn btn-sm btn-mozilla font-bold';
+			button.innerHTML = 'PQ';
+
+			button.onclick = function () {
+				return window.TerminalState.action('PQ_MODAL_SHOW', {});
+			};
+
+			return button;
+		}
+	}, {
+		key: 'render',
+		value: function render(_ref) {
+			var canCreatePq = _ref.canCreatePq;
+
+			button = button || this.makeButton();
+			button.disabled = !canCreatePq;
+			return button;
+		}
+	}]);
+
+	return PqButton;
+}();
+
+exports.default = PqButton;
+
+/***/ }),
+/* 26 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -5317,6 +7676,10 @@ var _buttonPopover = __webpack_require__(1);
 
 var _buttonPopover2 = _interopRequireDefault(_buttonPopover);
 
+var _fullscreen = __webpack_require__(27);
+
+var _fullscreen2 = _interopRequireDefault(_fullscreen);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -5325,49 +7688,114 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-var Theme = function (_ButtonPopOver) {
-	_inherits(Theme, _ButtonPopOver);
+var STORAGE_KEY = 'dedTerminalBufCmd';
 
-	function Theme(params) {
-		_classCallCheck(this, Theme);
+// import Terminal		from '../../modules/terminal.es6';
 
-		var _this = _possibleConstructorReturn(this, (Theme.__proto__ || Object.getPrototypeOf(Theme)).call(this, params));
+var CommandsBuffer = function (_ButtonPopOver) {
+	_inherits(CommandsBuffer, _ButtonPopOver);
 
+	function CommandsBuffer(params) {
+		_classCallCheck(this, CommandsBuffer);
+
+		var _this = _possibleConstructorReturn(this, (CommandsBuffer.__proto__ || Object.getPrototypeOf(CommandsBuffer)).call(this, params));
+
+		_this.settings.onOpen = function () {
+			return _this.area.focus();
+		};
 		_this.makeTrigger();
 		return _this;
 	}
 
-	_createClass(Theme, [{
+	_createClass(CommandsBuffer, [{
 		key: 'build',
 		value: function build() {
 			var _this2 = this;
 
-			var themeList = window.apiData['terminalThemes'];
+			var cmd = JSON.parse(window.localStorage.getItem(STORAGE_KEY)) || [];
 
-			if (themeList.length) {
-				themeList.map(function (value) {
+			var area = (0, _dom2.default)('textarea.form-control');
+			var btn = (0, _dom2.default)('button.btn btn-sm btn-primary btn-block m-t font-bold');
+			btn.innerHTML = 'Run';
 
-					var button = (0, _dom2.default)('button.list-group-item');
-					button.innerHTML = value.label;
+			area.value = cmd.join("\n");
 
-					button.addEventListener('click', function () {
-						_this2.popover.close();
-						_this2.settings.onSelect(value);
-					});
+			area.rows = 15;
+			area.cols = 20;
 
-					_this2.popContent.appendChild(button);
-				});
-			}
+			btn.onclick = function () {
+				var cmd = area.value.trim().split(/\s+/);
+
+				window.localStorage.setItem(STORAGE_KEY, JSON.stringify(cmd));
+				window.TerminalState.action('DEV_CMD_STACK_RUN', cmd);
+
+				_this2.popover.close();
+			};
+
+			this.popContent.appendChild(area);
+			this.popContent.appendChild(btn);
+
+			this.area = area;
 		}
 	}]);
 
-	return Theme;
+	return CommandsBuffer;
 }(_buttonPopover2.default);
 
-exports.default = Theme;
+var DevButtons = function () {
+	function DevButtons() {
+		_classCallCheck(this, DevButtons);
+
+		this.context = (0, _dom2.default)('div');
+		this.context.appendChild(this.AddPqMacros());
+		this.context.appendChild(this.commandsBuffer());
+		this.context.appendChild(this.fullScreen());
+	}
+
+	_createClass(DevButtons, [{
+		key: 'AddPqMacros',
+		value: function AddPqMacros() {
+			this.macros = (0, _dom2.default)('span.btn btn-primary font-bold');
+			this.macros.innerHTML = 'Test pq';
+			this.macros.onclick = function () {
+				window.TerminalState.action('DEV_CMD_STACK_RUN', ['A/V/13SEPSEAMNL+DL', '01k1*', '*R', '$BN1+2*C09+3*inf']);
+				// window.TerminalState.action('DEV_CMD_STACK_RUN', ['A10JUNKIVRIX', '01Y1Y2', '$B']);
+			};
+
+			return this.macros;
+		}
+	}, {
+		key: 'commandsBuffer',
+		value: function commandsBuffer() {
+			return this.commandsBuffer = new CommandsBuffer({
+				icon: '<span>Dev Buf</span>'
+			}).getTrigger();
+		}
+	}, {
+		key: 'fullScreen',
+		value: function fullScreen() {
+			this.macros = (0, _dom2.default)('span.btn btn-primary font-bold');
+			this.macros.innerHTML = 'Full';
+			this.macros.onclick = function () {
+				return _fullscreen2.default.show();
+			};
+
+			return this.macros;
+		}
+	}, {
+		key: 'getContext',
+		value: function getContext() {
+			return this.context;
+		}
+	}]);
+
+	return DevButtons;
+}();
+
+exports.default = DevButtons;
 
 /***/ }),
-/* 25 */
+/* 27 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -5383,183 +7811,1312 @@ var _dom = __webpack_require__(0);
 
 var _dom2 = _interopRequireDefault(_dom);
 
-var _terminal = __webpack_require__(8);
+var _terminal = __webpack_require__(5);
 
 var _terminal2 = _interopRequireDefault(_terminal);
 
-var _component = __webpack_require__(3);
-
-var _component2 = _interopRequireDefault(_component);
+var _cookie = __webpack_require__(10);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+var FullScreen = function () {
+	function FullScreen() {
+		_classCallCheck(this, FullScreen);
+	}
 
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+	_createClass(FullScreen, null, [{
+		key: 'makeBody',
+		value: function makeBody() {
+			if (!window.activePlugin) return false;
+
+			var body = (0, _dom2.default)('div.terminal-wrap-custom terminal-cell t-f-size-13 text-center t-height-100');
+			var body2 = (0, _dom2.default)('div.terminal-body');
+
+			body.appendChild(body2);
+			return body;
+		}
+	}, {
+		key: 'terminal',
+		value: function terminal(body) {
+			var props = {
+				name: 'fullScreen',
+				sessionIndex: window.TerminalState.getAreaIndex(), // to leave current active terminal
+				gds: window.TerminalState.getGds(),
+				buffer: false
+			};
+
+			var dimensions = {
+				height: body.clientHeight,
+				width: body.clientWidth,
+				char: ''
+				// char		: {
+				// 	height 		: '',
+				// 	width		: ''
+				// }
+			};
+
+			var terminal = new _terminal2.default(props);
+			terminal.reattach(body, dimensions);
+			terminal.context.innerHTML = window.activePlugin.terminal.get(0).innerHTML;
+
+			// on close there is two cmd lines
+			var cmd = terminal.context.querySelector('.cmd');
+			cmd.parentNode.removeChild(cmd);
+
+			// remove cloned epmty lines
+			var emptyLines = terminal.context.querySelector('.emptyLinesWrapper');
+			emptyLines.parentNode.removeChild(emptyLines);
+
+			terminal.init();
+		}
+	}, {
+		key: 'show',
+		value: function show() {
+			var _this = this;
+
+			if (!window.activePlugin) {
+				alert('no terminal selected');
+				return false;
+			}
+
+			var themeClass = (0, _cookie.cookieGet)('terminalTheme_' + apiData.auth.id) || 'terminaltheme_' + apiData['terminalThemes'][0]['id'];
+			var body = this.makeBody();
+
+			window.apiData.Modal.make({
+				dialog_class: 'modal-full no-footer',
+				body_class: 'no-padder ' + themeClass,
+				body: body,
+				noCloseBtn: 1,
+				header: 'Full Screen'
+			}).show(function (params) {
+
+				params.modal.on('hidden.bs.modal', function (e) {
+					window.TerminalState.change({});
+					params.modal.detach().remove();
+				});
+
+				_this.terminal(body);
+			});
+		}
+	}]);
+
+	return FullScreen;
+}();
+
+exports.default = FullScreen;
+
+/***/ }),
+/* 28 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+	value: true
+});
+
+var _slicedToArray = function () { function sliceIterator(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"]) _i["return"](); } finally { if (_d) throw _e; } } return _arr; } return function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { return sliceIterator(arr, i); } else { throw new TypeError("Invalid attempt to destructure non-iterable instance"); } }; }();
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _noty = __webpack_require__(6);
+
+var _noty2 = _interopRequireDefault(_noty);
+
+var _pagination = __webpack_require__(29);
+
+var _pagination2 = _interopRequireDefault(_pagination);
+
+var _session = __webpack_require__(30);
+
+var _session2 = _interopRequireDefault(_session);
+
+var _spinner = __webpack_require__(33);
+
+var _spinner2 = _interopRequireDefault(_spinner);
+
+var _keyBinding = __webpack_require__(36);
+
+var _keyBinding2 = _interopRequireDefault(_keyBinding);
+
+var _output = __webpack_require__(37);
+
+var _output2 = _interopRequireDefault(_output);
+
+var _tabManager = __webpack_require__(38);
+
+var _tabManager2 = _interopRequireDefault(_tabManager);
+
+var _f = __webpack_require__(39);
+
+var _f2 = _interopRequireDefault(_f);
+
+var _history = __webpack_require__(40);
+
+var _history2 = _interopRequireDefault(_history);
+
+var _switchTerminal = __webpack_require__(41);
+
+var _helpers = __webpack_require__(2);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-var gdsSession = [];
-var stringify = JSON.stringify;
-var cells = [];
+var $ = __webpack_require__(8);
+window.$ = window.jQuery = $;
 
-var DimensionCalculator = function () {
-	function DimensionCalculator(context) {
-		_classCallCheck(this, DimensionCalculator);
+__webpack_require__(42);
+__webpack_require__(46).polyfill();
 
-		this.context = context;
+var Debug = function Debug(txt, type) {
+	new _noty2.default({
+		text: 'DEBUG : <strong>' + txt + '</strong>',
+		layout: 'bottomCenter',
+		timeout: 1500,
+		theme: 'metroui',
+		type: type || 'info'
+	}).show();
+};
+
+var TerminalPlugin = function () {
+	function TerminalPlugin(params) {
+		_classCallCheck(this, TerminalPlugin);
+
+		this.settings = params;
+		this.context = params.context;
+		this.name = params.name;
+
+		this.allowManualPaging = params.gds === 'sabre';
+
+		this.session = new _session2.default({
+			terminalIndex: params.name,
+			sessionIndex: params.sessionIndex,
+			gds: params.gds
+		});
+
+		this.terminal = this.init();
+
+		this.pagination = new _pagination2.default(this.terminal);
+		this.spinner = new _spinner2.default(this.terminal);
+
+		this.outputLiner = new _output2.default(this.terminal);
+		this.outputLiner.setNumRows(params.numOfRows);
+
+		this.tabCommands = new _tabManager2.default();
+
+		this.f8Reader = new _f2.default({
+			terminal: this.terminal,
+			gds: params.gds
+		});
+
+		this.history = new _history2.default(params.gds);
 	}
 
-	_createClass(DimensionCalculator, [{
-		key: 'calculate',
-		value: function calculate(rowCount, cellCount) {
-			return {
-				height: Math.floor(this.context.clientHeight / rowCount),
-				width: Math.floor(this.context.clientWidth / cellCount),
-				char: this.getLineHeight()
+	/*return false if char is don't belong cmd*/
+
+
+	_createClass(TerminalPlugin, [{
+		key: 'parseKeyBinds',
+		value: function parseKeyBinds(evt, terminal) {
+			if (!_keyBinding2.default.parse(evt, terminal, this)) return false;
+
+			if (this.f8Reader.getIsActive()) // ignore Tab press
+				{
+					if (evt.which === 13) {
+						this.f8Reader.execCommand();
+						return false;
+					}
+
+					if (evt.key.length === 1 && !evt.ctrlKey) // ctrl meta alt .. forbid
+						this.f8Reader.replaceChar();
+				}
+
+			var replacement = (0, _helpers.getReplacement)(evt, window.TerminalState.isLanguageApollo());
+
+			if (replacement) {
+				this.replaceCommand = replacement;
+			}
+
+			if (replacement === false) // do not print nothing if char is forbidden
+				return false;
+
+			// if test>>>asd+sa and cursor on + // execute only between last > and + cmd
+			if (evt.which === 13) {
+				var cmd = terminal.cmd().get().substring(0, terminal.cmd().position());
+				var lastPromptSignPos = cmd.lastIndexOf('>') + 1;
+
+				if (lastPromptSignPos) cmd = cmd.substring(lastPromptSignPos, cmd.length);
+
+				if (cmd) {
+					terminal.exec(cmd);
+					terminal.cmd().set('');
+					return false;
+				}
+			}
+		}
+	}, {
+		key: 'changeActiveTerm',
+		value: function changeActiveTerm(activeTerminal) {
+			if (this.settings.name === 'fullScreen') return false;
+
+			window.activePlugin = this; // SO SO DEPRECATED NOW
+			window.TerminalState.action('CHANGE_ACTIVE_TERMINAL', activeTerminal);
+		}
+	}, {
+		key: 'purge',
+		value: function purge() {
+			this.settings.clear();
+		}
+	}, {
+		key: 'tabPressed',
+		value: function tabPressed() {
+			if (this.f8Reader.getIsActive()) return this.f8Reader.jumpToNextPos();
+
+			this.tabCommands.next().run(this.updateOutput.bind(this));
+		}
+	}, {
+		key: 'tabShiftPressed',
+		value: function tabShiftPressed() {
+			this.tabCommands.prev().run(this.updateOutput.bind(this));
+		}
+	}, {
+		key: 'updateOutput',
+		value: function updateOutput(_ref) {
+			var _ref2 = _slicedToArray(_ref, 2),
+			    cmd = _ref2[0],
+			    str = _ref2[1];
+
+			this.terminal.update(-1, str);
+			this.terminal.cmd().set(cmd);
+		}
+	}, {
+		key: 'resize',
+		value: function resize(sizes) {
+			this.terminal.settings().numChars = sizes.numOfChars;
+			this.terminal.settings().numRows = sizes.numOfRows;
+
+			this.terminal.resize();
+		}
+	}, {
+		key: 'emptyLinesRecalculate',
+		value: function emptyLinesRecalculate(numOfRows, numOfChars, charHeight) {
+			this.outputLiner.setNumRows(numOfRows).setNumChars(numOfChars).setCharHeight(charHeight).recalculate();
+		}
+	}, {
+		key: 'init',
+		value: function init() {
+			var _this = this;
+
+			//caveats terminal.rows() - every time appends div with cursor span - not too smooth for performance
+			var context = $(this.context).terminal(this.commandParser.bind(this), {
+				echoCommand: false,
+				greetings: '',
+				name: this.name,
+				prompt: '>',
+				numRows: this.settings.numOfRows || 0, // plugin calculates it in so shitty slow manner appending cursor to body 3 times per plugin
+				numChars: this.settings.numOfChars,
+				memory: true, // do not add to localStorage
+
+				keypress: function keypress(e, terminal) {
+					if (_this.replaceCommand) {
+						terminal.insert(_this.replaceCommand);
+						_this.replaceCommand = '';
+						return false;
+					}
+				}, // BUGGY BUGGY, assign on document wtf???
+
+				keydown: this.parseKeyBinds.bind(this),
+				clickTimeout: 300,
+				onInit: this.changeActiveTerm.bind(this),
+				onTerminalChange: this.changeActiveTerm.bind(this),
+				onBeforeCommand: this.checkBeforeEnter.bind(this),
+
+				// for hard scenario shortcut, others in keymap helper
+				keymap: {
+					'CTRL+S': function CTRLS() {
+						return window.TerminalState.purgeScreens();
+					},
+					'TAB': function TAB() {
+						return _this.tabPressed();
+					},
+					'F8': function F8() {
+						_this.terminal.cmd().set(_this.f8Reader.tie());return false;
+					},
+					'F5': function F5() {
+						return false;
+					},
+					'.': function _() {
+						return '.';
+					}
+				},
+
+				exceptionHandler: function exceptionHandler(err) {
+					console.warn('exc', err);
+				}
+			});
+
+			// custom keydown events for each terminal
+			// we introduced this approach because of terminal library adding keydown events to document
+			(0, _switchTerminal.terminalKeydown)(context[0]);
+			return context;
+		}
+	}, {
+		key: 'checkSabreCommand',
+		value: function checkSabreCommand(command, terminal) {
+			if (this.allowManualPaging) {
+				switch (command.toUpperCase()) {
+					case 'MD':
+						terminal.echo(this.pagination.next().print());
+						return true;
+
+					case 'MU':
+						terminal.echo(this.pagination.prev().print());
+						return true;
+
+					case 'MDA':
+						terminal.echo(this.pagination.printAll());
+						return true;
+
+					case 'MDA5':
+						return true;
+
+					case 'MDA20':
+						return true;
+				}
+			}
+
+			return false;
+		}
+	}, {
+		key: 'commandParser',
+		value: function commandParser(command, terminal) //pressed enter
+		{
+			return false;
+		}
+	}, {
+		key: 'checkBeforeEnter',
+		value: function checkBeforeEnter(terminal, command) {
+			var _this2 = this;
+
+			if (!command || command.trim() === '') {
+				this.terminal.echo('>');
+				return false;
+			}
+
+			if (this.checkSabreCommand(command, terminal)) return command;
+
+			this.spinner.start();
+
+			this.history.add(command);
+
+			var finish = function finish(response) {
+				_this2.spinner.end();
+				_this2.parseBackEnd(response, command);
 			};
+
+			var before = function before() {
+				_this2.outputLiner.prepare('');
+				_this2.spinner.start();
+				_this2.terminal.echo('[[;;;usedCommand;]>' + command.toUpperCase() + ']');
+			};
+
+			this.session.pushCommand(command.toUpperCase(), finish, before);
+
+			this.session.perform();
+
+			return command;
 		}
 	}, {
-		key: 'getLineHeight',
-		value: function getLineHeight() {
-			var _getBoundingClientRec = (this.cursor || this.getCursor()).getBoundingClientRect(),
-			    width = _getBoundingClientRec.width,
-			    height = _getBoundingClientRec.height;
+		key: 'parseBackEnd',
+		value: function parseBackEnd() {
+			var response = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+			var command = arguments[1];
 
-			return { width: width, height: height };
+			this.lastCommand = command;
+
+			var result = response['data'] || {};
+
+			if (result['output']) {
+				if (result['output'].trim() === '*') {
+					this.terminal.update(-2, command + ' *');
+					return false;
+				}
+
+				if (this.allowManualPaging) // sabre
+					{
+						var output = this.pagination.bindOutput(result['output'], this.settings.numOfRows - 1, this.settings.numOfChars).print();
+
+						this.terminal.echo(output);
+					} else {
+					// if 1 rows of terminal do not perform clear screen
+					var clearScreen = result['clearScreen'] && window.TerminalState.getMatrix().rows !== 0;
+					this.outputLiner.prepare(result['output'], clearScreen);
+				}
+			}
+
+			this.tabCommands.reset(result['tabCommands'], result['output']);
+
+			if (result['startNewSession']) window.TerminalState.action('RESET_GDS');
+
+			window.TerminalState.action('UPDATE_CUR_GDS', {
+				gdsName: this.settings.gds,
+
+				canCreatePq: result['canCreatePq'],
+				canCreatePqErrors: result['canCreatePqErrors'],
+
+				sessionIndex: ['A', 'B', 'C', 'D', 'E', 'F'].indexOf(result.area),
+				lastPcc: result['pcc']
+			});
+
+			if (window.TerminalState.hasPermissions()) this.debugOutput(result);
 		}
 	}, {
-		key: 'getCursor',
-		value: function getCursor() {
-			var tempCmd = (0, _dom2.default)('div.terminal temp-terminal');
-			this.context.appendChild(tempCmd);
-			tempCmd.innerHTML = '<div class="cmd"><span class="cursor">&nbsp;</span></div>';
+		key: 'debugOutput',
+		value: function debugOutput(result) {
+			if (result['clearScreen']) Debug('DEBUG: CLEAR SCREEN', 'info');
 
-			return this.cursor = tempCmd.querySelector('.cursor');
+			if (result['canCreatePq']) Debug('CAN CREATE PQ', 'warning');
+
+			if (result['tabCommands'] && result['tabCommands'].length) Debug('FOUND TAB COMMANDS', 'success');
+
+			if (result['pcc']) Debug('CHANGE PCC', 'success');
 		}
+	}, {
+		key: 'parseError',
+		value: function parseError(e) {}
 	}]);
 
-	return DimensionCalculator;
+	return TerminalPlugin;
 }();
 
-var TerminalsMatrix = function (_Component) {
-	_inherits(TerminalsMatrix, _Component);
+exports.default = TerminalPlugin;
 
-	function TerminalsMatrix() {
-		_classCallCheck(this, TerminalsMatrix);
+/***/ }),
+/* 29 */
+/***/ (function(module, exports, __webpack_require__) {
 
-		return _possibleConstructorReturn(this, (TerminalsMatrix.__proto__ || Object.getPrototypeOf(TerminalsMatrix)).call(this, 'table.terminals-table'));
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+	value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _helpers = __webpack_require__(2);
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var Pagination = function () {
+	function Pagination() {
+		_classCallCheck(this, Pagination);
+
+		this.cache = [];
+		this.output = '';
+		this.page = 0;
 	}
 
-	_createClass(TerminalsMatrix, [{
-		key: 'clear',
-		value: function clear() {
-			this.context.innerHTML = '';
+	_createClass(Pagination, [{
+		key: 'bindOutput',
+		value: function bindOutput(output) {
+			var rows = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 0;
+			var cols = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 0;
+
+			this.page = 0;
+			this.output = output;
+			this.cache = (0, _helpers.makePages)(output, rows, cols);
+
+			// console.log(this.cache );
 			return this;
 		}
 	}, {
-		key: 'getSizes',
-		value: function getSizes() {
-			return this.sizer = this.sizer || new DimensionCalculator(this.getContext().parentNode);
+		key: 'next',
+		value: function next() {
+			if (this.cache.length && this.page < this.cache.length) this.page++;
+
+			return this;
 		}
 	}, {
-		key: 'makeCells',
-		value: function makeCells(rowCount, cellCount) {
-			var _this2 = this;
+		key: 'prev',
+		value: function prev() {
+			if (this.page > 0) this.page--;
 
-			var makeRow = function makeRow() {
-				var row = (0, _dom2.default)('tr');
-				_this2.context.appendChild(row);
-				return row;
-			};
-
-			var makeCells = function makeCells(row) {
-				return [].concat(_toConsumableArray(new Array(cellCount))).map(function () {
-					var cell = (0, _dom2.default)('td.terminal-cell .v-middle');
-					row.appendChild(cell);
-					return cell;
-				});
-			};
-
-			return [].concat.apply([], [].concat(_toConsumableArray(new Array(rowCount))).map(makeRow).map(makeCells));
+			return this;
 		}
 	}, {
-		key: 'purgeScreens',
-		value: function purgeScreens(gds) {
-			gdsSession[gds].forEach(function (terminal) {
-				return terminal.clear();
-			});
+		key: 'print',
+		value: function print() {
+			return this.cache[this.page] || '‡NOTHING TO SCROLL‡';
 		}
 	}, {
-		key: 'getTerminal',
-		value: function getTerminal(gds, index, props) {
-			return gdsSession[gds][index] = gdsSession[gds][index] || new _terminal2.default(props);
-		}
-	}, {
-		key: 'renderIsNeeded',
-		value: function renderIsNeeded(state) {
-			if (!this.state) return true;
-
-			return stringify(state) !== stringify(this.state);
-		}
-	}, {
-		key: '_renderer',
-		value: function _renderer() {
-			var _this3 = this;
-
-			var params = this.props;
-
-			var rowCount = params.cellMatrix.rows + 1;
-			var cellCount = params.cellMatrix.cells + 1;
-
-			gdsSession[params.gds] = gdsSession[params.gds] || [];
-
-			var state = {
-				gds: params.gds,
-				dimensions: this.getSizes().calculate(rowCount, cellCount),
-				wrapWidth: params.containerWidth,
-				hideMenu: params.hideMenu
-			};
-
-			var needToRender = this.renderIsNeeded(state);
-
-			if (needToRender) {
-				this.context.innerHTML = '';
-				this.context.className = 't-matrix-w-' + (cellCount - 1);
-
-				this.state = state;
-
-				cells = this.makeCells(rowCount, cellCount);
-
-				cells.forEach(function (cell, index) {
-
-					var props = {
-						name: index,
-						sessionIndex: params.sessionIndex,
-						gds: params.gds, // need for session
-						buffer: params.buffer && params.buffer[params.gds] ? params.buffer[params.gds]['terminals'][index + 1] : ''
-					};
-
-					_this3.getTerminal(params.gds, index, props).reattach(cell, _this3.getSizes().calculate(rowCount, cellCount)); //sometimes calculate doesn't get actual parent context dimensions
-				});
-			}
-
-			cells.forEach(function (cell, index) {
-				var isActive = params.activeTerminal && index === params.activeTerminal.name();
-				cell.classList.toggle('activeWindow', isActive);
-			});
+		key: 'printAll',
+		value: function printAll() {
+			return this.output;
 		}
 	}]);
 
-	return TerminalsMatrix;
-}(_component2.default);
+	return Pagination;
+}();
 
-exports.default = TerminalsMatrix;
+exports.default = Pagination;
 
 /***/ }),
-/* 26 */
+/* 30 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+// import { TIME_FORMAT, ACCOUNT } from '../constants';
+
+Object.defineProperty(exports, "__esModule", {
+	value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _requests = __webpack_require__(7);
+
+var _requests2 = _interopRequireDefault(_requests);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var commandStack = [];
+var finishStack = [];
+var beforeStack = [];
+var isActive = false;
+var promise = false;
+
+var Session = function () {
+	function Session(params) {
+		_classCallCheck(this, Session);
+
+		this.settings = params;
+		this.promise = false;
+	}
+
+	_createClass(Session, [{
+		key: 'run',
+		value: function run(params) {
+			var rData = {
+				terminalIndex: parseInt(this.settings['terminalIndex']) + 1,
+				command: params['cmd'],
+				gds: this.settings['gds'],
+				language: window.TerminalState.getLanguage().toLowerCase(),
+				terminalData: window.apiData['terminalData']
+			};
+
+			promise = _requests2.default.runSyncCommand(rData);
+
+			promise.then(function () {
+				promise = false;
+			});
+
+			return promise;
+		}
+	}, {
+		key: 'isActive',
+		value: function isActive() {
+			return promise;
+		}
+	}, {
+		key: 'perform',
+		value: function perform() {
+			var _this = this;
+
+			if (promise) return false;
+
+			var cmd = commandStack[0];
+
+			beforeStack[0]();
+
+			return this.run({ cmd: cmd }).then(function (response) {
+
+				finishStack[0](response);
+
+				commandStack.shift();
+				finishStack.shift();
+				beforeStack.shift();
+
+				if (commandStack[0]) // recursive self call
+					{
+						_this.perform(commandStack[0]);
+					}
+
+				return response;
+			});
+		}
+	}, {
+		key: 'pushCommand',
+		value: function pushCommand(termRun, finish, before) {
+			commandStack.push(termRun);
+			finishStack.push(finish);
+			beforeStack.push(before);
+
+			return this;
+		}
+
+		/*start()
+  {
+  	Requests.runSyncCommand('startSession', {
+  		timeFormat	: TIME_FORMAT,
+  		account		: ACCOUNT
+  	})
+  		.then( function( response ) {
+  			return response['data'];
+  		})
+  		.catch(function(err) {
+  			console.error('oh shit Error', err);
+  		});
+  }
+  	end()
+  {
+  	let result = Requests.runSyncCommand('endSession', {
+  		sessionToken: this.settings['sessionToken']
+  	});
+  		if (result['success'])
+  		return true;
+  }*/
+
+	}]);
+
+	return Session;
+}();
+
+exports.default = Session;
+
+/***/ }),
+/* 31 */
+/***/ (function(module, exports) {
+
+(function(self) {
+  'use strict';
+
+  if (self.fetch) {
+    return
+  }
+
+  var support = {
+    searchParams: 'URLSearchParams' in self,
+    iterable: 'Symbol' in self && 'iterator' in Symbol,
+    blob: 'FileReader' in self && 'Blob' in self && (function() {
+      try {
+        new Blob()
+        return true
+      } catch(e) {
+        return false
+      }
+    })(),
+    formData: 'FormData' in self,
+    arrayBuffer: 'ArrayBuffer' in self
+  }
+
+  if (support.arrayBuffer) {
+    var viewClasses = [
+      '[object Int8Array]',
+      '[object Uint8Array]',
+      '[object Uint8ClampedArray]',
+      '[object Int16Array]',
+      '[object Uint16Array]',
+      '[object Int32Array]',
+      '[object Uint32Array]',
+      '[object Float32Array]',
+      '[object Float64Array]'
+    ]
+
+    var isDataView = function(obj) {
+      return obj && DataView.prototype.isPrototypeOf(obj)
+    }
+
+    var isArrayBufferView = ArrayBuffer.isView || function(obj) {
+      return obj && viewClasses.indexOf(Object.prototype.toString.call(obj)) > -1
+    }
+  }
+
+  function normalizeName(name) {
+    if (typeof name !== 'string') {
+      name = String(name)
+    }
+    if (/[^a-z0-9\-#$%&'*+.\^_`|~]/i.test(name)) {
+      throw new TypeError('Invalid character in header field name')
+    }
+    return name.toLowerCase()
+  }
+
+  function normalizeValue(value) {
+    if (typeof value !== 'string') {
+      value = String(value)
+    }
+    return value
+  }
+
+  // Build a destructive iterator for the value list
+  function iteratorFor(items) {
+    var iterator = {
+      next: function() {
+        var value = items.shift()
+        return {done: value === undefined, value: value}
+      }
+    }
+
+    if (support.iterable) {
+      iterator[Symbol.iterator] = function() {
+        return iterator
+      }
+    }
+
+    return iterator
+  }
+
+  function Headers(headers) {
+    this.map = {}
+
+    if (headers instanceof Headers) {
+      headers.forEach(function(value, name) {
+        this.append(name, value)
+      }, this)
+    } else if (Array.isArray(headers)) {
+      headers.forEach(function(header) {
+        this.append(header[0], header[1])
+      }, this)
+    } else if (headers) {
+      Object.getOwnPropertyNames(headers).forEach(function(name) {
+        this.append(name, headers[name])
+      }, this)
+    }
+  }
+
+  Headers.prototype.append = function(name, value) {
+    name = normalizeName(name)
+    value = normalizeValue(value)
+    var oldValue = this.map[name]
+    this.map[name] = oldValue ? oldValue+','+value : value
+  }
+
+  Headers.prototype['delete'] = function(name) {
+    delete this.map[normalizeName(name)]
+  }
+
+  Headers.prototype.get = function(name) {
+    name = normalizeName(name)
+    return this.has(name) ? this.map[name] : null
+  }
+
+  Headers.prototype.has = function(name) {
+    return this.map.hasOwnProperty(normalizeName(name))
+  }
+
+  Headers.prototype.set = function(name, value) {
+    this.map[normalizeName(name)] = normalizeValue(value)
+  }
+
+  Headers.prototype.forEach = function(callback, thisArg) {
+    for (var name in this.map) {
+      if (this.map.hasOwnProperty(name)) {
+        callback.call(thisArg, this.map[name], name, this)
+      }
+    }
+  }
+
+  Headers.prototype.keys = function() {
+    var items = []
+    this.forEach(function(value, name) { items.push(name) })
+    return iteratorFor(items)
+  }
+
+  Headers.prototype.values = function() {
+    var items = []
+    this.forEach(function(value) { items.push(value) })
+    return iteratorFor(items)
+  }
+
+  Headers.prototype.entries = function() {
+    var items = []
+    this.forEach(function(value, name) { items.push([name, value]) })
+    return iteratorFor(items)
+  }
+
+  if (support.iterable) {
+    Headers.prototype[Symbol.iterator] = Headers.prototype.entries
+  }
+
+  function consumed(body) {
+    if (body.bodyUsed) {
+      return Promise.reject(new TypeError('Already read'))
+    }
+    body.bodyUsed = true
+  }
+
+  function fileReaderReady(reader) {
+    return new Promise(function(resolve, reject) {
+      reader.onload = function() {
+        resolve(reader.result)
+      }
+      reader.onerror = function() {
+        reject(reader.error)
+      }
+    })
+  }
+
+  function readBlobAsArrayBuffer(blob) {
+    var reader = new FileReader()
+    var promise = fileReaderReady(reader)
+    reader.readAsArrayBuffer(blob)
+    return promise
+  }
+
+  function readBlobAsText(blob) {
+    var reader = new FileReader()
+    var promise = fileReaderReady(reader)
+    reader.readAsText(blob)
+    return promise
+  }
+
+  function readArrayBufferAsText(buf) {
+    var view = new Uint8Array(buf)
+    var chars = new Array(view.length)
+
+    for (var i = 0; i < view.length; i++) {
+      chars[i] = String.fromCharCode(view[i])
+    }
+    return chars.join('')
+  }
+
+  function bufferClone(buf) {
+    if (buf.slice) {
+      return buf.slice(0)
+    } else {
+      var view = new Uint8Array(buf.byteLength)
+      view.set(new Uint8Array(buf))
+      return view.buffer
+    }
+  }
+
+  function Body() {
+    this.bodyUsed = false
+
+    this._initBody = function(body) {
+      this._bodyInit = body
+      if (!body) {
+        this._bodyText = ''
+      } else if (typeof body === 'string') {
+        this._bodyText = body
+      } else if (support.blob && Blob.prototype.isPrototypeOf(body)) {
+        this._bodyBlob = body
+      } else if (support.formData && FormData.prototype.isPrototypeOf(body)) {
+        this._bodyFormData = body
+      } else if (support.searchParams && URLSearchParams.prototype.isPrototypeOf(body)) {
+        this._bodyText = body.toString()
+      } else if (support.arrayBuffer && support.blob && isDataView(body)) {
+        this._bodyArrayBuffer = bufferClone(body.buffer)
+        // IE 10-11 can't handle a DataView body.
+        this._bodyInit = new Blob([this._bodyArrayBuffer])
+      } else if (support.arrayBuffer && (ArrayBuffer.prototype.isPrototypeOf(body) || isArrayBufferView(body))) {
+        this._bodyArrayBuffer = bufferClone(body)
+      } else {
+        throw new Error('unsupported BodyInit type')
+      }
+
+      if (!this.headers.get('content-type')) {
+        if (typeof body === 'string') {
+          this.headers.set('content-type', 'text/plain;charset=UTF-8')
+        } else if (this._bodyBlob && this._bodyBlob.type) {
+          this.headers.set('content-type', this._bodyBlob.type)
+        } else if (support.searchParams && URLSearchParams.prototype.isPrototypeOf(body)) {
+          this.headers.set('content-type', 'application/x-www-form-urlencoded;charset=UTF-8')
+        }
+      }
+    }
+
+    if (support.blob) {
+      this.blob = function() {
+        var rejected = consumed(this)
+        if (rejected) {
+          return rejected
+        }
+
+        if (this._bodyBlob) {
+          return Promise.resolve(this._bodyBlob)
+        } else if (this._bodyArrayBuffer) {
+          return Promise.resolve(new Blob([this._bodyArrayBuffer]))
+        } else if (this._bodyFormData) {
+          throw new Error('could not read FormData body as blob')
+        } else {
+          return Promise.resolve(new Blob([this._bodyText]))
+        }
+      }
+
+      this.arrayBuffer = function() {
+        if (this._bodyArrayBuffer) {
+          return consumed(this) || Promise.resolve(this._bodyArrayBuffer)
+        } else {
+          return this.blob().then(readBlobAsArrayBuffer)
+        }
+      }
+    }
+
+    this.text = function() {
+      var rejected = consumed(this)
+      if (rejected) {
+        return rejected
+      }
+
+      if (this._bodyBlob) {
+        return readBlobAsText(this._bodyBlob)
+      } else if (this._bodyArrayBuffer) {
+        return Promise.resolve(readArrayBufferAsText(this._bodyArrayBuffer))
+      } else if (this._bodyFormData) {
+        throw new Error('could not read FormData body as text')
+      } else {
+        return Promise.resolve(this._bodyText)
+      }
+    }
+
+    if (support.formData) {
+      this.formData = function() {
+        return this.text().then(decode)
+      }
+    }
+
+    this.json = function() {
+      return this.text().then(JSON.parse)
+    }
+
+    return this
+  }
+
+  // HTTP methods whose capitalization should be normalized
+  var methods = ['DELETE', 'GET', 'HEAD', 'OPTIONS', 'POST', 'PUT']
+
+  function normalizeMethod(method) {
+    var upcased = method.toUpperCase()
+    return (methods.indexOf(upcased) > -1) ? upcased : method
+  }
+
+  function Request(input, options) {
+    options = options || {}
+    var body = options.body
+
+    if (input instanceof Request) {
+      if (input.bodyUsed) {
+        throw new TypeError('Already read')
+      }
+      this.url = input.url
+      this.credentials = input.credentials
+      if (!options.headers) {
+        this.headers = new Headers(input.headers)
+      }
+      this.method = input.method
+      this.mode = input.mode
+      if (!body && input._bodyInit != null) {
+        body = input._bodyInit
+        input.bodyUsed = true
+      }
+    } else {
+      this.url = String(input)
+    }
+
+    this.credentials = options.credentials || this.credentials || 'omit'
+    if (options.headers || !this.headers) {
+      this.headers = new Headers(options.headers)
+    }
+    this.method = normalizeMethod(options.method || this.method || 'GET')
+    this.mode = options.mode || this.mode || null
+    this.referrer = null
+
+    if ((this.method === 'GET' || this.method === 'HEAD') && body) {
+      throw new TypeError('Body not allowed for GET or HEAD requests')
+    }
+    this._initBody(body)
+  }
+
+  Request.prototype.clone = function() {
+    return new Request(this, { body: this._bodyInit })
+  }
+
+  function decode(body) {
+    var form = new FormData()
+    body.trim().split('&').forEach(function(bytes) {
+      if (bytes) {
+        var split = bytes.split('=')
+        var name = split.shift().replace(/\+/g, ' ')
+        var value = split.join('=').replace(/\+/g, ' ')
+        form.append(decodeURIComponent(name), decodeURIComponent(value))
+      }
+    })
+    return form
+  }
+
+  function parseHeaders(rawHeaders) {
+    var headers = new Headers()
+    rawHeaders.split(/\r?\n/).forEach(function(line) {
+      var parts = line.split(':')
+      var key = parts.shift().trim()
+      if (key) {
+        var value = parts.join(':').trim()
+        headers.append(key, value)
+      }
+    })
+    return headers
+  }
+
+  Body.call(Request.prototype)
+
+  function Response(bodyInit, options) {
+    if (!options) {
+      options = {}
+    }
+
+    this.type = 'default'
+    this.status = 'status' in options ? options.status : 200
+    this.ok = this.status >= 200 && this.status < 300
+    this.statusText = 'statusText' in options ? options.statusText : 'OK'
+    this.headers = new Headers(options.headers)
+    this.url = options.url || ''
+    this._initBody(bodyInit)
+  }
+
+  Body.call(Response.prototype)
+
+  Response.prototype.clone = function() {
+    return new Response(this._bodyInit, {
+      status: this.status,
+      statusText: this.statusText,
+      headers: new Headers(this.headers),
+      url: this.url
+    })
+  }
+
+  Response.error = function() {
+    var response = new Response(null, {status: 0, statusText: ''})
+    response.type = 'error'
+    return response
+  }
+
+  var redirectStatuses = [301, 302, 303, 307, 308]
+
+  Response.redirect = function(url, status) {
+    if (redirectStatuses.indexOf(status) === -1) {
+      throw new RangeError('Invalid status code')
+    }
+
+    return new Response(null, {status: status, headers: {location: url}})
+  }
+
+  self.Headers = Headers
+  self.Request = Request
+  self.Response = Response
+
+  self.fetch = function(input, init) {
+    return new Promise(function(resolve, reject) {
+      var request = new Request(input, init)
+      var xhr = new XMLHttpRequest()
+
+      xhr.onload = function() {
+        var options = {
+          status: xhr.status,
+          statusText: xhr.statusText,
+          headers: parseHeaders(xhr.getAllResponseHeaders() || '')
+        }
+        options.url = 'responseURL' in xhr ? xhr.responseURL : options.headers.get('X-Request-URL')
+        var body = 'response' in xhr ? xhr.response : xhr.responseText
+        resolve(new Response(body, options))
+      }
+
+      xhr.onerror = function() {
+        reject(new TypeError('Network request failed'))
+      }
+
+      xhr.ontimeout = function() {
+        reject(new TypeError('Network request failed'))
+      }
+
+      xhr.open(request.method, request.url, true)
+
+      if (request.credentials === 'include') {
+        xhr.withCredentials = true
+      }
+
+      if ('responseType' in xhr && support.blob) {
+        xhr.responseType = 'blob'
+      }
+
+      request.headers.forEach(function(value, name) {
+        xhr.setRequestHeader(name, value)
+      })
+
+      xhr.send(typeof request._bodyInit === 'undefined' ? null : request._bodyInit)
+    })
+  }
+  self.fetch.polyfill = true
+})(typeof self !== 'undefined' ? self : this);
+
+
+/***/ }),
+/* 32 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/**
+ * @preserve jquery-param (c) 2015 KNOWLEDGECODE | MIT
+ */
+(function (global) {
+    'use strict';
+
+    var param = function (a) {
+        var s = [], rbracket = /\[\]$/,
+            isArray = function (obj) {
+                return Object.prototype.toString.call(obj) === '[object Array]';
+            }, add = function (k, v) {
+                v = typeof v === 'function' ? v() : v === null ? '' : v === undefined ? '' : v;
+                s[s.length] = encodeURIComponent(k) + '=' + encodeURIComponent(v);
+            }, buildParams = function (prefix, obj) {
+                var i, len, key;
+
+                if (prefix) {
+                    if (isArray(obj)) {
+                        for (i = 0, len = obj.length; i < len; i++) {
+                            if (rbracket.test(prefix)) {
+                                add(prefix, obj[i]);
+                            } else {
+                                buildParams(prefix + '[' + (typeof obj[i] === 'object' ? i : '') + ']', obj[i]);
+                            }
+                        }
+                    } else if (obj && String(obj) === '[object Object]') {
+                        for (key in obj) {
+                            buildParams(prefix + '[' + key + ']', obj[key]);
+                        }
+                    } else {
+                        add(prefix, obj);
+                    }
+                } else if (isArray(obj)) {
+                    for (i = 0, len = obj.length; i < len; i++) {
+                        add(obj[i].name, obj[i].value);
+                    }
+                } else {
+                    for (key in obj) {
+                        buildParams(key, obj[key]);
+                    }
+                }
+                return s;
+            };
+
+        return buildParams('', a).join('&').replace(/%20/g, '+');
+    };
+
+    if (typeof module === 'object' && typeof module.exports === 'object') {
+        module.exports = param;
+    } else if (true) {
+        !(__WEBPACK_AMD_DEFINE_ARRAY__ = [], __WEBPACK_AMD_DEFINE_RESULT__ = function () {
+            return param;
+        }.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__),
+				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+    } else {
+        global.param = param;
+    }
+
+}(this));
+
+
+
+/***/ }),
+/* 33 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+	value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var cliSpinners = __webpack_require__(34);
+
+var Spinner = function () {
+	function Spinner(terminal) {
+		_classCallCheck(this, Spinner);
+
+		this.timer = false;
+		this.terminal = terminal;
+		this.prompt = '';
+		this.spinner = cliSpinners.simpleDots;
+		this.spinner.interval = 550;
+		this.frameCounter = 0;
+	}
+
+	_createClass(Spinner, [{
+		key: 'set',
+		value: function set() {
+			var text = this.spinner.frames[this.frameCounter++ % this.spinner.frames.length];
+			this.terminal.set_prompt(text);
+		}
+	}, {
+		key: 'start',
+		value: function start() {
+			if (this.timer) {
+				// this.end();
+				return false;
+			}
+
+			this.terminal.find('.cursor').hide();
+			this.terminal.set_mask('');
+
+			this.prompt = this.terminal.get_prompt();
+
+			this.set();
+			this.timer = setInterval(this.set.bind(this), this.spinner.interval);
+		}
+	}, {
+		key: 'end',
+		value: function end() {
+			clearInterval(this.timer);
+
+			this.terminal.set_prompt(this.prompt);
+
+			this.terminal.find('.cursor').show();
+			this.terminal.set_mask(false);
+
+			this.timer = false;
+		}
+	}, {
+		key: 'isActive',
+		value: function isActive() {
+			return !!this.timer;
+		}
+	}]);
+
+	return Spinner;
+}();
+
+exports.default = Spinner;
+
+/***/ }),
+/* 34 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+module.exports = __webpack_require__(35);
+
+
+/***/ }),
+/* 35 */
+/***/ (function(module, exports) {
+
+module.exports = {"dots":{"interval":80,"frames":["⠋","⠙","⠹","⠸","⠼","⠴","⠦","⠧","⠇","⠏"]},"dots2":{"interval":80,"frames":["⣾","⣽","⣻","⢿","⡿","⣟","⣯","⣷"]},"dots3":{"interval":80,"frames":["⠋","⠙","⠚","⠞","⠖","⠦","⠴","⠲","⠳","⠓"]},"dots4":{"interval":80,"frames":["⠄","⠆","⠇","⠋","⠙","⠸","⠰","⠠","⠰","⠸","⠙","⠋","⠇","⠆"]},"dots5":{"interval":80,"frames":["⠋","⠙","⠚","⠒","⠂","⠂","⠒","⠲","⠴","⠦","⠖","⠒","⠐","⠐","⠒","⠓","⠋"]},"dots6":{"interval":80,"frames":["⠁","⠉","⠙","⠚","⠒","⠂","⠂","⠒","⠲","⠴","⠤","⠄","⠄","⠤","⠴","⠲","⠒","⠂","⠂","⠒","⠚","⠙","⠉","⠁"]},"dots7":{"interval":80,"frames":["⠈","⠉","⠋","⠓","⠒","⠐","⠐","⠒","⠖","⠦","⠤","⠠","⠠","⠤","⠦","⠖","⠒","⠐","⠐","⠒","⠓","⠋","⠉","⠈"]},"dots8":{"interval":80,"frames":["⠁","⠁","⠉","⠙","⠚","⠒","⠂","⠂","⠒","⠲","⠴","⠤","⠄","⠄","⠤","⠠","⠠","⠤","⠦","⠖","⠒","⠐","⠐","⠒","⠓","⠋","⠉","⠈","⠈"]},"dots9":{"interval":80,"frames":["⢹","⢺","⢼","⣸","⣇","⡧","⡗","⡏"]},"dots10":{"interval":80,"frames":["⢄","⢂","⢁","⡁","⡈","⡐","⡠"]},"dots11":{"interval":100,"frames":["⠁","⠂","⠄","⡀","⢀","⠠","⠐","⠈"]},"dots12":{"interval":80,"frames":["⢀⠀","⡀⠀","⠄⠀","⢂⠀","⡂⠀","⠅⠀","⢃⠀","⡃⠀","⠍⠀","⢋⠀","⡋⠀","⠍⠁","⢋⠁","⡋⠁","⠍⠉","⠋⠉","⠋⠉","⠉⠙","⠉⠙","⠉⠩","⠈⢙","⠈⡙","⢈⠩","⡀⢙","⠄⡙","⢂⠩","⡂⢘","⠅⡘","⢃⠨","⡃⢐","⠍⡐","⢋⠠","⡋⢀","⠍⡁","⢋⠁","⡋⠁","⠍⠉","⠋⠉","⠋⠉","⠉⠙","⠉⠙","⠉⠩","⠈⢙","⠈⡙","⠈⠩","⠀⢙","⠀⡙","⠀⠩","⠀⢘","⠀⡘","⠀⠨","⠀⢐","⠀⡐","⠀⠠","⠀⢀","⠀⡀"]},"line":{"interval":130,"frames":["-","\\","|","/"]},"line2":{"interval":100,"frames":["⠂","-","–","—","–","-"]},"pipe":{"interval":100,"frames":["┤","┘","┴","└","├","┌","┬","┐"]},"simpleDots":{"interval":400,"frames":[".  ",".. ","...","   "]},"simpleDotsScrolling":{"interval":200,"frames":[".  ",".. ","..."," ..","  .","   "]},"star":{"interval":70,"frames":["✶","✸","✹","✺","✹","✷"]},"star2":{"interval":80,"frames":["+","x","*"]},"flip":{"interval":70,"frames":["_","_","_","-","`","`","'","´","-","_","_","_"]},"hamburger":{"interval":100,"frames":["☱","☲","☴"]},"growVertical":{"interval":120,"frames":["▁","▃","▄","▅","▆","▇","▆","▅","▄","▃"]},"growHorizontal":{"interval":120,"frames":["▏","▎","▍","▌","▋","▊","▉","▊","▋","▌","▍","▎"]},"balloon":{"interval":140,"frames":[" ",".","o","O","@","*"," "]},"balloon2":{"interval":120,"frames":[".","o","O","°","O","o","."]},"noise":{"interval":100,"frames":["▓","▒","░"]},"bounce":{"interval":120,"frames":["⠁","⠂","⠄","⠂"]},"boxBounce":{"interval":120,"frames":["▖","▘","▝","▗"]},"boxBounce2":{"interval":100,"frames":["▌","▀","▐","▄"]},"triangle":{"interval":50,"frames":["◢","◣","◤","◥"]},"arc":{"interval":100,"frames":["◜","◠","◝","◞","◡","◟"]},"circle":{"interval":120,"frames":["◡","⊙","◠"]},"squareCorners":{"interval":180,"frames":["◰","◳","◲","◱"]},"circleQuarters":{"interval":120,"frames":["◴","◷","◶","◵"]},"circleHalves":{"interval":50,"frames":["◐","◓","◑","◒"]},"squish":{"interval":100,"frames":["╫","╪"]},"toggle":{"interval":250,"frames":["⊶","⊷"]},"toggle2":{"interval":80,"frames":["▫","▪"]},"toggle3":{"interval":120,"frames":["□","■"]},"toggle4":{"interval":100,"frames":["■","□","▪","▫"]},"toggle5":{"interval":100,"frames":["▮","▯"]},"toggle6":{"interval":300,"frames":["ဝ","၀"]},"toggle7":{"interval":80,"frames":["⦾","⦿"]},"toggle8":{"interval":100,"frames":["◍","◌"]},"toggle9":{"interval":100,"frames":["◉","◎"]},"toggle10":{"interval":100,"frames":["㊂","㊀","㊁"]},"toggle11":{"interval":50,"frames":["⧇","⧆"]},"toggle12":{"interval":120,"frames":["☗","☖"]},"toggle13":{"interval":80,"frames":["=","*","-"]},"arrow":{"interval":100,"frames":["←","↖","↑","↗","→","↘","↓","↙"]},"arrow2":{"interval":80,"frames":["⬆️ ","↗️ ","➡️ ","↘️ ","⬇️ ","↙️ ","⬅️ ","↖️ "]},"arrow3":{"interval":120,"frames":["▹▹▹▹▹","▸▹▹▹▹","▹▸▹▹▹","▹▹▸▹▹","▹▹▹▸▹","▹▹▹▹▸"]},"bouncingBar":{"interval":80,"frames":["[    ]","[=   ]","[==  ]","[=== ]","[ ===]","[  ==]","[   =]","[    ]","[   =]","[  ==]","[ ===]","[====]","[=== ]","[==  ]","[=   ]"]},"bouncingBall":{"interval":80,"frames":["( ●    )","(  ●   )","(   ●  )","(    ● )","(     ●)","(    ● )","(   ●  )","(  ●   )","( ●    )","(●     )"]},"smiley":{"interval":200,"frames":["😄 ","😝 "]},"monkey":{"interval":300,"frames":["🙈 ","🙈 ","🙉 ","🙊 "]},"hearts":{"interval":100,"frames":["💛 ","💙 ","💜 ","💚 ","❤️ "]},"clock":{"interval":100,"frames":["🕐 ","🕑 ","🕒 ","🕓 ","🕔 ","🕕 ","🕖 ","🕗 ","🕘 ","🕙 ","🕚 "]},"earth":{"interval":180,"frames":["🌍 ","🌎 ","🌏 "]},"moon":{"interval":80,"frames":["🌑 ","🌒 ","🌓 ","🌔 ","🌕 ","🌖 ","🌗 ","🌘 "]},"runner":{"interval":140,"frames":["🚶 ","🏃 "]},"pong":{"interval":80,"frames":["▐⠂       ▌","▐⠈       ▌","▐ ⠂      ▌","▐ ⠠      ▌","▐  ⡀     ▌","▐  ⠠     ▌","▐   ⠂    ▌","▐   ⠈    ▌","▐    ⠂   ▌","▐    ⠠   ▌","▐     ⡀  ▌","▐     ⠠  ▌","▐      ⠂ ▌","▐      ⠈ ▌","▐       ⠂▌","▐       ⠠▌","▐       ⡀▌","▐      ⠠ ▌","▐      ⠂ ▌","▐     ⠈  ▌","▐     ⠂  ▌","▐    ⠠   ▌","▐    ⡀   ▌","▐   ⠠    ▌","▐   ⠂    ▌","▐  ⠈     ▌","▐  ⠂     ▌","▐ ⠠      ▌","▐ ⡀      ▌","▐⠠       ▌"]},"shark":{"interval":120,"frames":["▐|\\____________▌","▐_|\\___________▌","▐__|\\__________▌","▐___|\\_________▌","▐____|\\________▌","▐_____|\\_______▌","▐______|\\______▌","▐_______|\\_____▌","▐________|\\____▌","▐_________|\\___▌","▐__________|\\__▌","▐___________|\\_▌","▐____________|\\▌","▐____________/|▌","▐___________/|_▌","▐__________/|__▌","▐_________/|___▌","▐________/|____▌","▐_______/|_____▌","▐______/|______▌","▐_____/|_______▌","▐____/|________▌","▐___/|_________▌","▐__/|__________▌","▐_/|___________▌","▐/|____________▌"]},"dqpb":{"interval":100,"frames":["d","q","p","b"]},"weather":{"interval":100,"frames":["☀️ ","☀️ ","☀️ ","🌤 ","⛅️ ","🌥 ","☁️ ","🌧 ","🌨 ","🌧 ","🌨 ","🌧 ","🌨 ","⛈ ","🌨 ","🌧 ","🌨 ","☁️ ","🌥 ","⛅️ ","🌤 ","☀️ ","☀️ "]},"christmas":{"interval":400,"frames":["🌲","🎄"]}}
+
+/***/ }),
+/* 36 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -5957,754 +9514,7 @@ var KeyBinding = function () {
 exports.default = KeyBinding;
 
 /***/ }),
-/* 27 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-	value: true
-});
-
-var _slicedToArray = function () { function sliceIterator(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"]) _i["return"](); } finally { if (_d) throw _e; } } return _arr; } return function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { return sliceIterator(arr, i); } else { throw new TypeError("Invalid attempt to destructure non-iterable instance"); } }; }();
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-var _noty = __webpack_require__(9);
-
-var _noty2 = _interopRequireDefault(_noty);
-
-var _pagination = __webpack_require__(32);
-
-var _pagination2 = _interopRequireDefault(_pagination);
-
-var _session = __webpack_require__(33);
-
-var _session2 = _interopRequireDefault(_session);
-
-var _spinner = __webpack_require__(34);
-
-var _spinner2 = _interopRequireDefault(_spinner);
-
-var _keyBinding = __webpack_require__(26);
-
-var _keyBinding2 = _interopRequireDefault(_keyBinding);
-
-var _output = __webpack_require__(31);
-
-var _output2 = _interopRequireDefault(_output);
-
-var _tabManager = __webpack_require__(36);
-
-var _tabManager2 = _interopRequireDefault(_tabManager);
-
-var _f = __webpack_require__(28);
-
-var _f2 = _interopRequireDefault(_f);
-
-var _history = __webpack_require__(30);
-
-var _history2 = _interopRequireDefault(_history);
-
-var _switchTerminal = __webpack_require__(35);
-
-var _helpers = __webpack_require__(2);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-var $ = __webpack_require__(11);
-window.$ = window.jQuery = $;
-
-__webpack_require__(39);
-__webpack_require__(41).polyfill();
-
-var Debug = function Debug(txt, type) {
-	new _noty2.default({
-		text: 'DEBUG : <strong>' + txt + '</strong>',
-		layout: 'bottomCenter',
-		timeout: 1500,
-		theme: 'metroui',
-		type: type || 'info'
-	}).show();
-};
-
-var TerminalPlugin = function () {
-	function TerminalPlugin(params) {
-		_classCallCheck(this, TerminalPlugin);
-
-		this.settings = params;
-		this.context = params.context;
-		this.name = params.name;
-
-		this.allowManualPaging = params.gds === 'sabre';
-
-		this.session = new _session2.default({
-			terminalIndex: params.name,
-			sessionIndex: params.sessionIndex,
-			gds: params.gds
-		});
-
-		this.terminal = this.init();
-
-		this.pagination = new _pagination2.default(this.terminal);
-		this.spinner = new _spinner2.default(this.terminal);
-
-		this.outputLiner = new _output2.default(this.terminal);
-		this.outputLiner.setNumRows(params.numOfRows);
-
-		this.tabCommands = new _tabManager2.default();
-
-		this.f8Reader = new _f2.default({
-			terminal: this.terminal,
-			gds: params.gds
-		});
-
-		this.history = new _history2.default(params.gds);
-	}
-
-	/*
- * return false if char is don't belong cmd
- * */
-
-
-	_createClass(TerminalPlugin, [{
-		key: 'parseKeyBinds',
-		value: function parseKeyBinds(evt, terminal) {
-			if (!_keyBinding2.default.parse(evt, terminal, this)) return false;
-
-			if (this.f8Reader.getIsActive()) // ignore Tab press
-				{
-					if (evt.which === 13) {
-						this.f8Reader.execCommand();
-						return false;
-					}
-
-					if (evt.key.length === 1 && !evt.ctrlKey) // ctrl meta alt .. forbid
-						this.f8Reader.replaceChar();
-				}
-
-			var replacement = (0, _helpers.getReplacement)(evt, window.TerminalState.isLanguageApollo());
-
-			if (replacement) {
-				this.replaceCommand = replacement;
-			}
-
-			if (replacement === false) // do not print nothing if char is forbidden
-				return false;
-
-			// if test>>>asd+sa and cursor on + // execute only between last > and + cmd
-			if (evt.which === 13) {
-				var cmd = terminal.cmd().get().substring(0, terminal.cmd().position());
-				var lastPromptSignPos = cmd.lastIndexOf('>') + 1;
-
-				if (lastPromptSignPos) cmd = cmd.substring(lastPromptSignPos, cmd.length);
-
-				if (cmd) {
-					terminal.exec(cmd);
-					terminal.cmd().set('');
-					return false;
-				}
-			}
-		}
-	}, {
-		key: 'changeActiveTerm',
-		value: function changeActiveTerm(activeTerminal) {
-			if (this.settings.name === 'fullScreen') return false;
-
-			window.activePlugin = this; // SO SO DEPRECATED NOW
-			window.TerminalState.action('CHANGE_ACTIVE_TERMINAL', activeTerminal);
-		}
-	}, {
-		key: 'purge',
-		value: function purge() {
-			this.settings.clear();
-		}
-	}, {
-		key: 'tabPressed',
-		value: function tabPressed() {
-			if (this.f8Reader.getIsActive()) return this.f8Reader.jumpToNextPos();
-
-			this.tabCommands.next().run(this.updateOutput.bind(this));
-		}
-	}, {
-		key: 'tabShiftPressed',
-		value: function tabShiftPressed() {
-			this.tabCommands.prev().run(this.updateOutput.bind(this));
-		}
-	}, {
-		key: 'updateOutput',
-		value: function updateOutput(_ref) {
-			var _ref2 = _slicedToArray(_ref, 2),
-			    cmd = _ref2[0],
-			    str = _ref2[1];
-
-			this.terminal.update(-1, str);
-			this.terminal.cmd().set(cmd);
-		}
-	}, {
-		key: 'resize',
-		value: function resize(sizes) {
-			this.terminal.settings().numChars = sizes.numOfChars;
-			this.terminal.settings().numRows = sizes.numOfRows;
-
-			this.terminal.resize();
-		}
-	}, {
-		key: 'emptyLinesRecalculate',
-		value: function emptyLinesRecalculate(numOfRows, numOfChars, charHeight) {
-			this.outputLiner.setNumRows(numOfRows).setNumChars(numOfChars).setCharHeight(charHeight).recalculate();
-		}
-	}, {
-		key: 'init',
-		value: function init() {
-			var _this = this;
-
-			//caveats terminal.rows() - every time appends div with cursor span - not too smooth for performance
-
-			var context = $(this.context).terminal(this.commandParser.bind(this), {
-				echoCommand: false,
-
-				greetings: '',
-				name: this.name,
-				prompt: '>',
-
-				numRows: this.settings.numOfRows || 0, // plugin calculates it in so shitty slow manner appending cursor to body 3 times per plugin
-				numChars: this.settings.numOfChars,
-
-				memory: true, // dont add to localStorage
-
-				// scrollOnEcho	: false,
-				// keypress		: this.parseChar.bind(this), // BUGGY BUGGY, assign on document wtf???
-
-				keypress: function keypress(e, terminal) {
-
-					if (_this.replaceCommand) {
-						terminal.insert(_this.replaceCommand);
-						_this.replaceCommand = '';
-						return false;
-					}
-				}, // BUGGY BUGGY, assign on document wtf???
-
-				// keypress		: (e) => { // this function is super shitty prefer not to use it
-				// console.log(' key press ');
-				// if ( (e.ctrlKey) && [67].indexOf(e.which) !== -1 )
-				// 	return '';
-				// },
-
-				keydown: this.parseKeyBinds.bind(this),
-
-				clickTimeout: 300,
-
-				onInit: this.changeActiveTerm.bind(this),
-				onTerminalChange: this.changeActiveTerm.bind(this),
-
-				onBeforeCommand: this.checkBeforeEnter.bind(this),
-
-				// for hard scenario shortcut, others in keymap helper
-				keymap: {
-					'CTRL+S': function CTRLS() {
-						return window.TerminalState.purgeScreens();
-					},
-					// 'CTRL+C'	: (e) => { console.log(' ??' , e)},
-					'TAB': function TAB() {
-						return _this.tabPressed();
-					},
-					// 'SHIFT+TAB'	: () => {; this.tabShiftPressed() }, moved to keyParse
-					// 'F8'		: () => { this.f8Reader.tie();  return false;},
-					// 'F8'		: () => { this.terminal.cmd().set( '¤:3SSRDOCSYYHK1/N ///// DMMMYY/ //          /          /' );  return false;},
-					'F8': function F8() {
-						_this.terminal.cmd().set(_this.f8Reader.tie());return false;
-					},
-					'F5': function F5() {
-						return false;
-					},
-					'.': function _() {
-						return '.';
-					}
-				},
-
-				exceptionHandler: function exceptionHandler(err) {
-					console.warn('exc', err);
-				}
-			});
-
-			// custom keydown events for each terminal
-			// we introduced this approach because of terminal library adding keydown events to document
-			(0, _switchTerminal.terminalKeydown)(context[0]);
-
-			// setTimeout( () => { context.set_command('test')}, 500);
-			// setTimeout( () => { context.set_command('zzz')}, 1500);
-			// setTimeout( () => { context.set_command('test')}, 500);
-			//
-			return context;
-		}
-	}, {
-		key: 'checkSabreCommand',
-		value: function checkSabreCommand(command, terminal) {
-			if (this.allowManualPaging) {
-				switch (command.toUpperCase()) {
-					case 'MD':
-						terminal.echo(this.pagination.next().print());
-						return true;
-
-					case 'MU':
-						terminal.echo(this.pagination.prev().print());
-						return true;
-
-					case 'MDA':
-						terminal.echo(this.pagination.printAll());
-						return true;
-
-					case 'MDA5':
-						return true;
-
-					case 'MDA20':
-						return true;
-				}
-			}
-
-			return false;
-		}
-
-		/*setTimeout( () => {
-  	this.spinner.end();
-  	this.loopCmdStack();
-  	this.parseBackEnd({
-  		data	: {
-  			output 		: 'THIS IS ONLY A TEST TEST TES TEST',
-  			clearScreen : true
-  		}
-  	})
-  }, 1000 );*/
-
-	}, {
-		key: 'commandParser',
-		value: function commandParser(command, terminal) //pressed enter
-		{
-			return false;
-		}
-	}, {
-		key: 'checkBeforeEnter',
-		value: function checkBeforeEnter(terminal, command) {
-			var _this2 = this;
-
-			if (!command || command.trim() === '') {
-				this.terminal.echo('>');
-				return false;
-			}
-
-			if (this.checkSabreCommand(command, terminal)) return command;
-
-			this.spinner.start();
-
-			this.history.add(command);
-
-			var finish = function finish(response) {
-				_this2.spinner.end();
-				_this2.parseBackEnd(response, command);
-			};
-
-			var before = function before() {
-				_this2.outputLiner.prepare('');
-				_this2.spinner.start();
-				_this2.terminal.echo('[[;;;usedCommand;]>' + command.toUpperCase() + ']');
-			};
-
-			this.session.pushCommand(command.toUpperCase(), finish, before);
-
-			this.session.perform();
-
-			return command;
-		}
-	}, {
-		key: 'parseBackEnd',
-		value: function parseBackEnd() {
-			var response = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
-			var command = arguments[1];
-
-			this.lastCommand = command;
-
-			var result = response['data'] || {};
-
-			if (result['output']) {
-				if (result['output'].trim() === '*') {
-					this.terminal.update(-2, command + ' *');
-					return false;
-				}
-
-				if (this.allowManualPaging) // sabre
-					{
-						var output = this.pagination.bindOutput(result['output'], this.settings.numOfRows - 1, this.settings.numOfChars).print();
-
-						this.terminal.echo(output);
-					} else {
-					// if 1 rows of terminal do not perform clear screen
-					var clearScreen = result['clearScreen'] && window.TerminalState.getMatrix().rows !== 0;
-					this.outputLiner.prepare(result['output'], clearScreen);
-				}
-			}
-
-			this.tabCommands.reset(result['tabCommands'], result['output']);
-
-			if (result['startNewSession']) window.TerminalState.action('RESET_GDS');
-
-			window.TerminalState.action('UPDATE_CUR_GDS', {
-				canCreatePq: result['canCreatePq'],
-				canCreatePqErrors: result['canCreatePqErrors'],
-				sessionIndex: ['A', 'B', 'C', 'D', 'E', 'F'].indexOf(result.area),
-
-				lastPcc: result['pcc'] // TODO:: better deep-merge as pcc { sesionIndex : result[pcc] }
-			});
-
-			if (window.TerminalState.hasPermissions()) this.debugOutput(result);
-		}
-	}, {
-		key: 'debugOutput',
-		value: function debugOutput(result) {
-			if (result['clearScreen']) Debug('DEBUG: CLEAR SCREEN', 'info');
-
-			if (result['canCreatePq']) Debug('CAN CREATE PQ', 'warning');
-
-			if (result['tabCommands'] && result['tabCommands'].length) Debug('FOUND TAB COMMANDS', 'success');
-
-			if (result['pcc']) Debug('CHANGE PCC', 'success');
-		}
-	}, {
-		key: 'parseError',
-		value: function parseError(e) {
-			// this.spinner.end();
-			// console.error(' error', arguments );
-			// this.terminal.error( String(e) );
-		}
-	}]);
-
-	return TerminalPlugin;
-}();
-
-exports.default = TerminalPlugin;
-
-/***/ }),
-/* 28 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-	value: true
-});
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-var rules = {
-	apollo: {
-		pos: '¤:3SSRDOCSYYHK1/N'.length,
-		cmd: '¤:3SSRDOCSYYHK1/N ///// DMMMYY/ //          /          /',
-
-		rules: [' /////',
-		// '¤:3SSRDOCSYYHK1/N',
-		' DMMMYY', ' // ', '          /', '          /']
-	},
-
-	sabre: {
-		pos: '3DOCSA/DB/'.length,
-		cmd: '3DOCSA/DB/DDMMMYY/      /        /        -',
-		rules: ['3DOCSA/DB/']
-	},
-
-	amadeus: {
-		pos: 'SRDOCSYYHK1'.length,
-		cmd: 'SRDOCSYYHK1-----  DDMMMYY   -     --        -       /P',
-		rules: ['SRDOCSYYHK1']
-	}
-};
-
-var F8Reader = function () {
-	function F8Reader(_ref) {
-		var terminal = _ref.terminal,
-		    gds = _ref.gds;
-
-		_classCallCheck(this, F8Reader);
-
-		this.index = 0;
-		this.terminal = terminal;
-		this.isActive = false;
-		// this.canReplace	= false;
-		this.gds = gds;
-
-		this.currentCmd = rules[gds];
-	}
-
-	_createClass(F8Reader, [{
-		key: 'getIsActive',
-		value: function getIsActive() {
-			return this.isActive;
-		}
-	}, {
-		key: 'getNextTabPos',
-		value: function getNextTabPos() {
-			var subStr = this.currentCmd.rules[this.index];
-			return this.terminal.get_command().indexOf(subStr); // + ( this.index === 0 ? subStr.length : 0 );
-		}
-	}, {
-		key: 'jumpToNextPos',
-		value: function jumpToNextPos() {
-			this.terminal.cmd().position(this.getNextTabPos());
-
-			if (!this.currentCmd.rules[this.index]) {
-				this.isActive = false;
-				this.index = 0;
-			}
-
-			this.index++;
-		}
-	}, {
-		key: 'replaceChar',
-		value: function replaceChar() {
-			/*const curPos 			= this.terminal.cmd().position();
-   const oldCmd 			= this.terminal.get_command();
-   	const charToReplace 	= oldCmd.substr(curPos, 1);
-   	if (charToReplace === '/')
-   	return false;
-   	const newCmd = oldCmd.substr(0, curPos) + oldCmd.substr(curPos + 1);
-   	this.terminal.set_command(newCmd);
-   this.terminal.cmd().position( curPos );*/
-
-			var curPos = this.terminal.cmd().position();
-			var charToReplace = this.terminal.get_command().substr(curPos, 1);
-
-			if (charToReplace === '/') return false;
-
-			this.terminal.cmd().delete(+1);
-		}
-	}, {
-		key: 'tie',
-		value: function tie() {
-			this.index = 0;
-			this.isActive = true;
-
-			this.terminal.set_command(this.currentCmd.cmd);
-			this.jumpToNextPos();
-		}
-	}, {
-		key: 'execCommand',
-		value: function execCommand() {
-			var cmd = this.terminal.before_cursor();
-			this.terminal.cmd().set('');
-
-			this.isActive = false; // BEWARE of dead loop!
-			this.terminal.exec(cmd);
-		}
-	}]);
-
-	return F8Reader;
-}();
-
-exports.default = F8Reader;
-
-/***/ }),
-/* 29 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-	value: true
-});
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-var _dom = __webpack_require__(0);
-
-var _dom2 = _interopRequireDefault(_dom);
-
-var _terminal = __webpack_require__(8);
-
-var _terminal2 = _interopRequireDefault(_terminal);
-
-var _cookie = __webpack_require__(5);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-var FullScreen = function () {
-	function FullScreen() {
-		_classCallCheck(this, FullScreen);
-	}
-
-	_createClass(FullScreen, null, [{
-		key: 'makeBody',
-		value: function makeBody() {
-			if (!window.activePlugin) return false;
-
-			var body = (0, _dom2.default)('div.terminal-wrap-custom terminal-cell t-f-size-13 text-center t-height-100');
-			var body2 = (0, _dom2.default)('div.terminal-body');
-
-			body.appendChild(body2);
-			return body;
-		}
-	}, {
-		key: 'terminal',
-		value: function terminal(body) {
-			var props = {
-				name: 'fullScreen',
-				sessionIndex: window.TerminalState.getAreaIndex(), // to leave current active terminal
-				gds: window.TerminalState.getGds(),
-				buffer: false
-			};
-
-			var dimensions = {
-				height: body.clientHeight,
-				width: body.clientWidth,
-				char: ''
-				// char		: {
-				// 	height 		: '',
-				// 	width		: ''
-				// }
-			};
-
-			var terminal = new _terminal2.default(props);
-			terminal.reattach(body, dimensions);
-			terminal.context.innerHTML = window.activePlugin.terminal.get(0).innerHTML;
-
-			// on close there is two cmd lines
-			var cmd = terminal.context.querySelector('.cmd');
-			cmd.parentNode.removeChild(cmd);
-
-			// remove cloned epmty lines
-			var emptyLines = terminal.context.querySelector('.emptyLinesWrapper');
-			emptyLines.parentNode.removeChild(emptyLines);
-
-			terminal.init();
-		}
-	}, {
-		key: 'show',
-		value: function show() {
-			var _this = this;
-
-			if (!window.activePlugin) {
-				alert('no terminal selected');
-				return false;
-			}
-
-			var themeClass = (0, _cookie.cookieGet)('terminalTheme_' + apiData.auth.id) || 'terminaltheme_' + apiData['terminalThemes'][0]['id'];
-			var body = this.makeBody();
-
-			window.apiData.Modal.make({
-				dialog_class: 'modal-full no-footer',
-				body_class: 'no-padder ' + themeClass,
-				body: body,
-				noCloseBtn: 1,
-				header: 'Full Screen'
-			}).show(function (params) {
-
-				params.modal.on('hidden.bs.modal', function (e) {
-					window.TerminalState.change({});
-					params.modal.detach().remove();
-				});
-
-				_this.terminal(body);
-			});
-		}
-	}]);
-
-	return FullScreen;
-}();
-
-exports.default = FullScreen;
-
-/***/ }),
-/* 30 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-	value: true
-});
-exports.default = History;
-var promises = {};
-var commands = {};
-
-function History() {
-	var gds = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 'apollo';
-
-	var pos = false;
-	var length = 0;
-
-	commands[gds] = commands[gds] || [];
-
-	var askServer = function askServer() {
-		return window.TerminalState.getHistory();
-	};
-	var getData = function getData() {
-		// if ( promises[gds] && !pos )
-		// 	pos = commands[gds].length - 1;
-
-		// this will ask server only once per GDS
-		promises[gds] = promises[gds] || new Promise(function (resolve) {
-
-			askServer().then(function (response) {
-				commands[gds] = response.data;
-				pos = commands[gds].length;
-				length = commands[gds].length;
-			}).then(resolve);
-		});
-
-		return promises[gds];
-	};
-
-	var checkIfListUpdated = function checkIfListUpdated() {
-
-		if (commands[gds]) // when new commands were executed update position
-			{
-				if (commands[gds].length !== length) {
-					length = commands[gds].length;
-					pos = length;
-				}
-			}
-	};
-
-	return {
-
-		add: function add(cmd) {
-			if (commands[gds]) commands[gds].push(cmd);
-		},
-
-		next: function next() {
-			if (length === 0) return getData();
-
-			if (pos < commands[gds].length) ++pos;
-
-			checkIfListUpdated();
-
-			return getData().then(function () {
-				return commands[gds][pos] || '';
-			});
-		},
-
-		previous: function previous() {
-			checkIfListUpdated();
-
-			return getData().then(function () {
-				if (pos > 0) --pos;
-
-				return commands[gds][pos];
-			});
-		}
-	};
-}
-
-/***/ }),
-/* 31 */
+/* 37 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -6869,7 +9679,7 @@ var Output = function () {
 exports.default = Output;
 
 /***/ }),
-/* 32 */
+/* 38 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -6881,267 +9691,293 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _helpers = __webpack_require__(2);
-
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-var Pagination = function () {
-	function Pagination() {
-		_classCallCheck(this, Pagination);
+var TabManager = function () {
+	function TabManager() {
+		_classCallCheck(this, TabManager);
 
-		this.cache = [];
-		this.output = '';
-		this.page = 0;
+		this.index = 0;
+		this.list = [];
 	}
 
-	_createClass(Pagination, [{
-		key: 'bindOutput',
-		value: function bindOutput(output) {
-			var rows = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 0;
-			var cols = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 0;
+	_createClass(TabManager, [{
+		key: 'reset',
+		value: function reset() {
+			var list = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
+			var output = arguments[1];
 
-			this.page = 0;
+			this.list = list;
+
+			this.index = false;
 			this.output = output;
-			this.cache = (0, _helpers.makePages)(output, rows, cols);
 
-			// console.log(this.cache );
-			return this;
+			if (list.length) {
+				this.list.push(''); // empty command line
+			}
 		}
 	}, {
 		key: 'next',
 		value: function next() {
-			if (this.cache.length && this.page < this.cache.length) this.page++;
+			this.index = this.index === false ? 0 : this.index + 1;
+
+			if (this.list.length <= this.index) this.index = 0;
 
 			return this;
 		}
 	}, {
 		key: 'prev',
 		value: function prev() {
-			if (this.page > 0) this.page--;
+			this.index--;
+
+			if (this.index < 0) this.index = this.list.length - 1;
 
 			return this;
 		}
 	}, {
-		key: 'print',
-		value: function print() {
-			return this.cache[this.page] || '‡NOTHING TO SCROLL‡';
+		key: 'getCommand',
+		value: function getCommand() {
+			return this.list[this.index];
 		}
 	}, {
-		key: 'printAll',
-		value: function printAll() {
+		key: 'formatOutput',
+		value: function formatOutput(cmd) {
+			if (cmd) // last element in the array is an empty string
+				{
+					cmd = '>' + cmd;
+					var pos = this.output.indexOf(cmd);
+					var index = pos + cmd.length;
+
+					if (pos !== -1) // show this only if command is found
+						return this.output.substr(0, index) + '[[;red;blue;]\xB7]' + this.output.substr(index + 1, this.output.length);
+				}
+
 			return this.output;
 		}
-	}]);
-
-	return Pagination;
-}();
-
-exports.default = Pagination;
-
-/***/ }),
-/* 33 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-// import { TIME_FORMAT, ACCOUNT } from '../constants';
-
-Object.defineProperty(exports, "__esModule", {
-	value: true
-});
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-var _requests = __webpack_require__(6);
-
-var _requests2 = _interopRequireDefault(_requests);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-var commandStack = [];
-var finishStack = [];
-var beforeStack = [];
-var isActive = false;
-var promise = false;
-
-var Session = function () {
-	function Session(params) {
-		_classCallCheck(this, Session);
-
-		this.settings = params;
-		this.promise = false;
-	}
-
-	_createClass(Session, [{
+	}, {
 		key: 'run',
-		value: function run(params) {
-			var rData = {
-				terminalIndex: parseInt(this.settings['terminalIndex']) + 1,
-				command: params['cmd'],
-				gds: this.settings['gds'],
-				language: window.TerminalState.getLanguage().toLowerCase(),
-				terminalData: window.apiData['terminalData']
-			};
+		value: function run(replace) {
+			var cmd = this.getCommand();
 
-			promise = _requests2.default.runSyncCommand(rData);
-
-			promise.then(function () {
-				promise = false;
-			});
-
-			return promise;
-		}
-	}, {
-		key: 'isActive',
-		value: function isActive() {
-			return promise;
-		}
-	}, {
-		key: 'perform',
-		value: function perform() {
-			var _this = this;
-
-			if (promise) return false;
-
-			var cmd = commandStack[0];
-
-			beforeStack[0]();
-
-			return this.run({ cmd: cmd }).then(function (response) {
-
-				finishStack[0](response);
-
-				commandStack.shift();
-				finishStack.shift();
-				beforeStack.shift();
-
-				if (commandStack[0]) // recursive self call
-					{
-						_this.perform(commandStack[0]);
-					}
-
-				return response;
-			});
-		}
-	}, {
-		key: 'pushCommand',
-		value: function pushCommand(termRun, finish, before) {
-			commandStack.push(termRun);
-			finishStack.push(finish);
-			beforeStack.push(before);
-
-			return this;
-		}
-
-		/*start()
-  {
-  	Requests.runSyncCommand('startSession', {
-  		timeFormat	: TIME_FORMAT,
-  		account		: ACCOUNT
-  	})
-  		.then( function( response ) {
-  			return response['data'];
-  		})
-  		.catch(function(err) {
-  			console.error('oh shit Error', err);
-  		});
-  }
-  	end()
-  {
-  	let result = Requests.runSyncCommand('endSession', {
-  		sessionToken: this.settings['sessionToken']
-  	});
-  		if (result['success'])
-  		return true;
-  }*/
-
-	}]);
-
-	return Session;
-}();
-
-exports.default = Session;
-
-/***/ }),
-/* 34 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-	value: true
-});
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-var cliSpinners = __webpack_require__(37);
-
-var Spinner = function () {
-	function Spinner(terminal) {
-		_classCallCheck(this, Spinner);
-
-		this.timer = false;
-		this.terminal = terminal;
-		this.prompt = '';
-		this.spinner = cliSpinners.simpleDots;
-		this.spinner.interval = 550;
-		this.frameCounter = 0;
-	}
-
-	_createClass(Spinner, [{
-		key: 'set',
-		value: function set() {
-			var text = this.spinner.frames[this.frameCounter++ % this.spinner.frames.length];
-			this.terminal.set_prompt(text);
-		}
-	}, {
-		key: 'start',
-		value: function start() {
-			if (this.timer) {
-				// this.end();
-				return false;
+			if (cmd !== undefined) {
+				replace([cmd, this.formatOutput(cmd)]);
 			}
 
-			this.terminal.find('.cursor').hide();
-			this.terminal.set_mask('');
-
-			this.prompt = this.terminal.get_prompt();
-
-			this.set();
-			this.timer = setInterval(this.set.bind(this), this.spinner.interval);
-		}
-	}, {
-		key: 'end',
-		value: function end() {
-			clearInterval(this.timer);
-
-			this.terminal.set_prompt(this.prompt);
-
-			this.terminal.find('.cursor').show();
-			this.terminal.set_mask(false);
-
-			this.timer = false;
-		}
-	}, {
-		key: 'isActive',
-		value: function isActive() {
-			return !!this.timer;
+			return [];
 		}
 	}]);
 
-	return Spinner;
+	return TabManager;
 }();
 
-exports.default = Spinner;
+exports.default = TabManager;
 
 /***/ }),
-/* 35 */
+/* 39 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+	value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var rules = {
+	apollo: {
+		pos: '¤:3SSRDOCSYYHK1/N'.length,
+		cmd: '¤:3SSRDOCSYYHK1/N ///// DMMMYY/ //          /          /',
+
+		rules: [' /////',
+		// '¤:3SSRDOCSYYHK1/N',
+		' DMMMYY', ' // ', '          /', '          /']
+	},
+
+	sabre: {
+		pos: '3DOCSA/DB/'.length,
+		cmd: '3DOCSA/DB/DDMMMYY/      /        /        -',
+		rules: ['3DOCSA/DB/']
+	},
+
+	amadeus: {
+		pos: 'SRDOCSYYHK1'.length,
+		cmd: 'SRDOCSYYHK1-----  DDMMMYY   -     --        -       /P',
+		rules: ['SRDOCSYYHK1']
+	}
+};
+
+var F8Reader = function () {
+	function F8Reader(_ref) {
+		var terminal = _ref.terminal,
+		    gds = _ref.gds;
+
+		_classCallCheck(this, F8Reader);
+
+		this.index = 0;
+		this.terminal = terminal;
+		this.isActive = false;
+		// this.canReplace	= false;
+		this.gds = gds;
+
+		this.currentCmd = rules[gds];
+	}
+
+	_createClass(F8Reader, [{
+		key: 'getIsActive',
+		value: function getIsActive() {
+			return this.isActive;
+		}
+	}, {
+		key: 'getNextTabPos',
+		value: function getNextTabPos() {
+			var subStr = this.currentCmd.rules[this.index];
+			return this.terminal.get_command().indexOf(subStr); // + ( this.index === 0 ? subStr.length : 0 );
+		}
+	}, {
+		key: 'jumpToNextPos',
+		value: function jumpToNextPos() {
+			this.terminal.cmd().position(this.getNextTabPos());
+
+			if (!this.currentCmd.rules[this.index]) {
+				this.isActive = false;
+				this.index = 0;
+			}
+
+			this.index++;
+		}
+	}, {
+		key: 'replaceChar',
+		value: function replaceChar() {
+			/*const curPos 			= this.terminal.cmd().position();
+   const oldCmd 			= this.terminal.get_command();
+   	const charToReplace 	= oldCmd.substr(curPos, 1);
+   	if (charToReplace === '/')
+   	return false;
+   	const newCmd = oldCmd.substr(0, curPos) + oldCmd.substr(curPos + 1);
+   	this.terminal.set_command(newCmd);
+   this.terminal.cmd().position( curPos );*/
+
+			var curPos = this.terminal.cmd().position();
+			var charToReplace = this.terminal.get_command().substr(curPos, 1);
+
+			if (charToReplace === '/') return false;
+
+			this.terminal.cmd().delete(+1);
+		}
+	}, {
+		key: 'tie',
+		value: function tie() {
+			this.index = 0;
+			this.isActive = true;
+
+			this.terminal.set_command(this.currentCmd.cmd);
+			this.jumpToNextPos();
+		}
+	}, {
+		key: 'execCommand',
+		value: function execCommand() {
+			var cmd = this.terminal.before_cursor();
+			this.terminal.cmd().set('');
+
+			this.isActive = false; // BEWARE of dead loop!
+			this.terminal.exec(cmd);
+		}
+	}]);
+
+	return F8Reader;
+}();
+
+exports.default = F8Reader;
+
+/***/ }),
+/* 40 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+	value: true
+});
+exports.default = History;
+var promises = {};
+var commands = {};
+
+function History() {
+	var gds = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 'apollo';
+
+	var pos = false;
+	var length = 0;
+
+	commands[gds] = commands[gds] || [];
+
+	var askServer = function askServer() {
+		return window.TerminalState.getHistory();
+	};
+	var getData = function getData() {
+		// if ( promises[gds] && !pos )
+		// 	pos = commands[gds].length - 1;
+
+		// this will ask server only once per GDS
+		promises[gds] = promises[gds] || new Promise(function (resolve) {
+
+			askServer().then(function (response) {
+				commands[gds] = response.data;
+				pos = commands[gds].length;
+				length = commands[gds].length;
+			}).then(resolve);
+		});
+
+		return promises[gds];
+	};
+
+	var checkIfListUpdated = function checkIfListUpdated() {
+
+		if (commands[gds]) // when new commands were executed update position
+			{
+				if (commands[gds].length !== length) {
+					length = commands[gds].length;
+					pos = length;
+				}
+			}
+	};
+
+	return {
+
+		add: function add(cmd) {
+			if (commands[gds]) commands[gds].push(cmd);
+		},
+
+		next: function next() {
+			if (length === 0) return getData();
+
+			if (pos < commands[gds].length) ++pos;
+
+			checkIfListUpdated();
+
+			return getData().then(function () {
+				return commands[gds][pos] || '';
+			});
+		},
+
+		previous: function previous() {
+			checkIfListUpdated();
+
+			return getData().then(function () {
+				if (pos > 0) --pos;
+
+				return commands[gds][pos];
+			});
+		}
+	};
+}
+
+/***/ }),
+/* 41 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -7463,947 +10299,7 @@ function terminalKeydown(terminal) {
 }
 
 /***/ }),
-/* 36 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-	value: true
-});
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-var TabManager = function () {
-	function TabManager() {
-		_classCallCheck(this, TabManager);
-
-		this.index = 0;
-		this.list = [];
-	}
-
-	_createClass(TabManager, [{
-		key: 'reset',
-		value: function reset() {
-			var list = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
-			var output = arguments[1];
-
-			this.list = list;
-
-			this.index = false;
-			this.output = output;
-
-			if (list.length) {
-				this.list.push(''); // empty command line
-			}
-		}
-	}, {
-		key: 'next',
-		value: function next() {
-			this.index = this.index === false ? 0 : this.index + 1;
-
-			if (this.list.length <= this.index) this.index = 0;
-
-			return this;
-		}
-	}, {
-		key: 'prev',
-		value: function prev() {
-			this.index--;
-
-			if (this.index < 0) this.index = this.list.length - 1;
-
-			return this;
-		}
-	}, {
-		key: 'getCommand',
-		value: function getCommand() {
-			return this.list[this.index];
-		}
-	}, {
-		key: 'formatOutput',
-		value: function formatOutput(cmd) {
-			if (cmd) // last element in the array is an empty string
-				{
-					cmd = '>' + cmd;
-					var pos = this.output.indexOf(cmd);
-					var index = pos + cmd.length;
-
-					if (pos !== -1) // show this only if command is found
-						return this.output.substr(0, index) + '[[;red;blue;]\xB7]' + this.output.substr(index + 1, this.output.length);
-				}
-
-			return this.output;
-		}
-	}, {
-		key: 'run',
-		value: function run(replace) {
-			var cmd = this.getCommand();
-
-			if (cmd !== undefined) {
-				replace([cmd, this.formatOutput(cmd)]);
-			}
-
-			return [];
-		}
-	}]);
-
-	return TabManager;
-}();
-
-exports.default = TabManager;
-
-/***/ }),
-/* 37 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-module.exports = __webpack_require__(38);
-
-
-/***/ }),
-/* 38 */
-/***/ (function(module, exports) {
-
-module.exports = {
-	"dots": {
-		"interval": 80,
-		"frames": [
-			"⠋",
-			"⠙",
-			"⠹",
-			"⠸",
-			"⠼",
-			"⠴",
-			"⠦",
-			"⠧",
-			"⠇",
-			"⠏"
-		]
-	},
-	"dots2": {
-		"interval": 80,
-		"frames": [
-			"⣾",
-			"⣽",
-			"⣻",
-			"⢿",
-			"⡿",
-			"⣟",
-			"⣯",
-			"⣷"
-		]
-	},
-	"dots3": {
-		"interval": 80,
-		"frames": [
-			"⠋",
-			"⠙",
-			"⠚",
-			"⠞",
-			"⠖",
-			"⠦",
-			"⠴",
-			"⠲",
-			"⠳",
-			"⠓"
-		]
-	},
-	"dots4": {
-		"interval": 80,
-		"frames": [
-			"⠄",
-			"⠆",
-			"⠇",
-			"⠋",
-			"⠙",
-			"⠸",
-			"⠰",
-			"⠠",
-			"⠰",
-			"⠸",
-			"⠙",
-			"⠋",
-			"⠇",
-			"⠆"
-		]
-	},
-	"dots5": {
-		"interval": 80,
-		"frames": [
-			"⠋",
-			"⠙",
-			"⠚",
-			"⠒",
-			"⠂",
-			"⠂",
-			"⠒",
-			"⠲",
-			"⠴",
-			"⠦",
-			"⠖",
-			"⠒",
-			"⠐",
-			"⠐",
-			"⠒",
-			"⠓",
-			"⠋"
-		]
-	},
-	"dots6": {
-		"interval": 80,
-		"frames": [
-			"⠁",
-			"⠉",
-			"⠙",
-			"⠚",
-			"⠒",
-			"⠂",
-			"⠂",
-			"⠒",
-			"⠲",
-			"⠴",
-			"⠤",
-			"⠄",
-			"⠄",
-			"⠤",
-			"⠴",
-			"⠲",
-			"⠒",
-			"⠂",
-			"⠂",
-			"⠒",
-			"⠚",
-			"⠙",
-			"⠉",
-			"⠁"
-		]
-	},
-	"dots7": {
-		"interval": 80,
-		"frames": [
-			"⠈",
-			"⠉",
-			"⠋",
-			"⠓",
-			"⠒",
-			"⠐",
-			"⠐",
-			"⠒",
-			"⠖",
-			"⠦",
-			"⠤",
-			"⠠",
-			"⠠",
-			"⠤",
-			"⠦",
-			"⠖",
-			"⠒",
-			"⠐",
-			"⠐",
-			"⠒",
-			"⠓",
-			"⠋",
-			"⠉",
-			"⠈"
-		]
-	},
-	"dots8": {
-		"interval": 80,
-		"frames": [
-			"⠁",
-			"⠁",
-			"⠉",
-			"⠙",
-			"⠚",
-			"⠒",
-			"⠂",
-			"⠂",
-			"⠒",
-			"⠲",
-			"⠴",
-			"⠤",
-			"⠄",
-			"⠄",
-			"⠤",
-			"⠠",
-			"⠠",
-			"⠤",
-			"⠦",
-			"⠖",
-			"⠒",
-			"⠐",
-			"⠐",
-			"⠒",
-			"⠓",
-			"⠋",
-			"⠉",
-			"⠈",
-			"⠈"
-		]
-	},
-	"dots9": {
-		"interval": 80,
-		"frames": [
-			"⢹",
-			"⢺",
-			"⢼",
-			"⣸",
-			"⣇",
-			"⡧",
-			"⡗",
-			"⡏"
-		]
-	},
-	"dots10": {
-		"interval": 80,
-		"frames": [
-			"⢄",
-			"⢂",
-			"⢁",
-			"⡁",
-			"⡈",
-			"⡐",
-			"⡠"
-		]
-	},
-	"dots11": {
-		"interval": 100,
-		"frames": [
-			"⠁",
-			"⠂",
-			"⠄",
-			"⡀",
-			"⢀",
-			"⠠",
-			"⠐",
-			"⠈"
-		]
-	},
-	"dots12": {
-		"interval": 80,
-		"frames": [
-			"⢀⠀",
-			"⡀⠀",
-			"⠄⠀",
-			"⢂⠀",
-			"⡂⠀",
-			"⠅⠀",
-			"⢃⠀",
-			"⡃⠀",
-			"⠍⠀",
-			"⢋⠀",
-			"⡋⠀",
-			"⠍⠁",
-			"⢋⠁",
-			"⡋⠁",
-			"⠍⠉",
-			"⠋⠉",
-			"⠋⠉",
-			"⠉⠙",
-			"⠉⠙",
-			"⠉⠩",
-			"⠈⢙",
-			"⠈⡙",
-			"⢈⠩",
-			"⡀⢙",
-			"⠄⡙",
-			"⢂⠩",
-			"⡂⢘",
-			"⠅⡘",
-			"⢃⠨",
-			"⡃⢐",
-			"⠍⡐",
-			"⢋⠠",
-			"⡋⢀",
-			"⠍⡁",
-			"⢋⠁",
-			"⡋⠁",
-			"⠍⠉",
-			"⠋⠉",
-			"⠋⠉",
-			"⠉⠙",
-			"⠉⠙",
-			"⠉⠩",
-			"⠈⢙",
-			"⠈⡙",
-			"⠈⠩",
-			"⠀⢙",
-			"⠀⡙",
-			"⠀⠩",
-			"⠀⢘",
-			"⠀⡘",
-			"⠀⠨",
-			"⠀⢐",
-			"⠀⡐",
-			"⠀⠠",
-			"⠀⢀",
-			"⠀⡀"
-		]
-	},
-	"line": {
-		"interval": 130,
-		"frames": [
-			"-",
-			"\\",
-			"|",
-			"/"
-		]
-	},
-	"line2": {
-		"interval": 100,
-		"frames": [
-			"⠂",
-			"-",
-			"–",
-			"—",
-			"–",
-			"-"
-		]
-	},
-	"pipe": {
-		"interval": 100,
-		"frames": [
-			"┤",
-			"┘",
-			"┴",
-			"└",
-			"├",
-			"┌",
-			"┬",
-			"┐"
-		]
-	},
-	"simpleDots": {
-		"interval": 400,
-		"frames": [
-			".  ",
-			".. ",
-			"...",
-			"   "
-		]
-	},
-	"simpleDotsScrolling": {
-		"interval": 200,
-		"frames": [
-			".  ",
-			".. ",
-			"...",
-			" ..",
-			"  .",
-			"   "
-		]
-	},
-	"star": {
-		"interval": 70,
-		"frames": [
-			"✶",
-			"✸",
-			"✹",
-			"✺",
-			"✹",
-			"✷"
-		]
-	},
-	"star2": {
-		"interval": 80,
-		"frames": [
-			"+",
-			"x",
-			"*"
-		]
-	},
-	"flip": {
-		"interval": 70,
-		"frames": [
-			"_",
-			"_",
-			"_",
-			"-",
-			"`",
-			"`",
-			"'",
-			"´",
-			"-",
-			"_",
-			"_",
-			"_"
-		]
-	},
-	"hamburger": {
-		"interval": 100,
-		"frames": [
-			"☱",
-			"☲",
-			"☴"
-		]
-	},
-	"growVertical": {
-		"interval": 120,
-		"frames": [
-			"▁",
-			"▃",
-			"▄",
-			"▅",
-			"▆",
-			"▇",
-			"▆",
-			"▅",
-			"▄",
-			"▃"
-		]
-	},
-	"growHorizontal": {
-		"interval": 120,
-		"frames": [
-			"▏",
-			"▎",
-			"▍",
-			"▌",
-			"▋",
-			"▊",
-			"▉",
-			"▊",
-			"▋",
-			"▌",
-			"▍",
-			"▎"
-		]
-	},
-	"balloon": {
-		"interval": 140,
-		"frames": [
-			" ",
-			".",
-			"o",
-			"O",
-			"@",
-			"*",
-			" "
-		]
-	},
-	"balloon2": {
-		"interval": 120,
-		"frames": [
-			".",
-			"o",
-			"O",
-			"°",
-			"O",
-			"o",
-			"."
-		]
-	},
-	"noise": {
-		"interval": 100,
-		"frames": [
-			"▓",
-			"▒",
-			"░"
-		]
-	},
-	"bounce": {
-		"interval": 120,
-		"frames": [
-			"⠁",
-			"⠂",
-			"⠄",
-			"⠂"
-		]
-	},
-	"boxBounce": {
-		"interval": 120,
-		"frames": [
-			"▖",
-			"▘",
-			"▝",
-			"▗"
-		]
-	},
-	"boxBounce2": {
-		"interval": 100,
-		"frames": [
-			"▌",
-			"▀",
-			"▐",
-			"▄"
-		]
-	},
-	"triangle": {
-		"interval": 50,
-		"frames": [
-			"◢",
-			"◣",
-			"◤",
-			"◥"
-		]
-	},
-	"arc": {
-		"interval": 100,
-		"frames": [
-			"◜",
-			"◠",
-			"◝",
-			"◞",
-			"◡",
-			"◟"
-		]
-	},
-	"circle": {
-		"interval": 120,
-		"frames": [
-			"◡",
-			"⊙",
-			"◠"
-		]
-	},
-	"squareCorners": {
-		"interval": 180,
-		"frames": [
-			"◰",
-			"◳",
-			"◲",
-			"◱"
-		]
-	},
-	"circleQuarters": {
-		"interval": 120,
-		"frames": [
-			"◴",
-			"◷",
-			"◶",
-			"◵"
-		]
-	},
-	"circleHalves": {
-		"interval": 50,
-		"frames": [
-			"◐",
-			"◓",
-			"◑",
-			"◒"
-		]
-	},
-	"squish": {
-		"interval": 100,
-		"frames": [
-			"╫",
-			"╪"
-		]
-	},
-	"toggle": {
-		"interval": 250,
-		"frames": [
-			"⊶",
-			"⊷"
-		]
-	},
-	"toggle2": {
-		"interval": 80,
-		"frames": [
-			"▫",
-			"▪"
-		]
-	},
-	"toggle3": {
-		"interval": 120,
-		"frames": [
-			"□",
-			"■"
-		]
-	},
-	"toggle4": {
-		"interval": 100,
-		"frames": [
-			"■",
-			"□",
-			"▪",
-			"▫"
-		]
-	},
-	"toggle5": {
-		"interval": 100,
-		"frames": [
-			"▮",
-			"▯"
-		]
-	},
-	"toggle6": {
-		"interval": 300,
-		"frames": [
-			"ဝ",
-			"၀"
-		]
-	},
-	"toggle7": {
-		"interval": 80,
-		"frames": [
-			"⦾",
-			"⦿"
-		]
-	},
-	"toggle8": {
-		"interval": 100,
-		"frames": [
-			"◍",
-			"◌"
-		]
-	},
-	"toggle9": {
-		"interval": 100,
-		"frames": [
-			"◉",
-			"◎"
-		]
-	},
-	"toggle10": {
-		"interval": 100,
-		"frames": [
-			"㊂",
-			"㊀",
-			"㊁"
-		]
-	},
-	"toggle11": {
-		"interval": 50,
-		"frames": [
-			"⧇",
-			"⧆"
-		]
-	},
-	"toggle12": {
-		"interval": 120,
-		"frames": [
-			"☗",
-			"☖"
-		]
-	},
-	"toggle13": {
-		"interval": 80,
-		"frames": [
-			"=",
-			"*",
-			"-"
-		]
-	},
-	"arrow": {
-		"interval": 100,
-		"frames": [
-			"←",
-			"↖",
-			"↑",
-			"↗",
-			"→",
-			"↘",
-			"↓",
-			"↙"
-		]
-	},
-	"arrow2": {
-		"interval": 80,
-		"frames": [
-			"⬆️ ",
-			"↗️ ",
-			"➡️ ",
-			"↘️ ",
-			"⬇️ ",
-			"↙️ ",
-			"⬅️ ",
-			"↖️ "
-		]
-	},
-	"arrow3": {
-		"interval": 120,
-		"frames": [
-			"▹▹▹▹▹",
-			"▸▹▹▹▹",
-			"▹▸▹▹▹",
-			"▹▹▸▹▹",
-			"▹▹▹▸▹",
-			"▹▹▹▹▸"
-		]
-	},
-	"bouncingBar": {
-		"interval": 80,
-		"frames": [
-			"[    ]",
-			"[   =]",
-			"[  ==]",
-			"[ ===]",
-			"[====]",
-			"[=== ]",
-			"[==  ]",
-			"[=   ]"
-		]
-	},
-	"bouncingBall": {
-		"interval": 80,
-		"frames": [
-			"( ●    )",
-			"(  ●   )",
-			"(   ●  )",
-			"(    ● )",
-			"(     ●)",
-			"(    ● )",
-			"(   ●  )",
-			"(  ●   )",
-			"( ●    )",
-			"(●     )"
-		]
-	},
-	"smiley": {
-		"interval": 200,
-		"frames": [
-			"😄 ",
-			"😝 "
-		]
-	},
-	"monkey": {
-		"interval": 300,
-		"frames": [
-			"🙈 ",
-			"🙈 ",
-			"🙉 ",
-			"🙊 "
-		]
-	},
-	"hearts": {
-		"interval": 100,
-		"frames": [
-			"💛 ",
-			"💙 ",
-			"💜 ",
-			"💚 ",
-			"❤️ "
-		]
-	},
-	"clock": {
-		"interval": 100,
-		"frames": [
-			"🕐 ",
-			"🕑 ",
-			"🕒 ",
-			"🕓 ",
-			"🕔 ",
-			"🕕 ",
-			"🕖 ",
-			"🕗 ",
-			"🕘 ",
-			"🕙 ",
-			"🕚 "
-		]
-	},
-	"earth": {
-		"interval": 180,
-		"frames": [
-			"🌍 ",
-			"🌎 ",
-			"🌏 "
-		]
-	},
-	"moon": {
-		"interval": 80,
-		"frames": [
-			"🌑 ",
-			"🌒 ",
-			"🌓 ",
-			"🌔 ",
-			"🌕 ",
-			"🌖 ",
-			"🌗 ",
-			"🌘 "
-		]
-	},
-	"runner": {
-		"interval": 140,
-		"frames": [
-			"🚶 ",
-			"🏃 "
-		]
-	},
-	"pong": {
-		"interval": 80,
-		"frames": [
-			"▐⠂       ▌",
-			"▐⠈       ▌",
-			"▐ ⠂      ▌",
-			"▐ ⠠      ▌",
-			"▐  ⡀     ▌",
-			"▐  ⠠     ▌",
-			"▐   ⠂    ▌",
-			"▐   ⠈    ▌",
-			"▐    ⠂   ▌",
-			"▐    ⠠   ▌",
-			"▐     ⡀  ▌",
-			"▐     ⠠  ▌",
-			"▐      ⠂ ▌",
-			"▐      ⠈ ▌",
-			"▐       ⠂▌",
-			"▐       ⠠▌",
-			"▐       ⡀▌",
-			"▐      ⠠ ▌",
-			"▐      ⠂ ▌",
-			"▐     ⠈  ▌",
-			"▐     ⠂  ▌",
-			"▐    ⠠   ▌",
-			"▐    ⡀   ▌",
-			"▐   ⠠    ▌",
-			"▐   ⠂    ▌",
-			"▐  ⠈     ▌",
-			"▐  ⠂     ▌",
-			"▐ ⠠      ▌",
-			"▐ ⡀      ▌",
-			"▐⠠       ▌"
-		]
-	},
-	"shark": {
-		"interval": 120,
-		"frames": [
-			"▐|\\____________▌",
-			"▐_|\\___________▌",
-			"▐__|\\__________▌",
-			"▐___|\\_________▌",
-			"▐____|\\________▌",
-			"▐_____|\\_______▌",
-			"▐______|\\______▌",
-			"▐_______|\\_____▌",
-			"▐________|\\____▌",
-			"▐_________|\\___▌",
-			"▐__________|\\__▌",
-			"▐___________|\\_▌",
-			"▐____________|\\▌",
-			"▐____________/|▌",
-			"▐___________/|_▌",
-			"▐__________/|__▌",
-			"▐_________/|___▌",
-			"▐________/|____▌",
-			"▐_______/|_____▌",
-			"▐______/|______▌",
-			"▐_____/|_______▌",
-			"▐____/|________▌",
-			"▐___/|_________▌",
-			"▐__/|__________▌",
-			"▐_/|___________▌",
-			"▐/|____________▌"
-		]
-	},
-	"dqpb": {
-		"interval": 100,
-		"frames": [
-			"d",
-			"q",
-			"p",
-			"b"
-		]
-	}
-};
-
-/***/ }),
-/* 39 */
+/* 42 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(global, setImmediate) {var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/**@license
@@ -8596,7 +10492,7 @@ module.exports = {
 (function(factory) {
     if (true) {
         // AMD. Register as an anonymous module.
-        !(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(11)], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory),
+        !(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory),
 				__WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ?
 				(__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__),
 				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
@@ -15097,10 +16993,583 @@ module.exports = {
     }; // terminal plugin
 });
 
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(10), __webpack_require__(46).setImmediate))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(9), __webpack_require__(43).setImmediate))
 
 /***/ }),
-/* 40 */
+/* 43 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var apply = Function.prototype.apply;
+
+// DOM APIs, for completeness
+
+exports.setTimeout = function() {
+  return new Timeout(apply.call(setTimeout, window, arguments), clearTimeout);
+};
+exports.setInterval = function() {
+  return new Timeout(apply.call(setInterval, window, arguments), clearInterval);
+};
+exports.clearTimeout =
+exports.clearInterval = function(timeout) {
+  if (timeout) {
+    timeout.close();
+  }
+};
+
+function Timeout(id, clearFn) {
+  this._id = id;
+  this._clearFn = clearFn;
+}
+Timeout.prototype.unref = Timeout.prototype.ref = function() {};
+Timeout.prototype.close = function() {
+  this._clearFn.call(window, this._id);
+};
+
+// Does not start the time, just sets up the members needed.
+exports.enroll = function(item, msecs) {
+  clearTimeout(item._idleTimeoutId);
+  item._idleTimeout = msecs;
+};
+
+exports.unenroll = function(item) {
+  clearTimeout(item._idleTimeoutId);
+  item._idleTimeout = -1;
+};
+
+exports._unrefActive = exports.active = function(item) {
+  clearTimeout(item._idleTimeoutId);
+
+  var msecs = item._idleTimeout;
+  if (msecs >= 0) {
+    item._idleTimeoutId = setTimeout(function onTimeout() {
+      if (item._onTimeout)
+        item._onTimeout();
+    }, msecs);
+  }
+};
+
+// setimmediate attaches itself to the global object
+__webpack_require__(44);
+exports.setImmediate = setImmediate;
+exports.clearImmediate = clearImmediate;
+
+
+/***/ }),
+/* 44 */
+/***/ (function(module, exports, __webpack_require__) {
+
+/* WEBPACK VAR INJECTION */(function(global, process) {(function (global, undefined) {
+    "use strict";
+
+    if (global.setImmediate) {
+        return;
+    }
+
+    var nextHandle = 1; // Spec says greater than zero
+    var tasksByHandle = {};
+    var currentlyRunningATask = false;
+    var doc = global.document;
+    var registerImmediate;
+
+    function setImmediate(callback) {
+      // Callback can either be a function or a string
+      if (typeof callback !== "function") {
+        callback = new Function("" + callback);
+      }
+      // Copy function arguments
+      var args = new Array(arguments.length - 1);
+      for (var i = 0; i < args.length; i++) {
+          args[i] = arguments[i + 1];
+      }
+      // Store and register the task
+      var task = { callback: callback, args: args };
+      tasksByHandle[nextHandle] = task;
+      registerImmediate(nextHandle);
+      return nextHandle++;
+    }
+
+    function clearImmediate(handle) {
+        delete tasksByHandle[handle];
+    }
+
+    function run(task) {
+        var callback = task.callback;
+        var args = task.args;
+        switch (args.length) {
+        case 0:
+            callback();
+            break;
+        case 1:
+            callback(args[0]);
+            break;
+        case 2:
+            callback(args[0], args[1]);
+            break;
+        case 3:
+            callback(args[0], args[1], args[2]);
+            break;
+        default:
+            callback.apply(undefined, args);
+            break;
+        }
+    }
+
+    function runIfPresent(handle) {
+        // From the spec: "Wait until any invocations of this algorithm started before this one have completed."
+        // So if we're currently running a task, we'll need to delay this invocation.
+        if (currentlyRunningATask) {
+            // Delay by doing a setTimeout. setImmediate was tried instead, but in Firefox 7 it generated a
+            // "too much recursion" error.
+            setTimeout(runIfPresent, 0, handle);
+        } else {
+            var task = tasksByHandle[handle];
+            if (task) {
+                currentlyRunningATask = true;
+                try {
+                    run(task);
+                } finally {
+                    clearImmediate(handle);
+                    currentlyRunningATask = false;
+                }
+            }
+        }
+    }
+
+    function installNextTickImplementation() {
+        registerImmediate = function(handle) {
+            process.nextTick(function () { runIfPresent(handle); });
+        };
+    }
+
+    function canUsePostMessage() {
+        // The test against `importScripts` prevents this implementation from being installed inside a web worker,
+        // where `global.postMessage` means something completely different and can't be used for this purpose.
+        if (global.postMessage && !global.importScripts) {
+            var postMessageIsAsynchronous = true;
+            var oldOnMessage = global.onmessage;
+            global.onmessage = function() {
+                postMessageIsAsynchronous = false;
+            };
+            global.postMessage("", "*");
+            global.onmessage = oldOnMessage;
+            return postMessageIsAsynchronous;
+        }
+    }
+
+    function installPostMessageImplementation() {
+        // Installs an event handler on `global` for the `message` event: see
+        // * https://developer.mozilla.org/en/DOM/window.postMessage
+        // * http://www.whatwg.org/specs/web-apps/current-work/multipage/comms.html#crossDocumentMessages
+
+        var messagePrefix = "setImmediate$" + Math.random() + "$";
+        var onGlobalMessage = function(event) {
+            if (event.source === global &&
+                typeof event.data === "string" &&
+                event.data.indexOf(messagePrefix) === 0) {
+                runIfPresent(+event.data.slice(messagePrefix.length));
+            }
+        };
+
+        if (global.addEventListener) {
+            global.addEventListener("message", onGlobalMessage, false);
+        } else {
+            global.attachEvent("onmessage", onGlobalMessage);
+        }
+
+        registerImmediate = function(handle) {
+            global.postMessage(messagePrefix + handle, "*");
+        };
+    }
+
+    function installMessageChannelImplementation() {
+        var channel = new MessageChannel();
+        channel.port1.onmessage = function(event) {
+            var handle = event.data;
+            runIfPresent(handle);
+        };
+
+        registerImmediate = function(handle) {
+            channel.port2.postMessage(handle);
+        };
+    }
+
+    function installReadyStateChangeImplementation() {
+        var html = doc.documentElement;
+        registerImmediate = function(handle) {
+            // Create a <script> element; its readystatechange event will be fired asynchronously once it is inserted
+            // into the document. Do so, thus queuing up the task. Remember to clean up once it's been called.
+            var script = doc.createElement("script");
+            script.onreadystatechange = function () {
+                runIfPresent(handle);
+                script.onreadystatechange = null;
+                html.removeChild(script);
+                script = null;
+            };
+            html.appendChild(script);
+        };
+    }
+
+    function installSetTimeoutImplementation() {
+        registerImmediate = function(handle) {
+            setTimeout(runIfPresent, 0, handle);
+        };
+    }
+
+    // If supported, we should attach to the prototype of global, since that is where setTimeout et al. live.
+    var attachTo = Object.getPrototypeOf && Object.getPrototypeOf(global);
+    attachTo = attachTo && attachTo.setTimeout ? attachTo : global;
+
+    // Don't get fooled by e.g. browserify environments.
+    if ({}.toString.call(global.process) === "[object process]") {
+        // For Node.js before 0.9
+        installNextTickImplementation();
+
+    } else if (canUsePostMessage()) {
+        // For non-IE10 modern browsers
+        installPostMessageImplementation();
+
+    } else if (global.MessageChannel) {
+        // For web workers, where supported
+        installMessageChannelImplementation();
+
+    } else if (doc && "onreadystatechange" in doc.createElement("script")) {
+        // For IE 6–8
+        installReadyStateChangeImplementation();
+
+    } else {
+        // For older browsers
+        installSetTimeoutImplementation();
+    }
+
+    attachTo.setImmediate = setImmediate;
+    attachTo.clearImmediate = clearImmediate;
+}(typeof self === "undefined" ? typeof global === "undefined" ? this : global : self));
+
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(9), __webpack_require__(45)))
+
+/***/ }),
+/* 45 */
+/***/ (function(module, exports) {
+
+// shim for using process in browser
+var process = module.exports = {};
+
+// cached from whatever global is present so that test runners that stub it
+// don't break things.  But we need to wrap it in a try catch in case it is
+// wrapped in strict mode code which doesn't define any globals.  It's inside a
+// function because try/catches deoptimize in certain engines.
+
+var cachedSetTimeout;
+var cachedClearTimeout;
+
+function defaultSetTimout() {
+    throw new Error('setTimeout has not been defined');
+}
+function defaultClearTimeout () {
+    throw new Error('clearTimeout has not been defined');
+}
+(function () {
+    try {
+        if (typeof setTimeout === 'function') {
+            cachedSetTimeout = setTimeout;
+        } else {
+            cachedSetTimeout = defaultSetTimout;
+        }
+    } catch (e) {
+        cachedSetTimeout = defaultSetTimout;
+    }
+    try {
+        if (typeof clearTimeout === 'function') {
+            cachedClearTimeout = clearTimeout;
+        } else {
+            cachedClearTimeout = defaultClearTimeout;
+        }
+    } catch (e) {
+        cachedClearTimeout = defaultClearTimeout;
+    }
+} ())
+function runTimeout(fun) {
+    if (cachedSetTimeout === setTimeout) {
+        //normal enviroments in sane situations
+        return setTimeout(fun, 0);
+    }
+    // if setTimeout wasn't available but was latter defined
+    if ((cachedSetTimeout === defaultSetTimout || !cachedSetTimeout) && setTimeout) {
+        cachedSetTimeout = setTimeout;
+        return setTimeout(fun, 0);
+    }
+    try {
+        // when when somebody has screwed with setTimeout but no I.E. maddness
+        return cachedSetTimeout(fun, 0);
+    } catch(e){
+        try {
+            // When we are in I.E. but the script has been evaled so I.E. doesn't trust the global object when called normally
+            return cachedSetTimeout.call(null, fun, 0);
+        } catch(e){
+            // same as above but when it's a version of I.E. that must have the global object for 'this', hopfully our context correct otherwise it will throw a global error
+            return cachedSetTimeout.call(this, fun, 0);
+        }
+    }
+
+
+}
+function runClearTimeout(marker) {
+    if (cachedClearTimeout === clearTimeout) {
+        //normal enviroments in sane situations
+        return clearTimeout(marker);
+    }
+    // if clearTimeout wasn't available but was latter defined
+    if ((cachedClearTimeout === defaultClearTimeout || !cachedClearTimeout) && clearTimeout) {
+        cachedClearTimeout = clearTimeout;
+        return clearTimeout(marker);
+    }
+    try {
+        // when when somebody has screwed with setTimeout but no I.E. maddness
+        return cachedClearTimeout(marker);
+    } catch (e){
+        try {
+            // When we are in I.E. but the script has been evaled so I.E. doesn't  trust the global object when called normally
+            return cachedClearTimeout.call(null, marker);
+        } catch (e){
+            // same as above but when it's a version of I.E. that must have the global object for 'this', hopfully our context correct otherwise it will throw a global error.
+            // Some versions of I.E. have different rules for clearTimeout vs setTimeout
+            return cachedClearTimeout.call(this, marker);
+        }
+    }
+
+
+
+}
+var queue = [];
+var draining = false;
+var currentQueue;
+var queueIndex = -1;
+
+function cleanUpNextTick() {
+    if (!draining || !currentQueue) {
+        return;
+    }
+    draining = false;
+    if (currentQueue.length) {
+        queue = currentQueue.concat(queue);
+    } else {
+        queueIndex = -1;
+    }
+    if (queue.length) {
+        drainQueue();
+    }
+}
+
+function drainQueue() {
+    if (draining) {
+        return;
+    }
+    var timeout = runTimeout(cleanUpNextTick);
+    draining = true;
+
+    var len = queue.length;
+    while(len) {
+        currentQueue = queue;
+        queue = [];
+        while (++queueIndex < len) {
+            if (currentQueue) {
+                currentQueue[queueIndex].run();
+            }
+        }
+        queueIndex = -1;
+        len = queue.length;
+    }
+    currentQueue = null;
+    draining = false;
+    runClearTimeout(timeout);
+}
+
+process.nextTick = function (fun) {
+    var args = new Array(arguments.length - 1);
+    if (arguments.length > 1) {
+        for (var i = 1; i < arguments.length; i++) {
+            args[i - 1] = arguments[i];
+        }
+    }
+    queue.push(new Item(fun, args));
+    if (queue.length === 1 && !draining) {
+        runTimeout(drainQueue);
+    }
+};
+
+// v8 likes predictible objects
+function Item(fun, array) {
+    this.fun = fun;
+    this.array = array;
+}
+Item.prototype.run = function () {
+    this.fun.apply(null, this.array);
+};
+process.title = 'browser';
+process.browser = true;
+process.env = {};
+process.argv = [];
+process.version = ''; // empty string to avoid regexp issues
+process.versions = {};
+
+function noop() {}
+
+process.on = noop;
+process.addListener = noop;
+process.once = noop;
+process.off = noop;
+process.removeListener = noop;
+process.removeAllListeners = noop;
+process.emit = noop;
+process.prependListener = noop;
+process.prependOnceListener = noop;
+
+process.listeners = function (name) { return [] }
+
+process.binding = function (name) {
+    throw new Error('process.binding is not supported');
+};
+
+process.cwd = function () { return '/' };
+process.chdir = function (dir) {
+    throw new Error('process.chdir is not supported');
+};
+process.umask = function() { return 0; };
+
+
+/***/ }),
+/* 46 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_RESULT__;/* global define, KeyboardEvent, module */
+
+(function () {
+
+  var keyboardeventKeyPolyfill = {
+    polyfill: polyfill,
+    keys: {
+      3: 'Cancel',
+      6: 'Help',
+      8: 'Backspace',
+      9: 'Tab',
+      12: 'Clear',
+      13: 'Enter',
+      16: 'Shift',
+      17: 'Control',
+      18: 'Alt',
+      19: 'Pause',
+      20: 'CapsLock',
+      27: 'Escape',
+      28: 'Convert',
+      29: 'NonConvert',
+      30: 'Accept',
+      31: 'ModeChange',
+      32: ' ',
+      33: 'PageUp',
+      34: 'PageDown',
+      35: 'End',
+      36: 'Home',
+      37: 'ArrowLeft',
+      38: 'ArrowUp',
+      39: 'ArrowRight',
+      40: 'ArrowDown',
+      41: 'Select',
+      42: 'Print',
+      43: 'Execute',
+      44: 'PrintScreen',
+      45: 'Insert',
+      46: 'Delete',
+      48: ['0', ')'],
+      49: ['1', '!'],
+      50: ['2', '@'],
+      51: ['3', '#'],
+      52: ['4', '$'],
+      53: ['5', '%'],
+      54: ['6', '^'],
+      55: ['7', '&'],
+      56: ['8', '*'],
+      57: ['9', '('],
+      91: 'OS',
+      93: 'ContextMenu',
+      144: 'NumLock',
+      145: 'ScrollLock',
+      181: 'VolumeMute',
+      182: 'VolumeDown',
+      183: 'VolumeUp',
+      186: [';', ':'],
+      187: ['=', '+'],
+      188: [',', '<'],
+      189: ['-', '_'],
+      190: ['.', '>'],
+      191: ['/', '?'],
+      192: ['`', '~'],
+      219: ['[', '{'],
+      220: ['\\', '|'],
+      221: [']', '}'],
+      222: ["'", '"'],
+      224: 'Meta',
+      225: 'AltGraph',
+      246: 'Attn',
+      247: 'CrSel',
+      248: 'ExSel',
+      249: 'EraseEof',
+      250: 'Play',
+      251: 'ZoomOut'
+    }
+  };
+
+  // Function keys (F1-24).
+  var i;
+  for (i = 1; i < 25; i++) {
+    keyboardeventKeyPolyfill.keys[111 + i] = 'F' + i;
+  }
+
+  // Printable ASCII characters.
+  var letter = '';
+  for (i = 65; i < 91; i++) {
+    letter = String.fromCharCode(i);
+    keyboardeventKeyPolyfill.keys[i] = [letter.toLowerCase(), letter.toUpperCase()];
+  }
+
+  function polyfill () {
+    if (!('KeyboardEvent' in window) ||
+        'key' in KeyboardEvent.prototype) {
+      return false;
+    }
+
+    // Polyfill `key` on `KeyboardEvent`.
+    var proto = {
+      get: function (x) {
+        var key = keyboardeventKeyPolyfill.keys[this.which || this.keyCode];
+
+        if (Array.isArray(key)) {
+          key = key[+this.shiftKey];
+        }
+
+        return key;
+      }
+    };
+    Object.defineProperty(KeyboardEvent.prototype, 'key', proto);
+    return proto;
+  }
+
+  if (true) {
+    !(__WEBPACK_AMD_DEFINE_FACTORY__ = (keyboardeventKeyPolyfill),
+				__WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ?
+				(__WEBPACK_AMD_DEFINE_FACTORY__.call(exports, __webpack_require__, exports, module)) :
+				__WEBPACK_AMD_DEFINE_FACTORY__),
+				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+  } else if (typeof exports !== 'undefined' && typeof module !== 'undefined') {
+    module.exports = keyboardeventKeyPolyfill;
+  } else if (window) {
+    window.keyboardeventKeyPolyfill = keyboardeventKeyPolyfill;
+  }
+
+})();
+
+
+/***/ }),
+/* 47 */
 /***/ (function(module, exports) {
 
 /**@license
@@ -15425,3442 +17894,202 @@ module.exports = {
 
 
 /***/ }),
-/* 41 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_RESULT__;/* global define, KeyboardEvent, module */
-
-(function () {
-
-  var keyboardeventKeyPolyfill = {
-    polyfill: polyfill,
-    keys: {
-      3: 'Cancel',
-      6: 'Help',
-      8: 'Backspace',
-      9: 'Tab',
-      12: 'Clear',
-      13: 'Enter',
-      16: 'Shift',
-      17: 'Control',
-      18: 'Alt',
-      19: 'Pause',
-      20: 'CapsLock',
-      27: 'Escape',
-      28: 'Convert',
-      29: 'NonConvert',
-      30: 'Accept',
-      31: 'ModeChange',
-      32: ' ',
-      33: 'PageUp',
-      34: 'PageDown',
-      35: 'End',
-      36: 'Home',
-      37: 'ArrowLeft',
-      38: 'ArrowUp',
-      39: 'ArrowRight',
-      40: 'ArrowDown',
-      41: 'Select',
-      42: 'Print',
-      43: 'Execute',
-      44: 'PrintScreen',
-      45: 'Insert',
-      46: 'Delete',
-      48: ['0', ')'],
-      49: ['1', '!'],
-      50: ['2', '@'],
-      51: ['3', '#'],
-      52: ['4', '$'],
-      53: ['5', '%'],
-      54: ['6', '^'],
-      55: ['7', '&'],
-      56: ['8', '*'],
-      57: ['9', '('],
-      91: 'OS',
-      93: 'ContextMenu',
-      144: 'NumLock',
-      145: 'ScrollLock',
-      181: 'VolumeMute',
-      182: 'VolumeDown',
-      183: 'VolumeUp',
-      186: [';', ':'],
-      187: ['=', '+'],
-      188: [',', '<'],
-      189: ['-', '_'],
-      190: ['.', '>'],
-      191: ['/', '?'],
-      192: ['`', '~'],
-      219: ['[', '{'],
-      220: ['\\', '|'],
-      221: [']', '}'],
-      222: ["'", '"'],
-      224: 'Meta',
-      225: 'AltGraph',
-      246: 'Attn',
-      247: 'CrSel',
-      248: 'ExSel',
-      249: 'EraseEof',
-      250: 'Play',
-      251: 'ZoomOut'
-    }
-  };
-
-  // Function keys (F1-24).
-  var i;
-  for (i = 1; i < 25; i++) {
-    keyboardeventKeyPolyfill.keys[111 + i] = 'F' + i;
-  }
-
-  // Printable ASCII characters.
-  var letter = '';
-  for (i = 65; i < 91; i++) {
-    letter = String.fromCharCode(i);
-    keyboardeventKeyPolyfill.keys[i] = [letter.toLowerCase(), letter.toUpperCase()];
-  }
-
-  function polyfill () {
-    if (!('KeyboardEvent' in window) ||
-        'key' in KeyboardEvent.prototype) {
-      return false;
-    }
-
-    // Polyfill `key` on `KeyboardEvent`.
-    var proto = {
-      get: function (x) {
-        var key = keyboardeventKeyPolyfill.keys[this.which || this.keyCode];
-
-        if (Array.isArray(key)) {
-          key = key[+this.shiftKey];
-        }
-
-        return key;
-      }
-    };
-    Object.defineProperty(KeyboardEvent.prototype, 'key', proto);
-    return proto;
-  }
-
-  if (true) {
-    !(__WEBPACK_AMD_DEFINE_FACTORY__ = (keyboardeventKeyPolyfill),
-				__WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ?
-				(__WEBPACK_AMD_DEFINE_FACTORY__.call(exports, __webpack_require__, exports, module)) :
-				__WEBPACK_AMD_DEFINE_FACTORY__),
-				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
-  } else if (typeof exports !== 'undefined' && typeof module !== 'undefined') {
-    module.exports = keyboardeventKeyPolyfill;
-  } else if (window) {
-    window.keyboardeventKeyPolyfill = keyboardeventKeyPolyfill;
-  }
-
-})();
-
-
-/***/ }),
-/* 42 */
-/***/ (function(module, exports) {
-
-// shim for using process in browser
-var process = module.exports = {};
-
-// cached from whatever global is present so that test runners that stub it
-// don't break things.  But we need to wrap it in a try catch in case it is
-// wrapped in strict mode code which doesn't define any globals.  It's inside a
-// function because try/catches deoptimize in certain engines.
-
-var cachedSetTimeout;
-var cachedClearTimeout;
-
-function defaultSetTimout() {
-    throw new Error('setTimeout has not been defined');
-}
-function defaultClearTimeout () {
-    throw new Error('clearTimeout has not been defined');
-}
-(function () {
-    try {
-        if (typeof setTimeout === 'function') {
-            cachedSetTimeout = setTimeout;
-        } else {
-            cachedSetTimeout = defaultSetTimout;
-        }
-    } catch (e) {
-        cachedSetTimeout = defaultSetTimout;
-    }
-    try {
-        if (typeof clearTimeout === 'function') {
-            cachedClearTimeout = clearTimeout;
-        } else {
-            cachedClearTimeout = defaultClearTimeout;
-        }
-    } catch (e) {
-        cachedClearTimeout = defaultClearTimeout;
-    }
-} ())
-function runTimeout(fun) {
-    if (cachedSetTimeout === setTimeout) {
-        //normal enviroments in sane situations
-        return setTimeout(fun, 0);
-    }
-    // if setTimeout wasn't available but was latter defined
-    if ((cachedSetTimeout === defaultSetTimout || !cachedSetTimeout) && setTimeout) {
-        cachedSetTimeout = setTimeout;
-        return setTimeout(fun, 0);
-    }
-    try {
-        // when when somebody has screwed with setTimeout but no I.E. maddness
-        return cachedSetTimeout(fun, 0);
-    } catch(e){
-        try {
-            // When we are in I.E. but the script has been evaled so I.E. doesn't trust the global object when called normally
-            return cachedSetTimeout.call(null, fun, 0);
-        } catch(e){
-            // same as above but when it's a version of I.E. that must have the global object for 'this', hopfully our context correct otherwise it will throw a global error
-            return cachedSetTimeout.call(this, fun, 0);
-        }
-    }
-
-
-}
-function runClearTimeout(marker) {
-    if (cachedClearTimeout === clearTimeout) {
-        //normal enviroments in sane situations
-        return clearTimeout(marker);
-    }
-    // if clearTimeout wasn't available but was latter defined
-    if ((cachedClearTimeout === defaultClearTimeout || !cachedClearTimeout) && clearTimeout) {
-        cachedClearTimeout = clearTimeout;
-        return clearTimeout(marker);
-    }
-    try {
-        // when when somebody has screwed with setTimeout but no I.E. maddness
-        return cachedClearTimeout(marker);
-    } catch (e){
-        try {
-            // When we are in I.E. but the script has been evaled so I.E. doesn't  trust the global object when called normally
-            return cachedClearTimeout.call(null, marker);
-        } catch (e){
-            // same as above but when it's a version of I.E. that must have the global object for 'this', hopfully our context correct otherwise it will throw a global error.
-            // Some versions of I.E. have different rules for clearTimeout vs setTimeout
-            return cachedClearTimeout.call(this, marker);
-        }
-    }
-
-
-
-}
-var queue = [];
-var draining = false;
-var currentQueue;
-var queueIndex = -1;
-
-function cleanUpNextTick() {
-    if (!draining || !currentQueue) {
-        return;
-    }
-    draining = false;
-    if (currentQueue.length) {
-        queue = currentQueue.concat(queue);
-    } else {
-        queueIndex = -1;
-    }
-    if (queue.length) {
-        drainQueue();
-    }
-}
-
-function drainQueue() {
-    if (draining) {
-        return;
-    }
-    var timeout = runTimeout(cleanUpNextTick);
-    draining = true;
-
-    var len = queue.length;
-    while(len) {
-        currentQueue = queue;
-        queue = [];
-        while (++queueIndex < len) {
-            if (currentQueue) {
-                currentQueue[queueIndex].run();
-            }
-        }
-        queueIndex = -1;
-        len = queue.length;
-    }
-    currentQueue = null;
-    draining = false;
-    runClearTimeout(timeout);
-}
-
-process.nextTick = function (fun) {
-    var args = new Array(arguments.length - 1);
-    if (arguments.length > 1) {
-        for (var i = 1; i < arguments.length; i++) {
-            args[i - 1] = arguments[i];
-        }
-    }
-    queue.push(new Item(fun, args));
-    if (queue.length === 1 && !draining) {
-        runTimeout(drainQueue);
-    }
-};
-
-// v8 likes predictible objects
-function Item(fun, array) {
-    this.fun = fun;
-    this.array = array;
-}
-Item.prototype.run = function () {
-    this.fun.apply(null, this.array);
-};
-process.title = 'browser';
-process.browser = true;
-process.env = {};
-process.argv = [];
-process.version = ''; // empty string to avoid regexp issues
-process.versions = {};
-
-function noop() {}
-
-process.on = noop;
-process.addListener = noop;
-process.once = noop;
-process.off = noop;
-process.removeListener = noop;
-process.removeAllListeners = noop;
-process.emit = noop;
-process.prependListener = noop;
-process.prependOnceListener = noop;
-
-process.listeners = function (name) { return [] }
-
-process.binding = function (name) {
-    throw new Error('process.binding is not supported');
-};
-
-process.cwd = function () { return '/' };
-process.chdir = function (dir) {
-    throw new Error('process.chdir is not supported');
-};
-process.umask = function() { return 0; };
-
-
-/***/ }),
-/* 43 */
-/***/ (function(module, exports, __webpack_require__) {
-
-/* WEBPACK VAR INJECTION */(function(global, process) {(function (global, undefined) {
-    "use strict";
-
-    if (global.setImmediate) {
-        return;
-    }
-
-    var nextHandle = 1; // Spec says greater than zero
-    var tasksByHandle = {};
-    var currentlyRunningATask = false;
-    var doc = global.document;
-    var registerImmediate;
-
-    function setImmediate(callback) {
-      // Callback can either be a function or a string
-      if (typeof callback !== "function") {
-        callback = new Function("" + callback);
-      }
-      // Copy function arguments
-      var args = new Array(arguments.length - 1);
-      for (var i = 0; i < args.length; i++) {
-          args[i] = arguments[i + 1];
-      }
-      // Store and register the task
-      var task = { callback: callback, args: args };
-      tasksByHandle[nextHandle] = task;
-      registerImmediate(nextHandle);
-      return nextHandle++;
-    }
-
-    function clearImmediate(handle) {
-        delete tasksByHandle[handle];
-    }
-
-    function run(task) {
-        var callback = task.callback;
-        var args = task.args;
-        switch (args.length) {
-        case 0:
-            callback();
-            break;
-        case 1:
-            callback(args[0]);
-            break;
-        case 2:
-            callback(args[0], args[1]);
-            break;
-        case 3:
-            callback(args[0], args[1], args[2]);
-            break;
-        default:
-            callback.apply(undefined, args);
-            break;
-        }
-    }
-
-    function runIfPresent(handle) {
-        // From the spec: "Wait until any invocations of this algorithm started before this one have completed."
-        // So if we're currently running a task, we'll need to delay this invocation.
-        if (currentlyRunningATask) {
-            // Delay by doing a setTimeout. setImmediate was tried instead, but in Firefox 7 it generated a
-            // "too much recursion" error.
-            setTimeout(runIfPresent, 0, handle);
-        } else {
-            var task = tasksByHandle[handle];
-            if (task) {
-                currentlyRunningATask = true;
-                try {
-                    run(task);
-                } finally {
-                    clearImmediate(handle);
-                    currentlyRunningATask = false;
-                }
-            }
-        }
-    }
-
-    function installNextTickImplementation() {
-        registerImmediate = function(handle) {
-            process.nextTick(function () { runIfPresent(handle); });
-        };
-    }
-
-    function canUsePostMessage() {
-        // The test against `importScripts` prevents this implementation from being installed inside a web worker,
-        // where `global.postMessage` means something completely different and can't be used for this purpose.
-        if (global.postMessage && !global.importScripts) {
-            var postMessageIsAsynchronous = true;
-            var oldOnMessage = global.onmessage;
-            global.onmessage = function() {
-                postMessageIsAsynchronous = false;
-            };
-            global.postMessage("", "*");
-            global.onmessage = oldOnMessage;
-            return postMessageIsAsynchronous;
-        }
-    }
-
-    function installPostMessageImplementation() {
-        // Installs an event handler on `global` for the `message` event: see
-        // * https://developer.mozilla.org/en/DOM/window.postMessage
-        // * http://www.whatwg.org/specs/web-apps/current-work/multipage/comms.html#crossDocumentMessages
-
-        var messagePrefix = "setImmediate$" + Math.random() + "$";
-        var onGlobalMessage = function(event) {
-            if (event.source === global &&
-                typeof event.data === "string" &&
-                event.data.indexOf(messagePrefix) === 0) {
-                runIfPresent(+event.data.slice(messagePrefix.length));
-            }
-        };
-
-        if (global.addEventListener) {
-            global.addEventListener("message", onGlobalMessage, false);
-        } else {
-            global.attachEvent("onmessage", onGlobalMessage);
-        }
-
-        registerImmediate = function(handle) {
-            global.postMessage(messagePrefix + handle, "*");
-        };
-    }
-
-    function installMessageChannelImplementation() {
-        var channel = new MessageChannel();
-        channel.port1.onmessage = function(event) {
-            var handle = event.data;
-            runIfPresent(handle);
-        };
-
-        registerImmediate = function(handle) {
-            channel.port2.postMessage(handle);
-        };
-    }
-
-    function installReadyStateChangeImplementation() {
-        var html = doc.documentElement;
-        registerImmediate = function(handle) {
-            // Create a <script> element; its readystatechange event will be fired asynchronously once it is inserted
-            // into the document. Do so, thus queuing up the task. Remember to clean up once it's been called.
-            var script = doc.createElement("script");
-            script.onreadystatechange = function () {
-                runIfPresent(handle);
-                script.onreadystatechange = null;
-                html.removeChild(script);
-                script = null;
-            };
-            html.appendChild(script);
-        };
-    }
-
-    function installSetTimeoutImplementation() {
-        registerImmediate = function(handle) {
-            setTimeout(runIfPresent, 0, handle);
-        };
-    }
-
-    // If supported, we should attach to the prototype of global, since that is where setTimeout et al. live.
-    var attachTo = Object.getPrototypeOf && Object.getPrototypeOf(global);
-    attachTo = attachTo && attachTo.setTimeout ? attachTo : global;
-
-    // Don't get fooled by e.g. browserify environments.
-    if ({}.toString.call(global.process) === "[object process]") {
-        // For Node.js before 0.9
-        installNextTickImplementation();
-
-    } else if (canUsePostMessage()) {
-        // For non-IE10 modern browsers
-        installPostMessageImplementation();
-
-    } else if (global.MessageChannel) {
-        // For web workers, where supported
-        installMessageChannelImplementation();
-
-    } else if (doc && "onreadystatechange" in doc.createElement("script")) {
-        // For IE 6–8
-        installReadyStateChangeImplementation();
-
-    } else {
-        // For older browsers
-        installSetTimeoutImplementation();
-    }
-
-    attachTo.setImmediate = setImmediate;
-    attachTo.clearImmediate = clearImmediate;
-}(typeof self === "undefined" ? typeof global === "undefined" ? this : global : self));
-
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(10), __webpack_require__(42)))
-
-/***/ }),
-/* 44 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*! tether-drop 1.4.1 */
-
-(function(root, factory) {
-  if (true) {
-    !(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(45)], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory),
-				__WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ?
-				(__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__),
-				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
-  } else if (typeof exports === 'object') {
-    module.exports = factory(require('tether'));
-  } else {
-    root.Drop = factory(root.Tether);
-  }
-}(this, function(Tether) {
-
-/* global Tether */
-'use strict';
-
-var _bind = Function.prototype.bind;
-
-var _slicedToArray = (function () { function sliceIterator(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i['return']) _i['return'](); } finally { if (_d) throw _e; } } return _arr; } return function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { return sliceIterator(arr, i); } else { throw new TypeError('Invalid attempt to destructure non-iterable instance'); } }; })();
-
-var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
-
-var _get = function get(_x2, _x3, _x4) { var _again = true; _function: while (_again) { var object = _x2, property = _x3, receiver = _x4; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x2 = parent; _x3 = property; _x4 = receiver; _again = true; desc = parent = undefined; continue _function; } } else if ('value' in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== 'function' && superClass !== null) { throw new TypeError('Super expression must either be null or a function, not ' + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-var _Tether$Utils = Tether.Utils;
-var extend = _Tether$Utils.extend;
-var addClass = _Tether$Utils.addClass;
-var removeClass = _Tether$Utils.removeClass;
-var hasClass = _Tether$Utils.hasClass;
-var Evented = _Tether$Utils.Evented;
-
-function sortAttach(str) {
-  var _str$split = str.split(' ');
-
-  var _str$split2 = _slicedToArray(_str$split, 2);
-
-  var first = _str$split2[0];
-  var second = _str$split2[1];
-
-  if (['left', 'right'].indexOf(first) >= 0) {
-    var _ref = [second, first];
-    first = _ref[0];
-    second = _ref[1];
-  }
-  return [first, second].join(' ');
-}
-
-function removeFromArray(arr, item) {
-  var index = undefined;
-  var results = [];
-  while ((index = arr.indexOf(item)) !== -1) {
-    results.push(arr.splice(index, 1));
-  }
-  return results;
-}
-
-var clickEvents = ['click'];
-if ('ontouchstart' in document.documentElement) {
-  clickEvents.push('touchstart');
-}
-
-var transitionEndEvents = {
-  'WebkitTransition': 'webkitTransitionEnd',
-  'MozTransition': 'transitionend',
-  'OTransition': 'otransitionend',
-  'transition': 'transitionend'
-};
-
-var transitionEndEvent = '';
-for (var _name in transitionEndEvents) {
-  if (({}).hasOwnProperty.call(transitionEndEvents, _name)) {
-    var tempEl = document.createElement('p');
-    if (typeof tempEl.style[_name] !== 'undefined') {
-      transitionEndEvent = transitionEndEvents[_name];
-    }
-  }
-}
-
-var MIRROR_ATTACH = {
-  left: 'right',
-  right: 'left',
-  top: 'bottom',
-  bottom: 'top',
-  middle: 'middle',
-  center: 'center'
-};
-
-var allDrops = {};
-
-// Drop can be included in external libraries.  Calling createContext gives you a fresh
-// copy of drop which won't interact with other copies on the page (beyond calling the document events).
-
-function createContext() {
-  var options = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
-
-  var drop = function drop() {
-    for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
-      args[_key] = arguments[_key];
-    }
-
-    return new (_bind.apply(DropInstance, [null].concat(args)))();
-  };
-
-  extend(drop, {
-    createContext: createContext,
-    drops: [],
-    defaults: {}
-  });
-
-  var defaultOptions = {
-    classPrefix: 'drop',
-    defaults: {
-      position: 'bottom left',
-      openOn: 'click',
-      beforeClose: null,
-      constrainToScrollParent: true,
-      constrainToWindow: true,
-      classes: '',
-      remove: false,
-      openDelay: 0,
-      closeDelay: 50,
-      // inherited from openDelay and closeDelay if not explicitly defined
-      focusDelay: null,
-      blurDelay: null,
-      hoverOpenDelay: null,
-      hoverCloseDelay: null,
-      tetherOptions: {}
-    }
-  };
-
-  extend(drop, defaultOptions, options);
-  extend(drop.defaults, defaultOptions.defaults, options.defaults);
-
-  if (typeof allDrops[drop.classPrefix] === 'undefined') {
-    allDrops[drop.classPrefix] = [];
-  }
-
-  drop.updateBodyClasses = function () {
-    // There is only one body, so despite the context concept, we still iterate through all
-    // drops which share our classPrefix.
-
-    var anyOpen = false;
-    var drops = allDrops[drop.classPrefix];
-    var len = drops.length;
-    for (var i = 0; i < len; ++i) {
-      if (drops[i].isOpened()) {
-        anyOpen = true;
-        break;
-      }
-    }
-
-    if (anyOpen) {
-      addClass(document.body, drop.classPrefix + '-open');
-    } else {
-      removeClass(document.body, drop.classPrefix + '-open');
-    }
-  };
-
-  var DropInstance = (function (_Evented) {
-    _inherits(DropInstance, _Evented);
-
-    function DropInstance(opts) {
-      _classCallCheck(this, DropInstance);
-
-      _get(Object.getPrototypeOf(DropInstance.prototype), 'constructor', this).call(this);
-      this.options = extend({}, drop.defaults, opts);
-      this.target = this.options.target;
-
-      if (typeof this.target === 'undefined') {
-        throw new Error('Drop Error: You must provide a target.');
-      }
-
-      var dataPrefix = 'data-' + drop.classPrefix;
-
-      var contentAttr = this.target.getAttribute(dataPrefix);
-      if (contentAttr && this.options.content == null) {
-        this.options.content = contentAttr;
-      }
-
-      var attrsOverride = ['position', 'openOn'];
-      for (var i = 0; i < attrsOverride.length; ++i) {
-
-        var override = this.target.getAttribute(dataPrefix + '-' + attrsOverride[i]);
-        if (override && this.options[attrsOverride[i]] == null) {
-          this.options[attrsOverride[i]] = override;
-        }
-      }
-
-      if (this.options.classes && this.options.addTargetClasses !== false) {
-        addClass(this.target, this.options.classes);
-      }
-
-      drop.drops.push(this);
-      allDrops[drop.classPrefix].push(this);
-
-      this._boundEvents = [];
-      this.bindMethods();
-      this.setupElements();
-      this.setupEvents();
-      this.setupTether();
-    }
-
-    _createClass(DropInstance, [{
-      key: '_on',
-      value: function _on(element, event, handler) {
-        this._boundEvents.push({ element: element, event: event, handler: handler });
-        element.addEventListener(event, handler);
-      }
-    }, {
-      key: 'bindMethods',
-      value: function bindMethods() {
-        this.transitionEndHandler = this._transitionEndHandler.bind(this);
-      }
-    }, {
-      key: 'setupElements',
-      value: function setupElements() {
-        var _this = this;
-
-        this.drop = document.createElement('div');
-        addClass(this.drop, drop.classPrefix);
-
-        if (this.options.classes) {
-          addClass(this.drop, this.options.classes);
-        }
-
-        this.content = document.createElement('div');
-        addClass(this.content, drop.classPrefix + '-content');
-
-        if (typeof this.options.content === 'function') {
-          var generateAndSetContent = function generateAndSetContent() {
-            // content function might return a string or an element
-            var contentElementOrHTML = _this.options.content.call(_this, _this);
-
-            if (typeof contentElementOrHTML === 'string') {
-              _this.content.innerHTML = contentElementOrHTML;
-            } else if (typeof contentElementOrHTML === 'object') {
-              _this.content.innerHTML = '';
-              _this.content.appendChild(contentElementOrHTML);
-            } else {
-              throw new Error('Drop Error: Content function should return a string or HTMLElement.');
-            }
-          };
-
-          generateAndSetContent();
-          this.on('open', generateAndSetContent.bind(this));
-        } else if (typeof this.options.content === 'object') {
-          this.content.appendChild(this.options.content);
-        } else {
-          this.content.innerHTML = this.options.content;
-        }
-
-        this.drop.appendChild(this.content);
-      }
-    }, {
-      key: 'setupTether',
-      value: function setupTether() {
-        // Tether expects two attachment points, one in the target element, one in the
-        // drop.  We use a single one, and use the order as well, to allow us to put
-        // the drop on either side of any of the four corners.  This magic converts between
-        // the two:
-        var dropAttach = this.options.position.split(' ');
-        dropAttach[0] = MIRROR_ATTACH[dropAttach[0]];
-        dropAttach = dropAttach.join(' ');
-
-        var constraints = [];
-        if (this.options.constrainToScrollParent) {
-          constraints.push({
-            to: 'scrollParent',
-            pin: 'top, bottom',
-            attachment: 'together none'
-          });
-        } else {
-          // To get 'out of bounds' classes
-          constraints.push({
-            to: 'scrollParent'
-          });
-        }
-
-        if (this.options.constrainToWindow !== false) {
-          constraints.push({
-            to: 'window',
-            attachment: 'together'
-          });
-        } else {
-          // To get 'out of bounds' classes
-          constraints.push({
-            to: 'window'
-          });
-        }
-
-        var opts = {
-          element: this.drop,
-          target: this.target,
-          attachment: sortAttach(dropAttach),
-          targetAttachment: sortAttach(this.options.position),
-          classPrefix: drop.classPrefix,
-          offset: '0 0',
-          targetOffset: '0 0',
-          enabled: false,
-          constraints: constraints,
-          addTargetClasses: this.options.addTargetClasses
-        };
-
-        if (this.options.tetherOptions !== false) {
-          this.tether = new Tether(extend({}, opts, this.options.tetherOptions));
-        }
-      }
-    }, {
-      key: 'setupEvents',
-      value: function setupEvents() {
-        var _this2 = this;
-
-        if (!this.options.openOn) {
-          return;
-        }
-
-        if (this.options.openOn === 'always') {
-          setTimeout(this.open.bind(this));
-          return;
-        }
-
-        var events = this.options.openOn.split(' ');
-
-        if (events.indexOf('click') >= 0) {
-          var openHandler = function openHandler(event) {
-            _this2.toggle(event);
-            event.preventDefault();
-          };
-
-          var closeHandler = function closeHandler(event) {
-            if (!_this2.isOpened()) {
-              return;
-            }
-
-            // Clicking inside dropdown
-            if (event.target === _this2.drop || _this2.drop.contains(event.target)) {
-              return;
-            }
-
-            // Clicking target
-            if (event.target === _this2.target || _this2.target.contains(event.target)) {
-              return;
-            }
-
-            _this2.close(event);
-          };
-
-          for (var i = 0; i < clickEvents.length; ++i) {
-            var clickEvent = clickEvents[i];
-            this._on(this.target, clickEvent, openHandler);
-            this._on(document, clickEvent, closeHandler);
-          }
-        }
-
-        var inTimeout = null;
-        var outTimeout = null;
-
-        var inHandler = function inHandler(event) {
-          if (outTimeout !== null) {
-            clearTimeout(outTimeout);
-          } else {
-            inTimeout = setTimeout(function () {
-              _this2.open(event);
-              inTimeout = null;
-            }, (event.type === 'focus' ? _this2.options.focusDelay : _this2.options.hoverOpenDelay) || _this2.options.openDelay);
-          }
-        };
-
-        var outHandler = function outHandler(event) {
-          if (inTimeout !== null) {
-            clearTimeout(inTimeout);
-          } else {
-            outTimeout = setTimeout(function () {
-              _this2.close(event);
-              outTimeout = null;
-            }, (event.type === 'blur' ? _this2.options.blurDelay : _this2.options.hoverCloseDelay) || _this2.options.closeDelay);
-          }
-        };
-
-        if (events.indexOf('hover') >= 0) {
-          this._on(this.target, 'mouseover', inHandler);
-          this._on(this.drop, 'mouseover', inHandler);
-          this._on(this.target, 'mouseout', outHandler);
-          this._on(this.drop, 'mouseout', outHandler);
-        }
-
-        if (events.indexOf('focus') >= 0) {
-          this._on(this.target, 'focus', inHandler);
-          this._on(this.drop, 'focus', inHandler);
-          this._on(this.target, 'blur', outHandler);
-          this._on(this.drop, 'blur', outHandler);
-        }
-      }
-    }, {
-      key: 'isOpened',
-      value: function isOpened() {
-        if (this.drop) {
-          return hasClass(this.drop, drop.classPrefix + '-open');
-        }
-      }
-    }, {
-      key: 'toggle',
-      value: function toggle(event) {
-        if (this.isOpened()) {
-          this.close(event);
-        } else {
-          this.open(event);
-        }
-      }
-    }, {
-      key: 'open',
-      value: function open(event) {
-        var _this3 = this;
-
-        /* eslint no-unused-vars: 0 */
-        if (this.isOpened()) {
-          return;
-        }
-
-        if (!this.drop.parentNode) {
-          document.body.appendChild(this.drop);
-        }
-
-        if (typeof this.tether !== 'undefined') {
-          this.tether.enable();
-        }
-
-        addClass(this.drop, drop.classPrefix + '-open');
-        addClass(this.drop, drop.classPrefix + '-open-transitionend');
-
-        setTimeout(function () {
-          if (_this3.drop) {
-            addClass(_this3.drop, drop.classPrefix + '-after-open');
-          }
-        });
-
-        if (typeof this.tether !== 'undefined') {
-          this.tether.position();
-        }
-
-        this.trigger('open');
-
-        drop.updateBodyClasses();
-      }
-    }, {
-      key: '_transitionEndHandler',
-      value: function _transitionEndHandler(e) {
-        if (e.target !== e.currentTarget) {
-          return;
-        }
-
-        if (!hasClass(this.drop, drop.classPrefix + '-open')) {
-          removeClass(this.drop, drop.classPrefix + '-open-transitionend');
-        }
-        this.drop.removeEventListener(transitionEndEvent, this.transitionEndHandler);
-      }
-    }, {
-      key: 'beforeCloseHandler',
-      value: function beforeCloseHandler(event) {
-        var shouldClose = true;
-
-        if (!this.isClosing && typeof this.options.beforeClose === 'function') {
-          this.isClosing = true;
-          shouldClose = this.options.beforeClose(event, this) !== false;
-        }
-
-        this.isClosing = false;
-
-        return shouldClose;
-      }
-    }, {
-      key: 'close',
-      value: function close(event) {
-        if (!this.isOpened()) {
-          return;
-        }
-
-        if (!this.beforeCloseHandler(event)) {
-          return;
-        }
-
-        removeClass(this.drop, drop.classPrefix + '-open');
-        removeClass(this.drop, drop.classPrefix + '-after-open');
-
-        this.drop.addEventListener(transitionEndEvent, this.transitionEndHandler);
-
-        this.trigger('close');
-
-        if (typeof this.tether !== 'undefined') {
-          this.tether.disable();
-        }
-
-        drop.updateBodyClasses();
-
-        if (this.options.remove) {
-          this.remove(event);
-        }
-      }
-    }, {
-      key: 'remove',
-      value: function remove(event) {
-        this.close(event);
-        if (this.drop.parentNode) {
-          this.drop.parentNode.removeChild(this.drop);
-        }
-      }
-    }, {
-      key: 'position',
-      value: function position() {
-        if (this.isOpened() && typeof this.tether !== 'undefined') {
-          this.tether.position();
-        }
-      }
-    }, {
-      key: 'destroy',
-      value: function destroy() {
-        this.remove();
-
-        if (typeof this.tether !== 'undefined') {
-          this.tether.destroy();
-        }
-
-        for (var i = 0; i < this._boundEvents.length; ++i) {
-          var _boundEvents$i = this._boundEvents[i];
-          var element = _boundEvents$i.element;
-          var _event = _boundEvents$i.event;
-          var handler = _boundEvents$i.handler;
-
-          element.removeEventListener(_event, handler);
-        }
-
-        this._boundEvents = [];
-
-        this.tether = null;
-        this.drop = null;
-        this.content = null;
-        this.target = null;
-
-        removeFromArray(allDrops[drop.classPrefix], this);
-        removeFromArray(drop.drops, this);
-      }
-    }]);
-
-    return DropInstance;
-  })(Evented);
-
-  return drop;
-}
-
-var Drop = createContext();
-
-document.addEventListener('DOMContentLoaded', function () {
-  Drop.updateBodyClasses();
-});
-return Drop;
-
-}));
-
-
-/***/ }),
-/* 45 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_RESULT__;/*! tether 1.4.0 */
-
-(function(root, factory) {
-  if (true) {
-    !(__WEBPACK_AMD_DEFINE_FACTORY__ = (factory),
-				__WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ?
-				(__WEBPACK_AMD_DEFINE_FACTORY__.call(exports, __webpack_require__, exports, module)) :
-				__WEBPACK_AMD_DEFINE_FACTORY__),
-				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
-  } else if (typeof exports === 'object') {
-    module.exports = factory(require, exports, module);
-  } else {
-    root.Tether = factory();
-  }
-}(this, function(require, exports, module) {
-
-'use strict';
-
-var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
-
-var TetherBase = undefined;
-if (typeof TetherBase === 'undefined') {
-  TetherBase = { modules: [] };
-}
-
-var zeroElement = null;
-
-// Same as native getBoundingClientRect, except it takes into account parent <frame> offsets
-// if the element lies within a nested document (<frame> or <iframe>-like).
-function getActualBoundingClientRect(node) {
-  var boundingRect = node.getBoundingClientRect();
-
-  // The original object returned by getBoundingClientRect is immutable, so we clone it
-  // We can't use extend because the properties are not considered part of the object by hasOwnProperty in IE9
-  var rect = {};
-  for (var k in boundingRect) {
-    rect[k] = boundingRect[k];
-  }
-
-  if (node.ownerDocument !== document) {
-    var _frameElement = node.ownerDocument.defaultView.frameElement;
-    if (_frameElement) {
-      var frameRect = getActualBoundingClientRect(_frameElement);
-      rect.top += frameRect.top;
-      rect.bottom += frameRect.top;
-      rect.left += frameRect.left;
-      rect.right += frameRect.left;
-    }
-  }
-
-  return rect;
-}
-
-function getScrollParents(el) {
-  // In firefox if the el is inside an iframe with display: none; window.getComputedStyle() will return null;
-  // https://bugzilla.mozilla.org/show_bug.cgi?id=548397
-  var computedStyle = getComputedStyle(el) || {};
-  var position = computedStyle.position;
-  var parents = [];
-
-  if (position === 'fixed') {
-    return [el];
-  }
-
-  var parent = el;
-  while ((parent = parent.parentNode) && parent && parent.nodeType === 1) {
-    var style = undefined;
-    try {
-      style = getComputedStyle(parent);
-    } catch (err) {}
-
-    if (typeof style === 'undefined' || style === null) {
-      parents.push(parent);
-      return parents;
-    }
-
-    var _style = style;
-    var overflow = _style.overflow;
-    var overflowX = _style.overflowX;
-    var overflowY = _style.overflowY;
-
-    if (/(auto|scroll)/.test(overflow + overflowY + overflowX)) {
-      if (position !== 'absolute' || ['relative', 'absolute', 'fixed'].indexOf(style.position) >= 0) {
-        parents.push(parent);
-      }
-    }
-  }
-
-  parents.push(el.ownerDocument.body);
-
-  // If the node is within a frame, account for the parent window scroll
-  if (el.ownerDocument !== document) {
-    parents.push(el.ownerDocument.defaultView);
-  }
-
-  return parents;
-}
-
-var uniqueId = (function () {
-  var id = 0;
-  return function () {
-    return ++id;
-  };
-})();
-
-var zeroPosCache = {};
-var getOrigin = function getOrigin() {
-  // getBoundingClientRect is unfortunately too accurate.  It introduces a pixel or two of
-  // jitter as the user scrolls that messes with our ability to detect if two positions
-  // are equivilant or not.  We place an element at the top left of the page that will
-  // get the same jitter, so we can cancel the two out.
-  var node = zeroElement;
-  if (!node || !document.body.contains(node)) {
-    node = document.createElement('div');
-    node.setAttribute('data-tether-id', uniqueId());
-    extend(node.style, {
-      top: 0,
-      left: 0,
-      position: 'absolute'
-    });
-
-    document.body.appendChild(node);
-
-    zeroElement = node;
-  }
-
-  var id = node.getAttribute('data-tether-id');
-  if (typeof zeroPosCache[id] === 'undefined') {
-    zeroPosCache[id] = getActualBoundingClientRect(node);
-
-    // Clear the cache when this position call is done
-    defer(function () {
-      delete zeroPosCache[id];
-    });
-  }
-
-  return zeroPosCache[id];
-};
-
-function removeUtilElements() {
-  if (zeroElement) {
-    document.body.removeChild(zeroElement);
-  }
-  zeroElement = null;
-};
-
-function getBounds(el) {
-  var doc = undefined;
-  if (el === document) {
-    doc = document;
-    el = document.documentElement;
-  } else {
-    doc = el.ownerDocument;
-  }
-
-  var docEl = doc.documentElement;
-
-  var box = getActualBoundingClientRect(el);
-
-  var origin = getOrigin();
-
-  box.top -= origin.top;
-  box.left -= origin.left;
-
-  if (typeof box.width === 'undefined') {
-    box.width = document.body.scrollWidth - box.left - box.right;
-  }
-  if (typeof box.height === 'undefined') {
-    box.height = document.body.scrollHeight - box.top - box.bottom;
-  }
-
-  box.top = box.top - docEl.clientTop;
-  box.left = box.left - docEl.clientLeft;
-  box.right = doc.body.clientWidth - box.width - box.left;
-  box.bottom = doc.body.clientHeight - box.height - box.top;
-
-  return box;
-}
-
-function getOffsetParent(el) {
-  return el.offsetParent || document.documentElement;
-}
-
-var _scrollBarSize = null;
-function getScrollBarSize() {
-  if (_scrollBarSize) {
-    return _scrollBarSize;
-  }
-  var inner = document.createElement('div');
-  inner.style.width = '100%';
-  inner.style.height = '200px';
-
-  var outer = document.createElement('div');
-  extend(outer.style, {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    pointerEvents: 'none',
-    visibility: 'hidden',
-    width: '200px',
-    height: '150px',
-    overflow: 'hidden'
-  });
-
-  outer.appendChild(inner);
-
-  document.body.appendChild(outer);
-
-  var widthContained = inner.offsetWidth;
-  outer.style.overflow = 'scroll';
-  var widthScroll = inner.offsetWidth;
-
-  if (widthContained === widthScroll) {
-    widthScroll = outer.clientWidth;
-  }
-
-  document.body.removeChild(outer);
-
-  var width = widthContained - widthScroll;
-
-  _scrollBarSize = { width: width, height: width };
-  return _scrollBarSize;
-}
-
-function extend() {
-  var out = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
-
-  var args = [];
-
-  Array.prototype.push.apply(args, arguments);
-
-  args.slice(1).forEach(function (obj) {
-    if (obj) {
-      for (var key in obj) {
-        if (({}).hasOwnProperty.call(obj, key)) {
-          out[key] = obj[key];
-        }
-      }
-    }
-  });
-
-  return out;
-}
-
-function removeClass(el, name) {
-  if (typeof el.classList !== 'undefined') {
-    name.split(' ').forEach(function (cls) {
-      if (cls.trim()) {
-        el.classList.remove(cls);
-      }
-    });
-  } else {
-    var regex = new RegExp('(^| )' + name.split(' ').join('|') + '( |$)', 'gi');
-    var className = getClassName(el).replace(regex, ' ');
-    setClassName(el, className);
-  }
-}
-
-function addClass(el, name) {
-  if (typeof el.classList !== 'undefined') {
-    name.split(' ').forEach(function (cls) {
-      if (cls.trim()) {
-        el.classList.add(cls);
-      }
-    });
-  } else {
-    removeClass(el, name);
-    var cls = getClassName(el) + (' ' + name);
-    setClassName(el, cls);
-  }
-}
-
-function hasClass(el, name) {
-  if (typeof el.classList !== 'undefined') {
-    return el.classList.contains(name);
-  }
-  var className = getClassName(el);
-  return new RegExp('(^| )' + name + '( |$)', 'gi').test(className);
-}
-
-function getClassName(el) {
-  // Can't use just SVGAnimatedString here since nodes within a Frame in IE have
-  // completely separately SVGAnimatedString base classes
-  if (el.className instanceof el.ownerDocument.defaultView.SVGAnimatedString) {
-    return el.className.baseVal;
-  }
-  return el.className;
-}
-
-function setClassName(el, className) {
-  el.setAttribute('class', className);
-}
-
-function updateClasses(el, add, all) {
-  // Of the set of 'all' classes, we need the 'add' classes, and only the
-  // 'add' classes to be set.
-  all.forEach(function (cls) {
-    if (add.indexOf(cls) === -1 && hasClass(el, cls)) {
-      removeClass(el, cls);
-    }
-  });
-
-  add.forEach(function (cls) {
-    if (!hasClass(el, cls)) {
-      addClass(el, cls);
-    }
-  });
-}
-
-var deferred = [];
-
-var defer = function defer(fn) {
-  deferred.push(fn);
-};
-
-var flush = function flush() {
-  var fn = undefined;
-  while (fn = deferred.pop()) {
-    fn();
-  }
-};
-
-var Evented = (function () {
-  function Evented() {
-    _classCallCheck(this, Evented);
-  }
-
-  _createClass(Evented, [{
-    key: 'on',
-    value: function on(event, handler, ctx) {
-      var once = arguments.length <= 3 || arguments[3] === undefined ? false : arguments[3];
-
-      if (typeof this.bindings === 'undefined') {
-        this.bindings = {};
-      }
-      if (typeof this.bindings[event] === 'undefined') {
-        this.bindings[event] = [];
-      }
-      this.bindings[event].push({ handler: handler, ctx: ctx, once: once });
-    }
-  }, {
-    key: 'once',
-    value: function once(event, handler, ctx) {
-      this.on(event, handler, ctx, true);
-    }
-  }, {
-    key: 'off',
-    value: function off(event, handler) {
-      if (typeof this.bindings === 'undefined' || typeof this.bindings[event] === 'undefined') {
-        return;
-      }
-
-      if (typeof handler === 'undefined') {
-        delete this.bindings[event];
-      } else {
-        var i = 0;
-        while (i < this.bindings[event].length) {
-          if (this.bindings[event][i].handler === handler) {
-            this.bindings[event].splice(i, 1);
-          } else {
-            ++i;
-          }
-        }
-      }
-    }
-  }, {
-    key: 'trigger',
-    value: function trigger(event) {
-      if (typeof this.bindings !== 'undefined' && this.bindings[event]) {
-        var i = 0;
-
-        for (var _len = arguments.length, args = Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
-          args[_key - 1] = arguments[_key];
-        }
-
-        while (i < this.bindings[event].length) {
-          var _bindings$event$i = this.bindings[event][i];
-          var handler = _bindings$event$i.handler;
-          var ctx = _bindings$event$i.ctx;
-          var once = _bindings$event$i.once;
-
-          var context = ctx;
-          if (typeof context === 'undefined') {
-            context = this;
-          }
-
-          handler.apply(context, args);
-
-          if (once) {
-            this.bindings[event].splice(i, 1);
-          } else {
-            ++i;
-          }
-        }
-      }
-    }
-  }]);
-
-  return Evented;
-})();
-
-TetherBase.Utils = {
-  getActualBoundingClientRect: getActualBoundingClientRect,
-  getScrollParents: getScrollParents,
-  getBounds: getBounds,
-  getOffsetParent: getOffsetParent,
-  extend: extend,
-  addClass: addClass,
-  removeClass: removeClass,
-  hasClass: hasClass,
-  updateClasses: updateClasses,
-  defer: defer,
-  flush: flush,
-  uniqueId: uniqueId,
-  Evented: Evented,
-  getScrollBarSize: getScrollBarSize,
-  removeUtilElements: removeUtilElements
-};
-/* globals TetherBase, performance */
-
-'use strict';
-
-var _slicedToArray = (function () { function sliceIterator(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i['return']) _i['return'](); } finally { if (_d) throw _e; } } return _arr; } return function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { return sliceIterator(arr, i); } else { throw new TypeError('Invalid attempt to destructure non-iterable instance'); } }; })();
-
-var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
-
-var _get = function get(_x6, _x7, _x8) { var _again = true; _function: while (_again) { var object = _x6, property = _x7, receiver = _x8; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x6 = parent; _x7 = property; _x8 = receiver; _again = true; desc = parent = undefined; continue _function; } } else if ('value' in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== 'function' && superClass !== null) { throw new TypeError('Super expression must either be null or a function, not ' + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-if (typeof TetherBase === 'undefined') {
-  throw new Error('You must include the utils.js file before tether.js');
-}
-
-var _TetherBase$Utils = TetherBase.Utils;
-var getScrollParents = _TetherBase$Utils.getScrollParents;
-var getBounds = _TetherBase$Utils.getBounds;
-var getOffsetParent = _TetherBase$Utils.getOffsetParent;
-var extend = _TetherBase$Utils.extend;
-var addClass = _TetherBase$Utils.addClass;
-var removeClass = _TetherBase$Utils.removeClass;
-var updateClasses = _TetherBase$Utils.updateClasses;
-var defer = _TetherBase$Utils.defer;
-var flush = _TetherBase$Utils.flush;
-var getScrollBarSize = _TetherBase$Utils.getScrollBarSize;
-var removeUtilElements = _TetherBase$Utils.removeUtilElements;
-
-function within(a, b) {
-  var diff = arguments.length <= 2 || arguments[2] === undefined ? 1 : arguments[2];
-
-  return a + diff >= b && b >= a - diff;
-}
-
-var transformKey = (function () {
-  if (typeof document === 'undefined') {
-    return '';
-  }
-  var el = document.createElement('div');
-
-  var transforms = ['transform', 'WebkitTransform', 'OTransform', 'MozTransform', 'msTransform'];
-  for (var i = 0; i < transforms.length; ++i) {
-    var key = transforms[i];
-    if (el.style[key] !== undefined) {
-      return key;
-    }
-  }
-})();
-
-var tethers = [];
-
-var position = function position() {
-  tethers.forEach(function (tether) {
-    tether.position(false);
-  });
-  flush();
-};
-
-function now() {
-  if (typeof performance !== 'undefined' && typeof performance.now !== 'undefined') {
-    return performance.now();
-  }
-  return +new Date();
-}
-
-(function () {
-  var lastCall = null;
-  var lastDuration = null;
-  var pendingTimeout = null;
-
-  var tick = function tick() {
-    if (typeof lastDuration !== 'undefined' && lastDuration > 16) {
-      // We voluntarily throttle ourselves if we can't manage 60fps
-      lastDuration = Math.min(lastDuration - 16, 250);
-
-      // Just in case this is the last event, remember to position just once more
-      pendingTimeout = setTimeout(tick, 250);
-      return;
-    }
-
-    if (typeof lastCall !== 'undefined' && now() - lastCall < 10) {
-      // Some browsers call events a little too frequently, refuse to run more than is reasonable
-      return;
-    }
-
-    if (pendingTimeout != null) {
-      clearTimeout(pendingTimeout);
-      pendingTimeout = null;
-    }
-
-    lastCall = now();
-    position();
-    lastDuration = now() - lastCall;
-  };
-
-  if (typeof window !== 'undefined' && typeof window.addEventListener !== 'undefined') {
-    ['resize', 'scroll', 'touchmove'].forEach(function (event) {
-      window.addEventListener(event, tick);
-    });
-  }
-})();
-
-var MIRROR_LR = {
-  center: 'center',
-  left: 'right',
-  right: 'left'
-};
-
-var MIRROR_TB = {
-  middle: 'middle',
-  top: 'bottom',
-  bottom: 'top'
-};
-
-var OFFSET_MAP = {
-  top: 0,
-  left: 0,
-  middle: '50%',
-  center: '50%',
-  bottom: '100%',
-  right: '100%'
-};
-
-var autoToFixedAttachment = function autoToFixedAttachment(attachment, relativeToAttachment) {
-  var left = attachment.left;
-  var top = attachment.top;
-
-  if (left === 'auto') {
-    left = MIRROR_LR[relativeToAttachment.left];
-  }
-
-  if (top === 'auto') {
-    top = MIRROR_TB[relativeToAttachment.top];
-  }
-
-  return { left: left, top: top };
-};
-
-var attachmentToOffset = function attachmentToOffset(attachment) {
-  var left = attachment.left;
-  var top = attachment.top;
-
-  if (typeof OFFSET_MAP[attachment.left] !== 'undefined') {
-    left = OFFSET_MAP[attachment.left];
-  }
-
-  if (typeof OFFSET_MAP[attachment.top] !== 'undefined') {
-    top = OFFSET_MAP[attachment.top];
-  }
-
-  return { left: left, top: top };
-};
-
-function addOffset() {
-  var out = { top: 0, left: 0 };
-
-  for (var _len = arguments.length, offsets = Array(_len), _key = 0; _key < _len; _key++) {
-    offsets[_key] = arguments[_key];
-  }
-
-  offsets.forEach(function (_ref) {
-    var top = _ref.top;
-    var left = _ref.left;
-
-    if (typeof top === 'string') {
-      top = parseFloat(top, 10);
-    }
-    if (typeof left === 'string') {
-      left = parseFloat(left, 10);
-    }
-
-    out.top += top;
-    out.left += left;
-  });
-
-  return out;
-}
-
-function offsetToPx(offset, size) {
-  if (typeof offset.left === 'string' && offset.left.indexOf('%') !== -1) {
-    offset.left = parseFloat(offset.left, 10) / 100 * size.width;
-  }
-  if (typeof offset.top === 'string' && offset.top.indexOf('%') !== -1) {
-    offset.top = parseFloat(offset.top, 10) / 100 * size.height;
-  }
-
-  return offset;
-}
-
-var parseOffset = function parseOffset(value) {
-  var _value$split = value.split(' ');
-
-  var _value$split2 = _slicedToArray(_value$split, 2);
-
-  var top = _value$split2[0];
-  var left = _value$split2[1];
-
-  return { top: top, left: left };
-};
-var parseAttachment = parseOffset;
-
-var TetherClass = (function (_Evented) {
-  _inherits(TetherClass, _Evented);
-
-  function TetherClass(options) {
-    var _this = this;
-
-    _classCallCheck(this, TetherClass);
-
-    _get(Object.getPrototypeOf(TetherClass.prototype), 'constructor', this).call(this);
-    this.position = this.position.bind(this);
-
-    tethers.push(this);
-
-    this.history = [];
-
-    this.setOptions(options, false);
-
-    TetherBase.modules.forEach(function (module) {
-      if (typeof module.initialize !== 'undefined') {
-        module.initialize.call(_this);
-      }
-    });
-
-    this.position();
-  }
-
-  _createClass(TetherClass, [{
-    key: 'getClass',
-    value: function getClass() {
-      var key = arguments.length <= 0 || arguments[0] === undefined ? '' : arguments[0];
-      var classes = this.options.classes;
-
-      if (typeof classes !== 'undefined' && classes[key]) {
-        return this.options.classes[key];
-      } else if (this.options.classPrefix) {
-        return this.options.classPrefix + '-' + key;
-      } else {
-        return key;
-      }
-    }
-  }, {
-    key: 'setOptions',
-    value: function setOptions(options) {
-      var _this2 = this;
-
-      var pos = arguments.length <= 1 || arguments[1] === undefined ? true : arguments[1];
-
-      var defaults = {
-        offset: '0 0',
-        targetOffset: '0 0',
-        targetAttachment: 'auto auto',
-        classPrefix: 'tether'
-      };
-
-      this.options = extend(defaults, options);
-
-      var _options = this.options;
-      var element = _options.element;
-      var target = _options.target;
-      var targetModifier = _options.targetModifier;
-
-      this.element = element;
-      this.target = target;
-      this.targetModifier = targetModifier;
-
-      if (this.target === 'viewport') {
-        this.target = document.body;
-        this.targetModifier = 'visible';
-      } else if (this.target === 'scroll-handle') {
-        this.target = document.body;
-        this.targetModifier = 'scroll-handle';
-      }
-
-      ['element', 'target'].forEach(function (key) {
-        if (typeof _this2[key] === 'undefined') {
-          throw new Error('Tether Error: Both element and target must be defined');
-        }
-
-        if (typeof _this2[key].jquery !== 'undefined') {
-          _this2[key] = _this2[key][0];
-        } else if (typeof _this2[key] === 'string') {
-          _this2[key] = document.querySelector(_this2[key]);
-        }
-      });
-
-      addClass(this.element, this.getClass('element'));
-      if (!(this.options.addTargetClasses === false)) {
-        addClass(this.target, this.getClass('target'));
-      }
-
-      if (!this.options.attachment) {
-        throw new Error('Tether Error: You must provide an attachment');
-      }
-
-      this.targetAttachment = parseAttachment(this.options.targetAttachment);
-      this.attachment = parseAttachment(this.options.attachment);
-      this.offset = parseOffset(this.options.offset);
-      this.targetOffset = parseOffset(this.options.targetOffset);
-
-      if (typeof this.scrollParents !== 'undefined') {
-        this.disable();
-      }
-
-      if (this.targetModifier === 'scroll-handle') {
-        this.scrollParents = [this.target];
-      } else {
-        this.scrollParents = getScrollParents(this.target);
-      }
-
-      if (!(this.options.enabled === false)) {
-        this.enable(pos);
-      }
-    }
-  }, {
-    key: 'getTargetBounds',
-    value: function getTargetBounds() {
-      if (typeof this.targetModifier !== 'undefined') {
-        if (this.targetModifier === 'visible') {
-          if (this.target === document.body) {
-            return { top: pageYOffset, left: pageXOffset, height: innerHeight, width: innerWidth };
-          } else {
-            var bounds = getBounds(this.target);
-
-            var out = {
-              height: bounds.height,
-              width: bounds.width,
-              top: bounds.top,
-              left: bounds.left
-            };
-
-            out.height = Math.min(out.height, bounds.height - (pageYOffset - bounds.top));
-            out.height = Math.min(out.height, bounds.height - (bounds.top + bounds.height - (pageYOffset + innerHeight)));
-            out.height = Math.min(innerHeight, out.height);
-            out.height -= 2;
-
-            out.width = Math.min(out.width, bounds.width - (pageXOffset - bounds.left));
-            out.width = Math.min(out.width, bounds.width - (bounds.left + bounds.width - (pageXOffset + innerWidth)));
-            out.width = Math.min(innerWidth, out.width);
-            out.width -= 2;
-
-            if (out.top < pageYOffset) {
-              out.top = pageYOffset;
-            }
-            if (out.left < pageXOffset) {
-              out.left = pageXOffset;
-            }
-
-            return out;
-          }
-        } else if (this.targetModifier === 'scroll-handle') {
-          var bounds = undefined;
-          var target = this.target;
-          if (target === document.body) {
-            target = document.documentElement;
-
-            bounds = {
-              left: pageXOffset,
-              top: pageYOffset,
-              height: innerHeight,
-              width: innerWidth
-            };
-          } else {
-            bounds = getBounds(target);
-          }
-
-          var style = getComputedStyle(target);
-
-          var hasBottomScroll = target.scrollWidth > target.clientWidth || [style.overflow, style.overflowX].indexOf('scroll') >= 0 || this.target !== document.body;
-
-          var scrollBottom = 0;
-          if (hasBottomScroll) {
-            scrollBottom = 15;
-          }
-
-          var height = bounds.height - parseFloat(style.borderTopWidth) - parseFloat(style.borderBottomWidth) - scrollBottom;
-
-          var out = {
-            width: 15,
-            height: height * 0.975 * (height / target.scrollHeight),
-            left: bounds.left + bounds.width - parseFloat(style.borderLeftWidth) - 15
-          };
-
-          var fitAdj = 0;
-          if (height < 408 && this.target === document.body) {
-            fitAdj = -0.00011 * Math.pow(height, 2) - 0.00727 * height + 22.58;
-          }
-
-          if (this.target !== document.body) {
-            out.height = Math.max(out.height, 24);
-          }
-
-          var scrollPercentage = this.target.scrollTop / (target.scrollHeight - height);
-          out.top = scrollPercentage * (height - out.height - fitAdj) + bounds.top + parseFloat(style.borderTopWidth);
-
-          if (this.target === document.body) {
-            out.height = Math.max(out.height, 24);
-          }
-
-          return out;
-        }
-      } else {
-        return getBounds(this.target);
-      }
-    }
-  }, {
-    key: 'clearCache',
-    value: function clearCache() {
-      this._cache = {};
-    }
-  }, {
-    key: 'cache',
-    value: function cache(k, getter) {
-      // More than one module will often need the same DOM info, so
-      // we keep a cache which is cleared on each position call
-      if (typeof this._cache === 'undefined') {
-        this._cache = {};
-      }
-
-      if (typeof this._cache[k] === 'undefined') {
-        this._cache[k] = getter.call(this);
-      }
-
-      return this._cache[k];
-    }
-  }, {
-    key: 'enable',
-    value: function enable() {
-      var _this3 = this;
-
-      var pos = arguments.length <= 0 || arguments[0] === undefined ? true : arguments[0];
-
-      if (!(this.options.addTargetClasses === false)) {
-        addClass(this.target, this.getClass('enabled'));
-      }
-      addClass(this.element, this.getClass('enabled'));
-      this.enabled = true;
-
-      this.scrollParents.forEach(function (parent) {
-        if (parent !== _this3.target.ownerDocument) {
-          parent.addEventListener('scroll', _this3.position);
-        }
-      });
-
-      if (pos) {
-        this.position();
-      }
-    }
-  }, {
-    key: 'disable',
-    value: function disable() {
-      var _this4 = this;
-
-      removeClass(this.target, this.getClass('enabled'));
-      removeClass(this.element, this.getClass('enabled'));
-      this.enabled = false;
-
-      if (typeof this.scrollParents !== 'undefined') {
-        this.scrollParents.forEach(function (parent) {
-          parent.removeEventListener('scroll', _this4.position);
-        });
-      }
-    }
-  }, {
-    key: 'destroy',
-    value: function destroy() {
-      var _this5 = this;
-
-      this.disable();
-
-      tethers.forEach(function (tether, i) {
-        if (tether === _this5) {
-          tethers.splice(i, 1);
-        }
-      });
-
-      // Remove any elements we were using for convenience from the DOM
-      if (tethers.length === 0) {
-        removeUtilElements();
-      }
-    }
-  }, {
-    key: 'updateAttachClasses',
-    value: function updateAttachClasses(elementAttach, targetAttach) {
-      var _this6 = this;
-
-      elementAttach = elementAttach || this.attachment;
-      targetAttach = targetAttach || this.targetAttachment;
-      var sides = ['left', 'top', 'bottom', 'right', 'middle', 'center'];
-
-      if (typeof this._addAttachClasses !== 'undefined' && this._addAttachClasses.length) {
-        // updateAttachClasses can be called more than once in a position call, so
-        // we need to clean up after ourselves such that when the last defer gets
-        // ran it doesn't add any extra classes from previous calls.
-        this._addAttachClasses.splice(0, this._addAttachClasses.length);
-      }
-
-      if (typeof this._addAttachClasses === 'undefined') {
-        this._addAttachClasses = [];
-      }
-      var add = this._addAttachClasses;
-
-      if (elementAttach.top) {
-        add.push(this.getClass('element-attached') + '-' + elementAttach.top);
-      }
-      if (elementAttach.left) {
-        add.push(this.getClass('element-attached') + '-' + elementAttach.left);
-      }
-      if (targetAttach.top) {
-        add.push(this.getClass('target-attached') + '-' + targetAttach.top);
-      }
-      if (targetAttach.left) {
-        add.push(this.getClass('target-attached') + '-' + targetAttach.left);
-      }
-
-      var all = [];
-      sides.forEach(function (side) {
-        all.push(_this6.getClass('element-attached') + '-' + side);
-        all.push(_this6.getClass('target-attached') + '-' + side);
-      });
-
-      defer(function () {
-        if (!(typeof _this6._addAttachClasses !== 'undefined')) {
-          return;
-        }
-
-        updateClasses(_this6.element, _this6._addAttachClasses, all);
-        if (!(_this6.options.addTargetClasses === false)) {
-          updateClasses(_this6.target, _this6._addAttachClasses, all);
-        }
-
-        delete _this6._addAttachClasses;
-      });
-    }
-  }, {
-    key: 'position',
-    value: function position() {
-      var _this7 = this;
-
-      var flushChanges = arguments.length <= 0 || arguments[0] === undefined ? true : arguments[0];
-
-      // flushChanges commits the changes immediately, leave true unless you are positioning multiple
-      // tethers (in which case call Tether.Utils.flush yourself when you're done)
-
-      if (!this.enabled) {
-        return;
-      }
-
-      this.clearCache();
-
-      // Turn 'auto' attachments into the appropriate corner or edge
-      var targetAttachment = autoToFixedAttachment(this.targetAttachment, this.attachment);
-
-      this.updateAttachClasses(this.attachment, targetAttachment);
-
-      var elementPos = this.cache('element-bounds', function () {
-        return getBounds(_this7.element);
-      });
-
-      var width = elementPos.width;
-      var height = elementPos.height;
-
-      if (width === 0 && height === 0 && typeof this.lastSize !== 'undefined') {
-        var _lastSize = this.lastSize;
-
-        // We cache the height and width to make it possible to position elements that are
-        // getting hidden.
-        width = _lastSize.width;
-        height = _lastSize.height;
-      } else {
-        this.lastSize = { width: width, height: height };
-      }
-
-      var targetPos = this.cache('target-bounds', function () {
-        return _this7.getTargetBounds();
-      });
-      var targetSize = targetPos;
-
-      // Get an actual px offset from the attachment
-      var offset = offsetToPx(attachmentToOffset(this.attachment), { width: width, height: height });
-      var targetOffset = offsetToPx(attachmentToOffset(targetAttachment), targetSize);
-
-      var manualOffset = offsetToPx(this.offset, { width: width, height: height });
-      var manualTargetOffset = offsetToPx(this.targetOffset, targetSize);
-
-      // Add the manually provided offset
-      offset = addOffset(offset, manualOffset);
-      targetOffset = addOffset(targetOffset, manualTargetOffset);
-
-      // It's now our goal to make (element position + offset) == (target position + target offset)
-      var left = targetPos.left + targetOffset.left - offset.left;
-      var top = targetPos.top + targetOffset.top - offset.top;
-
-      for (var i = 0; i < TetherBase.modules.length; ++i) {
-        var _module2 = TetherBase.modules[i];
-        var ret = _module2.position.call(this, {
-          left: left,
-          top: top,
-          targetAttachment: targetAttachment,
-          targetPos: targetPos,
-          elementPos: elementPos,
-          offset: offset,
-          targetOffset: targetOffset,
-          manualOffset: manualOffset,
-          manualTargetOffset: manualTargetOffset,
-          scrollbarSize: scrollbarSize,
-          attachment: this.attachment
-        });
-
-        if (ret === false) {
-          return false;
-        } else if (typeof ret === 'undefined' || typeof ret !== 'object') {
-          continue;
-        } else {
-          top = ret.top;
-          left = ret.left;
-        }
-      }
-
-      // We describe the position three different ways to give the optimizer
-      // a chance to decide the best possible way to position the element
-      // with the fewest repaints.
-      var next = {
-        // It's position relative to the page (absolute positioning when
-        // the element is a child of the body)
-        page: {
-          top: top,
-          left: left
-        },
-
-        // It's position relative to the viewport (fixed positioning)
-        viewport: {
-          top: top - pageYOffset,
-          bottom: pageYOffset - top - height + innerHeight,
-          left: left - pageXOffset,
-          right: pageXOffset - left - width + innerWidth
-        }
-      };
-
-      var doc = this.target.ownerDocument;
-      var win = doc.defaultView;
-
-      var scrollbarSize = undefined;
-      if (win.innerHeight > doc.documentElement.clientHeight) {
-        scrollbarSize = this.cache('scrollbar-size', getScrollBarSize);
-        next.viewport.bottom -= scrollbarSize.height;
-      }
-
-      if (win.innerWidth > doc.documentElement.clientWidth) {
-        scrollbarSize = this.cache('scrollbar-size', getScrollBarSize);
-        next.viewport.right -= scrollbarSize.width;
-      }
-
-      if (['', 'static'].indexOf(doc.body.style.position) === -1 || ['', 'static'].indexOf(doc.body.parentElement.style.position) === -1) {
-        // Absolute positioning in the body will be relative to the page, not the 'initial containing block'
-        next.page.bottom = doc.body.scrollHeight - top - height;
-        next.page.right = doc.body.scrollWidth - left - width;
-      }
-
-      if (typeof this.options.optimizations !== 'undefined' && this.options.optimizations.moveElement !== false && !(typeof this.targetModifier !== 'undefined')) {
-        (function () {
-          var offsetParent = _this7.cache('target-offsetparent', function () {
-            return getOffsetParent(_this7.target);
-          });
-          var offsetPosition = _this7.cache('target-offsetparent-bounds', function () {
-            return getBounds(offsetParent);
-          });
-          var offsetParentStyle = getComputedStyle(offsetParent);
-          var offsetParentSize = offsetPosition;
-
-          var offsetBorder = {};
-          ['Top', 'Left', 'Bottom', 'Right'].forEach(function (side) {
-            offsetBorder[side.toLowerCase()] = parseFloat(offsetParentStyle['border' + side + 'Width']);
-          });
-
-          offsetPosition.right = doc.body.scrollWidth - offsetPosition.left - offsetParentSize.width + offsetBorder.right;
-          offsetPosition.bottom = doc.body.scrollHeight - offsetPosition.top - offsetParentSize.height + offsetBorder.bottom;
-
-          if (next.page.top >= offsetPosition.top + offsetBorder.top && next.page.bottom >= offsetPosition.bottom) {
-            if (next.page.left >= offsetPosition.left + offsetBorder.left && next.page.right >= offsetPosition.right) {
-              // We're within the visible part of the target's scroll parent
-              var scrollTop = offsetParent.scrollTop;
-              var scrollLeft = offsetParent.scrollLeft;
-
-              // It's position relative to the target's offset parent (absolute positioning when
-              // the element is moved to be a child of the target's offset parent).
-              next.offset = {
-                top: next.page.top - offsetPosition.top + scrollTop - offsetBorder.top,
-                left: next.page.left - offsetPosition.left + scrollLeft - offsetBorder.left
-              };
-            }
-          }
-        })();
-      }
-
-      // We could also travel up the DOM and try each containing context, rather than only
-      // looking at the body, but we're gonna get diminishing returns.
-
-      this.move(next);
-
-      this.history.unshift(next);
-
-      if (this.history.length > 3) {
-        this.history.pop();
-      }
-
-      if (flushChanges) {
-        flush();
-      }
-
-      return true;
-    }
-
-    // THE ISSUE
-  }, {
-    key: 'move',
-    value: function move(pos) {
-      var _this8 = this;
-
-      if (!(typeof this.element.parentNode !== 'undefined')) {
-        return;
-      }
-
-      var same = {};
-
-      for (var type in pos) {
-        same[type] = {};
-
-        for (var key in pos[type]) {
-          var found = false;
-
-          for (var i = 0; i < this.history.length; ++i) {
-            var point = this.history[i];
-            if (typeof point[type] !== 'undefined' && !within(point[type][key], pos[type][key])) {
-              found = true;
-              break;
-            }
-          }
-
-          if (!found) {
-            same[type][key] = true;
-          }
-        }
-      }
-
-      var css = { top: '', left: '', right: '', bottom: '' };
-
-      var transcribe = function transcribe(_same, _pos) {
-        var hasOptimizations = typeof _this8.options.optimizations !== 'undefined';
-        var gpu = hasOptimizations ? _this8.options.optimizations.gpu : null;
-        if (gpu !== false) {
-          var yPos = undefined,
-              xPos = undefined;
-          if (_same.top) {
-            css.top = 0;
-            yPos = _pos.top;
-          } else {
-            css.bottom = 0;
-            yPos = -_pos.bottom;
-          }
-
-          if (_same.left) {
-            css.left = 0;
-            xPos = _pos.left;
-          } else {
-            css.right = 0;
-            xPos = -_pos.right;
-          }
-
-          if (window.matchMedia) {
-            // HubSpot/tether#207
-            var retina = window.matchMedia('only screen and (min-resolution: 1.3dppx)').matches || window.matchMedia('only screen and (-webkit-min-device-pixel-ratio: 1.3)').matches;
-            if (!retina) {
-              xPos = Math.round(xPos);
-              yPos = Math.round(yPos);
-            }
-          }
-
-          css[transformKey] = 'translateX(' + xPos + 'px) translateY(' + yPos + 'px)';
-
-          if (transformKey !== 'msTransform') {
-            // The Z transform will keep this in the GPU (faster, and prevents artifacts),
-            // but IE9 doesn't support 3d transforms and will choke.
-            css[transformKey] += " translateZ(0)";
-          }
-        } else {
-          if (_same.top) {
-            css.top = _pos.top + 'px';
-          } else {
-            css.bottom = _pos.bottom + 'px';
-          }
-
-          if (_same.left) {
-            css.left = _pos.left + 'px';
-          } else {
-            css.right = _pos.right + 'px';
-          }
-        }
-      };
-
-      var moved = false;
-      if ((same.page.top || same.page.bottom) && (same.page.left || same.page.right)) {
-        css.position = 'absolute';
-        transcribe(same.page, pos.page);
-      } else if ((same.viewport.top || same.viewport.bottom) && (same.viewport.left || same.viewport.right)) {
-        css.position = 'fixed';
-        transcribe(same.viewport, pos.viewport);
-      } else if (typeof same.offset !== 'undefined' && same.offset.top && same.offset.left) {
-        (function () {
-          css.position = 'absolute';
-          var offsetParent = _this8.cache('target-offsetparent', function () {
-            return getOffsetParent(_this8.target);
-          });
-
-          if (getOffsetParent(_this8.element) !== offsetParent) {
-            defer(function () {
-              _this8.element.parentNode.removeChild(_this8.element);
-              offsetParent.appendChild(_this8.element);
-            });
-          }
-
-          transcribe(same.offset, pos.offset);
-          moved = true;
-        })();
-      } else {
-        css.position = 'absolute';
-        transcribe({ top: true, left: true }, pos.page);
-      }
-
-      if (!moved) {
-        if (this.options.bodyElement) {
-          this.options.bodyElement.appendChild(this.element);
-        } else {
-          var offsetParentIsBody = true;
-          var currentNode = this.element.parentNode;
-          while (currentNode && currentNode.nodeType === 1 && currentNode.tagName !== 'BODY') {
-            if (getComputedStyle(currentNode).position !== 'static') {
-              offsetParentIsBody = false;
-              break;
-            }
-
-            currentNode = currentNode.parentNode;
-          }
-
-          if (!offsetParentIsBody) {
-            this.element.parentNode.removeChild(this.element);
-            this.element.ownerDocument.body.appendChild(this.element);
-          }
-        }
-      }
-
-      // Any css change will trigger a repaint, so let's avoid one if nothing changed
-      var writeCSS = {};
-      var write = false;
-      for (var key in css) {
-        var val = css[key];
-        var elVal = this.element.style[key];
-
-        if (elVal !== val) {
-          write = true;
-          writeCSS[key] = val;
-        }
-      }
-
-      if (write) {
-        defer(function () {
-          extend(_this8.element.style, writeCSS);
-          _this8.trigger('repositioned');
-        });
-      }
-    }
-  }]);
-
-  return TetherClass;
-})(Evented);
-
-TetherClass.modules = [];
-
-TetherBase.position = position;
-
-var Tether = extend(TetherClass, TetherBase);
-/* globals TetherBase */
-
-'use strict';
-
-var _slicedToArray = (function () { function sliceIterator(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i['return']) _i['return'](); } finally { if (_d) throw _e; } } return _arr; } return function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { return sliceIterator(arr, i); } else { throw new TypeError('Invalid attempt to destructure non-iterable instance'); } }; })();
-
-var _TetherBase$Utils = TetherBase.Utils;
-var getBounds = _TetherBase$Utils.getBounds;
-var extend = _TetherBase$Utils.extend;
-var updateClasses = _TetherBase$Utils.updateClasses;
-var defer = _TetherBase$Utils.defer;
-
-var BOUNDS_FORMAT = ['left', 'top', 'right', 'bottom'];
-
-function getBoundingRect(tether, to) {
-  if (to === 'scrollParent') {
-    to = tether.scrollParents[0];
-  } else if (to === 'window') {
-    to = [pageXOffset, pageYOffset, innerWidth + pageXOffset, innerHeight + pageYOffset];
-  }
-
-  if (to === document) {
-    to = to.documentElement;
-  }
-
-  if (typeof to.nodeType !== 'undefined') {
-    (function () {
-      var node = to;
-      var size = getBounds(to);
-      var pos = size;
-      var style = getComputedStyle(to);
-
-      to = [pos.left, pos.top, size.width + pos.left, size.height + pos.top];
-
-      // Account any parent Frames scroll offset
-      if (node.ownerDocument !== document) {
-        var win = node.ownerDocument.defaultView;
-        to[0] += win.pageXOffset;
-        to[1] += win.pageYOffset;
-        to[2] += win.pageXOffset;
-        to[3] += win.pageYOffset;
-      }
-
-      BOUNDS_FORMAT.forEach(function (side, i) {
-        side = side[0].toUpperCase() + side.substr(1);
-        if (side === 'Top' || side === 'Left') {
-          to[i] += parseFloat(style['border' + side + 'Width']);
-        } else {
-          to[i] -= parseFloat(style['border' + side + 'Width']);
-        }
-      });
-    })();
-  }
-
-  return to;
-}
-
-TetherBase.modules.push({
-  position: function position(_ref) {
-    var _this = this;
-
-    var top = _ref.top;
-    var left = _ref.left;
-    var targetAttachment = _ref.targetAttachment;
-
-    if (!this.options.constraints) {
-      return true;
-    }
-
-    var _cache = this.cache('element-bounds', function () {
-      return getBounds(_this.element);
-    });
-
-    var height = _cache.height;
-    var width = _cache.width;
-
-    if (width === 0 && height === 0 && typeof this.lastSize !== 'undefined') {
-      var _lastSize = this.lastSize;
-
-      // Handle the item getting hidden as a result of our positioning without glitching
-      // the classes in and out
-      width = _lastSize.width;
-      height = _lastSize.height;
-    }
-
-    var targetSize = this.cache('target-bounds', function () {
-      return _this.getTargetBounds();
-    });
-
-    var targetHeight = targetSize.height;
-    var targetWidth = targetSize.width;
-
-    var allClasses = [this.getClass('pinned'), this.getClass('out-of-bounds')];
-
-    this.options.constraints.forEach(function (constraint) {
-      var outOfBoundsClass = constraint.outOfBoundsClass;
-      var pinnedClass = constraint.pinnedClass;
-
-      if (outOfBoundsClass) {
-        allClasses.push(outOfBoundsClass);
-      }
-      if (pinnedClass) {
-        allClasses.push(pinnedClass);
-      }
-    });
-
-    allClasses.forEach(function (cls) {
-      ['left', 'top', 'right', 'bottom'].forEach(function (side) {
-        allClasses.push(cls + '-' + side);
-      });
-    });
-
-    var addClasses = [];
-
-    var tAttachment = extend({}, targetAttachment);
-    var eAttachment = extend({}, this.attachment);
-
-    this.options.constraints.forEach(function (constraint) {
-      var to = constraint.to;
-      var attachment = constraint.attachment;
-      var pin = constraint.pin;
-
-      if (typeof attachment === 'undefined') {
-        attachment = '';
-      }
-
-      var changeAttachX = undefined,
-          changeAttachY = undefined;
-      if (attachment.indexOf(' ') >= 0) {
-        var _attachment$split = attachment.split(' ');
-
-        var _attachment$split2 = _slicedToArray(_attachment$split, 2);
-
-        changeAttachY = _attachment$split2[0];
-        changeAttachX = _attachment$split2[1];
-      } else {
-        changeAttachX = changeAttachY = attachment;
-      }
-
-      var bounds = getBoundingRect(_this, to);
-
-      if (changeAttachY === 'target' || changeAttachY === 'both') {
-        if (top < bounds[1] && tAttachment.top === 'top') {
-          top += targetHeight;
-          tAttachment.top = 'bottom';
-        }
-
-        if (top + height > bounds[3] && tAttachment.top === 'bottom') {
-          top -= targetHeight;
-          tAttachment.top = 'top';
-        }
-      }
-
-      if (changeAttachY === 'together') {
-        if (tAttachment.top === 'top') {
-          if (eAttachment.top === 'bottom' && top < bounds[1]) {
-            top += targetHeight;
-            tAttachment.top = 'bottom';
-
-            top += height;
-            eAttachment.top = 'top';
-          } else if (eAttachment.top === 'top' && top + height > bounds[3] && top - (height - targetHeight) >= bounds[1]) {
-            top -= height - targetHeight;
-            tAttachment.top = 'bottom';
-
-            eAttachment.top = 'bottom';
-          }
-        }
-
-        if (tAttachment.top === 'bottom') {
-          if (eAttachment.top === 'top' && top + height > bounds[3]) {
-            top -= targetHeight;
-            tAttachment.top = 'top';
-
-            top -= height;
-            eAttachment.top = 'bottom';
-          } else if (eAttachment.top === 'bottom' && top < bounds[1] && top + (height * 2 - targetHeight) <= bounds[3]) {
-            top += height - targetHeight;
-            tAttachment.top = 'top';
-
-            eAttachment.top = 'top';
-          }
-        }
-
-        if (tAttachment.top === 'middle') {
-          if (top + height > bounds[3] && eAttachment.top === 'top') {
-            top -= height;
-            eAttachment.top = 'bottom';
-          } else if (top < bounds[1] && eAttachment.top === 'bottom') {
-            top += height;
-            eAttachment.top = 'top';
-          }
-        }
-      }
-
-      if (changeAttachX === 'target' || changeAttachX === 'both') {
-        if (left < bounds[0] && tAttachment.left === 'left') {
-          left += targetWidth;
-          tAttachment.left = 'right';
-        }
-
-        if (left + width > bounds[2] && tAttachment.left === 'right') {
-          left -= targetWidth;
-          tAttachment.left = 'left';
-        }
-      }
-
-      if (changeAttachX === 'together') {
-        if (left < bounds[0] && tAttachment.left === 'left') {
-          if (eAttachment.left === 'right') {
-            left += targetWidth;
-            tAttachment.left = 'right';
-
-            left += width;
-            eAttachment.left = 'left';
-          } else if (eAttachment.left === 'left') {
-            left += targetWidth;
-            tAttachment.left = 'right';
-
-            left -= width;
-            eAttachment.left = 'right';
-          }
-        } else if (left + width > bounds[2] && tAttachment.left === 'right') {
-          if (eAttachment.left === 'left') {
-            left -= targetWidth;
-            tAttachment.left = 'left';
-
-            left -= width;
-            eAttachment.left = 'right';
-          } else if (eAttachment.left === 'right') {
-            left -= targetWidth;
-            tAttachment.left = 'left';
-
-            left += width;
-            eAttachment.left = 'left';
-          }
-        } else if (tAttachment.left === 'center') {
-          if (left + width > bounds[2] && eAttachment.left === 'left') {
-            left -= width;
-            eAttachment.left = 'right';
-          } else if (left < bounds[0] && eAttachment.left === 'right') {
-            left += width;
-            eAttachment.left = 'left';
-          }
-        }
-      }
-
-      if (changeAttachY === 'element' || changeAttachY === 'both') {
-        if (top < bounds[1] && eAttachment.top === 'bottom') {
-          top += height;
-          eAttachment.top = 'top';
-        }
-
-        if (top + height > bounds[3] && eAttachment.top === 'top') {
-          top -= height;
-          eAttachment.top = 'bottom';
-        }
-      }
-
-      if (changeAttachX === 'element' || changeAttachX === 'both') {
-        if (left < bounds[0]) {
-          if (eAttachment.left === 'right') {
-            left += width;
-            eAttachment.left = 'left';
-          } else if (eAttachment.left === 'center') {
-            left += width / 2;
-            eAttachment.left = 'left';
-          }
-        }
-
-        if (left + width > bounds[2]) {
-          if (eAttachment.left === 'left') {
-            left -= width;
-            eAttachment.left = 'right';
-          } else if (eAttachment.left === 'center') {
-            left -= width / 2;
-            eAttachment.left = 'right';
-          }
-        }
-      }
-
-      if (typeof pin === 'string') {
-        pin = pin.split(',').map(function (p) {
-          return p.trim();
-        });
-      } else if (pin === true) {
-        pin = ['top', 'left', 'right', 'bottom'];
-      }
-
-      pin = pin || [];
-
-      var pinned = [];
-      var oob = [];
-
-      if (top < bounds[1]) {
-        if (pin.indexOf('top') >= 0) {
-          top = bounds[1];
-          pinned.push('top');
-        } else {
-          oob.push('top');
-        }
-      }
-
-      if (top + height > bounds[3]) {
-        if (pin.indexOf('bottom') >= 0) {
-          top = bounds[3] - height;
-          pinned.push('bottom');
-        } else {
-          oob.push('bottom');
-        }
-      }
-
-      if (left < bounds[0]) {
-        if (pin.indexOf('left') >= 0) {
-          left = bounds[0];
-          pinned.push('left');
-        } else {
-          oob.push('left');
-        }
-      }
-
-      if (left + width > bounds[2]) {
-        if (pin.indexOf('right') >= 0) {
-          left = bounds[2] - width;
-          pinned.push('right');
-        } else {
-          oob.push('right');
-        }
-      }
-
-      if (pinned.length) {
-        (function () {
-          var pinnedClass = undefined;
-          if (typeof _this.options.pinnedClass !== 'undefined') {
-            pinnedClass = _this.options.pinnedClass;
-          } else {
-            pinnedClass = _this.getClass('pinned');
-          }
-
-          addClasses.push(pinnedClass);
-          pinned.forEach(function (side) {
-            addClasses.push(pinnedClass + '-' + side);
-          });
-        })();
-      }
-
-      if (oob.length) {
-        (function () {
-          var oobClass = undefined;
-          if (typeof _this.options.outOfBoundsClass !== 'undefined') {
-            oobClass = _this.options.outOfBoundsClass;
-          } else {
-            oobClass = _this.getClass('out-of-bounds');
-          }
-
-          addClasses.push(oobClass);
-          oob.forEach(function (side) {
-            addClasses.push(oobClass + '-' + side);
-          });
-        })();
-      }
-
-      if (pinned.indexOf('left') >= 0 || pinned.indexOf('right') >= 0) {
-        eAttachment.left = tAttachment.left = false;
-      }
-      if (pinned.indexOf('top') >= 0 || pinned.indexOf('bottom') >= 0) {
-        eAttachment.top = tAttachment.top = false;
-      }
-
-      if (tAttachment.top !== targetAttachment.top || tAttachment.left !== targetAttachment.left || eAttachment.top !== _this.attachment.top || eAttachment.left !== _this.attachment.left) {
-        _this.updateAttachClasses(eAttachment, tAttachment);
-        _this.trigger('update', {
-          attachment: eAttachment,
-          targetAttachment: tAttachment
-        });
-      }
-    });
-
-    defer(function () {
-      if (!(_this.options.addTargetClasses === false)) {
-        updateClasses(_this.target, addClasses, allClasses);
-      }
-      updateClasses(_this.element, addClasses, allClasses);
-    });
-
-    return { top: top, left: left };
-  }
-});
-/* globals TetherBase */
-
-'use strict';
-
-var _TetherBase$Utils = TetherBase.Utils;
-var getBounds = _TetherBase$Utils.getBounds;
-var updateClasses = _TetherBase$Utils.updateClasses;
-var defer = _TetherBase$Utils.defer;
-
-TetherBase.modules.push({
-  position: function position(_ref) {
-    var _this = this;
-
-    var top = _ref.top;
-    var left = _ref.left;
-
-    var _cache = this.cache('element-bounds', function () {
-      return getBounds(_this.element);
-    });
-
-    var height = _cache.height;
-    var width = _cache.width;
-
-    var targetPos = this.getTargetBounds();
-
-    var bottom = top + height;
-    var right = left + width;
-
-    var abutted = [];
-    if (top <= targetPos.bottom && bottom >= targetPos.top) {
-      ['left', 'right'].forEach(function (side) {
-        var targetPosSide = targetPos[side];
-        if (targetPosSide === left || targetPosSide === right) {
-          abutted.push(side);
-        }
-      });
-    }
-
-    if (left <= targetPos.right && right >= targetPos.left) {
-      ['top', 'bottom'].forEach(function (side) {
-        var targetPosSide = targetPos[side];
-        if (targetPosSide === top || targetPosSide === bottom) {
-          abutted.push(side);
-        }
-      });
-    }
-
-    var allClasses = [];
-    var addClasses = [];
-
-    var sides = ['left', 'top', 'right', 'bottom'];
-    allClasses.push(this.getClass('abutted'));
-    sides.forEach(function (side) {
-      allClasses.push(_this.getClass('abutted') + '-' + side);
-    });
-
-    if (abutted.length) {
-      addClasses.push(this.getClass('abutted'));
-    }
-
-    abutted.forEach(function (side) {
-      addClasses.push(_this.getClass('abutted') + '-' + side);
-    });
-
-    defer(function () {
-      if (!(_this.options.addTargetClasses === false)) {
-        updateClasses(_this.target, addClasses, allClasses);
-      }
-      updateClasses(_this.element, addClasses, allClasses);
-    });
-
-    return true;
-  }
-});
-/* globals TetherBase */
-
-'use strict';
-
-var _slicedToArray = (function () { function sliceIterator(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i['return']) _i['return'](); } finally { if (_d) throw _e; } } return _arr; } return function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { return sliceIterator(arr, i); } else { throw new TypeError('Invalid attempt to destructure non-iterable instance'); } }; })();
-
-TetherBase.modules.push({
-  position: function position(_ref) {
-    var top = _ref.top;
-    var left = _ref.left;
-
-    if (!this.options.shift) {
-      return;
-    }
-
-    var shift = this.options.shift;
-    if (typeof this.options.shift === 'function') {
-      shift = this.options.shift.call(this, { top: top, left: left });
-    }
-
-    var shiftTop = undefined,
-        shiftLeft = undefined;
-    if (typeof shift === 'string') {
-      shift = shift.split(' ');
-      shift[1] = shift[1] || shift[0];
-
-      var _shift = shift;
-
-      var _shift2 = _slicedToArray(_shift, 2);
-
-      shiftTop = _shift2[0];
-      shiftLeft = _shift2[1];
-
-      shiftTop = parseFloat(shiftTop, 10);
-      shiftLeft = parseFloat(shiftLeft, 10);
-    } else {
-      shiftTop = shift.top;
-      shiftLeft = shift.left;
-    }
-
-    top += shiftTop;
-    left += shiftLeft;
-
-    return { top: top, left: left };
-  }
-});
-return Tether;
-
-}));
-
-
-/***/ }),
-/* 46 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var apply = Function.prototype.apply;
-
-// DOM APIs, for completeness
-
-exports.setTimeout = function() {
-  return new Timeout(apply.call(setTimeout, window, arguments), clearTimeout);
-};
-exports.setInterval = function() {
-  return new Timeout(apply.call(setInterval, window, arguments), clearInterval);
-};
-exports.clearTimeout =
-exports.clearInterval = function(timeout) {
-  if (timeout) {
-    timeout.close();
-  }
-};
-
-function Timeout(id, clearFn) {
-  this._id = id;
-  this._clearFn = clearFn;
-}
-Timeout.prototype.unref = Timeout.prototype.ref = function() {};
-Timeout.prototype.close = function() {
-  this._clearFn.call(window, this._id);
-};
-
-// Does not start the time, just sets up the members needed.
-exports.enroll = function(item, msecs) {
-  clearTimeout(item._idleTimeoutId);
-  item._idleTimeout = msecs;
-};
-
-exports.unenroll = function(item) {
-  clearTimeout(item._idleTimeoutId);
-  item._idleTimeout = -1;
-};
-
-exports._unrefActive = exports.active = function(item) {
-  clearTimeout(item._idleTimeoutId);
-
-  var msecs = item._idleTimeout;
-  if (msecs >= 0) {
-    item._idleTimeoutId = setTimeout(function onTimeout() {
-      if (item._onTimeout)
-        item._onTimeout();
-    }, msecs);
-  }
-};
-
-// setimmediate attaches itself to the global object
-__webpack_require__(43);
-exports.setImmediate = setImmediate;
-exports.clearImmediate = clearImmediate;
-
-
-/***/ }),
-/* 47 */
-/***/ (function(module, exports) {
-
-(function(self) {
-  'use strict';
-
-  if (self.fetch) {
-    return
-  }
-
-  var support = {
-    searchParams: 'URLSearchParams' in self,
-    iterable: 'Symbol' in self && 'iterator' in Symbol,
-    blob: 'FileReader' in self && 'Blob' in self && (function() {
-      try {
-        new Blob()
-        return true
-      } catch(e) {
-        return false
-      }
-    })(),
-    formData: 'FormData' in self,
-    arrayBuffer: 'ArrayBuffer' in self
-  }
-
-  if (support.arrayBuffer) {
-    var viewClasses = [
-      '[object Int8Array]',
-      '[object Uint8Array]',
-      '[object Uint8ClampedArray]',
-      '[object Int16Array]',
-      '[object Uint16Array]',
-      '[object Int32Array]',
-      '[object Uint32Array]',
-      '[object Float32Array]',
-      '[object Float64Array]'
-    ]
-
-    var isDataView = function(obj) {
-      return obj && DataView.prototype.isPrototypeOf(obj)
-    }
-
-    var isArrayBufferView = ArrayBuffer.isView || function(obj) {
-      return obj && viewClasses.indexOf(Object.prototype.toString.call(obj)) > -1
-    }
-  }
-
-  function normalizeName(name) {
-    if (typeof name !== 'string') {
-      name = String(name)
-    }
-    if (/[^a-z0-9\-#$%&'*+.\^_`|~]/i.test(name)) {
-      throw new TypeError('Invalid character in header field name')
-    }
-    return name.toLowerCase()
-  }
-
-  function normalizeValue(value) {
-    if (typeof value !== 'string') {
-      value = String(value)
-    }
-    return value
-  }
-
-  // Build a destructive iterator for the value list
-  function iteratorFor(items) {
-    var iterator = {
-      next: function() {
-        var value = items.shift()
-        return {done: value === undefined, value: value}
-      }
-    }
-
-    if (support.iterable) {
-      iterator[Symbol.iterator] = function() {
-        return iterator
-      }
-    }
-
-    return iterator
-  }
-
-  function Headers(headers) {
-    this.map = {}
-
-    if (headers instanceof Headers) {
-      headers.forEach(function(value, name) {
-        this.append(name, value)
-      }, this)
-    } else if (Array.isArray(headers)) {
-      headers.forEach(function(header) {
-        this.append(header[0], header[1])
-      }, this)
-    } else if (headers) {
-      Object.getOwnPropertyNames(headers).forEach(function(name) {
-        this.append(name, headers[name])
-      }, this)
-    }
-  }
-
-  Headers.prototype.append = function(name, value) {
-    name = normalizeName(name)
-    value = normalizeValue(value)
-    var oldValue = this.map[name]
-    this.map[name] = oldValue ? oldValue+','+value : value
-  }
-
-  Headers.prototype['delete'] = function(name) {
-    delete this.map[normalizeName(name)]
-  }
-
-  Headers.prototype.get = function(name) {
-    name = normalizeName(name)
-    return this.has(name) ? this.map[name] : null
-  }
-
-  Headers.prototype.has = function(name) {
-    return this.map.hasOwnProperty(normalizeName(name))
-  }
-
-  Headers.prototype.set = function(name, value) {
-    this.map[normalizeName(name)] = normalizeValue(value)
-  }
-
-  Headers.prototype.forEach = function(callback, thisArg) {
-    for (var name in this.map) {
-      if (this.map.hasOwnProperty(name)) {
-        callback.call(thisArg, this.map[name], name, this)
-      }
-    }
-  }
-
-  Headers.prototype.keys = function() {
-    var items = []
-    this.forEach(function(value, name) { items.push(name) })
-    return iteratorFor(items)
-  }
-
-  Headers.prototype.values = function() {
-    var items = []
-    this.forEach(function(value) { items.push(value) })
-    return iteratorFor(items)
-  }
-
-  Headers.prototype.entries = function() {
-    var items = []
-    this.forEach(function(value, name) { items.push([name, value]) })
-    return iteratorFor(items)
-  }
-
-  if (support.iterable) {
-    Headers.prototype[Symbol.iterator] = Headers.prototype.entries
-  }
-
-  function consumed(body) {
-    if (body.bodyUsed) {
-      return Promise.reject(new TypeError('Already read'))
-    }
-    body.bodyUsed = true
-  }
-
-  function fileReaderReady(reader) {
-    return new Promise(function(resolve, reject) {
-      reader.onload = function() {
-        resolve(reader.result)
-      }
-      reader.onerror = function() {
-        reject(reader.error)
-      }
-    })
-  }
-
-  function readBlobAsArrayBuffer(blob) {
-    var reader = new FileReader()
-    var promise = fileReaderReady(reader)
-    reader.readAsArrayBuffer(blob)
-    return promise
-  }
-
-  function readBlobAsText(blob) {
-    var reader = new FileReader()
-    var promise = fileReaderReady(reader)
-    reader.readAsText(blob)
-    return promise
-  }
-
-  function readArrayBufferAsText(buf) {
-    var view = new Uint8Array(buf)
-    var chars = new Array(view.length)
-
-    for (var i = 0; i < view.length; i++) {
-      chars[i] = String.fromCharCode(view[i])
-    }
-    return chars.join('')
-  }
-
-  function bufferClone(buf) {
-    if (buf.slice) {
-      return buf.slice(0)
-    } else {
-      var view = new Uint8Array(buf.byteLength)
-      view.set(new Uint8Array(buf))
-      return view.buffer
-    }
-  }
-
-  function Body() {
-    this.bodyUsed = false
-
-    this._initBody = function(body) {
-      this._bodyInit = body
-      if (!body) {
-        this._bodyText = ''
-      } else if (typeof body === 'string') {
-        this._bodyText = body
-      } else if (support.blob && Blob.prototype.isPrototypeOf(body)) {
-        this._bodyBlob = body
-      } else if (support.formData && FormData.prototype.isPrototypeOf(body)) {
-        this._bodyFormData = body
-      } else if (support.searchParams && URLSearchParams.prototype.isPrototypeOf(body)) {
-        this._bodyText = body.toString()
-      } else if (support.arrayBuffer && support.blob && isDataView(body)) {
-        this._bodyArrayBuffer = bufferClone(body.buffer)
-        // IE 10-11 can't handle a DataView body.
-        this._bodyInit = new Blob([this._bodyArrayBuffer])
-      } else if (support.arrayBuffer && (ArrayBuffer.prototype.isPrototypeOf(body) || isArrayBufferView(body))) {
-        this._bodyArrayBuffer = bufferClone(body)
-      } else {
-        throw new Error('unsupported BodyInit type')
-      }
-
-      if (!this.headers.get('content-type')) {
-        if (typeof body === 'string') {
-          this.headers.set('content-type', 'text/plain;charset=UTF-8')
-        } else if (this._bodyBlob && this._bodyBlob.type) {
-          this.headers.set('content-type', this._bodyBlob.type)
-        } else if (support.searchParams && URLSearchParams.prototype.isPrototypeOf(body)) {
-          this.headers.set('content-type', 'application/x-www-form-urlencoded;charset=UTF-8')
-        }
-      }
-    }
-
-    if (support.blob) {
-      this.blob = function() {
-        var rejected = consumed(this)
-        if (rejected) {
-          return rejected
-        }
-
-        if (this._bodyBlob) {
-          return Promise.resolve(this._bodyBlob)
-        } else if (this._bodyArrayBuffer) {
-          return Promise.resolve(new Blob([this._bodyArrayBuffer]))
-        } else if (this._bodyFormData) {
-          throw new Error('could not read FormData body as blob')
-        } else {
-          return Promise.resolve(new Blob([this._bodyText]))
-        }
-      }
-
-      this.arrayBuffer = function() {
-        if (this._bodyArrayBuffer) {
-          return consumed(this) || Promise.resolve(this._bodyArrayBuffer)
-        } else {
-          return this.blob().then(readBlobAsArrayBuffer)
-        }
-      }
-    }
-
-    this.text = function() {
-      var rejected = consumed(this)
-      if (rejected) {
-        return rejected
-      }
-
-      if (this._bodyBlob) {
-        return readBlobAsText(this._bodyBlob)
-      } else if (this._bodyArrayBuffer) {
-        return Promise.resolve(readArrayBufferAsText(this._bodyArrayBuffer))
-      } else if (this._bodyFormData) {
-        throw new Error('could not read FormData body as text')
-      } else {
-        return Promise.resolve(this._bodyText)
-      }
-    }
-
-    if (support.formData) {
-      this.formData = function() {
-        return this.text().then(decode)
-      }
-    }
-
-    this.json = function() {
-      return this.text().then(JSON.parse)
-    }
-
-    return this
-  }
-
-  // HTTP methods whose capitalization should be normalized
-  var methods = ['DELETE', 'GET', 'HEAD', 'OPTIONS', 'POST', 'PUT']
-
-  function normalizeMethod(method) {
-    var upcased = method.toUpperCase()
-    return (methods.indexOf(upcased) > -1) ? upcased : method
-  }
-
-  function Request(input, options) {
-    options = options || {}
-    var body = options.body
-
-    if (input instanceof Request) {
-      if (input.bodyUsed) {
-        throw new TypeError('Already read')
-      }
-      this.url = input.url
-      this.credentials = input.credentials
-      if (!options.headers) {
-        this.headers = new Headers(input.headers)
-      }
-      this.method = input.method
-      this.mode = input.mode
-      if (!body && input._bodyInit != null) {
-        body = input._bodyInit
-        input.bodyUsed = true
-      }
-    } else {
-      this.url = String(input)
-    }
-
-    this.credentials = options.credentials || this.credentials || 'omit'
-    if (options.headers || !this.headers) {
-      this.headers = new Headers(options.headers)
-    }
-    this.method = normalizeMethod(options.method || this.method || 'GET')
-    this.mode = options.mode || this.mode || null
-    this.referrer = null
-
-    if ((this.method === 'GET' || this.method === 'HEAD') && body) {
-      throw new TypeError('Body not allowed for GET or HEAD requests')
-    }
-    this._initBody(body)
-  }
-
-  Request.prototype.clone = function() {
-    return new Request(this, { body: this._bodyInit })
-  }
-
-  function decode(body) {
-    var form = new FormData()
-    body.trim().split('&').forEach(function(bytes) {
-      if (bytes) {
-        var split = bytes.split('=')
-        var name = split.shift().replace(/\+/g, ' ')
-        var value = split.join('=').replace(/\+/g, ' ')
-        form.append(decodeURIComponent(name), decodeURIComponent(value))
-      }
-    })
-    return form
-  }
-
-  function parseHeaders(rawHeaders) {
-    var headers = new Headers()
-    rawHeaders.split(/\r?\n/).forEach(function(line) {
-      var parts = line.split(':')
-      var key = parts.shift().trim()
-      if (key) {
-        var value = parts.join(':').trim()
-        headers.append(key, value)
-      }
-    })
-    return headers
-  }
-
-  Body.call(Request.prototype)
-
-  function Response(bodyInit, options) {
-    if (!options) {
-      options = {}
-    }
-
-    this.type = 'default'
-    this.status = 'status' in options ? options.status : 200
-    this.ok = this.status >= 200 && this.status < 300
-    this.statusText = 'statusText' in options ? options.statusText : 'OK'
-    this.headers = new Headers(options.headers)
-    this.url = options.url || ''
-    this._initBody(bodyInit)
-  }
-
-  Body.call(Response.prototype)
-
-  Response.prototype.clone = function() {
-    return new Response(this._bodyInit, {
-      status: this.status,
-      statusText: this.statusText,
-      headers: new Headers(this.headers),
-      url: this.url
-    })
-  }
-
-  Response.error = function() {
-    var response = new Response(null, {status: 0, statusText: ''})
-    response.type = 'error'
-    return response
-  }
-
-  var redirectStatuses = [301, 302, 303, 307, 308]
-
-  Response.redirect = function(url, status) {
-    if (redirectStatuses.indexOf(status) === -1) {
-      throw new RangeError('Invalid status code')
-    }
-
-    return new Response(null, {status: status, headers: {location: url}})
-  }
-
-  self.Headers = Headers
-  self.Request = Request
-  self.Response = Response
-
-  self.fetch = function(input, init) {
-    return new Promise(function(resolve, reject) {
-      var request = new Request(input, init)
-      var xhr = new XMLHttpRequest()
-
-      xhr.onload = function() {
-        var options = {
-          status: xhr.status,
-          statusText: xhr.statusText,
-          headers: parseHeaders(xhr.getAllResponseHeaders() || '')
-        }
-        options.url = 'responseURL' in xhr ? xhr.responseURL : options.headers.get('X-Request-URL')
-        var body = 'response' in xhr ? xhr.response : xhr.responseText
-        resolve(new Response(body, options))
-      }
-
-      xhr.onerror = function() {
-        reject(new TypeError('Network request failed'))
-      }
-
-      xhr.ontimeout = function() {
-        reject(new TypeError('Network request failed'))
-      }
-
-      xhr.open(request.method, request.url, true)
-
-      if (request.credentials === 'include') {
-        xhr.withCredentials = true
-      }
-
-      if ('responseType' in xhr && support.blob) {
-        xhr.responseType = 'blob'
-      }
-
-      request.headers.forEach(function(value, name) {
-        xhr.setRequestHeader(name, value)
-      })
-
-      xhr.send(typeof request._bodyInit === 'undefined' ? null : request._bodyInit)
-    })
-  }
-  self.fetch.polyfill = true
-})(typeof self !== 'undefined' ? self : this);
-
-
-/***/ }),
 /* 48 */
 /***/ (function(module, exports, __webpack_require__) {
 
-__webpack_require__(12);
-module.exports = __webpack_require__(13);
+"use strict";
 
+
+Object.defineProperty(exports, "__esModule", {
+	value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _dom = __webpack_require__(0);
+
+var _dom2 = _interopRequireDefault(_dom);
+
+var _terminal = __webpack_require__(5);
+
+var _terminal2 = _interopRequireDefault(_terminal);
+
+var _component = __webpack_require__(3);
+
+var _component2 = _interopRequireDefault(_component);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var gdsSession = [];
+var stringify = JSON.stringify;
+var cells = [];
+
+var DimensionCalculator = function () {
+	function DimensionCalculator(context) {
+		_classCallCheck(this, DimensionCalculator);
+
+		this.context = context;
+	}
+
+	_createClass(DimensionCalculator, [{
+		key: 'calculate',
+		value: function calculate(rowCount, cellCount) {
+			return {
+				height: Math.floor(this.context.clientHeight / rowCount),
+				width: Math.floor(this.context.clientWidth / cellCount),
+				char: this.getLineHeight()
+			};
+		}
+	}, {
+		key: 'getLineHeight',
+		value: function getLineHeight() {
+			var _getBoundingClientRec = (this.cursor || this.getCursor()).getBoundingClientRect(),
+			    width = _getBoundingClientRec.width,
+			    height = _getBoundingClientRec.height;
+
+			return { width: width, height: height };
+		}
+	}, {
+		key: 'getCursor',
+		value: function getCursor() {
+			var tempCmd = (0, _dom2.default)('div.terminal temp-terminal');
+			this.context.appendChild(tempCmd);
+			tempCmd.innerHTML = '<div class="cmd"><span class="cursor">&nbsp;</span></div>';
+
+			return this.cursor = tempCmd.querySelector('.cursor');
+		}
+	}]);
+
+	return DimensionCalculator;
+}();
+
+var TerminalsMatrix = function (_Component) {
+	_inherits(TerminalsMatrix, _Component);
+
+	function TerminalsMatrix() {
+		_classCallCheck(this, TerminalsMatrix);
+
+		return _possibleConstructorReturn(this, (TerminalsMatrix.__proto__ || Object.getPrototypeOf(TerminalsMatrix)).call(this, 'table.terminals-table'));
+	}
+
+	_createClass(TerminalsMatrix, [{
+		key: 'clear',
+		value: function clear() {
+			this.context.innerHTML = '';
+			return this;
+		}
+	}, {
+		key: 'getSizes',
+		value: function getSizes() {
+			return this.sizer = this.sizer || new DimensionCalculator(this.getContext().parentNode);
+		}
+	}, {
+		key: 'makeCells',
+		value: function makeCells(rowCount, cellCount) {
+			var _this2 = this;
+
+			var makeRow = function makeRow() {
+				var row = (0, _dom2.default)('tr');
+				_this2.context.appendChild(row);
+				return row;
+			};
+
+			var makeCells = function makeCells(row) {
+				return [].concat(_toConsumableArray(new Array(cellCount))).map(function () {
+					var cell = (0, _dom2.default)('td.terminal-cell .v-middle');
+					row.appendChild(cell);
+					return cell;
+				});
+			};
+
+			return [].concat.apply([], [].concat(_toConsumableArray(new Array(rowCount))).map(makeRow).map(makeCells));
+		}
+	}, {
+		key: 'purgeScreens',
+		value: function purgeScreens(gds) {
+			gdsSession[gds].forEach(function (terminal) {
+				return terminal.clear();
+			});
+		}
+	}, {
+		key: 'getTerminal',
+		value: function getTerminal(gds, index, props) {
+			return gdsSession[gds][index] = gdsSession[gds][index] || new _terminal2.default(props);
+		}
+	}, {
+		key: 'renderIsNeeded',
+		value: function renderIsNeeded(state) {
+			if (!this.state) return true;
+
+			return stringify(state) !== stringify(this.state);
+		}
+	}, {
+		key: '_renderer',
+		value: function _renderer() {
+			var _this3 = this;
+
+			var params = this.props;
+
+			var rowCount = params.cellMatrix.rows + 1;
+			var cellCount = params.cellMatrix.cells + 1;
+
+			gdsSession[params.gds] = gdsSession[params.gds] || [];
+
+			var state = {
+				gds: params.gds,
+				dimensions: this.getSizes().calculate(rowCount, cellCount),
+				wrapWidth: params.containerWidth,
+				hideMenu: params.hideMenu
+			};
+
+			var needToRender = this.renderIsNeeded(state);
+
+			if (needToRender) {
+				this.context.innerHTML = '';
+				this.context.className = 't-matrix-w-' + (cellCount - 1);
+
+				this.state = state;
+
+				cells = this.makeCells(rowCount, cellCount);
+
+				cells.forEach(function (cell, index) {
+
+					var props = {
+						name: index,
+						sessionIndex: params.sessionIndex,
+						gds: params.gds, // need for session
+						buffer: params.buffer && params.buffer[params.gds] ? params.buffer[params.gds]['terminals'][index + 1] : ''
+					};
+
+					_this3.getTerminal(params.gds, index, props).reattach(cell, _this3.getSizes().calculate(rowCount, cellCount)); //sometimes calculate doesn't get actual parent context dimensions
+				});
+			}
+
+			cells.forEach(function (cell, index) {
+				var isActive = params.activeTerminal && index === params.activeTerminal.name();
+				cell.classList.toggle('activeWindow', isActive);
+			});
+		}
+	}]);
+
+	return TerminalsMatrix;
+}(_component2.default);
+
+exports.default = TerminalsMatrix;
+
+/***/ }),
+/* 49 */
+/***/ (function(module, exports) {
+
+// removed by extract-text-webpack-plugin
 
 /***/ })
 /******/ ]);

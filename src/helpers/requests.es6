@@ -4,6 +4,8 @@ import {END_POINT_URL, API_HOST}	from  '../constants.es6'
 import Noty 						from 'noty';
 import 'whatwg-fetch';
 
+const JParam = require('jquery-param');
+
 let Url;
 
 const Debug = txt => {
@@ -63,18 +65,19 @@ export const get = (url, defParams) => {
 	return Ask( url, { credentials: 'include' });
 };
 
-const runSyncCommand = params => {
-	const formData 	= new FormData();
-	formData.append( "data", JSON.stringify( {params}, true) );
-
+const runSyncCommand = postData => {
 	return Ask( API_HOST + Url, {
 		credentials	: 'include',
-		body		: formData,
+		body		: JParam( postData ),
 		method		: 'POST',
+		headers		: {
+			'Accept': 'application/json, application/xml, text/plain, text/html, .',
+			'Content-Type': 'application/x-www-form-urlencoded; charset=utf-8'
+		}
 	});
 };
 
-export const setLink = url => { Url = url || END_POINT_URL }
+export const setLink = url => { Url = url || END_POINT_URL };
 
 export default {
 	runSyncCommand	: runSyncCommand,

@@ -23,7 +23,8 @@ module.exports = {
 	devtool: 'source-map',
 
 	resolve : {
-		extensions 	: ['.js', '.json', '.es6'],
+		// extensions 	: ['.js', '.json', '.es6'],
+		extensions 	: ['.js', '.es6'],
 
 		modules		: [
 			"node_modules"
@@ -33,24 +34,27 @@ module.exports = {
 	module: {
 
 		rules: [
-			// {
-			// 	test: /\.(js|es6)$/,
-			// 	exclude: /(node_modules|bower_components)/,
-			// 	use: {
-			// 		loader: 'babel-loader',
-			// 		options: {
-			// 			presets: ['']
-			// 		}
-			// 	}
-			// },
 
 			{
+				test: /\.es6$/,
+				exclude: /node_modules/,
+
+				use: {
+					loader: 'babel-loader',
+					options: {
+						presets: ['env'],
+						// plugins: ['transform-runtime']
+					}
+				}
+			},
+
+			/*{
 				test: /\.es6$/,
 				loader: 'babel-loader',
 				query: {
 					presets: [ "babel-preset-es2015" ].map(require.resolve)
 				}
-			},
+			},*/
 
 			{
 				test: /\.less$/,
