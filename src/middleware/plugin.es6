@@ -192,8 +192,7 @@ export default class TerminalPlugin
 		if ( this.checkSabreCommand( command, terminal ) )
 			return command;
 
-		this.history.add(command);
-		this.spinner.start();
+		this.spinner.start(); // issue 03
 
 		const finish = response => {
 			this.spinner.end();
@@ -206,9 +205,9 @@ export default class TerminalPlugin
 			this.terminal.echo( `[[;;;usedCommand;]>${command.toUpperCase()}]` );
 		};
 
-		this.session.pushCommand( command.toUpperCase(), finish, before );
-
-		this.session.perform();
+		this.session
+			.pushCommand( command.toUpperCase(), finish, before )
+			.perform();
 
 		return command;
 	}
@@ -216,6 +215,7 @@ export default class TerminalPlugin
 	parseBackEnd( response = {}, command )
 	{
 		this.lastCommand = command;
+		this.history.add(command);
 
 		const result = response['data'] || {};
 
@@ -244,17 +244,13 @@ export default class TerminalPlugin
 
 		this.tabCommands.reset( result['tabCommands'], result['output'] );
 
-		if (result['startNewSession'])
-			window.TerminalState.action( 'RESET_GDS');
-
 		window.TerminalState.action( 'UPDATE_CUR_GDS', {
-			gdsName					: this.settings.gds,
-
+			gdsName				: this.settings.gds,
 			canCreatePq 		: result['canCreatePq'],
 			canCreatePqErrors 	: result['canCreatePqErrors'],
-
 			sessionIndex		: ['A','B','C','D','E','F'].indexOf(result.area),
-			lastPcc 			: result['pcc']
+			lastPcc 			: result['pcc'],
+			startNewSession 	: result['startNewSession']
 		});
 
 		if ( window.TerminalState.hasPermissions() )

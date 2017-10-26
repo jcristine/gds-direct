@@ -1,1 +1,3 @@
-01 : f8 template string : when pressing no matter what key (ctrl, alt) it will replace with empty char current character
+01 	: f8 template string : when pressing no matter what key (ctrl, alt) it will replace with empty char current character
+02	: when agent changes current gds but request with result still pending from previous gds
+03	: loader : when choose another terminal while previous is still responding

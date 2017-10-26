@@ -9,6 +9,8 @@ class Terminal
 {
 	constructor( params )
 	{
+		console.log('new Terminal');
+
 		Gds = GdsSet.getList( GDS_LIST, params.settings.gds );
 
 		setLink( params['commandUrl'] );
@@ -206,28 +208,20 @@ export class TerminalState
 				});
 			break;
 
-			case 'RESET_GDS' :
-				this.change({ gdsObj : Object.assign( {}, this.state.gdsObj, {pcc : {}} ) });
-			break;
-
 			case 'UPDATE_CUR_GDS' :
-				const {gdsName, canCreatePq, canCreatePqErrors, sessionIndex, lastPcc} = params;
+				const {gdsName, canCreatePq, canCreatePqErrors, sessionIndex, lastPcc, startNewSession} = params;
 
-				Gds[this.getGds()] 	= this.state.gdsObj;
-
+				Gds[this.getGds()] 	= this.state.gdsObj; //issue 02
 				Gds[gdsName] 		= Object.assign(Gds[gdsName], {canCreatePq, canCreatePqErrors, sessionIndex});
+
+				if (startNewSession)
+					Gds[gdsName]['pcc'] = {};
+
 				Gds[gdsName]['pcc'][sessionIndex] = lastPcc;
 
 				this.change({
 					gdsObj : Object.assign( this.state.gdsObj, Gds[this.getGds()] )
 				});
-			break;
-
-			case 'UPDATE_CUR_GDSOLD' :
-				const pcc 	= Object.assign({}, this.state.gdsObj.pcc, { [ params['sessionIndex'] ] : params['lastPcc']} );
-				const gds 	= Object.assign({}, this.state.gdsObj, {pcc : pcc});
-
-				this.change({ gdsObj : Object.assign( {}, gds, params ) });
 			break;
 
 			case 'PQ_MODAL_SHOW' :
@@ -237,7 +231,6 @@ export class TerminalState
 				this.showPqModal()
 					.then(() => this.change({hideMenu: true}))
 					.catch(() => console.log(' catch !!!') );
-
 			break;
 
 			case 'CLOSE_PQ_WINDOW' :

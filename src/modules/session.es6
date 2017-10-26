@@ -60,7 +60,7 @@ export default class Session
 			}
 
 			return response;
-		});
+		})
 	}
 
 	pushCommand( termRun, finish, before )

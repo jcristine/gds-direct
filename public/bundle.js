@@ -3956,8 +3956,6 @@ var _constants = __webpack_require__(4);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 var Container = void 0,
@@ -3965,6 +3963,8 @@ var Container = void 0,
 
 var Terminal = function Terminal(params) {
 	_classCallCheck(this, Terminal);
+
+	console.log('new Terminal');
 
 	Gds = _gds2.default.getList(_constants.GDS_LIST, params.settings.gds);
 
@@ -4170,33 +4170,25 @@ var TerminalState = function () {
 					});
 					break;
 
-				case 'RESET_GDS':
-					this.change({ gdsObj: Object.assign({}, this.state.gdsObj, { pcc: {} }) });
-					break;
-
 				case 'UPDATE_CUR_GDS':
 					var gdsName = params.gdsName,
 					    canCreatePq = params.canCreatePq,
 					    canCreatePqErrors = params.canCreatePqErrors,
 					    sessionIndex = params.sessionIndex,
-					    lastPcc = params.lastPcc;
+					    lastPcc = params.lastPcc,
+					    startNewSession = params.startNewSession;
 
 
-					Gds[this.getGds()] = this.state.gdsObj;
-
+					Gds[this.getGds()] = this.state.gdsObj; //issue 02
 					Gds[gdsName] = Object.assign(Gds[gdsName], { canCreatePq: canCreatePq, canCreatePqErrors: canCreatePqErrors, sessionIndex: sessionIndex });
+
+					if (startNewSession) Gds[gdsName]['pcc'] = {};
+
 					Gds[gdsName]['pcc'][sessionIndex] = lastPcc;
 
 					this.change({
 						gdsObj: Object.assign(this.state.gdsObj, Gds[this.getGds()])
 					});
-					break;
-
-				case 'UPDATE_CUR_GDSOLD':
-					var pcc = Object.assign({}, this.state.gdsObj.pcc, _defineProperty({}, params['sessionIndex'], params['lastPcc']));
-					var gds = Object.assign({}, this.state.gdsObj, { pcc: pcc });
-
-					this.change({ gdsObj: Object.assign({}, gds, params) });
 					break;
 
 				case 'PQ_MODAL_SHOW':
@@ -4207,7 +4199,6 @@ var TerminalState = function () {
 					}).catch(function () {
 						return console.log(' catch !!!');
 					});
-
 					break;
 
 				case 'CLOSE_PQ_WINDOW':
@@ -8158,8 +8149,7 @@ var TerminalPlugin = function () {
 
 			if (this.checkSabreCommand(command, terminal)) return command;
 
-			this.history.add(command);
-			this.spinner.start();
+			this.spinner.start(); // issue 03
 
 			var finish = function finish(response) {
 				_this.spinner.end();
@@ -8172,9 +8162,7 @@ var TerminalPlugin = function () {
 				_this.terminal.echo('[[;;;usedCommand;]>' + command.toUpperCase() + ']');
 			};
 
-			this.session.pushCommand(command.toUpperCase(), finish, before);
-
-			this.session.perform();
+			this.session.pushCommand(command.toUpperCase(), finish, before).perform();
 
 			return command;
 		}
@@ -8185,6 +8173,7 @@ var TerminalPlugin = function () {
 			var command = arguments[1];
 
 			this.lastCommand = command;
+			this.history.add(command);
 
 			var result = response['data'] || {};
 
@@ -8208,16 +8197,13 @@ var TerminalPlugin = function () {
 
 			this.tabCommands.reset(result['tabCommands'], result['output']);
 
-			if (result['startNewSession']) window.TerminalState.action('RESET_GDS');
-
 			window.TerminalState.action('UPDATE_CUR_GDS', {
 				gdsName: this.settings.gds,
-
 				canCreatePq: result['canCreatePq'],
 				canCreatePqErrors: result['canCreatePqErrors'],
-
 				sessionIndex: ['A', 'B', 'C', 'D', 'E', 'F'].indexOf(result.area),
-				lastPcc: result['pcc']
+				lastPcc: result['pcc'],
+				startNewSession: result['startNewSession']
 			});
 
 			if (window.TerminalState.hasPermissions()) this.debugOutput(result);
