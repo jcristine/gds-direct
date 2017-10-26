@@ -1,6 +1,5 @@
 const rules = {
 	apollo : {
-		pos 	: '¤:3SSRDOCSYYHK1/N'.length,
 		cmd		: '¤:3SSRDOCSYYHK1/N ///// DMMMYY/ //          /          /',
 
 		rules	: [
@@ -14,7 +13,6 @@ const rules = {
 	},
 
 	sabre 	: {
-		pos		: '3DOCSA/DB/'.length,
 		cmd		: '3DOCSA/DB/DDMMMYY/      /        /        -',
 		rules	: [
 			'3DOCSA/DB/'
@@ -22,7 +20,6 @@ const rules = {
 	},
 
 	amadeus 	: {
-		pos		: 'SRDOCSYYHK1'.length,
 		cmd		: 'SRDOCSYYHK1-----  DDMMMYY   -     --        -       /P',
 		rules	: [
 			'SRDOCSYYHK1'
@@ -37,7 +34,6 @@ export default class F8Reader
 		this.index		= 0;
 		this.terminal 	= terminal;
 		this.isActive 	= false;
-		this.gds		= gds;
 		this.currentCmd	= rules[gds];
 	}
 
@@ -46,51 +42,55 @@ export default class F8Reader
 		return this.isActive;
 	}
 
-	getNextTabPos()
+	_getNextTabPos()
 	{
 		const subStr = this.currentCmd.rules[ this.index ];
-		return this.terminal.get_command().indexOf( subStr ); // + ( this.index === 0 ? subStr.length : 0 );
+		return this.terminal.get_command().indexOf( subStr );
 	}
 
 	jumpToNextPos()
 	{
-		this.terminal.cmd().position( this.getNextTabPos() );
+		// console.log('position', this._getNextTabPos() );
+		// console.log(' tab pressed ', this.currentCmd.rules, this.index);
 
 		if ( !this.currentCmd.rules[this.index] )
 		{
 			this.isActive 	= false;
 			this.index 		= 0;
+
+			return false;
 		}
 
+		this.terminal.cmd().position( this._getNextTabPos() );
 		this.index++;
 	}
 
-	replaceChar()
+	replaceEmptyChar(evt)
 	{
-		const curPos 			= this.terminal.cmd().position();
-		const charToReplace 	= this.terminal.get_command().substr(curPos, 1);
+		if ( this.getIsActive() )
+		{
+			if (evt.key.length === 1 && !evt.ctrlKey) // issue 01
+			{
+				const curPos 			= this.terminal.cmd().position();
+				const charToReplace 	= this.terminal.get_command().substr(curPos, 1);
 
-		if (charToReplace === '/')
-			return false;
+				/*const char = this.terminal.get_command().charAt(
+					this.terminal.cmd().position()
+				);
+				console.log(char);*/
 
-		this.terminal.cmd().delete(+1);
+				if (charToReplace === '/')
+					return false;
+
+				this.terminal.cmd().delete(+1);
+			}
+		}
 	}
 
-	tie()
+	getFullCommand()
 	{
 		this.index 		= 0;
 		this.isActive	= true;
-
-		this.terminal.set_command( this.currentCmd.cmd );
-		this.jumpToNextPos();
-	}
-
-	execCommand()
-	{
-		const cmd = this.terminal.before_cursor();
-		this.terminal.cmd().set('');
-
-		this.isActive	= false; // BEWARE of dead loop!
-		this.terminal.exec(cmd);
+		return this.currentCmd.cmd;
 	}
 }

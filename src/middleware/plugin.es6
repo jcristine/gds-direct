@@ -51,53 +51,28 @@ export default class TerminalPlugin
 		this.history 		= new History( params.gds );
 	}
 
-	/*return false if char is don't belong cmd*/
 	parseKeyBinds( evt, terminal )
 	{
-		const hasShortCut = pressedShortcuts( evt, terminal, this );
+		const hasNoShortCut = pressedShortcuts( evt, terminal, this );
 
-		if ( !hasShortCut )
+		if ( !hasNoShortCut )
 			return false;
 
 		const isEnter = evt.which === 13;
-
-		if ( this.f8Reader.getIsActive() ) // ignore Tab press
-		{
-			if (isEnter)
-			{
-				this.f8Reader.execCommand();
-				return false;
-			}
-
-			if (evt.key.length === 1 && !evt.ctrlKey) // ctrl meta alt .. forbid
-				this.f8Reader.replaceChar();
-		}
-
-		const replacement = getReplacement( evt, window.TerminalState.isLanguageApollo() );
-
-		if ( replacement )
-		{
-			this.replaceCommand = replacement;
-		}
-
-		if (replacement === false) // do not print nothing if char is forbidden
-			return false;
+		this.f8Reader.replaceEmptyChar(evt);
 
 		// if test>>>asd+sa and cursor on + // execute only between last > and + cmd
 		if (isEnter)
 		{
-			let		cmd					= terminal.cmd().get().substring(0, terminal.cmd().position() );
+			this.f8Reader.isActive	= false;
+
+			let		cmd					= terminal.before_cursor();
 			const	lastPromptSignPos	= cmd.lastIndexOf('>') + 1;
 
 			if (lastPromptSignPos)
 				cmd = cmd.substring(lastPromptSignPos, cmd.length);
 
-			if (cmd)
-			{
-				terminal.exec(cmd);
-				terminal.cmd().set('');
-				return false;
-			}
+			terminal.set_command(cmd);
 		}
 	}
 
@@ -106,7 +81,7 @@ export default class TerminalPlugin
 		if (this.settings.name === 'fullScreen')
 			return false;
 
-		window.activePlugin = this; // SO SO DEPRECATED NOW
+		window.activePlugin = this; // SO SO check to DEPRECATED
 		window.TerminalState.action('CHANGE_ACTIVE_TERMINAL', activeTerminal );
 	}
 
@@ -115,27 +90,12 @@ export default class TerminalPlugin
 		this.settings.clear();
 	}
 
-	tabPressed()
+	tabPerform( reverse = false )
 	{
 		if ( this.f8Reader.getIsActive() )
 			return this.f8Reader.jumpToNextPos();
 
-		this.tabCommands
-			.next()
-			.run(
-				this.updateOutput.bind(this)
-			);
-	}
-
-	/*tabShiftPressed()
-	{
-		this.tabCommands.prev().run( this.updateOutput.bind(this) );
-	}*/
-
-	updateOutput([cmd, str])
-	{
-		this.terminal.update( -1,  str );
-		this.terminal.cmd().set( cmd );
+		this.tabCommands.move(reverse).run(this.terminal);
 	}
 
 	resize( sizes )
@@ -158,7 +118,7 @@ export default class TerminalPlugin
 	init()
 	{
 		//caveats terminal.rows() - every time appends div with cursor span - not too smooth for performance
-		const context =  $(this.context).terminal( this.commandParser.bind(this), {
+		const context =  $(this.context).terminal( () => {}, {
 			echoCommand		: false,
 			greetings		: '',
 			name			: this.name,
@@ -168,11 +128,11 @@ export default class TerminalPlugin
 			memory			: true, // do not add to localStorage
 
 			keypress		: (e, terminal) => {
+				const replacement = getReplacement( e, window.TerminalState.isLanguageApollo() );
 
-				if (this.replaceCommand)
+				if (replacement)
 				{
-					terminal.insert(this.replaceCommand);
-					this.replaceCommand = '';
+					terminal.insert(replacement);
 					return false;
 				}
 			},
@@ -183,21 +143,7 @@ export default class TerminalPlugin
 			onTerminalChange: this.changeActiveTerm.bind(this),
 			onBeforeCommand : this.checkBeforeEnter.bind(this),
 
-			// for hard scenario shortcut, others in keymap helper
-			keymap			: {
-
-				'TAB'		: () => {
-					this.tabPressed();
-					return false;
-				},
-
-				'F8'		: () => {
-					this.terminal.cmd().set( this.f8Reader.tie() );
-					return false;
-				}
-				// ,
-				// 'F5'		: () => false
-			},
+			/*keymap		: {},*/
 
 			exceptionHandler( err ) { console.warn('exc', err); }
 		});
@@ -235,11 +181,6 @@ export default class TerminalPlugin
 		return false;
 	}
 
-	commandParser() //pressed enter
-	{
-		return false;
-	}
-
 	checkBeforeEnter( terminal, command )
 	{
 		if ( !command || command.trim() === '' )
@@ -251,9 +192,8 @@ export default class TerminalPlugin
 		if ( this.checkSabreCommand( command, terminal ) )
 			return command;
 
+		this.history.add(command);
 		this.spinner.start();
-
-		this.history.add( command );
 
 		const finish = response => {
 			this.spinner.end();

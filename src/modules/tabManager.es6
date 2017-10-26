@@ -4,16 +4,36 @@ export default class TabManager
 	{
 		this.index 	= 0;
 		this.list	= [];
+		this.output = '';
 	}
 
-	reset( list = [], output )
+	_getCommand()
 	{
-		this.list 	= list;
+		return this.list[ this.index ];
+	}
 
+	_formatOutput( cmd )
+	{
+		if (cmd) // last element in the array is an empty string
+		{
+			cmd 		= `>${cmd}`;
+			const pos 	= this.output.indexOf( cmd );
+			const index = pos + cmd.length;
+
+			if (pos !== -1) // show this only if command is found
+				return this.output.substr(0, index) + `[[;red;blue;]·]` +  this.output.substr( (index + 1 ) , this.output.length);
+		}
+
+		return this.output;
+	}
+
+	reset( commandList = [], output )
+	{
+		this.list 	= commandList;
 		this.index 	= false;
 		this.output = output;
 
-		if (list.length)
+		if (commandList.length)
 		{
 			this.list.push(''); // empty command line
 		}
@@ -39,33 +59,22 @@ export default class TabManager
 		return this;
 	}
 
-	getCommand()
+	move(isOn = false)
 	{
-		return this.list[ this.index ];
+		if (isOn)
+			return this.prev();
+
+		return this.next();
 	}
 
-	formatOutput( cmd )
+	run(terminal)
 	{
-		if (cmd) // last element in the array is an empty string
-		{
-			cmd 		= `>${cmd}`;
-			const pos = this.output.indexOf( cmd );
-			const index = pos + cmd.length;
-
-			if (pos !== -1) // show this only if command is found
-				return this.output.substr(0, index) + `[[;red;blue;]·]` +  this.output.substr( (index + 1 ) , this.output.length);
-		}
-
-		return this.output;
-	}
-
-	run( replace )
-	{
-		const cmd = this.getCommand();
+		const cmd = this._getCommand();
 
 		if ( cmd !== undefined )
 		{
-			replace([ cmd, this.formatOutput( cmd ) ]);
+			terminal.update(-1,  this._formatOutput(cmd));
+			terminal.cmd().set( cmd );
 		}
 
 		return [];

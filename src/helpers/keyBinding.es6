@@ -24,8 +24,6 @@ export const pressedShortcuts = (evt, terminal, plugin) => {
 		const gds		= window.TerminalState.getGds();
 
 		// console.log('key pressed:' ,keymap);
-		// evt.preventDefault();
-		// evt.stopPropagation();
 
 		if ( evt.ctrlKey || evt.metaKey )
 		{
@@ -105,6 +103,10 @@ export const pressedShortcuts = (evt, terminal, plugin) => {
 		{
 			switch (keymap)
 			{
+				case 9 : //TAB
+					plugin.tabPerform(true);
+				break;
+
 				case 120 : //F9
 					const f9 = {
 						apollo 	: 'P:SFOAS/800-750-2238 ASAP CUSTOMER SUPPORT',
@@ -181,6 +183,10 @@ export const pressedShortcuts = (evt, terminal, plugin) => {
 				}
 			break;*/
 
+			case 9 : //TAB
+				plugin.tabPerform();
+			break;
+
 			case 34 : //page down
 			case 33 : //page up
 				const cmm 	= plugin.lastCommand ? plugin.lastCommand.toLowerCase() : '';
@@ -208,6 +214,14 @@ export const pressedShortcuts = (evt, terminal, plugin) => {
 				};
 
 				terminal.exec(f5[gds]);
+			break;
+
+			case 119 : //F8
+				terminal.set_command(
+					plugin.f8Reader.getFullCommand()
+				);
+
+				plugin.f8Reader.jumpToNextPos();
 			break;
 
 			case 122 : //F11

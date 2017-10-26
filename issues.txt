@@ -1,0 +1,1 @@
+01 : f8 template string : when pressing no matter what key (ctrl, alt) it will replace with empty char current character

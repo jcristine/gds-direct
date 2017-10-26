@@ -10,12 +10,9 @@ const common = {
 	'\\': '§'
 };
 
-const sabreLayout = Object.assign({}, common, {
-
-});
-
-const apolloLayout = Object.assign({}, common, {
-	',': '+'
+const sabreLayout 	= Object.assign({}, common);
+const apolloLayout 	= Object.assign({}, common, {
+	',' : '+'
 });
 
 const _to_ascii = {
@@ -39,7 +36,8 @@ const _to_ascii = {
 
 export function getReplacement( evt, isApollo )
 {
-	const char = String.fromCharCode(_to_ascii[ evt.keyCode || evt.which ] );
+	// const char = String.fromCharCode(_to_ascii[ evt.keyCode || evt.which ] );
+	const char = String.fromCharCode(evt.keyCode || evt.which);
 	return isApollo ? apolloLayout[char] : sabreLayout[char];
 }
 

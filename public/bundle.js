@@ -221,8 +221,7 @@ var common = {
 	'\\': '§'
 };
 
-var sabreLayout = Object.assign({}, common, {});
-
+var sabreLayout = Object.assign({}, common);
 var apolloLayout = Object.assign({}, common, {
 	',': '+'
 });
@@ -247,7 +246,8 @@ var _to_ascii = {
 };
 
 function getReplacement(evt, isApollo) {
-	var char = String.fromCharCode(_to_ascii[evt.keyCode || evt.which]);
+	// const char = String.fromCharCode(_to_ascii[ evt.keyCode || evt.which ] );
+	var char = String.fromCharCode(evt.keyCode || evt.which);
 	return isApollo ? apolloLayout[char] : sabreLayout[char];
 }
 
@@ -7942,8 +7942,6 @@ Object.defineProperty(exports, "__esModule", {
 	value: true
 });
 
-var _slicedToArray = function () { function sliceIterator(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"]) _i["return"](); } finally { if (_d) throw _e; } } return _arr; } return function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { return sliceIterator(arr, i); } else { throw new TypeError("Invalid attempt to destructure non-iterable instance"); } }; }();
-
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 var _pagination = __webpack_require__(30);
@@ -8026,50 +8024,26 @@ var TerminalPlugin = function () {
 		this.history = new _history2.default(params.gds);
 	}
 
-	/*return false if char is don't belong cmd*/
-
-
 	_createClass(TerminalPlugin, [{
 		key: 'parseKeyBinds',
 		value: function parseKeyBinds(evt, terminal) {
-			var hasShortCut = (0, _keyBinding.pressedShortcuts)(evt, terminal, this);
+			var hasNoShortCut = (0, _keyBinding.pressedShortcuts)(evt, terminal, this);
 
-			if (!hasShortCut) return false;
+			if (!hasNoShortCut) return false;
 
 			var isEnter = evt.which === 13;
-
-			if (this.f8Reader.getIsActive()) // ignore Tab press
-				{
-					if (isEnter) {
-						this.f8Reader.execCommand();
-						return false;
-					}
-
-					if (evt.key.length === 1 && !evt.ctrlKey) // ctrl meta alt .. forbid
-						this.f8Reader.replaceChar();
-				}
-
-			var replacement = (0, _helpers.getReplacement)(evt, window.TerminalState.isLanguageApollo());
-
-			if (replacement) {
-				this.replaceCommand = replacement;
-			}
-
-			if (replacement === false) // do not print nothing if char is forbidden
-				return false;
+			this.f8Reader.replaceEmptyChar(evt);
 
 			// if test>>>asd+sa and cursor on + // execute only between last > and + cmd
 			if (isEnter) {
-				var cmd = terminal.cmd().get().substring(0, terminal.cmd().position());
+				this.f8Reader.isActive = false;
+
+				var cmd = terminal.before_cursor();
 				var lastPromptSignPos = cmd.lastIndexOf('>') + 1;
 
 				if (lastPromptSignPos) cmd = cmd.substring(lastPromptSignPos, cmd.length);
 
-				if (cmd) {
-					terminal.exec(cmd);
-					terminal.cmd().set('');
-					return false;
-				}
+				terminal.set_command(cmd);
 			}
 		}
 	}, {
@@ -8077,7 +8051,7 @@ var TerminalPlugin = function () {
 		value: function changeActiveTerm(activeTerminal) {
 			if (this.settings.name === 'fullScreen') return false;
 
-			window.activePlugin = this; // SO SO DEPRECATED NOW
+			window.activePlugin = this; // SO SO check to DEPRECATED
 			window.TerminalState.action('CHANGE_ACTIVE_TERMINAL', activeTerminal);
 		}
 	}, {
@@ -8086,27 +8060,13 @@ var TerminalPlugin = function () {
 			this.settings.clear();
 		}
 	}, {
-		key: 'tabPressed',
-		value: function tabPressed() {
+		key: 'tabPerform',
+		value: function tabPerform() {
+			var reverse = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : false;
+
 			if (this.f8Reader.getIsActive()) return this.f8Reader.jumpToNextPos();
 
-			this.tabCommands.next().run(this.updateOutput.bind(this));
-		}
-
-		/*tabShiftPressed()
-  {
-  	this.tabCommands.prev().run( this.updateOutput.bind(this) );
-  }*/
-
-	}, {
-		key: 'updateOutput',
-		value: function updateOutput(_ref) {
-			var _ref2 = _slicedToArray(_ref, 2),
-			    cmd = _ref2[0],
-			    str = _ref2[1];
-
-			this.terminal.update(-1, str);
-			this.terminal.cmd().set(cmd);
+			this.tabCommands.move(reverse).run(this.terminal);
 		}
 	}, {
 		key: 'resize',
@@ -8124,10 +8084,8 @@ var TerminalPlugin = function () {
 	}, {
 		key: 'init',
 		value: function init() {
-			var _this = this;
-
 			//caveats terminal.rows() - every time appends div with cursor span - not too smooth for performance
-			var context = $(this.context).terminal(this.commandParser.bind(this), {
+			var context = $(this.context).terminal(function () {}, {
 				echoCommand: false,
 				greetings: '',
 				name: this.name,
@@ -8137,10 +8095,10 @@ var TerminalPlugin = function () {
 				memory: true, // do not add to localStorage
 
 				keypress: function keypress(e, terminal) {
+					var replacement = (0, _helpers.getReplacement)(e, window.TerminalState.isLanguageApollo());
 
-					if (_this.replaceCommand) {
-						terminal.insert(_this.replaceCommand);
-						_this.replaceCommand = '';
+					if (replacement) {
+						terminal.insert(replacement);
 						return false;
 					}
 				},
@@ -8151,21 +8109,7 @@ var TerminalPlugin = function () {
 				onTerminalChange: this.changeActiveTerm.bind(this),
 				onBeforeCommand: this.checkBeforeEnter.bind(this),
 
-				// for hard scenario shortcut, others in keymap helper
-				keymap: {
-
-					'TAB': function TAB() {
-						_this.tabPressed();
-						return false;
-					},
-
-					'F8': function F8() {
-						_this.terminal.cmd().set(_this.f8Reader.tie());
-						return false;
-					}
-					// ,
-					// 'F5'		: () => false
-				},
+				/*keymap		: {},*/
 
 				exceptionHandler: function exceptionHandler(err) {
 					console.warn('exc', err);
@@ -8203,15 +8147,9 @@ var TerminalPlugin = function () {
 			return false;
 		}
 	}, {
-		key: 'commandParser',
-		value: function commandParser() //pressed enter
-		{
-			return false;
-		}
-	}, {
 		key: 'checkBeforeEnter',
 		value: function checkBeforeEnter(terminal, command) {
-			var _this2 = this;
+			var _this = this;
 
 			if (!command || command.trim() === '') {
 				this.terminal.echo('>');
@@ -8220,19 +8158,18 @@ var TerminalPlugin = function () {
 
 			if (this.checkSabreCommand(command, terminal)) return command;
 
+			this.history.add(command);
 			this.spinner.start();
 
-			this.history.add(command);
-
 			var finish = function finish(response) {
-				_this2.spinner.end();
-				_this2.parseBackEnd(response, command);
+				_this.spinner.end();
+				_this.parseBackEnd(response, command);
 			};
 
 			var before = function before() {
-				_this2.outputLiner.prepare('');
-				_this2.spinner.start();
-				_this2.terminal.echo('[[;;;usedCommand;]>' + command.toUpperCase() + ']');
+				_this.outputLiner.prepare('');
+				_this.spinner.start();
+				_this.terminal.echo('[[;;;usedCommand;]>' + command.toUpperCase() + ']');
 			};
 
 			this.session.pushCommand(command.toUpperCase(), finish, before);
@@ -8385,8 +8322,6 @@ exports.default = Pagination;
 "use strict";
 
 
-// import { TIME_FORMAT, ACCOUNT } from '../constants';
-
 Object.defineProperty(exports, "__esModule", {
 	value: true
 });
@@ -8404,7 +8339,6 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 var commandStack = [];
 var finishStack = [];
 var beforeStack = [];
-var isActive = false;
 var promise = false;
 
 var Session = function () {
@@ -8475,29 +8409,6 @@ var Session = function () {
 
 			return this;
 		}
-
-		/*start()
-  {
-  	Requests.runSyncCommand('startSession', {
-  		timeFormat	: TIME_FORMAT,
-  		account		: ACCOUNT
-  	})
-  		.then( function( response ) {
-  			return response['data'];
-  		})
-  		.catch(function(err) {
-  			console.error('oh shit Error', err);
-  		});
-  }
-  	end()
-  {
-  	let result = Requests.runSyncCommand('endSession', {
-  		sessionToken: this.settings['sessionToken']
-  	});
-  		if (result['success'])
-  		return true;
-  }*/
-
 	}]);
 
 	return Session;
@@ -9167,8 +9078,6 @@ var pressedShortcuts = exports.pressedShortcuts = function pressedShortcuts(evt,
 	var gds = window.TerminalState.getGds();
 
 	// console.log('key pressed:' ,keymap);
-	// evt.preventDefault();
-	// evt.stopPropagation();
 
 	if (evt.ctrlKey || evt.metaKey) {
 		switch (keymap) {
@@ -9252,6 +9161,11 @@ var pressedShortcuts = exports.pressedShortcuts = function pressedShortcuts(evt,
 
 	if (evt.shiftKey) {
 		switch (keymap) {
+			case 9:
+				//TAB
+				plugin.tabPerform(true);
+				break;
+
 			case 120:
 				//F9
 				var f9 = {
@@ -9337,6 +9251,11 @@ var pressedShortcuts = exports.pressedShortcuts = function pressedShortcuts(evt,
   	}
   break;*/
 
+		case 9:
+			//TAB
+			plugin.tabPerform();
+			break;
+
 		case 34: //page down
 		case 33:
 			//page up
@@ -9367,6 +9286,13 @@ var pressedShortcuts = exports.pressedShortcuts = function pressedShortcuts(evt,
 			};
 
 			terminal.exec(f5[gds]);
+			break;
+
+		case 119:
+			//F8
+			terminal.set_command(plugin.f8Reader.getFullCommand());
+
+			plugin.f8Reader.jumpToNextPos();
 			break;
 
 		case 122:
@@ -9584,20 +9510,40 @@ var TabManager = function () {
 
 		this.index = 0;
 		this.list = [];
+		this.output = '';
 	}
 
 	_createClass(TabManager, [{
+		key: '_getCommand',
+		value: function _getCommand() {
+			return this.list[this.index];
+		}
+	}, {
+		key: '_formatOutput',
+		value: function _formatOutput(cmd) {
+			if (cmd) // last element in the array is an empty string
+				{
+					cmd = '>' + cmd;
+					var pos = this.output.indexOf(cmd);
+					var index = pos + cmd.length;
+
+					if (pos !== -1) // show this only if command is found
+						return this.output.substr(0, index) + '[[;red;blue;]\xB7]' + this.output.substr(index + 1, this.output.length);
+				}
+
+			return this.output;
+		}
+	}, {
 		key: 'reset',
 		value: function reset() {
-			var list = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
+			var commandList = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
 			var output = arguments[1];
 
-			this.list = list;
-
+			this.list = commandList;
 			this.index = false;
 			this.output = output;
 
-			if (list.length) {
+			if (commandList.length) {
 				this.list.push(''); // empty command line
 			}
 		}
@@ -9620,32 +9566,22 @@ var TabManager = function () {
 			return this;
 		}
 	}, {
-		key: 'getCommand',
-		value: function getCommand() {
-			return this.list[this.index];
-		}
-	}, {
-		key: 'formatOutput',
-		value: function formatOutput(cmd) {
-			if (cmd) // last element in the array is an empty string
-				{
-					cmd = '>' + cmd;
-					var pos = this.output.indexOf(cmd);
-					var index = pos + cmd.length;
+		key: 'move',
+		value: function move() {
+			var isOn = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : false;
 
-					if (pos !== -1) // show this only if command is found
-						return this.output.substr(0, index) + '[[;red;blue;]\xB7]' + this.output.substr(index + 1, this.output.length);
-				}
+			if (isOn) return this.prev();
 
-			return this.output;
+			return this.next();
 		}
 	}, {
 		key: 'run',
-		value: function run(replace) {
-			var cmd = this.getCommand();
+		value: function run(terminal) {
+			var cmd = this._getCommand();
 
 			if (cmd !== undefined) {
-				replace([cmd, this.formatOutput(cmd)]);
+				terminal.update(-1, this._formatOutput(cmd));
+				terminal.cmd().set(cmd);
 			}
 
 			return [];
@@ -9674,7 +9610,6 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
 var rules = {
 	apollo: {
-		pos: '¤:3SSRDOCSYYHK1/N'.length,
 		cmd: '¤:3SSRDOCSYYHK1/N ///// DMMMYY/ //          /          /',
 
 		rules: [' /////',
@@ -9683,13 +9618,11 @@ var rules = {
 	},
 
 	sabre: {
-		pos: '3DOCSA/DB/'.length,
 		cmd: '3DOCSA/DB/DDMMMYY/      /        /        -',
 		rules: ['3DOCSA/DB/']
 	},
 
 	amadeus: {
-		pos: 'SRDOCSYYHK1'.length,
 		cmd: 'SRDOCSYYHK1-----  DDMMMYY   -     --        -       /P',
 		rules: ['SRDOCSYYHK1']
 	}
@@ -9705,7 +9638,6 @@ var F8Reader = function () {
 		this.index = 0;
 		this.terminal = terminal;
 		this.isActive = false;
-		this.gds = gds;
 		this.currentCmd = rules[gds];
 	}
 
@@ -9715,50 +9647,53 @@ var F8Reader = function () {
 			return this.isActive;
 		}
 	}, {
-		key: 'getNextTabPos',
-		value: function getNextTabPos() {
+		key: '_getNextTabPos',
+		value: function _getNextTabPos() {
 			var subStr = this.currentCmd.rules[this.index];
-			return this.terminal.get_command().indexOf(subStr); // + ( this.index === 0 ? subStr.length : 0 );
+			return this.terminal.get_command().indexOf(subStr);
 		}
 	}, {
 		key: 'jumpToNextPos',
 		value: function jumpToNextPos() {
-			this.terminal.cmd().position(this.getNextTabPos());
+			// console.log('position', this._getNextTabPos() );
+			// console.log(' tab pressed ', this.currentCmd.rules, this.index);
 
 			if (!this.currentCmd.rules[this.index]) {
 				this.isActive = false;
 				this.index = 0;
+
+				return false;
 			}
 
+			this.terminal.cmd().position(this._getNextTabPos());
 			this.index++;
 		}
 	}, {
-		key: 'replaceChar',
-		value: function replaceChar() {
-			var curPos = this.terminal.cmd().position();
-			var charToReplace = this.terminal.get_command().substr(curPos, 1);
+		key: 'replaceEmptyChar',
+		value: function replaceEmptyChar(evt) {
+			if (this.getIsActive()) {
+				if (evt.key.length === 1 && !evt.ctrlKey) // issue 01
+					{
+						var curPos = this.terminal.cmd().position();
+						var charToReplace = this.terminal.get_command().substr(curPos, 1);
 
-			if (charToReplace === '/') return false;
+						/*const char = this.terminal.get_command().charAt(
+      	this.terminal.cmd().position()
+      );
+      console.log(char);*/
 
-			this.terminal.cmd().delete(+1);
+						if (charToReplace === '/') return false;
+
+						this.terminal.cmd().delete(+1);
+					}
+			}
 		}
 	}, {
-		key: 'tie',
-		value: function tie() {
+		key: 'getFullCommand',
+		value: function getFullCommand() {
 			this.index = 0;
 			this.isActive = true;
-
-			this.terminal.set_command(this.currentCmd.cmd);
-			this.jumpToNextPos();
-		}
-	}, {
-		key: 'execCommand',
-		value: function execCommand() {
-			var cmd = this.terminal.before_cursor();
-			this.terminal.cmd().set('');
-
-			this.isActive = false; // BEWARE of dead loop!
-			this.terminal.exec(cmd);
+			return this.currentCmd.cmd;
 		}
 	}]);
 
