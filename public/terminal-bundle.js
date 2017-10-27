@@ -844,8 +844,6 @@ var Container = void 0,
 var Terminal = function Terminal(params) {
 	_classCallCheck(this, Terminal);
 
-	console.log('new Terminal');
-
 	Gds = _gds2.default.getList(_constants.GDS_LIST, params.settings.gds);
 
 	(0, _requests.setLink)(params['commandUrl']);

@@ -9,8 +9,6 @@ class Terminal
 {
 	constructor( params )
 	{
-		console.log('new Terminal');
-
 		Gds = GdsSet.getList( GDS_LIST, params.settings.gds );
 
 		setLink( params['commandUrl'] );
