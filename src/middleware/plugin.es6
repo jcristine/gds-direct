@@ -194,20 +194,20 @@ export default class TerminalPlugin
 
 		this.spinner.start(); // issue 03
 
-		const finish = response => {
-			this.spinner.end();
-			this.parseBackEnd( response, command );
-		};
-
 		const before = () => {
 			this.outputLiner.prepare('');
 			this.spinner.start();
 			this.terminal.echo( `[[;;;usedCommand;]>${command.toUpperCase()}]` );
+			return command.toUpperCase();
 		};
 
 		this.session
-			.pushCommand( command.toUpperCase(), finish, before )
-			.perform();
+			.pushCommand( before )
+			.perform()
+			.then( response => {
+				this.spinner.end();
+				this.parseBackEnd( response, command );
+			});
 
 		return command;
 	}

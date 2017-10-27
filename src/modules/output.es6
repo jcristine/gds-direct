@@ -1,5 +1,3 @@
-'use strict';
-
 import {splitIntoLinesArr} from '../helpers/helpers.es6';
 import Dom from '../helpers/dom.es6';
 
@@ -52,12 +50,6 @@ export default class Output
 
 		this.emptyLines 	= this.clearScreen ? isClearScreen() : noClearScreen();
 
-		// console.log( ' ==== ' );
-		// console.log( this.terminal.rows() );
-		// console.log( numOfRows );
-		// console.log( this.getOutputLength() );
-		// console.log( this.emptyLines );
-
 		if (this.emptyLines < 0 )
 			this.emptyLines = 0;
 
@@ -74,7 +66,6 @@ export default class Output
 
 	recalculate()
 	{
-		// console.log(' recalculate ');
 		this.countEmpty().attachEmpty().scroll();
 	}
 
@@ -91,18 +82,6 @@ export default class Output
 	getOutputLength()
 	{
 		const chars = this.numOfChars || this.terminal.cols();
-
-		// console.log( chars )
-		// console.log( this.numOfChars )
-		// console.log( this.terminal.cols() )
-
-		// console.log(' num of chars ', this.numOfChars );
-		// console.log(' num of chars ', this.terminal.cols() );
-		// console.log(' num of chars ', chars );
-
-		// console.log('zzz', this.terminal.cols() );
-		// console.log('zzz', chars  );
-
 		const lines = splitIntoLinesArr( this.outputStrings, chars );
 
 		return lines.length;
@@ -112,11 +91,8 @@ export default class Output
 	{
 		this.cmdLineOffset 	= this.terminal.cmd()[0].offsetTop  - ( this.charHeight ? this.charHeight : 0);
 
-		const chars = this.numOfChars || this.terminal.cols();
+		// const chars = this.numOfChars || this.terminal.cols();
 		this.terminal.echo(this.outputStrings);
-
-		// const lines = splitIntoLinesArr( this.outputStrings, chars );
-		// this.terminal.echo(lines.join('\n'));
 
 		return this;
 	}
@@ -128,8 +104,7 @@ export default class Output
 			this.terminal.scroll().scroll( this.cmdLineOffset ); // to first line, to desired line //TEST
 		} else
 		{
-			this.terminal.scroll_to_bottom(); // to first line, to desired line //TEST
-			// this.terminal[0].scrollTop = this.terminal[0].scrollHeight;
+			this.terminal.scroll_to_bottom();
 		}
 	}
 }

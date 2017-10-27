@@ -1,5 +1,3 @@
-'use strict';
-
 import TerminalPlugin	from '../middleware/plugin.es6';
 import Dom				from '../helpers/dom.es6';
 
@@ -57,7 +55,7 @@ export default class Terminal {
 		this.context.appendChild( this.bufferDiv );
 	}
 
-	insertBuffer()
+	/*insertBuffer()
 	{
 		if ( !this.settings.buffer )
 			return false;
@@ -69,7 +67,7 @@ export default class Terminal {
 
 			this.plugin.terminal.echo(record.output);
 		});
-	}
+	}*/
 
 	calculateNumOfRows( lineHeight )
 	{
@@ -87,17 +85,12 @@ export default class Terminal {
 		this.context.style.width	= parentNode.clientWidth + 'px';
 
 		this.numOfRows 				= this.calculateNumOfRows( dimensions.char.height );
-		// this.numOfChars				= Math.floor( parentNode.clientWidth / Math.ceil(dimensions.char.width) );
 		this.numOfChars				= Math.floor( (dimensions.width - 2) / dimensions.char.width );
 
 		this.settings.parentContext.appendChild( this.context );
 
 		if (this.plugin)
 		{
-			// do not rely on plugin calculating too messy slow and etc.
-			// this.plugin.terminal.settings().numChars = Math.floor( (dimensions.width - 2) / dimensions.char.width );
-			// this.plugin.terminal.settings().numRows  = this.numOfRows;
-
 			this.plugin.resize({
 				numOfChars 	: this.numOfChars,
 				numOfRows 	: this.numOfRows
@@ -108,8 +101,6 @@ export default class Terminal {
 
 		if (this.plugin)
 			this.plugin.emptyLinesRecalculate( this.numOfRows, this.numOfChars, dimensions.char.height );
-
-		// this.context.style.width	= parentNode.clientWidth + 'px';
 
 		this.context.scrollTop = this.context.scrollHeight;
 	}

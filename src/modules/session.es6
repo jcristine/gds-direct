@@ -1,74 +1,62 @@
 import Requests from '../helpers/requests.es6';
 
-let commandStack 	= [];
-let finishStack 	= [];
 let beforeStack		= [];
-let promise 		= false;
+let promises 		= [];
+const stack			= [];
 
 export default class Session
 {
 	constructor( params )
 	{
-		this.settings 	= params;
-		this.promise 	= false;
+		this.settings = params;
 	}
 
-	run( params )
+	run(cmd)
 	{
-		const rData = {
+		return Requests.runSyncCommand({
 			terminalIndex	: parseInt(this.settings['terminalIndex']) + 1,
-			command			: params['cmd'],
+			command			: cmd,
 			gds				: this.settings['gds'],
 			language		: window.TerminalState.getLanguage().toLowerCase(),
 			terminalData	: window.apiData['terminalData']
-		};
-
-		promise 			= Requests.runSyncCommand( rData );
-
-		promise.then( () 	=> {
-			promise 		= false;
 		});
-
-		return promise;
-	}
-
-	isActive()
-	{
-		return promise;
 	}
 
 	perform()
 	{
-		if ( promise )
-			return false;
+		return new Promise( resolve => {
 
-		const cmd = commandStack[0];
+			const run = () => {
+				const cmd = beforeStack[0]();
+				beforeStack.shift();
 
-		beforeStack[0]();
+				return this
+					.run(cmd)
+					.then(resolve) //output result
+					.then( () => {
+						const nextCmd = stack.shift();
 
-		return this.run({cmd}).then( response => {
+						if (nextCmd)
+							return nextCmd();
 
-			finishStack[0]( response );
+						promises = [];
+					})
+			};
 
-			commandStack.shift();
-			finishStack.shift();
-			beforeStack.shift();
-
-			if ( commandStack[0] ) // recursive self call
+			if (!promises.length)
 			{
-				this.perform( commandStack[0] );
+				promises.push( run() );
 			}
-
-			return response;
-		})
+			else
+			{
+				stack.push(run);
+			}
+		});
 	}
 
-	pushCommand( termRun, finish, before )
+	pushCommand(before)
 	{
-		commandStack.push( termRun );
-		finishStack.push( finish );
 		beforeStack.push( before );
-
 		return this;
 	}
 }

@@ -496,21 +496,19 @@ var Terminal = function () {
 
 			this.context.appendChild(this.bufferDiv);
 		}
-	}, {
-		key: 'insertBuffer',
-		value: function insertBuffer() {
-			var _this3 = this;
 
-			if (!this.settings.buffer) return false;
+		/*insertBuffer()
+  {
+  	if ( !this.settings.buffer )
+  		return false;
+  		this.settings.buffer['buffering'].forEach( (record) => {
+  		this.plugin.terminal.echo(record.command, { finalize : function ( div ) {
+  			div[0].className = 'command';
+  		}});
+  			this.plugin.terminal.echo(record.output);
+  	});
+  }*/
 
-			this.settings.buffer['buffering'].forEach(function (record) {
-				_this3.plugin.terminal.echo(record.command, { finalize: function finalize(div) {
-						div[0].className = 'command';
-					} });
-
-				_this3.plugin.terminal.echo(record.output);
-			});
-		}
 	}, {
 		key: 'calculateNumOfRows',
 		value: function calculateNumOfRows(lineHeight) {
@@ -528,16 +526,11 @@ var Terminal = function () {
 			this.context.style.width = parentNode.clientWidth + 'px';
 
 			this.numOfRows = this.calculateNumOfRows(dimensions.char.height);
-			// this.numOfChars				= Math.floor( parentNode.clientWidth / Math.ceil(dimensions.char.width) );
 			this.numOfChars = Math.floor((dimensions.width - 2) / dimensions.char.width);
 
 			this.settings.parentContext.appendChild(this.context);
 
 			if (this.plugin) {
-				// do not rely on plugin calculating too messy slow and etc.
-				// this.plugin.terminal.settings().numChars = Math.floor( (dimensions.width - 2) / dimensions.char.width );
-				// this.plugin.terminal.settings().numRows  = this.numOfRows;
-
 				this.plugin.resize({
 					numOfChars: this.numOfChars,
 					numOfRows: this.numOfRows
@@ -547,8 +540,6 @@ var Terminal = function () {
 			this.context.style.height = this.numOfRows * dimensions.char.height + 'px';
 
 			if (this.plugin) this.plugin.emptyLinesRecalculate(this.numOfRows, this.numOfChars, dimensions.char.height);
-
-			// this.context.style.width	= parentNode.clientWidth + 'px';
 
 			this.context.scrollTop = this.context.scrollHeight;
 		}
@@ -8151,18 +8142,17 @@ var TerminalPlugin = function () {
 
 			this.spinner.start(); // issue 03
 
-			var finish = function finish(response) {
-				_this.spinner.end();
-				_this.parseBackEnd(response, command);
-			};
-
 			var before = function before() {
 				_this.outputLiner.prepare('');
 				_this.spinner.start();
 				_this.terminal.echo('[[;;;usedCommand;]>' + command.toUpperCase() + ']');
+				return command.toUpperCase();
 			};
 
-			this.session.pushCommand(command.toUpperCase(), finish, before).perform();
+			this.session.pushCommand(before).perform().then(function (response) {
+				_this.spinner.end();
+				_this.parseBackEnd(response, command);
+			});
 
 			return command;
 		}
@@ -8322,77 +8312,60 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-var commandStack = [];
-var finishStack = [];
 var beforeStack = [];
-var promise = false;
+var promises = [];
+var stack = [];
 
 var Session = function () {
 	function Session(params) {
 		_classCallCheck(this, Session);
 
 		this.settings = params;
-		this.promise = false;
 	}
 
 	_createClass(Session, [{
 		key: 'run',
-		value: function run(params) {
-			var rData = {
+		value: function run(cmd) {
+			return _requests2.default.runSyncCommand({
 				terminalIndex: parseInt(this.settings['terminalIndex']) + 1,
-				command: params['cmd'],
+				command: cmd,
 				gds: this.settings['gds'],
 				language: window.TerminalState.getLanguage().toLowerCase(),
 				terminalData: window.apiData['terminalData']
-			};
-
-			promise = _requests2.default.runSyncCommand(rData);
-
-			promise.then(function () {
-				promise = false;
 			});
-
-			return promise;
-		}
-	}, {
-		key: 'isActive',
-		value: function isActive() {
-			return promise;
 		}
 	}, {
 		key: 'perform',
 		value: function perform() {
 			var _this = this;
 
-			if (promise) return false;
+			return new Promise(function (resolve) {
 
-			var cmd = commandStack[0];
+				var run = function run() {
+					var cmd = beforeStack[0]();
+					beforeStack.shift();
 
-			beforeStack[0]();
+					return _this.run(cmd).then(resolve) //output result
+					.then(function () {
+						var nextCmd = stack.shift();
 
-			return this.run({ cmd: cmd }).then(function (response) {
+						if (nextCmd) return nextCmd();
 
-				finishStack[0](response);
+						promises = [];
+					});
+				};
 
-				commandStack.shift();
-				finishStack.shift();
-				beforeStack.shift();
-
-				if (commandStack[0]) // recursive self call
-					{
-						_this.perform(commandStack[0]);
-					}
-
-				return response;
+				if (!promises.length) {
+					promises.push(run());
+				} else {
+					stack.push(run);
+				}
 			});
 		}
 	}, {
 		key: 'pushCommand',
-		value: function pushCommand(termRun, finish, before) {
-			commandStack.push(termRun);
-			finishStack.push(finish);
+		value: function pushCommand(before) {
 			beforeStack.push(before);
-
 			return this;
 		}
 	}]);
@@ -9390,12 +9363,6 @@ var Output = function () {
 
 			this.emptyLines = this.clearScreen ? isClearScreen() : noClearScreen();
 
-			// console.log( ' ==== ' );
-			// console.log( this.terminal.rows() );
-			// console.log( numOfRows );
-			// console.log( this.getOutputLength() );
-			// console.log( this.emptyLines );
-
 			if (this.emptyLines < 0) this.emptyLines = 0;
 
 			return this;
@@ -9413,7 +9380,6 @@ var Output = function () {
 	}, {
 		key: 'recalculate',
 		value: function recalculate() {
-			// console.log(' recalculate ');
 			this.countEmpty().attachEmpty().scroll();
 		}
 	}, {
@@ -9429,18 +9395,6 @@ var Output = function () {
 		key: 'getOutputLength',
 		value: function getOutputLength() {
 			var chars = this.numOfChars || this.terminal.cols();
-
-			// console.log( chars )
-			// console.log( this.numOfChars )
-			// console.log( this.terminal.cols() )
-
-			// console.log(' num of chars ', this.numOfChars );
-			// console.log(' num of chars ', this.terminal.cols() );
-			// console.log(' num of chars ', chars );
-
-			// console.log('zzz', this.terminal.cols() );
-			// console.log('zzz', chars  );
-
 			var lines = (0, _helpers.splitIntoLinesArr)(this.outputStrings, chars);
 
 			return lines.length;
@@ -9450,11 +9404,8 @@ var Output = function () {
 		value: function printOutput() {
 			this.cmdLineOffset = this.terminal.cmd()[0].offsetTop - (this.charHeight ? this.charHeight : 0);
 
-			var chars = this.numOfChars || this.terminal.cols();
+			// const chars = this.numOfChars || this.terminal.cols();
 			this.terminal.echo(this.outputStrings);
-
-			// const lines = splitIntoLinesArr( this.outputStrings, chars );
-			// this.terminal.echo(lines.join('\n'));
 
 			return this;
 		}
@@ -9464,8 +9415,7 @@ var Output = function () {
 			if (this.emptyLines === 0) {
 				this.terminal.scroll().scroll(this.cmdLineOffset); // to first line, to desired line //TEST
 			} else {
-				this.terminal.scroll_to_bottom(); // to first line, to desired line //TEST
-				// this.terminal[0].scrollTop = this.terminal[0].scrollHeight;
+				this.terminal.scroll_to_bottom();
 			}
 		}
 	}]);
