@@ -1,5 +1,5 @@
 //var path = require('path');
-// const webpack 			= require('webpack');
+const webpack 			= require('webpack');
 
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
 const extractLess 		= new ExtractTextPlugin({
@@ -17,7 +17,7 @@ module.exports = {
 	],
 
 	output: {
-		filename: "./public/bundle.js"
+		filename: "./public/terminal-bundle.js"
 	},
 
 	// debug	: true,
@@ -59,6 +59,12 @@ module.exports = {
 
 	plugins: [
 		extractLess
+
+		,new webpack.DllReferencePlugin({
+			context: '.',
+			manifest: require('./public/vendor.terminal-manifest.json')
+		})
+
 		// ,new BabiliPlugin()
 		// ,new UglifyJSPlugin()
 	]

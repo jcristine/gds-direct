@@ -1,8 +1,7 @@
 import {END_POINT_URL, API_HOST}	from  '../constants.es6'
-import Noty 						from 'noty';
 import 'whatwg-fetch';
-import {showUserMessages, debugRequest} from "../modules/debug";
 
+import {showUserMessages, debugRequest} from "../modules/debug";
 const JParam = require('jquery-param');
 
 let Url;
