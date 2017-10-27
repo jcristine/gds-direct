@@ -3137,8 +3137,8 @@ var pressedShortcuts = exports.pressedShortcuts = function pressedShortcuts(evt,
 				terminal.exec(isApollo ? 'SEM/2BQ6/AG' : 'AAAW8K7');
 				break;
 
-			case 187: //+
-			case 61: //+ FireFox
+			// case 187: //+
+			// case 61 : //+ FireFox
 			case 188:
 				//,
 				terminal.insert('+');
