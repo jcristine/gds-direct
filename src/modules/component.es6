@@ -37,16 +37,26 @@ export default class Component
 		return this.context;
 	}
 
-	// _renderer()
-	// {
-	// }
-
 	render( params )
 	{
-		// console.log('render');
-		// console.log( this._renderer );
+		if ( typeof this.stateToProps === 'function' )
+		{
+			const props = this.stateToProps(params);
 
-		this.props = params;
+			if ( JSON.stringify( props ) === JSON.stringify( this.props ) )
+			{
+				return '';
+			}
+
+			if (props)
+			{
+				this.props = JSON.parse( JSON.stringify(props) );
+			}
+		}
+		else
+		{
+			this.props = params;
+		}
 
 		if ( typeof this._renderer === 'function' )
 		{

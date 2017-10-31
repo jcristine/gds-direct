@@ -1,5 +1,4 @@
 import {AREA_LIST, GDS_LIST} 	from '../constants.es6';
-import {mergeIntoNew} 			from '../helpers/helpers';
 
 const saved		= localStorage.getItem('matrix');
 
@@ -9,48 +8,31 @@ const defaults	= {
 	matrix			: saved ? JSON.parse( saved ) : {rows : 1, cells : 1},
 	activeTerminal	: null,
 	canCreatePq		: false,
-	history			: []
+	history			: [],
+	curTerminalId	: undefined
 };
 
-const getGdsData = (name, settings = {}) => {
+const initGdsData = (name, settings = {}) => {
 
-	return mergeIntoNew( defaults, {
-
+	const props = {
 		name 			: name,
 		sessionIndex 	: AREA_LIST.indexOf( settings['area'] ),
+		canCreatePq		: false,
+		list			: name === 'sabre' ? AREA_LIST : AREA_LIST.slice(0, -1)
+	};
 
-		// canCreatePq		: !!settings['canCreatePq'] // for DEV
-		// canCreatePq		: !window.TerminalState.hasPermissions() ? false : !!settings['canCreatePq'],
-
-		canCreatePq		: false
-	})
-
+	return { ...defaults, ...props}
 };
 
 export default class GdsSet
 {
-	static getList( list, loadedGds )
+	static makeList( savedGdsData )
 	{
-		this.gdsList = list.map( name => getGdsData(name, loadedGds[name]) );
-
-		const res = {};
-
-		this.gdsList.forEach( gds => {
-			res[gds.name] = gds;
-		});
-
-		return res;
+		return this.gdsList = GDS_LIST.map( name => initGdsData(name, savedGdsData[name]));
 	}
 
-	static getAreas( defaultsEvents )
+	static getList()
 	{
-		return this.gdsList.map( gds => {
-
-			return mergeIntoNew( defaultsEvents , {
-				name 	: gds.name,
-				list	: gds.name === 'sabre' ? AREA_LIST : AREA_LIST.slice(0, -1) //remove F
-			});
-
-		})
+		return this.gdsList;
 	}
 }

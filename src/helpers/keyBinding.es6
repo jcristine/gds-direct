@@ -1,4 +1,6 @@
-import {getDate} 	from './helpers.es6';
+import {getDate} 		from './helpers.es6';
+import {PURGE_SCREENS} 	from "../actions";
+import {switchTerminal} from "../modules/switchTerminal";
 
 /*window.addEventListener("beforeunload", function (e) {
 	let confirmationMessage = "TEST";
@@ -20,9 +22,10 @@ const prevCmd = (plugin, terminal) => {
 
 export const pressedShortcuts = (evt, terminal, plugin) => {
 		const keymap 	= evt.keyCode || evt.which;
-		const isApollo	= window.TerminalState.isGdsApollo();
-		const gds		= window.TerminalState.getGds();
 
+		const gds		= plugin.settings.gds;
+		const isApollo	= gds === 'apollo';
+		// const isApollo	= window.TerminalState.isGdsApollo();
 		// console.log('key pressed:' ,keymap);
 
 		if ( evt.ctrlKey || evt.metaKey )
@@ -31,11 +34,12 @@ export const pressedShortcuts = (evt, terminal, plugin) => {
 			{
 				case 8:  //CTRL + backSpace;
 				case 83: //CTRL + S;
-					window.TerminalState.purgeScreens();
+					PURGE_SCREENS(gds);
 				break;
 
 				case 87: //CTRL+W
-					window.TerminalState.clearTerminal();
+					plugin.purge();
+					// CLEAR_TERMINAL(plugin);
 				break;
 
 				case 68 	: // CTRL+D
@@ -78,8 +82,10 @@ export const pressedShortcuts = (evt, terminal, plugin) => {
 				break;
 
 				// disabling these keys from terminal library to execute
-				// these keys are used in terminalKeydown()
 				case 192 :	// Ctrl + ~
+					switchTerminal({keymap : 'next', gds, name : plugin.name});
+				break;
+
 				case 48 :	// Ctrl + 0
 				case 49 :	// Ctrl + 1
 				case 50 :	// Ctrl + 2
@@ -90,6 +96,7 @@ export const pressedShortcuts = (evt, terminal, plugin) => {
 				case 55 :	// Ctrl + 7
 				case 56 :	// Ctrl + 8
 				case 57 :	// Ctrl + 9
+					switchTerminal({keymap, gds, name : plugin.name});
 				break;
 
 				default:
@@ -139,9 +146,8 @@ export const pressedShortcuts = (evt, terminal, plugin) => {
 					terminal.insert('+');
 				break;
 
-				// disabling key from terminal library to execute
-				// key is used in terminalKeydown()
 				case 192 :	// Shift + ~
+					switchTerminal({keymap : 'prev', gds, name : plugin.name});
 				break;
 
 				default : return true

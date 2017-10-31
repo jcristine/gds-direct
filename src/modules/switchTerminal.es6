@@ -1,4 +1,4 @@
-'use strict';
+import {SWITCH_TERMINAL} from "../actions";
 
 const gridMaps = {
 	'2x2' : {
@@ -245,11 +245,10 @@ const gridMaps = {
 	}
 };
 
-function switchTerminal(keymap)
-{
-	const currentTerminalName	= window.activePlugin.name;
-	const gds					= window.TerminalState.getGds();
+export const switchTerminal = ({keymap, gds, name}) => {
+	const currentTerminalName	= name;
 	const matrix				= window.TerminalState.state.gdsObj.matrix;
+
 	const rows					= matrix.rows + 1;
 	const cells					= matrix.cells + 1;
 	const gridCount				= rows * cells;
@@ -276,9 +275,10 @@ function switchTerminal(keymap)
 		}
 	}
 
-	window.TerminalState.switchTerminals(gds, getId);
-}
+	SWITCH_TERMINAL(gds, getId);
+};
 
+/*
 export function terminalKeydown(terminal)
 {
 	terminal.querySelector('textarea').addEventListener( 'keydown', (e) => {
@@ -315,4 +315,4 @@ export function terminalKeydown(terminal)
 			}
 		}
 	});
-}
+}*/

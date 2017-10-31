@@ -25,7 +25,6 @@ export default class Terminal {
 			context 		: this.context,
 			clear			: () => this.clear(),
 			name 			: this.settings['name'],
-			sessionIndex 	: this.settings['sessionIndex'],
 			gds 			: this.settings['gds'],
 			numOfRows 		: this.numOfRows,
 			numOfChars 		: this.numOfChars
@@ -87,7 +86,9 @@ export default class Terminal {
 		this.numOfRows 				= this.calculateNumOfRows( dimensions.char.height );
 		this.numOfChars				= Math.floor( (dimensions.width - 2) / dimensions.char.width );
 
-		this.settings.parentContext.appendChild( this.context );
+		this.settings.parentContext.appendChild(
+			this.context
+		);
 
 		if (this.plugin)
 		{

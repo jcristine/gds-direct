@@ -17,6 +17,8 @@ import {Debug}		from '../modules/debug';
 import {terminalKeydown}	from '../modules/switchTerminal.es6';
 import {getReplacement}		from '../helpers/helpers.es6';
 
+import {UPDATE_CUR_GDS, CHANGE_ACTIVE_TERMINAL} from "../actions";
+
 export default class TerminalPlugin
 {
 	constructor( params )
@@ -29,7 +31,6 @@ export default class TerminalPlugin
 
 		this.session = new Session({
 			terminalIndex	: params.name,
-			sessionIndex	: params.sessionIndex,
 			gds				: params.gds
 		});
 
@@ -82,7 +83,8 @@ export default class TerminalPlugin
 			return false;
 
 		window.activePlugin = this; // SO SO check to DEPRECATED
-		window.TerminalState.action('CHANGE_ACTIVE_TERMINAL', activeTerminal );
+
+		CHANGE_ACTIVE_TERMINAL({gds : this.settings.gds, curTerminalId : this.name, activeTerminal});
 	}
 
 	purge()
@@ -118,7 +120,7 @@ export default class TerminalPlugin
 	init()
 	{
 		//caveats terminal.rows() - every time appends div with cursor span - not too smooth for performance
-		const context =  $(this.context).terminal( () => {}, {
+		return $(this.context).terminal( () => {}, {
 			echoCommand		: false,
 			greetings		: '',
 			name			: this.name,
@@ -147,11 +149,6 @@ export default class TerminalPlugin
 
 			exceptionHandler( err ) { console.warn('exc', err); }
 		});
-
-		// custom keydown events for each terminal
-		// we introduced this approach because of terminal library adding keydown events to document
-		terminalKeydown(context[0]);
-		return context;
 	}
 
 	checkSabreCommand( command, terminal )
@@ -244,14 +241,7 @@ export default class TerminalPlugin
 
 		this.tabCommands.reset( result['tabCommands'], result['output'] );
 
-		window.TerminalState.action( 'UPDATE_CUR_GDS', {
-			gdsName				: this.settings.gds,
-			canCreatePq 		: result['canCreatePq'],
-			canCreatePqErrors 	: result['canCreatePqErrors'],
-			sessionIndex		: ['A','B','C','D','E','F'].indexOf(result.area),
-			lastPcc 			: result['pcc'],
-			startNewSession 	: result['startNewSession']
-		});
+		UPDATE_CUR_GDS(this.settings.gds, result);
 
 		if ( window.TerminalState.hasPermissions() )
 			this.debugOutput( result );

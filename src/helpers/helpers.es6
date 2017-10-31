@@ -75,7 +75,7 @@ export function splitIntoLinesArr( txt, maxCharLimit )
 	return chunkByCharLimit;
 }
 
-export const mergeIntoNew = ( current, extendWith ) => Object.assign({}, current, extendWith);
+// export const mergeIntoNew = ( current, extendWith ) => Object.assign({}, current, extendWith);
 
 function splitLines(txt)
 {

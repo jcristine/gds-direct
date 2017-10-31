@@ -1,7 +1,6 @@
-'use strict';
-
 import Dom 			 	from '../../helpers/dom.es6';
 import ButtonPopOver	from '../../modules/buttonPopover.es6';
+import {CHANGE_MATRIX} from "../../actions";
 
 let cellObj = [];
 
@@ -46,10 +45,10 @@ export default class Matrix extends ButtonPopOver
 		cell.addEventListener( 'click', () => {
 			this.popover.close();
 
-			window.TerminalState.action( 'CHANGE_MATRIX', {
+			CHANGE_MATRIX({
 				rows 	: rIndex,
 				cells	: cIndex
-			});
+			})
 		});
 
 		cell.addEventListener('mouseover', () => {

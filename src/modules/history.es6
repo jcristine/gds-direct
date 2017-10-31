@@ -1,4 +1,4 @@
-'use strict';
+import {GET_HISTORY} from "../actions";
 
 const promises = {};
 const commands = {};
@@ -10,7 +10,7 @@ export default function History( gds = 'apollo' )
 
 	commands[gds] 	= commands[gds] || [];
 
-	const askServer = () => window.TerminalState.getHistory();
+	const askServer = () => GET_HISTORY();
 	const getData 	= () => {
 		// if ( promises[gds] && !pos )
 		// 	pos = commands[gds].length - 1;

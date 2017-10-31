@@ -1,15 +1,13 @@
 import Dom		from '../helpers/dom.es6';
 import Terminal	from '../modules/terminal.es6';
 import {cookieGet} 		from '../helpers/cookie';
+import {UPDATE_STATE} from "../actions";
 
 
 export default class FullScreen {
 
 	static makeBody()
 	{
-		if (!window.activePlugin)
-			return false;
-
 		const body 		= Dom('div.terminal-wrap-custom terminal-cell t-f-size-13 text-center t-height-100');
 		const body2 	= Dom('div.terminal-body');
 
@@ -21,7 +19,6 @@ export default class FullScreen {
 	{
 		const props = {
 			name 			: 'fullScreen',
-			sessionIndex	: window.TerminalState.getAreaIndex(), // to leave current active terminal
 			gds				: window.TerminalState.getGds(),
 			buffer			: false
 		};
@@ -73,7 +70,7 @@ export default class FullScreen {
 		.show( params => {
 
 			params.modal.on('hidden.bs.modal', e => {
-				window.TerminalState.change({});
+				UPDATE_STATE({});
 				params.modal.detach().remove();
 			});
 

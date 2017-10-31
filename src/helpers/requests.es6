@@ -16,7 +16,7 @@ const Ask = (url, params) => {
 		.catch( debugRequest );
 };
 
-export const get = (url, defParams) => {
+export const get = (url, defParams = false) => {
 	if (!url)
 		return '';
 

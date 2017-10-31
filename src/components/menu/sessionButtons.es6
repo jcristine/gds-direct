@@ -1,57 +1,46 @@
 import Dom	from '../../helpers/dom.es6';
+import {CHANGE_GDS, CHANGE_SESSION_BY_MENU} from "../../actions";
 
-export default class SessionKeys
+export class SessionButtons
 {
-	constructor( params )
+	constructor(params)
 	{
-		this.context 	= Dom('div');
-		this.settings 	= params;
-		this.collection	= [];
-		this.trigger	= [];
-		this.active		= params.name === params.gds;
+		this.context 		= Dom('div');
+		this.pcc			= params.pcc;
+		this.sessionIndex	= params.sessionIndex;
+		this.gdsname		= params.name;
 	}
 
-	getButtons()
+	makeTrigger( gdsName )
 	{
-		return this.settings.list.map( this.makeButton, this );
-	}
-
-	makeButton(value, index)
-	{
-		const pcc 		= window.TerminalState.getPcc()[index];
-		const isActive 	= this.settings.sessionIndex === index;
-
-		const button 		= Dom(`button.btn btn-sm btn-purple font-bold pos-rlt ${isActive ? 'active' : ''}`);
-		button.innerHTML	= value + ( pcc ? `<span class="pcc-label">${pcc}</span>` : '');
-
-		button.disabled 	= !this.settings.activeTerminal || isActive;
-
-		button.addEventListener('click', () => {
-			button.disabled = true;
-			this.settings.onAreaChange( index );
+		return Dom('button', {
+			className 	: `btn btn-sm btn-mint font-bold ${gdsName === this.gdsname ? ' active' : '' }`,
+			innerHTML	: gdsName,
+			onclick		: () => CHANGE_GDS(gdsName)
 		});
-
-		return button;
 	}
 
-	getTrigger()
+	makeArea(area, index)
 	{
-		this.trigger 			= Dom('button.btn btn-sm btn-mint font-bold' + ( this.active ? ' active' : '' ));
-		this.trigger.innerHTML	= this.settings['name'];
+		const pcc 		= this.pcc[index];
+		const isActive 	= this.sessionIndex === index;
 
-		if (!this.active)
-			this.trigger.addEventListener('click', () => this.settings.onGdsChange( this.settings['name'] ) );
+		return Dom(`button`, {
+			className 	: `btn btn-sm btn-purple font-bold pos-rlt ${isActive ? 'active' : ''}`,
 
-		return this.trigger;
-	}
+			innerHTML	:  area + ( pcc ? `<span class="pcc-label">${pcc}</span>` : ''),
 
-	render()
-	{
-		this.context.appendChild( this.getTrigger() );
+			// disabled	:  !curTerminalId || isActive,
+			disabled	:  isActive,
 
-		if (this.active)
-			this.collection = this.getButtons().map( button => this.context.appendChild( button ) );
+			onclick		: (e) => {
 
-		return this.context;
+				e.target.disabled = true;
+
+				CHANGE_SESSION_BY_MENU({sessionIndex : index}).catch( () => {
+					e.target.disabled = false;
+				})
+			}
+		});
 	}
 }

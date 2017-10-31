@@ -1,10 +1,9 @@
-import Dom	from '../../helpers/dom.es6';
+import Dom				from '../../helpers/dom.es6';
 import ButtonPopOver	from '../../modules/buttonPopover.es6';
+import FullScreen		from '../../modules/fullscreen.es6';
+import {DEV_CMD_STACK_RUN} from "../../actions";
 
 const STORAGE_KEY = 'dedTerminalBufCmd';
-
-// import Terminal		from '../../modules/terminal.es6';
-import FullScreen	from '../../modules/fullscreen.es6';
 
 class CommandsBuffer extends ButtonPopOver
 {
@@ -33,7 +32,7 @@ class CommandsBuffer extends ButtonPopOver
 			const cmd = area.value.trim().split(/\s+/);
 
 			window.localStorage.setItem(STORAGE_KEY, JSON.stringify(cmd));
-			window.TerminalState.action('DEV_CMD_STACK_RUN', cmd);
+			DEV_CMD_STACK_RUN(cmd);
 
 			this.popover.close();
 		};
@@ -60,8 +59,7 @@ export default class DevButtons
 		this.macros 			= Dom('span.btn btn-primary font-bold');
 		this.macros.innerHTML 	= 'Test pq';
 		this.macros.onclick 	= () => {
-			window.TerminalState.action('DEV_CMD_STACK_RUN', ['A/V/13SEPSEAMNL+DL', '01k1*', '*R', '$BN1+2*C09+3*inf']);
-			// window.TerminalState.action('DEV_CMD_STACK_RUN', ['A10JUNKIVRIX', '01Y1Y2', '$B']);
+			DEV_CMD_STACK_RUN(['A/V/13SEPSEAMNL+DL', '01k1*', '*R', '$BN1+2*C09+3*inf']);
 		};
 
 		return this.macros;

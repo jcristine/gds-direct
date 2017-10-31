@@ -1,22 +1,25 @@
-let button;
+import {PQ_MODAL_SHOW} 	from "../../actions";
+import Component 		from "../../modules/component";
 
-export default class PqButton
+export default class PqButton extends Component
 {
-	static makeButton()
+	constructor()
 	{
-		const button 		= document.createElement('button');
-		button.className	= 'btn btn-sm btn-mozilla font-bold';
-		button.innerHTML	= 'PQ';
+		super('button.btn btn-sm btn-mozilla font-bold[PQ]', {
+			disabled 	: true
+		});
 
-		button.onclick = () => window.TerminalState.action('PQ_MODAL_SHOW', {});
-
-		return button;
+		this.context.onclick = PQ_MODAL_SHOW
 	}
 
-	static render( { canCreatePq } )
+	stateToProps({gdsObj})
 	{
-		button 			= button || this.makeButton();
-		button.disabled = !canCreatePq;
-		return button;
+		const {canCreatePq} = gdsObj;
+		return {canCreatePq};
+	}
+
+	_renderer()
+	{
+		this.context.disabled = !this.props.canCreatePq;
 	}
 }

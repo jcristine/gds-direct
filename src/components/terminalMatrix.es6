@@ -4,7 +4,7 @@ import Component 	from '../modules/component.es6';
 
 const gdsSession	= [];
 const stringify 	= JSON.stringify;
-let cells = [];
+let cells 			= [];
 
 class DimensionCalculator
 {
@@ -38,22 +38,18 @@ class DimensionCalculator
 	}
 }
 
-class TerminalsMatrix extends Component
+export default class TerminalsMatrix extends Component
 {
-	constructor()
+	constructor( parent )
 	{
 		super('table.terminals-table');
+		this.sizer = this.sizer || new DimensionCalculator( parent );
 	}
 
 	clear()
 	{
 		this.context.innerHTML = '';
 		return this;
-	}
-
-	getSizes()
-	{
-		return this.sizer = this.sizer || new DimensionCalculator( this.getContext().parentNode );
 	}
 
 	makeCells(rowCount,  cellCount)
@@ -67,7 +63,7 @@ class TerminalsMatrix extends Component
 		const makeCells = row => {
 			return [ ...new Array(cellCount) ]
 				.map( () => {
-					const cell = Dom('td.terminal-cell .v-middle');
+					const cell = Dom('td.terminal-cell');
 					row.appendChild(cell);
 					return cell;
 				});
@@ -96,50 +92,57 @@ class TerminalsMatrix extends Component
 
 	_renderer()
 	{
-		const params 	= this.props;
+		const {hideMenu, buffer, gdsObj} = this.props;
 
-		const rowCount 	= params.cellMatrix.rows 	+ 1;
-		const cellCount = params.cellMatrix.cells 	+ 1;
+		const rowCount 	= gdsObj.matrix.rows 	+ 1;
+		const cellCount = gdsObj.matrix.cells 	+ 1;
 
-		gdsSession[ params.gds ] = gdsSession[ params.gds ] || [];
+		gdsSession[gdsObj['name']] = gdsSession[gdsObj['name']] || [];
 
 		const state = {
-			gds			: params.gds,
-			dimensions 	: this.getSizes().calculate(rowCount, cellCount),
-			wrapWidth	: params.containerWidth,
-			hideMenu	: params.hideMenu
+			gds			: gdsObj['name'],
+			dimensions 	: this.sizer.calculate(rowCount, cellCount),
+			hideMenu	: hideMenu
 		};
 
 		const needToRender = this.renderIsNeeded( state );
 
 		if ( needToRender )
 		{
+			// console.warn('need to rerender');
+
 			this.context.innerHTML 	= '';
 			this.context.className 	= 't-matrix-w-' + ( cellCount - 1 );
+			this.curTerminalId		= undefined;
 
 			this.state = state;
 
 			cells = this.makeCells( rowCount, cellCount );
 
-			cells.forEach( ( cell, index ) => {
+			// console.log('cells', cells);
+
+			cells.forEach( (cell, index) => {
 
 				const props = {
-					name 			: index,
-					sessionIndex	: params.sessionIndex,
-					gds				: params.gds, // need for session
-					buffer			: params.buffer && params.buffer[params.gds] ? params.buffer[params.gds]['terminals'][index + 1] : ''
+					name 	: index,
+					gds		: gdsObj['name'],
+					buffer	: buffer && buffer[gdsObj['name']] ? buffer[gdsObj['name']]['terminals'][index + 1] : ''
 				};
 
-				this.getTerminal( params.gds, index, props )
-					.reattach( cell, this.getSizes().calculate(rowCount, cellCount) ); //sometimes calculate doesn't get actual parent context dimensions
+				this.getTerminal( gdsObj['name'], index, props )
+					.reattach( cell, this.sizer.calculate(rowCount, cellCount) ); //sometimes calculate doesn't get actual parent context dimensions
 			});
 		}
 
-		cells.forEach( (cell, index) => {
-			const isActive = params.activeTerminal && index === params.activeTerminal.name();
-			cell.classList.toggle('activeWindow', isActive);
-		});
+		if ( gdsObj.curTerminalId !== this.curTerminalId )
+		{
+			if (this.curTerminalId !== undefined && cells[this.curTerminalId])
+				cells[this.curTerminalId].classList.remove('activeWindow');
+
+			if (cells[gdsObj.curTerminalId])
+				cells[gdsObj.curTerminalId].classList.toggle('activeWindow');
+
+			this.curTerminalId = gdsObj.curTerminalId;
+		}
 	}
 }
-
-export default TerminalsMatrix
