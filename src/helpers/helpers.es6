@@ -1,5 +1,3 @@
-'use strict';
-
 const common = {
 	'`': '>',
 	'[': '¤',
@@ -34,34 +32,30 @@ const _to_ascii = {
 	'61': '61'  //FF Key codes  =
 };
 
-export function getReplacement( evt, isApollo )
-{
+export const getReplacement = ( evt, isApollo ) => {
 	// const char = String.fromCharCode(_to_ascii[ evt.keyCode || evt.which ] );
 	const char = String.fromCharCode(evt.keyCode || evt.which);
 	return isApollo ? apolloLayout[char] : sabreLayout[char];
-}
+};
 
-function chunkIntoPages( linesArr , rowsPerScreen )
-{
+const chunkIntoPages = ( linesArr , rowsPerScreen ) => {
 	return linesArr.map(
 		(line, lineIndex) => lineIndex % rowsPerScreen ? [] : linesArr.slice( lineIndex , lineIndex + rowsPerScreen )
 	)
 	.filter(
 		( data ) => !!data.length
 	);
-}
+};
 
-export function makePages(txt, rowsPerScreen = 20, maxCharLimit)
-{
+export const makePages = (txt, rowsPerScreen = 20, maxCharLimit) => {
 	const chunkByCharLimit = splitIntoLinesArr( txt, maxCharLimit );
 
 	return chunkIntoPages(chunkByCharLimit, rowsPerScreen).map(
 		(sectionLines) => sectionLines.join('\n')
 	);
-}
+};
 
-export function splitIntoLinesArr( txt, maxCharLimit )
-{
+export const splitIntoLinesArr = ( txt, maxCharLimit ) => {
 	const lines 		= splitLines(txt);
 	const regex 		= new RegExp(`(.{1,${maxCharLimit}})`, 'gi');
 
@@ -73,22 +67,13 @@ export function splitIntoLinesArr( txt, maxCharLimit )
 	});
 
 	return chunkByCharLimit;
-}
+};
 
-// export const mergeIntoNew = ( current, extendWith ) => Object.assign({}, current, extendWith);
+const splitLines = (txt) => txt.split(/\r?\n/);
 
-function splitLines(txt)
-{
-	return txt.split(/\r?\n/);
-}
+const makeDate = (d) => d < 10 ? '0' + d : d;
 
-function makeDate(d)
-{
-	return d < 10 ? '0' + d : d;
-}
-
-export function getDate()
-{
+export const getDate = () => {
 	const d         = new Date();
 	const date      = d.getDate();
 	const d2        = new Date();
@@ -100,4 +85,4 @@ export function getDate()
 		now         : makeDate(date) + months[d.getMonth()],
 		plus320     : makeDate(p320Date) + months[dPlus320.getMonth()]
 	};
-}
+};

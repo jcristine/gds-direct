@@ -29,7 +29,17 @@ export const CHANGE_INPUT_LANGUAGE = language => {
 	state.change({language});
 };
 
-export const DEV_CMD_STACK_RUN 		= command => state.execCmd(command);
+export const DEV_CMD_STACK_RUN 		= command => {
+
+	if ( state.getGdsObj()['curTerminalId'] >= 0 )
+	{
+		state.execCmd(command);
+		return Promise.resolve();
+	}
+
+	alert('Please select terminal first');
+	return Promise.reject();
+};
 
 export const GET_HISTORY 			= () => get(`terminal/lastCommands?rId=${state.getRequestId()}&gds=${state.getGds()}`);
 
@@ -72,21 +82,11 @@ export const PQ_MODAL_SHOW = () => {
 export const CLOSE_PQ_WINDOW = () => state.change({hideMenu: false});
 
 export const CHANGE_SESSION_BY_MENU = ({sessionIndex}) => {
+	const area 		= AREA_LIST[sessionIndex];
+	const command 	= (state.isGdsApollo() ? 'S': '¤') + area;
 
-	if ( state.getGdsObj()['curTerminalId'] >= 0 )
-	{
-		const area = AREA_LIST[sessionIndex];
-
-		get(`terminal/saveSetting/area/${state.getGds()}/${area}`);
-
-		const command = (state.isGdsApollo() ? 'S': '¤') + area;
-		state.execCmd([command]);
-
-		return Promise.resolve();
-	}
-
-	alert('Please select terminal first');
-	return Promise.reject();
+	get(`terminal/saveSetting/area/${state.getGds()}/${area}`);
+	return DEV_CMD_STACK_RUN([command]);
 };
 
 export const CHANGE_GDS = (gdsName) => {

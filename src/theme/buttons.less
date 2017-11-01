@@ -1,0 +1,30 @@
+.btn.active {
+  position: relative;
+
+  &:before {
+    content: "\f00c";
+    font: normal normal normal 11px/1 FontAwesome;
+    position: absolute;
+    top: 8px;
+    left: 7px;
+    font-size: 9px;
+    z-index: 3;
+  }
+}
+
+.actions-btn-menu {
+  position: absolute;
+  padding: 10px;
+  z-index: 1;
+  right: 7px;
+  top: 0;
+
+  .btn {
+    padding: 3px 8px;
+
+    i {
+      font-size: 23px;
+      vertical-align: middle;
+    }
+  }
+}

@@ -2,8 +2,9 @@ import ActionsMenu 		from './actionsMenu';
 import MenuPanel 		from './menuPanel';
 import TerminalMatrix 	from './terminalMatrix';
 import Component 		from '../modules/component';
+import Dom 				from "../helpers/dom";
 
-let matrix;
+let matrix, tempTerm;
 
 export default class Container extends Component {
 
@@ -40,7 +41,8 @@ class RightSide extends Component
 {
 	constructor()
 	{
-		super('aside.t-d-cell menu');
+		// super('aside.t-d-cell menu');
+		super('td.menu');
 
 		this.observe(
 			new MenuPanel()
@@ -53,20 +55,60 @@ class RightSide extends Component
 	}
 }
 
+class TempTerminal extends Component
+{
+	constructor( parent )
+	{
+		super('div.terminal temp-terminal');
+
+		this.cursor = Dom('span.cursor', {innerHTML  : '&nbsp;'});
+		const div	= Dom('div.cmd', {innerHTML  : '&nbsp;'});
+
+		div.appendChild( this.cursor );
+		this.attach(div);
+
+		this.parent = parent;
+	}
+
+	calculate({cells, rows})
+	{
+		// console.log( 'zzzzz', this.parent.clientWidth );
+		// console.log( 'zzzzz', this.parent.offsetWidth );
+		// console.log( 'zzzzz', this.parent );
+
+		return {
+			height		: Math.floor(this.parent.clientHeight 	/ (rows+1)),
+			width 		: Math.floor(this.parent.clientWidth 	/ (cells+1)),
+			char		: this.getLineHeight()
+		}
+	}
+
+	getLineHeight()
+	{
+		const  { width, height } = this.cursor.getBoundingClientRect();
+		return { width, height };
+	}
+}
+
 class Wrapper extends Component
 {
 	constructor()
 	{
-		super('div.term-body minimized');
+		super('table.term-body minimized');
 
 		matrix 			= new TerminalMatrix( this.context );
 
-		const leftSide 	= new Component('aside.t-d-cell left');
+		const leftSide 	= new Component('td.left');
 		const rightSide = new RightSide();
 
+		tempTerm		= new TempTerminal(leftSide.context);
+
 		this
-			.append( leftSide )
-			.append( rightSide );
+			.observe(
+				new Component('tr')
+					.append( leftSide )
+					.append( rightSide )
+			);
 
 		this.addToObserve( rightSide );
 		this.addToObserve( leftSide );
@@ -76,5 +118,20 @@ class Wrapper extends Component
 			.append(
 				new ActionsMenu()
 			);
+
+		this.append(
+			tempTerm
+		)
+	}
+
+	_renderer()
+	{
+		console.log(this.context.clientWidth);
+		console.log(this.context.parentNode.clientWidth);
+		console.log(this.context.parentNode);
+		console.log('=================');
+
+		const dimensions = tempTerm.calculate(this.props.gdsObj.matrix);
+		this.props = {...this.props, dimensions}
 	}
 }

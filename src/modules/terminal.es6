@@ -68,23 +68,21 @@ export default class Terminal {
 		});
 	}*/
 
-	calculateNumOfRows( lineHeight )
-	{
-		return Math.floor( this.settings.parentContext.clientHeight / lineHeight );
-	}
-
 	reattach( parentNode, dimensions )
 	{
 		this.settings.parentContext = parentNode;
 
-		parentNode.style.height		= dimensions.height + 'px';
-		parentNode.style.width		= dimensions.width	+ 'px';
-
 		this.context.style.height	= parentNode.clientHeight + 'px';
 		this.context.style.width	= parentNode.clientWidth + 'px';
 
-		this.numOfRows 				= this.calculateNumOfRows( dimensions.char.height );
-		this.numOfChars				= Math.floor( (dimensions.width - 2) / dimensions.char.width );
+		this.numOfRows 				= Math.floor( parentNode.clientHeight / dimensions.char.height );
+		this.numOfChars				= Math.floor( (parentNode.clientWidth - 2) / dimensions.char.width );
+		// this.numOfChars				= Math.floor( (dimensions.width - 2) / dimensions.char.width );
+
+		// console.log('', parentNode.clientWidth);
+		// console.log('', dimensions.width);
+		// console.log('num of chars', this.numOfChars);
+		// console.log('num of rows', 	this.numOfRows);
 
 		this.settings.parentContext.appendChild(
 			this.context
@@ -96,12 +94,11 @@ export default class Terminal {
 				numOfChars 	: this.numOfChars,
 				numOfRows 	: this.numOfRows
 			});
+
+			this.plugin.emptyLinesRecalculate( this.numOfRows, this.numOfChars, dimensions.char.height )
 		}
 
 		this.context.style.height = (this.numOfRows * dimensions.char.height) + 'px';
-
-		if (this.plugin)
-			this.plugin.emptyLinesRecalculate( this.numOfRows, this.numOfChars, dimensions.char.height );
 
 		this.context.scrollTop = this.context.scrollHeight;
 	}

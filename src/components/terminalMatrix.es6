@@ -6,44 +6,11 @@ const gdsSession	= [];
 const stringify 	= JSON.stringify;
 let cells 			= [];
 
-class DimensionCalculator
-{
-	constructor( context )
-	{
-		this.context = context;
-	}
-
-	calculate(rowCount, cellCount)
-	{
-		return {
-			height		: Math.floor(this.context.clientHeight / rowCount),
-			width 		: Math.floor(this.context.clientWidth / cellCount),
-			char		: this.getLineHeight()
-		}
-	}
-
-	getLineHeight()
-	{
-		const  { width, height }	= ( this.cursor || this.getCursor() ).getBoundingClientRect();
-		return { width, height };
-	}
-
-	getCursor()
-	{
-		const tempCmd 		= Dom('div.terminal temp-terminal');
-		this.context.appendChild( tempCmd );
-		tempCmd.innerHTML 	= '<div class="cmd"><span class="cursor">&nbsp;</span></div>';
-
-		return this.cursor	= tempCmd.querySelector('.cursor');
-	}
-}
-
 export default class TerminalsMatrix extends Component
 {
-	constructor( parent )
+	constructor()
 	{
 		super('table.terminals-table');
-		this.sizer = this.sizer || new DimensionCalculator( parent );
 	}
 
 	clear()
@@ -52,7 +19,7 @@ export default class TerminalsMatrix extends Component
 		return this;
 	}
 
-	makeCells(rowCount,  cellCount)
+	makeCells(rowCount, cellCount, dimensions)
 	{
 		const makeRow 	= () => {
 			const row = Dom('tr');
@@ -63,7 +30,8 @@ export default class TerminalsMatrix extends Component
 		const makeCells = row => {
 			return [ ...new Array(cellCount) ]
 				.map( () => {
-					const cell = Dom('td.terminal-cell');
+					const cell = Dom('td.terminal-cell', {style : `zbackground: currentColor; width : ${dimensions.width}px; max-height : ${dimensions.height}px; height: ${dimensions.height}px`});
+					// const cell = Dom('td.terminal-cell');
 					row.appendChild(cell);
 					return cell;
 				});
@@ -92,16 +60,11 @@ export default class TerminalsMatrix extends Component
 
 	_renderer()
 	{
-		const {hideMenu, buffer, gdsObj} = this.props;
-
-		const rowCount 	= gdsObj.matrix.rows 	+ 1;
-		const cellCount = gdsObj.matrix.cells 	+ 1;
-
-		gdsSession[gdsObj['name']] = gdsSession[gdsObj['name']] || [];
+		const {hideMenu, buffer, gdsObj, dimensions} = this.props;
 
 		const state = {
 			gds			: gdsObj['name'],
-			dimensions 	: this.sizer.calculate(rowCount, cellCount),
+			dimensions 	: dimensions,
 			hideMenu	: hideMenu
 		};
 
@@ -109,17 +72,18 @@ export default class TerminalsMatrix extends Component
 
 		if ( needToRender )
 		{
-			// console.warn('need to rerender');
+			gdsSession[gdsObj['name']] = gdsSession[gdsObj['name']] || [];
+			const rowCount 	= gdsObj.matrix.rows 	+ 1;
+			const cellCount = gdsObj.matrix.cells 	+ 1;
+
+			console.warn('need to rerender');
 
 			this.context.innerHTML 	= '';
-			this.context.className 	= 't-matrix-w-' + ( cellCount - 1 );
-			this.curTerminalId		= undefined;
+			// this.context.className 	= 't-matrix-w-' + ( cellCount - 1 );
 
 			this.state = state;
 
-			cells = this.makeCells( rowCount, cellCount );
-
-			// console.log('cells', cells);
+			cells = this.makeCells(rowCount, cellCount, dimensions);
 
 			cells.forEach( (cell, index) => {
 
@@ -130,19 +94,17 @@ export default class TerminalsMatrix extends Component
 				};
 
 				this.getTerminal( gdsObj['name'], index, props )
-					.reattach( cell, this.sizer.calculate(rowCount, cellCount) ); //sometimes calculate doesn't get actual parent context dimensions
+					.reattach( cell, dimensions )
+					// .reattach( cell, this.sizer.calculate(rowCount, cellCount) ); //sometimes calculate doesn't get actual parent context dimensions
 			});
 		}
 
-		if ( gdsObj.curTerminalId !== this.curTerminalId )
-		{
-			if (this.curTerminalId !== undefined && cells[this.curTerminalId])
-				cells[this.curTerminalId].classList.remove('activeWindow');
+		if (cells[this.curTerminalId])
+			cells[this.curTerminalId].classList.remove('activeWindow');
 
-			if (cells[gdsObj.curTerminalId])
-				cells[gdsObj.curTerminalId].classList.toggle('activeWindow');
+		if (cells[gdsObj.curTerminalId])
+			cells[gdsObj.curTerminalId].classList.add('activeWindow');
 
-			this.curTerminalId = gdsObj.curTerminalId;
-		}
+		this.curTerminalId = gdsObj.curTerminalId;
 	}
 }
