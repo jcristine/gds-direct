@@ -2,12 +2,6 @@ import {getDate} 		from './helpers.es6';
 import {PURGE_SCREENS} 	from "../actions";
 import {switchTerminal} from "../modules/switchTerminal";
 
-/*window.addEventListener("beforeunload", function (e) {
-	let confirmationMessage = "TEST";
-	(e || window.event).returnValue = confirmationMessage; //Gecko + IE
-	return confirmationMessage;                            //Webkit, Safari, Chrome
-});*/
-
 const nextCmd = (plugin, terminal) => { //Next performed format, by default returns to the first format and than each one by one.
 	plugin.history.next().then( command => {
 		terminal.cmd().set( command );
@@ -39,7 +33,6 @@ export const pressedShortcuts = (evt, terminal, plugin) => {
 
 				case 87: //CTRL+W
 					plugin.purge();
-					// CLEAR_TERMINAL(plugin);
 				break;
 
 				case 68 	: // CTRL+D
@@ -180,15 +173,6 @@ export const pressedShortcuts = (evt, terminal, plugin) => {
 
 		switch (keymap)
 		{
-			/*case 59	: // ; firefox
-			case 186: // ; all other browsers
-				if (!isApollo)
-				{
-					// terminal.cmd().delete(-1);
-					// return false;
-				}
-			break;*/
-
 			case 9 : //TAB
 				plugin.tabPerform();
 			break;
