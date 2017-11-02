@@ -76,7 +76,7 @@ export default class Terminal {
 		this.context.style.width	= parentNode.clientWidth + 'px';
 
 		this.numOfRows 				= Math.floor( parentNode.clientHeight / dimensions.char.height );
-		this.numOfChars				= Math.floor( (parentNode.clientWidth - 2) / dimensions.char.width );
+		this.numOfChars				= Math.floor( (parentNode.clientWidth - 2) / dimensions.char.width ); //2 - padding-left px : need to fix
 		// this.numOfChars				= Math.floor( (dimensions.width - 2) / dimensions.char.width );
 
 		// console.log('', parentNode.clientWidth);

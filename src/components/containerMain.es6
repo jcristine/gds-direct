@@ -70,15 +70,19 @@ class TempTerminal extends Component
 		this.parent = parent;
 	}
 
-	calculate({cells, rows})
+	calculate({cells, rows}, parentWidth)
 	{
 		// console.log( 'zzzzz', this.parent.clientWidth );
+		// console.log( 'zzzzz', parentWidth );
 		// console.log( 'zzzzz', this.parent.offsetWidth );
 		// console.log( 'zzzzz', this.parent );
 
+
+
 		return {
 			height		: Math.floor(this.parent.clientHeight 	/ (rows+1)),
-			width 		: Math.floor(this.parent.clientWidth 	/ (cells+1)),
+			// width 		: Math.floor(this.parent.clientWidth 	/ (cells+1)),
+			width 		: Math.floor((parentWidth - 100) 	/ (cells+1)),
 			char		: this.getLineHeight()
 		}
 	}
@@ -126,12 +130,16 @@ class Wrapper extends Component
 
 	_renderer()
 	{
-		console.log(this.context.clientWidth);
-		console.log(this.context.parentNode.clientWidth);
-		console.log(this.context.parentNode);
-		console.log('=================');
+		// console.log(this.context.clientWidth);
+		// console.log(this.context);
+		//
+		// console.log(this.context.parentNode.clientWidth);
+		// console.log(this.context.parentNode);
+		//
+		// console.log(this.context.parentNode);
+		// console.log('=================');
 
-		const dimensions = tempTerm.calculate(this.props.gdsObj.matrix);
+		const dimensions = tempTerm.calculate(this.props.gdsObj.matrix, this.context.parentNode.clientWidth);
 		this.props = {...this.props, dimensions}
 	}
 }

@@ -3,6 +3,7 @@ import {get} 			from "./helpers/requests";
 import {TerminalState} 	from "./state";
 import GdsSet 			from './modules/gds';
 import ContainerMain 	from "./components/containerMain";
+import FullScreen		from './modules/fullscreen.es6';
 
 let state, Gds = {}, Container, PqModal;
 
@@ -127,6 +128,18 @@ export const SWITCH_TERMINAL = (gds, index) => {
 		return terminal.plugin.terminal.focus();
 
 	terminal.context.click();
+};
+
+export const FULL_SCREEN = () =>
+{
+	if ( state.getGdsObj()['curTerminalId'] >= 0 )
+	{
+		FullScreen.show(state.getGds(), state.getGdsObj()['activeTerminal']);
+	} else
+	{
+		alert('no terminal selected');
+		return false;
+	}
 };
 
 export const UPDATE_STATE = props => {
