@@ -13,10 +13,7 @@ import TabManager	from '../modules/tabManager.es6';
 import F8Reader		from '../modules/f8.es6';
 import History 		from '../modules/history.es6';
 import {Debug}		from '../modules/debug';
-
-import {terminalKeydown}	from '../modules/switchTerminal.es6';
 import {getReplacement}		from '../helpers/helpers.es6';
-
 import {UPDATE_CUR_GDS, CHANGE_ACTIVE_TERMINAL} from "../actions";
 
 export default class TerminalPlugin
@@ -100,11 +97,11 @@ export default class TerminalPlugin
 		this.tabCommands.move(reverse).run(this.terminal);
 	}
 
-	resize( sizes )
+	resize(sizes)
 	{
 		this.terminal.settings().numChars = sizes.numOfChars;
 		this.terminal.settings().numRows  = sizes.numOfRows;
-
+		// this.terminal.resize(width, height);
 		this.terminal.resize();
 	}
 

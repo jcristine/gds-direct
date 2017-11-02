@@ -22,12 +22,12 @@ export default class Terminal {
 	init()
 	{
 		this.plugin = new TerminalPlugin({
-			context 		: this.context,
-			clear			: () => this.clear(),
-			name 			: this.settings['name'],
-			gds 			: this.settings['gds'],
-			numOfRows 		: this.numOfRows,
-			numOfChars 		: this.numOfChars
+			context 	: this.context,
+			clear		: () => this.clear(),
+			name 		: this.settings['name'],
+			gds 		: this.settings['gds'],
+			numOfRows 	: this.numOfRows,
+			numOfChars 	: this.numOfChars
 		});
 	}
 
@@ -75,23 +75,18 @@ export default class Terminal {
 		this.context.style.height	= parentNode.clientHeight + 'px';
 		this.context.style.width	= parentNode.clientWidth + 'px';
 
-		this.numOfRows 				= Math.floor( parentNode.clientHeight / dimensions.char.height );
-		this.numOfChars				= Math.floor( (parentNode.clientWidth - 2) / dimensions.char.width ); //2 - padding-left px : need to fix
-		// this.numOfChars				= Math.floor( (dimensions.width - 2) / dimensions.char.width );
-
-		// console.log('', parentNode.clientWidth);
-		// console.log('', dimensions.width);
-		// console.log('num of chars', this.numOfChars);
-		// console.log('num of rows', 	this.numOfRows);
-
 		this.settings.parentContext.appendChild(
 			this.context
 		);
 
+		this.numOfRows 	= Math.floor( parentNode.clientHeight / dimensions.char.height );
+		this.numOfChars	= Math.floor( this.context.clientWidth / dimensions.char.width ); //2 - padding-left px : need to fix
+
+
 		if (this.plugin)
 		{
 			this.plugin.resize({
-				numOfChars 	: this.numOfChars,
+				numOfChars 	: this.numOfChars - 2,
 				numOfRows 	: this.numOfRows
 			});
 

@@ -8,7 +8,8 @@
   "license": "BSD-2-Clause",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "watch": "webpack --progress --watch"
+    "watch": "webpack --progress --watch",
+    "vendor": "webpack --config vendor.webpack.config.js"
   },
   "devDependencies": {
     "babel-core": "^6.24.1",
