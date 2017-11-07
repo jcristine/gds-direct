@@ -37,8 +37,19 @@ export const showUserMessages = response => {
 				theme	: 'metroui',
 				type 	: 'warning'
 			}).show();
-		} );
+		});
 	}
 
 	return response;
+};
+
+export const notify = ({msg, align = 'bottomLeft', type = 'error'}) => {
+
+	return new Noty({
+		text	: msg,
+		layout 	: align,
+		timeout : 100000,
+		theme	: 'mint',
+		type 	: type
+	}).show();
 };

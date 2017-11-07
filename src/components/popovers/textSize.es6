@@ -1,5 +1,3 @@
-'use strict';
-
 import Dom 			 from '../../helpers/dom.es6';
 import ButtonPopOver from '../../modules/buttonPopover.es6';
 

@@ -1,5 +1,6 @@
 import Dom	from '../../helpers/dom.es6';
 import {CHANGE_GDS, CHANGE_SESSION_BY_MENU} from "../../actions";
+import {AREA_LIST} from "../../constants";
 
 export class SessionButtons
 {
@@ -37,7 +38,7 @@ export class SessionButtons
 
 				e.target.disabled = true;
 
-				CHANGE_SESSION_BY_MENU({sessionIndex : index}).catch( () => {
+				CHANGE_SESSION_BY_MENU(AREA_LIST[index]).catch( () => {
 					e.target.disabled = false;
 				})
 			}

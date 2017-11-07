@@ -3,6 +3,7 @@ import MenuPanel 		from './menuPanel';
 import TerminalMatrix 	from './terminalMatrix';
 import Component 		from '../modules/component';
 import Dom 				from "../helpers/dom";
+import {PqQuotes} 		from "./PqQuotes";
 
 let matrix, tempTerm;
 
@@ -41,7 +42,6 @@ class RightSide extends Component
 {
 	constructor()
 	{
-		// super('aside.t-d-cell menu');
 		super('td.menu');
 
 		this.observe(
@@ -77,8 +77,6 @@ class TempTerminal extends Component
 		// console.log( 'zzzzz', this.parent.offsetWidth );
 		// console.log( 'zzzzz', this.parent );
 
-
-
 		return {
 			height		: Math.floor(this.parent.clientHeight 	/ (rows+1)),
 			// width 		: Math.floor(this.parent.clientWidth 	/ (cells+1)),
@@ -111,6 +109,7 @@ class Wrapper extends Component
 			.observe(
 				new Component('tr')
 					.append( leftSide )
+					.observe( new PqQuotes() )
 					.append( rightSide )
 			);
 

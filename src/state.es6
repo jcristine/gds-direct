@@ -1,6 +1,6 @@
 export class TerminalState
 {
-	constructor({permissions, buffer, openPqModal, requestId})
+	constructor({permissions, buffer, requestId})
 	{
 		this.state = {
 			language	: 'APOLLO',
@@ -11,7 +11,6 @@ export class TerminalState
 		};
 
 		this.permissions	= permissions;
-		this.openPqModal	= openPqModal;
 
 		this.buffer = {
 			gds : {}

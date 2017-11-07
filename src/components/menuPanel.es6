@@ -7,11 +7,7 @@ import DevButtons		from './menu/devButtons.es6';
 import Dom				from '../helpers/dom.es6';
 import Component		from '../modules/component';
 import GdsSet 			from '../modules/gds';
-import {cookieGet, cookieSet}	from '../helpers/cookie';
-import {CHANGE_INPUT_LANGUAGE, DEV_CMD_STACK_RUN, GET_HISTORY, UPDATE_STATE} from "../actions";
-
-const agentId		= apiData.auth.id;
-let oldThemeClass	= cookieGet('terminalTheme_' + agentId) || 'terminaltheme_' + apiData['terminalThemes'][0]['id'];
+import {CHANGE_INPUT_LANGUAGE, DEV_CMD_STACK_RUN, GET_HISTORY, SHOW_PQ_QUOTES, UPDATE_STATE} from "../actions";
 
 export default class MenuPanel extends Component
 {
@@ -60,19 +56,10 @@ class SettingsButtons extends Component
 
 	children()
 	{
+		const Quotes 	= Dom('button.btn btn-primary font-bold', {innerHTML : 'Quoutes', onclick : SHOW_PQ_QUOTES});
+
 		const theme 	= new Theme({
-			icon		: '<i class="fa fa-paint-brush t-f-size-14"></i>',
-			onSelect	: value => {
-				const terminalContext	= document.getElementById('terminalContext');
-				const newThemeClass		= 'terminaltheme_' + value.id;
-
-				terminalContext.classList.remove(oldThemeClass);
-				terminalContext.classList.add(newThemeClass);
-
-				oldThemeClass = newThemeClass;
-
-				cookieSet('terminalTheme_' + agentId, newThemeClass, 30)
-			}
+			icon		: '<i class="fa fa-paint-brush t-f-size-14"></i>'
 		}).getTrigger();
 
 		const textSize 	= new TextSize({
@@ -86,7 +73,7 @@ class SettingsButtons extends Component
 			onHistorySelect	: value => DEV_CMD_STACK_RUN([value])
 		}).getTrigger();
 
-		return [theme, textSize, history];
+		return [Quotes, theme, textSize, history];
 	}
 }
 
