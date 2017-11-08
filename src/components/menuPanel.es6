@@ -1,5 +1,5 @@
 import Theme 			from './popovers/theme.es6';
-import History 			from './popovers/history.es6';
+import {History} 		from './popovers/history.es6';
 import TextSize 		from './popovers/textSize.es6';
 import {SessionButtons}	from './menu/sessionButtons.es6';
 import PqButton			from './menu/pqButton.es6';
@@ -7,7 +7,7 @@ import DevButtons		from './menu/devButtons.es6';
 import Dom				from '../helpers/dom.es6';
 import Component		from '../modules/component';
 import GdsSet 			from '../modules/gds';
-import {CHANGE_INPUT_LANGUAGE, DEV_CMD_STACK_RUN, GET_HISTORY, SHOW_PQ_QUOTES, UPDATE_STATE} from "../actions";
+import {CHANGE_INPUT_LANGUAGE, SHOW_PQ_QUOTES} from "../actions";
 
 export default class MenuPanel extends Component
 {
@@ -59,18 +59,15 @@ class SettingsButtons extends Component
 		const Quotes 	= Dom('button.btn btn-primary font-bold', {innerHTML : 'Quoutes', onclick : SHOW_PQ_QUOTES});
 
 		const theme 	= new Theme({
-			icon		: '<i class="fa fa-paint-brush t-f-size-14"></i>'
+			icon	: '<i class="fa fa-paint-brush t-f-size-14"></i>'
 		}).getTrigger();
 
 		const textSize 	= new TextSize({
-			icon		: '<i class="fa fa-text-height t-f-size-14"></i>',
-			onSelect	: value => UPDATE_STATE({fontSize : value})
+			icon	: '<i class="fa fa-text-height t-f-size-14"></i>'
 		}).getTrigger();
 
 		const history	= new History({
-			icon			: '<i class="fa fa-history t-f-size-14"></i>',
-			askServer		: ()	=> GET_HISTORY(),
-			onHistorySelect	: value => DEV_CMD_STACK_RUN([value])
+			icon	: '<i class="fa fa-history t-f-size-14"></i>'
 		}).getTrigger();
 
 		return [Quotes, theme, textSize, history];
@@ -112,8 +109,8 @@ class GdsAreas extends Component
 	}
 }
 
-class LanguageButtons extends Component {
-
+class LanguageButtons extends Component
+{
 	constructor()
 	{
 		super('article');
@@ -142,8 +139,8 @@ class LanguageButtons extends Component {
 	}
 }
 
-class TestsButtons extends Component {
-
+class TestsButtons extends Component
+{
 	constructor()
 	{
 		super('article');

@@ -1,5 +1,6 @@
 import Dom 			 from '../../helpers/dom.es6';
 import ButtonPopOver from '../../modules/buttonPopover.es6';
+import {UPDATE_STATE} from "../../actions";
 
 class TextSize extends ButtonPopOver
 {
@@ -18,7 +19,7 @@ class TextSize extends ButtonPopOver
 
 			button.addEventListener('click', () => {
 				this.popover.close();
-				this.settings.onSelect( value );
+				UPDATE_STATE({fontSize : value})
 			});
 
 			this.popContent.appendChild( button );

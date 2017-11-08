@@ -4,7 +4,7 @@ import {TerminalState} 	from "./state";
 import GdsSet 			from './modules/gds';
 import ContainerMain 	from "./components/containerMain";
 import FullScreen		from './modules/fullscreen.es6';
-import {PqParser} from "./modules/pqParser";
+import {PqParser} 		from "./modules/pqParser";
 
 let state, Gds = {}, Container, pqParser;
 
@@ -49,7 +49,7 @@ const GET = (urlPart, param) => {
 };
 
 export const GET_HISTORY = () => {
-	get(`terminal/lastCommands?rId=${state.getRequestId()}&gds=${state.getGds()}`);
+	return get(`terminal/lastCommands?rId=${state.getRequestId()}&gds=${state.getGds()}`);
 };
 
 export const CHANGE_ACTIVE_TERMINAL = ({gds, curTerminalId, activeTerminal}) => {
