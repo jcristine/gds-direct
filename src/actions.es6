@@ -99,6 +99,10 @@ export const PQ_MODAL_SHOW = () => {
 	return pqParser.show( state.getGdsObj()['canCreatePqErrors'], state.getRequestId() );
 };
 
+export const PQ_MODAL_SHOW_DEV = () => {
+	return pqParser.show( state.getGdsObj()['canCreatePqErrors'], state.getRequestId() );
+};
+
 export const CLOSE_PQ_WINDOW = () => {
 	state.change({
 		hideMenu : false

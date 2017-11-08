@@ -34,17 +34,6 @@ const isPqError = ({data, result}) => {
 		// .toString().split(',')
 };
 
-const showUserMessages = messages => {
-
-	if (messages && messages.length)
-	{
-		const show = messages.map((msg, i) => (i > 0 ? '<div class="m-b"></div>' : '') + '<p class="text-left">' + msg + '</p>' );
-		notify({msg : show.join(''), type : 'warning'});
-	}
-
-	// Notify.bubble_msg.warning(context, 100000);
-};
-
 export class PqParser
 {
 	constructor( modal )
@@ -73,8 +62,8 @@ export class PqParser
 
 				return response;
 			})
+
 			.then( response => {
-				showUserMessages( response.data['userMessages'] );
 				get(`terminal/importPriceQuote?rId=${rId}`);
 				return response;
 			})

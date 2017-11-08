@@ -1,6 +1,6 @@
 import Dom				from '../../helpers/dom.es6';
 import ButtonPopOver	from '../../modules/buttonPopover.es6';
-import {DEV_CMD_STACK_RUN, FULL_SCREEN, PQ_MODAL_SHOW} from "../../actions";
+import {DEV_CMD_STACK_RUN, FULL_SCREEN, PQ_MODAL_SHOW_DEV} from "../../actions";
 
 const STORAGE_KEY = 'dedTerminalBufCmd';
 
@@ -56,7 +56,7 @@ export default class DevButtons
 	PqAddTest()
 	{
 		this.macros 			= Dom('span.btn btn-mozilla font-bold[PQ Dev]');
-		this.macros.onclick 	= PQ_MODAL_SHOW;
+		this.macros.onclick 	= PQ_MODAL_SHOW_DEV;
 
 		return this.macros;
 	}

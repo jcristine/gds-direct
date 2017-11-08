@@ -25,18 +25,13 @@ export const debugRequest = err => {
 
 export const showUserMessages = response => {
 
-	if (typeof response['data'] !== 'undefined')
+	if (response && response['data'] && response['data']['userMessages'])
 	{
-		const userMessages = response['data']['userMessages'] || [];
+		const userMessages = response['data']['userMessages'];
 
-		userMessages.map( msg => {
-			new Noty({
-				text	: `<strong>${msg}</strong>`,
-				layout 	: 'bottomCenter',
-				timeout : 5000,
-				theme	: 'metroui',
-				type 	: 'warning'
-			}).show();
+		notify({
+			msg 	: userMessages.join(''),
+			type 	: 'warning'
 		});
 	}
 
