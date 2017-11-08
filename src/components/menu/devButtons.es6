@@ -1,6 +1,6 @@
 import Dom				from '../../helpers/dom.es6';
 import ButtonPopOver	from '../../modules/buttonPopover.es6';
-import {DEV_CMD_STACK_RUN, FULL_SCREEN} from "../../actions";
+import {DEV_CMD_STACK_RUN, FULL_SCREEN, PQ_MODAL_SHOW} from "../../actions";
 
 const STORAGE_KEY = 'dedTerminalBufCmd';
 
@@ -47,18 +47,27 @@ export default class DevButtons
 	constructor()
 	{
 		this.context = Dom('div');
-		this.context.appendChild ( this.AddPqMacros() );
+		this.context.appendChild ( this.PqAddTest() );
+		// this.context.appendChild ( this.AddPqMacros() );
 		this.context.appendChild ( this.commandsBuffer() );
 		this.context.appendChild ( this.fullScreen() );
 	}
 
-	AddPqMacros()
+	PqAddTest()
 	{
-		this.macros 			= Dom('span.btn btn-primary font-bold[Test pq]');
-		this.macros.onclick 	= () => DEV_CMD_STACK_RUN(['A/V/13SEPSEAMNL+DL', '01k1*', '*R', '$BN1+2*C09+3*inf']);
+		this.macros 			= Dom('span.btn btn-mozilla font-bold[PQ Dev]');
+		this.macros.onclick 	= PQ_MODAL_SHOW;
 
 		return this.macros;
 	}
+
+	// AddPqMacros()
+	// {
+	// 	this.macros 			= Dom('span.btn btn-primary font-bold[Test pq]');
+	// 	this.macros.onclick 	= () => DEV_CMD_STACK_RUN(['A/V/13SEPSEAMNL+DL', '01k1*', '*R', '$BN1+2*C09+3*inf']);
+	//
+	// 	return this.macros;
+	// }
 
 	commandsBuffer()
 	{

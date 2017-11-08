@@ -17,7 +17,8 @@ const initGdsData = (name, settings = {}) => {
 	const props = {
 		name 			: name,
 		sessionIndex 	: AREA_LIST.indexOf( settings['area'] ),
-		canCreatePq		: 1,
+		// canCreatePq		: 1,
+		canCreatePq		: false,
 		list			: name === 'sabre' ? AREA_LIST : AREA_LIST.slice(0, -1)
 	};
 

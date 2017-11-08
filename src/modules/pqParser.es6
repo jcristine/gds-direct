@@ -2,13 +2,7 @@ import {get} from "../helpers/requests";
 import {CLOSE_PQ_WINDOW, UPDATE_STATE} from "../actions";
 import {notify} from "./debug";
 
-const throwError = error => {
-	const pqErrMsg = buildErrMsg(error);
-	notify({msg : pqErrMsg.msg});
-	return Promise.reject();
-};
-
-const buildErrMsg = err => {
+const throwError = err => {
 
 	if (typeof err === 'string')
 		err = [err];
@@ -17,10 +11,13 @@ const buildErrMsg = err => {
 	const printErrors 	= msg => separator + msg;
 	const html 			= err.map(printErrors).join('</br></br>');
 
-	return {
-		msg 	: `<p>${html}</p>`,
+	const pqErrMsg = {
+		msg 	: html,
 		align 	: err.length > 1 ? 'text-left' : ''
-	}
+	};
+
+	notify({msg : pqErrMsg.msg});
+	return Promise.reject();
 };
 
 const isPqError = ({data, result}) => {
@@ -31,8 +28,10 @@ const isPqError = ({data, result}) => {
 		result.error,
 		result.msg
 	]
-		.filter( er => er && er !== undefined && er.length > 0 )
-		.toString().split(',')
+	.filter( er => {
+		return er && er !== undefined && er.length > 0
+	})
+		// .toString().split(',')
 };
 
 const showUserMessages = messages => {
@@ -58,12 +57,18 @@ export class PqParser
 		if (errors)
 			return throwError(errors);
 
+		document.querySelector('#spinners').classList.remove('hidden');
+		document.querySelector('#loadingDots').classList.remove('loading-hidden');
+
 		get(`terminal/priceQuote?rId=${rId}`)
 
 			.then( response => {
+				document.querySelector('#spinners').classList.add('hidden');
+				document.querySelector('#loadingDots').classList.add('loading-hidden');
+
 				const pqError = isPqError(response);
 
-				if (pqError)
+				if (pqError.length)
 					return throwError(pqError);
 
 				return response;
@@ -75,12 +80,5 @@ export class PqParser
 			})
 			.then( response => this.modal( response, CLOSE_PQ_WINDOW ) )
 			.then( () => { UPDATE_STATE({hideMenu: true}) });
-
-		// return this.modal({
-		// 	canCreatePqErrors 	: errors,
-		// 	onClose				: CLOSE_PQ_WINDOW
-		// })
-		// 	.then(() 	=> UPDATE_STATE({hideMenu: true}) )
-		// 	.catch(err 	=> console.log('Error Catch', err ) );
 	}
 }

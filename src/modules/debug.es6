@@ -46,7 +46,7 @@ export const showUserMessages = response => {
 export const notify = ({msg, align = 'bottomLeft', type = 'error'}) => {
 
 	return new Noty({
-		text	: msg,
+		text	: `<p class="noty-wrap-text">${msg}</p>`,
 		layout 	: align,
 		timeout : 100000,
 		theme	: 'mint',
