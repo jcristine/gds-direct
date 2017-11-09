@@ -12,6 +12,41 @@
 .noty-wrap-text {
 	padding: 10px;
 	font-weight: bold;
+	font-size: 13px;
+	margin: 0;
+}
+
+.animated {
+	animation-duration: .5s;
+	animation-fill-mode: both;
+}
+
+@keyframes fadeIn {
+	from {
+		opacity: 0;
+	}
+
+	to {
+		opacity: 1;
+	}
+}
+
+.fadeIn {
+	animation-name: fadeIn;
+}
+
+@keyframes fadeOut {
+	from {
+		opacity: 1;
+	}
+
+	to {
+		opacity: 0;
+	}
+}
+
+.fadeOut {
+	animation-name: fadeOut;
 }
 
 // RESET COLORS

@@ -181,8 +181,12 @@ var CHANGE_MATRIX = exports.CHANGE_MATRIX = function CHANGE_MATRIX(matrix) {
 	});
 };
 
-var SHOW_PQ_QUOTES = exports.SHOW_PQ_QUOTES = function SHOW_PQ_QUOTES() {
+var SHOW_PQ_QUOTES = exports.SHOW_PQ_QUOTES = function SHOW_PQ_QUOTES(e) {
+	e.target.innerHTML = 'Loading...';
+
 	(0, _requests.get)("terminal/priceQuotes?rId=" + state.getRequestId()).then(function (response) {
+		e.target.innerHTML = 'Quotes';
+
 		state.change({
 			pqToShow: response,
 			hideMenu: true
@@ -224,7 +228,7 @@ var CHANGE_SESSION_BY_MENU = exports.CHANGE_SESSION_BY_MENU = function CHANGE_SE
 var CHANGE_GDS = exports.CHANGE_GDS = function CHANGE_GDS(gdsName) {
 	GET('terminal/saveSetting/gds', gdsName);
 
-	Gds[state.getGds()] = state.getGdsObj(); // save prev gds state
+	// Gds[state.getGds()] = state.getGdsObj(); // save prev gds state
 
 	state.change({
 		gdsObj: Gds[gdsName]
@@ -266,10 +270,7 @@ var SWITCH_TERMINAL = exports.SWITCH_TERMINAL = function SWITCH_TERMINAL(gds, in
 };
 
 var FULL_SCREEN = exports.FULL_SCREEN = function FULL_SCREEN() {
-
-	if (state.getGdsObj()['curTerminalId'] >= 0) {
-		return _fullscreen2.default.show(state.getGds(), window.activePlugin.terminal);
-	}
+	if (state.getGdsObj()['curTerminalId'] >= 0) return _fullscreen2.default.show(state.getGds(), window.activePlugin.terminal);
 
 	alert('no terminal selected');
 };
@@ -731,20 +732,23 @@ var Debug = exports.Debug = function Debug(txt, type) {
 		layout: 'bottomCenter',
 		timeout: 1500,
 		theme: 'metroui',
-		type: type || 'info'
+		type: type || 'info',
+		progressBar: false,
+		animation: {
+			open: 'animated fadeIn', // Animate.css class names
+			close: 'animated fadeOut' // Animate.css class names
+		}
 	}).show();
 };
 
 var debugRequest = exports.debugRequest = function debugRequest(err) {
-
-	var notify = new _noty2.default({
+	new _noty2.default({
 		text: 'SERVER ERROR : ' + err,
 		layout: 'bottomRight',
 		timeout: 5000,
 		type: 'error'
-	});
+	}).show();
 
-	notify.show();
 	console.warn('Server Returned: ', err);
 };
 
@@ -775,7 +779,11 @@ var notify = exports.notify = function notify(_ref) {
 		layout: align,
 		timeout: 100000,
 		theme: 'mint',
-		type: type
+		type: type,
+		animation: {
+			open: 'animated fadeIn', // Animate.css class names
+			close: 'animated fadeOut' // Animate.css class names
+		}
 	}).show();
 };
 

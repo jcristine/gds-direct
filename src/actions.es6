@@ -63,7 +63,7 @@ export const CHANGE_ACTIVE_TERMINAL = ({gds, curTerminalId}) => {
 	});
 };
 
-export const CHANGE_MATRIX = (matrix) => {
+export const CHANGE_MATRIX = matrix => {
 	localStorage.setItem('matrix', JSON.stringify(matrix) );
 
 	const gds 	= state.getGds();
@@ -74,9 +74,13 @@ export const CHANGE_MATRIX = (matrix) => {
 	});
 };
 
-export const SHOW_PQ_QUOTES = () => {
+export const SHOW_PQ_QUOTES = (e) => {
+	e.target.innerHTML = 'Loading...';
+
 	get(`terminal/priceQuotes?rId=${state.getRequestId()}`)
 		.then( response => {
+			e.target.innerHTML = 'Quotes';
+
 			state.change({
 				pqToShow	: response,
 				hideMenu	: true
@@ -109,8 +113,8 @@ export const CLOSE_PQ_WINDOW = () => {
 	})
 };
 
-export const CHANGE_SESSION_BY_MENU = (area) => {
-	const command 	= (state.isGdsApollo() ? 'S': '¤') + area;
+export const CHANGE_SESSION_BY_MENU = area => {
+	const command = (state.isGdsApollo() ? 'S': '¤') + area;
 
 	GET('terminal/saveSetting/area', area);
 	return DEV_CMD_STACK_RUN([command]);
@@ -119,7 +123,7 @@ export const CHANGE_SESSION_BY_MENU = (area) => {
 export const CHANGE_GDS = gdsName => {
 	GET('terminal/saveSetting/gds', gdsName);
 
-	Gds[state.getGds()] = state.getGdsObj(); // save prev gds state
+	// Gds[state.getGds()] = state.getGdsObj(); // save prev gds state
 
 	state.change({
 		gdsObj 	: Gds[gdsName]
@@ -137,8 +141,8 @@ export const UPDATE_CUR_GDS = (gdsName, {canCreatePq, canCreatePqErrors, area, p
 	const sessionIndex	= AREA_LIST.indexOf(area);
 	const newPcc 		= {[sessionIndex] : pcc};
 
-	Gds[gdsName]['pcc'] = startNewSession ? newPcc : { ...Gds[gdsName]['pcc'], ...newPcc};
-	Gds[gdsName] 		= {...Gds[gdsName], canCreatePq, canCreatePqErrors, sessionIndex };
+	Gds[gdsName]['pcc'] = startNewSession ? newPcc : {...Gds[gdsName]['pcc'], ...newPcc};
+	Gds[gdsName] 		= {...Gds[gdsName], canCreatePq, canCreatePqErrors, sessionIndex};
 
 	state.change({
 		gdsObj : Gds[gdsName]
@@ -156,11 +160,8 @@ export const SWITCH_TERMINAL = (gds, index) => {
 };
 
 export const FULL_SCREEN = () => {
-
 	if ( state.getGdsObj()['curTerminalId'] >= 0 )
-	{
 		return FullScreen.show(state.getGds(), window.activePlugin.terminal);
-	}
 
 	alert('no terminal selected');
 };

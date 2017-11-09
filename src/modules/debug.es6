@@ -6,20 +6,23 @@ export const Debug = (txt, type) => {
 		layout 	: 'bottomCenter',
 		timeout : 1500,
 		theme	: 'metroui',
-		type 	: type || 'info'
+		type 	: type || 'info',
+		progressBar : false,
+		animation: {
+			open	: 'animated fadeIn', // Animate.css class names
+			close	: 'animated fadeOut' // Animate.css class names
+		}
 	}).show();
 };
 
 export const debugRequest = err => {
-
-	const notify = new Noty({
+	new Noty({
 		text	: `SERVER ERROR : ${err}`,
 		layout 	: 'bottomRight',
 		timeout : 5000,
 		type 	: 'error'
-	});
+	}).show();
 
-	notify.show();
 	console.warn( 'Server Returned: ', err );
 };
 
@@ -45,6 +48,10 @@ export const notify = ({msg, align = 'bottomLeft', type = 'error'}) => {
 		layout 	: align,
 		timeout : 100000,
 		theme	: 'mint',
-		type 	: type
+		type 	: type,
+		animation: {
+			open	: 'animated fadeIn', // Animate.css class names
+			close	: 'animated fadeOut' // Animate.css class names
+		}
 	}).show();
 };
