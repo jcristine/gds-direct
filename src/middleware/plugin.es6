@@ -74,14 +74,14 @@ export default class TerminalPlugin
 		}
 	}
 
-	changeActiveTerm(activeTerminal)
+	changeActiveTerm()
 	{
 		if (this.settings.name === 'fullScreen')
 			return false;
 
-		// window.activePlugin = this; // SO SO check to DEPRECATED
+		window.activePlugin = this; // SO SO check to DEPRECATED
 
-		CHANGE_ACTIVE_TERMINAL({gds : this.settings.gds, curTerminalId : this.name, activeTerminal});
+		CHANGE_ACTIVE_TERMINAL({gds : this.settings.gds, curTerminalId : this.name});
 	}
 
 	purge()

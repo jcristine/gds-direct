@@ -140,7 +140,7 @@ var CHANGE_INPUT_LANGUAGE = exports.CHANGE_INPUT_LANGUAGE = function CHANGE_INPU
 var DEV_CMD_STACK_RUN = exports.DEV_CMD_STACK_RUN = function DEV_CMD_STACK_RUN(command) {
 
 	if (state.getGdsObj()['curTerminalId'] >= 0) {
-		state.execCmd(command);
+		window.activePlugin.terminal.exec(command);
 		return Promise.resolve();
 	}
 
@@ -158,13 +158,12 @@ var GET_HISTORY = exports.GET_HISTORY = function GET_HISTORY() {
 
 var CHANGE_ACTIVE_TERMINAL = exports.CHANGE_ACTIVE_TERMINAL = function CHANGE_ACTIVE_TERMINAL(_ref2) {
 	var gds = _ref2.gds,
-	    curTerminalId = _ref2.curTerminalId,
-	    activeTerminal = _ref2.activeTerminal;
+	    curTerminalId = _ref2.curTerminalId;
 
 
 	GET('terminal/saveSetting/terminal', name + 1);
 
-	Gds[gds] = _extends({}, Gds[gds], { activeTerminal: activeTerminal, curTerminalId: curTerminalId });
+	Gds[gds] = _extends({}, Gds[gds], { curTerminalId: curTerminalId });
 
 	state.change({
 		gdsObj: Gds[gds]
@@ -269,7 +268,7 @@ var SWITCH_TERMINAL = exports.SWITCH_TERMINAL = function SWITCH_TERMINAL(gds, in
 var FULL_SCREEN = exports.FULL_SCREEN = function FULL_SCREEN() {
 
 	if (state.getGdsObj()['curTerminalId'] >= 0) {
-		return _fullscreen2.default.show(state.getGds(), state.getGdsObj()['activeTerminal']);
+		return _fullscreen2.default.show(state.getGds(), window.activePlugin.terminal);
 	}
 
 	alert('no terminal selected');
@@ -805,7 +804,7 @@ var defaults = {
 	sessionIndex: 0,
 	pcc: {},
 	matrix: saved ? JSON.parse(saved) : { rows: 1, cells: 1 },
-	activeTerminal: null,
+	// activeTerminal	: null,
 	canCreatePq: false,
 	history: [],
 	curTerminalId: undefined
@@ -1164,21 +1163,20 @@ var TerminalState = exports.TerminalState = function () {
 		value: function getRequestId() {
 			return this.state.requestId;
 		}
-	}, {
-		key: 'execCmd',
-		value: function execCmd(commands) {
-			var term = this.getActiveTerminal();
 
-			if (term) term.exec(commands);
+		/*execCmd( commands )
+  {
+  	const term = this.getActiveTerminal();
+  		if (term)
+  		term.exec( commands );
+  		return false;
+  }
+  	getGdsList()
+  {
+  	// console.log( Gds );
+  	// return Gds;
+  }*/
 
-			return false;
-		}
-	}, {
-		key: 'getGdsList',
-		value: function getGdsList() {
-			// console.log( Gds );
-			// return Gds;
-		}
 	}, {
 		key: 'isGdsApollo',
 		value: function isGdsApollo() {
@@ -2618,12 +2616,12 @@ var TerminalPlugin = function () {
 		}
 	}, {
 		key: 'changeActiveTerm',
-		value: function changeActiveTerm(activeTerminal) {
+		value: function changeActiveTerm() {
 			if (this.settings.name === 'fullScreen') return false;
 
-			// window.activePlugin = this; // SO SO check to DEPRECATED
+			window.activePlugin = this; // SO SO check to DEPRECATED
 
-			(0, _actions.CHANGE_ACTIVE_TERMINAL)({ gds: this.settings.gds, curTerminalId: this.name, activeTerminal: activeTerminal });
+			(0, _actions.CHANGE_ACTIVE_TERMINAL)({ gds: this.settings.gds, curTerminalId: this.name });
 		}
 	}, {
 		key: 'purge',

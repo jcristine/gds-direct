@@ -34,7 +34,7 @@ export const DEV_CMD_STACK_RUN = command => {
 
 	if ( state.getGdsObj()['curTerminalId'] >= 0 )
 	{
-		state.execCmd(command);
+		window.activePlugin.terminal.exec(command);
 		return Promise.resolve();
 	}
 
@@ -52,11 +52,11 @@ export const GET_HISTORY = () => {
 	return get(`terminal/lastCommands?rId=${state.getRequestId()}&gds=${state.getGds()}`);
 };
 
-export const CHANGE_ACTIVE_TERMINAL = ({gds, curTerminalId, activeTerminal}) => {
+export const CHANGE_ACTIVE_TERMINAL = ({gds, curTerminalId}) => {
 
 	GET('terminal/saveSetting/terminal', (name + 1));
 
-	Gds[gds] = { ...Gds[gds], activeTerminal, curTerminalId };
+	Gds[gds] = { ...Gds[gds], curTerminalId };
 
 	state.change({
 		gdsObj : Gds[gds]
@@ -159,7 +159,7 @@ export const FULL_SCREEN = () => {
 
 	if ( state.getGdsObj()['curTerminalId'] >= 0 )
 	{
-		return FullScreen.show(state.getGds(), state.getGdsObj()['activeTerminal']);
+		return FullScreen.show(state.getGds(), window.activePlugin.terminal);
 	}
 
 	alert('no terminal selected');

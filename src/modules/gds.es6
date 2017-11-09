@@ -6,7 +6,7 @@ const defaults	= {
 	sessionIndex 	: 0,
 	pcc				: {},
 	matrix			: saved ? JSON.parse( saved ) : {rows : 1, cells : 1},
-	activeTerminal	: null,
+	// activeTerminal	: null,
 	canCreatePq		: false,
 	history			: [],
 	curTerminalId	: undefined

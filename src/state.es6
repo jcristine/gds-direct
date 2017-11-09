@@ -70,7 +70,7 @@ export class TerminalState
 		return this.state.requestId;
 	}
 
-	execCmd( commands )
+	/*execCmd( commands )
 	{
 		const term = this.getActiveTerminal();
 
@@ -84,7 +84,7 @@ export class TerminalState
 	{
 		// console.log( Gds );
 		// return Gds;
-	}
+	}*/
 
 	isGdsApollo()
 	{
