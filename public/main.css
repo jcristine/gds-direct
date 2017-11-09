@@ -1512,12 +1512,10 @@
 .terminal-wrap-custom .pqQuotes {
   padding: 10px;
   vertical-align: top;
-  width: 600px;
+  width: 470px;
 }
-.terminal-wrap-custom .pqQuotes textarea {
-  min-height: 200px;
-  width: 100%;
-  overflow: hidden;
+.terminal-wrap-custom .pqQuotes .priceqoute-pre {
+  font-size: 11px;
 }
 .terminal-wrap-custom > .term-body {
   width: 100%;
