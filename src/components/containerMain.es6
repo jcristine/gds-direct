@@ -44,9 +44,25 @@ class RightSide extends Component
 	{
 		super('td.menu');
 
-		this.observe(
-			new MenuPanel()
+		const menu = new MenuPanel();
+		this.addToObserve( menu );
+
+		this.append(
+			new Component('section.hbox stretch')
+				.append(
+					new Component('section.vbox')
+						.append(
+							new Component('section.scrollable')
+								.append(
+									menu
+								)
+						)
+				)
 		);
+
+		// this.observe(
+		// 	new MenuPanel()
+		// );
 	}
 
 	_renderer()
@@ -70,15 +86,17 @@ class TempTerminal extends Component
 		this.parent = parent;
 	}
 
-	calculate({cells, rows}, parentWidth)
+	calculate({cells, rows}, parentWidth, parentHeight)
 	{
-		// console.log( 'zzzzz', this.parent.clientWidth );
+		// console.log( 'zzzzz', this.parent.clientHeight );
 		// console.log( 'zzzzz', parentWidth );
 		// console.log( 'zzzzz', this.parent.offsetWidth );
-		// console.log( 'zzzzz', this.parent );
+		// console.log( 'zzzzz', Math.floor(parentHeight 	/ (rows+1)) );
+		// console.log( 'zzzzz', Math.floor(this.parent.clientHeight 	/ (rows+1)));
 
 		return {
-			height		: Math.floor(this.parent.clientHeight 	/ (rows+1)),
+			// height		: Math.floor(this.parent.clientHeight 	/ (rows+1)),
+			height		: Math.floor(parentHeight 	/ (rows+1)),
 			// width 		: Math.floor(this.parent.clientWidth 	/ (cells+1)),
 			width 		: Math.floor((parentWidth - 100) 	/ (cells+1)),
 			char		: this.getLineHeight()
@@ -129,7 +147,8 @@ class Wrapper extends Component
 
 	_renderer()
 	{
-		// console.log(this.context.clientWidth);
+		// console.log(this.context.clientHeight);
+		// console.log(this.context.parentNode.clientHeight);
 		// console.log(this.context);
 		//
 		// console.log(this.context.parentNode.clientWidth);
@@ -138,7 +157,7 @@ class Wrapper extends Component
 		// console.log(this.context.parentNode);
 		// console.log('=================');
 
-		const dimensions = tempTerm.calculate(this.props.gdsObj.matrix, this.context.parentNode.clientWidth);
+		const dimensions = tempTerm.calculate(this.props.gdsObj.matrix, this.context.parentNode.clientWidth, this.context.parentNode.clientHeight);
 		this.props = {...this.props, dimensions}
 	}
 }

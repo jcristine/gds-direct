@@ -1301,7 +1301,14 @@ var RightSide = function (_Component2) {
 
 		var _this2 = _possibleConstructorReturn(this, (RightSide.__proto__ || Object.getPrototypeOf(RightSide)).call(this, 'td.menu'));
 
-		_this2.observe(new _menuPanel2.default());
+		var menu = new _menuPanel2.default();
+		_this2.addToObserve(menu);
+
+		_this2.append(new _component2.default('section.hbox stretch').append(new _component2.default('section.vbox').append(new _component2.default('section.scrollable').append(menu))));
+
+		// this.observe(
+		// 	new MenuPanel()
+		// );
 		return _this2;
 	}
 
@@ -1335,17 +1342,19 @@ var TempTerminal = function (_Component3) {
 
 	_createClass(TempTerminal, [{
 		key: 'calculate',
-		value: function calculate(_ref, parentWidth) {
+		value: function calculate(_ref, parentWidth, parentHeight) {
 			var cells = _ref.cells,
 			    rows = _ref.rows;
 
-			// console.log( 'zzzzz', this.parent.clientWidth );
+			// console.log( 'zzzzz', this.parent.clientHeight );
 			// console.log( 'zzzzz', parentWidth );
 			// console.log( 'zzzzz', this.parent.offsetWidth );
-			// console.log( 'zzzzz', this.parent );
+			// console.log( 'zzzzz', Math.floor(parentHeight 	/ (rows+1)) );
+			// console.log( 'zzzzz', Math.floor(this.parent.clientHeight 	/ (rows+1)));
 
 			return {
-				height: Math.floor(this.parent.clientHeight / (rows + 1)),
+				// height		: Math.floor(this.parent.clientHeight 	/ (rows+1)),
+				height: Math.floor(parentHeight / (rows + 1)),
 				// width 		: Math.floor(this.parent.clientWidth 	/ (cells+1)),
 				width: Math.floor((parentWidth - 100) / (cells + 1)),
 				char: this.getLineHeight()
@@ -1394,7 +1403,8 @@ var Wrapper = function (_Component4) {
 	_createClass(Wrapper, [{
 		key: '_renderer',
 		value: function _renderer() {
-			// console.log(this.context.clientWidth);
+			// console.log(this.context.clientHeight);
+			// console.log(this.context.parentNode.clientHeight);
 			// console.log(this.context);
 			//
 			// console.log(this.context.parentNode.clientWidth);
@@ -1403,7 +1413,7 @@ var Wrapper = function (_Component4) {
 			// console.log(this.context.parentNode);
 			// console.log('=================');
 
-			var dimensions = tempTerm.calculate(this.props.gdsObj.matrix, this.context.parentNode.clientWidth);
+			var dimensions = tempTerm.calculate(this.props.gdsObj.matrix, this.context.parentNode.clientWidth, this.context.parentNode.clientHeight);
 			this.props = _extends({}, this.props, { dimensions: dimensions });
 		}
 	}]);
