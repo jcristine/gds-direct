@@ -30,8 +30,7 @@ export default class TerminalsMatrix extends Component
 		const makeCells = row => {
 			return [ ...new Array(cellCount) ]
 				.map( () => {
-					const cell = Dom('td.terminal-cell', {style : `zbackground: currentColor; width : ${dimensions.width}px; max-height : ${dimensions.height}px; height: ${dimensions.height}px`});
-					// const cell = Dom('td.terminal-cell');
+					const cell = Dom('td.terminal-cell', {style : `width : ${dimensions.width}px; max-height : ${dimensions.height}px; height: ${dimensions.height}px`});
 					row.appendChild(cell);
 					return cell;
 				});
@@ -60,13 +59,14 @@ export default class TerminalsMatrix extends Component
 
 	_renderer()
 	{
-		const {hideMenu, gdsObj, dimensions, pqToShow} = this.props;
+		const {hideMenu, gdsObj, pqToShow, getDimensions, width} = this.props;
 
 		const state = {
 			gds			: gdsObj['name'],
-			dimensions 	: dimensions,
+			matrix		: gdsObj.matrix,
 			hideMenu	: hideMenu,
 			pqToShow	: pqToShow,
+			width
 		};
 
 		const needToRender = this.renderIsNeeded( state );
@@ -77,9 +77,11 @@ export default class TerminalsMatrix extends Component
 			const rowCount 	= gdsObj.matrix.rows 	+ 1;
 			const cellCount = gdsObj.matrix.cells 	+ 1;
 
-			console.warn('need to rerender');
+			// console.warn('need to rerender!!');
 
 			this.context.innerHTML 	= '';
+
+			const dimensions = getDimensions();
 			this.state = state;
 
 			cells = this.makeCells(rowCount, cellCount, dimensions);

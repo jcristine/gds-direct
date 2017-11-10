@@ -88,13 +88,10 @@ class TempTerminal extends Component
 		// console.log( 'zzzzz', parentWidth );
 		// console.log( 'zzzzz' );
 
-		// console.log( 'zzzzz', this.parent.offsetWidth );
-		// console.log( 'zzzzz', Math.floor(parentHeight 	/ (rows+1)) );
-		// console.log( 'zzzzz', Math.floor(this.parent.clientHeight 	/ (rows+1)));
 
 		return {
 			height		: Math.floor(parentHeight 	/ (rows+1)),
-			width 		: Math.floor((parentWidth - 100) 	/ (cells+1)),
+			width 		: Math.floor( (this.parent.clientWidth) 	/ (cells+1)),
 			char		: this.getLineHeight()
 		}
 	}
@@ -145,12 +142,14 @@ class Wrapper extends Component
 
 	_renderer()
 	{
-		// console.log(this.context.clientWidth);
-		// console.log(this.context.parentNode.clientHeight);
-		// console.log(this.context.parentNode.clientWidth);
-		// console.log('=================');
+		// const dimensions = tempTerm.calculate(this.props.gdsObj.matrix, this.context.parentNode.clientWidth, this.context.parentNode.clientHeight);
 
-		const dimensions = tempTerm.calculate(this.props.gdsObj.matrix, this.context.parentNode.clientWidth, this.context.parentNode.clientHeight);
-		this.props = {...this.props, dimensions}
+		this.props = {...this.props, width : this.context.clientWidth, getDimensions : () => {
+			// console.log(this.context.clientWidth);
+			// console.log(this.context.parentNode.clientWidth);
+			// console.log('=================');
+
+			return tempTerm.calculate(this.props.gdsObj.matrix, this.context.parentNode.clientWidth, this.context.parentNode.clientHeight)
+		}}
 	}
 }

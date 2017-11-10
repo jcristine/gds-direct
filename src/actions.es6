@@ -123,7 +123,7 @@ export const CHANGE_SESSION_BY_MENU = area => {
 export const CHANGE_GDS = gdsName => {
 	GET('terminal/saveSetting/gds', gdsName);
 
-	// Gds[state.getGds()] = state.getGdsObj(); // save prev gds state
+	Gds[state.getGds()] = state.getGdsObj(); // save prev gds state
 
 	state.change({
 		gdsObj 	: Gds[gdsName]

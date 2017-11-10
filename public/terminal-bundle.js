@@ -226,7 +226,7 @@ var CHANGE_SESSION_BY_MENU = exports.CHANGE_SESSION_BY_MENU = function CHANGE_SE
 var CHANGE_GDS = exports.CHANGE_GDS = function CHANGE_GDS(gdsName) {
 	GET('terminal/saveSetting/gds', gdsName);
 
-	// Gds[state.getGds()] = state.getGdsObj(); // save prev gds state
+	Gds[state.getGds()] = state.getGdsObj(); // save prev gds state
 
 	state.change({
 		gdsObj: Gds[gdsName]
@@ -1349,13 +1349,10 @@ var TempTerminal = function (_Component3) {
 			// console.log( 'zzzzz', parentWidth );
 			// console.log( 'zzzzz' );
 
-			// console.log( 'zzzzz', this.parent.offsetWidth );
-			// console.log( 'zzzzz', Math.floor(parentHeight 	/ (rows+1)) );
-			// console.log( 'zzzzz', Math.floor(this.parent.clientHeight 	/ (rows+1)));
 
 			return {
 				height: Math.floor(parentHeight / (rows + 1)),
-				width: Math.floor((parentWidth - 100) / (cells + 1)),
+				width: Math.floor(this.parent.clientWidth / (cells + 1)),
 				char: this.getLineHeight()
 			};
 		}
@@ -1404,13 +1401,17 @@ var Wrapper = function (_Component4) {
 	_createClass(Wrapper, [{
 		key: '_renderer',
 		value: function _renderer() {
-			// console.log(this.context.clientWidth);
-			// console.log(this.context.parentNode.clientHeight);
-			// console.log(this.context.parentNode.clientWidth);
-			// console.log('=================');
+			var _this5 = this;
 
-			var dimensions = tempTerm.calculate(this.props.gdsObj.matrix, this.context.parentNode.clientWidth, this.context.parentNode.clientHeight);
-			this.props = _extends({}, this.props, { dimensions: dimensions });
+			// const dimensions = tempTerm.calculate(this.props.gdsObj.matrix, this.context.parentNode.clientWidth, this.context.parentNode.clientHeight);
+
+			this.props = _extends({}, this.props, { width: this.context.clientWidth, getDimensions: function getDimensions() {
+					// console.log(this.context.clientWidth);
+					// console.log(this.context.parentNode.clientWidth);
+					// console.log('=================');
+
+					return tempTerm.calculate(_this5.props.gdsObj.matrix, _this5.context.parentNode.clientWidth, _this5.context.parentNode.clientHeight);
+				} });
 		}
 	}]);
 
@@ -2426,8 +2427,7 @@ var TerminalsMatrix = function (_Component) {
 
 			var makeCells = function makeCells(row) {
 				return [].concat(_toConsumableArray(new Array(cellCount))).map(function () {
-					var cell = (0, _dom2.default)('td.terminal-cell', { style: 'zbackground: currentColor; width : ' + dimensions.width + 'px; max-height : ' + dimensions.height + 'px; height: ' + dimensions.height + 'px' });
-					// const cell = Dom('td.terminal-cell');
+					var cell = (0, _dom2.default)('td.terminal-cell', { style: 'width : ' + dimensions.width + 'px; max-height : ' + dimensions.height + 'px; height: ' + dimensions.height + 'px' });
 					row.appendChild(cell);
 					return cell;
 				});
@@ -2462,15 +2462,17 @@ var TerminalsMatrix = function (_Component) {
 			var _props = this.props,
 			    hideMenu = _props.hideMenu,
 			    gdsObj = _props.gdsObj,
-			    dimensions = _props.dimensions,
-			    pqToShow = _props.pqToShow;
+			    pqToShow = _props.pqToShow,
+			    getDimensions = _props.getDimensions,
+			    width = _props.width;
 
 
 			var state = {
 				gds: gdsObj['name'],
-				dimensions: dimensions,
+				matrix: gdsObj.matrix,
 				hideMenu: hideMenu,
-				pqToShow: pqToShow
+				pqToShow: pqToShow,
+				width: width
 			};
 
 			var needToRender = this.renderIsNeeded(state);
@@ -2480,9 +2482,11 @@ var TerminalsMatrix = function (_Component) {
 				var rowCount = gdsObj.matrix.rows + 1;
 				var cellCount = gdsObj.matrix.cells + 1;
 
-				console.warn('need to rerender');
+				// console.warn('need to rerender!!');
 
 				this.context.innerHTML = '';
+
+				var dimensions = getDimensions();
 				this.state = state;
 
 				cells = this.makeCells(rowCount, cellCount, dimensions);
