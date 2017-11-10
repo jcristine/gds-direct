@@ -60,12 +60,13 @@ export default class TerminalsMatrix extends Component
 
 	_renderer()
 	{
-		const {hideMenu, buffer, gdsObj, dimensions} = this.props;
+		const {hideMenu, gdsObj, dimensions, pqToShow} = this.props;
 
 		const state = {
 			gds			: gdsObj['name'],
 			dimensions 	: dimensions,
-			hideMenu	: hideMenu
+			hideMenu	: hideMenu,
+			pqToShow	: pqToShow,
 		};
 
 		const needToRender = this.renderIsNeeded( state );
@@ -79,8 +80,6 @@ export default class TerminalsMatrix extends Component
 			console.warn('need to rerender');
 
 			this.context.innerHTML 	= '';
-			// this.context.className 	= 't-matrix-w-' + ( cellCount - 1 );
-
 			this.state = state;
 
 			cells = this.makeCells(rowCount, cellCount, dimensions);
@@ -90,12 +89,12 @@ export default class TerminalsMatrix extends Component
 				const props = {
 					name 	: index,
 					gds		: gdsObj['name'],
-					buffer	: buffer && buffer[gdsObj['name']] ? buffer[gdsObj['name']]['terminals'][index + 1] : ''
+					buffer	: gdsObj['buffer'] ? gdsObj['buffer']['terminals'][index + 1] : ''
 				};
 
-				this.getTerminal( gdsObj['name'], index, props )
+				this
+					.getTerminal( gdsObj['name'], index, props )
 					.reattach( cell, dimensions )
-					// .reattach( cell, this.sizer.calculate(rowCount, cellCount) ); //sometimes calculate doesn't get actual parent context dimensions
 			});
 		}
 

@@ -127,7 +127,7 @@ class LanguageButtons extends Component
 
 		['APOLLO','SABRE', 'AMADEUS'].forEach( value => {
 
-			const button = Dom('button.btn  btn-gold t-f-size-10 font-bold' + ( this.props.language === value ? ' active' : '') );
+			const button = Dom('button.btn btn-gold t-f-size-10 font-bold' + ( this.props.language === value ? ' active' : '') );
 
 			button.innerHTML = value;
 			button.addEventListener('click', () => CHANGE_INPUT_LANGUAGE(value) );

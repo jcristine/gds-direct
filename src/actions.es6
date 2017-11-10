@@ -12,7 +12,7 @@ export const INIT = ({ settings, ...params }) => {
 
 	pqParser = new PqParser(params["PqPriceModal"]);
 
-	GdsSet.makeList(settings['gds']).forEach( gds => Gds[gds['name']] = gds);
+	Gds = GdsSet.init(settings['gds'], params['buffer']);
 
 	state = window.TerminalState = new TerminalState(params);
 
@@ -83,7 +83,7 @@ export const SHOW_PQ_QUOTES = (e) => {
 
 			state.change({
 				pqToShow	: response,
-				hideMenu	: true
+				// hideMenu	: true
 			});
 		});
 };
@@ -91,7 +91,7 @@ export const SHOW_PQ_QUOTES = (e) => {
 export const HIDE_PQ_QUOTES = () => {
 	state.change({
 		pqToShow	: false,
-		hideMenu	: false
+		// hideMenu	: false
 	});
 };
 

@@ -114,9 +114,7 @@ var INIT = function INIT(_ref) {
 
 	pqParser = new _pqParser.PqParser(params["PqPriceModal"]);
 
-	_gds2.default.makeList(settings['gds']).forEach(function (gds) {
-		return Gds[gds['name']] = gds;
-	});
+	Gds = _gds2.default.init(settings['gds'], params['buffer']);
 
 	state = window.TerminalState = new _state.TerminalState(params);
 
@@ -188,16 +186,16 @@ var SHOW_PQ_QUOTES = exports.SHOW_PQ_QUOTES = function SHOW_PQ_QUOTES(e) {
 		e.target.innerHTML = 'Quotes';
 
 		state.change({
-			pqToShow: response,
-			hideMenu: true
+			pqToShow: response
+			// hideMenu	: true
 		});
 	});
 };
 
 var HIDE_PQ_QUOTES = exports.HIDE_PQ_QUOTES = function HIDE_PQ_QUOTES() {
 	state.change({
-		pqToShow: false,
-		hideMenu: false
+		pqToShow: false
+		// hideMenu	: false
 	});
 };
 
@@ -850,6 +848,19 @@ var GdsSet = function () {
 		value: function getList() {
 			return this.gdsList;
 		}
+	}, {
+		key: 'init',
+		value: function init(gdsList) {
+			var buffer = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+
+			var gds = {};
+
+			GdsSet.makeList(gdsList).forEach(function (obj) {
+				gds[obj['name']] = _extends({}, obj, { buffer: buffer && buffer.gds ? buffer.gds[obj['name']] : '' });
+			});
+
+			return gds;
+		}
 	}]);
 
 	return GdsSet;
@@ -1060,7 +1071,7 @@ window.onresize = function () {
 
 	resizeTimeout = setTimeout(function () {
 		return (0, _actions.UPDATE_STATE)({});
-	}, 50);
+	}, 10);
 };
 
 /***/ }),
@@ -1099,7 +1110,6 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 var TerminalState = exports.TerminalState = function () {
 	function TerminalState(_ref) {
 		var permissions = _ref.permissions,
-		    buffer = _ref.buffer,
 		    requestId = _ref.requestId;
 
 		_classCallCheck(this, TerminalState);
@@ -1108,17 +1118,10 @@ var TerminalState = exports.TerminalState = function () {
 			language: 'APOLLO',
 			fontSize: 1,
 			hideMenu: false,
-			buffer: buffer,
 			requestId: requestId
 		};
 
 		this.permissions = permissions;
-
-		this.buffer = {
-			gds: {}
-		};
-
-		if (buffer && buffer.gds) this.state.buffer = buffer.gds;
 	}
 
 	_createClass(TerminalState, [{
@@ -1305,10 +1308,6 @@ var RightSide = function (_Component2) {
 		_this2.addToObserve(menu);
 
 		_this2.append(new _component2.default('section.hbox stretch').append(new _component2.default('section.vbox').append(new _component2.default('section.scrollable').append(menu))));
-
-		// this.observe(
-		// 	new MenuPanel()
-		// );
 		return _this2;
 	}
 
@@ -1346,16 +1345,16 @@ var TempTerminal = function (_Component3) {
 			var cells = _ref.cells,
 			    rows = _ref.rows;
 
-			// console.log( 'zzzzz', this.parent.clientHeight );
+			// console.log( 'zzzzz', this.parent.clientWidth );
 			// console.log( 'zzzzz', parentWidth );
+			// console.log( 'zzzzz' );
+
 			// console.log( 'zzzzz', this.parent.offsetWidth );
 			// console.log( 'zzzzz', Math.floor(parentHeight 	/ (rows+1)) );
 			// console.log( 'zzzzz', Math.floor(this.parent.clientHeight 	/ (rows+1)));
 
 			return {
-				// height		: Math.floor(this.parent.clientHeight 	/ (rows+1)),
 				height: Math.floor(parentHeight / (rows + 1)),
-				// width 		: Math.floor(this.parent.clientWidth 	/ (cells+1)),
 				width: Math.floor((parentWidth - 100) / (cells + 1)),
 				char: this.getLineHeight()
 			};
@@ -1384,13 +1383,15 @@ var Wrapper = function (_Component4) {
 
 		matrix = new _terminalMatrix2.default(_this4.context);
 
-		var leftSide = new _component2.default('td.left');
 		var rightSide = new RightSide();
+		var pqQuotes = new _PqQuotes.PqQuotes();
+		var leftSide = new _component2.default('td.left');
 
 		tempTerm = new TempTerminal(leftSide.context);
 
-		_this4.observe(new _component2.default('tr').append(leftSide).observe(new _PqQuotes.PqQuotes()).append(rightSide));
+		_this4.observe(new _component2.default('tr').append(leftSide).append(pqQuotes).append(rightSide));
 
+		_this4.addToObserve(pqQuotes);
 		_this4.addToObserve(rightSide);
 		_this4.addToObserve(leftSide);
 
@@ -1403,14 +1404,9 @@ var Wrapper = function (_Component4) {
 	_createClass(Wrapper, [{
 		key: '_renderer',
 		value: function _renderer() {
-			// console.log(this.context.clientHeight);
+			// console.log(this.context.clientWidth);
 			// console.log(this.context.parentNode.clientHeight);
-			// console.log(this.context);
-			//
 			// console.log(this.context.parentNode.clientWidth);
-			// console.log(this.context.parentNode);
-			//
-			// console.log(this.context.parentNode);
 			// console.log('=================');
 
 			var dimensions = tempTerm.calculate(this.props.gdsObj.matrix, this.context.parentNode.clientWidth, this.context.parentNode.clientHeight);
@@ -1785,7 +1781,7 @@ var LanguageButtons = function (_Component4) {
 
 			['APOLLO', 'SABRE', 'AMADEUS'].forEach(function (value) {
 
-				var button = (0, _dom2.default)('button.btn  btn-gold t-f-size-10 font-bold' + (_this6.props.language === value ? ' active' : ''));
+				var button = (0, _dom2.default)('button.btn btn-gold t-f-size-10 font-bold' + (_this6.props.language === value ? ' active' : ''));
 
 				button.innerHTML = value;
 				button.addEventListener('click', function () {
@@ -2465,15 +2461,16 @@ var TerminalsMatrix = function (_Component) {
 
 			var _props = this.props,
 			    hideMenu = _props.hideMenu,
-			    buffer = _props.buffer,
 			    gdsObj = _props.gdsObj,
-			    dimensions = _props.dimensions;
+			    dimensions = _props.dimensions,
+			    pqToShow = _props.pqToShow;
 
 
 			var state = {
 				gds: gdsObj['name'],
 				dimensions: dimensions,
-				hideMenu: hideMenu
+				hideMenu: hideMenu,
+				pqToShow: pqToShow
 			};
 
 			var needToRender = this.renderIsNeeded(state);
@@ -2486,8 +2483,6 @@ var TerminalsMatrix = function (_Component) {
 				console.warn('need to rerender');
 
 				this.context.innerHTML = '';
-				// this.context.className 	= 't-matrix-w-' + ( cellCount - 1 );
-
 				this.state = state;
 
 				cells = this.makeCells(rowCount, cellCount, dimensions);
@@ -2497,11 +2492,10 @@ var TerminalsMatrix = function (_Component) {
 					var props = {
 						name: index,
 						gds: gdsObj['name'],
-						buffer: buffer && buffer[gdsObj['name']] ? buffer[gdsObj['name']]['terminals'][index + 1] : ''
+						buffer: gdsObj['buffer'] ? gdsObj['buffer']['terminals'][index + 1] : ''
 					};
 
 					_this3.getTerminal(gdsObj['name'], index, props).reattach(cell, dimensions);
-					// .reattach( cell, this.sizer.calculate(rowCount, cellCount) ); //sometimes calculate doesn't get actual parent context dimensions
 				});
 			}
 
@@ -2635,6 +2629,8 @@ var TerminalPlugin = function () {
 	}, {
 		key: 'changeActiveTerm',
 		value: function changeActiveTerm() {
+			// this.context.parentNode.classList.add('activeWindow');
+
 			if (this.settings.name === 'fullScreen') return false;
 
 			window.activePlugin = this; // SO SO check to DEPRECATED

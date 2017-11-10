@@ -36,4 +36,15 @@ export default class GdsSet
 	{
 		return this.gdsList;
 	}
+
+	static init( gdsList, buffer = {} )
+	{
+		let gds = {};
+
+		GdsSet.makeList(gdsList).forEach( obj => {
+			gds[ obj['name'] ] = {...obj , buffer :  buffer && buffer.gds ? buffer.gds[obj['name']]  : ''};
+		});
+
+		return gds;
+	}
 }

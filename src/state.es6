@@ -1,23 +1,15 @@
 export class TerminalState
 {
-	constructor({permissions, buffer, requestId})
+	constructor({permissions, requestId})
 	{
 		this.state = {
 			language	: 'APOLLO',
 			fontSize	: 1,
 			hideMenu	: false,
-			buffer		: buffer,
 			requestId	: requestId
 		};
 
 		this.permissions	= permissions;
-
-		this.buffer = {
-			gds : {}
-		};
-
-		if ( buffer && buffer.gds )
-			this.state.buffer = buffer.gds;
 	}
 
 	setProvider( fn )

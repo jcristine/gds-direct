@@ -76,6 +76,8 @@ export default class TerminalPlugin
 
 	changeActiveTerm()
 	{
+		// this.context.parentNode.classList.add('activeWindow');
+
 		if (this.settings.name === 'fullScreen')
 			return false;
 

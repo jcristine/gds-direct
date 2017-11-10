@@ -19,5 +19,5 @@ window.onresize = () => {
 	if (resizeTimeout)
 		clearInterval(resizeTimeout);
 
-	resizeTimeout = setTimeout( () => UPDATE_STATE({}), 50 );
+	resizeTimeout = setTimeout( () => UPDATE_STATE({}), 10 );
 };

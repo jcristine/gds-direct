@@ -59,10 +59,6 @@ class RightSide extends Component
 						)
 				)
 		);
-
-		// this.observe(
-		// 	new MenuPanel()
-		// );
 	}
 
 	_renderer()
@@ -88,16 +84,16 @@ class TempTerminal extends Component
 
 	calculate({cells, rows}, parentWidth, parentHeight)
 	{
-		// console.log( 'zzzzz', this.parent.clientHeight );
+		// console.log( 'zzzzz', this.parent.clientWidth );
 		// console.log( 'zzzzz', parentWidth );
+		// console.log( 'zzzzz' );
+
 		// console.log( 'zzzzz', this.parent.offsetWidth );
 		// console.log( 'zzzzz', Math.floor(parentHeight 	/ (rows+1)) );
 		// console.log( 'zzzzz', Math.floor(this.parent.clientHeight 	/ (rows+1)));
 
 		return {
-			// height		: Math.floor(this.parent.clientHeight 	/ (rows+1)),
 			height		: Math.floor(parentHeight 	/ (rows+1)),
-			// width 		: Math.floor(this.parent.clientWidth 	/ (cells+1)),
 			width 		: Math.floor((parentWidth - 100) 	/ (cells+1)),
 			char		: this.getLineHeight()
 		}
@@ -118,8 +114,9 @@ class Wrapper extends Component
 
 		matrix 			= new TerminalMatrix( this.context );
 
-		const leftSide 	= new Component('td.left');
 		const rightSide = new RightSide();
+		const pqQuotes 	= new PqQuotes();
+		const leftSide 	= new Component('td.left');
 
 		tempTerm		= new TempTerminal(leftSide.context);
 
@@ -127,10 +124,11 @@ class Wrapper extends Component
 			.observe(
 				new Component('tr')
 					.append( leftSide )
-					.observe( new PqQuotes() )
+					.append( pqQuotes)
 					.append( rightSide )
 			);
 
+		this.addToObserve( pqQuotes );
 		this.addToObserve( rightSide );
 		this.addToObserve( leftSide );
 
@@ -147,14 +145,9 @@ class Wrapper extends Component
 
 	_renderer()
 	{
-		// console.log(this.context.clientHeight);
+		// console.log(this.context.clientWidth);
 		// console.log(this.context.parentNode.clientHeight);
-		// console.log(this.context);
-		//
 		// console.log(this.context.parentNode.clientWidth);
-		// console.log(this.context.parentNode);
-		//
-		// console.log(this.context.parentNode);
 		// console.log('=================');
 
 		const dimensions = tempTerm.calculate(this.props.gdsObj.matrix, this.context.parentNode.clientWidth, this.context.parentNode.clientHeight);
