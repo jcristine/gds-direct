@@ -52,11 +52,17 @@ export const GET_HISTORY = () => {
 	return get(`terminal/lastCommands?rId=${state.getRequestId()}&gds=${state.getGds()}`);
 };
 
-export const CHANGE_ACTIVE_TERMINAL = ({gds, curTerminalId}) => {
+export const CHANGE_ACTIVE_TERMINAL = ({gds, curTerminalId, plugin}) => {
 
-	GET('terminal/saveSetting/terminal', (name + 1));
+	GET('terminal/saveSetting/terminal', (curTerminalId + 1));
 
-	Gds[gds] = { ...Gds[gds], curTerminalId };
+	if (window.activePlugin)
+		window.activePlugin.context.parentNode.classList.remove('activeWindow');
+
+	plugin.context.parentNode.classList.add('activeWindow');
+	window.activePlugin = plugin; // SO SO check to DEPRECATED
+
+	Gds[gds] = {...Gds[gds], curTerminalId };
 
 	state.change({
 		gdsObj : Gds[gds]

@@ -76,14 +76,10 @@ export default class TerminalPlugin
 
 	changeActiveTerm()
 	{
-		// this.context.parentNode.classList.add('activeWindow');
-
 		if (this.settings.name === 'fullScreen')
 			return false;
 
-		window.activePlugin = this; // SO SO check to DEPRECATED
-
-		CHANGE_ACTIVE_TERMINAL({gds : this.settings.gds, curTerminalId : this.name});
+		CHANGE_ACTIVE_TERMINAL({gds : this.settings.gds, curTerminalId : this.name, plugin : this});
 	}
 
 	purge()

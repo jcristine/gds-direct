@@ -156,10 +156,16 @@ var GET_HISTORY = exports.GET_HISTORY = function GET_HISTORY() {
 
 var CHANGE_ACTIVE_TERMINAL = exports.CHANGE_ACTIVE_TERMINAL = function CHANGE_ACTIVE_TERMINAL(_ref2) {
 	var gds = _ref2.gds,
-	    curTerminalId = _ref2.curTerminalId;
+	    curTerminalId = _ref2.curTerminalId,
+	    plugin = _ref2.plugin;
 
 
-	GET('terminal/saveSetting/terminal', name + 1);
+	GET('terminal/saveSetting/terminal', curTerminalId + 1);
+
+	if (window.activePlugin) window.activePlugin.context.parentNode.classList.remove('activeWindow');
+
+	plugin.context.parentNode.classList.add('activeWindow');
+	window.activePlugin = plugin; // SO SO check to DEPRECATED
 
 	Gds[gds] = _extends({}, Gds[gds], { curTerminalId: curTerminalId });
 
@@ -744,7 +750,12 @@ var debugRequest = exports.debugRequest = function debugRequest(err) {
 		text: 'SERVER ERROR : ' + err,
 		layout: 'bottomRight',
 		timeout: 5000,
-		type: 'error'
+		type: 'error',
+		progressBar: false,
+		animation: {
+			open: 'animated fadeIn', // Animate.css class names
+			close: 'animated fadeOut' // Animate.css class names
+		}
 	}).show();
 
 	console.warn('Server Returned: ', err);
@@ -997,7 +1008,6 @@ var Terminal = function () {
 			this.numOfRows = Math.floor(parentNode.clientHeight / dimensions.char.height);
 			this.numOfChars = Math.floor(this.context.clientWidth / dimensions.char.width); //2 - padding-left px : need to fix
 
-
 			if (this.plugin) {
 				this.plugin.resize({
 					numOfChars: this.numOfChars - 2,
@@ -1008,8 +1018,9 @@ var Terminal = function () {
 			}
 
 			this.context.style.height = this.numOfRows * dimensions.char.height + 'px';
-
 			this.context.scrollTop = this.context.scrollHeight;
+
+			return this.plugin;
 		}
 	}, {
 		key: 'clear',
@@ -2387,8 +2398,6 @@ var _component2 = _interopRequireDefault(_component);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
-
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
@@ -2397,7 +2406,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 
 var gdsSession = [];
 var stringify = JSON.stringify;
-var cells = [];
+// let cells 			= [];
 
 var TerminalsMatrix = function (_Component) {
 	_inherits(TerminalsMatrix, _Component);
@@ -2416,24 +2425,32 @@ var TerminalsMatrix = function (_Component) {
 		}
 	}, {
 		key: 'makeCells',
-		value: function makeCells(rowCount, cellCount, dimensions) {
+		value: function makeCells(_ref, dimensions) {
 			var _this2 = this;
 
-			var makeRow = function makeRow() {
-				var row = (0, _dom2.default)('tr');
-				_this2.context.appendChild(row);
-				return row;
-			};
+			var rows = _ref.rows,
+			    cells = _ref.cells;
 
-			var makeCells = function makeCells(row) {
-				return [].concat(_toConsumableArray(new Array(cellCount))).map(function () {
-					var cell = (0, _dom2.default)('td.terminal-cell', { style: 'width : ' + dimensions.width + 'px; max-height : ' + dimensions.height + 'px; height: ' + dimensions.height + 'px' });
-					row.appendChild(cell);
-					return cell;
+			var cellsDom = [];
+
+			Array.apply(null, { length: rows + 1 }).map(function () {
+				return (0, _dom2.default)('tr');
+			}).map(function (tr) {
+
+				Array.apply(null, { length: cells + 1 }).map(function () {
+
+					var cell = (0, _dom2.default)('td.terminal-cell', {
+						style: 'width : ' + dimensions.width + 'px; max-height : ' + dimensions.height + 'px; height: ' + dimensions.height + 'px'
+					});
+
+					tr.appendChild(cell);
+					cellsDom.push(cell);
 				});
-			};
 
-			return [].concat.apply([], [].concat(_toConsumableArray(new Array(rowCount))).map(makeRow).map(makeCells));
+				_this2.context.appendChild(tr);
+			});
+
+			return cellsDom;
 		}
 	}, {
 		key: 'purgeScreens',
@@ -2479,19 +2496,15 @@ var TerminalsMatrix = function (_Component) {
 
 			if (needToRender) {
 				gdsSession[gdsObj['name']] = gdsSession[gdsObj['name']] || [];
-				var rowCount = gdsObj.matrix.rows + 1;
-				var cellCount = gdsObj.matrix.cells + 1;
 
-				// console.warn('need to rerender!!');
+				console.warn('need to rerender!!');
 
 				this.context.innerHTML = '';
 
 				var dimensions = getDimensions();
 				this.state = state;
 
-				cells = this.makeCells(rowCount, cellCount, dimensions);
-
-				cells.forEach(function (cell, index) {
+				this.makeCells(gdsObj.matrix, dimensions).forEach(function (cell, index) {
 
 					var props = {
 						name: index,
@@ -2499,15 +2512,14 @@ var TerminalsMatrix = function (_Component) {
 						buffer: gdsObj['buffer'] ? gdsObj['buffer']['terminals'][index + 1] : ''
 					};
 
-					_this3.getTerminal(gdsObj['name'], index, props).reattach(cell, dimensions);
+					// if (gdsObj.curTerminalId === index)
+					// {
+					// 	cell.classList.add('activeWindow');
+					// }
+
+					_this3.getTerminal(gdsObj['name'], index, props).reattach(cell, dimensions, gdsObj.curTerminalId === index);
 				});
 			}
-
-			if (cells[this.curTerminalId]) cells[this.curTerminalId].classList.remove('activeWindow');
-
-			if (cells[gdsObj.curTerminalId]) cells[gdsObj.curTerminalId].classList.add('activeWindow');
-
-			this.curTerminalId = gdsObj.curTerminalId;
 		}
 	}]);
 
@@ -2633,13 +2645,9 @@ var TerminalPlugin = function () {
 	}, {
 		key: 'changeActiveTerm',
 		value: function changeActiveTerm() {
-			// this.context.parentNode.classList.add('activeWindow');
-
 			if (this.settings.name === 'fullScreen') return false;
 
-			window.activePlugin = this; // SO SO check to DEPRECATED
-
-			(0, _actions.CHANGE_ACTIVE_TERMINAL)({ gds: this.settings.gds, curTerminalId: this.name });
+			(0, _actions.CHANGE_ACTIVE_TERMINAL)({ gds: this.settings.gds, curTerminalId: this.name, plugin: this });
 		}
 	}, {
 		key: 'purge',

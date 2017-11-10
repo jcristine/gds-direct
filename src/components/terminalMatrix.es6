@@ -4,7 +4,7 @@ import Component 	from '../modules/component.es6';
 
 const gdsSession	= [];
 const stringify 	= JSON.stringify;
-let cells 			= [];
+// let cells 			= [];
 
 export default class TerminalsMatrix extends Component
 {
@@ -19,24 +19,28 @@ export default class TerminalsMatrix extends Component
 		return this;
 	}
 
-	makeCells(rowCount, cellCount, dimensions)
+	makeCells( {rows, cells} , dimensions)
 	{
-		const makeRow 	= () => {
-			const row = Dom('tr');
-			this.context.appendChild( row );
-			return row;
-		};
+		let cellsDom = [];
 
-		const makeCells = row => {
-			return [ ...new Array(cellCount) ]
-				.map( () => {
-					const cell = Dom('td.terminal-cell', {style : `width : ${dimensions.width}px; max-height : ${dimensions.height}px; height: ${dimensions.height}px`});
-					row.appendChild(cell);
-					return cell;
+		Array.apply(null, {length: rows + 1 })
+			.map( () => Dom('tr') )
+			.map( tr => {
+
+				Array.apply(null, {length: cells + 1}).map( () => {
+
+					const cell = Dom('td.terminal-cell', {
+						style : `width : ${dimensions.width}px; max-height : ${dimensions.height}px; height: ${dimensions.height}px`
+					});
+
+					tr.appendChild(cell);
+					cellsDom.push( cell );
 				});
-		};
 
-		return [].concat.apply( [], [ ...new Array(rowCount) ].map( makeRow ).map( makeCells ) );
+				this.context.appendChild( tr );
+			});
+
+		return cellsDom;
 	}
 
 	purgeScreens( gds )
@@ -74,19 +78,15 @@ export default class TerminalsMatrix extends Component
 		if ( needToRender )
 		{
 			gdsSession[gdsObj['name']] = gdsSession[gdsObj['name']] || [];
-			const rowCount 	= gdsObj.matrix.rows 	+ 1;
-			const cellCount = gdsObj.matrix.cells 	+ 1;
 
-			// console.warn('need to rerender!!');
+			console.warn('need to rerender!!');
 
 			this.context.innerHTML 	= '';
 
 			const dimensions = getDimensions();
 			this.state = state;
 
-			cells = this.makeCells(rowCount, cellCount, dimensions);
-
-			cells.forEach( (cell, index) => {
+			this.makeCells(gdsObj.matrix, dimensions).forEach( (cell, index) => {
 
 				const props = {
 					name 	: index,
@@ -94,18 +94,15 @@ export default class TerminalsMatrix extends Component
 					buffer	: gdsObj['buffer'] ? gdsObj['buffer']['terminals'][index + 1] : ''
 				};
 
+				// if (gdsObj.curTerminalId === index)
+				// {
+				// 	cell.classList.add('activeWindow');
+				// }
+
 				this
 					.getTerminal( gdsObj['name'], index, props )
-					.reattach( cell, dimensions )
+					.reattach( cell, dimensions,  gdsObj.curTerminalId === index);
 			});
 		}
-
-		if (cells[this.curTerminalId])
-			cells[this.curTerminalId].classList.remove('activeWindow');
-
-		if (cells[gdsObj.curTerminalId])
-			cells[gdsObj.curTerminalId].classList.add('activeWindow');
-
-		this.curTerminalId = gdsObj.curTerminalId;
 	}
 }

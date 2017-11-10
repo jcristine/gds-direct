@@ -20,7 +20,12 @@ export const debugRequest = err => {
 		text	: `SERVER ERROR : ${err}`,
 		layout 	: 'bottomRight',
 		timeout : 5000,
-		type 	: 'error'
+		type 	: 'error',
+		progressBar : false,
+		animation: {
+			open	: 'animated fadeIn', // Animate.css class names
+			close	: 'animated fadeOut' // Animate.css class names
+		}
 	}).show();
 
 	console.warn( 'Server Returned: ', err );
