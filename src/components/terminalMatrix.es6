@@ -63,14 +63,15 @@ export default class TerminalsMatrix extends Component
 
 	_renderer()
 	{
-		const {hideMenu, gdsObj, pqToShow, getDimensions, width} = this.props;
+		const {hideMenu, gdsObj, pqToShow, getDimensions, width, fontSize} = this.props;
 
 		const state = {
 			gds			: gdsObj['name'],
 			matrix		: gdsObj.matrix,
 			hideMenu	: hideMenu,
 			pqToShow	: pqToShow,
-			width
+			width,
+			fontSize
 		};
 
 		const needToRender = this.renderIsNeeded( state );

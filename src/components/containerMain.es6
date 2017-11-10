@@ -144,7 +144,7 @@ class Wrapper extends Component
 	{
 		// const dimensions = tempTerm.calculate(this.props.gdsObj.matrix, this.context.parentNode.clientWidth, this.context.parentNode.clientHeight);
 
-		this.props = {...this.props, width : this.context.clientWidth, getDimensions : () => {
+		this.props = {...this.props,  width : this.context.clientWidth, getDimensions : () => {
 			// console.log(this.context.clientWidth);
 			// console.log(this.context.parentNode.clientWidth);
 			// console.log('=================');

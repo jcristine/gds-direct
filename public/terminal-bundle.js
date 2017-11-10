@@ -2481,7 +2481,8 @@ var TerminalsMatrix = function (_Component) {
 			    gdsObj = _props.gdsObj,
 			    pqToShow = _props.pqToShow,
 			    getDimensions = _props.getDimensions,
-			    width = _props.width;
+			    width = _props.width,
+			    fontSize = _props.fontSize;
 
 
 			var state = {
@@ -2489,7 +2490,8 @@ var TerminalsMatrix = function (_Component) {
 				matrix: gdsObj.matrix,
 				hideMenu: hideMenu,
 				pqToShow: pqToShow,
-				width: width
+				width: width,
+				fontSize: fontSize
 			};
 
 			var needToRender = this.renderIsNeeded(state);
