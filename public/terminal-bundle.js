@@ -1848,6 +1848,8 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
+var CLASS_NAME = 'terminaltheme_';
+
 var Theme = function (_ButtonPopOver) {
 	_inherits(Theme, _ButtonPopOver);
 
@@ -1857,7 +1859,12 @@ var Theme = function (_ButtonPopOver) {
 		var _this = _possibleConstructorReturn(this, (Theme.__proto__ || Object.getPrototypeOf(Theme)).call(this, params));
 
 		_this.agentId = apiData.auth.id;
-		_this.oldThemeClass = (0, _cookie.cookieGet)('terminalTheme_' + _this.agentId) || 'terminaltheme_' + window.apiData['terminalThemes'][0]['id'];
+		var theme = (0, _cookie.cookieGet)('terminalTheme_' + _this.agentId);
+
+		_this.oldThemeClass = theme || CLASS_NAME + window.apiData['terminalThemes'][0]['id'];
+		_this.themeId = window.apiData['terminalThemes'][0]['id'];
+
+		if (theme) _this.themeId = parseInt(theme.split('_')[1]);
 
 		_this.context = document.getElementById('terminalContext');
 		_this.context.classList.add(_this.oldThemeClass);
@@ -1869,13 +1876,17 @@ var Theme = function (_ButtonPopOver) {
 	_createClass(Theme, [{
 		key: 'onSelect',
 		value: function onSelect(value) {
-			var newThemeClass = 'terminaltheme_' + value.id;
+			var newThemeClass = CLASS_NAME + value.id;
+			this.themeId = value.id;
 
 			this.context.classList.remove(this.oldThemeClass);
 			this.context.classList.add(newThemeClass);
 
 			this.oldThemeClass = newThemeClass;
 			(0, _cookie.cookieSet)('terminalTheme_' + this.agentId, newThemeClass, 30);
+
+			this.popContent.innerHTML = '';
+			this.build();
 		}
 	}, {
 		key: 'build',
@@ -1885,14 +1896,14 @@ var Theme = function (_ButtonPopOver) {
 			var themeList = window.apiData['terminalThemes'];
 
 			if (themeList.length) {
-				themeList.map(function (value) {
+				themeList.forEach(function (obj) {
 
-					var button = (0, _dom2.default)('button.list-group-item');
-					button.innerHTML = value.label;
+					var button = (0, _dom2.default)('button.list-group-item ' + (obj.id === _this2.themeId ? 'font-bold' : ''));
+					button.innerHTML = obj.label;
 
 					button.addEventListener('click', function () {
 						_this2.popover.close();
-						_this2.onSelect(value);
+						_this2.onSelect(obj);
 					});
 
 					_this2.popContent.appendChild(button);
