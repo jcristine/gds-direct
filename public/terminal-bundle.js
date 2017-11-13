@@ -2663,6 +2663,9 @@ var TerminalPlugin = function () {
 	}, {
 		key: 'resize',
 		value: function resize(sizes) {
+			this.settings.numOfRows = sizes.numOfRows;
+			this.settings.numOfChars = sizes.numOfChars;
+
 			this.terminal.settings().numChars = sizes.numOfChars;
 			this.terminal.settings().numRows = sizes.numOfRows;
 			// this.terminal.resize(width, height);
