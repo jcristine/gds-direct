@@ -2,9 +2,9 @@ import Dom from '../helpers/dom';
 
 export default class Component
 {
-	constructor( selector )
+	constructor( selector, params)
 	{
-		this.context 	= Dom( selector );
+		this.context 	= Dom( selector, params);
 		this.observers 	= [];
 	}
 

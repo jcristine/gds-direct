@@ -12,10 +12,26 @@ export class PqQuotes extends Component
 			new Component('section.hbox stretch')
 				.observe(
 					new Component('section.vbox')
-						.observe(
-							new Component('section.scrollable')
+
+						.append(
+							new Component('header.header b-b')
 								.observe(
-									new Body()
+									new Component('span.close', {
+										innerHTML 	: '&times;',
+										onclick		: HIDE_PQ_QUOTES
+									})
+								)
+						)
+
+						.observe(
+							new Component('section.scrollable bg-light lter ')
+								.observe(
+
+									new Component('div.hbox stretch ')
+										.observe(
+											new Body()
+										)
+
 								)
 						)
 				)
@@ -37,7 +53,7 @@ class Body extends Component
 {
 	constructor()
 	{
-		super('div.hbox stretch');
+		super('div.term-body-pq');
 	}
 
 	_renderer()
@@ -45,13 +61,6 @@ class Body extends Component
 		if( this.props['pqToShow'] )
 		{
 			this.context.innerHTML = '';
-
-			this.context.appendChild(
-				Dom('span.close', {
-					innerHTML 	: '&times;',
-					onclick		: HIDE_PQ_QUOTES
-				})
-			);
 
 			this.context.appendChild(
 				Dom('br')
@@ -64,7 +73,7 @@ class Body extends Component
 				);
 
 				this.context.appendChild(
-					Dom('strong.m-r-sm', {innerHTML : pq['selling']})
+					Dom('strong.label label-grey m-r-sm', {innerHTML : pq['selling']})
 				);
 
 				this.context.appendChild(
@@ -72,15 +81,15 @@ class Body extends Component
 				);
 
 				this.context.appendChild(
-					Dom('strong.m-r-sm', {innerHTML : pq['net']})
+					Dom('strong.label label-grey  m-r-sm', {innerHTML : pq['net']})
 				);
 
 				this.context.appendChild(
-					Dom('strong.label label-mozilla', {innerHTML : pq['addedByGroupLabel']})
+					Dom('strong.label label-mozilla ', {innerHTML : pq['addedByGroupLabel']})
 				);
 
 				this.context.appendChild(
-					Dom('div.m-t-sm', {})
+					Dom('div.m-t', {})
 				);
 
 				this.context.appendChild(

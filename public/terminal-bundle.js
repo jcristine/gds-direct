@@ -363,10 +363,10 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 var Component = function () {
-	function Component(selector) {
+	function Component(selector, params) {
 		_classCallCheck(this, Component);
 
-		this.context = (0, _dom2.default)(selector);
+		this.context = (0, _dom2.default)(selector, params);
 		this.observers = [];
 	}
 
@@ -4183,7 +4183,10 @@ var PqQuotes = exports.PqQuotes = function (_Component) {
 
 		var _this = _possibleConstructorReturn(this, (PqQuotes.__proto__ || Object.getPrototypeOf(PqQuotes)).call(this, 'td.pqQuotes hidden bg-white b-l b-r'));
 
-		_this.observe(new _component2.default('section.hbox stretch').observe(new _component2.default('section.vbox').observe(new _component2.default('section.scrollable').observe(new Body()))));
+		_this.observe(new _component2.default('section.hbox stretch').observe(new _component2.default('section.vbox').append(new _component2.default('header.header b-b').observe(new _component2.default('span.close', {
+			innerHTML: '&times;',
+			onclick: _actions.HIDE_PQ_QUOTES
+		}))).observe(new _component2.default('section.scrollable bg-light lter ').observe(new _component2.default('div.hbox stretch ').observe(new Body())))));
 		return _this;
 	}
 
@@ -4210,7 +4213,7 @@ var Body = function (_Component2) {
 	function Body() {
 		_classCallCheck(this, Body);
 
-		return _possibleConstructorReturn(this, (Body.__proto__ || Object.getPrototypeOf(Body)).call(this, 'div.hbox stretch'));
+		return _possibleConstructorReturn(this, (Body.__proto__ || Object.getPrototypeOf(Body)).call(this, 'div.term-body-pq'));
 	}
 
 	_createClass(Body, [{
@@ -4221,26 +4224,21 @@ var Body = function (_Component2) {
 			if (this.props['pqToShow']) {
 				this.context.innerHTML = '';
 
-				this.context.appendChild((0, _dom2.default)('span.close', {
-					innerHTML: '&times;',
-					onclick: _actions.HIDE_PQ_QUOTES
-				}));
-
 				this.context.appendChild((0, _dom2.default)('br'));
 
 				this.props['pqToShow'].result.map(function (pq) {
 
 					_this3.context.appendChild((0, _dom2.default)('span.m-r-sm', { innerHTML: 'Selling:' }));
 
-					_this3.context.appendChild((0, _dom2.default)('strong.m-r-sm', { innerHTML: pq['selling'] }));
+					_this3.context.appendChild((0, _dom2.default)('strong.label label-grey m-r-sm', { innerHTML: pq['selling'] }));
 
 					_this3.context.appendChild((0, _dom2.default)('span.m-r-sm', { innerHTML: 'NET:' }));
 
-					_this3.context.appendChild((0, _dom2.default)('strong.m-r-sm', { innerHTML: pq['net'] }));
+					_this3.context.appendChild((0, _dom2.default)('strong.label label-grey  m-r-sm', { innerHTML: pq['net'] }));
 
-					_this3.context.appendChild((0, _dom2.default)('strong.label label-mozilla', { innerHTML: pq['addedByGroupLabel'] }));
+					_this3.context.appendChild((0, _dom2.default)('strong.label label-mozilla ', { innerHTML: pq['addedByGroupLabel'] }));
 
-					_this3.context.appendChild((0, _dom2.default)('div.m-t-sm', {}));
+					_this3.context.appendChild((0, _dom2.default)('div.m-t', {}));
 
 					_this3.context.appendChild((0, _dom2.default)('pre.priceqoute-pre pos-rlt m-b-none m-t-none t-courier', { innerHTML: pq['reservationDump'] }));
 
