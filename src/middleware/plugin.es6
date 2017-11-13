@@ -1,7 +1,8 @@
 const $		= require('jquery');
 window.$ 	= window.jQuery = $;
 
-require('jquery.terminal/js/jquery.terminal');
+// require('jquery.terminal/js/jquery.terminal');
+require('../lib/jquery-terminal');
 require('keyboardevent-key-polyfill').polyfill();
 
 import Pagination 	from '../modules/pagination.es6';
@@ -136,7 +137,7 @@ export default class TerminalPlugin
 
 			keydown			: this.parseKeyBinds.bind(this),
 			clickTimeout	: 300,
-			onInit			: this.changeActiveTerm.bind(this),
+			// onInit			: this.changeActiveTerm.bind(this),
 			onTerminalChange: this.changeActiveTerm.bind(this),
 			onBeforeCommand : this.checkBeforeEnter.bind(this),
 

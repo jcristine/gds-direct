@@ -934,8 +934,6 @@ __webpack_require__(44);
 
 var Terminal = function () {
 	function Terminal(params) {
-		var _this = this;
-
 		_classCallCheck(this, Terminal);
 
 		this.plugin = null;
@@ -944,20 +942,18 @@ var Terminal = function () {
 
 		this.makeBuffer(params.buffer);
 
-		this.context.onclick = function () {
-			if (!_this.plugin) _this.init();
-		};
+		this.init();
 	}
 
 	_createClass(Terminal, [{
 		key: 'init',
 		value: function init() {
-			var _this2 = this;
+			var _this = this;
 
 			this.plugin = new _plugin2.default({
 				context: this.context,
 				clear: function clear() {
-					return _this2.clear();
+					return _this.clear();
 				},
 				name: this.settings['name'],
 				gds: this.settings['gds'],
@@ -1008,14 +1004,12 @@ var Terminal = function () {
 			this.numOfRows = Math.floor(parentNode.clientHeight / dimensions.char.height);
 			this.numOfChars = Math.floor(this.context.clientWidth / dimensions.char.width); //2 - padding-left px : need to fix
 
-			if (this.plugin) {
-				this.plugin.resize({
-					numOfChars: this.numOfChars - 2,
-					numOfRows: this.numOfRows
-				});
+			this.plugin.resize({
+				numOfChars: this.numOfChars - 2,
+				numOfRows: this.numOfRows
+			});
 
-				this.plugin.emptyLinesRecalculate(this.numOfRows, this.numOfChars, dimensions.char.height);
-			}
+			this.plugin.emptyLinesRecalculate(this.numOfRows, this.numOfChars, dimensions.char.height);
 
 			this.context.style.height = this.numOfRows * dimensions.char.height + 'px';
 			this.context.scrollTop = this.context.scrollHeight;
@@ -2586,6 +2580,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 var $ = __webpack_require__(41);
 window.$ = window.jQuery = $;
 
+// require('jquery.terminal/js/jquery.terminal');
 __webpack_require__(42);
 __webpack_require__(43).polyfill();
 
@@ -2702,7 +2697,7 @@ var TerminalPlugin = function () {
 
 				keydown: this.parseKeyBinds.bind(this),
 				clickTimeout: 300,
-				onInit: this.changeActiveTerm.bind(this),
+				// onInit			: this.changeActiveTerm.bind(this),
 				onTerminalChange: this.changeActiveTerm.bind(this),
 				onBeforeCommand: this.checkBeforeEnter.bind(this),
 

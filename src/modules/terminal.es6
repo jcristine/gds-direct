@@ -13,10 +13,7 @@ export default class Terminal {
 
 		this.makeBuffer( params.buffer );
 
-		this.context.onclick = () => {
-			if (!this.plugin)
-				this.init();
-		};
+		this.init();
 	}
 
 	init()
@@ -82,15 +79,12 @@ export default class Terminal {
 		this.numOfRows 	= Math.floor( parentNode.clientHeight / dimensions.char.height );
 		this.numOfChars	= Math.floor( this.context.clientWidth / dimensions.char.width ); //2 - padding-left px : need to fix
 
-		if (this.plugin)
-		{
-			this.plugin.resize({
-				numOfChars 	: this.numOfChars - 2,
-				numOfRows 	: this.numOfRows
-			});
+		this.plugin.resize({
+			numOfChars 	: this.numOfChars - 2,
+			numOfRows 	: this.numOfRows
+		});
 
-			this.plugin.emptyLinesRecalculate( this.numOfRows, this.numOfChars, dimensions.char.height );
-		}
+		this.plugin.emptyLinesRecalculate( this.numOfRows, this.numOfChars, dimensions.char.height );
 
 		this.context.style.height 	= (this.numOfRows * dimensions.char.height) + 'px';
 		this.context.scrollTop 		= this.context.scrollHeight;

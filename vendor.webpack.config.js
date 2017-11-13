@@ -6,7 +6,8 @@ var UglifyJSPlugin = require('uglifyjs-webpack-plugin');
 module.exports = {
 	entry: {
 		'vendor': [
-			'jquery.terminal/js/jquery.terminal',
+			// 'jquery.terminal/js/jquery.terminal',
+			'./src/lib/jquery-terminal',
 			'keyboardevent-key-polyfill',
 			'jquery.terminal/js/unix_formatting',
 			'cli-spinners',
