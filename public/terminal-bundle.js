@@ -4224,25 +4224,25 @@ var Body = function (_Component2) {
 			if (this.props['pqToShow']) {
 				this.context.innerHTML = '';
 
-				this.context.appendChild((0, _dom2.default)('br'));
-
 				this.props['pqToShow'].result.map(function (pq) {
 
-					_this3.context.appendChild((0, _dom2.default)('span.m-r-sm', { innerHTML: 'Selling:' }));
+					var container = (0, _dom2.default)('div.pq-container');
 
-					_this3.context.appendChild((0, _dom2.default)('strong.label label-grey m-r-sm', { innerHTML: pq['selling'] }));
+					container.appendChild((0, _dom2.default)('span.m-r-sm', { innerHTML: 'Selling:' }));
 
-					_this3.context.appendChild((0, _dom2.default)('span.m-r-sm', { innerHTML: 'NET:' }));
+					container.appendChild((0, _dom2.default)('strong.label label-grey m-r-sm', { innerHTML: pq['selling'] }));
 
-					_this3.context.appendChild((0, _dom2.default)('strong.label label-grey  m-r-sm', { innerHTML: pq['net'] }));
+					container.appendChild((0, _dom2.default)('span.m-r-sm', { innerHTML: 'NET:' }));
 
-					_this3.context.appendChild((0, _dom2.default)('strong.label label-mozilla ', { innerHTML: pq['addedByGroupLabel'] }));
+					container.appendChild((0, _dom2.default)('strong.label label-grey  m-r-sm', { innerHTML: pq['net'] }));
 
-					_this3.context.appendChild((0, _dom2.default)('div.m-t', {}));
+					container.appendChild((0, _dom2.default)('strong.label label-mozilla added-by', { innerHTML: pq['addedByGroupLabel'] }));
 
-					_this3.context.appendChild((0, _dom2.default)('pre.priceqoute-pre pos-rlt m-b-none m-t-none t-courier', { innerHTML: pq['reservationDump'] }));
+					container.appendChild((0, _dom2.default)('div.m-t', {}));
 
-					_this3.context.appendChild((0, _dom2.default)('br', {}));
+					container.appendChild((0, _dom2.default)('pre.priceqoute-pre pos-rlt m-b-none m-t-none t-courier', { innerHTML: pq['reservationDump'] }));
+
+					_this3.context.appendChild(container);
 				});
 			}
 		}

@@ -1515,12 +1515,25 @@
   top: 10px;
   position: relative;
 }
-.terminal-wrap-custom .pqQuotes div.term-body-pq {
-  padding: 0 10px;
+.terminal-wrap-custom .pqQuotes div.term-body-pq .pq-container {
+  padding: 15px 10px;
+  border-bottom: 1px solid #f3f3f3;
+  border-left: none;
+  border-right: none;
+}
+.terminal-wrap-custom .pqQuotes div.term-body-pq .pq-container .added-by {
+  float: right;
+}
+.terminal-wrap-custom .pqQuotes div.term-body-pq .pq-container:nth-child(even) {
+  background: #fff;
+}
+.terminal-wrap-custom .pqQuotes div.term-body-pq .pq-container:nth-child(odd) {
+  background: #f3f3f3;
 }
 .terminal-wrap-custom .pqQuotes .priceqoute-pre {
   font-size: 11px;
   padding: 5px;
+  color: #000;
 }
 .terminal-wrap-custom > .term-body {
   width: 100%;

@@ -62,43 +62,41 @@ class Body extends Component
 		{
 			this.context.innerHTML = '';
 
-			this.context.appendChild(
-				Dom('br')
-			);
-
 			this.props['pqToShow'].result.map( pq => {
 
-				this.context.appendChild(
+				const container = Dom('div.pq-container');
+
+				container.appendChild(
 					Dom('span.m-r-sm', {innerHTML : 'Selling:'})
 				);
 
-				this.context.appendChild(
+				container.appendChild(
 					Dom('strong.label label-grey m-r-sm', {innerHTML : pq['selling']})
 				);
 
-				this.context.appendChild(
+				container.appendChild(
 					Dom('span.m-r-sm', {innerHTML : 'NET:'})
 				);
 
-				this.context.appendChild(
+				container.appendChild(
 					Dom('strong.label label-grey  m-r-sm', {innerHTML : pq['net']})
 				);
 
-				this.context.appendChild(
-					Dom('strong.label label-mozilla ', {innerHTML : pq['addedByGroupLabel']})
+				container.appendChild(
+					Dom('strong.label label-mozilla added-by', {innerHTML : pq['addedByGroupLabel']})
 				);
 
-				this.context.appendChild(
+				container.appendChild(
 					Dom('div.m-t', {})
 				);
 
-				this.context.appendChild(
+				container.appendChild(
 					Dom('pre.priceqoute-pre pos-rlt m-b-none m-t-none t-courier', {innerHTML : pq['reservationDump']})
 				);
 
 				this.context.appendChild(
-					Dom('br', {})
-				);
+					container
+				)
 			});
 		}
 	}
