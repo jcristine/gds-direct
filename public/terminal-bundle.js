@@ -1696,7 +1696,7 @@ var SettingsButtons = function (_Component2) {
 	_createClass(SettingsButtons, [{
 		key: 'children',
 		value: function children() {
-			var Quotes = (0, _dom2.default)('button.btn btn-primary font-bold', { innerHTML: 'Quoutes', onclick: _actions.SHOW_PQ_QUOTES });
+			var Quotes = (0, _dom2.default)('button.btn btn-mozilla font-bold', { innerHTML: 'Quoutes', onclick: _actions.SHOW_PQ_QUOTES });
 
 			var theme = new _theme2.default({
 				icon: '<i class="fa fa-paint-brush t-f-size-14"></i>'

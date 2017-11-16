@@ -56,7 +56,7 @@ class SettingsButtons extends Component
 
 	children()
 	{
-		const Quotes 	= Dom('button.btn btn-primary font-bold', {innerHTML : 'Quoutes', onclick : SHOW_PQ_QUOTES});
+		const Quotes 	= Dom('button.btn btn-mozilla font-bold', {innerHTML : 'Quoutes', onclick : SHOW_PQ_QUOTES});
 
 		const theme 	= new Theme({
 			icon	: '<i class="fa fa-paint-brush t-f-size-14"></i>'
