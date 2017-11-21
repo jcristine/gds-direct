@@ -768,7 +768,8 @@ var showUserMessages = exports.showUserMessages = function showUserMessages(resp
 
 		notify({
 			msg: userMessages.join(''),
-			type: 'warning'
+			type: 'warning',
+			timeout: 4000
 		});
 	}
 
@@ -780,13 +781,15 @@ var notify = exports.notify = function notify(_ref) {
 	    _ref$align = _ref.align,
 	    align = _ref$align === undefined ? 'bottomLeft' : _ref$align,
 	    _ref$type = _ref.type,
-	    type = _ref$type === undefined ? 'error' : _ref$type;
+	    type = _ref$type === undefined ? 'error' : _ref$type,
+	    _ref$timeout = _ref.timeout,
+	    timeout = _ref$timeout === undefined ? 10000 : _ref$timeout;
 
 
 	return new _noty2.default({
 		text: '<p class="noty-wrap-text">' + msg + '</p>',
 		layout: align,
-		timeout: 100000,
+		timeout: timeout,
 		theme: 'mint',
 		type: type,
 		animation: {
