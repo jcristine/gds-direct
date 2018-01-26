@@ -9,7 +9,6 @@ import {PqParser} 		from "./modules/pqParser";
 let state, Gds = {}, Container, pqParser;
 
 export const INIT = ({ settings, ...params }) => {
-
 	pqParser = new PqParser(params["PqPriceModal"]);
 
 	Gds = GdsSet.init(settings['gds'], params['buffer']);
@@ -53,7 +52,6 @@ export const GET_HISTORY = () => {
 };
 
 export const CHANGE_ACTIVE_TERMINAL = ({gds, curTerminalId, plugin}) => {
-
 	GET('terminal/saveSetting/terminal', (curTerminalId + 1));
 
 	if (window.activePlugin)

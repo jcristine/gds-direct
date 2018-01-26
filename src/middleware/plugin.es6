@@ -17,6 +17,29 @@ import {Debug}		from '../modules/debug';
 import {getReplacement}		from '../helpers/helpers.es6';
 import {UPDATE_CUR_GDS, CHANGE_ACTIVE_TERMINAL} from "../actions";
 
+const cookie = {
+	get : (name) => {
+		const 	value = '; ' + document.cookie,
+				parts = value.split('; ' + name + '=');
+
+		if (parts.length === 2)
+		{
+			return parts.pop().split(';').shift();
+		}
+	},
+
+	set : (name, value, xdays) => {
+		const 	d = new Date(),
+				expires = 'expires='+ d.toUTCString();
+
+		xdays = !isNaN(parseFloat(xdays)) ? parseFloat(xdays) : 1;
+		d.setTime(d.getTime() + (xdays*24*60*60*1000));
+		document.cookie = name + '=' + value + '; ' + expires;
+	}
+};
+
+let isTerminalInit = false;
+
 export default class TerminalPlugin
 {
 	constructor( params )
@@ -48,6 +71,39 @@ export default class TerminalPlugin
 		});
 
 		this.history 		= new History( params.gds );
+
+		this.customInitForPnr();
+	}
+
+	customInitForPnr()
+	{
+		const self = this;
+
+		if (!isTerminalInit)
+		{
+			isTerminalInit = true;
+			this.executePnrCode();
+
+			window.onhashchange = () => {
+				if (location.hash === "#terminalNavBtntab")
+				{
+					self.executePnrCode();
+				}
+			};
+		}
+	}
+
+	executePnrCode()
+	{
+		const code = cookie.get('pnrCode');
+
+		if (code)
+		{
+			cookie.set('pnrCode', null);
+			this.changeActiveTerm();
+			this.terminal.focus();
+			this.terminal.exec('*' + code);
+		}
 	}
 
 	parseKeyBinds( evt, terminal )

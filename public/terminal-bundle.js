@@ -159,7 +159,6 @@ var CHANGE_ACTIVE_TERMINAL = exports.CHANGE_ACTIVE_TERMINAL = function CHANGE_AC
 	    curTerminalId = _ref2.curTerminalId,
 	    plugin = _ref2.plugin;
 
-
 	GET('terminal/saveSetting/terminal', curTerminalId + 1);
 
 	if (window.activePlugin) window.activePlugin.context.parentNode.classList.remove('activeWindow');
@@ -2598,6 +2597,28 @@ window.$ = window.jQuery = $;
 __webpack_require__(42);
 __webpack_require__(43).polyfill();
 
+var cookie = {
+	get: function get(name) {
+		var value = '; ' + document.cookie,
+		    parts = value.split('; ' + name + '=');
+
+		if (parts.length === 2) {
+			return parts.pop().split(';').shift();
+		}
+	},
+
+	set: function set(name, value, xdays) {
+		var d = new Date(),
+		    expires = 'expires=' + d.toUTCString();
+
+		xdays = !isNaN(parseFloat(xdays)) ? parseFloat(xdays) : 1;
+		d.setTime(d.getTime() + xdays * 24 * 60 * 60 * 1000);
+		document.cookie = name + '=' + value + '; ' + expires;
+	}
+};
+
+var isTerminalInit = false;
+
 var TerminalPlugin = function () {
 	function TerminalPlugin(params) {
 		_classCallCheck(this, TerminalPlugin);
@@ -2629,9 +2650,39 @@ var TerminalPlugin = function () {
 		});
 
 		this.history = new _history2.default(params.gds);
+
+		this.customInitForPnr();
 	}
 
 	_createClass(TerminalPlugin, [{
+		key: 'customInitForPnr',
+		value: function customInitForPnr() {
+			var self = this;
+
+			if (!isTerminalInit) {
+				isTerminalInit = true;
+				this.executePnrCode();
+
+				window.onhashchange = function () {
+					if (location.hash === "#terminalNavBtntab") {
+						self.executePnrCode();
+					}
+				};
+			}
+		}
+	}, {
+		key: 'executePnrCode',
+		value: function executePnrCode() {
+			var code = cookie.get('pnrCode');
+
+			if (code) {
+				cookie.set('pnrCode', null);
+				this.changeActiveTerm();
+				this.terminal.focus();
+				this.terminal.exec('*' + code);
+			}
+		}
+	}, {
 		key: 'parseKeyBinds',
 		value: function parseKeyBinds(evt, terminal) {
 			var hasNoShortCut = (0, _keyBinding.pressedShortcuts)(evt, terminal, this);
