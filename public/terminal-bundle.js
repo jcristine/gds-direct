@@ -2607,12 +2607,12 @@ var cookie = {
 		}
 	},
 
-	set: function set(name, value, xdays) {
+	set: function set(name, value, xmins) {
 		var d = new Date(),
 		    expires = 'expires=' + d.toUTCString();
 
-		xdays = !isNaN(parseFloat(xdays)) ? parseFloat(xdays) : 1;
-		d.setTime(d.getTime() + xdays * 24 * 60 * 60 * 1000);
+		xmins = !isNaN(parseFloat(xmins)) ? parseFloat(xmins) : 1;
+		d.setTime(d.getTime() + xmins * 60 * 1000);
 		document.cookie = name + '=' + value + '; ' + expires;
 	}
 };
@@ -2661,7 +2661,6 @@ var TerminalPlugin = function () {
 
 			if (!isTerminalInit) {
 				isTerminalInit = true;
-				this.executePnrCode();
 
 				window.onhashchange = function () {
 					if (location.hash === "#terminalNavBtntab") {
