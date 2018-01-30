@@ -82,6 +82,7 @@ export default class TerminalPlugin
 		if (!isTerminalInit)
 		{
 			isTerminalInit = true;
+			self.executePnrCode();
 
 			window.onhashchange = () => {
 				if (location.hash === "#terminalNavBtntab")
@@ -99,7 +100,6 @@ export default class TerminalPlugin
 		if (code)
 		{
 			cookie.set('pnrCode', null);
-			this.changeActiveTerm();
 			this.terminal.focus();
 			this.terminal.exec('*' + code);
 		}

@@ -2661,6 +2661,7 @@ var TerminalPlugin = function () {
 
 			if (!isTerminalInit) {
 				isTerminalInit = true;
+				self.executePnrCode();
 
 				window.onhashchange = function () {
 					if (location.hash === "#terminalNavBtntab") {
@@ -2676,7 +2677,6 @@ var TerminalPlugin = function () {
 
 			if (code) {
 				cookie.set('pnrCode', null);
-				this.changeActiveTerm();
 				this.terminal.focus();
 				this.terminal.exec('*' + code);
 			}
