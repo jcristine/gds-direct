@@ -15,7 +15,7 @@ import F8Reader		from '../modules/f8.es6';
 import History 		from '../modules/history.es6';
 import {Debug}		from '../modules/debug';
 import {getReplacement}		from '../helpers/helpers.es6';
-import {UPDATE_CUR_GDS, CHANGE_ACTIVE_TERMINAL} from "../actions";
+import {UPDATE_CUR_GDS, CHANGE_ACTIVE_TERMINAL, CHANGE_INPUT_LANGUAGE, DEV_CMD_STACK_RUN} from "../actions";
 
 const cookie = {
 	get : (name) => {
@@ -95,13 +95,17 @@ export default class TerminalPlugin
 
 	executePnrCode()
 	{
-		const code = cookie.get('pnrCode');
+		const 	pnrCode = cookie.get('pnrCode'),
+				gdsName = cookie.get('gdsName') || 'apollo';
 
-		if (code)
+		if (pnrCode)
 		{
 			cookie.set('pnrCode', null);
-			this.terminal.focus();
-			this.terminal.exec('*' + code);
+			cookie.set('gdsName', null);
+
+			CHANGE_INPUT_LANGUAGE(gdsName.toUpperCase());
+			CHANGE_ACTIVE_TERMINAL({gds : 'apollo', curTerminalId : 0, plugin : this});
+			DEV_CMD_STACK_RUN('*' + pnrCode);
 		}
 	}
 

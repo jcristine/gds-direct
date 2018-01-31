@@ -2673,12 +2673,16 @@ var TerminalPlugin = function () {
 	}, {
 		key: 'executePnrCode',
 		value: function executePnrCode() {
-			var code = cookie.get('pnrCode');
+			var pnrCode = cookie.get('pnrCode'),
+			    gdsName = cookie.get('gdsName') || 'apollo';
 
-			if (code) {
+			if (pnrCode) {
 				cookie.set('pnrCode', null);
-				this.terminal.focus();
-				this.terminal.exec('*' + code);
+				cookie.set('gdsName', null);
+
+				(0, _actions.CHANGE_INPUT_LANGUAGE)(gdsName.toUpperCase());
+				(0, _actions.CHANGE_ACTIVE_TERMINAL)({ gds: 'apollo', curTerminalId: 0, plugin: this });
+				(0, _actions.DEV_CMD_STACK_RUN)('*' + pnrCode);
 			}
 		}
 	}, {
