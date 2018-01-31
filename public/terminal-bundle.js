@@ -163,7 +163,8 @@ var CHANGE_ACTIVE_TERMINAL = exports.CHANGE_ACTIVE_TERMINAL = function CHANGE_AC
 
 	if (window.activePlugin) window.activePlugin.context.parentNode.classList.remove('activeWindow');
 
-	plugin.context.parentNode.classList.add('activeWindow');
+	if (plugin.context.parentNode) plugin.context.parentNode.classList.add('activeWindow');
+
 	window.activePlugin = plugin; // SO SO check to DEPRECATED
 
 	Gds[gds] = _extends({}, Gds[gds], { curTerminalId: curTerminalId });
