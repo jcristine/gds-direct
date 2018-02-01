@@ -15,30 +15,7 @@ import F8Reader		from '../modules/f8.es6';
 import History 		from '../modules/history.es6';
 import {Debug}		from '../modules/debug';
 import {getReplacement}		from '../helpers/helpers.es6';
-import {UPDATE_CUR_GDS, CHANGE_ACTIVE_TERMINAL, CHANGE_INPUT_LANGUAGE, DEV_CMD_STACK_RUN} from "../actions";
-
-const cookie = {
-	get : (name) => {
-		const 	value = '; ' + document.cookie,
-				parts = value.split('; ' + name + '=');
-
-		if (parts.length === 2)
-		{
-			return parts.pop().split(';').shift();
-		}
-	},
-
-	set : (name, value, xmins) => {
-		const 	d = new Date(),
-				expires = 'expires='+ d.toUTCString();
-
-		xmins = !isNaN(parseFloat(xmins)) ? parseFloat(xmins) : 1;
-		d.setTime(d.getTime() + (xmins*60*1000));
-		document.cookie = name + '=' + value + '; ' + expires;
-	}
-};
-
-let isTerminalInit = false;
+import {UPDATE_CUR_GDS, CHANGE_ACTIVE_TERMINAL} from "../actions";
 
 export default class TerminalPlugin
 {
@@ -71,42 +48,6 @@ export default class TerminalPlugin
 		});
 
 		this.history 		= new History( params.gds );
-
-		this.customInitForPnr();
-	}
-
-	customInitForPnr()
-	{
-		const self = this;
-
-		if (!isTerminalInit)
-		{
-			isTerminalInit = true;
-			self.executePnrCode();
-
-			window.onhashchange = () => {
-				if (location.hash === "#terminalNavBtntab")
-				{
-					self.executePnrCode();
-				}
-			};
-		}
-	}
-
-	executePnrCode()
-	{
-		const 	pnrCode = cookie.get('pnrCode'),
-				gdsName = cookie.get('gdsName') || 'apollo';
-
-		if (pnrCode)
-		{
-			cookie.set('pnrCode', null);
-			cookie.set('gdsName', null);
-
-			CHANGE_INPUT_LANGUAGE(gdsName.toUpperCase());
-			CHANGE_ACTIVE_TERMINAL({gds : 'apollo', curTerminalId : 0, plugin : this});
-			DEV_CMD_STACK_RUN('*' + pnrCode);
-		}
 	}
 
 	parseKeyBinds( evt, terminal )

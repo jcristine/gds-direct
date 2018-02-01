@@ -57,7 +57,7 @@ export const CHANGE_ACTIVE_TERMINAL = ({gds, curTerminalId, plugin}) => {
 	if (window.activePlugin)
 		window.activePlugin.context.parentNode.classList.remove('activeWindow');
 
-	if (plugin.context.parentNode)
+	if (plugin.context && plugin.context.parentNode)
 		plugin.context.parentNode.classList.add('activeWindow');
 
 	window.activePlugin = plugin; // SO SO check to DEPRECATED

@@ -163,7 +163,7 @@ var CHANGE_ACTIVE_TERMINAL = exports.CHANGE_ACTIVE_TERMINAL = function CHANGE_AC
 
 	if (window.activePlugin) window.activePlugin.context.parentNode.classList.remove('activeWindow');
 
-	if (plugin.context.parentNode) plugin.context.parentNode.classList.add('activeWindow');
+	if (plugin.context && plugin.context.parentNode) plugin.context.parentNode.classList.add('activeWindow');
 
 	window.activePlugin = plugin; // SO SO check to DEPRECATED
 
@@ -1257,6 +1257,8 @@ var _dom2 = _interopRequireDefault(_dom);
 
 var _PqQuotes = __webpack_require__(45);
 
+var _actions = __webpack_require__(0);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -1266,7 +1268,28 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
 var matrix = void 0,
-    tempTerm = void 0;
+    tempTerm = void 0,
+    isTerminalInit = void 0;
+
+var cookie = {
+	get: function get(name) {
+		var value = '; ' + document.cookie,
+		    parts = value.split('; ' + name + '=');
+
+		if (parts.length === 2) {
+			return parts.pop().split(';').shift();
+		}
+	},
+
+	set: function set(name, value, xmins) {
+		var d = new Date(),
+		    expires = 'expires=' + d.toUTCString();
+
+		xmins = !isNaN(parseFloat(xmins)) ? parseFloat(xmins) : 1;
+		d.setTime(d.getTime() + xmins * 60 * 1000);
+		document.cookie = name + '=' + value + '; ' + expires;
+	}
+};
 
 var Container = function (_Component) {
 	_inherits(Container, _Component);
@@ -1279,6 +1302,8 @@ var Container = function (_Component) {
 		_this.observe(new Wrapper());
 
 		document.getElementById(rootId).appendChild(_this.getContext());
+
+		_this.customInitForPnr();
 		return _this;
 	}
 
@@ -1296,6 +1321,40 @@ var Container = function (_Component) {
 		key: '_renderer',
 		value: function _renderer() {
 			this.context.className = 'terminal-wrap-custom term-f-size-' + this.props.fontSize;
+		}
+	}, {
+		key: 'customInitForPnr',
+		value: function customInitForPnr() {
+			var self = this;
+
+			if (!isTerminalInit) {
+				isTerminalInit = true;
+
+				setTimeout(function () {
+					self.executePnrCode();
+				}, 300);
+
+				window.onhashchange = function () {
+					if (location.hash === "#terminalNavBtntab") {
+						self.executePnrCode();
+					}
+				};
+			}
+		}
+	}, {
+		key: 'executePnrCode',
+		value: function executePnrCode() {
+			var pnrCode = cookie.get('pnrCode'),
+			    gdsName = cookie.get('gdsName') || 'apollo';
+
+			if (pnrCode) {
+				cookie.set('pnrCode', null);
+				cookie.set('gdsName', null);
+
+				(0, _actions.CHANGE_GDS)(gdsName);
+				(0, _actions.CHANGE_ACTIVE_TERMINAL)({ gds: gdsName, curTerminalId: 0, plugin: this.getTerminal(gdsName, 0).plugin });
+				(0, _actions.DEV_CMD_STACK_RUN)('*' + pnrCode);
+			}
 		}
 	}]);
 
@@ -2598,28 +2657,6 @@ window.$ = window.jQuery = $;
 __webpack_require__(42);
 __webpack_require__(43).polyfill();
 
-var cookie = {
-	get: function get(name) {
-		var value = '; ' + document.cookie,
-		    parts = value.split('; ' + name + '=');
-
-		if (parts.length === 2) {
-			return parts.pop().split(';').shift();
-		}
-	},
-
-	set: function set(name, value, xmins) {
-		var d = new Date(),
-		    expires = 'expires=' + d.toUTCString();
-
-		xmins = !isNaN(parseFloat(xmins)) ? parseFloat(xmins) : 1;
-		d.setTime(d.getTime() + xmins * 60 * 1000);
-		document.cookie = name + '=' + value + '; ' + expires;
-	}
-};
-
-var isTerminalInit = false;
-
 var TerminalPlugin = function () {
 	function TerminalPlugin(params) {
 		_classCallCheck(this, TerminalPlugin);
@@ -2651,42 +2688,9 @@ var TerminalPlugin = function () {
 		});
 
 		this.history = new _history2.default(params.gds);
-
-		this.customInitForPnr();
 	}
 
 	_createClass(TerminalPlugin, [{
-		key: 'customInitForPnr',
-		value: function customInitForPnr() {
-			var self = this;
-
-			if (!isTerminalInit) {
-				isTerminalInit = true;
-				self.executePnrCode();
-
-				window.onhashchange = function () {
-					if (location.hash === "#terminalNavBtntab") {
-						self.executePnrCode();
-					}
-				};
-			}
-		}
-	}, {
-		key: 'executePnrCode',
-		value: function executePnrCode() {
-			var pnrCode = cookie.get('pnrCode'),
-			    gdsName = cookie.get('gdsName') || 'apollo';
-
-			if (pnrCode) {
-				cookie.set('pnrCode', null);
-				cookie.set('gdsName', null);
-
-				(0, _actions.CHANGE_INPUT_LANGUAGE)(gdsName.toUpperCase());
-				(0, _actions.CHANGE_ACTIVE_TERMINAL)({ gds: 'apollo', curTerminalId: 0, plugin: this });
-				(0, _actions.DEV_CMD_STACK_RUN)('*' + pnrCode);
-			}
-		}
-	}, {
 		key: 'parseKeyBinds',
 		value: function parseKeyBinds(evt, terminal) {
 			var hasNoShortCut = (0, _keyBinding.pressedShortcuts)(evt, terminal, this);

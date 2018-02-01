@@ -4,8 +4,30 @@ import TerminalMatrix 	from './terminalMatrix';
 import Component 		from '../modules/component';
 import Dom 				from "../helpers/dom";
 import {PqQuotes} 		from "./PqQuotes";
+import {CHANGE_ACTIVE_TERMINAL, DEV_CMD_STACK_RUN, CHANGE_GDS} from "../actions";
 
-let matrix, tempTerm;
+let matrix, tempTerm, isTerminalInit;
+
+const cookie = {
+	get : (name) => {
+		const 	value = '; ' + document.cookie,
+			parts = value.split('; ' + name + '=');
+
+		if (parts.length === 2)
+		{
+			return parts.pop().split(';').shift();
+		}
+	},
+
+	set : (name, value, xmins) => {
+		const 	d = new Date(),
+			expires = 'expires='+ d.toUTCString();
+
+		xmins = !isNaN(parseFloat(xmins)) ? parseFloat(xmins) : 1;
+		d.setTime(d.getTime() + (xmins*60*1000));
+		document.cookie = name + '=' + value + '; ' + expires;
+	}
+};
 
 export default class Container extends Component {
 
@@ -20,6 +42,8 @@ export default class Container extends Component {
 		document.getElementById( rootId ).appendChild(
 			this.getContext()
 		);
+
+		this.customInitForPnr();
 	}
 
 	purgeScreens( gds )
@@ -35,6 +59,43 @@ export default class Container extends Component {
 	_renderer()
 	{
 		this.context.className 	= 'terminal-wrap-custom term-f-size-' + this.props.fontSize;
+	}
+
+	customInitForPnr()
+	{
+		const self = this;
+
+		if (!isTerminalInit)
+		{
+			isTerminalInit = true;
+
+			setTimeout(function() {
+				self.executePnrCode();
+			}, 300);
+
+			window.onhashchange = () => {
+				if (location.hash === "#terminalNavBtntab")
+				{
+					self.executePnrCode();
+				}
+			};
+		}
+	}
+
+	executePnrCode()
+	{
+		const 	pnrCode = cookie.get('pnrCode'),
+				gdsName = cookie.get('gdsName') || 'apollo';
+
+		if (pnrCode)
+		{
+			cookie.set('pnrCode', null);
+			cookie.set('gdsName', null);
+
+			CHANGE_GDS(gdsName);
+			CHANGE_ACTIVE_TERMINAL({gds : gdsName, curTerminalId : 0, plugin : this.getTerminal(gdsName, 0).plugin});
+			DEV_CMD_STACK_RUN('*' + pnrCode);
+		}
 	}
 }
 
