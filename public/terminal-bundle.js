@@ -538,7 +538,7 @@ exports.default = ButtonPopOver;
 Object.defineProperty(exports, "__esModule", {
 	value: true
 });
-exports.setLink = exports.get = undefined;
+exports.setLink = exports.get = exports.post = undefined;
 
 var _constants = __webpack_require__(6);
 
@@ -556,6 +556,24 @@ var Ask = function Ask(url, params) {
 	return fetch(wwwFullDir + url, params).then(function (response) {
 		return response.json();
 	}).then(_debug.showUserMessages).catch(_debug.debugRequest);
+};
+
+var post = exports.post = function post(url) {
+	var params = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : '';
+	var callback = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : function () {};
+
+	var xhr = new XMLHttpRequest();
+
+	xhr.open('POST', url);
+	xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded; charset=utf-8');
+	xhr.setRequestHeader('Accept', 'application/json, application/xml, text/plain, text/html, .');
+	xhr.withCredentials = true;
+	xhr.onload = function () {
+		if (xhr.status === 200) {
+			callback(xhr.response);
+		}
+	};
+	xhr.send(params);
 };
 
 var get = exports.get = function get(url) {
@@ -1255,6 +1273,8 @@ var _dom = __webpack_require__(1);
 
 var _dom2 = _interopRequireDefault(_dom);
 
+var _requests = __webpack_require__(5);
+
 var _PqQuotes = __webpack_require__(45);
 
 var _actions = __webpack_require__(0);
@@ -1345,7 +1365,8 @@ var Container = function (_Component) {
 		key: 'executePnrCode',
 		value: function executePnrCode() {
 			var pnrCode = cookie.get('pnrCode'),
-			    gdsName = cookie.get('gdsName') || 'apollo';
+			    gdsName = cookie.get('gdsName') || 'apollo',
+			    rebuildGds = cookie.get('rebuildGds');
 
 			if (pnrCode) {
 				cookie.set('pnrCode', null);
@@ -1354,6 +1375,12 @@ var Container = function (_Component) {
 				(0, _actions.CHANGE_GDS)(gdsName);
 				(0, _actions.CHANGE_ACTIVE_TERMINAL)({ gds: gdsName, curTerminalId: 0, plugin: this.getTerminal(gdsName, 0).plugin });
 				(0, _actions.DEV_CMD_STACK_RUN)('*' + pnrCode);
+			} else if (rebuildGds) {
+				cookie.set('rebuildGds', null);
+
+				(0, _requests.post)('terminal/rebuildItinerary', rebuildGds, function (response) {
+					console.log('in callback', response);
+				});
 			}
 		}
 	}]);

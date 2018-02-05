@@ -3,6 +3,7 @@ import MenuPanel 		from './menuPanel';
 import TerminalMatrix 	from './terminalMatrix';
 import Component 		from '../modules/component';
 import Dom 				from "../helpers/dom";
+import {post}			from "../helpers/requests.es6";
 import {PqQuotes} 		from "./PqQuotes";
 import {CHANGE_ACTIVE_TERMINAL, DEV_CMD_STACK_RUN, CHANGE_GDS} from "../actions";
 
@@ -84,8 +85,9 @@ export default class Container extends Component {
 
 	executePnrCode()
 	{
-		const 	pnrCode = cookie.get('pnrCode'),
-				gdsName = cookie.get('gdsName') || 'apollo';
+		const 	pnrCode 	= cookie.get('pnrCode'),
+				gdsName 	= cookie.get('gdsName') || 'apollo',
+				rebuildGds 	= cookie.get('rebuildGds');
 
 		if (pnrCode)
 		{
@@ -95,6 +97,14 @@ export default class Container extends Component {
 			CHANGE_GDS(gdsName);
 			CHANGE_ACTIVE_TERMINAL({gds : gdsName, curTerminalId : 0, plugin : this.getTerminal(gdsName, 0).plugin});
 			DEV_CMD_STACK_RUN('*' + pnrCode);
+		}
+		else if (rebuildGds)
+		{
+			cookie.set('rebuildGds', null);
+
+			post('terminal/rebuildItinerary', rebuildGds, function(response){
+				console.log('in callback', response);
+			});
 		}
 	}
 }

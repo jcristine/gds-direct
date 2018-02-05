@@ -16,6 +16,21 @@ const Ask = (url, params) => {
 		.catch( debugRequest );
 };
 
+export const post = (url, params = '', callback = () => {}) => {
+	var xhr = new XMLHttpRequest();
+
+	xhr.open('POST', url);
+	xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded; charset=utf-8');
+	xhr.setRequestHeader('Accept', 'application/json, application/xml, text/plain, text/html, .');
+	xhr.withCredentials = true;
+	xhr.onload = function() {
+		if (xhr.status === 200) {
+			callback(xhr.response);
+		}
+	};
+	xhr.send(params);
+};
+
 export const get = (url, defParams = false) => {
 	if (!url)
 		return '';
