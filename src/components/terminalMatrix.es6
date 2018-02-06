@@ -63,7 +63,7 @@ export default class TerminalsMatrix extends Component
 
 	_renderer()
 	{
-		const {hideMenu, gdsObj, pqToShow, getDimensions, width, fontSize} = this.props;
+		const {hideMenu, gdsObj, pqToShow, getDimensions, width, fontSize, curTd} = this.props;
 
 		const state = {
 			gds			: gdsObj['name'],
@@ -80,8 +80,6 @@ export default class TerminalsMatrix extends Component
 		{
 			gdsSession[gdsObj['name']] = gdsSession[gdsObj['name']] || [];
 
-			console.warn('need to rerender!!');
-
 			this.context.innerHTML 	= '';
 
 			const dimensions = getDimensions();
@@ -95,15 +93,22 @@ export default class TerminalsMatrix extends Component
 					buffer	: gdsObj['buffer'] ? gdsObj['buffer']['terminals'][index + 1] : ''
 				};
 
-				// if (gdsObj.curTerminalId === index)
-				// {
-				// 	cell.classList.add('activeWindow');
-				// }
-
 				this
 					.getTerminal( gdsObj['name'], index, props )
 					.reattach( cell, dimensions,  gdsObj.curTerminalId === index);
 			});
 		}
+
+		if (this.curTerminal !== curTd)
+		{
+			if (this.curTerminal !== undefined)
+			{
+				this.getTerminal( gdsObj['name'], this.curTerminal ).context.parentNode.classList.remove('activeWindow');
+			}
+
+			this.getTerminal( gdsObj['name'], curTd ).context.parentNode.classList.add('activeWindow');
+		}
+
+		this.curTerminal = curTd;
 	}
 }

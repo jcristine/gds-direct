@@ -130,6 +130,10 @@ var INIT = function INIT(_ref) {
 };
 
 exports.INIT = INIT;
+var GET = function GET(urlPart, param) {
+	return (0, _requests.get)(urlPart + '/' + state.getGds() + '/' + param);
+};
+
 var CHANGE_INPUT_LANGUAGE = exports.CHANGE_INPUT_LANGUAGE = function CHANGE_INPUT_LANGUAGE(language) {
 	GET('terminal/saveSetting/language', language);
 	state.change({ language: language });
@@ -146,10 +150,6 @@ var DEV_CMD_STACK_RUN = exports.DEV_CMD_STACK_RUN = function DEV_CMD_STACK_RUN(c
 	return Promise.reject();
 };
 
-var GET = function GET(urlPart, param) {
-	return (0, _requests.get)(urlPart + '/' + state.getGds() + '/' + param);
-};
-
 var GET_HISTORY = exports.GET_HISTORY = function GET_HISTORY() {
 	return (0, _requests.get)("terminal/lastCommands?rId=" + state.getRequestId() + "&gds=" + state.getGds());
 };
@@ -161,16 +161,13 @@ var CHANGE_ACTIVE_TERMINAL = exports.CHANGE_ACTIVE_TERMINAL = function CHANGE_AC
 
 	GET('terminal/saveSetting/terminal', curTerminalId + 1);
 
-	if (window.activePlugin) window.activePlugin.context.parentNode.classList.remove('activeWindow');
-
-	if (plugin.context && plugin.context.parentNode) plugin.context.parentNode.classList.add('activeWindow');
-
 	window.activePlugin = plugin; // SO SO check to DEPRECATED
 
 	Gds[gds] = _extends({}, Gds[gds], { curTerminalId: curTerminalId });
 
 	state.change({
-		gdsObj: Gds[gds]
+		gdsObj: Gds[gds],
+		curTd: curTerminalId
 	});
 };
 
@@ -193,7 +190,6 @@ var SHOW_PQ_QUOTES = exports.SHOW_PQ_QUOTES = function SHOW_PQ_QUOTES(e) {
 
 		state.change({
 			pqToShow: response
-			// hideMenu	: true
 		});
 	});
 };
@@ -201,7 +197,6 @@ var SHOW_PQ_QUOTES = exports.SHOW_PQ_QUOTES = function SHOW_PQ_QUOTES(e) {
 var HIDE_PQ_QUOTES = exports.HIDE_PQ_QUOTES = function HIDE_PQ_QUOTES() {
 	state.change({
 		pqToShow: false
-		// hideMenu	: false
 	});
 };
 
@@ -1018,7 +1013,7 @@ var Terminal = function () {
 			this.settings.parentContext = parentNode;
 
 			this.context.style.height = parentNode.clientHeight + 'px';
-			this.context.style.width = parentNode.clientWidth + 'px';
+			this.context.style.width = dimensions.width + 'px';
 
 			this.settings.parentContext.appendChild(this.context);
 
@@ -1171,11 +1166,6 @@ var TerminalState = exports.TerminalState = function () {
 			return this.state.gdsObj.pcc;
 		}
 	}, {
-		key: 'getActiveTerminal',
-		value: function getActiveTerminal() {
-			return this.state.gdsObj['activeTerminal'];
-		}
-	}, {
 		key: 'getGds',
 		value: function getGds() {
 			return this.state.gdsObj['name'];
@@ -1191,29 +1181,10 @@ var TerminalState = exports.TerminalState = function () {
 			return this.state['language'];
 		}
 	}, {
-		key: 'getAreaIndex',
-		value: function getAreaIndex() {
-			return this.state.gdsObj['sessionIndex'];
-		}
-	}, {
 		key: 'getRequestId',
 		value: function getRequestId() {
 			return this.state.requestId;
 		}
-
-		/*execCmd( commands )
-  {
-  	const term = this.getActiveTerminal();
-  		if (term)
-  		term.exec( commands );
-  		return false;
-  }
-  	getGdsList()
-  {
-  	// console.log( Gds );
-  	// return Gds;
-  }*/
-
 	}, {
 		key: 'isGdsApollo',
 		value: function isGdsApollo() {
@@ -1390,19 +1361,52 @@ var Container = function (_Component) {
 
 exports.default = Container;
 
-var RightSide = function (_Component2) {
-	_inherits(RightSide, _Component2);
+var Wrapper = function (_Component2) {
+	_inherits(Wrapper, _Component2);
+
+	function Wrapper() {
+		_classCallCheck(this, Wrapper);
+
+		var _this2 = _possibleConstructorReturn(this, (Wrapper.__proto__ || Object.getPrototypeOf(Wrapper)).call(this, 'table.term-body minimized'));
+
+		var leftSide = new LeftTd();
+		tempTerm = new TempTerminal(leftSide.context);
+
+		_this2.observe(new _component2.default('tr').observe(new LeftTerminalFull()).observe(leftSide).observe(new _PqQuotes.PqQuotes()).observe(new RightSide())).observe(tempTerm);
+		return _this2;
+	}
+
+	_createClass(Wrapper, [{
+		key: '_renderer',
+		value: function _renderer() {
+			var _this3 = this;
+
+			this.props = _extends({}, this.props, {
+				width: this.context.clientWidth,
+				getDimensions: function getDimensions() {
+					var dim = tempTerm.calculate(_this3.props.gdsObj.matrix, _this3.context.parentNode, _this3.props.pqToShow ? 446 : 0);
+					return dim;
+				}
+			});
+		}
+	}]);
+
+	return Wrapper;
+}(_component2.default);
+
+var RightSide = function (_Component3) {
+	_inherits(RightSide, _Component3);
 
 	function RightSide() {
 		_classCallCheck(this, RightSide);
 
-		var _this2 = _possibleConstructorReturn(this, (RightSide.__proto__ || Object.getPrototypeOf(RightSide)).call(this, 'td.menu'));
+		var _this4 = _possibleConstructorReturn(this, (RightSide.__proto__ || Object.getPrototypeOf(RightSide)).call(this, 'td.menu'));
 
 		var menu = new _menuPanel2.default();
-		_this2.addToObserve(menu);
+		_this4.addToObserve(menu);
 
-		_this2.append(new _component2.default('section.hbox stretch').append(new _component2.default('section.vbox').append(new _component2.default('section.scrollable').append(menu))));
-		return _this2;
+		_this4.append(new _component2.default('section.hbox stretch').append(new _component2.default('section.vbox').append(new _component2.default('section.scrollable').append(menu))));
+		return _this4;
 	}
 
 	_createClass(RightSide, [{
@@ -1415,38 +1419,33 @@ var RightSide = function (_Component2) {
 	return RightSide;
 }(_component2.default);
 
-var TempTerminal = function (_Component3) {
-	_inherits(TempTerminal, _Component3);
+var TempTerminal = function (_Component4) {
+	_inherits(TempTerminal, _Component4);
 
 	function TempTerminal(parent) {
 		_classCallCheck(this, TempTerminal);
 
-		var _this3 = _possibleConstructorReturn(this, (TempTerminal.__proto__ || Object.getPrototypeOf(TempTerminal)).call(this, 'div.terminal temp-terminal'));
+		var _this5 = _possibleConstructorReturn(this, (TempTerminal.__proto__ || Object.getPrototypeOf(TempTerminal)).call(this, 'div.terminal temp-terminal'));
 
-		_this3.cursor = (0, _dom2.default)('span.cursor', { innerHTML: '&nbsp;' });
+		_this5.cursor = (0, _dom2.default)('span.cursor', { innerHTML: '&nbsp;' });
 		var div = (0, _dom2.default)('div.cmd', { innerHTML: '&nbsp;' });
 
-		div.appendChild(_this3.cursor);
-		_this3.attach(div);
+		div.appendChild(_this5.cursor);
+		_this5.attach(div);
 
-		_this3.parent = parent;
-		return _this3;
+		_this5.parent = parent;
+		return _this5;
 	}
 
 	_createClass(TempTerminal, [{
 		key: 'calculate',
-		value: function calculate(_ref, parentWidth, parentHeight) {
+		value: function calculate(_ref, context, offset) {
 			var cells = _ref.cells,
 			    rows = _ref.rows;
 
-			// console.log( 'zzzzz', this.parent.clientWidth );
-			// console.log( 'zzzzz', parentWidth );
-			// console.log( 'zzzzz' );
-
-
 			return {
-				height: Math.floor(parentHeight / (rows + 1)),
-				width: Math.floor(this.parent.clientWidth / (cells + 1)),
+				height: Math.floor(this.parent.clientHeight / (rows + 1)),
+				width: Math.floor((context.clientWidth - offset - 100) / (cells + 1)),
 				char: this.getLineHeight()
 			};
 		}
@@ -1464,52 +1463,33 @@ var TempTerminal = function (_Component3) {
 	return TempTerminal;
 }(_component2.default);
 
-var Wrapper = function (_Component4) {
-	_inherits(Wrapper, _Component4);
+var LeftTerminalFull = function (_Component5) {
+	_inherits(LeftTerminalFull, _Component5);
 
-	function Wrapper() {
-		_classCallCheck(this, Wrapper);
+	function LeftTerminalFull() {
+		_classCallCheck(this, LeftTerminalFull);
 
-		var _this4 = _possibleConstructorReturn(this, (Wrapper.__proto__ || Object.getPrototypeOf(Wrapper)).call(this, 'table.term-body minimized'));
-
-		matrix = new _terminalMatrix2.default(_this4.context);
-
-		var rightSide = new RightSide();
-		var pqQuotes = new _PqQuotes.PqQuotes();
-		var leftSide = new _component2.default('td.left');
-
-		tempTerm = new TempTerminal(leftSide.context);
-
-		_this4.observe(new _component2.default('tr').append(leftSide).append(pqQuotes).append(rightSide));
-
-		_this4.addToObserve(pqQuotes);
-		_this4.addToObserve(rightSide);
-		_this4.addToObserve(leftSide);
-
-		leftSide.observe(matrix).append(new _actionsMenu2.default());
-
-		_this4.append(tempTerm);
-		return _this4;
+		return _possibleConstructorReturn(this, (LeftTerminalFull.__proto__ || Object.getPrototypeOf(LeftTerminalFull)).call(this, 'td.left'));
 	}
 
-	_createClass(Wrapper, [{
-		key: '_renderer',
-		value: function _renderer() {
-			var _this5 = this;
+	return LeftTerminalFull;
+}(_component2.default);
 
-			// const dimensions = tempTerm.calculate(this.props.gdsObj.matrix, this.context.parentNode.clientWidth, this.context.parentNode.clientHeight);
+var LeftTd = function (_Component6) {
+	_inherits(LeftTd, _Component6);
 
-			this.props = _extends({}, this.props, { width: this.context.clientWidth, getDimensions: function getDimensions() {
-					// console.log(this.context.clientWidth);
-					// console.log(this.context.parentNode.clientWidth);
-					// console.log('=================');
+	function LeftTd() {
+		_classCallCheck(this, LeftTd);
 
-					return tempTerm.calculate(_this5.props.gdsObj.matrix, _this5.context.parentNode.clientWidth, _this5.context.parentNode.clientHeight);
-				} });
-		}
-	}]);
+		var _this7 = _possibleConstructorReturn(this, (LeftTd.__proto__ || Object.getPrototypeOf(LeftTd)).call(this, 'td.left'));
 
-	return Wrapper;
+		matrix = new _terminalMatrix2.default(_this7.context);
+
+		_this7.observe(matrix).append(new _actionsMenu2.default());
+		return _this7;
+	}
+
+	return LeftTd;
 }(_component2.default);
 
 /***/ }),
@@ -2576,7 +2556,8 @@ var TerminalsMatrix = function (_Component) {
 			    pqToShow = _props.pqToShow,
 			    getDimensions = _props.getDimensions,
 			    width = _props.width,
-			    fontSize = _props.fontSize;
+			    fontSize = _props.fontSize,
+			    curTd = _props.curTd;
 
 
 			var state = {
@@ -2593,8 +2574,6 @@ var TerminalsMatrix = function (_Component) {
 			if (needToRender) {
 				gdsSession[gdsObj['name']] = gdsSession[gdsObj['name']] || [];
 
-				console.warn('need to rerender!!');
-
 				this.context.innerHTML = '';
 
 				var dimensions = getDimensions();
@@ -2608,14 +2587,19 @@ var TerminalsMatrix = function (_Component) {
 						buffer: gdsObj['buffer'] ? gdsObj['buffer']['terminals'][index + 1] : ''
 					};
 
-					// if (gdsObj.curTerminalId === index)
-					// {
-					// 	cell.classList.add('activeWindow');
-					// }
-
 					_this3.getTerminal(gdsObj['name'], index, props).reattach(cell, dimensions, gdsObj.curTerminalId === index);
 				});
 			}
+
+			if (this.curTerminal !== curTd) {
+				if (this.curTerminal !== undefined) {
+					this.getTerminal(gdsObj['name'], this.curTerminal).context.parentNode.classList.remove('activeWindow');
+				}
+
+				this.getTerminal(gdsObj['name'], curTd).context.parentNode.classList.add('activeWindow');
+			}
+
+			this.curTerminal = curTd;
 		}
 	}]);
 

@@ -30,8 +30,8 @@ const cookie = {
 	}
 };
 
-export default class Container extends Component {
-
+export default class Container extends Component
+{
 	constructor( rootId )
 	{
 		super('section');
@@ -109,6 +109,42 @@ export default class Container extends Component {
 	}
 }
 
+class Wrapper extends Component
+{
+	constructor()
+	{
+		super('table.term-body minimized');
+
+		const leftSide 	= new LeftTd();
+		tempTerm		= new TempTerminal(leftSide.context);
+
+		this
+			.observe(
+				new Component('tr')
+					.observe( new LeftTerminalFull() )
+					.observe( leftSide )
+					.observe( new PqQuotes())
+					.observe( new RightSide() )
+			)
+			.observe(
+				tempTerm
+			)
+	}
+
+	_renderer()
+	{
+		this.props = {
+			...this.props,
+			width 			: this.context.clientWidth,
+			getDimensions 	: () =>
+			{
+				const dim =  tempTerm.calculate(this.props.gdsObj.matrix, this.context.parentNode, this.props.pqToShow ? 446 : 0);
+				return dim;
+			}
+		}
+	}
+}
+
 class RightSide extends Component
 {
 	constructor()
@@ -153,16 +189,11 @@ class TempTerminal extends Component
 		this.parent = parent;
 	}
 
-	calculate({cells, rows}, parentWidth, parentHeight)
+	calculate({cells, rows}, context, offset)
 	{
-		// console.log( 'zzzzz', this.parent.clientWidth );
-		// console.log( 'zzzzz', parentWidth );
-		// console.log( 'zzzzz' );
-
-
 		return {
-			height		: Math.floor(parentHeight 	/ (rows+1)),
-			width 		: Math.floor( (this.parent.clientWidth) 	/ (cells+1)),
+			height		: Math.floor(this.parent.clientHeight / (rows+1)),
+			width 		: Math.floor( (context.clientWidth - offset - 100) / (cells+1) )  ,
 			char		: this.getLineHeight()
 		}
 	}
@@ -174,53 +205,26 @@ class TempTerminal extends Component
 	}
 }
 
-class Wrapper extends Component
+class LeftTerminalFull extends Component
 {
 	constructor()
 	{
-		super('table.term-body minimized');
+		super('td.left');
+	}
+}
 
-		matrix 			= new TerminalMatrix( this.context );
+class LeftTd extends Component
+{
+	constructor()
+	{
+		super('td.left');
 
-		const rightSide = new RightSide();
-		const pqQuotes 	= new PqQuotes();
-		const leftSide 	= new Component('td.left');
-
-		tempTerm		= new TempTerminal(leftSide.context);
+		matrix 	 = new TerminalMatrix( this.context );
 
 		this
-			.observe(
-				new Component('tr')
-					.append( leftSide )
-					.append( pqQuotes)
-					.append( rightSide )
-			);
-
-		this.addToObserve( pqQuotes );
-		this.addToObserve( rightSide );
-		this.addToObserve( leftSide );
-
-		leftSide
 			.observe( matrix )
 			.append(
 				new ActionsMenu()
 			);
-
-		this.append(
-			tempTerm
-		)
-	}
-
-	_renderer()
-	{
-		// const dimensions = tempTerm.calculate(this.props.gdsObj.matrix, this.context.parentNode.clientWidth, this.context.parentNode.clientHeight);
-
-		this.props = {...this.props,  width : this.context.clientWidth, getDimensions : () => {
-			// console.log(this.context.clientWidth);
-			// console.log(this.context.parentNode.clientWidth);
-			// console.log('=================');
-
-			return tempTerm.calculate(this.props.gdsObj.matrix, this.context.parentNode.clientWidth, this.context.parentNode.clientHeight)
-		}}
 	}
 }
