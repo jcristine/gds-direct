@@ -32,11 +32,6 @@ export class TerminalState
 		return this.state.gdsObj.pcc;
 	}
 
-	getActiveTerminal()
-	{
-		return this.state.gdsObj['activeTerminal'];
-	}
-
 	getGds()
 	{
 		return this.state.gdsObj['name'];
@@ -52,31 +47,10 @@ export class TerminalState
 		return this.state['language'];
 	}
 
-	getAreaIndex()
-	{
-		return this.state.gdsObj['sessionIndex'];
-	}
-
 	getRequestId()
 	{
 		return this.state.requestId;
 	}
-
-	/*execCmd( commands )
-	{
-		const term = this.getActiveTerminal();
-
-		if (term)
-			term.exec( commands );
-
-		return false;
-	}
-
-	getGdsList()
-	{
-		// console.log( Gds );
-		// return Gds;
-	}*/
 
 	isGdsApollo()
 	{

@@ -3,8 +3,8 @@ import Dom				from '../helpers/dom.es6';
 
 require('../../node_modules/jquery.terminal/js/unix_formatting');
 
-export default class Terminal {
-
+export default class Terminal
+{
 	constructor( params )
 	{
 		this.plugin 	= null;
@@ -70,7 +70,7 @@ export default class Terminal {
 		this.settings.parentContext = parentNode;
 
 		this.context.style.height	= parentNode.clientHeight + 'px';
-		this.context.style.width	= parentNode.clientWidth + 'px';
+		this.context.style.width	= dimensions.width + 'px';
 
 		this.settings.parentContext.appendChild(
 			this.context

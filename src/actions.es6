@@ -24,6 +24,12 @@ export const INIT = ({ settings, ...params }) => {
 	});
 };
 
+const GET = (urlPart, param) => {
+	return get(
+		urlPart + '/' + state.getGds() + '/' + param
+	);
+};
+
 export const CHANGE_INPUT_LANGUAGE = language => {
 	GET('terminal/saveSetting/language', language);
 	state.change({language});
@@ -41,11 +47,6 @@ export const DEV_CMD_STACK_RUN = command => {
 	return Promise.reject();
 };
 
-const GET = (urlPart, param) => {
-	return get(
-		urlPart + '/' + state.getGds() + '/' + param
-	);
-};
 
 export const GET_HISTORY = () => {
 	return get(`terminal/lastCommands?rId=${state.getRequestId()}&gds=${state.getGds()}`);
@@ -54,18 +55,13 @@ export const GET_HISTORY = () => {
 export const CHANGE_ACTIVE_TERMINAL = ({gds, curTerminalId, plugin}) => {
 	GET('terminal/saveSetting/terminal', (curTerminalId + 1));
 
-	if (window.activePlugin)
-		window.activePlugin.context.parentNode.classList.remove('activeWindow');
-
-	if (plugin.context && plugin.context.parentNode)
-		plugin.context.parentNode.classList.add('activeWindow');
-
 	window.activePlugin = plugin; // SO SO check to DEPRECATED
 
 	Gds[gds] = {...Gds[gds], curTerminalId };
 
 	state.change({
-		gdsObj : Gds[gds]
+		gdsObj 	: Gds[gds],
+		curTd	: curTerminalId
 	});
 };
 
@@ -88,16 +84,14 @@ export const SHOW_PQ_QUOTES = (e) => {
 			e.target.innerHTML = 'Quotes';
 
 			state.change({
-				pqToShow	: response,
-				// hideMenu	: true
+				pqToShow	: response
 			});
 		});
 };
 
 export const HIDE_PQ_QUOTES = () => {
 	state.change({
-		pqToShow	: false,
-		// hideMenu	: false
+		pqToShow	: false
 	});
 };
 
