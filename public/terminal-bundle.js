@@ -108,11 +108,8 @@ var CHANGE_MATRIX = exports.CHANGE_MATRIX = function CHANGE_MATRIX(matrix) {
 var CHANGE_ACTIVE_TERMINAL = exports.CHANGE_ACTIVE_TERMINAL = function CHANGE_ACTIVE_TERMINAL(_ref) {
 	var curTerminalId = _ref.curTerminalId;
 
-
-	if (curTerminalId !== false) {
-		app.Gds.changeActive(curTerminalId);
-		(0, _state.getters)('active', curTerminalId + 1);
-	}
+	app.Gds.changeActive(curTerminalId);
+	(0, _state.getters)('active', curTerminalId + 1);
 };
 
 var CHANGE_GDS = exports.CHANGE_GDS = function CHANGE_GDS(gdsName) {
@@ -164,7 +161,7 @@ var GET_HISTORY = exports.GET_HISTORY = function GET_HISTORY() {
 
 var PURGE_SCREENS = exports.PURGE_SCREENS = function PURGE_SCREENS() {
 	app.Gds.clearScreen();
-	(0, _state.getters)('clear'); // TO MANY REQUESTS;
+	// getters('clear'); // TO MANY REQUESTS;
 };
 
 var showPq = function showPq(newState) {
@@ -194,11 +191,15 @@ var CLOSE_PQ_WINDOW = exports.CLOSE_PQ_WINDOW = function CLOSE_PQ_WINDOW() {
 };
 
 var SWITCH_TERMINAL = exports.SWITCH_TERMINAL = function SWITCH_TERMINAL(fn) {
+
 	var curTerminalId = fn(app.getGds().get());
 
-	CHANGE_ACTIVE_TERMINAL({ curTerminalId: curTerminalId });
+	setTimeout(function () {
+		// THIS IS CRAZY SHIT. WITHOUT IT SWITCHES TERMINALS SEVERAL TIMES TRY PRESS ~
+		var terminal = app.Gds.getCurrent().get('terminals');
 
-	app.Gds.getActiveTerminal().plugin.terminal.focus();
+		if (curTerminalId !== false) terminal[curTerminalId].plugin.terminal.focus();
+	}, 100);
 };
 
 var CHANGE_FONT_SIZE = exports.CHANGE_FONT_SIZE = function CHANGE_FONT_SIZE(props) {
@@ -548,6 +549,10 @@ var getStorageMatrix = exports.getStorageMatrix = function getStorageMatrix() {
 	var matrix = _getStorage('matrix');
 
 	if (matrix && !matrix.list) return { rows: 1, cells: 1, list: [].concat(_toConsumableArray(_constants.DEFAULT_CELLS)) };
+
+	if (!matrix) {
+		return { rows: 1, cells: 1, list: [].concat(_toConsumableArray(_constants.DEFAULT_CELLS)) };
+	}
 
 	return matrix;
 };
@@ -2133,7 +2138,7 @@ var pressedShortcuts = exports.pressedShortcuts = function pressedShortcuts(evt,
 			// disabling these keys from terminal library to execute
 			case 192:
 				// Ctrl + ~
-				(0, _switchTerminal.switchTerminal)({ keymap: 'next', gds: gds, name: plugin.name });
+				(0, _switchTerminal.switchTerminal)({ keymap: 'next' });
 				break;
 
 			case 48: // Ctrl + 0
@@ -2147,7 +2152,7 @@ var pressedShortcuts = exports.pressedShortcuts = function pressedShortcuts(evt,
 			case 56: // Ctrl + 8
 			case 57:
 				// Ctrl + 9
-				(0, _switchTerminal.switchTerminal)({ keymap: keymap, gds: gds, name: plugin.name });
+				(0, _switchTerminal.switchTerminal)({ keymap: keymap });
 				break;
 
 			default:
@@ -2204,7 +2209,7 @@ var pressedShortcuts = exports.pressedShortcuts = function pressedShortcuts(evt,
 
 			case 192:
 				// Shift + ~
-				(0, _switchTerminal.switchTerminal)({ keymap: 'prev', gds: gds, name: plugin.name });
+				(0, _switchTerminal.switchTerminal)({ keymap: 'prev' });
 				break;
 
 			default:
@@ -2575,19 +2580,11 @@ var switchTerminal = exports.switchTerminal = function switchTerminal(_ref) {
 	var keymap = _ref.keymap;
 
 
-	// const fn = (rows, cells, currentTerminalName) => {
 	var fn = function fn(_ref2) {
 		var matrix = _ref2.matrix,
 		    curTerminalId = _ref2.curTerminalId;
-		var cells = matrix.cells,
-		    rows = matrix.rows,
-		    list = matrix.list;
+		var list = matrix.list;
 
-
-		var gridCount = rows * cells;
-		var mapName = rows === 1 || cells === 1 ? 'other' : rows + 'x' + cells;
-
-		var getId = 0;
 
 		if (typeof keymap === 'number') {
 			var id = keymap === 48 ? 9 : keymap - 49;
@@ -2597,24 +2594,28 @@ var switchTerminal = exports.switchTerminal = function switchTerminal(_ref) {
 			}
 
 			return list[id];
-			// return gridMaps[mapName]['encode'][id] === 'undefined' ? false :  gridMaps[mapName]['encode'][id];
 		}
 
 		var isNext = keymap === 'next';
-		// let index = list.indexOf(curTerminalId);
-
-		var nextId = gridMaps[mapName]['decode'][curTerminalId] + (isNext ? 1 : -1);
+		var index = list.indexOf(curTerminalId);
+		var changeIndex = 0;
 
 		if (isNext) {
-			// index++;
-			getId = nextId >= gridCount ? 0 : gridMaps[mapName]['encode'][nextId];
+			changeIndex = index + 1;
+
+			if (changeIndex >= list.length) {
+				changeIndex = 0;
+			}
 		} else {
-			getId = nextId < 0 ? gridCount - 1 : gridMaps[mapName]['encode'][nextId];
+			changeIndex = index - 1;
+
+			if (changeIndex < 0) {
+				changeIndex = list.length - 1;
+			}
 		}
 
-		return getId;
-
-		// return list[index];
+		return list[changeIndex];
+		// return { list : list[changeIndex] };
 	};
 
 	(0, _actions.SWITCH_TERMINAL)(fn);
