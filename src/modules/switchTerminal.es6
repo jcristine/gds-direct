@@ -245,37 +245,39 @@ const gridMaps = {
 	}
 };
 
-export const switchTerminal = ({keymap, gds, name}) => {
-	const currentTerminalName	= name;
-	const matrix				= window.TerminalState.state.gdsObj.matrix;
+export const switchTerminal = ({keymap}) => {
 
-	const rows					= matrix.rows + 1;
-	const cells					= matrix.cells + 1;
-	const gridCount				= rows * cells;
-	const mapName				= (rows === 1 || cells === 1) ? 'other' : rows + 'x' + cells;
+	// const fn = (rows, cells, currentTerminalName) => {
+	const fn = ({matrix, curTerminalId}) => {
 
-	let getId					= 0;
+		const {cells, rows} = matrix;
 
-	if (typeof keymap === 'number')
-	{
-		const id		= keymap === 48 ? 9 : keymap - 49;
-		getId			= gridMaps[mapName]['encode'][id];
+		const gridCount				= rows * cells;
+		const mapName				= (rows === 1 || cells === 1) ? 'other' : rows + 'x' + cells;
 
-		if (typeof getId === 'undefined')
-			return false;
-	} else {
+		let getId					= 0;
+
+		if (typeof keymap === 'number')
+		{
+			const id		= keymap === 48 ? 9 : keymap - 49;
+			return gridMaps[mapName]['encode'][id] === 'undefined' ? false :  gridMaps[mapName]['encode'][id];
+		}
+
 		const isNext	= keymap === 'next';
-		const nextId	= gridMaps[mapName]['decode'][currentTerminalName] + (isNext ? 1 : -1);
+		const nextId	= gridMaps[mapName]['decode'][curTerminalId] + (isNext ? 1 : -1);
 
 		if (isNext)
 		{
 			getId	= nextId >= gridCount ? 0 : gridMaps[mapName]['encode'][nextId];
-		} else {
+		} else
+		{
 			getId	= nextId < 0 ? gridCount -1 : gridMaps[mapName]['encode'][nextId];
 		}
-	}
 
-	SWITCH_TERMINAL(gds, getId);
+		return getId;
+	};
+
+	SWITCH_TERMINAL( fn );
 };
 
 /*

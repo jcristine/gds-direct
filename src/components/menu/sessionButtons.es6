@@ -12,12 +12,12 @@ export class SessionButtons
 		this.gdsname		= params.name;
 	}
 
-	makeTrigger( gdsName )
+	makeTrigger(gdsName)
 	{
 		return Dom('button', {
 			className 	: `btn btn-sm btn-mint font-bold ${gdsName === this.gdsname ? ' active' : '' }`,
-			innerHTML	: gdsName,
-			onclick		: () => CHANGE_GDS(gdsName)
+			innerHTML	: this.gdsname,
+			onclick		: () => CHANGE_GDS(this.gdsname)
 		});
 	}
 

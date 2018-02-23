@@ -1,56 +1,18 @@
-import Dom			from '../helpers/dom.es6';
-import Terminal 	from '../modules/terminal.es6';
 import Component 	from '../modules/component.es6';
-
-const gdsSession	= [];
+import {GDS_LIST} 	from "../constants";
 const stringify 	= JSON.stringify;
-// let cells 			= [];
 
 export default class TerminalsMatrix extends Component
 {
 	constructor()
 	{
-		super('table.terminals-table');
+		super('div.terminals-table matrix-row');
 	}
 
 	clear()
 	{
 		this.context.innerHTML = '';
 		return this;
-	}
-
-	makeCells( {rows, cells} , dimensions)
-	{
-		let cellsDom = [];
-
-		Array.apply(null, {length: rows + 1 })
-			.map( () => Dom('tr') )
-			.map( tr => {
-
-				Array.apply(null, {length: cells + 1}).map( () => {
-
-					const cell = Dom('td.terminal-cell', {
-						style : `width : ${dimensions.width}px; max-height : ${dimensions.height}px; height: ${dimensions.height}px`
-					});
-
-					tr.appendChild(cell);
-					cellsDom.push( cell );
-				});
-
-				this.context.appendChild( tr );
-			});
-
-		return cellsDom;
-	}
-
-	purgeScreens( gds )
-	{
-		gdsSession[ gds ].forEach( terminal => terminal.clear() );
-	}
-
-	getTerminal(gds, index, props)
-	{
-		return gdsSession[gds][index] = gdsSession[gds][index] || new Terminal( props );
 	}
 
 	renderIsNeeded( state )
@@ -63,52 +25,56 @@ export default class TerminalsMatrix extends Component
 
 	_renderer()
 	{
-		const {hideMenu, gdsObj, pqToShow, getDimensions, width, fontSize, curTd} = this.props;
+		const curGdsIndex 	= GDS_LIST.indexOf(this.props.gdsObjName);
+		const curGds 		= this.props.gdsList[curGdsIndex];
+
+		const terminals 	= curGds.get('terminals');
+		const matrix 		= curGds.get('matrix');
+		const dimensions 	= curGds.get('dimensions');
+		const name 			= curGds.get('name');
 
 		const state = {
-			gds			: gdsObj['name'],
-			matrix		: gdsObj.matrix,
-			hideMenu	: hideMenu,
-			pqToShow	: pqToShow,
-			width,
-			fontSize
+			gds : name,
+			...matrix,
+			...dimensions,
+			hasWide : curGds.get('hasWide')
 		};
 
-		const needToRender = this.renderIsNeeded( state );
-
-		if ( needToRender )
+		if ( !this.renderIsNeeded(state) )
 		{
-			gdsSession[gdsObj['name']] = gdsSession[gdsObj['name']] || [];
+			return false;
+		}
 
-			this.context.innerHTML 	= '';
+		this.context.style.width 	= (dimensions.parent.width) + 'px';
+		this.context.style.height 	= (dimensions.parent.height) + 'px';
+		this.context.innerHTML 		= '';
 
-			const dimensions = getDimensions();
-			this.state = state;
+		if (curGds.get('hasWide'))
+		{
+			const wideTerminal = terminals.wide; //curGds.wideTerminal;
 
-			this.makeCells(gdsObj.matrix, dimensions).forEach( (cell, index) => {
-
-				const props = {
-					name 	: index,
-					gds		: gdsObj['name'],
-					buffer	: gdsObj['buffer'] ? gdsObj['buffer']['terminals'][index + 1] : ''
-				};
-
-				this
-					.getTerminal( gdsObj['name'], index, props )
-					.reattach( cell, dimensions,  gdsObj.curTerminalId === index);
+			wideTerminal.changeSize({
+				char : dimensions.char,
+				size : {
+					height 	: dimensions.parent.height,
+					width 	: dimensions.size.width
+				},
 			});
+
+			this.context.appendChild(wideTerminal.context);
 		}
 
-		if (this.curTerminal !== curTd)
-		{
-			if (this.curTerminal !== undefined)
-			{
-				this.getTerminal( gdsObj['name'], this.curTerminal ).context.parentNode.classList.remove('activeWindow');
-			}
+		matrix.list.forEach( index => {
 
-			this.getTerminal( gdsObj['name'], curTd ).context.parentNode.classList.add('activeWindow');
-		}
+			terminals[index].changeSize(dimensions);
 
-		this.curTerminal = curTd;
+			this.context.appendChild(
+				terminals[index].context
+			);
+
+			terminals[index].context.scrollTop = terminals[index].context.scrollHeight;
+		});
+
+		this.state = {...state}
 	}
 }

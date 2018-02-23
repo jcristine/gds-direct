@@ -86,28 +86,28 @@
 			height : 100%;
 			//width  : 100%;
 
-			& > table {
-				height : 100%;
-				width  : 100%;
-
-				tr {
-                    td {
-						border-right: 3px solid #fff;
-						border-top: 3px solid #fff;
-						vertical-align: top;
-					}
-
-					td:last-child {
-                        border-right: 0;
-					}
-
-					&:first-child {
-						td {
-                            border-top:0;
-						}
-					}
-				}
-			}
+			//& > table {
+			//	height : 100%;
+			//	width  : 100%;
+            //
+			//	tr {
+             //       td {
+			//			border-right: 3px solid #fff;
+			//			border-top: 3px solid #fff;
+			//			vertical-align: top;
+			//		}
+            //
+			//		td:last-child {
+             //           border-right: 0;
+			//		}
+            //
+			//		&:first-child {
+			//			td {
+             //               border-top:0;
+			//			}
+			//		}
+			//	}
+			//}
 		}
 
 		.menu {
@@ -162,17 +162,42 @@
 		}
 	}
 
+	.matrix-row{
+		//border-bottom: 2px solid #fff;
+
+		.terminal {
+			//white-space: normal;
+
+			border-left: 2px solid #fff;
+			border-top: 2px solid #fff;
+
+			//&:last-child {
+			//	border-right: 0;
+			//}
+		}
+
+		//&:last-child {
+		//	.terminal {
+		//		border-bottom: 0;
+		//	}
+		//}
+	}
+
 	.terminal {
         //width:100%;
 
 		padding: 0;
-		padding-left : 2px;
-		padding-top : 2px;
+		//padding-left : 2px;
+		//padding-top : 2px;
+		//display: inline-block;
+		//background: #000;
+		float:left;
 
-		//text-align: left;
-        //height: 100%;
-        //overflow: auto;
-        //height : auto;
+      //display: inline-block;
+
+		&.active{
+			background: red;
+		}
 
         .cmd {
             font-weight: bold;
@@ -182,38 +207,12 @@
         .usedCommand {
             text-transform: uppercase;
         }
-
-        /*.terminal-wrapper
-        {
-            overflow: auto;
-            width: 100%;
-        }
-
-        div {
-            overflow: auto;
-            width: 100%;
-        }
-
-        pre {
-            width: 100%;
-        }*/
 	}
 
     .cmd + div // for tests
     {
         //background: red;
     }
-
-	//.terminal-wrapper {
-		//overflow: auto;
-		//height: 100%;
-	//}
-
-	//.terminal-output {
-		//overflow: auto;
-		//height : auto;
-		//height: 100%;
-	//}
 
     // when text outside container width
     .terminal-output div span {

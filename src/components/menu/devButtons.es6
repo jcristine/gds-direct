@@ -47,10 +47,10 @@ export default class DevButtons
 	constructor()
 	{
 		this.context = Dom('div');
-		this.context.appendChild ( this.PqAddTest() );
+		// this.context.appendChild ( this.PqAddTest() );
 		// this.context.appendChild ( this.AddPqMacros() );
 		this.context.appendChild ( this.commandsBuffer() );
-		this.context.appendChild ( this.fullScreen() );
+		// this.context.appendChild ( this.fullScreen() );
 	}
 
 	PqAddTest()

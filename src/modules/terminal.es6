@@ -9,14 +9,12 @@ export default class Terminal
 	{
 		this.plugin 	= null;
 		this.settings 	= params;
-		this.context 	= Dom('div.terminal');
+		this.context 	= Dom('div.terminal terminal-cell');
 
 		this.makeBuffer( params.buffer );
-
-		this.init();
 	}
 
-	init()
+	initPlugin()
 	{
 		this.plugin = new TerminalPlugin({
 			context 	: this.context,
@@ -51,43 +49,34 @@ export default class Terminal
 		this.context.appendChild( this.bufferDiv );
 	}
 
-	/*insertBuffer()
+	changeSize(dimension)
 	{
-		if ( !this.settings.buffer )
-			return false;
+		const {char, size} = dimension;
 
-		this.settings.buffer['buffering'].forEach( (record) => {
-			this.plugin.terminal.echo(record.command, { finalize : function ( div ) {
-				div[0].className = 'command';
-			}});
+		const charHeight 	= char.height;
+		const charWidth 	= char.width;
 
-			this.plugin.terminal.echo(record.output);
-		});
-	}*/
+		this.numOfRows 	= Math.floor( size.height 	/ charHeight );
+		this.numOfChars	= Math.floor( size.width 	/ charWidth ); //2 - padding-left px : need to fix
 
-	reattach( parentNode, dimensions )
-	{
-		this.settings.parentContext = parentNode;
+		if (this.plugin)
+		{
+			this.plugin.resize({
+				numOfChars 	: this.numOfChars - 2,
+				numOfRows 	: this.numOfRows
+			});
 
-		this.context.style.height	= parentNode.clientHeight + 'px';
-		this.context.style.width	= dimensions.width + 'px';
+			this.plugin.emptyLinesRecalculate( this.numOfRows, this.numOfChars, char.height );
+		} else
+		{
+			this.initPlugin()
+		}
 
-		this.settings.parentContext.appendChild(
-			this.context
-		);
+		// this.context.style.width 	= ( (this.numOfChars - 2) * charWidth) 	+ 'px';
+		// this.context.style.height 	= (this.numOfRows * charHeight) 		+ 'px';
 
-		this.numOfRows 	= Math.floor( parentNode.clientHeight / dimensions.char.height );
-		this.numOfChars	= Math.floor( this.context.clientWidth / dimensions.char.width ); //2 - padding-left px : need to fix
-
-		this.plugin.resize({
-			numOfChars 	: this.numOfChars - 2,
-			numOfRows 	: this.numOfRows
-		});
-
-		this.plugin.emptyLinesRecalculate( this.numOfRows, this.numOfChars, dimensions.char.height );
-
-		this.context.style.height 	= (this.numOfRows * dimensions.char.height) + 'px';
-		this.context.scrollTop 		= this.context.scrollHeight;
+		this.context.style.width 	= size.width	+ 'px';
+		this.context.style.height 	= (size.height) + 'px';
 
 		return this.plugin;
 	}

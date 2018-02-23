@@ -5,3 +5,6 @@ export const API_HOST 				= '';
 export const KEEP_ALIVE_REFRESH 	= 60000;
 export const AREA_LIST 				= ['A', 'B', 'C', 'D', 'E', 'F'];
 export const GDS_LIST 				= ['apollo', 'sabre', 'amadeus'];
+export const MAX_ROWS 				= 4;
+export const MAX_CELLS 				= 4;
+export const DEFAULT_CELLS			= [0,1,5,6];

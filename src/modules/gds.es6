@@ -1,50 +1,107 @@
-import {AREA_LIST, GDS_LIST} 	from '../constants.es6';
+import {GDS_LIST} 	from '../constants.es6';
+import {GDS_UNIT} from "./gdsUnit";
 
-const saved		= localStorage.getItem('matrix');
-
-const defaults	= {
-	sessionIndex 	: 0,
-	pcc				: {},
-	matrix			: saved ? JSON.parse( saved ) : {rows : 1, cells : 1},
-	// activeTerminal	: null,
-	canCreatePq		: false,
-	history			: [],
-	curTerminalId	: undefined
-};
-
-const initGdsData = (name, settings = {}) => {
-
-	const props = {
-		name 			: name,
-		sessionIndex 	: AREA_LIST.indexOf( settings['area'] ),
-		// canCreatePq		: 1,
-		canCreatePq		: false,
-		list			: name === 'sabre' ? AREA_LIST : AREA_LIST.slice(0, -1)
-	};
-
-	return { ...defaults, ...props}
-};
-
-export default class GdsSet
+export class GDS
 {
-	static makeList( savedGdsData )
+	constructor(gdsList, buffer = {}, activeName)
 	{
-		return this.gdsList = GDS_LIST.map( name => initGdsData(name, savedGdsData[name]));
-	}
+		this.list 		= gdsList;
+		this.buffer 	= buffer;
+		this.setCurrent(activeName);
 
-	static getList()
-	{
-		return this.gdsList;
-	}
+		this.gdsSet 	= GDS_LIST.map( name => {
 
-	static init( gdsList, buffer = {} )
-	{
-		let gds = {};
+			let settings 		= this.list[name] 	|| {};
+			const {gds = {}} 	= this.buffer 		|| {};
 
-		GdsSet.makeList(gdsList).forEach( obj => {
-			gds[ obj['name'] ] = {...obj , buffer :  buffer && buffer.gds ? buffer.gds[obj['name']]  : ''};
+			return new GDS_UNIT(name, settings, gds);
 		});
+	}
 
-		return gds;
+	getList()
+	{
+		return this.gdsSet;
+	}
+
+	setCurrent(name = 'apollo')
+	{
+		this.name = name;
+	}
+
+	getCurrent()
+	{
+		return this.gdsSet.filter( gds => this.name === gds.get('name') )[0];
+	}
+
+	getCurrentName()
+	{
+		return this.name;
+	}
+
+	isApollo()
+	{
+		return this.name === 'apollo';
+	}
+
+	update(newState)
+	{
+		this.gdsSet = this.gdsSet.map( gds => {
+
+			if (gds.get('name') === this.name)
+			{
+				gds.update(newState);
+			}
+
+			return gds;
+		});
+	}
+
+	updateMatrix(dimensions)
+	{
+		this.getCurrent().updateMatrix(dimensions);
+	}
+
+	updatePcc(newState)
+	{
+		this.getCurrent().updatePcc(newState);
+	}
+
+	clearScreen()
+	{
+		this.getCurrent().get('terminals').forEach( terminal => terminal.clear() );
+	}
+
+	getActiveTerminal()
+	{
+		return this.getCurrent().getActiveTerminal();
+	}
+
+	changeActive(index)
+	{
+		const terminal = this.getActiveTerminal();
+
+		if (typeof terminal !== 'undefined')
+		{
+			terminal.context.classList.remove('activeWindow');
+		}
+
+		this.update({curTerminalId : index});
+		this.getActiveTerminal().context.classList.add('activeWindow');
+
+		// return this.getActiveTerminal().context; // for focus
+	}
+
+	runCommand(command)
+	{
+		const terminal = this.getActiveTerminal();
+
+		if (typeof terminal === 'undefined')
+		{
+			alert('Please select terminal first');
+			return Promise.reject('Please select terminal first');
+		}
+
+		terminal.plugin.terminal.exec(command);
+		return Promise.resolve();
 	}
 }

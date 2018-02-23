@@ -41,15 +41,24 @@ export class PqParser
 		this.modal = modal;
 	}
 
-	show(errors, rId)
+	show(gds, rId)
 	{
-		if (errors)
-			return throwError(errors);
+		if (!gds.get('canCreatePq'))
+		{
+			return Promise.reject('canCreatePq');
+		}
+
+		if (gds.get('canCreatePqErrors'))
+		{
+			return throwError(gds.get('canCreatePqErrors'));
+		}
+
+		// console.log("LOADING.....");
 
 		document.querySelector('#spinners').classList.remove('hidden');
 		document.querySelector('#loadingDots').classList.remove('loading-hidden');
 
-		get(`terminal/priceQuote?rId=${rId}`)
+		return get(`terminal/priceQuote?rId=${rId}`)
 
 			.then( response => {
 				document.querySelector('#spinners').classList.add('hidden');
@@ -67,7 +76,7 @@ export class PqParser
 				get(`terminal/importPriceQuote?rId=${rId}`);
 				return response;
 			})
+
 			.then( response => this.modal( response, CLOSE_PQ_WINDOW ) )
-			.then( () => { UPDATE_STATE({hideMenu: true}) });
 	}
 }

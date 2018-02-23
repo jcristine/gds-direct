@@ -1,73 +1,76 @@
-export class TerminalState
-{
-	constructor({permissions, requestId})
-	{
-		this.state = {
-			language	: 'APOLLO',
-			fontSize	: 1,
-			hideMenu	: false,
-			requestId	: requestId
-		};
+import {get} from "./helpers/requests";
 
-		this.permissions	= permissions;
+let State =  {
+	language	: 'APOLLO',
+	fontSize	: 1,
+	hideMenu	: false,
+	requestId	: null,
+	gdsList		: [],
+	gdsObjName	: ''
+};
+
+window.TerminalState = {
+	isLanguageApollo 	: () => State.language === 'APOLLO',
+	getLanguage 		: () => State.language,
+	hasPermissions 		: () => State.permissions
+};
+
+export const setState = (newState, action = '') => {
+
+	if (action)
+	{
+		switch (action)
+		{
+			default :
+		}
+	} else
+	{
+		State = {...State, ...newState};
 	}
 
-	setProvider( fn )
-	{
-		this.render = fn;
-	}
+	State = State = {...State, action};
 
-	hasPermissions()
-	{
-		return this.permissions;
-	}
+	console.log('STATE:', State);
+	renderView(State);
+};
 
-	getMatrix()
-	{
-		return this.state.gdsObj.matrix;
-	}
+export const getters = (action, props) => {
 
-	getPcc()
-	{
-		return this.state.gdsObj.pcc;
-	}
+	console.log('aaaa', State.gdsObjName);
 
-	getGds()
-	{
-		return this.state.gdsObj['name'];
-	}
+	const GET = (urlPart, param) => get(urlPart + '/' + State.gdsObjName + '/' + param);
 
-	getGdsObj()
+	switch (action)
 	{
-		return this.state.gdsObj;
-	}
+		case 'active' :
+			GET('terminal/saveSetting/terminal', props);
+			break;
 
-	getLanguage()
-	{
-		return this.state['language'];
-	}
+		case 'switch' :
+			GET('terminal/saveSetting/gds', props);
+			break;
 
-	getRequestId()
-	{
-		return this.state.requestId;
-	}
+		case 'session' :
+			GET('terminal/saveSetting/area', props);
+			break;
 
-	isGdsApollo()
-	{
-		return this.getGds() === 'apollo';
-	}
+		case 'language' :
+			GET('terminal/saveSetting/language', props);
+			break;
 
-	isLanguageApollo()
-	{
-		return this.getLanguage() === 'APOLLO'; //when time comes uncomment
-	}
+		case 'clear' :
+			get('terminal/clearBuffer', true);
+			break;
 
-	change( params = {} )
-	{
-		this.state = Object.assign( {}, this.state, params );
+		case 'history' :
+			return get(`terminal/lastCommands?rId=${State.requestId}&gds=${State.gdsObjName}`);
+		break;
 
-		this.render(
-			this.state
-		);
+		case 'showExistingPq' :
+			return get(`terminal/priceQuotes?rId=${State.requestId}`);
+		break;
 	}
-}
+};
+
+let renderView;
+export const setProvider = containerRender => { renderView = containerRender };

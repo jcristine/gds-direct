@@ -6,7 +6,7 @@ import PqButton			from './menu/pqButton.es6';
 import DevButtons		from './menu/devButtons.es6';
 import Dom				from '../helpers/dom.es6';
 import Component		from '../modules/component';
-import GdsSet 			from '../modules/gds';
+// import GdsSet 			from '../modules/gds';
 import {CHANGE_INPUT_LANGUAGE, SHOW_PQ_QUOTES} from "../actions";
 
 export default class MenuPanel extends Component
@@ -39,10 +39,19 @@ export default class MenuPanel extends Component
 			new PqButton()
 		);
 
-		if ( window.TerminalState.hasPermissions() )
-			this.append(
+		// if ( window.TerminalState.hasPermissions() )
+		// {
+		// 	this.observe(
+		// 		new TestsButtons()
+		// 	);
+		// }
+
+		if (!window.apiData.prod)
+		{
+			this.observe(
 				new TestsButtons()
 			);
+		}
 	}
 }
 
@@ -56,7 +65,12 @@ class SettingsButtons extends Component
 
 	children()
 	{
-		const Quotes 	= Dom('button.btn btn-mozilla font-bold', {innerHTML : 'Quoutes', onclick : SHOW_PQ_QUOTES});
+		const Quotes 	= Dom('button.btn btn-mozilla font-bold[Quotes]', {onclick : e => {
+			e.target.innerHTML = 'Loading...';
+
+			SHOW_PQ_QUOTES()
+				.then( ()  => {e.target.innerHTML = 'Quotes'});
+		}});
 
 		const theme 	= new Theme({
 			icon	: '<i class="fa fa-paint-brush t-f-size-14"></i>'
@@ -81,30 +95,31 @@ class GdsAreas extends Component
 		super('article');
 	}
 
-	stateToProps({gdsObj})
-	{
-		const {pcc, sessionIndex, name} = gdsObj;
-		return {pcc, sessionIndex, name};
-	}
-
 	_renderer()
 	{
 		this.context.innerHTML = '';
 
-		GdsSet.getList().forEach( ({list, name}) => {
+		this.props.gdsList.map( obj => {
 
-			const buttons = new SessionButtons(this.props);
+			const buttons = new SessionButtons({
+				pcc				: obj.get('pcc'),
+				sessionIndex	: obj.get('sessionIndex'),
+				name			: obj.get('name')
+			});
 
 			this.context.appendChild(
-				buttons.makeTrigger( name )
+				buttons.makeTrigger(this.props.gdsObjName)
 			);
 
-			if (this.props['name'] === name)
-				list.map( (area,index) => {
+			if (this.props.gdsObjName === obj.get('name') )
+			{
+				obj.get('list').map( (area, index) => {
 					this.context.appendChild(
 						buttons.makeArea(area, index)
 					);
 				});
+			}
+
 		});
 	}
 }
@@ -143,10 +158,20 @@ class TestsButtons extends Component
 {
 	constructor()
 	{
-		super('article');
+		super('article.hidden');
 
 		this.context.appendChild(
 			new DevButtons().getContext()
 		);
+	}
+
+	stateToProps({permissions})
+	{
+		return {permissions};
+	}
+
+	_renderer()
+	{
+		this.context.classList.toggle('hidden', !this.props.permissions);
 	}
 }

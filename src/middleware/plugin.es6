@@ -80,7 +80,7 @@ export default class TerminalPlugin
 		if (this.settings.name === 'fullScreen')
 			return false;
 
-		CHANGE_ACTIVE_TERMINAL({gds : this.settings.gds, curTerminalId : this.name, plugin : this});
+		CHANGE_ACTIVE_TERMINAL({curTerminalId : this.name});
 	}
 
 	purge()
@@ -233,7 +233,8 @@ export default class TerminalPlugin
 			} else
 			{
 				// if 1 rows of terminal do not perform clear screen
-				const clearScreen = result['clearScreen'] && window.TerminalState.getMatrix().rows !== 0;
+				const clearScreen = result['clearScreen'];// && window.TerminalState.getMatrix().rows !== 0;
+				// const clearScreen = result['clearScreen'] && window.TerminalState.getMatrix().rows !== 0;
 				this.outputLiner.prepare( result['output'], clearScreen );
 			}
 		}

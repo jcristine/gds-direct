@@ -1,3 +1,5 @@
+import {DEFAULT_CELLS} from "../constants";
+
 const common = {
 	'`': '>',
 	'[': '¤',
@@ -85,4 +87,19 @@ export const getDate = () => {
 		now         : makeDate(date) + months[d.getMonth()],
 		plus320     : makeDate(p320Date) + months[dPlus320.getMonth()]
 	};
+};
+
+const _getStorage = (name) => {
+	const saved	= localStorage.getItem(name);
+	return saved ? JSON.parse(saved) : false;
+};
+
+export const getStorageMatrix = () => {
+
+	const matrix = _getStorage('matrix');
+
+	if (matrix && !matrix.list)
+			return {rows : 1, cells : 1, list : [...DEFAULT_CELLS]};
+
+	return matrix;
 };

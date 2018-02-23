@@ -1,7 +1,7 @@
 import Matrix 	from './popovers/terminalMatrix.es6';
 import Component from '../modules/component';
 
-export default class ActionsMenu extends Component{
+export default class ActionsMenu extends Component {
 
 	constructor()
 	{

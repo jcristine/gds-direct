@@ -14,3 +14,24 @@ export function cookieSet(name, value, xdays) {
 	const expires = 'expires='+ d.toUTCString();
 	document.cookie = name + '=' + value + '; ' + expires;
 }
+
+// const cookie = {
+// 	get : (name) => {
+// 		const 	value = '; ' + document.cookie,
+// 			parts = value.split('; ' + name + '=');
+//
+// 		if (parts.length === 2)
+// 		{
+// 			return parts.pop().split(';').shift();
+// 		}
+// 	},
+//
+// 	set : (name, value, xmins) => {
+// 		const 	d = new Date(),
+// 			expires = 'expires='+ d.toUTCString();
+//
+// 		xmins = !isNaN(parseFloat(xmins)) ? parseFloat(xmins) : 1;
+// 		d.setTime(d.getTime() + (xmins*60*1000));
+// 		document.cookie = name + '=' + value + '; ' + expires;
+// 	}
+// };
