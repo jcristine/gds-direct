@@ -1197,7 +1197,9 @@ var GDS = exports.GDS = function () {
 				for (var _iterator = Object.keys(terminals)[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
 					var key = _step.value;
 
-					terminals[key].clear();
+					if (terminals[key]) {
+						terminals[key].clear();
+					}
 				}
 
 				// this.getCurrent().get('terminals').forEach( terminal => terminal.clear() );

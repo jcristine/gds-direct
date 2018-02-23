@@ -72,7 +72,10 @@ export class GDS
 
 		for (const key of Object.keys(terminals))
 		{
-			terminals[key].clear();
+			if (terminals[key])
+			{
+				terminals[key].clear();
+			}
 		}
 
 		// this.getCurrent().get('terminals').forEach( terminal => terminal.clear() );
