@@ -68,7 +68,14 @@ export class GDS
 
 	clearScreen()
 	{
-		this.getCurrent().get('terminals').forEach( terminal => terminal.clear() );
+		const terminals = this.getCurrent().get('terminals');
+
+		for (const key of Object.keys(terminals))
+		{
+			terminals[key].clear();
+		}
+
+		// this.getCurrent().get('terminals').forEach( terminal => terminal.clear() );
 	}
 
 	getActiveTerminal()
