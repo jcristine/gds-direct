@@ -950,6 +950,19 @@ var TerminalApp = function () {
 
 			return this;
 		}
+	}, {
+		key: 'runPnr',
+		value: function runPnr(_ref) {
+			var pnrCode = _ref.pnrCode,
+			    _ref$gdsName = _ref.gdsName,
+			    gdsName = _ref$gdsName === undefined ? 'apollo' : _ref$gdsName;
+
+			if (pnrCode) {
+				(0, _actions.CHANGE_GDS)(gdsName);
+				(0, _actions.CHANGE_ACTIVE_TERMINAL)({ curTerminalId: 0 });
+				(0, _actions.DEV_CMD_STACK_RUN)('*' + pnrCode);
+			}
+		}
 	}]);
 
 	return TerminalApp;
@@ -960,20 +973,6 @@ window.terminal = TerminalApp;
 var resizeTimeout = void 0;
 
 var initGlobEvents = function initGlobEvents() {
-
-	var exec_terminal = function exec_terminal() {
-		var pnrCode = (0, _cookie.cookieGet)('pnrCode'),
-		    gdsName = (0, _cookie.cookieGet)('gdsName') || 'apollo';
-
-		if (pnrCode) {
-			(0, _cookie.cookieSet)('pnrCode', '');
-			(0, _cookie.cookieSet)('gdsName', '');
-
-			(0, _actions.CHANGE_GDS)(gdsName);
-			(0, _actions.CHANGE_ACTIVE_TERMINAL)({ curTerminalId: 0 });
-			(0, _actions.DEV_CMD_STACK_RUN)('*' + pnrCode);
-		}
-	};
 
 	window.onresize = function () {
 
@@ -986,17 +985,36 @@ var initGlobEvents = function initGlobEvents() {
 		}, 10);
 	};
 
-	setTimeout(function () {
+	// const exec_terminal = () =>	{
+	// const
+	// 	pnrCode = cookieGet('pnrCode'),
+	// 	gdsName = cookieGet('gdsName') || 'apollo';
+	//
+	// if (pnrCode)
+	// {
+	// 	cookieSet('pnrCode', '');
+	// 	cookieSet('gdsName', '');
+	//
+	// 	CHANGE_GDS(gdsName);
+	// 	CHANGE_ACTIVE_TERMINAL({curTerminalId : 0});
+	// 	DEV_CMD_STACK_RUN('*' + pnrCode);
+	// }
+	// };
 
-		window.onhashchange = function () {
 
-			if (location.hash === "#terminalNavBtntab") {
-				exec_terminal();
-			}
-		};
-
-		exec_terminal();
-	}, 300);
+	// setTimeout(() => {
+	//
+	// 	window.onhashchange = () => {
+	//
+	// 		if (location.hash === "#terminalNavBtntab")
+	// 		{
+	// 			exec_terminal();
+	// 		}
+	// 	};
+	//
+	// 	exec_terminal();
+	//
+	// }, 300);
 };
 
 /***/ }),

@@ -4,7 +4,7 @@ import {CHANGE_ACTIVE_TERMINAL, CHANGE_GDS, DEV_CMD_STACK_RUN, INIT, UPDATE_STAT
 import {GDS} 			from './modules/gds';
 import ContainerMain 	from "./containers/main";
 import {PqParser} 		from "./modules/pqParser";
-import {cookieGet, cookieSet} from "./helpers/cookie";
+// import {cookieGet, cookieSet} from "./helpers/cookie";
 
 class TerminalApp
 {
@@ -72,6 +72,16 @@ class TerminalApp
 
 		return this;
 	}
+
+	runPnr({pnrCode, gdsName = 'apollo'})
+	{
+		if (pnrCode)
+		{
+			CHANGE_GDS(gdsName);
+			CHANGE_ACTIVE_TERMINAL({curTerminalId : 0});
+			DEV_CMD_STACK_RUN('*' + pnrCode);
+		}
+	}
 }
 
 window.terminal = TerminalApp;
@@ -80,21 +90,6 @@ let resizeTimeout;
 
 const initGlobEvents = () => {
 
-	const exec_terminal = () =>	{
-		const
-			pnrCode = cookieGet('pnrCode'),
-			gdsName = cookieGet('gdsName') || 'apollo';
-
-		if (pnrCode)
-		{
-			cookieSet('pnrCode', '');
-			cookieSet('gdsName', '');
-
-			CHANGE_GDS(gdsName);
-			CHANGE_ACTIVE_TERMINAL({curTerminalId : 0});
-			DEV_CMD_STACK_RUN('*' + pnrCode);
-		}
-	};
 
 	window.onresize = () => {
 
@@ -106,18 +101,36 @@ const initGlobEvents = () => {
 		resizeTimeout = setTimeout( () => UPDATE_STATE({}), 10 );
 	};
 
-	setTimeout(() => {
+	// const exec_terminal = () =>	{
+	// const
+	// 	pnrCode = cookieGet('pnrCode'),
+	// 	gdsName = cookieGet('gdsName') || 'apollo';
+	//
+	// if (pnrCode)
+	// {
+	// 	cookieSet('pnrCode', '');
+	// 	cookieSet('gdsName', '');
+	//
+	// 	CHANGE_GDS(gdsName);
+	// 	CHANGE_ACTIVE_TERMINAL({curTerminalId : 0});
+	// 	DEV_CMD_STACK_RUN('*' + pnrCode);
+	// }
+	// };
 
-		window.onhashchange = () => {
 
-			if (location.hash === "#terminalNavBtntab")
-			{
-				exec_terminal();
-			}
-		};
 
-		exec_terminal();
-
-	}, 300);
+	// setTimeout(() => {
+	//
+	// 	window.onhashchange = () => {
+	//
+	// 		if (location.hash === "#terminalNavBtntab")
+	// 		{
+	// 			exec_terminal();
+	// 		}
+	// 	};
+	//
+	// 	exec_terminal();
+	//
+	// }, 300);
 
 };
