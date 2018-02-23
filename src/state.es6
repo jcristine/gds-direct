@@ -36,8 +36,6 @@ export const setState = (newState, action = '') => {
 
 export const getters = (action, props) => {
 
-	console.log('aaaa', State.gdsObjName);
-
 	const GET = (urlPart, param) => get(urlPart + '/' + State.gdsObjName + '/' + param);
 
 	switch (action)

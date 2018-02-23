@@ -250,7 +250,7 @@ export const switchTerminal = ({keymap}) => {
 	// const fn = (rows, cells, currentTerminalName) => {
 	const fn = ({matrix, curTerminalId}) => {
 
-		const {cells, rows} = matrix;
+		const {cells, rows, list} = matrix;
 
 		const gridCount				= rows * cells;
 		const mapName				= (rows === 1 || cells === 1) ? 'other' : rows + 'x' + cells;
@@ -259,15 +259,25 @@ export const switchTerminal = ({keymap}) => {
 
 		if (typeof keymap === 'number')
 		{
-			const id		= keymap === 48 ? 9 : keymap - 49;
-			return gridMaps[mapName]['encode'][id] === 'undefined' ? false :  gridMaps[mapName]['encode'][id];
+			const id = keymap === 48 ? 9 : keymap - 49;
+
+			if (id >= list.length)
+			{
+				return false
+			}
+
+			return list[id];
+			// return gridMaps[mapName]['encode'][id] === 'undefined' ? false :  gridMaps[mapName]['encode'][id];
 		}
 
 		const isNext	= keymap === 'next';
+		// let index = list.indexOf(curTerminalId);
+
 		const nextId	= gridMaps[mapName]['decode'][curTerminalId] + (isNext ? 1 : -1);
 
 		if (isNext)
 		{
+			// index++;
 			getId	= nextId >= gridCount ? 0 : gridMaps[mapName]['encode'][nextId];
 		} else
 		{
@@ -275,6 +285,8 @@ export const switchTerminal = ({keymap}) => {
 		}
 
 		return getId;
+
+		// return list[index];
 	};
 
 	SWITCH_TERMINAL( fn );

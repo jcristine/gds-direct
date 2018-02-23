@@ -22,8 +22,13 @@ export const CHANGE_MATRIX = matrix => {
 };
 
 export const CHANGE_ACTIVE_TERMINAL = ({curTerminalId}) => {
-	app.Gds.changeActive(curTerminalId);
-	getters('active', curTerminalId + 1);
+
+	if (curTerminalId !== false)
+	{
+		app.Gds.changeActive(curTerminalId);
+		getters('active', curTerminalId + 1);
+	}
+
 };
 
 export const CHANGE_GDS = gdsName => {
@@ -89,9 +94,9 @@ export const PQ_MODAL_SHOW 	= () => {
 export const CLOSE_PQ_WINDOW = () => showPq({hideMenu : false});
 
 export const SWITCH_TERMINAL = fn => {
-	CHANGE_ACTIVE_TERMINAL({
-		curTerminalId : fn(app.getGds().get())
-	});
+	const curTerminalId = fn(app.getGds().get());
+
+	CHANGE_ACTIVE_TERMINAL({curTerminalId});
 
 	app.Gds.getActiveTerminal().plugin.terminal.focus();
 };
