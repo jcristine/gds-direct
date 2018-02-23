@@ -101,5 +101,10 @@ export const getStorageMatrix = () => {
 	if (matrix && !matrix.list)
 			return {rows : 1, cells : 1, list : [...DEFAULT_CELLS]};
 
+	if (!matrix)
+	{
+		return {rows : 1, cells : 1, list : [...DEFAULT_CELLS]};
+	}
+
 	return matrix;
 };

@@ -22,15 +22,8 @@ export const CHANGE_MATRIX = matrix => {
 };
 
 export const CHANGE_ACTIVE_TERMINAL = ({curTerminalId}) => {
-
-	console.log("CHANGE ACTIVE", curTerminalId);
-
-	if (curTerminalId !== false)
-	{
-		app.Gds.changeActive(curTerminalId);
-		getters('active', curTerminalId + 1);
-	}
-
+	app.Gds.changeActive(curTerminalId);
+	getters('active', curTerminalId + 1);
 };
 
 export const CHANGE_GDS = gdsName => {
@@ -102,7 +95,7 @@ export const SWITCH_TERMINAL = (fn) => {
 	setTimeout(() => { // THIS IS CRAZY SHIT. WITHOUT IT SWITCHES TERMINALS SEVERAL TIMES TRY PRESS ~
 		const terminal = app.Gds.getCurrent().get('terminals');
 
-		if (terminal !== false)
+		if (curTerminalId !== false)
 			terminal[curTerminalId].plugin.terminal.focus();
 	}, 100);
 };
