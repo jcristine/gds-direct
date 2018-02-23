@@ -5,7 +5,6 @@ let app;
 
 export const INIT = App => {
 	app = App;
-	app.getContainer();
 
 	setProvider( State => app.getContainer().render(State) );
 
@@ -67,7 +66,7 @@ export const GET_HISTORY 	= () => getters('history');
 
 export const PURGE_SCREENS 	= () => {
 	app.Gds.clearScreen();
-	// getters('clear'); // TO MANY REQUESTS;
+	getters('clear'); // TO MANY REQUESTS;
 };
 
 const showPq = (newState, offset = 100) => {

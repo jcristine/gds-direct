@@ -77,8 +77,8 @@ export default class TerminalPlugin
 
 	changeActiveTerm()
 	{
-		if (this.settings.name === 'fullScreen')
-			return false;
+		// if (this.settings.name === 'fullScreen')
+		// 	return false;
 
 		CHANGE_ACTIVE_TERMINAL({curTerminalId : this.name});
 	}

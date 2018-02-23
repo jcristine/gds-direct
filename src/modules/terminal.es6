@@ -1,5 +1,6 @@
 import TerminalPlugin	from '../middleware/plugin.es6';
 import Dom				from '../helpers/dom.es6';
+import {CHANGE_ACTIVE_TERMINAL} from "../actions";
 
 require('../../node_modules/jquery.terminal/js/unix_formatting');
 
@@ -24,6 +25,12 @@ export default class Terminal
 			numOfRows 	: this.numOfRows,
 			numOfChars 	: this.numOfChars
 		});
+
+		if (this.settings.name === 0) // when all terminals init at once first is current but never gets selected
+		{
+			CHANGE_ACTIVE_TERMINAL({curTerminalId: 0});
+			this.plugin.terminal.enable();
+		}
 	}
 
 	makeBuffer( buf )
@@ -57,7 +64,7 @@ export default class Terminal
 		const charWidth 	= char.width;
 
 		this.numOfRows 	= Math.floor( size.height 	/ charHeight );
-		this.numOfChars	= Math.floor( size.width 	/ charWidth ); //2 - padding-left px : need to fix
+		this.numOfChars	= Math.floor( (size.width - 2) 	/ charWidth ); //2 - padding-left px : need to fix
 
 		if (this.plugin)
 		{
@@ -69,7 +76,7 @@ export default class Terminal
 			this.plugin.emptyLinesRecalculate( this.numOfRows, this.numOfChars, char.height );
 		} else
 		{
-			this.initPlugin()
+			this.initPlugin();
 		}
 
 		// this.context.style.width 	= ( (this.numOfChars - 2) * charWidth) 	+ 'px';
