@@ -245,17 +245,13 @@ const gridMaps = {
 	}
 };
 
+
+
 export const switchTerminal = ({keymap}) => {
 
-	// const fn = (rows, cells, currentTerminalName) => {
 	const fn = ({matrix, curTerminalId}) => {
 
-		const {cells, rows, list} = matrix;
-
-		const gridCount				= rows * cells;
-		const mapName				= (rows === 1 || cells === 1) ? 'other' : rows + 'x' + cells;
-
-		let getId					= 0;
+		const {list} = matrix;
 
 		if (typeof keymap === 'number')
 		{
@@ -267,26 +263,32 @@ export const switchTerminal = ({keymap}) => {
 			}
 
 			return list[id];
-			// return gridMaps[mapName]['encode'][id] === 'undefined' ? false :  gridMaps[mapName]['encode'][id];
 		}
 
-		const isNext	= keymap === 'next';
-		// let index = list.indexOf(curTerminalId);
-
-		const nextId	= gridMaps[mapName]['decode'][curTerminalId] + (isNext ? 1 : -1);
+		const isNext		= keymap === 'next';
+		let index 			= list.indexOf(curTerminalId);
+		let changeIndex 	= 0;
 
 		if (isNext)
 		{
-			// index++;
-			getId	= nextId >= gridCount ? 0 : gridMaps[mapName]['encode'][nextId];
+			changeIndex = index + 1;
+
+			if (changeIndex >= list.length)
+			{
+				changeIndex = 0;
+			}
 		} else
 		{
-			getId	= nextId < 0 ? gridCount -1 : gridMaps[mapName]['encode'][nextId];
+			changeIndex = index - 1;
+
+			if (changeIndex < 0)
+			{
+				changeIndex = list.length - 1;
+			}
 		}
 
-		return getId;
-
-		// return list[index];
+		return list[changeIndex];
+		// return { list : list[changeIndex] };
 	};
 
 	SWITCH_TERMINAL( fn );

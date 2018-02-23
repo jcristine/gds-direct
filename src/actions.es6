@@ -23,6 +23,8 @@ export const CHANGE_MATRIX = matrix => {
 
 export const CHANGE_ACTIVE_TERMINAL = ({curTerminalId}) => {
 
+	console.log("CHANGE ACTIVE", curTerminalId);
+
 	if (curTerminalId !== false)
 	{
 		app.Gds.changeActive(curTerminalId);
@@ -72,7 +74,7 @@ export const GET_HISTORY 	= () => getters('history');
 
 export const PURGE_SCREENS 	= () => {
 	app.Gds.clearScreen();
-	getters('clear'); // TO MANY REQUESTS;
+	// getters('clear'); // TO MANY REQUESTS;
 };
 
 const showPq = (newState, offset = 100) => {
@@ -93,12 +95,16 @@ export const PQ_MODAL_SHOW 	= () => {
 
 export const CLOSE_PQ_WINDOW = () => showPq({hideMenu : false});
 
-export const SWITCH_TERMINAL = fn => {
+export const SWITCH_TERMINAL = (fn) => {
+
 	const curTerminalId = fn(app.getGds().get());
 
-	CHANGE_ACTIVE_TERMINAL({curTerminalId});
+	setTimeout(() => { // THIS IS CRAZY SHIT. WITHOUT IT SWITCHES TERMINALS SEVERAL TIMES TRY PRESS ~
+		const terminal = app.Gds.getCurrent().get('terminals');
 
-	app.Gds.getActiveTerminal().plugin.terminal.focus();
+		if (terminal !== false)
+			terminal[curTerminalId].plugin.terminal.focus();
+	}, 100);
 };
 
 export const CHANGE_FONT_SIZE = props => {

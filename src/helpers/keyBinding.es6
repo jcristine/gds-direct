@@ -76,7 +76,7 @@ export const pressedShortcuts = (evt, terminal, plugin) => {
 
 				// disabling these keys from terminal library to execute
 				case 192 :	// Ctrl + ~
-					switchTerminal({keymap : 'next', gds, name : plugin.name});
+					switchTerminal({keymap : 'next'});
 				break;
 
 				case 48 :	// Ctrl + 0
@@ -89,7 +89,7 @@ export const pressedShortcuts = (evt, terminal, plugin) => {
 				case 55 :	// Ctrl + 7
 				case 56 :	// Ctrl + 8
 				case 57 :	// Ctrl + 9
-					switchTerminal({keymap, gds, name : plugin.name});
+					switchTerminal({keymap});
 				break;
 
 				default:
@@ -140,7 +140,7 @@ export const pressedShortcuts = (evt, terminal, plugin) => {
 				break;
 
 				case 192 :	// Shift + ~
-					switchTerminal({keymap : 'prev', gds, name : plugin.name});
+					switchTerminal({keymap : 'prev'});
 				break;
 
 				default : return true
