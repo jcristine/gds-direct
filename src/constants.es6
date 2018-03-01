@@ -8,3 +8,4 @@ export const GDS_LIST 				= ['apollo', 'sabre', 'amadeus'];
 export const MAX_ROWS 				= 4;
 export const MAX_CELLS 				= 4;
 export const DEFAULT_CELLS			= [0,1,5,6];
+export const THEME_CLASS_NAME 		= 'terminaltheme_';

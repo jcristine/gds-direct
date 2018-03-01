@@ -9,9 +9,10 @@ export const INIT = App => {
 	setProvider( State => app.getContainer().render(State) );
 
 	UPDATE_STATE({
-		requestId	: app.params.requestId,
-		gdsObjName	: app.Gds.getCurrentName(),
-		permissions : app.params.permissions
+		requestId		: app.params.requestId,
+		gdsObjName		: app.Gds.getCurrentName(),
+		permissions 	: app.params.permissions,
+		terminalThemes	: app.params.terminalThemes
 	});
 };
 
@@ -34,18 +35,26 @@ export const CHANGE_GDS = gdsName => {
 export const UPDATE_CUR_GDS = (gdsName, {canCreatePq, canCreatePqErrors, area, pcc, startNewSession}) => {
 
 	const sessionIndex	= AREA_LIST.indexOf(area);
-	const newPcc 		= {[sessionIndex] : pcc};
+	// const newPcc 		= {[sessionIndex] : pcc};
+
+	const newAction = {canCreatePq, canCreatePqErrors, sessionIndex};
 
 	if (startNewSession)
 	{
-		app.Gds.update({pcc : {newPcc}, canCreatePq, canCreatePqErrors, sessionIndex});
+		app.Gds.update({pcc : {[sessionIndex] : pcc}, ...newAction});
 	} else
 	{
-		app.Gds.updatePcc(newPcc);
-		app.Gds.update({canCreatePq, canCreatePqErrors, sessionIndex});
+		app.Gds.updatePcc({[sessionIndex] : pcc});
+		app.Gds.update(newAction);
 	}
 
-	setState({gdsList : app.Gds.getList()})
+	setState({
+		gdsList : app.Gds.getList()
+	});
+};
+
+export const CHANGE_STYLE = name => {
+	app.changeStyle(name);
 };
 
 export const CHANGE_SESSION_BY_MENU = area => {

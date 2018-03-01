@@ -2,7 +2,7 @@ import Dom from '../helpers/dom';
 
 export default class Component
 {
-	constructor( selector, params)
+	constructor(selector, params)
 	{
 		this.context 	= Dom( selector, params);
 		this.observers 	= [];
@@ -37,6 +37,10 @@ export default class Component
 		return this.context;
 	}
 
+	mount()
+	{
+	}
+
 	render( params )
 	{
 		if ( typeof this.stateToProps === 'function' )
@@ -56,6 +60,15 @@ export default class Component
 		else
 		{
 			this.props = params;
+		}
+
+		// console.log("!",this.props);
+
+		if (this.props)
+		{
+			// console.log('IS')
+			this.mount();
+			this.mount = () => {};
 		}
 
 		if ( typeof this._renderer === 'function' )

@@ -12,7 +12,9 @@ export default class ContainerMain extends Component
 			new TableSections()
 		);
 
-		document.getElementById( rootId ).appendChild(
+		this.parent = document.getElementById( rootId );
+
+		this.parent.appendChild(
 			this.getContext()
 		);
 
@@ -31,5 +33,11 @@ export default class ContainerMain extends Component
 	getTempTerminal()
 	{
 		return this.tempTerminal;
+	}
+
+	changeStyle(themeName)
+	{
+		this.themeName = themeName;
+		this.parent.classList.add( themeName );
 	}
 }

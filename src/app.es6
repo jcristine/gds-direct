@@ -4,7 +4,8 @@ import {CHANGE_ACTIVE_TERMINAL, CHANGE_GDS, DEV_CMD_STACK_RUN, INIT, UPDATE_STAT
 import {GDS} 			from './modules/gds';
 import ContainerMain 	from "./containers/main";
 import {PqParser} 		from "./modules/pqParser";
-// import {cookieGet, cookieSet} from "./helpers/cookie";
+import {cookieGet, cookieSet} from "./helpers/cookie";
+import {THEME_CLASS_NAME} from "./constants";
 
 class TerminalApp
 {
@@ -12,16 +13,28 @@ class TerminalApp
 	{
 		this.params			= params;
 		this.settings 		= params.settings;
+
 		this.Gds 			= new GDS(params.settings.gds, params['buffer'], this.settings['common']['currentGds']);
 		this.pqParser 		= new PqParser(params["PqPriceModal"]);
+
 		this.offset			= 100; //menu
 
 		this.container 		= new ContainerMain(params['htmlRootId']);
+
+		const theme 		= cookieGet('terminalTheme_' + this.params.agentId);
+		const themeName		= theme || THEME_CLASS_NAME + this.params.terminalThemes[0]['id'];
+		this.changeStyle(themeName);
 
 		setLink( params['commandUrl'] );
 		INIT(this);
 
 		initGlobEvents();
+	}
+
+	changeStyle( name )
+	{
+		cookieSet('terminalTheme_' + this.params.agentId, name, 30);
+		this.container.changeStyle(name);
 	}
 
 	getContainer()
@@ -90,7 +103,6 @@ let resizeTimeout;
 
 const initGlobEvents = () => {
 
-
 	window.onresize = () => {
 
 		if (resizeTimeout)
@@ -100,37 +112,4 @@ const initGlobEvents = () => {
 
 		resizeTimeout = setTimeout( () => UPDATE_STATE({}), 10 );
 	};
-
-	// const exec_terminal = () =>	{
-	// const
-	// 	pnrCode = cookieGet('pnrCode'),
-	// 	gdsName = cookieGet('gdsName') || 'apollo';
-	//
-	// if (pnrCode)
-	// {
-	// 	cookieSet('pnrCode', '');
-	// 	cookieSet('gdsName', '');
-	//
-	// 	CHANGE_GDS(gdsName);
-	// 	CHANGE_ACTIVE_TERMINAL({curTerminalId : 0});
-	// 	DEV_CMD_STACK_RUN('*' + pnrCode);
-	// }
-	// };
-
-
-
-	// setTimeout(() => {
-	//
-	// 	window.onhashchange = () => {
-	//
-	// 		if (location.hash === "#terminalNavBtntab")
-	// 		{
-	// 			exec_terminal();
-	// 		}
-	// 	};
-	//
-	// 	exec_terminal();
-	//
-	// }, 300);
-
 };

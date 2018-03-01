@@ -1,40 +1,24 @@
 import Dom 			 from '../../helpers/dom.es6';
 import ButtonPopOver from '../../modules/buttonPopover.es6';
-import {cookieGet, cookieSet} from "../../helpers/cookie";
-
-const CLASS_NAME = 'terminaltheme_';
+import {CHANGE_STYLE} from "../../actions";
+import {THEME_CLASS_NAME} from "../../constants";
 
 export default class Theme extends ButtonPopOver
 {
-	constructor( params )
+	constructor({icon, themes})
 	{
-		super( params );
+		super({icon});
 
-		this.agentId	= apiData.auth.id;
-		const theme 	= cookieGet('terminalTheme_' + this.agentId);
-
-		this.oldThemeClass	= theme || CLASS_NAME + window.apiData['terminalThemes'][0]['id'];
-		this.themeId 		= window.apiData['terminalThemes'][0]['id'];
-
-		if (theme)
-			this.themeId  = parseInt(theme.split('_')[1]);
-
-		this.context		= document.getElementById('terminalContext');
-		this.context.classList.add(this.oldThemeClass);
-
+		this.themes 	= themes;
 		this.makeTrigger();
 	}
 
 	onSelect(value)
 	{
-		const newThemeClass		= CLASS_NAME + value.id;
+		const newThemeClass		= THEME_CLASS_NAME + value.id;
 		this.themeId 			= value.id;
 
-		this.context.classList.remove(this.oldThemeClass);
-		this.context.classList.add(newThemeClass);
-
-		this.oldThemeClass = newThemeClass;
-		cookieSet('terminalTheme_' + this.agentId, newThemeClass, 30);
+		CHANGE_STYLE(newThemeClass);
 
 		this.popContent.innerHTML = '';
 		this.build();
@@ -42,11 +26,9 @@ export default class Theme extends ButtonPopOver
 
 	build()
 	{
-		const themeList = window.apiData['terminalThemes'];
-
-		if (themeList.length)
+		if (this.themes.length)
 		{
-			themeList.forEach( obj => {
+			this.themes.forEach( obj => {
 
 				const button 		= Dom(`button.list-group-item ${obj.id === this.themeId ? 'font-bold' : ''}`);
 				button.innerHTML	= obj.label;
