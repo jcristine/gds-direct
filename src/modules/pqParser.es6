@@ -31,7 +31,6 @@ const isPqError = ({data, result}) => {
 	.filter( er => {
 		return er && er !== undefined && er.length > 0
 	})
-		// .toString().split(',')
 };
 
 export class PqParser
@@ -53,8 +52,6 @@ export class PqParser
 			return throwError(gds.get('canCreatePqErrors'));
 		}
 
-		// console.log("LOADING.....");
-
 		document.querySelector('#spinners').classList.remove('hidden');
 		document.querySelector('#loadingDots').classList.remove('loading-hidden');
 
@@ -64,12 +61,9 @@ export class PqParser
 				document.querySelector('#spinners').classList.add('hidden');
 				document.querySelector('#loadingDots').classList.add('loading-hidden');
 
+				// const pqError = [];//isPqError(response);
 				const pqError = isPqError(response);
-
-				if (pqError.length)
-					return throwError(pqError);
-
-				return response;
+				return pqError.length ? throwError(pqError) : response;
 			})
 
 			.then( response => {

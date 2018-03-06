@@ -63,7 +63,7 @@ export default class Terminal
 		const charHeight 	= char.height;
 		const charWidth 	= char.width;
 
-		this.numOfRows 	= Math.floor( size.height 	/ charHeight );
+		this.numOfRows 	= Math.floor( (size.height - 2) 	/ charHeight );
 		this.numOfChars	= Math.floor( (size.width - 2) 	/ charWidth ); //2 - padding-left px : need to fix
 
 		if (this.plugin)
