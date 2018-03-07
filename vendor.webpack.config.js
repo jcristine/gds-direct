@@ -34,6 +34,6 @@ module.exports = {
 			name: 'vendor_lib'
 		})
 
-		,new UglifyJSPlugin()
+		// ,new UglifyJSPlugin()
 	]
 };
