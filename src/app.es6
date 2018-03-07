@@ -14,7 +14,7 @@ class TerminalApp
 		this.params			= params;
 		this.settings 		= params.settings;
 
-		this.Gds 			= new GDS(params.settings.gds, params['buffer'], this.settings['common']['currentGds']);
+		this.Gds 			= new GDS(params.settings.gds, params['buffer'], this.settings['common']['currentGds'], params.permissions);
 		this.pqParser 		= new PqParser(params["PqPriceModal"]);
 
 		this.offset			= 100; //menu

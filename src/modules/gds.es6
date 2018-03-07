@@ -1,21 +1,22 @@
 import {GDS_LIST} 	from '../constants.es6';
-import {GDS_UNIT} from "./gdsUnit";
+import {GDS_UNIT} 	from "./gdsUnit";
 
 export class GDS
 {
-	constructor(gdsList, buffer = {}, activeName)
+	constructor(gdsList, buffer = {}, activeName, permissions)
 	{
 		this.list 		= gdsList;
 		this.buffer 	= buffer;
 		this.setCurrent(activeName);
 
-		this.gdsSet 	= GDS_LIST.map( name => {
+		this.gdsSet 	= GDS_LIST
+			.filter( name => ( name !== 'galileo' || permissions) )
+			.map( name => {
+				let settings 		= this.list[name] 	|| {};
+				const {gds = {}} 	= this.buffer 		|| {};
 
-			let settings 		= this.list[name] 	|| {};
-			const {gds = {}} 	= this.buffer 		|| {};
-
-			return new GDS_UNIT(name, settings, gds);
-		});
+				return new GDS_UNIT(name, settings, gds);
+			});
 	}
 
 	getList()

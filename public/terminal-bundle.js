@@ -436,7 +436,7 @@ var ACCOUNT = exports.ACCOUNT = 'training';
 var API_HOST = exports.API_HOST = '';
 var KEEP_ALIVE_REFRESH = exports.KEEP_ALIVE_REFRESH = 60000;
 var AREA_LIST = exports.AREA_LIST = ['A', 'B', 'C', 'D', 'E', 'F'];
-var GDS_LIST = exports.GDS_LIST = ['apollo', 'sabre', 'amadeus'];
+var GDS_LIST = exports.GDS_LIST = ['apollo', 'sabre', 'amadeus', 'galileo'];
 var MAX_ROWS = exports.MAX_ROWS = 4;
 var MAX_CELLS = exports.MAX_CELLS = 4;
 var DEFAULT_CELLS = exports.DEFAULT_CELLS = [0, 1, 5, 6];
@@ -862,7 +862,7 @@ var TerminalApp = function () {
 		this.params = params;
 		this.settings = params.settings;
 
-		this.Gds = new _gds.GDS(params.settings.gds, params['buffer'], this.settings['common']['currentGds']);
+		this.Gds = new _gds.GDS(params.settings.gds, params['buffer'], this.settings['common']['currentGds'], params.permissions);
 		this.pqParser = new _pqParser.PqParser(params["PqPriceModal"]);
 
 		this.offset = 100; //menu
@@ -1110,10 +1110,12 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
 var GDS = exports.GDS = function () {
 	function GDS(gdsList) {
+		var buffer = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+
 		var _this = this;
 
-		var buffer = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
 		var activeName = arguments[2];
+		var permissions = arguments[3];
 
 		_classCallCheck(this, GDS);
 
@@ -1121,8 +1123,9 @@ var GDS = exports.GDS = function () {
 		this.buffer = buffer;
 		this.setCurrent(activeName);
 
-		this.gdsSet = _constants.GDS_LIST.map(function (name) {
-
+		this.gdsSet = _constants.GDS_LIST.filter(function (name) {
+			return name !== 'galileo' || permissions;
+		}).map(function (name) {
 			var settings = _this.list[name] || {};
 
 			var _ref = _this.buffer || {},
