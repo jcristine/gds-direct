@@ -1,7 +1,7 @@
 var webpack = require('webpack');
 var path 	= require('path');
 
-var UglifyJSPlugin = require('uglifyjs-webpack-plugin');
+// var UglifyJSPlugin = require('uglifyjs-webpack-plugin');
 
 module.exports = {
 	entry: {

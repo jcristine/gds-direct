@@ -1,32 +1,23 @@
-//var path = require('path');
-const webpack 			= require('webpack');
-
-const ExtractTextPlugin = require('extract-text-webpack-plugin');
-const extractLess 		= new ExtractTextPlugin({
-	filename: 'public/main.css'
-});
-
-// const UglifyJSPlugin = require('uglifyjs-webpack-plugin');
-// const BabiliPlugin = require("babili-webpack-plugin");
+var path 				= require('path');
+var webpack 			= require('webpack');
 
 module.exports = {
 
 	entry: [
-		"./src/app.es6",
-		"./src/theme/main.less"
+		"./src/app.es6"
 	],
 
 	output: {
-		filename: "./public/terminal-bundle.js"
+		path: path.resolve(__dirname, "public"),
+		filename: "terminal-bundle.js"
 	},
 
-	// debug	: true,
-	devtool: 'source-map',
+	mode 	: 'development',
+	devtool	: 'source-map',
 
 	resolve : {
 		extensions 	: ['.js', '.es6'],
 		modules		: [
-			// path.resolve(__dirname, "src"),
 			"node_modules"
 		]
 	},
@@ -45,11 +36,17 @@ module.exports = {
 				}
 			},
 			{
-				test	: /\.less$/,
-				use		: extractLess.extract({
-					use		: [{loader: "css-loader"}, {loader: "less-loader"}],
-					fallback: "style-loader"
-				})
+				test: /\.less$/,
+
+				include: path.resolve(__dirname, "src"),
+
+				use: [{
+					loader: "style-loader" // creates style nodes from JS strings
+				}, {
+					loader: "css-loader" // translates CSS into CommonJS
+				}, {
+					loader: "less-loader" // compiles Less to CSS
+				}]
 			}
 		]
 	},
@@ -59,14 +56,9 @@ module.exports = {
 	},
 
 	plugins: [
-		extractLess
-
-		,new webpack.DllReferencePlugin({
+		new webpack.DllReferencePlugin({
 			context: '.',
 			manifest: require('./public/vendor.terminal-manifest.json')
 		})
-
-		// ,new BabiliPlugin()
-		// ,new UglifyJSPlugin()
 	]
 };
