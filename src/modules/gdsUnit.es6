@@ -4,19 +4,15 @@ import {getStorageMatrix} from "../helpers/helpers";
 
 export class GDS_UNIT
 {
-	constructor(name, settings, buffer)
+	constructor(name, area, buffer)
 	{
-		const props = {
+		this.props		= {
 			name 			: name,
 			list			: name === 'sabre' ? AREA_LIST : AREA_LIST.slice(0, -1),
-			buffer			: buffer[name]
-		};
+			buffer			: buffer[name],
 
-		this.settings 	= {...props};
-
-		this.props		= {
 			matrix			: getStorageMatrix(),
-			sessionIndex 	: AREA_LIST.indexOf( settings['area'] ),
+			sessionIndex 	: AREA_LIST.indexOf( area ),
 			pcc				: {},
 			canCreatePq		: false, //1
 			history			: [],
@@ -36,7 +32,7 @@ export class GDS_UNIT
 			return this.props;
 		}
 
-		return this.settings[name] || this.props[name];
+		return this.props[name];
 	}
 
 	set(name, value)
@@ -61,15 +57,17 @@ export class GDS_UNIT
 
 		let terminals = [...this.get('terminals')];
 
-		list.filter( index => !terminals[index] ).forEach( index => {
+		list
+			.filter( index => !terminals[index] )
+			.forEach( index => {
 
-			terminals[index] = new Terminal({
-				name 	: index,
-				gds		: this.get('name'),
-				buffer	: this.get('buffer') ? this.get('buffer')['terminals'][index + 1] : ''
+				terminals[index] = new Terminal({
+					name 	: index,
+					gds		: this.get('name'),
+					buffer	: this.get('buffer') ? this.get('buffer')['terminals'][index + 1] : ''
+				});
+
 			});
-
-		});
 
 		terminals['wide'] = terminals['wide'] || new Terminal({
 			name 	: 'wide',

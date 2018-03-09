@@ -1,5 +1,6 @@
 import {SessionButtons} from "./sessionButtons";
 import Component from "../../modules/component";
+import {GDS_LIST} from "../../constants";
 
 export class GdsAreas extends Component
 {
@@ -8,31 +9,44 @@ export class GdsAreas extends Component
 		super('article');
 	}
 
+	setState(state)
+	{
+		const {gdsList, gdsObjName, gdsObjIndex} = state;
+
+		const current = gdsList[gdsObjIndex];
+
+		const {pcc, sessionIndex} = current.get();
+
+		return super.setState({
+			gdsObjName,
+			pcc,
+			sessionIndex,
+			areaList : current.get('list')
+		})
+	}
+
 	_renderer()
 	{
 		this.context.innerHTML = '';
 
-		this.props.gdsList.map( obj => {
+		GDS_LIST.map( name => {
 
-			const buttons = new SessionButtons({
-				pcc				: obj.get('pcc'),
-				sessionIndex	: obj.get('sessionIndex'),
-				name			: obj.get('name')
-			});
+			const buttons = new SessionButtons({name});
 
 			this.context.appendChild(
-				buttons.makeTrigger(this.props.gdsObjName)
+				buttons.makeTrigger(this.state.gdsObjName)
 			);
 
-			if (this.props.gdsObjName === obj.get('name') )
+			if (this.state.gdsObjName === name )
 			{
-				obj.get('list').map( (area, index) => {
+				this.state.areaList.map( (area, index) => {
+
 					this.context.appendChild(
-						buttons.makeArea(area, index)
+						buttons.makeArea(area, index, this.state.pcc, this.state.sessionIndex)
 					);
+
 				});
 			}
-
 		});
 	}
 }

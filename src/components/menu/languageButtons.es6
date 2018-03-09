@@ -9,9 +9,11 @@ export class LanguageButtons extends Component
 		super('article');
 	}
 
-	stateToProps({language})
+	setState({language})
 	{
-		return {language};
+		return super.setState({
+			language
+		})
 	}
 
 	_renderer()
@@ -20,7 +22,7 @@ export class LanguageButtons extends Component
 
 		['APOLLO','SABRE', 'AMADEUS'].forEach( value => {
 
-			const button = Dom('button.btn btn-gold t-f-size-10 font-bold' + ( this.props.language === value ? ' active' : '') );
+			const button = Dom('button.btn btn-gold t-f-size-10 font-bold' + ( this.state.language === value ? ' active' : '') );
 
 			button.innerHTML = value;
 			button.addEventListener('click', () => CHANGE_INPUT_LANGUAGE(value) );

@@ -37,48 +37,44 @@ export default class Component
 		return this.context;
 	}
 
+	setState(state)
+	{
+		if ( JSON.stringify(state) === JSON.stringify(this.state) )
+		{
+			// console.log("IS EQUAL", state, this.state);
+			return false;
+		}
+
+		this.state = {...state};
+
+		return true;
+	}
+
 	mount()
 	{
 	}
 
-	render( params )
+	render({...state})
 	{
-		if ( typeof this.stateToProps === 'function' )
+		if (state)
 		{
-			const props = this.stateToProps(params);
-
-			if ( JSON.stringify( props ) === JSON.stringify( this.props ) )
-			{
-				return '';
-			}
-
-			if (props)
-			{
-				this.props = JSON.parse( JSON.stringify(props) );
-			}
-		}
-		else
-		{
-			this.props = params;
-		}
-
-		// console.log("!",this.props);
-
-		if (this.props)
-		{
-			// console.log('IS')
-			this.mount();
+			this.mount(state); //only once
 			this.mount = () => {};
 		}
 
 		if ( typeof this._renderer === 'function' )
 		{
-			this._renderer();
+			const newState = this.setState(state); // if child has no state call parent
+
+			// console.log(newState, this);
+
+			if (newState)
+			{
+				this._renderer(state);
+			}
 		}
 
-		this.observers.map( component => {
-			component.render( this.props )
-		});
+		this.observers.map( component => component.render(state) );
 
 		return this.context;
 	}

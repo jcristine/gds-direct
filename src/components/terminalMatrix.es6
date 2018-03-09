@@ -1,6 +1,4 @@
 import Component 	from '../modules/component.es6';
-import {GDS_LIST} 	from "../constants";
-const stringify 	= JSON.stringify;
 
 export default class TerminalsMatrix extends Component
 {
@@ -15,41 +13,26 @@ export default class TerminalsMatrix extends Component
 		return this;
 	}
 
-	renderIsNeeded( state )
+	setState({gdsObjName, gdsObjIndex, gdsList})
 	{
-		if (!this.state)
-			return true;
+		const curGds 		= gdsList[gdsObjIndex];
 
-		return stringify(state) !== stringify(this.state);
+		const {terminals, matrix, dimensions, hasWide} = curGds.get();
+
+		return super.setState({
+			terminals, matrix, dimensions, gdsObjName, hasWide
+		});
 	}
 
 	_renderer()
 	{
-		const curGdsIndex 	= GDS_LIST.indexOf(this.props.gdsObjName);
-		const curGds 		= this.props.gdsList[curGdsIndex];
-
-		const terminals 	= curGds.get('terminals');
-		const matrix 		= curGds.get('matrix');
-		const dimensions 	= curGds.get('dimensions');
-		const name 			= curGds.get('name');
-
-		const state = {
-			gds : name,
-			...matrix,
-			...dimensions,
-			hasWide : curGds.get('hasWide')
-		};
-
-		if ( !this.renderIsNeeded(state) )
-		{
-			return false;
-		}
+		const {dimensions, matrix, terminals, hasWide} = this.state;
 
 		this.context.style.width 	= (dimensions.parent.width) + 'px';
 		this.context.style.height 	= (dimensions.parent.height) + 'px';
 		this.context.innerHTML 		= '';
 
-		if (curGds.get('hasWide'))
+		if (hasWide)
 		{
 			const wideTerminal = terminals.wide; //curGds.wideTerminal;
 
@@ -74,7 +57,5 @@ export default class TerminalsMatrix extends Component
 
 			terminals[index].context.scrollTop = terminals[index].context.scrollHeight;
 		});
-
-		this.state = {...state}
 	}
 }

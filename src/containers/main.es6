@@ -37,6 +37,7 @@ export default class ContainerMain extends Component
 
 	changeStyle(themeName)
 	{
+		this.parent.classList.remove( this.themeName );
 		this.themeName = themeName;
 		this.parent.classList.add( themeName );
 	}

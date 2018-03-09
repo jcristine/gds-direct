@@ -6,26 +6,32 @@ import ContainerMain 	from "./containers/main";
 import {PqParser} 		from "./modules/pqParser";
 import {cookieGet, cookieSet} from "./helpers/cookie";
 import {THEME_CLASS_NAME} from "./constants";
+import './theme/main.less';
 
 class TerminalApp
 {
-	constructor(params)
+	constructor({settings, requestId, buffer, permissions, PqPriceModal, htmlRootId, agentId, terminalThemes, commandUrl})
 	{
-		this.params			= params;
-		this.settings 		= params.settings;
+		this.Gds 			= new GDS({
+			gdsList 	: settings.gds,
+			activeName 	: settings['common']['currentGds'],
+			buffer 		: buffer,
+			permissions : permissions
+		});
 
-		this.Gds 			= new GDS(params.settings.gds, params['buffer'], this.settings['common']['currentGds'], params.permissions);
-		this.pqParser 		= new PqParser(params["PqPriceModal"]);
+		this.params = { requestId, permissions, terminalThemes};
 
+		this.agentId		= agentId;
 		this.offset			= 100; //menu
 
-		this.container 		= new ContainerMain(params['htmlRootId']);
+		this.pqParser 		= new PqParser(PqPriceModal);
+		this.container 		= new ContainerMain(htmlRootId);
 
-		const theme 		= cookieGet('terminalTheme_' + this.params.agentId);
-		const themeName		= theme || THEME_CLASS_NAME + this.params.terminalThemes[0]['id'];
+		const theme 		= cookieGet('terminalTheme_' + agentId);
+		const themeName		= theme || THEME_CLASS_NAME + terminalThemes[0]['id'];
 		this.changeStyle(themeName);
 
-		setLink( params['commandUrl'] );
+		setLink( commandUrl );
 		INIT(this);
 
 		initGlobEvents();
@@ -33,7 +39,7 @@ class TerminalApp
 
 	changeStyle( name )
 	{
-		cookieSet('terminalTheme_' + this.params.agentId, name, 30);
+		cookieSet('terminalTheme_' + this.agentId, name, 30);
 		this.container.changeStyle(name);
 	}
 

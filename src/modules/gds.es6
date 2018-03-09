@@ -3,19 +3,19 @@ import {GDS_UNIT} 	from "./gdsUnit";
 
 export class GDS
 {
-	constructor(gdsList, buffer = {}, activeName, permissions)
+	constructor({gdsList, buffer = {}, activeName, permissions})
 	{
-		this.list 		= gdsList;
-		this.buffer 	= buffer;
 		this.setCurrent(activeName);
 
 		this.gdsSet 	= GDS_LIST
-			.filter( name => ( name !== 'galileo' || permissions) )
-			.map( name => {
-				let settings 		= this.list[name] 	|| {};
-				const {gds = {}} 	= this.buffer 		|| {};
 
-				return new GDS_UNIT(name, settings, gds);
+			.filter( name => ( name !== 'galileo' || permissions) ) // for dev temporary
+
+			.map( name => {
+				const settings 		= gdsList[name] 	|| {};
+				const {gds = {}} 	= buffer;
+
+				return new GDS_UNIT(name, settings.area, gds);
 			});
 	}
 
@@ -78,33 +78,31 @@ export class GDS
 				terminals[key].clear();
 			}
 		}
-
-		// this.getCurrent().get('terminals').forEach( terminal => terminal.clear() );
 	}
 
-	getActiveTerminal()
+	_getActiveTerminal()
 	{
 		return this.getCurrent().getActiveTerminal();
 	}
 
 	changeActive(index)
 	{
-		const terminal = this.getActiveTerminal();
+		const terminal = this._getActiveTerminal();
 
 		if (typeof terminal !== 'undefined')
 		{
 			terminal.context.classList.remove('activeWindow');
 		}
 
-		this.update({curTerminalId : index});
-		this.getActiveTerminal().context.classList.add('activeWindow');
+		this.update({curTerminalId : index}); // change current terminal
+		this._getActiveTerminal().context.classList.add('activeWindow');
 
 		// return this.getActiveTerminal().context; // for focus
 	}
 
 	runCommand(command)
 	{
-		const terminal = this.getActiveTerminal();
+		const terminal = this._getActiveTerminal();
 
 		if (typeof terminal === 'undefined')
 		{

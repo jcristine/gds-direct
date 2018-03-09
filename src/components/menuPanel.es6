@@ -1,5 +1,5 @@
 import PqButton			from './menu/pqButton.es6';
-import DevButtons		from './menu/devButtons.es6';
+import {DevButtons}		from './menu/devButtons.es6';
 import Dom				from '../helpers/dom.es6';
 import Component		from '../modules/component';
 import {SettingsButtons} 	from "./menu/settingsButtons";
@@ -35,41 +35,18 @@ export default class MenuPanel extends Component
 		this.observe(
 			new PqButton()
 		);
+	}
 
-		// if ( window.TerminalState.hasPermissions() )
-		// {
-		// 	this.observe(
-		// 		new TestsButtons()
-		// 	);
-		// }
-
-		if (!window.apiData.prod)
+	mount(state)
+	{
+		if (state.permissions)
 		{
-			this.observe(
-				new TestsButtons()
+			this.append(
+				new Component('article')
+					.append(
+						new DevButtons()
+					)
 			);
 		}
-	}
-}
-
-class TestsButtons extends Component
-{
-	constructor()
-	{
-		super('article.hidden');
-
-		this.context.appendChild(
-			new DevButtons().getContext()
-		);
-	}
-
-	stateToProps({permissions})
-	{
-		return {permissions};
-	}
-
-	_renderer()
-	{
-		this.context.classList.toggle('hidden', !this.props.permissions);
 	}
 }

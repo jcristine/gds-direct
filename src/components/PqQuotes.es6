@@ -26,7 +26,6 @@ export class PqQuotes extends Component
 						.observe(
 							new Component('section.scrollable bg-light lter ')
 								.observe(
-
 									new Component('div.hbox stretch ')
 										.observe(
 											new Body()
@@ -38,14 +37,16 @@ export class PqQuotes extends Component
 		)
 	}
 
-	stateToProps({pqToShow})
+	setState({pqToShow})
 	{
-		return {pqToShow};
+		return super.setState({
+			pqToShow
+		})
 	}
 
 	_renderer()
 	{
-		this.context.classList.toggle('hidden', !this.props['pqToShow']);
+		this.context.classList.toggle('hidden', !this.state['pqToShow']);
 	}
 }
 
@@ -56,13 +57,21 @@ class Body extends Component
 		super('div.term-body-pq');
 	}
 
+
+	setState({pqToShow})
+	{
+		return super.setState({
+			pqToShow
+		})
+	}
+
 	_renderer()
 	{
-		if( this.props['pqToShow'] )
+		if( this.state['pqToShow'] )
 		{
 			this.context.innerHTML = '';
 
-			this.props['pqToShow'].result.map( pq => {
+			this.state['pqToShow'].result.map( pq => {
 
 				const container = Dom('div.pq-container');
 

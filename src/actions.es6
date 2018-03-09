@@ -1,4 +1,4 @@
-import {AREA_LIST} 		from "./constants";
+import {AREA_LIST, GDS_LIST} from "./constants";
 import {getters, setProvider, setState} from "./state";
 
 let app;
@@ -12,7 +12,8 @@ export const INIT = App => {
 		requestId		: app.params.requestId,
 		gdsObjName		: app.Gds.getCurrentName(),
 		permissions 	: app.params.permissions,
-		terminalThemes	: app.params.terminalThemes
+		terminalThemes	: app.params.terminalThemes,
+		gdsObjIndex 	: GDS_LIST.indexOf(app.Gds.getCurrentName())
 	});
 };
 
@@ -29,13 +30,17 @@ export const CHANGE_ACTIVE_TERMINAL = ({curTerminalId}) => {
 export const CHANGE_GDS = gdsName => {
 	getters('switch', gdsName);
 	app.Gds.setCurrent(gdsName);
-	UPDATE_STATE({gdsObjName : app.Gds.getCurrentName()});
+
+
+	UPDATE_STATE({
+		gdsObjName 	: app.Gds.getCurrentName(),
+		gdsObjIndex : GDS_LIST.indexOf(gdsName)
+	});
 };
 
 export const UPDATE_CUR_GDS = (gdsName, {canCreatePq, canCreatePqErrors, area, pcc, startNewSession}) => {
 
 	const sessionIndex	= AREA_LIST.indexOf(area);
-	// const newPcc 		= {[sessionIndex] : pcc};
 
 	const newAction = {canCreatePq, canCreatePqErrors, sessionIndex};
 
@@ -49,7 +54,8 @@ export const UPDATE_CUR_GDS = (gdsName, {canCreatePq, canCreatePqErrors, area, p
 	}
 
 	setState({
-		gdsList : app.Gds.getList()
+		gdsList : app.Gds.getList(),
+		canCreatePq
 	});
 };
 
@@ -128,7 +134,6 @@ export const UPDATE_STATE = (props = {}) => {
 	})
 };
 
-
 // export const PQ_MODAL_SHOW_DEV = () => {
 // 	app.pqParser.show( app.getGds()['canCreatePqErrors'], app.params.requestId )
 // 		.then( () => {
@@ -143,20 +148,3 @@ export const UPDATE_STATE = (props = {}) => {
 	//
 	// alert('no terminal selected');
 };*/
-
-// const Actions = ( props = {}, name ) => {
-//
-// 	switch (action)
-// 	{
-// 		case 'CHANGE_FONT_SIZE' :
-// 			app.getContainer().changeFontClass(props);
-// 		break;
-//
-// 		case 'ADD_WHIDE_COLUMN' :
-// 			app.Gds.update({hasWide : !app.getGds().get('hasWide')});
-// 		break;
-// 	}
-//
-//
-// 	UPDATE_STATE(props);
-// };

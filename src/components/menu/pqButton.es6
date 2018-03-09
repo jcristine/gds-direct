@@ -1,6 +1,5 @@
 import {PQ_MODAL_SHOW} 	from "../../actions";
 import Component 		from "../../modules/component";
-import {GDS_LIST} from "../../constants";
 
 export default class PqButton extends Component
 {
@@ -13,15 +12,15 @@ export default class PqButton extends Component
 		this.context.onclick = PQ_MODAL_SHOW
 	}
 
-	stateToProps(state)
+	setState({canCreatePq = false})
 	{
-		const {gdsList, gdsObjName} = state;
-		const curGds = GDS_LIST.indexOf(gdsObjName);
-		return {canCreatePq : gdsList[curGds].get('canCreatePq')}
+		return super.setState({
+			canCreatePq : canCreatePq
+		})
 	}
 
-	_renderer()
+	_renderer(state)
 	{
-		this.context.disabled = this.props.canCreatePq !== true;
+		this.context.disabled = state.canCreatePq !== true;
 	}
 }
