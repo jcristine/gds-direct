@@ -1020,8 +1020,8 @@ var TerminalApp = function () {
 
 		this.Gds = new _gds.GDS({
 			gdsList: settings.gds,
-			activeName: settings['common']['currentGds'],
-			buffer: buffer,
+			activeName: settings['common']['currentGds'] || 'apollo',
+			buffer: buffer || {},
 			permissions: permissions
 		});
 
@@ -4216,7 +4216,7 @@ var GDS = exports.GDS = function () {
 		value: function setCurrent() {
 			var name = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 'apollo';
 
-			this.name = name;
+			this.name = name || 'sabre';
 		}
 	}, {
 		key: 'getCurrent',

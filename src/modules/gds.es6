@@ -26,7 +26,7 @@ export class GDS
 
 	setCurrent(name = 'apollo')
 	{
-		this.name = name;
+		this.name = name || 'sabre';
 	}
 
 	getCurrent()

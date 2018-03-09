@@ -14,8 +14,8 @@ class TerminalApp
 	{
 		this.Gds 			= new GDS({
 			gdsList 	: settings.gds,
-			activeName 	: settings['common']['currentGds'],
-			buffer 		: buffer,
+			activeName 	: settings['common']['currentGds'] || 'apollo',
+			buffer 		: buffer || {},
 			permissions : permissions
 		});
 
