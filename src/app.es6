@@ -19,6 +19,8 @@ class TerminalApp
 			permissions : permissions
 		});
 
+		console.log("GDS Set" , this.Gds);
+
 		this.params = { requestId, permissions, terminalThemes};
 
 		this.agentId		= agentId;

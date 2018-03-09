@@ -1025,6 +1025,8 @@ var TerminalApp = function () {
 			permissions: permissions
 		});
 
+		console.log("GDS Set", this.Gds);
+
 		this.params = { requestId: requestId, permissions: permissions, terminalThemes: terminalThemes };
 
 		this.agentId = agentId;
@@ -4216,7 +4218,7 @@ var GDS = exports.GDS = function () {
 		value: function setCurrent() {
 			var name = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 'apollo';
 
-			this.name = name || 'sabre';
+			this.name = name;
 		}
 	}, {
 		key: 'getCurrent',
