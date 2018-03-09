@@ -17,13 +17,13 @@ class TerminalApp
 			settings['common']['currentGds'] = 'apollo';
 		}
 
-		const gdsSet = GDS_LIST.filter( name => ( name !== 'galileo' || permissions) );
+		this.gdsList = GDS_LIST.filter( name => ( name !== 'galileo' || permissions) );
 
 		this.Gds 	= new GDS({
 			gdsList 	: settings.gds,
 			activeName 	: settings['common']['currentGds'] || 'apollo',
 			buffer 		: buffer || {},
-			gdsSet
+			gdsSet		: this.gdsList
 		});
 
 		this.params = { requestId, permissions, terminalThemes};

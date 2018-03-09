@@ -12,6 +12,41 @@
   padding: 10px;
 }
 
+
+.terminal-lds-hourglass {
+  display: inline-block;
+  position: relative;
+  width: 64px;
+  height: 64px;
+
+  &:after {
+    content: " ";
+    display: block;
+    border-radius: 50%;
+    width: 0;
+    height: 0;
+    margin: 6px;
+    box-sizing: border-box;
+    border: 26px solid #fff;
+    border-color: #fff transparent #fff transparent;
+    animation: lds-hourglass 1.2s infinite;
+  }
+}
+
+@keyframes lds-hourglass {
+  0% {
+    transform: rotate(0);
+    animation-timing-function: cubic-bezier(0.55, 0.055, 0.675, 0.19);
+  }
+  50% {
+    transform: rotate(900deg);
+    animation-timing-function: cubic-bezier(0.215, 0.61, 0.355, 1);
+  }
+  100% {
+    transform: rotate(1800deg);
+  }
+}
+
 .matrix-column {
   display: inline-block;
   float: left;
@@ -41,10 +76,8 @@
 }
 
 .historyContext  {
-
   width : 200px;
-  padding: 10px;
-  background: #fff;
+  padding-left: 5px;
 
   ul {
     max-height: 400px;
@@ -60,6 +93,29 @@
       a {
         margin-left: 5px;
         vertical-align: middle;
+        font-size: 12px;
+        display: inline-block;
+        padding: 2px 0;
+        font-weight: bold;
+        color:#fff;
+
+        &:hover {
+          opacity: .7;
+        }
+
+        &:before {
+          content: "\26AC";
+          margin-right: 5px;
+          font-size: 21px;
+          vertical-align: middle;
+        }
+
+        &.checked {
+          &:before {
+            content: "\2714";
+            margin-right: 5px;
+          }
+        }
       }
     }
   }

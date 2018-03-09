@@ -1,4 +1,3 @@
-import {GDS_LIST} 	from '../constants.es6';
 import {GDS_UNIT} 	from "./gdsUnit";
 
 export class GDS
@@ -27,7 +26,7 @@ export class GDS
 
 	getCurrent()
 	{
-		return this.gdsSet.filter( gds => this.name === gds.get('name') )[0];
+		return this.gdsSet.filter( gds => this.name === gds.get('name') )[0] || this.gdsSet[0];
 	}
 
 	getCurrentName()

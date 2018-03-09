@@ -1,6 +1,5 @@
 import {SessionButtons} from "./sessionButtons";
 import Component from "../../modules/component";
-import {GDS_LIST} from "../../constants";
 
 export class GdsAreas extends Component
 {

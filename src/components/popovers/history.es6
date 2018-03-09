@@ -18,6 +18,7 @@ export class History extends ButtonPopOver
 
 	_makeBody( response )
 	{
+		this.popContent.innerHTML = '';
 		this.list		= Dom('ul.list');
 		response.data.forEach( this._makeLi, this );
 		this.popContent.appendChild( this.list );
@@ -25,15 +26,14 @@ export class History extends ButtonPopOver
 
 	_makeLi( value )
 	{
-		const cb 	= Dom('input');
-		cb.type 	= 'checkbox';
-		cb.onclick	= () => buffer.push( value );
-
 		const el 	= Dom(`a.t-pointer[${value}]`);
-		el.onclick 	= () => cb.click();
+
+		el.onclick 	= () => {
+			el.classList.toggle('checked');
+			buffer.push(value);
+		};
 
 		const li = Dom('li.m-b-xs');
-		li.appendChild( cb );
 		li.appendChild( el );
 
 		this.list.appendChild( li );
@@ -57,7 +57,7 @@ export class History extends ButtonPopOver
 	askServer()
 	{
 		buffer 						= [];
-		this.popContent.innerHTML 	= '';
+		this.popContent.innerHTML 	= '<div class="text-center"><div class="terminal-lds-hourglass"></div></div>';
 
 		GET_HISTORY()
 			.then( this._makeBody.bind(this) )
@@ -69,4 +69,15 @@ export class History extends ButtonPopOver
 	{
 		return false;
 	}
+}
+
+
+class Context
+{
+
+	constructor(response)
+	{
+
+	}
+
 }

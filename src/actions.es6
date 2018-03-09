@@ -13,7 +13,7 @@ export const INIT = App => {
 		gdsObjName		: app.Gds.getCurrentName(),
 		permissions 	: app.params.permissions,
 		terminalThemes	: app.params.terminalThemes,
-		gdsObjIndex 	: GDS_LIST.indexOf(app.Gds.getCurrentName())
+		gdsObjIndex 	: app.gdsList.indexOf(app.Gds.getCurrentName())
 	});
 };
 
@@ -107,10 +107,14 @@ export const SWITCH_TERMINAL = (fn) => {
 	const curTerminalId = fn(app.getGds().get());
 
 	setTimeout(() => { // THIS IS CRAZY SHIT. WITHOUT IT SWITCHES TERMINALS SEVERAL TIMES TRY PRESS ~
+
 		const terminal = app.Gds.getCurrent().get('terminals');
 
 		if (curTerminalId !== false)
+		{
 			terminal[curTerminalId].plugin.terminal.focus();
+		}
+
 	}, 100);
 };
 
