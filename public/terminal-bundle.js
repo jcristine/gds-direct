@@ -1018,14 +1018,20 @@ var TerminalApp = function () {
 
 		_classCallCheck(this, TerminalApp);
 
+		if (settings['common']['currentGds'] === 'galileo') {
+			settings['common']['currentGds'] = 'apollo';
+		}
+
+		var gdsSet = _constants.GDS_LIST.filter(function (name) {
+			return name !== 'galileo' || permissions;
+		});
+
 		this.Gds = new _gds.GDS({
 			gdsList: settings.gds,
 			activeName: settings['common']['currentGds'] || 'apollo',
 			buffer: buffer || {},
-			permissions: permissions
+			gdsSet: gdsSet
 		});
-
-		console.log("GDS Set", this.Gds);
 
 		this.params = { requestId: requestId, permissions: permissions, terminalThemes: terminalThemes };
 
@@ -1512,7 +1518,10 @@ var GdsAreas = exports.GdsAreas = function (_Component) {
 				gdsObjName: gdsObjName,
 				pcc: pcc,
 				sessionIndex: sessionIndex,
-				areaList: current.get('list')
+				areaList: current.get('list'),
+				gdsList: gdsList.map(function (name) {
+					return name.props.name;
+				})
 			});
 		}
 	}, {
@@ -1522,7 +1531,7 @@ var GdsAreas = exports.GdsAreas = function (_Component) {
 
 			this.context.innerHTML = '';
 
-			_constants.GDS_LIST.map(function (name) {
+			this.state.gdsList.map(function (name) {
 
 				var buttons = new _sessionButtons.SessionButtons({ name: name });
 
@@ -4188,17 +4197,13 @@ var GDS = exports.GDS = function () {
 		    _ref$buffer = _ref.buffer,
 		    buffer = _ref$buffer === undefined ? {} : _ref$buffer,
 		    activeName = _ref.activeName,
-		    permissions = _ref.permissions;
+		    gdsSet = _ref.gdsSet;
 
 		_classCallCheck(this, GDS);
 
 		this.setCurrent(activeName);
 
-		this.gdsSet = _constants.GDS_LIST.filter(function (name) {
-			return name !== 'galileo' || permissions;
-		}) // for dev temporary
-
-		.map(function (name) {
+		this.gdsSet = gdsSet.map(function (name) {
 			var settings = gdsList[name] || {};
 			var _buffer$gds = buffer.gds,
 			    gds = _buffer$gds === undefined ? {} : _buffer$gds;

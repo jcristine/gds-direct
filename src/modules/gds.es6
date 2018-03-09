@@ -3,20 +3,16 @@ import {GDS_UNIT} 	from "./gdsUnit";
 
 export class GDS
 {
-	constructor({gdsList, buffer = {}, activeName, permissions})
+	constructor({gdsList, buffer = {}, activeName, gdsSet})
 	{
 		this.setCurrent(activeName);
 
-		this.gdsSet 	= GDS_LIST
+		this.gdsSet 	= gdsSet.map( name => {
+			const settings 		= gdsList[name] 	|| {};
+			const {gds = {}} 	= buffer;
 
-			.filter( name => ( name !== 'galileo' || permissions) ) // for dev temporary
-
-			.map( name => {
-				const settings 		= gdsList[name] 	|| {};
-				const {gds = {}} 	= buffer;
-
-				return new GDS_UNIT(name, settings.area, gds);
-			});
+			return new GDS_UNIT(name, settings.area, gds);
+		});
 	}
 
 	getList()

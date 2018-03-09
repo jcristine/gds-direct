@@ -21,7 +21,8 @@ export class GdsAreas extends Component
 			gdsObjName,
 			pcc,
 			sessionIndex,
-			areaList : current.get('list')
+			areaList 	: current.get('list'),
+			gdsList 	: gdsList.map( name => name.props.name)
 		})
 	}
 
@@ -29,7 +30,7 @@ export class GdsAreas extends Component
 	{
 		this.context.innerHTML = '';
 
-		GDS_LIST.map( name => {
+		this.state.gdsList.map( name => {
 
 			const buttons = new SessionButtons({name});
 
