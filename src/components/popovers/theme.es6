@@ -1,27 +1,17 @@
 import Dom 			 from '../../helpers/dom.es6';
 import ButtonPopOver from '../../modules/buttonPopover.es6';
 import {CHANGE_STYLE} from "../../actions";
-import {THEME_CLASS_NAME} from "../../constants";
 
 export default class Theme extends ButtonPopOver
 {
-	constructor({icon, themes})
+	constructor({icon, themes, theme})
 	{
-		super({icon});
+		super( {icon}, 'div.terminal-menu-popover themes' );
 
 		this.themes 	= themes;
 		this.makeTrigger();
-	}
 
-	onSelect(value)
-	{
-		const newThemeClass		= THEME_CLASS_NAME + value.id;
-		this.themeId 			= value.id;
-
-		CHANGE_STYLE(newThemeClass);
-
-		this.popContent.innerHTML = '';
-		this.build();
+		this.themeId = theme;
 	}
 
 	build()
@@ -29,17 +19,39 @@ export default class Theme extends ButtonPopOver
 		if (this.themes.length)
 		{
 			this.themes.forEach( obj => {
+				const button 		= Dom(`a.t-pointer ${this.themeId === obj.label} [${obj.label}]`);
 
-				const button 		= Dom(`button.list-group-item ${obj.id === this.themeId ? 'font-bold' : ''}`);
-				button.innerHTML	= obj.label;
+				if (obj.id === parseInt(this.themeId))
+				{
+					this.toggle(button);
+				}
 
 				button.addEventListener('click', () => {
-					this.popover.close();
-					this.onSelect( obj );
+					if (this.curBtn)
+					{
+						this.curBtn.classList.remove('checked');
+					}
+
+					this.toggle(button);
+					this.onSelect(obj);
 				});
 
 				this.popContent.appendChild( button );
 			})
 		}
+	}
+
+	onSelect(value)
+	{
+		const newThemeClass		= value.id;
+		this.themeId 			= value.id;
+
+		CHANGE_STYLE(newThemeClass);
+	}
+
+	toggle(button)
+	{
+		this.curBtn = button;
+		this.curBtn.classList.toggle('checked');
 	}
 }

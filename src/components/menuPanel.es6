@@ -11,7 +11,10 @@ export default class MenuPanel extends Component
 	constructor()
 	{
 		super('aside.sideMenu');
+	}
 
+	mount(state)
+	{
 		this.observe(
 			new SettingsButtons()
 		);
@@ -35,10 +38,7 @@ export default class MenuPanel extends Component
 		this.observe(
 			new PqButton()
 		);
-	}
 
-	mount(state)
-	{
 		if (state.permissions)
 		{
 			this.append(

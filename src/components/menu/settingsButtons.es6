@@ -12,12 +12,12 @@ export class SettingsButtons extends Component
 		super('article');
 	}
 
-	mount({terminalThemes})
+	mount({theme, terminalThemes})
 	{
-		this.children(terminalThemes).map( element => this.context.appendChild( element ) );
+		this.children({theme, terminalThemes}).map( element => this.context.appendChild( element ) );
 	}
 
-	children(terminalThemes)
+	children({theme, terminalThemes})
 	{
 		const Quotes 	= Dom('button.btn btn-mozilla font-bold[Quotes]', {onclick : e => {
 				e.target.innerHTML = 'Loading...';
@@ -26,9 +26,10 @@ export class SettingsButtons extends Component
 					.then( ()  => {e.target.innerHTML = 'Quotes'});
 			}});
 
-		const theme 	= new Theme({
+		const themeBtn 	= new Theme({
 			icon	: '<i class="fa fa-paint-brush t-f-size-14"></i>',
-			themes	: terminalThemes
+			themes	: terminalThemes,
+			theme
 		}).getTrigger();
 
 		const textSize 	= new TextSize({
@@ -39,6 +40,6 @@ export class SettingsButtons extends Component
 			icon	: '<i class="fa fa-history t-f-size-14"></i>'
 		}).getTrigger();
 
-		return [Quotes, theme, textSize, history];
+		return [Quotes, themeBtn, textSize, history];
 	}
 }

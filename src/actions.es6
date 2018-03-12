@@ -13,6 +13,7 @@ export const INIT = App => {
 		gdsObjName		: app.Gds.getCurrentName(),
 		permissions 	: app.params.permissions,
 		terminalThemes	: app.params.terminalThemes,
+		theme			: app.curTheme,
 		gdsObjIndex 	: app.gdsList.indexOf(app.Gds.getCurrentName())
 	});
 };

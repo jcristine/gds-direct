@@ -34,9 +34,8 @@ class TerminalApp
 		this.pqParser 		= new PqParser(PqPriceModal);
 		this.container 		= new ContainerMain(htmlRootId);
 
-		const theme 		= cookieGet('terminalTheme_' + agentId);
-		const themeName		= theme || THEME_CLASS_NAME + terminalThemes[0]['id'];
-		this.changeStyle(themeName);
+		this.curTheme		= cookieGet('terminalTheme_' + agentId) || (terminalThemes[0]['id']);
+		this.changeStyle(this.curTheme);
 
 		setLink( commandUrl );
 		INIT(this);

@@ -1,6 +1,8 @@
 import {CHANGE_INPUT_LANGUAGE} from "../../actions";
 import Dom from "../../helpers/dom";
 import Component from "../../modules/component";
+import ButtonPopOver from "../../modules/buttonPopover";
+import {LANGUAGE_LIST} from "../../constants";
 
 export class LanguageButtons extends Component
 {
@@ -20,16 +22,41 @@ export class LanguageButtons extends Component
 	{
 		this.context.innerHTML = '';
 
-		['APOLLO','SABRE', 'AMADEUS'].forEach( value => {
+		const buttons = new LanguageButton(this.state);
 
-			const button = Dom('button.btn btn-gold t-f-size-10 font-bold' + ( this.state.language === value ? ' active' : '') );
+		this.context.appendChild(
+			buttons.makeTrigger()
+		);
+	}
+}
 
-			button.innerHTML = value;
-			button.addEventListener('click', () => CHANGE_INPUT_LANGUAGE(value) );
+class LanguageButton extends ButtonPopOver
+{
+	constructor({language})
+	{
+		super({icon : language}, 'div');
+		this.language		= language;
+	}
 
-			this.context.appendChild(
+	makeTrigger()
+	{
+		return super.makeTrigger()
+	}
+
+	build()
+	{
+		LANGUAGE_LIST.map( name => {
+
+			const button = Dom(`button.btn btn-block btn-gold t-f-size-10 font-bold ${this.language === name ? ' active' : ''} [${name}]`);
+
+			button.addEventListener('click', () => {
+				this.popover.close();
+				CHANGE_INPUT_LANGUAGE(name);
+			});
+
+			this.popContent.appendChild(
 				button
 			);
-		});
+		})
 	}
 }

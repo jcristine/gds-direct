@@ -1,5 +1,8 @@
-import {SessionButtons} from "./sessionButtons";
 import Component from "../../modules/component";
+import {CHANGE_GDS, CHANGE_SESSION_BY_MENU, DEV_CMD_STACK_RUN} from "../../actions";
+import Dom from "../../helpers/dom";
+import {AREA_LIST} from "../../constants";
+import ButtonPopOver from "../../modules/buttonPopover";
 
 export class GdsAreas extends Component
 {
@@ -14,14 +17,12 @@ export class GdsAreas extends Component
 
 		const current = gdsList[gdsObjIndex];
 
-		const {pcc, sessionIndex} = current.get();
-
 		return super.setState({
 			gdsObjName,
-			pcc,
-			sessionIndex,
-			areaList 	: current.get('list'),
-			gdsList 	: gdsList.map( name => name.props.name)
+			pcc 			: current.get('pcc'),
+			sessionIndex	: current.get('sessionIndex'),
+			areaList 		: current.get('list'),
+			gdsList 		: gdsList.map( name => name.props.name)
 		})
 	}
 
@@ -29,23 +30,79 @@ export class GdsAreas extends Component
 	{
 		this.context.innerHTML = '';
 
-		this.state.gdsList.map( name => {
+		const buttons = new GdsButtons(this.state);
 
-			const buttons = new SessionButtons({name});
+		this.context.appendChild(
+			buttons.makeTrigger()
+		);
 
-			this.context.appendChild(
-				buttons.makeTrigger(this.state.gdsObjName)
+		buttons.makeAreas( this.context );
+	}
+}
+
+class GdsButtons extends ButtonPopOver
+{
+	constructor({gdsObjName, gdsList, areaList, sessionIndex, pcc})
+	{
+		super({icon : gdsObjName}, 'div');
+
+		this.gdsname		= gdsObjName;
+		this.gdsList		= gdsList;
+		this.areaList		= areaList;
+		this.sessionIndex	= sessionIndex;
+		this.pcc			= pcc;
+	}
+
+	makeTrigger()
+	{
+		return super.makeTrigger()
+	}
+
+	build()
+	{
+		this.gdsList.map( name => {
+			this.popContent.appendChild(
+				this.gdsButton(name)
 			);
+		})
+	}
 
-			if (this.state.gdsObjName === name )
-			{
-				this.state.areaList.map( (area, index) => {
+	gdsButton(gdsName)
+	{
+		return Dom(`button.btn btn-sm btn-block btn-mint font-bold [${gdsName}]`, {
+			disabled 	: this.gdsname === gdsName,
+			onclick 	: () => {
+				CHANGE_GDS(gdsName);
+				this.popover.close();
+			}
+		});
+	}
 
-					this.context.appendChild(
-						buttons.makeArea(area, index, this.state.pcc, this.state.sessionIndex)
-					);
+	makeAreas(context)
+	{
+		this.areaList.map( (area, index) => {
+			context.appendChild(
+				this.makeArea(area, index)
+			)
+		});
+	}
 
-				});
+	makeArea(area, index)
+	{
+		const isActive 	= this.sessionIndex === index;
+
+		return Dom(`button.btn btn-sm btn-purple font-bold pos-rlt ${isActive ? 'active' : ''}`, {
+
+			innerHTML	:  area + ( this.pcc[index] ? `<span class="pcc-label">${this.pcc[index]}</span>` : ''),
+
+			disabled	:  isActive,
+
+			onclick		: e => {
+
+				e.target.disabled = true;
+
+				CHANGE_SESSION_BY_MENU(AREA_LIST[index])
+					// .catch( () => e.target.disabled = false )
 			}
 		});
 	}

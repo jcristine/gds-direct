@@ -1,6 +1,7 @@
 import Component from "../modules/component";
 import {TableSections} from "./sectionsWrap";
 import {TempTerminal} from "../components/tempTerminal";
+import {THEME_CLASS_NAME} from "../constants";
 
 export default class ContainerMain extends Component
 {
@@ -37,8 +38,8 @@ export default class ContainerMain extends Component
 
 	changeStyle(themeName)
 	{
-		this.parent.classList.remove( this.themeName );
+		this.parent.classList.remove( THEME_CLASS_NAME + this.themeName );
 		this.themeName = themeName;
-		this.parent.classList.add( themeName );
+		this.parent.classList.add( THEME_CLASS_NAME + themeName );
 	}
 }
