@@ -115,7 +115,7 @@ exports.i(__webpack_require__(/*! -!../../node_modules/css-loader!tether-drop/di
 exports.i(__webpack_require__(/*! -!../../node_modules/css-loader!noty/lib/noty.css */ "./node_modules/css-loader/index.js!./node_modules/noty/lib/noty.css"), "");
 
 // module
-exports.push([module.i, ".terminal-wrap-custom .terminal .cmd {\n  height: 14px;\n}\n.terminal-wrap-custom .terminal .cmd .clipboard {\n  height: 14px;\n}\n.temp-terminal {\n  position: absolute;\n  top: -99999px;\n}\n.term-f-size-4 .terminal {\n  --size: 1.3;\n}\n.term-f-size-4 .terminal .cmd {\n  height: calc(18.2px);\n}\n.term-f-size-3 .terminal {\n  --size: 1.2;\n}\n.term-f-size-3 .terminal .cmd {\n  height: calc(16.8px);\n}\n.term-f-size-3 .terminal .cmd .clipboard {\n  height: calc(16.8px);\n}\n.term-f-size-2 .terminal {\n  --size: 1.1;\n}\n.term-f-size-2 .terminal .cmd {\n  height: calc(15.4px);\n}\n.term-f-size-2 .terminal .cmd .clipboard {\n  height: calc(15.4px);\n}\n.terminal-wrap-custom .t-matrix-w-0 td {\n  width: 100%;\n}\n.terminal-wrap-custom .t-matrix-w-1 td {\n  width: 50%;\n}\n.terminal-wrap-custom .t-matrix-w-2 td {\n  width: 33.33%;\n}\n.terminal-wrap-custom .t-matrix-w-3 td {\n  width: 25%;\n}\n.drop-element.drop-theme-twipsy .drop-content {\n  font-family: inherit;\n  padding: 10px;\n}\n.matrix-column {\n  display: inline-block;\n  float: left;\n  height: 125px;\n  margin-right: 20px;\n  padding: 10px;\n  cursor: pointer;\n  width: 25px;\n}\n.matrix-column:hover {\n  background: #7a43b6;\n}\n.matrix-table {\n  background: #fff;\n}\n.matrix-table td {\n  padding: 15px;\n  border: 1px solid #CCC;\n  cursor: pointer;\n}\n.matrix-table td:hover {\n  background-color: #7a43b6;\n}\n.historyContext {\n  width: 200px;\n  padding: 10px;\n  background: #fff;\n}\n.historyContext ul {\n  max-height: 400px;\n  overflow-y: auto;\n  padding: 0;\n}\n.historyContext ul li input {\n  vertical-align: middle;\n  margin: 0;\n}\n.historyContext ul li a {\n  margin-left: 5px;\n  vertical-align: middle;\n}\n.cmd .cursor {\n  border: 0;\n}\n.noty-wrap-text {\n  padding: 10px;\n  font-weight: bold;\n  font-size: 13px;\n  margin: 0;\n}\n.animated {\n  animation-duration: .5s;\n  animation-fill-mode: both;\n}\n@keyframes fadeIn {\n  from {\n    opacity: 0;\n  }\n  to {\n    opacity: 1;\n  }\n}\n.fadeIn {\n  animation-name: fadeIn;\n}\n@keyframes fadeOut {\n  from {\n    opacity: 1;\n  }\n  to {\n    opacity: 0;\n  }\n}\n.fadeOut {\n  animation-name: fadeOut;\n}\n.terminal,\n.cmd {\n  color: transparent;\n  background-color: transparent;\n}\n#terminalContext {\n  width: 100%;\n}\n.terminal-full-screen {\n  text-align: left;\n}\n.terminal-wrap-custom {\n  position: relative;\n  width: 100%;\n  height: 100%;\n}\n.terminal-wrap-custom .btn.active {\n  position: relative;\n}\n.terminal-wrap-custom .btn.active:before {\n  content: \"\\F00C\";\n  font: normal normal normal 11px/1 FontAwesome;\n  position: absolute;\n  top: 8px;\n  left: 7px;\n  font-size: 9px;\n  z-index: 3;\n}\n.terminal-wrap-custom .actions-btn-menu {\n  position: absolute;\n  padding: 10px;\n  z-index: 1;\n  right: 7px;\n  top: 0;\n}\n.terminal-wrap-custom .actions-btn-menu .btn {\n  padding: 3px 8px;\n}\n.terminal-wrap-custom .actions-btn-menu .btn i {\n  font-size: 23px;\n  vertical-align: middle;\n}\n.terminal-wrap-custom .pqQuotes {\n  vertical-align: top;\n  width: 445px;\n}\n.terminal-wrap-custom .pqQuotes .close {\n  top: 10px;\n  position: relative;\n}\n.terminal-wrap-custom .pqQuotes div.term-body-pq .pq-container {\n  padding: 15px 10px;\n  border-bottom: 1px solid #f3f3f3;\n  border-left: none;\n  border-right: none;\n}\n.terminal-wrap-custom .pqQuotes div.term-body-pq .pq-container .added-by {\n  float: right;\n}\n.terminal-wrap-custom .pqQuotes div.term-body-pq .pq-container:nth-child(even) {\n  background: #fff;\n}\n.terminal-wrap-custom .pqQuotes div.term-body-pq .pq-container:nth-child(odd) {\n  background: #f3f3f3;\n}\n.terminal-wrap-custom .pqQuotes .priceqoute-pre {\n  font-size: 11px;\n  padding: 5px;\n  color: #000;\n}\n.terminal-wrap-custom > .term-body {\n  width: 100%;\n  height: 100%;\n}\n.terminal-wrap-custom > .term-body .left {\n  position: relative;\n  height: 100%;\n}\n.terminal-wrap-custom > .term-body .menu {\n  width: 20%;\n  vertical-align: top;\n  padding: 9px;\n  background: #fff;\n}\n.terminal-wrap-custom > .term-body .menu .label {\n  font-weight: bold;\n  font-size: 12px;\n  padding: 10px 0;\n  color: #414141;\n}\n.terminal-wrap-custom > .term-body .menu .buttons .btn {\n  margin-right: 5px;\n}\n.terminal-wrap-custom > .term-body .menu .pcc-label {\n  position: absolute;\n  top: -5px;\n  right: -5px;\n  border: 1px solid;\n  padding: 0 3px;\n  background: #fff;\n  color: #511551;\n  border-radius: 15px;\n  font-size: 10px;\n}\n.terminal-wrap-custom > .term-body.minimized .menu {\n  width: 100px;\n}\n.terminal-wrap-custom > .term-body.minimized .menu .btn {\n  display: block;\n  width: 100%;\n  margin: 0 0 5px 0;\n}\n.terminal-wrap-custom > .term-body.minimized .menu .label {\n  text-align: center;\n  font-size: 10px;\n  display: block;\n}\n.terminal-wrap-custom .matrix-row .terminal {\n  border-left: 2px solid #fff;\n  border-top: 2px solid #fff;\n}\n.terminal-wrap-custom .terminal {\n  padding: 0;\n  float: left;\n}\n.terminal-wrap-custom .terminal.active {\n  background: red;\n}\n.terminal-wrap-custom .terminal .cmd {\n  font-weight: bold;\n  text-transform: uppercase;\n}\n.terminal-wrap-custom .terminal .usedCommand {\n  text-transform: uppercase;\n}\n.terminal-wrap-custom .terminal-output div span {\n  display: inline;\n}\n.terminal-wrap-custom div.terminal-wrapper {\n  height: auto;\n}\n/*\n.cmd .cursor.blink {\n\t-webkit-animation: terminal-blink2 1s infinite steps(1, start);\n\t-moz-animation: terminal-blink2 1s infinite steps(1, start);\n\t-ms-animation: terminal-blink2 1s infinite steps(1, start);\n\tanimation: terminal-blink2 1s infinite steps(1, start);\n}\n@-webkit-keyframes terminal-blink2 {\n\t0%, 100% {\n\t\tbackground-color: rgba(0,0,0,0.3);\n\t\tcolor: rgba(255,255,255,0.8);\n\t}\n\t50% {\n\t\tbackground-color: rgba(255,255,255,0.3);\n\t\tcolor: rgba(0,0,0,0.6);\n\t}\n}\n\n@-ms-keyframes terminal-blink2 {\n\t0%, 100% {\n\t\tbackground-color: rgba(0,0,0,0.3);\n\t\tcolor: rgba(255,255,255,0.8);\n\t}\n\t50% {\n\t\tbackground-color: rgba(255,255,255,0.3);\n\t\tcolor: rgba(0,0,0,0.6);\n\t}\n}\n\n@-moz-keyframes terminal-blink2 {\n\t0%, 100% {\n\t\tbackground-color: rgba(0,0,0,0.3);\n\t\tcolor: rgba(255,255,255,0.8);\n\t}\n\t50% {\n\t\tbackground-color: rgba(255,255,255,0.3);\n\t\tcolor: rgba(0,0,0,0.6);\n\t}\n}\n@keyframes terminal-blink2 {\n\t0%, 100% {\n\t\tbackground-color: rgba(0,0,0,0.3);\n\t\tcolor: rgba(255,255,255,0.8);\n\t}\n\t50% {\n\t\tbackground-color: rgba(255,255,255,0.3);\n\t\tcolor: rgba(0,0,0,0.6);\n\t}\n}*/\n@keyframes blink {\n  0% {\n    opacity: 1;\n  }\n  25% {\n    opacity: 0;\n  }\n  50% {\n    opacity: 0;\n  }\n  100% {\n    opacity: 1;\n  }\n}\n@-webkit-keyframes blink {\n  0% {\n    opacity: 1;\n  }\n  25% {\n    opacity: 0;\n  }\n  50% {\n    opacity: 0;\n  }\n  100% {\n    opacity: 1;\n  }\n}\n@-ms-keyframes blink {\n  0% {\n    opacity: 1;\n  }\n  25% {\n    opacity: 0;\n  }\n  50% {\n    opacity: 0;\n  }\n  100% {\n    opacity: 1;\n  }\n}\n@-moz-keyframes blink {\n  0% {\n    opacity: 1;\n  }\n  25% {\n    opacity: 0;\n  }\n  50% {\n    opacity: 0;\n  }\n  100% {\n    opacity: 1;\n  }\n}\n.cmd .cursor.blink {\n  background: #ccc;\n  -webkit-animation: blink 1s infinite linear;\n  -moz-animation: blink 1s infinite linear;\n  -ms-animation: blink 1s infinite linear;\n  animation: blink 1s linear infinite;\n}\n", ""]);
+exports.push([module.i, ".terminal-wrap-custom .terminal .cmd {\n  height: 14px;\n}\n.terminal-wrap-custom .terminal .cmd .clipboard {\n  height: 14px;\n}\n.temp-terminal {\n  position: absolute;\n  top: -99999px;\n}\n.term-f-size-4 .terminal {\n  --size: 1.3;\n}\n.term-f-size-4 .terminal .cmd {\n  height: calc(18.2px);\n}\n.term-f-size-3 .terminal {\n  --size: 1.2;\n}\n.term-f-size-3 .terminal .cmd {\n  height: calc(16.8px);\n}\n.term-f-size-3 .terminal .cmd .clipboard {\n  height: calc(16.8px);\n}\n.term-f-size-2 .terminal {\n  --size: 1.1;\n}\n.term-f-size-2 .terminal .cmd {\n  height: calc(15.4px);\n}\n.term-f-size-2 .terminal .cmd .clipboard {\n  height: calc(15.4px);\n}\n.terminal-wrap-custom .t-matrix-w-0 td {\n  width: 100%;\n}\n.terminal-wrap-custom .t-matrix-w-1 td {\n  width: 50%;\n}\n.terminal-wrap-custom .t-matrix-w-2 td {\n  width: 33.33%;\n}\n.terminal-wrap-custom .t-matrix-w-3 td {\n  width: 25%;\n}\n.drop-element.drop-theme-twipsy .drop-content {\n  font-family: inherit;\n  padding: 10px;\n}\n.terminal-lds-hourglass {\n  display: inline-block;\n  position: relative;\n  width: 64px;\n  height: 64px;\n}\n.terminal-lds-hourglass:after {\n  content: \" \";\n  display: block;\n  border-radius: 50%;\n  width: 0;\n  height: 0;\n  margin: 6px;\n  box-sizing: border-box;\n  border: 26px solid #fff;\n  border-color: #fff transparent #fff transparent;\n  animation: lds-hourglass 1.2s infinite;\n}\n@keyframes lds-hourglass {\n  0% {\n    transform: rotate(0);\n    animation-timing-function: cubic-bezier(0.55, 0.055, 0.675, 0.19);\n  }\n  50% {\n    transform: rotate(900deg);\n    animation-timing-function: cubic-bezier(0.215, 0.61, 0.355, 1);\n  }\n  100% {\n    transform: rotate(1800deg);\n  }\n}\n.matrix-column {\n  display: inline-block;\n  float: left;\n  height: 125px;\n  margin-right: 20px;\n  padding: 10px;\n  cursor: pointer;\n  width: 25px;\n}\n.matrix-column:hover {\n  background: #7a43b6;\n}\n.matrix-table {\n  background: #fff;\n}\n.matrix-table td {\n  padding: 15px;\n  border: 1px solid #CCC;\n  cursor: pointer;\n}\n.matrix-table td:hover {\n  background-color: #7a43b6;\n}\n.terminal-menu-popover {\n  padding-left: 5px;\n  width: 100px;\n}\n.terminal-menu-popover.themes {\n  width: 150px;\n}\n.terminal-menu-popover.themes a {\n  padding: 5px 0;\n}\n.terminal-menu-popover.historyContext {\n  width: 200px;\n}\n.terminal-menu-popover.historyContext ul {\n  max-height: 400px;\n  overflow-y: auto;\n  padding: 0;\n}\n.terminal-menu-popover.historyContext ul li input {\n  vertical-align: middle;\n  margin: 0;\n}\n.terminal-menu-popover.historyContext ul li a:hover {\n  opacity: .7;\n}\n.terminal-menu-popover.historyContext ul li a:before {\n  content: \"\\26AC\";\n  margin-right: 5px;\n  font-size: 21px;\n  vertical-align: middle;\n}\n.terminal-menu-popover.historyContext ul li a.checked:before {\n  content: \"\\2714\";\n  margin-right: 5px;\n}\n.terminal-menu-popover a {\n  margin-left: 5px;\n  vertical-align: middle;\n  font-size: 12px;\n  display: block;\n  padding: 2px 0;\n  font-weight: bold;\n  color: #fff;\n}\n.terminal-menu-popover a:hover {\n  opacity: .7;\n}\n.terminal-menu-popover a:before {\n  content: \"\\26AC\";\n  margin-right: 5px;\n  font-size: 21px;\n  vertical-align: middle;\n}\n.terminal-menu-popover a.checked:before {\n  content: \"\\2714\";\n  margin-right: 5px;\n}\n.cmd .cursor {\n  border: 0;\n}\n.noty-wrap-text {\n  padding: 10px;\n  font-weight: bold;\n  font-size: 13px;\n  margin: 0;\n}\n.animated {\n  animation-duration: .5s;\n  animation-fill-mode: both;\n}\n@keyframes fadeIn {\n  from {\n    opacity: 0;\n  }\n  to {\n    opacity: 1;\n  }\n}\n.fadeIn {\n  animation-name: fadeIn;\n}\n@keyframes fadeOut {\n  from {\n    opacity: 1;\n  }\n  to {\n    opacity: 0;\n  }\n}\n.fadeOut {\n  animation-name: fadeOut;\n}\n.terminal,\n.cmd {\n  color: transparent;\n  background-color: transparent;\n}\n#terminalContext {\n  width: 100%;\n}\n.terminal-full-screen {\n  text-align: left;\n}\n.terminal-wrap-custom {\n  position: relative;\n  width: 100%;\n  height: 100%;\n}\n.terminal-wrap-custom .btn.active {\n  position: relative;\n}\n.terminal-wrap-custom .btn.active:before {\n  content: \"\\F00C\";\n  font: normal normal normal 11px/1 FontAwesome;\n  position: absolute;\n  top: 8px;\n  left: 7px;\n  font-size: 9px;\n  z-index: 3;\n}\n.terminal-wrap-custom .actions-btn-menu {\n  position: absolute;\n  padding: 10px;\n  z-index: 1;\n  right: 7px;\n  top: 0;\n}\n.terminal-wrap-custom .actions-btn-menu .btn {\n  padding: 3px 8px;\n}\n.terminal-wrap-custom .actions-btn-menu .btn i {\n  font-size: 23px;\n  vertical-align: middle;\n}\n.terminal-wrap-custom .pqQuotes {\n  vertical-align: top;\n  width: 445px;\n}\n.terminal-wrap-custom .pqQuotes .close {\n  top: 10px;\n  position: relative;\n}\n.terminal-wrap-custom .pqQuotes div.term-body-pq .pq-container {\n  padding: 15px 10px;\n  border-bottom: 1px solid #f3f3f3;\n  border-left: none;\n  border-right: none;\n}\n.terminal-wrap-custom .pqQuotes div.term-body-pq .pq-container .added-by {\n  float: right;\n}\n.terminal-wrap-custom .pqQuotes div.term-body-pq .pq-container:nth-child(even) {\n  background: #fff;\n}\n.terminal-wrap-custom .pqQuotes div.term-body-pq .pq-container:nth-child(odd) {\n  background: #f3f3f3;\n}\n.terminal-wrap-custom .pqQuotes .priceqoute-pre {\n  font-size: 11px;\n  padding: 5px;\n  color: #000;\n}\n.terminal-wrap-custom > .term-body {\n  width: 100%;\n  height: 100%;\n}\n.terminal-wrap-custom > .term-body .left {\n  position: relative;\n  height: 100%;\n}\n.terminal-wrap-custom > .term-body .menu {\n  width: 20%;\n  vertical-align: top;\n  padding: 9px;\n  background: #fff;\n}\n.terminal-wrap-custom > .term-body .menu .label {\n  font-weight: bold;\n  font-size: 12px;\n  padding: 10px 0;\n  color: #414141;\n}\n.terminal-wrap-custom > .term-body .menu .buttons .btn {\n  margin-right: 5px;\n}\n.terminal-wrap-custom > .term-body .menu .pcc-label {\n  position: absolute;\n  top: -5px;\n  right: -5px;\n  border: 1px solid;\n  padding: 0 3px;\n  background: #fff;\n  color: #511551;\n  border-radius: 15px;\n  font-size: 10px;\n}\n.terminal-wrap-custom > .term-body.minimized .menu {\n  width: 100px;\n}\n.terminal-wrap-custom > .term-body.minimized .menu .btn {\n  display: block;\n  width: 100%;\n  margin: 0 0 5px 0;\n}\n.terminal-wrap-custom > .term-body.minimized .menu .label {\n  text-align: center;\n  font-size: 10px;\n  display: block;\n}\n.terminal-wrap-custom .matrix-row .terminal {\n  border-left: 2px solid #fff;\n  border-top: 2px solid #fff;\n}\n.terminal-wrap-custom .terminal {\n  padding: 0;\n  float: left;\n}\n.terminal-wrap-custom .terminal.active {\n  background: red;\n}\n.terminal-wrap-custom .terminal .cmd {\n  font-weight: bold;\n  text-transform: uppercase;\n}\n.terminal-wrap-custom .terminal .usedCommand {\n  text-transform: uppercase;\n}\n.terminal-wrap-custom .terminal-output div span {\n  display: inline;\n}\n.terminal-wrap-custom div.terminal-wrapper {\n  height: auto;\n}\n/*\n.cmd .cursor.blink {\n\t-webkit-animation: terminal-blink2 1s infinite steps(1, start);\n\t-moz-animation: terminal-blink2 1s infinite steps(1, start);\n\t-ms-animation: terminal-blink2 1s infinite steps(1, start);\n\tanimation: terminal-blink2 1s infinite steps(1, start);\n}\n@-webkit-keyframes terminal-blink2 {\n\t0%, 100% {\n\t\tbackground-color: rgba(0,0,0,0.3);\n\t\tcolor: rgba(255,255,255,0.8);\n\t}\n\t50% {\n\t\tbackground-color: rgba(255,255,255,0.3);\n\t\tcolor: rgba(0,0,0,0.6);\n\t}\n}\n\n@-ms-keyframes terminal-blink2 {\n\t0%, 100% {\n\t\tbackground-color: rgba(0,0,0,0.3);\n\t\tcolor: rgba(255,255,255,0.8);\n\t}\n\t50% {\n\t\tbackground-color: rgba(255,255,255,0.3);\n\t\tcolor: rgba(0,0,0,0.6);\n\t}\n}\n\n@-moz-keyframes terminal-blink2 {\n\t0%, 100% {\n\t\tbackground-color: rgba(0,0,0,0.3);\n\t\tcolor: rgba(255,255,255,0.8);\n\t}\n\t50% {\n\t\tbackground-color: rgba(255,255,255,0.3);\n\t\tcolor: rgba(0,0,0,0.6);\n\t}\n}\n@keyframes terminal-blink2 {\n\t0%, 100% {\n\t\tbackground-color: rgba(0,0,0,0.3);\n\t\tcolor: rgba(255,255,255,0.8);\n\t}\n\t50% {\n\t\tbackground-color: rgba(255,255,255,0.3);\n\t\tcolor: rgba(0,0,0,0.6);\n\t}\n}*/\n@keyframes blink {\n  0% {\n    opacity: 1;\n  }\n  25% {\n    opacity: 0;\n  }\n  50% {\n    opacity: 0;\n  }\n  100% {\n    opacity: 1;\n  }\n}\n@-webkit-keyframes blink {\n  0% {\n    opacity: 1;\n  }\n  25% {\n    opacity: 0;\n  }\n  50% {\n    opacity: 0;\n  }\n  100% {\n    opacity: 1;\n  }\n}\n@-ms-keyframes blink {\n  0% {\n    opacity: 1;\n  }\n  25% {\n    opacity: 0;\n  }\n  50% {\n    opacity: 0;\n  }\n  100% {\n    opacity: 1;\n  }\n}\n@-moz-keyframes blink {\n  0% {\n    opacity: 1;\n  }\n  25% {\n    opacity: 0;\n  }\n  50% {\n    opacity: 0;\n  }\n  100% {\n    opacity: 1;\n  }\n}\n.cmd .cursor.blink {\n  background: #ccc;\n  -webkit-animation: blink 1s infinite linear;\n  -moz-animation: blink 1s infinite linear;\n  -ms-animation: blink 1s infinite linear;\n  animation: blink 1s linear infinite;\n}\n", ""]);
 
 // exports
 
@@ -814,7 +814,8 @@ var INIT = exports.INIT = function INIT(App) {
 		gdsObjName: app.Gds.getCurrentName(),
 		permissions: app.params.permissions,
 		terminalThemes: app.params.terminalThemes,
-		gdsObjIndex: _constants.GDS_LIST.indexOf(app.Gds.getCurrentName())
+		theme: app.curTheme,
+		gdsObjIndex: app.gdsList.indexOf(app.Gds.getCurrentName())
 	});
 };
 
@@ -926,9 +927,12 @@ var SWITCH_TERMINAL = exports.SWITCH_TERMINAL = function SWITCH_TERMINAL(fn) {
 
 	setTimeout(function () {
 		// THIS IS CRAZY SHIT. WITHOUT IT SWITCHES TERMINALS SEVERAL TIMES TRY PRESS ~
+
 		var terminal = app.Gds.getCurrent().get('terminals');
 
-		if (curTerminalId !== false) terminal[curTerminalId].plugin.terminal.focus();
+		if (curTerminalId !== false) {
+			terminal[curTerminalId].plugin.terminal.focus();
+		}
 	}, 100);
 };
 
@@ -1022,7 +1026,7 @@ var TerminalApp = function () {
 			settings['common']['currentGds'] = 'apollo';
 		}
 
-		var gdsSet = _constants.GDS_LIST.filter(function (name) {
+		this.gdsList = _constants.GDS_LIST.filter(function (name) {
 			return name !== 'galileo' || permissions;
 		});
 
@@ -1030,7 +1034,7 @@ var TerminalApp = function () {
 			gdsList: settings.gds,
 			activeName: settings['common']['currentGds'] || 'apollo',
 			buffer: buffer || {},
-			gdsSet: gdsSet
+			gdsSet: this.gdsList
 		});
 
 		this.params = { requestId: requestId, permissions: permissions, terminalThemes: terminalThemes };
@@ -1041,9 +1045,8 @@ var TerminalApp = function () {
 		this.pqParser = new _pqParser.PqParser(PqPriceModal);
 		this.container = new _main2.default(htmlRootId);
 
-		var theme = (0, _cookie.cookieGet)('terminalTheme_' + agentId);
-		var themeName = theme || _constants.THEME_CLASS_NAME + terminalThemes[0]['id'];
-		this.changeStyle(themeName);
+		this.curTheme = (0, _cookie.cookieGet)('terminalTheme_' + agentId) || terminalThemes[0]['id'];
+		this.changeStyle(this.curTheme);
 
 		(0, _requests.setLink)(commandUrl);
 		(0, _actions.INIT)(this);
@@ -1475,13 +1478,21 @@ var _createClass = function () { function defineProperties(target, props) { for 
 
 var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
 
-var _sessionButtons = __webpack_require__(/*! ./sessionButtons */ "./src/components/menu/sessionButtons.es6");
-
 var _component = __webpack_require__(/*! ../../modules/component */ "./src/modules/component.es6");
 
 var _component2 = _interopRequireDefault(_component);
 
+var _actions = __webpack_require__(/*! ../../actions */ "./src/actions.es6");
+
+var _dom = __webpack_require__(/*! ../../helpers/dom */ "./src/helpers/dom.es6");
+
+var _dom2 = _interopRequireDefault(_dom);
+
 var _constants = __webpack_require__(/*! ../../constants */ "./src/constants.es6");
+
+var _buttonPopover = __webpack_require__(/*! ../../modules/buttonPopover */ "./src/modules/buttonPopover.es6");
+
+var _buttonPopover2 = _interopRequireDefault(_buttonPopover);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -1510,14 +1521,10 @@ var GdsAreas = exports.GdsAreas = function (_Component) {
 
 			var current = gdsList[gdsObjIndex];
 
-			var _current$get = current.get(),
-			    pcc = _current$get.pcc,
-			    sessionIndex = _current$get.sessionIndex;
-
 			return _get(GdsAreas.prototype.__proto__ || Object.getPrototypeOf(GdsAreas.prototype), "setState", this).call(this, {
 				gdsObjName: gdsObjName,
-				pcc: pcc,
-				sessionIndex: sessionIndex,
+				pcc: current.get('pcc'),
+				sessionIndex: current.get('sessionIndex'),
 				areaList: current.get('list'),
 				gdsList: gdsList.map(function (name) {
 					return name.props.name;
@@ -1527,28 +1534,101 @@ var GdsAreas = exports.GdsAreas = function (_Component) {
 	}, {
 		key: "_renderer",
 		value: function _renderer() {
-			var _this2 = this;
-
 			this.context.innerHTML = '';
 
-			this.state.gdsList.map(function (name) {
+			var buttons = new GdsButtons(this.state);
 
-				var buttons = new _sessionButtons.SessionButtons({ name: name });
+			this.context.appendChild(buttons.makeTrigger());
 
-				_this2.context.appendChild(buttons.makeTrigger(_this2.state.gdsObjName));
-
-				if (_this2.state.gdsObjName === name) {
-					_this2.state.areaList.map(function (area, index) {
-
-						_this2.context.appendChild(buttons.makeArea(area, index, _this2.state.pcc, _this2.state.sessionIndex));
-					});
-				}
-			});
+			buttons.makeAreas(this.context);
 		}
 	}]);
 
 	return GdsAreas;
 }(_component2.default);
+
+var GdsButtons = function (_ButtonPopOver) {
+	_inherits(GdsButtons, _ButtonPopOver);
+
+	function GdsButtons(_ref) {
+		var gdsObjName = _ref.gdsObjName,
+		    gdsList = _ref.gdsList,
+		    areaList = _ref.areaList,
+		    sessionIndex = _ref.sessionIndex,
+		    pcc = _ref.pcc;
+
+		_classCallCheck(this, GdsButtons);
+
+		var _this2 = _possibleConstructorReturn(this, (GdsButtons.__proto__ || Object.getPrototypeOf(GdsButtons)).call(this, { icon: gdsObjName }, 'div'));
+
+		_this2.gdsname = gdsObjName;
+		_this2.gdsList = gdsList;
+		_this2.areaList = areaList;
+		_this2.sessionIndex = sessionIndex;
+		_this2.pcc = pcc;
+		return _this2;
+	}
+
+	_createClass(GdsButtons, [{
+		key: "makeTrigger",
+		value: function makeTrigger() {
+			return _get(GdsButtons.prototype.__proto__ || Object.getPrototypeOf(GdsButtons.prototype), "makeTrigger", this).call(this);
+		}
+	}, {
+		key: "build",
+		value: function build() {
+			var _this3 = this;
+
+			this.gdsList.map(function (name) {
+				_this3.popContent.appendChild(_this3.gdsButton(name));
+			});
+		}
+	}, {
+		key: "gdsButton",
+		value: function gdsButton(gdsName) {
+			var _this4 = this;
+
+			return (0, _dom2.default)("button.btn btn-sm btn-block btn-mint font-bold [" + gdsName + "]", {
+				disabled: this.gdsname === gdsName,
+				onclick: function onclick() {
+					(0, _actions.CHANGE_GDS)(gdsName);
+					_this4.popover.close();
+				}
+			});
+		}
+	}, {
+		key: "makeAreas",
+		value: function makeAreas(context) {
+			var _this5 = this;
+
+			this.areaList.map(function (area, index) {
+				context.appendChild(_this5.makeArea(area, index));
+			});
+		}
+	}, {
+		key: "makeArea",
+		value: function makeArea(area, index) {
+			var isActive = this.sessionIndex === index;
+
+			return (0, _dom2.default)("button.btn btn-sm btn-purple font-bold pos-rlt " + (isActive ? 'active' : ''), {
+
+				innerHTML: area + (this.pcc[index] ? "<span class=\"pcc-label\">" + this.pcc[index] + "</span>" : ''),
+
+				disabled: isActive,
+
+				onclick: function onclick(e) {
+
+					e.target.disabled = true;
+
+					(0, _actions.CHANGE_SESSION_BY_MENU)(_constants.AREA_LIST[index]);
+					// .catch( () => e.target.disabled = false )
+				}
+			});
+		}
+	}]);
+
+	return GdsButtons;
+}(_buttonPopover2.default);
 
 /***/ }),
 
@@ -1581,6 +1661,12 @@ var _component = __webpack_require__(/*! ../../modules/component */ "./src/modul
 
 var _component2 = _interopRequireDefault(_component);
 
+var _buttonPopover = __webpack_require__(/*! ../../modules/buttonPopover */ "./src/modules/buttonPopover.es6");
+
+var _buttonPopover2 = _interopRequireDefault(_buttonPopover);
+
+var _constants = __webpack_require__(/*! ../../constants */ "./src/constants.es6");
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -1610,26 +1696,57 @@ var LanguageButtons = exports.LanguageButtons = function (_Component) {
 	}, {
 		key: "_renderer",
 		value: function _renderer() {
-			var _this2 = this;
-
 			this.context.innerHTML = '';
 
-			['APOLLO', 'SABRE', 'AMADEUS'].forEach(function (value) {
+			var buttons = new LanguageButton(this.state);
 
-				var button = (0, _dom2.default)('button.btn btn-gold t-f-size-10 font-bold' + (_this2.state.language === value ? ' active' : ''));
-
-				button.innerHTML = value;
-				button.addEventListener('click', function () {
-					return (0, _actions.CHANGE_INPUT_LANGUAGE)(value);
-				});
-
-				_this2.context.appendChild(button);
-			});
+			this.context.appendChild(buttons.makeTrigger());
 		}
 	}]);
 
 	return LanguageButtons;
 }(_component2.default);
+
+var LanguageButton = function (_ButtonPopOver) {
+	_inherits(LanguageButton, _ButtonPopOver);
+
+	function LanguageButton(_ref2) {
+		var language = _ref2.language;
+
+		_classCallCheck(this, LanguageButton);
+
+		var _this2 = _possibleConstructorReturn(this, (LanguageButton.__proto__ || Object.getPrototypeOf(LanguageButton)).call(this, { icon: language }, 'div'));
+
+		_this2.language = language;
+		return _this2;
+	}
+
+	_createClass(LanguageButton, [{
+		key: "makeTrigger",
+		value: function makeTrigger() {
+			return _get(LanguageButton.prototype.__proto__ || Object.getPrototypeOf(LanguageButton.prototype), "makeTrigger", this).call(this);
+		}
+	}, {
+		key: "build",
+		value: function build() {
+			var _this3 = this;
+
+			_constants.LANGUAGE_LIST.map(function (name) {
+
+				var button = (0, _dom2.default)("button.btn btn-block btn-gold t-f-size-10 font-bold " + (_this3.language === name ? ' active' : '') + " [" + name + "]");
+
+				button.addEventListener('click', function () {
+					_this3.popover.close();
+					(0, _actions.CHANGE_INPUT_LANGUAGE)(name);
+				});
+
+				_this3.popContent.appendChild(button);
+			});
+		}
+	}]);
+
+	return LanguageButton;
+}(_buttonPopover2.default);
 
 /***/ }),
 
@@ -1703,85 +1820,6 @@ exports.default = PqButton;
 
 /***/ }),
 
-/***/ "./src/components/menu/sessionButtons.es6":
-/*!************************************************!*\
-  !*** ./src/components/menu/sessionButtons.es6 ***!
-  \************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-	value: true
-});
-exports.SessionButtons = undefined;
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-var _dom = __webpack_require__(/*! ../../helpers/dom.es6 */ "./src/helpers/dom.es6");
-
-var _dom2 = _interopRequireDefault(_dom);
-
-var _actions = __webpack_require__(/*! ../../actions */ "./src/actions.es6");
-
-var _constants = __webpack_require__(/*! ../../constants */ "./src/constants.es6");
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-var SessionButtons = exports.SessionButtons = function () {
-	function SessionButtons(params) {
-		_classCallCheck(this, SessionButtons);
-
-		this.context = (0, _dom2.default)('div');
-		this.gdsname = params.name;
-	}
-
-	_createClass(SessionButtons, [{
-		key: "makeTrigger",
-		value: function makeTrigger(gdsName) {
-			var _this = this;
-
-			return (0, _dom2.default)('button', {
-				className: "btn btn-sm btn-mint font-bold " + (gdsName === this.gdsname ? ' active' : ''),
-				innerHTML: this.gdsname,
-				onclick: function onclick() {
-					return (0, _actions.CHANGE_GDS)(_this.gdsname);
-				}
-			});
-		}
-	}, {
-		key: "makeArea",
-		value: function makeArea(area, index, pcc, sessionIndex) {
-			var isActive = sessionIndex === index;
-
-			return (0, _dom2.default)("button", {
-				className: "btn btn-sm btn-purple font-bold pos-rlt " + (isActive ? 'active' : ''),
-
-				innerHTML: area + (pcc[index] ? "<span class=\"pcc-label\">" + pcc[index] + "</span>" : ''),
-
-				disabled: isActive,
-
-				onclick: function onclick(e) {
-
-					e.target.disabled = true;
-
-					(0, _actions.CHANGE_SESSION_BY_MENU)(_constants.AREA_LIST[index]).catch(function () {
-						e.target.disabled = false;
-					});
-				}
-			});
-		}
-	}]);
-
-	return SessionButtons;
-}();
-
-/***/ }),
-
 /***/ "./src/components/menu/settingsButtons.es6":
 /*!*************************************************!*\
   !*** ./src/components/menu/settingsButtons.es6 ***!
@@ -1841,15 +1879,19 @@ var SettingsButtons = exports.SettingsButtons = function (_Component) {
 		value: function mount(_ref) {
 			var _this2 = this;
 
-			var terminalThemes = _ref.terminalThemes;
+			var theme = _ref.theme,
+			    terminalThemes = _ref.terminalThemes;
 
-			this.children(terminalThemes).map(function (element) {
+			this.children({ theme: theme, terminalThemes: terminalThemes }).map(function (element) {
 				return _this2.context.appendChild(element);
 			});
 		}
 	}, {
 		key: "children",
-		value: function children(terminalThemes) {
+		value: function children(_ref2) {
+			var theme = _ref2.theme,
+			    terminalThemes = _ref2.terminalThemes;
+
 			var Quotes = (0, _dom2.default)('button.btn btn-mozilla font-bold[Quotes]', { onclick: function onclick(e) {
 					e.target.innerHTML = 'Loading...';
 
@@ -1858,9 +1900,10 @@ var SettingsButtons = exports.SettingsButtons = function (_Component) {
 					});
 				} });
 
-			var theme = new _theme2.default({
+			var themeBtn = new _theme2.default({
 				icon: '<i class="fa fa-paint-brush t-f-size-14"></i>',
-				themes: terminalThemes
+				themes: terminalThemes,
+				theme: theme
 			}).getTrigger();
 
 			var textSize = new _textSize2.default({
@@ -1871,7 +1914,7 @@ var SettingsButtons = exports.SettingsButtons = function (_Component) {
 				icon: '<i class="fa fa-history t-f-size-14"></i>'
 			}).getTrigger();
 
-			return [Quotes, theme, textSize, history];
+			return [Quotes, themeBtn, textSize, history];
 		}
 	}]);
 
@@ -1930,25 +1973,24 @@ var MenuPanel = function (_Component) {
 	function MenuPanel() {
 		_classCallCheck(this, MenuPanel);
 
-		var _this = _possibleConstructorReturn(this, (MenuPanel.__proto__ || Object.getPrototypeOf(MenuPanel)).call(this, 'aside.sideMenu'));
-
-		_this.observe(new _settingsButtons.SettingsButtons());
-
-		_this.attach((0, _dom2.default)('span.label[Session]'));
-
-		_this.observe(new _gdsAreas.GdsAreas());
-
-		_this.attach((0, _dom2.default)('span.label[Input Language]'));
-
-		_this.observe(new _languageButtons.LanguageButtons());
-
-		_this.observe(new _pqButton2.default());
-		return _this;
+		return _possibleConstructorReturn(this, (MenuPanel.__proto__ || Object.getPrototypeOf(MenuPanel)).call(this, 'aside.sideMenu'));
 	}
 
 	_createClass(MenuPanel, [{
 		key: 'mount',
 		value: function mount(state) {
+			this.observe(new _settingsButtons.SettingsButtons());
+
+			this.attach((0, _dom2.default)('span.label[Session]'));
+
+			this.observe(new _gdsAreas.GdsAreas());
+
+			this.attach((0, _dom2.default)('span.label[Input Language]'));
+
+			this.observe(new _languageButtons.LanguageButtons());
+
+			this.observe(new _pqButton2.default());
+
 			if (state.permissions) {
 				this.append(new _component2.default('article').append(new _devButtons.DevButtons()));
 			}
@@ -2005,82 +2047,93 @@ var History = exports.History = function (_ButtonPopOver) {
 	function History(params) {
 		_classCallCheck(this, History);
 
-		var _this = _possibleConstructorReturn(this, (History.__proto__ || Object.getPrototypeOf(History)).call(this, params));
+		var _this = _possibleConstructorReturn(this, (History.__proto__ || Object.getPrototypeOf(History)).call(this, params, 'div.terminal-menu-popover historyContext'));
 
-		_this.popContent = (0, _dom2.default)('div.historyContext');
-
-		var btn = _this.makeTrigger();
-		btn.addEventListener('click', function () {
-			return _this.askServer();
+		_this.makeTrigger({
+			onclick: function onclick() {
+				return _this.askServer();
+			}
 		});
 		return _this;
 	}
 
 	_createClass(History, [{
-		key: '_makeBody',
-		value: function _makeBody(response) {
-			this.list = (0, _dom2.default)('ul.list');
-			response.data.forEach(this._makeLi, this);
-			this.popContent.appendChild(this.list);
-		}
-	}, {
-		key: '_makeLi',
-		value: function _makeLi(value) {
-			var cb = (0, _dom2.default)('input');
-			cb.type = 'checkbox';
-			cb.onclick = function () {
-				return buffer.push(value);
-			};
-
-			var el = (0, _dom2.default)('a.t-pointer[' + value + ']');
-			el.onclick = function () {
-				return cb.click();
-			};
-
-			var li = (0, _dom2.default)('li.m-b-xs');
-			li.appendChild(cb);
-			li.appendChild(el);
-
-			this.list.appendChild(li);
-		}
-	}, {
-		key: '_makeLaunchBtn',
-		value: function _makeLaunchBtn() {
-			var _this2 = this;
-
-			var el = (0, _dom2.default)('button.btn btn-sm btn-purple font-bold btn-block m-t[Perform]');
-
-			el.onclick = function () {
-				return (0, _actions.DEV_CMD_STACK_RUN)(buffer);
-			};
-			el.addEventListener('click', function () {
-				return _this2.popover.close();
-			});
-
-			this.popContent.appendChild(el);
-		}
-	}, {
-		key: '_finalize',
-		value: function _finalize() {
-			this.list.scrollTop = this.popContent.scrollHeight;
-		}
-	}, {
 		key: 'askServer',
 		value: function askServer() {
-			buffer = [];
-			this.popContent.innerHTML = '';
+			var _this2 = this;
 
-			(0, _actions.GET_HISTORY)().then(this._makeBody.bind(this)).then(this._makeLaunchBtn.bind(this)).then(this._finalize.bind(this));
-		}
-	}, {
-		key: 'build',
-		value: function build() {
-			return false;
+			buffer = [];
+			this.popContent.innerHTML = '<div class="text-center"><div class="terminal-lds-hourglass"></div></div>';
+
+			(0, _actions.GET_HISTORY)().then(function (response) {
+
+				var c = new Context(response, _this2.popover);
+
+				_this2.popContent.innerHTML = '';
+				_this2.popContent.appendChild(c.context);
+
+				c.finalize(_this2.popContent);
+			});
 		}
 	}]);
 
 	return History;
 }(_buttonPopover2.default);
+
+var Context = function () {
+	function Context(response, popover) {
+		_classCallCheck(this, Context);
+
+		this.context = (0, _dom2.default)('div');
+
+		this._makeBody(response);
+		this._makeLaunchBtn(popover);
+	}
+
+	_createClass(Context, [{
+		key: '_makeBody',
+		value: function _makeBody(response) {
+			var list = (0, _dom2.default)('ul.list');
+
+			response.data.forEach(function (value) {
+
+				var el = (0, _dom2.default)('a.t-pointer[' + value + ']', {
+					onclick: function onclick() {
+						el.classList.toggle('checked');
+						buffer.push(value);
+					}
+				});
+
+				var li = (0, _dom2.default)('li.m-b-xs');
+				li.appendChild(el);
+
+				list.appendChild(li);
+			});
+
+			this.context.appendChild(list);
+			this.list = list;
+		}
+	}, {
+		key: '_makeLaunchBtn',
+		value: function _makeLaunchBtn(popover) {
+			var el = (0, _dom2.default)('button.btn btn-sm btn-purple font-bold btn-block m-t[Perform]', {
+				onclick: function onclick() {
+					(0, _actions.DEV_CMD_STACK_RUN)(buffer);
+					popover.close();
+				}
+			});
+
+			this.context.appendChild(el);
+		}
+	}, {
+		key: 'finalize',
+		value: function finalize(popContent) {
+			this.list.scrollTop = popContent.scrollHeight;
+		}
+	}]);
+
+	return Context;
+}();
 
 /***/ }),
 
@@ -2283,9 +2336,12 @@ var TextSize = function (_ButtonPopOver) {
 	function TextSize(params) {
 		_classCallCheck(this, TextSize);
 
-		var _this = _possibleConstructorReturn(this, (TextSize.__proto__ || Object.getPrototypeOf(TextSize)).call(this, params));
+		var _this = _possibleConstructorReturn(this, (TextSize.__proto__ || Object.getPrototypeOf(TextSize)).call(this, params, 'div.terminal-menu-popover'));
 
 		_this.makeTrigger();
+
+		_this.curFont = 1;
+		_this.curBtn = '';
 		return _this;
 	}
 
@@ -2294,18 +2350,36 @@ var TextSize = function (_ButtonPopOver) {
 		value: function build(list) {
 			var _this2 = this;
 
-			['1', '2', '3', '4'].forEach(function (value) {
+			var buttons = [1, 2, 3, 4].map(function (value) {
 
-				var button = (0, _dom2.default)('button.list-group-item');
-				button.innerHTML = value + 'x';
+				var button = (0, _dom2.default)('a.t-pointer ' + (_this2.curFont === value) + ' [' + value + ']x');
 
 				button.addEventListener('click', function () {
-					_this2.popover.close();
-					(0, _actions.CHANGE_FONT_SIZE)({ fontSize: value });
+					_this2.curBtn.classList.remove('checked');
+
+					_this2.toggle(button);
+					_this2.click(value);
 				});
 
 				_this2.popContent.appendChild(button);
+
+				return button;
 			});
+
+			this.toggle(buttons[0]);
+		}
+	}, {
+		key: 'click',
+		value: function click(value) {
+			this.popover.close();
+			this.curFont = value;
+			(0, _actions.CHANGE_FONT_SIZE)({ fontSize: value });
+		}
+	}, {
+		key: 'toggle',
+		value: function toggle(button) {
+			this.curBtn = button;
+			this.curBtn.classList.toggle('checked');
 		}
 	}]);
 
@@ -2342,8 +2416,6 @@ var _buttonPopover2 = _interopRequireDefault(_buttonPopover);
 
 var _actions = __webpack_require__(/*! ../../actions */ "./src/actions.es6");
 
-var _constants = __webpack_require__(/*! ../../constants */ "./src/constants.es6");
-
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -2357,47 +2429,59 @@ var Theme = function (_ButtonPopOver) {
 
 	function Theme(_ref) {
 		var icon = _ref.icon,
-		    themes = _ref.themes;
+		    themes = _ref.themes,
+		    theme = _ref.theme;
 
 		_classCallCheck(this, Theme);
 
-		var _this = _possibleConstructorReturn(this, (Theme.__proto__ || Object.getPrototypeOf(Theme)).call(this, { icon: icon }));
+		var _this = _possibleConstructorReturn(this, (Theme.__proto__ || Object.getPrototypeOf(Theme)).call(this, { icon: icon }, 'div.terminal-menu-popover themes'));
 
 		_this.themes = themes;
 		_this.makeTrigger();
+
+		_this.themeId = theme;
 		return _this;
 	}
 
 	_createClass(Theme, [{
-		key: 'onSelect',
-		value: function onSelect(value) {
-			var newThemeClass = _constants.THEME_CLASS_NAME + value.id;
-			this.themeId = value.id;
-
-			(0, _actions.CHANGE_STYLE)(newThemeClass);
-
-			this.popContent.innerHTML = '';
-			this.build();
-		}
-	}, {
 		key: 'build',
 		value: function build() {
 			var _this2 = this;
 
 			if (this.themes.length) {
 				this.themes.forEach(function (obj) {
+					var button = (0, _dom2.default)('a.t-pointer ' + (_this2.themeId === obj.label) + ' [' + obj.label + ']');
 
-					var button = (0, _dom2.default)('button.list-group-item ' + (obj.id === _this2.themeId ? 'font-bold' : ''));
-					button.innerHTML = obj.label;
+					if (obj.id === parseInt(_this2.themeId)) {
+						_this2.toggle(button);
+					}
 
 					button.addEventListener('click', function () {
-						_this2.popover.close();
+						if (_this2.curBtn) {
+							_this2.curBtn.classList.remove('checked');
+						}
+
+						_this2.toggle(button);
 						_this2.onSelect(obj);
 					});
 
 					_this2.popContent.appendChild(button);
 				});
 			}
+		}
+	}, {
+		key: 'onSelect',
+		value: function onSelect(value) {
+			var newThemeClass = value.id;
+			this.themeId = value.id;
+
+			(0, _actions.CHANGE_STYLE)(newThemeClass);
+		}
+	}, {
+		key: 'toggle',
+		value: function toggle(button) {
+			this.curBtn = button;
+			this.curBtn.classList.toggle('checked');
 		}
 	}]);
 
@@ -2616,6 +2700,7 @@ var MAX_ROWS = exports.MAX_ROWS = 4;
 var MAX_CELLS = exports.MAX_CELLS = 4;
 var DEFAULT_CELLS = exports.DEFAULT_CELLS = [0, 1, 5, 6];
 var THEME_CLASS_NAME = exports.THEME_CLASS_NAME = 'terminaltheme_';
+var LANGUAGE_LIST = exports.LANGUAGE_LIST = ['APOLLO', 'SABRE', 'AMADEUS'];
 
 /***/ }),
 
@@ -2642,6 +2727,8 @@ var _component2 = _interopRequireDefault(_component);
 var _sectionsWrap = __webpack_require__(/*! ./sectionsWrap */ "./src/containers/sectionsWrap.es6");
 
 var _tempTerminal = __webpack_require__(/*! ../components/tempTerminal */ "./src/components/tempTerminal.es6");
+
+var _constants = __webpack_require__(/*! ../constants */ "./src/constants.es6");
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -2686,9 +2773,9 @@ var ContainerMain = function (_Component) {
 	}, {
 		key: "changeStyle",
 		value: function changeStyle(themeName) {
-			this.parent.classList.remove(this.themeName);
+			this.parent.classList.remove(_constants.THEME_CLASS_NAME + this.themeName);
 			this.themeName = themeName;
-			this.parent.classList.add(themeName);
+			this.parent.classList.add(_constants.THEME_CLASS_NAME + themeName);
 		}
 	}]);
 
@@ -3763,6 +3850,8 @@ Object.defineProperty(exports, "__esModule", {
 	value: true
 });
 
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 var _tetherDrop = __webpack_require__(/*! tether-drop */ "./node_modules/tether-drop/dist/js/drop.js");
@@ -3790,25 +3879,37 @@ var CLASS_NAME = 'drop-theme-twipsy';
 
 var ButtonPopOver = function () {
 	function ButtonPopOver(params) {
+		var context = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 'div';
+
 		_classCallCheck(this, ButtonPopOver);
 
 		this.settings = params;
-		this.popContent = this.popContent = (0, _dom2.default)('div');
+		this.popContent = (0, _dom2.default)(context);
 	}
 
 	_createClass(ButtonPopOver, [{
 		key: 'makeTrigger',
 		value: function makeTrigger() {
-			this.trigger = (0, _dom2.default)('button.btn btn-primary font-bold');
-			this.trigger.onclick = this.makePopover.bind(this);
-			this.trigger.innerHTML = this.settings.icon;
+			var _this = this;
+
+			var attributes = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+
+			this.trigger = (0, _dom2.default)('button.btn btn-primary font-bold', _extends({}, attributes, { innerHTML: this.settings.icon }));
+
+			this.trigger.addEventListener('click', function () {
+				return _this.makePopover();
+			});
 
 			return this.trigger;
 		}
 	}, {
 		key: 'makePopover',
 		value: function makePopover() {
-			this.popover = this.popover || new _tetherDrop2.default({
+			if (this.popover) {
+				return false;
+			}
+
+			this.popover = new _tetherDrop2.default({
 				target: this.getTrigger(),
 				content: this.getPopContent(),
 				classes: CLASS_NAME,
@@ -3816,11 +3917,11 @@ var ButtonPopOver = function () {
 				openOn: 'click'
 			});
 
-			if (this.settings.onOpen) this.popover.on('open', this.settings.onOpen);
+			if (this.settings.onOpen) {
+				this.popover.on('open', this.settings.onOpen);
+			}
 
-			this.trigger.onclick = false;
 			this.popover.open();
-			// this.trigger.click();
 		}
 	}, {
 		key: 'getTrigger',
@@ -3835,9 +3936,7 @@ var ButtonPopOver = function () {
 		}
 	}, {
 		key: 'build',
-		value: function build() {
-			console.warn('Build Popover method undefined in child component ');
-		}
+		value: function build() {}
 	}]);
 
 	return ButtonPopOver;
@@ -4185,8 +4284,6 @@ exports.GDS = undefined;
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _constants = __webpack_require__(/*! ../constants.es6 */ "./src/constants.es6");
-
 var _gdsUnit = __webpack_require__(/*! ./gdsUnit */ "./src/modules/gdsUnit.es6");
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -4232,7 +4329,7 @@ var GDS = exports.GDS = function () {
 
 			return this.gdsSet.filter(function (gds) {
 				return _this.name === gds.get('name');
-			})[0];
+			})[0] || this.gdsSet[0];
 		}
 	}, {
 		key: 'getCurrentName',
