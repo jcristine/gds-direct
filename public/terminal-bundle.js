@@ -134,7 +134,7 @@ exports = module.exports = __webpack_require__(/*! ../../css-loader/lib/css-base
 
 
 // module
-exports.push([module.i, ".noty_layout_mixin, #noty_layout__top, #noty_layout__topLeft, #noty_layout__topCenter, #noty_layout__topRight, #noty_layout__bottom, #noty_layout__bottomLeft, #noty_layout__bottomCenter, #noty_layout__bottomRight, #noty_layout__center, #noty_layout__centerLeft, #noty_layout__centerRight {\n  position: fixed;\n  margin: 0;\n  padding: 0;\n  z-index: 9999999;\n  -webkit-transform: translateZ(0) scale(1, 1);\n          transform: translateZ(0) scale(1, 1);\n  -webkit-backface-visibility: hidden;\n          backface-visibility: hidden;\n  -webkit-font-smoothing: subpixel-antialiased;\n  filter: blur(0);\n  -webkit-filter: blur(0);\n  max-width: 90%; }\n\n#noty_layout__top {\n  top: 0;\n  left: 5%;\n  width: 90%; }\n\n#noty_layout__topLeft {\n  top: 20px;\n  left: 20px;\n  width: 325px; }\n\n#noty_layout__topCenter {\n  top: 5%;\n  left: 50%;\n  width: 325px;\n  -webkit-transform: translate(-webkit-calc(-50% - .5px)) translateZ(0) scale(1, 1);\n          transform: translate(calc(-50% - .5px)) translateZ(0) scale(1, 1); }\n\n#noty_layout__topRight {\n  top: 20px;\n  right: 20px;\n  width: 325px; }\n\n#noty_layout__bottom {\n  bottom: 0;\n  left: 5%;\n  width: 90%; }\n\n#noty_layout__bottomLeft {\n  bottom: 20px;\n  left: 20px;\n  width: 325px; }\n\n#noty_layout__bottomCenter {\n  bottom: 5%;\n  left: 50%;\n  width: 325px;\n  -webkit-transform: translate(-webkit-calc(-50% - .5px)) translateZ(0) scale(1, 1);\n          transform: translate(calc(-50% - .5px)) translateZ(0) scale(1, 1); }\n\n#noty_layout__bottomRight {\n  bottom: 20px;\n  right: 20px;\n  width: 325px; }\n\n#noty_layout__center {\n  top: 50%;\n  left: 50%;\n  width: 325px;\n  -webkit-transform: translate(-webkit-calc(-50% - .5px), -webkit-calc(-50% - .5px)) translateZ(0) scale(1, 1);\n          transform: translate(calc(-50% - .5px), calc(-50% - .5px)) translateZ(0) scale(1, 1); }\n\n#noty_layout__centerLeft {\n  top: 50%;\n  left: 20px;\n  width: 325px;\n  -webkit-transform: translate(0, -webkit-calc(-50% - .5px)) translateZ(0) scale(1, 1);\n          transform: translate(0, calc(-50% - .5px)) translateZ(0) scale(1, 1); }\n\n#noty_layout__centerRight {\n  top: 50%;\n  right: 20px;\n  width: 325px;\n  -webkit-transform: translate(0, -webkit-calc(-50% - .5px)) translateZ(0) scale(1, 1);\n          transform: translate(0, calc(-50% - .5px)) translateZ(0) scale(1, 1); }\n\n.noty_progressbar {\n  display: none; }\n\n.noty_has_timeout .noty_progressbar {\n  display: block;\n  position: absolute;\n  left: 0;\n  bottom: 0;\n  height: 3px;\n  width: 100%;\n  background-color: #646464;\n  opacity: 0.2;\n  filter: alpha(opacity=10); }\n\n.noty_bar {\n  -webkit-backface-visibility: hidden;\n  -webkit-transform: translate(0, 0) translateZ(0) scale(1, 1);\n  -ms-transform: translate(0, 0) scale(1, 1);\n      transform: translate(0, 0) scale(1, 1);\n  -webkit-font-smoothing: subpixel-antialiased;\n  overflow: hidden; }\n\n.noty_effects_open {\n  opacity: 0;\n  -webkit-transform: translate(50%);\n      -ms-transform: translate(50%);\n          transform: translate(50%);\n  -webkit-animation: noty_anim_in 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);\n          animation: noty_anim_in 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);\n  -webkit-animation-fill-mode: forwards;\n          animation-fill-mode: forwards; }\n\n.noty_effects_close {\n  -webkit-animation: noty_anim_out 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);\n          animation: noty_anim_out 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);\n  -webkit-animation-fill-mode: forwards;\n          animation-fill-mode: forwards; }\n\n.noty_fix_effects_height {\n  -webkit-animation: noty_anim_height 75ms ease-out;\n          animation: noty_anim_height 75ms ease-out; }\n\n.noty_close_with_click {\n  cursor: pointer; }\n\n.noty_close_button {\n  position: absolute;\n  top: 2px;\n  right: 2px;\n  font-weight: bold;\n  width: 20px;\n  height: 20px;\n  text-align: center;\n  line-height: 20px;\n  background-color: rgba(0, 0, 0, 0.05);\n  border-radius: 2px;\n  cursor: pointer;\n  -webkit-transition: all .2s ease-out;\n  transition: all .2s ease-out; }\n\n.noty_close_button:hover {\n  background-color: rgba(0, 0, 0, 0.1); }\n\n.noty_modal {\n  position: fixed;\n  width: 100%;\n  height: 100%;\n  background-color: #000;\n  z-index: 10000;\n  opacity: .3;\n  left: 0;\n  top: 0; }\n\n.noty_modal.noty_modal_open {\n  opacity: 0;\n  -webkit-animation: noty_modal_in .3s ease-out;\n          animation: noty_modal_in .3s ease-out; }\n\n.noty_modal.noty_modal_close {\n  -webkit-animation: noty_modal_out .3s ease-out;\n          animation: noty_modal_out .3s ease-out;\n  -webkit-animation-fill-mode: forwards;\n          animation-fill-mode: forwards; }\n\n@-webkit-keyframes noty_modal_in {\n  100% {\n    opacity: .3; } }\n\n@keyframes noty_modal_in {\n  100% {\n    opacity: .3; } }\n\n@-webkit-keyframes noty_modal_out {\n  100% {\n    opacity: 0; } }\n\n@keyframes noty_modal_out {\n  100% {\n    opacity: 0; } }\n\n@keyframes noty_modal_out {\n  100% {\n    opacity: 0; } }\n\n@-webkit-keyframes noty_anim_in {\n  100% {\n    -webkit-transform: translate(0);\n            transform: translate(0);\n    opacity: 1; } }\n\n@keyframes noty_anim_in {\n  100% {\n    -webkit-transform: translate(0);\n            transform: translate(0);\n    opacity: 1; } }\n\n@-webkit-keyframes noty_anim_out {\n  100% {\n    -webkit-transform: translate(50%);\n            transform: translate(50%);\n    opacity: 0; } }\n\n@keyframes noty_anim_out {\n  100% {\n    -webkit-transform: translate(50%);\n            transform: translate(50%);\n    opacity: 0; } }\n\n@-webkit-keyframes noty_anim_height {\n  100% {\n    height: 0; } }\n\n@keyframes noty_anim_height {\n  100% {\n    height: 0; } }\n\n.noty_theme__relax.noty_bar {\n  margin: 4px 0;\n  overflow: hidden;\n  border-radius: 2px;\n  position: relative; }\n  .noty_theme__relax.noty_bar .noty_body {\n    padding: 10px; }\n  .noty_theme__relax.noty_bar .noty_buttons {\n    border-top: 1px solid #e7e7e7;\n    padding: 5px 10px; }\n\n.noty_theme__relax.noty_type__alert,\n.noty_theme__relax.noty_type__notification {\n  background-color: #fff;\n  border: 1px solid #dedede;\n  color: #444; }\n\n.noty_theme__relax.noty_type__warning {\n  background-color: #FFEAA8;\n  border: 1px solid #FFC237;\n  color: #826200; }\n  .noty_theme__relax.noty_type__warning .noty_buttons {\n    border-color: #dfaa30; }\n\n.noty_theme__relax.noty_type__error {\n  background-color: #FF8181;\n  border: 1px solid #e25353;\n  color: #FFF; }\n  .noty_theme__relax.noty_type__error .noty_buttons {\n    border-color: darkred; }\n\n.noty_theme__relax.noty_type__info,\n.noty_theme__relax.noty_type__information {\n  background-color: #78C5E7;\n  border: 1px solid #3badd6;\n  color: #FFF; }\n  .noty_theme__relax.noty_type__info .noty_buttons,\n  .noty_theme__relax.noty_type__information .noty_buttons {\n    border-color: #0B90C4; }\n\n.noty_theme__relax.noty_type__success {\n  background-color: #BCF5BC;\n  border: 1px solid #7cdd77;\n  color: darkgreen; }\n  .noty_theme__relax.noty_type__success .noty_buttons {\n    border-color: #50C24E; }\n\n.noty_theme__metroui.noty_bar {\n  margin: 4px 0;\n  overflow: hidden;\n  position: relative;\n  box-shadow: rgba(0, 0, 0, 0.298039) 0 0 5px 0; }\n  .noty_theme__metroui.noty_bar .noty_progressbar {\n    position: absolute;\n    left: 0;\n    bottom: 0;\n    height: 3px;\n    width: 100%;\n    background-color: #000;\n    opacity: 0.2;\n    filter: alpha(opacity=20); }\n  .noty_theme__metroui.noty_bar .noty_body {\n    padding: 1.25em;\n    font-size: 14px; }\n  .noty_theme__metroui.noty_bar .noty_buttons {\n    padding: 0 10px .5em 10px; }\n\n.noty_theme__metroui.noty_type__alert,\n.noty_theme__metroui.noty_type__notification {\n  background-color: #fff;\n  color: #1d1d1d; }\n\n.noty_theme__metroui.noty_type__warning {\n  background-color: #FA6800;\n  color: #fff; }\n\n.noty_theme__metroui.noty_type__error {\n  background-color: #CE352C;\n  color: #FFF; }\n\n.noty_theme__metroui.noty_type__info,\n.noty_theme__metroui.noty_type__information {\n  background-color: #1BA1E2;\n  color: #FFF; }\n\n.noty_theme__metroui.noty_type__success {\n  background-color: #60A917;\n  color: #fff; }\n\n.noty_theme__mint.noty_bar {\n  margin: 4px 0;\n  overflow: hidden;\n  border-radius: 2px;\n  position: relative; }\n  .noty_theme__mint.noty_bar .noty_body {\n    padding: 10px;\n    font-size: 14px; }\n  .noty_theme__mint.noty_bar .noty_buttons {\n    padding: 10px; }\n\n.noty_theme__mint.noty_type__alert,\n.noty_theme__mint.noty_type__notification {\n  background-color: #fff;\n  border-bottom: 1px solid #D1D1D1;\n  color: #2F2F2F; }\n\n.noty_theme__mint.noty_type__warning {\n  background-color: #FFAE42;\n  border-bottom: 1px solid #E89F3C;\n  color: #fff; }\n\n.noty_theme__mint.noty_type__error {\n  background-color: #DE636F;\n  border-bottom: 1px solid #CA5A65;\n  color: #fff; }\n\n.noty_theme__mint.noty_type__info,\n.noty_theme__mint.noty_type__information {\n  background-color: #7F7EFF;\n  border-bottom: 1px solid #7473E8;\n  color: #fff; }\n\n.noty_theme__mint.noty_type__success {\n  background-color: #AFC765;\n  border-bottom: 1px solid #A0B55C;\n  color: #fff; }\n\n.noty_theme__sunset.noty_bar {\n  margin: 4px 0;\n  overflow: hidden;\n  border-radius: 2px;\n  position: relative; }\n  .noty_theme__sunset.noty_bar .noty_body {\n    padding: 10px;\n    font-size: 14px;\n    text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.1); }\n  .noty_theme__sunset.noty_bar .noty_buttons {\n    padding: 10px; }\n\n.noty_theme__sunset.noty_type__alert,\n.noty_theme__sunset.noty_type__notification {\n  background-color: #073B4C;\n  color: #fff; }\n  .noty_theme__sunset.noty_type__alert .noty_progressbar,\n  .noty_theme__sunset.noty_type__notification .noty_progressbar {\n    background-color: #fff; }\n\n.noty_theme__sunset.noty_type__warning {\n  background-color: #FFD166;\n  color: #fff; }\n\n.noty_theme__sunset.noty_type__error {\n  background-color: #EF476F;\n  color: #fff; }\n  .noty_theme__sunset.noty_type__error .noty_progressbar {\n    opacity: .4; }\n\n.noty_theme__sunset.noty_type__info,\n.noty_theme__sunset.noty_type__information {\n  background-color: #118AB2;\n  color: #fff; }\n  .noty_theme__sunset.noty_type__info .noty_progressbar,\n  .noty_theme__sunset.noty_type__information .noty_progressbar {\n    opacity: .6; }\n\n.noty_theme__sunset.noty_type__success {\n  background-color: #06D6A0;\n  color: #fff; }\n\n.noty_theme__bootstrap-v3.noty_bar {\n  margin: 4px 0;\n  overflow: hidden;\n  position: relative;\n  border: 1px solid transparent;\n  border-radius: 4px; }\n  .noty_theme__bootstrap-v3.noty_bar .noty_body {\n    padding: 15px; }\n  .noty_theme__bootstrap-v3.noty_bar .noty_buttons {\n    padding: 10px; }\n  .noty_theme__bootstrap-v3.noty_bar .noty_close_button {\n    font-size: 21px;\n    font-weight: 700;\n    line-height: 1;\n    color: #000;\n    text-shadow: 0 1px 0 #fff;\n    filter: alpha(opacity=20);\n    opacity: .2;\n    background: transparent; }\n  .noty_theme__bootstrap-v3.noty_bar .noty_close_button:hover {\n    background: transparent;\n    text-decoration: none;\n    cursor: pointer;\n    filter: alpha(opacity=50);\n    opacity: .5; }\n\n.noty_theme__bootstrap-v3.noty_type__alert,\n.noty_theme__bootstrap-v3.noty_type__notification {\n  background-color: #fff;\n  color: inherit; }\n\n.noty_theme__bootstrap-v3.noty_type__warning {\n  background-color: #fcf8e3;\n  color: #8a6d3b;\n  border-color: #faebcc; }\n\n.noty_theme__bootstrap-v3.noty_type__error {\n  background-color: #f2dede;\n  color: #a94442;\n  border-color: #ebccd1; }\n\n.noty_theme__bootstrap-v3.noty_type__info,\n.noty_theme__bootstrap-v3.noty_type__information {\n  background-color: #d9edf7;\n  color: #31708f;\n  border-color: #bce8f1; }\n\n.noty_theme__bootstrap-v3.noty_type__success {\n  background-color: #dff0d8;\n  color: #3c763d;\n  border-color: #d6e9c6; }\n\n.noty_theme__bootstrap-v4.noty_bar {\n  margin: 4px 0;\n  overflow: hidden;\n  position: relative;\n  border: 1px solid transparent;\n  border-radius: .25rem; }\n  .noty_theme__bootstrap-v4.noty_bar .noty_body {\n    padding: .75rem 1.25rem; }\n  .noty_theme__bootstrap-v4.noty_bar .noty_buttons {\n    padding: 10px; }\n  .noty_theme__bootstrap-v4.noty_bar .noty_close_button {\n    font-size: 1.5rem;\n    font-weight: 700;\n    line-height: 1;\n    color: #000;\n    text-shadow: 0 1px 0 #fff;\n    filter: alpha(opacity=20);\n    opacity: .5;\n    background: transparent; }\n  .noty_theme__bootstrap-v4.noty_bar .noty_close_button:hover {\n    background: transparent;\n    text-decoration: none;\n    cursor: pointer;\n    filter: alpha(opacity=50);\n    opacity: .75; }\n\n.noty_theme__bootstrap-v4.noty_type__alert,\n.noty_theme__bootstrap-v4.noty_type__notification {\n  background-color: #fff;\n  color: inherit; }\n\n.noty_theme__bootstrap-v4.noty_type__warning {\n  background-color: #fcf8e3;\n  color: #8a6d3b;\n  border-color: #faebcc; }\n\n.noty_theme__bootstrap-v4.noty_type__error {\n  background-color: #f2dede;\n  color: #a94442;\n  border-color: #ebccd1; }\n\n.noty_theme__bootstrap-v4.noty_type__info,\n.noty_theme__bootstrap-v4.noty_type__information {\n  background-color: #d9edf7;\n  color: #31708f;\n  border-color: #bce8f1; }\n\n.noty_theme__bootstrap-v4.noty_type__success {\n  background-color: #dff0d8;\n  color: #3c763d;\n  border-color: #d6e9c6; }\n\n.noty_theme__semanticui.noty_bar {\n  margin: 4px 0;\n  overflow: hidden;\n  position: relative;\n  border: 1px solid transparent;\n  font-size: 1em;\n  border-radius: .28571429rem;\n  box-shadow: 0 0 0 1px rgba(34, 36, 38, 0.22) inset, 0 0 0 0 transparent; }\n  .noty_theme__semanticui.noty_bar .noty_body {\n    padding: 1em 1.5em;\n    line-height: 1.4285em; }\n  .noty_theme__semanticui.noty_bar .noty_buttons {\n    padding: 10px; }\n\n.noty_theme__semanticui.noty_type__alert,\n.noty_theme__semanticui.noty_type__notification {\n  background-color: #f8f8f9;\n  color: rgba(0, 0, 0, 0.87); }\n\n.noty_theme__semanticui.noty_type__warning {\n  background-color: #fffaf3;\n  color: #573a08;\n  box-shadow: 0 0 0 1px #c9ba9b inset, 0 0 0 0 transparent; }\n\n.noty_theme__semanticui.noty_type__error {\n  background-color: #fff6f6;\n  color: #9f3a38;\n  box-shadow: 0 0 0 1px #e0b4b4 inset, 0 0 0 0 transparent; }\n\n.noty_theme__semanticui.noty_type__info,\n.noty_theme__semanticui.noty_type__information {\n  background-color: #f8ffff;\n  color: #276f86;\n  box-shadow: 0 0 0 1px #a9d5de inset, 0 0 0 0 transparent; }\n\n.noty_theme__semanticui.noty_type__success {\n  background-color: #fcfff5;\n  color: #2c662d;\n  box-shadow: 0 0 0 1px #a3c293 inset, 0 0 0 0 transparent; }\n\n.noty_theme__nest.noty_bar {\n  margin: 0 0 15px 0;\n  overflow: hidden;\n  border-radius: 2px;\n  position: relative;\n  box-shadow: rgba(0, 0, 0, 0.098039) 5px 4px 10px 0; }\n  .noty_theme__nest.noty_bar .noty_body {\n    padding: 10px;\n    font-size: 14px;\n    text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.1); }\n  .noty_theme__nest.noty_bar .noty_buttons {\n    padding: 10px; }\n\n.noty_layout .noty_theme__nest.noty_bar {\n  z-index: 5; }\n\n.noty_layout .noty_theme__nest.noty_bar:nth-child(2) {\n  position: absolute;\n  top: 0;\n  margin-top: 4px;\n  margin-right: -4px;\n  margin-left: 4px;\n  z-index: 4;\n  width: 100%; }\n\n.noty_layout .noty_theme__nest.noty_bar:nth-child(3) {\n  position: absolute;\n  top: 0;\n  margin-top: 8px;\n  margin-right: -8px;\n  margin-left: 8px;\n  z-index: 3;\n  width: 100%; }\n\n.noty_layout .noty_theme__nest.noty_bar:nth-child(4) {\n  position: absolute;\n  top: 0;\n  margin-top: 12px;\n  margin-right: -12px;\n  margin-left: 12px;\n  z-index: 2;\n  width: 100%; }\n\n.noty_layout .noty_theme__nest.noty_bar:nth-child(5) {\n  position: absolute;\n  top: 0;\n  margin-top: 16px;\n  margin-right: -16px;\n  margin-left: 16px;\n  z-index: 1;\n  width: 100%; }\n\n.noty_layout .noty_theme__nest.noty_bar:nth-child(n+6) {\n  position: absolute;\n  top: 0;\n  margin-top: 20px;\n  margin-right: -20px;\n  margin-left: 20px;\n  z-index: -1;\n  width: 100%; }\n\n#noty_layout__bottomLeft .noty_theme__nest.noty_bar:nth-child(2),\n#noty_layout__topLeft .noty_theme__nest.noty_bar:nth-child(2) {\n  margin-top: 4px;\n  margin-left: -4px;\n  margin-right: 4px; }\n\n#noty_layout__bottomLeft .noty_theme__nest.noty_bar:nth-child(3),\n#noty_layout__topLeft .noty_theme__nest.noty_bar:nth-child(3) {\n  margin-top: 8px;\n  margin-left: -8px;\n  margin-right: 8px; }\n\n#noty_layout__bottomLeft .noty_theme__nest.noty_bar:nth-child(4),\n#noty_layout__topLeft .noty_theme__nest.noty_bar:nth-child(4) {\n  margin-top: 12px;\n  margin-left: -12px;\n  margin-right: 12px; }\n\n#noty_layout__bottomLeft .noty_theme__nest.noty_bar:nth-child(5),\n#noty_layout__topLeft .noty_theme__nest.noty_bar:nth-child(5) {\n  margin-top: 16px;\n  margin-left: -16px;\n  margin-right: 16px; }\n\n#noty_layout__bottomLeft .noty_theme__nest.noty_bar:nth-child(n+6),\n#noty_layout__topLeft .noty_theme__nest.noty_bar:nth-child(n+6) {\n  margin-top: 20px;\n  margin-left: -20px;\n  margin-right: 20px; }\n\n.noty_theme__nest.noty_type__alert,\n.noty_theme__nest.noty_type__notification {\n  background-color: #073B4C;\n  color: #fff; }\n  .noty_theme__nest.noty_type__alert .noty_progressbar,\n  .noty_theme__nest.noty_type__notification .noty_progressbar {\n    background-color: #fff; }\n\n.noty_theme__nest.noty_type__warning {\n  background-color: #FFD166;\n  color: #fff; }\n\n.noty_theme__nest.noty_type__error {\n  background-color: #EF476F;\n  color: #fff; }\n  .noty_theme__nest.noty_type__error .noty_progressbar {\n    opacity: .4; }\n\n.noty_theme__nest.noty_type__info,\n.noty_theme__nest.noty_type__information {\n  background-color: #118AB2;\n  color: #fff; }\n  .noty_theme__nest.noty_type__info .noty_progressbar,\n  .noty_theme__nest.noty_type__information .noty_progressbar {\n    opacity: .6; }\n\n.noty_theme__nest.noty_type__success {\n  background-color: #06D6A0;\n  color: #fff; }", ""]);
+exports.push([module.i, ".noty_layout_mixin, #noty_layout__top, #noty_layout__topLeft, #noty_layout__topCenter, #noty_layout__topRight, #noty_layout__bottom, #noty_layout__bottomLeft, #noty_layout__bottomCenter, #noty_layout__bottomRight, #noty_layout__center, #noty_layout__centerLeft, #noty_layout__centerRight {\n  position: fixed;\n  margin: 0;\n  padding: 0;\n  z-index: 9999999;\n  -webkit-transform: translateZ(0) scale(1, 1);\n          transform: translateZ(0) scale(1, 1);\n  -webkit-backface-visibility: hidden;\n          backface-visibility: hidden;\n  -webkit-font-smoothing: subpixel-antialiased;\n  filter: blur(0);\n  -webkit-filter: blur(0);\n  max-width: 90%; }\n\n#noty_layout__top {\n  top: 0;\n  left: 5%;\n  width: 90%; }\n\n#noty_layout__topLeft {\n  top: 20px;\n  left: 20px;\n  width: 325px; }\n\n#noty_layout__topCenter {\n  top: 5%;\n  left: 50%;\n  width: 325px;\n  -webkit-transform: translate(-webkit-calc(-50% - .5px)) translateZ(0) scale(1, 1);\n          transform: translate(calc(-50% - .5px)) translateZ(0) scale(1, 1); }\n\n#noty_layout__topRight {\n  top: 20px;\n  right: 20px;\n  width: 325px; }\n\n#noty_layout__bottom {\n  bottom: 0;\n  left: 5%;\n  width: 90%; }\n\n#noty_layout__bottomLeft {\n  bottom: 20px;\n  left: 20px;\n  width: 325px; }\n\n#noty_layout__bottomCenter {\n  bottom: 5%;\n  left: 50%;\n  width: 325px;\n  -webkit-transform: translate(-webkit-calc(-50% - .5px)) translateZ(0) scale(1, 1);\n          transform: translate(calc(-50% - .5px)) translateZ(0) scale(1, 1); }\n\n#noty_layout__bottomRight {\n  bottom: 20px;\n  right: 20px;\n  width: 325px; }\n\n#noty_layout__center {\n  top: 50%;\n  left: 50%;\n  width: 325px;\n  -webkit-transform: translate(-webkit-calc(-50% - .5px), -webkit-calc(-50% - .5px)) translateZ(0) scale(1, 1);\n          transform: translate(calc(-50% - .5px), calc(-50% - .5px)) translateZ(0) scale(1, 1); }\n\n#noty_layout__centerLeft {\n  top: 50%;\n  left: 20px;\n  width: 325px;\n  -webkit-transform: translate(0, -webkit-calc(-50% - .5px)) translateZ(0) scale(1, 1);\n          transform: translate(0, calc(-50% - .5px)) translateZ(0) scale(1, 1); }\n\n#noty_layout__centerRight {\n  top: 50%;\n  right: 20px;\n  width: 325px;\n  -webkit-transform: translate(0, -webkit-calc(-50% - .5px)) translateZ(0) scale(1, 1);\n          transform: translate(0, calc(-50% - .5px)) translateZ(0) scale(1, 1); }\n\n.noty_progressbar {\n  display: none; }\n\n.noty_has_timeout.noty_has_progressbar .noty_progressbar {\n  display: block;\n  position: absolute;\n  left: 0;\n  bottom: 0;\n  height: 3px;\n  width: 100%;\n  background-color: #646464;\n  opacity: 0.2;\n  filter: alpha(opacity=10); }\n\n.noty_bar {\n  -webkit-backface-visibility: hidden;\n  -webkit-transform: translate(0, 0) translateZ(0) scale(1, 1);\n  -ms-transform: translate(0, 0) scale(1, 1);\n      transform: translate(0, 0) scale(1, 1);\n  -webkit-font-smoothing: subpixel-antialiased;\n  overflow: hidden; }\n\n.noty_effects_open {\n  opacity: 0;\n  -webkit-transform: translate(50%);\n      -ms-transform: translate(50%);\n          transform: translate(50%);\n  -webkit-animation: noty_anim_in 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);\n          animation: noty_anim_in 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);\n  -webkit-animation-fill-mode: forwards;\n          animation-fill-mode: forwards; }\n\n.noty_effects_close {\n  -webkit-animation: noty_anim_out 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);\n          animation: noty_anim_out 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);\n  -webkit-animation-fill-mode: forwards;\n          animation-fill-mode: forwards; }\n\n.noty_fix_effects_height {\n  -webkit-animation: noty_anim_height 75ms ease-out;\n          animation: noty_anim_height 75ms ease-out; }\n\n.noty_close_with_click {\n  cursor: pointer; }\n\n.noty_close_button {\n  position: absolute;\n  top: 2px;\n  right: 2px;\n  font-weight: bold;\n  width: 20px;\n  height: 20px;\n  text-align: center;\n  line-height: 20px;\n  background-color: rgba(0, 0, 0, 0.05);\n  border-radius: 2px;\n  cursor: pointer;\n  -webkit-transition: all .2s ease-out;\n  transition: all .2s ease-out; }\n\n.noty_close_button:hover {\n  background-color: rgba(0, 0, 0, 0.1); }\n\n.noty_modal {\n  position: fixed;\n  width: 100%;\n  height: 100%;\n  background-color: #000;\n  z-index: 10000;\n  opacity: .3;\n  left: 0;\n  top: 0; }\n\n.noty_modal.noty_modal_open {\n  opacity: 0;\n  -webkit-animation: noty_modal_in .3s ease-out;\n          animation: noty_modal_in .3s ease-out; }\n\n.noty_modal.noty_modal_close {\n  -webkit-animation: noty_modal_out .3s ease-out;\n          animation: noty_modal_out .3s ease-out;\n  -webkit-animation-fill-mode: forwards;\n          animation-fill-mode: forwards; }\n\n@-webkit-keyframes noty_modal_in {\n  100% {\n    opacity: .3; } }\n\n@keyframes noty_modal_in {\n  100% {\n    opacity: .3; } }\n\n@-webkit-keyframes noty_modal_out {\n  100% {\n    opacity: 0; } }\n\n@keyframes noty_modal_out {\n  100% {\n    opacity: 0; } }\n\n@keyframes noty_modal_out {\n  100% {\n    opacity: 0; } }\n\n@-webkit-keyframes noty_anim_in {\n  100% {\n    -webkit-transform: translate(0);\n            transform: translate(0);\n    opacity: 1; } }\n\n@keyframes noty_anim_in {\n  100% {\n    -webkit-transform: translate(0);\n            transform: translate(0);\n    opacity: 1; } }\n\n@-webkit-keyframes noty_anim_out {\n  100% {\n    -webkit-transform: translate(50%);\n            transform: translate(50%);\n    opacity: 0; } }\n\n@keyframes noty_anim_out {\n  100% {\n    -webkit-transform: translate(50%);\n            transform: translate(50%);\n    opacity: 0; } }\n\n@-webkit-keyframes noty_anim_height {\n  100% {\n    height: 0; } }\n\n@keyframes noty_anim_height {\n  100% {\n    height: 0; } }\n\n.noty_theme__relax.noty_bar {\n  margin: 4px 0;\n  overflow: hidden;\n  border-radius: 2px;\n  position: relative; }\n  .noty_theme__relax.noty_bar .noty_body {\n    padding: 10px; }\n  .noty_theme__relax.noty_bar .noty_buttons {\n    border-top: 1px solid #e7e7e7;\n    padding: 5px 10px; }\n\n.noty_theme__relax.noty_type__alert,\n.noty_theme__relax.noty_type__notification {\n  background-color: #fff;\n  border: 1px solid #dedede;\n  color: #444; }\n\n.noty_theme__relax.noty_type__warning {\n  background-color: #FFEAA8;\n  border: 1px solid #FFC237;\n  color: #826200; }\n  .noty_theme__relax.noty_type__warning .noty_buttons {\n    border-color: #dfaa30; }\n\n.noty_theme__relax.noty_type__error {\n  background-color: #FF8181;\n  border: 1px solid #e25353;\n  color: #FFF; }\n  .noty_theme__relax.noty_type__error .noty_buttons {\n    border-color: darkred; }\n\n.noty_theme__relax.noty_type__info,\n.noty_theme__relax.noty_type__information {\n  background-color: #78C5E7;\n  border: 1px solid #3badd6;\n  color: #FFF; }\n  .noty_theme__relax.noty_type__info .noty_buttons,\n  .noty_theme__relax.noty_type__information .noty_buttons {\n    border-color: #0B90C4; }\n\n.noty_theme__relax.noty_type__success {\n  background-color: #BCF5BC;\n  border: 1px solid #7cdd77;\n  color: darkgreen; }\n  .noty_theme__relax.noty_type__success .noty_buttons {\n    border-color: #50C24E; }\n\n.noty_theme__metroui.noty_bar {\n  margin: 4px 0;\n  overflow: hidden;\n  position: relative;\n  box-shadow: rgba(0, 0, 0, 0.298039) 0 0 5px 0; }\n  .noty_theme__metroui.noty_bar .noty_progressbar {\n    position: absolute;\n    left: 0;\n    bottom: 0;\n    height: 3px;\n    width: 100%;\n    background-color: #000;\n    opacity: 0.2;\n    filter: alpha(opacity=20); }\n  .noty_theme__metroui.noty_bar .noty_body {\n    padding: 1.25em;\n    font-size: 14px; }\n  .noty_theme__metroui.noty_bar .noty_buttons {\n    padding: 0 10px .5em 10px; }\n\n.noty_theme__metroui.noty_type__alert,\n.noty_theme__metroui.noty_type__notification {\n  background-color: #fff;\n  color: #1d1d1d; }\n\n.noty_theme__metroui.noty_type__warning {\n  background-color: #FA6800;\n  color: #fff; }\n\n.noty_theme__metroui.noty_type__error {\n  background-color: #CE352C;\n  color: #FFF; }\n\n.noty_theme__metroui.noty_type__info,\n.noty_theme__metroui.noty_type__information {\n  background-color: #1BA1E2;\n  color: #FFF; }\n\n.noty_theme__metroui.noty_type__success {\n  background-color: #60A917;\n  color: #fff; }\n\n.noty_theme__mint.noty_bar {\n  margin: 4px 0;\n  overflow: hidden;\n  border-radius: 2px;\n  position: relative; }\n  .noty_theme__mint.noty_bar .noty_body {\n    padding: 10px;\n    font-size: 14px; }\n  .noty_theme__mint.noty_bar .noty_buttons {\n    padding: 10px; }\n\n.noty_theme__mint.noty_type__alert,\n.noty_theme__mint.noty_type__notification {\n  background-color: #fff;\n  border-bottom: 1px solid #D1D1D1;\n  color: #2F2F2F; }\n\n.noty_theme__mint.noty_type__warning {\n  background-color: #FFAE42;\n  border-bottom: 1px solid #E89F3C;\n  color: #fff; }\n\n.noty_theme__mint.noty_type__error {\n  background-color: #DE636F;\n  border-bottom: 1px solid #CA5A65;\n  color: #fff; }\n\n.noty_theme__mint.noty_type__info,\n.noty_theme__mint.noty_type__information {\n  background-color: #7F7EFF;\n  border-bottom: 1px solid #7473E8;\n  color: #fff; }\n\n.noty_theme__mint.noty_type__success {\n  background-color: #AFC765;\n  border-bottom: 1px solid #A0B55C;\n  color: #fff; }\n\n.noty_theme__sunset.noty_bar {\n  margin: 4px 0;\n  overflow: hidden;\n  border-radius: 2px;\n  position: relative; }\n  .noty_theme__sunset.noty_bar .noty_body {\n    padding: 10px;\n    font-size: 14px;\n    text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.1); }\n  .noty_theme__sunset.noty_bar .noty_buttons {\n    padding: 10px; }\n\n.noty_theme__sunset.noty_type__alert,\n.noty_theme__sunset.noty_type__notification {\n  background-color: #073B4C;\n  color: #fff; }\n  .noty_theme__sunset.noty_type__alert .noty_progressbar,\n  .noty_theme__sunset.noty_type__notification .noty_progressbar {\n    background-color: #fff; }\n\n.noty_theme__sunset.noty_type__warning {\n  background-color: #FFD166;\n  color: #fff; }\n\n.noty_theme__sunset.noty_type__error {\n  background-color: #EF476F;\n  color: #fff; }\n  .noty_theme__sunset.noty_type__error .noty_progressbar {\n    opacity: .4; }\n\n.noty_theme__sunset.noty_type__info,\n.noty_theme__sunset.noty_type__information {\n  background-color: #118AB2;\n  color: #fff; }\n  .noty_theme__sunset.noty_type__info .noty_progressbar,\n  .noty_theme__sunset.noty_type__information .noty_progressbar {\n    opacity: .6; }\n\n.noty_theme__sunset.noty_type__success {\n  background-color: #06D6A0;\n  color: #fff; }\n\n.noty_theme__bootstrap-v3.noty_bar {\n  margin: 4px 0;\n  overflow: hidden;\n  position: relative;\n  border: 1px solid transparent;\n  border-radius: 4px; }\n  .noty_theme__bootstrap-v3.noty_bar .noty_body {\n    padding: 15px; }\n  .noty_theme__bootstrap-v3.noty_bar .noty_buttons {\n    padding: 10px; }\n  .noty_theme__bootstrap-v3.noty_bar .noty_close_button {\n    font-size: 21px;\n    font-weight: 700;\n    line-height: 1;\n    color: #000;\n    text-shadow: 0 1px 0 #fff;\n    filter: alpha(opacity=20);\n    opacity: .2;\n    background: transparent; }\n  .noty_theme__bootstrap-v3.noty_bar .noty_close_button:hover {\n    background: transparent;\n    text-decoration: none;\n    cursor: pointer;\n    filter: alpha(opacity=50);\n    opacity: .5; }\n\n.noty_theme__bootstrap-v3.noty_type__alert,\n.noty_theme__bootstrap-v3.noty_type__notification {\n  background-color: #fff;\n  color: inherit; }\n\n.noty_theme__bootstrap-v3.noty_type__warning {\n  background-color: #fcf8e3;\n  color: #8a6d3b;\n  border-color: #faebcc; }\n\n.noty_theme__bootstrap-v3.noty_type__error {\n  background-color: #f2dede;\n  color: #a94442;\n  border-color: #ebccd1; }\n\n.noty_theme__bootstrap-v3.noty_type__info,\n.noty_theme__bootstrap-v3.noty_type__information {\n  background-color: #d9edf7;\n  color: #31708f;\n  border-color: #bce8f1; }\n\n.noty_theme__bootstrap-v3.noty_type__success {\n  background-color: #dff0d8;\n  color: #3c763d;\n  border-color: #d6e9c6; }\n\n.noty_theme__bootstrap-v4.noty_bar {\n  margin: 4px 0;\n  overflow: hidden;\n  position: relative;\n  border: 1px solid transparent;\n  border-radius: .25rem; }\n  .noty_theme__bootstrap-v4.noty_bar .noty_body {\n    padding: .75rem 1.25rem; }\n  .noty_theme__bootstrap-v4.noty_bar .noty_buttons {\n    padding: 10px; }\n  .noty_theme__bootstrap-v4.noty_bar .noty_close_button {\n    font-size: 1.5rem;\n    font-weight: 700;\n    line-height: 1;\n    color: #000;\n    text-shadow: 0 1px 0 #fff;\n    filter: alpha(opacity=20);\n    opacity: .5;\n    background: transparent; }\n  .noty_theme__bootstrap-v4.noty_bar .noty_close_button:hover {\n    background: transparent;\n    text-decoration: none;\n    cursor: pointer;\n    filter: alpha(opacity=50);\n    opacity: .75; }\n\n.noty_theme__bootstrap-v4.noty_type__alert,\n.noty_theme__bootstrap-v4.noty_type__notification {\n  background-color: #fff;\n  color: inherit; }\n\n.noty_theme__bootstrap-v4.noty_type__warning {\n  background-color: #fcf8e3;\n  color: #8a6d3b;\n  border-color: #faebcc; }\n\n.noty_theme__bootstrap-v4.noty_type__error {\n  background-color: #f2dede;\n  color: #a94442;\n  border-color: #ebccd1; }\n\n.noty_theme__bootstrap-v4.noty_type__info,\n.noty_theme__bootstrap-v4.noty_type__information {\n  background-color: #d9edf7;\n  color: #31708f;\n  border-color: #bce8f1; }\n\n.noty_theme__bootstrap-v4.noty_type__success {\n  background-color: #dff0d8;\n  color: #3c763d;\n  border-color: #d6e9c6; }\n\n.noty_theme__semanticui.noty_bar {\n  margin: 4px 0;\n  overflow: hidden;\n  position: relative;\n  border: 1px solid transparent;\n  font-size: 1em;\n  border-radius: .28571429rem;\n  box-shadow: 0 0 0 1px rgba(34, 36, 38, 0.22) inset, 0 0 0 0 transparent; }\n  .noty_theme__semanticui.noty_bar .noty_body {\n    padding: 1em 1.5em;\n    line-height: 1.4285em; }\n  .noty_theme__semanticui.noty_bar .noty_buttons {\n    padding: 10px; }\n\n.noty_theme__semanticui.noty_type__alert,\n.noty_theme__semanticui.noty_type__notification {\n  background-color: #f8f8f9;\n  color: rgba(0, 0, 0, 0.87); }\n\n.noty_theme__semanticui.noty_type__warning {\n  background-color: #fffaf3;\n  color: #573a08;\n  box-shadow: 0 0 0 1px #c9ba9b inset, 0 0 0 0 transparent; }\n\n.noty_theme__semanticui.noty_type__error {\n  background-color: #fff6f6;\n  color: #9f3a38;\n  box-shadow: 0 0 0 1px #e0b4b4 inset, 0 0 0 0 transparent; }\n\n.noty_theme__semanticui.noty_type__info,\n.noty_theme__semanticui.noty_type__information {\n  background-color: #f8ffff;\n  color: #276f86;\n  box-shadow: 0 0 0 1px #a9d5de inset, 0 0 0 0 transparent; }\n\n.noty_theme__semanticui.noty_type__success {\n  background-color: #fcfff5;\n  color: #2c662d;\n  box-shadow: 0 0 0 1px #a3c293 inset, 0 0 0 0 transparent; }\n\n.noty_theme__nest.noty_bar {\n  margin: 0 0 15px 0;\n  overflow: hidden;\n  border-radius: 2px;\n  position: relative;\n  box-shadow: rgba(0, 0, 0, 0.098039) 5px 4px 10px 0; }\n  .noty_theme__nest.noty_bar .noty_body {\n    padding: 10px;\n    font-size: 14px;\n    text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.1); }\n  .noty_theme__nest.noty_bar .noty_buttons {\n    padding: 10px; }\n\n.noty_layout .noty_theme__nest.noty_bar {\n  z-index: 5; }\n\n.noty_layout .noty_theme__nest.noty_bar:nth-child(2) {\n  position: absolute;\n  top: 0;\n  margin-top: 4px;\n  margin-right: -4px;\n  margin-left: 4px;\n  z-index: 4;\n  width: 100%; }\n\n.noty_layout .noty_theme__nest.noty_bar:nth-child(3) {\n  position: absolute;\n  top: 0;\n  margin-top: 8px;\n  margin-right: -8px;\n  margin-left: 8px;\n  z-index: 3;\n  width: 100%; }\n\n.noty_layout .noty_theme__nest.noty_bar:nth-child(4) {\n  position: absolute;\n  top: 0;\n  margin-top: 12px;\n  margin-right: -12px;\n  margin-left: 12px;\n  z-index: 2;\n  width: 100%; }\n\n.noty_layout .noty_theme__nest.noty_bar:nth-child(5) {\n  position: absolute;\n  top: 0;\n  margin-top: 16px;\n  margin-right: -16px;\n  margin-left: 16px;\n  z-index: 1;\n  width: 100%; }\n\n.noty_layout .noty_theme__nest.noty_bar:nth-child(n+6) {\n  position: absolute;\n  top: 0;\n  margin-top: 20px;\n  margin-right: -20px;\n  margin-left: 20px;\n  z-index: -1;\n  width: 100%; }\n\n#noty_layout__bottomLeft .noty_theme__nest.noty_bar:nth-child(2),\n#noty_layout__topLeft .noty_theme__nest.noty_bar:nth-child(2) {\n  margin-top: 4px;\n  margin-left: -4px;\n  margin-right: 4px; }\n\n#noty_layout__bottomLeft .noty_theme__nest.noty_bar:nth-child(3),\n#noty_layout__topLeft .noty_theme__nest.noty_bar:nth-child(3) {\n  margin-top: 8px;\n  margin-left: -8px;\n  margin-right: 8px; }\n\n#noty_layout__bottomLeft .noty_theme__nest.noty_bar:nth-child(4),\n#noty_layout__topLeft .noty_theme__nest.noty_bar:nth-child(4) {\n  margin-top: 12px;\n  margin-left: -12px;\n  margin-right: 12px; }\n\n#noty_layout__bottomLeft .noty_theme__nest.noty_bar:nth-child(5),\n#noty_layout__topLeft .noty_theme__nest.noty_bar:nth-child(5) {\n  margin-top: 16px;\n  margin-left: -16px;\n  margin-right: 16px; }\n\n#noty_layout__bottomLeft .noty_theme__nest.noty_bar:nth-child(n+6),\n#noty_layout__topLeft .noty_theme__nest.noty_bar:nth-child(n+6) {\n  margin-top: 20px;\n  margin-left: -20px;\n  margin-right: 20px; }\n\n.noty_theme__nest.noty_type__alert,\n.noty_theme__nest.noty_type__notification {\n  background-color: #073B4C;\n  color: #fff; }\n  .noty_theme__nest.noty_type__alert .noty_progressbar,\n  .noty_theme__nest.noty_type__notification .noty_progressbar {\n    background-color: #fff; }\n\n.noty_theme__nest.noty_type__warning {\n  background-color: #FFD166;\n  color: #fff; }\n\n.noty_theme__nest.noty_type__error {\n  background-color: #EF476F;\n  color: #fff; }\n  .noty_theme__nest.noty_type__error .noty_progressbar {\n    opacity: .4; }\n\n.noty_theme__nest.noty_type__info,\n.noty_theme__nest.noty_type__information {\n  background-color: #118AB2;\n  color: #fff; }\n  .noty_theme__nest.noty_type__info .noty_progressbar,\n  .noty_theme__nest.noty_type__information .noty_progressbar {\n    opacity: .6; }\n\n.noty_theme__nest.noty_type__success {\n  background-color: #06D6A0;\n  color: #fff; }\n\n.noty_theme__light.noty_bar {\n  margin: 4px 0;\n  overflow: hidden;\n  border-radius: 2px;\n  position: relative; }\n  .noty_theme__light.noty_bar .noty_body {\n    padding: 10px; }\n  .noty_theme__light.noty_bar .noty_buttons {\n    border-top: 1px solid #e7e7e7;\n    padding: 5px 10px; }\n\n.noty_theme__light.noty_type__alert,\n.noty_theme__light.noty_type__notification {\n  background-color: #fff;\n  border: 1px solid #dedede;\n  color: #444; }\n\n.noty_theme__light.noty_type__warning {\n  background-color: #FFEAA8;\n  border: 1px solid #FFC237;\n  color: #826200; }\n  .noty_theme__light.noty_type__warning .noty_buttons {\n    border-color: #dfaa30; }\n\n.noty_theme__light.noty_type__error {\n  background-color: #ED7000;\n  border: 1px solid #e25353;\n  color: #FFF; }\n  .noty_theme__light.noty_type__error .noty_buttons {\n    border-color: darkred; }\n\n.noty_theme__light.noty_type__info,\n.noty_theme__light.noty_type__information {\n  background-color: #78C5E7;\n  border: 1px solid #3badd6;\n  color: #FFF; }\n  .noty_theme__light.noty_type__info .noty_buttons,\n  .noty_theme__light.noty_type__information .noty_buttons {\n    border-color: #0B90C4; }\n\n.noty_theme__light.noty_type__success {\n  background-color: #57C880;\n  border: 1px solid #7cdd77;\n  color: darkgreen; }\n  .noty_theme__light.noty_type__success .noty_buttons {\n    border-color: #50C24E; }", ""]);
 
 // exports
 
@@ -794,11 +794,9 @@ exports.UPDATE_STATE = exports.ADD_WHIDE_COLUMN = exports.CHANGE_FONT_SIZE = exp
 
 var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
-var _constants = __webpack_require__(/*! ./constants */ "./src/constants.es6");
-
 var _state = __webpack_require__(/*! ./state */ "./src/state.es6");
 
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+var _gdsActions = __webpack_require__(/*! ./actions/gdsActions */ "./src/actions/gdsActions.es6");
 
 var app = void 0;
 
@@ -833,37 +831,12 @@ var CHANGE_ACTIVE_TERMINAL = exports.CHANGE_ACTIVE_TERMINAL = function CHANGE_AC
 
 var CHANGE_GDS = exports.CHANGE_GDS = function CHANGE_GDS(gdsName) {
 	(0, _state.getters)('switch', gdsName);
-	app.Gds.setCurrent(gdsName);
 
-	UPDATE_STATE({
-		gdsObjName: app.Gds.getCurrentName(),
-		gdsObjIndex: _constants.GDS_LIST.indexOf(gdsName)
-	});
+	UPDATE_STATE((0, _gdsActions.change_gds)(app, gdsName));
 };
 
-var UPDATE_CUR_GDS = exports.UPDATE_CUR_GDS = function UPDATE_CUR_GDS(gdsName, _ref2) {
-	var canCreatePq = _ref2.canCreatePq,
-	    canCreatePqErrors = _ref2.canCreatePqErrors,
-	    area = _ref2.area,
-	    pcc = _ref2.pcc,
-	    startNewSession = _ref2.startNewSession;
-
-
-	var sessionIndex = _constants.AREA_LIST.indexOf(area);
-
-	var newAction = { canCreatePq: canCreatePq, canCreatePqErrors: canCreatePqErrors, sessionIndex: sessionIndex };
-
-	if (startNewSession) {
-		app.Gds.update(_extends({ pcc: _defineProperty({}, sessionIndex, pcc) }, newAction));
-	} else {
-		app.Gds.updatePcc(_defineProperty({}, sessionIndex, pcc));
-		app.Gds.update(newAction);
-	}
-
-	(0, _state.setState)({
-		gdsList: app.Gds.getList(),
-		canCreatePq: canCreatePq
-	});
+var UPDATE_CUR_GDS = exports.UPDATE_CUR_GDS = function UPDATE_CUR_GDS(props) {
+	(0, _state.setState)(_extends({}, (0, _gdsActions.update_cur_gds)(app, props)));
 };
 
 var CHANGE_STYLE = exports.CHANGE_STYLE = function CHANGE_STYLE(name) {
@@ -971,6 +944,65 @@ var UPDATE_STATE = exports.UPDATE_STATE = function UPDATE_STATE() {
 	//
 	// alert('no terminal selected');
 };*/
+
+/***/ }),
+
+/***/ "./src/actions/gdsActions.es6":
+/*!************************************!*\
+  !*** ./src/actions/gdsActions.es6 ***!
+  \************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+	value: true
+});
+exports.change_gds = exports.update_cur_gds = undefined;
+
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+var _constants = __webpack_require__(/*! ../constants */ "./src/constants.es6");
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+var update_cur_gds = exports.update_cur_gds = function update_cur_gds(app, _ref) {
+	var canCreatePq = _ref.canCreatePq,
+	    canCreatePqErrors = _ref.canCreatePqErrors,
+	    area = _ref.area,
+	    pcc = _ref.pcc,
+	    startNewSession = _ref.startNewSession,
+	    log = _ref.log;
+
+
+	var sessionIndex = _constants.AREA_LIST.indexOf(area);
+
+	// const newAction 	= {canCreatePq, canCreatePqErrors, sessionIndex};
+
+	if (startNewSession) {
+		app.Gds.update(_extends({ pcc: _defineProperty({}, sessionIndex, pcc) }, { canCreatePq: canCreatePq, canCreatePqErrors: canCreatePqErrors, sessionIndex: sessionIndex }));
+	} else {
+		app.Gds.updatePcc(_defineProperty({}, sessionIndex, pcc));
+		app.Gds.update({ canCreatePq: canCreatePq, canCreatePqErrors: canCreatePqErrors, sessionIndex: sessionIndex });
+	}
+
+	return {
+		gdsList: app.Gds.getList(),
+		log: log,
+		canCreatePq: canCreatePq
+	};
+};
+
+var change_gds = exports.change_gds = function change_gds(app, gdsName) {
+	app.Gds.setCurrent(gdsName);
+
+	return {
+		gdsObjName: app.Gds.getCurrentName(),
+		gdsObjIndex: _constants.GDS_LIST.indexOf(gdsName)
+	};
+};
 
 /***/ }),
 
@@ -1959,6 +1991,8 @@ var _gdsAreas = __webpack_require__(/*! ./menu/gdsAreas */ "./src/components/men
 
 var _languageButtons = __webpack_require__(/*! ./menu/languageButtons */ "./src/components/menu/languageButtons.es6");
 
+var _logButton = __webpack_require__(/*! ./popovers/logButton */ "./src/components/popovers/logButton.es6");
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -1992,7 +2026,11 @@ var MenuPanel = function (_Component) {
 			this.observe(new _pqButton2.default());
 
 			if (state.permissions) {
-				this.append(new _component2.default('article').append(new _devButtons.DevButtons()));
+				this.attach((0, _dom2.default)('span.label[Dev actions]'));
+
+				this.append(new _devButtons.DevButtons());
+
+				this.observe(new _logButton.LogButton());
 			}
 		}
 	}]);
@@ -2134,6 +2172,133 @@ var Context = function () {
 
 	return Context;
 }();
+
+/***/ }),
+
+/***/ "./src/components/popovers/logButton.es6":
+/*!***********************************************!*\
+  !*** ./src/components/popovers/logButton.es6 ***!
+  \***********************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+	value: true
+});
+exports.Log = exports.LogButton = undefined;
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
+
+var _buttonPopover = __webpack_require__(/*! ../../modules/buttonPopover */ "./src/modules/buttonPopover.es6");
+
+var _buttonPopover2 = _interopRequireDefault(_buttonPopover);
+
+var _component = __webpack_require__(/*! ../../modules/component */ "./src/modules/component.es6");
+
+var _component2 = _interopRequireDefault(_component);
+
+var _dom = __webpack_require__(/*! ../../helpers/dom */ "./src/helpers/dom.es6");
+
+var _dom2 = _interopRequireDefault(_dom);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var LogButton = exports.LogButton = function (_Component) {
+	_inherits(LogButton, _Component);
+
+	function LogButton() {
+		_classCallCheck(this, LogButton);
+
+		return _possibleConstructorReturn(this, (LogButton.__proto__ || Object.getPrototypeOf(LogButton)).call(this, 'div'));
+	}
+
+	_createClass(LogButton, [{
+		key: "setState",
+		value: function setState(_ref) {
+			var log = _ref.log;
+
+			return _get(LogButton.prototype.__proto__ || Object.getPrototypeOf(LogButton.prototype), "setState", this).call(this, { log: log });
+		}
+	}, {
+		key: "mount",
+		value: function mount() {
+			var trigger = new Log(this.state);
+
+			this.context.appendChild(trigger.makeTrigger());
+
+			this.log = trigger;
+		}
+	}, {
+		key: "_renderer",
+		value: function _renderer() {
+			this.log.update(this.state);
+		}
+	}]);
+
+	return LogButton;
+}(_component2.default);
+
+var Log = exports.Log = function (_ButtonPopOver) {
+	_inherits(Log, _ButtonPopOver);
+
+	function Log() {
+		_classCallCheck(this, Log);
+
+		var _this2 = _possibleConstructorReturn(this, (Log.__proto__ || Object.getPrototypeOf(Log)).call(this, { icon: 'Log' }, 'div', { style: 'width : 300px; max-height : 300px; overflow : auto' }));
+
+		_this2.log = [];
+		return _this2;
+	}
+
+	_createClass(Log, [{
+		key: "update",
+		value: function update(_ref2) {
+			var _ref2$log = _ref2.log,
+			    log = _ref2$log === undefined ? [] : _ref2$log;
+
+			if (log.length) {
+				this.log = [].concat(_toConsumableArray(this.log), [[].concat(_toConsumableArray(log))]);
+				this.popover = false;
+			}
+
+			this.trigger.classList.toggle('hidden', this.log.length === 0);
+		}
+	}, {
+		key: "build",
+		value: function build() {
+			var _this3 = this;
+
+			this.popContent.innerHTML = '';
+
+			this.log.reverse().forEach(function (cmdArray) {
+
+				var cmdContainer = (0, _dom2.default)('div.m-t m-b');
+
+				cmdArray.forEach(function (obj) {
+
+					cmdContainer.appendChild((0, _dom2.default)("div.font-bold text-" + obj.type + "[" + obj.text + "]"));
+				});
+
+				_this3.popContent.appendChild(cmdContainer);
+			});
+		}
+	}]);
+
+	return Log;
+}(_buttonPopover2.default);
 
 /***/ }),
 
@@ -2980,6 +3145,98 @@ function cookieSet(name, value, xdays) {
 
 /***/ }),
 
+/***/ "./src/helpers/debug.es6":
+/*!*******************************!*\
+  !*** ./src/helpers/debug.es6 ***!
+  \*******************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+	value: true
+});
+exports.notify = exports.showUserMessages = exports.debugRequest = exports.Debug = undefined;
+
+var _noty = __webpack_require__(/*! noty */ "./node_modules/noty/lib/noty.js");
+
+var _noty2 = _interopRequireDefault(_noty);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+var Debug = exports.Debug = function Debug(txt, type) {
+	new _noty2.default({
+		text: '<strong>' + txt + '</strong>',
+		layout: 'bottomCenter',
+		timeout: 1500,
+		theme: 'metroui',
+		type: type || 'info',
+		progressBar: false,
+		animation: {
+			open: 'animated fadeIn', // Animate.css class names
+			close: 'animated fadeOut' // Animate.css class names
+		}
+	}).show();
+};
+
+var debugRequest = exports.debugRequest = function debugRequest(err) {
+	new _noty2.default({
+		text: 'SERVER ERROR : ' + err,
+		layout: 'bottomRight',
+		timeout: 5000,
+		type: 'error',
+		progressBar: false,
+		animation: {
+			open: 'animated fadeIn', // Animate.css class names
+			close: 'animated fadeOut' // Animate.css class names
+		}
+	}).show();
+
+	console.warn('Server Returned: ', err);
+};
+
+var showUserMessages = exports.showUserMessages = function showUserMessages(response) {
+
+	if (response && response['data'] && response['data']['userMessages']) {
+		var userMessages = response['data']['userMessages'];
+
+		notify({
+			msg: userMessages.join(''),
+			type: 'warning',
+			timeout: 4000
+		});
+	}
+
+	return response;
+};
+
+var notify = exports.notify = function notify(_ref) {
+	var msg = _ref.msg,
+	    _ref$align = _ref.align,
+	    align = _ref$align === undefined ? 'bottomLeft' : _ref$align,
+	    _ref$type = _ref.type,
+	    type = _ref$type === undefined ? 'error' : _ref$type,
+	    _ref$timeout = _ref.timeout,
+	    timeout = _ref$timeout === undefined ? 10000 : _ref$timeout;
+
+
+	return new _noty2.default({
+		text: '<p class="noty-wrap-text">' + msg + '</p>',
+		layout: align,
+		timeout: timeout,
+		theme: 'mint',
+		type: type,
+		animation: {
+			open: 'animated fadeIn', // Animate.css class names
+			close: 'animated fadeOut' // Animate.css class names
+		}
+	}).show();
+};
+
+/***/ }),
+
 /***/ "./src/helpers/dom.es6":
 /*!*****************************!*\
   !*** ./src/helpers/dom.es6 ***!
@@ -3473,6 +3730,72 @@ var pressedShortcuts = exports.pressedShortcuts = function pressedShortcuts(evt,
 
 /***/ }),
 
+/***/ "./src/helpers/logger.es6":
+/*!********************************!*\
+  !*** ./src/helpers/logger.es6 ***!
+  \********************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+	value: true
+});
+exports.debugOutput = exports.loggerOutput = undefined;
+
+var _debug = __webpack_require__(/*! ./debug */ "./src/helpers/debug.es6");
+
+var loggerOutput = exports.loggerOutput = function loggerOutput(result, command) {
+
+	var commands = [];
+
+	var date = new Date();
+
+	var localTime = date.toLocaleTimeString('en-GB').replace(/:\d+ /, ' ');
+
+	commands.push({
+		text: localTime + ' ' + command,
+		type: 'white'
+	});
+
+	if (result['clearScreen']) commands.push({
+		text: 'DEBUG: CLEAR SCREEN',
+		type: 'info'
+	});
+
+	if (result['canCreatePq']) commands.push({
+		text: 'CAN CREATE PQ',
+		type: 'warning'
+	});
+
+	if (result['tabCommands'] && result['tabCommands'].length) commands.push({
+		text: 'FOUND TAB COMMANDS',
+		type: 'success'
+	});
+
+	if (result['pcc']) commands.push({
+		text: 'CHANGE PCC',
+		type: 'success'
+	});
+
+	return commands;
+};
+
+var debugOutput = exports.debugOutput = function debugOutput(result) {
+
+	if (result['clearScreen']) (0, _debug.Debug)('CLEAR SCREEN', 'info');
+
+	if (result['canCreatePq']) (0, _debug.Debug)('CAN CREATE PQ', 'warning');
+
+	if (result['tabCommands'] && result['tabCommands'].length) (0, _debug.Debug)('FOUND TAB COMMANDS', 'success');
+
+	if (result['pcc']) (0, _debug.Debug)('CHANGE PCC', 'success');
+};
+
+/***/ }),
+
 /***/ "./src/helpers/requests.es6":
 /*!**********************************!*\
   !*** ./src/helpers/requests.es6 ***!
@@ -3492,7 +3815,7 @@ var _constants = __webpack_require__(/*! ../constants.es6 */ "./src/constants.es
 
 __webpack_require__(/*! whatwg-fetch */ "./node_modules/whatwg-fetch/fetch.js");
 
-var _debug = __webpack_require__(/*! ../modules/debug */ "./src/modules/debug.es6");
+var _debug = __webpack_require__(/*! ./debug */ "./src/helpers/debug.es6");
 
 var JParam = __webpack_require__(/*! jquery-param */ "./node_modules/jquery-param/jquery-param.js");
 
@@ -3564,6 +3887,8 @@ Object.defineProperty(exports, "__esModule", {
 	value: true
 });
 
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 var _pagination = __webpack_require__(/*! ../modules/pagination.es6 */ "./src/modules/pagination.es6");
@@ -3596,11 +3921,11 @@ var _history = __webpack_require__(/*! ../modules/history.es6 */ "./src/modules/
 
 var _history2 = _interopRequireDefault(_history);
 
-var _debug = __webpack_require__(/*! ../modules/debug */ "./src/modules/debug.es6");
-
 var _helpers = __webpack_require__(/*! ../helpers/helpers.es6 */ "./src/helpers/helpers.es6");
 
 var _actions = __webpack_require__(/*! ../actions */ "./src/actions.es6");
+
+var _logger = __webpack_require__(/*! ../helpers/logger */ "./src/helpers/logger.es6");
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -3647,8 +3972,8 @@ var TerminalPlugin = function () {
 	}
 
 	_createClass(TerminalPlugin, [{
-		key: 'parseKeyBinds',
-		value: function parseKeyBinds(evt, terminal) {
+		key: '_parseKeyBinds',
+		value: function _parseKeyBinds(evt, terminal) {
 			var hasNoShortCut = (0, _keyBinding.pressedShortcuts)(evt, terminal, this);
 
 			if (!hasNoShortCut) return false;
@@ -3669,8 +3994,8 @@ var TerminalPlugin = function () {
 			}
 		}
 	}, {
-		key: 'changeActiveTerm',
-		value: function changeActiveTerm() {
+		key: '_changeActiveTerm',
+		value: function _changeActiveTerm() {
 			// if (this.settings.name === 'fullScreen')
 			// 	return false;
 
@@ -3692,19 +4017,19 @@ var TerminalPlugin = function () {
 		}
 	}, {
 		key: 'resize',
-		value: function resize(sizes) {
-			this.settings.numOfRows = sizes.numOfRows;
-			this.settings.numOfChars = sizes.numOfChars;
+		value: function resize(_ref) {
+			var numOfRows = _ref.numOfRows,
+			    numOfChars = _ref.numOfChars,
+			    charHeight = _ref.charHeight;
 
-			this.terminal.settings().numChars = sizes.numOfChars;
-			this.terminal.settings().numRows = sizes.numOfRows;
-			// this.terminal.resize(width, height);
+			this.settings.numOfRows = numOfRows;
+			this.settings.numOfChars = numOfChars;
+
+			this.terminal.settings().numChars = numOfChars;
+			this.terminal.settings().numRows = numOfRows;
 			this.terminal.resize();
-		}
-	}, {
-		key: 'emptyLinesRecalculate',
-		value: function emptyLinesRecalculate(numOfRows, numOfChars, charHeight) {
-			this.outputLiner.setNumRows(numOfRows).setNumChars(numOfChars).setCharHeight(charHeight).recalculate();
+
+			this.outputLiner.recalculate({ numOfRows: numOfRows, numOfChars: numOfChars, charHeight: charHeight });
 		}
 	}, {
 		key: 'init',
@@ -3728,12 +4053,12 @@ var TerminalPlugin = function () {
 					}
 				},
 
-				keydown: this.parseKeyBinds.bind(this),
+				keydown: this._parseKeyBinds.bind(this),
 				clickTimeout: 300,
-				// onInit			: this.changeActiveTerm.bind(this),
-				onTerminalChange: this.changeActiveTerm.bind(this),
-				onBeforeCommand: this.checkBeforeEnter.bind(this),
+				onTerminalChange: this._changeActiveTerm.bind(this),
+				onBeforeCommand: this._checkBeforeEnter.bind(this),
 
+				// onInit			: this._changeActiveTerm.bind(this),
 				/*keymap		: {},*/
 
 				exceptionHandler: function exceptionHandler(err) {
@@ -3742,8 +4067,8 @@ var TerminalPlugin = function () {
 			});
 		}
 	}, {
-		key: 'checkSabreCommand',
-		value: function checkSabreCommand(command, terminal) {
+		key: '_checkSabreCommand',
+		value: function _checkSabreCommand(command, terminal) {
 			if (this.allowManualPaging) {
 				switch (command.toUpperCase()) {
 					case 'MD':
@@ -3767,8 +4092,8 @@ var TerminalPlugin = function () {
 			return false;
 		}
 	}, {
-		key: 'checkBeforeEnter',
-		value: function checkBeforeEnter(terminal, command) {
+		key: '_checkBeforeEnter',
+		value: function _checkBeforeEnter(terminal, command) {
 			var _this = this;
 
 			if (!command || command.trim() === '') {
@@ -3776,7 +4101,7 @@ var TerminalPlugin = function () {
 				return false;
 			}
 
-			if (this.checkSabreCommand(command, terminal)) return command;
+			if (this._checkSabreCommand(command, terminal)) return command;
 
 			this.spinner.start(); // issue 03
 
@@ -3800,7 +4125,7 @@ var TerminalPlugin = function () {
 			var response = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
 			var command = arguments[1];
 
-			this.lastCommand = command;
+			this.lastCommand = command; // for history
 			this.history.add(command);
 
 			var result = response['data'] || {};
@@ -3819,33 +4144,21 @@ var TerminalPlugin = function () {
 					} else {
 					// if 1 rows of terminal do not perform clear screen
 					var clearScreen = result['clearScreen']; // && window.TerminalState.getMatrix().rows !== 0;
-					// const clearScreen = result['clearScreen'] && window.TerminalState.getMatrix().rows !== 0;
 					this.outputLiner.prepare(result['output'], clearScreen);
 				}
 			}
 
 			this.tabCommands.reset(result['tabCommands'], result['output']);
 
-			(0, _actions.UPDATE_CUR_GDS)(this.settings.gds, result);
+			if (window.TerminalState.hasPermissions()) {
+				// debugOutput( result );
+				result = _extends({}, result, { log: (0, _logger.loggerOutput)(result, command) });
+			}
 
-			if (window.TerminalState.hasPermissions()) this.debugOutput(result);
+			console.log('????', this.settings.gds);
+
+			(0, _actions.UPDATE_CUR_GDS)(result);
 		}
-	}, {
-		key: 'debugOutput',
-		value: function debugOutput(result) {
-			if (result['clearScreen']) (0, _debug.Debug)('DEBUG: CLEAR SCREEN', 'info');
-
-			if (result['canCreatePq']) (0, _debug.Debug)('CAN CREATE PQ', 'warning');
-
-			if (result['tabCommands'] && result['tabCommands'].length) (0, _debug.Debug)('FOUND TAB COMMANDS', 'success');
-
-			if (result['pcc']) (0, _debug.Debug)('CHANGE PCC', 'success');
-		}
-
-		// parseError(e)
-		// {
-		// }
-
 	}]);
 
 	return TerminalPlugin;
@@ -3899,11 +4212,12 @@ var CLASS_NAME = 'drop-theme-twipsy';
 var ButtonPopOver = function () {
 	function ButtonPopOver(params) {
 		var context = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 'div';
+		var attributes = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
 
 		_classCallCheck(this, ButtonPopOver);
 
 		this.settings = params;
-		this.popContent = (0, _dom2.default)(context);
+		this.popContent = (0, _dom2.default)(context, attributes);
 	}
 
 	_createClass(ButtonPopOver, [{
@@ -4077,98 +4391,6 @@ var Component = function () {
 }();
 
 exports.default = Component;
-
-/***/ }),
-
-/***/ "./src/modules/debug.es6":
-/*!*******************************!*\
-  !*** ./src/modules/debug.es6 ***!
-  \*******************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-	value: true
-});
-exports.notify = exports.showUserMessages = exports.debugRequest = exports.Debug = undefined;
-
-var _noty = __webpack_require__(/*! noty */ "./node_modules/noty/lib/noty.js");
-
-var _noty2 = _interopRequireDefault(_noty);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-var Debug = exports.Debug = function Debug(txt, type) {
-	new _noty2.default({
-		text: 'DEBUG : <strong>' + txt + '</strong>',
-		layout: 'bottomCenter',
-		timeout: 1500,
-		theme: 'metroui',
-		type: type || 'info',
-		progressBar: false,
-		animation: {
-			open: 'animated fadeIn', // Animate.css class names
-			close: 'animated fadeOut' // Animate.css class names
-		}
-	}).show();
-};
-
-var debugRequest = exports.debugRequest = function debugRequest(err) {
-	new _noty2.default({
-		text: 'SERVER ERROR : ' + err,
-		layout: 'bottomRight',
-		timeout: 5000,
-		type: 'error',
-		progressBar: false,
-		animation: {
-			open: 'animated fadeIn', // Animate.css class names
-			close: 'animated fadeOut' // Animate.css class names
-		}
-	}).show();
-
-	console.warn('Server Returned: ', err);
-};
-
-var showUserMessages = exports.showUserMessages = function showUserMessages(response) {
-
-	if (response && response['data'] && response['data']['userMessages']) {
-		var userMessages = response['data']['userMessages'];
-
-		notify({
-			msg: userMessages.join(''),
-			type: 'warning',
-			timeout: 4000
-		});
-	}
-
-	return response;
-};
-
-var notify = exports.notify = function notify(_ref) {
-	var msg = _ref.msg,
-	    _ref$align = _ref.align,
-	    align = _ref$align === undefined ? 'bottomLeft' : _ref$align,
-	    _ref$type = _ref.type,
-	    type = _ref$type === undefined ? 'error' : _ref$type,
-	    _ref$timeout = _ref.timeout,
-	    timeout = _ref$timeout === undefined ? 10000 : _ref$timeout;
-
-
-	return new _noty2.default({
-		text: '<p class="noty-wrap-text">' + msg + '</p>',
-		layout: align,
-		timeout: timeout,
-		theme: 'mint',
-		type: type,
-		animation: {
-			open: 'animated fadeIn', // Animate.css class names
-			close: 'animated fadeOut' // Animate.css class names
-		}
-	}).show();
-};
 
 /***/ }),
 
@@ -4738,21 +4960,38 @@ var Output = function () {
 			return this;
 		}
 	}, {
-		key: 'countEmpty',
-		value: function countEmpty() {
+		key: 'prepare',
+		value: function prepare(output) {
+			var clearScreen = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
+
+			this.outputStrings = output;
+			this.clearScreen = clearScreen;
+
+			this._countEmpty()._printOutput()._attachEmpty()._scroll();
+		}
+	}, {
+		key: 'recalculate',
+		value: function recalculate(_ref) {
+			var numOfRows = _ref.numOfRows,
+			    numOfChars = _ref.numOfChars,
+			    charHeight = _ref.charHeight;
+
+			this.setNumRows(numOfRows).setNumChars(numOfChars).setCharHeight(charHeight)._countEmpty()._attachEmpty()._scroll();
+		}
+	}, {
+		key: '_countEmpty',
+		value: function _countEmpty() {
 			var _this = this;
 
 			if (!this.numRows) {
 				console.warn('No num rows !!!!!!!!!!!!');
 			}
 
-			var numOfRows = this.numRows || this.terminal.rows(); //this.terminal.rows() - slow dom append cursor to body
-
 			var noClearScreen = function noClearScreen() {
-				return _this.emptyLines > 0 ? _this.emptyLines - _this.getOutputLength() : 0;
+				return _this.emptyLines > 0 ? _this.emptyLines - _this._getOutputLength() : 0;
 			};
 			var isClearScreen = function isClearScreen() {
-				return numOfRows - (_this.getOutputLength() + 2);
+				return _this.numRows - (_this._getOutputLength() + 2);
 			}; // 2 = cmd line + command name
 
 			this.emptyLines = this.clearScreen ? isClearScreen() : noClearScreen();
@@ -4762,23 +5001,8 @@ var Output = function () {
 			return this;
 		}
 	}, {
-		key: 'prepare',
-		value: function prepare(output) {
-			var clearScreen = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
-
-			this.outputStrings = output;
-			this.clearScreen = clearScreen;
-
-			this.countEmpty().printOutput().attachEmpty().scroll();
-		}
-	}, {
-		key: 'recalculate',
-		value: function recalculate() {
-			this.countEmpty().attachEmpty().scroll();
-		}
-	}, {
-		key: 'attachEmpty',
-		value: function attachEmpty() {
+		key: '_attachEmpty',
+		value: function _attachEmpty() {
 			this.context.innerHTML = '';
 
 			if (this.emptyLines > 0) this.context.innerHTML = [].concat(_toConsumableArray(new Array(this.emptyLines + 1))).join('<div><span>&nbsp;</span></div>');
@@ -4786,26 +5010,24 @@ var Output = function () {
 			return this;
 		}
 	}, {
-		key: 'getOutputLength',
-		value: function getOutputLength() {
+		key: '_getOutputLength',
+		value: function _getOutputLength() {
 			var chars = this.numOfChars || this.terminal.cols();
 			var lines = (0, _helpers.splitIntoLinesArr)(this.outputStrings, chars);
 
 			return lines.length;
 		}
 	}, {
-		key: 'printOutput',
-		value: function printOutput() {
+		key: '_printOutput',
+		value: function _printOutput() {
 			this.cmdLineOffset = this.terminal.cmd()[0].offsetTop - (this.charHeight ? this.charHeight : 0);
 
-			// const chars = this.numOfChars || this.terminal.cols();
 			this.terminal.echo(this.outputStrings);
-
 			return this;
 		}
 	}, {
-		key: 'scroll',
-		value: function scroll() {
+		key: '_scroll',
+		value: function _scroll() {
 			if (this.emptyLines === 0) {
 				this.terminal.scroll().scroll(this.cmdLineOffset); // to first line, to desired line //TEST
 			} else {
@@ -4917,7 +5139,7 @@ var _requests = __webpack_require__(/*! ../helpers/requests */ "./src/helpers/re
 
 var _actions = __webpack_require__(/*! ../actions */ "./src/actions.es6");
 
-var _debug = __webpack_require__(/*! ./debug */ "./src/modules/debug.es6");
+var _debug = __webpack_require__(/*! ../helpers/debug */ "./src/helpers/debug.es6");
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -5718,10 +5940,11 @@ var Terminal = function () {
 			if (this.plugin) {
 				this.plugin.resize({
 					numOfChars: this.numOfChars - 2,
-					numOfRows: this.numOfRows
+					numOfRows: this.numOfRows,
+					charHeight: charHeight
 				});
 
-				this.plugin.emptyLinesRecalculate(this.numOfRows, this.numOfChars, char.height);
+				// this.plugin.emptyLinesRecalculate( this.numOfRows, this.numOfChars, char.height );
 			} else {
 				this.initPlugin();
 			}
