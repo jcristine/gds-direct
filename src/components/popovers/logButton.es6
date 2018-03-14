@@ -35,7 +35,7 @@ export class Log extends ButtonPopOver
 {
 	constructor()
 	{
-		super({icon : 'Log'}, 'div', {style : 'width : 300px; max-height : 300px'});
+		super({icon : 'Log'}, 'div', {style : 'width : 300px; max-height : 300px; overflow : auto'});
 		this.log = [];
 	}
 

@@ -44,9 +44,15 @@ export default class Output
 		this._countEmpty()._printOutput()._attachEmpty()._scroll();
 	}
 
-	recalculate()
+	recalculate({numOfRows, numOfChars, charHeight})
 	{
-		this._countEmpty()._attachEmpty()._scroll();
+		this
+			.setNumRows(numOfRows)
+			.setNumChars(numOfChars)
+			.setCharHeight(charHeight)
+			._countEmpty()
+			._attachEmpty()
+			._scroll();
 	}
 
 	_countEmpty()
@@ -88,8 +94,6 @@ export default class Output
 	_printOutput()
 	{
 		this.cmdLineOffset 	= this.terminal.cmd()[0].offsetTop  - ( this.charHeight ? this.charHeight : 0);
-
-		console.log('@@', this.outputStrings)
 
 		this.terminal.echo(this.outputStrings);
 		return this;

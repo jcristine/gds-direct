@@ -70,10 +70,11 @@ export default class Terminal
 		{
 			this.plugin.resize({
 				numOfChars 	: this.numOfChars - 2,
-				numOfRows 	: this.numOfRows
+				numOfRows 	: this.numOfRows,
+				charHeight	: charHeight
 			});
 
-			this.plugin.emptyLinesRecalculate( this.numOfRows, this.numOfChars, char.height );
+			// this.plugin.emptyLinesRecalculate( this.numOfRows, this.numOfChars, char.height );
 		} else
 		{
 			this.initPlugin();

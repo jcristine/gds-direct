@@ -1,5 +1,5 @@
 import {getters, setProvider, setState} from "./state";
-import {change_gds, update_gds} from "./actions/gdsActions";
+import {change_gds, update_cur_gds} from "./actions/gdsActions";
 
 let app;
 
@@ -38,7 +38,7 @@ export const CHANGE_GDS = gdsName => {
 
 export const UPDATE_CUR_GDS = props => {
 	setState({
-		...update_gds(app, props)
+		...update_cur_gds(app, props)
 	});
 };
 

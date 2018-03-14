@@ -96,23 +96,16 @@ export default class TerminalPlugin
 		this.tabCommands.move(reverse).run(this.terminal);
 	}
 
-	resize(sizes)
+	resize({numOfRows, numOfChars, charHeight})
 	{
-		this.settings.numOfRows  = sizes.numOfRows;
-		this.settings.numOfChars = sizes.numOfChars;
+		this.settings.numOfRows  = numOfRows;
+		this.settings.numOfChars = numOfChars;
 
-		this.terminal.settings().numChars = sizes.numOfChars;
-		this.terminal.settings().numRows  = sizes.numOfRows;
+		this.terminal.settings().numChars = numOfChars;
+		this.terminal.settings().numRows  = numOfRows;
 		this.terminal.resize();
-	}
 
-	emptyLinesRecalculate( numOfRows, numOfChars, charHeight )
-	{
-		this.outputLiner
-			.setNumRows(numOfRows)
-			.setNumChars(numOfChars)
-			.setCharHeight(charHeight)
-			.recalculate();
+		this.outputLiner.recalculate({numOfRows, numOfChars, charHeight});
 	}
 
 	init()
@@ -245,6 +238,8 @@ export default class TerminalPlugin
 			// debugOutput( result );
 			result = {...result, log : loggerOutput(result, command)}
 		}
+
+		console.log('????' , this.settings.gds);
 
 		UPDATE_CUR_GDS(result);
 	}

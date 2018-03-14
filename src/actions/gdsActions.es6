@@ -1,25 +1,23 @@
 import {AREA_LIST, GDS_LIST} from "../constants";
 
-export const update_gds = (app, props) => {
-
-	const {canCreatePq, canCreatePqErrors, area, pcc, startNewSession} = props;
+export const update_cur_gds = (app, {canCreatePq, canCreatePqErrors, area, pcc, startNewSession, log}) => {
 
 	const sessionIndex	= AREA_LIST.indexOf(area);
 
-	const newAction = {canCreatePq, canCreatePqErrors, sessionIndex};
+	// const newAction 	= {canCreatePq, canCreatePqErrors, sessionIndex};
 
 	if (startNewSession)
 	{
-		app.Gds.update({pcc : {[sessionIndex] : pcc}, ...newAction});
+		app.Gds.update({pcc : {[sessionIndex] : pcc}, ...{canCreatePq, canCreatePqErrors, sessionIndex}});
 	} else
 	{
 		app.Gds.updatePcc({[sessionIndex] : pcc});
-		app.Gds.update(newAction);
+		app.Gds.update({canCreatePq, canCreatePqErrors, sessionIndex});
 	}
 
 	return {
 		gdsList : app.Gds.getList(),
-		log 	: props.log,
+		log,
 		canCreatePq
 	}
 };
