@@ -36,17 +36,28 @@ export default class Output
 		return this;
 	}
 
-	countEmpty()
+	prepare( output, clearScreen = false )
+	{
+		this.outputStrings 	= output;
+		this.clearScreen	= clearScreen;
+
+		this._countEmpty()._printOutput()._attachEmpty()._scroll();
+	}
+
+	recalculate()
+	{
+		this._countEmpty()._attachEmpty()._scroll();
+	}
+
+	_countEmpty()
 	{
 		if (!this.numRows)
 		{
 			console.warn('No num rows !!!!!!!!!!!!');
 		}
 
-		const numOfRows = this.numRows || this.terminal.rows(); //this.terminal.rows() - slow dom append cursor to body
-
-		const noClearScreen	= () => this.emptyLines > 0 ? this.emptyLines - this.getOutputLength() : 0 ;
-		const isClearScreen = () => numOfRows - ( this.getOutputLength() + 2 ); // 2 = cmd line + command name
+		const noClearScreen	= () => this.emptyLines > 0 ? this.emptyLines - this._getOutputLength() : 0 ;
+		const isClearScreen = () => this.numRows - ( this._getOutputLength() + 2 ); // 2 = cmd line + command name
 
 		this.emptyLines 	= this.clearScreen ? isClearScreen() : noClearScreen();
 
@@ -56,20 +67,7 @@ export default class Output
 		return this;
 	}
 
-	prepare( output, clearScreen = false )
-	{
-		this.outputStrings 	= output;
-		this.clearScreen	= clearScreen;
-
-		this.countEmpty().printOutput().attachEmpty().scroll();
-	}
-
-	recalculate()
-	{
-		this.countEmpty().attachEmpty().scroll();
-	}
-
-	attachEmpty()
+	_attachEmpty()
 	{
 		this.context.innerHTML = '';
 
@@ -79,7 +77,7 @@ export default class Output
 		return this;
 	}
 
-	getOutputLength()
+	_getOutputLength()
 	{
 		const chars = this.numOfChars || this.terminal.cols();
 		const lines = splitIntoLinesArr( this.outputStrings, chars );
@@ -87,17 +85,17 @@ export default class Output
 		return lines.length;
 	}
 
-	printOutput()
+	_printOutput()
 	{
 		this.cmdLineOffset 	= this.terminal.cmd()[0].offsetTop  - ( this.charHeight ? this.charHeight : 0);
 
-		// const chars = this.numOfChars || this.terminal.cols();
-		this.terminal.echo(this.outputStrings);
+		console.log('@@', this.outputStrings)
 
+		this.terminal.echo(this.outputStrings);
 		return this;
 	}
 
-	scroll()
+	_scroll()
 	{
 		if (this.emptyLines === 0)
 		{

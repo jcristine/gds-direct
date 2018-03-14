@@ -14,10 +14,10 @@ const CLASS_NAME = 'drop-theme-twipsy';
 
 export default class ButtonPopOver
 {
-	constructor( params, context = 'div')
+	constructor( params, context = 'div', attributes = {})
 	{
 		this.settings 	= params;
-		this.popContent = Dom( context );
+		this.popContent = Dom( context, attributes );
 	}
 
 	makeTrigger(attributes = {})

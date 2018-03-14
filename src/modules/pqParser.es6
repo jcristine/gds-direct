@@ -1,6 +1,6 @@
 import {get} from "../helpers/requests";
-import {CLOSE_PQ_WINDOW, UPDATE_STATE} from "../actions";
-import {notify} from "./debug";
+import {CLOSE_PQ_WINDOW} from "../actions";
+import {notify} from "../helpers/debug";
 
 const throwError = err => {
 

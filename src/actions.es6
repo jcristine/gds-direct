@@ -1,5 +1,5 @@
-import {AREA_LIST, GDS_LIST} from "./constants";
 import {getters, setProvider, setState} from "./state";
+import {change_gds, update_gds} from "./actions/gdsActions";
 
 let app;
 
@@ -30,33 +30,15 @@ export const CHANGE_ACTIVE_TERMINAL = ({curTerminalId}) => {
 
 export const CHANGE_GDS = gdsName => {
 	getters('switch', gdsName);
-	app.Gds.setCurrent(gdsName);
 
-
-	UPDATE_STATE({
-		gdsObjName 	: app.Gds.getCurrentName(),
-		gdsObjIndex : GDS_LIST.indexOf(gdsName)
-	});
+	UPDATE_STATE(
+		change_gds(app, gdsName)
+	);
 };
 
-export const UPDATE_CUR_GDS = (gdsName, {canCreatePq, canCreatePqErrors, area, pcc, startNewSession}) => {
-
-	const sessionIndex	= AREA_LIST.indexOf(area);
-
-	const newAction = {canCreatePq, canCreatePqErrors, sessionIndex};
-
-	if (startNewSession)
-	{
-		app.Gds.update({pcc : {[sessionIndex] : pcc}, ...newAction});
-	} else
-	{
-		app.Gds.updatePcc({[sessionIndex] : pcc});
-		app.Gds.update(newAction);
-	}
-
+export const UPDATE_CUR_GDS = props => {
 	setState({
-		gdsList : app.Gds.getList(),
-		canCreatePq
+		...update_gds(app, props)
 	});
 };
 

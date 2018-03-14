@@ -13,9 +13,9 @@ import OutputLiner	from '../modules/output.es6';
 import TabManager	from '../modules/tabManager.es6';
 import F8Reader		from '../modules/f8.es6';
 import History 		from '../modules/history.es6';
-import {Debug}		from '../modules/debug';
 import {getReplacement}		from '../helpers/helpers.es6';
 import {UPDATE_CUR_GDS, CHANGE_ACTIVE_TERMINAL} from "../actions";
+import {debugOutput, loggerOutput} from "../helpers/logger";
 
 export default class TerminalPlugin
 {
@@ -50,7 +50,7 @@ export default class TerminalPlugin
 		this.history 		= new History( params.gds );
 	}
 
-	parseKeyBinds( evt, terminal )
+	_parseKeyBinds( evt, terminal )
 	{
 		const hasNoShortCut = pressedShortcuts( evt, terminal, this );
 
@@ -75,7 +75,7 @@ export default class TerminalPlugin
 		}
 	}
 
-	changeActiveTerm()
+	_changeActiveTerm()
 	{
 		// if (this.settings.name === 'fullScreen')
 		// 	return false;
@@ -103,7 +103,6 @@ export default class TerminalPlugin
 
 		this.terminal.settings().numChars = sizes.numOfChars;
 		this.terminal.settings().numRows  = sizes.numOfRows;
-		// this.terminal.resize(width, height);
 		this.terminal.resize();
 	}
 
@@ -138,19 +137,20 @@ export default class TerminalPlugin
 				}
 			},
 
-			keydown			: this.parseKeyBinds.bind(this),
+			keydown			: this._parseKeyBinds.bind(this),
 			clickTimeout	: 300,
-			// onInit			: this.changeActiveTerm.bind(this),
-			onTerminalChange: this.changeActiveTerm.bind(this),
-			onBeforeCommand : this.checkBeforeEnter.bind(this),
+			onTerminalChange: this._changeActiveTerm.bind(this),
+			onBeforeCommand : this._checkBeforeEnter.bind(this),
 
+
+			// onInit			: this._changeActiveTerm.bind(this),
 			/*keymap		: {},*/
 
 			exceptionHandler( err ) { console.warn('exc', err); }
 		});
 	}
 
-	checkSabreCommand( command, terminal )
+	_checkSabreCommand( command, terminal )
 	{
 		if ( this.allowManualPaging )
 		{
@@ -177,7 +177,7 @@ export default class TerminalPlugin
 		return false;
 	}
 
-	checkBeforeEnter( terminal, command )
+	_checkBeforeEnter( terminal, command )
 	{
 		if ( !command || command.trim() === '' )
 		{
@@ -185,7 +185,7 @@ export default class TerminalPlugin
 			return false;
 		}
 
-		if ( this.checkSabreCommand( command, terminal ) )
+		if ( this._checkSabreCommand( command, terminal ) )
 			return command;
 
 		this.spinner.start(); // issue 03
@@ -210,10 +210,10 @@ export default class TerminalPlugin
 
 	parseBackEnd( response = {}, command )
 	{
-		this.lastCommand = command;
+		this.lastCommand = command; // for history
 		this.history.add(command);
 
-		const result = response['data'] || {};
+		let result = response['data'] || {};
 
 		if ( result['output'] )
 		{
@@ -234,35 +234,18 @@ export default class TerminalPlugin
 			{
 				// if 1 rows of terminal do not perform clear screen
 				const clearScreen = result['clearScreen'];// && window.TerminalState.getMatrix().rows !== 0;
-				// const clearScreen = result['clearScreen'] && window.TerminalState.getMatrix().rows !== 0;
 				this.outputLiner.prepare( result['output'], clearScreen );
 			}
 		}
 
 		this.tabCommands.reset( result['tabCommands'], result['output'] );
 
-		UPDATE_CUR_GDS(this.settings.gds, result);
-
 		if ( window.TerminalState.hasPermissions() )
-			this.debugOutput( result );
+		{
+			// debugOutput( result );
+			result = {...result, log : loggerOutput(result, command)}
+		}
+
+		UPDATE_CUR_GDS(result);
 	}
-
-	debugOutput( result )
-	{
-		if (result['clearScreen'])
-			Debug( 'DEBUG: CLEAR SCREEN', 'info' );
-
-		if ( result['canCreatePq'] )
-			Debug( 'CAN CREATE PQ' , 'warning');
-
-		if ( result['tabCommands'] && result['tabCommands'].length )
-			Debug( 'FOUND TAB COMMANDS', 'success' );
-
-		if ( result['pcc'] )
-			Debug( 'CHANGE PCC', 'success' );
-	}
-
-	// parseError(e)
-	// {
-	// }
 }

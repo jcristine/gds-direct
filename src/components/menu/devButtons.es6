@@ -72,6 +72,4 @@ export class DevButtons extends Component
 	//
 	// 	return this.macros;
 	// }
-
-
 }

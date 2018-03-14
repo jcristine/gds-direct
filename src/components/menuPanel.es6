@@ -5,6 +5,7 @@ import Component		from '../modules/component';
 import {SettingsButtons} 	from "./menu/settingsButtons";
 import {GdsAreas}  			from "./menu/gdsAreas";
 import {LanguageButtons} 	from "./menu/languageButtons";
+import {LogButton} 			from "./popovers/logButton";
 
 export default class MenuPanel extends Component
 {
@@ -41,11 +42,16 @@ export default class MenuPanel extends Component
 
 		if (state.permissions)
 		{
+			this.attach(
+				Dom('span.label[Dev actions]')
+			);
+
 			this.append(
-				new Component('article')
-					.append(
-						new DevButtons()
-					)
+				new DevButtons()
+			);
+
+			this.observe(
+				new LogButton()
 			);
 		}
 	}
