@@ -3,66 +3,48 @@ import Dom from '../helpers/dom.es6';
 
 export default class Output
 {
-	constructor( terminal )
+	constructor( terminal, {numOfChars, numOfRows, charHeight})
 	{
 		this.terminal		= terminal;
 
-		this.context 		= Dom('div.emptyLinesWrapper');
 		this.emptyLines 	= 0;
 		this.outputStrings	= '';
 		this.cmdLineOffset 	= '';
+		this.clearScreen 	= false; // parameter for lifting up output with empty lines;
 
+		this.numRows 		= numOfRows;
+		this.numOfChars 	= numOfChars;
+		this.charHeight 	= charHeight;
+
+		this.context 		= Dom('div.emptyLinesWrapper');
 		this.terminal.cmd().after( this.context );
-
-		this.clearScreen 	= false;
-		this.numRows		= 0;
 	}
 
-	setNumRows( numRows )
+	setOptions({numOfRows, numOfChars, charHeight})
 	{
-		this.numRows = numRows;
-		return this;
-	}
-
-	setNumChars( numOfChars )
-	{
+		this.numRows 	= numOfRows;
 		this.numOfChars = numOfChars;
-		return this;
-	}
-
-	setCharHeight( charHeight )
-	{
 		this.charHeight = charHeight;
-		return this;
 	}
 
-	prepare( output, clearScreen = false )
+	recalculate({numOfRows, numOfChars, charHeight}) //on view terminal change sizes
 	{
-		this.outputStrings 	= output;
-		this.clearScreen	= clearScreen;
+		this.setOptions({numOfRows, numOfChars, charHeight});
 
-		this._countEmpty()._printOutput()._attachEmpty()._scroll();
-	}
-
-	recalculate({numOfRows, numOfChars, charHeight})
-	{
 		this
-			.setNumRows(numOfRows)
-			.setNumChars(numOfChars)
-			.setCharHeight(charHeight)
 			._countEmpty()
 			._attachEmpty()
 			._scroll();
 	}
 
+	_getOutputLength()
+	{
+		return splitIntoLinesArr( this.outputStrings, this.numOfChars ).length;
+	}
+
 	_countEmpty()
 	{
-		if (!this.numRows)
-		{
-			console.warn('No num rows !!!!!!!!!!!!');
-		}
-
-		const noClearScreen	= () => this.emptyLines > 0 ? this.emptyLines - this._getOutputLength() : 0 ;
+		const noClearScreen	= () => this.emptyLines > 0 ? (this.emptyLines - this._getOutputLength()) : 0 ;
 		const isClearScreen = () => this.numRows - ( this._getOutputLength() + 2 ); // 2 = cmd line + command name
 
 		this.emptyLines 	= this.clearScreen ? isClearScreen() : noClearScreen();
@@ -70,6 +52,14 @@ export default class Output
 		if (this.emptyLines < 0 )
 			this.emptyLines = 0;
 
+		return this;
+	}
+
+	_printOutput()
+	{
+		this.cmdLineOffset 	= this.terminal.cmd()[0].offsetTop;//  - this.charHeight; // remember scrollTop height before the command so when clear flag screen is set scroll to this mark
+
+		this.terminal.echo(this.outputStrings);
 		return this;
 	}
 
@@ -83,30 +73,22 @@ export default class Output
 		return this;
 	}
 
-	_getOutputLength()
-	{
-		const chars = this.numOfChars || this.terminal.cols();
-		const lines = splitIntoLinesArr( this.outputStrings, chars );
-
-		return lines.length;
-	}
-
-	_printOutput()
-	{
-		this.cmdLineOffset 	= this.terminal.cmd()[0].offsetTop  - ( this.charHeight ? this.charHeight : 0);
-
-		this.terminal.echo(this.outputStrings);
-		return this;
-	}
-
 	_scroll()
 	{
 		if (this.emptyLines === 0)
 		{
-			this.terminal.scroll().scroll( this.cmdLineOffset ); // to first line, to desired line //TEST
+			this.terminal.scroll().scroll( this.cmdLineOffset ); // to first line, to desired line
 		} else
 		{
 			this.terminal.scroll_to_bottom();
 		}
+	}
+
+	printOutput(output, isClearScreen = false)
+	{
+		this.outputStrings 	= output;
+		this.clearScreen	= isClearScreen;
+
+		this._countEmpty()._printOutput()._attachEmpty()._scroll();
 	}
 }

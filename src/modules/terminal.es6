@@ -23,7 +23,8 @@ export default class Terminal
 			name 		: this.settings['name'],
 			gds 		: this.settings['gds'],
 			numOfRows 	: this.numOfRows,
-			numOfChars 	: this.numOfChars
+			numOfChars 	: this.numOfChars,
+			charHeight 	: this.charHeight
 		});
 
 		if (this.settings.name === 0) // when all terminals init at once first is current but never gets selected
@@ -60,28 +61,21 @@ export default class Terminal
 	{
 		const {char, size} = dimension;
 
-		const charHeight 	= char.height;
-		const charWidth 	= char.width;
-
-		this.numOfRows 	= Math.floor( (size.height - 2) 	/ charHeight );
-		this.numOfChars	= Math.floor( (size.width - 2) 	/ charWidth ); //2 - padding-left px : need to fix
+		this.numOfRows 	= Math.floor( (size.height - 2)	/ char.height );
+		this.numOfChars	= Math.floor( (size.width - 2) 	/ char.width ); //2 - padding-left px : need to fix
+		this.charHeight	= char.height;
 
 		if (this.plugin)
 		{
 			this.plugin.resize({
 				numOfChars 	: this.numOfChars - 2,
 				numOfRows 	: this.numOfRows,
-				charHeight	: charHeight
+				charHeight	: this.charHeight
 			});
-
-			// this.plugin.emptyLinesRecalculate( this.numOfRows, this.numOfChars, char.height );
 		} else
 		{
 			this.initPlugin();
 		}
-
-		// this.context.style.width 	= ( (this.numOfChars - 2) * charWidth) 	+ 'px';
-		// this.context.style.height 	= (this.numOfRows * charHeight) 		+ 'px';
 
 		this.context.style.width 	= size.width	+ 'px';
 		this.context.style.height 	= (size.height) + 'px';

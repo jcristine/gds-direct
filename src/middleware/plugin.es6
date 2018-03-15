@@ -34,14 +34,10 @@ export default class TerminalPlugin
 
 		this.terminal 		= this.init();
 
-		this.pagination 	= new Pagination( this.terminal );
+		this.pagination 	= new Pagination();
 		this.spinner 		= new Spinner( this.terminal );
-
-		this.outputLiner 	= new OutputLiner( this.terminal );
-		this.outputLiner.setNumRows(params.numOfRows);
-
+		this.outputLiner 	= new OutputLiner(this.terminal, params);
 		this.tabCommands	= new TabManager();
-
 		this.f8Reader		= new F8Reader({
 			terminal	: this.terminal,
 			gds			: params.gds
@@ -77,9 +73,6 @@ export default class TerminalPlugin
 
 	_changeActiveTerm()
 	{
-		// if (this.settings.name === 'fullScreen')
-		// 	return false;
-
 		CHANGE_ACTIVE_TERMINAL({curTerminalId : this.name});
 	}
 
@@ -172,6 +165,8 @@ export default class TerminalPlugin
 
 	_checkBeforeEnter( terminal, command )
 	{
+		this.outputLiner.printOutput('');
+
 		if ( !command || command.trim() === '' )
 		{
 			this.terminal.echo('>');
@@ -184,7 +179,6 @@ export default class TerminalPlugin
 		this.spinner.start(); // issue 03
 
 		const before = () => {
-			this.outputLiner.prepare('');
 			this.spinner.start();
 			this.terminal.echo( `[[;;;usedCommand;]>${command.toUpperCase()}]` );
 			return command.toUpperCase();
@@ -226,8 +220,9 @@ export default class TerminalPlugin
 			} else
 			{
 				// if 1 rows of terminal do not perform clear screen
-				const clearScreen = result['clearScreen'];// && window.TerminalState.getMatrix().rows !== 0;
-				this.outputLiner.prepare( result['output'], clearScreen );
+				// const clearScreen = result['clearScreen'];// && window.TerminalState.getMatrix().rows !== 0;
+				// this.outputLiner.prepare( result['output'], clearScreen );
+				this.outputLiner.printOutput( result['output'], result['clearScreen'] );
 			}
 		}
 
@@ -238,8 +233,6 @@ export default class TerminalPlugin
 			// debugOutput( result );
 			result = {...result, log : loggerOutput(result, command)}
 		}
-
-		console.log('????' , this.settings.gds);
 
 		UPDATE_CUR_GDS(result);
 	}

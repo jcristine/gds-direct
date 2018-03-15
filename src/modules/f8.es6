@@ -57,9 +57,6 @@ export default class F8Reader
 
 	jumpToNextPos()
 	{
-		// console.log('position', this._getNextTabPos() );
-		// console.log(' tab pressed ', this.currentCmd.rules, this.index);
-
 		if ( !this.currentCmd.rules[this.index] )
 		{
 			this.isActive 	= false;
@@ -80,11 +77,6 @@ export default class F8Reader
 			{
 				const curPos 			= this.terminal.cmd().position();
 				const charToReplace 	= this.terminal.get_command().substr(curPos, 1);
-
-				/*const char = this.terminal.get_command().charAt(
-					this.terminal.cmd().position()
-				);
-				console.log(char);*/
 
 				if (charToReplace === '/')
 					return false;
