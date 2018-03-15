@@ -30,7 +30,9 @@ export const setState = (newState, action = '') => {
 
 	State = State = {...State, action};
 
-	console.log('STATE:', State);
+	if (State.permissions)
+		console.log('STATE:', State);
+
 	renderView(State);
 };
 

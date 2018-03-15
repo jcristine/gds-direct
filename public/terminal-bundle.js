@@ -3955,14 +3955,10 @@ var TerminalPlugin = function () {
 
 		this.terminal = this.init();
 
-		this.pagination = new _pagination2.default(this.terminal);
+		this.pagination = new _pagination2.default();
 		this.spinner = new _spinner2.default(this.terminal);
-
-		this.outputLiner = new _output2.default(this.terminal);
-		this.outputLiner.setNumRows(params.numOfRows);
-
+		this.outputLiner = new _output2.default(this.terminal, params);
 		this.tabCommands = new _tabManager2.default();
-
 		this.f8Reader = new _f2.default({
 			terminal: this.terminal,
 			gds: params.gds
@@ -3996,9 +3992,6 @@ var TerminalPlugin = function () {
 	}, {
 		key: '_changeActiveTerm',
 		value: function _changeActiveTerm() {
-			// if (this.settings.name === 'fullScreen')
-			// 	return false;
-
 			(0, _actions.CHANGE_ACTIVE_TERMINAL)({ curTerminalId: this.name });
 		}
 	}, {
@@ -4096,6 +4089,8 @@ var TerminalPlugin = function () {
 		value: function _checkBeforeEnter(terminal, command) {
 			var _this = this;
 
+			this.outputLiner.printOutput('');
+
 			if (!command || command.trim() === '') {
 				this.terminal.echo('>');
 				return false;
@@ -4106,7 +4101,6 @@ var TerminalPlugin = function () {
 			this.spinner.start(); // issue 03
 
 			var before = function before() {
-				_this.outputLiner.prepare('');
 				_this.spinner.start();
 				_this.terminal.echo('[[;;;usedCommand;]>' + command.toUpperCase() + ']');
 				return command.toUpperCase();
@@ -4143,8 +4137,9 @@ var TerminalPlugin = function () {
 						this.terminal.echo(output);
 					} else {
 					// if 1 rows of terminal do not perform clear screen
-					var clearScreen = result['clearScreen']; // && window.TerminalState.getMatrix().rows !== 0;
-					this.outputLiner.prepare(result['output'], clearScreen);
+					// const clearScreen = result['clearScreen'];// && window.TerminalState.getMatrix().rows !== 0;
+					// this.outputLiner.prepare( result['output'], clearScreen );
+					this.outputLiner.printOutput(result['output'], result['clearScreen']);
 				}
 			}
 
@@ -4154,8 +4149,6 @@ var TerminalPlugin = function () {
 				// debugOutput( result );
 				result = _extends({}, result, { log: (0, _logger.loggerOutput)(result, command) });
 			}
-
-			console.log('????', this.settings.gds);
 
 			(0, _actions.UPDATE_CUR_GDS)(result);
 		}
@@ -4464,9 +4457,6 @@ var F8Reader = function () {
 	}, {
 		key: 'jumpToNextPos',
 		value: function jumpToNextPos() {
-			// console.log('position', this._getNextTabPos() );
-			// console.log(' tab pressed ', this.currentCmd.rules, this.index);
-
 			if (!this.currentCmd.rules[this.index]) {
 				this.isActive = false;
 				this.index = 0;
@@ -4485,11 +4475,6 @@ var F8Reader = function () {
 					{
 						var curPos = this.terminal.cmd().position();
 						var charToReplace = this.terminal.get_command().substr(curPos, 1);
-
-						/*const char = this.terminal.get_command().charAt(
-      	this.terminal.cmd().position()
-      );
-      console.log(char);*/
 
 						if (charToReplace === '/') return false;
 
@@ -4925,67 +4910,60 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 var Output = function () {
-	function Output(terminal) {
+	function Output(terminal, _ref) {
+		var numOfChars = _ref.numOfChars,
+		    numOfRows = _ref.numOfRows,
+		    charHeight = _ref.charHeight;
+
 		_classCallCheck(this, Output);
 
 		this.terminal = terminal;
 
-		this.context = (0, _dom2.default)('div.emptyLinesWrapper');
 		this.emptyLines = 0;
 		this.outputStrings = '';
 		this.cmdLineOffset = '';
+		this.clearScreen = false; // parameter for lifting up output with empty lines;
 
+		this.numRows = numOfRows;
+		this.numOfChars = numOfChars;
+		this.charHeight = charHeight;
+
+		this.context = (0, _dom2.default)('div.emptyLinesWrapper');
 		this.terminal.cmd().after(this.context);
-
-		this.clearScreen = false;
-		this.numRows = 0;
 	}
 
 	_createClass(Output, [{
-		key: 'setNumRows',
-		value: function setNumRows(numRows) {
-			this.numRows = numRows;
-			return this;
-		}
-	}, {
-		key: 'setNumChars',
-		value: function setNumChars(numOfChars) {
+		key: 'setOptions',
+		value: function setOptions(_ref2) {
+			var numOfRows = _ref2.numOfRows,
+			    numOfChars = _ref2.numOfChars,
+			    charHeight = _ref2.charHeight;
+
+			this.numRows = numOfRows;
 			this.numOfChars = numOfChars;
-			return this;
-		}
-	}, {
-		key: 'setCharHeight',
-		value: function setCharHeight(charHeight) {
 			this.charHeight = charHeight;
-			return this;
-		}
-	}, {
-		key: 'prepare',
-		value: function prepare(output) {
-			var clearScreen = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
-
-			this.outputStrings = output;
-			this.clearScreen = clearScreen;
-
-			this._countEmpty()._printOutput()._attachEmpty()._scroll();
 		}
 	}, {
 		key: 'recalculate',
-		value: function recalculate(_ref) {
-			var numOfRows = _ref.numOfRows,
-			    numOfChars = _ref.numOfChars,
-			    charHeight = _ref.charHeight;
+		value: function recalculate(_ref3) //on view terminal change sizes
+		{
+			var numOfRows = _ref3.numOfRows,
+			    numOfChars = _ref3.numOfChars,
+			    charHeight = _ref3.charHeight;
 
-			this.setNumRows(numOfRows).setNumChars(numOfChars).setCharHeight(charHeight)._countEmpty()._attachEmpty()._scroll();
+			this.setOptions({ numOfRows: numOfRows, numOfChars: numOfChars, charHeight: charHeight });
+
+			this._countEmpty()._attachEmpty()._scroll();
+		}
+	}, {
+		key: '_getOutputLength',
+		value: function _getOutputLength() {
+			return (0, _helpers.splitIntoLinesArr)(this.outputStrings, this.numOfChars).length;
 		}
 	}, {
 		key: '_countEmpty',
 		value: function _countEmpty() {
 			var _this = this;
-
-			if (!this.numRows) {
-				console.warn('No num rows !!!!!!!!!!!!');
-			}
 
 			var noClearScreen = function noClearScreen() {
 				return _this.emptyLines > 0 ? _this.emptyLines - _this._getOutputLength() : 0;
@@ -5001,6 +4979,14 @@ var Output = function () {
 			return this;
 		}
 	}, {
+		key: '_printOutput',
+		value: function _printOutput() {
+			this.cmdLineOffset = this.terminal.cmd()[0].offsetTop; //  - this.charHeight; // remember scrollTop height before the command so when clear flag screen is set scroll to this mark
+
+			this.terminal.echo(this.outputStrings);
+			return this;
+		}
+	}, {
 		key: '_attachEmpty',
 		value: function _attachEmpty() {
 			this.context.innerHTML = '';
@@ -5010,29 +4996,23 @@ var Output = function () {
 			return this;
 		}
 	}, {
-		key: '_getOutputLength',
-		value: function _getOutputLength() {
-			var chars = this.numOfChars || this.terminal.cols();
-			var lines = (0, _helpers.splitIntoLinesArr)(this.outputStrings, chars);
-
-			return lines.length;
-		}
-	}, {
-		key: '_printOutput',
-		value: function _printOutput() {
-			this.cmdLineOffset = this.terminal.cmd()[0].offsetTop - (this.charHeight ? this.charHeight : 0);
-
-			this.terminal.echo(this.outputStrings);
-			return this;
-		}
-	}, {
 		key: '_scroll',
 		value: function _scroll() {
 			if (this.emptyLines === 0) {
-				this.terminal.scroll().scroll(this.cmdLineOffset); // to first line, to desired line //TEST
+				this.terminal.scroll().scroll(this.cmdLineOffset); // to first line, to desired line
 			} else {
 				this.terminal.scroll_to_bottom();
 			}
+		}
+	}, {
+		key: 'printOutput',
+		value: function printOutput(output) {
+			var isClearScreen = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
+
+			this.outputStrings = output;
+			this.clearScreen = isClearScreen;
+
+			this._countEmpty()._printOutput()._attachEmpty()._scroll();
 		}
 	}]);
 
@@ -5898,7 +5878,8 @@ var Terminal = function () {
 				name: this.settings['name'],
 				gds: this.settings['gds'],
 				numOfRows: this.numOfRows,
-				numOfChars: this.numOfChars
+				numOfChars: this.numOfChars,
+				charHeight: this.charHeight
 			});
 
 			if (this.settings.name === 0) // when all terminals init at once first is current but never gets selected
@@ -5931,26 +5912,19 @@ var Terminal = function () {
 			    size = dimension.size;
 
 
-			var charHeight = char.height;
-			var charWidth = char.width;
-
-			this.numOfRows = Math.floor((size.height - 2) / charHeight);
-			this.numOfChars = Math.floor((size.width - 2) / charWidth); //2 - padding-left px : need to fix
+			this.numOfRows = Math.floor((size.height - 2) / char.height);
+			this.numOfChars = Math.floor((size.width - 2) / char.width); //2 - padding-left px : need to fix
+			this.charHeight = char.height;
 
 			if (this.plugin) {
 				this.plugin.resize({
 					numOfChars: this.numOfChars - 2,
 					numOfRows: this.numOfRows,
-					charHeight: charHeight
+					charHeight: this.charHeight
 				});
-
-				// this.plugin.emptyLinesRecalculate( this.numOfRows, this.numOfChars, char.height );
 			} else {
 				this.initPlugin();
 			}
-
-			// this.context.style.width 	= ( (this.numOfChars - 2) * charWidth) 	+ 'px';
-			// this.context.style.height 	= (this.numOfRows * charHeight) 		+ 'px';
 
 			this.context.style.width = size.width + 'px';
 			this.context.style.height = size.height + 'px';
@@ -6035,7 +6009,8 @@ var setState = exports.setState = function setState(newState) {
 
 	State = State = _extends({}, State, { action: action });
 
-	console.log('STATE:', State);
+	if (State.permissions) console.log('STATE:', State);
+
 	renderView(State);
 };
 
