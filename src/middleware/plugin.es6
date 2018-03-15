@@ -73,6 +73,7 @@ export default class TerminalPlugin
 
 	_changeActiveTerm()
 	{
+		// window.activeTerminal = this;
 		CHANGE_ACTIVE_TERMINAL({curTerminalId : this.name});
 	}
 
@@ -195,16 +196,16 @@ export default class TerminalPlugin
 		return command;
 	}
 
-	parseBackEnd( response = {}, command )
+	parseBackEnd({data = {}}, command)
 	{
 		this.lastCommand = command; // for history
 		this.history.add(command);
 
-		let result = response['data'] || {};
+		const {output} = data;
 
-		if ( result['output'] )
+		if ( output )
 		{
-			if ( result['output'].trim() === '*')
+			if ( output.trim() === '*')
 			{
 				this.terminal.update( -2 , command + ' *');
 				return false;
@@ -212,28 +213,27 @@ export default class TerminalPlugin
 
 			if ( this.allowManualPaging ) // sabre
 			{
-				const output = this.pagination
-					.bindOutput( result['output'], this.settings.numOfRows - 1, this.settings.numOfChars )
-					.print();
+				const {numOfRows, numOfChars} = this.settings;
 
-				this.terminal.echo( output );
+				this.terminal.echo(
+					this.pagination.bindOutput(output, numOfRows - 1, numOfChars).print()
+				);
 			} else
 			{
 				// if 1 rows of terminal do not perform clear screen
-				// const clearScreen = result['clearScreen'];// && window.TerminalState.getMatrix().rows !== 0;
-				// this.outputLiner.prepare( result['output'], clearScreen );
-				this.outputLiner.printOutput( result['output'], result['clearScreen'] );
+				// const clearScreen = data['clearScreen'];// && window.TerminalState.getMatrix().rows !== 0;
+				// this.outputLiner.prepare( output, clearScreen );
+				this.outputLiner.printOutput( output, data['clearScreen'] );
 			}
 		}
 
-		this.tabCommands.reset( result['tabCommands'], result['output'] );
+		this.tabCommands.reset( data['tabCommands'], output );
 
 		if ( window.TerminalState.hasPermissions() )
 		{
-			// debugOutput( result );
-			result = {...result, log : loggerOutput(result, command)}
+			data = {...data, log : loggerOutput(data, command)}
 		}
 
-		UPDATE_CUR_GDS(result);
+		UPDATE_CUR_GDS(data);
 	}
 }

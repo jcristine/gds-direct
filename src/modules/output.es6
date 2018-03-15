@@ -1,5 +1,6 @@
 import {splitIntoLinesArr} from '../helpers/helpers.es6';
 import Dom from '../helpers/dom.es6';
+import Drop from "tether-drop";
 
 export default class Output
 {
@@ -57,9 +58,33 @@ export default class Output
 
 	_printOutput()
 	{
-		this.cmdLineOffset 	= this.terminal.cmd()[0].offsetTop;//  - this.charHeight; // remember scrollTop height before the command so when clear flag screen is set scroll to this mark
+		this.cmdLineOffset 	= this.terminal.cmd()[0].offsetTop; //  - this.charHeight; // remember scrollTop height before the command so when clear flag screen is set scroll to this mark
+
+		/*if (this.outputStrings.indexOf('warningMessage') !== -1)
+		{
+			this.terminal.echo(this.outputStrings, {
+				finalize : (div) => {
+
+					const tip = div[0].querySelector('.warningMessage');
+
+					if (tip)
+					{
+						new Drop({
+							target		: tip,
+							content		: '<div class="t-f-size-16 font-bold">SUCCESS</div>',
+							classes		: 'drop-theme-twipsy',
+							openOn		: 'hover'
+						});
+					}
+				}
+			});
+		} else
+		{
+			this.terminal.echo(this.outputStrings)
+		}*/
 
 		this.terminal.echo(this.outputStrings);
+
 		return this;
 	}
 

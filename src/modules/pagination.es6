@@ -17,7 +17,6 @@ export default class Pagination
 		this.output = output;
 		this.cache 	= makePages( output, rows, cols );
 
-		// console.log(this.cache );
 		return this;
 	}
 
