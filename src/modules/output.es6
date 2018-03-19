@@ -1,6 +1,6 @@
 import {splitIntoLinesArr} from '../helpers/helpers.es6';
 import Dom from '../helpers/dom.es6';
-import Drop from "tether-drop";
+// import Drop from "tether-drop";
 
 export default class Output
 {
@@ -45,21 +45,23 @@ export default class Output
 
 	_countEmpty()
 	{
-		const noClearScreen	= () => this.emptyLines > 0 ? (this.emptyLines - this._getOutputLength()) : 0 ;
-		const isClearScreen = () => this.numRows - ( this._getOutputLength() + 2 ); // 2 = cmd line + command name
+		const outputRows = this.outputStrings ? this._getOutputLength() : 1;
 
-		this.emptyLines 	= this.clearScreen ? isClearScreen() : noClearScreen();
+		const rowsRemoveEmpty	= () => this.emptyLines - outputRows;
+		const rowsToLift 		= () => this.numRows - outputRows - 1; // 1 - cmd line
 
-		if (this.emptyLines < 0 )
+		this.emptyLines 	= this.clearScreen ? rowsToLift() : rowsRemoveEmpty();
+
+		if (this.emptyLines < 0)
+		{
 			this.emptyLines = 0;
+		}
 
 		return this;
 	}
 
 	_printOutput()
 	{
-		this.cmdLineOffset 	= this.terminal.cmd()[0].offsetTop; //  - this.charHeight; // remember scrollTop height before the command so when clear flag screen is set scroll to this mark
-
 		/*if (this.outputStrings.indexOf('warningMessage') !== -1)
 		{
 			this.terminal.echo(this.outputStrings, {
@@ -93,7 +95,9 @@ export default class Output
 		this.context.innerHTML = '';
 
 		if (this.emptyLines > 0 )
+		{
 			this.context.innerHTML = [ ...new Array(  this.emptyLines + 1  ) ].join('<div><span>&nbsp;</span></div>');
+		}
 
 		return this;
 	}
@@ -113,6 +117,7 @@ export default class Output
 	{
 		this.outputStrings 	= output;
 		this.clearScreen	= isClearScreen;
+		this.cmdLineOffset 	= this.terminal.cmd()[0].offsetTop; // - this.charHeight; // remember scrollTop height before the command so when clear flag screen is set scroll to this mark
 
 		this._countEmpty()._printOutput()._attachEmpty()._scroll();
 	}

@@ -78,7 +78,7 @@ export default class Terminal
 		}
 
 		this.context.style.width 	= size.width	+ 'px';
-		this.context.style.height 	= (size.height) + 'px';
+		this.context.style.height 	= (this.numOfRows * char.height) + 2 + 'px'; // 2 = border height
 
 		return this.plugin;
 	}

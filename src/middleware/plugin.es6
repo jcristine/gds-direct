@@ -166,32 +166,30 @@ export default class TerminalPlugin
 
 	_checkBeforeEnter( terminal, command )
 	{
-		this.outputLiner.printOutput('');
-
-		if ( !command || command.trim() === '' )
+		if ( this._checkSabreCommand( command, terminal ) )
 		{
-			this.terminal.echo('>');
-			return false;
+			return command;
 		}
 
-		if ( this._checkSabreCommand( command, terminal ) )
-			return command;
-
-		this.spinner.start(); // issue 03
-
 		const before = () => {
+
+			this.outputLiner.printOutput('');
+
 			this.spinner.start();
+
 			this.terminal.echo( `[[;;;usedCommand;]>${command.toUpperCase()}]` );
+
 			return command.toUpperCase();
 		};
 
+		const output = response => {
+			this.spinner.end();
+			this.parseBackEnd( response, command );
+		};
+
 		this.session
-			.pushCommand( before )
-			.perform()
-			.then( response => {
-				this.spinner.end();
-				this.parseBackEnd( response, command );
-			});
+			.perform( before )
+			.then( output );
 
 		return command;
 	}
@@ -220,9 +218,7 @@ export default class TerminalPlugin
 				);
 			} else
 			{
-				// if 1 rows of terminal do not perform clear screen
-				// const clearScreen = data['clearScreen'];// && window.TerminalState.getMatrix().rows !== 0;
-				// this.outputLiner.prepare( output, clearScreen );
+				// this.terminal.echo(output);
 				this.outputLiner.printOutput( output, data['clearScreen'] );
 			}
 		}

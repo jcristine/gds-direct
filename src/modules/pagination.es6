@@ -1,5 +1,3 @@
-'use strict';
-
 import {makePages} from '../helpers/helpers.es6';
 
 export default class Pagination

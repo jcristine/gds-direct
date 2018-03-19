@@ -13,6 +13,11 @@ export default class Session
 
 	run(cmd)
 	{
+		if (!cmd)
+		{
+			return Promise.resolve('');
+		}
+
 		return Requests.runSyncCommand({
 			terminalIndex	: parseInt(this.settings['terminalIndex']) + 1,
 			command			: cmd,
@@ -22,41 +27,45 @@ export default class Session
 		});
 	}
 
-	perform()
+	perform( beforeFn )
 	{
+		beforeStack.push( beforeFn );
+
 		return new Promise( resolve => {
 
-			const run = () => {
-				const cmd = beforeStack[0]();
-				beforeStack.shift();
+			const promiseRun = this._makePromise(resolve);
 
-				return this
-					.run(cmd)
-					.then(resolve) //output result
-					.then( () => {
-						const nextCmd = stack.shift();
-
-						if (nextCmd)
-							return nextCmd();
-
-						promises = [];
-					})
-			};
-
+			//** if we have command running then push to current fn to stack else run it and push to promise **//
 			if (!promises.length)
 			{
-				promises.push( run() );
+				promises.push( promiseRun(resolve) );
 			}
 			else
 			{
-				stack.push(run);
+				stack.push(promiseRun);
 			}
 		});
 	}
 
-	pushCommand(before)
+	_makePromise( resolve )
 	{
-		beforeStack.push( before );
-		return this;
+		return () => {
+			const cmd = beforeStack.shift();
+
+			return this
+				.run( cmd() )
+				.then(resolve) //output result
+				.then( () => {
+
+					const nextCmd = stack.shift();
+
+					if (nextCmd)
+					{
+						return nextCmd();
+					}
+
+					promises = [];
+				})
+		}
 	}
 }
