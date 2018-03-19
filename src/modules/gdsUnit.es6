@@ -55,7 +55,7 @@ export class GDS_UNIT
 	{
 		const {list} 	= this.get('matrix');
 
-		let terminals = [...this.get('terminals')];
+		let terminals = {...this.get('terminals')};
 
 		list
 			.filter( index => !terminals[index] )
