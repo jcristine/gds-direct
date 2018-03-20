@@ -69,7 +69,6 @@ export default class Terminal
 		if (this.plugin)
 		{
 			this.plugin.resize({
-				// numOfChars 	: this.numOfChars - 2,
 				numOfChars 	: this.numOfChars,
 				numOfRows 	: this.numOfRows,
 				charHeight	: this.charHeight
@@ -79,8 +78,8 @@ export default class Terminal
 			this.initPlugin();
 		}
 
-		this.context.style.width 	= terminalSize.width	+ 'px';
-		this.context.style.height 	= terminalSize.height + 'px'; // 2 = border height
+		this.context.style.width 	= terminalSize.width + 'px';
+		this.context.style.height 	= terminalSize.height + 'px';
 
 		return this.plugin;
 	}

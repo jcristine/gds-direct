@@ -28,8 +28,8 @@ export default class TerminalsMatrix extends Component
 	{
 		const {dimensions, matrix, terminals, hasWide, wideDimensions} = this.state;
 
-		this.context.style.width 	= (dimensions.parent.width) + 'px';
-		this.context.style.height 	= (dimensions.parent.height) + 'px';
+		this.context.style.width 	= dimensions.parent.width + 'px';
+		this.context.style.height 	= dimensions.parent.height + 'px';
 		this.context.innerHTML 		= '';
 
 		if (hasWide)

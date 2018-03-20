@@ -8,6 +8,8 @@ import {cookieGet, cookieSet} from "./helpers/cookie";
 import {GDS_LIST, THEME_CLASS_NAME} from "./constants";
 import './theme/main.less';
 
+const BORDER_SIZE = 2;
+
 class TerminalApp
 {
 	constructor({settings, requestId, buffer, permissions, PqPriceModal, htmlRootId, agentId, terminalThemes, commandUrl})
@@ -115,31 +117,31 @@ class TerminalApp
 
 	calculateMatrix()
 	{
-		const {rows, cells} = this.Gds.getCurrent().get('matrix');
-		const hasWide 		= this.Gds.getCurrent().get('hasWide');
+		const {matrix, hasWide} = this.Gds.getCurrent().get();
+		const {rows, cells} 	= matrix;
 
-		const char = this.getCharLength();
+		const char 			= this.getCharLength();
 
-		const size 	= {
-			height		: Math.floor(	(this.container.context.clientHeight) / (rows + 1) ),
-			width 		: Math.floor( 	(this.container.context.clientWidth - this.getOffset()) / (cells + (hasWide ? 2 : 1) ) ),
-		};
+		const height		= Math.floor((this.container.context.clientHeight) / (rows + 1) );
+		const width 		= Math.floor((this.container.context.clientWidth - this.getOffset()) / (cells + (hasWide ? 2 : 1) ) );
 
 		const numOf = {
-			numOfRows 	: Math.floor( (size.height - 2)	/ char.height ),
-			numOfChars	: Math.floor( (size.width - 2) 	/ char.width ) - 2
+			numOfRows 	: Math.floor( (height - BORDER_SIZE)	/ char.height ),
+			numOfChars	: Math.floor( (width - BORDER_SIZE) 	/ char.width )// - 2
 		};
 
 		const dimensions = {
 			char,
 			numOf,
+
 			terminalSize 	: {
-				width 	: size.width,
-				height 	: (numOf.numOfRows * char.height) + 2
+				width 	: width,
+				height 	: (numOf.numOfRows * char.height) + BORDER_SIZE
 			},
+
 			parent 			: {
 				height	: this.container.context.clientHeight,
-				width 	: (this.container.context.clientWidth - this.getOffset())
+				width 	: this.container.context.clientWidth - this.getOffset()
 			}
 		};
 
@@ -147,7 +149,7 @@ class TerminalApp
 
 		if (hasWide)
 		{
-			this.calculateHasWide( dimensions, rows );
+			this.calculateHasWide(dimensions, rows);
 		}
 
 		return this;
@@ -156,8 +158,6 @@ class TerminalApp
 	calculateHasWide(dimensions, rows)
 	{
 		const numOfRows = Math.floor( (dimensions.parent.height - 2) / dimensions.char.height );
-		// const height 	= (numOfRows * dimensions.char.height) + 2;
-
 		const height 	= (dimensions.terminalSize.height * (rows + 1));
 
 		const wideDimensions = {
