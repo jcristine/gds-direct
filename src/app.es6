@@ -74,20 +74,30 @@ class TerminalApp
 		this.offset = value;
 	}
 
-	calculateMatrix()
+	/*calculateMatrix2()
 	{
 		const {rows, cells} = this.Gds.getCurrent().get('matrix');
 		const hasWide 		= this.Gds.getCurrent().get('hasWide');
 
-		const sizes 	= {
-			height		: Math.floor(	(this.container.context.clientHeight) / (rows + 1) ),
-			width 		: Math.floor( 	(this.container.context.clientWidth - this.getOffset()) / (cells + (hasWide ? 2 : 1) ) ) ,
+		const char 			= this.getCharLength();
+		const rowsSize 		= rows + 1;
+
+		const height 	= ( this.container.context.clientHeight / rowsSize );// - (rowsSize * 2);
+		const width 	= Math.floor( 	(this.container.context.clientWidth - this.getOffset()) / (cells + (hasWide ? 2 : 1) ) );
+
+		const numOf 	= {
+			numOfRows 	: Math.floor( height / char.height ),
+			numOfChars	: Math.floor( (width - 2) 	/ char.width )
 		};
 
 		const dimensions = {
-			char : this.getCharLength(),
-			size : sizes,
-			parent : {
+			char,
+			numOf,
+			terminalSize : {
+				width 	: width,
+				height 	: (numOf.numOfRows * char.height) + 2
+			},
+			parent 	: {
 				height	: this.container.context.clientHeight,
 				width 	: (this.container.context.clientWidth - this.getOffset())
 			}
@@ -95,7 +105,76 @@ class TerminalApp
 
 		this.Gds.updateMatrix(dimensions);
 
+		if (hasWide)
+		{
+			this.calculateHasWide( dimensions );
+		}
+
 		return this;
+	}*/
+
+	calculateMatrix()
+	{
+		const {rows, cells} = this.Gds.getCurrent().get('matrix');
+		const hasWide 		= this.Gds.getCurrent().get('hasWide');
+
+		const char = this.getCharLength();
+
+		const size 	= {
+			height		: Math.floor(	(this.container.context.clientHeight) / (rows + 1) ),
+			width 		: Math.floor( 	(this.container.context.clientWidth - this.getOffset()) / (cells + (hasWide ? 2 : 1) ) ),
+		};
+
+		const numOf = {
+			numOfRows 	: Math.floor( (size.height - 2)	/ char.height ),
+			numOfChars	: Math.floor( (size.width - 2) 	/ char.width ) - 2
+		};
+
+		const dimensions = {
+			char,
+			numOf,
+			terminalSize 	: {
+				width 	: size.width,
+				height 	: (numOf.numOfRows * char.height) + 2
+			},
+			parent 			: {
+				height	: this.container.context.clientHeight,
+				width 	: (this.container.context.clientWidth - this.getOffset())
+			}
+		};
+
+		this.Gds.updateMatrix(dimensions);
+
+		if (hasWide)
+		{
+			this.calculateHasWide( dimensions, rows );
+		}
+
+		return this;
+	}
+
+	calculateHasWide(dimensions, rows)
+	{
+		const numOfRows = Math.floor( (dimensions.parent.height - 2) / dimensions.char.height );
+		// const height 	= (numOfRows * dimensions.char.height) + 2;
+
+		const height 	= (dimensions.terminalSize.height * (rows + 1));
+
+		const wideDimensions = {
+			char 			: dimensions.char,
+
+			numOf 			: {
+				numOfRows 	: numOfRows,
+				numOfChars	: dimensions.numOf.numOfChars
+			},
+
+			terminalSize	: {
+				width  	: dimensions.terminalSize.width,
+				height  : height
+			}
+		};
+
+		this.Gds.update({wideDimensions});
 	}
 
 	runPnr({pnrCode, gdsName = 'apollo'})

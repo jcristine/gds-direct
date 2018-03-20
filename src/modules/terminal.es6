@@ -59,16 +59,18 @@ export default class Terminal
 
 	changeSize(dimension)
 	{
-		const {char, size} = dimension;
+		const {char, numOf ,terminalSize} = dimension;
 
-		this.numOfRows 	= Math.floor( (size.height - 2)	/ char.height );
-		this.numOfChars	= Math.floor( (size.width - 2) 	/ char.width ); //2 - padding-left px : need to fix
+		this.numOfRows 	= numOf.numOfRows;
+		this.numOfChars	= numOf.numOfChars;
+
 		this.charHeight	= char.height;
 
 		if (this.plugin)
 		{
 			this.plugin.resize({
-				numOfChars 	: this.numOfChars - 2,
+				// numOfChars 	: this.numOfChars - 2,
+				numOfChars 	: this.numOfChars,
 				numOfRows 	: this.numOfRows,
 				charHeight	: this.charHeight
 			});
@@ -77,8 +79,8 @@ export default class Terminal
 			this.initPlugin();
 		}
 
-		this.context.style.width 	= size.width	+ 'px';
-		this.context.style.height 	= (this.numOfRows * char.height) + 2 + 'px'; // 2 = border height
+		this.context.style.width 	= terminalSize.width	+ 'px';
+		this.context.style.height 	= terminalSize.height + 'px'; // 2 = border height
 
 		return this.plugin;
 	}

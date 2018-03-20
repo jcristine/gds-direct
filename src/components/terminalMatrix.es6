@@ -17,16 +17,16 @@ export default class TerminalsMatrix extends Component
 	{
 		const curGds 		= gdsList[gdsObjIndex];
 
-		const {terminals, matrix, dimensions, hasWide} = curGds.get();
+		const {terminals, matrix, dimensions, hasWide, wideDimensions} = curGds.get();
 
 		return super.setState({
-			terminals, matrix, dimensions, gdsObjName, hasWide
+			terminals, matrix, dimensions, gdsObjName, hasWide, wideDimensions
 		});
 	}
 
 	_renderer()
 	{
-		const {dimensions, matrix, terminals, hasWide} = this.state;
+		const {dimensions, matrix, terminals, hasWide, wideDimensions} = this.state;
 
 		this.context.style.width 	= (dimensions.parent.width) + 'px';
 		this.context.style.height 	= (dimensions.parent.height) + 'px';
@@ -36,14 +36,7 @@ export default class TerminalsMatrix extends Component
 		{
 			const wideTerminal = terminals.wide; //curGds.wideTerminal;
 
-			wideTerminal.changeSize({
-				char : dimensions.char,
-				size : {
-					height 	: dimensions.parent.height,
-					width 	: dimensions.size.width
-				},
-			});
-
+			wideTerminal.changeSize(wideDimensions);
 			this.context.appendChild(wideTerminal.context);
 		}
 
