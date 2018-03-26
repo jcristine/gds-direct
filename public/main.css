@@ -1448,6 +1448,18 @@
   font-family: inherit;
   padding: 10px;
 }
+.matrix-column {
+  display: inline-block;
+  float: left;
+  height: 125px;
+  margin-right: 20px;
+  padding: 10px;
+  cursor: pointer;
+  width: 25px;
+}
+.matrix-column:hover {
+  background: #7a43b6;
+}
 .matrix-table {
   background: #fff;
 }
@@ -1590,21 +1602,6 @@
   position: relative;
   height: 100%;
 }
-.terminal-wrap-custom > .term-body .left > table {
-  height: 100%;
-  width: 100%;
-}
-.terminal-wrap-custom > .term-body .left > table tr td {
-  border-right: 3px solid #fff;
-  border-top: 3px solid #fff;
-  vertical-align: top;
-}
-.terminal-wrap-custom > .term-body .left > table tr td:last-child {
-  border-right: 0;
-}
-.terminal-wrap-custom > .term-body .left > table tr:first-child td {
-  border-top: 0;
-}
 .terminal-wrap-custom > .term-body .menu {
   width: 20%;
   vertical-align: top;
@@ -1644,24 +1641,16 @@
   font-size: 10px;
   display: block;
 }
+.terminal-wrap-custom .matrix-row .terminal {
+  border-left: 2px solid #fff;
+  border-top: 2px solid #fff;
+}
 .terminal-wrap-custom .terminal {
   padding: 0;
-  padding-left: 2px;
-  padding-top: 2px;
-  /*.terminal-wrapper
-        {
-            overflow: auto;
-            width: 100%;
-        }
-
-        div {
-            overflow: auto;
-            width: 100%;
-        }
-
-        pre {
-            width: 100%;
-        }*/
+  float: left;
+}
+.terminal-wrap-custom .terminal.active {
+  background: red;
 }
 .terminal-wrap-custom .terminal .cmd {
   font-weight: bold;

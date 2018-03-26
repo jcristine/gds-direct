@@ -58,7 +58,8 @@ export const pressedShortcuts = (evt, terminal, plugin) => {
 					const f1 = {
 						apollo 	: 'S*CTY/',
 						amadeus : 'DAC',
-						sabre 	: 'W/*'
+						sabre 	: 'W/*',
+						galileo	: '.CD'
 					};
 
 					terminal.insert(f1[gds]);
@@ -68,7 +69,8 @@ export const pressedShortcuts = (evt, terminal, plugin) => {
 					const f2 = {
 						apollo 	: 'S*AIR/',
 						amadeus : 'DNA',
-						sabre 	: 'W/*'
+						sabre 	: 'W/*',
+						galileo	: '.AD'
 					};
 
 					terminal.insert(f2[gds]);
@@ -76,7 +78,7 @@ export const pressedShortcuts = (evt, terminal, plugin) => {
 
 				// disabling these keys from terminal library to execute
 				case 192 :	// Ctrl + ~
-					switchTerminal({keymap : 'next', gds, name : plugin.name});
+					switchTerminal({keymap : 'next'});
 				break;
 
 				case 48 :	// Ctrl + 0
@@ -89,7 +91,7 @@ export const pressedShortcuts = (evt, terminal, plugin) => {
 				case 55 :	// Ctrl + 7
 				case 56 :	// Ctrl + 8
 				case 57 :	// Ctrl + 9
-					switchTerminal({keymap, gds, name : plugin.name});
+					switchTerminal({keymap});
 				break;
 
 				default:
@@ -107,18 +109,15 @@ export const pressedShortcuts = (evt, terminal, plugin) => {
 					plugin.tabPerform(true);
 				break;
 
-				case 120 : //F9
-					const f9 = {
-						apollo 	: 'P:SFOAS/800-750-2238 ASAP CUSTOMER SUPPORT',
-						amadeus : 'AP SFO 800-750-2238-A',
-						sabre 	: '91-800-750-2238-A'
+				case 116 : //F5
+					const f5 = {
+						apollo 	: 'SEM/2G52/AG',
+						amadeus : 'AAA5E9H',
+						sabre 	: 'AAA5E9H',
+						galileo : 'SEM/711M/AG'
 					};
 
-					terminal.exec(f9[gds]);
-				break;
-
-				case 116 : //F5
-					terminal.exec(isApollo ? 'SEM/2G52/AG' : 'AAA5E9H');
+					terminal.exec(f5[gds]);
 				break;
 
 				case 117: //F6
@@ -133,6 +132,17 @@ export const pressedShortcuts = (evt, terminal, plugin) => {
 					terminal.exec(isApollo ? 'SEM/2BQ6/AG' : 'AAAW8K7');
 				break;
 
+				case 120 : //F9
+					const f9 = {
+						apollo 	: 'P:SFOAS/800-750-2238 ASAP CUSTOMER SUPPORT',
+						amadeus : 'AP SFO 800-750-2238-A',
+						sabre 	: '91-800-750-2238-A',
+						galileo : 'P.SFOR:800-750-2238 ASAP CUSTOMER SUPPORT'
+					};
+
+					terminal.exec(f9[gds]);
+				break;
+
 				// case 187: //+
 				// case 61 : //+ FireFox
 				case 188: //,
@@ -140,7 +150,7 @@ export const pressedShortcuts = (evt, terminal, plugin) => {
 				break;
 
 				case 192 :	// Shift + ~
-					switchTerminal({keymap : 'prev', gds, name : plugin.name});
+					switchTerminal({keymap : 'prev'});
 				break;
 
 				default : return true
@@ -200,7 +210,8 @@ export const pressedShortcuts = (evt, terminal, plugin) => {
 				const f5 		= {
 					apollo 	: '0TURZZBK1YYZ' + plus320 + '-RETENTION LINE',
 					amadeus : 'RU1AHK1SFO' + plus320 + '/RETENTION',
-					sabre 	: '0OTHYYGK1/RETENTION' + plus320
+					sabre 	: '0OTHYYGK1/RETENTION' + plus320,
+					galileo : '0TURZZBK1YYZ' + getDate().minus45 + '-RETENTION LINE'
 				};
 
 				terminal.exec(f5[gds]);
@@ -218,7 +229,8 @@ export const pressedShortcuts = (evt, terminal, plugin) => {
 				const f11	= {
 					apollo 	: 'T:TAU/',
 					amadeus : 'TKTL',
-					sabre 	: '7TAW/'
+					sabre 	: '7TAW/',
+					galileo : 'T.TAU/'
 				};
 
 				terminal.exec(f11[gds] + getDate().now);
@@ -228,7 +240,8 @@ export const pressedShortcuts = (evt, terminal, plugin) => {
 				const f12 = {
 					apollo 	: 'R:',
 					amadeus : 'RF',
-					sabre 	: '6'
+					sabre 	: '6',
+					galileo : 'R.'
 				};
 
 				terminal.exec(f12[gds] + window.apiData.auth.login.toUpperCase());

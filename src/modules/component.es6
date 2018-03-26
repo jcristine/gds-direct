@@ -2,7 +2,7 @@ import Dom from '../helpers/dom';
 
 export default class Component
 {
-	constructor( selector, params)
+	constructor(selector, params)
 	{
 		this.context 	= Dom( selector, params);
 		this.observers 	= [];
@@ -37,35 +37,44 @@ export default class Component
 		return this.context;
 	}
 
-	render( params )
+	setState(state)
 	{
-		if ( typeof this.stateToProps === 'function' )
+		if ( JSON.stringify(state) === JSON.stringify(this.state) )
 		{
-			const props = this.stateToProps(params);
-
-			if ( JSON.stringify( props ) === JSON.stringify( this.props ) )
-			{
-				return '';
-			}
-
-			if (props)
-			{
-				this.props = JSON.parse( JSON.stringify(props) );
-			}
+			// console.log("IS EQUAL", state, this.state);
+			return false;
 		}
-		else
+
+		this.state = {...state};
+
+		return true;
+	}
+
+	mount()
+	{
+	}
+
+	render({...state})
+	{
+		if (state)
 		{
-			this.props = params;
+			this.mount(state); //only once
+			this.mount = () => {};
 		}
 
 		if ( typeof this._renderer === 'function' )
 		{
-			this._renderer();
+			const newState = this.setState(state); // if child has no state call parent
+
+			// console.log(newState, this);
+
+			if (newState)
+			{
+				this._renderer(state);
+			}
 		}
 
-		this.observers.map( component => {
-			component.render( this.props )
-		});
+		this.observers.map( component => component.render(state) );
 
 		return this.context;
 	}

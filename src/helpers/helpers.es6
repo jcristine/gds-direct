@@ -1,3 +1,5 @@
+import {DEFAULT_CELLS} from "../constants";
+
 const common = {
 	'`': '>',
 	'[': '¤',
@@ -76,13 +78,39 @@ const makeDate = (d) => d < 10 ? '0' + d : d;
 export const getDate = () => {
 	const d         = new Date();
 	const date      = d.getDate();
+	const months    = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'];
+
 	const d2        = new Date();
 	const dPlus320  = new Date(d2.setDate(date + 320));
 	const p320Date  = dPlus320.getDate();
-	const months    = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'];
+
+	const d3        = new Date();
+	const dMinus45  = new Date(d3.setDate(date + 320));
+	const m45Date   = dMinus45.getDate();
 
 	return {
 		now         : makeDate(date) + months[d.getMonth()],
-		plus320     : makeDate(p320Date) + months[dPlus320.getMonth()]
+		plus320     : makeDate(p320Date) + months[dPlus320.getMonth()],
+		minus45     : makeDate(m45Date) + months[dMinus45.getMonth()]
 	};
+};
+
+const _getStorage = (name) => {
+	const saved	= localStorage.getItem(name);
+	return saved ? JSON.parse(saved) : false;
+};
+
+export const getStorageMatrix = () => {
+
+	const matrix = _getStorage('matrix');
+
+	if (matrix && !matrix.list)
+			return {rows : 1, cells : 1, list : [...DEFAULT_CELLS]};
+
+	if (!matrix)
+	{
+		return {rows : 1, cells : 1, list : [...DEFAULT_CELLS]};
+	}
+
+	return matrix;
 };

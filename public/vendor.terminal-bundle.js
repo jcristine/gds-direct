@@ -1,4 +1,107 @@
-var vendor_lib=function(e){function t(o){if(n[o])return n[o].exports;var r=n[o]={i:o,l:!1,exports:{}};return e[o].call(r.exports,r,r.exports,t),r.l=!0,r.exports}var n={};return t.m=e,t.c=n,t.d=function(e,n,o){t.o(e,n)||Object.defineProperty(e,n,{configurable:!1,enumerable:!0,get:o})},t.n=function(e){var n=e&&e.__esModule?function(){return e.default}:function(){return e};return t.d(n,"a",n),n},t.o=function(e,t){return Object.prototype.hasOwnProperty.call(e,t)},t.p="",t(t.s=1)}([function(e,t){var n;n=function(){return this}();try{n=n||Function("return this")()||(0,eval)("this")}catch(e){"object"==typeof window&&(n=window)}e.exports=n},function(e,t,n){e.exports=n},function(e,t,n){(function(o,r){var i,s,a;/**@license
+var vendor_lib =
+/******/ (function(modules) { // webpackBootstrap
+/******/ 	// The module cache
+/******/ 	var installedModules = {};
+/******/
+/******/ 	// The require function
+/******/ 	function __webpack_require__(moduleId) {
+/******/
+/******/ 		// Check if module is in cache
+/******/ 		if(installedModules[moduleId]) {
+/******/ 			return installedModules[moduleId].exports;
+/******/ 		}
+/******/ 		// Create a new module (and put it into the cache)
+/******/ 		var module = installedModules[moduleId] = {
+/******/ 			i: moduleId,
+/******/ 			l: false,
+/******/ 			exports: {}
+/******/ 		};
+/******/
+/******/ 		// Execute the module function
+/******/ 		modules[moduleId].call(module.exports, module, module.exports, __webpack_require__);
+/******/
+/******/ 		// Flag the module as loaded
+/******/ 		module.l = true;
+/******/
+/******/ 		// Return the exports of the module
+/******/ 		return module.exports;
+/******/ 	}
+/******/
+/******/
+/******/ 	// expose the modules object (__webpack_modules__)
+/******/ 	__webpack_require__.m = modules;
+/******/
+/******/ 	// expose the module cache
+/******/ 	__webpack_require__.c = installedModules;
+/******/
+/******/ 	// define getter function for harmony exports
+/******/ 	__webpack_require__.d = function(exports, name, getter) {
+/******/ 		if(!__webpack_require__.o(exports, name)) {
+/******/ 			Object.defineProperty(exports, name, {
+/******/ 				configurable: false,
+/******/ 				enumerable: true,
+/******/ 				get: getter
+/******/ 			});
+/******/ 		}
+/******/ 	};
+/******/
+/******/ 	// getDefaultExport function for compatibility with non-harmony modules
+/******/ 	__webpack_require__.n = function(module) {
+/******/ 		var getter = module && module.__esModule ?
+/******/ 			function getDefault() { return module['default']; } :
+/******/ 			function getModuleExports() { return module; };
+/******/ 		__webpack_require__.d(getter, 'a', getter);
+/******/ 		return getter;
+/******/ 	};
+/******/
+/******/ 	// Object.prototype.hasOwnProperty.call
+/******/ 	__webpack_require__.o = function(object, property) { return Object.prototype.hasOwnProperty.call(object, property); };
+/******/
+/******/ 	// __webpack_public_path__
+/******/ 	__webpack_require__.p = "";
+/******/
+/******/ 	// Load entry module and return exports
+/******/ 	return __webpack_require__(__webpack_require__.s = 1);
+/******/ })
+/************************************************************************/
+/******/ ([
+/* 0 */
+/***/ (function(module, exports) {
+
+var g;
+
+// This works in non-strict mode
+g = (function() {
+	return this;
+})();
+
+try {
+	// This works if eval is allowed (see CSP)
+	g = g || Function("return this")() || (1,eval)("this");
+} catch(e) {
+	// This works if the window reference is available
+	if(typeof window === "object")
+		g = window;
+}
+
+// g can still be undefined, but nothing to do about it...
+// We return undefined, instead of nothing here, so it's
+// easier to handle this case. if(!global) { ...}
+
+module.exports = g;
+
+
+/***/ }),
+/* 1 */
+/***/ (function(module, exports, __webpack_require__) {
+
+module.exports = __webpack_require__;
+
+/***/ }),
+/* 2 */
+/***/ (function(module, exports, __webpack_require__) {
+
+/* WEBPACK VAR INJECTION */(function(global, setImmediate) {var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/**@license
  *       __ _____                     ________                              __
  *      / // _  /__ __ _____ ___ __ _/__  ___/__ ___ ______ __ __  __ ___  / /
  *  __ / // // // // // _  // _// // / / // _  // _//     // //  \/ // _ \/ /
@@ -33,7 +136,7281 @@ var vendor_lib=function(e){function t(o){if(n[o])return n[o].exports;var r=n[o]=
  *
  * Date: Tue, 12 Sep 2017 07:04:06 +0000
  */
-!function(e){function t(e){return Object.prototype.toString.call(e).slice(8,-1).toLowerCase()}function n(e,t){for(var n=[];t>0;n[--t]=e);return n.join("")}var o=function(){return o.cache.hasOwnProperty(arguments[0])||(o.cache[arguments[0]]=o.parse(arguments[0])),o.format.call(null,o.cache[arguments[0]],arguments)};o.format=function(e,r){var i,s,a,l,c,u,f,h=1,p=e.length,d="",m=[];for(s=0;s<p;s++)if("string"===(d=t(e[s])))m.push(e[s]);else if("array"===d){if(l=e[s],l[2])for(i=r[h],a=0;a<l[2].length;a++){if(!i.hasOwnProperty(l[2][a]))throw o('[sprintf] property "%s" does not exist',l[2][a]);i=i[l[2][a]]}else i=l[1]?r[l[1]]:r[h++];if(/[^s]/.test(l[8])&&"number"!==t(i))throw o("[sprintf] expecting number but found %s",t(i));switch(l[8]){case"b":i=i.toString(2);break;case"c":i=String.fromCharCode(i);break;case"d":i=parseInt(i,10);break;case"e":i=l[7]?i.toExponential(l[7]):i.toExponential();break;case"f":i=l[7]?parseFloat(i).toFixed(l[7]):parseFloat(i);break;case"o":i=i.toString(8);break;case"s":i=(i=String(i))&&l[7]?i.substring(0,l[7]):i;break;case"u":i>>>=0;break;case"x":i=i.toString(16);break;case"X":i=i.toString(16).toUpperCase()}i=/[def]/.test(l[8])&&l[3]&&i>=0?" +"+i:i,u=l[4]?"0"===l[4]?"0":l[4].charAt(1):" ",f=l[6]-String(i).length,c=l[6]?n(u,f):"",m.push(l[5]?i+c:c+i)}return m.join("")},o.cache={},o.parse=function(e){for(var t=e,n=[],o=[],r=0;t;){if(null!==(n=/^[^\x25]+/.exec(t)))o.push(n[0]);else if(null!==(n=/^\x25{2}/.exec(t)))o.push("%");else{if(null===(n=/^\x25(?:([1-9]\d*)\$|\(([^\)]+)\))?(\+)?(0|'[^$])?(-)?(\d+)?(?:\.(\d+))?([b-fosuxX])/.exec(t)))throw"[sprintf] huh?";if(n[2]){r|=1;var i=[],s=n[2],a=[];if(null===(a=/^([a-z_][a-z_\d]*)/i.exec(s)))throw"[sprintf] huh?";for(i.push(a[1]);""!==(s=s.substring(a[0].length));)if(null!==(a=/^\.([a-z_][a-z_\d]*)/i.exec(s)))i.push(a[1]);else{if(null===(a=/^\[(\d+)\]/.exec(s)))throw"[sprintf] huh?";i.push(a[1])}n[2]=i}else r|=2;if(3===r)throw"[sprintf] mixing positional and named placeholders is not (yet) supported";o.push(n)}t=t.substring(n[0].length)}return o};var r=function(e,t,n){return n=t.slice(0),n.splice(0,0,e),o.apply(null,n)};e.sprintf=o,e.vsprintf=r}(void 0!==o?o:window),function(o){s=[n(6)],i=o,void 0!==(a="function"==typeof i?i.apply(t,s):i)&&(e.exports=a)}(function(e,t){"use strict";function n(){var t=e.Callbacks(),n=!1;this.resolve=function(){t.fire(),n=!0},this.add=function(e){n?e():t.add(e)}}function o(e,t){var n;if("string"==typeof e&&"string"==typeof t)return localStorage[e]=t,!0;if("object"==typeof e&&void 0===t){for(n in e)e.hasOwnProperty(n)&&(localStorage[n]=e[n]);return!0}return!1}function i(e,t){var n,o,r;if(n=new Date,n.setTime(n.getTime()+31536e6),o="; expires="+n.toGMTString(),"string"==typeof e&&"string"==typeof t)return document.cookie=e+"="+t+o+"; path=/",!0;if("object"==typeof e&&void 0===t){for(r in e)e.hasOwnProperty(r)&&(document.cookie=r+"="+e[r]+o+"; path=/");return!0}return!1}function s(e){return localStorage[e]}function a(e){var t,n,o,r;for(t=e+"=",n=document.cookie.split(";"),o=0;o<n.length;o++){for(r=n[o];" "===r.charAt(0);)r=r.substring(1,r.length);if(0===r.indexOf(t))return r.substring(t.length,r.length)}return null}function l(e){return delete localStorage[e]}function c(e){return i(e,"",-1)}function u(e){e.attr({role:"presentation","aria-hidden":"true"})}function f(){var t=[].slice.call(arguments),n=0;e.extend(this,{get:function(){return t},index:function(){return n},rotate:function(e){if(!e){if(!t.filter(function(e){return void 0!==e}).length)return}return 1===t.length?t[0]:(n===t.length-1?n=0:++n,void 0!==t[n]?t[n]:this.rotate(!0))},length:function(){return t.length},remove:function(e){delete t[e]},set:function(e){for(var o=t.length;o--;)if(t[o]===e)return void(n=o);this.append(e),n=t.length-1},front:function(){if(t.length){for(var e=n,o=!1;!t[e];)if(++e>t.length){if(o)break;e=0,o=!0}return t[e]}},map:function(e){return t.filter(Boolean).map(e)},forEach:function(e){t.filter(Boolean).forEach(e)},append:function(e){t.push(e)}})}function h(t){var n=t instanceof Array?t:t?[t]:[];e.extend(this,{data:function(){return n},map:function(t){return e.map(n,t)},size:function(){return n.length},pop:function(){if(0===n.length)return null;var e=n[n.length-1];return n=n.slice(0,n.length-1),e},push:function(e){return n=n.concat([e]),e},top:function(){return n.length>0?n[n.length-1]:null},clone:function(){return new h(n.slice(0))}})}function p(t,n,o){var r=!0,i="";"string"==typeof t&&""!==t&&(i=t+"_"),i+="commands";var s;o?s=[]:(s=e.Storage.get(i),s=s?JSON.parse(s):[]);var a=s.length-1;e.extend(this,{append:function(t){r&&s[s.length-1]!==t&&(s.push(t),n&&s.length>n&&(s=s.slice(-n)),a=s.length-1,o||e.Storage.set(i,JSON.stringify(s)))},set:function(t){t instanceof Array&&(s=t,o||e.Storage.set(i,JSON.stringify(s)))},data:function(){return s},reset:function(){a=s.length-1},last:function(){return s[s.length-1]},end:function(){return a===s.length-1},position:function(){return a},current:function(){return s[a]},next:function(){if(a<s.length-1&&++a,-1!==a)return s[a]},previous:function(){var e=a;if(a>0&&--a,-1!==e)return s[a]},clear:function(){s=[],this.purge()},enabled:function(){return r},enable:function(){r=!0},purge:function(){o||e.Storage.remove(i)},disable:function(){r=!1}})}function d(t,n){var o=t.match(z)||[];if(o.length){var r=o.shift(),i=e.map(o,n),s=e.map(o,function(e){var t=e.match(/^(['"]).*\1$/);return t&&t[1]||""});return{command:t,name:r,args:i,args_quotes:s,rest:t.substring(r.length).trim()}}return{command:t,name:"",args:[],args_quotes:s,rest:""}}function m(){if(!("KeyboardEvent"in window&&"key"in window.KeyboardEvent.prototype))return!1;var e=window.KeyboardEvent.prototype;return Object.getOwnPropertyDescriptor(e,"key").get.toString().match(/\[native code\]/)}function g(e){e="[jQuery Terminal] "+e,console&&console.warn?console.warn(e):setTimeout(function(){throw new Error("WARN: "+e)},0)}function v(){return{}}function y(e,t){var n=e.find(".terminal-fill").width();return Math.floor(n/t.width)||1e3}function b(e,t){return Math.floor(e.find(".terminal-fill").height()/t.height)}function _(t,n){var o,r=e("<div>"+n.replace(/\n/,"<br/>")+"<div>");if(t.append(r),document.body.createTextRange)o=document.body.createTextRange(),o.moveToElementText(r[0]),o.select();else if(window.getSelection){var i=window.getSelection();i.setBaseAndExtent?i.setBaseAndExtent(r[0],0,r[0],1):document.createRange&&(o=document.createRange(),o.selectNodeContents(r[0]),i.removeAllRanges(),i.addRange(o))}try{document.execCommand("copy")}catch(e){}r.remove()}function w(e,t){return e.filter(function(e){return e[t]()===e}).length===e.length}function F(e){var t=e.split("");return w(t,"toLowerCase")?"lower":w(t,"toUpperCase")?"upper":"mixed"}function x(e){return"mixed"!==F(e)}e.omap=function(t,n){var o={};return e.each(t,function(e,r){o[e]=n.call(t,e,r)}),o};var k={clone_object:function(t){var n={};if("object"==typeof t){if(e.isArray(t))return this.clone_array(t);if(null===t)return t;for(var o in t)e.isArray(t[o])?n[o]=this.clone_array(t[o]):"object"==typeof t[o]?n[o]=this.clone_object(t[o]):n[o]=t[o]}return n},clone_array:function(t){if(!e.isFunction(Array.prototype.map))throw new Error("Your browser don't support ES5 array map use es5-shim");return t.slice(0).map(function(e){return"object"==typeof e?this.clone_object(e):e}.bind(this))}},A=function(e){return k.clone_object(e)},C=function(){var e=window.localStorage;try{return e.setItem("test","1"),e.removeItem("test"),!0}catch(e){return!1}}();e.extend({Storage:{set:C?o:i,get:C?s:a,remove:C?l:c}});var E=e;E.fn.extend({everyTime:function(e,t,n,o,r){return this.each(function(){E.timer.add(this,e,t,n,o,r)})},oneTime:function(e,t,n){return this.each(function(){E.timer.add(this,e,t,n,1)})},stopTime:function(e,t){return this.each(function(){E.timer.remove(this,e,t)})}}),E.extend({timer:{guid:1,global:{},regex:/^([0-9]+)\s*(.*s)?$/,powers:{ms:1,cs:10,ds:100,s:1e3,das:1e4,hs:1e5,ks:1e6},timeParse:function(e){if(e===t||null===e)return null;var n=this.regex.exec(E.trim(e.toString()));if(n[2]){return parseInt(n[1],10)*(this.powers[n[2]]||1)}return e},add:function(e,t,n,o,r,i){var s=0;if(E.isFunction(n)&&(r||(r=o),o=n,n=t),!("number"!=typeof(t=E.timer.timeParse(t))||isNaN(t)||t<=0)){r&&r.constructor!==Number&&(i=!!r,r=0),r=r||0,i=i||!1,e.$timers||(e.$timers={}),e.$timers[n]||(e.$timers[n]={}),o.$timerID=o.$timerID||this.guid++;var a=function(){i&&a.inProgress||(a.inProgress=!0,(++s>r&&0!==r||!1===o.call(e,s))&&E.timer.remove(e,n,o),a.inProgress=!1)};a.$timerID=o.$timerID,e.$timers[n][o.$timerID]||(e.$timers[n][o.$timerID]=window.setInterval(a,t)),this.global[n]||(this.global[n]=[]),this.global[n].push(e)}},remove:function(e,t,n){var o,r=e.$timers;if(r){if(t){if(r[t]){if(n)n.$timerID&&(window.clearInterval(r[t][n.$timerID]),delete r[t][n.$timerID]);else for(var i in r[t])r[t].hasOwnProperty(i)&&(window.clearInterval(r[t][i]),delete r[t][i]);for(o in r[t])if(r[t].hasOwnProperty(o))break;o||(o=null,delete r[t])}}else for(var s in r)r.hasOwnProperty(s)&&this.remove(e,s,n);for(o in r)if(r.hasOwnProperty(o))break;o||(e.$timers=null)}}}}),/(msie) ([\w.]+)/.exec(navigator.userAgent.toLowerCase())&&E(window).one("unload",function(){var e=E.timer.global;for(var t in e)if(e.hasOwnProperty(t))for(var n=e[t],o=n.length;--o;)E.timer.remove(n[o],t)}),function(e){if(String.prototype.split.toString().match(/\[native/)){var t,n=String.prototype.split,o=void 0===/()??/.exec("")[1];t=function(e,t,r){if("[object RegExp]"!==Object.prototype.toString.call(t))return n.call(e,t,r);var i,s,a,l,c=[],u=(t.ignoreCase?"i":"")+(t.multiline?"m":"")+(t.extended?"x":"")+(t.sticky?"y":""),f=0;for(t=new RegExp(t.source,u+"g"),e+="",o||(i=new RegExp("^"+t.source+"$(?!\\s)",u)),r=void 0===r?-1>>>0:r>>>0;(s=t.exec(e))&&!((a=s.index+s[0].length)>f&&(c.push(e.slice(f,s.index)),!o&&s.length>1&&s[0].replace(i,function(){for(var e=1;e<arguments.length-2;e++)void 0===arguments[e]&&(s[e]=void 0)}),s.length>1&&s.index<e.length&&Array.prototype.push.apply(c,s.slice(1)),l=s[0].length,f=a,c.length>=r));)t.lastIndex===s.index&&t.lastIndex++;return f===e.length?!l&&t.test("")||c.push(""):c.push(e.slice(f)),c.length>r?c.slice(0,r):c},String.prototype.split=function(e,n){return t(this,e,n)}}}(),e.fn.caret=function(e){var t=this[0],n="true"===t.contentEditable;if(0===arguments.length){if(window.getSelection){if(n){t.focus();var o=window.getSelection().getRangeAt(0),r=o.cloneRange();return r.selectNodeContents(t),r.setEnd(o.endContainer,o.endOffset),r.toString().length}return t.selectionStart}if(document.selection){if(t.focus(),n){var o=document.selection.createRange(),r=document.body.createTextRange();return r.moveToElementText(t),r.setEndPoint("EndToEnd",o),r.text.length}var e=0,i=t.createTextRange(),r=document.selection.createRange().duplicate(),s=r.getBookmark();for(i.moveToBookmark(s);0!==i.moveStart("character",-1);)e++;return e}return 0}if(-1===e&&(e=this[n?"text":"val"]().length),window.getSelection)n?(t.focus(),window.getSelection().collapse(t.firstChild,e)):t.setSelectionRange(e,e);else if(document.body.createTextRange){var i=document.body.createTextRange();i.moveToElementText(t),i.moveStart("character",e),i.collapse(!0),i.select()}return n||t.focus(),e};var T=window.requestAnimationFrame||window.mozRequestAnimationFrame||window.webkitRequestAnimationFrame||function(e){return window.setTimeout(e,20)};e.fn.resizer=function(t){var n="unbind"===arguments[0];if(!n&&!e.isFunction(t))throw new Error('Invalid argument, it need to a function of string "unbind".');return this.each(function(){var o=e(this);if(n)e(this).removeData("callbacks").find(".resizer").remove();else if(o.data("callbacks"))e(this).data("callbacks").push(t);else{o.data("callbacks",[t]);var r=this,i=e("<div/>").addClass("resizer").appendTo(this)[0],s="position: absolute; left: 0; top: 0; right: 0; bottom: 0; overflow: hidden; z-index: -1; visibility: hidden;",a="position: absolute; left: 0; top: 0; transition: 0s;";i.style.cssText=s,i.innerHTML='<div class="resize-sensor-expand" style="'+s+'"><div style="'+a+'"></div></div><div class="resize-sensor-shrink" style="'+s+'"><div style="'+a+' width: 200%; height: 200%"></div></div>';var l,c,u,f,h=i.childNodes[0],p=h.childNodes[0],d=i.childNodes[1],m=r.offsetWidth,g=r.offsetHeight,v=function(){p.style.width="100000px",p.style.height="100000px",h.scrollLeft=1e5,h.scrollTop=1e5,d.scrollLeft=1e5,d.scrollTop=1e5};v();var y=function(){if(c=0,l){m=u,g=f;var e=o.data("callbacks");e&&e.length&&e.forEach(function(e){e()})}},b=function(){u=r.offsetWidth,f=r.offsetHeight,l=u!==m||f!==g,l&&!c&&(c=T(y)),v()};e(h).on("scroll",b),e(d).on("scroll",b)}})};var D=0;e.fn.cmd=function(n){function o(){var t=e("<span>&nbsp;</span>").appendTo(I),n=t[0].getBoundingClientRect();return t.remove(),n}function r(){var e;if((e=window.getSelection())&&null!==e.focusNode)return e.focusOffset}function i(t){var n,i=r(),s=o(),a=s.height,l=I.offset(),c=Math.floor((t.pageY-l.top)/a);if(!e.isNumeric(i))return ae.length;var u=e(t.target).closest('[role="presentation"]');if(u.is("div"))n=i;else if(u.next().is(".cursor"))n=i;else{if(u.is(".cursor"))return ce;if(u.prev().is(".cursor"))return ce+i;n=0}var f,h=C(ae);f=c>0&&h.length>1?n+h.slice(0,c).reduce(function(e,t){return e+t.length},0):n;var p=ae.replace(/\t/g,"\0\0\0\0").replace(/\n/,""),d=p.slice(0,f),m=d.replace(/\x00{4}/g,"\t").replace(/\x00+/,"").length,g=ae.length;return m>g?g:m}function s(e){if(e.key){var t=e.key.toUpperCase();if("CONTROL"===t)return"CTRL";var n=[];return e.ctrlKey&&n.push("CTRL"),e.metaKey&&"META"!==t&&n.push("META"),e.shiftKey&&"SHIFT"!==t&&n.push("SHIFT"),e.altKey&&"ALT"!==t&&n.push("ALT"),e.key&&("DEL"===t?n.push("DELETE"):n.push(t)),n.join("+")}}function a(){return!0}function l(){return N.val(""),he=0,N.trigger("focus",[!0]),N.on("input",function e(t){O(),N.off("input",e)}),!0}function c(){return ye?(U=ae,I.set(Y.current())):I.set(Y.previous()),ye=!1,!1}function f(){return I.set(Y.end()?U:Y.next()),!1}function h(){ce>0&&(I.position(-1,!0),me())}function d(){return ce<ae.length&&I.position(1,!0),!1}function g(){I.position(0)}function v(){I.position(ae.length)}function y(){var e=N.is(":focus");K?I.oneTime(10,function(){!N.is(":focus")&&K&&N.trigger("focus",[!0])}):!e||!Q&&K||N.trigger("blur",[!0])}function b(){I.oneTime(10,function(){N.val(ae),K&&I.oneTime(10,function(){try{N.caret(ce)}catch(e){}})})}function w(){fe.toggleClass("inverted")}function F(){$="(reverse-i-search)`"+re+"': ",ge()}function x(){$=W,oe=!1,ie=null,re=""}function k(t){var n,o,r=Y.data(),i=r.length;if(t&&ie>0&&(i-=ie),re.length>0)for(var s=re.length;s>0;s--){o=e.terminal.escape_regex(re.substring(0,s)),n=new RegExp(o);for(var a=i;a--;)if(n.test(r[a]))return ie=r.length-a,I.position(r[a].indexOf(o)),I.set(r[a],!0),me(),void(re.length!==s&&(re=re.substring(0,s),F()))}re=""}function A(){var e=I.find(".prompt").text("&nbsp;"),t=I.width(),n=e[0].getBoundingClientRect().width;z=Math.floor(t/n),ge()}function C(t){function n(t){return e.terminal.split_equal(t,z)}var o,r=ne.text(),i=new RegExp("^"+e.terminal.escape_regex(r));if(t.match(/\n/)){for(var s=t.split("\n"),a=z-q-1,l=0;l<s.length-1;++l)s[l]+=" ";for(G(s[0])>a?(o=n(r+s[0]),o[0]=o[0].replace(i,"")):o=[s[0]],l=1;l<s.length;++l)s[l].length>z?o=o.concat(n(s[l])):o.push(s[l])}else o=n(r+t),o[0]=o[0].replace(i,"");return o}function E(t){t=e.terminal.escape_formatting(t);try{return e.terminal.apply_formatters(t)}catch(e){alert(e.message+"\n"+(e.stack?e.stack:e))}}function T(t){return e.terminal.format(e.terminal.encode(t))}function O(){if(!(he++>0)&&I.isenabled()){var e=I.find("textarea");e.is(":focus")||e.trigger("focus",[!0]),I.oneTime(100,function(){I.insert(e.val()),e.val(ae),b()})}}function S(){e.isFunction(n.onCommandChange)&&n.onCommandChange(ae)}function P(o){L('keydown "'+o.key+'" '+o.fake),Ce="process"===(o.key||"").toLowerCase();var r;_e=Fe&&we;try{o.fake||(we=o.key&&1===o.key.length&&!o.ctrlKey,xe="unidentified"===String(o.key).toLowerCase(),Ae="BACKSPACE"===o.key.toUpperCase()||8===o.which)}catch(e){}if("Unidentified"===o.key)return void(ke=!0);o.fake||(Fe=!0,ke=!1);var i=s(o);if(e.isFunction(n.keydown)&&(r=n.keydown(o))!==t)return r||(ve=!0),r;if(K)if(ve=-1!==["CTRL+V","META+V"].indexOf(i),38===o.which||80===o.which&&o.ctrlKey||(ye=!0),!oe||35!==o.which&&36!==o.which&&37!==o.which&&38!==o.which&&39!==o.which&&40!==o.which&&13!==o.which&&27!==o.which){if(!e.isFunction(te[i]))return o.altKey?void 0:void(be=!1);if(!0===(r=te[i]()))return;if(r!==t)return r}else x(),ge(),27===o.which&&I.set(""),me(),P.call(this,o)}function R(o){L('keypress "'+o.key+'" '+o.fake);var r;if(o.fake||(Fe=!1),(!o.ctrlKey&&!o.metaKey||o.altKey)&&!be){if(e.isFunction(n.keypress)&&(r=n.keypress(o))!==t)return r||(ve=!0),r;if(K){if(o.fake)return;var i;if((m()||o.fake)&&(i=o.key),i&&!xe||(i=String.fromCharCode(o.which)),"SPACEBAR"===i.toUpperCase()&&(i=" "),e.inArray(o.which,[13,0,8])>-1){if(123===o.keyCode)return;return!1}!i||!(!o.ctrlKey||o.ctrlKey&&o.ctrlKey)||o.altKey&&100===o.which&&!o.altKey||_e||(oe?(re+=i,k(),F()):I.insert(i))}}}function j(t,n,o){var r=e.Event(t);r.which=o,r.key=n,r.fake=!0,Te.trigger(r)}function L(e){}function M(){if(L("input "+ke+" || "+Ce+" (("+Fe+" || "+_e+") && !"+ve+" && ("+we+" || "+xe+") && !"+Ae+")"),ke||Ce||(Fe||_e)&&!ve&&(we||xe)&&!Ae){var e=ce,t=N.val();if(ke&&(Ae=Ee.substring(0,Ee.length-1)===Ee.length),oe)re=t,k(),F();else{var n=t.substring(ce);if(1===n.length||Ae){if(ke){var o;o=Ae?8:n.toUpperCase().charCodeAt(0),j("keydown",Ae?"Backspace":n,o)}Fe&&!Ae&&j("keypress",n,n.charCodeAt(0))}if(Ae)return void(Ee=ae);if(ve)return void(ve=!1);I.set(t)}Ae?I.position(e-1):I.position(e+Math.abs(t.length-Ee.length))}Ee=ae,ve=!1,ke=!0}var I=this,B=I.data("cmd");if(B)return B;var H=D++;I.addClass("cmd"),I.append('<span class="prompt"></span><span></span><span class="cursor">&nbsp;</span><span></span>'),u(I.find("span").not(":eq(0)"));var N=e("<textarea>").attr({autocapitalize:"off",spellcheck:"false",tabindex:1}).addClass("clipboard").appendTo(I);n.width&&I.width(n.width);var z,q,W,U,$,K,V,Y,ee,te,ne=I.find(".prompt"),oe=!1,re="",ie=null,se=n.mask||!1,ae="",le="",ce=0,ue=n.historySize||60,fe=I.find(".cursor"),he=0,pe={"ALT+D":function(){return I.set(ae.slice(0,ce)+ae.slice(ce).replace(/ *[^ ]+ *(?= )|[^ ]+$/,""),!0),!1},ENTER:function(){(Y&&ae&&!se&&e.isFunction(n.historyFilter)&&n.historyFilter(ae)||n.historyFilter instanceof RegExp&&ae.match(n.historyFilter)||!n.historyFilter)&&Y.append(ae);var t=ae;return Y.reset(),Ee="",ke=!0,I.set(""),n.commands&&n.commands(t),e.isFunction($)&&ge(),e(".clipboard").val(""),!1},"SHIFT+ENTER":function(){return I.insert("\n"),!0},BACKSPACE:function(){oe?(re=re.slice(0,-1),F()):""!==ae&&ce>0&&I.delete(-1),ke=!0},TAB:function(){I.insert("\t")},"CTRL+D":function(){return I.delete(1),!1},DELETE:function(){return I.delete(1),!0},ARROWUP:c,UP:c,"CTRL+P":c,ARROWDOWN:f,DOWN:f,"CTRL+N":f,ARROWLEFT:h,LEFT:h,"CTRL+B":h,"CTRL+ARROWLEFT":function(){var e=ce-1,t=0;" "===ae[e]&&--e;for(var n=e;n>0;--n){if(" "===ae[n]&&" "!==ae[n+1]){t=n+1;break}if("\n"===ae[n]&&"\n"!==ae[n+1]){t=n;break}}I.position(t)},"CTRL+R":function(){return oe?k(!0):(W=$,F(),U=ae,I.set(""),me(),oe=!0),!1},"CTRL+G":function(){if(oe)return $=W,ge(),I.set(U),me(),oe=!1,re="",!1},ARROWRIGHT:d,"CTRL+F":d,RIGHT:d,"CTRL+ARROWRIGHT":function(){" "===ae[ce]&&++ce;var e=/\S[\n\s]{2,}|[\n\s]+\S?/,t=ae.slice(ce).match(e);!t||t[0].match(/^\s+$/)?I.position(ae.length):" "!==t[0][0]?ce+=t.index+1:(ce+=t.index+t[0].length-1," "!==t[0][t[0].length-1]&&--ce),me()},F12:a,END:v,"CTRL+E":v,HOME:g,"CTRL+A":g,"SHIFT+INSERT":l,"CTRL+SHIFT+T":a,"CTRL+W":function(){if(""!==ae&&0!==ce){var e=ae.slice(0,ce).match(/([^ ]+ *$)/);e[0].length&&(le=I.delete(-e[0].length),_(I,le))}return!1},"CTRL+H":function(){return""!==ae&&ce>0&&I.delete(-1),!1},"CTRL+X":a,"CTRL+C":a,"CTRL+T":a,"CTRL+Y":function(){""!==le&&I.insert(le)},"CTRL+V":l,"META+V":l,"CTRL+K":function(){return ae.length-ce&&(le=I.delete(ae.length-ce),_(I,le)),!1},"CTRL+U":function(){return""!==ae&&0!==ce&&(le=I.delete(-ce),_(I,le)),!1},"CTRL+TAB":function(){return!1},"META+`":a,"META+R":a,"META+L":a};if(X&&!J)ee=function(e){e?fe.addClass("blink"):fe.removeClass("blink")};else{var de=!1;ee=function(e){e&&!de?(de=!0,fe.addClass("inverted blink"),I.everyTime(500,"blink",w)):de&&!e&&(de=!1,I.stopTime("blink",w),fe.removeClass("inverted blink"))}}var me=function(){function n(t,n,o){return e.terminal.substring(t,n,o)}function o(e,t){var o=e.length;if(e=E(e),t===o)a.html(T(e)),fe.html("&nbsp;"),l.html("");else if(0===t)a.html(""),fe.html(T(n(e,0,1))),l.html(T(n(e,1)));else{var r=n(e,0,t);a.html(T(r));var i=n(e,t,t+1);fe.html(T(i)),t===e.length-1?l.html(""):l.html(T(n(e,t+1)))}}function r(e){return'<div role="presentation">'+T(E(e))+"</div>"}function i(t){var n=l;e.each(t,function(t,o){n=e(r(o)).insertAfter(n)})}function s(t){e.each(t,function(e,t){a.before(r(t))})}var a=fe.prev(),l=fe.next();return function(){var n;switch(typeof se){case"boolean":n=se?ae.replace(/./g,"*"):ae;break;case"string":n=ae.replace(/./g,se)}var c;if(I.find("div").remove(),a.html(""),G(n)>z-q-1||n.match(/\n/)){var u=n.match(/\t/g),f=u?3*u.length:0;u&&(n=n.replace(/\t/g,"\0\0\0\0"));var h=C(n);u&&(h=e.map(h,function(e){return e.replace(/\x00\x00\x00\x00/g,"\t")}));var p=h[0].length;if(0===p&&1===h.length);else if(ce<p)o(h[0],ce),i(h.slice(1));else if(ce===p)a.before(r(h[0])),o(h[1]||"",0),h.length>1&&i(h.slice(2));else{var d=h.length;if(ce<p)o(h[0],ce),i(h.slice(1));else if(ce===p)a.before(r(h[0])),o(h[1],0),i(h.slice(2));else{var m=h.slice(-1)[0],g=n.length-ce-f,v=m.length,y=0;if(g<=v)s(h.slice(0,-1)),y=v===g?0:v-g,o(m,y);else if(3===d){var b=T(h[0]);a.before('<div role="presentation">'+b+"</div>"),o(h[1],ce-p-1),b=T(E(h[2])),l.after('<div role="presentation">'+b+"</div>")}else{var _,w;for(y=ce,c=0;c<h.length;++c){var F=h[c].length;if(!(y>F))break;y-=F}if(w=h[c],_=c,y===w.length&&(y=0,(w=h[++_])===t)){var x=e.terminal.defaults.strings.redrawError;throw new Error(x)}o(w,y),s(h.slice(0,_)),i(h.slice(_+1))}}}}else""===n?(a.html(""),fe.html("&nbsp;"),l.html("")):o(n,ce)}}(),ge=function(){function t(t){var n=e.terminal.split_equal(e.terminal.encode(t),z),o=n.slice(-1).map(e.terminal.format)[0],r=n.slice(0,-1).map(function(t){return t=e.terminal.format(t),t.match(/class="/)?t.replace(/class="/,'class="line '):t.replace(/^<span/,'<span class="line"')}).concat([o]).join("\n");ne.html(r),q=G(e("<span>"+o+"</span>").text())}return function(){switch(typeof $){case"string":t($);break;case"function":$(t)}}}();e.extend(I,{name:function(e){if(e!==t){V=e;var o=Y&&Y.enabled()||!Y;return Y=new p(e,ue,"memory"===n.history),o||Y.disable(),I}return V},purge:function(){return Y.clear(),I},history:function(){return Y},delete:function(e,t){var n;return 0===e?I:(e<0?ce>0&&(n=ae.slice(0,ce).slice(e),ae=ae.slice(0,ce+e)+ae.slice(ce,ae.length),t||I.position(ce+e),S()):""!==ae&&ce<ae.length&&(n=ae.slice(ce).slice(0,e),ae=ae.slice(0,ce)+ae.slice(ce+e,ae.length),S()),me(),b(),n)},set:function(e,n){return e!==t&&(ae=e,n||I.position(ae.length),me(),b(),S()),I},keymap:function(t){return void 0===t?te:(te=e.extend({},pe,e.omap(t||{},function(e,t){return function(n){return t(n,pe[e])}})),I)},insert:function(e,t){return ce===ae.length?ae+=e:ae=0===ce?e+ae:ae.slice(0,ce)+e+ae.slice(ce),t?b():I.position(e.length,!0),me(),S(),I},get:function(){return ae},commands:function(e){return e?(n.commands=e,I):e},destroy:function(){return Te.unbind("keypress.cmd",R),Te.unbind("keydown.cmd",P),Te.unbind("input.cmd",M),I.stopTime("blink",w),I.find(".cursor").next().remove().end().prev().remove().end().remove(),I.find(".prompt, .clipboard").remove(),I.removeClass("cmd").removeData("cmd").off(".cmd"),I},prompt:function(e){if(e===t)return $;if("string"!=typeof e&&"function"!=typeof e)throw new Error("prompt must be a function or string");return $=e,ge(),me(),I},kill_text:function(){return le},position:function(t,o){return"number"==typeof t?(o?ce+=t:ce=t<0?0:t>ae.length?ae.length:t,e.isFunction(n.onPositionChange)&&n.onPositionChange(ce),me(),b(),I):ce},visible:function(){var e=I.visible;return function(){e.apply(I,[]),me(),ge()}}(),show:function(){var e=I.show;return function(){e.apply(I,[]),me(),ge()}}(),resize:function(e){return e?z=e:A(),me(),ge(),I},enable:function(){if(!K){K=!0,I.addClass("enabled");try{N.caret(ce)}catch(e){}ee(!0),ge()}return y(),I},isenabled:function(){return K},disable:function(e){return K=!1,I.removeClass("enabled"),ee(!1),e||y(),I},mask:function(e){return void 0===e?se:(se=e,me(),I)}}),I.name(n.name||n.prompt||""),$="string"==typeof n.prompt?n.prompt:"> ",ge(),n.enabled!==t&&!0!==n.enabled||I.enable(),n.history||Y.disable();var ve,ye=!0,be=!1,_e=!1,we=!1,Fe=!1,xe=!1,ke=!0,Ae=!1,Ce=!1,Ee="",Te=e(document.documentElement||window);return I.keymap(n.keymap||{}),Te.bind("keypress.cmd",R).bind("keydown.cmd",P).bind("input.cmd",M),function(){var t=!1,o=0;I.on("mousedown.cmd",function(){t=!0}).on("mouseup.cmd",function(r){if(""===Z()){var s="click_"+H;if(1==++o){var a=t;K?I.oneTime(n.clickTimeout,s,function(){!e(r.target).is(".prompt")&&a&&(e(r.target).is(".cmd")?I.position(ae.length):I.position(i(r))),o=0}):o=0}else I.stopTime(s),o=0}t=!1})}(),I.data("cmd",I),"KeyboardEvent"in window&&"key"in window.KeyboardEvent.prototype||setTimeout(function(){throw new Error("key event property not supported try https://github.com/cvan/keyboardevent-key-polyfill")},0),I};var O=/(android|bb\d+|meego).+mobile|avantgo|bada\/|blackberry|blazer|compal|elaine|fennec|hiptop|iemobile|ip(hone|od)|iris|kindle|lge |maemo|midp|mmp|mobile.+firefox|netfront|opera m(ob|in)i|palm( os)?|phone|p(ixi|re)\/|plucker|pocket|psp|series(4|6)0|symbian|treo|up\.(browser|link)|vodafone|wap|windows ce|xda|xiino|android|ipad|playbook|silk/i,S=/1207|6310|6590|3gso|4thp|50[1-6]i|770s|802s|a wa|abac|ac(er|oo|s\-)|ai(ko|rn)|al(av|ca|co)|amoi|an(ex|ny|yw)|aptu|ar(ch|go)|as(te|us)|attw|au(di|\-m|r |s )|avan|be(ck|ll|nq)|bi(lb|rd)|bl(ac|az)|br(e|v)w|bumb|bw\-(n|u)|c55\/|capi|ccwa|cdm\-|cell|chtm|cldc|cmd\-|co(mp|nd)|craw|da(it|ll|ng)|dbte|dc\-s|devi|dica|dmob|do(c|p)o|ds(12|\-d)|el(49|ai)|em(l2|ul)|er(ic|k0)|esl8|ez([4-7]0|os|wa|ze)|fetc|fly(\-|_)|g1 u|g560|gene|gf\-5|g\-mo|go(\.w|od)|gr(ad|un)|haie|hcit|hd\-(m|p|t)|hei\-|hi(pt|ta)|hp( i|ip)|hs\-c|ht(c(\-| |_|a|g|p|s|t)|tp)|hu(aw|tc)|i\-(20|go|ma)|i230|iac( |\-|\/)|ibro|idea|ig01|ikom|im1k|inno|ipaq|iris|ja(t|v)a|jbro|jemu|jigs|kddi|keji|kgt( |\/)|klon|kpt |kwc\-|kyo(c|k)|le(no|xi)|lg( g|\/(k|l|u)|50|54|\-[a-w])|libw|lynx|m1\-w|m3ga|m50\/|ma(te|ui|xo)|mc(01|21|ca)|m\-cr|me(rc|ri)|mi(o8|oa|ts)|mmef|mo(01|02|bi|de|do|t(\-| |o|v)|zz)|mt(50|p1|v )|mwbp|mywa|n10[0-2]|n20[2-3]|n30(0|2)|n50(0|2|5)|n7(0(0|1)|10)|ne((c|m)\-|on|tf|wf|wg|wt)|nok(6|i)|nzph|o2im|op(ti|wv)|oran|owg1|p800|pan(a|d|t)|pdxg|pg(13|\-([1-8]|c))|phil|pire|pl(ay|uc)|pn\-2|po(ck|rt|se)|prox|psio|pt\-g|qa\-a|qc(07|12|21|32|60|\-[2-7]|i\-)|qtek|r380|r600|raks|rim9|ro(ve|zo)|s55\/|sa(ge|ma|mm|ms|ny|va)|sc(01|h\-|oo|p\-)|sdk\/|se(c(\-|0|1)|47|mc|nd|ri)|sgh\-|shar|sie(\-|m)|sk\-0|sl(45|id)|sm(al|ar|b3|it|t5)|so(ft|ny)|sp(01|h\-|v\-|v )|sy(01|mb)|t2(18|50)|t6(00|10|18)|ta(gt|lk)|tcl\-|tdg\-|tel(i|m)|tim\-|t\-mo|to(pl|sh)|ts(70|m\-|m3|m5)|tx\-9|up(\.b|g1|si)|utst|v400|v750|veri|vi(rg|te)|vk(40|5[0-3]|\-v)|vm40|voda|vulc|vx(52|53|60|61|70|80|81|83|85|98)|w3c(\-| )|webc|whit|wi(g |nc|nw)|wmlb|wonu|x700|yas\-|your|zeto|zte\-/i,P=/(\[\[[!gbiuso]*;[^;]*;[^\]]*\](?:[^\]]*\\\][^\]]*|[^\]]*|[^[]*\[[^\]]*)\]?)/i,R=/\[\[([!gbiuso]*);([^;]*);([^;\]]*);?([^;\]]*);?([^\]]*)\]([^\]]*\\\][^\]]*|[^\]]*|[^[]*\[[^\]]*)\]?/gi,j=/\[\[([!gbiuso]*;[^;\]]*;[^;\]]*(?:;|[^\]()]*);?[^\]]*)\]([^\]]*\\\][^\]]*|[^\]]*|[^[]*\[[^\]]*)\]?/gi,L=/\[\[([!gbiuso]*;[^;\]]*;[^;\]]*(?:;|[^\]()]*);?[^\]]*)\]([^\]]*\\\][^\]]*|[^\]]*|[^[]*\[[^\]]*)\]/gi,M=/^\[\[([!gbiuso]*;[^;\]]*;[^;\]]*(?:;|[^\]()]*);?[^\]]*)\]([^\]]*\\\][^\]]*|[^\]]*|[^[]*\[[^\]]*)\]$/gi,I=/^#([0-9a-f]{3}|[0-9a-f]{6})$/i,B=/(\bhttps?:\/\/(?:(?:(?!&[^;]+;)|(?=&amp;))[^\s"'<>\][)])+\b)/gi,H=/\b(https?:\/\/(?:(?:(?!&[^;]+;)|(?=&amp;))[^\s"'<>\][)])+)\b(?![^[\]]*])/gi,N=/((([^<>('")[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,})))/g,z=/((?:"[^"\\]*(?:\\[\S\s][^"\\]*)*"|'[^'\\]*(?:\\[\S\s][^'\\]*)*'|\/[^\/\\]*(?:\\[\S\s][^\/\\]*)*\/[gimy]*(?=\s|$)|(?:\\\s|\S))+)(?=\s|$)/gi,q=/(\[\[[!gbiuso]*;[^;]*;[^\]]*\])/i,W=/^(\[\[[!gbiuso]*;[^;]*;[^\]]*\])/i,U=/\[\[[!gbiuso]*;[^;]*;[^\]]*\]?$/i,$=/(\[\[(?:[^\]]|\\\])+\]\])/,K=/^[-+]?[0-9]*\.?[0-9]+([eE][-+]?[0-9]+)?$/,V=/^\/((?:\\\/|[^\/]|\[[^\]]*\/[^\]]*\])+)\/([gimy]*)$/,Y=/^(?=((?:[^"']+|"[^"\\]*(?:\\[^][^"\\]*)*"|'[^'\\]*(?:\\[^][^'\\]*)*')*))\1./,X=function(){var e=!1,n="Webkit Moz O ms Khtml".split(" "),o=document.createElement("div");if(o.style.animationName&&(e=!0),!1===e)for(var r=0;r<n.length;r++){var i=n[r]+"AnimationName";if(o.style[i]!==t){e=!0;break}}return e}(),J=-1!==navigator.userAgent.toLowerCase().indexOf("android"),G=function(){return"undefined"==typeof wcwidth?function(e){return e.length}:wcwidth}(),Q=function(e){var t=!1;return(O.test(e)||S.test(e.substr(0,4)))&&(t=!0),t}(navigator.userAgent||navigator.vendor||window.opera),Z=function(){return window.getSelection||document.getSelection?function(){var e=(window.getSelection||document.getSelection)();return e.text?e.text:e.toString()}:document.selection&&"Control"!==document.selection.type?function(){return document.selection.createRange().text}:function(){return""}}();e.terminal={version:"1.7.0",color_names:["transparent","currentcolor","black","silver","gray","white","maroon","red","purple","fuchsia","green","lime","olive","yellow","navy","blue","teal","aqua","aliceblue","antiquewhite","aqua","aquamarine","azure","beige","bisque","black","blanchedalmond","blue","blueviolet","brown","burlywood","cadetblue","chartreuse","chocolate","coral","cornflowerblue","cornsilk","crimson","cyan","darkblue","darkcyan","darkgoldenrod","darkgray","darkgreen","darkgrey","darkkhaki","darkmagenta","darkolivegreen","darkorange","darkorchid","darkred","darksalmon","darkseagreen","darkslateblue","darkslategray","darkslategrey","darkturquoise","darkviolet","deeppink","deepskyblue","dimgray","dimgrey","dodgerblue","firebrick","floralwhite","forestgreen","fuchsia","gainsboro","ghostwhite","gold","goldenrod","gray","green","greenyellow","grey","honeydew","hotpink","indianred","indigo","ivory","khaki","lavender","lavenderblush","lawngreen","lemonchiffon","lightblue","lightcoral","lightcyan","lightgoldenrodyellow","lightgray","lightgreen","lightgrey","lightpink","lightsalmon","lightseagreen","lightskyblue","lightslategray","lightslategrey","lightsteelblue","lightyellow","lime","limegreen","linen","magenta","maroon","mediumaquamarine","mediumblue","mediumorchid","mediumpurple","mediumseagreen","mediumslateblue","mediumspringgreen","mediumturquoise","mediumvioletred","midnightblue","mintcream","mistyrose","moccasin","navajowhite","navy","oldlace","olive","olivedrab","orange","orangered","orchid","palegoldenrod","palegreen","paleturquoise","palevioletred","papayawhip","peachpuff","peru","pink","plum","powderblue","purple","red","rosybrown","royalblue","saddlebrown","salmon","sandybrown","seagreen","seashell","sienna","silver","skyblue","slateblue","slategray","slategrey","snow","springgreen","steelblue","tan","teal","thistle","tomato","turquoise","violet","wheat","white","whitesmoke","yellow","yellowgreen"],Cycle:f,History:p,Stack:h,valid_color:function(t){return!!t.match(I)||-1!==e.inArray(t.toLowerCase(),e.terminal.color_names)},unclosed_strings:function(e){return!!e.match(Y)},escape_regex:function(e){if("string"==typeof e){var t=/([-\\^$[\]()+{}?*.|])/g;return e.replace(t,"\\$1")}},have_formatting:function(e){return"string"==typeof e&&!!e.match(L)},is_formatting:function(e){return"string"==typeof e&&!!e.match(M)},format_split:function(e){return e.split(P).filter(Boolean)},iterate_formatting:function(e,n){for(var o,r=!1,i=!1,s=0,a=-1,l=0;l<e.length;l++){o=e.substring(l).match(W),o?(r=o[1],i=!1):r?"]"===e[l]&&(i?(r="",i=!1):i=!0):i=!0;var c=r&&i||!r,u="["===e[l]&&"["===e[l+1];(function(){return"&nbsp;"===e.substring(l-6,l)||" "===e.substring(l-1,l)})()&&(c||u)&&(a=l);var f=e[l].match(/[[\]]/);if(c)if("&"===e[l]){if(o=function(t){return e.substring(t).match(/^(&[^;]+;)/)}(l)){l+=o[1].length-2;continue}++s}else"]"===e[l]&&"\\"===e[l-1]?--s:f||++s;if(!f&&c){2===G(e[l])&&s++;var h={count:s,index:l,formatting:r,text:i,space:a},p=n(h);if(!1===p)break;p&&(p.count!==t&&(s=p.count),p.space!==t&&(a=p.space),p.index!==t&&(l=p.index))}}},substring:function(t,n,o){if(""===e("<span>"+e.terminal.strip(t)+"</span>").text().substring(n,o))return"";var r,i=t.length,s="",a="";return e.terminal.iterate_formatting(t,function(e){e.count===n&&(r=e.index+1,e.formatting&&(s=e.formatting)),o&&e.count===o&&(i=e.index+1,a=e.formatting)}),t=s+t.substring(r,i),a&&(t+="]"),t},normalize:function(e){return e.replace(j,function(e,t,n){if(""===n)return"";var o=t.match(/;/g).length;if(o>=4){var r=t.split(/;/);return"[["+r.slice(0,4).join(";")+";"+(r.slice(4).join(";")||n)+"]"+n+"]"}return o=2===o?";;":3===o?";":"","[["+t+o+n.replace(/\\\]/g,"&#93;").replace(/\n/g,"\\n").replace(/&nbsp;/g," ")+"]"+n+"]"})},split_equal:function(t,n,o){for(var r="",i=[],s=e.terminal.normalize(t).split(/\n/g),a=0,l=s.length;a<l;++a)if(""!==s[a]){var c,u=s[a],f=0,h=u.length;e.terminal.iterate_formatting(u,function(t){var s=t.index===h-2&&"]"===u[t.index+1],a=t.index===h-1||s;if(t.count>=n||a||t.count===n-1&&2===G(u[t.index+1])){if(o){var l=e.terminal.strip(u.substring(t.space));l=e("<span>"+l+"</span>").text();var p=l.length,d=t.index+n+1;l=l.substring(0,d);var m=!1;(l.match(/\s/)||d>p)&&(m=!0)}if(o&&!s&&-1!==t.space&&t.index!==h-1&&m){c=u.substring(f,t.space);var g=t.space-1}else c=u.substring(f,t.index+1);if(o&&(c=c.replace(/(&nbsp;|\s)+$/g,"")),f=(g||t.index)+1,r){var v=c.match(/^[^\]]*\]/);c=r+c,v&&(r="")}s&&(c+="]",r="");var y=c.match(j);if(y){var b=y[y.length-1];"]"!==b[b.length-1]?(r=b.match(q)[1],c+="]"):c.match(U)&&(c=c.replace(U,""),r=b.match(q)[1])}return i.push(c),{index:g,count:0,space:-1}}})}else i.push("");return i},amp:function(e){return e.replace(/&(?!#[0-9]+;|[a-zA-Z]+;)/g,"&amp;")},encode:function(t){return e.terminal.amp(t).replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/ /g,"&nbsp;").replace(/\t/g,"&nbsp;&nbsp;&nbsp;&nbsp;")},nested_formatting:function(t){if(!e.terminal.have_formatting(t))return t;var n=[],o=/(\[\[(?:[^\]]|\\\])+\](?:[^\][]|\\\])*\]?)/,r=/(\[\[(?:[^\]]|\\\])+\])[\s\S]*/;return t.split(o).filter(Boolean).map(function(t){if(t.match(/^\[\[/))e.terminal.is_formatting(t)||(t+="]",n.push(t.replace(r,"$1")));else{var o=!1;t.match(/\]/)&&(o=!0),n.length&&(t=n[n.length-1]+t),o?n.pop():n.length&&(t+="]")}return t}).join("")},escape_formatting:function(t){return e.terminal.escape_brackets(t)},apply_formatters:function(t){var n=e.terminal.defaults.formatters;return e.terminal.format_split(t).map(function(t){if(e.terminal.is_formatting(t))return t;for(var o=0;o<n.length;++o)try{if("function"==typeof n[o]){var r=n[o](t);"string"==typeof r&&(t=r)}}catch(e){throw new Error("Error in formatter ["+o+"]")}return t}).join("")},format:function(t,n){var o=e.extend({},{linksNoReferrer:!1},n||{});if("string"==typeof t){var r=e.terminal.format_split(t);return t=e.map(r,function(t){return""===t?t:e.terminal.is_formatting(t)?(t=t.replace(/\[\[[^\]]+\]/,function(e){return e.replace(/&nbsp;/g," ")}),t.replace(R,function(t,n,r,i,s,a,l){if(""===l)return"";l=l.replace(/\\]/g,"]");var c="";-1!==n.indexOf("b")&&(c+="font-weight:bold;");var u=[];-1!==n.indexOf("u")&&u.push("underline"),-1!==n.indexOf("s")&&u.push("line-through"),-1!==n.indexOf("o")&&u.push("overline"),u.length&&(c+="text-decoration:"+u.join(" ")+";"),-1!==n.indexOf("i")&&(c+="font-style:italic;"),e.terminal.valid_color(r)&&(c+="color:"+r+";",-1!==n.indexOf("g")&&(c+="text-shadow:0 0 5px "+r+";")),e.terminal.valid_color(i)&&(c+="background-color:"+i);var f;f=""===a?l:a.replace(/&#93;/g,"]");var h;return-1!==n.indexOf("!")?(f.match(N)?h='<a href="mailto:'+f+'"':(h='<a target="_blank" href="'+f+'"',o.linksNoReferrer?h+=' rel="noreferrer noopener"':h+=' rel="noopener"'),h+=' tabindex="1000"'):h="<span",""!==c&&(h+=' style="'+c+'"'),""!==s&&(h+=' class="'+s+'"'),-1!==n.indexOf("!")?h+=">"+l+"</a>":h+=' data-text="'+f.replace('"',"&quote;")+'">'+l+"</span>",h})):"<span>"+t.replace(/\\\]/g,"]")+"</span>"}).join(""),t.replace(/<span><br\s*\/?><\/span>/gi,"<br/>")}return""},escape_brackets:function(e){return e.replace(/\[/g,"&#91;").replace(/\]/g,"&#93;")},strip:function(e){return e=e.replace(R,"$6"),e.replace(/(\\?)([[\]])/g,function(e,t){return t?e:""})},active:function(){return ce.front()},last_id:function(){var e=ce.length();if(e)return e-1},parse_argument:function(e,t){function n(e){if(e.match(/^['"]/)){var t=e[0],n=new RegExp("((^|[^\\\\])(?:\\\\\\\\)*)"+t,"g");e=e.replace(n,"$1")}return JSON.parse('"'+e+'"')}if(!1===t)return"'"===e[0]&&"'"===e[e.length-1]?e.replace(/^'|'$/g,""):'"'===e[0]&&'"'===e[e.length-1]?e.replace(/^"|"$/g,"").replace(/\\([" ])/g,"$1"):e.match(/\/.*\/[gimy]*$/)?e:e.match(/['"]]/)?n(e):e.replace(/\\ /g," ");var o=e.match(V);return o?new RegExp(o[1],o[2]):e.match(/['"]/)?n(e):e.match(/^-?[0-9]+$/)?parseInt(e,10):e.match(K)?parseFloat(e):e.replace(/\\(['"() ])/g,"$1")},parse_arguments:function(t){return e.map(t.match(z)||[],e.terminal.parse_argument)},split_arguments:function(t){return e.map(t.match(z)||[],function(t){return e.terminal.parse_argument(t,!1)})},parse_command:function(t){return d(t,e.terminal.parse_argument)},split_command:function(t){return d(t,function(t){return e.terminal.parse_argument(t,!1)})},extended_command:function(e,t){try{fe=!1,e.exec(t,!0).done(function(){fe=!0})}catch(e){}}},e.fn.visible=function(){return this.css("visibility","visible")},e.fn.hidden=function(){return this.css("visibility","hidden")},e.fn.scroll_element=function(){var t=e.fn.scroll_element.defaults;return this.map(function(){if(e(this).is("body")){var n=e("html"),o=e("body"),r=o.scrollTop()||n.scrollTop(),i=e("<pre/>").css(t.pre).appendTo("body");i.html(new Array(t.lines).join("\n")),e("body,html").scrollTop(10);var s;return 10===o.scrollTop()?(o.scrollTop(r),s=o[0]):10===n.scrollTop()&&(n.scrollTop(r),s=n[0]),i.remove(),s}return this})},e.fn.scroll_element.defaults={lines:2e3,pre:{"font-size":"100px","white-space":"pre"}};var ee={};e.jrpc=function(t,n,o,r,i){function s(t){return e.isNumeric(t.id)&&(void 0!==t.result||void 0!==t.error)}var a;a=e.isPlainObject(t)?t:{url:t,method:n,params:o,success:r,error:i},ee[a.url]=ee[a.url]||0;var l={jsonrpc:"2.0",method:a.method,params:a.params,id:++ee[a.url]};return e.ajax({url:a.url,beforeSend:function(t,n){e.isFunction(a.request)&&a.request(t,l),n.data=JSON.stringify(l)},success:function(t,n,o){o.getResponseHeader("Content-Type").match(/(application|text)\/json/)||g("Response Content-Type is neither application/json nor text/json");var r;try{r=JSON.parse(t)}catch(e){if(!a.error)throw new Error("Invalid JSON");return void a.error(o,"Invalid JSON",e)}if(e.isFunction(a.response)&&a.response(o,r),s(r)||"system.describe"===a.method)a.success(r,n,o);else{if(!a.error)throw new Error("Invalid JSON-RPC");a.error(o,"Invalid JSON-RPC")}},error:a.error,contentType:"application/json",dataType:"text",async:!0,cache:!1,type:"POST"})};var te=!e.terminal.version.match(/^\{\{/),ne="Copyright (c) 2011-2017 Jakub Jankiewicz <http://jcubic.pl/me>",oe=te?" v. "+e.terminal.version:" ",re=new RegExp(" {"+oe.length+"}$"),ie="jQuery Terminal Emulator"+(te?oe:""),se=[["jQuery Terminal","(c) 2011-2017 jcubic"],[ie,ne.replace(/^Copyright | *<.*>/g,"")],[ie,ne.replace(/^Copyright /,"")],["      _______                 ________                        __","     / / _  /_ ____________ _/__  ___/______________  _____  / /"," __ / / // / // / _  / _/ // / / / _  / _/     / /  \\/ / _ \\/ /","/  / / // / // / ___/ // // / / / ___/ // / / / / /\\  / // / /__","\\___/____ \\\\__/____/_/ \\__ / /_/____/_//_/_/_/ /_/  \\/\\__\\_\\___/","         \\/          /____/                                   ".replace(re," ")+oe,ne],["      __ _____                     ________                              __","     / // _  /__ __ _____ ___ __ _/__  ___/__ ___ ______ __ __  __ ___  / /"," __ / // // // // // _  // _// // / / // _  // _//     // //  \\/ // _ \\/ /","/  / // // // // // ___// / / // / / // ___// / / / / // // /\\  // // / /__","\\___//____ \\\\___//____//_/ _\\_  / /_//____//_/ /_/ /_//_//_/ /_/ \\__\\_\\___/","          \\/              /____/                                          ".replace(re,"")+oe,ne]];e.terminal.defaults={prompt:"> ",history:!0,exit:!0,clear:!0,enabled:!0,maskChar:"*",wrap:!0,checkArity:!0,raw:!1,exceptionHandler:null,pauseEvents:!0,softPause:!1,memory:!1,cancelableAjax:!0,processArguments:!0,linksNoReferrer:!1,processRPCResponse:null,completionEscape:!0,convertLinks:!0,extra:{},historySize:60,historyState:!1,importHistory:!1,historyFilter:null,echoCommand:!0,scrollOnEcho:!0,login:null,outputLimit:-1,formatters:[e.terminal.nested_formatting],onAjaxError:null,scrollBottomOffset:20,wordAutocomplete:!0,caseSensitiveAutocomplete:!0,clickTimeout:200,request:e.noop,response:e.noop,describe:"procs",onRPCError:null,completion:!1,onInit:e.noop,onClear:e.noop,onBlur:e.noop,onFocus:e.noop,onTerminalChange:e.noop,onExit:e.noop,onPush:e.noop,onPop:e.noop,keypress:e.noop,keydown:e.noop,onAfterRedraw:e.noop,onEchoCommand:e.noop,strings:{comletionParameters:"From version 1.0.0 completion function need to have two arguments",wrongPasswordTryAgain:"Wrong password try again!",wrongPassword:"Wrong password!",ajaxAbortError:"Error while aborting ajax call!",wrongArity:"Wrong number of arguments. Function '%s' expects %s got %s!",commandNotFound:"Command '%s' Not Found!",oneRPCWithIgnore:"You can use only one rpc with describe == false or rpc without system.describe",oneInterpreterFunction:"You can't use more than one function (rpc without system.describe or with option describe == false counts as one)",loginFunctionMissing:"You didn't specify a login function",noTokenError:"Access denied (no token)",serverResponse:"Server responded",wrongGreetings:"Wrong value of greetings parameter",notWhileLogin:"You can't call `%s' function while in login",loginIsNotAFunction:"Authenticate must be a function",canExitError:"You can't exit from main interpreter",invalidCompletion:"Invalid completion",invalidSelector:'Sorry, but terminal said that "%s" is not valid selector!',invalidTerminalId:"Invalid Terminal ID",login:"login",password:"password",recursiveCall:"Recursive call detected, skip",notAString:"%s function: argument is not a string",redrawError:"Internal error, wrong position in cmd redraw",invalidStrings:"Command %s have unclosed strings"}};var ae,le=[],ce=new f,ue=[],fe=!1,he=!0,pe=!0;e.fn.terminal=function(o,i){function s(t){t&&(this.storage={}),this.set=function(n,o){t?this.storage[n]=o:e.Storage.set(n,o)},this.get=function(n){return t?this.storage[n]:e.Storage.get(n)},this.remove=function(n){t?delete this.storage[n]:e.Storage.remove(n)}}function a(t){if(e.terminal.unclosed_strings(t)){var n=e.terminal.escape_brackets(t);throw new Error(sprintf(oe().invalidStrings,"`"+n+"`"))}return e.isFunction(Ke.processArguments)?d(t,Ke.processArguments):Ke.processArguments?e.terminal.parse_command(t):e.terminal.split_command(t)}function l(t){"string"==typeof t?_e.echo(t):t instanceof Array?_e.echo(e.map(t,function(e){return JSON.stringify(e)}).join(" ")):"object"==typeof t?_e.echo(JSON.stringify(t)):_e.echo(t)}function c(t){var n=/(.*):([0-9]+):([0-9]+)$/,o=t.match(n);o&&(_e.pause(Ke.softPause),e.get(o[1],function(t){var n=location.href.replace(/[^\/]+$/,""),r=o[1].replace(n,"");_e.echo("[[b;white;]"+r+"]");var i=t.split("\n"),s=+o[2]-1;_e.echo(i.slice(s-2,s+3).map(function(t,n){return 2===n&&(t="[[;#f00;]"+e.terminal.escape_brackets(t)+"]"),"["+(s+n)+"]: "+t}).join("\n")).resume()},"text"))}function f(t){if(e.isFunction(Ke.onRPCError))Ke.onRPCError.call(_e,t);else if(_e.error("&#91;RPC&#93; "+t.message),t.error&&t.error.message){t=t.error;var n="\t"+t.message;t.file&&(n+=' in file "'+t.file.replace(/.*\//,"")+'"'),t.at&&(n+=" at line "+t.at),_e.error(n)}}function p(t,n){var o=function(n,o){_e.pause(Ke.softPause),e.jrpc({url:t,method:n,params:o,request:function(e,t){try{Ke.request.apply(_e,e,t,_e)}catch(e){E(e,"USER")}},response:function(e,t){try{Ke.response.apply(_e,e,t,_e)}catch(e){E(e,"USER")}},success:function(t){t.error?f(t.error):e.isFunction(Ke.processRPCResponse)?Ke.processRPCResponse.call(_e,t.result,_e):l(t.result),_e.resume()},error:g})};return function(e,t){if(""!==e){try{e=a(e)}catch(e){return void E(e,"TERMINAL (get_processed_command)")}if(n&&"help"!==e.name){var r=t.token();r?o(e.name,[r].concat(e.args)):t.error("&#91;AUTH&#93; "+oe().noTokenError)}else o(e.name,e.args)}}}function m(n,o,r,i){return function(s,l){if(""!==s){var c;try{c=a(s)}catch(t){return void(e.isFunction(Ke.exception)?Ke.exception(t,_e):_e.error(t.toString()))}var u=n[c.name],f=e.type(u);if("function"===f){if(!o||u.length===c.args.length)return u.apply(_e,c.args);_e.error("&#91;Arity&#93; "+sprintf(oe().wrongArity,c.name,u.length,c.args.length))}else if("object"===f||"string"===f){var h=[];"object"===f&&(h=Object.keys(u),u=m(u,o,r)),l.push(u,{prompt:c.name+"> ",name:c.name,completion:"object"===f?h:t})}else e.isFunction(i)?i(s,_e):e.isFunction(Ke.onCommandNotFound)?Ke.onCommandNotFound.call(_e,s,_e):l.error(sprintf(oe().commandNotFound,c.name))}}}function g(t,n,o){_e.resume(),e.isFunction(Ke.onAjaxError)?Ke.onAjaxError.call(_e,t,n,o):"abort"!==n&&_e.error("&#91;AJAX&#93; "+n+" - "+oe().serverResponse+":\n"+e.terminal.escape_brackets(t.responseText))}function _(t,n,o){function r(t){t.error?f(t.error):e.isFunction(Ke.processRPCResponse)?Ke.processRPCResponse.call(_e,t.result,_e):l(t.result),_e.resume()}function i(e,t){try{Ke.request.call(_e,e,t,_e)}catch(e){E(e,"USER")}}function s(e,t){try{Ke.response.call(_e,e,t,_e)}catch(e){E(e,"USER")}}function a(a){var l=a;if(""!==Ke.describe&&Ke.describe.split(".").forEach(function(e){l=l[e]}),l&&l.length){var c={};e.each(l,function(o,a){c[a.name]=function(){var o=n&&"help"!==a.name,l=Array.prototype.slice.call(arguments),c=l.length+(o?1:0);if(Ke.checkArity&&a.params&&a.params.length!==c)_e.error("&#91;Arity&#93; "+sprintf(oe().wrongArity,a.name,a.params.length,c));else{if(_e.pause(Ke.softPause),o){var u=_e.token(!0);u?l=[u].concat(l):_e.error("&#91;AUTH&#93; "+oe().noTokenError)}e.jrpc({url:t,method:a.name,params:l,request:i,response:s,success:r,error:g})}}}),c.help=c.help||function(t){if(void 0===t){var n=a.procs.map(function(e){return e.name}).join(", ")+", help";_e.echo("Available commands: "+n)}else{var o=!1;if(e.each(l,function(e,n){if(n.name===t){o=!0;var r="";return r+="[[bu;#fff;]"+n.name+"]",n.params&&(r+=" "+n.params.join(" ")),n.help&&(r+="\n"+n.help),_e.echo(r),!1}}),!o)if("help"===t)_e.echo("[[bu;#fff;]help] [method]\ndisplay help for the method or list of methods if not specified");else{var r="Method `"+t+"' not found ";_e.error(r)}}},o(c)}else o(null)}return e.jrpc({url:t,method:"system.describe",params:[],success:a,request:i,response:s,error:function(){o(null)}})}function w(t,n,o){o=o||e.noop;var r,i,s=e.type(t),a={},l=0;if("array"===s)r={},function t(o,s){if(o.length){var a=o[0],c=o.slice(1),u=e.type(a);"string"===u?(_e.pause(Ke.softPause),!1===Ke.describe?(1==++l?i=p(a,n):_e.error(oe().oneRPCWithIgnore),t(c,s)):_(a,n,function(o){o?e.extend(r,o):1==++l?i=p(a,n):_e.error(oe().oneRPCWithIgnore),_e.resume(),t(c,s)})):"function"===u?(i?_e.error(oe().oneInterpreterFunction):i=a,t(c,s)):"object"===u&&(e.extend(r,a),t(c,s))}else s()}(t,function(){o({interpreter:m(r,!1,n,i.bind(_e)),completion:Object.keys(r)})});else if("string"===s)Ke.ignoreSystemDescribe?(r={interpreter:p(t,n)},e.isArray(Ke.completion)&&(r.completion=Ke.completion),o(r)):(_e.pause(Ke.softPause),_(t,n,function(e){e?(a.interpreter=m(e,!1,n),a.completion=Object.keys(e)):a.interpreter=p(t,n),o(a),_e.resume()}));else if("object"===s)o({interpreter:m(t,Ke.checkArity),completion:Object.keys(t)});else{if("undefined"===s)t=e.noop;else if("function"!==s)throw new Error(s+" is invalid interpreter value");o({interpreter:t,completion:Ke.completion})}}function k(t,n){var o="boolean"===e.type(n)?"login":n;return function(n,r,i){_e.pause(Ke.softPause),e.jrpc({url:t,method:o,params:[n,r],request:function(e,t){try{Ke.request.call(_e,e,t,_e)}catch(e){E(e,"USER")}},response:function(e,t){try{Ke.response.call(_e,e,t,_e)}catch(e){E(e,"USER")}},success:function(e){i(!e.error&&e.result?e.result:null),_e.resume()},error:g})}}function C(e){return"string"==typeof e?e:"string"==typeof e.fileName?e.fileName+": "+e.message:e.message}function E(t,n){e.isFunction(Ke.exceptionHandler)?Ke.exceptionHandler.call(_e,t,n):_e.exception(t,n)}function T(){var e;e=we.prop?we.prop("scrollHeight"):we.attr("scrollHeight"),we.scrollTop(e)}function D(t,n){try{if(e.isFunction(n))n.call(_e,e.noop,_e);else if("string"!=typeof n){var o=t+" must be string or function";throw o}}catch(e){return E(e,t.toUpperCase()),!1}return!0}function O(n,o){Ke.convertLinks&&!o.raw&&(n=n.replace(N,"[[!;;]$1]").replace(H,"[[!;;]$1]"));var r,i;if(!o.raw){if(o.formatters)try{n=e.terminal.apply_formatters(n)}catch(t){e.isFunction(Ke.exceptionHandler)?Ke.exceptionHandler.call(_e,t,"FORMATTERS"):alert(t.message+"\n"+(t.stack?t.stack:t))}n=e.terminal.encode(n)}if(me.push(ge),!o.raw&&(G(n)>ke||n.match(/\n/))&&(!0===Ke.wrap&&o.wrap===t||!1===Ke.wrap&&!0===o.wrap)){var s=o.keepWords,a=e.terminal.split_equal(n,ke,s);for(r=0,i=a.length;r<i;++r)""===a[r]||"\r"===a[r]?me.push("<span></span>"):o.raw?me.push(a[r]):me.push(e.terminal.format(a[r],{linksNoReferrer:Ke.linksNoReferrer}))}else o.raw?me.push(n):(n=e.terminal.normalize(n),n=e.terminal.format(n,{linksNoReferrer:Ke.linksNoReferrer}),n.split(/\n/).forEach(function(e){me.push(e)}));me.push(o.finalize)}function S(t,n){try{var o=e.extend({exec:!0,raw:!1,finalize:e.noop},n||{}),r="function"===e.type(t)?t():t;r="string"===e.type(r)?r:String(r),""!==r&&""!==(r=e.map(r.split($),function(t){return t&&t.match($)&&!e.terminal.is_formatting(t)?(t=t.replace(/^\[\[|\]\]$/g,""),o.exec&&(Fe&&Fe.command===t?_e.error(oe().recursiveCall):e.terminal.extended_command(_e,t)),""):t}).join(""))&&O(r,o)}catch(t){me=[],e.isFunction(Ke.exceptionHandler)?Ke.exceptionHandler.call(_e,t,"TERMINAL"):alert("[Internal Exception(process_line)]:"+C(t)+"\n"+t.stack)}}function P(){Oe.resize(ke);var t=xe.empty().detach(),n=[];if(Ke.outputLimit>=0){var o;o=0===Ke.outputLimit?_e.rows():Ke.outputLimit,Le.forEach(function(t){var o="function"===e.type(t[0])?t[0]():t[0];if(o="string"===e.type(o)?o:String(o),G(o)>ke){var r=t[1],i=e.terminal.split_equal(o,ke,r.keepWords);n=n.concat(i.map(function(e){return[e,r]}))}else n.push(t)}),n=n.slice(n.length-o-1)}else n=Le;try{me=[],e.each(Le,function(e,t){S.apply(null,t)}),Oe.before(t),_e.flush(),Ke.onAfterRedraw.call(_e)}catch(t){e.isFunction(Ke.exceptionHandler)?Ke.exceptionHandler.call(_e,t,"TERMINAL (redraw)"):alert("Exception in redraw\n"+t.stack)}}function R(){if(Ke.greetings===t)_e.echo(_e.signature,{finalize:u});else if(Ke.greetings){var e=typeof Ke.greetings;"string"===e?_e.echo(Ke.greetings):"function"===e?Ke.greetings.call(_e,_e.echo):_e.error(oe().wrongGreetings)}}function j(t){void 0===t&&(t=_e.get_command());var n=Oe.prompt(),o=Oe.mask();switch(typeof o){case"string":t=t.replace(/./g,o);break;case"boolean":t=o?t.replace(/./g,Ke.maskChar):e.terminal.escape_formatting(t)}var r={finalize:function(e){u(e.addClass("command")),Ke.onEchoCommand.call(_e,e)}};e.isFunction(n)?n(function(e){_e.echo(e+t,r)}):_e.echo(n+t,r)}function L(e){var t=ce.get()[e[0]];if(!t)throw new Error(oe().invalidTerminalId);var n=e[1];if(ue[n])t.import_view(ue[n]);else{fe=!1;var o=e[2];o&&t.exec(o).done(function(){fe=!0,ue[n]=t.export_view()})}}function M(){fe&&(he=!1,location.hash="#"+JSON.stringify(ae),setTimeout(function(){he=!0},100))}function I(n,o,r){function i(){r||(fe=!0,Ke.historyState&&_e.save_state(n,!1),fe=u),c.resolve(),e.isFunction(Ke.onAfterCommand)&&Ke.onAfterCommand.call(_e,_e,n)}function s(e){e&&h===Le.length-1&&l(e),i(),_e.resume()}ve&&(ve=!1,(Ke.historyState||Ke.execHash&&r)&&(ue.length?_e.save_state(null):_e.save_state()));try{if(e.isFunction(Ke.onBeforeCommand)&&!1===Ke.onBeforeCommand.call(_e,_e,n))return;r||(Fe=e.terminal.split_command(n)),Y()||r&&(e.isFunction(Ke.historyFilter)&&Ke.historyFilter(n)||n.match(Ke.historyFilter))&&Oe.history().append(n);var a=De.top();!o&&Ke.echoCommand&&j(n);var c=new e.Deferred,u=fe;if(n.match(/^\s*login\s*$/)&&_e.token(!0))_e.level()>1?_e.logout(!0):_e.logout(),i();else if(Ke.exit&&n.match(/^\s*exit\s*$/)&&!We){var f=_e.level();(1===f&&_e.get_token()||f>1)&&(_e.get_token(!0)&&_e.set_token(t,!0),_e.pop()),i()}else if(Ke.clear&&n.match(/^\s*clear\s*$/)&&!We)_e.clear(),i();else{var h=Le.length-1,p=a.interpreter.call(_e,n,_e);if(p!==t){if(_e.pause(Ke.softPause),!p.then)return e.when(p).done(s);p.then(s)}else Je?ye.push(function(){i()}):i()}return c.promise()}catch(e){if(E(e,"USER"),_e.resume(),!Ke.exceptionHandler)throw e}}function z(){if(e.isFunction(Ke.onBeforeLogout))try{if(!1===Ke.onBeforeLogout.call(_e,_e))return}catch(e){E(e,"onBeforeLogout")}if(q(),e.isFunction(Ke.onAfterLogout))try{Ke.onAfterLogout.call(_e,_e)}catch(e){E(e,"onAfterlogout")}_e.login(Ke.login,!0,V)}function q(){var e=_e.prefix_name(!0)+"_";Ve.remove(e+"token"),Ve.remove(e+"login")}function W(t){var n=_e.prefix_name()+"_interpreters",o=Ve.get(n);o=o?JSON.parse(o):[],-1===e.inArray(t,o)&&(o.push(t),Ve.set(n,JSON.stringify(o)))}function U(t){var n=De.top(),o=_e.prefix_name(!0);Y()||W(o),Oe.name(o),e.isFunction(n.prompt)?Oe.prompt(function(e){n.prompt.call(_e,e,_e)}):Oe.prompt(n.prompt),e.isPlainObject(n.keymap)&&Oe.keymap(e.omap(n.keymap,function(e,t){return function(){var e=[].slice.call(arguments);try{return t.apply(_e,e)}catch(e){if(E(e,"USER KEYMAP"),!Ke.exceptionHandler)throw e}}})),Oe.set(""),He.resolve(),!t&&e.isFunction(n.onStart)&&n.onStart.call(_e,_e)}function K(){if(he&&Ke.execHash)try{if(location.hash){var e=location.hash.replace(/^#/,"");ae=JSON.parse(decodeURIComponent(e))}else ae=[];ae.length?L(ae[ae.length-1]):ue[0]&&_e.import_view(ue[0])}catch(e){E(e,"TERMINAL")}}function V(){U(),R(),Le.length&&P();var t=!1;if(e.isFunction(Ke.onInit)){Ue=function(){t=!0};try{Ke.onInit.call(_e,_e)}catch(e){E(e,"OnInit")}finally{Ue=e.noop,!t&&_e.enabled()&&_e.resume()}}pe&&(pe=!1,e(window).on("hashchange",K))}function Y(){return We||!1!==Oe.mask()}function X(e,t,n){if(!t.length)return"";var o=F(e),r=[];e:for(var i=e.length;i<t[0].length;++i)for(var s=1;s<t.length;++s){var a=t[0].charAt(i),l=t[s].charAt(i);if(a!==l){if(n||"mixed"===o)break e;a.toLowerCase()===l.toLowerCase()&&("lower"===o?r.push(a.toLowerCase()):r.push(a.toUpperCase()))}else r.push(a)}return e+r.join("")}function ee(n){var o,r=De.top();if(e.isFunction(r.keydown)){if((o=r.keydown.call(_e,n,_e))!==t)return o}else if(e.isFunction(Ke.keydown)&&(o=Ke.keydown.call(_e,n,_e))!==t)return o}function te(n){var o,r;if(_e.enabled()){if(_e.paused()){if(!Ke.pauseEvents&&(o=ee(n))!==t)return o;if(68===n.which&&n.ctrlKey){if(Ke.pauseEvents&&(o=ee(n))!==t)return o;if(le.length){for(r=le.length;r--;){var i=le[r];if(4!==i.readyState)try{i.abort()}catch(t){e.isFunction(Ke.exceptionHandler)?Ke.exceptionHandler.call(_e,n,"AJAX ABORT"):_e.error(oe().ajaxAbortError)}}le=[]}_e.resume()}return!1}if((o=ee(n))!==t)return o;9!==n.which&&(je=0),_e.attr({scrollTop:_e.attr("scrollHeight")})}}function ne(e){return function(t){e.add(t)}}function oe(){return e.extend({},e.terminal.defaults.strings,Ke.strings)}function re(){Se&&_e.focus()}function ie(){Se=Ye,_e.disable().find("textarea").trigger("blur",[!0])}function de(e){if(e=e.originalEvent,e.clipboardData&&_e.enabled()){var t=e.clipboardData.items;if(t)for(var n=0;n<t.length;n++)if(-1!==t[n].type.indexOf("image")){var o=t[n].getAsFile(),r=window.URL||window.webkitURL,i=r.createObjectURL(o);_e.echo('<img src="'+i+'"/>',{raw:!0})}}}var me=[],ge=1,ve=!0,ye=[],be={"CTRL+D":function(e,n){return We||(""===Oe.get()?De.size()>1||Ke.login!==t?_e.pop(""):(_e.resume(),_e.echo("")):n()),!1},"CTRL+L":function(){_e.clear()},TAB:function(n,o){var r,i,s=De.top();if(i=void 0!==s.caseSensitiveAutocomplete?s.caseSensitiveAutocomplete:Ke.caseSensitiveAutocomplete,r=Ke.completion&&"boolean"!==e.type(Ke.completion)&&s.completion===t?Ke.completion:s.completion,"settings"===r&&(r=Ke.completion),r)switch(e.type(r)){case"function":var a=_e.before_cursor(Ke.wordAutocomplete);if(3===r.length){return E(new Error(oe().comletionParameters),"USER"),!1}r.call(_e,a,function(e){_e.complete(e,{echo:!0,word:Ke.wordAutocomplete,escape:Ke.completionEscape,caseSensitive:i})});break;case"array":_e.complete(r,{echo:!0,word:Ke.wordAutocomplete,escape:Ke.completionEscape,caseSensitive:i});break;default:throw new Error(oe().invalidCompletion)}else o();return!1},"CTRL+V":function(e,t){return t(e),_e.oneTime(200,function(){T()}),!0},"CTRL+TAB":function(){if(ce.length()>1)return _e.focus(!1),!1},PAGEDOWN:function(){_e.scroll(_e.height())},PAGEUP:function(){_e.scroll(-_e.height())}},_e=this;if(this.length>1)return this.each(function(){e.fn.terminal.call(e(this),o,e.extend({name:_e.selector},i))});if(_e.data("terminal"))return _e.data("terminal");if(0===_e.length)throw new Error(sprintf(oe().invalidSelector,_e.selector));var we,Fe,xe,ke,Ae,Ce,Ee,Te,De,Oe,Se,Pe,Re,je=0,Le=[],Me=ce.length(),Ie=new h,Be=new n,He=new n,Ne=ne(He),ze=v(),qe=ne(Be),We=!1,Ue=e.noop,$e=[],Ke=e.extend({},e.terminal.defaults,{name:_e.selector},i||{}),Ve=new s(Ke.memory),Ye=Ke.enabled,Xe=!1,Je=!1,Ge=!0;e.extend(_e,e.omap({id:function(){return Me},clear:function(){xe.html(""),Le=[];try{Ke.onClear.call(_e,_e)}catch(e){E(e,"onClear")}return _e.attr({scrollTop:0}),_e},export_view:function(){var t={};if(e.isFunction(Ke.onExport))try{t=Ke.onExport.call(_e)}catch(e){E(e,"onExport")}return e.extend({},{focus:Ye,mask:Oe.mask(),prompt:_e.get_prompt(),command:_e.get_command(),position:Oe.position(),lines:A(Le),interpreters:De.clone(),history:Oe.history().data},t)},import_view:function(t){if(We)throw new Error(sprintf(oe().notWhileLogin,"import_view"));if(e.isFunction(Ke.onImport))try{Ke.onImport.call(_e,t)}catch(e){E(e,"onImport")}return Ne(function(){_e.set_prompt(t.prompt),_e.set_command(t.command),Oe.position(t.position),Oe.mask(t.mask),t.focus&&_e.focus(),Le=A(t.lines),De=t.interpreters,Ke.importHistory&&Oe.history().set(t.history),P()}),_e},save_state:function(n,o,r){if(void 0!==r?ue[r]=_e.export_view():ue.push(_e.export_view()),e.isArray(ae)||(ae=[]),n!==t&&!o){var i=[Me,ue.length-1,n];ae.push(i),M()}},exec:function(t,n,o){var r=o||new e.Deferred;return qe(function(){e.isArray(t)?function e(){var o=t.shift();o?_e.exec(o,n).done(e):r.resolve()}():Je?$e.push([t,n,r]):I(t,n,!0).done(function(){r.resolve(_e)})}),r.promise()},autologin:function(e,t,n){return _e.trigger("terminal.autologin",[e,t,n]),_e},login:function(n,o,r,i){function s(n,s,l){if(s){for(;_e.level()>a;)_e.pop(t,!0);Ke.history&&Oe.history().enable();var c=_e.prefix_name(!0)+"_";Ve.set(c+"token",s),Ve.set(c+"login",n),We=!1,e.isFunction(r)&&r()}else o?(l||_e.error(oe().wrongPasswordTryAgain),_e.pop(t,!0).set_mask(!1)):(We=!1,l||_e.error(oe().wrongPassword),_e.pop(t,!0).pop(t,!0)),e.isFunction(i)&&i();_e.off("terminal.autologin")}if(Ie.push([].slice.call(arguments)),We)throw new Error(sprintf(oe().notWhileLogin,"login"));if(!e.isFunction(n))throw new Error(oe().loginIsNotAFunction);if(We=!0,_e.token()&&1===_e.level()&&!Ge)We=!1,_e.logout(!0);else if(_e.token(!0)&&_e.login_name(!0))return We=!1,e.isFunction(r)&&r(),_e;Ke.history&&Oe.history().disable();var a=_e.level();return _e.on("terminal.autologin",function(e,t,n,o){s(t,n,o)}),_e.push(function(e){_e.set_mask(Ke.maskChar).push(function(t){try{n.call(_e,e,t,function(t,n){s(e,t,n)})}catch(e){E(e,"AUTH")}},{prompt:oe().password+": ",name:"password"})},{prompt:oe().login+": ",name:"login"}),_e},settings:function(){return Ke},before_cursor:function(e){var t,n=Oe.position(),o=Oe.get().substring(0,n),r=o.split(" ");if(e)if(1===r.length)t=r[0];else{var i=o.match(/(\\?")/g),s=i?i.filter(function(e){return!e.match(/^\\/)}).length:0;i=o.match(/'/g);var a=i?i.length:0;if(a%2==1)t=o.match(/('[^']*)$/)[0];else if(s%2==1)t=o.match(/("(?:[^"]|\\")*)$/)[0];else for(t=r[r.length-1],et=r.length-1;et>0;et--){var l=r[et-1];if("\\"!==l[l.length-1])break;t=r[et-1]+" "+t}}else t=o;return t},complete:function(t,n){function o(e,t){var n=_e.get_command(),o=_e.get_position(),r=new RegExp(e+"$"),i=n.substring(0,o).replace(r,""),a=n.substring(o),l=t+(s||"");_e.set_command(i+l+a),_e.set_position((i+l).length)}n=e.extend({word:!0,echo:!1,escape:!0,caseSensitive:!0},n||{});var r=n.caseSensitive,i=_e.before_cursor(n.word).replace(/\\"/g,'"'),s=!1;if(n.word&&(i.match(/^"/)?s='"':i.match(/^'/)&&(s="'"),s&&(i=i.replace(/^["']/,""))),t=t.slice(),Ke.clear&&-1===e.inArray("clear",t)&&t.push("clear"),Ke.exit&&-1===e.inArray("exit",t)&&t.push("exit"),je%2==0)Ce=_e.before_cursor(n.word);else{if(_e.before_cursor(n.word)!==Ce)return}var a=e.terminal.escape_regex(i);n.escape&&(a=a.replace(/(\\+)(["'() ])/g,function(e,t,n){return n.match(/[()]/)?t+"\\?\\"+n:t+"?"+n}));var l=r?"":"i",c=new RegExp("^"+a,l),u=function(){for(var e=[],o=t.length;o--;)if(c.test(t[o])){var a=t[o];'"'===s&&(a=a.replace(/"/g,'\\"')),!s&&n.escape&&(a=a.replace(/(["'() ])/g,"\\$1")),!r&&x(a)&&(i.toLowerCase()===i?a=a.toLowerCase():i.toUpperCase()===i&&(a=a.toUpperCase())),e.push(a)}return e}();if(1===u.length)return n.escape?o(a,u[0]):_e.insert(u[0].replace(c,"")+(s||"")),Ce=_e.before_cursor(n.word),!0;if(u.length>1)if(++je>=2){if(je=0,n.echo){j();var f=u.reverse().join("\t");return _e.echo(e.terminal.escape_brackets(f),{keepWords:!0}),!0}}else{var h=X(i,u,r);if(h)return o(i,h),Ce=_e.before_cursor(n.word),!0}},commands:function(){return De.top().interpreter},set_interpreter:function(t,n){function o(){_e.pause(Ke.softPause),w(t,!!n,function(t){_e.resume();var n=De.top();e.extend(n,t),U(!0)})}return"string"===e.type(t)&&n?_e.login(k(t,n),!0,o):o(),_e},greetings:function(){return R(),_e},paused:function(){return Je},pause:function(t){return qe(function(){Ue(),Je=!0,Oe.disable(t||J),t||Oe.find(".prompt").hidden(),e.isFunction(Ke.onPause)&&Ke.onPause.call(_e)}),_e},resume:function(){return qe(function(){Je=!1,Ye&&ce.front()===_e&&Oe.enable(),Oe.find(".prompt").visible();var t=$e;$e=[];for(var n=0;n<t.length;++n)_e.exec.apply(_e,t[n]);_e.trigger("resume");var o=ye.shift();o&&o(),T(),e.isFunction(Ke.onResume)&&Ke.onResume.call(_e)}),_e},cols:function(){return Ke.numChars?Ke.numChars:(void 0===ke&&(ke=y(_e,ze)),ke)},rows:function(){return Ke.numRows?Ke.numRows:(void 0===Ae&&(Ae=b(_e,ze)),Ae)},history:function(){return Oe.history()},history_state:function(e){function t(){Ke.historyState=!0,ue.length?ce.length()>1&&_e.save_state(null):_e.save_state()}return e?void 0===window.setImmediate?setTimeout(t,0):r(t):Ke.historyState=!1,_e},clear_history_state:function(){return ae=[],ue=[],_e},next:function(){if(1===ce.length())return _e;ce.front().disable();var t=ce.rotate().enable(),n=t.offset().top-50;e("html,body").animate({scrollTop:n},500);try{Ke.onTerminalChange.call(t,t)}catch(e){E(e,"onTerminalChange")}return t},focus:function(e,t){return qe(function(){if(1===ce.length())!1===e?_e.disable(t):_e.enable(t);else if(!1===e)_e.next();else{var n=ce.front();if(n!==_e&&(ce.forEach(function(e){e!==_e&&e.enabled()&&e.disable(t)}),!t))try{Ke.onTerminalChange.call(_e,_e)}catch(e){E(e,"onTerminalChange")}ce.set(_e)}_e.enable(t)}),_e},freeze:function(e){Ne(function(){e?(_e.disable(),Xe=!0):(Xe=!1,_e.enable())})},frozen:function(){return Xe},enable:function(e){return Ye||Xe||(ke===t&&_e.resize(),qe(function(){var n;if(!e&&!Ye)try{n=Ke.onFocus.call(_e,_e)}catch(e){E(e,"onFocus")}(!e&&n===t||e)&&(Ye=!0,_e.paused()||Oe.enable())})),_e},disable:function(e){return qe(function(){var n;if(!e&&Ye)try{n=Ke.onBlur.call(_e,_e)}catch(e){E(e,"onBlur")}(!e&&n===t||e)&&(Ye=!1,Oe.disable())}),_e},enabled:function(){return Ye},signature:function(){for(var e=_e.cols(),t=se.length;t--;){var n=se[t].map(function(e){return e.length});if(Math.max.apply(null,n)<=e)return se[t].join("\n")+"\n"}return""},version:function(){return e.terminal.version},cmd:function(){return Oe},get_command:function(){return Oe.get()},set_command:function(e){return Ne(function(){Oe.set(e)}),_e},set_position:function(e,t){return Ne(function(){Oe.position(e,t)}),_e},get_position:function(){return Oe.position()},insert:function(e,t){if("string"==typeof e)return Ne(function(){var n=_e.is_bottom();Oe.insert(e,t),(Ke.scrollOnEcho||n)&&T()}),_e;throw new Error(sprintf(oe().notAString,"insert"))},set_prompt:function(t){return Ne(function(){D("prompt",t)&&(e.isFunction(t)?Oe.prompt(function(e){t(e,_e)}):Oe.prompt(t),De.top().prompt=t)}),_e},get_prompt:function(){return De.top().prompt},set_mask:function(e){return Ne(function(){Oe.mask(!0===e?Ke.maskChar:e)}),_e},get_output:function(t){return t?Le:e.map(Le,function(t){return e.isFunction(t[0])?t[0]():t[0]}).join("\n")},resize:function(t,n){if(_e.is(":visible")){if(t&&n&&(_e.width(t),_e.height(n)),t=_e.width(),n=_e.height(),void 0!==Ke.numChars&&void 0!==Ke.numRows){ke=Ke.numChars,Ae=Ke.numRows,Oe.resize(ke),P();var o=De.top();return e.isFunction(o.resize)?o.resize.call(_e,_e):e.isFunction(Ke.onResize)&&Ke.onResize.call(_e,_e),void T()}ze=v();var r=y(_e,ze),i=b(_e,ze);if(r!==ke||i!==Ae){ke=r,Ae=i,Oe.resize(ke),P();var o=De.top();e.isFunction(o.resize)?o.resize.call(_e,_e):e.isFunction(Ke.onResize)&&Ke.onResize.call(_e,_e),T()}}else _e.stopTime("resize"),_e.oneTime(500,"resize",function(){_e.resize(t,n)});return _e},flush:function(){try{var t,n=_e.is_bottom();if(e.each(me,function(n,o){o===ge?t=e("<div></div>"):e.isFunction(o)?(t.appendTo(xe),o(t)):e("<div/>").html(o).appendTo(t).width("100%")}),Ke.outputLimit>=0){var o;o=0===Ke.outputLimit?_e.rows():Ke.outputLimit;var r=xe.find("div div");if(r.length+1>o){var i=r.length-o+1,s=r.slice(0,i),a=s.parent();s.remove(),a.each(function(){var t=e(this);t.is(":empty")&&t.remove()})}}(Ke.scrollOnEcho||n)&&T(),me=[]}catch(t){e.isFunction(Ke.exceptionHandler)?Ke.exceptionHandler.call(_e,t,"TERMINAL (Flush)"):alert("[Flush] "+C(t)+"\n"+t.stack)}return _e},update:function(e,t){return Ne(function(){e<0&&(e=Le.length+e),Le[e]?(null===t?Le.splice(e,1):Le[e][0]=t,P()):_e.error("Invalid line number "+e)}),_e},last_index:function(){return Le.length-1},echo:function(t,n){function o(t){try{var o=e.extend({flush:!0,raw:Ke.raw,finalize:e.noop,keepWords:!1,formatters:!0},n||{});o.raw&&function(e){o.finalize=function(t){t.addClass("raw"),e(t)}}(o.finalize),o.flush&&(me.length&&_e.flush(),me=[]),S(t,o),Le.push([t,e.extend(o,{exec:!1})]),o.flush&&_e.flush()}catch(t){e.isFunction(Ke.exceptionHandler)?Ke.exceptionHandler.call(_e,t,"TERMINAL (echo)"):alert("[Terminal.echo] "+C(t)+"\n"+t.stack)}}try{n&&e.isFunction(n.finalize)&&n.finalize(e("<div/>")),e.isFunction(t.then)?e.when(t).done(o):o(t)}catch(e){E(e,"USER:echo(finalize)")}return _e},error:function(t,n){n=e.extend({},n,{raw:!1,formatters:!1});var o=e.terminal.escape_brackets(t).replace(/\\$/,"&#92;").replace(B,"]$1[[;;;error]");return _e.echo("[[;;;error]"+o+"]",n)},exception:function(t,n){var o=C(t);if(n&&(o="&#91;"+n+"&#93;: "+o),o&&_e.error(o,{finalize:function(e){e.addClass("exception message")},keepWords:!0}),"string"==typeof t.fileName&&(_e.pause(Ke.softPause),e.get(t.fileName,function(e){var n=t.lineNumber-1,o=e.split("\n")[n];o&&_e.error("["+t.lineNumber+"]: "+o),_e.resume()},"text")),t.stack){var r=e.terminal.escape_brackets(t.stack);_e.echo(r.split(/\n/g).map(function(e){return"[[;;;error]"+e.replace(B,function(e){return"]"+e+"[[;;;error]"})+"]"}).join("\n"),{finalize:function(e){e.addClass("exception stack-trace")},formatters:!1})}},scroll:function(e){var t;return e=Math.round(e),we.prop?(e>we.prop("scrollTop")&&e>0&&we.prop("scrollTop",0),t=we.prop("scrollTop"),we.scrollTop(t+e)):(e>we.attr("scrollTop")&&e>0&&we.attr("scrollTop",0),t=we.attr("scrollTop"),we.scrollTop(t+e)),_e},logout:function(e){if(We)throw new Error(sprintf(oe().notWhileLogin,"logout"));return Ne(function(){if(e){var n=Ie.pop();_e.set_token(t,!0),_e.login.apply(_e,n)}else if(1===De.size()&&_e.token())_e.logout(!0);else for(;De.size()>1;)_e.token()?_e.logout(!0).pop().pop():_e.pop()}),_e},token:function(e){return Ve.get(_e.prefix_name(e)+"_token")},set_token:function(e,t){var n=_e.prefix_name(t)+"_token";return void 0===e?Ve.remove(n,e):Ve.set(n,e),_e},get_token:function(e){return _e.token(e)},login_name:function(e){return Ve.get(_e.prefix_name(e)+"_login")},name:function(){return De.top().name},prefix_name:function(e){var t=(Ke.name?Ke.name+"_":"")+Me;if(e&&De.size()>1){var n=De.map(function(e){return e.name||""}).slice(1).join("_");n&&(t+="_"+n)}return t},read:function(t,n){var o=new e.Deferred;return _e.push(function(t){_e.pop(),e.isFunction(n)&&n(t),o.resolve(t)},{prompt:t}),o.promise()},push:function(n,o){return qe(function(){function r(){Ke.onPush.call(_e,a,De.top(),_e),U()}o=o||{};var i={infiniteLogin:!1},s=e.extend({},i,o);!s.name&&Fe&&(s.name=Fe.name),s.prompt===t&&(s.prompt=(s.name||">")+" ");var a=De.top();a&&(a.mask=Oe.mask());var l=Je;w(n,!!o.login,function(t){if(De.push(e.extend({},t,s)),!0===s.completion&&(e.isArray(t.completion)?De.top().completion=t.completion:t.completion||(De.top().completion=!1)),s.login){var o,i=e.type(s.login);"function"===i?(o=s.infiniteLogin?e.noop:_e.pop,_e.login(s.login,s.infiniteLogin,r,o)):("string"===e.type(n)&&"string"===i||"boolean"===i)&&(o=s.infiniteLogin?e.noop:_e.pop,_e.login(k(n,s.login),s.infiniteLogin,r,o))}else r();!l&&_e.enabled()&&_e.resume()})}),_e},pop:function(n,o){n!==t&&j(n);var r,i=_e.token(!0);if(1===De.size())if(r=De.top(),Ke.login){if(o||Ke.onPop.call(_e,r,null,_e),z(),e.isFunction(Ke.onExit))try{Ke.onExit.call(_e,_e)}catch(e){E(e,"onExit")}}else _e.error(oe().canExitError);else{i&&q();var s=De.pop();if(r=De.top(),U(),o||Ke.onPop.call(_e,s,r),We&&_e.get_prompt()!==oe().login+": "&&(We=!1),e.isFunction(s.onExit))try{s.onExit.call(_e,_e)}catch(e){E(e,"onExit")}_e.set_mask(r.mask)}return _e},option:function(t,n){if(void 0===n){if("string"==typeof t)return Ke[t];"object"==typeof t&&e.each(t,function(e,t){Ke[e]=t})}else Ke[t]=n;return _e},level:function(){return De.size()},reset:function(){return Ne(function(){for(_e.clear();De.size()>1;)De.pop();V()}),_e},purge:function(){return Ne(function(){var t=_e.prefix_name()+"_",n=Ve.get(t+"interpreters");n&&e.each(JSON.parse(n),function(e,t){Ve.remove(t+"_commands"),Ve.remove(t+"_token"),Ve.remove(t+"_login")}),Oe.purge(),Ve.remove(t+"interpreters")}),_e},destroy:function(){return Ne(function(){Oe.destroy().remove(),xe.remove(),Qe.remove(),e(document).unbind(".terminal_"+_e.id()),e(window).unbind(".terminal_"+_e.id()),_e.unbind("click wheel mousewheel mousedown mouseup"),_e.removeData("terminal").removeClass("terminal").unbind(".terminal"),Ke.width&&_e.css("width",""),Ke.height&&_e.css("height",""),e(window).off("blur",ie).off("focus",re),_e.find(".terminal-fill").remove(),ce.remove(Me),Pe&&Pe.unobserve(_e[0]),Re&&Re.disconnect(),_e.resizer("unbind"),ce.length()||e(window).off("hashchange")}),_e},scroll_to_bottom:T,is_bottom:function(){if(-1===Ke.scrollBottomOffset)return!1;var t,n,o;return _e.is("body")?(t=e(document).height(),n=e(window).scrollTop(),o=window.innerHeight):(t=we[0].scrollHeight,n=we.scrollTop(),o=we.outerHeight()),n+o>t-Ke.scrollBottomOffset}},function(e,t){return function(){try{return t.apply(_e,[].slice.apply(arguments))}catch(t){if("exec"!==e&&"resume"!==e&&E(t,"TERMINAL"),!Ke.exceptionHandler)throw t}}})),!0===Ke.ignoreSystemDescribe&&(Ke.describe=!1),Ke.width&&_e.width(Ke.width),Ke.height&&_e.height(Ke.height),we=_e.scroll_element(),e(document).bind("ajaxSend.terminal_"+_e.id(),function(e,t){le.push(t)});var Qe=e('<div class="terminal-wrapper"/>').appendTo(_e);if(e('<div class="terminal-fill"/>').appendTo(_e),xe=e("<div>").addClass("terminal-output").attr("role","log").appendTo(Qe),_e.addClass("terminal"),Ke.login&&e.isFunction(Ke.onBeforeLogin))try{!1===Ke.onBeforeLogin.call(_e,_e)&&(Ge=!1)}catch(e){if(E(e,"onBeforeLogin"),!Ke.exceptionHandler)throw e}var Ze;if("string"==typeof o)Ze=o;else if(o instanceof Array)for(var et=0,tt=o.length;et<tt;++et)if("string"==typeof o[et]){Ze=o[et];break}return!Ze||"string"!=typeof Ke.login&&!0!==Ke.login||(Ke.login=k(Ze,Ke.login)),ce.append(_e),_e.on("focus.terminal","textarea",function(e){_e.enabled()||e.originalEvent===t||_e.focus(!0)}),e(document).on("paste.terminal_"+_e.id(),de),w(o,!!Ke.login,function(n){function o(t){!e(t.target).closest(".terminal").length&&_e.enabled()&&_e.disable()}function r(){if(_e.is(":visible")){var e=_e.width(),t=_e.height();Te===t&&Ee===e||_e.resize(),Te=t,Ee=e}}function i(){Pe&&Pe.unobserve(_e[0]);var t;Pe=new IntersectionObserver(function(){_e.is(":visible")?(_e.resizer("unbind").resizer(r),r(),t&&_e.enabled()):(t=e.terminal.active()===_e&&_e.enabled(),_e.disable())},{root:document.body}),Pe.observe(_e[0])}function s(t){var n=ce.get()[t[0]];if(n&&Me===n.id()&&t[2])try{if(Je){var o=e.Deferred();return ye.push(function(){return n.exec(t[2]).done(function(){n.save_state(t[2],!0,t[1]),o.resolve()})}),o.promise()}return n.exec(t[2]).done(function(){n.save_state(t[2],!0,t[1])})}catch(t){var r=n.settings();if(e.isFunction(r.exceptionHandler))r.exceptionHandler.call(_e,t,"EXEC HASH");else{var i=e.terminal.escape_brackets(Ce),s="Error while exec with command "+i;n.error(s).exception(t)}}}function a(t,n){if(!d){var o=De.top();if(e.isFunction(o.mousewheel)){if(!1===o.mousewheel(t,n,_e))return}else if(e.isFunction(Ke.mousewheel)&&!1===Ke.mousewheel(t,n,_e))return;n>0?_e.scroll(-40):_e.scroll(40)}}(Ke.completion&&"boolean"!=typeof Ke.completion||!Ke.completion)&&(n.completion="settings");var l=e.extend({},be,Ke.keymap||{});De=new h(e.extend({},Ke.extra,{name:Ke.name,prompt:Ke.prompt,keypress:Ke.keypress,keydown:Ke.keydown,resize:Ke.onResize,greetings:Ke.greetings,mousewheel:Ke.mousewheel,keymap:l},n)),Oe=e("<div/>").appendTo(Qe).cmd({prompt:Ke.prompt,history:Ke.memory?"memory":Ke.history,historyFilter:Ke.historyFilter,historySize:Ke.historySize,width:"100%",enabled:!1,keydown:te,keymap:l,clickTimeout:Ke.clickTimeout,keypress:function(t){var n=De.top();if(Ye&&(!Je||!Ke.pauseEvents)){if(e.isFunction(n.keypress))return n.keypress.call(_e,t,_e);if(e.isFunction(Ke.keypress))return Ke.keypress.call(_e,t,_e)}},onCommandChange:function(t){if(e.isFunction(Ke.onCommandChange))try{Ke.onCommandChange.call(_e,t,_e)}catch(e){if(E(e,"onCommandChange"),!Ke.exceptionHandler)throw e}T()},commands:I}),Ye&&_e.is(":visible")&&!Q?_e.focus(t,!0):_e.disable(),_e.oneTime(100,function(){e(document).bind("click.terminal_"+_e.id(),o).bind("contextmenu.terminal_"+_e.id(),o)});var u=e(window);document.addEventListener("resume",function(){_e.disable()}),Q?_e.click(function(){Xe||(_e.enabled()?_e.disable():(_e.focus(),Oe.enable()))}):(u.on("focus.terminal_"+_e.id(),re).on("blur.terminal_"+_e.id(),ie),function(){function t(){if(n.is(".terminal")||n.is(".terminal-wrapper")){var e=_e.get_command().length;_e.set_position(e)}else n.closest(".prompt").length&&_e.set_position(0);o=0}var n,o=0,r="click_"+_e.id();_e.mousedown(function(t){n=e(t.target)}).mouseup(function(){if(""===Z())if(1==++o){if(!Xe)if(Ye){var e=Ke.clickTimeout;_e.oneTime(e,r,t)}else _e.focus(),Oe.enable(),o=0}else _e.stopTime(r),o=0}).dblclick(function(){o=0,_e.stopTime(r)})}(),function(){var e=_e.find("textarea");_e.on("mousedown.terminal",function(t){if(2===t.originalEvent.button){_e.enabled()||_e.enable(),t.preventDefault();var n=Oe.offset();e.css({left:t.pageX-n.left-5,top:t.pageY-n.top-5})}}),_e.bind("contextmenu",function(){_e.oneTime(100,function(){e.css({left:"",top:""})})})}()),_e.delegate(".exception a","click",function(t){var n=e(this).attr("href");n.match(/:[0-9]+$/)&&(t.preventDefault(),c(n))}),_e.is(":visible")&&(ke=_e.cols(),Oe.resize(ke),ze||(ze=v()),Ae=b(_e,ze)),Be.resolve(),Ke.login?_e.login(Ke.login,!0,V):V(),_e.is(":visible")&&_e.resizer(r);var f=!!_e.closest("body").length,p=window.MutationObserver||window.WebKitMutationObserver;window.IntersectionObserver&&(p&&(Re=new p(function(){_e.closest("body").length?(f||(_e.scroll_to_bottom(),i()),f=!0):f&&(f=!1)}),Re.observe(document.body,{childList:!0})),f&&i()),Ke.execHash&&location.hash?setTimeout(function(){try{var e=location.hash.replace(/^#/,"");ae=JSON.parse(decodeURIComponent(e));var t=0;!function e(){var n=ae[t++];n?s(n).done(e):fe=!0}()}catch(e){}}):fe=!0;var d=!1;if(e(document).bind("keydown.terminal_"+_e.id(),function(e){e.shiftKey&&(d=!0)}).bind("keyup.terminal_"+_e.id(),function(e){(e.shiftKey||16===e.which)&&(d=!1)}),e.event.special.mousewheel)_e.on("mousewheel",function(e,t){a(e,t),e.preventDefault()});else{var m;m="onwheel"in document.createElement("div")?"wheel":document.onmousewheel!==t?"mousewheel":"DOMMouseScroll",_e.on(m,function(e){var t;return t="mousewheel"===m?-.025*e.originalEvent.wheelDelta:e.originalEvent.deltaY||e.originalEvent.detail,a(e,-t),!1})}}),_e.data("terminal",_e),_e}})}).call(t,n(0),n(3).setImmediate)},function(e,t,n){function o(e,t){this._id=e,this._clearFn=t}var r=Function.prototype.apply;t.setTimeout=function(){return new o(r.call(setTimeout,window,arguments),clearTimeout)},t.setInterval=function(){return new o(r.call(setInterval,window,arguments),clearInterval)},t.clearTimeout=t.clearInterval=function(e){e&&e.close()},o.prototype.unref=o.prototype.ref=function(){},o.prototype.close=function(){this._clearFn.call(window,this._id)},t.enroll=function(e,t){clearTimeout(e._idleTimeoutId),e._idleTimeout=t},t.unenroll=function(e){clearTimeout(e._idleTimeoutId),e._idleTimeout=-1},t._unrefActive=t.active=function(e){clearTimeout(e._idleTimeoutId);var t=e._idleTimeout;t>=0&&(e._idleTimeoutId=setTimeout(function(){e._onTimeout&&e._onTimeout()},t))},n(4),t.setImmediate=setImmediate,t.clearImmediate=clearImmediate},function(e,t,n){(function(e,t){!function(e,n){"use strict";function o(e){"function"!=typeof e&&(e=new Function(""+e));for(var t=new Array(arguments.length-1),n=0;n<t.length;n++)t[n]=arguments[n+1];var o={callback:e,args:t};return c[l]=o,a(l),l++}function r(e){delete c[e]}function i(e){var t=e.callback,o=e.args;switch(o.length){case 0:t();break;case 1:t(o[0]);break;case 2:t(o[0],o[1]);break;case 3:t(o[0],o[1],o[2]);break;default:t.apply(n,o)}}function s(e){if(u)setTimeout(s,0,e);else{var t=c[e];if(t){u=!0;try{i(t)}finally{r(e),u=!1}}}}if(!e.setImmediate){var a,l=1,c={},u=!1,f=e.document,h=Object.getPrototypeOf&&Object.getPrototypeOf(e);h=h&&h.setTimeout?h:e,"[object process]"==={}.toString.call(e.process)?function(){a=function(e){t.nextTick(function(){s(e)})}}():function(){if(e.postMessage&&!e.importScripts){var t=!0,n=e.onmessage;return e.onmessage=function(){t=!1},e.postMessage("","*"),e.onmessage=n,t}}()?function(){var t="setImmediate$"+Math.random()+"$",n=function(n){n.source===e&&"string"==typeof n.data&&0===n.data.indexOf(t)&&s(+n.data.slice(t.length))};e.addEventListener?e.addEventListener("message",n,!1):e.attachEvent("onmessage",n),a=function(n){e.postMessage(t+n,"*")}}():e.MessageChannel?function(){var e=new MessageChannel;e.port1.onmessage=function(e){s(e.data)},a=function(t){e.port2.postMessage(t)}}():f&&"onreadystatechange"in f.createElement("script")?function(){var e=f.documentElement;a=function(t){var n=f.createElement("script");n.onreadystatechange=function(){s(t),n.onreadystatechange=null,e.removeChild(n),n=null},e.appendChild(n)}}():function(){a=function(e){setTimeout(s,0,e)}}(),h.setImmediate=o,h.clearImmediate=r}}("undefined"==typeof self?void 0===e?this:e:self)}).call(t,n(0),n(5))},function(e,t){function n(){throw new Error("setTimeout has not been defined")}function o(){throw new Error("clearTimeout has not been defined")}function r(e){if(u===setTimeout)return setTimeout(e,0);if((u===n||!u)&&setTimeout)return u=setTimeout,setTimeout(e,0);try{return u(e,0)}catch(t){try{return u.call(null,e,0)}catch(t){return u.call(this,e,0)}}}function i(e){if(f===clearTimeout)return clearTimeout(e);if((f===o||!f)&&clearTimeout)return f=clearTimeout,clearTimeout(e);try{return f(e)}catch(t){try{return f.call(null,e)}catch(t){return f.call(this,e)}}}function s(){m&&p&&(m=!1,p.length?d=p.concat(d):g=-1,d.length&&a())}function a(){if(!m){var e=r(s);m=!0;for(var t=d.length;t;){for(p=d,d=[];++g<t;)p&&p[g].run();g=-1,t=d.length}p=null,m=!1,i(e)}}function l(e,t){this.fun=e,this.array=t}function c(){}var u,f,h=e.exports={};!function(){try{u="function"==typeof setTimeout?setTimeout:n}catch(e){u=n}try{f="function"==typeof clearTimeout?clearTimeout:o}catch(e){f=o}}();var p,d=[],m=!1,g=-1;h.nextTick=function(e){var t=new Array(arguments.length-1);if(arguments.length>1)for(var n=1;n<arguments.length;n++)t[n-1]=arguments[n];d.push(new l(e,t)),1!==d.length||m||r(a)},l.prototype.run=function(){this.fun.apply(null,this.array)},h.title="browser",h.browser=!0,h.env={},h.argv=[],h.version="",h.versions={},h.on=c,h.addListener=c,h.once=c,h.off=c,h.removeListener=c,h.removeAllListeners=c,h.emit=c,h.prependListener=c,h.prependOnceListener=c,h.listeners=function(e){return[]},h.binding=function(e){throw new Error("process.binding is not supported")},h.cwd=function(){return"/"},h.chdir=function(e){throw new Error("process.chdir is not supported")},h.umask=function(){return 0}},function(e,t){e.exports=jQuery},function(e,t,n){var o,r;!function(){function i(){if(!("KeyboardEvent"in window)||"key"in KeyboardEvent.prototype)return!1;var e={get:function(e){var t=a.keys[this.which||this.keyCode];return Array.isArray(t)&&(t=t[+this.shiftKey]),t}};return Object.defineProperty(KeyboardEvent.prototype,"key",e),e}var s,a={polyfill:i,keys:{3:"Cancel",6:"Help",8:"Backspace",9:"Tab",12:"Clear",13:"Enter",16:"Shift",17:"Control",18:"Alt",19:"Pause",20:"CapsLock",27:"Escape",28:"Convert",29:"NonConvert",30:"Accept",31:"ModeChange",32:" ",33:"PageUp",34:"PageDown",35:"End",36:"Home",37:"ArrowLeft",38:"ArrowUp",39:"ArrowRight",40:"ArrowDown",41:"Select",42:"Print",43:"Execute",44:"PrintScreen",45:"Insert",46:"Delete",48:["0",")"],49:["1","!"],50:["2","@"],51:["3","#"],52:["4","$"],53:["5","%"],54:["6","^"],55:["7","&"],56:["8","*"],57:["9","("],91:"OS",93:"ContextMenu",144:"NumLock",145:"ScrollLock",181:"VolumeMute",182:"VolumeDown",183:"VolumeUp",186:[";",":"],187:["=","+"],188:[",","<"],189:["-","_"],190:[".",">"],191:["/","?"],192:["`","~"],219:["[","{"],220:["\\","|"],221:["]","}"],222:["'",'"'],224:"Meta",225:"AltGraph",246:"Attn",247:"CrSel",248:"ExSel",249:"EraseEof",250:"Play",251:"ZoomOut"}};for(s=1;s<25;s++)a.keys[111+s]="F"+s;var l="";for(s=65;s<91;s++)l=String.fromCharCode(s),a.keys[s]=[l.toLowerCase(),l.toUpperCase()];o=a,void 0!==(r="function"==typeof o?o.call(t,n,t,e):o)&&(e.exports=r)}()},function(e,t){/**@license
+
+/* TODO:
+ *
+ * Debug interpreters names in LocalStorage
+ * onPositionChange event add to terminal ???
+ * different command line history for each login users (add login if present to
+ * localStorage key)
+ *
+ * TEST: login + promises/exec
+ *       json-rpc/object + promises
+ *
+ * NOTE: json-rpc don't need promises and delegate resume/pause because only
+ *       exec can call it and exec call interpreter that work with resume/pause
+ */
+/* global location, jQuery, setTimeout, window, global, localStorage, sprintf,
+         setImmediate, IntersectionObserver, MutationObserver, wcwidth,
+         module, require, define */
+/* eslint-disable */
+(function(ctx) {
+	var sprintf = function() {
+		if (!sprintf.cache.hasOwnProperty(arguments[0])) {
+			sprintf.cache[arguments[0]] = sprintf.parse(arguments[0]);
+		}
+		return sprintf.format.call(null, sprintf.cache[arguments[0]], arguments);
+	};
+
+	sprintf.format = function(parse_tree, argv) {
+		var cursor = 1, tree_length = parse_tree.length, node_type = '', arg, output = [], i, k, match, pad, pad_character, pad_length;
+		for (i = 0; i < tree_length; i++) {
+			node_type = get_type(parse_tree[i]);
+			if (node_type === 'string') {
+				output.push(parse_tree[i]);
+			}
+			else if (node_type === 'array') {
+				match = parse_tree[i]; // convenience purposes only
+				if (match[2]) { // keyword argument
+					arg = argv[cursor];
+					for (k = 0; k < match[2].length; k++) {
+						if (!arg.hasOwnProperty(match[2][k])) {
+							throw(sprintf('[sprintf] property "%s" does not exist', match[2][k]));
+						}
+						arg = arg[match[2][k]];
+					}
+				}
+				else if (match[1]) { // positional argument (explicit)
+					arg = argv[match[1]];
+				}
+				else { // positional argument (implicit)
+					arg = argv[cursor++];
+				}
+
+				if (/[^s]/.test(match[8]) && (get_type(arg) !== 'number')) {
+					throw(sprintf('[sprintf] expecting number but found %s', get_type(arg)));
+				}
+				switch (match[8]) {
+					case 'b': arg = arg.toString(2); break;
+					case 'c': arg = String.fromCharCode(arg); break;
+					case 'd': arg = parseInt(arg, 10); break;
+					case 'e': arg = match[7] ? arg.toExponential(match[7]) : arg.toExponential(); break;
+					case 'f': arg = match[7] ? parseFloat(arg).toFixed(match[7]) : parseFloat(arg); break;
+					case 'o': arg = arg.toString(8); break;
+					case 's': arg = ((arg = String(arg)) && match[7] ? arg.substring(0, match[7]) : arg); break;
+					case 'u': arg = arg >>> 0; break;
+					case 'x': arg = arg.toString(16); break;
+					case 'X': arg = arg.toString(16).toUpperCase(); break;
+				}
+				arg = (/[def]/.test(match[8]) && match[3] && arg >= 0 ? ' +' + arg : arg);
+				pad_character = match[4] ? match[4] === '0' ? '0' : match[4].charAt(1) : ' ';
+				pad_length = match[6] - String(arg).length;
+				pad = match[6] ? str_repeat(pad_character, pad_length) : '';
+				output.push(match[5] ? arg + pad : pad + arg);
+			}
+		}
+		return output.join('');
+	};
+
+	sprintf.cache = {};
+
+	sprintf.parse = function(fmt) {
+		var _fmt = fmt, match = [], parse_tree = [], arg_names = 0;
+		while (_fmt) {
+			if ((match = /^[^\x25]+/.exec(_fmt)) !== null) {
+				parse_tree.push(match[0]);
+			}
+			else if ((match = /^\x25{2}/.exec(_fmt)) !== null) {
+				parse_tree.push('%');
+			}
+			else if ((match = /^\x25(?:([1-9]\d*)\$|\(([^\)]+)\))?(\+)?(0|'[^$])?(-)?(\d+)?(?:\.(\d+))?([b-fosuxX])/.exec(_fmt)) !== null) {
+				if (match[2]) {
+					arg_names |= 1;
+					var field_list = [], replacement_field = match[2], field_match = [];
+					if ((field_match = /^([a-z_][a-z_\d]*)/i.exec(replacement_field)) !== null) {
+						field_list.push(field_match[1]);
+						while ((replacement_field = replacement_field.substring(field_match[0].length)) !== '') {
+							if ((field_match = /^\.([a-z_][a-z_\d]*)/i.exec(replacement_field)) !== null) {
+								field_list.push(field_match[1]);
+							}
+							else if ((field_match = /^\[(\d+)\]/.exec(replacement_field)) !== null) {
+								field_list.push(field_match[1]);
+							}
+							else {
+								throw('[sprintf] huh?');
+							}
+						}
+					}
+					else {
+						throw('[sprintf] huh?');
+					}
+					match[2] = field_list;
+				}
+				else {
+					arg_names |= 2;
+				}
+				if (arg_names === 3) {
+					throw('[sprintf] mixing positional and named placeholders is not (yet) supported');
+				}
+				parse_tree.push(match);
+			}
+			else {
+				throw('[sprintf] huh?');
+			}
+			_fmt = _fmt.substring(match[0].length);
+		}
+		return parse_tree;
+	};
+
+	var vsprintf = function(fmt, argv, _argv) {
+		_argv = argv.slice(0);
+		_argv.splice(0, 0, fmt);
+		return sprintf.apply(null, _argv);
+	};
+
+	/**
+	 * helpers
+	 */
+	function get_type(variable) {
+		return Object.prototype.toString.call(variable).slice(8, -1).toLowerCase();
+	}
+
+	function str_repeat(input, multiplier) {
+		for (var output = []; multiplier > 0; output[--multiplier] = input) {/* do nothing */}
+		return output.join('');
+	}
+
+	/**
+	 * export to either browser or node.js
+	 */
+	ctx.sprintf = sprintf;
+	ctx.vsprintf = vsprintf;
+})(typeof global !== "undefined" ? global : window);
+/* eslint-enable */
+// UMD taken from https://github.com/umdjs/umd
+(function(factory) {
+	if (true) {
+		// AMD. Register as an anonymous module.
+		!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(6)], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory),
+				__WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ?
+				(__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__),
+				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+	} else if (typeof module === 'object' && module.exports) {
+		// Node/CommonJS
+		module.exports = function(root, jQuery) {
+			if (jQuery === undefined) {
+				// require('jQuery') returns a factory that requires window to
+				// build a jQuery instance, we normalize how we use modules
+				// that require this pattern but the window provided is a noop
+				// if it's defined (how jquery works)
+				if (typeof window !== 'undefined') {
+					jQuery = require('jquery');
+				}
+				else {
+					jQuery = require('jquery')(root);
+				}
+			}
+			factory(jQuery);
+			return jQuery;
+		};
+	} else {
+		// Browser globals
+		factory(jQuery);
+	}
+})(function($, undefined) {
+	'use strict';
+	// -----------------------------------------------------------------------
+	// :: Replacemenet for jQuery 2 deferred objects
+	// -----------------------------------------------------------------------
+	function DelayQueue() {
+		var callbacks = $.Callbacks();
+		var resolved = false;
+		this.resolve = function() {
+			callbacks.fire();
+			resolved = true;
+		};
+		this.add = function(fn) {
+			if (resolved) {
+				fn();
+			} else {
+				callbacks.add(fn);
+			}
+		};
+	}
+	// -----------------------------------------------------------------------
+	// :: map object to object
+	// -----------------------------------------------------------------------
+	$.omap = function(o, fn) {
+		var result = {};
+		$.each(o, function(k, v) {
+			result[k] = fn.call(o, k, v);
+		});
+		return result;
+	};
+	// -----------------------------------------------------------------------
+	// :: Deep clone of objects and arrays
+	// -----------------------------------------------------------------------
+	var Clone = {
+		clone_object: function(object) {
+			var tmp = {};
+			if (typeof object === 'object') {
+				if ($.isArray(object)) {
+					return this.clone_array(object);
+				} else if (object === null) {
+					return object;
+				} else {
+					for (var key in object) {
+						if ($.isArray(object[key])) {
+							tmp[key] = this.clone_array(object[key]);
+						} else if (typeof object[key] === 'object') {
+							tmp[key] = this.clone_object(object[key]);
+						} else {
+							tmp[key] = object[key];
+						}
+					}
+				}
+			}
+			return tmp;
+		},
+		clone_array: function(array) {
+			if (!$.isFunction(Array.prototype.map)) {
+				throw new Error("Your browser don't support ES5 array map " +
+					'use es5-shim');
+			}
+			return array.slice(0).map(function(item) {
+				if (typeof item === 'object') {
+					return this.clone_object(item);
+				} else {
+					return item;
+				}
+			}.bind(this));
+		}
+	};
+	var clone = function(object) {
+		return Clone.clone_object(object);
+	};
+
+	/* eslint-disable */
+	var hasLS = function() {
+		var testKey = 'test', storage = window.localStorage;
+		try {
+			storage.setItem(testKey, '1');
+			storage.removeItem(testKey);
+			return true;
+		} catch (error) {
+			return false;
+		}
+	};
+
+	// -----------------------------------------------------------------------
+	// :: Storage plugin
+	// -----------------------------------------------------------------------
+	// Private data
+	var isLS = hasLS();
+	// Private functions
+	function wls(n, v) {
+		var c;
+		if (typeof n === 'string' && typeof v === 'string') {
+			localStorage[n] = v;
+			return true;
+		} else if (typeof n === 'object' && typeof v === 'undefined') {
+			for (c in n) {
+				if (n.hasOwnProperty(c)) {
+					localStorage[c] = n[c];
+				}
+			}
+			return true;
+		}
+		return false;
+	}
+	function wc(n, v) {
+		var dt, e, c;
+		dt = new Date();
+		dt.setTime(dt.getTime() + 31536000000);
+		e = '; expires=' + dt.toGMTString();
+		if (typeof n === 'string' && typeof v === 'string') {
+			document.cookie = n + '=' + v + e + '; path=/';
+			return true;
+		} else if (typeof n === 'object' && typeof v === 'undefined') {
+			for (c in n) {
+				if (n.hasOwnProperty(c)) {
+					document.cookie = c + '=' + n[c] + e + '; path=/';
+				}
+			}
+			return true;
+		}
+		return false;
+	}
+	function rls(n) {
+		return localStorage[n];
+	}
+	function rc(n) {
+		var nn, ca, i, c;
+		nn = n + '=';
+		ca = document.cookie.split(';');
+		for (i = 0; i < ca.length; i++) {
+			c = ca[i];
+			while (c.charAt(0) === ' ') {
+				c = c.substring(1, c.length);
+			}
+			if (c.indexOf(nn) === 0) {
+				return c.substring(nn.length, c.length);
+			}
+		}
+		return null;
+	}
+	function dls(n) {
+		return delete localStorage[n];
+	}
+	function dc(n) {
+		return wc(n, '', -1);
+	}
+	/**
+	 * Public API
+	 * $.Storage.set("name", "value")
+	 * $.Storage.set({"name1":"value1", "name2":"value2", etc})
+	 * $.Storage.get("name")
+	 * $.Storage.remove("name")
+	 */
+	$.extend({
+		Storage: {
+			set: isLS ? wls : wc,
+			get: isLS ? rls : rc,
+			remove: isLS ? dls : dc
+		}
+	});
+	// -----------------------------------------------------------------------
+	// :: jQuery Timers
+	// -----------------------------------------------------------------------
+	var jQuery = $;
+	jQuery.fn.extend({
+		everyTime: function(interval, label, fn, times, belay) {
+			return this.each(function() {
+				jQuery.timer.add(this, interval, label, fn, times, belay);
+			});
+		},
+		oneTime: function(interval, label, fn) {
+			return this.each(function() {
+				jQuery.timer.add(this, interval, label, fn, 1);
+			});
+		},
+		stopTime: function(label, fn) {
+			return this.each(function() {
+				jQuery.timer.remove(this, label, fn);
+			});
+		}
+	});
+
+	jQuery.extend({
+		timer: {
+			guid: 1,
+			global: {},
+			regex: /^([0-9]+)\s*(.*s)?$/,
+			powers: {
+				// Yeah this is major overkill...
+				'ms': 1,
+				'cs': 10,
+				'ds': 100,
+				's': 1000,
+				'das': 10000,
+				'hs': 100000,
+				'ks': 1000000
+			},
+			timeParse: function(value) {
+				if (value === undefined || value === null) {
+					return null;
+				}
+				var result = this.regex.exec(jQuery.trim(value.toString()));
+				if (result[2]) {
+					var num = parseInt(result[1], 10);
+					var mult = this.powers[result[2]] || 1;
+					return num * mult;
+				} else {
+					return value;
+				}
+			},
+			add: function(element, interval, label, fn, times, belay) {
+				var counter = 0;
+
+				if (jQuery.isFunction(label)) {
+					if (!times) {
+						times = fn;
+					}
+					fn = label;
+					label = interval;
+				}
+
+				interval = jQuery.timer.timeParse(interval);
+
+				if (typeof interval !== 'number' ||
+					isNaN(interval) ||
+					interval <= 0) {
+					return;
+				}
+				if (times && times.constructor !== Number) {
+					belay = !!times;
+					times = 0;
+				}
+
+				times = times || 0;
+				belay = belay || false;
+
+				if (!element.$timers) {
+					element.$timers = {};
+				}
+				if (!element.$timers[label]) {
+					element.$timers[label] = {};
+				}
+				fn.$timerID = fn.$timerID || this.guid++;
+
+				var handler = function() {
+					if (belay && handler.inProgress) {
+						return;
+					}
+					handler.inProgress = true;
+					if ((++counter > times && times !== 0) ||
+						fn.call(element, counter) === false) {
+						jQuery.timer.remove(element, label, fn);
+					}
+					handler.inProgress = false;
+				};
+
+				handler.$timerID = fn.$timerID;
+
+				if (!element.$timers[label][fn.$timerID]) {
+					element.$timers[label][fn.$timerID] = window.setInterval(handler, interval);
+				}
+
+				if (!this.global[label]) {
+					this.global[label] = [];
+				}
+				this.global[label].push(element);
+
+			},
+			remove: function(element, label, fn) {
+				var timers = element.$timers, ret;
+
+				if (timers) {
+
+					if (!label) {
+						for (var lab in timers) {
+							if (timers.hasOwnProperty(lab)) {
+								this.remove(element, lab, fn);
+							}
+						}
+					} else if (timers[label]) {
+						if (fn) {
+							if (fn.$timerID) {
+								window.clearInterval(timers[label][fn.$timerID]);
+								delete timers[label][fn.$timerID];
+							}
+						} else {
+							for (var _fn in timers[label]) {
+								if (timers[label].hasOwnProperty(_fn)) {
+									window.clearInterval(timers[label][_fn]);
+									delete timers[label][_fn];
+								}
+							}
+						}
+
+						for (ret in timers[label]) {
+							if (timers[label].hasOwnProperty(ret)) {
+								break;
+							}
+						}
+						if (!ret) {
+							ret = null;
+							delete timers[label];
+						}
+					}
+
+					for (ret in timers) {
+						if (timers.hasOwnProperty(ret)) {
+							break;
+						}
+					}
+					if (!ret) {
+						element.$timers = null;
+					}
+				}
+			}
+		}
+	});
+
+	if (/(msie) ([\w.]+)/.exec(navigator.userAgent.toLowerCase())) {
+		jQuery(window).one('unload', function() {
+			var global = jQuery.timer.global;
+			for (var label in global) {
+				if (global.hasOwnProperty(label)) {
+					var els = global[label], i = els.length;
+					while (--i) {
+						jQuery.timer.remove(els[i], label);
+					}
+				}
+			}
+		});
+	}
+	// -----------------------------------------------------------------------
+	// :: CROSS BROWSER SPLIT
+	// -----------------------------------------------------------------------
+	(function(undef) {
+
+		// prevent double include
+
+		if (!String.prototype.split.toString().match(/\[native/)) {
+			return;
+		}
+
+		var nativeSplit = String.prototype.split,
+			compliantExecNpcg = /()??/.exec("")[1] === undef, // NPCG: nonparticipating capturing group
+			self;
+
+		self = function(str, separator, limit) {
+			// If `separator` is not a regex, use `nativeSplit`
+			if (Object.prototype.toString.call(separator) !== "[object RegExp]") {
+				return nativeSplit.call(str, separator, limit);
+			}
+			var output = [],
+				flags = (separator.ignoreCase ? "i" : "") +
+					(separator.multiline  ? "m" : "") +
+					(separator.extended   ? "x" : "") + // Proposed for ES6
+					(separator.sticky     ? "y" : ""), // Firefox 3+
+				lastLastIndex = 0,
+				// Make `global` and avoid `lastIndex` issues by working with a copy
+				separator2, match, lastIndex, lastLength;
+			separator = new RegExp(separator.source, flags + "g");
+			str += ""; // Type-convert
+			if (!compliantExecNpcg) {
+				// Doesn't need flags gy, but they don't hurt
+				separator2 = new RegExp("^" + separator.source + "$(?!\\s)", flags);
+			}
+			/* Values for `limit`, per the spec:
+             * If undefined: 4294967295 // Math.pow(2, 32) - 1
+             * If 0, Infinity, or NaN: 0
+             * If positive number: limit = Math.floor(limit); if (limit > 4294967295) limit -= 4294967296;
+             * If negative number: 4294967296 - Math.floor(Math.abs(limit))
+             * If other: Type-convert, then use the above rules
+             */
+			// ? Math.pow(2, 32) - 1 : ToUint32(limit)
+			limit = limit === undef ? -1 >>> 0 : limit >>> 0;
+			while (match = separator.exec(str)) {
+				// `separator.lastIndex` is not reliable cross-browser
+				lastIndex = match.index + match[0].length;
+				if (lastIndex > lastLastIndex) {
+					output.push(str.slice(lastLastIndex, match.index));
+					// Fix browsers whose `exec` methods don't consistently return `undefined` for
+					// nonparticipating capturing groups
+					if (!compliantExecNpcg && match.length > 1) {
+						match[0].replace(separator2, function() {
+							for (var i = 1; i < arguments.length - 2; i++) {
+								if (arguments[i] === undef) {
+									match[i] = undef;
+								}
+							}
+						});
+					}
+					if (match.length > 1 && match.index < str.length) {
+						Array.prototype.push.apply(output, match.slice(1));
+					}
+					lastLength = match[0].length;
+					lastLastIndex = lastIndex;
+					if (output.length >= limit) {
+						break;
+					}
+				}
+				if (separator.lastIndex === match.index) {
+					separator.lastIndex++; // Avoid an infinite loop
+				}
+			}
+			if (lastLastIndex === str.length) {
+				if (lastLength || !separator.test("")) {
+					output.push("");
+				}
+			} else {
+				output.push(str.slice(lastLastIndex));
+			}
+			return output.length > limit ? output.slice(0, limit) : output;
+		};
+
+		// For convenience
+		String.prototype.split = function(separator, limit) {
+			return self(this, separator, limit);
+		};
+
+		return self;
+
+	})();
+	// -----------------------------------------------------------------------
+	// :: jQuery Caret
+	// -----------------------------------------------------------------------
+	$.fn.caret = function(pos) {
+		var target = this[0];
+		var isContentEditable = target.contentEditable === 'true';
+		//get
+		if (arguments.length === 0) {
+			//HTML5
+			if (window.getSelection) {
+				//contenteditable
+				if (isContentEditable) {
+					target.focus();
+					var range1 = window.getSelection().getRangeAt(0),
+						range2 = range1.cloneRange();
+					range2.selectNodeContents(target);
+					range2.setEnd(range1.endContainer, range1.endOffset);
+					return range2.toString().length;
+				}
+				//textarea
+				return target.selectionStart;
+			}
+			//IE<9
+			if (document.selection) {
+				target.focus();
+				//contenteditable
+				if (isContentEditable) {
+					var range1 = document.selection.createRange(),
+						range2 = document.body.createTextRange();
+					range2.moveToElementText(target);
+					range2.setEndPoint('EndToEnd', range1);
+					return range2.text.length;
+				}
+				//textarea
+				var pos = 0,
+					range = target.createTextRange(),
+					range2 = document.selection.createRange().duplicate(),
+					bookmark = range2.getBookmark();
+				range.moveToBookmark(bookmark);
+				while (range.moveStart('character', -1) !== 0) pos++;
+				return pos;
+			}
+			//not supported
+			return 0;
+		}
+		//set
+		if (pos === -1)
+			pos = this[isContentEditable? 'text' : 'val']().length;
+		//HTML5
+		if (window.getSelection) {
+			//contenteditable
+			if (isContentEditable) {
+				target.focus();
+				window.getSelection().collapse(target.firstChild, pos);
+			}
+			//textarea
+			else
+				target.setSelectionRange(pos, pos);
+		}
+		//IE<9
+		else if (document.body.createTextRange) {
+			var range = document.body.createTextRange();
+			range.moveToElementText(target);
+			range.moveStart('character', pos);
+			range.collapse(true);
+			range.select();
+		}
+		if (!isContentEditable)
+			target.focus();
+		return pos;
+	};
+	/* eslint-enable */
+	var requestAnimationFrame =
+		window.requestAnimationFrame ||
+		window.mozRequestAnimationFrame ||
+		window.webkitRequestAnimationFrame ||
+		function(fn) {
+			return window.setTimeout(fn, 20);
+		};
+	// -----------------------------------------------------------------------
+	// :: Cross-browser resize element plugin
+	// :: Taken from ResizeSensor.js file from marcj/css-element-queries (MIT license)
+	// :: not all jQuerifided
+	// -----------------------------------------------------------------------
+	$.fn.resizer = function(callback) {
+		var unbind = arguments[0] === "unbind";
+		if (!unbind && !$.isFunction(callback)) {
+			throw new Error(
+				'Invalid argument, it need to a function of string "unbind".'
+			);
+		}
+		return this.each(function() {
+			var $this = $(this);
+			if (unbind) {
+				$(this).removeData('callbacks').find('.resizer').remove();
+			} else if ($this.data('callbacks')) {
+				$(this).data('callbacks').push(callback);
+			} else {
+				$this.data('callbacks', [callback]);
+				var self = this;
+				var resizer = $('<div/>').addClass('resizer').appendTo(this)[0];
+				var style =
+					'position: absolute; left: 0; top: 0; right: 0; bottom: 0; ' +
+					'overflow: hidden; z-index: -1; visibility: hidden;';
+				var styleChild = 'position: absolute; left: 0; top: 0; transition: 0s;';
+				resizer.style.cssText = style;
+				resizer.innerHTML =
+					'<div class="resize-sensor-expand" style="' + style + '">' +
+					'<div style="' + styleChild + '"></div>' + "</div>" +
+					'<div class="resize-sensor-shrink" style="' + style + '">' +
+					'<div style="' + styleChild + ' width: 200%; height: 200%"></div>' +
+					"</div>";
+
+				var expand = resizer.childNodes[0];
+				var expandChild = expand.childNodes[0];
+				var shrink = resizer.childNodes[1];
+				var dirty, rafId, newWidth, newHeight;
+				var lastWidth = self.offsetWidth;
+				var lastHeight = self.offsetHeight;
+
+				var reset = function() {
+					expandChild.style.width = '100000px';
+					expandChild.style.height = '100000px';
+
+					expand.scrollLeft = 100000;
+					expand.scrollTop = 100000;
+
+					shrink.scrollLeft = 100000;
+					shrink.scrollTop = 100000;
+				};
+
+				reset();
+
+				var onResized = function() {
+					rafId = 0;
+
+					if (!dirty) {
+						return;
+					}
+
+					lastWidth = newWidth;
+					lastHeight = newHeight;
+					var callbacks = $this.data('callbacks');
+					if (callbacks && callbacks.length) {
+						callbacks.forEach(function(fn) {
+							fn();
+						});
+					}
+				};
+
+				var onScroll = function() {
+					newWidth = self.offsetWidth;
+					newHeight = self.offsetHeight;
+					dirty = newWidth !== lastWidth || newHeight !== lastHeight;
+
+					if (dirty && !rafId) {
+						rafId = requestAnimationFrame(onResized);
+					}
+
+					reset();
+				};
+				$(expand).on("scroll", onScroll);
+				$(shrink).on("scroll", onScroll);
+			}
+		});
+	};
+	// -----------------------------------------------------------------------
+	// :: hide elements from screen readers
+	// -----------------------------------------------------------------------
+	function a11y_hide(element) {
+		element.attr({
+			role: 'presentation',
+			'aria-hidden': 'true'
+		});
+	}
+	// -----------------------------------------------------------------------
+	// :: CYCLE DATA STRUCTURE
+	// -----------------------------------------------------------------------
+	function Cycle() {
+		var data = [].slice.call(arguments);
+		var pos = 0;
+		$.extend(this, {
+			get: function() {
+				return data;
+			},
+			index: function() {
+				return pos;
+			},
+			rotate: function(skip) {
+				if (!skip) {
+					var defined = data.filter(function(item) {
+						return typeof item !== 'undefined';
+					});
+					if (!defined.length) {
+						return;
+					}
+				}
+				if (data.length === 1) {
+					return data[0];
+				} else {
+					if (pos === data.length - 1) {
+						pos = 0;
+					} else {
+						++pos;
+					}
+					if (typeof data[pos] !== 'undefined') {
+						return data[pos];
+					} else {
+						return this.rotate(true);
+					}
+				}
+			},
+			length: function() {
+				return data.length;
+			},
+			remove: function(index) {
+				delete data[index];
+			},
+			set: function(item) {
+				for (var i = data.length; i--;) {
+					if (data[i] === item) {
+						pos = i;
+						return;
+					}
+				}
+				this.append(item);
+				pos = data.length - 1;
+			},
+			front: function() {
+				if (data.length) {
+					var index = pos;
+					var restart = false;
+					while (!data[index]) {
+						index++;
+						if (index > data.length) {
+							if (restart) {
+								break;
+							}
+							index = 0;
+							restart = true;
+						}
+					}
+					return data[index];
+				}
+			},
+			map: function(fn) {
+				return data.filter(Boolean).map(fn);
+			},
+			forEach: function(fn) {
+				data.filter(Boolean).forEach(fn);
+			},
+			append: function(item) {
+				data.push(item);
+			}
+		});
+	}
+	// -----------------------------------------------------------------------
+	// :: STACK DATA STRUCTURE
+	// -----------------------------------------------------------------------
+	function Stack(init) {
+		var data = init instanceof Array ? init : init ? [init] : [];
+		$.extend(this, {
+			data: function() {
+				return data;
+			},
+			map: function(fn) {
+				return $.map(data, fn);
+			},
+			size: function() {
+				return data.length;
+			},
+			pop: function() {
+				if (data.length === 0) {
+					return null;
+				} else {
+					var value = data[data.length - 1];
+					data = data.slice(0, data.length - 1);
+					return value;
+				}
+			},
+			push: function(value) {
+				data = data.concat([value]);
+				return value;
+			},
+			top: function() {
+				return data.length > 0 ? data[data.length - 1] : null;
+			},
+			clone: function() {
+				return new Stack(data.slice(0));
+			}
+		});
+	}
+	// -------------------------------------------------------------------------
+	// :: HISTORY CLASS
+	// -------------------------------------------------------------------------
+	function History(name, size, memory) {
+		var enabled = true;
+		var storage_key = '';
+		if (typeof name === 'string' && name !== '') {
+			storage_key = name + '_';
+		}
+		storage_key += 'commands';
+		var data;
+		if (memory) {
+			data = [];
+		} else {
+			data = $.Storage.get(storage_key);
+			data = data ? JSON.parse(data) : [];
+		}
+		var pos = data.length - 1;
+		$.extend(this, {
+			append: function(item) {
+				if (enabled) {
+					if (data[data.length - 1] !== item) {
+						data.push(item);
+						if (size && data.length > size) {
+							data = data.slice(-size);
+						}
+						pos = data.length - 1;
+						if (!memory) {
+							$.Storage.set(storage_key, JSON.stringify(data));
+						}
+					}
+				}
+			},
+			set: function(new_data) {
+				if (new_data instanceof Array) {
+					data = new_data;
+					if (!memory) {
+						$.Storage.set(storage_key, JSON.stringify(data));
+					}
+				}
+			},
+			data: function() {
+				return data;
+			},
+			reset: function() {
+				pos = data.length - 1;
+			},
+			last: function() {
+				return data[data.length - 1];
+			},
+			end: function() {
+				return pos === data.length - 1;
+			},
+			position: function() {
+				return pos;
+			},
+			current: function() {
+				return data[pos];
+			},
+			next: function() {
+				if (pos < data.length - 1) {
+					++pos;
+				}
+				if (pos !== -1) {
+					return data[pos];
+				}
+			},
+			previous: function() {
+				var old = pos;
+				if (pos > 0) {
+					--pos;
+				}
+				if (old !== -1) {
+					return data[pos];
+				}
+			},
+			clear: function() {
+				data = [];
+				this.purge();
+			},
+			enabled: function() {
+				return enabled;
+			},
+			enable: function() {
+				enabled = true;
+			},
+			purge: function() {
+				if (!memory) {
+					$.Storage.remove(storage_key);
+				}
+			},
+			disable: function() {
+				enabled = false;
+			}
+		});
+	}
+	// -------------------------------------------------------------------------
+	// :: COMMAND LINE PLUGIN
+	// -------------------------------------------------------------------------
+	var cmd_index = 0;
+	$.fn.cmd = function(options) {
+		var self = this;
+		var maybe_data = self.data('cmd');
+		if (maybe_data) {
+			return maybe_data;
+		}
+		var id = cmd_index++;
+		self.addClass('cmd');
+		self.append('<span class="prompt"></span><span></span>' +
+			'<span class="cursor">&nbsp;</span><span></span>');
+		// a11y: don't read command it's in textarea that's in focus
+		a11y_hide(self.find('span').not(':eq(0)'));
+		// on mobile the only way to hide textarea on desktop it's needed because
+		// textarea show up after focus
+		//self.append('<span class="mask"></mask>');
+		var clip = $('<textarea>').attr({
+			autocapitalize: 'off',
+			spellcheck: 'false',
+			tabindex: 1
+		}).addClass('clipboard').appendTo(self);
+		// we don't need this but leave it as a comment just in case
+		//var contentEditable = $('<div contentEditable></div>')
+		//$(document.body).append(contentEditable);
+		if (options.width) {
+			self.width(options.width);
+		}
+		var num_chars; // calculated by draw_prompt
+		var prompt_len;
+		var prompt_node = self.find('.prompt');
+		var reverse_search = false;
+		var rev_search_str = '';
+		var reverse_search_position = null;
+		var backup_prompt;
+		var mask = options.mask || false;
+		var command = '';
+		var last_command;
+		// text from selection using CTRL+SHIFT+C (as in Xterm)
+		var kill_text = ''; // text from command that kill part of the command
+		var position = 0;
+		var prompt;
+		var enabled;
+		var historySize = options.historySize || 60;
+		var name, history;
+		var cursor = self.find('.cursor');
+		var animation;
+		var paste_count = 0;
+		function get_char_size() {
+			var span = $('<span>&nbsp;</span>').appendTo(self);
+			var rect = span[0].getBoundingClientRect();
+			span.remove();
+			return rect;
+		}
+		function get_focus_offset() {
+			var sel;
+			if ((sel = window.getSelection()) && (sel.focusNode !== null)) {
+				return sel.focusOffset;
+			}
+		}
+		function get_char_pos(e) {
+			var focus = get_focus_offset();
+			var col;
+			var size = get_char_size();
+			var height = size.height;
+			var offset = self.offset();
+			var row = Math.floor((e.pageY - offset.top) / height);
+			if ($.isNumeric(focus)) {
+				var node = $(e.target).closest('[role="presentation"]');
+				if (node.is('div')) {
+					col = focus;
+				} else if (node.next().is('.cursor')) {
+					col = focus;
+				} else if (node.is('.cursor')) {
+					return position;
+				} else if (node.prev().is('.cursor')) {
+					return position + focus;
+				} else {
+					col = 0;
+				}
+			} else {
+				return command.length;
+			}
+			var lines = get_splited_command_line(command);
+			var try_pos;
+			if (row > 0 && lines.length > 1) {
+				try_pos = col + lines.slice(0, row).reduce(function(sum, line) {
+					return sum + line.length;
+				}, 0);
+			} else {
+				try_pos = col;
+			}
+			// tabs are 4 spaces and newline don't show up in results
+			var text = command.replace(/\t/g, '\x00\x00\x00\x00').replace(/\n/, '');
+			var before = text.slice(0, try_pos);
+			var len = before.replace(/\x00{4}/g, '\t').replace(/\x00+/, '').length;
+			var command_len = command.length;
+			return len > command_len ? command_len : len;
+		}
+		function get_key(e) {
+			if (e.key) {
+				var key = e.key.toUpperCase();
+				if (key === 'CONTROL') {
+					return 'CTRL';
+				} else {
+					var combo = [];
+					if (e.ctrlKey) {
+						combo.push('CTRL');
+					}
+					if (e.metaKey && key !== 'META') {
+						combo.push('META');
+					}
+					if (e.shiftKey && key !== 'SHIFT') {
+						combo.push('SHIFT');
+					}
+					if (e.altKey && key !== 'ALT') {
+						combo.push('ALT');
+					}
+					if (e.key) {
+						if (key === 'DEL') { // IE11
+							combo.push('DELETE');
+						} else {
+							combo.push(key);
+						}
+					}
+					return combo.join('+');
+				}
+			}
+		}
+		var keymap;
+		var default_keymap = {
+			'ALT+D': function() {
+				self.set(command.slice(0, position) +
+					command.slice(position).
+					replace(/ *[^ ]+ *(?= )|[^ ]+$/, ''), true);
+				// chrome jump to address bar
+				return false;
+			},
+			'ENTER': function() {
+				if (history && command && !mask &&
+					($.isFunction(options.historyFilter) &&
+						options.historyFilter(command)) ||
+					(options.historyFilter instanceof RegExp &&
+						command.match(options.historyFilter)) ||
+					!options.historyFilter) {
+					history.append(command);
+				}
+				var tmp = command;
+				history.reset();
+
+				// for next input event on firefox/android with google keyboard
+				text = '';
+				no_keydown = true;
+
+				self.set('');
+				if (options.commands) {
+					options.commands(tmp);
+				}
+				if ($.isFunction(prompt)) {
+					draw_prompt();
+				}
+				$('.clipboard').val('');
+				return false;
+			},
+			'SHIFT+ENTER': function() {
+				self.insert('\n');
+				return true;
+			},
+			'BACKSPACE': function() {
+				if (reverse_search) {
+					rev_search_str = rev_search_str.slice(0, -1);
+					draw_reverse_prompt();
+				} else if (command !== '' && position > 0) {
+					self['delete'](-1);
+				}
+				// for next input after naitve backspace
+				no_keydown = true;
+			},
+			'TAB': function() {
+				self.insert('\t');
+			},
+			'CTRL+D': function() {
+				self['delete'](1);
+				return false;
+			},
+			'DELETE': function() {
+				self['delete'](1);
+				return true;
+			},
+			'ARROWUP': prev_history,
+			'UP': prev_history, // IE
+			'CTRL+P': prev_history,
+			'ARROWDOWN': next_history,
+			'DOWN': next_history, // IE
+			'CTRL+N': next_history,
+			'ARROWLEFT': left,
+			'LEFT': left, // IE
+			'CTRL+B': left,
+			'CTRL+ARROWLEFT': function() {
+				// jump to one character after last space before prevoius word
+				var len = position - 1;
+				var pos = 0;
+				if (command[len] === ' ') {
+					--len;
+				}
+				for (var i = len; i > 0; --i) {
+					if (command[i] === ' ' && command[i + 1] !== ' ') {
+						pos = i + 1;
+						break;
+					} else if (command[i] === '\n' &&
+						command[i + 1] !== '\n') {
+						pos = i;
+						break;
+					}
+				}
+				self.position(pos);
+			},
+			'CTRL+R': function() {
+				if (reverse_search) {
+					reverse_history_search(true);
+				} else {
+					backup_prompt = prompt;
+					draw_reverse_prompt();
+					last_command = command;
+					self.set('');
+					redraw();
+					reverse_search = true;
+				}
+				return false;
+			},
+			'CTRL+G': function() {
+				if (reverse_search) {
+					prompt = backup_prompt;
+					draw_prompt();
+					self.set(last_command);
+					redraw();
+					reverse_search = false;
+					rev_search_str = '';
+					return false;
+				}
+			},
+			'ARROWRIGHT': right,
+			'CTRL+F': right,
+			'RIGHT': right, // IE
+			'CTRL+ARROWRIGHT': function() {
+				// jump to beginning or end of the word
+				if (command[position] === ' ') {
+					++position;
+				}
+				var re = /\S[\n\s]{2,}|[\n\s]+\S?/;
+				var match = command.slice(position).match(re);
+				if (!match || match[0].match(/^\s+$/)) {
+					self.position(command.length);
+				} else if (match[0][0] !== ' ') {
+					position += match.index + 1;
+				} else {
+					position += match.index + match[0].length - 1;
+					if (match[0][match[0].length - 1] !== ' ') {
+						--position;
+					}
+				}
+				redraw();
+			},
+			'F12': return_true, // Allow Firebug
+			'END': end,
+			'CTRL+E': end,
+			'HOME': home,
+			'CTRL+A': home,
+			'SHIFT+INSERT': paste_event,
+			'CTRL+SHIFT+T': return_true, // open closed tab
+			'CTRL+W': function() {
+				// don't work in Chromium (can't prevent close tab)
+				if (command !== '' && position !== 0) {
+					var m = command.slice(0, position).match(/([^ ]+ *$)/);
+					if (m[0].length) {
+						kill_text = self['delete'](-m[0].length);
+						text_to_clipboard(self, kill_text);
+					}
+				}
+				return false;
+			},
+			'CTRL+H': function() {
+				if (command !== '' && position > 0) {
+					self['delete'](-1);
+				}
+				return false;
+			},
+			'CTRL+X': return_true,
+			'CTRL+C': return_true,
+			'CTRL+T': return_true,
+			'CTRL+Y': function() {
+				if (kill_text !== '') {
+					self.insert(kill_text);
+				}
+			},
+			'CTRL+V': paste_event,
+			'META+V': paste_event,
+			'CTRL+K': function() {
+				if (command.length - position) {
+					kill_text = self['delete'](command.length - position);
+					text_to_clipboard(self, kill_text);
+				}
+				return false;
+			},
+			'CTRL+U': function() {
+				if (command !== '' && position !== 0) {
+					kill_text = self['delete'](-position);
+					text_to_clipboard(self, kill_text);
+				}
+				return false;
+			},
+			'CTRL+TAB': function() {
+				return false;
+			},
+			'META+`': return_true, // CMD+` switch browser window on Mac
+			'META+R': return_true, // CMD+R page reload in Chrome Mac
+			'META+L': return_true  // CLD+L jump into Ominbox on Chrome Mac
+		};
+		function return_true() {
+			return true;
+		}
+		function paste_event() {
+			clip.val('');
+			paste_count = 0;
+			clip.trigger('focus', [true]);
+			clip.on('input', function input(e) {
+				paste(e);
+				clip.off('input', input);
+			});
+			return true;
+		}
+		function prev_history() {
+			if (first_up_history) {
+				last_command = command;
+				self.set(history.current());
+			} else {
+				self.set(history.previous());
+			}
+			first_up_history = false;
+			return false;
+		}
+		function next_history() {
+			self.set(history.end() ? last_command : history.next());
+			return false;
+		}
+		function left() {
+			if (position > 0) {
+				self.position(-1, true);
+				redraw();
+			}
+		}
+		function right() {
+			if (position < command.length) {
+				self.position(1, true);
+			}
+			return false;
+		}
+		function home() {
+			self.position(0);
+		}
+		function end() {
+			self.position(command.length);
+		}
+		function mobile_focus() {
+			//if (is_touch) {
+			var focus = clip.is(':focus');
+			if (enabled) {
+				if (!focus) {
+					//clip.trigger('focus', [true]);
+				}
+				self.oneTime(10, function() {
+					if (!clip.is(':focus') && enabled) {
+						clip.trigger('focus', [true]);
+					}
+				});
+			} else if (focus && (is_mobile || !enabled)) {
+				clip.trigger('blur', [true]);
+			}
+		}
+		// on mobile you can't delete character if input is empty (event
+		// will not fire) so we fake text entry, we could just put dummy
+		// data but we put real command and position
+		function fix_textarea() {
+			// delay worked while experimenting
+			self.oneTime(10, function() {
+				clip.val(command);
+				if (enabled) {
+					self.oneTime(10, function() {
+						try {
+							clip.caret(position);
+						} catch (e) {
+							// firefox throw NS_ERROR_FAILURE ignore
+						}
+					});
+				}
+			});
+		}
+		// terminal animation don't work on andorid because they animate
+		// 2 properties
+		if (support_animations && !is_android) {
+			animation = function(toggle) {
+				if (toggle) {
+					cursor.addClass('blink');
+				} else {
+					cursor.removeClass('blink');
+				}
+			};
+		} else {
+			var animating = false;
+			animation = function(toggle) {
+				if (toggle && !animating) {
+					animating = true;
+					cursor.addClass('inverted blink');
+					self.everyTime(500, 'blink', blink);
+				} else if (animating && !toggle) {
+					animating = false;
+					self.stopTime('blink', blink);
+					cursor.removeClass('inverted blink');
+				}
+			};
+		}
+		// ---------------------------------------------------------------------
+		// :: Blinking cursor function
+		// ---------------------------------------------------------------------
+		function blink() {
+			cursor.toggleClass('inverted');
+		}
+		// ---------------------------------------------------------------------
+		// :: Set prompt for reverse search
+		// ---------------------------------------------------------------------
+		function draw_reverse_prompt() {
+			prompt = '(reverse-i-search)`' + rev_search_str + "': ";
+			draw_prompt();
+		}
+		// ---------------------------------------------------------------------
+		// :: Disable reverse search
+		// ---------------------------------------------------------------------
+		function clear_reverse_state() {
+			prompt = backup_prompt;
+			reverse_search = false;
+			reverse_search_position = null;
+			rev_search_str = '';
+		}
+		// ---------------------------------------------------------------------
+		// :: Search through command line history. If next is not defined or
+		// :: false it searches for the first item from the end. If true it
+		// :: search for the next item
+		// ---------------------------------------------------------------------
+		function reverse_history_search(next) {
+			var history_data = history.data();
+			var regex, save_string;
+			var len = history_data.length;
+			if (next && reverse_search_position > 0) {
+				len -= reverse_search_position;
+			}
+			if (rev_search_str.length > 0) {
+				for (var j = rev_search_str.length; j > 0; j--) {
+					save_string = $.terminal.escape_regex(rev_search_str.substring(0, j));
+					regex = new RegExp(save_string);
+					for (var i = len; i--;) {
+						if (regex.test(history_data[i])) {
+							reverse_search_position = history_data.length - i;
+							self.position(history_data[i].indexOf(save_string));
+							self.set(history_data[i], true);
+							redraw();
+							if (rev_search_str.length !== j) {
+								rev_search_str = rev_search_str.substring(0, j);
+								draw_reverse_prompt();
+							}
+							return;
+						}
+					}
+				}
+			}
+			rev_search_str = ''; // clear if not found any
+		}
+		// ---------------------------------------------------------------------
+		// :: Recalculate number of characters in command line
+		// ---------------------------------------------------------------------
+		function change_num_chars() {
+			var $prompt = self.find('.prompt').text('&nbsp;');
+			var W = self.width();
+			var w = $prompt[0].getBoundingClientRect().width;
+			num_chars = Math.floor(W / w);
+			draw_prompt();
+		}
+		// ---------------------------------------------------------------------
+		// :: Split String that fit into command line where first line need to
+		// :: fit next to prompt (need to have less characters)
+		// ---------------------------------------------------------------------
+		function get_splited_command_line(string) {
+			function split(string) {
+				return $.terminal.split_equal(string, num_chars);
+			}
+			var prompt = prompt_node.text();
+			var re = new RegExp('^' + $.terminal.escape_regex(prompt));
+			var array;
+			if (string.match(/\n/)) {
+				var tmp = string.split('\n');
+				var first_len = num_chars - prompt_len - 1;
+				for (var i = 0; i < tmp.length - 1; ++i) {
+					tmp[i] += ' ';
+				}
+				// split first line
+				if (strlen(tmp[0]) > first_len) {
+					array = split(prompt + tmp[0], num_chars);
+					array[0] = array[0].replace(re, '');
+				} else {
+					array = [tmp[0]];
+				}
+				// process rest of the lines
+				for (i = 1; i < tmp.length; ++i) {
+					if (tmp[i].length > num_chars) {
+						array = array.concat(split(tmp[i], num_chars));
+					} else {
+						array.push(tmp[i]);
+					}
+				}
+			} else {
+				array = split(prompt + string, num_chars);
+				array[0] = array[0].replace(re, '');
+			}
+			return array;
+		}
+		// ---------------------------------------------------------------------
+		// :: use custom formatting
+		// ---------------------------------------------------------------------
+		function formatting(string) {
+			// we don't want to format command when user type formatting in
+			string = $.terminal.escape_formatting(string);
+			try {
+				return $.terminal.apply_formatters(string);
+			} catch (e) {
+				alert(e.message + '\n' + (e.stack ? e.stack : e));
+			}
+		}
+		// ---------------------------------------------------------------------
+		// :: format end encode the string
+		// ---------------------------------------------------------------------
+		function format(string) {
+			return $.terminal.format($.terminal.encode(string));
+		}
+		// ---------------------------------------------------------------------
+		// :: Function that displays the command line. Split long lines and
+		// :: place cursor in the right place
+		// ---------------------------------------------------------------------
+		var redraw = (function() {
+			var before = cursor.prev();
+			var after = cursor.next();
+			// -----------------------------------------------------------------
+			// :: Draw line with the cursor
+			// -----------------------------------------------------------------
+			function slice(string, start, end) {
+				return $.terminal.substring(string, start, end);
+			}
+			function draw_cursor_line(string, position) {
+				var len = string.length;
+				string = formatting(string);
+				if (position === len) {
+					before.html(format(string));
+					cursor.html('&nbsp;');
+					after.html('');
+				} else if (position === 0) {
+					before.html('');
+					//fix for tilda in IE
+					cursor.html(format(slice(string, 0, 1)));
+					//cursor.html(format(string[0]));
+					after.html(format(slice(string, 1)));
+				} else {
+					var before_str = slice(string, 0, position);
+					before.html(format(before_str));
+					//fix for tilda in IE
+					var c = slice(string, position, position + 1);
+					//cursor.html(string[position]);
+					cursor.html(format(c));
+					if (position === string.length - 1) {
+						after.html('');
+					} else {
+						after.html(format(slice(string, position + 1)));
+					}
+				}
+			}
+			function div(string) {
+				return '<div role="presentation">' +
+					format(formatting(string)) +
+					'</div>';
+			}
+			// -----------------------------------------------------------------
+			// :: Display lines after the cursor
+			// -----------------------------------------------------------------
+			function lines_after(lines) {
+				var last_ins = after;
+				$.each(lines, function(i, line) {
+					last_ins = $(div(line)).insertAfter(last_ins);
+				});
+			}
+			// -----------------------------------------------------------------
+			// :: Display lines before the cursor
+			// -----------------------------------------------------------------
+			function lines_before(lines) {
+				$.each(lines, function(i, line) {
+					before.before(div(line));
+				});
+			}
+			// -----------------------------------------------------------------
+			// :: Redraw function
+			// -----------------------------------------------------------------
+			return function() {
+				var string;
+				switch (typeof mask) {
+					case 'boolean':
+						string = mask ? command.replace(/./g, '*') : command;
+						break;
+					case 'string':
+						string = command.replace(/./g, mask);
+						break;
+				}
+				var i;
+				self.find('div').remove();
+				before.html('');
+				// long line
+				if (strlen(string) > num_chars - prompt_len - 1 ||
+					string.match(/\n/)) {
+					var tabs = string.match(/\t/g);
+					var tabs_rm = tabs ? tabs.length * 3 : 0;
+					//quick tabulation hack
+					if (tabs) {
+						string = string.replace(/\t/g, '\x00\x00\x00\x00');
+					}
+					var array = get_splited_command_line(string);
+					if (tabs) {
+						array = $.map(array, function(line) {
+							return line.replace(/\x00\x00\x00\x00/g, '\t');
+						});
+					}
+					var first_len = array[0].length;
+					//cursor in first line
+					if (first_len === 0 && array.length === 1) {
+						// skip empty line
+					} else if (position < first_len) {
+						draw_cursor_line(array[0], position);
+						lines_after(array.slice(1));
+					} else if (position === first_len) {
+						before.before(div(array[0]));
+						draw_cursor_line(array[1] || '', 0);
+						if (array.length > 1) {
+							lines_after(array.slice(2));
+						}
+					} else {
+						var num_lines = array.length;
+						if (position < first_len) {
+							draw_cursor_line(array[0], position);
+							lines_after(array.slice(1));
+						} else if (position === first_len) {
+							before.before(div(array[0]));
+							draw_cursor_line(array[1], 0);
+							lines_after(array.slice(2));
+						} else {
+							var last = array.slice(-1)[0];
+							var from_last = string.length - position - tabs_rm;
+							var last_len = last.length;
+							var pos = 0;
+							if (from_last <= last_len) { // in last line
+								lines_before(array.slice(0, -1));
+								if (last_len === from_last) {
+									pos = 0;
+								} else {
+									pos = last_len - from_last;
+								}
+								draw_cursor_line(last, pos);
+							} else if (num_lines === 3) { // in the middle
+								var str = format(array[0]);
+								before.before('<div role="presentation">' +
+									str +
+									'</div>');
+								draw_cursor_line(array[1], position - first_len - 1);
+								str = format(formatting(array[2]));
+								after.after('<div role="presentation">' +
+									str +
+									'</div>');
+							} else {
+								// more lines, cursor in the middle
+								var line_index;
+								var current;
+								pos = position;
+								for (i = 0; i < array.length; ++i) {
+									var current_len = array[i].length;
+									if (pos > current_len) {
+										pos -= current_len;
+									} else {
+										break;
+									}
+								}
+								current = array[i];
+								line_index = i;
+								// cursor on first character in line
+								if (pos === current.length) {
+									pos = 0;
+									current = array[++line_index];
+									if (current === undefined) {
+										//should never happen
+										var msg = $.terminal.defaults.strings.redrawError;
+										throw new Error(msg);
+									}
+								}
+								draw_cursor_line(current, pos);
+								lines_before(array.slice(0, line_index));
+								lines_after(array.slice(line_index + 1));
+							}
+						}
+					}
+				} else if (string === '') {
+					before.html('');
+					cursor.html('&nbsp;');
+					after.html('');
+				} else {
+					draw_cursor_line(string, position);
+				}
+			};
+		})();
+		// ---------------------------------------------------------------------
+		// :: Draw prompt that can be a function or a string
+		// ---------------------------------------------------------------------
+		var draw_prompt = (function() {
+			function set(prompt) {
+				var lines = $.terminal.split_equal(
+					$.terminal.encode(prompt),
+					num_chars
+				);
+				var last_line = lines.slice(-1).map($.terminal.format)[0];
+				var formatted = lines.slice(0, -1).map(function(line) {
+					line = $.terminal.format(line);
+					if (line.match(/class="/)) {
+						return line.replace(/class="/, 'class="line ');
+					} else {
+						return line.replace(/^<span/, '<span class="line"');
+					}
+				}).concat([last_line]).join('\n');
+				prompt_node.html(formatted);
+				prompt_len = strlen($('<span>' + last_line + '</span>').text());
+			}
+			return function() {
+				switch (typeof prompt) {
+					case 'string':
+						set(prompt);
+						break;
+					case 'function':
+						prompt(set);
+						break;
+				}
+			};
+		})();
+		// ---------------------------------------------------------------------
+		// :: Paste content to terminal using hidden textarea
+		// ---------------------------------------------------------------------
+		function paste() {
+			if (paste_count++ > 0) {
+				return;
+			}
+			if (self.isenabled()) {
+				var clip = self.find('textarea');
+				if (!clip.is(':focus')) {
+					clip.trigger('focus', [true]);
+				}
+				//wait until Browser insert text to textarea
+				self.oneTime(100, function() {
+					self.insert(clip.val());
+					clip.val(command);
+					fix_textarea();
+				});
+			}
+		}
+		function fire_change_command() {
+			if ($.isFunction(options.onCommandChange)) {
+				options.onCommandChange(command);
+			}
+		}
+		// ---------------------------------------------------------------------
+		// :: Command Line Methods
+		// ---------------------------------------------------------------------
+		$.extend(self, {
+			name: function(string) {
+				if (string !== undefined) {
+					name = string;
+					var enabled = history && history.enabled() || !history;
+					history = new History(
+						string,
+						historySize,
+						options.history === 'memory'
+					);
+					// disable new history if old was disabled
+					if (!enabled) {
+						history.disable();
+					}
+					return self;
+				} else {
+					return name;
+				}
+			},
+			purge: function() {
+				history.clear();
+				return self;
+			},
+			history: function() {
+				return history;
+			},
+			'delete': function(n, stay) {
+				var removed;
+				if (n === 0) {
+					return self;
+				} else if (n < 0) {
+					if (position > 0) {
+						// this may look weird but if n is negative we need
+						// to use +
+						removed = command.slice(0, position).slice(n);
+						command = command.slice(0, position + n) +
+							command.slice(position, command.length);
+						if (!stay) {
+							self.position(position + n);
+						}
+						fire_change_command();
+					}
+				} else if (command !== '' && position < command.length) {
+					removed = command.slice(position).slice(0, n);
+					command = command.slice(0, position) +
+						command.slice(position + n, command.length);
+					fire_change_command();
+				}
+				redraw();
+				fix_textarea();
+				return removed;
+			},
+			set: function(string, stay) {
+				if (string !== undefined) {
+					command = string;
+					if (!stay) {
+						self.position(command.length);
+					}
+					redraw();
+					fix_textarea();
+					fire_change_command();
+				}
+				return self;
+			},
+			keymap: function(new_keymap) {
+				if (typeof new_keymap === 'undefined') {
+					return keymap;
+				} else {
+					keymap = $.extend(
+						{},
+						default_keymap,
+						$.omap(new_keymap || {}, function(key, fn) {
+							return function(e) {
+								// new keymap function will get default as 2nd argument
+								return fn(e, default_keymap[key]);
+							};
+						})
+					);
+					return self;
+				}
+			},
+			insert: function(string, stay) {
+				if (position === command.length) {
+					command += string;
+				} else if (position === 0) {
+					command = string + command;
+				} else {
+					command = command.slice(0, position) +
+						string + command.slice(position);
+				}
+				if (!stay) {
+					self.position(string.length, true);
+				} else {
+					fix_textarea();
+				}
+				redraw();
+				fire_change_command();
+				return self;
+			},
+			get: function() {
+				return command;
+			},
+			commands: function(commands) {
+				if (commands) {
+					options.commands = commands;
+					return self;
+				} else {
+					return commands;
+				}
+			},
+			destroy: function() {
+				doc.unbind('keypress.cmd', keypress_event);
+				doc.unbind('keydown.cmd', keydown_event);
+				doc.unbind('input.cmd', input_event);
+				self.stopTime('blink', blink);
+				self.find('.cursor').next().remove().end().prev().remove().
+				end().remove();
+				self.find('.prompt, .clipboard').remove();
+				self.removeClass('cmd').removeData('cmd').off('.cmd');
+				return self;
+			},
+			prompt: function(user_prompt) {
+				if (user_prompt === undefined) {
+					return prompt;
+				} else {
+					if (typeof user_prompt === 'string' ||
+						typeof user_prompt === 'function') {
+						prompt = user_prompt;
+					} else {
+						throw new Error('prompt must be a function or string');
+					}
+					draw_prompt();
+					// we could check if command is longer then numchars-new
+					// prompt
+					redraw();
+					return self;
+				}
+			},
+			kill_text: function() {
+				return kill_text;
+			},
+			position: function(n, relative) {
+				if (typeof n === 'number') {
+					// if (position !== n) { this don't work, don't know why
+					if (relative) {
+						position += n;
+					} else if (n < 0) {
+						position = 0;
+					} else if (n > command.length) {
+						position = command.length;
+					} else {
+						position = n;
+					}
+					if ($.isFunction(options.onPositionChange)) {
+						options.onPositionChange(position);
+					}
+					redraw();
+					fix_textarea();
+					return self;
+				} else {
+					return position;
+				}
+			},
+			visible: (function() {
+				var visible = self.visible;
+				return function() {
+					visible.apply(self, []);
+					redraw();
+					draw_prompt();
+				};
+			})(),
+			show: (function() {
+				var show = self.show;
+				return function() {
+					show.apply(self, []);
+					redraw();
+					draw_prompt();
+				};
+			})(),
+			resize: function(num) {
+				if (num) {
+					num_chars = num;
+				} else {
+					change_num_chars();
+				}
+				redraw();
+				draw_prompt();
+				return self;
+			},
+			enable: function() {
+				if (!enabled) {
+					enabled = true;
+					self.addClass('enabled');
+					try {
+						clip.caret(position);
+					} catch (e) {
+						// firefox throw NS_ERROR_FAILURE ignore
+					}
+					animation(true);
+					draw_prompt();
+				}
+				mobile_focus();
+				return self;
+			},
+			isenabled: function() {
+				return enabled;
+			},
+			disable: function(focus) {
+				enabled = false;
+				self.removeClass('enabled');
+				animation(false);
+				if (!focus) {
+					mobile_focus();
+				}
+				return self;
+			},
+			mask: function(new_mask) {
+				if (typeof new_mask === 'undefined') {
+					return mask;
+				} else {
+					mask = new_mask;
+					redraw();
+					return self;
+				}
+			}
+		});
+		// ---------------------------------------------------------------------
+		// :: INIT
+		// ---------------------------------------------------------------------
+		self.name(options.name || options.prompt || '');
+		if (typeof options.prompt === 'string') {
+			prompt = options.prompt;
+		} else {
+			prompt = '> ';
+		}
+		draw_prompt();
+		if (options.enabled === undefined || options.enabled === true) {
+			self.enable();
+		}
+		if (!options.history) {
+			history.disable();
+		}
+		var first_up_history = true;
+		// prevent_keypress - hack for Android that was inserting characters on
+		// backspace
+		var prevent_keypress = false;
+		var dead_key = false;
+		var single_key = false;
+		var no_keypress = false;
+		var no_key = false;
+		var no_keydown = true;
+		var backspace = false;
+		var process = false;
+		var skip_insert;
+		// we hold text before keydown to fix backspace for Android/Chrome/SwiftKey
+		// keyboard that generate keycode 229 for all keys #296
+		var text = '';
+		// ---------------------------------------------------------------------
+		// :: Keydown Event Handler
+		// ---------------------------------------------------------------------
+		function keydown_event(e) {
+			debug('keydown "' + e.key + '" ' + e.fake);
+			process = (e.key || '').toLowerCase() === 'process';
+			var result;
+			dead_key = no_keypress && single_key;
+			// special keys don't trigger keypress fix #293
+			try {
+				if (!e.fake) {
+					single_key = e.key && e.key.length === 1 && !e.ctrlKey;
+					// chrome on android support key property but it's "Unidentified"
+					no_key = String(e.key).toLowerCase() === 'unidentified';
+					backspace = e.key.toUpperCase() === 'BACKSPACE' || e.which === 8;
+				}
+			} catch (exception) {}
+			// keydown created in input will have text already inserted and we
+			// want text before input
+			if (e.key === "Unidentified") {
+				no_keydown = true;
+				// android swift keyboard have always which == 229 we will triger proper
+				// event in input with e.fake == true
+				return;
+			}
+			if (!e.fake) {
+				no_keypress = true;
+				no_keydown = false;
+			}
+			var key = get_key(e);
+			if ($.isFunction(options.keydown)) {
+				result = options.keydown(e);
+				if (result !== undefined) {
+					//prevent_keypress = true;
+					if (!result) {
+						skip_insert = true;
+					}
+					return result;
+				}
+			}
+			if (enabled) {
+				// CTRL+V don't fire keypress in IE11
+				skip_insert = ['CTRL+V', 'META+V'].indexOf(key) !== -1;
+				if (e.which !== 38 && !(e.which === 80 && e.ctrlKey)) {
+					first_up_history = true;
+				}
+				// arrows / Home / End / ENTER
+				if (reverse_search && (e.which === 35 || e.which === 36 ||
+						e.which === 37 || e.which === 38 ||
+						e.which === 39 || e.which === 40 ||
+						e.which === 13 || e.which === 27)) {
+					clear_reverse_state();
+					draw_prompt();
+					if (e.which === 27) { // ESC
+						self.set('');
+					}
+					redraw();
+					// finish reverse search and execute normal event handler
+					/* jshint validthis:true */
+					keydown_event.call(this, e);
+				} else if ($.isFunction(keymap[key])) {
+					result = keymap[key]();
+					if (result === true) {
+						return;
+					}
+					if (result !== undefined) {
+						return result;
+					}
+				} else if (e.altKey) {
+					return;
+				} else {
+					prevent_keypress = false;
+					return;
+				}
+				// this will prevent for instance backspace to go back one page
+				//prevent_keypress = true;
+				//e.preventDefault();
+			}
+		}
+		var doc = $(document.documentElement || window);
+		self.keymap(options.keymap || {});
+		function keypress_event(e) {
+			debug('keypress "' + e.key + '" ' + e.fake);
+			var result;
+			if (!e.fake) {
+				no_keypress = false;
+			}
+			if ((e.ctrlKey || e.metaKey) && !e.altKey) {
+				return;
+			}
+			if (prevent_keypress) {
+				return;
+			}
+			if ($.isFunction(options.keypress)) {
+				result = options.keypress(e);
+				if (result !== undefined) {
+					if (!result) {
+						skip_insert = true;
+					}
+					return result;
+				}
+			}
+			if (enabled) {
+				if (e.fake) {
+					// event created in input, we prevent inserting text
+					// in different interpreter when keydown called pop
+					return;
+				}
+				// key polyfill is not correct for keypress
+				// https://github.com/cvan/keyboardevent-key-polyfill/issues/15
+				var key;
+				if (is_key_native() || e.fake) {
+					key = e.key;
+				}
+				if (!key || no_key) {
+					key = String.fromCharCode(e.which);
+				}
+				if (key.toUpperCase() === 'SPACEBAR') { // fix IE issue
+					key = ' ';
+				}
+				if ($.inArray(e.which, [13, 0, 8]) > -1) {
+					if (e.keyCode === 123) { // for F12 which === 0
+						return;
+					}
+					return false;
+					// which === 100 - d
+				} else if (key && (!e.ctrlKey || (e.ctrlKey && e.ctrlKey)) &&
+					(!(e.altKey && e.which === 100) || e.altKey) &&
+					!dead_key) {
+					// dead_key are handled by input event
+					if (reverse_search) {
+						rev_search_str += key;
+						reverse_history_search();
+						draw_reverse_prompt();
+					} else {
+						self.insert(key);
+					}
+				}
+			}
+		}
+		function event(type, chr, which) {
+			var event = $.Event(type);
+			event.which = which;
+			event.key = chr;
+			event.fake = true;
+			doc.trigger(event);
+		}
+		function debug(str) {
+			if (false) {
+				console.log(str);
+				//$.terminal.active().echo(str);
+			}
+		}
+		function input_event() {
+			debug('input ' + no_keydown + ' || ' + process + ' ((' + no_keypress +
+				' || ' + dead_key + ') && !' + skip_insert + ' && (' + single_key +
+				' || ' + no_key + ') && !' + backspace + ')');
+			// Some Androids don't fire keypress - #39
+			// if there is dead_key we also need to grab real character #158
+			// Firefox/Android with google keyboard don't fire keydown and keyup #319
+			if (no_keydown || process || ((no_keypress || dead_key) && !skip_insert &&
+					(single_key || no_key) && !backspace)) {
+				var pos = position;
+				var val = clip.val();
+				// backspace is set in keydown if no keydown we need to get new one
+				if (no_keydown) {
+					backspace = text.substring(0, text.length - 1) === text.length;
+				}
+				if (reverse_search) {
+					rev_search_str = val;
+					reverse_history_search();
+					draw_reverse_prompt();
+				} else {
+					var chr = val.substring(position);
+					if (chr.length === 1 || backspace) {
+						// we trigger events so keypress and keydown callback work
+						if (no_keydown) {
+							var keycode;
+							if (backspace) {
+								keycode = 8;
+							} else {
+								keycode = chr.toUpperCase().charCodeAt(0);
+							}
+							event('keydown', backspace ? 'Backspace' : chr, keycode);
+						}
+						if (no_keypress && !backspace) {
+							event('keypress', chr, chr.charCodeAt(0));
+						}
+					}
+					if (backspace) {
+						text = command;
+						return;
+					}
+					// if user return false in keydown we don't want to insert text
+					if (skip_insert) {
+						skip_insert = false;
+						return;
+					}
+					self.set(val);
+				}
+				if (backspace) {
+					self.position(pos - 1);
+				} else {
+					// user enter more then one character if click on complete word
+					// on android
+					self.position(pos + Math.abs(val.length - text.length));
+				}
+			}
+			text = command;
+			skip_insert = false;
+			no_keydown = true;
+		}
+		doc.bind('keypress.cmd', keypress_event).bind('keydown.cmd', keydown_event)
+			.bind('input.cmd', input_event);
+		(function() {
+			var was_down = false;
+			var count = 0;
+			self.on('mousedown.cmd', function() {
+				was_down = true;
+			}).on('mouseup.cmd', function(e) {
+				if (get_selected_text() === '') {
+					var name = 'click_' + id;
+					if (++count === 1) {
+						var down = was_down;
+						if (enabled) {
+							self.oneTime(options.clickTimeout, name, function() {
+								if (!$(e.target).is('.prompt') && down) {
+									if ($(e.target).is('.cmd')) {
+										self.position(command.length);
+									} else {
+										self.position(get_char_pos(e));
+									}
+								}
+								count = 0;
+							});
+						} else {
+							count = 0;
+						}
+					} else {
+						self.stopTime(name);
+						count = 0;
+					}
+				}
+				was_down = false;
+			});
+		})();
+		self.data('cmd', self);
+		if (!('KeyboardEvent' in window && 'key' in window.KeyboardEvent.prototype)) {
+			setTimeout(function() {
+				throw new Error('key event property not supported try ' +
+					'https://github.com/cvan/keyboardevent-key-polyfill');
+			}, 0);
+		}
+		return self;
+	}; // cmd plugin
+	// -------------------------------------------------------------------------
+	/* eslint-disable */
+	// https://stackoverflow.com/questions/11381673/detecting-a-mobile-browser
+	var mobile_re = /(android|bb\d+|meego).+mobile|avantgo|bada\/|blackberry|blazer|compal|elaine|fennec|hiptop|iemobile|ip(hone|od)|iris|kindle|lge |maemo|midp|mmp|mobile.+firefox|netfront|opera m(ob|in)i|palm( os)?|phone|p(ixi|re)\/|plucker|pocket|psp|series(4|6)0|symbian|treo|up\.(browser|link)|vodafone|wap|windows ce|xda|xiino|android|ipad|playbook|silk/i;
+	var tablet_re = /1207|6310|6590|3gso|4thp|50[1-6]i|770s|802s|a wa|abac|ac(er|oo|s\-)|ai(ko|rn)|al(av|ca|co)|amoi|an(ex|ny|yw)|aptu|ar(ch|go)|as(te|us)|attw|au(di|\-m|r |s )|avan|be(ck|ll|nq)|bi(lb|rd)|bl(ac|az)|br(e|v)w|bumb|bw\-(n|u)|c55\/|capi|ccwa|cdm\-|cell|chtm|cldc|cmd\-|co(mp|nd)|craw|da(it|ll|ng)|dbte|dc\-s|devi|dica|dmob|do(c|p)o|ds(12|\-d)|el(49|ai)|em(l2|ul)|er(ic|k0)|esl8|ez([4-7]0|os|wa|ze)|fetc|fly(\-|_)|g1 u|g560|gene|gf\-5|g\-mo|go(\.w|od)|gr(ad|un)|haie|hcit|hd\-(m|p|t)|hei\-|hi(pt|ta)|hp( i|ip)|hs\-c|ht(c(\-| |_|a|g|p|s|t)|tp)|hu(aw|tc)|i\-(20|go|ma)|i230|iac( |\-|\/)|ibro|idea|ig01|ikom|im1k|inno|ipaq|iris|ja(t|v)a|jbro|jemu|jigs|kddi|keji|kgt( |\/)|klon|kpt |kwc\-|kyo(c|k)|le(no|xi)|lg( g|\/(k|l|u)|50|54|\-[a-w])|libw|lynx|m1\-w|m3ga|m50\/|ma(te|ui|xo)|mc(01|21|ca)|m\-cr|me(rc|ri)|mi(o8|oa|ts)|mmef|mo(01|02|bi|de|do|t(\-| |o|v)|zz)|mt(50|p1|v )|mwbp|mywa|n10[0-2]|n20[2-3]|n30(0|2)|n50(0|2|5)|n7(0(0|1)|10)|ne((c|m)\-|on|tf|wf|wg|wt)|nok(6|i)|nzph|o2im|op(ti|wv)|oran|owg1|p800|pan(a|d|t)|pdxg|pg(13|\-([1-8]|c))|phil|pire|pl(ay|uc)|pn\-2|po(ck|rt|se)|prox|psio|pt\-g|qa\-a|qc(07|12|21|32|60|\-[2-7]|i\-)|qtek|r380|r600|raks|rim9|ro(ve|zo)|s55\/|sa(ge|ma|mm|ms|ny|va)|sc(01|h\-|oo|p\-)|sdk\/|se(c(\-|0|1)|47|mc|nd|ri)|sgh\-|shar|sie(\-|m)|sk\-0|sl(45|id)|sm(al|ar|b3|it|t5)|so(ft|ny)|sp(01|h\-|v\-|v )|sy(01|mb)|t2(18|50)|t6(00|10|18)|ta(gt|lk)|tcl\-|tdg\-|tel(i|m)|tim\-|t\-mo|to(pl|sh)|ts(70|m\-|m3|m5)|tx\-9|up(\.b|g1|si)|utst|v400|v750|veri|vi(rg|te)|vk(40|5[0-3]|\-v)|vm40|voda|vulc|vx(52|53|60|61|70|80|81|83|85|98)|w3c(\-| )|webc|whit|wi(g |nc|nw)|wmlb|wonu|x700|yas\-|your|zeto|zte\-/i;
+	var format_split_re = /(\[\[[!gbiuso]*;[^;]*;[^\]]*\](?:[^\]]*\\\][^\]]*|[^\]]*|[^[]*\[[^\]]*)\]?)/i;
+	var format_parts_re = /\[\[([!gbiuso]*);([^;]*);([^;\]]*);?([^;\]]*);?([^\]]*)\]([^\]]*\\\][^\]]*|[^\]]*|[^[]*\[[^\]]*)\]?/gi;
+	var format_re = /\[\[([!gbiuso]*;[^;\]]*;[^;\]]*(?:;|[^\]()]*);?[^\]]*)\]([^\]]*\\\][^\]]*|[^\]]*|[^[]*\[[^\]]*)\]?/gi;
+	var format_exist_re = /\[\[([!gbiuso]*;[^;\]]*;[^;\]]*(?:;|[^\]()]*);?[^\]]*)\]([^\]]*\\\][^\]]*|[^\]]*|[^[]*\[[^\]]*)\]/gi;
+	var format_full_re = /^\[\[([!gbiuso]*;[^;\]]*;[^;\]]*(?:;|[^\]()]*);?[^\]]*)\]([^\]]*\\\][^\]]*|[^\]]*|[^[]*\[[^\]]*)\]$/gi;
+	var color_hex_re = /^#([0-9a-f]{3}|[0-9a-f]{6})$/i;
+	var url_re = /(\bhttps?:\/\/(?:(?:(?!&[^;]+;)|(?=&amp;))[^\s"'<>\][)])+\b)/gi;
+	var url_nf_re = /\b(https?:\/\/(?:(?:(?!&[^;]+;)|(?=&amp;))[^\s"'<>\][)])+)\b(?![^[\]]*])/gi;
+	var email_re = /((([^<>('")[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,})))/g;
+	var command_re = /((?:"[^"\\]*(?:\\[\S\s][^"\\]*)*"|'[^'\\]*(?:\\[\S\s][^'\\]*)*'|\/[^\/\\]*(?:\\[\S\s][^\/\\]*)*\/[gimy]*(?=\s|$)|(?:\\\s|\S))+)(?=\s|$)/gi;
+	var format_begin_re = /(\[\[[!gbiuso]*;[^;]*;[^\]]*\])/i;
+	var format_start_re = /^(\[\[[!gbiuso]*;[^;]*;[^\]]*\])/i;
+	var format_end_re = /\[\[[!gbiuso]*;[^;]*;[^\]]*\]?$/i;
+	var format_exec_re = /(\[\[(?:[^\]]|\\\])+\]\])/;
+	var float_re = /^[-+]?[0-9]*\.?[0-9]+([eE][-+]?[0-9]+)?$/;
+	var re_re = /^\/((?:\\\/|[^/]|\[[^\]]*\/[^\]]*\])+)\/([gimy]*)$/;
+	var unclosed_strings_re = /^(?=((?:[^"']+|"[^"\\]*(?:\\[^][^"\\]*)*"|'[^'\\]*(?:\\[^][^'\\]*)*')*))\1./;
+	/* eslint-enable */
+	// -------------------------------------------------------------------------
+	// :: TOOLS
+	// -------------------------------------------------------------------------
+	// taken from https://hacks.mozilla.org/2011/09/detecting-and-generating-
+	// css-animations-in-javascript/
+	var support_animations = (function() {
+		var animation = false,
+			domPrefixes = 'Webkit Moz O ms Khtml'.split(' '),
+			elm = document.createElement('div');
+		if (elm.style.animationName) {
+			animation = true;
+		}
+		if (animation === false) {
+			for (var i = 0; i < domPrefixes.length; i++) {
+				var name = domPrefixes[i] + 'AnimationName';
+				if (elm.style[name] !== undefined) {
+					animation = true;
+					break;
+				}
+			}
+		}
+		return animation;
+	})();
+	// -------------------------------------------------------------------------
+	var is_android = navigator.userAgent.toLowerCase().indexOf('android') !== -1;
+	// -------------------------------------------------------------------------
+	var strlen = (function() {
+		if (typeof wcwidth === 'undefined') {
+			return function(string) {
+				return string.length;
+			};
+		} else {
+			return wcwidth;
+		}
+	})();
+	// -------------------------------------------------------------------------
+	var is_mobile = (function(a) {
+		var check = false;
+		if (mobile_re.test(a) || tablet_re.test(a.substr(0, 4))) {
+			check = true;
+		}
+		return check;
+	})(navigator.userAgent || navigator.vendor || window.opera);
+	var get_selected_text = (function() {
+		if (window.getSelection || document.getSelection) {
+			return function() {
+				var selection = (window.getSelection || document.getSelection)();
+				if (selection.text) {
+					return selection.text;
+				} else {
+					return selection.toString();
+				}
+			};
+		} else if (document.selection && document.selection.type !== "Control") {
+			return function() {
+				return document.selection.createRange().text;
+			};
+		}
+		return function() {
+			return '';
+		};
+	})();
+	// -------------------------------------------------------------------------
+	function process_command(string, fn) {
+		var array = string.match(command_re) || [];
+		if (array.length) {
+			var name = array.shift();
+			var args = $.map(array, fn);
+			var quotes = $.map(array, function(arg) {
+				var m = arg.match(/^(['"]).*\1$/);
+				return m && m[1] || '';
+			});
+			var rest = string.substring(name.length).trim();
+			return {
+				command: string,
+				name: name,
+				args: args,
+				args_quotes: quotes,
+				rest: rest
+			};
+		} else {
+			return {
+				command: string,
+				name: '',
+				args: [],
+				args_quotes: quotes,
+				rest: ''
+			};
+		}
+	}
+	$.terminal = {
+		version: '1.7.0',
+		// colors from http://www.w3.org/wiki/CSS/Properties/color/keywords
+		color_names: [
+			'transparent', 'currentcolor', 'black', 'silver', 'gray', 'white',
+			'maroon', 'red', 'purple', 'fuchsia', 'green', 'lime', 'olive',
+			'yellow', 'navy', 'blue', 'teal', 'aqua', 'aliceblue',
+			'antiquewhite', 'aqua', 'aquamarine', 'azure', 'beige', 'bisque',
+			'black', 'blanchedalmond', 'blue', 'blueviolet', 'brown',
+			'burlywood', 'cadetblue', 'chartreuse', 'chocolate', 'coral',
+			'cornflowerblue', 'cornsilk', 'crimson', 'cyan', 'darkblue',
+			'darkcyan', 'darkgoldenrod', 'darkgray', 'darkgreen', 'darkgrey',
+			'darkkhaki', 'darkmagenta', 'darkolivegreen', 'darkorange',
+			'darkorchid', 'darkred', 'darksalmon', 'darkseagreen',
+			'darkslateblue', 'darkslategray', 'darkslategrey', 'darkturquoise',
+			'darkviolet', 'deeppink', 'deepskyblue', 'dimgray', 'dimgrey',
+			'dodgerblue', 'firebrick', 'floralwhite', 'forestgreen', 'fuchsia',
+			'gainsboro', 'ghostwhite', 'gold', 'goldenrod', 'gray', 'green',
+			'greenyellow', 'grey', 'honeydew', 'hotpink', 'indianred', 'indigo',
+			'ivory', 'khaki', 'lavender', 'lavenderblush', 'lawngreen',
+			'lemonchiffon', 'lightblue', 'lightcoral', 'lightcyan',
+			'lightgoldenrodyellow', 'lightgray', 'lightgreen', 'lightgrey',
+			'lightpink', 'lightsalmon', 'lightseagreen', 'lightskyblue',
+			'lightslategray', 'lightslategrey', 'lightsteelblue', 'lightyellow',
+			'lime', 'limegreen', 'linen', 'magenta', 'maroon',
+			'mediumaquamarine', 'mediumblue', 'mediumorchid', 'mediumpurple',
+			'mediumseagreen', 'mediumslateblue', 'mediumspringgreen',
+			'mediumturquoise', 'mediumvioletred', 'midnightblue', 'mintcream',
+			'mistyrose', 'moccasin', 'navajowhite', 'navy', 'oldlace', 'olive',
+			'olivedrab', 'orange', 'orangered', 'orchid', 'palegoldenrod',
+			'palegreen', 'paleturquoise', 'palevioletred', 'papayawhip',
+			'peachpuff', 'peru', 'pink', 'plum', 'powderblue', 'purple', 'red',
+			'rosybrown', 'royalblue', 'saddlebrown', 'salmon', 'sandybrown',
+			'seagreen', 'seashell', 'sienna', 'silver', 'skyblue', 'slateblue',
+			'slategray', 'slategrey', 'snow', 'springgreen', 'steelblue', 'tan',
+			'teal', 'thistle', 'tomato', 'turquoise', 'violet', 'wheat',
+			'white', 'whitesmoke', 'yellow', 'yellowgreen'],
+		// for unit tests
+		Cycle: Cycle,
+		History: History,
+		Stack: Stack,
+		// ---------------------------------------------------------------------
+		// :: Validate html color (it can be name or hex)
+		// ---------------------------------------------------------------------
+		valid_color: function valid_color(color) {
+			if (color.match(color_hex_re)) {
+				return true;
+			} else {
+				return $.inArray(color.toLowerCase(),
+					$.terminal.color_names) !== -1;
+			}
+		},
+		// ---------------------------------------------------------------------
+		// :: function check if given string contain invalid strings
+		// ---------------------------------------------------------------------
+		unclosed_strings: function unclosed_strings(string) {
+			return !!string.match(unclosed_strings_re);
+		},
+		// ---------------------------------------------------------------------
+		// :: Escape all special regex characters, so it can be use as regex to
+		// :: match exact string that contain those characters
+		// ---------------------------------------------------------------------
+		escape_regex: function escape_regex(str) {
+			if (typeof str === 'string') {
+				var special = /([-\\^$[\]()+{}?*.|])/g;
+				return str.replace(special, '\\$1');
+			}
+		},
+		// ---------------------------------------------------------------------
+		// :: test if string contain formatting
+		// ---------------------------------------------------------------------
+		have_formatting: function have_formatting(str) {
+			return typeof str === 'string' && !!str.match(format_exist_re);
+		},
+		is_formatting: function is_formatting(str) {
+			return typeof str === 'string' && !!str.match(format_full_re);
+		},
+		// ---------------------------------------------------------------------
+		// :: return array of formatting and text between them
+		// ---------------------------------------------------------------------
+		format_split: function format_split(str) {
+			return str.split(format_split_re).filter(Boolean);
+		},
+		// ---------------------------------------------------------------------
+		// :: helper function used by substring and split_equal it loop over
+		// :: string and execute callback with text count and other data
+		// ---------------------------------------------------------------------
+		iterate_formatting: function iterate_formatting(string, callback) {
+			function is_space() {
+				return string.substring(i - 6, i) === '&nbsp;' ||
+					string.substring(i - 1, i) === ' ';
+			}
+			function match_entity(index) {
+				return string.substring(index).match(/^(&[^;]+;)/);
+			}
+			var formatting = false;
+			var in_text = false;
+			var count = 0;
+			var match;
+			var space = -1;
+			for (var i = 0; i < string.length; i++) {
+				match = string.substring(i).match(format_start_re);
+				if (match) {
+					formatting = match[1];
+					in_text = false;
+				} else if (formatting) {
+					if (string[i] === ']') {
+						if (in_text) {
+							formatting = '';
+							in_text = false;
+						} else {
+							in_text = true;
+						}
+					}
+				} else {
+					in_text = true;
+				}
+				var not_formatting = (formatting && in_text) || !formatting;
+				var opening = string[i] === '[' && string[i + 1] === '[';
+				if (is_space() && (not_formatting || opening)) {
+					space = i;
+				}
+				var braket = string[i].match(/[[\]]/);
+				if (not_formatting) {
+					if (string[i] === '&') { // treat entity as one character
+						match = match_entity(i);
+						if (match) {
+							i += match[1].length - 2; // because continue adds 1 to i
+							continue;
+						}
+						++count;
+					} else if (string[i] === ']' && string[i - 1] === '\\') {
+						// escape \] counts as one character
+						--count;
+					} else if (!braket) {
+						++count;
+					}
+				}
+				if (!braket && not_formatting) {
+					if (strlen(string[i]) === 2) {
+						count++;
+					}
+					var data = {
+						count: count,
+						index: i,
+						formatting: formatting,
+						text: in_text,
+						space: space
+					};
+					var ret = callback(data);
+					if (ret === false) {
+						break;
+					} else if (ret) {
+						if (ret.count !== undefined) {
+							count = ret.count;
+						}
+						if (ret.space !== undefined) {
+							space = ret.space;
+						}
+						if (ret.index !== undefined) {
+							i = ret.index;
+						}
+					}
+				}
+			}
+		},
+		// ---------------------------------------------------------------------
+		// :: formatting aware substring function
+		// ---------------------------------------------------------------------
+		substring: function substring(string, start_index, end_index) {
+			var strip = $('<span>' + $.terminal.strip(string) + '</span>').text();
+			if (strip.substring(start_index, end_index) === '') {
+				return '';
+			}
+			var start;
+			var end = string.length;
+			var start_formatting = '';
+			var end_formatting = '';
+			$.terminal.iterate_formatting(string, function(data) {
+				if (data.count === start_index) {
+					start = data.index + 1;
+					if (data.formatting) {
+						start_formatting = data.formatting;
+					}
+				}
+				if (end_index && data.count === end_index) {
+					end = data.index + 1;
+					end_formatting = data.formatting;
+				}
+			});
+			string = start_formatting + string.substring(start, end);
+			if (end_formatting) {
+				string += ']';
+			}
+			return string;
+		},
+		// ---------------------------------------------------------------------
+		// :: add format text as 5th paramter to formatting it's used for
+		// :: data attribute in format function
+		// ---------------------------------------------------------------------
+		normalize: function normalize(string) {
+			return string.replace(format_re, function(_, format, text) {
+				if (text === '') {
+					return '';
+				}
+				var semicolons = format.match(/;/g).length;
+				// missing semicolons
+				if (semicolons >= 4) {
+					var args = format.split(/;/);
+					var start = args.slice(0, 4).join(';');
+					var arg = args.slice(4).join(';');
+					return '[[' + start + ';' + (arg || text) + ']' + text + ']';
+				} else if (semicolons === 2) {
+					semicolons = ';;';
+				} else if (semicolons === 3) {
+					semicolons = ';';
+				} else {
+					semicolons = '';
+				}
+				// return '[[' + format + ']' + text + ']';
+				// closing braket will break formatting so we need to escape
+				// those using html entity equvalent
+				var safe = text.replace(/\\\]/g, '&#93;').replace(/\n/g, '\\n').
+				replace(/&nbsp;/g, ' ');
+				return '[[' + format + semicolons + safe + ']' + text + ']';
+			});
+		},
+		// ---------------------------------------------------------------------
+		// :: split text into lines with equal length so each line can be
+		// :: rendered separately (text formatting can be longer then a line).
+		// ---------------------------------------------------------------------
+		split_equal: function split_equal(str, length, keep_words) {
+			var prev_format = '';
+			var result = [];
+			var array = $.terminal.normalize(str).split(/\n/g);
+			for (var i = 0, len = array.length; i < len; ++i) {
+				if (array[i] === '') {
+					result.push('');
+					continue;
+				}
+				var line = array[i];
+				var first_index = 0;
+				var output;
+				var line_length = line.length;
+				$.terminal.iterate_formatting(line, function(data) {
+					// we don't iterate over last closing bracket
+					var last_bracket = data.index === line_length - 2 &&
+						line[data.index + 1] === ']';
+					var last_iteraction = data.index === line_length - 1 || last_bracket;
+					if (data.count >= length || last_iteraction ||
+						(data.count === length - 1 &&
+							strlen(line[data.index + 1]) === 2)) {
+						if (keep_words) {
+							var text = $.terminal.strip(line.substring(data.space));
+							// replace html entities with characters
+							text = $('<span>' + text + '</span>').text();
+							// real length, not counting formatting
+							var text_len = text.length;
+							var limit = data.index + length + 1;
+							text = text.substring(0, limit);
+							var can_break = false;
+							if (text.match(/\s/) || limit > text_len) {
+								can_break = true;
+							}
+						}
+						// if words is true we split at last space and make next loop
+						// continue where the space where located
+						if (keep_words && !last_bracket && data.space !== -1 &&
+							data.index !== line_length - 1 && can_break) {
+							output = line.substring(first_index, data.space);
+							var new_index = data.space - 1;
+						} else {
+							output = line.substring(first_index, data.index + 1);
+						}
+						if (keep_words) {
+							output = output.replace(/(&nbsp;|\s)+$/g, '');
+						}
+						first_index = (new_index || data.index) + 1;
+						// prev_format added in fix_close function
+						if (prev_format) {
+							var closed_formatting = output.match(/^[^\]]*\]/);
+							output = prev_format + output;
+							if (closed_formatting) {
+								prev_format = '';
+							}
+						}
+						if (last_bracket) {
+							output += ']';
+							prev_format = '';
+						}
+						var matched = output.match(format_re);
+						if (matched) {
+							var last = matched[matched.length - 1];
+							if (last[last.length - 1] !== ']') {
+								prev_format = last.match(format_begin_re)[1];
+								output += ']';
+							} else if (output.match(format_end_re)) {
+								output = output.replace(format_end_re, '');
+								prev_format = last.match(format_begin_re)[1];
+							}
+						}
+						result.push(output);
+						// modify loop by returing new data
+						return {index: new_index, count: 0, space: -1};
+					}
+				});
+			}
+			return result;
+		},
+		// ---------------------------------------------------------------------
+		// :: Escape & that's not part of entity
+		// ---------------------------------------------------------------------
+		amp: function(str) {
+			return str.replace(/&(?!#[0-9]+;|[a-zA-Z]+;)/g, '&amp;');
+		},
+		// ---------------------------------------------------------------------
+		// :: Encode formating as html for insertion into DOM
+		// ---------------------------------------------------------------------
+		encode: function encode(str) {
+			return $.terminal.amp(str).replace(/</g, '&lt;').replace(/>/g, '&gt;')
+				.replace(/ /g, '&nbsp;')
+				.replace(/\t/g, '&nbsp;&nbsp;&nbsp;&nbsp;');
+		},
+		// -----------------------------------------------------------------------
+		// :: Default formatter that allow for nested formatting, example:
+		// :: [[;;#000]hello [[;#f00;]red] world]
+		// -----------------------------------------------------------------------
+		nested_formatting: function nested_formatting(string) {
+			if (!$.terminal.have_formatting(string)) {
+				return string;
+			}
+			var stack = [];
+			var re = /(\[\[(?:[^\]]|\\\])+\](?:[^\][]|\\\])*\]?)/;
+			var format_re = /(\[\[(?:[^\]]|\\\])+\])[\s\S]*/;
+			return string.split(re).filter(Boolean).map(function(string) {
+				if (string.match(/^\[\[/)) {
+					if (!$.terminal.is_formatting(string)) {
+						string += ']';
+						stack.push(string.replace(format_re, '$1'));
+					}
+				} else {
+					var pop = false;
+					if (string.match(/\]/)) {
+						pop = true;
+					}
+					if (stack.length) {
+						string = stack[stack.length - 1] + string;
+					}
+					if (pop) {
+						stack.pop();
+					} else if (stack.length) {
+						string += ']';
+					}
+				}
+				return string;
+			}).join('');
+		},
+		// ---------------------------------------------------------------------
+		// :: safe function that will render text as it is
+		// ---------------------------------------------------------------------
+		escape_formatting: function escape_formatting(string) {
+			return $.terminal.escape_brackets(string);
+		},
+		// ---------------------------------------------------------------------
+		// :: apply custom formatters only to text
+		// ---------------------------------------------------------------------
+		apply_formatters: function(string) {
+			var formatters = $.terminal.defaults.formatters;
+			return $.terminal.format_split(string).map(function(string) {
+				if ($.terminal.is_formatting(string)) {
+					return string;
+				} else {
+					for (var i = 0; i < formatters.length; ++i) {
+						try {
+							if (typeof formatters[i] === 'function') {
+								var ret = formatters[i](string);
+								if (typeof ret === 'string') {
+									string = ret;
+								}
+							}
+						} catch (e) {
+							throw new Error('Error in formatter [' + i + ']');
+						}
+					}
+					return string;
+				}
+			}).join('');
+		},
+		// ---------------------------------------------------------------------
+		// :: Replace terminal formatting with html
+		// ---------------------------------------------------------------------
+		format: function format(str, options) {
+			var settings = $.extend({}, {
+				linksNoReferrer: false
+			}, options || {});
+			if (typeof str === 'string') {
+				// support for formating foo[[u;;]bar]baz[[b;#fff;]quux]zzz
+				var splitted = $.terminal.format_split(str);
+				str = $.map(splitted, function(text) {
+					if (text === '') {
+						return text;
+					} else if ($.terminal.is_formatting(text)) {
+						// fix &nbsp; inside formatting because encode is called
+						// before format
+						text = text.replace(/\[\[[^\]]+\]/, function(text) {
+							return text.replace(/&nbsp;/g, ' ');
+						});
+						return text.replace(format_parts_re, function(s,
+																	  style,
+																	  color,
+																	  background,
+																	  _class,
+																	  data_text,
+																	  text) {
+							if (text === '') {
+								return ''; //'<span>&nbsp;</span>';
+							}
+							text = text.replace(/\\]/g, ']');
+							var style_str = '';
+							if (style.indexOf('b') !== -1) {
+								style_str += 'font-weight:bold;';
+							}
+							var text_decoration = [];
+							if (style.indexOf('u') !== -1) {
+								text_decoration.push('underline');
+							}
+							if (style.indexOf('s') !== -1) {
+								text_decoration.push('line-through');
+							}
+							if (style.indexOf('o') !== -1) {
+								text_decoration.push('overline');
+							}
+							if (text_decoration.length) {
+								style_str += 'text-decoration:' +
+									text_decoration.join(' ') + ';';
+							}
+							if (style.indexOf('i') !== -1) {
+								style_str += 'font-style:italic;';
+							}
+							if ($.terminal.valid_color(color)) {
+								style_str += 'color:' + color + ';';
+								if (style.indexOf('g') !== -1) {
+									style_str += 'text-shadow:0 0 5px ' + color + ';';
+								}
+							}
+							if ($.terminal.valid_color(background)) {
+								style_str += 'background-color:' + background;
+							}
+							var data;
+							if (data_text === '') {
+								data = text;
+							} else {
+								data = data_text.replace(/&#93;/g, ']');
+							}
+							var result;
+							if (style.indexOf('!') !== -1) {
+								if (data.match(email_re)) {
+									result = '<a href="mailto:' + data + '"';
+								} else {
+									result = '<a target="_blank" href="' + data + '"';
+									if (settings.linksNoReferrer) {
+										result += ' rel="noreferrer noopener"';
+									} else {
+										result += ' rel="noopener"';
+									}
+								}
+								// make focus to terminal textarea that will enable
+								// terminal when pressing tab and terminal is disabled
+								result += ' tabindex="1000"';
+							} else {
+								result = '<span';
+							}
+							if (style_str !== '') {
+								result += ' style="' + style_str + '"';
+							}
+							if (_class !== '') {
+								result += ' class="' + _class + '"';
+							}
+							if (style.indexOf('!') !== -1) {
+								result += '>' + text + '</a>';
+							} else {
+								result += ' data-text="' +
+									data.replace('"', '&quote;') + '">' +
+									text + '</span>';
+							}
+							return result;
+						});
+					} else {
+						return '<span>' + text.replace(/\\\]/g, ']') + '</span>';
+					}
+				}).join('');
+				return str.replace(/<span><br\s*\/?><\/span>/gi, '<br/>');
+			} else {
+				return '';
+			}
+		},
+		// ---------------------------------------------------------------------
+		// :: Replace brackets with html entities
+		// ---------------------------------------------------------------------
+		escape_brackets: function escape_brackets(string) {
+			return string.replace(/\[/g, '&#91;').replace(/\]/g, '&#93;');
+		},
+		// ---------------------------------------------------------------------
+		// :: Remove formatting from text
+		// ---------------------------------------------------------------------
+		strip: function strip(str) {
+			str = str.replace(format_parts_re, '$6');
+			return str.replace(/(\\?)([[\]])/g, function(whole, slash) {
+				if (slash) {
+					return whole;
+				} else {
+					return '';
+				}
+			});
+		},
+		// ---------------------------------------------------------------------
+		// :: Return active terminal
+		// ---------------------------------------------------------------------
+		active: function active() {
+			return terminals.front();
+		},
+		// ---------------------------------------------------------------------
+		// :: Implmentation detail id is always length of terminals Cycle
+		// ---------------------------------------------------------------------
+		last_id: function last_id() {
+			var len = terminals.length();
+			if (len) {
+				return len - 1;
+			}
+		},
+		// ---------------------------------------------------------------------
+		// :: Function that works with strings like 'asd' 'asd\' asd' "asd asd"
+		// :: asd\ 123 -n -b / [^ ]+ / /\s+/ asd\ a it creates a regex and
+		// :: numbers and replaces escape characters in double quotes
+		// :: if strict is set to false it only strips single and double quotes
+		// :: and escapes spaces
+		// ---------------------------------------------------------------------
+		parse_argument: function parse_argument(arg, strict) {
+			function parse_string(string) {
+				// remove quotes if before are even number of slashes
+				// we don't remove slases becuase they are handled by JSON.parse
+				//string = string.replace(/([^\\])['"]$/, '$1');
+				if (string.match(/^['"]/)) {
+					var quote = string[0];
+					var re = new RegExp("((^|[^\\\\])(?:\\\\\\\\)*)" + quote, "g");
+					string = string.replace(re, "$1");
+				}
+				// use build in function to parse rest of escaped characters
+				return JSON.parse('"' + string + '"');
+			}
+			if (strict === false) {
+				if (arg[0] === "'" && arg[arg.length - 1] === "'") {
+					return arg.replace(/^'|'$/g, '');
+				} else if (arg[0] === '"' && arg[arg.length - 1] === '"') {
+					return arg.replace(/^"|"$/g, '').replace(/\\([" ])/g, '$1');
+				} else if (arg.match(/\/.*\/[gimy]*$/)) {
+					return arg;
+				} else if (arg.match(/['"]]/)) {
+					// part of arg is in quote
+					return parse_string(arg);
+				} else {
+					return arg.replace(/\\ /g, ' ');
+				}
+			}
+			var regex = arg.match(re_re);
+			if (regex) {
+				return new RegExp(regex[1], regex[2]);
+			} else if (arg.match(/['"]/)) {
+				return parse_string(arg);
+			} else if (arg.match(/^-?[0-9]+$/)) {
+				return parseInt(arg, 10);
+			} else if (arg.match(float_re)) {
+				return parseFloat(arg);
+			} else {
+				return arg.replace(/\\(['"() ])/g, '$1');
+			}
+		},
+		// ---------------------------------------------------------------------
+		// :: function split and parse arguments
+		// ---------------------------------------------------------------------
+		parse_arguments: function parse_arguments(string) {
+			return $.map(string.match(command_re) || [], $.terminal.parse_argument);
+		},
+		// ---------------------------------------------------------------------
+		// :: Function split and strips single and double quotes
+		// :: and escapes spaces
+		// ---------------------------------------------------------------------
+		split_arguments: function(string) {
+			return $.map(string.match(command_re) || [], function(arg) {
+				return $.terminal.parse_argument(arg, false);
+			});
+		},
+		// ---------------------------------------------------------------------
+		// :: Function that returns an object {name,args}. Arguments are parsed
+		// :: using the function parse_arguments
+		// ---------------------------------------------------------------------
+		parse_command: function parse_command(string) {
+			return process_command(string, $.terminal.parse_argument);
+		},
+		// ---------------------------------------------------------------------
+		// :: Same as parse_command but arguments are parsed using split_arguments
+		// ---------------------------------------------------------------------
+		split_command: function(string) {
+			return process_command(string, function(arg) {
+				return $.terminal.parse_argument(arg, false);
+			});
+		},
+		// ---------------------------------------------------------------------
+		// :: function executed for each text inside [{ .... }]
+		// ---------------------------------------------------------------------
+		extended_command: function extended_command(term, string) {
+			try {
+				change_hash = false;
+				term.exec(string, true).done(function() {
+					change_hash = true;
+				});
+			} catch (e) {
+				// error is process in exec
+			}
+		}
+	};
+	// -----------------------------------------------------------------------
+	// Helper plugins and functions
+	// -----------------------------------------------------------------------
+	$.fn.visible = function() {
+		return this.css('visibility', 'visible');
+	};
+	$.fn.hidden = function() {
+		return this.css('visibility', 'hidden');
+	};
+	// -----------------------------------------------------------------------
+	// :: hack to get scroll element if terminal attached to the body
+	// :: is better then userAgent sniffing because other browsers beside
+	// :: chrome may use body as scroll element instead of html like
+	// :: IE and FireFox
+	// -----------------------------------------------------------------------
+	$.fn.scroll_element = function() {
+		var defaults = $.fn.scroll_element.defaults;
+		return this.map(function() {
+			var $this = $(this);
+			if ($this.is('body')) {
+				var html = $('html');
+				var body = $('body');
+				var scrollTop = body.scrollTop() || html.scrollTop();
+				var pre = $('<pre/>').css(defaults.pre).appendTo('body');
+				pre.html(new Array(defaults.lines).join('\n'));
+				$('body,html').scrollTop(10);
+				var scroll_object;
+				if (body.scrollTop() === 10) {
+					body.scrollTop(scrollTop);
+					scroll_object = body[0];
+				} else if (html.scrollTop() === 10) {
+					html.scrollTop(scrollTop);
+					scroll_object = html[0];
+				}
+				pre.remove();
+				return scroll_object;
+			} else {
+				return this;
+			}
+		});
+	};
+	$.fn.scroll_element.defaults = {
+		lines: 2000,
+		pre: {
+			'font-size': '100px',
+			'white-space': 'pre' // just in case if user overwrite css for pre tag
+		}
+	};
+	// -----------------------------------------------------------------------
+	function is_key_native() {
+		if (!('KeyboardEvent' in window && 'key' in window.KeyboardEvent.prototype)) {
+			return false;
+		}
+		var proto = window.KeyboardEvent.prototype;
+		var get = Object.getOwnPropertyDescriptor(proto, 'key').get;
+		return get.toString().match(/\[native code\]/);
+	}
+	// -----------------------------------------------------------------------
+	function warn(msg) {
+		msg = '[jQuery Terminal] ' + msg;
+		if (console && console.warn) {
+			console.warn(msg);
+		} else {
+			// prevent catching in outer try..catch
+			setTimeout(function() {
+				throw new Error('WARN: ' + msg);
+			}, 0);
+		}
+	}
+	// -----------------------------------------------------------------------
+	// JSON-RPC CALL
+	// -----------------------------------------------------------------------
+	var ids = {}; // list of url based ids of JSON-RPC
+	$.jrpc = function(url, method, params, success, error) {
+		var options;
+		if ($.isPlainObject(url)) {
+			options = url;
+		} else {
+			options = {
+				url: url,
+				method: method,
+				params: params,
+				success: success,
+				error: error
+			};
+		}
+		function validJSONRPC(response) {
+			return $.isNumeric(response.id) &&
+				(typeof response.result !== 'undefined' ||
+					typeof response.error !== 'undefined');
+		}
+		ids[options.url] = ids[options.url] || 0;
+		var request = {
+			'jsonrpc': '2.0',
+			'method': options.method,
+			'params': options.params,
+			'id': ++ids[options.url]
+		};
+		return $.ajax({
+			url: options.url,
+			beforeSend: function beforeSend(jxhr, settings) {
+				if ($.isFunction(options.request)) {
+					options.request(jxhr, request);
+				}
+				settings.data = JSON.stringify(request);
+			},
+			success: function success(response, status, jqXHR) {
+				var content_type = jqXHR.getResponseHeader('Content-Type');
+				if (!content_type.match(/(application|text)\/json/)) {
+					warn('Response Content-Type is neither application/json' +
+						' nor text/json');
+				}
+				var json;
+				try {
+					json = JSON.parse(response);
+				} catch (e) {
+					if (options.error) {
+						options.error(jqXHR, 'Invalid JSON', e);
+					} else {
+						throw new Error('Invalid JSON');
+					}
+					return;
+				}
+				if ($.isFunction(options.response)) {
+					options.response(jqXHR, json);
+				}
+				if (validJSONRPC(json) || options.method === 'system.describe') {
+					// don't catch errors in success callback
+					options.success(json, status, jqXHR);
+				} else if (options.error) {
+					options.error(jqXHR, 'Invalid JSON-RPC');
+				} else {
+					throw new Error('Invalid JSON-RPC');
+				}
+			},
+			error: options.error,
+			contentType: 'application/json',
+			dataType: 'text',
+			async: true,
+			cache: false,
+			// timeout: 1,
+			type: 'POST'
+		});
+	};
+
+	// -----------------------------------------------------------------------
+	/*
+    function is_scrolled_into_view(elem) {
+        var docViewTop = $(window).scrollTop();
+        var docViewBottom = docViewTop + $(window).height();
+
+        var elemTop = $(elem).offset().top;
+        var elemBottom = elemTop + $(elem).height();
+
+        return ((elemBottom >= docViewTop) && (elemTop <= docViewBottom));
+    }
+    */
+	// -----------------------------------------------------------------------
+	// :: Create fake terminal to calcualte the dimention of one character
+	// :: this will make terminal work if terminal div is not added to the
+	// :: DOM at init like with:
+	// :: $('<div/>').terminal().echo('foo bar').appendTo('body');
+	// -----------------------------------------------------------------------
+	function get_char_size() {
+
+		// console.log('go');
+		// console.time('someFunction');
+		// OSIPOV
+		// console.log('test');
+		return {};
+
+		var temp = $('<div class="terminal temp"><div class="cmd"><span cla' +
+			'ss="prompt">&nbsp;</span></div></div>').appendTo('body');
+		var rect = temp.find('span')[0].getBoundingClientRect();
+		var result = {
+			width: rect.width,
+			height: rect.height
+		};
+		temp.remove();
+
+
+		// console.timeEnd('someFunction');
+		return result;
+	}
+	// -----------------------------------------------------------------------
+	// :: calculate numbers of characters
+	// -----------------------------------------------------------------------
+	function get_num_chars(terminal, char_size) {
+		var width = terminal.find('.terminal-fill').width();
+		var result = Math.floor(width / char_size.width);
+		// random number to not get NaN in node but big enough to not wrap exception
+		return result || 1000;
+	}
+	// -----------------------------------------------------------------------
+	// :: Calculate number of lines that fit without scroll
+	// -----------------------------------------------------------------------
+	function get_num_rows(terminal, char_size) {
+		return Math.floor(terminal.find('.terminal-fill').height() / char_size.height);
+	}
+	// -----------------------------------------------------------------------
+	// :: try to copy given DOM element text to clipboard
+	// -----------------------------------------------------------------------
+	function text_to_clipboard(container, text) {
+		var $div = $('<div>' + text.replace(/\n/, '<br/>') + '<div>');
+		var range;
+		container.append($div);
+		if (document.body.createTextRange) {
+			range = document.body.createTextRange();
+			range.moveToElementText($div[0]);
+			range.select();
+		} else if (window.getSelection) {
+			var selection = window.getSelection();
+			if (selection.setBaseAndExtent) {
+				selection.setBaseAndExtent($div[0], 0, $div[0], 1);
+			} else if (document.createRange) {
+				range = document.createRange();
+				range.selectNodeContents($div[0]);
+				selection.removeAllRanges();
+				selection.addRange(range);
+			}
+		}
+		try {
+			document.execCommand('copy');
+		} catch (e) {}
+		$div.remove();
+	}
+	function all(array, fn) {
+		var same = array.filter(function(item) {
+			return item[fn]() === item;
+		});
+		return same.length === array.length;
+	}
+	function string_case(string) {
+		var array = string.split('');
+		if (all(array, 'toLowerCase')) {
+			return 'lower';
+		} else if (all(array, 'toUpperCase')) {
+			return 'upper';
+		} else {
+			return 'mixed';
+		}
+	}
+	function same_case(string) {
+		return string_case(string) !== 'mixed';
+	}
+	// -----------------------------------------------------------------------
+	// :: TERMINAL PLUGIN CODE
+	// -----------------------------------------------------------------------
+	var version_set = !$.terminal.version.match(/^\{\{/);
+	var copyright = 'Copyright (c) 2011-2017 Jakub Jankiewicz <http://jcubic' +
+		'.pl/me>';
+	var version_string = version_set ? ' v. ' + $.terminal.version : ' ';
+	// regex is for placing version string aligned to the right
+	var reg = new RegExp(' {' + version_string.length + '}$');
+	var name_ver = 'jQuery Terminal Emulator' +
+		(version_set ? version_string : '');
+	// -----------------------------------------------------------------------
+	// :: Terminal Signatures
+	// -----------------------------------------------------------------------
+	var signatures = [
+		['jQuery Terminal', '(c) 2011-2017 jcubic'],
+		[name_ver, copyright.replace(/^Copyright | *<.*>/g, '')],
+		[name_ver, copyright.replace(/^Copyright /, '')],
+		[
+			'      _______                 ________                        __',
+			'     / / _  /_ ____________ _/__  ___/______________  _____  / /',
+			' __ / / // / // / _  / _/ // / / / _  / _/     / /  \\/ / _ \\/ /',
+			'/  / / // / // / ___/ // // / / / ___/ // / / / / /\\  / // / /__',
+			'\\___/____ \\\\__/____/_/ \\__ / /_/____/_//_/_/_/ /_/  \\/\\__\\_\\___/',
+			'         \\/          /____/                                   '
+				.replace(reg, ' ') + version_string,
+			copyright
+		],
+		[
+			'      __ _____                     ________                            ' +
+			'  __',
+			'     / // _  /__ __ _____ ___ __ _/__  ___/__ ___ ______ __ __  __ ___ ' +
+			' / /',
+			' __ / // // // // // _  // _// // / / // _  // _//     // //  \\/ // _ ' +
+			'\\/ /',
+			'/  / // // // // // ___// / / // / / // ___// / / / / // // /\\  // // ' +
+			'/ /__',
+			'\\___//____ \\\\___//____//_/ _\\_  / /_//____//_/ /_/ /_//_//_/ /_/ \\' +
+			'__\\_\\___/',
+			('          \\/              /____/                                      ' +
+				'    ').replace(reg, '') + version_string,
+			copyright
+		]
+	];
+	// -----------------------------------------------------------------------
+	// :: Default options
+	// -----------------------------------------------------------------------
+	$.terminal.defaults = {
+		prompt: '> ',
+		history: true,
+		exit: true,
+		clear: true,
+		enabled: true,
+		maskChar: '*',
+		wrap: true,
+		checkArity: true,
+		raw: false,
+		exceptionHandler: null,
+		pauseEvents: true,
+		softPause: false,
+		memory: false,
+		cancelableAjax: true,
+		processArguments: true,
+		linksNoReferrer: false,
+		processRPCResponse: null,
+		completionEscape: true,
+		convertLinks: true,
+		extra: {},
+		historySize: 60,
+		historyState: false,
+		importHistory: false,
+		historyFilter: null,
+		echoCommand: true,
+		scrollOnEcho: true,
+		login: null,
+		outputLimit: -1,
+		formatters: [$.terminal.nested_formatting],
+		onAjaxError: null,
+		scrollBottomOffset: 20,
+		wordAutocomplete: true,
+		caseSensitiveAutocomplete: true,
+		clickTimeout: 200,
+		request: $.noop,
+		response: $.noop,
+		describe: 'procs',
+		onRPCError: null,
+		completion: false,
+		onInit: $.noop,
+		onClear: $.noop,
+		onBlur: $.noop,
+		onFocus: $.noop,
+		onTerminalChange: $.noop,
+		onExit: $.noop,
+		onPush: $.noop,
+		onPop: $.noop,
+		keypress: $.noop,
+		keydown: $.noop,
+		onAfterRedraw: $.noop,
+		onEchoCommand: $.noop,
+		strings: {
+			comletionParameters: 'From version 1.0.0 completion function need to' +
+			' have two arguments',
+			wrongPasswordTryAgain: 'Wrong password try again!',
+			wrongPassword: 'Wrong password!',
+			ajaxAbortError: 'Error while aborting ajax call!',
+			wrongArity: "Wrong number of arguments. Function '%s' expects %s got" +
+			' %s!',
+			commandNotFound: "Command '%s' Not Found!",
+			oneRPCWithIgnore: 'You can use only one rpc with describe == false ' +
+			'or rpc without system.describe',
+			oneInterpreterFunction: "You can't use more than one function (rpc " +
+			'without system.describe or with option describe == false count' +
+			's as one)',
+			loginFunctionMissing: "You didn't specify a login function",
+			noTokenError: 'Access denied (no token)',
+			serverResponse: 'Server responded',
+			wrongGreetings: 'Wrong value of greetings parameter',
+			notWhileLogin: "You can't call `%s' function while in login",
+			loginIsNotAFunction: 'Authenticate must be a function',
+			canExitError: "You can't exit from main interpreter",
+			invalidCompletion: 'Invalid completion',
+			invalidSelector: 'Sorry, but terminal said that "%s" is not valid ' +
+			'selector!',
+			invalidTerminalId: 'Invalid Terminal ID',
+			login: 'login',
+			password: 'password',
+			recursiveCall: 'Recursive call detected, skip',
+			notAString: '%s function: argument is not a string',
+			redrawError: 'Internal error, wrong position in cmd redraw',
+			invalidStrings: 'Command %s have unclosed strings'
+		}
+	};
+	// -------------------------------------------------------------------------
+	// :: All terminal globals
+	// -------------------------------------------------------------------------
+	var requests = []; // for canceling on CTRL+D
+	var terminals = new Cycle(); // list of terminals global in this scope
+	// state for all terminals, terminals can't have own array fo state because
+	// there is only one popstate event
+	var save_state = []; // hold objects returned by export_view by history API
+	var hash_commands;
+	var change_hash = false; // don't change hash on Init
+	var fire_hash_change = true;
+	var first_instance = true; // used by history state
+	$.fn.terminal = function(init_interpreter, options) {
+		function StorageHelper(memory) {
+			if (memory) {
+				this.storage = {};
+			}
+			this.set = function(key, value) {
+				if (memory) {
+					this.storage[key] = value;
+				} else {
+					$.Storage.set(key, value);
+				}
+			};
+			this.get = function(key) {
+				if (memory) {
+					return this.storage[key];
+				} else {
+					return $.Storage.get(key);
+				}
+			};
+			this.remove = function(key) {
+				if (memory) {
+					delete this.storage[key];
+				} else {
+					$.Storage.remove(key);
+				}
+			};
+		}
+		// ---------------------------------------------------------------------
+		// :: helper function
+		// ---------------------------------------------------------------------
+		function get_processed_command(command) {
+			if ($.terminal.unclosed_strings(command)) {
+				var string = $.terminal.escape_brackets(command);
+				throw new Error(sprintf(strings().invalidStrings, "`" + string + "`"));
+			} else if ($.isFunction(settings.processArguments)) {
+				return process_command(command, settings.processArguments);
+			} else if (settings.processArguments) {
+				return $.terminal.parse_command(command);
+			} else {
+				return $.terminal.split_command(command);
+			}
+		}
+		// ---------------------------------------------------------------------
+		// :: Display object on terminal
+		// ---------------------------------------------------------------------
+		function display_object(object) {
+			if (typeof object === 'string') {
+				self.echo(object);
+			} else if (object instanceof Array) {
+				self.echo($.map(object, function(object) {
+					return JSON.stringify(object);
+				}).join(' '));
+			} else if (typeof object === 'object') {
+				self.echo(JSON.stringify(object));
+			} else {
+				self.echo(object);
+			}
+		}
+		// Display line code in the file if line numbers are present
+		function print_line(url_spec) {
+			var re = /(.*):([0-9]+):([0-9]+)$/;
+			// google chrome have line and column after filename
+			var m = url_spec.match(re);
+			if (m) {
+				// TODO: do we need to call pause/resume or return promise?
+				self.pause(settings.softPause);
+				$.get(m[1], function(response) {
+					var prefix = location.href.replace(/[^/]+$/, '');
+					var file = m[1].replace(prefix, '');
+					self.echo('[[b;white;]' + file + ']');
+					var code = response.split('\n');
+					var n = +m[2] - 1;
+					self.echo(code.slice(n - 2, n + 3).map(function(line, i) {
+						if (i === 2) {
+							line = '[[;#f00;]' +
+								$.terminal.escape_brackets(line) + ']';
+						}
+						return '[' + (n + i) + ']: ' + line;
+					}).join('\n')).resume();
+				}, 'text');
+			}
+		}
+		// ---------------------------------------------------------------------
+		// :: Helper function
+		// ---------------------------------------------------------------------
+		function display_json_rpc_error(error) {
+			if ($.isFunction(settings.onRPCError)) {
+				settings.onRPCError.call(self, error);
+			} else {
+				self.error('&#91;RPC&#93; ' + error.message);
+				if (error.error && error.error.message) {
+					error = error.error;
+					// more detailed error message
+					var msg = '\t' + error.message;
+					if (error.file) {
+						msg += ' in file "' + error.file.replace(/.*\//, '') + '"';
+					}
+					if (error.at) {
+						msg += ' at line ' + error.at;
+					}
+					self.error(msg);
+				}
+			}
+		}
+		// ---------------------------------------------------------------------
+		// :: Create interpreter function from url string
+		// ---------------------------------------------------------------------
+		function make_basic_json_rpc(url, auth) {
+			var interpreter = function(method, params) {
+				self.pause(settings.softPause);
+				$.jrpc({
+					url: url,
+					method: method,
+					params: params,
+					request: function(jxhr, request) {
+						try {
+							settings.request.apply(self, jxhr, request, self);
+						} catch (e) {
+							display_exception(e, 'USER');
+						}
+					},
+					response: function(jxhr, response) {
+						try {
+							settings.response.apply(self, jxhr, response, self);
+						} catch (e) {
+							display_exception(e, 'USER');
+						}
+					},
+					success: function success(json) {
+						if (json.error) {
+							display_json_rpc_error(json.error);
+						} else if ($.isFunction(settings.processRPCResponse)) {
+							settings.processRPCResponse.call(self, json.result, self);
+						} else {
+							display_object(json.result);
+						}
+						self.resume();
+					},
+					error: ajax_error
+				});
+			};
+			// this is the interpreter function
+			return function(command, terminal) {
+				if (command === '') {
+					return;
+				}
+				try {
+					command = get_processed_command(command);
+				} catch (e) {
+					// exception can be thrown on invalid regex
+					display_exception(e, 'TERMINAL (get_processed_command)');
+					return;
+					// throw e; // this will show stack in other try..catch
+				}
+				if (!auth || command.name === 'help') {
+					// allows to call help without a token
+					interpreter(command.name, command.args);
+				} else {
+					var token = terminal.token();
+					if (token) {
+						interpreter(command.name, [token].concat(command.args));
+					} else {
+						// should never happen
+						terminal.error('&#91;AUTH&#93; ' +
+							strings().noTokenError);
+					}
+				}
+			};
+		}
+		// ---------------------------------------------------------------------
+		// :: Create interpreter function from Object. If the value is object
+		// :: it will create nested interpreters
+		// ---------------------------------------------------------------------
+		function make_object_interpreter(object, arity, login, fallback) {
+			// function that maps commands to object methods
+			// it keeps terminal context
+			return function(user_command, terminal) {
+				if (user_command === '') {
+					return;
+				}
+				// command = split_command_line(command);
+				var command;
+				try {
+					command = get_processed_command(user_command);
+				} catch (e) {
+					// exception can be thrown on invalid regex
+					if ($.isFunction(settings.exception)) {
+						settings.exception(e, self);
+					} else {
+						self.error(e.toString());
+					}
+					return;
+					// throw e; // this will show stack in other try..catch
+				}
+				/*
+                if (login) {
+                    var token = self.token(true);
+                    if (token) {
+                        command.args = [token].concat(command.args);
+                    } else {
+                        terminal.error('&#91;AUTH&#93; ' + strings.noTokenError);
+                        return;
+                    }
+                }*/
+				var val = object[command.name];
+				var type = $.type(val);
+				if (type === 'function') {
+					if (arity && val.length !== command.args.length) {
+						self.error('&#91;Arity&#93; ' +
+							sprintf(strings().wrongArity,
+								command.name,
+								val.length,
+								command.args.length));
+					} else {
+						return val.apply(self, command.args);
+					}
+				} else if (type === 'object' || type === 'string') {
+					var commands = [];
+					if (type === 'object') {
+						commands = Object.keys(val);
+						val = make_object_interpreter(val,
+							arity,
+							login);
+					}
+					terminal.push(val, {
+						prompt: command.name + '> ',
+						name: command.name,
+						completion: type === 'object' ? commands : undefined
+					});
+				} else if ($.isFunction(fallback)) {
+					fallback(user_command, self);
+				} else if ($.isFunction(settings.onCommandNotFound)) {
+					settings.onCommandNotFound.call(self, user_command, self);
+				} else {
+					terminal.error(sprintf(strings().commandNotFound, command.name));
+				}
+			};
+		}
+		// ---------------------------------------------------------------------
+		function ajax_error(xhr, status, error) {
+			self.resume(); // onAjaxError can use pause/resume call it first
+			if ($.isFunction(settings.onAjaxError)) {
+				settings.onAjaxError.call(self, xhr, status, error);
+			} else if (status !== 'abort') {
+				self.error('&#91;AJAX&#93; ' + status + ' - ' +
+					strings().serverResponse + ':\n' +
+					$.terminal.escape_brackets(xhr.responseText));
+			}
+		}
+		// ---------------------------------------------------------------------
+		function make_json_rpc_object(url, auth, success) {
+			function jrpc_success(json) {
+				if (json.error) {
+					display_json_rpc_error(json.error);
+				} else if ($.isFunction(settings.processRPCResponse)) {
+					settings.processRPCResponse.call(self, json.result, self);
+				} else {
+					display_object(json.result);
+				}
+				self.resume();
+			}
+			function jrpc_request(jxhr, request) {
+				try {
+					settings.request.call(self, jxhr, request, self);
+				} catch (e) {
+					display_exception(e, 'USER');
+				}
+			}
+			function jrpc_response(jxhr, response) {
+				try {
+					settings.response.call(self, jxhr, response, self);
+				} catch (e) {
+					display_exception(e, 'USER');
+				}
+			}
+			function response(response) {
+				var procs = response;
+				// we check if it's false before we call this function but
+				// it don't hurt to be explicit here
+				if (settings.describe !== '') {
+					settings.describe.split('.').forEach(function(field) {
+						procs = procs[field];
+					});
+				}
+				if (procs && procs.length) {
+					var interpreter_object = {};
+					$.each(procs, function(_, proc) {
+						interpreter_object[proc.name] = function() {
+							var append = auth && proc.name !== 'help';
+							var args = Array.prototype.slice.call(arguments);
+							var args_len = args.length + (append ? 1 : 0);
+							if (settings.checkArity && proc.params &&
+								proc.params.length !== args_len) {
+								self.error('&#91;Arity&#93; ' +
+									sprintf(strings().wrongArity,
+										proc.name,
+										proc.params.length,
+										args_len));
+							} else {
+								self.pause(settings.softPause);
+								if (append) {
+									var token = self.token(true);
+									if (token) {
+										args = [token].concat(args);
+									} else {
+										self.error('&#91;AUTH&#93; ' +
+											strings().noTokenError);
+									}
+								}
+								$.jrpc({
+									url: url,
+									method: proc.name,
+									params: args,
+									request: jrpc_request,
+									response: jrpc_response,
+									success: jrpc_success,
+									error: ajax_error
+								});
+							}
+						};
+					});
+					interpreter_object.help = interpreter_object.help || function(fn) {
+						if (typeof fn === 'undefined') {
+							var names = response.procs.map(function(proc) {
+								return proc.name;
+							}).join(', ') + ', help';
+							self.echo('Available commands: ' + names);
+						} else {
+							var found = false;
+							$.each(procs, function(_, proc) {
+								if (proc.name === fn) {
+									found = true;
+									var msg = '';
+									msg += '[[bu;#fff;]' + proc.name + ']';
+									if (proc.params) {
+										msg += ' ' + proc.params.join(' ');
+									}
+									if (proc.help) {
+										msg += '\n' + proc.help;
+									}
+									self.echo(msg);
+									return false;
+								}
+							});
+							if (!found) {
+								if (fn === 'help') {
+									self.echo('[[bu;#fff;]help] [method]\ndisplay help ' +
+										'for the method or list of methods if not' +
+										' specified');
+								} else {
+									var msg = 'Method `' + fn + "' not found ";
+									self.error(msg);
+								}
+							}
+						}
+					};
+					success(interpreter_object);
+				} else {
+					success(null);
+				}
+			}
+			return $.jrpc({
+				url: url,
+				method: 'system.describe',
+				params: [],
+				success: response,
+				request: jrpc_request,
+				response: jrpc_response,
+				error: function error() {
+					success(null);
+				}
+			});
+		}
+		// ---------------------------------------------------------------------
+		function make_interpreter(user_intrp, login, finalize) {
+			finalize = finalize || $.noop;
+			var type = $.type(user_intrp);
+			var object;
+			var result = {};
+			var rpc_count = 0; // only one rpc can be use for array
+			var fn_interpreter;
+			if (type === 'array') {
+				object = {};
+				// recur will be called when previous acync call is finished
+				(function recur(interpreters, success) {
+					if (interpreters.length) {
+						var first = interpreters[0];
+						var rest = interpreters.slice(1);
+						var type = $.type(first);
+						if (type === 'string') {
+							self.pause(settings.softPause);
+							if (settings.describe === false) {
+								if (++rpc_count === 1) {
+									fn_interpreter = make_basic_json_rpc(first, login);
+								} else {
+									self.error(strings().oneRPCWithIgnore);
+								}
+								recur(rest, success);
+							} else {
+								make_json_rpc_object(first, login, function(new_obj) {
+									if (new_obj) {
+										$.extend(object, new_obj);
+									} else if (++rpc_count === 1) {
+										fn_interpreter = make_basic_json_rpc(
+											first,
+											login
+										);
+									} else {
+										self.error(strings().oneRPCWithIgnore);
+									}
+									self.resume();
+									recur(rest, success);
+								});
+							}
+						} else if (type === 'function') {
+							if (fn_interpreter) {
+								self.error(strings().oneInterpreterFunction);
+							} else {
+								fn_interpreter = first;
+							}
+							recur(rest, success);
+						} else if (type === 'object') {
+							$.extend(object, first);
+							recur(rest, success);
+						}
+					} else {
+						success();
+					}
+				})(user_intrp, function() {
+					finalize({
+						interpreter: make_object_interpreter(object,
+							false,
+							login,
+							fn_interpreter.bind(self)),
+						completion: Object.keys(object)
+					});
+				});
+			} else if (type === 'string') {
+				if (settings.ignoreSystemDescribe) {
+					object = {
+						interpreter: make_basic_json_rpc(user_intrp, login)
+					};
+					if ($.isArray(settings.completion)) {
+						object.completion = settings.completion;
+					}
+					finalize(object);
+				} else {
+					self.pause(settings.softPause);
+					make_json_rpc_object(user_intrp, login, function(object) {
+						if (object) {
+							result.interpreter = make_object_interpreter(object,
+								false,
+								login);
+							result.completion = Object.keys(object);
+						} else {
+							// no procs in system.describe
+							result.interpreter = make_basic_json_rpc(user_intrp, login);
+						}
+						finalize(result);
+						self.resume();
+					});
+				}
+			} else if (type === 'object') {
+				finalize({
+					interpreter: make_object_interpreter(user_intrp,
+						settings.checkArity),
+					completion: Object.keys(user_intrp)
+				});
+			} else {
+				// allow $('<div/>').terminal();
+				if (type === 'undefined') {
+					user_intrp = $.noop;
+				} else if (type !== 'function') {
+					throw new Error(type + ' is invalid interpreter value');
+				}
+				// single function don't need bind
+				finalize({
+					interpreter: user_intrp,
+					completion: settings.completion
+				});
+			}
+		}
+		// ---------------------------------------------------------------------
+		// :: Create JSON-RPC authentication function
+		// ---------------------------------------------------------------------
+		function make_json_rpc_login(url, login) {
+			var method = $.type(login) === 'boolean' ? 'login' : login;
+			return function(user, passwd, callback) {
+				self.pause(settings.softPause);
+				$.jrpc({
+					url: url,
+					method: method,
+					params: [user, passwd],
+					request: function(jxhr, request) {
+						try {
+							settings.request.call(self, jxhr, request, self);
+						} catch (e) {
+							display_exception(e, 'USER');
+						}
+					},
+					response: function(jxhr, response) {
+						try {
+							settings.response.call(self, jxhr, response, self);
+						} catch (e) {
+							display_exception(e, 'USER');
+						}
+					},
+					success: function success(response) {
+						if (!response.error && response.result) {
+							callback(response.result);
+						} else {
+							// null will trigger message that login fail
+							callback(null);
+						}
+						self.resume();
+					},
+					error: ajax_error
+				});
+			};
+			// default name is login so you can pass true
+		}
+		// ---------------------------------------------------------------------
+		// :: Return exception message as string
+		// ---------------------------------------------------------------------
+		function exception_message(e) {
+			if (typeof e === 'string') {
+				return e;
+			} else if (typeof e.fileName === 'string') {
+				return e.fileName + ': ' + e.message;
+			} else {
+				return e.message;
+			}
+		}
+		// ---------------------------------------------------------------------
+		// :: display Exception on terminal
+		// ---------------------------------------------------------------------
+		function display_exception(e, label) {
+			if ($.isFunction(settings.exceptionHandler)) {
+				settings.exceptionHandler.call(self, e, label);
+			} else {
+				self.exception(e, label);
+			}
+		}
+		// ---------------------------------------------------------------------
+		function scroll_to_bottom() {
+			var scrollHeight;
+			if (scroll_object.prop) {
+				scrollHeight = scroll_object.prop('scrollHeight');
+			} else {
+				scrollHeight = scroll_object.attr('scrollHeight');
+			}
+			scroll_object.scrollTop(scrollHeight);
+		}
+		// ---------------------------------------------------------------------
+		// :: validating if object is a string or a function, call that function
+		// :: and display the exeption if any
+		// ---------------------------------------------------------------------
+		function validate(label, object) {
+			try {
+				if ($.isFunction(object)) {
+					object.call(self, $.noop, self);
+				} else if (typeof object !== 'string') {
+					var msg = label + ' must be string or function';
+					throw msg;
+				}
+			} catch (e) {
+				display_exception(e, label.toUpperCase());
+				return false;
+			}
+			return true;
+		}
+		// ---------------------------------------------------------------------
+		// :: Draw line - can have line breaks and be longer than the width of
+		// :: the terminal, there are 2 options raw and finalize
+		// :: raw - will not encode the string and finalize if a function that
+		// :: will have div container of the line as first argument
+		// :: NOTE: it formats and appends lines to output_buffer. The actual
+		// :: append to terminal output happens in the flush function
+		// ---------------------------------------------------------------------
+		var output_buffer = [];
+		var NEW_LINE = 1;
+		function buffer_line(string, options) {
+			// urls should always have formatting to keep url if split
+			if (settings.convertLinks && !options.raw) {
+				string = string.replace(email_re, '[[!;;]$1]').
+				replace(url_nf_re, '[[!;;]$1]');
+			}
+			var i, len;
+			if (!options.raw) {
+				if (options.formatters) {
+					try {
+						string = $.terminal.apply_formatters(string);
+					} catch (e) {
+						// display_exception(e, 'FORMATTING');
+						if ($.isFunction(settings.exceptionHandler)) {
+							settings.exceptionHandler.call(self, e, 'FORMATTERS');
+						} else {
+							alert(e.message + '\n' + (e.stack ? e.stack : e));
+						}
+					}
+				}
+				string = $.terminal.encode(string);
+			}
+			output_buffer.push(NEW_LINE);
+			if (!options.raw && (strlen(string) > num_chars ||
+					string.match(/\n/)) &&
+				((settings.wrap === true && options.wrap === undefined) ||
+					settings.wrap === false && options.wrap === true)) {
+				var words = options.keepWords;
+				var array = $.terminal.split_equal(string, num_chars, words);
+				for (i = 0, len = array.length; i < len; ++i) {
+					if (array[i] === '' || array[i] === '\r') {
+						output_buffer.push('<span></span>');
+					} else if (options.raw) {
+						output_buffer.push(array[i]);
+					} else {
+						output_buffer.push($.terminal.format(array[i], {
+							linksNoReferrer: settings.linksNoReferrer
+						}));
+					}
+				}
+			} else if (!options.raw) {
+				string = $.terminal.normalize(string);
+				string = $.terminal.format(string, {
+					linksNoReferrer: settings.linksNoReferrer
+				});
+				string.split(/\n/).forEach(function(string) {
+					output_buffer.push(string);
+				});
+			} else {
+				output_buffer.push(string);
+			}
+			output_buffer.push(options.finalize);
+		}
+		// ---------------------------------------------------------------------
+		function process_line(line, options) {
+			// prevent exception in display exception
+			try {
+				var line_settings = $.extend({
+					exec: true,
+					raw: false,
+					finalize: $.noop
+				}, options || {});
+				var string = $.type(line) === 'function' ? line() : line;
+				string = $.type(string) === 'string' ? string : String(string);
+				if (string !== '') {
+					string = $.map(string.split(format_exec_re), function(string) {
+						if (string && string.match(format_exec_re) &&
+							!$.terminal.is_formatting(string)) {
+							// redraw should not execute commands and it have
+							// and lines variable have all extended commands
+							string = string.replace(/^\[\[|\]\]$/g, '');
+							if (line_settings.exec) {
+								if (prev_command && prev_command.command === string) {
+									self.error(strings().recursiveCall);
+								} else {
+									$.terminal.extended_command(self, string);
+								}
+							}
+							return '';
+						} else {
+							return string;
+						}
+					}).join('');
+					if (string !== '') {
+						// string can be empty after removing extended commands
+						buffer_line(string, line_settings);
+					}
+				}
+			} catch (e) {
+				output_buffer = [];
+				// don't display exception if exception throw in terminal
+				if ($.isFunction(settings.exceptionHandler)) {
+					settings.exceptionHandler.call(self, e, 'TERMINAL');
+				} else {
+					alert('[Internal Exception(process_line)]:' +
+						exception_message(e) + '\n' + e.stack);
+				}
+			}
+		}
+		// ---------------------------------------------------------------------
+		// :: Redraw all lines
+		// ---------------------------------------------------------------------
+		function redraw() {
+			command_line.resize(num_chars);
+			// we don't want reflow while processing lines
+			var detached_output = output.empty().detach();
+			var lines_to_show = [];
+			// Dead code
+			if (settings.outputLimit >= 0) {
+				// flush will limit lines but if there is lot of
+				// lines we don't need to show them and then remove
+				// them from terminal
+				var limit;
+				if (settings.outputLimit === 0) {
+					limit = self.rows();
+				} else {
+					limit = settings.outputLimit;
+				}
+				lines.forEach(function(line) {
+					var string = $.type(line[0]) === 'function' ? line[0]() : line[0];
+					string = $.type(string) === 'string' ? string : String(string);
+					if (strlen(string) > num_chars) {
+						var options = line[1];
+						var splitted = $.terminal.split_equal(
+							string,
+							num_chars,
+							options.keepWords
+						);
+						lines_to_show = lines_to_show.concat(splitted.map(function(line) {
+							return [line, options];
+						}));
+					} else {
+						lines_to_show.push(line);
+					}
+				});
+				lines_to_show = lines_to_show.slice(lines_to_show.length - limit - 1);
+			} else {
+				lines_to_show = lines;
+			}
+			try {
+				output_buffer = [];
+				$.each(lines, function(i, line) {
+					process_line.apply(null, line); // line is an array
+				});
+				command_line.before(detached_output); // reinsert output
+				self.flush();
+				settings.onAfterRedraw.call(self);
+			} catch (e) {
+				if ($.isFunction(settings.exceptionHandler)) {
+					settings.exceptionHandler.call(self, e, 'TERMINAL (redraw)');
+				} else {
+					alert('Exception in redraw\n' + e.stack);
+				}
+			}
+		}
+		// ---------------------------------------------------------------------
+		// :: Display user greetings or terminal signature
+		// ---------------------------------------------------------------------
+		function show_greetings() {
+			if (settings.greetings === undefined) {
+				// signature have ascii art so it's not suite for screen readers
+				self.echo(self.signature, {finalize: a11y_hide});
+			} else if (settings.greetings) {
+				var type = typeof settings.greetings;
+				if (type === 'string') {
+					self.echo(settings.greetings);
+				} else if (type === 'function') {
+					settings.greetings.call(self, self.echo);
+				} else {
+					self.error(strings().wrongGreetings);
+				}
+			}
+		}
+		// ---------------------------------------------------------------------
+		// :: Display prompt and last command
+		// ---------------------------------------------------------------------
+		function echo_command(command) {
+			if (typeof command === 'undefined') {
+				command = self.get_command();
+			}
+			var prompt = command_line.prompt();
+			var mask = command_line.mask();
+			switch (typeof mask) {
+				case 'string':
+					command = command.replace(/./g, mask);
+					break;
+				case 'boolean':
+					if (mask) {
+						command = command.replace(/./g, settings.maskChar);
+					} else {
+						command = $.terminal.escape_formatting(command);
+					}
+					break;
+			}
+			var options = {
+				finalize: function finalize(div) {
+					a11y_hide(div.addClass('command'));
+					settings.onEchoCommand.call(self, div);
+				}
+			};
+			if ($.isFunction(prompt)) {
+				prompt(function(string) {
+					self.echo(string + command, options);
+				});
+			} else {
+				self.echo(prompt + command, options);
+			}
+		}
+		// ---------------------------------------------------------------------
+		// :: Helper function that restore state. Call import_view or exec
+		// ---------------------------------------------------------------------
+		function restore_state(spec) {
+			// spec [terminal_id, state_index, command]
+			var terminal = terminals.get()[spec[0]];
+			if (!terminal) {
+				throw new Error(strings().invalidTerminalId);
+			}
+			var command_idx = spec[1];
+			if (save_state[command_idx]) { // state exists
+				terminal.import_view(save_state[command_idx]);
+			} else {
+				// restore state
+				change_hash = false;
+				var command = spec[2];
+				if (command) {
+					terminal.exec(command).done(function() {
+						change_hash = true;
+						save_state[command_idx] = terminal.export_view();
+					});
+				}
+			}
+			/*if (spec[3].length) {
+                restore_state(spec[3]);
+            }*/
+		}
+		// ---------------------------------------------------------------------
+		// :: Helper function
+		// ---------------------------------------------------------------------
+		function maybe_update_hash() {
+			if (change_hash) {
+				fire_hash_change = false;
+				location.hash = '#' + JSON.stringify(hash_commands);
+				setTimeout(function() {
+					fire_hash_change = true;
+				}, 100);
+			}
+		}
+		// ---------------------------------------------------------------------
+		// :: Wrapper over interpreter, it implements exit and catches all
+		// :: exeptions from user code and displays them on the terminal
+		// ---------------------------------------------------------------------
+		var first_command = true;
+		var resume_callbacks = [];
+		function commands(command, silent, exec) {
+			// first command store state of the terminal before the command get
+			// executed
+			if (first_command) {
+				first_command = false;
+				// execHash need first empty command too
+				if (settings.historyState || settings.execHash && exec) {
+					if (!save_state.length) {
+						// first command in first terminal don't have hash
+						self.save_state();
+					} else {
+						self.save_state(null);
+					}
+				}
+			}
+			function after_exec() {
+				// variables defined later in commands
+				if (!exec) {
+					change_hash = true;
+					if (settings.historyState) {
+						self.save_state(command, false);
+					}
+					change_hash = saved_change_hash;
+				}
+				deferred.resolve();
+				if ($.isFunction(settings.onAfterCommand)) {
+					settings.onAfterCommand.call(self, self, command);
+				}
+			}
+			function show(result) {
+				// don't echo result if user echo something
+				if (result && position === lines.length - 1) {
+					display_object(result);
+				}
+				after_exec();
+				self.resume();
+			}
+			try {
+				// this callback can disable commands
+				if ($.isFunction(settings.onBeforeCommand)) {
+					if (settings.onBeforeCommand.call(self, self, command) === false) {
+						return;
+					}
+				}
+				if (!exec) {
+					prev_command = $.terminal.split_command(command);
+				}
+				if (!ghost()) {
+					// exec execute this function wihout the help of cmd plugin
+					// that add command to history on enter
+					if (exec && ($.isFunction(settings.historyFilter) &&
+							settings.historyFilter(command) ||
+							command.match(settings.historyFilter))) {
+						command_line.history().append(command);
+					}
+				}
+				var interpreter = interpreters.top();
+				if (!silent && settings.echoCommand) {
+					echo_command(command);
+				}
+				// new promise will be returned to exec that will resolve his
+				// returned promise
+				var deferred = new $.Deferred();
+				// we need to save sate before commands is deleyd because
+				// execute_extended_command disable it and it can be executed
+				// after delay
+				var saved_change_hash = change_hash;
+				if (command.match(/^\s*login\s*$/) && self.token(true)) {
+					if (self.level() > 1) {
+						self.logout(true);
+					} else {
+						self.logout();
+					}
+					after_exec();
+				} else if (settings.exit && command.match(/^\s*exit\s*$/) &&
+					!in_login) {
+					var level = self.level();
+					if (level === 1 && self.get_token() || level > 1) {
+						if (self.get_token(true)) {
+							self.set_token(undefined, true);
+						}
+						self.pop();
+					}
+					after_exec();
+				} else if (settings.clear && command.match(/^\s*clear\s*$/) &&
+					!in_login) {
+					self.clear();
+					after_exec();
+				} else {
+					var position = lines.length - 1;
+					// Call user interpreter function
+					var result = interpreter.interpreter.call(self, command, self);
+					if (result !== undefined) {
+						// auto pause/resume when user return promises
+						self.pause(settings.softPause);
+						// when for native Promise object work only in jQuery 3.x
+						if (result.then) {
+							result.then(show);
+						} else {
+							return $.when(result).done(show);
+						}
+					} else if (paused) {
+						resume_callbacks.push(function() {
+							// exec with resume/pause in user code
+							after_exec();
+						});
+					} else {
+						after_exec();
+					}
+				}
+				return deferred.promise();
+			} catch (e) {
+				display_exception(e, 'USER');
+				self.resume();
+				if (!settings.exceptionHandler) {
+					throw e;
+				}
+			}
+		}
+		// ---------------------------------------------------------------------
+		// :: The logout function removes Storage, disables history and runs
+		// :: the login function. This function is called only when options.login
+		// :: function is defined. The check for this is in the self.pop method
+		// ---------------------------------------------------------------------
+		function global_logout() {
+			if ($.isFunction(settings.onBeforeLogout)) {
+				try {
+					if (settings.onBeforeLogout.call(self, self) === false) {
+						return;
+					}
+				} catch (e) {
+					display_exception(e, 'onBeforeLogout');
+				}
+			}
+			clear_loging_storage();
+			if ($.isFunction(settings.onAfterLogout)) {
+				try {
+					settings.onAfterLogout.call(self, self);
+				} catch (e) {
+					display_exception(e, 'onAfterlogout');
+				}
+			}
+			self.login(settings.login, true, initialize);
+		}
+		// ---------------------------------------------------------------------
+		function clear_loging_storage() {
+			var name = self.prefix_name(true) + '_';
+			storage.remove(name + 'token');
+			storage.remove(name + 'login');
+		}
+		// ---------------------------------------------------------------------
+		// :: Save the interpreter name for use with purge
+		// ---------------------------------------------------------------------
+		function maybe_append_name(interpreter_name) {
+			var storage_key = self.prefix_name() + '_interpreters';
+			var names = storage.get(storage_key);
+			if (names) {
+				names = JSON.parse(names);
+			} else {
+				names = [];
+			}
+			if ($.inArray(interpreter_name, names) === -1) {
+				names.push(interpreter_name);
+				storage.set(storage_key, JSON.stringify(names));
+			}
+		}
+		// ---------------------------------------------------------------------
+		// :: Function enables history, sets prompt, runs interpreter function
+		// ---------------------------------------------------------------------
+		function prepare_top_interpreter(silent) {
+			var interpreter = interpreters.top();
+			var name = self.prefix_name(true);
+			if (!ghost()) {
+				maybe_append_name(name);
+			}
+			command_line.name(name);
+			if ($.isFunction(interpreter.prompt)) {
+				command_line.prompt(function(command) {
+					interpreter.prompt.call(self, command, self);
+				});
+			} else {
+				command_line.prompt(interpreter.prompt);
+			}
+			if ($.isPlainObject(interpreter.keymap)) {
+				command_line.keymap($.omap(interpreter.keymap, function(name, fun) {
+					return function() {
+						var args = [].slice.call(arguments);
+						try {
+							return fun.apply(self, args);
+						} catch (e) {
+							display_exception(e, 'USER KEYMAP');
+							if (!settings.exceptionHandler) {
+								throw e;
+							}
+						}
+					};
+				}));
+			}
+			command_line.set('');
+			init_queue.resolve();
+			if (!silent && $.isFunction(interpreter.onStart)) {
+				interpreter.onStart.call(self, self);
+			}
+		}
+		// ---------------------------------------------------------------------
+		function hashchange() {
+			if (fire_hash_change && settings.execHash) {
+				try {
+					if (location.hash) {
+						var hash = location.hash.replace(/^#/, '');
+						hash_commands = JSON.parse(decodeURIComponent(hash));
+					} else {
+						hash_commands = [];
+					}
+					if (hash_commands.length) {
+						restore_state(hash_commands[hash_commands.length - 1]);
+					} else if (save_state[0]) {
+						self.import_view(save_state[0]);
+					}
+				} catch (e) {
+					display_exception(e, 'TERMINAL');
+				}
+			}
+		}
+		// ---------------------------------------------------------------------
+		function initialize() {
+			prepare_top_interpreter();
+			show_greetings();
+			if (lines.length) {
+				redraw(); // for case when showing long error before init
+			}
+			// was_paused flag is workaround for case when user call exec before
+			// login and pause in onInit, 3rd exec will have proper timing (will
+			// execute after onInit resume)
+			var was_paused = false;
+			if ($.isFunction(settings.onInit)) {
+				onPause = function() { // local in terminal
+					was_paused = true;
+				};
+				try {
+					settings.onInit.call(self, self);
+				} catch (e) {
+					display_exception(e, 'OnInit');
+					// throw e; // it will be catched by terminal
+				} finally {
+					onPause = $.noop;
+					if (!was_paused && self.enabled()) {
+						// resume login if user didn't call pause in onInit
+						// if user pause in onInit wait with exec until it
+						// resume
+						self.resume();
+					}
+				}
+			}
+			if (first_instance) {
+				first_instance = false;
+				$(window).on('hashchange', hashchange);
+			}
+		}
+		// ---------------------------------------------------------------------
+		// :: If Ghost don't store anything in localstorage
+		// ---------------------------------------------------------------------
+		function ghost() {
+			return in_login || command_line.mask() !== false;
+		}
+		// ---------------------------------------------------------------------
+		// :: return string that are common in all elements of the array
+		// ---------------------------------------------------------------------
+		function common_string(string, array, matchCase) {
+			if (!array.length) {
+				return '';
+			}
+			var type = string_case(string);
+			var result = [];
+			loop:
+				for (var j = string.length; j < array[0].length; ++j) {
+					for (var i = 1; i < array.length; ++i) {
+						var a = array[0].charAt(j);
+						var b = array[i].charAt(j);
+						if (a !== b) {
+							if (matchCase || type === 'mixed') {
+								break loop;
+							} else if (a.toLowerCase() === b.toLowerCase()) {
+								if (type === 'lower') {
+									result.push(a.toLowerCase());
+								} else {
+									result.push(a.toUpperCase());
+								}
+							}
+						} else {
+							result.push(a);
+						}
+					}
+				}
+			return string + result.join('');
+		}
+		// ---------------------------------------------------------------------
+		// :: Keydown event handler
+		// ---------------------------------------------------------------------
+		function user_key_down(e) {
+			var result, top = interpreters.top();
+			if ($.isFunction(top.keydown)) {
+				result = top.keydown.call(self, e, self);
+				if (result !== undefined) {
+					return result;
+				}
+			} else if ($.isFunction(settings.keydown)) {
+				result = settings.keydown.call(self, e, self);
+				if (result !== undefined) {
+					return result;
+				}
+			}
+		}
+		var keymap = {
+			'CTRL+D': function(e, original) {
+				if (!in_login) {
+					if (command_line.get() === '') {
+						if (interpreters.size() > 1 ||
+							settings.login !== undefined) {
+							self.pop('');
+						} else {
+							self.resume();
+							self.echo('');
+						}
+					} else {
+						original();
+					}
+				}
+				return false;
+			},
+			'CTRL+L': function() {
+				self.clear();
+			},
+			'TAB': function(e, orignal) {
+				// TODO: move this to cmd plugin
+				//       add completion = array | function
+				//       !!! Problem complete more then one key need terminal
+				var top = interpreters.top(), completion, caseSensitive;
+				if (typeof top.caseSensitiveAutocomplete !== 'undefined') {
+					caseSensitive = top.caseSensitiveAutocomplete;
+				} else {
+					caseSensitive = settings.caseSensitiveAutocomplete;
+				}
+				if (settings.completion &&
+					$.type(settings.completion) !== 'boolean' &&
+					top.completion === undefined) {
+					completion = settings.completion;
+				} else {
+					completion = top.completion;
+				}
+				if (completion === 'settings') {
+					completion = settings.completion;
+				}
+				if (completion) {
+					switch ($.type(completion)) {
+						case 'function':
+							var string = self.before_cursor(settings.wordAutocomplete);
+							if (completion.length === 3) {
+								var error = new Error(strings().comletionParameters);
+								display_exception(error, 'USER');
+								return false;
+							}
+							completion.call(self, string, function(commands) {
+								self.complete(commands, {
+									echo: true,
+									word: settings.wordAutocomplete,
+									escape: settings.completionEscape,
+									caseSensitive: caseSensitive
+								});
+							});
+							break;
+						case 'array':
+							self.complete(completion, {
+								echo: true,
+								word: settings.wordAutocomplete,
+								escape: settings.completionEscape,
+								caseSensitive: caseSensitive
+							});
+							break;
+						default:
+							throw new Error(strings().invalidCompletion);
+					}
+				} else {
+					orignal();
+				}
+				return false;
+			},
+			'CTRL+V': function(e, original) {
+				original(e);
+				self.oneTime(200, function() {
+					scroll_to_bottom();
+				});
+				return true;
+			},
+			'CTRL+TAB': function() {
+				if (terminals.length() > 1) {
+					self.focus(false);
+					return false;
+				}
+			},
+			'PAGEDOWN': function() {
+				self.scroll(self.height());
+			},
+			'PAGEUP': function() {
+				self.scroll(-self.height());
+			}
+		};
+		function key_down(e) {
+			// Prevent to be executed by cmd: CTRL+D, TAB, CTRL+TAB (if more
+			// then one terminal)
+			var result, i;
+			if (self.enabled()) {
+				if (!self.paused()) {
+					result = user_key_down(e);
+					if (result !== undefined) {
+						return result;
+					}
+					if (e.which !== 9) { // not a TAB
+						tab_count = 0;
+					}
+					self.attr({scrollTop: self.attr('scrollHeight')});
+				} else {
+					if (!settings.pauseEvents) {
+						result = user_key_down(e);
+						if (result !== undefined) {
+							return result;
+						}
+					}
+					if (e.which === 68 && e.ctrlKey) { // CTRL+D (if paused)
+						if (settings.pauseEvents) {
+							result = user_key_down(e);
+							if (result !== undefined) {
+								return result;
+							}
+						}
+						if (requests.length) {
+							for (i = requests.length; i--;) {
+								var r = requests[i];
+								if (r.readyState !== 4) {
+									try {
+										r.abort();
+									} catch (error) {
+										if ($.isFunction(settings.exceptionHandler)) {
+											settings.exceptionHandler.call(self,
+												e,
+												'AJAX ABORT');
+										} else {
+											self.error(strings().ajaxAbortError);
+										}
+									}
+								}
+							}
+							requests = [];
+						}
+						self.resume();
+					}
+					return false;
+				}
+			}
+		}
+		function ready(queue) {
+			return function(fun) {
+				queue.add(fun);
+			};
+		}
+		function strings() {
+			return $.extend({}, $.terminal.defaults.strings, settings.strings);
+		}
+		// ---------------------------------------------------------------------
+		var self = this;
+		if (this.length > 1) {
+			return this.each(function() {
+				$.fn.terminal.call($(this),
+					init_interpreter,
+					$.extend({name: self.selector}, options));
+			});
+		}
+		// terminal already exists
+		if (self.data('terminal')) {
+			return self.data('terminal');
+		}
+		if (self.length === 0) {
+			throw new Error(sprintf(strings().invalidSelector, self.selector));
+		}
+		// var names = []; // stack if interpreter names
+		var scroll_object;
+		var prev_command; // used for name on the terminal if not defined
+		var tab_count = 0; // for tab completion
+		// array of line objects:
+		// - function (called whenever necessary, result is printed)
+		// - array (expected form: [line, settings])
+		// - anything else (cast to string when painted)
+		var lines = [];
+		var output; // .terminal-output jquery object
+		var terminal_id = terminals.length();
+		var num_chars; // numer of chars in line
+		var num_rows; // number of lines that fit without scrollbar
+		var command; // for tab completion
+		var logins = new Stack(); // stack of logins
+		var command_queue = new DelayQueue();
+		var init_queue = new DelayQueue();
+		var when_ready = ready(init_queue);
+		var char_size = get_char_size();
+		var cmd_ready = ready(command_queue);
+		var in_login = false;// some Methods should not be called when login
+		// TODO: Try to use mutex like counter for pause/resume
+		var onPause = $.noop;// used to indicate that user call pause onInit
+		var old_width, old_height;
+		var delayed_commands = []; // used when exec commands while paused
+		var settings = $.extend({},
+			$.terminal.defaults,
+			{name: self.selector},
+			options || {});
+		var storage = new StorageHelper(settings.memory);
+		var enabled = settings.enabled, frozen = false;
+		var paused = false;
+		var autologin = true; // set to false if onBeforeLogin return false
+		var interpreters;
+		var command_line;
+		var old_enabled;
+		var visibility_observer;
+		var mutation_observer;
+		// -----------------------------------------------------------------
+		// TERMINAL METHODS
+		// -----------------------------------------------------------------
+		$.extend(self, $.omap({
+			id: function() {
+				return terminal_id;
+			},
+			// -------------------------------------------------------------
+			// :: Clear the output
+			// -------------------------------------------------------------
+			clear: function() {
+				output.html('');
+				lines = [];
+				try {
+					settings.onClear.call(self, self);
+				} catch (e) {
+					display_exception(e, 'onClear');
+				}
+				self.attr({scrollTop: 0});
+				return self;
+			},
+			// -------------------------------------------------------------
+			// :: Return an object that can be used with import_view to
+			// :: restore the state
+			// -------------------------------------------------------------
+			export_view: function() {
+				var user_export = {};
+				if ($.isFunction(settings.onExport)) {
+					try {
+						user_export = settings.onExport.call(self);
+					} catch (e) {
+						display_exception(e, 'onExport');
+					}
+				}
+				return $.extend({}, {
+					focus: enabled,
+					mask: command_line.mask(),
+					prompt: self.get_prompt(),
+					command: self.get_command(),
+					position: command_line.position(),
+					lines: clone(lines),
+					interpreters: interpreters.clone(),
+					history: command_line.history().data
+				}, user_export);
+			},
+			// -------------------------------------------------------------
+			// :: Restore the state of the previous exported view
+			// -------------------------------------------------------------
+			import_view: function(view) {
+				if (in_login) {
+					throw new Error(sprintf(strings().notWhileLogin, 'import_view'));
+				}
+				if ($.isFunction(settings.onImport)) {
+					try {
+						settings.onImport.call(self, view);
+					} catch (e) {
+						display_exception(e, 'onImport');
+					}
+				}
+				when_ready(function ready() {
+					self.set_prompt(view.prompt);
+					self.set_command(view.command);
+					command_line.position(view.position);
+					command_line.mask(view.mask);
+					if (view.focus) {
+						self.focus();
+					}
+					lines = clone(view.lines);
+					interpreters = view.interpreters;
+					if (settings.importHistory) {
+						command_line.history().set(view.history);
+					}
+					redraw();
+				});
+				return self;
+			},
+			// -------------------------------------------------------------
+			// :: Store current terminal state
+			// -------------------------------------------------------------
+			save_state: function(command, ignore_hash, index) {
+				// save_state.push({view:self.export_view(), join:[]});
+				if (typeof index !== 'undefined') {
+					save_state[index] = self.export_view();
+				} else {
+					save_state.push(self.export_view());
+				}
+				if (!$.isArray(hash_commands)) {
+					hash_commands = [];
+				}
+				if (command !== undefined && !ignore_hash) {
+					var state = [
+						terminal_id,
+						save_state.length - 1,
+						command
+					];
+					hash_commands.push(state);
+					maybe_update_hash();
+				}
+			},
+			// -------------------------------------------------------------
+			// :: Execute a command, it will handle commands that do AJAX
+			// :: calls and have delays, if the second argument is set to
+			// :: true it will not echo executed command
+			// -------------------------------------------------------------
+			exec: function(command, silent, deferred) {
+				var d = deferred || new $.Deferred();
+				cmd_ready(function ready() {
+					if ($.isArray(command)) {
+						(function recur() {
+							var cmd = command.shift();
+							if (cmd) {
+								self.exec(cmd, silent).done(recur);
+							} else {
+								d.resolve();
+							}
+						})();
+					} else if (paused) {
+						// both commands executed here (resume will call Term::exec)
+						// delay command multiple time
+						delayed_commands.push([command, silent, d]);
+					} else {
+						// commands may return promise from user code
+						// it will resolve exec promise when user promise
+						// is resolved
+						commands(command, silent, true).done(function() {
+							d.resolve(self);
+						});
+					}
+				});
+				// while testing it didn't executed last exec when using this
+				// for resolved deferred
+				return d.promise();
+			},
+			// -------------------------------------------------------------
+			// :: bypass login function that wait untill you type user/pass
+			// :: it hide implementation detail
+			// -------------------------------------------------------------
+			autologin: function(user, token, silent) {
+				self.trigger('terminal.autologin', [user, token, silent]);
+				return self;
+			},
+			// -------------------------------------------------------------
+			// :: Function changes the prompt of the command line to login
+			// :: with a password and calls the user login function with
+			// :: the callback that expects a token. The login is successful
+			// :: if the user calls it with value that is truthy
+			// -------------------------------------------------------------
+			login: function(auth, infinite, success, error) {
+				logins.push([].slice.call(arguments));
+				if (in_login) {
+					throw new Error(sprintf(strings().notWhileLogin, 'login'));
+				}
+				if (!$.isFunction(auth)) {
+					throw new Error(strings().loginIsNotAFunction);
+				}
+				in_login = true;
+				if (self.token() && self.level() === 1 && !autologin) {
+					in_login = false; // logout will call login
+					self.logout(true);
+				} else if (self.token(true) && self.login_name(true)) {
+					in_login = false;
+					if ($.isFunction(success)) {
+						success();
+					}
+					return self;
+				}
+				// don't store login data in history
+				if (settings.history) {
+					command_line.history().disable();
+				}
+				// so we know how many times call pop
+				var level = self.level();
+				function login_callback(user, token, silent) {
+					if (token) {
+						while (self.level() > level) {
+							self.pop(undefined, true);
+						}
+						if (settings.history) {
+							command_line.history().enable();
+						}
+						var name = self.prefix_name(true) + '_';
+						storage.set(name + 'token', token);
+						storage.set(name + 'login', user);
+						in_login = false;
+						if ($.isFunction(success)) {
+							// will be used internaly since users know
+							// when login success (they decide when
+							// it happen by calling the callback -
+							// this funtion)
+							success();
+						}
+					} else {
+						if (infinite) {
+							if (!silent) {
+								self.error(strings().wrongPasswordTryAgain);
+							}
+							self.pop(undefined, true).set_mask(false);
+						} else {
+							in_login = false;
+							if (!silent) {
+								self.error(strings().wrongPassword);
+							}
+							self.pop(undefined, true).pop(undefined, true);
+						}
+						// used only to call pop in push
+						if ($.isFunction(error)) {
+							error();
+						}
+					}
+					self.off('terminal.autologin');
+				}
+				self.on('terminal.autologin', function(event, user, token, silent) {
+					login_callback(user, token, silent);
+				});
+				self.push(function(user) {
+					self.set_mask(settings.maskChar).push(function(pass) {
+						try {
+							auth.call(self, user, pass, function(token, silent) {
+								login_callback(user, token, silent);
+							});
+						} catch (e) {
+							display_exception(e, 'AUTH');
+						}
+					}, {
+						prompt: strings().password + ': ',
+						name: 'password'
+					});
+				}, {
+					prompt: strings().login + ': ',
+					name: 'login'
+				});
+				return self;
+			},
+			// -------------------------------------------------------------
+			// :: User defined settings and defaults as well
+			// -------------------------------------------------------------
+			settings: function() {
+				return settings;
+			},
+			// -------------------------------------------------------------
+			// :: Get string before cursor
+			// -------------------------------------------------------------
+			before_cursor: function(word) {
+				var pos = command_line.position();
+				var command = command_line.get().substring(0, pos);
+				var cmd_strings = command.split(' ');
+				var string; // string before cursor that will be completed
+				if (word) {
+					if (cmd_strings.length === 1) {
+						string = cmd_strings[0];
+					} else {
+						var m = command.match(/(\\?")/g);
+						var double_quotes = m ? m.filter(function(chr) {
+							return !chr.match(/^\\/);
+						}).length : 0;
+						m = command.match(/'/g);
+						var single_quote = m ? m.length : 0;
+						if (single_quote % 2 === 1) {
+							string = command.match(/('[^']*)$/)[0];
+						} else if (double_quotes % 2 === 1) {
+							string = command.match(/("(?:[^"]|\\")*)$/)[0];
+						} else {
+							string = cmd_strings[cmd_strings.length - 1];
+							for (i = cmd_strings.length - 1; i > 0; i--) {
+								// treat escape space as part of the string
+								var prev_string = cmd_strings[i - 1];
+								if (prev_string[prev_string.length - 1] === '\\') {
+									string = cmd_strings[i - 1] + ' ' + string;
+								} else {
+									break;
+								}
+							}
+						}
+					}
+				} else {
+					string = command;
+				}
+				return string;
+			},
+			// -------------------------------------------------------------
+			// :: complete word or command based on array of words
+			// -------------------------------------------------------------
+			complete: function(commands, options) {
+				options = $.extend({
+					word: true,
+					echo: false,
+					escape: true,
+					caseSensitive: true
+				}, options || {});
+				var sensitive = options.caseSensitive;
+				// cursor can be in the middle of the command
+				// so we need to get the text before the cursor
+				var string = self.before_cursor(options.word).replace(/\\"/g, '"');
+				var quote = false;
+				if (options.word) {
+					if (string.match(/^"/)) {
+						quote = '"';
+					} else if (string.match(/^'/)) {
+						quote = "'";
+					}
+					if (quote) {
+						string = string.replace(/^["']/, '');
+					}
+				}
+				// local copy
+				commands = commands.slice();
+				if (settings.clear && $.inArray('clear', commands) === -1) {
+					commands.push('clear');
+				}
+				if (settings.exit && $.inArray('exit', commands) === -1) {
+					commands.push('exit');
+				}
+				if (tab_count % 2 === 0) {
+					command = self.before_cursor(options.word);
+				} else {
+					var test = self.before_cursor(options.word);
+					if (test !== command) {
+						// command line changed between TABS - ignore
+						return;
+					}
+				}
+				var safe = $.terminal.escape_regex(string);
+				if (options.escape) {
+					safe = safe.replace(/(\\+)(["'() ])/g, function(_, slash, chr) {
+						if (chr.match(/[()]/)) {
+							return slash + '\\?\\' + chr;
+						} else {
+							return slash + '?' + chr;
+						}
+					});
+				}
+				function matched_strings() {
+					var matched = [];
+					for (var i = commands.length; i--;) {
+						if (regex.test(commands[i])) {
+							var match = commands[i];
+							if (quote === '"') {
+								match = match.replace(/"/g, '\\"');
+							}
+							if (!quote && options.escape) {
+								match = match.replace(/(["'() ])/g, '\\$1');
+							}
+							if (!sensitive && same_case(match)) {
+								if (string.toLowerCase() === string) {
+									match = match.toLowerCase();
+								} else if (string.toUpperCase() === string) {
+									match = match.toUpperCase();
+								}
+							}
+							matched.push(match);
+						}
+					}
+					return matched;
+				}
+				var flags = sensitive ? '' : 'i';
+				var regex = new RegExp('^' + safe, flags);
+				var matched = matched_strings();
+				function replace(input, replacement) {
+					var text = self.get_command();
+					var pos = self.get_position();
+					var re = new RegExp(input + '$');
+					var pre = text.substring(0, pos).replace(re, '');
+					var post = text.substring(pos);
+					var to_insert = replacement + (quote || '');
+					self.set_command(pre + to_insert + post);
+					self.set_position((pre + to_insert).length);
+				}
+				if (matched.length === 1) {
+					if (options.escape) {
+						replace(safe, matched[0]);
+					} else {
+						self.insert(matched[0].replace(regex, '') + (quote || ''));
+					}
+					command = self.before_cursor(options.word);
+					return true;
+				} else if (matched.length > 1) {
+					if (++tab_count >= 2) {
+						tab_count = 0;
+						if (options.echo) {
+							echo_command();
+							var text = matched.reverse().join('\t');
+							self.echo($.terminal.escape_brackets(text), {
+								keepWords: true
+							});
+							return true;
+						}
+					} else {
+						var common = common_string(string, matched, sensitive);
+						if (common) {
+							replace(string, common);
+							command = self.before_cursor(options.word);
+							return true;
+						}
+					}
+				}
+			},
+			// -------------------------------------------------------------
+			// :: Return commands function from top interpreter
+			// -------------------------------------------------------------
+			commands: function() {
+				return interpreters.top().interpreter;
+			},
+			// -------------------------------------------------------------
+			// :: Low Level method that overwrites interpreter
+			// -------------------------------------------------------------
+			set_interpreter: function(user_intrp, login) {
+				function overwrite_interpreter() {
+					self.pause(settings.softPause);
+					make_interpreter(user_intrp, !!login, function(result) {
+						self.resume();
+						var top = interpreters.top();
+						$.extend(top, result);
+						prepare_top_interpreter(true);
+					});
+				}
+				if ($.type(user_intrp) === 'string' && login) {
+					self.login(make_json_rpc_login(user_intrp, login),
+						true,
+						overwrite_interpreter);
+				} else {
+					overwrite_interpreter();
+				}
+				return self;
+			},
+			// -------------------------------------------------------------
+			// :: Show user greetings or terminal signature
+			// -------------------------------------------------------------
+			greetings: function() {
+				show_greetings();
+				return self;
+			},
+			// -------------------------------------------------------------
+			// :: Return true if terminal is paused false otherwise
+			// -------------------------------------------------------------
+			paused: function() {
+				return paused;
+			},
+			// -------------------------------------------------------------
+			// :: Pause the terminal, it should be used for ajax calls
+			// -------------------------------------------------------------
+			pause: function(visible) {
+				cmd_ready(function ready() {
+					onPause();
+					paused = true;
+					command_line.disable(visible || is_android);
+					if (!visible) {
+						command_line.find('.prompt').hidden();
+					}
+					if ($.isFunction(settings.onPause)) {
+						settings.onPause.call(self);
+					}
+				});
+				return self;
+			},
+			// -------------------------------------------------------------
+			// :: Resume the previously paused terminal
+			// -------------------------------------------------------------
+			resume: function() {
+				cmd_ready(function ready() {
+					paused = false;
+					if (enabled && terminals.front() === self) {
+						command_line.enable();
+					}
+					command_line.find('.prompt').visible();
+					var original = delayed_commands;
+					delayed_commands = [];
+					for (var i = 0; i < original.length; ++i) {
+						self.exec.apply(self, original[i]);
+					}
+					self.trigger('resume');
+					var fn = resume_callbacks.shift();
+					if (fn) {
+						fn();
+					}
+					scroll_to_bottom();
+					if ($.isFunction(settings.onResume)) {
+						settings.onResume.call(self);
+					}
+				});
+				return self;
+			},
+			// -------------------------------------------------------------
+			// :: Return the number of characters that fit into the width of
+			// :: the terminal
+			// -------------------------------------------------------------
+			cols: function() {
+				if (settings.numChars) {
+					return settings.numChars;
+				}
+				if (typeof num_chars === 'undefined') {
+					num_chars = get_num_chars(self, char_size);
+				}
+				return num_chars;
+			},
+			// -------------------------------------------------------------
+			// :: Return the number of lines that fit into the height of the
+			// :: terminal
+			// -------------------------------------------------------------
+			rows: function() {
+				if (settings.numRows) {
+					return settings.numRows;
+				}
+				if (typeof num_rows === 'undefined') {
+					num_rows = get_num_rows(self, char_size);
+				}
+				return num_rows;
+			},
+			// -------------------------------------------------------------
+			// :: Return the History object
+			// -------------------------------------------------------------
+			history: function() {
+				return command_line.history();
+			},
+			// -------------------------------------------------------------
+			// :: toggle recording of history state
+			// -------------------------------------------------------------
+			history_state: function(toggle) {
+				function run() {
+					settings.historyState = true;
+					if (!save_state.length) {
+						self.save_state();
+					} else if (terminals.length() > 1) {
+						self.save_state(null);
+					}
+				}
+				if (toggle) {
+					// if set to true and if set from user command we need
+					// not to include the command
+					if (typeof window.setImmediate === 'undefined') {
+						setTimeout(run, 0);
+					} else {
+						setImmediate(run);
+					}
+				} else {
+					settings.historyState = false;
+				}
+				return self;
+			},
+			// -------------------------------------------------------------
+			// :: clear the history state
+			// -------------------------------------------------------------
+			clear_history_state: function() {
+				hash_commands = [];
+				save_state = [];
+				return self;
+			},
+			// -------------------------------------------------------------
+			// :: Switch to the next terminal
+			// -------------------------------------------------------------
+			next: function() {
+				if (terminals.length() === 1) {
+					return self;
+				} else {
+					terminals.front().disable();
+					var next = terminals.rotate().enable();
+					// 50 provides buffer in viewport
+					var x = next.offset().top - 50;
+					$('html,body').animate({scrollTop: x}, 500);
+					try {
+						settings.onTerminalChange.call(next, next);
+					} catch (e) {
+						display_exception(e, 'onTerminalChange');
+					}
+					return next;
+				}
+			},
+			// -------------------------------------------------------------
+			// :: Make the terminal in focus or blur depending on the first
+			// :: argument. If there is more then one terminal it will
+			// :: switch to next one, if the second argument is set to true
+			// :: the events will be not fired. Used on init
+			// -------------------------------------------------------------
+			focus: function(toggle, silent) {
+				cmd_ready(function ready() {
+					if (terminals.length() === 1) {
+						if (toggle === false) {
+							self.disable(silent);
+						} else {
+							self.enable(silent);
+						}
+					} else if (toggle === false) {
+						self.next();
+					} else {
+						var front = terminals.front();
+						if (front !== self) {
+							// there should be only from terminal enabled but tests
+							// sometime fail because there where more them one
+							// where cursor have blink class
+							terminals.forEach(function(terminal) {
+								if (terminal !== self && terminal.enabled()) {
+									terminal.disable(silent);
+								}
+							});
+							if (!silent) {
+								try {
+									settings.onTerminalChange.call(self, self);
+								} catch (e) {
+									display_exception(e, 'onTerminalChange');
+								}
+							}
+						}
+						terminals.set(self);
+					}
+					self.enable(silent);
+				});
+				return self;
+			},
+			// -------------------------------------------------------------
+			// :: Disable/Enable terminal that can be enabled by click
+			// -------------------------------------------------------------
+			freeze: function(freeze) {
+				when_ready(function ready() {
+					if (freeze) {
+						self.disable();
+						frozen = true;
+					} else {
+						frozen = false;
+						self.enable();
+					}
+				});
+			},
+			// -------------------------------------------------------------
+			// :: check if terminal is frozen
+			// -------------------------------------------------------------
+			frozen: function() {
+				return frozen;
+			},
+			// -------------------------------------------------------------
+			// :: Enable the terminal
+			// -------------------------------------------------------------
+			enable: function(silent) {
+				if (!enabled && !frozen) {
+					if (num_chars === undefined) {
+						// enabling first time
+						self.resize();
+					}
+					cmd_ready(function ready() {
+						var ret;
+						if (!silent && !enabled) {
+							try {
+								ret = settings.onFocus.call(self, self);
+							} catch (e) {
+								display_exception(e, 'onFocus');
+							}
+						}
+						if (!silent && ret === undefined || silent) {
+							enabled = true;
+							if (!self.paused()) {
+								command_line.enable();
+							}
+						}
+					});
+				}
+				return self;
+			},
+			// -------------------------------------------------------------
+			// :: Disable the terminal
+			// -------------------------------------------------------------
+			disable: function(silent) {
+				cmd_ready(function ready() {
+					var ret;
+					if (!silent && enabled) {
+						try {
+							ret = settings.onBlur.call(self, self);
+						} catch (e) {
+							display_exception(e, 'onBlur');
+						}
+					}
+					if (!silent && ret === undefined || silent) {
+						enabled = false;
+						command_line.disable();
+					}
+				});
+				return self;
+			},
+			// -------------------------------------------------------------
+			// :: return true if the terminal is enabled
+			// -------------------------------------------------------------
+			enabled: function() {
+				return enabled;
+			},
+			// -------------------------------------------------------------
+			// :: Return the terminal signature depending on the size of the terminal
+			// -------------------------------------------------------------
+			signature: function() {
+				var cols = self.cols();
+				for (var i = signatures.length; i--;) {
+					var lenghts = signatures[i].map(function(line) {
+						return line.length;
+					});
+					if (Math.max.apply(null, lenghts) <= cols) {
+						return signatures[i].join('\n') + '\n';
+					}
+				}
+				return '';
+			},
+			// -------------------------------------------------------------
+			// :: Return the version number
+			// -------------------------------------------------------------
+			version: function() {
+				return $.terminal.version;
+			},
+			// -------------------------------------------------------------
+			// :: Return actual command line object (jquery object with cmd
+			// :: methods)
+			// -------------------------------------------------------------
+			cmd: function() {
+				return command_line;
+			},
+			// -------------------------------------------------------------
+			// :: Return the current command entered by terminal
+			// -------------------------------------------------------------
+			get_command: function() {
+				return command_line.get();
+			},
+			// -------------------------------------------------------------
+			// :: Change the command line to the new one
+			// -------------------------------------------------------------
+			set_command: function(command) {
+				when_ready(function ready() {
+					command_line.set(command);
+				});
+				return self;
+			},
+			// -------------------------------------------------------------
+			// :: Change position of the command line
+			// -------------------------------------------------------------
+			set_position: function(position, relative) {
+				when_ready(function ready() {
+					command_line.position(position, relative);
+				});
+				return self;
+			},
+			// -------------------------------------------------------------
+			// :: Return position of the command line
+			// -------------------------------------------------------------
+			get_position: function() {
+				return command_line.position();
+			},
+			// -------------------------------------------------------------
+			// :: Insert text into the command line after the cursor
+			// -------------------------------------------------------------
+			insert: function(string, stay) {
+				if (typeof string === 'string') {
+					when_ready(function ready() {
+						var bottom = self.is_bottom();
+						command_line.insert(string, stay);
+						if (settings.scrollOnEcho || bottom) {
+							scroll_to_bottom();
+						}
+					});
+					return self;
+				} else {
+					throw new Error(sprintf(strings().notAString, 'insert'));
+				}
+			},
+			// -------------------------------------------------------------
+			// :: Set the prompt of the command line
+			// -------------------------------------------------------------
+			set_prompt: function(prompt) {
+				when_ready(function ready() {
+					if (validate('prompt', prompt)) {
+						if ($.isFunction(prompt)) {
+							command_line.prompt(function(callback) {
+								prompt(callback, self);
+							});
+						} else {
+							command_line.prompt(prompt);
+						}
+						interpreters.top().prompt = prompt;
+					}
+				});
+				return self;
+			},
+			// -------------------------------------------------------------
+			// :: Return the prompt used by the terminal
+			// -------------------------------------------------------------
+			get_prompt: function() {
+				return interpreters.top().prompt;
+				// command_line.prompt(); - can be a wrapper
+				// return command_line.prompt();
+			},
+			// -------------------------------------------------------------
+			// :: Enable or Disable mask depedning on the passed argument
+			// :: the mask can also be character (in fact it will work with
+			// :: strings longer then one)
+			// -------------------------------------------------------------
+			set_mask: function(mask) {
+				when_ready(function ready() {
+					command_line.mask(mask === true ? settings.maskChar : mask);
+				});
+				return self;
+			},
+			// -------------------------------------------------------------
+			// :: Return the ouput of the terminal as text
+			// -------------------------------------------------------------
+			get_output: function(raw) {
+				if (raw) {
+					return lines;
+				} else {
+					return $.map(lines, function(item) {
+						return $.isFunction(item[0]) ? item[0]() : item[0];
+					}).join('\n');
+				}
+			},
+			// -------------------------------------------------------------
+			// :: Recalculate and redraw everything
+			// -------------------------------------------------------------
+			resize: function(width, height) {
+				if (!self.is(':visible')) {
+					// delay resize if terminal not visible
+					self.stopTime('resize');
+					self.oneTime(500, 'resize', function() {
+						self.resize(width, height);
+					});
+				} else {
+					if (width && height) {
+						self.width(width);
+						self.height(height);
+					}
+					width = self.width();
+					height = self.height();
+
+					// osipov CUSTOMIZATION!
+
+					// if (typeof settings.numChars !== 'undefined' &&
+					//     typeof settings.numRows !== 'undefined') {
+					//     return;
+					// }
+
+					if (typeof settings.numChars !== 'undefined' &&
+						typeof settings.numRows !== 'undefined') {
+
+						num_chars = settings.numChars;
+						num_rows = settings.numRows;
+						command_line.resize(num_chars);
+						redraw();
+						var top = interpreters.top();
+						if ($.isFunction(top.resize)) {
+							top.resize.call(self, self);
+						} else if ($.isFunction(settings.onResize)) {
+							settings.onResize.call(self, self);
+						}
+						scroll_to_bottom();
+
+
+						return;
+					}
+
+					char_size = get_char_size();
+					var new_num_chars = get_num_chars(self, char_size);
+					var new_num_rows = get_num_rows(self, char_size);
+					// only if number of chars changed
+					if (new_num_chars !== num_chars ||
+						new_num_rows !== num_rows) {
+						num_chars = new_num_chars;
+						num_rows = new_num_rows;
+						command_line.resize(num_chars);
+						redraw();
+						var top = interpreters.top();
+						if ($.isFunction(top.resize)) {
+							top.resize.call(self, self);
+						} else if ($.isFunction(settings.onResize)) {
+							settings.onResize.call(self, self);
+						}
+						scroll_to_bottom();
+					}
+				}
+				return self;
+			},
+			// -------------------------------------------------------------
+			// :: Flush the output to the terminal
+			// -------------------------------------------------------------
+			flush: function() {
+				try {
+					var bottom = self.is_bottom();
+					var wrapper;
+					// print all lines
+					$.each(output_buffer, function(i, line) {
+						if (line === NEW_LINE) {
+							wrapper = $('<div></div>');
+						} else if ($.isFunction(line)) {
+							// this is finalize function from echo
+							wrapper.appendTo(output);
+							line(wrapper);
+						} else {
+							$('<div/>').html(line)
+								.appendTo(wrapper).width('100%');
+						}
+					});
+					if (settings.outputLimit >= 0) {
+						var limit;
+						if (settings.outputLimit === 0) {
+							limit = self.rows();
+						} else {
+							limit = settings.outputLimit;
+						}
+						var $lines = output.find('div div');
+						if ($lines.length + 1 > limit) {
+							var max = $lines.length - limit + 1;
+							var for_remove = $lines.slice(0, max);
+							// you can't get parent if you remove the
+							// element so we first get the parent
+							var parents = for_remove.parent();
+							for_remove.remove();
+							parents.each(function() {
+								var $self = $(this);
+								if ($self.is(':empty')) {
+									// there can be divs inside parent that
+									// was not removed
+									$self.remove();
+								}
+							});
+						}
+					}
+					//num_rows = get_num_rows(self, char_size);
+					if (settings.scrollOnEcho || bottom) {
+						scroll_to_bottom();
+					}
+					output_buffer = [];
+				} catch (e) {
+					if ($.isFunction(settings.exceptionHandler)) {
+						settings.exceptionHandler.call(self, e, 'TERMINAL (Flush)');
+					} else {
+						alert('[Flush] ' + exception_message(e) + '\n' +
+							e.stack);
+					}
+				}
+				return self;
+			},
+			// -------------------------------------------------------------
+			// :: Update the output line - line number can be negative
+			// -------------------------------------------------------------
+			update: function(line, string) {
+				when_ready(function ready() {
+					if (line < 0) {
+						line = lines.length + line; // yes +
+					}
+					if (!lines[line]) {
+						self.error('Invalid line number ' + line);
+					} else {
+						if (string === null) {
+							lines.splice(line, 1);
+						} else {
+							lines[line][0] = string;
+						}
+						// it would be hard to figure out which div need to be
+						// updated so we update everything
+						redraw();
+					}
+				});
+				return self;
+			},
+			// -------------------------------------------------------------
+			// :: return index of last line in case when you need to update
+			// :: after something is echo on the terminal
+			// -------------------------------------------------------------
+			last_index: function() {
+				return lines.length - 1;
+			},
+			// -------------------------------------------------------------
+			// :: Print data to the terminal output. It can have two options
+			// :: a function that is called with the container div that
+			// :: holds the output (as a jquery object) every time the
+			// :: output is printed (including resize and scrolling)
+			// :: If the line is a function it will be called for every
+			// :: redraw.
+			// :: it use $.when so you can echo a promise
+			// -------------------------------------------------------------
+			echo: function(string, options) {
+				function echo(string) {
+					try {
+						var locals = $.extend({
+							flush: true,
+							raw: settings.raw,
+							finalize: $.noop,
+							keepWords: false,
+							formatters: true
+						}, options || {});
+						if (locals.raw) {
+							(function(finalize) {
+								locals.finalize = function(div) {
+									div.addClass('raw');
+									finalize(div);
+								};
+							})(locals.finalize);
+						}
+						if (locals.flush) {
+							// flush buffer if there was no flush after previous echo
+							if (output_buffer.length) {
+								self.flush();
+							}
+							output_buffer = [];
+						}
+						process_line(string, locals);
+						// extended commands should be processed only
+						// once in echo and not on redraw
+						lines.push([string, $.extend(locals, {
+							exec: false
+						})]);
+						if (locals.flush) {
+							self.flush();
+						}
+					} catch (e) {
+						// if echo throw exception we can't use error to
+						// display that exception
+						if ($.isFunction(settings.exceptionHandler)) {
+							settings.exceptionHandler.call(self, e, 'TERMINAL (echo)');
+						} else {
+							alert('[Terminal.echo] ' + exception_message(e) +
+								'\n' + e.stack);
+						}
+					}
+				}
+				try {
+					if (options && $.isFunction(options.finalize)) {
+						options.finalize($('<div/>'));
+					}
+					if ($.isFunction(string.then)) {
+						$.when(string).done(echo);
+					} else {
+						echo(string);
+					}
+				} catch (e) {
+					display_exception(e, 'USER:echo(finalize)');
+				}
+				return self;
+			},
+			// -------------------------------------------------------------
+			// :: echo red text
+			// -------------------------------------------------------------
+			error: function(message, options) {
+				options = $.extend({}, options, {raw: false, formatters: false});
+				// quick hack to fix trailing backslash
+				var str = $.terminal.escape_brackets(message).
+				replace(/\\$/, '&#92;').
+				replace(url_re, ']$1[[;;;error]');
+				return self.echo('[[;;;error]' + str + ']', options);
+			},
+			// -------------------------------------------------------------
+			// :: Display Exception on terminal
+			// -------------------------------------------------------------
+			exception: function(e, label) {
+				var message = exception_message(e);
+				if (label) {
+					message = '&#91;' + label + '&#93;: ' + message;
+				}
+				if (message) {
+					self.error(message, {
+						finalize: function(div) {
+							div.addClass('exception message');
+						},
+						keepWords: true
+					});
+				}
+				if (typeof e.fileName === 'string') {
+					// display filename and line which throw exeption
+					self.pause(settings.softPause);
+					$.get(e.fileName, function(file) {
+						var num = e.lineNumber - 1;
+						var line = file.split('\n')[num];
+						if (line) {
+							self.error('[' + e.lineNumber + ']: ' + line);
+						}
+						self.resume();
+					}, 'text');
+				}
+				if (e.stack) {
+					var stack = $.terminal.escape_brackets(e.stack);
+					self.echo(stack.split(/\n/g).map(function(trace) {
+						return '[[;;;error]' + trace.replace(url_re, function(url) {
+							return ']' + url + '[[;;;error]';
+						}) + ']';
+					}).join('\n'), {
+						finalize: function(div) {
+							div.addClass('exception stack-trace');
+						},
+						formatters: false
+					});
+				}
+			},
+			// -------------------------------------------------------------
+			// :: Scroll Div that holds the terminal
+			// -------------------------------------------------------------
+			scroll: function(amount) {
+				var pos;
+				amount = Math.round(amount);
+				if (scroll_object.prop) { // work with jQuery > 1.6
+					if (amount > scroll_object.prop('scrollTop') && amount > 0) {
+						scroll_object.prop('scrollTop', 0);
+					}
+					pos = scroll_object.prop('scrollTop');
+					scroll_object.scrollTop(pos + amount);
+				} else {
+					if (amount > scroll_object.attr('scrollTop') && amount > 0) {
+						scroll_object.attr('scrollTop', 0);
+					}
+					pos = scroll_object.attr('scrollTop');
+					scroll_object.scrollTop(pos + amount);
+				}
+				return self;
+			},
+			// -------------------------------------------------------------
+			// :: Exit all interpreters and logout. The function will throw
+			// :: exception if there is no login provided
+			// -------------------------------------------------------------
+			logout: function(local) {
+				if (in_login) {
+					throw new Error(sprintf(strings().notWhileLogin, 'logout'));
+				}
+				when_ready(function ready() {
+					if (local) {
+						var login = logins.pop();
+						self.set_token(undefined, true);
+						self.login.apply(self, login);
+					} else if (interpreters.size() === 1 && self.token()) {
+						self.logout(true);
+					} else {
+						while (interpreters.size() > 1) {
+							// pop will call global_logout that will call login
+							// and size will be > 0; this is workaround the problem
+							if (self.token()) {
+								self.logout(true).pop().pop();
+							} else {
+								self.pop();
+							}
+						}
+					}
+				});
+				return self;
+			},
+			// -------------------------------------------------------------
+			// :: Function returns the token returned by callback function
+			// :: in login function. It does nothing (return undefined) if
+			// :: there is no login
+			// -------------------------------------------------------------
+			token: function(local) {
+				return storage.get(self.prefix_name(local) + '_token');
+			},
+			// -------------------------------------------------------------
+			// :: Function sets the token to the supplied value. This function
+			// :: works regardless of wherer settings.login is supplied
+			// -------------------------------------------------------------
+			set_token: function(token, local) {
+				var name = self.prefix_name(local) + '_token';
+				if (typeof token === 'undefined') {
+					storage.remove(name, token);
+				} else {
+					storage.set(name, token);
+				}
+				return self;
+			},
+			// -------------------------------------------------------------
+			// :: Function get the token either set by the login method or
+			// :: by the set_token method.
+			// -------------------------------------------------------------
+			get_token: function(local) {
+				return self.token(local);
+			},
+			// -------------------------------------------------------------
+			// :: Function return Login name entered by the user
+			// -------------------------------------------------------------
+			login_name: function(local) {
+				return storage.get(self.prefix_name(local) + '_login');
+			},
+			// -------------------------------------------------------------
+			// :: Function returns the name of current interpreter
+			// -------------------------------------------------------------
+			name: function() {
+				return interpreters.top().name;
+			},
+			// -------------------------------------------------------------
+			// :: Function return prefix name for login/token
+			// -------------------------------------------------------------
+			prefix_name: function(local) {
+				var name = (settings.name ? settings.name + '_' : '') +
+					terminal_id;
+				if (local && interpreters.size() > 1) {
+					var local_name = interpreters.map(function(intrp) {
+						return intrp.name || '';
+					}).slice(1).join('_');
+					if (local_name) {
+						name += '_' + local_name;
+					}
+				}
+				return name;
+			},
+			// -------------------------------------------------------------
+			// :: wrapper for common use case
+			// -------------------------------------------------------------
+			read: function(message, callback) {
+				var d = new $.Deferred();
+				self.push(function(text) {
+					self.pop();
+					if ($.isFunction(callback)) {
+						callback(text);
+					}
+					d.resolve(text);
+				}, {
+					prompt: message
+				});
+				return d.promise();
+			},
+			// -------------------------------------------------------------
+			// :: Push a new interenter on the Stack
+			// -------------------------------------------------------------
+			push: function(interpreter, options) {
+				cmd_ready(function ready() {
+					options = options || {};
+					var defaults = {
+						infiniteLogin: false
+					};
+					var push_settings = $.extend({}, defaults, options);
+					if (!push_settings.name && prev_command) {
+						// push is called in login
+						push_settings.name = prev_command.name;
+					}
+					if (push_settings.prompt === undefined) {
+						push_settings.prompt = (push_settings.name || '>') + ' ';
+					}
+					// names.push(options.name);
+					var top = interpreters.top();
+					if (top) {
+						top.mask = command_line.mask();
+					}
+					var was_paused = paused;
+					function init() {
+						settings.onPush.call(self, top, interpreters.top(), self);
+						prepare_top_interpreter();
+					}
+					// self.pause();
+					make_interpreter(interpreter, !!options.login, function(ret) {
+						// result is object with interpreter and completion properties
+						interpreters.push($.extend({}, ret, push_settings));
+						if (push_settings.completion === true) {
+							if ($.isArray(ret.completion)) {
+								interpreters.top().completion = ret.completion;
+							} else if (!ret.completion) {
+								interpreters.top().completion = false;
+							}
+						}
+						if (push_settings.login) {
+							var error;
+							var type = $.type(push_settings.login);
+							if (type === 'function') {
+								error = push_settings.infiniteLogin ? $.noop : self.pop;
+								self.login(push_settings.login,
+									push_settings.infiniteLogin,
+									init,
+									error);
+							} else if ($.type(interpreter) === 'string' &&
+								type === 'string' || type === 'boolean') {
+								error = push_settings.infiniteLogin ? $.noop : self.pop;
+								self.login(make_json_rpc_login(interpreter,
+									push_settings.login),
+									push_settings.infiniteLogin,
+									init,
+									error);
+							}
+						} else {
+							init();
+						}
+						if (!was_paused && self.enabled()) {
+							self.resume();
+						}
+					});
+				});
+				return self;
+			},
+			// -------------------------------------------------------------
+			// :: Remove the last interpreter from the Stack
+			// -------------------------------------------------------------
+			pop: function(string, silent) {
+				if (string !== undefined) {
+					echo_command(string);
+				}
+				var token = self.token(true);
+				var top;
+				if (interpreters.size() === 1) {
+					top = interpreters.top();
+					if (settings.login) {
+						if (!silent) {
+							settings.onPop.call(self, top, null, self);
+						}
+						global_logout();
+						if ($.isFunction(settings.onExit)) {
+							try {
+								settings.onExit.call(self, self);
+							} catch (e) {
+								display_exception(e, 'onExit');
+							}
+						}
+					} else {
+						self.error(strings().canExitError);
+					}
+				} else {
+					if (token) {
+						clear_loging_storage();
+					}
+					var current = interpreters.pop();
+					top = interpreters.top();
+					prepare_top_interpreter();
+					if (!silent) {
+						settings.onPop.call(self, current, top);
+					}
+					// we check in case if you don't pop from password interpreter
+					if (in_login && self.get_prompt() !== strings().login + ': ') {
+						in_login = false;
+					}
+					if ($.isFunction(current.onExit)) {
+						try {
+							current.onExit.call(self, self);
+						} catch (e) {
+							display_exception(e, 'onExit');
+						}
+					}
+					// restore mask
+					self.set_mask(top.mask);
+				}
+				return self;
+			},
+			// -------------------------------------------------------------
+			// :: Change terminal option(s) at runtime
+			// -------------------------------------------------------------
+			option: function(object_or_name, value) {
+				if (typeof value === 'undefined') {
+					if (typeof object_or_name === 'string') {
+						return settings[object_or_name];
+					} else if (typeof object_or_name === 'object') {
+						$.each(object_or_name, function(key, value) {
+							settings[key] = value;
+						});
+					}
+				} else {
+					settings[object_or_name] = value;
+				}
+				return self;
+			},
+			// -------------------------------------------------------------
+			// :: Return how deep you are in nested interpreters
+			// -------------------------------------------------------------
+			level: function() {
+				return interpreters.size();
+			},
+			// -------------------------------------------------------------
+			// :: Reinitialize the terminal
+			// -------------------------------------------------------------
+			reset: function() {
+				when_ready(function ready() {
+					self.clear();
+					while (interpreters.size() > 1) {
+						interpreters.pop();
+					}
+					initialize();
+				});
+				return self;
+			},
+			// -------------------------------------------------------------
+			// :: Remove all local storage left by terminal, it will not
+			// :: logout you until you refresh the browser
+			// -------------------------------------------------------------
+			purge: function() {
+				when_ready(function ready() {
+					var prefix = self.prefix_name() + '_';
+					var names = storage.get(prefix + 'interpreters');
+					if (names) {
+						$.each(JSON.parse(names), function(_, name) {
+							storage.remove(name + '_commands');
+							storage.remove(name + '_token');
+							storage.remove(name + '_login');
+						});
+					}
+					command_line.purge();
+					storage.remove(prefix + 'interpreters');
+				});
+				return self;
+			},
+			// -------------------------------------------------------------
+			// :: Remove all events and DOM nodes left by terminal, it will
+			// :: not purge the terminal so you will have the same state
+			// :: when you refresh the browser
+			// -------------------------------------------------------------
+			destroy: function() {
+				when_ready(function ready() {
+					command_line.destroy().remove();
+					output.remove();
+					wrapper.remove();
+					$(document).unbind('.terminal_' + self.id());
+					$(window).unbind('.terminal_' + self.id());
+					self.unbind('click wheel mousewheel mousedown mouseup');
+					self.removeData('terminal').removeClass('terminal').
+					unbind('.terminal');
+					if (settings.width) {
+						self.css('width', '');
+					}
+					if (settings.height) {
+						self.css('height', '');
+					}
+					$(window).off('blur', blur_terminal).
+					off('focus', focus_terminal);
+					self.find('.terminal-fill').remove();
+					terminals.remove(terminal_id);
+					if (visibility_observer) {
+						visibility_observer.unobserve(self[0]);
+					}
+					if (mutation_observer) {
+						mutation_observer.disconnect();
+					}
+					self.resizer('unbind');
+					if (!terminals.length()) {
+						$(window).off('hashchange');
+					}
+				});
+				return self;
+			},
+			// -------------------------------------------------------------
+			scroll_to_bottom: scroll_to_bottom,
+			// -------------------------------------------------------------
+			// :: return true if terminal div or body is at the bottom
+			// :: is use scrollBottomOffset option as margin for the check
+			// -------------------------------------------------------------
+			is_bottom: function() {
+				if (settings.scrollBottomOffset === -1) {
+					return false;
+				} else {
+					var scroll_height, scroll_top, height;
+					if (self.is('body')) {
+						scroll_height = $(document).height();
+						scroll_top = $(window).scrollTop();
+						height = window.innerHeight;
+					} else {
+						scroll_height = scroll_object[0].scrollHeight;
+						scroll_top = scroll_object.scrollTop();
+						height = scroll_object.outerHeight();
+					}
+					var limit = scroll_height - settings.scrollBottomOffset;
+					return scroll_top + height > limit;
+				}
+			}
+		}, function(name, fun) {
+			// wrap all functions and display execptions
+			return function() {
+				try {
+					return fun.apply(self, [].slice.apply(arguments));
+				} catch (e) {
+					// exec catch by command (resume call exec)
+					if (name !== 'exec' && name !== 'resume') {
+						display_exception(e, 'TERMINAL');
+					}
+					if (!settings.exceptionHandler) {
+						throw e;
+					}
+				}
+			};
+		}));
+
+		// -----------------------------------------------------------------
+		// INIT CODE
+		// -----------------------------------------------------------------
+		// backward compatibility
+		if (settings.ignoreSystemDescribe === true) {
+			settings.describe = false;
+		}
+		if (settings.width) {
+			self.width(settings.width);
+		}
+		if (settings.height) {
+			self.height(settings.height);
+		}
+		scroll_object = self.scroll_element();
+		// register ajaxSend for cancel requests on CTRL+D
+		$(document).bind('ajaxSend.terminal_' + self.id(), function(e, xhr) {
+			requests.push(xhr);
+		});
+		var wrapper = $('<div class="terminal-wrapper"/>').appendTo(self);
+		$('<div class="terminal-fill"/>').appendTo(self);
+		output = $('<div>').addClass('terminal-output').attr('role', 'log')
+			.appendTo(wrapper);
+		self.addClass('terminal');
+		// before login event
+		if (settings.login && $.isFunction(settings.onBeforeLogin)) {
+			try {
+				if (settings.onBeforeLogin.call(self, self) === false) {
+					autologin = false;
+				}
+			} catch (e) {
+				display_exception(e, 'onBeforeLogin');
+				if (!settings.exceptionHandler) {
+					throw e;
+				}
+			}
+		}
+		// create json-rpc authentication function
+		var base_interpreter;
+		if (typeof init_interpreter === 'string') {
+			base_interpreter = init_interpreter;
+		} else if (init_interpreter instanceof Array) {
+			// first JSON-RPC
+			for (var i = 0, len = init_interpreter.length; i < len; ++i) {
+				if (typeof init_interpreter[i] === 'string') {
+					base_interpreter = init_interpreter[i];
+					break;
+				}
+			}
+		}
+		if (base_interpreter &&
+			(typeof settings.login === 'string' || settings.login === true)) {
+			settings.login = make_json_rpc_login(base_interpreter,
+				settings.login);
+		}
+		terminals.append(self);
+		self.on('focus.terminal', 'textarea', function(e) {
+			// for cases when user press tab to focus terminal
+			if (!self.enabled() && e.originalEvent !== undefined) {
+				self.focus(true);
+			}
+		});
+		function focus_terminal() {
+			if (old_enabled) {
+				self.focus();
+			}
+		}
+		function blur_terminal() {
+			old_enabled = enabled;
+			self.disable().find('textarea').trigger('blur', [true]);
+		}
+		function paste_event(e) {
+			e = e.originalEvent;
+			// we don't care about browser that don't support clipboard data
+			// those browser simple will not have this feature normal paste
+			// is cross-browser and it's handled by cmd plugin
+			if (e.clipboardData) {
+				if (self.enabled()) {
+					var items = e.clipboardData.items;
+					if (items) {
+						for (var i = 0; i < items.length; i++) {
+							if (items[i].type.indexOf('image') !== -1) {
+								var blob = items[i].getAsFile();
+								var URL = window.URL || window.webkitURL;
+								var source = URL.createObjectURL(blob);
+								self.echo('<img src="' + source + '"/>', {raw: true});
+							}
+						}
+					}
+				}
+			}
+		}
+		$(document).on('paste.terminal_' + self.id(), paste_event);
+		make_interpreter(init_interpreter, !!settings.login, function(itrp) {
+			if (settings.completion && typeof settings.completion !== 'boolean' ||
+				!settings.completion) {
+				// overwrite interpreter completion by global setting #224
+				// we use string to indicate that it need to be taken from settings
+				// so we are able to change it using option API method
+				itrp.completion = 'settings';
+			}
+			var new_keymap = $.extend({}, keymap, settings.keymap || {});
+			interpreters = new Stack($.extend({}, settings.extra, {
+				name: settings.name,
+				prompt: settings.prompt,
+				keypress: settings.keypress,
+				keydown: settings.keydown,
+				resize: settings.onResize,
+				greetings: settings.greetings,
+				mousewheel: settings.mousewheel,
+				keymap: new_keymap
+			}, itrp));
+			// CREATE COMMAND LINE
+			command_line = $('<div/>').appendTo(wrapper).cmd({
+				prompt: settings.prompt,
+				history: settings.memory ? 'memory' : settings.history,
+				historyFilter: settings.historyFilter,
+				historySize: settings.historySize,
+				width: '100%',
+				enabled: false,
+				keydown: key_down,
+				keymap: new_keymap,
+				clickTimeout: settings.clickTimeout,
+				keypress: function(e) {
+					var top = interpreters.top();
+					if (enabled && (!paused || !settings.pauseEvents)) {
+						if ($.isFunction(top.keypress)) {
+							return top.keypress.call(self, e, self);
+						} else if ($.isFunction(settings.keypress)) {
+							return settings.keypress.call(self, e, self);
+						}
+					}
+				},
+				onCommandChange: function(command) {
+					if ($.isFunction(settings.onCommandChange)) {
+						try {
+							settings.onCommandChange.call(self, command, self);
+						} catch (e) {
+							display_exception(e, 'onCommandChange');
+							if (!settings.exceptionHandler) {
+								throw e;
+							}
+						}
+					}
+					scroll_to_bottom();
+				},
+				commands: commands
+			});
+			// touch devices need touch event to get virtual keyboard
+			if (enabled && self.is(':visible') && !is_mobile) {
+				self.focus(undefined, true);
+			} else {
+				self.disable();
+			}
+			function disable(e) {
+				var sender = $(e.target);
+				if (!sender.closest('.terminal').length && self.enabled()) {
+					self.disable();
+				}
+			}
+			self.oneTime(100, function() {
+				$(document).bind('click.terminal_' + self.id(), disable).
+				bind('contextmenu.terminal_' + self.id(), disable);
+			});
+			var $win = $(window);
+			// cordova application, if keyboard was open and we resume it will be
+			// closed so we need to disable terminal so you can enable it with tap
+			document.addEventListener("resume", function() {
+				self.disable();
+			});
+			if (is_mobile) {
+				self.click(function() {
+					if (!frozen) {
+						if (!self.enabled()) {
+							self.focus();
+							command_line.enable();
+						} else {
+							self.disable();
+						}
+					}
+				});
+			} else {
+				// work weird on mobile
+				$win.on('focus.terminal_' + self.id(), focus_terminal).
+				on('blur.terminal_' + self.id(), blur_terminal);
+				// detect mouse drag
+				(function() {
+					var count = 0;
+					var $target;
+					var name = 'click_' + self.id();
+					function position() {
+						if ($target.is('.terminal') ||
+							$target.is('.terminal-wrapper')) {
+							var len = self.get_command().length;
+							self.set_position(len);
+						} else if ($target.closest('.prompt').length) {
+							self.set_position(0);
+						}
+						count = 0;
+					}
+					self.mousedown(function(e) {
+						$target = $(e.target);
+					}).mouseup(function() {
+						if (get_selected_text() === '') {
+							if (++count === 1) {
+								if (!frozen) {
+									if (!enabled) {
+										self.focus();
+										command_line.enable();
+										count = 0;
+									} else {
+										var timeout = settings.clickTimeout;
+										self.oneTime(timeout, name, position);
+									}
+								}
+							} else {
+								self.stopTime(name);
+								count = 0;
+							}
+						}
+					}).dblclick(function() {
+						count = 0;
+						self.stopTime(name);
+					});
+				})();
+				(function() {
+					var clip = self.find('textarea');
+					self.on('mousedown.terminal', function(e) {
+						if (e.originalEvent.button === 2) {
+							if (!self.enabled()) {
+								self.enable();
+							}
+							e.preventDefault();
+							var offset = command_line.offset();
+							clip.css({
+								left: e.pageX - offset.left - 5,
+								top: e.pageY - offset.top - 5
+							});
+						}
+					});
+					// contextmenu is fired after mousedown
+					self.bind('contextmenu', function() {
+						self.oneTime(100, function() {
+							clip.css({left: '', top: ''});
+						});
+					});
+				})();
+			}
+			self.delegate('.exception a', 'click', function(e) {
+				// .on('click', '.exception a', function(e) {
+				// in new jquery .delegate just call .on
+				var href = $(this).attr('href');
+				if (href.match(/:[0-9]+$/)) { // display line if specified
+					e.preventDefault();
+					print_line(href);
+				}
+			});
+			if (self.is(':visible')) {
+				num_chars = self.cols();
+				command_line.resize(num_chars);
+				if (!char_size) {
+					char_size = get_char_size();
+				}
+				num_rows = get_num_rows(self, char_size);
+			}
+			// -------------------------------------------------------------
+			// Run Login
+			command_queue.resolve();
+			if (settings.login) {
+				self.login(settings.login, true, initialize);
+			} else {
+				initialize();
+			}
+			function resize() {
+				if (self.is(':visible')) {
+					var width = self.width();
+					var height = self.height();
+					// prevent too many calculations in IE
+					if (old_height !== height || old_width !== width) {
+						self.resize();
+					}
+					old_height = height;
+					old_width = width;
+				}
+			}
+			if (self.is(':visible')) {
+				self.resizer(resize);
+			}
+			function observe_visibility() {
+				if (visibility_observer) {
+					visibility_observer.unobserve(self[0]);
+				}
+				var was_enabled;
+				visibility_observer = new IntersectionObserver(function() {
+					if (self.is(':visible')) {
+						self.resizer('unbind').resizer(resize);
+						resize();
+						if (was_enabled) {
+							self.enabled();
+						}
+					} else {
+						was_enabled = $.terminal.active() === self && self.enabled();
+						self.disable();
+					}
+				}, {
+					root: document.body
+				});
+				visibility_observer.observe(self[0]);
+			}
+			var in_dom = !!self.closest('body').length;
+			var MutationObsrv = window.MutationObserver || window.WebKitMutationObserver;
+			if (window.IntersectionObserver) {
+				if (MutationObsrv) {
+					mutation_observer = new MutationObsrv(function() {
+						if (self.closest('body').length) {
+							if (!in_dom) {
+								self.scroll_to_bottom();
+								observe_visibility();
+							}
+							in_dom = true;
+						} else if (in_dom) {
+							in_dom = false;
+						}
+					});
+					mutation_observer.observe(document.body, {childList: true});
+				}
+				// check if element is in the DOM if not running IntersectionObserver
+				// don't make sense
+				if (in_dom) {
+					observe_visibility();
+				}
+
+			}
+			// -------------------------------------------------------------
+			// :: helper
+			function exec_spec(spec) {
+				var terminal = terminals.get()[spec[0]];
+				// execute if belong to this terminal
+				if (terminal && terminal_id === terminal.id()) {
+					if (spec[2]) {
+						try {
+							if (paused) {
+								var defer = $.Deferred();
+								resume_callbacks.push(function() {
+									return terminal.exec(spec[2]).done(function() {
+										terminal.save_state(spec[2], true, spec[1]);
+										defer.resolve();
+									});
+								});
+								return defer.promise();
+							} else {
+								return terminal.exec(spec[2]).done(function() {
+									terminal.save_state(spec[2], true, spec[1]);
+								});
+							}
+						} catch (e) {
+							var settings = terminal.settings();
+							if ($.isFunction(settings.exceptionHandler)) {
+								settings.exceptionHandler.call(self, e, 'EXEC HASH');
+							} else {
+								var cmd = $.terminal.escape_brackets(command);
+								var msg = 'Error while exec with command ' + cmd;
+								terminal.error(msg).exception(e);
+							}
+						}
+					}
+				}
+			}
+			// exec from hash called in each terminal instance
+			if (settings.execHash) {
+				if (location.hash) {
+					// wait until login is initialized
+					setTimeout(function() {
+						try {
+							var hash = location.hash.replace(/^#/, '');
+							// yes no var - local inside terminal
+							hash_commands = JSON.parse(decodeURIComponent(hash));
+							var i = 0;
+							(function recur() {
+								var spec = hash_commands[i++];
+								if (spec) {
+									exec_spec(spec).done(recur);
+								} else {
+									change_hash = true;
+								}
+							})();// */
+						} catch (e) {
+							// invalid json - ignore
+						}
+					});
+				} else {
+					change_hash = true;
+				}
+			} else {
+				change_hash = true; // if enabled later
+			}
+			// change_hash = true; // exec can now change hash
+			// -------------------------------------------------------------
+			var shift = false;
+			$(document).bind('keydown.terminal_' + self.id(), function(e) {
+				if (e.shiftKey) {
+					shift = true;
+				}
+			}).bind('keyup.terminal_' + self.id(), function(e) {
+				// in Google Chromium/Linux shiftKey is false
+				if (e.shiftKey || e.which === 16) {
+					shift = false;
+				}
+			});
+			// this could work without calling scroll on wheel event but we
+			// need to for cases where you have mouse wheel work differently
+			// like with less command that scroll text
+			function mousewheel(event, delta) {
+				if (!shift) {
+					var interpreter = interpreters.top();
+					var ret;
+					if ($.isFunction(interpreter.mousewheel)) {
+						ret = interpreter.mousewheel(event, delta, self);
+						if (ret === false) {
+							return;
+						}
+					} else if ($.isFunction(settings.mousewheel)) {
+						ret = settings.mousewheel(event, delta, self);
+						if (ret === false) {
+							return;
+						}
+					}
+					if (delta > 0) {
+						self.scroll(-40);
+					} else {
+						self.scroll(40);
+					}
+				}
+			}
+			if ($.event.special.mousewheel) {
+				// we keep mousewheel plugin just in case
+				self.on('mousewheel', function(event, delta) {
+					mousewheel(event, delta);
+					event.preventDefault();
+				});
+			} else {
+				// detection take from:
+				// https://developer.mozilla.org/en-US/docs/Web/Events/wheel
+				var event;
+				if ("onwheel" in document.createElement("div")) {
+					event = "wheel"; // Modern browsers support "wheel"
+				} else if (document.onmousewheel !== undefined) {
+					event = "mousewheel"; // Webkit and IE support at least "mousewheel"
+				} else {
+					// let's assume that remaining browsers are older Firefox
+					event = "DOMMouseScroll";
+				}
+				self.on(event, function(e) {
+					var delta;
+					if (event === 'mousewheel') {
+						delta = - 1 / 40 * e.originalEvent.wheelDelta;
+					} else {
+						delta = e.originalEvent.deltaY || e.originalEvent.detail;
+					}
+					mousewheel(e, -delta);
+					return false;
+				});
+			}
+		}); // make_interpreter
+		self.data('terminal', self);
+		return self;
+	}; // terminal plugin
+});
+
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(0), __webpack_require__(3).setImmediate))
+
+/***/ }),
+/* 3 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var apply = Function.prototype.apply;
+
+// DOM APIs, for completeness
+
+exports.setTimeout = function() {
+  return new Timeout(apply.call(setTimeout, window, arguments), clearTimeout);
+};
+exports.setInterval = function() {
+  return new Timeout(apply.call(setInterval, window, arguments), clearInterval);
+};
+exports.clearTimeout =
+exports.clearInterval = function(timeout) {
+  if (timeout) {
+    timeout.close();
+  }
+};
+
+function Timeout(id, clearFn) {
+  this._id = id;
+  this._clearFn = clearFn;
+}
+Timeout.prototype.unref = Timeout.prototype.ref = function() {};
+Timeout.prototype.close = function() {
+  this._clearFn.call(window, this._id);
+};
+
+// Does not start the time, just sets up the members needed.
+exports.enroll = function(item, msecs) {
+  clearTimeout(item._idleTimeoutId);
+  item._idleTimeout = msecs;
+};
+
+exports.unenroll = function(item) {
+  clearTimeout(item._idleTimeoutId);
+  item._idleTimeout = -1;
+};
+
+exports._unrefActive = exports.active = function(item) {
+  clearTimeout(item._idleTimeoutId);
+
+  var msecs = item._idleTimeout;
+  if (msecs >= 0) {
+    item._idleTimeoutId = setTimeout(function onTimeout() {
+      if (item._onTimeout)
+        item._onTimeout();
+    }, msecs);
+  }
+};
+
+// setimmediate attaches itself to the global object
+__webpack_require__(4);
+exports.setImmediate = setImmediate;
+exports.clearImmediate = clearImmediate;
+
+
+/***/ }),
+/* 4 */
+/***/ (function(module, exports, __webpack_require__) {
+
+/* WEBPACK VAR INJECTION */(function(global, process) {(function (global, undefined) {
+    "use strict";
+
+    if (global.setImmediate) {
+        return;
+    }
+
+    var nextHandle = 1; // Spec says greater than zero
+    var tasksByHandle = {};
+    var currentlyRunningATask = false;
+    var doc = global.document;
+    var registerImmediate;
+
+    function setImmediate(callback) {
+      // Callback can either be a function or a string
+      if (typeof callback !== "function") {
+        callback = new Function("" + callback);
+      }
+      // Copy function arguments
+      var args = new Array(arguments.length - 1);
+      for (var i = 0; i < args.length; i++) {
+          args[i] = arguments[i + 1];
+      }
+      // Store and register the task
+      var task = { callback: callback, args: args };
+      tasksByHandle[nextHandle] = task;
+      registerImmediate(nextHandle);
+      return nextHandle++;
+    }
+
+    function clearImmediate(handle) {
+        delete tasksByHandle[handle];
+    }
+
+    function run(task) {
+        var callback = task.callback;
+        var args = task.args;
+        switch (args.length) {
+        case 0:
+            callback();
+            break;
+        case 1:
+            callback(args[0]);
+            break;
+        case 2:
+            callback(args[0], args[1]);
+            break;
+        case 3:
+            callback(args[0], args[1], args[2]);
+            break;
+        default:
+            callback.apply(undefined, args);
+            break;
+        }
+    }
+
+    function runIfPresent(handle) {
+        // From the spec: "Wait until any invocations of this algorithm started before this one have completed."
+        // So if we're currently running a task, we'll need to delay this invocation.
+        if (currentlyRunningATask) {
+            // Delay by doing a setTimeout. setImmediate was tried instead, but in Firefox 7 it generated a
+            // "too much recursion" error.
+            setTimeout(runIfPresent, 0, handle);
+        } else {
+            var task = tasksByHandle[handle];
+            if (task) {
+                currentlyRunningATask = true;
+                try {
+                    run(task);
+                } finally {
+                    clearImmediate(handle);
+                    currentlyRunningATask = false;
+                }
+            }
+        }
+    }
+
+    function installNextTickImplementation() {
+        registerImmediate = function(handle) {
+            process.nextTick(function () { runIfPresent(handle); });
+        };
+    }
+
+    function canUsePostMessage() {
+        // The test against `importScripts` prevents this implementation from being installed inside a web worker,
+        // where `global.postMessage` means something completely different and can't be used for this purpose.
+        if (global.postMessage && !global.importScripts) {
+            var postMessageIsAsynchronous = true;
+            var oldOnMessage = global.onmessage;
+            global.onmessage = function() {
+                postMessageIsAsynchronous = false;
+            };
+            global.postMessage("", "*");
+            global.onmessage = oldOnMessage;
+            return postMessageIsAsynchronous;
+        }
+    }
+
+    function installPostMessageImplementation() {
+        // Installs an event handler on `global` for the `message` event: see
+        // * https://developer.mozilla.org/en/DOM/window.postMessage
+        // * http://www.whatwg.org/specs/web-apps/current-work/multipage/comms.html#crossDocumentMessages
+
+        var messagePrefix = "setImmediate$" + Math.random() + "$";
+        var onGlobalMessage = function(event) {
+            if (event.source === global &&
+                typeof event.data === "string" &&
+                event.data.indexOf(messagePrefix) === 0) {
+                runIfPresent(+event.data.slice(messagePrefix.length));
+            }
+        };
+
+        if (global.addEventListener) {
+            global.addEventListener("message", onGlobalMessage, false);
+        } else {
+            global.attachEvent("onmessage", onGlobalMessage);
+        }
+
+        registerImmediate = function(handle) {
+            global.postMessage(messagePrefix + handle, "*");
+        };
+    }
+
+    function installMessageChannelImplementation() {
+        var channel = new MessageChannel();
+        channel.port1.onmessage = function(event) {
+            var handle = event.data;
+            runIfPresent(handle);
+        };
+
+        registerImmediate = function(handle) {
+            channel.port2.postMessage(handle);
+        };
+    }
+
+    function installReadyStateChangeImplementation() {
+        var html = doc.documentElement;
+        registerImmediate = function(handle) {
+            // Create a <script> element; its readystatechange event will be fired asynchronously once it is inserted
+            // into the document. Do so, thus queuing up the task. Remember to clean up once it's been called.
+            var script = doc.createElement("script");
+            script.onreadystatechange = function () {
+                runIfPresent(handle);
+                script.onreadystatechange = null;
+                html.removeChild(script);
+                script = null;
+            };
+            html.appendChild(script);
+        };
+    }
+
+    function installSetTimeoutImplementation() {
+        registerImmediate = function(handle) {
+            setTimeout(runIfPresent, 0, handle);
+        };
+    }
+
+    // If supported, we should attach to the prototype of global, since that is where setTimeout et al. live.
+    var attachTo = Object.getPrototypeOf && Object.getPrototypeOf(global);
+    attachTo = attachTo && attachTo.setTimeout ? attachTo : global;
+
+    // Don't get fooled by e.g. browserify environments.
+    if ({}.toString.call(global.process) === "[object process]") {
+        // For Node.js before 0.9
+        installNextTickImplementation();
+
+    } else if (canUsePostMessage()) {
+        // For non-IE10 modern browsers
+        installPostMessageImplementation();
+
+    } else if (global.MessageChannel) {
+        // For web workers, where supported
+        installMessageChannelImplementation();
+
+    } else if (doc && "onreadystatechange" in doc.createElement("script")) {
+        // For IE 6–8
+        installReadyStateChangeImplementation();
+
+    } else {
+        // For older browsers
+        installSetTimeoutImplementation();
+    }
+
+    attachTo.setImmediate = setImmediate;
+    attachTo.clearImmediate = clearImmediate;
+}(typeof self === "undefined" ? typeof global === "undefined" ? this : global : self));
+
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(0), __webpack_require__(5)))
+
+/***/ }),
+/* 5 */
+/***/ (function(module, exports) {
+
+// shim for using process in browser
+var process = module.exports = {};
+
+// cached from whatever global is present so that test runners that stub it
+// don't break things.  But we need to wrap it in a try catch in case it is
+// wrapped in strict mode code which doesn't define any globals.  It's inside a
+// function because try/catches deoptimize in certain engines.
+
+var cachedSetTimeout;
+var cachedClearTimeout;
+
+function defaultSetTimout() {
+    throw new Error('setTimeout has not been defined');
+}
+function defaultClearTimeout () {
+    throw new Error('clearTimeout has not been defined');
+}
+(function () {
+    try {
+        if (typeof setTimeout === 'function') {
+            cachedSetTimeout = setTimeout;
+        } else {
+            cachedSetTimeout = defaultSetTimout;
+        }
+    } catch (e) {
+        cachedSetTimeout = defaultSetTimout;
+    }
+    try {
+        if (typeof clearTimeout === 'function') {
+            cachedClearTimeout = clearTimeout;
+        } else {
+            cachedClearTimeout = defaultClearTimeout;
+        }
+    } catch (e) {
+        cachedClearTimeout = defaultClearTimeout;
+    }
+} ())
+function runTimeout(fun) {
+    if (cachedSetTimeout === setTimeout) {
+        //normal enviroments in sane situations
+        return setTimeout(fun, 0);
+    }
+    // if setTimeout wasn't available but was latter defined
+    if ((cachedSetTimeout === defaultSetTimout || !cachedSetTimeout) && setTimeout) {
+        cachedSetTimeout = setTimeout;
+        return setTimeout(fun, 0);
+    }
+    try {
+        // when when somebody has screwed with setTimeout but no I.E. maddness
+        return cachedSetTimeout(fun, 0);
+    } catch(e){
+        try {
+            // When we are in I.E. but the script has been evaled so I.E. doesn't trust the global object when called normally
+            return cachedSetTimeout.call(null, fun, 0);
+        } catch(e){
+            // same as above but when it's a version of I.E. that must have the global object for 'this', hopfully our context correct otherwise it will throw a global error
+            return cachedSetTimeout.call(this, fun, 0);
+        }
+    }
+
+
+}
+function runClearTimeout(marker) {
+    if (cachedClearTimeout === clearTimeout) {
+        //normal enviroments in sane situations
+        return clearTimeout(marker);
+    }
+    // if clearTimeout wasn't available but was latter defined
+    if ((cachedClearTimeout === defaultClearTimeout || !cachedClearTimeout) && clearTimeout) {
+        cachedClearTimeout = clearTimeout;
+        return clearTimeout(marker);
+    }
+    try {
+        // when when somebody has screwed with setTimeout but no I.E. maddness
+        return cachedClearTimeout(marker);
+    } catch (e){
+        try {
+            // When we are in I.E. but the script has been evaled so I.E. doesn't  trust the global object when called normally
+            return cachedClearTimeout.call(null, marker);
+        } catch (e){
+            // same as above but when it's a version of I.E. that must have the global object for 'this', hopfully our context correct otherwise it will throw a global error.
+            // Some versions of I.E. have different rules for clearTimeout vs setTimeout
+            return cachedClearTimeout.call(this, marker);
+        }
+    }
+
+
+
+}
+var queue = [];
+var draining = false;
+var currentQueue;
+var queueIndex = -1;
+
+function cleanUpNextTick() {
+    if (!draining || !currentQueue) {
+        return;
+    }
+    draining = false;
+    if (currentQueue.length) {
+        queue = currentQueue.concat(queue);
+    } else {
+        queueIndex = -1;
+    }
+    if (queue.length) {
+        drainQueue();
+    }
+}
+
+function drainQueue() {
+    if (draining) {
+        return;
+    }
+    var timeout = runTimeout(cleanUpNextTick);
+    draining = true;
+
+    var len = queue.length;
+    while(len) {
+        currentQueue = queue;
+        queue = [];
+        while (++queueIndex < len) {
+            if (currentQueue) {
+                currentQueue[queueIndex].run();
+            }
+        }
+        queueIndex = -1;
+        len = queue.length;
+    }
+    currentQueue = null;
+    draining = false;
+    runClearTimeout(timeout);
+}
+
+process.nextTick = function (fun) {
+    var args = new Array(arguments.length - 1);
+    if (arguments.length > 1) {
+        for (var i = 1; i < arguments.length; i++) {
+            args[i - 1] = arguments[i];
+        }
+    }
+    queue.push(new Item(fun, args));
+    if (queue.length === 1 && !draining) {
+        runTimeout(drainQueue);
+    }
+};
+
+// v8 likes predictible objects
+function Item(fun, array) {
+    this.fun = fun;
+    this.array = array;
+}
+Item.prototype.run = function () {
+    this.fun.apply(null, this.array);
+};
+process.title = 'browser';
+process.browser = true;
+process.env = {};
+process.argv = [];
+process.version = ''; // empty string to avoid regexp issues
+process.versions = {};
+
+function noop() {}
+
+process.on = noop;
+process.addListener = noop;
+process.once = noop;
+process.off = noop;
+process.removeListener = noop;
+process.removeAllListeners = noop;
+process.emit = noop;
+process.prependListener = noop;
+process.prependOnceListener = noop;
+
+process.listeners = function (name) { return [] }
+
+process.binding = function (name) {
+    throw new Error('process.binding is not supported');
+};
+
+process.cwd = function () { return '/' };
+process.chdir = function (dir) {
+    throw new Error('process.chdir is not supported');
+};
+process.umask = function() { return 0; };
+
+
+/***/ }),
+/* 6 */
+/***/ (function(module, exports) {
+
+module.exports = jQuery;
+
+/***/ }),
+/* 7 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_RESULT__;/* global define, KeyboardEvent, module */
+
+(function () {
+
+  var keyboardeventKeyPolyfill = {
+    polyfill: polyfill,
+    keys: {
+      3: 'Cancel',
+      6: 'Help',
+      8: 'Backspace',
+      9: 'Tab',
+      12: 'Clear',
+      13: 'Enter',
+      16: 'Shift',
+      17: 'Control',
+      18: 'Alt',
+      19: 'Pause',
+      20: 'CapsLock',
+      27: 'Escape',
+      28: 'Convert',
+      29: 'NonConvert',
+      30: 'Accept',
+      31: 'ModeChange',
+      32: ' ',
+      33: 'PageUp',
+      34: 'PageDown',
+      35: 'End',
+      36: 'Home',
+      37: 'ArrowLeft',
+      38: 'ArrowUp',
+      39: 'ArrowRight',
+      40: 'ArrowDown',
+      41: 'Select',
+      42: 'Print',
+      43: 'Execute',
+      44: 'PrintScreen',
+      45: 'Insert',
+      46: 'Delete',
+      48: ['0', ')'],
+      49: ['1', '!'],
+      50: ['2', '@'],
+      51: ['3', '#'],
+      52: ['4', '$'],
+      53: ['5', '%'],
+      54: ['6', '^'],
+      55: ['7', '&'],
+      56: ['8', '*'],
+      57: ['9', '('],
+      91: 'OS',
+      93: 'ContextMenu',
+      144: 'NumLock',
+      145: 'ScrollLock',
+      181: 'VolumeMute',
+      182: 'VolumeDown',
+      183: 'VolumeUp',
+      186: [';', ':'],
+      187: ['=', '+'],
+      188: [',', '<'],
+      189: ['-', '_'],
+      190: ['.', '>'],
+      191: ['/', '?'],
+      192: ['`', '~'],
+      219: ['[', '{'],
+      220: ['\\', '|'],
+      221: [']', '}'],
+      222: ["'", '"'],
+      224: 'Meta',
+      225: 'AltGraph',
+      246: 'Attn',
+      247: 'CrSel',
+      248: 'ExSel',
+      249: 'EraseEof',
+      250: 'Play',
+      251: 'ZoomOut'
+    }
+  };
+
+  // Function keys (F1-24).
+  var i;
+  for (i = 1; i < 25; i++) {
+    keyboardeventKeyPolyfill.keys[111 + i] = 'F' + i;
+  }
+
+  // Printable ASCII characters.
+  var letter = '';
+  for (i = 65; i < 91; i++) {
+    letter = String.fromCharCode(i);
+    keyboardeventKeyPolyfill.keys[i] = [letter.toLowerCase(), letter.toUpperCase()];
+  }
+
+  function polyfill () {
+    if (!('KeyboardEvent' in window) ||
+        'key' in KeyboardEvent.prototype) {
+      return false;
+    }
+
+    // Polyfill `key` on `KeyboardEvent`.
+    var proto = {
+      get: function (x) {
+        var key = keyboardeventKeyPolyfill.keys[this.which || this.keyCode];
+
+        if (Array.isArray(key)) {
+          key = key[+this.shiftKey];
+        }
+
+        return key;
+      }
+    };
+    Object.defineProperty(KeyboardEvent.prototype, 'key', proto);
+    return proto;
+  }
+
+  if (true) {
+    !(__WEBPACK_AMD_DEFINE_FACTORY__ = (keyboardeventKeyPolyfill),
+				__WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ?
+				(__WEBPACK_AMD_DEFINE_FACTORY__.call(exports, __webpack_require__, exports, module)) :
+				__WEBPACK_AMD_DEFINE_FACTORY__),
+				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+  } else if (typeof exports !== 'undefined' && typeof module !== 'undefined') {
+    module.exports = keyboardeventKeyPolyfill;
+  } else if (window) {
+    window.keyboardeventKeyPolyfill = keyboardeventKeyPolyfill;
+  }
+
+})();
+
+
+/***/ }),
+/* 8 */
+/***/ (function(module, exports) {
+
+/**@license
  *       __ _____                     ________                              __
  *      / // _  /__ __ _____ ___ __ _/__  ___/__ ___ ______ __ __  __ ___  / /
  *  __ / // // // // // _  // _// // / / // _  // _//     // //  \/ // _ \/ /
@@ -48,23 +7425,6327 @@ var vendor_lib=function(e){function t(o){if(n[o])return n[o].exports;var r=n[o]=
  * Released under the MIT license
  *
  */
-!function(e){if(!e.terminal)throw new Error("$.terminal is not defined");e.terminal.overtyping=function(e){return e.replace(/((?:_\x08.|.\x08_)+)/g,function(e){return"[[u;;]"+e.replace(/_x08|\x08_|_\u0008|\u0008_/g,"")+"]"}).replace(/((?:.\x08.)+)/g,function(e){return"[[b;#fff;]"+e.replace(/(.)(?:\x08|\u0008)\1/g,function(e,t){return t})+"]"})},e.terminal.ansi_colors={normal:{black:"#000",red:"#A00",green:"#008400",yellow:"#A50",blue:"#00A",magenta:"#A0A",cyan:"#0AA",white:"#AAA"},faited:{black:"#000",red:"#640000",green:"#006100",yellow:"#737300",blue:"#000087",magenta:"#650065",cyan:"#008787",white:"#818181"},bold:{black:"#000",red:"#F55",green:"#44D544",yellow:"#FF5",blue:"#55F",magenta:"#F5F",cyan:"#5FF",white:"#FFF"},palette:["#000000","#AA0000","#00AA00","#AA5500","#0000AA","#AA00AA","#00AAAA","#AAAAAA","#555555","#FF5555","#55FF55","#FFFF55","#5555FF","#FF55FF","#55FFFF","#FFFFFF","#000000","#00005F","#000087","#0000AF","#0000D7","#0000FF","#005F00","#005F5F","#005F87","#005FAF","#005FD7","#005FFF","#008700","#00875F","#008787","#0087AF","#0087D7","#0087FF","#00AF00","#00AF5F","#00AF87","#00AFAF","#00AFD7","#00AFFF","#00D700","#00D75F","#00D787","#00D7AF","#00D7D7","#00D7FF","#00FF00","#00FF5F","#00FF87","#00FFAF","#00FFD7","#00FFFF","#5F0000","#5F005F","#5F0087","#5F00AF","#5F00D7","#5F00FF","#5F5F00","#5F5F5F","#5F5F87","#5F5FAF","#5F5FD7","#5F5FFF","#5F8700","#5F875F","#5F8787","#5F87AF","#5F87D7","#5F87FF","#5FAF00","#5FAF5F","#5FAF87","#5FAFAF","#5FAFD7","#5FAFFF","#5FD700","#5FD75F","#5FD787","#5FD7AF","#5FD7D7","#5FD7FF","#5FFF00","#5FFF5F","#5FFF87","#5FFFAF","#5FFFD7","#5FFFFF","#870000","#87005F","#870087","#8700AF","#8700D7","#8700FF","#875F00","#875F5F","#875F87","#875FAF","#875FD7","#875FFF","#878700","#87875F","#878787","#8787AF","#8787D7","#8787FF","#87AF00","#87AF5F","#87AF87","#87AFAF","#87AFD7","#87AFFF","#87D700","#87D75F","#87D787","#87D7AF","#87D7D7","#87D7FF","#87FF00","#87FF5F","#87FF87","#87FFAF","#87FFD7","#87FFFF","#AF0000","#AF005F","#AF0087","#AF00AF","#AF00D7","#AF00FF","#AF5F00","#AF5F5F","#AF5F87","#AF5FAF","#AF5FD7","#AF5FFF","#AF8700","#AF875F","#AF8787","#AF87AF","#AF87D7","#AF87FF","#AFAF00","#AFAF5F","#AFAF87","#AFAFAF","#AFAFD7","#AFAFFF","#AFD700","#AFD75F","#AFD787","#AFD7AF","#AFD7D7","#AFD7FF","#AFFF00","#AFFF5F","#AFFF87","#AFFFAF","#AFFFD7","#AFFFFF","#D70000","#D7005F","#D70087","#D700AF","#D700D7","#D700FF","#D75F00","#D75F5F","#D75F87","#D75FAF","#D75FD7","#D75FFF","#D78700","#D7875F","#D78787","#D787AF","#D787D7","#D787FF","#D7AF00","#D7AF5F","#D7AF87","#D7AFAF","#D7AFD7","#D7AFFF","#D7D700","#D7D75F","#D7D787","#D7D7AF","#D7D7D7","#D7D7FF","#D7FF00","#D7FF5F","#D7FF87","#D7FFAF","#D7FFD7","#D7FFFF","#FF0000","#FF005F","#FF0087","#FF00AF","#FF00D7","#FF00FF","#FF5F00","#FF5F5F","#FF5F87","#FF5FAF","#FF5FD7","#FF5FFF","#FF8700","#FF875F","#FF8787","#FF87AF","#FF87D7","#FF87FF","#FFAF00","#FFAF5F","#FFAF87","#FFAFAF","#FFAFD7","#FFAFFF","#FFD700","#FFD75F","#FFD787","#FFD7AF","#FFD7D7","#FFD7FF","#FFFF00","#FFFF5F","#FFFF87","#FFFFAF","#FFFFD7","#FFFFFF","#080808","#121212","#1C1C1C","#262626","#303030","#3A3A3A","#444444","#4E4E4E","#585858","#626262","#6C6C6C","#767676","#808080","#8A8A8A","#949494","#9E9E9E","#A8A8A8","#B2B2B2","#BCBCBC","#C6C6C6","#D0D0D0","#DADADA","#E4E4E4","#EEEEEE"]},e.terminal.from_ansi=function(){function t(t){var r,i=t.split(";"),s=!1,a=!1,l=!1,c=[],u="",f="",h=!1,p=!1,d=!1,m=e.terminal.ansi_colors.palette;for(var g in i)i.hasOwnProperty(g)&&(r=parseInt(i[g],10),d&&(p||h)?(h&&m[r]&&(u=m[r]),p&&m[r]&&(f=m[r])):function(e){switch(e){case 1:c.push("b"),l=!0,s=!1;break;case 4:c.push("u");break;case 3:c.push("i");break;case 5:d=!0;break;case 38:h=!0;break;case 48:p=!0;break;case 2:s=!0,l=!1;break;case 7:a=!0;break;default:-1===i.indexOf("5")&&(n[e]&&(u=n[e]),o[e]&&(f=o[e]))}}(r));if(a)if(u||f){var v=f;f=u,u=v}else u="black",f="white";var y,b,_,w;return y=w=l?e.terminal.ansi_colors.bold:s?e.terminal.ansi_colors.faited:e.terminal.ansi_colors.normal,b=h?u:"inherit"===u?u:y[u],_=p?f:"transparent"===f?f:w[f],[c.join(""),b,_]}var n={30:"black",31:"red",32:"green",33:"yellow",34:"blue",35:"magenta",36:"cyan",37:"white",39:"inherit"},o={40:"black",41:"red",42:"green",43:"yellow",44:"blue",45:"magenta",46:"cyan",47:"white",49:"transparent"};return function(e){var n=e.split(/(\x1B\[[0-9;]*[A-Za-z])/g);if(1===n.length)return e;var o=[];if(n.length>3){n.slice(0,3).join("").match(/^\[0*m$/)&&(n=n.slice(3))}for(var r,i,s,a,l=!1,c=0;c<n.length;++c)if(a=n[c].match(/^\x1B\[([0-9;]*)([A-Za-z])$/))switch(a[2]){case"m":0!=+a[1]&&(s=t(a[1])),l?(o.push("]"),0==+a[1]?(l=!1,r=i=""):(s[1]=s[1]||r,s[2]=s[2]||i,o.push("[["+s.join(";")+"]"),s[1]&&(r=s[1]),s[2]&&(i=s[2]))):0!=+a[1]&&(l=!0,s[1]=s[1]||r,s[2]=s[2]||i,o.push("[["+s.join(";")+"]"),s[1]&&(r=s[1]),s[2]&&(i=s[2]))}else o.push(n[c]);return l&&o.push("]"),o.join("")}}(),e.terminal.defaults.formatters.unshift(e.terminal.overtyping),e.terminal.defaults.formatters.unshift(e.terminal.from_ansi)}(jQuery)},function(e,t,n){"use strict";e.exports=n(10)},function(e,t){e.exports={dots:{interval:80,frames:["⠋","⠙","⠹","⠸","⠼","⠴","⠦","⠧","⠇","⠏"]},dots2:{interval:80,frames:["⣾","⣽","⣻","⢿","⡿","⣟","⣯","⣷"]},dots3:{interval:80,frames:["⠋","⠙","⠚","⠞","⠖","⠦","⠴","⠲","⠳","⠓"]},dots4:{interval:80,frames:["⠄","⠆","⠇","⠋","⠙","⠸","⠰","⠠","⠰","⠸","⠙","⠋","⠇","⠆"]},dots5:{interval:80,frames:["⠋","⠙","⠚","⠒","⠂","⠂","⠒","⠲","⠴","⠦","⠖","⠒","⠐","⠐","⠒","⠓","⠋"]},dots6:{interval:80,frames:["⠁","⠉","⠙","⠚","⠒","⠂","⠂","⠒","⠲","⠴","⠤","⠄","⠄","⠤","⠴","⠲","⠒","⠂","⠂","⠒","⠚","⠙","⠉","⠁"]},dots7:{interval:80,frames:["⠈","⠉","⠋","⠓","⠒","⠐","⠐","⠒","⠖","⠦","⠤","⠠","⠠","⠤","⠦","⠖","⠒","⠐","⠐","⠒","⠓","⠋","⠉","⠈"]},dots8:{interval:80,frames:["⠁","⠁","⠉","⠙","⠚","⠒","⠂","⠂","⠒","⠲","⠴","⠤","⠄","⠄","⠤","⠠","⠠","⠤","⠦","⠖","⠒","⠐","⠐","⠒","⠓","⠋","⠉","⠈","⠈"]},dots9:{interval:80,frames:["⢹","⢺","⢼","⣸","⣇","⡧","⡗","⡏"]},dots10:{interval:80,frames:["⢄","⢂","⢁","⡁","⡈","⡐","⡠"]},dots11:{interval:100,frames:["⠁","⠂","⠄","⡀","⢀","⠠","⠐","⠈"]},dots12:{interval:80,frames:["⢀⠀","⡀⠀","⠄⠀","⢂⠀","⡂⠀","⠅⠀","⢃⠀","⡃⠀","⠍⠀","⢋⠀","⡋⠀","⠍⠁","⢋⠁","⡋⠁","⠍⠉","⠋⠉","⠋⠉","⠉⠙","⠉⠙","⠉⠩","⠈⢙","⠈⡙","⢈⠩","⡀⢙","⠄⡙","⢂⠩","⡂⢘","⠅⡘","⢃⠨","⡃⢐","⠍⡐","⢋⠠","⡋⢀","⠍⡁","⢋⠁","⡋⠁","⠍⠉","⠋⠉","⠋⠉","⠉⠙","⠉⠙","⠉⠩","⠈⢙","⠈⡙","⠈⠩","⠀⢙","⠀⡙","⠀⠩","⠀⢘","⠀⡘","⠀⠨","⠀⢐","⠀⡐","⠀⠠","⠀⢀","⠀⡀"]},line:{interval:130,frames:["-","\\","|","/"]},line2:{interval:100,frames:["⠂","-","–","—","–","-"]},pipe:{interval:100,frames:["┤","┘","┴","└","├","┌","┬","┐"]},simpleDots:{interval:400,frames:[".  ",".. ","...","   "]},simpleDotsScrolling:{interval:200,frames:[".  ",".. ","..."," ..","  .","   "]},star:{interval:70,frames:["✶","✸","✹","✺","✹","✷"]},star2:{interval:80,frames:["+","x","*"]},flip:{interval:70,frames:["_","_","_","-","`","`","'","´","-","_","_","_"]},hamburger:{interval:100,frames:["☱","☲","☴"]},growVertical:{interval:120,frames:["▁","▃","▄","▅","▆","▇","▆","▅","▄","▃"]},growHorizontal:{interval:120,frames:["▏","▎","▍","▌","▋","▊","▉","▊","▋","▌","▍","▎"]},balloon:{interval:140,frames:[" ",".","o","O","@","*"," "]},balloon2:{interval:120,frames:[".","o","O","°","O","o","."]},noise:{interval:100,frames:["▓","▒","░"]},bounce:{interval:120,frames:["⠁","⠂","⠄","⠂"]},boxBounce:{interval:120,frames:["▖","▘","▝","▗"]},boxBounce2:{interval:100,frames:["▌","▀","▐","▄"]},triangle:{interval:50,frames:["◢","◣","◤","◥"]},arc:{interval:100,frames:["◜","◠","◝","◞","◡","◟"]},circle:{interval:120,frames:["◡","⊙","◠"]},squareCorners:{interval:180,frames:["◰","◳","◲","◱"]},circleQuarters:{interval:120,frames:["◴","◷","◶","◵"]},circleHalves:{interval:50,frames:["◐","◓","◑","◒"]},squish:{interval:100,frames:["╫","╪"]},toggle:{interval:250,frames:["⊶","⊷"]},toggle2:{interval:80,frames:["▫","▪"]},toggle3:{interval:120,frames:["□","■"]},toggle4:{interval:100,frames:["■","□","▪","▫"]},toggle5:{interval:100,frames:["▮","▯"]},toggle6:{interval:300,frames:["ဝ","၀"]},toggle7:{interval:80,frames:["⦾","⦿"]},toggle8:{interval:100,frames:["◍","◌"]},toggle9:{interval:100,frames:["◉","◎"]},toggle10:{interval:100,frames:["㊂","㊀","㊁"]},toggle11:{interval:50,frames:["⧇","⧆"]},toggle12:{interval:120,frames:["☗","☖"]},toggle13:{interval:80,frames:["=","*","-"]},arrow:{interval:100,frames:["←","↖","↑","↗","→","↘","↓","↙"]},arrow2:{interval:80,frames:["⬆️ ","↗️ ","➡️ ","↘️ ","⬇️ ","↙️ ","⬅️ ","↖️ "]},arrow3:{interval:120,frames:["▹▹▹▹▹","▸▹▹▹▹","▹▸▹▹▹","▹▹▸▹▹","▹▹▹▸▹","▹▹▹▹▸"]},bouncingBar:{interval:80,frames:["[    ]","[=   ]","[==  ]","[=== ]","[ ===]","[  ==]","[   =]","[    ]","[   =]","[  ==]","[ ===]","[====]","[=== ]","[==  ]","[=   ]"]},bouncingBall:{interval:80,frames:["( ●    )","(  ●   )","(   ●  )","(    ● )","(     ●)","(    ● )","(   ●  )","(  ●   )","( ●    )","(●     )"]},smiley:{interval:200,frames:["😄 ","😝 "]},monkey:{interval:300,frames:["🙈 ","🙈 ","🙉 ","🙊 "]},hearts:{interval:100,frames:["💛 ","💙 ","💜 ","💚 ","❤️ "]},clock:{interval:100,frames:["🕐 ","🕑 ","🕒 ","🕓 ","🕔 ","🕕 ","🕖 ","🕗 ","🕘 ","🕙 ","🕚 "]},earth:{interval:180,frames:["🌍 ","🌎 ","🌏 "]},moon:{interval:80,frames:["🌑 ","🌒 ","🌓 ","🌔 ","🌕 ","🌖 ","🌗 ","🌘 "]},runner:{interval:140,frames:["🚶 ","🏃 "]},pong:{interval:80,frames:["▐⠂       ▌","▐⠈       ▌","▐ ⠂      ▌","▐ ⠠      ▌","▐  ⡀     ▌","▐  ⠠     ▌","▐   ⠂    ▌","▐   ⠈    ▌","▐    ⠂   ▌","▐    ⠠   ▌","▐     ⡀  ▌","▐     ⠠  ▌","▐      ⠂ ▌","▐      ⠈ ▌","▐       ⠂▌","▐       ⠠▌","▐       ⡀▌","▐      ⠠ ▌","▐      ⠂ ▌","▐     ⠈  ▌","▐     ⠂  ▌","▐    ⠠   ▌","▐    ⡀   ▌","▐   ⠠    ▌","▐   ⠂    ▌","▐  ⠈     ▌","▐  ⠂     ▌","▐ ⠠      ▌","▐ ⡀      ▌","▐⠠       ▌"]},shark:{interval:120,frames:["▐|\\____________▌","▐_|\\___________▌","▐__|\\__________▌","▐___|\\_________▌","▐____|\\________▌","▐_____|\\_______▌","▐______|\\______▌","▐_______|\\_____▌","▐________|\\____▌","▐_________|\\___▌","▐__________|\\__▌","▐___________|\\_▌","▐____________|\\▌","▐____________/|▌","▐___________/|_▌","▐__________/|__▌","▐_________/|___▌","▐________/|____▌","▐_______/|_____▌","▐______/|______▌","▐_____/|_______▌","▐____/|________▌","▐___/|_________▌","▐__/|__________▌","▐_/|___________▌","▐/|____________▌"]},dqpb:{interval:100,frames:["d","q","p","b"]},weather:{interval:100,frames:["☀️ ","☀️ ","☀️ ","🌤 ","⛅️ ","🌥 ","☁️ ","🌧 ","🌨 ","🌧 ","🌨 ","🌧 ","🌨 ","⛈ ","🌨 ","🌧 ","🌨 ","☁️ ","🌥 ","⛅️ ","🌤 ","☀️ ","☀️ "]},christmas:{interval:400,frames:["🌲","🎄"]}}},function(e,t,n){/* 
+/* global jQuery */
+(function($) {
+    if (!$.terminal) {
+        throw new Error('$.terminal is not defined');
+    }
+    // ---------------------------------------------------------------------
+    // :: Replace overtyping (from man) formatting with terminal formatting
+    // ---------------------------------------------------------------------
+    $.terminal.overtyping = function overtyping(string) {
+        return string.replace(/((?:_\x08.|.\x08_)+)/g, function(full) {
+            var striped = full.replace(/_x08|\x08_|_\u0008|\u0008_/g, '');
+            return '[[u;;]' + striped + ']';
+        }).replace(/((?:.\x08.)+)/g, function(full) {
+            return '[[b;#fff;]' + full.replace(/(.)(?:\x08|\u0008)\1/g,
+                                               function(full, g) {
+                                                   return g;
+                                               }) + ']';
+        });
+    };
+    // ---------------------------------------------------------------------
+    // :: Html colors taken from ANSI formatting in Linux Terminal
+    // ---------------------------------------------------------------------
+    $.terminal.ansi_colors = {
+        normal: {
+            black: '#000',
+            red: '#A00',
+            green: '#008400',
+            yellow: '#A50',
+            blue: '#00A',
+            magenta: '#A0A',
+            cyan: '#0AA',
+            white: '#AAA'
+        },
+        faited: {
+            black: '#000',
+            red: '#640000',
+            green: '#006100',
+            yellow: '#737300',
+            blue: '#000087',
+            magenta: '#650065',
+            cyan: '#008787',
+            white: '#818181'
+        },
+        bold: {
+            black: '#000',
+            red: '#F55',
+            green: '#44D544',
+            yellow: '#FF5',
+            blue: '#55F',
+            magenta: '#F5F',
+            cyan: '#5FF',
+            white: '#FFF'
+        },
+        // XTerm 8-bit pallete
+        palette: [
+            '#000000', '#AA0000', '#00AA00', '#AA5500', '#0000AA', '#AA00AA',
+            '#00AAAA', '#AAAAAA', '#555555', '#FF5555', '#55FF55', '#FFFF55',
+            '#5555FF', '#FF55FF', '#55FFFF', '#FFFFFF', '#000000', '#00005F',
+            '#000087', '#0000AF', '#0000D7', '#0000FF', '#005F00', '#005F5F',
+            '#005F87', '#005FAF', '#005FD7', '#005FFF', '#008700', '#00875F',
+            '#008787', '#0087AF', '#0087D7', '#0087FF', '#00AF00', '#00AF5F',
+            '#00AF87', '#00AFAF', '#00AFD7', '#00AFFF', '#00D700', '#00D75F',
+            '#00D787', '#00D7AF', '#00D7D7', '#00D7FF', '#00FF00', '#00FF5F',
+            '#00FF87', '#00FFAF', '#00FFD7', '#00FFFF', '#5F0000', '#5F005F',
+            '#5F0087', '#5F00AF', '#5F00D7', '#5F00FF', '#5F5F00', '#5F5F5F',
+            '#5F5F87', '#5F5FAF', '#5F5FD7', '#5F5FFF', '#5F8700', '#5F875F',
+            '#5F8787', '#5F87AF', '#5F87D7', '#5F87FF', '#5FAF00', '#5FAF5F',
+            '#5FAF87', '#5FAFAF', '#5FAFD7', '#5FAFFF', '#5FD700', '#5FD75F',
+            '#5FD787', '#5FD7AF', '#5FD7D7', '#5FD7FF', '#5FFF00', '#5FFF5F',
+            '#5FFF87', '#5FFFAF', '#5FFFD7', '#5FFFFF', '#870000', '#87005F',
+            '#870087', '#8700AF', '#8700D7', '#8700FF', '#875F00', '#875F5F',
+            '#875F87', '#875FAF', '#875FD7', '#875FFF', '#878700', '#87875F',
+            '#878787', '#8787AF', '#8787D7', '#8787FF', '#87AF00', '#87AF5F',
+            '#87AF87', '#87AFAF', '#87AFD7', '#87AFFF', '#87D700', '#87D75F',
+            '#87D787', '#87D7AF', '#87D7D7', '#87D7FF', '#87FF00', '#87FF5F',
+            '#87FF87', '#87FFAF', '#87FFD7', '#87FFFF', '#AF0000', '#AF005F',
+            '#AF0087', '#AF00AF', '#AF00D7', '#AF00FF', '#AF5F00', '#AF5F5F',
+            '#AF5F87', '#AF5FAF', '#AF5FD7', '#AF5FFF', '#AF8700', '#AF875F',
+            '#AF8787', '#AF87AF', '#AF87D7', '#AF87FF', '#AFAF00', '#AFAF5F',
+            '#AFAF87', '#AFAFAF', '#AFAFD7', '#AFAFFF', '#AFD700', '#AFD75F',
+            '#AFD787', '#AFD7AF', '#AFD7D7', '#AFD7FF', '#AFFF00', '#AFFF5F',
+            '#AFFF87', '#AFFFAF', '#AFFFD7', '#AFFFFF', '#D70000', '#D7005F',
+            '#D70087', '#D700AF', '#D700D7', '#D700FF', '#D75F00', '#D75F5F',
+            '#D75F87', '#D75FAF', '#D75FD7', '#D75FFF', '#D78700', '#D7875F',
+            '#D78787', '#D787AF', '#D787D7', '#D787FF', '#D7AF00', '#D7AF5F',
+            '#D7AF87', '#D7AFAF', '#D7AFD7', '#D7AFFF', '#D7D700', '#D7D75F',
+            '#D7D787', '#D7D7AF', '#D7D7D7', '#D7D7FF', '#D7FF00', '#D7FF5F',
+            '#D7FF87', '#D7FFAF', '#D7FFD7', '#D7FFFF', '#FF0000', '#FF005F',
+            '#FF0087', '#FF00AF', '#FF00D7', '#FF00FF', '#FF5F00', '#FF5F5F',
+            '#FF5F87', '#FF5FAF', '#FF5FD7', '#FF5FFF', '#FF8700', '#FF875F',
+            '#FF8787', '#FF87AF', '#FF87D7', '#FF87FF', '#FFAF00', '#FFAF5F',
+            '#FFAF87', '#FFAFAF', '#FFAFD7', '#FFAFFF', '#FFD700', '#FFD75F',
+            '#FFD787', '#FFD7AF', '#FFD7D7', '#FFD7FF', '#FFFF00', '#FFFF5F',
+            '#FFFF87', '#FFFFAF', '#FFFFD7', '#FFFFFF', '#080808', '#121212',
+            '#1C1C1C', '#262626', '#303030', '#3A3A3A', '#444444', '#4E4E4E',
+            '#585858', '#626262', '#6C6C6C', '#767676', '#808080', '#8A8A8A',
+            '#949494', '#9E9E9E', '#A8A8A8', '#B2B2B2', '#BCBCBC', '#C6C6C6',
+            '#D0D0D0', '#DADADA', '#E4E4E4', '#EEEEEE'
+        ]
+    };
+    // ---------------------------------------------------------------------
+    // :: Replace ANSI formatting with terminal formatting
+    // ---------------------------------------------------------------------
+    $.terminal.from_ansi = (function() {
+        var color_list = {
+            30: 'black',
+            31: 'red',
+            32: 'green',
+            33: 'yellow',
+            34: 'blue',
+            35: 'magenta',
+            36: 'cyan',
+            37: 'white',
+
+            39: 'inherit' // default color
+        };
+        var background_list = {
+            40: 'black',
+            41: 'red',
+            42: 'green',
+            43: 'yellow',
+            44: 'blue',
+            45: 'magenta',
+            46: 'cyan',
+            47: 'white',
+
+            49: 'transparent' // default background
+        };
+        function format_ansi(code) {
+            var controls = code.split(';');
+            var num;
+            var faited = false;
+            var reverse = false;
+            var bold = false;
+            var styles = [];
+            var output_color = '';
+            var output_background = '';
+            var _8bit_color = false;
+            var _8bit_background = false;
+            var process_8bit = false;
+            var palette = $.terminal.ansi_colors.palette;
+            function set_styles(num) {
+                switch (num) {
+                    case 1:
+                        styles.push('b');
+                        bold = true;
+                        faited = false;
+                        break;
+                    case 4:
+                        styles.push('u');
+                        break;
+                    case 3:
+                        styles.push('i');
+                        break;
+                    case 5:
+                        process_8bit = true;
+                        break;
+                    case 38:
+                        _8bit_color = true;
+                        break;
+                    case 48:
+                        _8bit_background = true;
+                        break;
+                    case 2:
+                        faited = true;
+                        bold = false;
+                        break;
+                    case 7:
+                        reverse = true;
+                        break;
+                    default:
+                        if (controls.indexOf('5') === -1) {
+                            if (color_list[num]) {
+                                output_color = color_list[num];
+                            }
+                            if (background_list[num]) {
+                                output_background = background_list[num];
+                            }
+                        }
+                }
+            }
+            for (var i in controls) {
+                if (controls.hasOwnProperty(i)) {
+                    num = parseInt(controls[i], 10);
+                    if (process_8bit && (_8bit_background || _8bit_color)) {
+                        if (_8bit_color && palette[num]) {
+                            output_color = palette[num];
+                        }
+                        if (_8bit_background && palette[num]) {
+                            output_background = palette[num];
+                        }
+                    } else {
+                        set_styles(num);
+                    }
+                }
+            }
+            if (reverse) {
+                if (output_color || output_background) {
+                    var tmp = output_background;
+                    output_background = output_color;
+                    output_color = tmp;
+                } else {
+                    output_color = 'black';
+                    output_background = 'white';
+                }
+            }
+            var colors, color, background, backgrounds;
+            if (bold) {
+                colors = backgrounds = $.terminal.ansi_colors.bold;
+            } else if (faited) {
+                colors = backgrounds = $.terminal.ansi_colors.faited;
+            } else {
+                colors = backgrounds = $.terminal.ansi_colors.normal;
+            }
+            if (_8bit_color) {
+                color = output_color;
+            } else if (output_color === 'inherit') {
+                color = output_color;
+            } else {
+                color = colors[output_color];
+            }
+            if (_8bit_background) {
+                background = output_background;
+            } else if (output_background === 'transparent') {
+                background = output_background;
+            } else {
+                background = backgrounds[output_background];
+            }
+            return [styles.join(''), color, background];
+        }
+        return function from_ansi(input) {
+            //merge multiple codes
+            /*input = input.replace(/((?:\x1B\[[0-9;]*[A-Za-z])*)/g, function(group) {
+              return group.replace(/m\x1B\[/g, ';');
+              });*/
+            var splitted = input.split(/(\x1B\[[0-9;]*[A-Za-z])/g);
+            if (splitted.length === 1) {
+                return input;
+            }
+            var output = [];
+            //skip closing at the begining
+            if (splitted.length > 3) {
+                var str = splitted.slice(0, 3).join('');
+                if (str.match(/^\[0*m$/)) {
+                    splitted = splitted.slice(3);
+                }
+            }
+            var prev_color, prev_background, code, match;
+            var inside = false;
+            for (var i = 0; i < splitted.length; ++i) {
+                match = splitted[i].match(/^\x1B\[([0-9;]*)([A-Za-z])$/);
+                if (match) {
+                    switch (match[2]) {
+                        case 'm':
+                            if (+match[1] !== 0) {
+                                code = format_ansi(match[1]);
+                            }
+                            if (inside) {
+                                output.push(']');
+                                if (+match[1] === 0) {
+                                    //just closing
+                                    inside = false;
+                                    prev_color = prev_background = '';
+                                } else {
+                                    // someone forget to close - move to next
+                                    code[1] = code[1] || prev_color;
+                                    code[2] = code[2] || prev_background;
+                                    output.push('[[' + code.join(';') + ']');
+                                    // store colors to next use
+                                    if (code[1]) {
+                                        prev_color = code[1];
+                                    }
+                                    if (code[2]) {
+                                        prev_background = code[2];
+                                    }
+                                }
+                            } else if (+match[1] !== 0) {
+                                inside = true;
+                                code[1] = code[1] || prev_color;
+                                code[2] = code[2] || prev_background;
+                                output.push('[[' + code.join(';') + ']');
+                                // store colors to next use
+                                if (code[1]) {
+                                    prev_color = code[1];
+                                }
+                                if (code[2]) {
+                                    prev_background = code[2];
+                                }
+                            }
+                            break;
+                    }
+                } else {
+                    output.push(splitted[i]);
+                }
+            }
+            if (inside) {
+                output.push(']');
+            }
+            return output.join(''); //.replace(/\[\[[^\]]+\]\]/g, '');
+        };
+    })();
+    $.terminal.defaults.formatters.unshift($.terminal.overtyping);
+    $.terminal.defaults.formatters.unshift($.terminal.from_ansi);
+})(jQuery);
+
+
+/***/ }),
+/* 9 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+module.exports = __webpack_require__(10);
+
+
+/***/ }),
+/* 10 */
+/***/ (function(module, exports) {
+
+module.exports = {"dots":{"interval":80,"frames":["⠋","⠙","⠹","⠸","⠼","⠴","⠦","⠧","⠇","⠏"]},"dots2":{"interval":80,"frames":["⣾","⣽","⣻","⢿","⡿","⣟","⣯","⣷"]},"dots3":{"interval":80,"frames":["⠋","⠙","⠚","⠞","⠖","⠦","⠴","⠲","⠳","⠓"]},"dots4":{"interval":80,"frames":["⠄","⠆","⠇","⠋","⠙","⠸","⠰","⠠","⠰","⠸","⠙","⠋","⠇","⠆"]},"dots5":{"interval":80,"frames":["⠋","⠙","⠚","⠒","⠂","⠂","⠒","⠲","⠴","⠦","⠖","⠒","⠐","⠐","⠒","⠓","⠋"]},"dots6":{"interval":80,"frames":["⠁","⠉","⠙","⠚","⠒","⠂","⠂","⠒","⠲","⠴","⠤","⠄","⠄","⠤","⠴","⠲","⠒","⠂","⠂","⠒","⠚","⠙","⠉","⠁"]},"dots7":{"interval":80,"frames":["⠈","⠉","⠋","⠓","⠒","⠐","⠐","⠒","⠖","⠦","⠤","⠠","⠠","⠤","⠦","⠖","⠒","⠐","⠐","⠒","⠓","⠋","⠉","⠈"]},"dots8":{"interval":80,"frames":["⠁","⠁","⠉","⠙","⠚","⠒","⠂","⠂","⠒","⠲","⠴","⠤","⠄","⠄","⠤","⠠","⠠","⠤","⠦","⠖","⠒","⠐","⠐","⠒","⠓","⠋","⠉","⠈","⠈"]},"dots9":{"interval":80,"frames":["⢹","⢺","⢼","⣸","⣇","⡧","⡗","⡏"]},"dots10":{"interval":80,"frames":["⢄","⢂","⢁","⡁","⡈","⡐","⡠"]},"dots11":{"interval":100,"frames":["⠁","⠂","⠄","⡀","⢀","⠠","⠐","⠈"]},"dots12":{"interval":80,"frames":["⢀⠀","⡀⠀","⠄⠀","⢂⠀","⡂⠀","⠅⠀","⢃⠀","⡃⠀","⠍⠀","⢋⠀","⡋⠀","⠍⠁","⢋⠁","⡋⠁","⠍⠉","⠋⠉","⠋⠉","⠉⠙","⠉⠙","⠉⠩","⠈⢙","⠈⡙","⢈⠩","⡀⢙","⠄⡙","⢂⠩","⡂⢘","⠅⡘","⢃⠨","⡃⢐","⠍⡐","⢋⠠","⡋⢀","⠍⡁","⢋⠁","⡋⠁","⠍⠉","⠋⠉","⠋⠉","⠉⠙","⠉⠙","⠉⠩","⠈⢙","⠈⡙","⠈⠩","⠀⢙","⠀⡙","⠀⠩","⠀⢘","⠀⡘","⠀⠨","⠀⢐","⠀⡐","⠀⠠","⠀⢀","⠀⡀"]},"line":{"interval":130,"frames":["-","\\","|","/"]},"line2":{"interval":100,"frames":["⠂","-","–","—","–","-"]},"pipe":{"interval":100,"frames":["┤","┘","┴","└","├","┌","┬","┐"]},"simpleDots":{"interval":400,"frames":[".  ",".. ","...","   "]},"simpleDotsScrolling":{"interval":200,"frames":[".  ",".. ","..."," ..","  .","   "]},"star":{"interval":70,"frames":["✶","✸","✹","✺","✹","✷"]},"star2":{"interval":80,"frames":["+","x","*"]},"flip":{"interval":70,"frames":["_","_","_","-","`","`","'","´","-","_","_","_"]},"hamburger":{"interval":100,"frames":["☱","☲","☴"]},"growVertical":{"interval":120,"frames":["▁","▃","▄","▅","▆","▇","▆","▅","▄","▃"]},"growHorizontal":{"interval":120,"frames":["▏","▎","▍","▌","▋","▊","▉","▊","▋","▌","▍","▎"]},"balloon":{"interval":140,"frames":[" ",".","o","O","@","*"," "]},"balloon2":{"interval":120,"frames":[".","o","O","°","O","o","."]},"noise":{"interval":100,"frames":["▓","▒","░"]},"bounce":{"interval":120,"frames":["⠁","⠂","⠄","⠂"]},"boxBounce":{"interval":120,"frames":["▖","▘","▝","▗"]},"boxBounce2":{"interval":100,"frames":["▌","▀","▐","▄"]},"triangle":{"interval":50,"frames":["◢","◣","◤","◥"]},"arc":{"interval":100,"frames":["◜","◠","◝","◞","◡","◟"]},"circle":{"interval":120,"frames":["◡","⊙","◠"]},"squareCorners":{"interval":180,"frames":["◰","◳","◲","◱"]},"circleQuarters":{"interval":120,"frames":["◴","◷","◶","◵"]},"circleHalves":{"interval":50,"frames":["◐","◓","◑","◒"]},"squish":{"interval":100,"frames":["╫","╪"]},"toggle":{"interval":250,"frames":["⊶","⊷"]},"toggle2":{"interval":80,"frames":["▫","▪"]},"toggle3":{"interval":120,"frames":["□","■"]},"toggle4":{"interval":100,"frames":["■","□","▪","▫"]},"toggle5":{"interval":100,"frames":["▮","▯"]},"toggle6":{"interval":300,"frames":["ဝ","၀"]},"toggle7":{"interval":80,"frames":["⦾","⦿"]},"toggle8":{"interval":100,"frames":["◍","◌"]},"toggle9":{"interval":100,"frames":["◉","◎"]},"toggle10":{"interval":100,"frames":["㊂","㊀","㊁"]},"toggle11":{"interval":50,"frames":["⧇","⧆"]},"toggle12":{"interval":120,"frames":["☗","☖"]},"toggle13":{"interval":80,"frames":["=","*","-"]},"arrow":{"interval":100,"frames":["←","↖","↑","↗","→","↘","↓","↙"]},"arrow2":{"interval":80,"frames":["⬆️ ","↗️ ","➡️ ","↘️ ","⬇️ ","↙️ ","⬅️ ","↖️ "]},"arrow3":{"interval":120,"frames":["▹▹▹▹▹","▸▹▹▹▹","▹▸▹▹▹","▹▹▸▹▹","▹▹▹▸▹","▹▹▹▹▸"]},"bouncingBar":{"interval":80,"frames":["[    ]","[=   ]","[==  ]","[=== ]","[ ===]","[  ==]","[   =]","[    ]","[   =]","[  ==]","[ ===]","[====]","[=== ]","[==  ]","[=   ]"]},"bouncingBall":{"interval":80,"frames":["( ●    )","(  ●   )","(   ●  )","(    ● )","(     ●)","(    ● )","(   ●  )","(  ●   )","( ●    )","(●     )"]},"smiley":{"interval":200,"frames":["😄 ","😝 "]},"monkey":{"interval":300,"frames":["🙈 ","🙈 ","🙉 ","🙊 "]},"hearts":{"interval":100,"frames":["💛 ","💙 ","💜 ","💚 ","❤️ "]},"clock":{"interval":100,"frames":["🕐 ","🕑 ","🕒 ","🕓 ","🕔 ","🕕 ","🕖 ","🕗 ","🕘 ","🕙 ","🕚 "]},"earth":{"interval":180,"frames":["🌍 ","🌎 ","🌏 "]},"moon":{"interval":80,"frames":["🌑 ","🌒 ","🌓 ","🌔 ","🌕 ","🌖 ","🌗 ","🌘 "]},"runner":{"interval":140,"frames":["🚶 ","🏃 "]},"pong":{"interval":80,"frames":["▐⠂       ▌","▐⠈       ▌","▐ ⠂      ▌","▐ ⠠      ▌","▐  ⡀     ▌","▐  ⠠     ▌","▐   ⠂    ▌","▐   ⠈    ▌","▐    ⠂   ▌","▐    ⠠   ▌","▐     ⡀  ▌","▐     ⠠  ▌","▐      ⠂ ▌","▐      ⠈ ▌","▐       ⠂▌","▐       ⠠▌","▐       ⡀▌","▐      ⠠ ▌","▐      ⠂ ▌","▐     ⠈  ▌","▐     ⠂  ▌","▐    ⠠   ▌","▐    ⡀   ▌","▐   ⠠    ▌","▐   ⠂    ▌","▐  ⠈     ▌","▐  ⠂     ▌","▐ ⠠      ▌","▐ ⡀      ▌","▐⠠       ▌"]},"shark":{"interval":120,"frames":["▐|\\____________▌","▐_|\\___________▌","▐__|\\__________▌","▐___|\\_________▌","▐____|\\________▌","▐_____|\\_______▌","▐______|\\______▌","▐_______|\\_____▌","▐________|\\____▌","▐_________|\\___▌","▐__________|\\__▌","▐___________|\\_▌","▐____________|\\▌","▐____________/|▌","▐___________/|_▌","▐__________/|__▌","▐_________/|___▌","▐________/|____▌","▐_______/|_____▌","▐______/|______▌","▐_____/|_______▌","▐____/|________▌","▐___/|_________▌","▐__/|__________▌","▐_/|___________▌","▐/|____________▌"]},"dqpb":{"interval":100,"frames":["d","q","p","b"]},"weather":{"interval":100,"frames":["☀️ ","☀️ ","☀️ ","🌤 ","⛅️ ","🌥 ","☁️ ","🌧 ","🌨 ","🌧 ","🌨 ","🌧 ","🌨 ","⛈ ","🌨 ","🌧 ","🌨 ","☁️ ","🌥 ","⛅️ ","🌤 ","☀️ ","☀️ "]},"christmas":{"interval":400,"frames":["🌲","🎄"]}}
+
+/***/ }),
+/* 11 */
+/***/ (function(module, exports, __webpack_require__) {
+
+/* 
   @package NOTY - Dependency-free notification library 
   @version version: 3.1.3 
   @contributors https://github.com/needim/noty/graphs/contributors 
   @documentation Examples and Documentation - http://needim.github.com/noty 
   @license Licensed under the MIT licenses: http://www.opensource.org/licenses/mit-license.php 
 */
-!function(t,n){e.exports=n()}(0,function(){return function(e){function t(o){if(n[o])return n[o].exports;var r=n[o]={i:o,l:!1,exports:{}};return e[o].call(r.exports,r,r.exports,t),r.l=!0,r.exports}var n={};return t.m=e,t.c=n,t.i=function(e){return e},t.d=function(e,n,o){t.o(e,n)||Object.defineProperty(e,n,{configurable:!1,enumerable:!0,get:o})},t.n=function(e){var n=e&&e.__esModule?function(){return e.default}:function(){return e};return t.d(n,"a",n),n},t.o=function(e,t){return Object.prototype.hasOwnProperty.call(e,t)},t.p="",t(t.s=6)}([function(e,t,n){"use strict";function o(e,t,n){var o=void 0;if(!n){for(o in t)if(t.hasOwnProperty(o)&&t[o]===e)return!0}else for(o in t)if(t.hasOwnProperty(o)&&t[o]===e)return!0;return!1}function r(e){e=e||window.event,void 0!==e.stopPropagation?e.stopPropagation():e.cancelBubble=!0}function i(){var e=arguments.length>0&&void 0!==arguments[0]?arguments[0]:"",t="noty_"+e+"_";return t+="xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g,function(e){var t=16*Math.random()|0;return("x"===e?t:3&t|8).toString(16)})}function s(e){var t=e.offsetHeight,n=window.getComputedStyle(e);return t+=parseInt(n.marginTop)+parseInt(n.marginBottom)}function a(e,t,n){var o=arguments.length>3&&void 0!==arguments[3]&&arguments[3];t=t.split(" ");for(var r=0;r<t.length;r++)document.addEventListener?e.addEventListener(t[r],n,o):document.attachEvent&&e.attachEvent("on"+t[r],n)}function l(e,t){return("string"==typeof e?e:h(e)).indexOf(" "+t+" ")>=0}function c(e,t){var n=h(e),o=n+t;l(n,t)||(e.className=o.substring(1))}function u(e,t){var n=h(e),o=void 0;l(e,t)&&(o=n.replace(" "+t+" "," "),e.className=o.substring(1,o.length-1))}function f(e){e.parentNode&&e.parentNode.removeChild(e)}function h(e){return(" "+(e&&e.className||"")+" ").replace(/\s+/gi," ")}function p(){function e(){y.PageHidden=document[s],o()}function t(){y.PageHidden=!0,o()}function n(){y.PageHidden=!1,o()}function o(){y.PageHidden?r():i()}function r(){setTimeout(function(){Object.keys(y.Store).forEach(function(e){y.Store.hasOwnProperty(e)&&y.Store[e].options.visibilityControl&&y.Store[e].stop()})},100)}function i(){setTimeout(function(){Object.keys(y.Store).forEach(function(e){y.Store.hasOwnProperty(e)&&y.Store[e].options.visibilityControl&&y.Store[e].resume()}),y.queueRenderAll()},100)}var s=void 0,l=void 0;void 0!==document.hidden?(s="hidden",l="visibilitychange"):void 0!==document.msHidden?(s="msHidden",l="msvisibilitychange"):void 0!==document.webkitHidden&&(s="webkitHidden",l="webkitvisibilitychange"),a(document,l,e),a(window,"blur",t),a(window,"focus",n)}function d(e){if(e.hasSound){var t=document.createElement("audio");e.options.sounds.sources.forEach(function(e){var n=document.createElement("source");n.src=e,n.type="audio/"+m(e),t.appendChild(n)}),e.barDom?e.barDom.appendChild(t):document.querySelector("body").appendChild(t),t.volume=e.options.sounds.volume,e.soundPlayed||(t.play(),e.soundPlayed=!0),t.onended=function(){f(t)}}}function m(e){return e.match(/\.([^.]+)$/)[1]}Object.defineProperty(t,"__esModule",{value:!0}),t.css=t.deepExtend=t.animationEndEvents=void 0;var g="function"==typeof Symbol&&"symbol"==typeof Symbol.iterator?function(e){return typeof e}:function(e){return e&&"function"==typeof Symbol&&e.constructor===Symbol&&e!==Symbol.prototype?"symbol":typeof e};t.inArray=o,t.stopPropagation=r,t.generateID=i,t.outerHeight=s,t.addListener=a,t.hasClass=l,t.addClass=c,t.removeClass=u,t.remove=f,t.classList=h,t.visibilityChangeFlow=p,t.createAudioElements=d;var v=n(1),y=function(e){if(e&&e.__esModule)return e;var t={};if(null!=e)for(var n in e)Object.prototype.hasOwnProperty.call(e,n)&&(t[n]=e[n]);return t.default=e,t}(v);t.animationEndEvents="webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend",t.deepExtend=function e(t){t=t||{};for(var n=1;n<arguments.length;n++){var o=arguments[n];if(o)for(var r in o)o.hasOwnProperty(r)&&(Array.isArray(o[r])?t[r]=o[r]:"object"===g(o[r])&&null!==o[r]?t[r]=e(t[r],o[r]):t[r]=o[r])}return t},t.css=function(){function e(e){return e.replace(/^-ms-/,"ms-").replace(/-([\da-z])/gi,function(e,t){return t.toUpperCase()})}function t(e){var t=document.body.style;if(e in t)return e;for(var n=r.length,o=e.charAt(0).toUpperCase()+e.slice(1),i=void 0;n--;)if((i=r[n]+o)in t)return i;return e}function n(n){return n=e(n),i[n]||(i[n]=t(n))}function o(e,t,o){t=n(t),e.style[t]=o}var r=["Webkit","O","Moz","ms"],i={};return function(e,t){var n=arguments,r=void 0,i=void 0;if(2===n.length)for(r in t)t.hasOwnProperty(r)&&void 0!==(i=t[r])&&t.hasOwnProperty(r)&&o(e,r,i);else o(e,n[1],n[2])}}()},function(e,t,n){"use strict";function o(){var e=arguments.length>0&&void 0!==arguments[0]?arguments[0]:"global",t=0,n=C;return E.hasOwnProperty(e)&&(n=E[e].maxVisible,Object.keys(T).forEach(function(n){T[n].options.queue!==e||T[n].closed||t++})),{current:t,maxVisible:n}}function r(e){E.hasOwnProperty(e.options.queue)||(E[e.options.queue]={maxVisible:C,queue:[]}),E[e.options.queue].queue.push(e)}function i(e){if(E.hasOwnProperty(e.options.queue)){var t=[];Object.keys(E[e.options.queue].queue).forEach(function(n){E[e.options.queue].queue[n].id!==e.id&&t.push(E[e.options.queue].queue[n])}),E[e.options.queue].queue=t}}function s(){var e=arguments.length>0&&void 0!==arguments[0]?arguments[0]:"global";if(E.hasOwnProperty(e)){var t=E[e].queue.shift();t&&t.show()}}function a(){Object.keys(E).forEach(function(e){s(e)})}function l(e){var t=F.generateID("ghost"),n=document.createElement("div");n.setAttribute("id",t),F.css(n,{height:F.outerHeight(e.barDom)+"px"}),e.barDom.insertAdjacentHTML("afterend",n.outerHTML),F.remove(e.barDom),n=document.getElementById(t),F.addClass(n,"noty_fix_effects_height"),F.addListener(n,F.animationEndEvents,function(){F.remove(n)})}function c(e){m(e);var t='<div class="noty_body">'+e.options.text+"</div>"+f(e)+'<div class="noty_progressbar"></div>';e.barDom=document.createElement("div"),e.barDom.setAttribute("id",e.id),F.addClass(e.barDom,"noty_bar noty_type__"+e.options.type+" noty_theme__"+e.options.theme),e.barDom.innerHTML=t,y(e,"onTemplate")}function u(e){return!(!e.options.buttons||!Object.keys(e.options.buttons).length)}function f(e){if(u(e)){var t=document.createElement("div");return F.addClass(t,"noty_buttons"),Object.keys(e.options.buttons).forEach(function(n){t.appendChild(e.options.buttons[n].dom)}),e.options.buttons.forEach(function(e){t.appendChild(e.dom)}),t.outerHTML}return""}function h(e){e.options.modal&&(0===x&&d(),t.DocModalCount=x+=1)}function p(e){if(e.options.modal&&x>0&&(t.DocModalCount=x-=1,x<=0)){var n=document.querySelector(".noty_modal");n&&(F.removeClass(n,"noty_modal_open"),F.addClass(n,"noty_modal_close"),F.addListener(n,F.animationEndEvents,function(){F.remove(n)}))}}function d(){var e=document.querySelector("body"),t=document.createElement("div");F.addClass(t,"noty_modal"),e.insertBefore(t,e.firstChild),F.addClass(t,"noty_modal_open"),F.addListener(t,F.animationEndEvents,function(){F.removeClass(t,"noty_modal_open")})}function m(e){if(e.options.container)return void(e.layoutDom=document.querySelector(e.options.container));var t="noty_layout__"+e.options.layout;e.layoutDom=document.querySelector("div#"+t),e.layoutDom||(e.layoutDom=document.createElement("div"),e.layoutDom.setAttribute("id",t),F.addClass(e.layoutDom,"noty_layout"),document.querySelector("body").appendChild(e.layoutDom))}function g(e){e.options.timeout&&(e.options.progressBar&&e.progressDom&&F.css(e.progressDom,{transition:"width "+e.options.timeout+"ms linear",width:"0%"}),clearTimeout(e.closeTimer),e.closeTimer=setTimeout(function(){e.close()},e.options.timeout))}function v(e){e.options.timeout&&e.closeTimer&&(clearTimeout(e.closeTimer),e.closeTimer=-1,e.options.progressBar&&e.progressDom&&F.css(e.progressDom,{transition:"width 0ms linear",width:"100%"}))}function y(e,t){e.listeners.hasOwnProperty(t)&&e.listeners[t].forEach(function(t){"function"==typeof t&&t.apply(e)})}function b(e){y(e,"afterShow"),g(e),F.addListener(e.barDom,"mouseenter",function(){v(e)}),F.addListener(e.barDom,"mouseleave",function(){g(e)})}function _(e){delete T[e.id],e.closing=!1,y(e,"afterClose"),F.remove(e.barDom),0!==e.layoutDom.querySelectorAll(".noty_bar").length||e.options.container||F.remove(e.layoutDom),(F.inArray("docVisible",e.options.titleCount.conditions)||F.inArray("docHidden",e.options.titleCount.conditions))&&A.decrement(),s(e.options.queue)}Object.defineProperty(t,"__esModule",{value:!0}),t.Defaults=t.Store=t.Queues=t.DefaultMaxVisible=t.docTitle=t.DocModalCount=t.PageHidden=void 0,t.getQueueCounts=o,t.addToQueue=r,t.removeFromQueue=i,t.queueRender=s,t.queueRenderAll=a,t.ghostFix=l,t.build=c,t.hasButtons=u,t.handleModal=h,t.handleModalClose=p,t.queueClose=g,t.dequeueClose=v,t.fire=y,t.openFlow=b,t.closeFlow=_;var w=n(0),F=function(e){if(e&&e.__esModule)return e;var t={};if(null!=e)for(var n in e)Object.prototype.hasOwnProperty.call(e,n)&&(t[n]=e[n]);return t.default=e,t}(w),x=(t.PageHidden=!1,t.DocModalCount=0),k={originalTitle:null,count:0,changed:!1,timer:-1},A=t.docTitle={increment:function(){k.count++,A._update()},decrement:function(){if(--k.count<=0)return void A._clear();A._update()},_update:function(){var e=document.title;k.changed?document.title="("+k.count+") "+k.originalTitle:(k.originalTitle=e,document.title="("+k.count+") "+e,k.changed=!0)},_clear:function(){k.changed&&(k.count=0,document.title=k.originalTitle,k.changed=!1)}},C=t.DefaultMaxVisible=5,E=t.Queues={global:{maxVisible:C,queue:[]}},T=t.Store={};t.Defaults={type:"alert",layout:"topRight",theme:"mint",text:"",timeout:!1,progressBar:!0,closeWith:["click"],animation:{open:"noty_effects_open",close:"noty_effects_close"},id:!1,force:!1,killer:!1,queue:"global",container:!1,buttons:[],callbacks:{beforeShow:null,onShow:null,afterShow:null,onClose:null,afterClose:null,onClick:null,onHover:null,onTemplate:null},sounds:{sources:[],volume:1,conditions:[]},titleCount:{conditions:[]},modal:!1,visibilityControl:!1}},function(e,t,n){"use strict";function o(e,t){if(!(e instanceof t))throw new TypeError("Cannot call a class as a function")}Object.defineProperty(t,"__esModule",{value:!0}),t.NotyButton=void 0;var r=n(0),i=function(e){if(e&&e.__esModule)return e;var t={};if(null!=e)for(var n in e)Object.prototype.hasOwnProperty.call(e,n)&&(t[n]=e[n]);return t.default=e,t}(r);t.NotyButton=function e(t,n,r){var s=this,a=arguments.length>3&&void 0!==arguments[3]?arguments[3]:{};return o(this,e),this.dom=document.createElement("button"),this.dom.innerHTML=t,this.id=a.id=a.id||i.generateID("button"),this.cb=r,Object.keys(a).forEach(function(e){s.dom.setAttribute(e,a[e])}),i.addClass(this.dom,n||"noty_btn"),this}},function(e,t,n){"use strict";function o(e,t){if(!(e instanceof t))throw new TypeError("Cannot call a class as a function")}Object.defineProperty(t,"__esModule",{value:!0});var r=function(){function e(e,t){for(var n=0;n<t.length;n++){var o=t[n];o.enumerable=o.enumerable||!1,o.configurable=!0,"value"in o&&(o.writable=!0),Object.defineProperty(e,o.key,o)}}return function(t,n,o){return n&&e(t.prototype,n),o&&e(t,o),t}}();t.Push=function(){function e(){var t=arguments.length>0&&void 0!==arguments[0]?arguments[0]:"/service-worker.js";return o(this,e),this.subData={},this.workerPath=t,this.listeners={onPermissionGranted:[],onPermissionDenied:[],onSubscriptionSuccess:[],onSubscriptionCancel:[],onWorkerError:[],onWorkerSuccess:[],onWorkerNotSupported:[]},this}return r(e,[{key:"on",value:function(e){var t=arguments.length>1&&void 0!==arguments[1]?arguments[1]:function(){};return"function"==typeof t&&this.listeners.hasOwnProperty(e)&&this.listeners[e].push(t),this}},{key:"fire",value:function(e){var t=this,n=arguments.length>1&&void 0!==arguments[1]?arguments[1]:[];this.listeners.hasOwnProperty(e)&&this.listeners[e].forEach(function(e){"function"==typeof e&&e.apply(t,n)})}},{key:"create",value:function(){console.log("NOT IMPLEMENTED YET")}},{key:"isSupported",value:function(){var e=!1;try{e=window.Notification||window.webkitNotifications||navigator.mozNotification||window.external&&void 0!==window.external.msIsSiteMode()}catch(e){}return e}},{key:"getPermissionStatus",value:function(){var e="default";if(window.Notification&&window.Notification.permissionLevel)e=window.Notification.permissionLevel;else if(window.webkitNotifications&&window.webkitNotifications.checkPermission)switch(window.webkitNotifications.checkPermission()){case 1:e="default";break;case 0:e="granted";break;default:e="denied"}else window.Notification&&window.Notification.permission?e=window.Notification.permission:navigator.mozNotification?e="granted":window.external&&void 0!==window.external.msIsSiteMode()&&(e=window.external.msIsSiteMode()?"granted":"default");return e.toString().toLowerCase()}},{key:"getEndpoint",value:function(e){var t=e.endpoint,n=e.subscriptionId;return n&&-1===t.indexOf(n)&&(t+="/"+n),t}},{key:"isSWRegistered",value:function(){try{return"activated"===navigator.serviceWorker.controller.state}catch(e){return!1}}},{key:"unregisterWorker",value:function(){var e=this;"serviceWorker"in navigator&&navigator.serviceWorker.getRegistrations().then(function(t){var n=!0,o=!1,r=void 0;try{for(var i,s=t[Symbol.iterator]();!(n=(i=s.next()).done);n=!0){i.value.unregister(),e.fire("onSubscriptionCancel")}}catch(e){o=!0,r=e}finally{try{!n&&s.return&&s.return()}finally{if(o)throw r}}})}},{key:"requestSubscription",value:function(){var e=this,t=!(arguments.length>0&&void 0!==arguments[0])||arguments[0],n=this,o=this.getPermissionStatus(),r=function(o){"granted"===o?(e.fire("onPermissionGranted"),"serviceWorker"in navigator?navigator.serviceWorker.register(e.workerPath).then(function(){navigator.serviceWorker.ready.then(function(e){n.fire("onWorkerSuccess"),e.pushManager.subscribe({userVisibleOnly:t}).then(function(e){var t=e.getKey("p256dh"),o=e.getKey("auth");n.subData={endpoint:n.getEndpoint(e),p256dh:t?window.btoa(String.fromCharCode.apply(null,new Uint8Array(t))):null,auth:o?window.btoa(String.fromCharCode.apply(null,new Uint8Array(o))):null},n.fire("onSubscriptionSuccess",[n.subData])}).catch(function(e){n.fire("onWorkerError",[e])})})}):n.fire("onWorkerNotSupported")):"denied"===o&&(e.fire("onPermissionDenied"),e.unregisterWorker())};"default"===o?window.Notification&&window.Notification.requestPermission?window.Notification.requestPermission(r):window.webkitNotifications&&window.webkitNotifications.checkPermission&&window.webkitNotifications.requestPermission(r):r(o)}}]),e}()},function(e,t,n){(function(t,o){/*!
+
+(function webpackUniversalModuleDefinition(root, factory) {
+	if(true)
+		module.exports = factory();
+	else if(typeof define === 'function' && define.amd)
+		define("Noty", [], factory);
+	else if(typeof exports === 'object')
+		exports["Noty"] = factory();
+	else
+		root["Noty"] = factory();
+})(this, function() {
+return /******/ (function(modules) { // webpackBootstrap
+/******/ 	// The module cache
+/******/ 	var installedModules = {};
+/******/
+/******/ 	// The require function
+/******/ 	function __webpack_require__(moduleId) {
+/******/
+/******/ 		// Check if module is in cache
+/******/ 		if(installedModules[moduleId]) {
+/******/ 			return installedModules[moduleId].exports;
+/******/ 		}
+/******/ 		// Create a new module (and put it into the cache)
+/******/ 		var module = installedModules[moduleId] = {
+/******/ 			i: moduleId,
+/******/ 			l: false,
+/******/ 			exports: {}
+/******/ 		};
+/******/
+/******/ 		// Execute the module function
+/******/ 		modules[moduleId].call(module.exports, module, module.exports, __webpack_require__);
+/******/
+/******/ 		// Flag the module as loaded
+/******/ 		module.l = true;
+/******/
+/******/ 		// Return the exports of the module
+/******/ 		return module.exports;
+/******/ 	}
+/******/
+/******/
+/******/ 	// expose the modules object (__webpack_modules__)
+/******/ 	__webpack_require__.m = modules;
+/******/
+/******/ 	// expose the module cache
+/******/ 	__webpack_require__.c = installedModules;
+/******/
+/******/ 	// identity function for calling harmony imports with the correct context
+/******/ 	__webpack_require__.i = function(value) { return value; };
+/******/
+/******/ 	// define getter function for harmony exports
+/******/ 	__webpack_require__.d = function(exports, name, getter) {
+/******/ 		if(!__webpack_require__.o(exports, name)) {
+/******/ 			Object.defineProperty(exports, name, {
+/******/ 				configurable: false,
+/******/ 				enumerable: true,
+/******/ 				get: getter
+/******/ 			});
+/******/ 		}
+/******/ 	};
+/******/
+/******/ 	// getDefaultExport function for compatibility with non-harmony modules
+/******/ 	__webpack_require__.n = function(module) {
+/******/ 		var getter = module && module.__esModule ?
+/******/ 			function getDefault() { return module['default']; } :
+/******/ 			function getModuleExports() { return module; };
+/******/ 		__webpack_require__.d(getter, 'a', getter);
+/******/ 		return getter;
+/******/ 	};
+/******/
+/******/ 	// Object.prototype.hasOwnProperty.call
+/******/ 	__webpack_require__.o = function(object, property) { return Object.prototype.hasOwnProperty.call(object, property); };
+/******/
+/******/ 	// __webpack_public_path__
+/******/ 	__webpack_require__.p = "";
+/******/
+/******/ 	// Load entry module and return exports
+/******/ 	return __webpack_require__(__webpack_require__.s = 6);
+/******/ })
+/************************************************************************/
+/******/ ([
+/* 0 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.css = exports.deepExtend = exports.animationEndEvents = undefined;
+
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
+
+exports.inArray = inArray;
+exports.stopPropagation = stopPropagation;
+exports.generateID = generateID;
+exports.outerHeight = outerHeight;
+exports.addListener = addListener;
+exports.hasClass = hasClass;
+exports.addClass = addClass;
+exports.removeClass = removeClass;
+exports.remove = remove;
+exports.classList = classList;
+exports.visibilityChangeFlow = visibilityChangeFlow;
+exports.createAudioElements = createAudioElements;
+
+var _api = __webpack_require__(1);
+
+var API = _interopRequireWildcard(_api);
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
+var animationEndEvents = exports.animationEndEvents = 'webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend';
+
+function inArray(needle, haystack, argStrict) {
+  var key = void 0;
+  var strict = !!argStrict;
+
+  if (strict) {
+    for (key in haystack) {
+      if (haystack.hasOwnProperty(key) && haystack[key] === needle) {
+        return true;
+      }
+    }
+  } else {
+    for (key in haystack) {
+      if (haystack.hasOwnProperty(key) && haystack[key] === needle) {
+        return true;
+      }
+    }
+  }
+  return false;
+}
+
+function stopPropagation(evt) {
+  evt = evt || window.event;
+
+  if (typeof evt.stopPropagation !== 'undefined') {
+    evt.stopPropagation();
+  } else {
+    evt.cancelBubble = true;
+  }
+}
+
+var deepExtend = exports.deepExtend = function deepExtend(out) {
+  out = out || {};
+
+  for (var i = 1; i < arguments.length; i++) {
+    var obj = arguments[i];
+
+    if (!obj) continue;
+
+    for (var key in obj) {
+      if (obj.hasOwnProperty(key)) {
+        if (Array.isArray(obj[key])) {
+          out[key] = obj[key];
+        } else if (_typeof(obj[key]) === 'object' && obj[key] !== null) {
+          out[key] = deepExtend(out[key], obj[key]);
+        } else {
+          out[key] = obj[key];
+        }
+      }
+    }
+  }
+
+  return out;
+};
+
+function generateID() {
+  var prefix = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '';
+
+  var id = 'noty_' + prefix + '_';
+
+  id += 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
+    var r = Math.random() * 16 | 0;
+    var v = c === 'x' ? r : r & 0x3 | 0x8;
+    return v.toString(16);
+  });
+
+  return id;
+}
+
+function outerHeight(el) {
+  var height = el.offsetHeight;
+  var style = window.getComputedStyle(el);
+
+  height += parseInt(style.marginTop) + parseInt(style.marginBottom);
+  return height;
+}
+
+var css = exports.css = function () {
+  var cssPrefixes = ['Webkit', 'O', 'Moz', 'ms'];
+  var cssProps = {};
+
+  function camelCase(string) {
+    return string.replace(/^-ms-/, 'ms-').replace(/-([\da-z])/gi, function (match, letter) {
+      return letter.toUpperCase();
+    });
+  }
+
+  function getVendorProp(name) {
+    var style = document.body.style;
+    if (name in style) return name;
+
+    var i = cssPrefixes.length;
+    var capName = name.charAt(0).toUpperCase() + name.slice(1);
+    var vendorName = void 0;
+
+    while (i--) {
+      vendorName = cssPrefixes[i] + capName;
+      if (vendorName in style) return vendorName;
+    }
+
+    return name;
+  }
+
+  function getStyleProp(name) {
+    name = camelCase(name);
+    return cssProps[name] || (cssProps[name] = getVendorProp(name));
+  }
+
+  function applyCss(element, prop, value) {
+    prop = getStyleProp(prop);
+    element.style[prop] = value;
+  }
+
+  return function (element, properties) {
+    var args = arguments;
+    var prop = void 0;
+    var value = void 0;
+
+    if (args.length === 2) {
+      for (prop in properties) {
+        if (properties.hasOwnProperty(prop)) {
+          value = properties[prop];
+          if (value !== undefined && properties.hasOwnProperty(prop)) {
+            applyCss(element, prop, value);
+          }
+        }
+      }
+    } else {
+      applyCss(element, args[1], args[2]);
+    }
+  };
+}();
+
+function addListener(el, events, cb) {
+  var useCapture = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : false;
+
+  events = events.split(' ');
+  for (var i = 0; i < events.length; i++) {
+    if (document.addEventListener) {
+      el.addEventListener(events[i], cb, useCapture);
+    } else if (document.attachEvent) {
+      el.attachEvent('on' + events[i], cb);
+    }
+  }
+}
+
+function hasClass(element, name) {
+  var list = typeof element === 'string' ? element : classList(element);
+  return list.indexOf(' ' + name + ' ') >= 0;
+}
+
+function addClass(element, name) {
+  var oldList = classList(element);
+  var newList = oldList + name;
+
+  if (hasClass(oldList, name)) return;
+
+  // Trim the opening space.
+  element.className = newList.substring(1);
+}
+
+function removeClass(element, name) {
+  var oldList = classList(element);
+  var newList = void 0;
+
+  if (!hasClass(element, name)) return;
+
+  // Replace the class name.
+  newList = oldList.replace(' ' + name + ' ', ' ');
+
+  // Trim the opening and closing spaces.
+  element.className = newList.substring(1, newList.length - 1);
+}
+
+function remove(element) {
+  if (element.parentNode) {
+    element.parentNode.removeChild(element);
+  }
+}
+
+function classList(element) {
+  return (' ' + (element && element.className || '') + ' ').replace(/\s+/gi, ' ');
+}
+
+function visibilityChangeFlow() {
+  var hidden = void 0;
+  var visibilityChange = void 0;
+  if (typeof document.hidden !== 'undefined') {
+    // Opera 12.10 and Firefox 18 and later support
+    hidden = 'hidden';
+    visibilityChange = 'visibilitychange';
+  } else if (typeof document.msHidden !== 'undefined') {
+    hidden = 'msHidden';
+    visibilityChange = 'msvisibilitychange';
+  } else if (typeof document.webkitHidden !== 'undefined') {
+    hidden = 'webkitHidden';
+    visibilityChange = 'webkitvisibilitychange';
+  }
+
+  function onVisibilityChange() {
+    API.PageHidden = document[hidden];
+    handleVisibilityChange();
+  }
+
+  function onBlur() {
+    API.PageHidden = true;
+    handleVisibilityChange();
+  }
+
+  function onFocus() {
+    API.PageHidden = false;
+    handleVisibilityChange();
+  }
+
+  function handleVisibilityChange() {
+    if (API.PageHidden) stopAll();else resumeAll();
+  }
+
+  function stopAll() {
+    setTimeout(function () {
+      Object.keys(API.Store).forEach(function (id) {
+        if (API.Store.hasOwnProperty(id)) {
+          if (API.Store[id].options.visibilityControl) {
+            API.Store[id].stop();
+          }
+        }
+      });
+    }, 100);
+  }
+
+  function resumeAll() {
+    setTimeout(function () {
+      Object.keys(API.Store).forEach(function (id) {
+        if (API.Store.hasOwnProperty(id)) {
+          if (API.Store[id].options.visibilityControl) {
+            API.Store[id].resume();
+          }
+        }
+      });
+      API.queueRenderAll();
+    }, 100);
+  }
+
+  addListener(document, visibilityChange, onVisibilityChange);
+  addListener(window, 'blur', onBlur);
+  addListener(window, 'focus', onFocus);
+}
+
+function createAudioElements(ref) {
+  if (ref.hasSound) {
+    var audioElement = document.createElement('audio');
+
+    ref.options.sounds.sources.forEach(function (s) {
+      var source = document.createElement('source');
+      source.src = s;
+      source.type = 'audio/' + getExtension(s);
+      audioElement.appendChild(source);
+    });
+
+    if (ref.barDom) {
+      ref.barDom.appendChild(audioElement);
+    } else {
+      document.querySelector('body').appendChild(audioElement);
+    }
+
+    audioElement.volume = ref.options.sounds.volume;
+
+    if (!ref.soundPlayed) {
+      audioElement.play();
+      ref.soundPlayed = true;
+    }
+
+    audioElement.onended = function () {
+      remove(audioElement);
+    };
+  }
+}
+
+function getExtension(fileName) {
+  return fileName.match(/\.([^.]+)$/)[1];
+}
+
+/***/ }),
+/* 1 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.Defaults = exports.Store = exports.Queues = exports.DefaultMaxVisible = exports.docTitle = exports.DocModalCount = exports.PageHidden = undefined;
+exports.getQueueCounts = getQueueCounts;
+exports.addToQueue = addToQueue;
+exports.removeFromQueue = removeFromQueue;
+exports.queueRender = queueRender;
+exports.queueRenderAll = queueRenderAll;
+exports.ghostFix = ghostFix;
+exports.build = build;
+exports.hasButtons = hasButtons;
+exports.handleModal = handleModal;
+exports.handleModalClose = handleModalClose;
+exports.queueClose = queueClose;
+exports.dequeueClose = dequeueClose;
+exports.fire = fire;
+exports.openFlow = openFlow;
+exports.closeFlow = closeFlow;
+
+var _utils = __webpack_require__(0);
+
+var Utils = _interopRequireWildcard(_utils);
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
+var PageHidden = exports.PageHidden = false;
+var DocModalCount = exports.DocModalCount = 0;
+
+var DocTitleProps = {
+  originalTitle: null,
+  count: 0,
+  changed: false,
+  timer: -1
+};
+
+var docTitle = exports.docTitle = {
+  increment: function increment() {
+    DocTitleProps.count++;
+
+    docTitle._update();
+  },
+
+  decrement: function decrement() {
+    DocTitleProps.count--;
+
+    if (DocTitleProps.count <= 0) {
+      docTitle._clear();
+      return;
+    }
+
+    docTitle._update();
+  },
+
+  _update: function _update() {
+    var title = document.title;
+
+    if (!DocTitleProps.changed) {
+      DocTitleProps.originalTitle = title;
+      document.title = '(' + DocTitleProps.count + ') ' + title;
+      DocTitleProps.changed = true;
+    } else {
+      document.title = '(' + DocTitleProps.count + ') ' + DocTitleProps.originalTitle;
+    }
+  },
+
+  _clear: function _clear() {
+    if (DocTitleProps.changed) {
+      DocTitleProps.count = 0;
+      document.title = DocTitleProps.originalTitle;
+      DocTitleProps.changed = false;
+    }
+  }
+};
+
+var DefaultMaxVisible = exports.DefaultMaxVisible = 5;
+
+var Queues = exports.Queues = {
+  global: {
+    maxVisible: DefaultMaxVisible,
+    queue: []
+  }
+};
+
+var Store = exports.Store = {};
+
+var Defaults = exports.Defaults = {
+  type: 'alert',
+  layout: 'topRight',
+  theme: 'mint',
+  text: '',
+  timeout: false,
+  progressBar: true,
+  closeWith: ['click'],
+  animation: {
+    open: 'noty_effects_open',
+    close: 'noty_effects_close'
+  },
+  id: false,
+  force: false,
+  killer: false,
+  queue: 'global',
+  container: false,
+  buttons: [],
+  callbacks: {
+    beforeShow: null,
+    onShow: null,
+    afterShow: null,
+    onClose: null,
+    afterClose: null,
+    onClick: null,
+    onHover: null,
+    onTemplate: null
+  },
+  sounds: {
+    sources: [],
+    volume: 1,
+    conditions: []
+  },
+  titleCount: {
+    conditions: []
+  },
+  modal: false,
+  visibilityControl: false
+
+  /**
+   * @param {string} queueName
+   * @return {object}
+   */
+};function getQueueCounts() {
+  var queueName = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 'global';
+
+  var count = 0;
+  var max = DefaultMaxVisible;
+
+  if (Queues.hasOwnProperty(queueName)) {
+    max = Queues[queueName].maxVisible;
+    Object.keys(Store).forEach(function (i) {
+      if (Store[i].options.queue === queueName && !Store[i].closed) count++;
+    });
+  }
+
+  return {
+    current: count,
+    maxVisible: max
+  };
+}
+
+/**
+ * @param {Noty} ref
+ * @return {void}
+ */
+function addToQueue(ref) {
+  if (!Queues.hasOwnProperty(ref.options.queue)) {
+    Queues[ref.options.queue] = { maxVisible: DefaultMaxVisible, queue: [] };
+  }
+
+  Queues[ref.options.queue].queue.push(ref);
+}
+
+/**
+ * @param {Noty} ref
+ * @return {void}
+ */
+function removeFromQueue(ref) {
+  if (Queues.hasOwnProperty(ref.options.queue)) {
+    var queue = [];
+    Object.keys(Queues[ref.options.queue].queue).forEach(function (i) {
+      if (Queues[ref.options.queue].queue[i].id !== ref.id) {
+        queue.push(Queues[ref.options.queue].queue[i]);
+      }
+    });
+    Queues[ref.options.queue].queue = queue;
+  }
+}
+
+/**
+ * @param {string} queueName
+ * @return {void}
+ */
+function queueRender() {
+  var queueName = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 'global';
+
+  if (Queues.hasOwnProperty(queueName)) {
+    var noty = Queues[queueName].queue.shift();
+
+    if (noty) noty.show();
+  }
+}
+
+/**
+ * @return {void}
+ */
+function queueRenderAll() {
+  Object.keys(Queues).forEach(function (queueName) {
+    queueRender(queueName);
+  });
+}
+
+/**
+ * @param {Noty} ref
+ * @return {void}
+ */
+function ghostFix(ref) {
+  var ghostID = Utils.generateID('ghost');
+  var ghost = document.createElement('div');
+  ghost.setAttribute('id', ghostID);
+  Utils.css(ghost, {
+    height: Utils.outerHeight(ref.barDom) + 'px'
+  });
+
+  ref.barDom.insertAdjacentHTML('afterend', ghost.outerHTML);
+
+  Utils.remove(ref.barDom);
+  ghost = document.getElementById(ghostID);
+  Utils.addClass(ghost, 'noty_fix_effects_height');
+  Utils.addListener(ghost, Utils.animationEndEvents, function () {
+    Utils.remove(ghost);
+  });
+}
+
+/**
+ * @param {Noty} ref
+ * @return {void}
+ */
+function build(ref) {
+  findOrCreateContainer(ref);
+
+  var markup = '<div class="noty_body">' + ref.options.text + '</div>' + buildButtons(ref) + '<div class="noty_progressbar"></div>';
+
+  ref.barDom = document.createElement('div');
+  ref.barDom.setAttribute('id', ref.id);
+  Utils.addClass(ref.barDom, 'noty_bar noty_type__' + ref.options.type + ' noty_theme__' + ref.options.theme);
+
+  ref.barDom.innerHTML = markup;
+
+  fire(ref, 'onTemplate');
+}
+
+/**
+ * @param {Noty} ref
+ * @return {boolean}
+ */
+function hasButtons(ref) {
+  return !!(ref.options.buttons && Object.keys(ref.options.buttons).length);
+}
+
+/**
+ * @param {Noty} ref
+ * @return {string}
+ */
+function buildButtons(ref) {
+  if (hasButtons(ref)) {
+    var buttons = document.createElement('div');
+    Utils.addClass(buttons, 'noty_buttons');
+
+    Object.keys(ref.options.buttons).forEach(function (key) {
+      buttons.appendChild(ref.options.buttons[key].dom);
+    });
+
+    ref.options.buttons.forEach(function (btn) {
+      buttons.appendChild(btn.dom);
+    });
+    return buttons.outerHTML;
+  }
+  return '';
+}
+
+/**
+ * @param {Noty} ref
+ * @return {void}
+ */
+function handleModal(ref) {
+  if (ref.options.modal) {
+    if (DocModalCount === 0) {
+      createModal(ref);
+    }
+
+    exports.DocModalCount = DocModalCount += 1;
+  }
+}
+
+/**
+ * @param {Noty} ref
+ * @return {void}
+ */
+function handleModalClose(ref) {
+  if (ref.options.modal && DocModalCount > 0) {
+    exports.DocModalCount = DocModalCount -= 1;
+
+    if (DocModalCount <= 0) {
+      var modal = document.querySelector('.noty_modal');
+
+      if (modal) {
+        Utils.removeClass(modal, 'noty_modal_open');
+        Utils.addClass(modal, 'noty_modal_close');
+        Utils.addListener(modal, Utils.animationEndEvents, function () {
+          Utils.remove(modal);
+        });
+      }
+    }
+  }
+}
+
+/**
+ * @return {void}
+ */
+function createModal() {
+  var body = document.querySelector('body');
+  var modal = document.createElement('div');
+  Utils.addClass(modal, 'noty_modal');
+  body.insertBefore(modal, body.firstChild);
+  Utils.addClass(modal, 'noty_modal_open');
+
+  Utils.addListener(modal, Utils.animationEndEvents, function () {
+    Utils.removeClass(modal, 'noty_modal_open');
+  });
+}
+
+/**
+ * @param {Noty} ref
+ * @return {void}
+ */
+function findOrCreateContainer(ref) {
+  if (ref.options.container) {
+    ref.layoutDom = document.querySelector(ref.options.container);
+    return;
+  }
+
+  var layoutID = 'noty_layout__' + ref.options.layout;
+  ref.layoutDom = document.querySelector('div#' + layoutID);
+
+  if (!ref.layoutDom) {
+    ref.layoutDom = document.createElement('div');
+    ref.layoutDom.setAttribute('id', layoutID);
+    Utils.addClass(ref.layoutDom, 'noty_layout');
+    document.querySelector('body').appendChild(ref.layoutDom);
+  }
+}
+
+/**
+ * @param {Noty} ref
+ * @return {void}
+ */
+function queueClose(ref) {
+  if (ref.options.timeout) {
+    if (ref.options.progressBar && ref.progressDom) {
+      Utils.css(ref.progressDom, {
+        transition: 'width ' + ref.options.timeout + 'ms linear',
+        width: '0%'
+      });
+    }
+
+    clearTimeout(ref.closeTimer);
+
+    ref.closeTimer = setTimeout(function () {
+      ref.close();
+    }, ref.options.timeout);
+  }
+}
+
+/**
+ * @param {Noty} ref
+ * @return {void}
+ */
+function dequeueClose(ref) {
+  if (ref.options.timeout && ref.closeTimer) {
+    clearTimeout(ref.closeTimer);
+    ref.closeTimer = -1;
+
+    if (ref.options.progressBar && ref.progressDom) {
+      Utils.css(ref.progressDom, {
+        transition: 'width 0ms linear',
+        width: '100%'
+      });
+    }
+  }
+}
+
+/**
+ * @param {Noty} ref
+ * @param {string} eventName
+ * @return {void}
+ */
+function fire(ref, eventName) {
+  if (ref.listeners.hasOwnProperty(eventName)) {
+    ref.listeners[eventName].forEach(function (cb) {
+      if (typeof cb === 'function') {
+        cb.apply(ref);
+      }
+    });
+  }
+}
+
+/**
+ * @param {Noty} ref
+ * @return {void}
+ */
+function openFlow(ref) {
+  fire(ref, 'afterShow');
+  queueClose(ref);
+
+  Utils.addListener(ref.barDom, 'mouseenter', function () {
+    dequeueClose(ref);
+  });
+
+  Utils.addListener(ref.barDom, 'mouseleave', function () {
+    queueClose(ref);
+  });
+}
+
+/**
+ * @param {Noty} ref
+ * @return {void}
+ */
+function closeFlow(ref) {
+  delete Store[ref.id];
+  ref.closing = false;
+  fire(ref, 'afterClose');
+
+  Utils.remove(ref.barDom);
+
+  if (ref.layoutDom.querySelectorAll('.noty_bar').length === 0 && !ref.options.container) {
+    Utils.remove(ref.layoutDom);
+  }
+
+  if (Utils.inArray('docVisible', ref.options.titleCount.conditions) || Utils.inArray('docHidden', ref.options.titleCount.conditions)) {
+    docTitle.decrement();
+  }
+
+  queueRender(ref.options.queue);
+}
+
+/***/ }),
+/* 2 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.NotyButton = undefined;
+
+var _utils = __webpack_require__(0);
+
+var Utils = _interopRequireWildcard(_utils);
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var NotyButton = exports.NotyButton = function NotyButton(html, classes, cb) {
+  var _this = this;
+
+  var attributes = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : {};
+
+  _classCallCheck(this, NotyButton);
+
+  this.dom = document.createElement('button');
+  this.dom.innerHTML = html;
+  this.id = attributes.id = attributes.id || Utils.generateID('button');
+  this.cb = cb;
+  Object.keys(attributes).forEach(function (propertyName) {
+    _this.dom.setAttribute(propertyName, attributes[propertyName]);
+  });
+  Utils.addClass(this.dom, classes || 'noty_btn');
+
+  return this;
+};
+
+/***/ }),
+/* 3 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var Push = exports.Push = function () {
+  function Push() {
+    var workerPath = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '/service-worker.js';
+
+    _classCallCheck(this, Push);
+
+    this.subData = {};
+    this.workerPath = workerPath;
+    this.listeners = {
+      onPermissionGranted: [],
+      onPermissionDenied: [],
+      onSubscriptionSuccess: [],
+      onSubscriptionCancel: [],
+      onWorkerError: [],
+      onWorkerSuccess: [],
+      onWorkerNotSupported: []
+    };
+    return this;
+  }
+
+  /**
+   * @param {string} eventName
+   * @param {function} cb
+   * @return {Push}
+   */
+
+
+  _createClass(Push, [{
+    key: 'on',
+    value: function on(eventName) {
+      var cb = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : function () {};
+
+      if (typeof cb === 'function' && this.listeners.hasOwnProperty(eventName)) {
+        this.listeners[eventName].push(cb);
+      }
+
+      return this;
+    }
+  }, {
+    key: 'fire',
+    value: function fire(eventName) {
+      var _this = this;
+
+      var params = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : [];
+
+      if (this.listeners.hasOwnProperty(eventName)) {
+        this.listeners[eventName].forEach(function (cb) {
+          if (typeof cb === 'function') {
+            cb.apply(_this, params);
+          }
+        });
+      }
+    }
+  }, {
+    key: 'create',
+    value: function create() {
+      console.log('NOT IMPLEMENTED YET');
+    }
+
+    /**
+     * @return {boolean}
+     */
+
+  }, {
+    key: 'isSupported',
+    value: function isSupported() {
+      var result = false;
+
+      try {
+        result = window.Notification || window.webkitNotifications || navigator.mozNotification || window.external && window.external.msIsSiteMode() !== undefined;
+      } catch (e) {}
+
+      return result;
+    }
+
+    /**
+     * @return {string}
+     */
+
+  }, {
+    key: 'getPermissionStatus',
+    value: function getPermissionStatus() {
+      var perm = 'default';
+
+      if (window.Notification && window.Notification.permissionLevel) {
+        perm = window.Notification.permissionLevel;
+      } else if (window.webkitNotifications && window.webkitNotifications.checkPermission) {
+        switch (window.webkitNotifications.checkPermission()) {
+          case 1:
+            perm = 'default';
+            break;
+          case 0:
+            perm = 'granted';
+            break;
+          default:
+            perm = 'denied';
+        }
+      } else if (window.Notification && window.Notification.permission) {
+        perm = window.Notification.permission;
+      } else if (navigator.mozNotification) {
+        perm = 'granted';
+      } else if (window.external && window.external.msIsSiteMode() !== undefined) {
+        perm = window.external.msIsSiteMode() ? 'granted' : 'default';
+      }
+
+      return perm.toString().toLowerCase();
+    }
+
+    /**
+     * @return {string}
+     */
+
+  }, {
+    key: 'getEndpoint',
+    value: function getEndpoint(subscription) {
+      var endpoint = subscription.endpoint;
+      var subscriptionId = subscription.subscriptionId;
+
+      // fix for Chrome < 45
+      if (subscriptionId && endpoint.indexOf(subscriptionId) === -1) {
+        endpoint += '/' + subscriptionId;
+      }
+
+      return endpoint;
+    }
+
+    /**
+     * @return {boolean}
+     */
+
+  }, {
+    key: 'isSWRegistered',
+    value: function isSWRegistered() {
+      try {
+        return navigator.serviceWorker.controller.state === 'activated';
+      } catch (e) {
+        return false;
+      }
+    }
+
+    /**
+     * @return {void}
+     */
+
+  }, {
+    key: 'unregisterWorker',
+    value: function unregisterWorker() {
+      var self = this;
+      if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.getRegistrations().then(function (registrations) {
+          var _iteratorNormalCompletion = true;
+          var _didIteratorError = false;
+          var _iteratorError = undefined;
+
+          try {
+            for (var _iterator = registrations[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+              var registration = _step.value;
+
+              registration.unregister();
+              self.fire('onSubscriptionCancel');
+            }
+          } catch (err) {
+            _didIteratorError = true;
+            _iteratorError = err;
+          } finally {
+            try {
+              if (!_iteratorNormalCompletion && _iterator.return) {
+                _iterator.return();
+              }
+            } finally {
+              if (_didIteratorError) {
+                throw _iteratorError;
+              }
+            }
+          }
+        });
+      }
+    }
+
+    /**
+     * @return {void}
+     */
+
+  }, {
+    key: 'requestSubscription',
+    value: function requestSubscription() {
+      var _this2 = this;
+
+      var userVisibleOnly = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : true;
+
+      var self = this;
+      var current = this.getPermissionStatus();
+      var cb = function cb(result) {
+        if (result === 'granted') {
+          _this2.fire('onPermissionGranted');
+
+          if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register(_this2.workerPath).then(function () {
+              navigator.serviceWorker.ready.then(function (serviceWorkerRegistration) {
+                self.fire('onWorkerSuccess');
+                serviceWorkerRegistration.pushManager.subscribe({
+                  userVisibleOnly: userVisibleOnly
+                }).then(function (subscription) {
+                  var key = subscription.getKey('p256dh');
+                  var token = subscription.getKey('auth');
+
+                  self.subData = {
+                    endpoint: self.getEndpoint(subscription),
+                    p256dh: key ? window.btoa(String.fromCharCode.apply(null, new Uint8Array(key))) : null,
+                    auth: token ? window.btoa(String.fromCharCode.apply(null, new Uint8Array(token))) : null
+                  };
+
+                  self.fire('onSubscriptionSuccess', [self.subData]);
+                }).catch(function (err) {
+                  self.fire('onWorkerError', [err]);
+                });
+              });
+            });
+          } else {
+            self.fire('onWorkerNotSupported');
+          }
+        } else if (result === 'denied') {
+          _this2.fire('onPermissionDenied');
+          _this2.unregisterWorker();
+        }
+      };
+
+      if (current === 'default') {
+        if (window.Notification && window.Notification.requestPermission) {
+          window.Notification.requestPermission(cb);
+        } else if (window.webkitNotifications && window.webkitNotifications.checkPermission) {
+          window.webkitNotifications.requestPermission(cb);
+        }
+      } else {
+        cb(current);
+      }
+    }
+  }]);
+
+  return Push;
+}();
+
+/***/ }),
+/* 4 */
+/***/ (function(module, exports, __webpack_require__) {
+
+/* WEBPACK VAR INJECTION */(function(process, global) {var require;/*!
  * @overview es6-promise - a tiny implementation of Promises/A+.
  * @copyright Copyright (c) 2014 Yehuda Katz, Tom Dale, Stefan Penner and contributors (Conversion to ES6 API by Jake Archibald)
  * @license   Licensed under MIT license
  *            See https://raw.githubusercontent.com/stefanpenner/es6-promise/master/LICENSE
  * @version   4.1.0
  */
-!function(t,n){e.exports=n()}(0,function(){"use strict";function e(e){return"function"==typeof e||"object"==typeof e&&null!==e}function r(e){return"function"==typeof e}function i(e){$=e}function s(e){K=e}function a(){return void 0!==U?function(){U(c)}:l()}function l(){var e=setTimeout;return function(){return e(c,1)}}function c(){for(var e=0;e<W;e+=2){(0,Q[e])(Q[e+1]),Q[e]=void 0,Q[e+1]=void 0}W=0}function u(e,t){var n=arguments,o=this,r=new this.constructor(h);void 0===r[ee]&&S(r);var i=o._state;return i?function(){var e=n[i-1];K(function(){return T(i,r,e,o._result)})}():k(o,r,e,t),r}function f(e){var t=this;if(e&&"object"==typeof e&&e.constructor===t)return e;var n=new t(h);return _(n,e),n}function h(){}function p(){return new TypeError("You cannot resolve a promise with itself")}function d(){return new TypeError("A promises callback cannot return that same promise.")}function m(e){try{return e.then}catch(e){return re.error=e,re}}function g(e,t,n,o){try{e.call(t,n,o)}catch(e){return e}}function v(e,t,n){K(function(e){var o=!1,r=g(n,t,function(n){o||(o=!0,t!==n?_(e,n):F(e,n))},function(t){o||(o=!0,x(e,t))},"Settle: "+(e._label||" unknown promise"));!o&&r&&(o=!0,x(e,r))},e)}function y(e,t){t._state===ne?F(e,t._result):t._state===oe?x(e,t._result):k(t,void 0,function(t){return _(e,t)},function(t){return x(e,t)})}function b(e,t,n){t.constructor===e.constructor&&n===u&&t.constructor.resolve===f?y(e,t):n===re?(x(e,re.error),re.error=null):void 0===n?F(e,t):r(n)?v(e,t,n):F(e,t)}function _(t,n){t===n?x(t,p()):e(n)?b(t,n,m(n)):F(t,n)}function w(e){e._onerror&&e._onerror(e._result),A(e)}function F(e,t){e._state===te&&(e._result=t,e._state=ne,0!==e._subscribers.length&&K(A,e))}function x(e,t){e._state===te&&(e._state=oe,e._result=t,K(w,e))}function k(e,t,n,o){var r=e._subscribers,i=r.length;e._onerror=null,r[i]=t,r[i+ne]=n,r[i+oe]=o,0===i&&e._state&&K(A,e)}function A(e){var t=e._subscribers,n=e._state;if(0!==t.length){for(var o=void 0,r=void 0,i=e._result,s=0;s<t.length;s+=3)o=t[s],r=t[s+n],o?T(n,o,r,i):r(i);e._subscribers.length=0}}function C(){this.error=null}function E(e,t){try{return e(t)}catch(e){return ie.error=e,ie}}function T(e,t,n,o){var i=r(n),s=void 0,a=void 0,l=void 0,c=void 0;if(i){if(s=E(n,o),s===ie?(c=!0,a=s.error,s.error=null):l=!0,t===s)return void x(t,d())}else s=o,l=!0;t._state!==te||(i&&l?_(t,s):c?x(t,a):e===ne?F(t,s):e===oe&&x(t,s))}function D(e,t){try{t(function(t){_(e,t)},function(t){x(e,t)})}catch(t){x(e,t)}}function O(){return se++}function S(e){e[ee]=se++,e._state=void 0,e._result=void 0,e._subscribers=[]}function P(e,t){this._instanceConstructor=e,this.promise=new e(h),this.promise[ee]||S(this.promise),q(t)?(this._input=t,this.length=t.length,this._remaining=t.length,this._result=new Array(this.length),0===this.length?F(this.promise,this._result):(this.length=this.length||0,this._enumerate(),0===this._remaining&&F(this.promise,this._result))):x(this.promise,R())}function R(){return new Error("Array Methods must be provided an Array")}function j(e){return new P(this,e).promise}function L(e){var t=this;return new t(q(e)?function(n,o){for(var r=e.length,i=0;i<r;i++)t.resolve(e[i]).then(n,o)}:function(e,t){return t(new TypeError("You must pass an array to race."))})}function M(e){var t=this,n=new t(h);return x(n,e),n}function I(){throw new TypeError("You must pass a resolver function as the first argument to the promise constructor")}function B(){throw new TypeError("Failed to construct 'Promise': Please use the 'new' operator, this object constructor cannot be called as a function.")}function H(e){this[ee]=O(),this._result=this._state=void 0,this._subscribers=[],h!==e&&("function"!=typeof e&&I(),this instanceof H?D(this,e):B())}function N(){var e=void 0;if(void 0!==o)e=o;else if("undefined"!=typeof self)e=self;else try{e=Function("return this")()}catch(e){throw new Error("polyfill failed because global object is unavailable in this environment")}var t=e.Promise;if(t){var n=null;try{n=Object.prototype.toString.call(t.resolve())}catch(e){}if("[object Promise]"===n&&!t.cast)return}e.Promise=H}var z=void 0;z=Array.isArray?Array.isArray:function(e){return"[object Array]"===Object.prototype.toString.call(e)};var q=z,W=0,U=void 0,$=void 0,K=function(e,t){Q[W]=e,Q[W+1]=t,2===(W+=2)&&($?$(c):Z())},V="undefined"!=typeof window?window:void 0,Y=V||{},X=Y.MutationObserver||Y.WebKitMutationObserver,J="undefined"==typeof self&&void 0!==t&&"[object process]"==={}.toString.call(t),G="undefined"!=typeof Uint8ClampedArray&&"undefined"!=typeof importScripts&&"undefined"!=typeof MessageChannel,Q=new Array(1e3),Z=void 0;Z=J?function(){return function(){return t.nextTick(c)}}():X?function(){var e=0,t=new X(c),n=document.createTextNode("");return t.observe(n,{characterData:!0}),function(){n.data=e=++e%2}}():G?function(){var e=new MessageChannel;return e.port1.onmessage=c,function(){return e.port2.postMessage(0)}}():void 0===V?function(){try{var e=n(9);return U=e.runOnLoop||e.runOnContext,a()}catch(e){return l()}}():l();var ee=Math.random().toString(36).substring(16),te=void 0,ne=1,oe=2,re=new C,ie=new C,se=0;return P.prototype._enumerate=function(){for(var e=this.length,t=this._input,n=0;this._state===te&&n<e;n++)this._eachEntry(t[n],n)},P.prototype._eachEntry=function(e,t){var n=this._instanceConstructor,o=n.resolve;if(o===f){var r=m(e);if(r===u&&e._state!==te)this._settledAt(e._state,t,e._result);else if("function"!=typeof r)this._remaining--,this._result[t]=e;else if(n===H){var i=new n(h);b(i,e,r),this._willSettleAt(i,t)}else this._willSettleAt(new n(function(t){return t(e)}),t)}else this._willSettleAt(o(e),t)},P.prototype._settledAt=function(e,t,n){var o=this.promise;o._state===te&&(this._remaining--,e===oe?x(o,n):this._result[t]=n),0===this._remaining&&F(o,this._result)},P.prototype._willSettleAt=function(e,t){var n=this;k(e,void 0,function(e){return n._settledAt(ne,t,e)},function(e){return n._settledAt(oe,t,e)})},H.all=j,H.race=L,H.resolve=f,H.reject=M,H._setScheduler=i,H._setAsap=s,H._asap=K,H.prototype={constructor:H,then:u,catch:function(e){return this.then(null,e)}},H.polyfill=N,H.Promise=H,H})}).call(t,n(7),n(8))},function(e,t){},function(e,t,n){"use strict";function o(e){if(e&&e.__esModule)return e;var t={};if(null!=e)for(var n in e)Object.prototype.hasOwnProperty.call(e,n)&&(t[n]=e[n]);return t.default=e,t}function r(e,t){if(!(e instanceof t))throw new TypeError("Cannot call a class as a function")}Object.defineProperty(t,"__esModule",{value:!0});var i=function(){function e(e,t){for(var n=0;n<t.length;n++){var o=t[n];o.enumerable=o.enumerable||!1,o.configurable=!0,"value"in o&&(o.writable=!0),Object.defineProperty(e,o.key,o)}}return function(t,n,o){return n&&e(t.prototype,n),o&&e(t,o),t}}();n(5);var s=n(4),a=function(e){return e&&e.__esModule?e:{default:e}}(s),l=n(0),c=o(l),u=n(1),f=o(u),h=n(2),p=n(3),d=function(){function e(){var t=arguments.length>0&&void 0!==arguments[0]?arguments[0]:{};return r(this,e),this.options=c.deepExtend({},f.Defaults,t),this.id=this.options.id||c.generateID("bar"),this.closeTimer=-1,this.barDom=null,this.layoutDom=null,this.progressDom=null,this.showing=!1,this.shown=!1,this.closed=!1,this.closing=!1,this.killable=this.options.timeout||this.options.closeWith.length>0,this.hasSound=this.options.sounds.sources.length>0,this.soundPlayed=!1,this.listeners={beforeShow:[],onShow:[],afterShow:[],onClose:[],afterClose:[],onClick:[],onHover:[],onTemplate:[]},this.promises={show:null,close:null},this.on("beforeShow",this.options.callbacks.beforeShow),this.on("onShow",this.options.callbacks.onShow),this.on("afterShow",this.options.callbacks.afterShow),this.on("onClose",this.options.callbacks.onClose),this.on("afterClose",this.options.callbacks.afterClose),this.on("onClick",this.options.callbacks.onClick),this.on("onHover",this.options.callbacks.onHover),this.on("onTemplate",this.options.callbacks.onTemplate),this}return i(e,[{key:"on",value:function(e){var t=arguments.length>1&&void 0!==arguments[1]?arguments[1]:function(){};return"function"==typeof t&&this.listeners.hasOwnProperty(e)&&this.listeners[e].push(t),this}},{key:"show",value:function(){var t=this;!0===this.options.killer?e.closeAll():"string"==typeof this.options.killer&&e.closeAll(this.options.killer);var n=f.getQueueCounts(this.options.queue);if(n.current>=n.maxVisible||f.PageHidden&&this.options.visibilityControl)return f.addToQueue(this),f.PageHidden&&this.hasSound&&c.inArray("docHidden",this.options.sounds.conditions)&&c.createAudioElements(this),f.PageHidden&&c.inArray("docHidden",this.options.titleCount.conditions)&&f.docTitle.increment(),this;if(f.Store[this.id]=this,f.fire(this,"beforeShow"),this.showing=!0,this.closing)return this.showing=!1,this;if(f.build(this),f.handleModal(this),this.options.force?this.layoutDom.insertBefore(this.barDom,this.layoutDom.firstChild):this.layoutDom.appendChild(this.barDom),this.hasSound&&!this.soundPlayed&&c.inArray("docVisible",this.options.sounds.conditions)&&c.createAudioElements(this),c.inArray("docVisible",this.options.titleCount.conditions)&&f.docTitle.increment(),this.shown=!0,this.closed=!1,f.hasButtons(this)&&Object.keys(this.options.buttons).forEach(function(e){var n=t.barDom.querySelector("#"+t.options.buttons[e].id);c.addListener(n,"click",function(n){c.stopPropagation(n),t.options.buttons[e].cb()})}),this.progressDom=this.barDom.querySelector(".noty_progressbar"),c.inArray("click",this.options.closeWith)&&(c.addClass(this.barDom,"noty_close_with_click"),c.addListener(this.barDom,"click",function(e){c.stopPropagation(e),f.fire(t,"onClick"),t.close()},!1)),c.addListener(this.barDom,"mouseenter",function(){f.fire(t,"onHover")},!1),this.options.timeout&&c.addClass(this.barDom,"noty_has_timeout"),this.options.progressBar&&c.addClass(this.barDom,"noty_has_progressbar"),c.inArray("button",this.options.closeWith)){c.addClass(this.barDom,"noty_close_with_button");var o=document.createElement("div");c.addClass(o,"noty_close_button"),o.innerHTML="×",this.barDom.appendChild(o),c.addListener(o,"click",function(e){c.stopPropagation(e),t.close()},!1)}return f.fire(this,"onShow"),null===this.options.animation.open?this.promises.show=new a.default(function(e){e()}):"function"==typeof this.options.animation.open?this.promises.show=new a.default(this.options.animation.open.bind(this)):(c.addClass(this.barDom,this.options.animation.open),this.promises.show=new a.default(function(e){c.addListener(t.barDom,c.animationEndEvents,function(){c.removeClass(t.barDom,t.options.animation.open),e()})})),this.promises.show.then(function(){var e=t;setTimeout(function(){f.openFlow(e)},100)}),this}},{key:"stop",value:function(){return f.dequeueClose(this),this}},{key:"resume",value:function(){return f.queueClose(this),this}},{key:"setTimeout",value:function(e){function t(t){return e.apply(this,arguments)}return t.toString=function(){return e.toString()},t}(function(e){if(this.stop(),this.options.timeout=e,this.barDom){this.options.timeout?c.addClass(this.barDom,"noty_has_timeout"):c.removeClass(this.barDom,"noty_has_timeout");var t=this;setTimeout(function(){t.resume()},100)}return this})},{key:"setText",value:function(e){var t=arguments.length>1&&void 0!==arguments[1]&&arguments[1];return this.barDom&&(this.barDom.querySelector(".noty_body").innerHTML=e),t&&(this.options.text=e),this}},{key:"setType",value:function(e){var t=this,n=arguments.length>1&&void 0!==arguments[1]&&arguments[1];if(this.barDom){c.classList(this.barDom).split(" ").forEach(function(e){"noty_type__"===e.substring(0,11)&&c.removeClass(t.barDom,e)}),c.addClass(this.barDom,"noty_type__"+e)}return n&&(this.options.type=e),this}},{key:"setTheme",value:function(e){var t=this,n=arguments.length>1&&void 0!==arguments[1]&&arguments[1];if(this.barDom){c.classList(this.barDom).split(" ").forEach(function(e){"noty_theme__"===e.substring(0,12)&&c.removeClass(t.barDom,e)}),c.addClass(this.barDom,"noty_theme__"+e)}return n&&(this.options.theme=e),this}},{key:"close",value:function(){var e=this;return this.closed?this:this.shown?(f.fire(this,"onClose"),this.closing=!0,null===this.options.animation.close?this.promises.close=new a.default(function(e){e()}):"function"==typeof this.options.animation.close?this.promises.close=new a.default(this.options.animation.close.bind(this)):(c.addClass(this.barDom,this.options.animation.close),this.promises.close=new a.default(function(t){c.addListener(e.barDom,c.animationEndEvents,function(){e.options.force?c.remove(e.barDom):f.ghostFix(e),t()})})),this.promises.close.then(function(){f.closeFlow(e),f.handleModalClose(e)}),this.closed=!0,this):(f.removeFromQueue(this),this)}}],[{key:"closeAll",value:function(){var e=arguments.length>0&&void 0!==arguments[0]&&arguments[0];return Object.keys(f.Store).forEach(function(t){e?f.Store[t].options.queue===e&&f.Store[t].killable&&f.Store[t].close():f.Store[t].killable&&f.Store[t].close()}),this}},{key:"overrideDefaults",value:function(e){return f.Defaults=c.deepExtend({},f.Defaults,e),this}},{key:"setMaxVisible",value:function(){var e=arguments.length>0&&void 0!==arguments[0]?arguments[0]:f.DefaultMaxVisible,t=arguments.length>1&&void 0!==arguments[1]?arguments[1]:"global";return f.Queues.hasOwnProperty(t)||(f.Queues[t]={maxVisible:e,queue:[]}),f.Queues[t].maxVisible=e,this}},{key:"button",value:function(e){var t=arguments.length>1&&void 0!==arguments[1]?arguments[1]:null,n=arguments[2],o=arguments.length>3&&void 0!==arguments[3]?arguments[3]:{};return new h.NotyButton(e,t,n,o)}},{key:"version",value:function(){return"3.1.3"}},{key:"Push",value:function(e){return new p.Push(e)}}]),e}();t.default=d,c.visibilityChangeFlow(),e.exports=t.default},function(e,t){function n(){throw new Error("setTimeout has not been defined")}function o(){throw new Error("clearTimeout has not been defined")}function r(e){if(u===setTimeout)return setTimeout(e,0);if((u===n||!u)&&setTimeout)return u=setTimeout,setTimeout(e,0);try{return u(e,0)}catch(t){try{return u.call(null,e,0)}catch(t){return u.call(this,e,0)}}}function i(e){if(f===clearTimeout)return clearTimeout(e);if((f===o||!f)&&clearTimeout)return f=clearTimeout,clearTimeout(e);try{return f(e)}catch(t){try{return f.call(null,e)}catch(t){return f.call(this,e)}}}function s(){m&&p&&(m=!1,p.length?d=p.concat(d):g=-1,d.length&&a())}function a(){if(!m){var e=r(s);m=!0;for(var t=d.length;t;){for(p=d,d=[];++g<t;)p&&p[g].run();g=-1,t=d.length}p=null,m=!1,i(e)}}function l(e,t){this.fun=e,this.array=t}function c(){}var u,f,h=e.exports={};!function(){try{u="function"==typeof setTimeout?setTimeout:n}catch(e){u=n}try{f="function"==typeof clearTimeout?clearTimeout:o}catch(e){f=o}}();var p,d=[],m=!1,g=-1;h.nextTick=function(e){var t=new Array(arguments.length-1);if(arguments.length>1)for(var n=1;n<arguments.length;n++)t[n-1]=arguments[n];d.push(new l(e,t)),1!==d.length||m||r(a)},l.prototype.run=function(){this.fun.apply(null,this.array)},h.title="browser",h.browser=!0,h.env={},h.argv=[],h.version="",h.versions={},h.on=c,h.addListener=c,h.once=c,h.off=c,h.removeListener=c,h.removeAllListeners=c,h.emit=c,h.prependListener=c,h.prependOnceListener=c,h.listeners=function(e){return[]},h.binding=function(e){throw new Error("process.binding is not supported")},h.cwd=function(){return"/"},h.chdir=function(e){throw new Error("process.chdir is not supported")},h.umask=function(){return 0}},function(e,t){var n;n=function(){return this}();try{n=n||Function("return this")()||(0,eval)("this")}catch(e){"object"==typeof window&&(n=window)}e.exports=n},function(e,t){}])})},function(e,t,n){var o,r,i;/*! tether-drop 1.4.1 */
-!function(s,a){r=[n(13)],o=a,void 0!==(i="function"==typeof o?o.apply(t,r):o)&&(e.exports=i)}(0,function(e){"use strict";function t(e,t){if(!(e instanceof t))throw new TypeError("Cannot call a class as a function")}function n(e,t){if("function"!=typeof t&&null!==t)throw new TypeError("Super expression must either be null or a function, not "+typeof t);e.prototype=Object.create(t&&t.prototype,{constructor:{value:e,enumerable:!1,writable:!0,configurable:!0}}),t&&(Object.setPrototypeOf?Object.setPrototypeOf(e,t):e.__proto__=t)}function o(e){var t=e.split(" "),n=a(t,2),o=n[0],r=n[1];if(["left","right"].indexOf(o)>=0){var i=[r,o];o=i[0],r=i[1]}return[o,r].join(" ")}function r(e,t){for(var n=void 0,o=[];-1!==(n=e.indexOf(t));)o.push(e.splice(n,1));return o}function i(){var a=arguments.length<=0||void 0===arguments[0]?{}:arguments[0],u=function(){for(var e=arguments.length,t=Array(e),n=0;n<e;n++)t[n]=arguments[n];return new(s.apply(b,[null].concat(t)))};f(u,{createContext:i,drops:[],defaults:{}});var v={classPrefix:"drop",defaults:{position:"bottom left",openOn:"click",beforeClose:null,constrainToScrollParent:!0,constrainToWindow:!0,classes:"",remove:!1,openDelay:0,closeDelay:50,focusDelay:null,blurDelay:null,hoverOpenDelay:null,hoverCloseDelay:null,tetherOptions:{}}};f(u,v,a),f(u.defaults,v.defaults,a.defaults),void 0===F[u.classPrefix]&&(F[u.classPrefix]=[]),u.updateBodyClasses=function(){for(var e=!1,t=F[u.classPrefix],n=t.length,o=0;o<n;++o)if(t[o].isOpened()){e=!0;break}e?h(document.body,u.classPrefix+"-open"):p(document.body,u.classPrefix+"-open")};var b=function(i){function s(e){if(t(this,s),c(Object.getPrototypeOf(s.prototype),"constructor",this).call(this),this.options=f({},u.defaults,e),this.target=this.options.target,void 0===this.target)throw new Error("Drop Error: You must provide a target.");var n="data-"+u.classPrefix,o=this.target.getAttribute(n);o&&null==this.options.content&&(this.options.content=o);for(var r=["position","openOn"],i=0;i<r.length;++i){var a=this.target.getAttribute(n+"-"+r[i]);a&&null==this.options[r[i]]&&(this.options[r[i]]=a)}this.options.classes&&!1!==this.options.addTargetClasses&&h(this.target,this.options.classes),u.drops.push(this),F[u.classPrefix].push(this),this._boundEvents=[],this.bindMethods(),this.setupElements(),this.setupEvents(),this.setupTether()}return n(s,i),l(s,[{key:"_on",value:function(e,t,n){this._boundEvents.push({element:e,event:t,handler:n}),e.addEventListener(t,n)}},{key:"bindMethods",value:function(){this.transitionEndHandler=this._transitionEndHandler.bind(this)}},{key:"setupElements",value:function(){var e=this;if(this.drop=document.createElement("div"),h(this.drop,u.classPrefix),this.options.classes&&h(this.drop,this.options.classes),this.content=document.createElement("div"),h(this.content,u.classPrefix+"-content"),"function"==typeof this.options.content){var t=function(){var t=e.options.content.call(e,e);if("string"==typeof t)e.content.innerHTML=t;else{if("object"!=typeof t)throw new Error("Drop Error: Content function should return a string or HTMLElement.");e.content.innerHTML="",e.content.appendChild(t)}};t(),this.on("open",t.bind(this))}else"object"==typeof this.options.content?this.content.appendChild(this.options.content):this.content.innerHTML=this.options.content;this.drop.appendChild(this.content)}},{key:"setupTether",value:function(){var t=this.options.position.split(" ");t[0]=w[t[0]],t=t.join(" ");var n=[];this.options.constrainToScrollParent?n.push({to:"scrollParent",pin:"top, bottom",attachment:"together none"}):n.push({to:"scrollParent"}),!1!==this.options.constrainToWindow?n.push({to:"window",attachment:"together"}):n.push({to:"window"});var r={element:this.drop,target:this.target,attachment:o(t),targetAttachment:o(this.options.position),classPrefix:u.classPrefix,offset:"0 0",targetOffset:"0 0",enabled:!1,constraints:n,addTargetClasses:this.options.addTargetClasses};!1!==this.options.tetherOptions&&(this.tether=new e(f({},r,this.options.tetherOptions)))}},{key:"setupEvents",value:function(){var e=this;if(this.options.openOn){if("always"===this.options.openOn)return void setTimeout(this.open.bind(this));var t=this.options.openOn.split(" ");if(t.indexOf("click")>=0)for(var n=function(t){e.toggle(t),t.preventDefault()},o=function(t){e.isOpened()&&(t.target===e.drop||e.drop.contains(t.target)||t.target===e.target||e.target.contains(t.target)||e.close(t))},r=0;r<g.length;++r){var i=g[r];this._on(this.target,i,n),this._on(document,i,o)}var s=null,a=null,l=function(t){null!==a?clearTimeout(a):s=setTimeout(function(){e.open(t),s=null},("focus"===t.type?e.options.focusDelay:e.options.hoverOpenDelay)||e.options.openDelay)},c=function(t){null!==s?clearTimeout(s):a=setTimeout(function(){e.close(t),a=null},("blur"===t.type?e.options.blurDelay:e.options.hoverCloseDelay)||e.options.closeDelay)};t.indexOf("hover")>=0&&(this._on(this.target,"mouseover",l),this._on(this.drop,"mouseover",l),this._on(this.target,"mouseout",c),this._on(this.drop,"mouseout",c)),t.indexOf("focus")>=0&&(this._on(this.target,"focus",l),this._on(this.drop,"focus",l),this._on(this.target,"blur",c),this._on(this.drop,"blur",c))}}},{key:"isOpened",value:function(){if(this.drop)return d(this.drop,u.classPrefix+"-open")}},{key:"toggle",value:function(e){this.isOpened()?this.close(e):this.open(e)}},{key:"open",value:function(e){var t=this;this.isOpened()||(this.drop.parentNode||document.body.appendChild(this.drop),void 0!==this.tether&&this.tether.enable(),h(this.drop,u.classPrefix+"-open"),h(this.drop,u.classPrefix+"-open-transitionend"),setTimeout(function(){t.drop&&h(t.drop,u.classPrefix+"-after-open")}),void 0!==this.tether&&this.tether.position(),this.trigger("open"),u.updateBodyClasses())}},{key:"_transitionEndHandler",value:function(e){e.target===e.currentTarget&&(d(this.drop,u.classPrefix+"-open")||p(this.drop,u.classPrefix+"-open-transitionend"),this.drop.removeEventListener(y,this.transitionEndHandler))}},{key:"beforeCloseHandler",value:function(e){var t=!0;return this.isClosing||"function"!=typeof this.options.beforeClose||(this.isClosing=!0,t=!1!==this.options.beforeClose(e,this)),this.isClosing=!1,t}},{key:"close",value:function(e){this.isOpened()&&this.beforeCloseHandler(e)&&(p(this.drop,u.classPrefix+"-open"),p(this.drop,u.classPrefix+"-after-open"),this.drop.addEventListener(y,this.transitionEndHandler),this.trigger("close"),void 0!==this.tether&&this.tether.disable(),u.updateBodyClasses(),this.options.remove&&this.remove(e))}},{key:"remove",value:function(e){this.close(e),this.drop.parentNode&&this.drop.parentNode.removeChild(this.drop)}},{key:"position",value:function(){this.isOpened()&&void 0!==this.tether&&this.tether.position()}},{key:"destroy",value:function(){this.remove(),void 0!==this.tether&&this.tether.destroy();for(var e=0;e<this._boundEvents.length;++e){var t=this._boundEvents[e],n=t.element,o=t.event,i=t.handler;n.removeEventListener(o,i)}this._boundEvents=[],this.tether=null,this.drop=null,this.content=null,this.target=null,r(F[u.classPrefix],this),r(u.drops,this)}}]),s}(m);return u}var s=Function.prototype.bind,a=function(){function e(e,t){var n=[],o=!0,r=!1,i=void 0;try{for(var s,a=e[Symbol.iterator]();!(o=(s=a.next()).done)&&(n.push(s.value),!t||n.length!==t);o=!0);}catch(e){r=!0,i=e}finally{try{!o&&a.return&&a.return()}finally{if(r)throw i}}return n}return function(t,n){if(Array.isArray(t))return t;if(Symbol.iterator in Object(t))return e(t,n);throw new TypeError("Invalid attempt to destructure non-iterable instance")}}(),l=function(){function e(e,t){for(var n=0;n<t.length;n++){var o=t[n];o.enumerable=o.enumerable||!1,o.configurable=!0,"value"in o&&(o.writable=!0),Object.defineProperty(e,o.key,o)}}return function(t,n,o){return n&&e(t.prototype,n),o&&e(t,o),t}}(),c=function(e,t,n){for(var o=!0;o;){var r=e,i=t,s=n;o=!1,null===r&&(r=Function.prototype);var a=Object.getOwnPropertyDescriptor(r,i);if(void 0!==a){if("value"in a)return a.value;var l=a.get;if(void 0===l)return;return l.call(s)}var c=Object.getPrototypeOf(r);if(null===c)return;e=c,t=i,n=s,o=!0,a=c=void 0}},u=e.Utils,f=u.extend,h=u.addClass,p=u.removeClass,d=u.hasClass,m=u.Evented,g=["click"];"ontouchstart"in document.documentElement&&g.push("touchstart");var v={WebkitTransition:"webkitTransitionEnd",MozTransition:"transitionend",OTransition:"otransitionend",transition:"transitionend"},y="";for(var b in v)if({}.hasOwnProperty.call(v,b)){var _=document.createElement("p");void 0!==_.style[b]&&(y=v[b])}var w={left:"right",right:"left",top:"bottom",bottom:"top",middle:"middle",center:"center"},F={},x=i();return document.addEventListener("DOMContentLoaded",function(){x.updateBodyClasses()}),x})},function(e,t,n){var o,r;/*! tether 1.4.0 */
-!function(i,s){o=s,void 0!==(r="function"==typeof o?o.call(t,n,t,e):o)&&(e.exports=r)}(0,function(e,t,n){"use strict";function o(e,t){if(!(e instanceof t))throw new TypeError("Cannot call a class as a function")}function r(e){var t=e.getBoundingClientRect(),n={};for(var o in t)n[o]=t[o];if(e.ownerDocument!==document){var i=e.ownerDocument.defaultView.frameElement;if(i){var s=r(i);n.top+=s.top,n.bottom+=s.top,n.left+=s.left,n.right+=s.left}}return n}function i(e){var t=getComputedStyle(e)||{},n=t.position,o=[];if("fixed"===n)return[e];for(var r=e;(r=r.parentNode)&&r&&1===r.nodeType;){var i=void 0;try{i=getComputedStyle(r)}catch(e){}if(void 0===i||null===i)return o.push(r),o;var s=i,a=s.overflow,l=s.overflowX;/(auto|scroll)/.test(a+s.overflowY+l)&&("absolute"!==n||["relative","absolute","fixed"].indexOf(i.position)>=0)&&o.push(r)}return o.push(e.ownerDocument.body),e.ownerDocument!==document&&o.push(e.ownerDocument.defaultView),o}function s(){A&&document.body.removeChild(A),A=null}function a(e){var t=void 0;e===document?(t=document,e=document.documentElement):t=e.ownerDocument;var n=t.documentElement,o=r(e),i=T();return o.top-=i.top,o.left-=i.left,void 0===o.width&&(o.width=document.body.scrollWidth-o.left-o.right),void 0===o.height&&(o.height=document.body.scrollHeight-o.top-o.bottom),o.top=o.top-n.clientTop,o.left=o.left-n.clientLeft,o.right=t.body.clientWidth-o.width-o.left,o.bottom=t.body.clientHeight-o.height-o.top,o}function l(e){return e.offsetParent||document.documentElement}function c(){if(D)return D;var e=document.createElement("div");e.style.width="100%",e.style.height="200px";var t=document.createElement("div");u(t.style,{position:"absolute",top:0,left:0,pointerEvents:"none",visibility:"hidden",width:"200px",height:"150px",overflow:"hidden"}),t.appendChild(e),document.body.appendChild(t);var n=e.offsetWidth;t.style.overflow="scroll";var o=e.offsetWidth;n===o&&(o=t.clientWidth),document.body.removeChild(t);var r=n-o;return D={width:r,height:r}}function u(){var e=arguments.length<=0||void 0===arguments[0]?{}:arguments[0],t=[];return Array.prototype.push.apply(t,arguments),t.slice(1).forEach(function(t){if(t)for(var n in t)({}).hasOwnProperty.call(t,n)&&(e[n]=t[n])}),e}function f(e,t){if(void 0!==e.classList)t.split(" ").forEach(function(t){t.trim()&&e.classList.remove(t)});else{var n=new RegExp("(^| )"+t.split(" ").join("|")+"( |$)","gi"),o=d(e).replace(n," ");m(e,o)}}function h(e,t){if(void 0!==e.classList)t.split(" ").forEach(function(t){t.trim()&&e.classList.add(t)});else{f(e,t);var n=d(e)+" "+t;m(e,n)}}function p(e,t){if(void 0!==e.classList)return e.classList.contains(t);var n=d(e);return new RegExp("(^| )"+t+"( |$)","gi").test(n)}function d(e){return e.className instanceof e.ownerDocument.defaultView.SVGAnimatedString?e.className.baseVal:e.className}function m(e,t){e.setAttribute("class",t)}function g(e,t,n){n.forEach(function(n){-1===t.indexOf(n)&&p(e,n)&&f(e,n)}),t.forEach(function(t){p(e,t)||h(e,t)})}function o(e,t){if(!(e instanceof t))throw new TypeError("Cannot call a class as a function")}function v(e,t){if("function"!=typeof t&&null!==t)throw new TypeError("Super expression must either be null or a function, not "+typeof t);e.prototype=Object.create(t&&t.prototype,{constructor:{value:e,enumerable:!1,writable:!0,configurable:!0}}),t&&(Object.setPrototypeOf?Object.setPrototypeOf(e,t):e.__proto__=t)}function y(e,t){var n=arguments.length<=2||void 0===arguments[2]?1:arguments[2];return e+n>=t&&t>=e-n}function b(){return"undefined"!=typeof performance&&void 0!==performance.now?performance.now():+new Date}function _(){for(var e={top:0,left:0},t=arguments.length,n=Array(t),o=0;o<t;o++)n[o]=arguments[o];return n.forEach(function(t){var n=t.top,o=t.left;"string"==typeof n&&(n=parseFloat(n,10)),"string"==typeof o&&(o=parseFloat(o,10)),e.top+=n,e.left+=o}),e}function w(e,t){return"string"==typeof e.left&&-1!==e.left.indexOf("%")&&(e.left=parseFloat(e.left,10)/100*t.width),"string"==typeof e.top&&-1!==e.top.indexOf("%")&&(e.top=parseFloat(e.top,10)/100*t.height),e}function F(e,t){return"scrollParent"===t?t=e.scrollParents[0]:"window"===t&&(t=[pageXOffset,pageYOffset,innerWidth+pageXOffset,innerHeight+pageYOffset]),t===document&&(t=t.documentElement),void 0!==t.nodeType&&function(){var e=t,n=a(t),o=n,r=getComputedStyle(t);if(t=[o.left,o.top,n.width+o.left,n.height+o.top],e.ownerDocument!==document){var i=e.ownerDocument.defaultView;t[0]+=i.pageXOffset,t[1]+=i.pageYOffset,t[2]+=i.pageXOffset,t[3]+=i.pageYOffset}X.forEach(function(e,n){e=e[0].toUpperCase()+e.substr(1),"Top"===e||"Left"===e?t[n]+=parseFloat(r["border"+e+"Width"]):t[n]-=parseFloat(r["border"+e+"Width"])})}(),t}var x=function(){function e(e,t){for(var n=0;n<t.length;n++){var o=t[n];o.enumerable=o.enumerable||!1,o.configurable=!0,"value"in o&&(o.writable=!0),Object.defineProperty(e,o.key,o)}}return function(t,n,o){return n&&e(t.prototype,n),o&&e(t,o),t}}(),k=void 0;void 0===k&&(k={modules:[]});var A=null,C=function(){var e=0;return function(){return++e}}(),E={},T=function(){var e=A;e&&document.body.contains(e)||(e=document.createElement("div"),e.setAttribute("data-tether-id",C()),u(e.style,{top:0,left:0,position:"absolute"}),document.body.appendChild(e),A=e);var t=e.getAttribute("data-tether-id");return void 0===E[t]&&(E[t]=r(e),S(function(){delete E[t]})),E[t]},D=null,O=[],S=function(e){O.push(e)},P=function(){for(var e=void 0;e=O.pop();)e()},R=function(){function e(){o(this,e)}return x(e,[{key:"on",value:function(e,t,n){var o=!(arguments.length<=3||void 0===arguments[3])&&arguments[3];void 0===this.bindings&&(this.bindings={}),void 0===this.bindings[e]&&(this.bindings[e]=[]),this.bindings[e].push({handler:t,ctx:n,once:o})}},{key:"once",value:function(e,t,n){this.on(e,t,n,!0)}},{key:"off",value:function(e,t){if(void 0!==this.bindings&&void 0!==this.bindings[e])if(void 0===t)delete this.bindings[e];else for(var n=0;n<this.bindings[e].length;)this.bindings[e][n].handler===t?this.bindings[e].splice(n,1):++n}},{key:"trigger",value:function(e){if(void 0!==this.bindings&&this.bindings[e]){for(var t=0,n=arguments.length,o=Array(n>1?n-1:0),r=1;r<n;r++)o[r-1]=arguments[r];for(;t<this.bindings[e].length;){var i=this.bindings[e][t],s=i.handler,a=i.ctx,l=i.once,c=a;void 0===c&&(c=this),s.apply(c,o),l?this.bindings[e].splice(t,1):++t}}}}]),e}();k.Utils={getActualBoundingClientRect:r,getScrollParents:i,getBounds:a,getOffsetParent:l,extend:u,addClass:h,removeClass:f,hasClass:p,updateClasses:g,defer:S,flush:P,uniqueId:C,Evented:R,getScrollBarSize:c,removeUtilElements:s};var j=function(){function e(e,t){var n=[],o=!0,r=!1,i=void 0;try{for(var s,a=e[Symbol.iterator]();!(o=(s=a.next()).done)&&(n.push(s.value),!t||n.length!==t);o=!0);}catch(e){r=!0,i=e}finally{try{!o&&a.return&&a.return()}finally{if(r)throw i}}return n}return function(t,n){if(Array.isArray(t))return t;if(Symbol.iterator in Object(t))return e(t,n);throw new TypeError("Invalid attempt to destructure non-iterable instance")}}(),x=function(){function e(e,t){for(var n=0;n<t.length;n++){var o=t[n];o.enumerable=o.enumerable||!1,o.configurable=!0,"value"in o&&(o.writable=!0),Object.defineProperty(e,o.key,o)}}return function(t,n,o){return n&&e(t.prototype,n),o&&e(t,o),t}}(),L=function(e,t,n){for(var o=!0;o;){var r=e,i=t,s=n;o=!1,null===r&&(r=Function.prototype);var a=Object.getOwnPropertyDescriptor(r,i);if(void 0!==a){if("value"in a)return a.value;var l=a.get;if(void 0===l)return;return l.call(s)}var c=Object.getPrototypeOf(r);if(null===c)return;e=c,t=i,n=s,o=!0,a=c=void 0}};if(void 0===k)throw new Error("You must include the utils.js file before tether.js");var M=k.Utils,i=M.getScrollParents,a=M.getBounds,l=M.getOffsetParent,u=M.extend,h=M.addClass,f=M.removeClass,g=M.updateClasses,S=M.defer,P=M.flush,c=M.getScrollBarSize,s=M.removeUtilElements,I=function(){if("undefined"==typeof document)return"";for(var e=document.createElement("div"),t=["transform","WebkitTransform","OTransform","MozTransform","msTransform"],n=0;n<t.length;++n){var o=t[n];if(void 0!==e.style[o])return o}}(),B=[],H=function(){B.forEach(function(e){e.position(!1)}),P()};!function(){var e=null,t=null,n=null,o=function o(){if(void 0!==t&&t>16)return t=Math.min(t-16,250),void(n=setTimeout(o,250));void 0!==e&&b()-e<10||(null!=n&&(clearTimeout(n),n=null),e=b(),H(),t=b()-e)};"undefined"!=typeof window&&void 0!==window.addEventListener&&["resize","scroll","touchmove"].forEach(function(e){window.addEventListener(e,o)})}();var N={center:"center",left:"right",right:"left"},z={middle:"middle",top:"bottom",bottom:"top"},q={top:0,left:0,middle:"50%",center:"50%",bottom:"100%",right:"100%"},W=function(e,t){var n=e.left,o=e.top;return"auto"===n&&(n=N[t.left]),"auto"===o&&(o=z[t.top]),{left:n,top:o}},U=function(e){var t=e.left,n=e.top;return void 0!==q[e.left]&&(t=q[e.left]),void 0!==q[e.top]&&(n=q[e.top]),{left:t,top:n}},$=function(e){var t=e.split(" "),n=j(t,2);return{top:n[0],left:n[1]}},K=$,V=function(e){function t(e){var n=this;o(this,t),L(Object.getPrototypeOf(t.prototype),"constructor",this).call(this),this.position=this.position.bind(this),B.push(this),this.history=[],this.setOptions(e,!1),k.modules.forEach(function(e){void 0!==e.initialize&&e.initialize.call(n)}),this.position()}return v(t,e),x(t,[{key:"getClass",value:function(){var e=arguments.length<=0||void 0===arguments[0]?"":arguments[0],t=this.options.classes;return void 0!==t&&t[e]?this.options.classes[e]:this.options.classPrefix?this.options.classPrefix+"-"+e:e}},{key:"setOptions",value:function(e){var t=this,n=arguments.length<=1||void 0===arguments[1]||arguments[1],o={offset:"0 0",targetOffset:"0 0",targetAttachment:"auto auto",classPrefix:"tether"};this.options=u(o,e);var r=this.options,s=r.element,a=r.target,l=r.targetModifier;if(this.element=s,this.target=a,this.targetModifier=l,"viewport"===this.target?(this.target=document.body,this.targetModifier="visible"):"scroll-handle"===this.target&&(this.target=document.body,this.targetModifier="scroll-handle"),["element","target"].forEach(function(e){if(void 0===t[e])throw new Error("Tether Error: Both element and target must be defined");void 0!==t[e].jquery?t[e]=t[e][0]:"string"==typeof t[e]&&(t[e]=document.querySelector(t[e]))}),h(this.element,this.getClass("element")),!1!==this.options.addTargetClasses&&h(this.target,this.getClass("target")),!this.options.attachment)throw new Error("Tether Error: You must provide an attachment");this.targetAttachment=K(this.options.targetAttachment),this.attachment=K(this.options.attachment),this.offset=$(this.options.offset),this.targetOffset=$(this.options.targetOffset),void 0!==this.scrollParents&&this.disable(),"scroll-handle"===this.targetModifier?this.scrollParents=[this.target]:this.scrollParents=i(this.target),!1!==this.options.enabled&&this.enable(n)}},{key:"getTargetBounds",value:function(){if(void 0===this.targetModifier)return a(this.target);if("visible"===this.targetModifier){if(this.target===document.body)return{top:pageYOffset,left:pageXOffset,height:innerHeight,width:innerWidth};var e=a(this.target),t={height:e.height,width:e.width,top:e.top,left:e.left};return t.height=Math.min(t.height,e.height-(pageYOffset-e.top)),t.height=Math.min(t.height,e.height-(e.top+e.height-(pageYOffset+innerHeight))),t.height=Math.min(innerHeight,t.height),t.height-=2,t.width=Math.min(t.width,e.width-(pageXOffset-e.left)),t.width=Math.min(t.width,e.width-(e.left+e.width-(pageXOffset+innerWidth))),t.width=Math.min(innerWidth,t.width),t.width-=2,t.top<pageYOffset&&(t.top=pageYOffset),t.left<pageXOffset&&(t.left=pageXOffset),t}if("scroll-handle"===this.targetModifier){var e=void 0,n=this.target;n===document.body?(n=document.documentElement,e={left:pageXOffset,top:pageYOffset,height:innerHeight,width:innerWidth}):e=a(n);var o=getComputedStyle(n),r=n.scrollWidth>n.clientWidth||[o.overflow,o.overflowX].indexOf("scroll")>=0||this.target!==document.body,i=0;r&&(i=15);var s=e.height-parseFloat(o.borderTopWidth)-parseFloat(o.borderBottomWidth)-i,t={width:15,height:.975*s*(s/n.scrollHeight),left:e.left+e.width-parseFloat(o.borderLeftWidth)-15},l=0;s<408&&this.target===document.body&&(l=-11e-5*Math.pow(s,2)-.00727*s+22.58),this.target!==document.body&&(t.height=Math.max(t.height,24));var c=this.target.scrollTop/(n.scrollHeight-s);return t.top=c*(s-t.height-l)+e.top+parseFloat(o.borderTopWidth),this.target===document.body&&(t.height=Math.max(t.height,24)),t}}},{key:"clearCache",value:function(){this._cache={}}},{key:"cache",value:function(e,t){return void 0===this._cache&&(this._cache={}),void 0===this._cache[e]&&(this._cache[e]=t.call(this)),this._cache[e]}},{key:"enable",value:function(){var e=this,t=arguments.length<=0||void 0===arguments[0]||arguments[0];!1!==this.options.addTargetClasses&&h(this.target,this.getClass("enabled")),h(this.element,this.getClass("enabled")),this.enabled=!0,this.scrollParents.forEach(function(t){t!==e.target.ownerDocument&&t.addEventListener("scroll",e.position)}),t&&this.position()}},{key:"disable",value:function(){var e=this;f(this.target,this.getClass("enabled")),f(this.element,this.getClass("enabled")),this.enabled=!1,void 0!==this.scrollParents&&this.scrollParents.forEach(function(t){t.removeEventListener("scroll",e.position)})}},{key:"destroy",value:function(){var e=this;this.disable(),B.forEach(function(t,n){t===e&&B.splice(n,1)}),0===B.length&&s()}},{key:"updateAttachClasses",value:function(e,t){var n=this;e=e||this.attachment,t=t||this.targetAttachment;var o=["left","top","bottom","right","middle","center"];void 0!==this._addAttachClasses&&this._addAttachClasses.length&&this._addAttachClasses.splice(0,this._addAttachClasses.length),void 0===this._addAttachClasses&&(this._addAttachClasses=[]);var r=this._addAttachClasses;e.top&&r.push(this.getClass("element-attached")+"-"+e.top),e.left&&r.push(this.getClass("element-attached")+"-"+e.left),t.top&&r.push(this.getClass("target-attached")+"-"+t.top),t.left&&r.push(this.getClass("target-attached")+"-"+t.left);var i=[];o.forEach(function(e){i.push(n.getClass("element-attached")+"-"+e),i.push(n.getClass("target-attached")+"-"+e)}),S(function(){void 0!==n._addAttachClasses&&(g(n.element,n._addAttachClasses,i),!1!==n.options.addTargetClasses&&g(n.target,n._addAttachClasses,i),delete n._addAttachClasses)})}},{key:"position",value:function(){var e=this,t=arguments.length<=0||void 0===arguments[0]||arguments[0];if(this.enabled){this.clearCache();var n=W(this.targetAttachment,this.attachment);this.updateAttachClasses(this.attachment,n);var o=this.cache("element-bounds",function(){return a(e.element)}),r=o.width,i=o.height;if(0===r&&0===i&&void 0!==this.lastSize){var s=this.lastSize;r=s.width,i=s.height}else this.lastSize={width:r,height:i};var u=this.cache("target-bounds",function(){return e.getTargetBounds()}),f=u,h=w(U(this.attachment),{width:r,height:i}),p=w(U(n),f),d=w(this.offset,{width:r,height:i}),m=w(this.targetOffset,f);h=_(h,d),p=_(p,m);for(var g=u.left+p.left-h.left,v=u.top+p.top-h.top,y=0;y<k.modules.length;++y){var b=k.modules[y],F=b.position.call(this,{left:g,top:v,targetAttachment:n,targetPos:u,elementPos:o,offset:h,targetOffset:p,manualOffset:d,manualTargetOffset:m,scrollbarSize:E,attachment:this.attachment});if(!1===F)return!1;void 0!==F&&"object"==typeof F&&(v=F.top,g=F.left)}var x={page:{top:v,left:g},viewport:{top:v-pageYOffset,bottom:pageYOffset-v-i+innerHeight,left:g-pageXOffset,right:pageXOffset-g-r+innerWidth}},A=this.target.ownerDocument,C=A.defaultView,E=void 0;return C.innerHeight>A.documentElement.clientHeight&&(E=this.cache("scrollbar-size",c),x.viewport.bottom-=E.height),C.innerWidth>A.documentElement.clientWidth&&(E=this.cache("scrollbar-size",c),x.viewport.right-=E.width),-1!==["","static"].indexOf(A.body.style.position)&&-1!==["","static"].indexOf(A.body.parentElement.style.position)||(x.page.bottom=A.body.scrollHeight-v-i,x.page.right=A.body.scrollWidth-g-r),void 0!==this.options.optimizations&&!1!==this.options.optimizations.moveElement&&void 0===this.targetModifier&&function(){var t=e.cache("target-offsetparent",function(){return l(e.target)}),n=e.cache("target-offsetparent-bounds",function(){return a(t)}),o=getComputedStyle(t),r=n,i={};if(["Top","Left","Bottom","Right"].forEach(function(e){i[e.toLowerCase()]=parseFloat(o["border"+e+"Width"])}),n.right=A.body.scrollWidth-n.left-r.width+i.right,n.bottom=A.body.scrollHeight-n.top-r.height+i.bottom,x.page.top>=n.top+i.top&&x.page.bottom>=n.bottom&&x.page.left>=n.left+i.left&&x.page.right>=n.right){var s=t.scrollTop,c=t.scrollLeft;x.offset={top:x.page.top-n.top+s-i.top,left:x.page.left-n.left+c-i.left}}}(),this.move(x),this.history.unshift(x),this.history.length>3&&this.history.pop(),t&&P(),!0}}},{key:"move",value:function(e){var t=this;if(void 0!==this.element.parentNode){var n={};for(var o in e){n[o]={};for(var r in e[o]){for(var i=!1,s=0;s<this.history.length;++s){var a=this.history[s];if(void 0!==a[o]&&!y(a[o][r],e[o][r])){i=!0;break}}i||(n[o][r]=!0)}}var c={top:"",left:"",right:"",bottom:""},f=function(e,n){if(!1!==(void 0!==t.options.optimizations?t.options.optimizations.gpu:null)){var o=void 0,r=void 0;e.top?(c.top=0,o=n.top):(c.bottom=0,o=-n.bottom),e.left?(c.left=0,r=n.left):(c.right=0,r=-n.right),window.matchMedia&&(window.matchMedia("only screen and (min-resolution: 1.3dppx)").matches||window.matchMedia("only screen and (-webkit-min-device-pixel-ratio: 1.3)").matches||(r=Math.round(r),o=Math.round(o))),c[I]="translateX("+r+"px) translateY("+o+"px)","msTransform"!==I&&(c[I]+=" translateZ(0)")}else e.top?c.top=n.top+"px":c.bottom=n.bottom+"px",e.left?c.left=n.left+"px":c.right=n.right+"px"},h=!1;if((n.page.top||n.page.bottom)&&(n.page.left||n.page.right)?(c.position="absolute",f(n.page,e.page)):(n.viewport.top||n.viewport.bottom)&&(n.viewport.left||n.viewport.right)?(c.position="fixed",f(n.viewport,e.viewport)):void 0!==n.offset&&n.offset.top&&n.offset.left?function(){c.position="absolute";var o=t.cache("target-offsetparent",function(){return l(t.target)});l(t.element)!==o&&S(function(){t.element.parentNode.removeChild(t.element),o.appendChild(t.element)}),f(n.offset,e.offset),h=!0}():(c.position="absolute",f({top:!0,left:!0},e.page)),!h)if(this.options.bodyElement)this.options.bodyElement.appendChild(this.element);else{for(var p=!0,d=this.element.parentNode;d&&1===d.nodeType&&"BODY"!==d.tagName;){if("static"!==getComputedStyle(d).position){p=!1;break}d=d.parentNode}p||(this.element.parentNode.removeChild(this.element),this.element.ownerDocument.body.appendChild(this.element))}var m={},g=!1;for(var r in c){var v=c[r];this.element.style[r]!==v&&(g=!0,m[r]=v)}g&&S(function(){u(t.element.style,m),t.trigger("repositioned")})}}}]),t}(R);V.modules=[],k.position=H;var Y=u(V,k),j=function(){function e(e,t){var n=[],o=!0,r=!1,i=void 0;try{for(var s,a=e[Symbol.iterator]();!(o=(s=a.next()).done)&&(n.push(s.value),!t||n.length!==t);o=!0);}catch(e){r=!0,i=e}finally{try{!o&&a.return&&a.return()}finally{if(r)throw i}}return n}return function(t,n){if(Array.isArray(t))return t;if(Symbol.iterator in Object(t))return e(t,n);throw new TypeError("Invalid attempt to destructure non-iterable instance")}}(),M=k.Utils,a=M.getBounds,u=M.extend,g=M.updateClasses,S=M.defer,X=["left","top","right","bottom"];k.modules.push({position:function(e){var t=this,n=e.top,o=e.left,r=e.targetAttachment;if(!this.options.constraints)return!0;var i=this.cache("element-bounds",function(){return a(t.element)}),s=i.height,l=i.width;if(0===l&&0===s&&void 0!==this.lastSize){var c=this.lastSize;l=c.width,s=c.height}var f=this.cache("target-bounds",function(){return t.getTargetBounds()}),h=f.height,p=f.width,d=[this.getClass("pinned"),this.getClass("out-of-bounds")];this.options.constraints.forEach(function(e){var t=e.outOfBoundsClass,n=e.pinnedClass;t&&d.push(t),n&&d.push(n)}),d.forEach(function(e){["left","top","right","bottom"].forEach(function(t){d.push(e+"-"+t)})});var m=[],v=u({},r),y=u({},this.attachment);return this.options.constraints.forEach(function(e){var i=e.to,a=e.attachment,c=e.pin;void 0===a&&(a="");var u=void 0,f=void 0;if(a.indexOf(" ")>=0){var d=a.split(" "),g=j(d,2);f=g[0],u=g[1]}else u=f=a;var b=F(t,i);"target"!==f&&"both"!==f||(n<b[1]&&"top"===v.top&&(n+=h,v.top="bottom"),n+s>b[3]&&"bottom"===v.top&&(n-=h,v.top="top")),"together"===f&&("top"===v.top&&("bottom"===y.top&&n<b[1]?(n+=h,v.top="bottom",n+=s,y.top="top"):"top"===y.top&&n+s>b[3]&&n-(s-h)>=b[1]&&(n-=s-h,v.top="bottom",y.top="bottom")),"bottom"===v.top&&("top"===y.top&&n+s>b[3]?(n-=h,v.top="top",n-=s,y.top="bottom"):"bottom"===y.top&&n<b[1]&&n+(2*s-h)<=b[3]&&(n+=s-h,v.top="top",y.top="top")),"middle"===v.top&&(n+s>b[3]&&"top"===y.top?(n-=s,y.top="bottom"):n<b[1]&&"bottom"===y.top&&(n+=s,y.top="top"))),"target"!==u&&"both"!==u||(o<b[0]&&"left"===v.left&&(o+=p,v.left="right"),o+l>b[2]&&"right"===v.left&&(o-=p,v.left="left")),"together"===u&&(o<b[0]&&"left"===v.left?"right"===y.left?(o+=p,v.left="right",o+=l,y.left="left"):"left"===y.left&&(o+=p,v.left="right",o-=l,y.left="right"):o+l>b[2]&&"right"===v.left?"left"===y.left?(o-=p,v.left="left",o-=l,y.left="right"):"right"===y.left&&(o-=p,v.left="left",o+=l,y.left="left"):"center"===v.left&&(o+l>b[2]&&"left"===y.left?(o-=l,y.left="right"):o<b[0]&&"right"===y.left&&(o+=l,y.left="left"))),"element"!==f&&"both"!==f||(n<b[1]&&"bottom"===y.top&&(n+=s,y.top="top"),n+s>b[3]&&"top"===y.top&&(n-=s,y.top="bottom")),"element"!==u&&"both"!==u||(o<b[0]&&("right"===y.left?(o+=l,y.left="left"):"center"===y.left&&(o+=l/2,y.left="left")),o+l>b[2]&&("left"===y.left?(o-=l,y.left="right"):"center"===y.left&&(o-=l/2,y.left="right"))),"string"==typeof c?c=c.split(",").map(function(e){return e.trim()}):!0===c&&(c=["top","left","right","bottom"]),c=c||[];var _=[],w=[];n<b[1]&&(c.indexOf("top")>=0?(n=b[1],_.push("top")):w.push("top")),n+s>b[3]&&(c.indexOf("bottom")>=0?(n=b[3]-s,_.push("bottom")):w.push("bottom")),o<b[0]&&(c.indexOf("left")>=0?(o=b[0],_.push("left")):w.push("left")),o+l>b[2]&&(c.indexOf("right")>=0?(o=b[2]-l,_.push("right")):w.push("right")),_.length&&function(){var e=void 0;e=void 0!==t.options.pinnedClass?t.options.pinnedClass:t.getClass("pinned"),m.push(e),_.forEach(function(t){m.push(e+"-"+t)})}(),w.length&&function(){var e=void 0;e=void 0!==t.options.outOfBoundsClass?t.options.outOfBoundsClass:t.getClass("out-of-bounds"),m.push(e),w.forEach(function(t){m.push(e+"-"+t)})}(),(_.indexOf("left")>=0||_.indexOf("right")>=0)&&(y.left=v.left=!1),(_.indexOf("top")>=0||_.indexOf("bottom")>=0)&&(y.top=v.top=!1),v.top===r.top&&v.left===r.left&&y.top===t.attachment.top&&y.left===t.attachment.left||(t.updateAttachClasses(y,v),t.trigger("update",{attachment:y,targetAttachment:v}))}),S(function(){!1!==t.options.addTargetClasses&&g(t.target,m,d),g(t.element,m,d)}),{top:n,left:o}}});var M=k.Utils,a=M.getBounds,g=M.updateClasses,S=M.defer;k.modules.push({position:function(e){var t=this,n=e.top,o=e.left,r=this.cache("element-bounds",function(){return a(t.element)}),i=r.height,s=r.width,l=this.getTargetBounds(),c=n+i,u=o+s,f=[];n<=l.bottom&&c>=l.top&&["left","right"].forEach(function(e){var t=l[e];t!==o&&t!==u||f.push(e)}),o<=l.right&&u>=l.left&&["top","bottom"].forEach(function(e){var t=l[e];t!==n&&t!==c||f.push(e)});var h=[],p=[],d=["left","top","right","bottom"];return h.push(this.getClass("abutted")),d.forEach(function(e){h.push(t.getClass("abutted")+"-"+e)}),f.length&&p.push(this.getClass("abutted")),f.forEach(function(e){p.push(t.getClass("abutted")+"-"+e)}),S(function(){!1!==t.options.addTargetClasses&&g(t.target,p,h),g(t.element,p,h)}),!0}});var j=function(){function e(e,t){var n=[],o=!0,r=!1,i=void 0;try{for(var s,a=e[Symbol.iterator]();!(o=(s=a.next()).done)&&(n.push(s.value),!t||n.length!==t);o=!0);}catch(e){r=!0,i=e}finally{try{!o&&a.return&&a.return()}finally{if(r)throw i}}return n}return function(t,n){if(Array.isArray(t))return t;if(Symbol.iterator in Object(t))return e(t,n);throw new TypeError("Invalid attempt to destructure non-iterable instance")}}();return k.modules.push({position:function(e){var t=e.top,n=e.left;if(this.options.shift){var o=this.options.shift;"function"==typeof this.options.shift&&(o=this.options.shift.call(this,{top:t,left:n}));var r=void 0,i=void 0;if("string"==typeof o){o=o.split(" "),o[1]=o[1]||o[0];var s=o,a=j(s,2);r=a[0],i=a[1],r=parseFloat(r,10),i=parseFloat(i,10)}else r=o.top,i=o.left;return t+=r,n+=i,{top:t,left:n}}}}),Y})},function(e,t){!function(e){"use strict";function t(e){if("string"!=typeof e&&(e=String(e)),/[^a-z0-9\-#$%&'*+.\^_`|~]/i.test(e))throw new TypeError("Invalid character in header field name");return e.toLowerCase()}function n(e){return"string"!=typeof e&&(e=String(e)),e}function o(e){var t={next:function(){var t=e.shift();return{done:void 0===t,value:t}}};return v.iterable&&(t[Symbol.iterator]=function(){return t}),t}function r(e){this.map={},e instanceof r?e.forEach(function(e,t){this.append(t,e)},this):Array.isArray(e)?e.forEach(function(e){this.append(e[0],e[1])},this):e&&Object.getOwnPropertyNames(e).forEach(function(t){this.append(t,e[t])},this)}function i(e){if(e.bodyUsed)return Promise.reject(new TypeError("Already read"));e.bodyUsed=!0}function s(e){return new Promise(function(t,n){e.onload=function(){t(e.result)},e.onerror=function(){n(e.error)}})}function a(e){var t=new FileReader,n=s(t);return t.readAsArrayBuffer(e),n}function l(e){var t=new FileReader,n=s(t);return t.readAsText(e),n}function c(e){for(var t=new Uint8Array(e),n=new Array(t.length),o=0;o<t.length;o++)n[o]=String.fromCharCode(t[o]);return n.join("")}function u(e){if(e.slice)return e.slice(0);var t=new Uint8Array(e.byteLength);return t.set(new Uint8Array(e)),t.buffer}function f(){return this.bodyUsed=!1,this._initBody=function(e){if(this._bodyInit=e,e)if("string"==typeof e)this._bodyText=e;else if(v.blob&&Blob.prototype.isPrototypeOf(e))this._bodyBlob=e;else if(v.formData&&FormData.prototype.isPrototypeOf(e))this._bodyFormData=e;else if(v.searchParams&&URLSearchParams.prototype.isPrototypeOf(e))this._bodyText=e.toString();else if(v.arrayBuffer&&v.blob&&b(e))this._bodyArrayBuffer=u(e.buffer),this._bodyInit=new Blob([this._bodyArrayBuffer]);else{if(!v.arrayBuffer||!ArrayBuffer.prototype.isPrototypeOf(e)&&!_(e))throw new Error("unsupported BodyInit type");this._bodyArrayBuffer=u(e)}else this._bodyText="";this.headers.get("content-type")||("string"==typeof e?this.headers.set("content-type","text/plain;charset=UTF-8"):this._bodyBlob&&this._bodyBlob.type?this.headers.set("content-type",this._bodyBlob.type):v.searchParams&&URLSearchParams.prototype.isPrototypeOf(e)&&this.headers.set("content-type","application/x-www-form-urlencoded;charset=UTF-8"))},v.blob&&(this.blob=function(){var e=i(this);if(e)return e;if(this._bodyBlob)return Promise.resolve(this._bodyBlob);if(this._bodyArrayBuffer)return Promise.resolve(new Blob([this._bodyArrayBuffer]));if(this._bodyFormData)throw new Error("could not read FormData body as blob");return Promise.resolve(new Blob([this._bodyText]))},this.arrayBuffer=function(){return this._bodyArrayBuffer?i(this)||Promise.resolve(this._bodyArrayBuffer):this.blob().then(a)}),this.text=function(){var e=i(this);if(e)return e;if(this._bodyBlob)return l(this._bodyBlob);if(this._bodyArrayBuffer)return Promise.resolve(c(this._bodyArrayBuffer));if(this._bodyFormData)throw new Error("could not read FormData body as text");return Promise.resolve(this._bodyText)},v.formData&&(this.formData=function(){return this.text().then(d)}),this.json=function(){return this.text().then(JSON.parse)},this}function h(e){var t=e.toUpperCase();return w.indexOf(t)>-1?t:e}function p(e,t){t=t||{};var n=t.body;if(e instanceof p){if(e.bodyUsed)throw new TypeError("Already read");this.url=e.url,this.credentials=e.credentials,t.headers||(this.headers=new r(e.headers)),this.method=e.method,this.mode=e.mode,n||null==e._bodyInit||(n=e._bodyInit,e.bodyUsed=!0)}else this.url=String(e);if(this.credentials=t.credentials||this.credentials||"omit",!t.headers&&this.headers||(this.headers=new r(t.headers)),this.method=h(t.method||this.method||"GET"),this.mode=t.mode||this.mode||null,this.referrer=null,("GET"===this.method||"HEAD"===this.method)&&n)throw new TypeError("Body not allowed for GET or HEAD requests");this._initBody(n)}function d(e){var t=new FormData;return e.trim().split("&").forEach(function(e){if(e){var n=e.split("="),o=n.shift().replace(/\+/g," "),r=n.join("=").replace(/\+/g," ");t.append(decodeURIComponent(o),decodeURIComponent(r))}}),t}function m(e){var t=new r;return e.split(/\r?\n/).forEach(function(e){var n=e.split(":"),o=n.shift().trim();if(o){var r=n.join(":").trim();t.append(o,r)}}),t}function g(e,t){t||(t={}),this.type="default",this.status="status"in t?t.status:200,this.ok=this.status>=200&&this.status<300,this.statusText="statusText"in t?t.statusText:"OK",this.headers=new r(t.headers),this.url=t.url||"",this._initBody(e)}if(!e.fetch){var v={searchParams:"URLSearchParams"in e,iterable:"Symbol"in e&&"iterator"in Symbol,blob:"FileReader"in e&&"Blob"in e&&function(){try{return new Blob,!0}catch(e){return!1}}(),formData:"FormData"in e,arrayBuffer:"ArrayBuffer"in e};if(v.arrayBuffer)var y=["[object Int8Array]","[object Uint8Array]","[object Uint8ClampedArray]","[object Int16Array]","[object Uint16Array]","[object Int32Array]","[object Uint32Array]","[object Float32Array]","[object Float64Array]"],b=function(e){return e&&DataView.prototype.isPrototypeOf(e)},_=ArrayBuffer.isView||function(e){return e&&y.indexOf(Object.prototype.toString.call(e))>-1};r.prototype.append=function(e,o){e=t(e),o=n(o);var r=this.map[e];this.map[e]=r?r+","+o:o},r.prototype.delete=function(e){delete this.map[t(e)]},r.prototype.get=function(e){return e=t(e),this.has(e)?this.map[e]:null},r.prototype.has=function(e){return this.map.hasOwnProperty(t(e))},r.prototype.set=function(e,o){this.map[t(e)]=n(o)},r.prototype.forEach=function(e,t){for(var n in this.map)this.map.hasOwnProperty(n)&&e.call(t,this.map[n],n,this)},r.prototype.keys=function(){var e=[];return this.forEach(function(t,n){e.push(n)}),o(e)},r.prototype.values=function(){var e=[];return this.forEach(function(t){e.push(t)}),o(e)},r.prototype.entries=function(){var e=[];return this.forEach(function(t,n){e.push([n,t])}),o(e)},v.iterable&&(r.prototype[Symbol.iterator]=r.prototype.entries);var w=["DELETE","GET","HEAD","OPTIONS","POST","PUT"];p.prototype.clone=function(){return new p(this,{body:this._bodyInit})},f.call(p.prototype),f.call(g.prototype),g.prototype.clone=function(){return new g(this._bodyInit,{status:this.status,statusText:this.statusText,headers:new r(this.headers),url:this.url})},g.error=function(){var e=new g(null,{status:0,statusText:""});return e.type="error",e};var F=[301,302,303,307,308];g.redirect=function(e,t){if(-1===F.indexOf(t))throw new RangeError("Invalid status code");return new g(null,{status:t,headers:{location:e}})},e.Headers=r,e.Request=p,e.Response=g,e.fetch=function(e,t){return new Promise(function(n,o){var r=new p(e,t),i=new XMLHttpRequest;i.onload=function(){var e={status:i.status,statusText:i.statusText,headers:m(i.getAllResponseHeaders()||"")};e.url="responseURL"in i?i.responseURL:e.headers.get("X-Request-URL");var t="response"in i?i.response:i.responseText;n(new g(t,e))},i.onerror=function(){o(new TypeError("Network request failed"))},i.ontimeout=function(){o(new TypeError("Network request failed"))},i.open(r.method,r.url,!0),"include"===r.credentials&&(i.withCredentials=!0),"responseType"in i&&v.blob&&(i.responseType="blob"),r.headers.forEach(function(e,t){i.setRequestHeader(t,e)}),i.send(void 0===r._bodyInit?null:r._bodyInit)})},e.fetch.polyfill=!0}}("undefined"!=typeof self?self:this)},function(e,t,n){var o,r;/**
+
+(function (global, factory) {
+     true ? module.exports = factory() :
+    typeof define === 'function' && define.amd ? define(factory) :
+    (global.ES6Promise = factory());
+}(this, (function () { 'use strict';
+
+function objectOrFunction(x) {
+  return typeof x === 'function' || typeof x === 'object' && x !== null;
+}
+
+function isFunction(x) {
+  return typeof x === 'function';
+}
+
+var _isArray = undefined;
+if (!Array.isArray) {
+  _isArray = function (x) {
+    return Object.prototype.toString.call(x) === '[object Array]';
+  };
+} else {
+  _isArray = Array.isArray;
+}
+
+var isArray = _isArray;
+
+var len = 0;
+var vertxNext = undefined;
+var customSchedulerFn = undefined;
+
+var asap = function asap(callback, arg) {
+  queue[len] = callback;
+  queue[len + 1] = arg;
+  len += 2;
+  if (len === 2) {
+    // If len is 2, that means that we need to schedule an async flush.
+    // If additional callbacks are queued before the queue is flushed, they
+    // will be processed by this flush that we are scheduling.
+    if (customSchedulerFn) {
+      customSchedulerFn(flush);
+    } else {
+      scheduleFlush();
+    }
+  }
+};
+
+function setScheduler(scheduleFn) {
+  customSchedulerFn = scheduleFn;
+}
+
+function setAsap(asapFn) {
+  asap = asapFn;
+}
+
+var browserWindow = typeof window !== 'undefined' ? window : undefined;
+var browserGlobal = browserWindow || {};
+var BrowserMutationObserver = browserGlobal.MutationObserver || browserGlobal.WebKitMutationObserver;
+var isNode = typeof self === 'undefined' && typeof process !== 'undefined' && ({}).toString.call(process) === '[object process]';
+
+// test for web worker but not in IE10
+var isWorker = typeof Uint8ClampedArray !== 'undefined' && typeof importScripts !== 'undefined' && typeof MessageChannel !== 'undefined';
+
+// node
+function useNextTick() {
+  // node version 0.10.x displays a deprecation warning when nextTick is used recursively
+  // see https://github.com/cujojs/when/issues/410 for details
+  return function () {
+    return process.nextTick(flush);
+  };
+}
+
+// vertx
+function useVertxTimer() {
+  if (typeof vertxNext !== 'undefined') {
+    return function () {
+      vertxNext(flush);
+    };
+  }
+
+  return useSetTimeout();
+}
+
+function useMutationObserver() {
+  var iterations = 0;
+  var observer = new BrowserMutationObserver(flush);
+  var node = document.createTextNode('');
+  observer.observe(node, { characterData: true });
+
+  return function () {
+    node.data = iterations = ++iterations % 2;
+  };
+}
+
+// web worker
+function useMessageChannel() {
+  var channel = new MessageChannel();
+  channel.port1.onmessage = flush;
+  return function () {
+    return channel.port2.postMessage(0);
+  };
+}
+
+function useSetTimeout() {
+  // Store setTimeout reference so es6-promise will be unaffected by
+  // other code modifying setTimeout (like sinon.useFakeTimers())
+  var globalSetTimeout = setTimeout;
+  return function () {
+    return globalSetTimeout(flush, 1);
+  };
+}
+
+var queue = new Array(1000);
+function flush() {
+  for (var i = 0; i < len; i += 2) {
+    var callback = queue[i];
+    var arg = queue[i + 1];
+
+    callback(arg);
+
+    queue[i] = undefined;
+    queue[i + 1] = undefined;
+  }
+
+  len = 0;
+}
+
+function attemptVertx() {
+  try {
+    var r = require;
+    var vertx = __webpack_require__(9);
+    vertxNext = vertx.runOnLoop || vertx.runOnContext;
+    return useVertxTimer();
+  } catch (e) {
+    return useSetTimeout();
+  }
+}
+
+var scheduleFlush = undefined;
+// Decide what async method to use to triggering processing of queued callbacks:
+if (isNode) {
+  scheduleFlush = useNextTick();
+} else if (BrowserMutationObserver) {
+  scheduleFlush = useMutationObserver();
+} else if (isWorker) {
+  scheduleFlush = useMessageChannel();
+} else if (browserWindow === undefined && "function" === 'function') {
+  scheduleFlush = attemptVertx();
+} else {
+  scheduleFlush = useSetTimeout();
+}
+
+function then(onFulfillment, onRejection) {
+  var _arguments = arguments;
+
+  var parent = this;
+
+  var child = new this.constructor(noop);
+
+  if (child[PROMISE_ID] === undefined) {
+    makePromise(child);
+  }
+
+  var _state = parent._state;
+
+  if (_state) {
+    (function () {
+      var callback = _arguments[_state - 1];
+      asap(function () {
+        return invokeCallback(_state, child, callback, parent._result);
+      });
+    })();
+  } else {
+    subscribe(parent, child, onFulfillment, onRejection);
+  }
+
+  return child;
+}
+
+/**
+  `Promise.resolve` returns a promise that will become resolved with the
+  passed `value`. It is shorthand for the following:
+
+  ```javascript
+  let promise = new Promise(function(resolve, reject){
+    resolve(1);
+  });
+
+  promise.then(function(value){
+    // value === 1
+  });
+  ```
+
+  Instead of writing the above, your code now simply becomes the following:
+
+  ```javascript
+  let promise = Promise.resolve(1);
+
+  promise.then(function(value){
+    // value === 1
+  });
+  ```
+
+  @method resolve
+  @static
+  @param {Any} value value that the returned promise will be resolved with
+  Useful for tooling.
+  @return {Promise} a promise that will become fulfilled with the given
+  `value`
+*/
+function resolve(object) {
+  /*jshint validthis:true */
+  var Constructor = this;
+
+  if (object && typeof object === 'object' && object.constructor === Constructor) {
+    return object;
+  }
+
+  var promise = new Constructor(noop);
+  _resolve(promise, object);
+  return promise;
+}
+
+var PROMISE_ID = Math.random().toString(36).substring(16);
+
+function noop() {}
+
+var PENDING = void 0;
+var FULFILLED = 1;
+var REJECTED = 2;
+
+var GET_THEN_ERROR = new ErrorObject();
+
+function selfFulfillment() {
+  return new TypeError("You cannot resolve a promise with itself");
+}
+
+function cannotReturnOwn() {
+  return new TypeError('A promises callback cannot return that same promise.');
+}
+
+function getThen(promise) {
+  try {
+    return promise.then;
+  } catch (error) {
+    GET_THEN_ERROR.error = error;
+    return GET_THEN_ERROR;
+  }
+}
+
+function tryThen(then, value, fulfillmentHandler, rejectionHandler) {
+  try {
+    then.call(value, fulfillmentHandler, rejectionHandler);
+  } catch (e) {
+    return e;
+  }
+}
+
+function handleForeignThenable(promise, thenable, then) {
+  asap(function (promise) {
+    var sealed = false;
+    var error = tryThen(then, thenable, function (value) {
+      if (sealed) {
+        return;
+      }
+      sealed = true;
+      if (thenable !== value) {
+        _resolve(promise, value);
+      } else {
+        fulfill(promise, value);
+      }
+    }, function (reason) {
+      if (sealed) {
+        return;
+      }
+      sealed = true;
+
+      _reject(promise, reason);
+    }, 'Settle: ' + (promise._label || ' unknown promise'));
+
+    if (!sealed && error) {
+      sealed = true;
+      _reject(promise, error);
+    }
+  }, promise);
+}
+
+function handleOwnThenable(promise, thenable) {
+  if (thenable._state === FULFILLED) {
+    fulfill(promise, thenable._result);
+  } else if (thenable._state === REJECTED) {
+    _reject(promise, thenable._result);
+  } else {
+    subscribe(thenable, undefined, function (value) {
+      return _resolve(promise, value);
+    }, function (reason) {
+      return _reject(promise, reason);
+    });
+  }
+}
+
+function handleMaybeThenable(promise, maybeThenable, then$$) {
+  if (maybeThenable.constructor === promise.constructor && then$$ === then && maybeThenable.constructor.resolve === resolve) {
+    handleOwnThenable(promise, maybeThenable);
+  } else {
+    if (then$$ === GET_THEN_ERROR) {
+      _reject(promise, GET_THEN_ERROR.error);
+      GET_THEN_ERROR.error = null;
+    } else if (then$$ === undefined) {
+      fulfill(promise, maybeThenable);
+    } else if (isFunction(then$$)) {
+      handleForeignThenable(promise, maybeThenable, then$$);
+    } else {
+      fulfill(promise, maybeThenable);
+    }
+  }
+}
+
+function _resolve(promise, value) {
+  if (promise === value) {
+    _reject(promise, selfFulfillment());
+  } else if (objectOrFunction(value)) {
+    handleMaybeThenable(promise, value, getThen(value));
+  } else {
+    fulfill(promise, value);
+  }
+}
+
+function publishRejection(promise) {
+  if (promise._onerror) {
+    promise._onerror(promise._result);
+  }
+
+  publish(promise);
+}
+
+function fulfill(promise, value) {
+  if (promise._state !== PENDING) {
+    return;
+  }
+
+  promise._result = value;
+  promise._state = FULFILLED;
+
+  if (promise._subscribers.length !== 0) {
+    asap(publish, promise);
+  }
+}
+
+function _reject(promise, reason) {
+  if (promise._state !== PENDING) {
+    return;
+  }
+  promise._state = REJECTED;
+  promise._result = reason;
+
+  asap(publishRejection, promise);
+}
+
+function subscribe(parent, child, onFulfillment, onRejection) {
+  var _subscribers = parent._subscribers;
+  var length = _subscribers.length;
+
+  parent._onerror = null;
+
+  _subscribers[length] = child;
+  _subscribers[length + FULFILLED] = onFulfillment;
+  _subscribers[length + REJECTED] = onRejection;
+
+  if (length === 0 && parent._state) {
+    asap(publish, parent);
+  }
+}
+
+function publish(promise) {
+  var subscribers = promise._subscribers;
+  var settled = promise._state;
+
+  if (subscribers.length === 0) {
+    return;
+  }
+
+  var child = undefined,
+      callback = undefined,
+      detail = promise._result;
+
+  for (var i = 0; i < subscribers.length; i += 3) {
+    child = subscribers[i];
+    callback = subscribers[i + settled];
+
+    if (child) {
+      invokeCallback(settled, child, callback, detail);
+    } else {
+      callback(detail);
+    }
+  }
+
+  promise._subscribers.length = 0;
+}
+
+function ErrorObject() {
+  this.error = null;
+}
+
+var TRY_CATCH_ERROR = new ErrorObject();
+
+function tryCatch(callback, detail) {
+  try {
+    return callback(detail);
+  } catch (e) {
+    TRY_CATCH_ERROR.error = e;
+    return TRY_CATCH_ERROR;
+  }
+}
+
+function invokeCallback(settled, promise, callback, detail) {
+  var hasCallback = isFunction(callback),
+      value = undefined,
+      error = undefined,
+      succeeded = undefined,
+      failed = undefined;
+
+  if (hasCallback) {
+    value = tryCatch(callback, detail);
+
+    if (value === TRY_CATCH_ERROR) {
+      failed = true;
+      error = value.error;
+      value.error = null;
+    } else {
+      succeeded = true;
+    }
+
+    if (promise === value) {
+      _reject(promise, cannotReturnOwn());
+      return;
+    }
+  } else {
+    value = detail;
+    succeeded = true;
+  }
+
+  if (promise._state !== PENDING) {
+    // noop
+  } else if (hasCallback && succeeded) {
+      _resolve(promise, value);
+    } else if (failed) {
+      _reject(promise, error);
+    } else if (settled === FULFILLED) {
+      fulfill(promise, value);
+    } else if (settled === REJECTED) {
+      _reject(promise, value);
+    }
+}
+
+function initializePromise(promise, resolver) {
+  try {
+    resolver(function resolvePromise(value) {
+      _resolve(promise, value);
+    }, function rejectPromise(reason) {
+      _reject(promise, reason);
+    });
+  } catch (e) {
+    _reject(promise, e);
+  }
+}
+
+var id = 0;
+function nextId() {
+  return id++;
+}
+
+function makePromise(promise) {
+  promise[PROMISE_ID] = id++;
+  promise._state = undefined;
+  promise._result = undefined;
+  promise._subscribers = [];
+}
+
+function Enumerator(Constructor, input) {
+  this._instanceConstructor = Constructor;
+  this.promise = new Constructor(noop);
+
+  if (!this.promise[PROMISE_ID]) {
+    makePromise(this.promise);
+  }
+
+  if (isArray(input)) {
+    this._input = input;
+    this.length = input.length;
+    this._remaining = input.length;
+
+    this._result = new Array(this.length);
+
+    if (this.length === 0) {
+      fulfill(this.promise, this._result);
+    } else {
+      this.length = this.length || 0;
+      this._enumerate();
+      if (this._remaining === 0) {
+        fulfill(this.promise, this._result);
+      }
+    }
+  } else {
+    _reject(this.promise, validationError());
+  }
+}
+
+function validationError() {
+  return new Error('Array Methods must be provided an Array');
+};
+
+Enumerator.prototype._enumerate = function () {
+  var length = this.length;
+  var _input = this._input;
+
+  for (var i = 0; this._state === PENDING && i < length; i++) {
+    this._eachEntry(_input[i], i);
+  }
+};
+
+Enumerator.prototype._eachEntry = function (entry, i) {
+  var c = this._instanceConstructor;
+  var resolve$$ = c.resolve;
+
+  if (resolve$$ === resolve) {
+    var _then = getThen(entry);
+
+    if (_then === then && entry._state !== PENDING) {
+      this._settledAt(entry._state, i, entry._result);
+    } else if (typeof _then !== 'function') {
+      this._remaining--;
+      this._result[i] = entry;
+    } else if (c === Promise) {
+      var promise = new c(noop);
+      handleMaybeThenable(promise, entry, _then);
+      this._willSettleAt(promise, i);
+    } else {
+      this._willSettleAt(new c(function (resolve$$) {
+        return resolve$$(entry);
+      }), i);
+    }
+  } else {
+    this._willSettleAt(resolve$$(entry), i);
+  }
+};
+
+Enumerator.prototype._settledAt = function (state, i, value) {
+  var promise = this.promise;
+
+  if (promise._state === PENDING) {
+    this._remaining--;
+
+    if (state === REJECTED) {
+      _reject(promise, value);
+    } else {
+      this._result[i] = value;
+    }
+  }
+
+  if (this._remaining === 0) {
+    fulfill(promise, this._result);
+  }
+};
+
+Enumerator.prototype._willSettleAt = function (promise, i) {
+  var enumerator = this;
+
+  subscribe(promise, undefined, function (value) {
+    return enumerator._settledAt(FULFILLED, i, value);
+  }, function (reason) {
+    return enumerator._settledAt(REJECTED, i, reason);
+  });
+};
+
+/**
+  `Promise.all` accepts an array of promises, and returns a new promise which
+  is fulfilled with an array of fulfillment values for the passed promises, or
+  rejected with the reason of the first passed promise to be rejected. It casts all
+  elements of the passed iterable to promises as it runs this algorithm.
+
+  Example:
+
+  ```javascript
+  let promise1 = resolve(1);
+  let promise2 = resolve(2);
+  let promise3 = resolve(3);
+  let promises = [ promise1, promise2, promise3 ];
+
+  Promise.all(promises).then(function(array){
+    // The array here would be [ 1, 2, 3 ];
+  });
+  ```
+
+  If any of the `promises` given to `all` are rejected, the first promise
+  that is rejected will be given as an argument to the returned promises's
+  rejection handler. For example:
+
+  Example:
+
+  ```javascript
+  let promise1 = resolve(1);
+  let promise2 = reject(new Error("2"));
+  let promise3 = reject(new Error("3"));
+  let promises = [ promise1, promise2, promise3 ];
+
+  Promise.all(promises).then(function(array){
+    // Code here never runs because there are rejected promises!
+  }, function(error) {
+    // error.message === "2"
+  });
+  ```
+
+  @method all
+  @static
+  @param {Array} entries array of promises
+  @param {String} label optional string for labeling the promise.
+  Useful for tooling.
+  @return {Promise} promise that is fulfilled when all `promises` have been
+  fulfilled, or rejected if any of them become rejected.
+  @static
+*/
+function all(entries) {
+  return new Enumerator(this, entries).promise;
+}
+
+/**
+  `Promise.race` returns a new promise which is settled in the same way as the
+  first passed promise to settle.
+
+  Example:
+
+  ```javascript
+  let promise1 = new Promise(function(resolve, reject){
+    setTimeout(function(){
+      resolve('promise 1');
+    }, 200);
+  });
+
+  let promise2 = new Promise(function(resolve, reject){
+    setTimeout(function(){
+      resolve('promise 2');
+    }, 100);
+  });
+
+  Promise.race([promise1, promise2]).then(function(result){
+    // result === 'promise 2' because it was resolved before promise1
+    // was resolved.
+  });
+  ```
+
+  `Promise.race` is deterministic in that only the state of the first
+  settled promise matters. For example, even if other promises given to the
+  `promises` array argument are resolved, but the first settled promise has
+  become rejected before the other promises became fulfilled, the returned
+  promise will become rejected:
+
+  ```javascript
+  let promise1 = new Promise(function(resolve, reject){
+    setTimeout(function(){
+      resolve('promise 1');
+    }, 200);
+  });
+
+  let promise2 = new Promise(function(resolve, reject){
+    setTimeout(function(){
+      reject(new Error('promise 2'));
+    }, 100);
+  });
+
+  Promise.race([promise1, promise2]).then(function(result){
+    // Code here never runs
+  }, function(reason){
+    // reason.message === 'promise 2' because promise 2 became rejected before
+    // promise 1 became fulfilled
+  });
+  ```
+
+  An example real-world use case is implementing timeouts:
+
+  ```javascript
+  Promise.race([ajax('foo.json'), timeout(5000)])
+  ```
+
+  @method race
+  @static
+  @param {Array} promises array of promises to observe
+  Useful for tooling.
+  @return {Promise} a promise which settles in the same way as the first passed
+  promise to settle.
+*/
+function race(entries) {
+  /*jshint validthis:true */
+  var Constructor = this;
+
+  if (!isArray(entries)) {
+    return new Constructor(function (_, reject) {
+      return reject(new TypeError('You must pass an array to race.'));
+    });
+  } else {
+    return new Constructor(function (resolve, reject) {
+      var length = entries.length;
+      for (var i = 0; i < length; i++) {
+        Constructor.resolve(entries[i]).then(resolve, reject);
+      }
+    });
+  }
+}
+
+/**
+  `Promise.reject` returns a promise rejected with the passed `reason`.
+  It is shorthand for the following:
+
+  ```javascript
+  let promise = new Promise(function(resolve, reject){
+    reject(new Error('WHOOPS'));
+  });
+
+  promise.then(function(value){
+    // Code here doesn't run because the promise is rejected!
+  }, function(reason){
+    // reason.message === 'WHOOPS'
+  });
+  ```
+
+  Instead of writing the above, your code now simply becomes the following:
+
+  ```javascript
+  let promise = Promise.reject(new Error('WHOOPS'));
+
+  promise.then(function(value){
+    // Code here doesn't run because the promise is rejected!
+  }, function(reason){
+    // reason.message === 'WHOOPS'
+  });
+  ```
+
+  @method reject
+  @static
+  @param {Any} reason value that the returned promise will be rejected with.
+  Useful for tooling.
+  @return {Promise} a promise rejected with the given `reason`.
+*/
+function reject(reason) {
+  /*jshint validthis:true */
+  var Constructor = this;
+  var promise = new Constructor(noop);
+  _reject(promise, reason);
+  return promise;
+}
+
+function needsResolver() {
+  throw new TypeError('You must pass a resolver function as the first argument to the promise constructor');
+}
+
+function needsNew() {
+  throw new TypeError("Failed to construct 'Promise': Please use the 'new' operator, this object constructor cannot be called as a function.");
+}
+
+/**
+  Promise objects represent the eventual result of an asynchronous operation. The
+  primary way of interacting with a promise is through its `then` method, which
+  registers callbacks to receive either a promise's eventual value or the reason
+  why the promise cannot be fulfilled.
+
+  Terminology
+  -----------
+
+  - `promise` is an object or function with a `then` method whose behavior conforms to this specification.
+  - `thenable` is an object or function that defines a `then` method.
+  - `value` is any legal JavaScript value (including undefined, a thenable, or a promise).
+  - `exception` is a value that is thrown using the throw statement.
+  - `reason` is a value that indicates why a promise was rejected.
+  - `settled` the final resting state of a promise, fulfilled or rejected.
+
+  A promise can be in one of three states: pending, fulfilled, or rejected.
+
+  Promises that are fulfilled have a fulfillment value and are in the fulfilled
+  state.  Promises that are rejected have a rejection reason and are in the
+  rejected state.  A fulfillment value is never a thenable.
+
+  Promises can also be said to *resolve* a value.  If this value is also a
+  promise, then the original promise's settled state will match the value's
+  settled state.  So a promise that *resolves* a promise that rejects will
+  itself reject, and a promise that *resolves* a promise that fulfills will
+  itself fulfill.
+
+
+  Basic Usage:
+  ------------
+
+  ```js
+  let promise = new Promise(function(resolve, reject) {
+    // on success
+    resolve(value);
+
+    // on failure
+    reject(reason);
+  });
+
+  promise.then(function(value) {
+    // on fulfillment
+  }, function(reason) {
+    // on rejection
+  });
+  ```
+
+  Advanced Usage:
+  ---------------
+
+  Promises shine when abstracting away asynchronous interactions such as
+  `XMLHttpRequest`s.
+
+  ```js
+  function getJSON(url) {
+    return new Promise(function(resolve, reject){
+      let xhr = new XMLHttpRequest();
+
+      xhr.open('GET', url);
+      xhr.onreadystatechange = handler;
+      xhr.responseType = 'json';
+      xhr.setRequestHeader('Accept', 'application/json');
+      xhr.send();
+
+      function handler() {
+        if (this.readyState === this.DONE) {
+          if (this.status === 200) {
+            resolve(this.response);
+          } else {
+            reject(new Error('getJSON: `' + url + '` failed with status: [' + this.status + ']'));
+          }
+        }
+      };
+    });
+  }
+
+  getJSON('/posts.json').then(function(json) {
+    // on fulfillment
+  }, function(reason) {
+    // on rejection
+  });
+  ```
+
+  Unlike callbacks, promises are great composable primitives.
+
+  ```js
+  Promise.all([
+    getJSON('/posts'),
+    getJSON('/comments')
+  ]).then(function(values){
+    values[0] // => postsJSON
+    values[1] // => commentsJSON
+
+    return values;
+  });
+  ```
+
+  @class Promise
+  @param {function} resolver
+  Useful for tooling.
+  @constructor
+*/
+function Promise(resolver) {
+  this[PROMISE_ID] = nextId();
+  this._result = this._state = undefined;
+  this._subscribers = [];
+
+  if (noop !== resolver) {
+    typeof resolver !== 'function' && needsResolver();
+    this instanceof Promise ? initializePromise(this, resolver) : needsNew();
+  }
+}
+
+Promise.all = all;
+Promise.race = race;
+Promise.resolve = resolve;
+Promise.reject = reject;
+Promise._setScheduler = setScheduler;
+Promise._setAsap = setAsap;
+Promise._asap = asap;
+
+Promise.prototype = {
+  constructor: Promise,
+
+  /**
+    The primary way of interacting with a promise is through its `then` method,
+    which registers callbacks to receive either a promise's eventual value or the
+    reason why the promise cannot be fulfilled.
+  
+    ```js
+    findUser().then(function(user){
+      // user is available
+    }, function(reason){
+      // user is unavailable, and you are given the reason why
+    });
+    ```
+  
+    Chaining
+    --------
+  
+    The return value of `then` is itself a promise.  This second, 'downstream'
+    promise is resolved with the return value of the first promise's fulfillment
+    or rejection handler, or rejected if the handler throws an exception.
+  
+    ```js
+    findUser().then(function (user) {
+      return user.name;
+    }, function (reason) {
+      return 'default name';
+    }).then(function (userName) {
+      // If `findUser` fulfilled, `userName` will be the user's name, otherwise it
+      // will be `'default name'`
+    });
+  
+    findUser().then(function (user) {
+      throw new Error('Found user, but still unhappy');
+    }, function (reason) {
+      throw new Error('`findUser` rejected and we're unhappy');
+    }).then(function (value) {
+      // never reached
+    }, function (reason) {
+      // if `findUser` fulfilled, `reason` will be 'Found user, but still unhappy'.
+      // If `findUser` rejected, `reason` will be '`findUser` rejected and we're unhappy'.
+    });
+    ```
+    If the downstream promise does not specify a rejection handler, rejection reasons will be propagated further downstream.
+  
+    ```js
+    findUser().then(function (user) {
+      throw new PedagogicalException('Upstream error');
+    }).then(function (value) {
+      // never reached
+    }).then(function (value) {
+      // never reached
+    }, function (reason) {
+      // The `PedgagocialException` is propagated all the way down to here
+    });
+    ```
+  
+    Assimilation
+    ------------
+  
+    Sometimes the value you want to propagate to a downstream promise can only be
+    retrieved asynchronously. This can be achieved by returning a promise in the
+    fulfillment or rejection handler. The downstream promise will then be pending
+    until the returned promise is settled. This is called *assimilation*.
+  
+    ```js
+    findUser().then(function (user) {
+      return findCommentsByAuthor(user);
+    }).then(function (comments) {
+      // The user's comments are now available
+    });
+    ```
+  
+    If the assimliated promise rejects, then the downstream promise will also reject.
+  
+    ```js
+    findUser().then(function (user) {
+      return findCommentsByAuthor(user);
+    }).then(function (comments) {
+      // If `findCommentsByAuthor` fulfills, we'll have the value here
+    }, function (reason) {
+      // If `findCommentsByAuthor` rejects, we'll have the reason here
+    });
+    ```
+  
+    Simple Example
+    --------------
+  
+    Synchronous Example
+  
+    ```javascript
+    let result;
+  
+    try {
+      result = findResult();
+      // success
+    } catch(reason) {
+      // failure
+    }
+    ```
+  
+    Errback Example
+  
+    ```js
+    findResult(function(result, err){
+      if (err) {
+        // failure
+      } else {
+        // success
+      }
+    });
+    ```
+  
+    Promise Example;
+  
+    ```javascript
+    findResult().then(function(result){
+      // success
+    }, function(reason){
+      // failure
+    });
+    ```
+  
+    Advanced Example
+    --------------
+  
+    Synchronous Example
+  
+    ```javascript
+    let author, books;
+  
+    try {
+      author = findAuthor();
+      books  = findBooksByAuthor(author);
+      // success
+    } catch(reason) {
+      // failure
+    }
+    ```
+  
+    Errback Example
+  
+    ```js
+  
+    function foundBooks(books) {
+  
+    }
+  
+    function failure(reason) {
+  
+    }
+  
+    findAuthor(function(author, err){
+      if (err) {
+        failure(err);
+        // failure
+      } else {
+        try {
+          findBoooksByAuthor(author, function(books, err) {
+            if (err) {
+              failure(err);
+            } else {
+              try {
+                foundBooks(books);
+              } catch(reason) {
+                failure(reason);
+              }
+            }
+          });
+        } catch(error) {
+          failure(err);
+        }
+        // success
+      }
+    });
+    ```
+  
+    Promise Example;
+  
+    ```javascript
+    findAuthor().
+      then(findBooksByAuthor).
+      then(function(books){
+        // found books
+    }).catch(function(reason){
+      // something went wrong
+    });
+    ```
+  
+    @method then
+    @param {Function} onFulfilled
+    @param {Function} onRejected
+    Useful for tooling.
+    @return {Promise}
+  */
+  then: then,
+
+  /**
+    `catch` is simply sugar for `then(undefined, onRejection)` which makes it the same
+    as the catch block of a try/catch statement.
+  
+    ```js
+    function findAuthor(){
+      throw new Error('couldn't find that author');
+    }
+  
+    // synchronous
+    try {
+      findAuthor();
+    } catch(reason) {
+      // something went wrong
+    }
+  
+    // async with promises
+    findAuthor().catch(function(reason){
+      // something went wrong
+    });
+    ```
+  
+    @method catch
+    @param {Function} onRejection
+    Useful for tooling.
+    @return {Promise}
+  */
+  'catch': function _catch(onRejection) {
+    return this.then(null, onRejection);
+  }
+};
+
+function polyfill() {
+    var local = undefined;
+
+    if (typeof global !== 'undefined') {
+        local = global;
+    } else if (typeof self !== 'undefined') {
+        local = self;
+    } else {
+        try {
+            local = Function('return this')();
+        } catch (e) {
+            throw new Error('polyfill failed because global object is unavailable in this environment');
+        }
+    }
+
+    var P = local.Promise;
+
+    if (P) {
+        var promiseToString = null;
+        try {
+            promiseToString = Object.prototype.toString.call(P.resolve());
+        } catch (e) {
+            // silently ignored
+        }
+
+        if (promiseToString === '[object Promise]' && !P.cast) {
+            return;
+        }
+    }
+
+    local.Promise = Promise;
+}
+
+// Strange compat..
+Promise.polyfill = polyfill;
+Promise.Promise = Promise;
+
+return Promise;
+
+})));
+//# sourceMappingURL=es6-promise.map
+
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(7), __webpack_require__(8)))
+
+/***/ }),
+/* 5 */
+/***/ (function(module, exports) {
+
+// removed by extract-text-webpack-plugin
+
+/***/ }),
+/* 6 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }(); /* global VERSION */
+
+__webpack_require__(5);
+
+var _es6Promise = __webpack_require__(4);
+
+var _es6Promise2 = _interopRequireDefault(_es6Promise);
+
+var _utils = __webpack_require__(0);
+
+var Utils = _interopRequireWildcard(_utils);
+
+var _api = __webpack_require__(1);
+
+var API = _interopRequireWildcard(_api);
+
+var _button = __webpack_require__(2);
+
+var _push = __webpack_require__(3);
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var Noty = function () {
+  /**
+   * @param {object} options
+   * @return {Noty}
+   */
+  function Noty() {
+    var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+
+    _classCallCheck(this, Noty);
+
+    this.options = Utils.deepExtend({}, API.Defaults, options);
+    this.id = this.options.id || Utils.generateID('bar');
+    this.closeTimer = -1;
+    this.barDom = null;
+    this.layoutDom = null;
+    this.progressDom = null;
+    this.showing = false;
+    this.shown = false;
+    this.closed = false;
+    this.closing = false;
+    this.killable = this.options.timeout || this.options.closeWith.length > 0;
+    this.hasSound = this.options.sounds.sources.length > 0;
+    this.soundPlayed = false;
+    this.listeners = {
+      beforeShow: [],
+      onShow: [],
+      afterShow: [],
+      onClose: [],
+      afterClose: [],
+      onClick: [],
+      onHover: [],
+      onTemplate: []
+    };
+    this.promises = {
+      show: null,
+      close: null
+    };
+    this.on('beforeShow', this.options.callbacks.beforeShow);
+    this.on('onShow', this.options.callbacks.onShow);
+    this.on('afterShow', this.options.callbacks.afterShow);
+    this.on('onClose', this.options.callbacks.onClose);
+    this.on('afterClose', this.options.callbacks.afterClose);
+    this.on('onClick', this.options.callbacks.onClick);
+    this.on('onHover', this.options.callbacks.onHover);
+    this.on('onTemplate', this.options.callbacks.onTemplate);
+
+    return this;
+  }
+
+  /**
+   * @param {string} eventName
+   * @param {function} cb
+   * @return {Noty}
+   */
+
+
+  _createClass(Noty, [{
+    key: 'on',
+    value: function on(eventName) {
+      var cb = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : function () {};
+
+      if (typeof cb === 'function' && this.listeners.hasOwnProperty(eventName)) {
+        this.listeners[eventName].push(cb);
+      }
+
+      return this;
+    }
+
+    /**
+     * @return {Noty}
+     */
+
+  }, {
+    key: 'show',
+    value: function show() {
+      var _this = this;
+
+      if (this.options.killer === true) {
+        Noty.closeAll();
+      } else if (typeof this.options.killer === 'string') {
+        Noty.closeAll(this.options.killer);
+      }
+
+      var queueCounts = API.getQueueCounts(this.options.queue);
+
+      if (queueCounts.current >= queueCounts.maxVisible || API.PageHidden && this.options.visibilityControl) {
+        API.addToQueue(this);
+
+        if (API.PageHidden && this.hasSound && Utils.inArray('docHidden', this.options.sounds.conditions)) {
+          Utils.createAudioElements(this);
+        }
+
+        if (API.PageHidden && Utils.inArray('docHidden', this.options.titleCount.conditions)) {
+          API.docTitle.increment();
+        }
+
+        return this;
+      }
+
+      API.Store[this.id] = this;
+
+      API.fire(this, 'beforeShow');
+
+      this.showing = true;
+
+      if (this.closing) {
+        this.showing = false;
+        return this;
+      }
+
+      API.build(this);
+      API.handleModal(this);
+
+      if (this.options.force) {
+        this.layoutDom.insertBefore(this.barDom, this.layoutDom.firstChild);
+      } else {
+        this.layoutDom.appendChild(this.barDom);
+      }
+
+      if (this.hasSound && !this.soundPlayed && Utils.inArray('docVisible', this.options.sounds.conditions)) {
+        Utils.createAudioElements(this);
+      }
+
+      if (Utils.inArray('docVisible', this.options.titleCount.conditions)) {
+        API.docTitle.increment();
+      }
+
+      this.shown = true;
+      this.closed = false;
+
+      // bind button events if any
+      if (API.hasButtons(this)) {
+        Object.keys(this.options.buttons).forEach(function (key) {
+          var btn = _this.barDom.querySelector('#' + _this.options.buttons[key].id);
+          Utils.addListener(btn, 'click', function (e) {
+            Utils.stopPropagation(e);
+            _this.options.buttons[key].cb();
+          });
+        });
+      }
+
+      this.progressDom = this.barDom.querySelector('.noty_progressbar');
+
+      if (Utils.inArray('click', this.options.closeWith)) {
+        Utils.addClass(this.barDom, 'noty_close_with_click');
+        Utils.addListener(this.barDom, 'click', function (e) {
+          Utils.stopPropagation(e);
+          API.fire(_this, 'onClick');
+          _this.close();
+        }, false);
+      }
+
+      Utils.addListener(this.barDom, 'mouseenter', function () {
+        API.fire(_this, 'onHover');
+      }, false);
+
+      if (this.options.timeout) Utils.addClass(this.barDom, 'noty_has_timeout');
+      if (this.options.progressBar) {
+        Utils.addClass(this.barDom, 'noty_has_progressbar');
+      }
+
+      if (Utils.inArray('button', this.options.closeWith)) {
+        Utils.addClass(this.barDom, 'noty_close_with_button');
+
+        var closeButton = document.createElement('div');
+        Utils.addClass(closeButton, 'noty_close_button');
+        closeButton.innerHTML = '×';
+        this.barDom.appendChild(closeButton);
+
+        Utils.addListener(closeButton, 'click', function (e) {
+          Utils.stopPropagation(e);
+          _this.close();
+        }, false);
+      }
+
+      API.fire(this, 'onShow');
+
+      if (this.options.animation.open === null) {
+        this.promises.show = new _es6Promise2.default(function (resolve) {
+          resolve();
+        });
+      } else if (typeof this.options.animation.open === 'function') {
+        this.promises.show = new _es6Promise2.default(this.options.animation.open.bind(this));
+      } else {
+        Utils.addClass(this.barDom, this.options.animation.open);
+        this.promises.show = new _es6Promise2.default(function (resolve) {
+          Utils.addListener(_this.barDom, Utils.animationEndEvents, function () {
+            Utils.removeClass(_this.barDom, _this.options.animation.open);
+            resolve();
+          });
+        });
+      }
+
+      this.promises.show.then(function () {
+        var _t = _this;
+        setTimeout(function () {
+          API.openFlow(_t);
+        }, 100);
+      });
+
+      return this;
+    }
+
+    /**
+     * @return {Noty}
+     */
+
+  }, {
+    key: 'stop',
+    value: function stop() {
+      API.dequeueClose(this);
+      return this;
+    }
+
+    /**
+     * @return {Noty}
+     */
+
+  }, {
+    key: 'resume',
+    value: function resume() {
+      API.queueClose(this);
+      return this;
+    }
+
+    /**
+     * @param {int|boolean} ms
+     * @return {Noty}
+     */
+
+  }, {
+    key: 'setTimeout',
+    value: function (_setTimeout) {
+      function setTimeout(_x) {
+        return _setTimeout.apply(this, arguments);
+      }
+
+      setTimeout.toString = function () {
+        return _setTimeout.toString();
+      };
+
+      return setTimeout;
+    }(function (ms) {
+      this.stop();
+      this.options.timeout = ms;
+
+      if (this.barDom) {
+        if (this.options.timeout) {
+          Utils.addClass(this.barDom, 'noty_has_timeout');
+        } else {
+          Utils.removeClass(this.barDom, 'noty_has_timeout');
+        }
+
+        var _t = this;
+        setTimeout(function () {
+          // ugly fix for progressbar display bug
+          _t.resume();
+        }, 100);
+      }
+
+      return this;
+    })
+
+    /**
+     * @param {string} html
+     * @param {boolean} optionsOverride
+     * @return {Noty}
+     */
+
+  }, {
+    key: 'setText',
+    value: function setText(html) {
+      var optionsOverride = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
+
+      if (this.barDom) {
+        this.barDom.querySelector('.noty_body').innerHTML = html;
+      }
+
+      if (optionsOverride) this.options.text = html;
+
+      return this;
+    }
+
+    /**
+     * @param {string} type
+     * @param {boolean} optionsOverride
+     * @return {Noty}
+     */
+
+  }, {
+    key: 'setType',
+    value: function setType(type) {
+      var _this2 = this;
+
+      var optionsOverride = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
+
+      if (this.barDom) {
+        var classList = Utils.classList(this.barDom).split(' ');
+
+        classList.forEach(function (c) {
+          if (c.substring(0, 11) === 'noty_type__') {
+            Utils.removeClass(_this2.barDom, c);
+          }
+        });
+
+        Utils.addClass(this.barDom, 'noty_type__' + type);
+      }
+
+      if (optionsOverride) this.options.type = type;
+
+      return this;
+    }
+
+    /**
+     * @param {string} theme
+     * @param {boolean} optionsOverride
+     * @return {Noty}
+     */
+
+  }, {
+    key: 'setTheme',
+    value: function setTheme(theme) {
+      var _this3 = this;
+
+      var optionsOverride = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
+
+      if (this.barDom) {
+        var classList = Utils.classList(this.barDom).split(' ');
+
+        classList.forEach(function (c) {
+          if (c.substring(0, 12) === 'noty_theme__') {
+            Utils.removeClass(_this3.barDom, c);
+          }
+        });
+
+        Utils.addClass(this.barDom, 'noty_theme__' + theme);
+      }
+
+      if (optionsOverride) this.options.theme = theme;
+
+      return this;
+    }
+
+    /**
+     * @return {Noty}
+     */
+
+  }, {
+    key: 'close',
+    value: function close() {
+      var _this4 = this;
+
+      if (this.closed) return this;
+
+      if (!this.shown) {
+        // it's in the queue
+        API.removeFromQueue(this);
+        return this;
+      }
+
+      API.fire(this, 'onClose');
+
+      this.closing = true;
+
+      if (this.options.animation.close === null) {
+        this.promises.close = new _es6Promise2.default(function (resolve) {
+          resolve();
+        });
+      } else if (typeof this.options.animation.close === 'function') {
+        this.promises.close = new _es6Promise2.default(this.options.animation.close.bind(this));
+      } else {
+        Utils.addClass(this.barDom, this.options.animation.close);
+        this.promises.close = new _es6Promise2.default(function (resolve) {
+          Utils.addListener(_this4.barDom, Utils.animationEndEvents, function () {
+            if (_this4.options.force) {
+              Utils.remove(_this4.barDom);
+            } else {
+              API.ghostFix(_this4);
+            }
+            resolve();
+          });
+        });
+      }
+
+      this.promises.close.then(function () {
+        API.closeFlow(_this4);
+        API.handleModalClose(_this4);
+      });
+
+      this.closed = true;
+
+      return this;
+    }
+
+    // API functions
+
+    /**
+     * @param {boolean|string} queueName
+     * @return {Noty}
+     */
+
+  }], [{
+    key: 'closeAll',
+    value: function closeAll() {
+      var queueName = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : false;
+
+      Object.keys(API.Store).forEach(function (id) {
+        if (queueName) {
+          if (API.Store[id].options.queue === queueName && API.Store[id].killable) {
+            API.Store[id].close();
+          }
+        } else if (API.Store[id].killable) {
+          API.Store[id].close();
+        }
+      });
+      return this;
+    }
+
+    /**
+     * @param {Object} obj
+     * @return {Noty}
+     */
+
+  }, {
+    key: 'overrideDefaults',
+    value: function overrideDefaults(obj) {
+      API.Defaults = Utils.deepExtend({}, API.Defaults, obj);
+      return this;
+    }
+
+    /**
+     * @param {int} amount
+     * @param {string} queueName
+     * @return {Noty}
+     */
+
+  }, {
+    key: 'setMaxVisible',
+    value: function setMaxVisible() {
+      var amount = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : API.DefaultMaxVisible;
+      var queueName = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 'global';
+
+      if (!API.Queues.hasOwnProperty(queueName)) {
+        API.Queues[queueName] = { maxVisible: amount, queue: [] };
+      }
+
+      API.Queues[queueName].maxVisible = amount;
+      return this;
+    }
+
+    /**
+     * @param {string} innerHtml
+     * @param {String} classes
+     * @param {Function} cb
+     * @param {Object} attributes
+     * @return {NotyButton}
+     */
+
+  }, {
+    key: 'button',
+    value: function button(innerHtml) {
+      var classes = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : null;
+      var cb = arguments[2];
+      var attributes = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : {};
+
+      return new _button.NotyButton(innerHtml, classes, cb, attributes);
+    }
+
+    /**
+     * @return {string}
+     */
+
+  }, {
+    key: 'version',
+    value: function version() {
+      return "3.1.3";
+    }
+
+    /**
+     * @param {String} workerPath
+     * @return {Push}
+     */
+
+  }, {
+    key: 'Push',
+    value: function Push(workerPath) {
+      return new _push.Push(workerPath);
+    }
+  }]);
+
+  return Noty;
+}();
+
+// Document visibility change controller
+
+
+exports.default = Noty;
+Utils.visibilityChangeFlow();
+module.exports = exports['default'];
+
+/***/ }),
+/* 7 */
+/***/ (function(module, exports) {
+
+// shim for using process in browser
+var process = module.exports = {};
+
+// cached from whatever global is present so that test runners that stub it
+// don't break things.  But we need to wrap it in a try catch in case it is
+// wrapped in strict mode code which doesn't define any globals.  It's inside a
+// function because try/catches deoptimize in certain engines.
+
+var cachedSetTimeout;
+var cachedClearTimeout;
+
+function defaultSetTimout() {
+    throw new Error('setTimeout has not been defined');
+}
+function defaultClearTimeout () {
+    throw new Error('clearTimeout has not been defined');
+}
+(function () {
+    try {
+        if (typeof setTimeout === 'function') {
+            cachedSetTimeout = setTimeout;
+        } else {
+            cachedSetTimeout = defaultSetTimout;
+        }
+    } catch (e) {
+        cachedSetTimeout = defaultSetTimout;
+    }
+    try {
+        if (typeof clearTimeout === 'function') {
+            cachedClearTimeout = clearTimeout;
+        } else {
+            cachedClearTimeout = defaultClearTimeout;
+        }
+    } catch (e) {
+        cachedClearTimeout = defaultClearTimeout;
+    }
+} ())
+function runTimeout(fun) {
+    if (cachedSetTimeout === setTimeout) {
+        //normal enviroments in sane situations
+        return setTimeout(fun, 0);
+    }
+    // if setTimeout wasn't available but was latter defined
+    if ((cachedSetTimeout === defaultSetTimout || !cachedSetTimeout) && setTimeout) {
+        cachedSetTimeout = setTimeout;
+        return setTimeout(fun, 0);
+    }
+    try {
+        // when when somebody has screwed with setTimeout but no I.E. maddness
+        return cachedSetTimeout(fun, 0);
+    } catch(e){
+        try {
+            // When we are in I.E. but the script has been evaled so I.E. doesn't trust the global object when called normally
+            return cachedSetTimeout.call(null, fun, 0);
+        } catch(e){
+            // same as above but when it's a version of I.E. that must have the global object for 'this', hopfully our context correct otherwise it will throw a global error
+            return cachedSetTimeout.call(this, fun, 0);
+        }
+    }
+
+
+}
+function runClearTimeout(marker) {
+    if (cachedClearTimeout === clearTimeout) {
+        //normal enviroments in sane situations
+        return clearTimeout(marker);
+    }
+    // if clearTimeout wasn't available but was latter defined
+    if ((cachedClearTimeout === defaultClearTimeout || !cachedClearTimeout) && clearTimeout) {
+        cachedClearTimeout = clearTimeout;
+        return clearTimeout(marker);
+    }
+    try {
+        // when when somebody has screwed with setTimeout but no I.E. maddness
+        return cachedClearTimeout(marker);
+    } catch (e){
+        try {
+            // When we are in I.E. but the script has been evaled so I.E. doesn't  trust the global object when called normally
+            return cachedClearTimeout.call(null, marker);
+        } catch (e){
+            // same as above but when it's a version of I.E. that must have the global object for 'this', hopfully our context correct otherwise it will throw a global error.
+            // Some versions of I.E. have different rules for clearTimeout vs setTimeout
+            return cachedClearTimeout.call(this, marker);
+        }
+    }
+
+
+
+}
+var queue = [];
+var draining = false;
+var currentQueue;
+var queueIndex = -1;
+
+function cleanUpNextTick() {
+    if (!draining || !currentQueue) {
+        return;
+    }
+    draining = false;
+    if (currentQueue.length) {
+        queue = currentQueue.concat(queue);
+    } else {
+        queueIndex = -1;
+    }
+    if (queue.length) {
+        drainQueue();
+    }
+}
+
+function drainQueue() {
+    if (draining) {
+        return;
+    }
+    var timeout = runTimeout(cleanUpNextTick);
+    draining = true;
+
+    var len = queue.length;
+    while(len) {
+        currentQueue = queue;
+        queue = [];
+        while (++queueIndex < len) {
+            if (currentQueue) {
+                currentQueue[queueIndex].run();
+            }
+        }
+        queueIndex = -1;
+        len = queue.length;
+    }
+    currentQueue = null;
+    draining = false;
+    runClearTimeout(timeout);
+}
+
+process.nextTick = function (fun) {
+    var args = new Array(arguments.length - 1);
+    if (arguments.length > 1) {
+        for (var i = 1; i < arguments.length; i++) {
+            args[i - 1] = arguments[i];
+        }
+    }
+    queue.push(new Item(fun, args));
+    if (queue.length === 1 && !draining) {
+        runTimeout(drainQueue);
+    }
+};
+
+// v8 likes predictible objects
+function Item(fun, array) {
+    this.fun = fun;
+    this.array = array;
+}
+Item.prototype.run = function () {
+    this.fun.apply(null, this.array);
+};
+process.title = 'browser';
+process.browser = true;
+process.env = {};
+process.argv = [];
+process.version = ''; // empty string to avoid regexp issues
+process.versions = {};
+
+function noop() {}
+
+process.on = noop;
+process.addListener = noop;
+process.once = noop;
+process.off = noop;
+process.removeListener = noop;
+process.removeAllListeners = noop;
+process.emit = noop;
+process.prependListener = noop;
+process.prependOnceListener = noop;
+
+process.listeners = function (name) { return [] }
+
+process.binding = function (name) {
+    throw new Error('process.binding is not supported');
+};
+
+process.cwd = function () { return '/' };
+process.chdir = function (dir) {
+    throw new Error('process.chdir is not supported');
+};
+process.umask = function() { return 0; };
+
+
+/***/ }),
+/* 8 */
+/***/ (function(module, exports) {
+
+var g;
+
+// This works in non-strict mode
+g = (function() {
+	return this;
+})();
+
+try {
+	// This works if eval is allowed (see CSP)
+	g = g || Function("return this")() || (1,eval)("this");
+} catch(e) {
+	// This works if the window reference is available
+	if(typeof window === "object")
+		g = window;
+}
+
+// g can still be undefined, but nothing to do about it...
+// We return undefined, instead of nothing here, so it's
+// easier to handle this case. if(!global) { ...}
+
+module.exports = g;
+
+
+/***/ }),
+/* 9 */
+/***/ (function(module, exports) {
+
+/* (ignored) */
+
+/***/ })
+/******/ ]);
+});
+//# sourceMappingURL=noty.js.map
+
+/***/ }),
+/* 12 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*! tether-drop 1.4.1 */
+
+(function(root, factory) {
+  if (true) {
+    !(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(13)], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory),
+				__WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ?
+				(__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__),
+				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+  } else if (typeof exports === 'object') {
+    module.exports = factory(require('tether'));
+  } else {
+    root.Drop = factory(root.Tether);
+  }
+}(this, function(Tether) {
+
+/* global Tether */
+'use strict';
+
+var _bind = Function.prototype.bind;
+
+var _slicedToArray = (function () { function sliceIterator(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i['return']) _i['return'](); } finally { if (_d) throw _e; } } return _arr; } return function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { return sliceIterator(arr, i); } else { throw new TypeError('Invalid attempt to destructure non-iterable instance'); } }; })();
+
+var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+
+var _get = function get(_x2, _x3, _x4) { var _again = true; _function: while (_again) { var object = _x2, property = _x3, receiver = _x4; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x2 = parent; _x3 = property; _x4 = receiver; _again = true; desc = parent = undefined; continue _function; } } else if ('value' in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== 'function' && superClass !== null) { throw new TypeError('Super expression must either be null or a function, not ' + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var _Tether$Utils = Tether.Utils;
+var extend = _Tether$Utils.extend;
+var addClass = _Tether$Utils.addClass;
+var removeClass = _Tether$Utils.removeClass;
+var hasClass = _Tether$Utils.hasClass;
+var Evented = _Tether$Utils.Evented;
+
+function sortAttach(str) {
+  var _str$split = str.split(' ');
+
+  var _str$split2 = _slicedToArray(_str$split, 2);
+
+  var first = _str$split2[0];
+  var second = _str$split2[1];
+
+  if (['left', 'right'].indexOf(first) >= 0) {
+    var _ref = [second, first];
+    first = _ref[0];
+    second = _ref[1];
+  }
+  return [first, second].join(' ');
+}
+
+function removeFromArray(arr, item) {
+  var index = undefined;
+  var results = [];
+  while ((index = arr.indexOf(item)) !== -1) {
+    results.push(arr.splice(index, 1));
+  }
+  return results;
+}
+
+var clickEvents = ['click'];
+if ('ontouchstart' in document.documentElement) {
+  clickEvents.push('touchstart');
+}
+
+var transitionEndEvents = {
+  'WebkitTransition': 'webkitTransitionEnd',
+  'MozTransition': 'transitionend',
+  'OTransition': 'otransitionend',
+  'transition': 'transitionend'
+};
+
+var transitionEndEvent = '';
+for (var _name in transitionEndEvents) {
+  if (({}).hasOwnProperty.call(transitionEndEvents, _name)) {
+    var tempEl = document.createElement('p');
+    if (typeof tempEl.style[_name] !== 'undefined') {
+      transitionEndEvent = transitionEndEvents[_name];
+    }
+  }
+}
+
+var MIRROR_ATTACH = {
+  left: 'right',
+  right: 'left',
+  top: 'bottom',
+  bottom: 'top',
+  middle: 'middle',
+  center: 'center'
+};
+
+var allDrops = {};
+
+// Drop can be included in external libraries.  Calling createContext gives you a fresh
+// copy of drop which won't interact with other copies on the page (beyond calling the document events).
+
+function createContext() {
+  var options = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
+
+  var drop = function drop() {
+    for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
+      args[_key] = arguments[_key];
+    }
+
+    return new (_bind.apply(DropInstance, [null].concat(args)))();
+  };
+
+  extend(drop, {
+    createContext: createContext,
+    drops: [],
+    defaults: {}
+  });
+
+  var defaultOptions = {
+    classPrefix: 'drop',
+    defaults: {
+      position: 'bottom left',
+      openOn: 'click',
+      beforeClose: null,
+      constrainToScrollParent: true,
+      constrainToWindow: true,
+      classes: '',
+      remove: false,
+      openDelay: 0,
+      closeDelay: 50,
+      // inherited from openDelay and closeDelay if not explicitly defined
+      focusDelay: null,
+      blurDelay: null,
+      hoverOpenDelay: null,
+      hoverCloseDelay: null,
+      tetherOptions: {}
+    }
+  };
+
+  extend(drop, defaultOptions, options);
+  extend(drop.defaults, defaultOptions.defaults, options.defaults);
+
+  if (typeof allDrops[drop.classPrefix] === 'undefined') {
+    allDrops[drop.classPrefix] = [];
+  }
+
+  drop.updateBodyClasses = function () {
+    // There is only one body, so despite the context concept, we still iterate through all
+    // drops which share our classPrefix.
+
+    var anyOpen = false;
+    var drops = allDrops[drop.classPrefix];
+    var len = drops.length;
+    for (var i = 0; i < len; ++i) {
+      if (drops[i].isOpened()) {
+        anyOpen = true;
+        break;
+      }
+    }
+
+    if (anyOpen) {
+      addClass(document.body, drop.classPrefix + '-open');
+    } else {
+      removeClass(document.body, drop.classPrefix + '-open');
+    }
+  };
+
+  var DropInstance = (function (_Evented) {
+    _inherits(DropInstance, _Evented);
+
+    function DropInstance(opts) {
+      _classCallCheck(this, DropInstance);
+
+      _get(Object.getPrototypeOf(DropInstance.prototype), 'constructor', this).call(this);
+      this.options = extend({}, drop.defaults, opts);
+      this.target = this.options.target;
+
+      if (typeof this.target === 'undefined') {
+        throw new Error('Drop Error: You must provide a target.');
+      }
+
+      var dataPrefix = 'data-' + drop.classPrefix;
+
+      var contentAttr = this.target.getAttribute(dataPrefix);
+      if (contentAttr && this.options.content == null) {
+        this.options.content = contentAttr;
+      }
+
+      var attrsOverride = ['position', 'openOn'];
+      for (var i = 0; i < attrsOverride.length; ++i) {
+
+        var override = this.target.getAttribute(dataPrefix + '-' + attrsOverride[i]);
+        if (override && this.options[attrsOverride[i]] == null) {
+          this.options[attrsOverride[i]] = override;
+        }
+      }
+
+      if (this.options.classes && this.options.addTargetClasses !== false) {
+        addClass(this.target, this.options.classes);
+      }
+
+      drop.drops.push(this);
+      allDrops[drop.classPrefix].push(this);
+
+      this._boundEvents = [];
+      this.bindMethods();
+      this.setupElements();
+      this.setupEvents();
+      this.setupTether();
+    }
+
+    _createClass(DropInstance, [{
+      key: '_on',
+      value: function _on(element, event, handler) {
+        this._boundEvents.push({ element: element, event: event, handler: handler });
+        element.addEventListener(event, handler);
+      }
+    }, {
+      key: 'bindMethods',
+      value: function bindMethods() {
+        this.transitionEndHandler = this._transitionEndHandler.bind(this);
+      }
+    }, {
+      key: 'setupElements',
+      value: function setupElements() {
+        var _this = this;
+
+        this.drop = document.createElement('div');
+        addClass(this.drop, drop.classPrefix);
+
+        if (this.options.classes) {
+          addClass(this.drop, this.options.classes);
+        }
+
+        this.content = document.createElement('div');
+        addClass(this.content, drop.classPrefix + '-content');
+
+        if (typeof this.options.content === 'function') {
+          var generateAndSetContent = function generateAndSetContent() {
+            // content function might return a string or an element
+            var contentElementOrHTML = _this.options.content.call(_this, _this);
+
+            if (typeof contentElementOrHTML === 'string') {
+              _this.content.innerHTML = contentElementOrHTML;
+            } else if (typeof contentElementOrHTML === 'object') {
+              _this.content.innerHTML = '';
+              _this.content.appendChild(contentElementOrHTML);
+            } else {
+              throw new Error('Drop Error: Content function should return a string or HTMLElement.');
+            }
+          };
+
+          generateAndSetContent();
+          this.on('open', generateAndSetContent.bind(this));
+        } else if (typeof this.options.content === 'object') {
+          this.content.appendChild(this.options.content);
+        } else {
+          this.content.innerHTML = this.options.content;
+        }
+
+        this.drop.appendChild(this.content);
+      }
+    }, {
+      key: 'setupTether',
+      value: function setupTether() {
+        // Tether expects two attachment points, one in the target element, one in the
+        // drop.  We use a single one, and use the order as well, to allow us to put
+        // the drop on either side of any of the four corners.  This magic converts between
+        // the two:
+        var dropAttach = this.options.position.split(' ');
+        dropAttach[0] = MIRROR_ATTACH[dropAttach[0]];
+        dropAttach = dropAttach.join(' ');
+
+        var constraints = [];
+        if (this.options.constrainToScrollParent) {
+          constraints.push({
+            to: 'scrollParent',
+            pin: 'top, bottom',
+            attachment: 'together none'
+          });
+        } else {
+          // To get 'out of bounds' classes
+          constraints.push({
+            to: 'scrollParent'
+          });
+        }
+
+        if (this.options.constrainToWindow !== false) {
+          constraints.push({
+            to: 'window',
+            attachment: 'together'
+          });
+        } else {
+          // To get 'out of bounds' classes
+          constraints.push({
+            to: 'window'
+          });
+        }
+
+        var opts = {
+          element: this.drop,
+          target: this.target,
+          attachment: sortAttach(dropAttach),
+          targetAttachment: sortAttach(this.options.position),
+          classPrefix: drop.classPrefix,
+          offset: '0 0',
+          targetOffset: '0 0',
+          enabled: false,
+          constraints: constraints,
+          addTargetClasses: this.options.addTargetClasses
+        };
+
+        if (this.options.tetherOptions !== false) {
+          this.tether = new Tether(extend({}, opts, this.options.tetherOptions));
+        }
+      }
+    }, {
+      key: 'setupEvents',
+      value: function setupEvents() {
+        var _this2 = this;
+
+        if (!this.options.openOn) {
+          return;
+        }
+
+        if (this.options.openOn === 'always') {
+          setTimeout(this.open.bind(this));
+          return;
+        }
+
+        var events = this.options.openOn.split(' ');
+
+        if (events.indexOf('click') >= 0) {
+          var openHandler = function openHandler(event) {
+            _this2.toggle(event);
+            event.preventDefault();
+          };
+
+          var closeHandler = function closeHandler(event) {
+            if (!_this2.isOpened()) {
+              return;
+            }
+
+            // Clicking inside dropdown
+            if (event.target === _this2.drop || _this2.drop.contains(event.target)) {
+              return;
+            }
+
+            // Clicking target
+            if (event.target === _this2.target || _this2.target.contains(event.target)) {
+              return;
+            }
+
+            _this2.close(event);
+          };
+
+          for (var i = 0; i < clickEvents.length; ++i) {
+            var clickEvent = clickEvents[i];
+            this._on(this.target, clickEvent, openHandler);
+            this._on(document, clickEvent, closeHandler);
+          }
+        }
+
+        var inTimeout = null;
+        var outTimeout = null;
+
+        var inHandler = function inHandler(event) {
+          if (outTimeout !== null) {
+            clearTimeout(outTimeout);
+          } else {
+            inTimeout = setTimeout(function () {
+              _this2.open(event);
+              inTimeout = null;
+            }, (event.type === 'focus' ? _this2.options.focusDelay : _this2.options.hoverOpenDelay) || _this2.options.openDelay);
+          }
+        };
+
+        var outHandler = function outHandler(event) {
+          if (inTimeout !== null) {
+            clearTimeout(inTimeout);
+          } else {
+            outTimeout = setTimeout(function () {
+              _this2.close(event);
+              outTimeout = null;
+            }, (event.type === 'blur' ? _this2.options.blurDelay : _this2.options.hoverCloseDelay) || _this2.options.closeDelay);
+          }
+        };
+
+        if (events.indexOf('hover') >= 0) {
+          this._on(this.target, 'mouseover', inHandler);
+          this._on(this.drop, 'mouseover', inHandler);
+          this._on(this.target, 'mouseout', outHandler);
+          this._on(this.drop, 'mouseout', outHandler);
+        }
+
+        if (events.indexOf('focus') >= 0) {
+          this._on(this.target, 'focus', inHandler);
+          this._on(this.drop, 'focus', inHandler);
+          this._on(this.target, 'blur', outHandler);
+          this._on(this.drop, 'blur', outHandler);
+        }
+      }
+    }, {
+      key: 'isOpened',
+      value: function isOpened() {
+        if (this.drop) {
+          return hasClass(this.drop, drop.classPrefix + '-open');
+        }
+      }
+    }, {
+      key: 'toggle',
+      value: function toggle(event) {
+        if (this.isOpened()) {
+          this.close(event);
+        } else {
+          this.open(event);
+        }
+      }
+    }, {
+      key: 'open',
+      value: function open(event) {
+        var _this3 = this;
+
+        /* eslint no-unused-vars: 0 */
+        if (this.isOpened()) {
+          return;
+        }
+
+        if (!this.drop.parentNode) {
+          document.body.appendChild(this.drop);
+        }
+
+        if (typeof this.tether !== 'undefined') {
+          this.tether.enable();
+        }
+
+        addClass(this.drop, drop.classPrefix + '-open');
+        addClass(this.drop, drop.classPrefix + '-open-transitionend');
+
+        setTimeout(function () {
+          if (_this3.drop) {
+            addClass(_this3.drop, drop.classPrefix + '-after-open');
+          }
+        });
+
+        if (typeof this.tether !== 'undefined') {
+          this.tether.position();
+        }
+
+        this.trigger('open');
+
+        drop.updateBodyClasses();
+      }
+    }, {
+      key: '_transitionEndHandler',
+      value: function _transitionEndHandler(e) {
+        if (e.target !== e.currentTarget) {
+          return;
+        }
+
+        if (!hasClass(this.drop, drop.classPrefix + '-open')) {
+          removeClass(this.drop, drop.classPrefix + '-open-transitionend');
+        }
+        this.drop.removeEventListener(transitionEndEvent, this.transitionEndHandler);
+      }
+    }, {
+      key: 'beforeCloseHandler',
+      value: function beforeCloseHandler(event) {
+        var shouldClose = true;
+
+        if (!this.isClosing && typeof this.options.beforeClose === 'function') {
+          this.isClosing = true;
+          shouldClose = this.options.beforeClose(event, this) !== false;
+        }
+
+        this.isClosing = false;
+
+        return shouldClose;
+      }
+    }, {
+      key: 'close',
+      value: function close(event) {
+        if (!this.isOpened()) {
+          return;
+        }
+
+        if (!this.beforeCloseHandler(event)) {
+          return;
+        }
+
+        removeClass(this.drop, drop.classPrefix + '-open');
+        removeClass(this.drop, drop.classPrefix + '-after-open');
+
+        this.drop.addEventListener(transitionEndEvent, this.transitionEndHandler);
+
+        this.trigger('close');
+
+        if (typeof this.tether !== 'undefined') {
+          this.tether.disable();
+        }
+
+        drop.updateBodyClasses();
+
+        if (this.options.remove) {
+          this.remove(event);
+        }
+      }
+    }, {
+      key: 'remove',
+      value: function remove(event) {
+        this.close(event);
+        if (this.drop.parentNode) {
+          this.drop.parentNode.removeChild(this.drop);
+        }
+      }
+    }, {
+      key: 'position',
+      value: function position() {
+        if (this.isOpened() && typeof this.tether !== 'undefined') {
+          this.tether.position();
+        }
+      }
+    }, {
+      key: 'destroy',
+      value: function destroy() {
+        this.remove();
+
+        if (typeof this.tether !== 'undefined') {
+          this.tether.destroy();
+        }
+
+        for (var i = 0; i < this._boundEvents.length; ++i) {
+          var _boundEvents$i = this._boundEvents[i];
+          var element = _boundEvents$i.element;
+          var _event = _boundEvents$i.event;
+          var handler = _boundEvents$i.handler;
+
+          element.removeEventListener(_event, handler);
+        }
+
+        this._boundEvents = [];
+
+        this.tether = null;
+        this.drop = null;
+        this.content = null;
+        this.target = null;
+
+        removeFromArray(allDrops[drop.classPrefix], this);
+        removeFromArray(drop.drops, this);
+      }
+    }]);
+
+    return DropInstance;
+  })(Evented);
+
+  return drop;
+}
+
+var Drop = createContext();
+
+document.addEventListener('DOMContentLoaded', function () {
+  Drop.updateBodyClasses();
+});
+return Drop;
+
+}));
+
+
+/***/ }),
+/* 13 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_RESULT__;/*! tether 1.4.0 */
+
+(function(root, factory) {
+  if (true) {
+    !(__WEBPACK_AMD_DEFINE_FACTORY__ = (factory),
+				__WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ?
+				(__WEBPACK_AMD_DEFINE_FACTORY__.call(exports, __webpack_require__, exports, module)) :
+				__WEBPACK_AMD_DEFINE_FACTORY__),
+				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+  } else if (typeof exports === 'object') {
+    module.exports = factory(require, exports, module);
+  } else {
+    root.Tether = factory();
+  }
+}(this, function(require, exports, module) {
+
+'use strict';
+
+var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
+
+var TetherBase = undefined;
+if (typeof TetherBase === 'undefined') {
+  TetherBase = { modules: [] };
+}
+
+var zeroElement = null;
+
+// Same as native getBoundingClientRect, except it takes into account parent <frame> offsets
+// if the element lies within a nested document (<frame> or <iframe>-like).
+function getActualBoundingClientRect(node) {
+  var boundingRect = node.getBoundingClientRect();
+
+  // The original object returned by getBoundingClientRect is immutable, so we clone it
+  // We can't use extend because the properties are not considered part of the object by hasOwnProperty in IE9
+  var rect = {};
+  for (var k in boundingRect) {
+    rect[k] = boundingRect[k];
+  }
+
+  if (node.ownerDocument !== document) {
+    var _frameElement = node.ownerDocument.defaultView.frameElement;
+    if (_frameElement) {
+      var frameRect = getActualBoundingClientRect(_frameElement);
+      rect.top += frameRect.top;
+      rect.bottom += frameRect.top;
+      rect.left += frameRect.left;
+      rect.right += frameRect.left;
+    }
+  }
+
+  return rect;
+}
+
+function getScrollParents(el) {
+  // In firefox if the el is inside an iframe with display: none; window.getComputedStyle() will return null;
+  // https://bugzilla.mozilla.org/show_bug.cgi?id=548397
+  var computedStyle = getComputedStyle(el) || {};
+  var position = computedStyle.position;
+  var parents = [];
+
+  if (position === 'fixed') {
+    return [el];
+  }
+
+  var parent = el;
+  while ((parent = parent.parentNode) && parent && parent.nodeType === 1) {
+    var style = undefined;
+    try {
+      style = getComputedStyle(parent);
+    } catch (err) {}
+
+    if (typeof style === 'undefined' || style === null) {
+      parents.push(parent);
+      return parents;
+    }
+
+    var _style = style;
+    var overflow = _style.overflow;
+    var overflowX = _style.overflowX;
+    var overflowY = _style.overflowY;
+
+    if (/(auto|scroll)/.test(overflow + overflowY + overflowX)) {
+      if (position !== 'absolute' || ['relative', 'absolute', 'fixed'].indexOf(style.position) >= 0) {
+        parents.push(parent);
+      }
+    }
+  }
+
+  parents.push(el.ownerDocument.body);
+
+  // If the node is within a frame, account for the parent window scroll
+  if (el.ownerDocument !== document) {
+    parents.push(el.ownerDocument.defaultView);
+  }
+
+  return parents;
+}
+
+var uniqueId = (function () {
+  var id = 0;
+  return function () {
+    return ++id;
+  };
+})();
+
+var zeroPosCache = {};
+var getOrigin = function getOrigin() {
+  // getBoundingClientRect is unfortunately too accurate.  It introduces a pixel or two of
+  // jitter as the user scrolls that messes with our ability to detect if two positions
+  // are equivilant or not.  We place an element at the top left of the page that will
+  // get the same jitter, so we can cancel the two out.
+  var node = zeroElement;
+  if (!node || !document.body.contains(node)) {
+    node = document.createElement('div');
+    node.setAttribute('data-tether-id', uniqueId());
+    extend(node.style, {
+      top: 0,
+      left: 0,
+      position: 'absolute'
+    });
+
+    document.body.appendChild(node);
+
+    zeroElement = node;
+  }
+
+  var id = node.getAttribute('data-tether-id');
+  if (typeof zeroPosCache[id] === 'undefined') {
+    zeroPosCache[id] = getActualBoundingClientRect(node);
+
+    // Clear the cache when this position call is done
+    defer(function () {
+      delete zeroPosCache[id];
+    });
+  }
+
+  return zeroPosCache[id];
+};
+
+function removeUtilElements() {
+  if (zeroElement) {
+    document.body.removeChild(zeroElement);
+  }
+  zeroElement = null;
+};
+
+function getBounds(el) {
+  var doc = undefined;
+  if (el === document) {
+    doc = document;
+    el = document.documentElement;
+  } else {
+    doc = el.ownerDocument;
+  }
+
+  var docEl = doc.documentElement;
+
+  var box = getActualBoundingClientRect(el);
+
+  var origin = getOrigin();
+
+  box.top -= origin.top;
+  box.left -= origin.left;
+
+  if (typeof box.width === 'undefined') {
+    box.width = document.body.scrollWidth - box.left - box.right;
+  }
+  if (typeof box.height === 'undefined') {
+    box.height = document.body.scrollHeight - box.top - box.bottom;
+  }
+
+  box.top = box.top - docEl.clientTop;
+  box.left = box.left - docEl.clientLeft;
+  box.right = doc.body.clientWidth - box.width - box.left;
+  box.bottom = doc.body.clientHeight - box.height - box.top;
+
+  return box;
+}
+
+function getOffsetParent(el) {
+  return el.offsetParent || document.documentElement;
+}
+
+var _scrollBarSize = null;
+function getScrollBarSize() {
+  if (_scrollBarSize) {
+    return _scrollBarSize;
+  }
+  var inner = document.createElement('div');
+  inner.style.width = '100%';
+  inner.style.height = '200px';
+
+  var outer = document.createElement('div');
+  extend(outer.style, {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    pointerEvents: 'none',
+    visibility: 'hidden',
+    width: '200px',
+    height: '150px',
+    overflow: 'hidden'
+  });
+
+  outer.appendChild(inner);
+
+  document.body.appendChild(outer);
+
+  var widthContained = inner.offsetWidth;
+  outer.style.overflow = 'scroll';
+  var widthScroll = inner.offsetWidth;
+
+  if (widthContained === widthScroll) {
+    widthScroll = outer.clientWidth;
+  }
+
+  document.body.removeChild(outer);
+
+  var width = widthContained - widthScroll;
+
+  _scrollBarSize = { width: width, height: width };
+  return _scrollBarSize;
+}
+
+function extend() {
+  var out = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
+
+  var args = [];
+
+  Array.prototype.push.apply(args, arguments);
+
+  args.slice(1).forEach(function (obj) {
+    if (obj) {
+      for (var key in obj) {
+        if (({}).hasOwnProperty.call(obj, key)) {
+          out[key] = obj[key];
+        }
+      }
+    }
+  });
+
+  return out;
+}
+
+function removeClass(el, name) {
+  if (typeof el.classList !== 'undefined') {
+    name.split(' ').forEach(function (cls) {
+      if (cls.trim()) {
+        el.classList.remove(cls);
+      }
+    });
+  } else {
+    var regex = new RegExp('(^| )' + name.split(' ').join('|') + '( |$)', 'gi');
+    var className = getClassName(el).replace(regex, ' ');
+    setClassName(el, className);
+  }
+}
+
+function addClass(el, name) {
+  if (typeof el.classList !== 'undefined') {
+    name.split(' ').forEach(function (cls) {
+      if (cls.trim()) {
+        el.classList.add(cls);
+      }
+    });
+  } else {
+    removeClass(el, name);
+    var cls = getClassName(el) + (' ' + name);
+    setClassName(el, cls);
+  }
+}
+
+function hasClass(el, name) {
+  if (typeof el.classList !== 'undefined') {
+    return el.classList.contains(name);
+  }
+  var className = getClassName(el);
+  return new RegExp('(^| )' + name + '( |$)', 'gi').test(className);
+}
+
+function getClassName(el) {
+  // Can't use just SVGAnimatedString here since nodes within a Frame in IE have
+  // completely separately SVGAnimatedString base classes
+  if (el.className instanceof el.ownerDocument.defaultView.SVGAnimatedString) {
+    return el.className.baseVal;
+  }
+  return el.className;
+}
+
+function setClassName(el, className) {
+  el.setAttribute('class', className);
+}
+
+function updateClasses(el, add, all) {
+  // Of the set of 'all' classes, we need the 'add' classes, and only the
+  // 'add' classes to be set.
+  all.forEach(function (cls) {
+    if (add.indexOf(cls) === -1 && hasClass(el, cls)) {
+      removeClass(el, cls);
+    }
+  });
+
+  add.forEach(function (cls) {
+    if (!hasClass(el, cls)) {
+      addClass(el, cls);
+    }
+  });
+}
+
+var deferred = [];
+
+var defer = function defer(fn) {
+  deferred.push(fn);
+};
+
+var flush = function flush() {
+  var fn = undefined;
+  while (fn = deferred.pop()) {
+    fn();
+  }
+};
+
+var Evented = (function () {
+  function Evented() {
+    _classCallCheck(this, Evented);
+  }
+
+  _createClass(Evented, [{
+    key: 'on',
+    value: function on(event, handler, ctx) {
+      var once = arguments.length <= 3 || arguments[3] === undefined ? false : arguments[3];
+
+      if (typeof this.bindings === 'undefined') {
+        this.bindings = {};
+      }
+      if (typeof this.bindings[event] === 'undefined') {
+        this.bindings[event] = [];
+      }
+      this.bindings[event].push({ handler: handler, ctx: ctx, once: once });
+    }
+  }, {
+    key: 'once',
+    value: function once(event, handler, ctx) {
+      this.on(event, handler, ctx, true);
+    }
+  }, {
+    key: 'off',
+    value: function off(event, handler) {
+      if (typeof this.bindings === 'undefined' || typeof this.bindings[event] === 'undefined') {
+        return;
+      }
+
+      if (typeof handler === 'undefined') {
+        delete this.bindings[event];
+      } else {
+        var i = 0;
+        while (i < this.bindings[event].length) {
+          if (this.bindings[event][i].handler === handler) {
+            this.bindings[event].splice(i, 1);
+          } else {
+            ++i;
+          }
+        }
+      }
+    }
+  }, {
+    key: 'trigger',
+    value: function trigger(event) {
+      if (typeof this.bindings !== 'undefined' && this.bindings[event]) {
+        var i = 0;
+
+        for (var _len = arguments.length, args = Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
+          args[_key - 1] = arguments[_key];
+        }
+
+        while (i < this.bindings[event].length) {
+          var _bindings$event$i = this.bindings[event][i];
+          var handler = _bindings$event$i.handler;
+          var ctx = _bindings$event$i.ctx;
+          var once = _bindings$event$i.once;
+
+          var context = ctx;
+          if (typeof context === 'undefined') {
+            context = this;
+          }
+
+          handler.apply(context, args);
+
+          if (once) {
+            this.bindings[event].splice(i, 1);
+          } else {
+            ++i;
+          }
+        }
+      }
+    }
+  }]);
+
+  return Evented;
+})();
+
+TetherBase.Utils = {
+  getActualBoundingClientRect: getActualBoundingClientRect,
+  getScrollParents: getScrollParents,
+  getBounds: getBounds,
+  getOffsetParent: getOffsetParent,
+  extend: extend,
+  addClass: addClass,
+  removeClass: removeClass,
+  hasClass: hasClass,
+  updateClasses: updateClasses,
+  defer: defer,
+  flush: flush,
+  uniqueId: uniqueId,
+  Evented: Evented,
+  getScrollBarSize: getScrollBarSize,
+  removeUtilElements: removeUtilElements
+};
+/* globals TetherBase, performance */
+
+'use strict';
+
+var _slicedToArray = (function () { function sliceIterator(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i['return']) _i['return'](); } finally { if (_d) throw _e; } } return _arr; } return function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { return sliceIterator(arr, i); } else { throw new TypeError('Invalid attempt to destructure non-iterable instance'); } }; })();
+
+var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+
+var _get = function get(_x6, _x7, _x8) { var _again = true; _function: while (_again) { var object = _x6, property = _x7, receiver = _x8; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x6 = parent; _x7 = property; _x8 = receiver; _again = true; desc = parent = undefined; continue _function; } } else if ('value' in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== 'function' && superClass !== null) { throw new TypeError('Super expression must either be null or a function, not ' + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+if (typeof TetherBase === 'undefined') {
+  throw new Error('You must include the utils.js file before tether.js');
+}
+
+var _TetherBase$Utils = TetherBase.Utils;
+var getScrollParents = _TetherBase$Utils.getScrollParents;
+var getBounds = _TetherBase$Utils.getBounds;
+var getOffsetParent = _TetherBase$Utils.getOffsetParent;
+var extend = _TetherBase$Utils.extend;
+var addClass = _TetherBase$Utils.addClass;
+var removeClass = _TetherBase$Utils.removeClass;
+var updateClasses = _TetherBase$Utils.updateClasses;
+var defer = _TetherBase$Utils.defer;
+var flush = _TetherBase$Utils.flush;
+var getScrollBarSize = _TetherBase$Utils.getScrollBarSize;
+var removeUtilElements = _TetherBase$Utils.removeUtilElements;
+
+function within(a, b) {
+  var diff = arguments.length <= 2 || arguments[2] === undefined ? 1 : arguments[2];
+
+  return a + diff >= b && b >= a - diff;
+}
+
+var transformKey = (function () {
+  if (typeof document === 'undefined') {
+    return '';
+  }
+  var el = document.createElement('div');
+
+  var transforms = ['transform', 'WebkitTransform', 'OTransform', 'MozTransform', 'msTransform'];
+  for (var i = 0; i < transforms.length; ++i) {
+    var key = transforms[i];
+    if (el.style[key] !== undefined) {
+      return key;
+    }
+  }
+})();
+
+var tethers = [];
+
+var position = function position() {
+  tethers.forEach(function (tether) {
+    tether.position(false);
+  });
+  flush();
+};
+
+function now() {
+  if (typeof performance !== 'undefined' && typeof performance.now !== 'undefined') {
+    return performance.now();
+  }
+  return +new Date();
+}
+
+(function () {
+  var lastCall = null;
+  var lastDuration = null;
+  var pendingTimeout = null;
+
+  var tick = function tick() {
+    if (typeof lastDuration !== 'undefined' && lastDuration > 16) {
+      // We voluntarily throttle ourselves if we can't manage 60fps
+      lastDuration = Math.min(lastDuration - 16, 250);
+
+      // Just in case this is the last event, remember to position just once more
+      pendingTimeout = setTimeout(tick, 250);
+      return;
+    }
+
+    if (typeof lastCall !== 'undefined' && now() - lastCall < 10) {
+      // Some browsers call events a little too frequently, refuse to run more than is reasonable
+      return;
+    }
+
+    if (pendingTimeout != null) {
+      clearTimeout(pendingTimeout);
+      pendingTimeout = null;
+    }
+
+    lastCall = now();
+    position();
+    lastDuration = now() - lastCall;
+  };
+
+  if (typeof window !== 'undefined' && typeof window.addEventListener !== 'undefined') {
+    ['resize', 'scroll', 'touchmove'].forEach(function (event) {
+      window.addEventListener(event, tick);
+    });
+  }
+})();
+
+var MIRROR_LR = {
+  center: 'center',
+  left: 'right',
+  right: 'left'
+};
+
+var MIRROR_TB = {
+  middle: 'middle',
+  top: 'bottom',
+  bottom: 'top'
+};
+
+var OFFSET_MAP = {
+  top: 0,
+  left: 0,
+  middle: '50%',
+  center: '50%',
+  bottom: '100%',
+  right: '100%'
+};
+
+var autoToFixedAttachment = function autoToFixedAttachment(attachment, relativeToAttachment) {
+  var left = attachment.left;
+  var top = attachment.top;
+
+  if (left === 'auto') {
+    left = MIRROR_LR[relativeToAttachment.left];
+  }
+
+  if (top === 'auto') {
+    top = MIRROR_TB[relativeToAttachment.top];
+  }
+
+  return { left: left, top: top };
+};
+
+var attachmentToOffset = function attachmentToOffset(attachment) {
+  var left = attachment.left;
+  var top = attachment.top;
+
+  if (typeof OFFSET_MAP[attachment.left] !== 'undefined') {
+    left = OFFSET_MAP[attachment.left];
+  }
+
+  if (typeof OFFSET_MAP[attachment.top] !== 'undefined') {
+    top = OFFSET_MAP[attachment.top];
+  }
+
+  return { left: left, top: top };
+};
+
+function addOffset() {
+  var out = { top: 0, left: 0 };
+
+  for (var _len = arguments.length, offsets = Array(_len), _key = 0; _key < _len; _key++) {
+    offsets[_key] = arguments[_key];
+  }
+
+  offsets.forEach(function (_ref) {
+    var top = _ref.top;
+    var left = _ref.left;
+
+    if (typeof top === 'string') {
+      top = parseFloat(top, 10);
+    }
+    if (typeof left === 'string') {
+      left = parseFloat(left, 10);
+    }
+
+    out.top += top;
+    out.left += left;
+  });
+
+  return out;
+}
+
+function offsetToPx(offset, size) {
+  if (typeof offset.left === 'string' && offset.left.indexOf('%') !== -1) {
+    offset.left = parseFloat(offset.left, 10) / 100 * size.width;
+  }
+  if (typeof offset.top === 'string' && offset.top.indexOf('%') !== -1) {
+    offset.top = parseFloat(offset.top, 10) / 100 * size.height;
+  }
+
+  return offset;
+}
+
+var parseOffset = function parseOffset(value) {
+  var _value$split = value.split(' ');
+
+  var _value$split2 = _slicedToArray(_value$split, 2);
+
+  var top = _value$split2[0];
+  var left = _value$split2[1];
+
+  return { top: top, left: left };
+};
+var parseAttachment = parseOffset;
+
+var TetherClass = (function (_Evented) {
+  _inherits(TetherClass, _Evented);
+
+  function TetherClass(options) {
+    var _this = this;
+
+    _classCallCheck(this, TetherClass);
+
+    _get(Object.getPrototypeOf(TetherClass.prototype), 'constructor', this).call(this);
+    this.position = this.position.bind(this);
+
+    tethers.push(this);
+
+    this.history = [];
+
+    this.setOptions(options, false);
+
+    TetherBase.modules.forEach(function (module) {
+      if (typeof module.initialize !== 'undefined') {
+        module.initialize.call(_this);
+      }
+    });
+
+    this.position();
+  }
+
+  _createClass(TetherClass, [{
+    key: 'getClass',
+    value: function getClass() {
+      var key = arguments.length <= 0 || arguments[0] === undefined ? '' : arguments[0];
+      var classes = this.options.classes;
+
+      if (typeof classes !== 'undefined' && classes[key]) {
+        return this.options.classes[key];
+      } else if (this.options.classPrefix) {
+        return this.options.classPrefix + '-' + key;
+      } else {
+        return key;
+      }
+    }
+  }, {
+    key: 'setOptions',
+    value: function setOptions(options) {
+      var _this2 = this;
+
+      var pos = arguments.length <= 1 || arguments[1] === undefined ? true : arguments[1];
+
+      var defaults = {
+        offset: '0 0',
+        targetOffset: '0 0',
+        targetAttachment: 'auto auto',
+        classPrefix: 'tether'
+      };
+
+      this.options = extend(defaults, options);
+
+      var _options = this.options;
+      var element = _options.element;
+      var target = _options.target;
+      var targetModifier = _options.targetModifier;
+
+      this.element = element;
+      this.target = target;
+      this.targetModifier = targetModifier;
+
+      if (this.target === 'viewport') {
+        this.target = document.body;
+        this.targetModifier = 'visible';
+      } else if (this.target === 'scroll-handle') {
+        this.target = document.body;
+        this.targetModifier = 'scroll-handle';
+      }
+
+      ['element', 'target'].forEach(function (key) {
+        if (typeof _this2[key] === 'undefined') {
+          throw new Error('Tether Error: Both element and target must be defined');
+        }
+
+        if (typeof _this2[key].jquery !== 'undefined') {
+          _this2[key] = _this2[key][0];
+        } else if (typeof _this2[key] === 'string') {
+          _this2[key] = document.querySelector(_this2[key]);
+        }
+      });
+
+      addClass(this.element, this.getClass('element'));
+      if (!(this.options.addTargetClasses === false)) {
+        addClass(this.target, this.getClass('target'));
+      }
+
+      if (!this.options.attachment) {
+        throw new Error('Tether Error: You must provide an attachment');
+      }
+
+      this.targetAttachment = parseAttachment(this.options.targetAttachment);
+      this.attachment = parseAttachment(this.options.attachment);
+      this.offset = parseOffset(this.options.offset);
+      this.targetOffset = parseOffset(this.options.targetOffset);
+
+      if (typeof this.scrollParents !== 'undefined') {
+        this.disable();
+      }
+
+      if (this.targetModifier === 'scroll-handle') {
+        this.scrollParents = [this.target];
+      } else {
+        this.scrollParents = getScrollParents(this.target);
+      }
+
+      if (!(this.options.enabled === false)) {
+        this.enable(pos);
+      }
+    }
+  }, {
+    key: 'getTargetBounds',
+    value: function getTargetBounds() {
+      if (typeof this.targetModifier !== 'undefined') {
+        if (this.targetModifier === 'visible') {
+          if (this.target === document.body) {
+            return { top: pageYOffset, left: pageXOffset, height: innerHeight, width: innerWidth };
+          } else {
+            var bounds = getBounds(this.target);
+
+            var out = {
+              height: bounds.height,
+              width: bounds.width,
+              top: bounds.top,
+              left: bounds.left
+            };
+
+            out.height = Math.min(out.height, bounds.height - (pageYOffset - bounds.top));
+            out.height = Math.min(out.height, bounds.height - (bounds.top + bounds.height - (pageYOffset + innerHeight)));
+            out.height = Math.min(innerHeight, out.height);
+            out.height -= 2;
+
+            out.width = Math.min(out.width, bounds.width - (pageXOffset - bounds.left));
+            out.width = Math.min(out.width, bounds.width - (bounds.left + bounds.width - (pageXOffset + innerWidth)));
+            out.width = Math.min(innerWidth, out.width);
+            out.width -= 2;
+
+            if (out.top < pageYOffset) {
+              out.top = pageYOffset;
+            }
+            if (out.left < pageXOffset) {
+              out.left = pageXOffset;
+            }
+
+            return out;
+          }
+        } else if (this.targetModifier === 'scroll-handle') {
+          var bounds = undefined;
+          var target = this.target;
+          if (target === document.body) {
+            target = document.documentElement;
+
+            bounds = {
+              left: pageXOffset,
+              top: pageYOffset,
+              height: innerHeight,
+              width: innerWidth
+            };
+          } else {
+            bounds = getBounds(target);
+          }
+
+          var style = getComputedStyle(target);
+
+          var hasBottomScroll = target.scrollWidth > target.clientWidth || [style.overflow, style.overflowX].indexOf('scroll') >= 0 || this.target !== document.body;
+
+          var scrollBottom = 0;
+          if (hasBottomScroll) {
+            scrollBottom = 15;
+          }
+
+          var height = bounds.height - parseFloat(style.borderTopWidth) - parseFloat(style.borderBottomWidth) - scrollBottom;
+
+          var out = {
+            width: 15,
+            height: height * 0.975 * (height / target.scrollHeight),
+            left: bounds.left + bounds.width - parseFloat(style.borderLeftWidth) - 15
+          };
+
+          var fitAdj = 0;
+          if (height < 408 && this.target === document.body) {
+            fitAdj = -0.00011 * Math.pow(height, 2) - 0.00727 * height + 22.58;
+          }
+
+          if (this.target !== document.body) {
+            out.height = Math.max(out.height, 24);
+          }
+
+          var scrollPercentage = this.target.scrollTop / (target.scrollHeight - height);
+          out.top = scrollPercentage * (height - out.height - fitAdj) + bounds.top + parseFloat(style.borderTopWidth);
+
+          if (this.target === document.body) {
+            out.height = Math.max(out.height, 24);
+          }
+
+          return out;
+        }
+      } else {
+        return getBounds(this.target);
+      }
+    }
+  }, {
+    key: 'clearCache',
+    value: function clearCache() {
+      this._cache = {};
+    }
+  }, {
+    key: 'cache',
+    value: function cache(k, getter) {
+      // More than one module will often need the same DOM info, so
+      // we keep a cache which is cleared on each position call
+      if (typeof this._cache === 'undefined') {
+        this._cache = {};
+      }
+
+      if (typeof this._cache[k] === 'undefined') {
+        this._cache[k] = getter.call(this);
+      }
+
+      return this._cache[k];
+    }
+  }, {
+    key: 'enable',
+    value: function enable() {
+      var _this3 = this;
+
+      var pos = arguments.length <= 0 || arguments[0] === undefined ? true : arguments[0];
+
+      if (!(this.options.addTargetClasses === false)) {
+        addClass(this.target, this.getClass('enabled'));
+      }
+      addClass(this.element, this.getClass('enabled'));
+      this.enabled = true;
+
+      this.scrollParents.forEach(function (parent) {
+        if (parent !== _this3.target.ownerDocument) {
+          parent.addEventListener('scroll', _this3.position);
+        }
+      });
+
+      if (pos) {
+        this.position();
+      }
+    }
+  }, {
+    key: 'disable',
+    value: function disable() {
+      var _this4 = this;
+
+      removeClass(this.target, this.getClass('enabled'));
+      removeClass(this.element, this.getClass('enabled'));
+      this.enabled = false;
+
+      if (typeof this.scrollParents !== 'undefined') {
+        this.scrollParents.forEach(function (parent) {
+          parent.removeEventListener('scroll', _this4.position);
+        });
+      }
+    }
+  }, {
+    key: 'destroy',
+    value: function destroy() {
+      var _this5 = this;
+
+      this.disable();
+
+      tethers.forEach(function (tether, i) {
+        if (tether === _this5) {
+          tethers.splice(i, 1);
+        }
+      });
+
+      // Remove any elements we were using for convenience from the DOM
+      if (tethers.length === 0) {
+        removeUtilElements();
+      }
+    }
+  }, {
+    key: 'updateAttachClasses',
+    value: function updateAttachClasses(elementAttach, targetAttach) {
+      var _this6 = this;
+
+      elementAttach = elementAttach || this.attachment;
+      targetAttach = targetAttach || this.targetAttachment;
+      var sides = ['left', 'top', 'bottom', 'right', 'middle', 'center'];
+
+      if (typeof this._addAttachClasses !== 'undefined' && this._addAttachClasses.length) {
+        // updateAttachClasses can be called more than once in a position call, so
+        // we need to clean up after ourselves such that when the last defer gets
+        // ran it doesn't add any extra classes from previous calls.
+        this._addAttachClasses.splice(0, this._addAttachClasses.length);
+      }
+
+      if (typeof this._addAttachClasses === 'undefined') {
+        this._addAttachClasses = [];
+      }
+      var add = this._addAttachClasses;
+
+      if (elementAttach.top) {
+        add.push(this.getClass('element-attached') + '-' + elementAttach.top);
+      }
+      if (elementAttach.left) {
+        add.push(this.getClass('element-attached') + '-' + elementAttach.left);
+      }
+      if (targetAttach.top) {
+        add.push(this.getClass('target-attached') + '-' + targetAttach.top);
+      }
+      if (targetAttach.left) {
+        add.push(this.getClass('target-attached') + '-' + targetAttach.left);
+      }
+
+      var all = [];
+      sides.forEach(function (side) {
+        all.push(_this6.getClass('element-attached') + '-' + side);
+        all.push(_this6.getClass('target-attached') + '-' + side);
+      });
+
+      defer(function () {
+        if (!(typeof _this6._addAttachClasses !== 'undefined')) {
+          return;
+        }
+
+        updateClasses(_this6.element, _this6._addAttachClasses, all);
+        if (!(_this6.options.addTargetClasses === false)) {
+          updateClasses(_this6.target, _this6._addAttachClasses, all);
+        }
+
+        delete _this6._addAttachClasses;
+      });
+    }
+  }, {
+    key: 'position',
+    value: function position() {
+      var _this7 = this;
+
+      var flushChanges = arguments.length <= 0 || arguments[0] === undefined ? true : arguments[0];
+
+      // flushChanges commits the changes immediately, leave true unless you are positioning multiple
+      // tethers (in which case call Tether.Utils.flush yourself when you're done)
+
+      if (!this.enabled) {
+        return;
+      }
+
+      this.clearCache();
+
+      // Turn 'auto' attachments into the appropriate corner or edge
+      var targetAttachment = autoToFixedAttachment(this.targetAttachment, this.attachment);
+
+      this.updateAttachClasses(this.attachment, targetAttachment);
+
+      var elementPos = this.cache('element-bounds', function () {
+        return getBounds(_this7.element);
+      });
+
+      var width = elementPos.width;
+      var height = elementPos.height;
+
+      if (width === 0 && height === 0 && typeof this.lastSize !== 'undefined') {
+        var _lastSize = this.lastSize;
+
+        // We cache the height and width to make it possible to position elements that are
+        // getting hidden.
+        width = _lastSize.width;
+        height = _lastSize.height;
+      } else {
+        this.lastSize = { width: width, height: height };
+      }
+
+      var targetPos = this.cache('target-bounds', function () {
+        return _this7.getTargetBounds();
+      });
+      var targetSize = targetPos;
+
+      // Get an actual px offset from the attachment
+      var offset = offsetToPx(attachmentToOffset(this.attachment), { width: width, height: height });
+      var targetOffset = offsetToPx(attachmentToOffset(targetAttachment), targetSize);
+
+      var manualOffset = offsetToPx(this.offset, { width: width, height: height });
+      var manualTargetOffset = offsetToPx(this.targetOffset, targetSize);
+
+      // Add the manually provided offset
+      offset = addOffset(offset, manualOffset);
+      targetOffset = addOffset(targetOffset, manualTargetOffset);
+
+      // It's now our goal to make (element position + offset) == (target position + target offset)
+      var left = targetPos.left + targetOffset.left - offset.left;
+      var top = targetPos.top + targetOffset.top - offset.top;
+
+      for (var i = 0; i < TetherBase.modules.length; ++i) {
+        var _module2 = TetherBase.modules[i];
+        var ret = _module2.position.call(this, {
+          left: left,
+          top: top,
+          targetAttachment: targetAttachment,
+          targetPos: targetPos,
+          elementPos: elementPos,
+          offset: offset,
+          targetOffset: targetOffset,
+          manualOffset: manualOffset,
+          manualTargetOffset: manualTargetOffset,
+          scrollbarSize: scrollbarSize,
+          attachment: this.attachment
+        });
+
+        if (ret === false) {
+          return false;
+        } else if (typeof ret === 'undefined' || typeof ret !== 'object') {
+          continue;
+        } else {
+          top = ret.top;
+          left = ret.left;
+        }
+      }
+
+      // We describe the position three different ways to give the optimizer
+      // a chance to decide the best possible way to position the element
+      // with the fewest repaints.
+      var next = {
+        // It's position relative to the page (absolute positioning when
+        // the element is a child of the body)
+        page: {
+          top: top,
+          left: left
+        },
+
+        // It's position relative to the viewport (fixed positioning)
+        viewport: {
+          top: top - pageYOffset,
+          bottom: pageYOffset - top - height + innerHeight,
+          left: left - pageXOffset,
+          right: pageXOffset - left - width + innerWidth
+        }
+      };
+
+      var doc = this.target.ownerDocument;
+      var win = doc.defaultView;
+
+      var scrollbarSize = undefined;
+      if (win.innerHeight > doc.documentElement.clientHeight) {
+        scrollbarSize = this.cache('scrollbar-size', getScrollBarSize);
+        next.viewport.bottom -= scrollbarSize.height;
+      }
+
+      if (win.innerWidth > doc.documentElement.clientWidth) {
+        scrollbarSize = this.cache('scrollbar-size', getScrollBarSize);
+        next.viewport.right -= scrollbarSize.width;
+      }
+
+      if (['', 'static'].indexOf(doc.body.style.position) === -1 || ['', 'static'].indexOf(doc.body.parentElement.style.position) === -1) {
+        // Absolute positioning in the body will be relative to the page, not the 'initial containing block'
+        next.page.bottom = doc.body.scrollHeight - top - height;
+        next.page.right = doc.body.scrollWidth - left - width;
+      }
+
+      if (typeof this.options.optimizations !== 'undefined' && this.options.optimizations.moveElement !== false && !(typeof this.targetModifier !== 'undefined')) {
+        (function () {
+          var offsetParent = _this7.cache('target-offsetparent', function () {
+            return getOffsetParent(_this7.target);
+          });
+          var offsetPosition = _this7.cache('target-offsetparent-bounds', function () {
+            return getBounds(offsetParent);
+          });
+          var offsetParentStyle = getComputedStyle(offsetParent);
+          var offsetParentSize = offsetPosition;
+
+          var offsetBorder = {};
+          ['Top', 'Left', 'Bottom', 'Right'].forEach(function (side) {
+            offsetBorder[side.toLowerCase()] = parseFloat(offsetParentStyle['border' + side + 'Width']);
+          });
+
+          offsetPosition.right = doc.body.scrollWidth - offsetPosition.left - offsetParentSize.width + offsetBorder.right;
+          offsetPosition.bottom = doc.body.scrollHeight - offsetPosition.top - offsetParentSize.height + offsetBorder.bottom;
+
+          if (next.page.top >= offsetPosition.top + offsetBorder.top && next.page.bottom >= offsetPosition.bottom) {
+            if (next.page.left >= offsetPosition.left + offsetBorder.left && next.page.right >= offsetPosition.right) {
+              // We're within the visible part of the target's scroll parent
+              var scrollTop = offsetParent.scrollTop;
+              var scrollLeft = offsetParent.scrollLeft;
+
+              // It's position relative to the target's offset parent (absolute positioning when
+              // the element is moved to be a child of the target's offset parent).
+              next.offset = {
+                top: next.page.top - offsetPosition.top + scrollTop - offsetBorder.top,
+                left: next.page.left - offsetPosition.left + scrollLeft - offsetBorder.left
+              };
+            }
+          }
+        })();
+      }
+
+      // We could also travel up the DOM and try each containing context, rather than only
+      // looking at the body, but we're gonna get diminishing returns.
+
+      this.move(next);
+
+      this.history.unshift(next);
+
+      if (this.history.length > 3) {
+        this.history.pop();
+      }
+
+      if (flushChanges) {
+        flush();
+      }
+
+      return true;
+    }
+
+    // THE ISSUE
+  }, {
+    key: 'move',
+    value: function move(pos) {
+      var _this8 = this;
+
+      if (!(typeof this.element.parentNode !== 'undefined')) {
+        return;
+      }
+
+      var same = {};
+
+      for (var type in pos) {
+        same[type] = {};
+
+        for (var key in pos[type]) {
+          var found = false;
+
+          for (var i = 0; i < this.history.length; ++i) {
+            var point = this.history[i];
+            if (typeof point[type] !== 'undefined' && !within(point[type][key], pos[type][key])) {
+              found = true;
+              break;
+            }
+          }
+
+          if (!found) {
+            same[type][key] = true;
+          }
+        }
+      }
+
+      var css = { top: '', left: '', right: '', bottom: '' };
+
+      var transcribe = function transcribe(_same, _pos) {
+        var hasOptimizations = typeof _this8.options.optimizations !== 'undefined';
+        var gpu = hasOptimizations ? _this8.options.optimizations.gpu : null;
+        if (gpu !== false) {
+          var yPos = undefined,
+              xPos = undefined;
+          if (_same.top) {
+            css.top = 0;
+            yPos = _pos.top;
+          } else {
+            css.bottom = 0;
+            yPos = -_pos.bottom;
+          }
+
+          if (_same.left) {
+            css.left = 0;
+            xPos = _pos.left;
+          } else {
+            css.right = 0;
+            xPos = -_pos.right;
+          }
+
+          if (window.matchMedia) {
+            // HubSpot/tether#207
+            var retina = window.matchMedia('only screen and (min-resolution: 1.3dppx)').matches || window.matchMedia('only screen and (-webkit-min-device-pixel-ratio: 1.3)').matches;
+            if (!retina) {
+              xPos = Math.round(xPos);
+              yPos = Math.round(yPos);
+            }
+          }
+
+          css[transformKey] = 'translateX(' + xPos + 'px) translateY(' + yPos + 'px)';
+
+          if (transformKey !== 'msTransform') {
+            // The Z transform will keep this in the GPU (faster, and prevents artifacts),
+            // but IE9 doesn't support 3d transforms and will choke.
+            css[transformKey] += " translateZ(0)";
+          }
+        } else {
+          if (_same.top) {
+            css.top = _pos.top + 'px';
+          } else {
+            css.bottom = _pos.bottom + 'px';
+          }
+
+          if (_same.left) {
+            css.left = _pos.left + 'px';
+          } else {
+            css.right = _pos.right + 'px';
+          }
+        }
+      };
+
+      var moved = false;
+      if ((same.page.top || same.page.bottom) && (same.page.left || same.page.right)) {
+        css.position = 'absolute';
+        transcribe(same.page, pos.page);
+      } else if ((same.viewport.top || same.viewport.bottom) && (same.viewport.left || same.viewport.right)) {
+        css.position = 'fixed';
+        transcribe(same.viewport, pos.viewport);
+      } else if (typeof same.offset !== 'undefined' && same.offset.top && same.offset.left) {
+        (function () {
+          css.position = 'absolute';
+          var offsetParent = _this8.cache('target-offsetparent', function () {
+            return getOffsetParent(_this8.target);
+          });
+
+          if (getOffsetParent(_this8.element) !== offsetParent) {
+            defer(function () {
+              _this8.element.parentNode.removeChild(_this8.element);
+              offsetParent.appendChild(_this8.element);
+            });
+          }
+
+          transcribe(same.offset, pos.offset);
+          moved = true;
+        })();
+      } else {
+        css.position = 'absolute';
+        transcribe({ top: true, left: true }, pos.page);
+      }
+
+      if (!moved) {
+        if (this.options.bodyElement) {
+          this.options.bodyElement.appendChild(this.element);
+        } else {
+          var offsetParentIsBody = true;
+          var currentNode = this.element.parentNode;
+          while (currentNode && currentNode.nodeType === 1 && currentNode.tagName !== 'BODY') {
+            if (getComputedStyle(currentNode).position !== 'static') {
+              offsetParentIsBody = false;
+              break;
+            }
+
+            currentNode = currentNode.parentNode;
+          }
+
+          if (!offsetParentIsBody) {
+            this.element.parentNode.removeChild(this.element);
+            this.element.ownerDocument.body.appendChild(this.element);
+          }
+        }
+      }
+
+      // Any css change will trigger a repaint, so let's avoid one if nothing changed
+      var writeCSS = {};
+      var write = false;
+      for (var key in css) {
+        var val = css[key];
+        var elVal = this.element.style[key];
+
+        if (elVal !== val) {
+          write = true;
+          writeCSS[key] = val;
+        }
+      }
+
+      if (write) {
+        defer(function () {
+          extend(_this8.element.style, writeCSS);
+          _this8.trigger('repositioned');
+        });
+      }
+    }
+  }]);
+
+  return TetherClass;
+})(Evented);
+
+TetherClass.modules = [];
+
+TetherBase.position = position;
+
+var Tether = extend(TetherClass, TetherBase);
+/* globals TetherBase */
+
+'use strict';
+
+var _slicedToArray = (function () { function sliceIterator(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i['return']) _i['return'](); } finally { if (_d) throw _e; } } return _arr; } return function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { return sliceIterator(arr, i); } else { throw new TypeError('Invalid attempt to destructure non-iterable instance'); } }; })();
+
+var _TetherBase$Utils = TetherBase.Utils;
+var getBounds = _TetherBase$Utils.getBounds;
+var extend = _TetherBase$Utils.extend;
+var updateClasses = _TetherBase$Utils.updateClasses;
+var defer = _TetherBase$Utils.defer;
+
+var BOUNDS_FORMAT = ['left', 'top', 'right', 'bottom'];
+
+function getBoundingRect(tether, to) {
+  if (to === 'scrollParent') {
+    to = tether.scrollParents[0];
+  } else if (to === 'window') {
+    to = [pageXOffset, pageYOffset, innerWidth + pageXOffset, innerHeight + pageYOffset];
+  }
+
+  if (to === document) {
+    to = to.documentElement;
+  }
+
+  if (typeof to.nodeType !== 'undefined') {
+    (function () {
+      var node = to;
+      var size = getBounds(to);
+      var pos = size;
+      var style = getComputedStyle(to);
+
+      to = [pos.left, pos.top, size.width + pos.left, size.height + pos.top];
+
+      // Account any parent Frames scroll offset
+      if (node.ownerDocument !== document) {
+        var win = node.ownerDocument.defaultView;
+        to[0] += win.pageXOffset;
+        to[1] += win.pageYOffset;
+        to[2] += win.pageXOffset;
+        to[3] += win.pageYOffset;
+      }
+
+      BOUNDS_FORMAT.forEach(function (side, i) {
+        side = side[0].toUpperCase() + side.substr(1);
+        if (side === 'Top' || side === 'Left') {
+          to[i] += parseFloat(style['border' + side + 'Width']);
+        } else {
+          to[i] -= parseFloat(style['border' + side + 'Width']);
+        }
+      });
+    })();
+  }
+
+  return to;
+}
+
+TetherBase.modules.push({
+  position: function position(_ref) {
+    var _this = this;
+
+    var top = _ref.top;
+    var left = _ref.left;
+    var targetAttachment = _ref.targetAttachment;
+
+    if (!this.options.constraints) {
+      return true;
+    }
+
+    var _cache = this.cache('element-bounds', function () {
+      return getBounds(_this.element);
+    });
+
+    var height = _cache.height;
+    var width = _cache.width;
+
+    if (width === 0 && height === 0 && typeof this.lastSize !== 'undefined') {
+      var _lastSize = this.lastSize;
+
+      // Handle the item getting hidden as a result of our positioning without glitching
+      // the classes in and out
+      width = _lastSize.width;
+      height = _lastSize.height;
+    }
+
+    var targetSize = this.cache('target-bounds', function () {
+      return _this.getTargetBounds();
+    });
+
+    var targetHeight = targetSize.height;
+    var targetWidth = targetSize.width;
+
+    var allClasses = [this.getClass('pinned'), this.getClass('out-of-bounds')];
+
+    this.options.constraints.forEach(function (constraint) {
+      var outOfBoundsClass = constraint.outOfBoundsClass;
+      var pinnedClass = constraint.pinnedClass;
+
+      if (outOfBoundsClass) {
+        allClasses.push(outOfBoundsClass);
+      }
+      if (pinnedClass) {
+        allClasses.push(pinnedClass);
+      }
+    });
+
+    allClasses.forEach(function (cls) {
+      ['left', 'top', 'right', 'bottom'].forEach(function (side) {
+        allClasses.push(cls + '-' + side);
+      });
+    });
+
+    var addClasses = [];
+
+    var tAttachment = extend({}, targetAttachment);
+    var eAttachment = extend({}, this.attachment);
+
+    this.options.constraints.forEach(function (constraint) {
+      var to = constraint.to;
+      var attachment = constraint.attachment;
+      var pin = constraint.pin;
+
+      if (typeof attachment === 'undefined') {
+        attachment = '';
+      }
+
+      var changeAttachX = undefined,
+          changeAttachY = undefined;
+      if (attachment.indexOf(' ') >= 0) {
+        var _attachment$split = attachment.split(' ');
+
+        var _attachment$split2 = _slicedToArray(_attachment$split, 2);
+
+        changeAttachY = _attachment$split2[0];
+        changeAttachX = _attachment$split2[1];
+      } else {
+        changeAttachX = changeAttachY = attachment;
+      }
+
+      var bounds = getBoundingRect(_this, to);
+
+      if (changeAttachY === 'target' || changeAttachY === 'both') {
+        if (top < bounds[1] && tAttachment.top === 'top') {
+          top += targetHeight;
+          tAttachment.top = 'bottom';
+        }
+
+        if (top + height > bounds[3] && tAttachment.top === 'bottom') {
+          top -= targetHeight;
+          tAttachment.top = 'top';
+        }
+      }
+
+      if (changeAttachY === 'together') {
+        if (tAttachment.top === 'top') {
+          if (eAttachment.top === 'bottom' && top < bounds[1]) {
+            top += targetHeight;
+            tAttachment.top = 'bottom';
+
+            top += height;
+            eAttachment.top = 'top';
+          } else if (eAttachment.top === 'top' && top + height > bounds[3] && top - (height - targetHeight) >= bounds[1]) {
+            top -= height - targetHeight;
+            tAttachment.top = 'bottom';
+
+            eAttachment.top = 'bottom';
+          }
+        }
+
+        if (tAttachment.top === 'bottom') {
+          if (eAttachment.top === 'top' && top + height > bounds[3]) {
+            top -= targetHeight;
+            tAttachment.top = 'top';
+
+            top -= height;
+            eAttachment.top = 'bottom';
+          } else if (eAttachment.top === 'bottom' && top < bounds[1] && top + (height * 2 - targetHeight) <= bounds[3]) {
+            top += height - targetHeight;
+            tAttachment.top = 'top';
+
+            eAttachment.top = 'top';
+          }
+        }
+
+        if (tAttachment.top === 'middle') {
+          if (top + height > bounds[3] && eAttachment.top === 'top') {
+            top -= height;
+            eAttachment.top = 'bottom';
+          } else if (top < bounds[1] && eAttachment.top === 'bottom') {
+            top += height;
+            eAttachment.top = 'top';
+          }
+        }
+      }
+
+      if (changeAttachX === 'target' || changeAttachX === 'both') {
+        if (left < bounds[0] && tAttachment.left === 'left') {
+          left += targetWidth;
+          tAttachment.left = 'right';
+        }
+
+        if (left + width > bounds[2] && tAttachment.left === 'right') {
+          left -= targetWidth;
+          tAttachment.left = 'left';
+        }
+      }
+
+      if (changeAttachX === 'together') {
+        if (left < bounds[0] && tAttachment.left === 'left') {
+          if (eAttachment.left === 'right') {
+            left += targetWidth;
+            tAttachment.left = 'right';
+
+            left += width;
+            eAttachment.left = 'left';
+          } else if (eAttachment.left === 'left') {
+            left += targetWidth;
+            tAttachment.left = 'right';
+
+            left -= width;
+            eAttachment.left = 'right';
+          }
+        } else if (left + width > bounds[2] && tAttachment.left === 'right') {
+          if (eAttachment.left === 'left') {
+            left -= targetWidth;
+            tAttachment.left = 'left';
+
+            left -= width;
+            eAttachment.left = 'right';
+          } else if (eAttachment.left === 'right') {
+            left -= targetWidth;
+            tAttachment.left = 'left';
+
+            left += width;
+            eAttachment.left = 'left';
+          }
+        } else if (tAttachment.left === 'center') {
+          if (left + width > bounds[2] && eAttachment.left === 'left') {
+            left -= width;
+            eAttachment.left = 'right';
+          } else if (left < bounds[0] && eAttachment.left === 'right') {
+            left += width;
+            eAttachment.left = 'left';
+          }
+        }
+      }
+
+      if (changeAttachY === 'element' || changeAttachY === 'both') {
+        if (top < bounds[1] && eAttachment.top === 'bottom') {
+          top += height;
+          eAttachment.top = 'top';
+        }
+
+        if (top + height > bounds[3] && eAttachment.top === 'top') {
+          top -= height;
+          eAttachment.top = 'bottom';
+        }
+      }
+
+      if (changeAttachX === 'element' || changeAttachX === 'both') {
+        if (left < bounds[0]) {
+          if (eAttachment.left === 'right') {
+            left += width;
+            eAttachment.left = 'left';
+          } else if (eAttachment.left === 'center') {
+            left += width / 2;
+            eAttachment.left = 'left';
+          }
+        }
+
+        if (left + width > bounds[2]) {
+          if (eAttachment.left === 'left') {
+            left -= width;
+            eAttachment.left = 'right';
+          } else if (eAttachment.left === 'center') {
+            left -= width / 2;
+            eAttachment.left = 'right';
+          }
+        }
+      }
+
+      if (typeof pin === 'string') {
+        pin = pin.split(',').map(function (p) {
+          return p.trim();
+        });
+      } else if (pin === true) {
+        pin = ['top', 'left', 'right', 'bottom'];
+      }
+
+      pin = pin || [];
+
+      var pinned = [];
+      var oob = [];
+
+      if (top < bounds[1]) {
+        if (pin.indexOf('top') >= 0) {
+          top = bounds[1];
+          pinned.push('top');
+        } else {
+          oob.push('top');
+        }
+      }
+
+      if (top + height > bounds[3]) {
+        if (pin.indexOf('bottom') >= 0) {
+          top = bounds[3] - height;
+          pinned.push('bottom');
+        } else {
+          oob.push('bottom');
+        }
+      }
+
+      if (left < bounds[0]) {
+        if (pin.indexOf('left') >= 0) {
+          left = bounds[0];
+          pinned.push('left');
+        } else {
+          oob.push('left');
+        }
+      }
+
+      if (left + width > bounds[2]) {
+        if (pin.indexOf('right') >= 0) {
+          left = bounds[2] - width;
+          pinned.push('right');
+        } else {
+          oob.push('right');
+        }
+      }
+
+      if (pinned.length) {
+        (function () {
+          var pinnedClass = undefined;
+          if (typeof _this.options.pinnedClass !== 'undefined') {
+            pinnedClass = _this.options.pinnedClass;
+          } else {
+            pinnedClass = _this.getClass('pinned');
+          }
+
+          addClasses.push(pinnedClass);
+          pinned.forEach(function (side) {
+            addClasses.push(pinnedClass + '-' + side);
+          });
+        })();
+      }
+
+      if (oob.length) {
+        (function () {
+          var oobClass = undefined;
+          if (typeof _this.options.outOfBoundsClass !== 'undefined') {
+            oobClass = _this.options.outOfBoundsClass;
+          } else {
+            oobClass = _this.getClass('out-of-bounds');
+          }
+
+          addClasses.push(oobClass);
+          oob.forEach(function (side) {
+            addClasses.push(oobClass + '-' + side);
+          });
+        })();
+      }
+
+      if (pinned.indexOf('left') >= 0 || pinned.indexOf('right') >= 0) {
+        eAttachment.left = tAttachment.left = false;
+      }
+      if (pinned.indexOf('top') >= 0 || pinned.indexOf('bottom') >= 0) {
+        eAttachment.top = tAttachment.top = false;
+      }
+
+      if (tAttachment.top !== targetAttachment.top || tAttachment.left !== targetAttachment.left || eAttachment.top !== _this.attachment.top || eAttachment.left !== _this.attachment.left) {
+        _this.updateAttachClasses(eAttachment, tAttachment);
+        _this.trigger('update', {
+          attachment: eAttachment,
+          targetAttachment: tAttachment
+        });
+      }
+    });
+
+    defer(function () {
+      if (!(_this.options.addTargetClasses === false)) {
+        updateClasses(_this.target, addClasses, allClasses);
+      }
+      updateClasses(_this.element, addClasses, allClasses);
+    });
+
+    return { top: top, left: left };
+  }
+});
+/* globals TetherBase */
+
+'use strict';
+
+var _TetherBase$Utils = TetherBase.Utils;
+var getBounds = _TetherBase$Utils.getBounds;
+var updateClasses = _TetherBase$Utils.updateClasses;
+var defer = _TetherBase$Utils.defer;
+
+TetherBase.modules.push({
+  position: function position(_ref) {
+    var _this = this;
+
+    var top = _ref.top;
+    var left = _ref.left;
+
+    var _cache = this.cache('element-bounds', function () {
+      return getBounds(_this.element);
+    });
+
+    var height = _cache.height;
+    var width = _cache.width;
+
+    var targetPos = this.getTargetBounds();
+
+    var bottom = top + height;
+    var right = left + width;
+
+    var abutted = [];
+    if (top <= targetPos.bottom && bottom >= targetPos.top) {
+      ['left', 'right'].forEach(function (side) {
+        var targetPosSide = targetPos[side];
+        if (targetPosSide === left || targetPosSide === right) {
+          abutted.push(side);
+        }
+      });
+    }
+
+    if (left <= targetPos.right && right >= targetPos.left) {
+      ['top', 'bottom'].forEach(function (side) {
+        var targetPosSide = targetPos[side];
+        if (targetPosSide === top || targetPosSide === bottom) {
+          abutted.push(side);
+        }
+      });
+    }
+
+    var allClasses = [];
+    var addClasses = [];
+
+    var sides = ['left', 'top', 'right', 'bottom'];
+    allClasses.push(this.getClass('abutted'));
+    sides.forEach(function (side) {
+      allClasses.push(_this.getClass('abutted') + '-' + side);
+    });
+
+    if (abutted.length) {
+      addClasses.push(this.getClass('abutted'));
+    }
+
+    abutted.forEach(function (side) {
+      addClasses.push(_this.getClass('abutted') + '-' + side);
+    });
+
+    defer(function () {
+      if (!(_this.options.addTargetClasses === false)) {
+        updateClasses(_this.target, addClasses, allClasses);
+      }
+      updateClasses(_this.element, addClasses, allClasses);
+    });
+
+    return true;
+  }
+});
+/* globals TetherBase */
+
+'use strict';
+
+var _slicedToArray = (function () { function sliceIterator(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i['return']) _i['return'](); } finally { if (_d) throw _e; } } return _arr; } return function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { return sliceIterator(arr, i); } else { throw new TypeError('Invalid attempt to destructure non-iterable instance'); } }; })();
+
+TetherBase.modules.push({
+  position: function position(_ref) {
+    var top = _ref.top;
+    var left = _ref.left;
+
+    if (!this.options.shift) {
+      return;
+    }
+
+    var shift = this.options.shift;
+    if (typeof this.options.shift === 'function') {
+      shift = this.options.shift.call(this, { top: top, left: left });
+    }
+
+    var shiftTop = undefined,
+        shiftLeft = undefined;
+    if (typeof shift === 'string') {
+      shift = shift.split(' ');
+      shift[1] = shift[1] || shift[0];
+
+      var _shift = shift;
+
+      var _shift2 = _slicedToArray(_shift, 2);
+
+      shiftTop = _shift2[0];
+      shiftLeft = _shift2[1];
+
+      shiftTop = parseFloat(shiftTop, 10);
+      shiftLeft = parseFloat(shiftLeft, 10);
+    } else {
+      shiftTop = shift.top;
+      shiftLeft = shift.left;
+    }
+
+    top += shiftTop;
+    left += shiftLeft;
+
+    return { top: top, left: left };
+  }
+});
+return Tether;
+
+}));
+
+
+/***/ }),
+/* 14 */
+/***/ (function(module, exports) {
+
+(function(self) {
+  'use strict';
+
+  if (self.fetch) {
+    return
+  }
+
+  var support = {
+    searchParams: 'URLSearchParams' in self,
+    iterable: 'Symbol' in self && 'iterator' in Symbol,
+    blob: 'FileReader' in self && 'Blob' in self && (function() {
+      try {
+        new Blob()
+        return true
+      } catch(e) {
+        return false
+      }
+    })(),
+    formData: 'FormData' in self,
+    arrayBuffer: 'ArrayBuffer' in self
+  }
+
+  if (support.arrayBuffer) {
+    var viewClasses = [
+      '[object Int8Array]',
+      '[object Uint8Array]',
+      '[object Uint8ClampedArray]',
+      '[object Int16Array]',
+      '[object Uint16Array]',
+      '[object Int32Array]',
+      '[object Uint32Array]',
+      '[object Float32Array]',
+      '[object Float64Array]'
+    ]
+
+    var isDataView = function(obj) {
+      return obj && DataView.prototype.isPrototypeOf(obj)
+    }
+
+    var isArrayBufferView = ArrayBuffer.isView || function(obj) {
+      return obj && viewClasses.indexOf(Object.prototype.toString.call(obj)) > -1
+    }
+  }
+
+  function normalizeName(name) {
+    if (typeof name !== 'string') {
+      name = String(name)
+    }
+    if (/[^a-z0-9\-#$%&'*+.\^_`|~]/i.test(name)) {
+      throw new TypeError('Invalid character in header field name')
+    }
+    return name.toLowerCase()
+  }
+
+  function normalizeValue(value) {
+    if (typeof value !== 'string') {
+      value = String(value)
+    }
+    return value
+  }
+
+  // Build a destructive iterator for the value list
+  function iteratorFor(items) {
+    var iterator = {
+      next: function() {
+        var value = items.shift()
+        return {done: value === undefined, value: value}
+      }
+    }
+
+    if (support.iterable) {
+      iterator[Symbol.iterator] = function() {
+        return iterator
+      }
+    }
+
+    return iterator
+  }
+
+  function Headers(headers) {
+    this.map = {}
+
+    if (headers instanceof Headers) {
+      headers.forEach(function(value, name) {
+        this.append(name, value)
+      }, this)
+    } else if (Array.isArray(headers)) {
+      headers.forEach(function(header) {
+        this.append(header[0], header[1])
+      }, this)
+    } else if (headers) {
+      Object.getOwnPropertyNames(headers).forEach(function(name) {
+        this.append(name, headers[name])
+      }, this)
+    }
+  }
+
+  Headers.prototype.append = function(name, value) {
+    name = normalizeName(name)
+    value = normalizeValue(value)
+    var oldValue = this.map[name]
+    this.map[name] = oldValue ? oldValue+','+value : value
+  }
+
+  Headers.prototype['delete'] = function(name) {
+    delete this.map[normalizeName(name)]
+  }
+
+  Headers.prototype.get = function(name) {
+    name = normalizeName(name)
+    return this.has(name) ? this.map[name] : null
+  }
+
+  Headers.prototype.has = function(name) {
+    return this.map.hasOwnProperty(normalizeName(name))
+  }
+
+  Headers.prototype.set = function(name, value) {
+    this.map[normalizeName(name)] = normalizeValue(value)
+  }
+
+  Headers.prototype.forEach = function(callback, thisArg) {
+    for (var name in this.map) {
+      if (this.map.hasOwnProperty(name)) {
+        callback.call(thisArg, this.map[name], name, this)
+      }
+    }
+  }
+
+  Headers.prototype.keys = function() {
+    var items = []
+    this.forEach(function(value, name) { items.push(name) })
+    return iteratorFor(items)
+  }
+
+  Headers.prototype.values = function() {
+    var items = []
+    this.forEach(function(value) { items.push(value) })
+    return iteratorFor(items)
+  }
+
+  Headers.prototype.entries = function() {
+    var items = []
+    this.forEach(function(value, name) { items.push([name, value]) })
+    return iteratorFor(items)
+  }
+
+  if (support.iterable) {
+    Headers.prototype[Symbol.iterator] = Headers.prototype.entries
+  }
+
+  function consumed(body) {
+    if (body.bodyUsed) {
+      return Promise.reject(new TypeError('Already read'))
+    }
+    body.bodyUsed = true
+  }
+
+  function fileReaderReady(reader) {
+    return new Promise(function(resolve, reject) {
+      reader.onload = function() {
+        resolve(reader.result)
+      }
+      reader.onerror = function() {
+        reject(reader.error)
+      }
+    })
+  }
+
+  function readBlobAsArrayBuffer(blob) {
+    var reader = new FileReader()
+    var promise = fileReaderReady(reader)
+    reader.readAsArrayBuffer(blob)
+    return promise
+  }
+
+  function readBlobAsText(blob) {
+    var reader = new FileReader()
+    var promise = fileReaderReady(reader)
+    reader.readAsText(blob)
+    return promise
+  }
+
+  function readArrayBufferAsText(buf) {
+    var view = new Uint8Array(buf)
+    var chars = new Array(view.length)
+
+    for (var i = 0; i < view.length; i++) {
+      chars[i] = String.fromCharCode(view[i])
+    }
+    return chars.join('')
+  }
+
+  function bufferClone(buf) {
+    if (buf.slice) {
+      return buf.slice(0)
+    } else {
+      var view = new Uint8Array(buf.byteLength)
+      view.set(new Uint8Array(buf))
+      return view.buffer
+    }
+  }
+
+  function Body() {
+    this.bodyUsed = false
+
+    this._initBody = function(body) {
+      this._bodyInit = body
+      if (!body) {
+        this._bodyText = ''
+      } else if (typeof body === 'string') {
+        this._bodyText = body
+      } else if (support.blob && Blob.prototype.isPrototypeOf(body)) {
+        this._bodyBlob = body
+      } else if (support.formData && FormData.prototype.isPrototypeOf(body)) {
+        this._bodyFormData = body
+      } else if (support.searchParams && URLSearchParams.prototype.isPrototypeOf(body)) {
+        this._bodyText = body.toString()
+      } else if (support.arrayBuffer && support.blob && isDataView(body)) {
+        this._bodyArrayBuffer = bufferClone(body.buffer)
+        // IE 10-11 can't handle a DataView body.
+        this._bodyInit = new Blob([this._bodyArrayBuffer])
+      } else if (support.arrayBuffer && (ArrayBuffer.prototype.isPrototypeOf(body) || isArrayBufferView(body))) {
+        this._bodyArrayBuffer = bufferClone(body)
+      } else {
+        throw new Error('unsupported BodyInit type')
+      }
+
+      if (!this.headers.get('content-type')) {
+        if (typeof body === 'string') {
+          this.headers.set('content-type', 'text/plain;charset=UTF-8')
+        } else if (this._bodyBlob && this._bodyBlob.type) {
+          this.headers.set('content-type', this._bodyBlob.type)
+        } else if (support.searchParams && URLSearchParams.prototype.isPrototypeOf(body)) {
+          this.headers.set('content-type', 'application/x-www-form-urlencoded;charset=UTF-8')
+        }
+      }
+    }
+
+    if (support.blob) {
+      this.blob = function() {
+        var rejected = consumed(this)
+        if (rejected) {
+          return rejected
+        }
+
+        if (this._bodyBlob) {
+          return Promise.resolve(this._bodyBlob)
+        } else if (this._bodyArrayBuffer) {
+          return Promise.resolve(new Blob([this._bodyArrayBuffer]))
+        } else if (this._bodyFormData) {
+          throw new Error('could not read FormData body as blob')
+        } else {
+          return Promise.resolve(new Blob([this._bodyText]))
+        }
+      }
+
+      this.arrayBuffer = function() {
+        if (this._bodyArrayBuffer) {
+          return consumed(this) || Promise.resolve(this._bodyArrayBuffer)
+        } else {
+          return this.blob().then(readBlobAsArrayBuffer)
+        }
+      }
+    }
+
+    this.text = function() {
+      var rejected = consumed(this)
+      if (rejected) {
+        return rejected
+      }
+
+      if (this._bodyBlob) {
+        return readBlobAsText(this._bodyBlob)
+      } else if (this._bodyArrayBuffer) {
+        return Promise.resolve(readArrayBufferAsText(this._bodyArrayBuffer))
+      } else if (this._bodyFormData) {
+        throw new Error('could not read FormData body as text')
+      } else {
+        return Promise.resolve(this._bodyText)
+      }
+    }
+
+    if (support.formData) {
+      this.formData = function() {
+        return this.text().then(decode)
+      }
+    }
+
+    this.json = function() {
+      return this.text().then(JSON.parse)
+    }
+
+    return this
+  }
+
+  // HTTP methods whose capitalization should be normalized
+  var methods = ['DELETE', 'GET', 'HEAD', 'OPTIONS', 'POST', 'PUT']
+
+  function normalizeMethod(method) {
+    var upcased = method.toUpperCase()
+    return (methods.indexOf(upcased) > -1) ? upcased : method
+  }
+
+  function Request(input, options) {
+    options = options || {}
+    var body = options.body
+
+    if (input instanceof Request) {
+      if (input.bodyUsed) {
+        throw new TypeError('Already read')
+      }
+      this.url = input.url
+      this.credentials = input.credentials
+      if (!options.headers) {
+        this.headers = new Headers(input.headers)
+      }
+      this.method = input.method
+      this.mode = input.mode
+      if (!body && input._bodyInit != null) {
+        body = input._bodyInit
+        input.bodyUsed = true
+      }
+    } else {
+      this.url = String(input)
+    }
+
+    this.credentials = options.credentials || this.credentials || 'omit'
+    if (options.headers || !this.headers) {
+      this.headers = new Headers(options.headers)
+    }
+    this.method = normalizeMethod(options.method || this.method || 'GET')
+    this.mode = options.mode || this.mode || null
+    this.referrer = null
+
+    if ((this.method === 'GET' || this.method === 'HEAD') && body) {
+      throw new TypeError('Body not allowed for GET or HEAD requests')
+    }
+    this._initBody(body)
+  }
+
+  Request.prototype.clone = function() {
+    return new Request(this, { body: this._bodyInit })
+  }
+
+  function decode(body) {
+    var form = new FormData()
+    body.trim().split('&').forEach(function(bytes) {
+      if (bytes) {
+        var split = bytes.split('=')
+        var name = split.shift().replace(/\+/g, ' ')
+        var value = split.join('=').replace(/\+/g, ' ')
+        form.append(decodeURIComponent(name), decodeURIComponent(value))
+      }
+    })
+    return form
+  }
+
+  function parseHeaders(rawHeaders) {
+    var headers = new Headers()
+    rawHeaders.split(/\r?\n/).forEach(function(line) {
+      var parts = line.split(':')
+      var key = parts.shift().trim()
+      if (key) {
+        var value = parts.join(':').trim()
+        headers.append(key, value)
+      }
+    })
+    return headers
+  }
+
+  Body.call(Request.prototype)
+
+  function Response(bodyInit, options) {
+    if (!options) {
+      options = {}
+    }
+
+    this.type = 'default'
+    this.status = 'status' in options ? options.status : 200
+    this.ok = this.status >= 200 && this.status < 300
+    this.statusText = 'statusText' in options ? options.statusText : 'OK'
+    this.headers = new Headers(options.headers)
+    this.url = options.url || ''
+    this._initBody(bodyInit)
+  }
+
+  Body.call(Response.prototype)
+
+  Response.prototype.clone = function() {
+    return new Response(this._bodyInit, {
+      status: this.status,
+      statusText: this.statusText,
+      headers: new Headers(this.headers),
+      url: this.url
+    })
+  }
+
+  Response.error = function() {
+    var response = new Response(null, {status: 0, statusText: ''})
+    response.type = 'error'
+    return response
+  }
+
+  var redirectStatuses = [301, 302, 303, 307, 308]
+
+  Response.redirect = function(url, status) {
+    if (redirectStatuses.indexOf(status) === -1) {
+      throw new RangeError('Invalid status code')
+    }
+
+    return new Response(null, {status: status, headers: {location: url}})
+  }
+
+  self.Headers = Headers
+  self.Request = Request
+  self.Response = Response
+
+  self.fetch = function(input, init) {
+    return new Promise(function(resolve, reject) {
+      var request = new Request(input, init)
+      var xhr = new XMLHttpRequest()
+
+      xhr.onload = function() {
+        var options = {
+          status: xhr.status,
+          statusText: xhr.statusText,
+          headers: parseHeaders(xhr.getAllResponseHeaders() || '')
+        }
+        options.url = 'responseURL' in xhr ? xhr.responseURL : options.headers.get('X-Request-URL')
+        var body = 'response' in xhr ? xhr.response : xhr.responseText
+        resolve(new Response(body, options))
+      }
+
+      xhr.onerror = function() {
+        reject(new TypeError('Network request failed'))
+      }
+
+      xhr.ontimeout = function() {
+        reject(new TypeError('Network request failed'))
+      }
+
+      xhr.open(request.method, request.url, true)
+
+      if (request.credentials === 'include') {
+        xhr.withCredentials = true
+      }
+
+      if ('responseType' in xhr && support.blob) {
+        xhr.responseType = 'blob'
+      }
+
+      request.headers.forEach(function(value, name) {
+        xhr.setRequestHeader(name, value)
+      })
+
+      xhr.send(typeof request._bodyInit === 'undefined' ? null : request._bodyInit)
+    })
+  }
+  self.fetch.polyfill = true
+})(typeof self !== 'undefined' ? self : this);
+
+
+/***/ }),
+/* 15 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/**
  * @preserve jquery-param (c) 2015 KNOWLEDGECODE | MIT
  */
-!function(n){"use strict";var i=function(e){var t=[],n=/\[\]$/,o=function(e){return"[object Array]"===Object.prototype.toString.call(e)},r=function(e,n){n="function"==typeof n?n():null===n?"":void 0===n?"":n,t[t.length]=encodeURIComponent(e)+"="+encodeURIComponent(n)},i=function(e,s){var a,l,c;if(e)if(o(s))for(a=0,l=s.length;a<l;a++)n.test(e)?r(e,s[a]):i(e+"["+("object"==typeof s[a]?a:"")+"]",s[a]);else if(s&&"[object Object]"===String(s))for(c in s)i(e+"["+c+"]",s[c]);else r(e,s);else if(o(s))for(a=0,l=s.length;a<l;a++)r(s[a].name,s[a].value);else for(c in s)i(c,s[c]);return t};return i("",e).join("&").replace(/%20/g,"+")};"object"==typeof e&&"object"==typeof e.exports?e.exports=i:(o=[],void 0!==(r=function(){return i}.apply(t,o))&&(e.exports=r))}()}]);
+(function (global) {
+    'use strict';
+
+    var param = function (a) {
+        var s = [], rbracket = /\[\]$/,
+            isArray = function (obj) {
+                return Object.prototype.toString.call(obj) === '[object Array]';
+            }, add = function (k, v) {
+                v = typeof v === 'function' ? v() : v === null ? '' : v === undefined ? '' : v;
+                s[s.length] = encodeURIComponent(k) + '=' + encodeURIComponent(v);
+            }, buildParams = function (prefix, obj) {
+                var i, len, key;
+
+                if (prefix) {
+                    if (isArray(obj)) {
+                        for (i = 0, len = obj.length; i < len; i++) {
+                            if (rbracket.test(prefix)) {
+                                add(prefix, obj[i]);
+                            } else {
+                                buildParams(prefix + '[' + (typeof obj[i] === 'object' ? i : '') + ']', obj[i]);
+                            }
+                        }
+                    } else if (obj && String(obj) === '[object Object]') {
+                        for (key in obj) {
+                            buildParams(prefix + '[' + key + ']', obj[key]);
+                        }
+                    } else {
+                        add(prefix, obj);
+                    }
+                } else if (isArray(obj)) {
+                    for (i = 0, len = obj.length; i < len; i++) {
+                        add(obj[i].name, obj[i].value);
+                    }
+                } else {
+                    for (key in obj) {
+                        buildParams(key, obj[key]);
+                    }
+                }
+                return s;
+            };
+
+        return buildParams('', a).join('&').replace(/%20/g, '+');
+    };
+
+    if (typeof module === 'object' && typeof module.exports === 'object') {
+        module.exports = param;
+    } else if (true) {
+        !(__WEBPACK_AMD_DEFINE_ARRAY__ = [], __WEBPACK_AMD_DEFINE_RESULT__ = function () {
+            return param;
+        }.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__),
+				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+    } else {
+        global.param = param;
+    }
+
+}(this));
+
+
+
+/***/ })
+/******/ ]);

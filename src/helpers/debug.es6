@@ -2,7 +2,7 @@ import Noty from 'noty';
 
 export const Debug = (txt, type) => {
 	new Noty({
-		text	: `DEBUG : <strong>${txt}</strong>`,
+		text	: `<strong>${txt}</strong>`,
 		layout 	: 'bottomCenter',
 		timeout : 1500,
 		theme	: 'metroui',

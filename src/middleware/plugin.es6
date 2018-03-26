@@ -13,9 +13,9 @@ import OutputLiner	from '../modules/output.es6';
 import TabManager	from '../modules/tabManager.es6';
 import F8Reader		from '../modules/f8.es6';
 import History 		from '../modules/history.es6';
-import {Debug}		from '../modules/debug';
 import {getReplacement}		from '../helpers/helpers.es6';
 import {UPDATE_CUR_GDS, CHANGE_ACTIVE_TERMINAL} from "../actions";
+import {debugOutput, loggerOutput} from "../helpers/logger";
 
 export default class TerminalPlugin
 {
@@ -34,14 +34,10 @@ export default class TerminalPlugin
 
 		this.terminal 		= this.init();
 
-		this.pagination 	= new Pagination( this.terminal );
+		this.pagination 	= new Pagination();
 		this.spinner 		= new Spinner( this.terminal );
-
-		this.outputLiner 	= new OutputLiner( this.terminal );
-		this.outputLiner.setNumRows(params.numOfRows);
-
+		this.outputLiner 	= new OutputLiner(this.terminal, params);
 		this.tabCommands	= new TabManager();
-
 		this.f8Reader		= new F8Reader({
 			terminal	: this.terminal,
 			gds			: params.gds
@@ -50,7 +46,7 @@ export default class TerminalPlugin
 		this.history 		= new History( params.gds );
 	}
 
-	parseKeyBinds( evt, terminal )
+	_parseKeyBinds( evt, terminal )
 	{
 		const hasNoShortCut = pressedShortcuts( evt, terminal, this );
 
@@ -75,12 +71,10 @@ export default class TerminalPlugin
 		}
 	}
 
-	changeActiveTerm()
+	_changeActiveTerm()
 	{
-		if (this.settings.name === 'fullScreen')
-			return false;
-
-		CHANGE_ACTIVE_TERMINAL({gds : this.settings.gds, curTerminalId : this.name, plugin : this});
+		// window.activeTerminal = this;
+		CHANGE_ACTIVE_TERMINAL({curTerminalId : this.name});
 	}
 
 	purge()
@@ -96,24 +90,16 @@ export default class TerminalPlugin
 		this.tabCommands.move(reverse).run(this.terminal);
 	}
 
-	resize(sizes)
+	resize({numOfRows, numOfChars, charHeight})
 	{
-		this.settings.numOfRows  = sizes.numOfRows;
-		this.settings.numOfChars = sizes.numOfChars;
+		this.settings.numOfRows  = numOfRows;
+		this.settings.numOfChars = numOfChars;
 
-		this.terminal.settings().numChars = sizes.numOfChars;
-		this.terminal.settings().numRows  = sizes.numOfRows;
-		// this.terminal.resize(width, height);
+		this.terminal.settings().numChars = numOfChars;
+		this.terminal.settings().numRows  = numOfRows;
 		this.terminal.resize();
-	}
 
-	emptyLinesRecalculate( numOfRows, numOfChars, charHeight )
-	{
-		this.outputLiner
-			.setNumRows(numOfRows)
-			.setNumChars(numOfChars)
-			.setCharHeight(charHeight)
-			.recalculate();
+		this.outputLiner.recalculate({numOfRows, numOfChars, charHeight});
 	}
 
 	init()
@@ -138,19 +124,20 @@ export default class TerminalPlugin
 				}
 			},
 
-			keydown			: this.parseKeyBinds.bind(this),
+			keydown			: this._parseKeyBinds.bind(this),
 			clickTimeout	: 300,
-			// onInit			: this.changeActiveTerm.bind(this),
-			onTerminalChange: this.changeActiveTerm.bind(this),
-			onBeforeCommand : this.checkBeforeEnter.bind(this),
+			onTerminalChange: this._changeActiveTerm.bind(this),
+			onBeforeCommand : this._checkBeforeEnter.bind(this),
 
+
+			// onInit			: this._changeActiveTerm.bind(this),
 			/*keymap		: {},*/
 
 			exceptionHandler( err ) { console.warn('exc', err); }
 		});
 	}
 
-	checkSabreCommand( command, terminal )
+	_checkSabreCommand( command, terminal )
 	{
 		if ( this.allowManualPaging )
 		{
@@ -177,47 +164,46 @@ export default class TerminalPlugin
 		return false;
 	}
 
-	checkBeforeEnter( terminal, command )
+	_checkBeforeEnter( terminal, command )
 	{
-		if ( !command || command.trim() === '' )
+		if ( this._checkSabreCommand( command, terminal ) )
 		{
-			this.terminal.echo('>');
-			return false;
+			return command;
 		}
 
-		if ( this.checkSabreCommand( command, terminal ) )
-			return command;
-
-		this.spinner.start(); // issue 03
-
 		const before = () => {
-			this.outputLiner.prepare('');
+
+			this.outputLiner.printOutput('');
+
 			this.spinner.start();
+
 			this.terminal.echo( `[[;;;usedCommand;]>${command.toUpperCase()}]` );
+
 			return command.toUpperCase();
 		};
 
+		const output = response => {
+			this.spinner.end();
+			this.parseBackEnd( response, command );
+		};
+
 		this.session
-			.pushCommand( before )
-			.perform()
-			.then( response => {
-				this.spinner.end();
-				this.parseBackEnd( response, command );
-			});
+			.perform( before )
+			.then( output );
 
 		return command;
 	}
 
-	parseBackEnd( response = {}, command )
+	parseBackEnd({data = {}}, command)
 	{
-		this.lastCommand = command;
+		this.lastCommand = command; // for history
 		this.history.add(command);
 
-		const result = response['data'] || {};
+		const {output} = data;
 
-		if ( result['output'] )
+		if ( output )
 		{
-			if ( result['output'].trim() === '*')
+			if ( output.trim() === '*')
 			{
 				this.terminal.update( -2 , command + ' *');
 				return false;
@@ -225,43 +211,25 @@ export default class TerminalPlugin
 
 			if ( this.allowManualPaging ) // sabre
 			{
-				const output = this.pagination
-					.bindOutput( result['output'], this.settings.numOfRows - 1, this.settings.numOfChars )
-					.print();
+				const {numOfRows, numOfChars} = this.settings;
 
-				this.terminal.echo( output );
+				this.terminal.echo(
+					this.pagination.bindOutput(output, numOfRows - 1, numOfChars).print()
+				);
 			} else
 			{
-				// if 1 rows of terminal do not perform clear screen
-				const clearScreen = result['clearScreen'] && window.TerminalState.getMatrix().rows !== 0;
-				this.outputLiner.prepare( result['output'], clearScreen );
+				// this.terminal.echo(output);
+				this.outputLiner.printOutput( output, data['clearScreen'] );
 			}
 		}
 
-		this.tabCommands.reset( result['tabCommands'], result['output'] );
-
-		UPDATE_CUR_GDS(this.settings.gds, result);
+		this.tabCommands.reset( data['tabCommands'], output );
 
 		if ( window.TerminalState.hasPermissions() )
-			this.debugOutput( result );
+		{
+			data = {...data, log : loggerOutput(data, command)}
+		}
+
+		UPDATE_CUR_GDS(data);
 	}
-
-	debugOutput( result )
-	{
-		if (result['clearScreen'])
-			Debug( 'DEBUG: CLEAR SCREEN', 'info' );
-
-		if ( result['canCreatePq'] )
-			Debug( 'CAN CREATE PQ' , 'warning');
-
-		if ( result['tabCommands'] && result['tabCommands'].length )
-			Debug( 'FOUND TAB COMMANDS', 'success' );
-
-		if ( result['pcc'] )
-			Debug( 'CHANGE PCC', 'success' );
-	}
-
-	// parseError(e)
-	// {
-	// }
 }

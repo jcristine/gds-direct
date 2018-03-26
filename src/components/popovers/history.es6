@@ -8,65 +8,78 @@ export class History extends ButtonPopOver
 {
 	constructor(params)
 	{
-		super(params);
+		super(params, 'div.terminal-menu-popover historyContext');
 
-		this.popContent = Dom('div.historyContext');
-
-		const btn 		= this.makeTrigger();
-		btn.addEventListener( 'click', () => this.askServer() );
-	}
-
-	_makeBody( response )
-	{
-		this.list		= Dom('ul.list');
-		response.data.forEach( this._makeLi, this );
-		this.popContent.appendChild( this.list );
-	}
-
-	_makeLi( value )
-	{
-		const cb 	= Dom('input');
-		cb.type 	= 'checkbox';
-		cb.onclick	= () => buffer.push( value );
-
-		const el 	= Dom(`a.t-pointer[${value}]`);
-		el.onclick 	= () => cb.click();
-
-		const li = Dom('li.m-b-xs');
-		li.appendChild( cb );
-		li.appendChild( el );
-
-		this.list.appendChild( li );
-	}
-
-	_makeLaunchBtn()
-	{
-		const el  = Dom('button.btn btn-sm btn-purple font-bold btn-block m-t[Perform]');
-
-		el.onclick 		= () => DEV_CMD_STACK_RUN(buffer);
-		el.addEventListener('click', () => this.popover.close() );
-
-		this.popContent.appendChild( el );
-	}
-
-	_finalize()
-	{
-		this.list.scrollTop  = this.popContent.scrollHeight;
+		this.makeTrigger({
+			onclick : () => this.askServer()
+		});
 	}
 
 	askServer()
 	{
 		buffer 						= [];
-		this.popContent.innerHTML 	= '';
+		this.popContent.innerHTML 	= '<div class="text-center"><div class="terminal-lds-hourglass"></div></div>';
 
 		GET_HISTORY()
-			.then( this._makeBody.bind(this) )
-			.then( this._makeLaunchBtn.bind(this) )
-			.then( this._finalize.bind(this) )
+			.then( response => {
+
+				const c = new Context(response, this.popover);
+
+				this.popContent.innerHTML = '';
+				this.popContent.appendChild( c.context );
+
+				c.finalize( this.popContent );
+			})
+	}
+}
+
+class Context
+{
+	constructor(response, popover)
+	{
+		this.context = Dom('div');
+
+		this._makeBody(response);
+		this._makeLaunchBtn(popover);
 	}
 
-	build()
+	_makeBody( response )
 	{
-		return false;
+		const list	= Dom('ul.list');
+
+		response.data.forEach( value => {
+
+			const el 	= Dom(`a.t-pointer[${value}]`, {
+				onclick : () => {
+					el.classList.toggle('checked');
+					buffer.push(value);
+				}
+			});
+
+			const li = Dom('li.m-b-xs');
+			li.appendChild( el );
+
+			list.appendChild( li );
+		});
+
+		this.context.appendChild( list );
+		this.list = list;
+	}
+
+	_makeLaunchBtn(popover)
+	{
+		const el  = Dom('button.btn btn-sm btn-purple font-bold btn-block m-t[Perform]', {
+			onclick : () => {
+				DEV_CMD_STACK_RUN(buffer);
+				popover.close();
+			}
+		});
+
+		this.context.appendChild( el );
+	}
+
+	finalize(popContent)
+	{
+		this.list.scrollTop  = popContent.scrollHeight;
 	}
 }

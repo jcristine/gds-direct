@@ -1,5 +1,3 @@
-'use strict';
-
 import Drop		from 'tether-drop';
 import Dom 		from '../helpers/dom.es6';
 
@@ -16,37 +14,42 @@ const CLASS_NAME = 'drop-theme-twipsy';
 
 export default class ButtonPopOver
 {
-	constructor( params )
+	constructor( params, context = 'div', attributes = {})
 	{
 		this.settings 	= params;
-		this.popContent = this.popContent = Dom('div');
+		this.popContent = Dom( context, attributes );
 	}
 
-	makeTrigger()
+	makeTrigger(attributes = {})
 	{
-		this.trigger 			= Dom('button.btn btn-primary font-bold');
-		this.trigger.onclick 	= this.makePopover.bind(this);
-		this.trigger.innerHTML	= this.settings.icon;
+		this.trigger = Dom('button.btn btn-primary font-bold', {...attributes, innerHTML : this.settings.icon});
+
+		this.trigger.addEventListener('click', () => this.makePopover());
 
 		return this.trigger;
 	}
 
 	makePopover()
 	{
-		this.popover = this.popover || new Drop({
-				target		: this.getTrigger(),
-				content		: this.getPopContent(),
-				classes		: CLASS_NAME,
-				position	: 'left top',
-				openOn		: 'click'
-			});
+		if (this.popover)
+		{
+			return false;
+		}
+
+		this.popover = new Drop({
+			target		: this.getTrigger(),
+			content		: this.getPopContent(),
+			classes		: CLASS_NAME,
+			position	: 'left top',
+			openOn		: 'click'
+		});
 
 		if (this.settings.onOpen)
+		{
 			this.popover.on('open', this.settings.onOpen );
+		}
 
-		this.trigger.onclick = false;
 		this.popover.open();
-		// this.trigger.click();
 	}
 
 	getTrigger()
@@ -62,6 +65,5 @@ export default class ButtonPopOver
 
 	build()
 	{
-		console.warn( 'Build Popover method undefined in child component ')
 	}
 }

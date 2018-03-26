@@ -6,20 +6,21 @@ export default class PqButton extends Component
 	constructor()
 	{
 		super('button.btn btn-sm btn-mozilla font-bold[PQ]', {
-			disabled 	: true
+			disabled : true
 		});
 
 		this.context.onclick = PQ_MODAL_SHOW
 	}
 
-	stateToProps({gdsObj})
+	setState({canCreatePq = false})
 	{
-		const {canCreatePq} = gdsObj;
-		return {canCreatePq};
+		return super.setState({
+			canCreatePq : canCreatePq
+		})
 	}
 
-	_renderer()
+	_renderer(state)
 	{
-		this.context.disabled = !this.props.canCreatePq;
+		this.context.disabled = state.canCreatePq !== true;
 	}
 }

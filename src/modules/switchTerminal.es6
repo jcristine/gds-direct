@@ -245,37 +245,53 @@ const gridMaps = {
 	}
 };
 
-export const switchTerminal = ({keymap, gds, name}) => {
-	const currentTerminalName	= name;
-	const matrix				= window.TerminalState.state.gdsObj.matrix;
 
-	const rows					= matrix.rows + 1;
-	const cells					= matrix.cells + 1;
-	const gridCount				= rows * cells;
-	const mapName				= (rows === 1 || cells === 1) ? 'other' : rows + 'x' + cells;
 
-	let getId					= 0;
+export const switchTerminal = ({keymap}) => {
 
-	if (typeof keymap === 'number')
-	{
-		const id		= keymap === 48 ? 9 : keymap - 49;
-		getId			= gridMaps[mapName]['encode'][id];
+	const fn = ({matrix, curTerminalId}) => {
 
-		if (typeof getId === 'undefined')
-			return false;
-	} else {
-		const isNext	= keymap === 'next';
-		const nextId	= gridMaps[mapName]['decode'][currentTerminalName] + (isNext ? 1 : -1);
+		const {list} = matrix;
+
+		if (typeof keymap === 'number')
+		{
+			const id = keymap === 48 ? 9 : keymap - 49;
+
+			if (id >= list.length)
+			{
+				return false
+			}
+
+			return list[id];
+		}
+
+		const isNext		= keymap === 'next';
+		let index 			= list.indexOf(curTerminalId);
+		let changeIndex 	= 0;
 
 		if (isNext)
 		{
-			getId	= nextId >= gridCount ? 0 : gridMaps[mapName]['encode'][nextId];
-		} else {
-			getId	= nextId < 0 ? gridCount -1 : gridMaps[mapName]['encode'][nextId];
-		}
-	}
+			changeIndex = index + 1;
 
-	SWITCH_TERMINAL(gds, getId);
+			if (changeIndex >= list.length)
+			{
+				changeIndex = 0;
+			}
+		} else
+		{
+			changeIndex = index - 1;
+
+			if (changeIndex < 0)
+			{
+				changeIndex = list.length - 1;
+			}
+		}
+
+		return list[changeIndex];
+		// return { list : list[changeIndex] };
+	};
+
+	SWITCH_TERMINAL( fn );
 };
 
 /*

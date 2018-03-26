@@ -1,6 +1,6 @@
 import {get} from "../helpers/requests";
-import {CLOSE_PQ_WINDOW, UPDATE_STATE} from "../actions";
-import {notify} from "./debug";
+import {CLOSE_PQ_WINDOW} from "../actions";
+import {notify} from "../helpers/debug";
 
 const throwError = err => {
 
@@ -31,7 +31,6 @@ const isPqError = ({data, result}) => {
 	.filter( er => {
 		return er && er !== undefined && er.length > 0
 	})
-		// .toString().split(',')
 };
 
 export class PqParser
@@ -41,33 +40,37 @@ export class PqParser
 		this.modal = modal;
 	}
 
-	show(errors, rId)
+	show(gds, rId)
 	{
-		if (errors)
-			return throwError(errors);
+		if (!gds.get('canCreatePq'))
+		{
+			return Promise.reject('canCreatePq');
+		}
+
+		if (gds.get('canCreatePqErrors'))
+		{
+			return throwError(gds.get('canCreatePqErrors'));
+		}
 
 		document.querySelector('#spinners').classList.remove('hidden');
 		document.querySelector('#loadingDots').classList.remove('loading-hidden');
 
-		get(`terminal/priceQuote?rId=${rId}`)
+		return get(`terminal/priceQuote?rId=${rId}`)
 
 			.then( response => {
 				document.querySelector('#spinners').classList.add('hidden');
 				document.querySelector('#loadingDots').classList.add('loading-hidden');
 
+				// const pqError = [];//isPqError(response);
 				const pqError = isPqError(response);
-
-				if (pqError.length)
-					return throwError(pqError);
-
-				return response;
+				return pqError.length ? throwError(pqError) : response;
 			})
 
 			.then( response => {
 				get(`terminal/importPriceQuote?rId=${rId}`);
 				return response;
 			})
+
 			.then( response => this.modal( response, CLOSE_PQ_WINDOW ) )
-			.then( () => { UPDATE_STATE({hideMenu: true}) });
 	}
 }

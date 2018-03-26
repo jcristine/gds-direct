@@ -1,110 +1,124 @@
 import {splitIntoLinesArr} from '../helpers/helpers.es6';
 import Dom from '../helpers/dom.es6';
+// import Drop from "tether-drop";
 
 export default class Output
 {
-	constructor( terminal )
+	constructor( terminal, {numOfChars, numOfRows, charHeight})
 	{
 		this.terminal		= terminal;
 
-		this.context 		= Dom('div.emptyLinesWrapper');
 		this.emptyLines 	= 0;
 		this.outputStrings	= '';
 		this.cmdLineOffset 	= '';
+		this.clearScreen 	= false; // parameter for lifting up output with empty lines;
 
+		this.numRows 		= numOfRows;
+		this.numOfChars 	= numOfChars;
+		this.charHeight 	= charHeight;
+
+		this.context 		= Dom('div.emptyLinesWrapper');
 		this.terminal.cmd().after( this.context );
-
-		this.clearScreen 	= false;
-		this.numRows		= 0;
 	}
 
-	setNumRows( numRows )
+	setOptions({numOfRows, numOfChars, charHeight})
 	{
-		this.numRows = numRows;
-		return this;
-	}
-
-	setNumChars( numOfChars )
-	{
+		this.numRows 	= numOfRows;
 		this.numOfChars = numOfChars;
-		return this;
-	}
-
-	setCharHeight( charHeight )
-	{
 		this.charHeight = charHeight;
-		return this;
 	}
 
-	countEmpty()
+	recalculate({numOfRows, numOfChars, charHeight}) //on view terminal change sizes
 	{
-		if (!this.numRows)
+		this.setOptions({numOfRows, numOfChars, charHeight});
+
+		this
+			._countEmpty()
+			._attachEmpty()
+			._scroll();
+	}
+
+	_getOutputLength()
+	{
+		return splitIntoLinesArr( this.outputStrings, this.numOfChars ).length;
+	}
+
+	_countEmpty()
+	{
+		const outputRows = this.outputStrings ? this._getOutputLength() : 1;
+
+		const rowsRemoveEmpty	= () => this.emptyLines - outputRows;
+		const rowsToLift 		= () => this.numRows - outputRows - 1; // 1 - cmd line
+
+		this.emptyLines 	= this.clearScreen ? rowsToLift() : rowsRemoveEmpty();
+
+		if (this.emptyLines < 0)
 		{
-			console.warn('No num rows !!!!!!!!!!!!');
+			this.emptyLines = 0;
 		}
 
-		const numOfRows = this.numRows || this.terminal.rows(); //this.terminal.rows() - slow dom append cursor to body
-
-		const noClearScreen	= () => this.emptyLines > 0 ? this.emptyLines - this.getOutputLength() : 0 ;
-		const isClearScreen = () => numOfRows - ( this.getOutputLength() + 2 ); // 2 = cmd line + command name
-
-		this.emptyLines 	= this.clearScreen ? isClearScreen() : noClearScreen();
-
-		if (this.emptyLines < 0 )
-			this.emptyLines = 0;
-
 		return this;
 	}
 
-	prepare( output, clearScreen = false )
+	_printOutput()
 	{
-		this.outputStrings 	= output;
-		this.clearScreen	= clearScreen;
+		/*if (this.outputStrings.indexOf('warningMessage') !== -1)
+		{
+			this.terminal.echo(this.outputStrings, {
+				finalize : (div) => {
 
-		this.countEmpty().printOutput().attachEmpty().scroll();
-	}
+					const tip = div[0].querySelector('.warningMessage');
 
-	recalculate()
-	{
-		this.countEmpty().attachEmpty().scroll();
-	}
+					if (tip)
+					{
+						new Drop({
+							target		: tip,
+							content		: '<div class="t-f-size-16 font-bold">SUCCESS</div>',
+							classes		: 'drop-theme-twipsy',
+							openOn		: 'hover'
+						});
+					}
+				}
+			});
+		} else
+		{
+			this.terminal.echo(this.outputStrings)
+		}*/
 
-	attachEmpty()
-	{
-		this.context.innerHTML = '';
-
-		if (this.emptyLines > 0 )
-			this.context.innerHTML = [ ...new Array(  this.emptyLines + 1  ) ].join('<div><span>&nbsp;</span></div>');
-
-		return this;
-	}
-
-	getOutputLength()
-	{
-		const chars = this.numOfChars || this.terminal.cols();
-		const lines = splitIntoLinesArr( this.outputStrings, chars );
-
-		return lines.length;
-	}
-
-	printOutput()
-	{
-		this.cmdLineOffset 	= this.terminal.cmd()[0].offsetTop  - ( this.charHeight ? this.charHeight : 0);
-
-		// const chars = this.numOfChars || this.terminal.cols();
 		this.terminal.echo(this.outputStrings);
 
 		return this;
 	}
 
-	scroll()
+	_attachEmpty()
+	{
+		this.context.innerHTML = '';
+
+		if (this.emptyLines > 0 )
+		{
+			this.context.innerHTML = [ ...new Array(  this.emptyLines + 1  ) ].join('<div><span>&nbsp;</span></div>');
+		}
+
+		return this;
+	}
+
+	_scroll()
 	{
 		if (this.emptyLines === 0)
 		{
-			this.terminal.scroll().scroll( this.cmdLineOffset ); // to first line, to desired line //TEST
+			this.terminal.scroll().scroll( this.cmdLineOffset ); // to first line, to desired line
 		} else
 		{
 			this.terminal.scroll_to_bottom();
 		}
+	}
+
+	printOutput(output, isClearScreen = false)
+	{
+		this.outputStrings 	= output;
+		this.clearScreen	= isClearScreen;
+		this.cmdLineOffset 	= this.terminal.cmd()[0].offsetTop; // - this.charHeight; // remember scrollTop height before the command so when clear flag screen is set scroll to this mark
+
+		this._countEmpty()._printOutput()._attachEmpty()._scroll();
 	}
 }
