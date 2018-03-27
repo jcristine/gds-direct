@@ -1,4 +1,5 @@
 import {setLink}				from './helpers/requests.es6';
+import Requests 				from './helpers/requests';
 import {CHANGE_ACTIVE_TERMINAL, CHANGE_GDS, DEV_CMD_STACK_RUN, INIT, UPDATE_STATE} from "./actions";
 
 import {GDS} 			from './modules/gds';
@@ -184,6 +185,19 @@ class TerminalApp
 			CHANGE_GDS(gdsName);
 			CHANGE_ACTIVE_TERMINAL({curTerminalId : 0});
 			DEV_CMD_STACK_RUN('*' + pnrCode);
+		}
+	}
+
+	rebuild({rebuildGds, gdsName = 'apollo'})
+	{
+		console.log('in rebuild', rebuildGds);
+		if (rebuildGds)
+		{
+			CHANGE_GDS(gdsName);
+			CHANGE_ACTIVE_TERMINAL({curTerminalId : 0});
+			Requests.post('terminal/rebuildItinerary', rebuildGds, function(response){
+				console.log('in callback', response);
+			});
 		}
 	}
 }

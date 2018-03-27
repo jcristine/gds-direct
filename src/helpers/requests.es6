@@ -16,7 +16,7 @@ const Ask = (url, params) => {
 		.catch( debugRequest );
 };
 
-export const post = (url, params = '', callback = () => {}) => {
+const post = (url, params = '', callback = () => {}) => {
 	var xhr = new XMLHttpRequest();
 
 	xhr.open('POST', url);
@@ -57,5 +57,6 @@ export const setLink = url => { Url = url || END_POINT_URL };
 
 export default {
 	runSyncCommand	: runSyncCommand,
-	get 			: get
+	get 			: get,
+	post			: post
 };
