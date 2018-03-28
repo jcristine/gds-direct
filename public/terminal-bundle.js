@@ -1020,10 +1020,6 @@ var _createClass = function () { function defineProperties(target, props) { for 
 
 var _requests = __webpack_require__(/*! ./helpers/requests.es6 */ "./src/helpers/requests.es6");
 
-var _requests2 = __webpack_require__(/*! ./helpers/requests */ "./src/helpers/requests.es6");
-
-var _requests3 = _interopRequireDefault(_requests2);
-
 var _actions = __webpack_require__(/*! ./actions */ "./src/actions.es6");
 
 var _gds = __webpack_require__(/*! ./modules/gds */ "./src/modules/gds.es6");
@@ -3926,24 +3922,6 @@ var Ask = function Ask(url, params) {
 	}).then(_debug.showUserMessages).catch(_debug.debugRequest);
 };
 
-var post = function post(url) {
-	var params = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : '';
-	var callback = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : function () {};
-
-	var xhr = new XMLHttpRequest();
-
-	xhr.open('POST', url);
-	xhr.setRequestHeader('Accept', 'application/json, application/xml, text/plain, text/html, .');
-	xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded; charset=utf-8');
-	xhr.withCredentials = true;
-	xhr.onload = function () {
-		if (xhr.status === 200) {
-			callback(xhr.response);
-		}
-	};
-	xhr.send(params);
-};
-
 var get = exports.get = function get(url) {
 	var defParams = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
 
@@ -3972,8 +3950,7 @@ var setLink = exports.setLink = function setLink(url) {
 
 exports.default = {
 	runSyncCommand: runSyncCommand,
-	get: get,
-	post: post
+	get: get
 };
 
 /***/ }),

@@ -1,5 +1,4 @@
 import {setLink}				from './helpers/requests.es6';
-import Requests 				from './helpers/requests';
 import {CHANGE_ACTIVE_TERMINAL, CHANGE_GDS, DEV_CMD_STACK_RUN, INIT, UPDATE_STATE} from "./actions";
 
 import {GDS} 			from './modules/gds';
