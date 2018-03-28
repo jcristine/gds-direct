@@ -188,16 +188,13 @@ class TerminalApp
 		}
 	}
 
-	rebuild({rebuildGds, gdsName = 'apollo'})
+	rebuild({data, gdsName = 'apollo'})
 	{
-		console.log('in rebuild', rebuildGds);
-		if (rebuildGds)
+		if (data)
 		{
 			CHANGE_GDS(gdsName);
 			CHANGE_ACTIVE_TERMINAL({curTerminalId : 0});
-			Requests.post('terminal/rebuildItinerary', rebuildGds, function(response){
-				console.log('in callback', response);
-			});
+			DEV_CMD_STACK_RUN('REBUILD/' + data.itineraryId + '/' + data.segmentStatus + '/' + data.seats);
 		}
 	}
 }

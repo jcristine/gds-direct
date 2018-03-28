@@ -1238,17 +1238,14 @@ var TerminalApp = function () {
 	}, {
 		key: 'rebuild',
 		value: function rebuild(_ref3) {
-			var rebuildGds = _ref3.rebuildGds,
+			var data = _ref3.data,
 			    _ref3$gdsName = _ref3.gdsName,
 			    gdsName = _ref3$gdsName === undefined ? 'apollo' : _ref3$gdsName;
 
-			console.log('in rebuild', rebuildGds);
-			if (rebuildGds) {
+			if (data) {
 				(0, _actions.CHANGE_GDS)(gdsName);
 				(0, _actions.CHANGE_ACTIVE_TERMINAL)({ curTerminalId: 0 });
-				_requests3.default.post('terminal/rebuildItinerary', rebuildGds, function (response) {
-					console.log('in callback', response);
-				});
+				(0, _actions.DEV_CMD_STACK_RUN)('REBUILD/' + data.itineraryId + '/' + data.segmentStatus + '/' + data.seats);
 			}
 		}
 	}]);
