@@ -27,9 +27,10 @@ const rules = {
 	},
 
 	galileo 	: {
-		cmd		: 'SI.P /SSDOCSYYHK1/////DDMMYY/ //        /         /',
+		cmd		: 'SI.P /SSRDOCSYYHK1///// DMMYY/ //        /         /',
 		rules	: [
 			' /SSDOCSYYHK1',
+			' DMMYY',
 			' //',
 			'        /',
 			'        /'

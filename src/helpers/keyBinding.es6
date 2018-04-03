@@ -137,7 +137,7 @@ export const pressedShortcuts = (evt, terminal, plugin) => {
 						apollo 	: 'P:SFOAS/800-750-2238 ASAP CUSTOMER SUPPORT',
 						amadeus : 'AP SFO 800-750-2238-A',
 						sabre 	: '91-800-750-2238-A',
-						galileo : 'P.SFOR:800-750-2238 ASAP CUSTOMER SUPPORT'
+						galileo : 'P.SFOT:800-750-2238 ASAP CUSTOMER SUPPORT'
 					};
 
 					terminal.exec(f9[gds]);
