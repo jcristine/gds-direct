@@ -1061,7 +1061,7 @@ var TerminalApp = function () {
 		}
 
 		this.gdsList = _constants.GDS_LIST.filter(function (name) {
-			return name !== 'galileo' || permissions;
+			return name !== '' || permissions;
 		});
 
 		this.Gds = new _gds.GDS({
