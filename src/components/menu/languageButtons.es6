@@ -34,7 +34,7 @@ class LanguageButton extends ButtonPopOver
 {
 	constructor({language})
 	{
-		super({icon : language}, 'div');
+		super({icon : language + '<i class="t-f-size-9 m-l-xs  fa fa-chevron-down"></i>'}, 'div');
 		this.language		= language;
 	}
 

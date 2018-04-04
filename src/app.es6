@@ -14,18 +14,13 @@ class TerminalApp
 {
 	constructor({settings, requestId, buffer, permissions, PqPriceModal, htmlRootId, agentId, terminalThemes, commandUrl})
 	{
-		if (settings['common']['currentGds'] === 'galileo')
-		{
-			settings['common']['currentGds'] = 'apollo';
-		}
-
-		this.gdsList = GDS_LIST.filter( name => ( name !== 'galileo' || permissions) );
+		this.gdsList = GDS_LIST;
 
 		this.Gds 	= new GDS({
 			gdsList 	: settings.gds,
 			activeName 	: settings['common']['currentGds'] || 'apollo',
 			buffer 		: buffer || {},
-			gdsSet		: this.gdsList
+			gdsSet		: GDS_LIST
 		});
 
 		this.params = { requestId, permissions, terminalThemes};

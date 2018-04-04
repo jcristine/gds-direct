@@ -44,7 +44,7 @@ class GdsButtons extends ButtonPopOver
 {
 	constructor({gdsObjName, gdsList, areaList, sessionIndex, pcc})
 	{
-		super({icon : gdsObjName}, 'div');
+		super({icon : gdsObjName + '<i class="t-f-size-9 m-l-xs  fa fa-chevron-down"></i>'}, 'div');
 
 		this.gdsname		= gdsObjName;
 		this.gdsList		= gdsList;
