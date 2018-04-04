@@ -5,7 +5,7 @@ import {GDS} 			from './modules/gds';
 import ContainerMain 	from "./containers/main";
 import {PqParser} 		from "./modules/pqParser";
 import {cookieGet, cookieSet} from "./helpers/cookie";
-import {GDS_LIST, THEME_CLASS_NAME} from "./constants";
+import {GDS_LIST} from "./constants";
 import './theme/main.less';
 
 const BORDER_SIZE = 2;
