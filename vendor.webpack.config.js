@@ -1,8 +1,6 @@
 var webpack = require('webpack');
 var path 	= require('path');
 
-// var UglifyJSPlugin = require('uglifyjs-webpack-plugin');
-
 module.exports = {
 	entry: {
 		'vendor': [
@@ -18,6 +16,8 @@ module.exports = {
 		]
 	},
 
+	// mode : 'development',
+
 	output: {
 		filename: 'vendor.terminal-bundle.js',
 		path: path.resolve(__dirname, 'public'),
@@ -30,10 +30,11 @@ module.exports = {
 
 	plugins: [
 		new webpack.DllPlugin({
-			path: 'public/vendor.terminal-manifest.json',
-			name: 'vendor_lib'
+			// path: 'public/vendor.terminal-manifest.json',
+			// name: 'vendor_lib'
+			context	: __dirname,
+			name	: "vendor_lib",
+			path	: path.join(__dirname, "public/vendor.terminal-manifest.json")
 		})
-
-		// ,new UglifyJSPlugin()
 	]
 };
