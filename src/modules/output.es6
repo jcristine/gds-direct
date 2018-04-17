@@ -60,32 +60,43 @@ export default class Output
 		return this;
 	}
 
-	_printOutput()
+	_printOutput(appliedRules = '')
 	{
-		/*if (this.outputStrings.indexOf('warningMessage') !== -1)
+		/*if (appliedRules)
 		{
+			const tips = {};
+
+			Object.keys(appliedRules).map( (key) => {
+				const color = appliedRules[key].color;
+				const value = appliedRules[key].value;
+
+				tips['replace_'+key] = appliedRules[key];
+				this.outputStrings = this.outputStrings.replace(value, '[[;;;'+color+' replace_'+key+']'+value+']');
+			});
+
 			this.terminal.echo(this.outputStrings, {
 				finalize : (div) => {
 
-					const tip = div[0].querySelector('.warningMessage');
+					Object.keys(tips).map( (key) => {
+						const tip = div[0].querySelector('.' + key);
 
-					if (tip)
-					{
-						new Drop({
-							target		: tip,
-							content		: '<div class="t-f-size-16 font-bold">SUCCESS</div>',
-							classes		: 'drop-theme-twipsy',
-							openOn		: 'hover'
-						});
-					}
+						if (tip && tips[key].onMouseOver)
+						{
+							new Drop({
+								target		: tip,
+								content		: '<div class="font-bold">'+tips[key].onMouseOver+'</div>',
+								classes		: 'drop-theme-twipsy',
+								openOn		: 'hover'
+							});
+						}
+
+					});
 				}
 			});
 		} else
-		{
-			this.terminal.echo(this.outputStrings)
-		}*/
-
-		this.terminal.echo(this.outputStrings);
+		{*/
+			this.terminal.echo(this.outputStrings);
+		// }
 
 		return this;
 	}
@@ -113,12 +124,12 @@ export default class Output
 		}
 	}
 
-	printOutput(output, isClearScreen = false)
+	printOutput(output, isClearScreen = false, appliedRules = '')
 	{
 		this.outputStrings 	= output;
 		this.clearScreen	= isClearScreen;
 		this.cmdLineOffset 	= this.terminal.cmd()[0].offsetTop; // - this.charHeight; // remember scrollTop height before the command so when clear flag screen is set scroll to this mark
 
-		this._countEmpty()._printOutput()._attachEmpty()._scroll();
+		this._countEmpty()._printOutput(appliedRules)._attachEmpty()._scroll();
 	}
 }
