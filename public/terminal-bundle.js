@@ -78,7 +78,7 @@
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = (__webpack_require__(/*! dll-reference vendor_lib */ "dll-reference vendor_lib"))(9);
+module.exports = (__webpack_require__(/*! dll-reference vendor_lib */ "dll-reference vendor_lib"))(7);
 
 /***/ }),
 
@@ -254,7 +254,7 @@ function toComment(sourceMap) {
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = (__webpack_require__(/*! dll-reference vendor_lib */ "dll-reference vendor_lib"))(15);
+module.exports = (__webpack_require__(/*! dll-reference vendor_lib */ "dll-reference vendor_lib"))(1);
 
 /***/ }),
 
@@ -276,7 +276,7 @@ module.exports = (__webpack_require__(/*! dll-reference vendor_lib */ "dll-refer
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = (__webpack_require__(/*! dll-reference vendor_lib */ "dll-reference vendor_lib"))(7);
+module.exports = (__webpack_require__(/*! dll-reference vendor_lib */ "dll-reference vendor_lib"))(9);
 
 /***/ }),
 
@@ -287,7 +287,7 @@ module.exports = (__webpack_require__(/*! dll-reference vendor_lib */ "dll-refer
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = (__webpack_require__(/*! dll-reference vendor_lib */ "dll-reference vendor_lib"))(11);
+module.exports = (__webpack_require__(/*! dll-reference vendor_lib */ "dll-reference vendor_lib"))(5);
 
 /***/ }),
 
@@ -762,7 +762,7 @@ module.exports = function (css) {
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = (__webpack_require__(/*! dll-reference vendor_lib */ "dll-reference vendor_lib"))(12);
+module.exports = (__webpack_require__(/*! dll-reference vendor_lib */ "dll-reference vendor_lib"))(4);
 
 /***/ }),
 
@@ -773,7 +773,7 @@ module.exports = (__webpack_require__(/*! dll-reference vendor_lib */ "dll-refer
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = (__webpack_require__(/*! dll-reference vendor_lib */ "dll-reference vendor_lib"))(14);
+module.exports = (__webpack_require__(/*! dll-reference vendor_lib */ "dll-reference vendor_lib"))(2);
 
 /***/ }),
 
@@ -3956,7 +3956,7 @@ exports.default = {
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = (__webpack_require__(/*! dll-reference vendor_lib */ "dll-reference vendor_lib"))(2);
+module.exports = (__webpack_require__(/*! dll-reference vendor_lib */ "dll-reference vendor_lib"))(14);
 
 /***/ }),
 
@@ -4135,7 +4135,7 @@ var TerminalPlugin = function () {
 				},
 
 				keydown: this._parseKeyBinds.bind(this),
-				clickTimeout: 300,
+				// clickTimeout	: 300,
 				onTerminalChange: this._changeActiveTerm.bind(this),
 				onBeforeCommand: this._checkBeforeEnter.bind(this),
 
