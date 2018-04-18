@@ -1,5 +1,6 @@
 import {DEV_CMD_STACK_RUN} from "../actions";
 import Drop from "tether-drop";
+import {switchTerminal} from "./switchTerminal";
 
 export const highlightPopover = (props) => {
 	const defs = {
@@ -56,8 +57,12 @@ export const replaceInTerminal = (div, tips) => {
 
 		if (target && tips[key].onClickCommand)
 		{
-			target.onclick = () => DEV_CMD_STACK_RUN(tips[key].onClickCommand);
-			// CHANGE_ACTIVE_TERMINAL({curTerminalId : 0});
+			target.onclick = () => {
+				switchTerminal({keymap : 'prev'})
+					.then(() => {
+						DEV_CMD_STACK_RUN(tips[key].onClickCommand);
+					});
+			}
 		}
 	});
 };

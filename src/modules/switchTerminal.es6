@@ -1,5 +1,5 @@
 import {SWITCH_TERMINAL} from "../actions";
-
+/*
 const gridMaps = {
 	'2x2' : {
 		encode: {
@@ -243,7 +243,7 @@ const gridMaps = {
 			9: 9
 		}
 	}
-};
+};*/
 
 
 
@@ -256,42 +256,22 @@ export const switchTerminal = ({keymap}) => {
 		if (typeof keymap === 'number')
 		{
 			const id = keymap === 48 ? 9 : keymap - 49;
-
-			if (id >= list.length)
-			{
-				return false
-			}
-
-			return list[id];
+			return id >= list.length ? false :  list[id];
 		}
 
-		const isNext		= keymap === 'next';
-		let index 			= list.indexOf(curTerminalId);
-		let changeIndex 	= 0;
+		const index 		= list.indexOf(curTerminalId);
+		let changeIndex 	= keymap === 'next' ? (index + 1) : (index - 1);
 
-		if (isNext)
-		{
-			changeIndex = index + 1;
+		if (changeIndex >= list.length)
+			changeIndex = 0;
 
-			if (changeIndex >= list.length)
-			{
-				changeIndex = 0;
-			}
-		} else
-		{
-			changeIndex = index - 1;
-
-			if (changeIndex < 0)
-			{
-				changeIndex = list.length - 1;
-			}
-		}
+		if (changeIndex < 0)
+			changeIndex = list.length - 1;
 
 		return list[changeIndex];
-		// return { list : list[changeIndex] };
 	};
 
-	SWITCH_TERMINAL( fn );
+	return SWITCH_TERMINAL( fn );
 };
 
 /*

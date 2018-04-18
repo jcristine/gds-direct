@@ -122,7 +122,7 @@ class TerminalApp
 
 		const numOf = {
 			numOfRows 	: Math.floor( (height - BORDER_SIZE)	/ char.height ),
-			numOfChars	: Math.floor( (width - BORDER_SIZE) 	/ char.width )// - 2
+			numOfChars	: Math.floor( (width - BORDER_SIZE) 	/ char.width ) - 2 // 2 - FORGOT ABOUT SCROLL
 		};
 
 		const dimensions = {

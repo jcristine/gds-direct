@@ -87,18 +87,20 @@ export const CLOSE_PQ_WINDOW = () => showPq({hideMenu : false});
 
 export const SWITCH_TERMINAL = (fn) => {
 
-	const curTerminalId = fn(app.getGds().get());
+	return new Promise( resolve => {
 
-	setTimeout(() => { // THIS IS CRAZY SHIT. WITHOUT IT SWITCHES TERMINALS SEVERAL TIMES TRY PRESS ~
+		const curTerminalId = fn(app.getGds().get());
 
-		const terminal = app.Gds.getCurrent().get('terminals');
+		setTimeout(() => { // THIS IS CRAZY SHIT. WITHOUT IT SWITCHES TERMINALS SEVERAL TIMES TRY PRESS ~
 
-		if (curTerminalId !== false)
-		{
-			terminal[curTerminalId].plugin.terminal.focus();
-		}
+			const terminal = app.Gds.getCurrent().get('terminals');
 
-	}, 100);
+			if (curTerminalId !== false)
+				terminal[curTerminalId].plugin.terminal.focus();
+
+			resolve('done');
+		}, 100);
+	});
 };
 
 export const CHANGE_FONT_SIZE = props => {
