@@ -125,7 +125,7 @@ export default class TerminalPlugin
 			},
 
 			keydown			: this._parseKeyBinds.bind(this),
-			clickTimeout	: 300,
+			// clickTimeout	: 300,
 			onTerminalChange: this._changeActiveTerm.bind(this),
 			onBeforeCommand : this._checkBeforeEnter.bind(this),
 
