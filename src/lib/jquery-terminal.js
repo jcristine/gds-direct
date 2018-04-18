@@ -6441,6 +6441,14 @@
 					var $target;
 					var name = 'click_' + self.id();
 					function position() {
+
+						// osipov CUSTOMIZATION!
+						if (!$target)
+						{
+							count = 0;
+							return false;
+						}
+
 						if ($target.is('.terminal') ||
 							$target.is('.terminal-wrapper')) {
 							var len = self.get_command().length;
