@@ -1,7 +1,6 @@
 import {splitIntoLinesArr} from '../helpers/helpers.es6';
 import Dom from '../helpers/dom.es6';
-import Drop from "tether-drop";
-import {CHANGE_ACTIVE_TERMINAL, DEV_CMD_STACK_RUN} from "../actions";
+import {seedOutputString, replaceInTerminal} from "./highlight";
 
 export default class Output
 {
@@ -65,41 +64,8 @@ export default class Output
 	{
 		if (appliedRules && window.TerminalState.hasPermissions())
 		{
-			const tips = {};
-
-			Object.keys(appliedRules).map( (key) => {
-				const color 	= appliedRules[key].color;
-				const value 	= appliedRules[key].value;
-				const replaced 	= value.replace(new RegExp('%', 'g'), '');
-
-				tips['replace_'+key] = appliedRules[key];
-				this.outputStrings = this.outputStrings.replace(value, '[[;;;'+color+' terminal-highlight replace_'+key+']'+replaced+']');
-			});
-
-			const finalize = (div) => {
-
-				Object.keys(tips).map( (key) => {
-					const context = div[0].querySelector('.' + key);
-
-					if (context && tips[key].onMouseOver)
-					{
-						new Drop({
-							target		: context,
-							content		: '<strong>'+tips[key].onMouseOver+'</strong>',
-							classes		: 'drop-theme-twipsy',
-							openOn		: 'hover'
-						});
-					}
-
-					if (context && tips[key].onClickCommand)
-					{
-						context.onclick = () => DEV_CMD_STACK_RUN(tips[key].onClickCommand);
-						// CHANGE_ACTIVE_TERMINAL({curTerminalId : 0});
-					}
-				});
-			};
-
-			this.terminal.echo(this.outputStrings, {finalize});
+			const {tips, outputText} = seedOutputString(this.outputStrings, appliedRules);
+			this.terminal.echo(outputText, {finalize : (div) => replaceInTerminal(div, tips)});
 		} else
 		{
 			this.terminal.echo(this.outputStrings);

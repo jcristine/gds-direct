@@ -1,0 +1,63 @@
+import {DEV_CMD_STACK_RUN} from "../actions";
+import Drop from "tether-drop";
+
+export const highlightPopover = (props) => {
+	const defs = {
+		classes		: 'drop-theme-twipsy font-bold',
+		position	: 'top center',
+		openOn		: 'hover'
+	};
+
+	return new Drop({
+		...defs,
+		...props
+	});
+};
+
+export const seedOutputString = (outputText, appliedRules) => {
+
+	const tips = {};
+
+	appliedRules = Object.keys(appliedRules).map((k) => appliedRules[k]);
+
+	appliedRules.map( ({color, value, ...rule}, key) => {
+		const replaced 	= value.replace(new RegExp('%', 'g'), '');
+
+		let part =  '[[;;;'+color;
+
+
+		if (rule.onClickCommand || rule.onMouseOver)
+		{
+			tips['replace_'+key] = rule;
+			part += ' terminal-highlight replace_'+key;
+		}
+
+		part += ']'+replaced+']';
+
+		outputText = outputText.replace(value, part);
+	});
+
+	return {
+		tips, outputText
+	}
+};
+
+export const replaceInTerminal = (div, tips) => {
+
+	Object.keys(tips).map( key => {
+
+		const target 	= div[0].querySelector('.' + key);
+		const content 	= tips[key].onMouseOver;
+
+		if (target && content)
+		{
+			highlightPopover({target, content})
+		}
+
+		if (target && tips[key].onClickCommand)
+		{
+			target.onclick = () => DEV_CMD_STACK_RUN(tips[key].onClickCommand);
+			// CHANGE_ACTIVE_TERMINAL({curTerminalId : 0});
+		}
+	});
+};
