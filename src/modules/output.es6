@@ -1,6 +1,7 @@
 import {splitIntoLinesArr} from '../helpers/helpers.es6';
 import Dom from '../helpers/dom.es6';
-// import Drop from "tether-drop";
+import Drop from "tether-drop";
+import {CHANGE_ACTIVE_TERMINAL, DEV_CMD_STACK_RUN} from "../actions";
 
 export default class Output
 {
@@ -62,7 +63,7 @@ export default class Output
 
 	_printOutput(appliedRules = '')
 	{
-		/*if (appliedRules)
+		if (appliedRules && window.TerminalState.hasPermissions())
 		{
 			const tips = {};
 
@@ -71,32 +72,37 @@ export default class Output
 				const value = appliedRules[key].value;
 
 				tips['replace_'+key] = appliedRules[key];
-				this.outputStrings = this.outputStrings.replace(value, '[[;;;'+color+' replace_'+key+']'+value+']');
+				this.outputStrings = this.outputStrings.replace(value, '[[;;;'+color+' terminal-highlight replace_'+key+']'+value+']');
 			});
 
 			this.terminal.echo(this.outputStrings, {
 				finalize : (div) => {
 
 					Object.keys(tips).map( (key) => {
-						const tip = div[0].querySelector('.' + key);
+						const context = div[0].querySelector('.' + key);
 
-						if (tip && tips[key].onMouseOver)
+						if (context && tips[key].onMouseOver)
 						{
 							new Drop({
-								target		: tip,
+								target		: context,
 								content		: '<div class="font-bold">'+tips[key].onMouseOver+'</div>',
 								classes		: 'drop-theme-twipsy',
 								openOn		: 'hover'
 							});
 						}
 
+						if (context && tips[key].onClickCommand)
+						{
+							context.onclick = () => DEV_CMD_STACK_RUN(tips[key].onClickCommand);
+							// CHANGE_ACTIVE_TERMINAL({curTerminalId : 0});
+						}
 					});
 				}
 			});
 		} else
-		{*/
+		{
 			this.terminal.echo(this.outputStrings);
-		// }
+		}
 
 		return this;
 	}

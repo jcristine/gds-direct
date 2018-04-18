@@ -219,7 +219,7 @@ export default class TerminalPlugin
 			} else
 			{
 				// this.terminal.echo(output);
-				this.outputLiner.printOutput( output, data['clearScreen'] );
+				this.outputLiner.printOutput( output, data['clearScreen'], data['appliedRules'] );
 			}
 		}
 
