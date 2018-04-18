@@ -5089,35 +5089,36 @@ var Output = function () {
 				Object.keys(appliedRules).map(function (key) {
 					var color = appliedRules[key].color;
 					var value = appliedRules[key].value;
+					var replaced = value.replace(new RegExp('%', 'g'), '');
 
 					tips['replace_' + key] = appliedRules[key];
-					_this2.outputStrings = _this2.outputStrings.replace(value, '[[;;;' + color + ' terminal-highlight replace_' + key + ']' + value + ']');
+					_this2.outputStrings = _this2.outputStrings.replace(value, '[[;;;' + color + ' terminal-highlight replace_' + key + ']' + replaced + ']');
 				});
 
-				this.terminal.echo(this.outputStrings, {
-					finalize: function finalize(div) {
+				var finalize = function finalize(div) {
 
-						Object.keys(tips).map(function (key) {
-							var context = div[0].querySelector('.' + key);
+					Object.keys(tips).map(function (key) {
+						var context = div[0].querySelector('.' + key);
 
-							if (context && tips[key].onMouseOver) {
-								new _tetherDrop2.default({
-									target: context,
-									content: '<div class="font-bold">' + tips[key].onMouseOver + '</div>',
-									classes: 'drop-theme-twipsy',
-									openOn: 'hover'
-								});
-							}
+						if (context && tips[key].onMouseOver) {
+							new _tetherDrop2.default({
+								target: context,
+								content: '<strong>' + tips[key].onMouseOver + '</strong>',
+								classes: 'drop-theme-twipsy',
+								openOn: 'hover'
+							});
+						}
 
-							if (context && tips[key].onClickCommand) {
-								context.onclick = function () {
-									return (0, _actions.DEV_CMD_STACK_RUN)(tips[key].onClickCommand);
-								};
-								// CHANGE_ACTIVE_TERMINAL({curTerminalId : 0});
-							}
-						});
-					}
-				});
+						if (context && tips[key].onClickCommand) {
+							context.onclick = function () {
+								return (0, _actions.DEV_CMD_STACK_RUN)(tips[key].onClickCommand);
+							};
+							// CHANGE_ACTIVE_TERMINAL({curTerminalId : 0});
+						}
+					});
+				};
+
+				this.terminal.echo(this.outputStrings, { finalize: finalize });
 			} else {
 				this.terminal.echo(this.outputStrings);
 			}

@@ -68,37 +68,38 @@ export default class Output
 			const tips = {};
 
 			Object.keys(appliedRules).map( (key) => {
-				const color = appliedRules[key].color;
-				const value = appliedRules[key].value;
+				const color 	= appliedRules[key].color;
+				const value 	= appliedRules[key].value;
+				const replaced 	= value.replace(new RegExp('%', 'g'), '');
 
 				tips['replace_'+key] = appliedRules[key];
-				this.outputStrings = this.outputStrings.replace(value, '[[;;;'+color+' terminal-highlight replace_'+key+']'+value+']');
+				this.outputStrings = this.outputStrings.replace(value, '[[;;;'+color+' terminal-highlight replace_'+key+']'+replaced+']');
 			});
 
-			this.terminal.echo(this.outputStrings, {
-				finalize : (div) => {
+			const finalize = (div) => {
 
-					Object.keys(tips).map( (key) => {
-						const context = div[0].querySelector('.' + key);
+				Object.keys(tips).map( (key) => {
+					const context = div[0].querySelector('.' + key);
 
-						if (context && tips[key].onMouseOver)
-						{
-							new Drop({
-								target		: context,
-								content		: '<div class="font-bold">'+tips[key].onMouseOver+'</div>',
-								classes		: 'drop-theme-twipsy',
-								openOn		: 'hover'
-							});
-						}
+					if (context && tips[key].onMouseOver)
+					{
+						new Drop({
+							target		: context,
+							content		: '<strong>'+tips[key].onMouseOver+'</strong>',
+							classes		: 'drop-theme-twipsy',
+							openOn		: 'hover'
+						});
+					}
 
-						if (context && tips[key].onClickCommand)
-						{
-							context.onclick = () => DEV_CMD_STACK_RUN(tips[key].onClickCommand);
-							// CHANGE_ACTIVE_TERMINAL({curTerminalId : 0});
-						}
-					});
-				}
-			});
+					if (context && tips[key].onClickCommand)
+					{
+						context.onclick = () => DEV_CMD_STACK_RUN(tips[key].onClickCommand);
+						// CHANGE_ACTIVE_TERMINAL({curTerminalId : 0});
+					}
+				});
+			};
+
+			this.terminal.echo(this.outputStrings, {finalize});
 		} else
 		{
 			this.terminal.echo(this.outputStrings);
