@@ -19,13 +19,12 @@ export const seedOutputString = (outputText, appliedRules) => {
 
 	const tips = {};
 
-	appliedRules = Object.keys(appliedRules).map((k) => appliedRules[k]);
+	// appliedRules = Object.keys(appliedRules).map((k) => appliedRules[k]);
 
 	appliedRules.map( ({color, value, ...rule}, key) => {
 		const replaced 	= value.replace(new RegExp('%', 'g'), '');
 
 		let part =  '[[;;;'+color;
-
 
 		if (rule.onClickCommand || rule.onMouseOver)
 		{
@@ -55,12 +54,17 @@ export const replaceInTerminal = (div, tips) => {
 			highlightPopover({target, content})
 		}
 
-		if (target && tips[key].onClickCommand)
+		const command = tips[key].onClickCommand || tips[key].onClickMessage;
+
+		if (target && command)
 		{
-			target.onclick = () => {
+			target.onclick = (e) => {
+				// e.preventDefault();
+				// e.stopPropagation();
+
 				switchTerminal({keymap : 'prev'})
 					.then(() => {
-						DEV_CMD_STACK_RUN(tips[key].onClickCommand);
+						DEV_CMD_STACK_RUN(command);
 					});
 			}
 		}
