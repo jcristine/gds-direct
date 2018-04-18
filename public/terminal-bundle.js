@@ -896,17 +896,20 @@ var CLOSE_PQ_WINDOW = exports.CLOSE_PQ_WINDOW = function CLOSE_PQ_WINDOW() {
 
 var SWITCH_TERMINAL = exports.SWITCH_TERMINAL = function SWITCH_TERMINAL(fn) {
 
-	var curTerminalId = fn(app.getGds().get());
+	return new Promise(function (resolve) {
 
-	setTimeout(function () {
-		// THIS IS CRAZY SHIT. WITHOUT IT SWITCHES TERMINALS SEVERAL TIMES TRY PRESS ~
+		var curTerminalId = fn(app.getGds().get());
 
-		var terminal = app.Gds.getCurrent().get('terminals');
+		setTimeout(function () {
+			// THIS IS CRAZY SHIT. WITHOUT IT SWITCHES TERMINALS SEVERAL TIMES TRY PRESS ~
 
-		if (curTerminalId !== false) {
-			terminal[curTerminalId].plugin.terminal.focus();
-		}
-	}, 100);
+			var terminal = app.Gds.getCurrent().get('terminals');
+
+			if (curTerminalId !== false) terminal[curTerminalId].plugin.terminal.focus();
+
+			resolve('done');
+		}, 100);
+	});
 };
 
 var CHANGE_FONT_SIZE = exports.CHANGE_FONT_SIZE = function CHANGE_FONT_SIZE(props) {
@@ -1164,7 +1167,7 @@ var TerminalApp = function () {
 
 			var numOf = {
 				numOfRows: Math.floor((height - BORDER_SIZE) / char.height),
-				numOfChars: Math.floor((width - BORDER_SIZE) / char.width) // - 2
+				numOfChars: Math.floor((width - BORDER_SIZE) / char.width) - 2 // 2 - FORGOT ABOUT SCROLL
 			};
 
 			var dimensions = {
@@ -4901,6 +4904,8 @@ var _tetherDrop = __webpack_require__(/*! tether-drop */ "./node_modules/tether-
 
 var _tetherDrop2 = _interopRequireDefault(_tetherDrop);
 
+var _switchTerminal = __webpack_require__(/*! ./switchTerminal */ "./src/modules/switchTerminal.es6");
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _objectWithoutProperties(obj, keys) { var target = {}; for (var i in obj) { if (keys.indexOf(i) >= 0) continue; if (!Object.prototype.hasOwnProperty.call(obj, i)) continue; target[i] = obj[i]; } return target; }
@@ -4919,9 +4924,7 @@ var seedOutputString = function seedOutputString(outputText, appliedRules) {
 
 	var tips = {};
 
-	appliedRules = Object.keys(appliedRules).map(function (k) {
-		return appliedRules[k];
-	});
+	// appliedRules = Object.keys(appliedRules).map((k) => appliedRules[k]);
 
 	appliedRules.map(function (_ref, key) {
 		var color = _ref.color,
@@ -4959,11 +4962,17 @@ var replaceInTerminal = exports.replaceInTerminal = function replaceInTerminal(d
 			highlightPopover({ target: target, content: content });
 		}
 
-		if (target && tips[key].onClickCommand) {
-			target.onclick = function () {
-				return (0, _actions.DEV_CMD_STACK_RUN)(tips[key].onClickCommand);
+		var command = tips[key].onClickCommand || tips[key].onClickMessage;
+
+		if (target && command) {
+			target.onclick = function (e) {
+				// e.preventDefault();
+				// e.stopPropagation();
+
+				(0, _switchTerminal.switchTerminal)({ keymap: 'next' }).then(function () {
+					(0, _actions.DEV_CMD_STACK_RUN)(command);
+				});
 			};
-			// CHANGE_ACTIVE_TERMINAL({curTerminalId : 0});
 		}
 	});
 };
@@ -5592,8 +5601,9 @@ exports.switchTerminal = undefined;
 
 var _actions = __webpack_require__(/*! ../actions */ "./src/actions.es6");
 
-var gridMaps = {
-	'2x2': {
+/*
+const gridMaps = {
+	'2x2' : {
 		encode: {
 			0: 0,
 			1: 2,
@@ -5607,7 +5617,7 @@ var gridMaps = {
 			3: 3
 		}
 	},
-	'2x3': {
+	'2x3' : {
 		encode: {
 			0: 0,
 			1: 3,
@@ -5625,7 +5635,7 @@ var gridMaps = {
 			5: 5
 		}
 	},
-	'2x4': {
+	'2x4' : {
 		encode: {
 			0: 0,
 			1: 4,
@@ -5647,7 +5657,7 @@ var gridMaps = {
 			7: 7
 		}
 	},
-	'3x2': {
+	'3x2' : {
 		encode: {
 			0: 0,
 			1: 2,
@@ -5665,7 +5675,7 @@ var gridMaps = {
 			5: 5
 		}
 	},
-	'3x3': {
+	'3x3' : {
 		encode: {
 			0: 0,
 			1: 3,
@@ -5689,7 +5699,7 @@ var gridMaps = {
 			8: 8
 		}
 	},
-	'3x4': {
+	'3x4' : {
 		encode: {
 			0: 0,
 			1: 4,
@@ -5719,7 +5729,7 @@ var gridMaps = {
 			11: 11
 		}
 	},
-	'4x2': {
+	'4x2' : {
 		encode: {
 			0: 0,
 			1: 2,
@@ -5741,7 +5751,7 @@ var gridMaps = {
 			7: 7
 		}
 	},
-	'4x3': {
+	'4x3' : {
 		encode: {
 			0: 0,
 			1: 3,
@@ -5771,7 +5781,7 @@ var gridMaps = {
 			11: 11
 		}
 	},
-	'4x4': {
+	'4x4' : {
 		encode: {
 			0: 0,
 			1: 4,
@@ -5809,7 +5819,7 @@ var gridMaps = {
 			15: 15
 		}
 	},
-	'other': {
+	'other' : {
 		encode: {
 			0: 0,
 			1: 1,
@@ -5835,7 +5845,7 @@ var gridMaps = {
 			9: 9
 		}
 	}
-};
+};*/
 
 var switchTerminal = exports.switchTerminal = function switchTerminal(_ref) {
 	var keymap = _ref.keymap;
@@ -5849,37 +5859,20 @@ var switchTerminal = exports.switchTerminal = function switchTerminal(_ref) {
 
 		if (typeof keymap === 'number') {
 			var id = keymap === 48 ? 9 : keymap - 49;
-
-			if (id >= list.length) {
-				return false;
-			}
-
-			return list[id];
+			return id >= list.length ? false : list[id];
 		}
 
-		var isNext = keymap === 'next';
 		var index = list.indexOf(curTerminalId);
-		var changeIndex = 0;
+		var changeIndex = keymap === 'next' ? index + 1 : index - 1;
 
-		if (isNext) {
-			changeIndex = index + 1;
+		if (changeIndex >= list.length) changeIndex = 0;
 
-			if (changeIndex >= list.length) {
-				changeIndex = 0;
-			}
-		} else {
-			changeIndex = index - 1;
-
-			if (changeIndex < 0) {
-				changeIndex = list.length - 1;
-			}
-		}
+		if (changeIndex < 0) changeIndex = list.length - 1;
 
 		return list[changeIndex];
-		// return { list : list[changeIndex] };
 	};
 
-	(0, _actions.SWITCH_TERMINAL)(fn);
+	return (0, _actions.SWITCH_TERMINAL)(fn);
 };
 
 /*
