@@ -155,6 +155,13 @@
         .usedCommand {
             text-transform: uppercase;
         }
+
+		.terminal-highlight {
+			cursor: pointer;
+			&:hover {
+				opacity: .7;
+			}
+		}
 	}
 
     .cmd + div // for tests
@@ -172,56 +179,6 @@
 		height : auto;
 	}
 }
-
-/*
-.cmd .cursor.blink {
-	-webkit-animation: terminal-blink2 1s infinite steps(1, start);
-	-moz-animation: terminal-blink2 1s infinite steps(1, start);
-	-ms-animation: terminal-blink2 1s infinite steps(1, start);
-	animation: terminal-blink2 1s infinite steps(1, start);
-}
-@-webkit-keyframes terminal-blink2 {
-	0%, 100% {
-		background-color: rgba(0,0,0,0.3);
-		color: rgba(255,255,255,0.8);
-	}
-	50% {
-		background-color: rgba(255,255,255,0.3);
-		color: rgba(0,0,0,0.6);
-	}
-}
-
-@-ms-keyframes terminal-blink2 {
-	0%, 100% {
-		background-color: rgba(0,0,0,0.3);
-		color: rgba(255,255,255,0.8);
-	}
-	50% {
-		background-color: rgba(255,255,255,0.3);
-		color: rgba(0,0,0,0.6);
-	}
-}
-
-@-moz-keyframes terminal-blink2 {
-	0%, 100% {
-		background-color: rgba(0,0,0,0.3);
-		color: rgba(255,255,255,0.8);
-	}
-	50% {
-		background-color: rgba(255,255,255,0.3);
-		color: rgba(0,0,0,0.6);
-	}
-}
-@keyframes terminal-blink2 {
-	0%, 100% {
-		background-color: rgba(0,0,0,0.3);
-		color: rgba(255,255,255,0.8);
-	}
-	50% {
-		background-color: rgba(255,255,255,0.3);
-		color: rgba(0,0,0,0.6);
-	}
-}*/
 
 @keyframes blink {
     0% { opacity: 1; }
