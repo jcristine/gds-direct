@@ -62,7 +62,7 @@ export const replaceInTerminal = (div, tips) => {
 				// e.preventDefault();
 				// e.stopPropagation();
 
-				switchTerminal({keymap : 'prev'})
+				switchTerminal({keymap : 'next'})
 					.then(() => {
 						DEV_CMD_STACK_RUN(command);
 					});
