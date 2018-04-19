@@ -4972,7 +4972,7 @@ var replaceInTerminal = exports.replaceInTerminal = function replaceInTerminal(d
 			target.onclick = function () {
 
 				if (window.TerminalState.hasPermissions()) {
-					console.log('Ilja: ' + tips[key]);
+					console.log('Ilja: ', tips[key]);
 				}
 
 				(0, _switchTerminal.switchTerminal)({ keymap: 'next' }).then(function () {

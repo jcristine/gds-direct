@@ -67,7 +67,7 @@ export const replaceInTerminal = (div, tips) => {
 
 				if ( window.TerminalState.hasPermissions() )
 				{
-					console.log('Ilja: ' + tips[key]);
+					console.log('Ilja: ', tips[key]);
 				}
 
 				switchTerminal({keymap : 'next'})
