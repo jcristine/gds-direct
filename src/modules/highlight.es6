@@ -64,6 +64,12 @@ export const replaceInTerminal = (div, tips) => {
 		if (target && command)
 		{
 			target.onclick = () => {
+
+				if ( window.TerminalState.hasPermissions() )
+				{
+					console.log('Ilja: ' + tips[key]);
+				}
+
 				switchTerminal({keymap : 'next'})
 					.then(() => {
 						DEV_CMD_STACK_RUN(command);
