@@ -4,7 +4,7 @@ import {switchTerminal} from "./switchTerminal";
 
 export const highlightPopover = (props) => {
 	const defs = {
-		classes		: 'drop-theme-twipsy font-bold',
+		classes		: 'drop-theme-twipsy font-bold highlight-popover',
 		position	: 'top center',
 		openOn		: 'hover'
 	};
@@ -47,7 +47,12 @@ export const replaceInTerminal = (div, tips) => {
 	Object.keys(tips).map( key => {
 
 		const target 	= div[0].querySelector('.' + key);
-		const content 	= tips[key].onMouseOver;
+		let content 	= tips[key].onMouseOver;
+
+		if ( window.TerminalState.hasPermissions() )
+		{
+			content += '(' + tips[key].id + ')';
+		}
 
 		if (target && content)
 		{
@@ -58,10 +63,7 @@ export const replaceInTerminal = (div, tips) => {
 
 		if (target && command)
 		{
-			target.onclick = (e) => {
-				// e.preventDefault();
-				// e.stopPropagation();
-
+			target.onclick = () => {
 				switchTerminal({keymap : 'next'})
 					.then(() => {
 						DEV_CMD_STACK_RUN(command);
