@@ -4942,7 +4942,10 @@ var seedOutputString = function seedOutputString(outputText, appliedRules) {
 
 		part += ']' + replaced + ']';
 
-		outputText = outputText.replace(value, part);
+		if (outputText.indexOf(value) > -1) {
+			var valueReplaced = value.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, '\\$&'); // escapes all special regexp chars
+			outputText = outputText.replace(new RegExp(valueReplaced, 'g'), part);
+		}
 	});
 
 	return {
@@ -4955,31 +4958,31 @@ var replaceInTerminal = exports.replaceInTerminal = function replaceInTerminal(d
 
 	Object.keys(tips).map(function (key) {
 
-		var target = div[0].querySelector('.' + key);
-		var content = tips[key].onMouseOver;
+		var querySelector = div[0].querySelectorAll('.' + key);
 
-		if (window.TerminalState.hasPermissions()) {
-			content += '(' + tips[key].id + ')';
-		}
+		[].map.call(querySelector, function (target) {
 
-		if (target && content) {
-			highlightPopover({ target: target, content: content });
-		}
+			var content = tips[key].onMouseOver;
 
-		var command = tips[key].onClickCommand || tips[key].onClickMessage;
+			if (window.TerminalState.hasPermissions()) {
+				content += '(' + tips[key].id + ')';
+			}
 
-		if (target && command) {
-			target.onclick = function () {
+			if (target && content) {
+				highlightPopover({ target: target, content: content });
+			}
 
-				if (window.TerminalState.hasPermissions()) {
-					console.log('Ilja: ', tips[key]);
-				}
+			var command = tips[key].onClickCommand || tips[key].onClickMessage;
 
-				(0, _switchTerminal.switchTerminal)({ keymap: 'next' }).then(function () {
-					(0, _actions.DEV_CMD_STACK_RUN)(command);
-				});
-			};
-		}
+			if (target && command) {
+				var runCommand = function runCommand() {
+					return (0, _actions.DEV_CMD_STACK_RUN)(command);
+				};
+				target.onclick = function () {
+					return (0, _switchTerminal.switchTerminal)({ keymap: 'next' }).then(runCommand);
+				};
+			}
+		});
 	});
 };
 

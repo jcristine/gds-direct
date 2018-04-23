@@ -34,7 +34,11 @@ export const seedOutputString = (outputText, appliedRules) => {
 
 		part += ']'+replaced+']';
 
-		outputText = outputText.replace(value, part);
+		if ( outputText.indexOf(value) > -1 )
+		{
+			const valueReplaced = value.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, '\\$&'); // escapes all special regexp chars
+			outputText = outputText.replace(new RegExp(valueReplaced, 'g'), part);
+		}
 	});
 
 	return {
@@ -46,35 +50,30 @@ export const replaceInTerminal = (div, tips) => {
 
 	Object.keys(tips).map( key => {
 
-		const target 	= div[0].querySelector('.' + key);
-		let content 	= tips[key].onMouseOver;
+		const querySelector 	= div[0].querySelectorAll('.' + key);
 
-		if ( window.TerminalState.hasPermissions() )
-		{
-			content += '(' + tips[key].id + ')';
-		}
+		[].map.call(querySelector, ( target )  => {
 
-		if (target && content)
-		{
-			highlightPopover({target, content})
-		}
+			let content 	= tips[key].onMouseOver;
 
-		const command = tips[key].onClickCommand || tips[key].onClickMessage;
-
-		if (target && command)
-		{
-			target.onclick = () => {
-
-				if ( window.TerminalState.hasPermissions() )
-				{
-					console.log('Ilja: ', tips[key]);
-				}
-
-				switchTerminal({keymap : 'next'})
-					.then(() => {
-						DEV_CMD_STACK_RUN(command);
-					});
+			if ( window.TerminalState.hasPermissions() )
+			{
+				content += '(' + tips[key].id + ')';
 			}
-		}
+
+			if (target && content)
+			{
+				highlightPopover({target, content})
+			}
+
+			const command = tips[key].onClickCommand || tips[key].onClickMessage;
+
+			if (target && command)
+			{
+				const runCommand = () => DEV_CMD_STACK_RUN(command);
+				target.onclick = () => switchTerminal({keymap : 'next'}).then( runCommand )
+			}
+
+		});
 	});
 };
