@@ -45,12 +45,11 @@ export default class Output
 
 	_countEmpty()
 	{
-		const outputRows = this.outputStrings ? this._getOutputLength() : 1;
-
+		const outputRows 		= this.outputStrings ? this._getOutputLength() : 1;
 		const rowsRemoveEmpty	= () => this.emptyLines - outputRows;
 		const rowsToLift 		= () => this.numRows - outputRows - 1; // 1 - cmd line
 
-		this.emptyLines 	= this.clearScreen ? rowsToLift() : rowsRemoveEmpty();
+		this.emptyLines 		= this.clearScreen ? rowsToLift() : rowsRemoveEmpty();
 
 		if (this.emptyLines < 0)
 		{
@@ -62,10 +61,15 @@ export default class Output
 
 	_printOutput(appliedRules = '')
 	{
-		if (appliedRules && window.TerminalState.hasPermissions())
+		if (appliedRules && appliedRules.length && window.TerminalState.hasPermissions())
 		{
 			const {tips, outputText} = seedOutputString(this.outputStrings, appliedRules);
-			this.terminal.echo(outputText, {finalize : (div) => replaceInTerminal(div, tips)});
+			this.outputStrings 	= outputText;
+
+			this.terminal.echo(outputText, {
+				finalize 	: (div) => replaceInTerminal(div, tips),
+				// raw 		: true
+			});
 		} else
 		{
 			this.terminal.echo(this.outputStrings);
@@ -104,5 +108,7 @@ export default class Output
 		this.cmdLineOffset 	= this.terminal.cmd()[0].offsetTop; // - this.charHeight; // remember scrollTop height before the command so when clear flag screen is set scroll to this mark
 
 		this._countEmpty()._printOutput(appliedRules)._attachEmpty()._scroll();
+
+		return this.outputStrings;
 	}
 }

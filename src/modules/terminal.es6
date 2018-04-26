@@ -41,7 +41,7 @@ export default class Terminal
 
 		const buffered = buf['buffering'].map( record => {
 
-			const output = record.output ? `<pre style="white-space: pre-wrap; overflow: hidden">${ $.terminal.format( record.output )} </pre>` : '';
+			const output = record.output ? `<pre style="white-space: pre-wrap; overflow: hidden">${ $.terminal.format( record.output ).replace(/%/g, '')} </pre>` : '';
 
 			return `<div class="command">
 						<div>

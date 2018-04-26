@@ -15,7 +15,8 @@ import F8Reader		from '../modules/f8.es6';
 import History 		from '../modules/history.es6';
 import {getReplacement}		from '../helpers/helpers.es6';
 import {UPDATE_CUR_GDS, CHANGE_ACTIVE_TERMINAL} from "../actions";
-import {debugOutput, loggerOutput} from "../helpers/logger";
+// import {debugOutput} from "../helpers/logger";
+import {loggerOutput} from "../helpers/logger";
 
 export default class TerminalPlugin
 {
@@ -73,7 +74,7 @@ export default class TerminalPlugin
 
 	_changeActiveTerm()
 	{
-		// window.activeTerminal = this;
+		window.activeTerminal = this;
 		CHANGE_ACTIVE_TERMINAL({curTerminalId : this.name});
 	}
 
@@ -128,11 +129,6 @@ export default class TerminalPlugin
 			// clickTimeout	: 300,
 			onTerminalChange: this._changeActiveTerm.bind(this),
 			onBeforeCommand : this._checkBeforeEnter.bind(this),
-
-
-			// onInit			: this._changeActiveTerm.bind(this),
-			/*keymap		: {},*/
-
 			exceptionHandler( err ) { console.warn('exc', err); }
 		});
 	}
@@ -144,16 +140,16 @@ export default class TerminalPlugin
 			switch (command.toUpperCase())
 			{
 				case 'MD' :
-					terminal.echo( this.pagination.next().print() );
-					return true;
+					this.print( this.pagination.next().print() );
+				return true;
 
 				case 'MU' :
-					terminal.echo( this.pagination.prev().print() );
-					return true;
+					this.print( this.pagination.prev().print() );
+				return true;
 
 				case 'MDA' :
-					terminal.echo( this.pagination.printAll() );
-					return true;
+					this.print( this.pagination.printAll() );
+				return true;
 
 				case 'MDA5' :
 				case 'MDA20' :
@@ -177,7 +173,7 @@ export default class TerminalPlugin
 
 			this.spinner.start();
 
-			this.terminal.echo( `[[;;;usedCommand;]>${command.toUpperCase()}]` );
+			this.print(`[[;;;usedCommand;]>${command.toUpperCase()}]`);
 
 			return command.toUpperCase();
 		};
@@ -199,9 +195,9 @@ export default class TerminalPlugin
 		this.lastCommand = command; // for history
 		this.history.add(command);
 
-		const {output} = data;
+		let {output, clearScreen, appliedRules} = data;
 
-		if ( output )
+		if (output)
 		{
 			if ( output.trim() === '*')
 			{
@@ -211,16 +207,11 @@ export default class TerminalPlugin
 
 			if ( this.allowManualPaging ) // sabre
 			{
-				const {numOfRows, numOfChars} = this.settings;
-
-				this.terminal.echo(
-					this.pagination.bindOutput(output, numOfRows - 1, numOfChars).print()
-				);
-			} else
-			{
-				// this.terminal.echo(output);
-				this.outputLiner.printOutput( output, data['clearScreen'], data['appliedRules'] );
+				const {numOfRows, numOfChars} 	= this.settings;
+				output = this.pagination.bindOutput(output, numOfRows - 1, numOfChars).print();
 			}
+
+			output = this.outputLiner.printOutput(output, clearScreen, appliedRules);
 		}
 
 		this.tabCommands.reset( data['tabCommands'], output );
@@ -231,5 +222,11 @@ export default class TerminalPlugin
 		}
 
 		UPDATE_CUR_GDS(data);
+	}
+
+
+	print(output)
+	{
+		this.terminal.echo(output);
 	}
 }
