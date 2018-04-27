@@ -1,6 +1,4 @@
-'use strict';
-
-import Dom 				from '../../helpers/dom.es6';
+// 'deprieated';
 import ButtonPopOver	from '../../modules/buttonPopover.es6';
 
 export default class Settings extends ButtonPopOver

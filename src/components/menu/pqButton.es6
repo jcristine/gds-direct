@@ -12,15 +12,17 @@ export default class PqButton extends Component
 		this.context.onclick = PQ_MODAL_SHOW
 	}
 
-	setState({canCreatePq = false})
+	setState({canCreatePq = false, requestId})
 	{
 		return super.setState({
-			canCreatePq : canCreatePq
+			canCreatePq : canCreatePq,
+			requestId 	: requestId
 		})
 	}
 
 	_renderer(state)
 	{
 		this.context.disabled = state.canCreatePq !== true;
+		this.context.classList.toggle('hidden', !this.state.requestId);
 	}
 }

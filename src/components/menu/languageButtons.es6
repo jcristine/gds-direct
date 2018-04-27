@@ -34,13 +34,13 @@ class LanguageButton extends ButtonPopOver
 {
 	constructor({language})
 	{
-		super({icon : language + '<i class="t-f-size-9 m-l-xs  fa fa-chevron-down"></i>'}, 'div');
-		this.language		= language;
+		super({icon : language}, 'div');
+		this.language = language;
 	}
 
 	makeTrigger()
 	{
-		return super.makeTrigger()
+		return super.makeTrigger({className : 'btn btn-primary font-bold pos-rlt has-drop-down'})
 	}
 
 	build()

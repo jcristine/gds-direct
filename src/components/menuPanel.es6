@@ -6,6 +6,7 @@ import {SettingsButtons} 	from "./menu/settingsButtons";
 import {GdsAreas}  			from "./menu/gdsAreas";
 import {LanguageButtons} 	from "./menu/languageButtons";
 import {LogButton} 			from "./popovers/logButton";
+import {Quotes} from "./menu/quotes";
 
 export default class MenuPanel extends Component
 {
@@ -16,6 +17,13 @@ export default class MenuPanel extends Component
 
 	mount(state)
 	{
+		this.observe(
+			new Component('article')
+				.observe(
+					new Quotes()
+				)
+		);
+
 		this.observe(
 			new SettingsButtons()
 		);
@@ -29,7 +37,7 @@ export default class MenuPanel extends Component
 		);
 
 		this.attach(
-			Dom('span.label[Input Language]')
+			Dom('span.label[Language]')
 		);
 
 		this.observe(
@@ -37,7 +45,10 @@ export default class MenuPanel extends Component
 		);
 
 		this.observe(
-			new PqButton()
+			new Component('article')
+				.observe(
+					new PqButton()
+				)
 		);
 
 		if (state.permissions)
@@ -46,13 +57,14 @@ export default class MenuPanel extends Component
 				Dom('span.label[Dev actions]')
 			);
 
-			this.append(
-				new DevButtons()
-			);
-
 			this.observe(
-				new LogButton()
-			);
+				new Component('article')
+					.observe(
+						new DevButtons()
+					).observe(
+					new LogButton()
+					)
+			)
 		}
 	}
 }

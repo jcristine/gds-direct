@@ -7,6 +7,14 @@ let State =  {
 	requestId	: null,
 	gdsList		: [],
 	gdsObjName	: ''
+
+	// action	: ''
+	// canCreatePq	: ''
+	// gdsObjIndex	: ''
+	// theme : '',
+	// terminalThemes : '',
+	// permissions : '',
+	// log : '',
 };
 
 window.TerminalState = {

@@ -44,7 +44,7 @@ class GdsButtons extends ButtonPopOver
 {
 	constructor({gdsObjName, gdsList, areaList, sessionIndex, pcc})
 	{
-		super({icon : gdsObjName + '<i class="t-f-size-9 m-l-xs  fa fa-chevron-down"></i>'}, 'div');
+		super({icon : gdsObjName }, 'div');
 
 		this.gdsname		= gdsObjName;
 		this.gdsList		= gdsList;
@@ -55,7 +55,7 @@ class GdsButtons extends ButtonPopOver
 
 	makeTrigger()
 	{
-		return super.makeTrigger()
+		return super.makeTrigger({className : 'btn btn-primary font-bold pos-rlt has-drop-down'})
 	}
 
 	build()

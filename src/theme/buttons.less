@@ -5,10 +5,32 @@
     content: "\f00c";
     font: normal normal normal 11px/1 FontAwesome;
     position: absolute;
-    top: 8px;
-    left: 7px;
+    //top: 8px;
+    //left: 7px;
     font-size: 9px;
     z-index: 3;
+
+    top: 6px;
+    left: -6px;
+    background: inherit;
+    padding: 2px;
+    border-radius: 25px;
+  }
+}
+
+.btn.has-drop-down {
+
+  &:after {
+    content: "\f00c";
+    font: normal normal normal 11px/1 FontAwesome;
+    position: absolute;
+    font-size: 11px;
+    z-index: 3;
+    top: 6px;
+    right: -6px;
+    background: inherit;
+    padding: 2px;
+    border-radius: 25px;
   }
 }
 
@@ -21,6 +43,7 @@
 
   .btn {
     padding: 3px 8px;
+    box-shadow: 2px 2px 5px #404040;
 
     i {
       font-size: 23px;

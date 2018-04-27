@@ -16,48 +16,50 @@ const highlightPopover = (props) => {
 	});
 };
 
+// highlightPopover({target, content});
+
+/*const replaceForLargeDiv = () => {
+	let part =  `<span class="${color}`;
+
+	if (rule.onClickCommand || rule.onClickMessage || rule.onMouseOver)
+	{
+		part += ' terminal-highlight replace_'+key;
+		tips['replace_'+key] = rule;
+	}
+
+	part += `"`;
+
+	if (rule.onMouseOver)
+	{
+		let content = rule.onMouseOver;
+
+		if ( window.TerminalState.hasPermissions() ) // for debug purpose
+		{
+			content += '(' + rule.id + ')';
+		}
+
+		part += ` title="${content}"`;
+	}
+
+	part += `>${replaced}</span>`;
+}*/
+
 export const seedOutputString = (outputText, appliedRules) => {
 
 	const tips = {};
 
-	appliedRules.map( ({color, value, ...rule}, key) => {
+	appliedRules.map(({color, value, ...rule}, key) => {
 
-		const replaced 	= value.replace(new RegExp('%', 'g'), '');
+		const replaced 	= value.replace(/%/g, '');
 
-		let part =  `[[;;;${color}`;
-
-		if (rule.onClickCommand || rule.onClickMessage || rule.onMouseOver)
-		{
-			part += ' terminal-highlight replace_'+key;
-			tips['replace_'+key] = rule;
-		}
-
-		part += `]${replaced}]`;
-
-		/*let part =  `<span class="${color}`;
+		let part = `[[;;;${color} someClasses ]${replaced}]`;
 
 		if (rule.onClickCommand || rule.onClickMessage || rule.onMouseOver)
 		{
-			part += ' terminal-highlight replace_'+key;
+			part = part.replace('someClasses', `terminal-highlight replace_${key}`);
 			tips['replace_'+key] = rule;
 		}
 
-		part += `"`;
-
-		if (rule.onMouseOver)
-		{
-			let content = rule.onMouseOver;
-
-			if ( window.TerminalState.hasPermissions() ) // for debug purpose
-			{
-				content += '(' + rule.id + ')';
-			}
-
-			part += ` title="${content}"`;
-		}
-
-		part += `>${replaced}</span>`;
-*/
 		if ( outputText.indexOf(value) > -1 )
 		{
 			const valueReplaced = value.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, '\\$&'); // escapes all special regexp chars
@@ -70,45 +72,48 @@ export const seedOutputString = (outputText, appliedRules) => {
 	}
 };
 
+
+const popoverDefs = (div, content, placement = 'top') => ({
+	placement 	: placement,
+	content 	: content,
+	template	: '<div class="popover font-bold text-danger" role="tooltip"><div class="arrow"></div><div class="popover-content"></div></div>',
+	html 		: true,
+	trigger		: 'click',
+	viewport	: div
+});
+
 export const replaceInTerminal = (div, tips) => {
 
-	Object.keys(tips).map( key => {
+	Object.keys(tips).map(key => {
 
-		const querySelector 	= div[0].querySelectorAll('.' + key);
+		[].map.call(div[0].querySelectorAll('.' + key), target => {
 
-		[].map.call(querySelector, target  => {
+			const {id, onMouseOver, onClickMessage, onClickCommand} = tips[key];
 
-			const command = tips[key].onClickCommand || tips[key].onClickMessage;
-
-			if (target && command)
+			if (target && onClickMessage)
 			{
-				const runCommand = () => DEV_CMD_STACK_RUN(command);
+				$(target).popover( popoverDefs(div, onClickMessage, 'bottom') );
+			}
 
-				target.onclick = () => {
+			if (target && onMouseOver)
+			{
+				let content = onMouseOver + (window.TerminalState.hasPermissions() ? '(' + id + ')' : '');
+
+				$(target).tooltip({
+					...popoverDefs(div, content),
+					title		: content,
+					trigger 	: 'hover',
+					template 	: '<div class="tooltip" role="tooltip"><div class="tooltip-arrow"></div><div class="tooltip-inner"></div></div>'
+				});
+			}
+
+			if (target && onClickCommand)
+			{
+				const runCommand 	= () => DEV_CMD_STACK_RUN(onClickCommand);
+
+				target.onclick 		= () => {
 					switchTerminal({keymap : 'next'}).then( runCommand );
 				}
-			}
-
-			let content 	= tips[key].onMouseOver;
-
-			if ( window.TerminalState.hasPermissions() ) // for debug purpose
-			{
-				content += '(' + tips[key].id + ')';
-			}
-
-			if (target && content)
-			{
-				// highlightPopover({target, content});
-
-				$(target).popover({
-					placement 	: 'top',
-					// container	: 'body',
-					content 	: content,
-					template	: '<div class="popover bg-darka font-bold text-danger" role="tooltip"><div class="arrow"></div><div class="popover-content"></div></div>',
-					html 		: true,
-					trigger		: 'hover',
-					viewport	: div
-				});
 			}
 		});
 	});
