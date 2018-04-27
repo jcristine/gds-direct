@@ -75,20 +75,14 @@ class Body extends Component
 
 				const container = Dom('div.pq-container');
 
-				container.appendChild(
-					Dom('span.m-r-sm', {innerHTML : 'Selling:'})
-				);
 
 				container.appendChild(
-					Dom('strong.label label-grey m-r-sm', {innerHTML : pq['selling']})
+					Dom('strong.label label-grey m-r-sm', {innerHTML : 'Selling: ' + pq['selling']})
 				);
 
-				container.appendChild(
-					Dom('span.m-r-sm', {innerHTML : 'NET:'})
-				);
 
 				container.appendChild(
-					Dom('strong.label label-grey  m-r-sm', {innerHTML : pq['net']})
+					Dom('strong.label label-grey  m-r-sm', {innerHTML : 'NET: '  + pq['net']})
 				);
 
 				container.appendChild(
@@ -96,7 +90,7 @@ class Body extends Component
 				);
 
 				container.appendChild(
-					Dom('div.m-t', {})
+					Dom('div.m-t-sm', {})
 				);
 
 				container.appendChild(

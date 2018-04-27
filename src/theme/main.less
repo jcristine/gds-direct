@@ -84,7 +84,6 @@
 		.menu {
 			width: 20%;
 			vertical-align: top;
-			//padding: 9px;
 			background: #fff;
 
 			.label {
@@ -129,7 +128,6 @@
 					width: 100%;
 					margin: 0 auto 8px;
 					box-shadow: 1px 1px 3px #c1c1c1;
-					//border-radius: 25px;
 				}
 
 				.btn-purple {
@@ -145,7 +143,7 @@
 		}
 	}
 
-	.matrix-row{
+	.matrix-row {
 		.terminal {
 			border-right: 2px solid #fff;
 			border-bottom: 2px solid #fff;
@@ -169,13 +167,24 @@
             text-transform: uppercase;
         }
 
-		.terminal-highlight {
+		.t-highlight {
 			cursor: pointer;
-			//text-decoration: underline;
-			border-bottom : 1px dashed;
+			position: relative;
+
 			&:hover {
 				opacity: .7;
-				border-bottom : none;
+				&:before {
+					display: none;
+				}
+			}
+
+			&:before {
+				position: absolute;
+				left: 0;
+				right: 0;
+				content: ' ';
+				bottom: 2px;
+				border-bottom: 1px dashed;
 			}
 		}
 

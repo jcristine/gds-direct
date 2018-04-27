@@ -71,45 +71,6 @@ class TerminalApp
 		this.offset = value;
 	}
 
-	/*calculateMatrix2()
-	{
-		const {rows, cells} = this.Gds.getCurrent().get('matrix');
-		const hasWide 		= this.Gds.getCurrent().get('hasWide');
-
-		const char 			= this.getCharLength();
-		const rowsSize 		= rows + 1;
-
-		const height 	= ( this.container.context.clientHeight / rowsSize );// - (rowsSize * 2);
-		const width 	= Math.floor( 	(this.container.context.clientWidth - this.getOffset()) / (cells + (hasWide ? 2 : 1) ) );
-
-		const numOf 	= {
-			numOfRows 	: Math.floor( height / char.height ),
-			numOfChars	: Math.floor( (width - 2) 	/ char.width )
-		};
-
-		const dimensions = {
-			char,
-			numOf,
-			terminalSize : {
-				width 	: width,
-				height 	: (numOf.numOfRows * char.height) + 2
-			},
-			parent 	: {
-				height	: this.container.context.clientHeight,
-				width 	: (this.container.context.clientWidth - this.getOffset())
-			}
-		};
-
-		this.Gds.updateMatrix(dimensions);
-
-		if (hasWide)
-		{
-			this.calculateHasWide( dimensions );
-		}
-
-		return this;
-	}*/
-
 	calculateMatrix()
 	{
 		const {matrix, hasWide} = this.Gds.getCurrent().get();

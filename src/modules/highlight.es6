@@ -23,7 +23,7 @@ const highlightPopover = (props) => {
 
 	if (rule.onClickCommand || rule.onClickMessage || rule.onMouseOver)
 	{
-		part += ' terminal-highlight replace_'+key;
+		part += ' t-highlight replace_'+key;
 		tips['replace_'+key] = rule;
 	}
 
@@ -56,7 +56,7 @@ export const seedOutputString = (outputText, appliedRules) => {
 
 		if (rule.onClickCommand || rule.onClickMessage || rule.onMouseOver)
 		{
-			part = part.replace('someClasses', `terminal-highlight replace_${key}`);
+			part = part.replace('someClasses', `t-highlight replace_${key}`);
 			tips['replace_'+key] = rule;
 		}
 
@@ -79,7 +79,8 @@ const popoverDefs = (div, content, placement = 'top') => ({
 	template	: '<div class="popover font-bold text-danger" role="tooltip"><div class="arrow"></div><div class="popover-content highlight-popover"></div></div>',
 	html 		: true,
 	trigger		: 'click',
-	viewport	: div
+	viewport	: div,
+	container	: div
 });
 
 export const replaceInTerminal = (div, tips) => {
