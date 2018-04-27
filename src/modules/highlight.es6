@@ -76,7 +76,7 @@ export const seedOutputString = (outputText, appliedRules) => {
 const popoverDefs = (div, content, placement = 'top') => ({
 	placement 	: placement,
 	content 	: content,
-	template	: '<div class="popover font-bold text-danger" role="tooltip"><div class="arrow"></div><div class="popover-content"></div></div>',
+	template	: '<div class="popover font-bold text-danger" role="tooltip"><div class="arrow"></div><div class="popover-content highlight-popover"></div></div>',
 	html 		: true,
 	trigger		: 'click',
 	viewport	: div
