@@ -61,7 +61,7 @@ export default class Output
 
 	_printOutput(appliedRules = '')
 	{
-		if (appliedRules && appliedRules.length && window.TerminalState.hasPermissions())
+		if (appliedRules && appliedRules.length)
 		{
 			const {tips, outputText} = seedOutputString(this.outputStrings, appliedRules);
 			this.outputStrings 	= outputText;
