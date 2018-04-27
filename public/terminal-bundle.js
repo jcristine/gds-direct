@@ -115,7 +115,7 @@ exports.i(__webpack_require__(/*! -!../../node_modules/css-loader!tether-drop/di
 exports.i(__webpack_require__(/*! -!../../node_modules/css-loader!noty/lib/noty.css */ "./node_modules/css-loader/index.js!./node_modules/noty/lib/noty.css"), "");
 
 // module
-exports.push([module.i, ".terminal-wrap-custom .terminal .cmd {\n  height: 14px;\n}\n.terminal-wrap-custom .terminal .cmd .clipboard {\n  height: 14px;\n}\n.temp-terminal {\n  position: absolute;\n  top: -99999px;\n}\n.term-f-size-4 .terminal {\n  --size: 1.3;\n}\n.term-f-size-4 .terminal .cmd {\n  height: calc(18.2px);\n}\n.term-f-size-3 .terminal {\n  --size: 1.2;\n}\n.term-f-size-3 .terminal .cmd {\n  height: calc(16.8px);\n}\n.term-f-size-3 .terminal .cmd .clipboard {\n  height: calc(16.8px);\n}\n.term-f-size-2 .terminal {\n  --size: 1.1;\n}\n.term-f-size-2 .terminal .cmd {\n  height: calc(15.4px);\n}\n.term-f-size-2 .terminal .cmd .clipboard {\n  height: calc(15.4px);\n}\n.terminal-wrap-custom .t-matrix-w-0 td {\n  width: 100%;\n}\n.terminal-wrap-custom .t-matrix-w-1 td {\n  width: 50%;\n}\n.terminal-wrap-custom .t-matrix-w-2 td {\n  width: 33.33%;\n}\n.terminal-wrap-custom .t-matrix-w-3 td {\n  width: 25%;\n}\n.drop-element.drop-theme-twipsy .drop-content {\n  font-family: inherit;\n  padding: 10px;\n}\n.terminal-lds-hourglass {\n  display: inline-block;\n  position: relative;\n  width: 64px;\n  height: 64px;\n}\n.terminal-lds-hourglass:after {\n  content: \" \";\n  display: block;\n  border-radius: 50%;\n  width: 0;\n  height: 0;\n  margin: 6px;\n  box-sizing: border-box;\n  border: 26px solid #fff;\n  border-color: #fff transparent #fff transparent;\n  animation: lds-hourglass 1.2s infinite;\n}\n@keyframes lds-hourglass {\n  0% {\n    transform: rotate(0);\n    animation-timing-function: cubic-bezier(0.55, 0.055, 0.675, 0.19);\n  }\n  50% {\n    transform: rotate(900deg);\n    animation-timing-function: cubic-bezier(0.215, 0.61, 0.355, 1);\n  }\n  100% {\n    transform: rotate(1800deg);\n  }\n}\n.matrix-column {\n  display: inline-block;\n  float: left;\n  height: 125px;\n  margin-right: 20px;\n  padding: 10px;\n  cursor: pointer;\n  width: 25px;\n}\n.matrix-column:hover {\n  background: #7a43b6;\n}\n.matrix-table {\n  background: #fff;\n}\n.matrix-table td {\n  padding: 15px;\n  border: 1px solid #CCC;\n  cursor: pointer;\n}\n.matrix-table td:hover {\n  background-color: #7a43b6;\n}\n.highlight-popover .drop-content {\n  font-size: 12px;\n}\n.terminal-menu-popover {\n  padding-left: 5px;\n  width: 100px;\n}\n.terminal-menu-popover.themes {\n  width: 150px;\n}\n.terminal-menu-popover.themes a {\n  padding: 5px 0;\n}\n.terminal-menu-popover.historyContext {\n  width: 200px;\n}\n.terminal-menu-popover.historyContext ul {\n  max-height: 400px;\n  overflow-y: auto;\n  padding: 0;\n}\n.terminal-menu-popover.historyContext ul li input {\n  vertical-align: middle;\n  margin: 0;\n}\n.terminal-menu-popover.historyContext ul li a:hover {\n  opacity: .7;\n}\n.terminal-menu-popover.historyContext ul li a:before {\n  content: \"\\26AC\";\n  margin-right: 5px;\n  font-size: 21px;\n  vertical-align: middle;\n}\n.terminal-menu-popover.historyContext ul li a.checked:before {\n  content: \"\\2714\";\n  margin-right: 5px;\n}\n.terminal-menu-popover a {\n  margin-left: 5px;\n  vertical-align: middle;\n  font-size: 12px;\n  display: block;\n  padding: 2px 0;\n  font-weight: bold;\n  color: #fff;\n}\n.terminal-menu-popover a:hover {\n  opacity: .7;\n}\n.terminal-menu-popover a:before {\n  content: \"\\26AC\";\n  margin-right: 5px;\n  font-size: 21px;\n  vertical-align: middle;\n}\n.terminal-menu-popover a.checked:before {\n  content: \"\\2714\";\n  margin-right: 5px;\n}\n.cmd .cursor {\n  border: 0;\n}\n.noty-wrap-text {\n  padding: 10px;\n  font-weight: bold;\n  font-size: 13px;\n  margin: 0;\n}\n.animated {\n  animation-duration: .5s;\n  animation-fill-mode: both;\n}\n@keyframes fadeIn {\n  from {\n    opacity: 0;\n  }\n  to {\n    opacity: 1;\n  }\n}\n.fadeIn {\n  animation-name: fadeIn;\n}\n@keyframes fadeOut {\n  from {\n    opacity: 1;\n  }\n  to {\n    opacity: 0;\n  }\n}\n.fadeOut {\n  animation-name: fadeOut;\n}\n.terminal,\n.cmd {\n  color: transparent;\n  background-color: transparent;\n}\n#terminalContext {\n  width: 100%;\n  background: #fff;\n}\n.terminal-full-screen {\n  text-align: left;\n}\n.terminal-wrap-custom {\n  position: relative;\n  width: 100%;\n  height: 100%;\n}\n.terminal-wrap-custom .btn.active {\n  position: relative;\n}\n.terminal-wrap-custom .btn.active:before {\n  content: \"\\F00C\";\n  font: normal normal normal 11px/1 FontAwesome;\n  position: absolute;\n  top: 8px;\n  left: 7px;\n  font-size: 9px;\n  z-index: 3;\n}\n.terminal-wrap-custom .actions-btn-menu {\n  position: absolute;\n  padding: 10px;\n  z-index: 1;\n  right: 7px;\n  top: 0;\n}\n.terminal-wrap-custom .actions-btn-menu .btn {\n  padding: 3px 8px;\n}\n.terminal-wrap-custom .actions-btn-menu .btn i {\n  font-size: 23px;\n  vertical-align: middle;\n}\n.terminal-wrap-custom .pqQuotes {\n  vertical-align: top;\n  width: 445px;\n}\n.terminal-wrap-custom .pqQuotes .close {\n  top: 10px;\n  position: relative;\n}\n.terminal-wrap-custom .pqQuotes div.term-body-pq .pq-container {\n  padding: 15px 10px;\n  border-bottom: 1px solid #f3f3f3;\n  border-left: none;\n  border-right: none;\n}\n.terminal-wrap-custom .pqQuotes div.term-body-pq .pq-container .added-by {\n  float: right;\n}\n.terminal-wrap-custom .pqQuotes div.term-body-pq .pq-container:nth-child(even) {\n  background: #fff;\n}\n.terminal-wrap-custom .pqQuotes div.term-body-pq .pq-container:nth-child(odd) {\n  background: #f3f3f3;\n}\n.terminal-wrap-custom .pqQuotes .priceqoute-pre {\n  font-size: 11px;\n  padding: 5px;\n  color: #000;\n}\n.terminal-wrap-custom > .term-body {\n  width: 100%;\n  height: 100%;\n}\n.terminal-wrap-custom > .term-body .left {\n  position: relative;\n  height: 100%;\n}\n.terminal-wrap-custom > .term-body .menu {\n  width: 20%;\n  vertical-align: top;\n  padding: 9px;\n  background: #fff;\n}\n.terminal-wrap-custom > .term-body .menu .label {\n  font-weight: bold;\n  font-size: 12px;\n  padding: 10px 0;\n  color: #414141;\n}\n.terminal-wrap-custom > .term-body .menu .buttons .btn {\n  margin-right: 5px;\n}\n.terminal-wrap-custom > .term-body .menu .pcc-label {\n  position: absolute;\n  top: -5px;\n  right: -5px;\n  border: 1px solid;\n  padding: 0 3px;\n  background: #fff;\n  color: #511551;\n  border-radius: 15px;\n  font-size: 10px;\n}\n.terminal-wrap-custom > .term-body.minimized .menu {\n  width: 100px;\n}\n.terminal-wrap-custom > .term-body.minimized .menu .btn {\n  display: block;\n  width: 100%;\n  margin: 0 0 5px 0;\n}\n.terminal-wrap-custom > .term-body.minimized .menu .label {\n  text-align: center;\n  font-size: 10px;\n  display: block;\n}\n.terminal-wrap-custom .matrix-row .terminal {\n  border-right: 2px solid #fff;\n  border-bottom: 2px solid #fff;\n}\n.terminal-wrap-custom .terminal {\n  padding: 0;\n  float: left;\n}\n.terminal-wrap-custom .terminal.active {\n  background: red;\n}\n.terminal-wrap-custom .terminal .cmd {\n  font-weight: bold;\n  text-transform: uppercase;\n}\n.terminal-wrap-custom .terminal .usedCommand {\n  text-transform: uppercase;\n}\n.terminal-wrap-custom .terminal .terminal-highlight {\n  cursor: pointer;\n  border-bottom: 1px dashed;\n}\n.terminal-wrap-custom .terminal .terminal-highlight:hover {\n  opacity: .7;\n  border-bottom: none;\n}\n.terminal-wrap-custom .terminal .raw > div {\n  white-space: pre-wrap;\n}\n.terminal-wrap-custom .terminal-output div span {\n  display: inline;\n}\n.terminal-wrap-custom div.terminal-wrapper {\n  height: auto;\n}\n@keyframes blink {\n  0% {\n    opacity: 1;\n  }\n  25% {\n    opacity: 0;\n  }\n  50% {\n    opacity: 0;\n  }\n  100% {\n    opacity: 1;\n  }\n}\n@-webkit-keyframes blink {\n  0% {\n    opacity: 1;\n  }\n  25% {\n    opacity: 0;\n  }\n  50% {\n    opacity: 0;\n  }\n  100% {\n    opacity: 1;\n  }\n}\n@-ms-keyframes blink {\n  0% {\n    opacity: 1;\n  }\n  25% {\n    opacity: 0;\n  }\n  50% {\n    opacity: 0;\n  }\n  100% {\n    opacity: 1;\n  }\n}\n@-moz-keyframes blink {\n  0% {\n    opacity: 1;\n  }\n  25% {\n    opacity: 0;\n  }\n  50% {\n    opacity: 0;\n  }\n  100% {\n    opacity: 1;\n  }\n}\n.cmd .cursor.blink {\n  background: #ccc;\n  -webkit-animation: blink 1s infinite linear;\n  -moz-animation: blink 1s infinite linear;\n  -ms-animation: blink 1s infinite linear;\n  animation: blink 1s linear infinite;\n}\n", ""]);
+exports.push([module.i, ".terminal-wrap-custom .terminal .cmd {\n  height: 14px;\n}\n.terminal-wrap-custom .terminal .cmd .clipboard {\n  height: 14px;\n}\n.temp-terminal {\n  position: absolute;\n  top: -99999px;\n}\n.term-f-size-4 .terminal {\n  --size: 1.3;\n}\n.term-f-size-4 .terminal .cmd {\n  height: calc(18.2px);\n}\n.term-f-size-3 .terminal {\n  --size: 1.2;\n}\n.term-f-size-3 .terminal .cmd {\n  height: calc(16.8px);\n}\n.term-f-size-3 .terminal .cmd .clipboard {\n  height: calc(16.8px);\n}\n.term-f-size-2 .terminal {\n  --size: 1.1;\n}\n.term-f-size-2 .terminal .cmd {\n  height: calc(15.4px);\n}\n.term-f-size-2 .terminal .cmd .clipboard {\n  height: calc(15.4px);\n}\n.terminal-wrap-custom .t-matrix-w-0 td {\n  width: 100%;\n}\n.terminal-wrap-custom .t-matrix-w-1 td {\n  width: 50%;\n}\n.terminal-wrap-custom .t-matrix-w-2 td {\n  width: 33.33%;\n}\n.terminal-wrap-custom .t-matrix-w-3 td {\n  width: 25%;\n}\n.drop-element.drop-theme-twipsy .drop-content {\n  font-family: inherit;\n  padding: 10px;\n}\n.terminal-lds-hourglass {\n  display: inline-block;\n  position: relative;\n  width: 64px;\n  height: 64px;\n}\n.terminal-lds-hourglass:after {\n  content: \" \";\n  display: block;\n  border-radius: 50%;\n  width: 0;\n  height: 0;\n  margin: 6px;\n  box-sizing: border-box;\n  border: 26px solid #fff;\n  border-color: #fff transparent #fff transparent;\n  animation: lds-hourglass 1.2s infinite;\n}\n@keyframes lds-hourglass {\n  0% {\n    transform: rotate(0);\n    animation-timing-function: cubic-bezier(0.55, 0.055, 0.675, 0.19);\n  }\n  50% {\n    transform: rotate(900deg);\n    animation-timing-function: cubic-bezier(0.215, 0.61, 0.355, 1);\n  }\n  100% {\n    transform: rotate(1800deg);\n  }\n}\n.matrix-column {\n  display: inline-block;\n  float: left;\n  height: 125px;\n  margin-right: 20px;\n  padding: 10px;\n  cursor: pointer;\n  width: 25px;\n}\n.matrix-column:hover {\n  background: #7a43b6;\n}\n.matrix-table {\n  background: #fff;\n}\n.matrix-table td {\n  padding: 15px;\n  border: 1px solid #CCC;\n  cursor: pointer;\n}\n.matrix-table td:hover {\n  background-color: #7a43b6;\n}\n.terminal .highlight-popover {\n  font-size: 11px;\n  line-height: 1.5em;\n}\n.terminal-menu-popover {\n  padding-left: 5px;\n  width: 100px;\n}\n.terminal-menu-popover.themes {\n  width: 150px;\n}\n.terminal-menu-popover.themes a {\n  padding: 5px 0;\n}\n.terminal-menu-popover.historyContext {\n  width: 200px;\n}\n.terminal-menu-popover.historyContext ul {\n  max-height: 400px;\n  overflow-y: auto;\n  padding: 0;\n}\n.terminal-menu-popover.historyContext ul li input {\n  vertical-align: middle;\n  margin: 0;\n}\n.terminal-menu-popover.historyContext ul li a:hover {\n  opacity: .7;\n}\n.terminal-menu-popover.historyContext ul li a:before {\n  content: \"\\26AC\";\n  margin-right: 5px;\n  font-size: 21px;\n  vertical-align: middle;\n}\n.terminal-menu-popover.historyContext ul li a.checked:before {\n  content: \"\\2714\";\n  margin-right: 5px;\n}\n.terminal-menu-popover a {\n  margin-left: 5px;\n  vertical-align: middle;\n  font-size: 12px;\n  display: block;\n  padding: 2px 0;\n  font-weight: bold;\n  color: #fff;\n}\n.terminal-menu-popover a:hover {\n  opacity: .7;\n}\n.terminal-menu-popover a:before {\n  content: \"\\26AC\";\n  margin-right: 5px;\n  font-size: 21px;\n  vertical-align: middle;\n}\n.terminal-menu-popover a.checked:before {\n  content: \"\\2714\";\n  margin-right: 5px;\n}\n.cmd .cursor {\n  border: 0;\n}\n.noty-wrap-text {\n  padding: 10px;\n  font-weight: bold;\n  font-size: 13px;\n  margin: 0;\n}\n.animated {\n  animation-duration: .5s;\n  animation-fill-mode: both;\n}\n@keyframes fadeIn {\n  from {\n    opacity: 0;\n  }\n  to {\n    opacity: 1;\n  }\n}\n.fadeIn {\n  animation-name: fadeIn;\n}\n@keyframes fadeOut {\n  from {\n    opacity: 1;\n  }\n  to {\n    opacity: 0;\n  }\n}\n.fadeOut {\n  animation-name: fadeOut;\n}\n.terminal,\n.cmd {\n  color: transparent;\n  background-color: transparent;\n}\n#terminalContext {\n  width: 100%;\n  background: #fff;\n}\n.terminal-full-screen {\n  text-align: left;\n}\n.terminal-wrap-custom {\n  position: relative;\n  width: 100%;\n  height: 100%;\n}\n.terminal-wrap-custom .btn.active {\n  position: relative;\n}\n.terminal-wrap-custom .btn.active:before {\n  content: \"\\F00C\";\n  font: normal normal normal 11px/1 FontAwesome;\n  position: absolute;\n  font-size: 9px;\n  z-index: 3;\n  top: 6px;\n  left: -6px;\n  background: inherit;\n  padding: 2px;\n  border-radius: 25px;\n}\n.terminal-wrap-custom .btn.has-drop-down:after {\n  content: \"\\F078\";\n  font: normal normal normal 11px/1 FontAwesome;\n  position: absolute;\n  font-size: 11px;\n  z-index: 3;\n  top: 6px;\n  right: -6px;\n  background: inherit;\n  padding: 2px;\n  border-radius: 25px;\n}\n.terminal-wrap-custom .actions-btn-menu {\n  position: absolute;\n  padding: 10px;\n  z-index: 1;\n  right: 7px;\n  top: 0;\n}\n.terminal-wrap-custom .actions-btn-menu .btn {\n  padding: 3px 8px;\n  box-shadow: 2px 2px 5px #404040;\n}\n.terminal-wrap-custom .actions-btn-menu .btn i {\n  font-size: 23px;\n  vertical-align: middle;\n}\n.terminal-wrap-custom .pqQuotes {\n  vertical-align: top;\n  width: 445px;\n}\n.terminal-wrap-custom .pqQuotes .close {\n  top: 10px;\n  position: relative;\n}\n.terminal-wrap-custom .pqQuotes div.term-body-pq .pq-container {\n  padding: 15px 10px;\n  border-bottom: 1px solid #f3f3f3;\n  border-left: none;\n  border-right: none;\n}\n.terminal-wrap-custom .pqQuotes div.term-body-pq .pq-container .added-by {\n  float: right;\n}\n.terminal-wrap-custom .pqQuotes div.term-body-pq .pq-container:nth-child(even) {\n  background: #fff;\n}\n.terminal-wrap-custom .pqQuotes div.term-body-pq .pq-container:nth-child(odd) {\n  background: #f3f3f3;\n}\n.terminal-wrap-custom .pqQuotes .priceqoute-pre {\n  font-size: 11px;\n  padding: 5px;\n  color: #000;\n}\n.terminal-wrap-custom > .term-body {\n  width: 100%;\n  height: 100%;\n}\n.terminal-wrap-custom > .term-body .left {\n  position: relative;\n  height: 100%;\n}\n.terminal-wrap-custom > .term-body .menu {\n  width: 20%;\n  vertical-align: top;\n  background: #fff;\n}\n.terminal-wrap-custom > .term-body .menu .label {\n  font-weight: bold;\n  font-size: 12px;\n  padding: 10px 0;\n  color: #414141;\n}\n.terminal-wrap-custom > .term-body .menu .pcc-label {\n  position: absolute;\n  top: -5px;\n  right: -16px;\n  padding: 2px 5px;\n  background: #fff;\n  color: #511551;\n  border-radius: 15px;\n  font-size: 10px;\n  border: 0;\n}\n.terminal-wrap-custom > .term-body.minimized .menu {\n  width: 100px;\n}\n.terminal-wrap-custom > .term-body.minimized .menu article.small-buttons .btn {\n  width: 85%;\n}\n.terminal-wrap-custom > .term-body.minimized .menu article {\n  padding: 5px 10px;\n}\n.terminal-wrap-custom > .term-body.minimized .menu article .btn:last-of-type {\n  margin-bottom: 0;\n}\n.terminal-wrap-custom > .term-body.minimized .menu .btn {\n  display: block;\n  width: 100%;\n  margin: 0 auto 8px;\n  box-shadow: 1px 1px 3px #c1c1c1;\n}\n.terminal-wrap-custom > .term-body.minimized .menu .btn-purple {\n  width: 85%;\n}\n.terminal-wrap-custom > .term-body.minimized .menu .label {\n  text-align: center;\n  font-size: 12px;\n  display: block;\n}\n.terminal-wrap-custom .matrix-row .terminal {\n  border-right: 2px solid #fff;\n  border-bottom: 2px solid #fff;\n}\n.terminal-wrap-custom .terminal {\n  padding: 0;\n  float: left;\n}\n.terminal-wrap-custom .terminal.active {\n  background: red;\n}\n.terminal-wrap-custom .terminal .cmd {\n  font-weight: bold;\n  text-transform: uppercase;\n}\n.terminal-wrap-custom .terminal .usedCommand {\n  text-transform: uppercase;\n}\n.terminal-wrap-custom .terminal .terminal-highlight {\n  cursor: pointer;\n  border-bottom: 1px dashed;\n}\n.terminal-wrap-custom .terminal .terminal-highlight:hover {\n  opacity: .7;\n  border-bottom: none;\n}\n.terminal-wrap-custom .terminal .raw > div {\n  white-space: pre-wrap;\n}\n.terminal-wrap-custom .terminal-output div span {\n  display: inline;\n}\n.terminal-wrap-custom div.terminal-wrapper {\n  height: auto;\n}\n@keyframes blink {\n  0% {\n    opacity: 1;\n  }\n  25% {\n    opacity: 0;\n  }\n  50% {\n    opacity: 0;\n  }\n  100% {\n    opacity: 1;\n  }\n}\n@-webkit-keyframes blink {\n  0% {\n    opacity: 1;\n  }\n  25% {\n    opacity: 0;\n  }\n  50% {\n    opacity: 0;\n  }\n  100% {\n    opacity: 1;\n  }\n}\n@-ms-keyframes blink {\n  0% {\n    opacity: 1;\n  }\n  25% {\n    opacity: 0;\n  }\n  50% {\n    opacity: 0;\n  }\n  100% {\n    opacity: 1;\n  }\n}\n@-moz-keyframes blink {\n  0% {\n    opacity: 1;\n  }\n  25% {\n    opacity: 0;\n  }\n  50% {\n    opacity: 0;\n  }\n  100% {\n    opacity: 1;\n  }\n}\n.cmd .cursor.blink {\n  background: #ccc;\n  -webkit-animation: blink 1s infinite linear;\n  -moz-animation: blink 1s infinite linear;\n  -ms-animation: blink 1s infinite linear;\n  animation: blink 1s linear infinite;\n}\n", ""]);
 
 // exports
 
@@ -1675,7 +1675,7 @@ var GdsButtons = function (_ButtonPopOver) {
 
 		_classCallCheck(this, GdsButtons);
 
-		var _this2 = _possibleConstructorReturn(this, (GdsButtons.__proto__ || Object.getPrototypeOf(GdsButtons)).call(this, { icon: gdsObjName + '<i class="t-f-size-9 m-l-xs  fa fa-chevron-down"></i>' }, 'div'));
+		var _this2 = _possibleConstructorReturn(this, (GdsButtons.__proto__ || Object.getPrototypeOf(GdsButtons)).call(this, { icon: gdsObjName }, 'div'));
 
 		_this2.gdsname = gdsObjName;
 		_this2.gdsList = gdsList;
@@ -1688,7 +1688,7 @@ var GdsButtons = function (_ButtonPopOver) {
 	_createClass(GdsButtons, [{
 		key: "makeTrigger",
 		value: function makeTrigger() {
-			return _get(GdsButtons.prototype.__proto__ || Object.getPrototypeOf(GdsButtons.prototype), "makeTrigger", this).call(this);
+			return _get(GdsButtons.prototype.__proto__ || Object.getPrototypeOf(GdsButtons.prototype), "makeTrigger", this).call(this, { className: 'btn btn-primary font-bold pos-rlt has-drop-down' });
 		}
 	}, {
 		key: "build",
@@ -1831,7 +1831,7 @@ var LanguageButton = function (_ButtonPopOver) {
 
 		_classCallCheck(this, LanguageButton);
 
-		var _this2 = _possibleConstructorReturn(this, (LanguageButton.__proto__ || Object.getPrototypeOf(LanguageButton)).call(this, { icon: language + '<i class="t-f-size-9 m-l-xs  fa fa-chevron-down"></i>' }, 'div'));
+		var _this2 = _possibleConstructorReturn(this, (LanguageButton.__proto__ || Object.getPrototypeOf(LanguageButton)).call(this, { icon: language }, 'div'));
 
 		_this2.language = language;
 		return _this2;
@@ -1840,7 +1840,7 @@ var LanguageButton = function (_ButtonPopOver) {
 	_createClass(LanguageButton, [{
 		key: "makeTrigger",
 		value: function makeTrigger() {
-			return _get(LanguageButton.prototype.__proto__ || Object.getPrototypeOf(LanguageButton.prototype), "makeTrigger", this).call(this);
+			return _get(LanguageButton.prototype.__proto__ || Object.getPrototypeOf(LanguageButton.prototype), "makeTrigger", this).call(this, { className: 'btn btn-primary font-bold pos-rlt has-drop-down' });
 		}
 	}, {
 		key: "build",
@@ -1916,16 +1916,19 @@ var PqButton = function (_Component) {
 		key: "setState",
 		value: function setState(_ref) {
 			var _ref$canCreatePq = _ref.canCreatePq,
-			    canCreatePq = _ref$canCreatePq === undefined ? false : _ref$canCreatePq;
+			    canCreatePq = _ref$canCreatePq === undefined ? false : _ref$canCreatePq,
+			    requestId = _ref.requestId;
 
 			return _get(PqButton.prototype.__proto__ || Object.getPrototypeOf(PqButton.prototype), "setState", this).call(this, {
-				canCreatePq: canCreatePq
+				canCreatePq: canCreatePq,
+				requestId: requestId
 			});
 		}
 	}, {
 		key: "_renderer",
 		value: function _renderer(state) {
 			this.context.disabled = state.canCreatePq !== true;
+			this.context.classList.toggle('hidden', !this.state.requestId);
 		}
 	}]);
 
@@ -1933,6 +1936,76 @@ var PqButton = function (_Component) {
 }(_component2.default);
 
 exports.default = PqButton;
+
+/***/ }),
+
+/***/ "./src/components/menu/quotes.es6":
+/*!****************************************!*\
+  !*** ./src/components/menu/quotes.es6 ***!
+  \****************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+	value: true
+});
+exports.Quotes = undefined;
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
+
+var _actions = __webpack_require__(/*! ../../actions */ "./src/actions.es6");
+
+var _component = __webpack_require__(/*! ../../modules/component */ "./src/modules/component.es6");
+
+var _component2 = _interopRequireDefault(_component);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var Quotes = exports.Quotes = function (_Component) {
+	_inherits(Quotes, _Component);
+
+	function Quotes() {
+		_classCallCheck(this, Quotes);
+
+		return _possibleConstructorReturn(this, (Quotes.__proto__ || Object.getPrototypeOf(Quotes)).call(this, 'button.btn btn-mozilla font-bold[Quotes]', {
+			onclick: function onclick(e) {
+				e.target.innerHTML = 'Loading...';
+				(0, _actions.SHOW_PQ_QUOTES)().then(function () {
+					e.target.innerHTML = 'Quotes';
+				});
+			}
+		}));
+	}
+
+	_createClass(Quotes, [{
+		key: "setState",
+		value: function setState(_ref) {
+			var requestId = _ref.requestId;
+
+			return _get(Quotes.prototype.__proto__ || Object.getPrototypeOf(Quotes.prototype), "setState", this).call(this, {
+				requestId: requestId
+			});
+		}
+	}, {
+		key: "_renderer",
+		value: function _renderer(state) {
+			this.context.classList.toggle('hidden', !this.state.requestId);
+		}
+	}]);
+
+	return Quotes;
+}(_component2.default);
 
 /***/ }),
 
@@ -1963,15 +2036,9 @@ var _textSize = __webpack_require__(/*! ../popovers/textSize */ "./src/component
 
 var _textSize2 = _interopRequireDefault(_textSize);
 
-var _dom = __webpack_require__(/*! ../../helpers/dom */ "./src/helpers/dom.es6");
-
-var _dom2 = _interopRequireDefault(_dom);
-
 var _component = __webpack_require__(/*! ../../modules/component */ "./src/modules/component.es6");
 
 var _component2 = _interopRequireDefault(_component);
-
-var _actions = __webpack_require__(/*! ../../actions */ "./src/actions.es6");
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -1987,7 +2054,7 @@ var SettingsButtons = exports.SettingsButtons = function (_Component) {
 	function SettingsButtons() {
 		_classCallCheck(this, SettingsButtons);
 
-		return _possibleConstructorReturn(this, (SettingsButtons.__proto__ || Object.getPrototypeOf(SettingsButtons)).call(this, 'article'));
+		return _possibleConstructorReturn(this, (SettingsButtons.__proto__ || Object.getPrototypeOf(SettingsButtons)).call(this, 'article.small-buttons'));
 	}
 
 	_createClass(SettingsButtons, [{
@@ -2008,14 +2075,6 @@ var SettingsButtons = exports.SettingsButtons = function (_Component) {
 			var theme = _ref2.theme,
 			    terminalThemes = _ref2.terminalThemes;
 
-			var Quotes = (0, _dom2.default)('button.btn btn-mozilla font-bold[Quotes]', { onclick: function onclick(e) {
-					e.target.innerHTML = 'Loading...';
-
-					(0, _actions.SHOW_PQ_QUOTES)().then(function () {
-						e.target.innerHTML = 'Quotes';
-					});
-				} });
-
 			var themeBtn = new _theme2.default({
 				icon: '<i class="fa fa-paint-brush t-f-size-14"></i>',
 				themes: terminalThemes,
@@ -2030,7 +2089,7 @@ var SettingsButtons = exports.SettingsButtons = function (_Component) {
 				icon: '<i class="fa fa-history t-f-size-14"></i>'
 			}).getTrigger();
 
-			return [Quotes, themeBtn, textSize, history];
+			return [themeBtn, textSize, history];
 		}
 	}]);
 
@@ -2077,6 +2136,8 @@ var _languageButtons = __webpack_require__(/*! ./menu/languageButtons */ "./src/
 
 var _logButton = __webpack_require__(/*! ./popovers/logButton */ "./src/components/popovers/logButton.es6");
 
+var _quotes = __webpack_require__(/*! ./menu/quotes */ "./src/components/menu/quotes.es6");
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -2097,24 +2158,24 @@ var MenuPanel = function (_Component) {
 	_createClass(MenuPanel, [{
 		key: 'mount',
 		value: function mount(state) {
+			this.observe(new _component2.default('article').observe(new _quotes.Quotes()));
+
 			this.observe(new _settingsButtons.SettingsButtons());
 
 			this.attach((0, _dom2.default)('span.label[Session]'));
 
 			this.observe(new _gdsAreas.GdsAreas());
 
-			this.attach((0, _dom2.default)('span.label[Input Language]'));
+			this.attach((0, _dom2.default)('span.label[Language]'));
 
 			this.observe(new _languageButtons.LanguageButtons());
 
-			this.observe(new _pqButton2.default());
+			this.observe(new _component2.default('article').observe(new _pqButton2.default()));
 
 			if (state.permissions) {
 				this.attach((0, _dom2.default)('span.label[Dev actions]'));
 
-				this.append(new _devButtons.DevButtons());
-
-				this.observe(new _logButton.LogButton());
+				this.observe(new _component2.default('article').observe(new _devButtons.DevButtons()).observe(new _logButton.LogButton()));
 			}
 		}
 	}]);
@@ -4923,6 +4984,34 @@ var highlightPopover = function highlightPopover(props) {
 	return new _tetherDrop2.default(_extends({}, defs, props));
 };
 
+// highlightPopover({target, content});
+
+/*const replaceForLargeDiv = () => {
+	let part =  `<span class="${color}`;
+
+	if (rule.onClickCommand || rule.onClickMessage || rule.onMouseOver)
+	{
+		part += ' terminal-highlight replace_'+key;
+		tips['replace_'+key] = rule;
+	}
+
+	part += `"`;
+
+	if (rule.onMouseOver)
+	{
+		let content = rule.onMouseOver;
+
+		if ( window.TerminalState.hasPermissions() ) // for debug purpose
+		{
+			content += '(' + rule.id + ')';
+		}
+
+		part += ` title="${content}"`;
+	}
+
+	part += `>${replaced}</span>`;
+}*/
+
 var seedOutputString = function seedOutputString(outputText, appliedRules) {
 
 	var tips = {};
@@ -4932,35 +5021,15 @@ var seedOutputString = function seedOutputString(outputText, appliedRules) {
 		    value = _ref.value,
 		    rule = _objectWithoutProperties(_ref, ["color", "value"]);
 
-		var replaced = value.replace(new RegExp('%', 'g'), '');
+		var replaced = value.replace(/%/g, '');
 
-		var part = "[[;;;" + color;
+		var part = "[[;;;" + color + " someClasses ]" + replaced + "]";
 
 		if (rule.onClickCommand || rule.onClickMessage || rule.onMouseOver) {
-			part += ' terminal-highlight replace_' + key;
+			part = part.replace('someClasses', "terminal-highlight replace_" + key);
 			tips['replace_' + key] = rule;
 		}
 
-		part += "]" + replaced + "]";
-
-		/*let part =  `<span class="${color}`;
-  	if (rule.onClickCommand || rule.onClickMessage || rule.onMouseOver)
-  {
-  	part += ' terminal-highlight replace_'+key;
-  	tips['replace_'+key] = rule;
-  }
-  	part += `"`;
-  	if (rule.onMouseOver)
-  {
-  	let content = rule.onMouseOver;
-  		if ( window.TerminalState.hasPermissions() ) // for debug purpose
-  	{
-  		content += '(' + rule.id + ')';
-  	}
-  		part += ` title="${content}"`;
-  }
-  	part += `>${replaced}</span>`;
-  */
 		if (outputText.indexOf(value) > -1) {
 			var valueReplaced = value.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, '\\$&'); // escapes all special regexp chars
 			outputText = outputText.replace(new RegExp(valueReplaced, 'g'), part);
@@ -4973,45 +5042,52 @@ var seedOutputString = function seedOutputString(outputText, appliedRules) {
 };
 
 exports.seedOutputString = seedOutputString;
+var popoverDefs = function popoverDefs(div, content) {
+	var placement = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 'top';
+	return {
+		placement: placement,
+		content: content,
+		template: '<div class="popover font-bold text-danger" role="tooltip"><div class="arrow"></div><div class="popover-content highlight-popover"></div></div>',
+		html: true,
+		trigger: 'click',
+		viewport: div
+	};
+};
+
 var replaceInTerminal = exports.replaceInTerminal = function replaceInTerminal(div, tips) {
 
 	Object.keys(tips).map(function (key) {
 
-		var querySelector = div[0].querySelectorAll('.' + key);
+		[].map.call(div[0].querySelectorAll('.' + key), function (target) {
+			var _tips$key = tips[key],
+			    id = _tips$key.id,
+			    onMouseOver = _tips$key.onMouseOver,
+			    onClickMessage = _tips$key.onClickMessage,
+			    onClickCommand = _tips$key.onClickCommand;
 
-		[].map.call(querySelector, function (target) {
 
-			var command = tips[key].onClickCommand || tips[key].onClickMessage;
+			if (target && onClickMessage) {
+				$(target).popover(popoverDefs(div, onClickMessage, 'bottom'));
+			}
 
-			if (target && command) {
+			if (target && onMouseOver) {
+				var content = onMouseOver + (window.TerminalState.hasPermissions() ? '(' + id + ')' : '');
+
+				$(target).tooltip(_extends({}, popoverDefs(div, content), {
+					title: content,
+					trigger: 'hover',
+					template: '<div class="tooltip" role="tooltip"><div class="tooltip-arrow"></div><div class="tooltip-inner"></div></div>'
+				}));
+			}
+
+			if (target && onClickCommand) {
 				var runCommand = function runCommand() {
-					return (0, _actions.DEV_CMD_STACK_RUN)(command);
+					return (0, _actions.DEV_CMD_STACK_RUN)(onClickCommand);
 				};
 
 				target.onclick = function () {
 					(0, _switchTerminal.switchTerminal)({ keymap: 'next' }).then(runCommand);
 				};
-			}
-
-			var content = tips[key].onMouseOver;
-
-			if (window.TerminalState.hasPermissions()) // for debug purpose
-				{
-					content += '(' + tips[key].id + ')';
-				}
-
-			if (target && content) {
-				// highlightPopover({target, content});
-
-				$(target).popover({
-					placement: 'top',
-					// container	: 'body',
-					content: content,
-					template: '<div class="popover bg-darka font-bold text-danger" role="tooltip"><div class="arrow"></div><div class="popover-content"></div></div>',
-					html: true,
-					trigger: 'hover',
-					viewport: div
-				});
 			}
 		});
 	});
@@ -6232,6 +6308,14 @@ var State = {
 	requestId: null,
 	gdsList: [],
 	gdsObjName: ''
+
+	// action	: ''
+	// canCreatePq	: ''
+	// gdsObjIndex	: ''
+	// theme : '',
+	// terminalThemes : '',
+	// permissions : '',
+	// log : '',
 };
 
 window.TerminalState = {
