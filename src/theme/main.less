@@ -167,6 +167,26 @@
             text-transform: uppercase;
         }
 
+
+		.term-highlight{
+			&.underline {
+				text-decoration: underline;
+			}
+
+			&.dotted{
+				border-bottom : 1px dashed;
+			}
+
+			&.bold{
+				font-weight: bold;
+			}
+
+			&.bordered{
+				border : 1px solid;
+			}
+		}
+
+
 		.t-highlight {
 			cursor: pointer;
 			position: relative;
@@ -186,6 +206,8 @@
 				bottom: 2px;
 				border-bottom: 1px dashed;
 			}
+
+
 		}
 
 		.raw > div {

@@ -48,17 +48,29 @@ export const seedOutputString = (outputText, appliedRules) => {
 
 	const tips = {};
 
-	appliedRules.map(({color, value, ...rule}, key) => {
+	appliedRules.map(({color, decoration, value, ...rule}, key) => {
 
 		const replaced 	= value.replace(/%/g, '');
 
-		let part = `[[;;;${color} someClasses ]${replaced}]`;
+		console.log(decoration)
+
+		if (decoration)
+		{
+			decoration.forEach( (className) => {
+				color += ' ' + className
+			})
+		}
+
+		color += ` term-highlight`;
 
 		if (rule.onClickCommand || rule.onClickMessage || rule.onMouseOver)
 		{
-			part = part.replace('someClasses', `t-highlight replace_${key}`);
+			// part = part.replace('someClasses', `t-highlight replace_${key}`);
 			tips['replace_'+key] = rule;
+			color += ` t-highlight replace_${key}`;
 		}
+
+		let part = `[[;;;${color}]${replaced}]`;
 
 		if ( outputText.indexOf(value) > -1 )
 		{

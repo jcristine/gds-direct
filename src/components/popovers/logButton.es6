@@ -6,7 +6,7 @@ export class LogButton extends Component
 {
 	constructor()
 	{
-		super('div');
+		super('div.m-t-sm');
 	}
 
 	setState({log})
