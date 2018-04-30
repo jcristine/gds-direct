@@ -5,45 +5,53 @@ import {GDS} 			from './modules/gds';
 import ContainerMain 	from "./containers/main";
 import {PqParser} 		from "./modules/pqParser";
 import {cookieGet, cookieSet} from "./helpers/cookie";
-import {GDS_LIST} from "./constants";
 import './theme/main.less';
+import {OFFSET_DEFAULT} from "./constants";
 
 const BORDER_SIZE = 2;
 
 class TerminalApp
 {
-	constructor({settings, requestId, buffer, permissions, PqPriceModal, htmlRootId, agentId, terminalThemes, commandUrl})
+	constructor(params)
 	{
-		this.gdsList = GDS_LIST;
+		const {settings, requestId, buffer, permissions, PqPriceModal, htmlRootId, agentId, terminalThemes, commandUrl} = params;
 
 		this.Gds 	= new GDS({
-			gdsList 	: settings.gds,
+			gdsListDb 	: settings.gds,
 			activeName 	: settings['common']['currentGds'] || 'apollo',
-			buffer 		: buffer || {},
-			gdsSet		: GDS_LIST
+			buffer 		: buffer || {}
 		});
 
-		this.params = { requestId, permissions, terminalThemes};
-
-		this.agentId		= agentId;
-		this.offset			= 100; //menu
+		this.params 		= {requestId, permissions};
+		this.offset			= OFFSET_DEFAULT; //menu
 
 		this.pqParser 		= new PqParser(PqPriceModal);
 		this.container 		= new ContainerMain(htmlRootId);
 
-		this.curTheme		= cookieGet('terminalTheme_' + agentId) || (terminalThemes[0]['id']);
-		this.changeStyle(this.curTheme);
+		this.agentId 		= agentId;
+		this.themeId		= this.getStyle(agentId, terminalThemes);
 
 		setLink( commandUrl );
-		INIT(this);
+		INIT(this, {permissions, terminalThemes, requestId, themeId : this.themeId});
 
 		initGlobEvents();
 	}
 
-	changeStyle( name )
+	changeStyle(id)
 	{
-		cookieSet('terminalTheme_' + this.agentId, name, 30);
-		this.container.changeStyle(name);
+		cookieSet('terminalTheme_' + this.agentId, id, 30);
+		this.container.changeStyle(id);
+	}
+
+	getStyle(agentId, terminalThemes)
+	{
+		if (!this.themeId)
+		{
+			this.themeId = cookieGet('terminalTheme_' + agentId) || terminalThemes[0]['id'];
+			this.container.changeStyle(this.themeId);
+		}
+
+		return this.themeId;
 	}
 
 	getContainer()

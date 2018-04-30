@@ -52,8 +52,6 @@ export const seedOutputString = (outputText, appliedRules) => {
 
 		const replaced 	= value.replace(/%/g, '');
 
-		console.log(decoration)
-
 		if (decoration)
 		{
 			decoration.forEach( (className) => {

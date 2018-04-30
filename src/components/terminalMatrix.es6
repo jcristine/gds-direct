@@ -13,14 +13,12 @@ export default class TerminalsMatrix extends Component
 		return this;
 	}
 
-	setState({gdsObjName, gdsObjIndex, gdsList})
+	setState(state)
 	{
-		const curGds 		= gdsList[gdsObjIndex];
-
-		const {terminals, matrix, dimensions, hasWide, wideDimensions} = curGds.get();
+		const {terminals, matrix, dimensions, hasWide, wideDimensions, name} = state.curGds.get();
 
 		return super.setState({
-			terminals, matrix, dimensions, gdsObjName, hasWide, wideDimensions
+			terminals, matrix, dimensions, name, hasWide, wideDimensions
 		});
 	}
 

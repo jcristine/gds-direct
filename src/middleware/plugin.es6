@@ -26,6 +26,8 @@ export default class TerminalPlugin
 		this.context	= params.context;
 		this.name		= params.name;
 
+		this.gdsName	= params.gds;
+
 		this.allowManualPaging = params.gds === 'sabre';
 
 		this.session = new Session({
@@ -221,7 +223,7 @@ export default class TerminalPlugin
 			data = {...data, log : loggerOutput(data, command)}
 		}
 
-		UPDATE_CUR_GDS(data);
+		UPDATE_CUR_GDS({...data, gdsName : this.gdsName});
 	}
 
 

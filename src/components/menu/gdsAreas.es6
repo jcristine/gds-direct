@@ -1,7 +1,7 @@
 import Component from "../../modules/component";
 import {CHANGE_GDS, CHANGE_SESSION_BY_MENU, DEV_CMD_STACK_RUN} from "../../actions";
 import Dom from "../../helpers/dom";
-import {AREA_LIST} from "../../constants";
+import {AREA_LIST,GDS_LIST} from "../../constants";
 import ButtonPopOver from "../../modules/buttonPopover";
 
 export class GdsAreas extends Component
@@ -13,16 +13,13 @@ export class GdsAreas extends Component
 
 	setState(state)
 	{
-		const {gdsList, gdsObjName, gdsObjIndex} = state;
-
-		const current = gdsList[gdsObjIndex];
+		const current = state.curGds;
 
 		return super.setState({
-			gdsObjName,
+			gdsName			: current.get('name'),
 			pcc 			: current.get('pcc'),
 			sessionIndex	: current.get('sessionIndex'),
 			areaList 		: current.get('list'),
-			gdsList 		: gdsList.map( name => name.props.name)
 		})
 	}
 
@@ -42,12 +39,11 @@ export class GdsAreas extends Component
 
 class GdsButtons extends ButtonPopOver
 {
-	constructor({gdsObjName, gdsList, areaList, sessionIndex, pcc})
+	constructor({gdsName, areaList, sessionIndex, pcc})
 	{
-		super({icon : gdsObjName }, 'div');
+		super({icon : gdsName}, 'div');
 
-		this.gdsname		= gdsObjName;
-		this.gdsList		= gdsList;
+		this.gdsname		= gdsName;
 		this.areaList		= areaList;
 		this.sessionIndex	= sessionIndex;
 		this.pcc			= pcc;
@@ -60,7 +56,7 @@ class GdsButtons extends ButtonPopOver
 
 	build()
 	{
-		this.gdsList.map( name => {
+		GDS_LIST.map( name => {
 			this.popContent.appendChild(
 				this.gdsButton(name)
 			);
@@ -92,17 +88,11 @@ class GdsButtons extends ButtonPopOver
 		const isActive 	= this.sessionIndex === index;
 
 		return Dom(`button.btn btn-sm btn-purple font-bold pos-rlt ${isActive ? 'active' : ''}`, {
-
 			innerHTML	:  area + ( this.pcc[index] ? `<span class="pcc-label">${this.pcc[index]}</span>` : ''),
-
 			disabled	:  isActive,
-
 			onclick		: e => {
-
 				e.target.disabled = true;
-
 				CHANGE_SESSION_BY_MENU(AREA_LIST[index])
-					// .catch( () => e.target.disabled = false )
 			}
 		});
 	}

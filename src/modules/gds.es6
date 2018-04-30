@@ -1,13 +1,14 @@
 import {GDS_UNIT} 	from "./gdsUnit";
+import {GDS_LIST} from "../constants";
 
 export class GDS
 {
-	constructor({gdsList, buffer = {}, activeName, gdsSet})
+	constructor({gdsListDb, buffer = {}, activeName})
 	{
 		this.setCurrent(activeName);
 
-		this.gdsSet 	= gdsSet.map( name => {
-			const settings 		= gdsList[name] 	|| {};
+		this.gdsSet 	= GDS_LIST.map( name => {
+			const settings 		= gdsListDb[name] || {};
 			const {gds = {}} 	= buffer;
 
 			return new GDS_UNIT(name, settings.area, gds);
@@ -21,7 +22,8 @@ export class GDS
 
 	setCurrent(name = 'apollo')
 	{
-		this.name = name;
+		this.name 	= name;
+		this.index 	= GDS_LIST.indexOf(name);
 	}
 
 	getCurrent()
@@ -34,16 +36,21 @@ export class GDS
 		return this.name;
 	}
 
+	getCurrentIndex()
+	{
+		return this.index;
+	}
+
 	isApollo()
 	{
 		return this.name === 'apollo';
 	}
 
-	update(newState)
+	update(newState, gdsName = this.name)
 	{
 		this.gdsSet = this.gdsSet.map( gds => {
 
-			if (gds.get('name') === this.name)
+			if (gds.get('name') === (gdsName))
 			{
 				gds.update(newState);
 			}
@@ -57,9 +64,14 @@ export class GDS
 		this.getCurrent().updateMatrix(dimensions);
 	}
 
-	updatePcc(newState)
+	updatePcc(newState, gdsName)
 	{
-		this.getCurrent().updatePcc(newState);
+		this.getGds(gdsName).updatePcc( newState );
+	}
+
+	getGds(gdsName)
+	{
+		return this.gdsSet.filter( gds => gds.get('name') === gdsName )[0];
 	}
 
 	clearScreen()

@@ -7,10 +7,8 @@ export default class Theme extends ButtonPopOver
 	constructor({icon, themes, theme})
 	{
 		super( {icon}, 'div.terminal-menu-popover themes' );
-
 		this.themes 	= themes;
 		this.makeTrigger();
-
 		this.themeId = theme;
 	}
 

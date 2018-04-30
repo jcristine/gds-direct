@@ -1,22 +1,24 @@
-import {AREA_LIST, GDS_LIST} from "../constants";
+import {AREA_LIST} from "../constants";
 
-export const update_cur_gds = (app, {canCreatePq, canCreatePqErrors, area, pcc, startNewSession, log}) => {
+export const update_cur_gds = (app, {canCreatePq, canCreatePqErrors, area, pcc, startNewSession, log, gdsName}) => {
 
 	const sessionIndex	= AREA_LIST.indexOf(area);
 
-	// const newAction 	= {canCreatePq, canCreatePqErrors, sessionIndex};
+	const pc 	= {[sessionIndex] : pcc};
+	let pccUpd	= startNewSession ? pc : {...app.Gds.getGds(gdsName).get('pcc'), ...pc};
 
-	if (startNewSession)
+	app.Gds.update({pcc : pccUpd, canCreatePq, canCreatePqErrors, sessionIndex}, gdsName);
+
+	/*if (startNewSession)
 	{
-		app.Gds.update({pcc : {[sessionIndex] : pcc}, ...{canCreatePq, canCreatePqErrors, sessionIndex}});
+		app.Gds.update({pcc : {[sessionIndex] : pcc}, ...{canCreatePq, canCreatePqErrors, sessionIndex}}, gdsName);
 	} else
 	{
-		app.Gds.updatePcc({[sessionIndex] : pcc});
-		app.Gds.update({canCreatePq, canCreatePqErrors, sessionIndex});
-	}
+		app.Gds.updatePcc({[sessionIndex] : pcc}, gdsName);
+		app.Gds.update({canCreatePq, canCreatePqErrors, sessionIndex}, gdsName);
+	}*/
 
 	return {
-		gdsList : app.Gds.getList(),
 		log,
 		canCreatePq
 	}
@@ -27,6 +29,6 @@ export const change_gds = (app, gdsName)  => {
 
 	return {
 		gdsObjName 	: app.Gds.getCurrentName(),
-		gdsObjIndex : GDS_LIST.indexOf(gdsName)
+		gdsObjIndex : app.Gds.getCurrentIndex()
 	}
 };

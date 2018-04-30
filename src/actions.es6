@@ -1,20 +1,22 @@
 import {getters, setProvider, setState} from "./state";
 import {change_gds, update_cur_gds} from "./actions/gdsActions";
+import {OFFSET_QUOTES} from "./constants";
 
 let app;
 
-export const INIT = App => {
+export const INIT = (App, props) => {
 	app = App;
 
 	setProvider( State => app.getContainer().render(State) );
 
 	UPDATE_STATE({
-		requestId		: app.params.requestId,
+		requestId		: props.requestId,
+		permissions 	: props.permissions,
+		terminalThemes	: props.terminalThemes,
+		theme			: props.themeId,
+
 		gdsObjName		: app.Gds.getCurrentName(),
-		permissions 	: app.params.permissions,
-		terminalThemes	: app.params.terminalThemes,
-		theme			: app.curTheme,
-		gdsObjIndex 	: app.gdsList.indexOf(app.Gds.getCurrentName())
+		gdsObjIndex 	: app.Gds.getCurrentIndex()
 	});
 };
 
@@ -72,7 +74,7 @@ const showPq = (newState, offset = 100) => {
 	UPDATE_STATE(newState);
 };
 
-export const SHOW_PQ_QUOTES = () => getters('showExistingPq').then(response => showPq({pqToShow :response}, 500) );
+export const SHOW_PQ_QUOTES = () => getters('showExistingPq').then(response => showPq({pqToShow :response}, OFFSET_QUOTES) );
 export const HIDE_PQ_QUOTES = () => showPq({pqToShow:false});
 
 export const PQ_MODAL_SHOW 	= () => {
@@ -117,23 +119,10 @@ export const ADD_WHIDE_COLUMN = () => {
 };
 
 export const UPDATE_STATE = (props = {}) => {
+	app.calculateMatrix();
+
 	setState({
 		...props,
-		gdsList : app.calculateMatrix().Gds.getList()
+		curGds	: app.Gds.getCurrent()
 	})
 };
-
-// export const PQ_MODAL_SHOW_DEV = () => {
-// 	app.pqParser.show( app.getGds()['canCreatePqErrors'], app.params.requestId )
-// 		.then( () => {
-// 			app.setOffset(0);
-// 			UPDATE_STATE({hideMenu: true})
-// 		});
-// };
-
-/*export const FULL_SCREEN = () => {
-	// if ( state.getGdsObj()['curTerminalId'] >= 0 )
-	// 	return FullScreen.show(state.getGds(), window.activePlugin.terminal);
-	//
-	// alert('no terminal selected');
-};*/
