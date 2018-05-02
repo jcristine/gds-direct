@@ -42,7 +42,7 @@ class TerminalApp
 
 		const curGds 		= settings['gds'][settings['common']['currentGds'] || 'apollo'];
 		const fontSize		= curGds['fontSize'] || 1;
-		const language		= curGds['language'] || 'apollo';
+		const language		= curGds['language'] || 'APOLLO';
 		this.container.changeFontClass(fontSize);
 
 		getStore().updateView({

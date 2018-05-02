@@ -7,7 +7,11 @@ const showPq = (newState, offset = 100) => {
 	getStore().updateView(newState);
 };
 
-export const SHOW_PQ_QUOTES = () => getters('showExistingPq').then(response => showPq({pqToShow :response}, OFFSET_QUOTES) );
+export const SHOW_PQ_QUOTES = () => {
+	showPq({pqToShow : 'loading'}, OFFSET_QUOTES);
+	return getters('showExistingPq').then(response => showPq({pqToShow :response}, OFFSET_QUOTES));
+};
+
 export const HIDE_PQ_QUOTES = () => showPq({pqToShow:false});
 
 export const PQ_MODAL_SHOW 	= () => {

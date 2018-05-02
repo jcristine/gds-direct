@@ -18,7 +18,7 @@ let State =  {
 };
 
 window.TerminalState = {
-	isLanguageApollo 	: () => State.language === 'APOLLO',
+	isLanguageApollo 	: () => State.language.toLowerCase() === 'apollo',
 	getLanguage 		: () => State.language,
 	hasPermissions 		: () => State.permissions
 };

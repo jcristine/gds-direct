@@ -1,27 +1,44 @@
 .pqQuotes {
 
+  background: #bdbebf;
+
   .close {
     top: 10px;
     position: relative;
   }
 
   div.term-body-pq {
-    //padding: 0 10px;
+    padding: 0 5px;
 
     .pq-container {
+
+      position: relative;
+
+      .pq-container-labels {
+
+        position: absolute;
+
+        top: -7px;
+        z-index: 1;
+        border-radius: 25px;
+        width: 100%;
+
+        .label {border-radius: 25px}
+      }
 
       .added-by {
         float: right;
       }
 
-      &:nth-child(even) {background:  #fff }
-      &:nth-child(odd) {background: #f3f3f3}
+      //&:nth-child(even) {background:  #fff }
+      //&:nth-child(odd) {background: #f3f3f3}
 
-      //margin: 0 0 10px 0;
-      padding: 15px 10px;
-      border-bottom: 1px solid #f3f3f3;
-      border-left: none;
-      border-right: none;
+      margin: 15px 0;
+      //padding: 0 10px;
+
+      //border-bottom: 1px solid #f3f3f3;
+      //border-left: none;
+      //border-right: none;
     }
 
   }
@@ -31,9 +48,8 @@
 
   .priceqoute-pre {
     font-size: 11px;
-    padding: 5px;
+    padding: 15px 0 0;
     color: #000;
-
   }
 
 }
