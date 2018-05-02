@@ -1,5 +1,6 @@
 import {setLink}				from './helpers/requests.es6';
-import {CHANGE_ACTIVE_TERMINAL, DEV_CMD_STACK_RUN} from "./actions";
+import {CHANGE_ACTIVE_TERMINAL} from "./actions/settings";
+import {DEV_CMD_STACK_RUN} from "./actions";
 import {CHANGE_GDS} from "./actions/gdsActions";
 
 import {GDS} 			from './modules/gds';

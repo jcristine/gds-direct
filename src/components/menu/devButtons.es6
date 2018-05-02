@@ -1,6 +1,6 @@
 import Dom				from '../../helpers/dom.es6';
 import ButtonPopOver	from '../../modules/buttonPopover.es6';
-import {DEV_CMD_STACK_RUN, FULL_SCREEN, PQ_MODAL_SHOW_DEV} from "../../actions";
+import {DEV_CMD_STACK_RUN} from "../../actions";
 import Component from "../../modules/component";
 
 const STORAGE_KEY = 'dedTerminalBufCmd';

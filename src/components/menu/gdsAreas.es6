@@ -1,5 +1,5 @@
 import Component from "../../modules/component";
-import {CHANGE_SESSION_BY_MENU, DEV_CMD_STACK_RUN} from "../../actions";
+import {CHANGE_SESSION_BY_MENU} from "../../actions/settings";
 import {CHANGE_GDS} from "../../actions/gdsActions";
 import Dom from "../../helpers/dom";
 import {AREA_LIST,GDS_LIST} from "../../constants";

@@ -1,6 +1,6 @@
 import Dom 			 	from '../../helpers/dom.es6';
 import ButtonPopOver	from '../../modules/buttonPopover.es6';
-import {ADD_WHIDE_COLUMN, CHANGE_MATRIX} from "../../actions";
+import {ADD_WHIDE_COLUMN, CHANGE_MATRIX} from "../../actions/settings";
 import {MAX_ROWS} from "../../constants";
 import {getStorageMatrix} from "../../helpers/helpers";
 
