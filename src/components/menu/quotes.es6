@@ -1,4 +1,4 @@
-import {SHOW_PQ_QUOTES} from "../../actions";
+import {SHOW_PQ_QUOTES} from "../../actions/priceQuoutes";
 import Component 		from "../../modules/component";
 
 export class Quotes extends Component

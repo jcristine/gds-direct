@@ -1,5 +1,5 @@
 import {get} from "../helpers/requests";
-import {CLOSE_PQ_WINDOW} from "../actions";
+import {CLOSE_PQ_WINDOW} from "../actions/priceQuoutes";
 import {notify} from "../helpers/debug";
 
 const throwError = err => {

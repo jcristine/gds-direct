@@ -14,7 +14,8 @@ import TabManager	from '../modules/tabManager.es6';
 import F8Reader		from '../modules/f8.es6';
 import History 		from '../modules/history.es6';
 import {getReplacement}		from '../helpers/helpers.es6';
-import {UPDATE_CUR_GDS, CHANGE_ACTIVE_TERMINAL} from "../actions";
+import {CHANGE_ACTIVE_TERMINAL} from "../actions";
+import {UPDATE_CUR_GDS} from "../actions/gdsActions";
 // import {debugOutput} from "../helpers/logger";
 import {loggerOutput} from "../helpers/logger";
 

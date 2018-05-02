@@ -1,3 +1,5 @@
+//deprecated
+/*
 import Dom				from '../helpers/dom.es6';
 import Terminal			from '../modules/terminal.es6';
 import {cookieGet} 		from '../helpers/cookie';
@@ -68,4 +70,4 @@ export default class FullScreen {
 			this.terminal(props);
 		});
 	}
-}
+}*/

@@ -1,4 +1,4 @@
-import {CHANGE_INPUT_LANGUAGE} from "../../actions";
+import {CHANGE_INPUT_LANGUAGE} from "../../actions/settings";
 import Dom from "../../helpers/dom";
 import Component from "../../modules/component";
 import ButtonPopOver from "../../modules/buttonPopover";

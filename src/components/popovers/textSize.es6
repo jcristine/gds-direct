@@ -1,6 +1,6 @@
 import Dom 			 from '../../helpers/dom.es6';
 import ButtonPopOver from '../../modules/buttonPopover.es6';
-import {CHANGE_FONT_SIZE} from "../../actions";
+import {CHANGE_FONT_SIZE} from "../../actions/settings";
 
 class TextSize extends ButtonPopOver
 {

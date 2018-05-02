@@ -1,4 +1,4 @@
-import {GET_HISTORY} from "../actions";
+import {GET_HISTORY} from "../actions/settings";
 
 const promises = {};
 const commands = {};

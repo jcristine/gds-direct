@@ -45,12 +45,6 @@ export class GDS_UNIT
 		this.props = {...this.props, ...newState};
 	}
 
-	updatePcc(newState)
-	{
-		const pcc = {...this.get('pcc'), ...newState};
-		this.set('pcc', pcc);
-	}
-
 	updateMatrix(dimensions)
 	{
 		const {list} 	= this.get('matrix');

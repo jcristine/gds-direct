@@ -1,6 +1,7 @@
 import Dom 				from '../../helpers/dom.es6';
 import ButtonPopOver	from '../../modules/buttonPopover.es6';
-import {DEV_CMD_STACK_RUN, GET_HISTORY} from "../../actions";
+import {DEV_CMD_STACK_RUN} from "../../actions";
+import {GET_HISTORY} from "../../actions/settings";
 
 let buffer = [];
 

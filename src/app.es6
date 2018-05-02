@@ -1,5 +1,6 @@
 import {setLink}				from './helpers/requests.es6';
-import {CHANGE_ACTIVE_TERMINAL, CHANGE_GDS, DEV_CMD_STACK_RUN, INIT, UPDATE_STATE} from "./actions";
+import {CHANGE_ACTIVE_TERMINAL, DEV_CMD_STACK_RUN} from "./actions";
+import {CHANGE_GDS} from "./actions/gdsActions";
 
 import {GDS} 			from './modules/gds';
 import ContainerMain 	from "./containers/main";
@@ -7,6 +8,8 @@ import {PqParser} 		from "./modules/pqParser";
 import {cookieGet, cookieSet} from "./helpers/cookie";
 import './theme/main.less';
 import {OFFSET_DEFAULT} from "./constants";
+
+import {connect, getStore} from "./store";
 
 const BORDER_SIZE = 2;
 
@@ -32,9 +35,25 @@ class TerminalApp
 		this.themeId		= this.getStyle(agentId, terminalThemes);
 
 		setLink( commandUrl );
-		INIT(this, {permissions, terminalThemes, requestId, themeId : this.themeId});
-
 		initGlobEvents();
+
+		connect(this);
+
+		const curGds 		= settings['gds'][settings['common']['currentGds'] || 'apollo'];
+		const fontSize		= curGds['fontSize'] || 1;
+		const language		= curGds['language'] || 'apollo';
+		this.container.changeFontClass(fontSize);
+
+		getStore().updateView({
+			requestId		: requestId,
+			permissions 	: permissions,
+			terminalThemes	: terminalThemes,
+			fontSize		: fontSize,
+			language		: language,
+			theme			: this.themeId,
+			gdsObjName		: this.Gds.getCurrentName(),
+			gdsObjIndex 	: this.Gds.getCurrentIndex()
+		});
 	}
 
 	changeStyle(id)
@@ -175,6 +194,6 @@ const initGlobEvents = () => {
 			clearInterval(resizeTimeout);
 		}
 
-		resizeTimeout = setTimeout( () => UPDATE_STATE({}), 10 );
+		resizeTimeout = setTimeout( () => getStore().updateView(), 10 );
 	};
 };

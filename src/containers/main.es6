@@ -7,7 +7,7 @@ export default class ContainerMain extends Component
 {
 	constructor( rootId )
 	{
-		super('section.terminal-wrap-custom');
+		super(`section.terminal-wrap-custom`);
 
 		this.observe(
 			new TableSections()
@@ -26,7 +26,7 @@ export default class ContainerMain extends Component
 		)
 	}
 
-	changeFontClass({fontSize})
+	changeFontClass(fontSize)
 	{
 		this.context.className = 'terminal-wrap-custom term-f-size-' + fontSize;
 	}

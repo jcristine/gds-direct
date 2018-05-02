@@ -50,25 +50,17 @@ export const getters = (action, props) => {
 
 	switch (action)
 	{
-		case 'active' :
-			GET('terminal/saveSetting/terminal', props);
-			break;
-
-		case 'switch' :
-			GET('terminal/saveSetting/gds', props);
-			break;
-
-		case 'session' :
-			GET('terminal/saveSetting/area', props);
-			break;
-
+		case 'terminal' :
+		case 'gds' :
+		case 'area' :
 		case 'language' :
-			GET('terminal/saveSetting/language', props);
-			break;
+		case 'fontSize' :
+			GET(`terminal/saveSetting/${action}`, props);
+		break;
 
 		case 'clear' :
 			get('terminal/clearBuffer', true);
-			break;
+		break;
 
 		case 'history' :
 			return get(`terminal/lastCommands?rId=${State.requestId}&gds=${State.gdsObjName}`);

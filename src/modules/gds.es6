@@ -64,10 +64,10 @@ export class GDS
 		this.getCurrent().updateMatrix(dimensions);
 	}
 
-	updatePcc(newState, gdsName)
-	{
-		this.getGds(gdsName).updatePcc( newState );
-	}
+	// updatePcc(newState, gdsName)
+	// {
+	// 	this.getGds(gdsName).updatePcc( newState );
+	// }
 
 	getGds(gdsName)
 	{

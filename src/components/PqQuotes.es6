@@ -1,6 +1,6 @@
 import Component from "../modules/component";
 import Dom from '../helpers/dom';
-import {HIDE_PQ_QUOTES} from "../actions";
+import {HIDE_PQ_QUOTES} from "../actions/priceQuoutes";
 
 export class PqQuotes extends Component
 {

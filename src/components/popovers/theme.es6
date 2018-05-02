@@ -1,6 +1,6 @@
 import Dom 			 from '../../helpers/dom.es6';
 import ButtonPopOver from '../../modules/buttonPopover.es6';
-import {CHANGE_STYLE} from "../../actions";
+import {CHANGE_STYLE} from "../../actions/settings";
 
 export default class Theme extends ButtonPopOver
 {
