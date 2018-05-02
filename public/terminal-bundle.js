@@ -1819,14 +1819,18 @@ var LanguageButton = function (_ButtonPopOver) {
 	_createClass(LanguageButton, [{
 		key: "makeTrigger",
 		value: function makeTrigger() {
-			return _get(LanguageButton.prototype.__proto__ || Object.getPrototypeOf(LanguageButton.prototype), "makeTrigger", this).call(this, { className: 'btn btn-primary font-bold pos-rlt has-drop-down' });
+			return _get(LanguageButton.prototype.__proto__ || Object.getPrototypeOf(LanguageButton.prototype), "makeTrigger", this).call(this, { className: 'btn btn-primary font-bold pos-rlt has-drop-down', style: 'text-transform : uppercase' });
 		}
 	}, {
 		key: "build",
 		value: function build() {
 			var _this3 = this;
 
-			_constants.LANGUAGE_LIST.map(function (name) {
+			_constants.LANGUAGE_LIST.forEach(function (name) {
+
+				if (!window.TerminalState.hasPermissions() && name === 'GALILEO') {
+					return '';
+				}
 
 				var button = (0, _dom2.default)("button.btn btn-block btn-gold t-f-size-10 font-bold " + (_this3.language === name ? ' active' : '') + " [" + name + "]");
 
@@ -2991,7 +2995,7 @@ var MAX_ROWS = exports.MAX_ROWS = 4;
 var MAX_CELLS = exports.MAX_CELLS = 4;
 var DEFAULT_CELLS = exports.DEFAULT_CELLS = [0, 1, 5, 6];
 var THEME_CLASS_NAME = exports.THEME_CLASS_NAME = 'terminaltheme_';
-var LANGUAGE_LIST = exports.LANGUAGE_LIST = ['APOLLO', 'SABRE', 'AMADEUS'];
+var LANGUAGE_LIST = exports.LANGUAGE_LIST = ['APOLLO', 'SABRE', 'AMADEUS', 'GALILEO'];
 
 var OFFSET_QUOTES = exports.OFFSET_QUOTES = 500;
 var OFFSET_DEFAULT = exports.OFFSET_DEFAULT = 100;

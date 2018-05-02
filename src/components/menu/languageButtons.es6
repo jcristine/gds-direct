@@ -40,12 +40,17 @@ class LanguageButton extends ButtonPopOver
 
 	makeTrigger()
 	{
-		return super.makeTrigger({className : 'btn btn-primary font-bold pos-rlt has-drop-down'})
+		return super.makeTrigger({className : 'btn btn-primary font-bold pos-rlt has-drop-down', style : 'text-transform : uppercase'})
 	}
 
 	build()
 	{
-		LANGUAGE_LIST.map( name => {
+		LANGUAGE_LIST.forEach( name => {
+
+			if (!window.TerminalState.hasPermissions() && name === 'GALILEO')
+			{
+				return '';
+			}
 
 			const button = Dom(`button.btn btn-block btn-gold t-f-size-10 font-bold ${this.language === name ? ' active' : ''} [${name}]`);
 
