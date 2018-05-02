@@ -62,7 +62,7 @@ export default class MenuPanel extends Component
 					.observe(
 						new DevButtons()
 					).observe(
-					new LogButton()
+						new LogButton()
 					)
 			)
 		}

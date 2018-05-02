@@ -4,20 +4,21 @@ import {CHANGE_FONT_SIZE} from "../../actions/settings";
 
 class TextSize extends ButtonPopOver
 {
-	constructor( params )
+	constructor( {fontSize, ...params} )
 	{
 		super( params, 'div.terminal-menu-popover' );
 		this.makeTrigger();
 
-		this.curFont 	= 1;
+
+		this.curFont 	= fontSize;
 		this.curBtn		= '';
 	}
 
 	build( list )
 	{
-		const buttons = [ 1, 2, 3, 4].map( value => {
+		[ 1, 2, 3, 4].map( value => {
 
-			const button 		= Dom(`a.t-pointer ${this.curFont === value} [${value}]x`);
+			const button 		= Dom(`a.t-pointer  [${value}]x`);
 
 			button.addEventListener('click', () => {
 				this.curBtn.classList.remove('checked');
@@ -28,10 +29,13 @@ class TextSize extends ButtonPopOver
 
 			this.popContent.appendChild( button );
 
+			if (this.curFont === value )
+			{
+				this.toggle(button)
+			}
+
 			return button;
 		});
-
-		this.toggle(buttons[0]);
 	}
 
 	click(value)

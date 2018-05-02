@@ -10,12 +10,12 @@ export class SettingsButtons extends Component
 		super('article.small-buttons');
 	}
 
-	mount({theme, terminalThemes})
+	mount({theme, terminalThemes, fontSize})
 	{
-		this.children({theme, terminalThemes}).map( element => this.context.appendChild( element ) );
+		this.children({theme, terminalThemes, fontSize}).map( element => this.context.appendChild( element ) );
 	}
 
-	children({theme, terminalThemes})
+	children({theme, terminalThemes, fontSize})
 	{
 		const themeBtn 	= new Theme({
 			icon	: '<i class="fa fa-paint-brush t-f-size-14"></i>',
@@ -24,7 +24,8 @@ export class SettingsButtons extends Component
 		}).getTrigger();
 
 		const textSize 	= new TextSize({
-			icon	: '<i class="fa fa-text-height t-f-size-14"></i>'
+			icon	: '<i class="fa fa-text-height t-f-size-14"></i>',
+			fontSize
 		}).getTrigger();
 
 		const history	= new History({

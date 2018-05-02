@@ -2046,9 +2046,10 @@ var SettingsButtons = exports.SettingsButtons = function (_Component) {
 			var _this2 = this;
 
 			var theme = _ref.theme,
-			    terminalThemes = _ref.terminalThemes;
+			    terminalThemes = _ref.terminalThemes,
+			    fontSize = _ref.fontSize;
 
-			this.children({ theme: theme, terminalThemes: terminalThemes }).map(function (element) {
+			this.children({ theme: theme, terminalThemes: terminalThemes, fontSize: fontSize }).map(function (element) {
 				return _this2.context.appendChild(element);
 			});
 		}
@@ -2056,7 +2057,8 @@ var SettingsButtons = exports.SettingsButtons = function (_Component) {
 		key: "children",
 		value: function children(_ref2) {
 			var theme = _ref2.theme,
-			    terminalThemes = _ref2.terminalThemes;
+			    terminalThemes = _ref2.terminalThemes,
+			    fontSize = _ref2.fontSize;
 
 			var themeBtn = new _theme2.default({
 				icon: '<i class="fa fa-paint-brush t-f-size-14"></i>',
@@ -2065,7 +2067,8 @@ var SettingsButtons = exports.SettingsButtons = function (_Component) {
 			}).getTrigger();
 
 			var textSize = new _textSize2.default({
-				icon: '<i class="fa fa-text-height t-f-size-14"></i>'
+				icon: '<i class="fa fa-text-height t-f-size-14"></i>',
+				fontSize: fontSize
 			}).getTrigger();
 
 			var history = new _history.History({
@@ -2630,6 +2633,8 @@ var _settings = __webpack_require__(/*! ../../actions/settings */ "./src/actions
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
+function _objectWithoutProperties(obj, keys) { var target = {}; for (var i in obj) { if (keys.indexOf(i) >= 0) continue; if (!Object.prototype.hasOwnProperty.call(obj, i)) continue; target[i] = obj[i]; } return target; }
+
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
@@ -2639,14 +2644,17 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 var TextSize = function (_ButtonPopOver) {
 	_inherits(TextSize, _ButtonPopOver);
 
-	function TextSize(params) {
+	function TextSize(_ref) {
+		var fontSize = _ref.fontSize,
+		    params = _objectWithoutProperties(_ref, ['fontSize']);
+
 		_classCallCheck(this, TextSize);
 
 		var _this = _possibleConstructorReturn(this, (TextSize.__proto__ || Object.getPrototypeOf(TextSize)).call(this, params, 'div.terminal-menu-popover'));
 
 		_this.makeTrigger();
 
-		_this.curFont = 1;
+		_this.curFont = fontSize;
 		_this.curBtn = '';
 		return _this;
 	}
@@ -2656,9 +2664,9 @@ var TextSize = function (_ButtonPopOver) {
 		value: function build(list) {
 			var _this2 = this;
 
-			var buttons = [1, 2, 3, 4].map(function (value) {
+			[1, 2, 3, 4].map(function (value) {
 
-				var button = (0, _dom2.default)('a.t-pointer ' + (_this2.curFont === value) + ' [' + value + ']x');
+				var button = (0, _dom2.default)('a.t-pointer  [' + value + ']x');
 
 				button.addEventListener('click', function () {
 					_this2.curBtn.classList.remove('checked');
@@ -2669,10 +2677,12 @@ var TextSize = function (_ButtonPopOver) {
 
 				_this2.popContent.appendChild(button);
 
+				if (_this2.curFont === value) {
+					_this2.toggle(button);
+				}
+
 				return button;
 			});
-
-			this.toggle(buttons[0]);
 		}
 	}, {
 		key: 'click',
