@@ -115,7 +115,7 @@ exports.i(__webpack_require__(/*! -!../../node_modules/css-loader!tether-drop/di
 exports.i(__webpack_require__(/*! -!../../node_modules/css-loader!noty/lib/noty.css */ "./node_modules/css-loader/index.js!./node_modules/noty/lib/noty.css"), "");
 
 // module
-exports.push([module.i, ".terminal-wrap-custom .terminal .cmd {\n  height: 14px;\n}\n.terminal-wrap-custom .terminal .cmd .clipboard {\n  height: 14px;\n}\n.temp-terminal {\n  position: absolute;\n  top: -99999px;\n}\n.term-f-size-4 .terminal {\n  --size: 1.3;\n}\n.term-f-size-4 .terminal .cmd {\n  height: calc(18.2px);\n}\n.term-f-size-3 .terminal {\n  --size: 1.2;\n}\n.term-f-size-3 .terminal .cmd {\n  height: calc(16.8px);\n}\n.term-f-size-3 .terminal .cmd .clipboard {\n  height: calc(16.8px);\n}\n.term-f-size-2 .terminal {\n  --size: 1.1;\n}\n.term-f-size-2 .terminal .cmd {\n  height: calc(15.4px);\n}\n.term-f-size-2 .terminal .cmd .clipboard {\n  height: calc(15.4px);\n}\n.terminal-wrap-custom .t-matrix-w-0 td {\n  width: 100%;\n}\n.terminal-wrap-custom .t-matrix-w-1 td {\n  width: 50%;\n}\n.terminal-wrap-custom .t-matrix-w-2 td {\n  width: 33.33%;\n}\n.terminal-wrap-custom .t-matrix-w-3 td {\n  width: 25%;\n}\n.drop-element.drop-theme-twipsy .drop-content {\n  font-family: inherit;\n  padding: 10px;\n}\n.terminal-lds-hourglass {\n  display: inline-block;\n  position: relative;\n  width: 64px;\n  height: 64px;\n}\n.terminal-lds-hourglass:after {\n  content: \" \";\n  display: block;\n  border-radius: 50%;\n  width: 0;\n  height: 0;\n  margin: 6px;\n  box-sizing: border-box;\n  border: 26px solid #fff;\n  border-color: #fff transparent #fff transparent;\n  animation: lds-hourglass 1.2s infinite;\n}\n@keyframes lds-hourglass {\n  0% {\n    transform: rotate(0);\n    animation-timing-function: cubic-bezier(0.55, 0.055, 0.675, 0.19);\n  }\n  50% {\n    transform: rotate(900deg);\n    animation-timing-function: cubic-bezier(0.215, 0.61, 0.355, 1);\n  }\n  100% {\n    transform: rotate(1800deg);\n  }\n}\n.matrix-column {\n  display: inline-block;\n  float: left;\n  height: 125px;\n  margin-right: 20px;\n  padding: 10px;\n  cursor: pointer;\n  width: 25px;\n}\n.matrix-column:hover {\n  background: #7a43b6;\n}\n.matrix-table {\n  background: #fff;\n}\n.matrix-table td {\n  padding: 15px;\n  border: 1px solid #CCC;\n  cursor: pointer;\n}\n.matrix-table td:hover {\n  background-color: #7a43b6;\n}\n.terminal .terminal-output .highlight-popover {\n  font-size: 11px;\n  line-height: 1.5em;\n}\n.terminal-menu-popover {\n  padding-left: 5px;\n  width: 100px;\n}\n.terminal-menu-popover.themes {\n  width: 150px;\n}\n.terminal-menu-popover.themes a {\n  padding: 5px 0;\n}\n.terminal-menu-popover.historyContext {\n  width: 200px;\n}\n.terminal-menu-popover.historyContext ul {\n  max-height: 400px;\n  overflow-y: auto;\n  padding: 0;\n}\n.terminal-menu-popover.historyContext ul li input {\n  vertical-align: middle;\n  margin: 0;\n}\n.terminal-menu-popover.historyContext ul li a:hover {\n  opacity: .7;\n}\n.terminal-menu-popover.historyContext ul li a:before {\n  content: \"\\26AC\";\n  margin-right: 5px;\n  font-size: 21px;\n  vertical-align: middle;\n}\n.terminal-menu-popover.historyContext ul li a.checked:before {\n  content: \"\\2714\";\n  margin-right: 5px;\n}\n.terminal-menu-popover a {\n  margin-left: 5px;\n  vertical-align: middle;\n  font-size: 12px;\n  display: block;\n  padding: 2px 0;\n  font-weight: bold;\n  color: #fff;\n}\n.terminal-menu-popover a:hover {\n  opacity: .7;\n}\n.terminal-menu-popover a:before {\n  content: \"\\26AC\";\n  margin-right: 5px;\n  font-size: 21px;\n  vertical-align: middle;\n}\n.terminal-menu-popover a.checked:before {\n  content: \"\\2714\";\n  margin-right: 5px;\n}\n.cmd .cursor {\n  border: 0;\n}\n.noty-wrap-text {\n  padding: 10px;\n  font-weight: bold;\n  font-size: 13px;\n  margin: 0;\n}\n.animated {\n  animation-duration: .5s;\n  animation-fill-mode: both;\n}\n@keyframes fadeIn {\n  from {\n    opacity: 0;\n  }\n  to {\n    opacity: 1;\n  }\n}\n.fadeIn {\n  animation-name: fadeIn;\n}\n@keyframes fadeOut {\n  from {\n    opacity: 1;\n  }\n  to {\n    opacity: 0;\n  }\n}\n.fadeOut {\n  animation-name: fadeOut;\n}\n.terminal,\n.cmd {\n  color: transparent;\n  background-color: transparent;\n}\n#terminalContext {\n  width: 100%;\n  background: #fff;\n}\n.terminal-full-screen {\n  text-align: left;\n}\n.terminal-wrap-custom {\n  position: relative;\n  width: 100%;\n  height: 100%;\n}\n.terminal-wrap-custom .btn.active {\n  position: relative;\n}\n.terminal-wrap-custom .btn.active:before {\n  content: \"\\F00C\";\n  font: normal normal normal 11px/1 FontAwesome;\n  position: absolute;\n  font-size: 9px;\n  z-index: 3;\n  top: 6px;\n  left: -6px;\n  background: inherit;\n  padding: 2px;\n  border-radius: 25px;\n}\n.terminal-wrap-custom .btn.has-drop-down:after {\n  content: \"\\F078\";\n  font: normal normal normal 11px/1 FontAwesome;\n  position: absolute;\n  font-size: 11px;\n  z-index: 3;\n  top: 6px;\n  right: -6px;\n  background: inherit;\n  padding: 2px;\n  border-radius: 25px;\n}\n.terminal-wrap-custom .actions-btn-menu {\n  position: absolute;\n  padding: 10px;\n  z-index: 1;\n  right: 7px;\n  top: 4px;\n}\n.terminal-wrap-custom .actions-btn-menu .btn {\n  display: inline-block;\n  font-size: 0;\n  cursor: pointer;\n  width: 47px;\n  height: 47px;\n  border-radius: 50%;\n  text-align: center;\n  position: relative;\n}\n.terminal-wrap-custom .actions-btn-menu .btn i {\n  vertical-align: middle;\n  font-size: 23px;\n  line-height: 19px;\n}\n.terminal-wrap-custom .actions-btn-menu .btn:after {\n  top: -5px;\n  left: -5px;\n  padding: 5px;\n  box-shadow: 0 0 0 3px #6b3b60;\n  transition: transform 0.2s, opacity 0.2s;\n  transform: scale(0.8);\n  opacity: 0;\n  pointer-events: none;\n  position: absolute;\n  width: 100%;\n  height: 100%;\n  border-radius: 50%;\n  content: '';\n  box-sizing: content-box;\n}\n.terminal-wrap-custom .actions-btn-menu .btn:hover:after {\n  transform: scale(1);\n  opacity: 1;\n}\n.terminal-wrap-custom .pqQuotes {\n  vertical-align: top;\n  width: 445px;\n}\n.terminal-wrap-custom .pqQuotes .close {\n  top: 10px;\n  position: relative;\n}\n.terminal-wrap-custom .pqQuotes div.term-body-pq .pq-container {\n  padding: 15px 10px;\n  border-bottom: 1px solid #f3f3f3;\n  border-left: none;\n  border-right: none;\n}\n.terminal-wrap-custom .pqQuotes div.term-body-pq .pq-container .added-by {\n  float: right;\n}\n.terminal-wrap-custom .pqQuotes div.term-body-pq .pq-container:nth-child(even) {\n  background: #fff;\n}\n.terminal-wrap-custom .pqQuotes div.term-body-pq .pq-container:nth-child(odd) {\n  background: #f3f3f3;\n}\n.terminal-wrap-custom .pqQuotes .priceqoute-pre {\n  font-size: 11px;\n  padding: 5px;\n  color: #000;\n}\n.terminal-wrap-custom > .term-body {\n  width: 100%;\n  height: 100%;\n}\n.terminal-wrap-custom > .term-body .left {\n  position: relative;\n  height: 100%;\n}\n.terminal-wrap-custom > .term-body .menu {\n  width: 20%;\n  vertical-align: top;\n  background: #fff;\n}\n.terminal-wrap-custom > .term-body .menu .label {\n  font-weight: bold;\n  font-size: 12px;\n  padding: 10px 0;\n  color: #414141;\n}\n.terminal-wrap-custom > .term-body .menu .pcc-label {\n  position: absolute;\n  top: -5px;\n  right: -16px;\n  padding: 2px 5px;\n  background: #fff;\n  color: #511551;\n  border-radius: 15px;\n  font-size: 10px;\n  border: 0;\n}\n.terminal-wrap-custom > .term-body.minimized .menu {\n  width: 100px;\n}\n.terminal-wrap-custom > .term-body.minimized .menu article.small-buttons .btn {\n  width: 85%;\n}\n.terminal-wrap-custom > .term-body.minimized .menu article {\n  padding: 5px 10px;\n}\n.terminal-wrap-custom > .term-body.minimized .menu article .btn:last-of-type {\n  margin-bottom: 0;\n}\n.terminal-wrap-custom > .term-body.minimized .menu .btn {\n  display: block;\n  width: 100%;\n  margin: 0 auto 8px;\n  box-shadow: 1px 1px 3px #c1c1c1;\n}\n.terminal-wrap-custom > .term-body.minimized .menu .btn-purple {\n  width: 85%;\n}\n.terminal-wrap-custom > .term-body.minimized .menu .label {\n  text-align: center;\n  font-size: 12px;\n  display: block;\n}\n.terminal-wrap-custom .matrix-row .terminal {\n  border-right: 2px solid #fff;\n  border-bottom: 2px solid #fff;\n}\n.terminal-wrap-custom .terminal {\n  padding: 0;\n  float: left;\n}\n.terminal-wrap-custom .terminal.active {\n  background: red;\n}\n.terminal-wrap-custom .terminal .cmd {\n  font-weight: bold;\n  text-transform: uppercase;\n}\n.terminal-wrap-custom .terminal .usedCommand {\n  text-transform: uppercase;\n}\n.terminal-wrap-custom .terminal .t-highlight {\n  cursor: pointer;\n  position: relative;\n}\n.terminal-wrap-custom .terminal .t-highlight:hover {\n  opacity: .7;\n}\n.terminal-wrap-custom .terminal .t-highlight:hover:before {\n  display: none;\n}\n.terminal-wrap-custom .terminal .t-highlight:before {\n  position: absolute;\n  left: 0;\n  right: 0;\n  content: ' ';\n  bottom: 2px;\n  border-bottom: 1px dashed;\n}\n.terminal-wrap-custom .terminal .raw > div {\n  white-space: pre-wrap;\n}\n.terminal-wrap-custom .terminal-output div span {\n  display: inline;\n}\n.terminal-wrap-custom div.terminal-wrapper {\n  height: auto;\n}\n@keyframes blink {\n  0% {\n    opacity: 1;\n  }\n  25% {\n    opacity: 0;\n  }\n  50% {\n    opacity: 0;\n  }\n  100% {\n    opacity: 1;\n  }\n}\n@-webkit-keyframes blink {\n  0% {\n    opacity: 1;\n  }\n  25% {\n    opacity: 0;\n  }\n  50% {\n    opacity: 0;\n  }\n  100% {\n    opacity: 1;\n  }\n}\n@-ms-keyframes blink {\n  0% {\n    opacity: 1;\n  }\n  25% {\n    opacity: 0;\n  }\n  50% {\n    opacity: 0;\n  }\n  100% {\n    opacity: 1;\n  }\n}\n@-moz-keyframes blink {\n  0% {\n    opacity: 1;\n  }\n  25% {\n    opacity: 0;\n  }\n  50% {\n    opacity: 0;\n  }\n  100% {\n    opacity: 1;\n  }\n}\n.cmd .cursor.blink {\n  background: #ccc;\n  -webkit-animation: blink 1s infinite linear;\n  -moz-animation: blink 1s infinite linear;\n  -ms-animation: blink 1s infinite linear;\n  animation: blink 1s linear infinite;\n}\n", ""]);
+exports.push([module.i, ".terminal-wrap-custom .terminal .cmd {\n  height: 14px;\n}\n.terminal-wrap-custom .terminal .cmd .clipboard {\n  height: 14px;\n}\n.temp-terminal {\n  position: absolute;\n  top: -99999px;\n}\n.term-f-size-4 .terminal {\n  --size: 1.3;\n}\n.term-f-size-4 .terminal .cmd {\n  height: calc(18.2px);\n}\n.term-f-size-3 .terminal {\n  --size: 1.2;\n}\n.term-f-size-3 .terminal .cmd {\n  height: calc(16.8px);\n}\n.term-f-size-3 .terminal .cmd .clipboard {\n  height: calc(16.8px);\n}\n.term-f-size-2 .terminal {\n  --size: 1.1;\n}\n.term-f-size-2 .terminal .cmd {\n  height: calc(15.4px);\n}\n.term-f-size-2 .terminal .cmd .clipboard {\n  height: calc(15.4px);\n}\n.terminal-wrap-custom .t-matrix-w-0 td {\n  width: 100%;\n}\n.terminal-wrap-custom .t-matrix-w-1 td {\n  width: 50%;\n}\n.terminal-wrap-custom .t-matrix-w-2 td {\n  width: 33.33%;\n}\n.terminal-wrap-custom .t-matrix-w-3 td {\n  width: 25%;\n}\n.drop-element.drop-theme-twipsy .drop-content {\n  font-family: inherit;\n  padding: 10px;\n}\n.terminal-lds-hourglass {\n  display: inline-block;\n  position: relative;\n  width: 64px;\n  height: 64px;\n}\n.terminal-lds-hourglass:after {\n  content: \" \";\n  display: block;\n  border-radius: 50%;\n  width: 0;\n  height: 0;\n  margin: 6px;\n  box-sizing: border-box;\n  border: 26px solid #fff;\n  border-color: #fff transparent #fff transparent;\n  animation: lds-hourglass 1.2s infinite;\n}\n@keyframes lds-hourglass {\n  0% {\n    transform: rotate(0);\n    animation-timing-function: cubic-bezier(0.55, 0.055, 0.675, 0.19);\n  }\n  50% {\n    transform: rotate(900deg);\n    animation-timing-function: cubic-bezier(0.215, 0.61, 0.355, 1);\n  }\n  100% {\n    transform: rotate(1800deg);\n  }\n}\n.matrix-column {\n  display: inline-block;\n  float: left;\n  height: 125px;\n  margin-right: 20px;\n  padding: 10px;\n  cursor: pointer;\n  width: 25px;\n}\n.matrix-column:hover {\n  background: #7a43b6;\n}\n.matrix-table {\n  background: #fff;\n}\n.matrix-table td {\n  padding: 15px;\n  border: 1px solid #e0e0e0;\n  cursor: pointer;\n}\n.matrix-table td:hover {\n  background-color: #7a43b6;\n}\n.terminal .terminal-output .highlight-popover {\n  font-size: 11px;\n  line-height: 1.5em;\n}\n.terminal-menu-popover {\n  padding-left: 5px;\n  width: 100px;\n}\n.terminal-menu-popover.themes {\n  width: 150px;\n}\n.terminal-menu-popover.themes a {\n  padding: 5px 0;\n}\n.terminal-menu-popover.historyContext {\n  width: 200px;\n}\n.terminal-menu-popover.historyContext ul {\n  max-height: 400px;\n  overflow-y: auto;\n  padding: 0;\n}\n.terminal-menu-popover.historyContext ul li input {\n  vertical-align: middle;\n  margin: 0;\n}\n.terminal-menu-popover.historyContext ul li a:hover {\n  opacity: .7;\n}\n.terminal-menu-popover.historyContext ul li a:before {\n  content: \"\\26AC\";\n  margin-right: 5px;\n  font-size: 21px;\n  vertical-align: middle;\n}\n.terminal-menu-popover.historyContext ul li a.checked:before {\n  content: \"\\2714\";\n  margin-right: 5px;\n}\n.terminal-menu-popover a {\n  margin-left: 5px;\n  vertical-align: middle;\n  font-size: 12px;\n  display: block;\n  padding: 2px 0;\n  font-weight: bold;\n  color: #fff;\n}\n.terminal-menu-popover a:hover {\n  opacity: .7;\n}\n.terminal-menu-popover a:before {\n  content: \"\\26AC\";\n  margin-right: 5px;\n  font-size: 21px;\n  vertical-align: middle;\n}\n.terminal-menu-popover a.checked:before {\n  content: \"\\2714\";\n  margin-right: 5px;\n}\n.cmd .cursor {\n  border: 0;\n}\n.noty-wrap-text {\n  padding: 10px;\n  font-weight: bold;\n  font-size: 13px;\n  margin: 0;\n}\n.animated {\n  animation-duration: .5s;\n  animation-fill-mode: both;\n}\n@keyframes fadeIn {\n  from {\n    opacity: 0;\n  }\n  to {\n    opacity: 1;\n  }\n}\n.fadeIn {\n  animation-name: fadeIn;\n}\n@keyframes fadeOut {\n  from {\n    opacity: 1;\n  }\n  to {\n    opacity: 0;\n  }\n}\n.fadeOut {\n  animation-name: fadeOut;\n}\n.terminal,\n.cmd {\n  color: transparent;\n  background-color: transparent;\n}\n#terminalContext {\n  width: 100%;\n  background: #fff;\n}\n.terminal-full-screen {\n  text-align: left;\n}\n.terminal-wrap-custom {\n  position: relative;\n  width: 100%;\n  height: 100%;\n}\n.terminal-wrap-custom .btn.active {\n  position: relative;\n}\n.terminal-wrap-custom .btn.active:before {\n  content: \"\\F00C\";\n  font: normal normal normal 11px/1 FontAwesome;\n  position: absolute;\n  font-size: 9px;\n  z-index: 3;\n  top: 6px;\n  left: -6px;\n  background: inherit;\n  padding: 2px;\n  border-radius: 25px;\n}\n.terminal-wrap-custom .btn.has-drop-down:after {\n  content: \"\\F078\";\n  font: normal normal normal 11px/1 FontAwesome;\n  position: absolute;\n  font-size: 11px;\n  z-index: 3;\n  top: 6px;\n  right: -6px;\n  background: inherit;\n  padding: 2px;\n  border-radius: 25px;\n}\n.terminal-wrap-custom .actions-btn-menu {\n  position: absolute;\n  padding: 10px;\n  z-index: 1;\n  right: 7px;\n  top: 4px;\n}\n.terminal-wrap-custom .actions-btn-menu .btn {\n  display: inline-block;\n  font-size: 0;\n  cursor: pointer;\n  width: 47px;\n  height: 47px;\n  border-radius: 50%;\n  text-align: center;\n  position: relative;\n}\n.terminal-wrap-custom .actions-btn-menu .btn i {\n  vertical-align: middle;\n  font-size: 23px;\n  line-height: 19px;\n}\n.terminal-wrap-custom .actions-btn-menu .btn:after {\n  top: -5px;\n  left: -5px;\n  padding: 5px;\n  box-shadow: 0 0 0 3px #6b3b60;\n  transition: transform 0.2s, opacity 0.2s;\n  transform: scale(0.8);\n  opacity: 0;\n  pointer-events: none;\n  position: absolute;\n  width: 100%;\n  height: 100%;\n  border-radius: 50%;\n  content: '';\n  box-sizing: content-box;\n}\n.terminal-wrap-custom .actions-btn-menu .btn:hover:after {\n  transform: scale(1);\n  opacity: 1;\n}\n.terminal-wrap-custom .pqQuotes {\n  vertical-align: top;\n  width: 445px;\n}\n.terminal-wrap-custom .pqQuotes .close {\n  top: 10px;\n  position: relative;\n}\n.terminal-wrap-custom .pqQuotes div.term-body-pq .pq-container {\n  padding: 15px 10px;\n  border-bottom: 1px solid #f3f3f3;\n  border-left: none;\n  border-right: none;\n}\n.terminal-wrap-custom .pqQuotes div.term-body-pq .pq-container .added-by {\n  float: right;\n}\n.terminal-wrap-custom .pqQuotes div.term-body-pq .pq-container:nth-child(even) {\n  background: #fff;\n}\n.terminal-wrap-custom .pqQuotes div.term-body-pq .pq-container:nth-child(odd) {\n  background: #f3f3f3;\n}\n.terminal-wrap-custom .pqQuotes .priceqoute-pre {\n  font-size: 11px;\n  padding: 5px;\n  color: #000;\n}\n.terminal-wrap-custom > .term-body {\n  width: 100%;\n  height: 100%;\n}\n.terminal-wrap-custom > .term-body .left {\n  position: relative;\n  height: 100%;\n}\n.terminal-wrap-custom > .term-body .menu {\n  width: 20%;\n  vertical-align: top;\n  background: #fff;\n}\n.terminal-wrap-custom > .term-body .menu .label {\n  font-weight: bold;\n  font-size: 12px;\n  padding: 10px 0;\n  color: #414141;\n}\n.terminal-wrap-custom > .term-body .menu .pcc-label {\n  position: absolute;\n  top: -5px;\n  right: -16px;\n  padding: 2px 5px;\n  background: #fff;\n  color: #511551;\n  border-radius: 15px;\n  font-size: 10px;\n  border: 0;\n}\n.terminal-wrap-custom > .term-body.minimized .menu {\n  width: 100px;\n}\n.terminal-wrap-custom > .term-body.minimized .menu article.small-buttons .btn {\n  width: 85%;\n}\n.terminal-wrap-custom > .term-body.minimized .menu article {\n  padding: 5px 10px;\n}\n.terminal-wrap-custom > .term-body.minimized .menu article .btn:last-of-type {\n  margin-bottom: 0;\n}\n.terminal-wrap-custom > .term-body.minimized .menu .btn {\n  display: block;\n  width: 100%;\n  margin: 0 auto 8px;\n  box-shadow: 1px 1px 3px #c1c1c1;\n}\n.terminal-wrap-custom > .term-body.minimized .menu .btn-purple {\n  width: 85%;\n}\n.terminal-wrap-custom > .term-body.minimized .menu .label {\n  text-align: center;\n  font-size: 12px;\n  display: block;\n}\n.terminal-wrap-custom .matrix-row .terminal {\n  border-right: 2px solid #fff;\n  border-bottom: 2px solid #fff;\n}\n.terminal-wrap-custom .terminal {\n  padding: 0;\n  float: left;\n}\n.terminal-wrap-custom .terminal.active {\n  background: red;\n}\n.terminal-wrap-custom .terminal .cmd {\n  font-weight: bold;\n  text-transform: uppercase;\n}\n.terminal-wrap-custom .terminal .usedCommand {\n  text-transform: uppercase;\n}\n.terminal-wrap-custom .terminal .term-highlight.underline {\n  text-decoration: underline;\n}\n.terminal-wrap-custom .terminal .term-highlight.dotted {\n  border-bottom: 1px dashed;\n}\n.terminal-wrap-custom .terminal .term-highlight.bold {\n  font-weight: bold;\n}\n.terminal-wrap-custom .terminal .term-highlight.bordered {\n  border: 1px solid;\n}\n.terminal-wrap-custom .terminal .t-highlight {\n  cursor: pointer;\n  position: relative;\n}\n.terminal-wrap-custom .terminal .t-highlight:hover {\n  opacity: .7;\n}\n.terminal-wrap-custom .terminal .t-highlight:hover:before {\n  display: none;\n}\n.terminal-wrap-custom .terminal .t-highlight:before {\n  position: absolute;\n  left: 0;\n  right: 0;\n  content: ' ';\n  bottom: 2px;\n  border-bottom: 1px dashed;\n}\n.terminal-wrap-custom .terminal .raw > div {\n  white-space: pre-wrap;\n}\n.terminal-wrap-custom .terminal-output div span {\n  display: inline;\n}\n.terminal-wrap-custom div.terminal-wrapper {\n  height: auto;\n}\n@keyframes blink {\n  0% {\n    opacity: 1;\n  }\n  25% {\n    opacity: 0;\n  }\n  50% {\n    opacity: 0;\n  }\n  100% {\n    opacity: 1;\n  }\n}\n@-webkit-keyframes blink {\n  0% {\n    opacity: 1;\n  }\n  25% {\n    opacity: 0;\n  }\n  50% {\n    opacity: 0;\n  }\n  100% {\n    opacity: 1;\n  }\n}\n@-ms-keyframes blink {\n  0% {\n    opacity: 1;\n  }\n  25% {\n    opacity: 0;\n  }\n  50% {\n    opacity: 0;\n  }\n  100% {\n    opacity: 1;\n  }\n}\n@-moz-keyframes blink {\n  0% {\n    opacity: 1;\n  }\n  25% {\n    opacity: 0;\n  }\n  50% {\n    opacity: 0;\n  }\n  100% {\n    opacity: 1;\n  }\n}\n.cmd .cursor.blink {\n  background: #ccc;\n  -webkit-animation: blink 1s infinite linear;\n  -moz-animation: blink 1s infinite linear;\n  -ms-animation: blink 1s infinite linear;\n  animation: blink 1s linear infinite;\n}\n", ""]);
 
 // exports
 
@@ -790,120 +790,31 @@ module.exports = (__webpack_require__(/*! dll-reference vendor_lib */ "dll-refer
 Object.defineProperty(exports, "__esModule", {
 	value: true
 });
-exports.UPDATE_STATE = exports.ADD_WHIDE_COLUMN = exports.CHANGE_FONT_SIZE = exports.SWITCH_TERMINAL = exports.CLOSE_PQ_WINDOW = exports.PQ_MODAL_SHOW = exports.HIDE_PQ_QUOTES = exports.SHOW_PQ_QUOTES = exports.PURGE_SCREENS = exports.GET_HISTORY = exports.CHANGE_INPUT_LANGUAGE = exports.DEV_CMD_STACK_RUN = exports.CHANGE_SESSION_BY_MENU = exports.CHANGE_STYLE = exports.UPDATE_CUR_GDS = exports.CHANGE_GDS = exports.CHANGE_ACTIVE_TERMINAL = exports.CHANGE_MATRIX = exports.INIT = undefined;
-
-var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+exports.SWITCH_TERMINAL = exports.PURGE_SCREENS = exports.DEV_CMD_STACK_RUN = undefined;
 
 var _state = __webpack_require__(/*! ./state */ "./src/state.es6");
 
-var _gdsActions = __webpack_require__(/*! ./actions/gdsActions */ "./src/actions/gdsActions.es6");
-
-var app = void 0;
-
-var INIT = exports.INIT = function INIT(App) {
-	app = App;
-
-	(0, _state.setProvider)(function (State) {
-		return app.getContainer().render(State);
-	});
-
-	UPDATE_STATE({
-		requestId: app.params.requestId,
-		gdsObjName: app.Gds.getCurrentName(),
-		permissions: app.params.permissions,
-		terminalThemes: app.params.terminalThemes,
-		theme: app.curTheme,
-		gdsObjIndex: app.gdsList.indexOf(app.Gds.getCurrentName())
-	});
-};
-
-var CHANGE_MATRIX = exports.CHANGE_MATRIX = function CHANGE_MATRIX(matrix) {
-	app.Gds.update({ matrix: matrix });
-	UPDATE_STATE();
-};
-
-var CHANGE_ACTIVE_TERMINAL = exports.CHANGE_ACTIVE_TERMINAL = function CHANGE_ACTIVE_TERMINAL(_ref) {
-	var curTerminalId = _ref.curTerminalId;
-
-	app.Gds.changeActive(curTerminalId);
-	(0, _state.getters)('active', curTerminalId + 1);
-};
-
-var CHANGE_GDS = exports.CHANGE_GDS = function CHANGE_GDS(gdsName) {
-	(0, _state.getters)('switch', gdsName);
-
-	UPDATE_STATE((0, _gdsActions.change_gds)(app, gdsName));
-};
-
-var UPDATE_CUR_GDS = exports.UPDATE_CUR_GDS = function UPDATE_CUR_GDS(props) {
-	(0, _state.setState)(_extends({}, (0, _gdsActions.update_cur_gds)(app, props)));
-};
-
-var CHANGE_STYLE = exports.CHANGE_STYLE = function CHANGE_STYLE(name) {
-	app.changeStyle(name);
-};
-
-var CHANGE_SESSION_BY_MENU = exports.CHANGE_SESSION_BY_MENU = function CHANGE_SESSION_BY_MENU(area) {
-	(0, _state.getters)('session', area);
-
-	var command = (app.Gds.isApollo() ? 'S' : '¤') + area;
-	return DEV_CMD_STACK_RUN([command]);
-};
+var _store = __webpack_require__(/*! ./store */ "./src/store.es6");
 
 var DEV_CMD_STACK_RUN = exports.DEV_CMD_STACK_RUN = function DEV_CMD_STACK_RUN(command) {
-	return app.Gds.runCommand(command);
-};
-
-var CHANGE_INPUT_LANGUAGE = exports.CHANGE_INPUT_LANGUAGE = function CHANGE_INPUT_LANGUAGE(language) {
-	(0, _state.getters)('language', language);
-	(0, _state.setState)({ language: language });
-};
-
-var GET_HISTORY = exports.GET_HISTORY = function GET_HISTORY() {
-	return (0, _state.getters)('history');
+	return (0, _store.getStore)().app.Gds.runCommand(command);
 };
 
 var PURGE_SCREENS = exports.PURGE_SCREENS = function PURGE_SCREENS() {
-	app.Gds.clearScreen();
+	(0, _store.getStore)().app.Gds.clearScreen();
 	(0, _state.getters)('clear'); // TO MANY REQUESTS;
-};
-
-var showPq = function showPq(newState) {
-	var offset = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 100;
-
-	app.setOffset(offset);
-	UPDATE_STATE(newState);
-};
-
-var SHOW_PQ_QUOTES = exports.SHOW_PQ_QUOTES = function SHOW_PQ_QUOTES() {
-	return (0, _state.getters)('showExistingPq').then(function (response) {
-		return showPq({ pqToShow: response }, 500);
-	});
-};
-var HIDE_PQ_QUOTES = exports.HIDE_PQ_QUOTES = function HIDE_PQ_QUOTES() {
-	return showPq({ pqToShow: false });
-};
-
-var PQ_MODAL_SHOW = exports.PQ_MODAL_SHOW = function PQ_MODAL_SHOW() {
-	app.pqParser.show(app.getGds(), app.params.requestId).then(function () {
-		showPq({ hideMenu: true }, 0);
-	});
-};
-
-var CLOSE_PQ_WINDOW = exports.CLOSE_PQ_WINDOW = function CLOSE_PQ_WINDOW() {
-	return showPq({ hideMenu: false });
 };
 
 var SWITCH_TERMINAL = exports.SWITCH_TERMINAL = function SWITCH_TERMINAL(fn) {
 
 	return new Promise(function (resolve) {
 
-		var curTerminalId = fn(app.getGds().get());
+		var curTerminalId = fn((0, _store.getStore)().app.getGds().get());
 
 		setTimeout(function () {
 			// THIS IS CRAZY SHIT. WITHOUT IT SWITCHES TERMINALS SEVERAL TIMES TRY PRESS ~
 
-			var terminal = app.Gds.getCurrent().get('terminals');
+			var terminal = (0, _store.getStore)().app.Gds.getCurrent().get('terminals');
 
 			if (curTerminalId !== false) terminal[curTerminalId].plugin.terminal.focus();
 
@@ -911,42 +822,6 @@ var SWITCH_TERMINAL = exports.SWITCH_TERMINAL = function SWITCH_TERMINAL(fn) {
 		}, 100);
 	});
 };
-
-var CHANGE_FONT_SIZE = exports.CHANGE_FONT_SIZE = function CHANGE_FONT_SIZE(props) {
-	app.getContainer().changeFontClass(props);
-	UPDATE_STATE(props);
-};
-
-var ADD_WHIDE_COLUMN = exports.ADD_WHIDE_COLUMN = function ADD_WHIDE_COLUMN() {
-	app.Gds.update({
-		hasWide: !app.getGds().get('hasWide')
-	});
-
-	UPDATE_STATE();
-};
-
-var UPDATE_STATE = exports.UPDATE_STATE = function UPDATE_STATE() {
-	var props = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
-
-	(0, _state.setState)(_extends({}, props, {
-		gdsList: app.calculateMatrix().Gds.getList()
-	}));
-};
-
-// export const PQ_MODAL_SHOW_DEV = () => {
-// 	app.pqParser.show( app.getGds()['canCreatePqErrors'], app.params.requestId )
-// 		.then( () => {
-// 			app.setOffset(0);
-// 			UPDATE_STATE({hideMenu: true})
-// 		});
-// };
-
-/*export const FULL_SCREEN = () => {
-	// if ( state.getGdsObj()['curTerminalId'] >= 0 )
-	// 	return FullScreen.show(state.getGds(), window.activePlugin.terminal);
-	//
-	// alert('no terminal selected');
-};*/
 
 /***/ }),
 
@@ -963,48 +838,175 @@ var UPDATE_STATE = exports.UPDATE_STATE = function UPDATE_STATE() {
 Object.defineProperty(exports, "__esModule", {
 	value: true
 });
-exports.change_gds = exports.update_cur_gds = undefined;
+exports.UPDATE_CUR_GDS = exports.CHANGE_GDS = undefined;
 
 var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
 var _constants = __webpack_require__(/*! ../constants */ "./src/constants.es6");
 
+var _store = __webpack_require__(/*! ../store */ "./src/store.es6");
+
+var _state = __webpack_require__(/*! ../state */ "./src/state.es6");
+
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
-var update_cur_gds = exports.update_cur_gds = function update_cur_gds(app, _ref) {
+var update_cur_gds = function update_cur_gds(_ref) {
 	var canCreatePq = _ref.canCreatePq,
 	    canCreatePqErrors = _ref.canCreatePqErrors,
 	    area = _ref.area,
 	    pcc = _ref.pcc,
 	    startNewSession = _ref.startNewSession,
-	    log = _ref.log;
+	    log = _ref.log,
+	    gdsName = _ref.gdsName;
 
 
 	var sessionIndex = _constants.AREA_LIST.indexOf(area);
 
-	// const newAction 	= {canCreatePq, canCreatePqErrors, sessionIndex};
+	var pc = _defineProperty({}, sessionIndex, pcc);
+	var pccUpd = startNewSession ? pc : _extends({}, (0, _store.getStore)().app.Gds.getGds(gdsName).get('pcc'), pc);
 
-	if (startNewSession) {
-		app.Gds.update(_extends({ pcc: _defineProperty({}, sessionIndex, pcc) }, { canCreatePq: canCreatePq, canCreatePqErrors: canCreatePqErrors, sessionIndex: sessionIndex }));
-	} else {
-		app.Gds.updatePcc(_defineProperty({}, sessionIndex, pcc));
-		app.Gds.update({ canCreatePq: canCreatePq, canCreatePqErrors: canCreatePqErrors, sessionIndex: sessionIndex });
-	}
+	(0, _store.getStore)().app.Gds.update({ pcc: pccUpd, canCreatePq: canCreatePq, canCreatePqErrors: canCreatePqErrors, sessionIndex: sessionIndex }, gdsName);
 
 	return {
-		gdsList: app.Gds.getList(),
 		log: log,
 		canCreatePq: canCreatePq
 	};
 };
 
-var change_gds = exports.change_gds = function change_gds(app, gdsName) {
-	app.Gds.setCurrent(gdsName);
+var CHANGE_GDS = exports.CHANGE_GDS = function CHANGE_GDS(gdsName) {
+	(0, _state.getters)('gds', gdsName);
 
-	return {
-		gdsObjName: app.Gds.getCurrentName(),
-		gdsObjIndex: _constants.GDS_LIST.indexOf(gdsName)
-	};
+	(0, _store.getStore)().app.Gds.setCurrent(gdsName);
+
+	(0, _store.getStore)().updateView({
+		gdsObjName: (0, _store.getStore)().app.Gds.getCurrentName(),
+		gdsObjIndex: (0, _store.getStore)().app.Gds.getCurrentIndex()
+	});
+};
+
+var UPDATE_CUR_GDS = exports.UPDATE_CUR_GDS = function UPDATE_CUR_GDS(props) {
+
+	(0, _store.getStore)().setState(_extends({}, update_cur_gds(props)));
+};
+
+/***/ }),
+
+/***/ "./src/actions/priceQuoutes.es6":
+/*!**************************************!*\
+  !*** ./src/actions/priceQuoutes.es6 ***!
+  \**************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+	value: true
+});
+exports.CLOSE_PQ_WINDOW = exports.PQ_MODAL_SHOW = exports.HIDE_PQ_QUOTES = exports.SHOW_PQ_QUOTES = undefined;
+
+var _store = __webpack_require__(/*! ../store */ "./src/store.es6");
+
+var _constants = __webpack_require__(/*! ../constants */ "./src/constants.es6");
+
+var _state = __webpack_require__(/*! ../state */ "./src/state.es6");
+
+var showPq = function showPq(newState) {
+	var offset = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 100;
+
+	(0, _store.getStore)().app.setOffset(offset);
+	(0, _store.getStore)().updateView(newState);
+};
+
+var SHOW_PQ_QUOTES = exports.SHOW_PQ_QUOTES = function SHOW_PQ_QUOTES() {
+	return (0, _state.getters)('showExistingPq').then(function (response) {
+		return showPq({ pqToShow: response }, _constants.OFFSET_QUOTES);
+	});
+};
+var HIDE_PQ_QUOTES = exports.HIDE_PQ_QUOTES = function HIDE_PQ_QUOTES() {
+	return showPq({ pqToShow: false });
+};
+
+var PQ_MODAL_SHOW = exports.PQ_MODAL_SHOW = function PQ_MODAL_SHOW() {
+	(0, _store.getStore)().app.pqParser.show((0, _store.getStore)().app.getGds(), (0, _store.getStore)().app.params.requestId).then(function () {
+		showPq({ hideMenu: true }, 0);
+	});
+};
+
+var CLOSE_PQ_WINDOW = exports.CLOSE_PQ_WINDOW = function CLOSE_PQ_WINDOW() {
+	return showPq({ hideMenu: false });
+};
+
+/***/ }),
+
+/***/ "./src/actions/settings.es6":
+/*!**********************************!*\
+  !*** ./src/actions/settings.es6 ***!
+  \**********************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+	value: true
+});
+exports.ADD_WHIDE_COLUMN = exports.CHANGE_SESSION_BY_MENU = exports.CHANGE_ACTIVE_TERMINAL = exports.CHANGE_MATRIX = exports.GET_HISTORY = exports.CHANGE_INPUT_LANGUAGE = exports.CHANGE_FONT_SIZE = exports.CHANGE_STYLE = undefined;
+
+var _state = __webpack_require__(/*! ../state */ "./src/state.es6");
+
+var _store = __webpack_require__(/*! ../store */ "./src/store.es6");
+
+var CHANGE_STYLE = exports.CHANGE_STYLE = function CHANGE_STYLE(name) {
+	(0, _store.getStore)().app.changeStyle(name);
+};
+
+var CHANGE_FONT_SIZE = exports.CHANGE_FONT_SIZE = function CHANGE_FONT_SIZE(_ref) {
+	var fontSize = _ref.fontSize;
+
+	(0, _state.getters)('fontSize', fontSize);
+
+	(0, _store.getStore)().app.getContainer().changeFontClass(fontSize);
+	(0, _store.getStore)().updateView({ fontSize: fontSize });
+};
+
+var CHANGE_INPUT_LANGUAGE = exports.CHANGE_INPUT_LANGUAGE = function CHANGE_INPUT_LANGUAGE(language) {
+	(0, _state.getters)('language', language);
+	(0, _store.getStore)().setState({ language: language });
+};
+
+var GET_HISTORY = exports.GET_HISTORY = function GET_HISTORY() {
+	return (0, _state.getters)('history');
+};
+
+var CHANGE_MATRIX = exports.CHANGE_MATRIX = function CHANGE_MATRIX(matrix) {
+	(0, _store.getStore)().app.Gds.update({ matrix: matrix });
+	(0, _store.getStore)().updateView();
+};
+
+var CHANGE_ACTIVE_TERMINAL = exports.CHANGE_ACTIVE_TERMINAL = function CHANGE_ACTIVE_TERMINAL(_ref2) {
+	var curTerminalId = _ref2.curTerminalId;
+
+	(0, _store.getStore)().app.Gds.changeActive(curTerminalId);
+	(0, _state.getters)('terminal', curTerminalId + 1);
+};
+
+var CHANGE_SESSION_BY_MENU = exports.CHANGE_SESSION_BY_MENU = function CHANGE_SESSION_BY_MENU(area) {
+	(0, _state.getters)('area', area);
+
+	var command = ((0, _store.getStore)().app.Gds.isApollo() ? 'S' : '¤') + area;
+	return (0, _store.getStore)().app.Gds.runCommand([command]);
+};
+
+var ADD_WHIDE_COLUMN = exports.ADD_WHIDE_COLUMN = function ADD_WHIDE_COLUMN() {
+
+	(0, _store.getStore)().app.Gds.update({
+		hasWide: !(0, _store.getStore)().app.getGds().get('hasWide')
+	});
+
+	(0, _store.getStore)().updateView();
 };
 
 /***/ }),
@@ -1023,7 +1025,11 @@ var _createClass = function () { function defineProperties(target, props) { for 
 
 var _requests = __webpack_require__(/*! ./helpers/requests.es6 */ "./src/helpers/requests.es6");
 
+var _settings = __webpack_require__(/*! ./actions/settings */ "./src/actions/settings.es6");
+
 var _actions = __webpack_require__(/*! ./actions */ "./src/actions.es6");
+
+var _gdsActions = __webpack_require__(/*! ./actions/gdsActions */ "./src/actions/gdsActions.es6");
 
 var _gds = __webpack_require__(/*! ./modules/gds */ "./src/modules/gds.es6");
 
@@ -1035,9 +1041,11 @@ var _pqParser = __webpack_require__(/*! ./modules/pqParser */ "./src/modules/pqP
 
 var _cookie = __webpack_require__(/*! ./helpers/cookie */ "./src/helpers/cookie.es6");
 
+__webpack_require__(/*! ./theme/main.less */ "./src/theme/main.less");
+
 var _constants = __webpack_require__(/*! ./constants */ "./src/constants.es6");
 
-__webpack_require__(/*! ./theme/main.less */ "./src/theme/main.less");
+var _store = __webpack_require__(/*! ./store */ "./src/store.es6");
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -1046,78 +1054,100 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 var BORDER_SIZE = 2;
 
 var TerminalApp = function () {
-	function TerminalApp(_ref) {
-		var settings = _ref.settings,
-		    requestId = _ref.requestId,
-		    buffer = _ref.buffer,
-		    permissions = _ref.permissions,
-		    PqPriceModal = _ref.PqPriceModal,
-		    htmlRootId = _ref.htmlRootId,
-		    agentId = _ref.agentId,
-		    terminalThemes = _ref.terminalThemes,
-		    commandUrl = _ref.commandUrl;
-
+	function TerminalApp(params) {
 		_classCallCheck(this, TerminalApp);
 
-		this.gdsList = _constants.GDS_LIST;
+		var settings = params.settings,
+		    requestId = params.requestId,
+		    buffer = params.buffer,
+		    permissions = params.permissions,
+		    PqPriceModal = params.PqPriceModal,
+		    htmlRootId = params.htmlRootId,
+		    agentId = params.agentId,
+		    terminalThemes = params.terminalThemes,
+		    commandUrl = params.commandUrl;
+
 
 		this.Gds = new _gds.GDS({
-			gdsList: settings.gds,
+			gdsListDb: settings.gds,
 			activeName: settings['common']['currentGds'] || 'apollo',
-			buffer: buffer || {},
-			gdsSet: _constants.GDS_LIST
+			buffer: buffer || {}
 		});
 
-		this.params = { requestId: requestId, permissions: permissions, terminalThemes: terminalThemes };
-
-		this.agentId = agentId;
-		this.offset = 100; //menu
+		this.params = { requestId: requestId, permissions: permissions };
+		this.offset = _constants.OFFSET_DEFAULT; //menu
 
 		this.pqParser = new _pqParser.PqParser(PqPriceModal);
 		this.container = new _main2.default(htmlRootId);
 
-		this.curTheme = (0, _cookie.cookieGet)('terminalTheme_' + agentId) || terminalThemes[0]['id'];
-		this.changeStyle(this.curTheme);
+		this.agentId = agentId;
+		this.themeId = this.getStyle(agentId, terminalThemes);
 
 		(0, _requests.setLink)(commandUrl);
-		(0, _actions.INIT)(this);
-
 		initGlobEvents();
+
+		(0, _store.connect)(this);
+
+		var curGds = settings['gds'][settings['common']['currentGds'] || 'apollo'];
+		var fontSize = curGds['fontSize'] || 1;
+		var language = curGds['language'] || 'apollo';
+		this.container.changeFontClass(fontSize);
+
+		(0, _store.getStore)().updateView({
+			requestId: requestId,
+			permissions: permissions,
+			terminalThemes: terminalThemes,
+			fontSize: fontSize,
+			language: language,
+			theme: this.themeId,
+			gdsObjName: this.Gds.getCurrentName(),
+			gdsObjIndex: this.Gds.getCurrentIndex()
+		});
 	}
 
 	_createClass(TerminalApp, [{
-		key: 'changeStyle',
-		value: function changeStyle(name) {
-			(0, _cookie.cookieSet)('terminalTheme_' + this.agentId, name, 30);
-			this.container.changeStyle(name);
+		key: "changeStyle",
+		value: function changeStyle(id) {
+			(0, _cookie.cookieSet)('terminalTheme_' + this.agentId, id, 30);
+			this.container.changeStyle(id);
 		}
 	}, {
-		key: 'getContainer',
+		key: "getStyle",
+		value: function getStyle(agentId, terminalThemes) {
+			if (!this.themeId) {
+				this.themeId = (0, _cookie.cookieGet)('terminalTheme_' + agentId) || terminalThemes[0]['id'];
+				this.container.changeStyle(this.themeId);
+			}
+
+			return this.themeId;
+		}
+	}, {
+		key: "getContainer",
 		value: function getContainer() {
 			return this.container;
 		}
 	}, {
-		key: 'getGds',
+		key: "getGds",
 		value: function getGds() {
 			return this.Gds.getCurrent();
 		}
 	}, {
-		key: 'getCharLength',
+		key: "getCharLength",
 		value: function getCharLength() {
 			return this.container.getTempTerminal().getLineHeight();
 		}
 	}, {
-		key: 'getOffset',
+		key: "getOffset",
 		value: function getOffset() {
 			return this.offset || 0;
 		}
 	}, {
-		key: 'setOffset',
+		key: "setOffset",
 		value: function setOffset(value) {
 			this.offset = value;
 		}
 	}, {
-		key: 'calculateMatrix',
+		key: "calculateMatrix",
 		value: function calculateMatrix() {
 			var _Gds$getCurrent$get = this.Gds.getCurrent().get(),
 			    matrix = _Gds$getCurrent$get.matrix,
@@ -1161,7 +1191,7 @@ var TerminalApp = function () {
 			return this;
 		}
 	}, {
-		key: 'calculateHasWide',
+		key: "calculateHasWide",
 		value: function calculateHasWide(dimensions, rows) {
 			var numOfRows = Math.floor((dimensions.parent.height - 2) / dimensions.char.height);
 			var height = dimensions.terminalSize.height * (rows + 1);
@@ -1183,28 +1213,28 @@ var TerminalApp = function () {
 			this.Gds.update({ wideDimensions: wideDimensions });
 		}
 	}, {
-		key: 'runPnr',
-		value: function runPnr(_ref2) {
-			var pnrCode = _ref2.pnrCode,
-			    _ref2$gdsName = _ref2.gdsName,
-			    gdsName = _ref2$gdsName === undefined ? 'apollo' : _ref2$gdsName;
+		key: "runPnr",
+		value: function runPnr(_ref) {
+			var pnrCode = _ref.pnrCode,
+			    _ref$gdsName = _ref.gdsName,
+			    gdsName = _ref$gdsName === undefined ? 'apollo' : _ref$gdsName;
 
 			if (pnrCode) {
-				(0, _actions.CHANGE_GDS)(gdsName);
-				(0, _actions.CHANGE_ACTIVE_TERMINAL)({ curTerminalId: 0 });
+				(0, _gdsActions.CHANGE_GDS)(gdsName);
+				(0, _settings.CHANGE_ACTIVE_TERMINAL)({ curTerminalId: 0 });
 				(0, _actions.DEV_CMD_STACK_RUN)('*' + pnrCode);
 			}
 		}
 	}, {
-		key: 'rebuild',
-		value: function rebuild(_ref3) {
-			var data = _ref3.data,
-			    _ref3$gdsName = _ref3.gdsName,
-			    gdsName = _ref3$gdsName === undefined ? 'apollo' : _ref3$gdsName;
+		key: "rebuild",
+		value: function rebuild(_ref2) {
+			var data = _ref2.data,
+			    _ref2$gdsName = _ref2.gdsName,
+			    gdsName = _ref2$gdsName === undefined ? 'apollo' : _ref2$gdsName;
 
 			if (data) {
-				(0, _actions.CHANGE_GDS)(gdsName);
-				(0, _actions.CHANGE_ACTIVE_TERMINAL)({ curTerminalId: 0 });
+				(0, _gdsActions.CHANGE_GDS)(gdsName);
+				(0, _settings.CHANGE_ACTIVE_TERMINAL)({ curTerminalId: 0 });
 				(0, _actions.DEV_CMD_STACK_RUN)('REBUILD/' + data.itineraryId + '/' + data.segmentStatus + '/' + data.seats);
 			}
 		}
@@ -1226,7 +1256,7 @@ var initGlobEvents = function initGlobEvents() {
 		}
 
 		resizeTimeout = setTimeout(function () {
-			return (0, _actions.UPDATE_STATE)({});
+			return (0, _store.getStore)().updateView();
 		}, 10);
 	};
 };
@@ -1260,7 +1290,7 @@ var _dom = __webpack_require__(/*! ../helpers/dom */ "./src/helpers/dom.es6");
 
 var _dom2 = _interopRequireDefault(_dom);
 
-var _actions = __webpack_require__(/*! ../actions */ "./src/actions.es6");
+var _priceQuoutes = __webpack_require__(/*! ../actions/priceQuoutes */ "./src/actions/priceQuoutes.es6");
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -1280,7 +1310,7 @@ var PqQuotes = exports.PqQuotes = function (_Component) {
 
 		_this.observe(new _component2.default('section.hbox stretch').observe(new _component2.default('section.vbox').append(new _component2.default('header.header b-b').observe(new _component2.default('span.close', {
 			innerHTML: '&times;',
-			onclick: _actions.HIDE_PQ_QUOTES
+			onclick: _priceQuoutes.HIDE_PQ_QUOTES
 		}))).observe(new _component2.default('section.scrollable bg-light lter ').observe(new _component2.default('div.hbox stretch ').observe(new Body())))));
 		return _this;
 	}
@@ -1561,7 +1591,9 @@ var _component = __webpack_require__(/*! ../../modules/component */ "./src/modul
 
 var _component2 = _interopRequireDefault(_component);
 
-var _actions = __webpack_require__(/*! ../../actions */ "./src/actions.es6");
+var _settings = __webpack_require__(/*! ../../actions/settings */ "./src/actions/settings.es6");
+
+var _gdsActions = __webpack_require__(/*! ../../actions/gdsActions */ "./src/actions/gdsActions.es6");
 
 var _dom = __webpack_require__(/*! ../../helpers/dom */ "./src/helpers/dom.es6");
 
@@ -1593,21 +1625,13 @@ var GdsAreas = exports.GdsAreas = function (_Component) {
 	_createClass(GdsAreas, [{
 		key: "setState",
 		value: function setState(state) {
-			var gdsList = state.gdsList,
-			    gdsObjName = state.gdsObjName,
-			    gdsObjIndex = state.gdsObjIndex;
-
-
-			var current = gdsList[gdsObjIndex];
+			var current = state.curGds;
 
 			return _get(GdsAreas.prototype.__proto__ || Object.getPrototypeOf(GdsAreas.prototype), "setState", this).call(this, {
-				gdsObjName: gdsObjName,
+				gdsName: current.get('name'),
 				pcc: current.get('pcc'),
 				sessionIndex: current.get('sessionIndex'),
-				areaList: current.get('list'),
-				gdsList: gdsList.map(function (name) {
-					return name.props.name;
-				})
+				areaList: current.get('list')
 			});
 		}
 	}, {
@@ -1630,18 +1654,16 @@ var GdsButtons = function (_ButtonPopOver) {
 	_inherits(GdsButtons, _ButtonPopOver);
 
 	function GdsButtons(_ref) {
-		var gdsObjName = _ref.gdsObjName,
-		    gdsList = _ref.gdsList,
+		var gdsName = _ref.gdsName,
 		    areaList = _ref.areaList,
 		    sessionIndex = _ref.sessionIndex,
 		    pcc = _ref.pcc;
 
 		_classCallCheck(this, GdsButtons);
 
-		var _this2 = _possibleConstructorReturn(this, (GdsButtons.__proto__ || Object.getPrototypeOf(GdsButtons)).call(this, { icon: gdsObjName }, 'div'));
+		var _this2 = _possibleConstructorReturn(this, (GdsButtons.__proto__ || Object.getPrototypeOf(GdsButtons)).call(this, { icon: gdsName }, 'div'));
 
-		_this2.gdsname = gdsObjName;
-		_this2.gdsList = gdsList;
+		_this2.gdsname = gdsName;
 		_this2.areaList = areaList;
 		_this2.sessionIndex = sessionIndex;
 		_this2.pcc = pcc;
@@ -1658,7 +1680,7 @@ var GdsButtons = function (_ButtonPopOver) {
 		value: function build() {
 			var _this3 = this;
 
-			this.gdsList.map(function (name) {
+			_constants.GDS_LIST.map(function (name) {
 				_this3.popContent.appendChild(_this3.gdsButton(name));
 			});
 		}
@@ -1670,7 +1692,7 @@ var GdsButtons = function (_ButtonPopOver) {
 			return (0, _dom2.default)("button.btn btn-sm btn-block btn-mint font-bold [" + gdsName + "]", {
 				disabled: this.gdsname === gdsName,
 				onclick: function onclick() {
-					(0, _actions.CHANGE_GDS)(gdsName);
+					(0, _gdsActions.CHANGE_GDS)(gdsName);
 					_this4.popover.close();
 				}
 			});
@@ -1690,17 +1712,11 @@ var GdsButtons = function (_ButtonPopOver) {
 			var isActive = this.sessionIndex === index;
 
 			return (0, _dom2.default)("button.btn btn-sm btn-purple font-bold pos-rlt " + (isActive ? 'active' : ''), {
-
 				innerHTML: area + (this.pcc[index] ? "<span class=\"pcc-label\">" + this.pcc[index] + "</span>" : ''),
-
 				disabled: isActive,
-
 				onclick: function onclick(e) {
-
 					e.target.disabled = true;
-
-					(0, _actions.CHANGE_SESSION_BY_MENU)(_constants.AREA_LIST[index]);
-					// .catch( () => e.target.disabled = false )
+					(0, _settings.CHANGE_SESSION_BY_MENU)(_constants.AREA_LIST[index]);
 				}
 			});
 		}
@@ -1730,7 +1746,7 @@ var _createClass = function () { function defineProperties(target, props) { for 
 
 var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
 
-var _actions = __webpack_require__(/*! ../../actions */ "./src/actions.es6");
+var _settings = __webpack_require__(/*! ../../actions/settings */ "./src/actions/settings.es6");
 
 var _dom = __webpack_require__(/*! ../../helpers/dom */ "./src/helpers/dom.es6");
 
@@ -1816,7 +1832,7 @@ var LanguageButton = function (_ButtonPopOver) {
 
 				button.addEventListener('click', function () {
 					_this3.popover.close();
-					(0, _actions.CHANGE_INPUT_LANGUAGE)(name);
+					(0, _settings.CHANGE_INPUT_LANGUAGE)(name);
 				});
 
 				_this3.popContent.appendChild(button);
@@ -1847,7 +1863,7 @@ var _createClass = function () { function defineProperties(target, props) { for 
 
 var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
 
-var _actions = __webpack_require__(/*! ../../actions */ "./src/actions.es6");
+var _priceQuoutes = __webpack_require__(/*! ../../actions/priceQuoutes */ "./src/actions/priceQuoutes.es6");
 
 var _component = __webpack_require__(/*! ../../modules/component */ "./src/modules/component.es6");
 
@@ -1871,7 +1887,7 @@ var PqButton = function (_Component) {
 			disabled: true
 		}));
 
-		_this.context.onclick = _actions.PQ_MODAL_SHOW;
+		_this.context.onclick = _priceQuoutes.PQ_MODAL_SHOW;
 		return _this;
 	}
 
@@ -1921,7 +1937,7 @@ var _createClass = function () { function defineProperties(target, props) { for 
 
 var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
 
-var _actions = __webpack_require__(/*! ../../actions */ "./src/actions.es6");
+var _priceQuoutes = __webpack_require__(/*! ../../actions/priceQuoutes */ "./src/actions/priceQuoutes.es6");
 
 var _component = __webpack_require__(/*! ../../modules/component */ "./src/modules/component.es6");
 
@@ -1944,7 +1960,7 @@ var Quotes = exports.Quotes = function (_Component) {
 		return _possibleConstructorReturn(this, (Quotes.__proto__ || Object.getPrototypeOf(Quotes)).call(this, 'button.btn btn-mozilla font-bold[Quotes]', {
 			onclick: function onclick(e) {
 				e.target.innerHTML = 'Loading...';
-				(0, _actions.SHOW_PQ_QUOTES)().then(function () {
+				(0, _priceQuoutes.SHOW_PQ_QUOTES)().then(function () {
 					e.target.innerHTML = 'Quotes';
 				});
 			}
@@ -2177,6 +2193,8 @@ var _buttonPopover2 = _interopRequireDefault(_buttonPopover);
 
 var _actions = __webpack_require__(/*! ../../actions */ "./src/actions.es6");
 
+var _settings = __webpack_require__(/*! ../../actions/settings */ "./src/actions/settings.es6");
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -2211,7 +2229,7 @@ var History = exports.History = function (_ButtonPopOver) {
 			buffer = [];
 			this.popContent.innerHTML = '<div class="text-center"><div class="terminal-lds-hourglass"></div></div>';
 
-			(0, _actions.GET_HISTORY)().then(function (response) {
+			(0, _settings.GET_HISTORY)().then(function (response) {
 
 				var c = new Context(response, _this2.popover);
 
@@ -2330,7 +2348,7 @@ var LogButton = exports.LogButton = function (_Component) {
 	function LogButton() {
 		_classCallCheck(this, LogButton);
 
-		return _possibleConstructorReturn(this, (LogButton.__proto__ || Object.getPrototypeOf(LogButton)).call(this, 'div'));
+		return _possibleConstructorReturn(this, (LogButton.__proto__ || Object.getPrototypeOf(LogButton)).call(this, 'div.m-t-sm'));
 	}
 
 	_createClass(LogButton, [{
@@ -2434,7 +2452,7 @@ var _buttonPopover = __webpack_require__(/*! ../../modules/buttonPopover.es6 */ 
 
 var _buttonPopover2 = _interopRequireDefault(_buttonPopover);
 
-var _actions = __webpack_require__(/*! ../../actions */ "./src/actions.es6");
+var _settings = __webpack_require__(/*! ../../actions/settings */ "./src/actions/settings.es6");
 
 var _constants = __webpack_require__(/*! ../../constants */ "./src/constants.es6");
 
@@ -2473,7 +2491,7 @@ var Matrix = function (_ButtonPopOver) {
 				onclick: function onclick(e) {
 					e.target.classList.toggle(ACTIVE_CLASS);
 					e.target.classList.toggle('bg-white');
-					(0, _actions.ADD_WHIDE_COLUMN)();
+					(0, _settings.ADD_WHIDE_COLUMN)();
 				}
 			});
 
@@ -2543,7 +2561,7 @@ var Matrix = function (_ButtonPopOver) {
 
 				localStorage.setItem('matrix', JSON.stringify(matrixProps));
 
-				(0, _actions.CHANGE_MATRIX)(matrixProps);
+				(0, _settings.CHANGE_MATRIX)(matrixProps);
 			});
 
 			cell.addEventListener('mouseover', function () {
@@ -2604,7 +2622,7 @@ var _buttonPopover = __webpack_require__(/*! ../../modules/buttonPopover.es6 */ 
 
 var _buttonPopover2 = _interopRequireDefault(_buttonPopover);
 
-var _actions = __webpack_require__(/*! ../../actions */ "./src/actions.es6");
+var _settings = __webpack_require__(/*! ../../actions/settings */ "./src/actions/settings.es6");
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -2657,7 +2675,7 @@ var TextSize = function (_ButtonPopOver) {
 		value: function click(value) {
 			this.popover.close();
 			this.curFont = value;
-			(0, _actions.CHANGE_FONT_SIZE)({ fontSize: value });
+			(0, _settings.CHANGE_FONT_SIZE)({ fontSize: value });
 		}
 	}, {
 		key: 'toggle',
@@ -2698,7 +2716,7 @@ var _buttonPopover = __webpack_require__(/*! ../../modules/buttonPopover.es6 */ 
 
 var _buttonPopover2 = _interopRequireDefault(_buttonPopover);
 
-var _actions = __webpack_require__(/*! ../../actions */ "./src/actions.es6");
+var _settings = __webpack_require__(/*! ../../actions/settings */ "./src/actions/settings.es6");
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -2722,7 +2740,6 @@ var Theme = function (_ButtonPopOver) {
 
 		_this.themes = themes;
 		_this.makeTrigger();
-
 		_this.themeId = theme;
 		return _this;
 	}
@@ -2759,7 +2776,7 @@ var Theme = function (_ButtonPopOver) {
 			var newThemeClass = value.id;
 			this.themeId = value.id;
 
-			(0, _actions.CHANGE_STYLE)(newThemeClass);
+			(0, _settings.CHANGE_STYLE)(newThemeClass);
 		}
 	}, {
 		key: 'toggle',
@@ -2895,22 +2912,17 @@ var TerminalsMatrix = function (_Component) {
 		}
 	}, {
 		key: 'setState',
-		value: function setState(_ref) {
-			var gdsObjName = _ref.gdsObjName,
-			    gdsObjIndex = _ref.gdsObjIndex,
-			    gdsList = _ref.gdsList;
-
-			var curGds = gdsList[gdsObjIndex];
-
-			var _curGds$get = curGds.get(),
-			    terminals = _curGds$get.terminals,
-			    matrix = _curGds$get.matrix,
-			    dimensions = _curGds$get.dimensions,
-			    hasWide = _curGds$get.hasWide,
-			    wideDimensions = _curGds$get.wideDimensions;
+		value: function setState(state) {
+			var _state$curGds$get = state.curGds.get(),
+			    terminals = _state$curGds$get.terminals,
+			    matrix = _state$curGds$get.matrix,
+			    dimensions = _state$curGds$get.dimensions,
+			    hasWide = _state$curGds$get.hasWide,
+			    wideDimensions = _state$curGds$get.wideDimensions,
+			    name = _state$curGds$get.name;
 
 			return _get(TerminalsMatrix.prototype.__proto__ || Object.getPrototypeOf(TerminalsMatrix.prototype), 'setState', this).call(this, {
-				terminals: terminals, matrix: matrix, dimensions: dimensions, gdsObjName: gdsObjName, hasWide: hasWide, wideDimensions: wideDimensions
+				terminals: terminals, matrix: matrix, dimensions: dimensions, name: name, hasWide: hasWide, wideDimensions: wideDimensions
 			});
 		}
 	}, {
@@ -2981,6 +2993,9 @@ var DEFAULT_CELLS = exports.DEFAULT_CELLS = [0, 1, 5, 6];
 var THEME_CLASS_NAME = exports.THEME_CLASS_NAME = 'terminaltheme_';
 var LANGUAGE_LIST = exports.LANGUAGE_LIST = ['APOLLO', 'SABRE', 'AMADEUS'];
 
+var OFFSET_QUOTES = exports.OFFSET_QUOTES = 500;
+var OFFSET_DEFAULT = exports.OFFSET_DEFAULT = 100;
+
 /***/ }),
 
 /***/ "./src/containers/main.es6":
@@ -3023,7 +3038,7 @@ var ContainerMain = function (_Component) {
 	function ContainerMain(rootId) {
 		_classCallCheck(this, ContainerMain);
 
-		var _this = _possibleConstructorReturn(this, (ContainerMain.__proto__ || Object.getPrototypeOf(ContainerMain)).call(this, 'section.terminal-wrap-custom'));
+		var _this = _possibleConstructorReturn(this, (ContainerMain.__proto__ || Object.getPrototypeOf(ContainerMain)).call(this, "section.terminal-wrap-custom"));
 
 		_this.observe(new _sectionsWrap.TableSections());
 
@@ -3039,9 +3054,7 @@ var ContainerMain = function (_Component) {
 
 	_createClass(ContainerMain, [{
 		key: "changeFontClass",
-		value: function changeFontClass(_ref) {
-			var fontSize = _ref.fontSize;
-
+		value: function changeFontClass(fontSize) {
 			this.context.className = 'terminal-wrap-custom term-f-size-' + fontSize;
 		}
 	}, {
@@ -4037,7 +4050,9 @@ var _history2 = _interopRequireDefault(_history);
 
 var _helpers = __webpack_require__(/*! ../helpers/helpers.es6 */ "./src/helpers/helpers.es6");
 
-var _actions = __webpack_require__(/*! ../actions */ "./src/actions.es6");
+var _settings2 = __webpack_require__(/*! ../actions/settings */ "./src/actions/settings.es6");
+
+var _gdsActions = __webpack_require__(/*! ../actions/gdsActions */ "./src/actions/gdsActions.es6");
 
 var _logger = __webpack_require__(/*! ../helpers/logger */ "./src/helpers/logger.es6");
 
@@ -4060,6 +4075,8 @@ var TerminalPlugin = function () {
 		this.settings = params;
 		this.context = params.context;
 		this.name = params.name;
+
+		this.gdsName = params.gds;
 
 		this.allowManualPaging = params.gds === 'sabre';
 
@@ -4108,7 +4125,7 @@ var TerminalPlugin = function () {
 		key: '_changeActiveTerm',
 		value: function _changeActiveTerm() {
 			window.activeTerminal = this;
-			(0, _actions.CHANGE_ACTIVE_TERMINAL)({ curTerminalId: this.name });
+			(0, _settings2.CHANGE_ACTIVE_TERMINAL)({ curTerminalId: this.name });
 		}
 	}, {
 		key: 'purge',
@@ -4264,7 +4281,7 @@ var TerminalPlugin = function () {
 				data = _extends({}, data, { log: (0, _logger.loggerOutput)(data, command) });
 			}
 
-			(0, _actions.UPDATE_CUR_GDS)(data);
+			(0, _gdsActions.UPDATE_CUR_GDS)(_extends({}, data, { gdsName: this.gdsName }));
 		}
 	}, {
 		key: 'print',
@@ -4636,22 +4653,23 @@ var _createClass = function () { function defineProperties(target, props) { for 
 
 var _gdsUnit = __webpack_require__(/*! ./gdsUnit */ "./src/modules/gdsUnit.es6");
 
+var _constants = __webpack_require__(/*! ../constants */ "./src/constants.es6");
+
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 var GDS = exports.GDS = function () {
 	function GDS(_ref) {
-		var gdsList = _ref.gdsList,
+		var gdsListDb = _ref.gdsListDb,
 		    _ref$buffer = _ref.buffer,
 		    buffer = _ref$buffer === undefined ? {} : _ref$buffer,
-		    activeName = _ref.activeName,
-		    gdsSet = _ref.gdsSet;
+		    activeName = _ref.activeName;
 
 		_classCallCheck(this, GDS);
 
 		this.setCurrent(activeName);
 
-		this.gdsSet = gdsSet.map(function (name) {
-			var settings = gdsList[name] || {};
+		this.gdsSet = _constants.GDS_LIST.map(function (name) {
+			var settings = gdsListDb[name] || {};
 			var _buffer$gds = buffer.gds,
 			    gds = _buffer$gds === undefined ? {} : _buffer$gds;
 
@@ -4661,19 +4679,20 @@ var GDS = exports.GDS = function () {
 	}
 
 	_createClass(GDS, [{
-		key: 'getList',
+		key: "getList",
 		value: function getList() {
 			return this.gdsSet;
 		}
 	}, {
-		key: 'setCurrent',
+		key: "setCurrent",
 		value: function setCurrent() {
 			var name = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 'apollo';
 
 			this.name = name;
+			this.index = _constants.GDS_LIST.indexOf(name);
 		}
 	}, {
-		key: 'getCurrent',
+		key: "getCurrent",
 		value: function getCurrent() {
 			var _this = this;
 
@@ -4682,23 +4701,28 @@ var GDS = exports.GDS = function () {
 			})[0] || this.gdsSet[0];
 		}
 	}, {
-		key: 'getCurrentName',
+		key: "getCurrentName",
 		value: function getCurrentName() {
 			return this.name;
 		}
 	}, {
-		key: 'isApollo',
+		key: "getCurrentIndex",
+		value: function getCurrentIndex() {
+			return this.index;
+		}
+	}, {
+		key: "isApollo",
 		value: function isApollo() {
 			return this.name === 'apollo';
 		}
 	}, {
-		key: 'update',
+		key: "update",
 		value: function update(newState) {
-			var _this2 = this;
+			var gdsName = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : this.name;
 
 			this.gdsSet = this.gdsSet.map(function (gds) {
 
-				if (gds.get('name') === _this2.name) {
+				if (gds.get('name') === gdsName) {
 					gds.update(newState);
 				}
 
@@ -4706,17 +4730,25 @@ var GDS = exports.GDS = function () {
 			});
 		}
 	}, {
-		key: 'updateMatrix',
+		key: "updateMatrix",
 		value: function updateMatrix(dimensions) {
 			this.getCurrent().updateMatrix(dimensions);
 		}
+
+		// updatePcc(newState, gdsName)
+		// {
+		// 	this.getGds(gdsName).updatePcc( newState );
+		// }
+
 	}, {
-		key: 'updatePcc',
-		value: function updatePcc(newState) {
-			this.getCurrent().updatePcc(newState);
+		key: "getGds",
+		value: function getGds(gdsName) {
+			return this.gdsSet.filter(function (gds) {
+				return gds.get('name') === gdsName;
+			})[0];
 		}
 	}, {
-		key: 'clearScreen',
+		key: "clearScreen",
 		value: function clearScreen() {
 			var terminals = this.getCurrent().get('terminals');
 
@@ -4748,12 +4780,12 @@ var GDS = exports.GDS = function () {
 			}
 		}
 	}, {
-		key: '_getActiveTerminal',
+		key: "_getActiveTerminal",
 		value: function _getActiveTerminal() {
 			return this.getCurrent().getActiveTerminal();
 		}
 	}, {
-		key: 'changeActive',
+		key: "changeActive",
 		value: function changeActive(index) {
 			var terminal = this._getActiveTerminal();
 
@@ -4767,7 +4799,7 @@ var GDS = exports.GDS = function () {
 			// return this.getActiveTerminal().context; // for focus
 		}
 	}, {
-		key: 'runCommand',
+		key: "runCommand",
 		value: function runCommand(command) {
 			var terminal = this._getActiveTerminal();
 
@@ -4858,12 +4890,6 @@ var GDS_UNIT = exports.GDS_UNIT = function () {
 		key: "update",
 		value: function update(newState) {
 			this.props = _extends({}, this.props, newState);
-		}
-	}, {
-		key: "updatePcc",
-		value: function updatePcc(newState) {
-			var pcc = _extends({}, this.get('pcc'), newState);
-			this.set('pcc', pcc);
 		}
 	}, {
 		key: "updateMatrix",
@@ -4981,17 +5007,27 @@ var seedOutputString = function seedOutputString(outputText, appliedRules) {
 
 	appliedRules.map(function (_ref, key) {
 		var color = _ref.color,
+		    decoration = _ref.decoration,
 		    value = _ref.value,
-		    rule = _objectWithoutProperties(_ref, ["color", "value"]);
+		    rule = _objectWithoutProperties(_ref, ["color", "decoration", "value"]);
 
 		var replaced = value.replace(/%/g, '');
 
-		var part = "[[;;;" + color + " someClasses ]" + replaced + "]";
+		if (decoration) {
+			decoration.forEach(function (className) {
+				color += ' ' + className;
+			});
+		}
+
+		color += " term-highlight";
 
 		if (rule.onClickCommand || rule.onClickMessage || rule.onMouseOver) {
-			part = part.replace('someClasses', "t-highlight replace_" + key);
+			// part = part.replace('someClasses', `t-highlight replace_${key}`);
 			tips['replace_' + key] = rule;
+			color += " t-highlight replace_" + key;
 		}
+
+		var part = "[[;;;" + color + "]" + replaced + "]";
 
 		if (outputText.indexOf(value) > -1) {
 			var valueReplaced = value.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, '\\$&'); // escapes all special regexp chars
@@ -5074,7 +5110,7 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.default = History;
 
-var _actions = __webpack_require__(/*! ../actions */ "./src/actions.es6");
+var _settings = __webpack_require__(/*! ../actions/settings */ "./src/actions/settings.es6");
 
 var promises = {};
 var commands = {};
@@ -5088,7 +5124,7 @@ function History() {
 	commands[gds] = commands[gds] || [];
 
 	var askServer = function askServer() {
-		return (0, _actions.GET_HISTORY)();
+		return (0, _settings.GET_HISTORY)();
 	};
 	var getData = function getData() {
 		// if ( promises[gds] && !pos )
@@ -5412,7 +5448,7 @@ var _createClass = function () { function defineProperties(target, props) { for 
 
 var _requests = __webpack_require__(/*! ../helpers/requests */ "./src/helpers/requests.es6");
 
-var _actions = __webpack_require__(/*! ../actions */ "./src/actions.es6");
+var _priceQuoutes = __webpack_require__(/*! ../actions/priceQuoutes */ "./src/actions/priceQuoutes.es6");
 
 var _debug = __webpack_require__(/*! ../helpers/debug */ "./src/helpers/debug.es6");
 
@@ -5481,7 +5517,7 @@ var PqParser = exports.PqParser = function () {
 				(0, _requests.get)("terminal/importPriceQuote?rId=" + rId);
 				return response;
 			}).then(function (response) {
-				return _this.modal(response, _actions.CLOSE_PQ_WINDOW);
+				return _this.modal(response, _priceQuoutes.CLOSE_PQ_WINDOW);
 			});
 		}
 	}]);
@@ -5687,252 +5723,6 @@ exports.switchTerminal = undefined;
 
 var _actions = __webpack_require__(/*! ../actions */ "./src/actions.es6");
 
-/*
-const gridMaps = {
-	'2x2' : {
-		encode: {
-			0: 0,
-			1: 2,
-			2: 1,
-			3: 3
-		},
-		decode: {
-			0: 0,
-			1: 2,
-			2: 1,
-			3: 3
-		}
-	},
-	'2x3' : {
-		encode: {
-			0: 0,
-			1: 3,
-			2: 1,
-			3: 4,
-			4: 2,
-			5: 5
-		},
-		decode: {
-			0: 0,
-			1: 2,
-			2: 4,
-			3: 1,
-			4: 3,
-			5: 5
-		}
-	},
-	'2x4' : {
-		encode: {
-			0: 0,
-			1: 4,
-			2: 1,
-			3: 5,
-			4: 2,
-			5: 6,
-			6: 3,
-			7: 7
-		},
-		decode: {
-			0: 0,
-			1: 2,
-			2: 4,
-			3: 6,
-			4: 1,
-			5: 3,
-			6: 5,
-			7: 7
-		}
-	},
-	'3x2' : {
-		encode: {
-			0: 0,
-			1: 2,
-			2: 4,
-			3: 1,
-			4: 3,
-			5: 5
-		},
-		decode: {
-			0: 0,
-			1: 3,
-			2: 1,
-			3: 4,
-			4: 2,
-			5: 5
-		}
-	},
-	'3x3' : {
-		encode: {
-			0: 0,
-			1: 3,
-			2: 6,
-			3: 1,
-			4: 4,
-			5: 7,
-			6: 2,
-			7: 5,
-			8: 8
-		},
-		decode: {
-			0: 0,
-			1: 3,
-			2: 6,
-			3: 1,
-			4: 4,
-			5: 7,
-			6: 2,
-			7: 5,
-			8: 8
-		}
-	},
-	'3x4' : {
-		encode: {
-			0: 0,
-			1: 4,
-			2: 8,
-			3: 1,
-			4: 5,
-			5: 9,
-			6: 2,
-			7: 6,
-			8: 10,
-			9: 3,
-			10: 7,
-			11: 11
-		},
-		decode: {
-			0: 0,
-			1: 3,
-			2: 6,
-			3: 9,
-			4: 1,
-			5: 4,
-			6: 7,
-			7: 10,
-			8: 2,
-			9: 5,
-			10: 8,
-			11: 11
-		}
-	},
-	'4x2' : {
-		encode: {
-			0: 0,
-			1: 2,
-			2: 4,
-			3: 6,
-			4: 1,
-			5: 3,
-			6: 5,
-			7: 7
-		},
-		decode: {
-			0: 0,
-			1: 4,
-			2: 1,
-			3: 5,
-			4: 2,
-			5: 6,
-			6: 3,
-			7: 7
-		}
-	},
-	'4x3' : {
-		encode: {
-			0: 0,
-			1: 3,
-			2: 6,
-			3: 9,
-			4: 1,
-			5: 4,
-			6: 7,
-			7: 10,
-			8: 2,
-			9: 5,
-			10: 8,
-			11: 11
-		},
-		decode: {
-			0: 0,
-			1: 4,
-			2: 8,
-			3: 1,
-			4: 5,
-			5: 9,
-			6: 2,
-			7: 6,
-			9: 3,
-			10: 7,
-			8: 10,
-			11: 11
-		}
-	},
-	'4x4' : {
-		encode: {
-			0: 0,
-			1: 4,
-			2: 8,
-			3: 12,
-			4: 1,
-			5: 5,
-			6: 9,
-			7: 13,
-			8: 2,
-			9: 6,
-			10: 10,
-			11: 14,
-			12: 3,
-			13: 7,
-			14: 11,
-			15: 15
-		},
-		decode: {
-			0: 0,
-			1: 4,
-			2: 8,
-			4: 1,
-			5: 5,
-			6: 9,
-			8: 2,
-			9: 6,
-			12: 3,
-			13: 7,
-			10: 10,
-			14: 11,
-			3: 12,
-			7: 13,
-			11: 14,
-			15: 15
-		}
-	},
-	'other' : {
-		encode: {
-			0: 0,
-			1: 1,
-			2: 2,
-			3: 3,
-			4: 4,
-			5: 5,
-			6: 6,
-			7: 7,
-			8: 8,
-			9: 9
-		},
-		decode: {
-			0: 0,
-			1: 1,
-			2: 2,
-			3: 3,
-			4: 4,
-			5: 5,
-			6: 6,
-			7: 7,
-			8: 8,
-			9: 9
-		}
-	}
-};*/
-
 var switchTerminal = exports.switchTerminal = function switchTerminal(_ref) {
 	var keymap = _ref.keymap;
 
@@ -5960,45 +5750,6 @@ var switchTerminal = exports.switchTerminal = function switchTerminal(_ref) {
 
 	return (0, _actions.SWITCH_TERMINAL)(fn);
 };
-
-/*
-export function terminalKeydown(terminal)
-{
-	terminal.querySelector('textarea').addEventListener( 'keydown', (e) => {
-		const keymap 	= e.keyCode || e.which;
-
-		if ( e.ctrlKey || e.metaKey )
-		{
-			switch (keymap)
-			{
-				case 192 :	// Ctrl + ~
-					switchTerminal('next');
-					break;
-
-				case 48 :	// Ctrl + 0
-				case 49 :	// Ctrl + 1
-				case 50 :	// Ctrl + 2
-				case 51 :	// Ctrl + 3
-				case 52 :	// Ctrl + 4
-				case 53 :	// Ctrl + 5
-				case 54 :	// Ctrl + 6
-				case 55 :	// Ctrl + 7
-				case 56 :	// Ctrl + 8
-				case 57 :	// Ctrl + 9
-					switchTerminal(keymap);
-					break;
-			}
-		}
-
-		if (e.shiftKey)
-		{
-			if (keymap === 192)	// Shift + ~
-			{
-				switchTerminal('prev');
-			}
-		}
-	});
-}*/
 
 /***/ }),
 
@@ -6135,7 +5886,7 @@ var _dom = __webpack_require__(/*! ../helpers/dom.es6 */ "./src/helpers/dom.es6"
 
 var _dom2 = _interopRequireDefault(_dom);
 
-var _actions = __webpack_require__(/*! ../actions */ "./src/actions.es6");
+var _settings = __webpack_require__(/*! ../actions/settings */ "./src/actions/settings.es6");
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -6173,7 +5924,7 @@ var Terminal = function () {
 
 			if (this.settings.name === 0) // when all terminals init at once first is current but never gets selected
 				{
-					(0, _actions.CHANGE_ACTIVE_TERMINAL)({ curTerminalId: 0 });
+					(0, _settings.CHANGE_ACTIVE_TERMINAL)({ curTerminalId: 0 });
 					this.plugin.terminal.enable();
 				}
 		}
@@ -6320,20 +6071,12 @@ var getters = exports.getters = function getters(action, props) {
 	};
 
 	switch (action) {
-		case 'active':
-			GET('terminal/saveSetting/terminal', props);
-			break;
-
-		case 'switch':
-			GET('terminal/saveSetting/gds', props);
-			break;
-
-		case 'session':
-			GET('terminal/saveSetting/area', props);
-			break;
-
+		case 'terminal':
+		case 'gds':
+		case 'area':
 		case 'language':
-			GET('terminal/saveSetting/language', props);
+		case 'fontSize':
+			GET('terminal/saveSetting/' + action, props);
 			break;
 
 		case 'clear':
@@ -6353,6 +6096,80 @@ var getters = exports.getters = function getters(action, props) {
 var renderView = void 0;
 var setProvider = exports.setProvider = function setProvider(containerRender) {
 	renderView = containerRender;
+};
+
+/***/ }),
+
+/***/ "./src/store.es6":
+/*!***********************!*\
+  !*** ./src/store.es6 ***!
+  \***********************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+	value: true
+});
+exports.getStore = exports.connect = undefined;
+
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _state = __webpack_require__(/*! ./state */ "./src/state.es6");
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var store = void 0;
+
+var connect = exports.connect = function connect(app) {
+	(0, _state.setProvider)(function (State) {
+		return app.getContainer().render(State);
+	});
+	store = new Store(app);
+};
+
+var Store = function () {
+	function Store(app) {
+		_classCallCheck(this, Store);
+
+		this.setApp(app);
+	}
+
+	_createClass(Store, [{
+		key: "getApp",
+		value: function getApp() {
+			return this.app;
+		}
+	}, {
+		key: "setApp",
+		value: function setApp(app) {
+			this.app = app;
+		}
+	}, {
+		key: "setState",
+		value: function setState(state) {
+			(0, _state.setState)(state);
+		}
+	}, {
+		key: "updateView",
+		value: function updateView(props) {
+			store.app.calculateMatrix();
+
+			this.setState(_extends({}, props, {
+				curGds: store.app.Gds.getCurrent()
+			}));
+		}
+	}]);
+
+	return Store;
+}();
+
+var getStore = exports.getStore = function getStore() {
+	return store;
 };
 
 /***/ }),
