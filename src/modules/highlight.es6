@@ -99,7 +99,7 @@ export const replaceInTerminal = (div, tips) => {
 
 		[].map.call(div[0].querySelectorAll('.' + key), target => {
 
-			const {id, onMouseOver, onClickMessage, onClickCommand} = tips[key];
+			const {id, onMouseOver, onClickMessage, onClickCommand, isInSameWindow} = tips[key];
 
 			if (target && onClickMessage)
 			{
@@ -120,10 +120,14 @@ export const replaceInTerminal = (div, tips) => {
 
 			if (target && onClickCommand)
 			{
-				const runCommand 	= () => DEV_CMD_STACK_RUN(onClickCommand);
-
 				target.onclick 		= () => {
-					switchTerminal({keymap : 'next'}).then( runCommand );
+
+					if (parseInt(isInSameWindow) === 1)
+					{
+						return DEV_CMD_STACK_RUN(onClickCommand);
+					}
+
+					switchTerminal({keymap : 'next'}).then( () => DEV_CMD_STACK_RUN(onClickCommand) );
 				}
 			}
 		});

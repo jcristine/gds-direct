@@ -6,7 +6,7 @@ export class PqQuotes extends Component
 {
 	constructor()
 	{
-		super('td.pqQuotes hidden  b-l b-r');
+		super('td.pqQuotes hidden');
 
 		this.observe(
 			new Component('section.hbox stretch')
