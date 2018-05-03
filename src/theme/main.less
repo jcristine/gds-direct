@@ -170,19 +170,42 @@
 
 
 		.term-highlight{
+			position: relative;
+
 			&.underline {
-				text-decoration: underline;
+				&:before {
+					border-bottom: 1px solid;
+				}
 			}
 
-			&.dotted{
-				border-bottom : 1px dashed;
+			&.dotted {
+				&:before {
+					border-bottom: 1px dashed;
+				}
 			}
 
-			&.bold{
+			&.dotted, &.underline {
+				&:hover {
+					opacity: .7;
+					&:before {
+						display: none;
+					}
+				}
+
+				&:before {
+					position: absolute;
+					left: 0;
+					right: 0;
+					content: ' ';
+					bottom: 2px;
+				}
+			}
+
+			&.bold {
 				font-weight: bold;
 			}
 
-			&.bordered{
+			&.bordered {
 				border: 1px solid;
 				border-radius: 6px;
 				padding: 1px 6px;
@@ -190,25 +213,10 @@
 		}
 
 
-		.t-highlight {
+		.t-pointer {
 			cursor: pointer;
-			position: relative;
 
-			&:hover {
-				opacity: .7;
-				&:before {
-					display: none;
-				}
-			}
 
-			//&:before {
-			//	position: absolute;
-			//	left: 0;
-			//	right: 0;
-			//	content: ' ';
-			//	bottom: 2px;
-			//	border-bottom: 1px dashed;
-			//}
 		}
 
 		.raw > div {

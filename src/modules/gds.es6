@@ -64,11 +64,6 @@ export class GDS
 		this.getCurrent().updateMatrix(dimensions);
 	}
 
-	// updatePcc(newState, gdsName)
-	// {
-	// 	this.getGds(gdsName).updatePcc( newState );
-	// }
-
 	getGds(gdsName)
 	{
 		return this.gdsSet.filter( gds => gds.get('name') === gdsName )[0];

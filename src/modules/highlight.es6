@@ -1,78 +1,52 @@
 import {DEV_CMD_STACK_RUN} from "../actions";
-import Drop from "tether-drop";
 import {switchTerminal} from "./switchTerminal";
 
-const highlightPopover = (props) => {
-	const defs = {
-		classes		: 'drop-theme-twipsy font-bold highlight-popover',
-		position	: 'top center',
-		openOn		: 'hover',
-		remove		: true
-	};
-
-	return new Drop({
-		...defs,
-		...props
-	});
-};
-
-// highlightPopover({target, content});
-
-/*const replaceForLargeDiv = () => {
-	let part =  `<span class="${color}`;
-
-	if (rule.onClickCommand || rule.onClickMessage || rule.onMouseOver)
-	{
-		part += ' t-highlight replace_'+key;
-		tips['replace_'+key] = rule;
-	}
-
-	part += `"`;
-
-	if (rule.onMouseOver)
-	{
-		let content = rule.onMouseOver;
-
-		if ( window.TerminalState.hasPermissions() ) // for debug purpose
-		{
-			content += '(' + rule.id + ')';
-		}
-
-		part += ` title="${content}"`;
-	}
-
-	part += `>${replaced}</span>`;
-}*/
 
 export const seedOutputString = (outputText, appliedRules) => {
 
 	const tips = {};
 
-	appliedRules.map(({color, decoration, value, ...rule}, key) => {
+	appliedRules.map( ({color, decoration, value, ...rule}, key) => {
 
 		const replaced 	= value.replace(/%/g, '');
+		color 			+= ` ${decoration.join(' ')} term-highlight`;
 
-		if (decoration)
+		if (rule.onClickCommand.indexOf('lnNumber') > -1)
 		{
-			decoration.forEach( (className) => {
-				color += ' ' + className
-			})
+			/** when we need to replace {lineNumber} for all the values found in output**/
+			return outputText.split(/\r?\n/)
+				.filter( line => line.indexOf(value) > -1)
+				.map( line => {
+
+					/** GET FIRST NUMBER **/
+					const lineNumber = line.match(/^\d+|\d+\b|\d+(?=\w)/)[0];
+					const index 	= `replace_${key}_${lineNumber}`;
+
+					tips[index] 	= {
+						...rule,
+						onClickCommand : rule.onClickCommand.replace('{lnNumber}', lineNumber)
+					};
+
+					let part 		= `[[;;;t-pointer ${color} ${index}]${replaced}]`;
+					const newLine 	= line.replace(value, part);
+
+					outputText 		= outputText.replace(line, newLine);
+				});
 		}
 
-		color += ` term-highlight`;
-
-		if (rule.onClickCommand || rule.onClickMessage || rule.onMouseOver)
+		if (rule['onClickCommand'] || rule['onClickMessage'] || rule['onMouseOver'])
 		{
-			// part = part.replace('someClasses', `t-highlight replace_${key}`);
-			tips['replace_'+key] = rule;
-			color += ` t-highlight replace_${key}`;
+			const index 	= 'replace_'+key;
+			color 			+= ` t-pointer ${index}`;
+			tips[index] 	= rule;
 		}
 
 		let part = `[[;;;${color}]${replaced}]`;
 
 		if ( outputText.indexOf(value) > -1 )
 		{
-			const valueReplaced = value.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, '\\$&'); // escapes all special regexp chars
+			/**escapes all special regexp chars**/
+			const valueReplaced = value.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, '\\$&');
 			outputText = outputText.replace(new RegExp(valueReplaced, 'g'), part);
 		}
 	});
@@ -81,7 +55,6 @@ export const seedOutputString = (outputText, appliedRules) => {
 		tips, outputText
 	}
 };
-
 
 const popoverDefs = (div, content, placement = 'top') => ({
 	placement 	: placement,
