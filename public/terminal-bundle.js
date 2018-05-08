@@ -4982,7 +4982,7 @@ var getFirstNumber = function getFirstNumber(line) {
 };
 
 var makeSpan = function makeSpan(color, index, value) {
-	return "[[;;;" + color + " " + index + "] " + value.replace(/%/g, '') + " ]";
+	return "[[;;;" + color + " " + index + "]" + value.replace(/%/g, '') + "]";
 };
 
 var makeRule = function makeRule(rule, key) {

@@ -3,7 +3,7 @@ import {switchTerminal} from "./switchTerminal";
 
 const getFirstNumber = (line) => line.match(/^\d+|\d+\b|\d+(?=\w)/)[0];
 
-const makeSpan	= (color, index, value) => `[[;;;${color} ${index}] ${value.replace(/%/g, '')} ]`;
+const makeSpan	= (color, index, value) => `[[;;;${color} ${index}]${value.replace(/%/g, '')}]`;
 
 const makeRule	= (rule, key, lineNumber = '') => {
 
