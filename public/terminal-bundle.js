@@ -115,7 +115,7 @@ exports.i(__webpack_require__(/*! -!../../node_modules/css-loader!tether-drop/di
 exports.i(__webpack_require__(/*! -!../../node_modules/css-loader!noty/lib/noty.css */ "./node_modules/css-loader/index.js!./node_modules/noty/lib/noty.css"), "");
 
 // module
-exports.push([module.i, ".terminal-wrap-custom .terminal .cmd {\n  height: 14px;\n}\n.terminal-wrap-custom .terminal .cmd .clipboard {\n  height: 14px;\n}\n.temp-terminal {\n  position: absolute;\n  top: -99999px;\n}\n.term-f-size-4 .terminal {\n  --size: 1.3;\n}\n.term-f-size-4 .terminal .cmd {\n  height: calc(18.2px);\n}\n.term-f-size-3 .terminal {\n  --size: 1.2;\n}\n.term-f-size-3 .terminal .cmd {\n  height: calc(16.8px);\n}\n.term-f-size-3 .terminal .cmd .clipboard {\n  height: calc(16.8px);\n}\n.term-f-size-2 .terminal {\n  --size: 1.1;\n}\n.term-f-size-2 .terminal .cmd {\n  height: calc(15.4px);\n}\n.term-f-size-2 .terminal .cmd .clipboard {\n  height: calc(15.4px);\n}\n.terminal-wrap-custom .t-matrix-w-0 td {\n  width: 100%;\n}\n.terminal-wrap-custom .t-matrix-w-1 td {\n  width: 50%;\n}\n.terminal-wrap-custom .t-matrix-w-2 td {\n  width: 33.33%;\n}\n.terminal-wrap-custom .t-matrix-w-3 td {\n  width: 25%;\n}\n.drop-element.drop-theme-twipsy .drop-content {\n  font-family: inherit;\n  padding: 10px;\n}\n.terminal-lds-hourglass {\n  display: inline-block;\n  position: relative;\n  width: 64px;\n  height: 64px;\n}\n.terminal-lds-hourglass:after {\n  content: \" \";\n  display: block;\n  border-radius: 50%;\n  width: 0;\n  height: 0;\n  margin: 6px;\n  box-sizing: border-box;\n  border: 26px solid #fff;\n  border-color: #fff transparent #fff transparent;\n  animation: lds-hourglass 1.2s infinite;\n}\n@keyframes lds-hourglass {\n  0% {\n    transform: rotate(0);\n    animation-timing-function: cubic-bezier(0.55, 0.055, 0.675, 0.19);\n  }\n  50% {\n    transform: rotate(900deg);\n    animation-timing-function: cubic-bezier(0.215, 0.61, 0.355, 1);\n  }\n  100% {\n    transform: rotate(1800deg);\n  }\n}\n.matrix-column {\n  display: inline-block;\n  float: left;\n  height: 125px;\n  margin-right: 20px;\n  padding: 10px;\n  cursor: pointer;\n  width: 25px;\n}\n.matrix-column:hover {\n  background: #7a43b6;\n}\n.matrix-table {\n  background: #fff;\n}\n.matrix-table td {\n  padding: 15px;\n  border: 1px solid #e0e0e0;\n  cursor: pointer;\n}\n.matrix-table td:hover {\n  background-color: #7a43b6;\n}\n.terminal .terminal-output .highlight-popover {\n  font-size: 11px;\n  line-height: 1.5em;\n}\n.terminal-menu-popover {\n  padding-left: 5px;\n  width: 100px;\n}\n.terminal-menu-popover.themes {\n  width: 150px;\n}\n.terminal-menu-popover.themes a {\n  padding: 5px 0;\n}\n.terminal-menu-popover.historyContext {\n  width: 200px;\n}\n.terminal-menu-popover.historyContext ul {\n  max-height: 400px;\n  overflow-y: auto;\n  padding: 0;\n}\n.terminal-menu-popover.historyContext ul li input {\n  vertical-align: middle;\n  margin: 0;\n}\n.terminal-menu-popover.historyContext ul li a:hover {\n  opacity: .7;\n}\n.terminal-menu-popover.historyContext ul li a:before {\n  content: \"\\26AC\";\n  margin-right: 5px;\n  font-size: 21px;\n  vertical-align: middle;\n}\n.terminal-menu-popover.historyContext ul li a.checked:before {\n  content: \"\\2714\";\n  margin-right: 5px;\n}\n.terminal-menu-popover a {\n  margin-left: 5px;\n  vertical-align: middle;\n  font-size: 12px;\n  display: block;\n  padding: 2px 0;\n  font-weight: bold;\n  color: #fff;\n}\n.terminal-menu-popover a:hover {\n  opacity: .7;\n}\n.terminal-menu-popover a:before {\n  content: \"\\26AC\";\n  margin-right: 5px;\n  font-size: 21px;\n  vertical-align: middle;\n}\n.terminal-menu-popover a.checked:before {\n  content: \"\\2714\";\n  margin-right: 5px;\n}\n.cmd .cursor {\n  border: 0;\n}\n.noty-wrap-text {\n  padding: 10px;\n  font-weight: bold;\n  font-size: 13px;\n  margin: 0;\n}\n.animated {\n  animation-duration: .5s;\n  animation-fill-mode: both;\n}\n@keyframes fadeIn {\n  from {\n    opacity: 0;\n  }\n  to {\n    opacity: 1;\n  }\n}\n.fadeIn {\n  animation-name: fadeIn;\n}\n@keyframes fadeOut {\n  from {\n    opacity: 1;\n  }\n  to {\n    opacity: 0;\n  }\n}\n.fadeOut {\n  animation-name: fadeOut;\n}\n.terminal,\n.cmd {\n  color: transparent;\n  background-color: transparent;\n}\n#terminalContext {\n  width: 100%;\n  background: #fff;\n}\n.terminal-full-screen {\n  text-align: left;\n}\n.terminal-wrap-custom {\n  position: relative;\n  width: 100%;\n  height: 100%;\n}\n.terminal-wrap-custom .btn.active {\n  position: relative;\n}\n.terminal-wrap-custom .btn.active:before {\n  content: \"\\F00C\";\n  font: normal normal normal 11px/1 FontAwesome;\n  position: absolute;\n  font-size: 9px;\n  z-index: 3;\n  top: 6px;\n  left: -6px;\n  background: inherit;\n  padding: 2px;\n  border-radius: 25px;\n}\n.terminal-wrap-custom .btn.has-drop-down:after {\n  content: \"\\F078\";\n  font: normal normal normal 11px/1 FontAwesome;\n  position: absolute;\n  font-size: 11px;\n  z-index: 3;\n  top: 6px;\n  right: -6px;\n  background: inherit;\n  padding: 2px;\n  border-radius: 25px;\n}\n.terminal-wrap-custom .actions-btn-menu {\n  position: absolute;\n  padding: 10px;\n  z-index: 1;\n  right: 7px;\n  top: 4px;\n}\n.terminal-wrap-custom .actions-btn-menu .btn {\n  display: inline-block;\n  font-size: 0;\n  cursor: pointer;\n  width: 47px;\n  height: 47px;\n  border-radius: 50%;\n  text-align: center;\n  position: relative;\n}\n.terminal-wrap-custom .actions-btn-menu .btn i {\n  vertical-align: middle;\n  font-size: 23px;\n  line-height: 19px;\n}\n.terminal-wrap-custom .actions-btn-menu .btn:after {\n  top: -5px;\n  left: -5px;\n  padding: 5px;\n  box-shadow: 0 0 0 3px #6b3b60;\n  transition: transform 0.2s, opacity 0.2s;\n  transform: scale(0.8);\n  opacity: 0;\n  pointer-events: none;\n  position: absolute;\n  width: 100%;\n  height: 100%;\n  border-radius: 50%;\n  content: '';\n  box-sizing: content-box;\n}\n.terminal-wrap-custom .actions-btn-menu .btn:hover:after {\n  transform: scale(1);\n  opacity: 1;\n}\n.terminal-wrap-custom .pqQuotes {\n  background: #bdbebf;\n  vertical-align: top;\n  width: 445px;\n}\n.terminal-wrap-custom .pqQuotes .close {\n  top: 10px;\n  position: relative;\n}\n.terminal-wrap-custom .pqQuotes div.term-body-pq {\n  padding: 0 5px;\n}\n.terminal-wrap-custom .pqQuotes div.term-body-pq .pq-container {\n  position: relative;\n  margin: 15px 0;\n}\n.terminal-wrap-custom .pqQuotes div.term-body-pq .pq-container .pq-container-labels {\n  position: absolute;\n  top: -7px;\n  z-index: 1;\n  border-radius: 25px;\n  width: 100%;\n}\n.terminal-wrap-custom .pqQuotes div.term-body-pq .pq-container .pq-container-labels .label {\n  border-radius: 25px;\n}\n.terminal-wrap-custom .pqQuotes div.term-body-pq .pq-container .added-by {\n  float: right;\n}\n.terminal-wrap-custom .pqQuotes .priceqoute-pre {\n  font-size: 11px;\n  padding: 15px 0 0;\n  color: #000;\n}\n.terminal-wrap-custom .centered {\n  top: 50%;\n  position: absolute;\n  left: 0;\n  right: 0;\n  margin: auto;\n}\n.terminal-wrap-custom > .term-body {\n  width: 100%;\n  height: 100%;\n}\n.terminal-wrap-custom > .term-body .left {\n  position: relative;\n  height: 100%;\n}\n.terminal-wrap-custom > .term-body .menu {\n  width: 20%;\n  vertical-align: top;\n  background: #fff;\n}\n.terminal-wrap-custom > .term-body .menu .label {\n  font-weight: bold;\n  font-size: 12px;\n  padding: 10px 0;\n  color: #414141;\n}\n.terminal-wrap-custom > .term-body .menu .pcc-label {\n  position: absolute;\n  top: -5px;\n  right: -16px;\n  padding: 2px 5px;\n  background: #fff;\n  color: #511551;\n  border-radius: 15px;\n  font-size: 10px;\n  border: 0;\n}\n.terminal-wrap-custom > .term-body.minimized .menu {\n  width: 100px;\n}\n.terminal-wrap-custom > .term-body.minimized .menu article.small-buttons .btn {\n  width: 85%;\n}\n.terminal-wrap-custom > .term-body.minimized .menu article {\n  padding: 5px 10px;\n}\n.terminal-wrap-custom > .term-body.minimized .menu article .btn:last-of-type {\n  margin-bottom: 0;\n}\n.terminal-wrap-custom > .term-body.minimized .menu .btn {\n  display: block;\n  width: 100%;\n  margin: 0 auto 8px;\n  box-shadow: 1px 1px 3px #c1c1c1;\n}\n.terminal-wrap-custom > .term-body.minimized .menu .btn-purple {\n  width: 85%;\n}\n.terminal-wrap-custom > .term-body.minimized .menu .label {\n  text-align: center;\n  font-size: 12px;\n  display: block;\n}\n.terminal-wrap-custom .matrix-row .terminal {\n  border-right: 2px solid #fff;\n  border-bottom: 2px solid #fff;\n}\n.terminal-wrap-custom .terminal {\n  padding: 0;\n  float: left;\n}\n.terminal-wrap-custom .terminal.active {\n  background: red;\n}\n.terminal-wrap-custom .terminal .cmd {\n  font-weight: bold;\n  text-transform: uppercase;\n}\n.terminal-wrap-custom .terminal .usedCommand {\n  text-transform: uppercase;\n}\n.terminal-wrap-custom .terminal .term-highlight {\n  position: relative;\n}\n.terminal-wrap-custom .terminal .term-highlight.underline:before {\n  border-bottom: 1px solid;\n}\n.terminal-wrap-custom .terminal .term-highlight.dotted:before {\n  border-bottom: 1px dashed;\n}\n.terminal-wrap-custom .terminal .term-highlight.dotted:hover,\n.terminal-wrap-custom .terminal .term-highlight.underline:hover {\n  opacity: .7;\n}\n.terminal-wrap-custom .terminal .term-highlight.dotted:hover:before,\n.terminal-wrap-custom .terminal .term-highlight.underline:hover:before {\n  display: none;\n}\n.terminal-wrap-custom .terminal .term-highlight.dotted:before,\n.terminal-wrap-custom .terminal .term-highlight.underline:before {\n  position: absolute;\n  left: 0;\n  right: 0;\n  content: ' ';\n  bottom: 2px;\n}\n.terminal-wrap-custom .terminal .term-highlight.bold {\n  font-weight: bold;\n}\n.terminal-wrap-custom .terminal .term-highlight.bordered {\n  border: 1px solid;\n  border-radius: 6px;\n  padding: 1px 6px;\n}\n.terminal-wrap-custom .terminal .t-pointer {\n  cursor: pointer;\n}\n.terminal-wrap-custom .terminal .raw > div {\n  white-space: pre-wrap;\n}\n.terminal-wrap-custom .terminal-output div span {\n  display: inline;\n}\n.terminal-wrap-custom div.terminal-wrapper {\n  height: auto;\n}\n@keyframes blink {\n  0% {\n    opacity: 1;\n  }\n  25% {\n    opacity: 0;\n  }\n  50% {\n    opacity: 0;\n  }\n  100% {\n    opacity: 1;\n  }\n}\n@-webkit-keyframes blink {\n  0% {\n    opacity: 1;\n  }\n  25% {\n    opacity: 0;\n  }\n  50% {\n    opacity: 0;\n  }\n  100% {\n    opacity: 1;\n  }\n}\n@-ms-keyframes blink {\n  0% {\n    opacity: 1;\n  }\n  25% {\n    opacity: 0;\n  }\n  50% {\n    opacity: 0;\n  }\n  100% {\n    opacity: 1;\n  }\n}\n@-moz-keyframes blink {\n  0% {\n    opacity: 1;\n  }\n  25% {\n    opacity: 0;\n  }\n  50% {\n    opacity: 0;\n  }\n  100% {\n    opacity: 1;\n  }\n}\n.cmd .cursor.blink {\n  background: #ccc;\n  -webkit-animation: blink 1s infinite linear;\n  -moz-animation: blink 1s infinite linear;\n  -ms-animation: blink 1s infinite linear;\n  animation: blink 1s linear infinite;\n}\n", ""]);
+exports.push([module.i, ".terminal-wrap-custom .terminal .cmd {\n  height: 14px;\n}\n.terminal-wrap-custom .terminal .cmd .clipboard {\n  height: 14px;\n}\n.temp-terminal {\n  position: absolute;\n  top: -99999px;\n}\n.term-f-size-4 .terminal {\n  --size: 1.3;\n}\n.term-f-size-4 .terminal .cmd {\n  height: calc(18.2px);\n}\n.term-f-size-3 .terminal {\n  --size: 1.2;\n}\n.term-f-size-3 .terminal .cmd {\n  height: calc(16.8px);\n}\n.term-f-size-3 .terminal .cmd .clipboard {\n  height: calc(16.8px);\n}\n.term-f-size-2 .terminal {\n  --size: 1.1;\n}\n.term-f-size-2 .terminal .cmd {\n  height: calc(15.4px);\n}\n.term-f-size-2 .terminal .cmd .clipboard {\n  height: calc(15.4px);\n}\n.terminal-wrap-custom .t-matrix-w-0 td {\n  width: 100%;\n}\n.terminal-wrap-custom .t-matrix-w-1 td {\n  width: 50%;\n}\n.terminal-wrap-custom .t-matrix-w-2 td {\n  width: 33.33%;\n}\n.terminal-wrap-custom .t-matrix-w-3 td {\n  width: 25%;\n}\n.drop-element.drop-theme-twipsy .drop-content {\n  font-family: inherit;\n  padding: 10px;\n}\n.terminal-lds-hourglass {\n  display: inline-block;\n  position: relative;\n  width: 64px;\n  height: 64px;\n}\n.terminal-lds-hourglass:after {\n  content: \" \";\n  display: block;\n  border-radius: 50%;\n  width: 0;\n  height: 0;\n  margin: 6px;\n  box-sizing: border-box;\n  border: 26px solid #fff;\n  border-color: #fff transparent #fff transparent;\n  animation: lds-hourglass 1.2s infinite;\n}\n@keyframes lds-hourglass {\n  0% {\n    transform: rotate(0);\n    animation-timing-function: cubic-bezier(0.55, 0.055, 0.675, 0.19);\n  }\n  50% {\n    transform: rotate(900deg);\n    animation-timing-function: cubic-bezier(0.215, 0.61, 0.355, 1);\n  }\n  100% {\n    transform: rotate(1800deg);\n  }\n}\n.matrix-column {\n  display: inline-block;\n  float: left;\n  height: 125px;\n  margin-right: 20px;\n  padding: 10px;\n  cursor: pointer;\n  width: 25px;\n}\n.matrix-column:hover {\n  background: #7a43b6;\n}\n.matrix-table {\n  background: #fff;\n}\n.matrix-table td {\n  padding: 15px;\n  border: 1px solid #e0e0e0;\n  cursor: pointer;\n}\n.matrix-table td:hover {\n  background-color: #7a43b6;\n}\n.terminal .terminal-output .highlight-popover {\n  font-size: 11px;\n  line-height: 1.5em;\n}\n.terminal .terminal-output div.tooltip-inner {\n  font-size: 11px;\n  line-height: 1.6em;\n}\n.terminal-menu-popover {\n  padding-left: 5px;\n  width: 100px;\n}\n.terminal-menu-popover.themes {\n  width: 150px;\n}\n.terminal-menu-popover.themes a {\n  padding: 5px 0;\n}\n.terminal-menu-popover.historyContext {\n  width: 200px;\n}\n.terminal-menu-popover.historyContext ul {\n  max-height: 400px;\n  overflow-y: auto;\n  padding: 0;\n}\n.terminal-menu-popover.historyContext ul li input {\n  vertical-align: middle;\n  margin: 0;\n}\n.terminal-menu-popover.historyContext ul li a:hover {\n  opacity: .7;\n}\n.terminal-menu-popover.historyContext ul li a:before {\n  content: \"\\26AC\";\n  margin-right: 5px;\n  font-size: 21px;\n  vertical-align: middle;\n}\n.terminal-menu-popover.historyContext ul li a.checked:before {\n  content: \"\\2714\";\n  margin-right: 5px;\n}\n.terminal-menu-popover a {\n  margin-left: 5px;\n  vertical-align: middle;\n  font-size: 12px;\n  display: block;\n  padding: 2px 0;\n  font-weight: bold;\n  color: #fff;\n}\n.terminal-menu-popover a:hover {\n  opacity: .7;\n}\n.terminal-menu-popover a:before {\n  content: \"\\26AC\";\n  margin-right: 5px;\n  font-size: 21px;\n  vertical-align: middle;\n}\n.terminal-menu-popover a.checked:before {\n  content: \"\\2714\";\n  margin-right: 5px;\n}\n.cmd .cursor {\n  border: 0;\n}\n.noty-wrap-text {\n  padding: 10px;\n  font-weight: bold;\n  font-size: 13px;\n  margin: 0;\n}\n.animated {\n  animation-duration: .5s;\n  animation-fill-mode: both;\n}\n@keyframes fadeIn {\n  from {\n    opacity: 0;\n  }\n  to {\n    opacity: 1;\n  }\n}\n.fadeIn {\n  animation-name: fadeIn;\n}\n@keyframes fadeOut {\n  from {\n    opacity: 1;\n  }\n  to {\n    opacity: 0;\n  }\n}\n.fadeOut {\n  animation-name: fadeOut;\n}\n.terminal,\n.cmd {\n  color: transparent;\n  background-color: transparent;\n}\n#terminalContext {\n  width: 100%;\n  background: #fff;\n}\n.terminal-full-screen {\n  text-align: left;\n}\n.terminal-wrap-custom {\n  position: relative;\n  width: 100%;\n  height: 100%;\n}\n.terminal-wrap-custom .btn.active {\n  position: relative;\n}\n.terminal-wrap-custom .btn.active:before {\n  content: \"\\F00C\";\n  font: normal normal normal 11px/1 FontAwesome;\n  position: absolute;\n  font-size: 9px;\n  z-index: 3;\n  top: 6px;\n  left: -6px;\n  background: inherit;\n  padding: 2px;\n  border-radius: 25px;\n}\n.terminal-wrap-custom .btn.has-drop-down:after {\n  content: \"\\F078\";\n  font: normal normal normal 11px/1 FontAwesome;\n  position: absolute;\n  font-size: 11px;\n  z-index: 3;\n  top: 6px;\n  right: -6px;\n  background: inherit;\n  padding: 2px;\n  border-radius: 25px;\n}\n.terminal-wrap-custom .actions-btn-menu {\n  position: absolute;\n  padding: 10px;\n  z-index: 1;\n  right: 7px;\n  top: 4px;\n}\n.terminal-wrap-custom .actions-btn-menu .btn {\n  display: inline-block;\n  font-size: 0;\n  cursor: pointer;\n  width: 47px;\n  height: 47px;\n  border-radius: 50%;\n  text-align: center;\n  position: relative;\n}\n.terminal-wrap-custom .actions-btn-menu .btn i {\n  vertical-align: middle;\n  font-size: 23px;\n  line-height: 19px;\n}\n.terminal-wrap-custom .actions-btn-menu .btn:after {\n  top: -5px;\n  left: -5px;\n  padding: 5px;\n  box-shadow: 0 0 0 3px #6b3b60;\n  transition: transform 0.2s, opacity 0.2s;\n  transform: scale(0.8);\n  opacity: 0;\n  pointer-events: none;\n  position: absolute;\n  width: 100%;\n  height: 100%;\n  border-radius: 50%;\n  content: '';\n  box-sizing: content-box;\n}\n.terminal-wrap-custom .actions-btn-menu .btn:hover:after {\n  transform: scale(1);\n  opacity: 1;\n}\n.terminal-wrap-custom .pqQuotes {\n  background: #bdbebf;\n  vertical-align: top;\n  width: 445px;\n}\n.terminal-wrap-custom .pqQuotes .close {\n  top: 10px;\n  position: relative;\n}\n.terminal-wrap-custom .pqQuotes div.term-body-pq {\n  padding: 0 5px;\n}\n.terminal-wrap-custom .pqQuotes div.term-body-pq .pq-container {\n  position: relative;\n  margin: 15px 0;\n}\n.terminal-wrap-custom .pqQuotes div.term-body-pq .pq-container .pq-container-labels {\n  position: absolute;\n  top: -7px;\n  z-index: 1;\n  border-radius: 25px;\n  width: 100%;\n}\n.terminal-wrap-custom .pqQuotes div.term-body-pq .pq-container .pq-container-labels .label {\n  border-radius: 25px;\n}\n.terminal-wrap-custom .pqQuotes div.term-body-pq .pq-container .added-by {\n  float: right;\n}\n.terminal-wrap-custom .pqQuotes .priceqoute-pre {\n  font-size: 11px;\n  padding: 15px 0 0;\n  color: #000;\n}\n.terminal-wrap-custom .centered {\n  top: 50%;\n  position: absolute;\n  left: 0;\n  right: 0;\n  margin: auto;\n}\n.terminal-wrap-custom > .term-body {\n  width: 100%;\n  height: 100%;\n}\n.terminal-wrap-custom > .term-body .left {\n  position: relative;\n  height: 100%;\n}\n.terminal-wrap-custom > .term-body .menu {\n  width: 20%;\n  vertical-align: top;\n  background: #fff;\n}\n.terminal-wrap-custom > .term-body .menu .label {\n  font-weight: bold;\n  font-size: 12px;\n  padding: 10px 0;\n  color: #414141;\n}\n.terminal-wrap-custom > .term-body .menu .pcc-label {\n  position: absolute;\n  top: -5px;\n  right: -16px;\n  padding: 2px 5px;\n  background: #fff;\n  color: #511551;\n  border-radius: 15px;\n  font-size: 10px;\n  border: 0;\n}\n.terminal-wrap-custom > .term-body.minimized .menu {\n  width: 100px;\n}\n.terminal-wrap-custom > .term-body.minimized .menu article.small-buttons .btn {\n  width: 85%;\n}\n.terminal-wrap-custom > .term-body.minimized .menu article {\n  padding: 5px 10px;\n}\n.terminal-wrap-custom > .term-body.minimized .menu article .btn:last-of-type {\n  margin-bottom: 0;\n}\n.terminal-wrap-custom > .term-body.minimized .menu .btn {\n  display: block;\n  width: 100%;\n  margin: 0 auto 8px;\n  box-shadow: 1px 1px 3px #c1c1c1;\n}\n.terminal-wrap-custom > .term-body.minimized .menu .btn-purple {\n  width: 85%;\n}\n.terminal-wrap-custom > .term-body.minimized .menu .label {\n  text-align: center;\n  font-size: 12px;\n  display: block;\n}\n.terminal-wrap-custom .matrix-row .terminal {\n  border-right: 2px solid #fff;\n  border-bottom: 2px solid #fff;\n}\n.terminal-wrap-custom .terminal {\n  padding: 0;\n  float: left;\n}\n.terminal-wrap-custom .terminal.active {\n  background: red;\n}\n.terminal-wrap-custom .terminal .cmd {\n  font-weight: bold;\n  text-transform: uppercase;\n}\n.terminal-wrap-custom .terminal .usedCommand {\n  text-transform: uppercase;\n}\n.terminal-wrap-custom .terminal .term-highlight {\n  position: relative;\n}\n.terminal-wrap-custom .terminal .term-highlight.underline:before {\n  border-bottom: 1px solid;\n}\n.terminal-wrap-custom .terminal .term-highlight.dotted:before {\n  border-bottom: 1px dashed;\n}\n.terminal-wrap-custom .terminal .term-highlight.dotted:hover,\n.terminal-wrap-custom .terminal .term-highlight.underline:hover {\n  opacity: .7;\n}\n.terminal-wrap-custom .terminal .term-highlight.dotted:hover:before,\n.terminal-wrap-custom .terminal .term-highlight.underline:hover:before {\n  display: none;\n}\n.terminal-wrap-custom .terminal .term-highlight.dotted:before,\n.terminal-wrap-custom .terminal .term-highlight.underline:before {\n  position: absolute;\n  left: 0;\n  right: 0;\n  content: ' ';\n  bottom: 2px;\n}\n.terminal-wrap-custom .terminal .term-highlight.bold {\n  font-weight: bold;\n}\n.terminal-wrap-custom .terminal .term-highlight.bordered {\n  border: 1px solid;\n  border-radius: 6px;\n  padding: 1px 4px;\n  font-size: 0.9em;\n}\n.terminal-wrap-custom .terminal .t-pointer {\n  cursor: pointer;\n}\n.terminal-wrap-custom .terminal .raw > div {\n  white-space: pre-wrap;\n}\n.terminal-wrap-custom .terminal-output div span {\n  display: inline;\n}\n.terminal-wrap-custom div.terminal-wrapper {\n  height: auto;\n}\n@keyframes blink {\n  0% {\n    opacity: 1;\n  }\n  25% {\n    opacity: 0;\n  }\n  50% {\n    opacity: 0;\n  }\n  100% {\n    opacity: 1;\n  }\n}\n@-webkit-keyframes blink {\n  0% {\n    opacity: 1;\n  }\n  25% {\n    opacity: 0;\n  }\n  50% {\n    opacity: 0;\n  }\n  100% {\n    opacity: 1;\n  }\n}\n@-ms-keyframes blink {\n  0% {\n    opacity: 1;\n  }\n  25% {\n    opacity: 0;\n  }\n  50% {\n    opacity: 0;\n  }\n  100% {\n    opacity: 1;\n  }\n}\n@-moz-keyframes blink {\n  0% {\n    opacity: 1;\n  }\n  25% {\n    opacity: 0;\n  }\n  50% {\n    opacity: 0;\n  }\n  100% {\n    opacity: 1;\n  }\n}\n.cmd .cursor.blink {\n  background: #ccc;\n  -webkit-animation: blink 1s infinite linear;\n  -moz-animation: blink 1s infinite linear;\n  -ms-animation: blink 1s infinite linear;\n  animation: blink 1s linear infinite;\n}\n", ""]);
 
 // exports
 
@@ -3971,7 +3971,13 @@ var Ask = function Ask(url, params) {
 	if (url.substr(0, 1) !== '/') url = '/' + url;
 
 	return fetch(wwwFullDir + url, params).then(function (response) {
-		return response.json();
+
+		if (response && response.status && response.status === 200) {
+			return response.json();
+		}
+
+		console.log("ERORR:   ", response.text());
+		return Promise.reject(response.statusText);
 	}).then(_debug.showUserMessages).catch(_debug.debugRequest);
 };
 
@@ -4241,23 +4247,24 @@ var TerminalPlugin = function () {
 				return command;
 			}
 
+			this.spinner.start();
+
 			var before = function before() {
-
+				/** spinner is also new line  **/
 				_this.outputLiner.printOutput('');
-
 				_this.spinner.start();
 
 				_this.print('[[;;;usedCommand;]>' + command.toUpperCase() + ']');
-
 				return command.toUpperCase();
 			};
 
-			var output = function output(response) {
+			this.session.perform(before).then(function (response) {
 				_this.spinner.end();
-				_this.parseBackEnd(response, command);
-			};
 
-			this.session.perform(before).then(output);
+				if (command) {
+					if (response && response.data) _this.parseBackEnd(response, command);else _this.print('[[;;;text-danger;]SERVER ERROR]');
+				}
+			});
 
 			return command;
 		}
@@ -4273,7 +4280,8 @@ var TerminalPlugin = function () {
 			var _data = data,
 			    output = _data.output,
 			    clearScreen = _data.clearScreen,
-			    appliedRules = _data.appliedRules;
+			    appliedRules = _data.appliedRules,
+			    tabCommands = _data.tabCommands;
 
 
 			if (output) {
@@ -4294,7 +4302,7 @@ var TerminalPlugin = function () {
 				output = this.outputLiner.printOutput(output, clearScreen, appliedRules);
 			}
 
-			this.tabCommands.reset(data['tabCommands'], output);
+			this.tabCommands.reset(tabCommands, output);
 
 			if (window.TerminalState.hasPermissions()) {
 				data = _extends({}, data, { log: (0, _logger.loggerOutput)(data, command) });
@@ -4969,52 +4977,80 @@ var _switchTerminal = __webpack_require__(/*! ./switchTerminal */ "./src/modules
 
 function _objectWithoutProperties(obj, keys) { var target = {}; for (var i in obj) { if (keys.indexOf(i) >= 0) continue; if (!Object.prototype.hasOwnProperty.call(obj, i)) continue; target[i] = obj[i]; } return target; }
 
+var getFirstNumber = function getFirstNumber(line) {
+	return line.match(/^\d+|\d+\b|\d+(?=\w)/)[0];
+};
+
+var makeSpan = function makeSpan(color, index, value) {
+	return "[[;;;" + color + " " + index + "] " + value.replace(/%/g, '') + " ]";
+};
+
+var makeRule = function makeRule(rule, key) {
+	var lineNumber = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : '';
+
+
+	var searchIndex = '';
+	var className = rule.color + " " + rule['decoration'].join(' ') + " term-highlight";
+	var newRule = _extends({}, rule);
+
+	if (rule['onClickCommand'] || rule['onClickMessage'] || rule['onMouseOver']) {
+		searchIndex = "replace_" + key;
+		className += " t-pointer";
+	}
+
+	if (lineNumber) {
+		searchIndex += '_' + lineNumber;
+		newRule.onClickCommand = newRule.onClickCommand.replace('{lnNumber}', lineNumber);
+	}
+
+	if (searchIndex) {
+		className += " " + searchIndex;
+	}
+
+	return { searchIndex: searchIndex, className: className, newRule: newRule };
+};
+
 var seedOutputString = function seedOutputString(outputText, appliedRules) {
 
 	var tips = {};
 
 	appliedRules.map(function (_ref, key) {
-		var color = _ref.color,
-		    decoration = _ref.decoration,
-		    value = _ref.value,
-		    rule = _objectWithoutProperties(_ref, ["color", "decoration", "value"]);
-
-		var replaced = value.replace(/%/g, '');
-		color += " " + decoration.join(' ') + " term-highlight";
+		var value = _ref.value,
+		    rule = _objectWithoutProperties(_ref, ["value"]);
 
 		if (rule.onClickCommand.indexOf('lnNumber') > -1) {
 			/** when we need to replace {lineNumber} for all the values found in output**/
 			return outputText.split(/\r?\n/).filter(function (line) {
 				return line.indexOf(value) > -1;
 			}).map(function (line) {
-
 				/** GET FIRST NUMBER **/
-				var lineNumber = line.match(/^\d+|\d+\b|\d+(?=\w)/)[0];
-				var index = "replace_" + key + "_" + lineNumber;
+				var lineNumber = getFirstNumber(line);
 
-				tips[index] = _extends({}, rule, {
-					onClickCommand: rule.onClickCommand.replace('{lnNumber}', lineNumber)
-				});
+				var _makeRule = makeRule(rule, key, lineNumber),
+				    searchIndex = _makeRule.searchIndex,
+				    newRule = _makeRule.newRule,
+				    className = _makeRule.className;
 
-				var part = "[[;;;t-pointer " + color + " " + index + "]" + replaced + "]";
-				var newLine = line.replace(value, part);
+				tips[searchIndex] = newRule;
 
+				var newLine = line.replace(value, makeSpan(className, searchIndex, value));
 				outputText = outputText.replace(line, newLine);
 			});
 		}
 
-		if (rule['onClickCommand'] || rule['onClickMessage'] || rule['onMouseOver']) {
-			var index = 'replace_' + key;
-			color += " t-pointer " + index;
-			tips[index] = rule;
+		var _makeRule2 = makeRule(rule, key),
+		    searchIndex = _makeRule2.searchIndex,
+		    newRule = _makeRule2.newRule,
+		    className = _makeRule2.className;
+
+		if (searchIndex) {
+			tips[searchIndex] = newRule;
 		}
 
-		var part = "[[;;;" + color + "]" + replaced + "]";
-
 		if (outputText.indexOf(value) > -1) {
-			/**escapes all special regexp chars**/
+			/** Escapes all special regexp chars **/
 			var valueReplaced = value.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, '\\$&');
-			outputText = outputText.replace(new RegExp(valueReplaced, 'g'), part);
+			outputText = outputText.replace(new RegExp(valueReplaced, 'g'), makeSpan(className, searchIndex, value));
 		}
 	});
 
@@ -5065,16 +5101,17 @@ var replaceInTerminal = exports.replaceInTerminal = function replaceInTerminal(d
 			}
 
 			if (target && onClickCommand) {
-				target.onclick = function () {
-
-					if (parseInt(isInSameWindow) === 1) {
+				if (parseInt(isInSameWindow) === 1) {
+					target.onclick = function () {
 						return (0, _actions.DEV_CMD_STACK_RUN)(onClickCommand);
-					}
-
-					(0, _switchTerminal.switchTerminal)({ keymap: 'next' }).then(function () {
-						return (0, _actions.DEV_CMD_STACK_RUN)(onClickCommand);
-					});
-				};
+					};
+				} else {
+					target.onclick = function () {
+						return (0, _switchTerminal.switchTerminal)({ keymap: 'next' }).then(function () {
+							return (0, _actions.DEV_CMD_STACK_RUN)(onClickCommand);
+						});
+					};
+				}
 			}
 		});
 	});
@@ -5539,8 +5576,8 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 var beforeStack = [];
-var promises = [];
 var stack = [];
+var promise = '';
 
 var Session = function () {
 	function Session(params) {
@@ -5550,8 +5587,8 @@ var Session = function () {
 	}
 
 	_createClass(Session, [{
-		key: 'run',
-		value: function run(cmd) {
+		key: '_run',
+		value: function _run(cmd) {
 			if (!cmd) {
 				return Promise.resolve('');
 			}
@@ -5565,44 +5602,41 @@ var Session = function () {
 			});
 		}
 	}, {
-		key: 'perform',
-		value: function perform(beforeFn) {
-			var _this = this;
+		key: '_runNext',
+		value: function _runNext() {
+			if (!promise) {
+				var nextRun = stack.shift();
 
-			beforeStack.push(beforeFn);
-
-			return new Promise(function (resolve) {
-
-				var promiseRun = _this._makePromise(resolve);
-
-				//** if we have command running then push to current fn to stack else run it and push to promise **//
-				if (!promises.length) {
-					promises.push(promiseRun(resolve));
-				} else {
-					stack.push(promiseRun);
+				if (nextRun) {
+					promise = nextRun();
 				}
-			});
+			}
 		}
 	}, {
 		key: '_makePromise',
 		value: function _makePromise(resolve) {
-			var _this2 = this;
+			var _this = this;
 
 			return function () {
-				var cmd = beforeStack.shift();
-
-				return _this2.run(cmd()).then(resolve) //output result
+				return _this._run(beforeStack.shift()()).then(resolve) //output result
 				.then(function () {
-
-					var nextCmd = stack.shift();
-
-					if (nextCmd) {
-						return nextCmd();
-					}
-
-					promises = [];
+					return promise = '';
+				}).then(function () {
+					return _this._runNext();
 				});
 			};
+		}
+	}, {
+		key: 'perform',
+		value: function perform(beforeFn) {
+			var _this2 = this;
+
+			beforeStack.push(beforeFn);
+
+			return new Promise(function (resolve) {
+				stack.push(_this2._makePromise(resolve));
+				_this2._runNext();
+			});
 		}
 	}]);
 
