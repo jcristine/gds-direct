@@ -106,7 +106,9 @@ class TerminalApp
 
 		const char 			= this.getCharLength();
 
-		const height		= Math.floor((this.container.context.clientHeight) / (rows + 1) );
+		const rRows = rows + 1;
+
+		const height		= Math.floor(this.container.context.clientHeight / rRows); // - (BORDER_SIZE * rRows) );
 		const width 		= Math.floor((this.container.context.clientWidth - this.getOffset()) / (cells + (hasWide ? 2 : 1) ) );
 
 		const numOf = {
@@ -119,14 +121,18 @@ class TerminalApp
 			numOf,
 
 			terminalSize 	: {
-				width 	: width,
-				height 	: (numOf.numOfRows * char.height) + BORDER_SIZE
+				width 	: width - BORDER_SIZE,
+				height 	: (numOf.numOfRows * char.height) //- BORDER_SIZE
 			},
 
 			parent 			: {
 				height	: this.container.context.clientHeight,
 				width 	: this.container.context.clientWidth - this.getOffset()
 			}
+		};
+
+		dimensions['leftOver'] = {
+			height : Math.floor(   ( this.container.context.clientHeight - ((dimensions.terminalSize.height + BORDER_SIZE) * rRows)  ) / rRows )
 		};
 
 		this.Gds.updateMatrix(dimensions);
@@ -139,23 +145,18 @@ class TerminalApp
 		return this;
 	}
 
-	calculateHasWide(dimensions, rows)
+	calculateHasWide(dimensions)
 	{
-		const numOfRows = Math.floor( (dimensions.parent.height - 2) / dimensions.char.height );
-		const height 	= (dimensions.terminalSize.height * (rows + 1));
-
 		const wideDimensions = {
-			char 			: dimensions.char,
+			...dimensions,
+			numOf  			: {...dimensions.numOf},
+			terminalSize  	: {...dimensions.terminalSize}
+		};
 
-			numOf 			: {
-				numOfRows 	: numOfRows,
-				numOfChars	: dimensions.numOf.numOfChars
-			},
-
-			terminalSize	: {
-				width  	: dimensions.terminalSize.width,
-				height  : height
-			}
+		wideDimensions.numOf.numOfRows 		= Math.floor( (dimensions.parent.height - BORDER_SIZE) / dimensions.char.height );
+		wideDimensions.terminalSize.height 	= wideDimensions.numOf.numOfRows * dimensions.char.height;
+		wideDimensions['leftOver'] 			= {
+			height : Math.floor(this.container.context.clientHeight - (wideDimensions.terminalSize.height + BORDER_SIZE))
 		};
 
 		this.Gds.update({wideDimensions});

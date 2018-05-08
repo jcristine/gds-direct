@@ -59,7 +59,7 @@ export default class Terminal
 
 	changeSize(dimension)
 	{
-		const {char, numOf ,terminalSize} = dimension;
+		const {char, numOf ,terminalSize, leftOver} = dimension;
 
 		this.numOfRows 	= numOf.numOfRows;
 		this.numOfChars	= numOf.numOfChars;
@@ -80,6 +80,11 @@ export default class Terminal
 
 		this.context.style.width 	= terminalSize.width + 'px';
 		this.context.style.height 	= terminalSize.height + 'px';
+
+		const padding = Math.floor(leftOver.height / 2);
+		this.context.style.paddingTop 		= padding + 'px';
+		this.context.style.paddingBottom 	= padding + 'px';
+		this.context.style.boxSizing 		= 'content-box';
 
 		return this.plugin;
 	}
