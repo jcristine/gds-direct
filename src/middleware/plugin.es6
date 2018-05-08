@@ -170,25 +170,30 @@ export default class TerminalPlugin
 			return command;
 		}
 
+		this.spinner.start();
+
 		const before = () => {
-
+			/** spinner is also new line  **/
 			this.outputLiner.printOutput('');
-
 			this.spinner.start();
 
 			this.print(`[[;;;usedCommand;]>${command.toUpperCase()}]`);
-
 			return command.toUpperCase();
-		};
-
-		const output = response => {
-			this.spinner.end();
-			this.parseBackEnd( response, command );
 		};
 
 		this.session
 			.perform( before )
-			.then( output );
+			.then( response => {
+				this.spinner.end();
+
+				if (command)
+				{
+					if (response && response.data)
+						this.parseBackEnd( response, command );
+					else
+						this.print(`[[;;;text-danger;]SERVER ERROR]`);
+				}
+			});
 
 		return command;
 	}
@@ -198,7 +203,7 @@ export default class TerminalPlugin
 		this.lastCommand = command; // for history
 		this.history.add(command);
 
-		let {output, clearScreen, appliedRules} = data;
+		let {output, clearScreen, appliedRules, tabCommands} = data;
 
 		if (output)
 		{
@@ -217,7 +222,7 @@ export default class TerminalPlugin
 			output = this.outputLiner.printOutput(output, clearScreen, appliedRules);
 		}
 
-		this.tabCommands.reset( data['tabCommands'], output );
+		this.tabCommands.reset( tabCommands, output );
 
 		if ( window.TerminalState.hasPermissions() )
 		{
@@ -226,7 +231,6 @@ export default class TerminalPlugin
 
 		UPDATE_CUR_GDS({...data, gdsName : this.gdsName});
 	}
-
 
 	print(output)
 	{

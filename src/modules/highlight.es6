@@ -1,15 +1,42 @@
 import {DEV_CMD_STACK_RUN} from "../actions";
 import {switchTerminal} from "./switchTerminal";
 
+const getFirstNumber = (line) => line.match(/^\d+|\d+\b|\d+(?=\w)/)[0];
+
+const makeSpan	= (color, index, value) => `[[;;;${color} ${index}] ${value.replace(/%/g, '')} ]`;
+
+const makeRule	= (rule, key, lineNumber = '') => {
+
+	let searchIndex	= '';
+	let className	= `${rule.color} ${rule['decoration'].join(' ')} term-highlight`;
+	let newRule		= {...rule};
+
+	if (rule['onClickCommand'] || rule['onClickMessage'] || rule['onMouseOver'])
+	{
+		searchIndex = `replace_${key}`;
+		className 	+= ` t-pointer`;
+	}
+
+	if (lineNumber)
+	{
+		searchIndex += '_' + lineNumber;
+		newRule.onClickCommand = newRule.onClickCommand.replace('{lnNumber}', lineNumber);
+	}
+
+	if (searchIndex)
+	{
+		className += ` ${searchIndex}`;
+	}
+
+	return {searchIndex, className, newRule};
+};
+
 
 export const seedOutputString = (outputText, appliedRules) => {
 
 	const tips = {};
 
-	appliedRules.map( ({color, decoration, value, ...rule}, key) => {
-
-		const replaced 	= value.replace(/%/g, '');
-		color 			+= ` ${decoration.join(' ')} term-highlight`;
+	appliedRules.map( ({value, ...rule}, key) => {
 
 		if (rule.onClickCommand.indexOf('lnNumber') > -1)
 		{
@@ -17,37 +44,29 @@ export const seedOutputString = (outputText, appliedRules) => {
 			return outputText.split(/\r?\n/)
 				.filter( line => line.indexOf(value) > -1)
 				.map( line => {
-
 					/** GET FIRST NUMBER **/
-					const lineNumber = line.match(/^\d+|\d+\b|\d+(?=\w)/)[0];
-					const index 	= `replace_${key}_${lineNumber}`;
+					const lineNumber = getFirstNumber(line);
 
-					tips[index] 	= {
-						...rule,
-						onClickCommand : rule.onClickCommand.replace('{lnNumber}', lineNumber)
-					};
+					const {searchIndex, newRule, className} = makeRule(rule, key, lineNumber);
+					tips[searchIndex] 	= newRule;
 
-					let part 		= `[[;;;t-pointer ${color} ${index}]${replaced}]`;
-					const newLine 	= line.replace(value, part);
-
+					const newLine 	= line.replace(value, makeSpan(className, searchIndex, value) );
 					outputText 		= outputText.replace(line, newLine);
 				});
 		}
 
-		if (rule['onClickCommand'] || rule['onClickMessage'] || rule['onMouseOver'])
-		{
-			const index 	= 'replace_'+key;
-			color 			+= ` t-pointer ${index}`;
-			tips[index] 	= rule;
-		}
+		const {searchIndex, newRule, className} = makeRule(rule, key);
 
-		let part = `[[;;;${color}]${replaced}]`;
+		if (searchIndex)
+		{
+			tips[searchIndex] = newRule;
+		}
 
 		if ( outputText.indexOf(value) > -1 )
 		{
-			/**escapes all special regexp chars**/
+			/** Escapes all special regexp chars **/
 			const valueReplaced = value.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, '\\$&');
-			outputText = outputText.replace(new RegExp(valueReplaced, 'g'), part);
+			outputText = outputText.replace(new RegExp(valueReplaced, 'g'), makeSpan(className, searchIndex, value));
 		}
 	});
 
@@ -93,14 +112,12 @@ export const replaceInTerminal = (div, tips) => {
 
 			if (target && onClickCommand)
 			{
-				target.onclick 		= () => {
-
-					if (parseInt(isInSameWindow) === 1)
-					{
-						return DEV_CMD_STACK_RUN(onClickCommand);
-					}
-
-					switchTerminal({keymap : 'next'}).then( () => DEV_CMD_STACK_RUN(onClickCommand) );
+				if (parseInt(isInSameWindow) === 1)
+				{
+					target.onclick 	= () => DEV_CMD_STACK_RUN(onClickCommand);
+				} else
+				{
+					target.onclick 	= () => switchTerminal({keymap : 'next'}).then( () => DEV_CMD_STACK_RUN(onClickCommand) )
 				}
 			}
 		});

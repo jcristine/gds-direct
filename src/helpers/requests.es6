@@ -11,7 +11,16 @@ const Ask = (url, params) => {
 		url = '/' + url;
 
 	return fetch( wwwFullDir + url, params )
-		.then( response => response.json() )
+		.then( response => {
+
+			if (response && response.status && response.status === 200)
+			{
+				return response.json();
+			}
+
+			console.log("ERORR:   ", response.text());
+			return Promise.reject(response.statusText);
+		})
 		.then( showUserMessages )
 		.catch( debugRequest );
 };
