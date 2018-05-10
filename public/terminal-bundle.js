@@ -1023,6 +1023,8 @@ var ADD_WHIDE_COLUMN = exports.ADD_WHIDE_COLUMN = function ADD_WHIDE_COLUMN() {
 "use strict";
 
 
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 var _requests = __webpack_require__(/*! ./helpers/requests.es6 */ "./src/helpers/requests.es6");
@@ -1161,7 +1163,9 @@ var TerminalApp = function () {
 
 			var char = this.getCharLength();
 
-			var height = Math.floor(this.container.context.clientHeight / (rows + 1));
+			var rRows = rows + 1;
+
+			var height = Math.floor(this.container.context.clientHeight / rRows); // - (BORDER_SIZE * rRows) );
 			var width = Math.floor((this.container.context.clientWidth - this.getOffset()) / (cells + (hasWide ? 2 : 1)));
 
 			var numOf = {
@@ -1174,14 +1178,18 @@ var TerminalApp = function () {
 				numOf: numOf,
 
 				terminalSize: {
-					width: width,
-					height: numOf.numOfRows * char.height + BORDER_SIZE
+					width: width - BORDER_SIZE,
+					height: numOf.numOfRows * char.height //- BORDER_SIZE
 				},
 
 				parent: {
 					height: this.container.context.clientHeight,
 					width: this.container.context.clientWidth - this.getOffset()
 				}
+			};
+
+			dimensions['leftOver'] = {
+				height: Math.floor((this.container.context.clientHeight - (dimensions.terminalSize.height + BORDER_SIZE) * rRows) / rRows)
 			};
 
 			this.Gds.updateMatrix(dimensions);
@@ -1194,22 +1202,16 @@ var TerminalApp = function () {
 		}
 	}, {
 		key: "calculateHasWide",
-		value: function calculateHasWide(dimensions, rows) {
-			var numOfRows = Math.floor((dimensions.parent.height - 2) / dimensions.char.height);
-			var height = dimensions.terminalSize.height * (rows + 1);
+		value: function calculateHasWide(dimensions) {
+			var wideDimensions = _extends({}, dimensions, {
+				numOf: _extends({}, dimensions.numOf),
+				terminalSize: _extends({}, dimensions.terminalSize)
+			});
 
-			var wideDimensions = {
-				char: dimensions.char,
-
-				numOf: {
-					numOfRows: numOfRows,
-					numOfChars: dimensions.numOf.numOfChars
-				},
-
-				terminalSize: {
-					width: dimensions.terminalSize.width,
-					height: height
-				}
+			wideDimensions.numOf.numOfRows = Math.floor((dimensions.parent.height - BORDER_SIZE) / dimensions.char.height);
+			wideDimensions.terminalSize.height = wideDimensions.numOf.numOfRows * dimensions.char.height;
+			wideDimensions['leftOver'] = {
+				height: Math.floor(this.container.context.clientHeight - (wideDimensions.terminalSize.height + BORDER_SIZE))
 			};
 
 			this.Gds.update({ wideDimensions: wideDimensions });
@@ -3453,7 +3455,7 @@ function Dom(str) {
 Object.defineProperty(exports, "__esModule", {
 	value: true
 });
-exports.getStorageMatrix = exports.getDate = exports.splitIntoLinesArr = exports.makePages = exports.getReplacement = undefined;
+exports.getStorageMatrix = exports.getDate = exports.splitLines = exports.splitIntoLinesArr = exports.makePages = exports.getReplacement = exports.escapeSpecials = exports.getFirstNumber = exports.replaceChar = undefined;
 
 var _constants = __webpack_require__(/*! ../constants */ "./src/constants.es6");
 
@@ -3493,8 +3495,17 @@ var _to_ascii = {
 	'61': '61' //FF Key codes  =
 };
 
+var replaceChar = exports.replaceChar = function replaceChar(value, char) {
+	return value.replace(new RegExp(char, 'g'), '');
+};
+var getFirstNumber = exports.getFirstNumber = function getFirstNumber(line) {
+	return line.match(/^\d+|\d+\b|\d+(?=\w)/)[0];
+};
+var escapeSpecials = exports.escapeSpecials = function escapeSpecials(value) {
+	return value.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, '\\$&');
+};
+
 var getReplacement = exports.getReplacement = function getReplacement(evt, isApollo) {
-	// const char = String.fromCharCode(_to_ascii[ evt.keyCode || evt.which ] );
 	var char = String.fromCharCode(evt.keyCode || evt.which);
 	return isApollo ? apolloLayout[char] : sabreLayout[char];
 };
@@ -3532,7 +3543,7 @@ var splitIntoLinesArr = exports.splitIntoLinesArr = function splitIntoLinesArr(t
 	return chunkByCharLimit;
 };
 
-var splitLines = function splitLines(txt) {
+var splitLines = exports.splitLines = function splitLines(txt) {
 	return txt.split(/\r?\n/);
 };
 
@@ -4975,18 +4986,15 @@ var _actions = __webpack_require__(/*! ../actions */ "./src/actions.es6");
 
 var _switchTerminal = __webpack_require__(/*! ./switchTerminal */ "./src/modules/switchTerminal.es6");
 
+var _helpers = __webpack_require__(/*! ../helpers/helpers */ "./src/helpers/helpers.es6");
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
 function _objectWithoutProperties(obj, keys) { var target = {}; for (var i in obj) { if (keys.indexOf(i) >= 0) continue; if (!Object.prototype.hasOwnProperty.call(obj, i)) continue; target[i] = obj[i]; } return target; }
-
-var getFirstNumber = function getFirstNumber(line) {
-	return line.match(/^\d+|\d+\b|\d+(?=\w)/)[0];
-};
-
-var makeSpan = function makeSpan(color, index, value) {
-	return "[[;;;" + color + " " + index + "]" + value.replace(/%/g, '') + "]";
-};
 
 var makeRule = function makeRule(rule, key) {
 	var lineNumber = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : '';
+	var pattern = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : '';
 
 
 	var searchIndex = '';
@@ -5000,7 +5008,7 @@ var makeRule = function makeRule(rule, key) {
 
 	if (lineNumber) {
 		searchIndex += '_' + lineNumber;
-		newRule.onClickCommand = newRule.onClickCommand.replace('{lnNumber}', lineNumber);
+		newRule.onClickCommand = newRule.onClickCommand.replace(pattern, lineNumber);
 	}
 
 	if (searchIndex) {
@@ -5014,67 +5022,66 @@ var seedOutputString = function seedOutputString(outputText, appliedRules) {
 
 	var tips = {};
 
-	appliedRules.map(function (_ref, key) {
-		var value = _ref.value,
-		    rule = _objectWithoutProperties(_ref, ["value"]);
+	var makeSpan = function makeSpan(_ref) {
+		var className = _ref.className,
+		    _ref$searchIndex = _ref.searchIndex,
+		    searchIndex = _ref$searchIndex === undefined ? '' : _ref$searchIndex,
+		    value = _ref.value;
+		return "[[;;;" + className + " " + searchIndex + "]" + (0, _helpers.replaceChar)(value, '%') + "]";
+	};
 
-		if (rule.onClickCommand.indexOf('lnNumber') > -1) {
-			/** when we need to replace {lineNumber} for all the values found in output**/
-			return outputText.split(/\r?\n/).filter(function (line) {
+	var loop = function loop(_ref2, key) {
+		var value = _ref2.value,
+		    rule = _objectWithoutProperties(_ref2, ["value"]);
+
+		var getProps = function getProps() {
+			var pattern = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '';
+			var lineNumber = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : '';
+
+			var _makeRule = makeRule(rule, key, lineNumber, pattern),
+			    searchIndex = _makeRule.searchIndex,
+			    className = _makeRule.className,
+			    newRule = _makeRule.newRule;
+
+			if (searchIndex) tips = _extends({}, tips, _defineProperty({}, searchIndex, newRule));
+
+			return { searchIndex: searchIndex, className: className, newRule: newRule, value: value };
+		};
+
+		var replacePerLine = function replacePerLine(pattern, getCmd) {
+			return (0, _helpers.splitLines)(outputText).filter(function (line) {
 				return line.indexOf(value) > -1;
 			}).map(function (line) {
-				/** GET FIRST NUMBER **/
-				var lineNumber = getFirstNumber(line);
+				var props = getProps(pattern, getCmd(line));
+				outputText = outputText.replace(line, line.replace(value, makeSpan(props)));
+			});
+		};
 
-				var _makeRule = makeRule(rule, key, lineNumber),
-				    searchIndex = _makeRule.searchIndex,
-				    newRule = _makeRule.newRule,
-				    className = _makeRule.className;
-
-				tips[searchIndex] = newRule;
-
-				var newLine = line.replace(value, makeSpan(className, searchIndex, value));
-				outputText = outputText.replace(line, newLine);
+		if (rule.onClickCommand.indexOf('{lnNumber}') > -1) {
+			return replacePerLine('{lnNumber}', function (line) {
+				return (0, _helpers.getFirstNumber)(line);
 			});
 		}
 
-		var _makeRule2 = makeRule(rule, key),
-		    searchIndex = _makeRule2.searchIndex,
-		    newRule = _makeRule2.newRule,
-		    className = _makeRule2.className;
-
-		if (searchIndex) {
-			tips[searchIndex] = newRule;
+		if (rule.onClickCommand.indexOf('{pattern}') > -1) {
+			return replacePerLine('{pattern}', function () {
+				return (0, _helpers.replaceChar)(value, '%');
+			});
 		}
 
 		if (outputText.indexOf(value) > -1) {
-			/** Escapes all special regexp chars **/
-			var valueReplaced = value.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, '\\$&');
-			outputText = outputText.replace(new RegExp(valueReplaced, 'g'), makeSpan(className, searchIndex, value));
+			var needle = new RegExp((0, _helpers.escapeSpecials)(value), 'g');
+			outputText = outputText.replace(needle, makeSpan(getProps()));
 		}
-	});
-
-	return {
-		tips: tips, outputText: outputText
 	};
+
+	appliedRules.map(loop);
+
+	return { tips: tips, outputText: outputText };
 };
 
 exports.seedOutputString = seedOutputString;
-var popoverDefs = function popoverDefs(div, content) {
-	var placement = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 'top';
-	return {
-		placement: placement,
-		content: content,
-		template: '<div class="popover font-bold text-danger" role="tooltip"><div class="arrow"></div><div class="popover-content highlight-popover"></div></div>',
-		html: true,
-		trigger: 'click',
-		viewport: div,
-		container: div
-	};
-};
-
 var replaceInTerminal = exports.replaceInTerminal = function replaceInTerminal(div, tips) {
-
 	Object.keys(tips).map(function (key) {
 
 		[].map.call(div[0].querySelectorAll('.' + key), function (target) {
@@ -5115,6 +5122,19 @@ var replaceInTerminal = exports.replaceInTerminal = function replaceInTerminal(d
 			}
 		});
 	});
+};
+
+var popoverDefs = function popoverDefs(div, content) {
+	var placement = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 'top';
+	return {
+		placement: placement,
+		content: content,
+		template: '<div class="popover font-bold text-danger" role="tooltip"><div class="arrow"></div><div class="popover-content highlight-popover"></div></div>',
+		html: true,
+		trigger: 'click',
+		viewport: div,
+		container: div
+	};
 };
 
 /***/ }),
@@ -5234,6 +5254,8 @@ var _dom2 = _interopRequireDefault(_dom);
 
 var _highlight = __webpack_require__(/*! ./highlight */ "./src/modules/highlight.es6");
 
+var _helpers2 = __webpack_require__(/*! ../helpers/helpers */ "./src/helpers/helpers.es6");
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
@@ -5289,7 +5311,9 @@ var Output = function () {
 	}, {
 		key: '_getOutputLength',
 		value: function _getOutputLength() {
-			return (0, _helpers.splitIntoLinesArr)(this.outputStrings, this.numOfChars).length;
+			return (0, _helpers.splitIntoLinesArr)(this.outputStrings, this.numOfChars).filter(function (line) {
+				return line !== null;
+			}).length;
 		}
 	}, {
 		key: '_countEmpty',
@@ -5316,9 +5340,10 @@ var Output = function () {
 		key: '_printOutput',
 		value: function _printOutput() {
 			var appliedRules = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '';
+			var output = arguments[1];
 
 			if (appliedRules && appliedRules.length) {
-				var _seedOutputString = (0, _highlight.seedOutputString)(this.outputStrings, appliedRules),
+				var _seedOutputString = (0, _highlight.seedOutputString)(output, appliedRules),
 				    tips = _seedOutputString.tips,
 				    outputText = _seedOutputString.outputText;
 
@@ -5362,11 +5387,11 @@ var Output = function () {
 			var isClearScreen = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
 			var appliedRules = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : '';
 
-			this.outputStrings = output;
+			this.outputStrings = appliedRules ? (0, _helpers2.replaceChar)(output, '%') : output;
 			this.clearScreen = isClearScreen;
 			this.cmdLineOffset = this.terminal.cmd()[0].offsetTop; // - this.charHeight; // remember scrollTop height before the command so when clear flag screen is set scroll to this mark
 
-			this._countEmpty()._printOutput(appliedRules)._attachEmpty()._scroll();
+			this._countEmpty()._printOutput(appliedRules, output)._attachEmpty()._scroll();
 
 			return this.outputStrings;
 		}
@@ -5971,7 +5996,8 @@ var Terminal = function () {
 		value: function changeSize(dimension) {
 			var char = dimension.char,
 			    numOf = dimension.numOf,
-			    terminalSize = dimension.terminalSize;
+			    terminalSize = dimension.terminalSize,
+			    leftOver = dimension.leftOver;
 
 
 			this.numOfRows = numOf.numOfRows;
@@ -5991,6 +6017,11 @@ var Terminal = function () {
 
 			this.context.style.width = terminalSize.width + 'px';
 			this.context.style.height = terminalSize.height + 'px';
+
+			var padding = Math.floor(leftOver.height / 2);
+			this.context.style.paddingTop = padding + 'px';
+			this.context.style.paddingBottom = padding + 'px';
+			this.context.style.boxSizing = 'content-box';
 
 			return this.plugin;
 		}
