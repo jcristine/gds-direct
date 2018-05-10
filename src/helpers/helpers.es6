@@ -34,8 +34,12 @@ const _to_ascii = {
 	'61': '61'  //FF Key codes  =
 };
 
+export const replaceChar	= (value, char) => value.replace(new RegExp(char, 'g'), '');
+export const getFirstNumber = line 	=> line.match(/^\d+|\d+\b|\d+(?=\w)/)[0];
+export const escapeSpecials	= value => value.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, '\\$&');
+
+
 export const getReplacement = ( evt, isApollo ) => {
-	// const char = String.fromCharCode(_to_ascii[ evt.keyCode || evt.which ] );
 	const char = String.fromCharCode(evt.keyCode || evt.which);
 	return isApollo ? apolloLayout[char] : sabreLayout[char];
 };
@@ -44,9 +48,7 @@ const chunkIntoPages = ( linesArr , rowsPerScreen ) => {
 	return linesArr.map(
 		(line, lineIndex) => lineIndex % rowsPerScreen ? [] : linesArr.slice( lineIndex , lineIndex + rowsPerScreen )
 	)
-	.filter(
-		( data ) => !!data.length
-	);
+	.filter( data  => !!data.length	);
 };
 
 export const makePages = (txt, rowsPerScreen = 20, maxCharLimit) => {
@@ -71,7 +73,7 @@ export const splitIntoLinesArr = ( txt, maxCharLimit ) => {
 	return chunkByCharLimit;
 };
 
-const splitLines = (txt) => txt.split(/\r?\n/);
+export const splitLines = (txt) => txt.split(/\r?\n/);
 
 const makeDate = (d) => d < 10 ? '0' + d : d;
 

@@ -1,11 +1,8 @@
 import {DEV_CMD_STACK_RUN} from "../actions";
 import {switchTerminal} from "./switchTerminal";
+import {escapeSpecials, getFirstNumber, replaceChar, splitLines} from "../helpers/helpers";
 
-const getFirstNumber = (line) => line.match(/^\d+|\d+\b|\d+(?=\w)/)[0];
-
-const makeSpan	= (color, index, value) => `[[;;;${color} ${index}]${value.replace(/%/g, '')}]`;
-
-const makeRule	= (rule, key, lineNumber = '') => {
+const makeRule		= (rule, key, lineNumber = '', pattern = '') => {
 
 	let searchIndex	= '';
 	let className	= `${rule.color} ${rule['decoration'].join(' ')} term-highlight`;
@@ -20,7 +17,7 @@ const makeRule	= (rule, key, lineNumber = '') => {
 	if (lineNumber)
 	{
 		searchIndex += '_' + lineNumber;
-		newRule.onClickCommand = newRule.onClickCommand.replace('{lnNumber}', lineNumber);
+		newRule.onClickCommand = newRule.onClickCommand.replace(pattern, lineNumber);
 	}
 
 	if (searchIndex)
@@ -34,59 +31,52 @@ const makeRule	= (rule, key, lineNumber = '') => {
 
 export const seedOutputString = (outputText, appliedRules) => {
 
-	const tips = {};
+	let tips = {};
 
-	appliedRules.map( ({value, ...rule}, key) => {
+	const makeSpan		= ({className, searchIndex = '', value}) => `[[;;;${className} ${searchIndex}]${replaceChar(value,'%')}]`;
 
-		if (rule.onClickCommand.indexOf('lnNumber') > -1)
+
+	const loop = ({value, ...rule}, key) => {
+
+		const getProps 		= (pattern = '', lineNumber = '') => {
+			const {searchIndex, className, newRule} = makeRule(rule, key, lineNumber, pattern);
+
+			if (searchIndex)
+				tips = {...tips, [searchIndex] : newRule};
+
+			return {searchIndex, className, newRule, value};
+		};
+
+		const replacePerLine = (pattern, getCmd) => splitLines(outputText)
+			.filter( line => line.indexOf(value) > -1)
+			.map( line => {
+				const props = getProps(pattern, getCmd(line));
+				outputText = outputText.replace(line, line.replace(value, makeSpan(props)) );
+			});
+
+		if (rule.onClickCommand.indexOf('{lnNumber}') > -1)
 		{
-			/** when we need to replace {lineNumber} for all the values found in output**/
-			return outputText.split(/\r?\n/)
-				.filter( line => line.indexOf(value) > -1)
-				.map( line => {
-					/** GET FIRST NUMBER **/
-					const lineNumber = getFirstNumber(line);
-
-					const {searchIndex, newRule, className} = makeRule(rule, key, lineNumber);
-					tips[searchIndex] 	= newRule;
-
-					const newLine 	= line.replace(value, makeSpan(className, searchIndex, value) );
-					outputText 		= outputText.replace(line, newLine);
-				});
+			return replacePerLine('{lnNumber}', line => getFirstNumber(line));
 		}
 
-		const {searchIndex, newRule, className} = makeRule(rule, key);
-
-		if (searchIndex)
+		if (rule.onClickCommand.indexOf('{pattern}') > -1)
 		{
-			tips[searchIndex] = newRule;
+			return replacePerLine('{pattern}', () => replaceChar(value, '%') );
 		}
 
 		if ( outputText.indexOf(value) > -1 )
 		{
-			/** Escapes all special regexp chars **/
-			const valueReplaced = value.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, '\\$&');
-			outputText = outputText.replace(new RegExp(valueReplaced, 'g'), makeSpan(className, searchIndex, value));
+			const needle = new RegExp(escapeSpecials(value), 'g');
+			outputText = outputText.replace(needle, makeSpan(getProps()) );
 		}
-	});
+	};
 
-	return {
-		tips, outputText
-	}
+	appliedRules.map(loop);
+
+	return {tips, outputText}
 };
 
-const popoverDefs = (div, content, placement = 'top') => ({
-	placement 	: placement,
-	content 	: content,
-	template	: '<div class="popover font-bold text-danger" role="tooltip"><div class="arrow"></div><div class="popover-content highlight-popover"></div></div>',
-	html 		: true,
-	trigger		: 'click',
-	viewport	: div,
-	container	: div
-});
-
 export const replaceInTerminal = (div, tips) => {
-
 	Object.keys(tips).map(key => {
 
 		[].map.call(div[0].querySelectorAll('.' + key), target => {
@@ -123,3 +113,13 @@ export const replaceInTerminal = (div, tips) => {
 		});
 	});
 };
+
+const popoverDefs = (div, content, placement = 'top') => ({
+	placement 	: placement,
+	content 	: content,
+	template	: '<div class="popover font-bold text-danger" role="tooltip"><div class="arrow"></div><div class="popover-content highlight-popover"></div></div>',
+	html 		: true,
+	trigger		: 'click',
+	viewport	: div,
+	container	: div
+});

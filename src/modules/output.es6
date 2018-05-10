@@ -1,6 +1,7 @@
 import {splitIntoLinesArr} from '../helpers/helpers.es6';
 import Dom from '../helpers/dom.es6';
 import {seedOutputString, replaceInTerminal} from "./highlight";
+import {replaceChar} from "../helpers/helpers";
 
 export default class Output
 {
@@ -40,7 +41,7 @@ export default class Output
 
 	_getOutputLength()
 	{
-		return splitIntoLinesArr( this.outputStrings, this.numOfChars ).length;
+		return splitIntoLinesArr( this.outputStrings, this.numOfChars ).filter(line => line !== null).length;
 	}
 
 	_countEmpty()
@@ -59,11 +60,11 @@ export default class Output
 		return this;
 	}
 
-	_printOutput(appliedRules = '')
+	_printOutput(appliedRules = '', output)
 	{
 		if (appliedRules && appliedRules.length)
 		{
-			const {tips, outputText} = seedOutputString(this.outputStrings, appliedRules);
+			const {tips, outputText} = seedOutputString(output, appliedRules);
 			this.outputStrings 	= outputText;
 
 			this.terminal.echo(outputText, {
@@ -103,11 +104,11 @@ export default class Output
 
 	printOutput(output, isClearScreen = false, appliedRules = '')
 	{
-		this.outputStrings 	= output;
+		this.outputStrings 	= appliedRules ? replaceChar(output, '%') : output;
 		this.clearScreen	= isClearScreen;
 		this.cmdLineOffset 	= this.terminal.cmd()[0].offsetTop; // - this.charHeight; // remember scrollTop height before the command so when clear flag screen is set scroll to this mark
 
-		this._countEmpty()._printOutput(appliedRules)._attachEmpty()._scroll();
+		this._countEmpty()._printOutput(appliedRules, output)._attachEmpty()._scroll();
 
 		return this.outputStrings;
 	}
