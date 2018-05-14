@@ -20,7 +20,7 @@ export class Quotes extends Component
 		})
 	}
 
-	_renderer(state)
+	_renderer()
 	{
 		this.context.classList.toggle('hidden', !this.state.requestId);
 	}

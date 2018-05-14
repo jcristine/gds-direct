@@ -1,6 +1,6 @@
 import Component 		from "../modules/component";
 import {RightSide} 		from "./sides/right";
-import ActionsMenu 		from "../components/actionsMenu";
+import {ActionsMenu, ActionsMenuBottom} from "../components/actionsMenu";
 import TerminalMatrix 	from "../components/terminalMatrix";
 import {PqQuotes}		from "../components/PqQuotes";
 
@@ -13,9 +13,12 @@ export class TableSections extends Component
 		this
 			.observe(
 				new Component('tr')
-					.observe( new LeftTd() )
-					.observe( new PqQuotes())
-					.observe( new RightSide() )
+					.observe([
+						new LeftTd(),
+						new PqQuotes(),
+						new RightSide(),
+						new ActionsMenuBottom()
+					])
 			)
 	}
 }
@@ -27,8 +30,10 @@ class LeftTd extends Component
 		super('td.left');
 
 		this
-			.observe( new TerminalMatrix() )
-			.observe( new ActionsMenu() );
+			.observe([
+				new TerminalMatrix(),
+				new ActionsMenu(),
+				// new ActionsMenuBottom()
+			])
 	}
 }
-

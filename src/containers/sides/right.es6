@@ -24,15 +24,15 @@ export class RightSide extends Component
 		);
 	}
 
-	setState({hideMenu})
+	setState({menuHidden})
 	{
 		return super.setState({
-			hideMenu
+			menuHidden
 		})
 	}
 
 	_renderer()
 	{
-		this.context.classList.toggle('hidden', this.state.hideMenu );
+		this.context.classList.toggle('hidden', this.state.menuHidden );
 	}
 }

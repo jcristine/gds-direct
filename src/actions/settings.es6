@@ -44,3 +44,15 @@ export const ADD_WHIDE_COLUMN = () => {
 
 	getStore().updateView();
 };
+
+export const HIDE_MENU = (hidden) => {
+	getStore().app.setOffset(hidden ? 0 : 100);
+
+	getStore().updateView({
+		menuHidden : hidden
+	});
+};
+
+export const UPDATE_SCREEN = () => {
+	getStore().updateView();
+};

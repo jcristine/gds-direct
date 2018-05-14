@@ -7,6 +7,7 @@ import {GdsAreas}  			from "./menu/gdsAreas";
 import {LanguageButtons} 	from "./menu/languageButtons";
 import {LogButton} 			from "./popovers/logButton";
 import {Quotes} from "./menu/quotes";
+import {MenuHideButton} from "./menu/hideMenu";
 
 export default class MenuPanel extends Component
 {
@@ -48,6 +49,13 @@ export default class MenuPanel extends Component
 			new Component('article')
 				.observe(
 					new PqButton()
+				)
+		);
+
+		this.observe(
+			new Component('article.small-buttons')
+				.observe(
+					new MenuHideButton()
 				)
 		);
 

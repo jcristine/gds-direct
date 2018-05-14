@@ -2,24 +2,31 @@ import {getStore} from "../store";
 import {OFFSET_QUOTES} from "../constants";
 import {getters} from "../state";
 
-const showPq = (newState, offset = 100) => {
+const isHidden = false;
+
+const showPq = (newState = {}, offset = 100) => {
 	getStore().app.setOffset(offset);
 	getStore().updateView(newState);
 };
 
 export const SHOW_PQ_QUOTES = () => {
-	showPq({pqToShow : 'loading'}, OFFSET_QUOTES);
-	return getters('showExistingPq').then(response => showPq({pqToShow :response}, OFFSET_QUOTES));
+	const offset = getStore().app.getOffset() === 0 ? 400 : OFFSET_QUOTES;
+	showPq({pqToShow : 'loading'}, offset);
+
+	return getters('showExistingPq').then(response => (
+		showPq({pqToShow:response}, offset)
+	));
 };
 
-export const HIDE_PQ_QUOTES = () => showPq({pqToShow:false});
-
-export const PQ_MODAL_SHOW 	= () => {
-	getStore().app.pqParser
-		.show( getStore().app.getGds(), getStore().app.params.requestId )
-		.then(() => {
-			showPq({hideMenu : true}, 0)
-		})
+export const HIDE_PQ_QUOTES = () => {
+	const offset = getStore().app.getOffset() === 400 ? 0 : 100;
+	return showPq({pqToShow:false}, offset);
 };
 
-export const CLOSE_PQ_WINDOW = () => showPq({hideMenu : false});
+const toggleModal = app => {
+	app.pqParser.show( app.getGds(), app.params.requestId )
+		.then(() => showPq({menuHidden : true}, 0));
+};
+
+export const PQ_MODAL_SHOW 	= () => toggleModal(getStore().app);
+export const CLOSE_PQ_WINDOW = () => showPq({menuHidden : false});

@@ -8,22 +8,51 @@ export default class Component
 		this.observers 	= [];
 	}
 
-	observe( component )
-	{
-		this.observers.push( component );
-		this.context.appendChild( component.getContext() );
-		return this;
-	}
-
 	addToObserve( component )
 	{
 		this.observers.push( component );
 		return this;
 	}
 
-	append( component )
+	observe(el)
 	{
-		this.context.appendChild( component.getContext() );
+		if (!el)
+		{
+			return this;
+		}
+
+		if ( el.constructor === Array )
+		{
+			el.map(obj => this.observe(obj));
+		} else
+		{
+			this.context.appendChild(el.getContext());
+			this.observers.push( el );
+		}
+
+		return this;
+	}
+
+	append(el)
+	{
+		if ( el.constructor === Array )
+		{
+			el.map(obj => this.append(obj));
+		}
+		else
+		{
+			if (!el)
+				return '';
+
+			if ( !(el instanceof Element) )
+			{
+				this.context.appendChild(el.getContext());
+			} else
+			{
+				this.context.appendChild(el);
+			}
+		}
+
 		return this;
 	}
 
