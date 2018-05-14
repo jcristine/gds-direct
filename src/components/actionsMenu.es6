@@ -7,6 +7,7 @@ import {LanguageButtons} from "./menu/languageButtons";
 import {Quotes} from "./menu/quotes";
 import PqButton from "./menu/pqButton";
 import {HIDE_MENU} from "../actions/settings";
+import {DevButtons} from "./menu/devButtons";
 
 export class ActionsMenu extends Component
 {
@@ -81,14 +82,24 @@ class Trigger extends ButtonPopover
 			new GdsAreas(),
 			new LanguageButtons(),
 			new Quotes(),
-			new PqButton(),
+			new PqButton()
+		]);
+
+		if (this.state.permissions)
+		{
+			this.popContent.observe(
+				new DevButtons()
+			)
+		}
+
+		this.popContent.observe(
 			new Component('button.btn btn-primary[<i class="fa fa-bars"></i>]', {
 				onclick : () => {
 					this.clickOnButton();
 					HIDE_MENU(false);
 				}
 			})
-		]);
+		);
 
 		return this.popContent
 	}
@@ -98,17 +109,17 @@ class Trigger extends ButtonPopover
 		return {
 			openOn 		: null,
 			position	: 'top right',
-			tetherOptions: {
-				offset: '0 3px'
-
-			}
+			// tetherOptions: {
+			// 	offset: '0 3px'
+			//
+			// }
 		}
 	}
 
-	setState({menuHidden})
+	setState({menuHidden,permissions})
 	{
 		return super.setState({
-			menuHidden
+			menuHidden,permissions
 		})
 	}
 

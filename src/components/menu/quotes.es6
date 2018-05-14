@@ -7,8 +7,9 @@ export class Quotes extends Component
 	{
 		super('button.btn btn-mozilla font-bold[Quotes]', {
 			onclick : e => {
-				e.target.innerHTML = 'Loading...';
-				SHOW_PQ_QUOTES().then(()  => {e.target.innerHTML = 'Quotes'});
+				e.target.innerHTML = 'Loading';
+				e.target.disabled = true;
+				SHOW_PQ_QUOTES().then(()  => {e.target.innerHTML = 'Quotes'; e.target.disabled = false});
 			}
 		});
 	}

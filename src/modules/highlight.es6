@@ -33,26 +33,25 @@ export const seedOutputString = (outputText, appliedRules) => {
 
 	let tips = {};
 
-	const makeSpan		= ({className, searchIndex = '', value}) => `[[;;;${className} ${searchIndex}]${replaceChar(value,'%')}]`;
-
-
 	const loop = ({value, ...rule}, key) => {
 
-		const getProps 		= (pattern = '', lineNumber = '') => {
+		const replaceWith 		= (pattern = '', lineNumber = '') => {
 			const {searchIndex, className, newRule} = makeRule(rule, key, lineNumber, pattern);
 
 			if (searchIndex)
 				tips = {...tips, [searchIndex] : newRule};
 
-			return {searchIndex, className, newRule, value};
+			return `[[;;;${className} ${searchIndex}]${replaceChar(value,'%')}]`;
 		};
 
-		const replacePerLine = (pattern, getCmd) => splitLines(outputText)
-			.filter( line => line.indexOf(value) > -1)
-			.map( line => {
-				const props = getProps(pattern, getCmd(line));
-				outputText = outputText.replace(line, line.replace(value, makeSpan(props)) );
-			});
+		const findInjection = line => line.indexOf(value) > -1;
+
+		const replaceOutput = (pattern, getCmd) => line => {
+			const replaced = replaceWith(pattern, getCmd(line));
+			outputText = outputText.replace(line, line.replace(value, replaced) );
+		};
+
+		const replacePerLine = (pattern, getCmd) => splitLines(outputText).filter(findInjection).map( replaceOutput(pattern, getCmd));
 
 		if (rule.onClickCommand.indexOf('{lnNumber}') > -1)
 		{
@@ -67,11 +66,11 @@ export const seedOutputString = (outputText, appliedRules) => {
 		if ( outputText.indexOf(value) > -1 )
 		{
 			const needle = new RegExp(escapeSpecials(value), 'g');
-			outputText = outputText.replace(needle, makeSpan(getProps()) );
+			outputText = outputText.replace(needle, replaceWith() );
 		}
 	};
 
-	appliedRules.map(loop);
+	appliedRules.forEach(loop);
 
 	return {tips, outputText}
 };

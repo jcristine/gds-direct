@@ -8,7 +8,6 @@ export class ButtonPopover extends Component
 	{
 		super(`button.btn btn-purple m-b-sm[${icon}]`, {
 			onclick : () => this.clickOnButton(),
-			style 	: 'display : block',
 			...buttonProps
 		});
 
