@@ -3,10 +3,11 @@ import {get} from "./helpers/requests";
 let State =  {
 	language	: 'APOLLO',
 	fontSize	: 1,
-	hideMenu	: false,
+	// hideMenu	: false,
 	requestId	: null,
 	gdsList		: [],
-	gdsObjName	: ''
+	gdsObjName	: '',
+	menuHidden	: false
 
 	// action	: ''
 	// canCreatePq	: ''

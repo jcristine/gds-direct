@@ -6,8 +6,7 @@ export class MenuHideButton extends Component
 	constructor()
 	{
 		super('button.btn btn-white[<i class="fa fa-bars"></i>]', {
-			onclick : () => HIDE_MENU(true),
-			style 	: 'position: absolute;	bottom: 36px;'
+			onclick : () => HIDE_MENU(true)
 		})
 	}
 }

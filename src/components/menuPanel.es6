@@ -53,7 +53,7 @@ export default class MenuPanel extends Component
 		);
 
 		this.observe(
-			new Component('article.small-buttons')
+			new Component('article.align-bottom')
 				.observe(
 					new MenuHideButton()
 				)

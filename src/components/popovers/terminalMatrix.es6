@@ -1,27 +1,30 @@
 import Dom 			 	from '../../helpers/dom.es6';
-import ButtonPopOver	from '../../modules/buttonPopover.es6';
 import {ADD_WHIDE_COLUMN, CHANGE_MATRIX} from "../../actions/settings";
 import {MAX_ROWS} from "../../constants";
 import {getStorageMatrix} from "../../helpers/helpers";
+import {ButtonPopover} from "../../modules/dom/buttonPopover";
 
 let cellObj = [];
 
 const HOVER_CLASS 	= 'bg-purple';
 const ACTIVE_CLASS 	= 'bg-info';
 
-export default class Matrix extends ButtonPopOver
+export default class Matrix extends ButtonPopover
 {
-	constructor( params )
+	constructor()
 	{
-		super( params );
+		super({icon : '<i class="fa fa-th-large"></i>'});
+	}
 
-		this.popContent = Dom('div');
-		this.makeTrigger();
+	getPopContent()
+	{
+		this.build();
+		return this.popContent
 	}
 
 	build()
 	{
-		const wideButton 	= new Dom('div.bg-white matrix-column' , {
+		const wideButton 	= Dom('div.bg-white matrix-column' , {
 			onclick : (e) => {
 				e.target.classList.toggle(ACTIVE_CLASS);
 				e.target.classList.toggle('bg-white');
@@ -30,7 +33,6 @@ export default class Matrix extends ButtonPopOver
 		});
 
 		const table 	= new Dom('table.matrix-table');
-		// window.open('http://cms3.artur.snx702.dyninno.net/leadInfo?rId=6173322#terminalNavBtntab','winname',"directories=0,titlebar=0,toolabar=0,location=0,stataus=0,menaubar=0,scrollbars=no,resizable=no,widtah=400,aheight=350");
 
 		[0, 1, 2, 3]
 			.map( this._rows )
@@ -43,11 +45,11 @@ export default class Matrix extends ButtonPopOver
 
 		this._addColor(rows, cells, ACTIVE_CLASS);
 
-		this.popContent.appendChild(
+		this.popContent.attach(
 			wideButton
 		);
 
-		this.popContent.appendChild(
+		this.popContent.attach(
 			table
 		);
 	}
@@ -55,7 +57,7 @@ export default class Matrix extends ButtonPopOver
 	_rows()
 	{
 		cellObj.push([]);
-		return document.createElement('tr');
+		return Dom('tr');
 	}
 
 	_cells( row, rIndex )
@@ -66,20 +68,16 @@ export default class Matrix extends ButtonPopOver
 
 	_cell(rIndex, cIndex)
 	{
-		const cell = document.createElement('td');
-		cell.className = 'matrix-p-row';
-
-		cellObj[rIndex].push(cell);
-
-		cell.addEventListener('click', () => {
-
+		const selectMatrix = () => {
 			// this.popover.close();
 
-			let cellsSelected = [];
+			const makeArray 	= length => Array.apply(null, {length});
+			const arrayByIndex 	= (yIndex) => (x, xIndex) => yIndex * MAX_ROWS + xIndex;
+			const mergeIntoOne 	= (part, collection) => [...part, ...collection];
 
-			Array.apply(null, {length : rIndex + 1}).map( (y, yIndex) => {
-				Array.apply(null, {length : cIndex + 1}).map( (x, xIndex) => cellsSelected.push(yIndex * MAX_ROWS + xIndex))
-			});
+			const cellsSelected = makeArray(rIndex + 1)
+				.map((y, yIndex) => makeArray(cIndex + 1).map(arrayByIndex(yIndex)))
+				.reduce(mergeIntoOne);
 
 			this._removeClass(ACTIVE_CLASS);
 			this._addColor(rIndex, cIndex, ACTIVE_CLASS);
@@ -93,10 +91,14 @@ export default class Matrix extends ButtonPopOver
 			localStorage.setItem('matrix', JSON.stringify(matrixProps) );
 
 			CHANGE_MATRIX(matrixProps)
-		});
+		};
+
+		const cell = Dom('td.matrix-p-row', {onclick : selectMatrix});
 
 		cell.addEventListener('mouseover', 	() => this._addColor(rIndex, cIndex, HOVER_CLASS) );
 		cell.addEventListener('mouseleave', () => this._removeClass(HOVER_CLASS) );
+
+		cellObj[rIndex].push(cell);
 
 		return cell;
 	}
@@ -111,6 +113,6 @@ export default class Matrix extends ButtonPopOver
 
 	_removeClass(className)
 	{
-		[].forEach.call( this.popContent.querySelectorAll('.matrix-p-row.' + className) , cell => cell.classList.remove(className) );
+		[].forEach.call( this.popContent.context.querySelectorAll('.matrix-p-row.' + className) , cell => cell.classList.remove(className) );
 	}
 }
