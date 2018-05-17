@@ -37,7 +37,7 @@ export const setState = (newState, action = '') => {
 		State = {...State, ...newState};
 	}
 
-	State = State = {...State, action};
+	State = {...State, action};
 
 	if (State.permissions)
 		console.log('STATE:', State);
