@@ -23,10 +23,10 @@ export const HIDE_PQ_QUOTES = () => {
 	return showPq({pqToShow:false}, offset);
 };
 
-const toggleModal = app => {
+const openPq = app => {
 	app.pqParser.show( app.getGds(), app.params.requestId )
 		.then(() => showPq({menuHidden : true}, 0));
 };
 
-export const PQ_MODAL_SHOW 	= () => toggleModal(getStore().app);
+export const PQ_MODAL_SHOW 	= () => openPq(getStore().app);
 export const CLOSE_PQ_WINDOW = () => showPq({menuHidden : false});
