@@ -936,14 +936,14 @@ var HIDE_PQ_QUOTES = exports.HIDE_PQ_QUOTES = function HIDE_PQ_QUOTES() {
 	return showPq({ pqToShow: false }, offset);
 };
 
-var toggleModal = function toggleModal(app) {
+var openPq = function openPq(app) {
 	app.pqParser.show(app.getGds(), app.params.requestId).then(function () {
 		return showPq({ menuHidden: true }, 0);
 	});
 };
 
 var PQ_MODAL_SHOW = exports.PQ_MODAL_SHOW = function PQ_MODAL_SHOW() {
-	return toggleModal((0, _store.getStore)().app);
+	return openPq((0, _store.getStore)().app);
 };
 var CLOSE_PQ_WINDOW = exports.CLOSE_PQ_WINDOW = function CLOSE_PQ_WINDOW() {
 	return showPq({ menuHidden: false });
@@ -2077,6 +2077,8 @@ var _component2 = _interopRequireDefault(_component);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
+function _objectWithoutProperties(obj, keys) { var target = {}; for (var i in obj) { if (keys.indexOf(i) >= 0) continue; if (!Object.prototype.hasOwnProperty.call(obj, i)) continue; target[i] = obj[i]; } return target; }
+
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
@@ -2089,30 +2091,24 @@ var PqButton = function (_Component) {
 	function PqButton() {
 		_classCallCheck(this, PqButton);
 
-		var _this = _possibleConstructorReturn(this, (PqButton.__proto__ || Object.getPrototypeOf(PqButton)).call(this, 'button.btn btn-sm btn-mozilla font-bold[PQ]', {
-			disabled: true
-		}));
-
-		_this.context.onclick = _priceQuoutes.PQ_MODAL_SHOW;
-		return _this;
+		return _possibleConstructorReturn(this, (PqButton.__proto__ || Object.getPrototypeOf(PqButton)).call(this, 'button.btn btn-sm btn-mozilla font-bold[PQ]', { onclick: _priceQuoutes.PQ_MODAL_SHOW }));
 	}
 
 	_createClass(PqButton, [{
 		key: "setState",
 		value: function setState(_ref) {
-			var _ref$canCreatePq = _ref.canCreatePq,
-			    canCreatePq = _ref$canCreatePq === undefined ? false : _ref$canCreatePq,
-			    requestId = _ref.requestId;
+			var requestId = _ref.requestId,
+			    state = _objectWithoutProperties(_ref, ["requestId"]);
 
 			return _get(PqButton.prototype.__proto__ || Object.getPrototypeOf(PqButton.prototype), "setState", this).call(this, {
-				canCreatePq: canCreatePq,
+				canCreatePq: state.curGds.get('canCreatePq'),
 				requestId: requestId
 			});
 		}
 	}, {
 		key: "_renderer",
-		value: function _renderer(state) {
-			this.context.disabled = state.canCreatePq !== true;
+		value: function _renderer() {
+			this.context.disabled = this.state.canCreatePq !== true;
 			this.context.classList.toggle('hidden', !this.state.requestId);
 		}
 	}]);
@@ -5864,7 +5860,7 @@ var _debug = __webpack_require__(/*! ../helpers/debug */ "./src/helpers/debug.es
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-var throwError = function throwError(err) {
+var reject = function reject(err) {
 
 	if (typeof err === 'string') err = [err];
 
@@ -5901,6 +5897,12 @@ var PqParser = exports.PqParser = function () {
 	}
 
 	_createClass(PqParser, [{
+		key: "loaderToggle",
+		value: function loaderToggle(state) {
+			document.querySelector('#spinners').classList.toggle('hidden', state);
+			document.querySelector('#loadingDots').classList.toggle('loading-hidden', state);
+		}
+	}, {
 		key: "show",
 		value: function show(gds, rId) {
 			var _this = this;
@@ -5910,23 +5912,18 @@ var PqParser = exports.PqParser = function () {
 			}
 
 			if (gds.get('canCreatePqErrors')) {
-				return throwError(gds.get('canCreatePqErrors'));
+				return reject(gds.get('canCreatePqErrors'));
 			}
 
-			document.querySelector('#spinners').classList.remove('hidden');
-			document.querySelector('#loadingDots').classList.remove('loading-hidden');
+			this.loaderToggle(false);
 
 			return (0, _requests.get)("terminal/priceQuote?rId=" + rId).then(function (response) {
-				document.querySelector('#spinners').classList.add('hidden');
-				document.querySelector('#loadingDots').classList.add('loading-hidden');
+				_this.loaderToggle(true);
 
-				// const pqError = [];//isPqError(response);
 				var pqError = isPqError(response);
-				return pqError.length ? throwError(pqError) : response;
+				return pqError.length ? reject(pqError) : response;
 			}).then(function (response) {
 				(0, _requests.get)("terminal/importPriceQuote?rId=" + rId);
-				return response;
-			}).then(function (response) {
 				return _this.modal(response, _priceQuoutes.CLOSE_PQ_WINDOW);
 			});
 		}
@@ -6471,7 +6468,7 @@ var setState = exports.setState = function setState(newState) {
 		State = _extends({}, State, newState);
 	}
 
-	State = State = _extends({}, State, { action: action });
+	State = _extends({}, State, { action: action });
 
 	if (State.permissions) console.log('STATE:', State);
 
