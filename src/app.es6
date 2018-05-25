@@ -191,11 +191,14 @@ const initGlobEvents = () => {
 
 	window.onresize = () => {
 
-		if (resizeTimeout)
-		{
-			clearInterval(resizeTimeout);
-		}
+		// console.warn('on resize');
 
-		resizeTimeout = setTimeout( () => getStore().updateView(), 10 );
+		// if (resizeTimeout)
+		// {
+		// 	clearInterval(resizeTimeout);
+		// }
+
+		getStore().updateView();
+		// resizeTimeout = setTimeout( () => getStore().updateView(), 0 );
 	};
 };

@@ -1276,13 +1276,15 @@ var initGlobEvents = function initGlobEvents() {
 
 	window.onresize = function () {
 
-		if (resizeTimeout) {
-			clearInterval(resizeTimeout);
-		}
+		// console.warn('on resize');
 
-		resizeTimeout = setTimeout(function () {
-			return (0, _store.getStore)().updateView();
-		}, 10);
+		// if (resizeTimeout)
+		// {
+		// 	clearInterval(resizeTimeout);
+		// }
+
+		(0, _store.getStore)().updateView();
+		// resizeTimeout = setTimeout( () => getStore().updateView(), 0 );
 	};
 };
 
