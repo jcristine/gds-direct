@@ -48,7 +48,7 @@ export const seedOutputString = (outputText, appliedRules) => {
 
 		const replaceOutput = (pattern, getCmd) => line => {
 			const replaced = replaceWith(pattern, getCmd(line));
-			outputText = outputText.replace(line, line.replace(value, replaced) );
+			outputText = outputText.replace(line, line.replace(new RegExp(value, 'g'), replaced) );
 		};
 
 		const replacePerLine = (pattern, getCmd) => splitLines(outputText).filter(findInjection).map( replaceOutput(pattern, getCmd));

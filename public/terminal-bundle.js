@@ -5408,7 +5408,7 @@ var seedOutputString = function seedOutputString(outputText, appliedRules) {
 		var replaceOutput = function replaceOutput(pattern, getCmd) {
 			return function (line) {
 				var replaced = replaceWith(pattern, getCmd(line));
-				outputText = outputText.replace(line, line.replace(value, replaced));
+				outputText = outputText.replace(line, line.replace(new RegExp(value, 'g'), replaced));
 			};
 		};
 
