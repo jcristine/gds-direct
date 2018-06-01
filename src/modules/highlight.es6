@@ -2,56 +2,63 @@ import {DEV_CMD_STACK_RUN} from "../actions";
 import {switchTerminal} from "./switchTerminal";
 import {escapeSpecials, getFirstNumber, replaceChar, splitLines} from "../helpers/helpers";
 
-const makeRule		= (rule, key, lineNumber = '', pattern = '') => {
+const makeRule		= (rule, key, isPattern = '') => {
+	let searchIndex		= '';
+	const isInteract 	= rule['onClickCommand'] || rule['onClickMessage'] || rule['onMouseOver'];
 
-	let searchIndex	= '';
-	let className	= `${rule.color} ${rule['decoration'].join(' ')} term-highlight`;
-	let newRule		= {...rule};
-
-	if (rule['onClickCommand'] || rule['onClickMessage'] || rule['onMouseOver'])
+	if (isInteract)
 	{
-		searchIndex = `replace_${key}`;
-		className 	+= ` t-pointer`;
+		searchIndex = `replace_${key}_${isPattern.replace('*', '')}`;
+		tips = {...tips, [searchIndex] : rule};
 	}
 
-	if (lineNumber)
-	{
-		searchIndex += '_' + lineNumber;
-		newRule.onClickCommand = newRule.onClickCommand.replace(pattern, lineNumber);
-	}
-
-	if (searchIndex)
-	{
-		className += ` ${searchIndex}`;
-	}
-
-	return {searchIndex, className, newRule};
+	let className	= `term-highlight ${rule.color} ${rule['decoration'].join(' ')}` + (searchIndex ? ` t-pointer ${searchIndex}` : '');
+	return `[[;;;${className}]${replaceChar(rule.value, '%')}]`; // creates span like span.usedCommand term-highlight replace_0
 };
 
+/**
+ color
+ decoration
+ id
+ isInSameWindow
+ onClickCommand : command / {lineNumber} / {pattern}
+ onClickMessage
+ onMouseOver
+ value
+**/
+
+const replaceAll = value => new RegExp(value, 'g');
+
+let tips 	= {};
 
 export const seedOutputString = (outputText, appliedRules) => {
 
-	let tips = {};
+	tips = {};
 
-	const loop = ({value, ...rule}, key) => {
+	const loop 	= (rule, key) => {
+		const value = rule.value;
 
-		const replaceWith 		= (pattern = '', lineNumber = '') => {
-			const {searchIndex, className, newRule} = makeRule(rule, key, lineNumber, pattern);
+		const replaceWith = (pattern = '', patternReplaced = '') => {
+			const newRule = {...rule};
 
-			if (searchIndex)
-				tips = {...tips, [searchIndex] : newRule};
+			if (pattern)
+			{
+				newRule.onClickCommand = newRule.onClickCommand.replace(pattern, patternReplaced);
+			}
 
-			return `[[;;;${className} ${searchIndex}]${replaceChar(value,'%')}]`;
+			return makeRule(newRule, key, patternReplaced);
 		};
 
-		const findInjection = line => line.indexOf(value) > -1;
+		const replaceOutput = (pattern, onClickCmd) => line => {
+			const replaced 	= replaceWith(pattern, onClickCmd(line));
+			const needle	= replaceAll(escapeSpecials(value));
 
-		const replaceOutput = (pattern, getCmd) => line => {
-			const replaced = replaceWith(pattern, getCmd(line));
-			outputText = outputText.replace(line, line.replace(new RegExp(value, 'g'), replaced) );
+			const newLine 	= line.replace(needle, replaced);
+			outputText 		= outputText.replace(line, newLine);
 		};
 
-		const replacePerLine = (pattern, getCmd) => splitLines(outputText).filter(findInjection).map( replaceOutput(pattern, getCmd));
+		const findInjection 	= line => line.indexOf(value) > -1;
+		const replacePerLine 	= (pattern, onClickCmd) => splitLines(outputText).filter(findInjection).map(replaceOutput(pattern, onClickCmd));
 
 		if (rule.onClickCommand.indexOf('{lnNumber}') > -1)
 		{
@@ -60,7 +67,7 @@ export const seedOutputString = (outputText, appliedRules) => {
 
 		if (rule.onClickCommand.indexOf('{pattern}') > -1)
 		{
-			return replacePerLine('{pattern}', () => replaceChar(value, '%') );
+			return replacePerLine('{pattern}', () => replaceChar(value, '%'));
 		}
 
 		if ( outputText.indexOf(value) > -1 )
@@ -76,49 +83,66 @@ export const seedOutputString = (outputText, appliedRules) => {
 };
 
 export const replaceInTerminal = (div, tips) => {
+
+	const findSpan = key => target => {
+
+		const {id, onMouseOver, onClickMessage, onClickCommand, isInSameWindow} = tips[key];
+
+		if (onClickMessage)
+		{
+			$(target).popover({
+				...popoverDefs(div, onClickMessage, id)
+			});
+		}
+
+		if (onMouseOver)
+		{
+			$(target).tooltip({
+				...popoverDefs(div, onMouseOver, id),
+
+				placement 	: 'top',
+				trigger 	: 'hover',
+				template 	: '<div class="tooltip" role="tooltip"><div class="tooltip-arrow"></div><div class="tooltip-inner"></div></div>'
+			});
+		}
+
+		if (onClickCommand)
+		{
+			// $(target).tooltip({
+			// 	...popoverDefs(div, onClickCommand, id),
+			// 	placement 	: 'top',
+			// 	trigger 	: 'hover',
+			// 	template 	: '<div class="tooltip" role="tooltip"><div class="tooltip-arrow"></div><div class="tooltip-inner"></div></div>'
+			// });
+
+			if (parseInt(isInSameWindow) === 1)
+			{
+				target.onclick 	= () => DEV_CMD_STACK_RUN(onClickCommand);
+			} else
+			{
+				target.onclick 	= () => switchTerminal({keymap : 'next'}).then( () => DEV_CMD_STACK_RUN(onClickCommand) )
+			}
+		}
+	};
+
 	Object.keys(tips).map(key => {
-
-		[].map.call(div[0].querySelectorAll('.' + key), target => {
-
-			const {id, onMouseOver, onClickMessage, onClickCommand, isInSameWindow} = tips[key];
-
-			if (target && onClickMessage)
-			{
-				$(target).popover( popoverDefs(div, onClickMessage, 'bottom') );
-			}
-
-			if (target && onMouseOver)
-			{
-				let content = onMouseOver + (window.TerminalState.hasPermissions() ? '(' + id + ')' : '');
-
-				$(target).tooltip({
-					...popoverDefs(div, content),
-					title		: content,
-					trigger 	: 'hover',
-					template 	: '<div class="tooltip" role="tooltip"><div class="tooltip-arrow"></div><div class="tooltip-inner"></div></div>'
-				});
-			}
-
-			if (target && onClickCommand)
-			{
-				if (parseInt(isInSameWindow) === 1)
-				{
-					target.onclick 	= () => DEV_CMD_STACK_RUN(onClickCommand);
-				} else
-				{
-					target.onclick 	= () => switchTerminal({keymap : 'next'}).then( () => DEV_CMD_STACK_RUN(onClickCommand) )
-				}
-			}
-		});
+		const spans = div[0].querySelectorAll('.' + key);
+		[].map.call(spans, findSpan(key));
 	});
 };
 
-const popoverDefs = (div, content, placement = 'top') => ({
-	placement 	: placement,
-	content 	: content,
-	template	: '<div class="popover font-bold text-danger" role="tooltip"><div class="arrow"></div><div class="popover-content highlight-popover"></div></div>',
-	html 		: true,
-	trigger		: 'click',
-	viewport	: div,
-	container	: div
-});
+const popoverDefs = (div, content, id) => {
+	content += window.TerminalState.hasPermissions() ? '(' + id + ')' : '';
+
+	return {
+		content,
+		placement 	: 'bottom',
+		trigger		: 'click',
+		template	: '<div class="popover font-bold text-danger" role="tooltip"><div class="arrow"></div><div class="popover-content highlight-popover"></div></div>',
+
+		title		: content,
+		html 		: true,
+		viewport	: div,
+		container	: div
+	}
+};
