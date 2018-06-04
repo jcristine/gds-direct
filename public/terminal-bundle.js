@@ -5351,69 +5351,73 @@ var _helpers = __webpack_require__(/*! ../helpers/helpers */ "./src/helpers/help
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
-function _objectWithoutProperties(obj, keys) { var target = {}; for (var i in obj) { if (keys.indexOf(i) >= 0) continue; if (!Object.prototype.hasOwnProperty.call(obj, i)) continue; target[i] = obj[i]; } return target; }
-
 var makeRule = function makeRule(rule, key) {
-	var lineNumber = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : '';
-	var pattern = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : '';
-
+	var isPattern = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : '';
 
 	var searchIndex = '';
-	var className = rule.color + " " + rule['decoration'].join(' ') + " term-highlight";
-	var newRule = _extends({}, rule);
+	var isInteract = rule['onClickCommand'] || rule['onClickMessage'] || rule['onMouseOver'];
 
-	if (rule['onClickCommand'] || rule['onClickMessage'] || rule['onMouseOver']) {
-		searchIndex = "replace_" + key;
-		className += " t-pointer";
+	if (isInteract) {
+		searchIndex = "replace_" + key + "_" + isPattern.replace('*', '');
+		tips = _extends({}, tips, _defineProperty({}, searchIndex, rule));
 	}
 
-	if (lineNumber) {
-		searchIndex += '_' + lineNumber;
-		newRule.onClickCommand = newRule.onClickCommand.replace(pattern, lineNumber);
-	}
-
-	if (searchIndex) {
-		className += " " + searchIndex;
-	}
-
-	return { searchIndex: searchIndex, className: className, newRule: newRule };
+	var className = "term-highlight " + rule.color + " " + rule['decoration'].join(' ') + (searchIndex ? " t-pointer " + searchIndex : '');
+	return "[[;;;" + className + "]" + (0, _helpers.replaceChar)(rule.value, '%') + "]"; // creates span like span.usedCommand term-highlight replace_0
 };
 
-var seedOutputString = function seedOutputString(outputText, appliedRules) {
+/**
+ color
+ decoration
+ id
+ isInSameWindow
+ onClickCommand : command / {lineNumber} / {pattern}
+ onClickMessage
+ onMouseOver
+ value
+**/
 
-	var tips = {};
+var replaceAll = function replaceAll(value) {
+	return new RegExp(value, 'g');
+};
 
-	var loop = function loop(_ref, key) {
-		var value = _ref.value,
-		    rule = _objectWithoutProperties(_ref, ["value"]);
+var tips = {};
+
+var seedOutputString = exports.seedOutputString = function seedOutputString(outputText, appliedRules) {
+
+	tips = {};
+
+	var loop = function loop(rule, key) {
+		var value = rule.value;
 
 		var replaceWith = function replaceWith() {
 			var pattern = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '';
-			var lineNumber = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : '';
+			var patternReplaced = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : '';
 
-			var _makeRule = makeRule(rule, key, lineNumber, pattern),
-			    searchIndex = _makeRule.searchIndex,
-			    className = _makeRule.className,
-			    newRule = _makeRule.newRule;
+			var newRule = _extends({}, rule);
 
-			if (searchIndex) tips = _extends({}, tips, _defineProperty({}, searchIndex, newRule));
+			if (pattern) {
+				newRule.onClickCommand = newRule.onClickCommand.replace(pattern, patternReplaced);
+			}
 
-			return "[[;;;" + className + " " + searchIndex + "]" + (0, _helpers.replaceChar)(value, '%') + "]";
+			return makeRule(newRule, key, patternReplaced);
+		};
+
+		var replaceOutput = function replaceOutput(pattern, onClickCmd) {
+			return function (line) {
+				var replaced = replaceWith(pattern, onClickCmd(line));
+				var needle = replaceAll((0, _helpers.escapeSpecials)(value));
+
+				var newLine = line.replace(needle, replaced);
+				outputText = outputText.replace(line, newLine);
+			};
 		};
 
 		var findInjection = function findInjection(line) {
 			return line.indexOf(value) > -1;
 		};
-
-		var replaceOutput = function replaceOutput(pattern, getCmd) {
-			return function (line) {
-				var replaced = replaceWith(pattern, getCmd(line));
-				outputText = outputText.replace(line, line.replace(new RegExp(value, 'g'), replaced));
-			};
-		};
-
-		var replacePerLine = function replacePerLine(pattern, getCmd) {
-			return (0, _helpers.splitLines)(outputText).filter(findInjection).map(replaceOutput(pattern, getCmd));
+		var replacePerLine = function replacePerLine(pattern, onClickCmd) {
+			return (0, _helpers.splitLines)(outputText).filter(findInjection).map(replaceOutput(pattern, onClickCmd));
 		};
 
 		if (rule.onClickCommand.indexOf('{lnNumber}') > -1) {
@@ -5439,11 +5443,10 @@ var seedOutputString = function seedOutputString(outputText, appliedRules) {
 	return { tips: tips, outputText: outputText };
 };
 
-exports.seedOutputString = seedOutputString;
 var replaceInTerminal = exports.replaceInTerminal = function replaceInTerminal(div, tips) {
-	Object.keys(tips).map(function (key) {
 
-		[].map.call(div[0].querySelectorAll('.' + key), function (target) {
+	var findSpan = function findSpan(key) {
+		return function (target) {
 			var _tips$key = tips[key],
 			    id = _tips$key.id,
 			    onMouseOver = _tips$key.onMouseOver,
@@ -5452,21 +5455,27 @@ var replaceInTerminal = exports.replaceInTerminal = function replaceInTerminal(d
 			    isInSameWindow = _tips$key.isInSameWindow;
 
 
-			if (target && onClickMessage) {
-				$(target).popover(popoverDefs(div, onClickMessage, 'bottom'));
+			if (onClickMessage) {
+				$(target).popover(_extends({}, popoverDefs(div, onClickMessage, id)));
 			}
 
-			if (target && onMouseOver) {
-				var content = onMouseOver + (window.TerminalState.hasPermissions() ? '(' + id + ')' : '');
+			if (onMouseOver) {
+				$(target).tooltip(_extends({}, popoverDefs(div, onMouseOver, id), {
 
-				$(target).tooltip(_extends({}, popoverDefs(div, content), {
-					title: content,
+					placement: 'top',
 					trigger: 'hover',
 					template: '<div class="tooltip" role="tooltip"><div class="tooltip-arrow"></div><div class="tooltip-inner"></div></div>'
 				}));
 			}
 
-			if (target && onClickCommand) {
+			if (onClickCommand) {
+				// $(target).tooltip({
+				// 	...popoverDefs(div, onClickCommand, id),
+				// 	placement 	: 'top',
+				// 	trigger 	: 'hover',
+				// 	template 	: '<div class="tooltip" role="tooltip"><div class="tooltip-arrow"></div><div class="tooltip-inner"></div></div>'
+				// });
+
 				if (parseInt(isInSameWindow) === 1) {
 					target.onclick = function () {
 						return (0, _actions.DEV_CMD_STACK_RUN)(onClickCommand);
@@ -5479,18 +5488,26 @@ var replaceInTerminal = exports.replaceInTerminal = function replaceInTerminal(d
 					};
 				}
 			}
-		});
+		};
+	};
+
+	Object.keys(tips).map(function (key) {
+		var spans = div[0].querySelectorAll('.' + key);
+		[].map.call(spans, findSpan(key));
 	});
 };
 
-var popoverDefs = function popoverDefs(div, content) {
-	var placement = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 'top';
+var popoverDefs = function popoverDefs(div, content, id) {
+	content += window.TerminalState.hasPermissions() ? '(' + id + ')' : '';
+
 	return {
-		placement: placement,
 		content: content,
-		template: '<div class="popover font-bold text-danger" role="tooltip"><div class="arrow"></div><div class="popover-content highlight-popover"></div></div>',
-		html: true,
+		placement: 'bottom',
 		trigger: 'click',
+		template: '<div class="popover font-bold text-danger" role="tooltip"><div class="arrow"></div><div class="popover-content highlight-popover"></div></div>',
+
+		title: content,
+		html: true,
 		viewport: div,
 		container: div
 	};
