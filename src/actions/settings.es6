@@ -19,6 +19,8 @@ export const CHANGE_INPUT_LANGUAGE = language => {
 
 export const GET_HISTORY 	= () => getters('history');
 
+export const GET_LAST_REQUESTS 	= () => getters('lastRequests');
+
 export const CHANGE_MATRIX = matrix => {
 	getStore().app.Gds.update({matrix});
 	getStore().updateView();

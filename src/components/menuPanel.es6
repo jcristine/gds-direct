@@ -1,13 +1,14 @@
-import PqButton			from './menu/pqButton.es6';
-import {DevButtons}		from './menu/devButtons.es6';
-import Dom				from '../helpers/dom.es6';
-import Component		from '../modules/component';
-import {SettingsButtons} 	from "./menu/settingsButtons";
-import {GdsAreas}  			from "./menu/gdsAreas";
-import {LanguageButtons} 	from "./menu/languageButtons";
-import {LogButton} 			from "./popovers/logButton";
-import {Quotes} from "./menu/quotes";
-import {MenuHideButton} from "./menu/hideMenu";
+import PqButton			        from './menu/pqButton.es6';
+import gdsDirectPqButton		from './menu/gdsDirectPqButton.es6';
+import {DevButtons}		        from './menu/devButtons.es6';
+import Dom				        from '../helpers/dom.es6';
+import Component		        from '../modules/component';
+import {SettingsButtons} 	    from "./menu/settingsButtons";
+import {GdsAreas}  			    from "./menu/gdsAreas";
+import {LanguageButtons} 	    from "./menu/languageButtons";
+import {LogButton} 			    from "./popovers/logButton";
+import {Quotes}                 from "./menu/quotes";
+import {MenuHideButton}         from "./menu/hideMenu";
 
 export default class MenuPanel extends Component
 {
@@ -49,6 +50,9 @@ export default class MenuPanel extends Component
 			new Component('article')
 				.observe(
 					new PqButton()
+				)
+				.observe(
+					new gdsDirectPqButton()
 				)
 		);
 

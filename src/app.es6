@@ -57,6 +57,11 @@ class TerminalApp
 		});
 	}
 
+	set(key, val)
+	{
+		this.params[key] = val;
+	}
+
 	changeStyle(id)
 	{
 		cookieSet('terminalTheme_' + this.agentId, id, 30);

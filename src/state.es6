@@ -70,6 +70,10 @@ export const getters = (action, props) => {
 		case 'showExistingPq' :
 			return get(`terminal/priceQuotes?rId=${State.requestId}`);
 		break;
+
+		case 'lastRequests' :
+			return get(`gdsDirect/lastViewedRequests`);
+		break;
 	}
 };
 

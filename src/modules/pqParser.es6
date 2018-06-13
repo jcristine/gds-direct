@@ -42,8 +42,8 @@ export class PqParser
 
 	loaderToggle(state)
 	{
-		document.querySelector('#spinners').classList.toggle('hidden', state);
-		document.querySelector('#loadingDots').classList.toggle('loading-hidden', state);
+		// document.querySelector('#spinners').classList.toggle('hidden', state);
+		// document.querySelector('#loadingDots').classList.toggle('loading-hidden', state);
 	}
 
 	show(gds, rId)

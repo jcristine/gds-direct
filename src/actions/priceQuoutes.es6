@@ -23,6 +23,11 @@ export const HIDE_PQ_QUOTES = () => {
 	return showPq({pqToShow:false}, offset);
 };
 
+export const SET_REQUEST_ID = rId => {
+	getStore().app.set('requestId', rId);
+	return Promise.resolve();
+};
+
 const openPq = app => {
 	app.pqParser.show( app.getGds(), app.params.requestId )
 		.then(() => showPq({menuHidden : true}, 0));
