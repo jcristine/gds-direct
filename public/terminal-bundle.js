@@ -6094,8 +6094,12 @@ var PqParser = exports.PqParser = function () {
 	_createClass(PqParser, [{
 		key: "loaderToggle",
 		value: function loaderToggle(state) {
-			// document.querySelector('#spinners').classList.toggle('hidden', state);
-			// document.querySelector('#loadingDots').classList.toggle('loading-hidden', state);
+			var spinner = document.querySelector('#spinners');
+			var loadingDots = document.querySelector('#loadingDots');
+
+			if (spinner) spinner.classList.toggle('hidden', state);
+
+			if (loadingDots) loadingDots.classList.toggle('loading-hidden', state);
 		}
 	}, {
 		key: "show",
