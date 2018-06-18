@@ -17,14 +17,17 @@ export default class TerminalsMatrix extends Component
 	{
 		const {terminals, matrix, dimensions, hasWide, wideDimensions, name} = state.curGds.get();
 
+		this.terminals = terminals;
+
 		return super.setState({
-			terminals, matrix, dimensions, name, hasWide, wideDimensions
+			matrix, dimensions, name, hasWide, wideDimensions
 		});
 	}
 
 	_renderer()
 	{
-		const {dimensions, matrix, terminals, hasWide, wideDimensions} = this.state;
+		const {dimensions, matrix, hasWide, wideDimensions} = this.state;
+		const terminals = this.terminals;
 
 		this.context.style.width 	= dimensions.parent.width + 'px';
 		this.context.style.height 	= dimensions.parent.height + 'px';

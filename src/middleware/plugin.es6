@@ -143,15 +143,18 @@ export default class TerminalPlugin
 			switch (command.toUpperCase())
 			{
 				case 'MD' :
-					this.print( this.pagination.next().print() );
+					this.outputLiner.printOutput(this.pagination.next().print(), false, this.appliedRules);
+					// this.print( this.pagination.next().print() );
 				return true;
 
 				case 'MU' :
-					this.print( this.pagination.prev().print() );
+					this.outputLiner.printOutput(this.pagination.prev().print(), false, this.appliedRules);
+					// this.print( this.pagination.prev().print() );
 				return true;
 
 				case 'MDA' :
-					this.print( this.pagination.printAll() );
+					this.outputLiner.printOutput(this.pagination.printAll(), false, this.appliedRules);
+					// this.print( this.pagination.printAll() );
 				return true;
 
 				case 'MDA5' :
@@ -204,6 +207,7 @@ export default class TerminalPlugin
 		this.history.add(command);
 
 		let {output, clearScreen, appliedRules, tabCommands} = data;
+		this.appliedRules = appliedRules;
 
 		if (output)
 		{

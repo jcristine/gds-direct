@@ -47,7 +47,12 @@ export default function History( gds = 'apollo' )
 		add	: function ( cmd )
 		{
 			if ( commands[gds] )
-				commands[gds].push( cmd );
+			{
+				if ([...commands[gds]].pop() === cmd) // Do not add repeated previous cmd
+				{
+					commands[gds].push( cmd );
+				}
+			}
 		},
 
 		next: function()
