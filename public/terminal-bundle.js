@@ -5762,7 +5762,7 @@ function History() {
 
 		add: function add(cmd) {
 			if (commands[gds]) {
-				if ([].concat(_toConsumableArray(commands[gds])).pop() === cmd) // Do not add repeated previous cmd
+				if ([].concat(_toConsumableArray(commands[gds])).pop() !== cmd) // Do not add repeated previous cmd
 					{
 						commands[gds].push(cmd);
 					}
