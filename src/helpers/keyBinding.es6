@@ -244,7 +244,7 @@ export const pressedShortcuts = (evt, terminal, plugin) => {
 					galileo : 'R.'
 				};
 
-				terminal.exec(f12[gds] + window.apiData.auth.login.toUpperCase());
+				terminal.exec(f12[gds] + window.apiData.auth.displayName.toUpperCase());
 			break;
 
 			default: return true;
