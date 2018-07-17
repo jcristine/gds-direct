@@ -91,18 +91,20 @@ export const replaceInTerminal = (div, tips) => {
 		if (onClickMessage)
 		{
 			$(target).popover({
-				...popoverDefs(div, onClickMessage, id)
+				...popoverDefs(div, onClickMessage, id),
+
+				template 	: '<div class="popover font-bold text-danger" role="tooltip"><div class="arrow"></div><div class="popover-content highlight-popover"></div></div>',
 			});
 		}
 
 		if (onMouseOver)
 		{
-			$(target).tooltip({
+			$(target).popover({
 				...popoverDefs(div, onMouseOver, id),
 
 				placement 	: 'top',
 				trigger 	: 'hover',
-				template 	: '<div class="tooltip" role="tooltip"><div class="tooltip-arrow"></div><div class="tooltip-inner"></div></div>'
+				template 	: '<div class="popover font-bold text-primary" role="tooltip"><div class="arrow"></div><div class="popover-content highlight-popover"></div></div>',
 			});
 		}
 
@@ -136,7 +138,7 @@ const popoverDefs = (div, content, id) => {
 
 	return {
 		content,
-		placement 	: 'bottom',
+		placement 	: 'top',
 		trigger		: 'click',
 		template	: '<div class="popover font-bold text-danger" role="tooltip"><div class="arrow"></div><div class="popover-content highlight-popover"></div></div>',
 
