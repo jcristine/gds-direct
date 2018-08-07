@@ -5640,7 +5640,7 @@ var replaceInTerminal = exports.replaceInTerminal = function replaceInTerminal(d
 			if (onClickMessage) {
 				$(target).popover(_extends({}, popoverDefs(div, onClickMessage, id), {
 
-					template: '<div class="popover font-bold text-danger" role="tooltip"><div class="arrow"></div><div class="popover-content highlight-popover"></div></div>'
+					template: '<div class="popover popoverOnClick font-bold text-danger" role="tooltip"><div class="arrow"></div><div class="popover-content highlight-popover"></div></div>'
 				}));
 			}
 
@@ -5697,6 +5697,19 @@ var popoverDefs = function popoverDefs(div, content, id) {
 		container: div
 	};
 };
+
+// closing popover when clicking outside it
+$('body').on('click', function (e) {
+	$('.popoverOnClick').each(function () {
+		if (e.target.getAttribute('aria-describedby') !== this.id && !$(this).is(e.target) && $(this).has(e.target).length === 0 && $('.popover').has(e.target).length === 0) {
+			$(this).popover('hide');
+		}
+	});
+});
+// bootstrap fix where programmatically hiding popover trigger click state is not changed
+$('body').on('hidden.bs.popover', function (e) {
+	$(e.target).data('bs.popover').inState.click = false;
+});
 
 /***/ }),
 
