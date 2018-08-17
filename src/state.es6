@@ -1,4 +1,4 @@
-import {get} from "./helpers/requests";
+import {get, post} from "./helpers/requests";
 
 let State =  {
 	language	: 'APOLLO',
@@ -7,7 +7,9 @@ let State =  {
 	requestId	: null,
 	gdsList		: [],
 	gdsObjName	: '',
-	menuHidden	: false
+	menuHidden	: false,
+	keyBindings	: {},
+	defaultPccs : {}
 
 	// action	: ''
 	// canCreatePq	: ''
@@ -46,8 +48,8 @@ export const setState = (newState, action = '') => {
 };
 
 export const getters = (action, props) => {
-
 	const GET = (urlPart, param) => get(urlPart + '/' + State.gdsObjName + '/' + param);
+	const POST = (urlPart, param) => post(urlPart + '/' + State.gdsObjName, param);
 
 	switch (action)
 	{
@@ -56,7 +58,15 @@ export const getters = (action, props) => {
 		case 'area' :
 		case 'language' :
 		case 'fontSize' :
+		case 'theme' :
 			GET(`terminal/saveSetting/${action}`, props);
+		break;
+		// POST method is used just to make sure that URL length is not exceeding limits
+		case 'settings' :
+			post(`terminal/saveSetting/${action}/0`, props);
+		break;
+		case 'matrixConfiguration' :
+			POST(`terminal/saveSetting/${action}`, props);
 		break;
 
 		case 'clear' :

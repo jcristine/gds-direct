@@ -3,6 +3,7 @@ import {ADD_WHIDE_COLUMN, CHANGE_MATRIX} from "../../actions/settings";
 import {MAX_ROWS} from "../../constants";
 import {getStorageMatrix} from "../../helpers/helpers";
 import {ButtonPopover} from "../../modules/dom/buttonPopover";
+import {getStore} from "../../store";
 
 let cellObj = [];
 
@@ -24,13 +25,15 @@ export default class Matrix extends ButtonPopover
 
 	build()
 	{
-		const wideButton 	= Dom('div.bg-white matrix-column' , {
+		this.wideButton	= Dom('div.bg-white matrix-column ' , {
 			onclick : (e) => {
 				e.target.classList.toggle(ACTIVE_CLASS);
 				e.target.classList.toggle('bg-white');
 				ADD_WHIDE_COLUMN();
 			}
 		});
+
+		this._renderer();
 
 		const table 	= new Dom('table.matrix-table');
 
@@ -46,7 +49,7 @@ export default class Matrix extends ButtonPopover
 		this._addColor(rows, cells, ACTIVE_CLASS);
 
 		this.popContent.attach(
-			wideButton
+			this.wideButton
 		);
 
 		this.popContent.attach(
@@ -114,5 +117,18 @@ export default class Matrix extends ButtonPopover
 	_removeClass(className)
 	{
 		[].forEach.call( this.popContent.context.querySelectorAll('.matrix-p-row.' + className) , cell => cell.classList.remove(className) );
+	}
+
+	_renderer()
+	{
+		if (this.wideButton) {
+			if (getStore().app.getGds().get('hasWide')) {
+				this.wideButton.classList.add(ACTIVE_CLASS);
+				this.wideButton.classList.remove('bg-white');
+			} else {
+				this.wideButton.classList.remove(ACTIVE_CLASS);
+				this.wideButton.classList.add('bg-white');
+			}
+		}
 	}
 }

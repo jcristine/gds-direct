@@ -11,7 +11,7 @@ export class GDS
 			const settings 		= gdsListDb[name] || {};
 			const {gds = {}} 	= buffer;
 
-			return new GDS_UNIT(name, settings.area, gds);
+			return new GDS_UNIT(name, settings.area, gds, settings);
 		});
 	}
 

@@ -6,7 +6,6 @@ import {CHANGE_GDS} from "./actions/gdsActions";
 import {GDS} 			from './modules/gds';
 import ContainerMain 	from "./containers/main";
 import {PqParser} 		from "./modules/pqParser";
-import {cookieGet, cookieSet} from "./helpers/cookie";
 import './theme/main.less';
 import {OFFSET_DEFAULT} from "./constants";
 
@@ -33,7 +32,6 @@ class TerminalApp
 		this.container 		= new ContainerMain(htmlRootId);
 
 		this.agentId 		= agentId;
-		this.themeId		= this.getStyle(agentId, terminalThemes);
 
 		setLink( commandUrl );
 		initGlobEvents();
@@ -43,7 +41,10 @@ class TerminalApp
 		const curGds 		= settings['gds'][settings['common']['currentGds'] || 'apollo'];
 		const fontSize		= curGds['fontSize'] || 1;
 		const language		= curGds['language'] || 'APOLLO';
+		const { keyBindings, defaultPccs }	= this.getGdsDefaultSettings(settings);
 		this.container.changeFontClass(fontSize);
+
+		this.themeId		= this.getStyle(settings.gds, terminalThemes);
 
 		getStore().updateView({
 			requestId		: requestId,
@@ -53,7 +54,9 @@ class TerminalApp
 			language		: language,
 			theme			: this.themeId,
 			gdsObjName		: this.Gds.getCurrentName(),
-			gdsObjIndex 	: this.Gds.getCurrentIndex()
+			gdsObjIndex 	: this.Gds.getCurrentIndex(),
+			keyBindings		: keyBindings,
+			defaultPccs		: defaultPccs
 		});
 	}
 
@@ -64,19 +67,36 @@ class TerminalApp
 
 	changeStyle(id)
 	{
-		cookieSet('terminalTheme_' + this.agentId, id, 30);
 		this.container.changeStyle(id);
 	}
 
-	getStyle(agentId, terminalThemes)
+	getStyle(settings, terminalThemes)
 	{
 		if (!this.themeId)
 		{
-			this.themeId = cookieGet('terminalTheme_' + agentId) || terminalThemes[0]['id'];
+			const themeId = settings && settings[this.Gds.name] && settings[this.Gds.name].theme
+				? settings[this.Gds.name].theme
+				: terminalThemes[0]['id']
+			this.themeId = themeId;
 			this.container.changeStyle(this.themeId);
 		}
 
 		return this.themeId;
+	}
+
+	getGdsDefaultSettings(allSettings)
+	{
+		const settings = {
+			keyBindings: {},
+			defaultPccs: {},
+		};
+
+		$.each(allSettings.gds, (gds, gdsSettings) => {
+			settings.keyBindings[gds] = gdsSettings.keyBindings || {};
+			settings.defaultPccs[gds] = gdsSettings.defaultPcc || null;
+		});
+
+		return settings;
 	}
 
 	getContainer()

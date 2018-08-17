@@ -22,9 +22,17 @@ export const CHANGE_GDS = gdsName => {
 
 	getStore().app.Gds.setCurrent(gdsName);
 
+	const { fontSize, language, theme } = getStore().app.Gds.getCurrent().get();
+
+	getStore().app.getContainer().changeFontClass(fontSize);
+	getStore().app.changeStyle(theme);
+
 	getStore().updateView({
 		gdsObjName 	: getStore().app.Gds.getCurrentName(),
-		gdsObjIndex : getStore().app.Gds.getCurrentIndex()
+		gdsObjIndex : getStore().app.Gds.getCurrentIndex(),
+		fontSize,
+		language,
+		theme
 	});
 };
 

@@ -6,6 +6,19 @@ const JParam = require('jquery-param');
 
 let Url;
 
+
+const getPostRequestHeader = data => {
+	return { 
+		credentials	: 'include',
+		body		: JParam( data ),
+		method		: 'POST',
+		headers		: {
+			'Accept': 'application/json, application/xml, text/plain, text/html, .',
+			'Content-Type': 'application/x-www-form-urlencoded; charset=utf-8'
+		}
+	}
+}
+
 const Ask = (url, params) => {
 	if (url.substr(0, 1) !== '/')
 		url = '/' + url;
@@ -35,15 +48,19 @@ export const get = (url, defParams = false) => {
 	return Ask( url, { credentials: 'include' });
 };
 
+export const post = (url, defParams = false) => {
+	if (!url)
+		return '';
+
+	if (defParams)
+		url += '?rId='+ window.apiData.rId;
+
+	return Ask(url, { ...getPostRequestHeader(defParams) });
+};
+
 const runSyncCommand = postData => {
 	return Ask( API_HOST + Url, {
-		credentials	: 'include',
-		body		: JParam( postData ),
-		method		: 'POST',
-		headers		: {
-			'Accept': 'application/json, application/xml, text/plain, text/html, .',
-			'Content-Type': 'application/x-www-form-urlencoded; charset=utf-8'
-		}
+		...getPostRequestHeader(postData),
 	});
 };
 

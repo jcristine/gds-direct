@@ -153,6 +153,55 @@
     }
   }
 
+  &.hotkeysContext {
+    width: 400px;
+    max-height: 400px;
+    overflow-y: auto;
+
+    .gds-select-header {
+      padding-bottom: 10px;
+      position: absolute;
+      left: 15px;
+      right: 15px;
+      background: #414141;
+      z-index: 10;
+    }
+
+    .gds-select-container {
+      padding-top: 36px;
+
+      .tab {
+        display: none;
+
+        &.active {
+          display: block;
+        } 
+      }
+    }
+
+    .gds-select {
+      display: inline-block;
+      text-transform: uppercase;
+      margin-top: 3px;
+      margin-right: 5px;
+      cursor: pointer;
+    }
+
+    .settings-input-container {
+      display: flex;
+      margin-bottom: 4px;
+
+      label {
+        width: 85px;
+        align-self: center;
+      }
+
+      input {
+        flex: 1;
+      }
+    }
+  }
+
 
   a {
     margin-left: 5px;

@@ -4,22 +4,29 @@ import {getStorageMatrix} from "../helpers/helpers";
 
 export class GDS_UNIT
 {
-	constructor(name, area, buffer)
+	constructor(name, area, buffer, settings)
 	{
+		const { matrix, hasWide } = settings.matrix || {};
+
 		this.props		= {
 			name 			: name,
 			list			: name === 'sabre' ? AREA_LIST : AREA_LIST.slice(0, -1),
 			buffer			: buffer[name],
 
-			matrix			: getStorageMatrix(),
+			matrix			: matrix || getStorageMatrix(),
 			sessionIndex 	: AREA_LIST.indexOf( area ),
+			defaultPcc		: settings.pcc || null,
 			pcc				: {},
 			canCreatePq		: false, //1
 			history			: [],
 			terminals		: {},
 			curTerminalId	: undefined,
 			dimensions		: {},
-			hasWide			: false
+			hasWide			: hasWide === 'true',
+			language		: settings.language || 'apollo',
+			fontSize		: settings.fontSize || 1,
+			keyBindings		: settings.keyBindings || {},
+			theme			: settings.theme || 4,
 		};
 
 		return this;

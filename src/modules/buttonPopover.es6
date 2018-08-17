@@ -41,7 +41,8 @@ export default class ButtonPopOver
 			content		: this.getPopContent(),
 			classes		: CLASS_NAME,
 			position	: 'left top',
-			openOn		: 'click'
+			openOn		: 'click',
+			remove		: true,
 		});
 
 		if (this.settings.onOpen)
