@@ -6532,7 +6532,7 @@ var Terminal = function () {
 
 		this.plugin = null;
 		this.settings = params;
-		this.context = (0, _dom2.default)('div.terminal terminal-cell');
+		this.context = (0, _dom2.default)('div.terminal terminal-cell ' + (params.name === 'wide' ? 'fixedColumnBackground' : ''));
 
 		this.makeBuffer(params.buffer);
 	}

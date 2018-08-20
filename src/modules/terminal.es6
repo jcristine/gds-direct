@@ -10,7 +10,7 @@ export default class Terminal
 	{
 		this.plugin 	= null;
 		this.settings 	= params;
-		this.context 	= Dom('div.terminal terminal-cell');
+		this.context 	= Dom('div.terminal terminal-cell ' + (params.name === 'wide' ? 'fixedColumnBackground' : ''));
 
 		this.makeBuffer( params.buffer );
 	}
