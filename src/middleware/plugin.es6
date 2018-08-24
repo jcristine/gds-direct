@@ -60,6 +60,8 @@ export default class TerminalPlugin
 		const isEnter = evt.which === 13;
 		this.f8Reader.replaceEmptyChar(evt);
 
+		const replace = /^.{1}$/.test(evt.key) ? evt.key : false;
+
 		// if test>>>asd+sa and cursor on + // execute only between last > and + cmd
 		if (isEnter)
 		{
@@ -72,6 +74,19 @@ export default class TerminalPlugin
 				cmd = cmd.substring(lastPromptSignPos, cmd.length);
 
 			terminal.set_command(cmd);
+		} else if (replace) {
+			// Replace text insted of moving forward (like INSERT button works on some text editors). Example:
+			// >H|E|LLO - press letter "A", result: >HA|L|LO instead of >HA|E|LLO ("||" - cursor position)
+			const position = terminal.get_position();
+			const command = terminal.get_command();
+			if (position < command.length) {
+				const nextPos = position + 1;
+				const newCommand = `${command.substr(0, position)}${replace}${command.substr(nextPos)}`;
+				terminal.set_command(newCommand);
+				terminal.set_position(nextPos);
+
+				return false;
+			}
 		}
 	}
 

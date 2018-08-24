@@ -4911,6 +4911,8 @@ var TerminalPlugin = function () {
 			var isEnter = evt.which === 13;
 			this.f8Reader.replaceEmptyChar(evt);
 
+			var replace = /^.{1}$/.test(evt.key) ? evt.key : false;
+
 			// if test>>>asd+sa and cursor on + // execute only between last > and + cmd
 			if (isEnter) {
 				this.f8Reader.isActive = false;
@@ -4921,6 +4923,19 @@ var TerminalPlugin = function () {
 				if (lastPromptSignPos) cmd = cmd.substring(lastPromptSignPos, cmd.length);
 
 				terminal.set_command(cmd);
+			} else if (replace) {
+				// Replace text insted of moving forward (like INSERT button works on some text editors). Example:
+				// >H|E|LLO - press letter "A", result: >HA|L|LO instead of >HA|E|LLO ("||" - cursor position)
+				var position = terminal.get_position();
+				var command = terminal.get_command();
+				if (position < command.length) {
+					var nextPos = position + 1;
+					var newCommand = '' + command.substr(0, position) + replace + command.substr(nextPos);
+					terminal.set_command(newCommand);
+					terminal.set_position(nextPos);
+
+					return false;
+				}
 			}
 		}
 	}, {
