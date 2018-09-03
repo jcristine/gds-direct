@@ -4911,7 +4911,8 @@ var TerminalPlugin = function () {
 			var isEnter = evt.which === 13;
 			this.f8Reader.replaceEmptyChar(evt);
 
-			var replace = !this.f8Reader.getIsActive() && evt.key.length === 1 && !evt.ctrlKey;
+			var ctrlOrMetaKey = evt.ctrlKey || evt.metaKey;
+			var replace = !this.f8Reader.getIsActive() && evt.key.length === 1 && !ctrlOrMetaKey;
 
 			// if test>>>asd+sa and cursor on + // execute only between last > and + cmd
 			if (isEnter) {
