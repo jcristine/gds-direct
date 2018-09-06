@@ -130,7 +130,7 @@ exports.i(__webpack_require__(/*! -!../../node_modules/css-loader!tether-drop/di
 exports.i(__webpack_require__(/*! -!../../node_modules/css-loader!noty/lib/noty.css */ "./node_modules/css-loader/index.js!./node_modules/noty/lib/noty.css"), "");
 
 // module
-exports.push([module.i, ".terminal-wrap-custom .terminal .cmd {\n  height: 14px;\n}\n.terminal-wrap-custom .terminal .cmd .clipboard {\n  height: 14px;\n}\n.temp-terminal {\n  position: absolute;\n  top: -99999px;\n}\n.term-f-size-4 .terminal {\n  --size: 1.3;\n}\n.term-f-size-4 .terminal .cmd {\n  height: calc(18.2px);\n}\n.term-f-size-3 .terminal {\n  --size: 1.2;\n}\n.term-f-size-3 .terminal .cmd {\n  height: calc(16.8px);\n}\n.term-f-size-3 .terminal .cmd .clipboard {\n  height: calc(16.8px);\n}\n.term-f-size-2 .terminal {\n  --size: 1.1;\n}\n.term-f-size-2 .terminal .cmd {\n  height: calc(15.4px);\n}\n.term-f-size-2 .terminal .cmd .clipboard {\n  height: calc(15.4px);\n}\n.terminal-wrap-custom .t-matrix-w-0 td {\n  width: 100%;\n}\n.terminal-wrap-custom .t-matrix-w-1 td {\n  width: 50%;\n}\n.terminal-wrap-custom .t-matrix-w-2 td {\n  width: 33.33%;\n}\n.terminal-wrap-custom .t-matrix-w-3 td {\n  width: 25%;\n}\n.drop-element.drop-theme-twipsy .drop-content {\n  font-family: inherit;\n  padding: 10px;\n}\n.terminal-lds-hourglass {\n  display: inline-block;\n  position: relative;\n  width: 64px;\n  height: 64px;\n}\n.terminal-lds-hourglass:after {\n  content: \" \";\n  display: block;\n  border-radius: 50%;\n  width: 0;\n  height: 0;\n  margin: 6px;\n  box-sizing: border-box;\n  border: 26px solid #fff;\n  border-color: #fff transparent #fff transparent;\n  animation: lds-hourglass 1.2s infinite;\n}\n@keyframes lds-hourglass {\n  0% {\n    transform: rotate(0);\n    animation-timing-function: cubic-bezier(0.55, 0.055, 0.675, 0.19);\n  }\n  50% {\n    transform: rotate(900deg);\n    animation-timing-function: cubic-bezier(0.215, 0.61, 0.355, 1);\n  }\n  100% {\n    transform: rotate(1800deg);\n  }\n}\n.matrix-column {\n  display: inline-block;\n  float: left;\n  height: 125px;\n  margin-right: 20px;\n  padding: 10px;\n  cursor: pointer;\n  width: 25px;\n}\n.matrix-column:hover {\n  background: #7a43b6;\n}\n.matrix-table {\n  background: #fff;\n}\n.matrix-table td {\n  padding: 15px;\n  border: 1px solid #e0e0e0;\n  cursor: pointer;\n}\n.matrix-table td:hover {\n  background-color: #7a43b6;\n}\n.terminal .terminal-output .highlight-popover {\n  font-size: 11px;\n  line-height: 1.5em;\n}\n.terminal .terminal-output div.tooltip-inner {\n  font-size: 11px;\n  line-height: 1.6em;\n}\n.term-popover-menu .btn {\n  display: block;\n  width: 100%;\n  margin: 10px 0;\n}\n.term-popover-menu .btn i {\n  font-size: 14px;\n}\n.terminal-menu-popover {\n  padding-left: 5px;\n  width: 100px;\n}\n.terminal-menu-popover.themes {\n  width: 150px;\n}\n.terminal-menu-popover.themes a {\n  padding: 5px 0;\n}\n.terminal-menu-popover.historyContext {\n  width: 200px;\n}\n.terminal-menu-popover.historyContext ul {\n  max-height: 400px;\n  overflow-y: auto;\n  padding: 0;\n}\n.terminal-menu-popover.historyContext ul li input {\n  vertical-align: middle;\n  margin: 0;\n}\n.terminal-menu-popover.historyContext ul li a:hover {\n  opacity: .7;\n}\n.terminal-menu-popover.historyContext ul li a:before {\n  content: \"\\26AC\";\n  margin-right: 5px;\n  font-size: 21px;\n  vertical-align: middle;\n}\n.terminal-menu-popover.historyContext ul li a.checked:before {\n  content: \"\\2714\";\n  margin-right: 5px;\n}\n.terminal-menu-popover.hotkeysContext {\n  width: 400px;\n  max-height: 400px;\n  overflow-y: auto;\n}\n.terminal-menu-popover.hotkeysContext .gds-select-header {\n  padding-bottom: 10px;\n  position: absolute;\n  left: 15px;\n  right: 15px;\n  background: #414141;\n  z-index: 10;\n}\n.terminal-menu-popover.hotkeysContext .gds-select-container {\n  padding-top: 36px;\n}\n.terminal-menu-popover.hotkeysContext .gds-select-container .tab {\n  display: none;\n}\n.terminal-menu-popover.hotkeysContext .gds-select-container .tab.active {\n  display: block;\n}\n.terminal-menu-popover.hotkeysContext .gds-select {\n  display: inline-block;\n  text-transform: uppercase;\n  margin-top: 3px;\n  margin-right: 5px;\n  cursor: pointer;\n}\n.terminal-menu-popover.hotkeysContext .settings-input-container {\n  display: flex;\n  margin-bottom: 4px;\n}\n.terminal-menu-popover.hotkeysContext .settings-input-container label {\n  width: 85px;\n  align-self: center;\n}\n.terminal-menu-popover.hotkeysContext .settings-input-container input {\n  flex: 1;\n}\n.terminal-menu-popover a {\n  margin-left: 5px;\n  vertical-align: middle;\n  font-size: 12px;\n  display: block;\n  padding: 2px 0;\n  font-weight: bold;\n  color: #fff;\n}\n.terminal-menu-popover a:hover {\n  opacity: .7;\n}\n.terminal-menu-popover a:before {\n  content: \"\\26AC\";\n  margin-right: 5px;\n  font-size: 21px;\n  vertical-align: middle;\n}\n.terminal-menu-popover a.checked:before {\n  content: \"\\2714\";\n  margin-right: 5px;\n}\n.terminal-menu-popover.requestList a:before {\n  display: none;\n}\n.cmd .cursor {\n  border: 0;\n}\n.noty-wrap-text {\n  padding: 10px;\n  font-weight: bold;\n  font-size: 13px;\n  margin: 0;\n}\n.animated {\n  animation-duration: .5s;\n  animation-fill-mode: both;\n}\n@keyframes fadeIn {\n  from {\n    opacity: 0;\n  }\n  to {\n    opacity: 1;\n  }\n}\n.fadeIn {\n  animation-name: fadeIn;\n}\n@keyframes fadeOut {\n  from {\n    opacity: 1;\n  }\n  to {\n    opacity: 0;\n  }\n}\n.fadeOut {\n  animation-name: fadeOut;\n}\n.terminal,\n.cmd {\n  color: transparent;\n  background-color: transparent;\n}\n#terminalContext {\n  width: 100%;\n  background: #fff;\n}\n.terminal-full-screen {\n  text-align: left;\n}\n.pcc-label {\n  position: absolute;\n  top: -5px;\n  right: -16px;\n  padding: 2px 5px;\n  background: #fff;\n  color: #511551;\n  border-radius: 15px;\n  font-size: 10px;\n  border: 0;\n}\n.terminal-wrap-custom {\n  position: relative;\n  width: 100%;\n  height: 100%;\n}\n.terminal-wrap-custom .btn.active {\n  position: relative;\n}\n.terminal-wrap-custom .btn.active:before {\n  content: \"\\F00C\";\n  font: normal normal normal 11px/1 FontAwesome;\n  position: absolute;\n  font-size: 9px;\n  z-index: 3;\n  top: 6px;\n  left: -6px;\n  background: inherit;\n  padding: 2px;\n  border-radius: 25px;\n}\n.terminal-wrap-custom .btn.has-drop-down:after {\n  content: \"\\F078\";\n  font: normal normal normal 11px/1 FontAwesome;\n  position: absolute;\n  font-size: 11px;\n  z-index: 3;\n  top: 6px;\n  right: -6px;\n  background: inherit;\n  padding: 2px;\n  border-radius: 25px;\n}\n.terminal-wrap-custom .actions-btn-menu {\n  position: absolute;\n  padding: 10px;\n  z-index: 1;\n  right: 7px;\n  top: 4px;\n}\n.terminal-wrap-custom .actions-btn-menu.bottom {\n  bottom: 0;\n  top: initial;\n}\n.terminal-wrap-custom .actions-btn-menu .btn {\n  display: inline-block;\n  font-size: 0;\n  cursor: pointer;\n  width: 47px;\n  height: 47px;\n  border-radius: 50%;\n  text-align: center;\n  position: relative;\n}\n.terminal-wrap-custom .actions-btn-menu .btn i {\n  vertical-align: middle;\n  font-size: 23px;\n  line-height: 19px;\n}\n.terminal-wrap-custom .actions-btn-menu .btn:after {\n  top: -5px;\n  left: -5px;\n  padding: 5px;\n  box-shadow: 0 0 0 3px #6b3b60;\n  transition: transform 0.2s, opacity 0.2s;\n  transform: scale(0.8);\n  opacity: 0;\n  pointer-events: none;\n  position: absolute;\n  width: 100%;\n  height: 100%;\n  border-radius: 50%;\n  content: '';\n  box-sizing: content-box;\n}\n.terminal-wrap-custom .actions-btn-menu .btn:hover:after {\n  transform: scale(1);\n  opacity: 1;\n}\n.terminal-wrap-custom .pqQuotes {\n  background: #bdbebf;\n  vertical-align: top;\n  width: 445px;\n}\n.terminal-wrap-custom .pqQuotes .close {\n  top: 10px;\n  position: relative;\n}\n.terminal-wrap-custom .pqQuotes div.term-body-pq {\n  padding: 0 5px;\n}\n.terminal-wrap-custom .pqQuotes div.term-body-pq .pq-container {\n  position: relative;\n  margin: 15px 0;\n}\n.terminal-wrap-custom .pqQuotes div.term-body-pq .pq-container .pq-container-labels {\n  position: absolute;\n  top: -7px;\n  z-index: 1;\n  border-radius: 25px;\n  width: 100%;\n}\n.terminal-wrap-custom .pqQuotes div.term-body-pq .pq-container .pq-container-labels .label {\n  border-radius: 25px;\n}\n.terminal-wrap-custom .pqQuotes div.term-body-pq .pq-container .added-by {\n  float: right;\n}\n.terminal-wrap-custom .pqQuotes .priceqoute-pre {\n  font-size: 11px;\n  padding: 15px 0 0;\n  color: #000;\n}\n.terminal-wrap-custom .centered {\n  top: 50%;\n  position: absolute;\n  left: 0;\n  right: 0;\n  margin: auto;\n}\n.terminal-wrap-custom > .term-body {\n  width: 100%;\n  height: 100%;\n}\n.terminal-wrap-custom > .term-body .left {\n  position: relative;\n  height: 100%;\n}\n.terminal-wrap-custom > .term-body .menu {\n  width: 20%;\n  vertical-align: top;\n  background: #fff;\n}\n.terminal-wrap-custom > .term-body .menu .label {\n  font-weight: bold;\n  font-size: 12px;\n  padding: 10px 0;\n  color: #414141;\n}\n.terminal-wrap-custom > .term-body.minimized .menu {\n  width: 100px;\n}\n.terminal-wrap-custom > .term-body.minimized .menu .sideMenu {\n  height: 100%;\n}\n.terminal-wrap-custom > .term-body.minimized .menu article.small-buttons .btn {\n  width: 85%;\n}\n.terminal-wrap-custom > .term-body.minimized .menu article.align-bottom {\n  position: absolute;\n  bottom: 20px;\n  width: 100%;\n}\n.terminal-wrap-custom > .term-body.minimized .menu article {\n  padding: 5px 10px;\n}\n.terminal-wrap-custom > .term-body.minimized .menu article .btn:last-of-type {\n  margin-bottom: 0;\n}\n.terminal-wrap-custom > .term-body.minimized .menu .btn {\n  display: block;\n  width: 100%;\n  margin: 0 auto 8px;\n  box-shadow: 1px 1px 3px #c1c1c1;\n}\n.terminal-wrap-custom > .term-body.minimized .menu .btn-purple {\n  width: 85%;\n}\n.terminal-wrap-custom > .term-body.minimized .menu .label {\n  text-align: center;\n  font-size: 12px;\n  display: block;\n}\n.terminal-wrap-custom .matrix-row .terminal {\n  border-right: 2px solid #fff;\n  border-bottom: 2px solid #fff;\n}\n.terminal-wrap-custom .terminal {\n  padding: 0;\n  float: left;\n}\n.terminal-wrap-custom .terminal.active {\n  background: red;\n}\n.terminal-wrap-custom .terminal .cmd {\n  font-weight: bold;\n  text-transform: uppercase;\n}\n.terminal-wrap-custom .terminal .usedCommand {\n  text-transform: uppercase;\n}\n.terminal-wrap-custom .terminal .term-highlight {\n  position: relative;\n}\n.terminal-wrap-custom .terminal .term-highlight.underline:before {\n  border-bottom: 1px solid;\n}\n.terminal-wrap-custom .terminal .term-highlight.dotted:before {\n  border-bottom: 1px dashed;\n}\n.terminal-wrap-custom .terminal .term-highlight.dotted:hover,\n.terminal-wrap-custom .terminal .term-highlight.underline:hover {\n  opacity: .7;\n}\n.terminal-wrap-custom .terminal .term-highlight.dotted:hover:before,\n.terminal-wrap-custom .terminal .term-highlight.underline:hover:before {\n  display: none;\n}\n.terminal-wrap-custom .terminal .term-highlight.dotted:before,\n.terminal-wrap-custom .terminal .term-highlight.underline:before {\n  position: absolute;\n  left: 0;\n  right: 0;\n  content: ' ';\n  bottom: 2px;\n}\n.terminal-wrap-custom .terminal .term-highlight.bold {\n  font-weight: bold;\n}\n.terminal-wrap-custom .terminal .term-highlight.bordered {\n  border: 1px solid;\n  border-radius: 6px;\n  padding: 1px 4px;\n  font-size: 0.9em;\n}\n.terminal-wrap-custom .terminal .t-pointer {\n  cursor: pointer;\n}\n.terminal-wrap-custom .terminal .raw > div {\n  white-space: pre-wrap;\n}\n.terminal-wrap-custom .terminal-output div span {\n  display: inline;\n}\n.terminal-wrap-custom div.terminal-wrapper {\n  height: auto;\n}\n@keyframes blink {\n  0% {\n    opacity: 1;\n  }\n  25% {\n    opacity: 0;\n  }\n  50% {\n    opacity: 0;\n  }\n  100% {\n    opacity: 1;\n  }\n}\n@-webkit-keyframes blink {\n  0% {\n    opacity: 1;\n  }\n  25% {\n    opacity: 0;\n  }\n  50% {\n    opacity: 0;\n  }\n  100% {\n    opacity: 1;\n  }\n}\n@-ms-keyframes blink {\n  0% {\n    opacity: 1;\n  }\n  25% {\n    opacity: 0;\n  }\n  50% {\n    opacity: 0;\n  }\n  100% {\n    opacity: 1;\n  }\n}\n@-moz-keyframes blink {\n  0% {\n    opacity: 1;\n  }\n  25% {\n    opacity: 0;\n  }\n  50% {\n    opacity: 0;\n  }\n  100% {\n    opacity: 1;\n  }\n}\n.cmd .cursor.blink {\n  background: #ccc;\n  -webkit-animation: blink 1s infinite linear;\n  -moz-animation: blink 1s infinite linear;\n  -ms-animation: blink 1s infinite linear;\n  animation: blink 1s linear infinite;\n}\n", ""]);
+exports.push([module.i, ".terminal-wrap-custom .terminal .cmd {\n  height: 14px;\n}\n.terminal-wrap-custom .terminal .cmd .clipboard {\n  height: 14px;\n}\n.temp-terminal {\n  position: absolute;\n  top: -99999px;\n}\n.term-f-size-4 .terminal {\n  --size: 1.3;\n}\n.term-f-size-4 .terminal .cmd {\n  height: calc(18.2px);\n}\n.term-f-size-3 .terminal {\n  --size: 1.2;\n}\n.term-f-size-3 .terminal .cmd {\n  height: calc(16.8px);\n}\n.term-f-size-3 .terminal .cmd .clipboard {\n  height: calc(16.8px);\n}\n.term-f-size-2 .terminal {\n  --size: 1.1;\n}\n.term-f-size-2 .terminal .cmd {\n  height: calc(15.4px);\n}\n.term-f-size-2 .terminal .cmd .clipboard {\n  height: calc(15.4px);\n}\n.terminal-wrap-custom .t-matrix-w-0 td {\n  width: 100%;\n}\n.terminal-wrap-custom .t-matrix-w-1 td {\n  width: 50%;\n}\n.terminal-wrap-custom .t-matrix-w-2 td {\n  width: 33.33%;\n}\n.terminal-wrap-custom .t-matrix-w-3 td {\n  width: 25%;\n}\n.drop-element.drop-theme-twipsy .drop-content {\n  font-family: inherit;\n  padding: 10px;\n}\n.terminal-lds-hourglass {\n  display: inline-block;\n  position: relative;\n  width: 64px;\n  height: 64px;\n}\n.terminal-lds-hourglass:after {\n  content: \" \";\n  display: block;\n  border-radius: 50%;\n  width: 0;\n  height: 0;\n  margin: 6px;\n  box-sizing: border-box;\n  border: 26px solid #fff;\n  border-color: #fff transparent #fff transparent;\n  animation: lds-hourglass 1.2s infinite;\n}\n@keyframes lds-hourglass {\n  0% {\n    transform: rotate(0);\n    animation-timing-function: cubic-bezier(0.55, 0.055, 0.675, 0.19);\n  }\n  50% {\n    transform: rotate(900deg);\n    animation-timing-function: cubic-bezier(0.215, 0.61, 0.355, 1);\n  }\n  100% {\n    transform: rotate(1800deg);\n  }\n}\n.matrix-column {\n  display: inline-block;\n  float: left;\n  height: 125px;\n  margin-right: 20px;\n  padding: 10px;\n  cursor: pointer;\n  width: 25px;\n}\n.matrix-column:hover {\n  background: #7a43b6;\n}\n.matrix-table {\n  background: #fff;\n}\n.matrix-table td {\n  padding: 15px;\n  border: 1px solid #e0e0e0;\n  cursor: pointer;\n}\n.matrix-table td:hover {\n  background-color: #7a43b6;\n}\n.terminal .terminal-output .highlight-popover {\n  font-size: 11px;\n  line-height: 1.5em;\n}\n.terminal .terminal-output div.tooltip-inner {\n  font-size: 11px;\n  line-height: 1.6em;\n}\n.term-popover-menu .btn {\n  display: block;\n  width: 100%;\n  margin: 10px 0;\n}\n.term-popover-menu .btn i {\n  font-size: 14px;\n}\n.terminal-menu-popover {\n  padding-left: 5px;\n  width: 100px;\n}\n.terminal-menu-popover.themes {\n  width: 150px;\n}\n.terminal-menu-popover.themes a {\n  padding: 5px 0;\n}\n.terminal-menu-popover.historyContext {\n  width: 200px;\n}\n.terminal-menu-popover.historyContext ul {\n  max-height: 400px;\n  overflow-y: auto;\n  padding: 0;\n}\n.terminal-menu-popover.historyContext ul li input {\n  vertical-align: middle;\n  margin: 0;\n}\n.terminal-menu-popover.historyContext ul li a:hover {\n  opacity: .7;\n}\n.terminal-menu-popover.historyContext ul li a:before {\n  content: \"\\26AC\";\n  margin-right: 5px;\n  font-size: 21px;\n  vertical-align: middle;\n}\n.terminal-menu-popover.historyContext ul li a.checked:before {\n  content: \"\\2714\";\n  margin-right: 5px;\n}\n.terminal-menu-popover.hotkeysContext {\n  width: 500px;\n}\n.terminal-menu-popover.hotkeysContext .gds-select-header {\n  padding-bottom: 10px;\n  background: #414141;\n  z-index: 10;\n}\n.terminal-menu-popover.hotkeysContext .gds-select-container .tab {\n  display: none;\n}\n.terminal-menu-popover.hotkeysContext .gds-select-container .tab .tab-content {\n  max-height: 400px;\n  overflow-y: auto;\n}\n.terminal-menu-popover.hotkeysContext .gds-select-container .tab.active {\n  display: block;\n}\n.terminal-menu-popover.hotkeysContext .gds-select {\n  display: inline-block;\n  text-transform: uppercase;\n  margin-top: 3px;\n  margin-right: 5px;\n  cursor: pointer;\n}\n.terminal-menu-popover.hotkeysContext .settings-input-container {\n  display: flex;\n  margin-bottom: 4px;\n}\n.terminal-menu-popover.hotkeysContext .settings-input-container label {\n  min-width: 90px;\n  align-self: center;\n}\n.terminal-menu-popover.hotkeysContext .settings-input-container input {\n  flex: 1 1 auto;\n}\n.terminal-menu-popover.hotkeysContext .settings-input-container input.ch-box {\n  margin: 0;\n  width: auto;\n  min-width: 70px;\n}\n.terminal-menu-popover.hotkeysContext .settings-input-container.input-container-header label:not(:first-child):not(:last-child) {\n  flex: 1 1 auto;\n}\n.terminal-menu-popover.hotkeysContext .settings-input-container.input-container-header label:last-child {\n  min-width: 70px;\n  text-align: center;\n}\n.terminal-menu-popover a {\n  margin-left: 5px;\n  vertical-align: middle;\n  font-size: 12px;\n  display: block;\n  padding: 2px 0;\n  font-weight: bold;\n  color: #fff;\n}\n.terminal-menu-popover a:hover {\n  opacity: .7;\n}\n.terminal-menu-popover a:before {\n  content: \"\\26AC\";\n  margin-right: 5px;\n  font-size: 21px;\n  vertical-align: middle;\n}\n.terminal-menu-popover a.checked:before {\n  content: \"\\2714\";\n  margin-right: 5px;\n}\n.terminal-menu-popover.requestList a:before {\n  display: none;\n}\n.cmd .cursor {\n  border: 0;\n}\n.noty-wrap-text {\n  padding: 10px;\n  font-weight: bold;\n  font-size: 13px;\n  margin: 0;\n}\n.animated {\n  animation-duration: .5s;\n  animation-fill-mode: both;\n}\n@keyframes fadeIn {\n  from {\n    opacity: 0;\n  }\n  to {\n    opacity: 1;\n  }\n}\n.fadeIn {\n  animation-name: fadeIn;\n}\n@keyframes fadeOut {\n  from {\n    opacity: 1;\n  }\n  to {\n    opacity: 0;\n  }\n}\n.fadeOut {\n  animation-name: fadeOut;\n}\n.terminal,\n.cmd {\n  color: transparent;\n  background-color: transparent;\n}\n#terminalContext {\n  width: 100%;\n  background: #fff;\n}\n.terminal-full-screen {\n  text-align: left;\n}\n.pcc-label {\n  position: absolute;\n  top: -5px;\n  right: -16px;\n  padding: 2px 5px;\n  background: #fff;\n  color: #511551;\n  border-radius: 15px;\n  font-size: 10px;\n  border: 0;\n}\n.terminal-wrap-custom {\n  position: relative;\n  width: 100%;\n  height: 100%;\n}\n.terminal-wrap-custom .btn.active {\n  position: relative;\n}\n.terminal-wrap-custom .btn.active:before {\n  content: \"\\F00C\";\n  font: normal normal normal 11px/1 FontAwesome;\n  position: absolute;\n  font-size: 9px;\n  z-index: 3;\n  top: 6px;\n  left: -6px;\n  background: inherit;\n  padding: 2px;\n  border-radius: 25px;\n}\n.terminal-wrap-custom .btn.has-drop-down:after {\n  content: \"\\F078\";\n  font: normal normal normal 11px/1 FontAwesome;\n  position: absolute;\n  font-size: 11px;\n  z-index: 3;\n  top: 6px;\n  right: -6px;\n  background: inherit;\n  padding: 2px;\n  border-radius: 25px;\n}\n.terminal-wrap-custom .actions-btn-menu {\n  position: absolute;\n  padding: 10px;\n  z-index: 1;\n  right: 7px;\n  top: 4px;\n}\n.terminal-wrap-custom .actions-btn-menu.bottom {\n  bottom: 0;\n  top: initial;\n}\n.terminal-wrap-custom .actions-btn-menu .btn {\n  display: inline-block;\n  font-size: 0;\n  cursor: pointer;\n  width: 47px;\n  height: 47px;\n  border-radius: 50%;\n  text-align: center;\n  position: relative;\n}\n.terminal-wrap-custom .actions-btn-menu .btn i {\n  vertical-align: middle;\n  font-size: 23px;\n  line-height: 19px;\n}\n.terminal-wrap-custom .actions-btn-menu .btn:after {\n  top: -5px;\n  left: -5px;\n  padding: 5px;\n  box-shadow: 0 0 0 3px #6b3b60;\n  transition: transform 0.2s, opacity 0.2s;\n  transform: scale(0.8);\n  opacity: 0;\n  pointer-events: none;\n  position: absolute;\n  width: 100%;\n  height: 100%;\n  border-radius: 50%;\n  content: '';\n  box-sizing: content-box;\n}\n.terminal-wrap-custom .actions-btn-menu .btn:hover:after {\n  transform: scale(1);\n  opacity: 1;\n}\n.terminal-wrap-custom .pqQuotes {\n  background: #bdbebf;\n  vertical-align: top;\n  width: 445px;\n}\n.terminal-wrap-custom .pqQuotes .close {\n  top: 10px;\n  position: relative;\n}\n.terminal-wrap-custom .pqQuotes div.term-body-pq {\n  padding: 0 5px;\n}\n.terminal-wrap-custom .pqQuotes div.term-body-pq .pq-container {\n  position: relative;\n  margin: 15px 0;\n}\n.terminal-wrap-custom .pqQuotes div.term-body-pq .pq-container .pq-container-labels {\n  position: absolute;\n  top: -7px;\n  z-index: 1;\n  border-radius: 25px;\n  width: 100%;\n}\n.terminal-wrap-custom .pqQuotes div.term-body-pq .pq-container .pq-container-labels .label {\n  border-radius: 25px;\n}\n.terminal-wrap-custom .pqQuotes div.term-body-pq .pq-container .added-by {\n  float: right;\n}\n.terminal-wrap-custom .pqQuotes .priceqoute-pre {\n  font-size: 11px;\n  padding: 15px 0 0;\n  color: #000;\n}\n.terminal-wrap-custom .centered {\n  top: 50%;\n  position: absolute;\n  left: 0;\n  right: 0;\n  margin: auto;\n}\n.terminal-wrap-custom > .term-body {\n  width: 100%;\n  height: 100%;\n}\n.terminal-wrap-custom > .term-body .left {\n  position: relative;\n  height: 100%;\n}\n.terminal-wrap-custom > .term-body .menu {\n  width: 20%;\n  vertical-align: top;\n  background: #fff;\n}\n.terminal-wrap-custom > .term-body .menu .label {\n  font-weight: bold;\n  font-size: 12px;\n  padding: 10px 0;\n  color: #414141;\n}\n.terminal-wrap-custom > .term-body.minimized .menu {\n  width: 100px;\n}\n.terminal-wrap-custom > .term-body.minimized .menu .sideMenu {\n  height: 100%;\n}\n.terminal-wrap-custom > .term-body.minimized .menu article.small-buttons .btn {\n  width: 85%;\n}\n.terminal-wrap-custom > .term-body.minimized .menu article.align-bottom {\n  position: absolute;\n  bottom: 20px;\n  width: 100%;\n}\n.terminal-wrap-custom > .term-body.minimized .menu article {\n  padding: 5px 10px;\n}\n.terminal-wrap-custom > .term-body.minimized .menu article .btn:last-of-type {\n  margin-bottom: 0;\n}\n.terminal-wrap-custom > .term-body.minimized .menu .btn {\n  display: block;\n  width: 100%;\n  margin: 0 auto 8px;\n  box-shadow: 1px 1px 3px #c1c1c1;\n}\n.terminal-wrap-custom > .term-body.minimized .menu .btn-purple {\n  width: 85%;\n}\n.terminal-wrap-custom > .term-body.minimized .menu .label {\n  text-align: center;\n  font-size: 12px;\n  display: block;\n}\n.terminal-wrap-custom .matrix-row .terminal {\n  border-right: 2px solid #fff;\n  border-bottom: 2px solid #fff;\n}\n.terminal-wrap-custom .terminal {\n  padding: 0;\n  float: left;\n}\n.terminal-wrap-custom .terminal.active {\n  background: red;\n}\n.terminal-wrap-custom .terminal .cmd {\n  font-weight: bold;\n  text-transform: uppercase;\n}\n.terminal-wrap-custom .terminal .usedCommand {\n  text-transform: uppercase;\n}\n.terminal-wrap-custom .terminal .term-highlight {\n  position: relative;\n}\n.terminal-wrap-custom .terminal .term-highlight.underline:before {\n  border-bottom: 1px solid;\n}\n.terminal-wrap-custom .terminal .term-highlight.dotted:before {\n  border-bottom: 1px dashed;\n}\n.terminal-wrap-custom .terminal .term-highlight.dotted:hover,\n.terminal-wrap-custom .terminal .term-highlight.underline:hover {\n  opacity: .7;\n}\n.terminal-wrap-custom .terminal .term-highlight.dotted:hover:before,\n.terminal-wrap-custom .terminal .term-highlight.underline:hover:before {\n  display: none;\n}\n.terminal-wrap-custom .terminal .term-highlight.dotted:before,\n.terminal-wrap-custom .terminal .term-highlight.underline:before {\n  position: absolute;\n  left: 0;\n  right: 0;\n  content: ' ';\n  bottom: 2px;\n}\n.terminal-wrap-custom .terminal .term-highlight.bold {\n  font-weight: bold;\n}\n.terminal-wrap-custom .terminal .term-highlight.bordered {\n  border: 1px solid;\n  border-radius: 6px;\n  padding: 1px 4px;\n  font-size: 0.9em;\n}\n.terminal-wrap-custom .terminal .t-pointer {\n  cursor: pointer;\n}\n.terminal-wrap-custom .terminal .raw > div {\n  white-space: pre-wrap;\n}\n.terminal-wrap-custom .terminal-output div span {\n  display: inline;\n}\n.terminal-wrap-custom div.terminal-wrapper {\n  height: auto;\n}\n@keyframes blink {\n  0% {\n    opacity: 1;\n  }\n  25% {\n    opacity: 0;\n  }\n  50% {\n    opacity: 0;\n  }\n  100% {\n    opacity: 1;\n  }\n}\n@-webkit-keyframes blink {\n  0% {\n    opacity: 1;\n  }\n  25% {\n    opacity: 0;\n  }\n  50% {\n    opacity: 0;\n  }\n  100% {\n    opacity: 1;\n  }\n}\n@-ms-keyframes blink {\n  0% {\n    opacity: 1;\n  }\n  25% {\n    opacity: 0;\n  }\n  50% {\n    opacity: 0;\n  }\n  100% {\n    opacity: 1;\n  }\n}\n@-moz-keyframes blink {\n  0% {\n    opacity: 1;\n  }\n  25% {\n    opacity: 0;\n  }\n  50% {\n    opacity: 0;\n  }\n  100% {\n    opacity: 1;\n  }\n}\n.cmd .cursor.blink {\n  background: #ccc;\n  -webkit-animation: blink 1s infinite linear;\n  -moz-animation: blink 1s infinite linear;\n  -ms-animation: blink 1s infinite linear;\n  animation: blink 1s linear infinite;\n}\n", ""]);
 
 // exports
 
@@ -1123,6 +1123,8 @@ var _createClass = function () { function defineProperties(target, props) { for 
 
 var _requests = __webpack_require__(/*! ./helpers/requests.es6 */ "./src/helpers/requests.es6");
 
+var _keyBinding = __webpack_require__(/*! ./helpers/keyBinding */ "./src/helpers/keyBinding.es6");
+
 var _settings = __webpack_require__(/*! ./actions/settings */ "./src/actions/settings.es6");
 
 var _actions = __webpack_require__(/*! ./actions */ "./src/actions.es6");
@@ -1163,6 +1165,9 @@ var TerminalApp = function () {
 		    terminalThemes = params.terminalThemes,
 		    commandUrl = params.commandUrl;
 
+		var _getGdsDefaultSetting = this.getGdsDefaultSettings(settings),
+		    keyBindings = _getGdsDefaultSetting.keyBindings,
+		    defaultPccs = _getGdsDefaultSetting.defaultPccs;
 
 		this.Gds = new _gds.GDS({
 			gdsListDb: settings.gds,
@@ -1186,11 +1191,6 @@ var TerminalApp = function () {
 		var curGds = settings['gds'][settings['common']['currentGds'] || 'apollo'];
 		var fontSize = curGds['fontSize'] || 1;
 		var language = curGds['language'] || 'APOLLO';
-
-		var _getGdsDefaultSetting = this.getGdsDefaultSettings(settings),
-		    keyBindings = _getGdsDefaultSetting.keyBindings,
-		    defaultPccs = _getGdsDefaultSetting.defaultPccs;
-
 		this.container.changeFontClass(fontSize);
 
 		this.themeId = this.getStyle(settings.gds, terminalThemes);
@@ -1210,17 +1210,17 @@ var TerminalApp = function () {
 	}
 
 	_createClass(TerminalApp, [{
-		key: "set",
+		key: 'set',
 		value: function set(key, val) {
 			this.params[key] = val;
 		}
 	}, {
-		key: "changeStyle",
+		key: 'changeStyle',
 		value: function changeStyle(id) {
 			this.container.changeStyle(id);
 		}
 	}, {
-		key: "getStyle",
+		key: 'getStyle',
 		value: function getStyle(settings, terminalThemes) {
 			if (!this.themeId) {
 				var themeId = settings && settings[this.Gds.name] && settings[this.Gds.name].theme ? settings[this.Gds.name].theme : terminalThemes[0]['id'];
@@ -1231,7 +1231,7 @@ var TerminalApp = function () {
 			return this.themeId;
 		}
 	}, {
-		key: "getGdsDefaultSettings",
+		key: 'getGdsDefaultSettings',
 		value: function getGdsDefaultSettings(allSettings) {
 			var settings = {
 				keyBindings: {},
@@ -1239,39 +1239,59 @@ var TerminalApp = function () {
 			};
 
 			$.each(allSettings.gds, function (gds, gdsSettings) {
-				settings.keyBindings[gds] = gdsSettings.keyBindings || {};
+				var parsedKeyBindings = {};
+
+				// Fix old key formatting
+				if (gdsSettings.keyBindings) {
+					$.each(gdsSettings.keyBindings, function (key, data) {
+						var c = { command: '', autorun: 0 };
+						if (typeof data === 'string') {
+							c.command = data;
+						} else {
+							c = Object.assign({}, c, {
+								command: data.command,
+								autorun: parseInt(data.autorun)
+							});
+						}
+						parsedKeyBindings[key] = c;
+					});
+				}
+
+				allSettings.gds[gds].keyBindings = parsedKeyBindings; // It's bad to do like this, I know
+
+				settings.keyBindings[gds] = parsedKeyBindings;
 				settings.defaultPccs[gds] = gdsSettings.defaultPcc || null;
 			});
 
 			return settings;
 		}
 	}, {
-		key: "getContainer",
+		key: 'getContainer',
 		value: function getContainer() {
 			return this.container;
 		}
 	}, {
-		key: "getGds",
+		key: 'getGds',
 		value: function getGds() {
 			return this.Gds.getCurrent();
 		}
 	}, {
-		key: "getCharLength",
+		key: 'getCharLength',
 		value: function getCharLength() {
 			return this.container.getTempTerminal().getLineHeight();
 		}
 	}, {
-		key: "getOffset",
+		key: 'getOffset',
 		value: function getOffset() {
 			return this.offset || 0;
 		}
 	}, {
-		key: "setOffset",
+		key: 'setOffset',
 		value: function setOffset(value) {
 			this.offset = value;
 		}
 	}, {
-		key: "calculateMatrix",
+		key: 'calculateMatrix',
 		value: function calculateMatrix() {
 			var _Gds$getCurrent$get = this.Gds.getCurrent().get(),
 			    matrix = _Gds$getCurrent$get.matrix,
@@ -1321,7 +1341,7 @@ var TerminalApp = function () {
 			return this;
 		}
 	}, {
-		key: "calculateHasWide",
+		key: 'calculateHasWide',
 		value: function calculateHasWide(dimensions) {
 			var wideDimensions = _extends({}, dimensions, {
 				numOf: _extends({}, dimensions.numOf),
@@ -1337,7 +1357,7 @@ var TerminalApp = function () {
 			this.Gds.update({ wideDimensions: wideDimensions });
 		}
 	}, {
-		key: "runPnr",
+		key: 'runPnr',
 		value: function runPnr(_ref) {
 			var pnrCode = _ref.pnrCode,
 			    _ref$gdsName = _ref.gdsName,
@@ -1350,7 +1370,7 @@ var TerminalApp = function () {
 			}
 		}
 	}, {
-		key: "rebuild",
+		key: 'rebuild',
 		value: function rebuild(_ref2) {
 			var data = _ref2.data,
 			    _ref2$gdsName = _ref2.gdsName,
@@ -2473,9 +2493,9 @@ var _theme2 = _interopRequireDefault(_theme);
 
 var _history = __webpack_require__(/*! ../popovers/history */ "./src/components/popovers/history.es6");
 
-var _settings = __webpack_require__(/*! ../popups/settings */ "./src/components/popups/settings.es6");
+var _keySettings = __webpack_require__(/*! ../popovers/keySettings */ "./src/components/popovers/keySettings.es6");
 
-var _settings2 = _interopRequireDefault(_settings);
+var _keySettings2 = _interopRequireDefault(_keySettings);
 
 var _textSize = __webpack_require__(/*! ../popovers/textSize */ "./src/components/popovers/textSize.es6");
 
@@ -2541,13 +2561,13 @@ var SettingsButtons = exports.SettingsButtons = function (_Component) {
 				icon: '<i class="fa fa-history t-f-size-14"></i>'
 			}).getTrigger();
 
-			var settings = new _settings2.default({
+			var keySettings = new _keySettings2.default({
 				icon: '<i class="fa fa-gear t-f-size-14"></i>',
 				keyBindings: keyBindings,
 				defaultPccs: defaultPccs
 			}).getTrigger();
 
-			return [themeBtn, textSize, history, settings];
+			return [themeBtn, textSize, history, keySettings];
 		}
 	}, {
 		key: "_renderer",
@@ -2796,6 +2816,273 @@ var Context = function () {
 		key: 'finalize',
 		value: function finalize(popContent) {
 			this.list.scrollTop = popContent.scrollHeight;
+		}
+	}]);
+
+	return Context;
+}();
+
+/***/ }),
+
+/***/ "./src/components/popovers/keySettings.es6":
+/*!*************************************************!*\
+  !*** ./src/components/popovers/keySettings.es6 ***!
+  \*************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+	value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _dom = __webpack_require__(/*! ../../helpers/dom.es6 */ "./src/helpers/dom.es6");
+
+var _dom2 = _interopRequireDefault(_dom);
+
+var _buttonPopover = __webpack_require__(/*! ../../modules/buttonPopover.es6 */ "./src/modules/buttonPopover.es6");
+
+var _buttonPopover2 = _interopRequireDefault(_buttonPopover);
+
+var _settings = __webpack_require__(/*! ../../actions/settings */ "./src/actions/settings.es6");
+
+var _keyBinding = __webpack_require__(/*! ../../helpers/keyBinding */ "./src/helpers/keyBinding.es6");
+
+var _constants = __webpack_require__(/*! ../../constants */ "./src/constants.es6");
+
+var _store = __webpack_require__(/*! ./../../store */ "./src/store.es6");
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+function _objectWithoutProperties(obj, keys) { var target = {}; for (var i in obj) { if (keys.indexOf(i) >= 0) continue; if (!Object.prototype.hasOwnProperty.call(obj, i)) continue; target[i] = obj[i]; } return target; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var KeySettings = function (_ButtonPopOver) {
+	_inherits(KeySettings, _ButtonPopOver);
+
+	function KeySettings(_ref) {
+		var keyBindings = _ref.keyBindings,
+		    defaultPccs = _ref.defaultPccs,
+		    params = _objectWithoutProperties(_ref, ['keyBindings', 'defaultPccs']);
+
+		_classCallCheck(this, KeySettings);
+
+		var _this = _possibleConstructorReturn(this, (KeySettings.__proto__ || Object.getPrototypeOf(KeySettings)).call(this, params, 'div.terminal-menu-popover hotkeysContext'));
+
+		_this.makeTrigger({
+			onclick: function onclick() {
+				_this.popContent.innerHTML = '';
+				var c = new Context(_this, keyBindings, defaultPccs);
+				_this.popContent.appendChild(c.context);
+			}
+		});
+		return _this;
+	}
+
+	return KeySettings;
+}(_buttonPopover2.default);
+
+exports.default = KeySettings;
+
+var Context = function () {
+	function Context(popover, keyBindings, defaultPccs) {
+		_classCallCheck(this, Context);
+
+		this.context = (0, _dom2.default)('div');
+		this.currentKeyBindings = keyBindings;
+		this.currentPccs = defaultPccs;
+		this.inputFields = {};
+		this._makeBody(popover);
+	}
+
+	_createClass(Context, [{
+		key: '_makeBody',
+		value: function _makeBody(parent) {
+			var _this2 = this;
+
+			var _getStore$app$Gds$get = (0, _store.getStore)().app.Gds.getCurrent().get(),
+			    name = _getStore$app$Gds$get.name;
+
+			var selectedGds = name;
+
+			var container = (0, _dom2.default)('div');
+			var header = (0, _dom2.default)('div.gds-select-header');
+			var content = (0, _dom2.default)('div.gds-select-container');
+
+			container.appendChild(header);
+			container.appendChild(content);
+
+			_constants.GDS_LIST.forEach(function (gds, idx) {
+				var isActive = selectedGds === gds;
+
+				var btn = (0, _dom2.default)('a.gds-select t-pointer ' + (isActive ? 'checked' : '') + '[' + gds + ']');
+				header.appendChild(btn);
+
+				// Change active tab
+				btn.addEventListener('click', function (e) {
+					e.target.classList.add('checked');
+					selectedGds = gds;
+					var activeIdx = _constants.GDS_LIST.findIndex(function (el) {
+						return el === selectedGds;
+					});
+					var children = content.children;
+
+					for (var i = 0; i < children.length; i++) {
+						content.children[i].classList.remove('active');
+						header.children[i].classList.remove('checked');
+						if (i === activeIdx) {
+							content.children[i].classList.add('active');
+							header.children[i].classList.add('checked');
+						}
+					}
+				});
+
+				var tab = (0, _dom2.default)('div.tab' + (isActive ? ' active' : ''));
+				content.appendChild(tab);
+
+				var tabContent = (0, _dom2.default)('div.tab-content');
+				tab.appendChild(tabContent);
+
+				var buttonHeader = (0, _dom2.default)('div.settings-input-container input-container-header');
+				buttonHeader.appendChild((0, _dom2.default)('label[Key]'));
+				buttonHeader.appendChild((0, _dom2.default)('label[Command]'));
+				buttonHeader.appendChild((0, _dom2.default)('label[Autorun]'));
+
+				var inputFields = _this2._makeInputFieldList(gds);
+				tabContent.appendChild(inputFields.pccContainer);
+
+				tabContent.appendChild(buttonHeader);
+
+				inputFields.buttons.forEach(function (button) {
+					tabContent.appendChild(button.inputContainer);
+				});
+			});
+
+			var saveBtn = (0, _dom2.default)('button.btn btn-sm btn-purple font-bold pull-right [Save]', {
+				onclick: function onclick() {
+					_this2.save();
+					parent.popover.close();
+				}
+			});
+			header.appendChild(saveBtn);
+
+			this.context.appendChild(container);
+		}
+	}, {
+		key: '_makeInputFieldList',
+		value: function _makeInputFieldList(gds) {
+			var _this3 = this;
+
+			var data = { pccContainer: null, buttons: [] };
+			var buttonPrefixes = [null, 'shift', 'ctrl'];
+			var startingKey = 111;
+
+			// Default PCC
+			var pccContainer = this._getInputRow({
+				label: 'Default PCC',
+				name: 'defaultPcc[' + gds + ']',
+				placeholder: '',
+				value: this._getPcc(gds)
+			});
+
+			data.pccContainer = pccContainer;
+
+			// All button shortcuts
+			buttonPrefixes.forEach(function (prefix) {
+				for (var i = 1; i <= 12; i += 1) {
+					var key = startingKey + i;
+					var btnName = prefix ? prefix + '+' + key : '' + key;
+					var placeholder = (0, _keyBinding.getBindingForKey)(btnName, gds, false);
+
+					// "Hotkey" input
+					var inputContainer = _this3._getInputRow({
+						label: prefix ? prefix + ' + F' + i : 'F' + i,
+						placeholder: placeholder.command,
+						value: _this3._getKeyBinding(gds, btnName, 'command')
+					});
+
+					// "Autorun" checkbox
+					var userAutorun = _this3._getKeyBinding(gds, btnName, 'autorun');
+					inputContainer.appendChild((0, _dom2.default)('input.form-control settings-input ch-box', {
+						type: 'checkbox',
+						checked: userAutorun !== false ? userAutorun : placeholder.autorun
+					}));
+					data.buttons.push(_defineProperty({ key: key, btnName: btnName, placeholder: placeholder, inputContainer: inputContainer }, 'placeholder', placeholder));
+				}
+			});
+
+			this.inputFields[gds] = data;
+
+			return data;
+		}
+	}, {
+		key: '_getInputRow',
+		value: function _getInputRow(_ref2) {
+			var label = _ref2.label,
+			    placeholder = _ref2.placeholder,
+			    value = _ref2.value;
+
+			var container = (0, _dom2.default)('div.settings-input-container');
+			container.appendChild((0, _dom2.default)('label[' + label + ']'));
+			container.appendChild((0, _dom2.default)('input.form-control settings-input', { placeholder: placeholder, value: value }));
+			return container;
+		}
+	}, {
+		key: '_getKeyBinding',
+		value: function _getKeyBinding(gds, btnName, type) {
+			var hasValue = this.currentKeyBindings && this.currentKeyBindings[gds] && this.currentKeyBindings[gds][btnName];
+			if (hasValue) {
+				var value = this.currentKeyBindings[gds][btnName];
+				return value[type];
+			}
+
+			return type === 'command' ? '' : false;
+		}
+	}, {
+		key: '_getPcc',
+		value: function _getPcc(gds) {
+			return this.currentPccs && this.currentPccs[gds] ? this.currentPccs[gds] : '';
+		}
+	}, {
+		key: 'save',
+		value: function save() {
+			var _this4 = this;
+
+			var result = {};
+
+			_constants.GDS_LIST.forEach(function (gds) {
+				result[gds] = { keyBindings: {}, defaultPcc: null };
+
+				_this4.inputFields[gds].buttons.forEach(function (input) {
+					var placeholder = input.placeholder;
+					var command = input.inputContainer.children[1].value;
+					var autorun = input.inputContainer.children[2].checked ? 1 : 0;
+
+					if (command !== '' || autorun !== placeholder.autorun) {
+						result[gds].keyBindings[input.btnName] = { command: command, autorun: autorun };
+					}
+				});
+
+				result[gds].defaultPcc = _this4.inputFields[gds].pccContainer.children[1].value;
+
+				// jquery-param removes empty objects so we need to preserve emptiness with "null"
+				if ($.isEmptyObject(result[gds].keyBindings)) {
+					result[gds].keyBindings = null;
+				}
+			});
+
+			(0, _settings.CHANGE_SETTINGS)(result);
 		}
 	}]);
 
@@ -3324,236 +3611,6 @@ var Theme = function (_ButtonPopOver) {
 }(_buttonPopover2.default);
 
 exports.default = Theme;
-
-/***/ }),
-
-/***/ "./src/components/popups/settings.es6":
-/*!********************************************!*\
-  !*** ./src/components/popups/settings.es6 ***!
-  \********************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-	value: true
-});
-
-var _slicedToArray = function () { function sliceIterator(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"]) _i["return"](); } finally { if (_d) throw _e; } } return _arr; } return function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { return sliceIterator(arr, i); } else { throw new TypeError("Invalid attempt to destructure non-iterable instance"); } }; }();
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-var _dom = __webpack_require__(/*! ../../helpers/dom.es6 */ "./src/helpers/dom.es6");
-
-var _dom2 = _interopRequireDefault(_dom);
-
-var _buttonPopover = __webpack_require__(/*! ../../modules/buttonPopover.es6 */ "./src/modules/buttonPopover.es6");
-
-var _buttonPopover2 = _interopRequireDefault(_buttonPopover);
-
-var _settings = __webpack_require__(/*! ../../actions/settings */ "./src/actions/settings.es6");
-
-var _keyBinding = __webpack_require__(/*! ../../helpers/keyBinding */ "./src/helpers/keyBinding.es6");
-
-var _constants = __webpack_require__(/*! ../../constants */ "./src/constants.es6");
-
-var _store = __webpack_require__(/*! ./../../store */ "./src/store.es6");
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _objectWithoutProperties(obj, keys) { var target = {}; for (var i in obj) { if (keys.indexOf(i) >= 0) continue; if (!Object.prototype.hasOwnProperty.call(obj, i)) continue; target[i] = obj[i]; } return target; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-var Settings = function (_ButtonPopOver) {
-	_inherits(Settings, _ButtonPopOver);
-
-	function Settings(_ref) {
-		var keyBindings = _ref.keyBindings,
-		    defaultPccs = _ref.defaultPccs,
-		    params = _objectWithoutProperties(_ref, ['keyBindings', 'defaultPccs']);
-
-		_classCallCheck(this, Settings);
-
-		var _this = _possibleConstructorReturn(this, (Settings.__proto__ || Object.getPrototypeOf(Settings)).call(this, params, 'div.terminal-menu-popover hotkeysContext'));
-
-		_this.makeTrigger({
-			onclick: function onclick() {
-				_this.popContent.innerHTML = '';
-				var c = new Context(_this, keyBindings, defaultPccs);
-				_this.popContent.appendChild(c.context);
-			}
-		});
-		return _this;
-	}
-
-	return Settings;
-}(_buttonPopover2.default);
-
-exports.default = Settings;
-
-var Context = function () {
-	function Context(popover, keyBindings, defaultPccs) {
-		_classCallCheck(this, Context);
-
-		this.context = (0, _dom2.default)('div');
-		this.currentKeyBindings = keyBindings;
-		this.currentPccs = defaultPccs;
-
-		this._makeBody(popover);
-	}
-
-	_createClass(Context, [{
-		key: '_makeBody',
-		value: function _makeBody(parent) {
-			var _this2 = this;
-
-			var _getStore$app$Gds$get = (0, _store.getStore)().app.Gds.getCurrent().get(),
-			    name = _getStore$app$Gds$get.name;
-
-			var selectedGds = name;
-
-			var container = (0, _dom2.default)('div');
-			var header = (0, _dom2.default)('div.gds-select-header');
-			var content = (0, _dom2.default)('div.gds-select-container');
-
-			container.appendChild(header);
-			container.appendChild(content);
-
-			var buttonPrefixes = [null, 'shift', 'ctrl'];
-			var startingKey = 111;
-
-			_constants.GDS_LIST.forEach(function (gds, idx) {
-				var isActive = selectedGds === gds;
-
-				var btn = (0, _dom2.default)('a.gds-select t-pointer ' + (isActive ? 'checked' : '') + '[' + gds + ']');
-				header.appendChild(btn);
-
-				btn.addEventListener('click', function (e) {
-					e.target.classList.add('checked');
-					selectedGds = gds;
-					var activeIdx = _constants.GDS_LIST.findIndex(function (el) {
-						return el === selectedGds;
-					});
-					var children = content.children;
-
-					for (var i = 0; i < children.length; i++) {
-						content.children[i].classList.remove('active');
-						header.children[i].classList.remove('checked');
-						if (i === activeIdx) {
-							content.children[i].classList.add('active');
-							header.children[i].classList.add('checked');
-						}
-					}
-				});
-
-				var tab = (0, _dom2.default)('div.tab' + (isActive ? ' active' : ''));
-				content.appendChild(tab);
-
-				// Default PCC
-				var pccContainer = _this2._getInputRow({
-					label: 'Default PCC',
-					name: 'defaultPcc[' + gds + ']',
-					placeholder: '',
-					value: _this2._getPcc(gds)
-				});
-				tab.appendChild(pccContainer);
-
-				// All button shortcuts
-				buttonPrefixes.forEach(function (prefix) {
-					for (var i = 1; i <= 12; i += 1) {
-						var key = startingKey + i;
-						var btnName = prefix ? prefix + '+' + key : '' + key;
-						var placeholder = (0, _keyBinding.getBindingForKey)(btnName, gds, false);
-
-						var inputContainer = _this2._getInputRow({
-							label: prefix ? prefix + ' + F' + i : 'F' + i,
-							name: 'keyBindings[' + gds + '][' + btnName + ']',
-							placeholder: placeholder,
-							value: _this2._getKeyBinding(gds, btnName)
-						});
-
-						tab.appendChild(inputContainer);
-					}
-				});
-			});
-
-			var saveBtn = (0, _dom2.default)('button.btn btn-sm btn-purple font-bold pull-right [Save]', {
-				onclick: function onclick() {
-					_this2.save();
-					parent.popover.close();
-				}
-			});
-			header.appendChild(saveBtn);
-
-			this.context.appendChild(container);
-		}
-	}, {
-		key: '_getInputRow',
-		value: function _getInputRow(_ref2) {
-			var label = _ref2.label,
-			    name = _ref2.name,
-			    placeholder = _ref2.placeholder,
-			    value = _ref2.value;
-
-			var container = (0, _dom2.default)('div.settings-input-container');
-			container.appendChild((0, _dom2.default)('label[' + label + ']'));
-			container.appendChild((0, _dom2.default)('input.form-control settings-input', { name: name, placeholder: placeholder, value: value }));
-			return container;
-		}
-	}, {
-		key: '_getKeyBinding',
-		value: function _getKeyBinding(gds, btnName) {
-			return this.currentKeyBindings && this.currentKeyBindings[gds] && this.currentKeyBindings[gds][btnName] ? this.currentKeyBindings[gds][btnName] : '';
-		}
-	}, {
-		key: '_getPcc',
-		value: function _getPcc(gds) {
-			return this.currentPccs && this.currentPccs[gds] ? this.currentPccs[gds] : '';
-		}
-	}, {
-		key: 'save',
-		value: function save() {
-			var result = {};
-			_constants.GDS_LIST.forEach(function (gds) {
-				return result[gds] = { keyBindings: {}, defaultPcc: null };
-			});
-
-			$('.settings-input').serializeArray().forEach(function (item) {
-				if (item.value !== '') {
-					var _item$name$match = item.name.match(/[a-zA-Z+0-9]+/g),
-					    _item$name$match2 = _slicedToArray(_item$name$match, 3),
-					    slug = _item$name$match2[0],
-					    gds = _item$name$match2[1],
-					    key = _item$name$match2[2];
-
-					if (slug === 'keyBindings') {
-						result[gds][slug][key] = item.value;
-					} else {
-						result[gds][slug] = item.value;
-					}
-				}
-			});
-
-			// jquery-param removes empty objects so we need to preserve emptiness
-			$.each(result, function (key, value) {
-				if ($.isEmptyObject(value.keyBindings)) {
-					result[key].keyBindings = null;
-				}
-			});
-
-			(0, _settings.CHANGE_SETTINGS)(result);
-		}
-	}]);
-
-	return Context;
-}();
 
 /***/ }),
 
@@ -4320,28 +4377,31 @@ var prevCmd = function prevCmd(plugin, terminal) {
 	});
 };
 
-// Bindings are neededed outside this scope
+/**
+ * Default key bindings
+ * Object keys are in format "keyNumber" or "ctrl|shift+keyNumber"
+ */
 var DEFAULT_KEY_BINDINGS = {
 	116: {
-		apollo: '0TURZZBK1YYZ{{datePlus320}}-RETENTION LINE',
-		amadeus: 'RU1AHK1SFO{{datePlus320}}/RETENTION',
-		sabre: '0OTHYYGK1/RETENTION{{datePlus320}}',
-		galileo: '0TURZZBK1YYZ{{dateMinus45}}-RETENTION LINE'
+		apollo: { command: '0TURZZBK1YYZ{{datePlus320}}-RETENTION LINE', autorun: 1 },
+		amadeus: { command: 'RU1AHK1SFO{{datePlus320}}/RETENTION', autorun: 1 },
+		sabre: { command: '0OTHYYGK1/RETENTION{{datePlus320}}', autorun: 1 },
+		galileo: { command: '0TURZZBK1YYZ{{dateMinus45}}-RETENTION LINE', autorun: 1 }
 	},
 	119: function _() {
 		return '((f8Command))';
 	},
 	122: {
-		apollo: 'T:TAU/{{dateNow}}',
-		amadeus: 'TKTL{{dateNow}}',
-		sabre: '7TAW/{{dateNow}}',
-		galileo: 'T.TAU/{{dateNow}}'
+		apollo: { command: 'T:TAU/{{dateNow}}', autorun: 1 },
+		amadeus: { command: 'TKTL{{dateNow}}', autorun: 1 },
+		sabre: { command: '7TAW/{{dateNow}}', autorun: 1 },
+		galileo: { command: 'T.TAU/{{dateNow}}', autorun: 1 }
 	},
 	123: {
-		apollo: 'R:{{userName}}',
-		amadeus: 'RF{{userName}}',
-		sabre: '6{{userName}}',
-		galileo: 'R.{{userName}}'
+		apollo: { command: 'R:{{userName}}', autorun: 1 },
+		amadeus: { command: 'RF{{userName}}', autorun: 1 },
+		sabre: { command: '6{{userName}}', autorun: 1 },
+		galileo: { command: 'R.{{userName}}', autorun: 1 }
 	},
 	'ctrl+112': {
 		apollo: 'S*CTY/',
@@ -4356,25 +4416,28 @@ var DEFAULT_KEY_BINDINGS = {
 		galileo: '.AD'
 	},
 	'shift+116': {
-		apollo: 'SEM/2G52/AG',
-		amadeus: 'AAA5E9H',
-		sabre: 'AAA5E9H',
-		galileo: 'SEM/711M/AG'
+		apollo: { command: 'SEM/2G52/AG', autorun: 1 },
+		amadeus: { command: 'AAA5E9H', autorun: 1 },
+		sabre: { command: 'AAA5E9H', autorun: 1 },
+		galileo: { command: 'SEM/711M/AG', autorun: 1 }
 	},
 	'shift+117': function shift117(gds) {
-		return gds === 'apollo' ? 'SEM/2G55/AG' : 'AAA6IIF';
+		var command = gds === 'apollo' ? 'SEM/2G55/AG' : 'AAA6IIF';
+		return { command: command, autorun: 1 };
 	},
 	'shift+118': function shift118(gds) {
-		return gds === 'apollo' ? 'SEM/2G2H/AG' : 'AAADK8H';
+		var command = gds === 'apollo' ? 'SEM/2G2H/AG' : 'AAADK8H';
+		return { command: command, autorun: 1 };
 	},
 	'shift+119': function shift119(gds) {
-		return gds === 'apollo' ? 'SEM/2BQ6/AG' : 'AAAW8K7';
+		var command = gds === 'apollo' ? 'SEM/2BQ6/AG' : 'AAAW8K7';
+		return { command: command, autorun: 1 };
 	},
 	'shift+120': {
-		apollo: 'P:SFOAS/800-750-2238 ASAP CUSTOMER SUPPORT',
-		amadeus: 'AP SFO 800-750-2238-A',
-		sabre: '91-800-750-2238-A',
-		galileo: 'P.SFOT:800-750-2238 ASAP CUSTOMER SUPPORT'
+		apollo: { command: 'P:SFOAS/800-750-2238 ASAP CUSTOMER SUPPORT', autorun: 1 },
+		amadeus: { command: 'AP SFO 800-750-2238-A', autorun: 1 },
+		sabre: { command: '91-800-750-2238-A', autorun: 1 },
+		galileo: { command: 'P.SFOT:800-750-2238 ASAP CUSTOMER SUPPORT', autorun: 1 }
 	}
 
 	/**
@@ -4412,9 +4475,21 @@ function replaceCommandVariables(command) {
  */
 function getUserCustomCommand(keyName) {
 	var _getStore$app$Gds$get = (0, _store.getStore)().app.Gds.getCurrent().get(),
+	    name = _getStore$app$Gds$get.name,
 	    keyBindings = _getStore$app$Gds$get.keyBindings;
 
-	return keyBindings && keyBindings[keyName] ? replaceCommandVariables(keyBindings[keyName]) : false;
+	if (keyBindings && keyBindings[keyName]) {
+		var defaultCommand = getBindingForKey(keyName, name);
+		var userReplacedCommand = replaceCommandVariables(keyBindings[keyName].command);
+
+		// User can overwrite default command "autorun" so we still need to execute default command
+		if (userReplacedCommand === '') {
+			userReplacedCommand = defaultCommand.command;
+		}
+
+		return { command: userReplacedCommand, autorun: parseInt(keyBindings[keyName].autorun) };
+	}
+	return false;
 }
 
 var getBindingForKey = exports.getBindingForKey = function getBindingForKey(keyName, gds) {
@@ -4429,11 +4504,15 @@ var getBindingForKey = exports.getBindingForKey = function getBindingForKey(keyN
 		result = data[gds];
 	}
 
+	var command = result.command || result || '';
 	if (replaceVariables) {
-		result = replaceCommandVariables(result);
+		command = replaceCommandVariables(command);
 	}
 
-	return result;
+	return Object.assign({}, {
+		command: command,
+		autorun: result.autorun || 0
+	});
 };
 
 var pressedShortcuts = exports.pressedShortcuts = function pressedShortcuts(evt, terminal, plugin) {
@@ -4450,6 +4529,14 @@ var pressedShortcuts = exports.pressedShortcuts = function pressedShortcuts(evt,
 		plugin.f8Reader.jumpToNextPos();
 	}
 
+	function insertOrExec(command) {
+		if (command.autorun) {
+			terminal.exec(command.command);
+		} else {
+			terminal.insert(command.command);
+		}
+	}
+
 	// Try to get user custom command
 	var keyName = eventToButtonName(evt);
 	var command = getUserCustomCommand(keyName);
@@ -4457,7 +4544,7 @@ var pressedShortcuts = exports.pressedShortcuts = function pressedShortcuts(evt,
 		if (command === '((f8Command))') {
 			doF8();
 		} else {
-			terminal.exec(command);
+			insertOrExec(command);
 		}
 		return true;
 	}
@@ -4500,7 +4587,8 @@ var pressedShortcuts = exports.pressedShortcuts = function pressedShortcuts(evt,
 			case 112: // F1
 			case 113:
 				// F2
-				terminal.insert(getBindingForKey("ctrl+" + keymap, gds));
+				var _command = getBindingForKey("ctrl+" + keymap, gds);
+				insertOrExec(_command);
 				break;
 
 			// disabling these keys from terminal library to execute
@@ -4543,7 +4631,8 @@ var pressedShortcuts = exports.pressedShortcuts = function pressedShortcuts(evt,
 			case 119: // F8
 			case 120:
 				// F9
-				terminal.exec(getBindingForKey("shift+" + keymap, gds));
+				var _command2 = getBindingForKey("shift+" + keymap, gds);
+				insertOrExec(_command2);
 				break;
 
 			// case 187: //+
@@ -4624,8 +4713,8 @@ var pressedShortcuts = exports.pressedShortcuts = function pressedShortcuts(evt,
 		case 122: // F11
 		case 123:
 			// F12
-			var c = getBindingForKey(keymap, gds);
-			terminal.exec(c);
+			var _command3 = getBindingForKey(keymap, gds);
+			insertOrExec(_command3);
 			break;
 
 		default:

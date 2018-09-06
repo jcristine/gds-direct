@@ -15,26 +15,29 @@ const prevCmd = (plugin, terminal) => {
 	});
 };
 
-// Bindings are neededed outside this scope
+/**
+ * Default key bindings
+ * Object keys are in format "keyNumber" or "ctrl|shift+keyNumber"
+ */
 const DEFAULT_KEY_BINDINGS = {
 	116: {
-		apollo 	: '0TURZZBK1YYZ{{datePlus320}}-RETENTION LINE',
-		amadeus : 'RU1AHK1SFO{{datePlus320}}/RETENTION',
-		sabre 	: '0OTHYYGK1/RETENTION{{datePlus320}}',
-		galileo : '0TURZZBK1YYZ{{dateMinus45}}-RETENTION LINE'
+		apollo	: { command: '0TURZZBK1YYZ{{datePlus320}}-RETENTION LINE', autorun: 1 },
+		amadeus	: { command: 'RU1AHK1SFO{{datePlus320}}/RETENTION', autorun: 1 },
+		sabre	: { command: '0OTHYYGK1/RETENTION{{datePlus320}}', autorun: 1 },
+		galileo	: { command: '0TURZZBK1YYZ{{dateMinus45}}-RETENTION LINE', autorun: 1 },
 	},
 	119: () => '((f8Command))',
 	122: {
-		apollo 	: 'T:TAU/{{dateNow}}',
-		amadeus : 'TKTL{{dateNow}}',
-		sabre 	: '7TAW/{{dateNow}}',
-		galileo : 'T.TAU/{{dateNow}}'
+		apollo 	: { command: 'T:TAU/{{dateNow}}', autorun: 1 },
+		amadeus : { command: 'TKTL{{dateNow}}', autorun: 1 },
+		sabre 	: { command: '7TAW/{{dateNow}}', autorun: 1 },
+		galileo : { command: 'T.TAU/{{dateNow}}', autorun: 1 },
 	},
 	123: {
-		apollo 	: 'R:{{userName}}',
-		amadeus : 'RF{{userName}}',
-		sabre 	: '6{{userName}}',
-		galileo : 'R.{{userName}}'
+		apollo 	: { command: 'R:{{userName}}', autorun: 1 },
+		amadeus	: { command: 'RF{{userName}}', autorun: 1 },
+		sabre 	: { command: '6{{userName}}', autorun: 1 },
+		galileo	: { command: 'R.{{userName}}', autorun: 1 },
 	},
 	'ctrl+112': {
 		apollo 	: 'S*CTY/',
@@ -49,19 +52,28 @@ const DEFAULT_KEY_BINDINGS = {
 		galileo	: '.AD'
 	},
 	'shift+116': {
-		apollo 	: 'SEM/2G52/AG',
-		amadeus : 'AAA5E9H',
-		sabre 	: 'AAA5E9H',
-		galileo : 'SEM/711M/AG'
+		apollo 	: { command: 'SEM/2G52/AG', autorun: 1 },
+		amadeus	: { command: 'AAA5E9H', autorun: 1 },
+		sabre 	: { command: 'AAA5E9H', autorun: 1 },
+		galileo	: { command: 'SEM/711M/AG', autorun: 1 },
 	},
-	'shift+117': gds => gds === 'apollo' ? 'SEM/2G55/AG' : 'AAA6IIF',
-	'shift+118': gds => gds === 'apollo' ? 'SEM/2G2H/AG' : 'AAADK8H',
-	'shift+119': gds => gds === 'apollo' ? 'SEM/2BQ6/AG' : 'AAAW8K7',
+	'shift+117': gds => {
+		const command = gds === 'apollo' ? 'SEM/2G55/AG' : 'AAA6IIF';
+		return { command, autorun: 1 };
+	},
+	'shift+118': gds => {
+		const command = gds === 'apollo' ? 'SEM/2G2H/AG' : 'AAADK8H';
+		return { command, autorun: 1 };
+	},
+	'shift+119': gds => {
+		const command = gds === 'apollo' ? 'SEM/2BQ6/AG' : 'AAAW8K7';
+		return { command, autorun: 1 };
+	},
 	'shift+120': {
-		apollo 	: 'P:SFOAS/800-750-2238 ASAP CUSTOMER SUPPORT',
-		amadeus : 'AP SFO 800-750-2238-A',
-		sabre 	: '91-800-750-2238-A',
-		galileo : 'P.SFOT:800-750-2238 ASAP CUSTOMER SUPPORT'
+		apollo 	: { command: 'P:SFOAS/800-750-2238 ASAP CUSTOMER SUPPORT', autorun: 1 },
+		amadeus : { command: 'AP SFO 800-750-2238-A', autorun: 1 },
+		sabre 	: { command: '91-800-750-2238-A', autorun: 1 },
+		galileo : { command: 'P.SFOT:800-750-2238 ASAP CUSTOMER SUPPORT', autorun: 1 }
 	}
 }
 
@@ -104,11 +116,20 @@ function replaceCommandVariables(command) {
  * @returns string || false
  */
 function getUserCustomCommand(keyName) {
-	const { keyBindings } = getStore().app.Gds.getCurrent().get();
+	const { name, keyBindings } = getStore().app.Gds.getCurrent().get();
 
-	return keyBindings && keyBindings[keyName]
-		? replaceCommandVariables(keyBindings[keyName])
-		: false;
+	if (keyBindings && keyBindings[keyName]) {
+		const defaultCommand = getBindingForKey(keyName, name);
+		let userReplacedCommand = replaceCommandVariables(keyBindings[keyName].command);
+
+		// User can overwrite default command "autorun" so we still need to execute default command
+		if (userReplacedCommand === '') {
+			userReplacedCommand = defaultCommand.command;
+		}
+
+		return { command: userReplacedCommand, autorun: parseInt(keyBindings[keyName].autorun) };
+	}
+	return false;
 }
 
 export const getBindingForKey = (keyName, gds, replaceVariables = true) => {
@@ -116,16 +137,20 @@ export const getBindingForKey = (keyName, gds, replaceVariables = true) => {
 
 	let result = '';
 	if (data && typeof data === 'function') {
-		result = data(gds)
+		result = data(gds);
 	} else if (data && data[gds]) {
 		result = data[gds];
 	}
 
+	let command = result.command || result || '';
 	if (replaceVariables) {
-		result = replaceCommandVariables(result);
+		command = replaceCommandVariables(command);
 	}
 
-	return result;
+	return Object.assign({}, {
+		command,
+		autorun: result.autorun || 0,
+	});
 }
 
 export const pressedShortcuts = (evt, terminal, plugin) => {
@@ -144,6 +169,14 @@ export const pressedShortcuts = (evt, terminal, plugin) => {
 			plugin.f8Reader.jumpToNextPos();
 		}
 
+		function insertOrExec(command) {
+			if (command.autorun) {
+				terminal.exec(command.command);
+			} else {
+				terminal.insert(command.command);
+			}
+		}
+
 		// Try to get user custom command
 		const keyName = eventToButtonName(evt);
 		const command = getUserCustomCommand(keyName);
@@ -151,7 +184,7 @@ export const pressedShortcuts = (evt, terminal, plugin) => {
 			if (command === '((f8Command))') {
 				doF8();
 			} else {
-				terminal.exec(command);
+				insertOrExec(command);
 			}
 			return true;
 		}
@@ -191,7 +224,8 @@ export const pressedShortcuts = (evt, terminal, plugin) => {
 
 				case 112 :	// F1
 				case 113 :	// F2
-					terminal.insert(getBindingForKey(`ctrl+${keymap}`, gds));
+					const command = getBindingForKey(`ctrl+${keymap}`, gds);
+					insertOrExec(command);
 				break;
 
 				// disabling these keys from terminal library to execute
@@ -232,7 +266,8 @@ export const pressedShortcuts = (evt, terminal, plugin) => {
 				case 118 : // F7
 				case 119 : // F8
 				case 120 : // F9
-					terminal.exec(getBindingForKey(`shift+${keymap}`, gds));
+					const command = getBindingForKey(`shift+${keymap}`, gds);
+					insertOrExec(command);
 				break;
 
 				// case 187: //+
@@ -304,8 +339,8 @@ export const pressedShortcuts = (evt, terminal, plugin) => {
 			case 116 : // F5
 			case 122 : // F11
 			case 123 : // F12
-				const c = getBindingForKey(keymap, gds);
-				terminal.exec(c);
+				const command = getBindingForKey(keymap, gds);
+				insertOrExec(command);
 			break;
 
 			default: return true;

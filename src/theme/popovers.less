@@ -154,24 +154,22 @@
   }
 
   &.hotkeysContext {
-    width: 400px;
-    max-height: 400px;
-    overflow-y: auto;
+    width: 500px;
 
     .gds-select-header {
       padding-bottom: 10px;
-      position: absolute;
-      left: 15px;
-      right: 15px;
       background: #414141;
       z-index: 10;
     }
 
     .gds-select-container {
-      padding-top: 36px;
-
       .tab {
         display: none;
+
+        .tab-content {
+          max-height: 400px;
+          overflow-y: auto;
+        }
 
         &.active {
           display: block;
@@ -192,12 +190,29 @@
       margin-bottom: 4px;
 
       label {
-        width: 85px;
+        min-width: 90px;
         align-self: center;
       }
 
       input {
-        flex: 1;
+        flex: 1 1 auto;
+
+        &.ch-box {
+          margin: 0;
+          width: auto;
+          min-width: 70px;
+        }
+      }
+
+      &.input-container-header {
+        label:not(:first-child):not(:last-child) {
+          flex: 1 1 auto;
+        }
+
+        label:last-child {
+          min-width: 70px;
+          text-align: center;
+        }
       }
     }
   }

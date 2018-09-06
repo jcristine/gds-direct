@@ -1,6 +1,6 @@
 import Theme from "../popovers/theme";
 import {History} from "../popovers/history";
-import Settings from "../popups/settings";
+import KeySettings from "../popovers/keySettings";
 import TextSize from "../popovers/textSize";
 import Component from "../../modules/component";
 
@@ -34,13 +34,13 @@ export class SettingsButtons extends Component
 			icon	: '<i class="fa fa-history t-f-size-14"></i>'
 		}).getTrigger();
 
-		const settings	= new Settings({
+		const keySettings	= new KeySettings({
 			icon	: '<i class="fa fa-gear t-f-size-14"></i>',
 			keyBindings,
 			defaultPccs
 		}).getTrigger();
 
-		return [themeBtn, textSize, history, settings];
+		return [themeBtn, textSize, history, keySettings];
 	}
 
 	_renderer({theme, terminalThemes, fontSize, keyBindings, defaultPccs})

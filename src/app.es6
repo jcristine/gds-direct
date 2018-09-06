@@ -1,4 +1,5 @@
 import {setLink}				from './helpers/requests.es6';
+import {getBindingForKey} 		from './helpers/keyBinding';
 import {CHANGE_ACTIVE_TERMINAL} from "./actions/settings";
 import {DEV_CMD_STACK_RUN} from "./actions";
 import {CHANGE_GDS} from "./actions/gdsActions";
@@ -18,6 +19,8 @@ class TerminalApp
 	constructor(params)
 	{
 		const {settings, requestId, buffer, permissions, PqPriceModal, htmlRootId, agentId, terminalThemes, commandUrl} = params;
+
+		const { keyBindings, defaultPccs }	= this.getGdsDefaultSettings(settings);
 
 		this.Gds 	= new GDS({
 			gdsListDb 	: settings.gds,
@@ -41,7 +44,6 @@ class TerminalApp
 		const curGds 		= settings['gds'][settings['common']['currentGds'] || 'apollo'];
 		const fontSize		= curGds['fontSize'] || 1;
 		const language		= curGds['language'] || 'APOLLO';
-		const { keyBindings, defaultPccs }	= this.getGdsDefaultSettings(settings);
 		this.container.changeFontClass(fontSize);
 
 		this.themeId		= this.getStyle(settings.gds, terminalThemes);
@@ -92,7 +94,27 @@ class TerminalApp
 		};
 
 		$.each(allSettings.gds, (gds, gdsSettings) => {
-			settings.keyBindings[gds] = gdsSettings.keyBindings || {};
+			const parsedKeyBindings = {};
+
+			// Fix old key formatting
+			if (gdsSettings.keyBindings) {
+				$.each(gdsSettings.keyBindings, (key, data) => {
+					let c = { command: '', autorun: 0 };
+					if (typeof data === 'string') {
+						c.command = data;
+					} else {
+						c = Object.assign({}, c, {
+							command: data.command,
+							autorun: parseInt(data.autorun)
+						});
+					}
+					parsedKeyBindings[key] = c;
+				});
+			}
+
+			allSettings.gds[gds].keyBindings = parsedKeyBindings; // It's bad to do like this, I know
+
+			settings.keyBindings[gds] = parsedKeyBindings;
 			settings.defaultPccs[gds] = gdsSettings.defaultPcc || null;
 		});
 
