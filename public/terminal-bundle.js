@@ -7056,7 +7056,8 @@ var Terminal = function () {
 
 			var buffered = buf['buffering'].map(function (record) {
 
-				var output = record.output ? '<pre style="white-space: pre-wrap; overflow: hidden">' + $.terminal.format(record.output).replace(/%/g, '') + ' </pre>' : '';
+				var c = $.terminal.format(record.output).replace(/%/g, '').replace(new RegExp('\r?\n', 'g'), '<br />');
+				var output = record.output ? '<pre style="white-space: pre-wrap; overflow: hidden">' + c + ' </pre>' : '';
 
 				return '<div class="command">\n\t\t\t\t\t\t<div>\n\t\t\t\t\t\t\t<span class="usedCommand">' + record.command + '</span>\n\t\t\t\t\t\t</div>\n\t\t\t\t\t</div>\n\t\t\t\t\t' + output;
 			}).join('');
