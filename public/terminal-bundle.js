@@ -6419,11 +6419,13 @@ var Output = function () {
 
 				this.outputStrings = outputText;
 
-				this.terminal.echo(outputText, {
+				var rawOutput = $.terminal.format(outputText).replace(new RegExp('\r?\n', 'g'), '<br />');
+
+				this.terminal.echo(rawOutput, {
 					finalize: function finalize(div) {
 						return (0, _highlight.replaceInTerminal)(div, tips);
-					}
-					// raw 		: true
+					},
+					raw: true
 				});
 			} else {
 				this.terminal.echo(this.outputStrings);
