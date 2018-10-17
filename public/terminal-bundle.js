@@ -6409,6 +6409,8 @@ var Output = function () {
 	}, {
 		key: '_printOutput',
 		value: function _printOutput() {
+			var _this2 = this;
+
 			var appliedRules = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '';
 			var output = arguments[1];
 
@@ -6419,13 +6421,14 @@ var Output = function () {
 
 				this.outputStrings = outputText;
 
-				var rawOutput = $.terminal.format(outputText).replace(new RegExp('\r?\n', 'g'), '<br />');
-
-				this.terminal.echo(rawOutput, {
+				this.terminal.echo(outputText, {
 					finalize: function finalize(div) {
-						return (0, _highlight.replaceInTerminal)(div, tips);
-					},
-					raw: true
+						if (div[0]) {
+							div[0].innerHTML = $.terminal.format(_this2.terminal.get_output()).replace(new RegExp('\r?\n', 'g'), '<br />');
+						}
+						(0, _highlight.replaceInTerminal)(div, tips);
+					}
+					// raw 		: true
 				});
 			} else {
 				this.terminal.echo(this.outputStrings);
