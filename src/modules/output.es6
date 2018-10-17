@@ -60,29 +60,26 @@ export default class Output
 		return this;
 	}
 
-	_printOutput(appliedRules = '', output)
-	{
-		if (appliedRules && appliedRules.length)
-		{
-			const {tips, outputText} = seedOutputString(output, appliedRules);
-			this.outputStrings 	= outputText;
+    _printOutput(appliedRules = '', output)
+    {
+        if (appliedRules && appliedRules.length)
+        {
+            const {tips, outputText} = seedOutputString(output, appliedRules);
+            this.outputStrings 	= outputText;
 
-			this.terminal.echo(outputText, {
-				finalize 	: (div) => {
-					if (div[0]) {
-						div[0].innerHTML = $.terminal.format(this.terminal.get_output()).replace(new RegExp('\r?\n','g'), '<br />');
-					}
-					replaceInTerminal(div, tips);
-				},
-				// raw 		: true
-			});
-		} else
-		{
-			this.terminal.echo(this.outputStrings);
-		}
+            const rawOutput = $.terminal.format( outputText ).replace(new RegExp('\r?\n','g'), '<br />');
 
-		return this;
-	}
+            this.terminal.echo(rawOutput, {
+                finalize 	: (div) => replaceInTerminal(div, tips),
+                raw 		: true
+            });
+        } else
+        {
+            this.terminal.echo(this.outputStrings);
+        }
+
+        return this;
+    }
 
 	_attachEmpty()
 	{
