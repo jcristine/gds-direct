@@ -67,11 +67,9 @@ export default class Output
             const {tips, outputText} = seedOutputString(output, appliedRules);
             this.outputStrings 	= outputText;
 
-            const rawOutput = $.terminal.format( outputText ).replace(new RegExp('\r?\n','g'), '<br />');
-
-            this.terminal.echo(rawOutput, {
-                finalize 	: (div) => replaceInTerminal(div, tips),
-                raw 		: true
+			this.terminal.echo(outputText, {
+				finalize 	: (div) => replaceInTerminal(div, tips),
+				// raw 		: true
             });
         } else
         {
