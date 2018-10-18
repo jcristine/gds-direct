@@ -5675,7 +5675,10 @@
 					// print all lines
 					$.each(output_buffer, function(i, line) {
 						if (line === NEW_LINE) {
-							wrapper = $('<div></div>');
+							// I. Stinkevics CUSTOMIZATION
+							// Why? When Agents need to copy text from Firefox 
+							// to Google Hangouts they need to preserve formating (line-breaks)
+							wrapper = $('<pre></pre>');
 						} else if ($.isFunction(line)) {
 							// this is finalize function from echo
 							wrapper.appendTo(output);

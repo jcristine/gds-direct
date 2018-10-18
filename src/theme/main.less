@@ -256,7 +256,12 @@
     // when text outside container width
     .terminal-output div span {
         display: inline;
-    }
+	}
+
+	.terminal-output pre {
+		white-space: pre-wrap;
+		overflow: hidden;
+	}
 
     // buffer scroll fix
 	div.terminal-wrapper {
