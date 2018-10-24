@@ -31,6 +31,7 @@ export default class Terminal
 		{
 			CHANGE_ACTIVE_TERMINAL({curTerminalId: 0});
 			this.plugin.terminal.enable();
+			this.plugin.terminal.focus(); // Fix to allow correctly switch between terminals (check jquery-terminal.js:5382)
 		}
 	}
 
