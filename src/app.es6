@@ -18,7 +18,7 @@ class TerminalApp
 {
 	constructor(params)
 	{
-		const {settings, requestId, buffer, permissions, PqPriceModal, htmlRootId, agentId, terminalThemes, commandUrl} = params;
+		const {settings, requestId, isStandAlone, buffer, permissions, PqPriceModal, htmlRootId, agentId, terminalThemes, commandUrl} = params;
 
 		const { keyBindings, defaultPccs }	= this.getGdsDefaultSettings(settings);
 
@@ -28,7 +28,7 @@ class TerminalApp
 			buffer 		: buffer || {}
 		});
 
-		this.params 		= {requestId, permissions};
+		this.params 		= {requestId, permissions, isStandAlone};
 		this.offset			= OFFSET_DEFAULT; //menu
 
 		this.pqParser 		= new PqParser(PqPriceModal);

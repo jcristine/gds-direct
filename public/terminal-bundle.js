@@ -968,7 +968,7 @@ var SET_REQUEST_ID = exports.SET_REQUEST_ID = function SET_REQUEST_ID(rId) {
 };
 
 var openPq = function openPq(app) {
-	app.pqParser.show(app.getGds(), app.params.requestId).then(function () {
+	app.pqParser.show(app.getGds(), app.params.requestId, app.params.isStandAlone).then(function () {
 		return showPq({ menuHidden: true }, 0);
 	});
 };
@@ -1157,6 +1157,7 @@ var TerminalApp = function () {
 
 		var settings = params.settings,
 		    requestId = params.requestId,
+		    isStandAlone = params.isStandAlone,
 		    buffer = params.buffer,
 		    permissions = params.permissions,
 		    PqPriceModal = params.PqPriceModal,
@@ -1175,7 +1176,7 @@ var TerminalApp = function () {
 			buffer: buffer || {}
 		});
 
-		this.params = { requestId: requestId, permissions: permissions };
+		this.params = { requestId: requestId, permissions: permissions, isStandAlone: isStandAlone };
 		this.offset = _constants.OFFSET_DEFAULT; //menu
 
 		this.pqParser = new _pqParser.PqParser(PqPriceModal);
@@ -6621,7 +6622,7 @@ var PqParser = exports.PqParser = function () {
 		}
 	}, {
 		key: "show",
-		value: function show(gds, rId) {
+		value: function show(gds, rId, isStandAlone) {
 			var _this = this;
 
 			if (!gds.get('canCreatePq')) {
@@ -6634,13 +6635,17 @@ var PqParser = exports.PqParser = function () {
 
 			this.loaderToggle(false);
 
-			return (0, _requests.get)("terminal/priceQuote?rId=" + rId).then(function (response) {
+			isStandAlone = +isStandAlone ? '1' : '0';
+			return (0, _requests.get)("terminal/priceQuote?rId=" + rId + "&isStandAlone=" + isStandAlone).then(function (response) {
 				_this.loaderToggle(true);
 
 				var pqError = isPqError(response);
 				return pqError.length ? reject(pqError) : response;
 			}).then(function (response) {
-				(0, _requests.get)("terminal/importPriceQuote?rId=" + rId);
+				if (+isStandAlone) {
+					response.rId = rId;
+				}
+				(0, _requests.get)("terminal/importPriceQuote?rId=" + rId + "&isStandAlone=" + isStandAlone);
 				return _this.modal(response, _priceQuoutes.CLOSE_PQ_WINDOW);
 			});
 		}

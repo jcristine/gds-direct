@@ -52,7 +52,7 @@ export class PqParser
 			loadingDots.classList.toggle('loading-hidden', state);
 	}
 
-	show(gds, rId)
+	show(gds, rId, isStandAlone)
 	{
 		if (!gds.get('canCreatePq'))
 		{
@@ -66,7 +66,8 @@ export class PqParser
 
 		this.loaderToggle(false);
 
-		return get(`terminal/priceQuote?rId=${rId}`)
+		isStandAlone = +isStandAlone ? '1' : '0';
+		return get(`terminal/priceQuote?rId=${rId}&isStandAlone=${isStandAlone}`)
 
 			.then( response => {
 				this.loaderToggle(true);
@@ -76,7 +77,10 @@ export class PqParser
 			})
 			
 			.then( response => {
-				get(`terminal/importPriceQuote?rId=${rId}`);
+				if (+isStandAlone) {
+					response.rId = rId;
+				}
+				get(`terminal/importPriceQuote?rId=${rId}&isStandAlone=${isStandAlone}`);
 				return this.modal(response, CLOSE_PQ_WINDOW);
 			})
 	}
