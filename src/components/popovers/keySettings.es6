@@ -139,8 +139,9 @@ class Context
 		const areaGrid = Dom(`div`, {style: 'display: grid; grid-template-areas: "a a"; padding-left: 10%'});
 		this._getGdsAreas(gds)
             .map(letter => {
-            	const pccs = this.pccs.filter( pcc => pcc.gds === gds);
-            	const select = new AreaSelect({pccs}).getContext();
+                const defaultPcc    = this._getAreaPcc(gds, letter);
+            	const pccs          = this.pccs.filter( pcc => pcc.gds === gds);
+            	const select        = new AreaSelect({defaultPcc, pccs}).getContext();
 
                 const container = Dom(`div.settings-input-container`);
                 container.setAttribute('data-area', letter);
