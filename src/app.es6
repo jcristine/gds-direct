@@ -20,7 +20,7 @@ class TerminalApp
 	{
 		const {settings, requestId, isStandAlone, buffer, permissions, PqPriceModal, htmlRootId, agentId, terminalThemes, commandUrl} = params;
 
-		const { keyBindings, defaultPccs }	= this.getGdsDefaultSettings(settings);
+		const { keyBindings, defaultPccs, gdsAreaSettings }	= this.getGdsDefaultSettings(settings);
 
 		this.Gds 	= new GDS({
 			gdsListDb 	: settings.gds,
@@ -58,6 +58,7 @@ class TerminalApp
 			gdsObjName		: this.Gds.getCurrentName(),
 			gdsObjIndex 	: this.Gds.getCurrentIndex(),
 			keyBindings		: keyBindings,
+            gdsAreaSettings	: gdsAreaSettings,
 			defaultPccs		: defaultPccs
 		});
 	}
@@ -91,8 +92,10 @@ class TerminalApp
 		const settings = {
 			keyBindings: {},
 			defaultPccs: {},
+			gdsAreaSettings: {},
 		};
 
+        settings.gdsAreaSettings = {};
 		$.each(allSettings.gds, (gds, gdsSettings) => {
 			const parsedKeyBindings = {};
 
@@ -116,6 +119,7 @@ class TerminalApp
 
 			settings.keyBindings[gds] = parsedKeyBindings;
 			settings.defaultPccs[gds] = gdsSettings.defaultPcc || null;
+			settings.gdsAreaSettings[gds] = gdsSettings.areaSettings;
 		});
 
 		return settings;

@@ -7,14 +7,14 @@ import {getStore} 			from './../../store';
 
 export default class KeySettings extends ButtonPopOver
 {
-	constructor({ keyBindings, defaultPccs, ...params })
+	constructor({ keyBindings, defaultPccs, gdsAreaSettings, ...params })
 	{
 		super(params, 'div.terminal-menu-popover hotkeysContext');
 
 		this.makeTrigger({
 			onclick : () => {
 				this.popContent.innerHTML = '';
-				const c = new Context(this, keyBindings, defaultPccs);
+				const c = new Context(this, keyBindings, defaultPccs, gdsAreaSettings);
 				this.popContent.appendChild(c.context);
 			}
 		});
@@ -23,11 +23,12 @@ export default class KeySettings extends ButtonPopOver
 
 class Context
 {
-	constructor(popover, keyBindings, defaultPccs)
+	constructor(popover, keyBindings, defaultPccs, gdsAreaSettings)
 	{
 		this.context = Dom('div');
 		this.currentKeyBindings = keyBindings;
 		this.currentPccs = defaultPccs;
+		this.gdsAreaSettings = gdsAreaSettings;
 		this.inputFields = {};
 		this._makeBody(popover);
 	}
@@ -43,7 +44,7 @@ class Context
 
 		container.appendChild(header);
 		container.appendChild(content);
-	
+
 		GDS_LIST.forEach((gds, idx) => {
 			const isActive = selectedGds === gds;
 
@@ -81,6 +82,7 @@ class Context
 
 			const inputFields = this._makeInputFieldList(gds);
 			tabContent.appendChild(inputFields.pccContainer);
+			tabContent.appendChild(inputFields.areaGrid);
 
 			tabContent.appendChild(buttonHeader);
 
@@ -100,21 +102,44 @@ class Context
 		this.context.appendChild( container );
 	}
 
+    _getGdsAreas(gds)
+    {
+        return {
+            apollo:  ['A', 'B', 'C', 'D', 'E'],
+            galileo: ['A', 'B', 'C', 'D', 'E'],
+            sabre:   ['A', 'B', 'C', 'D', 'E', 'F'],
+            amadeus: ['A', 'B', 'C', 'D'],
+        }[gds] || [];
+    }
+
 	_makeInputFieldList(gds)
 	{
-		const data = { pccContainer: null, buttons: [] };
+		const data = { pccContainer: null, buttons: [], areaSettings: [] };
 		const buttonPrefixes = [null, 'shift', 'ctrl'];
 		const startingKey = 111;
 
 		// Default PCC
-		const pccContainer = this._getInputRow({ 
+		const pccContainer = this._getInputRow({
 			label: 'Default PCC',
 			name: `defaultPcc[${gds}]`,
 			placeholder: '',
 			value: this._getPcc(gds)
 		});
+		const areaGrid = Dom(`div`, {style: 'display: grid; grid-template-areas: "a a"; padding-left: 10%'});
+		this._getGdsAreas(gds)
+            .map(letter => {
+                const container = Dom(`div.settings-input-container`);
+                container.setAttribute('data-area', letter);
+                container.appendChild(Dom(`label[Area ${letter}]`, {style: 'text-align: right; padding-right: 6px;'}));
+                container.appendChild(Dom('input.form-control settings-input default-pcc', {
+                    placeholder: '', value: this._getAreaPcc(gds, letter)
+                }));
+                return container;
+            })
+            .forEach(cell => areaGrid.appendChild(cell));
 
 		data.pccContainer = pccContainer;
+		data.areaGrid = areaGrid;
 
 		// All button shortcuts
 		buttonPrefixes.forEach(prefix => {
@@ -122,9 +147,9 @@ class Context
 				const key = startingKey + i;
 				const btnName = prefix ? `${prefix}+${key}` : `${key}`;
 				const placeholder = getBindingForKey(btnName, gds, false);
-				
+
 				// "Hotkey" input
-				const inputContainer = this._getInputRow({ 
+				const inputContainer = this._getInputRow({
 					label: prefix ? `${prefix} + F${i}` : `F${i}`,
 					placeholder: placeholder.command,
 					value: this._getKeyBinding(gds, btnName, 'command')
@@ -133,7 +158,7 @@ class Context
 				// "Autorun" checkbox
 				const userAutorun = this._getKeyBinding(gds, btnName, 'autorun');
 				inputContainer.appendChild(
-					Dom('input.form-control settings-input ch-box', { 
+					Dom('input.form-control ch-box', {
 						type: 'checkbox',
 						checked: userAutorun !== false ? userAutorun : placeholder.autorun
 					})
@@ -171,6 +196,17 @@ class Context
 		return this.currentPccs && this.currentPccs[gds] ? this.currentPccs[gds] : '';
 	}
 
+	_getAreaPcc(gds, area)
+	{
+		const areaSettings = (this.gdsAreaSettings || {})[gds] || [];
+		for (let areaSetting of areaSettings) {
+			if (areaSetting.area === area) {
+				return areaSetting.defaultPcc;
+			}
+		}
+	    return null;
+	}
+
 	save()
 	{
 		const result = {};
@@ -189,6 +225,11 @@ class Context
 			});
 
 			result[gds].defaultPcc = this.inputFields[gds].pccContainer.children[1].value;
+			result[gds].areaSettings = [...this.inputFields[gds].areaGrid.children].map(cont => 1 && {
+				area: cont.getAttribute('data-area'),
+				defaultPcc: [...cont.querySelectorAll('input.default-pcc')]
+					.map(inp => inp.value)[0] || null,
+            });
 
 			// jquery-param removes empty objects so we need to preserve emptiness with "null"
 			if ($.isEmptyObject(result[gds].keyBindings)) {

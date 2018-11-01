@@ -1034,16 +1034,18 @@ var CHANGE_INPUT_LANGUAGE = exports.CHANGE_INPUT_LANGUAGE = function CHANGE_INPU
 var CHANGE_SETTINGS = exports.CHANGE_SETTINGS = function CHANGE_SETTINGS(settings) {
 	(0, _state.getters)('settings', settings);
 
-	var newData = { keyBindings: {}, defaultPccs: {} };
+	var newData = { keyBindings: {}, defaultPccs: {}, gdsAreaSettings: {} };
 	$.each(settings, function (gds, value) {
 		newData.keyBindings[gds] = value.keyBindings || {};
+		newData.gdsAreaSettings[gds] = value.areaSettings || [];
 		newData.defaultPccs[gds] = value.defaultPcc || '';
 		(0, _store.getStore)().app.Gds.update({
 			keyBindings: newData.keyBindings[gds],
+			areaSettings: newData.gdsAreaSettings[gds],
 			defaultPcc: newData.defaultPccs[gds]
 		}, gds);
 	});
-	(0, _store.getStore)().updateView({ keyBindings: newData.keyBindings, defaultPccs: newData.defaultPccs });
+	(0, _store.getStore)().updateView({ keyBindings: newData.keyBindings, defaultPccs: newData.defaultPccs, gdsAreaSettings: newData.gdsAreaSettings });
 };
 
 var GET_HISTORY = exports.GET_HISTORY = function GET_HISTORY() {
@@ -1168,7 +1170,8 @@ var TerminalApp = function () {
 
 		var _getGdsDefaultSetting = this.getGdsDefaultSettings(settings),
 		    keyBindings = _getGdsDefaultSetting.keyBindings,
-		    defaultPccs = _getGdsDefaultSetting.defaultPccs;
+		    defaultPccs = _getGdsDefaultSetting.defaultPccs,
+		    gdsAreaSettings = _getGdsDefaultSetting.gdsAreaSettings;
 
 		this.Gds = new _gds.GDS({
 			gdsListDb: settings.gds,
@@ -1206,6 +1209,7 @@ var TerminalApp = function () {
 			gdsObjName: this.Gds.getCurrentName(),
 			gdsObjIndex: this.Gds.getCurrentIndex(),
 			keyBindings: keyBindings,
+			gdsAreaSettings: gdsAreaSettings,
 			defaultPccs: defaultPccs
 		});
 	}
@@ -1236,9 +1240,11 @@ var TerminalApp = function () {
 		value: function getGdsDefaultSettings(allSettings) {
 			var settings = {
 				keyBindings: {},
-				defaultPccs: {}
+				defaultPccs: {},
+				gdsAreaSettings: {}
 			};
 
+			settings.gdsAreaSettings = {};
 			$.each(allSettings.gds, function (gds, gdsSettings) {
 				var parsedKeyBindings = {};
 
@@ -1262,6 +1268,7 @@ var TerminalApp = function () {
 
 				settings.keyBindings[gds] = parsedKeyBindings;
 				settings.defaultPccs[gds] = gdsSettings.defaultPcc || null;
+				settings.gdsAreaSettings[gds] = gdsSettings.areaSettings;
 			});
 
 			return settings;
@@ -2532,9 +2539,10 @@ var SettingsButtons = exports.SettingsButtons = function (_Component) {
 			    terminalThemes = _ref.terminalThemes,
 			    fontSize = _ref.fontSize,
 			    keyBindings = _ref.keyBindings,
-			    defaultPccs = _ref.defaultPccs;
+			    defaultPccs = _ref.defaultPccs,
+			    gdsAreaSettings = _ref.gdsAreaSettings;
 
-			this.children({ theme: theme, terminalThemes: terminalThemes, fontSize: fontSize, keyBindings: keyBindings, defaultPccs: defaultPccs }).map(function (element) {
+			this.children({ theme: theme, terminalThemes: terminalThemes, fontSize: fontSize, keyBindings: keyBindings, defaultPccs: defaultPccs, gdsAreaSettings: gdsAreaSettings }).map(function (element) {
 				return _this2.context.appendChild(element);
 			});
 		}
@@ -2545,7 +2553,8 @@ var SettingsButtons = exports.SettingsButtons = function (_Component) {
 			    terminalThemes = _ref2.terminalThemes,
 			    fontSize = _ref2.fontSize,
 			    keyBindings = _ref2.keyBindings,
-			    defaultPccs = _ref2.defaultPccs;
+			    defaultPccs = _ref2.defaultPccs,
+			    gdsAreaSettings = _ref2.gdsAreaSettings;
 
 			var themeBtn = new _theme2.default({
 				icon: '<i class="fa fa-paint-brush t-f-size-14"></i>',
@@ -2565,6 +2574,7 @@ var SettingsButtons = exports.SettingsButtons = function (_Component) {
 			var keySettings = new _keySettings2.default({
 				icon: '<i class="fa fa-gear t-f-size-14"></i>',
 				keyBindings: keyBindings,
+				gdsAreaSettings: gdsAreaSettings,
 				defaultPccs: defaultPccs
 			}).getTrigger();
 
@@ -2579,10 +2589,11 @@ var SettingsButtons = exports.SettingsButtons = function (_Component) {
 			    terminalThemes = _ref3.terminalThemes,
 			    fontSize = _ref3.fontSize,
 			    keyBindings = _ref3.keyBindings,
-			    defaultPccs = _ref3.defaultPccs;
+			    defaultPccs = _ref3.defaultPccs,
+			    gdsAreaSettings = _ref3.gdsAreaSettings;
 
 			this.context.innerHTML = '';
-			this.children({ theme: theme, terminalThemes: terminalThemes, fontSize: fontSize, keyBindings: keyBindings, defaultPccs: defaultPccs }).map(function (element) {
+			this.children({ theme: theme, terminalThemes: terminalThemes, fontSize: fontSize, keyBindings: keyBindings, defaultPccs: defaultPccs, gdsAreaSettings: gdsAreaSettings }).map(function (element) {
 				return _this3.context.appendChild(element);
 			});
 		}
@@ -2859,6 +2870,8 @@ var _store = __webpack_require__(/*! ./../../store */ "./src/store.es6");
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
+function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
+
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
 function _objectWithoutProperties(obj, keys) { var target = {}; for (var i in obj) { if (keys.indexOf(i) >= 0) continue; if (!Object.prototype.hasOwnProperty.call(obj, i)) continue; target[i] = obj[i]; } return target; }
@@ -2875,7 +2888,8 @@ var KeySettings = function (_ButtonPopOver) {
 	function KeySettings(_ref) {
 		var keyBindings = _ref.keyBindings,
 		    defaultPccs = _ref.defaultPccs,
-		    params = _objectWithoutProperties(_ref, ['keyBindings', 'defaultPccs']);
+		    gdsAreaSettings = _ref.gdsAreaSettings,
+		    params = _objectWithoutProperties(_ref, ['keyBindings', 'defaultPccs', 'gdsAreaSettings']);
 
 		_classCallCheck(this, KeySettings);
 
@@ -2884,7 +2898,7 @@ var KeySettings = function (_ButtonPopOver) {
 		_this.makeTrigger({
 			onclick: function onclick() {
 				_this.popContent.innerHTML = '';
-				var c = new Context(_this, keyBindings, defaultPccs);
+				var c = new Context(_this, keyBindings, defaultPccs, gdsAreaSettings);
 				_this.popContent.appendChild(c.context);
 			}
 		});
@@ -2897,12 +2911,13 @@ var KeySettings = function (_ButtonPopOver) {
 exports.default = KeySettings;
 
 var Context = function () {
-	function Context(popover, keyBindings, defaultPccs) {
+	function Context(popover, keyBindings, defaultPccs, gdsAreaSettings) {
 		_classCallCheck(this, Context);
 
 		this.context = (0, _dom2.default)('div');
 		this.currentKeyBindings = keyBindings;
 		this.currentPccs = defaultPccs;
+		this.gdsAreaSettings = gdsAreaSettings;
 		this.inputFields = {};
 		this._makeBody(popover);
 	}
@@ -2962,6 +2977,7 @@ var Context = function () {
 
 				var inputFields = _this2._makeInputFieldList(gds);
 				tabContent.appendChild(inputFields.pccContainer);
+				tabContent.appendChild(inputFields.areaGrid);
 
 				tabContent.appendChild(buttonHeader);
 
@@ -2981,11 +2997,21 @@ var Context = function () {
 			this.context.appendChild(container);
 		}
 	}, {
+		key: '_getGdsAreas',
+		value: function _getGdsAreas(gds) {
+			return {
+				apollo: ['A', 'B', 'C', 'D', 'E'],
+				galileo: ['A', 'B', 'C', 'D', 'E'],
+				sabre: ['A', 'B', 'C', 'D', 'E', 'F'],
+				amadeus: ['A', 'B', 'C', 'D']
+			}[gds] || [];
+		}
+	}, {
 		key: '_makeInputFieldList',
 		value: function _makeInputFieldList(gds) {
 			var _this3 = this;
 
-			var data = { pccContainer: null, buttons: [] };
+			var data = { pccContainer: null, buttons: [], areaSettings: [] };
 			var buttonPrefixes = [null, 'shift', 'ctrl'];
 			var startingKey = 111;
 
@@ -2996,8 +3022,21 @@ var Context = function () {
 				placeholder: '',
 				value: this._getPcc(gds)
 			});
+			var areaGrid = (0, _dom2.default)('div', { style: 'display: grid; grid-template-areas: "a a"; padding-left: 10%' });
+			this._getGdsAreas(gds).map(function (letter) {
+				var container = (0, _dom2.default)('div.settings-input-container');
+				container.setAttribute('data-area', letter);
+				container.appendChild((0, _dom2.default)('label[Area ' + letter + ']', { style: 'text-align: right; padding-right: 6px;' }));
+				container.appendChild((0, _dom2.default)('input.form-control settings-input default-pcc', {
+					placeholder: '', value: _this3._getAreaPcc(gds, letter)
+				}));
+				return container;
+			}).forEach(function (cell) {
+				return areaGrid.appendChild(cell);
+			});
 
 			data.pccContainer = pccContainer;
+			data.areaGrid = areaGrid;
 
 			// All button shortcuts
 			buttonPrefixes.forEach(function (prefix) {
@@ -3015,7 +3054,7 @@ var Context = function () {
 
 					// "Autorun" checkbox
 					var userAutorun = _this3._getKeyBinding(gds, btnName, 'autorun');
-					inputContainer.appendChild((0, _dom2.default)('input.form-control settings-input ch-box', {
+					inputContainer.appendChild((0, _dom2.default)('input.form-control ch-box', {
 						type: 'checkbox',
 						checked: userAutorun !== false ? userAutorun : placeholder.autorun
 					}));
@@ -3056,6 +3095,39 @@ var Context = function () {
 			return this.currentPccs && this.currentPccs[gds] ? this.currentPccs[gds] : '';
 		}
 	}, {
+		key: '_getAreaPcc',
+		value: function _getAreaPcc(gds, area) {
+			var areaSettings = (this.gdsAreaSettings || {})[gds] || [];
+			var _iteratorNormalCompletion = true;
+			var _didIteratorError = false;
+			var _iteratorError = undefined;
+
+			try {
+				for (var _iterator = areaSettings[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+					var areaSetting = _step.value;
+
+					if (areaSetting.area === area) {
+						return areaSetting.defaultPcc;
+					}
+				}
+			} catch (err) {
+				_didIteratorError = true;
+				_iteratorError = err;
+			} finally {
+				try {
+					if (!_iteratorNormalCompletion && _iterator.return) {
+						_iterator.return();
+					}
+				} finally {
+					if (_didIteratorError) {
+						throw _iteratorError;
+					}
+				}
+			}
+
+			return null;
+		}
+	}, {
 		key: 'save',
 		value: function save() {
 			var _this4 = this;
@@ -3076,6 +3148,14 @@ var Context = function () {
 				});
 
 				result[gds].defaultPcc = _this4.inputFields[gds].pccContainer.children[1].value;
+				result[gds].areaSettings = [].concat(_toConsumableArray(_this4.inputFields[gds].areaGrid.children)).map(function (cont) {
+					return  true && {
+						area: cont.getAttribute('data-area'),
+						defaultPcc: [].concat(_toConsumableArray(cont.querySelectorAll('input.default-pcc'))).map(function (inp) {
+							return inp.value;
+						})[0] || null
+					};
+				});
 
 				// jquery-param removes empty objects so we need to preserve emptiness with "null"
 				if ($.isEmptyObject(result[gds].keyBindings)) {
@@ -7159,6 +7239,7 @@ var State = {
 	gdsObjName: '',
 	menuHidden: false,
 	keyBindings: {},
+	gdsAreaSettings: {},
 	defaultPccs: {}
 
 	// action	: ''

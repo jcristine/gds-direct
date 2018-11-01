@@ -28,16 +28,18 @@ export const CHANGE_INPUT_LANGUAGE = language => {
 export const CHANGE_SETTINGS = settings => {
 	getters('settings', settings);
 
-	const newData = { keyBindings: {}, defaultPccs: {} };
+	const newData = { keyBindings: {}, defaultPccs: {}, gdsAreaSettings: {} };
 	$.each(settings, (gds, value) => {
 		newData.keyBindings[gds] = value.keyBindings || {};
+        newData.gdsAreaSettings[gds] = value.areaSettings || [];
 		newData.defaultPccs[gds] = value.defaultPcc || '';
 		getStore().app.Gds.update({
 			keyBindings: newData.keyBindings[gds],
+            areaSettings: newData.gdsAreaSettings[gds],
 			defaultPcc: newData.defaultPccs[gds]
 		}, gds);
 	});
-	getStore().updateView({ keyBindings: newData.keyBindings, defaultPccs: newData.defaultPccs });
+	getStore().updateView({ keyBindings: newData.keyBindings, defaultPccs: newData.defaultPccs, gdsAreaSettings: newData.gdsAreaSettings });
 };
 
 export const GET_HISTORY 	= () => getters('history');

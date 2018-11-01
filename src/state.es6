@@ -9,6 +9,7 @@ let State =  {
 	gdsObjName	: '',
 	menuHidden	: false,
 	keyBindings	: {},
+	gdsAreaSettings : {},
 	defaultPccs : {}
 
 	// action	: ''
