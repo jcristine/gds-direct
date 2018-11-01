@@ -6033,7 +6033,7 @@ var makeRule = function makeRule(rule, key) {
 		tips = _extends({}, tips, _defineProperty({}, searchIndex, rule));
 	}
 
-	var className = "term-highlight " + rule.color + " " + rule['decoration'].join(' ') + (searchIndex ? " t-pointer " + searchIndex : '');
+	var className = "term-highlight " + rule.color + "-color " + rule.backgroundColor + "-backgroundColor " + rule['decoration'].join(' ') + (searchIndex ? " t-pointer " + searchIndex : '');
 	return "[[;;;" + className + "]" + (0, _helpers.replaceChar)(rule.value, '%') + "]"; // creates span like span.usedCommand term-highlight replace_0
 };
 
@@ -7060,7 +7060,7 @@ var Terminal = function () {
 				var c = $.terminal.format(record.output).replace(/%/g, '').replace(new RegExp('\r?\n', 'g'), '<br />');
 				var output = record.output ? '<pre style="white-space: pre-wrap; overflow: hidden">' + c + ' </pre>' : '';
 
-				return '<div class="command">\n\t\t\t\t\t\t<div>\n\t\t\t\t\t\t\t<span class="usedCommand">' + record.command + '</span>\n\t\t\t\t\t\t</div>\n\t\t\t\t\t</div>\n\t\t\t\t\t' + output;
+				return '<div class="command">\n\t\t\t\t\t\t<div>\n\t\t\t\t\t\t\t<span class="usedCommand usedCommand-color">' + record.command + '</span>\n\t\t\t\t\t\t</div>\n\t\t\t\t\t</div>\n\t\t\t\t\t' + output;
 			}).join('');
 
 			this.bufferDiv = (0, _dom2.default)('article.terminal-wrapper');

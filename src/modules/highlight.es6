@@ -12,7 +12,7 @@ const makeRule		= (rule, key, isPattern = '') => {
 		tips = {...tips, [searchIndex] : rule};
 	}
 
-	let className	= `term-highlight ${rule.color} ${rule['decoration'].join(' ')}` + (searchIndex ? ` t-pointer ${searchIndex}` : '');
+	let className	= `term-highlight ${rule.color}-color ${rule.backgroundColor}-backgroundColor ${rule['decoration'].join(' ')}` + (searchIndex ? ` t-pointer ${searchIndex}` : '');
 	return `[[;;;${className}]${replaceChar(rule.value, '%')}]`; // creates span like span.usedCommand term-highlight replace_0
 };
 
