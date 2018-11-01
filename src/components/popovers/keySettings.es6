@@ -4,6 +4,9 @@ import {CHANGE_SETTINGS} 	from '../../actions/settings';
 import {getBindingForKey} 	from '../../helpers/keyBinding';
 import {GDS_LIST} 			from '../../constants';
 import {getStore} 			from './../../store';
+import AreaSelect 			from "./areaSelect";
+import {get} 				from "../../helpers/requests";
+import "select2";
 
 export default class KeySettings extends ButtonPopOver
 {
@@ -11,11 +14,18 @@ export default class KeySettings extends ButtonPopOver
 	{
 		super(params, 'div.terminal-menu-popover hotkeysContext');
 
+		this.pccs = [];
+
 		this.makeTrigger({
 			onclick : () => {
-				this.popContent.innerHTML = '';
-				const c = new Context(this, keyBindings, defaultPccs, gdsAreaSettings);
-				this.popContent.appendChild(c.context);
+                return get('/autoComplete?pccs=1')
+                    .then(pccs => {
+                        this.pccs = pccs;
+
+                        this.popContent.innerHTML = '';
+                        const c = new Context(this, keyBindings, defaultPccs, gdsAreaSettings);
+                        this.popContent.appendChild(c.context);
+                    });
 			}
 		});
 	}
@@ -25,6 +35,7 @@ class Context
 {
 	constructor(popover, keyBindings, defaultPccs, gdsAreaSettings)
 	{
+		this.pccs = popover.pccs;
 		this.context = Dom('div');
 		this.currentKeyBindings = keyBindings;
 		this.currentPccs = defaultPccs;
@@ -128,12 +139,17 @@ class Context
 		const areaGrid = Dom(`div`, {style: 'display: grid; grid-template-areas: "a a"; padding-left: 10%'});
 		this._getGdsAreas(gds)
             .map(letter => {
+            	const pccs = this.pccs.filter( pcc => pcc.gds === gds);
+            	const select = new AreaSelect({pccs}).getContext();
+
                 const container = Dom(`div.settings-input-container`);
                 container.setAttribute('data-area', letter);
                 container.appendChild(Dom(`label[Area ${letter}]`, {style: 'text-align: right; padding-right: 6px;'}));
-                container.appendChild(Dom('input.form-control settings-input default-pcc', {
+                container.appendChild(select);
+           /*     container.appendChild(Dom('input.form-control settings-input default-pcc', {
                     placeholder: '', value: this._getAreaPcc(gds, letter)
-                }));
+                }));*/
+                $(select).select2({theme : "bootstrap"});
                 return container;
             })
             .forEach(cell => areaGrid.appendChild(cell));
