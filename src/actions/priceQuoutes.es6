@@ -29,7 +29,7 @@ export const SET_REQUEST_ID = rId => {
 };
 
 const openPq = app => {
-	app.pqParser.show( app.getGds(), app.params.requestId )
+	app.pqParser.show( app.getGds(), app.params.requestId, app.params.isStandAlone )
 		.then(() => showPq({menuHidden : true}, 0));
 };
 
