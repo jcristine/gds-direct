@@ -151,6 +151,12 @@ class Context
                     placeholder: '', value: this._getAreaPcc(gds, letter)
                 }));*/
                 $(select).select2({theme : "bootstrap"});
+                $(select).on('select2:open', e => {
+                    $(".select2-search__field").on('click', e => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                    });
+                });
                 return container;
             })
             .forEach(cell => areaGrid.appendChild(cell));
