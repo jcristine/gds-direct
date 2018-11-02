@@ -3,6 +3,7 @@ import Dom                                  from "../../helpers/dom";
 import {GET_LAST_REQUESTS}                  from "../../actions/settings";
 import {PQ_MODAL_SHOW, SET_REQUEST_ID} 	    from "../../actions/priceQuoutes";
 import Drop                                 from "tether-drop";
+import Moment 								from "moment";
 
 export default class gdsDirectPqButton extends Component
 {
@@ -78,19 +79,75 @@ class PopoverContext
 	_makeBody(response, popover)
 	{
 		response.data.forEach( value => {
+			const leadWrapper = Dom('div');
 
-			const el 	= Dom(`a.t-pointer[${value}]`, {
-				onclick : () => {
-					SET_REQUEST_ID(value)
-						.then( () => {
-							PQ_MODAL_SHOW();
-							popover.close();
-						});
+            const el 	= Dom(`a.t-pointer[${value}]`, {
+                onclick : () => {
+                    SET_REQUEST_ID(value)
+                        .then( () => {
+                            PQ_MODAL_SHOW();
+                            popover.close();
+                        });
+                }
+            });
+
+            leadWrapper.appendChild( el );
+
+            response.records.forEach( record => {
+				if (value === record.id)
+				{
+					let dateWrapper = Dom('div', { style: 'display: inline-block; width: 55px; margin-right: 5px;' });
+
+                    dateWrapper.appendChild(
+                        Dom(`span[${this._getDate(record)}]`)
+                    );
+
+					leadWrapper.appendChild( dateWrapper );
+
+                    leadWrapper.appendChild(
+                    	Dom(`span[${this._getItinerary(record)}]`)
+					);
 				}
-			});
+			} );
 
-			this.context.appendChild( el );
+			this.context.appendChild( leadWrapper );
 		});
+	}
+
+	_getDate (record) {
+		const destination = record.destinations[Object.keys(record.destinations)[0]][1];
+
+		return destination.departureDateMin && destination.departureDateMin !== "" ? Moment(destination.departureDateMin).format('DD-MMM-YY') : '';
+	}
+
+	_getItinerary (record) {
+        let codes = [], destination, departure;
+
+        const destinations = Object.keys(record.destinations).map( key => record.destinations[key][1]);
+
+      	destinations.forEach( function( firstRoute ) {
+
+            departure	= firstRoute['departureCityCode'] || firstRoute['departureAirportCode'];
+
+            if (destination && ( departure !== destination ) )
+            {
+                codes.push( destination, '||' );
+            }
+
+            if (departure)
+            {
+                codes.push( departure, '-' );
+            }
+
+            destination = firstRoute['destinationCityCode'] || firstRoute['destinationAirportCode'];
+        });
+
+        if ( destination )
+        {
+            codes.push(destination);
+        }
+
+        return codes.join('') || '';
 	}
 
 	finalize(popContent)

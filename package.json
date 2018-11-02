@@ -29,6 +29,7 @@
     "jquery-param": "^0.2.0",
     "jquery.terminal": "1.7.0",
     "keyboardevent-key-polyfill": "^1.0.2",
+    "moment": "^2.22.2",
     "noty": "^3.0.1",
     "tether-drop": "^1.4.2",
     "whatwg-fetch": "^2.0.4"
