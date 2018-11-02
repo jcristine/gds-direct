@@ -3,7 +3,7 @@ import Component from "../../modules/component";
 export default class AreaSelect extends Component{
     constructor({defaultPcc, pccs})
     {
-        super('select.form-control', {style : 'z-index: 9999'});
+        super('select.form-control default-pcc', {style : 'z-index: 9999'});
 
         this.context.appendChild(
             new Option('Not selected', '0')

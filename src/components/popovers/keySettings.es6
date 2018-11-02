@@ -250,15 +250,15 @@ class Context
 			result[gds].defaultPcc = this.inputFields[gds].pccContainer.children[1].value;
 			result[gds].areaSettings = [...this.inputFields[gds].areaGrid.children].map(cont => 1 && {
 				area: cont.getAttribute('data-area'),
-				defaultPcc: [...cont.querySelectorAll('input.default-pcc')]
-					.map(inp => inp.value)[0] || null,
+				defaultPcc: [...cont.querySelectorAll('select.default-pcc')]
+					.map(select => select.options[select.selectedIndex].innerHTML)[0] || null,
             });
 
 			// jquery-param removes empty objects so we need to preserve emptiness with "null"
 			if ($.isEmptyObject(result[gds].keyBindings)) {
 				result[gds].keyBindings = null;
 			}
-		})
+		});
 
 		CHANGE_SETTINGS(result);
 	}
