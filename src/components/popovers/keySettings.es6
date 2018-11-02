@@ -156,6 +156,10 @@ class Context
                         e.preventDefault();
                         e.stopPropagation();
                     });
+                    $(".select2-dropdown.select2-dropdown--below").on('click', e => {
+                    	e.preventDefault();
+                    	e.stopPropagation();
+					});
                 });
                 return container;
             })
