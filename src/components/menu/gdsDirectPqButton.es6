@@ -73,7 +73,20 @@ class PopoverContext
 	{
 		this.context = Dom('div');
 
+		this._makeHeader();
+
 		this._makeBody(response, popover);
+	}
+
+	_makeHeader ()
+	{
+		const header = Dom('div', {style: 'text-align: center'});
+
+		header.appendChild(
+			Dom(`h4[Last 10 requests]`, {style: 'font-weight: bold'})
+		);
+
+		this.context.appendChild( header );
 	}
 
 	_makeBody(response, popover)
