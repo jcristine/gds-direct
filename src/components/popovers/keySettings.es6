@@ -136,7 +136,7 @@ class Context
 			placeholder: '',
 			value: this._getPcc(gds)
 		});
-		const areaGrid = Dom(`div`, {style: 'display: grid; grid-template-areas: "a a"; padding-left: 10%'});
+		const areaGrid = Dom(`div`, {style: 'display: grid; grid-template-areas: "a a";'});
 		this._getGdsAreas(gds)
             .map(letter => {
                 const defaultPcc    = this._getAreaPcc(gds, letter);
@@ -251,7 +251,7 @@ class Context
 			result[gds].areaSettings = [...this.inputFields[gds].areaGrid.children].map(cont => 1 && {
 				area: cont.getAttribute('data-area'),
 				defaultPcc: [...cont.querySelectorAll('select.default-pcc')]
-					.map(select => select.options[select.selectedIndex].innerHTML)[0] || null,
+					.map(select => select.options[select.selectedIndex].value)[0] || null,
             });
 
 			// jquery-param removes empty objects so we need to preserve emptiness with "null"
