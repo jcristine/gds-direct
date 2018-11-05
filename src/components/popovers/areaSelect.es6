@@ -11,7 +11,7 @@ export default class AreaSelect extends Component{
 
         pccs.map( pcc => {
             this.context.appendChild(
-                new Option(pcc.label, pcc.name, pcc.name === defaultPcc, pcc.name === defaultPcc)
+                new Option(pcc.name + " - " + pcc.consolidatorName, pcc.name, pcc.name === defaultPcc, pcc.name === defaultPcc)
             )
         } );
     }
