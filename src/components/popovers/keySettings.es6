@@ -150,17 +150,11 @@ class Context
            /*     container.appendChild(Dom('input.form-control settings-input default-pcc', {
                     placeholder: '', value: this._getAreaPcc(gds, letter)
                 }));*/
-                $(select).select2({theme : "bootstrap"});
-                $(select).on('select2:open', e => {
-                    $(".select2-search__field").on('click', e => {
-                        e.preventDefault();
-                        e.stopPropagation();
-                    });
-                    $(".select2-dropdown.select2-dropdown--below").on('click', e => {
-                    	e.preventDefault();
-                    	e.stopPropagation();
-					});
+                $(select).select2({
+                    theme : "bootstrap",
+                    dropdownParent : $(this.context)
                 });
+
                 return container;
             })
             .forEach(cell => areaGrid.appendChild(cell));
