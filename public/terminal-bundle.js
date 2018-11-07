@@ -86,17 +86,6 @@
 /************************************************************************/
 /******/ ({
 
-/***/ "../node_modules/moment/moment.js":
-/*!********************************************************************************!*\
-  !*** delegated ../node_modules/moment/moment.js from dll-reference vendor_lib ***!
-  \********************************************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-module.exports = (__webpack_require__(/*! dll-reference vendor_lib */ "dll-reference vendor_lib"))(0);
-
-/***/ }),
-
 /***/ "./node_modules/cli-spinners/index.js":
 /*!************************************************************************************!*\
   !*** delegated ./node_modules/cli-spinners/index.js from dll-reference vendor_lib ***!
@@ -303,6 +292,17 @@ module.exports = (__webpack_require__(/*! dll-reference vendor_lib */ "dll-refer
 /***/ (function(module, exports, __webpack_require__) {
 
 module.exports = (__webpack_require__(/*! dll-reference vendor_lib */ "dll-reference vendor_lib"))(131);
+
+/***/ }),
+
+/***/ "./node_modules/moment/moment.js":
+/*!*******************************************************************************!*\
+  !*** delegated ./node_modules/moment/moment.js from dll-reference vendor_lib ***!
+  \*******************************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+module.exports = (__webpack_require__(/*! dll-reference vendor_lib */ "dll-reference vendor_lib"))(0);
 
 /***/ }),
 
@@ -2056,7 +2056,7 @@ var _tetherDrop = __webpack_require__(/*! tether-drop */ "./node_modules/tether-
 
 var _tetherDrop2 = _interopRequireDefault(_tetherDrop);
 
-var _moment = __webpack_require__(/*! moment */ "../node_modules/moment/moment.js");
+var _moment = __webpack_require__(/*! moment */ "./node_modules/moment/moment.js");
 
 var _moment2 = _interopRequireDefault(_moment);
 
@@ -3229,7 +3229,7 @@ var Context = function () {
 
 				result[gds].defaultPcc = _this4.inputFields[gds].pccContainer.children[1].value;
 				result[gds].areaSettings = [].concat(_toConsumableArray(_this4.inputFields[gds].areaGrid.children)).map(function (cont) {
-					return  true && {
+					return 1 && {
 						area: cont.getAttribute('data-area'),
 						defaultPcc: [].concat(_toConsumableArray(cont.querySelectorAll('input.default-pcc'))).map(function (inp) {
 							return inp.value;
