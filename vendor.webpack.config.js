@@ -12,7 +12,8 @@ module.exports = {
 			'noty',
 			'tether-drop',
 			'whatwg-fetch',
-			'jquery-param'
+			'jquery-param',
+			'moment'
 		]
 	},
 
