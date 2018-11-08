@@ -8662,7 +8662,7 @@ var AreaSelect = function (_Component) {
 
         var _this = _possibleConstructorReturn(this, (AreaSelect.__proto__ || Object.getPrototypeOf(AreaSelect)).call(this, 'select.form-control default-pcc', { style: 'z-index: 9999' }));
 
-        _this.context.appendChild(new Option('Not selected', '0'));
+        _this.context.appendChild(new Option('Not selected', ''));
 
         pccs.map(function (pcc) {
             _this.context.appendChild(new Option(pcc.name + " - " + pcc.consolidatorName, pcc.name, pcc.name === defaultPcc, pcc.name === defaultPcc));

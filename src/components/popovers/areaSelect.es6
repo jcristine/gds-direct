@@ -6,7 +6,7 @@ export default class AreaSelect extends Component{
         super('select.form-control default-pcc', {style : 'z-index: 9999'});
 
         this.context.appendChild(
-            new Option('Not selected', '0')
+            new Option('Not selected', '')
         );
 
         pccs.map( pcc => {
