@@ -8043,7 +8043,11 @@ var PopoverContext = function () {
 		value: function _getDate(record) {
 			var destination = record.destinations[Object.keys(record.destinations)[0]][1];
 
-			return destination.departureDateMin && destination.departureDateMin !== "" ? (0, _moment2.default)(destination.departureDateMin).format('DD-MMM-YY') : '';
+			if (!destination.departureDateMin || destination.departureDateMin === "" || destination.departureDateMin === "0000-00-00 00:00:00") {
+				return '-';
+			}
+
+			return (0, _moment2.default)(destination.departureDateMin).format('DD-MMM-YY');
 		}
 	}, {
 		key: "_getItinerary",

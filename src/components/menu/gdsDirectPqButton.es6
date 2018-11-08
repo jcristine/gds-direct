@@ -130,7 +130,12 @@ class PopoverContext
 	_getDate (record) {
 		const destination = record.destinations[Object.keys(record.destinations)[0]][1];
 
-		return destination.departureDateMin && destination.departureDateMin !== "" ? Moment(destination.departureDateMin).format('DD-MMM-YY') : '';
+		if (!destination.departureDateMin || destination.departureDateMin === "" || destination.departureDateMin === "0000-00-00 00:00:00")
+		{
+			return '-';
+		}
+
+		return Moment(destination.departureDateMin).format('DD-MMM-YY')
 	}
 
 	_getItinerary (record) {
