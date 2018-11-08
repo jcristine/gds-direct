@@ -139,20 +139,19 @@ class Context
 		const areaGrid = Dom(`div`, {style: 'display: grid; grid-template-areas: "a a";'});
 		this._getGdsAreas(gds)
             .map(letter => {
+                const container = Dom(`div.settings-input-container`);
                 const defaultPcc    = this._getAreaPcc(gds, letter);
             	const pccs          = this.pccs.filter( pcc => pcc.gds === gds);
             	const select        = new AreaSelect({defaultPcc, pccs}).getContext();
 
-                const container = Dom(`div.settings-input-container`);
                 container.setAttribute('data-area', letter);
                 container.appendChild(Dom(`label[Area ${letter}]`, {style: 'text-align: right; padding-right: 6px;'}));
                 container.appendChild(select);
-           /*     container.appendChild(Dom('input.form-control settings-input default-pcc', {
-                    placeholder: '', value: this._getAreaPcc(gds, letter)
-                }));*/
+
                 $(select).select2({
                     theme : "bootstrap",
-                    dropdownParent : $(this.context)
+                    dropdownParent : $(this.context),
+					width : '185px'
                 });
 
                 return container;
