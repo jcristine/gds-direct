@@ -7152,6 +7152,12 @@ var TerminalApp = function () {
 	}, {
 		key: 'calculateMatrix',
 		value: function calculateMatrix() {
+			if (this.container.context.offsetParent === null) {
+				// terminal tab is hidden, can't recalculate since clientWidth will be 0
+				// TODO: should probably also trigger recalculate on tab change
+				return;
+			}
+
 			var _Gds$getCurrent$get = this.Gds.getCurrent().get(),
 			    matrix = _Gds$getCurrent$get.matrix,
 			    hasWide = _Gds$getCurrent$get.hasWide;
@@ -9151,7 +9157,7 @@ var Context = function () {
 
 				result[gds].defaultPcc = _this4.inputFields[gds].pccContainer.children[1].value;
 				result[gds].areaSettings = [].concat(_toConsumableArray(_this4.inputFields[gds].areaGrid.children)).map(function (cont) {
-					return 1 && {
+					return  true && {
 						area: cont.getAttribute('data-area'),
 						defaultPcc: [].concat(_toConsumableArray(cont.querySelectorAll('select.default-pcc'))).map(function (select) {
 							return select.options[select.selectedIndex].value;

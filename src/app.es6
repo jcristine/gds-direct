@@ -152,6 +152,12 @@ class TerminalApp
 
 	calculateMatrix()
 	{
+		if (this.container.context.offsetParent === null) {
+			// terminal tab is hidden, can't recalculate since clientWidth will be 0
+			// TODO: should probably also trigger recalculate on tab change
+			return;
+		}
+
 		const {matrix, hasWide} = this.Gds.getCurrent().get();
 		const {rows, cells} 	= matrix;
 
