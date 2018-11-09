@@ -7879,7 +7879,7 @@ var GdsButtons = function (_ButtonPopOver) {
 
 
 Object.defineProperty(exports, "__esModule", {
-	value: true
+    value: true
 });
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -7898,13 +7898,13 @@ var _settings = __webpack_require__(/*! ../../actions/settings */ "./src/actions
 
 var _priceQuoutes = __webpack_require__(/*! ../../actions/priceQuoutes */ "./src/actions/priceQuoutes.es6");
 
-var _tetherDrop = __webpack_require__(/*! tether-drop */ "./node_modules/tether-drop/dist/js/drop.js");
-
-var _tetherDrop2 = _interopRequireDefault(_tetherDrop);
-
 var _moment = __webpack_require__(/*! moment */ "./node_modules/moment/moment.js");
 
 var _moment2 = _interopRequireDefault(_moment);
+
+var _buttonPopover = __webpack_require__(/*! ../../modules/buttonPopover */ "./src/modules/buttonPopover.es6");
+
+var _buttonPopover2 = _interopRequireDefault(_buttonPopover);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -7917,184 +7917,178 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
 var gdsDirectPqButton = function (_Component) {
-	_inherits(gdsDirectPqButton, _Component);
+    _inherits(gdsDirectPqButton, _Component);
 
-	function gdsDirectPqButton() {
-		_classCallCheck(this, gdsDirectPqButton);
+    function gdsDirectPqButton() {
+        _classCallCheck(this, gdsDirectPqButton);
 
-		var _this = _possibleConstructorReturn(this, (gdsDirectPqButton.__proto__ || Object.getPrototypeOf(gdsDirectPqButton)).call(this, 'button.btn btn-sm btn-mozilla font-bold[PQ]'));
+        var _this = _possibleConstructorReturn(this, (gdsDirectPqButton.__proto__ || Object.getPrototypeOf(gdsDirectPqButton)).call(this, 'div'));
 
-		_this.popContent = (0, _dom2.default)('div.terminal-menu-popover requestList');
+        _this.pqButton = new PqButtonPopover().getTrigger();
+        return _this;
+    }
 
-		_this.context.addEventListener('click', function () {
-			_this.makePopover();
-			_this.askServer();
-		});
-		return _this;
-	}
+    _createClass(gdsDirectPqButton, [{
+        key: "setState",
+        value: function setState(_ref) {
+            var requestId = _ref.requestId,
+                state = _objectWithoutProperties(_ref, ["requestId"]);
 
-	_createClass(gdsDirectPqButton, [{
-		key: "makePopover",
-		value: function makePopover() {
-			if (this.popover) {
-				return false;
-			}
+            return _get(gdsDirectPqButton.prototype.__proto__ || Object.getPrototypeOf(gdsDirectPqButton.prototype), "setState", this).call(this, {
+                canCreatePq: state.curGds.get('canCreatePq'),
+                requestId: requestId
+            });
+        }
+    }, {
+        key: "mount",
+        value: function mount() {
+            this.context.appendChild(this.pqButton);
+        }
+    }, {
+        key: "_renderer",
+        value: function _renderer() {
+            this.pqButton.disabled = this.state.canCreatePq !== true;
+            this.pqButton.classList.toggle('hidden', !!this.state.requestId);
+        }
+    }]);
 
-			this.popover = new _tetherDrop2.default({
-				target: this.context,
-				content: this.popContent,
-				classes: 'drop-theme-twipsy',
-				position: 'left top',
-				openOn: 'manual'
-			});
-		}
-	}, {
-		key: "askServer",
-		value: function askServer() {
-			var _this2 = this;
-
-			this.popContent.innerHTML = '<div class="text-center"><div class="terminal-lds-hourglass"></div></div>';
-
-			this.popover.open();
-
-			(0, _settings.GET_LAST_REQUESTS)().then(function (response) {
-				var c = new PopoverContext(response, _this2.popover);
-
-				_this2.popContent.innerHTML = '';
-				_this2.popContent.appendChild(c.context);
-
-				c.finalize(_this2.popContent);
-			});
-		}
-	}, {
-		key: "setState",
-		value: function setState(_ref) {
-			var requestId = _ref.requestId,
-			    state = _objectWithoutProperties(_ref, ["requestId"]);
-
-			return _get(gdsDirectPqButton.prototype.__proto__ || Object.getPrototypeOf(gdsDirectPqButton.prototype), "setState", this).call(this, {
-				canCreatePq: state.curGds.get('canCreatePq'),
-				requestId: requestId
-			});
-		}
-	}, {
-		key: "_renderer",
-		value: function _renderer() {
-			this.context.disabled = this.state.canCreatePq !== true;
-			this.context.classList.toggle('hidden', !!this.state.requestId);
-		}
-	}]);
-
-	return gdsDirectPqButton;
+    return gdsDirectPqButton;
 }(_component2.default);
 
 exports.default = gdsDirectPqButton;
 
+var PqButtonPopover = function (_ButtonPopOver) {
+    _inherits(PqButtonPopover, _ButtonPopOver);
+
+    function PqButtonPopover() {
+        _classCallCheck(this, PqButtonPopover);
+
+        var _this2 = _possibleConstructorReturn(this, (PqButtonPopover.__proto__ || Object.getPrototypeOf(PqButtonPopover)).call(this, { icon: 'PQ' }, 'div.terminal-menu-popover requestList'));
+
+        _this2.makeTrigger({
+            className: 'btn btn-sm btn-mozilla font-bold',
+            onclick: function onclick() {
+                (0, _settings.GET_LAST_REQUESTS)().then(function (response) {
+                    var c = new PopoverContext(response, _this2.popover);
+
+                    _this2.popContent.innerHTML = '';
+                    _this2.popContent.appendChild(c.context);
+
+                    c.finalize(_this2.popContent);
+                });
+            }
+        });
+        return _this2;
+    }
+
+    return PqButtonPopover;
+}(_buttonPopover2.default);
+
 var PopoverContext = function () {
-	function PopoverContext(response, popover) {
-		_classCallCheck(this, PopoverContext);
+    function PopoverContext(response, popover) {
+        _classCallCheck(this, PopoverContext);
 
-		this.context = (0, _dom2.default)('div');
+        this.context = (0, _dom2.default)('div');
 
-		this._makeHeader();
+        this._makeHeader();
 
-		this._makeBody(response, popover);
-	}
+        this._makeBody(response, popover);
+    }
 
-	_createClass(PopoverContext, [{
-		key: "_makeHeader",
-		value: function _makeHeader() {
-			var header = (0, _dom2.default)('div', { style: 'text-align: center' });
+    _createClass(PopoverContext, [{
+        key: "_makeHeader",
+        value: function _makeHeader() {
+            var header = (0, _dom2.default)('div', { style: 'text-align: center' });
 
-			header.appendChild((0, _dom2.default)("h4[Last 10 requests]", { style: 'font-weight: bold' }));
+            header.appendChild((0, _dom2.default)("h4[Last 10 requests]", { style: 'font-weight: bold' }));
 
-			this.context.appendChild(header);
-		}
-	}, {
-		key: "_makeBody",
-		value: function _makeBody(response, popover) {
-			var _this3 = this;
+            this.context.appendChild(header);
+        }
+    }, {
+        key: "_makeBody",
+        value: function _makeBody(response, popover) {
+            var _this3 = this;
 
-			response.data.forEach(function (value) {
-				var leadWrapper = (0, _dom2.default)('div');
+            response.data.forEach(function (value) {
+                var leadWrapper = (0, _dom2.default)('div');
 
-				var el = (0, _dom2.default)("a.t-pointer[" + value + "]", {
-					onclick: function onclick() {
-						(0, _priceQuoutes.SET_REQUEST_ID)(value).then(function () {
-							(0, _priceQuoutes.PQ_MODAL_SHOW)();
-							popover.close();
-						});
-					}
-				});
+                var el = (0, _dom2.default)("a.t-pointer[" + value + "]", {
+                    onclick: function onclick() {
+                        (0, _priceQuoutes.SET_REQUEST_ID)(value).then(function () {
+                            (0, _priceQuoutes.PQ_MODAL_SHOW)();
+                            popover.close();
+                        });
+                    }
+                });
 
-				leadWrapper.appendChild(el);
+                leadWrapper.appendChild(el);
 
-				response.records.forEach(function (record) {
-					if (value === record.id) {
-						var dateWrapper = (0, _dom2.default)('div', { style: 'display: inline-block; width: 55px; margin-right: 5px;' });
+                response.records.forEach(function (record) {
+                    if (value === record.id) {
+                        var dateWrapper = (0, _dom2.default)('div', { style: 'display: inline-block; width: 55px; margin-right: 5px;' });
 
-						dateWrapper.appendChild((0, _dom2.default)("span[" + _this3._getDate(record) + "]"));
+                        dateWrapper.appendChild((0, _dom2.default)("span[" + _this3._getDate(record) + "]"));
 
-						leadWrapper.appendChild(dateWrapper);
+                        leadWrapper.appendChild(dateWrapper);
 
-						leadWrapper.appendChild((0, _dom2.default)("span[" + _this3._getItinerary(record) + "]"));
-					}
-				});
+                        leadWrapper.appendChild((0, _dom2.default)("span[" + _this3._getItinerary(record) + "]"));
+                    }
+                });
 
-				_this3.context.appendChild(leadWrapper);
-			});
-		}
-	}, {
-		key: "_getDate",
-		value: function _getDate(record) {
-			var destination = record.destinations[Object.keys(record.destinations)[0]][1];
+                _this3.context.appendChild(leadWrapper);
+            });
+        }
+    }, {
+        key: "_getDate",
+        value: function _getDate(record) {
+            var destination = record.destinations[Object.keys(record.destinations)[0]][1];
 
-			if (!destination.departureDateMin || destination.departureDateMin === "" || destination.departureDateMin === "0000-00-00 00:00:00") {
-				return '-';
-			}
+            if (!destination.departureDateMin || destination.departureDateMin === "" || destination.departureDateMin === "0000-00-00 00:00:00") {
+                return '-';
+            }
 
-			return (0, _moment2.default)(destination.departureDateMin).format('DD-MMM-YY');
-		}
-	}, {
-		key: "_getItinerary",
-		value: function _getItinerary(record) {
-			var codes = [],
-			    destination = void 0,
-			    departure = void 0;
+            return (0, _moment2.default)(destination.departureDateMin).format('DD-MMM-YY');
+        }
+    }, {
+        key: "_getItinerary",
+        value: function _getItinerary(record) {
+            var codes = [],
+                destination = void 0,
+                departure = void 0;
 
-			var destinations = Object.keys(record.destinations).map(function (key) {
-				return record.destinations[key][1];
-			});
+            var destinations = Object.keys(record.destinations).map(function (key) {
+                return record.destinations[key][1];
+            });
 
-			destinations.forEach(function (firstRoute) {
+            destinations.forEach(function (firstRoute) {
 
-				departure = firstRoute['departureCityCode'] || firstRoute['departureAirportCode'];
+                departure = firstRoute['departureCityCode'] || firstRoute['departureAirportCode'];
 
-				if (destination && departure !== destination) {
-					codes.push(destination, '||');
-				}
+                if (destination && departure !== destination) {
+                    codes.push(destination, '||');
+                }
 
-				if (departure) {
-					codes.push(departure, '-');
-				}
+                if (departure) {
+                    codes.push(departure, '-');
+                }
 
-				destination = firstRoute['destinationCityCode'] || firstRoute['destinationAirportCode'];
-			});
+                destination = firstRoute['destinationCityCode'] || firstRoute['destinationAirportCode'];
+            });
 
-			if (destination) {
-				codes.push(destination);
-			}
+            if (destination) {
+                codes.push(destination);
+            }
 
-			return codes.join('') || '';
-		}
-	}, {
-		key: "finalize",
-		value: function finalize(popContent) {
-			this.context.scrollTop = popContent.scrollHeight;
-		}
-	}]);
+            return codes.join('') || '';
+        }
+    }, {
+        key: "finalize",
+        value: function finalize(popContent) {
+            this.context.scrollTop = popContent.scrollHeight;
+        }
+    }]);
 
-	return PopoverContext;
+    return PopoverContext;
 }();
 
 /***/ }),
@@ -9157,7 +9151,7 @@ var Context = function () {
 
 				result[gds].defaultPcc = _this4.inputFields[gds].pccContainer.children[1].value;
 				result[gds].areaSettings = [].concat(_toConsumableArray(_this4.inputFields[gds].areaGrid.children)).map(function (cont) {
-					return  true && {
+					return 1 && {
 						area: cont.getAttribute('data-area'),
 						defaultPcc: [].concat(_toConsumableArray(cont.querySelectorAll('select.default-pcc'))).map(function (select) {
 							return select.options[select.selectedIndex].value;

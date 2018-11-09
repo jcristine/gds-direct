@@ -2,97 +2,90 @@ import Component 		                    from "../../modules/component";
 import Dom                                  from "../../helpers/dom";
 import {GET_LAST_REQUESTS}                  from "../../actions/settings";
 import {PQ_MODAL_SHOW, SET_REQUEST_ID} 	    from "../../actions/priceQuoutes";
-import Drop                                 from "tether-drop";
 import Moment 								from "moment";
+import ButtonPopOver						from "../../modules/buttonPopover";
 
 export default class gdsDirectPqButton extends Component
 {
-	constructor()
-	{
-		super('button.btn btn-sm btn-mozilla font-bold[PQ]');
+    constructor()
+    {
+        super('div');
 
-		this.popContent = Dom('div.terminal-menu-popover requestList');
+        this.pqButton = new PqButtonPopover().getTrigger();
+    }
 
-		this.context.addEventListener('click', () => {
-			this.makePopover();
-			this.askServer();
-		});
-	}
+    setState({requestId, ...state})
+    {
+        return super.setState({
+            canCreatePq : state.curGds.get('canCreatePq'),
+            requestId 	: requestId
+        })
+    }
 
-	makePopover()
-	{
-		if (this.popover)
-		{
-			return false;
-		}
+    mount ()
+    {
+        this.context.appendChild(
+            this.pqButton
+        )
+    }
 
-		this.popover = new Drop({
-			target		: this.context,
-			content		: this.popContent,
-			classes		: 'drop-theme-twipsy',
-			position	: 'left top',
-			openOn		: 'manual'
-		});
-	}
+    _renderer()
+    {
+        this.pqButton.disabled = this.state.canCreatePq !== true;
+        this.pqButton.classList.toggle('hidden', !!this.state.requestId);
+    }
+}
 
-	askServer()
-	{
-		this.popContent.innerHTML 	= '<div class="text-center"><div class="terminal-lds-hourglass"></div></div>';
+class PqButtonPopover extends ButtonPopOver {
 
-		this.popover.open();
+    constructor()
+    {
+        super({icon : 'PQ'}, 'div.terminal-menu-popover requestList');
 
-		GET_LAST_REQUESTS()
-			.then(response => {
-				const c = new PopoverContext(response, this.popover);
+        this.makeTrigger({
+            className	: 'btn btn-sm btn-mozilla font-bold',
+            onclick		: () => {
+                GET_LAST_REQUESTS()
+                    .then(response => {
+                        const c = new PopoverContext(response, this.popover);
 
-				this.popContent.innerHTML = '';
-				this.popContent.appendChild( c.context );
+                        this.popContent.innerHTML = '';
+                        this.popContent.appendChild( c.context );
 
-				c.finalize( this.popContent );
-			});
-	}
+                        c.finalize( this.popContent );
+                    });
+            }
+        });
+    }
 
-	setState({requestId, ...state})
-	{
-		return super.setState({
-			canCreatePq : state.curGds.get('canCreatePq'),
-			requestId 	: requestId
-		})
-	}
-
-	_renderer()
-	{
-		this.context.disabled = this.state.canCreatePq !== true;
-		this.context.classList.toggle('hidden', !!this.state.requestId);
-	}
 }
 
 class PopoverContext
 {
-	constructor(response, popover)
-	{
-		this.context = Dom('div');
+    constructor(response, popover)
+    {
+        this.context = Dom('div');
 
-		this._makeHeader();
+        this._makeHeader();
 
-		this._makeBody(response, popover);
-	}
+        this._makeBody(response, popover);
+    }
 
-	_makeHeader ()
-	{
-		const header = Dom('div', {style: 'text-align: center'});
+    _makeHeader ()
+    {
+        const header = Dom('div', {style: 'text-align: center'});
 
-		header.appendChild(
-			Dom(`h4[Last 10 requests]`, {style: 'font-weight: bold'})
-		);
+        header.appendChild(
+            Dom(`h4[Last 10 requests]`, {style: 'font-weight: bold'})
+        );
 
-		this.context.appendChild( header );
-	}
+        this.context.appendChild( header );
+    }
 
-	_makeBody(response, popover)
-	{
-		response.data.forEach( value => {
-			const leadWrapper = Dom('div');
+    _makeBody(response, popover)
+    {
+        response.data.forEach( value => {
+            const leadWrapper = Dom('div');
 
             const el 	= Dom(`a.t-pointer[${value}]`, {
                 onclick : () => {
@@ -107,43 +100,43 @@ class PopoverContext
             leadWrapper.appendChild( el );
 
             response.records.forEach( record => {
-				if (value === record.id)
-				{
-					let dateWrapper = Dom('div', { style: 'display: inline-block; width: 55px; margin-right: 5px;' });
+                if (value === record.id)
+                {
+                    let dateWrapper = Dom('div', { style: 'display: inline-block; width: 55px; margin-right: 5px;' });
 
                     dateWrapper.appendChild(
                         Dom(`span[${this._getDate(record)}]`)
                     );
 
-					leadWrapper.appendChild( dateWrapper );
+                    leadWrapper.appendChild( dateWrapper );
 
                     leadWrapper.appendChild(
-                    	Dom(`span[${this._getItinerary(record)}]`)
-					);
-				}
-			} );
+                        Dom(`span[${this._getItinerary(record)}]`)
+                    );
+                }
+            } );
 
-			this.context.appendChild( leadWrapper );
-		});
-	}
+            this.context.appendChild( leadWrapper );
+        });
+    }
 
-	_getDate (record) {
-		const destination = record.destinations[Object.keys(record.destinations)[0]][1];
+    _getDate (record) {
+        const destination = record.destinations[Object.keys(record.destinations)[0]][1];
 
-		if (!destination.departureDateMin || destination.departureDateMin === "" || destination.departureDateMin === "0000-00-00 00:00:00")
-		{
-			return '-';
-		}
+        if (!destination.departureDateMin || destination.departureDateMin === "" || destination.departureDateMin === "0000-00-00 00:00:00")
+        {
+            return '-';
+        }
 
-		return Moment(destination.departureDateMin).format('DD-MMM-YY')
-	}
+        return Moment(destination.departureDateMin).format('DD-MMM-YY')
+    }
 
-	_getItinerary (record) {
+    _getItinerary (record) {
         let codes = [], destination, departure;
 
         const destinations = Object.keys(record.destinations).map( key => record.destinations[key][1]);
 
-      	destinations.forEach( function( firstRoute ) {
+        destinations.forEach( function( firstRoute ) {
 
             departure	= firstRoute['departureCityCode'] || firstRoute['departureAirportCode'];
 
@@ -166,10 +159,10 @@ class PopoverContext
         }
 
         return codes.join('') || '';
-	}
+    }
 
-	finalize(popContent)
-	{
-		this.context.scrollTop  = popContent.scrollHeight;
-	}
+    finalize(popContent)
+    {
+        this.context.scrollTop  = popContent.scrollHeight;
+    }
 }
