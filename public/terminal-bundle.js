@@ -9151,7 +9151,7 @@ var Context = function () {
 
 				result[gds].defaultPcc = _this4.inputFields[gds].pccContainer.children[1].value;
 				result[gds].areaSettings = [].concat(_toConsumableArray(_this4.inputFields[gds].areaGrid.children)).map(function (cont) {
-					return  true && {
+					return 1 && {
 						area: cont.getAttribute('data-area'),
 						defaultPcc: [].concat(_toConsumableArray(cont.querySelectorAll('select.default-pcc'))).map(function (select) {
 							return select.options[select.selectedIndex].value;
