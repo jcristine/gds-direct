@@ -187,7 +187,11 @@ export default class TerminalPlugin
 			this.outputLiner.printOutput('');
 			this.spinner.start();
 
-			this.print(`[[;;;usedCommand;]>${command.toUpperCase()}]`);
+			// trim and split needed for multiline commands, since jquery
+			// terminal does not allow line breaks inside [[;;;...]>]
+			command.trimEnd().split('\n').forEach(cmdLine => {
+				this.print(`[[;;;usedCommand;]>${cmdLine.toUpperCase()}]`);
+			});
 			return command.toUpperCase();
 		};
 

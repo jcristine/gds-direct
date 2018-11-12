@@ -9151,7 +9151,7 @@ var Context = function () {
 
 				result[gds].defaultPcc = _this4.inputFields[gds].pccContainer.children[1].value;
 				result[gds].areaSettings = [].concat(_toConsumableArray(_this4.inputFields[gds].areaGrid.children)).map(function (cont) {
-					return 1 && {
+					return  true && {
 						area: cont.getAttribute('data-area'),
 						defaultPcc: [].concat(_toConsumableArray(cont.querySelectorAll('select.default-pcc'))).map(function (select) {
 							return select.options[select.selectedIndex].value;
@@ -11213,7 +11213,11 @@ var TerminalPlugin = function () {
 				_this.outputLiner.printOutput('');
 				_this.spinner.start();
 
-				_this.print('[[;;;usedCommand;]>' + command.toUpperCase() + ']');
+				// trim and split needed for multiline commands, since jquery
+				// terminal does not allow line breaks inside [[;;;...]>]
+				command.trimEnd().split('\n').forEach(function (cmdLine) {
+					_this.print('[[;;;usedCommand;]>' + cmdLine.toUpperCase() + ']');
+				});
 				return command.toUpperCase();
 			};
 
