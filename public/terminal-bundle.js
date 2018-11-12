@@ -11213,9 +11213,9 @@ var TerminalPlugin = function () {
 				_this.outputLiner.printOutput('');
 				_this.spinner.start();
 
-				// trim and split needed for multiline commands, since jquery
+				// split needed for multiline commands, since jquery
 				// terminal does not allow line breaks inside [[;;;...]>]
-				command.trimEnd().split('\n').forEach(function (cmdLine) {
+				command.split('\n').forEach(function (cmdLine) {
 					_this.print('[[;;;usedCommand;]>' + cmdLine.toUpperCase() + ']');
 				});
 				return command.toUpperCase();
