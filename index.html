@@ -1,0 +1,40 @@
+<html>
+<head>
+    <title>GDS Direct on Node test page</title>
+    <meta charset="utf-8"/>
+</head>
+<body>
+
+<h2>This is a test page that demonstrates how gds-direct-nodejs app gets injected in a project (work in progress)</h2>
+<p>When we are done, it should be possible to inject this app in CMS/OTA/GBO/etc...</p>
+<p>Since it is hosted on node js, it is possible for server to preserve the http connection with GDS service endpoint resulting in x3 response time decrease on consequentive command calls</p>
+<textarea class="hi-output" rows="20" cols="80"></textarea>
+
+<script>
+(function() {
+    let nodeRpcUrl = 'http://localhost:8080';
+    fetch(nodeRpcUrl, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json; charset=utf-8',
+        },
+        body: JSON.stringify({
+            func: 'sayHi',
+            ping: 'pong',
+        }),
+    }).then(resp => resp.json()).then(responseData => {
+        console.log('responseData', responseData);
+        document.querySelectorAll('textarea.hi-output')
+            .forEach(dom => dom.innerHTML = JSON.stringify(responseData, null, 4));
+    });
+})();
+</script>
+
+<style>
+body {
+    padding: 18px;
+}
+</style>
+
+</body>
+</html>
