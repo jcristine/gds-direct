@@ -1,0 +1,1 @@
+If I get it right, these files are used to convert ES6 files to vanilla javascript right in the browser, without compilation on server side.

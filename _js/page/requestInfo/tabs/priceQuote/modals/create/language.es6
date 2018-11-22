@@ -1,0 +1,42 @@
+import App from 'application';
+
+export const language =  App.language.translate({
+	create				: 'Create',
+	clone				: 'Clone',
+	pqLabel				: 'Price Quote',
+	minMarkup			: 'Min Markup',
+	selling				: 'Selling',
+	price				: 'Price',
+	sellingPrice		: 'Selling price',
+	net					: 'Net',
+	netPriceOpt			: 'Net price (optional)',
+	netPrice			: 'Net price',
+	insertDump			: 'Insert Reservation Dump Here',
+	detailsNotR			: 'Flights details are not required',
+	createPq			: 'Create price quote',
+	adult				: 'Adult',
+	children			: 'Children',
+	infant				: 'Infant',
+	clientRemark		: 'Remarks for client',
+	internalRemark		: 'Internal Remarks',
+	pqMainCurrency		: 'Price Quote Main currency',
+	minSellingPrice		: 'Selling price needs to be at least',
+	pqAdded				: 'Flight Options Successfully saved',
+	cancel				: 'Cancel',
+	itinerary			: 'Itinerary',
+	pcc					: 'Pcc',
+	currency			: 'Currency',
+	mileage				: 'Mileage',
+	hotel 				: 'Hotel',
+	datesPlaceholder 	: 'Select your dates',
+	hotelName			: 'Hotel Name',
+	selectCity			: 'City, country',
+	hotelAddress		: 'Hotel Address',
+	nbrAdults			: 'Number of Adults',
+	nbrChildren			: 'Number of Children',
+	nbrRooms			: 'Number of Rooms',
+	hotelInputs			: 'Show hotel inputs',
+    searchIn            : 'Search in'
+}, 'optionsModal.js' );
+
+export const getLang = (label) => language[label];

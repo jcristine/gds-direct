@@ -1,0 +1,206 @@
+@true-black:        #000;
+@true-white:        #FFF;
+
+// Grays
+// -------------------------
+@gray07:            lighten(@true-black, 7%);      // #111
+@gray13:            lighten(@true-black, 13.5%);   // #222
+@gray15:            lighten(@true-black, 15%);     // #252525
+@gray20:            lighten(@true-black, 20%);     // #333
+@gray27:            lighten(@true-black, 27%);     // #444
+@gray33:            lighten(@true-black, 33.5%);   // #555
+@gray40:            lighten(@true-black, 40%);     // #666
+@gray46:            lighten(@true-black, 46%);     // #757575
+@gray53:            lighten(@true-black, 53%);   // #888
+@gray60:            lighten(@true-black, 60%);     // #999
+@gray67:            lighten(@true-black, 66.5%);   // #AAA
+@gray74:            lighten(@true-black, 73.5%); // #BBB
+@gray80:            lighten(@true-black, 80%);     // #CCC
+@gray87:            lighten(@true-black, 86.5%);   // #DDD
+@gray90:            lighten(@true-black, 90%);     // #E5E5E5
+@gray93:            lighten(@true-black, 93.5%);   // #EEE
+@gray96:            lighten(@true-black, 96%);     // #F5F5F5
+@gray98:            lighten(@true-black, 98%);     // #f9f9f9
+@gray99:            lighten(@true-black, 99%);     // #FCFCFC
+
+// Accent colors
+// -------------------------
+@blue:                  #049cdb;
+@blueDark:              #0064cd;
+@green:                 #46a546;
+@red:                   #9d261d;
+@yellow:                #ffc40d;
+@orange:                #f89406;
+@pink:                  #c3325f;
+@purple:                #7a43b6;
+
+// Text Colors
+// -------------------------
+@text-primary:         #428bca;
+@text-success:         #3c763d;
+@text-info:            #31708f;
+@text-warning:         #8a6d3b;
+@text-danger:          #a94442;
+@text-dimmed:          @gray40;
+@text-muted:           @gray60;
+
+
+
+@baseBorderRadius:      4px;
+@borderRadiusLarge:     6px;
+@borderRadiusSmall:     3px;
+
+// Checkbox
+// -------------------------
+@checkboxPrimaryColor:                 #39b3d7;
+
+.radioTabbing() {
+
+  /* for keyboard tabbing */
+  input[type="radio"]:focus + .radio-label,
+  input[type="radio"]:hover + .radio-label,
+  .radio-label:hover {
+	color: @gray60;
+  }
+}
+
+//.fuelux {
+  .radio {
+	&.highlight {
+	  padding: 4px;
+	  margin: 0 0 5px 0;
+
+	  & + .radio.highlight {
+		margin-top: -9px;
+	  }
+	  & label.radio-custom {
+		left: -8px;
+		padding: 4px 4px 4px 24px;
+		border-radius: @baseBorderRadius;
+		&:before {
+		  left: 5px;
+		  top: 7px;
+		}
+		&:after {
+		  left: 9px;
+		  top: 11px;
+		}
+	  }
+	  &.checked label.radio-custom,
+	  & label.radio-custom.checked {
+		background: @gray90;
+		border-radius: @baseBorderRadius;
+	  }
+	}
+
+	/* for keyboard tabbing */
+	input[type="radio"]:focus + .radio-label,
+	input[type="radio"]:hover + .radio-label,
+	.radio-label:hover {
+	  color: @gray60;
+	}
+  }
+  .form-horizontal .radio-inline {
+	padding-top: 0;
+  }
+  .input-group-addon.radio-custom.radio-inline {
+	&:before {
+	  left: 11px;
+	  top: 9px;
+	}
+	&:after {
+	  left: 15px;
+	  top: 13px;
+	}
+  }
+  .radio-custom {
+	position: relative;
+
+	.highlight {
+	  padding: 4px;
+	  margin: 0 0 5px 0;
+
+	  &.checked {
+		background: @gray90;
+		border-radius: @baseBorderRadius;
+	  }
+	}
+	&:after {
+	  background: transparent;
+	  border-radius: 6px;
+	  content: " ";
+	  height: 6px;
+	  left: 4px;
+	  position: absolute;
+	  top: 7px;
+	  width: 6px;
+	}
+	&:before {
+	  border: 1px solid @gray67;
+	  border-radius: 14px;
+	  content: " ";
+	  height: 14px;
+	  left: 0px;
+	  position: absolute;
+	  top: 3px;
+	  width: 14px;
+	}
+	&.checked {
+	  &:after {
+		background: @true-white;
+	  }
+	  &:before {
+		background: @checkboxPrimaryColor;
+		border-color: @checkboxPrimaryColor;
+	  }
+	}
+	&.disabled {
+	  cursor: not-allowed;
+	  opacity: .65;
+
+	  &:after {
+		cursor: not-allowed;
+	  }
+	  &:before {
+		cursor: not-allowed;
+		opacity: .65;
+	  }
+	}
+	&.radio-inline {
+	  &:after {
+		left: 4px;
+		top: 7px;
+	  }
+	  &:before {
+		left: 0;
+		top: 3px;
+	  }
+	  &.highlight {
+		left: -3px;
+
+		padding: 4px 4px 4px 24px;
+
+		&:after {
+		  left: 8px;
+		  top: 11px;
+		}
+		&:before {
+		  left: 4px;
+		  top: 7px;
+		}
+		&.checked {
+		  background: @gray90;
+		  border-radius: @baseBorderRadius;
+		}
+	  }
+	}
+
+	/* for keyboard tabbing */
+	input[type="radio"]:focus + .radio-label {
+	  color: @gray60;
+	}
+  }
+
+  label.radio-custom.radio-inline {
+	padding-left: 20px;
+  }
