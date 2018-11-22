@@ -5,6 +5,7 @@
   "author": "klesun",
   "license": "proprietary",
   "dependencies": {
-    "express": "^4.16.4"
+    "express": "^4.16.4",
+    "request": "^2.88.0"
   }
 }
