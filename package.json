@@ -1,0 +1,10 @@
+{
+  "name": "gds-direct-nodejs",
+  "version": "2018.11.21.01",
+  "description": "An applet that allows user to enter GDS commands in a browser",
+  "author": "klesun",
+  "license": "proprietary",
+  "dependencies": {
+    "express": "^4.16.4"
+  }
+}
