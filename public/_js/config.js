@@ -1,9 +1,18 @@
 // apiData.prod = true;
 
-if ( !apiData || apiData.length === 0 || !apiData.auth )
-{
-	throw 'ERROR PAGE';
-}
+
+window.languages = window.languages || {};
+// TODO: we don't want to use same value as in CMS!
+window.wwwFullDir = window.wwwFullDir || 'http://10.128.8.117:8080';
+window.apiData = window.apiData || {
+    "terminalData": {"rId":0,"isStandAlone":1},
+    "prod": false,
+    "auth": {
+        "id": 6206,
+        "displayName": "aklesuns",
+        "roles": [],
+    }
+};
 
 requirejs.config({
 	baseUrl		: '_js',
@@ -35,35 +44,17 @@ requirejs.config({
 	}
 });
 
-if (apiData.prod)
-{
-	requirejs.onError = function (err) {
+requirejs.onError = function (err) {
 
-		if (err.requireType === 'timeout')
-		{
-			console.error('modules failed to load: ' + err.requireModules);
-			return false;
-		}
-
-		throw err;
-	};
-}
-
-if (apiData['scriptStart'])
-{
-	require(['lib/common', 'application'], function () {
-		require([apiData['scriptStart']]);
-	});
-} else
-{
-	var rData = ['es6!page/common/app'];
-
-	if (apiData.prod)
+	if (err.requireType === 'timeout')
 	{
-		rData.push('abstract/dataTables');
+		console.error('modules failed to load: ' + err.requireModules);
+		return false;
 	}
 
-	require(rData, function () {
-		require(apiData['jsScripts']);
-	});
-}
+	throw err;
+};
+
+require(['lib/common', 'application'], function () {
+	require(['gdsDirect']);
+});

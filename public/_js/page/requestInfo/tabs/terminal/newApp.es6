@@ -62,8 +62,8 @@ export const init = () => {
 		.then( checkAccess )
 		.then( response => {
 			return new Promise( resolve => {
-				loadScript('../../../../../frontend/public/vendor.terminal-bundle.js', () => {
-					loadScript('../../../../../frontend/public/terminal-bundle.js', () => {
+				loadScript('frontend/public/vendor.terminal-bundle.js', () => {
+					loadScript('frontend/public/terminal-bundle.js', () => {
 						resolve(terminal(response));
 					}, true);
 				});
