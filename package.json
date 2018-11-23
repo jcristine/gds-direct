@@ -6,6 +6,7 @@
   "license": "proprietary",
   "dependencies": {
     "express": "^4.16.4",
+    "jsdom": "^13.0.0",
     "request": "^2.88.0"
   }
 }
