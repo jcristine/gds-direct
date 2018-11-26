@@ -25,7 +25,6 @@ export default class Session
 			command			: cmd,
 			gds				: this.settings['gds'],
 			language		: window.GdsDirectPlusState.getLanguage().toLowerCase(),
-			terminalData	: window.apiData['terminalData']
 		});
 	}
 

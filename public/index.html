@@ -4,28 +4,24 @@
     <meta charset="utf-8"/>
     <link href="_style/css/parsed.css" rel="stylesheet"/>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" type="text/css"/>
+    <!-- note that using jquery 2.2.4 and above causes JSON.stringify() to fail with circular refs -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
     <link rel="shortcut icon" href="favicon.png">
 </head>
 <body>
 
-<h2>This is a test page that demonstrates how gds-direct-nodejs app gets injected in a project (work in progress)</h2>
-<p>When we are done, it should be possible to inject this app in CMS/OTA/GBO/etc...</p>
-<p>Since it is hosted on node js, it is possible for server to preserve the http connection with GDS service endpoint resulting in x3 response time decrease on sequential command calls</p>
+<aside id="terminalContext" style="height: 100%;"></aside>
 
-<section id="leadInfoWrap" class="hbox stretch">
-	<section>
-		<aside id="terminalContext" style="height: 100%;"></aside>
-	</section>
-</section>
-
-<script src="_js/lib/require.min.js"></script>
-<script src="_js/config.js"></script>
-
-<style>
-body {
-    padding: 18px;
-}
-</style>
+<script src="frontend/public/terminal-bundle.js"></script>
+<script>
+    new window.GdsDirectPlusApp({
+        htmlRootDom		: document.getElementById('terminalContext'),
+        isStandAlone	: true,
+        PqPriceModal	: (response, onClose) => new Promise((resolve, reject) => {
+            reject('Can\'t create PQ modal on a test page');
+        }),
+    });
+</script>
 
 </body>
 </html>

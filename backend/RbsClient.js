@@ -1,7 +1,6 @@
 
 let request = require('request');
 
-let globalSessionUsedAt = 0;
 let globalSessionId = null;
 
 let callRbs = (functionName, params) => new Promise((resolve, reject) => {
@@ -39,36 +38,46 @@ let callRbs = (functionName, params) => new Promise((resolve, reject) => {
 	});
 });
 
+let runInSession = (req, sessionId) => callRbs('terminal.runCommand', {
+	gds: req.body.gds,
+	command: req.body.command,
+	sessionId: sessionId,
+}).then(rbsResp => {
+	return {
+		output: rbsResp.result.result.calledCommands
+			.map(call => '>' + call.cmd + '\n' + call.output)
+			.join('\n______________________\n'),
+		tabCommands: rbsResp.result.result.calledCommands
+			.flatMap(call => call.tabCommands),
+		clearScreen: rbsResp.result.result.clearScreen,
+		canCreatePq: rbsResp.result.result.sessionInfo.canCreatePq,
+		canCreatePqErrors: rbsResp.result.result.sessionInfo.canCreatePqErrors,
+		area: rbsResp.result.result.sessionInfo.area,
+		pcc: rbsResp.result.result.sessionInfo.pcc,
+	};
+});
+
+let runInNewSession = (req) => callRbs('terminal.startSession', {
+	gds: req.body.gds, agentId: 6206,
+}).then(rbsResp => {
+	globalSessionId = rbsResp.result.result.sessionId;
+	return runInSession(req, globalSessionId)
+		.then(data => Object.assign({}, data, {
+			startNewSession: true,
+			userMessages: ['New session started'],
+		}));
+});
+
 /** @param {Request} req */
 exports.runInputCmd = (req) => {
-	let runInSession = (sessionId) => callRbs('terminal.runCommand', {
-		gds: req.body.gds,
-		command: req.body.command,
-		sessionId: sessionId,
-	}).then(rbsResp => {
-		globalSessionUsedAt = process.hrtime();
-		return {
-			output: rbsResp.result.result.calledCommands
-				.map(call => '>' + call.cmd + '\n' + call.output)
-				.join('\n______________________\n'),
-			tabCommands: rbsResp.result.result.calledCommands
-				.flatMap(call => call.tabCommands),
-			clearScreen: rbsResp.result.result.clearScreen,
-			canCreatePq: rbsResp.result.result.sessionInfo.canCreatePq,
-			canCreatePqErrors: rbsResp.result.result.sessionInfo.canCreatePqErrors,
-			area: rbsResp.result.result.sessionInfo.area,
-			pcc: rbsResp.result.result.sessionInfo.pcc,
-		};
-	});
-	if (globalSessionId || process.hrtime()[0] - globalSessionUsedAt[0] > 120) {
-		return runInSession(globalSessionId);
+	if (globalSessionId) {
+		return runInSession(req, globalSessionId)
+			.catch(exc => runInNewSession(req)
+				.then(data => Object.assign({}, data, {
+					userMessages: [('Session aborted - ' + exc).slice(0, 800) + '...\n']
+						.concat(data.userMessages || []),
+				})));
 	} else {
-		return callRbs('terminal.startSession', {
-			gds: req.body.gds, agentId: 6206,
-		}).then(rbsResp => {
-			globalSessionUsedAt = process.hrtime();
-			globalSessionId = rbsResp.result.result.sessionId;
-			return runInSession(globalSessionId);
-		});
+		return runInNewSession(req);
 	}
 };

@@ -24,9 +24,6 @@ class TerminalApp
 		const {htmlRootDom, commandUrl, isStandAlone, PqPriceModal, sessionId, userId, requestId} = params;
 		requests.get('/gdsDirect/view')
 			.then(viewData => {
-				/** @debug */
-				console.log('GDS Direct Plus params', params);
-
 				const {settings, buffer, terminalThemes} = viewData;
 
 				const { keyBindings, defaultPccs, gdsAreaSettings }	= this._getGdsDefaultSettings(settings);
