@@ -1,6 +1,7 @@
 import {get, post} from "./helpers/requests";
 
 let State =  {
+	useRbs		: false,
 	language	: 'APOLLO',
 	fontSize	: 1,
 	// hideMenu	: false,
@@ -21,10 +22,11 @@ let State =  {
 	// log : '',
 };
 
-window.TerminalState = {
+window.GdsDirectPlusState = {
 	isLanguageApollo 	: () => State.language.toLowerCase() === 'apollo',
 	getLanguage 		: () => State.language,
-	hasPermissions 		: () => State.permissions
+	hasPermissions 		: () => State.permissions,
+	getUseRbs 			: () => State.useRbs,
 };
 
 export const setState = (newState, action = '') => {

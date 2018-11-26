@@ -158,7 +158,7 @@ export const pressedShortcuts = (evt, terminal, plugin) => {
 
 		const gds		= plugin.settings.gds;
 		const isApollo	= gds === 'apollo';
-		// const isApollo	= window.TerminalState.isGdsApollo();
+		// const isApollo	= window.GdsDirectPlusState.isGdsApollo();
 		// console.log('key pressed:' ,keymap);
 
 		function doF8() {

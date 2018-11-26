@@ -1,4 +1,5 @@
 import Requests from '../helpers/requests.es6';
+import {getStore} from "../store";
 
 let beforeStack	= [];
 let stack		= [];
@@ -19,10 +20,11 @@ export default class Session
 		}
 
 		return Requests.runSyncCommand({
+			useRbs			: window.GdsDirectPlusState.getUseRbs() ? 1 : 0,
 			terminalIndex	: parseInt(this.settings['terminalIndex']) + 1,
 			command			: cmd,
 			gds				: this.settings['gds'],
-			language		: window.TerminalState.getLanguage().toLowerCase(),
+			language		: window.GdsDirectPlusState.getLanguage().toLowerCase(),
 			terminalData	: window.apiData['terminalData']
 		});
 	}

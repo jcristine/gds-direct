@@ -9,6 +9,7 @@ import {LanguageButtons} 	    from "./menu/languageButtons";
 import {LogButton} 			    from "./popovers/logButton";
 import {Quotes}                 from "./menu/quotes";
 import {MenuHideButton}         from "./menu/hideMenu";
+import {UseRbsFlag} from "./menu/useRbsFlag";
 
 export default class MenuPanel extends Component
 {
@@ -54,6 +55,10 @@ export default class MenuPanel extends Component
 				.observe(
 					new gdsDirectPqButton()
 				)
+		);
+
+		this.observe(
+			new UseRbsFlag()
 		);
 
 		this.observe(

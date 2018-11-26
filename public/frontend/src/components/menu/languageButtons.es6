@@ -47,7 +47,7 @@ class LanguageButton extends ButtonPopOver
 	{
 		LANGUAGE_LIST.forEach( name => {
 
-			if (!window.TerminalState.hasPermissions() && name === 'GALILEO')
+			if (!window.GdsDirectPlusState.hasPermissions() && name === 'GALILEO')
 			{
 				return '';
 			}

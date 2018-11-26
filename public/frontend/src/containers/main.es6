@@ -5,7 +5,7 @@ import {THEME_CLASS_NAME} from "../constants";
 
 export default class ContainerMain extends Component
 {
-	constructor( rootId )
+	constructor( htmlRootDom )
 	{
 		super(`section.terminal-wrap-custom`);
 
@@ -13,7 +13,7 @@ export default class ContainerMain extends Component
 			new TableSections()
 		);
 
-		this.parent = document.getElementById( rootId );
+		this.parent = htmlRootDom;
 
 		this.parent.appendChild(
 			this.getContext()

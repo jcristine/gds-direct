@@ -6,9 +6,8 @@ const JParam = require('jquery-param');
 
 let Url;
 
-
 const getPostRequestHeader = data => {
-	return { 
+	return {
 		credentials	: 'include',
 		body		: JParam( data ),
 		method		: 'POST',
@@ -17,13 +16,13 @@ const getPostRequestHeader = data => {
 			'Content-Type': 'application/x-www-form-urlencoded; charset=utf-8'
 		}
 	}
-}
+};
 
 const Ask = (url, params) => {
 	if (url.substr(0, 1) !== '/')
 		url = '/' + url;
 
-	return fetch( wwwFullDir + url, params )
+	return fetch( window.gdsDirectPlusRootUrl + url, params )
 		.then( response => {
 
 			if (response && response.status && response.status === 200)

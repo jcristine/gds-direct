@@ -126,7 +126,7 @@ export default class TerminalPlugin
 			memory			: true, // do not add to localStorage
 
 			keypress		: (e, terminal) => {
-				const replacement = getReplacement( e, window.TerminalState.isLanguageApollo() );
+				const replacement = getReplacement( e, window.GdsDirectPlusState.isLanguageApollo() );
 
 				if (replacement)
 				{
@@ -239,7 +239,7 @@ export default class TerminalPlugin
 
 		this.tabCommands.reset( tabCommands, output );
 
-		if ( window.TerminalState.hasPermissions() )
+		if ( window.GdsDirectPlusState.hasPermissions() )
 		{
 			data = {...data, log : loggerOutput(data, command)}
 		}

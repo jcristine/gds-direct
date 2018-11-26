@@ -11,57 +11,64 @@ import './theme/main.less';
 import {OFFSET_DEFAULT} from "./constants";
 
 import {connect, getStore} from "./store";
+import requests from  "./helpers/requests";
 
 const BORDER_SIZE = 2;
+
+window.gdsDirectPlusRootUrl = new URL(document.currentScript.src).origin;
 
 class TerminalApp
 {
 	constructor(params)
 	{
-		const {settings, requestId, isStandAlone, buffer, permissions, PqPriceModal, htmlRootId, agentId, terminalThemes, commandUrl} = params;
+		const {htmlRootDom, commandUrl, isStandAlone, PqPriceModal, sessionId, userId, requestId} = params;
+		requests.get('/gdsDirect/view')
+			.then(viewData => {
+				/** @debug */
+				console.log('GDS Direct Plus params', params);
 
-		const { keyBindings, defaultPccs, gdsAreaSettings }	= this.getGdsDefaultSettings(settings);
+				const {settings, buffer, terminalThemes} = viewData;
 
-		this.Gds 	= new GDS({
-			gdsListDb 	: settings.gds,
-			activeName 	: settings['common']['currentGds'] || 'apollo',
-			buffer 		: buffer || {}
-		});
+				const { keyBindings, defaultPccs, gdsAreaSettings }	= this._getGdsDefaultSettings(settings);
 
-		this.params 		= {requestId, permissions, isStandAlone};
-		this.offset			= OFFSET_DEFAULT; //menu
+				this.Gds 	= new GDS({
+					gdsListDb 	: settings.gds,
+					activeName 	: settings['common']['currentGds'] || 'apollo',
+					buffer 		: buffer || {}
+				});
 
-		this.pqParser 		= new PqParser(PqPriceModal);
-		this.container 		= new ContainerMain(htmlRootId);
+				this.params 		= {requestId, isStandAlone};
+				this.offset			= OFFSET_DEFAULT; //menu
 
-		this.agentId 		= agentId;
+				this.pqParser 		= new PqParser(PqPriceModal);
+				this.container 		= new ContainerMain(htmlRootDom);
 
-		setLink( commandUrl );
-		initGlobEvents();
-		initThemeStyles();
+				setLink( commandUrl );
+				initGlobEvents();
+				initThemeStyles();
 
-		connect(this);
+				connect(this);
 
-		const curGds 		= settings['gds'][settings['common']['currentGds'] || 'apollo'];
-		const fontSize		= curGds['fontSize'] || 1;
-		const language		= curGds['language'] || 'APOLLO';
-		this.container.changeFontClass(fontSize);
+				const curGds 		= settings['gds'][settings['common']['currentGds'] || 'apollo'];
+				const fontSize		= curGds['fontSize'] || 1;
+				const language		= curGds['language'] || 'APOLLO';
+				this.container.changeFontClass(fontSize);
 
-		this.themeId		= this.getStyle(settings.gds, terminalThemes);
+				this.themeId		= this._getStyle(settings.gds, terminalThemes);
 
-		getStore().updateView({
-			requestId		: requestId,
-			permissions 	: permissions,
-			terminalThemes	: terminalThemes,
-			fontSize		: fontSize,
-			language		: language,
-			theme			: this.themeId,
-			gdsObjName		: this.Gds.getCurrentName(),
-			gdsObjIndex 	: this.Gds.getCurrentIndex(),
-			keyBindings		: keyBindings,
-            gdsAreaSettings	: gdsAreaSettings,
-			defaultPccs		: defaultPccs
-		});
+				getStore().updateView({
+					requestId		: requestId,
+					terminalThemes	: terminalThemes,
+					fontSize		: fontSize,
+					language		: language,
+					theme			: this.themeId,
+					gdsObjName		: this.Gds.getCurrentName(),
+					gdsObjIndex 	: this.Gds.getCurrentIndex(),
+					keyBindings		: keyBindings,
+		            gdsAreaSettings	: gdsAreaSettings,
+					defaultPccs		: defaultPccs
+				});
+			});
 	}
 
 	set(key, val)
@@ -69,12 +76,13 @@ class TerminalApp
 		this.params[key] = val;
 	}
 
+	// used by Component framework
 	changeStyle(id)
 	{
 		this.container.changeStyle(id);
 	}
 
-	getStyle(settings, terminalThemes)
+	_getStyle(settings, terminalThemes)
 	{
 		if (!this.themeId)
 		{
@@ -88,7 +96,7 @@ class TerminalApp
 		return this.themeId;
 	}
 
-	getGdsDefaultSettings(allSettings)
+	_getGdsDefaultSettings(allSettings)
 	{
 		const settings = {
 			keyBindings: {},
@@ -151,6 +159,7 @@ class TerminalApp
 		this.offset = value;
 	}
 
+	// used by Component framework
 	calculateMatrix()
 	{
 		if (this.container.context.offsetParent === null) {
@@ -220,6 +229,7 @@ class TerminalApp
 		this.Gds.update({wideDimensions});
 	}
 
+	// used by CMS - when agent presses on a record locator in PQ list
 	runPnr({pnrCode, gdsName = 'apollo'})
 	{
 		if (pnrCode)
@@ -230,6 +240,7 @@ class TerminalApp
 		}
 	}
 
+	// used by CMS - when agent presses on a "GDS Direct" logo in PQ list
 	rebuild({data, gdsName = 'apollo'})
 	{
 		if (data)
@@ -241,7 +252,7 @@ class TerminalApp
 	}
 }
 
-window.terminal = TerminalApp;
+window.GdsDirectPlusApp = TerminalApp;
 
 let resizeTimeout;
 
@@ -261,8 +272,7 @@ const initGlobEvents = () => {
 	};
 };
 
-const initThemeStyles = () => fetch('/gdsDirect/themes')
-	.then(resp => resp.json())
+const initThemeStyles = () => requests.get('/gdsDirect/themes')
 	.then(responseData => {
 		let head = document.head;
 		let style = document.createElement('style');

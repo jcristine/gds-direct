@@ -35,7 +35,7 @@ const checkAccess = res => {
 };
 
 const terminal = ({buffer, settings}) => {
-	return new window.terminal({
+	return new window.GdsDirectPlusApp({
 		buffer,
 		settings,
 
@@ -46,17 +46,14 @@ const terminal = ({buffer, settings}) => {
 		isStandAlone	: get('terminalData')['isStandAlone'],
 		permissions		: get('auth')['isTester'],
 		terminalThemes	: get('terminalThemes'),
-
 		agentId			: agent.getId(),
-
 		PqPriceModal	: (response, onClose) => new Promise(resolve => pQuotesTerminal(response, onClose, resolve))
 	});
 };
 
 export const init = () => {
 
-	const rId = get('rId');
-	const url = rId ? 'terminal/view?rId=' + rId : '/gdsDirect/view';
+	const url = '/gdsDirect/view';
 
 	return response = response || apiRequest.promise({url}).get()
 		.then( checkAccess )

@@ -134,7 +134,7 @@ export const replaceInTerminal = (div, tips) => {
 };
 
 const popoverDefs = (div, content, id) => {
-	content += window.TerminalState.hasPermissions() ? '(' + id + ')' : '';
+	content += window.GdsDirectPlusState.hasPermissions() ? '(' + id + ')' : '';
 
 	return {
 		content,

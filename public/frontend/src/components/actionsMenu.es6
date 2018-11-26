@@ -4,6 +4,7 @@ import {GdsAreas} from "./menu/gdsAreas";
 import {ButtonPopover} from "../modules/dom/buttonPopover";
 import {SettingsButtons} from "./menu/settingsButtons";
 import {LanguageButtons} from "./menu/languageButtons";
+import {UseRbsFlag} from "./menu/useRbsFlag";
 import {Quotes} from "./menu/quotes";
 import PqButton from "./menu/pqButton";
 import {HIDE_MENU} from "../actions/settings";
@@ -82,7 +83,8 @@ class Trigger extends ButtonPopover
 			new GdsAreas(),
 			new LanguageButtons(),
 			new Quotes(),
-			new PqButton()
+			new PqButton(),
+			new UseRbsFlag(),
 		]);
 
 		if (this.state.permissions)

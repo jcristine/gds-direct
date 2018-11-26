@@ -25,6 +25,10 @@ export const CHANGE_INPUT_LANGUAGE = language => {
 	getStore().setState({language});
 };
 
+export const CHANGE_USE_RBS = useRbs => {
+	getStore().setState({useRbs});
+};
+
 export const CHANGE_SETTINGS = settings => {
 	getters('settings', settings);
 
@@ -50,7 +54,7 @@ export const CHANGE_MATRIX = matrix => {
 	const result = {
 		hasWide: getStore().app.getGds().get('hasWide'),
 		matrix,
-	}
+	};
 	getters('matrixConfiguration', result);
 	getStore().app.Gds.update({matrix});
 	getStore().updateView();
@@ -77,7 +81,7 @@ export const ADD_WHIDE_COLUMN = () => {
 	getters('matrixConfiguration', result);
 
 	getStore().app.Gds.update({
-		hasWide : !getStore().app.getGds().get('hasWide') 
+		hasWide : !getStore().app.getGds().get('hasWide')
 	});
 
 	getStore().updateView();
