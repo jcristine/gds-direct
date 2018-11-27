@@ -1,10 +1,11 @@
 
 let express = require('express');
 
-let TravelportClient = require('./backend/TravelportClient.js');
-let RbsClient = require('./backend/RbsClient.js');
-let User = require('./backend/User.js');
-let CompletionData = require('./backend/CompletionData.js');
+let TravelportClient = require('./backend/TravelportClient.es6');
+let RbsClient = require('./backend/RbsClient.es6');
+let User = require('./backend/User.es6');
+let CompletionData = require('./backend/CompletionData.es6');
+let Emc = require('./backend/App/Api/Clients/Emc.es6');
 
 let app = express();
 
@@ -29,14 +30,22 @@ let makeCmdResponse = (data) => 1 && {
 	}, data),
 };
 
-let runInputCmd = (reqBody) => {
+/** @param {IEmcData} emcData */
+let runInputCmd = (reqBody, emcData) => {
+	let agentId = emcData.user.id;
 	let useRbs = +reqBody.useRbs ? true : false;
+	let params = {
+		command: reqBody.command,
+		gds: reqBody.gds,
+		language: reqBody.language,
+		agentId: agentId,
+	};
 	if (useRbs) {
-		return RbsClient.runInputCmd(reqBody)
+		return RbsClient.runInputCmd(params)
 			.then(data => makeCmdResponse(data));
 	} else {
-		return TravelportClient.runInputCmd(reqBody)
-			.then(data => makeCmdResponse(data));
+	    return TravelportClient.runInputCmd(params)
+		 	.then(data => makeCmdResponse(data));
 	}
 };
 
@@ -64,17 +73,25 @@ app.get('/terminal/saveSetting/:name/:currentGds/:value', (req, res) => res.send
 app.post('/terminal/saveSetting/:name/:currentGds', (req, res) => res.send(JSON.stringify({
     success: true, data : {data: {userMessages: 'OK'}},
 })));
-app.post('/terminal/command', (req, res) => runInputCmd(req.body)
+app.post('/terminal/command', (req, res) => (new Emc()).getCachedSessionInfo(req.body.emcSessionId)
+	.catch(exc => Promise.reject('EMC auth error - ' + exc))
+	.then(emcData => runInputCmd(req.body, emcData.result))
 	.then(result => res.send(JSON.stringify(Object.assign({success: true}, result))))
 	.catch(exc => {
 		res.status(500);
-		res.send(JSON.stringify({error: exc + ''}));
+		res.send(JSON.stringify({error: exc + '', stack: exc.stack}));
 	}));
-app.post('/gdsDirect/keepAlive', (req, res) => runInputCmd({command: 'MD0', gds: req.body.gds})
+app.post('/gdsDirect/keepAlive', (req, res) => (new Emc()).getCachedSessionInfo(req.body.emcSessionId)
+	.catch(exc => Promise.reject('EMC auth error - ' + exc))
+	.then(emcData => runInputCmd({command: 'MD0', ...req.body}, emcData.result))
 	.then(result => res.send(JSON.stringify(Object.assign({success: true}, result))))
 	.catch(exc => {
 		res.status(500);
-		res.send(JSON.stringify({error: exc + ''}));
+		res.send(JSON.stringify({error: exc + '', stack: exc.stack}));
 	}));
+app.get('/terminal/priceQuote', (req, res) => {
+	res.status(501);
+	res.send(JSON.stringify({error: 'PQ creation is not supported yet'}));
+});
 
 app.listen(8080);

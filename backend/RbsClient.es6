@@ -1,7 +1,8 @@
 
 let request = require('request');
+let Utils = require('./Utils/Utils.es6');
 
-let globalSessionId = null;
+let agentToGdsToLeadToSessionId = Utils.MultiLevelMap();
 
 let callRbs = (functionName, params) => new Promise((resolve, reject) => {
 	let logId = 'rbs.5bf6e431.9577485';
@@ -61,18 +62,22 @@ let runInSession = (reqBody, sessionId) => callRbs('terminal.runCommand', {
 let runInNewSession = (reqBody) => callRbs('terminal.startSession', {
 	gds: reqBody.gds, agentId: 6206,
 }).then(rbsResp => {
-	globalSessionId = rbsResp.result.result.sessionId;
-	return runInSession(reqBody, globalSessionId)
+	let {agentId, gds, leadId} = reqBody;
+	let sessionId = rbsResp.result.result.sessionId;
+	agentToGdsToLeadToSessionId.set([agentId, gds, leadId], sessionId);
+	return runInSession(reqBody, sessionId)
 		.then(data => Object.assign({}, data, {
 			startNewSession: true,
 			userMessages: ['New session started'],
 		}));
 });
 
-/** @param {{cmd: '*R', gds: 'apollo', language: 'sabre'}} reqBody */
+/** @param {{command: '*R', gds: 'apollo', language: 'sabre', agentId: '6206'}} reqBody */
 exports.runInputCmd = (reqBody) => {
-	if (globalSessionId) {
-		return runInSession(reqBody, globalSessionId)
+	let {agentId, gds, leadId} = reqBody;
+	let sessionId = agentToGdsToLeadToSessionId.get([agentId, gds, leadId]);
+	if (sessionId) {
+		return runInSession(reqBody, sessionId)
 			.catch(exc => runInNewSession(reqBody)
 				.then(data => Object.assign({}, data, {
 					userMessages: [('Session aborted - ' + exc).slice(0, 800) + '...\n']

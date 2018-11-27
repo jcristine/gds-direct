@@ -2,6 +2,9 @@
 let https = require('https');
 let jsdom = require('jsdom');
 let config = require('./../local.config.conf');
+let Utils = require('./Utils/Utils.es6');
+
+let agentToToken = Utils.MultiLevelMap();
 
 let agent = new https.Agent({
 	keepAlive: true,
@@ -12,9 +15,6 @@ let agent = new https.Agent({
 let url = 'https://emea.webservices.travelport.com/B2BGateway/service/XMLSelect';
 // let url = 'https://americas.webservices.travelport.com/B2BGateway/service/XMLSelect';
 // let url = 'https://apac.webservices.travelport.com/B2BGateway/service/XMLSelect';
-
-//let globalToken = 'some_expired_token';
-let globalToken = null;
 
 let sendRequest = (requestBody) => new Promise((resolve, reject) => {
 	let headers = {
@@ -94,12 +94,9 @@ let wrap = function(text) {
     return result.join('\n');
 };
 
-/** @param {Request} req */
 exports.runInputCmd = (reqBody) => {
-	let gds = reqBody.gds;
 	let cmd = reqBody.command;
-	if (!cmd) return false;
-
+	let agentId = reqBody.agentId;
 	let fullOutput = '';
 	let fetchAll = true;
 	let getNextPage = (nextCmd, token) => runOneCmd(nextCmd, token).then((parsedResp) => {
@@ -126,15 +123,17 @@ exports.runInputCmd = (reqBody) => {
 		}
 	});
 	let runInNewSession = (cmd) => startSession().then((resp) => {
-		globalToken = resp.sessionToken;
-		return getNextPage(cmd, resp.sessionToken)
+		let token = resp.sessionToken;
+		agentToToken.set([agentId], token);
+		return getNextPage(cmd, token)
 			.then(data => Object.assign({}, data, {
 				startNewSession: true,
 				userMessages: ['New session started'],
 			}));
 	});
-	if (globalToken) {
-		return getNextPage(cmd, globalToken)
+	let travelportToken = agentToToken.get([agentId]);
+	if (travelportToken) {
+		return getNextPage(cmd, travelportToken)
 			.catch(exc => runInNewSession(cmd)
 				.then(data => Object.assign({}, data, {
 					userMessages: [('Session aborted - ' + exc).slice(0, 800) + '...\n']
