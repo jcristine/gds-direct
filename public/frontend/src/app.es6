@@ -41,11 +41,13 @@ class TerminalApp
 		this.container 		= new ContainerMain(htmlRootDom);
 
 		initGlobEvents();
-		initThemeStyles();
+		let loadThemes = requests.get('/gdsDirect/themes');
+		let loadView = requests.get('/gdsDirect/view');
 
-		requests.get('/gdsDirect/view')
-			.then(viewData => {
-				const {settings, buffer, terminalThemes} = viewData;
+		Promise.all([loadThemes, loadView])
+			.then(([themeData, viewData]) => {
+				const terminalThemes = themeData.terminalThemes;
+				const {settings, buffer} = viewData;
 
 				const { keyBindings, defaultPccs, gdsAreaSettings }	= this._getGdsDefaultSettings(settings);
 
@@ -55,6 +57,7 @@ class TerminalApp
 					buffer 		: buffer || {}
 				});
 
+				initThemeStyles(themeData);
 				connect(this);
 
 				const curGds 		= settings['gds'][settings['common']['currentGds'] || 'apollo'];
@@ -280,49 +283,47 @@ const initGlobEvents = () => {
 	};
 };
 
-const initThemeStyles = () => requests.get('/gdsDirect/themes')
-	.then(responseData => {
-		let head = document.head;
-		let style = document.createElement('style');
-		style.class = 'generated-theme-css';
-		style.type = 'text/css';
-		let cssLines = [];
-		let classList = ['defaultBg', 'outputFont', 'activeWindow', 'entryFont', 'usedCommand', 'errorMessage',
-			'warningMessage', 'startSession', 'specialHighlight', 'fixedColumnBackground',
-			'highlightDark', 'highlightLight', 'highlightBlue'];
-		for (let row of responseData.terminalThemes) {
-			let prefix = '.terminaltheme_' + row.id;
-			for (let cls of classList) {
-				if (row.colors[cls]) {
-					let className;
-					if (cls === 'defaultBg') {
-						className = 'terminal-cell';
-					} else if (cls === 'outputFont') {
-						className = 'terminal';
-					} else if (cls === 'entryFont') {
-						className = 'cmd';
-					} else {
-						className = cls;
-					}
-					let props = [];
-					for (let k1 in row.colors[cls]) {
-						let v1 = row.colors[cls][k1];
-						props.push(k1 + ':' + v1 + ';');
-					}
-					cssLines.push(prefix + ' .' + className + ' { ' + props.join(' ') + ' }');
+const initThemeStyles = responseData => {
+	let head = document.head;
+	let style = document.createElement('style');
+	style.class = 'generated-theme-css';
+	style.type = 'text/css';
+	let cssLines = [];
+	let classList = ['defaultBg', 'outputFont', 'activeWindow', 'entryFont', 'usedCommand', 'errorMessage',
+		'warningMessage', 'startSession', 'specialHighlight', 'fixedColumnBackground',
+		'highlightDark', 'highlightLight', 'highlightBlue'];
+	for (let row of responseData.terminalThemes) {
+		let prefix = '.terminaltheme_' + row.id;
+		for (let cls of classList) {
+			if (row.colors[cls]) {
+				let className;
+				if (cls === 'defaultBg') {
+					className = 'terminal-cell';
+				} else if (cls === 'outputFont') {
+					className = 'terminal';
+				} else if (cls === 'entryFont') {
+					className = 'cmd';
+				} else {
+					className = cls;
 				}
-			}
-			for (let cls in row.colorsParsed) {
 				let props = [];
-				let style = row.colorsParsed[cls];
-				for (let k1 in style) {
-					let v1 = style[k1];
+				for (let k1 in row.colors[cls]) {
+					let v1 = row.colors[cls][k1];
 					props.push(k1 + ':' + v1 + ';');
 				}
-				cssLines.push(prefix + ' .' + cls + ' { ' + props.join(' ') + ' }');
+				cssLines.push(prefix + ' .' + className + ' { ' + props.join(' ') + ' }');
 			}
 		}
-		style.appendChild(document.createTextNode(cssLines.join('\n')));
-		head.appendChild(style);
-		console.log(style);
-	});
+		for (let cls in row.colorsParsed) {
+			let props = [];
+			let style = row.colorsParsed[cls];
+			for (let k1 in style) {
+				let v1 = style[k1];
+				props.push(k1 + ':' + v1 + ';');
+			}
+			cssLines.push(prefix + ' .' + cls + ' { ' + props.join(' ') + ' }');
+		}
+	}
+	style.appendChild(document.createTextNode(cssLines.join('\n')));
+	head.appendChild(style);
+};
