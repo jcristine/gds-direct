@@ -38,9 +38,10 @@ let callRbs = (functionName, params) => new Promise((resolve, reject) => {
 	});
 });
 
-let runInSession = (req, sessionId) => callRbs('terminal.runCommand', {
-	gds: req.body.gds,
-	command: req.body.command,
+let runInSession = (reqBody, sessionId) => callRbs('terminal.runCommand', {
+	gds: reqBody.gds,
+	command: reqBody.command,
+	dialect: reqBody.language,
 	sessionId: sessionId,
 }).then(rbsResp => {
 	return {
@@ -57,27 +58,27 @@ let runInSession = (req, sessionId) => callRbs('terminal.runCommand', {
 	};
 });
 
-let runInNewSession = (req) => callRbs('terminal.startSession', {
-	gds: req.body.gds, agentId: 6206,
+let runInNewSession = (reqBody) => callRbs('terminal.startSession', {
+	gds: reqBody.gds, agentId: 6206,
 }).then(rbsResp => {
 	globalSessionId = rbsResp.result.result.sessionId;
-	return runInSession(req, globalSessionId)
+	return runInSession(reqBody, globalSessionId)
 		.then(data => Object.assign({}, data, {
 			startNewSession: true,
 			userMessages: ['New session started'],
 		}));
 });
 
-/** @param {Request} req */
-exports.runInputCmd = (req) => {
+/** @param {{cmd: '*R', gds: 'apollo', language: 'sabre'}} reqBody */
+exports.runInputCmd = (reqBody) => {
 	if (globalSessionId) {
-		return runInSession(req, globalSessionId)
-			.catch(exc => runInNewSession(req)
+		return runInSession(reqBody, globalSessionId)
+			.catch(exc => runInNewSession(reqBody)
 				.then(data => Object.assign({}, data, {
 					userMessages: [('Session aborted - ' + exc).slice(0, 800) + '...\n']
 						.concat(data.userMessages || []),
 				})));
 	} else {
-		return runInNewSession(req);
+		return runInNewSession(reqBody);
 	}
 };

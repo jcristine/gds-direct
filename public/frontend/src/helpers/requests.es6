@@ -4,8 +4,6 @@ import 'whatwg-fetch';
 import {showUserMessages, debugRequest} from "./debug";
 const JParam = require('jquery-param');
 
-let Url;
-
 const getPostRequestHeader = data => {
 	return {
 		credentials	: 'include',
@@ -38,34 +36,13 @@ const Ask = (url, params) => {
 };
 
 export const get = (url, defParams = false) => {
-	if (!url)
-		return '';
-
-	if (defParams)
-		url += '?rId='+ window.apiData.rId;
-
 	return Ask( url, { credentials: 'include' });
 };
 
 export const post = (url, defParams = false) => {
-	if (!url)
-		return '';
-
-	if (defParams)
-		url += '?rId='+ window.apiData.rId;
-
 	return Ask(url, { ...getPostRequestHeader(defParams) });
 };
 
-const runSyncCommand = postData => {
-	return Ask( API_HOST + Url, {
-		...getPostRequestHeader(postData),
-	});
-};
-
-export const setLink = url => { Url = url || END_POINT_URL };
-
 export default {
-	runSyncCommand	: runSyncCommand,
 	get 			: get
 };

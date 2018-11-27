@@ -1,15 +1,24 @@
-import Requests from '../helpers/requests.es6';
-import {getStore} from "../store";
+import {get, post} from "../helpers/requests";
 
 let beforeStack	= [];
 let stack		= [];
 let promise 	= '';
+
+let lastUsedAt = window.performance.now();
 
 export default class Session
 {
 	constructor( params )
 	{
 		this.settings = params;
+		let gds = params.gds;
+		let pingInterval = gds === 'apollo' ? 60 : 10 * 60;
+		setInterval(() => {
+			if (window.performance.now() - lastUsedAt >= pingInterval) {
+				lastUsedAt = window.performance.now();
+				post('/gdsDirect/keepAlive', {gds: gds});
+			}
+		}, pingInterval * 1000);
 	}
 
 	_run(cmd)
@@ -19,7 +28,8 @@ export default class Session
 			return Promise.resolve('');
 		}
 
-		return Requests.runSyncCommand({
+		lastUsedAt = window.performance.now();
+		return post('/terminal/command', {
 			useRbs			: window.GdsDirectPlusState.getUseRbs() ? 1 : 0,
 			terminalIndex	: parseInt(this.settings['terminalIndex']) + 1,
 			command			: cmd,

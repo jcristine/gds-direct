@@ -95,9 +95,9 @@ let wrap = function(text) {
 };
 
 /** @param {Request} req */
-exports.runInputCmd = (req) => {
-	let gds = req.body.gds;
-	let cmd = req.body.command;
+exports.runInputCmd = (reqBody) => {
+	let gds = reqBody.gds;
+	let cmd = reqBody.command;
 	if (!cmd) return false;
 
 	let fullOutput = '';

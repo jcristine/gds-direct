@@ -21,7 +21,16 @@ class TerminalApp
 {
 	constructor(params)
 	{
-		const {htmlRootDom, commandUrl, isStandAlone, PqPriceModal, sessionId, userId, requestId} = params;
+		const {htmlRootDom, isStandAlone, PqPriceModal, sessionId, userId, requestId} = params;
+
+		this.params 		= {requestId, isStandAlone};
+		this.offset			= OFFSET_DEFAULT; //menu
+		this.pqParser 		= new PqParser(PqPriceModal);
+		this.container 		= new ContainerMain(htmlRootDom);
+
+		initGlobEvents();
+		initThemeStyles();
+
 		requests.get('/gdsDirect/view')
 			.then(viewData => {
 				const {settings, buffer, terminalThemes} = viewData;
@@ -33,16 +42,6 @@ class TerminalApp
 					activeName 	: settings['common']['currentGds'] || 'apollo',
 					buffer 		: buffer || {}
 				});
-
-				this.params 		= {requestId, isStandAlone};
-				this.offset			= OFFSET_DEFAULT; //menu
-
-				this.pqParser 		= new PqParser(PqPriceModal);
-				this.container 		= new ContainerMain(htmlRootDom);
-
-				setLink( commandUrl );
-				initGlobEvents();
-				initThemeStyles();
 
 				connect(this);
 

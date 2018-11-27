@@ -29,13 +29,13 @@ let makeCmdResponse = (data) => 1 && {
 	}, data),
 };
 
-let runInputCmd = (req) => {
-	let useRbs = +req.body.useRbs ? true : false;
+let runInputCmd = (reqBody) => {
+	let useRbs = +reqBody.useRbs ? true : false;
 	if (useRbs) {
-		return RbsClient.runInputCmd(req)
+		return RbsClient.runInputCmd(reqBody)
 			.then(data => makeCmdResponse(data));
 	} else {
-		return TravelportClient.runInputCmd(req)
+		return TravelportClient.runInputCmd(reqBody)
 			.then(data => makeCmdResponse(data));
 	}
 };
@@ -64,7 +64,13 @@ app.get('/terminal/saveSetting/:name/:currentGds/:value', (req, res) => res.send
 app.post('/terminal/saveSetting/:name/:currentGds', (req, res) => res.send(JSON.stringify({
     success: true, data : {data: {userMessages: 'OK'}},
 })));
-app.post('/terminal/command', (req, res) => runInputCmd(req)
+app.post('/terminal/command', (req, res) => runInputCmd(req.body)
+	.then(result => res.send(JSON.stringify(Object.assign({success: true}, result))))
+	.catch(exc => {
+		res.status(500);
+		res.send(JSON.stringify({error: exc + ''}));
+	}));
+app.post('/gdsDirect/keepAlive', (req, res) => runInputCmd({command: 'MD0', gds: req.body.gds})
 	.then(result => res.send(JSON.stringify(Object.assign({success: true}, result))))
 	.catch(exc => {
 		res.status(500);
