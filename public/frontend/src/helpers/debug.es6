@@ -29,6 +29,7 @@ export const debugRequest = err => {
 	}).show();
 
 	console.warn( 'Server Returned: ', err );
+	return Promise.reject(err);
 };
 
 export const showUserMessages = response => {

@@ -59,9 +59,10 @@ export class PqParser
 			return Promise.reject('canCreatePq');
 		}
 
-		if (gds.get('canCreatePqErrors'))
+		let pqErrors = gds.get('canCreatePqErrors') || [];
+		if (pqErrors.length > 0)
 		{
-			return reject(gds.get('canCreatePqErrors'));
+			return reject('Can\t create PQ - ' + pqErrors.join('; '));
 		}
 
 		this.loaderToggle(false);
@@ -71,11 +72,11 @@ export class PqParser
 
 			.then( response => {
 				this.loaderToggle(true);
-				
+
 				const pqError = isPqError(response);
 				return pqError.length ? reject(pqError) : response;
 			})
-			
+
 			.then( response => {
 				if (+isStandAlone) {
 					response.rId = rId;

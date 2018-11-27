@@ -20,26 +20,32 @@ const Ask = (url, params) => {
 	if (url.substr(0, 1) !== '/')
 		url = '/' + url;
 
-	return fetch( window.gdsDirectPlusRootUrl + url, params )
-		.then( response => {
+	return fetch( window.GdsDirectPlusParams.rootUrl + url, params )
+		.then(response => response.json()
+			.catch(jsExc => Promise.reject('Malformed JSON response - ' + response.status + ' ' + response.statusText))
+			.then(body => {
+				if (response && response.status && response.status === 200) {
+					return Promise.resolve(body);
+				} else {
+					console.log("HTTP request ERROR:   ", body);
 
-			if (response && response.status && response.status === 200)
-			{
-				return response.json();
-			}
-
-			console.log("ERORR:   ", response.text());
-			return Promise.reject(response.statusText);
-		})
+					let error = body.error || JSON.stringify(body);
+					return Promise.reject('Request error - ' + error.slice(0, 200));
+				}
+			}))
 		.then( showUserMessages )
 		.catch( debugRequest );
 };
 
-export const get = (url, defParams = false) => {
+export const get = (url) => {
+	url += '?emcSessionId=' + window.GdsDirectPlusParams.emcSessionId;
 	return Ask( url, { credentials: 'include' });
 };
 
-export const post = (url, defParams = false) => {
+export const post = (url, defParams = {}) => {
+	if (defParams)
+		defParams.emcSessionId = window.GdsDirectPlusParams.emcSessionId;
+
 	return Ask(url, { ...getPostRequestHeader(defParams) });
 };
 

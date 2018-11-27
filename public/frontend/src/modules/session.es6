@@ -16,7 +16,10 @@ export default class Session
 		setInterval(() => {
 			if (window.performance.now() - lastUsedAt >= pingInterval) {
 				lastUsedAt = window.performance.now();
-				post('/gdsDirect/keepAlive', {gds: gds});
+				post('/gdsDirect/keepAlive', {
+					gds		: gds,
+					useRbs	: window.GdsDirectPlusState.getUseRbs() ? 1 : 0,
+				});
 			}
 		}, pingInterval * 1000);
 	}
@@ -29,7 +32,7 @@ export default class Session
 		}
 
 		lastUsedAt = window.performance.now();
-		return post('/terminal/command', {
+		return post('/terminal/command?cmd=' + cmd, {
 			useRbs			: window.GdsDirectPlusState.getUseRbs() ? 1 : 0,
 			terminalIndex	: parseInt(this.settings['terminalIndex']) + 1,
 			command			: cmd,

@@ -54,6 +54,8 @@ export const getters = (action, props) => {
 	const GET = (urlPart, param) => get(urlPart + '/' + State.gdsObjName + '/' + param);
 	const POST = (urlPart, param) => post(urlPart + '/' + State.gdsObjName, param);
 
+	let cmsUrl = window.GdsDirectPlusParams.cmsUrl;
+
 	switch (action)
 	{
 		case 'terminal' :
@@ -81,11 +83,13 @@ export const getters = (action, props) => {
 		break;
 
 		case 'showExistingPq' :
-			return get(`terminal/priceQuotes?rId=${State.requestId}`);
+			return fetch(cmsUrl + `/terminal/priceQuotes?rId=${State.requestId}`)
+				.then(resp => resp.json());
 		break;
 
 		case 'lastRequests' :
-			return get(`gdsDirect/lastViewedRequests`);
+			return fetch(cmsUrl + `/gdsDirect/lastViewedRequests`)
+				.then(resp => resp.json());
 		break;
 	}
 };

@@ -15,13 +15,25 @@ import requests from  "./helpers/requests";
 
 const BORDER_SIZE = 2;
 
-window.gdsDirectPlusRootUrl = new URL(document.currentScript.src).origin;
+window.GdsDirectPlusParams = {
+	rootUrl: new URL(document.currentScript.src).origin,
+	emcSessionId: null,
+	travelRequestId: null,
+	cmsUrl: null,
+};
 
 class TerminalApp
 {
 	constructor(params)
 	{
-		const {htmlRootDom, isStandAlone, PqPriceModal, sessionId, userId, requestId} = params;
+		const {htmlRootDom, PqPriceModal, emcSessionId, requestId, cmsUrl} = params;
+
+		// probably better would be to pass it through all these abstractions
+		// to the session.es6 instead of making a global variable...
+		window.GdsDirectPlusParams.emcSessionId = emcSessionId;
+		window.GdsDirectPlusParams.travelRequestId = requestId;
+		window.GdsDirectPlusParams.cmsUrl = cmsUrl;
+		let isStandAlone = !requestId;
 
 		this.params 		= {requestId, isStandAlone};
 		this.offset			= OFFSET_DEFAULT; //menu
