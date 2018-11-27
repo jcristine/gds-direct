@@ -72,12 +72,18 @@ export const CHANGE_SESSION_BY_MENU = area => {
 	return getStore().app.Gds.runCommand([command])
 };
 
+export const RUN_COMMAND_LIST = commands => {
+	for (let cmd of commands) {
+		getStore().app.Gds.runCommand([cmd]);
+	}
+};
+
 export const ADD_WHIDE_COLUMN = () => {
 	const hasWide = !getStore().app.getGds().get('hasWide');
 	const result = {
 		hasWide,
 		matrix: getStore().app.getGds().get('matrix'),
-	}
+	};
 	getters('matrixConfiguration', result);
 
 	getStore().app.Gds.update({

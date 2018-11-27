@@ -10,6 +10,7 @@ import {LogButton} 			    from "./popovers/logButton";
 import {Quotes}                 from "./menu/quotes";
 import {MenuHideButton}         from "./menu/hideMenu";
 import {UseRbsFlag} from "./menu/useRbsFlag";
+import {RUN_COMMAND_LIST} from "../actions/settings";
 
 export default class MenuPanel extends Component
 {
@@ -59,6 +60,27 @@ export default class MenuPanel extends Component
 
 		this.observe(
 			new UseRbsFlag()
+		);
+
+		this.observe(
+			new Component('article')
+				.observe(
+					new Component('button.btn btn-sm btn-mozilla font-bold[Run Test]', {
+						onclick: () => RUN_COMMAND_LIST([
+							'SEM/2I61/AG',
+							'0 DL8456Z 24APR SFOCDG GK2',
+							'0 AF7626J 25APR CDGBOD GK2',
+							'0 DL9359Z 11MAY BODAMS GK2',
+							'0 DL9380Z 11MAY AMSSFO GK2',
+							'$B:A',
+							'FQN',
+							'FN1/ALL',
+							'MD',
+							'MD',
+							'MD',
+						]),
+					})
+				)
 		);
 
 		this.observe(
