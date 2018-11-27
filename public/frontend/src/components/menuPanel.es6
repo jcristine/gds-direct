@@ -66,19 +66,24 @@ export default class MenuPanel extends Component
 			new Component('article')
 				.observe(
 					new Component('button.btn btn-sm btn-mozilla font-bold[Run Test]', {
-						onclick: () => RUN_COMMAND_LIST([
-							'SEM/2I61/AG',
-							'0 DL8456Z 24APR SFOCDG GK2',
-							'0 AF7626J 25APR CDGBOD GK2',
-							'0 DL9359Z 11MAY BODAMS GK2',
-							'0 DL9380Z 11MAY AMSSFO GK2',
-							'$B:A',
-							'FQN',
-							'FN1/ALL',
-							'MD',
-							'MD',
-							'MD',
-						]),
+						onclick: (e) => {
+							e.target.blur();
+							RUN_COMMAND_LIST([
+								'I',
+								'I',
+								'SEM/2I61/AG',
+								'0 DL8456Z 24APR SFOCDG GK2',
+								'0 AF7626J 25APR CDGBOD GK2',
+								'0 DL9359Z 11MAY BODAMS GK2',
+								'0 DL9380Z 11MAY AMSSFO GK2',
+								'$B:A',
+								'FQN',
+								'FN1/ALL',
+								'MD',
+								'MD',
+								'MD',
+							]);
+						},
 					})
 				)
 		);
