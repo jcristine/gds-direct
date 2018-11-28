@@ -1,31 +1,4 @@
 
-/**
- * if you are sick of checking each level in a multidimensional map, this class is for you:
- * before:
- *   let agentToGdsToLeadToSessionId = {};
- *   if (!agentToGdsToLeadToSessionId[agentId]) agentToGdsToLeadToSessionId[agentId] = {};
- *   if (!agentToGdsToLeadToSessionId[agentId][gds]) agentToGdsToLeadToSessionId[agentId][gds] = {};
- *   agentToGdsToLeadToSessionId[agentId][gds][leadId] = sessionId;
- * after:
- *   let agentToGdsToLeadToSessionId = DefaultDict();
- *   agentToGdsToLeadToSessionId[agentId][gds][leadId] = sessionId;
- */
-exports.DefaultDict = (parent = null, keyInParent = null) => new Proxy({}, {
-    get: (self, name) => {
-        if (name in self) {
-            return self[name];
-        } else {
-            return DefaultDict(self, name);
-        }
-    },
-    set: (self, name, value) => {
-        self[name] = value;
-        if (parent) {
-            parent[keyInParent] = self;
-        }
-    },
-});
-
 exports.MultiLevelMap = () => {
     let root = {};
     return {
