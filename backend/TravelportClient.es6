@@ -3,18 +3,11 @@ let https = require('https');
 let config = require('./../local.config.conf');
 let Utils = require('./Utils/Utils.es6');
 
-let agentToToken = Utils.MultiLevelMap();
-
-let agent = new https.Agent({
+let httpAgent = new https.Agent({
 	keepAlive: true,
 	keepAliveMsecs: 4 * 60 * 1000, // 4 minutes
 	maxSockets: 1,
 });
-
-let gdsProfile = 'DynApolloProd_1O3K';
-let url = 'https://emea.webservices.travelport.com/B2BGateway/service/XMLSelect';
-// let url = 'https://americas.webservices.travelport.com/B2BGateway/service/XMLSelect';
-// let url = 'https://apac.webservices.travelport.com/B2BGateway/service/XMLSelect';
 
 let sendRequest = (requestBody) => new Promise((resolve, reject) => {
 	let headers = {
@@ -23,22 +16,28 @@ let sendRequest = (requestBody) => new Promise((resolve, reject) => {
 	let req = https.request(url, {
 		headers: headers,
 		method: 'POST',
-		agent: agent,
+		agent: httpAgent,
 	}, (res) => {
 		let responseBody = '';
 		res.setEncoding('utf8');
-	    res.on('data', (chunk) => responseBody += chunk);
-	    res.on('end', () => {
+		res.on('data', (chunk) => responseBody += chunk);
+		res.on('end', () => {
 			if (res.statusCode != 200) {
 				reject('Http request to Travelport failed - ' + res.statusCode + ' - ' + responseBody);
 			} else {
 				resolve(responseBody);
 			}
-	    });
+		});
 	});
 	req.on('error', (e) => reject('Failed to make request - ' + e));
 	req.end(requestBody);
 });
+
+let gdsProfile = 'DynApolloProd_1O3K';
+let url = 'https://emea.webservices.travelport.com/B2BGateway/service/XMLSelect';
+// let url = 'https://americas.webservices.travelport.com/B2BGateway/service/XMLSelect';
+// let url = 'https://apac.webservices.travelport.com/B2BGateway/service/XMLSelect';
+let agentToToken = Utils.MultiLevelMap();
 
 let parseXml = (xml) => {
 	let jsdom = require('jsdom');
@@ -73,46 +72,45 @@ let runOneCmd = (cmd, token) => {
 };
 
 let extractPager = (text) => {
-    let [_, clean, pager] =
-        text.match(/([\s\S]*)(\)\>\<)$/) ||
-        text.match(/([\s\S]*)(\>\<)$/) ||
-        [null, text, null];
-    return [clean, pager];
+	let [_, clean, pager] =
+		text.match(/([\s\S]*)(\)\>\<)$/) ||
+		text.match(/([\s\S]*)(\>\<)$/) ||
+		[null, text, null];
+	return [clean, pager];
 };
 
 let shouldWrap = (cmd) => {
-    let wrappedCmds = ['FS', 'MORE*', 'QC', '*HTE', 'HOA', 'HOC', 'FQN', 'A'];
-    let alwaysWrap = false;
-    return alwaysWrap
-        || wrappedCmds.some(wCmd => cmd.startsWith(wCmd));
+	let wrappedCmds = ['FS', 'MORE*', 'QC', '*HTE', 'HOA', 'HOC', 'FQN', 'A'];
+	let alwaysWrap = false;
+	return alwaysWrap
+		|| wrappedCmds.some(wCmd => cmd.startsWith(wCmd));
 };
 
 let wrap = function(text) {
-    let result = [];
-    for (let line of text.split('\n')) {
-        for (let chunk of (line.match(/.{1,64}/g) || [''])) {
-            result.push(chunk);
-        }
-    }
-    if (result.slice(-1)[0].length === 64) {
-        result.push('');
-    }
-    return result.join('\n');
+	let result = [];
+	for (let line of text.split('\n')) {
+		for (let chunk of (line.match(/.{1,64}/g) || [''])) {
+			result.push(chunk);
+		}
+	}
+	if (result.slice(-1)[0].length === 64) {
+		result.push('');
+	}
+	return result.join('\n');
 };
 
-exports.runInputCmd = (reqBody) => {
-	let cmd = reqBody.command;
-	let agentId = reqBody.agentId;
+let makeSessionData = token => !token ? null :{
+	profileName: gdsProfile,
+	externalToken: token,
+};
+
+let runAndCleanupCmd = (cmd, token, fetchAll = false) => {
 	let fullOutput = '';
-	let fetchAll = false;
-	let getNextPage = (nextCmd, token) => runOneCmd(nextCmd, token)
+	let getNextPage = (nextCmd) => runOneCmd(nextCmd, token)
 		.then((parsedResp) => {
 			let makeResult = (output) => 1 && {
 				output: output,
-				gdsSessionData: {
-					profileName: gdsProfile,
-					externalToken: token,
-				},
+				gdsSessionData: makeSessionData(token),
 			};
 			let rawOutput = parsedResp.output;
 			let [output, pager] = extractPager(rawOutput);
@@ -132,22 +130,36 @@ exports.runInputCmd = (reqBody) => {
 				return makeResult(rawOutput + '\n');
 			}
 		});
-	let runInNewSession = (cmd) => startSession().then((resp) => {
-		let token = resp.sessionToken;
-		agentToToken.set([agentId], token);
-		return getNextPage(cmd, token)
-			.then(data => Object.assign({}, data, {
-				startNewSession: true,
-				userMessages: ['New session started'],
-			}));
-	});
-	let travelportToken = agentToToken.get([agentId]);
-	return !travelportToken
-		? runInNewSession(cmd)
-		: getNextPage(cmd, travelportToken)
-			.catch(exc => runInNewSession(cmd)
+	return getNextPage(cmd);
+};
+
+/** @param {{command: '*R', gds: 'apollo', language: 'sabre', agentId: '6206'}} reqBody */
+module.exports = (reqBody) => {
+	let agentId = reqBody.agentId;
+	let runInputCmd = () => {
+		let cmd = reqBody.command;
+		let runInNewSession = (cmd) => startSession().then((resp) => {
+			let token = resp.sessionToken;
+			agentToToken.set([agentId], token);
+			return runAndCleanupCmd(cmd, token)
 				.then(data => Object.assign({}, data, {
-					userMessages: [('Session aborted - ' + exc).slice(0, 800) + '...\n']
-						.concat(data.userMessages || []),
-				})));
+					startNewSession: true,
+					userMessages: ['New session started'],
+				}));
+		});
+		let travelportToken = agentToToken.get([agentId]);
+		return !travelportToken
+			? runInNewSession(cmd)
+			: runAndCleanupCmd(cmd, travelportToken)
+				.catch(exc => runInNewSession(cmd)
+					.then(data => Object.assign({}, data, {
+						userMessages: [('Session aborted - ' + exc).slice(0, 800) + '...\n']
+							.concat(data.userMessages || []),
+					})));
+	};
+
+	return {
+		getSessionData: () => makeSessionData(agentToToken.get([agentId])),
+		runInputCmd: runInputCmd,
+	};
 };

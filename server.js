@@ -55,7 +55,7 @@ app.post('/terminal/saveSetting/:name/:currentGds', (req, res) => res.send(JSON.
 app.post('/terminal/command', withAuth((reqBody, emcResult) =>
     GdsSessionController.runInputCmd(reqBody, emcResult)));
 app.post('/gdsDirect/keepAlive', withAuth((reqBody, emcResult) =>
-    GdsSessionController.runInputCmd({command: 'MD0', ...reqBody}, emcResult)));
+    GdsSessionController.keepAlive(reqBody, emcResult)));
 app.get('/terminal/priceQuote', (req, res) => {
 	res.status(501);
 	res.send(JSON.stringify({error: 'PQ creation is not supported yet'}));

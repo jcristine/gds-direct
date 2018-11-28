@@ -4,8 +4,8 @@
  * provides handy methods to make inserts/selects/etc...
  * @param {PoolConnection} dbConn
  */
-module.exports = (dbConn) => 1 && {
-    insertRows: ($table, $rows) => {
+module.exports = (dbConn) => {
+    let insertRows = ($table, $rows) => {
         if (!$rows) {
             return Promise.resolve();
         }
@@ -36,7 +36,7 @@ module.exports = (dbConn) => 1 && {
         ].join('\n');
 
         return dbConn.query($sql, $dataToInsert);
-    },
+    };
 
     /**
      * @param {{
@@ -62,7 +62,7 @@ module.exports = (dbConn) => 1 && {
      * usage:
      * Db(conn).fetchAll(params).then(rows => console.log(rows));
      */
-    fetchAll: (params) => {
+    let fetchAll = (params) => {
         let {
             table, where = [], whereOr = [], orderBy = null,
             limit = null, skip = null,
@@ -87,5 +87,10 @@ module.exports = (dbConn) => 1 && {
                 .map(([col, op, val]) => val)),
         );
         return dbConn.query(sql, placedValues);
-    },
+    };
+
+    return {
+        insertRows: insertRows,
+        fetchAll: fetchAll,
+    };
 };

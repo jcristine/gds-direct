@@ -2,8 +2,6 @@
 let request = require('request');
 let Utils = require('./Utils/Utils.es6');
 
-let agentToGdsToLeadToSessionId = Utils.MultiLevelMap();
-
 let callRbs = (functionName, params) => new Promise((resolve, reject) => {
 	let logId = 'rbs.5bf6e431.9577485';
 	let rbsUrl = 'http://st-rbs.sjager.php7.dyninno.net/jsonExternalInterface.php?log_id=' + logId;
@@ -38,6 +36,8 @@ let callRbs = (functionName, params) => new Promise((resolve, reject) => {
 		}
 	});
 });
+
+let agentToGdsToLeadToSessionId = Utils.MultiLevelMap();
 
 /** @param {{command: '*R', gds: 'apollo', language: 'sabre', agentId: '6206'}} reqBody */
 module.exports = (reqBody) => {

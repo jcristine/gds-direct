@@ -37,16 +37,21 @@ let makeCmdResponse = (data) => 1 && {
 };
 
 /** @param {IEmcResult} emcResult */
-exports.runInputCmd = (reqBody, emcResult) => {
+let runInputCmd = (reqBody, emcResult) => {
 	reqBody.agentId = emcResult.user.id;
 	let useRbs = +reqBody.useRbs ? true : false;
-	let hrtimeStart = process.hrtime();
-	let requestTimestamp = new Date().getTime();
-	let running = useRbs
+	return useRbs
 		? RbsClient(reqBody).runInputCmd()
 			.then(data => makeCmdResponse(data))
-		: TravelportClient.runInputCmd(reqBody)
+		: TravelportClient(reqBody).runInputCmd(reqBody)
 			.then(data => makeCmdResponse(data));
+};
+
+/** @param {IEmcResult} emcResult */
+exports.runInputCmd = (reqBody, emcResult) => {
+	let hrtimeStart = process.hrtime();
+	let requestTimestamp = new Date().getTime();
+	let running = runInputCmd(reqBody, emcResult);
 
 	// do logging _after_ we returned the result
 	running.then(result => {
@@ -76,14 +81,18 @@ exports.runInputCmd = (reqBody, emcResult) => {
 	return running;
 };
 
+/** @param {IEmcResult} emcResult */
+exports.keepAlive = (reqBody, emcResult) => {
+	return runInputCmd({command: 'MD0', ...reqBody}, emcResult);
+};
+
 exports.getLastCommands = (reqBody, emcResult) => {
 	reqBody.agentId = emcResult.user.id;
 	return dbPool.getConnection()
 		.then(dbConn => {
 			let rbsSessionId = RbsClient(reqBody).getSessionId();
-			//let gdsSessionData = TravelportClient(reqBody).getSessionData();
-			//let gdsSessionDataMd5 = md5(gdsSessionData);
-			let gdsSessionDataMd5 = 'fake123';
+			let gdsSessionData = TravelportClient(reqBody).getSessionData();
+			let gdsSessionDataMd5 = md5(gdsSessionData);
 			return Db(dbConn).fetchAll({
 				table: 'terminalBuffering',
 				whereOr: [
