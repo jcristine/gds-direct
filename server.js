@@ -1,53 +1,32 @@
 
 let express = require('express');
 
-let TravelportClient = require('./backend/TravelportClient.es6');
-let RbsClient = require('./backend/RbsClient.es6');
 let User = require('./backend/User.es6');
 let CompletionData = require('./backend/CompletionData.es6');
 let Emc = require('./backend/App/Api/Clients/Emc.es6');
+let GdsSessionController = require('./backend/GdsSessionController.es6');
 
 let app = express();
 
+let withAuth = (action) => (req, res) => {
+    let reqBody = req.body;
+    if (Object.keys(reqBody).length === 0) {
+        let querystring = require('querystring');
+        let queryStr = req.url.split('?')[1] || '';
+        reqBody = querystring.parse(queryStr);
+    }
+    return (new Emc()).getCachedSessionInfo(reqBody.emcSessionId)
+        .catch(exc => Promise.reject('EMC auth error - ' + exc))
+        .then(emcData => action(reqBody, emcData.result))
+        .then(result => res.send(JSON.stringify(Object.assign({message: 'OK'}, result))))
+        .catch(exc => {
+            res.status(500);
+            res.send(JSON.stringify({error: exc + '', stack: exc.stack}));
+        });
+};
+
 app.use(express.json());
 app.use(express.urlencoded());
-
-let makeCmdResponse = (data) => 1 && {
-	success: true,
-	data: Object.assign({
-		output: 'NO RESPONSE',
-		tabCommands: [],
-		clearScreen: false,
-		canCreatePq: false,
-		canCreatePqErrors: [],
-		area: 'A',
-		pcc: '1O3K',
-		prompt: "",
-		startNewSession: false,
-		userMessages: null,
-		appliedRules: [],
-		legend: [],
-	}, data),
-};
-
-/** @param {IEmcData} emcData */
-let runInputCmd = (reqBody, emcData) => {
-	let agentId = emcData.user.id;
-	let useRbs = +reqBody.useRbs ? true : false;
-	let params = {
-		command: reqBody.command,
-		gds: reqBody.gds,
-		language: reqBody.language,
-		agentId: agentId,
-	};
-	if (useRbs) {
-		return RbsClient.runInputCmd(params)
-			.then(data => makeCmdResponse(data));
-	} else {
-	    return TravelportClient.runInputCmd(params)
-		 	.then(data => makeCmdResponse(data));
-	}
-};
 
 app.use('/public', express.static(__dirname + '/public'));
 app.use(function(req, res, next) {
@@ -73,25 +52,15 @@ app.get('/terminal/saveSetting/:name/:currentGds/:value', (req, res) => res.send
 app.post('/terminal/saveSetting/:name/:currentGds', (req, res) => res.send(JSON.stringify({
     success: true, data : {data: {userMessages: 'OK'}},
 })));
-app.post('/terminal/command', (req, res) => (new Emc()).getCachedSessionInfo(req.body.emcSessionId)
-	.catch(exc => Promise.reject('EMC auth error - ' + exc))
-	.then(emcData => runInputCmd(req.body, emcData.result))
-	.then(result => res.send(JSON.stringify(Object.assign({success: true}, result))))
-	.catch(exc => {
-		res.status(500);
-		res.send(JSON.stringify({error: exc + '', stack: exc.stack}));
-	}));
-app.post('/gdsDirect/keepAlive', (req, res) => (new Emc()).getCachedSessionInfo(req.body.emcSessionId)
-	.catch(exc => Promise.reject('EMC auth error - ' + exc))
-	.then(emcData => runInputCmd({command: 'MD0', ...req.body}, emcData.result))
-	.then(result => res.send(JSON.stringify(Object.assign({success: true}, result))))
-	.catch(exc => {
-		res.status(500);
-		res.send(JSON.stringify({error: exc + '', stack: exc.stack}));
-	}));
+app.post('/terminal/command', withAuth((reqBody, emcResult) =>
+    GdsSessionController.runInputCmd(reqBody, emcResult)));
+app.post('/gdsDirect/keepAlive', withAuth((reqBody, emcResult) =>
+    GdsSessionController.runInputCmd({command: 'MD0', ...reqBody}, emcResult)));
 app.get('/terminal/priceQuote', (req, res) => {
 	res.status(501);
 	res.send(JSON.stringify({error: 'PQ creation is not supported yet'}));
 });
+app.get('/terminal/lastCommands', withAuth((reqBody, emcResult) =>
+    GdsSessionController.getLastCommands(reqBody, emcResult)));
 
-app.listen(8080);
+app.listen(8089);

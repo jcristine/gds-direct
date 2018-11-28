@@ -1,6 +1,5 @@
 
 let https = require('https');
-let jsdom = require('jsdom');
 let config = require('./../local.config.conf');
 let Utils = require('./Utils/Utils.es6');
 
@@ -12,6 +11,7 @@ let agent = new https.Agent({
 	maxSockets: 1,
 });
 
+let gdsProfile = 'DynApolloProd_1O3K';
 let url = 'https://emea.webservices.travelport.com/B2BGateway/service/XMLSelect';
 // let url = 'https://americas.webservices.travelport.com/B2BGateway/service/XMLSelect';
 // let url = 'https://apac.webservices.travelport.com/B2BGateway/service/XMLSelect';
@@ -40,15 +40,22 @@ let sendRequest = (requestBody) => new Promise((resolve, reject) => {
 	req.end(requestBody);
 });
 
+let parseXml = (xml) => {
+	let jsdom = require('jsdom');
+	let jsdomObj = new jsdom.JSDOM(xml, {contentType: 'text/xml'});
+	return jsdomObj.window.document;
+};
+
 let startSession = () => {
 	let body = `<?xml version="1.0" encoding="UTF-8"?>
-<SOAP-ENV:Envelope xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ns1="http://webservices.galileo.com"><SOAP-ENV:Body><ns1:BeginSession><ns1:Profile>DynApolloProd_1O3K</ns1:Profile></ns1:BeginSession></SOAP-ENV:Body></SOAP-ENV:Envelope>`;
+<SOAP-ENV:Envelope xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ns1="http://webservices.galileo.com"><SOAP-ENV:Body><ns1:BeginSession><ns1:Profile>${gdsProfile}</ns1:Profile></ns1:BeginSession></SOAP-ENV:Body></SOAP-ENV:Envelope>`;
 	return sendRequest(body).then(resp => {
-		let xmlDoc = new jsdom.JSDOM(resp, {contentType: 'text/xml'});
-		let sessionToken = xmlDoc.window.document.querySelectorAll('BeginSessionResult')[0].innerHTML;
-		return {
-			sessionToken: sessionToken,
-		};
+		let sessionToken = parseXml(resp).querySelectorAll('BeginSessionResult')[0].textContent;
+		if (!sessionToken) {
+			return Promise.reject('Failed to extract session token from Travelport response - ' + resp);
+		} else {
+			return Promise.resolve({sessionToken: sessionToken});
+		}
 	});
 };
 
@@ -56,10 +63,9 @@ let runOneCmd = (cmd, token) => {
 	let body = `<?xml version="1.0" encoding="UTF-8"?>
 <SOAP-ENV:Envelope xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ns1="http://webservices.galileo.com"><SOAP-ENV:Body><ns1:SubmitTerminalTransaction><ns1:Token>` + token + `</ns1:Token><ns1:Request>` + cmd + `</ns1:Request><ns1:IntermediateResponse></ns1:IntermediateResponse></ns1:SubmitTerminalTransaction></SOAP-ENV:Body></SOAP-ENV:Envelope>`;
 	return sendRequest(body).then(resp => {
-		let xmlDoc = new jsdom.JSDOM(resp, {contentType: 'text/xml'});
-		let resultTag = xmlDoc.window.document.querySelectorAll('SubmitTerminalTransactionResult')[0];
+		let resultTag = parseXml(resp).querySelectorAll('SubmitTerminalTransactionResult')[0];
 		if (resultTag) {
-			return {output: resultTag.innerHTML};
+			return {output: resultTag.textContent};
 		} else {
 			return Promise.reject('Unexpected Travelport response format - ' + resp);
 		}
@@ -98,11 +104,16 @@ exports.runInputCmd = (reqBody) => {
 	let cmd = reqBody.command;
 	let agentId = reqBody.agentId;
 	let fullOutput = '';
-	let fetchAll = true;
-	let getNextPage = (nextCmd, token) => runOneCmd(nextCmd, token).then((parsedResp) => {
-		if (parsedResp.error) {
-			return Promise.reject('failed to run command though http - ' + parsedResp.error);
-		} else {
+	let fetchAll = false;
+	let getNextPage = (nextCmd, token) => runOneCmd(nextCmd, token)
+		.then((parsedResp) => {
+			let makeResult = (output) => 1 && {
+				output: output,
+				gdsSessionData: {
+					profileName: gdsProfile,
+					externalToken: token,
+				},
+			};
 			let rawOutput = parsedResp.output;
 			let [output, pager] = extractPager(rawOutput);
 
@@ -114,14 +125,13 @@ exports.runInputCmd = (reqBody) => {
 				if (pager === ')><') {
 					return getNextPage('MR', token);
 				} else {
-					return {output: fullOutput};
+					return makeResult(fullOutput);
 				}
 			} else {
 				if (shouldWrap(cmd)) rawOutput = wrap(rawOutput);
-				return {output: rawOutput + '\n'};
+				return makeResult(rawOutput + '\n');
 			}
-		}
-	});
+		});
 	let runInNewSession = (cmd) => startSession().then((resp) => {
 		let token = resp.sessionToken;
 		agentToToken.set([agentId], token);
@@ -132,14 +142,12 @@ exports.runInputCmd = (reqBody) => {
 			}));
 	});
 	let travelportToken = agentToToken.get([agentId]);
-	if (travelportToken) {
-		return getNextPage(cmd, travelportToken)
+	return !travelportToken
+		? runInNewSession(cmd)
+		: getNextPage(cmd, travelportToken)
 			.catch(exc => runInNewSession(cmd)
 				.then(data => Object.assign({}, data, {
 					userMessages: [('Session aborted - ' + exc).slice(0, 800) + '...\n']
 						.concat(data.userMessages || []),
 				})));
-	} else {
-		return runInNewSession(cmd);
-	}
 };

@@ -39,51 +39,58 @@ let callRbs = (functionName, params) => new Promise((resolve, reject) => {
 	});
 });
 
-let runInSession = (reqBody, sessionId) => callRbs('terminal.runCommand', {
-	gds: reqBody.gds,
-	command: reqBody.command,
-	dialect: reqBody.language,
-	sessionId: sessionId,
-}).then(rbsResp => {
-	return {
-		output: rbsResp.result.result.calledCommands
-			.map(call => '>' + call.cmd + '\n' + call.output)
-			.join('\n______________________\n'),
-		tabCommands: rbsResp.result.result.calledCommands
-			.flatMap(call => call.tabCommands),
-		clearScreen: rbsResp.result.result.clearScreen,
-		canCreatePq: rbsResp.result.result.sessionInfo.canCreatePq,
-		canCreatePqErrors: rbsResp.result.result.sessionInfo.canCreatePqErrors,
-		area: rbsResp.result.result.sessionInfo.area,
-		pcc: rbsResp.result.result.sessionInfo.pcc,
-	};
-});
-
-let runInNewSession = (reqBody) => callRbs('terminal.startSession', {
-	gds: reqBody.gds, agentId: 6206,
-}).then(rbsResp => {
-	let {agentId, gds, leadId} = reqBody;
-	let sessionId = rbsResp.result.result.sessionId;
-	agentToGdsToLeadToSessionId.set([agentId, gds, leadId], sessionId);
-	return runInSession(reqBody, sessionId)
-		.then(data => Object.assign({}, data, {
-			startNewSession: true,
-			userMessages: ['New session started'],
-		}));
-});
-
 /** @param {{command: '*R', gds: 'apollo', language: 'sabre', agentId: '6206'}} reqBody */
-exports.runInputCmd = (reqBody) => {
+module.exports = (reqBody) => {
 	let {agentId, gds, leadId} = reqBody;
-	let sessionId = agentToGdsToLeadToSessionId.get([agentId, gds, leadId]);
-	if (sessionId) {
-		return runInSession(reqBody, sessionId)
-			.catch(exc => runInNewSession(reqBody)
-				.then(data => Object.assign({}, data, {
-					userMessages: [('Session aborted - ' + exc).slice(0, 800) + '...\n']
-						.concat(data.userMessages || []),
-				})));
-	} else {
-		return runInNewSession(reqBody);
-	}
+	let getSessionId = () => agentToGdsToLeadToSessionId.get([agentId, gds, leadId]);
+	let setSessionId = (sessionId) => agentToGdsToLeadToSessionId.set([agentId, gds, leadId], sessionId);
+
+	let runInSession = ({command, dialect, sessionId}) => callRbs('terminal.runCommand', {
+		gds: gds,
+		command: command,
+		dialect: dialect,
+		sessionId: sessionId,
+	}).then(rbsResp => {
+		return {
+			output: rbsResp.result.result.calledCommands
+				.map(call => '>' + call.cmd + '\n' + call.output)
+				.join('\n______________________\n'),
+			tabCommands: rbsResp.result.result.calledCommands
+				.flatMap(call => call.tabCommands),
+			clearScreen: rbsResp.result.result.clearScreen,
+			canCreatePq: rbsResp.result.result.sessionInfo.canCreatePq,
+			canCreatePqErrors: rbsResp.result.result.sessionInfo.canCreatePqErrors,
+			area: rbsResp.result.result.sessionInfo.area,
+			pcc: rbsResp.result.result.sessionInfo.pcc,
+			rbsSessionId: sessionId,
+		};
+	});
+
+	let runInNewSession = ({command, dialect}) => callRbs('terminal.startSession', {
+		gds: gds, agentId: 6206,
+	}).then(rbsResp => {
+		let sessionId = rbsResp.result.result.sessionId;
+		setSessionId(sessionId);
+		return runInSession({command, dialect, sessionId})
+			.then(data => Object.assign({}, data, {
+				startNewSession: true,
+				userMessages: ['New session started'],
+			}));
+	});
+
+	return {
+		getSessionId: getSessionId,
+		runInputCmd: () => {
+			let sessionId = getSessionId();
+			let {command, language: dialect} = reqBody;
+			return !sessionId
+				? runInNewSession({command, dialect})
+				: runInSession({command, dialect, sessionId})
+					.catch(exc => runInNewSession(reqBody)
+						.then(data => Object.assign({}, data, {
+							userMessages: [('Session aborted - ' + exc).slice(0, 800) + '...\n']
+								.concat(data.userMessages || []),
+						})));
+		},
+	};
 };
