@@ -6,6 +6,16 @@ let promise 	= '';
 
 let lastUsedAt = window.performance.now();
 
+let makeParams = (session, callParams) => {
+	let baseParams = {
+		useRbs			: window.GdsDirectPlusState.getUseRbs() ? 1 : 0,
+		terminalIndex	: parseInt(session.settings['terminalIndex']) + 1,
+		gds				: session.settings['gds'],
+		language		: window.GdsDirectPlusState.getLanguage().toLowerCase(),
+	};
+	return Object.assign({}, baseParams, callParams);
+};
+
 export default class Session
 {
 	constructor( params )
@@ -16,10 +26,7 @@ export default class Session
 		setInterval(() => {
 			if (window.performance.now() - lastUsedAt >= pingInterval) {
 				lastUsedAt = window.performance.now();
-				post('/gdsDirect/keepAlive', {
-					gds		: gds,
-					useRbs	: window.GdsDirectPlusState.getUseRbs() ? 1 : 0,
-				});
+				post('/gdsDirect/keepAlive', makeParams(this, {}));
 			}
 		}, pingInterval * 1000);
 	}
@@ -32,13 +39,7 @@ export default class Session
 		}
 
 		lastUsedAt = window.performance.now();
-		return post('/terminal/command?cmd=' + cmd, {
-			useRbs			: window.GdsDirectPlusState.getUseRbs() ? 1 : 0,
-			terminalIndex	: parseInt(this.settings['terminalIndex']) + 1,
-			command			: cmd,
-			gds				: this.settings['gds'],
-			language		: window.GdsDirectPlusState.getLanguage().toLowerCase(),
-		});
+		return post('/terminal/command?cmd=' + cmd, makeParams(this, {command: cmd}));
 	}
 
 	_runNext()

@@ -38,7 +38,8 @@ const Ask = (url, params) => {
 };
 
 export const get = (url) => {
-	url += '?emcSessionId=' + window.GdsDirectPlusParams.emcSessionId;
+	let delim = url.indexOf('?') > -1 ? '&' : '?';
+	url += delim + 'emcSessionId=' + window.GdsDirectPlusParams.emcSessionId;
 	return Ask( url, { credentials: 'include' });
 };
 

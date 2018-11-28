@@ -14,9 +14,16 @@
 
 <script src="frontend/public/terminal-bundle.js"></script>
 <script>
+    let hashData = {};
+    let hashStr = window.location.hash.substr(1);
+    for (let pair of hashStr.split('&')) {
+        let [key, value] = pair.split('=');
+        hashData[key] = value;
+    }
     new window.GdsDirectPlusApp({
         htmlRootDom		: document.getElementById('terminalContext'),
         isStandAlone	: true,
+        emcSessionId    : hashData['emcSessionId'],
         PqPriceModal	: (response, onClose) => new Promise((resolve, reject) => {
             reject('Can\'t create PQ modal on a test page');
         }),
