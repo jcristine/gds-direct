@@ -61,6 +61,7 @@ exports.runInputCmd = (reqBody, emcResult) => {
 			.then(dbConn => {
 				return Db(dbConn).insertRows('terminalBuffering', [{
 					agentId: reqBody.agentId,
+					requestId: reqBody.travelRequestId || 0,
 					gds: reqBody.gds,
 					dialect: reqBody.language,
 					rbsSessionId: result.data.rbsSessionId || null,

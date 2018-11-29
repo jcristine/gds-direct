@@ -1,7 +1,7 @@
 
 let https = require('https');
 let config = require('./../local.config.conf');
-let Utils = require('./Utils/Utils.es6');
+let MultiLevelMap = require('./Utils/MultiLevelMap.es6');
 
 let httpAgent = new https.Agent({
 	keepAlive: true,
@@ -34,10 +34,10 @@ let sendRequest = (requestBody) => new Promise((resolve, reject) => {
 });
 
 let gdsProfile = 'DynApolloProd_1O3K';
-let url = 'https://emea.webservices.travelport.com/B2BGateway/service/XMLSelect';
-// let url = 'https://americas.webservices.travelport.com/B2BGateway/service/XMLSelect';
+//let url = 'https://emea.webservices.travelport.com/B2BGateway/service/XMLSelect';
+let url = 'https://americas.webservices.travelport.com/B2BGateway/service/XMLSelect';
 // let url = 'https://apac.webservices.travelport.com/B2BGateway/service/XMLSelect';
-let agentToToken = Utils.MultiLevelMap();
+let agentToToken = MultiLevelMap();
 
 let parseXml = (xml) => {
 	let jsdom = require('jsdom');

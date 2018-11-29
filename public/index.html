@@ -1,6 +1,6 @@
 <html>
 <head>
-    <title>GDS Direct on Node</title>
+    <title>GDS Direct Plus</title>
     <meta charset="utf-8"/>
     <link href="_style/css/parsed.css" rel="stylesheet"/>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" type="text/css"/>
@@ -20,6 +20,7 @@
         let [key, value] = pair.split('=');
         hashData[key] = value;
     }
+    window.onhashchange = () => window.location.reload();
     new window.GdsDirectPlusApp({
         htmlRootDom		: document.getElementById('terminalContext'),
         isStandAlone	: true,

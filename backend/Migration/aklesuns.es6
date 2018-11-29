@@ -6,6 +6,7 @@ module.exports.migrations = [
             'CREATE TABLE `terminalBuffering` (',
             '  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,',
             '  `agentId` int(10) unsigned NOT NULL,',
+            '  `requestId` int(10) unsigned NOT NULL DEFAULT 0,',
             '  `gds` VARCHAR(15),',
             '  `dialect` VARCHAR(15),',
             '  `rbsSessionId` int(10) unsigned DEFAULT NULL,',

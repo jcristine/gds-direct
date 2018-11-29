@@ -20,6 +20,7 @@ window.GdsDirectPlusParams = {
 	emcSessionId: null,
 	travelRequestId: null,
 	cmsUrl: null,
+    auth: null,
 };
 
 class TerminalApp
@@ -41,13 +42,14 @@ class TerminalApp
 		this.container 		= new ContainerMain(htmlRootDom);
 
 		initGlobEvents();
+        let loadView = requests.get('/gdsDirect/view');
 		let loadThemes = requests.get('/gdsDirect/themes');
-		let loadView = requests.get('/gdsDirect/view');
 
-		Promise.all([loadThemes, loadView])
-			.then(([themeData, viewData]) => {
+		Promise.all([loadView, loadThemes])
+			.then(([viewData, themeData]) => {
 				const terminalThemes = themeData.terminalThemes;
-				const {settings, buffer} = viewData;
+				const {settings, buffer, auth} = viewData;
+				window.GdsDirectPlusParams.auth = auth;
 
 				const { keyBindings, defaultPccs, gdsAreaSettings }	= this._getGdsDefaultSettings(settings);
 

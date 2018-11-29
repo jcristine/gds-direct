@@ -39,13 +39,16 @@ const Ask = (url, params) => {
 
 export const get = (url) => {
 	let delim = url.indexOf('?') > -1 ? '&' : '?';
-	url += delim + 'emcSessionId=' + window.GdsDirectPlusParams.emcSessionId;
+	url += delim + [
+		'emcSessionId=' + window.GdsDirectPlusParams.emcSessionId,
+		'travelRequestId=' + window.GdsDirectPlusParams.travelRequestId,
+	].join('&');
 	return Ask( url, { credentials: 'include' });
 };
 
 export const post = (url, defParams = {}) => {
-	if (defParams)
-		defParams.emcSessionId = window.GdsDirectPlusParams.emcSessionId;
+	defParams.emcSessionId = window.GdsDirectPlusParams.emcSessionId;
+	defParams.travelRequestId = window.GdsDirectPlusParams.travelRequestId;
 
 	return Ask(url, { ...getPostRequestHeader(defParams) });
 };

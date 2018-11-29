@@ -1,6 +1,6 @@
 
 let request = require('request');
-let Utils = require('./Utils/Utils.es6');
+let MultiLevelMap = require('./Utils/MultiLevelMap.es6');
 
 let callRbs = (functionName, params) => new Promise((resolve, reject) => {
 	let logId = 'rbs.5bf6e431.9577485';
@@ -37,13 +37,13 @@ let callRbs = (functionName, params) => new Promise((resolve, reject) => {
 	});
 });
 
-let agentToGdsToLeadToSessionId = Utils.MultiLevelMap();
+let agentToGdsToLeadToSessionId = MultiLevelMap();
 
 /** @param {{command: '*R', gds: 'apollo', language: 'sabre', agentId: '6206'}} reqBody */
 module.exports = (reqBody) => {
-	let {agentId, gds, leadId} = reqBody;
-	let getSessionId = () => agentToGdsToLeadToSessionId.get([agentId, gds, leadId]);
-	let setSessionId = (sessionId) => agentToGdsToLeadToSessionId.set([agentId, gds, leadId], sessionId);
+	let {agentId, gds, travelRequestId} = reqBody;
+	let getSessionId = () => agentToGdsToLeadToSessionId.get([agentId, gds, travelRequestId]);
+	let setSessionId = (sessionId) => agentToGdsToLeadToSessionId.set([agentId, gds, travelRequestId], sessionId);
 
 	let runInSession = ({command, dialect, sessionId}) => callRbs('terminal.runCommand', {
 		gds: gds,
@@ -56,7 +56,8 @@ module.exports = (reqBody) => {
 				.map(call => '>' + call.cmd + '\n' + call.output)
 				.join('\n______________________\n'),
 			tabCommands: rbsResp.result.result.calledCommands
-				.flatMap(call => call.tabCommands),
+				.map(call => call.tabCommands)
+				.reduce((a,b) => a.concat(b), []),
 			clearScreen: rbsResp.result.result.clearScreen,
 			canCreatePq: rbsResp.result.result.sessionInfo.canCreatePq,
 			canCreatePqErrors: rbsResp.result.result.sessionInfo.canCreatePqErrors,

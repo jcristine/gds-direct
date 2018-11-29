@@ -103,8 +103,9 @@ function eventToButtonName(evt) {
  * @returns string
  */
 function replaceCommandVariables(command) {
+	let auth = window.GdsDirectPlusParams.auth;
 	return command
-		.replace('{{userName}}', window.apiData.auth.displayName.toUpperCase())
+		.replace('{{userName}}', auth ? auth.displayName.toUpperCase() : '')
 		.replace('{{dateNow}}', getDate().now)
 		.replace('{{datePlus320}}', getDate().plus320)
 		.replace('{{dateMinus45}}', getDate().minus45);

@@ -83,8 +83,9 @@ module.exports = (dbConn) => {
         let placedValues = [].concat(
             where
                 .map(([col, op, val]) => val),
-            whereOr.flatMap(or => or
-                .map(([col, op, val]) => val)),
+            whereOr.map(or => or
+                .map(([col, op, val]) => val))
+                .reduce((a,b) => a.concat(b), []),
         );
         return dbConn.query(sql, placedValues);
     };

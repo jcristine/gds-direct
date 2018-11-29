@@ -1,7 +1,7 @@
 
 let express = require('express');
 
-let User = require('./backend/User.es6');
+let UserController = require('./backend/UserController.es6');
 let CompletionData = require('./backend/CompletionData.es6');
 let Emc = require('./backend/App/Api/Clients/Emc.es6');
 let GdsSessionController = require('./backend/GdsSessionController.es6');
@@ -37,9 +37,7 @@ app.use(function(req, res, next) {
 	next();
 });
 
-app.get('/gdsDirect/view', (req, res) => {
-    res.send(JSON.stringify(User.getView()));
-});
+app.get('/gdsDirect/view', withAuth((reqBody, emcResult) => UserController.getView(reqBody, emcResult)));
 app.get('/autoComplete', (req, res) => {
     res.send(JSON.stringify(CompletionData.getData(req)));
 });
