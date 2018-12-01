@@ -1,0 +1,178 @@
+const Db = require('./../../../../Utils/Db.es6');
+const Constants = require('./../../../../Constants.es6');
+const {array_map, array_flip, array_intersect_key, empty, json_decode, str_split, intval, isset} = require("../../../php.es6");
+
+let agentToCurrentGds = {};
+
+let TABLE = 'terminalSettings';
+let AREA_TABLE = 'terminalAreaSettings';
+
+let self = {
+	TABLE: TABLE,
+	CACHE_KEY_SETTINGS: 'cmsTerminalAgentSettings_',
+	CACHE_KEY_CURRENT_GDS_ID: 'cmsTerminalAgentCurrentGdsId_',
+	addUpdateRow: (fields) => Db.with(db => db.writeRows(TABLE, [fields])),
+	$fields: [
+		'id',
+		'agentId',
+		'gds',
+		'language',
+		'terminalNumber',
+		'fontSize',
+		'canCreatePq',
+		'keyBindings',
+		'terminalTheme',
+		'matrixConfiguration',
+	],
+	$default: {
+		'currentGds': 'apollo',
+		'language': 'apollo',
+		'area': 'A',
+		'terminalNumber': 1,
+		'fontSize': 1,
+		'canCreatePq': 0,
+		'terminalTheme': 4,
+	},
+};
+
+class TerminalSettings {
+	/** @param {IEmcResult} emcResult */
+	constructor(emcResult) {
+		this.agentId = emcResult.user.id;
+	}
+
+	getCurrentGds($agentId) {
+		return agentToCurrentGds[$agentId]
+			|| this.getDefault('currentGds');
+	}
+
+	/**
+	 * @param null|string $name
+	 * @return array|string
+	 */
+	getDefault($name) {
+		if ($name) {
+			return self.$default[$name];
+		}
+		return self.$default;
+	}
+
+	_transformRowFromDb($row, areaRows) {
+		return {
+			'language': $row['language'],
+			'terminalNumber': intval($row['terminalNumber']),
+			'keyBindings': json_decode($row['keyBindings']),
+			'fontSize': intval($row['fontSize']),
+			'theme': intval($row['terminalTheme']),
+			'areaSettings': areaRows.filter(areaRow => areaRow.gds === $row['gds']),
+			'matrix': json_decode($row['matrixConfiguration']),
+
+			// TODO: make sure frontend start keeping them per session, not per agent
+			//'canCreatePq': intval($row['canCreatePq']),
+			//'area': $row['area'],
+			//'pcc': $row['pcc'],
+		};
+	}
+
+	/**
+	 * Get setting by Agent
+	 *
+	 * @param int $agentId
+	 */
+	getSettings() {
+		let $agentId = this.agentId;
+		let $settings = {
+			common: this.getCurrentGds($agentId),
+			gds: {},
+		};
+		for (let $gds of Constants.supportedGdses) {
+			$settings['gds'][$gds] = this.getDefault();
+		}
+		return Db.with(
+			db => db.fetchAll({
+				table: TABLE,
+				where: [['agentId', '=', $agentId]],
+			}).then($result => db.fetchAll({
+				table: AREA_TABLE,
+				where: [['agentId', '=', $agentId]],
+			}).then(areaRows => {
+				for (let $row of $result) {
+					if (isset($settings['gds'][$row['gds']])) {
+						$settings['gds'][$row['gds']] = this._transformRowFromDb($row, areaRows);
+					}
+				}
+				return $settings;
+			})),
+		);
+	}
+
+	/**
+	 * Add gds settings if not exist
+	 *
+	 * @param string $gds
+	 * @throws \Dyninno\Core\Exception\SQLException
+	 * @throws \Psr\SimpleCache\InvalidArgumentException
+	 */
+	addGds($gds) {
+		let agentId = this.agentId;
+		// just to be safe, it's how it worked in CMS
+		agentToCurrentGds[agentId] = agentToCurrentGds[agentId] || $gds;
+		return Db.with(
+			(db) => db.writeRows(TABLE, [{
+				agentId: agentId,
+				gds: $gds,
+			}]),
+		);
+	}
+
+	/**
+	 * Set current gds
+	 *
+	 * @param string $gds
+	 */
+	setCurrentGds($gds) {
+		agentToCurrentGds[this.agentId] = $gds;
+	}
+
+	/**
+	 * Save setting
+	 *
+	 * @param string $gds
+	 * @param string $field
+	 * @param string $value
+	 */
+	setSetting($gds, $field, $value) {
+		this.addGds($gds);
+		return self.addUpdateRow({'agentId': this.agentId, 'gds': $gds, [$field]: $value});
+	}
+
+	/**
+	 * Save settings
+	 *
+	 * @param string $gds
+	 * @param array $data
+	 */
+	setSettings($gds, $data) {
+		let agentId = this.agentId;
+		let filtered = array_intersect_key($data, array_flip(self.$fields));
+		return empty(filtered)
+			? Promise.reject('Empty/unknown setting values - ' + Object.keys($data).join(', '))
+			: Db.with(db => db.writeRows(TABLE, [Object.assign({}, filtered, {
+				agentId: agentId, gds: $gds,
+			})]));
+	}
+
+	setAreaSettings($gds, $areaSettings) {
+		let agentId = this.agentId;
+		return Db.with(
+			db => db.writeRows(AREA_TABLE, $areaSettings.map($areaSetting => ({
+				'area': $areaSetting['area'],
+				'gds': $gds,
+				'agentId': agentId,
+				'defaultPcc': $areaSetting['defaultPcc'],
+			}))),
+		);
+	}
+}
+
+module.exports = TerminalSettings;

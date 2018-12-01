@@ -1,0 +1,3 @@
+
+// in future there may appear something like 'worldspan', 'abbacus', etc...
+exports.supportedGdses = ['apollo', 'sabre', 'galileo', 'amadeus'];
