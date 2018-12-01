@@ -25,9 +25,7 @@
         htmlRootDom		: document.getElementById('terminalContext'),
         isStandAlone	: true,
         emcSessionId    : hashData['emcSessionId'],
-        PqPriceModal	: (response, onClose) => new Promise((resolve, reject) => {
-            reject('Can\'t create PQ modal on a test page');
-        }),
+        PqPriceModal	: (response, onClose) => Promise.reject('Can\'t create PQ modal on a test page'),
     });
 </script>
 

@@ -1,12 +1,14 @@
 
+let dbPool = require('../App/Classes/Sql.es6');
+
 /**
  * a wrapper for DB connection
  * provides handy methods to make inserts/selects/etc...
  * @param {PoolConnection} dbConn
  */
-module.exports = (dbConn) => {
-    let insertRows = ($table, $rows) => {
-        if (!$rows) {
+let Db = (dbConn) => {
+    let writeRows = ($table, $rows) => {
+        if ($rows.length === 0) {
             return Promise.resolve();
         }
         let $colNames = Object.keys($rows[0]);
@@ -76,8 +78,8 @@ module.exports = (dbConn) => {
                 'AND ' + makeConds(where),
             whereOr.length === 0 ? '' :
                 'AND (' + (whereOr.map(or => makeConds(or)).join(' OR ')) + ')',
-            orderBy.length === 0 ? '' : `ORDER BY ` + orderBy,
-            limit ? [] : `LIMIT ` + (+skip ? +skip + ', ' : '') + +limit,
+            orderBy ? '' : `ORDER BY ` + orderBy,
+            !limit ? '' : `LIMIT ` + (+skip ? +skip + ', ' : '') + +limit,
         ].join('\n');
 
         let placedValues = [].concat(
@@ -91,7 +93,12 @@ module.exports = (dbConn) => {
     };
 
     return {
-        insertRows: insertRows,
+        writeRows: writeRows,
         fetchAll: fetchAll,
     };
 };
+Db.with = (process) => dbPool.getConnection()
+    .then(dbConn => process(Db(dbConn))
+        .finally(() => dbPool.releaseConnection(dbConn)));
+
+module.exports = Db;

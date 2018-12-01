@@ -58,9 +58,11 @@ export const getters = (action, props) => {
 
 	switch (action)
 	{
+		case 'area' :
+			// TODO: per session, not per agent...
+		break;
 		case 'terminal' :
 		case 'gds' :
-		case 'area' :
 		case 'language' :
 		case 'fontSize' :
 		case 'theme' :

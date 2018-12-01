@@ -59,7 +59,7 @@ exports.runInputCmd = (reqBody, emcResult) => {
 		let responseTimestamp = new Date().getTime();
 		dbPool.getConnection()
 			.then(dbConn => {
-				return Db(dbConn).insertRows('terminalBuffering', [{
+				return Db(dbConn).writeRows('terminalBuffering', [{
 					agentId: reqBody.agentId,
 					requestId: reqBody.travelRequestId || 0,
 					gds: reqBody.gds,

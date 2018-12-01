@@ -46,11 +46,13 @@ export const get = (url) => {
 	return Ask( url, { credentials: 'include' });
 };
 
-export const post = (url, defParams = {}) => {
-	defParams.emcSessionId = window.GdsDirectPlusParams.emcSessionId;
-	defParams.travelRequestId = window.GdsDirectPlusParams.travelRequestId;
+export const post = (url, postParams = {}) => {
+	postParams = {...postParams,
+		emcSessionId: window.GdsDirectPlusParams.emcSessionId,
+		travelRequestId: window.GdsDirectPlusParams.travelRequestId,
+	};
 
-	return Ask(url, { ...getPostRequestHeader(defParams) });
+	return Ask(url, { ...getPostRequestHeader(postParams) });
 };
 
 export default {

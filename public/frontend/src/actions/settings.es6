@@ -1,5 +1,6 @@
 import {getters} from "../state";
 import {getStore} from "../store";
+import {GDS_LIST} from "../constants";
 
 export const CHANGE_STYLE = theme => {
 	getters('theme', theme);

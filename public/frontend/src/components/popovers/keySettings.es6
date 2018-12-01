@@ -86,13 +86,15 @@ class Context
 			tab.appendChild(tabContent);
 
 
-			const buttonHeader = Dom(`div.settings-input-container input-container-header`)
+			const buttonHeader = Dom(`div.settings-input-container input-container-header`);
 			buttonHeader.appendChild(Dom(`label[Key]`));
 			buttonHeader.appendChild(Dom(`label[Command]`));
 			buttonHeader.appendChild(Dom(`label[Autorun]`));
 
 			const inputFields = this._makeInputFieldList(gds);
-			tabContent.appendChild(inputFields.pccContainer);
+			const labelDiv = Dom(`div.settings-input-container`)
+			labelDiv.appendChild(Dom(`label[Default PCC]`));
+			tabContent.appendChild(labelDiv);
 			tabContent.appendChild(inputFields.areaGrid);
 
 			tabContent.appendChild(buttonHeader);
@@ -125,17 +127,10 @@ class Context
 
 	_makeInputFieldList(gds)
 	{
-		const data = { pccContainer: null, buttons: [], areaSettings: [] };
+		const data = { buttons: [], areaSettings: [] };
 		const buttonPrefixes = [null, 'shift', 'ctrl'];
 		const startingKey = 111;
 
-		// Default PCC
-		const pccContainer = this._getInputRow({
-			label: 'Default PCC',
-			name: `defaultPcc[${gds}]`,
-			placeholder: '',
-			value: this._getPcc(gds)
-		});
 		const areaGrid = Dom(`div`, {style: 'display: grid; grid-template-areas: "a a";'});
 		this._getGdsAreas(gds)
             .map(letter => {
@@ -158,7 +153,6 @@ class Context
             })
             .forEach(cell => areaGrid.appendChild(cell));
 
-		data.pccContainer = pccContainer;
 		data.areaGrid = areaGrid;
 
 		// All button shortcuts
@@ -244,7 +238,8 @@ class Context
 				}
 			});
 
-			result[gds].defaultPcc = this.inputFields[gds].pccContainer.children[1].value;
+			// TODO: remove, it is now stored per area
+			result[gds].defaultPcc = null;
 			result[gds].areaSettings = [...this.inputFields[gds].areaGrid.children].map(cont => 1 && {
 				area: cont.getAttribute('data-area'),
 				defaultPcc: [...cont.querySelectorAll('select.default-pcc')]
