@@ -19,6 +19,7 @@ module.exports.migrations = [
             '  `requestTimestamp` int(10) unsigned DEFAULT NULL,',
             '  `responseTimestamp` int(10) unsigned DEFAULT NULL,',
             '  PRIMARY KEY (`id`),',
+            '  KEY `agentId_requestId` (`agentId`, `requestId`),',
             '  KEY `rbsSessionId` (`rbsSessionId`),',
             '  KEY `gdsSessionDataMd5` (`gdsSessionDataMd5`)',
             ') ENGINE=InnoDB CHARSET=utf8',

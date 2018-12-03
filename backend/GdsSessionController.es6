@@ -88,26 +88,26 @@ exports.keepAlive = (reqBody, emcResult) => {
 };
 
 exports.getLastCommands = (reqBody, emcResult) => {
-	reqBody.agentId = emcResult.user.id;
+	let agentId = emcResult.user.id;
+	let gds = reqBody.gds;
+	let requestId = reqBody.travelRequestId || 0;
 	return dbPool.getConnection()
 		.then(dbConn => {
-			let rbsSessionId = RbsClient(reqBody).getSessionId();
-			let gdsSessionData = TravelportClient(reqBody).getSessionData();
-			let gdsSessionDataMd5 = md5(gdsSessionData);
 			return Db(dbConn).fetchAll({
 				table: 'terminalBuffering',
-				whereOr: [
-					[['rbsSessionId', '=', rbsSessionId]],
-					[['gdsSessionDataMd5', '=', gdsSessionDataMd5]],
+				where: [
+					['gds', '=', gds],
+					['agentId', '=', agentId],
+					['requestId', '=', requestId],
 				],
 				orderBy: 'id DESC',
 				limit: 100,
 			}).then(rows => {
-				let cmds = rows.map(row => row.command);
+				let cmds = rows.reverse().map(row => row.command);
 				let usedSet = new Set();
 				return {
 					success: true,
-					data: cmds.reverse().filter(cmd => {
+					data: cmds.filter(cmd => {
 						// remove dupes
 						let used = usedSet.has(cmd);
 						usedSet.add(cmd);

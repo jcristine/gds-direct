@@ -78,7 +78,7 @@ let Db = (dbConn) => {
                 'AND ' + makeConds(where),
             whereOr.length === 0 ? '' :
                 'AND (' + (whereOr.map(or => makeConds(or)).join(' OR ')) + ')',
-            orderBy ? '' : `ORDER BY ` + orderBy,
+            !orderBy ? '' : `ORDER BY ` + orderBy,
             !limit ? '' : `LIMIT ` + (+skip ? +skip + ', ' : '') + +limit,
         ].join('\n');
 
