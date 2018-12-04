@@ -1,6 +1,7 @@
 
 let request = require('request');
 let MultiLevelMap = require('./Utils/MultiLevelMap.es6');
+let TerminalService = require('./Transpiled/App/Services/TerminalService.es6');
 
 let callRbs = (functionName, params) => new Promise((resolve, reject) => {
 	let logId = 'rbs.5bf6e431.9577485';
@@ -39,6 +40,19 @@ let callRbs = (functionName, params) => new Promise((resolve, reject) => {
 
 let agentToGdsToLeadToSessionId = MultiLevelMap();
 
+let getLeadData = (travelRequestId) => {
+	return !travelRequestId ? null : {
+		// TODO: fetch from CMS
+		leadId: travelRequestId,
+		leadOwnerId: null,
+		leadUrl: 'https://cms.asaptickets.com/leadInfo?id=' + travelRequestId,
+		projectName: null,
+		paxNumAdults: 1,
+		paxNumChildren: 0,
+		paxNumInfants: 0,
+	};
+};
+
 /** @param {{command: '*R', gds: 'apollo', language: 'sabre', agentId: '6206'}} reqBody */
 module.exports = (reqBody) => {
 	let {agentId, gds, travelRequestId} = reqBody;
@@ -50,22 +64,11 @@ module.exports = (reqBody) => {
 		command: command,
 		dialect: dialect,
 		sessionId: sessionId,
+		context: getLeadData(reqBody.travelRequestId),
 	}).then(rbsResp => {
-		return {
-			output: rbsResp.result.result.calledCommands
-				.map(call => '>' + call.cmd + '\n' + call.output)
-				.join('\n______________________\n'),
-			tabCommands: rbsResp.result.result.calledCommands
-				.map(call => call.tabCommands)
-				.reduce((a,b) => a.concat(b), []),
-			clearScreen: rbsResp.result.result.clearScreen,
-			canCreatePq: rbsResp.result.result.sessionInfo.canCreatePq,
-			canCreatePqErrors: rbsResp.result.result.sessionInfo.canCreatePqErrors,
-			area: rbsResp.result.result.sessionInfo.area,
-			pcc: rbsResp.result.result.sessionInfo.pcc,
-			rbsSessionId: sessionId,
-		};
-	});
+		let termSvc = new TerminalService(gds, agentId, travelRequestId);
+        return termSvc.addHighlighting(command, dialect, rbsResp);
+    }).then(result => ({rbsSessionId: sessionId, ...result}));
 
 	let runInNewSession = ({command, dialect}) => callRbs('terminal.startSession', {
 		gds: gds, agentId: 6206,

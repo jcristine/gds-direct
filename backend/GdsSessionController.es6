@@ -39,12 +39,15 @@ let makeCmdResponse = (data) => 1 && {
 /** @param {IEmcResult} emcResult */
 let runInputCmd = (reqBody, emcResult) => {
 	reqBody.agentId = emcResult.user.id;
+	reqBody.command = reqBody.command.trim();
 	let useRbs = +reqBody.useRbs ? true : false;
-	return useRbs
-		? RbsClient(reqBody).runInputCmd()
-			.then(data => makeCmdResponse(data))
-		: TravelportClient(reqBody).runInputCmd(reqBody)
+	if (useRbs) {
+		return RbsClient(reqBody).runInputCmd()
 			.then(data => makeCmdResponse(data));
+	} else {
+		return TravelportClient(reqBody).runInputCmd(reqBody)
+			.then(data => makeCmdResponse(data));
+	}
 };
 
 /** @param {IEmcResult} emcResult */

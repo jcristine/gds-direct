@@ -2,22 +2,16 @@ let MultiLevelMap = require('./Utils/MultiLevelMap.es6');
 let Db = require('./Utils/Db.es6');
 let TerminalSettings = require('./Transpiled/App/Models/Terminal/TerminalSettings.es6');
 
-let dbPool = require('./App/Classes/Sql.es6');
-
-let getCommandBufferRows = (reqBody, emcResult) => {
-	return dbPool.getConnection()
-		.then(dbConn => {
-			return Db(dbConn).fetchAll({
-				table: 'terminalBuffering',
-				where: [
-					['agentId', '=', emcResult.user.id],
-					['requestId', '=', reqBody.travelRequestId || 0],
-				],
-				orderBy: 'id DESC',
-				limit: 100, // standalone commands are taken for _whole time_
-			}).finally(() => dbPool.releaseConnection(dbConn));
-		});
-};
+let getCommandBufferRows = (reqBody, emcResult) =>
+    Db.with(db => db.fetchAll({
+        table: 'terminalBuffering',
+        where: [
+            ['agentId', '=', emcResult.user.id],
+            ['requestId', '=', reqBody.travelRequestId || 0],
+        ],
+        orderBy: 'id DESC',
+        limit: 100, // standalone commands are taken for _whole time_
+    }));
 
 exports.getView = (reqBody, emcResult) => {
     return getCommandBufferRows(reqBody, emcResult).then(rows =>

@@ -57,4 +57,20 @@ module.exports.migrations = [
             ') ENGINE=InnoDB DEFAULT CHARSET=utf8',
         ].join('\n'),
     },
+	{
+		number: '00.00.04',
+		sql: [
+			// called terminalHighlightLanguages in CMS
+			"CREATE TABLE `highlightCmdPatterns` (",
+			"  `id` int(11) NOT NULL AUTO_INCREMENT,",
+			"  `ruleId` int(10) unsigned NOT NULL,",
+			"  `dialect` VARCHAR(15) NOT NULL,",
+			"  `cmdPattern` varchar(255) DEFAULT NULL,",
+			"  `onClickCommand` varchar(50) DEFAULT NULL,",
+			"  `regexError` tinyint(3) unsigned DEFAULT '0',",
+			"  PRIMARY KEY (`id`),",
+			"  UNIQUE KEY `ruleId_dialect` (`ruleId`,`dialect`)",
+			") ENGINE=InnoDB DEFAULT CHARSET=utf8",
+		].join('\n'),
+	},
 ];
