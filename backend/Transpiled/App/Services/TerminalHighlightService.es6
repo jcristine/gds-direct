@@ -1,7 +1,7 @@
 
 const Str = require("../../../Utils/Str.es6");
 const Db = require("../../../Utils/Db.es6");
-const {uasort, array_key_exists, array_merge, substr_replace, array_flip, array_intersect_key, array_values, sprintf, strlen, implode, preg_match, preg_replace, preg_replace_callback, rtrim, str_replace, strcasecmp, boolval, empty, intval, isset, strtoupper, trim, PHP_EOL, json_encode} = require('../../php.es6');
+const {ucfirst, uasort, array_key_exists, array_merge, substr_replace, array_flip, array_intersect_key, array_values, sprintf, strlen, implode, preg_match, preg_replace, preg_replace_callback, rtrim, str_replace, strcasecmp, boolval, empty, intval, isset, strtoupper, trim, PHP_EOL, json_encode} = require('../../php.es6');
 
 /** @debug */
 var require = (path) => {
@@ -42,39 +42,67 @@ let getCmsPatternToRuleIds = (dialect) => {
 	}));
 };
 
-let getRule = (id, $language, $gds) => {
-	// see \App\Repositories\TerminalHighlightRepository::getRule
-	return Promise.reject('TODO: implement');
+let getRuleMapping = (db) => {
+	let whenRules = db.fetchAll({table: 'highlightRules'});
+	let whenPatterns = db.fetchAll({table: 'highlightOutputPatterns'});
+	return Promise.all([whenRules, whenPatterns])
+		.then(([rules, patterns]) => {
+			let mapping = {};
+			for (let rule of rules) {
+				mapping[rule.id] = rule;
+			}
+			for (let pattern of patterns) {
+				if (mapping[pattern.ruleId]) {
+					mapping[pattern.ruleId].patterns = mapping[pattern.ruleId].patterns || [];
+					mapping[pattern.ruleId].patterns.push(pattern);
+				}
+			}
+			return Object.values(mapping);
+		});
 };
 
-let setRegexError = (ruleId, cmdPattern, dialect) =>
-	Db.with(db => db.write('highlightCmdPatterns', [{
+let setCmdRegexError = (ruleId, cmdPattern, dialect) =>
+	Db.with(db => db.writeRows('highlightCmdPatterns', [{
 		cmdPattern: cmdPattern,
 		// there is actually an unique index on these two, so cmdPattern is probably
 		// redundant... but you never know whether keys on prod are same as on dev
 		ruleId: ruleId,
 		dialect: dialect,
+		regexError: true,
 	}]));
+
+let setOutputRegexError = (patternId) =>
+	Db.with(db => db.writeRows('highlightOutputPatterns', [{
+		id: patternId,
+		regexError: true,
+	}]));
+
+// /^\s*(?P<value>OPERATED BY .*)/ -> /^\s*(?<value>OPERATED BY .*)/
+// (?P< -> (?<
+let makeRegex = (content, flags = undefined) => {
+	content = content.replace(/(?<!\\)\(\?P</g, '(?<');
+	return new RegExp(content, flags);
+};
+
+let normalizeRuleForFrontend = (rule) => {
+	return {
+		id: rule.id,
+		value: rule.value,
+		onMouseOver: rule.isMessageOnClick ? rule.message : '',
+		onClickCommand: rule.onClickCommand || '',
+		color: rule.color,
+		backgroundColor: rule.backgroundColor,
+		isInSameWindow: rule.isInSameWindow,
+		decoration: JSON.parse(rule.decoration),
+		offsets: rule.offsets,
+	};
+};
 
 class TerminalHighlightService {
 	constructor() {
-		this.$terminalHighlightRepository = $terminalHighlightRepository;
-		this.$terminalHighlightGdsRepository = $terminalHighlightGdsRepository;
 		this.$appliedRules = [];
 		this.$matches = [];
 		this.$shift = 0;
-		this.$availableFields = {
-			'id': 0,
-			'value': 1,
-			'onMouseOver': 2,
-			'onClickMessage': 3,
-			'onClickCommand': 4,
-			'color': 5,
-			'isInSameWindow': 6,
-			'decoration': 7,
-			'backgroundColor': 8,
-			'offsets': 9,
-		};
 	}
 
 	/**
@@ -93,18 +121,18 @@ class TerminalHighlightService {
 	 * @param string $enteredCommand
 	 * @return Promise
 	 */
-	async getRulesIdsMatchedToCommand($language, $enteredCommand) {
+	async getRuleIdsMatchedToCommand($language, $enteredCommand) {
 		let $response = [];
 		let $commands = await getCmsPatternToRuleIds($language);
 		if (!empty($commands)) {
 			for (let [$command, ruleIds] of Object.entries($commands)) {
 				let $match;
 				try {
-					let regex = new RegExp('^' + $command);
+					let regex = makeRegex('^' + $command);
 					$match = preg_match(regex, $enteredCommand);
 				} catch ($e) {
 					$match = null;
-					ruleIds.forEach(ruleId => setRegexError(ruleId, $command, $language));
+					ruleIds.forEach(ruleId => setCmdRegexError(ruleId, $command, $language));
 				}
 				if ($match) {
 					$response = array_merge($response, ruleIds);
@@ -118,35 +146,11 @@ class TerminalHighlightService {
 	 * @param array $ids
 	 * @param string $language
 	 * @param string $gds
-	 * @return array
-	 * @throws \Dyninno\Core\Exception\SQLException
-	 * @throws \Psr\SimpleCache\InvalidArgumentException
 	 */
-	getRules($ids, $language, $gds) {
-		let $response = [];
-		for (let $highlightId of $ids) {
-			/** @var TerminalHighlightRepository $rule */
-			let $rule = getRule($highlightId, $language, $gds);
-			if ($rule) {
-				if (!AuthSession.hasRole(Role.CMS_TESTER_ROLE) && $rule['isForTestersOnly']) {
-					continue;
-				}
-
-				if ($rule['highlightGdsRegexError']) {
-					continue;
-				}
-
-				$response[$highlightId] = $rule;
-			}
-		}
-		uasort($response, function ($a, $b) {
-			if ($a['priority'] == $b['priority']) {
-				return 0;
-			}
-
-			return ($a['priority'] < $b['priority']) ? -1 : 1;
-		});
-		return $response;
+	getRules($ids) {
+		return Db.with(getRuleMapping)
+			.then(rules => rules.filter(rule => $ids.includes(rule.id)))
+			.then(rules => rules.sort((a, b) => a.priority - b.priority));
 	}
 
 	/**
@@ -176,7 +180,7 @@ class TerminalHighlightService {
 			} else {
 				// cross-match, skip
 			}
-			$lastPosition = max($lastPosition, $row[1] + strlen($row[0]));
+			$lastPosition = Math.max($lastPosition, $row[1] + strlen($row[0]));
 		}
 		return $response;
 	}
@@ -190,7 +194,6 @@ class TerminalHighlightService {
 	 */
 	async replace($language, $enteredCommand, $gds, $output) {
         let matches = await this.match($language, $enteredCommand, $gds, $output);
-        console.log('assorted matches', matches);
         matches = this.sortByPosition(matches);
 		matches = this.removeCrossMatches(matches);
 		for (let $match of matches) {
@@ -200,81 +203,72 @@ class TerminalHighlightService {
 	}
 
 	async match($language, $enteredCommand, $gds, $output) {
-		let $rulesMatchedToCommand = await this.getRulesIdsMatchedToCommand($language, $enteredCommand);
-		let $rules = this.getRules($rulesMatchedToCommand, $language, $gds);
-		for (let $rule of $rules) {
-			if (empty($rule['pattern'])) {
-				continue;
-			}
-			let matches = [];
-			try {
-				let regex = new RegExp('/' + $rule['pattern'] + '/m');
-				matches = Str.matchAll(regex, $output);
-			} catch ($e) {
-				matches = [];
-				this.$terminalHighlightGdsRepository.setRegexError($rule['highlightGdsId'], $rule['id']);
-			}
-			if (matches.length > 0) {
-				switch ($rule['type']) {
-					case TerminalHighlightType.TYPE_PATTERN_ONLY:
-						this.matchPattern(matches, $rule);
-						break;
+		let $rulesMatchedToCommand = await this.getRuleIdsMatchedToCommand($language, $enteredCommand);
+		let $rules = await this.getRules($rulesMatchedToCommand);
+		for (let $rule of Object.values($rules)) {
+			$rule['patterns']
+				.filter(row => row.gds === $gds && !empty(row.pattern))
+				.forEach(gdsRow => {
+					let matches = [];
+					let regex = makeRegex(gdsRow['pattern'], 'm');
+					try {
+						matches = Str.matchAll(regex, $output);
+					} catch ($e) {
+						matches = [];
+						console.error('Invalid output regex ' + $e, {$e, gdsRow});
+						setOutputRegexError(gdsRow['id']);
+					}
+					for (let match of matches) {
+						let whole = match[0];
+						let start = match.index;
+						switch ($rule['highlightType']) {
+							case 'patternOnly':
+								this.matchPattern(whole, start, $rule);
+								break;
+							case 'customValue':
+								for (let [name, captured] of Object.entries(match.groups)) {
+									// javascript does not seem to return capture indexes unlike php...
+									// this is a stupid hack, but we'll have to use it till I find a lib
+									let relIndex = whole.indexOf(captured);
+									if (relIndex > -1) {
+										this.matchPattern(captured, start + relIndex, $rule);
+									}
+								}
+								break;
+						}
+						if ($rule['isOnlyFirstFound']) {
+							break;
+						}
+					}
+				});
 
-					case TerminalHighlightType.TYPE_CUSTOM_VALUE:
-						this.matchCustomValue(matches, $rule);
-						break;
-				}
-
-			}
 		}
 		return this.$matches;
 	}
 
-	matchPattern(matches, $rule) {
-		for (let match of matches) {
-			let whole = match[0];
-			let index = match.index;
-			if (!empty(whole)) {
+	matchPattern(matchedText, index, $rule) {
+		if (!empty(matchedText)) {
 
-				$rule['value'] = sprintf('%%%s%%', whole);
+			$rule['value'] = sprintf('%%%s%%', matchedText);
 
-				if (isset(this.$appliedRules[$rule['value']]) && this.$appliedRules[$rule['value']]['id'] != $rule['id']) {
-					continue;
-				}
-
-				this.$matches.push({
-					0: whole,
-					1: index,
-					rule: $rule['id'],
-				});
-				let $offsets = this.$appliedRules[$rule['value']]['offsets'] || [];
-				$offsets.push({'start': index, 'end': index + strlen(whole)});
-				this.$appliedRules[$rule['value']] = this.indexKeys($rule);
-				this.$appliedRules[$rule['value']]['offsets'] = $offsets;
+			if (isset(this.$appliedRules[$rule['value']]) && this.$appliedRules[$rule['value']]['id'] != $rule['id']) {
+				return;
 			}
-			if ($rule['isOnlyFirstFound']) {
-				break;
-			}
-		}
-	}
 
-	matchCustomValue($matches, $rule) {
-		for (let $group of $matches) {
-			this.matchPattern($group, $rule);
+			this.$matches.push({
+				0: matchedText,
+				1: index,
+				rule: $rule['id'],
+			});
+			this.$appliedRules[$rule['value']] = this.indexKeys($rule);
+			let $offsets = this.$appliedRules[$rule['value']]['offsets'] || [];
+			$offsets.push({'start': index, 'end': index + strlen(matchedText)});
+			this.$appliedRules[$rule['value']]['offsets'] = $offsets;
 		}
 	}
 
 	indexKeys($rule) {
-		if (!self.INDEX_KEYS) {
-			return $rule;
-		}
-		let $response = [];
-		for (let [$key, $value] of Object.entries($rule)) {
-			if (array_key_exists($key, this.$availableFields)) {
-				$response[this.$availableFields[$key]] = $value;
-			}
-		}
-		return $response;
+		return $rule;
 	}
 
 
@@ -290,7 +284,7 @@ class TerminalHighlightService {
 	getAppliedRules() {
 		if (!self.INDEX_KEYS) {
 			for (let [k,v] of Object.entries(this.$appliedRules)) {
-				this.$appliedRules[k] = array_intersect_key(v, this.$availableFields);
+				this.$appliedRules[k] = normalizeRuleForFrontend(v);
 			}
 		}
 		return array_values(this.$appliedRules);
@@ -300,7 +294,7 @@ class TerminalHighlightService {
 	 * @return array
 	 */
 	getAvailableFields() {
-		return self.INDEX_KEYS ? array_flip(this.$availableFields) : [];
+		return [];
 	}
 
 	/**

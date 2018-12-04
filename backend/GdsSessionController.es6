@@ -79,7 +79,7 @@ exports.runInputCmd = (reqBody, emcResult) => {
 					responseTimestamp: responseTimestamp,
 				}]).finally(() => dbPool.releaseConnection(dbConn));
 			})
-			.catch(exc => console.log('SQL exc - ' + exc));
+			.catch(exc => console.error('SQL exc - ' + exc));
 	});
 
 	return running;
@@ -87,6 +87,8 @@ exports.runInputCmd = (reqBody, emcResult) => {
 
 /** @param {IEmcResult} emcResult */
 exports.keepAlive = (reqBody, emcResult) => {
+	// TODO: use terminal.keepAlive function in RBS instead since if user enters a
+	//  command before keepAlive finishes, "session is locked" error will be returned
 	return runInputCmd({command: 'MD0', ...reqBody}, emcResult);
 };
 
@@ -106,7 +108,7 @@ exports.getLastCommands = (reqBody, emcResult) => {
 				orderBy: 'id DESC',
 				limit: 100,
 			}).then(rows => {
-				let cmds = rows.reverse().map(row => row.command);
+				let cmds = rows.map(row => row.command);
 				let usedSet = new Set();
 				return {
 					success: true,
@@ -115,7 +117,7 @@ exports.getLastCommands = (reqBody, emcResult) => {
 						let used = usedSet.has(cmd);
 						usedSet.add(cmd);
 						return !used;
-					}),
+					}).reverse(),
 				};
 			}).finally(() => dbPool.releaseConnection(dbConn));
 		});

@@ -53,7 +53,7 @@ let Db = (dbConn) => {
      *     ],
      *     orderBy: 'id DESC',
      *     skip: 0,
-     *     limit: 100,
+     *     limit: '100',
      * }} params
      * will generate:
      *   SELECT * FROM terminalBuffering
@@ -63,6 +63,7 @@ let Db = (dbConn) => {
      *   LIMIT 0, 100
      * usage:
      * Db(conn).fetchAll(params).then(rows => console.log(rows));
+	 * @return Promise
      */
     let fetchAll = (params) => {
         let {
@@ -95,6 +96,10 @@ let Db = (dbConn) => {
     return {
         writeRows: writeRows,
         fetchAll: fetchAll,
+        fetchOne: params => fetchAll(params)
+			.then(rows => rows.length > 0 ? rows[0] :
+				Promise.reject('Could not find ' +
+					params.table + ' record in DB')),
     };
 };
 Db.with = (process) => dbPool.getConnection()

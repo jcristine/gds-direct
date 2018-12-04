@@ -143,7 +143,7 @@ class TerminalService
             }));
             for (let row of rows) {
                 let cmd = row.command || '';
-                if (cmd.match(self.MD_PATTERNS)) {
+                if (!cmd.match(self.MD_PATTERNS)) {
                     return cmd;
                 }
             }

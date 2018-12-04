@@ -82,7 +82,7 @@ class TerminalSettings {
 	getSettings() {
 		let $agentId = this.agentId;
 		let $settings = {
-			common: this.getCurrentGds($agentId),
+			common: {currentGds: this.getCurrentGds($agentId)},
 			gds: {},
 		};
 		for (let $gds of Constants.supportedGdses) {

@@ -22,13 +22,13 @@ export default class Session
 	{
 		this.settings = params;
 		let gds = params.gds;
-		let pingInterval = gds === 'apollo' ? 60 : 10 * 60;
+		let pingInterval = gds === 'apollo' ? 60 * 1000 : 10 * 60 * 1000;
 		setInterval(() => {
 			if (window.performance.now() - lastUsedAt >= pingInterval) {
 				lastUsedAt = window.performance.now();
 				post('/gdsDirect/keepAlive', makeParams(this, {}));
 			}
-		}, pingInterval * 1000);
+		}, pingInterval);
 	}
 
 	_run(cmd)

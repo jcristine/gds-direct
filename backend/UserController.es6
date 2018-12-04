@@ -16,7 +16,6 @@ let getCommandBufferRows = (reqBody, emcResult) =>
 exports.getView = (reqBody, emcResult) => {
     return getCommandBufferRows(reqBody, emcResult).then(rows =>
         new TerminalSettings(emcResult).getSettings().then(settings => {
-            let currentGds = 'apollo';
             let bufferMap = MultiLevelMap();
             rows = rows.reverse();
             for (let row of rows) {
@@ -27,23 +26,11 @@ exports.getView = (reqBody, emcResult) => {
                     output: row.output,
                 });
             }
-            let usedSet = new Set();
-            let lastCommands = rows
-                .filter(row => row.gds === currentGds)
-                .map(row => row.command)
-                .filter(cmd => {
-                    // remove dupes
-                    let used = usedSet.has(cmd);
-                    usedSet.add(cmd);
-                    return !used;
-                })
-                .slice(-20);
             return {
                 enabled: true,
                 disableReason: '',
                 settings: settings,
                 buffer: bufferMap.root,
-                lastCommands: lastCommands,
                 auth: emcResult.user,
             };
         })

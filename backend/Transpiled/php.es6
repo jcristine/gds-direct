@@ -1,7 +1,8 @@
 
 let util = require('util');
 
-let empty = (value) => !value || +value === 0 || Object.keys(value).length === 0;
+let empty = (value) => !value || +value === 0 ||
+	(typeof value === 'object') && Object.keys(value).length === 0;
 
 exports.empty = empty;
 exports.intval = (value) => +value;
