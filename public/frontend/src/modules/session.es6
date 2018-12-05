@@ -16,6 +16,12 @@ let makeParams = (session, callParams) => {
 	return Object.assign({}, baseParams, callParams);
 };
 
+let formatSystemError = (exc) => {
+	let msg = 'SYSTEM ERROR - ' + (exc + '').replace('\n', ' ').slice(0, 100);
+	let output = '[[;;;errorMessage]' + msg + ']';
+	return {data: {output: output}};
+};
+
 export default class Session
 {
 	constructor( params )
@@ -39,7 +45,8 @@ export default class Session
 		}
 
 		lastUsedAt = window.performance.now();
-		return post('/terminal/command?cmd=' + cmd, makeParams(this, {command: cmd}));
+		return post('/terminal/command?cmd=' + cmd, makeParams(this, {command: cmd}))
+			.catch(formatSystemError);
 	}
 
 	_runNext()
