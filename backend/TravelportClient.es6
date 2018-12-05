@@ -80,7 +80,7 @@ let extractPager = (text) => {
 };
 
 let shouldWrap = (cmd) => {
-	let wrappedCmds = ['FS', 'MORE*', 'QC', '*HTE', 'HOA', 'HOC', 'FQN', 'A'];
+	let wrappedCmds = ['FS', 'MORE*', 'QC', '*HTE', 'HOA', 'HOC', 'FQN', 'A', '$D'];
 	let alwaysWrap = false;
 	return alwaysWrap
 		|| wrappedCmds.some(wCmd => cmd.startsWith(wCmd));
@@ -104,14 +104,26 @@ let makeSessionData = token => !token ? null :{
 	externalToken: token,
 };
 
+let makeResult = (cmd, output, token) => ({
+	calledCommands: [{
+		cmd: cmd,
+		output: output,
+	}],
+	messages: [],
+	clearScreen: false,
+	sessionInfo: {
+		canCreatePq: false,
+		canCreatePqErrors: ['Not supported in RBS-free connection'],
+		area: 'A',
+		pcc: '1O3K',
+	},
+	gdsSessionData: makeSessionData(token),
+});
+
 let runAndCleanupCmd = (cmd, token, fetchAll = false) => {
 	let fullOutput = '';
 	let getNextPage = (nextCmd) => runOneCmd(nextCmd, token)
 		.then((parsedResp) => {
-			let makeResult = (output) => 1 && {
-				output: output,
-				gdsSessionData: makeSessionData(token),
-			};
 			let rawOutput = parsedResp.output;
 			let [output, pager] = extractPager(rawOutput);
 
@@ -123,11 +135,11 @@ let runAndCleanupCmd = (cmd, token, fetchAll = false) => {
 				if (pager === ')><') {
 					return getNextPage('MR', token);
 				} else {
-					return makeResult(fullOutput);
+					return makeResult(cmd, fullOutput, token);
 				}
 			} else {
 				if (shouldWrap(cmd)) rawOutput = wrap(rawOutput);
-				return makeResult(rawOutput + '\n');
+				return makeResult(cmd, rawOutput + '\n', token);
 			}
 		});
 	return getNextPage(cmd);

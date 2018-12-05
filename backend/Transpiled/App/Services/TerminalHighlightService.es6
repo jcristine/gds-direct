@@ -4,20 +4,13 @@ const Db = require("../../../Utils/Db.es6");
 const {ucfirst, array_key_exists, array_merge, substr_replace, array_flip, array_intersect_key, array_values, sprintf, strlen, implode, preg_match, preg_replace, preg_replace_callback, rtrim, str_replace, strcasecmp, boolval, empty, intval, isset, strtoupper, trim, PHP_EOL, json_encode} = require('../../php.es6');
 
 // TODO: cache or something... and reuse db instance
-let getCmsPatternToRuleIds = (dialect) => {
+let getCmsPatterns = (dialect) => {
 	return Db.with(db => db.fetchAll({
 		table: 'highlightCmdPatterns',
 		where: [
 			['dialect', '=', dialect],
 			['regexError', '=', 0],
 		],
-	}).then(rows => {
-		let dict = {};
-		for (let row of rows) {
-            dict[row.cmdPattern] = dict[row.cmdPattern] || [];
-			dict[row.cmdPattern].push(row.ruleId);
-		}
-		return dict;
 	}));
 };
 
@@ -67,8 +60,9 @@ let normalizeRuleForFrontend = (rule) => {
 	return {
 		id: rule.id,
 		value: rule.value,
-		onMouseOver: rule.isMessageOnClick ? rule.message : '',
-		onClickCommand: rule.onClickCommand || '',
+		onMouseOver: !rule.isMessageOnClick ? rule.message : '',
+		onClickMessage: rule.isMessageOnClick ? rule.message : '',
+		onClickCommand: rule.cmdPattern.onClickCommand || '',
 		color: rule.color,
 		backgroundColor: rule.backgroundColor,
 		isInSameWindow: rule.isInSameWindow,
@@ -85,40 +79,25 @@ class TerminalHighlightService {
 	}
 
 	/**
-	 * @param string $language
-	 * @return array
-	 */
-	async getLanguageCommands($language) {
-		let $data = await getCmsPatternToRuleIds($language);
-		return $data[$language] || [];
-	}
-
-	/**
 	 * Get all applied to command rules
 	 *
 	 * @param string $language
 	 * @param string $enteredCommand
 	 * @return Promise
 	 */
-	async getRuleIdsMatchedToCommand($language, $enteredCommand) {
-		let $response = [];
-		let $commands = await getCmsPatternToRuleIds($language);
-		if (!empty($commands)) {
-			for (let [$command, ruleIds] of Object.entries($commands)) {
-				let $match;
+	getMatchingCmdPatterns($language, $enteredCommand) {
+		return getCmsPatterns($language).then(rows =>
+			rows.filter(row => {
+				let $command = row.cmdPattern;
 				try {
 					let regex = makeRegex('^' + $command);
-					$match = preg_match(regex, $enteredCommand);
+					return preg_match(regex, $enteredCommand);
 				} catch ($e) {
-					$match = null;
-					ruleIds.forEach(ruleId => setCmdRegexError(ruleId, $command, $language));
+					setCmdRegexError(row.ruleId, $command, $language);
+					return false;
 				}
-				if ($match) {
-					$response = array_merge($response, ruleIds);
-				}
-			}
-		}
-		return $response;
+			})
+		);
 	}
 
 	/**
@@ -126,9 +105,19 @@ class TerminalHighlightService {
 	 * @param string $language
 	 * @param string $gds
 	 */
-	getRules($ids) {
+	getRules(cmdPatterns) {
 		return Db.with(getRuleMapping)
-			.then(rules => rules.filter(rule => $ids.includes(rule.id)))
+			.then(rules => {
+				let result = [];
+				for (let rule of rules) {
+					for (let cmdPattern of cmdPatterns) {
+						if (cmdPattern.ruleId == rule.id) {
+							result.push({...rule, cmdPattern});
+						}
+					}
+				}
+				return result;
+			})
 			.then(rules => rules.sort((a, b) => a.priority - b.priority));
 	}
 
@@ -144,7 +133,6 @@ class TerminalHighlightService {
 				$response.push($row);
 			} else {
 				// cross-match, skip
-				console.log('zhopa cross-match', {$lastPosition, $row, $response});
 			}
 			$lastPosition = Math.max($lastPosition, +$row[1] + strlen($row[0]));
 		}
@@ -152,8 +140,8 @@ class TerminalHighlightService {
 	}
 
 	async match($language, $enteredCommand, $gds, $output) {
-		let $rulesMatchedToCommand = await this.getRuleIdsMatchedToCommand($language, $enteredCommand);
-		let $rules = await this.getRules($rulesMatchedToCommand);
+		let cmdPatterns = await this.getMatchingCmdPatterns($language, $enteredCommand);
+		let $rules = await this.getRules(cmdPatterns);
 		for (let $rule of Object.values($rules)) {
 			$rule['patterns']
 				.filter(row => row.gds === $gds && !empty(row.pattern))

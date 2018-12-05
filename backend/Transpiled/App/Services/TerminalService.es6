@@ -4,18 +4,6 @@ const {sprintf, preg_match, preg_replace, preg_replace_callback, rtrim, str_repl
 
 let TerminalHighlightService = require('./TerminalHighlightService.es6');
 
-/** @debug */
-var require = (path) => {
-	let reportError = (name) => { throw new Error('Tried to use ' + name + ' of untranspilled module - ' + path) };
-	return new Proxy({}, {
-		get: (target, name) => reportError(name),
-		set: (target, name, value) => reportError(name),
-	});
-};
-
-const SQLException = require('Dyninno/Core/Exception/SQLException');
-const InvalidArgumentException = require('Psr/SimpleCache/InvalidArgumentException');
-
 let self = {
 	ERROR_NO_PARAMS                 : 'Error: No Params',
 	ERROR_UNKNOWN_FUNCTION          : 'Error: Unknown Function',
@@ -66,19 +54,17 @@ class TerminalService
 	 * @param string $enteredCommand
 	 * @param string $language
 	 * @return string
-	 * @throws InvalidArgumentException
-	 * @throws SQLException
 	 */
 	async formatOutput($enteredCommand, $language, calledCommands) {
 		let $output = '';
 		for (let [$index, $row] of Object.entries(calledCommands)) {
 			let $command;
-			if ($index) {
+			if ($index > 0) {
 				let $separator = strcasecmp('*', trim($row['output'])) ? PHP_EOL : "&nbsp;++";
 				$command = PHP_EOL + this.color("&gt;" + $row['cmd'], 'usedCommand') + $separator;
 			} else {
-				let $command = '';
-				if (strcasecmp($enteredCommand, $row['cmd'])) {
+				$command = '';
+				if ($enteredCommand.toUpperCase() !== $row['cmd'].toUpperCase()) {
 					$command += PHP_EOL + this.color("&gt;" + $row['cmd'], 'usedCommand') + PHP_EOL;
 				}
 			}
@@ -94,7 +80,6 @@ class TerminalService
 	 * @param string $output
 	 * @param $messages
 	 * @return string
-	 * @throws InvalidArgumentException
 	 */
 	appendOutput($output, $messages) {
 		let $errors = '';
@@ -186,7 +171,7 @@ class TerminalService
 	 * @param {IRbsRunCommandResult} rbsResp
 	 */
 	addHighlighting($command, $language, rbsResp) {
-		let {calledCommands, messages} = rbsResp.result.result;
+		let {calledCommands, messages} = rbsResp;
 		let typeToMsgs = {};
 		for (let msgRec of messages) {
 			typeToMsgs[msgRec.type] = typeToMsgs[msgRec.type] || [];
@@ -196,20 +181,20 @@ class TerminalService
 			.then($output => {
 				$output = this.appendOutput($output, typeToMsgs);
 				return {
-					'output': $output,
-					'prompt': '',
-					'userMessages': typeToMsgs['pop_up'] ? typeToMsgs['pop_up'] : null,
-					'appliedRules': this.$terminalHighlightService.getAppliedRules(),
-					'legend': [],
+					output: $output,
+					prompt: '',
+					userMessages: typeToMsgs['pop_up'] ? typeToMsgs['pop_up'] : null,
+					appliedRules: this.$terminalHighlightService.getAppliedRules(),
+					legend: [],
 
 					tabCommands: calledCommands
 						.map(call => call.tabCommands)
 						.reduce((a,b) => a.concat(b), []),
-					clearScreen: rbsResp.result.result.clearScreen,
-					canCreatePq: rbsResp.result.result.sessionInfo.canCreatePq,
-					canCreatePqErrors: rbsResp.result.result.sessionInfo.canCreatePqErrors,
-					area: rbsResp.result.result.sessionInfo.area,
-					pcc: rbsResp.result.result.sessionInfo.pcc,
+					clearScreen: rbsResp.clearScreen,
+					canCreatePq: rbsResp.sessionInfo.canCreatePq,
+					canCreatePqErrors: rbsResp.sessionInfo.canCreatePqErrors,
+					area: rbsResp.sessionInfo.area,
+					pcc: rbsResp.sessionInfo.pcc,
 				};
 			});
 	}

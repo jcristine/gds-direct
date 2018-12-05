@@ -3,6 +3,7 @@ let RbsClient = require('./RbsClient.es6');
 let TravelportClient = require('./TravelportClient.es6');
 let dbPool = require('./App/Classes/Sql.es6');
 let Db = require('./Utils/Db.es6');
+let TerminalService = require('./Transpiled/App/Services/TerminalService.es6');
 
 let md5 = (data) => {
 	// return crypto.createHash('md5')
@@ -41,18 +42,20 @@ let runInputCmd = (reqBody, emcResult) => {
 	reqBody.agentId = emcResult.user.id;
 	reqBody.command = reqBody.command.trim();
 	let useRbs = +reqBody.useRbs ? true : false;
+	let running;
 	if (useRbs) {
-		return RbsClient(reqBody).runInputCmd()
-			.then(data => makeCmdResponse(data));
+		running = RbsClient(reqBody).runInputCmd();
 	} else {
 		if (reqBody.gds === 'apollo') {
-			return TravelportClient(reqBody).runInputCmd(reqBody)
-				.then(data => makeCmdResponse(data));
+			running = TravelportClient(reqBody).runInputCmd(reqBody);
 		} else {
-			// TODO: do not break GUI on rejections
-			return Promise.reject('Unsupported GDS for RBS-free connection - ' + reqBody.gds)
+			running = Promise.reject('Unsupported GDS for RBS-free connection - ' + reqBody.gds)
 		}
 	}
+	return running.then(rbsResult => {
+		let termSvc = new TerminalService(reqBody.gds, reqBody.agentId, reqBody.travelRequestId);
+		return termSvc.addHighlighting(reqBody.command, reqBody.language, rbsResult);
+	}).then(makeCmdResponse);
 };
 
 /** @param {IEmcResult} emcResult */

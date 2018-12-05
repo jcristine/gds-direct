@@ -1,7 +1,6 @@
 
 let request = require('request');
 let MultiLevelMap = require('./Utils/MultiLevelMap.es6');
-let TerminalService = require('./Transpiled/App/Services/TerminalService.es6');
 
 let callRbs = (functionName, params) => new Promise((resolve, reject) => {
 	let logId = 'rbs.5bf6e431.9577485';
@@ -65,10 +64,7 @@ module.exports = (reqBody) => {
 		dialect: dialect,
 		sessionId: sessionId,
 		context: getLeadData(reqBody.travelRequestId),
-	}).then(rbsResp => {
-		let termSvc = new TerminalService(gds, agentId, travelRequestId);
-        return termSvc.addHighlighting(command, dialect, rbsResp);
-    }).then(result => ({rbsSessionId: sessionId, ...result}));
+	}).then(result => ({rbsSessionId: sessionId, ...result.result.result}));
 
 	let runInNewSession = ({command, dialect}) => callRbs('terminal.startSession', {
 		gds: gds, agentId: 6206,
