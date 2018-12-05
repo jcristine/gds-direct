@@ -3,18 +3,10 @@ const Str = require("../../../Utils/Str.es6");
 const Db = require("../../../Utils/Db.es6");
 const {ucfirst, array_key_exists, array_merge, substr_replace, array_flip, array_intersect_key, array_values, sprintf, strlen, implode, preg_match, preg_replace, preg_replace_callback, rtrim, str_replace, strcasecmp, boolval, empty, intval, isset, strtoupper, trim, PHP_EOL, json_encode} = require('../../php.es6');
 
-// TODO: cache or something... and reuse db instance
-let getCmsPatterns = (dialect) => {
-	return Db.with(db => db.fetchAll({
-		table: 'highlightCmdPatterns',
-		where: [
-			['dialect', '=', dialect],
-			['regexError', '=', 0],
-		],
-	}));
-};
+let whenRuleMapping = null;
+let whenCmdPatterns = null;
 
-let getRuleMapping = (db) => {
+let fetchAllRules = (db) => {
 	let whenRules = db.fetchAll({table: 'highlightRules'});
 	let whenPatterns = db.fetchAll({table: 'highlightOutputPatterns'});
 	return Promise.all([whenRules, whenPatterns])
@@ -29,8 +21,23 @@ let getRuleMapping = (db) => {
 					mapping[pattern.ruleId].patterns.push(pattern);
 				}
 			}
-			return Object.values(mapping);
+			return mapping;
 		});
+};
+
+// TODO: reset when rules get changed in the admin page
+let getRuleMapping = () => {
+	whenRuleMapping = whenRuleMapping || Db.with(fetchAllRules);
+	return whenRuleMapping;
+};
+let getCmdPatterns = () => {
+	if (whenCmdPatterns === null) {
+		whenCmdPatterns = Db.with(db => db.fetchAll({
+			table: 'highlightCmdPatterns',
+			where: [['regexError', '=', 0]],
+		}));
+	}
+	return whenCmdPatterns;
 };
 
 let setCmdRegexError = (ruleId, cmdPattern, dialect) =>
@@ -86,8 +93,9 @@ class TerminalHighlightService {
 	 * @return Promise
 	 */
 	getMatchingCmdPatterns($language, $enteredCommand) {
-		return getCmsPatterns($language).then(rows =>
-			rows.filter(row => {
+		return getCmdPatterns().then(rows => rows
+			.filter(row => row.dialect = $language)
+			.filter(row => {
 				let $command = row.cmdPattern;
 				try {
 					let regex = makeRegex('^' + $command);
@@ -106,14 +114,13 @@ class TerminalHighlightService {
 	 * @param string $gds
 	 */
 	getRules(cmdPatterns) {
-		return Db.with(getRuleMapping)
-			.then(rules => {
+		return getRuleMapping()
+			.then(ruleMapping => {
 				let result = [];
-				for (let rule of rules) {
-					for (let cmdPattern of cmdPatterns) {
-						if (cmdPattern.ruleId == rule.id) {
-							result.push({...rule, cmdPattern});
-						}
+				for (let cmdPattern of cmdPatterns) {
+					let rule = ruleMapping[cmdPattern.ruleId];
+					if (rule) {
+						result.push({...rule, cmdPattern});
 					}
 				}
 				return result;

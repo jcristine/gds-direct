@@ -28,6 +28,12 @@ let self = {
 	MD_PATTERNS : /^(MD.*|MU.*|MR.*)/i,
 };
 
+let hrtimeToDecimal = (hrtime) => {
+	let [seconds, nanos] = hrtime;
+	let rest = ('0'.repeat(9) + nanos).slice(-9);
+	return seconds + '.' + rest;
+};
+
 class TerminalService
 {
 	constructor(gds, agentId, travelRequestId) {
@@ -177,6 +183,7 @@ class TerminalService
 			typeToMsgs[msgRec.type] = typeToMsgs[msgRec.type] || [];
 			typeToMsgs[msgRec.type].push(msgRec.text);
 		}
+		let hrtimeStart = process.hrtime();
 		return this.formatOutput($command, $language, calledCommands)
 			.then($output => {
 				$output = this.appendOutput($output, typeToMsgs);
@@ -195,6 +202,7 @@ class TerminalService
 					canCreatePqErrors: rbsResp.sessionInfo.canCreatePqErrors,
 					area: rbsResp.sessionInfo.area,
 					pcc: rbsResp.sessionInfo.pcc,
+					highlightTime: hrtimeToDecimal(process.hrtime(hrtimeStart)),
 				};
 			});
 	}
