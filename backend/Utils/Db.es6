@@ -103,7 +103,8 @@ let Db = (dbConn) => {
     };
 };
 Db.with = (process) => dbPool.getConnection()
-    .then(dbConn => process(Db(dbConn))
+    .then(dbConn => Promise.resolve()
+		.then(() => process(Db(dbConn)))
         .finally(() => dbPool.releaseConnection(dbConn)));
 
 module.exports = Db;
