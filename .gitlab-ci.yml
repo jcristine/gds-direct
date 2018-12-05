@@ -1,0 +1,35 @@
+stages:
+- test
+- build
+before_script:
+- php -v
+syntax-check:
+  stage: test
+  tags:
+  - dev-w13
+  script:
+  - find ./ -type f -name '*.php' -print0 | xargs -n 1 -0 php -l
+update-packagist:
+  stage: build
+  tags:
+  - dev-w13
+  only:
+  - master
+  when: manual
+  before_script:
+  - . /home/pkirpitsov/scripts/ci_secret_ssh.sh
+  - git config --global user.name "Gitlab CI"
+  - git config --global user.email "gitlab@dyninno.net"
+  - export CI_PUSH_REPO=`echo $CI_REPOSITORY_URL | perl -pe 's#.*@(.+?(\:\d+)?)/#git@\1:#'`
+  - git remote set-url --push origin "${CI_PUSH_REPO}"
+  - echo ${CI_PUSH_REPO}
+  script:
+  # get next tag
+  - NEXT_TAG=$(php /home/pkirpitsov/public_html/ci/console.php next_tag `pwd` $TAG_PREFIX)
+  - echo "Next tag will be - $NEXT_TAG"
+  # creating new tag
+  - git tag $NEXT_TAG
+  # push new tag to remote
+  - git push origin $NEXT_TAG
+  - echo "Packagist successfully updated"
+  - kill -9 $SSH_AGENT_PID
