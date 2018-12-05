@@ -316,7 +316,7 @@ class TerminalBaseController {
 			let $success = false;
 			$result['errors'] = $exception.message;
 		}
-		let $result = arraySort($result, 'net');
+		$result = arraySort($result, 'net');
 		return this.json({'result': $result, 'success': $success,});
 	}
 
