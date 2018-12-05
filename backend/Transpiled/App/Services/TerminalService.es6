@@ -200,7 +200,7 @@ class TerminalService
 					'prompt': '',
 					'userMessages': typeToMsgs['pop_up'] ? typeToMsgs['pop_up'] : null,
 					'appliedRules': this.$terminalHighlightService.getAppliedRules(),
-					'legend': this.$terminalHighlightService.getAvailableFields(),
+					'legend': [],
 
 					tabCommands: calledCommands
 						.map(call => call.tabCommands)

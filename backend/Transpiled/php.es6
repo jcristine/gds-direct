@@ -53,20 +53,6 @@ exports.preg_replace_callback = (pattern, callback, str) => {
 		return callback(matches);
 	});
 };
-exports.uasort = (obj, valueCmp) => {
-	let orderedKeys = Object.keys(obj)
-		.sort((ka, kb) => valueCmp(obj[ka], obj[kb]));
-	let copy = {...obj};
-	for (let key in obj) {
-		delete obj[key];
-	}
-	for (let key of orderedKeys) {
-		// it is often said that properties are supposed to be
-		// unordered in js, but we'll neglect this for now
-		obj[key] = copy[key];
-	}
-	return true;
-};
 exports.preg_match = (pattern, str, matches = null, phpFlags = null) => {
 	if (phpFlags) {
 		throw new Error('Fourth preg_match argument, php flags, is not supported - ' + phpFlags);

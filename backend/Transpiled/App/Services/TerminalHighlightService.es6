@@ -1,28 +1,7 @@
 
 const Str = require("../../../Utils/Str.es6");
 const Db = require("../../../Utils/Db.es6");
-const {ucfirst, uasort, array_key_exists, array_merge, substr_replace, array_flip, array_intersect_key, array_values, sprintf, strlen, implode, preg_match, preg_replace, preg_replace_callback, rtrim, str_replace, strcasecmp, boolval, empty, intval, isset, strtoupper, trim, PHP_EOL, json_encode} = require('../../php.es6');
-
-/** @debug */
-var require = (path) => {
-	let reportError = (name) => {
-		throw new Error('Tried to use ' + name + ' of untranspilled module - ' + path)
-	};
-	return new Proxy({}, {
-		get: (target, name) => reportError(name),
-		set: (target, name, value) => reportError(name),
-	});
-};
-
-const AuthSession = require('App/Classes/Core/AuthSession');
-const Role = require('App/Classes/Core/Role');
-const TerminalHighlightType = require('App/Models/Terminal/TerminalHighlightType');
-
-let self = {
-	CACHE_HIGHLIGHT_COMMANDS: 'cmsTerminal_highlightsCommands_',
-	CACHE_HIGHLIGHT_RULE: 'cmsTerminal_highlightsRule02_',
-	INDEX_KEYS: false,
-};
+const {ucfirst, array_key_exists, array_merge, substr_replace, array_flip, array_intersect_key, array_values, sprintf, strlen, implode, preg_match, preg_replace, preg_replace_callback, rtrim, str_replace, strcasecmp, boolval, empty, intval, isset, strtoupper, trim, PHP_EOL, json_encode} = require('../../php.es6');
 
 // TODO: cache or something... and reuse db instance
 let getCmsPatternToRuleIds = (dialect) => {
@@ -100,7 +79,7 @@ let normalizeRuleForFrontend = (rule) => {
 
 class TerminalHighlightService {
 	constructor() {
-		this.$appliedRules = [];
+		this.$appliedRules = {};
 		this.$matches = [];
 		this.$shift = 0;
 	}
@@ -154,20 +133,6 @@ class TerminalHighlightService {
 	}
 
 	/**
-	 *
-	 */
-	sortByPosition(matches) {
-		uasort(matches, function ($a, $b) {
-			if ($a[1] == $b[1]) {
-				return 0;
-			}
-
-			return ($a[1] < $b[1]) ? -1 : 1;
-		});
-		return matches;
-	}
-
-	/**
 	 * @throws \Psr\SimpleCache\InvalidArgumentException
 	 * @throws \Exception
 	 */
@@ -179,27 +144,11 @@ class TerminalHighlightService {
 				$response.push($row);
 			} else {
 				// cross-match, skip
+				console.log('zhopa cross-match', {$lastPosition, $row, $response});
 			}
-			$lastPosition = Math.max($lastPosition, $row[1] + strlen($row[0]));
+			$lastPosition = Math.max($lastPosition, +$row[1] + strlen($row[0]));
 		}
 		return $response;
-	}
-
-	/**
-	 * @param string $language
-	 * @param string $enteredCommand
-	 * @param string $gds
-	 * @param string $output
-	 * @return {Promise}
-	 */
-	async replace($language, $enteredCommand, $gds, $output) {
-        let matches = await this.match($language, $enteredCommand, $gds, $output);
-        matches = this.sortByPosition(matches);
-		matches = this.removeCrossMatches(matches);
-		for (let $match of matches) {
-			$output = this.doReplace($match, $output);
-		}
-		return $output;
 	}
 
 	async match($language, $enteredCommand, $gds, $output) {
@@ -219,19 +168,19 @@ class TerminalHighlightService {
 						setOutputRegexError(gdsRow['id']);
 					}
 					for (let match of matches) {
-						let whole = match[0];
-						let start = match.index;
+						let whole = match.shift();
+						let index = match.index;
 						switch ($rule['highlightType']) {
 							case 'patternOnly':
-								this.matchPattern(whole, start, $rule);
+								this.matchPattern(whole, index, $rule);
 								break;
 							case 'customValue':
-								for (let [name, captured] of Object.entries(match.groups)) {
+								for (let [name, captured] of Object.entries(match.groups || [])) {
 									// javascript does not seem to return capture indexes unlike php...
 									// this is a stupid hack, but we'll have to use it till I find a lib
 									let relIndex = whole.indexOf(captured);
 									if (relIndex > -1) {
-										this.matchPattern(captured, start + relIndex, $rule);
+										this.matchPattern(captured, index + relIndex, $rule);
 									}
 								}
 								break;
@@ -260,17 +209,12 @@ class TerminalHighlightService {
 				1: index,
 				rule: $rule['id'],
 			});
-			this.$appliedRules[$rule['value']] = this.indexKeys($rule);
+			this.$appliedRules[$rule['value']] = {...$rule};
 			let $offsets = this.$appliedRules[$rule['value']]['offsets'] || [];
-			$offsets.push({'start': index, 'end': index + strlen(matchedText)});
+			$offsets.push({'index': index, 'end': index + strlen(matchedText)});
 			this.$appliedRules[$rule['value']]['offsets'] = $offsets;
 		}
 	}
-
-	indexKeys($rule) {
-		return $rule;
-	}
-
 
 	doReplace($match, $output) {
 		$output = substr_replace($output, sprintf('%%%s%%', $match[0]), $match[1] + this.$shift, strlen($match[0]));
@@ -282,29 +226,28 @@ class TerminalHighlightService {
 	 * @return mixed
 	 */
 	getAppliedRules() {
-		if (!self.INDEX_KEYS) {
-			for (let [k,v] of Object.entries(this.$appliedRules)) {
-				this.$appliedRules[k] = normalizeRuleForFrontend(v);
-			}
+		for (let [k,v] of Object.entries(this.$appliedRules)) {
+			this.$appliedRules[k] = normalizeRuleForFrontend(v);
 		}
 		return array_values(this.$appliedRules);
 	}
 
 	/**
-	 * @return array
+	 * @param string $language
+	 * @param string $enteredCommand
+	 * @param string $gds
+	 * @param string $output
+	 * @return {Promise}
 	 */
-	getAvailableFields() {
-		return [];
+	async replace($language, $enteredCommand, $gds, $output) {
+        let matches = await this.match($language, $enteredCommand, $gds, $output);
+        matches = matches.sort((a,b) => a[1] - b[1]);
+		matches = this.removeCrossMatches(matches);
+		for (let $match of matches) {
+			$output = this.doReplace($match, $output);
+		}
+		return $output;
 	}
-
-	/**
-	 * @param mixed $logId
-	 */
-	setLogId($logId) {
-		this.$logId = $logId;
-	}
-
-
 }
 
 module.exports = TerminalHighlightService;

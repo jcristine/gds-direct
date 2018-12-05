@@ -45,8 +45,13 @@ let runInputCmd = (reqBody, emcResult) => {
 		return RbsClient(reqBody).runInputCmd()
 			.then(data => makeCmdResponse(data));
 	} else {
-		return TravelportClient(reqBody).runInputCmd(reqBody)
-			.then(data => makeCmdResponse(data));
+		if (reqBody.gds === 'apollo') {
+			return TravelportClient(reqBody).runInputCmd(reqBody)
+				.then(data => makeCmdResponse(data));
+		} else {
+			// TODO: do not break GUI on rejections
+			return Promise.reject('Unsupported GDS for RBS-free connection - ' + reqBody.gds)
+		}
 	}
 };
 
