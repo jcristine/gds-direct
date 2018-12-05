@@ -104,10 +104,20 @@ let makeSessionData = token => !token ? null :{
 	externalToken: token,
 };
 
+/**
+ * @param '$BN1|2*INF'
+ * @return '$BN1+2*INF'
+ */
+let encodeCmdForCms = ($cmd) =>
+	$cmd.replace(/\|/g, '+').replace(/@/g, '¤');
+
+let encodeOutputForCms = ($dump) =>
+	$dump.replace(/\|/g, '+').replace(/;/g, '·');
+
 let makeResult = (cmd, output, token) => ({
 	calledCommands: [{
-		cmd: cmd,
-		output: output,
+		cmd: encodeCmdForCms(cmd),
+		output: encodeOutputForCms(output),
 	}],
 	messages: [],
 	clearScreen: false,
