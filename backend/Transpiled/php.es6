@@ -16,8 +16,8 @@ exports.implode = (delim, values) => values.join(delim);
 exports.json_encode = (str) => JSON.stringify(str);
 exports.json_decode = (str) => str ? JSON.parse(str) : null;
 exports.ucfirst = str => str.slice(0, 1).toUpperCase() + str.slice(1);
-exports.ltrim = str => str.trimStart();
-exports.rtrim = str => str.trimEnd();
+exports.ltrim = str => str.replace(/^\s+/, '');
+exports.rtrim = str => str.replace(/\s+$/, '');
 exports.strlen = str => (str + "").length;
 exports.array_key_exists = (key, obj) => key in obj;
 exports.substr_replace = (str, replace, start, length = null) => {
