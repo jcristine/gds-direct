@@ -109,7 +109,6 @@ class TerminalService
 	 * @return {Promise}
 	 */
 	async highlightOutput($enteredCommand, $language, $output) {
-
 		$enteredCommand = await this.getScrolledCmd($enteredCommand);
 		return this.$terminalHighlightService.replace($language, $enteredCommand, this.gds, $output);
 	}
@@ -124,6 +123,7 @@ class TerminalService
 		if ($enteredCommand.match(self.MD_PATTERNS)) {
 			// it should actually be commands of current
 			// session, not all commands of the agent...
+			// also keeping scrolled command in memory would be better than using DB
 			let rows = await Db.with(db => db.fetchAll({
 				table: 'terminalBuffering',
 				where: [
@@ -131,6 +131,7 @@ class TerminalService
 					['requestId', '=', this.travelRequestId || 0],
 				],
 				orderBy: 'id DESC',
+				limit: 50,
 			}));
 			for (let row of rows) {
 				let cmd = row.command || '';
