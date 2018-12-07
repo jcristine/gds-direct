@@ -37,6 +37,21 @@ let makeCmdResponse = (data) => 1 && {
 	}, data),
 };
 
+let isTravelportAllowed = (emcResult) => {
+	let agentId = emcResult.user.id;
+	return [
+		6206, // aklesuns
+		785, // kira
+		836, // Bruce
+		1330, // Bruce Paulson
+		20744, // Eldar
+		1092, // Jayden
+		2838, // stanislaw
+		2838, // stanislaw
+		101395, // aprokopcuks
+	].includes(agentId);
+};
+
 /** @param {IEmcResult} emcResult */
 let runInputCmd = (reqBody, emcResult) => {
 	reqBody.agentId = emcResult.user.id;
@@ -45,6 +60,8 @@ let runInputCmd = (reqBody, emcResult) => {
 	let running;
 	if (useRbs) {
 		running = RbsClient(reqBody).runInputCmd();
+	} else if (isTravelportAllowed(emcResult)) {
+		running = Promise.reject('You are not allowed to use RBS-free connection');
 	} else {
 		if (reqBody.gds === 'apollo') {
 			running = TravelportClient(reqBody).runInputCmd(reqBody);
@@ -95,8 +112,7 @@ exports.runInputCmd = (reqBody, emcResult) => {
 
 /** @param {IEmcResult} emcResult */
 exports.keepAlive = (reqBody, emcResult) => {
-	// TODO: use terminal.keepAlive function in RBS instead since if user enters a
-	//  command before keepAlive finishes, "session is locked" error will be returned
+	// TODO: use terminal.keepAlive so that RBS logs was not trashed with these MD0-s
 	return runInputCmd({command: 'MD0', ...reqBody}, emcResult);
 };
 

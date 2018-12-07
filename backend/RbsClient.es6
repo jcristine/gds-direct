@@ -4,7 +4,8 @@ let MultiLevelMap = require('./Utils/MultiLevelMap.es6');
 
 let callRbs = (functionName, params) => new Promise((resolve, reject) => {
 	let logId = 'rbs.5bf6e431.9577485';
-	let rbsUrl = 'http://st-rbs.sjager.php7.dyninno.net/jsonExternalInterface.php?log_id=' + logId;
+	//let rbsUrl = 'http://st-rbs.sjager.php7.dyninno.net/jsonExternalInterface.php?log_id=' + logId;
+	let rbsUrl = 'http://rbs-dev.aklesuns.php7.dyninno.net/jsonExternalInterface.php?log_id=' + logId;
 	let formParams = {
 		credentials: JSON.stringify({login: 'CMS', password: 'qwerty'}),
 		functionName: functionName,
