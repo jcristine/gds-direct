@@ -67,22 +67,15 @@ export class PqParser
 
 		this.loaderToggle(false);
 
-		isStandAlone = +isStandAlone ? '1' : '0';
-		return get(`terminal/priceQuote?rId=${rId}&isStandAlone=${isStandAlone}`)
-
-			.then( response => {
-				this.loaderToggle(true);
-
-				const pqError = isPqError(response);
-				return pqError.length ? reject(pqError) : response;
-			})
-
+		return get(`terminal/getPqItinerary?pqTravelRequestId=${rId}&isStandAlone=${isStandAlone}&gds=${gds.get('name')}`)
 			.then( response => {
 				if (+isStandAlone) {
 					response.rId = rId;
 				}
-				get(`terminal/importPriceQuote?rId=${rId}&isStandAlone=${isStandAlone}`);
-				return this.modal(response, CLOSE_PQ_WINDOW);
+				let importing = get(`terminal/importPq?pqTravelRequestId=${rId}&isStandAlone=${isStandAlone}&gds=${gds.get('name')}`);
+				return this.modal(response, CLOSE_PQ_WINDOW)
+					.then(modalControl => importing
+						.then(data => modalControl.handleImportPq(data)));
 			})
 	}
 }

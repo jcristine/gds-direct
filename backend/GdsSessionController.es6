@@ -54,7 +54,6 @@ let isTravelportAllowed = (emcResult) => {
 
 /** @param {IEmcResult} emcResult */
 let runInputCmd = (reqBody, emcResult) => {
-	reqBody.agentId = emcResult.user.id;
 	reqBody.command = reqBody.command.trim();
 	let useRbs = +reqBody.useRbs ? true : false;
 	let running;
@@ -109,6 +108,9 @@ exports.runInputCmd = (reqBody, emcResult) => {
 
 	return running;
 };
+
+exports.getPqItinerary = (reqBody, emcResult) => RbsClient(reqBody).getPqItinerary();
+exports.importPq = (reqBody, emcResult) => RbsClient(reqBody).importPq();
 
 /** @param {IEmcResult} emcResult */
 exports.keepAlive = (reqBody, emcResult) => {

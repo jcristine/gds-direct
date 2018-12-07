@@ -41,7 +41,7 @@ export const get = (url) => {
 	let delim = url.indexOf('?') > -1 ? '&' : '?';
 	url += delim + [
 		'emcSessionId=' + window.GdsDirectPlusParams.emcSessionId,
-		'travelRequestId=' + window.GdsDirectPlusParams.travelRequestId,
+		'travelRequestId=' + (window.GdsDirectPlusParams.travelRequestId || 0),
 	].join('&');
 	return Ask( url, { credentials: 'include' });
 };
@@ -49,7 +49,7 @@ export const get = (url) => {
 export const post = (url, postParams = {}) => {
 	postParams = {...postParams,
 		emcSessionId: window.GdsDirectPlusParams.emcSessionId,
-		travelRequestId: window.GdsDirectPlusParams.travelRequestId,
+		travelRequestId: window.GdsDirectPlusParams.travelRequestId || 0,
 	};
 
 	return Ask(url, { ...getPostRequestHeader(postParams) });

@@ -15,25 +15,25 @@ let callRbs = (functionName, params) => new Promise((resolve, reject) => {
 		url: rbsUrl, form: formParams,
 	}, (err, httpResponse, body) => {
 		if (err || httpResponse.statusCode !== 200) {
-			reject('Could not connect to RBS - ' + httpResponse.statusCode + ' - ' + err + ' - ' + body);
+			return reject('Could not connect to RBS - ' + httpResponse.statusCode + ' - ' + err + ' - ' + body);
 		}
 		let resp;
 		try {
 			resp = JSON.parse(body);
 		} catch (exc) {
-			reject('Could not parse RBS ' + functionName + ' json response - ' + body);
+			return reject('Could not parse RBS ' + functionName + ' json response - ' + body);
 		}
 		if (resp.status !== 'OK' || !resp.result || !resp.result.response_code) {
-			reject('Unexpected RBS response format - ' + JSON.stringify(resp));
+			return reject('Unexpected RBS response format - ' + body + ' ' + httpResponse.statusCode);
 		} else if (![1,2,3].includes(resp.result.response_code)) {
 			let rpcErrors = resp.result.errors;
-			reject('RBS service responded with error - ' + resp.result.response_code + ' - ' + JSON.stringify(rpcErrors));
+			return reject('RBS service responded with error - ' + resp.result.response_code + ' - ' + JSON.stringify(rpcErrors));
 		} else if (resp.result.response_code == 3) {
 			let rpcErrors = resp.result.errors;
 			let messages = resp.result.result.messages;
-			reject('RBS service cannot satisfy your request - ' + JSON.stringify(messages) + ' - ' + JSON.stringify(rpcErrors));
+			return reject('RBS service cannot satisfy your request - ' + JSON.stringify(messages) + ' - ' + JSON.stringify(rpcErrors));
 		} else {
-			resolve(resp);
+			return resolve(resp);
 		}
 	});
 });
@@ -43,7 +43,7 @@ let agentToGdsToLeadToSessionId = MultiLevelMap();
 let getLeadData = (travelRequestId) => {
 	return !travelRequestId ? null : {
 		// TODO: fetch from CMS
-		leadId: travelRequestId,
+		leadId: +travelRequestId || null,
 		leadOwnerId: null,
 		leadUrl: 'https://cms.asaptickets.com/leadInfo?id=' + travelRequestId,
 		projectName: null,
@@ -51,6 +51,24 @@ let getLeadData = (travelRequestId) => {
 		paxNumChildren: 0,
 		paxNumInfants: 0,
 	};
+};
+
+let validate = (sup) => {
+	try {
+		let access = {
+			some: (value, msg = '') => {
+				if (value === undefined || value === null) {
+					throw new Error('Mandatory value absent ' + value + ' ' + msg);
+				} else {
+					return value;
+				}
+			},
+		};
+		return Promise.resolve(sup(access));
+	} catch (exc) {
+		exc.message = 'Invalid params - ' + exc.message;
+		return Promise.reject(exc);
+	}
 };
 
 /** @param {{command: '*R', gds: 'apollo', language: 'sabre', agentId: '6206'}} reqBody */
@@ -93,5 +111,21 @@ module.exports = (reqBody) => {
 								.concat(data.userMessages || []),
 						})));
 		},
+		getPqItinerary: () => validate(({some}) => ({
+			pqTravelRequestId: some(reqBody.pqTravelRequestId, 'travel request id is empty'),
+			sessionId: some(getSessionId(), 'session not found - ' + [agentId, gds, travelRequestId]),
+		})).then(valid => callRbs('terminal.getPqItinerary', {
+			sessionId: valid.sessionId,
+			gds: gds,
+			context: getLeadData(valid.pqTravelRequestId),
+		})).then(rbsResp => rbsResp.result.result),
+		importPq: () => validate(({some}) => ({
+			pqTravelRequestId: some(reqBody.pqTravelRequestId, 'travel request id is empty'),
+			sessionId: some(getSessionId(), 'session not found - ' + [agentId, gds, travelRequestId]),
+		})).then(valid => callRbs('terminal.importPq', {
+			sessionId: valid.sessionId,
+			gds: gds,
+			context: getLeadData(valid.pqTravelRequestId),
+		})).then(rbsResp => rbsResp.result.result),
 	};
 };

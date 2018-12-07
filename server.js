@@ -18,7 +18,10 @@ let withAuth = (action) => (req, res) => {
     }
     return (new Emc()).getCachedSessionInfo(reqBody.emcSessionId)
         .catch(exc => Promise.reject('EMC auth error - ' + exc))
-        .then(emcData => action(reqBody, emcData.result, req.params))
+        .then(emcData => {
+			reqBody.agentId = emcData.result.user.id;
+			return action(reqBody, emcData.result, req.params);
+		})
         .then(result => res.send(JSON.stringify(Object.assign({message: 'OK'}, result))))
         .catch(exc => {
             res.status(500);
@@ -55,10 +58,8 @@ app.post('/terminal/saveSetting/:name/:currentGds', withAuth((reqBody, emcResult
 }));
 app.post('/terminal/command', withAuth(GdsSessionController.runInputCmd));
 app.post('/gdsDirect/keepAlive', withAuth(GdsSessionController.keepAlive));
-app.get('/terminal/priceQuote', (req, res) => {
-	res.status(501);
-	res.send(JSON.stringify({error: 'PQ creation is not supported yet'}));
-});
+app.get('/terminal/getPqItinerary', withAuth(GdsSessionController.getPqItinerary));
+app.get('/terminal/importPq', withAuth(GdsSessionController.importPq));
 app.get('/terminal/lastCommands', withAuth(GdsSessionController.getLastCommands));
 
 app.listen(8089);
