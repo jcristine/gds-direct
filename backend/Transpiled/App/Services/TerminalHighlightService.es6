@@ -56,10 +56,25 @@ let setOutputRegexError = (patternId) =>
 		regexError: true,
 	}]));
 
-// /^\s*(?P<value>OPERATED BY .*)/ -> /^\s*(?<value>OPERATED BY .*)/
-// (?P< -> (?<
+let areNamedCapturesSupported = () => {
+	// supported in node v10.0.0+
+	let majorVersion = process.version.split('.')[0];
+	majorVersion = majorVersion.replace(/^v/, '');
+	return +majorVersion >= 10;
+};
+
 let makeRegex = (content, flags = undefined) => {
-	content = content.replace(/(?<!\\)\(\?P</g, '(?<');
+	if (areNamedCapturesSupported()) {
+		// convert php-format (?P< to js format (?<
+		content = content.replace(/(?<!\\)\(\?P</g, '(?<');
+		// /^(\s+|\.+)(?P<value>OPERATED BY .*)/ -> /^(\s+|\.+)(?<value>OPERATED BY .*)/
+	} else {
+		// make all not named groups non-capturing
+		content = content.replace(/(?<!\\)\((?!\?)/g, '(?:');
+		// make all named groups simple groups because node v<10.0.0
+		content = content.replace(/(?<!\\)\(\?P<[A-Za-z_0-9]+>/g, '(');
+		// /^(\s+|\.+)(?P<value>OPERATED BY .*)/ -> /^(?:\s+|\.+)(OPERATED BY .*)/
+	}
 	return new RegExp(content, flags);
 };
 
@@ -170,7 +185,8 @@ class TerminalHighlightService {
 								this.matchPattern(whole, index, $rule);
 								break;
 							case 'customValue':
-								for (let [name, captured] of Object.entries(match.groups || [])) {
+								let captures = [].concat(match).concat(Object.values(match.groups || {}));
+								for (let captured of captures) {
 									// javascript does not seem to return capture indexes unlike php...
 									// this is a stupid hack, but we'll have to use it till I find a lib
 									let relIndex = whole.indexOf(captured);
