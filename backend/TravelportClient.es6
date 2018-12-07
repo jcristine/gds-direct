@@ -9,11 +9,25 @@ let httpAgent = new https.Agent({
 	maxSockets: 1,
 });
 
+/**
+ * they are all physically located in USA, Atlanta (in same building)
+ * I guess different urls are kept just for compatibility now
+ * it is said in their docs, though, that it is possible to setup a separate endpoint for a company:
+ * @see https://support.travelport.com/webhelp/GWS/Content/Overview/Getting_Started/Connecting_to_GWS.htm
+ * due to geo-latency, requests from Europe to USA are taking at least 100 ms overhead on dev
+ */
+let host = 'americas.webservices.travelport.com';
+//let host = 'emea.webservices.travelport.com';
+//let host = 'apac.webservices.travelport.com';
+
 let sendRequest = (requestBody) => new Promise((resolve, reject) => {
 	let headers = {
 		'Authorization': 'Basic ' + config.apolloAuthToken,
 	};
-	let req = https.request(url, {
+	let req = https.request({
+		host: host,
+		path: '/B2BGateway/service/XMLSelect',
+		port: 443,
 		headers: headers,
 		method: 'POST',
 		agent: httpAgent,
@@ -34,9 +48,6 @@ let sendRequest = (requestBody) => new Promise((resolve, reject) => {
 });
 
 let gdsProfile = 'DynApolloProd_1O3K';
-//let url = 'https://emea.webservices.travelport.com/B2BGateway/service/XMLSelect';
-let url = 'https://americas.webservices.travelport.com/B2BGateway/service/XMLSelect';
-// let url = 'https://apac.webservices.travelport.com/B2BGateway/service/XMLSelect';
 let agentToToken = MultiLevelMap();
 
 let parseXml = (xml) => {
