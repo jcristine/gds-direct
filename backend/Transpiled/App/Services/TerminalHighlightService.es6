@@ -185,7 +185,12 @@ class TerminalHighlightService {
 								this.matchPattern(whole, index, $rule);
 								break;
 							case 'customValue':
-								let captures = [].concat(match).concat(Object.values(match.groups || {}));
+								let captures = [];
+								if (match.groups) {
+									captures.push(...Object.values(match.groups));
+								} else {
+									captures.push(...match);
+								}
 								for (let captured of captures) {
 									// javascript does not seem to return capture indexes unlike php...
 									// this is a stupid hack, but we'll have to use it till I find a lib

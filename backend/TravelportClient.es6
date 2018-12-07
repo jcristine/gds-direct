@@ -141,7 +141,15 @@ let makeResult = (cmd, output, token) => ({
 	gdsSessionData: makeSessionData(token),
 });
 
-let runAndCleanupCmd = (cmd, token, fetchAll = false) => {
+let runAndCleanupCmd = (cmd, token) => {
+	let fetchAll = false;
+	if (cmd.endsWith('/MDA')) {
+		cmd = cmd.slice(0, -4);
+		fetchAll = true;
+	} else if (cmd === 'MDA') {
+		cmd = 'MD';
+		fetchAll = true;
+	}
 	let fullOutput = '';
 	let getNextPage = (nextCmd) => runOneCmd(nextCmd, token)
 		.then((parsedResp) => {
