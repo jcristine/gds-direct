@@ -49,7 +49,7 @@ let isTravelportAllowed = (emcResult) => {
 		2838, // stanislaw
 		2838, // stanislaw
 		101395, // aprokopcuks
-	].includes(agentId);
+	].includes(+agentId);
 };
 
 /** @param {IEmcResult} emcResult */
@@ -60,7 +60,7 @@ let runInputCmd = (reqBody, emcResult) => {
 	let running;
 	if (useRbs) {
 		running = RbsClient(reqBody).runInputCmd();
-	} else if (isTravelportAllowed(emcResult)) {
+	} else if (!isTravelportAllowed(emcResult)) {
 		running = Promise.reject('You are not allowed to use RBS-free connection');
 	} else {
 		if (reqBody.gds === 'apollo') {
