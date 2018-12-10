@@ -20,19 +20,6 @@ const reject = err => {
 	return Promise.reject();
 };
 
-const isPqError = ({data, result}) => {
-
-	return [
-		data.canCreatePqErrors,
-		data.errors,
-		result.error,
-		result.msg
-	]
-	.filter( er => {
-		return er && er !== undefined && er.length > 0
-	})
-};
-
 export class PqParser
 {
 	constructor( modal )
@@ -68,14 +55,11 @@ export class PqParser
 		this.loaderToggle(false);
 
 		return get(`terminal/getPqItinerary?pqTravelRequestId=${rId}&isStandAlone=${isStandAlone}&gds=${gds.get('name')}`)
-			.then( response => {
-				if (+isStandAlone) {
-					response.rId = rId;
-				}
-				let importing = get(`terminal/importPq?pqTravelRequestId=${rId}&isStandAlone=${isStandAlone}&gds=${gds.get('name')}`);
-				return this.modal(response, CLOSE_PQ_WINDOW)
-					.then(modalControl => importing
-						.then(data => modalControl.handleImportPq(data)));
+			.then(rbsData => ({pqTravelRequestId: rId, gds: gds.get('name'), rbsData: rbsData}))
+			.then(pqBtnData => {
+				let importPq = () => get(`terminal/importPq?pqTravelRequestId=${rId}&isStandAlone=${isStandAlone}&gds=${gds.get('name')}`)
+					.then(rbsData => ({rbsData: rbsData}));
+				return this.modal(pqBtnData, CLOSE_PQ_WINDOW, importPq);
 			})
 	}
 }
