@@ -6,7 +6,7 @@ before_script:
 syntax-check:
   stage: test
   tags:
-  - dev-w13
+  - php70-builder
   script:
   - find ./ -type f -name '*.php' -print0 | xargs -n 1 -0 php -l
 update-packagist:
