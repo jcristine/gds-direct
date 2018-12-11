@@ -1,3 +1,6 @@
+
+![example screenshot](https://gitlab.dyninno.net/client-management-system/gds-direct-nodejs/uploads/803cfa6f85ac4bb3115dfd457ffd85cd/image.png)
+
 Hi, nice to meet you. I am the gds-direct-nodejs app.
 
 You can inject me on a page in your project to give user access to a GDS (Apollo, Sabre, Galileo or Amadeus).
@@ -16,13 +19,11 @@ Usage:
 <script src="http://10.128.128.99:8089/public/terminal-bundle.js"></script>
 <script>
     window.InitGdsDirectPlusApp({
-        htmlRootDom		: document.getElementById('terminalContext'),
-        emcSessionId    : hashData['emcSessionId'],
+        htmlRootDom: document.getElementById('terminalContext'),
+        emcSessionId: hashData['emcSessionId'],
     }).then(nodeApp => {
         // nodeApp.runPnr({pnrCode: 'QWE123'});
         // nodeApp.rebuild({data: {itineraryId: 1234, segmentStatus: 'GK'}});
     });
 </script>
 ```
-
-![example screenshot](https://gitlab.dyninno.net/client-management-system/gds-direct-nodejs/uploads/803cfa6f85ac4bb3115dfd457ffd85cd/image.png)

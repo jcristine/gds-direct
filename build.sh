@@ -4,10 +4,10 @@
 # lessc public/_style/less/main.less > public/_style/css/parsed.css
 
 # downloads /node_modules/ if needed
-npm install --from-lock-file
+npm install --from-lock-file --no-progress
 
 startpath=$(pwd)
 cd frontend
-npm install --from-lock-file
-node node_modules/webpack/bin/webpack.js --progress --display-modules --sort-modules-by size
+npm install --from-lock-file --no-progress
+node node_modules/webpack/bin/webpack.js --sort-modules-by size
 cd $startpath
