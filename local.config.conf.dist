@@ -5,7 +5,7 @@ let config = {
         host: "10.128.128.203",
         user: "stasadm",
         password: "G0a4wa&",
-        database: "gds_direct_cms",
+        database: "gds_direct_plus",
         port: 3306,
         connectionLimit: 20
     },

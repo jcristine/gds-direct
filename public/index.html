@@ -24,9 +24,7 @@
     window.onhashchange = () => window.location.reload();
     window.InitGdsDirectPlusApp({
         htmlRootDom		: document.getElementById('terminalContext'),
-        isStandAlone	: true,
         emcSessionId    : hashData['emcSessionId'],
-        PqPriceModal	: (response, onClose) => Promise.reject('Can\'t create PQ modal on a test page'),
     }).then(nodeApp => {
     	// nodeApp.runPnr({pnrCode: 'QWE123'});
     	// nodeApp.rebuild({data: {itineraryId: 1234, segmentStatus: 'GK'}});

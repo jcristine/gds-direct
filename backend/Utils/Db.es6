@@ -100,6 +100,8 @@ let Db = (dbConn) => {
 			.then(rows => rows.length > 0 ? rows[0] :
 				Promise.reject('Could not find ' +
 					params.table + ' record in DB')),
+		// for custom stuff
+		query: (...args) => dbConn.query(...args),
 	};
 };
 Db.with = (process) => dbPool.getConnection()

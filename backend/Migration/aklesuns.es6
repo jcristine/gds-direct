@@ -1,33 +1,33 @@
 
 module.exports.migrations = [
     {
-        number: '00.00.01',
-        sql: [
-            'CREATE TABLE `terminalBuffering` (',
-            '  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,',
-            '  `agentId` int(10) unsigned NOT NULL,',
-            '  `requestId` int(10) unsigned NOT NULL DEFAULT 0,',
-            '  `gds` VARCHAR(15),',
-            '  `dialect` VARCHAR(15),',
-            '  `rbsSessionId` int(10) unsigned DEFAULT NULL,',
-            '  `gdsSessionDataMd5` CHAR(32) DEFAULT NULL,',
-            '  `area` char(1) DEFAULT NULL,',
-            '  `terminalNumber` tinyint(3) unsigned NOT NULL,',
-            '  `processedTime` decimal(10,5) NOT NULL DEFAULT "0.00000",',
-            '  `command` varchar(127) DEFAULT NULL,',
-            '  `output` text,',
-            '  `requestTimestamp` int(10) unsigned DEFAULT NULL,',
-            '  `responseTimestamp` int(10) unsigned DEFAULT NULL,',
-            '  PRIMARY KEY (`id`),',
-            '  KEY `agentId_requestId` (`agentId`, `requestId`),',
-            '  KEY `rbsSessionId` (`rbsSessionId`),',
-            '  KEY `gdsSessionDataMd5` (`gdsSessionDataMd5`)',
-            ') ENGINE=InnoDB CHARSET=utf8',
-        ].join('\n'),
+		name: '00.00.01',
+		perform: (db) => db.query([
+			'CREATE TABLE `terminalBuffering` (',
+			'  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,',
+			'  `agentId` int(10) unsigned NOT NULL,',
+			'  `requestId` int(10) unsigned NOT NULL DEFAULT 0,',
+			'  `gds` VARCHAR(15),',
+			'  `dialect` VARCHAR(15),',
+			'  `rbsSessionId` int(10) unsigned DEFAULT NULL,',
+			'  `gdsSessionDataMd5` CHAR(32) DEFAULT NULL,',
+			'  `area` char(1) DEFAULT NULL,',
+			'  `terminalNumber` tinyint(3) unsigned NOT NULL,',
+			'  `processedTime` decimal(10,5) NOT NULL DEFAULT "0.00000",',
+			'  `command` varchar(127) DEFAULT NULL,',
+			'  `output` text,',
+			'  `requestTimestamp` int(10) unsigned DEFAULT NULL,',
+			'  `responseTimestamp` int(10) unsigned DEFAULT NULL,',
+			'  PRIMARY KEY (`id`),',
+			'  KEY `agentId_requestId` (`agentId`, `requestId`),',
+			'  KEY `rbsSessionId` (`rbsSessionId`),',
+			'  KEY `gdsSessionDataMd5` (`gdsSessionDataMd5`)',
+			') ENGINE=InnoDB CHARSET=utf8',
+		].join('\n')),
     },
     {
-        number: '00.00.02',
-        sql: [
+		name: '00.00.02',
+		perform: (db) => db.query([
             'CREATE TABLE `terminalSettings` (',
             '  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,',
             '  `agentId` int(10) unsigned NOT NULL,',
@@ -41,11 +41,11 @@ module.exports.migrations = [
             '  PRIMARY KEY (`id`),',
             '  UNIQUE KEY `agentId_gds` (`agentId`,`gds`)',
             ') ENGINE=InnoDB DEFAULT CHARSET=utf8',
-        ].join('\n'),
+		].join('\n')),
     },
     {
-        number: '00.00.03',
-        sql: [
+		name: '00.00.03',
+		perform: (db) => db.query([
             'CREATE TABLE `terminalAreaSettings` (',
             '  `id` int(11) NOT NULL AUTO_INCREMENT,',
             '  `gds` varchar(15) NOT NULL,',
@@ -55,11 +55,11 @@ module.exports.migrations = [
             '  PRIMARY KEY (`id`),',
             '  UNIQUE KEY `agentId_gds_area` (`agentId`,`gds`,`area`)',
             ') ENGINE=InnoDB DEFAULT CHARSET=utf8',
-        ].join('\n'),
+		].join('\n')),
     },
 	{
-		number: '00.00.04',
-		sql: [
+		name: '00.00.04',
+		perform: (db) => db.query([
 			// called terminalHighlightLanguages in CMS
 			"CREATE TABLE `highlightCmdPatterns` (",
 			"  `id` int(11) NOT NULL AUTO_INCREMENT,",
@@ -71,11 +71,11 @@ module.exports.migrations = [
 			"  PRIMARY KEY (`id`),",
 			"  UNIQUE KEY `ruleId_dialect` (`ruleId`,`dialect`)",
 			") ENGINE=InnoDB DEFAULT CHARSET=utf8",
-		].join('\n'),
+		].join('\n')),
 	},
 	{
-		number: '00.00.05',
-		sql: [
+		name: '00.00.05',
+		perform: (db) => db.query([
 			"CREATE TABLE `highlightRules` (",
 		   "  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,",
 		   "  `highlightGroup` VARCHAR(50) NOT NULL DEFAULT '0',",
@@ -91,15 +91,15 @@ module.exports.migrations = [
 		   "  `isEnabled` BOOLEAN DEFAULT TRUE,",
 		   "  `isForTestersOnly` BOOLEAN DEFAULT FALSE,",
 		   "  `isInSameWindow` BOOLEAN NOT NULL DEFAULT FALSE,",
-		   "  `decoration` VARCHAR(255)",
+		   "  `decoration` VARCHAR(255),",
 		   "  PRIMARY KEY (`id`),",
 		   "  UNIQUE KEY `terminalHighlight_name_uindex` (`name`)",
 		   ") ENGINE=InnoDB DEFAULT CHARSET=utf8",
-		].join('\n'),
+		].join('\n')),
 	},
 	{
-		number: '00.00.06',
-		sql: [
+		name: '00.00.06',
+		perform: (db) => db.query([
 			"CREATE TABLE `highlightOutputPatterns` (",
 			"  `id` int(11) NOT NULL AUTO_INCREMENT,",
 			"  `ruleId` int(10) unsigned NOT NULL,",
@@ -107,8 +107,8 @@ module.exports.migrations = [
 			"  `pattern` varchar(255) DEFAULT NULL,",
 			"  `regexError` BOOLEAN DEFAULT '0',",
 			"  PRIMARY KEY (`id`),",
-			"  UNIQUE KEY `styleId` (`styleId`)",
+			"  UNIQUE KEY `ruleId` (`ruleId`)",
 			") ENGINE=InnoDB DEFAULT CHARSET=utf8",
-		].join('\n'),
+		].join('\n')),
 	},
 ];

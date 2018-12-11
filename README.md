@@ -9,3 +9,20 @@ airline databases to build the itinerary requested by customer, booking the rese
 
 When injecting this terminal in your project, you should keep in mind that some user actions may be destructive, for example if user books the reservation and forgets to cancel it later, or if he modifies a ticketed PNR.
 There are mechanisms in this app that check agent roles and stuff, but they do not cover _all_ possible formats in every GDS, so it's possible (even though not likely) for any agent to do something bad.
+
+Usage:
+```html
+<div id="terminalContext" style="height: 100%;"></div>
+<script src="http://10.128.128.99:8089/public/terminal-bundle.js"></script>
+<script>
+    window.InitGdsDirectPlusApp({
+        htmlRootDom		: document.getElementById('terminalContext'),
+        emcSessionId    : hashData['emcSessionId'],
+    }).then(nodeApp => {
+        // nodeApp.runPnr({pnrCode: 'QWE123'});
+        // nodeApp.rebuild({data: {itineraryId: 1234, segmentStatus: 'GK'}});
+    });
+</script>
+```
+
+![example screenshot](https://gitlab.dyninno.net/client-management-system/gds-direct-nodejs/uploads/803cfa6f85ac4bb3115dfd457ffd85cd/image.png)

@@ -3,7 +3,7 @@ console.log('Starting unit tests');
 
 let tests = [
 	() => 3 > 4 ? 'Your code says that 3 > 4, this is wrong' : null,
-	() => 5 > 4 ? 'An artificially broken test failed asserting that 5 > 4 is false' : null,
+	() => 5 < 4 ? 'Five can not be less than four, silly' : null,
 ];
 
 let oks = 0;

@@ -56,10 +56,11 @@ export class PqParser
 
 		return get(`terminal/getPqItinerary?pqTravelRequestId=${rId}&isStandAlone=${isStandAlone}&gds=${gds.get('name')}`)
 			.then(rbsData => ({pqTravelRequestId: rId, gds: gds.get('name'), rbsData: rbsData}))
+			.finally(() => this.loaderToggle(true))
 			.then(pqBtnData => {
 				let importPq = () => get(`terminal/importPq?pqTravelRequestId=${rId}&isStandAlone=${isStandAlone}&gds=${gds.get('name')}`)
 					.then(rbsData => ({rbsData: rbsData}));
 				return this.modal(pqBtnData, CLOSE_PQ_WINDOW, importPq);
-			})
+			});
 	}
 }
