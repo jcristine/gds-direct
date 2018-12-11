@@ -16,11 +16,12 @@ run-tests:
   - git config --global user.email "gitlab@dyninno.net"
 #  - test -e "/home/gitlab-runner/public_html/gds-direct-plus" || git clone $CI_REPOSITORY_URL -b master /home/gitlab-runner/public_html/gds-direct-plus --depth 1
 #  - cd /home/gitlab-runner/public_html/gds-direct-plus
-  - cp local.config.conf.dist local.config.conf
   - export CI_PUSH_REPO=`echo $CI_REPOSITORY_URL | perl -pe 's#.*@(.+?(\:\d+)?)/#git@\1:#'`
   - git remote set-url origin "${CI_PUSH_REPO}"
   - echo ${CI_PUSH_REPO}
   - git reset --hard origin/master
   - git pull
   - bash build.sh
+  - ls
+  - cp local.config.conf.dist local.config.conf
   - node tests/runTests.js
