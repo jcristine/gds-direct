@@ -1,9 +1,14 @@
+stages:
+- test
+- build
+
 before_script:
   - node --version
 
 run-tests:
+  stage: test
   variables:
-    GIT_STRATEGY: none
+    GIT_STRATEGY: fetch
   tags:
     - php70-builder # it has node v8.x at least
   only:
@@ -13,6 +18,7 @@ run-tests:
       url: http://gds-direct-plus.gitlab-runner.php7.dyninno.net
   script:
   - git show --name-status
+  - git branch
 #  - test -e "/home/gitlab-runner/public_html/gds-direct-plus" || git clone $CI_REPOSITORY_URL -b master /home/gitlab-runner/public_html/gds-direct-plus --depth 1
 #  - cd /home/gitlab-runner/public_html/gds-direct-plus
 #  - bash build.sh
