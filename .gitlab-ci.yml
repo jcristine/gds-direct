@@ -14,7 +14,7 @@ run-tests:
   script:
   - git config --global user.name "Gitlab CI"
   - git config --global user.email "gitlab@dyninno.net"
-  - git remote set-url origin https://gitlab-ci-token:xJaVRMHCCA1gs1A-82bQ@gitlab.dyninno.net:1022/client-management-system/gds-direct-nodejs.git
+  - git remote set-url origin ssh://git@gitlab.dyninno.net:1022/client-management-system/gds-direct-nodejs.git
   - git remote -v
   - git pull
   - git show --name-status
