@@ -1,5 +1,22 @@
 import Dom from '../helpers/dom';
 
+/** @see https://stackoverflow.com/a/11616993/2750743 */
+let jsonNoCirc = data => {
+	const getCircularReplacer = () => {
+		const seen = new WeakSet();
+		return (key, value) => {
+			if (typeof value === "object" && value !== null) {
+				if (seen.has(value)) {
+					return;
+				}
+				seen.add(value);
+			}
+			return value;
+		};
+	};
+	return JSON.stringify(data, getCircularReplacer());
+};
+
 export default class Component
 {
 	constructor(selector, params)
@@ -68,7 +85,7 @@ export default class Component
 
 	setState(state)
 	{
-		if ( JSON.stringify(state) === JSON.stringify(this.state) )
+		if ( jsonNoCirc(state) === jsonNoCirc(this.state) )
 		{
 			// console.log("IS EQUAL", state, this.state);
 			return false;

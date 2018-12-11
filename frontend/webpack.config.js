@@ -51,14 +51,10 @@ module.exports = {
 		]
 	},
 
-	externals: {
-		jquery	: 'jQuery'
-	},
-
-	// plugins: [
-	// 	new webpack.DllReferencePlugin({
-	// 		context: '.',
-	// 		manifest: require('./public/vendor.terminal-manifest.json')
-	// 	})
-	// ]
+	plugins: [
+		new webpack.ProvidePlugin({
+			jQuery: 'jquery',
+			$: 'jquery'
+		})
+	]
 };

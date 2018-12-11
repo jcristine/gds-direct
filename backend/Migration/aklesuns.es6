@@ -107,7 +107,7 @@ module.exports.migrations = [
 			"  `pattern` varchar(255) DEFAULT NULL,",
 			"  `regexError` BOOLEAN DEFAULT '0',",
 			"  PRIMARY KEY (`id`),",
-			"  UNIQUE KEY `ruleId` (`ruleId`)",
+			"  UNIQUE KEY `gds_ruleId` (`gds`, `ruleId`)",
 			") ENGINE=InnoDB DEFAULT CHARSET=utf8",
 		].join('\n')),
 	},

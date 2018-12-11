@@ -1,4 +1,7 @@
+
+import 'bootstrap'
 import './theme/main.less';
+
 import {getStore} from "./store";
 import requests from  "./helpers/requests";
 import GdsDirectPlusApp from  "./modules/GdsDirectPlusApp";
