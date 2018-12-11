@@ -21,6 +21,6 @@ run-tests:
   - git branch
 #  - test -e "/home/gitlab-runner/public_html/gds-direct-plus" || git clone $CI_REPOSITORY_URL -b master /home/gitlab-runner/public_html/gds-direct-plus --depth 1
 #  - cd /home/gitlab-runner/public_html/gds-direct-plus
-#  - bash build.sh
-#  - cp local.config.conf.dist local.config.conf
-#  - node tests/runTests.js
+  - bash build.sh
+  - cp local.config.conf.dist local.config.conf
+  - node tests/runTests.js
