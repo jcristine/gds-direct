@@ -23,15 +23,10 @@ export const HIDE_PQ_QUOTES = () => {
 	return showPq({pqToShow:false}, offset);
 };
 
-export const SET_REQUEST_ID = rId => {
-	getStore().app.set('requestId', rId);
-	return Promise.resolve();
-};
-
-const openPq = app => {
-	app.pqParser.show( app.getGds(), app.params.requestId, app.params.isStandAlone )
+const openPq = (app, pqTravelRequestId) => {
+	app.pqParser.show( app.getGds(), pqTravelRequestId, app.params.isStandAlone )
 		.then(() => showPq({menuHidden : true}, 0));
 };
 
-export const PQ_MODAL_SHOW 	= () => openPq(getStore().app);
+export const PQ_MODAL_SHOW 	= (pqTravelRequestId) => openPq(getStore().app, pqTravelRequestId);
 export const CLOSE_PQ_WINDOW = () => showPq({menuHidden : false});

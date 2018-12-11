@@ -5,7 +5,9 @@ export default class PqButton extends Component
 {
 	constructor()
 	{
-		super('button.btn btn-sm btn-mozilla font-bold[PQ]', {onclick : PQ_MODAL_SHOW});
+		super('button.btn btn-sm btn-mozilla font-bold[PQ]', {
+			onclick : () => PQ_MODAL_SHOW(window.GdsDirectPlusParams.travelRequestId),
+		});
 	}
 
 	setState({requestId, ...state})

@@ -1,7 +1,7 @@
 import Component 		                    from "../../modules/component";
 import Dom                                  from "../../helpers/dom";
 import {GET_LAST_REQUESTS}                  from "../../actions/settings";
-import {PQ_MODAL_SHOW, SET_REQUEST_ID} 	    from "../../actions/priceQuoutes";
+import {PQ_MODAL_SHOW} from "../../actions/priceQuoutes";
 import Moment 								from "moment";
 import ButtonPopOver						from "../../modules/buttonPopover";
 
@@ -83,42 +83,32 @@ class PopoverContext
     }
 
     _makeBody(response, popover)
-    {
-        response.data.forEach( value => {
-            const leadWrapper = Dom('div');
+	{
+		let leadRecords = response.records || [];
+		leadRecords.forEach( record => {
+			let pqTravelRequestId = record.id;
+			let leadWrapper = Dom('div');
 
-            const el 	= Dom(`a.t-pointer[${value}]`, {
-                onclick : () => {
-                    SET_REQUEST_ID(value)
-                        .then( () => {
-                            PQ_MODAL_SHOW();
-                            popover.close();
-                        });
-                }
-            });
+			let el = Dom(`a.t-pointer[${pqTravelRequestId}]`, {
+				onclick : () => {
+					PQ_MODAL_SHOW(pqTravelRequestId);
+					popover.close();
+				}
+			});
 
-            leadWrapper.appendChild( el );
+			leadWrapper.appendChild( el );
+			let dateWrapper = Dom('div', { style: 'display: inline-block; width: 55px; margin-right: 5px;' });
+			dateWrapper.appendChild(
+				Dom(`span[${this._getDate(record)}]`)
+			);
+			leadWrapper.appendChild( dateWrapper );
+			leadWrapper.appendChild(
+				Dom(`span[${this._getItinerary(record)}]`)
+			);
 
-            response.records.forEach( record => {
-                if (value === record.id)
-                {
-                    let dateWrapper = Dom('div', { style: 'display: inline-block; width: 55px; margin-right: 5px;' });
-
-                    dateWrapper.appendChild(
-                        Dom(`span[${this._getDate(record)}]`)
-                    );
-
-                    leadWrapper.appendChild( dateWrapper );
-
-                    leadWrapper.appendChild(
-                        Dom(`span[${this._getItinerary(record)}]`)
-                    );
-                }
-            } );
-
-            this.context.appendChild( leadWrapper );
-        });
-    }
+			this.context.appendChild( leadWrapper );
+		});
+	}
 
     _getDate (record) {
         const destination = record.destinations[Object.keys(record.destinations)[0]][1];
