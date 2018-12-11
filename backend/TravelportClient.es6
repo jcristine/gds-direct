@@ -1,13 +1,7 @@
 
-let https = require('https');
 let config = require('./../local.config.conf');
 let MultiLevelMap = require('./Utils/MultiLevelMap.es6');
-
-let httpAgent = new https.Agent({
-	keepAlive: true,
-	keepAliveMsecs: 4 * 60 * 1000, // 4 minutes
-	maxSockets: 1,
-});
+let PersistentHttpRq = require('./Utils/PersistentHttpRq.es6');
 
 /**
  * they are all physically located in USA, Atlanta (in same building)
@@ -16,36 +10,18 @@ let httpAgent = new https.Agent({
  * @see https://support.travelport.com/webhelp/GWS/Content/Overview/Getting_Started/Connecting_to_GWS.htm
  * due to geo-latency, requests from Europe to USA are taking at least 100 ms overhead on dev
  */
-let host = 'americas.webservices.travelport.com';
-//let host = 'emea.webservices.travelport.com';
-//let host = 'apac.webservices.travelport.com';
+let endpoint = 'https://americas.webservices.travelport.com/B2BGateway/service/XMLSelect';
+//let endpoint = 'https://emea.webservices.travelport.com/B2BGateway/service/XMLSelect';
+//let endpoint = 'https://apac.webservices.travelport.com/B2BGateway/service/XMLSelect';
 
-let sendRequest = (requestBody) => new Promise((resolve, reject) => {
-	let headers = {
-		'Authorization': 'Basic ' + config.apolloAuthToken,
-	};
-	let req = https.request({
-		host: host,
-		path: '/B2BGateway/service/XMLSelect',
-		port: 443,
-		headers: headers,
-		method: 'POST',
-		agent: httpAgent,
-	}, (res) => {
-		let responseBody = '';
-		res.setEncoding('utf8');
-		res.on('data', (chunk) => responseBody += chunk);
-		res.on('end', () => {
-			if (res.statusCode != 200) {
-				reject('Http request to Travelport failed - ' + res.statusCode + ' - ' + responseBody);
-			} else {
-				resolve(responseBody);
-			}
-		});
-	});
-	req.on('error', (e) => reject('Failed to make request - ' + e));
-	req.end(requestBody);
-});
+let sendRequest = (requestBody) =>
+	PersistentHttpRq({
+		url: endpoint,
+		headers: {
+			'Authorization': 'Basic ' + config.apolloAuthToken,
+		},
+		body: requestBody,
+	}).then(resp => resp.body);
 
 let gdsProfile = 'DynApolloProd_1O3K';
 let agentToToken = MultiLevelMap();

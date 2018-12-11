@@ -1,8 +1,9 @@
 
-let request = require('request');
+let querystring = require('querystring');
 let MultiLevelMap = require('./Utils/MultiLevelMap.es6');
+let PersistentHttpRq = require('./Utils/PersistentHttpRq.es6');
 
-let callRbs = (functionName, params) => new Promise((resolve, reject) => {
+let callRbs = (functionName, params) => {
 	let logId = 'rbs.5bf6e431.9577485';
 	//let rbsUrl = 'http://st-rbs.sjager.php7.dyninno.net/jsonExternalInterface.php?log_id=' + logId;
 	let rbsUrl = 'http://rbs-dev.aklesuns.php7.dyninno.net/jsonExternalInterface.php?log_id=' + logId;
@@ -11,32 +12,34 @@ let callRbs = (functionName, params) => new Promise((resolve, reject) => {
 		functionName: functionName,
 		params: JSON.stringify(params),
 	};
-	return request.post({
-		url: rbsUrl, form: formParams,
-	}, (err, httpResponse, body) => {
-		if (err || httpResponse.statusCode !== 200) {
-			return reject('Could not connect to RBS - ' + httpResponse.statusCode + ' - ' + err + ' - ' + body);
-		}
+	return PersistentHttpRq({
+		url: rbsUrl,
+		body: querystring.stringify(formParams),
+		headers: {
+			'Content-Type': 'application/x-www-form-urlencoded',
+		},
+	}).then(respRec => {
+		let body = respRec.body;
 		let resp;
 		try {
 			resp = JSON.parse(body);
 		} catch (exc) {
-			return reject('Could not parse RBS ' + functionName + ' json response - ' + body);
+			return Promise.reject('Could not parse RBS ' + functionName + ' json response - ' + body);
 		}
 		if (resp.status !== 'OK' || !resp.result || !resp.result.response_code) {
-			return reject('Unexpected RBS response format - ' + body + ' ' + httpResponse.statusCode);
+			return Promise.reject('Unexpected RBS response format - ' + body);
 		} else if (![1,2,3].includes(resp.result.response_code)) {
 			let rpcErrors = resp.result.errors;
-			return reject('RBS service responded with error - ' + resp.result.response_code + ' - ' + JSON.stringify(rpcErrors));
+			return Promise.reject('RBS service responded with error - ' + resp.result.response_code + ' - ' + JSON.stringify(rpcErrors));
 		} else if (resp.result.response_code == 3) {
 			let rpcErrors = resp.result.errors;
 			let messages = resp.result.result.messages;
-			return reject('RBS service cannot satisfy your request - ' + JSON.stringify(messages) + ' - ' + JSON.stringify(rpcErrors));
+			return Promise.reject('RBS service cannot satisfy your request - ' + JSON.stringify(messages) + ' - ' + JSON.stringify(rpcErrors));
 		} else {
-			return resolve(resp);
+			return Promise.resolve(resp);
 		}
 	});
-});
+};
 
 let agentToGdsToLeadToSessionId = MultiLevelMap();
 
