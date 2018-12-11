@@ -7,7 +7,7 @@
 npm install --from-lock-file
 
 startpath=$(pwd)
-cd public/frontend
+cd frontend
 npm install --from-lock-file
 node node_modules/webpack/bin/webpack.js --progress --display-modules --sort-modules-by size
 cd $startpath

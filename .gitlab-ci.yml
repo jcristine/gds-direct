@@ -1,35 +1,28 @@
 stages:
 - test
 - build
-before_script:
-- php -v
-syntax-check:
-  stage: test
+staging:
+  variables:
+    GIT_STRATEGY: none
   tags:
-  - php70-builder
-  script:
-  - find ./ -type f -name '*.es6' -print0 | xargs -n 1 -0 eslint
-update-packagist:
-  stage: build
-  tags:
-  - dev-w13
+    - php70-builder
   only:
-  - master
-  when: manual
-  before_script:
+    - master
+  environment:
+      name: staging
+      url: http://gds-direct-plus.gitlab-runner.php7.dyninno.net
+  script:
+  #- rm -rf /home/gitlab-runner/public_html/cms/cache
   - . /home/pkirpitsov/scripts/ci_secret_ssh.sh
   - git config --global user.name "Gitlab CI"
   - git config --global user.email "gitlab@dyninno.net"
+  - test -e "/home/gitlab-runner/public_html/gds-direct-plus" || git clone $CI_REPOSITORY_URL -b master /home/gitlab-runner/public_html/gds-direct-plus --depth 1
+  - cd /home/gitlab-runner/public_html/gds-direct-plus
+#  - cp local.config.php.dist local.config.php
   - export CI_PUSH_REPO=`echo $CI_REPOSITORY_URL | perl -pe 's#.*@(.+?(\:\d+)?)/#git@\1:#'`
-  - git remote set-url --push origin "${CI_PUSH_REPO}"
+  - git remote set-url origin "${CI_PUSH_REPO}"
   - echo ${CI_PUSH_REPO}
-  script:
-  # get next tag
-  - NEXT_TAG=$(php /home/pkirpitsov/public_html/ci/console.php next_tag `pwd` $TAG_PREFIX)
-  - echo "Next tag will be - $NEXT_TAG"
-  # creating new tag
-  - git tag $NEXT_TAG
-  # push new tag to remote
-  - git push origin $NEXT_TAG
-  - echo "Packagist successfully updated"
-  - kill -9 $SSH_AGENT_PID
+  - git reset --hard origin/master
+  - git pull
+  - bash build.sh
+  - kill $SSH_AGENT_PID
