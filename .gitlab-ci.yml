@@ -12,8 +12,6 @@ run-tests:
       name: staging
       url: http://gds-direct-plus.gitlab-runner.php7.dyninno.net
   script:
-  - pwd
-  - ls
   - git config --global user.name "Gitlab CI"
   - git config --global user.email "gitlab@dyninno.net"
 #  - test -e "/home/gitlab-runner/public_html/gds-direct-plus" || git clone $CI_REPOSITORY_URL -b master /home/gitlab-runner/public_html/gds-direct-plus --depth 1
@@ -25,3 +23,4 @@ run-tests:
   - git reset --hard origin/master
   - git pull
   - bash build.sh
+  - node tests/runTests.js

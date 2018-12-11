@@ -1,0 +1,25 @@
+/** @lang javascript */
+
+let config = {
+    db : {
+        host: "10.128.128.203",
+        user: "stasadm",
+        password: "G0a4wa&",
+        database: "gds_direct_cms",
+        port: 3306,
+        connectionLimit: 20
+    },
+    redis: {
+        host: "10.128.128.230",
+        port: 6379
+    },
+    socketListenPort: 3000,
+    httpListenPort: 3001,
+    production: false,
+    apolloAuthToken: null,
+
+    scheduledTasksEnabled: true
+};
+
+
+module.exports = config;
