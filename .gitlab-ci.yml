@@ -8,7 +8,7 @@ syntax-check:
   tags:
   - php70-builder
   script:
-  - find ./ -type f -name '*.php' -print0 | xargs -n 1 -0 php -l
+  - find ./ -type f -name '*.es6' -print0 | xargs -n 1 -0 eslint
 update-packagist:
   stage: build
   tags:
