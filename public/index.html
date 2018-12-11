@@ -13,7 +13,7 @@
 
 <aside id="terminalContext" style="height: 100%;"></aside>
 
-<script src="frontend/public/terminal-bundle.js"></script>
+<script src="terminal-bundle.js"></script>
 <script>
     let hashData = {};
     let hashStr = window.location.hash.substr(1);
@@ -22,11 +22,14 @@
         hashData[key] = value;
     }
     window.onhashchange = () => window.location.reload();
-    new window.GdsDirectPlusApp({
+    window.InitGdsDirectPlusApp({
         htmlRootDom		: document.getElementById('terminalContext'),
         isStandAlone	: true,
         emcSessionId    : hashData['emcSessionId'],
         PqPriceModal	: (response, onClose) => Promise.reject('Can\'t create PQ modal on a test page'),
+    }).then(nodeApp => {
+    	// nodeApp.runPnr({pnrCode: 'QWE123'});
+    	// nodeApp.rebuild({data: {itineraryId: 1234, segmentStatus: 'GK'}});
     });
 </script>
 
