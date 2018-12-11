@@ -1,9 +1,26 @@
 
 console.log('Starting unit tests');
 
-if (3 > 4) {
-	console.error('Your code says that 3 > 4, this is wrong');
+let tests = [
+	() => 3 > 4 ? 'Your code says that 3 > 4, this is wrong' : null,
+	() => 5 > 4 ? 'An artificially broken test failed asserting that 5 > 4 is false' : null,
+];
+
+let oks = 0;
+let errors = [];
+
+for (let test of tests) {
+	let error = test();
+	if (error) {
+		errors.push(error);
+	} else {
+		++oks;
+	}
 }
-if (5 > 4) {
-	console.error('A broken test failed asserting that 5 > 4 is false');
+
+console.log('Finished with ' + oks + ' oks and ' + errors.length + ' errors');
+
+if (errors.length > 0) {
+	console.error('Unit test resulted in errors', errors);
+	process.exit(1);
 }
