@@ -77,13 +77,13 @@ let runInputCmd = (reqBody, emcResult) => {
 /** @param {IEmcResult} emcResult */
 exports.runInputCmd = (reqBody, emcResult) => {
 	let hrtimeStart = process.hrtime();
-	let requestTimestamp = new Date().getTime();
+	let requestTimestamp = Math.floor(new Date().getTime() / 1000);
 	let running = runInputCmd(reqBody, emcResult);
 
 	// do logging _after_ we returned the result
 	running.then(result => {
 		let hrtimeDiff = process.hrtime(hrtimeStart);
-		let responseTimestamp = new Date().getTime();
+		let responseTimestamp = Math.floor(new Date().getTime() / 1000);
 		dbPool.getConnection()
 			.then(dbConn => {
 				return Db(dbConn).writeRows('terminalBuffering', [{
@@ -114,7 +114,7 @@ exports.importPq = (reqBody, emcResult) => RbsClient(reqBody).importPq();
 
 /** @param {IEmcResult} emcResult */
 exports.keepAlive = (reqBody, emcResult) => {
-	// TODO: use terminal.keepAlive so that RBS logs was not trashed with these MD0-s
+	// TODO: use terminal.keepAlive so that RBS logs were not trashed with these MD0-s
 	return runInputCmd({command: 'MD0', ...reqBody}, emcResult);
 };
 
