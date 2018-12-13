@@ -1,14 +1,14 @@
 
 let ioredis = require("ioredis");
-let Config = require('./Config');
+let config = require('./Config.es6');
 
-let client = new ioredis(Config.redis().port, Config.redis().host);
+let client = new ioredis(config.redis.port, config.redis.host);
 
 let getStore = (name, keys) => {
 	let hash = JSON.stringify(keys.map(k => k + ""));
 	return ({
-		get: () => client.hget(name, hash),
-		set: (value) => client.hset(name, hash, value),
+		get: () => client.hget('gdsDirectPlus_' + name, hash),
+		set: (value) => client.hset('gdsDirectPlus_' + name, hash, value),
 	});
 };
 

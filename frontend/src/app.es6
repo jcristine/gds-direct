@@ -75,6 +75,10 @@ window.GdsDirectPlusParams = window.GdsDirectPlusParams || {
     auth: null,
 };
 
+/**
+ * supposed to be injected in a <script> tag (either
+ * statically or via js dynamic DOM generation)
+ */
 window.InitGdsDirectPlusApp = (params) => {
 	// probably better would be to pass it through all these abstractions
 	// to the session.es6 instead of making a global variable...

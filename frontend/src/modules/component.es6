@@ -1,6 +1,9 @@
 import Dom from '../helpers/dom';
 
-/** @see https://stackoverflow.com/a/11616993/2750743 */
+/**
+ * @see https://stackoverflow.com/a/11616993/2750743
+ * needed when jquery version is >2.1.4
+ */
 let jsonNoCirc = data => {
 	const getCircularReplacer = () => {
 		const seen = new WeakSet();

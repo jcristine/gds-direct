@@ -1,5 +1,4 @@
 const $		= require('jquery');
-window.$ 	= window.jQuery = $;
 
 // require('jquery.terminal/js/jquery.terminal');
 require('../lib/jquery-terminal');
