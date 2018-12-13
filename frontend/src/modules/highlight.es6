@@ -1,6 +1,7 @@
 import {DEV_CMD_STACK_RUN} from "../actions";
 import {switchTerminal} from "./switchTerminal";
 import {escapeSpecials, getFirstNumber, replaceChar, splitLines} from "../helpers/helpers";
+import tetherDrop from 'tether-drop';
 
 const makeRule		= (rule, key, isPattern = '') => {
 	let searchIndex		= '';
@@ -82,6 +83,26 @@ export const seedOutputString = (outputText, appliedRules) => {
 	return {tips, outputText}
 };
 
+/**
+ * a replacement for $().popover() because requiring bootstrap causes
+ * side effects in the form of main app popovers stopping working
+ */
+let bsPopover = (target, options) => {
+	// return $(target).popover(options);
+	let content = document.createElement('div');
+	content.innerHTML = options.template;
+	// TODO: make it transparent to mouse so that it did not interrupt copying
+	// TODO: fade like in bs
+	let popover = new tetherDrop({
+		target: target,
+		content: content,
+		position: 'top center',
+		classes: 'drop-theme-arrows fade in',
+		openOn: options.trigger,
+		remove: true,
+	});
+};
+
 export const replaceInTerminal = (div, tips) => {
 
 	const findSpan = key => target => {
@@ -90,21 +111,19 @@ export const replaceInTerminal = (div, tips) => {
 
 		if (onClickMessage)
 		{
-			$(target).popover({
-				...popoverDefs(div, onClickMessage, id),
-
-				template 	: '<div class="popover popoverOnClick font-bold text-danger" role="tooltip"><div class="arrow"></div><div class="popover-content highlight-popover"></div></div>',
+			bsPopover(target, {
+				...popoverDefs(onClickMessage, id),
+				trigger 	: 'click',
+				template 	: '<div class="font-bold text-danger" role="tooltip"><div class="arrow"></div><div>' + onClickMessage + '</div></div>',
 			});
 		}
 
 		if (onMouseOver)
 		{
-			$(target).popover({
-				...popoverDefs(div, onMouseOver, id),
-
-				placement 	: 'top',
+			bsPopover(target, {
+				...popoverDefs(onMouseOver, id),
 				trigger 	: 'hover',
-				template 	: '<div class="popover font-bold text-primary" role="tooltip"><div class="arrow"></div><div class="popover-content highlight-popover"></div></div>',
+				template 	: '<div class="font-bold text-primary" role="tooltip"><div class="arrow"></div><div>' + onMouseOver + '</div></div>',
 			});
 		}
 
@@ -133,20 +152,10 @@ export const replaceInTerminal = (div, tips) => {
 	});
 };
 
-const popoverDefs = (div, content, id) => {
+const popoverDefs = (content, id) => {
 	content += window.GdsDirectPlusState.hasPermissions() ? '(' + id + ')' : '';
 
-	return {
-		content,
-		placement 	: 'top',
-		trigger		: 'click',
-		template	: '<div class="popover font-bold text-danger" role="tooltip"><div class="arrow"></div><div class="popover-content highlight-popover"></div></div>',
-
-		title		: content,
-		html 		: true,
-		viewport	: div,
-		container	: div
-	}
+	return {content}
 };
 
 // closing popover when clicking outside it

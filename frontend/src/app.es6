@@ -1,5 +1,4 @@
 
-import 'bootstrap'
 import './theme/main.less';
 
 import {getStore} from "./store";
