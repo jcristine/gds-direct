@@ -1,8 +1,7 @@
 const Db = require('./../../../../Utils/Db.es6');
 const Constants = require('./../../../../Constants.es6');
 const {array_map, array_flip, array_intersect_key, empty, json_decode, str_split, intval, isset} = require("../../../php.es6");
-
-let agentToCurrentGds = {};
+const RedisData = require("../../../../RedisData.es6");
 
 let TABLE = 'terminalSettings';
 let AREA_TABLE = 'terminalAreaSettings';
@@ -39,11 +38,13 @@ class TerminalSettings {
 	/** @param {IEmcResult} emcResult */
 	constructor(emcResult) {
 		this.agentId = emcResult.user.id;
+		this.currentGdsStore = RedisData.stores.currentGds([emcResult.user.id]);
 	}
 
-	getCurrentGds($agentId) {
-		return agentToCurrentGds[$agentId]
-			|| this.getDefault('currentGds');
+	getCurrentGds() {
+		let fallback = this.getDefault('currentGds');
+		return this.currentGdsStore.get()
+			.then(gds => gds || fallback);
 	}
 
 	/**
@@ -79,10 +80,10 @@ class TerminalSettings {
 	 *
 	 * @param int $agentId
 	 */
-	getSettings() {
+	async getSettings() {
 		let $agentId = this.agentId;
 		let $settings = {
-			common: {currentGds: this.getCurrentGds($agentId)},
+			common: {currentGds: await this.getCurrentGds()},
 			gds: {},
 		};
 		for (let $gds of Constants.supportedGdses) {
@@ -116,7 +117,8 @@ class TerminalSettings {
 	addGds($gds) {
 		let agentId = this.agentId;
 		// just to be safe, it's how it worked in CMS
-		agentToCurrentGds[agentId] = agentToCurrentGds[agentId] || $gds;
+		this.currentGdsStore.get().then(current =>
+			this.currentGdsStore.set(current || $gds));
 		return Db.with(
 			(db) => db.writeRows(TABLE, [{
 				agentId: agentId,
@@ -131,7 +133,7 @@ class TerminalSettings {
 	 * @param string $gds
 	 */
 	setCurrentGds($gds) {
-		agentToCurrentGds[this.agentId] = $gds;
+		return this.currentGdsStore.set($gds);
 	}
 
 	/**

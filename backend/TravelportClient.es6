@@ -1,7 +1,6 @@
-
 let config = require('./../local.config.conf');
-let MultiLevelMap = require('./Utils/MultiLevelMap.es6');
 let PersistentHttpRq = require('./Utils/PersistentHttpRq.es6');
+let RedisData = require('./RedisData.es6');
 
 /**
  * they are all physically located in USA, Atlanta (in same building)
@@ -24,7 +23,6 @@ let sendRequest = (requestBody) =>
 	}).then(resp => resp.body);
 
 let gdsProfile = 'DynApolloProd_1O3K';
-let agentToToken = MultiLevelMap();
 
 let parseXml = (xml) => {
 	let jsdom = require('jsdom');
@@ -153,30 +151,26 @@ let runAndCleanupCmd = (cmd, token) => {
 /** @param {{command: '*R', gds: 'apollo', language: 'sabre', agentId: '6206'}} reqBody */
 module.exports = (reqBody) => {
 	let agentId = reqBody.agentId;
+	let tokenStore = RedisData.stores.travelportSession([agentId]);
 	let runInputCmd = () => {
 		let cmd = reqBody.command;
-		let runInNewSession = (cmd) => startSession().then((resp) => {
-			let token = resp.sessionToken;
-			agentToToken.set([agentId], token);
-			return runAndCleanupCmd(cmd, token)
-				.then(data => Object.assign({}, data, {
-					startNewSession: true,
-					userMessages: ['New session started'],
-				}));
-		});
-		let travelportToken = agentToToken.get([agentId]);
-		return !travelportToken
+		let runInNewSession = (cmd) => startSession().then((resp) =>
+			tokenStore.set(resp.sessionToken).then(() =>
+				runAndCleanupCmd(cmd, resp.sessionToken)
+					.then(data => Object.assign({}, data, {
+						startNewSession: true,
+						userMessages: ['New session started'],
+					}))));
+		return tokenStore.get().then(travelportToken => !travelportToken
 			? runInNewSession(cmd)
 			: runAndCleanupCmd(cmd, travelportToken)
 				.catch(exc => runInNewSession(cmd)
 					.then(data => Object.assign({}, data, {
 						userMessages: [('Session aborted - ' + exc).slice(0, 800) + '...\n']
 							.concat(data.userMessages || []),
-					})));
+					}))));
 	};
-
 	return {
-		getSessionData: () => makeSessionData(agentToToken.get([agentId])),
 		runInputCmd: runInputCmd,
 	};
 };

@@ -20,9 +20,41 @@
         htmlRootDom		: document.getElementById('terminalContext'),
         emcSessionId    : hashData['emcSessionId'],
     }).then(nodeApp => {
-    	// nodeApp.runPnr({pnrCode: 'QWE123'});
-    	// nodeApp.rebuild({data: {itineraryId: 1234, segmentStatus: 'GK'}});
+        // nodeApp.runPnr({pnrCode: 'QWE123'});
+        // nodeApp.rebuild({data: {itineraryId: 1234, segmentStatus: 'GK'}});
     });
+</script>
+
+<button onclick="window.testMultiThreading()">Test Multi-threading</button>
+<div class="multi-threading-test-output" style="background-color: white; color: black; min-height: 200px;"></div>
+<script>
+    window.testMultiThreading = () => {
+        let startedAt = window.performance.now();
+        let results = [];
+        let cpuCnt = 4;
+        for (let i = 0; i < cpuCnt; ++i) {
+            fetch('/doSomeHeavyStuff?emcSessionId=' + hashData['emcSessionId'])
+                .then(resp => resp.text())
+                .then(resp => {
+                    let responseTime = ((window.performance.now() - startedAt) / 1000).toFixed(4);
+                    document.querySelector('.multi-threading-test-output').innerHTML +=
+                        'Response #' + i + ' at ' + responseTime + ' ' + resp + '<br/>';
+                    results.push(responseTime);
+                    if (results.length === cpuCnt) {
+                        let min = Math.min(...results);
+                        let diff = (Math.max(...results) - min).toFixed(4);
+                        document.querySelector('.multi-threading-test-output').innerHTML +=
+                            'Done ' + cpuCnt + ' jobs with results: ' + results + '<br/>';
+                        document.querySelector('.multi-threading-test-output').innerHTML += diff < min
+                            ? '<div style="color: green;">' + 'Diff: ' + diff + ' OK, Requests seem to be processed with multiple threads</div>'
+                            : '<div style="color: red;">' + 'Diff: ' + diff + ' ERROR, Requests seem to be processed with a single thread</div>';
+                    }
+                });
+        }
+        document.querySelector('.multi-threading-test-output').innerHTML +=
+               'Started ' + cpuCnt + ' jobs. Please wait...' + '<br/>';
+
+    };
 </script>
 
 </body>

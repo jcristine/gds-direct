@@ -4,6 +4,7 @@ let TravelportClient = require('./TravelportClient.es6');
 let dbPool = require('./App/Classes/Sql.es6');
 let Db = require('./Utils/Db.es6');
 let TerminalService = require('./Transpiled/App/Services/TerminalService.es6');
+let {hrtimeToDecimal} = require('./Utils/Misc.es6');
 
 let md5 = (data) => {
 	// return crypto.createHash('md5')
@@ -11,12 +12,6 @@ let md5 = (data) => {
 	// 	.digest('hex');
 	let objectHash = require('object-hash');
 	return objectHash(data);
-};
-
-let hrtimeToDecimal = (hrtime) => {
-	let [seconds, nanos] = hrtime;
-	let rest = ('0'.repeat(9) + nanos).slice(-9);
-	return seconds + '.' + rest;
 };
 
 let makeCmdResponse = (data) => 1 && {

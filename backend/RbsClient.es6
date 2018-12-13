@@ -1,7 +1,7 @@
 
 let querystring = require('querystring');
-let MultiLevelMap = require('./Utils/MultiLevelMap.es6');
 let PersistentHttpRq = require('./Utils/PersistentHttpRq.es6');
+let RedisData = require('./RedisData.es6');
 
 let callRbs = (functionName, params) => {
 	let logId = 'rbs.5bf6e431.9577485';
@@ -41,8 +41,6 @@ let callRbs = (functionName, params) => {
 	});
 };
 
-let agentToGdsToLeadToSessionId = MultiLevelMap();
-
 let getLeadData = (travelRequestId) => {
 	return !travelRequestId ? null : {
 		// TODO: fetch from CMS
@@ -77,8 +75,7 @@ let validate = (sup) => {
 /** @param {{command: '*R', gds: 'apollo', language: 'sabre', agentId: '6206'}} reqBody */
 module.exports = (reqBody) => {
 	let {agentId, gds, travelRequestId} = reqBody;
-	let getSessionId = () => agentToGdsToLeadToSessionId.get([agentId, gds, travelRequestId]);
-	let setSessionId = (sessionId) => agentToGdsToLeadToSessionId.set([agentId, gds, travelRequestId], sessionId);
+	let sessionStore = RedisData.stores.rbsSession([agentId, gds, travelRequestId]);
 
 	let runInSession = ({command, dialect, sessionId}) => callRbs('terminal.runCommand', {
 		gds: gds,
@@ -92,18 +89,17 @@ module.exports = (reqBody) => {
 		gds: gds, agentId: 6206,
 	}).then(rbsResp => {
 		let sessionId = rbsResp.result.result.sessionId;
-		setSessionId(sessionId);
-		return runInSession({command, dialect, sessionId})
-			.then(data => Object.assign({}, data, {
-				startNewSession: true,
-				userMessages: ['New session started'],
-			}));
+		return sessionStore.set(sessionId).then(() =>
+			runInSession({command, dialect, sessionId})
+				.then(data => Object.assign({}, data, {
+					startNewSession: true,
+					userMessages: ['New session started'],
+				}))
+		);
 	});
 
 	return {
-		getSessionId: getSessionId,
-		runInputCmd: () => {
-			let sessionId = getSessionId();
+		runInputCmd: () => sessionStore.get().then(sessionId => {
 			let {command, language: dialect} = reqBody;
 			return !sessionId
 				? runInNewSession({command, dialect})
@@ -113,18 +109,18 @@ module.exports = (reqBody) => {
 							userMessages: [('Session aborted - ' + exc).slice(0, 800) + '...\n']
 								.concat(data.userMessages || []),
 						})));
-		},
-		getPqItinerary: () => validate(({some}) => ({
+		}),
+		getPqItinerary: () => sessionStore.get().then(sessionId => validate(({some}) => ({
 			pqTravelRequestId: some(reqBody.pqTravelRequestId, 'travel request id is empty'),
-			sessionId: some(getSessionId(), 'session not found - ' + [agentId, gds, travelRequestId]),
-		})).then(valid => callRbs('terminal.getPqItinerary', {
+			sessionId: some(sessionId, 'session not found - ' + [agentId, gds, travelRequestId]),
+		}))).then(valid => callRbs('terminal.getPqItinerary', {
 			sessionId: valid.sessionId,
 			gds: gds,
 			context: getLeadData(valid.pqTravelRequestId),
 		})).then(rbsResp => rbsResp.result.result),
 		importPq: () => validate(({some}) => ({
 			pqTravelRequestId: some(reqBody.pqTravelRequestId, 'travel request id is empty'),
-			sessionId: some(getSessionId(), 'session not found - ' + [agentId, gds, travelRequestId]),
+			sessionId: some(sessionStore.get(), 'session not found - ' + [agentId, gds, travelRequestId]),
 		})).then(valid => callRbs('terminal.importPq', {
 			sessionId: valid.sessionId,
 			gds: gds,

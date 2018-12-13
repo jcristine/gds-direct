@@ -34,7 +34,6 @@ const Itinerary = require('../../App/Models/Itinerary.es6');
 const ItinerarySegments = require('../../App/Models/ItinerarySegments.es6');
 const LeadsDestinations = require('../../App/Models/LeadsDestinations.es6');
 const PassengerTypes = require('../../App/Models/PassengerTypes.es6');
-const TerminalAreaSetting = require('../../App/Models/Terminal/TerminalAreaSetting.es6');
 const TerminalBuffering = require('../../App/Models/Terminal/TerminalBuffering.es6');
 const TerminalInputLanguages = require('../../App/Models/Terminal/TerminalInputLanguages.es6');
 const TerminalLogsGz = require('../../App/Models/TerminalLogsGz.es6');
@@ -330,8 +329,7 @@ class TerminalBaseController {
 		let agentSettings = new TerminalSettings(this.emcResult);
 		switch ($name) {
 			case 'gds':
-				agentSettings.setCurrentGds($value);
-				saving = Promise.resolve();
+				saving = agentSettings.setCurrentGds($value);
 				break;
 			case 'language':
 				saving = agentSettings.setSetting($currentGds, 'languageId', TerminalInputLanguages.id($value));
