@@ -70,14 +70,19 @@
     }
   }
 }
+.drop-element.highlight-popover {
+  font-size: 11px;
+  line-height: 1.5em;
+  pointer-events: none;
+  animation: fadein 0.5s;
+}
+@keyframes fadein {
+   from { opacity:0; }
+   to { opacity:1; }
+}
 
 .terminal {
   .terminal-output {
-    .highlight-popover {
-      font-size: 11px;
-      line-height: 1.5em;
-    }
-
     div.tooltip-inner {
       font-size: 11px;
       line-height: 1.6em;
@@ -177,7 +182,7 @@
 
         &.active {
           display: block;
-        } 
+        }
       }
     }
 

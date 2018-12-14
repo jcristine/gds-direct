@@ -67,8 +67,12 @@ export default class Output
             const {tips, outputText} = seedOutputString(output, appliedRules);
             this.outputStrings 	= outputText;
 
+            let cleanupLast = () => {};
 			this.terminal.echo(outputText, {
-				finalize 	: (div) => replaceInTerminal(div, tips),
+				finalize 	: (div) => {
+					cleanupLast();
+					cleanupLast = replaceInTerminal(div, tips);
+				},
 				// raw 		: true
             });
         } else

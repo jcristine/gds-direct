@@ -83,27 +83,28 @@ export const seedOutputString = (outputText, appliedRules) => {
 	return {tips, outputText}
 };
 
-/**
- * a replacement for $().popover() because requiring bootstrap causes
- * side effects in the form of main app popovers stopping working
- */
-let bsPopover = (target, options) => {
-	// return $(target).popover(options);
-	let content = document.createElement('div');
-	content.innerHTML = options.template;
-	// TODO: make it transparent to mouse so that it did not interrupt copying
-	// TODO: fade like in bs
-	let popover = new tetherDrop({
-		target: target,
-		content: content,
-		position: 'top center',
-		classes: 'drop-theme-arrows fade in',
-		openOn: options.trigger,
-		remove: true,
-	});
-};
+export const replaceInTerminal = ($div, tips) => {
 
-export const replaceInTerminal = (div, tips) => {
+	let popovers = [];
+
+	/**
+	 * a replacement for $().popover() because requiring bootstrap causes
+	 * side effects in the form of main app popovers stopping working
+	 */
+	let bsPopover = (target, options) => {
+		//return $(target).popover(options);
+		let content = document.createElement('div');
+		content.innerHTML = options.template;
+		let popover = new tetherDrop({
+			target: target,
+			content: content,
+			position: 'top center',
+			classes: 'drop-theme-arrows highlight-popover',
+			openOn: options.trigger,
+			remove: true,
+		});
+		popovers.push(popover);
+	};
 
 	const findSpan = key => target => {
 
@@ -114,16 +115,15 @@ export const replaceInTerminal = (div, tips) => {
 			bsPopover(target, {
 				...popoverDefs(onClickMessage, id),
 				trigger 	: 'click',
-				template 	: '<div class="font-bold text-danger" role="tooltip"><div class="arrow"></div><div>' + onClickMessage + '</div></div>',
+				template 	: '<div class="font-bold text-danger" role="tooltip"><div class="arrow"></div><div style="max-width: 400px">' + onClickMessage + '</div></div>',
 			});
 		}
-
 		if (onMouseOver)
 		{
 			bsPopover(target, {
 				...popoverDefs(onMouseOver, id),
 				trigger 	: 'hover',
-				template 	: '<div class="font-bold text-primary" role="tooltip"><div class="arrow"></div><div>' + onMouseOver + '</div></div>',
+				template 	: '<div class="font-bold text-primary" role="tooltip"><div class="arrow"></div><div style="max-width: 400px">' + onMouseOver + '</div></div>',
 			});
 		}
 
@@ -147,9 +147,14 @@ export const replaceInTerminal = (div, tips) => {
 	};
 
 	Object.keys(tips).map(key => {
-		const spans = div[0].querySelectorAll('.' + key);
-		[].map.call(spans, findSpan(key));
+		[...$div[0].querySelectorAll('.' + key)]
+			.forEach(findSpan(key));
 	});
+
+	// $().terminal() re-renders content on focus change leaving broken tether
+	// instance visible forever since onmouseout event never fires on target
+	let cleanup = () => popovers.forEach(popover => popover.remove());
+	return cleanup;
 };
 
 const popoverDefs = (content, id) => {
@@ -157,16 +162,3 @@ const popoverDefs = (content, id) => {
 
 	return {content}
 };
-
-// closing popover when clicking outside it
-$('body').on('click', function (e) {
-	$('.popoverOnClick').each(function () {
-		if ( e.target.getAttribute('aria-describedby') !== this.id && !$(this).is(e.target) && $(this).has(e.target).length === 0 && $('.popover').has(e.target).length === 0 ) {
-			$(this).popover('hide');
-		}
-	});
-});
-// bootstrap fix where programmatically hiding popover trigger click state is not changed
-$('body').on('hidden.bs.popover', function (e) {
-	$(e.target).data('bs.popover').inState.click = false;
-});

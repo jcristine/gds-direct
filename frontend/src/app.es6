@@ -85,7 +85,7 @@ window.InitGdsDirectPlusApp = (params) => {
 	window.GdsDirectPlusParams.travelRequestId = params.travelRequestId;
 	window.GdsDirectPlusParams.cmsUrl = params.cmsUrl;
 	initGlobEvents();
-	params.htmlRootDom.innerHTML = 'Please wait, loading user data...';
+	params.htmlRootDom.innerHTML = '<h2 style="background-color: white; color: black">Please wait, loading user data...</h2>';
 
 	let loadView = requests.get('/gdsDirect/view');
 	let loadThemes = requests.get('/gdsDirect/themes');
