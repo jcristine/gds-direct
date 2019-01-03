@@ -118,10 +118,10 @@ module.exports = (reqBody) => {
 			gds: gds,
 			context: getLeadData(valid.pqTravelRequestId),
 		})).then(rbsResp => rbsResp.result.result),
-		importPq: () => validate(({some}) => ({
+		importPq: () => sessionStore.get().then(sessionId => validate(({some}) => ({
 			pqTravelRequestId: some(reqBody.pqTravelRequestId, 'travel request id is empty'),
-			sessionId: some(sessionStore.get(), 'session not found - ' + [agentId, gds, travelRequestId]),
-		})).then(valid => callRbs('terminal.importPq', {
+			sessionId: some(sessionId, 'session not found - ' + [agentId, gds, travelRequestId]),
+		}))).then(valid => callRbs('terminal.importPq', {
 			sessionId: valid.sessionId,
 			gds: gds,
 			context: getLeadData(valid.pqTravelRequestId),
