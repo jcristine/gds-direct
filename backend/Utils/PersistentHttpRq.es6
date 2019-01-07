@@ -37,7 +37,7 @@ module.exports = PersistentHttpRq = (params) => new Promise((resolve, reject) =>
 		res.on('data', (chunk) => responseBody += chunk);
 		res.on('end', () => {
 			if (res.statusCode != 200) {
-				reject('Http request to external service failed failed - ' + res.statusCode + ' - ' + responseBody);
+				reject('Http request to external service failed - ' + res.statusCode + ' - ' + parsedUrl.path + ' - ' + responseBody);
 			} else {
 				resolve({body: responseBody});
 			}

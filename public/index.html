@@ -1,60 +1,99 @@
 <html>
 <head>
-    <title>GDS Direct Plus</title>
-    <meta charset="utf-8"/>
-    <link rel="shortcut icon" href="favicon.png">
+	<title>GDS Direct Plus</title>
+	<meta charset="utf-8"/>
+	<link rel="shortcut icon" href="favicon.png">
 </head>
 <body>
 
 <div id="terminalContext"></div>
 <script src="terminal-bundle.js"></script>
 <script>
-    let hashData = {};
-    let hashStr = window.location.hash.substr(1);
-    for (let pair of hashStr.split('&')) {
-        let [key, value] = pair.split('=');
-        hashData[key] = value;
-    }
-    window.onhashchange = () => window.location.reload();
-    window.InitGdsDirectPlusApp({
-        htmlRootDom		: document.getElementById('terminalContext'),
-        emcSessionId    : hashData['emcSessionId'],
-    }).then(nodeApp => {
-        // nodeApp.runPnr({pnrCode: 'QWE123'});
-        // nodeApp.rebuild({data: {itineraryId: 1234, segmentStatus: 'GK'}});
-    });
+	let hashData = {};
+	let hashStr = window.location.hash.substr(1);
+	for (let pair of hashStr.split('&')) {
+		let [key, value] = pair.split('=');
+		hashData[key] = value;
+	}
+	window.onhashchange = () => window.location.reload();
+	window.InitGdsDirectPlusApp({
+		htmlRootDom		: document.getElementById('terminalContext'),
+		emcSessionId    : hashData['emcSessionId'],
+	}).then(nodeApp => {
+		// nodeApp.runPnr({pnrCode: 'QWE123'});
+		// nodeApp.rebuild({data: {itineraryId: 1234, segmentStatus: 'GK'}});
+	});
 </script>
 
 <button onclick="window.testMultiThreading()">Test Multi-threading</button>
+<button onclick="window.updateHighlightRulesFromProd()">Update Highlight Rules From Prod</button>
 <div class="multi-threading-test-output" style="background-color: white; color: black; min-height: 200px;"></div>
 <script>
-    window.testMultiThreading = () => {
-        let startedAt = window.performance.now();
-        let results = [];
-        let cpuCnt = 4;
-        for (let i = 0; i < cpuCnt; ++i) {
-            fetch('/doSomeHeavyStuff?emcSessionId=' + hashData['emcSessionId'])
-                .then(resp => resp.text())
-                .then(resp => {
-                    let responseTime = ((window.performance.now() - startedAt) / 1000).toFixed(4);
-                    document.querySelector('.multi-threading-test-output').innerHTML +=
-                        'Response #' + i + ' at ' + responseTime + ' ' + resp + '<br/>';
-                    results.push(responseTime);
-                    if (results.length === cpuCnt) {
-                        let min = Math.min(...results);
-                        let diff = (Math.max(...results) - min).toFixed(4);
-                        document.querySelector('.multi-threading-test-output').innerHTML +=
-                            'Done ' + cpuCnt + ' jobs with results: ' + results + '<br/>';
-                        document.querySelector('.multi-threading-test-output').innerHTML += diff < min
-                            ? '<div style="color: green;">' + 'Diff: ' + diff + ' OK, Requests seem to be processed with multiple threads</div>'
-                            : '<div style="color: red;">' + 'Diff: ' + diff + ' ERROR, Requests seem to be processed with a single thread</div>';
-                    }
-                });
-        }
-        document.querySelector('.multi-threading-test-output').innerHTML +=
-               'Started ' + cpuCnt + ' jobs. Please wait...' + '<br/>';
+	window.testMultiThreading = () => {
+		let startedAt = window.performance.now();
+		let results = [];
+		let cpuCnt = 4;
+		for (let i = 0; i < cpuCnt; ++i) {
+			fetch('/doSomeHeavyStuff?emcSessionId=' + hashData['emcSessionId'], {
+				headers: {
+					connection: 'close',
+				},
+			})  .then(resp => resp.text())
+				.then(resp => {
+					let responseTime = ((window.performance.now() - startedAt) / 1000).toFixed(4);
+					document.querySelector('.multi-threading-test-output').innerHTML +=
+						'Response #' + i + ' at ' + responseTime + ' ' + resp + '<br/>';
+					results.push(responseTime);
+					if (results.length === cpuCnt) {
+						let min = Math.min(...results);
+						let diff = (Math.max(...results) - min).toFixed(4);
+						document.querySelector('.multi-threading-test-output').innerHTML +=
+							'Done ' + cpuCnt + ' jobs with results: ' + results + '<br/>';
+						document.querySelector('.multi-threading-test-output').innerHTML += diff < min
+							? '<div style="color: green;">' + 'Diff: ' + diff + ' OK, Requests seem to be processed with multiple threads</div>'
+							: '<div style="color: red;">' + 'Diff: ' + diff + ' ERROR, Requests seem to be processed with a single thread</div>';
+					}
+				});
+		}
+		document.querySelector('.multi-threading-test-output').innerHTML +=
+			   'Started ' + cpuCnt + ' jobs. Please wait...' + '<br/>';
 
-    };
+	};
+	window.updateHighlightRulesFromProd = () => {
+		let destinationUrl = '/admin/updateHighlightRules';
+		let promises = [
+			fetch('https://cms.asaptickets.com/admin/terminal/highlight?draw=1&length=5000', {credentials: 'include'}),
+			fetch('https://cms.asaptickets.com/admin/table/listGet', {method: 'POST', headers: {'Content-Type': 'application/x-www-form-urlencoded'}, credentials: 'include', body: 'draw=1&length=5000&order[0][column]=0&order[0][dir]=DESC&model=App\\Models\\Gds'}),
+			fetch('https://cms.asaptickets.com/admin/table/listGet', {method: 'POST', headers: {'Content-Type': 'application/x-www-form-urlencoded'}, credentials: 'include', body: 'draw=1&length=5000&order[0][column]=0&order[0][dir]=DESC&model=App\\Models\\Terminal\\TerminalInputLanguages'}),
+			fetch('https://cms.asaptickets.com/admin/table/listGet', {method: 'POST', headers: {'Content-Type': 'application/x-www-form-urlencoded'}, credentials: 'include', body: 'draw=1&length=5000&order[0][column]=0&order[0][dir]=DESC&model=App\\Models\\Terminal\\TerminalHighlightGroup'}),
+			fetch('https://cms.asaptickets.com/admin/table/listGet', {method: 'POST', headers: {'Content-Type': 'application/x-www-form-urlencoded'}, credentials: 'include', body: 'draw=1&length=5000&order[0][column]=0&order[0][dir]=DESC&model=App\\Models\\Terminal\\TerminalColors'}),
+			fetch('https://cms.asaptickets.com/admin/table/listGet', {method: 'POST', headers: {'Content-Type': 'application/x-www-form-urlencoded'}, credentials: 'include', body: 'draw=1&length=5000&order[0][column]=0&order[0][dir]=DESC&model=App\\Models\\Terminal\\TerminalHighlightType'}),
+		];
+
+		promises.push();
+		promises = promises.map(p => p.then(resp => resp.json()));
+
+		Promise.all(promises)
+			.catch(exc => Promise.reject('(make sure browser CORS flag is set and cookie has the prod token) ' + exc))
+			.then(([cmsData, gdses, langs, groups, colors, types]) => {
+				return fetch(destinationUrl, {
+					method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({
+						cmsData: cmsData, emcSessionId: hashData['emcSessionId'],
+						langs, gdses, groups, colors, types,
+					}),
+				})
+			})
+			.then(resp => resp.text())
+			.then(resp => {
+				document.querySelector('.multi-threading-test-output').innerHTML += 'Response: <br/>';
+				document.querySelector('.multi-threading-test-output').innerText += resp;
+				document.querySelector('.multi-threading-test-output').innerHTML += '<br/>';
+			})
+			.catch(exc => {
+				document.querySelector('.multi-threading-test-output').innerHTML +=
+					'<div style="color: red;">ERROR, ' + exc + '</div>';
+			});
+	};
 </script>
 
 </body>

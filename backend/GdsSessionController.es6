@@ -5,6 +5,7 @@ let dbPool = require('./App/Classes/Sql.es6');
 let Db = require('./Utils/Db.es6');
 let TerminalService = require('./Transpiled/App/Services/TerminalService.es6');
 let {hrtimeToDecimal} = require('./Utils/Misc.es6');
+let {admins} = require('./Constants.es6');
 
 let md5 = (data) => {
 	// return crypto.createHash('md5')
@@ -34,17 +35,7 @@ let makeCmdResponse = (data) => 1 && {
 
 let isTravelportAllowed = (emcResult) => {
 	let agentId = emcResult.user.id;
-	return [
-		6206, // aklesuns
-		785, // kira
-		836, // Bruce
-		1330, // Bruce Paulson
-		20744, // Eldar
-		1092, // Jayden
-		2838, // stanislaw
-		2838, // stanislaw
-		101395, // aprokopcuks
-	].includes(+agentId);
+	return admins.includes(+agentId);
 };
 
 /** @param {IEmcResult} emcResult */
@@ -60,7 +51,7 @@ let runInputCmd = (reqBody, emcResult) => {
 		if (reqBody.gds === 'apollo') {
 			running = TravelportClient(reqBody).runInputCmd(reqBody);
 		} else {
-			running = Promise.reject('Unsupported GDS for RBS-free connection - ' + reqBody.gds)
+			running = Promise.reject('Unsupported GDS for RBS-free connection - ' + reqBody.gds + '. Uncheck the "Be Fast" flag.')
 		}
 	}
 	return running.then(rbsResult => {
