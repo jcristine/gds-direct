@@ -102,6 +102,11 @@ export const replaceInTerminal = ($div, tips) => {
 			classes: 'drop-theme-arrows highlight-popover',
 			openOn: options.trigger,
 			remove: true,
+			tetherOptions: {
+				attachment: 'bottom center',
+				targetAttachment: 'top center',
+				constraints: [{to: 'scrollParent', pin: true}],
+			},
 		});
 		popovers.push(popover);
 	};
