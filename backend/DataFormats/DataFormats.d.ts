@@ -215,3 +215,189 @@ interface IRbsRunCommandResult {
         }
     ]
 }
+
+interface ICmsHighlightData {
+    "aaData": [
+        {
+            "id": 12,
+            "highlightGroupId": 12,
+            "terminalColorId": 14,
+            "terminalBackgroundColorId": 0,
+            "highlightTypeId": 10,
+            "priority": 0,
+            "name": "routingIndicatorInTariffDisplay",
+            "label": "\"Routing\" Indicator in Tariff Display",
+            "message": "Click to see the Routing Rules",
+            "isMessageOnClick": 0,
+            "isOnlyFirstFound": 0,
+            "isEnabled": 1,
+            "isForTestersOnly": 0,
+            "isInSameWindow": 0,
+            "textDecorationUnderline": 0,
+            "textDecorationDotted": 0,
+            "textDecorationBold": 0,
+            "textDecorationBordered": 0,
+            "textDecorationItalic": 0,
+            "textDecorationLarge": 0,
+            "languages": {
+                "2": {
+                    "id": 32,
+                    "terminalHighlightId": 12,
+                    "terminalInputLanguageId": 2,
+                    "gdsCommand": "\\$D.*",
+                    "onClickCommand": "$LR{lnNumber}/MDA",
+                    "regexError": 0
+                },
+                "4": {
+                    "id": 34,
+                    "terminalHighlightId": 12,
+                    "terminalInputLanguageId": 4,
+                    "gdsCommand": null,
+                    "onClickCommand": null,
+                    "regexError": 0
+                },
+                "6": {
+                    "id": 36,
+                    "terminalHighlightId": 12,
+                    "terminalInputLanguageId": 6,
+                    "gdsCommand": "FQD.*",
+                    "onClickCommand": null,
+                    "regexError": 0
+                },
+                "8": {
+                    "id": 562,
+                    "terminalHighlightId": 12,
+                    "terminalInputLanguageId": 8,
+                    "gdsCommand": "FD.*",
+                    "onClickCommand": null,
+                    "regexError": 0
+                }
+            },
+            "gds": {
+                "2": {
+                    "id": 42,
+                    "terminalHighlightId": 12,
+                    "gdsId": 2,
+                    "pattern": "^(.{50,65})(?P<value1>\\bR\\b)",
+                    "regexError": 0
+                },
+                "3": {
+                    "id": 44,
+                    "terminalHighlightId": 12,
+                    "gdsId": 3,
+                    "pattern": null,
+                    "regexError": 0
+                },
+                "4": {
+                    "id": 46,
+                    "terminalHighlightId": 12,
+                    "gdsId": 4,
+                    "pattern": "^\\d.*(?P<value>R$)",
+                    "regexError": 0
+                },
+                "6": {
+                    "id": 48,
+                    "terminalHighlightId": 12,
+                    "gdsId": 6,
+                    "pattern": "^\\s+\\d+.{53}(?P<value>R)",
+                    "regexError": 0
+                }
+            }
+        }
+    ],
+    "recordsTotal": 105,
+    "recordsFiltered": 105,
+    "draw": 1,
+    "query": "SELECT terminalHighlight.id FROM terminalHighlight LIMIT 0, 100"
+}
+
+interface IFullCmsHighlightData {
+    "cmsData": ICmsHighlightData,
+    "emcSessionId": "2aae108030ad283429e7333a1ee7872c",
+    "langs": {
+        "aaData": [
+            {"id":2,"name":"apollo"},
+            {"id":4,"name":"sabre"},
+            {"id":6,"name":"amadeus"},
+            {"id":8,"name":"galileo"}
+        ],
+        "recordsTotal": null,
+        "recordsFiltered": null,
+        "draw": 1,
+        "query": "SELECT terminalInputLanguages.id FROM terminalInputLanguages LIMIT 0, 5000"
+    },
+    "groups": {
+        "aaData": [
+            {
+                "id": 18,
+                "name": "airlineIncentives",
+                "label": "Airline Incentives"
+            },
+            {
+                "id": 6,
+                "name": "availabilityScreen",
+                "label": "Availability Screen"
+            },
+            {"id":4,"name":"errors","label":"Errors"},
+            {"id":24,"name":"fastSearch","label":"Fast Search (FS)"},
+            {"id":20,"name":"historyScreen","label":"History Screen"},
+            {"id":2,"name":"others","label":"Others"},
+            {"id":14,"name":"pnrScreen","label":"PNR Screen"},
+            {"id":8,"name":"pricingScreen","label":"Pricing Screen"},
+            {"id":16,"name":"routingScreen","label":"Routing Screen"},
+            {"id":22,"name":"seatMap","label":"Seat Map"},
+            {"id":26,"name":"svc","label":"*SVC"},
+            {"id":12,"name":"tariffDisplay","label":"Tariff Display"},
+            {"id":10,"name":"ticketMask","label":"Ticket Mask"}
+        ],
+        "recordsTotal": null,
+        "recordsFiltered": null,
+        "draw": 1,
+        "query": "SELECT terminalHighlightGroups.id FROM terminalHighlightGroups LIMIT 0, 5000"
+    },
+    "colors": {
+        "aaData": [
+            {
+                "id": 2,
+                "name": "activeWindow",
+                "label": "Active Window Background"
+            },
+            {"id":4,"name":"defaultBg","label":"Default Background"},
+            {"id":6,"name":"entryFont","label":"Entry Font"},
+            {"id":8,"name":"errorMessage","label":"Error Message"},
+            {"id":24,"name":"highlightBlue","label":"Highlight Blue"},
+            {"id":20,"name":"highlightDark","label":"Highlight Dark"},
+            {"id":22,"name":"highlightLight","label":"Highlight Light"},
+            {"id":10,"name":"outputFont","label":"Output Font"},
+            {
+                "id": 12,
+                "name": "specialHighlight",
+                "label": "Special \"Highlight\""
+            },
+            {"id":14,"name":"startSession","label":"Start Session"},
+            {"id":16,"name":"usedCommand","label":"Used Command"},
+            {"id":18,"name":"warningMessage","label":"Warning Message"}
+        ],
+        "recordsTotal": null,
+        "recordsFiltered": null,
+        "draw": 1,
+        "query": "SELECT terminalColors.id FROM terminalColors LIMIT 0, 5000"
+    },
+    "types": {
+        "aaData": [
+            {
+                "id": 10,
+                "name": "customValue",
+                "label": "Custom values (?p<name>)"
+            },
+            {"id":4,"name":"fullLine","label":"Full Line"},
+            {"id":2,"name":"patternOnly","label":"Pattern Only"},
+            {"id":8,"name":"patternToEnd","label":"Pattern To End"},
+            {"id":6,"name":"patternToStart","label":"Pattern To Start"}
+        ],
+        "recordsTotal": null,
+        "recordsFiltered": null,
+        "draw": 1,
+        "query": "SELECT terminalHighlightTypes.id FROM terminalHighlightTypes LIMIT 0, 5000"
+    }
+}

@@ -6,6 +6,8 @@ let GdsSessionController = require('./GdsSessionController.es6');
 let TerminalBaseController = require('./Transpiled/App/Controllers/TerminalBaseController.es6');
 let {hrtimeToDecimal} = require('./Utils/Misc.es6');
 let cluster = require('cluster');
+let {admins} = require('./Constants.es6');
+let UpdateHighlightRulesFromProd = require('./Actions/UpdateHighlightRulesFromProd.es6');
 
 let app = express();
 
@@ -17,22 +19,35 @@ let withAuth = (action) => (req, res) => {
 		reqBody = querystring.parse(queryStr);
 	}
 	return (new Emc()).getCachedSessionInfo(reqBody.emcSessionId)
-		.catch(exc => Promise.reject('EMC auth error - ' + exc))
+		.catch(exc => {
+			let error = new Error('EMC auth error - ' + exc);
+			error.httpStatusCode = 401;
+			return Promise.reject(error);
+		})
 		.then(emcData => {
 			reqBody.agentId = emcData.result.user.id;
-			return action(reqBody, emcData.result, req.params);
+			return Promise.resolve()
+				.then(() => action(reqBody, emcData.result, req.params))
+				.catch(exc => {
+					let error = new Error('RPC action failed - ' + exc);
+					error.httpStatusCode = 520;
+					error.trace += '\nCaused by:\n' + exc.trace;
+					return Promise.reject(error);
+				});
 		})
 		.then(result => res.send(JSON.stringify(Object.assign({
-			message: 'OK', workerId: cluster.worker.id}, result))))
+			message: 'OK', workerId: cluster.worker.id,
+		}, result))))
 		.catch(exc => {
-			res.status(500);
+			res.status(exc.httpStatusCode || 500);
 			res.send(JSON.stringify({error: exc + '', stack: exc.stack}));
 		});
 };
 
-app.use(express.json());
-app.use(express.urlencoded());
+app.use(express.json({limit: '1mb'}));
+app.use(express.urlencoded({extended: true}));
 
+app.get('/', (req, res) => res.redirect('/public'));
 app.use('/public', express.static(__dirname + '/../public'));
 app.use(function(req, res, next) {
 	res.setHeader('Access-Control-Allow-Origin', req.headers.origin || '*');
@@ -62,6 +77,14 @@ app.post('/gdsDirect/keepAlive', withAuth(GdsSessionController.keepAlive));
 app.get('/terminal/getPqItinerary', withAuth(GdsSessionController.getPqItinerary));
 app.get('/terminal/importPq', withAuth(GdsSessionController.importPq));
 app.get('/terminal/lastCommands', withAuth(GdsSessionController.getLastCommands));
+//app.use('/admin/updateHighlightRules', express.bodyParser({limit: '10mb'}));
+app.post('/admin/updateHighlightRules', withAuth((reqBody, emcResult) => {
+	if (admins.includes(+emcResult.user.id)) {
+		return UpdateHighlightRulesFromProd(reqBody);
+	} else {
+		return Promise.reject('Sorry, only users with admin rights can use that. Your id ' + emcResult.user.id + ' is not in ' + admins.join(','));
+	}
+}));
 app.get('/doSomeHeavyStuff', withAuth((reqBody, emcResult) => {
 	if (emcResult.user.id == 6206) {
 		let hrtimeStart = process.hrtime();
