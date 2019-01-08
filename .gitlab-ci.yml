@@ -10,7 +10,7 @@ run-tests:
   variables:
     GIT_STRATEGY: fetch
   tags:
-    - dev-w13
+    - dev-w04-test
   only:
     - master
   environment:
