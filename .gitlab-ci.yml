@@ -10,7 +10,7 @@ run-tests:
   variables:
     GIT_STRATEGY: fetch
   tags:
-    - php70-builder # it has node v8.x at least
+    - dev-w13
   only:
     - master
   environment:
