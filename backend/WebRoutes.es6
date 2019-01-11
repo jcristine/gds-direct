@@ -31,7 +31,7 @@ let withAuth = (action) => (req, res) => {
 				.catch(exc => {
 					let error = new Error('RPC action failed - ' + exc);
 					error.httpStatusCode = 520;
-					error.trace += '\nCaused by:\n' + exc.trace;
+					error.stack += '\nCaused by:\n' + exc.stack;
 					return Promise.reject(error);
 				});
 		})

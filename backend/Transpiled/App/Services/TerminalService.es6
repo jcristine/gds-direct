@@ -40,7 +40,6 @@ class TerminalService
 		this.gds = gds;
 		this.agentId = agentId;
 		this.travelRequestId = travelRequestId;
-		this.$terminalHighlightService = new TerminalHighlightService();
 	}
 
 	/**
@@ -63,7 +62,9 @@ class TerminalService
 	 */
 	async formatOutput($enteredCommand, $language, calledCommands) {
 		let $output = '';
+		let appliedRules = [];
 		for (let [$index, $row] of Object.entries(calledCommands)) {
+			let svc = new TerminalHighlightService();
 			let $command;
 			if ($index > 0) {
 				let $separator = strcasecmp('*', trim($row['output'])) ? PHP_EOL : "&nbsp;++";
@@ -74,10 +75,11 @@ class TerminalService
 					$command += PHP_EOL + this.color("&gt;" + $row['cmd'], 'usedCommand') + PHP_EOL;
 				}
 			}
-			let highlighted = await this.highlightOutput($enteredCommand, $language, this.clearOutput($row['output']));
+			let highlighted = await this.highlightOutput(svc, $enteredCommand, $language, this.clearOutput($row['output']));
 			$output += $command + highlighted;
+			appliedRules.push(...svc.getAppliedRules());
 		}
-		return $output;
+		return {$output, appliedRules};
 	}
 
 	/**
@@ -108,9 +110,9 @@ class TerminalService
 	 * @param string $output
 	 * @return {Promise}
 	 */
-	async highlightOutput($enteredCommand, $language, $output) {
+	async highlightOutput(svc, $enteredCommand, $language, $output) {
 		$enteredCommand = await this.getScrolledCmd($enteredCommand);
-		return this.$terminalHighlightService.replace($language, $enteredCommand, this.gds, $output);
+		return svc.replace($language, $enteredCommand, this.gds, $output);
 	}
 
 	/**
@@ -186,13 +188,13 @@ class TerminalService
 		}
 		let hrtimeStart = process.hrtime();
 		return this.formatOutput($command, $language, calledCommands)
-			.then($output => {
+			.then(({$output, appliedRules}) => {
 				$output = this.appendOutput($output, typeToMsgs);
 				return {
 					output: $output,
 					prompt: '',
 					userMessages: typeToMsgs['pop_up'] ? typeToMsgs['pop_up'] : null,
-					appliedRules: this.$terminalHighlightService.getAppliedRules(),
+					appliedRules: appliedRules,
 					legend: [],
 
 					tabCommands: calledCommands
