@@ -47,11 +47,6 @@ class LanguageButton extends ButtonPopOver
 	{
 		LANGUAGE_LIST.forEach( name => {
 
-			if (!window.GdsDirectPlusState.hasPermissions() && name === 'GALILEO')
-			{
-				return '';
-			}
-
 			const button = Dom(`button.btn btn-block btn-gold t-f-size-10 font-bold ${this.language === name ? ' active' : ''} [${name}]`);
 
 			button.addEventListener('click', () => {
