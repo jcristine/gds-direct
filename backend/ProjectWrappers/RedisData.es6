@@ -1,6 +1,6 @@
 
 let ioredis = require("ioredis");
-let config = require('./Config.es6');
+let config = require('../Config.es6');
 
 let client = new ioredis(config.redis.port, config.redis.host);
 

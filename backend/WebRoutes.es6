@@ -8,6 +8,7 @@ let {hrtimeToDecimal} = require('./Utils/Misc.es6');
 let cluster = require('cluster');
 let {admins} = require('./Constants.es6');
 let UpdateHighlightRulesFromProd = require('./Actions/UpdateHighlightRulesFromProd.es6');
+const Diag = require('./ProjectWrappers/Diag.es6');
 
 let app = express();
 
@@ -22,6 +23,7 @@ let withAuth = (action) => (req, res) => {
 		.catch(exc => {
 			let error = new Error('EMC auth error - ' + exc);
 			error.httpStatusCode = 401;
+			error.stack += '\nCaused by:\n' + exc.stack;
 			return Promise.reject(error);
 		})
 		.then(emcData => {
@@ -31,7 +33,9 @@ let withAuth = (action) => (req, res) => {
 				.catch(exc => {
 					let error = new Error('RPC action failed - ' + exc);
 					error.httpStatusCode = 520;
-					error.stack += '\nCaused by:\n' + exc.stack;
+					if (exc.stack) {
+						error.stack += '\nCaused by:\n' + exc.stack;
+					}
 					return Promise.reject(error);
 				});
 		})
@@ -41,6 +45,15 @@ let withAuth = (action) => (req, res) => {
 		.catch(exc => {
 			res.status(exc.httpStatusCode || 500);
 			res.send(JSON.stringify({error: exc + '', stack: exc.stack}));
+			Diag.error('HTTP request failed', {
+				message: exc.message || '' + exc,
+				httpStatusCode: exc.httpStatusCode,
+				requestPath: req.path,
+				requestBody: Object.assign({}, reqBody, {
+					emcSessionId: '******' + (reqBody.emcSessionId || '').slice(-4),
+				}),
+				stack: exc.stack,
+			});
 		});
 };
 

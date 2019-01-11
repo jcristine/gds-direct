@@ -1,7 +1,7 @@
 
 let querystring = require('querystring');
 let PersistentHttpRq = require('./Utils/PersistentHttpRq.es6');
-let RedisData = require('./RedisData.es6');
+let RedisData = require('./ProjectWrappers/RedisData.es6');
 
 let callRbs = (functionName, params) => {
 	let logId = 'rbs.5bf6e431.9577485';

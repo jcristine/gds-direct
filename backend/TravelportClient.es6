@@ -1,6 +1,6 @@
 let config = require('./../local.config.conf');
 let PersistentHttpRq = require('./Utils/PersistentHttpRq.es6');
-let RedisData = require('./RedisData.es6');
+let RedisData = require('./ProjectWrappers/RedisData.es6');
 
 /**
  * they are all physically located in USA, Atlanta (in same building)
