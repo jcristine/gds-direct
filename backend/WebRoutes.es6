@@ -36,7 +36,7 @@ let withAuth = (action) => (req, res) => {
 				});
 		})
 		.then(result => res.send(JSON.stringify(Object.assign({
-			message: 'OK', workerId: cluster.worker.id,
+			message: 'OK', workerId: (cluster.worker || {}).id,
 		}, result))))
 		.catch(exc => {
 			res.status(exc.httpStatusCode || 500);
