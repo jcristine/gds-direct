@@ -1,3 +1,4 @@
+
 let express = require('express');
 let UserController = require('./UserController.es6');
 let CompletionData = require('./CompletionData.es6');
@@ -8,7 +9,9 @@ let {hrtimeToDecimal} = require('./Utils/Misc.es6');
 let cluster = require('cluster');
 let {admins} = require('./Constants.es6');
 let UpdateHighlightRulesFromProd = require('./Actions/UpdateHighlightRulesFromProd.es6');
-const Diag = require('./ProjectWrappers/Diag.es6');
+let Db = require('./Utils/Db.es6');
+let Diag = require('./ProjectWrappers/Diag.es6');
+let FluentLogger = require('./ProjectWrappers/FluentLogger.es6');
 
 let app = express();
 
@@ -19,6 +22,18 @@ let withAuth = (action) => (req, res) => {
 		let queryStr = req.url.split('?')[1] || '';
 		reqBody = querystring.parse(queryStr);
 	}
+	let maskedBody = Object.assign({}, reqBody, {
+		emcSessionId: '******' + (reqBody.emcSessionId || '').slice(-4),
+	});
+	let {log, logId} = FluentLogger.init();
+	let logToTable = (agentId) => Db.with(db =>
+		db.writeRows('http_rq_log', [{
+			path: req.path,
+			dt: new Date().toISOString(),
+			agentId: agentId,
+			logId: logId,
+		}]));
+	log('Processing HTTP request ' + req.path + ' with params:', maskedBody);
 	return (new Emc()).getCachedSessionInfo(reqBody.emcSessionId)
 		.catch(exc => {
 			let error = new Error('EMC auth error - ' + exc);
@@ -27,11 +42,14 @@ let withAuth = (action) => (req, res) => {
 			return Promise.reject(error);
 		})
 		.then(emcData => {
-			reqBody.agentId = emcData.result.user.id;
+			let agentId = emcData.result.user.id;
+			reqBody.agentId = agentId;
+			log('Authorized agent: ' + reqBody.agentId + ' ' + emcData.result.user.displayName, emcData.result.user.roles);
+			logToTable(agentId);
 			return Promise.resolve()
 				.then(() => action(reqBody, emcData.result, req.params))
 				.catch(exc => {
-					let error = new Error('RPC action failed - ' + exc);
+					let error = new Error('HTTP action failed - ' + exc);
 					error.httpStatusCode = 520;
 					if (exc.stack) {
 						error.stack += '\nCaused by:\n' + exc.stack;
@@ -39,21 +57,25 @@ let withAuth = (action) => (req, res) => {
 					return Promise.reject(error);
 				});
 		})
-		.then(result => res.send(JSON.stringify(Object.assign({
-			message: 'OK', workerId: (cluster.worker || {}).id,
-		}, result))))
+		.then(result => {
+			log('HTTP action result:', result);
+			return res.send(JSON.stringify(Object.assign({
+				message: 'OK', workerId: (cluster.worker || {}).id,
+			}, result)));
+		})
 		.catch(exc => {
 			res.status(exc.httpStatusCode || 500);
 			res.send(JSON.stringify({error: exc + '', stack: exc.stack}));
-			Diag.error('HTTP request failed', {
+			let errorData = {
 				message: exc.message || '' + exc,
 				httpStatusCode: exc.httpStatusCode,
 				requestPath: req.path,
-				requestBody: Object.assign({}, reqBody, {
-					emcSessionId: '******' + (reqBody.emcSessionId || '').slice(-4),
-				}),
+				requestBody: maskedBody,
 				stack: exc.stack,
-			});
+				processLogId: logId,
+			};
+			log('ERROR: HTTP request failed', errorData);
+			Diag.error('HTTP request failed', errorData);
 		});
 };
 

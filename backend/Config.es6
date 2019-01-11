@@ -3,6 +3,10 @@ const config = require('../local.config.conf');
 
 class Config {
 
+	get mantisId() {
+		return 611; // 153 = CMS, 611 = Node Libraries, 533 = CMS Libraries
+	};
+
 	get production() {
 		return this._production;
 	}

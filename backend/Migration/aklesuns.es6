@@ -111,4 +111,18 @@ module.exports.migrations = [
 			") ENGINE=InnoDB DEFAULT CHARSET=utf8",
 		].join('\n')),
 	},
+	{
+		name: '00.00.07-create-http-rq-log-table',
+		perform: (db) => db.query([
+			"CREATE TABLE `http_rq_log` (",
+			"  `id` INT NOT NULL AUTO_INCREMENT,",
+			"  `path` VARCHAR(255) NOT NULL,",
+			"  `dt` DATETIME NOT NULL,",
+			"  `agentId` INT DEFAULT NULL,",
+			"  `logId` VARCHAR(255),",
+			"  PRIMARY KEY (`id`),",
+			"  KEY `dt` (`dt`)",
+			") ENGINE=InnoDB DEFAULT CHARSET=utf8",
+		].join('\n')),
+	},
 ];
