@@ -1,7 +1,5 @@
 node_modules
 /.idea
 /local.config.conf
-/public/frontend/public/terminal-bundle.js
-/public/frontend/public/terminal-bundle.js.map
-/public/frontend/public/vendor.terminal-bundle.js
-/public/frontend/public/vendor.terminal-manifest.json
+/public/terminal-bundle.js
+/public/terminal-bundle.js.map
