@@ -4,6 +4,7 @@ import './theme/main.less';
 import {getStore} from "./store";
 import requests from  "./helpers/requests";
 import GdsDirectPlusApp from  "./modules/GdsDirectPlusApp";
+import HighlightRulesAdminApp from  "./modules/HighlightRulesAdminApp";
 
 const initGlobEvents = () => {
 
@@ -95,3 +96,5 @@ window.InitGdsDirectPlusApp = (params) => {
 			return new GdsDirectPlusApp(params, viewData, themeData);
 		});
 };
+
+window.InitGdsDirectPlusApp.HighlightRulesAdminApp = HighlightRulesAdminApp;
