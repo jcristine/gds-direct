@@ -22,6 +22,9 @@ const BORDER_SIZE = 2;
  */
 export default class GdsDirectPlusApp
 {
+	/**
+	 * @param viewData = async require('UserController.es6').getView()
+	 */
 	constructor(params, viewData, themeData)
 	{
 		const {htmlRootDom, PqPriceModal, travelRequestId} = params;
@@ -57,6 +60,7 @@ export default class GdsDirectPlusApp
 
 		getStore().updateView({
 			requestId		: travelRequestId,
+			isAdmin			: viewData.isAdmin,
 			terminalThemes	: terminalThemes,
 			fontSize		: fontSize,
 			language		: language,

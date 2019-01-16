@@ -35,5 +35,10 @@ export class UseRbsFlag extends Component
 		});
 		label.appendChild(beFastFlag);
 		this.context.appendChild(label);
+
+		if (!window.GdsDirectPlusState.getIsAdmin()) {
+			this.context.classList.toggle('hidden', true);
+			beFastFlag.checked = false;
+		}
 	}
 }

@@ -41,7 +41,20 @@ export class SettingsButtons extends Component
 			defaultPccs
 		}).getTrigger();
 
-		return [themeBtn, textSize, history, keySettings];
+		let buttons = [themeBtn, textSize, history, keySettings];
+
+		if (window.GdsDirectPlusState.getIsAdmin()) {
+			const admin = new Component('button.btn btn-primary[<i class="fa t-f-size-14">admin</i>]', {
+				onclick: () => {
+					// replace with prod link when we have prod
+					let url = 'http://dev-w13:20328/public/admin/highlightRules.html#emcSessionId=' + GdsDirectPlusParams.emcSessionId;
+					window.open(url, '_blank');
+				},
+			}).context;
+			buttons.push(admin);
+		}
+
+		return buttons;
 	}
 
 	_renderer({theme, terminalThemes, fontSize, keyBindings, defaultPccs, gdsAreaSettings})

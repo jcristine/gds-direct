@@ -51,18 +51,18 @@ let Db = (dbConn) => {
 
 	/**
 	 * @param {{
-	 *     table: 'terminalBuffering',
-	 *     where: [
+	 *     table: 'terminalBuffering'|string,
+	 *     where?: [
 	 *         ['gds', '=', 'apollo'],
 	 *         ['terminalNumber', '=', '2'],
 	 *     ],
-	 *     whereOr: [
+	 *     whereOr?: [
 	 *         [['rbsSessionId', '=', '12345']],
 	 *         [['gdsSessionDataMd5', '=', 'abcvsdadadajwnekjn']],
 	 *     ],
-	 *     orderBy: 'id DESC',
-	 *     skip: 0,
-	 *     limit: '100',
+	 *     orderBy?: 'id DESC',
+	 *     skip?: '0',
+	 *     limit?: '100',
 	 * }} params
 	 * will generate:
 	 *   SELECT * FROM terminalBuffering

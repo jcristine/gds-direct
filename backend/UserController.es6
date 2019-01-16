@@ -1,6 +1,7 @@
 let MultiLevelMap = require('./Utils/MultiLevelMap.es6');
 let Db = require('./Utils/Db.es6');
 let TerminalSettings = require('./Transpiled/App/Models/Terminal/TerminalSettings.es6');
+let {admins} = require('./Constants.es6');
 
 let getCommandBufferRows = (reqBody, emcResult) =>
     Db.with(db => db.fetchAll({
@@ -31,6 +32,7 @@ exports.getView = (reqBody, emcResult) => {
                 disableReason: '',
                 settings: settings,
                 buffer: bufferMap.root,
+                isAdmin: admins.includes(+emcResult.user.id),
                 auth: emcResult.user,
             };
         })
