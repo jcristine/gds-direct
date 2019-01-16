@@ -7,6 +7,9 @@ let dbPool = require('../App/Classes/Sql.es6');
  * @param {PoolConnection} dbConn
  */
 let Db = (dbConn) => {
+	/**
+	 * @return {Promise<IPromiseMysqlQueryResult>}
+	 */
 	let writeRows = ($table, $rows) => {
 		if ($rows.length === 0) {
 			return Promise.resolve();
@@ -17,7 +20,13 @@ let Db = (dbConn) => {
 			let $row = $rows[$i];
 			for (let $colName of $colNames) {
 				if ($colName in $row) {
-					$dataToInsert.push($row[$colName]);
+					let value = $row[$colName];
+					let primitives = ['string', 'number', 'boolean', 'undefined'];
+					if (!primitives.includes(typeof value) && value !== null) {
+						return Promise.reject('Invalid insert value on key `' + $colName + '` in the ' + $i + '-th row - ' + (typeof value));
+					} else {
+						$dataToInsert.push(value);
+					}
 				} else {
 					return Promise.reject('No key `' + $colName + '` in the ' + $i + '-th row required to insert many');
 				}

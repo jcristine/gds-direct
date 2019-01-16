@@ -9,6 +9,5 @@ exports.admins = [
 	1330, // Bruce Paulson
 	20744, // Eldar
 	1092, // Jayden
-	2838, // stanislaw
 	101395, // aprokopcuks
 ];

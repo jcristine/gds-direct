@@ -455,3 +455,51 @@ type IFullHighlightDataEl = IHighlightRules & {
 interface IFullHighlightData {
     aaData: IFullHighlightDataEl[],
 }
+
+interface ISaveHighlightRuleParams {
+    "id": "22",
+    "priority": "",
+    "highlightGroup": "pricingScreen",
+    "label": "Baggage Info (1-3 PCs)",
+    "languages": {
+        "apollo": {"cmdPattern":"\\$B.*|\\*LF|T\\:\\$B","onClickCommand":""},
+        "sabre": {"cmdPattern":"WP\\*BAG","onClickCommand":""},
+        "amadeus": {"cmdPattern":"FX.*","onClickCommand":""},
+        "galileo": {"cmdPattern":"FQ.*","onClickCommand":""}
+    },
+    "gds": {
+        "apollo": {"pattern":"BAGGAGE ALLOWANCE\\n.*\\n.*(3PC|2PC|1PC)\\b"},
+        "sabre": {"pattern":"^BAG ALLOWANCE\\s+\\-[A-Z]{6}\\-(01P|02P|03P)"},
+        "amadeus": {"pattern":"^.{58}\\K(1P$|2P$|3P$)"},
+        "galileo": {"pattern":"^BAGGAGE ALLOWANCE\\n.*$\\n.*\\s(1PC|2PC|3PC)"}
+    },
+    "highlightType": "patternOnly",
+    "isOnlyFirstFound": "0",
+    "color": "warningMessage",
+    "backgroundColor": "",
+    "decorationFlags": {
+        "underline": "0",
+        "bold": "0",
+        "dotted": "0",
+        "bordered": "0",
+        "large": "0",
+        "italic": "0"
+    },
+    "message": "",
+    "isMessageOnClick": "0",
+    "isInSameWindow": "0",
+    "isEnabled": "1",
+    "isForTestersOnly": "0",
+    "saveType": "editRow",
+    "emcSessionId": "2b9135b7f0719e7bd1fc1f3f00d180c5\n"
+}
+
+interface IPromiseMysqlQueryResult {
+    "fieldCount": 0,
+    "affectedRows": 2,
+    "insertId": 14,
+    "serverStatus": 2,
+    "warningCount": 1,
+    "protocol41": true,
+    "changedRows": 0
+}

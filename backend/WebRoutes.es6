@@ -32,7 +32,7 @@ let toHandleHttp = (action, logger = null) => (req, res) => {
 		.then(() => action(rqBody, req.params))
 		.catch(exc => {
 			let error = new Error('HTTP action failed - ' + exc);
-			error.httpStatusCode = 520;
+			error.httpStatusCode = exc.httpStatusCode || 520;
 			if (exc.stack) {
 				error.stack += '\nCaused by:\n' + exc.stack;
 			}
@@ -40,12 +40,14 @@ let toHandleHttp = (action, logger = null) => (req, res) => {
 		})
 		.then(result => {
 			log('HTTP action result:', result);
-			return res.send(JSON.stringify(Object.assign({
+			res.setHeader('Content-Type', 'application/json');
+			res.send(JSON.stringify(Object.assign({
 				message: 'OK', workerId: (cluster.worker || {}).id,
 			}, result)));
 		})
 		.catch(exc => {
 			res.status(exc.httpStatusCode || 500);
+			res.setHeader('Content-Type', 'application/json');
 			res.send(JSON.stringify({error: exc + '', stack: exc.stack}));
 			let errorData = {
 				message: exc.message || '' + exc,
@@ -85,15 +87,7 @@ let withAuth = (action) => (req, res) => {
 				log('Authorized agent: ' + rqBody.agentId + ' ' + emcData.result.user.displayName, emcData.result.user.roles);
 				logToTable(agentId);
 				return Promise.resolve()
-					.then(() => action(rqBody, emcData.result, routeParams))
-					.catch(exc => {
-						let error = new Error('HTTP action failed - ' + exc);
-						error.httpStatusCode = 520;
-						if (exc.stack) {
-							error.stack += '\nCaused by:\n' + exc.stack;
-						}
-						return Promise.reject(error);
-					});
+					.then(() => action(rqBody, emcData.result, routeParams));
 			});
 	}, logger)(req, res);
 };
@@ -146,15 +140,9 @@ app.post('/admin/updateHighlightRules', withAuth((reqBody, emcResult) => {
 	}
 }));
 
-app.post('/admin/terminal/highlight', (rq, rs) => {
-	toHandleHttp((rqBody) =>
-		HighlightRulesRepository.getFullDataForAdminPage()
-			.then(fullData => {
-				rs.setHeader('Content-Type', 'application/json');
-				return fullData;
-			})
-	)(rq, rs);
-});
+app.post('/admin/terminal/highlight', toHandleHttp(HighlightRulesRepository.getFullDataForAdminPage));
+app.post('/admin/terminal/highlight/save', withAuth(HighlightRulesRepository.saveRule));
+
 app.get('/doSomeHeavyStuff', withAuth((reqBody, emcResult) => {
 	if (emcResult.user.id == 6206) {
 		let hrtimeStart = process.hrtime();
