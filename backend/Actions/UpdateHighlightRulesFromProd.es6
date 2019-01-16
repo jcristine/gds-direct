@@ -40,7 +40,7 @@ module.exports = (fullCmsData) => {
 				terminalHighlight.textDecorationBordered ? 'bordered' : null,
 				terminalHighlight.textDecorationItalic ? 'italic' : null,
 				terminalHighlight.textDecorationLarge ? 'large' : null,
-			]),
+			].filter(a => a !== null)),
 		}))),
 		db.writeRows('highlightCmdPatterns', cmsData.aaData
 			.reduce((sum, next) => sum.concat(Object.values(next.languages)), [])

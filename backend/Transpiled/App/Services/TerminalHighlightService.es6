@@ -93,6 +93,19 @@ let normalizeRuleForFrontend = (rule) => {
 	};
 };
 
+/**
+ * takes a GDS dump and colorizes it using set of regexp-s stored in DB
+ * example input:
+ * ' 1 CZ 328T 21APR LAXCAN HK1  1150P  540A2*      TH/SA   E',
+ * ' 2 CZ3203Y 23APR CANXIY HK1   915A 1145A *         SA   E',
+ * example output:
+ * ' 1 %CZ% 328T 21APR LAXCAN %HK%1  1150P  540A2*      TH/SA   E',
+ * ' 2 %CZ%3203Y 23APR CANXIY %HK%1   915A 1145A *         SA   E',
+ * comes with applied rules: [
+ *     {value: 'CZ', color: 'warningMessage', ...},
+ *     {value: 'HK', color: 'errorMessage', ...},
+ * ]
+ */
 class TerminalHighlightService {
 	constructor() {
 		this.$appliedRules = {};

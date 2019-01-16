@@ -25,7 +25,7 @@ interface IEmcResult {
             {"uid":"5VM5I38S337","mask":"3712*****11","type":"mobile"},
             {"uid":"5VM5I38S337","mask":"3712*****11","type":"primary"}
         ],
-        "photos": [],
+        "photos": {}[],
         "groups": [{"id":3384,"name":"Developers","project":true}],
         "roles": [
             "login",
@@ -400,4 +400,58 @@ interface IFullCmsHighlightData {
         "draw": 1,
         "query": "SELECT terminalHighlightTypes.id FROM terminalHighlightTypes LIMIT 0, 5000"
     }
+}
+
+// table row definition follows (may be outdated)
+
+type int = number;
+type tinyint = number;
+type VARCHAR = string;
+type BOOLEAN = boolean;
+type DATETIME = string;
+type INTEGER = int;
+type varchar = VARCHAR;
+type INT = int;
+
+type EGds = 'apollo' | 'sabre' | 'amadeus' | 'galileo';
+
+interface IHighlightRules {
+    id: int,
+    highlightGroup: VARCHAR,
+    color: VARCHAR,
+    backgroundColor: VARCHAR,
+    highlightType: VARCHAR,
+    priority: INTEGER,
+    name: varchar,
+    label: varchar,
+    message: varchar,
+    isMessageOnClick: BOOLEAN,
+    isOnlyFirstFound: BOOLEAN,
+    isEnabled: BOOLEAN,
+    isForTestersOnly: BOOLEAN,
+    isInSameWindow: BOOLEAN,
+    decoration: VARCHAR,
+}
+interface highlightCmdPatterns {
+    id: int,
+    ruleId: int,
+    dialect: VARCHAR,
+    cmdPattern: varchar,
+    onClickCommand: varchar,
+    regexError: tinyint,
+}
+interface highlightOutputPatterns {
+    id: int,
+    ruleId: int,
+    gds: VARCHAR,
+    pattern: varchar,
+    regexError: BOOLEAN,
+}
+type IFullHighlightDataEl = IHighlightRules & {
+    decoration: string[],
+    languages: {[k in EGds]: highlightCmdPatterns},
+    gds: {[k in EGds]: highlightOutputPatterns},
+}
+interface IFullHighlightData {
+    aaData: IFullHighlightDataEl[],
 }

@@ -12,50 +12,31 @@ let UpdateHighlightRulesFromProd = require('./Actions/UpdateHighlightRulesFromPr
 let Db = require('./Utils/Db.es6');
 let Diag = require('./ProjectWrappers/Diag.es6');
 let FluentLogger = require('./ProjectWrappers/FluentLogger.es6');
+let HighlightRulesRepository = require('./Actions/HighlightRulesRepository.es6');
 
 let app = express();
 
-let withAuth = (action) => (req, res) => {
-	let reqBody = req.body;
-	if (Object.keys(reqBody).length === 0) {
+let toHandleHttp = (action, logger = null) => (req, res) => {
+	let log = logger ? logger.log : (() => {});
+	let rqBody = req.body;
+	if (Object.keys(rqBody).length === 0) {
 		let querystring = require('querystring');
 		let queryStr = req.url.split('?')[1] || '';
-		reqBody = querystring.parse(queryStr);
+		rqBody = querystring.parse(queryStr);
 	}
-	let maskedBody = Object.assign({}, reqBody, {
-		emcSessionId: '******' + (reqBody.emcSessionId || '').slice(-4),
+	let maskedBody = Object.assign({}, rqBody, {
+		emcSessionId: '******' + (rqBody.emcSessionId || '').slice(-4),
 	});
-	let {log, logId} = FluentLogger.init();
-	let logToTable = (agentId) => Db.with(db =>
-		db.writeRows('http_rq_log', [{
-			path: req.path,
-			dt: new Date().toISOString(),
-			agentId: agentId,
-			logId: logId,
-		}]));
 	log('Processing HTTP request ' + req.path + ' with params:', maskedBody);
-	return (new Emc()).getCachedSessionInfo(reqBody.emcSessionId)
+	return Promise.resolve()
+		.then(() => action(rqBody, req.params))
 		.catch(exc => {
-			let error = new Error('EMC auth error - ' + exc);
-			error.httpStatusCode = 401;
-			error.stack += '\nCaused by:\n' + exc.stack;
+			let error = new Error('HTTP action failed - ' + exc);
+			error.httpStatusCode = 520;
+			if (exc.stack) {
+				error.stack += '\nCaused by:\n' + exc.stack;
+			}
 			return Promise.reject(error);
-		})
-		.then(emcData => {
-			let agentId = emcData.result.user.id;
-			reqBody.agentId = agentId;
-			log('Authorized agent: ' + reqBody.agentId + ' ' + emcData.result.user.displayName, emcData.result.user.roles);
-			logToTable(agentId);
-			return Promise.resolve()
-				.then(() => action(reqBody, emcData.result, req.params))
-				.catch(exc => {
-					let error = new Error('HTTP action failed - ' + exc);
-					error.httpStatusCode = 520;
-					if (exc.stack) {
-						error.stack += '\nCaused by:\n' + exc.stack;
-					}
-					return Promise.reject(error);
-				});
 		})
 		.then(result => {
 			log('HTTP action result:', result);
@@ -72,25 +53,69 @@ let withAuth = (action) => (req, res) => {
 				requestPath: req.path,
 				requestBody: maskedBody,
 				stack: exc.stack,
-				processLogId: logId,
+				processLogId: logger ? logger.logId : null,
 			};
 			log('ERROR: HTTP request failed', errorData);
 			Diag.error('HTTP request failed', errorData);
-		});
+		})
+};
+
+let withAuth = (action) => (req, res) => {
+	let logger = FluentLogger.init();
+	let {log, logId} = logger;
+	let logToTable = (agentId) => Db.with(db =>
+		db.writeRows('http_rq_log', [{
+			path: req.path,
+			dt: new Date().toISOString(),
+			agentId: agentId,
+			logId: logId,
+		}]));
+
+	return toHandleHttp((rqBody, routeParams) => {
+		return (new Emc()).getCachedSessionInfo(rqBody.emcSessionId)
+			.catch(exc => {
+				let error = new Error('EMC auth error - ' + exc);
+				error.httpStatusCode = 401;
+				error.stack += '\nCaused by:\n' + exc.stack;
+				return Promise.reject(error);
+			})
+			.then(emcData => {
+				let agentId = emcData.result.user.id;
+				rqBody.agentId = agentId;
+				log('Authorized agent: ' + rqBody.agentId + ' ' + emcData.result.user.displayName, emcData.result.user.roles);
+				logToTable(agentId);
+				return Promise.resolve()
+					.then(() => action(rqBody, emcData.result, routeParams))
+					.catch(exc => {
+						let error = new Error('HTTP action failed - ' + exc);
+						error.httpStatusCode = 520;
+						if (exc.stack) {
+							error.stack += '\nCaused by:\n' + exc.stack;
+						}
+						return Promise.reject(error);
+					});
+			});
+	}, logger)(req, res);
 };
 
 app.use(express.json({limit: '1mb'}));
 app.use(express.urlencoded({extended: true}));
 
-app.get('/', (req, res) => res.redirect('/public'));
-app.use('/public', express.static(__dirname + '/../public'));
-app.use(function(req, res, next) {
+app.use((req, res, next) => {
 	res.setHeader('Access-Control-Allow-Origin', req.headers.origin || '*');
 	res.setHeader('Access-Control-Allow-Methods', 'GET, POST');
 	res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With,content-type');
 	res.setHeader('Access-Control-Allow-Credentials', true);
 	next();
 });
+app.get('/', (req, res) => res.redirect('/public'));
+app.use('/public', (rq, rs, next) => {
+	if (rq.path.endsWith('.es6')) {
+		rs.setHeader('Content-Type', 'application/javascript');
+	}
+	next();
+});
+app.use('/public', express.static(__dirname + '/../public'));
 
 app.get('/gdsDirect/view', withAuth(UserController.getView));
 app.get('/autoComplete', (req, res) => {
@@ -120,6 +145,16 @@ app.post('/admin/updateHighlightRules', withAuth((reqBody, emcResult) => {
 		return Promise.reject('Sorry, only users with admin rights can use that. Your id ' + emcResult.user.id + ' is not in ' + admins.join(','));
 	}
 }));
+
+app.post('/admin/terminal/highlight', (rq, rs) => {
+	toHandleHttp((rqBody) =>
+		HighlightRulesRepository.getFullDataForAdminPage()
+			.then(fullData => {
+				rs.setHeader('Content-Type', 'application/json');
+				return fullData;
+			})
+	)(rq, rs);
+});
 app.get('/doSomeHeavyStuff', withAuth((reqBody, emcResult) => {
 	if (emcResult.user.id == 6206) {
 		let hrtimeStart = process.hrtime();
