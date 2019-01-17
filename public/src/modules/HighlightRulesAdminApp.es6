@@ -336,11 +336,13 @@ gdses.forEach( gds => {
     });
 });
 
+let escapeXml = (text) => $('<div/>').text(text).html();
+
 params.columns.push(
 
     {
         name: 'highlightType',
-        data: obj => highlightTypes[obj['highlightType']],
+        data: obj => escapeXml(highlightTypes[obj['highlightType']]),
         validate : ['selectNotZero'],
         width: 200,
         title: msgLang.whatToHighlight,
