@@ -10,8 +10,8 @@ let cluster = require('cluster');
 let {admins} = require('./Constants.es6');
 let UpdateHighlightRulesFromProd = require('./Actions/UpdateHighlightRulesFromProd.es6');
 let Db = require('./Utils/Db.es6');
-let Diag = require('./ProjectWrappers/Diag.es6');
-let FluentLogger = require('./ProjectWrappers/FluentLogger.es6');
+let Diag = require('./LibWrappers/Diag.es6');
+let FluentLogger = require('./LibWrappers/FluentLogger.es6');
 let HighlightRulesRepository = require('./Actions/HighlightRulesRepository.es6');
 
 let app = express();
@@ -62,6 +62,14 @@ let toHandleHttp = (action, logger = null) => (req, res) => {
 		})
 };
 
+let normalizeRqBody = (rqBody, emcData) => {
+	return {
+		agentId: +emcData.result.user.id,
+		// action-specific fields follow
+		...rqBody,
+	};
+};
+
 let withAuth = (action) => (req, res) => {
 	let logger = FluentLogger.init();
 	let {log, logId} = logger;
@@ -82,10 +90,9 @@ let withAuth = (action) => (req, res) => {
 				return Promise.reject(error);
 			})
 			.then(emcData => {
-				let agentId = emcData.result.user.id;
-				rqBody.agentId = agentId;
+				rqBody = normalizeRqBody(rqBody, emcData);
 				log('Authorized agent: ' + rqBody.agentId + ' ' + emcData.result.user.displayName, emcData.result.user.roles);
-				logToTable(agentId);
+				logToTable(rqBody.agentId);
 				return Promise.resolve()
 					.then(() => action(rqBody, emcData.result, routeParams));
 			});

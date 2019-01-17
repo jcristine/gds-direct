@@ -1,0 +1,1 @@
+This namespace contains modules that provide model-specific functions that access to DB/Redis.

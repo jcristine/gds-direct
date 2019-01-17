@@ -51,7 +51,7 @@ let Db = (dbConn) => {
 
 	/**
 	 * @param {{
-	 *     table: 'terminalBuffering'|string,
+	 *     table: 'terminalBuffering',
 	 *     where?: [
 	 *         ['gds', '=', 'apollo'],
 	 *         ['terminalNumber', '=', '2'],

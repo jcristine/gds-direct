@@ -23,7 +23,7 @@ const BORDER_SIZE = 2;
 export default class GdsDirectPlusApp
 {
 	/**
-	 * @param viewData = async require('UserController.es6').getView()
+	 * @param viewData = await require('UserController.es6').getView()
 	 */
 	constructor(params, viewData, themeData)
 	{

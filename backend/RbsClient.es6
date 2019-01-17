@@ -1,7 +1,7 @@
 
 let querystring = require('querystring');
 let PersistentHttpRq = require('./Utils/PersistentHttpRq.es6');
-let RedisData = require('./ProjectWrappers/RedisData.es6');
+let RedisData = require('./LibWrappers/RedisData.es6');
 
 let callRbs = (functionName, params) => {
 	let logId = 'rbs.5bf6e431.9577485';
@@ -54,77 +54,36 @@ let getLeadData = (travelRequestId) => {
 	};
 };
 
-let validate = (sup) => {
-	try {
-		let access = {
-			some: (value, msg = '') => {
-				if (value === undefined || value === null) {
-					throw new Error('Mandatory value absent ' + value + ' ' + msg);
-				} else {
-					return value;
-				}
-			},
-		};
-		return Promise.resolve(sup(access));
-	} catch (exc) {
-		exc.message = 'Invalid params - ' + exc.message;
-		return Promise.reject(exc);
-	}
-};
-
 /** @param {{command: '*R', gds: 'apollo', language: 'sabre', agentId: '6206'}} reqBody */
-module.exports = (reqBody) => {
-	let {agentId, gds, travelRequestId} = reqBody;
-	let sessionStore = RedisData.stores.rbsSession([agentId, gds, travelRequestId]);
-
-	let runInSession = ({command, dialect, sessionId}) => callRbs('terminal.runCommand', {
-		gds: gds,
-		command: command,
-		dialect: dialect,
-		sessionId: sessionId,
-		context: getLeadData(reqBody.travelRequestId),
-	}).then(result => ({rbsSessionId: sessionId, ...result.result.result}));
-
-	let runInNewSession = ({command, dialect}) => callRbs('terminal.startSession', {
-		gds: gds, agentId: 6206,
-	}).then(rbsResp => {
-		let sessionId = rbsResp.result.result.sessionId;
-		return sessionStore.set(sessionId).then(() =>
-			runInSession({command, dialect, sessionId})
-				.then(data => Object.assign({}, data, {
-					startNewSession: true,
-					userMessages: ['New session started'],
-				}))
-		);
-	});
-
+let RbsClient = (reqBody) => {
+	let {gds, travelRequestId} = reqBody;
 	return {
-		runInputCmd: () => sessionStore.get().then(sessionId => {
-			let {command, language: dialect} = reqBody;
-			return !sessionId
-				? runInNewSession({command, dialect})
-				: runInSession({command, dialect, sessionId})
-					.catch(exc => runInNewSession(reqBody)
-						.then(data => Object.assign({}, data, {
-							userMessages: [('Session aborted - ' + exc).slice(0, 800) + '...\n']
-								.concat(data.userMessages || []),
-						})));
-		}),
-		getPqItinerary: () => sessionStore.get().then(sessionId => validate(({some}) => ({
-			pqTravelRequestId: some(reqBody.pqTravelRequestId, 'travel request id is empty'),
-			sessionId: some(sessionId, 'session not found - ' + [agentId, gds, travelRequestId]),
-		}))).then(valid => callRbs('terminal.getPqItinerary', {
-			sessionId: valid.sessionId,
+		runInputCmd: ({rbsSessionId}) => callRbs('terminal.runCommand', {
 			gds: gds,
-			context: getLeadData(valid.pqTravelRequestId),
-		})).then(rbsResp => rbsResp.result.result),
-		importPq: () => sessionStore.get().then(sessionId => validate(({some}) => ({
-			pqTravelRequestId: some(reqBody.pqTravelRequestId, 'travel request id is empty'),
-			sessionId: some(sessionId, 'session not found - ' + [agentId, gds, travelRequestId]),
-		}))).then(valid => callRbs('terminal.importPq', {
-			sessionId: valid.sessionId,
+			command: reqBody.command,
+			dialect: reqBody.language,
+			sessionId: rbsSessionId,
+			context: getLeadData(travelRequestId),
+		}).then(result => result.result.result),
+		getPqItinerary: ({rbsSessionId}) => callRbs('terminal.getPqItinerary', {
+			sessionId: rbsSessionId,
 			gds: gds,
-			context: getLeadData(valid.pqTravelRequestId),
-		})).then(rbsResp => rbsResp.result.result),
+			context: getLeadData(reqBody.pqTravelRequestId),
+		}).then(rbsResp => rbsResp.result.result),
+		importPq: ({rbsSessionId}) => callRbs('terminal.importPq', {
+			sessionId: rbsSessionId,
+			gds: gds,
+			context: getLeadData(reqBody.pqTravelRequestId),
+		}).then(rbsResp => rbsResp.result.result),
 	};
 };
+
+RbsClient.startSession = ({gds, agentId}) => {
+	return callRbs('terminal.startSession', {
+		gds: gds, agentId: agentId,
+	}).then(rbsResp => ({
+		rbsSessionId: rbsResp.result.result.sessionId,
+	}));
+};
+
+module.exports = RbsClient;

@@ -6,6 +6,7 @@ let Db = require('./Utils/Db.es6');
 let TerminalService = require('./Transpiled/App/Services/TerminalService.es6');
 let {hrtimeToDecimal} = require('./Utils/Misc.es6');
 let {admins} = require('./Constants.es6');
+let GdsSessions = require('./Repositories/GdsSessions.es6');
 
 let md5 = (data) => {
 	// return crypto.createHash('md5')
@@ -33,30 +34,54 @@ let makeCmdResponse = (data) => 1 && {
 	}, data),
 };
 
-let isTravelportAllowed = (emcResult) => {
-	let agentId = emcResult.user.id;
-	return admins.includes(+agentId);
+let isTravelportAllowed = (rqBody) => {
+	return admins.includes(+rqBody.agentId);
 };
 
-/** @param {IEmcResult} emcResult */
-let runInputCmd = (reqBody, emcResult) => {
-	reqBody.command = reqBody.command.trim();
-	let useRbs = +reqBody.useRbs ? true : false;
-	let running;
-	if (useRbs) {
-		running = RbsClient(reqBody).runInputCmd();
-	} else if (!isTravelportAllowed(emcResult)) {
-		running = Promise.reject('You are not allowed to use RBS-free connection');
+let startNewSession = (rqBody) => {
+	let starting;
+	if (+rqBody.useRbs) {
+		starting = RbsClient.startSession(rqBody);
 	} else {
-		if (reqBody.gds === 'apollo') {
-			running = TravelportClient(reqBody).runInputCmd(reqBody);
+		if (!isTravelportAllowed(rqBody)) {
+			starting = Promise.reject('You are not allowed to use RBS-free connection');
+		} else if (rqBody.gds === 'apollo') {
+			starting = TravelportClient.startSession();
 		} else {
-			running = Promise.reject('Unsupported GDS for RBS-free connection - ' + reqBody.gds + '. Uncheck the "Be Fast" flag.')
+			starting = Promise.reject('GDS ' + rqBody.gds + ' not supported with "Be Fast" flag - uncheck it.');
 		}
 	}
-	return running.then(rbsResult => {
+	return starting.then(sessionData => GdsSessions.storeNew(rqBody, sessionData));
+};
+
+let runInSession = (session, rqBody) => {
+	let running;
+	if (+session.context.useRbs) {
+		running = RbsClient(rqBody).runInputCmd(session.sessionData);
+	} else {
+		running = TravelportClient(rqBody).runInputCmd(session.sessionData);
+	}
+	return running.then(rbsResult => ({session, rbsResult}));
+};
+
+/** @param {IEmcResult} emcResult
+ * @param reqBody = in('WebRoutes.es6').normalizeRqBody() */
+let runInputCmd = (reqBody) => {
+	reqBody.command = reqBody.command.trim();
+	let running = GdsSessions.getByContext(reqBody)
+		.then(session => runInSession(session, reqBody))
+		.catch(exc => startNewSession(reqBody)
+			// session could have expired
+			.then(session => runInSession(session, reqBody))
+			.then(data => Object.assign({}, data, {
+				startNewSession: true,
+				userMessages: ['New session started, reason: ' + (exc + '').slice(0, 800) + '...\n'],
+			})));
+
+	return running.then(({session, rbsResult}) => {
+		GdsSessions.updateAccessTime(session.id);
 		let termSvc = new TerminalService(reqBody.gds, reqBody.agentId, reqBody.travelRequestId);
-		return termSvc.addHighlighting(reqBody.command, reqBody.language, rbsResult);
+		return termSvc.addHighlighting(reqBody.command, reqBody.language || reqBody.gds, rbsResult);
 	}).then(makeCmdResponse);
 };
 
@@ -95,17 +120,25 @@ exports.runInputCmd = (reqBody, emcResult) => {
 	return running;
 };
 
-exports.getPqItinerary = (reqBody, emcResult) => RbsClient(reqBody).getPqItinerary();
-exports.importPq = (reqBody, emcResult) => RbsClient(reqBody).importPq();
-
-/** @param {IEmcResult} emcResult */
-exports.keepAlive = (reqBody, emcResult) => {
-	// TODO: use terminal.keepAlive so that RBS logs were not trashed with these MD0-s
-	return runInputCmd({command: 'MD0', ...reqBody}, emcResult);
+exports.getPqItinerary = (reqBody) => {
+	reqBody.useRbs = true;
+	return GdsSessions.getByContext(reqBody).then(session =>
+		RbsClient(reqBody).getPqItinerary(session.sessionData));
+};
+exports.importPq = (reqBody) => {
+	reqBody.useRbs = true;
+	return GdsSessions.getByContext(reqBody).then(session =>
+		RbsClient(reqBody).importPq(session.sessionData));
 };
 
-exports.getLastCommands = (reqBody, emcResult) => {
-	let agentId = emcResult.user.id;
+/** @param {IEmcResult} emcResult */
+exports.keepAlive = (reqBody) => {
+	// TODO: use terminal.keepAlive so that RBS logs were not trashed with these MD0-s
+	return runInputCmd({command: 'MD0', ...reqBody});
+};
+
+exports.getLastCommands = (reqBody) => {
+	let agentId = reqBody.agentId;
 	let gds = reqBody.gds;
 	let requestId = reqBody.travelRequestId || 0;
 	return dbPool.getConnection()
