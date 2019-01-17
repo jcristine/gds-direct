@@ -10,7 +10,7 @@ let keys = {
 	get SESSION_LAST_INSERT_ID() { never() },
 	get SESSION_ACTIVES() { never() },
 	get SESSION_BY_CONTEXT() { never() },
-	get SESSION_TO_DATA() { never() },
+	get SESSION_TO_RECORD() { never() },
 };
 // to avoid explicitly setting value for
 // each constant risking getting a typo

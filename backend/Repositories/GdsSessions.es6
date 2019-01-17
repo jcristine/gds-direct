@@ -13,8 +13,23 @@ let normalizeContext = (reqBody) => {
 
 let nonEmpty = (value) => value ? Promise.resolve(value) : Promise.reject('Value is empty');
 
+let makeSessionRecord = (context, sessionData) => {
+	let logger = FluentLogger.init();
+	let createdMs = Date.now();
+	let session = {
+		id: id,
+		logId: logger.logId,
+		createdMs: createdMs,
+		context: context,
+		sessionData: sessionData,
+	};
+	logger.log('Session created: #' + id, session);
+	return session;
+};
+
+/** @return {Promise} makeSessionRecord() */
 let getById = (id) => {
-	return client.hget(keys.SESSION_TO_DATA, id)
+	return client.hget(keys.SESSION_TO_RECORD, id)
 		.then(nonEmpty).then(json => JSON.parse(json));
 };
 
@@ -22,20 +37,11 @@ let getById = (id) => {
 exports.storeNew = (context, sessionData) => {
 	let normalized = normalizeContext(context);
 	let contextStr = JSON.stringify(normalized);
-	let createdMs = Date.now();
 	return client.incr(keys.SESSION_LAST_INSERT_ID).then(id => {
-		let logger = FluentLogger.init();
-		let session = {
-			id: id,
-			logId: logger.logId,
-			createdMs: createdMs,
-			context: normalized,
-			sessionData: sessionData,
-		};
-		logger.log('Session created: #' + id, session);
-		client.zadd(keys.SESSION_ACTIVES, createdMs, id);
+		let session = makeSessionRecord(context, sessionData);
+		client.zadd(keys.SESSION_ACTIVES, Date.now(), id);
 		client.hset(keys.SESSION_BY_CONTEXT, contextStr, id);
-		client.hset(keys.SESSION_TO_DATA, id, JSON.stringify(session));
+		client.hset(keys.SESSION_TO_RECORD, id, JSON.stringify(session));
 		return session;
 	});
 };
@@ -55,5 +61,5 @@ exports.takeIdlest = () => {
 	let maxIdleMs = Date.now() - 70 * 1000;
 	let expr = ['-inf', maxIdleMs, 'WITHSCORES', 'LIMIT 0 1'];
 	return client.zremrangebyscore(keys.SESSION_ACTIVES, ...expr)
-		.then(nonEmpty).then(getById);
+		.then(nonEmpty).then((id, accessedMs) => [getById(id), accessedMs]);
 };
