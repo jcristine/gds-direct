@@ -7,8 +7,9 @@ process.env.NODE_ENV = Config.production ? 'production' : 'development'; // acce
 const logger = new Logger();
 
 module.exports = {
-	logNewId: logger.logNewId,
-	logit: logger.logit,
+	logNewId: (prefix = 'logs', log_id_old = '', msg_for_old_log = 'New log created, old one in ') =>
+		logger.logNewId(prefix, log_id_old, msg_for_old_log),
+	logit: (msg, id, obj = {}) => logger.logit(msg, id, obj),
 	init: (logId = undefined) => {
 		logId = logId || logger.logNewId('grect');
 		return {

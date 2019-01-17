@@ -62,9 +62,10 @@ let toHandleHttp = (action, logger = null) => (req, res) => {
 		})
 };
 
-let normalizeRqBody = (rqBody, emcData) => {
+let normalizeRqBody = (rqBody, emcData, logId) => {
 	return {
 		agentId: +emcData.result.user.id,
+		processLogId: logId,
 		// action-specific fields follow
 		...rqBody,
 	};
@@ -90,7 +91,7 @@ let withAuth = (action) => (req, res) => {
 				return Promise.reject(error);
 			})
 			.then(emcData => {
-				rqBody = normalizeRqBody(rqBody, emcData);
+				rqBody = normalizeRqBody(rqBody, emcData, logId);
 				log('Authorized agent: ' + rqBody.agentId + ' ' + emcData.result.user.displayName, emcData.result.user.roles);
 				logToTable(rqBody.agentId);
 				return Promise.resolve()

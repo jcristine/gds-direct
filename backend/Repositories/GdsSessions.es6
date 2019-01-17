@@ -1,5 +1,6 @@
 
 let {client, keys} = require('./../LibWrappers/Redis.es6');
+let FluentLogger = require('./../LibWrappers/FluentLogger.es6');
 
 let normalizeContext = (reqBody) => {
 	return {
@@ -23,12 +24,15 @@ exports.storeNew = (context, sessionData) => {
 	let contextStr = JSON.stringify(normalized);
 	let createdMs = Date.now();
 	return client.incr(keys.SESSION_LAST_INSERT_ID).then(id => {
+		let logger = FluentLogger.init();
 		let session = {
 			id: id,
+			logId: logger.logId,
 			createdMs: createdMs,
 			context: normalized,
 			sessionData: sessionData,
 		};
+		logger.log('Session created: #' + id, session);
 		client.zadd(keys.SESSION_ACTIVES, createdMs, id);
 		client.hset(keys.SESSION_BY_CONTEXT, contextStr, id);
 		client.hset(keys.SESSION_TO_DATA, id, JSON.stringify(session));
@@ -46,8 +50,10 @@ exports.updateAccessTime = (id) => {
 	client.zadd(keys.SESSION_ACTIVES, Date.now(), id);
 };
 
-exports.takeLastAccessed = () => {
-	let expr = '-inf +inf WITHSCORES LIMIT 0 1'.split(' ');
+exports.takeIdlest = () => {
+	// take only sessions that are idle more than 70 seconds
+	let maxIdleMs = Date.now() - 70 * 1000;
+	let expr = ['-inf', maxIdleMs, 'WITHSCORES', 'LIMIT 0 1'];
 	return client.zremrangebyscore(keys.SESSION_ACTIVES, ...expr)
 		.then(nonEmpty).then(getById);
 };

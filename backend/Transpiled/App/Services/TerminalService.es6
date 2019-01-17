@@ -206,6 +206,7 @@ class TerminalService
 					area: rbsResp.sessionInfo.area,
 					pcc: rbsResp.sessionInfo.pcc,
 					highlightTime: hrtimeToDecimal(process.hrtime(hrtimeStart)),
+					startNewSession: rbsResp.startNewSession || false,
 				};
 			});
 	}

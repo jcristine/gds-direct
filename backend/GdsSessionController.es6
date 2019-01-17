@@ -7,6 +7,7 @@ let TerminalService = require('./Transpiled/App/Services/TerminalService.es6');
 let {hrtimeToDecimal} = require('./Utils/Misc.es6');
 let {admins} = require('./Constants.es6');
 let GdsSessions = require('./Repositories/GdsSessions.es6');
+let {logit} = require('./LibWrappers/FluentLogger.es6');
 
 let md5 = (data) => {
 	// return crypto.createHash('md5')
@@ -14,24 +15,6 @@ let md5 = (data) => {
 	// 	.digest('hex');
 	let objectHash = require('object-hash');
 	return objectHash(data);
-};
-
-let makeCmdResponse = (data) => 1 && {
-	success: true,
-	data: Object.assign({
-		output: 'NO RESPONSE',
-		tabCommands: [],
-		clearScreen: false,
-		canCreatePq: false,
-		canCreatePqErrors: [],
-		area: 'A',
-		pcc: '1O3K',
-		prompt: "",
-		startNewSession: false,
-		userMessages: null,
-		appliedRules: [],
-		legend: [],
-	}, data),
 };
 
 let isTravelportAllowed = (rqBody) => {
@@ -73,16 +56,18 @@ let runInputCmd = (reqBody) => {
 		.catch(exc => startNewSession(reqBody)
 			// session could have expired
 			.then(session => runInSession(session, reqBody))
-			.then(data => Object.assign({}, data, {
-				startNewSession: true,
-				userMessages: ['New session started, reason: ' + (exc + '').slice(0, 800) + '...\n'],
-			})));
+			.then(runt => {
+				runt.rbsResult.startNewSession = true;
+				runt.rbsResult.userMessages = ['New session started, reason: ' + (exc + '').slice(0, 800) + '...\n'];
+				return runt;
+			}));
 
-	return running.then(({session, rbsResult}) => {
+	return running.then(async ({session, rbsResult}) => {
 		GdsSessions.updateAccessTime(session.id);
 		let termSvc = new TerminalService(reqBody.gds, reqBody.agentId, reqBody.travelRequestId);
-		return termSvc.addHighlighting(reqBody.command, reqBody.language || reqBody.gds, rbsResult);
-	}).then(makeCmdResponse);
+		let rbsResp = await termSvc.addHighlighting(reqBody.command, reqBody.language || reqBody.gds, rbsResult);
+		return {success: true, sessionLogId: session.logId, data: rbsResp};
+	});
 };
 
 /** @param {IEmcResult} emcResult */
@@ -94,6 +79,7 @@ exports.runInputCmd = (reqBody, emcResult) => {
 	// do logging _after_ we returned the result
 	running.then(result => {
 		let hrtimeDiff = process.hrtime(hrtimeStart);
+		let processedTime = hrtimeToDecimal(hrtimeDiff);
 		let responseTimestamp = Math.floor(new Date().getTime() / 1000);
 		dbPool.getConnection()
 			.then(dbConn => {
@@ -107,7 +93,7 @@ exports.runInputCmd = (reqBody, emcResult) => {
 						md5(result.data.gdsSessionData),
 					area: result.data.area,
 					terminalNumber: reqBody.terminalIndex,
-					processedTime: hrtimeToDecimal(hrtimeDiff),
+					processedTime: processedTime,
 					command: reqBody.command,
 					output: result.data.output,
 					requestTimestamp: requestTimestamp,
@@ -115,6 +101,9 @@ exports.runInputCmd = (reqBody, emcResult) => {
 				}]).finally(() => dbPool.releaseConnection(dbConn));
 			})
 			.catch(exc => console.error('SQL exc - ' + exc));
+		logit('Executed cmd: ' + reqBody.command + ' in ' + processedTime + ' s.', result.sessionLogId, result);
+		logit('Process log: ' + reqBody.processLogId, result.sessionLogId);
+		logit('Session log: ' + result.sessionLogId, reqBody.processLogId);
 	});
 
 	return running;
