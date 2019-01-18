@@ -36,7 +36,9 @@ let keepAliveNextIdlestSession = () => {
 			log('TODO: Processing session: #' + session.id + ' accessed ' + idleSeconds + ' s. ago - ' + ' ' + session.logId, session);
 			FluentLogger.logit('Processing in bg worker as the idlest session: ' + workerLogId, session.logId);
 			let processing;
+			let action = 'doNothing';
 			if (expired(session, accessedMs)) {
+				action = 'removeExpired';
 				FluentLogger.logit('TODO: Removing session, since it expired in GDS', session.logId);
 				processing = GdsSessions.remove(session);
 			} else {
@@ -44,11 +46,13 @@ let keepAliveNextIdlestSession = () => {
 					let userIdleSeconds = ((Date.now() - userAccessMs) / 1000).toFixed(3);
 					log('INFO: Last _user_ access was ' + userIdleSeconds + ' s. ago');
 					if (shouldClose(userAccessMs)) {
+						action = 'closeLongUnused';
 						return GdsSessionController.closeSession(session).catch(exc => {
 							FluentLogger.logExc('ERROR: Failed to close session', session.logId, exc);
 							return GdsSessions.remove(session);
 						});
 					} else {
+						action = 'keepAlive';
 						return GdsSessionController.keepAliveSession(session).catch(exc => {
 							FluentLogger.logExc('ERROR: Failed to keepAlive:', session.logId, exc);
 							// we will take that it was connection timeout, or a lock,
@@ -59,7 +63,7 @@ let keepAliveNextIdlestSession = () => {
 				});
 			}
 			processing.then(result => {
-				log('Processed session: #' + session.id, result);
+				log('Processed session: #' + session.id + ' - ' + action, result);
 				keepAliveNextIdlestSession();
 			});
 		})

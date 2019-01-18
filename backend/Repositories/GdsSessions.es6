@@ -98,7 +98,7 @@ exports.takeIdlest = () => {
 exports.remove = (session) => {
 	let normalized = normalizeContext(session.context);
 	let contextStr = JSON.stringify(normalized);
-	FluentLogger.logit('TODO: Removing session data');
+	FluentLogger.logit('TODO: Removing session data', session.logId);
 	return Promise.all([
 		client.hdel(keys.SESSION_BY_CONTEXT, contextStr),
 		client.hdel(keys.SESSION_TO_RECORD, session.id),
