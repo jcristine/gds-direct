@@ -2,6 +2,7 @@
 let GdsSessionController = require('./backend/GdsSessionController.es6');
 let GdsSessions = require('./backend/Repositories/GdsSessions.es6');
 let FluentLogger = require('./backend/LibWrappers/FluentLogger.es6');
+let {NoContent} = require('./backend/Utils/Rej.es6');
 
 let workerLogId = FluentLogger.logNewId('bgworker');
 
@@ -90,7 +91,15 @@ let processNextSession = () => {
 		.catch(exc => {
 			// 10..11 seconds
 			let delay = 10 * 1000 + (Math.random() * 1000);
-			let msg = waiting ? '...:' : 'No idle sessions left (or error took place), waiting for ' + delay + ' ms ';
+			let rsCode = !exc ? 0 : exc.httpStatusCode;
+			let msg;
+			if (waiting) {
+				msg = '...:';
+			} else if (NoContent.matches(rsCode)) {
+				msg = 'No idle sessions left, waiting for ' + delay + ' ms';
+			} else {
+				msg = 'ERROR: Could not take most idle session, waiting for ' + delay + ' ms';
+			}
 			logExc(msg, workerLogId, exc);
 			waiting = setTimeout(processNextSession, delay);
 		});

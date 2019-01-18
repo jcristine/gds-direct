@@ -8,6 +8,7 @@ let {hrtimeToDecimal} = require('./Utils/Misc.es6');
 let {admins} = require('./Constants.es6');
 let GdsSessions = require('./Repositories/GdsSessions.es6');
 let {logit, logExc} = require('./LibWrappers/FluentLogger.es6');
+let {Forbidden, NotImplemented} = require('./Utils/Rej.es6');
 
 let md5 = (data) => {
 	// return crypto.createHash('md5')
@@ -27,11 +28,11 @@ let startNewSession = (rqBody) => {
 		starting = RbsClient.startSession(rqBody);
 	} else {
 		if (!isTravelportAllowed(rqBody)) {
-			starting = Promise.reject('You are not allowed to use RBS-free connection');
+			starting = Forbidden('You are not allowed to use RBS-free connection');
 		} else if (rqBody.gds === 'apollo') {
 			starting = TravelportClient.startSession();
 		} else {
-			starting = Promise.reject('GDS ' + rqBody.gds + ' not supported with "Be Fast" flag - uncheck it.');
+			starting = NotImplemented('GDS ' + rqBody.gds + ' not supported with "Be Fast" flag - uncheck it.');
 		}
 	}
 	return starting.then(sessionData => GdsSessions.storeNew(rqBody, sessionData));

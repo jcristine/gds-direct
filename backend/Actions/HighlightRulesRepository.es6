@@ -2,6 +2,7 @@
 let Db = require("../Utils/Db.es6");
 let MultiLevelMap = require('../Utils/MultiLevelMap.es6');
 let {admins} = require('./../Constants.es6');
+let {Forbidden} = require('./../Utils/Rej.es6');
 
 let fetchFromDb = () => Db.with((db) => Promise.all([
 	db.fetchAll({table: 'highlightRules'}),
@@ -60,7 +61,7 @@ exports.getFullDataForAdminPage = () => fetchFromDb().then(({
  * @param {IEmcResult} emcResult */
 exports.saveRule = (rqBody, emcResult) => Db.with(db => {
 	if (!admins.includes(+emcResult.user.id)) {
-		return Promise.reject('You (' + emcResult.user.displayName + ') are not listed as an admin of this project, so you can not change rules');
+		return Forbidden('You (' + emcResult.user.displayName + ') are not listed as an admin of this project, so you can not change rules');
 	}
 	let decoration = [];
 	for (let [key, value] of Object.entries(rqBody.decorationFlags || {})) {

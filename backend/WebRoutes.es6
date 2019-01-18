@@ -6,6 +6,7 @@ let Emc = require('./App/Api/Clients/Emc.es6');
 let GdsSessionController = require('./GdsSessionController.es6');
 let TerminalBaseController = require('./Transpiled/App/Controllers/TerminalBaseController.es6');
 let {hrtimeToDecimal} = require('./Utils/Misc.es6');
+let {Forbidden, NotImplemented} = require('./Utils/Rej.es6');
 let cluster = require('cluster');
 let {admins} = require('./Constants.es6');
 let UpdateHighlightRulesFromProd = require('./Actions/UpdateHighlightRulesFromProd.es6');
@@ -15,6 +16,10 @@ let FluentLogger = require('./LibWrappers/FluentLogger.es6');
 let HighlightRulesRepository = require('./Actions/HighlightRulesRepository.es6');
 
 let app = express();
+
+let shouldDiag = (exc) =>
+	!Forbidden.matches(exc.httpStatusCode) &&
+	!NotImplemented.matches(exc.httpStatusCode);
 
 let toHandleHttp = (action, logger = null) => (req, res) => {
 	let log = logger ? logger.log : (() => {});
@@ -46,6 +51,7 @@ let toHandleHttp = (action, logger = null) => (req, res) => {
 			}, result)));
 		})
 		.catch(exc => {
+			exc = exc || 'Empty error ' + exc;
 			res.status(exc.httpStatusCode || 500);
 			res.setHeader('Content-Type', 'application/json');
 			res.send(JSON.stringify({error: exc + '', stack: exc.stack}));
@@ -57,8 +63,12 @@ let toHandleHttp = (action, logger = null) => (req, res) => {
 				stack: exc.stack,
 				processLogId: logger ? logger.logId : null,
 			};
-			log('ERROR: HTTP request failed', errorData);
-			Diag.error('HTTP request failed', errorData);
+			if (shouldDiag(exc)) {
+				log('ERROR: HTTP request failed', errorData);
+				Diag.error('HTTP request failed', errorData);
+			} else {
+				log('HTTP request was not satisfied', errorData);
+			}
 		})
 };
 
@@ -144,7 +154,7 @@ app.post('/admin/updateHighlightRules', withAuth((reqBody, emcResult) => {
 	if (admins.includes(+emcResult.user.id)) {
 		return UpdateHighlightRulesFromProd(reqBody);
 	} else {
-		return Promise.reject('Sorry, only users with admin rights can use that. Your id ' + emcResult.user.id + ' is not in ' + admins.join(','));
+		return Forbidden('Sorry, only users with admin rights can use that. Your id ' + emcResult.user.id + ' is not in ' + admins.join(','));
 	}
 }));
 
@@ -161,8 +171,27 @@ app.get('/doSomeHeavyStuff', withAuth((reqBody, emcResult) => {
 		let hrtimeDiff = process.hrtime(hrtimeStart);
 		return {message: 'Done in ' + hrtimeToDecimal(hrtimeDiff) + ' ' + sum + ' on worker #' + cluster.worker.id};
 	} else {
-		return Promise.reject('Sorry, you must be me in order to use that');
+		return Forbidden('Sorry, you must be me in order to use that');
 	}
 }));
 
 app.listen(20327);
+
+// UnhandledPromiseRejectionWarning
+// it's actually pretty weird that we ever get here, probably
+// something is wrong with the Promise chain in toHandleHttp()
+process.on('unhandledRejection', (exc, promise) => {
+	exc = exc || 'Empty error ' + exc;
+	let data = typeof exc === 'string' ? exc : {
+		message: exc + ' ' + promise,
+		stack: exc.stack,
+		promise: promise,
+		...exc,
+	};
+	if (shouldDiag(exc)) {
+		console.error('Unhandled Promise Rejection', data);
+		Diag.error('Unhandled Promise Rejection', data);
+	} else {
+		console.log('(ignored) Unhandled Promise Rejection', data);
+	}
+});

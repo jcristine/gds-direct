@@ -1,6 +1,7 @@
 
 let {client, keys, withNewConnection} = require('./../LibWrappers/Redis.es6');
 let FluentLogger = require('./../LibWrappers/FluentLogger.es6');
+let {NoContent, Conflict, NotFound} = require('./../Utils/Rej.es6');
 
 let normalizeContext = (reqBody) => {
 	return {
@@ -11,8 +12,11 @@ let normalizeContext = (reqBody) => {
 	};
 };
 
-let nonEmpty = (msg) => (value) => value ? Promise.resolve(value)
-	: Promise.reject(new Error('Value is empty - ' + msg));
+let nonEmpty = (msg, reject = null) => (value) => {
+	reject = reject || NoContent;
+	return value ? Promise.resolve(value)
+		: reject('Value is empty - ' + msg);
+};
 
 let makeSessionRecord = (id, context, sessionData) => {
 	let prefix = context.gds + '_' + context.agentId;
@@ -32,7 +36,7 @@ let makeSessionRecord = (id, context, sessionData) => {
 /** @return {Promise} makeSessionRecord() */
 let getById = (id) => {
 	return client.hget(keys.SESSION_TO_RECORD, id)
-		.then(nonEmpty('Session #' + id))
+		.then(nonEmpty('Session #' + id, NotFound))
 		.then(json => JSON.parse(json))
 		.then(/** @param session = makeSessionRecord() */ (session) => session);
 };
@@ -53,7 +57,7 @@ exports.storeNew = (context, sessionData) => {
 exports.getByContext = (context) => {
 	let contextStr = JSON.stringify(normalizeContext(context));
 	return client.hget(keys.SESSION_BY_CONTEXT, contextStr)
-		.then(nonEmpty('Session of ' + contextStr))
+		.then(nonEmpty('Session of ' + contextStr, NotFound))
 		.then(getById);
 };
 
@@ -79,17 +83,17 @@ exports.takeIdlest = () => {
 		client.multi({pipeline: false});
 		client.zrem(keys.SESSION_ACTIVES, sessionId);
 		return client.exec()
-			.then(nonEmpty('Transaction aborted because session #' + sessionId + ' was locked by another process'))
+			.then(nonEmpty('Transaction aborted because session #' + sessionId + ' was locked by another process', Conflict))
 			.then((bulkRs) => [accessedMs, sessionId]);
 	}).then(([accessedMs, sessionId]) => {
 		let maxIdleMs = Date.now() - 70 * 1000;
 		if (!sessionId) {
-			return Promise.reject('No sessions left');
+			return NoContent('No sessions left');
 		} else if (accessedMs < maxIdleMs) {
 			return getById(sessionId).then(session => [accessedMs, session]);
 		} else {
 			client.zadd(keys.SESSION_ACTIVES, accessedMs, sessionId); // return it back to the queue
-			return Promise.reject('The idlest session #' + sessionId + ' was accessed too recently - ' + ((Date.now() - accessedMs) / 1000).toFixed(3) + ' seconds ago');
+			return NoContent('The idlest session #' + sessionId + ' was accessed too recently - ' + ((Date.now() - accessedMs) / 1000).toFixed(3) + ' seconds ago');
 		}
 	});
 };
