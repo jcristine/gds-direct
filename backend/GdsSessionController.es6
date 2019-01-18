@@ -7,7 +7,7 @@ let TerminalService = require('./Transpiled/App/Services/TerminalService.es6');
 let {hrtimeToDecimal} = require('./Utils/Misc.es6');
 let {admins} = require('./Constants.es6');
 let GdsSessions = require('./Repositories/GdsSessions.es6');
-let {logit} = require('./LibWrappers/FluentLogger.es6');
+let {logit, logExc} = require('./LibWrappers/FluentLogger.es6');
 
 let md5 = (data) => {
 	// return crypto.createHash('md5')
@@ -47,6 +47,36 @@ let runInSession = (session, rqBody) => {
 	return running.then(rbsResult => ({session, rbsResult}));
 };
 
+let keepAliveSession = (session) => {
+	// TODO: use terminal.keepAlive so that RBS logs were not trashed with these MD0-s
+	let rqBody = {
+		gds: session.context.gds,
+		travelRequestId: session.context.travelRequestId,
+		command: 'MD0',
+		language: 'apollo',
+	};
+	return runInSession(session, rqBody).then(result => {
+		logit('INFO: keepAlive result:', session.logId, result);
+		GdsSessions.updateAccessTime(session);
+		return result;
+	});
+};
+
+/** @param session = in('GdsSessions.es6').makeSessionRecord() */
+let closeSession = (session) => {
+	let closing;
+	if (+session.context.useRbs) {
+		closing = RbsClient.closeSession(session);
+	} else {
+		closing = TravelportClient.closeSession(session);
+	}
+	GdsSessions.remove(session);
+	return closing.then(result => {
+		logit('NOTICE: close result:', session.logId, result);
+		return result;
+	});
+};
+
 /** @param {IEmcResult} emcResult
  * @param reqBody = in('WebRoutes.es6').normalizeRqBody() */
 let runInputCmd = (reqBody) => {
@@ -63,10 +93,10 @@ let runInputCmd = (reqBody) => {
 			}));
 
 	return running.then(async ({session, rbsResult}) => {
-		GdsSessions.updateAccessTime(session.id);
+		GdsSessions.updateAccessTime(session);
 		let termSvc = new TerminalService(reqBody.gds, reqBody.agentId, reqBody.travelRequestId);
 		let rbsResp = await termSvc.addHighlighting(reqBody.command, reqBody.language || reqBody.gds, rbsResult);
-		return {success: true, sessionLogId: session.logId, data: rbsResp};
+		return {success: true, data: rbsResp, session: session};
 	});
 };
 
@@ -78,6 +108,7 @@ exports.runInputCmd = (reqBody, emcResult) => {
 
 	// do logging _after_ we returned the result
 	running.then(result => {
+		GdsSessions.updateUserAccessTime(result.session);
 		let hrtimeDiff = process.hrtime(hrtimeStart);
 		let processedTime = hrtimeToDecimal(hrtimeDiff);
 		let responseTimestamp = Math.floor(new Date().getTime() / 1000);
@@ -101,9 +132,9 @@ exports.runInputCmd = (reqBody, emcResult) => {
 				}]).finally(() => dbPool.releaseConnection(dbConn));
 			})
 			.catch(exc => console.error('SQL exc - ' + exc));
-		logit('Executed cmd: ' + reqBody.command + ' in ' + processedTime + ' s.', result.sessionLogId, result);
-		logit('Process log: ' + reqBody.processLogId, result.sessionLogId);
-		logit('Session log: ' + result.sessionLogId, reqBody.processLogId);
+		logit('TODO: Executed cmd: ' + reqBody.command + ' in ' + processedTime + ' s.', result.session.logId, result);
+		logit('Process log: ' + reqBody.processLogId, result.session.logId);
+		logit('Session log: ' + result.session.logId, reqBody.processLogId);
 	});
 
 	return running;
@@ -120,11 +151,14 @@ exports.importPq = (reqBody) => {
 		RbsClient(reqBody).importPq(session.sessionData));
 };
 
-/** @param {IEmcResult} emcResult */
 exports.keepAlive = (reqBody) => {
-	// TODO: use terminal.keepAlive so that RBS logs were not trashed with these MD0-s
-	return runInputCmd({command: 'MD0', ...reqBody});
+	return GdsSessions.getByContext(reqBody)
+		.then(session => keepAliveSession(session));
 };
+
+exports.keepAliveSession = keepAliveSession;
+
+exports.closeSession = closeSession;
 
 exports.getLastCommands = (reqBody) => {
 	let agentId = reqBody.agentId;

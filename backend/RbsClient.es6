@@ -86,4 +86,12 @@ RbsClient.startSession = ({gds, agentId}) => {
 	}));
 };
 
+/** @param session = in('GdsSessions.es6').makeSessionRecord() */
+RbsClient.closeSession = (session) => {
+	return callRbs('terminal.closeSession', {
+		gds: session.context.gds,
+		sessionId: session.sessionData.rbsSessionId,
+	});
+};
+
 module.exports = RbsClient;

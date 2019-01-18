@@ -161,4 +161,10 @@ let TravelportClient = (reqBody) => {
 
 TravelportClient.startSession = startSession;
 
+/** @param session = in('GdsSessions.es6').makeSessionRecord() */
+TravelportClient.closeSession = (session) => {
+	// TODO: actually close
+	return Promise.resolve({message: 'Nah, will expire on it\'s own someday...'});
+};
+
 module.exports = TravelportClient;

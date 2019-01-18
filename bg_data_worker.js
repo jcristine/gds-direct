@@ -1,8 +1,14 @@
 
 let GdsSessionController = require('./backend/GdsSessionController.es6');
 let GdsSessions = require('./backend/Repositories/GdsSessions.es6');
+let FluentLogger = require('./backend/LibWrappers/FluentLogger.es6');
 
-let log = (msg, ...args) => console.log(msg, ...args);
+let workerLogId = FluentLogger.logNewId('bgworker');
+
+let log = (msg, ...data) => {
+	FluentLogger.logit(msg, workerLogId, ...data);
+	console.log(msg, ...data);
+};
 
 let expired = (session, accessedMs) => {
 	let idleSeconds = (Date.now() - accessedMs) / 1000;
@@ -16,30 +22,58 @@ let expired = (session, accessedMs) => {
 	}
 };
 
-let shouldClose = (session) => {
-	let aliveSeconds = (Date.now() - session.createdMs) / 1000;
+let shouldClose = (userAccessMs) => {
+	let aliveSeconds = (Date.now() - userAccessMs) / 1000;
 	return aliveSeconds > 30 * 60; // 30 minutes
 };
 
+let isWaiting = false;
 let keepAliveNextIdlestSession = () => {
 	GdsSessions.takeIdlest()
-		.catch(exc => {
-			let delay = 10 * 1000;
-			log('No idle sessions left, waiting for ' + delay + ' ms');
-			// I hope setTimeout won't lead to stack overflow eventually...
-			setTimeout(keepAliveNextIdlestSession, delay);
-		})
-		.then(([session, accessedMs]) => {
+		.then(([accessedMs, session]) => {
+			isWaiting = false;
+			let idleSeconds = ((Date.now() - accessedMs) / 1000).toFixed(3);
+			log('TODO: Processing session: #' + session.id + ' accessed ' + idleSeconds + ' s. ago - ' + ' ' + session.logId, session);
+			FluentLogger.logit('Processing in bg worker as the idlest session: ' + workerLogId, session.logId);
+			let processing;
 			if (expired(session, accessedMs)) {
-				// remove from redis
-			} else if (shouldClose(session)) {
-				// close
+				FluentLogger.logit('TODO: Removing session, since it expired in GDS', session.logId);
+				processing = GdsSessions.remove(session);
 			} else {
-				// keep alive
+				processing = GdsSessions.getUserAccessMs(session).then(userAccessMs => {
+					let userIdleSeconds = ((Date.now() - userAccessMs) / 1000).toFixed(3);
+					log('INFO: Last _user_ access was ' + userIdleSeconds + ' s. ago');
+					if (shouldClose(userAccessMs)) {
+						return GdsSessionController.closeSession(session).catch(exc => {
+							FluentLogger.logExc('ERROR: Failed to close session', session.logId, exc);
+							return GdsSessions.remove(session);
+						});
+					} else {
+						return GdsSessionController.keepAliveSession(session).catch(exc => {
+							FluentLogger.logExc('ERROR: Failed to keepAlive:', session.logId, exc);
+							// we will take that it was connection timeout, or a lock,
+							// or something else... and that ping _did_ happen whatsoever
+							return GdsSessions.updateAccessTime(session);
+						});
+					}
+				});
 			}
-			keepAliveNextIdlestSession();
+			processing.then(result => {
+				log('Processed session: #' + session.id, result);
+				keepAliveNextIdlestSession();
+			});
+		})
+		.catch(exc => {
+			// 10..11 seconds
+			let delay = 10 * 1000 + (Math.random() * 1000);
+			let msg = isWaiting ? '...:' : 'No idle sessions left (or error took place), waiting for ' + delay + ' ms ';
+			FluentLogger.logExc(msg, workerLogId, exc);
+			setTimeout(keepAliveNextIdlestSession, delay);
+			isWaiting = true;
 		});
 };
+
+log('BG worker started ' + workerLogId);
 
 // probably should restart it every
 // minute in case it fails or something...
