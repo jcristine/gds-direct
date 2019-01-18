@@ -7,7 +7,12 @@ let workerLogId = FluentLogger.logNewId('bgworker');
 
 let log = (msg, ...data) => {
 	FluentLogger.logit(msg, workerLogId, ...data);
-	console.log(msg, ...data);
+	console.log((new Date()).toISOString() + ': ' + msg, ...data);
+};
+
+let logExc = (msg, ...data) => {
+	FluentLogger.logExc(msg, workerLogId, ...data);
+	console.log((new Date()).toISOString() + ': ' + msg, ...data);
 };
 
 let expired = (session, accessedMs) => {
@@ -27,11 +32,26 @@ let shouldClose = (userAccessMs) => {
 	return aliveSeconds > 30 * 60; // 30 minutes
 };
 
-let isWaiting = false;
-let keepAliveNextIdlestSession = () => {
+let waiting = null;
+let terminating = false;
+let terminate = (signal) => {
+	if (waiting) {
+		clearTimeout(waiting);
+		log('Exiting gracefully after waiting - ' + signal);
+		process.exit(0);
+	} else {
+		// wait for currently processed session to finish and only then terminate
+		terminating = true;
+	}
+};
+let processNextSession = () => {
+	if (terminating) {
+		log('Exiting gracefully after clearing last session');
+		process.exit(0);
+	}
 	GdsSessions.takeIdlest()
 		.then(([accessedMs, session]) => {
-			isWaiting = false;
+			waiting = null;
 			let idleSeconds = ((Date.now() - accessedMs) / 1000).toFixed(3);
 			log('TODO: Processing session: #' + session.id + ' accessed ' + idleSeconds + ' s. ago - ' + ' ' + session.logId, session);
 			FluentLogger.logit('Processing in bg worker as the idlest session: ' + workerLogId, session.logId);
@@ -48,13 +68,13 @@ let keepAliveNextIdlestSession = () => {
 					if (shouldClose(userAccessMs)) {
 						action = 'closeLongUnused';
 						return GdsSessionController.closeSession(session).catch(exc => {
-							FluentLogger.logExc('ERROR: Failed to close session', session.logId, exc);
+							logExc('ERROR: Failed to close session', session.logId, exc);
 							return GdsSessions.remove(session);
 						});
 					} else {
 						action = 'keepAlive';
 						return GdsSessionController.keepAliveSession(session).catch(exc => {
-							FluentLogger.logExc('ERROR: Failed to keepAlive:', session.logId, exc);
+							logExc('ERROR: Failed to keepAlive:', session.logId, exc);
 							// we will take that it was connection timeout, or a lock,
 							// or something else... and that ping _did_ happen whatsoever
 							return GdsSessions.updateAccessTime(session);
@@ -64,16 +84,15 @@ let keepAliveNextIdlestSession = () => {
 			}
 			processing.then(result => {
 				log('Processed session: #' + session.id + ' - ' + action, result);
-				keepAliveNextIdlestSession();
+				processNextSession();
 			});
 		})
 		.catch(exc => {
 			// 10..11 seconds
 			let delay = 10 * 1000 + (Math.random() * 1000);
-			let msg = isWaiting ? '...:' : 'No idle sessions left (or error took place), waiting for ' + delay + ' ms ';
-			FluentLogger.logExc(msg, workerLogId, exc);
-			setTimeout(keepAliveNextIdlestSession, delay);
-			isWaiting = true;
+			let msg = waiting ? '...:' : 'No idle sessions left (or error took place), waiting for ' + delay + ' ms ';
+			logExc(msg, workerLogId, exc);
+			waiting = setTimeout(processNextSession, delay);
 		});
 };
 
@@ -81,22 +100,8 @@ log('BG worker started ' + workerLogId);
 
 // probably should restart it every
 // minute in case it fails or something...
-keepAliveNextIdlestSession();
+processNextSession();
 
-// let schedule = require('node-schedule');
-//
-// // run every minute at 0 seconds
-// schedule.scheduleJob('0 * * * * *', (scheduleDt) => {
-// 	console.log('Minute cron job started ' + new Date().toISOString(), scheduleDt);
-//
-// 	// in 5 seconds you can keep alive ~
-// 	console.log('Minute cron job ended');
-// });
-//
-// // run every hour at on 0-th minute
-// schedule.scheduleJob('0 0 * * * *', (scheduleDt) => {
-// 	console.log('Hour cron job started ' + new Date().toISOString(), scheduleDt);
-//
-// 	// in 5 seconds you can keep alive ~
-// 	console.log('Hour cron job ended');
-// });
+process.on('SIGINT', terminate);
+process.on('SIGTERM', terminate);
+process.on('SIGHUP', terminate);
