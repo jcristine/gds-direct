@@ -38,3 +38,17 @@ exports.withNewConnection = (process) => {
 		return Promise.reject(exc);
 	});
 };
+
+exports.getInfo = () => {
+	return client.info().then(text => {
+		let kvPairs = text.split(/[\n\r]+/)
+			.filter(l => !l.startsWith('#'))
+			.map(l => l.split(':'));
+		/** @type IRedisInfo */
+		let parsed = {};
+		for (let [k,v] of kvPairs) {
+			parsed[k] = v;
+		}
+		return parsed;
+	});
+};
