@@ -63,7 +63,7 @@ let keepAliveSession = (session) => {
 	});
 };
 
-/** @param session = in('GdsSessions.es6').makeSessionRecord() */
+/** @param session = at('GdsSessions.es6').makeSessionRecord() */
 let closeSession = (session) => {
 	let closing;
 	if (+session.context.useRbs) {
@@ -78,8 +78,7 @@ let closeSession = (session) => {
 	});
 };
 
-/** @param {IEmcResult} emcResult
- * @param reqBody = in('WebRoutes.es6').normalizeRqBody() */
+/** @param reqBody = at('WebRoutes.es6').normalizeRqBody() */
 let runInputCmd = (reqBody) => {
 	reqBody.command = reqBody.command.trim();
 	let running = GdsSessions.getByContext(reqBody)

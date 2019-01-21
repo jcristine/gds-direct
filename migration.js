@@ -4,7 +4,6 @@ let Db = require('./backend/Utils/Db.es6');
 
 let TABLE_NAME = 'migrations';
 
-/** @param db = from('./backend/Utils/Db.es6')() */
 let runSingle = (migration, db) => {
 	let {name, perform} = migration;
 	return db.fetchAll({
@@ -40,7 +39,6 @@ let runNext = (db) => {
 	}
 };
 
-/** @param db = from('./backend/Utils/Db.es6')() */
 let start = (db) =>
 	db.query([
 		'CREATE TABLE IF NOT EXISTS ' + TABLE_NAME + ' ( ',

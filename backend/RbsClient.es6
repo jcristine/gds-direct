@@ -86,7 +86,7 @@ RbsClient.startSession = ({gds, agentId}) => {
 	}));
 };
 
-/** @param session = in('GdsSessions.es6').makeSessionRecord() */
+/** @param session = at('GdsSessions.es6').makeSessionRecord() */
 RbsClient.closeSession = (session) => {
 	return callRbs('terminal.endSession', {
 		gds: session.context.gds,
