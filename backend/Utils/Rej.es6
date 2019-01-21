@@ -6,7 +6,7 @@
 
 let toReject = (httpStatusCode, isOk = false) => {
 	let makeRejection = (msg) => {
-		msg += ' ' + httpStatusCode;
+		msg += ' (status: ' + httpStatusCode + ')';
 		let exc;
 		if (!isOk) {
 			exc = new Error(msg);
