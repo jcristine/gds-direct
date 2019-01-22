@@ -2,6 +2,7 @@
 let http = require('http');
 let https = require('https');
 let url = require('url');
+let {BadGateway} = require('../Utils/Rej.es6');
 
 // not sure if it should be a separate agent per domain or not...
 let httpsAgent = new https.Agent({
@@ -37,7 +38,9 @@ module.exports = PersistentHttpRq = (params) => new Promise((resolve, reject) =>
 		res.on('data', (chunk) => responseBody += chunk);
 		res.on('end', () => {
 			if (res.statusCode != 200) {
-				reject('Http request to external service failed - ' + res.statusCode + ' - ' + parsedUrl.path + ' - ' + responseBody);
+				let msg = 'Http request to external service failed - ' +
+					res.statusCode + ' - ' + parsedUrl.path + ' - ' + responseBody;
+				reject(BadGateway(msg).exc);
 			} else {
 				resolve({body: responseBody});
 			}

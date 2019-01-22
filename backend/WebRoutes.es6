@@ -16,6 +16,8 @@ let FluentLogger = require('./LibWrappers/FluentLogger.es6');
 let HighlightRulesRepository = require('./Actions/HighlightRulesRepository.es6');
 let dbPool = require('./App/Classes/Sql.es6');
 let Redis = require('./LibWrappers/Redis.es6');
+let initSocketIo = require('socket.io');
+let Config = require('./Config.es6');
 
 let app = express();
 
@@ -48,6 +50,7 @@ let toHandleHttp = (action, logger = null) => (req, res) => {
 		.then(result => {
 			log('HTTP action result:', result);
 			res.setHeader('Content-Type', 'application/json');
+			res.status(200);
 			res.send(JSON.stringify(Object.assign({
 				message: 'OK', workerId: (cluster.worker || {}).id,
 			}, result)));
@@ -66,7 +69,7 @@ let toHandleHttp = (action, logger = null) => (req, res) => {
 				processLogId: logger ? logger.logId : null,
 			};
 			if (shouldDiag(exc)) {
-				log('ERROR: HTTP request failed', errorData);
+				FluentLogger.logExc('ERROR: HTTP request failed', logger.logId, errorData);
 				Diag.error('HTTP request failed', errorData);
 			} else {
 				log('HTTP request was not satisfied', errorData);
@@ -214,7 +217,7 @@ app.get('/doSomeHeavyStuff', withAuth((reqBody, emcResult) => {
 	}
 }));
 
-app.listen(20327);
+app.listen(Config.HTTP_PORT);
 
 // UnhandledPromiseRejectionWarning
 // it's actually pretty weird that we ever get here, probably
@@ -234,3 +237,39 @@ process.on('unhandledRejection', (exc, promise) => {
 		console.log('(ignored) Unhandled Promise Rejection', data);
 	}
 });
+
+let socketIo = initSocketIo();
+socketIo.on('connection', /** @param {Socket} socket */ socket => {
+	console.log('got a socket connection', socket.id);
+	socket.on('message', (data, reply) => {
+		console.log('message from client', data);
+
+		let fallbackBody = JSON.stringify({error: 'Your request was not handled'});
+		let rsData = {body: fallbackBody, status: 501, headers: {}};
+		let rq = {url: data.url, path: data.url.split('?')[0], body: data.body, params: {}};
+		let rs = {
+			status: (code) => rsData.status = code,
+			setHeader: (name, value) => rsData.headers[name] = value,
+			send: (body) => {
+				try {
+					body = JSON.parse(body);
+				} catch (exc) {}
+				rsData.body = body;
+				reply(rsData);
+			},
+		};
+		if (rq.path === '/terminal/command') {
+			withAuth(GdsSessionController.runInputCmd)(rq, rs);
+		} else if (rq.path === '/gdsDirect/keepAlive') {
+			withAuth(GdsSessionController.keepAlive)(rq, rs);
+		} else {
+			rs.status(501);
+			rs.send('Unsupported path - ' + data.path);
+		}
+	});
+	socket.send({testMessage: 'hello, how are you?'}, (response) => {
+		console.log('delivered testMessage to client', response);
+	});
+});
+socketIo.listen(Config.SOCKET_PORT);
+

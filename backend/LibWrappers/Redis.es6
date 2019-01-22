@@ -3,7 +3,7 @@ let ioredis = require("ioredis");
 let config = require('../Config.es6');
 
 /** @type IIoRedisClient */
-let client = new ioredis(config.redis.port, config.redis.host);
+let client = new ioredis(config.REDIS_PORT, config.REDIS_HOST);
 
 let never = () => { throw new Error('Should never happen'); };
 let keys = {
@@ -29,7 +29,7 @@ exports.client = client;
  * @return Promise<T>
  */
 exports.withNewConnection = (process) => {
-	let client = new ioredis(config.redis.port, config.redis.host);
+	let client = new ioredis(config.REDIS_PORT, config.REDIS_HOST);
 	return process(client).then(result => {
 		client.quit();
 		return result;

@@ -1,6 +1,6 @@
-let config = require('./../local.config.conf');
+
+let config = require('./Config.es6');
 let PersistentHttpRq = require('./Utils/PersistentHttpRq.es6');
-let RedisData = require('./LibWrappers/RedisData.es6');
 
 /**
  * they are all physically located in USA, Atlanta (in same building)
@@ -53,6 +53,11 @@ let runOneCmd = (cmd, token) => {
 		} else {
 			return Promise.reject('Unexpected Travelport response format - ' + resp);
 		}
+	}).catch(exc => {
+		let obj = typeof exc === 'string' ? new Error(exc) : exc;
+		// be careful not to include credentials here
+		obj.rqBody = body;
+		return Promise.reject(obj);
 	});
 };
 
