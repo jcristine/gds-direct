@@ -16,7 +16,9 @@ let toReject = (httpStatusCode, isOk = false) => {
 			exc = {message: msg, toString: () => msg};
 		}
 		exc.httpStatusCode = httpStatusCode;
-		return Promise.reject(exc);
+		let rejection = Promise.reject(exc);
+		rejection.exc = exc;
+		return rejection;
 	};
 	makeRejection.httpStatusCode = httpStatusCode;
 	makeRejection.matches = (otherCode) => otherCode == httpStatusCode;
@@ -35,3 +37,4 @@ exports.Conflict = toReject(409);
 
 // server errors
 exports.NotImplemented = toReject(501);
+exports.BadGateway = toReject(502);
