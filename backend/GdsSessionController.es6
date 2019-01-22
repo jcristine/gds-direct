@@ -48,6 +48,18 @@ let runInSession = (session, rqBody) => {
 	return running.then(rbsResult => ({session, rbsResult}));
 };
 
+let runInSessionOrRestart = (session, rqBody) => {
+	return runInSession(session, rqBody)
+		.catch(exc => startNewSession(rqBody)
+			// session could have expired
+			.then(session => runInSession(session, rqBody))
+			.then(runt => {
+				runt.rbsResult.startNewSession = true;
+				runt.rbsResult.userMessages = ['New session started, reason: ' + (exc + '').slice(0, 800) + '...\n'];
+				return runt;
+			}));
+};
+
 let keepAliveSession = (session) => {
 	// TODO: use terminal.keepAlive so that RBS logs were not trashed with these MD0-s
 	let rqBody = {
@@ -56,7 +68,7 @@ let keepAliveSession = (session) => {
 		command: 'MD0',
 		language: 'apollo',
 	};
-	return runInSession(session, rqBody).then(result => {
+	return runInSessionOrRestart(session, rqBody).then(result => {
 		logit('INFO: keepAlive result:', session.logId, result);
 		GdsSessions.updateAccessTime(session);
 		return result;
@@ -82,15 +94,7 @@ let closeSession = (session) => {
 let runInputCmd = (reqBody) => {
 	reqBody.command = reqBody.command.trim();
 	let running = GdsSessions.getByContext(reqBody)
-		.then(session => runInSession(session, reqBody))
-		.catch(exc => startNewSession(reqBody)
-			// session could have expired
-			.then(session => runInSession(session, reqBody))
-			.then(runt => {
-				runt.rbsResult.startNewSession = true;
-				runt.rbsResult.userMessages = ['New session started, reason: ' + (exc + '').slice(0, 800) + '...\n'];
-				return runt;
-			}));
+		.then(session => runInSessionOrRestart(session, reqBody));
 
 	return running.then(async ({session, rbsResult}) => {
 		GdsSessions.updateAccessTime(session);
