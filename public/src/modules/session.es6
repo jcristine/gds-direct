@@ -1,4 +1,5 @@
 import {get, post} from "../helpers/requests";
+import {notify} from "../helpers/debug";
 
 let beforeStack	= [];
 let stack		= [];
@@ -8,6 +9,7 @@ let lastUsedAt = window.performance.now();
 
 let makeParams = (session, callParams) => {
 	let baseParams = {
+		useSocket		: true,
 		useRbs			: window.GdsDirectPlusState.getUseRbs() ? 1 : 0,
 		terminalIndex	: parseInt(session.settings['terminalIndex']) + 1,
 		gds				: session.settings['gds'],
@@ -32,7 +34,19 @@ export default class Session
 		setInterval(() => {
 			if (window.performance.now() - lastUsedAt >= pingInterval) {
 				lastUsedAt = window.performance.now();
-				post('/gdsDirect/keepAlive', makeParams(this, {}));
+				post('/gdsDirect/keepAlive', makeParams(this, {}))
+					.then(result => {
+						let rbsResult = result.rbsResult;
+						let newSession = rbsResult ? rbsResult.startNewSession : false;
+						if (newSession) {
+							notify({
+								msg 	: 'Session restarted on attempt to keepAlive',
+								type 	: 'warning',
+								timeout	: 4000
+							});
+						}
+					})
+					.catch(formatSystemError);
 			}
 		}, pingInterval);
 	}

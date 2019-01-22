@@ -264,7 +264,7 @@ socketIo.on('connection', /** @param {Socket} socket */ socket => {
 			withAuth(GdsSessionController.keepAlive)(rq, rs);
 		} else {
 			rs.status(501);
-			rs.send('Unsupported path - ' + data.path);
+			rs.send('Unsupported path - ' + rq.path);
 		}
 	});
 	socket.send({testMessage: 'hello, how are you?'}, (response) => {
