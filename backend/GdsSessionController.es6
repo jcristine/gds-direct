@@ -140,6 +140,8 @@ exports.importPq = (reqBody) => {
 
 // TODO: use terminal.keepAlive so that RBS logs were not trashed with these MD0-s
 let makeKeepAliveParams = (context) => ({
+	agentId: context.agentId,
+	useRbs: +context.useRbs ? true : false,
 	gds: context.gds,
 	travelRequestId: context.travelRequestId,
 	command: 'MD0',
@@ -158,7 +160,7 @@ let keepAliveSession = (session) => {
 exports.keepAlive = (reqBody) => {
 	return runInputCmdRestartAllowed(makeKeepAliveParams(reqBody))
 		.then(result => {
-			logit('INFO: keepAlive result:', session.logId, result);
+			logit('INFO: keepAlive result:', result.session.logId, result);
 			return result;
 		});
 };
