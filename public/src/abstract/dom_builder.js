@@ -1,5 +1,6 @@
 
 // taken from CMS /_js/abstract/dom_builder.js
+
 let Dom = {
 	build: {
 		select: (params) => {
@@ -42,6 +43,7 @@ let Dom = {
 			if (params.addon) { container.addClass('input-group-addon'); }
 			if (params.checked) { input[0].setAttribute('checked', 'checked'); }
 			if (params.disabled) { input[0].setAttribute('disabled', 'disabled'); }
+			if (params.onchange) { input[0].onchange = e => params.onchange(e); }
 			if (params.hidden) {
 				$hidden = $('<input>', {type : 'hidden', name : params.name, value : 0});
 				label.append( $hidden );

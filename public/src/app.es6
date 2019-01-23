@@ -5,6 +5,7 @@ import {getStore} from "./store";
 import requests from  "./helpers/requests";
 import GdsDirectPlusApp from  "./modules/GdsDirectPlusApp";
 import HighlightRulesAdminApp from  "./modules/HighlightRulesAdminApp";
+import TerminalThemesAdminApp from  "./modules/TerminalThemesAdminApp";
 
 const initGlobEvents = () => {
 
@@ -101,3 +102,4 @@ window.InitGdsDirectPlusApp = (params) => {
 };
 
 window.InitGdsDirectPlusApp.HighlightRulesAdminApp = HighlightRulesAdminApp;
+window.InitGdsDirectPlusApp.TerminalThemesAdminApp = TerminalThemesAdminApp;

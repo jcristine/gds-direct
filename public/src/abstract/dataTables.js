@@ -290,13 +290,14 @@ export default (function() {
 				}).catch(exc => {
 					disabledSelects.prop('disabled', 1);
 					notify({msg: 'Server returned error - ' + exc});
+					return Promise.reject(exc);
 				});
 			}
 
 			return {
 				remove	: function ()
 				{
-					send({
+					return send({
 						url		: settings.router['remove'] ? settings.router['remove'] : settings.apiUrl + '&removeData=1',
 						message	: msgLang.recordRemove
 					});
@@ -310,7 +311,7 @@ export default (function() {
 						return false;
 					}
 
-					send({
+					return send({
 						url		: settings.router['save'] ? settings.router['save'] : settings.apiUrl + '&setData=1',
 						message	: type !== 'editRow' ? msgLang.newRecAdd : msgLang.newRecUpdate
 					})
@@ -339,7 +340,9 @@ export default (function() {
 						App.Dom('button.btn btn-success btn-lg no-radius', {
 							innerHTML 	: msgLang.save,
 							onclick		: function () {
-								sendRequest().save();
+								sendRequest().save()
+									.then(() => modalContext.close())
+									.catch(exc => {});
 							}
 						})
 					)
@@ -349,7 +352,9 @@ export default (function() {
 							innerHTML 	: msgLang.deleteTxt,
 							onclick		: function () {
 								if (confirm( msgLang.deleteMsg ))
-									sendRequest().remove();
+									sendRequest().remove()
+										.then(() => modalContext.close())
+										.catch(exc => {});
 							}
 						})
 					)
