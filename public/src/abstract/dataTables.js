@@ -7,7 +7,7 @@ import Validate from './validator.js';
 import {notify} from '../helpers/debug.es6';
 
 let App = {Dom: AppDom};
-require( 'datatables.net' );
+require('datatables.net');
 
 // define([
 // 	'abstract/validator',
@@ -81,9 +81,9 @@ export default (function() {
 				});
 
 				var promise = fetch(settings.url, {
-					method: settings.method ? settings.method.toUpperCase() : 'GET',
+					method: settings.method ? settings.method.toUpperCase() : data ? 'POST' : 'GET',
 					headers: {'Content-Type': 'application/json'},
-					body: JSON.stringify(data),
+					body: data ? JSON.stringify(data) : undefined,
 				}).then(a => a.json());
                 promise.then(callback);
 			},
