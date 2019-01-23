@@ -70,7 +70,7 @@ const initThemeStyles = responseData => {
 let rootUrl = new URL(document.currentScript.src).origin;
 window.GdsDirectPlusParams = window.GdsDirectPlusParams || {
 	rootUrl: rootUrl,
-	socketHost: rootUrl.split(':')[0] + ':' + 13377,
+	socketHost: rootUrl.replace(/:\d+$/, '') + ':' + 13377,
 	emcSessionId: null,
 	travelRequestId: null,
 	cmsUrl: null,
@@ -87,7 +87,7 @@ window.InitGdsDirectPlusApp = (params) => {
 	window.GdsDirectPlusParams.emcSessionId = params.emcSessionId;
 	window.GdsDirectPlusParams.travelRequestId = params.travelRequestId;
 	window.GdsDirectPlusParams.cmsUrl = params.cmsUrl;
-	window.GdsDirectPlusParams.socketHost = params.socketHost;
+	window.GdsDirectPlusParams.socketHost = params.socketHost || window.GdsDirectPlusParams.socketHost;
 	initGlobEvents();
 	params.htmlRootDom.innerHTML = '<h2 style="background-color: white; color: black">Please wait, loading user data...</h2>';
 
