@@ -157,17 +157,6 @@ let separateBgColors = (nameToStyles) => {
 	return $colorsParsed;
 };
 
-app.get('/gdsDirect/themes', toHandleHttp(() =>
-	Db.with(db => db.fetchAll({table: 'terminalThemes'}))
-		.then(rows => ({
-			terminalThemes: rows.map(r => ({
-				id: r.id,
-				label: r.label,
-				colors: JSON.parse(r.colors || '{}'),
-				colorsParsed: separateBgColors(JSON.parse(r.colors || '{}')),
-			})),
-		}))
-));
 app.get('/terminal/saveSetting/:name/:currentGds/:value', withAuth((reqBody, emcResult, routeParams) => {
 	let {name, currentGds, value} = routeParams;
 	return new TerminalBaseController(emcResult).saveSettingAction(name, currentGds, value);
@@ -192,6 +181,30 @@ app.post('/admin/updateHighlightRules', withAuth((reqBody, emcResult) => {
 
 app.post('/admin/terminal/highlight', toHandleHttp(HighlightRulesRepository.getFullDataForAdminPage));
 app.post('/admin/terminal/highlight/save', withAuth(HighlightRulesRepository.saveRule));
+app.post('/admin/terminal/themes/save', withAuth(rqBody => {
+	return Db.with(db => db.writeRows('terminalThemes', [{
+		id: rqBody.id || undefined,
+		label: rqBody.label,
+		colors: JSON.stringify(rqBody.colors || {}),
+	}]));
+}));
+app.post('/admin/terminal/themes/delete', withAuth(rqBody => {
+	let sql = 'DELETE FROM terminalThemes WHERE id = ?';
+	return Db.with(db => db.query(sql, [rqBody.id]))
+}));
+app.get('/gdsDirect/themes', toHandleHttp(() =>
+	Db.with(db => db.fetchAll({table: 'terminalThemes'}))
+		.then(rows => ({
+			terminalThemes: rows.map(r => {
+				return ({
+					id: r.id,
+					label: r.label,
+					colors: JSON.parse(r.colors || '{}'),
+					colorsParsed: separateBgColors(JSON.parse(r.colors || '{}')),
+				});
+			}),
+		}))
+));
 
 app.get('/ping', toHandleHttp((rqBody) => {
 	let memory = {};
