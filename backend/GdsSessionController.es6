@@ -55,7 +55,7 @@ let runInSessionOrRestart = (session, rqBody) => {
 			.then(session => runInSession(session, rqBody))
 			.then(runt => {
 				runt.rbsResult.startNewSession = true;
-				runt.rbsResult.userMessages = ['New session started, reason: ' + (exc + '').slice(0, 800) + '...\n'];
+				runt.rbsResult.messages = [{type: 'pop_up', text: 'New session started, reason: ' + (exc + '').slice(0, 800) + '...\n'}];
 				return runt;
 			}));
 };

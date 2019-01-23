@@ -138,6 +138,25 @@ app.get('/gdsDirect/view', withAuth(UserController.getView));
 app.get('/autoComplete', (req, res) => {
 	res.send(JSON.stringify(CompletionData.getData(req)));
 });
+
+/**
+ * Function separates font color from background color so we can apply
+ * two different classes in frontend for highlighting
+ */
+let separateBgColors = (nameToStyles) => {
+	let $colorsParsed = {};
+	for (let [$class, $style] of Object.entries(nameToStyles)) {
+		let $hex = $style['background-color'] || $style['color'] || '';
+		$colorsParsed[$class + '-color'] = {
+			'color': $hex,
+		};
+		$colorsParsed[$class + '-backgroundColor'] = {
+			'background-color': $hex,
+		};
+	}
+	return $colorsParsed;
+};
+
 app.get('/gdsDirect/themes', toHandleHttp(() =>
 	Db.with(db => db.fetchAll({table: 'terminalThemes'}))
 		.then(rows => ({
@@ -145,6 +164,7 @@ app.get('/gdsDirect/themes', toHandleHttp(() =>
 				id: r.id,
 				label: r.label,
 				colors: JSON.parse(r.colors || '{}'),
+				colorsParsed: separateBgColors(JSON.parse(r.colors || '{}')),
 			})),
 		}))
 ));
