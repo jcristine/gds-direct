@@ -36,7 +36,6 @@
     "select2": "^4.0.6-rc.1",
     "socket.io-client": "^2.2.0",
     "tether-drop": "^1.4.2",
-    "validator": "^10.11.0",
-    "whatwg-fetch": "^2.0.4"
+    "validator": "^10.11.0"
   }
 }
