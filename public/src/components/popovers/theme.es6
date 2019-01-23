@@ -1,6 +1,7 @@
 import Dom 			 from '../../helpers/dom.es6';
 import ButtonPopOver from '../../modules/buttonPopover.es6';
 import {CHANGE_STYLE} from "../../actions/settings";
+import Component from "../../modules/component";
 
 export default class Theme extends ButtonPopOver
 {
@@ -36,6 +37,16 @@ export default class Theme extends ButtonPopOver
 
 				this.popContent.appendChild( button );
 			})
+		}
+		if (window.GdsDirectPlusState.getIsAdmin()) {
+			const admin = new Component('button.btn btn-primary[<i class="fa t-f-size-14">Edit</i>]', {
+				onclick: () => {
+					// replace with prod link when we have prod
+					let url = 'http://dev-w13:20328/public/admin/terminalThemes.html#emcSessionId=' + GdsDirectPlusParams.emcSessionId;
+					window.open(url, '_blank');
+				},
+			}).context;
+			this.popContent.appendChild(admin);
 		}
 	}
 
