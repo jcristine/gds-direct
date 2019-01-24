@@ -1,3 +1,4 @@
+let ItineraryParser = require("./Transpiled/Gds/Parsers/Apollo/Pnr/ItineraryParser.es6");
 
 let config = require('./Config.es6');
 let PersistentHttpRq = require('./Utils/PersistentHttpRq.es6');
@@ -104,11 +105,8 @@ let encodeCmdForCms = ($cmd) =>
 let encodeOutputForCms = ($dump) =>
 	$dump.replace(/\|/g, '+').replace(/;/g, '·');
 
-let makeResult = (cmd, output, token) => ({
-	calledCommands: [{
-		cmd: encodeCmdForCms(cmd),
-		output: encodeOutputForCms(output),
-	}],
+let makeResult = (calledCommands, token) => ({
+	calledCommands: calledCommands,
 	messages: [],
 	clearScreen: false,
 	sessionInfo: {
@@ -120,37 +118,86 @@ let makeResult = (cmd, output, token) => ({
 	gdsSessionData: makeSessionData(token),
 });
 
-let runAndCleanupCmd = (cmd, token) => {
-	let fetchAll = false;
+/** @param segment = ItineraryParser.parseSegmentLine() */
+let makeSellCmd = (segment) => {
+	return [
+		'0',
+		segment.airline,
+		segment.flightNumber,
+		segment.bookingClass,
+		segment.departureDate.raw,
+		segment.departureAirport,
+		segment.destinationAirport,
+		segment.segmentStatus,
+		segment.statusNumber,
+	].join('');
+};
+
+let parseCmdAsItinerary = (dump) => {
+	try {
+		let parsed = ItineraryParser.parse(dump);
+		if (parsed.segments.length > 0) {
+			console.log('parsed itinerary', {dump, parsed});
+			return {
+				bulkCmds: parsed.segments.map(makeSellCmd),
+			};
+		}
+	} catch (exc) {
+		// should not happen, but who knows...
+	}
+	return null;
+};
+
+let parseAlias = (cmd) => {
+	let type = null, data = null, fetchAll = false, realCmd = '';
+
 	if (cmd.endsWith('/MDA')) {
-		cmd = cmd.slice(0, -4);
+		realCmd = cmd.slice(0, -4);
 		fetchAll = true;
 	} else if (cmd === 'MDA') {
-		cmd = 'MD';
+		realCmd = 'MD';
 		fetchAll = true;
+	} else if (data = parseCmdAsItinerary(cmd)) {
+		type = 'itinerary';
+	} else {
+		realCmd = cmd;
 	}
-	let fullOutput = '';
-	let getNextPage = (nextCmd) => runOneCmd(nextCmd, token)
-		.then((parsedResp) => {
-			let rawOutput = parsedResp.output;
-			let [output, pager] = extractPager(rawOutput);
+	return {
+		realCmd: realCmd,
+		fetchAll: fetchAll,
+		data: data,
+		type: type,
+	};
+};
 
-			if (fetchAll) {
-				if (shouldWrap(cmd)) {
-					output = wrap(output);
-				}
-				fullOutput += output;
-				if (pager === ')><') {
-					return getNextPage('MR', token);
-				} else {
-					return makeResult(cmd, fullOutput, token);
-				}
-			} else {
-				if (shouldWrap(cmd)) rawOutput = wrap(rawOutput);
-				return makeResult(cmd, rawOutput + '\n', token);
-			}
+let fetchAllOutput = async (nextCmd, token) => {
+	let pages = [];
+	while (nextCmd) {
+		let rawOutput = (await runOneCmd(nextCmd, token)).output;
+		let [output, pager] = extractPager(rawOutput);
+		pages.push(output);
+		nextCmd = pager === ')><' ? 'MR' : null;
+	}
+	return pages.join('\n')
+};
+
+let runAndCleanupCmd = async (inputCmd, token) => {
+	let {realCmd: cmd, fetchAll, type, data} = parseAlias(inputCmd);
+	let cmdsLeft = (data ? data.bulkCmds : null) || [cmd];
+	let calledCommands = [];
+	for (let cmd of cmdsLeft) {
+		let output = fetchAll
+			? await fetchAllOutput(cmd, token)
+			: (await runOneCmd(cmd, token)).output;
+		if (shouldWrap(cmd)) {
+			output = wrap(output);
+		}
+		calledCommands.push({
+			cmd: encodeCmdForCms(cmd),
+			output: encodeOutputForCms(output),
 		});
-	return getNextPage(cmd);
+	}
+	return makeResult(calledCommands, token);
 };
 
 /** @param {{command: '*R', gds: 'apollo', language: 'sabre', agentId: '6206'}} reqBody */

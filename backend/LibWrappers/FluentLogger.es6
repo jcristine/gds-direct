@@ -37,6 +37,7 @@ module.exports = {
 	},
 	logit: logit,
 	logExc: (msg, id, exc) => {
+		console.error(msg, exc.stack);
 		let data = getExcData(exc);
 		return logit(msg, id, data);
 	},
