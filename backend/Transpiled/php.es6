@@ -4,15 +4,69 @@ let util = require('util');
 let empty = (value) => !value || +value === 0 ||
 	(typeof value === 'object') && Object.keys(value).length === 0;
 
+let strval = (value) => value === null || value === false || value === undefined ? '' : value + '';
+
+let STR_PAD_LEFT = 0;
+let STR_PAD_RIGHT = 1;
+
 exports.empty = empty;
 exports.intval = (value) => +value;
 exports.boolval = (value) => empty(value) ? true : false;
-exports.trim = (value) => (value + '').trim();
-exports.strtoupper = (value) => (value + '').toUpperCase();
+exports.trim = (value) => strval(value).trim();
+exports.strval = strval;
+exports.strtoupper = (value) => strval(value).toUpperCase();
+exports.substr = (str, from, length) => str.slice(from, from + length);
+exports.str_pad = ($input, $pad_length, $pad_string = " ", $pad_type = STR_PAD_RIGHT) => {
+	if ($pad_type == STR_PAD_RIGHT) {
+		return strval($input).padEnd($pad_length, $pad_string);
+	} else if ($pad_type == STR_PAD_LEFT) {
+		return strval($input).padStart($pad_length, $pad_string);
+	} else {
+		throw new Error('Unsupported padding type - ' + $pad_type);
+	}
+};
+
 exports.isset = (value) => value !== null && value !== undefined;
+exports.strtotime = (dtStr) => {
+	if (dtStr === 'now') {
+		return Date.now() / 1000;
+	} else if (dtStr.match(/^\d{4}-\d{2}-\d{2}(\d{2}:\d{2}:\d{2})?$/)) {
+		return Date.parse(dtStr) / 1000;
+	} else {
+		throw new Error('Unsupported date str format - ' + dtStr);
+	}
+};
+exports.date = (format, epoch) => {
+	let dtObj;
+	if (epoch === undefined) {
+		dtObj = new Date();
+	} else {
+		dtObj = new Date(1970, 0, 1); // Epoch
+		dtObj.setSeconds(epoch);
+	}
+	if (format === 'Y-m-d H:i:s') {
+		return dtObj.toISOString().slice(0, '2018-12-05T22:13:41'.length).replace('T', ' ');
+	} else if (format === 'Y-m-d') {
+		return dtObj.toISOString().slice(0, '2018-12-05'.length);
+	} else if (format === 'm-d') {
+		return dtObj.toISOString().slice('2018-'.length, '2018-12-05'.length);
+	} else if (format === 'H:i') {
+		return dtObj.toISOString().slice('2018-12-05T'.length, '2018-12-05T22:13'.length);
+	} else {
+		throw new Error('Unsupported date format - ' + format);
+	}
+};
+
 exports.array_keys = (obj) => Object.keys(obj);
 exports.array_values = (obj) => Object.values(obj);
+exports.in_array = (value, arr) => Object.values(arr).indexOf(value) > -1;
+/** @param {Array} arr */
+exports.array_shift = (arr) => arr.shift();
+/** @param {Array} arr */
+exports.array_unshift = (arr, value) => arr.unshift(value);
 exports.implode = (delim, values) => values.join(delim);
+exports.explode = (delim, str) => str.split(delim);
+
 exports.json_encode = (str) => JSON.stringify(str);
 exports.json_decode = (str) => str ? JSON.parse(str) : null;
 exports.ucfirst = str => str.slice(0, 1).toUpperCase() + str.slice(1);
@@ -57,7 +111,11 @@ exports.preg_match = (pattern, str, matches = null, phpFlags = null) => {
 	if (phpFlags) {
 		throw new Error('Fourth preg_match argument, php flags, is not supported - ' + phpFlags);
 	} else {
-		return str.match(pattern);
+		let matches = str.match(pattern);
+		if (matches) {
+			Object.assign(matches, matches.groups);
+		}
+		return matches;
 	}
 };
 // exports.preg_match_all = (pattern, str, dest, bitMask) => {
@@ -125,3 +183,5 @@ exports.str_split = (str, size = 1) => {
 //exports.PREG_OFFSET_CAPTURE = 256;
 
 exports.PHP_EOL = '\n';
+exports.STR_PAD_LEFT = STR_PAD_LEFT;
+exports.STR_PAD_RIGHT = STR_PAD_RIGHT;
