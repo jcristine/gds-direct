@@ -6,6 +6,7 @@ let stack		= [];
 let promise 	= '';
 
 let lastUsedAt = window.performance.now();
+let callInProgress = false;
 
 let makeParams = (session, callParams) => {
 	let baseParams = {
@@ -32,8 +33,9 @@ export default class Session
 		let gds = params.gds;
 		let pingInterval = gds === 'apollo' ? 60 * 1000 : 10 * 60 * 1000;
 		setInterval(() => {
-			if (window.performance.now() - lastUsedAt >= pingInterval) {
+			if (!callInProgress && window.performance.now() - lastUsedAt >= pingInterval) {
 				lastUsedAt = window.performance.now();
+				callInProgress = true;
 				post('/gdsDirect/keepAlive', makeParams(this, {}))
 					.then(result => {
 						let rbsResult = result.rbsResult;
@@ -46,7 +48,11 @@ export default class Session
 							});
 						}
 					})
-					.catch(formatSystemError);
+					.catch(formatSystemError)
+					.then(result => {
+						callInProgress = false;
+						return result;
+					});
 			}
 		}, pingInterval);
 	}
@@ -59,8 +65,13 @@ export default class Session
 		}
 
 		lastUsedAt = window.performance.now();
+		callInProgress = true;
 		return post('/terminal/command?cmd=' + cmd, makeParams(this, {command: cmd}))
-			.catch(formatSystemError);
+			.catch(formatSystemError)
+			.then(result => {
+				callInProgress = false;
+				return result;
+			});
 	}
 
 	_runNext()
