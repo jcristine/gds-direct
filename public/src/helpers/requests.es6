@@ -23,7 +23,7 @@ let initSocket = (host) => new Promise((resolve, reject) => {
 				let startMs = Date.now();
 				socket.send(data, (response) => {
 					let duration = ((Date.now() - startMs) / 1000).toFixed(3);
-					console.debug('Socket RQ, RS in ' + duration, data, response);
+					console.debug(new Date().toISOString() + ' - Socket RQ, RS in ' + duration, data, response);
 					resolve(response);
 				});
 			}),
