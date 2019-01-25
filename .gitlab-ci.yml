@@ -17,12 +17,12 @@ run-tests:
       name: staging
       url: http://gds-direct-plus.gitlab-runner.php7.dyninno.net
   script:
-  - git config --global user.name "Gitlab CI"
-  - git config --global user.email "gitlab@dyninno.net"
+#  - git config --global user.name "Gitlab CI"
+#  - git config --global user.email "gitlab@dyninno.net"
   - git show --name-status
   - git branch
 #  - test -e "/home/gitlab-runner/public_html/gds-direct-plus" || git clone $CI_REPOSITORY_URL -b master /home/gitlab-runner/public_html/gds-direct-plus --depth 1
 #  - cd /home/gitlab-runner/public_html/gds-direct-plus
   - bash build.sh
   - cp .env.dist .env
-  - node tests/runTests.js
+  - node_modules/node/bin/node tests/runTests.js
