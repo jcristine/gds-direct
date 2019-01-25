@@ -503,3 +503,8 @@ interface IPromiseMysqlQueryResult {
     "protocol41": true,
     "changedRows": 0
 }
+
+interface ITestEvent {
+    type: 'ok' | 'error',
+    msg?: string,
+}
