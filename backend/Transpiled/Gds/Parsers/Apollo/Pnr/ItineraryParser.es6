@@ -82,8 +82,14 @@ class ItineraryParser {
 				}
 			} else if($parsed = this.parsePlaneChangeLine($line)) {
 				$lastParsedSegment['raw'] += PHP_EOL + $line;
+				$lastParsedSegment['planeChange'] = $lastParsedSegment['planeChange'] || [];
 				$lastParsedSegment['planeChange'].push($parsed);
-				let $filter = '#^\\s+' + '(?<from>[A-Z]{3})-' + '(?<to>[A-Z]{3})\\s+' + '(?<aircraft>[A-Z\\d]{2,3})\\s*' + '$#';
+				let $filter =
+					'/^\\s+' +
+					'(?<from>[A-Z]{3})-' +
+					'(?<to>[A-Z]{3})\\s+' +
+					'(?<aircraft>[A-Z\\d]{2,3})\\s*' +
+					'$/';
 				while ($line = array_shift($lines)) {
 					let $matches;
 					if ($matches = preg_match($filter, $line)) {
@@ -172,7 +178,7 @@ class ItineraryParser {
 				},
 				'eticket': $eticket,
 				'marriage': $marriage,
-				'unexpectedText': array_key_exists('unexpectedText', $matches) ? $matches['unexpectedText'] : false,
+				'unexpectedText': $matches['unexpectedText'] || '',
 				'raw': $line,
 			};
 		} else {
