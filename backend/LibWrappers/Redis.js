@@ -1,6 +1,6 @@
 
 let ioredis = require("ioredis");
-let config = require('../Config.es6');
+let config = require('../Config.js');
 
 /** @type IIoRedisClient */
 let client = new ioredis(config.REDIS_PORT, config.REDIS_HOST);

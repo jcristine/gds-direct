@@ -10,9 +10,9 @@ let {
 	preg_match, rtrim, str_split,
 	explode, in_array,
 	trim
-} = require("../../../../php.es6");
+} = require("../../../../php.js");
 
-const CommonParserHelpers = require('./../CommonParserHelpers.es6');
+const CommonParserHelpers = require('./../CommonParserHelpers.js');
 
 const SEGMENT_TYPE_ITINERARY_SEGMENT = 'SEGMENT_TYPE_ITINERARY_SEGMENT';
 const SEGMENT_TYPE_OTH = 'OTH';

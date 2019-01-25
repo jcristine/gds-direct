@@ -1,5 +1,5 @@
 
-let dbPool = require('../App/Classes/Sql.es6');
+let dbPool = require('../App/Classes/Sql.js');
 
 /**
  * a wrapper for DB connection

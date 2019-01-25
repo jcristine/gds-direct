@@ -1,5 +1,5 @@
-const ConnectionList = require('./../Cache/ConnectionList.es6');
-const Sessions = require('./../Cache/Sessions.es6');
+const ConnectionList = require('./../Cache/ConnectionList.js');
+const Sessions = require('./../Cache/Sessions.js');
 
 class LocalCache {
     constructor() {

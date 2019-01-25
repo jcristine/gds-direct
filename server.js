@@ -1,2 +1,2 @@
 
-require('./backend/WebRoutes.es6');
+require('./backend/WebRoutes.js');

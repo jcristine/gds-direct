@@ -1,8 +1,8 @@
 
-const Db = require("../../../Utils/Db.es6");
-const {sprintf, preg_match, preg_replace, preg_replace_callback, rtrim, str_replace, strcasecmp, boolval, empty, intval, isset, strtoupper, trim, PHP_EOL, json_encode} = require('../../php.es6');
+const Db = require("../../../Utils/Db.js");
+const {sprintf, preg_match, preg_replace, preg_replace_callback, rtrim, str_replace, strcasecmp, boolval, empty, intval, isset, strtoupper, trim, PHP_EOL, json_encode} = require('../../php.js');
 
-let TerminalHighlightService = require('./TerminalHighlightService.es6');
+let TerminalHighlightService = require('./TerminalHighlightService.js');
 
 let self = {
 	ERROR_NO_PARAMS                 : 'Error: No Params',

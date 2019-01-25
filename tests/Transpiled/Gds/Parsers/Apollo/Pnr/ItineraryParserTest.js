@@ -1,10 +1,10 @@
 
 // add this to generated require() - '../../backend/Transpiled/'
 
-const ItineraryParser = require('../../../../../../backend/Transpiled/Gds/Parsers/Apollo/Pnr/ItineraryParser.es6');
-const php                              = require('../../../../../../backend/Transpiled/php.es6');
+const ItineraryParser = require('../../../../../../backend/Transpiled/Gds/Parsers/Apollo/Pnr/ItineraryParser.js');
+const php                              = require('../../../../../../backend/Transpiled/php.js');
 
-class ItineraryParserTest extends require('../../../../../../backend/Transpiled/Lib/TestCase.es6')
+class ItineraryParserTest extends require('../../../../../../backend/Transpiled/Lib/TestCase.js')
 {
     provideTreeTestCases()  {
         let $list;

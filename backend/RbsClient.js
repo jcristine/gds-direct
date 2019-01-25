@@ -1,7 +1,7 @@
 
 let querystring = require('querystring');
-let PersistentHttpRq = require('./Utils/PersistentHttpRq.es6');
-let RedisData = require('./LibWrappers/RedisData.es6');
+let PersistentHttpRq = require('./Utils/PersistentHttpRq.js');
+let RedisData = require('./LibWrappers/RedisData.js');
 
 let callRbs = (functionName, params) => {
 	let logId = 'rbs.5bf6e431.9577485';
@@ -86,7 +86,7 @@ RbsClient.startSession = ({gds, agentId}) => {
 	}));
 };
 
-/** @param session = at('GdsSessions.es6').makeSessionRecord() */
+/** @param session = at('GdsSessions.js').makeSessionRecord() */
 RbsClient.closeSession = (session) => {
 	return callRbs('terminal.endSession', {
 		gds: session.context.gds,

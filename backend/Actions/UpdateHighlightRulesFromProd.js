@@ -1,4 +1,4 @@
-const Db = require("../Utils/Db.es6");
+const Db = require("../Utils/Db.js");
 
 /** @param {IFullCmsHighlightData} fullCmsData */
 module.exports = (fullCmsData) => {

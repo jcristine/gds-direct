@@ -1,6 +1,6 @@
 
-const {boolval, empty, intval, isset, strtoupper, trim, PHP_EOL, json_encode} = require('../../php.es6');
-const TerminalSettings = require('../../App/Models/Terminal/TerminalSettings.es6');
+const {boolval, empty, intval, isset, strtoupper, trim, PHP_EOL, json_encode} = require('../../php.js');
+const TerminalSettings = require('../../App/Models/Terminal/TerminalSettings.js');
 class ValidateException extends Error {}
 
 /** @debug */
@@ -14,34 +14,34 @@ var require = (path) => {
 
 const AuthSession = require('App/Classes/Core/AuthSession');
 //const ValidateException = require('App/Classes/Core/Exceptions/ValidateException');
-const FlightOptionRemarks = require('../../App/ModelHelpers/FlightOptionRemarks.es6');
-const ItineraryHelper = require('../../App/ModelHelpers/ItineraryHelper.es6');
-const ItinerarySegmentsHelper = require('../../App/ModelHelpers/ItinerarySegmentsHelper.es6');
-const Airline = require('../../App/Models/Airline.es6');
-const Airport = require('../../App/Models/Airport.es6');
-const Baggage = require('../../App/Models/Baggage.es6');
-const City = require('../../App/Models/City.es6');
-const Country = require('../../App/Models/Country.es6');
-const Currency = require('../../App/Models/Currency.es6');
-const FlightOption = require('../../App/Models/FlightOption.es6');
-const FlightOptionPrices = require('../../App/Models/FlightOptionPrices.es6');
-const FlightOptionsAddedGroups = require('../../App/Models/FlightOptionsAddedGroups.es6');
-const FlightOptionSources = require('../../App/Models/FlightOptionSources.es6');
-const FlightOptionStatuses = require('../../App/Models/FlightOptionStatuses.es6');
-const FlightOptionType = require('../../App/Models/FlightOptionType.es6');
-const Gds = require('../../App/Models/Gds.es6');
-const Itinerary = require('../../App/Models/Itinerary.es6');
-const ItinerarySegments = require('../../App/Models/ItinerarySegments.es6');
-const LeadsDestinations = require('../../App/Models/LeadsDestinations.es6');
-const PassengerTypes = require('../../App/Models/PassengerTypes.es6');
-const TerminalBuffering = require('../../App/Models/Terminal/TerminalBuffering.es6');
-const TerminalInputLanguages = require('../../App/Models/Terminal/TerminalInputLanguages.es6');
-const TerminalLogsGz = require('../../App/Models/TerminalLogsGz.es6');
-const TravelRequests = require('../../App/Models/TravelRequests.es6');
-const TerminalService = require('../../App/Services/TerminalService.es6');
-const SQLException = require('../../Dyninno/Core/Exception/SQLException.es6');
-const Log = require('../../Dyninno/Core/Logger/Log.es6');
-const InvalidArgumentException = require('../../Psr/SimpleCache/InvalidArgumentException.es6');
+const FlightOptionRemarks = require('../../App/ModelHelpers/FlightOptionRemarks.js');
+const ItineraryHelper = require('../../App/ModelHelpers/ItineraryHelper.js');
+const ItinerarySegmentsHelper = require('../../App/ModelHelpers/ItinerarySegmentsHelper.js');
+const Airline = require('../../App/Models/Airline.js');
+const Airport = require('../../App/Models/Airport.js');
+const Baggage = require('../../App/Models/Baggage.js');
+const City = require('../../App/Models/City.js');
+const Country = require('../../App/Models/Country.js');
+const Currency = require('../../App/Models/Currency.js');
+const FlightOption = require('../../App/Models/FlightOption.js');
+const FlightOptionPrices = require('../../App/Models/FlightOptionPrices.js');
+const FlightOptionsAddedGroups = require('../../App/Models/FlightOptionsAddedGroups.js');
+const FlightOptionSources = require('../../App/Models/FlightOptionSources.js');
+const FlightOptionStatuses = require('../../App/Models/FlightOptionStatuses.js');
+const FlightOptionType = require('../../App/Models/FlightOptionType.js');
+const Gds = require('../../App/Models/Gds.js');
+const Itinerary = require('../../App/Models/Itinerary.js');
+const ItinerarySegments = require('../../App/Models/ItinerarySegments.js');
+const LeadsDestinations = require('../../App/Models/LeadsDestinations.js');
+const PassengerTypes = require('../../App/Models/PassengerTypes.js');
+const TerminalBuffering = require('../../App/Models/Terminal/TerminalBuffering.js');
+const TerminalInputLanguages = require('../../App/Models/Terminal/TerminalInputLanguages.js');
+const TerminalLogsGz = require('../../App/Models/TerminalLogsGz.js');
+const TravelRequests = require('../../App/Models/TravelRequests.js');
+const TerminalService = require('../../App/Services/TerminalService.js');
+const SQLException = require('../../Dyninno/Core/Exception/SQLException.js');
+const Log = require('../../Dyninno/Core/Logger/Log.js');
+const InvalidArgumentException = require('../../Psr/SimpleCache/InvalidArgumentException.js');
 
 class TerminalBaseController {
 

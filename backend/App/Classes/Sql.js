@@ -1,6 +1,6 @@
 "use strict";
 const mysql  = require('promise-mysql'),
-      Config = require('../../Config.es6');
+      Config = require('../../Config.js');
 
 let dbPool = mysql.createPool({
 	host: Config.DB_HOST,

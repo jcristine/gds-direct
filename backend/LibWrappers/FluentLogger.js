@@ -1,7 +1,7 @@
 
 const {Logger} = require('dynatech-logger');
-const Config = require('../Config.es6');
-const Diag = require('./Diag.es6');
+const Config = require('../Config.js');
+const Diag = require('./Diag.js');
 
 process.env.NODE_ENV = Config.production ? 'production' : 'development'; // accept development | stage | production
 

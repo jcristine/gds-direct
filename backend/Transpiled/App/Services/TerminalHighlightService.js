@@ -1,7 +1,7 @@
 
-const Str = require("../../../Utils/Str.es6");
-const Db = require("../../../Utils/Db.es6");
-const {ucfirst, array_key_exists, array_merge, substr_replace, array_flip, array_intersect_key, array_values, sprintf, strlen, implode, preg_match, preg_replace, preg_replace_callback, rtrim, str_replace, strcasecmp, boolval, empty, intval, isset, strtoupper, trim, PHP_EOL, json_encode} = require('../../php.es6');
+const Str = require("../../../Utils/Str.js");
+const Db = require("../../../Utils/Db.js");
+const {ucfirst, array_key_exists, array_merge, substr_replace, array_flip, array_intersect_key, array_values, sprintf, strlen, implode, preg_match, preg_replace, preg_replace_callback, rtrim, str_replace, strcasecmp, boolval, empty, intval, isset, strtoupper, trim, PHP_EOL, json_encode} = require('../../php.js');
 
 let whenRuleMapping = null;
 let whenCmdPatterns = null;

@@ -1,5 +1,5 @@
 
-let {client} = require('./Redis.es6');
+let {client} = require('./Redis.js');
 
 let getStore = (name, keys) => {
 	let hash = JSON.stringify(keys.map(k => k + ""));

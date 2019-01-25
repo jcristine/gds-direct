@@ -1,9 +1,9 @@
 
 // namespace Gds\Parsers\Apollo;
 
-const CommonParserHelpers = require('../../../../../../backend/Transpiled/Gds/Parsers/Apollo/CommonParserHelpers.es6');
+const CommonParserHelpers = require('../../../../../../backend/Transpiled/Gds/Parsers/Apollo/CommonParserHelpers.js');
 
-class CommonParserHelpersTest extends require('../../../../../../backend/Transpiled/Lib/TestCase.es6')
+class CommonParserHelpersTest extends require('../../../../../../backend/Transpiled/Lib/TestCase.js')
 {
     provideDecodeApolloTimeData()  {
         return [

@@ -1,23 +1,23 @@
 
 let express = require('express');
-let UserController = require('./UserController.es6');
-let CompletionData = require('./CompletionData.es6');
-let Emc = require('./App/Api/Clients/Emc.es6');
-let GdsSessionController = require('./GdsSessionController.es6');
-let TerminalBaseController = require('./Transpiled/App/Controllers/TerminalBaseController.es6');
-let {hrtimeToDecimal} = require('./Utils/Misc.es6');
-let {Forbidden, NotImplemented} = require('./Utils/Rej.es6');
+let UserController = require('./UserController.js');
+let CompletionData = require('./CompletionData.js');
+let Emc = require('./App/Api/Clients/Emc.js');
+let GdsSessionController = require('./GdsSessionController.js');
+let TerminalBaseController = require('./Transpiled/App/Controllers/TerminalBaseController.js');
+let {hrtimeToDecimal} = require('./Utils/Misc.js');
+let {Forbidden, NotImplemented} = require('./Utils/Rej.js');
 let cluster = require('cluster');
-let {admins} = require('./Constants.es6');
-let UpdateHighlightRulesFromProd = require('./Actions/UpdateHighlightRulesFromProd.es6');
-let Db = require('./Utils/Db.es6');
-let Diag = require('./LibWrappers/Diag.es6');
-let FluentLogger = require('./LibWrappers/FluentLogger.es6');
-let HighlightRulesRepository = require('./Actions/HighlightRulesRepository.es6');
-let dbPool = require('./App/Classes/Sql.es6');
-let Redis = require('./LibWrappers/Redis.es6');
+let {admins} = require('./Constants.js');
+let UpdateHighlightRulesFromProd = require('./Actions/UpdateHighlightRulesFromProd.js');
+let Db = require('./Utils/Db.js');
+let Diag = require('./LibWrappers/Diag.js');
+let FluentLogger = require('./LibWrappers/FluentLogger.js');
+let HighlightRulesRepository = require('./Actions/HighlightRulesRepository.js');
+let dbPool = require('./App/Classes/Sql.js');
+let Redis = require('./LibWrappers/Redis.js');
 let initSocketIo = require('socket.io');
-let Config = require('./Config.es6');
+let Config = require('./Config.js');
 
 let app = express();
 
@@ -127,7 +127,7 @@ app.use((req, res, next) => {
 });
 app.get('/', (req, res) => res.redirect('/public'));
 app.use('/public', (rq, rs, next) => {
-	if (rq.path.endsWith('.es6')) {
+	if (rq.path.endsWith('.js')) {
 		rs.setHeader('Content-Type', 'application/javascript');
 	}
 	next();

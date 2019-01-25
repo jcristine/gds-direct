@@ -1,7 +1,7 @@
 
-let {client, keys, withNewConnection} = require('./../LibWrappers/Redis.es6');
-let FluentLogger = require('./../LibWrappers/FluentLogger.es6');
-let {NoContent, Conflict, NotFound} = require('./../Utils/Rej.es6');
+let {client, keys, withNewConnection} = require('./../LibWrappers/Redis.js');
+let FluentLogger = require('./../LibWrappers/FluentLogger.js');
+let {NoContent, Conflict, NotFound} = require('./../Utils/Rej.js');
 
 let normalizeContext = (reqBody) => {
 	return {

@@ -2,7 +2,7 @@
 let http = require('http');
 let https = require('https');
 let url = require('url');
-let {BadGateway} = require('../Utils/Rej.es6');
+let {BadGateway} = require('../Utils/Rej.js');
 
 // not sure if it should be a separate agent per domain or not...
 let httpsAgent = new https.Agent({

@@ -3,7 +3,7 @@
 
 // add this to generated require() - '../../../backend/Transpiled/'
 
-let php = require('../php.es6');
+let php = require('../php.js');
 
 class TestCase
 {

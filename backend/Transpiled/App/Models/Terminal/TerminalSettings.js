@@ -1,7 +1,7 @@
-const Db = require('./../../../../Utils/Db.es6');
-const Constants = require('./../../../../Constants.es6');
-const {array_map, array_flip, array_intersect_key, empty, json_decode, str_split, intval, isset} = require("../../../php.es6");
-const RedisData = require("../../../../LibWrappers/RedisData.es6");
+const Db = require('./../../../../Utils/Db.js');
+const Constants = require('./../../../../Constants.js');
+const {array_map, array_flip, array_intersect_key, empty, json_decode, str_split, intval, isset} = require("../../../php.js");
+const RedisData = require("../../../../LibWrappers/RedisData.js");
 
 let TABLE = 'terminalSettings';
 let AREA_TABLE = 'terminalAreaSettings';

@@ -1,14 +1,14 @@
 
-let RbsClient = require('./RbsClient.es6');
-let TravelportClient = require('./TravelportClient.es6');
-let dbPool = require('./App/Classes/Sql.es6');
-let Db = require('./Utils/Db.es6');
-let TerminalService = require('./Transpiled/App/Services/TerminalService.es6');
-let {hrtimeToDecimal} = require('./Utils/Misc.es6');
-let {admins} = require('./Constants.es6');
-let GdsSessions = require('./Repositories/GdsSessions.es6');
-let {logit, logExc} = require('./LibWrappers/FluentLogger.es6');
-let {Forbidden, NotImplemented} = require('./Utils/Rej.es6');
+let RbsClient = require('./RbsClient.js');
+let TravelportClient = require('./TravelportClient.js');
+let dbPool = require('./App/Classes/Sql.js');
+let Db = require('./Utils/Db.js');
+let TerminalService = require('./Transpiled/App/Services/TerminalService.js');
+let {hrtimeToDecimal} = require('./Utils/Misc.js');
+let {admins} = require('./Constants.js');
+let GdsSessions = require('./Repositories/GdsSessions.js');
+let {logit, logExc} = require('./LibWrappers/FluentLogger.js');
+let {Forbidden, NotImplemented} = require('./Utils/Rej.js');
 
 let md5 = (data) => {
 	// return crypto.createHash('md5')
@@ -59,7 +59,7 @@ let runInNewSession = (rqBody, exc) => {
 		});
 };
 
-/** @param session = at('GdsSessions.es6').makeSessionRecord() */
+/** @param session = at('GdsSessions.js').makeSessionRecord() */
 let closeSession = (session) => {
 	let closing;
 	if (+session.context.useRbs) {
@@ -74,7 +74,7 @@ let closeSession = (session) => {
 	});
 };
 
-/** @param reqBody = at('WebRoutes.es6').normalizeRqBody() */
+/** @param reqBody = at('WebRoutes.js').normalizeRqBody() */
 let runInputCmdRestartAllowed = (reqBody) => {
 	reqBody.command = reqBody.command.trim();
 	return GdsSessions.getByContext(reqBody)

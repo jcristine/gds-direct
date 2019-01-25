@@ -1,7 +1,7 @@
 "use strict";
 
 const request = require('request');
-const JsonServiceRequestException = require('./../../../Exceptions/JsonServiceRequestException.es6');
+const JsonServiceRequestException = require('./../../../Exceptions/JsonServiceRequestException.js');
 
 class JsonService {
     constructor() {

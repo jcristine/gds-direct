@@ -1,7 +1,7 @@
-let MultiLevelMap = require('./Utils/MultiLevelMap.es6');
-let Db = require('./Utils/Db.es6');
-let TerminalSettings = require('./Transpiled/App/Models/Terminal/TerminalSettings.es6');
-let {admins} = require('./Constants.es6');
+let MultiLevelMap = require('./Utils/MultiLevelMap.js');
+let Db = require('./Utils/Db.js');
+let TerminalSettings = require('./Transpiled/App/Models/Terminal/TerminalSettings.js');
+let {admins} = require('./Constants.js');
 
 let getCommandBufferRows = (reqBody, emcResult) =>
     Db.with(db => db.fetchAll({

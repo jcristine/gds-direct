@@ -1,8 +1,8 @@
 
-let Db = require("../Utils/Db.es6");
-let MultiLevelMap = require('../Utils/MultiLevelMap.es6');
-let {admins} = require('./../Constants.es6');
-let {Forbidden} = require('./../Utils/Rej.es6');
+let Db = require("../Utils/Db.js");
+let MultiLevelMap = require('../Utils/MultiLevelMap.js');
+let {admins} = require('./../Constants.js');
+let {Forbidden} = require('./../Utils/Rej.js');
 
 let fetchFromDb = () => Db.with((db) => Promise.all([
 	db.fetchAll({table: 'highlightRules'}),

@@ -1,9 +1,9 @@
 "use strict";
 
-const JsonService                 = require('../../Classes/Core/JsonService/JsonService.es6'),
-      Config                      = require('./../../../Config.es6'),
-      LocalCache                  = require('../../Classes/Core/LocalCache.es6'),
-      JsonServiceRequestException = require('./../../Exceptions/JsonServiceRequestException.es6');
+const JsonService                 = require('../../Classes/Core/JsonService/JsonService.js'),
+      Config                      = require('./../../../Config.js'),
+      LocalCache                  = require('../../Classes/Core/LocalCache.js'),
+      JsonServiceRequestException = require('./../../Exceptions/JsonServiceRequestException.js');
 
 class Emc extends JsonService {
     constructor() {

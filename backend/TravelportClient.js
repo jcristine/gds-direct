@@ -1,7 +1,7 @@
-let ItineraryParser = require("./Transpiled/Gds/Parsers/Apollo/Pnr/ItineraryParser.es6");
+let ItineraryParser = require("./Transpiled/Gds/Parsers/Apollo/Pnr/ItineraryParser.js");
 
-let config = require('./Config.es6');
-let PersistentHttpRq = require('./Utils/PersistentHttpRq.es6');
+let config = require('./Config.js');
+let PersistentHttpRq = require('./Utils/PersistentHttpRq.js');
 
 /**
  * they are all physically located in USA, Atlanta (in same building)
@@ -213,7 +213,7 @@ let TravelportClient = (reqBody) => {
 
 TravelportClient.startSession = startSession;
 
-/** @param session = at('GdsSessions.es6').makeSessionRecord() */
+/** @param session = at('GdsSessions.js').makeSessionRecord() */
 TravelportClient.closeSession = (session) => {
 	// TODO: actually close
 	return Promise.resolve({message: 'Nah, will expire on it\'s own someday...'});
