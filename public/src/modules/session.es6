@@ -36,13 +36,16 @@ export default class Session
 			if (!callInProgress && window.performance.now() - lastUsedAt >= pingInterval) {
 				lastUsedAt = window.performance.now();
 				callInProgress = true;
+				let requestedAt = new Date();
 				post('/gdsDirect/keepAlive', makeParams(this, {}))
 					.then(result => {
 						let rbsResult = result.rbsResult;
 						let newSession = rbsResult ? rbsResult.startNewSession : false;
+						let gdsSessionData = rbsResult ? rbsResult.gdsSessionData : null;
 						if (newSession) {
 							notify({
-								msg 	: 'Session restarted on attempt to keepAlive',
+								msg 	: 'Session restarted on attempt to keepAlive - ' + JSON.stringify(gdsSessionData)
+									+ ' ' + new Date().toISOString() + ' (requested at ' + requestedAt.toISOString() + ')',
 								type 	: 'warning',
 								timeout	: 4000
 							});
