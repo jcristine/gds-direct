@@ -4,9 +4,6 @@ stages:
 before_script:
   - node --version
 
-variables:
-  GIT_STRATEGY: none
-
 run-tests:
   stage: test
   tags:
