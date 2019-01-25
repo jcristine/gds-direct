@@ -1,13 +1,9 @@
-cache:
-  untracked: true
-  key: "$CI_BUILD_REF_NAME"
-  paths:
-    - node_modules/
-    - public/node_modules/
-
 stages:
 - setup
 - test
+
+before_script:
+  - node --version
 
 setup:
   stage: setup
@@ -21,6 +17,10 @@ setup:
   script:
     - bash build.sh
     - cp .env.dist .env
+  artifacts:
+    paths:
+      - node_modules/
+      - public/node_modules/
 
 run-tests:
   stage: test
