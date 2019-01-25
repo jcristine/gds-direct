@@ -5,6 +5,11 @@ stages:
 before_script:
   - node --version
 
+cache:
+  paths:
+    - node_modules/
+    - public/node_modules
+
 setup:
   stage: setup
   tags:
@@ -17,11 +22,6 @@ setup:
   script:
     - bash build.sh
     - cp .env.dist .env
-  artifacts:
-    paths:
-      - node_modules/
-      - public/node_modules/
-    expire_in: 1 week
 
 run-tests:
   stage: test
