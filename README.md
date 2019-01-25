@@ -1,4 +1,3 @@
-
 ![example screenshot](https://gitlab.dyninno.net/client-management-system/gds-direct-nodejs/uploads/803cfa6f85ac4bb3115dfd457ffd85cd/image.png)
 
 Hi, nice to meet you. I am the gds-direct-nodejs app.
@@ -27,3 +26,4 @@ Usage:
     });
 </script>
 ```
+
