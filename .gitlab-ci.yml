@@ -4,24 +4,17 @@ stages:
 before_script:
   - node --version
 
-cache:
-  untracked: true
-  key: "$CI_BUILD_REF_NAME"
-  paths:
-    - node_modules/
-    - public/node_modules
+variables:
+  GIT_STRATEGY: none
 
 run-tests:
   stage: test
   tags:
     - dev-w04
   script:
+    - git pull
     - bash build.sh
     - cp .env.dist .env
 #  - test -e "/home/gitlab-runner/public_html/gds-direct-plus" || git clone $CI_REPOSITORY_URL -b master /home/gitlab-runner/public_html/gds-direct-plus --depth 1
 #  - cd /home/gitlab-runner/public_html/gds-direct-plus
     - node_modules/node/bin/node tests/runTests.js
-  artifacts:
-    paths:
-      - node_modules/
-      - public/node_modules
