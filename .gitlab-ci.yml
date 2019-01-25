@@ -21,6 +21,7 @@ setup:
     paths:
       - node_modules/
       - public/node_modules/
+    expire_in: 1 week
 
 run-tests:
   stage: test
