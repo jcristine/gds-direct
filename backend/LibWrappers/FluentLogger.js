@@ -1,5 +1,14 @@
 
-const {Logger} = require('dynatech-logger');
+let Logger;
+try {
+	Logger = require('dynatech-logger').Logger;
+} catch (exc) {
+	// no permissions in gitlab-ci
+	Logger = class {
+		logit(msg, logId, data) {};
+		logNewId(prefix, log_id_old, msg_for_old_log) {};
+	};
+}
 const Config = require('../Config.js');
 const Diag = require('./Diag.js');
 

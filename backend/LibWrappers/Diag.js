@@ -1,4 +1,15 @@
-const {DiagService} = require('dynatech-diag-service');
+
+let DiagService;
+try {
+    DiagService = require('dynatech-diag-service').DiagService;
+} catch (exc) {
+    DiagService = class {
+        setProjectId() {};
+        setIsProduction() {};
+        setHostname() {};
+        error() {};
+    };
+}
 const Config = require('../Config.js');
 
 const diagService = new DiagService(null, {

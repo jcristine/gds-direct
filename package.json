@@ -4,10 +4,12 @@
   "description": "An applet that allows user to enter GDS commands in a browser",
   "author": "klesun",
   "license": "proprietary",
+  "optionalDependencies": {
+    "dynatech-diag-service": "git+ssh://git@gitlab.dyninno.net:1022/node-libraries/diag-service.git#0.0.05",
+    "dynatech-logger": "git+ssh://git@gitlab.dyninno.net:1022/node-libraries/logger#0311e74054d23f40ff0f124cc48d757828da10da"
+  },
   "dependencies": {
     "dotenv": "^6.2.0",
-    "dynatech-diag-service": "git+ssh://git@gitlab.dyninno.net:1022/node-libraries/diag-service.git#0.0.05",
-    "dynatech-logger": "git+ssh://git@gitlab.dyninno.net:1022/node-libraries/logger#0311e74054d23f40ff0f124cc48d757828da10da",
     "express": "^4.16.4",
     "ioredis": "^4.3.0",
     "jsdom": "^13.0.0",
