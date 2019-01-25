@@ -1,31 +1,27 @@
 stages:
-- setup
 - test
 
 before_script:
   - node --version
 
 cache:
+  untracked: true
+  key: "$CI_BUILD_REF_NAME"
   paths:
     - node_modules/
     - public/node_modules
 
-setup:
-  stage: setup
+run-tests:
+  stage: test
   tags:
     - dev-w04
-  only:
-    - master
-  environment:
-      name: staging
-      url: http://gds-direct-plus.gitlab-runner.php7.dyninno.net
   script:
     - bash build.sh
     - cp .env.dist .env
-
-run-tests:
-  stage: test
-  script:
 #  - test -e "/home/gitlab-runner/public_html/gds-direct-plus" || git clone $CI_REPOSITORY_URL -b master /home/gitlab-runner/public_html/gds-direct-plus --depth 1
 #  - cd /home/gitlab-runner/public_html/gds-direct-plus
-  - node_modules/node/bin/node tests/runTests.js
+    - node_modules/node/bin/node tests/runTests.js
+  artifacts:
+    paths:
+      - node_modules/
+      - public/node_modules
