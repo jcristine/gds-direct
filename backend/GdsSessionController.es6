@@ -158,11 +158,8 @@ let keepAliveSession = (session) => {
 
 // should restart session if token expired
 exports.keepAlive = (reqBody) => {
-	return runInputCmdRestartAllowed(makeKeepAliveParams(reqBody))
-		.then(result => {
-			logit('INFO: keepAlive result:', result.session.logId, result);
-			return result;
-		});
+	return GdsSessions.getByContext(reqBody)
+		.then(keepAliveSession);
 };
 
 // should not restart session

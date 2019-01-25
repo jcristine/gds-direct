@@ -7,6 +7,7 @@ let promise 	= '';
 
 let lastUsedAt = window.performance.now();
 let callInProgress = false;
+let closed = false;
 
 let makeParams = (session, callParams) => {
 	let baseParams = {
@@ -33,29 +34,13 @@ export default class Session
 		let gds = params.gds;
 		let pingInterval = gds === 'apollo' ? 60 * 1000 : 10 * 60 * 1000;
 		setInterval(() => {
-			if (!callInProgress && window.performance.now() - lastUsedAt >= pingInterval) {
+			if (!callInProgress && !closed && window.performance.now() - lastUsedAt >= pingInterval) {
 				lastUsedAt = window.performance.now();
 				callInProgress = true;
 				let requestedAt = new Date();
 				post('/gdsDirect/keepAlive', makeParams(this, {}))
-					.then(result => {
-						let rbsResult = result.rbsResult;
-						let newSession = rbsResult ? rbsResult.startNewSession : false;
-						let gdsSessionData = rbsResult ? rbsResult.gdsSessionData : null;
-						if (newSession) {
-							notify({
-								msg 	: 'Session restarted on attempt to keepAlive - ' + JSON.stringify(gdsSessionData)
-									+ ' ' + new Date().toISOString() + ' (requested at ' + requestedAt.toISOString() + ')',
-								type 	: 'warning',
-								timeout	: 4000
-							});
-						}
-					})
-					.catch(formatSystemError)
-					.then(result => {
-						callInProgress = false;
-						return result;
-					});
+					.catch(exc => closed = true)
+					.then(result => callInProgress = false);
 			}
 		}, pingInterval);
 	}
@@ -72,6 +57,7 @@ export default class Session
 		return post('/terminal/command?cmd=' + cmd, makeParams(this, {command: cmd}))
 			.catch(formatSystemError)
 			.then(result => {
+				closed = false;
 				callInProgress = false;
 				return result;
 			});
