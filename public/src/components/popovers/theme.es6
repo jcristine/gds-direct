@@ -38,16 +38,6 @@ export default class Theme extends ButtonPopOver
 				this.popContent.appendChild( button );
 			})
 		}
-		if (window.GdsDirectPlusState.getIsAdmin()) {
-			const admin = new Component('button.btn btn-primary[<i class="fa t-f-size-14">Edit</i>]', {
-				onclick: () => {
-					// replace with prod link when we have prod
-					let url = 'http://dev-w13:20328/public/admin/terminalThemes.html#emcSessionId=' + GdsDirectPlusParams.emcSessionId;
-					window.open(url, '_blank');
-				},
-			}).context;
-			this.popContent.appendChild(admin);
-		}
 	}
 
 	onSelect(value)

@@ -3,6 +3,7 @@ import {History} from "../popovers/history";
 import KeySettings from "../popovers/keySettings";
 import TextSize from "../popovers/textSize";
 import Component from "../../modules/component";
+import Admin from "../popovers/admin";
 
 export class SettingsButtons extends Component
 {
@@ -44,13 +45,9 @@ export class SettingsButtons extends Component
 		let buttons = [themeBtn, textSize, history, keySettings];
 
 		if (window.GdsDirectPlusState.getIsAdmin()) {
-			const admin = new Component('button.btn btn-primary[<i class="fa t-f-size-14">admin</i>]', {
-				onclick: () => {
-					// replace with prod link when we have prod
-					let url = 'http://dev-w13:20328/public/admin/highlightRules.html#emcSessionId=' + GdsDirectPlusParams.emcSessionId;
-					window.open(url, '_blank');
-				},
-			}).context;
+			let admin = new Admin({
+				icon: '<i class="fa t-f-size-14">admin</i>',
+			}).getTrigger();
 			buttons.push(admin);
 		}
 
