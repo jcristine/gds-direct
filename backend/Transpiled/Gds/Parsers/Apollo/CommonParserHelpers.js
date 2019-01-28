@@ -156,8 +156,8 @@ class CommonParserHelpers
             $withoutCentury = $raw;
         }
         if ($parsed = this.parseApolloFullDate($withoutCentury)) {
-            let $century = $century || '20';
-            let $parsed = $century + $parsed;
+            $century = $century || '20';
+            $parsed = $century + $parsed;
         }
         return {'raw': $raw,'parsed': $parsed,};
     }
