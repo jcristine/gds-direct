@@ -3,10 +3,11 @@ import Component from "../modules/component.es6";
 import Modals from '../abstract/components/modals.js';
 
 import AppDom from '../helpers/dom.es6';
+let App = {Dom: AppDom};
+
 import Validate from './validator.js';
 import {notify} from '../helpers/debug.es6';
 
-let App = {Dom: AppDom};
 require('datatables.net');
 
 // define([

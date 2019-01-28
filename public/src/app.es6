@@ -4,8 +4,9 @@ import './theme/main.less';
 import {getStore} from "./store";
 import requests from  "./helpers/requests";
 import GdsDirectPlusApp from  "./modules/GdsDirectPlusApp";
-import HighlightRulesAdminApp from  "./modules/HighlightRulesAdminApp";
-import TerminalThemesAdminApp from  "./modules/TerminalThemesAdminApp";
+import HighlightRulesAdminApp from "./modules/HighlightRulesAdminApp";
+import TerminalThemesAdminApp from "./modules/TerminalThemesAdminApp";
+import TerminalSessionListApp from "./modules/TerminalSessionListApp";
 
 const initGlobEvents = () => {
 
@@ -103,3 +104,4 @@ window.InitGdsDirectPlusApp = (params) => {
 
 window.InitGdsDirectPlusApp.HighlightRulesAdminApp = HighlightRulesAdminApp;
 window.InitGdsDirectPlusApp.TerminalThemesAdminApp = TerminalThemesAdminApp;
+window.InitGdsDirectPlusApp.TerminalSessionListApp = TerminalSessionListApp;
