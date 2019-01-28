@@ -19,6 +19,7 @@ let Redis = require('./LibWrappers/Redis.js');
 let initSocketIo = require('socket.io');
 let Config = require('./Config.js');
 let GdsSessions = require('./Repositories/GdsSessions.js');
+const CommandParser = require("./Transpiled/Gds/Parsers/Apollo/CommandParser");
 
 let app = express();
 
@@ -281,6 +282,9 @@ app.get('/doSomeHeavyStuff', withAuth((reqBody, emcResult) => {
 	} else {
 		return Forbidden('Sorry, you must be me in order to use that');
 	}
+}));
+app.get('/parser/test', toHandleHttp((rqBody) => {
+	return CommandParser.parse(rqBody.input);
 }));
 
 app.listen(Config.HTTP_PORT);

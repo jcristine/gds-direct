@@ -1,0 +1,17 @@
+<body>
+	<label>cmd: <textarea id="input" rows="1" cols="100"></textarea></label>
+	<button onclick="parse()">Parse!</button><br/>
+	<label>output:</label><br/>
+	<textarea id="output" rows="30" cols="200"></textarea><br/>
+<script>
+	let inputField = document.getElementById('input');
+	let outputField = document.getElementById('output');
+	window.parse = () => {
+		let inputEsc = encodeURIComponent(inputField.value);
+		fetch('/parser/test?input=' + inputEsc)
+			.then(a => a.json())
+			.then(result => outputField.value = JSON.stringify(result, null, 4));
+	};
+</script>
+</body>
+
