@@ -18,6 +18,7 @@ let dbPool = require('./App/Classes/Sql.js');
 let Redis = require('./LibWrappers/Redis.js');
 let initSocketIo = require('socket.io');
 let Config = require('./Config.js');
+let GdsSessions = require('./Repositories/GdsSessions.js');
 
 let app = express();
 
@@ -205,6 +206,31 @@ app.get('/gdsDirect/themes', toHandleHttp(() =>
 			}),
 		}))
 ));
+
+/** @param session = at('GdsSessions.js').makeSessionRecord() */
+let transformSession = (session) => {
+	return {
+		"id": session.id,
+		"externalId": session.sessionData.rbsSessionId || JSON.stringify(session.sessionData),
+		"agentId": session.context.agentId,
+		"gds": session.context.gds,
+		"requestId": session.context.travelRequestId,
+		"startTime": new Date(session.createdMs).toISOString(),
+		"endTime": null,
+		"logId": session.logId,
+		"isRestarted": false,
+		"startTimestamp": Math.floor(session.createdMs / 1000),
+		"accessMs": session.accessMs,
+		"useRbs": session.context.useRbs,
+	};
+};
+
+app.post('/admin/terminal/sessionsGet', toHandleHttp(async rqBody => {
+	let sessions = await GdsSessions.getAll();
+	return {
+		aaData: sessions.map(transformSession),
+	};
+}));
 
 app.get('/ping', toHandleHttp((rqBody) => {
 	let memory = {};

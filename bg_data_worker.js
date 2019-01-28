@@ -1,8 +1,8 @@
 
-let GdsSessionController = require('./backend/GdsSessionController.es6');
-let GdsSessions = require('./backend/Repositories/GdsSessions.es6');
-let FluentLogger = require('./backend/LibWrappers/FluentLogger.es6');
-let {NoContent} = require('./backend/Utils/Rej.es6');
+let GdsSessionController = require('./backend/GdsSessionController.js');
+let GdsSessions = require('./backend/Repositories/GdsSessions.js');
+let FluentLogger = require('./backend/LibWrappers/FluentLogger.js');
+let {NoContent} = require('./backend/Utils/Rej.js');
 
 let workerLogId = FluentLogger.logNewId('bgworker');
 

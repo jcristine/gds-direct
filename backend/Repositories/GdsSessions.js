@@ -2,6 +2,7 @@
 let {client, keys, withNewConnection} = require('./../LibWrappers/Redis.js');
 let FluentLogger = require('./../LibWrappers/FluentLogger.js');
 let {NoContent, Conflict, NotFound} = require('./../Utils/Rej.js');
+let {chunk} = require('./../Utils/Misc.js');
 
 let normalizeContext = (reqBody) => {
 	return {
@@ -39,6 +40,17 @@ let getById = (id) => {
 		.then(nonEmpty('Session #' + id, NotFound))
 		.then(json => JSON.parse(json))
 		.then(/** @param session = makeSessionRecord() */ (session) => session);
+};
+
+// recently accessed first
+exports.getAll = () => {
+	return client.zrevrange(keys.SESSION_ACTIVES, 0, -1, 'WITHSCORES')
+		.then(values => Promise.all(chunk(values, 2)
+			.map(async ([id, accessMs]) => {
+				let session = await getById(id);
+				session.accessMs = accessMs;
+				return session;
+			})));
 };
 
 /** @param context = normalizeContext() */
