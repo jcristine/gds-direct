@@ -38,3 +38,10 @@ exports.Conflict = toReject(409);
 // server errors
 exports.NotImplemented = toReject(501);
 exports.BadGateway = toReject(502);
+
+/** handy when you need to filter a value in Promise chain */
+exports.nonEmpty = (msg = '(no description)', reject = null) => (value) => {
+	reject = reject || exports.NoContent;
+	return value ? Promise.resolve(value)
+		: reject('Value is empty - ' + msg);
+};

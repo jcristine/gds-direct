@@ -406,6 +406,7 @@ interface IFullCmsHighlightData {
 
 type int = number;
 type tinyint = number;
+type char = string;
 type VARCHAR = string;
 type BOOLEAN = boolean;
 type DATETIME = string;
@@ -414,6 +415,8 @@ type varchar = VARCHAR;
 type INT = int;
 
 type EGds = 'apollo' | 'sabre' | 'amadeus' | 'galileo';
+
+// database row type definitions follow
 
 interface IHighlightRules {
     id: int,
@@ -447,6 +450,15 @@ interface highlightOutputPatterns {
     pattern: varchar,
     regexError: BOOLEAN,
 }
+
+interface terminalAreaSettings {
+    id: int,
+    gds: varchar,
+    area: char,
+    agentId: int,
+    defaultPcc: varchar,
+}
+
 type IFullHighlightDataEl = IHighlightRules & {
     decoration: string[],
     languages: {[k in EGds]: highlightCmdPatterns},

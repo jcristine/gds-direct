@@ -2,6 +2,7 @@ const Db = require('./../../../../Utils/Db.js');
 const Constants = require('./../../../../Constants.js');
 const {array_map, array_flip, array_intersect_key, empty, json_decode, str_split, intval, isset} = require("../../../php.js");
 const RedisData = require("../../../../LibWrappers/RedisData.js");
+const AreaSettings = require("../../../../Repositories/AreaSettings");
 
 let TABLE = 'terminalSettings';
 let AREA_TABLE = 'terminalAreaSettings';
@@ -88,17 +89,15 @@ class TerminalSettings {
 			db => db.fetchAll({
 				table: TABLE,
 				where: [['agentId', '=', $agentId]],
-			}).then($result => db.fetchAll({
-				table: AREA_TABLE,
-				where: [['agentId', '=', $agentId]],
-			}).then(areaRows => {
-				for (let $row of $result) {
-					if (isset($settings['gds'][$row['gds']])) {
-						$settings['gds'][$row['gds']] = this._transformRowFromDb($row, areaRows);
+			}).then($result => AreaSettings.getByAgent($agentId, db)
+				.then(areaRows => {
+					for (let $row of $result) {
+						if (isset($settings['gds'][$row['gds']])) {
+							$settings['gds'][$row['gds']] = this._transformRowFromDb($row, areaRows);
+						}
 					}
-				}
-				return $settings;
-			})),
+					return $settings;
+				})),
 		);
 	}
 
@@ -160,15 +159,7 @@ class TerminalSettings {
 	}
 
 	setAreaSettings($gds, $areaSettings) {
-		let agentId = this.agentId;
-		return Db.with(
-			db => db.writeRows(AREA_TABLE, $areaSettings.map($areaSetting => ({
-				'area': $areaSetting['area'],
-				'gds': $gds,
-				'agentId': agentId,
-				'defaultPcc': $areaSetting['defaultPcc'],
-			}))),
-		);
+		return AreaSettings.update(this.agentId, $gds, $areaSettings);
 	}
 }
 

@@ -1,7 +1,7 @@
 
 let {client, keys, withNewConnection} = require('./../LibWrappers/Redis.js');
 let FluentLogger = require('./../LibWrappers/FluentLogger.js');
-let {NoContent, Conflict, NotFound} = require('./../Utils/Rej.js');
+let {NoContent, Conflict, NotFound, nonEmpty} = require('./../Utils/Rej.js');
 let {chunk} = require('./../Utils/Misc.js');
 
 let normalizeContext = (reqBody) => {
@@ -11,12 +11,6 @@ let normalizeContext = (reqBody) => {
 		travelRequestId: +reqBody.travelRequestId,
 		useRbs: +reqBody.useRbs ? true : false,
 	};
-};
-
-let nonEmpty = (msg, reject = null) => (value) => {
-	reject = reject || NoContent;
-	return value ? Promise.resolve(value)
-		: reject('Value is empty - ' + msg);
 };
 
 let makeSessionRecord = (id, context, sessionData) => {

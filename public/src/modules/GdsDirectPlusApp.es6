@@ -78,9 +78,9 @@ export default class GdsDirectPlusApp
 			let updateArea = (area) => UPDATE_CUR_GDS({
 				canCreatePqErrors: [],
 				area: area,
-				pcc: (data.fullState.areas[area] || {}).pcc,
-				canCreatePq: (data.fullState.areas[area] || {}).can_create_pq,
-				recordLocator: (data.fullState.areas[area] || {}).record_locator,
+				pcc: ((data.fullState.areas || {})[area] || {}).pcc,
+				canCreatePq: ((data.fullState.areas || {})[area] || {}).can_create_pq,
+				recordLocator: ((data.fullState.areas || {})[area] || {}).record_locator,
 				startNewSession: false,
 				gdsName: gds,
 			});

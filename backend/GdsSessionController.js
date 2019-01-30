@@ -8,6 +8,8 @@ let {hrtimeToDecimal} = require('./Utils/Misc.js');
 let {admins} = require('./Constants.js');
 let GdsSessions = require('./Repositories/GdsSessions.js');
 const UpdateApolloSessionStateAction = require("./Transpiled/Rbs/GdsDirect/SessionStateProcessor/UpdateApolloSessionStateAction");
+const AreaSettings = require("./Repositories/AreaSettings");
+const nonEmpty = require("./Utils/Rej").nonEmpty;
 let {logit, logExc} = require('./LibWrappers/FluentLogger.js');
 let {Forbidden, NotImplemented} = require('./Utils/Rej.js');
 
@@ -66,11 +68,30 @@ let addSessionInfo = async (session, rbsResult) => {
 
 let runInSession = (session, rqBody) => {
 	let running;
+	let gdsData = session.sessionData;
 	if (+session.context.useRbs) {
-		running = RbsClient(rqBody).runInputCmd(session.sessionData);
+		running = RbsClient(rqBody).runInputCmd(gdsData);
 	} else {
-		running = TravelportClient(rqBody).runInputCmd(session.sessionData)
-			.then(rbsResult => addSessionInfo(session, rbsResult));
+		running = TravelportClient(rqBody).runInputCmd(gdsData)
+			.then(rbsResult => addSessionInfo(session, rbsResult))
+			.then(rbsResult => {
+				let {area, pcc} = rbsResult.sessionInfo;
+				if (!pcc) {
+					// emulate to default pcc
+					return AreaSettings.getByAgent(rqBody.agentId)
+						.then(rows => rows.filter(r => r.area === area && r.defaultPcc)[0])
+						.then(nonEmpty())
+						.then(row => TravelportClient({command: 'SEM/' + row.defaultPcc + '/AG'}).runInputCmd(gdsData))
+						.then(semResult => addSessionInfo(session, semResult))
+						.then(semResult => {
+							semResult.calledCommands.unshift(...(rbsResult.calledCommands || []));
+							return semResult;
+						})
+						.catch(exc => rbsResult);
+				} else {
+					return rbsResult;
+				}
+			});
 	}
 	GdsSessions.updateAccessTime(session);
 	return running.then(rbsResult => ({session, rbsResult}));
