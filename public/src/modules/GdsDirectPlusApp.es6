@@ -75,17 +75,19 @@ export default class GdsDirectPlusApp
 
 		// set current PCC on each area button
 		for (let [gds, data] of Object.entries(settings.gds)) {
-			for (let [area, state] of Object.entries(data.fullState.areas || {})) {
-				UPDATE_CUR_GDS({
-					canCreatePqErrors: [],
-					area: area,
-					pcc: state.pcc,
-					canCreatePq: state.can_create_pq,
-					recordLocator: state.record_locator,
-					startNewSession: false,
-					gdsName: gds,
-				});
+			let updateArea = (area) => UPDATE_CUR_GDS({
+				canCreatePqErrors: [],
+				area: area,
+				pcc: (data.fullState.areas[area] || {}).pcc,
+				canCreatePq: (data.fullState.areas[area] || {}).can_create_pq,
+				recordLocator: (data.fullState.areas[area] || {}).record_locator,
+				startNewSession: false,
+				gdsName: gds,
+			});
+			for (let area of Object.keys(data.fullState.areas || {})) {
+				updateArea(area); // set data of each area
 			}
+			updateArea(data.fullState.area); // set current area
 		}
 	}
 
