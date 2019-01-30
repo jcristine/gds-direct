@@ -278,7 +278,7 @@ interface ICmsHighlightData {
                     "id": 42,
                     "terminalHighlightId": 12,
                     "gdsId": 2,
-                    "pattern": "^(.{50,65})(?P<value1>\\bR\\b)",
+                    "pattern": "^(.{50,65})(?<value1>\\bR\\b)",
                     "regexError": 0
                 },
                 "3": {
@@ -292,14 +292,14 @@ interface ICmsHighlightData {
                     "id": 46,
                     "terminalHighlightId": 12,
                     "gdsId": 4,
-                    "pattern": "^\\d.*(?P<value>R$)",
+                    "pattern": "^\\d.*(?<value>R$)",
                     "regexError": 0
                 },
                 "6": {
                     "id": 48,
                     "terminalHighlightId": 12,
                     "gdsId": 6,
-                    "pattern": "^\\s+\\d+.{53}(?P<value>R)",
+                    "pattern": "^\\s+\\d+.{53}(?<value>R)",
                     "regexError": 0
                 }
             }
@@ -388,7 +388,7 @@ interface IFullCmsHighlightData {
             {
                 "id": 10,
                 "name": "customValue",
-                "label": "Custom values (?p<name>)"
+                "label": "Custom values (?<name>)"
             },
             {"id":4,"name":"fullLine","label":"Full Line"},
             {"id":2,"name":"patternOnly","label":"Pattern Only"},

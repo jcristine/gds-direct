@@ -63,7 +63,7 @@ let highlightTypes = {
 	fullLine: 'Full Line',
 	patternToStart: 'Pattern To Start',
 	patternToEnd: 'Pattern To End',
-	customValue: 'Custom values (?p<name>)',
+	customValue: 'Custom values (?<name>)',
 };
 
 let terminalColors = {

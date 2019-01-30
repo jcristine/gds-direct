@@ -20,6 +20,7 @@ let initSocketIo = require('socket.io');
 let Config = require('./Config.js');
 let GdsSessions = require('./Repositories/GdsSessions.js');
 const CommandParser = require("./Transpiled/Gds/Parsers/Apollo/CommandParser");
+const PnrParser = require("./Transpiled/Gds/Parsers/Apollo/Pnr/PnrParser");
 
 let app = express();
 
@@ -284,7 +285,13 @@ app.get('/doSomeHeavyStuff', withAuth((reqBody, emcResult) => {
 	}
 }));
 app.get('/parser/test', toHandleHttp((rqBody) => {
-	return CommandParser.parse(rqBody.input);
+	let result;
+	result = CommandParser.parse(rqBody.input);
+	if (result && result.type) {
+		return result;
+	}
+	result = PnrParser.parse(rqBody.input);
+	return result;
 }));
 
 app.listen(Config.HTTP_PORT);
