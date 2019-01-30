@@ -92,6 +92,7 @@ class PopoverContext
 			let el = Dom(`a.t-pointer[${pqTravelRequestId}]`, {
 				onclick : () => {
 					// App.get('lead')
+					window.apiData = window.apiData || {};
 					window.apiData.lead = record;
 					PQ_MODAL_SHOW(pqTravelRequestId);
 					popover.close();

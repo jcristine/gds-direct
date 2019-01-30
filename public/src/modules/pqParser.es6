@@ -54,11 +54,12 @@ export class PqParser
 
 		this.loaderToggle(false);
 
-		return get(`terminal/getPqItinerary?pqTravelRequestId=${rId}&isStandAlone=${isStandAlone}&gds=${gds.get('name')}`)
+		let useRbs = GdsDirectPlusState.getUseRbs() ? '1' : '';
+		return get(`terminal/getPqItinerary?pqTravelRequestId=${rId}&isStandAlone=${isStandAlone}&gds=${gds.get('name')}&useRbs=${useRbs}`)
 			.then(rbsData => ({pqTravelRequestId: rId, gds: gds.get('name'), rbsData: rbsData}))
 			.finally(() => this.loaderToggle(true))
 			.then(pqBtnData => {
-				let importPq = () => get(`terminal/importPq?pqTravelRequestId=${rId}&isStandAlone=${isStandAlone}&gds=${gds.get('name')}`)
+				let importPq = () => get(`terminal/importPq?pqTravelRequestId=${rId}&isStandAlone=${isStandAlone}&gds=${gds.get('name')}&useRbs=${useRbs}`)
 					.then(rbsData => ({rbsData: rbsData}));
 				return this.modal(pqBtnData, CLOSE_PQ_WINDOW, importPq);
 			});

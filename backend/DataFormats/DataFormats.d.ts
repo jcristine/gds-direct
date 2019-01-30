@@ -508,3 +508,20 @@ interface ITestEvent {
     type: 'ok' | 'error',
     msg?: string,
 }
+
+type EAreaLetter = 'A' | 'B' | 'C' | 'D' | 'E' | 'F';
+
+interface IAreaState {
+    can_create_pq: string,
+    area: EAreaLetter,
+    record_locator: string,
+    pcc: string,
+    lead_creator_id: string,
+    is_pnr_stored: string,
+    has_pnr: string,
+}
+
+type IFullSessionState = IAreaState & {
+    area: EAreaLetter,
+    areas: {[area in EAreaLetter]: IAreaState},
+}
