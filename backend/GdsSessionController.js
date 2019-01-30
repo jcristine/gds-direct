@@ -7,6 +7,7 @@ let TerminalService = require('./Transpiled/App/Services/TerminalService.js');
 let {hrtimeToDecimal} = require('./Utils/Misc.js');
 let {admins} = require('./Constants.js');
 let GdsSessions = require('./Repositories/GdsSessions.js');
+const UpdateApolloSessionStateAction = require("./Transpiled/Rbs/GdsDirect/SessionStateProcessor/UpdateApolloSessionStateAction");
 let {logit, logExc} = require('./LibWrappers/FluentLogger.js');
 let {Forbidden, NotImplemented} = require('./Utils/Rej.js');
 
@@ -38,12 +39,49 @@ let startNewSession = (rqBody) => {
 	return starting.then(sessionData => GdsSessions.storeNew(rqBody, sessionData));
 };
 
+let makeDefaultState = () => ({
+	area: 'A',
+	areas: {
+		area: 'A',
+		pcc: '1O3K',
+		record_locator: '',
+		can_create_pq: false,
+	},
+});
+
+let addSessionInfo = async (session, rbsResult) => {
+	if (session.context.gds !== 'apollo') {
+		return session;
+	}
+	let fullState = await GdsSessions.getFullState(session)
+		.catch(makeDefaultState);
+	for (let {cmd, output} of rbsResult.calledCommands) {
+		let getArea = letter => fullState.areas[letter] || {};
+		let oldState = fullState.areas[fullState.area] || {};
+		let newState = UpdateApolloSessionStateAction
+			.execute(cmd, output, oldState, getArea);
+		fullState.area = newState.area;
+		fullState.areas[newState.area] = newState;
+	}
+	GdsSessions.updateFullState(session, fullState);
+	let areaState = fullState.areas[fullState.area] || {};
+	rbsResult.sessionInfo = rbsResult.sessionInfo || {};
+	rbsResult.sessionInfo.area = areaState.area || '';
+	rbsResult.sessionInfo.pcc = areaState.pcc || '';
+	rbsResult.sessionInfo.recordLocator = areaState.record_locator || '';
+	rbsResult.sessionInfo.canCreatePq = areaState.can_create_pq ? true : false;
+	rbsResult.sessionInfo.canCreatePqErrors = areaState.can_create_pq
+		? [] : ['Local state processor does not allow creating PQ'];
+	return rbsResult;
+};
+
 let runInSession = (session, rqBody) => {
 	let running;
 	if (+session.context.useRbs) {
 		running = RbsClient(rqBody).runInputCmd(session.sessionData);
 	} else {
-		running = TravelportClient(rqBody).runInputCmd(session.sessionData);
+		running = TravelportClient(rqBody).runInputCmd(session.sessionData)
+			.then(rbsResult => addSessionInfo(session, rbsResult));
 	}
 	GdsSessions.updateAccessTime(session);
 	return running.then(rbsResult => ({session, rbsResult}));
@@ -128,14 +166,20 @@ exports.runInputCmd = (reqBody, emcResult) => {
 };
 
 exports.getPqItinerary = (reqBody) => {
-	reqBody.useRbs = true;
-	return GdsSessions.getByContext(reqBody).then(session =>
-		RbsClient(reqBody).getPqItinerary(session.sessionData));
+	if (reqBody.useRbs) {
+		return GdsSessions.getByContext(reqBody).then(session =>
+			RbsClient(reqBody).getPqItinerary(session.sessionData));
+	} else {
+		return Promise.reject('getPqItinerary for RBS-free session not implemented yet');
+	}
 };
 exports.importPq = (reqBody) => {
-	reqBody.useRbs = true;
-	return GdsSessions.getByContext(reqBody).then(session =>
-		RbsClient(reqBody).importPq(session.sessionData));
+	if (reqBody.useRbs) {
+		return GdsSessions.getByContext(reqBody).then(session =>
+			RbsClient(reqBody).importPq(session.sessionData));
+	} else {
+		return Promise.reject('importPq for RBS-free session not implemented yet');
+	}
 };
 
 // TODO: use terminal.keepAlive so that RBS logs were not trashed with these MD0-s

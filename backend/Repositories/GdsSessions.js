@@ -75,12 +75,27 @@ exports.getByContext = (context) => {
 
 /** @param session = makeSessionRecord() */
 exports.updateAccessTime = (session) => {
-	client.zadd(keys.SESSION_ACTIVES, Date.now(), session.id);
+	return client.zadd(keys.SESSION_ACTIVES, Date.now(), session.id);
 };
 
 /** @param session = makeSessionRecord() */
 exports.updateUserAccessTime = (session) => {
-	client.hset(keys.SESSION_TO_USER_ACCESS_MS, session.id, Date.now());
+	return client.hset(keys.SESSION_TO_USER_ACCESS_MS, session.id, Date.now());
+};
+
+/** @param {IFullSessionState} state */
+exports.updateFullState = (session, state) => {
+	return Promise.all([
+		exports.updateAccessTime(session),
+		client.hset(keys.SESSION_TO_STATE, session.id, JSON.stringify(state)),
+	]);
+};
+
+/** @return Promise<IFullSessionState> */
+exports.getFullState = (session) => {
+	return client.hget(keys.SESSION_TO_STATE, session.id)
+		.then(nonEmpty('State of #' + session.id, NotFound))
+		.then(stateStr => JSON.parse(stateStr));
 };
 
 exports.getUserAccessMs = (session) => {
@@ -118,6 +133,7 @@ exports.remove = (session) => {
 	return Promise.all([
 		client.hdel(keys.SESSION_BY_CONTEXT, contextStr),
 		client.hdel(keys.SESSION_TO_RECORD, session.id),
+		client.hdel(keys.SESSION_TO_STATE, session.id),
 		client.zrem(keys.SESSION_ACTIVES, session.id),
 	]);
 };

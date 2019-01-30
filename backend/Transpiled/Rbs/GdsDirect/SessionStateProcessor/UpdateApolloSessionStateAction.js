@@ -187,10 +187,13 @@ class UpdateApolloSessionStateAction {
 		return $sessionState;
 	}
 
-	/** @param $getAreaData = function($letter){return DbSessionState::getAreaData();} */
+	/** @param {IAreaState} $sessionData
+	 * @param {function(string): IAreaState} $getAreaData */
 	static execute($cmd, $output, $sessionData, $getAreaData) {
 		let $self, $cmdParsed, $flatCmds, $cmdRec;
-		$self = new this($getAreaData);
+		$sessionData = {...$sessionData};
+		let $getAreaDataNorm = (letter) => ({...$getAreaData(letter)});
+		$self = new this($getAreaDataNorm);
 		$cmdParsed = CommandParser.parse($cmd);
 		$flatCmds = php.array_merge([$cmdParsed], $cmdParsed['followingCommands'] || []);
 		for ($cmdRec of $flatCmds) {

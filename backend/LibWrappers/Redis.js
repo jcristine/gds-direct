@@ -12,6 +12,7 @@ let keys = {
 	get SESSION_TO_USER_ACCESS_MS() { never() },
 	get SESSION_BY_CONTEXT() { never() },
 	get SESSION_TO_RECORD() { never() },
+	get SESSION_TO_STATE() { never() },
 };
 // to avoid explicitly setting value for
 // each constant risking getting a typo
