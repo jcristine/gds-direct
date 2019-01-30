@@ -39,22 +39,11 @@ let startNewSession = (rqBody) => {
 	return starting.then(sessionData => GdsSessions.storeNew(rqBody, sessionData));
 };
 
-let makeDefaultState = () => ({
-	area: 'A',
-	areas: {
-		area: 'A',
-		pcc: '1O3K',
-		record_locator: '',
-		can_create_pq: false,
-	},
-});
-
 let addSessionInfo = async (session, rbsResult) => {
 	if (session.context.gds !== 'apollo') {
 		return session;
 	}
-	let fullState = await GdsSessions.getFullState(session)
-		.catch(makeDefaultState);
+	let fullState = await GdsSessions.getFullState(session);
 	for (let {cmd, output} of rbsResult.calledCommands) {
 		let getArea = letter => fullState.areas[letter] || {};
 		let oldState = fullState.areas[fullState.area] || {};

@@ -91,11 +91,24 @@ exports.updateFullState = (session, state) => {
 	]);
 };
 
+let makeDefaultState = (session) => ({
+	area: 'A',
+	areas: {
+		A: {
+			area: 'A',
+			pcc: session.context.gds === 'apollo' ? '1O3K' : null,
+			record_locator: '',
+			can_create_pq: false,
+		},
+	},
+});
+
 /** @return Promise<IFullSessionState> */
 exports.getFullState = (session) => {
 	return client.hget(keys.SESSION_TO_STATE, session.id)
 		.then(nonEmpty('State of #' + session.id, NotFound))
-		.then(stateStr => JSON.parse(stateStr));
+		.then(stateStr => JSON.parse(stateStr))
+		.catch(exc => makeDefaultState(session));
 };
 
 exports.getUserAccessMs = (session) => {

@@ -67,11 +67,6 @@ class TerminalSettings {
 			'theme': intval($row['terminalTheme']),
 			'areaSettings': areaRows.filter(areaRow => areaRow.gds === $row['gds']),
 			'matrix': json_decode($row['matrixConfiguration']),
-
-			// TODO: make sure frontend start keeping them per session, not per agent
-			//'canCreatePq': intval($row['canCreatePq']),
-			//'area': $row['area'],
-			//'pcc': $row['pcc'],
 		};
 	}
 

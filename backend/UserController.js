@@ -1,6 +1,7 @@
 let MultiLevelMap = require('./Utils/MultiLevelMap.js');
 let Db = require('./Utils/Db.js');
 let TerminalSettings = require('./Transpiled/App/Models/Terminal/TerminalSettings.js');
+const GdsSessions = require("./Repositories/GdsSessions");
 let {admins} = require('./Constants.js');
 
 let getCommandBufferRows = (reqBody, emcResult) =>
@@ -16,9 +17,10 @@ let getCommandBufferRows = (reqBody, emcResult) =>
 
 exports.getView = (reqBody, emcResult) => {
     return getCommandBufferRows(reqBody, emcResult).then(rows =>
-        new TerminalSettings(emcResult).getSettings().then(settings => {
+        new TerminalSettings(emcResult).getSettings().then(async settings => {
             let bufferMap = MultiLevelMap();
             rows = rows.reverse();
+            let isAdmin = admins.includes(+emcResult.user.id);
             for (let row of rows) {
                 bufferMap.push(['gds', row.gds, 'terminals', row.terminalNumber, 'buffering'], {
                     area: row.area,
@@ -27,12 +29,25 @@ exports.getView = (reqBody, emcResult) => {
                     output: row.output,
                 });
             }
+
+            for (let gds in settings.gds) {
+                let state = await GdsSessions.getByContext({
+                    useRbs: !isAdmin,
+                    agentId: +reqBody.agentId,
+                    gds: gds,
+                    travelRequestId: +reqBody.travelRequestId,
+                }).then(GdsSessions.getFullState)
+                    .catch(exc => ({}));
+
+                settings.gds[gds].fullState = state;
+            }
+
             return {
                 enabled: true,
                 disableReason: '',
                 settings: settings,
                 buffer: bufferMap.root,
-                isAdmin: admins.includes(+emcResult.user.id),
+                isAdmin: isAdmin,
                 auth: emcResult.user,
             };
         })

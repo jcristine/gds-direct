@@ -2,7 +2,7 @@
 import {getBindingForKey} 		from '../helpers/keyBinding';
 import {CHANGE_ACTIVE_TERMINAL} from "../actions/settings";
 import {DEV_CMD_STACK_RUN} from "../actions";
-import {CHANGE_GDS} from "../actions/gdsActions";
+import {CHANGE_GDS, UPDATE_CUR_GDS} from "../actions/gdsActions";
 import {GDS} 			from '../modules/gds';
 import ContainerMain 	from "../containers/main";
 import {PqParser} 		from "../modules/pqParser";
@@ -72,6 +72,21 @@ export default class GdsDirectPlusApp
 			gdsAreaSettings	: gdsAreaSettings,
 			defaultPccs		: defaultPccs
 		});
+
+		// set current PCC on each area button
+		for (let [gds, data] of Object.entries(settings.gds)) {
+			for (let [area, state] of Object.entries(data.fullState.areas || {})) {
+				UPDATE_CUR_GDS({
+					canCreatePqErrors: [],
+					area: area,
+					pcc: state.pcc,
+					canCreatePq: state.can_create_pq,
+					recordLocator: state.record_locator,
+					startNewSession: false,
+					gdsName: gds,
+				});
+			}
+		}
 	}
 
 	set(key, val)
