@@ -1,7 +1,8 @@
 
 let ItineraryParserTest = require('./Transpiled/Gds/Parsers/Apollo/Pnr/ItineraryParserTest.js');
 let CommonParsersHelperTest = require('./Transpiled/Gds/Parsers/Apollo/Pnr/CommonParsersHelperTest.js');
-let CommandParser = require("./Transpiled/Gds/Parsers/Apollo/CommandParserTest.js");
+let CommandParserTest = require("./Transpiled/Gds/Parsers/Apollo/CommandParserTest.js");
+const PnrParserTest = require("./Transpiled/Gds/Parsers/Apollo/Pnr/PnrParserTest.js");
 
 console.log('Starting unit tests');
 
@@ -10,7 +11,8 @@ let tests = [
 	() => 5 < 4 ? 'Five can not be less than four, silly' : null,
 ].concat(new ItineraryParserTest().getTests())
 	.concat(new CommonParsersHelperTest().getTests())
-	.concat(new CommandParser().getTests())
+	.concat(new CommandParserTest().getTests())
+	.concat(new PnrParserTest().getTests())
 	;
 
 let oks = 0;

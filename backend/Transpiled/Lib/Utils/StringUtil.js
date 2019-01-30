@@ -43,7 +43,7 @@ class StringUtil
     }
 
     static lines($str)  {
-        return php.preg_split(/\r\n|\n|\r/, $str);
+        return $str.split(/\r\n|\n|\r/);
     }
 
     /*

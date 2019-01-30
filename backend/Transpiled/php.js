@@ -32,7 +32,8 @@ php.is_array = val => Array.isArray(val) || isPlainObject(val);
 php.is_integer = str => {
 	let n = Math.floor(Number(str));
 	return n !== Infinity && String(n) === str;
-} ;
+};
+php.is_numeric = str => +str + '' === str;
 
 php.call_user_func = (func, arg) => normFunc(func)(arg);
 php.json_encode = (str) => JSON.stringify(str);
@@ -76,6 +77,8 @@ php.date = (format, epoch) => {
 		return safe(() => dtObj.toISOString().slice('2018-'.length, '2018-12-05'.length));
 	} else if (format === 'H:i') {
 		return safe(() => dtObj.toISOString().slice('2018-12-05T'.length, '2018-12-05T22:13'.length));
+	} else if (format === 'y') {
+		return safe(() => dtObj.toISOString().slice('20'.length, '2018'.length));
 	} else {
 		throw new Error('Unsupported date format - ' + format);
 	}
@@ -293,6 +296,15 @@ php.array_intersect_key = (source, whitelist) => {
 		}
 	}
 	return newObj;
+};
+php.array_diff_key = (minuend, subtrahend) => {
+	let difference = {};
+	for (let k in minuend) {
+		if (!(k in subtrahend)) {
+			difference[k] = minuend[k];
+		}
+	}
+	return difference;
 };
 php.array_flip = (obj) => {
 	let newObj = {};
