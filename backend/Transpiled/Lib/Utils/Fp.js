@@ -10,7 +10,7 @@ class Fp {
 
 	static all($function, $arr) {
 		let $el;
-		for ($el of $arr) {
+		for ($el of Object.values($arr)) {
 			if (!php.call_user_func($function, $el)) {
 				return false;
 			}

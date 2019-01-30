@@ -84,7 +84,7 @@ class AtfqParser {
 			} else if (php.preg_match(/^FM-/, $line)) {
 				$atfqInfo['FQ'] = FqLineParser.parseFqLine($line);
 			} else {
-				throw new Error('Second line expected to be FQ line, something else found: [' + $line + ']');
+				$atfqInfo['FQ'] = null;
 			}
 		}
 		return $atfqInfo;
