@@ -2,16 +2,16 @@
 
 const Fp = require('../../../Lib/Utils/Fp.js');
 const StringUtil = require('../../../Lib/Utils/StringUtil.js');
-const Errors = require('../../../Rbs/GdsDirect/Errors.js');
-const CmsApolloTerminal = require('../../../Rbs/GdsDirect/GdsInterface/CmsApolloTerminal.js');
-const PtcUtil = require('../../../Rbs/Process/Common/PtcUtil.js');
+const Errors = require('../Errors.js');
+const CmsApolloTerminal = require('../GdsInterface/CmsApolloTerminal.js');
+const PtcUtil = require('../../Process/Common/PtcUtil.js');
 
 /**
  * return pricing/itinerary dump/parsed data
  * this action is called before terminal+importPq, supposedly being
  * faster, to give mandatory data to CMS as soon as possible
  */
-class GetPqItineraryAction {
+class CanCreatePqRules {
 	static checkPnrData($parsedReservation) {
 		let $errors, $allowedStatuses, $segment;
 		$errors = [];
@@ -198,4 +198,4 @@ class GetPqItineraryAction {
 	}
 }
 
-module.exports = GetPqItineraryAction;
+module.exports = CanCreatePqRules;

@@ -1,7 +1,7 @@
 
 // namespace Rbs\GdsDirect\SessionStateProcessor;
 
-const GetPqItineraryAction = require('../../../Rbs/GdsDirect/Actions/GetPqItineraryAction.js');
+const GetPqItineraryAction = require('./CanCreatePqRules.js');
 const Errors = require('../../../Rbs/GdsDirect/Errors.js');
 const SessionStateProcessor = require('../../../Rbs/GdsDirect/SessionStateProcessor/SessionStateProcessor.js');
 const CmsApolloTerminal = require('../../../Rbs/GdsDirect/GdsInterface/CmsApolloTerminal');
