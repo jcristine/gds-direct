@@ -21,6 +21,7 @@ export class GdsAreas extends Component
 			pcc 			: current.get('pcc'),
 			sessionIndex	: current.get('sessionIndex'),
 			areaList 		: current.get('list'),
+			idxToInfo		: current.get('idxToInfo') || {},
 		})
 	}
 
@@ -40,7 +41,7 @@ export class GdsAreas extends Component
 
 class GdsButtons extends ButtonPopOver
 {
-	constructor({gdsName, areaList, sessionIndex, pcc})
+	constructor({gdsName, areaList, sessionIndex, pcc, idxToInfo})
 	{
 		super({icon : gdsName}, 'div');
 
@@ -48,6 +49,7 @@ class GdsButtons extends ButtonPopOver
 		this.areaList		= areaList;
 		this.sessionIndex	= sessionIndex;
 		this.pcc			= pcc;
+		this.idxToInfo		= idxToInfo || {};
 	}
 
 	makeTrigger()
@@ -87,9 +89,23 @@ class GdsButtons extends ButtonPopOver
 	makeArea(area, index)
 	{
 		const isActive 	= this.sessionIndex === index;
+		let sessionInfo = this.idxToInfo[index] || {};
+		let pnrHtml = '';
+		if (sessionInfo.area === area) {
+			let rloc = sessionInfo.recordLocator || '';
+			if (rloc) {
+				pnrHtml = `<span class="pnr-label">${rloc}</span>`;
+			} else if (sessionInfo.canCreatePq) {
+				pnrHtml = `<span class="pnr-label">PQ</span>`;
+			} else if (sessionInfo.hasPnr) {
+				pnrHtml = `<span class="pnr-label">PNR</span>`;
+			}
+		}
 
 		return Dom(`button.btn btn-sm btn-purple font-bold pos-rlt ${isActive ? 'active' : ''}`, {
-			innerHTML	:  area + ( this.pcc[index] ? `<span class="pcc-label">${this.pcc[index]}</span>` : ''),
+			innerHTML	:  area + ( this.pcc[index] ? `<span class="pcc-label">${this.pcc[index]}</span>` : '')
+				+ pnrHtml
+				,
 			disabled	:  isActive,
 			onclick		: e => {
 				e.target.disabled = true;

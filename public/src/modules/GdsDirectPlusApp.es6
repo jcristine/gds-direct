@@ -80,6 +80,7 @@ export default class GdsDirectPlusApp
 				area: area,
 				pcc: ((data.fullState.areas || {})[area] || {}).pcc,
 				canCreatePq: ((data.fullState.areas || {})[area] || {}).can_create_pq,
+				hasPnr: ((data.fullState.areas || {})[area] || {}).has_pnr,
 				recordLocator: ((data.fullState.areas || {})[area] || {}).record_locator,
 				startNewSession: false,
 				gdsName: gds,

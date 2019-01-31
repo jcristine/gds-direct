@@ -2,6 +2,7 @@ let ItineraryParser = require("./Transpiled/Gds/Parsers/Apollo/Pnr/ItineraryPars
 
 let config = require('./Config.js');
 let PersistentHttpRq = require('./Utils/PersistentHttpRq.js');
+const hrtimeToDecimal = require("./Utils/Misc").hrtimeToDecimal;
 
 /**
  * they are all physically located in USA, Atlanta (in same building)
@@ -186,15 +187,18 @@ let runAndCleanupCmd = async (inputCmd, token) => {
 	let cmdsLeft = (data ? data.bulkCmds : null) || [cmd];
 	let calledCommands = [];
 	for (let cmd of cmdsLeft) {
+		let hrtimeStart = process.hrtime();
 		let output = fetchAll
 			? await fetchAllOutput(cmd, token)
 			: (await runOneCmd(cmd, token)).output;
 		if (shouldWrap(cmd)) {
 			output = wrap(output);
 		}
+		let hrtimeDiff = process.hrtime(hrtimeStart);
 		calledCommands.push({
 			cmd: encodeCmdForCms(cmd),
 			output: encodeOutputForCms(output),
+			duration: hrtimeToDecimal(hrtimeDiff),
 		});
 	}
 	return makeResult(calledCommands, token);

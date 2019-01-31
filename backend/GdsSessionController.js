@@ -45,6 +45,7 @@ let addSessionInfo = async (session, rbsResult) => {
 	if (session.context.gds !== 'apollo') {
 		return session;
 	}
+	let hrtimeStart = process.hrtime();
 	let fullState = await GdsSessions.getFullState(session);
 	for (let {cmd, output} of rbsResult.calledCommands) {
 		let getArea = letter => fullState.areas[letter] || {};
@@ -59,10 +60,13 @@ let addSessionInfo = async (session, rbsResult) => {
 	rbsResult.sessionInfo = rbsResult.sessionInfo || {};
 	rbsResult.sessionInfo.area = areaState.area || '';
 	rbsResult.sessionInfo.pcc = areaState.pcc || '';
+	rbsResult.sessionInfo.hasPnr = areaState.has_pnr ? true : false;
 	rbsResult.sessionInfo.recordLocator = areaState.record_locator || '';
 	rbsResult.sessionInfo.canCreatePq = areaState.can_create_pq ? true : false;
 	rbsResult.sessionInfo.canCreatePqErrors = areaState.can_create_pq
 		? [] : ['Local state processor does not allow creating PQ'];
+	let hrtimeDiff = process.hrtime(hrtimeStart);
+	rbsResult.sessionInfo.updateTime = hrtimeToDecimal(hrtimeDiff);
 	return rbsResult;
 };
 

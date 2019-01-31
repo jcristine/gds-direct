@@ -190,6 +190,7 @@ class TerminalService
 		return this.formatOutput($command, $language, calledCommands)
 			.then(({$output, appliedRules}) => {
 				$output = this.appendOutput($output, typeToMsgs);
+				let cmdTimes = rbsResp.calledCommands.map(rec => rec.duration).filter(a => a);
 				return {
 					output: $output,
 					prompt: '',
@@ -205,7 +206,11 @@ class TerminalService
 					canCreatePqErrors: rbsResp.sessionInfo.canCreatePqErrors,
 					area: rbsResp.sessionInfo.area,
 					pcc: rbsResp.sessionInfo.pcc,
+					hasPnr: rbsResp.sessionInfo.hasPnr ? true : false,
+					recordLocator: rbsResp.sessionInfo.recordLocator,
 					highlightTime: hrtimeToDecimal(process.hrtime(hrtimeStart)),
+					gdsTime: cmdTimes.length > 0 ? cmdTimes.reduce((a,b) => a + b) : null,
+					stateUpdateTime: rbsResp.sessionInfo.updateTime || null,
 					startNewSession: rbsResp.startNewSession || false,
 				};
 			});

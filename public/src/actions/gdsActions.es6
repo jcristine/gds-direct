@@ -2,14 +2,18 @@ import {AREA_LIST} from "../constants";
 import {getStore} from "../store";
 import {getters} from "../state";
 
-const update_cur_gds = ({canCreatePq, canCreatePqErrors, area, pcc, startNewSession, log, gdsName}) => {
+const update_cur_gds = (sessionInfo) => {
+	let {canCreatePq, canCreatePqErrors, area, pcc, startNewSession, log, gdsName} = sessionInfo;
 
 	const sessionIndex	= AREA_LIST.indexOf(area);
 
 	const pc 	= {[sessionIndex] : pcc};
 	let pccUpd	= startNewSession ? pc : {...getStore().app.Gds.getGds(gdsName).get('pcc'), ...pc};
 
-	getStore().app.Gds.update({pcc : pccUpd, canCreatePq, canCreatePqErrors, sessionIndex}, gdsName);
+	let idxToInfo = {...getStore().app.Gds.getGds(gdsName).get('idxToInfo') || {}};
+	idxToInfo[sessionIndex] = sessionInfo;
+
+	getStore().app.Gds.update({pcc : pccUpd, canCreatePq, canCreatePqErrors, sessionIndex, idxToInfo}, gdsName);
 
 	return {
 		log,
