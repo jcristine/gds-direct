@@ -31,6 +31,7 @@ let shouldDiag = (exc) =>
 let toHandleHttp = (action, logger = null) => (req, res) => {
 	let log = logger ? logger.log : (() => {});
 	let rqBody = req.body;
+	let rqTakenMs = Date.now();
 	if (Object.keys(rqBody).length === 0) {
 		let querystring = require('querystring');
 		let queryStr = req.url.split('?')[1] || '';
@@ -55,7 +56,9 @@ let toHandleHttp = (action, logger = null) => (req, res) => {
 			res.setHeader('Content-Type', 'application/json');
 			res.status(200);
 			res.send(JSON.stringify(Object.assign({
-				message: 'OK', workerId: (cluster.worker || {}).id,
+				rqTakenMs: rqTakenMs,
+				rsSentMs: Date.now(),
+				message: 'GRECT HTTP OK', workerId: (cluster.worker || {}).id,
 			}, result)));
 		})
 		.catch(exc => {

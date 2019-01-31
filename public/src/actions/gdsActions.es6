@@ -10,7 +10,7 @@ const update_cur_gds = (sessionInfo) => {
 	const pc 	= {[sessionIndex] : pcc};
 	let pccUpd	= startNewSession ? pc : {...getStore().app.Gds.getGds(gdsName).get('pcc'), ...pc};
 
-	let idxToInfo = {...getStore().app.Gds.getGds(gdsName).get('idxToInfo') || {}};
+	let idxToInfo = startNewSession ? {} : {...getStore().app.Gds.getGds(gdsName).get('idxToInfo') || {}};
 	idxToInfo[sessionIndex] = sessionInfo;
 
 	getStore().app.Gds.update({pcc : pccUpd, canCreatePq, canCreatePqErrors, sessionIndex, idxToInfo}, gdsName);
