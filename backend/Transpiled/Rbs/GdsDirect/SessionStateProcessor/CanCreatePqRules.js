@@ -7,9 +7,11 @@ const CmsApolloTerminal = require('../GdsInterface/CmsApolloTerminal.js');
 const PtcUtil = require('../../Process/Common/PtcUtil.js');
 
 /**
- * return pricing/itinerary dump/parsed data
- * this action is called before terminal+importPq, supposedly being
- * faster, to give mandatory data to CMS as soon as possible
+ * provides functions that validate pricing cmd and
+ * output to tell if pricing is applicable for PQ creation:
+ * there are mods that ignore availability, some combinations
+ * simply cause bugs in a GDS, the class also checks
+ * that priced passengers match passengers in the lead
  */
 class CanCreatePqRules {
 	static checkPnrData($parsedReservation) {

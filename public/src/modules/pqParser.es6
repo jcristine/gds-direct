@@ -20,23 +20,29 @@ const reject = err => {
 	return Promise.reject();
 };
 
+let loaderToggle = (state) => {
+	const spinner = document.querySelector('#spinners');
+	const loadingDots = document.querySelector('#loadingDots');
+
+	if (spinner)
+		spinner.classList.toggle('hidden', state);
+
+	if (loadingDots)
+		loadingDots.classList.toggle('loading-hidden', state);
+};
+
+let blockAllUi = (url) => {
+	loaderToggle(false);
+	let result = get(url);
+	result.finally(() => loaderToggle(true));
+	return result;
+};
+
 export class PqParser
 {
 	constructor( modal )
 	{
-		this.modal = modal;
-	}
-
-	loaderToggle(state)
-	{
-		const spinner = document.querySelector('#spinners');
-		const loadingDots = document.querySelector('#loadingDots');
-
-		if (spinner)
-			spinner.classList.toggle('hidden', state);
-
-		if (loadingDots)
-			loadingDots.classList.toggle('loading-hidden', state);
+		this.modal = modal || (() => Promise.reject('Project-specific PQ modal function was not passed by the page'));
 	}
 
 	show(gds, rId, isStandAlone)
@@ -52,12 +58,9 @@ export class PqParser
 			return reject('Can\t create PQ - ' + pqErrors.join('; '));
 		}
 
-		this.loaderToggle(false);
-
 		let useRbs = GdsDirectPlusState.getUseRbs() ? '1' : '';
-		return get(`terminal/getPqItinerary?pqTravelRequestId=${rId}&isStandAlone=${isStandAlone}&gds=${gds.get('name')}&useRbs=${useRbs}`)
+		return blockAllUi(`terminal/getPqItinerary?pqTravelRequestId=${rId}&isStandAlone=${isStandAlone}&gds=${gds.get('name')}&useRbs=${useRbs}`)
 			.then(rbsData => ({pqTravelRequestId: rId, gds: gds.get('name'), rbsData: rbsData}))
-			.finally(() => this.loaderToggle(true))
 			.then(pqBtnData => {
 				let importPq = () => get(`terminal/importPq?pqTravelRequestId=${rId}&isStandAlone=${isStandAlone}&gds=${gds.get('name')}&useRbs=${useRbs}`)
 					.then(rbsData => ({rbsData: rbsData}));

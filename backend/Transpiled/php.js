@@ -297,6 +297,11 @@ php.array_intersect_key = (source, whitelist) => {
 	}
 	return newObj;
 };
+php.array_diff = (arr1, arr2) => {
+	let set2 = new Set(arr2);
+	return Object.values(arr1)
+		.filter(el => !set2.has(el));
+};
 php.array_diff_key = (minuend, subtrahend) => {
 	let difference = {};
 	for (let k in minuend) {

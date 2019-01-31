@@ -32,6 +32,13 @@
 		htmlRootDom		: document.getElementById('terminalContext'),
 		emcSessionId    : emcSessionId,
 		cmsUrl			: 'http://cms.gitlab-runner.snx702.dyninno.net/',
+		PqPriceModal	: (pqData, closeModal, importPq) => {
+			console.log('getPqItinerary data', pqData);
+			importPq().then(fullData => {
+				console.log('importPq data', fullData);
+			});
+			setTimeout(closeModal, 2000);
+		},
 	}).then(nodeApp => {
 		// nodeApp.runPnr({pnrCode: 'QWE123'});
 		// nodeApp.rebuild({data: {itineraryId: 1234, segmentStatus: 'GK'}});
