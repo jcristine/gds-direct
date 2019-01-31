@@ -4,6 +4,20 @@ import {showUserMessages, debugRequest} from "./debug";
 
 let httpSocket = undefined;
 
+/** @param response = {body: await require('GdsSessionController.js').runInputCmd()} */
+let makeBriefRsStr = (response, duration) => {
+	let result = '';
+	let gdsTime = ((response.body || {}).data || {}).gdsTime;
+	let cmdType = ((response.body || {}).data || {}).cmdType;
+	if (gdsTime) {
+		result += ' (GDS: ' + (+gdsTime).toFixed(3) + ', us: ' + (duration - gdsTime).toFixed(3) + ')'
+	}
+	if (cmdType) {
+		result += ' ' + cmdType;
+	}
+	return result;
+};
+
 let initSocket = (host) => new Promise((resolve, reject) => {
 	/** @type {Socket} */
 	const socket = io(host);
@@ -24,10 +38,7 @@ let initSocket = (host) => new Promise((resolve, reject) => {
 				socket.send(data, (response) => {
 					let duration = ((Date.now() - startMs) / 1000).toFixed(3);
 					let msg = new Date().toISOString() + ' - Socket ' + data.url + ' in ' + duration;
-					let gdsTime = ((response.body || {}).data || {}).gdsTime;
-					if (gdsTime) {
-						msg += ' (GDS: ' + (+gdsTime).toFixed(3) + ', us: ' + (duration - gdsTime).toFixed(3) + ')'
-					}
+					msg += makeBriefRsStr(response, duration);
 					console.debug(msg, {rq: data, rs: response});
 					resolve(response);
 				});

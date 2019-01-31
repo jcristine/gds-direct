@@ -47,13 +47,15 @@ let addSessionInfo = async (session, rbsResult) => {
 	}
 	let hrtimeStart = process.hrtime();
 	let fullState = await GdsSessions.getFullState(session);
-	for (let {cmd, output} of rbsResult.calledCommands) {
+	for (let rec of rbsResult.calledCommands) {
+		let {cmd, output} = rec;
 		let getArea = letter => fullState.areas[letter] || {};
 		let oldState = fullState.areas[fullState.area] || {};
 		let newState = UpdateApolloSessionStateAction
 			.execute(cmd, output, oldState, getArea);
 		fullState.area = newState.area;
 		fullState.areas[newState.area] = newState;
+		rec.type = newState.cmdType;
 	}
 	GdsSessions.updateFullState(session, fullState);
 	let areaState = fullState.areas[fullState.area] || {};

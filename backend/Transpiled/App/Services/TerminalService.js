@@ -192,6 +192,7 @@ class TerminalService
 				$output = this.appendOutput($output, typeToMsgs);
 				let cmdTimes = rbsResp.calledCommands.map(rec => rec.duration).filter(a => a);
 				return {
+					cmdType: rbsResp.calledCommands.length > 0 ? rbsResp.calledCommands[0].type : null,
 					output: $output,
 					prompt: '',
 					userMessages: typeToMsgs['pop_up'] ? typeToMsgs['pop_up'] : null,

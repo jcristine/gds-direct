@@ -199,6 +199,7 @@ class UpdateApolloSessionStateAction {
 		for ($cmdRec of $flatCmds) {
 			$sessionData = $self.updateState($cmdRec['cmd'], $output, $sessionData);
 		}
+		$sessionData.cmdType = $cmdParsed ? $cmdParsed.type : null;
 		return $sessionData;
 	}
 }
