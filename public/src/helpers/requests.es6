@@ -23,7 +23,12 @@ let initSocket = (host) => new Promise((resolve, reject) => {
 				let startMs = Date.now();
 				socket.send(data, (response) => {
 					let duration = ((Date.now() - startMs) / 1000).toFixed(3);
-					console.debug(new Date().toISOString() + ' - Socket RQ, RS in ' + duration, data, response);
+					let msg = new Date().toISOString() + ' - Socket ' + data.url + ' in ' + duration;
+					let gdsTime = ((response.body || {}).data || {}).gdsTime;
+					if (gdsTime) {
+						msg += ' (GDS: ' + (+gdsTime).toFixed(3) + ', us: ' + (duration - gdsTime).toFixed(3) + ')'
+					}
+					console.debug(msg, {rq: data, rs: response});
 					resolve(response);
 				});
 			}),
