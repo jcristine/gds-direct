@@ -23,7 +23,7 @@ class ApolloAddCustomSegmentAction
             '(?<date>\\d+[A-Z]{3})\\s*'+
             '(-\\s*(?<remark>.*?))?'+
             '\\s*$\/';
-        if ($matches = php.preg_match($regex, $dump, $matches = [])) {
+        if (php.preg_match($regex, $dump, $matches = [])) {
             return $matches;
         } else {
             return null;

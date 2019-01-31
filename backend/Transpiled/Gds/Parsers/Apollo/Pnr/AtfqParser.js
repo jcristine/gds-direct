@@ -100,7 +100,7 @@ class AtfqParser {
 			'(?<atfqType>ATFQ-[A-Z]+)\\\/' +
 			'(?<pricingCommand>.+?)' +
 			'\\s*$\/';
-		if ($matches = php.preg_match($regex, $line, $matches)) {
+		if (php.preg_match($regex, $line, $matches = [])) {
 			if ($parsedCommand = this.parsePricingCommand($matches['pricingCommand'])) {
 
 				$pricingModifiers = $parsedCommand['pricingModifiers'];
@@ -178,7 +178,7 @@ class AtfqParser {
 			'currency': ($token) => php.preg_match(/^:[A-Z]{3}$/, $token) ? php.substr($token, 1) : null,
 			'tourCode': ($token) => {
 				let $matches;
-				if ($matches = php.preg_match(/^IT([A-Z0-9\*]+)$/, $token, $matches = [])) {
+				if (php.preg_match(/^IT([A-Z0-9\*]+)$/, $token, $matches = [])) {
 					return {'tourCodes': php.explode('*', $matches[1])};
 				} else {
 					return null;
@@ -256,11 +256,11 @@ class AtfqParser {
 	static parsePicModifier($propertyToken) {
 		let $passengerProperties, $matches, $_, $fieldNumber, $firstNameNumber;
 		$passengerProperties = [];
-		if ($matches = php.preg_match(/^(\d+)(-\d+|)$/, $propertyToken, $matches = [])) {
+		if (php.preg_match(/^(\d+)(-\d+|)$/, $propertyToken, $matches = [])) {
 			[$_, $fieldNumber, $firstNameNumber] = $matches;
 			$passengerProperties['passengerNumber'] = php.intval($fieldNumber);
 			$passengerProperties['firstNameNumber'] = $firstNameNumber ? -$firstNameNumber : null;
-		} else if ($matches = php.preg_match(/^IF(\d*\.?\d+)$/, $propertyToken, $matches = [])) {
+		} else if (php.preg_match(/^IF(\d*\.?\d+)$/, $propertyToken, $matches = [])) {
 			$passengerProperties['markup'] = $matches[1];
 		} else if (php.preg_match(/^C\d+/, $propertyToken)) {
 			$passengerProperties['ptc'] = $propertyToken;
@@ -313,12 +313,12 @@ class AtfqParser {
 	 */
 	static parseSegmentModifier($token) {
 		let $matches, $rawBundles, $bundles, $bundleStr, $_, $from, $to, $modStr, $bundle, $pccs;
-		if ($matches = php.preg_match(/^S(.+)$/, $token, $matches = [])) {
+		if (php.preg_match(/^S(.+)$/, $token, $matches = [])) {
 			$token = $matches[1];
 			$rawBundles = $token.split(/[\|\+]/);
 			$bundles = [];
 			for ($bundleStr of $rawBundles) {
-				if ($matches = php.preg_match(/^(\d+)([\*\-]\d+|)(.*)$/, $bundleStr, $matches = [])) {
+				if (php.preg_match(/^(\d+)([\*\-]\d+|)(.*)$/, $bundleStr, $matches = [])) {
 					[$_, $from, $to, $modStr] = $matches;
 					$bundle = this.parseSegmentBundleMods($modStr);
 					if (!$bundle) {
@@ -353,7 +353,7 @@ class AtfqParser {
 
 	static parseCabinClassModifier($token) {
 		let $matches, $letter;
-		if ($matches = php.preg_match(/^\/@([A-Z])$/, $token, $matches = [])) {
+		if (php.preg_match(/^\/@([A-Z])$/, $token, $matches = [])) {
 			$letter = $matches[1];
 			return {
 				'raw': $letter,
@@ -377,13 +377,13 @@ class AtfqParser {
 		if ($raw === 'B') {
 			$type = 'isBulk';
 			$parsed = true;
-		} else if ($matches = php.preg_match(/^BG([A-Z0-9]+)$/, $raw, $matches = [])) {
+		} else if (php.preg_match(/^BG([A-Z0-9]+)$/, $raw, $matches = [])) {
 			$type = 'freeBaggageAmount';
 			$parsed = BagAllowanceParser.parseAmountCode($matches[1]);
-		} else if ($matches = php.preg_match(/^E(.+)$/, $raw, $matches = [])) {
+		} else if (php.preg_match(/^E(.+)$/, $raw, $matches = [])) {
 			$type = 'endorsementLine';
 			$parsed = {'text': php.str_replace('@', ' ', $matches[1])};
-		} else if ($matches = php.preg_match(/^TD([A-Z0-9]+)$/, $raw, $matches = [])) {
+		} else if (php.preg_match(/^TD([A-Z0-9]+)$/, $raw, $matches = [])) {
 			$type = 'ticketDesignator';
 			$parsed = {'code': $matches[1]};
 		} else {
@@ -398,7 +398,7 @@ class AtfqParser {
 	// "GTDUSA98" - ticket designator "USA98"
 	static parseGenericModifier($token) {
 		let $matches, $rawSubMods, $subMods, $isBulk;
-		if ($matches = php.preg_match(/^G(.+)$/, $token, $matches = [])) {
+		if (php.preg_match(/^G(.+)$/, $token, $matches = [])) {
 			$rawSubMods = $matches[1].split(/[|+]/, );
 			$subMods = php.array_map(a => this.parseGenericSubModifier(a), $rawSubMods);
 			$isBulk = php.in_array('isBulk', php.array_column($subMods, 'type'));
@@ -422,7 +422,7 @@ class AtfqParser {
 
 	static parseFareTypeModifier($token) {
 		let $matches, $code;
-		if ($matches = php.preg_match(/^:([A-Z])$/, $token, $matches = [])) {
+		if (php.preg_match(/^:([A-Z])$/, $token, $matches = [])) {
 			$code = $matches[1];
 			return this.decodeFareType($code);
 		} else {

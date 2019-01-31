@@ -171,7 +171,7 @@ class CommandParser {
 		if (!$expr) {
 			$rangeType = 'notSpecified';
 			$ranges.push({'from': 1, 'to': 1});
-		} else if ($matches = php.preg_match(/^(\d+)-\*$/, $expr, $matches = [])) {
+		} else if (php.preg_match(/^(\d+)-\*$/, $expr, $matches = [])) {
 			$rangeType = 'everythingAfter';
 			$ranges.push({'from': $matches[1]});
 		} else {
@@ -207,7 +207,7 @@ class CommandParser {
 			')' +
 			'(\\|(?<textLeft>.*)|$)' +
 			'\/';
-		if ($matches = php.preg_match($regex, $cmd, $matches = [])) {
+		if (php.preg_match($regex, $cmd, $matches = [])) {
 			$rangesData = this.parseRemarkRanges($matches['ranges']);
 			return {
 				'cmd': $matches['cmd'],
@@ -240,7 +240,7 @@ class CommandParser {
 			[/^\*\*([^|]*?-[A-Z][^|]*?)(\||$)/]: 'searchPnr',
 		};
 		for ([$pattern, $name] of Object.entries($simplePatterns)) {
-			if ($matches = php.preg_match($pattern, $cmd, $matches = [])) {
+			if (php.preg_match($pattern, $cmd, $matches = [])) {
 				[$raw, $data] = $matches;
 				return {
 					'cmd': php.rtrim($raw, '|'),
@@ -294,9 +294,9 @@ class CommandParser {
 			'(?<includeConnections>\\*?)' +
 			'(?<segmentStatus>[A-Z]{2}|)' +
 			'$\/';
-		if ($matches = php.preg_match($regex, $cmd, $matches = [])) {
+		if (php.preg_match($regex, $cmd, $matches = [])) {
 			$segments = [];
-			$tuples = php.preg_match_all('\/' + $segmentPattern + '\/', $matches['segments'], $tuples = [], php.PREG_SET_ORDER);
+			php.preg_match_all('\/' + $segmentPattern + '\/', $matches['segments'], $tuples = [], php.PREG_SET_ORDER);
 			for ([$_, $bookingClass, $lineNumber] of $tuples) {
 				$segments.push({'bookingClass': $bookingClass, 'lineNumber': $lineNumber});
 			}
@@ -327,7 +327,7 @@ class CommandParser {
 			'(?<seatCount>\\d{0,2})' +
 			'(?<unparsed>.*?)' +
 			'\\s*$\/';
-		if ($matches = php.preg_match($regex, $cmd, $matches = [])) {
+		if (php.preg_match($regex, $cmd, $matches = [])) {
 			return {
 				'sellType': 'directSell',
 				'airline': $matches['airline'],
@@ -350,7 +350,7 @@ class CommandParser {
 		let $segments, $rawSeg, $matches, $_, $segNum, $bookCls;
 		$segments = [];
 		for ($rawSeg of php.explode('|', $textLeft)) {
-			if ($matches = php.preg_match(/^(\d{1,2})([A-Z])$/, $rawSeg, $matches = [])) {
+			if (php.preg_match(/^(\d{1,2})([A-Z])$/, $rawSeg, $matches = [])) {
 				[$_, $segNum, $bookCls] = $matches;
 				$segments.push({
 					'segmentNumber': $segNum,
@@ -373,9 +373,9 @@ class CommandParser {
 		$date = null;
 		$bookingClass = null;
 		for ($value of $values) {
-			if ($matches = php.preg_match(/^(\d{1,2}[A-Z]{3})$/, $value, $matches = [])) {
+			if (php.preg_match(/^(\d{1,2}[A-Z]{3})$/, $value, $matches = [])) {
 				$date = {'raw': $matches[1]};
-			} else if ($matches = php.preg_match(/^([A-Z]|)$/, $value, $matches = [])) {
+			} else if (php.preg_match(/^([A-Z]|)$/, $value, $matches = [])) {
 				$bookingClass = $value;
 			} else {
 				return null;
@@ -395,7 +395,7 @@ class CommandParser {
 			'\/^0XXOPEN' +
 			'(?<unparsed>.*?)' +
 			'\\s*$\/';
-		if ($matches = php.preg_match($regex, $cmd, $matches = [])) {
+		if (php.preg_match($regex, $cmd, $matches = [])) {
 			return {
 				'sellType': 'openSegment',
 				'unparsed': $matches['unparsed'],
@@ -436,7 +436,7 @@ class CommandParser {
 			return null;
 		}
 		$textLeft = php.substr($cmd, 1);
-		if ($matches = php.preg_match(/^([AI]|\d[\-\|\d]*)(\/.*|)$/, $textLeft, $matches = [])) {
+		if (php.preg_match(/^([AI]|\d[\-\|\d]*)(\/.*|)$/, $textLeft, $matches = [])) {
 			[$_, $range, $textLeft] = $matches;
 			if ($range === 'I' || $range === 'A') {
 				$applyToAllAir = true;
@@ -459,7 +459,7 @@ class CommandParser {
 	// '/2|Y', '/3|01Y3', '/4|0UA15Y3DECLAXSFONN1'
 	static parseInsertSegments($cmd) {
 		let $matches, $_, $segNum, $value;
-		if ($matches = php.preg_match(/^\/(\d+)\|(\S.*)$/, $cmd, $matches = [])) {
+		if (php.preg_match(/^\/(\d+)\|(\S.*)$/, $cmd, $matches = [])) {
 			[$_, $segNum, $value] = $matches;
 			return {
 				'insertAfter': $segNum,
@@ -473,7 +473,7 @@ class CommandParser {
 	// '@AA4346366363', 'UA12345678910'
 	static parseMpAir($airPart) {
 		let $matches, $_, $at, $air, $code;
-		if ($matches = php.preg_match(/^(@|)([A-Z0-9]{2})([A-Z0-9]*)$/, $airPart, $matches = [])) {
+		if (php.preg_match(/^(@|)([A-Z0-9]{2})([A-Z0-9]*)$/, $airPart, $matches = [])) {
 			[$_, $at, $air, $code] = $matches;
 			return {
 				'withAllPartners': $at ? true : false,
@@ -494,7 +494,7 @@ class CommandParser {
 			'(N?(?<majorPaxNum>\\d+)(-(?<minorPaxNum>\\d+))?)?' +
 			'\\*(?<airPart>.*)' +
 			'$\/';
-		if ($matches = php.preg_match($regex, $paxPart, $matches = [])) {
+		if (php.preg_match($regex, $paxPart, $matches = [])) {
 			$airParts = php.explode('*', $matches['airPart']);
 			$mpAirs = php.array_map(a => this.parseMpAir(a), $airParts);
 			if (Fp.any('is_null', $mpAirs)) {
@@ -515,7 +515,7 @@ class CommandParser {
 	// 'MPN1-1*@AA8853315554*@BA9742123848*@DL3158746568|N2-1*@AA4346366363*@BA2315488786*@DL7845453554'
 	static parseMpChange($cmd) {
 		let $matches, $_, $xMark, $paxPart, $mpPaxes, $paxParts;
-		if ($matches = php.preg_match(/^MP(\/X\/|)(.*)$/, $cmd, $matches = [])) {
+		if (php.preg_match(/^MP(\/X\/|)(.*)$/, $cmd, $matches = [])) {
 			[$_, $xMark, $paxPart] = $matches;
 			if ($paxPart === '*ALL') {
 				$mpPaxes = [];
@@ -547,9 +547,9 @@ class CommandParser {
 			'(\\\/(?<aisleMark>A))?' +
 			'(\\\/(?<seatCodes>(\\d+[A-Z]+)+))?' +
 			'$\/';
-		if ($matches = php.preg_match($regex, $cmd, $matches = [])) {
+		if (php.preg_match($regex, $cmd, $matches = [])) {
 			$seatCodesStr = $matches['seatCodes'] || '';
-			$seatMatches = php.preg_match_all(/(\d+)([A-Z]+)/, $seatCodesStr, $seatMatches = [], php.PREG_SET_ORDER);
+			php.preg_match_all(/(\d+)([A-Z]+)/, $seatCodesStr, $seatMatches = [], php.PREG_SET_ORDER);
 			$seatCodes = [];
 			for ([$_, $rowNumber, $letters] of $seatMatches) {
 				for ($letter of php.str_split($letters, 1)) {
@@ -627,11 +627,11 @@ class CommandParser {
 	static parseFareSearch($cmd) {
 		let $returnDate, $matches, $_, $departureAirport, $destinationAirport, $departureDate, $modsPart, $lexed;
 		$returnDate = null;
-		if ($matches = php.preg_match(/^\$D([A-Z]{3})([A-Z]{3})(\d{1,2}[A-Z]{3}\d{0,2})(.*)$/, $cmd, $matches = [])) {
+		if (php.preg_match(/^\$D([A-Z]{3})([A-Z]{3})(\d{1,2}[A-Z]{3}\d{0,2})(.*)$/, $cmd, $matches = [])) {
 			[$_, $departureAirport, $destinationAirport, $departureDate, $modsPart] = $matches;
-		} else if ($matches = php.preg_match(/^\$DV(\d{1,2}[A-Z]{3}\d{0,2})([A-Z]{3})([A-Z]{3})(\d{1,2}[A-Z]{3}\d{0,2})(.*)$/, $cmd, $matches = [])) {
+		} else if (php.preg_match(/^\$DV(\d{1,2}[A-Z]{3}\d{0,2})([A-Z]{3})([A-Z]{3})(\d{1,2}[A-Z]{3}\d{0,2})(.*)$/, $cmd, $matches = [])) {
 			[$_, $departureDate, $departureAirport, $destinationAirport, $returnDate, $modsPart] = $matches;
-		} else if ($matches = php.preg_match(/^\$DV?(\d{1,2}[A-Z]{3}\d{0,2})([A-Z]{3})([A-Z]{3})(.*)$/, $cmd, $matches = [])) {
+		} else if (php.preg_match(/^\$DV?(\d{1,2}[A-Z]{3}\d{0,2})([A-Z]{3})([A-Z]{3})(.*)$/, $cmd, $matches = [])) {
 			[$_, $departureDate, $departureAirport, $destinationAirport, $modsPart] = $matches;
 		} else {
 			return null;
@@ -654,7 +654,7 @@ class CommandParser {
 	static parseArea($cmd) {
 		let $filter, $matches;
 		$filter = /^S([A-E])$/;
-		if ($matches = php.preg_match($filter, $cmd, $matches = [])) {
+		if (php.preg_match($filter, $cmd, $matches = [])) {
 			return $matches[1];
 		} else {
 			return null;
@@ -664,7 +664,7 @@ class CommandParser {
 	static parsePcc($cmd) {
 		let $filter, $matches;
 		$filter = /^SEM\/([A-Z0-9]{3,4})\/AG$/;
-		if ($matches = php.preg_match($filter, $cmd, $matches = [])) {
+		if (php.preg_match($filter, $cmd, $matches = [])) {
 			return $matches[1];
 		} else {
 			return null;

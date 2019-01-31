@@ -11,7 +11,7 @@ class CmsApolloTerminal
 {
     static extractTabCommands($output)  {
         let $matches;
-        $matches = php.preg_match_all(/>([^>]+?)(?:·|;)/, $output, $matches = []);
+        php.preg_match_all(/>([^>]+?)(?:·|;)/, $output, $matches = []);
         return php.array_unique($matches[1] || []);
     }
 

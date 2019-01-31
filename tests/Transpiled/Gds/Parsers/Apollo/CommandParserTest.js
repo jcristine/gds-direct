@@ -807,6 +807,8 @@ class CommandParserTest extends require('../../../../../backend/Transpiled/Lib/T
                 },
             },
         ]);
+        // caused "$seatMatches is not iterable" exception
+        $list.push(['9S/S1', {'type': 'requestSeats'}]);
         return $list;
     }
 
