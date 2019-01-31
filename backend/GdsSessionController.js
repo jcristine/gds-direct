@@ -70,6 +70,13 @@ let addSessionInfo = async (session, rbsResult) => {
 	return rbsResult;
 };
 
+let addSessinInfoSafe = (session, rbsResult) =>
+	addSessionInfo(session, rbsResult).catch(exc => {
+		rbsResult.messages.push({type: 'pop_up', text: 'Failed to process state ' + exc});
+		logExc('ERROR: Failed to process state', session.logId, exc);
+		return rbsResult;
+	});
+
 let runInSession = (session, rqBody) => {
 	let running;
 	let gdsData = session.sessionData;
@@ -77,7 +84,7 @@ let runInSession = (session, rqBody) => {
 		running = RbsClient(rqBody).runInputCmd(gdsData);
 	} else {
 		running = TravelportClient(rqBody).runInputCmd(gdsData)
-			.then(rbsResult => addSessionInfo(session, rbsResult))
+			.then(rbsResult => addSessinInfoSafe(session, rbsResult))
 			.then(rbsResult => {
 				let {area, pcc} = rbsResult.sessionInfo;
 				if (!pcc) {
@@ -86,7 +93,7 @@ let runInSession = (session, rqBody) => {
 						.then(rows => rows.filter(r => r.area === area && r.defaultPcc)[0])
 						.then(nonEmpty())
 						.then(row => TravelportClient({command: 'SEM/' + row.defaultPcc + '/AG'}).runInputCmd(gdsData))
-						.then(semResult => addSessionInfo(session, semResult))
+						.then(semResult => addSessinInfoSafe(session, semResult))
 						.then(semResult => {
 							semResult.calledCommands.unshift(...(rbsResult.calledCommands || []));
 							return semResult;
