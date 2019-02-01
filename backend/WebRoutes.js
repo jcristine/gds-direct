@@ -21,6 +21,7 @@ let Config = require('./Config.js');
 let GdsSessions = require('./Repositories/GdsSessions.js');
 const CommandParser = require("./Transpiled/Gds/Parsers/Apollo/CommandParser");
 const PnrParser = require("./Transpiled/Gds/Parsers/Apollo/Pnr/PnrParser");
+const FareConstructionParser = require("./Transpiled/Gds/Parsers/Common/FareConstruction/FareConstructionParser");
 
 let app = express();
 
@@ -30,6 +31,7 @@ let shouldDiag = (exc) =>
 
 let toHandleHttp = (action, logger = null) => (req, res) => {
 	let log = logger ? logger.log : (() => {});
+	let logId = logger ? logger.logId :null;
 	let rqBody = req.body;
 	let rqTakenMs = Date.now();
 	if (Object.keys(rqBody).length === 0) {
@@ -72,10 +74,10 @@ let toHandleHttp = (action, logger = null) => (req, res) => {
 				requestPath: req.path,
 				requestBody: maskedBody,
 				stack: exc.stack,
-				processLogId: logger ? logger.logId : null,
+				processLogId: logId,
 			};
 			if (shouldDiag(exc)) {
-				FluentLogger.logExc('ERROR: HTTP request failed', logger.logId, errorData);
+				FluentLogger.logExc('ERROR: HTTP request failed', logId, errorData);
 				Diag.error('HTTP request failed', errorData);
 			} else {
 				log('HTTP request was not satisfied', errorData);
@@ -287,13 +289,27 @@ app.get('/doSomeHeavyStuff', withAuth((reqBody, emcResult) => {
 		return Forbidden('Sorry, you must be me in order to use that');
 	}
 }));
+let safe = getter => {
+	try {
+		return getter();
+	} catch (exc) {
+		return null;
+	}
+};
 app.get('/parser/test', toHandleHttp((rqBody) => {
 	let result;
 	result = CommandParser.parse(rqBody.input);
-	if (result && result.type) {
+	if (result && result.type && result.data) {
 		return result;
 	}
 	result = PnrParser.parse(rqBody.input);
+	if (safe(() => result.headerData.reservationInfo.recordLocator) ||
+		safe(() => result.itineraryData.length > 0) ||
+		safe(() => result.passengers.length > 0)
+	) {
+		return result;
+	}
+	result = FareConstructionParser.parse(rqBody.input);
 	return result;
 }));
 

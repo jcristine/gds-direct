@@ -3934,7 +3934,7 @@ class SessionStateProcessorTest extends require('../../../../../backend/Transpil
      */
     testCalledCommands($sessionRecord)  {
         let $state, $calledCommands, $letterToArea, $getAreaData, $i, $cmdRecord, $cmd, $output, $expected, $allCmds;
-        /** @debug */
+        // TODO: support all GDS-es one day
         if ($sessionRecord.initialState.gds !== 'apollo') {
             return;
         }
@@ -3950,13 +3950,11 @@ class SessionStateProcessorTest extends require('../../../../../backend/Transpil
                 'is_pnr_stored': false,
             };
         };
-        /** @debug */
         for ([$i, $cmdRecord] of Object.entries($calledCommands)) {
             $cmd = $cmdRecord['cmd'];
             $output = $cmdRecord['output'];
             $state = SessionStateProcessor.updateStateSafe($cmd, $output, $state, $getAreaData);
             $letterToArea[$state['area']] = $state;
-            /** @debug */
             if ($expected = $cmdRecord['state'] || null) {
                 $allCmds = php.array_column($calledCommands, 'cmd');
                 this.assertArrayElementsSubset($expected, $state, $i+'-th command - '+$cmdRecord['cmd']+' - '+php.PHP_EOL+php.implode(', ', $allCmds)+php.PHP_EOL);
