@@ -13,8 +13,11 @@ let util = require('util');
 
 let php = {};
 
-let empty = (value) => !value || +value === 0 ||
-	(typeof value === 'object') && Object.keys(value).length === 0;
+let empty = (value) =>
+	!value || (
+	(typeof value === 'object')
+		? Object.keys(value).length === 0
+		: +value === 0);
 
 let strval = (value) => value === null || value === false || value === undefined ? '' : value + '';
 
@@ -27,6 +30,7 @@ php.empty = empty;
 php.is_null = (value) => value === null || value === undefined;
 php.intval = (value) => +value;
 php.boolval = (value) => empty(value) ? true : false;
+php.abs = (value) => Math.abs(value);
 php.isset = (value) => value !== null && value !== undefined;
 php.is_array = val => Array.isArray(val) || isPlainObject(val);
 php.is_integer = str => {
@@ -130,7 +134,7 @@ php.str_pad = ($input, $pad_length, $pad_string = " ", $pad_type = php.STR_PAD_R
 };
 
 php.implode = (delim, values) => values.join(delim);
-php.explode = (delim, str) => str.split(delim);
+php.explode = (delim, str) => strval(str).split(delim);
 
 php.ucfirst = str => str.slice(0, 1).toUpperCase() + str.slice(1);
 php.strlen = str => (str + "").length;
@@ -148,6 +152,7 @@ php.strcasecmp = (a, b) =>
 	a.toLowerCase() > b.toLowerCase() ? 1 :
 	a.toLowerCase() < b.toLowerCase() ? -1 : 0;
 
+/** be careful, it does not support '%.02f' format */
 php.sprintf = (template, ...values) => util.format(template, ...values);
 php.strpos = (str, substr) => {
 	let index = str.indexOf(substr);
@@ -374,6 +379,13 @@ php.array_slice = (arr, start, length = undefined) => {
 	arr = Object.values(arr);
 	length = length === undefined ? arr.length : length;
 	return arr.slice(start, start + length);
+};
+php.array_sum = (arr) => {
+	let result = 0;
+	for (let value of Object.values(arr)) {
+		result += +value;
+	}
+	return result;
 };
 php.array_column = (arr, key) => {
 	return Object.values(arr).map(el => el[key]);

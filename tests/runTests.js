@@ -4,6 +4,7 @@ let CommonParsersHelperTest = require('./Transpiled/Gds/Parsers/Apollo/Pnr/Commo
 let CommandParserTest = require("./Transpiled/Gds/Parsers/Apollo/CommandParserTest.js");
 const PnrParserTest = require("./Transpiled/Gds/Parsers/Apollo/Pnr/PnrParserTest.js");
 const SessionStateProcessorTest = require("./Transpiled/Rbs/GdsDirect/SessionDataProcessor/SessionStateProcessorTest");
+const PricingParserTest = require("./Transpiled/Gds/Parsers/Apollo/PricingParserTest");
 
 console.log('Starting unit tests');
 
@@ -15,6 +16,7 @@ let tests = [
 	.concat(new CommandParserTest().getTests())
 	.concat(new PnrParserTest().getTests())
 	.concat(new SessionStateProcessorTest().getTests())
+	.concat(new PricingParserTest().getTests())
 	;
 
 let oks = 0;

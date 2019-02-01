@@ -35,7 +35,7 @@ class Lexeme {
 		$constraint = ($context) => {
 			let $previousLexeme;
 			$previousLexeme = php.array_pop($context['lexemes']);
-			return php.in_array($previousLexeme['lexeme'], $lexemes);
+			return $previousLexeme && php.in_array($previousLexeme['lexeme'], $lexemes);
 		};
 		return this.hasConstraint($constraint);
 	}
