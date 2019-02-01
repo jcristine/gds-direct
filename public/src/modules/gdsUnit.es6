@@ -18,6 +18,7 @@ export class GDS_UNIT
 			defaultPcc		: settings.pcc || null,
 			pcc				: {},
 			canCreatePq		: false, //1
+			canCreatePqErrors: [],
 			history			: [],
 			terminals		: {},
 			curTerminalId	: undefined,

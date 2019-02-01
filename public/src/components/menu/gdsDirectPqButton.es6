@@ -18,6 +18,7 @@ export default class gdsDirectPqButton extends Component
     {
         return super.setState({
             canCreatePq : state.curGds.get('canCreatePq'),
+            canCreatePqErrors : state.curGds.get('canCreatePqErrors') || [],
             requestId 	: requestId
         })
     }
@@ -32,6 +33,7 @@ export default class gdsDirectPqButton extends Component
     _renderer()
     {
         this.pqButton.disabled = this.state.canCreatePq !== true;
+        this.pqButton.classList.toggle('has-pq-errors', (this.state.canCreatePqErrors || []).length > 0);
         this.pqButton.classList.toggle('hidden', !!this.state.requestId);
     }
 }

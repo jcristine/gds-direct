@@ -1,6 +1,7 @@
 import {get} from "../helpers/requests";
 import {CLOSE_PQ_WINDOW} from "../actions/priceQuoutes";
 import {notify} from "../helpers/debug";
+import {UPDATE_CUR_GDS} from "../actions/gdsActions";
 
 const reject = err => {
 
@@ -38,6 +39,20 @@ let blockAllUi = (url) => {
 	return result;
 };
 
+/** @param {IRbsGetPqItineraryRs} rbsData */
+let updateSessionState = (rbsData, gdsName) => {
+	UPDATE_CUR_GDS({
+		canCreatePqErrors: rbsData.sessionInfo.canCreatePqErrors,
+		area: rbsData.sessionInfo.area,
+		pcc: rbsData.sessionInfo.pcc,
+		canCreatePq: rbsData.sessionInfo.canCreatePq,
+		hasPnr: rbsData.sessionInfo.hasPnr,
+		recordLocator: rbsData.sessionInfo.recordLocator,
+		startNewSession: false,
+		gdsName: gdsName,
+	});
+};
+
 export class PqParser
 {
 	constructor( modal )
@@ -55,15 +70,21 @@ export class PqParser
 		let pqErrors = gds.get('canCreatePqErrors') || [];
 		if (pqErrors.length > 0)
 		{
-			return reject('Can\t create PQ - ' + pqErrors.join('; '));
+			return reject('Can\'t create PQ - ' + pqErrors.join('; '));
 		}
 
 		let useRbs = GdsDirectPlusState.getUseRbs() ? '1' : '';
 		return blockAllUi(`terminal/getPqItinerary?pqTravelRequestId=${rId}&isStandAlone=${isStandAlone}&gds=${gds.get('name')}&useRbs=${useRbs}`)
-			.then(rbsData => ({pqTravelRequestId: rId, gds: gds.get('name'), rbsData: rbsData}))
+			.then(rbsData => {
+				updateSessionState(rbsData, gds.get('name'));
+				return {pqTravelRequestId: rId, gds: gds.get('name'), rbsData: rbsData};
+			})
 			.then(pqBtnData => {
 				let importPq = () => get(`terminal/importPq?pqTravelRequestId=${rId}&isStandAlone=${isStandAlone}&gds=${gds.get('name')}&useRbs=${useRbs}`)
-					.then(rbsData => ({rbsData: rbsData}));
+					.then(rbsData => {
+						updateSessionState(rbsData, gds.get('name'));
+						return {rbsData: rbsData};
+					});
 				return this.modal(pqBtnData, CLOSE_PQ_WINDOW, importPq);
 			});
 	}
