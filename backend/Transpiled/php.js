@@ -382,12 +382,18 @@ php.array_pad = (array, size, value) => {
 	}
 };
 php.array_splice = (arr, start, length = undefined) => {
+	if (Array.isArray(arr)) {
+		throw new Error('Tried to splice a non-array - ' + arr);
+	}
 	arr = Object.values(arr);
 	length = length === undefined ? arr.length : length;
 	return arr.splice(start, start + length);
 };
-php.array_slice = (arr, start, length = undefined) =>
-	php.array_splice([...arr], start, length);
+php.array_slice = (arr, start, length = undefined) => {
+	arr = Object.values(arr);
+	length = length === undefined ? arr.length : length;
+	return arr.slice(start, start + length);
+};
 php.array_sum = (arr) => {
 	let result = 0;
 	for (let value of Object.values(arr)) {
