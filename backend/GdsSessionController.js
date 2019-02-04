@@ -9,6 +9,10 @@ let {admins} = require('./Constants.js');
 let GdsSessions = require('./Repositories/GdsSessions.js');
 const UpdateApolloSessionStateAction = require("./Transpiled/Rbs/GdsDirect/SessionStateProcessor/UpdateApolloSessionStateAction");
 const AreaSettings = require("./Repositories/AreaSettings");
+const ImportPqAction = require("./Transpiled/Rbs/GdsDirect/Actions/ImportPqAction");
+const CmsStatefulSession = require("./Transpiled/Rbs/GdsDirect/CmsStatefulSession");
+const SessionStateProcessor = require("./Transpiled/Rbs/GdsDirect/SessionStateProcessor/SessionStateProcessor");
+const TerminalBuffering = require("./Repositories/TerminalBuffering");
 const nonEmpty = require("./Utils/Rej").nonEmpty;
 let {logit, logExc} = require('./LibWrappers/FluentLogger.js');
 let {Forbidden, NotImplemented} = require('./Utils/Rej.js');
@@ -42,20 +46,17 @@ let startNewSession = (rqBody) => {
 };
 
 let addSessionInfo = async (session, rbsResult) => {
-	if (session.context.gds !== 'apollo') {
+	let gds = session.context.gds;
+	if (gds !== 'apollo') {
 		return session;
 	}
 	let hrtimeStart = process.hrtime();
 	let fullState = await GdsSessions.getFullState(session);
 	for (let rec of rbsResult.calledCommands) {
 		let {cmd, output} = rec;
-		let getArea = letter => fullState.areas[letter] || {};
-		let oldState = fullState.areas[fullState.area] || {};
-		let newState = UpdateApolloSessionStateAction
-			.execute(cmd, output, oldState, getArea);
-		fullState.area = newState.area;
-		fullState.areas[newState.area] = newState;
-		rec.type = newState.cmdType;
+		fullState = SessionStateProcessor
+			.updateFullState(cmd, output, gds, fullState);
+		rec.type = fullState.areas[fullState.area].cmdType;
 	}
 	GdsSessions.updateFullState(session, fullState);
 	let areaState = fullState.areas[fullState.area] || {};
@@ -145,47 +146,14 @@ let runInputCmdRestartAllowed = (reqBody) => {
 
 /** @param {IEmcResult} emcResult */
 exports.runInputCmd = (reqBody, emcResult) => {
-	let hrtimeStart = process.hrtime();
-	let requestTimestamp = Math.floor(new Date().getTime() / 1000);
-	let running = runInputCmdRestartAllowed(reqBody, emcResult);
-
-	return running.then(async ({session, rbsResult}) => {
-		let termSvc = new TerminalService(reqBody.gds, reqBody.agentId, reqBody.travelRequestId);
-		let rbsResp = await termSvc.addHighlighting(reqBody.command, reqBody.language || reqBody.gds, rbsResult);
-		let result = {success: true, data: rbsResp, session: session};
-
-		GdsSessions.updateUserAccessTime(result.session);
-		let hrtimeDiff = process.hrtime(hrtimeStart);
-		let processedTime = hrtimeToDecimal(hrtimeDiff);
-		let responseTimestamp = Math.floor(new Date().getTime() / 1000);
-		dbPool.getConnection()
-			.then(dbConn => {
-				return Db(dbConn).writeRows('terminalBuffering', [{
-					agentId: reqBody.agentId,
-					requestId: reqBody.travelRequestId || 0,
-					gds: reqBody.gds,
-					dialect: reqBody.language,
-					// TODO: use session id instead
-					rbsSessionId: session.sessionData.rbsSessionId || null,
-					gdsSessionDataMd5: !session.sessionData ? null :
-						md5(session.sessionData),
-					area: result.data.area,
-					terminalNumber: reqBody.terminalIndex,
-					processedTime: processedTime,
-					command: reqBody.command,
-					output: result.data.output,
-					requestTimestamp: requestTimestamp,
-					responseTimestamp: responseTimestamp,
-				}]).finally(() => dbPool.releaseConnection(dbConn));
-			})
-			.catch(exc => logExc('ERROR: SQL exc - ' + exc, session.logId, exc));
-
-		logit('TODO: Executed cmd: ' + reqBody.command + ' in ' + processedTime + ' s.', session.logId, result);
-		logit('Process log: ' + reqBody.processLogId, session.logId);
-		logit('Session log: ' + session.logId, reqBody.processLogId);
-
-		return result;
-	});
+	let running = runInputCmdRestartAllowed(reqBody, emcResult)
+		.then(async ({session, rbsResult}) => {
+			let termSvc = new TerminalService(reqBody.gds, reqBody.agentId, reqBody.travelRequestId);
+			let rbsResp = await termSvc.addHighlighting(reqBody.command, reqBody.language || reqBody.gds, rbsResult);
+			return {success: true, data: rbsResp, session: session};
+		});
+	TerminalBuffering.logCommand(reqBody, running);
+	return running;
 };
 
 exports.getPqItinerary = (reqBody) => {
@@ -193,7 +161,10 @@ exports.getPqItinerary = (reqBody) => {
 		return GdsSessions.getByContext(reqBody).then(session =>
 			RbsClient(reqBody).getPqItinerary(session.sessionData));
 	} else {
-		return Promise.reject('getPqItinerary for RBS-free session not implemented yet');
+		return GdsSessions.getByContext(reqBody).then(session => {
+			let stSession = CmsStatefulSession.makeByData(session);
+			return new ImportPqAction().setSession(stSession).execute();
+		});
 	}
 };
 exports.importPq = (reqBody) => {

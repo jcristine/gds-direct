@@ -27,6 +27,7 @@ php.PREG_PATTERN_ORDER = 1;
 php.PREG_SET_ORDER = 2;
 
 php.empty = empty;
+php.get_class = (value) => value ? (value.constructor || {}).name || null : null;
 php.is_null = (value) => value === null || value === undefined;
 php.intval = (value) => +value;
 php.boolval = (value) => empty(value) ? true : false;
@@ -302,6 +303,11 @@ php.array_intersect_key = (source, whitelist) => {
 	}
 	return newObj;
 };
+php.array_intersect = (arr1, arr2) => {
+	let set2 = new Set(arr2);
+	return Object.values(arr1)
+		.filter(el => set2.has(el));
+};
 php.array_diff = (arr1, arr2) => {
 	let set2 = new Set(arr2);
 	return Object.values(arr1)
@@ -375,11 +381,13 @@ php.array_pad = (array, size, value) => {
 		throw new Error('Invalid size value for array_pad - ' + size);
 	}
 };
-php.array_slice = (arr, start, length = undefined) => {
+php.array_splice = (arr, start, length = undefined) => {
 	arr = Object.values(arr);
 	length = length === undefined ? arr.length : length;
-	return arr.slice(start, start + length);
+	return arr.splice(start, start + length);
 };
+php.array_slice = (arr, start, length = undefined) =>
+	php.array_splice([...arr], start, length);
 php.array_sum = (arr) => {
 	let result = 0;
 	for (let value of Object.values(arr)) {

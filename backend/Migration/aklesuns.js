@@ -1,31 +1,6 @@
 
 module.exports.migrations = [
 	{
-		name: '00.00.01',
-		perform: (db) => db.query([
-			'CREATE TABLE `terminalBuffering` (',
-			'  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,',
-			'  `agentId` int(10) unsigned NOT NULL,',
-			'  `requestId` int(10) unsigned NOT NULL DEFAULT 0,',
-			'  `gds` VARCHAR(15),',
-			'  `dialect` VARCHAR(15),',
-			'  `rbsSessionId` int(10) unsigned DEFAULT NULL,',
-			'  `gdsSessionDataMd5` CHAR(32) DEFAULT NULL,',
-			'  `area` char(1) DEFAULT NULL,',
-			'  `terminalNumber` tinyint(3) unsigned NOT NULL,',
-			'  `processedTime` decimal(10,5) NOT NULL DEFAULT "0.00000",',
-			'  `command` varchar(127) DEFAULT NULL,',
-			'  `output` text,',
-			'  `requestTimestamp` int(10) unsigned DEFAULT NULL,',
-			'  `responseTimestamp` int(10) unsigned DEFAULT NULL,',
-			'  PRIMARY KEY (`id`),',
-			'  KEY `agentId_requestId` (`agentId`, `requestId`),',
-			'  KEY `rbsSessionId` (`rbsSessionId`),',
-			'  KEY `gdsSessionDataMd5` (`gdsSessionDataMd5`)',
-			') ENGINE=InnoDB CHARSET=utf8',
-		].join('\n')),
-	},
-	{
 		name: '00.00.02',
 		perform: (db) => db.query([
 			'CREATE TABLE `terminalSettings` (',
@@ -150,6 +125,55 @@ module.exports.migrations = [
 			'(20,\'Deep Ocean\',\'{"defaultBg":{"background-color":"#141e29"},"activeWindow":{"background-color":"#192633"},"entryFont":{"color":"#ffffff"},"outputFont":{"color":"#ffffff"},"usedCommand":{"color":"#ffff00"},"errorMessage":{"color":"#ff0000"},"warningMessage":{"color":"#65d994"},"startSession":{"color":"#81f7b1"},"specialHighlight":{"color":"#18fafa"}}\'),(22,\'SmartPoint Theme\',\'{"defaultBg":{"background-color":"#4b4b4b"},"activeWindow":{"background-color":"#525151"},"entryFont":{"color":"#ffffff"},"outputFont":{"color":"#ffffff"},"usedCommand":{"color":"#ffff00"},"errorMessage":{"color":"#ff0000","font-weight":"bold"},"warningMessage":{"color":"#77fc77"},"startSession":{"color":"#00ff00"},"specialHighlight":{"color":"#7eb9f9"}}\'),',
 			'(24,\'Deep Ocean (no highlights)\',\'{"defaultBg":{"background-color":"#141e29"},"activeWindow":{"background-color":"#192633"},"entryFont":{"color":"#ffffff"},"outputFont":{"color":"#ffffff"},"usedCommand":{"color":"#ffffff"},"errorMessage":{"color":"#ffffff"},"warningMessage":{"color":"#ffffff"},"startSession":{"color":"#ffffff"},"specialHighlight":{"color":"#ffffff"}}\')',
 			';',
+		].join('\n')),
+	},
+	{
+		name: '00.00.10-re-create-terminal-buffering-table',
+		perform: (db) => db.query([
+			'CREATE TABLE `terminalBuffering` (',
+			'  `id` bigint(20) unsigned NOT NULL,',
+			'  `agentId` int(10) unsigned NOT NULL,',
+			'  `requestId` int(10) unsigned NOT NULL DEFAULT 0,',
+			'  `gds` VARCHAR(15),',
+			'  `dialect` VARCHAR(15),',
+			// sessionId incrementation will be reset after redis restart,
+			// that's why redisRunId must be included in WHERE queries
+			'  `redisRunId` CHAR(40) NOT NULL,',
+			'  `sessionId` INTEGER NOT NULL,',
+			'  `area` char(1) DEFAULT NULL,',
+			'  `terminalNumber` tinyint(3) unsigned NOT NULL,',
+			'  `processedTime` decimal(10,5) NOT NULL DEFAULT "0.00000",',
+			'  `command` varchar(127) DEFAULT NULL,',
+			'  `output` text,',
+			'  `requestTimestamp` int(10) unsigned DEFAULT NULL,',
+			'  `responseTimestamp` int(10) unsigned DEFAULT NULL,',
+			'  PRIMARY KEY (`id`),',
+			'  KEY `agentId_requestId` (`agentId`, `requestId`),',
+			'  KEY `sessionId_redisRunId` (`sessionId`, `redisRunId`)',
+			') ENGINE=InnoDB CHARSET=utf8',
+		].join('\n')),
+	},
+	{
+		// `terminalBuffering` is the _requested_ command, whereas `terminalCommandLog`
+		// is the command(s) that were actually called in GDS, possibly auto-corrected
+		// one `terminalBuffering` record can own multiple `terminalCommandLog` records
+		name: '00.00.11-create-tcl-table',
+		perform: (db) => db.query([
+			'CREATE TABLE `terminalCommandLog` (',
+			'  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,',
+			'  `gds` VARCHAR(30) DEFAULT NULL,',
+			'  `type` VARCHAR(255) DEFAULT NULL,',
+			'  `cmd` VARCHAR(255) NOT NULL,',
+			'  `output` TEXT NOT NULL,',
+			'  `startMs` BIGINT NOT NULL,',
+			'  `duration` DECIMAL(10,4) NOT NULL,',
+			'  `redisRunId` CHAR(40) NOT NULL,',
+			'  `sessionId` INTEGER NOT NULL,',
+			'  `cmdRequestedId` INTEGER NOT NULL,',
+			'  PRIMARY KEY (`id`),',
+			'  KEY `gds_type_id` (`gds`, `type`, `id`),',
+			'  KEY `sessionId_redisRunId` (`sessionId`, `redisRunId`)',
+			') ENGINE=InnoDB CHARSET=utf8',
 		].join('\n')),
 	},
 ];

@@ -1,6 +1,7 @@
 
 let ioredis = require("ioredis");
 let config = require('../Config.js');
+const nonEmpty = require("../Utils/Rej").nonEmpty;
 
 /** @type IIoRedisClient */
 let client = new ioredis(config.REDIS_PORT, config.REDIS_HOST);
@@ -13,6 +14,7 @@ let keys = {
 	get SESSION_BY_CONTEXT() { never() },
 	get SESSION_TO_RECORD() { never() },
 	get SESSION_TO_STATE() { never() },
+	get CMD_RQ_LAST_INSERT_ID() { never() },
 };
 // to avoid explicitly setting value for
 // each constant risking getting a typo
@@ -53,3 +55,6 @@ exports.getInfo = () => {
 		return parsed;
 	});
 };
+
+exports.getRunId = () => exports.getInfo()
+	.then(i => i.run_id).then(nonEmpty());

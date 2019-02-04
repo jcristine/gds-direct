@@ -17,14 +17,24 @@ class SessionStateProcessor
     }
 
     /** "safe" means it does not write to DB */
-    static updateStateSafe($cmd, $output, $sessionState, $getAreaData)  {
+    static updateStateSafe($cmd, $output, gds, $sessionState, $getAreaData)  {
         let $newState;
-        if ($sessionState['gds'] === 'apollo') {
+        if (gds === 'apollo') {
             let UpdateApolloSessionStateAction = require('./UpdateApolloSessionStateAction.js');
             return UpdateApolloSessionStateAction.execute($cmd, $output, $sessionState, $getAreaData);
         } else {
             throw new Error('Session State Processor is not implemented for '+$sessionState['gds']+' GDS yet');
         }
+    }
+
+    static updateFullState(cmd, output, gds, fullState) {
+        fullState = JSON.parse(JSON.stringify(fullState));
+        let getArea = letter => fullState.areas[letter] || {};
+        let oldState = fullState.areas[fullState.area] || {};
+        let newState = this.updateStateSafe(cmd, output, gds, oldState, getArea);
+        fullState.area = newState.area;
+        fullState.areas[newState.area] = newState;
+        return fullState;
     }
 }
 
