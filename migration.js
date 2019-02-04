@@ -1,6 +1,6 @@
 
-let aklesuns = require('./backend/Migration/aklesuns.es6');
-let Db = require('./backend/Utils/Db.es6');
+let aklesuns = require('./backend/Migration/aklesuns.js');
+let Db = require('./backend/Utils/Db.js');
 
 let TABLE_NAME = 'migrations';
 
