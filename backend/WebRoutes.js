@@ -218,7 +218,7 @@ app.get('/gdsDirect/themes', toHandleHttp(() =>
 let transformSession = (session) => {
 	return {
 		"id": session.id,
-		"externalId": session.sessionData.rbsSessionId || JSON.stringify(session.sessionData),
+		"externalId": session.gdsData.rbsSessionId || JSON.stringify(session.gdsData),
 		"agentId": session.context.agentId,
 		"gds": session.context.gds,
 		"requestId": session.context.travelRequestId,

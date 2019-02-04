@@ -13,7 +13,7 @@ let normalizeContext = (reqBody) => {
 	};
 };
 
-let makeSessionRecord = (id, context, sessionData) => {
+let makeSessionRecord = (id, context, gdsData) => {
 	let prefix = context.gds + '_' + context.agentId;
 	let logId = FluentLogger.logNewId(prefix);
 	let createdMs = Date.now();
@@ -22,7 +22,7 @@ let makeSessionRecord = (id, context, sessionData) => {
 		logId: logId,
 		createdMs: createdMs,
 		context: context,
-		sessionData: sessionData,
+		gdsData: gdsData,
 	};
 	FluentLogger.logit('Session created: #' + id, logId, session);
 	return session;
@@ -48,11 +48,11 @@ exports.getAll = () => {
 };
 
 /** @param context = normalizeContext() */
-exports.storeNew = (context, sessionData) => {
+exports.storeNew = (context, gdsData) => {
 	let normalized = normalizeContext(context);
 	let contextStr = JSON.stringify(normalized);
 	return client.incr(keys.SESSION_LAST_INSERT_ID).then(id => {
-		let session = makeSessionRecord(id, context, sessionData);
+		let session = makeSessionRecord(id, context, gdsData);
 		client.zadd(keys.SESSION_ACTIVES, Date.now(), id);
 		client.hset(keys.SESSION_BY_CONTEXT, contextStr, id);
 		client.hset(keys.SESSION_TO_RECORD, id, JSON.stringify(session));

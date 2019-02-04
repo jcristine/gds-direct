@@ -42,7 +42,7 @@ let startNewSession = (rqBody) => {
 			starting = NotImplemented('GDS ' + rqBody.gds + ' not supported with "Be Fast" flag - uncheck it.');
 		}
 	}
-	return starting.then(sessionData => GdsSessions.storeNew(rqBody, sessionData));
+	return starting.then(gdsData => GdsSessions.storeNew(rqBody, gdsData));
 };
 
 let addSessionInfo = async (session, rbsResult) => {
@@ -73,7 +73,7 @@ let addSessionInfo = async (session, rbsResult) => {
 	return rbsResult;
 };
 
-let addSessinInfoSafe = (session, rbsResult) =>
+let addSessionInfoSafe = (session, rbsResult) =>
 	addSessionInfo(session, rbsResult).catch(exc => {
 		rbsResult.messages.push({type: 'pop_up', text: 'Failed to process state ' + exc});
 		logExc('ERROR: Failed to process state', session.logId, exc);
@@ -82,12 +82,12 @@ let addSessinInfoSafe = (session, rbsResult) =>
 
 let runInSession = (session, rqBody) => {
 	let running;
-	let gdsData = session.sessionData;
+	let gdsData = session.gdsData;
 	if (+session.context.useRbs) {
 		running = RbsClient(rqBody).runInputCmd(gdsData);
 	} else {
 		running = TravelportClient(rqBody).runInputCmd(gdsData)
-			.then(rbsResult => addSessinInfoSafe(session, rbsResult))
+			.then(rbsResult => addSessionInfoSafe(session, rbsResult))
 			.then(rbsResult => {
 				let {area, pcc} = rbsResult.sessionInfo;
 				if (!pcc) {
@@ -96,7 +96,7 @@ let runInSession = (session, rqBody) => {
 						.then(rows => rows.filter(r => r.area === area && r.defaultPcc)[0])
 						.then(nonEmpty())
 						.then(row => TravelportClient({command: 'SEM/' + row.defaultPcc + '/AG'}).runInputCmd(gdsData))
-						.then(semResult => addSessinInfoSafe(session, semResult))
+						.then(semResult => addSessionInfoSafe(session, semResult))
 						.then(semResult => {
 							semResult.calledCommands.unshift(...(rbsResult.calledCommands || []));
 							return semResult;
@@ -159,7 +159,7 @@ exports.runInputCmd = (reqBody, emcResult) => {
 exports.getPqItinerary = (reqBody) => {
 	if (reqBody.useRbs) {
 		return GdsSessions.getByContext(reqBody).then(session =>
-			RbsClient(reqBody).getPqItinerary(session.sessionData));
+			RbsClient(reqBody).getPqItinerary(session.gdsData));
 	} else {
 		return GdsSessions.getByContext(reqBody).then(session => {
 			let stSession = CmsStatefulSession.makeByData(session);
@@ -170,7 +170,7 @@ exports.getPqItinerary = (reqBody) => {
 exports.importPq = (reqBody) => {
 	if (reqBody.useRbs) {
 		return GdsSessions.getByContext(reqBody).then(session =>
-			RbsClient(reqBody).importPq(session.sessionData));
+			RbsClient(reqBody).importPq(session.gdsData));
 	} else {
 		return Promise.reject('importPq for RBS-free session not implemented yet');
 	}

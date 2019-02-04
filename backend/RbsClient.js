@@ -90,7 +90,7 @@ RbsClient.startSession = ({gds, agentId}) => {
 RbsClient.closeSession = (session) => {
 	return callRbs('terminal.endSession', {
 		gds: session.context.gds,
-		sessionId: session.sessionData.rbsSessionId,
+		sessionId: session.gdsData.rbsSessionId,
 	});
 };
 
