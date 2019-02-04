@@ -4,30 +4,17 @@ let TravelportClient = require('./TravelportClient.js');
 let dbPool = require('./App/Classes/Sql.js');
 let Db = require('./Utils/Db.js');
 let TerminalService = require('./Transpiled/App/Services/TerminalService.js');
-let {hrtimeToDecimal} = require('./Utils/Misc.js');
 let {admins} = require('./Constants.js');
 let GdsSessions = require('./Repositories/GdsSessions.js');
-const UpdateApolloSessionStateAction = require("./Transpiled/Rbs/GdsDirect/SessionStateProcessor/UpdateApolloSessionStateAction");
-const AreaSettings = require("./Repositories/AreaSettings");
 const ImportPqAction = require("./Transpiled/Rbs/GdsDirect/Actions/ImportPqAction");
 const CmsStatefulSession = require("./Transpiled/Rbs/GdsDirect/CmsStatefulSession");
-const SessionStateProcessor = require("./Transpiled/Rbs/GdsDirect/SessionStateProcessor/SessionStateProcessor");
 const TerminalBuffering = require("./Repositories/TerminalBuffering");
-const nonEmpty = require("./Utils/Rej").nonEmpty;
 let {logit, logExc} = require('./LibWrappers/FluentLogger.js');
 let {Forbidden, NotImplemented} = require('./Utils/Rej.js');
+let ProcessTerminalInput = require('./Actions/ProcessTerminalInput.js');
 
-let md5 = (data) => {
-	// return crypto.createHash('md5')
-	// 	.update(JSON.stringify(data))
-	// 	.digest('hex');
-	let objectHash = require('object-hash');
-	return objectHash(data);
-};
-
-let isTravelportAllowed = (rqBody) => {
-	return admins.includes(+rqBody.agentId);
-};
+let isTravelportAllowed = (rqBody) =>
+	admins.includes(+rqBody.agentId);
 
 let startNewSession = (rqBody) => {
 	let starting;
@@ -45,67 +32,13 @@ let startNewSession = (rqBody) => {
 	return starting.then(gdsData => GdsSessions.storeNew(rqBody, gdsData));
 };
 
-let addSessionInfo = async (session, rbsResult) => {
-	let gds = session.context.gds;
-	if (gds !== 'apollo') {
-		return session;
-	}
-	let hrtimeStart = process.hrtime();
-	let fullState = await GdsSessions.getFullState(session);
-	for (let rec of rbsResult.calledCommands) {
-		let {cmd, output} = rec;
-		fullState = SessionStateProcessor
-			.updateFullState(cmd, output, gds, fullState);
-		rec.type = fullState.areas[fullState.area].cmdType;
-	}
-	GdsSessions.updateFullState(session, fullState);
-	let areaState = fullState.areas[fullState.area] || {};
-	rbsResult.sessionInfo = rbsResult.sessionInfo || {};
-	rbsResult.sessionInfo.area = areaState.area || '';
-	rbsResult.sessionInfo.pcc = areaState.pcc || '';
-	rbsResult.sessionInfo.hasPnr = areaState.has_pnr ? true : false;
-	rbsResult.sessionInfo.recordLocator = areaState.record_locator || '';
-	rbsResult.sessionInfo.canCreatePq = areaState.can_create_pq ? true : false;
-	rbsResult.sessionInfo.canCreatePqErrors = areaState.can_create_pq
-		? [] : ['Local state processor does not allow creating PQ'];
-	let hrtimeDiff = process.hrtime(hrtimeStart);
-	rbsResult.sessionInfo.updateTime = hrtimeToDecimal(hrtimeDiff);
-	return rbsResult;
-};
-
-let addSessionInfoSafe = (session, rbsResult) =>
-	addSessionInfo(session, rbsResult).catch(exc => {
-		rbsResult.messages.push({type: 'pop_up', text: 'Failed to process state ' + exc});
-		logExc('ERROR: Failed to process state', session.logId, exc);
-		return rbsResult;
-	});
-
 let runInSession = (session, rqBody) => {
 	let running;
 	let gdsData = session.gdsData;
 	if (+session.context.useRbs) {
 		running = RbsClient(rqBody).runInputCmd(gdsData);
 	} else {
-		running = TravelportClient(rqBody).runInputCmd(gdsData)
-			.then(rbsResult => addSessionInfoSafe(session, rbsResult))
-			.then(rbsResult => {
-				let {area, pcc} = rbsResult.sessionInfo;
-				if (!pcc) {
-					// emulate to default pcc
-					return AreaSettings.getByAgent(rqBody.agentId)
-						.then(rows => rows.filter(r => r.area === area && r.defaultPcc)[0])
-						.then(nonEmpty())
-						.then(row => TravelportClient({command: 'SEM/' + row.defaultPcc + '/AG'}).runInputCmd(gdsData))
-						.then(semResult => addSessionInfoSafe(session, semResult))
-						.then(semResult => {
-							semResult.calledCommands.unshift(...(rbsResult.calledCommands || []));
-							return semResult;
-						})
-						.catch(exc => rbsResult);
-				} else {
-					return rbsResult;
-				}
-			});
+		running = ProcessTerminalInput(session, rqBody);
 	}
 	GdsSessions.updateAccessTime(session);
 	return running.then(rbsResult => ({session, rbsResult}));
