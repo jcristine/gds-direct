@@ -10,7 +10,7 @@ const hrtimeToDecimal = require("../Utils/Misc").hrtimeToDecimal;
 let addSessionInfo = async (session, rbsResult) => {
 	let gds = session.context.gds;
 	if (gds !== 'apollo') {
-		return session;
+		return rbsResult;
 	}
 	let hrtimeStart = process.hrtime();
 	let fullState = await GdsSessions.getFullState(session);
