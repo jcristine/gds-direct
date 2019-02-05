@@ -37,6 +37,9 @@ let initSocket = (host) => new Promise((resolve, reject) => {
 			console.log('socket message from server', data);
 			reply('I confirm this message');
 		});
+		socket.on('error', (...args) => {
+			console.error('socket error occurred', args);
+		});
 		resolve({
 			send: (url, fetchParams) => new Promise((resolve, reject) => {
 				let data = {

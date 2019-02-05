@@ -46,7 +46,10 @@ let runInSession = (session, rqBody) => {
 
 let runInNewSession = (rqBody, exc) => {
 	return startNewSession(rqBody)
-		.then(session => runInSession(session, rqBody))
+		.then(session => {
+			logExc('WARNING: Restarting session due to exception', session.id, exc);
+			return runInSession(session, rqBody);
+		})
 		.then(runt => {
 			runt.rbsResult.startNewSession = true;
 			runt.rbsResult.messages = [{type: 'pop_up', text: 'New session started, reason: ' + (exc + '').slice(0, 800) + '...\n'}];

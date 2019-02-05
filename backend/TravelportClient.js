@@ -57,161 +57,16 @@ let runOneCmd = (cmd, token) => {
 		}
 	}).catch(exc => {
 		let obj = typeof exc === 'string' ? new Error(exc) : exc;
-		// be careful not to include credentials here
+		// for debug, be careful not to include credentials here
 		obj.rqBody = body;
 		return Promise.reject(obj);
 	});
 };
 
-let extractPager = (text) => {
-	let [_, clean, pager] =
-		text.match(/([\s\S]*)(\)\>\<)$/) ||
-		text.match(/([\s\S]*)(\>\<)$/) ||
-		[null, text, null];
-	return [clean, pager];
-};
-
-let shouldWrap = (cmd) => {
-	let wrappedCmds = ['FS', 'MORE*', 'QC', '*HTE', 'HOA', 'HOC', 'FQN', 'A', '$D'];
-	let alwaysWrap = false;
-	return alwaysWrap
-		|| wrappedCmds.some(wCmd => cmd.startsWith(wCmd));
-};
-
-let wrap = function(text) {
-	let result = [];
-	for (let line of text.split('\n')) {
-		for (let chunk of (line.match(/.{1,64}/g) || [''])) {
-			result.push(chunk);
-		}
-	}
-	if (result.slice(-1)[0].length === 64) {
-		result.push('');
-	}
-	return result.join('\n');
-};
-
-let makeSessionData = token => !token ? null :{
-	profileName: gdsProfile,
-	externalToken: token,
-};
-
-/**
- * @param '$BN1|2*INF'
- * @return '$BN1+2*INF'
- */
-let encodeCmdForCms = ($cmd) =>
-	$cmd.replace(/\|/g, '+').replace(/@/g, '¤');
-
-let encodeOutputForCms = ($dump) =>
-	$dump.replace(/\|/g, '+').replace(/;/g, '·');
-
-let makeResult = (calledCommands, token) => ({
-	calledCommands: calledCommands,
-	messages: [],
-	clearScreen: false,
-	sessionInfo: {
-		canCreatePq: false,
-		canCreatePqErrors: ['Not supported in RBS-free connection'],
-		area: 'A',
-		pcc: '1O3K',
-	},
-	gdsSessionData: makeSessionData(token),
-});
-
-/** @param segment = ItineraryParser.parseSegmentLine() */
-let makeSellCmd = (segment) => {
-	return [
-		'0',
-		segment.airline,
-		segment.flightNumber,
-		segment.bookingClass,
-		segment.departureDate.raw,
-		segment.departureAirport,
-		segment.destinationAirport,
-		segment.segmentStatus,
-		segment.statusNumber,
-	].join('');
-};
-
-let parseCmdAsItinerary = (dump) => {
-	try {
-		let parsed = ItineraryParser.parse(dump);
-		if (parsed.segments.length > 0) {
-			console.log('parsed itinerary', {dump, parsed});
-			return {
-				bulkCmds: parsed.segments.map(makeSellCmd),
-			};
-		}
-	} catch (exc) {
-		// should not happen, but who knows...
-	}
-	return null;
-};
-
-let parseAlias = (cmd) => {
-	let type = null, data = null, fetchAll = false, realCmd = '';
-
-	if (cmd.endsWith('/MDA')) {
-		realCmd = cmd.slice(0, -4);
-		fetchAll = true;
-	} else if (cmd === 'MDA') {
-		realCmd = 'MD';
-		fetchAll = true;
-	} else if (data = parseCmdAsItinerary(cmd)) {
-		type = 'itinerary';
-	} else {
-		realCmd = cmd;
-	}
-	return {
-		realCmd: realCmd,
-		fetchAll: fetchAll,
-		data: data,
-		type: type,
-	};
-};
-
-let fetchAllOutput = async (nextCmd, token) => {
-	let pages = [];
-	while (nextCmd) {
-		let rawOutput = (await runOneCmd(nextCmd, token)).output;
-		let [output, pager] = extractPager(rawOutput);
-		pages.push(output);
-		nextCmd = pager === ')><' ? 'MR' : null;
-	}
-	return pages.join('\n')
-};
-
-let runAndCleanupCmd = async (inputCmd, token) => {
-	let {realCmd: cmd, fetchAll, type, data} = parseAlias(inputCmd);
-	let cmdsLeft = (data ? data.bulkCmds : null) || [cmd];
-	let calledCommands = [];
-	for (let cmd of cmdsLeft) {
-		let hrtimeStart = process.hrtime();
-		let output = fetchAll
-			? await fetchAllOutput(cmd, token)
-			: (await runOneCmd(cmd, token)).output;
-		if (shouldWrap(cmd)) {
-			output = wrap(output);
-		}
-		let hrtimeDiff = process.hrtime(hrtimeStart);
-		calledCommands.push({
-			cmd: encodeCmdForCms(cmd),
-			output: encodeOutputForCms(output),
-			duration: hrtimeToDecimal(hrtimeDiff),
-		});
-	}
-	return makeResult(calledCommands, token);
-};
-
 /** @param {{command: '*R', gds: 'apollo', language: 'sabre', agentId: '6206'}} reqBody */
 let TravelportClient = (reqBody) => {
-	let runInputCmd = ({sessionToken}) => {
-		let cmd = reqBody.command;
-		return runAndCleanupCmd(cmd, sessionToken);
-	};
 	return {
-		runInputCmd: runInputCmd,
+		runCmd: (gdsData) => runOneCmd(reqBody.command, gdsData.sessionToken),
 	};
 };
 

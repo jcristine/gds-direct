@@ -173,7 +173,7 @@ app.post('/terminal/saveSetting/:name/:currentGds', withAuth((reqBody, emcResult
 	let {name, currentGds} = routeParams;
 	return new TerminalBaseController(emcResult).postSaveSettingAction(reqBody, name, currentGds);
 }));
-app.post('/terminal/command', withAuth(GdsSessionController.runInputCmd));
+app.post('/terminal/command', withAuth(GdsSessionController.runCmd));
 app.post('/gdsDirect/keepAlive', withAuth(GdsSessionController.keepAlive));
 app.get('/terminal/getPqItinerary', withAuth(GdsSessionController.getPqItinerary));
 app.get('/terminal/importPq', withAuth(GdsSessionController.importPq));
