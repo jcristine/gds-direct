@@ -3,6 +3,14 @@ import {switchTerminal} from "./switchTerminal";
 import {escapeSpecials, getFirstNumber, replaceChar, splitLines} from "../helpers/helpers";
 import tetherDrop from 'tether-drop';
 
+// example:        "1%+% PR 127 %L7%+%JFK%MNL 145A  615A+350  0" <- "%+%", "%L7%", "%JFK%"
+// would result in "1+ PR 127 %L7+JFK%MNL 145A  615A+350  0" without this check
+// instead of      "1+ PR 127 L7+JFKMNL 145A  615A+350  0"
+const hasBrokenTokens = (text) => {
+	let percents = text.split('').filter(c => c === '%');
+	return percents.length % 2 === 1;
+};
+
 const makeRule		= (rule, key, isPattern = '') => {
 	let searchIndex		= '';
 	const isInteract 	= rule['onClickCommand'] || rule['onClickMessage'] || rule['onMouseOver'];
@@ -14,7 +22,17 @@ const makeRule		= (rule, key, isPattern = '') => {
 	}
 
 	let className	= `term-highlight ${rule.color}-color ${rule.backgroundColor}-backgroundColor ${rule['decoration'].join(' ')}` + (searchIndex ? ` t-pointer ${searchIndex}` : '');
-	return `[[;;;${className}]${replaceChar(rule.value, '%')}]`; // creates span like span.usedCommand term-highlight replace_0
+
+	return (...args) => {
+		let match = args.shift();
+		let fullStr = args.pop();
+		let offset = args.pop();
+		if (hasBrokenTokens(fullStr.slice(0, offset))) {
+			return match; // skip this match
+		} else {
+			return `[[;;;${className}]${replaceChar(rule.value, '%')}]`; // creates span like span.usedCommand term-highlight replace_0
+		}
+	};
 };
 
 /**
@@ -50,15 +68,17 @@ export const seedOutputString = (outputText, appliedRules) => {
 			return makeRule(newRule, key, patternReplaced);
 		};
 
-		const replaceOutput = (pattern, onClickCmd) => line => {
+		const replaceOutput = (pattern, onClickCmd) => (line) => {
 			const replaced 	= replaceWith(pattern, onClickCmd(line));
 			const needle	= replaceAll(escapeSpecials(value));
 
 			const newLine 	= line.replace(needle, replaced);
 			outputText 		= outputText.replace(line, newLine);
 		};
-
-		const findInjection 	= line => line.indexOf(value) > -1;
+		const findInjection 	= line => {
+			const pos = line.indexOf(value);
+			return pos > -1 && !hasBrokenTokens(line.slice(0, pos));
+		};
 		const replacePerLine 	= (pattern, onClickCmd) => splitLines(outputText).filter(findInjection).map(replaceOutput(pattern, onClickCmd));
 
 		if (rule.onClickCommand.indexOf('{lnNumber}') > -1)
@@ -71,7 +91,7 @@ export const seedOutputString = (outputText, appliedRules) => {
 			return replacePerLine('{pattern}', () => replaceChar(value, '%'));
 		}
 
-		if ( outputText.indexOf(value) > -1 )
+		if ( findInjection(outputText) )
 		{
 			const needle = new RegExp(escapeSpecials(value), 'g');
 			outputText = outputText.replace(needle, replaceWith() );
