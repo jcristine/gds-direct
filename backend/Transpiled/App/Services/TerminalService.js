@@ -213,6 +213,7 @@ class TerminalService
 					gdsTime: cmdTimes.length > 0 ? cmdTimes.reduce((a,b) => a + b) : null,
 					stateUpdateTime: rbsResp.sessionInfo.updateTime || null,
 					startNewSession: rbsResp.startNewSession || false,
+					calledCommands: rbsResp.calledCommands,
 				};
 			});
 	}

@@ -14,6 +14,9 @@ let StatefulSession = async (session) => {
 		runCmd: (cmd) => {
 			// should write to terminalCommandLog here
 			let hrtimeStart = process.hrtime();
+			if (!session.gdsData) {
+				console.error('lol, why gdsData is empty? ', session);
+			}
 			return TravelportClient({command: cmd}).runCmd(session.gdsData)
 				.then(gdsResult => {
 					let type = null;

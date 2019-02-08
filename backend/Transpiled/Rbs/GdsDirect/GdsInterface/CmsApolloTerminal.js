@@ -166,9 +166,11 @@ class CmsApolloTerminal
     transformCalledCommand($cmdRecord)  {
         return {
             'cmd': this.prototype.encodeCmdForCms($cmdRecord['cmd']),
+            'type': $cmdRecord['type'] || null,
             'output': this.sanitizeOutput($cmdRecord['output'], $cmdRecord['noWrap'] || false),
             'tabCommands': this.prototype.extractTabCommands($cmdRecord['output']),
             'clearScreen': this.prototype.isScreenCleaningCommand($cmdRecord['cmd']),
+            'duration': $cmdRecord['duration'] || null,
         };
     }
 }

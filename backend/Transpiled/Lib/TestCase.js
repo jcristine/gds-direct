@@ -3,7 +3,32 @@
 
 // add this to generated require() - '../../../backend/Transpiled/'
 
+let {jsExport} = require("../../Utils/Misc");
+
 let php = require('../php.js');
+
+let findStrMismatch = (a, b) => {
+	for (let i = 0; i < Math.max(a.length, b.length); ++i) {
+		if (a[i] !== b[i]) {
+			return i;
+		}
+	}
+	return 0;
+};
+
+let describeMismatch = (expected, infix, actual, msg = '') => {
+	let explanation = '';
+	if (typeof expected === 'string' && typeof actual === 'string') {
+		let mismatchAt = findStrMismatch(expected, actual);
+		explanation += '\n'
+			+ ' expected ...' + jsExport(expected.slice(mismatchAt, mismatchAt + 50))
+			+ ' actual ...' + jsExport(actual.slice(mismatchAt, mismatchAt + 50))
+			;
+	}
+	return 'Failed asserting that expected value \n' +
+		(jsExport(expected) + '').slice(0, 600) + '\n' + infix + ' actual \n' +
+		(jsExport(actual) + '').slice(0, 600) + explanation + '\n' + msg;
+};
 
 class TestCase
 {
@@ -56,9 +81,7 @@ class TestCase
 		if (expected === actual) {
 			return this._ok();
 		} else {
-			let fullMsg = 'Failed asserting that expected value \n' +
-				(JSON.stringify(expected) + '').slice(0, 600) + '\nis identical to actual \n' +
-				(JSON.stringify(actual) + '').slice(0, 600) + '\n' + msg;
+			let fullMsg = describeMismatch(expected, 'is identical to', actual, msg);
 			return this._err(fullMsg);
 		}
 	}
@@ -67,9 +90,7 @@ class TestCase
 		if (expected == actual) {
 			return this._ok();
 		} else {
-			let fullMsg = 'Failed asserting that expected value \n' +
-				(JSON.stringify(expected) + '').slice(0, 600) + '\nequals actual \n' +
-				(JSON.stringify(actual) + '').slice(0, 600) + '\n' + msg;
+			let fullMsg = describeMismatch(expected, 'equals', actual, msg);
 			return this._err(fullMsg);
 		}
 	}
@@ -107,12 +128,12 @@ class TestCase
 	getTests() {
 		return this.getTestMapping()
 			.map(([provide, test]) => {
-				return provide.call(this).map((dataset, i) => () => {
+				return provide.call(this).map((dataset, i) => async () => {
 					let [input, expected] = dataset;
 					let testEvents = [];
 					this.log = (e) => testEvents.push(e);
 					try {
-						test.call(this, input, expected);
+						await test.call(this, input, expected);
 					} catch (exc) {
 						testEvents.push({type: 'error', msg: 'Uncaught exception ' + exc.message + '\n' + exc.stack});
 					}
