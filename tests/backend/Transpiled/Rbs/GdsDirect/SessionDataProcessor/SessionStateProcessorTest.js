@@ -1,11 +1,11 @@
 
 // namespace Rbs\GdsDirect\SessionStateProcessor;
 
-const SessionStateProcessor = require('../../../../../backend/Transpiled/Rbs/GdsDirect/SessionStateProcessor/SessionStateProcessor.js');
-const GdsDirectDefaults = require('../../../../../backend/Transpiled/Rbs/TestUtils/GdsDirectDefaults.js');
-let php = require('./../../../../../backend/Transpiled/php');
+const SessionStateProcessor = require('../../../../../../backend/Transpiled/Rbs/GdsDirect/SessionStateProcessor/SessionStateProcessor.js');
+const GdsDirectDefaults = require('../../../../../../backend/Transpiled/Rbs/TestUtils/GdsDirectDefaults.js');
+let php = require('../../../../../../backend/Transpiled/php');
 
-class SessionStateProcessorTest extends require('../../../../../backend/Transpiled/Lib/TestCase.js')
+class SessionStateProcessorTest extends require('../../../../../../backend/Transpiled/Lib/TestCase.js')
 {
     provideCalledCommands()  {
         let $sessionRecords, $argumentTuples, $sessionRecord;

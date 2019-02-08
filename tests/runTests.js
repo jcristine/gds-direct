@@ -1,10 +1,10 @@
 
-let ItineraryParserTest = require('./Transpiled/Gds/Parsers/Apollo/Pnr/ItineraryParserTest.js');
-let CommonParsersHelperTest = require('./Transpiled/Gds/Parsers/Apollo/Pnr/CommonParsersHelperTest.js');
-let CommandParserTest = require("./Transpiled/Gds/Parsers/Apollo/CommandParserTest.js");
-const PnrParserTest = require("./Transpiled/Gds/Parsers/Apollo/Pnr/PnrParserTest.js");
-const SessionStateProcessorTest = require("./Transpiled/Rbs/GdsDirect/SessionDataProcessor/SessionStateProcessorTest");
-const PricingParserTest = require("./Transpiled/Gds/Parsers/Apollo/PricingParserTest");
+let ItineraryParserTest = require('./backend/Transpiled/Gds/Parsers/Apollo/Pnr/ItineraryParserTest.js');
+let CommonParsersHelperTest = require('./backend/Transpiled/Gds/Parsers/Apollo/Pnr/CommonParsersHelperTest.js');
+let CommandParserTest = require("./backend/Transpiled/Gds/Parsers/Apollo/CommandParserTest.js");
+const PnrParserTest = require("./backend/Transpiled/Gds/Parsers/Apollo/Pnr/PnrParserTest.js");
+const SessionStateProcessorTest = require("./backend/Transpiled/Rbs/GdsDirect/SessionDataProcessor/SessionStateProcessorTest");
+const PricingParserTest = require("./backend/Transpiled/Gds/Parsers/Apollo/PricingParserTest");
 
 console.log('Starting unit tests');
 

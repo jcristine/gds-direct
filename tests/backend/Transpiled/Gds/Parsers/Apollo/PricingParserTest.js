@@ -1,10 +1,10 @@
 
 // namespace Gds\Parsers\Apollo;
 
-const PricingParser = require('../../../../../backend/Transpiled/Gds/Parsers/Apollo/PricingParser/PricingParser.js');
-const php = require('../../../../../backend/Transpiled/php');
+const PricingParser = require('../../../../../../backend/Transpiled/Gds/Parsers/Apollo/PricingParser/PricingParser.js');
+const php = require('../../../../../../backend/Transpiled/php');
 
-class PricingParserTest extends require('../../../../../backend/Transpiled/Lib/TestCase.js')
+class PricingParserTest extends require('../../../../../../backend/Transpiled/Lib/TestCase.js')
 {
     provideDumps()  {
         let $list;

@@ -2,9 +2,9 @@
 
 // add this to generated require() - '../../backend/Transpiled/'
 
-let CommandParser = require('../../../../../backend/Transpiled/Gds/Parsers/Apollo/CommandParser.js');
+let CommandParser = require('../../../../../../backend/Transpiled/Gds/Parsers/Apollo/CommandParser.js');
 
-class CommandParserTest extends require('../../../../../backend/Transpiled/Lib/TestCase.js')
+class CommandParserTest extends require('../../../../../../backend/Transpiled/Lib/TestCase.js')
 {
     provideTestDumpList()  {
         let $list;
