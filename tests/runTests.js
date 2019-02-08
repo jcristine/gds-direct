@@ -42,6 +42,8 @@ let perform = async (tests) => {
 			console.error(error);
 		}
 		process.exit(1);
+	} else {
+		process.exit(0);
 	}
 };
 
