@@ -2,7 +2,7 @@
 let GdsSessionController = require('./backend/GdsSessionController.js');
 let GdsSessions = require('./backend/Repositories/GdsSessions.js');
 let FluentLogger = require('./backend/LibWrappers/FluentLogger.js');
-let {NoContent} = require('./backend/Utils/Rej.js');
+let {NoContent, LoginTimeOut} = require('./backend/Utils/Rej.js');
 
 let workerLogId = FluentLogger.logNewId('bgworker');
 
@@ -76,9 +76,14 @@ let processNextSession = () => {
 						action = 'keepAlive';
 						return GdsSessionController.keepAliveSession(session).catch(exc => {
 							logExc('ERROR: Failed to keepAlive:', session.logId, exc);
-							// we will take that it was connection timeout, or a lock,
-							// or something else... and that ping _did_ happen whatsoever
-							return GdsSessions.updateAccessTime(session);
+							if (LoginTimeOut.matches(exc.httpStatusCode)) {
+								GdsSessions.remove(session);
+								action = 'closeLongUnused';
+							} else {
+								// we will take that it was connection timeout, or a lock,
+								// or something else... and that ping _did_ happen whatsoever
+								return GdsSessions.updateAccessTime(session);
+							}
 						});
 					}
 				});

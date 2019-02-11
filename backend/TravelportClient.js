@@ -1,3 +1,5 @@
+let {LoginTimeOut} = require("./Utils/Rej");
+
 let ItineraryParser = require("./Transpiled/Gds/Parsers/Apollo/Pnr/ItineraryParser.js");
 
 let config = require('./Config.js');
@@ -56,10 +58,14 @@ let runOneCmd = (cmd, token) => {
 			return Promise.reject('Unexpected Travelport response format - ' + resp);
 		}
 	}).catch(exc => {
-		let obj = typeof exc === 'string' ? new Error(exc) : exc;
-		// for debug, be careful not to include credentials here
-		obj.rqBody = body;
-		return Promise.reject(obj);
+		if ((exc + '').indexOf('Could not locate Session Token Information') > -1) {
+			return LoginTimeOut('Session token expired');
+		} else {
+			let obj = typeof exc === 'string' ? new Error(exc) : exc;
+			// for debug, be careful not to include credentials here
+			obj.rqBody = body;
+			return Promise.reject(obj);
+		}
 	});
 };
 

@@ -1,3 +1,4 @@
+let {LoginTimeOut} = require("./Utils/Rej");
 
 let querystring = require('querystring');
 let PersistentHttpRq = require('./Utils/PersistentHttpRq.js');
@@ -64,7 +65,13 @@ let RbsClient = (reqBody) => {
 			dialect: reqBody.language,
 			sessionId: rbsSessionId,
 			context: getLeadData(travelRequestId),
-		}).then(result => result.result.result),
+		}).then(result => result.result.result).catch(exc => {
+			if ((exc + '').indexOf('Session token expired') > -1) {
+				return LoginTimeOut('Session token expired');
+			} else {
+				return Promise.reject(exc);
+			}
+		}),
 		getPqItinerary: ({rbsSessionId}) => callRbs('terminal.getPqItinerary', {
 			sessionId: rbsSessionId,
 			gds: gds,
