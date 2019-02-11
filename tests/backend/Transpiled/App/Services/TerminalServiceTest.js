@@ -47,21 +47,13 @@ class TerminalServiceTest extends require('../../../../../backend/Transpiled/Lib
 				].join("\n"),
 				appliedRules: [
 					{
-						"id": 122,
-						"value": "%+%",
-						"onMouseOver": "This airline is an Inside Availability ™  participant",
-						"color": "specialHighlight",
-						"isInSameWindow": 0,
-						"offsets": [{"index":456,"end":457}]
-					},
-					{
 						"id": 40,
 						"value": "%A*M·%",
 						"onMouseOver": "Click to view Meals Plus screen",
 						"onClickCommand": "A*M",
 						"color": "usedCommand",
 						"isInSameWindow": 1,
-						"decoration": [null,null,null,"bordered",null,null],
+						"decoration": ["bordered"],
 						"offsets": [{"index":656,"end":660}]
 					},
 					{
@@ -71,6 +63,14 @@ class TerminalServiceTest extends require('../../../../../backend/Transpiled/Lib
 						"color": "usedCommand",
 						"isInSameWindow": 0,
 						"offsets": [{"index":670,"end":676}]
+					},
+					{
+						"id": 122,
+						"value": "%+%",
+						"onMouseOver": "This airline is an Inside Availability ™  participant",
+						"color": "specialHighlight",
+						"isInSameWindow": 0,
+						"offsets": [{"index":456,"end":457}]
 					},
 					{
 						"id": 124,
@@ -355,13 +355,53 @@ class TerminalServiceTest extends require('../../../../../backend/Transpiled/Lib
 					}
 				],
 			},
-			rules: {},
+		}]);
+
+		// there was a bug - it suggested *FF (galileo format) instead of *LF (apollo format)
+		list.push([{
+			input: {
+				$enteredCommand: '*R',
+				$language: 'apollo',
+				calledCommands: [
+					{
+						"cmd": "*R",
+						"type": "redisplayPnr",
+						"output": [
+							" 1.1LIB/MAR ",
+							" 1 PR 127N 10MAY JFKMNL SS1   145A  615A+*      FR/SA   E",
+							"*** LINEAR FARE DATA EXISTS *** >*LF· ",
+							"ATFQ-OK/$B-*1O3K/TA1O3K/CPR/ET",
+							" FQ-USD 1247.00/USD 18.60US/USD 76.10XT/USD 1341.70 - 11FEB NLOW",
+							"><"
+						].join("\n"),
+					},
+				],
+			},
+			expected: {
+				$output: [
+					" 1.1%LIB/MAR% ",
+					" 1 %PR% 127%N% 10MAY %JFKMNL% %SS1%   145A  615A+*      FR/SA   E",
+					"*** LINEAR FARE DATA EXISTS *** >%*LF·% ",
+					"%ATFQ-%OK/$B-*%1O3K%/TA1O3K/CPR/ET",
+					" FQ-USD 1247.00/USD 18.60US/USD 76.10XT/USD 1341.70 - 11FEB NLOW"
+				].join("\n"),
+				"appliedRules": [
+					{id: 66, value: "%PR%", color: "startSession"} ,
+					{id: 66, value: "%N%", color: "startSession"} ,
+					{id: 30, value: "%SS1%", onMouseOver: "Click to open a seat map", onClickCommand: "9V/S{lnNumber}/MDA", color: "usedCommand"},
+					{id: 32, value: "%JFKMNL%", color: "startSession"} ,
+					{id: 36, value: "%LIB/MAR%", color: "warningMessage", "decoration":[]},
+					{id: 28, value: "%*LF·%", onMouseOver: "Click to open the stored fare", onClickCommand: "*LF/MDA", color: "usedCommand", decoration:["bold","bordered"]},
+					{id: 170, value: "%ATFQ-%", onMouseOver: "undefined", onClickCommand: "{patter}", color: "specialHighlight"},
+					{id: 191, value: "%1O3K%", onClickCommand: "SEM/{pattern}/AG", color: "specialHighlight", decoration: ["bordered"]},
+				],
+			},
 		}]);
 
 		return list;
 	}
 
-	async testFormatOutput({input, expected, rules}) {
+	async testFormatOutput({input, expected}) {
 		let {$enteredCommand, $language, calledCommands} = input;
 		let actual = await (new TerminalService('apollo', 6206, 123))
 			.formatOutput($enteredCommand, $language, calledCommands);

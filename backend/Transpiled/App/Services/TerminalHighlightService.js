@@ -88,7 +88,7 @@ let normalizeRuleForFrontend = (rule) => {
 		color: rule.color,
 		backgroundColor: rule.backgroundColor,
 		isInSameWindow: rule.isInSameWindow,
-		decoration: JSON.parse(rule.decoration),
+		decoration: JSON.parse(rule.decoration).filter(a => a !== null),
 		offsets: rule.offsets,
 	};
 };
@@ -122,7 +122,7 @@ class TerminalHighlightService {
 	 */
 	getMatchingCmdPatterns($language, $enteredCommand) {
 		return getCmdPatterns().then(rows => rows
-			.filter(row => row.dialect = $language)
+			.filter(row => row.dialect === $language)
 			.filter(row => {
 				let $command = row.cmdPattern;
 				try {

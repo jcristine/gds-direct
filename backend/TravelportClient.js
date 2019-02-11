@@ -4,7 +4,6 @@ let ItineraryParser = require("./Transpiled/Gds/Parsers/Apollo/Pnr/ItineraryPars
 
 let config = require('./Config.js');
 let PersistentHttpRq = require('./Utils/PersistentHttpRq.js');
-const hrtimeToDecimal = require("./Utils/Misc").hrtimeToDecimal;
 
 /**
  * they are all physically located in USA, Atlanta (in same building)
