@@ -7,7 +7,7 @@ before_script:
 run-tests:
   stage: test
   tags:
-    - dev-w04
+    - dev-w13
   script:
     - bash build.sh
     - cp .env.dist .env
