@@ -1,12 +1,5 @@
-const dotenv = require('dotenv');
 
-let result = dotenv.config();
-if (result.error) {
-	console.log('GRECT! Please create .env file from .env.dist');
-	console.log('Process terminated!');
-	process.exit();
-}
-let env = process.env;
+let env = process.env || {};
 
 let Config = {
 
@@ -23,7 +16,7 @@ let Config = {
 	REDIS_HOST: env.REDIS_HOST,
 	REDIS_PORT: env.REDIS_PORT,
 	SOCKET_PORT: env.SOCKET_PORT,
-	HTTP_PORT: env.HTTP_PORT,
+	HTTP_PORT: env.HTTP_PORT || 3011,
 	HOST: env.HOST || '0.0.0.0',
 
 	apolloAuthToken: env.apolloAuthToken,
