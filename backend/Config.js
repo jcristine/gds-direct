@@ -10,8 +10,7 @@ let env = process.env;
 
 let Config = {
 
-	// 153 = CMS, 611 = Node Libraries, 533 = CMS Libraries
-	mantisId: 611,
+	mantisId: 677,
 
 	production: env.NODE_ENV === 'production',
 
@@ -25,6 +24,7 @@ let Config = {
 	REDIS_PORT: env.REDIS_PORT,
 	SOCKET_PORT: env.SOCKET_PORT,
 	HTTP_PORT: env.HTTP_PORT,
+	HOST: env.HOST || '0.0.0.0',
 
 	apolloAuthToken: env.apolloAuthToken,
 };

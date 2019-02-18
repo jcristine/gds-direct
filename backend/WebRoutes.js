@@ -313,7 +313,9 @@ app.get('/parser/test', toHandleHttp((rqBody) => {
 	return result;
 }));
 
-app.listen(Config.HTTP_PORT);
+app.listen(+Config.HTTP_PORT, Config.HOST, function () {
+	console.log('listening on *:' + Config.HTTP_PORT + ' - for standard http request handling');
+});
 
 // UnhandledPromiseRejectionWarning
 // it's actually pretty weird that we ever get here, probably
