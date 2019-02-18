@@ -1,5 +1,5 @@
 
-let Diag = require('./LibWrappers/Diag.js');
+let Diag = require('./backend/LibWrappers/Diag.js');
 Diag.error('test diag message', {please: 'work'});
 
 /** @debug */
