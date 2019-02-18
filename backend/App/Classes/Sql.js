@@ -7,7 +7,7 @@ let dbPool = mysql.createPool({
 	user: Config.DB_USER,
 	password: Config.DB_PASS,
 	database: Config.DB_NAME,
-	port: 3306,
+	port: Config.DB_PORT || 3306,
 	connectionLimit: 20,
 });
 
