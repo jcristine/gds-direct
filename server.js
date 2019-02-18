@@ -9,8 +9,8 @@ app.get('/test123', (req, res) => {
 	res.send(JSON.stringify({test: 'success yay ololo'}));
 });
 
-app.listen(3011, function () {
-	console.log('listening on *:' + 3011 + ' - for standard http request handling');
+app.listen(process.env.HTTP_PORT, process.env.HOST, function () {
+	console.log('listening on *:' + process.env.HTTP_PORT + ' - for standard http request handling');
 });
 
 // const Config = require('./backend/Config.js');
