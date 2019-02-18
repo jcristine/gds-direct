@@ -17,6 +17,5 @@ const diagService = new DiagService(null, {
 });
 diagService.setProjectId(Config.mantisId);
 diagService.setIsProduction(Config.production);
-diagService.setHostname(Config.host || 'gds-direct-plus.asaptickets.com');
 
 module.exports = diagService;
