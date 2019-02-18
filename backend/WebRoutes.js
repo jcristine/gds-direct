@@ -369,5 +369,10 @@ socketIo.on('connection', /** @param {Socket} socket */ socket => {
 		console.log('delivered testMessage to client', response);
 	});
 });
-socketIo.listen(Config.SOCKET_PORT);
+try {
+	socketIo.listen(Config.SOCKET_PORT);
+} catch (exc) {
+	// TypeError: Cannot read property 'listeners' of undefined if SOCKET_PORT is not defined
+	Diag.error('Failed to listen to socket port (' + Config.SOCKET_PORT + ') - ' + exc)
+}
 
