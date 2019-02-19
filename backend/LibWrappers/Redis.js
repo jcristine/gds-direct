@@ -15,6 +15,7 @@ let keys = {
 	get SESSION_TO_RECORD() { never() },
 	get SESSION_TO_STATE() { never() },
 	get CMD_RQ_LAST_INSERT_ID() { never() },
+	get USER_TO_TMP_SETTINGS() { never() },
 };
 // to avoid explicitly setting value for
 // each constant risking getting a typo
