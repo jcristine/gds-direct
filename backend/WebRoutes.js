@@ -19,6 +19,7 @@ let Redis = require('./LibWrappers/Redis.js');
 let initSocketIo = require('socket.io');
 let Config = require('./Config.js');
 let GdsSessions = require('./Repositories/GdsSessions.js');
+let Migration = require("./Migration");
 const CommandParser = require("./Transpiled/Gds/Parsers/Apollo/CommandParser");
 const PnrParser = require("./Transpiled/Gds/Parsers/Apollo/Pnr/PnrParser");
 const FareConstructionParser = require("./Transpiled/Gds/Parsers/Common/FareConstruction/FareConstructionParser");
@@ -285,6 +286,13 @@ app.get('/doSomeHeavyStuff', withAuth((reqBody, emcResult) => {
 		}
 		let hrtimeDiff = process.hrtime(hrtimeStart);
 		return {message: 'Done in ' + hrtimeToDecimal(hrtimeDiff) + ' ' + sum + ' on worker #' + cluster.worker.id};
+	} else {
+		return Forbidden('Sorry, you must be me in order to use that');
+	}
+}));
+app.get('/runMigrations', withAuth((reqBody, emcResult) => {
+	if (emcResult.user.id == 6206) {
+		return Migration.run();
 	} else {
 		return Forbidden('Sorry, you must be me in order to use that');
 	}
