@@ -72,7 +72,8 @@ const initThemeStyles = responseData => {
 let rootUrl = new URL(document.currentScript.src).origin;
 window.GdsDirectPlusParams = window.GdsDirectPlusParams || {
 	rootUrl: rootUrl,
-	socketHost: rootUrl.replace(/:\d+$/, '') + ':' + 13377,
+	//socketHost: rootUrl.replace(/:\d+$/, '') + ':' + 3022,
+	socketHost: rootUrl + '/socket.io',
 	emcSessionId: null,
 	travelRequestId: null,
 	cmsUrl: null,
