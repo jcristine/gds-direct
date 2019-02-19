@@ -1,7 +1,5 @@
 let {LoginTimeOut} = require("./Utils/Rej");
-
-let ItineraryParser = require("./Transpiled/Gds/Parsers/Apollo/Pnr/ItineraryParser.js");
-
+let Redis = require('./LibWrappers/Redis.js');
 let config = require('./Config.js');
 let PersistentHttpRq = require('./Utils/PersistentHttpRq.js');
 
@@ -16,14 +14,20 @@ let endpoint = 'https://americas.webservices.travelport.com/B2BGateway/service/X
 //let endpoint = 'https://emea.webservices.travelport.com/B2BGateway/service/XMLSelect';
 //let endpoint = 'https://apac.webservices.travelport.com/B2BGateway/service/XMLSelect';
 
-let sendRequest = (requestBody) =>
-	PersistentHttpRq({
+let sendRequest = async (requestBody) => {
+	let redisKey = Redis.keys.USER_TO_TMP_SETTINGS + ':6206';
+	let authToken = await Redis.client.hget(redisKey, 'apolloAuthToken');
+	if (!authToken) {
+		return Promise.reject('Apollo auth credentials not set');
+	}
+	return PersistentHttpRq({
 		url: endpoint,
 		headers: {
-			'Authorization': 'Basic ' + config.apolloAuthToken,
+			'Authorization': 'Basic ' + authToken,
 		},
 		body: requestBody,
 	}).then(resp => resp.body);
+};
 
 let gdsProfile = 'DynApolloProd_1O3K';
 
