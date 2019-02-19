@@ -20,6 +20,11 @@ let Config = {
 	HTTP_PORT: env.HTTP_PORT || 3011,
 	HOST: env.HOST || '0.0.0.0',
 
+	// TODO: use own credentials
+	projectName: 'CMS_CHAT',
+	serviceUserLogin: 'cmschat',
+	serviceUserPass: env.NODE_ENV === 'production' ? 'x8=(XKK^' : 'qwerty',
+
 	apolloAuthToken: env.apolloAuthToken,
 
 	fetchExternalConfig: () => {

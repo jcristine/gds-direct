@@ -3,6 +3,7 @@ let express = require('express');
 let UserController = require('./UserController.js');
 let CompletionData = require('./CompletionData.js');
 let Emc = require('./App/Api/Clients/Emc.js');
+let EmcNew = require('./LibWrappers/Emc.js');
 let GdsSessionController = require('./GdsSessionController.js');
 let TerminalBaseController = require('./Transpiled/App/Controllers/TerminalBaseController.js');
 let {hrtimeToDecimal} = require('./Utils/Misc.js');
@@ -107,7 +108,7 @@ let withAuth = (action) => (req, res) => {
 		}]));
 
 	return toHandleHttp((rqBody, routeParams) => {
-		return (new Emc()).getCachedSessionInfo(rqBody.emcSessionId)
+		return EmcNew.client.sessionInfo(rqBody.emcSessionId)
 			.catch(exc => {
 				let error = new Error('EMC auth error - ' + exc);
 				error.httpStatusCode = 401;
@@ -115,6 +116,9 @@ let withAuth = (action) => (req, res) => {
 				return Promise.reject(error);
 			})
 			.then(emcData => {
+				// compatibility with v14, should refactor everything that uses result probably...
+				emcData.result = emcData.data;
+
 				rqBody = normalizeRqBody(rqBody, emcData, logId);
 				log('Authorized agent: ' + rqBody.agentId + ' ' + emcData.result.user.displayName, emcData.result.user.roles);
 				logToTable(rqBody.agentId);
