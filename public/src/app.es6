@@ -69,11 +69,13 @@ const initThemeStyles = responseData => {
 	head.appendChild(style);
 };
 
+let isDev = !(window.location.hostname + '').endsWith('.asaptickets.com');
 let rootUrl = new URL(document.currentScript.src).origin;
 window.GdsDirectPlusParams = window.GdsDirectPlusParams || {
 	rootUrl: rootUrl,
-	//socketHost: rootUrl.replace(/:\d+$/, '') + ':' + 3022,
-	socketHost: rootUrl + '/socket.io',
+	socketHost: isDev
+		? rootUrl.replace(/:\d+$/, '') + ':' + 3022
+		: rootUrl + '/socket.io',
 	emcSessionId: null,
 	travelRequestId: null,
 	cmsUrl: null,

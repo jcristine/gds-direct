@@ -14,18 +14,20 @@ let makeBriefRsStr = (response, startMs) => {
 	let rqTakenMs = (response.body || {}).rqTakenMs;
 	let rsSentMs = (response.body || {}).rsSentMs;
 
-	let result =  ' in ' + duration;
 	if (gdsTime && rqTakenMs && rsSentMs) {
+		let result =  ' in ' + duration;
 		let rqRouteTime = (rqTakenMs - startMs) / 1000;
 		let rsRouteTime = (endMs - rsSentMs) / 1000;
 		let backendTime = duration - gdsTime - rqRouteTime - rsRouteTime;
 		result += ' (GDS: ' + (+gdsTime).toFixed(3) + ', backend: ' + backendTime.toFixed(3) +
 			', browser->node: ' + rqRouteTime.toFixed(3) + ', node->browser ' + rsRouteTime.toFixed(3) + ')'
+		if (cmdType) {
+			result += ' ' + cmdType;
+		}
+		return result;
+	} else {
+		return null;
 	}
-	if (cmdType) {
-		result += ' ' + cmdType;
-	}
-	return result;
 };
 
 let initSocket = (host) => new Promise((resolve, reject) => {
@@ -50,7 +52,8 @@ let initSocket = (host) => new Promise((resolve, reject) => {
 				let startMs = Date.now();
 				socket.send(data, (response) => {
 					let msg = new Date().toISOString() + ' - Socket ' + data.url;
-					msg += makeBriefRsStr(response, startMs);
+					msg += makeBriefRsStr(response, startMs)
+						|| ((Date.now() - startMs) / 1000).toFixed(3);
 					console.debug(msg, {rq: data, rs: response});
 					resolve(response);
 				});
@@ -85,13 +88,20 @@ const Ask = (url, fetchParams) => {
 	if (url.substr(0, 1) !== '/')
 		url = '/' + url;
 
+	let startMs = Date.now();
 	let httpSocket = getHttpSocket();
 	let whenFetched = fetchParams.useSocket && httpSocket
 		? httpSocket.send(url, fetchParams)
 		: fetch( window.GdsDirectPlusParams.rootUrl + url, fetchParams )
 			.then(response => response.json()
 				.catch(jsExc => Promise.reject('Malformed JSON response - ' + response.status + ' ' + response.statusText))
-				.then(body => ({body, status: response.status})));
+				.then(body => {
+					let rsStr = makeBriefRsStr({body}, startMs);
+					if (rsStr) {
+						console.debug(rsStr);
+					}
+					return ({body, status: response.status});
+				}));
 
 	return whenFetched
 		.then(({body, status}) => {
