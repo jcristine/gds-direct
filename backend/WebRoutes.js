@@ -2,7 +2,6 @@
 let express = require('express');
 let UserController = require('./UserController.js');
 let CompletionData = require('./CompletionData.js');
-let Emc = require('./App/Api/Clients/Emc.js');
 let EmcNew = require('./LibWrappers/Emc.js');
 let GdsSessionController = require('./GdsSessionController.js');
 let TerminalBaseController = require('./Transpiled/App/Controllers/TerminalBaseController.js');
