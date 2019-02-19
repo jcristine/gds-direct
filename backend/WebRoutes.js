@@ -2,7 +2,7 @@
 let express = require('express');
 let UserController = require('./UserController.js');
 let CompletionData = require('./CompletionData.js');
-let EmcNew = require('./LibWrappers/Emc.js');
+let Emc = require('./LibWrappers/Emc.js');
 let GdsSessionController = require('./GdsSessionController.js');
 let TerminalBaseController = require('./Transpiled/App/Controllers/TerminalBaseController.js');
 let {hrtimeToDecimal} = require('./Utils/Misc.js');
@@ -107,7 +107,7 @@ let withAuth = (action) => (req, res) => {
 		}]));
 
 	return toHandleHttp((rqBody, routeParams) => {
-		return EmcNew.client.sessionInfo(rqBody.emcSessionId)
+		return Emc.getCachedSessionInfo(rqBody.emcSessionId)
 			.catch(exc => {
 				let error = new Error('EMC auth error - ' + exc);
 				error.httpStatusCode = 401;

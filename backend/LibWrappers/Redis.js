@@ -16,6 +16,7 @@ let keys = {
 	get SESSION_TO_STATE() { never() },
 	get CMD_RQ_LAST_INSERT_ID() { never() },
 	get USER_TO_TMP_SETTINGS() { never() },
+	get EMC_TOKEN_TO_USER() { never() },
 };
 // to avoid explicitly setting value for
 // each constant risking getting a typo
