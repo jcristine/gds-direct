@@ -75,7 +75,7 @@ window.GdsDirectPlusParams = window.GdsDirectPlusParams || {
 	rootUrl: rootUrl,
 	socketHost: isDev
 		? rootUrl.replace(/:\d+$/, '') + ':' + 3022
-		: rootUrl + '/socket.io',
+		: rootUrl,
 	emcSessionId: null,
 	travelRequestId: null,
 	cmsUrl: null,
