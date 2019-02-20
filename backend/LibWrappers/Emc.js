@@ -41,7 +41,7 @@ exports.getCachedSessionInfo = async (sessionKey) => {
 	}
 	Redis.client.set(cacheKey, JSON.stringify(sessionInfo), 'EX', keyExpire);
 	let userId = ((sessionInfo || {}).user || {}).id;
-	if (!id) {
+	if (!userId) {
 	    return Promise.reject('No user id in EMC rs - ' + JSON.stringify(sessionInfo));
 	} else {
 	    return sessionInfo;
