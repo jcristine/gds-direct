@@ -1,13 +1,15 @@
 let {LoginTimeOut} = require("./Utils/Rej");
+let Config = require("./Config.js");
 
 let querystring = require('querystring');
 let PersistentHttpRq = require('./Utils/PersistentHttpRq.js');
-let RedisData = require('./LibWrappers/RedisData.js');
 
 let callRbs = (functionName, params) => {
 	let logId = 'rbs.5bf6e431.9577485';
-	//let rbsUrl = 'http://st-rbs.sjager.php7.dyninno.net/jsonExternalInterface.php?log_id=' + logId;
-	let rbsUrl = 'http://rbs-dev.aklesuns.php7.dyninno.net/jsonExternalInterface.php?log_id=' + logId;
+	let rbsUrl = Config.production
+		? 'http://rbs-asaptickets.lan.dyninno.net/jsonExternalInterface.php?log_id=' + logId
+		// : 'http://st-rbs.sjager.php7.dyninno.net/jsonExternalInterface.php?log_id=' + logId;
+		: 'http://rbs-dev.aklesuns.php7.dyninno.net/jsonExternalInterface.php?log_id=' + logId;
 	let formParams = {
 		credentials: JSON.stringify({login: 'CMS', password: 'qwerty'}),
 		functionName: functionName,
