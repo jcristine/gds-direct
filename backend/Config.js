@@ -24,9 +24,14 @@ let Config = {
 	HOST: env.HOST || '0.0.0.0',
 
 	// TODO: use own credentials
-	projectName: 'CMS_CHAT',
-	serviceUserLogin: 'cmschat',
-	serviceUserPass: env.NODE_ENV === 'production' ? 'x8=(XKK^' : 'qwerty',
+	// projectName: 'CMS_CHAT',
+	// serviceUserLogin: 'cmschat',
+	// serviceUserPass: env.NODE_ENV === 'production' ? 'x8=(XKK^' : 'qwerty',
+	// serviceToken: '',
+	projectName: 'GDSD',
+	serviceUserLogin: 'gdsd',
+	serviceUserPass: '',
+	serviceToken: env.NODE_ENV === 'production' ? 'byXWu*Yu^8HyD23BJ4Gu' : 'qwerty',
 
 	apolloAuthToken: env.apolloAuthToken,
 

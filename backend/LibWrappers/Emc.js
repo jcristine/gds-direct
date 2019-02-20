@@ -16,6 +16,7 @@ try {
 	}
 	client.setLogin(Config.serviceUserLogin);
 	client.setPassword(Config.serviceUserPass);
+	client.setToken(Config.serviceToken);
 	client.setDiagServiceProjectId(Config.mantisId);
 	client.setProject(Config.projectName);
 } catch (exc) {
