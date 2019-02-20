@@ -1,4 +1,5 @@
-
+let DateTime = require("./Transpiled/Lib/Utils/DateTime.js");
+let PnrParser = require("./Transpiled/Gds/Parsers/Apollo/Pnr/PnrParser.js");
 let RbsClient = require('./RbsClient.js');
 let TravelportClient = require('./TravelportClient.js');
 let dbPool = require('./App/Classes/Sql.js');
@@ -11,6 +12,8 @@ let GdsSessions = require('./Repositories/GdsSessions.js');
 const TerminalBuffering = require("./Repositories/TerminalBuffering");
 let {logit, logExc} = require('./LibWrappers/FluentLogger.js');
 let {Forbidden, NotImplemented} = require('./Utils/Rej.js');
+let {fetchAllOutput} = require('./GdsHelpers/TravelportUtils.js');
+let StatefulSession = require('./GdsHelpers/StatefulSession.js');
 let ProcessTerminalInput = require('./Actions/ProcessTerminalInput.js');
 
 let isTravelportAllowed = (rqBody) =>
@@ -92,25 +95,61 @@ exports.runInputCmd = (reqBody, emcResult) => {
 	return running;
 };
 
-exports.getPqItinerary = (reqBody) => {
-	if (reqBody.useRbs) {
-		return GdsSessions.getByContext(reqBody).then(session =>
-			RbsClient(reqBody).getPqItinerary(session.gdsData));
-	} else {
-		return GdsSessions.getByContext(reqBody).then(session => {
-			let stSession = CmsStatefulSession.makeByData(session);
-			return new ImportPqAction().setSession(stSession).execute();
-		});
-	}
+/**
+ * creates an RBS session, copies current itinerary there, performs
+ * the requested action (getPqItinerary/importPq) and close RBS session
+ */
+let withRbsPqCopy = async (session, action) => {
+	let stateful = await StatefulSession(session);
+	let full = stateful.getFullState();
+	let areaState = full.areas[full.area] || {};
+	let pricingCmd = areaState.pricing_cmd;
+	let pcc = areaState.pcc;
+	let pnrDump = (await fetchAllOutput('*R', stateful)).output;
+	let pnr = PnrParser.parse(pnrDump);
+
+	let ctx = session.context;
+	let gdsData = await RbsClient.startSession(ctx);
+	let rbsSessionId = gdsData.rbsSessionId;
+	let rebuilt = await RbsClient(ctx).rebuildItinerary({
+		sessionId: rbsSessionId,
+		pcc: pcc,
+		itinerary: pnr.itineraryData.map(seg => ({
+			airline: seg.airline,
+			flightNumber: seg.flightNumber,
+			bookingClass: seg.bookingClass,
+			departureDate: DateTime.decodeRelativeDateInFuture(
+				seg.departureDate.parsed, new Date().toISOString()
+			),
+			departureAirport: seg.departureAirport,
+			destinationAirport: seg.destinationAirport,
+			segmentStatus: 'GK',
+			seatCount: seg.seatCount,
+		})),
+	});
+	let priced = await RbsClient({...ctx, command: pricingCmd}).runInputCmd({rbsSessionId});
+	let pqItinerary = action({rbsSessionId});
+	RbsClient.closeSession({context: ctx, gdsData: gdsData});
+	return pqItinerary;
 };
-exports.importPq = (reqBody) => {
-	if (reqBody.useRbs) {
-		return GdsSessions.getByContext(reqBody).then(session =>
-			RbsClient(reqBody).importPq(session.gdsData));
-	} else {
-		return Promise.reject('importPq for RBS-free session not implemented yet');
-	}
-};
+
+exports.getPqItinerary = (reqBody) =>
+	GdsSessions.getByContext(reqBody).then(session =>
+		reqBody.useRbs
+			? RbsClient(reqBody).getPqItinerary(session.gdsData)
+			: withRbsPqCopy(session, ({rbsSessionId}) =>
+				RbsClient(reqBody).getPqItinerary({rbsSessionId})
+			)
+	);
+
+exports.importPq = (reqBody) =>
+	GdsSessions.getByContext(reqBody).then(session =>
+		reqBody.useRbs
+			? RbsClient(reqBody).importPq(session.gdsData)
+			: withRbsPqCopy(session, ({rbsSessionId}) =>
+				RbsClient(reqBody).importPq({rbsSessionId})
+			)
+	);
 
 // TODO: use terminal.keepAlive so that RBS logs were not trashed with these MD0-s
 let makeKeepAliveParams = (context) => ({
