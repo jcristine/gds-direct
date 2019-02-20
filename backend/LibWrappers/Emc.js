@@ -28,6 +28,9 @@ try {
 
 exports.client = client;
 exports.getCachedSessionInfo = async (sessionKey) => {
+    if (!sessionKey) {
+        return Promise.reject('Passed EMC session token is empty');
+    }
 	// probably just keeping token -> agentId mapping
 	// instead would save us few milliseconds...
 	const cacheKey = Redis.keys.EMC_TOKEN_TO_USER;
@@ -40,7 +43,7 @@ exports.getCachedSessionInfo = async (sessionKey) => {
 	    sessionInfo = await client.sessionInfo(sessionKey);
 	}
 	Redis.client.set(cacheKey, JSON.stringify(sessionInfo), 'EX', keyExpire);
-	let userId = ((sessionInfo || {}).user || {}).id;
+	let userId = (((sessionInfo || {}).data || {}).user || {}).id;
 	if (!userId) {
 	    return Promise.reject('No user id in EMC rs - ' + JSON.stringify(sessionInfo));
 	} else {
