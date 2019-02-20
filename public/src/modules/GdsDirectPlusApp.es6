@@ -86,16 +86,8 @@ export default class GdsDirectPlusApp
 				startNewSession: false,
 				gdsName: gds,
 			});
-			for (let area of Object.keys(data.fullState.areas || {})) {
+			for (let area of AREA_LIST) {
 				updateArea(area); // set data of each area
-			}
-			for (let areaSetting of (gdsAreaSettings[gds] || [])) {
-				let area = areaSetting.area;
-				let pcc = areaSetting.defaultPcc;
-				if (pcc && !(area in (data.fullState.areas || {}))) {
-					// show default PCC on empty areas instead of nothing
-					UPDATE_CUR_GDS({area: area, pcc: pcc, gdsName: gds});
-				}
 			}
 			updateArea(data.fullState.area); // set current area
 		}

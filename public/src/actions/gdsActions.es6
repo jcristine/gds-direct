@@ -9,6 +9,11 @@ const update_cur_gds = (sessionInfo) => {
 
 	const pc 	= {[sessionIndex] : pcc};
 	let pccUpd	= startNewSession ? pc : {...getStore().app.Gds.getGds(gdsName).get('pcc'), ...pc};
+	for (let areaSetting of (window.GdsDirectPlusState.getGdsAreaSettings()[gdsName] || [])) {
+		// show default PCC on empty areas instead of nothing
+		let idx = AREA_LIST.indexOf(areaSetting.area);
+		pccUpd[idx] = pccUpd[idx] || areaSetting.defaultPcc;
+	}
 
 	let idxToInfo = startNewSession ? {} : {...getStore().app.Gds.getGds(gdsName).get('idxToInfo') || {}};
 	idxToInfo[sessionIndex] = sessionInfo;

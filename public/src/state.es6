@@ -30,6 +30,7 @@ window.GdsDirectPlusState = {
 	hasPermissions 		: () => State.permissions,
 	getIsAdmin			: () => State.isAdmin,
 	getUseRbs 			: () => State.useRbs,
+	getGdsAreaSettings	: () => State.gdsAreaSettings || {},
 };
 
 export const setState = (newState, action = '') => {
