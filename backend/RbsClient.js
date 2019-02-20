@@ -1,4 +1,4 @@
-let {LoginTimeOut} = require("./Utils/Rej");
+let {LoginTimeOut, BadRequest, BadGateway, NotImplemented} = require("./Utils/Rej");
 let Config = require("./Config.js");
 let Crypt = require("../node_modules/dynatech-client-component/lib/Crypt.js").default;
 
@@ -38,17 +38,22 @@ let callRbs = (functionName, params) => {
 		try {
 			resp = JSON.parse(body);
 		} catch (exc) {
-			return Promise.reject('Could not parse RBS ' + functionName + ' json response - ' + body);
+			return BadGateway('Could not parse RBS ' + functionName + ' json response - ' + body);
 		}
 		if (resp.status !== 'OK' || !resp.result || !resp.result.response_code) {
 			return Promise.reject('Unexpected RBS response format - ' + body);
 		} else if (![1,2,3].includes(resp.result.response_code)) {
 			let rpcErrors = resp.result.errors;
-			return Promise.reject('RBS service responded with error - ' + resp.result.response_code + ' - ' + JSON.stringify(rpcErrors));
+			let errorStr = resp.result.response_code + ' - ' + JSON.stringify(rpcErrors);
+			if (resp.result.response_code == 104) {
+				return BadRequest('RBS says passed params are invalid - ' + errorStr);
+			} else {
+				return BadGateway('RBS service responded with error - ' + resp.result.response_code + ' - ' + errorStr);
+			}
 		} else if (resp.result.response_code == 3) {
 			let rpcErrors = resp.result.errors;
 			let messages = resp.result.result.messages;
-			return Promise.reject('RBS service cannot satisfy your request - ' + JSON.stringify(messages) + ' - ' + JSON.stringify(rpcErrors));
+			return NotImplemented('RBS service cannot satisfy your request - ' + JSON.stringify(messages) + ' - ' + JSON.stringify(rpcErrors));
 		} else {
 			return Promise.resolve(resp);
 		}
@@ -95,6 +100,9 @@ let RbsClient = (reqBody) => {
 			gds: gds,
 			context: getLeadData(reqBody.pqTravelRequestId),
 		}).then(rbsResp => rbsResp.result.result),
+		/** @param {IRebuildItineraryRq} params */
+		rebuildItinerary: (params) => callRbs('terminal.rebuildItinerary', params)
+			.then(rbsResp => rbsResp.result.result),
 	};
 };
 

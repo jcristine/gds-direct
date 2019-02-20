@@ -53,6 +53,8 @@ php.strtotime = (dtStr) => {
 		return Date.now() / 1000;
 	} else if (dtStr.match(/^\d{4}-\d{2}-\d{2}(\d{2}:\d{2}:\d{2})?$/)) {
 		return Date.parse(dtStr + ' Z') / 1000;
+	} else if (dtStr.match(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(\.\d*|)Z$/)) {
+		return Date.parse(dtStr) / 1000;
 	} else if (dtStr.match(/^\d{2}:\d{2} [AP]M$/)) {
 		return Date.parse('2016-01-01 ' + dtStr + ' Z') / 1000;
 	} else {
@@ -84,6 +86,8 @@ php.date = (format, epoch) => {
 		return safe(() => dtObj.toISOString().slice('2018-12-05T'.length, '2018-12-05T22:13'.length));
 	} else if (format === 'y') {
 		return safe(() => dtObj.toISOString().slice('20'.length, '2018'.length));
+	} else if (format === 'Y') {
+		return safe(() => dtObj.toISOString().slice(0, '2018'.length));
 	} else {
 		throw new Error('Unsupported date format - ' + format);
 	}
