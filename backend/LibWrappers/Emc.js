@@ -33,10 +33,12 @@ exports.getCachedSessionInfo = async (sessionKey) => {
 	const cacheKey = Redis.keys.EMC_TOKEN_TO_USER;
 	const keyExpire = SESSION_EXPIRE;
 	const session = await Redis.client.get(cacheKey);
+	let sessionInfo;
 	if (session !== null && session) {
-		return JSON.parse(session);
+		sessionInfo = JSON.parse(session);
+	} else {
+	    sessionInfo = await client.sessionInfo(sessionKey);
 	}
-	const sessionInfo = await client.sessionInfo(sessionKey);
 	Redis.client.set(cacheKey, JSON.stringify(sessionInfo), 'EX', keyExpire);
 	let userId = ((sessionInfo || {}).user || {}).id;
 	if (!id) {
