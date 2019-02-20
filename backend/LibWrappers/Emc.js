@@ -33,7 +33,7 @@ exports.getCachedSessionInfo = async (sessionKey) => {
     }
 	// probably just keeping token -> agentId mapping
 	// instead would save us few milliseconds...
-	const cacheKey = Redis.keys.EMC_TOKEN_TO_USER;
+	const cacheKey = Redis.keys.EMC_TOKEN_TO_USER + ':' + sessionKey;
 	const keyExpire = SESSION_EXPIRE;
 	const session = await Redis.client.get(cacheKey);
 	let sessionInfo;
