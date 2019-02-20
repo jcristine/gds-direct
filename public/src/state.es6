@@ -73,7 +73,7 @@ export const getters = (action, props) => {
 		break;
 		// POST method is used just to make sure that URL length is not exceeding limits
 		case 'settings' :
-			post(`terminal/saveSetting/${action}/0`, props);
+			return post(`terminal/saveSetting/${action}/0`, props);
 		break;
 		case 'matrixConfiguration' :
 			POST(`terminal/saveSetting/${action}`, props);

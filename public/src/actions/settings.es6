@@ -1,6 +1,7 @@
 import {getters} from "../state";
 import {getStore} from "../store";
 import {GDS_LIST} from "../constants";
+import {notify} from '../helpers/debug.es6';
 
 export const CHANGE_STYLE = theme => {
 	getters('theme', theme);
@@ -34,16 +35,26 @@ export const CHANGE_SETTINGS = settings => {
 	getters('settings', settings);
 
 	const newData = { keyBindings: {}, defaultPccs: {}, gdsAreaSettings: {} };
+	let promises = [];
 	$.each(settings, (gds, value) => {
 		newData.keyBindings[gds] = value.keyBindings || {};
         newData.gdsAreaSettings[gds] = value.areaSettings || [];
 		newData.defaultPccs[gds] = value.defaultPcc || '';
-		getStore().app.Gds.update({
+		let promise = getStore().app.Gds.update({
 			keyBindings: newData.keyBindings[gds],
             areaSettings: newData.gdsAreaSettings[gds],
 			defaultPcc: newData.defaultPccs[gds]
 		}, gds);
+		promises.push(promise);
 	});
+	if (promises.length > 0) {
+		Promise.all(promises).then(() => {
+			notify({
+				type: 'success',
+				msg: 'Saved Successfully',
+			});
+		});
+	}
 	getStore().updateView({ keyBindings: newData.keyBindings, defaultPccs: newData.defaultPccs, gdsAreaSettings: newData.gdsAreaSettings });
 };
 
