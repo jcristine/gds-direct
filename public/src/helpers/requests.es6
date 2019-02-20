@@ -130,7 +130,7 @@ export const get = (url) => {
 
 export const post = (url, postParams = {}) => {
 	postParams = {...postParams,
-		emcSessionId: window.GdsDirectPlusParams.emcSessionId,
+		emcSessionId: window.GdsDirectPlusParams.emcSessionId || '',
 		travelRequestId: window.GdsDirectPlusParams.travelRequestId || 0,
 	};
 
