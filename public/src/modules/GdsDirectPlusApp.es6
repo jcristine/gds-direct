@@ -6,7 +6,7 @@ import {CHANGE_GDS, UPDATE_CUR_GDS} from "../actions/gdsActions";
 import {GDS} 			from '../modules/gds';
 import ContainerMain 	from "../containers/main";
 import {PqParser} 		from "../modules/pqParser";
-import {OFFSET_DEFAULT} from "../constants";
+import {OFFSET_DEFAULT, AREA_LIST} from "../constants";
 import {connect, getStore} from "../store";
 
 const BORDER_SIZE = 2;
@@ -88,6 +88,14 @@ export default class GdsDirectPlusApp
 			});
 			for (let area of Object.keys(data.fullState.areas || {})) {
 				updateArea(area); // set data of each area
+			}
+			for (let areaSetting of (gdsAreaSettings[gds] || [])) {
+				let area = areaSetting.area;
+				let pcc = areaSetting.defaultPcc;
+				if (pcc && !(area in (data.fullState.areas || {}))) {
+					// show default PCC on empty areas instead of nothing
+					UPDATE_CUR_GDS({area: area, pcc: pcc, gdsName: gds});
+				}
 			}
 			updateArea(data.fullState.area); // set current area
 		}
