@@ -13,7 +13,7 @@ let callRbs = (functionName, params) => {
 		: 'http://rbs-dev.aklesuns.php7.dyninno.net/jsonExternalInterface.php?log_id=' + logId;
 
 	let rbsPassword = Config.RBS_PASSWORD;
-	if (rbsPassword) {
+	if (!rbsPassword) {
 		return Promise.reject('RBS password not defined in env');
 	}
 
