@@ -156,6 +156,7 @@ let makeGrectResult = (calledCommands, fullState) => {
 		clearScreen: false,
 		sessionInfo: {
 			canCreatePq: areaState.can_create_pq ? true : false,
+			pricingCmd: areaState.pricing_cmd || '',
 			canCreatePqErrors: areaState.can_create_pq
 				? [] : ['Local state processor does not allow creating PQ'],
 			area: areaState.area || '',

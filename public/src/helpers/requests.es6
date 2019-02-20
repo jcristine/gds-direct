@@ -20,7 +20,7 @@ let makeBriefRsStr = (response, startMs) => {
 		let rsRouteTime = (endMs - rsSentMs) / 1000;
 		let backendTime = duration - gdsTime - rqRouteTime - rsRouteTime;
 		result += ' (GDS: ' + (+gdsTime).toFixed(3) + ', backend: ' + backendTime.toFixed(3) +
-			', browser->node: ' + rqRouteTime.toFixed(3) + ', node->browser ' + rsRouteTime.toFixed(3) + ')'
+			', browser->node: ' + rqRouteTime.toFixed(3) + ', node->browser ' + rsRouteTime.toFixed(3) + ')';
 		if (cmdType) {
 			result += ' ' + cmdType;
 		}
@@ -50,7 +50,7 @@ let initSocket = (host) => new Promise((resolve, reject) => {
 				socket.send(data, (response) => {
 					let msg = new Date().toISOString() + ' - Socket ' + data.url;
 					msg += makeBriefRsStr(response, startMs)
-						|| ((Date.now() - startMs) / 1000).toFixed(3);
+						|| ' in ' + ((Date.now() - startMs) / 1000).toFixed(3);
 					console.debug(msg, {rq: data, rs: response});
 					resolve(response);
 				});

@@ -96,7 +96,8 @@ class GdsButtons extends ButtonPopOver
 			if (rloc) {
 				pnrHtml = `<span class="pnr-label">${rloc}</span>`;
 			} else if (sessionInfo.canCreatePq) {
-				pnrHtml = `<span class="pnr-label">PQ</span>`;
+				let pricingCmd = sessionInfo.pricingCmd || 'PQ';
+				pnrHtml = `<span class="pnr-label">${pricingCmd}</span>`;
 			} else if (sessionInfo.hasPnr) {
 				pnrHtml = `<span class="pnr-label">PNR</span>`;
 			}

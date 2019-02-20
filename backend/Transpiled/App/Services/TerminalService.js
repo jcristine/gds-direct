@@ -203,6 +203,7 @@ class TerminalService
 						.map(call => call.tabCommands)
 						.reduce((a,b) => a.concat(b), []),
 					clearScreen: rbsResp.clearScreen,
+					pricingCmd: rbsResp.sessionInfo.pricingCmd,
 					canCreatePq: rbsResp.sessionInfo.canCreatePq,
 					canCreatePqErrors: rbsResp.sessionInfo.canCreatePqErrors,
 					area: rbsResp.sessionInfo.area,

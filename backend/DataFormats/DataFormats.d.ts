@@ -163,6 +163,7 @@ interface IRbsRunCommandResult {
         "area": "A",
         "recordLocator": "",
         "canCreatePq": false,
+        "pricingCmd": '',
         "canCreatePqFor": ["infant","child","pricing"],
         "canCreatePqErrors": [
             "PNR changed since last pricing - must price again",

@@ -56,6 +56,7 @@ class SessionStateHelper
         return {
             'isAlive': $row['is_active'] ? true : false,
             'canCreatePq': $row['can_create_pq'] ? true : false,
+            'pricingCmd': $row['pricing_cmd'] || '',
             'pcc': $row['pcc'],
             'area': $row['area'],
             'recordLocator': $row['record_locator'] || '',

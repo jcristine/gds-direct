@@ -103,8 +103,11 @@ class UpdateApolloSessionStateAction {
 		$data = $commandTypeData['data'];
 		if (this.constructor.isValidPricing($cmd, $output)) {
 			$sessionState['can_create_pq'] = true;
+			$sessionState['pricing_cmd'] = $cmd !== '$BBQ01'
+				? $cmd : $sessionState['pricing_cmd'];
 		} else if (!php.in_array($type, SessionStateProcessor.getCanCreatePqSafeTypes())) {
 			$sessionState['can_create_pq'] = false;
+			$sessionState['pricing_cmd'] = null;
 		}
 		if (php.preg_match(/^\s*\*\s*(><)?\s*$/, $output)) {
 			// "*" output is returned by most Apollo writing commands
