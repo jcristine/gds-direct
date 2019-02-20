@@ -10,7 +10,6 @@ class ApolloBuildItineraryAction {
 		$date = $isParserFormat
 			? $segment['departureDate']['raw']
 			: this.formatApolloDate($segment['departureDate']);
-		$seatCount = $isParserFormat ? $segment['statusNumber'] : $segment['seatCount'];
 		$pattern = '0{airline}{flightNumber}{bookingClass}{departureDate}{departureAirport}{destinationAirport}{segmentStatus}{seatCount}';
 		return StringUtil.format($pattern, {
 			'airline': $segment['airline'],
@@ -20,7 +19,7 @@ class ApolloBuildItineraryAction {
 			'departureAirport': $segment['departureAirport'],
 			'destinationAirport': $segment['destinationAirport'],
 			'segmentStatus': $segment['segmentStatus'],
-			'seatCount': $seatCount,
+			'seatCount': $segment['seatCount'],
 		});
 	}
 

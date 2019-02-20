@@ -1,72 +1,15 @@
 
-let TravelportClient = require('./../TravelportClient.js');
-const GdsSessions = require("../Repositories/GdsSessions");
-const SessionStateProcessor = require("../Transpiled/Rbs/GdsDirect/SessionStateProcessor/SessionStateProcessor");
+let {fetchAllOutput, wrap} = require('../GdsHelpers/TravelportUtils.js');
+const StatefulSession = require("../GdsHelpers/StatefulSession.js");
 const AreaSettings = require("../Repositories/AreaSettings");
 const ItineraryParser = require("../Transpiled/Gds/Parsers/Apollo/Pnr/ItineraryParser");
-const logExc = require("../LibWrappers/FluentLogger").logExc;
 const nonEmpty = require("../Utils/Rej").nonEmpty;
-const hrtimeToDecimal = require("../Utils/Misc").hrtimeToDecimal;
-
-let StatefulSession = async (session) => {
-	let fullState = await GdsSessions.getFullState(session);
-	return {
-		runCmd: (cmd) => {
-			// should write to terminalCommandLog here
-			let hrtimeStart = process.hrtime();
-			if (!session.gdsData) {
-				console.error('lol, why gdsData is empty? ', session);
-			}
-			return TravelportClient({command: cmd}).runCmd(session.gdsData)
-				.then(gdsResult => {
-					let type = null;
-					try {
-						fullState = SessionStateProcessor
-							.updateFullState(cmd, gdsResult.output, 'apollo', fullState);
-						GdsSessions.updateFullState(session, fullState);
-						type = fullState.areas[fullState.area].cmdType;
-					} catch (exc) {
-						logExc('ERROR: Failed to process state', session.logId, exc);
-					}
-					let hrtimeDiff = process.hrtime(hrtimeStart);
-					return {
-						cmd: cmd,
-						type: type,
-						output: gdsResult.output,
-						duration: hrtimeToDecimal(hrtimeDiff),
-					};
-				});
-		},
-		getFullState: () => fullState,
-	};
-};
-
-let extractPager = (text) => {
-	let [_, clean, pager] =
-		text.match(/([\s\S]*)(\)\>\<)$/) ||
-		text.match(/([\s\S]*)(\>\<)$/) ||
-		[null, text, null];
-	return [clean, pager];
-};
 
 let shouldWrap = (cmd) => {
 	let wrappedCmds = ['FS', 'MORE*', 'QC', '*HTE', 'HOA', 'HOC', 'FQN', 'A', '$D'];
 	let alwaysWrap = false;
 	return alwaysWrap
 		|| wrappedCmds.some(wCmd => cmd.startsWith(wCmd));
-};
-
-let wrap = function(text) {
-	let result = [];
-	for (let line of text.split('\n')) {
-		for (let chunk of (line.match(/.{1,64}/g) || [''])) {
-			result.push(chunk);
-		}
-	}
-	if (result.slice(-1)[0].length === 64) {
-		result.push('');
-	}
-	return result.join('\n');
 };
 
 /**
@@ -94,7 +37,7 @@ let makeSellCmd = (segment) => {
 		segment.departureAirport,
 		segment.destinationAirport,
 		segment.segmentStatus,
-		segment.statusNumber,
+		segment.seatCount,
 	].join('');
 };
 
@@ -133,23 +76,6 @@ let parseAlias = (cmd) => {
 		data: data,
 		type: type,
 	};
-};
-
-let fetchAllOutput = async (nextCmd, stateful) => {
-	let pages = [];
-	let fullCmdRec = null;
-	let hrtimeStart = process.hrtime();
-	while (nextCmd) {
-		let cmdRec = (await stateful.runCmd(nextCmd));
-		fullCmdRec = fullCmdRec || cmdRec;
-		let [output, pager] = extractPager(cmdRec.output);
-		pages.push(output);
-		nextCmd = pager === ')><' ? 'MR' : null;
-	}
-	let hrtimeDiff = process.hrtime(hrtimeStart);
-	fullCmdRec.output = pages.join('\n');
-	fullCmdRec.duration = hrtimeToDecimal(hrtimeDiff);
-	return fullCmdRec;
 };
 
 let makeGrectResult = (calledCommands, fullState) => {
