@@ -90,7 +90,7 @@ let makeDefaultState = (session) => ({
 	areas: {
 		A: {
 			area: 'A',
-			pcc: session.context.gds === 'apollo' ? '1O3K' : null,
+			pcc: session.context.gds === 'apollo' ? '2F3K' : null,
 			record_locator: '',
 			can_create_pq: false,
 		},
