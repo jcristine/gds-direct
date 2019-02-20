@@ -76,8 +76,12 @@ let wrap = function(text) {
 let encodeCmdForCms = ($cmd) =>
 	$cmd.replace(/\|/g, '+').replace(/@/g, '¤');
 
-let encodeOutputForCms = ($dump) =>
-	$dump.replace(/\|/g, '+').replace(/;/g, '·');
+let encodeOutputForCms = ($dump) => {
+	$dump = $dump.replace(/\|/g, '+').replace(/;/g, '·');
+	$dump = $dump.replace(/\n?\)><$/, '\n└─>');
+	$dump = $dump.replace(/><$/, '');
+	return $dump;
+};
 
 /** @param segment = ItineraryParser.parseSegmentLine() */
 let makeSellCmd = (segment) => {
