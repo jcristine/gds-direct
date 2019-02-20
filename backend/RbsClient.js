@@ -21,7 +21,7 @@ let callRbs = (functionName, params) => {
 	let formParams = {
 		credentials: JSON.stringify({
 			login: 'CMS',
-			password: ec.encryptToken('qwerty'),
+			password: ec.encryptToken(rbsPassword),
 		}),
 		functionName: functionName,
 		params: JSON.stringify(params),
