@@ -1,5 +1,6 @@
 let {LoginTimeOut} = require("./Utils/Rej");
 let Config = require("./Config.js");
+let Crypt = require("../node_modules/dynatech-client-component/lib/Crypt.js").default;
 
 let querystring = require('querystring');
 let PersistentHttpRq = require('./Utils/PersistentHttpRq.js');
@@ -10,8 +11,13 @@ let callRbs = (functionName, params) => {
 		? 'http://rbs-asaptickets.lan.dyninno.net/jsonExternalInterface.php?log_id=' + logId
 		// : 'http://st-rbs.sjager.php7.dyninno.net/jsonExternalInterface.php?log_id=' + logId;
 		: 'http://rbs-dev.aklesuns.php7.dyninno.net/jsonExternalInterface.php?log_id=' + logId;
+
+	const ec = new Crypt(process.env.RANDOM_KEY, 'des-ede3');
 	let formParams = {
-		credentials: JSON.stringify({login: 'CMS', password: 'qwerty'}),
+		credentials: JSON.stringify({
+			login: 'CMS',
+			password: ec.encryptToken('qwerty'),
+		}),
 		functionName: functionName,
 		params: JSON.stringify(params),
 	};
