@@ -23,10 +23,11 @@ let Config = {
 	HTTP_PORT: env.HTTP_PORT || 3011,
 	HOST: env.HOST || '0.0.0.0',
 
-	projectName: 'GDSD',
-	serviceUserLogin: 'gdsd',
-	serviceUserPass: '',
-	serviceToken: env.NODE_ENV === 'production' ? 'byXWu*Yu^8HyD23BJ4Gu' : 'qwerty',
+	// no service user on dev
+	projectName: env.NODE_ENV === 'production' ? 'GDSD' : 'CMS_CHAT',
+	serviceUserLogin: env.NODE_ENV === 'production' ? 'gdsd' : 'cmschat',
+	serviceUserPass: env.NODE_ENV === 'production' ? '' : 'qwerty',
+	serviceToken: env.NODE_ENV === 'production' ? 'byXWu*Yu^8HyD23BJ4Gu' : '',
 
 	apolloAuthToken: env.apolloAuthToken,
 
