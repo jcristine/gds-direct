@@ -12,7 +12,12 @@ let callRbs = (functionName, params) => {
 		// : 'http://st-rbs.sjager.php7.dyninno.net/jsonExternalInterface.php?log_id=' + logId;
 		: 'http://rbs-dev.aklesuns.php7.dyninno.net/jsonExternalInterface.php?log_id=' + logId;
 
-	const ec = new Crypt(process.env.RANDOM_KEY, 'des-ede3');
+	let rbsPassword = Config.RBS_PASSWORD;
+	if (rbsPassword) {
+		return Promise.reject('RBS password not defined in env');
+	}
+
+	let ec = new Crypt(process.env.RANDOM_KEY, 'des-ede3');
 	let formParams = {
 		credentials: JSON.stringify({
 			login: 'CMS',

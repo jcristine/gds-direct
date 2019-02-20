@@ -8,11 +8,14 @@ let Config = {
 
 	production: env.NODE_ENV === 'production',
 
-	DB_HOST: env.DB_HOST || null,
-	DB_USER: env.DB_USER || null,
-	DB_PASS: env.DB_PASS || null,
-	DB_NAME: env.DB_NAME || null,
+	// set by fetchExternalConfig()
+	DB_HOST: null,
+	DB_USER: null,
+	DB_PASS: null,
+	DB_NAME: null,
 	DB_PORT: null,
+
+	RBS_PASSWORD: env.RBS_PASSWORD,
 
 	REDIS_HOST: env.REDIS_HOST,
 	REDIS_PORT: env.REDIS_PORT,
