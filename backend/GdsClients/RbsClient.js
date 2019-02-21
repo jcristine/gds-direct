@@ -1,9 +1,9 @@
-let {LoginTimeOut, BadRequest, BadGateway, NotImplemented} = require("./Utils/Rej");
-let Config = require("./Config.js");
-let Crypt = require("../node_modules/dynatech-client-component/lib/Crypt.js").default;
+let {LoginTimeOut, BadRequest, BadGateway, NotImplemented} = require("../Utils/Rej.js");
+let Config = require("../Config.js");
+let Crypt = require("../../node_modules/dynatech-client-component/lib/Crypt.js").default;
 
 let querystring = require('querystring');
-let PersistentHttpRq = require('./Utils/PersistentHttpRq.js');
+let PersistentHttpRq = require('../Utils/PersistentHttpRq.js');
 
 let callRbs = (functionName, params) => {
 	let logId = 'rbs.5bf6e431.9577485';

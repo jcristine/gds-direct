@@ -1,8 +1,8 @@
-let {getTravelport} = require("./Repositories/GdsProfiles.js");
-let {LoginTimeOut, BadGateway} = require("./Utils/Rej");
-let Redis = require('./LibWrappers/Redis.js');
-let config = require('./Config.js');
-let PersistentHttpRq = require('./Utils/PersistentHttpRq.js');
+let {getTravelport} = require("../Repositories/GdsProfiles.js");
+let {LoginTimeOut, BadGateway} = require("../Utils/Rej");
+let Redis = require('../LibWrappers/Redis.js');
+let config = require('../Config.js');
+let PersistentHttpRq = require('../Utils/PersistentHttpRq.js');
 
 /**
  * they are all physically located in USA, Atlanta (in same building)

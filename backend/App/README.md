@@ -1,1 +1,0 @@
-Taken from the chat app - caht-in-node 2.0.1

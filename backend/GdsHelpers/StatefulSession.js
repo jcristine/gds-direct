@@ -1,5 +1,5 @@
 
-let TravelportClient = require('./../TravelportClient.js');
+let TravelportClient = require('../GdsClients/TravelportClient.js');
 const GdsSessions = require("../Repositories/GdsSessions.js");
 const SessionStateProcessor = require("../Transpiled/Rbs/GdsDirect/SessionStateProcessor/SessionStateProcessor.js");
 const logExc = require("../LibWrappers/FluentLogger").logExc;

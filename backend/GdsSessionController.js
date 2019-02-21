@@ -1,8 +1,7 @@
 let DateTime = require("./Transpiled/Lib/Utils/DateTime.js");
 let PnrParser = require("./Transpiled/Gds/Parsers/Apollo/Pnr/PnrParser.js");
-let RbsClient = require('./RbsClient.js');
-let TravelportClient = require('./TravelportClient.js');
-let dbPool = require('./App/Classes/Sql.js');
+let RbsClient = require('./GdsClients/RbsClient.js');
+let TravelportClient = require('./GdsClients/TravelportClient.js');
 let Db = require('./Utils/Db.js');
 let TerminalService = require('./Transpiled/App/Services/TerminalService.js');
 let {admins} = require('./Constants.js');
@@ -187,29 +186,26 @@ exports.getLastCommands = (reqBody) => {
 	let agentId = reqBody.agentId;
 	let gds = reqBody.gds;
 	let requestId = reqBody.travelRequestId || 0;
-	return dbPool.getConnection()
-		.then(dbConn => {
-			return Db(dbConn).fetchAll({
-				table: 'terminalBuffering',
-				where: [
-					['gds', '=', gds],
-					['agentId', '=', agentId],
-					['requestId', '=', requestId],
-				],
-				orderBy: 'id DESC',
-				limit: 100,
-			}).then(rows => {
-				let cmds = rows.map(row => row.command);
-				let usedSet = new Set();
-				return {
-					success: true,
-					data: cmds.filter(cmd => {
-						// remove dupes
-						let used = usedSet.has(cmd);
-						usedSet.add(cmd);
-						return !used;
-					}).reverse(),
-				};
-			}).finally(() => dbPool.releaseConnection(dbConn));
-		});
+	return Db.with(db => db.fetchAll({
+		table: 'terminalBuffering',
+		where: [
+			['gds', '=', gds],
+			['agentId', '=', agentId],
+			['requestId', '=', requestId],
+		],
+		orderBy: 'id DESC',
+		limit: 100,
+	})).then(rows => {
+		let cmds = rows.map(row => row.command);
+		let usedSet = new Set();
+		return {
+			success: true,
+			data: cmds.filter(cmd => {
+				// remove dupes
+				let used = usedSet.has(cmd);
+				usedSet.add(cmd);
+				return !used;
+			}).reverse(),
+		};
+	});
 };

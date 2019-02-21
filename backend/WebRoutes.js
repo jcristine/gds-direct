@@ -14,7 +14,6 @@ let Db = require('./Utils/Db.js');
 let Diag = require('./LibWrappers/Diag.js');
 let FluentLogger = require('./LibWrappers/FluentLogger.js');
 let HighlightRulesRepository = require('./Actions/HighlightRulesRepository.js');
-let dbPool = require('./App/Classes/Sql.js');
 let Redis = require('./LibWrappers/Redis.js');
 let initSocketIo = require('socket.io');
 let Config = require('./Config.js');
@@ -257,12 +256,7 @@ app.get('/ping', toHandleHttp((rqBody) => {
 
 	return Redis.getInfo().then(redisLines => {
 		const data = {
-			'dbPool': {
-				acquiringConnections: dbPool.pool._acquiringConnections.length,
-				allConnections: dbPool.pool._allConnections.length,
-				freeConnections: dbPool.pool._freeConnections.length,
-				connectionQueue: dbPool.pool._connectionQueue.length
-			},
+			'dbPool': Db.getInfo(),
 			sockets: {
 				'totalConnection': 0,
 				'userCount': 0
