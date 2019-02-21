@@ -148,7 +148,10 @@ module.exports = async (session, rqBody) => {
 			if (!pcc) {
 				// emulate to default pcc
 				return AreaSettings.getByAgent(rqBody.agentId)
-					.then(rows => rows.filter(r => r.area === area && r.defaultPcc)[0])
+					.then(rows => rows.filter(r =>
+						r.gds === gds &&
+						r.area === area &&
+						r.defaultPcc)[0])
 					.then(nonEmpty())
 					.then(row => {
 						let cmd = 'SEM/' + row.defaultPcc + '/AG';
