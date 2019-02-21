@@ -11,21 +11,11 @@ try {
 }
 const Config = require('../Config.js');
 const Diag = require('./Diag.js');
+const {getExcData} = require('./../Utils/Misc.js');
 
 process.env.NODE_ENV = Config.production ? 'production' : 'development'; // accept development | stage | production
 
 const logger = new Logger();
-
-let getExcData = (exc) => {
-	if (typeof exc === 'string') {
-		return exc;
-	} else {
-		let props = {...exc};
-		props.errorClass = exc.constructor.name;
-		props.stack = exc.stack;
-		return {message: exc + '', ...props};
-	}
-};
 
 let logit = (msg, id, obj = {}) => {
 	try {

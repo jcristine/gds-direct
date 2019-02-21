@@ -23,6 +23,7 @@ let Migration = require("./Migration");
 const CommandParser = require("./Transpiled/Gds/Parsers/Apollo/CommandParser");
 const PnrParser = require("./Transpiled/Gds/Parsers/Apollo/Pnr/PnrParser");
 const FareConstructionParser = require("./Transpiled/Gds/Parsers/Common/FareConstruction/FareConstructionParser");
+const {getExcData} = require('./Utils/Misc.js');
 
 let app = express();
 
@@ -47,12 +48,16 @@ let toHandleHttp = (action, logger = null) => (req, res) => {
 	return Promise.resolve()
 		.then(() => action(rqBody, req.params))
 		.catch(exc => {
-			let error = new Error('HTTP action failed - ' + exc);
-			error.httpStatusCode = exc.httpStatusCode || 520;
-			if (exc.stack) {
-				error.stack += '\nCaused by:\n' + exc.stack;
+			let excData = getExcData(exc);
+			if (typeof excData === 'string') {
+				excData = new Error('HTTP action failed - ' + exc);
+			} else {
+				excData.message = 'HTTP action failed - ' + excData.message;
+				let cause = excData.stack ? '\nCaused by:\n' + excData.stack : '';
+				excData.stack = new Error().stack + cause;
 			}
-			return Promise.reject(error);
+			excData.httpStatusCode = exc.httpStatusCode || 520;
+			return Promise.reject(excData);
 		})
 		.then(result => {
 			log('HTTP action result:', result);
@@ -68,15 +73,15 @@ let toHandleHttp = (action, logger = null) => (req, res) => {
 			exc = exc || 'Empty error ' + exc;
 			res.status(exc.httpStatusCode || 500);
 			res.setHeader('Content-Type', 'application/json');
-			res.send(JSON.stringify({error: exc + '', stack: exc.stack}));
-			let errorData = {
+			res.send(JSON.stringify({error: exc.message || exc + '', processLogId: logId}));
+			let errorData = getExcData(exc, {
 				message: exc.message || '' + exc,
 				httpStatusCode: exc.httpStatusCode,
 				requestPath: req.path,
 				requestBody: maskedBody,
 				stack: exc.stack,
 				processLogId: logId,
-			};
+			});
 			if (shouldDiag(exc)) {
 				FluentLogger.logExc('ERROR: HTTP request failed', logId, errorData);
 				Diag.error('HTTP request failed', errorData);

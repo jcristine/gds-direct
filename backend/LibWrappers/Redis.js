@@ -1,13 +1,13 @@
 
 let ioredis = require("ioredis");
 let config = require('../Config.js');
+let {never, StrConsts} = require('../Utils/StrConsts.js');
 const nonEmpty = require("../Utils/Rej").nonEmpty;
 
 /** @type IIoRedisClient */
 let client = new ioredis(config.REDIS_PORT, config.REDIS_HOST);
 
-let never = () => { throw new Error('Should never happen'); };
-let keys = {
+exports.keys = StrConsts({
 	get SESSION_LAST_INSERT_ID() { never() },
 	get SESSION_ACTIVES() { never() },
 	get SESSION_TO_USER_ACCESS_MS() { never() },
@@ -17,15 +17,7 @@ let keys = {
 	get CMD_RQ_LAST_INSERT_ID() { never() },
 	get USER_TO_TMP_SETTINGS() { never() },
 	get EMC_TOKEN_TO_USER() { never() },
-};
-// to avoid explicitly setting value for
-// each constant risking getting a typo
-for (let key in keys) {
-	delete keys[key];
-	keys[key] = 'GRECT_' + key;
-}
-
-exports.keys = keys;
+}, 'GRECT_');
 exports.client = client;
 
 /**

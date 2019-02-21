@@ -7,6 +7,7 @@ let Db = require('./Utils/Db.js');
 let TerminalService = require('./Transpiled/App/Services/TerminalService.js');
 let {admins} = require('./Constants.js');
 let GdsSessions = require('./Repositories/GdsSessions.js');
+let {TRAVELPORT} = require('./Repositories/GdsProfiles.js');
 //const ImportPqAction = require("./Transpiled/Rbs/GdsDirect/Actions/ImportPqAction");
 //const CmsStatefulSession = require("./Transpiled/Rbs/GdsDirect/CmsStatefulSession");
 const TerminalBuffering = require("./Repositories/TerminalBuffering");
@@ -27,7 +28,9 @@ let startNewSession = (rqBody) => {
 		if (!isTravelportAllowed(rqBody)) {
 			starting = Forbidden('You are not allowed to use RBS-free connection');
 		} else if (rqBody.gds === 'apollo') {
-			starting = TravelportClient.startSession();
+			starting = TravelportClient.startSession({gdsProfile: TRAVELPORT.DynApolloProd_2F3K});
+		} else if (rqBody.gds === 'galileo') {
+			starting = TravelportClient.startSession({gdsProfile: TRAVELPORT.DynGalileoProd_711M});
 		} else {
 			starting = NotImplemented('GDS ' + rqBody.gds + ' not supported with "Be Fast" flag - uncheck it.');
 		}

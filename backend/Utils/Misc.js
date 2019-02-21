@@ -43,3 +43,18 @@ let jsExport = function($var, $margin, inlineLimit) {
  */
 exports.jsExport = ($var, $margin = null, inlineLimit = 64) =>
 	jsExport($var, $margin, inlineLimit);
+
+exports.getExcData = (exc, moreData = null) => {
+	let props = {message: exc + ''};
+	if (typeof exc === 'string') {
+		if (!moreData) {
+			return exc;
+		}
+	} else {
+		props = {...props, ...exc};
+		props.errorClass = props.errorClass || exc.constructor.name;
+		props.stack = exc.stack;
+	}
+	props = {...props, ...(moreData || {})};
+	return props;
+};

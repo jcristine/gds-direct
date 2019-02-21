@@ -1,4 +1,5 @@
-let {LoginTimeOut} = require("./Utils/Rej");
+let {getTravelport} = require("./Repositories/GdsProfiles.js");
+let {LoginTimeOut, BadGateway} = require("./Utils/Rej");
 let Redis = require('./LibWrappers/Redis.js');
 let config = require('./Config.js');
 let PersistentHttpRq = require('./Utils/PersistentHttpRq.js');
@@ -14,12 +15,10 @@ let endpoint = 'https://americas.webservices.travelport.com/B2BGateway/service/X
 //let endpoint = 'https://emea.webservices.travelport.com/B2BGateway/service/XMLSelect';
 //let endpoint = 'https://apac.webservices.travelport.com/B2BGateway/service/XMLSelect';
 
-let sendRequest = async (requestBody) => {
-	let redisKey = Redis.keys.USER_TO_TMP_SETTINGS + ':6206';
-	let authToken = await Redis.client.hget(redisKey, 'apolloAuthToken');
-	if (!authToken) {
-		return Promise.reject('Apollo auth credentials not set');
-	}
+let sendRequest = async (requestBody, gdsProfile) => {
+	let profileData = await getTravelport(gdsProfile);
+	let authTokenSrc = profileData.username + ':' + profileData.password;
+	let authToken = Buffer.from(authTokenSrc).toString('base64');
 	return PersistentHttpRq({
 		url: endpoint,
 		headers: {
@@ -29,37 +28,37 @@ let sendRequest = async (requestBody) => {
 	}).then(resp => resp.body);
 };
 
-//let gdsProfile = 'DynApolloProd_1O3K';
-let gdsProfile = 'DynApolloProd_2F3K';
-
 let parseXml = (xml) => {
 	let jsdom = require('jsdom');
 	let jsdomObj = new jsdom.JSDOM(xml, {contentType: 'text/xml'});
 	return jsdomObj.window.document;
 };
 
-let startSession = () => {
+let startSession = (params) => {
+	let gdsProfile = params.gdsProfile;
 	let body = `<?xml version="1.0" encoding="UTF-8"?>
 <SOAP-ENV:Envelope xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ns1="http://webservices.galileo.com"><SOAP-ENV:Body><ns1:BeginSession><ns1:Profile>${gdsProfile}</ns1:Profile></ns1:BeginSession></SOAP-ENV:Body></SOAP-ENV:Envelope>`;
-	return sendRequest(body).then(resp => {
+	return sendRequest(body, gdsProfile).then(resp => {
 		let sessionToken = parseXml(resp).querySelectorAll('BeginSessionResult')[0].textContent;
 		if (!sessionToken) {
-			return Promise.reject('Failed to extract session token from Travelport response - ' + resp);
+			return BadGateway('Failed to extract session token from Travelport response - ' + resp);
 		} else {
-			return Promise.resolve({sessionToken: sessionToken});
+			return Promise.resolve({sessionToken: sessionToken, gdsProfile: gdsProfile});
 		}
 	});
 };
 
-let runOneCmd = (cmd, token) => {
+let runOneCmd = (cmd, gdsData) => {
+	let token = gdsData.sessionToken;
+	let gdsProfile = gdsData.gdsProfile;
 	let body = `<?xml version="1.0" encoding="UTF-8"?>
 <SOAP-ENV:Envelope xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ns1="http://webservices.galileo.com"><SOAP-ENV:Body><ns1:SubmitTerminalTransaction><ns1:Token>` + token + `</ns1:Token><ns1:Request>` + cmd + `</ns1:Request><ns1:IntermediateResponse></ns1:IntermediateResponse></ns1:SubmitTerminalTransaction></SOAP-ENV:Body></SOAP-ENV:Envelope>`;
-	return sendRequest(body).then(resp => {
+	return sendRequest(body, gdsProfile).then(resp => {
 		let resultTag = parseXml(resp).querySelectorAll('SubmitTerminalTransactionResult')[0];
 		if (resultTag) {
 			return {output: resultTag.textContent};
 		} else {
-			return Promise.reject('Unexpected Travelport response format - ' + resp);
+			return BadGateway('Unexpected Travelport response format - ' + resp);
 		}
 	}).catch(exc => {
 		if ((exc + '').indexOf('Could not locate Session Token Information') > -1) {
@@ -76,7 +75,7 @@ let runOneCmd = (cmd, token) => {
 /** @param {{command: '*R', gds: 'apollo', language: 'sabre', agentId: '6206'}} reqBody */
 let TravelportClient = (reqBody) => {
 	return {
-		runCmd: (gdsData) => runOneCmd(reqBody.command, gdsData.sessionToken),
+		runCmd: (gdsData) => runOneCmd(reqBody.command, gdsData),
 	};
 };
 

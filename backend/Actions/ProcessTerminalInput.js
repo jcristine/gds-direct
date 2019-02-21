@@ -19,6 +19,9 @@ let shouldWrap = (cmd) => {
 let encodeCmdForCms = ($cmd) =>
 	$cmd.replace(/\|/g, '+').replace(/@/g, '¤');
 
+let decodeCmsInput = ($cmd) =>
+	$cmd.replace(/\+/g, '|').replace(/¤/g, '@');
+
 let encodeOutputForCms = ($dump) => {
 	$dump = $dump.replace(/\|/g, '+').replace(/;/g, '·');
 	$dump = $dump.replace(/\n?\)><$/, '\n└─>');
@@ -97,9 +100,15 @@ let makeGrectResult = (calledCommands, fullState) => {
 	});
 };
 
-let transformCalledCommand = (rec) => {
-	let output = shouldWrap(rec.cmd)
-		? wrap(rec.output) : rec.output;
+let transformCalledCommand = (rec, gds) => {
+	let output = rec.output;
+	if (gds === 'apollo') {
+		output = shouldWrap(rec.cmd)
+			? wrap(rec.output) : rec.output;
+	} else if (gds === 'galileo') {
+		output = wrap(rec.output);
+	}
+
 	return {
 		cmd: encodeCmdForCms(rec.cmd),
 		type: rec.type,
@@ -109,6 +118,7 @@ let transformCalledCommand = (rec) => {
 };
 
 let runCmdRq =  async (inputCmd, stateful) => {
+	inputCmd = decodeCmsInput(inputCmd);
 	let {realCmd: cmd, fetchAll, type, data} = parseAlias(inputCmd);
 	let cmdsLeft = (data ? data.bulkCmds : null) || [cmd];
 	let calledCommands = [];
@@ -130,6 +140,7 @@ let runCmdRq =  async (inputCmd, stateful) => {
 module.exports = async (session, rqBody) => {
 	let stateful = await StatefulSession(session);
 	let cmdRq = rqBody.command;
+	let gds = session.context.gds;
 
 	return runCmdRq(cmdRq, stateful)
 		.then(grectResult => {
@@ -155,6 +166,6 @@ module.exports = async (session, rqBody) => {
 		.then(grectResult => ({
 			...grectResult,
 			calledCommands: grectResult.calledCommands
-				.map(r => transformCalledCommand(r)),
+				.map(r => transformCalledCommand(r, gds)),
 		}));
 };

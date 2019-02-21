@@ -538,3 +538,31 @@ type IFullSessionState = IAreaState & {
     area: EAreaLetter,
     areas: {[area in EAreaLetter]: IAreaState},
 }
+
+type ETravelportProfile = 'DynApolloProd_1O3K' | 'DynApolloProd_2F3K' | 'DynApolloCopy_1O3K' | 'DynApolloProd_2G55' | 'DynGalileoProd_711M';
+type ESabreProfile = 'SABRE_PROD_L3II' | 'SABRE_PROD_Z2NI' | 'SABRE_PROD_6IIF' | 'SABRE_PROD_8ZFH';
+type EAmadeusProfile = 'AMADEUS_TEST_1ASIWTUTICO' | 'AMADEUS_PROD_1ASIWTUTICO' | 'AMADEUS_PROD_1ASIWTUT0GW';
+interface IGdsProfileMap {
+    travelport: {
+        [gdsProfile in ETravelportProfile]: {
+            username: 'GWS/PCC1O3K',
+            password: 'qwe123',
+        }
+    },
+    sabre: {
+        [gdsProfile in ESabreProfile]: {
+            password: 'qwe123',
+            username: '1234',
+            default_pcc: 'L3II',
+        }
+    },
+    amadeus: {
+        [gdsProfile in EAmadeusProfile]: {
+            username: 'WS0GWTUT',
+            password: 'qwe123',
+            default_pcc: 'LAXGO3106',
+            endpoint: 'https://nodeD1.test.webservices.amadeus.com/1ASIWTUTICO'
+                    | 'https://nodeD1.production.webservices.amadeus.com/1ASIWTUTICO',
+        }
+    },
+}
