@@ -24,7 +24,8 @@ export default class Admin extends ButtonPopOver
 				let el = Dom('button.btn btn-primary[<i class="fa t-f-size-14">' + label + '</i>]', {
 					onclick: () => {
 						// replace with prod link when we have prod
-						let url = 'http://dev-w13:20328' + path + '#emcSessionId=' + GdsDirectPlusParams.emcSessionId;
+						let rootUrl = GdsDirectPlusParams.rootUrl;
+						let url = rootUrl + path + '#emcSessionId=' + GdsDirectPlusParams.emcSessionId;
 						window.open(url, '_blank');
 					},
 				});

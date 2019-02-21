@@ -1,5 +1,4 @@
 
-import {getBindingForKey} 		from '../helpers/keyBinding';
 import {CHANGE_ACTIVE_TERMINAL} from "../actions/settings";
 import {DEV_CMD_STACK_RUN} from "../actions";
 import {CHANGE_GDS, UPDATE_CUR_GDS} from "../actions/gdsActions";
