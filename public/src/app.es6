@@ -23,10 +23,25 @@ const initGlobEvents = () => {
 	};
 };
 
-const initThemeStyles = (responseData, htmlRootDom) => {
+let addCss = (cssText, htmlRootDom) => {
 	let style = document.createElement('style');
 	style.class = 'generated-theme-css';
 	style.type = 'text/css';
+	style.appendChild(document.createTextNode(cssText));
+	htmlRootDom.appendChild(style);
+};
+
+let addExternalStyles = (htmlRootDom) => {
+	let link = document.createElement('link');
+	link.class = 'generated-fa-css';
+	link.rel = 'stylesheet';
+	link.type = 'text/css';
+	htmlRootDom.appendChild(link);
+	link.setAttribute('href', 'https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css');
+	console.log('zhopa style', link);
+};
+
+let initThemeStyles = (responseData, htmlRootDom) => {
 	let cssLines = [];
 	let classList = ['defaultBg', 'outputFont', 'activeWindow', 'entryFont', 'usedCommand', 'errorMessage',
 		'warningMessage', 'startSession', 'specialHighlight', 'fixedColumnBackground',
@@ -63,8 +78,7 @@ const initThemeStyles = (responseData, htmlRootDom) => {
 			cssLines.push(prefix + ' .' + cls + ' { ' + props.join(' ') + ' }');
 		}
 	}
-	style.appendChild(document.createTextNode(cssLines.join('\n')));
-	htmlRootDom.appendChild(style);
+	addCss(cssLines.join('\n'), htmlRootDom);
 };
 
 let isDev = !(window.location.hostname + '').endsWith('.asaptickets.com');
@@ -92,13 +106,16 @@ window.InitGdsDirectPlusApp = (params) => {
 	window.GdsDirectPlusParams.cmsUrl = params.cmsUrl;
 	window.GdsDirectPlusParams.socketHost = params.socketHost || window.GdsDirectPlusParams.socketHost;
 	initGlobEvents();
-	params.htmlRootDom.innerHTML = '<h2 style="background-color: white; color: black">Please wait, loading user data...</h2>';
+	params.htmlRootDom.innerHTML = '<h2 class="pls-wait-placeholder" style="background-color: white; color: black">Please wait, loading user data...</h2>';
 
 	let loadView = requests.get('/gdsDirect/view');
 	let loadThemes = requests.get('/gdsDirect/themes');
+	addExternalStyles(params.htmlRootDom);
+
 	return Promise.all([loadView, loadThemes])
 		.then(([viewData, themeData]) => {
-			params.htmlRootDom.innerHTML = '';
+			params.htmlRootDom.querySelectorAll('.pls-wait-placeholder')
+				.forEach(ph => ph.remove());
 			initThemeStyles(themeData, params.htmlRootDom);
 			return new GdsDirectPlusApp(params, viewData, themeData);
 		});
