@@ -1,12 +1,18 @@
 import Component from "../../modules/component";
 
 export default class AreaSelect extends Component{
-    constructor({defaultPcc, pccs})
+    constructor({defaultPcc, pccs, disabled})
     {
         super('select.form-control default-pcc', {style : 'z-index: 9999'});
 
+        let notSelectedMsg = 'Not selected';
+        if (disabled) {
+            this.getContext().setAttribute('disabled', 'disabled');
+            notSelectedMsg = 'Home PCC';
+        }
+
         this.context.appendChild(
-            new Option('Not selected', '')
+            new Option(notSelectedMsg, '')
         );
 
         pccs.map( pcc => {

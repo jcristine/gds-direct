@@ -137,7 +137,10 @@ class Context
                 const container = Dom(`div.settings-input-container`);
                 const defaultPcc    = this._getAreaPcc(gds, letter);
             	const pccs          = this.pccs.filter( pcc => pcc.gds === gds);
-            	const select        = new AreaSelect({defaultPcc, pccs}).getContext();
+                // these PCC-s are used as fallback, but A is instantly
+                // logged in, so there is no point in a fallback
+                const disabled      = letter === 'A';
+                const select        = new AreaSelect({defaultPcc, pccs, disabled}).getContext();
 
                 container.setAttribute('data-area', letter);
                 container.appendChild(Dom(`label[Area ${letter}]`, {style: 'text-align: right; padding-right: 6px;'}));
