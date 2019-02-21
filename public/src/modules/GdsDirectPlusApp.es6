@@ -29,6 +29,8 @@ export default class GdsDirectPlusApp
 	{
 		const {htmlRootDom, PqPriceModal, travelRequestId} = params;
 
+		htmlRootDom.classList.add('gds-direct-plus-root');
+
 		// should not be needed anymore anywhere actually...
 		let isStandAlone = !travelRequestId;
 

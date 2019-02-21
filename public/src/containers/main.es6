@@ -13,7 +13,6 @@ export default class ContainerMain extends Component
 			new TableSections()
 		);
 
-		htmlRootDom.innerHTML = '';
 		this.parent = htmlRootDom;
 
 		this.parent.appendChild(

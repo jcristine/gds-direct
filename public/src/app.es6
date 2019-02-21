@@ -24,8 +24,7 @@ const initGlobEvents = () => {
 	};
 };
 
-const initThemeStyles = responseData => {
-	let head = document.head;
+const initThemeStyles = (responseData, htmlRootDom) => {
 	let style = document.createElement('style');
 	style.class = 'generated-theme-css';
 	style.type = 'text/css';
@@ -66,7 +65,7 @@ const initThemeStyles = responseData => {
 		}
 	}
 	style.appendChild(document.createTextNode(cssLines.join('\n')));
-	head.appendChild(style);
+	htmlRootDom.appendChild(style);
 };
 
 let isDev = !(window.location.hostname + '').endsWith('.asaptickets.com');
@@ -100,7 +99,8 @@ window.InitGdsDirectPlusApp = (params) => {
 	let loadThemes = requests.get('/gdsDirect/themes');
 	return Promise.all([loadView, loadThemes])
 		.then(([viewData, themeData]) => {
-			initThemeStyles(themeData);
+			params.htmlRootDom.innerHTML = '';
+			initThemeStyles(themeData, params.htmlRootDom);
 			return new GdsDirectPlusApp(params, viewData, themeData);
 		});
 };
