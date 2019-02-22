@@ -123,6 +123,9 @@ exports.startSession = async (params) => {
 	let soapEnvXml = makeStartSoapEnvXml(profileData, payloadXml);
 
 	return PersistentHttpRq({
+		// it's probably worth looking in the docs if they have region-specific urls, since this endpoint is
+		// located in Germany and we waste a lot of time making requests from our Virginia Amazon server
+		// (making requests directly from RIX takes 50-100 ms on dev, but from RIX through prod server - 270 ms)
 		url: profileData.endpoint,
 		headers: {
 			'SOAPAction': 'http://webservices.amadeus.com/HSFREQ_07_3_1A',
@@ -143,8 +146,6 @@ exports.startSession = async (params) => {
 exports.runCmd = async (rqBody, gdsData) => {
 	let cmd = rqBody.command;
 	let gdsProfile = gdsData.gdsProfile;
-	/** @debug */
-	console.debug('ama runCmd gdsData', gdsData);
 	let profileData = await getAmadeus(gdsProfile);
 
 	let payloadXml = makeCmdPayloadXml(cmd);
