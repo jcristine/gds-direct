@@ -3,7 +3,7 @@ let Config = require('../Config.js');
 
 let SESSION_EXPIRE = 60 * 10 * 1000;
 
-/** @type {{Interfaces.Emc|ClientAbstract}} */
+/** @type IEmcClient */
 let client;
 try {
 	let {Emc} = require('dynatech-client-component-emc');
@@ -29,9 +29,6 @@ try {
 
 exports.client = client;
 exports.getCachedSessionInfo = async (sessionKey) => {
-	/** @debug */
-	return Promise.resolve({data: {user: {id: 6206, displayName: 'aklesuns'}}});
-
     if (!sessionKey) {
         return Promise.reject('Passed EMC session token is empty');
     }

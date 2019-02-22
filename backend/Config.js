@@ -24,8 +24,8 @@ let Config = {
 	HOST: env.HOST || '0.0.0.0',
 
 	// no service user on dev
-	projectName: env.NODE_ENV === 'production' ? 'GDSD' : 'CMS_CHAT',
-	serviceUserLogin: env.NODE_ENV === 'production' ? 'gdsd' : 'cmschat',
+	projectName: env.NODE_ENV === 'production' ? 'GDSD' : 'LMS',
+	serviceUserLogin: env.NODE_ENV === 'production' ? 'gdsd' : 'lms',
 	serviceUserPass: env.NODE_ENV === 'production' ? '' : 'qwerty',
 	serviceToken: env.NODE_ENV === 'production' ? 'byXWu*Yu^8HyD23BJ4Gu' : '',
 

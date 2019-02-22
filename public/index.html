@@ -9,6 +9,7 @@
 <div id="terminalContext"></div>
 <script src="terminal-bundle.js"></script>
 <script>
+	// TODO: move this authentication code to a module and use it from all admin pages
 	let hashData = {};
 	let cookieData = {};
 	let hashStr = window.location.hash.substr(1);
@@ -21,28 +22,57 @@
 		cookieData[key] = value;
 	}
 
+	let rawToken = new URL(window.location.href).searchParams.get('token');
 	let emcSessionId = hashData.emcSessionId || cookieData.emcSessionId;
-	if (emcSessionId) {
-		document.cookie = 'emcSessionId=' + emcSessionId;
-		window.location.hash = '';
-	}
 
-	window.onhashchange = () => window.location.reload();
-	window.InitGdsDirectPlusApp({
-		htmlRootDom		: document.getElementById('terminalContext'),
-		emcSessionId    : emcSessionId,
-		cmsUrl			: 'http://cms.gitlab-runner.snx702.dyninno.net/',
-		PqPriceModal	: (pqData, closeModal, importPq) => {
-			console.log('getPqItinerary data', pqData);
-			importPq().then(fullData => {
-				console.log('importPq data', fullData);
-			});
-			setTimeout(closeModal, 2000);
-		},
-	}).then(nodeApp => {
-		// nodeApp.runPnr({pnrCode: 'QWE123'});
-		// nodeApp.rebuild({data: {itineraryId: 1234, segmentStatus: 'GK'}});
-	});
+	let onEmcSessionId = (emcSessionId) => {
+		document.cookie = 'emcSessionId=' + emcSessionId;
+		window.history.replaceState('', '', '/'); // remove GET params and # params
+
+		let isDev = !(window.location.hostname + '').endsWith('.asaptickets.com');
+		window.InitGdsDirectPlusApp({
+			htmlRootDom		: document.getElementById('terminalContext'),
+			emcSessionId    : emcSessionId,
+			cmsUrl			: isDev
+				? 'http://cms.gitlab-runner.snx702.dyninno.net/'
+				: 'https://cms.asaptickets.com/',
+			PqPriceModal	: (pqData, closeModal, importPq) => {
+				console.log('getPqItinerary data', pqData);
+				importPq().then(fullData => {
+					console.log('importPq data', fullData);
+				});
+				setTimeout(closeModal, 2000);
+			},
+		}).then(nodeApp => {
+			// nodeApp.runPnr({pnrCode: 'QWE123'});
+			// nodeApp.rebuild({data: {itineraryId: 1234, segmentStatus: 'GK'}});
+		}).catch(exc => {
+			// remove expired token
+			document.cookie = 'emcSessionId=';
+			return Promise.reject(exc);
+		});
+	};
+
+	if (emcSessionId) {
+		onEmcSessionId(emcSessionId);
+	} else {
+		window.onhashchange = () => window.location.reload();
+		if (rawToken) {
+			fetch('/authorizeEmcToken?token=' + encodeURIComponent(rawToken))
+				.then(rs => rs.json())
+				.then(rsBody => onEmcSessionId(rsBody.emcSessionId));
+		} else {
+			fetch('/emcLoginUrl?returnUrl=' + encodeURIComponent(window.location.href))
+				.then(rs => rs.json())
+				.then(rsBody => {
+					if (rsBody.emcLoginUrl) {
+						window.location.href = rsBody.emcLoginUrl;
+					} else {
+						console.error('Invalid /emcLoginUrl response', rsBody);
+					}
+				});
+		}
+	}
 </script>
 
 <button onclick="window.testMultiThreading()">Test Multi-threading</button>

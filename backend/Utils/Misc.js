@@ -74,18 +74,18 @@ exports.mand = (val) => {
 	}
 };
 
-exports.safe = f => {
+exports.safe = getter => {
 	try {
-		return f();
+		return getter();
 	} catch (exc) {
 		//throw exc;
 		return null;
 	}
 };
 
-exports.wrapExc = f => {
+exports.wrapExc = getter => {
 	try {
-		return Promise.resolve(f());
+		return Promise.resolve(getter());
 	} catch (exc) {
 		return Promise.reject(exc);
 	}

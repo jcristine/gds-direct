@@ -22,7 +22,7 @@ let Migration = require("./Migration");
 const CommandParser = require("./Transpiled/Gds/Parsers/Apollo/CommandParser");
 const PnrParser = require("./Transpiled/Gds/Parsers/Apollo/Pnr/PnrParser");
 const FareConstructionParser = require("./Transpiled/Gds/Parsers/Common/FareConstruction/FareConstructionParser");
-const {getExcData} = require('./Utils/Misc.js');
+const {getExcData, safe} = require('./Utils/Misc.js');
 
 let app = express();
 
@@ -247,6 +247,16 @@ app.post('/admin/terminal/sessionsGet', toHandleHttp(async rqBody => {
 	};
 }));
 
+app.get('/emcLoginUrl', toHandleHttp(async rqBody => {
+	let returnUrl = rqBody.returnUrl;
+	let result = await Emc.client.getLoginPage(Config.projectName, returnUrl);
+	return {emcLoginUrl: result.data.data};
+}));
+app.get('/authorizeEmcToken', toHandleHttp(async rqBody => {
+	let token = rqBody.token;
+	let result = await Emc.client.authorizeToken(token);
+	return {emcSessionId: result.data.sessionKey};
+}));
 app.get('/ping', toHandleHttp((rqBody) => {
 	let memory = {};
 	const used2 = process.memoryUsage();
@@ -307,13 +317,6 @@ app.get('/testRedisWrite', withAuth((reqBody, emcResult) => {
 		return Forbidden('Sorry, you must be me in order to use that');
 	}
 }));
-let safe = getter => {
-	try {
-		return getter();
-	} catch (exc) {
-		return null;
-	}
-};
 app.get('/parser/test', toHandleHttp((rqBody) => {
 	let result;
 	result = CommandParser.parse(rqBody.input);
