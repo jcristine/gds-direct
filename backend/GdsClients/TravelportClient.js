@@ -1,7 +1,6 @@
 let {getTravelport} = require("../Repositories/GdsProfiles.js");
 let {LoginTimeOut, BadGateway} = require("../Utils/Rej");
-let Redis = require('../LibWrappers/Redis.js');
-let config = require('../Config.js');
+let {parseXml} = require("../Utils/Misc.js");
 let PersistentHttpRq = require('../Utils/PersistentHttpRq.js');
 
 /**
@@ -26,12 +25,6 @@ let sendRequest = async (requestBody, gdsProfile) => {
 		},
 		body: requestBody,
 	}).then(resp => resp.body);
-};
-
-let parseXml = (xml) => {
-	let jsdom = require('jsdom');
-	let jsdomObj = new jsdom.JSDOM(xml, {contentType: 'text/xml'});
-	return jsdomObj.window.document;
 };
 
 let startSession = (params) => {

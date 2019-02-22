@@ -58,3 +58,35 @@ exports.getExcData = (exc, moreData = null) => {
 	props = {...props, ...(moreData || {})};
 	return props;
 };
+
+/** @return {Document} */
+exports.parseXml = (xml) => {
+	let jsdom = require('jsdom');
+	let jsdomObj = new jsdom.JSDOM(xml, {contentType: 'text/xml'});
+	return jsdomObj.window.document;
+};
+
+exports.mand = (val) => {
+	if (!val) {
+		throw new Error('Mandatory GDS Profile field absent');
+	} else {
+		return val;
+	}
+};
+
+exports.safe = f => {
+	try {
+		return f();
+	} catch (exc) {
+		//throw exc;
+		return null;
+	}
+};
+
+exports.wrapExc = f => {
+	try {
+		return Promise.resolve(f());
+	} catch (exc) {
+		return Promise.reject(exc);
+	}
+};

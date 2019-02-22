@@ -10,6 +10,7 @@
  */
 
 let util = require('util');
+let {safe} = require('../Utils/Misc.js');
 
 let php = {};
 
@@ -59,14 +60,6 @@ php.strtotime = (dtStr) => {
 		return Date.parse('2016-01-01 ' + dtStr + ' Z') / 1000;
 	} else {
 		throw new Error('Unsupported date str format - ' + dtStr);
-	}
-};
-let safe = f => {
-	try {
-		return f();
-	} catch (exc) {
-		//throw exc;
-		return null;
 	}
 };
 php.date = (format, epoch) => {
