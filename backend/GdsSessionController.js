@@ -1,3 +1,4 @@
+let AmadeusClient = require("./GdsClients/AmadeusClient.js");
 let DateTime = require("./Transpiled/Lib/Utils/DateTime.js");
 let PnrParser = require("./Transpiled/Gds/Parsers/Apollo/Pnr/PnrParser.js");
 let RbsClient = require('./GdsClients/RbsClient.js');
@@ -6,7 +7,7 @@ let Db = require('./Utils/Db.js');
 let TerminalService = require('./Transpiled/App/Services/TerminalService.js');
 let {admins} = require('./Constants.js');
 let GdsSessions = require('./Repositories/GdsSessions.js');
-let {TRAVELPORT} = require('./Repositories/GdsProfiles.js');
+let {TRAVELPORT, AMADEUS} = require('./Repositories/GdsProfiles.js');
 //const ImportPqAction = require("./Transpiled/Rbs/GdsDirect/Actions/ImportPqAction");
 //const CmsStatefulSession = require("./Transpiled/Rbs/GdsDirect/CmsStatefulSession");
 const TerminalBuffering = require("./Repositories/TerminalBuffering");
@@ -30,6 +31,8 @@ let startNewSession = (rqBody) => {
 			starting = TravelportClient.startSession({gdsProfile: TRAVELPORT.DynApolloProd_2F3K});
 		} else if (rqBody.gds === 'galileo') {
 			starting = TravelportClient.startSession({gdsProfile: TRAVELPORT.DynGalileoProd_711M});
+		} else if (rqBody.gds === 'amadeus') {
+			starting = AmadeusClient.startSession({gdsProfile: AMADEUS.AMADEUS_PROD_1ASIWTUTICO});
 		} else {
 			starting = NotImplemented('GDS ' + rqBody.gds + ' not supported with "Be Fast" flag - uncheck it.');
 		}
