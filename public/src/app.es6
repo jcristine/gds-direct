@@ -31,14 +31,13 @@ let addCss = (cssText, htmlRootDom) => {
 	htmlRootDom.appendChild(style);
 };
 
-let addExternalStyles = (htmlRootDom) => {
+let addExternalStyles = () => {
 	let link = document.createElement('link');
 	link.class = 'generated-fa-css';
 	link.rel = 'stylesheet';
 	link.type = 'text/css';
-	htmlRootDom.appendChild(link);
+	document.head.appendChild(link);
 	link.setAttribute('href', 'https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css');
-	console.log('zhopa style', link);
 };
 
 let initThemeStyles = (responseData, htmlRootDom) => {
@@ -110,7 +109,6 @@ window.InitGdsDirectPlusApp = (params) => {
 
 	let loadView = requests.get('/gdsDirect/view');
 	let loadThemes = requests.get('/gdsDirect/themes');
-	addExternalStyles(params.htmlRootDom);
 
 	return Promise.all([loadView, loadThemes])
 		.then(([viewData, themeData]) => {
@@ -124,3 +122,5 @@ window.InitGdsDirectPlusApp = (params) => {
 window.InitGdsDirectPlusApp.HighlightRulesAdminApp = HighlightRulesAdminApp;
 window.InitGdsDirectPlusApp.TerminalThemesAdminApp = TerminalThemesAdminApp;
 window.InitGdsDirectPlusApp.TerminalSessionListApp = TerminalSessionListApp;
+
+addExternalStyles();
