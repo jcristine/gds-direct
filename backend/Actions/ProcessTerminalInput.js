@@ -16,13 +16,13 @@ let shouldWrap = (cmd) => {
  * @param '$BN1|2*INF'
  * @return '$BN1+2*INF'
  */
-let encodeCmdForCms = ($cmd) =>
+let encodeTpCmdForCms = ($cmd) =>
 	$cmd.replace(/\|/g, '+').replace(/@/g, '¤');
 
 let decodeCmsInput = ($cmd) =>
 	$cmd.replace(/\+/g, '|').replace(/¤/g, '@');
 
-let encodeOutputForCms = ($dump) => {
+let encodeTpOutputForCms = ($dump) => {
 	$dump = $dump.replace(/\|/g, '+').replace(/;/g, '·');
 	$dump = $dump.replace(/\n?\)><$/, '\n└─>');
 	$dump = $dump.replace(/><$/, '');
@@ -101,18 +101,26 @@ let makeGrectResult = (calledCommands, fullState) => {
 };
 
 let transformCalledCommand = (rec, gds) => {
+	let cmd = rec.cmd;
 	let output = rec.output;
 	if (gds === 'apollo') {
+		cmd = encodeTpCmdForCms(cmd);
 		output = shouldWrap(rec.cmd)
 			? wrap(rec.output) : rec.output;
+		output = encodeTpOutputForCms(output);
 	} else if (gds === 'galileo') {
+		cmd = encodeTpCmdForCms(cmd);
 		output = wrap(rec.output);
+		output = encodeTpOutputForCms(output);
+	} else if (gds === 'amadeus') {
+		// they are using past century macs apparently - with just \r as a line break...
+		output = output.replace(/\r\n|\r/g, '\n');
 	}
 
 	return {
-		cmd: encodeCmdForCms(rec.cmd),
+		cmd: cmd,
 		type: rec.type,
-		output: encodeOutputForCms(output),
+		output: output,
 		duration: rec.duration || null,
 	};
 };
