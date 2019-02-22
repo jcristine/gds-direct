@@ -88,12 +88,13 @@ export default class MenuPanel extends Component
 				)
 		);
 
-		this.observe(
-			new Component('article.align-bottom')
-				.observe(
-					new MenuHideButton()
-				)
-		);
+		// I hope nobody used it. It covered other buttons, that was annoying
+		//this.observe(
+		//	new Component('article.align-bottom')
+		//		.observe(
+		//			new MenuHideButton()
+		//		)
+		//);
 
 		if (state.permissions)
 		{
