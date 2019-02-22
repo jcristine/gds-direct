@@ -2,7 +2,6 @@ import Component 		                    from "../../modules/component";
 import Dom                                  from "../../helpers/dom";
 import {GET_LAST_REQUESTS}                  from "../../actions/settings";
 import {PQ_MODAL_SHOW} from "../../actions/priceQuoutes";
-import Moment 								from "moment";
 import ButtonPopOver						from "../../modules/buttonPopover";
 
 export default class gdsDirectPqButton extends Component
@@ -115,6 +114,7 @@ class PopoverContext
 		});
 	}
 
+	/** '2019-03-17 00:00:00' -> '17-Mar-19' */
     _getDate (record) {
         const destination = record.destinations[Object.keys(record.destinations)[0]][1];
 
@@ -123,7 +123,15 @@ class PopoverContext
             return '-';
         }
 
-        return Moment(destination.departureDateMin).format('DD-MMM-YY')
+        let epochMs = Date.parse(destination.departureDateMin + ' Z');
+        let dtObj = new Date(epochMs);
+        let months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+
+        return [
+            ('00' + dtObj.getUTCDate()).slice(-2),
+            months[dtObj.getUTCMonth()],
+            (dtObj.getUTCFullYear() + '').slice(-2),
+        ].join('-');
     }
 
     _getItinerary (record) {
