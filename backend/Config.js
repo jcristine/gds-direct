@@ -32,8 +32,8 @@ let Config = {
 	apolloAuthToken: env.apolloAuthToken,
 
 	fetchExternalConfig: () => {
-		const dbUrl = process.env.CONFIG_LAN + '/db.php?db=' + process.env.DB_NAME;
-		const redisUrl = process.env.CONFIG_LAN + '/v0/redis/' + process.env.REDIS_CLUSTER_NAME;
+		const dbUrl = env.CONFIG_LAN + '/db.php?db=' + env.DB_NAME;
+		const redisUrl = env.CONFIG_LAN + '/v0/redis/' + env.REDIS_CLUSTER_NAME;
 		const promise = [];
 
 		promise.push(PersistentHttpRq({
@@ -68,6 +68,28 @@ let Config = {
 				// make some validation
 			});
 	},
+};
+
+Config.getConfig = async () => {
+	if (!Config.production) {
+		let defaults = {
+			NODE_ENV: 'development',
+			HOST: '0.0.0.0',
+			HTTP_PORT: '20327',
+			SOCKET_PORT: '3022',
+			DB_NAME: 'lead_management_chat',
+			REDIS_CLUSTER_NAME: "some-grect-redis",
+			RANDOM_KEY: "12345678901234567890123456789012",
+			CONFIG_LAN: "http://intranet.dyninno.net/~aklesuns/grect_fake_config_lan/",
+			RBS_PASSWORD: "qwerty",
+		};
+		for (let [k, v] of Object.entries(defaults)) {
+			Config[k] = Config[k] || v;
+			env[k] = env[k] || v;
+		}
+	}
+	await Config.fetchExternalConfig();
+	return Config;
 };
 
 module.exports = Config;
