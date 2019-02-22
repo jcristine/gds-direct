@@ -5,6 +5,7 @@ const AreaSettings = require("../Repositories/AreaSettings");
 const ItineraryParser = require("../Transpiled/Gds/Parsers/Apollo/Pnr/ItineraryParser");
 const nonEmpty = require("../Utils/Rej").nonEmpty;
 
+// this is not complete list
 let shouldWrap = (cmd) => {
 	let wrappedCmds = ['FS', 'MORE*', 'QC', '*HTE', 'HOA', 'HOC', 'FQN', 'A', '$D'];
 	let alwaysWrap = false;
@@ -103,12 +104,7 @@ let makeGrectResult = (calledCommands, fullState) => {
 let transformCalledCommand = (rec, gds) => {
 	let cmd = rec.cmd;
 	let output = rec.output;
-	if (gds === 'apollo') {
-		cmd = encodeTpCmdForCms(cmd);
-		output = shouldWrap(rec.cmd)
-			? wrap(rec.output) : rec.output;
-		output = encodeTpOutputForCms(output);
-	} else if (gds === 'galileo') {
+	if (['galileo', 'apollo'].includes(gds)) {
 		cmd = encodeTpCmdForCms(cmd);
 		output = wrap(rec.output);
 		output = encodeTpOutputForCms(output);
