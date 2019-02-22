@@ -93,7 +93,7 @@ let makeDefaultState = (session) => ({
 			pcc: {
 				apollo: '2F3K',
 				galileo: '711M',
-				sabre: '6IIF',
+				sabre: 'L3II',
 				amadeus: 'SFO1S2195',
 			}[session.context.gds] || null,
 			record_locator: '',

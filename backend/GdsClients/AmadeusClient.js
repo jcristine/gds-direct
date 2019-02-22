@@ -110,14 +110,14 @@ let parseCmdRs = (dom, profileData) => ({
 		seqNumber: dom.querySelector('awsse\\:SequenceNumber').textContent,
 		securityToken: dom.querySelector('awsse\\:SecurityToken').textContent,
 		pcc: profileData.default_pcc,
-		gdsProfile: profileData.gdsProfile,
+		profileName: profileData.profileName,
 	},
 	output: dom.querySelector('Command_CrypticReply > longTextString > textStringDetails').textContent,
 });
 
 exports.startSession = async (params) => {
-	let gdsProfile = params.gdsProfile;
-	let profileData = await getAmadeus(gdsProfile);
+	let profileName = params.profileName;
+	let profileData = await getAmadeus(profileName);
 
 	let payloadXml = makeCmdPayloadXml('MD0');
 	let soapEnvXml = makeStartSoapEnvXml(profileData, payloadXml);
@@ -145,8 +145,8 @@ exports.startSession = async (params) => {
 /** @param gdsData = parseCmdRs().gdsData */
 exports.runCmd = async (rqBody, gdsData) => {
 	let cmd = rqBody.command;
-	let gdsProfile = gdsData.gdsProfile;
-	let profileData = await getAmadeus(gdsProfile);
+	let profileName = gdsData.profileName;
+	let profileData = await getAmadeus(profileName);
 
 	let payloadXml = makeCmdPayloadXml(cmd);
 	let soapEnvXml = makeContinueSoapEnvXml(gdsData, payloadXml);

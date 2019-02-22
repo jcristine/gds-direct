@@ -1,4 +1,5 @@
 let AmadeusClient = require("./GdsClients/AmadeusClient.js");
+let SabreClient = require("./GdsClients/SabreClient.js");
 let DateTime = require("./Transpiled/Lib/Utils/DateTime.js");
 let PnrParser = require("./Transpiled/Gds/Parsers/Apollo/Pnr/PnrParser.js");
 let RbsClient = require('./GdsClients/RbsClient.js');
@@ -7,7 +8,7 @@ let Db = require('./Utils/Db.js');
 let TerminalService = require('./Transpiled/App/Services/TerminalService.js');
 let {admins} = require('./Constants.js');
 let GdsSessions = require('./Repositories/GdsSessions.js');
-let {TRAVELPORT, AMADEUS} = require('./Repositories/GdsProfiles.js');
+let {TRAVELPORT, AMADEUS, SABRE} = require('./Repositories/GdsProfiles.js');
 //const ImportPqAction = require("./Transpiled/Rbs/GdsDirect/Actions/ImportPqAction");
 //const CmsStatefulSession = require("./Transpiled/Rbs/GdsDirect/CmsStatefulSession");
 const TerminalBuffering = require("./Repositories/TerminalBuffering");
@@ -28,13 +29,15 @@ let startNewSession = (rqBody) => {
 		if (!isTravelportAllowed(rqBody)) {
 			starting = Forbidden('You are not allowed to use RBS-free connection');
 		} else if (rqBody.gds === 'apollo') {
-			starting = TravelportClient.startSession({gdsProfile: TRAVELPORT.DynApolloProd_2F3K});
+			starting = TravelportClient.startSession({profileName: TRAVELPORT.DynApolloProd_2F3K});
 		} else if (rqBody.gds === 'galileo') {
-			starting = TravelportClient.startSession({gdsProfile: TRAVELPORT.DynGalileoProd_711M});
+			starting = TravelportClient.startSession({profileName: TRAVELPORT.DynGalileoProd_711M});
 		} else if (rqBody.gds === 'amadeus') {
-			starting = AmadeusClient.startSession({gdsProfile: AMADEUS.AMADEUS_PROD_1ASIWTUTICO});
+			starting = AmadeusClient.startSession({profileName: AMADEUS.AMADEUS_PROD_1ASIWTUTICO});
+		} else if (rqBody.gds === 'sabre') {
+			starting = SabreClient.startSession({profileName: SABRE.SABRE_PROD_L3II});
 		} else {
-			starting = NotImplemented('GDS ' + rqBody.gds + ' not supported with "Be Fast" flag - uncheck it.');
+			starting = NotImplemented('Unsupported GDS ' + rqBody.gds + ' for session creation');
 		}
 	}
 	return starting.then(gdsData => GdsSessions.storeNew(rqBody, gdsData));

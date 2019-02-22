@@ -14,8 +14,8 @@ let endpoint = 'https://americas.webservices.travelport.com/B2BGateway/service/X
 //let endpoint = 'https://emea.webservices.travelport.com/B2BGateway/service/XMLSelect';
 //let endpoint = 'https://apac.webservices.travelport.com/B2BGateway/service/XMLSelect';
 
-let sendRequest = async (requestBody, gdsProfile) => {
-	let profileData = await getTravelport(gdsProfile);
+let sendRequest = async (requestBody, profileName) => {
+	let profileData = await getTravelport(profileName);
 	let authTokenSrc = profileData.username + ':' + profileData.password;
 	let authToken = Buffer.from(authTokenSrc).toString('base64');
 	return PersistentHttpRq({
@@ -28,25 +28,25 @@ let sendRequest = async (requestBody, gdsProfile) => {
 };
 
 let startSession = (params) => {
-	let gdsProfile = params.gdsProfile;
+	let profileName = params.profileName;
 	let body = `<?xml version="1.0" encoding="UTF-8"?>
-<SOAP-ENV:Envelope xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ns1="http://webservices.galileo.com"><SOAP-ENV:Body><ns1:BeginSession><ns1:Profile>${gdsProfile}</ns1:Profile></ns1:BeginSession></SOAP-ENV:Body></SOAP-ENV:Envelope>`;
-	return sendRequest(body, gdsProfile).then(resp => {
+<SOAP-ENV:Envelope xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ns1="http://webservices.galileo.com"><SOAP-ENV:Body><ns1:BeginSession><ns1:Profile>${profileName}</ns1:Profile></ns1:BeginSession></SOAP-ENV:Body></SOAP-ENV:Envelope>`;
+	return sendRequest(body, profileName).then(resp => {
 		let sessionToken = parseXml(resp).querySelectorAll('BeginSessionResult')[0].textContent;
 		if (!sessionToken) {
 			return BadGateway('Failed to extract session token from Travelport response - ' + resp);
 		} else {
-			return Promise.resolve({sessionToken: sessionToken, gdsProfile: gdsProfile});
+			return Promise.resolve({sessionToken: sessionToken, profileName: profileName});
 		}
 	});
 };
 
 let runOneCmd = (cmd, gdsData) => {
 	let token = gdsData.sessionToken;
-	let gdsProfile = gdsData.gdsProfile;
+	let profileName = gdsData.profileName;
 	let body = `<?xml version="1.0" encoding="UTF-8"?>
 <SOAP-ENV:Envelope xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ns1="http://webservices.galileo.com"><SOAP-ENV:Body><ns1:SubmitTerminalTransaction><ns1:Token>` + token + `</ns1:Token><ns1:Request>` + cmd + `</ns1:Request><ns1:IntermediateResponse></ns1:IntermediateResponse></ns1:SubmitTerminalTransaction></SOAP-ENV:Body></SOAP-ENV:Envelope>`;
-	return sendRequest(body, gdsProfile).then(resp => {
+	return sendRequest(body, profileName).then(resp => {
 		let resultTag = parseXml(resp).querySelectorAll('SubmitTerminalTransactionResult')[0];
 		if (resultTag) {
 			return {output: resultTag.textContent};

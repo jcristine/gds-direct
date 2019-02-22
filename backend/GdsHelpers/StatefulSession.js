@@ -1,4 +1,5 @@
 let AmadeusClient = require("../GdsClients/AmadeusClient.js");
+let SabreClient = require("../GdsClients/SabreClient.js");
 let TravelportClient = require('../GdsClients/TravelportClient.js');
 const GdsSessions = require("../Repositories/GdsSessions.js");
 const SessionStateProcessor = require("../Transpiled/Rbs/GdsDirect/SessionStateProcessor/SessionStateProcessor.js");
@@ -25,6 +26,8 @@ let StatefulSession = async (session) => {
 				running = TravelportClient({command: cmd}).runCmd(session.gdsData);
 			} else if (gds === 'amadeus') {
 				running = AmadeusClient.runCmd({command: cmd}, session.gdsData);
+			} else if (gds === 'sabre') {
+				running = SabreClient.runCmd({command: cmd}, session.gdsData);
 			} else {
 				running = NotImplemented('Unsupported stateful GDS - ' + gds);
 			}

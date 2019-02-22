@@ -14,6 +14,29 @@ let getAll = async () => {
 	}
 };
 
+/** @type IGdsProfileMap */
+let gdsProfileCache = {
+	travelport: {},
+	sabre: {},
+	amadeus: {},
+};
+
+let getOne = async (service, profileName) => {
+	if (gdsProfileCache[service] && gdsProfileCache[service][profileName]) {
+		return gdsProfileCache[service][profileName];
+	}
+	// new profiles may be added, so we don't want to cache all of them at once
+	let gdsProfiles = await getAll();
+	let data = (gdsProfiles[service] || {})[profileName];
+	if (data) {
+		gdsProfiles[service] = gdsProfiles[service] || {};
+		gdsProfiles[service][profileName] = data;
+		return data;
+	} else {
+		return Rej.NotImplemented('No data for ' + service + ' profile ' + profileName);
+	}
+};
+
 exports.TRAVELPORT = StrConsts({
 	// apollo
 	get DynApolloProd_1O3K() { never(); }, // importPnr
@@ -31,29 +54,32 @@ exports.AMADEUS = StrConsts({
 	get AMADEUS_PROD_1ASIWTUT0GW() { never(); },
 });
 
-// TODO: cache in memory on success
-exports.getTravelport = async (gdsProfile) => {
-	let gdsProfiles = await getAll();
-	let data = gdsProfiles.travelport[gdsProfile];
-	return data
-		? {
-			username: mand(data.username),
-			password: mand(data.password),
-		}
-		: Rej.NotImplemented('No data for Travelport profile ' + gdsProfile);
-};
+exports.SABRE = StrConsts({
+	get SABRE_PROD_L3II() { never(); },
+	get SABRE_PROD_Z2NI() { never(); },
+	get SABRE_PROD_6IIF() { never(); },
+	get SABRE_PROD_8ZFH() { never(); },
+});
 
-// TODO: cache in memory on success
-exports.getAmadeus = async (gdsProfile) => {
-	let gdsProfiles = await getAll();
-	let data = gdsProfiles.amadeus[gdsProfile];
-	return data
-		? {
-            username: mand(data.username), // 'WS0GWTUT',
-            password: mand(data.password), // 'qwe123',
-            default_pcc: mand(data.default_pcc), // 'LAXGO3106',
-            endpoint: mand(data.endpoint), // 'https://nodeD1.test.webservices.amadeus.com/1ASIWTUTICO',
-			gdsProfile: gdsProfile,
-		}
-		: Rej.NotImplemented('No data for Amadeus profile ' + gdsProfile);
-};
+exports.getTravelport = (profileName) =>
+	getOne('travelport', profileName).then(data => ({
+		username: mand(data.username),
+		password: mand(data.password),
+	}));
+
+exports.getAmadeus = (profileName) =>
+	getOne('amadeus', profileName).then(data => ({
+		username: mand(data.username), // 'WS0GWTUT',
+		password: mand(data.password), // 'qwe123',
+		default_pcc: mand(data.default_pcc), // 'LAXGO3106',
+		endpoint: mand(data.endpoint), // 'https://nodeD1.test.webservices.amadeus.com/1ASIWTUTICO',
+		profileName: profileName,
+	}));
+
+exports.getSabre = (profileName) =>
+	getOne('sabre', profileName).then(data => ({
+		password: mand(data.password), // 'qwe123',
+		username: mand(data.username), // '1234',
+		default_pcc: mand(data.default_pcc), // 'L3II',
+		profileName: profileName,
+	}));
