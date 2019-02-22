@@ -29,6 +29,9 @@ try {
 
 exports.client = client;
 exports.getCachedSessionInfo = async (sessionKey) => {
+	/** @debug */
+	return Promise.resolve({data: {user: {id: 6206, displayName: 'aklesuns'}}});
+
     if (!sessionKey) {
         return Promise.reject('Passed EMC session token is empty');
     }
