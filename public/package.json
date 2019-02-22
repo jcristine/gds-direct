@@ -31,7 +31,6 @@
     "jquery-param": "^0.2.0",
     "jquery.terminal": "1.7.0",
     "keyboardevent-key-polyfill": "^1.0.2",
-    "moment": "^2.22.2",
     "noty": "^3.0.1",
     "select2": "^4.0.6-rc.1",
     "socket.io-client": "^2.2.0",
