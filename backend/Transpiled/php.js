@@ -30,6 +30,7 @@ php.PREG_SET_ORDER = 2;
 php.empty = empty;
 php.get_class = (value) => value ? (value.constructor || {}).name || null : null;
 php.is_null = (value) => value === null || value === undefined;
+php.is_string = (value) => typeof value === 'string';
 php.intval = (value) => +value;
 php.boolval = (value) => empty(value) ? true : false;
 php.abs = (value) => Math.abs(value);
@@ -130,6 +131,7 @@ php.str_pad = ($input, $pad_length, $pad_string = " ", $pad_type = php.STR_PAD_R
 		throw new Error('Unsupported padding type - ' + $pad_type);
 	}
 };
+php.str_repeat = (str, n) => strval(str).repeat(n);
 
 php.implode = (delim, values) => values.join(delim);
 php.explode = (delim, str) => strval(str).split(delim);

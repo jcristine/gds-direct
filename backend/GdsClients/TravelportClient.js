@@ -75,9 +75,17 @@ let TravelportClient = (reqBody) => {
 TravelportClient.startSession = startSession;
 
 /** @param session = at('GdsSessions.js').makeSessionRecord() */
-TravelportClient.closeSession = (session) => {
-	// TODO: actually close
-	return Promise.resolve({message: 'Nah, will expire on it\'s own someday...'});
+TravelportClient.closeSession = (gdsData) => {
+	let body = [
+	    '<SOAP-ENV:Envelope xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ns1="http://webservices.galileo.com">',
+	    '  <SOAP-ENV:Body>',
+	    '    <ns1:EndSession>',
+	    '      <ns1:Token>' + gdsData.sessionToken + '</ns1:Token>',
+	    '    </ns1:EndSession>',
+	    '  </SOAP-ENV:Body>',
+	    '</SOAP-ENV:Envelope>',
+	].join('\n');
+	return sendRequest(body, gdsData.profileName);
 };
 
 module.exports = TravelportClient;

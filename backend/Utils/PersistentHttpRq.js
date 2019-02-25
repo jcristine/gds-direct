@@ -4,17 +4,14 @@ let https = require('https');
 let url = require('url');
 let {BadGateway} = require('../Utils/Rej.js');
 
-// not sure if it should be a separate agent per domain or not...
-let httpsAgent = new https.Agent({
+let agentParams = {
 	keepAlive: true,
-	keepAliveMsecs: 4 * 60 * 1000, // 4 minutes
-	maxSockets: 1,
-});
-let httpAgent = new http.Agent({
-	keepAlive: true,
-	keepAliveMsecs: 4 * 60 * 1000, // 4 minutes
-	maxSockets: 1,
-});
+	keepAliveMsecs: 3 * 60 * 1000, // 3 minutes
+	// the default "infinity" should actually be good enough
+	//maxSockets: 50,
+};
+let httpsAgent = new https.Agent(agentParams);
+let httpAgent = new http.Agent(agentParams);
 
 /**
  * a wrapper around http.request that preserves connection for continuous calls

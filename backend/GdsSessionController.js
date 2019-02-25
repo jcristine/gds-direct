@@ -73,8 +73,10 @@ let closeSession = (session) => {
 	let closing;
 	if (+session.context.useRbs) {
 		closing = RbsClient.closeSession(session);
+	} else if (['apollo', 'galileo'].includes(session.context.gds)) {
+		closing = TravelportClient.closeSession(session.gdsData);
 	} else {
-		closing = TravelportClient.closeSession(session);
+		closing = Promise.reject('closeSession() not implemented for GDS - ' + session.context.gds);
 	}
 	GdsSessions.remove(session);
 	return closing.then(result => {

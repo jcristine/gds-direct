@@ -85,7 +85,7 @@ let decodeBinaryChars = (output) => {
 	return output;
 };
 
-/** @param gdsData = await await require('SabreClient.js').startSession() */
+/** @param gdsData = await require('SabreClient.js').startSession() */
 exports.runCmd = async (rqBody, gdsData) => {
 	let cmd = rqBody.command;
 	let profileName = gdsData.profileName;
