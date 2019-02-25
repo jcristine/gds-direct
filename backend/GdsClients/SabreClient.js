@@ -76,6 +76,15 @@ exports.startSession = async (params) => {
 	});
 };
 
+/** @see https://sds.sabre.com/XTRANET_Access/sabre.htm */
+let decodeBinaryChars = (output) => {
+	output = output.replace(new RegExp('', 'g'), '¥');
+	output = output.replace(new RegExp('Â', 'g'), '');
+	output = output.replace(new RegExp(String.fromCharCode(0xC2, 0x80), 'g'), ' '); // yellow background start
+	output = output.replace(new RegExp(String.fromCharCode(0xC2, 0x81), 'g'), ' '); // yellow background end
+	return output;
+};
+
 /** @param gdsData = await await require('SabreClient.js').startSession() */
 exports.runCmd = async (rqBody, gdsData) => {
 	let cmd = rqBody.command;
@@ -130,9 +139,12 @@ exports.runCmd = async (rqBody, gdsData) => {
 		body: soapEnvXml,
 	}).then(rs => rs.body).then(rsXml => {
 		let dom = parseXml(rsXml);
-		return wrapExc(() => ({
-			output: dom.querySelector('SabreCommandLLSRS > Response').textContent,
-		})).catch(exc => {
+		return wrapExc(() => {
+			let output = dom.querySelector('SabreCommandLLSRS > Response').textContent;
+			return {
+				output: decodeBinaryChars(output),
+			};
+		}).catch(exc => {
 			exc.httpStatusCode = Rej.BadGateway.httpStatusCode;
 			exc.message = 'Invalid Sabre cmd response - ' + exc.message;
 			return Promise.reject(exc);
