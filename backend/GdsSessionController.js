@@ -138,7 +138,7 @@ let withRbsPqCopy = async (session, action) => {
 		})),
 	});
 	let priced = await RbsClient({...ctx, command: pricingCmd}).runInputCmd({rbsSessionId});
-	let pqItinerary = action({rbsSessionId});
+	let pqItinerary = await action({rbsSessionId});
 	RbsClient.closeSession({context: ctx, gdsData: gdsData});
 	return pqItinerary;
 };
