@@ -1,3 +1,7 @@
+let Config = require('../backend/Config.js');
+
+(async () => {
+await Config.getConfig();
 
 let ItineraryParserTest = require('./backend/Transpiled/Gds/Parsers/Apollo/Pnr/ItineraryParserTest.js');
 let CommonParsersHelperTest = require('./backend/Transpiled/Gds/Parsers/Apollo/Pnr/CommonParsersHelperTest.js');
@@ -5,6 +9,7 @@ let CommandParserTest = require("./backend/Transpiled/Gds/Parsers/Apollo/Command
 const PnrParserTest = require("./backend/Transpiled/Gds/Parsers/Apollo/Pnr/PnrParserTest.js");
 const SessionStateProcessorTest = require("./backend/Transpiled/Rbs/GdsDirect/SessionDataProcessor/SessionStateProcessorTest");
 const PricingParserTest = require("./backend/Transpiled/Gds/Parsers/Apollo/PricingParserTest");
+const AirAvailabilityParserTest = require("./backend/Transpiled/Gds/Parsers/Apollo/AirAvailabilityParserTest");
 const TerminalServiceTest = require("./backend/Transpiled/App/Services/TerminalServiceTest");
 
 console.log('Starting unit tests');
@@ -18,6 +23,7 @@ let tests = [
 	.concat(new PnrParserTest().getTests())
 	.concat(new SessionStateProcessorTest().getTests())
 	.concat(new PricingParserTest().getTests())
+	.concat(new AirAvailabilityParserTest().getTests())
 	.concat(new TerminalServiceTest().getTests())
 	;
 
@@ -29,6 +35,9 @@ let perform = async (tests) => {
 		let error = await test();
 		if (error) {
 			errors.push(error);
+			/** @debug */
+			//console.error(error);
+			//process.exit(-100);
 		} else {
 			++oks;
 		}
@@ -48,3 +57,5 @@ let perform = async (tests) => {
 };
 
 perform(tests);
+
+})();

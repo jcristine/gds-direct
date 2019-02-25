@@ -41,6 +41,7 @@ php.is_integer = str => {
 	return n !== Infinity && String(n) === str;
 };
 php.is_numeric = str => +str + '' === str;
+php.floor = (num) => Math.floor(num);
 
 php.call_user_func = (func, arg) => normFunc(func)(arg);
 php.json_encode = (str) => JSON.stringify(str);
@@ -158,7 +159,8 @@ php.strpos = (str, substr) => {
 	let index = str.indexOf(substr);
 	return index > -1 ? index : false;
 };
-php.str_replace = (search, replace, str) => str.replace(search, replace);
+let escapeRegex = (str) => str.replace(/([.*+?^=!:${}()|\[\]\/\\])/g, "\\$1");
+php.str_replace = (search, replace, str) => str.replace(new RegExp(escapeRegex(search), 'g'), replace);
 php.str_split = (str, size = 1) => {
 	if (size < 1) {
 		throw new Error('Invalid chunk size - ' + size + ', it must be >= 1');
