@@ -118,9 +118,16 @@ window.InitGdsDirectPlusApp = (params) => {
 			return new GdsDirectPlusApp(params, viewData, themeData);
 		});
 };
-
-window.InitGdsDirectPlusApp.HighlightRulesAdminApp = HighlightRulesAdminApp;
-window.InitGdsDirectPlusApp.TerminalThemesAdminApp = TerminalThemesAdminApp;
-window.InitGdsDirectPlusApp.TerminalSessionListApp = TerminalSessionListApp;
+window.InitGdsDirectPlusApp.AdminApps = () => {
+	// required for modals.js, not included in injected
+	// part of the app, because it conflicts with CMS UI
+	require('bootstrap');
+	require('./theme/entry/standalone.less');
+	return {
+		HighlightRulesAdminApp: HighlightRulesAdminApp,
+		TerminalThemesAdminApp: TerminalThemesAdminApp,
+		TerminalSessionListApp: TerminalSessionListApp,
+	};
+};
 
 addExternalStyles();

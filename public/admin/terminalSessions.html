@@ -69,7 +69,7 @@
 	}
 
 	window.onhashchange = () => window.location.reload();
-	window.InitGdsDirectPlusApp.TerminalSessionListApp({
+	window.InitGdsDirectPlusApp.AdminApps().TerminalSessionListApp({
 		htmlRootDom		: [...document.getElementsByClassName('container-fluid')][0],
 		emcSessionId    : emcSessionId,
 	}).then(app => {

@@ -58,7 +58,7 @@
 	}
 
 	window.onhashchange = () => window.location.reload();
-	window.InitGdsDirectPlusApp.HighlightRulesAdminApp({
+	window.InitGdsDirectPlusApp.AdminApps().HighlightRulesAdminApp({
 		htmlRootDom		: [...document.getElementsByClassName('container-fluid')][0],
 		emcSessionId    : emcSessionId,
 	}).then(app => {

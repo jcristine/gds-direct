@@ -2,7 +2,6 @@
 const $ = require('jquery');
 import AppDom from '../../helpers/dom.es6';
 import Helper from '../../abstract/helper.js';
-import 'bootstrap';
 let App = {Dom: AppDom};
 
 // const Validator = ...;

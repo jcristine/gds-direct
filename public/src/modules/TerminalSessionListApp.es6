@@ -175,8 +175,6 @@ let init = () => {
 };
 
 export default (appParams) => {
-	require('./../theme/entry/standalone.less');
-
 	window.GdsDirectPlusParams = window.GdsDirectPlusParams || {};
 	window.GdsDirectPlusParams.emcSessionId = appParams.emcSessionId;
 	return init();
