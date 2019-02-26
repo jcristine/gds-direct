@@ -503,8 +503,6 @@ class ProcessApolloTerminalInputAction {
 	}
 
 	async runCmd($cmd, $fetchAll) {
-		let $prevState;
-		$prevState = this.getSessionData();
 		let $cmdRec = $fetchAll
 			? await fetchAllOutput($cmd, this.$statefulSession)
 			: await this.$statefulSession.runCmd($cmd);
@@ -1195,9 +1193,10 @@ class ProcessApolloTerminalInputAction {
 		if ($errors = $cmd['errors'] || []) {
 			return $cmd;
 		}
-		$output = await this.runCommand($cmd['cmd'], false);
+		let cmdRec = await this.runCmd($cmd['cmd']);
+		$output = cmdRec.output;
 		if (StringUtil.contains($output, '** PRIVATE FARES SELECTED **')) {
-			$output = this.moveDownAll()[0]['output'] || $output;
+			$output = (await this.moveDownAll(null, [cmdRec]))[0]['output'] || $output;
 			if (this.needsColonN($output, $pnr)) {
 				$newAtfqNum = $prevAtfqNum + 1;
 				// delete ATFQ we just created and store a correct one, with /:N/ mod
@@ -1234,11 +1233,11 @@ class ProcessApolloTerminalInputAction {
 	}
 
 	/** @param int|null $pageLimit - null means _all_ */
-	async moveDownAll($pageLimit) {
+	async moveDownAll($pageLimit, calledCommands) {
 		let $calledCommands, $lastCommandArray, $output, $iteration, $nextPage, $sanitized, $cmd;
 		$pageLimit = $pageLimit || 100;
 		$calledCommands = [];
-		$lastCommandArray = this.constructor.getLastCommandArrayIncludeMd(this.$statefulSession.getLog());
+		$lastCommandArray = calledCommands.slice(-1);
 		if (!php.empty($lastCommandArray)) {
 			$output = '';
 			for ($iteration = 0; $iteration < $pageLimit; $iteration++) {
@@ -1431,15 +1430,13 @@ class ProcessApolloTerminalInputAction {
 		$alias = this.constructor.parseAlias($cmd);
 		if ($mdaData = $alias['moveDownAll'] || null) {
 			$limit = $mdaData['limit'] || null;
-			if ($cmdReal = $alias['realCmd']) {
-				$result = await this.processRealCommand($cmdReal, false);
-				if (php.empty($result['errors'])) {
-					$result['calledCommands'] = await this.moveDownAll($limit);
-				}
-				return $result;
-			} else {
-				$calledCommands = await this.moveDownAll($limit);
+			$cmdReal = $alias['realCmd'] || 'MT';
+			// TODO: take last command from DB instead of using MT
+			$result = await this.processRealCommand($cmdReal, false);
+			if (php.empty($result['errors'])) {
+				$result['calledCommands'] = await this.moveDownAll($limit, $result.calledCommands);
 			}
+			return $result;
 		} else if (php.preg_match(/^PNR$/, $cmd, $matches = [])) {
 			return this.processSavePnr();
 		} else if (php.preg_match(/^HHMCO$/, $cmd, $matches = [])) {
