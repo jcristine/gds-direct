@@ -449,7 +449,19 @@ class ItineraryParser {
 	//' 1 DL1234Y 15DEC EWRLHR GK1                        TH',
 	//' 2 DL1234Y 16DEC LHRTYO GK1                        FR',
 	parseFakeSegmentLine($line) {
-		let $regex = '\/^\\s*' + '(?<segmentNumber>\\d{1,2})\\s+' + '(?<airline>[A-Z0-9]{2})\\s{0,3}' + '(?<flightNumber>\\d{1,4})' + '(?<bookingClass>[A-Z])\\s+' + '(?<departureDate>\\d{1,2}[A-Z]{3})\\s+' + '(?<departureAirport>[A-Z]{3})' + '(?<destinationAirport>[A-Z]{3})\\s+' + '(?<segmentStatus>[A-Z]{2})' + '(?<seatCount>\\d{0,2})\\s+' + '(?<daysOfWeek>[A-Z]{2}(\\\/[A-Z]{2})*)' + '$\/';
+		let $regex =
+			'\/^\\s*' +
+			'(?<segmentNumber>\\d{1,2})\\s+' +
+			'(?<airline>[A-Z0-9]{2})\\s{0,3}' +
+			'(?<flightNumber>\\d{1,4})' +
+			'(?<bookingClass>[A-Z])\\s+' +
+			'(?<departureDate>\\d{1,2}[A-Z]{3})\\s+' +
+			'(?<departureAirport>[A-Z]{3})' +
+			'(?<destinationAirport>[A-Z]{3})\\s+' +
+			'(?<segmentStatus>[A-Z]{2})' +
+			'(?<seatCount>\\d{0,2})\\s+' +
+			'(?<daysOfWeek>[A-Z]{2}(\\\/[A-Z]{2})*)' +
+			'$\/';
 		let $matches;
 		if ($matches = preg_match($regex, $line)) {
 			return {
@@ -476,4 +488,14 @@ class ItineraryParser {
 	}
 }
 
-module.exports = new ItineraryParser();
+let parser = new ItineraryParser();
+
+parser.SEGMENT_TYPE_ITINERARY_SEGMENT = SEGMENT_TYPE_ITINERARY_SEGMENT;
+parser.SEGMENT_TYPE_OTH = SEGMENT_TYPE_OTH;
+parser.SEGMENT_TYPE_TUR = SEGMENT_TYPE_TUR;
+parser.SEGMENT_TYPE_ARNK = SEGMENT_TYPE_ARNK;
+parser.SEGMENT_TYPE_CAR = SEGMENT_TYPE_CAR;
+parser.SEGMENT_TYPE_HOTEL = SEGMENT_TYPE_HOTEL;
+parser.SEGMENT_TYPE_FAKE = SEGMENT_TYPE_FAKE;
+
+module.exports = parser;

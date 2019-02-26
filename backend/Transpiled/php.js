@@ -275,6 +275,7 @@ php.array_values = (obj) => Object.values(obj);
 php.in_array = (value, arr) => Object.values(arr).indexOf(value) > -1;
 /** @param {Array} arr */
 php.array_shift = (arr) => arr.shift();
+php.array_push = (arr, el) => arr.push(el);
 /** @param {Array} arr */
 php.array_pop = (arr) => arr.pop();
 /** @param {Array} arr */

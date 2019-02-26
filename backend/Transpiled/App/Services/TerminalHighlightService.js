@@ -65,15 +65,15 @@ let areNamedCapturesSupported = () => {
 
 let makeRegex = (content, flags = undefined) => {
 	if (areNamedCapturesSupported()) {
-		// convert php-format (?P< to js format (?<
+		// convert php-format ( ?P< to js format (?<
 		content = content.replace(/(?<!\\)\(\?P</g, '(?<');
-		// /^(\s+|\.+)(?P<value>OPERATED BY .*)/ -> /^(\s+|\.+)(?<value>OPERATED BY .*)/
+		// /^(\s+|\.+)( ?P<value>OPERATED BY .*)/ -> /^(\s+|\.+)(?<value>OPERATED BY .*)/
 	} else {
 		// make all not named groups non-capturing
 		content = content.replace(/(?<!\\)\((?!\?)/g, '(?:');
 		// make all named groups simple groups because node v<10.0.0
 		content = content.replace(/(?<!\\)\(\?P<[A-Za-z_0-9]+>/g, '(');
-		// /^(\s+|\.+)(?P<value>OPERATED BY .*)/ -> /^(?:\s+|\.+)(OPERATED BY .*)/
+		// /^(\s+|\.+)( ?P<value>OPERATED BY .*)/ -> /^(?:\s+|\.+)(OPERATED BY .*)/
 	}
 	return new RegExp(content, flags);
 };

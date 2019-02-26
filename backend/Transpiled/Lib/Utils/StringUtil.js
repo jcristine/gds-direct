@@ -82,7 +82,7 @@ class StringUtil
 
     static format($pattern, $params)  {
         let $key, $value;
-        for ([$key, $value] of Object.entries($params)) {
+        for ([$key, $value] of Object.entries($params || {})) {
             $pattern = php.str_replace('{'+$key+'}', $value, $pattern);}
         return $pattern;
     }

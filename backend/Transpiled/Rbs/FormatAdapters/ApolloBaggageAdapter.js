@@ -1,0 +1,130 @@
+
+// namespace Rbs\FormatAdapters;
+
+const Fp = require('../../Lib/Utils/Fp.js');
+const ApolloPricingAdapter = require("./ApolloPricingAdapter");
+
+/**
+ * extracts baggage data from PricingParser::parse() and transforms it to a common format
+ */
+class ApolloBaggageAdapter
+{
+    constructor() {
+        this.$pricingCommand = null;
+        this.$nameRecords = null;
+    }
+
+    setPricingCommand($cmd)  {
+        this.$pricingCommand = $cmd;
+        return this;
+    }
+
+    setNameRecords($nameRecords)  {
+        this.$nameRecords = $nameRecords;
+        return this;
+    }
+
+    static transformBagSegmentDetails($segmentDetails)  {
+        return {
+            'airline': $segmentDetails['airline'],
+            'departureAirport': $segmentDetails['departureAirport'],
+            'destinationAirport': $segmentDetails['destinationAirport'],
+            'bagWithoutFeeNumber': $segmentDetails['freeBaggageAmount']['raw'] || null,
+            'bagWithoutFeeNumberParsed': $segmentDetails['freeBaggageAmount']['parsed'] || null,
+            'isAvailable': $segmentDetails['isAvailable'],
+            'error': $segmentDetails['error'] || null,
+        };
+    }
+
+    static transformBaggageInfo($baggageData)  {
+        return {
+            'baggageAllowanceBlocks': Fp.map(($baggageAllowanceBlock) => {
+                return {
+                    'ptc': $baggageAllowanceBlock['paxTypeCode'],
+                    'segments': Fp.map(($segment) => {
+                        return {
+                            'segmentDetails': this.transformBagSegmentDetails($segment['segmentDetails']),
+                            'bags': Fp.map(($bag) => {
+                                return {
+                                    'bagNumber': $bag['bagNumber'],
+                                    'flags': $bag['flags'],
+                                    'bagDescription': $bag['bagDescription'] || null,
+                                    'weightInLb': $bag['weightInLb'] || null,
+                                    'weightInKg': $bag['weightInKg'] || null,
+                                    'sizeInInches': $bag['sizeInInches'] || null,
+                                    'sizeInCm': $bag['sizeInCm'] || null,
+                                    'feeAmount': $bag['feeAmount'] || null,
+                                    'feeCurrency': $bag['feeCurrency'] || null,
+                                };
+                            }, $segment['bags']),
+                        };
+                    }, $baggageAllowanceBlock['segments']),
+                };
+            }, $baggageData['baggageAllowanceBlocks']),
+            'carryOnAllowanceBlock': {
+                'segments': Fp.map(($segment) => {
+                    return {
+                        'segmentDetails': this.transformBagSegmentDetails($segment['segmentDetails']),
+                        'flags': Fp.map(($flag) => {
+                            return $flag;
+                        }, $segment['flags']),
+                        'bags': Fp.map(($bag) => {
+                            return {
+                                'bagNumber': $bag['bagNumber'],
+                                'flags': Fp.map(($flag) => {
+                                    return $flag;
+                                }, $bag['flags']),
+                                'bagDescription': $bag['bagDescription'] || null,
+                                'weightInLb': $bag['weightInLb'] || null,
+                                'weightInKg': $bag['weightInKg'] || null,
+                                'sizeInInches': $bag['sizeInInches'] || null,
+                                'sizeInCm': $bag['sizeInCm'] || null,
+                            };
+                        }, $segment['bags'] || []),
+                    };
+                }, $baggageData['carryOnAllowanceBlock']['segments']),
+            },
+            'misc': {
+                'embargoBlock': {
+                    'segments': Fp.map(($segment) => {
+                        return $segment;
+                    }, $baggageData['embargoBlock']['segments']),
+                },
+                'flags': Fp.map(($flag) => {
+                    return $flag;
+                }, $baggageData['flags'] || []),
+            },
+        };
+    }
+
+    /**
+     * @param $storePricing = PricingParser::parse()
+     */
+    transform($storePricing)  {
+        let $records, $j, $pricingBlock, $baggageInfo, $modsHelper, $ptcInfo, $nameNumbers;
+        $records = [];
+        for ([$j, $pricingBlock] of Object.entries($storePricing['pricingBlockList'] || [])) {
+            if ($baggageInfo = $pricingBlock['baggageInfo'] || null) {
+                $modsHelper = new ApolloPricingAdapter()
+					.setNameRecords(this.$nameRecords)
+					.setPricingCommand(this.$pricingCommand)
+					.makeHelper($storePricing);
+                $ptcInfo = $modsHelper.makeBlockPtcInfo($pricingBlock['passengerNumbers'],
+                    $pricingBlock['baggageInfo']['parsed']['baggageAllowanceBlocks'][0]['paxTypeCode'] || null);
+                $nameNumbers = $ptcInfo['nameNumbers'];
+                delete($ptcInfo['nameNumbers']);
+                $records.push({
+                    'pricingNumber': null,
+                    'subPricingNumber': $j + 1,
+                    'passengerNameNumbers': $nameNumbers,
+                    'ptcInfo': $ptcInfo,
+                    'parsed': php.isset($baggageInfo['parsed'])
+                        ? this.constructor.transformBaggageInfo($baggageInfo['parsed'])
+                        : {'error': 'failed to parse'},
+                    'raw': $baggageInfo['raw'],
+                });
+            }}
+        return $records;
+    }
+}
+module.exports = ApolloBaggageAdapter;

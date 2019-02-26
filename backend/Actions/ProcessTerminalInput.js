@@ -3,6 +3,7 @@ let {fetchAllOutput, wrap} = require('../GdsHelpers/TravelportUtils.js');
 const StatefulSession = require("../GdsHelpers/StatefulSession.js");
 const AreaSettings = require("../Repositories/AreaSettings");
 const ItineraryParser = require("../Transpiled/Gds/Parsers/Apollo/Pnr/ItineraryParser");
+const ProcessApolloTerminalInputAction = require("../Transpiled/Rbs/GdsDirect/Actions/Apollo/ProcessApolloTerminalInputAction");
 const nonEmpty = require("../Utils/Rej").nonEmpty;
 
 // this is not complete list
@@ -85,7 +86,7 @@ let parseAlias = (cmd) => {
 let makeGrectResult = (calledCommands, fullState) => {
 	let areaState = fullState.areas[fullState.area] || {};
 	return ({
-		calledCommands: calledCommands,
+		calledCommands: calledCommands.map(a => a),
 		messages: [],
 		clearScreen: false,
 		sessionInfo: {
@@ -123,16 +124,24 @@ let transformCalledCommand = (rec, gds) => {
 
 let runCmdRq =  async (inputCmd, stateful) => {
 	inputCmd = decodeCmsInput(inputCmd);
-	let {realCmd: cmd, fetchAll, type, data} = parseAlias(inputCmd);
-	let cmdsLeft = (data ? data.bulkCmds : null) || [cmd];
-	let calledCommands = [];
-	for (let cmd of cmdsLeft) {
-		let cmdRec = fetchAll
-			? await fetchAllOutput(cmd, stateful)
-			: (await stateful.runCmd(cmd));
-		calledCommands.push(cmdRec);
+	if (stateful.gds === 'apollo') {
+		let gdsResult = await (new ProcessApolloTerminalInputAction(stateful).execute(inputCmd));
+		let grectResult = makeGrectResult(gdsResult.calledCommands, stateful.getFullState());
+		grectResult.status = gdsResult.status;
+		grectResult.messages = (gdsResult.userMessages || []).map(msg => ({type: 'error', text: msg}));
+		return grectResult;
+	} else {
+		let {realCmd: cmd, fetchAll, type, data} = parseAlias(inputCmd);
+		let cmdsLeft = (data ? data.bulkCmds : null) || [cmd];
+		let calledCommands = [];
+		for (let cmd of cmdsLeft) {
+			let cmdRec = fetchAll
+				? await fetchAllOutput(cmd, stateful)
+				: (await stateful.runCmd(cmd));
+			calledCommands.push(cmdRec);
+		}
+		return makeGrectResult(calledCommands, stateful.getFullState());
 	}
-	return makeGrectResult(calledCommands, stateful.getFullState());
 };
 
 /**

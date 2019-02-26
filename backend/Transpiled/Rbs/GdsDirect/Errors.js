@@ -159,7 +159,7 @@ class Errors
      */
     static getMessage($errorName, $templateData)  {
         let $template;
-        if ($template = this.getMapping()[$errorName]['pattern'] || null) {
+        if ($template = (this.getMapping()[$errorName] || {})['pattern'] || null) {
             return StringUtil.format($template, $templateData);
         } else {
             return 'Unregistered error constant - '+$errorName+' - '+php.json_encode($templateData);

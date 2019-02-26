@@ -14,6 +14,8 @@ let extractPager = (text) => {
 	return [clean, pager];
 };
 
+exports.extractPager = extractPager;
+
 /** @param stateful = await require('StatefulSession.js')() */
 exports.fetchAllOutput = async (nextCmd, stateful) => {
 	let pages = [];
