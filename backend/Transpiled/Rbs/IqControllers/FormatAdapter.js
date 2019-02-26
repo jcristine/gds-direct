@@ -281,7 +281,7 @@ class FormatAdapter
                         'departureDate': {
                             'parsed': $ssr['data']['departureDate']['parsed'],
                         },
-                        'statusNumber': $ssr['data']['seatCount'],
+                        'seatCount': $ssr['data']['seatCount'],
                         'paxIsInfant': $ssr['data']['paxIsInfant'],
                         'paxName': $ssr['data']['paxName'],
                         'comment': $ssr['data']['comment'],

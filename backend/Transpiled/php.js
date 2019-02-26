@@ -83,6 +83,11 @@ php.date = (format, epoch) => {
 		return safe(() => dtObj.toISOString().slice('20'.length, '2018'.length));
 	} else if (format === 'Y') {
 		return safe(() => dtObj.toISOString().slice(0, '2018'.length));
+	} else if (format === 'dM') {
+		return safe(() => {
+        let months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+		return ('00' + dtObj.getUTCDate()).slice(-2) + months[dtObj.getUTCMonth()];
+		});
 	} else {
 		throw new Error('Unsupported date format - ' + format);
 	}

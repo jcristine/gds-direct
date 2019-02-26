@@ -454,7 +454,7 @@ class ProcessApolloTerminalInputAction {
 		$cmdLog = this.$statefulSession.getLog();
 		$sessionData = $cmdLog.getSessionData();
 		$leadData = this.$statefulSession.getLeadData();
-		$msg = CommonDataHelper.createCredentialMessage($sessionData, $leadData, this.getAgent(), this.getLeadAgent());
+		$msg = CommonDataHelper.createCredentialMessage(this.$statefulSession);
 		if (CommonDataHelper.shouldAddCreationRemark($msg, $cmdLog)) {
 			return '@:5' + $msg;
 		}
@@ -717,7 +717,7 @@ class ProcessApolloTerminalInputAction {
 			}
 		}
 		if (this.constructor.doesStorePnr($cmd)) {
-			if ($pnr = this.getStoredPnr()) {
+			if ($pnr = await this.getStoredPnr()) {
 				for ($remark of Object.values($pnr.getRemarks())) {
 					if ($remark['remarkType'] !== GenericRemarkParser.CMS_LEAD_REMARK) continue;
 					if (!($pnrCreationPcc = $remark['data']['pcc'] || null)) continue;
@@ -839,7 +839,7 @@ class ProcessApolloTerminalInputAction {
 		$segmentNumbers = this.constructor.parseStringNumbersList($matches[0] || '');
 		for ($i = 0; $i < php.count($itinerary); ++$i) {
 			if (php.in_array($itinerary[$i]['segmentNumber'], $segmentNumbers)) {
-				$itinerary[$i]['statusNumber'] = $seatNumber;
+				$itinerary[$i]['seatCount'] = $seatNumber;
 				if (!php.empty($segmentStatus)) {
 					$itinerary[$i]['segmentStatus'] = $segmentStatus;
 				}
@@ -998,7 +998,7 @@ class ProcessApolloTerminalInputAction {
 		}
 		for ([$key, $segment] of Object.entries($itinerary)) {
 			if ($seatNumber >= 1 && $seatNumber <= 9) {
-				$itinerary[$key]['statusNumber'] = $seatNumber;
+				$itinerary[$key]['seatCount'] = $seatNumber;
 			}
 			$itinerary[$key]['segmentStatus'] = $segmentStatus;
 		}
@@ -1046,7 +1046,7 @@ class ProcessApolloTerminalInputAction {
 		$pnrDump = $pnr.getDump();
 		if (!CommonDataHelper.isValidPnr($pnr)) {
 			return {'errors': [Errors.getMessage(Errors.INVALID_PNR, {'response': php.trim($pnrDump)})]};
-		} else if ($errors = CommonDataHelper.checkSeatCount($pnr)) {
+		} else if (!php.empty($errors = CommonDataHelper.checkSeatCount($pnr))) {
 			return {'errors': $errors};
 		}
 		$usedCmds = this.$statefulSession.getLog().getCurrentPnrCommands();
@@ -1070,13 +1070,13 @@ class ProcessApolloTerminalInputAction {
 		) {
 			php.array_unshift($writeCommands, 'T-CA-SFO@$0221686');
 		}
-		$writeCommands = php.array_merge(this.prepareToSavePnr(), $writeCommands);
+		$writeCommands = php.array_merge(await this.prepareToSavePnr(), $writeCommands);
 		$cmd = php.implode('|', $writeCommands);
-		$output = await this.runCommand($cmd);
+		$output = (await this.runCmd($cmd)).output;
 		$saveResult = TApolloSavePnr.parseSavePnrOutput($output);
 		if ($saveResult['success']) {
 			this.handlePnrSave($saveResult['recordLocator']);
-			$output = await this.runCommand('*R');
+			$output = (await this.runCmd('*R')).output;
 		}
 		$cmdRecord = {'cmd': 'PNR', 'output': $output};
 		return {'calledCommands': [$cmdRecord]};
@@ -1273,7 +1273,7 @@ class ProcessApolloTerminalInputAction {
 		} else if (this.doesDivideFpBooking($cmd)) {
 			// all commands between >DN...; and >F; affect only the new PNR
 			$leadData = this.$statefulSession.getLeadData();
-			$msg = CommonDataHelper.createCredentialMessage(this.getSessionData(), $leadData, this.getAgent(), this.getLeadAgent());
+			$msg = CommonDataHelper.createCredentialMessage(this.$statefulSession);
 			await this.runCommand('@:5' + $msg);
 		}
 		return $calledCommands;
@@ -1307,7 +1307,7 @@ class ProcessApolloTerminalInputAction {
 			$parsed = ApolloReservationParser.parse($clean);
 			$isAlex = ($pax) => {
 				return $pax['lastName'] === 'WEINSTEIN'
-					&& $pax['firstName'] === 'ALEX DEV TESTING';
+					&& $pax['firstName'] === 'ALEX';
 			};
 			if (Fp.any($isAlex, $parsed['passengers']['passengerList'] || []) &&
 				!this.$statefulSession.getAgent().canOpenPrivatePnr()

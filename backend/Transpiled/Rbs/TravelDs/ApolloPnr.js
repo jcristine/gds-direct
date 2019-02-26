@@ -27,7 +27,7 @@ class ApolloPnr {
 	}
 
 	getRecordLocator() {
-		return this.$parsed['headerData']['reservationInfo']['recordLocator'] || null;
+		return ((this.$parsed['headerData'] || {})['reservationInfo'] || {})['recordLocator'] || null;
 	}
 
 	getGdsName() {

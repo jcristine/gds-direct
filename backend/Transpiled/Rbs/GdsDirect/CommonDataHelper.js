@@ -53,8 +53,11 @@ class CommonDataHelper
         return true;
     }
 
-    /** @param Agent|null $leadAgent */
-    static createCredentialMessage($sessionData, $leadData, $agent, $leadAgent)  {
+    /** @param stateful = await require('StatefulSession.js')() */
+    static createCredentialMessage(stateful)  {
+        let $agent = stateful.getAgent();
+        let $leadAgent = stateful.getLeadAgent();
+        let $leadData = stateful.getLeadData();
         let $maxLen, $leadPart, $pattern, $minLen;
         $maxLen = {
             'apollo': 87 - php.strlen('@:5'),
@@ -62,9 +65,9 @@ class CommonDataHelper
             // 71 is limit for whole remark command: >5MSG LIMIT IS 70; >53¤MSG LIMIT IS 68;
             'sabre': 71 - php.strlen('5'),
             'amadeus': 126 - php.strlen('RM'),
-        }[$sessionData['gds']];
+        }[stateful.gds];
         $leadPart = php.empty($leadData['leadId']) ? '' : (
-            ($agent.canSavePnrWithoutLead() ? '' : /FOR {leadAgent}/+$leadData['leadOwnerId'])+
+            ($agent.canSavePnrWithoutLead() ? '' : /FOR {leadAgent}/+($leadData['leadOwnerId'] || ''))+
             '\/LEAD-'+$leadData['leadId']
         );
         if ($agent.getLogin()) {
@@ -73,9 +76,9 @@ class CommonDataHelper
             $pattern = php.implode('', [
                 'GD-',
                 '{pnrAgent}',
-                '\/'+$sessionData['agent_id'],
+                '\/'+$agent.getId(),
                 $leadPart,
-                ' IN '+$sessionData['pcc'],
+                ' IN '+stateful.getSessionData().pcc,
             ]);
             $minLen = php.mb_strlen(StringUtil.format($pattern, {
                 'pnrAgent': '', 'leadAgent': '',
@@ -102,9 +105,9 @@ class CommonDataHelper
             $errors.push(Errors.getMessage(Errors.ITINERARY_IS_EMPTY));
         } else {
             for ($segment of Object.values($itinerary)) {
-                if ($segment['statusNumber'] != $passengerCount) {
+                if ($segment['seatCount'] != $passengerCount) {
                     $errors.push(Errors.getMessage(Errors.WRONG_SEAT_COUNT, {
-                        'seatCount': $segment['statusNumber'],
+                        'seatCount': $segment['seatCount'],
                         'nameCount': $passengerCount,
                     }));
                     break;

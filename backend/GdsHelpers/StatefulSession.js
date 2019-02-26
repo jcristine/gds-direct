@@ -71,6 +71,7 @@ let StatefulSession = async (session) => {
 		getStartDt: () => startDt,
 		getAreaRows: () => fullState.areas,
 		flushCalledCommands: () => calledCommands.splice(0),
+		handlePnrSave: () => {},
 		getSessionData: getSessionData,
 		getLeadData: () => ({
 			leadId: session.context.travelRequestId,
@@ -102,6 +103,7 @@ let StatefulSession = async (session) => {
 			];
 			let hasRole = (role) => tmpRoles.includes(role);
 			return {
+				getId: () => 6206,
 				getLogin: () => 'aklesuns',
 				getFsCallsUsed: () => 13,
 				getFsLimit: () => 50,
