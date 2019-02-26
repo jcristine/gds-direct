@@ -1267,7 +1267,7 @@ class ProcessApolloTerminalInputAction {
 		$calledCommands = [];
 		if (this.constructor.doesStorePnr($cmd)) {
 			$batchCmds = await this.prepareToSavePnr();
-			if ($batchCmds) {
+			if (!php.empty($batchCmds)) {
 				await this.runCommand(php.implode('|', $batchCmds));
 			}
 		} else if (this.doesDivideFpBooking($cmd)) {

@@ -3,10 +3,9 @@ let SabreClient = require("../GdsClients/SabreClient.js");
 let TravelportClient = require('../GdsClients/TravelportClient.js');
 const GdsSessions = require("../Repositories/GdsSessions.js");
 const SessionStateProcessor = require("../Transpiled/Rbs/GdsDirect/SessionStateProcessor/SessionStateProcessor.js");
-const logExc = require("../LibWrappers/FluentLogger").logExc;
 const hrtimeToDecimal = require("../Utils/Misc").hrtimeToDecimal;
-const {NotImplemented} = require("../Utils/Rej.js");
-const FluentLogger = require("../LibWrappers/FluentLogger.js");
+const {NotImplemented, BadRequest} = require("../Utils/Rej.js");
+const {logit, logExc} = require("../LibWrappers/FluentLogger.js");
 
 /**
  * a generic session that can be either apollo, sabre, galileo, amadeus, etc...
@@ -23,6 +22,9 @@ let StatefulSession = async (session) => {
 	let getSessionData = () => fullState.areas[fullState.area] || {};
 	return {
 		runCmd: (cmd) => {
+			if (!cmd) {
+				return BadRequest('An empty string was passed instead of command to call in GDS');
+			}
 			// should write to terminalCommandLog here
 			let hrtimeStart = process.hrtime();
 			let running;
@@ -35,6 +37,7 @@ let StatefulSession = async (session) => {
 			} else {
 				running = NotImplemented('Unsupported stateful GDS - ' + gds);
 			}
+			running.catch(exc => logExc('ERROR: Failed to run cmd [' + cmd + '] in GDS' + cmd, session.logId, exc));
 			return running.then(gdsResult => {
 				let type = null;
 				try {
@@ -53,7 +56,7 @@ let StatefulSession = async (session) => {
 					duration: hrtimeToDecimal(hrtimeDiff),
 				};
 				calledCommands.push(cmdRec);
-				FluentLogger.logit('Gds result: ' + cmd, session.logId, {...cmdRec, state: fullState.areas[fullState.area]});
+				logit('Gds result: ' + cmd, session.logId, {...cmdRec, state: fullState.areas[fullState.area]});
 				return cmdRec;
 			});
 		},

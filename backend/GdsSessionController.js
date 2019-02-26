@@ -13,7 +13,7 @@ let {TRAVELPORT, AMADEUS, SABRE} = require('./Repositories/GdsProfiles.js');
 //const CmsStatefulSession = require("./Transpiled/Rbs/GdsDirect/CmsStatefulSession");
 const TerminalBuffering = require("./Repositories/TerminalBuffering");
 let {logit, logExc} = require('./LibWrappers/FluentLogger.js');
-let {Forbidden, NotImplemented} = require('./Utils/Rej.js');
+let {Forbidden, NotImplemented, LoginTimeOut} = require('./Utils/Rej.js');
 let {fetchAllOutput} = require('./GdsHelpers/TravelportUtils.js');
 let StatefulSession = require('./GdsHelpers/StatefulSession.js');
 let ProcessTerminalInput = require('./Actions/ProcessTerminalInput.js');
@@ -85,12 +85,23 @@ let closeSession = (session) => {
 	});
 };
 
+let isSessionExpiredExc = (exc) => {
+	return LoginTimeOut.matches(exc.httpStatusCode);
+};
+
 /** @param reqBody = at('WebRoutes.js').normalizeRqBody() */
 let runInputCmdRestartAllowed = (reqBody) => {
 	reqBody.command = reqBody.command.trim();
 	return GdsSessions.getByContext(reqBody)
-		.then(session => runInSession(session, reqBody))
-		.catch(exc => runInNewSession(reqBody, exc));
+		.then(session => runInSession(session, reqBody)
+			.catch(exc => {
+				logExc('WARNING: Failed to run cmd in session, restarting...', session.logId, exc);
+				if (isSessionExpiredExc(exc)) {
+					return runInNewSession(reqBody, exc);
+				} else {
+					return Promise.reject(exc);
+				}
+			}));
 };
 
 /** @param {IEmcResult} emcResult */
