@@ -110,7 +110,7 @@ class RepriceInAnotherPccAction
             return $segment;
         };
         $itinerary = Fp.map($convertStatus, $itinerary);
-        $emulatePccAction = (new EmulatePccAction($target['gds'])).setLog($log);
+        $emulatePccAction = (new EmulatePccAction($target['gds']));
         $emulatePccAction.execute($target['pcc']);
         $session = $emulatePccAction.getSession();
         $log('Rebuild itinerary in '+$target['pcc'], $itinerary);
@@ -123,7 +123,7 @@ class RepriceInAnotherPccAction
         } else if ($target['gds'] === 'galileo') {
             $action = (new GalileoBuildItineraryAction()).setGalileo($session);
         }
-        $action.setLog($log).execute($itinerary, true);
+        $action.execute($itinerary, true);
         $translatorResult = (new GdsDialectTranslator()).setBaseDate($startDt).translate($dialect, $target['gds'], $cmd);
         $log('Translate '+$dialect+' ['+$cmd+'] to '+$target['gds'], $translatorResult);
         $targetCmd = $translatorResult['output'] || $cmd;

@@ -59,17 +59,6 @@ class ProcessApolloTerminalInputAction {
 		this.$useXml = false; // TODO: implement and set to true
 	}
 
-	setLog($log) {
-		this.$log = $log;
-		return this;
-	}
-
-	log($msg, $data) {
-		let $log;
-		$log = this.$log;
-		$log($msg, $data);
-	}
-
 	static doesStorePnr($cmd) {
 		let $parsedCmd, $flatCmds, $cmdTypes;
 		$parsedCmd = CommandParser.parse($cmd);
@@ -506,7 +495,6 @@ class ProcessApolloTerminalInputAction {
 		let $cmdRec = $fetchAll
 			? await fetchAllOutput($cmd, this.$statefulSession)
 			: await this.$statefulSession.runCmd($cmd);
-		this.log('Apollo result: (' + $cmd + ')', $cmdRec.output);
 		if (this.constructor.isSuccessfulFsCommand($cmdRec.cmd, $cmdRec.output)) {
 			this.$statefulSession.handleFsUsage();
 		}
@@ -634,7 +622,7 @@ class ProcessApolloTerminalInputAction {
 
 	areAllCouponsVoided() {
 		let $ticketData, $ticket, $isVoid;
-		$ticketData = (new RetrieveApolloTicketsAction()).setApollo(this.$statefulSession).setLog(this.$log).execute();
+		$ticketData = (new RetrieveApolloTicketsAction()).setApollo(this.$statefulSession).execute();
 		if (!php.empty($ticketData['error'])) {
 			return false;
 		}
@@ -754,7 +742,7 @@ class ProcessApolloTerminalInputAction {
 			$chgClsCmd =
 				'X' + php.implode('+', php.array_column($segs, 'segmentNumber')) + '\/' +
 				'0' + php.implode('+', $segs.map(($seg) => $seg['segmentNumber'] + $seg['bookingClass']));
-			$chgClsOutput = await this.runCommand($chgClsCmd, true);
+			$chgClsOutput = (await this.runCmd($chgClsCmd, true)).output;
 			if (!this.constructor.isSuccessRebookOutput($chgClsOutput)) {
 				$failedSegNums = php.array_merge($failedSegNums, php.array_column($segs, 'segmentNumber'));
 			}
@@ -782,6 +770,7 @@ class ProcessApolloTerminalInputAction {
 				&& $seg['segmentStatus'] !== 'GK';
 		};
 		$newItinerary = Fp.map(($seg) => {
+			$seg = {...$seg};
 			if ($isGkRebookPossible($seg)) {
 				// any different booking class will do, since it's GK
 				$seg['bookingClass'] = $seg['bookingClass'] !== 'Y' ? 'Y' : 'Z';
@@ -791,7 +780,6 @@ class ProcessApolloTerminalInputAction {
 		}, $itinerary);
 		$gkSegments = Fp.filter($isGkRebookPossible, $itinerary);
 		$result = await (new ApolloBuildItineraryAction())
-			.setLog(this.$log)
 			.setSession(this.$statefulSession)
 			.execute($newItinerary, true);
 		if ($error = this.constructor.transformBuildError($result)) {
@@ -800,8 +788,8 @@ class ProcessApolloTerminalInputAction {
 				'errors': [$error],
 			};
 		} else {
-			$gkRebook = this.rebookGkSegments($gkSegments);
-			if ($failedSegNums = $gkRebook['failedSegmentNumbers']) {
+			$gkRebook = await this.rebookGkSegments($gkSegments);
+			if (!php.empty($failedSegNums = $gkRebook['failedSegmentNumbers'])) {
 				$errors.push(Errors.getMessage(Errors.REBUILD_FALLBACK_TO_GK, {'segNums': php.implode(',', $failedSegNums)}));
 			}
 			this.$statefulSession.flushCalledCommands();
@@ -904,30 +892,25 @@ class ProcessApolloTerminalInputAction {
 		let $allowCutting, $gkSegments, $xCmd, $newSegs;
 		$allowCutting = $data['allowCutting'] || false;
 		this.$statefulSession.flushCalledCommands();
-		$gkSegments = Fp.filter(($seg) => {
-			return $seg['segmentStatus'] === 'GK';
-		}, (await this.getCurrentPnr()).getItinerary());
-		if (!$gkSegments) {
+		let pnr = await this.getCurrentPnr();
+		$gkSegments = pnr.getItinerary().filter(($seg) => $seg['segmentStatus'] === 'GK');
+		if (php.empty($gkSegments)) {
 			return {'errors': ['No GK segments']};
 		}
 		$xCmd = 'X' + php.implode('|', php.array_column($gkSegments, 'segmentNumber'));
 		await this.runCommand($xCmd);
-		$newSegs = Fp.map(($seg) => {
-			$seg['segmentStatus'] = 'NN';
-			return $seg;
-		}, $gkSegments);
+		$newSegs = $gkSegments.map(($seg) => ({...$seg, segmentStatus: 'NN'}));
 		return this.bookItinerary($newSegs, !$allowCutting);
 	}
 
-
 	getMultiPccTariffDisplay($cmd) {
-		return (new GetMultiPccTariffDisplayAction()).setLog(this.$log).execute($cmd, this.$statefulSession);
+		return (new GetMultiPccTariffDisplayAction()).execute($cmd, this.$statefulSession);
 	}
 
 	async priceInAnotherPcc($cmd, $target, $dialect) {
 		let $pnr;
 		$pnr = await this.getCurrentPnr();
-		return (new RepriceInAnotherPccAction()).setLog(this.$log).execute($pnr, $cmd, $dialect, $target, this.$statefulSession);
+		return (new RepriceInAnotherPccAction()).execute($pnr, $cmd, $dialect, $target, this.$statefulSession);
 	}
 
 	// Parse strings like '1,2,4-7,9'

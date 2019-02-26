@@ -4,18 +4,6 @@ class AbstractGdsAction {
 		this.$session = null;
 	}
 
-	setLog($log) {
-		this.$log = $log;
-		return this;
-	}
-
-	log($msg, $data) {
-		let $log;
-		$log = this.$log;
-		$log($msg, $data);
-		return this;
-	}
-
 	setSession($apollo) {
 		this.$session = $apollo;
 		return this;
