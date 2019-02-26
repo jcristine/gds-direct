@@ -1,12 +1,12 @@
 
 let Config = require('./backend/Config.js');
-let Migration = require('./backend/Migration.js');
 
 (async () => {
-	await Config.fetchExternalConfig();
+	await Config.getConfig();
+	let Migration = require('./backend/Migration.js');
 	Migration.run()
 		.then((result) => {
-			console.log('Processed ' + result.cnt + ' migrations successfully');
+			console.log('Processed migrations successfully', result);
 			process.exit(0);
 		})
 		.catch(exc => {

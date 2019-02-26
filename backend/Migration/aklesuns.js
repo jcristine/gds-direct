@@ -1,4 +1,6 @@
 
+let Emc = require('../LibWrappers/Emc');
+
 module.exports.migrations = [
 	{
 		name: '00.00.02',
@@ -175,5 +177,26 @@ module.exports.migrations = [
 			'  KEY `sessionId_redisRunId` (`sessionId`, `redisRunId`)',
 			') ENGINE=InnoDB CHARSET=utf8',
 		].join('\n')),
+	},
+	{
+		name: 'GRECT/2019.02.26005-create-roles-amr',
+		perform: (db) => Emc.client.addRole([
+			{"name":"NEW_GDS_DIRECT_ACCESS","project":"GDSD","description":"Same as in RBS"},
+			{"name":"NEW_GDS_DIRECT_TICKETING","project":"GDSD","description":"Same as in RBS"},
+			{"name":"NEW_GDS_DIRECT_QUEUE_PROCESSING","project":"GDSD","description":"Same as in RBS"},
+			{"name":"NEW_GDS_DIRECT_PNR_SEARCH","project":"GDSD","description":"Same as in RBS"},
+			{"name":"NEW_GDS_DIRECT_EDIT_TICKETED_PNR","project":"GDSD","description":"Same as in RBS"},
+			{"name":"NEW_GDS_DIRECT_EDIT_VOID_TICKETED_PNR","project":"GDSD","description":"Same as in RBS"},
+			{"name":"NEW_GDS_DIRECT_CC_ACCESS","project":"GDSD","description":"Same as in RBS"},
+			{"name":"NEW_GDS_DIRECT_CONTACT_INFO_ACCESS","project":"GDSD","description":"Same as in RBS"},
+			{"name":"NEW_GDS_DIRECT_EMULATE_ANY_PCC","project":"GDSD","description":"Same as in RBS"},
+			{"name":"NEW_GDS_DIRECT_ANY_PCC_AVAILABILITY","project":"GDSD","description":"Same as in RBS"},
+			{"name":"NEW_GDS_DIRECT_CAN_EMULATE_TO_RESTRICTED_SABRE_PCCS","project":"GDSD","description":"Same as in RBS"},
+			{"name":"NEW_GDS_DIRECT_NO_LEAD_PNR","project":"GDSD","description":"Same as in RBS"},
+			{"name":"NEW_GDS_DIRECT_PRIVATE_PNR_ACCESS","project":"GDSD","description":"Same as in RBS"},
+			{"name":"NEW_GDS_DIRECT_MULTI_PCC_TARIFF_DISPLAY","project":"GDSD","description":"Same as in RBS"},
+			{"name":"NEW_GDS_DIRECT_PASTE_ITINERARY","project":"GDSD","description":"Same as in RBS"},
+			{"name":"NEW_GDS_DIRECT_HHMCO","project":"GDSD","description":"Same as in RBS"},
+		]),
 	},
 ];
