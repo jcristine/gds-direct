@@ -20,7 +20,6 @@ const CommandParser = require('../../../../Gds/Parsers/Apollo/CommandParser.js')
 const CommonParserHelpers = require('../../../../Gds/Parsers/Apollo/CommonParserHelpers.js');
 const PricingParser = require('../../../../Gds/Parsers/Apollo/PricingParser/PricingParser.js');
 const GenericRemarkParser = require('../../../../Gds/Parsers/Common/GenericRemarkParser.js');
-const PnrFieldsCommonHelper = require('../../../../Rbs/Process/Common/ImportPnr/PnrFieldsCommonHelper.js');
 const PtcUtil = require('../../../../Rbs/Process/Common/PtcUtil.js');
 const {fetchAllOutput, extractPager} = require('../../../../../GdsHelpers/TravelportUtils.js');
 const ApolloPnr = require('../../../../Rbs/TravelDs/ApolloPnr.js');
@@ -31,6 +30,7 @@ const AirAvailabilityParser = require('../../../../Gds/Parsers/Apollo/AirAvailab
 const ImportPqApolloAction = require("./ImportPqApolloAction");
 const importPnrFromDumpsBrief = require("../../../../../GdsHelpers/RbsUtils").importPnrFromDumpsBrief;
 const PnrHistoryParser = require('../../../../Gds/Parsers/Apollo/PnrHistoryParser.js');
+const DisplayHistoryActionHelper = require('./DisplayHistoryActionHelper.js');
 
 let php = require('../../../../php.js');
 
@@ -1207,7 +1207,7 @@ class ProcessApolloTerminalInputAction {
 
 	async displayHistory() {
 		let $dump, $history, $display;
-		$dump = await this.runCommand('*HA');
+		$dump = (await this.runCmd('*HA', true)).output;
 		$history = PnrHistoryParser.parse($dump);
 		$display = DisplayHistoryActionHelper.display($history);
 		return {'calledCommands': [{'cmd': '*HA', 'output': $display}]};
@@ -1404,10 +1404,8 @@ class ProcessApolloTerminalInputAction {
 	}
 
 	async processRequestedCommand($cmd) {
-		let $errors, $calledCommands, $alias, $mdaData, $limit, $cmdReal, $result, $matches, $_, $plus, $seatAmount,
+		let $alias, $mdaData, $limit, $cmdReal, $result, $matches, $_, $plus, $seatAmount,
 			$segmentNumbers, $segmentStatus, $availability, $cityRow, $airlines, $itinerary;
-		$errors = [];
-		$calledCommands = [];
 		$alias = this.constructor.parseAlias($cmd);
 		if ($mdaData = $alias['moveDownAll'] || null) {
 			$limit = $mdaData['limit'] || null;
@@ -1459,10 +1457,6 @@ class ProcessApolloTerminalInputAction {
 			$cmd = $alias['realCmd'];
 			return this.processRealCommand($cmd, this.constructor.shouldFetchAll($cmd));
 		}
-		return {
-			'calledCommands': $calledCommands,
-			'errors': $errors,
-		};
 	}
 
 	async execute($cmdRequested) {
