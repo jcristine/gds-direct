@@ -29,6 +29,7 @@ const translib = require('../../../../translib');
 const RepriceInAnotherPccAction = require('../../../../Rbs/GdsDirect/Actions/Common/RepriceInAnotherPccAction.js');
 const AirAvailabilityParser = require('../../../../Gds/Parsers/Apollo/AirAvailabilityParser.js');
 const ImportPqApolloAction = require("./ImportPqApolloAction");
+const importPnrFromDumpsBrief = require("../../../../../GdsHelpers/RbsUtils").importPnrFromDumpsBrief;
 
 let php = require('../../../../php.js');
 
@@ -1101,8 +1102,8 @@ class ProcessApolloTerminalInputAction {
 		return {'calledCommands': $calledCommands};
 	}
 
-	needsColonN($pricingDump, $pnr) {
-		let $parsed, $exc, $store, $ptcBlock, $baseDt, $itinObj, $ptcPricing, $isPrivate;
+	async needsColonN($pricingDump, $pnr) {
+		let $parsed, $store, $ptcBlock, $baseDt;
 		try {
 			$parsed = PricingParser.parse($pricingDump);
 		} catch ($exc) {
@@ -1114,10 +1115,8 @@ class ProcessApolloTerminalInputAction {
 		$store = (new ApolloPricingAdapter()).transform($parsed);
 		for ($ptcBlock of Object.values($store['pricingBlockList'])) {
 			$baseDt = this.$statefulSession.getStartDt();
-			$itinObj = Itinerary.makeFromApolloSegments($pnr.getItinerary(), $baseDt);
-			$ptcPricing = PtcPricing.makeFromGenericData($itinObj, $ptcBlock);
-			$isPrivate = (new PnrFieldsCommonHelper($pnr.getGdsName())).setDataAccess(this.$statefulSession.getDataAccess()).isPrivateFare([$ptcBlock]);
-			if ($isPrivate && $ptcPricing.isBrokenFare()) {
+			let rbsInfo = await importPnrFromDumpsBrief($pnr.getDump(), $pricingDump);
+			if (rbsInfo.isPrivateFare && rbsInfo.isBrokenFare) {
 				return true;
 			}
 		}
@@ -1132,7 +1131,7 @@ class ProcessApolloTerminalInputAction {
 		if ($needsColonN && $adultPtc === 'ITX') {
 			$adultPtc = 'ADT';
 		}
-		if ($errors = CommonDataHelper.checkSeatCount($pnr)) {
+		if (!php.empty($errors = CommonDataHelper.checkSeatCount($pnr))) {
 			return {'errors': $errors};
 		}
 		$tripEndDate = ArrayUtil.getLast($pnr.getItinerary())['departureDate']['parsed'] || null;
@@ -1169,31 +1168,32 @@ class ProcessApolloTerminalInputAction {
 	}
 
 	async storePricing($aliasData) {
-		let $pnr, $prevAtfqNum, $cmd, $errors, $output, $newAtfqNum, $cmdRecord;
+		let $pnr, $prevAtfqNum, $storeCmdRec, $errors, $output, $newAtfqNum, $cmdRecord;
 		$pnr = await this.getCurrentPnr();
-		$prevAtfqNum = ArrayUtil.getLast($pnr.getStoredPricingList())['lineNumber'] || 0;
-		$cmd = this.makeStorePricingCmd($pnr, $aliasData, false);
-		if ($errors = $cmd['errors'] || []) {
-			return $cmd;
+		let lastStore = ArrayUtil.getLast($pnr.getStoredPricingList());
+		$prevAtfqNum = lastStore ? lastStore['lineNumber'] : 0;
+		$storeCmdRec = this.makeStorePricingCmd($pnr, $aliasData, false);
+		if (!php.empty($errors = $storeCmdRec['errors'] || [])) {
+			return $storeCmdRec;
 		}
-		let cmdRec = await this.runCmd($cmd['cmd']);
+		let cmdRec = await this.runCmd($storeCmdRec['cmd']);
 		$output = cmdRec.output;
 		if (StringUtil.contains($output, '** PRIVATE FARES SELECTED **')) {
 			$output = (await this.moveDownAll(null, [cmdRec]))[0]['output'] || $output;
-			if (this.needsColonN($output, $pnr)) {
+			if (await this.needsColonN($output, $pnr)) {
 				$newAtfqNum = $prevAtfqNum + 1;
 				// delete ATFQ we just created and store a correct one, with /:N/ mod
 				await this.runCommand('XT' + $newAtfqNum, false);
-				$cmd = this.makeStorePricingCmd($pnr, $aliasData, true);
+				$storeCmdRec = this.makeStorePricingCmd($pnr, $aliasData, true);
 
-				if ($errors = $cmd['errors'] || []) {
-					return $cmd;
+				if ($errors = $storeCmdRec['errors'] || []) {
+					return $storeCmdRec;
 				}
 
-				$output = await this.runCommand($cmd['cmd'], false);
+				$output = await this.runCommand($storeCmdRec['cmd'], false);
 			}
 		}
-		$cmdRecord = {'cmd': $cmd['cmd'], 'output': $output};
+		$cmdRecord = {'cmd': $storeCmdRec['cmd'], 'output': $output};
 		return {'calledCommands': [$cmdRecord]};
 	}
 

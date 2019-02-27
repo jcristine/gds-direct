@@ -1,6 +1,8 @@
 
 // namespace Rbs\Process\Common;
 
+let php = require('../../../php.js');
+
 /** provides functions to parse/make/modify PTC */
 class PtcUtil
 {
@@ -175,7 +177,7 @@ class PtcUtil
             return 'infant';
         } else if ($age = $nameRecord['age'] || null) {
             return php.intval($age) <= this.CHILD_MAX_AGE ? 'child' : 'adult';
-        } else if ($tripEndDt && ($dob = $nameRecord['dob']['parsed'] || null)) {
+        } else if ($tripEndDt && ($dob = ($nameRecord['dob'] || {})['parsed'])) {
             $age = (new require('../../../DateTime.js')($tripEndDt)).diff(new require('../../../DateTime.js')($dob)).$y;
             return php.intval($age) <= this.CHILD_MAX_AGE ? 'child' : 'adult';
         } else if ($ptc = $nameRecord['ptc'] || null) {

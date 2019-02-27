@@ -42,6 +42,20 @@ php.is_integer = str => {
 };
 php.is_numeric = str => +str + '' === str;
 php.floor = (num) => Math.floor(num);
+php.max = (...args) => {
+	if (args.length === 1 && Array.isArray(args[0])) {
+		return Math.max(...args[0]);
+	} else {
+		return Math.max(...args);
+	}
+};
+php.min = (...args) => {
+	if (args.length === 1 && Array.isArray(args[0])) {
+		return Math.min(...args[0]);
+	} else {
+		return Math.min(...args);
+	}
+};
 
 php.call_user_func = (func, arg) => normFunc(func)(arg);
 php.json_encode = (str) => JSON.stringify(str);
