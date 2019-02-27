@@ -27,6 +27,7 @@ module.exports = PersistentHttpRq = (params) => new Promise((resolve, reject) =>
 		path: parsedUrl.path,
 		headers: params.headers,
 		method: params.method || 'POST',
+		body: params.body || undefined,
 		agent: requestAgent,
 		...params,
 	}, (res) => {

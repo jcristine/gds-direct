@@ -1,4 +1,3 @@
-
 exports.hrtimeToDecimal = (hrtime) => {
 	let [seconds, nanos] = hrtime;
 	let rest = ('0'.repeat(9) + nanos).slice(-9);
@@ -13,28 +12,28 @@ exports.chunk = (arr, size) => {
 	return chunks;
 };
 
-let jsExport = function($var, $margin, inlineLimit) {
-    "use strict";
-    var ind = '    ';
-    $margin = $margin || '';
-    inlineLimit = inlineLimit || 64;
+let jsExport = function ($var, $margin, inlineLimit) {
+	"use strict";
+	var ind = '    ';
+	$margin = $margin || '';
+	inlineLimit = inlineLimit || 64;
 
-    if ($var === undefined) {
-        return 'undefined';
-    }
+	if ($var === undefined) {
+		return 'undefined';
+	}
 
-    return JSON.stringify($var).length < inlineLimit ? JSON.stringify($var)
-        : Array.isArray($var)
-            ? '[\n'
-                + $var.map((el) => $margin + ind + jsExport(el, $margin + ind, inlineLimit)).join(',\n')
-                + '\n' + $margin + ']'
-        : (typeof $var === 'object' && $var !== null)
-            ? '{\n'
-                + Object.keys($var).map(k => $margin + ind + JSON.stringify(k) + ': ' + jsExport($var[k], $margin + ind, inlineLimit)).join(',\n')
-                + '\n' + $margin + '}'
-        : (typeof $var === 'string' && $var.indexOf('\n') > -1)
-            ? jsExport($var.split('\n'), $margin) + '.join("\\n")'
-        : JSON.stringify($var);
+	return JSON.stringify($var).length < inlineLimit ? JSON.stringify($var)
+		: Array.isArray($var)
+			? '[\n'
+			+ $var.map((el) => $margin + ind + jsExport(el, $margin + ind, inlineLimit)).join(',\n')
+			+ '\n' + $margin + ']'
+			: (typeof $var === 'object' && $var !== null)
+				? '{\n'
+				+ Object.keys($var).map(k => $margin + ind + JSON.stringify(k) + ': ' + jsExport($var[k], $margin + ind, inlineLimit)).join(',\n')
+				+ '\n' + $margin + '}'
+				: (typeof $var === 'string' && $var.indexOf('\n') > -1)
+					? jsExport($var.split('\n'), $margin) + '.join("\\n")'
+					: JSON.stringify($var);
 };
 
 /**
@@ -89,4 +88,30 @@ exports.wrapExc = getter => {
 	} catch (exc) {
 		return Promise.reject(exc);
 	}
+};
+
+/**
+ * @param {Promise[]} promises
+ * wait till all promises are resolved or rejected, then return {resolved: [...], rejected: []}
+ */
+exports.allWrap = promises => new Promise((resolve) => {
+	let resolved = [];
+	let rejected = [];
+	promises.forEach(p => p
+		.then(result => resolved.push(result))
+		.catch(exc => rejected.push(exc))
+		.finally(() => {
+			if (resolved.length + rejected.length === promises.length) {
+				resolve({resolved, rejected});
+			}
+		}));
+});
+
+exports.timeout = (seconds, promise) => {
+	return Promise.race([
+		promise,
+		new Promise((_, reject) => setTimeout(() =>
+			reject(new Error('Timed out after ' + seconds + ' s.')), seconds * 1000)
+		),
+	]);
 };
