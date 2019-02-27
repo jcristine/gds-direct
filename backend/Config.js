@@ -2,11 +2,13 @@
 let env = process.env || {};
 let PersistentHttpRq = require('./Utils/PersistentHttpRq.js');
 
+let isProd = env.NODE_ENV === 'production';
+
 let Config = {
 
 	mantisId: 677,
 
-	production: env.NODE_ENV === 'production',
+	production: isProd,
 
 	// set by fetchExternalConfig()
 	DB_HOST: null,
@@ -23,11 +25,22 @@ let Config = {
 	HTTP_PORT: env.HTTP_PORT || 3011,
 	HOST: env.HOST || '0.0.0.0',
 
-	// no service user on dev
-	projectName: env.NODE_ENV === 'production' ? 'GDSD' : 'LMS',
-	serviceUserLogin: env.NODE_ENV === 'production' ? 'gdsd' : 'lms',
-	serviceUserPass: env.NODE_ENV === 'production' ? '' : 'qwerty',
-	serviceToken: env.NODE_ENV === 'production' ? 'byXWu*Yu^8HyD23BJ4Gu' : '',
+	external_service: {
+		emc: {
+			// no gdsd service user on dev
+			projectName: isProd ? 'GDSD' : 'LMS',
+			login: isProd ? 'gdsd' : 'lms',
+			password: isProd ? '' : 'qwerty',
+			token: isProd ? 'byXWu*Yu^8HyD23BJ4Gu' : '',
+		},
+		infocenter: {
+			host: isProd
+				? 'http://infocenter7-services-dyninno.lan.dyninno.net/server_json.php'
+				: 'http://infocenter-services.gitlab-runner.php7.dyninno.net/server_json.php',
+			login: 'services_infocenter',
+			password: isProd ? 'Chwpjx2UlSM0pGMAQTnb' : 'Chwpjx2UlSM0pGMAQTnb',
+		},
+	},
 
 	apolloAuthToken: env.apolloAuthToken,
 
@@ -70,7 +83,11 @@ let Config = {
 	},
 };
 
+let fetching = null;
 Config.getConfig = async () => {
+	if (fetching) {
+		return fetching;
+	}
 	if (!Config.production) {
 		let defaults = {
 			NODE_ENV: 'development',
@@ -88,8 +105,8 @@ Config.getConfig = async () => {
 			env[k] = env[k] || v;
 		}
 	}
-	await Config.fetchExternalConfig();
-	return Config;
+	fetching = Config.fetchExternalConfig().then(() => Config);
+	return fetching;
 };
 
 module.exports = Config;

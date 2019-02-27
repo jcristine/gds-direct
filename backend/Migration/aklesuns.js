@@ -1,4 +1,6 @@
 
+let Airports = require('../Repositories/Airports.js');
+
 let Emc = require('../LibWrappers/Emc');
 
 module.exports.migrations = [
@@ -198,5 +200,32 @@ module.exports.migrations = [
 			{"name":"NEW_GDS_DIRECT_PASTE_ITINERARY","project":"GDSD","description":"Same as in RBS"},
 			{"name":"NEW_GDS_DIRECT_HHMCO","project":"GDSD","description":"Same as in RBS"},
 		]),
+	},
+	{
+		name: 'GRECT/2019.02.27002-create-airports-table',
+		perform: (db) => db.query([
+			"CREATE TABLE `airports` (",
+			"  `iata_code` char(3) COLLATE utf8_unicode_ci NOT NULL,",
+			"  `name` varchar(250) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',",
+			"  `country_code` char(2) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',",
+			"  `country_code_3` char(3) COLLATE utf8_unicode_ci DEFAULT NULL,",
+			"  `country_name` varchar(30) COLLATE utf8_unicode_ci DEFAULT NULL,",
+			"  `state_code` char(2) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',",
+			"  `city_code` char(3) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',",
+			"  `city_name` varchar(30) COLLATE utf8_unicode_ci DEFAULT NULL,",
+			"  `lat` decimal(7,4) DEFAULT NULL,",
+			"  `lon` decimal(7,4) DEFAULT NULL,",
+			"  `tz` varchar(255) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',",
+			"  `updated_dt` datetime DEFAULT NULL,",
+			"  `region_id` int(11) DEFAULT NULL,",
+			"  `region_name` varchar(30) COLLATE utf8_unicode_ci DEFAULT NULL,",
+			"  `alternatives` tinytext COLLATE utf8_unicode_ci,",
+			"  PRIMARY KEY (`iata_code`)",
+			") ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci",
+		].join('\n')),
+	},
+	{
+		name: 'GRECT/2019.02.27002-fetch-airports',
+		perform: (db) => Airports.updateFromService(),
 	},
 ];

@@ -14,11 +14,11 @@ try {
 	} else {
 		client.setLink('http://auth.gitlab-runner.snx702.dyninno.net/jsonService.php');
 	}
-	client.setLogin(Config.serviceUserLogin);
-	client.setPassword(Config.serviceUserPass);
-	client.setToken(Config.serviceToken);
+	client.setLogin(Config.external_service.emc.login);
+	client.setPassword(Config.external_service.emc.password);
+	client.setToken(Config.external_service.emc.token);
 	client.setDiagServiceProjectId(Config.mantisId);
-	client.setProject(Config.projectName);
+	client.setProject(Config.external_service.emc.projectName);
 } catch (exc) {
 	client = {
 		sessionInfo: (token) => {
