@@ -102,6 +102,7 @@ class StringUtil
         $i = 0;
         for ($char of php.str_split($pattern)) {
             if (php.in_array($char, php.array_keys($data))) {
+                $map[$char] = $map[$char] || {};
                 if (php.isset($map[$char]['firstPosition'])) {
                     $map[$char]['lastPosition'] = $i;
                 } else {

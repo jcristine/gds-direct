@@ -140,7 +140,7 @@ php.rtrim = (str, chars = ' \n\t') => {
 php.trim = (value, chars = ' \n\t') => php.ltrim(php.rtrim(value, chars), chars);
 php.strval = strval;
 php.strtoupper = (value) => strval(value).toUpperCase();
-php.substr = (str, from, length) => str.slice(from, length !== undefined ? from + length : undefined);
+php.substr = (str, from, length) => strval(str).slice(from, length !== undefined ? from + length : undefined);
 php.mb_substr = php.substr; // simple substr() behaves a bit differently with unicode, but nah
 php.str_pad = ($input, $pad_length, $pad_string = " ", $pad_type = php.STR_PAD_RIGHT) => {
 	if ($pad_type == php.STR_PAD_RIGHT) {
@@ -395,7 +395,7 @@ php.array_reverse = (arr) => Object.values(arr).reverse();
 php.array_pad = (array, size, value) => {
 	array = Object.values(array);
 	let absLen = Math.abs(size);
-	let restVals = Array(absLen).fill(value + '');
+	let restVals = Array(absLen).fill(value);
 	if (size > 0) {
 		return array.concat(restVals).slice(0, absLen);
 	} else if (size < 0) {

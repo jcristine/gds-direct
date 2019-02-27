@@ -12,6 +12,7 @@ const PricingParserTest = require("./backend/Transpiled/Gds/Parsers/Apollo/Prici
 const AirAvailabilityParserTest = require("./backend/Transpiled/Gds/Parsers/Apollo/AirAvailabilityParserTest");
 const TerminalServiceTest = require("./backend/Transpiled/App/Services/TerminalServiceTest");
 const PnrHistoryParserTest = require('./backend/Transpiled/Gds/Parsers/Apollo/PnrHistoryParserTest.js');
+const DisplayHistoryActionHelperTest = require('./backend/Transpiled/Rbs/GdsDirect/Actions/Apollo/DisplayHistoryActionHelperTest.js');
 
 console.log('Starting unit tests');
 
@@ -27,6 +28,7 @@ let tests = [
 	.concat(new AirAvailabilityParserTest().getTests())
 	.concat(new TerminalServiceTest().getTests())
 	.concat(new PnrHistoryParserTest().getTests())
+	.concat(new DisplayHistoryActionHelperTest().getTests())
 	;
 
 let oks = 0;
