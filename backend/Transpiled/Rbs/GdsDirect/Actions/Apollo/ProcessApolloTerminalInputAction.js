@@ -31,13 +31,13 @@ const ImportPqApolloAction = require("./ImportPqApolloAction");
 const importPnrFromDumpsBrief = require("../../../../../GdsHelpers/RbsUtils").importPnrFromDumpsBrief;
 const PnrHistoryParser = require('../../../../Gds/Parsers/Apollo/PnrHistoryParser.js');
 const DisplayHistoryActionHelper = require('./DisplayHistoryActionHelper.js');
+const GetMultiPccTariffDisplayAction = require('../../../../Rbs/GdsDirect/Actions/Common/GetMultiPccTariffDisplayAction.js');
 
 let php = require('../../../../php.js');
 
 /** @debug */
 var require = translib.stubRequire;
 
-const GetMultiPccTariffDisplayAction = require('../../../../Rbs/GdsDirect/Actions/Common/GetMultiPccTariffDisplayAction.js');
 const FareDisplayDomesticParser = require('../../../../Gds/Parsers/Apollo/FareDisplayDomesticParser.js');
 const FareDisplayInternationalParser = require('../../../../Gds/Parsers/Apollo/FareDisplayInternationalParser.js');
 const TariffDisplayParser = require('../../../../Gds/Parsers/Apollo/TariffDisplay/TariffDisplayParser.js');
@@ -902,7 +902,7 @@ class ProcessApolloTerminalInputAction {
 		return this.bookItinerary($newSegs, !$allowCutting);
 	}
 
-	getMultiPccTariffDisplay($cmd) {
+	async getMultiPccTariffDisplay($cmd) {
 		return (new GetMultiPccTariffDisplayAction()).execute($cmd, this.$statefulSession);
 	}
 

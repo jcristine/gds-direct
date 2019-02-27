@@ -107,7 +107,9 @@ let transformCalledCommand = (rec, gds) => {
 	let output = rec.output;
 	if (['galileo', 'apollo'].includes(gds)) {
 		cmd = encodeTpCmdForCms(cmd);
-		output = wrap(rec.output);
+		if (!rec.noWrap) {
+			output = wrap(rec.output);
+		}
 		output = encodeTpOutputForCms(output);
 	} else if (gds === 'amadeus') {
 		// they are using past century macs apparently - with just \r as a line break...
