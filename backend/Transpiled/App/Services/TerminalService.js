@@ -202,8 +202,10 @@ class TerminalService
 
 					tabCommands: calledCommands
 						.map(call => call.tabCommands)
-						.reduce((a,b) => a.concat(b), []),
-					clearScreen: rbsResp.clearScreen,
+						.reduce((a,b) => a.concat(b), [])
+						.filter(cmd => cmd.trim()),
+					clearScreen: rbsResp.clearScreen || rbsResp.calledCommands
+						.filter(rec => rec.clearScreen).length > 0,
 					pricingCmd: rbsResp.sessionInfo.pricingCmd,
 					canCreatePq: rbsResp.sessionInfo.canCreatePq,
 					canCreatePqErrors: rbsResp.sessionInfo.canCreatePqErrors,

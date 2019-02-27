@@ -4,6 +4,8 @@ const StatefulSession = require("../GdsHelpers/StatefulSession.js");
 const AreaSettings = require("../Repositories/AreaSettings");
 const ItineraryParser = require("../Transpiled/Gds/Parsers/Apollo/Pnr/ItineraryParser");
 const ProcessApolloTerminalInputAction = require("../Transpiled/Rbs/GdsDirect/Actions/Apollo/ProcessApolloTerminalInputAction");
+const CommandParser = require("../Transpiled/Gds/Parsers/Apollo/CommandParser");
+const matchAll = require("../Utils/Str").matchAll;
 const nonEmpty = require("../Utils/Rej").nonEmpty;
 
 // this is not complete list
@@ -102,15 +104,34 @@ let makeGrectResult = (calledCommands, fullState) => {
 	});
 };
 
+let isScreenCleaningCommand = (rec, gds) => {
+	if (gds === 'apollo') {
+		let type = rec.type || CommandParser.parse(rec.cmd);
+		return ['seatMap', 'changeArea', 'ignoreKeepPnr', 'reorderSegments'].includes(type)
+			|| rec.cmd.startsWith('A')
+			|| rec.cmd.startsWith('*')
+			|| rec.cmd.startsWith('$')
+			|| rec.cmd.startsWith('MDA')
+			;
+	} else {
+		// TODO: rest GDS-es when we parse them
+		return false;
+	}
+};
+
 let transformCalledCommand = (rec, gds) => {
 	let cmd = rec.cmd;
 	let output = rec.output;
+	let type = rec.type;
+	let tabCommands = [];
 	if (['galileo', 'apollo'].includes(gds)) {
 		cmd = encodeTpCmdForCms(cmd);
 		if (!rec.noWrap) {
 			output = wrap(rec.output);
 		}
 		output = encodeTpOutputForCms(output);
+		tabCommands = matchAll(/>([^>]+?)(?:·|;)/g, output).map(m => m[1]);
+		tabCommands = [...new Set(tabCommands)];
 	} else if (gds === 'amadeus') {
 		// they are using past century macs apparently - with just \r as a line break...
 		output = output.replace(/\r\n|\r/g, '\n');
@@ -118,9 +139,11 @@ let transformCalledCommand = (rec, gds) => {
 
 	return {
 		cmd: cmd,
-		type: rec.type,
+		type: type,
 		output: output,
 		duration: rec.duration || null,
+		clearScreen: isScreenCleaningCommand(rec, gds),
+		tabCommands: tabCommands,
 	};
 };
 
