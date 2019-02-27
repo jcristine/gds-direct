@@ -229,3 +229,13 @@ exports.getLastCommands = (reqBody) => {
 		};
 	});
 };
+
+exports.clearBuffer = (rqBody) => {
+	let agentId = rqBody.agentId;
+	let requestId = rqBody.travelRequestId || 0;
+	return Db.with(db => db.query([
+		'DELETE FROM terminalBuffering',
+		'WHERE agentId = ?',
+		'  AND requestId = ?',
+	].join('\n'), [agentId, requestId]));
+};
