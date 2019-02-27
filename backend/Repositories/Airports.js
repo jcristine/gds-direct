@@ -52,3 +52,33 @@ exports.updateFromService = async () => {
 		sqlResult: written,
 	};
 };
+
+exports.findByCode = (code) =>
+	Db.with(db => db.fetchOne({
+		table: TABLE,
+		where: [['iata_code', '=', code]],
+	}));
+
+exports.findByCity = (code) =>
+	Db.with(db => db.fetchOne({
+		table: TABLE,
+		where: [['city_code', '=', code]],
+	}));
+
+exports.getRegionNames = () => {
+	let sql = 'SELECT DISTINCT region_id, region_name FROM airports';
+	return Db.with(db => db.query(sql))
+		.then($rows => php.array_combine(
+			$rows.map(r => r.region_id),
+			$rows.map(r => r.region_name),
+		));
+};
+
+exports.getCountryNames = () => {
+	let sql = 'SELECT DISTINCT country_code, country_name FROM airports';
+	return Db.with(db => db.query(sql))
+		.then($rows => php.array_combine(
+			$rows.map(r => r.country_code),
+			$rows.map(r => r.country_name),
+		));
+};

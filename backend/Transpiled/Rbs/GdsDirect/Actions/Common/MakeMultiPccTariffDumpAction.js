@@ -14,22 +14,26 @@ class MakeMultiPccTariffDumpAction {
 		$pccToJobResult = php.array_combine(php.array_column($finishedJobs, 'pcc'),
 			php.array_column($finishedJobs, 'jobResult'));
 		$header = (($pccToJobResult[$currentPcc] || {})['result'] || {})['header'];
-		$fareSelection = $header['fareSelection'] || 'PUBLIC\/PRIVATE';
 		$infoLines = [];
-		if ($lastUpdatedDate = $header['lastUpdatedDate'] || null) {
-			$infoLines.push('FARES LAST UPDATED ' + $lastUpdatedDate['raw'] +
-				(php.empty($header['lastUpdatedTime']) ? '' : ' ' + $header['lastUpdatedTime']['raw']));
+		if ($header) {
+			$fareSelection = $header['fareSelection'];
+			if ($lastUpdatedDate = $header['lastUpdatedDate'] || null) {
+				$infoLines.push('FARES LAST UPDATED ' + $lastUpdatedDate['raw'] +
+					(php.empty($header['lastUpdatedTime']) ? '' : ' ' + $header['lastUpdatedTime']['raw']));
+			}
+			if ($commandCopy = $header['commandCopy'] || null) {
+				$infoLines.push('>' + $commandCopy);
+			}
+			if ($from = $header['departureCity'] || null) {
+				$to = $header['destinationCity'] || null;
+				$weekDay = $header['departureDayOfWeek']['raw'] || '';
+				$date = $header['departureDate']['raw'] || '';
+				$infoLines.push($from + '-' + $to + ' ' + $weekDay + '-' + $date);
+			}
+			$infoLines = php.array_merge($infoLines, $header['unparsedLines'] || []);
+		} else {
+			$fareSelection = 'PUBLIC\/PRIVATE';
 		}
-		if ($commandCopy = $header['commandCopy'] || null) {
-			$infoLines.push('>' + $commandCopy);
-		}
-		if ($from = $header['departureCity'] || null) {
-			$to = $header['destinationCity'] || null;
-			$weekDay = $header['departureDayOfWeek']['raw'] || '';
-			$date = $header['departureDate']['raw'] || '';
-			$infoLines.push($from + '-' + $to + ' ' + $weekDay + '-' + $date);
-		}
-		$infoLines = php.array_merge($infoLines, $header['unparsedLines'] || []);
 		$pccs = php.array_keys($pccToJobResult);
 		$pccs = php.array_diff($pccs, [$currentPcc]);
 		$pccs = php.array_merge([$currentPcc], $pccs);

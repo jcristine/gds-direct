@@ -14,6 +14,7 @@ const TerminalServiceTest = require("./backend/Transpiled/App/Services/TerminalS
 const PnrHistoryParserTest = require('./backend/Transpiled/Gds/Parsers/Apollo/PnrHistoryParserTest.js');
 const DisplayHistoryActionHelperTest = require('./backend/Transpiled/Rbs/GdsDirect/Actions/Apollo/DisplayHistoryActionHelperTest.js');
 const MakeMultiPccTariffDumpActionTest = require('./backend/Transpiled/Rbs/GdsDirect/Actions/Common/MakeMultiPccTariffDumpActionTest.js');
+const GetMultiPccTariffDisplayActionTest = require('./backend/Transpiled/Rbs/GdsDirect/Actions/Common/GetMultiPccTariffDisplayActionTest.js');
 
 console.log('Starting unit tests');
 
@@ -31,6 +32,7 @@ let tests = [
 	.concat(new PnrHistoryParserTest().getTests())
 	.concat(new DisplayHistoryActionHelperTest().getTests())
 	.concat(new MakeMultiPccTariffDumpActionTest().getTests())
+	.concat(new GetMultiPccTariffDisplayActionTest().getTests())
 	;
 
 let oks = 0;

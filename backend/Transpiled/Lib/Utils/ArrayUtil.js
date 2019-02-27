@@ -1,5 +1,7 @@
 // namespace Lib\Utils;
 
+let php = require('../../php.js');
+
 class ArrayUtil {
 	static overwrite($originalArray, $newArray) {
 		let $key, $value;

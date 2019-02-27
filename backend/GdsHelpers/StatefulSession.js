@@ -37,7 +37,7 @@ let StatefulSession = async (session) => {
 			} else {
 				running = NotImplemented('Unsupported stateful GDS - ' + gds);
 			}
-			running.catch(exc => logExc('ERROR: Failed to run cmd [' + cmd + '] in GDS' + cmd, session.logId, exc));
+			running.catch(exc => logExc('ERROR: Failed to run cmd [' + cmd + '] in GDS', session.logId, exc));
 			return running.then(gdsResult => {
 				let type = null;
 				try {
@@ -62,6 +62,8 @@ let StatefulSession = async (session) => {
 		},
 		getFullState: () => fullState,
 		gds: gds,
+		logit: (msg, data) => logit(msg, session.logId, data),
+		logExc: (msg, exc) => logExc(msg, session.logId, exc),
 
 		// following is RBS CmsStatefulSession.php implementation
 

@@ -87,6 +87,14 @@ class TestCase
 		}
 	}
 
+	assertEmpty(value, msg) {
+		if (php.empty(value)) {
+			return this._ok();
+		} else {
+			return this._err('Failed asserting that value is empty - ' + msg);
+		}
+	}
+
 	assertEquals(expected, actual, msg) {
 		if (expected == actual) {
 			return this._ok();

@@ -9,8 +9,8 @@ let callRbs = (functionName, params) => {
 	let logId = 'rbs.5bf6e431.9577485';
 	let rbsUrl = Config.production
 		? 'http://rbs-asaptickets.lan.dyninno.net/jsonExternalInterface.php?log_id=' + logId
-		// : 'http://st-rbs.sjager.php7.dyninno.net/jsonExternalInterface.php?log_id=' + logId;
-		: 'http://rbs-dev.aklesuns.php7.dyninno.net/jsonExternalInterface.php?log_id=' + logId;
+		: 'http://st-rbs.sjager.php7.dyninno.net/jsonExternalInterface.php?log_id=' + logId;
+		// : 'http://rbs-dev.aklesuns.php7.dyninno.net/jsonExternalInterface.php?log_id=' + logId;
 
 	let rbsPassword = Config.RBS_PASSWORD;
 	if (!rbsPassword) {
@@ -48,12 +48,12 @@ let callRbs = (functionName, params) => {
 			if (resp.result.response_code == 104) {
 				return BadRequest('RBS says passed params are invalid - ' + errorStr);
 			} else {
-				return BadGateway('RBS service responded with error - ' + resp.result.response_code + ' - ' + errorStr);
+				return BadGateway('RBS returned error - ' + resp.result.response_code + ' - ' + errorStr);
 			}
 		} else if (resp.result.response_code == 3) {
-			let rpcErrors = resp.result.errors;
-			let messages = resp.result.result.messages;
-			return NotImplemented('RBS service cannot satisfy your request - ' + JSON.stringify(messages) + ' - ' + JSON.stringify(rpcErrors));
+			let rpcErrors = resp.result.errors || [];
+			let messages = (resp.result.result || {}).messages || [];
+			return NotImplemented('RBS cant satisfy - ' + JSON.stringify(messages.concat(rpcErrors)));
 		} else {
 			return Promise.resolve(resp);
 		}
@@ -120,6 +120,14 @@ RbsClient.closeSession = (session) => {
 		gds: session.context.gds,
 		sessionId: session.gdsData.rbsSessionId,
 	});
+};
+
+/**
+ * @param {IGetTariffDisplayRq} params
+ * @return Promise<IGetTariffDisplayRs>
+ */
+RbsClient.getTariffDisplay = (params) => {
+	return callRbs('terminal.getTariffDisplay', params);
 };
 
 module.exports = RbsClient;

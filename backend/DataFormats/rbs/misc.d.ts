@@ -40,3 +40,71 @@ interface IRebuildItineraryRq {
         }
     ],
 }
+
+interface IGetTariffDisplayRq {
+    "maxFares": "40",
+    "timeout": "13.333333333333",
+    "departureDate": "2019-02-26",
+    "returnDate": "",
+    "departureAirport": "CHI",
+    "destinationAirport": "FRA",
+    "pcc": "LAXGO3106",
+    "gds": "amadeus",
+    "fareType": "private"
+}
+
+interface IGetTariffDisplayRs {
+    "status": "OK",
+    "logId": "rbs.5c6c9bc4.bb9e5f9",
+    "result": {
+        "logId": "rbs.5c6c9bc4.bb9e5f9",
+        "response_code": 1,
+        "response_msg": "success",
+        "errors": string[],
+        "result": {
+            "currency": "USD",
+            "header": {"commandCopy":"FQDCHIFRA/26FEB19/R,U"},
+            "fares": [
+                {
+                    "lineNumber": "06",
+                    "isPrivateFare": true,
+                    "fareType": "airlinePrivate",
+                    "isRoundTrip": true,
+                    "airline": "DL",
+                    "fare": "363",
+                    "seasonStart": null,
+                    "seasonEnd": null,
+                    "fareBasis": "UL5X57B1",
+                    "bookingClass": null,
+                    "advancePurchase": 50,
+                    "minStay": {
+                        "raw": "7+",
+                        "hasMoreRules": true,
+                        "type": "amount",
+                        "amount": "7",
+                        "units": "days"
+                    },
+                    "maxStay": {
+                        "raw": "12M",
+                        "hasMoreRules": false,
+                        "type": "amount",
+                        "amount": "12",
+                        "units": "months"
+                    },
+                    "penalties": {
+                        "raw": "NRF",
+                        "type": "nonRefundable",
+                        "value": null,
+                        "hasMoreRules": false
+                    },
+                    "ticketDesignator": null,
+                    "oceanicFlight": {"raw":"AT"},
+                    "isRoutingBased": false,
+                    "isMileageBased": true,
+                    "departure": "CHI",
+                    "destination": "FRA"
+                }
+            ]
+        }
+    }
+}
