@@ -249,7 +249,7 @@ app.post('/admin/terminal/sessionsGet', toHandleHttp(async rqBody => {
 
 app.get('/emcLoginUrl', toHandleHttp(async rqBody => {
 	let returnUrl = rqBody.returnUrl;
-	let result = await Emc.client.getLoginPage(Config.projectName, returnUrl);
+	let result = await Emc.client.getLoginPage(Config.external_service.emc.projectName, returnUrl);
 	return {emcLoginUrl: result.data.data};
 }));
 app.get('/authorizeEmcToken', toHandleHttp(async rqBody => {
