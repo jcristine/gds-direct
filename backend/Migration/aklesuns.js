@@ -228,4 +228,10 @@ module.exports.migrations = [
 		name: 'GRECT/2019.02.27002-fetch-airports',
 		perform: (db) => Airports.updateFromService(),
 	},
+	{
+		name: 'GRECT/2019.02.27004-add-key-by-city',
+		perform: (db) => db.query([
+			'ALTER TABLE airports ADD INDEX city_code (city_code);',
+		].join('\n')),
+	},
 ];
