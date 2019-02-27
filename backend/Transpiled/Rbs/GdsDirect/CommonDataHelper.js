@@ -124,7 +124,7 @@ class CommonDataHelper
      * '   6 SSRCTCEQRHK1/XXXXXXXXXXXY//YAHOO+COM-1PANDEY/DEVENDRA'
      * '   7 SSRCTCMQRHK1/XXXXXXXXX27-1PANDEY/DEVENDRA'
      */
-    static maskSsrContactInfo($output, $lettersShown, $digitsShown)  {
+    static maskSsrContactInfo($output, $lettersShown = 1, $digitsShown = 2)  {
         let $lines, $line, $lineNumber, $ssrStart, $emailRegex, $phoneRegex, $matches, $_, $prefix, $masked, $postfix;
         $lines = [];
         for ($line of Object.values(StringUtil.lines($output))) {

@@ -5,6 +5,8 @@ const AreaSettings = require("../Repositories/AreaSettings");
 const ItineraryParser = require("../Transpiled/Gds/Parsers/Apollo/Pnr/ItineraryParser");
 const ProcessApolloTerminalInputAction = require("../Transpiled/Rbs/GdsDirect/Actions/Apollo/ProcessApolloTerminalInputAction");
 const CommandParser = require("../Transpiled/Gds/Parsers/Apollo/CommandParser");
+const Misc = require("../Transpiled/Lib/Utils/Misc");
+const CommonDataHelper = require("../Transpiled/Rbs/GdsDirect/CommonDataHelper");
 const matchAll = require("../Utils/Str").matchAll;
 const nonEmpty = require("../Utils/Rej").nonEmpty;
 
@@ -112,6 +114,7 @@ let isScreenCleaningCommand = (rec, gds) => {
 			|| rec.cmd.startsWith('*')
 			|| rec.cmd.startsWith('$')
 			|| rec.cmd.startsWith('MDA')
+			|| rec.cmd.startsWith('MT')
 			;
 	} else {
 		// TODO: rest GDS-es when we parse them
@@ -119,7 +122,9 @@ let isScreenCleaningCommand = (rec, gds) => {
 	}
 };
 
-let transformCalledCommand = (rec, gds) => {
+let transformCalledCommand = (rec, stateful) => {
+	let gds = stateful.gds;
+	let agent = stateful.getAgent();
 	let cmd = rec.cmd;
 	let output = rec.output;
 	let type = rec.type;
@@ -136,7 +141,12 @@ let transformCalledCommand = (rec, gds) => {
 		// they are using past century macs apparently - with just \r as a line break...
 		output = output.replace(/\r\n|\r/g, '\n');
 	}
-
+	if (!agent.canSeeCcNumbers()) {
+		output = Misc.maskCcNumbers(output)
+	}
+	if (!agent.canSeeContactInfo()) {
+		output = CommonDataHelper.maskSsrContactInfo(output);
+	}
 	return {
 		cmd: cmd,
 		type: type,
@@ -207,6 +217,6 @@ module.exports = async (session, rqBody) => {
 		.then(grectResult => ({
 			...grectResult,
 			calledCommands: grectResult.calledCommands
-				.map(r => transformCalledCommand(r, gds)),
+				.map(r => transformCalledCommand(r, stateful)),
 		}));
 };

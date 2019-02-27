@@ -222,7 +222,7 @@ php.preg_split = (regex, str, limit = -1, flags = 0) => {
 	return str.split(regex);
 };
 php.preg_replace = (pattern, replace, str) => {
-	let reg = new RegExp(pattern);
+	let reg = normReg(pattern);
 	if (!reg.flags.includes('g')) {
 		reg = new RegExp(reg.source, reg.flags + 'g');
 	}
