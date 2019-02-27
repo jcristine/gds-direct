@@ -130,11 +130,10 @@ class TestCase
 		return this.getTestMapping()
 			.map(([provide, test]) => {
 				return provide.call(this).map((dataset, i) => async () => {
-					let [input, expected] = dataset;
 					let testEvents = [];
 					this.log = (e) => testEvents.push(e);
 					try {
-						await test.call(this, input, expected);
+						await test.call(this, ...dataset);
 					} catch (exc) {
 						testEvents.push({type: 'error', msg: 'Uncaught exception ' + exc.message + '\n' + exc.stack});
 					}

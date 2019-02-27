@@ -207,6 +207,25 @@ class Fp {
 		$result.push($currentChunk);
 		return $result;
 	}
+
+	static sortBy(getValue, arr) {
+		return Object.values(arr)
+			// see https://stackoverflow.com/a/31213792/2750743
+			// v8 does not seem to keep order of same values
+			.map((data, idx) => ({data, idx}))
+			.sort((a,b) => {
+				let aval = getValue(a.data);
+				let bval = getValue(b.data);
+				if (aval > bval) {
+					return 1;
+				} else if (bval > aval) {
+					return -1;
+				} else {
+					return a.idx - b.idx;
+				}
+			})
+			.map(a => a.data);
+	}
 }
 
 module.exports = Fp;

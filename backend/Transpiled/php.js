@@ -68,14 +68,14 @@ php.json_decode = (str) => str ? JSON.parse(str) : null;
 php.strtotime = (dtStr) => {
 	if (dtStr === 'now') {
 		return Date.now() / 1000;
-	} else if (dtStr.match(/^\d{4}-\d{2}-\d{2}(\d{2}:\d{2}:\d{2})?$/)) {
+	} else if (dtStr.match(/^\d{4}-\d{2}-\d{2}( \d{2}:\d{2}:\d{2})?$/)) {
 		return Date.parse(dtStr + ' Z') / 1000;
 	} else if (dtStr.match(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(\.\d*|)Z$/)) {
 		return Date.parse(dtStr) / 1000;
 	} else if (dtStr.match(/^\d{2}:\d{2} [AP]M$/)) {
 		return Date.parse('2016-01-01 ' + dtStr + ' Z') / 1000;
 	} else {
-		throw new Error('Unsupported date str format - ' + dtStr);
+		throw new Error('Unsupported date str format - ' + JSON.stringify(dtStr));
 	}
 };
 php.date = (format, epoch) => {
@@ -139,6 +139,7 @@ php.rtrim = (str, chars = ' \n\t') => {
 };
 php.trim = (value, chars = ' \n\t') => php.ltrim(php.rtrim(value, chars), chars);
 php.strval = strval;
+php.floatval = num => +num;
 php.strtoupper = (value) => strval(value).toUpperCase();
 php.substr = (str, from, length) => strval(str).slice(from, length !== undefined ? from + length : undefined);
 php.mb_substr = php.substr; // simple substr() behaves a bit differently with unicode, but nah

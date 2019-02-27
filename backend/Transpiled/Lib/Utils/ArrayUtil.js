@@ -12,11 +12,11 @@ class ArrayUtil {
 	}
 
 	static getFirst($arr) {
-		return $arr[0];
+		return Object.values($arr)[0];
 	}
 
 	static getLast($arr) {
-		return $arr.slice(-1)[0];
+		return Object.values($arr).slice(-1)[0];
 	}
 
 	/**
