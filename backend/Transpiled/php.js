@@ -247,6 +247,7 @@ let normMatch = match => {
 };
 php.preg_match = (pattern, str, dest = [], phpFlags = null) => {
 	pattern = normReg(pattern);
+	str = strval(str);
 	if (phpFlags) {
 		throw new Error('Fourth preg_match argument, php flags, is not supported - ' + phpFlags);
 	} else {
@@ -254,6 +255,7 @@ php.preg_match = (pattern, str, dest = [], phpFlags = null) => {
 		if (matches) {
 			Object.assign(dest, matches);
 		}
+		delete(dest.groups);
 		return matches;
 	}
 };

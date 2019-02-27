@@ -30,6 +30,7 @@ const RepriceInAnotherPccAction = require('../../../../Rbs/GdsDirect/Actions/Com
 const AirAvailabilityParser = require('../../../../Gds/Parsers/Apollo/AirAvailabilityParser.js');
 const ImportPqApolloAction = require("./ImportPqApolloAction");
 const importPnrFromDumpsBrief = require("../../../../../GdsHelpers/RbsUtils").importPnrFromDumpsBrief;
+const PnrHistoryParser = require('../../../../Gds/Parsers/Apollo/PnrHistoryParser.js');
 
 let php = require('../../../../php.js');
 
@@ -39,11 +40,8 @@ var require = translib.stubRequire;
 const GetMultiPccTariffDisplayAction = require('../../../../Rbs/GdsDirect/Actions/Common/GetMultiPccTariffDisplayAction.js');
 const FareDisplayDomesticParser = require('../../../../Gds/Parsers/Apollo/FareDisplayDomesticParser.js');
 const FareDisplayInternationalParser = require('../../../../Gds/Parsers/Apollo/FareDisplayInternationalParser.js');
-const PnrHistoryParser = require('../../../../Gds/Parsers/Apollo/PnrHistoryParser.js');
 const TariffDisplayParser = require('../../../../Gds/Parsers/Apollo/TariffDisplay/TariffDisplayParser.js');
 const RetrieveApolloTicketsAction = require('../../../../Rbs/Process/Apollo/ImportPnr/Actions/RetrieveApolloTicketsAction.js');
-const Itinerary = require('../../../../Rbs/TravelDs/Itinerary.js');
-const PtcPricing = require('../../../../Rbs/TravelDs/PtcPricing.js');
 
 class ProcessApolloTerminalInputAction {
 	useXml($flag) {
@@ -503,7 +501,7 @@ class ProcessApolloTerminalInputAction {
 	}
 
 	// TODO: use runCmd everywhere instead (to include duration and stuff)
-	async runCommand($cmd, $fetchAll) {
+	async runCommand($cmd, $fetchAll = true) {
 		return this.runCmd($cmd, $fetchAll).then(rec => rec.output);
 	}
 
