@@ -21,6 +21,7 @@ console.log('Starting unit tests');
 let tests = [
 	() => 3 > 4 ? 'Your code says that 3 > 4, this is wrong' : null,
 	() => 5 < 4 ? Promise.resolve('Five can not be less than four, silly') : null,
+	() => 5 > 4 ? Promise.resolve('Purposely failing test to check failed pipeline emails') : null,
 ].concat(new ItineraryParserTest().getTests())
 	.concat(new CommonParsersHelperTest().getTests())
 	.concat(new CommandParserTest().getTests())
