@@ -2,6 +2,7 @@
 let Airports = require('../Repositories/Airports.js');
 
 let Emc = require('../LibWrappers/Emc');
+const Pccs = require("../Repositories/Pccs.js");
 
 module.exports.migrations = [
 	{
@@ -233,5 +234,31 @@ module.exports.migrations = [
 		perform: (db) => db.query([
 			'ALTER TABLE airports ADD INDEX city_code (city_code);',
 		].join('\n')),
+	},
+	{
+		name: 'GRECT/2019.02.28002-create-pccs-table',
+		perform: (db) => db.query([
+			"CREATE TABLE `pccs` (",
+			"  `gds` varchar(10) COLLATE utf8_unicode_ci NOT NULL,",
+			"  `pcc` varchar(9) COLLATE utf8_unicode_ci NOT NULL,",
+			"  `consolidator` varchar(50) COLLATE utf8_unicode_ci NOT NULL,",
+			"  `pcc_type` varchar(50) COLLATE utf8_unicode_ci NOT NULL,",
+			"  `arc_type` varchar(50) COLLATE utf8_unicode_ci DEFAULT NULL,",
+			"  `content_type` varchar(50) COLLATE utf8_unicode_ci DEFAULT NULL,",
+			"  `description` varchar(50) COLLATE utf8_unicode_ci DEFAULT NULL,",
+			"  `arc_nr` varchar(20) COLLATE utf8_unicode_ci DEFAULT NULL,",
+			"  `dk_number` varchar(20) COLLATE utf8_unicode_ci DEFAULT NULL,",
+			"  `point_of_sale_country` char(2) COLLATE utf8_unicode_ci DEFAULT NULL,",
+			"  `point_of_sale_city` char(3) COLLATE utf8_unicode_ci DEFAULT NULL,",
+			"  `default_currency` char(3) COLLATE utf8_unicode_ci DEFAULT NULL,",
+			"  `ticket_mask_pcc` varchar(9) COLLATE utf8_unicode_ci DEFAULT NULL,",
+			"  `updated_dt` datetime DEFAULT NULL,",
+			"  UNIQUE KEY `gds` (`gds`,`pcc`)",
+			") ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci",
+		].join('\n')),
+	},
+	{
+		name: 'GRECT/2019.02.28002-fetch-pccs-2',
+		perform: (db) => Pccs.updateFromService(),
 	},
 ];

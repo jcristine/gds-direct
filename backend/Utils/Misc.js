@@ -1,4 +1,8 @@
 
+let PresistentHttpRq = require('./PersistentHttpRq.js');
+const BadGateway = require("./Rej").BadGateway;
+let querystring = require('querystring');
+
 exports.hrtimeToDecimal = (hrtime) => {
 	let [seconds, nanos] = hrtime;
 	let rest = ('0'.repeat(9) + nanos).slice(-9);
@@ -116,3 +120,35 @@ exports.timeout = (seconds, promise) => {
 		),
 	]);
 };
+
+/**
+ * this function makes a HTTP request to a service following the protocol created
+ * by A. Prokopchuk, used across our company, common names of this protocol are:
+ * "IQ JSON" (in RBS), "External Interface" (in BO), "client-component" (in CMS)...
+ *
+ * @return {Promise<{status: 'OK', result: *}>}
+ */
+exports.iqJson = async ({url, credentials, functionName, serviceName, params}) =>
+	PresistentHttpRq({
+		url: url,
+		body: querystring.stringify({
+			credentials: JSON.stringify(credentials),
+			functionName: functionName,
+			serviceName: serviceName || null,
+			params: JSON.stringify(params || null),
+		}),
+		headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+	}).then(respRec => {
+		let body = respRec.body;
+		let resp;
+		try {
+			resp = JSON.parse(body);
+		} catch (exc) {
+			return BadGateway('Could not parse IQ service ' + functionName + ' json response - ' + body);
+		}
+		if (resp.status !== 'OK' || !('result' in resp)) {
+			return Promise.reject('Unexpected IQ service response format - ' + body);
+		} else {
+			return Promise.resolve(resp);
+		}
+	});

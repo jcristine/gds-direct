@@ -174,6 +174,7 @@ php.trim = (value, chars = ' \n\t') => php.ltrim(php.rtrim(value, chars), chars)
 php.strval = strval;
 php.floatval = num => +num;
 php.strtoupper = (value) => strval(value).toUpperCase();
+php.strtolower = (value) => strval(value).toLowerCase();
 php.substr = (str, from, length) => strval(str).slice(from, length !== undefined ? from + length : undefined);
 php.mb_substr = php.substr; // simple substr() behaves a bit differently with unicode, but nah
 php.str_pad = ($input, $pad_length, $pad_string = " ", $pad_type = php.STR_PAD_RIGHT) => {

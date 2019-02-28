@@ -40,6 +40,13 @@ let Config = {
 			login: 'services_infocenter',
 			password: isProd ? 'Chwpjx2UlSM0pGMAQTnb' : 'Chwpjx2UlSM0pGMAQTnb',
 		},
+		act: {
+			host: isProd
+				? 'http://contracts-asaptickets-lan.dyninno.net/jsonService.php'
+				: 'http://contracts.gitlab-runner.php7.dyninno.net/jsonService.php',
+			login: 'cms_json_service',
+			password: isProd ? '4plj42hy2EvhoZgKYthc' : 'SK8BmH2XrAlwgr3U6Hem',
+		},
 	},
 
 	apolloAuthToken: env.apolloAuthToken,
