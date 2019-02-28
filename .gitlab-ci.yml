@@ -4,13 +4,27 @@ stages:
 before_script:
   - node --version
 
-run-tests:
+run-tests-dev:
   stage: test
   tags:
     - dev-w13
+  except:
+    - tags
+    - production
   script:
     - bash build.sh
-    - cp .env.dist .env
-#  - test -e "/home/gitlab-runner/public_html/gds-direct-plus" || git clone $CI_REPOSITORY_URL -b master /home/gitlab-runner/public_html/gds-direct-plus --depth 1
-#  - cd /home/gitlab-runner/public_html/gds-direct-plus
+    # dev-w13 has node 9.8 sadly, it has incomplete regex support
+    - npm install --dev node@10.13.0
+    - node_modules/node/bin/node tests/runTests.js
+
+run-tests-prod:
+  stage: test
+  tags:
+    - dev-w13
+  only:
+    #- tags
+    - production
+  script:
+    # dev-w13 has node 9.8 sadly, it has incomplete regex support
+    - npm install --dev node@10.13.0
     - node_modules/node/bin/node tests/runTests.js
