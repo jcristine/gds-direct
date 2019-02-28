@@ -467,7 +467,7 @@ class ProcessApolloTerminalInputAction {
 			};
 			$errorRecords = CmsApolloTerminal.checkPricingCmdObviousPqRuleRecords($cmd);
 			$consideredErrors = Fp.filter($isConsidered, $errorRecords);
-			return !$consideredErrors;
+			return php.empty($consideredErrors);
 		} else if (php.in_array($type, ['ticketList', 'ticketMask'])) {
 			return true;
 		} else {

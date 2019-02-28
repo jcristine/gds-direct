@@ -4,6 +4,7 @@ stages:
 before_script:
   - node --version
 
+# takes 1 minute and 9 seconds
 run-tests-dev:
   tags:
     - dev-w13
@@ -16,6 +17,7 @@ run-tests-dev:
     - npm install node@10.13.0
     - node_modules/node/bin/node tests/runTests.js
 
+# takes 16 seconds, could be even faster if it did not install node 10 each time...
 run-tests-prod:
   tags:
     - dev-w13
