@@ -28,7 +28,7 @@ const translib = require('../../../../translib');
 const RepriceInAnotherPccAction = require('../../../../Rbs/GdsDirect/Actions/Common/RepriceInAnotherPccAction.js');
 const AirAvailabilityParser = require('../../../../Gds/Parsers/Apollo/AirAvailabilityParser.js');
 const ImportPqApolloAction = require("./ImportPqApolloAction");
-const importPnrFromDumpsBrief = require("../../../../../GdsHelpers/RbsUtils").importPnrFromDumpsBrief;
+const getRbsPqInfo = require("../../../../../GdsHelpers/RbsUtils").getRbsPqInfo;
 const PnrHistoryParser = require('../../../../Gds/Parsers/Apollo/PnrHistoryParser.js');
 const DisplayHistoryActionHelper = require('./DisplayHistoryActionHelper.js');
 const GetMultiPccTariffDisplayAction = require('../../../../Rbs/GdsDirect/Actions/Common/GetMultiPccTariffDisplayAction.js');
@@ -1128,7 +1128,7 @@ class ProcessApolloTerminalInputAction {
 		$store = (new ApolloPricingAdapter()).transform($parsed);
 		for ($ptcBlock of Object.values($store['pricingBlockList'])) {
 			$baseDt = this.$statefulSession.getStartDt();
-			let rbsInfo = await importPnrFromDumpsBrief($pnr.getDump(), $pricingDump);
+			let rbsInfo = await getRbsPqInfo($pnr.getDump(), $pricingDump, 'apollo').catch(exc => ({}));
 			if (rbsInfo.isPrivateFare && rbsInfo.isBrokenFare) {
 				return true;
 			}

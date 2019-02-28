@@ -19,8 +19,8 @@ let callRbs = (functionName, params) => {
 	let logId = 'rbs.5bf6e431.9577485';
 	let rbsUrl = Config.production
 		? 'http://rbs-asaptickets.lan.dyninno.net/jsonExternalInterface.php?log_id=' + logId
-		: 'http://st-rbs.sjager.php7.dyninno.net/jsonExternalInterface.php?log_id=' + logId;
-		// : 'http://rbs-dev.aklesuns.php7.dyninno.net/jsonExternalInterface.php?log_id=' + logId;
+		// : 'http://st-rbs.sjager.php7.dyninno.net/jsonExternalInterface.php?log_id=' + logId;
+		: 'http://rbs-dev.aklesuns.php7.dyninno.net/jsonExternalInterface.php?log_id=' + logId;
 
 	let rbsPassword = Config.RBS_PASSWORD;
 	if (!rbsPassword) {
@@ -138,6 +138,14 @@ RbsClient.closeSession = (session) => {
  */
 RbsClient.getTariffDisplay = (params) => {
 	return callRbs('terminal.getTariffDisplay', params);
+};
+
+/**
+ * @param {IImportPnrFromDumpsRq} params
+ * @return {Promise<IImportPnrFromDumpsRs>}
+ */
+RbsClient.importPnrFromDumps = (params) => {
+	return callRbs('pnr.importPnrFromDumps', params);
 };
 
 module.exports = RbsClient;
