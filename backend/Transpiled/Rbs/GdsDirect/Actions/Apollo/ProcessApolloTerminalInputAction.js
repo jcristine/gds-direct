@@ -1116,24 +1116,8 @@ class ProcessApolloTerminalInputAction {
 	}
 
 	async needsColonN($pricingDump, $pnr) {
-		let $parsed, $store, $ptcBlock, $baseDt;
-		try {
-			$parsed = PricingParser.parse($pricingDump);
-		} catch ($exc) {
-			$parsed = null;
-		}
-		if (!$parsed) {
-			return false;
-		}
-		$store = (new ApolloPricingAdapter()).transform($parsed);
-		for ($ptcBlock of Object.values($store['pricingBlockList'])) {
-			$baseDt = this.$statefulSession.getStartDt();
-			let rbsInfo = await getRbsPqInfo($pnr.getDump(), $pricingDump, 'apollo').catch(exc => ({}));
-			if (rbsInfo.isPrivateFare && rbsInfo.isBrokenFare) {
-				return true;
-			}
-		}
-		return false;
+		let rbsInfo = await getRbsPqInfo($pnr.getDump(), $pricingDump, 'apollo').catch(exc => ({}));
+		return rbsInfo.isPrivateFare && rbsInfo.isBrokenFare;
 	}
 
 	makeStorePricingCmd($pnr, $aliasData, $needsColonN) {
