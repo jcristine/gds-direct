@@ -85,8 +85,11 @@ let closeSession = (session) => {
 	});
 };
 
-let isExpiredExc = (exc) => {
-	return LoginTimeOut.matches(exc.httpStatusCode);
+let shouldRestart = (exc, session) => {
+	let lifetimeMs = Date.now() - session.createdMs;
+	return LoginTimeOut.matches(exc.httpStatusCode)
+		// 1 hour, to exclude cases like outdated format of gdsData
+		|| lifetimeMs > 60 * 60 * 1000;
 };
 
 /** @param reqBody = at('WebRoutes.js').normalizeRqBody() */
@@ -99,7 +102,7 @@ let runInputCmdRestartAllowed = (reqBody) => {
 		.then(session => runInSession(session, reqBody)
 			.catch(exc => {
 				logExc('WARNING: Failed to run cmd in session, restarting...', session.logId, exc);
-				return isExpiredExc(exc)
+				return shouldRestart(exc, session)
 					? runInNewSession(reqBody, exc)
 					: Promise.reject(exc);
 			}));
