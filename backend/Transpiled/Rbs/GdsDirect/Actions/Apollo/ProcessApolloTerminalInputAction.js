@@ -1062,8 +1062,21 @@ class ProcessApolloTerminalInputAction {
 		return {'calledCommands': [$cmdRecord]};
 	}
 
+	async _getSegUtc($seg) {
+		let $geoProvider = this.$statefulSession.getGeoProvider();
+		let fullDt = DateTime.decodeRelativeDateInFuture(
+			$seg.departureDate.parsed, new Date().toISOString()
+		) + ' ' + $seg.departureTime.parsed + ':00';
+		let tz = await $geoProvider.getTimezone($seg.departureAirport);
+		if (tz) {
+			return DateTime.toUtc(fullDt, tz);
+		} else {
+			return null;
+		}
+	}
+
 	async processSortItinerary() {
-		let $pnr, $pnrDump, $itinerary, $geoProvider, $getUtcTime, $getSegNum, $times, $noTz, $calledCommands, $sorted,
+		let $pnr, $pnrDump, $itinerary, $calledCommands, $sorted,
 			$cmd;
 		$pnr = await this.getCurrentPnr();
 		$pnrDump = $pnr.getDump();
@@ -1071,20 +1084,22 @@ class ProcessApolloTerminalInputAction {
 			return {'errors': ['No itinerary to sort']};
 		}
 		$itinerary = $pnr.getItinerary();
-		$geoProvider = this.$statefulSession.getGeoProvider();
-		$getUtcTime = ($seg) => null; // TODO: add Geo Provider
-		$getSegNum = ($seg) => $seg['segmentNumber'];
-		$times = Fp.map($getUtcTime, $itinerary);
-		if ($noTz = Fp.filter('is_null', $times)) {
-			return {'errors': ['No time zone for ' + php.implode(',', php.array_keys($noTz)) + '-th segment']};
-		}
+
+		let promises = $itinerary.map(async seg => {
+			let utc = await this._getSegUtc(seg);
+			return utc
+				? Promise.resolve({utc, seg})
+				: Promise.reject('No tz for seg ' + seg.segmentNumber + ' ' + seg.departureAirport);
+		});
+		let utcRecords = await Promise.all(promises);
+
 		$calledCommands = [];
-		$sorted = Fp.sortBy($getUtcTime, $itinerary);
-		if ($sorted != $itinerary) {
-			$cmd = /0/ + php.implode('|', Fp.map($getSegNum, $sorted));
-			$calledCommands.push({'cmd': $cmd, 'output': await this.runCommand($cmd)});
+		$sorted = Fp.sortBy(r => r.utc, utcRecords).map(r => r.seg);
+		if (!php.equals($sorted, $itinerary)) {
+			$cmd = /0/ + php.implode('|', Fp.map(s => s.segmentNumber, $sorted));
+			$calledCommands.push(await this.runCmd($cmd));
 		}
-		if (!$calledCommands) {
+		if (php.empty($calledCommands)) {
 			$calledCommands.push({'cmd': '*R', 'output': $pnrDump});
 		}
 		return {'calledCommands': $calledCommands};

@@ -8,6 +8,8 @@ let dbPool = mysql.createPool({
 	database: Config.DB_NAME,
 	port: Config.DB_PORT || 3306,
 	connectionLimit: 20,
+	// return datetime as string, not Date object
+	dateStrings: true,
 });
 
 /**

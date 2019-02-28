@@ -1,6 +1,9 @@
 
 // namespace Lib\Utils;
 
+let moment = require('moment-timezone');
+let Diag = require('../../../LibWrappers/Diag.js');
+
 const StringUtil = require('../../Lib/Utils/StringUtil.js');
 let php = require('../../php.js');
 
@@ -108,22 +111,27 @@ class DateTime
         return StringUtil.format($format, $vars);
     }
 
-    /**
-     * @param string $localTimeZone examples: "UTC", "America/New_York", "Africa/Porto-Novo"
-     */
-    static toUtc($localDt, $localTimeZone)  {
-        let $dtObj, $exc;
-        $localDt = php.date('Y-m-d H:i:s', php.strtotime($localDt));
-        if ($localTimeZone) {
-            try {
-                $dtObj = new require('../../DateTime.js')($localDt, new require('../../DateTimeZone.js')($localTimeZone));
-            } catch ($exc) {
-                return null;}
-            $dtObj.setTimezone(new require('../../DateTimeZone.js')('UTC'));
-            return $dtObj.format('Y-m-d H:i:s');
-        } else {
-            return null;
-        }
-    }
+	/**
+	 * @param {'2019-10-15 22:13:00'} localDt
+	 * @param {'America/New_York'} localTimeZone
+	 * @return {'2019-10-16T02:13:00.000Z'|null}
+	 */
+	static toUtc(localDt, localTimeZone) {
+		if (localTimeZone) {
+			let momented = moment.tz(localDt, localTimeZone);
+			if (momented.tz() === undefined) {
+				Diag.error('moment-timezone could not resolve tz ' + localTimeZone + ' for dt ' + localDt, new Error().stack);
+				// there will also be cases when info in db is wrong: when
+				// some country will decide to drop daylight-saving for example
+				return null;
+			} else {
+				/** @type {'2019-10-16T02:13:00.000+00:00'} */
+				let inMomentFormat = momented.utc() + '';
+				return inMomentFormat.slice(0, '2019-10-16T02:13:00.000'.length) + 'Z';
+			}
+		} else {
+			return null;
+		}
+	};
 }
 module.exports = DateTime;

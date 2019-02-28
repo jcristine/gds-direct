@@ -6,6 +6,7 @@ const SessionStateProcessor = require("../Transpiled/Rbs/GdsDirect/SessionStateP
 const hrtimeToDecimal = require("../Utils/Misc").hrtimeToDecimal;
 const {NotImplemented, BadRequest} = require("../Utils/Rej.js");
 const {logit, logExc} = require("../LibWrappers/FluentLogger.js");
+const LocationGeographyProvider = require('../Transpiled/Rbs/DataProviders/LocationGeographyProvider.js');
 
 /**
  * a generic session that can be either apollo, sabre, galileo, amadeus, etc...
@@ -82,9 +83,7 @@ let StatefulSession = async (session) => {
 			leadId: session.context.travelRequestId,
 			agentId: session.context.agentId,
 		}),
-		getGeoProvider: () => ({
-
-		}),
+		getGeoProvider: () => new LocationGeographyProvider(),
 		getLeadAgent: () => null,
 		getAgent: () => {
 			// TODO: use actual agent data (will need to migrate GDS_DIRECT_* roles from RBS)

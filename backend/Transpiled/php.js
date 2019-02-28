@@ -40,6 +40,39 @@ php.is_integer = str => {
 	let n = Math.floor(Number(str));
 	return n !== Infinity && String(n) === str;
 };
+// partial implementation
+let equals = (a, b, strict) => {
+	let occurrences = new Set();
+	let equalsImpl = (a, b) => {
+		if (strict && a === b) {
+			return true;
+		} else if (!strict && a == b) {
+			// there are probably some discrepancies
+			// between js == and php == - should check one day
+			return true;
+		} else if (occurrences.has(a) || occurrences.has(b)) {
+			// circular reference, it probably could happen in js
+			return false;
+		} else if (Array.isArray(a) && Array.isArray(b)) {
+			if (a.length !== b.length) {
+				return false;
+			} else {
+				occurrences.add(a);
+				occurrences.add(b);
+				for (let i = 0; i < a.length; ++i) {
+					if (!equalsImpl(a[i], b[i])) {
+						return false;
+					}
+				}
+				return true;
+			}
+		} else {
+			return false;
+		}
+	};
+	return equalsImpl(a, b);
+};
+php.equals = equals;
 php.is_numeric = str => +str + '' === str;
 php.floor = (num) => Math.floor(num);
 php.max = (...args) => {
