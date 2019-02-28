@@ -5,7 +5,6 @@ before_script:
   - node --version
 
 run-tests-dev:
-  stage: test
   tags:
     - dev-w13
   except:
@@ -13,18 +12,17 @@ run-tests-dev:
     - production
   script:
     - bash build.sh
-    # dev-w13 has node 9.8 sadly, it has incomplete regex support
-    - npm install --dev node@10.13.0
+    # dev-w13 has node 9.8 sadly, it has limited regex support
+    - npm install node@10.13.0
     - node_modules/node/bin/node tests/runTests.js
 
 run-tests-prod:
-  stage: test
   tags:
     - dev-w13
   only:
     #- tags
     - production
   script:
-    # dev-w13 has node 9.8 sadly, it has incomplete regex support
-    - npm install --dev node@10.13.0
+    # dev-w13 has node 9.8 sadly, it has limited regex support
+    - npm install node@10.13.0
     - node_modules/node/bin/node tests/runTests.js
