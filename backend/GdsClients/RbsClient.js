@@ -1,3 +1,6 @@
+
+const iqJson = require("../Utils/Misc").iqJson;
+
 let {LoginTimeOut, BadRequest, BadGateway, NotImplemented} = require("../Utils/Rej.js");
 let Config = require("../Config.js");
 let Crypt;
@@ -12,12 +15,10 @@ try {
 	};
 }
 
-let querystring = require('querystring');
-let PersistentHttpRq = require('../Utils/PersistentHttpRq.js');
 
-let callRbs = (functionName, params) => {
+let callRbs = async (functionName, params) => {
 	let logId = 'rbs.5bf6e431.9577485';
-	let rbsUrl = Config.production
+	let url = Config.production
 		? 'http://rbs-asaptickets.lan.dyninno.net/jsonExternalInterface.php?log_id=' + logId
 		// : 'http://st-rbs.sjager.php7.dyninno.net/jsonExternalInterface.php?log_id=' + logId;
 		: 'http://rbs-dev.aklesuns.php7.dyninno.net/jsonExternalInterface.php?log_id=' + logId;
@@ -26,31 +27,11 @@ let callRbs = (functionName, params) => {
 	if (!rbsPassword) {
 		return Promise.reject('RBS password not defined in env');
 	}
-
 	let ec = new Crypt(process.env.RANDOM_KEY, 'des-ede3');
-	let formParams = {
-		credentials: JSON.stringify({
-			login: 'CMS',
-			password: ec.encryptToken(rbsPassword),
-		}),
-		functionName: functionName,
-		params: JSON.stringify(params),
-	};
-	return PersistentHttpRq({
-		url: rbsUrl,
-		body: querystring.stringify(formParams),
-		headers: {
-			'Content-Type': 'application/x-www-form-urlencoded',
-		},
-	}).then(respRec => {
-		let body = respRec.body;
-		let resp;
-		try {
-			resp = JSON.parse(body);
-		} catch (exc) {
-			return BadGateway('Could not parse RBS ' + functionName + ' json response - ' + body);
-		}
-		if (resp.status !== 'OK' || !resp.result || !resp.result.response_code) {
+	let credentials = {login: 'CMS', password: ec.encryptToken(rbsPassword)};
+
+	return iqJson({url, credentials, functionName, params}).then(resp => {
+		if (!resp.result || !resp.result.response_code) {
 			return Promise.reject('Unexpected RBS response format - ' + body);
 		} else if (![1,2,3].includes(resp.result.response_code)) {
 			let rpcErrors = resp.result.errors;

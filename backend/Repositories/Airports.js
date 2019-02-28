@@ -1,8 +1,7 @@
 
-let PersistentHttpRq = require('../Utils/PersistentHttpRq.js');
 let {getConfig} = require('../Config.js');
-let querystring = require('querystring');
 let Db = require('../Utils/Db.js');
+const iqJson = require("../Utils/Misc").iqJson;
 let {strval, implode, array_column} = require('../Transpiled/php.js');
 
 let TABLE = 'airports';
@@ -28,19 +27,16 @@ let normalizeAirportRow = ($row) => ({
 exports.updateFromService = async () => {
 	let config = await getConfig();
 	/** @type IGetAirportsRs */
-	let serviceResult = await PersistentHttpRq({
+	let serviceResult = await iqJson({
 		url: config.external_service.infocenter.host,
-		body: querystring.stringify({
-			credentials: JSON.stringify({
-				login: config.external_service.infocenter.login,
-				passwd: config.external_service.infocenter.password,
-			}),
-			functionName: 'getAirports',
-			serviceName: 'infocenter',
-			params: JSON.stringify({folder: 'arc'})
-		}),
-		headers: {'Content-Type': 'application/x-www-form-urlencoded'},
-	}).then(rs => JSON.parse(rs.body));
+		credentials: {
+			login: config.external_service.infocenter.login,
+			passwd: config.external_service.infocenter.password,
+		},
+		functionName: 'getAirports',
+		serviceName: 'infocenter',
+		params: {folder: 'arc'},
+	});
 
 	let rows = Object
 		.values(serviceResult.result.data)
