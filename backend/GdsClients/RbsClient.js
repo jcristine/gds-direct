@@ -1,6 +1,16 @@
 let {LoginTimeOut, BadRequest, BadGateway, NotImplemented} = require("../Utils/Rej.js");
 let Config = require("../Config.js");
-let Crypt = require("../../node_modules/dynatech-client-component/lib/Crypt.js").default;
+let Crypt;
+try {
+	Crypt = require("../../node_modules/dynatech-client-component/lib/Crypt.js").default;
+} catch (exc) {
+	// no access on test environment in gitlab
+	Crypt = class {
+		construct() {
+			throw new Error('Cannot instantiate Crypt since it could not be required. Is this test environment? ' + exc.getMessage());
+		}
+	};
+}
 
 let querystring = require('querystring');
 let PersistentHttpRq = require('../Utils/PersistentHttpRq.js');
