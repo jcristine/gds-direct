@@ -138,6 +138,9 @@ exports.iqJson = async ({url, credentials, functionName, serviceName, params}) =
 			params: JSON.stringify(params || null),
 		}),
 		headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+		// I'm not sure, but it's possible that persisting connection caused RBS to be dying tonight
+		// (I dunno, maybe Apache did not release resources due to keep-alive or something...)
+		dropConnection: true,
 	}).then(respRec => {
 		let body = respRec.body;
 		let resp;

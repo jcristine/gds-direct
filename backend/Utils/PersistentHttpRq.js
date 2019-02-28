@@ -21,7 +21,8 @@ let httpAgent = new http.Agent(agentParams);
 module.exports = PersistentHttpRq = (params) => new Promise((resolve, reject) => {
 	let parsedUrl = url.parse(params.url);
 	let request = parsedUrl.protocol.startsWith('https') ? https.request : http.request;
-	let requestAgent = parsedUrl.protocol.startsWith('https') ? httpsAgent : httpAgent;
+	let requestAgent = params.dropConnection ? undefined :
+		parsedUrl.protocol.startsWith('https') ? httpsAgent : httpAgent;
 	let req = request({
 		host: parsedUrl.host,
 		path: parsedUrl.path,
