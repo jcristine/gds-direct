@@ -1,6 +1,7 @@
 
 let aklesuns = require('./Migration/aklesuns.js');
 let Db = require('./Utils/Db.js');
+let {client, keys} = require('./LibWrappers/Redis.js');
 
 let TABLE_NAME = 'migrations';
 
@@ -36,7 +37,14 @@ let Migration = () => {
 	};
 
 	return {
-		run: () => {
+		run: async () => {
+			// there are currently 2 supposedly equal servers
+			let lockSeconds = 5 * 60; // 5 minutes
+			let migrationLock = await client.set(keys.MIGRATION_LOCK, 'locked', 'EX', lockSeconds, 'NX');
+			if (!migrationLock) {
+				return Promise.resolve('Migration is already being handled by other cluster');
+			}
+
 			let migrations = aklesuns.migrations.slice();
 			let cnt = migrations.length;
 			let runNext = (db) => {

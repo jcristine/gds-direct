@@ -17,6 +17,7 @@ exports.keys = StrConsts({
 	get CMD_RQ_LAST_INSERT_ID() { never() },
 	get USER_TO_TMP_SETTINGS() { never() },
 	get EMC_TOKEN_TO_USER() { never() },
+	get MIGRATION_LOCK() { never() },
 }, 'GRECT_');
 exports.client = client;
 
