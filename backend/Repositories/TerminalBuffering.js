@@ -13,7 +13,8 @@ exports.logCommand = (rqBody, running) => {
 	let requestTimestamp = Math.floor(new Date().getTime() / 1000);
 
 	running.then(result => {
-		let {data, session} = result;
+		let data = result;
+		let {session} = result;
 		Promise.all([getRunId(), getNextId()])
 			.then(([runId, nextId]) => {
 				let hrtimeDiff = process.hrtime(hrtimeStart);

@@ -210,7 +210,7 @@ export default class TerminalPlugin
 
 				if (command)
 				{
-					if (response && response.data)
+					if (response && response.output)
 						this.parseBackEnd( response, command );
 					else
 						this.print(`[[;;;text-danger;]SERVER ERROR]`);
@@ -235,8 +235,8 @@ export default class TerminalPlugin
 			return post('terminal/makeMco', params)
 				.then(resp => {
 					this.spinner.end();
-					this.parseBackEnd(resp);
-					return {canClosePopup: resp && resp.success};
+					this.parseBackEnd(resp, 'HHMCU');
+					return {canClosePopup: resp && resp.output};
 				}).catch(exc => {
 					this.spinner.end();
 					return {canClosePopup: false};
@@ -250,7 +250,7 @@ export default class TerminalPlugin
 		this.terminal.scroll_to_bottom();
 	}
 
-	parseBackEnd({data = {}}, command)
+	parseBackEnd(data, command)
 	{
 		this.lastCommand = command; // for history
 		this.history.add(command);

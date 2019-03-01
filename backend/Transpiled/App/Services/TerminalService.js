@@ -207,16 +207,10 @@ class TerminalService
 						.filter(cmd => cmd.trim()),
 					clearScreen: rbsResp.clearScreen || rbsResp.calledCommands
 						.filter(rec => rec.clearScreen).length > 0,
-					pricingCmd: rbsResp.sessionInfo.pricingCmd,
-					canCreatePq: rbsResp.sessionInfo.canCreatePq,
-					canCreatePqErrors: rbsResp.sessionInfo.canCreatePqErrors,
-					area: rbsResp.sessionInfo.area,
-					pcc: rbsResp.sessionInfo.pcc,
-					hasPnr: rbsResp.sessionInfo.hasPnr ? true : false,
-					recordLocator: rbsResp.sessionInfo.recordLocator,
+
+					...rbsResp.sessionInfo,
 					highlightTime: hrtimeToDecimal(process.hrtime(hrtimeStart)),
 					gdsTime: cmdTimes.length > 0 ? cmdTimes.reduce((a,b) => a + b) : null,
-					stateUpdateTime: rbsResp.sessionInfo.updateTime || null,
 					startNewSession: rbsResp.startNewSession || false,
 					calledCommands: rbsResp.calledCommands,
 				};

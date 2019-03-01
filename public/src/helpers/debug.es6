@@ -34,9 +34,9 @@ export const debugRequest = err => {
 
 export const showUserMessages = response => {
 
-	if (response && response['data'] && response['data']['userMessages'])
+	if (response && response['userMessages'])
 	{
-		const userMessages = response['data']['userMessages'];
+		const userMessages = response['userMessages'];
 
 		notify({
 			msg 	: userMessages.join(''),

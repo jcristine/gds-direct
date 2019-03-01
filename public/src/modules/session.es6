@@ -23,7 +23,7 @@ let makeParams = (session, callParams) => {
 let formatSystemError = (exc) => {
 	let msg = 'SYSTEM ERROR - ' + (exc + '').replace('\n', ' ').slice(0, 100);
 	let output = '[[;;;errorMessage]' + msg + ']';
-	return {data: {output: output}};
+	return {output: output};
 };
 
 export default class Session

@@ -117,7 +117,7 @@ exports.runInputCmd = (reqBody, emcResult) => {
 		.then(async ({session, rbsResult}) => {
 			let termSvc = new TerminalService(reqBody.gds, reqBody.agentId, reqBody.travelRequestId);
 			let rbsResp = await termSvc.addHighlighting(reqBody.command, reqBody.language || reqBody.gds, rbsResult);
-			return {success: true, data: rbsResp, session: session};
+			return {...rbsResp, session: session};
 		});
 	TerminalBuffering.logCommand(reqBody, running);
 	return running;
@@ -195,24 +195,15 @@ exports.makeMco = async (reqBody) => {
 			if (!php.empty(mcoResult.errors)) {
 				return Promise.reject('Failed to MCO - ' + mcoResult.errors.join('; '));
 			} else {
-				// TODO: TerminalService output formatting
 				return Promise.resolve({
-					data: mcoResult,
+					output: mcoResult.calledCommands
+						.map(rec => '\n>' + rec.cmd + '\n' + rec.output)
+						.join('\n'),
 					calledCommands: mcoResult.calledCommands,
 				});
 			}
 
 		});
-	let gds = reqBody.gds;
-	let travelRequestId = reqBody.travelRequestId;
-	let useRbs = reqBody.useRbs ? true : false;
-	GdsSessions.getByContext(reqBody).then(session =>
-		reqBody.useRbs
-			? RbsClient(reqBody).importPq(session.gdsData)
-			: withRbsPqCopy(session, ({rbsSessionId}) =>
-				RbsClient(reqBody).importPq({rbsSessionId})
-			)
-	);
 };
 
 // TODO: use terminal.keepAlive so that RBS logs were not trashed with these MD0-s
