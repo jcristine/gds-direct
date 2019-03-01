@@ -59,6 +59,7 @@ let Config = {
 		promise.push(PersistentHttpRq({
 			url: dbUrl,
 			method: 'GET',
+			dropConnection: true,
 		}).then(rs => JSON.parse(rs.body)).then((body) => {
 			if (body['dbhost'] && body.dbhost.length) {
 				Config.DB_USER = body.dbuser;
