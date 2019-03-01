@@ -185,6 +185,7 @@ app.post('/terminal/command', withAuth(GdsSessionController.runInputCmd));
 app.post('/gdsDirect/keepAlive', withAuth(GdsSessionController.keepAlive));
 app.get('/terminal/getPqItinerary', withAuth(GdsSessionController.getPqItinerary));
 app.get('/terminal/importPq', withAuth(GdsSessionController.importPq));
+app.post('/terminal/makeMco', withAuth(GdsSessionController.makeMco));
 app.get('/terminal/lastCommands', withAuth(GdsSessionController.getLastCommands));
 app.get('/terminal/clearBuffer', withAuth(GdsSessionController.clearBuffer));
 //app.use('/admin/updateHighlightRules', express.bodyParser({limit: '10mb'}));

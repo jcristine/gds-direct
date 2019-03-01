@@ -14,9 +14,12 @@ let {TRAVELPORT, AMADEUS, SABRE} = require('./Repositories/GdsProfiles.js');
 const TerminalBuffering = require("./Repositories/TerminalBuffering");
 let {logit, logExc} = require('./LibWrappers/FluentLogger.js');
 let {Forbidden, NotImplemented, LoginTimeOut, NotFound} = require('./Utils/Rej.js');
-let {fetchAllOutput} = require('./GdsHelpers/TravelportUtils.js');
+let {fetchAll} = require('./GdsHelpers/TravelportUtils.js');
 let StatefulSession = require('./GdsHelpers/StatefulSession.js');
 let ProcessTerminalInput = require('./Actions/ProcessTerminalInput.js');
+const MakeMcoApolloAction = require('./Transpiled/Rbs/GdsDirect/Actions/Apollo/MakeMcoApolloAction.js');
+
+let php = require('./Transpiled/php.js');
 
 let isTravelportAllowed = (rqBody) =>
 	admins.includes(+rqBody.agentId);
@@ -130,7 +133,7 @@ let withRbsPqCopy = async (session, action) => {
 	let areaState = full.areas[full.area] || {};
 	let pricingCmd = areaState.pricing_cmd;
 	let pcc = areaState.pcc;
-	let pnrDump = (await fetchAllOutput('*R', stateful)).output;
+	let pnrDump = (await fetchAll('*R', stateful)).output;
 	let pnr = PnrParser.parse(pnrDump);
 
 	let ctx = session.context;
@@ -175,6 +178,42 @@ exports.importPq = (reqBody) =>
 				RbsClient(reqBody).importPq({rbsSessionId})
 			)
 	);
+
+exports.makeMco = async (reqBody) => {
+	let mcoData = {};
+	for (let {key, value} of reqBody.fields) {
+		mcoData[key] = value.toUpperCase();
+	}
+	return GdsSessions.getByContext(reqBody)
+		.then(async session => {
+			if (session.context.gds !== 'apollo') {
+				return Promise.reject('Unsupported GDS makeMco - ' + session.context.gds);
+			}
+			let stateful = await StatefulSession(session);
+			let mcoResult = await (new MakeMcoApolloAction())
+				.setSession(stateful).execute(mcoData);
+			if (!php.empty(mcoResult.errors)) {
+				return Promise.reject('Failed to MCO - ' + mcoResult.errors.join('; '));
+			} else {
+				// TODO: TerminalService output formatting
+				return Promise.resolve({
+					data: mcoResult,
+					calledCommands: mcoResult.calledCommands,
+				});
+			}
+
+		});
+	let gds = reqBody.gds;
+	let travelRequestId = reqBody.travelRequestId;
+	let useRbs = reqBody.useRbs ? true : false;
+	GdsSessions.getByContext(reqBody).then(session =>
+		reqBody.useRbs
+			? RbsClient(reqBody).importPq(session.gdsData)
+			: withRbsPqCopy(session, ({rbsSessionId}) =>
+				RbsClient(reqBody).importPq({rbsSessionId})
+			)
+	);
+};
 
 // TODO: use terminal.keepAlive so that RBS logs were not trashed with these MD0-s
 let makeKeepAliveParams = (context) => ({
