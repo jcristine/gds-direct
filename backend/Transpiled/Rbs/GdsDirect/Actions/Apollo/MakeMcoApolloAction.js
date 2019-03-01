@@ -91,7 +91,7 @@ class MakeMcoApolloAction extends AbstractGdsAction
             'approvalCode': $pnrParams['approvalCode'],
         };
         $paramsFromUser = {
-            'mcoNumber': this.getCurrentMcoCount() + 1,
+            'mcoNumber': (await this.getCurrentMcoCount()) + 1,
             'passengerName': $userParams['passengerName'],
             'amount': $userParams['amount'],
             'amountCurrency': $userParams['amountCurrency'],
