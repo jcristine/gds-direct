@@ -119,7 +119,8 @@ let Db = (dbConn) => {
 		fetchOne: params => fetchAll(params)
 			.then(rows => rows.length > 0 ? rows[0] :
 				Promise.reject('Could not find ' +
-					params.table + ' record in DB')),
+					params.table + ' record in DB ' +
+					(params.where ? JSON.stringify(params.where) : ''))),
 		// for custom stuff
 		query: (...args) => dbConn.query(...args),
 	};
