@@ -6,7 +6,7 @@ let {strval, implode, array_column} = require('../Transpiled/php.js');
 
 let TABLE = 'airports';
 
-let normalizeAirportRow = ($row) => ({
+let normalizeRow = ($row) => ({
 	iata_code: $row['airport_code_en'],
 	name: $row['airport_title_en'],
 	country_code: strval($row['country_code']),
@@ -40,7 +40,7 @@ exports.updateFromService = async () => {
 
 	let rows = Object
 		.values(serviceResult.result.data)
-		.map(normalizeAirportRow);
+		.map(normalizeRow);
 
 	let written = await Db.with(db => db.writeRows(TABLE, rows));
 	return {

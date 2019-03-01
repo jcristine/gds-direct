@@ -6,7 +6,7 @@ let php = require('../Transpiled/php.js');
 
 const TABLE = 'pccs';
 
-let normalizePccRow = ($pcc) => {
+let normalizeRow = ($pcc) => {
 	return {
 		'gds': php.strtolower($pcc['gds']),
 		'pcc': $pcc['pcc'],
@@ -40,7 +40,7 @@ exports.updateFromService = async () => {
 
 	let rows = Object
 		.values(serviceResult.result.content)
-		.map($pcc => normalizePccRow($pcc));
+		.map($pcc => normalizeRow($pcc));
 
 	let written = await Db.with(db => db.writeRows(TABLE, rows));
 	return {
@@ -50,11 +50,13 @@ exports.updateFromService = async () => {
 };
 
 exports.findByCode = async (gds, pcc) => {
-	return Db.with(db => db.fetchOne({
+	/** @var row = normalizeRow() */
+	let row = Db.with(db => db.fetchOne({
 		table: TABLE,
 		where: [
 			['gds', '=', gds],
 			['pcc', '=', pcc],
 		],
 	}));
+	return row;
 };
