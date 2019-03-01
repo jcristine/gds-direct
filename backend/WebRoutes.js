@@ -377,7 +377,7 @@ app.get('/ping', toHandleHttp((rqBody) => {
 
 	return Redis.getInfo().then(redisLines => {
 		const data = {
-			pmId: process.env.pm_id,
+			pid: process.pid,
 			'dbPool': Db.getInfo(),
 			sockets: {
 				'totalConnection': socketIo.engine.clientsCount,
