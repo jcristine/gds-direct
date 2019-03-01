@@ -79,6 +79,9 @@ class TestCase
 	}
 
 	assertSame(expected, actual, msg) {
+		// there is no difference between undefined and null in php, so should not be here
+		expected = expected === undefined ? null : expected;
+		actual = actual === undefined ? null : actual;
 		if (expected === actual) {
 			return this._ok();
 		} else {

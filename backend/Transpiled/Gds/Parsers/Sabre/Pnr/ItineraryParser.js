@@ -138,7 +138,7 @@ class ItineraryParser {
 				'segmentNumber': php.intval($tokens['segmentNumber']),
 				'airline': $tokens['airline'],
 				'flightNumber': $tokens['flightNumber'],
-				'bookingClass': $tokens['bookingClass'] || null,
+				'bookingClass': $tokens['bookingClass'] || '',
 				'departureDate': {
 					'raw': $tokens['departureDate'],
 					'parsed': this.parsePartialDate($tokens['departureDate'] || null),
