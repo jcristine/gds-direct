@@ -4,10 +4,11 @@
 const ApolloMakeMcoAction = require("../../../../../backend/Transpiled/Rbs/GdsAction/ApolloMakeMcoAction");
 
 let php = require('../../../../../backend/Transpiled/php.js');
+const GdsActionTestUtil = require("../../../../../backend/Transpiled/Rbs/TestUtils/GdsActionTestUtil");
 
 class ApolloMakeMcoActionTest extends require('../../../../../backend/Transpiled/Lib/TestCase.js')
 {
-    provideTestCases()  {
+    provideMakeCmdTestCases()  {
         let $list;
         $list = [];
         $list.push([
@@ -31,12 +32,12 @@ class ApolloMakeMcoActionTest extends require('../../../../../backend/Transpiled
             },
             php.implode('', [
                 'HHMCU4.         *** MISC CHARGE ORDER ***                      ',
-                ' PASSENGER NAME;SHAWTAYLOR\/EVA I........................        ',
+                ' PASSENGER NAME;SHAWTAYLOR/EVA I........................        ',
                 ' TO;SA...................................... AT;JOHANNESBURG... ',
                 ' VALID FOR;SPLIT............................................... ',
                 ' TOUR CODE;............... RELATED TKT NBR;.............        ',
-                ' FOP;VI4430000000070970\/OK..................................... ',
-                ' EXP DATE;0419 APVL CODE;741346 COMM;0.00\/... TAX;........-;..  ',
+                ' FOP;VI4430000000070970/OK..................................... ',
+                ' EXP DATE;0419 APVL CODE;741346 COMM;0.00/... TAX;........-;..  ',
                 ' AMOUNT;710.00..-;USD EQUIV ;........-;... BSR;..........       ',
                 ' END BOX;...................................................... ',
                 ' REMARK1;..............................................         ',
@@ -45,6 +46,62 @@ class ApolloMakeMcoActionTest extends require('../../../../../backend/Transpiled
             ])
         ]);
         return $list;
+    }
+
+    provideExecuteTestCases() {
+        let testCases = [];
+        testCases.push({
+            input: {
+                mcoNumber: 1,
+                passengerName: "LIB/MAR",
+                to: "LO",
+                at: "WAW",
+                validFor: "SPLIT",
+                tourCode: "",
+                ticketNumber: "",
+                formOfPayment: "VIXXXXXXXXXXXX1111/OK",
+                expirationDate: "2022-03-01",
+                approvalCode: "12345Z",
+                commission: "0.00/",
+                taxAmount: "",
+                taxCode: "",
+                amount: "1.00",
+                amountCurrency: "USD",
+                equivAmount: "",
+                equivCurrency: "",
+                rateOfExchange: "",
+                endorsementBox: "",
+                remark1: "",
+                remark2: "",
+                validatingCarrier: "LO",
+                issueNow: "n",
+            },
+            output: {
+                success: true,
+                response: "MCO DATA STORED \n",
+            },
+            calledCommands: [
+                {
+                    "cmd": [
+                        "HHMCU1.         *** MISC CHARGE ORDER ***                      ",
+                        " PASSENGER NAME;LIB/MAR.................................        ",
+                        " TO;LO...................................... AT;WAW............ ",
+                        " VALID FOR;SPLIT............................................... ",
+                        " TOUR CODE;............... RELATED TKT NBR;.............        ",
+                        " FOP;VIXXXXXXXXXXXX1111/OK..................................... ",
+                        " EXP DATE;0322 APVL CODE;12345Z COMM;0.00/... TAX;........-;..  ",
+                        " AMOUNT;1.00....-;USD EQUIV ;........-;... BSR;..........       ",
+                        " END BOX;...................................................... ",
+                        " REMARK1;..............................................         ",
+                        " REMARK2;...................................................... ",
+                        " VALIDATING CARRIER;LO                  ISSUE NOW;N"
+                    ].join(''),
+                    "output": "MCO DATA STORED \n><",
+                    "duration": "0.211568601",
+                },
+            ],
+        });
+        return testCases.map(t => [t]); // arg tuple list
     }
 
     /**
@@ -57,9 +114,15 @@ class ApolloMakeMcoActionTest extends require('../../../../../backend/Transpiled
         this.assertEquals($expectedOutput, $actualCmd);
     }
 
+    async testExecute(testCase) {
+        await GdsActionTestUtil.testGdsAction(this, testCase, (session, input) =>
+            (new ApolloMakeMcoAction()).setSession(session).execute(input));
+    }
+
 	getTestMapping() {
 		return [
-			[this.provideTestCases, this.testMakeCmd],
+			[this.provideMakeCmdTestCases, this.testMakeCmd],
+			[this.provideExecuteTestCases, this.testExecute],
 		];
 	}
 }

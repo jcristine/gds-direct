@@ -5,7 +5,7 @@
 // (to decide whether or not to write it to Diag, for example)
 
 let toReject = (httpStatusCode, isOk = false) => {
-	let makeRejection = (msg) => {
+	let makeRejection = (msg, data = undefined) => {
 		msg += ' (status: ' + httpStatusCode + ')';
 		let exc;
 		if (!isOk) {
@@ -16,6 +16,7 @@ let toReject = (httpStatusCode, isOk = false) => {
 			exc = {message: msg, toString: () => msg};
 		}
 		exc.httpStatusCode = httpStatusCode;
+		exc.data = data;
 		let rejection = Promise.reject(exc);
 		rejection.exc = exc;
 		return rejection;

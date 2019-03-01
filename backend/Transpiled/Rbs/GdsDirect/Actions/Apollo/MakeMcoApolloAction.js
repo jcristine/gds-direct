@@ -13,7 +13,7 @@ const McoMaskParser = require('../../../../Gds/Parsers/Apollo/Mco/McoMaskParser.
 let php = require('../../../../php.js');
 
 /**
- * call ApolloMakeMcoAction and format output
+ * get current PNR data, ApolloMakeMcoAction and format output
  */
 class MakeMcoApolloAction extends AbstractGdsAction
 {
