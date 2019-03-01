@@ -113,6 +113,7 @@ class ApolloMakeMcoAction extends AbstractGdsAction
         $result = (await fetchAll($cmd, this)).output;
         return {
             'success': StringUtil.startsWith($result, 'MCO ISSUED')
+                    || StringUtil.startsWith($result, 'EXISTING MCO UPDATED')
                     || StringUtil.startsWith($result, 'MCO DATA STORED'),
             'response': $result,
         };

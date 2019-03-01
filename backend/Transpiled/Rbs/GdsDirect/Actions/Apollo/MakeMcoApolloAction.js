@@ -14,31 +14,23 @@ let php = require('../../../../php.js');
 
 /**
  * get current PNR data, ApolloMakeMcoAction and format output
+ * if you accidentally pass ISSUE NOW Y, command to cancel document is RRVO/0805056180981/01MAR
  */
 class MakeMcoApolloAction extends AbstractGdsAction
 {
-    static formatGdsOutput($dump)  {
-        $dump = php.str_replace('|', '+', $dump);
-        $dump = php.str_replace(';', '\u00B7', $dump);
-        return $dump;
-    }
-
-    static extractTabCommands($output)  {
-        let $matches;
-        $matches = php.preg_match_all(/>([^>]+?)(?:·|;)/, $output, $matches = []);
-        return php.array_unique($matches[1] || []);
-    }
-
     static async getMcoParams($pnr, $mcoMask)  {
-        let $validatingCarrier, $hub, $storedParams, $fop, $expirationDate;
+        let $validatingCarrier, $hub, $fop, $expirationDate;
         $validatingCarrier = $pnr.getValidatingCarrier();
         $hub = await Airlines.findByCode($validatingCarrier)
             .then(r => r.hub).catch(() => null);
         if (!$validatingCarrier) {
             return {'errors': ['Validating carrier must be present in ATFQ']};
         }
-        $storedParams = McoMaskParser.parse($mcoMask);
-        $fop = $storedParams['formOfPayment']['raw'] || null;
+        let $storedParams = McoMaskParser.parse($mcoMask);
+        if ($storedParams.error) {
+            return {'errors': ['Failed to parse MCO mask - ' + $storedParams.error]};
+        }
+        $fop = $storedParams['formOfPayment']['raw'];
         $expirationDate = ($storedParams['expirationYear'] && $storedParams['expirationMonth'])
             ? '20'+$storedParams['expirationYear']+'-'+$storedParams['expirationMonth']+'-01'
             : null;
@@ -113,14 +105,12 @@ class MakeMcoApolloAction extends AbstractGdsAction
             return {
                 'calledCommands': [{
                     'cmd': 'HHMCU',
-                    'output': this.constructor.formatGdsOutput($mcoResult['response']),
-                    'tabCommands': this.constructor.extractTabCommands($mcoResult['response']),
-                    'clearScreen': true,
+                    'output': $mcoResult['response'],
                 }],
             };
         } else {
             return {
-                'errors': ['Failed to issue MCO: '+$mcoResult['response']],
+                'errors': ['Failed to issue MCO: '+$mcoResult['response'].trimEnd().replace(/[\s\S]*\n/, '')],
             };
         }
     }

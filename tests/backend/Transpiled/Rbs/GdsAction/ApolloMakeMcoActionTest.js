@@ -50,6 +50,8 @@ class ApolloMakeMcoActionTest extends require('../../../../../backend/Transpiled
 
     provideExecuteTestCases() {
         let testCases = [];
+
+        // STORED example
         testCases.push({
             input: {
                 mcoNumber: 1,
@@ -101,6 +103,46 @@ class ApolloMakeMcoActionTest extends require('../../../../../backend/Transpiled
                 },
             ],
         });
+
+        // MCO ISSUED example
+        testCases.push({
+            input: {
+                mcoNumber: 1,                             taxCode: "",
+                passengerName: "LIB/MAR",                 amount: "3.00",
+                to: "LO",                                 amountCurrency: "USD",
+                at: "WAW",                                equivAmount: "",
+                validFor: "SPLIT",                        equivCurrency: "",
+                tourCode: "",                             rateOfExchange: "",
+                ticketNumber: "",                         endorsementBox: "",
+                formOfPayment: "VI4111111111111111/OK",   remark1: "",
+                expirationDate: "2022-03-01",             remark2: "",
+                approvalCode: "12345Z",                   validatingCarrier: "LO",
+                commission: "0.00/",                      issueNow: "Y",
+                taxAmount: "",
+            },
+            output: {
+                success: true,
+                response: [
+                    "MCO ISSUED TTL FARE  USD     3.00",
+                    "ITIN/INVOICE ISSUED",
+                    "TAB AND ENTER TO REDISPLAY PNR >*LCF9T0;",
+                    "><"
+                ].join("\n"),
+            },
+            calledCommands: [
+                {
+                    "cmd": "HHMCU1.         *** MISC CHARGE ORDER ***                       PASSENGER NAME;LIB/MAR.................................         TO;LO...................................... AT;WAW............  VALID FOR;SPLIT...............................................  TOUR CODE;............... RELATED TKT NBR;.............         FOP;VI4111111111111111/OK.....................................  EXP DATE;0322 APVL CODE;12345Z COMM;0.00/... TAX;........-;..   AMOUNT;3.00....-;USD EQUIV ;........-;... BSR;..........        END BOX;......................................................  REMARK1;..............................................          REMARK2;......................................................  VALIDATING CARRIER;LO                  ISSUE NOW;Y",
+                    "output": [
+                        "MCO ISSUED TTL FARE  USD     3.00",
+                        "ITIN/INVOICE ISSUED",
+                        "TAB AND ENTER TO REDISPLAY PNR >*LCF9T0;",
+                        "><"
+                    ].join("\n"),
+                    "duration": "0.256330192",
+                },
+            ],
+        });
+
         return testCases.map(t => [t]); // arg tuple list
     }
 
