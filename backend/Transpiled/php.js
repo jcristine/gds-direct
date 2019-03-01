@@ -128,6 +128,9 @@ php.date = (format, epoch) => {
 		return safe(() => dtObj.toISOString().slice('2018-12-05T'.length, '2018-12-05T22:13'.length));
 	} else if (format === 'y') {
 		return safe(() => dtObj.toISOString().slice('20'.length, '2018'.length));
+	} else if (format === 'my') {
+		return safe(() => dtObj.toISOString().slice('2018-'.length, '2018-12'.length)
+						+ dtObj.toISOString().slice('20'.length, '2018'.length));
 	} else if (format === 'Y') {
 		return safe(() => dtObj.toISOString().slice(0, '2018'.length));
 	} else if (format === 'dM') {
@@ -343,7 +346,8 @@ php.array_merge = (...arrays) => {
 	let result = arrays.every(arr => Array.isArray(arr)) ? [] : {};
 	for (let arr of arrays) {
 		if (Array.isArray(result)) {
-			result.push(...arr);
+			// php drops numeric indexes on array_merge()
+			result.push(...arr.filter(a => a !== undefined));
 		} else {
 			for (let [k,v] of Object.entries(arr)) {
 				result[k] = v;
