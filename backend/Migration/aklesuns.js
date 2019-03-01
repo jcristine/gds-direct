@@ -3,6 +3,7 @@ let Airports = require('../Repositories/Airports.js');
 
 let Emc = require('../LibWrappers/Emc');
 const Pccs = require("../Repositories/Pccs.js");
+const Airlines = require("../Repositories/Airlines");
 
 module.exports.migrations = [
 	{
@@ -260,5 +261,21 @@ module.exports.migrations = [
 	{
 		name: 'GRECT/2019.02.28002-fetch-pccs-2',
 		perform: (db) => Pccs.updateFromService(),
+	},
+	{
+		name: 'GRECT/2019.03.01001-create-airlines-table',
+		perform: (db) => db.query([
+			"CREATE TABLE `airlines` (",
+			"  `iata_code` char(2) NOT NULL,",
+			"  `name` varchar(250) NOT NULL DEFAULT '',",
+			"  `hub` char(3) DEFAULT NULL,",
+			"  `updated_dt` datetime DEFAULT NULL,",
+			"  PRIMARY KEY (`iata_code`)",
+			") ENGINE=InnoDB CHARSET=utf8",
+		].join('\n')),
+	},
+	{
+		name: 'GRECT/2019.03.01001-fetch-airlines-2',
+		perform: (db) => Airlines.updateFromService(),
 	},
 ];
