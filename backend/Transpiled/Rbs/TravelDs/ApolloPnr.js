@@ -116,12 +116,8 @@ class ApolloPnr {
 
 	getValidatingCarrier() {
 		let $isValidatingCarrierMod, $getValue, $list, $pricing;
-		$isValidatingCarrierMod = ($mod) => {
-			return $mod['type'] === 'validatingCarrier';
-		};
-		$getValue = ($mod) => {
-			return $mod['parsed'];
-		};
+		$isValidatingCarrierMod = ($mod) => $mod['type'] === 'validatingCarrier';
+		$getValue = ($mod) => $mod['parsed'];
 		$list = [];
 		for ($pricing of this.getStoredPricingList()) {
 			$list = php.array_merge($list, Fp.map($getValue, Fp.filter($isValidatingCarrierMod, $pricing['pricingModifiers'])));

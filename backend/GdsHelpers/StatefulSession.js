@@ -7,6 +7,7 @@ const hrtimeToDecimal = require("../Utils/Misc").hrtimeToDecimal;
 const {NotImplemented, BadRequest} = require("../Utils/Rej.js");
 const {logit, logExc} = require("../LibWrappers/FluentLogger.js");
 const LocationGeographyProvider = require('../Transpiled/Rbs/DataProviders/LocationGeographyProvider.js');
+const Pccs = require("../Repositories/Pccs");
 
 /**
  * a generic session that can be either apollo, sabre, galileo, amadeus, etc...
@@ -84,6 +85,7 @@ let StatefulSession = async (session) => {
 			agentId: session.context.agentId,
 		}),
 		getGeoProvider: () => new LocationGeographyProvider(),
+		getPccDataProvider: () => (gds, pcc) => Pccs.findByCode(gds, pcc),
 		getLeadAgent: () => null,
 		getAgent: () => {
 			// TODO: use actual agent data (will need to migrate GDS_DIRECT_* roles from RBS)

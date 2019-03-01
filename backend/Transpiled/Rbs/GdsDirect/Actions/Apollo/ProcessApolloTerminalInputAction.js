@@ -5,7 +5,6 @@ const DateTime = require('../../../../Lib/Utils/DateTime.js');
 const Fp = require('../../../../Lib/Utils/Fp.js');
 const Misc = require('../../../../Lib/Utils/Misc.js');
 const StringUtil = require('../../../../Lib/Utils/StringUtil.js');
-const ApolloPricingAdapter = require('../../../../Rbs/FormatAdapters/ApolloPricingAdapter.js');
 const ApolloBuildItineraryAction = require('../../../../Rbs/GdsAction/ApolloBuildItineraryAction.js');
 const ApolloMakeMcoAction = require('../../../../Rbs/GdsAction/ApolloMakeMcoAction.js');
 const TApolloSavePnr = require('../../../../Rbs/GdsAction/Traits/TApolloSavePnr.js');
@@ -21,7 +20,7 @@ const CommonParserHelpers = require('../../../../Gds/Parsers/Apollo/CommonParser
 const PricingParser = require('../../../../Gds/Parsers/Apollo/PricingParser/PricingParser.js');
 const GenericRemarkParser = require('../../../../Gds/Parsers/Common/GenericRemarkParser.js');
 const PtcUtil = require('../../../../Rbs/Process/Common/PtcUtil.js');
-const {fetchAllOutput, extractPager} = require('../../../../../GdsHelpers/TravelportUtils.js');
+const {fetchAll, extractPager} = require('../../../../../GdsHelpers/TravelportUtils.js');
 const ApolloPnr = require('../../../../Rbs/TravelDs/ApolloPnr.js');
 const MakeMcoApolloAction = require('../../../../Rbs/GdsDirect/Actions/Apollo/MakeMcoApolloAction.js');
 const translib = require('../../../../translib');
@@ -492,7 +491,7 @@ class ProcessApolloTerminalInputAction {
 
 	async runCmd($cmd, $fetchAll) {
 		let $cmdRec = $fetchAll
-			? await fetchAllOutput($cmd, this.$statefulSession)
+			? await fetchAll($cmd, this.$statefulSession)
 			: await this.$statefulSession.runCmd($cmd);
 		if (this.constructor.isSuccessfulFsCommand($cmdRec.cmd, $cmdRec.output)) {
 			this.$statefulSession.handleFsUsage();
@@ -1333,11 +1332,10 @@ class ProcessApolloTerminalInputAction {
 	async prepareMcoMask() {
 		let $getPaxName, $pcc, $pccPointOfSaleCountry, $agent, $pnr, $passengerNames, $mcoMask, $pnrParams,
 			$hasPredefinedPax, $predefinedPax, $mcoParams, $key, $value, $calledCommands, $userMessages, $result;
-		$getPaxName = ($pax) => {
-			return $pax['lastName'] + '\/' + $pax['firstName'];
-		};
+		$getPaxName = ($pax) => $pax['lastName'] + '\/' + $pax['firstName'];
 		$pcc = this.getSessionData()['pcc'];
-		$pccPointOfSaleCountry = this.$statefulSession.getPccDataProvider()($pcc)['point_of_sale_country'];
+		$pccPointOfSaleCountry = await this.$statefulSession.getPccDataProvider()('apollo', $pcc)
+			.then(r => r.point_of_sale_country).catch(exc => null);
 		if ($pccPointOfSaleCountry !== 'US') {
 			return {'errors': ['You\\\'re emulated to ' + $pcc + '. Split MCO can be issued only in a USA PCC']};
 		}
@@ -1350,9 +1348,9 @@ class ProcessApolloTerminalInputAction {
 			return {'errors': ['Must be in a PNR']};
 		}
 		$passengerNames = Fp.map($getPaxName, php.array_filter($pnr.getPassengers()));
-		$mcoMask = this.$statefulSession.fetchAllOutput('HHMCO');
-		$pnrParams = MakeMcoApolloAction.getMcoParams($pnr, $mcoMask);
-		if ($pnrParams['errors'] || null) {
+		$mcoMask = (await this.runCmd('HHMCO', true)).output;
+		$pnrParams = await MakeMcoApolloAction.getMcoParams($pnr, $mcoMask);
+		if (!php.empty($pnrParams['errors'])) {
 			return {'errors': $pnrParams['errors']};
 		}
 		$hasPredefinedPax = (php.count($passengerNames) === 1);

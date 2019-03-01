@@ -4,17 +4,18 @@
 const StringUtil = require('../../../../Lib/Utils/StringUtil.js');
 const ApolloMakeMcoAction = require('../../../../Rbs/GdsAction/ApolloMakeMcoAction.js');
 const ApolloPnr = require('../../../../Rbs/TravelDs/ApolloPnr.js');
-
-const translib = require('../../../../translib');
-
-/** @debug */
-var require = translib.stubRequire;
-
+const Airlines = require("../../../../../Repositories/Airlines");
+const AbstractGdsAction = require('../../../GdsAction/AbstractGdsAction.js');
+const fetchAll = require("../../../../../GdsHelpers/TravelportUtils").fetchAll;
 const McoListParser = require('../../../../Gds/Parsers/Apollo/Mco/McoListParser.js');
 const McoMaskParser = require('../../../../Gds/Parsers/Apollo/Mco/McoMaskParser.js');
-const AirlineDataProvider = require('../../../../Rbs/DataProviders/AirlineDataProvider.js');
 
-class MakeMcoApolloAction
+let php = require('../../../../php.js');
+
+/**
+ * call ApolloMakeMcoAction and format output
+ */
+class MakeMcoApolloAction extends AbstractGdsAction
 {
     static formatGdsOutput($dump)  {
         $dump = php.str_replace('|', '+', $dump);
@@ -28,16 +29,17 @@ class MakeMcoApolloAction
         return php.array_unique($matches[1] || []);
     }
 
-    static getMcoParams($pnr, $mcoMask)  {
+    static async getMcoParams($pnr, $mcoMask)  {
         let $validatingCarrier, $hub, $storedParams, $fop, $expirationDate;
         $validatingCarrier = $pnr.getValidatingCarrier();
-        $hub = (new AirlineDataProvider()).getData($validatingCarrier)['hub'] || null;
+        $hub = await Airlines.findByCode($validatingCarrier)
+            .then(r => r.hub).catch(() => null);
         if (!$validatingCarrier) {
             return {'errors': ['Validating carrier must be present in ATFQ']};
         }
         $storedParams = McoMaskParser.parse($mcoMask);
         $fop = $storedParams['formOfPayment']['raw'] || null;
-        $expirationDate = (($storedParams['expirationYear'] || null) && ($storedParams['expirationMonth'] || null))
+        $expirationDate = ($storedParams['expirationYear'] && $storedParams['expirationMonth'])
             ? '20'+$storedParams['expirationYear']+'-'+$storedParams['expirationMonth']+'-01'
             : null;
         if (!$fop || !$expirationDate || !$storedParams['approvalCode']) {
@@ -55,27 +57,28 @@ class MakeMcoApolloAction
         };
     }
 
-    getPnrMcoData()  {
+    async getPnrMcoData()  {
         let $pnr, $mcoMask;
-        $pnr = ApolloPnr.makeFromDump(this.apollo('*R'));
+        let pnrDump = (await fetchAll('*R', this)).output;
+        $pnr = ApolloPnr.makeFromDump(pnrDump);
         if (!$pnr.getRecordLocator()) {
             return {'errors': ['Must be in a PNR']};
         }
-        $mcoMask = this.apollo('HHMCO');
+        $mcoMask = (await fetchAll('HHMCO', this)).output;
         return this.constructor.getMcoParams($pnr, $mcoMask);
     }
 
-    getCurrentMcoCount()  {
+    async getCurrentMcoCount()  {
         let $mcoList;
-        $mcoList = this.apollo('*MPD');
+        $mcoList = (await fetchAll('*MPD', this)).output;
         $mcoList = McoListParser.parse($mcoList);
         return php.count($mcoList['mcoRows'] || []);
     }
 
-    prepareParams($userParams)  {
+    async prepareParams($userParams)  {
         let $defaultParams, $pnrParams, $paramsFromPnr, $paramsFromUser;
         $defaultParams = ApolloMakeMcoAction.getDefaultParams();
-        $pnrParams = this.getPnrMcoData();
+        $pnrParams = await this.getPnrMcoData();
         if ($pnrParams['errors'] || null) {
             return $pnrParams;
         }
@@ -97,15 +100,15 @@ class MakeMcoApolloAction
         return php.array_merge($defaultParams, $paramsFromPnr, $paramsFromUser);
     }
 
-    execute($userParams)  {
-        let $log, $params, $mcoResult;
-        $log = this.$log;
-        $params = this.prepareParams($userParams);
+    async execute($userParams)  {
+        let $params, $mcoResult;
+        $params = await this.prepareParams($userParams);
         if ($params['errors'] || null) {
             return {'errors': $params['errors']};
         }
-        $log('Perform HHMCU with params:', $params);
-        $mcoResult = ApolloMakeMcoAction.makeFrom(this).execute($params);
+        $mcoResult = await new ApolloMakeMcoAction()
+            .setSession(this.session)
+            .execute($params);
         if ($mcoResult['success'] || false) {
             return {
                 'calledCommands': [{

@@ -1,21 +1,18 @@
 class AbstractGdsAction {
 	constructor() {
-		this.$log = ($cmd, $data) => {};
-		this.$session = null;
+		this.session = null;
 	}
 
-	setSession($apollo) {
-		this.$session = $apollo;
+	/** @param session = await require('StatefulSession.js')() */
+	setSession(session) {
+		this.session = session;
 		return this;
 	}
 
-	runCmd($cmd) {
-		let $log, $dump;
-		$log = this.$log;
-		$cmd = php.strtoupper($cmd);
-		$dump = this.$session.fetchAllOutput($cmd, $forceScrolling);
-		$log('GDS result: (' + $cmd + ')', $dump);
-		return $dump;
+	async runCmd($cmd) {
+		$cmd = $cmd.toUpperCase();
+		let $cmdRec = await this.session.runCmd($cmd);
+		return $cmdRec;
 	}
 }
 

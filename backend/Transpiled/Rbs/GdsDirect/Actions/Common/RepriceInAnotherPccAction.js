@@ -127,7 +127,7 @@ class RepriceInAnotherPccAction
         $translatorResult = (new GdsDialectTranslator()).setBaseDate($startDt).translate($dialect, $target['gds'], $cmd);
         $log('Translate '+$dialect+' ['+$cmd+'] to '+$target['gds'], $translatorResult);
         $targetCmd = $translatorResult['output'] || $cmd;
-        $output = $session.fetchAllOutput($targetCmd);
+        $output = $session.fetchAll($targetCmd);
         return {'calledCommands': [{'cmd': $targetCmd, 'output': $output}]};
     }
 }

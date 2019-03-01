@@ -1,5 +1,5 @@
 
-let {fetchAllOutput, wrap} = require('../GdsHelpers/TravelportUtils.js');
+let {fetchAll, wrap} = require('../GdsHelpers/TravelportUtils.js');
 const StatefulSession = require("../GdsHelpers/StatefulSession.js");
 const AreaSettings = require("../Repositories/AreaSettings");
 const ItineraryParser = require("../Transpiled/Gds/Parsers/Apollo/Pnr/ItineraryParser");
@@ -164,6 +164,7 @@ let runCmdRq =  async (inputCmd, stateful) => {
 		let grectResult = makeGrectResult(gdsResult.calledCommands, stateful.getFullState());
 		grectResult.status = gdsResult.status;
 		grectResult.messages = (gdsResult.userMessages || []).map(msg => ({type: 'error', text: msg}));
+		grectResult.actions = gdsResult.actions || [];
 		return grectResult;
 	} else {
 		let {realCmd: cmd, fetchAll, type, data} = parseAlias(inputCmd);
@@ -171,7 +172,7 @@ let runCmdRq =  async (inputCmd, stateful) => {
 		let calledCommands = [];
 		for (let cmd of cmdsLeft) {
 			let cmdRec = fetchAll
-				? await fetchAllOutput(cmd, stateful)
+				? await fetchAll(cmd, stateful)
 				: (await stateful.runCmd(cmd));
 			calledCommands.push(cmdRec);
 		}

@@ -16,13 +16,13 @@ let extractPager = (text) => {
 
 exports.extractPager = extractPager;
 
-/** @param stateful = await require('StatefulSession.js')() */
-exports.fetchAllOutput = async (nextCmd, stateful) => {
+/** @param {{runCmd: function(string): Promise<{output: string}>}} session */
+exports.fetchAll = async (nextCmd, session) => {
 	let pages = [];
 	let fullCmdRec = null;
 	let hrtimeStart = process.hrtime();
 	while (nextCmd) {
-		let cmdRec = (await stateful.runCmd(nextCmd));
+		let cmdRec = (await session.runCmd(nextCmd));
 		fullCmdRec = fullCmdRec || cmdRec;
 		let [output, pager] = extractPager(cmdRec.output);
 		pages.push(output);
