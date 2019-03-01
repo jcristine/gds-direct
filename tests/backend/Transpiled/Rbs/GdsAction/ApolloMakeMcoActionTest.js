@@ -126,7 +126,7 @@ class ApolloMakeMcoActionTest extends require('../../../../../backend/Transpiled
                     "MCO ISSUED TTL FARE  USD     3.00",
                     "ITIN/INVOICE ISSUED",
                     "TAB AND ENTER TO REDISPLAY PNR >*LCF9T0;",
-                    "><"
+                    ""
                 ].join("\n"),
             },
             calledCommands: [
