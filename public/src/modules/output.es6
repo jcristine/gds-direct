@@ -83,9 +83,14 @@ export default class Output
         return this;
     }
 
-	_attachEmpty()
+    removeEmpty()
 	{
 		this.context.innerHTML = '';
+	}
+
+	_attachEmpty()
+	{
+		this.removeEmpty();
 
 		if (this.emptyLines > 0 )
 		{

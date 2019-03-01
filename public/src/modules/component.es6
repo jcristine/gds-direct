@@ -76,9 +76,19 @@ export default class Component
 		return this;
 	}
 
-	attach( element )
+	attach( elements )
 	{
-		this.context.appendChild( element );
+		if (!Array.isArray(elements)) {
+			elements = [elements];
+		}
+		for (let element of elements) {
+			if (element instanceof HTMLElement) {
+				this.context.appendChild( element );
+			} else {
+				this.context.appendChild( element.getContext() );
+			}
+		}
+		return this;
 	}
 
 	getContext()

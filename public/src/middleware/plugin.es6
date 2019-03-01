@@ -17,6 +17,8 @@ import {CHANGE_ACTIVE_TERMINAL} from "../actions/settings";
 import {UPDATE_CUR_GDS} from "../actions/gdsActions";
 // import {debugOutput} from "../helpers/logger";
 import {loggerOutput} from "../helpers/logger";
+import {post} from "../helpers/requests";
+import {McoForm} from "../components/popovers/mcoForm";
 
 export default class TerminalPlugin
 {
@@ -51,6 +53,10 @@ export default class TerminalPlugin
 
 	_parseKeyBinds( evt, terminal )
 	{
+		if (evt.target.tagName.toLowerCase() === 'input') {
+		        return true;
+		}
+
 		const hasNoShortCut = pressedShortcuts( evt, terminal, this );
 
 		if ( !hasNoShortCut )
@@ -125,6 +131,9 @@ export default class TerminalPlugin
 			memory			: true, // do not add to localStorage
 
 			keypress		: (e, terminal) => {
+				if (e.target.tagName.toLowerCase() === 'input') {
+				        return true;
+				}
 				const replacement = getReplacement( e, window.GdsDirectPlusState.isLanguageApollo() );
 
 				if (replacement)
@@ -211,6 +220,36 @@ export default class TerminalPlugin
 		return command;
 	}
 
+	_displayMcoMask(data)
+	{
+		let mcoForm = McoForm({data, onsubmit: (data) => {
+			let terminalData = apiData ? apiData.terminalData : null;
+			let isStandAlone = terminalData ? +terminalData.isStandAlone : false;
+			let params = {
+				isStandAlone: isStandAlone,
+				gds: this.gdsName,
+				fields: data.fields,
+				useRbs: GdsDirectPlusState.getUseRbs(),
+			};
+			this.spinner.start();
+			return post('terminal/makeMco', params)
+				.then(resp => {
+					this.spinner.end();
+					this.parseBackEnd(resp);
+					return {canClosePopup: resp && resp.success};
+				}).catch(exc => {
+					this.spinner.end();
+					return {canClosePopup: false};
+				});
+		}});
+		this.context.appendChild(mcoForm.context);
+		let inp = mcoForm.context.querySelector('input:not([disabled]):not([type="hidden"])');
+		if (inp) {
+			inp.focus();
+		}
+		this.terminal.scroll_to_bottom();
+	}
+
 	parseBackEnd({data = {}}, command)
 	{
 		this.lastCommand = command; // for history
@@ -244,6 +283,13 @@ export default class TerminalPlugin
 		}
 
 		UPDATE_CUR_GDS({...data, gdsName : this.gdsName});
+
+		for (let action of data.actions || []) {
+			if (action.type === 'displayMcoMask') {
+				this._displayMcoMask(action.data);
+				this.outputLiner.removeEmpty();
+			}
+		}
 	}
 
 	print(output)

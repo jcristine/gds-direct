@@ -29,7 +29,7 @@ window.GdsDirectPlusState = {
 	getLanguage 		: () => State.language,
 	hasPermissions 		: () => State.permissions,
 	getIsAdmin			: () => State.isAdmin,
-	getUseRbs 			: () => State.useRbs,
+	getUseRbs 			: () => State.useRbs ? true : false,
 	getGdsAreaSettings	: () => State.gdsAreaSettings || {},
 };
 
