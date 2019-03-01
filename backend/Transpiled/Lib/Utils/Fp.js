@@ -8,6 +8,28 @@ class Fp {
 		return php.array_map($function, $arr);
 	}
 
+	/**
+	 * @param rows = [
+	 *     [a1, a2, a3],
+	 *     [b1, b2, b3],
+	 *     [c1, c2, c3],
+	 * ]
+	 * @return array [
+	 *     [a1, b1, c1],
+	 *     [a2, b2, c2],
+	 *     [a3, b3, c3],
+	 * ]
+	 * @see https://stackoverflow.com/a/10284006/2750743
+	 */
+	static zip(rows)
+	{
+		if (rows.length === 0) {
+			return [];
+		} else {
+			return rows[0].map((_,c) => rows.map(row => row[c]));
+		}
+	}
+
 	static all($function, $arr) {
 		let $el;
 		for ($el of Object.values($arr)) {
