@@ -15,6 +15,7 @@ const PnrHistoryParserTest = require('./backend/Transpiled/Gds/Parsers/Apollo/Pn
 const DisplayHistoryActionHelperTest = require('./backend/Transpiled/Rbs/GdsDirect/Actions/Apollo/DisplayHistoryActionHelperTest.js');
 const MakeMultiPccTariffDumpActionTest = require('./backend/Transpiled/Rbs/GdsDirect/Actions/Common/MakeMultiPccTariffDumpActionTest.js');
 const GetMultiPccTariffDisplayActionTest = require('./backend/Transpiled/Rbs/GdsDirect/Actions/Common/GetMultiPccTariffDisplayActionTest.js');
+const ApolloMakeMcoActionTest = require('./backend/Transpiled/Rbs/GdsAction/ApolloMakeMcoActionTest.js');
 
 console.log('Starting unit tests');
 
@@ -33,6 +34,7 @@ let tests = [
 	.concat(new DisplayHistoryActionHelperTest().getTests())
 	.concat(new MakeMultiPccTariffDumpActionTest().getTests())
 	.concat(new GetMultiPccTariffDisplayActionTest().getTests())
+	.concat(new ApolloMakeMcoActionTest().getTests())
 	;
 
 let oks = 0;
