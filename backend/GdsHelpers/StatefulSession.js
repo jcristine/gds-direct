@@ -8,6 +8,7 @@ const {NotImplemented, BadRequest} = require("../Utils/Rej.js");
 const {logit, logExc} = require("../LibWrappers/FluentLogger.js");
 const LocationGeographyProvider = require('../Transpiled/Rbs/DataProviders/LocationGeographyProvider.js');
 const Pccs = require("../Repositories/Pccs");
+const Misc = require("../Transpiled/Lib/Utils/Misc");
 
 /**
  * a generic session that can be either apollo, sabre, galileo, amadeus, etc...
@@ -58,7 +59,8 @@ let StatefulSession = async (session) => {
 					duration: hrtimeToDecimal(hrtimeDiff),
 				};
 				calledCommands.push(cmdRec);
-				logit('Gds result: ' + cmd, session.logId, {...cmdRec, state: fullState.areas[fullState.area]});
+				let masked = Misc.maskCcNumbers(cmdRec);
+				logit('Gds result: ' + cmd, session.logId, {...masked, state: fullState.areas[fullState.area]});
 				return cmdRec;
 			});
 		},
