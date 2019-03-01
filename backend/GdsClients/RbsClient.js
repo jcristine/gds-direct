@@ -20,8 +20,8 @@ let callRbs = async (functionName, params) => {
 	let logId = 'rbs.5bf6e431.9577485';
 	let url = Config.production
 		? 'http://rbs-asaptickets.lan.dyninno.net/jsonExternalInterface.php?log_id=' + logId
-		// : 'http://st-rbs.sjager.php7.dyninno.net/jsonExternalInterface.php?log_id=' + logId;
-		: 'http://rbs-dev.aklesuns.php7.dyninno.net/jsonExternalInterface.php?log_id=' + logId;
+		: 'http://st-rbs.sjager.php7.dyninno.net/jsonExternalInterface.php?log_id=' + logId;
+		// : 'http://rbs-dev.aklesuns.php7.dyninno.net/jsonExternalInterface.php?log_id=' + logId;
 
 	let rbsPassword = Config.RBS_PASSWORD;
 	if (!rbsPassword) {

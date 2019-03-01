@@ -18,7 +18,7 @@ let httpAgent = new http.Agent(agentParams);
  * Travelport response takes 0.17 seconds instead of 0.7 from Europe when you preserve the connection
  * it also returns a promise
  */
-module.exports = PersistentHttpRq = (params) => new Promise((resolve, reject) => {
+let PersistentHttpRq = (params) => new Promise((resolve, reject) => {
 	let parsedUrl = url.parse(params.url);
 	let request = parsedUrl.protocol.startsWith('https') ? https.request : http.request;
 	let requestAgent = params.dropConnection ? undefined :
@@ -48,3 +48,26 @@ module.exports = PersistentHttpRq = (params) => new Promise((resolve, reject) =>
 	req.on('error', (e) => reject('Failed to make request - ' + e));
 	req.end(params.body);
 });
+
+let countSockets = (hostToSockets) => {
+	let result = {};
+	for (let [host, sockets] of Object.entries(hostToSockets)) {
+		result[host] = sockets.length;
+	}
+	return result;
+};
+
+PersistentHttpRq.getInfo = () => {
+	return {
+		agents: [
+			['http', httpAgent],
+			['https', httpsAgent],
+		].map(([name, a]) => ({
+			name: name,
+			socketsUnused: countSockets(a.freeSockets),
+			socketsUsed: countSockets(a.sockets),
+		})),
+	};
+};
+
+module.exports = PersistentHttpRq;

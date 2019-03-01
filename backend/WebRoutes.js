@@ -375,6 +375,7 @@ app.get('/ping', toHandleHttp((rqBody) => {
 	for (let key in used2) {
 		memory[key] = Math.round(used2[key] / 1024 / 1024 * 100) / 100;
 	}
+	let PersistentHttpRq = require('./Utils/PersistentHttpRq.js');
 
 	return Redis.getInfo().then(redisLines => {
 		const data = {
@@ -394,6 +395,7 @@ app.get('/ping', toHandleHttp((rqBody) => {
 			system: {
 				memory: memory
 			},
+			persistentHttpRqInfo: PersistentHttpRq.getInfo(),
 		};
 		console.log(JSON.stringify(data));
 		data['msg'] = 'pong';

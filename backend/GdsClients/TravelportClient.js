@@ -2,6 +2,7 @@ let {getTravelport} = require("../Repositories/GdsProfiles.js");
 let {LoginTimeOut, BadGateway} = require("../Utils/Rej");
 let {parseXml} = require("../Utils/Misc.js");
 let PersistentHttpRq = require('../Utils/PersistentHttpRq.js');
+const Conflict = require("../Utils/Rej").Conflict;
 
 /**
  * they are all physically located in USA, Atlanta (in same building)
@@ -56,6 +57,8 @@ let runOneCmd = (cmd, gdsData) => {
 	}).catch(exc => {
 		if ((exc + '').indexOf('Could not locate Session Token Information') > -1) {
 			return LoginTimeOut('Session token expired');
+		} else if ((exc + '').indexOf('Transaction already in progress') > -1) {
+			return Conflict('Another command is still in progress - no action taken');
 		} else {
 			let obj = typeof exc === 'string' ? new Error(exc) : exc;
 			// for debug, be careful not to include credentials here
