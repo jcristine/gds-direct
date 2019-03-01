@@ -36,40 +36,44 @@ let Migration = () => {
 		});
 	};
 
+	let runLocked = async () => {
+		let migrations = aklesuns.migrations.slice();
+		let cnt = migrations.length;
+		let runNext = (db) => {
+			let next = migrations.shift();
+			if (!next) {
+				return Promise.resolve({cnt: cnt});
+			} else {
+				return runSingle(next, db)
+					.then(() => runNext(db));
+			}
+		};
+
+		let start = (db) =>
+			db.query([
+				'CREATE TABLE IF NOT EXISTS ' + TABLE_NAME + ' ( ',
+				'    `id` INTEGER PRIMARY KEY AUTO_INCREMENT, ',
+				'    `name` VARCHAR(255) DEFAULT NULL, ',
+				'    `dt`  DATETIME DEFAULT NULL, ',
+				'    UNIQUE KEY `name` (`name`) ',
+				') ENGINE=InnoDb DEFAULT CHARSET=utf8;',
+			].join('\n'))
+				.then(() => runNext(db));
+
+		return Db.with(db => start(db))
+			.then(result => ({result: result, logs: logs}));
+	};
+
 	return {
 		run: async () => {
 			// there are currently 2 supposedly equal servers
 			let lockSeconds = 5 * 60; // 5 minutes
-			let migrationLock = await client.set(keys.MIGRATION_LOCK, 'locked', 'EX', lockSeconds, 'NX');
+			let lockKey = keys.MIGRATION_PROCESS_LOCK;
+			let migrationLock = await client.set(lockKey, 'locked', 'EX', lockSeconds, 'NX');
 			if (!migrationLock) {
 				return Promise.resolve('Migration is already being handled by other cluster');
 			}
-
-			let migrations = aklesuns.migrations.slice();
-			let cnt = migrations.length;
-			let runNext = (db) => {
-				let next = migrations.shift();
-				if (!next) {
-					return Promise.resolve({cnt: cnt});
-				} else {
-					return runSingle(next, db)
-						.then(() => runNext(db));
-				}
-			};
-
-			let start = (db) =>
-				db.query([
-					'CREATE TABLE IF NOT EXISTS ' + TABLE_NAME + ' ( ',
-					'    `id` INTEGER PRIMARY KEY AUTO_INCREMENT, ',
-					'    `name` VARCHAR(255) DEFAULT NULL, ',
-					'    `dt`  DATETIME DEFAULT NULL, ',
-					'    UNIQUE KEY `name` (`name`) ',
-					') ENGINE=InnoDb DEFAULT CHARSET=utf8;',
-				].join('\n'))
-					.then(() => runNext(db));
-
-			return Db.with(db => start(db))
-				.then(result => ({result: result, logs: logs}));
+			return runLocked().finally(() => client.del(lockKey));
 		},
 	};
 };
