@@ -258,37 +258,6 @@ app.get('/authorizeEmcToken', toHandleHttp(async rqBody => {
 	let result = await Emc.client.authorizeToken(token);
 	return {emcSessionId: result.data.sessionKey};
 }));
-app.get('/ping', toHandleHttp((rqBody) => {
-	let memory = {};
-	const used2 = process.memoryUsage();
-	for (let key in used2) {
-		memory[key] = Math.round(used2[key] / 1024 / 1024 * 100) / 100;
-	}
-
-	return Redis.getInfo().then(redisLines => {
-		const data = {
-			'dbPool': Db.getInfo(),
-			sockets: {
-				'totalConnection': 0,
-				'userCount': 0
-			},
-			redis: {
-				connected_clients: redisLines.connected_clients,
-				client_longest_output_list: redisLines.client_longest_output_list,
-				client_biggest_input_buf: redisLines.client_biggest_input_buf,
-				blocked_clients: redisLines.blocked_clients,
-				used_memory_human: redisLines.used_memory_human,
-				used_memory_peak_human: redisLines.used_memory_peak_human,
-			},
-			system: {
-				memory: memory
-			},
-		};
-		console.log(JSON.stringify(data));
-		data['msg'] = 'pong';
-		return {status: 'OK', result: data};
-	});
-}));
 
 app.get('/doSomeHeavyStuff', withAuth((reqBody, emcResult) => {
 	if (emcResult.user.id == 6206) {
@@ -398,3 +367,34 @@ try {
 	Diag.error('Failed to listen to socket port (' + Config.SOCKET_PORT + ') - ' + exc)
 }
 
+
+app.get('/ping', toHandleHttp((rqBody) => {
+	let memory = {};
+	const used2 = process.memoryUsage();
+	for (let key in used2) {
+		memory[key] = Math.round(used2[key] / 1024 / 1024 * 100) / 100;
+	}
+
+	return Redis.getInfo().then(redisLines => {
+		const data = {
+			'dbPool': Db.getInfo(),
+			sockets: {
+				'totalConnection': socketIo.engine.clientsCount,
+			},
+			redis: {
+				connected_clients: redisLines.connected_clients,
+				client_longest_output_list: redisLines.client_longest_output_list,
+				client_biggest_input_buf: redisLines.client_biggest_input_buf,
+				blocked_clients: redisLines.blocked_clients,
+				used_memory_human: redisLines.used_memory_human,
+				used_memory_peak_human: redisLines.used_memory_peak_human,
+			},
+			system: {
+				memory: memory
+			},
+		};
+		console.log(JSON.stringify(data));
+		data['msg'] = 'pong';
+		return {status: 'OK', result: data};
+	});
+}));
