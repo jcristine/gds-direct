@@ -9,8 +9,8 @@ let makeBriefRsStr = (response, startMs) => {
 	let endMs = Date.now();
 	let duration = ((endMs - startMs) / 1000).toFixed(3);
 
-	let gdsTime = ((response.body || {}).data || {}).gdsTime;
-	let cmdType = ((response.body || {}).data || {}).cmdType;
+	let gdsTime = (response.body || {}).gdsTime;
+	let cmdType = (response.body || {}).cmdType;
 	let rqTakenMs = (response.body || {}).rqTakenMs;
 	let rsSentMs = (response.body || {}).rsSentMs;
 

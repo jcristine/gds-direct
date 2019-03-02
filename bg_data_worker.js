@@ -1,4 +1,10 @@
 
+let Config = require('./backend/Config.js');
+
+(async () => {
+
+await Config.getConfig();
+
 let GdsSessionController = require('./backend/GdsSessionController.js');
 let GdsSessions = require('./backend/Repositories/GdsSessions.js');
 let FluentLogger = require('./backend/LibWrappers/FluentLogger.js');
@@ -119,3 +125,5 @@ processNextSession();
 process.on('SIGINT', terminate);
 process.on('SIGTERM', terminate);
 process.on('SIGHUP', terminate);
+
+})();
