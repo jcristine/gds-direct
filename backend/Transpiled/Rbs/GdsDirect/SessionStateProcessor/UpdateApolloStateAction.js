@@ -16,7 +16,7 @@ const SessionStateHelper = require("./SessionStateHelper");
 const SessionStateProcessor = require("./SessionStateProcessor");
 const php = require("./../../../../../backend/Transpiled/php");
 
-class UpdateApolloSessionStateAction {
+class UpdateApolloStateAction {
 	constructor($getAreaData) {
 		this.$getAreaData = $getAreaData;
 	}
@@ -207,4 +207,4 @@ class UpdateApolloSessionStateAction {
 	}
 }
 
-module.exports = UpdateApolloSessionStateAction;
+module.exports = UpdateApolloStateAction;

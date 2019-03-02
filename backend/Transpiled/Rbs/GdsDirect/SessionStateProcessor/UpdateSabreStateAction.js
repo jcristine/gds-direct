@@ -17,7 +17,7 @@ const SessionStateHelper = require("./SessionStateHelper");
 const SessionStateProcessor = require("./SessionStateProcessor");
 
 const php = require('../../../php.js');
-class UpdateSabreSessionStateAction
+class UpdateSabreStateAction
 {
     constructor($getAreaData)  {
         this.$getAreaData = $getAreaData;
@@ -193,4 +193,4 @@ class UpdateSabreSessionStateAction
         return $sessionData;
     }
 }
-module.exports = UpdateSabreSessionStateAction;
+module.exports = UpdateSabreStateAction;

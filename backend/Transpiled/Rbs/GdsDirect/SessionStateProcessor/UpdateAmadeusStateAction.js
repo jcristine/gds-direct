@@ -10,7 +10,7 @@ const CmsAmadeusTerminal = require('../../../Rbs/GdsDirect/GdsInterface/CmsAmade
 const SessionStateProcessor = require('../../../Rbs/GdsDirect/SessionStateProcessor/SessionStateProcessor.js');
 
 const php = require('../../../php.js');
-class UpdateAmadeusSessionStateAction
+class UpdateAmadeusStateAction
 {
     constructor($initialState, $getAreaData)  {
 
@@ -180,4 +180,4 @@ class UpdateAmadeusSessionStateAction
         return $self.$state;
     }
 }
-module.exports = UpdateAmadeusSessionStateAction;
+module.exports = UpdateAmadeusStateAction;

@@ -20,14 +20,17 @@ class SessionStateProcessor
     static updateStateSafe($cmd, $output, gds, $sessionState, $getAreaData)  {
         let $getAreaDataNorm = (letter) => ({...$getAreaData(letter)});
         if (gds === 'apollo') {
-            let UpdateApolloSessionStateAction = require('./UpdateApolloSessionStateAction.js');
+            let UpdateApolloSessionStateAction = require('./UpdateApolloStateAction.js');
             return UpdateApolloSessionStateAction.execute($cmd, $output, $sessionState, $getAreaDataNorm);
         } else if (gds === 'sabre') {
-            let UpdateSabreSessionStateAction = require('./UpdateSabreSessionStateAction.js');
+            let UpdateSabreSessionStateAction = require('./UpdateSabreStateAction.js');
             return UpdateSabreSessionStateAction.execute($cmd, $output, $sessionState, $getAreaDataNorm);
         } else if (gds === 'amadeus') {
-            let UpdateAmadeusSessionStateAction = require('./UpdateAmadeusSessionStateAction.js');
+            let UpdateAmadeusSessionStateAction = require('./UpdateAmadeusStateAction.js');
             return UpdateAmadeusSessionStateAction.execute($cmd, $output, $sessionState, $getAreaDataNorm).toArray();
+        } else if (gds === 'galileo') {
+            let UpdateGalileoSessionStateAction = require('./UpdateGalileoStateAction.js');
+            return UpdateGalileoSessionStateAction.execute($cmd, $output, $sessionState, $getAreaDataNorm).toArray();
         } else {
             throw new Error('Session State Processor is not implemented for '+$sessionState['gds']+' GDS yet');
         }
