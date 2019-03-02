@@ -17,6 +17,7 @@ let tests = [
 	.concat(new (require("./backend/Transpiled/Gds/Parsers/Amadeus/CommandParserTest.js"))().getTests())
 	.concat(new (require("./backend/Transpiled/Gds/Parsers/Apollo/Pnr/PnrParserTest.js"))().getTests())
 	.concat(new (require("./backend/Transpiled/Gds/Parsers/Sabre/Pnr/PnrParserTest.js"))().getTests())
+	.concat(new (require("./backend/Transpiled/Gds/Parsers/Amadeus/Pnr/PnrParserTest.js"))().getTests())
 	.concat(new (require("./backend/Transpiled/Rbs/GdsDirect/SessionStateProcessor/SessionStateProcessorTest"))().getTests())
 	.concat(new (require("./backend/Transpiled/Gds/Parsers/Apollo/PricingParserTest"))().getTests())
 	.concat(new (require("./backend/Transpiled/Gds/Parsers/Sabre/Pricing/SabrePricingParserTest"))().getTests())

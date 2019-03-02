@@ -73,7 +73,14 @@ let equals = (a, b, strict) => {
 	return equalsImpl(a, b);
 };
 php.equals = equals;
-php.is_numeric = str => +str + '' === str;
+// '123' - true
+// '123.213' - true
+// '09' - true
+// 'asdf' - false
+php.is_numeric = str => {
+	str = strval(str);
+	return (+str + '').replace(/^0*/, '') === str.replace(/^0*/, '');
+};
 php.floor = (num) => Math.floor(num);
 php.max = (...args) => {
 	if (args.length === 1 && Array.isArray(args[0])) {
@@ -255,9 +262,10 @@ php.PREG_SPLIT_NO_EMPTY = 1;
 php.PREG_SPLIT_DELIM_CAPTURE = 2;
 php.PREG_SPLIT_OFFSET_CAPTURE = 2;
 php.preg_split = (regex, str, limit = -1, flags = 0) => {
+	let hasGroups = regex.source.match(/(?<!\\)\((?!\?:)/);
 	if (limit !== -1) {
 		throw new Error('Unsupported preg_split parameter - limit ' + limit);
-	} else if (!(flags & php.PREG_SPLIT_DELIM_CAPTURE)) {
+	} else if (!(flags & php.PREG_SPLIT_DELIM_CAPTURE) && hasGroups) {
 		// Because in js str.split(...) always includes captures. I guess I could implement a
 		// workaround here, but I'm too lazy, - it's easier to just change (...) to (?:...) everywhere
 		throw new Error('preg_split is only supported with PREG_SPLIT_DELIM_CAPTURE flag');
