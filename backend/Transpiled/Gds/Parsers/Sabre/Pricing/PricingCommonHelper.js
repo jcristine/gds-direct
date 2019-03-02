@@ -51,7 +51,7 @@ class PricingCommonHelper {
 		let $regex, $matches;
 
 		$regex =
-			'\/^\\s*' +
+			'/^\\s*' +
 			'((?<quantity>\\d+)-\\s+)?' +
 			'(?<baseFareCurrency>[A-Z]{3})' +
 			'(?<baseFareAmount>[\\d\\.]+)\\s+' +
@@ -66,7 +66,7 @@ class PricingCommonHelper {
 			'(?<totalCurrency>[A-Z]{3})' +
 			'(?<totalAmount>\\d+\\.?\\d*)' +
 			'(?<ptc>[A-Z0-9]{3})' +
-			'\\s*$\/';
+			'\\s*$/';
 
 		if (php.preg_match($regex, $valuesLine, $matches = [])) {
 			$matches = php.array_filter($matches);
@@ -110,11 +110,11 @@ class PricingCommonHelper {
 		$taxList = [];
 		$matches = [];
 		$taxPattern = '(\\d*\\.?\\d+)([A-Z0-9]{2})';
-		$rowRegex = '\/^(\\s{4}XT\\s+|\\s*)' + $taxPattern + '(\\s+' + $taxPattern + ')*\\s*$\/';
+		$rowRegex = '/^(\\s{4}XT\\s+|\\s*)' + $taxPattern + '(\\s+' + $taxPattern + ')*\\s*$/';
 
 		while ($line = php.array_shift($lines)) {
 			if (php.preg_match($rowRegex, $line, $matches = [])) {
-				for ($tuple of Object.values(this.getAllMatches('\/' + $taxPattern + '\/', $line))) {
+				for ($tuple of Object.values(this.getAllMatches('/' + $taxPattern + '/', $line))) {
 					[$amount, $taxType] = $tuple;
 					$taxList.push({
 						'amount': $amount,
@@ -141,8 +141,8 @@ class PricingCommonHelper {
 				'quantity': $number,
 				'records': Fp.map(($fb) => {
 						return {
-							'fareBasis': php.explode('\/', $fb)[0],
-							'ticketDesignator': (php.explode('\/', $fb) || {})[1],
+							'fareBasis': php.explode('/', $fb)[0],
+							'ticketDesignator': (php.explode('/', $fb) || {})[1],
 						};
 					},
 					php.array_filter($fareBasisList.split(/ +/))),

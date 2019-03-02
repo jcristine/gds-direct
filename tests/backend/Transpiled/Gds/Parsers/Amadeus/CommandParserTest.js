@@ -59,7 +59,7 @@ class CommandParserTest extends require('../../../Lib/TestCase.js')
         $list.push(['RT*', {'type': null}]);
         $list.push(['*RT', {'type': null}]);
         $list.push(['RT:', {'type': null}]);
-        $list.push(['RT\/', {'type': null}]);
+        $list.push(['RT/', {'type': null}]);
         $list.push(['RTASD', {'type': null}]);
 
         $list.push(['FXX', {'type': 'priceItinerary'}]);

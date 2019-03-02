@@ -98,7 +98,7 @@ class FqCmdParser
             '(?<fareBasis>(@[A-Z0-9]+)*)';
 
         for ($segmentGroup of Object.values(php.explode('.', $token))) {
-            if (php.preg_match('\/^'+$segmentGroupRegex+'\/', $segmentGroup, $matches = [])) {
+            if (php.preg_match('/^'+$segmentGroupRegex+'/', $segmentGroup, $matches = [])) {
                 $bundles.push({
                     'segmentNumbers': $matches['toSegment']
                         ? php.range($matches['fromSegment'], $matches['toSegment'])
@@ -197,7 +197,7 @@ class FqCmdParser
             [$_, $baseCmd, $modsPart] = $matches;
             // some mods in Galileo starting with non-letters may have no slash before them
             $mods = [];
-            for ($gluedModsPart of Object.values(php.explode('\/', $modsPart))) {
+            for ($gluedModsPart of Object.values(php.explode('/', $modsPart))) {
                 while ($gluedModsPart) {
                     $mod = this.parseMod($gluedModsPart);
                     if ($mod['raw']) {

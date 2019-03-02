@@ -94,10 +94,10 @@ class FopLineParser
 
         $parsedData = [];
         $lineDataStr = php.str_replace(php.PHP_EOL, '', $lineDataStr);
-        $oldNewData = php.explode('+\/', $lineDataStr);
+        $oldNewData = php.explode('+/', $lineDataStr);
         for ($paymentStr of Object.values($oldNewData)) {
             $isOld = false;
-            if (StringUtil.startsWith($paymentStr, 'O\/')) {
+            if (StringUtil.startsWith($paymentStr, 'O/')) {
                 $isOld = true;
                 $paymentStr = php.substr($paymentStr,2);
             }

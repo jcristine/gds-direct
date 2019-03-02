@@ -51,7 +51,7 @@ class PnrHistoryParser {
 	//HX 538DN24MAY HKGSGN TK/UN2  1105P 1250A *
 	static parseSegmentAction($content) {
 		let $regex, $matches, $result;
-		$regex = '\/^' +
+		$regex = '/^' +
 			'(?<airline>[A-Z0-9]{2})\\s{0,3}' +
 			'(?<flightNumber>\\d{1,4})' +
 			'(?<unparsedToken1>.)' + // no idea what it is
@@ -59,7 +59,7 @@ class PnrHistoryParser {
 			'(?<departureDate>\\d{2}[A-Z]{3})\\s+' +
 			'(?<departureAirport>[A-Z]{3})' +
 			'(?<destinationAirport>[A-Z]{3})\\s+' +
-			'(?<segmentStatusWas>[A-Z]{2})\\\/' +
+			'(?<segmentStatusWas>[A-Z]{2})\\/' +
 			'(?<segmentStatusBecame>[A-Z]{2})' +
 			'(?<seatCount>\\d*)' +
 			'.{2}\\s*' + // two spaces, i suspect something may appear here
@@ -70,7 +70,7 @@ class PnrHistoryParser {
 			'(\\s+(?<confirmedByAirline>\\*)|)' +
 			'.{0,9}?' + // same here
 			'(?<marriage>\\d+|)' +
-			'$\/';
+			'$/';
 		if (php.preg_match($regex, $content, $matches = {})) {
 			$result = this.postProcessGroupMatches($matches);
 			$result['departureDate'] = {
@@ -139,7 +139,7 @@ class PnrHistoryParser {
 	// "XDB/2ER7/1V AG    14MAR2326Z"
 	static parseRcvdStandardPart($text) {
 		let $regex, $matches;
-		$regex = '\/^' +
+		$regex = '/^' +
 			'(' +
 			'(?<signCityCode>[A-Z]{3})' +
 			'(\\\/(?<pcc>[A-Z0-9]{3,4}|\\s*))?' +
@@ -152,7 +152,7 @@ class PnrHistoryParser {
 			'(?<receivedTime>\\d{3,4})' +
 			'(?<receivedTimezone>.+)' +
 			')' +
-			'\\s*$\/';
+			'\\s*$/';
 		if (php.preg_match($regex, $text, $matches = {})) {
 			return this.postProcessRcvdStandardPartMatches($matches);
 		} else {
@@ -168,11 +168,11 @@ class PnrHistoryParser {
 	static parseRcvdOriginSpecificPart($text, $originType) {
 		let $regex, $matches;
 		if ($originType === 'agency') {
-			$regex = '\/^' +
+			$regex = '/^' +
 				'(?<receivedFrom>[A-Z]+|)' +
 				'\\\/Z' +
 				'(?<agencySignAndInitials>[A-Z0-9]{3,4}\\\/?[A-Z0-9]{2,3})' +
-				'\\s*$\/';
+				'\\s*$/';
 
 			if (php.preg_match($regex, $text, $matches = {})) {
 				return {
@@ -184,12 +184,12 @@ class PnrHistoryParser {
 				};
 			}
 		} else if ($originType === 'airline') {
-			$regex = '\/^' +
-				'(?<token1>\\d+)\\\/' +
-				'(?<token2>[A-Z0-9]*)\\\/' +
-				'(?<token3>[A-Z0-9]+)\\\/' +
+			$regex = '/^' +
+				'(?<token1>\\d+)\\/' +
+				'(?<token2>[A-Z0-9]*)\\/' +
+				'(?<token3>[A-Z0-9]+)\\/' +
 				'(?<token4>.*?)' +
-				'\\s*$\/';
+				'\\s*$/';
 
 			if (php.preg_match($regex, $text, $matches = {})) {
 				return this.postProcessGroupMatches($matches);
@@ -248,7 +248,7 @@ class PnrHistoryParser {
 	// ZDNPGS
 	static parseAgentSign($agentSign) {
 		let $tokens, $homePcc, $agentInitials;
-		$tokens = php.explode('\/', $agentSign);
+		$tokens = php.explode('/', $agentSign);
 		if (php.count($tokens) === 2) {
 			[$homePcc, $agentInitials] = $tokens;
 			return {
@@ -343,12 +343,12 @@ class PnrHistoryParser {
 	static parsePricingAction($content) {
 		let $regex, $tokens;
 		$regex =
-			'\/^' +
+			'/^' +
 			'(?<status>\\$B-|TKT\\s+|)' +
 			'(?<passengerNumbers>\\d(-\\d+)*)\\s' +
 			'(?<fareTypeCode>[A-Z]{1})' +
 			'(?<date>\\d+[A-Z]{3}\\d{2})' +
-			'\/';
+			'/';
 		if (php.preg_match($regex, $content, $tokens = [])) {
 			return {
 				'atfqLineType': 'paxBundle',
@@ -372,17 +372,17 @@ class PnrHistoryParser {
 	static parseFirstRcvdCopy($lines) {
 		let $source, $standardLineRegex, $line, $matches, $_, $agentName, $agencySignAndInitials, $result;
 		$source = [...$lines];
-		$standardLineRegex = '\/^' +
+		$standardLineRegex = '/^' +
 			'(?<signCityCode>[A-Z]{3})\\s+' +
 			'(?<originType>AG|RM)\\s+' +
 			'(?<teamInitials>[A-Z0-9]{2})\\s+' +
 			'(?<receivedDtRaw>' +
 			'(?<receivedTime>\\d{3,4})' +
 			'(?<receivedTimezone>[A-Z])' +
-			'\\\/' +
+			'\\/' +
 			'(?<receivedDate>\\d{1,2}[A-Z]{3})' +
 			')' +
-			'\\s*$\/';
+			'\\s*$/';
 		if ($line = php.array_shift($lines)) {
 			if (php.preg_match(/^RCVD-([A-Z]*)\/([A-Z0-9]{3,4}\/?[A-Z0-9]{2,3})\s*$/, $line, $matches = [])) {
 				[$_, $agentName, $agencySignAndInitials] = $matches;

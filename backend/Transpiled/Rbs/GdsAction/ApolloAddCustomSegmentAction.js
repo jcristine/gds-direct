@@ -13,7 +13,7 @@ class ApolloAddCustomSegmentAction
     static parseAddSegmentOutput($dump)  {
         let $regex, $matches;
         $regex =
-            '\/^\\s*'+
+            '/^\\s*'+
             '(?<segmentNumber>\\d+)\\s*'+
             '(?<segmentType>OTH|TUR)\\s*'+
             '(?<vendor>[A-Z0-9]{2})\\s*'+
@@ -22,7 +22,7 @@ class ApolloAddCustomSegmentAction
             '(?<location>[A-Z]{3})\\s*'+
             '(?<date>\\d+[A-Z]{3})\\s*'+
             '(-\\s*(?<remark>.*?))?'+
-            '\\s*$\/';
+            '\\s*$/';
         if (php.preg_match($regex, $dump, $matches = [])) {
             return $matches;
         } else {

@@ -37,7 +37,7 @@ class AccountingDataParser {
 		let $regex, $matches, $unparsed, $numKeys;
 
 		$regex =
-			'\/^\\s*' +
+			'/^\\s*' +
 			'(?<airline>[A-Z0-9]{2})\\s*' +
 			'(?<source>\u00A5|\\\/|\u00A4)\\s*' +
 			'(?<partialTicketNumber>\\d{10})\\s*\\\/\\s*' +
@@ -50,7 +50,7 @@ class AccountingDataParser {
 			'(?<lastName>[^\\s]+)\\s+' +
 			'(?<firstName>[^\\\/]+)\\s*\\\/\\s*' +
 			'(?<unparsedTokens>.*?)' +
-			'\\s*$\/';
+			'\\s*$/';
 
 		if (php.preg_match($regex, $line, $matches = [])) {
 			$matches['nameNumber'] = $matches['nameNumber'] ? {
@@ -62,14 +62,14 @@ class AccountingDataParser {
 				'raw': $matches['source'],
 				'parsed': ({
 					'\u00A5': 'automatic',
-					'\/': 'manual',
+					'/': 'manual',
 					'\u00A4': 'msif',
 				} || {})[$matches['source']],
 			};
 			$matches['formOfPayment'] = this.parseFormOfPayment($matches['formOfPayment']);
 			$unparsed = php.trim($matches['unparsedTokens']);
 			$matches['unparsedTokens'] = $unparsed
-				? Fp.map('trim', php.explode('\/', $unparsed))
+				? Fp.map('trim', php.explode('/', $unparsed))
 				: [];
 			$numKeys = Fp.filter('is_numeric', php.array_keys($matches));
 			return php.array_diff_key($matches, php.array_flip($numKeys));
@@ -87,7 +87,7 @@ class AccountingDataParser {
 		if ($parsed = this.parseAccountingLine($line)) {
 			$type = 'accounting';
 		} else {
-			$tokens = Fp.map('trim', php.explode('\/', php.trim($line)));
+			$tokens = Fp.map('trim', php.explode('/', php.trim($line)));
 			if (php.count($tokens) === 5) {
 				$type = 'bulk';
 			} else if (php.count($tokens) === 6) {
@@ -110,7 +110,7 @@ class AccountingDataParser {
 		let $regex, $matches, $raw, $result, $record;
 
 		$regex =
-			'\/^' +
+			'/^' +
 			'(?<recordBlock>\\s{0,2}' +
 			'(?<lineNumber>\\d+)\\.' +
 			'(?<indent>\\s*)' +
@@ -118,7 +118,7 @@ class AccountingDataParser {
 			'(?<wrappedText>\\n\\s{4}.*)*' +
 			')\\n?' +
 			'(?<textLeft>([\\s\\S]*))' +
-			'$\/';
+			'$/';
 
 		if (php.preg_match($regex, $recordsBlock, $matches = [])) {
 			$raw = php.implode('', Fp.map(this.toRemoveIndent(4 + php.strlen($matches['indent'])),

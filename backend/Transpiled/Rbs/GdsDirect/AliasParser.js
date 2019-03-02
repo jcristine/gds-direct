@@ -16,14 +16,14 @@ class AliasParser
     static parseRe($cmd)  {
         let $regex, $matches;
         $regex =
-            '\/^RE\\\/'+
+            '/^RE\\/'+
             '(?<pcc>[A-Z0-9]{3,9})'+
-            '(\\\/'+
+            '(\\/'+
                 '(?<status>[A-Z]{2}|)'+
                 '(?<seatCount>\\d*)'+
             ')?'+
             '(?<keepOriginalMark>\\+|\\||)'+
-            '$\/';
+            '$/';
         if (php.preg_match($regex, $cmd, $matches = [])) {
             return {
                 'pcc': $matches['pcc'],

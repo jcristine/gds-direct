@@ -49,9 +49,9 @@ class HeaderParser
 
     static parsePnrHeaderLine($line)  {
         let $pattern1, $pattern2, $pattern3, $tokens, $creatorToken, $matches, $_, $agencyToken, $agentToken;
-        $pattern1 = '\/^'+
+        $pattern1 = '/^'+
                     '(?<recordLocator>[A-Z0-9]{6})'+
-                    '\\\/'+
+                    '\\/'+
                     '(?<focalPointInitials>[A-Z0-9]{2})'+
                     '\\s'+
                     '(?<agencyId>[A-Z0-9]{5})'+ // this QSBSB token, which usually is different for other agency reservations, nobody knows what it actually is
@@ -59,10 +59,10 @@ class HeaderParser
                     'AG\\s(?<arcNumber>[0-9]{8}|0)'+
                     '\\s'+
                     '(?<reservationDate>[0-9]{2}[A-Z]{3})'+
-                    '$\/';
-        $pattern2 = '\/^'+
+                    '$/';
+        $pattern2 = '/^'+
                     '(?<recordLocator>[A-Z0-9]{6})'+
-                    '\\\/'+
+                    '\\/'+
                     '(?<focalPointInitials>[A-Z0-9]{2})'+
                     '\\s'+
                     '(?<agencyId>[A-Z0-9]{3})'+ // Looks like an airport, but stands in place of this 'QSBSB' thing
@@ -70,10 +70,10 @@ class HeaderParser
                     'RM'+
                     '\\s'+
                     '(?<reservationDate>[0-9]{2}[A-Z]{3})'+
-                    '$\/';
-        $pattern3 = '\/^'+
+                    '$/';
+        $pattern3 = '/^'+
                     '(?<recordLocator>[A-Z0-9]{6})'+
-                    '\\\/'+
+                    '\\/'+
                     '(?<focalPointInitials>[A-Z0-9]{2})'+
                     '\\s+'+
                     '(?<agencyId>[A-Z0-9]{3,5})'+
@@ -81,7 +81,7 @@ class HeaderParser
                     '(?<pnrCreatorToken>([A-Z0-9]{3,4})?\\\/?[A-Z0-9]{2,3})'+
                     '\\s+'+
                     '(?<reservationDate>[0-9]{2}[A-Z]{3})'+
-                    '\\s*$\/';
+                    '\\s*$/';
         if (php.preg_match($pattern1, php.trim($line), $tokens = [])) {
             $creatorToken = php.trim($tokens['pnrCreatorToken']);
             if (php.preg_match(/^([A-Z0-9]{3,4})\/([A-Z0-9]{2,3})$/, $creatorToken, $matches = [])) {

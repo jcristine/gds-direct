@@ -44,7 +44,7 @@ class Misc {
 		};
 		for ([$ccRegex, $len] of Object.entries($ccRegexList)) {
 			$replacement = php.str_repeat('X', $len - $showDigits);
-			$str = php.preg_replace('\/' + $ccRegex + '\/', '$1' + $replacement + '$2', $str);
+			$str = php.preg_replace('/' + $ccRegex + '/', '$1' + $replacement + '$2', $str);
 		}
 		return $str;
 	}

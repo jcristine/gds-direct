@@ -34,7 +34,7 @@ class HotelLineParser
     static parseContext($context)  {
         let $data;
 
-        $data = php.explode('\/', $context);
+        $data = php.explode('/', $context);
         return {
             'hotelName': php.array_shift($data),
             'unparsedCodes': $data,
@@ -45,7 +45,7 @@ class HotelLineParser
         let $filter, $matches, $result, $key, $value, $msg;
 
         $line = php.str_replace('    ', ' ', php.trim($line));
-        $line = php.preg_replace('/\\s?\\\/\\s?/', '\/', $line);
+        $line = php.preg_replace('/\\s?\\\/\\s?/', '/', $line);
 
         $filter = '/^'+
             '(?<lineNumber>\\d{1,2})\\s'+

@@ -515,7 +515,7 @@ class CommandParserTest extends require('../../../../../../backend/Transpiled/Li
                 },
             },
         }]);
-        $list.push(['\/2|Y', {
+        $list.push(['/2|Y', {
             'type': 'insertSegments',
             'data': {
                 'insertAfter': '2',
@@ -527,7 +527,7 @@ class CommandParserTest extends require('../../../../../../backend/Transpiled/Li
                 },
             },
         }]);
-        $list.push(['\/3|01Y3', {
+        $list.push(['/3|01Y3', {
             'type': 'insertSegments',
             'data': {
                 'insertAfter': '3',
@@ -540,17 +540,17 @@ class CommandParserTest extends require('../../../../../../backend/Transpiled/Li
                 },
             },
         }]);
-        $list.push(['\/4|0UA15Y3DECLAXSFONN1', {
+        $list.push(['/4|0UA15Y3DECLAXSFONN1', {
             'type': 'insertSegments',
             'data': {
                 'insertAfter': '4',
                 'sell': {'sellType': 'directSell'},
             },
         }]);
-        $list.push(['\/2\/8', {'type': 'reorderSegments'}]);
-        $list.push(['\/1\/3-5', {'type': 'reorderSegments'}]);
-        $list.push(['\/3\/7|9', {'type': 'reorderSegments'}]);
-        $list.push(['\/1\/5|7-9', {'type': 'reorderSegments'}]);
+        $list.push(['/2\/8', {'type': 'reorderSegments'}]);
+        $list.push(['/1\/3-5', {'type': 'reorderSegments'}]);
+        $list.push(['/3\/7|9', {'type': 'reorderSegments'}]);
+        $list.push(['/1\/5|7-9', {'type': 'reorderSegments'}]);
         $list.push([
             '$BBAS3-*2G55|4-*2G55',
             {
@@ -652,9 +652,9 @@ class CommandParserTest extends require('../../../../../../backend/Transpiled/Li
         $list.push(['DN1-2', {'type': 'divideBooking'}]);
         $list.push(['*DV', {'type': 'dividedBookings'}]);
         $list.push(['F', {'type': 'fileDividedBooking'}]);
-        $list.push(['\/0', {'type': 'setNextFollowsSegment'}]);
-        $list.push(['\/3', {'type': 'setNextFollowsSegment'}]);
-        $list.push(['\/2', {'type': 'setNextFollowsSegment'}]);
+        $list.push(['/0', {'type': 'setNextFollowsSegment'}]);
+        $list.push(['/3', {'type': 'setNextFollowsSegment'}]);
+        $list.push(['/2', {'type': 'setNextFollowsSegment'}]);
         $list.push(['F:BA268\/19DEC', {'type': 'operationalInfo'}]);
         $list.push(['F:AY5478', {'type': 'operationalInfo'}]);
         $list.push(['$LR1', {'type': 'routingFromTariff'}]);
@@ -672,7 +672,7 @@ class CommandParserTest extends require('../../../../../../backend/Transpiled/Li
                 'pricingModifiers': [
                     {'raw': 'CUA', 'type': 'validatingCarrier'},
                     {'raw': '*ADT', 'type': 'passengers'},
-                    {'raw': '\/@C', 'type': 'cabinClass'},
+                    {'raw': '/@C', 'type': 'cabinClass'},
                     {'raw': ':A', 'type': 'fareType'},
                     {'raw': '@ASDAS', 'type': 'segments'},
                 ],
@@ -682,7 +682,7 @@ class CommandParserTest extends require('../../../../../../backend/Transpiled/Li
             'type': 'priceItinerary',
             'data': {
                 'pricingModifiers': [
-                    {'raw': '\/@C', 'type': 'cabinClass'},
+                    {'raw': '/@C', 'type': 'cabinClass'},
                     {'raw': 'CUA', 'type': 'validatingCarrier'},
                     {'raw': '*ADT', 'type': 'passengers'},
                     {'raw': ':A', 'type': 'fareType'},
@@ -766,7 +766,7 @@ class CommandParserTest extends require('../../../../../../backend/Transpiled/Li
             'departureAirport': 'WAS',
             'destinationAirport': 'JNB',
             'modifiers': [
-                {'type': 'cabinClass', 'raw': '\/\/@C', 'parsed': 'business'},
+                {'type': 'cabinClass', 'raw': '/\/@C', 'parsed': 'business'},
             ],
         }}]);
         $list.push(['$DV18AUGEWRMDE27AUG|AA'   , {'type': 'fareSearch', 'data': {'departureDate': {'raw': '18AUG'}, 'departureAirport': 'EWR', 'destinationAirport': 'MDE'}}]);

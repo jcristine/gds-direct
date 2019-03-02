@@ -36,7 +36,7 @@ class CarLineParser
         let $data, $carTypeCode, $key, $value;
         let $parsedData = {};
 
-        $data = php.explode('\/', $context);
+        $data = php.explode('/', $context);
         $carTypeCode = php.array_shift($data);
 
         for ([$key, $value] of Object.entries($data)) {
@@ -85,7 +85,7 @@ class CarLineParser
         let $filter, $result, $matches, $key, $value, $msg;
 
         $line = php.str_replace('    ', ' ', php.trim($line));
-        $line = php.preg_replace('/\\s?\/\\s?/', '\/', $line);
+        $line = php.preg_replace('/\\s?\/\\s?/', '/', $line);
         $filter = '/^'+
             '(?<lineNumber>\\d{1,2})\\s*'+
             '[\\\/\\*]?(?<type>CCR)\\s+'+

@@ -37,8 +37,8 @@ class MakeMcoApolloAction extends AbstractGdsAction
         if (!$fop || !$expirationDate || !$storedParams['approvalCode']) {
             return {'errors': ['Approved FOP must be present']};
         }
-        if (!StringUtil.endsWith($fop, '\/OK')) {
-            $fop += '\/OK';
+        if (!StringUtil.endsWith($fop, '/OK')) {
+            $fop += '/OK';
         }
         return {
             'validatingCarrier': $validatingCarrier,

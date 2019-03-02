@@ -119,7 +119,7 @@ class FactsBlockParser
 
         $matches = [];
         $regex =
-            '\/^'+
+            '/^'+
             '(?<lineNumber>[ \\d]{3})\\.SSR ?'+
             '(?<ssrCode>[A-Z]{4}) ?'+
             '(?<airline>[A-Z\\d]{2}) ?'+
@@ -160,13 +160,13 @@ class FactsBlockParser
 
         $matches = [];
         $regex =
-            '\/^'+
+            '/^'+
             '(?<lineNumber>[ \\d]{3})\\.SSR ?'+
             '(?<ssrCode>[A-Z]{4}) ?'+
             '(?<airline>AA) '+
             '(?<flightNumber>\\d{1,4})'+
             '(?<bookingClass>[A-Z])?'+
-            '(?<departureDate>\\d+[A-Z]{3})\\\/'+
+            '(?<departureDate>\\d+[A-Z]{3})\\/'+
             '(?<status>[A-Z]{2})'+
             '(?<statusNumber>\\d+).*'+
             '$\/s';
@@ -195,7 +195,7 @@ class FactsBlockParser
 
         $matches = [];
         $regex =
-            '\/^'+
+            '/^'+
             '(?<lineNumber>[ \\d]{3})'+
             '\\.SSR '+
             '(?<ssrCode>(OTHS|ADTK|ADPI))'+
@@ -234,7 +234,7 @@ class FactsBlockParser
             'paxNum': php.trim($split['N']),
             'paxName': php.rtrim($split['F']),
         };
-        [$lname, $fname] = php.array_pad(php.explode('\/', $result['paxName']), 2, '');
+        [$lname, $fname] = php.array_pad(php.explode('/', $result['paxName']), 2, '');
         $nameRegex = /^[A-Z](\s*[^\d\W]+)*$/; // \w except numbers
         $isValidName = php.preg_match($nameRegex, $lname) &&
             (php.preg_match($nameRegex, $fname) || !$fname && php.mb_strlen($lname) > 20);
@@ -257,7 +257,7 @@ class FactsBlockParser
         let $firstLineRegex, $matches;
 
         $firstLineRegex =
-            '\/^\\s*'+
+            '/^\\s*'+
             '(?<lineNumber>\\d+)\\.SSR\\s*'+
             '(?<ssrCode>('+php.implode('|', $allowedCodes)+'))\\s?'+
             '(?<airline>[A-Z\\d]{2})?[\\s\\.]'+
@@ -271,7 +271,7 @@ class FactsBlockParser
         if (php.preg_match($firstLineRegex, $gluedLine, $matches = [])) {
             $matches = php.array_filter($matches);
             return {
-                'tokens': php.explode('\/', $matches['tokensPart']),
+                'tokens': php.explode('/', $matches['tokensPart']),
                 'lineNumber': php.intval($matches['lineNumber']),
                 'ssrCode': $matches['ssrCode'],
                 'airline': $matches['airline'],
@@ -360,7 +360,7 @@ class FactsBlockParser
 
         $matches = [];
         $regex =
-            '\/^'+
+            '/^'+
             '(?<lineNumber>[\\s\\d]{3})'+
             '\\.SSR\\s+'+
             '(?<ssrCode>[A-Z]{4})'+

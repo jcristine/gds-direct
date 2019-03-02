@@ -86,12 +86,12 @@ class CommandParser
         let $regex, $matches;
 
         $regex =
-            '\/^FFN'+
+            '/^FFN'+
             '(?<airline>[A-Z0-9]{2})-'+
             '(?<code>[A-Z0-9]+)'+
             '(?<partners>(,[A-Z0-9]{2})*)'+
             '(\\\/P(?<majorPaxNum>\\d+))?'+
-            '$\/';
+            '$/';
         if (php.preg_match($regex, $cmd, $matches = [])) {
             return {
                 'airline': $matches['airline'],
@@ -146,15 +146,15 @@ class CommandParser
         let $regex, $matches, $seatCodesStr, $seatCodeGroups, $seatCodes, $group, $seatMatches, $_, $rowNumber, $letters, $letter, $paxNums;
 
         $regex =
-            '\/^ST'+
+            '/^ST'+
             '(\\\/(?<location>[AWB]))?'+
             '(?<seatCodes>(\\\/\\d+[A-Z]+)*)'+
             '(\\\/P(?<paxNums>\\d+[-,\\d]*))?'+
             '(\\\/S(?<segNums>\\d+[-,\\d]*))?'+
-            '$\/';
+            '$/';
         if (php.preg_match($regex, $cmd, $matches = [])) {
-            $seatCodesStr = php.ltrim($matches['seatCodes'] || '', '\/');
-            $seatCodeGroups = $seatCodesStr ? php.explode('\/', $seatCodesStr) : [];
+            $seatCodesStr = php.ltrim($matches['seatCodes'] || '', '/');
+            $seatCodeGroups = $seatCodesStr ? php.explode('/', $seatCodesStr) : [];
             $seatCodes = [];
             for ($group of Object.values($seatCodeGroups)) {
                 php.preg_match_all(/(\d+)([A-Z]+)/, $group, $seatMatches = [], php.PREG_SET_ORDER);
@@ -188,10 +188,10 @@ return {
         let $regex, $matches, $paxNums;
 
         $regex =
-            '\/^SX'+
+            '/^SX'+
             '(\\\/P(?<paxNums>\\d+[-,\\d]*))?'+
             '(\\\/S(?<segNums>\\d+[-,\\d]*))?'+
-            '$\/';
+            '$/';
         if (php.preg_match($regex, $cmd, $matches = [])) {
             $paxNums = php.empty($matches['paxNums']) ? [] :
                 this.parseRange($matches['paxNums']);
@@ -252,7 +252,7 @@ return {
             'TKTL': 'addTicketingDateLimit',
             'RF': 'addReceivedFrom',
             'QT': 'queueCount',
-            'QV\/': 'queueRecordLocators',
+            'QV/': 'queueRecordLocators',
             'Q': 'queueOperation',
             'X': 'deletePnrField',
             'DL': 'deletePnrField',

@@ -52,7 +52,7 @@ class AnyGdsStubSession extends require('./TStubGdsClient.js')
         $fareNum = $params['fareComponentNumber'] || null;
         $sections = $params['paragraphs'] || null;
         if (php.in_array(this.$gds, ['apollo', 'galileo'])) {
-            $cmd = 'FN'+$fareNum+'\/'+php.implode('\/', $sections || ['ALL']);
+            $cmd = 'FN'+$fareNum+'/'+php.implode('/', $sections || ['ALL']);
             $output = fetchAll($cmd, this);
             return {'cmd': $cmd, 'output': $output};
         } else {

@@ -55,7 +55,7 @@ class SeatsParser
         };
 
         $regex =
-            '\/^\\s*'+
+            '/^\\s*'+
             '(?<segmentNumber>\\d+)\\s*'+
             '(?<airline>[A-Z0-9]{2})\\s*'+
             '(?<flightNumber>\\d{1,4})'+
@@ -72,7 +72,7 @@ class SeatsParser
             '|(?<undocumentedToken>.{5}))\\s'+
             '(?<passengerNumber>\\d+\\.\\d+)\\s+'+
             '(?<passengerName>.+\\\/.+)\\s*'+
-            '$\/';
+            '$/';
 
         if (php.preg_match($regex, $line, $matches = [])) {
             $seat = this.removeIndexKeys(php.array_filter($matches));

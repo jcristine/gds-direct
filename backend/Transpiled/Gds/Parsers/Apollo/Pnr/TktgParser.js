@@ -9,7 +9,7 @@ class TktgParser
     static parse($dump)  {
         let $ticketedRegex, $tokens, $matches, $_, $tauDate;
         $ticketedRegex =
-            '/^TKTG-T\/'+
+            '/^TKTG-T/'+
             '(?<agencyCode>[A-Z]{3})'+
             '\\s+'+
             '(?<ticketingDate>\\d{1,2}[A-Z]{3})'+
@@ -19,7 +19,7 @@ class TktgParser
             '(?<fpInitials>[A-Z\\d]{2})'+
             '\\s+'+
             'AG'+
-            '\/';
+            '/';
         if (php.preg_match($ticketedRegex, $dump, $tokens = [])) {
             return {
                 'agencyCode': $tokens['agencyCode'],

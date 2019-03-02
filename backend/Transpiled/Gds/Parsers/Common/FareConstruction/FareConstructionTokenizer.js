@@ -73,17 +73,17 @@ class FareConstructionTokenizer {
 			(new Lexeme('end', /^(?:-{1,3}\s{0,1}(?<infoMessage>[^-]*)-*\s*)*END(?![A-Z])/)).preprocessDataRemoveNumericKeys(),
 			(new Lexeme('rateOfExchange', /^(?:ROE(\d+\.?\d*))/)).preprocessData($getFirst),
 
-			(new Lexeme('segment', '\/^' +
+			(new Lexeme('segment', '/^' +
 				'(?<airline>[A-Z0-9]{2})' +
 				'(\\s+|[\\(\\*](?<oceanicFlight>[A-Z]{2})[\\)\\*]\\s*|(?<starMark>\\*))' +
 				'(?<flags>(?:[A-Z]\\\/)*)' +
-				'(?<destination>[A-Z]{3})(?![A-Z])\/'
+				'(?<destination>[A-Z]{3})(?![A-Z])/'
 			)).preprocessDataRemoveNumericKeys(),
 
 			(new Lexeme('fuelSurcharge', /^Q\s*(\s[A-Z]{3}[A-Z]{3}|)(\d*\.?\d+)/)).preprocessData($getTuple),
 			(new Lexeme('stopoverFee', /^(\d|)S(\d*\.?\d+)/)).preprocessData($getTuple),
 
-			(new Lexeme('fare', '\/^' +
+			(new Lexeme('fare', '/^' +
 				'(?:' +
 				'(?<mileagePrinciple>\\d*[05]M|M)' +
 				'(?<mileageAirports>\\s+[A-Z]{6}|)\\s*' +
@@ -92,7 +92,7 @@ class FareConstructionTokenizer {
 				'(?<from>[A-Z]{3})' +
 				'(?<to>[A-Z]{3})\\s*' +
 				'|)' +
-				'(?<amount>\\d*\\.?\\d+)\/'
+				'(?<amount>\\d*\\.?\\d+)/'
 			)).hasConstraint($onlyFareInSegment).preprocessDataRemoveNumericKeys(),
 
 			(new Lexeme('fareBasis', /^([A-Z0-9]+)(?:\/([A-Z0-9]+)|)/)).hasPreviousLexemeConstraint(['fare']).preprocessData($getTuple),

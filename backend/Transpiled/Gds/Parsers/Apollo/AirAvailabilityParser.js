@@ -51,7 +51,7 @@ class AirAvailabilityParser
     static parseBasicFlightLine($line)  {
         let $pattern, $matches;
         $pattern = php.implode('', [
-            '\/^',
+            '/^',
             '(?<lineNumber>\\d)',
             '(?<insideAvailabilityMarker>\\||\\+|\\*|\\:|\\#|\\@|\\s)',
             '\\s',
@@ -76,7 +76,7 @@ class AirAvailabilityParser
             '\\s*',
             '(?<ontimeMarker>\\s|\\d|N)',
             '(?<hiddenStops>\\d)',
-            '$\/',
+            '$/',
         ]);
         if (php.preg_match($pattern, $line, $matches = [])) {
             return {
@@ -116,11 +116,11 @@ class AirAvailabilityParser
     static parseMoreClassesLine($line)  {
         let $pattern, $matches;
         $pattern = php.implode('', [
-            '\/^',
+            '/^',
             ' +',
             '(?<availability>(([A-Z]\\d)( [A-Z]\\d)+))',
             ' *',
-            '$\/',
+            '$/',
         ]);
         if (php.preg_match($pattern, $line, $matches = [])) {
             return {
@@ -139,7 +139,7 @@ class AirAvailabilityParser
     static parseMealScreenLine($line)  {
         let $pattern, $matches;
         $pattern = php.implode('', [
-            '\/^',
+            '/^',
             '(?<lineNumber>\\d)',
             '(?<insideAvailabilityMarker>\\+|\\*)',
             ' ',
@@ -160,7 +160,7 @@ class AirAvailabilityParser
             '.{11}',
             ' ',
             '(?<aircraft>[A-Z0-9]{3})',
-            '\/',
+            '/',
         ]);
         if (php.preg_match($pattern, $line, $matches = [])) {
             return {
@@ -217,14 +217,14 @@ class AirAvailabilityParser
     static parseHotelOfferLine($line)  {
         let $regex, $matches;
         $regex =
-            '\/^'+
+            '/^'+
             '(?<message>.*?)\\s*'+
             '(>>\\s*'+
                 '(?<amount>\\d*\\.?\\d+)\\s*'+
                 '(?<currency>[A-Z]{3})\\s*'+
             ')?'+
             '>(?<command>AH\\*\\d+);'+
-            '\\s*$\/';
+            '\\s*$/';
         if (php.preg_match($regex, $line, $matches = [])) {
             return {
                 'message': $matches['message'],

@@ -97,11 +97,11 @@ class CmsApolloTerminal
             $bundles = $sMod['parsed']['bundles'];
             $fareBases = php.array_filter(php.array_column($bundles, 'fareBasis'));
             if ($fareBases.length > 0) {
-                $errorRecords.push({'type': Errors.BAD_MOD_BASIS_OVERRIDE, 'data': {'modifier': '\/@'+php.implode('@', $fareBases)+'\/'}});
+                $errorRecords.push({'type': Errors.BAD_MOD_BASIS_OVERRIDE, 'data': {'modifier': '/@'+php.implode('@', $fareBases)+'/'}});
             }
         }
         if ($cmdData['baseCmd'] === '$BBA') {
-            $errorRecords.push({'type': Errors.BAD_MOD_IGNORE_AVAILABILITY, 'data': {'modifier': '$BBA\/'}});
+            $errorRecords.push({'type': Errors.BAD_MOD_IGNORE_AVAILABILITY, 'data': {'modifier': '$BBA/'}});
         }
         return $errorRecords;
     }

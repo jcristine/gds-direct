@@ -71,7 +71,7 @@ class FormatAdapter
         if ($dprt = $segment['departureDayOfWeek']['parsed'] || null) {
             $daysOfWeek = $dprt;
             if ($dstn = $segment['destinationDayOfWeek']['parsed'] || null) {
-                $daysOfWeek += '\/'+$dstn;
+                $daysOfWeek += '/'+$dstn;
             }
         }
         return {

@@ -215,7 +215,7 @@ class PnrParserTest extends require('../../../../Lib/TestCase.js')
                             'destinationDayOfWeek': {'raw': null,'parsed': null},
                             'confirmationAirline': 'UA',
                             'confirmationNumber': 'CLK26C',
-                            'operatedBy': '\/GOJET AIRLINES DBA UNITED EXPRESS',
+                            'operatedBy': '/GOJET AIRLINES DBA UNITED EXPRESS',
                             'segmentType': 'SEGMENT_TYPE_ITINERARY_SEGMENT',
                         },
                         {
@@ -517,7 +517,7 @@ class PnrParserTest extends require('../../../../Lib/TestCase.js')
                 'parsedData': {
                     'tktgData': {
                         'error': 'unexpectedStartOfDump',
-                        'line': '  1.TAWO4HG30MAY077\/0400A\/'
+                        'line': '  1.TAWO4HG30MAY077\/0400A/'
                     },
                 },
             }
@@ -1402,7 +1402,7 @@ class PnrParserTest extends require('../../../../Lib/TestCase.js')
                 'SECURITY INFO EXISTS *P3D OR *P4D TO DISPLAY',
                 'REMARKS',
                 '  1.-CK',
-                '  2.XXTAW6IIF07OCT099\/',
+                '  2.XXTAW6IIF07OCT099/',
                 'ACCOUNTING DATA',
                 '  1.  SU\u00C2\u00A57864937995\/    .00\/     196.00\/ 105.30\/ONE\/CA 1.1IVANO',
                 '      V IVAN\/1\/F\/E',
@@ -1617,8 +1617,8 @@ class PnrParserTest extends require('../../../../Lib/TestCase.js')
                 ' 15.H-TRANH B8F390CB-B360-4880-8BC0-9F2EC164540C',
                 ' 16.H-TBMUSD53.04 BASE AMT PLUS SECURITY PER ADT\/1708\/25OCT',
                 ' 17.H-\/T\u00A5SP\u00A5BECO',
-                ' 18.XXAUTH\/1231       \/TB\u00A510\/',
-                ' 19.XXTACXTM25OCT\/',
+                ' 18.XXAUTH\/1231       \/TB\u00A510/',
+                ' 19.XXTACXTM25OCT/',
                 ' 20.H-\/T\u00A5TBMEDIT\/EMAIL SENT 1717\/25OCT\/TDS',
                 'RECEIVED FROM - WWW\u00A5699VMF6',
                 'WWW.HDQ2CRE 1705\/25OCT17 QCZLPQ H',
@@ -1697,7 +1697,7 @@ class PnrParserTest extends require('../../../../Lib/TestCase.js')
                 ' 1.1LIBERMANE\/MARINA',
                 'NO ITIN',
                 'TKT\/TIME LIMIT',
-                '  1.TAW6IIF10MAR009\/0400A\/',
+                '  1.TAW6IIF10MAR009\/0400A/',
                 'PHONES',
                 '  1.SFO0181-577-4670-A',
                 'PASSENGER EMAIL DATA EXISTS  *PE TO DISPLAY ALL',
@@ -2039,7 +2039,7 @@ class PnrParserTest extends require('../../../../Lib/TestCase.js')
                 ' 3 BA 573J 11SEP T MXPLHR GK1  1205P  110P \/E',
                 ' 4 BA 287I 11SEP T LHRSFO GK1   215P  520P \/E',
                 'TKT\/TIME LIMIT',
-                '  1.TAWL3II20JUN009\/',
+                '  1.TAWL3II20JUN009/',
                 'PHONES',
                 '  1.SFO0181-577-4670-A',
                 '  2.SFO0181-577-4670-A',

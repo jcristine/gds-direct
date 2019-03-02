@@ -1263,7 +1263,7 @@ class ApolloReservationParserTest extends require('../../../../../../../backend/
                 'TAM                                                         ',
                 'P3VJ2D\/DL QSBSB DYBDL   AG 0 10JUL',
                 ' 1.1LEI\/TONY ',
-                'FONE-SFO\/',
+                'FONE-SFO/',
                 'ACKN-DL G7AJQB   11JUL 0025',
                 '   2 DL G7AJQB   11JUL 0025',
                 '   3 DL G7AJQB   11JUL 0026',

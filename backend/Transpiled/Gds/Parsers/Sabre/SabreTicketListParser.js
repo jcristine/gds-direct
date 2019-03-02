@@ -17,13 +17,13 @@ class SabreTicketListParser
         let $tawRegex, $matches;
 
         $tawRegex =
-            '\/^\\s*1\\.TAW\\\/?'+
+            '/^\\s*1\\.TAW\\\/?'+
             '(?<pcc>[A-Z0-9]{3,4})?\\\/?'+
             '(?<tauDate>\\d+[A-Z]{3})\\\/?'+
             '(?<mysteriousToken>\\d{3})?\\\/?'+
             '(?<tauTime>\\d{3,4}[A-Z]?)?\\\/?'+
             '(?<unparsed>.*?)'+
-            '\\s*$\/';
+            '\\s*$/';
         if (php.preg_match($tawRegex, $line, $matches = [])) {
             return {
                 'type': 'timeLimit',
@@ -48,7 +48,7 @@ class SabreTicketListParser
         let $normalRegex, $matches;
 
         $normalRegex =
-            '\/^'+
+            '/^'+
             '\\s*1\\.T-(?<ticketingDate>\\d+[A-Z]{3})'+
             '('+
                 '-(?<pcc>[A-Z\\d]{3,4})'+
@@ -57,7 +57,7 @@ class SabreTicketListParser
                 '|'+
                 '-(?<otherMadeByIndicator>[^\\s]+)?'+
             ')?\\s*'+
-            '$\/';
+            '$/';
 
         if (php.preg_match($normalRegex, $line, $matches = [])) {
             $matches = php.array_filter($matches);
@@ -90,7 +90,7 @@ class SabreTicketListParser
         let $regex, $borderings, $matches;
 
         $regex =
-            '\/^'+
+            '/^'+
             '\\s*((?<lineNumber>\\d+)\\.)?'+
             '(?<transactionIndicator>[A-Z]{2})\\s+'+ // TE - eticket, TV - void
             '(?<ticketNumber>\\d{13})'+
@@ -104,11 +104,11 @@ class SabreTicketListParser
                 '|'+
                 '(?<otherMadeByIndicator>[^\\s]+)?'+
             ')\\s+'+
-            '(?<issueTime>\\d{4})\\\/'+
+            '(?<issueTime>\\d{4})\\/'+
             '(?<issueDate>\\d{2}[A-Z]{3})\\s?'+
             '(?<cashFopMark>\\*)?'+
             '(?<remark>[^\\s]+)?'+
-            '\\s*$\/';
+            '\\s*$/';
 
         $borderings = {
             'I': 'international',

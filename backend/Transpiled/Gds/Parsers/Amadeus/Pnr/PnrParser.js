@@ -216,13 +216,13 @@ class AmadeusReservationParser
         let $regex, $matches;
 
         $regex =
-            '\/^\\s{2}\\*\\sSP\\s+'+
-            '(?<date>\\d{1,2}[A-Z]{3}\\d*)\\\/'+
+            '/^\\s{2}\\*\\sSP\\s+'+
+            '(?<date>\\d{1,2}[A-Z]{3}\\d*)\\/'+
             '(?<agentInitials>[A-Z0-9]{2})'+
-            '(?<dutyCode>[A-Z0-9]{2})\\\/'+
+            '(?<dutyCode>[A-Z0-9]{2})\\/'+
             '(?<pcc>[A-Z0-9]{3,})-'+
             '(?<recordLocator>[A-Z0-9]{6})'+
-            '\/';
+            '/';
         if (php.preg_match($regex, $line, $matches = [])) {
             return {
                 'date': {
@@ -246,16 +246,16 @@ class AmadeusReservationParser
         let $regex, $matches;
 
         $regex =
-            '\/^\\s{0,2}'+
+            '/^\\s{0,2}'+
             '(?<lineNumber>\\d+)\\s+MCO\\s+'+
             '(?<airline>[A-Z0-9]{2})'+
             '.*'+
-            '(?<date>\\d{1,2}[A-Z]{3})\\\/'+
+            '(?<date>\\d{1,2}[A-Z]{3})\\/'+
             '(?<currency>[A-Z]{3})\\s*'+
             '(?<amount>\\d*\\.?\\d+)'+
             '(\\\/\\*(?<service>.*?))?'+
             '(\\\/P(?<paxNum>\\d+))?'+
-            '\\s*$\/';
+            '\\s*$/';
         if (php.preg_match($regex, $line, $matches = [])) {
             return {
                 'lineNumber': $matches['lineNumber'],
@@ -319,7 +319,7 @@ class AmadeusReservationParser
         if (php.preg_match(/^\s{0,2}(\d+)\s+FA\s+(.+)$/s, $line, $matches = [])) {
             [$_, $lineNumber, $content] = $matches;
             $content = php.str_replace(php.PHP_EOL, '', $content);
-            $tokens = php.explode('\/', $content);
+            $tokens = php.explode('/', $content);
             $result = {
                 'lineNumber': $lineNumber,
             };
@@ -458,7 +458,7 @@ class AmadeusReservationParser
         // '  2  W3 303 L 28AUG 7 ROBLOS HK1  1140A 425P 28AUG  E  W3/CXPNQ6'
         // '  1  AY 099 Y 10APR 2 HELHKG GK1  1150P 230P 11APR  A'
         $regex =
-            '\/^'+
+            '/^'+
             '\\s{0,3}'+
             '(?<lineNumber>\\d{1,2})'+
             '\\s\\s'+
@@ -488,7 +488,7 @@ class AmadeusReservationParser
             '\\s*'+
             '((?<confirmationAirline>[A-Z\\d]{2})\\\/(?<confirmationNumber>[A-Z\\d]{6}))?'+
             '\\s?'+
-            '\/';
+            '/';
 
         if (php.preg_match($regex, $line, $tokens = [])) {
             return {
@@ -528,7 +528,7 @@ class AmadeusReservationParser
 
         // '  4 MIS 1A HK1 SFO 21DEC-PRESERVEPNR'
         $regex =
-            '\/^'+
+            '/^'+
             '\\s{0,3}'+
             '(?<lineNumber>\\d{1,2})'+
             '\\s'+
@@ -538,7 +538,7 @@ class AmadeusReservationParser
             '\\s*'+
             '(?<text>.+)'+
             '$'+
-            '\/';
+            '/';
 
         if (php.preg_match($regex, $line, $tokens = [])) {
             return {
@@ -556,7 +556,7 @@ class AmadeusReservationParser
 
         // '  2  W3 108 M 13AUG 6 JFKLOS         FLWN'
         $regex =
-            '\/^'+
+            '/^'+
             '\\s{0,3}'+
             '(?<lineNumber>\\d{1,2})'+
             '\\s\\s'+
@@ -575,7 +575,7 @@ class AmadeusReservationParser
             '\\s+'+
             'FLWN'+
             '\\s*'+
-            '\/';
+            '/';
 
         if (php.preg_match($regex, $line, $tokens = [])) {
             return {
@@ -602,12 +602,12 @@ class AmadeusReservationParser
         let $regex, $matches;
 
         $regex =
-            '\/^'+
-            '(?<officeId>[A-Z0-9]{3,})\\\/'+
+            '/^'+
+            '(?<officeId>[A-Z0-9]{3,})\\/'+
             '(?<agentNumber>\\d+)'+
-            '(?<agentInitials>[A-Z0-9]{2,3})\\\/'+
+            '(?<agentInitials>[A-Z0-9]{2,3})\\/'+
             '(?<date>\\d{1,2}[A-Z]{3}\\d{2,4})'+
-            '\\s*$\/';
+            '\\s*$/';
 
         if (php.preg_match($regex, $line, $matches = [])) {
             return {
@@ -628,23 +628,23 @@ class AmadeusReservationParser
         // 'RP/SFO1S2195/SFO1S2195            NI/GS  18AUG16/1833Z   2RFU8B'
         // 'RP/SFO1S2195/SWI1GCFZKRE/5RB/45520300    24SEP16/2215Z   3R593V',
         $regex =
-            '\/^'+
-            '[A-Z\\d]{2}\\\/'+
-            '(?<responsibleOfficeId>[A-Z0-9]+)\\\/'+
+            '/^'+
+            '[A-Z\\d]{2}\\/'+
+            '(?<responsibleOfficeId>[A-Z0-9]+)\\/'+
             '(?<queueingOfficeId>[A-Z0-9]+)'+
             '.+?'+
             '(\\s+'+
-                '(?<agentInitials>[A-Z0-9]{2,3})\\\/'+
+                '(?<agentInitials>[A-Z0-9]{2,3})\\/'+
                 '(?<dutyCode>[A-Z0-9]{2,3})'+
             ')?'+
             '\\s+'+
-            '(?<date>\\d{1,2}[A-Z]{3}\\d{2})\\\/'+
+            '(?<date>\\d{1,2}[A-Z]{3}\\d{2})\\/'+
             '(?<time>\\d{3,4})'+
             '(?<timezone>[A-Z]?)'+
             '\\s+'+
             '(?<recordLocator>[A-Z0-9]{6})'+
             '\\s*'+
-            '$\/';
+            '$/';
         if (php.preg_match($regex, $line, $tokens = [])) {
             $parsedDate = CommonParserHelpers.parseApolloFullDate($tokens['date']);
             return {

@@ -484,7 +484,7 @@ class CommandParserTest extends require('../../../Lib/TestCase.js')
 			'destinationAirport': 'MNL',
 			'modifiers': [
 				{'type': 'connection','raw': '.12A.RDU','parsed': null},
-				{'type': 'airlines','raw': '\/DL#\/UA#','parsed': null},
+				{'type': 'airlines','raw': '/DL#\/UA#','parsed': null},
 				{'type': 'bookingClass', 'raw': '@V', 'parsed': {
 					'seatCount': '','bookingClass': 'V',
 				}},
@@ -514,7 +514,7 @@ class CommandParserTest extends require('../../../Lib/TestCase.js')
 			'departureAirport': 'KIV',
 			'destinationAirport': 'RIX',
 			'modifiers': [
-				{'type': 'airlines','raw': '\/9U-\/BT-\/SU-','parsed': null},
+				{'type': 'airlines','raw': '/9U-\/BT-\/SU-','parsed': null},
 			],
 		}}]);
 		$list.push(['AJ20SEPLAXMNL\/DL#@T', {'type': 'airAvailability'}]);
@@ -531,7 +531,7 @@ class CommandParserTest extends require('../../../Lib/TestCase.js')
 			'destinationAirport': 'ACC',
 			'modifiers': [
 				{'type': 'connection', 'raw': '.12A.NYC.AMS', 'parsed': null},
-				{'type': 'allianceCode', 'raw': '\/\/*S', 'parsed': 'S'},
+				{'type': 'allianceCode', 'raw': '/\/*S', 'parsed': 'S'},
 			],
 		}}]);
 		$list.push(['AJ20SEPSFOACC.12A.NYC\/\/*S@K', {'type': 'airAvailability'}]);
@@ -711,7 +711,7 @@ class CommandParserTest extends require('../../../Lib/TestCase.js')
 			'modifiers': [
 				{'type': 'ticketingDate', 'raw': '.T12MAR17'},
 				{'type': 'tripType', 'raw': '-RT'},
-				{'type': 'airlines', 'raw': '\/DL'},
+				{'type': 'airlines', 'raw': '/DL'},
 				{'type': 'bookingClass', 'raw': '-M'},
 			],
 		}}]);
@@ -753,7 +753,7 @@ class CommandParserTest extends require('../../../Lib/TestCase.js')
 				{'type': 'ticketingDate', 'raw': '.T12MAR17'},
 				{'type': 'tripType','raw': '-RT','parsed': 'RT'},
 				{'type': 'bookingClass','raw': '-M','parsed': 'M'},
-				{'type': 'airlines','raw': '\/DL'},
+				{'type': 'airlines','raw': '/DL'},
 			],
 		}}]);
 		$list.push(['FDKIVRIXV20SEP05JUL:CAD', {'type': 'fareSearch', 'data': {
@@ -768,7 +768,7 @@ class CommandParserTest extends require('../../../Lib/TestCase.js')
 			'departureAirport': 'PIT',
 			'destinationAirport': 'MIL',
 			'modifiers': [
-				{'type': 'airlines','raw': '\/PS\/TK\/LO'},
+				{'type': 'airlines','raw': '/PS\/TK\/LO'},
 				{'type': 'ptc','raw': '*ITX'},
 			],
 		}}]);
@@ -792,7 +792,7 @@ class CommandParserTest extends require('../../../Lib/TestCase.js')
 			'modifiers': [
 				{'type': 'accountCodes', 'parsed': ['TPACK']},
 				{'type': 'fareType', 'parsed': 'private'},
-				{'type': 'airlines','raw': '\/UA','parsed': ['UA']},
+				{'type': 'airlines','raw': '/UA','parsed': ['UA']},
 			],
 		}}]);
 		$list.push(['FD20SEPKIVRIX-RT@W', {'type': 'fareSearch', 'data': {

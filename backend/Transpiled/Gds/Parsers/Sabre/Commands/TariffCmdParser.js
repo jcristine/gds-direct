@@ -42,20 +42,20 @@ class TariffCmdParser {
 		};
 		$end = '(?![A-Z0-9])';
 		$lexer = new Lexer([
-			(new Lexeme('returnDate', '\/^\u00A5R(\\d{1,2}[A-Z]{3}\\d{0,2})' + $end + '\/')).preprocessData($parseDate),
-			(new Lexeme('currency', '\/^\\\/([A-Z]{3})' + $end + '\/')).preprocessData($getFirst),
-			(new Lexeme('tripType', '\/^\u00A5(RT|OW)' + $end + '\/')).preprocessData($getFirst),
-			(new Lexeme('cabinClass', '\/^(' + php.implode('|', php.array_values(this.getCabinClasses())) + ')' + $end + '\/')).preprocessData(($matches) => {
+			(new Lexeme('returnDate', '/^\u00A5R(\\d{1,2}[A-Z]{3}\\d{0,2})' + $end + '/')).preprocessData($parseDate),
+			(new Lexeme('currency', '/^\\\/([A-Z]{3})' + $end + '/')).preprocessData($getFirst),
+			(new Lexeme('tripType', '/^\u00A5(RT|OW)' + $end + '/')).preprocessData($getFirst),
+			(new Lexeme('cabinClass', '/^(' + php.implode('|', php.array_values(this.getCabinClasses())) + ')' + $end + '/')).preprocessData(($matches) => {
 				return (php.array_flip(this.getCabinClasses()) || {})[$matches[1]];
 			}),
-			(new Lexeme('fareType', '\/^\u00A5(PV|PL)' + $end + '\/')).preprocessData(($matches) => {
+			(new Lexeme('fareType', '/^\u00A5(PV|PL)' + $end + '/')).preprocessData(($matches) => {
 				return {
 					'PV': 'private', 'PL': 'public',
 				}[$matches[1]];
 			}),
-			(new Lexeme('accountCode', '\/^\u00A5RR\\*([A-Z0-9]+)' + $end + '\/')).preprocessData($getFirst),
-			(new Lexeme('ptc', '\/^\u00A5P([A-Z][A-Z0-9]{2})' + $end + '\/')).preprocessData($getFirst),
-			(new Lexeme('airlines', '\/^(-[A-Z0-9]{2})+' + $end + '\/')).preprocessData(($matches) => {
+			(new Lexeme('accountCode', '/^\u00A5RR\\*([A-Z0-9]+)' + $end + '/')).preprocessData($getFirst),
+			(new Lexeme('ptc', '/^\u00A5P([A-Z][A-Z0-9]{2})' + $end + '/')).preprocessData($getFirst),
+			(new Lexeme('airlines', '/^(-[A-Z0-9]{2})+' + $end + '/')).preprocessData(($matches) => {
 				return php.explode('-', php.ltrim($matches[0], '-'));
 			}),
 			(new Lexeme('bookingClass', /^¥B([A-Z])/)).preprocessData($getFirst),

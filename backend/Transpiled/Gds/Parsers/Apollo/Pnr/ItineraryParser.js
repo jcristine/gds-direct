@@ -187,9 +187,9 @@ class ItineraryParser {
 	}
 
 	decodeDaysOfWeek($str) {
-		return implode('\/', array_map(function ($x) {
+		return implode('/', array_map(function ($x) {
 			return CommonParserHelpers.apolloDayOfWeekToNumber($x);
-		}, explode('\/', $str)));
+		}, explode('/', $str)));
 	}
 
 	decodeDayOffset($token) {
@@ -219,7 +219,7 @@ class ItineraryParser {
 	// ' 6 TUR ZZ BK1  YYZ 07DEC-***THANK YOU FOR YOUR SUPPORT*** ',
 	// ' 7 TUR ZZ BK1  YYZ 01FEB-***THANK YOU FOR YOUR SUPPORT***',
 	parseTurSegmentLine($line) {
-		let $regex = '\/^\\s*' + '(?<segmentNumber>\\d+)\\s+' + '(?<segmentType>TUR)\\s+' + '(?<vendor>[A-Z0-9]{2})\\s+' + '(?<segmentStatus>[A-Z]{2})' + '(?<seatCount>\\d+)\\s+' + '(?<location>[A-Z]{3})\\s+' + '(?<date>\\d{1,2}[A-Z]{3})-?\\s*' + '(?<remark>.*?)\\s*' + '$\/';
+		let $regex = '/^\\s*' + '(?<segmentNumber>\\d+)\\s+' + '(?<segmentType>TUR)\\s+' + '(?<vendor>[A-Z0-9]{2})\\s+' + '(?<segmentStatus>[A-Z]{2})' + '(?<seatCount>\\d+)\\s+' + '(?<location>[A-Z]{3})\\s+' + '(?<date>\\d{1,2}[A-Z]{3})-?\\s*' + '(?<remark>.*?)\\s*' + '$/';
 		let $matches;
 		if ($matches = preg_match($regex, $line)) {
 			return {
@@ -280,7 +280,7 @@ class ItineraryParser {
 		let $regex =
 			'^' + '(?<segmentNumber>[\\s\\d]{1,2})' + '\\s+' + 'CCR' + '\\s+' + '(?<vendorCode>[A-Z\\d]{2})' + '\\s+' + '(?<segmentStatus>[A-Z]{2})' + '(?<seatCount>\\d{0,2})' + '\\s+' + '(?<airport>[A-Z]{3})' + '\\s+' + '(?<arrivalDate>\\d{1,2}[A-Z]{3})' + '\\s*-\\s*' + '(?<returnDate>\\d{1,2}[A-Z]{3})' + '\\s+' + '(?<acrissCode>[A-Z]{4})' + '\\\/(?<modifiers>.*)$' + '';
 		let $matches;
-		if ($matches = preg_match('\/' + $regex + '\/', $line, $matches)) {
+		if ($matches = preg_match('/' + $regex + '/', $line, $matches)) {
 			let $modifiers = this.parseCarSegmentModifiers($matches['modifiers']);
 			return {
 				'success': true,
@@ -327,7 +327,7 @@ class ItineraryParser {
 			'departureTime': null,
 			'name': null,
 		};
-		let $modifiers = array_map($getModifierCodeAndData, array_map('trim', explode('\/', $txt)));
+		let $modifiers = array_map($getModifierCodeAndData, array_map('trim', explode('/', $txt)));
 		for (let [$code, $data] of $modifiers) {
 			if ($code === 'CF') {
 				$result['confirmationNumber'] = rtrim($data, ' *');
@@ -382,7 +382,7 @@ class ItineraryParser {
 	// ' 4 HHL RD HK3 RIX 10DEC-12DEC  2NT 69706  RADISSON BLU ELIZAB   3ZJXX101-2/RG-EUR105.00/AGT05578602/NM-LIBERMANE MARINA/CF-R2G4YFK *',
 	parseHhlSegmentLine($line) {
 		let $regex =
-			'\/^' + '(?<segmentNumber>[\\s\\d]{1,2})' + '\\s+' + '(?<hotelType>HHL)' + '\\s+' + '(?<hotel>[A-Z\\d]{2})' + '\\s+' + '(?<segmentStatus>[A-Z]{2})' + '(?<roomCount>\\d{0,2})' + '\\s+' + '(?<city>[A-Z]{3})' + '\\s+' + '(?<from>\\d{1,2}[A-Z]{3})' + '-(OUT|)' + '(?<to>\\d{1,2}[A-Z]{3})' + '\\s+' + '(?<stayNights>\\d+)NT\\s+' + '(?<propertyCode>[A-Z0-9]{1,5})\\s+' + '(?<hotelName>.*?)\\s*' + '(?<basisRoomCount>\\d+)' + '(?<fareBasis>[A-Z0-9]+)\\s*-' + '(?<personCount>\\d+)' + '(?<fields>.*)' + '$\/';
+			'/^' + '(?<segmentNumber>[\\s\\d]{1,2})' + '\\s+' + '(?<hotelType>HHL)' + '\\s+' + '(?<hotel>[A-Z\\d]{2})' + '\\s+' + '(?<segmentStatus>[A-Z]{2})' + '(?<roomCount>\\d{0,2})' + '\\s+' + '(?<city>[A-Z]{3})' + '\\s+' + '(?<from>\\d{1,2}[A-Z]{3})' + '-(OUT|)' + '(?<to>\\d{1,2}[A-Z]{3})' + '\\s+' + '(?<stayNights>\\d+)NT\\s+' + '(?<propertyCode>[A-Z0-9]{1,5})\\s+' + '(?<hotelName>.*?)\\s*' + '(?<basisRoomCount>\\d+)' + '(?<fareBasis>[A-Z0-9]+)\\s*-' + '(?<personCount>\\d+)' + '(?<fields>.*)' + '$/';
 		let $matches;
 		if ($matches = preg_match($regex, $line)) {
 			let $fields = array_values(array_filter(array_map(
@@ -421,7 +421,7 @@ class ItineraryParser {
 	// looks similar to HHL, but formatted differently... is it due to Cash form of payment instead of Credit Card?
 	parseHtlSegmentLine($line) {
 		let $regex =
-			'\/^' + '(?<segmentNumber>[\\s\\d]{1,2})' + '\\s+' + '(?<hotelType>HTL)' + '\\s+' + '(?<hotel>[A-Z\\d]{2})' + '\\s+' + '(?<segmentStatus>[A-Z]{2})' + '(?<roomCount>\\d{0,2})' + '\\s+' + '(?<city>[A-Z]{3})' + '\\s+' + '(?<from>\\d{1,2}[A-Z]{3})' + '-OUT' + '(?<to>\\d{1,2}[A-Z]{3})' + '\\s+' + '(?<unparsed>.*)' + '\/';
+			'/^' + '(?<segmentNumber>[\\s\\d]{1,2})' + '\\s+' + '(?<hotelType>HTL)' + '\\s+' + '(?<hotel>[A-Z\\d]{2})' + '\\s+' + '(?<segmentStatus>[A-Z]{2})' + '(?<roomCount>\\d{0,2})' + '\\s+' + '(?<city>[A-Z]{3})' + '\\s+' + '(?<from>\\d{1,2}[A-Z]{3})' + '-OUT' + '(?<to>\\d{1,2}[A-Z]{3})' + '\\s+' + '(?<unparsed>.*)' + '/';
 		let $matches;
 		if ($matches = preg_match($regex, $line)) {
 			return {
@@ -450,7 +450,7 @@ class ItineraryParser {
 	//' 2 DL1234Y 16DEC LHRTYO GK1                        FR',
 	parseFakeSegmentLine($line) {
 		let $regex =
-			'\/^\\s*' +
+			'/^\\s*' +
 			'(?<segmentNumber>\\d{1,2})\\s+' +
 			'(?<airline>[A-Z0-9]{2})\\s{0,3}' +
 			'(?<flightNumber>\\d{1,4})' +
@@ -461,7 +461,7 @@ class ItineraryParser {
 			'(?<segmentStatus>[A-Z]{2})' +
 			'(?<seatCount>\\d{0,2})\\s+' +
 			'(?<daysOfWeek>[A-Z]{2}(\\\/[A-Z]{2})*)' +
-			'$\/';
+			'$/';
 		let $matches;
 		if ($matches = preg_match($regex, $line)) {
 			return {

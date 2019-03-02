@@ -41,7 +41,7 @@ class CmsSabreTerminal
 
     static isSuccessChangePccOutput($dump, $pcc)  {
 
-        return php.preg_match('\/'+$pcc+'\\.[A-Z0-9]{3,4}\/', $dump);
+        return php.preg_match('/'+$pcc+'\\.[A-Z0-9]{3,4}/', $dump);
     }
 
     isSuccessChangeAreaOutput($output)  {
@@ -95,15 +95,15 @@ class CmsSabreTerminal
 
         // >WPNCS;
         if ($ncsMod = $typeToMod['lowestFareIgnoringAvailability']) {
-            $errors.push(Errors.getMessage(Errors.BAD_MOD_IGNORE_AVAILABILITY, {'modifier': '\/'+$ncsMod['raw']+'\/'}));
+            $errors.push(Errors.getMessage(Errors.BAD_MOD_IGNORE_AVAILABILITY, {'modifier': '/'+$ncsMod['raw']+'/'}));
         }
         // >WPQVK4S9EU;
         if ($qMod = $typeToMod['fareBasis']) {
-            $errors.push(Errors.getMessage(Errors.BAD_MOD_BASIS_OVERRIDE, {'modifier': '\/'+$qMod['raw']+'\/'}));
+            $errors.push(Errors.getMessage(Errors.BAD_MOD_BASIS_OVERRIDE, {'modifier': '/'+$qMod['raw']+'/'}));
         }
         // >WPS1;
         if ($sMod = $typeToMod['segments']) {
-            $errors.push(Errors.getMessage(Errors.BAD_MOD_SEGMENT, {'modifier': '\/'+$sMod['raw']+'\/'}));
+            $errors.push(Errors.getMessage(Errors.BAD_MOD_SEGMENT, {'modifier': '/'+$sMod['raw']+'/'}));
         }
         return $errors;
     }

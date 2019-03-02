@@ -33,7 +33,7 @@ class PnrSearchParser
         let $regex, $matches, $orderKeys;
 
         $regex =
-            '\/^\\s*'+
+            '/^\\s*'+
             '(?<lineNumber>\\d+)\\s+'+
             '(?<lastName>[^\\\/\\+]+?)[\\\/\\+]'+
             '(?<firstName>[^\\\/\\+]+?)?\\+?\\s+'+
@@ -56,7 +56,7 @@ class PnrSearchParser
             ')\\s+'+
             '(?<recordLocator>[A-Z0-9]{6})\\s*'+
             '$'+
-            '\/';
+            '/';
 
         if (php.preg_match($regex, $line, $matches = [])) {
             $orderKeys = Fp.filter('is_numeric', php.array_keys($matches));

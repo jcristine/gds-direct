@@ -48,7 +48,7 @@ class AmadeusReservationPassengerBlockParser
     static parseInfantToken($token)  {
         let $lastName, $firstName, $dob;
 
-        [$lastName, $firstName, $dob] = php.explode('\/', $token);
+        [$lastName, $firstName, $dob] = php.explode('/', $token);
         return {
             'success': true,
             'rawNumber': null,
@@ -108,7 +108,7 @@ class AmadeusReservationPassengerBlockParser
     static parseName($token)  {
         let $lastName, $firstName;
 
-        [$lastName, $firstName] = php.explode('\/', $token);
+        [$lastName, $firstName] = php.explode('/', $token);
         return {
             'firstName': php.trim($firstName),
             'lastName': php.trim($lastName),
@@ -118,7 +118,7 @@ class AmadeusReservationPassengerBlockParser
     static parseDetails($token)  {
         let $ptc, $dob;
 
-        [$ptc, $dob] = php.array_pad(php.explode('\/', $token), 2, null);
+        [$ptc, $dob] = php.array_pad(php.explode('/', $token), 2, null);
         return {
             'age': php.is_numeric(php.substr($ptc, 1)) ? php.substr($ptc, 1) : null,
             'dob': $dob ? {

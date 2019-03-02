@@ -21,14 +21,14 @@ class FrequentFlyerParser
         let $regex, $matches;
 
         $regex =
-            '\/^\\s{7}'+
+            '/^\\s{7}'+
             '(?<airline>[A-Z0-9]{2})\\s{0,3}'+
             '(?<flightNumber>\\d{1,4})'+
             '(?<bookingClass>[A-Z])\\s'+
             '(?<departureDate>\\d{1,2}[A-Z]{3})\\s'+
             '(?<departureAirport>[A-Z]{3})'+
             '(?<destinationAirport>[A-Z]{3})'+
-            '\\s*$\/';
+            '\\s*$/';
 
         if (php.preg_match($regex, $line, $matches = [])) {
             $matches['departureDate'] = {
@@ -46,7 +46,7 @@ class FrequentFlyerParser
         let $regex, $matches;
 
         $regex =
-            '\/^\\s*'+
+            '/^\\s*'+
             '(?<lineNumber>\\d+)\\.'+
             '(?<airline>[A-Z0-9]{2})\\s+'+
             '(?<code>[A-Z0-9]+)\\s+'+
@@ -54,7 +54,7 @@ class FrequentFlyerParser
             '(?<operatingAirline>[A-Z0-9]{2})\\s+'+
             '(?<passengerNumber>\\d+\\.\\d+)\\s+'+
             '(?<passengerName>[\\w|\\s]+\\\/[\\w|\\s]+)\\s*'+
-            '$\/';
+            '$/';
 
         if (php.preg_match($regex, $line, $matches = [])) {
             return this.removeIndexKeys($matches);

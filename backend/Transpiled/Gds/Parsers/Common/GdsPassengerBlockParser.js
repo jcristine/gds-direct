@@ -77,13 +77,13 @@ class GdsPassengerBlockParser
     // '1.2LARIOZA/FLORIAN/EXST'
     static parsePassengerToken($token)  {
         let $regex, $matches, $age, $dob, $ptc, $parsedChildToken;
-        $regex = '\/^'+
+        $regex = '/^'+
             '(?<number>\\d+\\.(I\\\/\\d+|\\d+))'+
-            '(?<lastName>(\\w|\\s|-)+)\\\/'+
+            '(?<lastName>(\\w|\\s|-)+)\\/'+
             '(?<firstName>(\\w|\\s)+)'+
             '(?<joinedFirstNames>(\\\/(\\w|\\s)+)*)'+
             '(\\*(?<childToken>.+))?'+
-        '\/';
+        '/';
         $matches = [];
         if (php.preg_match($regex, $token, $matches = [])) {
             $age = null;
@@ -102,7 +102,7 @@ class GdsPassengerBlockParser
                 'parsedNumber': this.parseNameNumber($matches['number']),
                 'firstName': $matches['firstName'],
                 'lastName': $matches['lastName'],
-                'joinedFirstNames': php.array_values(php.array_filter(php.explode('\/', $matches['joinedFirstNames']))),
+                'joinedFirstNames': php.array_values(php.array_filter(php.explode('/', $matches['joinedFirstNames']))),
                 'age': $age,
                 'dob': $dob,
                 // Enter "PTC" in focal point for reference

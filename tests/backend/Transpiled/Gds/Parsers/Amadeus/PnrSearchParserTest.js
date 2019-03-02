@@ -12,7 +12,7 @@ class PnrSearchParserTest extends require('../../../Lib/TestCase.js')
 
         $list.push([
             php.implode(php.PHP_EOL, [
-                '\/$RT\/A',
+                '/$RT\/A',
                 '  1 ADERIYE\/ADEFEMI       NO ACTIVE ITINERARY           M68244',
                 '  2 AGBORTAR\/MARY         NO ACTIVE ITINERARY           OM59DW',
                 '  3 AGBORUA\/ACHOJANO FR+  ET  509  T  13JUL  EWRLFW   1 2S4RBK',
@@ -29,7 +29,7 @@ class PnrSearchParserTest extends require('../../../Lib/TestCase.js')
                 ' ',
             ]),
             {
-                'commandCopy': '\/$RT\/A',
+                'commandCopy': '/$RT\/A',
                 'success': true,
                 'entries': [
                     {'recordLocator': 'M68244', 'lastName': 'ADERIYE'},

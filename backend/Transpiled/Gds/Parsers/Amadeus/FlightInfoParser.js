@@ -40,13 +40,13 @@ class FlightInfoParser
         let $regex, $matches;
 
         $regex =
-            '\/^\\*(?<label>.+?)\\*\\s+.*?'+
+            '/^\\*(?<label>.+?)\\*\\s+.*?'+
             '(?<airline>[A-Z0-9]{2})\\s*'+
             '(?<flightNumber>\\d{1,4})\\s+'+
             '(?<unparsedToken1>.*?)\\s+'+
             '(?<dayOfWeek>[A-Z]{2})\\s+'+
             '(?<departureDate>\\d{1,2}[A-Z]{3}\\d{2})'+
-            '\/';
+            '/';
         if (php.preg_match($regex, $line, $matches = [])) {
             return {
                 'label': $matches['label'],
@@ -434,11 +434,11 @@ class FlightInfoParser
         let $regex, $matches, $_;
 
         $regex =
-            '\/\\s*'+
+            '/\\s*'+
             '(?<airline>[A-Z0-9]{2})\\s+'+
             '(?<flightNumber>\\d{1,4})\\s+'+
             '(?<departureDate>\\d{1,2}[A-Z]{3}\\d{2,4})\\s+'+
-            'FLIGHT NOT OPERATIONAL\/';
+            'FLIGHT NOT OPERATIONAL/';
 
         if (php.preg_match($regex, php.array_shift($lines), $matches = [])) {
             [$_, $lines] = this.parseSequence($lines, (...args) => this.isEmptyLine(...args));
@@ -459,11 +459,11 @@ class FlightInfoParser
         let $regex, $matches, $_;
 
         $regex =
-            '\/\\s*'+
+            '/\\s*'+
             '(?<airline>[A-Z0-9]{2})\\s+'+
             '(?<flightNumber>\\d{1,4})\\s+'+
             '(?<departureDate>\\d{1,2}[A-Z]{3}\\d{2,4})\\s+'+
-            'REQUEST IS OUTSIDE SYSTEM DATE RANGE\/';
+            'REQUEST IS OUTSIDE SYSTEM DATE RANGE/';
 
         if (php.preg_match($regex, php.array_shift($lines), $matches = [])) {
             [$_, $lines] = this.parseSequence($lines, (...args) => this.isEmptyLine(...args));

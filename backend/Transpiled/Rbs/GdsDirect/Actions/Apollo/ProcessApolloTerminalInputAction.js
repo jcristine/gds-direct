@@ -167,7 +167,7 @@ class ProcessApolloTerminalInputAction {
 				$rawMods.push($mod['raw']);
 			}
 		}
-		return $data['baseCmd'] + ($rawMods.length ? '\/' + php.implode('\/', $rawMods) : '');
+		return $data['baseCmd'] + ($rawMods.length ? '/' + php.implode('/', $rawMods) : '');
 	}
 
 	//parse: A/T/20SEPNYCSFO/CHI/ATL/CLT/SEA/MSP+DL
@@ -198,7 +198,7 @@ class ProcessApolloTerminalInputAction {
 		}
 		if (!StringUtil.startsWith($newPart, '$B')) {
 			$isFullCmd = false;
-			$newPart = $mainParsed['data']['baseCmd'] + '\/' + $newPart;
+			$newPart = $mainParsed['data']['baseCmd'] + '/' + $newPart;
 		} else {
 			$isFullCmd = true;
 		}
@@ -214,7 +214,7 @@ class ProcessApolloTerminalInputAction {
 			$newMods = php.array_merge($mainMods, $newMods);
 		}
 		$rawMods = php.array_column($newMods, 'raw');
-		return $newParsed['data']['baseCmd'] + ($rawMods.length ? '\/' + php.implode('\/', $rawMods) : '');
+		return $newParsed['data']['baseCmd'] + ($rawMods.length ? '/' + php.implode('/', $rawMods) : '');
 	}
 
 	static parseAlias($cmdRequested) {
@@ -738,7 +738,7 @@ class ProcessApolloTerminalInputAction {
 		$failedSegNums = [];
 		for ([$marriage, $segs] of Object.entries($marriageToSegs)) {
 			$chgClsCmd =
-				'X' + php.implode('+', php.array_column($segs, 'segmentNumber')) + '\/' +
+				'X' + php.implode('+', php.array_column($segs, 'segmentNumber')) + '/' +
 				'0' + php.implode('+', $segs.map(($seg) => $seg['segmentNumber'] + $seg['bookingClass']));
 			$chgClsOutput = (await this.runCmd($chgClsCmd, true)).output;
 			if (!this.constructor.isSuccessRebookOutput($chgClsOutput)) {
@@ -867,14 +867,14 @@ class ProcessApolloTerminalInputAction {
 	async emulatePcc($pcc, $recoveryPcc) {
 		let $cmd, $result, $answer, $recoveryResult;
 		$recoveryPcc = $recoveryPcc || this.getSessionData()['pcc'];
-		$cmd = 'SEM\/' + $pcc + '\/AG';
+		$cmd = 'SEM/' + $pcc + '/AG';
 		$result = await this.processRealCommand($cmd, false);
 		if (php.empty($result['errors']) && !php.empty($result['calledCommands']) && !php.empty($recoveryPcc)) {
 			$answer = ArrayUtil.getFirst(($result['calledCommands']))['output'];
 
 			if (php.trim(extractPager($answer)[0]) === 'ERR: INVALID - NOT 2HJ9 - APOLLO') {
 
-				$cmd = 'SEM\/' + $recoveryPcc + '\/AG';
+				$cmd = 'SEM/' + $recoveryPcc + '/AG';
 
 				$recoveryResult = this.processRealCommand($cmd, false);
 
@@ -1039,7 +1039,7 @@ class ProcessApolloTerminalInputAction {
 			php.array_unshift($writeCommands, 'R:' + php.strtoupper($login));
 		}
 		if (!php.in_array('addTicketingDateLimit', $usedCmdTypes)) {
-			php.array_unshift($writeCommands, 'T:TAU\/' + php.strtoupper(php.date('dM', php.strtotime(this.$statefulSession.getStartDt()))));
+			php.array_unshift($writeCommands, 'T:TAU/' + php.strtoupper(php.date('dM', php.strtotime(this.$statefulSession.getStartDt()))));
 		}
 		if (!php.in_array('addAgencyPhone', $usedCmdTypes)) {
 			php.array_unshift($writeCommands, 'P:SFOAS\/800-750-2238 ASAP CUSTOMER SUPPORT');
@@ -1150,15 +1150,15 @@ class ProcessApolloTerminalInputAction {
 			return $ageGroup === 'child'
 				|| $pax['ptc'] === 'INS';
 		};
-		$cmd += '\/Z0';
+		$cmd += '/Z0';
 		if (Fp.all($needsAccompanying, $pnr.getPassengers())) {
-			$cmd += '\/ACC';
+			$cmd += '/ACC';
 		}
 		if ($needsColonN) {
-			$cmd += '\/:N';
+			$cmd += '/:N';
 		}
 		for ($mod of Object.values($mods)) {
-			$cmd += '\/' + $mod['raw'];
+			$cmd += '/' + $mod['raw'];
 		}
 		return {'cmd': $cmd};
 	}
@@ -1314,7 +1314,7 @@ class ProcessApolloTerminalInputAction {
 	async makeMultipleCityAvailabilitySearch($availability, $citiesRaw, $airlines) {
 		let $calledCommands, $cities, $city, $cmd, $output, $matches;
 		$calledCommands = [];
-		$cities = php.explode('\/', php.trim($citiesRaw, '\/'));
+		$cities = php.explode('/', php.trim($citiesRaw, '/'));
 		for ($city of Object.values($cities)) {
 			$cmd = $availability + $city + $airlines;
 			$output = (await this.$statefulSession.runCmd($cmd)).output;
@@ -1332,7 +1332,7 @@ class ProcessApolloTerminalInputAction {
 	async prepareMcoMask() {
 		let $getPaxName, $pcc, $pccPointOfSaleCountry, $agent, $pnr, $passengerNames, $mcoMask, $pnrParams,
 			$hasPredefinedPax, $predefinedPax, $mcoParams, $key, $value, $calledCommands, $userMessages, $result;
-		$getPaxName = ($pax) => $pax['lastName'] + '\/' + $pax['firstName'];
+		$getPaxName = ($pax) => $pax['lastName'] + '/' + $pax['firstName'];
 		$pcc = this.getSessionData()['pcc'];
 		$pccPointOfSaleCountry = await this.$statefulSession.getPccDataProvider()('apollo', $pcc)
 			.then(r => r.point_of_sale_country).catch(exc => null);

@@ -51,7 +51,7 @@ class CommandParser {
 			'@LT': 'showTime',
 			'MU': 'moveUp',
 			'MD': 'moveDown',
-			'S*AIR\/': 'decodeAirline',
+			'S*AIR/': 'decodeAirline',
 			'HELP': 'help',
 			'*H': 'history',
 			'$V:': 'mostRestrictiveSegmentRules',
@@ -59,7 +59,7 @@ class CommandParser {
 			'*TE': 'ticketMask',
 			'@:3SSR': 'addSsr',
 			'@:3': 'addProgrammaticSsr',
-			'B\/': 'bridgeTo',
+			'B/': 'bridgeTo',
 			'*$B': 'redisplayPriceItinerary',
 			'0TURZOBK1XXX': 'addTurSegment',
 			'COQ': 'movePnrToPccQueue',
@@ -84,8 +84,8 @@ class CommandParser {
 			'HMPR': 'soldTicketsDailyReport',
 			'TI-': 'visaAndHealthInfo',
 			'T:$B': 'storePricing', // store Ticketing pricing
-			'MV\/': 'fillFromProfile',
-			'MVT\/': 'addAgencyInfo', // add agency info
+			'MV/': 'fillFromProfile',
+			'MVT/': 'addAgencyInfo', // add agency info
 			'$D': 'fareSearch', // HELP TARIFF DISPLAY-BASIC OR VALIDATED
 			'*$D': 'redisplayFareSearch',
 			'S*': 'encodeOrDecode', // HELP ENCODE OR DECODE
@@ -122,13 +122,13 @@ class CommandParser {
 			[/^(?:\/\d+)$/]: 'setNextFollowsSegment',
 			[/^FS\d*[A-Z]{3}(\d+[A-Z]{3}[A-Z]{3})+.*$/]: 'lowFareSearch', // HELP FSU (Unbooked)
 			[/^FS\d+$/]: 'sellFromLowFareSearch',
-			['\/^(' + php.implode('|', [
+			['/^(' + php.implode('|', [
 				'MORE\\*\\d+',// AT THE SAME PRICE AS PRICING OPTION \d
 				'FS\\*\\d+',// VIEW FARE DETAILS FOR PRICING OPTION \d
 				'FSMORE',// VIEW MORE PRICING OPTIONS
 				'\\*FS', // RETURN TO THE ORIGINAL PRICING OPTION SCREEN
 				'FS-', // RETURN TO THE PREVIOUS SCREEN
-			]) + ')$\/']: 'lowFareSearchNavigation', // HELP FSN (Navigation)
+			]) + ')$/']: 'lowFareSearchNavigation', // HELP FSN (Navigation)
 			[/^FS\/\/.*$/]: 'lowFareSearchFromPnr', // HELP FSA (Availabilities for current reservation)
 			// there are also "HELP FSP and HELP FSC" for filters when working within a reservation,
 			// but i believe we don't use them much, please, add the regex-es here if i am wrong
@@ -199,14 +199,14 @@ class CommandParser {
 	static parseChangePnrRemarks($cmd) {
 		let $regex, $matches, $rangesData;
 		$regex =
-			'\/^' +
+			'/^' +
 			'(?<cmd>' +
 			'C:' +
 			'(?<ranges>[\\-\\d\\*]*)@:5' +
 			'(?<newText>[^\\|]*)' +
 			')' +
 			'(\\|(?<textLeft>.*)|$)' +
-			'\/';
+			'/';
 		if (php.preg_match($regex, $cmd, $matches = [])) {
 			$rangesData = this.parseRemarkRanges($matches['ranges']);
 			return {
@@ -288,15 +288,15 @@ class CommandParser {
 		let $segmentPattern, $regex, $matches, $segments, $tuples, $_, $bookingClass, $lineNumber;
 		$segmentPattern = '([A-Z])(\\d{1,2})';
 		$regex =
-			'\/^0' +
+			'/^0' +
 			'(?<seatCount>\\d+)' +
 			'(?<segments>(' + $segmentPattern + ')+)' +
 			'(?<includeConnections>\\*?)' +
 			'(?<segmentStatus>[A-Z]{2}|)' +
-			'$\/';
+			'$/';
 		if (php.preg_match($regex, $cmd, $matches = [])) {
 			$segments = [];
-			php.preg_match_all('\/' + $segmentPattern + '\/', $matches['segments'], $tuples = [], php.PREG_SET_ORDER);
+			php.preg_match_all('/' + $segmentPattern + '/', $matches['segments'], $tuples = [], php.PREG_SET_ORDER);
 			for ([$_, $bookingClass, $lineNumber] of $tuples) {
 				$segments.push({'bookingClass': $bookingClass, 'lineNumber': $lineNumber});
 			}
@@ -316,7 +316,7 @@ class CommandParser {
 	static parseDirectSell($cmd) {
 		let $regex, $matches;
 		$regex =
-			'\/^0' +
+			'/^0' +
 			'(?<airline>[A-Z0-9]{2})' +
 			'(?<flightNumber>\\d{1,4})' +
 			'(?<bookingClass>[A-Z])' +
@@ -326,7 +326,7 @@ class CommandParser {
 			'(?<segmentStatus>[A-Z]{2})' +
 			'(?<seatCount>\\d{0,2})' +
 			'(?<unparsed>.*?)' +
-			'\\s*$\/';
+			'\\s*$/';
 		if (php.preg_match($regex, $cmd, $matches = [])) {
 			return {
 				'sellType': 'directSell',
@@ -369,7 +369,7 @@ class CommandParser {
 	// '25AUG/Q', 'B', '25FEB'
 	static parseRebookAll($textLeft) {
 		let $values, $date, $bookingClass, $value, $matches;
-		$values = php.explode('\/', $textLeft);
+		$values = php.explode('/', $textLeft);
 		$date = null;
 		$bookingClass = null;
 		for ($value of $values) {
@@ -392,9 +392,9 @@ class CommandParser {
 	static parseOpenSell($cmd) {
 		let $regex, $matches;
 		$regex =
-			'\/^0XXOPEN' +
+			'/^0XXOPEN' +
 			'(?<unparsed>.*?)' +
-			'\\s*$\/';
+			'\\s*$/';
 		if (php.preg_match($regex, $cmd, $matches = [])) {
 			return {
 				'sellType': 'openSegment',
@@ -449,7 +449,7 @@ class CommandParser {
 				'field': 'itinerary',
 				'applyToAllAir': $applyToAllAir,
 				'segmentNumbers': $segmentNumbers,
-				'sell': $textLeft ? this.parseSell(php.ltrim($textLeft, '\/')) : null,
+				'sell': $textLeft ? this.parseSell(php.ltrim($textLeft, '/')) : null,
 			};
 		} else {
 			return {'field': null, 'unparsed': $textLeft};
@@ -490,10 +490,10 @@ class CommandParser {
 	static parseMpPax($paxPart) {
 		let $regex, $matches, $airParts, $mpAirs;
 		$regex =
-			'\/^' +
+			'/^' +
 			'(N?(?<majorPaxNum>\\d+)(-(?<minorPaxNum>\\d+))?)?' +
 			'\\*(?<airPart>.*)' +
-			'$\/';
+			'$/';
 		if (php.preg_match($regex, $paxPart, $matches = [])) {
 			$airParts = php.explode('*', $matches['airPart']);
 			$mpAirs = php.array_map(a => this.parseMpAir(a), $airParts);
@@ -540,13 +540,13 @@ class CommandParser {
 	static parseSeatChange($cmd) {
 		let $regex, $matches, $seatCodesStr, $seatMatches, $seatCodes, $_, $rowNumber, $letters, $letter;
 		$regex =
-			'\/^' +
+			'/^' +
 			'(?<baseCmd>9S|9X)' +
 			'(\\\/N(?<paxNums>\\d+[-|\\d]*))?' +
 			'(\\\/S(?<segNums>\\d+[*|\\d]*))?' +
 			'(\\\/(?<aisleMark>A))?' +
 			'(\\\/(?<seatCodes>(\\d+[A-Z]+)+))?' +
-			'$\/';
+			'$/';
 		if (php.preg_match($regex, $cmd, $matches = [])) {
 			$seatCodesStr = $matches['seatCodes'] || '';
 			php.preg_match_all(/(\d+)([A-Z]+)/, $seatCodesStr, $seatMatches = [], php.PREG_SET_ORDER);
@@ -606,20 +606,20 @@ class CommandParser {
 		};
 		$end = '(?![A-Z0-9])';
 		$lexer = new Lexer([
-			(new Lexeme('airlines', '\/^(\\|[A-Z0-9]{2})+' + $end + '\/')).preprocessData(($matches) => {
+			(new Lexeme('airlines', '/^(\\|[A-Z0-9]{2})+' + $end + '/')).preprocessData(($matches) => {
 				return php.explode('|', php.ltrim($matches[0], '|'));
 			}),
-			(new Lexeme('currency', '\/^:([A-Z]{3})' + $end + '\/')).preprocessData($getFirst),
-			(new Lexeme('tripType', '\/^:(RT|OW)' + $end + '\/')).preprocessData($getFirst),
-			(new Lexeme('cabinClass', '\/^(\\\/\\\/)?@(?<cabinClass>[A-Z])' + $end + '\/')).preprocessData(($matches) => {
+			(new Lexeme('currency', '/^:([A-Z]{3})' + $end + '/')).preprocessData($getFirst),
+			(new Lexeme('tripType', '/^:(RT|OW)' + $end + '/')).preprocessData($getFirst),
+			(new Lexeme('cabinClass', '/^(\\\/\\\/)?@(?<cabinClass>[A-Z])' + $end + '/')).preprocessData(($matches) => {
 				return this.getCabinClasses()[$matches['cabinClass']] || null;
 			}),
-			(new Lexeme('fareType', '\/^:([A-Z])' + $end + '\/')).preprocessData(($matches) => {
+			(new Lexeme('fareType', '/^:([A-Z])' + $end + '/')).preprocessData(($matches) => {
 				return AtfqParser.decodeFareType($matches[1]);
 			}),
-			(new Lexeme('ptc', '\/^-([A-Z][A-Z0-9]{2})' + $end + '\/')).preprocessData($getFirst),
-			(new Lexeme('bookingClass', '\/^-([A-Z])' + $end + '\/')).preprocessData($getFirst),
-			(new Lexeme('ticketingDate', '\/^T(\\d{1,2}[A-Z]{3}\\d{2})' + $end + '\/')).preprocessData($parseDate),
+			(new Lexeme('ptc', '/^-([A-Z][A-Z0-9]{2})' + $end + '/')).preprocessData($getFirst),
+			(new Lexeme('bookingClass', '/^-([A-Z])' + $end + '/')).preprocessData($getFirst),
+			(new Lexeme('ticketingDate', '/^T(\\d{1,2}[A-Z]{3}\\d{2})' + $end + '/')).preprocessData($parseDate),
 		]);
 		return $lexer.lex($modsPart);
 	}
@@ -703,7 +703,7 @@ class CommandParser {
 			$substr = php.explode('|', php.substr($cmd, 1));
 
 			for ($subCommand of $substr) {
-				if ($data = php.explode('\/', $subCommand)) {
+				if ($data = php.explode('/', $subCommand)) {
 					$checkCmd = php.array_shift($data);
 
 					if (php.in_array($checkCmd, $availableCommands)) {

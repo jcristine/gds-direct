@@ -12,7 +12,7 @@ class SsrLineParser
     static parseSsrDocsToken($ssrData)  {
         let $tokenParts, $travelDocType, $issuingCountry, $travelDocNumber, $nationality, $dob, $genderAndI, $expirationDate, $lastName, $firstName, $segment, $segmentMaches;
 
-        $tokenParts = php.explode('\/', $ssrData['content'] || '');
+        $tokenParts = php.explode('/', $ssrData['content'] || '');
         if (php.count($tokenParts) >= 9) {
             [$travelDocType, $issuingCountry, $travelDocNumber, $nationality, $dob, $genderAndI, $expirationDate, $lastName, $firstName, $segment] = php.array_pad($tokenParts, 10, null);
 
@@ -41,7 +41,7 @@ class SsrLineParser
     static parseSsrDocaToken($ssrData)  {
         let $tokenParts, $addressType, $country, $addressDetails, $city, $province, $postalCode;
 
-        $tokenParts = php.explode('\/', $ssrData['content'] || '');
+        $tokenParts = php.explode('/', $ssrData['content'] || '');
         if (php.count($tokenParts) >= 6) {
             [$addressType, $country, $addressDetails, $city, $province, $postalCode] = php.array_pad($tokenParts, 6, '');
 
@@ -62,7 +62,7 @@ class SsrLineParser
     static parseSsrDocoToken($ssrData)  {
         let $tokenParts, $pre, $travelDocType, $travelDocNumber, $issuingCountry, $dob, $countryWhereApplies, $segment, $segmentMaches;
 
-        $tokenParts = php.explode('\/', $ssrData['content'] || '');
+        $tokenParts = php.explode('/', $ssrData['content'] || '');
         if (php.count($tokenParts) >= 6) {
             [$pre, $travelDocType, $travelDocNumber, $issuingCountry, $dob, $countryWhereApplies, $segment] = php.array_pad($tokenParts, 7, '');
 
@@ -92,12 +92,12 @@ class SsrLineParser
         let $regex, $matches;
 
         $regex =
-            '\/'+
+            '/'+
             '(?<airline>[A-Z0-9\\d]{2})'+
             '(?<flyerNumber>[A-Z0-9]{3,})'+
             '.*?'+
             '(\\\/P(?<paxNum>\\d+))?'+
-            '\\s*$\/';
+            '\\s*$/';
         if (php.preg_match($regex, $ssrData['content'], $matches = [])) {
             return {
                 'airline': $matches['airline'],
@@ -112,10 +112,10 @@ class SsrLineParser
     static parseSegmentNumberToken($ssrContent)  {
         let $regex, $matches;
 
-        $regex = '\/^\\s*'+
+        $regex = '/^\\s*'+
             '\\\/S(?<segNum>\\d+)'+
             '(\\\/P(?<paxNum>\\d+))?'+
-            '\\s*$\/';
+            '\\s*$/';
         if (php.preg_match($regex, $ssrContent, $matches = [])) {
             return {
                 'segNum': $matches['segNum'],
@@ -158,7 +158,7 @@ class SsrLineParser
         let $filterSsr, $filterOsi, $matches, $ssrData;
 
         $line = php.str_replace(php.PHP_EOL, '', $line);
-        $filterSsr = '\/^'+
+        $filterSsr = '/^'+
             '\\s{0,2}'+
             '(?<lineNumber>\\d{1,2})\\s'+
             '[\\\/\\*]?(?<type>SSR)\\s+'+
@@ -168,7 +168,7 @@ class SsrLineParser
             '(?<content>.*?)'+
             '(\\\/S(?<segNum>\\d+))?'+
             '(\\\/P(?<paxNum>\\d+))?'+
-            '\\s*$\/';
+            '\\s*$/';
         $filterOsi = '#^'+
             '\\s{0,2}'+
             '(?<lineNumber>\\d{1,2})\\s'+

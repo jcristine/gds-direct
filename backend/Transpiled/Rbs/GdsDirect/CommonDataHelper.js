@@ -68,7 +68,7 @@ class CommonDataHelper
         }[stateful.gds];
         $leadPart = php.empty($leadData['leadId']) ? '' : (
             ($agent.canSavePnrWithoutLead() ? '' : /FOR {leadAgent}/+($leadData['leadOwnerId'] || ''))+
-            '\/LEAD-'+$leadData['leadId']
+            '/LEAD-'+$leadData['leadId']
         );
         if ($agent.getLogin()) {
             // if you make changes here, please also update
@@ -76,7 +76,7 @@ class CommonDataHelper
             $pattern = php.implode('', [
                 'GD-',
                 '{pnrAgent}',
-                '\/'+$agent.getId(),
+                '/'+$agent.getId(),
                 $leadPart,
                 ' IN '+stateful.getSessionData().pcc,
             ]);
@@ -130,8 +130,8 @@ class CommonDataHelper
         for ($line of Object.values(StringUtil.lines($output))) {
             $lineNumber = '(?:\\s*\\d+|GFAX-)\\.?\\s*';
             $ssrStart = '(?:[A-Z0-9]{2})?\\s*(?:[A-Z]{2}\\d+)?\\s*[\\\/\\s]';
-            $emailRegex = '\/^('+$lineNumber+'SSR\\s*CTCE\\s*'+$ssrStart+')(.+?)(\\S{'+$lettersShown+'}\\\/\\\/.*|)$\/';
-            $phoneRegex = '\/^('+$lineNumber+'SSR\\s*CTCM\\s*'+$ssrStart+')(.+)(\\d{'+$digitsShown+'}.*)$\/';
+            $emailRegex = '/^('+$lineNumber+'SSR\\s*CTCE\\s*'+$ssrStart+')(.+?)(\\S{'+$lettersShown+'}\\\/\\\/.*|)$/';
+            $phoneRegex = '/^('+$lineNumber+'SSR\\s*CTCM\\s*'+$ssrStart+')(.+)(\\d{'+$digitsShown+'}.*)$/';
             if (php.preg_match($emailRegex, $line, $matches = [])) {
                 [$_, $prefix, $masked, $postfix] = $matches;
                 $line = $prefix+php.preg_replace(/./, 'X', $masked)+$postfix;

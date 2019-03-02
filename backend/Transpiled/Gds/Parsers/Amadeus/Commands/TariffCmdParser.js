@@ -99,7 +99,7 @@ class TariffCmdParser
     static parse($cmd)  {
         let $rawMods, $mainPart, $matches, $_, $departureAirport, $destinationAirport;
 
-        $rawMods = php.explode('\/', $cmd);
+        $rawMods = php.explode('/', $cmd);
         $mainPart = php.array_shift($rawMods);
         if (php.preg_match(/^FQD([A-Z]{3})([A-Z]{3})$/, $mainPart, $matches = [])) {
             [$_, $departureAirport, $destinationAirport] = $matches;

@@ -14,7 +14,7 @@ class LinearFareParser
         let $taxPattern, $regex, $matches, $taxMatches;
         $taxPattern = 'TAX\\s+(\\d*\\.\\d+|EXEMPT\\s+)([A-Z0-9]{2})\\s+';
         $regex =
-            '\/^FARE\\s+'+
+            '/^FARE\\s+'+
             '(?<baseCurrency>[A-Z]{3})\\s+'+
             '(?<baseAmount>\\d*\\.?\\d+)\\s+'+
             '(EQU\\s+'+
@@ -25,10 +25,10 @@ class LinearFareParser
             '(?<totalCurrency>[A-Z]{3})\\s+'+
             '(?<totalAmount>\\d*\\.\\d+)'+
             '(?<textLeft>.*)'+
-            '\/s';
+            '/s';
         if (php.preg_match($regex, $line, $matches = [])) {
             $matches = php.array_filter($matches);
-            $taxMatches = php.preg_match_all('\/'+$taxPattern+'\/', $matches['taxList'] || '', $taxMatches = [], php.PREG_SET_ORDER);
+            $taxMatches = php.preg_match_all('/'+$taxPattern+'/', $matches['taxList'] || '', $taxMatches = [], php.PREG_SET_ORDER);
             return {
                 'fareAndMarkup': {
                     'currency': $matches['baseCurrency'],

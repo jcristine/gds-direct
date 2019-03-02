@@ -38,7 +38,7 @@ class Errors
             },
             [this.BAD_MOD_IGNORE_AVAILABILITY]: {
                 'pattern': 'Pricing command should not ignore availability - {modifier} is forbidden',
-                'sampleData': {'modifier': '>$BBA\/'},
+                'sampleData': {'modifier': '>$BBA/'},
             },
             [this.BAD_MOD_LOW_FARE_CHILD]: {
                 'pattern': 'Use {alternative} format when pricing {ageGroupsPlural} (instead of {modifier})',
@@ -142,7 +142,7 @@ class Errors
             },
             [this.REBOOK_FAILURE]: {
                 'pattern': 'Failed to change booking class in {segNums} segment(s): {output}',
-                'sampleData': {'segNums': '2,3,5', 'output': '\/$UNABLE TO REPLICATE - PASSIVE SEGMENT'},
+                'sampleData': {'segNums': '2,3,5', 'output': '/$UNABLE TO REPLICATE - PASSIVE SEGMENT'},
             },
             [this.GDSD_LIMIT_EXHAUSTED]: {
                 'pattern': 'You exhausted your GDS Direct usage limit for today',

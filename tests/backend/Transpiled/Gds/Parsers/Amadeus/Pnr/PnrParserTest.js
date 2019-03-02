@@ -99,7 +99,7 @@ class PnrParserTest extends require('../../../../Lib/TestCase.js')
                             'airline': 'PR',
                             'status': 'HK',
                             'statusNumber': '1',
-                            'content': '\/\/\/\/01FEB46\/F\/\/CASTRO\/ADELFAMONTANO',
+                            'content': '/\/\/\/01FEB46\/F\/\/CASTRO\/ADELFAMONTANO',
                             'data': {
                                 'travelDocType': '',
                                 'issuingCountry': '',
@@ -141,7 +141,7 @@ class PnrParserTest extends require('../../../../Lib/TestCase.js')
                             'airline': 'PR',
                             'status': 'HK',
                             'statusNumber': '',
-                            'content': '\/ PS1005775190\/3',
+                            'content': '/ PS1005775190\/3',
                             'data': {
                                 'airline': 'PS',
                                 'flyerNumber': '1005775190',
@@ -518,7 +518,7 @@ class PnrParserTest extends require('../../../../Lib/TestCase.js')
                 '       \/S3-4,6-8\/P1',
                 ' 46 FB PAX 0000000000 TTP\/ET\/EXCH\/T3\/RT OK ETICKET\/S3-4,6-8\/P2',
                 ' 47 FB PAX 0000000000 TTP\/ET\/EXCH\/T4\/RT OK ETICKET\/S3-4,6-8\/P1',
-                ' 48 FE PAX *M*55564216 REFTHRUAG\/NONEND\/NONRERTE\/LH\/UA\/AC\/OS\/SN\/',
+                ' 48 FE PAX *M*55564216 REFTHRUAG\/NONEND\/NONRERTE\/LH\/UA\/AC\/OS\/SN/',
                 '       LX ONLY\/S3-4,6-8\/P1-2',
                 ' 49 FG PAX 0000000000 AMSAA3102\/S3-4,6-8\/P2',
                 ' 50 FG PAX 0000000000 AMSAA3102\/S3-4,6-8\/P1',
@@ -1272,8 +1272,8 @@ class PnrParserTest extends require('../../../../Lib/TestCase.js')
                 'RP\/SFO1S2195\/SFO1S2195            TS\/GS  19OCT16\/1517Z   6A4TB2',
                 'SFO1S2195\/4002TS\/19OCT16',
                 '  1.DOE\/JOHN(INFDOE\/JANE\/03JAN16)',
-                '  2  UA7226 S 12NOV 6 JFKJNB HK1  1040A 815A 13NOV  E  UA\/',
-                '  3  UA7227 S 13NOV 7 JNBACC HK1   655P1055P 13NOV  E  UA\/',
+                '  2  UA7226 S 12NOV 6 JFKJNB HK1  1040A 815A 13NOV  E  UA/',
+                '  3  UA7227 S 13NOV 7 JNBACC HK1   655P1055P 13NOV  E  UA/',
                 '  4 AP 8000000000',
                 '  5 TK TL20OCT\/SFO1S2195',
                 '  6 SSR INFT UA HN1 DOE\/JANE 03JAN16\/S2',
@@ -1318,7 +1318,7 @@ class PnrParserTest extends require('../../../../Lib/TestCase.js')
                 'SFO1S2195\/4002TS\/19OCT16',
                 '  1.BROWN\/JANE(INS)   2.DOE\/JOHN(INFDOE\/JANE\/03JAN16)',
                 '  3.SMITH\/JUNIOR(CHD\/04APR10)',
-                '  4  ET 501 E 13NOV 7 IADADD HK3  1030A 740A 14NOV  E  ET\/',
+                '  4  ET 501 E 13NOV 7 IADADD HK3  1030A 740A 14NOV  E  ET/',
                 '  5 AP SFO 888 585-2727 - ITN CORP. - A',
                 '  6 TK TL20OCT\/SFO1S2195',
                 '  7 SSR CHLD ET HK1 04APR10\/P3',
@@ -1386,7 +1386,7 @@ class PnrParserTest extends require('../../../../Lib/TestCase.js')
                 'RP\/SFO1S2195\/SFO1S2195            TS\/GS  19OCT16\/1547Z   6A4YZ8',
                 'SFO1S2195\/4002TS\/19OCT16',
                 '  1.DOE\/FRANK(INFJONES\/JANE\/01APR16)   2.DOE\/JOHN',
-                '  4  ET 501 E 13NOV 7 IADADD HK3  1030A 740A 14NOV  E  ET\/',
+                '  4  ET 501 E 13NOV 7 IADADD HK3  1030A 740A 14NOV  E  ET/',
                 '  5 AP SFO 888 585-2727 - ITN CORP. - A',
                 '  6 TK TL20OCT\/SFO1S2195'
             ]),
@@ -1550,8 +1550,8 @@ class PnrParserTest extends require('../../../../Lib/TestCase.js')
         // not saved yet PNR - text between segments
         $list.push([
             php.implode(php.PHP_EOL, [
-                '\/$--- MSC SFP ---',
-                'RP\/SFO1S2195\/',
+                '/$--- MSC SFP ---',
+                'RP\/SFO1S2195/',
                 '  1  DL 462 Y 23OCT 1*JFKDTW DK1   910A1130A 23OCT  E  0 717 N',
                 '     SEE RTSVC',
                 '  2  DL 275 Y 23OCT 1*DTWMNL DK1  1210P 855P 24OCT  E  1 EQV D',
@@ -1576,7 +1576,7 @@ class PnrParserTest extends require('../../../../Lib/TestCase.js')
         // example of itinerary segment with OPERATED BY
         $list.push([
             php.implode(php.PHP_EOL, [
-                'RP\/SFO1S2195\/',
+                'RP\/SFO1S2195/',
                 '  1  KQ1566 H 28JUL 5 NBOAMS DK1  1155P 710A 29JUL  E  0 EQV',
                 '     KQ NOW FLIES TO BANGUI 2X WK FR 1ST NOV',
                 '     DIRECT FLTS 2 HAN 3X WK GO 2 GGAIRKQNEWS 4 VISA',
@@ -1704,7 +1704,7 @@ class PnrParserTest extends require('../../../../Lib/TestCase.js')
         // infant without date of birth and last name same as parent (INF/KATJA)
         $list.push([
             php.implode(php.PHP_EOL, [
-                'RP\/SFO1S2195\/',
+                'RP\/SFO1S2195/',
                 '  1.LIBERMANE\/LEPIN   2.LIBERMANE\/MARINA(INF\/KATJA)',
                 '  3.LIBERMANE\/ZIMICH(CHD)',
                 '  4  PS 898 Y 20SEP 3 KIVKBP DK3   720A 825A 20SEP  E  0 738 F',
@@ -1755,7 +1755,7 @@ class PnrParserTest extends require('../../../../Lib/TestCase.js')
         $list.push([
             php.implode(php.PHP_EOL, [
                 '--- MSC ---',
-                'RP\/NYC1S2186\/',
+                'RP\/NYC1S2186/',
                 '  1  SU1845 Y 10DEC 7 KIVSVO HK1            140A 535A   32A E0 S',
                 '     SEE RTSVC',
                 '  2  SU2682 Y 10DEC 7 SVORIX HK1        D   925A1005A   320 E0 S',
@@ -1809,8 +1809,8 @@ class PnrParserTest extends require('../../../../Lib/TestCase.js')
 
         $list.push([
             php.implode(php.PHP_EOL, [
-                '\/$                        ***  NHP  ***',
-                'RP\/NYC1S2186\/',
+                '/$                        ***  NHP  ***',
+                'RP\/NYC1S2186/',
                 '  1  PS 898 N 20NOV 1 KIVKBP HK2            710A 820A   738 E0 F',
                 '     BOARDING PASS AT CHECKIN IS CHARGEABLE',
                 '     FULL PASSPORT DATA IS MANDATORY',
@@ -1888,7 +1888,7 @@ class PnrParserTest extends require('../../../../Lib/TestCase.js')
         // day offset format segments in a stored PNR
         $list.push([
             php.implode(php.PHP_EOL, [
-                '\/$--- RLR MSC ---',
+                '/$--- RLR MSC ---',
                 'RP\/NYC1S2186\/NYC1S2186            WS\/SU  12OCT17\/1500Z   NWDBDX',
                 '  1.LIBERMANE\/LEPIN(C05)   2.LIBERMANE\/MARINA',
                 '  3  SU1845 Y 10DEC 7 KIVSVO HK2            140A 540A   *1A\/E*',
@@ -1964,7 +1964,7 @@ class PnrParserTest extends require('../../../../Lib/TestCase.js')
 
         $list.push([
             php.implode(php.PHP_EOL, [
-                '\/$RP\/SFO1S2195\/SFO1S2195            WS\/SU  25SEP17\/1933Z   VYYWJK',
+                '/$RP\/SFO1S2195\/SFO1S2195            WS\/SU  25SEP17\/1933Z   VYYWJK',
                 '------- PRIORITY',
                 'M  CREATED IN GDS DIRECT BY ELDAR',
                 '-------',
@@ -2175,7 +2175,7 @@ class PnrParserTest extends require('../../../../Lib/TestCase.js')
                             'airline': 'EK',
                             'status': 'HK',
                             'statusNumber': '1',
-                            'content': '\/\/\/\/22JUN90\/F\/\/MANGALAGIRI\/HIMABINDU',
+                            'content': '/\/\/\/22JUN90\/F\/\/MANGALAGIRI\/HIMABINDU',
                             'data': {
                                 'dob': {'raw': '22JUN90','parsed': '1990-06-22'},
                                 'gender': 'F',
@@ -2194,7 +2194,7 @@ class PnrParserTest extends require('../../../../Lib/TestCase.js')
         $list.push([
             php.implode(php.PHP_EOL, [
                 '                        ***  NHP  ***',
-                'RP\/SFO1S2195\/',
+                'RP\/SFO1S2195/',
                 '  1.IVANOV\/ANDREY   2.IVANOVA\/MARINA(C07)',
                 '  3  9U 173 G 20SEP 4 KIVDME DK4   700A 850A 20SEP  E  0 320 B',
                 '     CHECK API DATA REQUIRED',

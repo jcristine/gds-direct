@@ -116,9 +116,9 @@ class PricingCmdParser
             if ($modsPart) {
                 // you can price multiple pricing stores in single
                 // command by separating them through "//"
-                for ($rawModPack of Object.values(php.explode('\/\/', $modsPart))) {
+                for ($rawModPack of Object.values(php.explode('//', $modsPart))) {
                     $pricingStores.push(php.array_map((...args) => this.parsePricingModifier(...args),
-                        php.array_values(php.array_filter(php.explode('\/', $rawModPack)))));}
+                        php.array_values(php.array_filter(php.explode('/', $rawModPack)))));}
             }
             return {
                 'baseCmd': $baseCmd,

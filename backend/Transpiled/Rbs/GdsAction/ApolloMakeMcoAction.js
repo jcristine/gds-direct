@@ -51,7 +51,7 @@ class ApolloMakeMcoAction extends AbstractGdsAction
             'validFor': 'SPLIT',
             'tourCode': '',
             'ticketNumber': '',
-            'commission': '0.00\/',
+            'commission': '0.00/',
             'taxAmount': '',
             'taxCode': '',
             'equivAmount': '',

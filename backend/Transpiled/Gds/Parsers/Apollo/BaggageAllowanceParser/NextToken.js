@@ -56,7 +56,7 @@ class NextToken
         $lines = php.explode(php.PHP_EOL, $text);
         $firstLine = php.array_shift($lines);
         $trimmedLine = php.trim($firstLine);
-        $regex = '\/^\\s*'+
+        $regex = '/^\\s*'+
             '(?<airline>[A-Z\\d]{2})\\s+'+
             '(?<departureAirport>[A-Z]{3})'+
             '(?<destinationAirport>[A-Z]{3})\\s+'+
@@ -66,7 +66,7 @@ class NextToken
             '|'+
             '(?<error>.+)'+
             ')'+
-        '\\s*$\/';
+        '\\s*$/';
         $tokens = [];
         if (php.preg_match($regex, $trimmedLine, $tokens = [])) {
             $error = $tokens['error'] || null;

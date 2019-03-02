@@ -12,13 +12,13 @@ class GenericRemarkParser
     static parsePriceRemark($remark)  {
         let $priceRemarkRegex, $tokens;
         $priceRemarkRegex =
-            '\/^'+
+            '/^'+
             '\\s*'+
             'S(?<paxNumberS>\\d+) (?<sellingPrice>\\d+(\\.\\d{0,2})?)'+
             '\\sN(?<paxNumberN>\\d+) (?<netPrice>\\d+(\\.\\d{0,2})?)'+
             '\\sF(?<paxNumberF>\\d+) (?<fare>\\d+(\\.\\d{0,2})?)'+
             '(\\sQ\\d+ (?<fuelSurcharge>\\d+(\\.\\d{2})?))?'+
-            '\/';
+            '/';
         if (php.preg_match($priceRemarkRegex, $remark, $tokens = [])
             && ($tokens['paxNumberS'] == $tokens['paxNumberN'] && $tokens['paxNumberS'] == $tokens['paxNumberF'])
         ) {
@@ -43,17 +43,17 @@ class GenericRemarkParser
     static parseLeadRemarkVerbose($line)  {
         let $regex, $matches;
         $regex =
-            '\/'+
+            '/'+
             '(GD-)?'+
-            '(?<agentLogin>[^\\\/]+)\\\/'+
-            'ID(?<agentId>\\d+)\\\/'+
+            '(?<agentLogin>[^\\\/]+)\\/'+
+            'ID(?<agentId>\\d+)\\/'+
             '('+
-                'CREATED FOR (?<leadCreatorLogin>[^\\\/]+)\\\/'+
-                'ID(?<leadCreatorId>\\d+)\\\/'+
+                'CREATED FOR (?<leadCreatorLogin>[^\\\/]+)\\/'+
+                'ID(?<leadCreatorId>\\d+)\\/'+
             ')?'+
             'REQ. ID-(?<leadId>\\d+)'+
             '(?:\\s*IN\\s+(?<pcc>[A-Z0-9]{3,9}))?'+
-            '\/';
+            '/';
         if (php.preg_match($regex, $line, $matches = [])) {
             return {
                 'agentLogin': $matches['agentLogin'],
@@ -74,18 +74,18 @@ class GenericRemarkParser
     static parseLeadRemarkCompact($line)  {
         let $regex, $matches;
         $regex =
-            '\/'+
+            '/'+
             'GD-'+
-            '(?<agentLogin>[^\\\/]+)\\\/'+
+            '(?<agentLogin>[^\\\/]+)\\/'+
             '(?<agentId>\\d+)'+
             '('+
                 '\\\/FOR\\s+'+
-                '(?<leadCreatorLogin>[^\\\/]+)\\\/'+
+                '(?<leadCreatorLogin>[^\\\/]+)\\/'+
                 '(?<leadCreatorId>\\d+)'+
             ')?'+
             '(\\\/LEAD-(?<leadId>\\d+))?\\s*'+
             'IN\\s+(?<pcc>[A-Z0-9]{3,9})'+
-            '\/';
+            '/';
         if (php.preg_match($regex, $line, $matches = [])) {
             return {
                 'agentLogin': $matches['agentLogin'],

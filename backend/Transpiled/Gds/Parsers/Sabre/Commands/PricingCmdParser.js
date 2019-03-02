@@ -11,7 +11,7 @@ let parseRanges = ($expr) => {
 		$pair = php.explode('-', $text);
 		return php.range($pair[0], $pair[1] || $pair[0]);
 	};
-	return Fp.flatten(Fp.map($parseRange, php.explode('\/', php.trim($expr))));
+	return Fp.flatten(Fp.map($parseRange, php.explode('/', php.trim($expr))));
 };
 
 // 'N1.1/1.2/2.1'
@@ -41,7 +41,7 @@ let parseNameQualifier = ($token) => {
 		} else {
 			return null;
 		}
-	}, php.explode('\/', $content));
+	}, php.explode('/', $content));
 	if (Fp.any('is_null', $records)) {
 		return null;
 	} else {
@@ -56,10 +56,10 @@ let parseNameQualifier = ($token) => {
 let parseSegmentQualifier = ($token) => {
 	let $regex, $matches;
 	$regex =
-		'\/^S' +
+		'/^S' +
 		'(?<segNums>\\d+[\\d\\\/\\-]*)' +
 		'(?<unparsed>\\*.+|)' +
-		'$\/';
+		'$/';
 	if (php.preg_match($regex, $token, $matches = [])) {
 		return {
 			'segmentNumbers': parseRanges($matches['segNums']),
@@ -90,7 +90,7 @@ let parsePtcQualifier = ($token) => {
 		} else {
 			return null;
 		}
-	}, php.explode('\/', $content));
+	}, php.explode('/', $content));
 	if (Fp.any('is_null', $records)) {
 		return null;
 	} else {

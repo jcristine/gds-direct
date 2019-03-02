@@ -18,7 +18,7 @@ class FqLineParser
         };
         $line = php.substr($line, 3);
         [$priceConstructionPart, $miscInfoPart] = php.array_pad(php.explode(' - ', $line), 2, '');
-        $priceConstructionPartTokens = php.explode('\/', $priceConstructionPart);
+        $priceConstructionPartTokens = php.explode('/', $priceConstructionPart);
         $state = this.FQ_LINE_PARSER_STATE_WAITING_FOR_FARE;
         for ($token of $priceConstructionPartTokens) {
             if ($state == this.FQ_LINE_PARSER_STATE_WAITING_FOR_FARE) {

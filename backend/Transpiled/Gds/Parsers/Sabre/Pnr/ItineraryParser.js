@@ -102,7 +102,7 @@ class ItineraryParser {
 	static parseSegmentLine($line) {
 		let $regex, $tokens, $optional;
 		$regex =
-			'\/^' +
+			'/^' +
 			'\\s*' +
 			'(?<segmentNumber>\\d+)' +
 			'\\s*' +
@@ -131,7 +131,7 @@ class ItineraryParser {
 			'\\s*' +
 			'(?<destinationTime>\\d{2,4}[A-Z]?)' +
 			'(?<textLeft>.{0,})' +
-			'\/';
+			'/';
 		if (php.preg_match($regex, $line, $tokens = [])) {
 			$optional = this.parseOptionalTokens($tokens['textLeft']);
 			return {
@@ -213,7 +213,7 @@ class ItineraryParser {
 	static parseHotelWrappedPart($parsedLine, $wrappedLine) {
 		let $tokens, $outToken, $matches, $taToken;
 		$parsedLine['wrappedText'] += $wrappedLine;
-		$tokens = php.explode('\/', $parsedLine['wrappedText']);
+		$tokens = php.explode('/', $parsedLine['wrappedText']);
 		if (php.count($tokens) >= 5) {
 			$parsedLine['city'] = php.array_shift($tokens);
 			$outToken = php.array_shift($tokens);
@@ -243,7 +243,7 @@ class ItineraryParser {
 	static parseHotelSegmentMainPart($line) {
 		let $regex, $tokens;
 		$regex =
-			'\/^\\s*' +
+			'/^\\s*' +
 			'(?<segmentNumber>\\d+)\\s+' +
 			'(?<hotelType>HTL)\\s+' +
 			'(?<hotel>[A-Z0-9]{2})\\s+' +
@@ -252,7 +252,7 @@ class ItineraryParser {
 			'(?<segmentStatus>[A-Z]{2})' +
 			'(?<roomCount>\\d+)\\s+' +
 			'(?<wrappedText>\\S.*)' +
-			'$\/';
+			'$/';
 		if (php.preg_match($regex, $line, $tokens = [])) {
 			return {
 				'segmentNumber': $tokens['segmentNumber'],

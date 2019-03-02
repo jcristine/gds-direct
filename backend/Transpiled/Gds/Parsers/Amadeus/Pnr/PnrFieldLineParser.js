@@ -43,7 +43,7 @@ class PnrFieldLineParser
         let $regex, $matches;
 
         $regex =
-            '\/^\\s*'+
+            '/^\\s*'+
             '((?<infMark>INF|PAX)\\s+|)'+
             '(?<content>.*?)\\s*'+
             '(\\\/S(?<segNums>\\d+[,\\-\\d]*)|)\\s*'+
@@ -99,15 +99,15 @@ class PnrFieldLineParser
         let $regex, $matches;
 
         $regex =
-            '\/^\\s*'+
+            '/^\\s*'+
             '(?<airlineNumber>\\d{3})-'+
             '(?<documentNumber>\\d{10})'+
             '(?<location>[A-Z]{3})'+
-            '(?<date>\\d{1,2}[A-Z]{3}\\d{2,4})\\\/'+
-            '(?<iata>\\d{8})\\\/'+
+            '(?<date>\\d{1,2}[A-Z]{3}\\d{2,4})\\/'+
+            '(?<iata>\\d{8})\\/'+
             '(?<exchangedForAirlineNumber>\\d{3})-'+
             '(?<exchangedForDocumentNumber>\\d{10})'+
-            '\\s*$\/';
+            '\\s*$/';
         if (php.preg_match($regex, $line, $matches = [])) {
             return {
                 'airlineNumber': $matches['airlineNumber'],

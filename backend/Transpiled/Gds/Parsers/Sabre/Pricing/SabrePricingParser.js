@@ -26,7 +26,7 @@ class SabrePricingParser {
 		};
 
 		for ([$pattern, $errorName] of Object.entries($nameByPattern)) {
-			if (php.preg_match('\/^' + $pattern + '$\/s', php.trim($dump))) {
+			if (php.preg_match('/^' + $pattern + '$\/s', php.trim($dump))) {
 				return $errorName;
 			}
 		}
@@ -42,7 +42,7 @@ class SabrePricingParser {
 		let $idxs, $result, $i, $portion;
 
 		$idxs = php.array_keys(Fp.filter(($line) => {
-			return php.preg_match('\/' + $pattern + '\/', $line);
+			return php.preg_match('/' + $pattern + '/', $line);
 		}, $lines));
 
 		$result = [];
@@ -169,12 +169,12 @@ class SabrePricingParser {
 		let $withEquiv, $regex, $matches;
 
 		$withEquiv = php.preg_match(/EQUIV AMT/, $headersLine);
-		$regex = '\/^\\s*' +
+		$regex = '/^\\s*' +
 			'(?<baseFare>\\d*\\.?\\d+)\\s*' +
 			($withEquiv ? '(?<inDefaultCurrency>\\d*\\.?\\d+)\\s*' : '') +
 			'((?<tax>\\d*\\.?\\d+)\\s+)?' +
 			'(?<total>\\d*\\.?\\d+)TTL\\s*$' +
-			'\/';
+			'/';
 
 		if (php.preg_match($regex, $line, $matches = [])) {
 			return {
@@ -192,11 +192,11 @@ class SabrePricingParser {
 		let $regex, $matches;
 
 		$regex =
-			'\/^' +
+			'/^' +
 			'(?<departureDate>\\d{2}[A-Z]{3})\\sDEPARTURE\\sDATE-+' +
-			'LAST\\sDAY\\sTO\\sPURCHASE\\s(?<lastDateToPurchase>\\d{1,2}[A-Z]{3})\\\/' +
+			'LAST\\sDAY\\sTO\\sPURCHASE\\s(?<lastDateToPurchase>\\d{1,2}[A-Z]{3})\\/' +
 			'(?<lastTimeToPurchase>\\d{1,4})' +
-			'$\/';
+			'$/';
 
 		if (php.preg_match($regex, $line, $matches = [])) {
 			return {

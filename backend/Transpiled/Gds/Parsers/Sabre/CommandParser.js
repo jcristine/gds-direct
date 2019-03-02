@@ -49,7 +49,7 @@ class CommandParser {
 		$startsWith = {
 			'FQHELP': 'tariffDisplayHelp',
 			'*H': 'history',
-			'QC\/': 'queueCount',
+			'QC/': 'queueCount',
 			'SI': 'signIn', // eg. SI*1234
 			'SO': 'signOut',
 			'WV*': 'voidList',
@@ -197,14 +197,14 @@ class CommandParser {
 
 	static parseSearchPnr($cmd) {
 		let $filter, $matches;
-		$filter = '\/' + php.implode('|', [
+		$filter = '/' + php.implode('|', [
 			// Not all formats are possible to display pnr
 			'^\\*-.*',
 			'^\\*[A-Z0-9]{2}\\d{1,4}[-\\\/].*',
 			'^\\*[IL]?\u00A5.*',
 			'^\\*\\*\\d{1,3}-.*',
 			'^\\*(?:TKT|PTA-|TOD-)\\d+.*',
-		]) + '\/';
+		]) + '/';
 		if (php.preg_match($filter, $cmd, $matches = [])) {
 			return $matches[0];
 		} else {
@@ -321,7 +321,7 @@ class CommandParser {
 	static parseFfChange($cmd) {
 		let $regex, $matches;
 		$regex =
-			'\/^FF' +
+			'/^FF' +
 			'(' +
 			'(?<lineNums>\\d+[-,\\d]*|)' +
 			'(?<pillow>\u00A4)' +
@@ -332,7 +332,7 @@ class CommandParser {
 			'|' +
 			'(?<airline>[A-Z0-9]{2})' +
 			'(?<code>[A-Z0-9]+)' +
-			'(\\\/' +
+			'(\\/' +
 			'(?<partners>[A-Z0-9]{2}(,[A-Z0-9]{2})*|)' +
 			'(?<segNums>\\d+[-,\\d]*|)' +
 			')?' +
@@ -343,7 +343,7 @@ class CommandParser {
 			'(?<paxName>[A-Z].*\\\/.*)' +
 			'))?' +
 			')' +
-			'$\/';
+			'$/';
 		if (php.preg_match($regex, $cmd, $matches = [])) {
 			return {
 				'type': php.empty($matches['pillow'])
@@ -370,13 +370,13 @@ class CommandParser {
 	static parseSeatChange($cmd) {
 		let $regex, $matches, $seatCodesStr, $seatMatches, $seatCodes, $_, $rowNumber, $letters, $letter, $segNums;
 		$regex =
-			'\/^4G' +
+			'/^4G' +
 			'(?<cancelMark>X|)' +
 			'(?<segNums>\\d+[,\\d]*|A|ALL|)' +
 			'(\\\/(?<location>[AWX]))?' +
 			'(\\\/(?<seatCodes>(\\d+[A-Z]+)+))?' +
 			'(-(?<paxNums>\\d+\\.\\d+([-,]\\d+\\.\\d+)*))?' +
-			'$\/';
+			'$/';
 		if (php.preg_match($regex, $cmd, $matches = [])) {
 			$seatCodesStr = $matches['seatCodes'] || '';
 			$seatMatches = php.preg_match_all(/(\d+)([A-Z]+)/, $seatCodesStr, $seatMatches = [], php.PREG_SET_ORDER);

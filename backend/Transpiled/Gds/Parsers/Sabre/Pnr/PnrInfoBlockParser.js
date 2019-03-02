@@ -53,14 +53,14 @@ class PnrInfoBlockParser
 
         // 'O4FG.O4FG*A15 0524/13SEP11 GMIKYK H'
         $regex =
-            '\/^'+
+            '/^'+
             '(?<pcc>[A-Z\\d]{3,4})\\.'+
             '(?<homePcc>[A-Z\\d]{3,4})'+
             '(\\*|\\d|R|\\-)'+
             '(?<agentInitials>[A-Z\\d]{3})\\s'+
             '(?<time>\\d{4})\\\/(?<date>\\d{2}[A-Z]{3}\\d{2})'+
             '(\\s(?<recordLocator>[A-Z\\d]{6}))?'+
-            '\/';
+            '/';
 
         if (php.preg_match($regex, $line, $match = [])) {
             $initials = $match['agentInitials'];

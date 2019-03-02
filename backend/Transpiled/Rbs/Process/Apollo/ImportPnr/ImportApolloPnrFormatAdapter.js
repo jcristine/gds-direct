@@ -239,8 +239,8 @@ return $mco['documentNumber'];
                     'status': null,
                     'currency': $doc['currency'],
                     'amount': $doc['amount'],
-                    'passengerName': $doc['lastName']+'\/'+$doc['firstName'],
-                    'nameNumber': this.findPaxMatchingName($nameRecords, $doc['lastName']+'\/'+$doc['firstName'], true)['nameNumber'] || null,
+                    'passengerName': $doc['lastName']+'/'+$doc['firstName'],
+                    'nameNumber': this.findPaxMatchingName($nameRecords, $doc['lastName']+'/'+$doc['firstName'], true)['nameNumber'] || null,
                 });
             }}
         return {'mcoRecords': $mcoRecords};
@@ -300,7 +300,7 @@ return $mco['documentNumber'];
 
     static nameMatchesPax($paxName, $pax, $partial)  {
         let $lastName, $firstName;
-        [$lastName, $firstName] = php.array_pad(php.explode('\/', $paxName), 2, '');
+        [$lastName, $firstName] = php.array_pad(php.explode('/', $paxName), 2, '');
         if (!$partial) {
             return $lastName === $pax['lastName']
                 && $firstName === $pax['firstName'];
@@ -537,7 +537,7 @@ return $mco['documentNumber'];
         if (!php.isset($ticketData['error'])) {
             $ticket = [];
 
-            $numberTokens = php.explode('\/', $ticketData['header']['ticketNumber']);
+            $numberTokens = php.explode('/', $ticketData['header']['ticketNumber']);
 
             $ticket['ticketNumber'] = php.str_replace(' ', '', $numberTokens[0]);
             $ticket['ticketNumberExtension'] = $numberTokens[1] || null;

@@ -72,7 +72,7 @@ class BagAllowanceParser
         for ($line of Object.values($lines)) {
             $section = this.detectSectionFromHeader($line) || $section;
             $result[$section].push($line);
-            if ($section === 'disclaimer' && php.trim($line) === 'CREDIT CARD FORM OF PAYMENT\/EARLY PURCHASE OVER INTERNET,ETC.\/' ||
+            if ($section === 'disclaimer' && php.trim($line) === 'CREDIT CARD FORM OF PAYMENT\/EARLY PURCHASE OVER INTERNET,ETC./' ||
                 $section === 'disclaimer' && php.trim($line) === 'ADDITIONAL ALLOWANCES AND\/OR DISCOUNTS MAY APPLY' // without continuation
             ) {
                 $section = 'additionalInfo';
@@ -203,7 +203,7 @@ return StringUtil.startsWith($line, '*');};
 
         $matches = [];
         $regex =
-            '\/^'+
+            '/^'+
             'BAG ALLOWANCE     -'+
             '(?<departureStopover>[A-Z]{3})'+
             '(?<destinationStopover>[A-Z]{3})-'+
@@ -211,10 +211,10 @@ return StringUtil.startsWith($line, '*');};
                 '(?<allowanceCode>[A-Z\\d]+)'+
                 '|'+
                 '(?<noPriceDueTo>\\*|[A-Z ]+)'+
-            ')\\\/'+
+            ')\\/'+
             '(?<airline>[A-Z\\d]{2})'+
             '(\\\/(?<sizeInfo>.+))? *'+
-            '$\/';
+            '$/';
         if (php.preg_match($regex, $line, $matches = [])) {
             if (php.isset($matches['sizeInfo']) && $matches['sizeInfo']) {
                 $sizeInfo = this.parseSizeInfoText($matches['sizeInfo']) || {'error': 'failed to parse', 'raw': php.trim($matches['sizeInfo'])};
@@ -244,7 +244,7 @@ return StringUtil.startsWith($line, '*');};
 
         $matches = [];
         $regex =
-            '\/^'+
+            '/^'+
             '(?<feeNumber>\\d+)'+
             '(ST|ND|RD|TH)CHECKED BAG FEE-'+
             '(?<departureStopover>[A-Z]{3})'+
@@ -254,13 +254,13 @@ return StringUtil.startsWith($line, '*');};
                 '(?<amount>\\d+(\\.\\d*)?)'+
                 '|'+
                 '(?<noPriceDueTo>\\*|[A-Z ]+)'+
-            ')\\\/'+
+            ')\\/'+
             '(?<airline>[A-Z\\d]{2})'+
-            '(\\\/'+
+            '(\\/'+
                 '(?<sizeInfo>[^\\*]+)'+
                 '(?<generalRemarkIndicator>\\*\\*)?'+
             ')? *'+
-            '$\/';
+            '$/';
 
         if (php.preg_match($regex, $line, $matches = [])) {
             if (php.isset($matches['sizeInfo'])) {
@@ -362,7 +362,7 @@ return StringUtil.startsWith($line, '*');};
         for ($and of Object.values(php.explode(' AND ', $text))) {
             if (php.preg_match(/^\s*UP TO\s*(.*)$/, $and, $matches = [])) {
                 $slashed = $matches[1];
-                for ($limit of Object.values(php.explode('\/', $slashed))) {
+                for ($limit of Object.values(php.explode('/', $slashed))) {
                     if (php.preg_match(/^\s*(\d+) POUNDS\s*$/, $limit, $matches = [])) {
                         $result['weightInLb'] = $matches[1];
                     } else if (php.preg_match(/^\s*(\d+) KILOGRAMS\s*/, $limit, $matches = [])) {
@@ -417,13 +417,13 @@ return StringUtil.startsWith($line, '*');};
         let $regex, $matches, $cityPairs;
 
         $regex =
-            '\/^'+
+            '/^'+
             '(?<cityPairs>[A-Z]{6}( [A-Z]{6})*)-'+
             '((?<bagAllowanceCode>[A-Z\\d]{3})\\\/)?'+
             '((?<weightInKg>\\d+)KG\\\/)?'+
             '(?<airline>[A-Z\\d]{2})'+
             '(-(?<error>.*))?'+
-            '\\s*$\/';
+            '\\s*$/';
 
         if (php.preg_match($regex, $line, $matches = [])) {
             $cityPairs = Fp.map(($p) => {

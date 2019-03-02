@@ -176,7 +176,7 @@ class NextToken
             $pair = php.explode('-', $text);
             return php.range($pair[0], $pair[1] || $pair[0]);
         };
-        return Fp.flatten(Fp.map($parseRange, php.explode('\/', php.trim($query))));
+        return Fp.flatten(Fp.map($parseRange, php.explode('/', php.trim($query))));
     }
 
     static matchFareConstructionMarkerLine($text)  {

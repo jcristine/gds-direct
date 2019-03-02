@@ -332,7 +332,7 @@ class SessionStateProcessorTest extends require('../../../../../../backend/Trans
                         '                                                                EMBARGO - FOR BAGGAGE LIMITATIONS SEE ',
                         ' DL CHINYC  MYTRIPANDMORE.COM\/BAGGAGEDETAILSDL.BAGG         ',
                         ' DL NYCMSP  MYTRIPANDMORE.COM\/BAGGAGEDETAILSDL.BAGG         ',
-                        '                                                                BAGGAGE DISCOUNTS MAY APPLY BASED ON FREQUENT FLYER STATUS\/',
+                        '                                                                BAGGAGE DISCOUNTS MAY APPLY BASED ON FREQUENT FLYER STATUS/',
                         'ONLINE CHECKIN\/FORM OF PAYMENT\/MILITARY\/ETC.',
                         '',
                     ]),
@@ -419,7 +419,7 @@ class SessionStateProcessorTest extends require('../../../../../../backend/Trans
                         '   BAG 1 -  NO FEE       PERSONAL ITEM                    ',
                         '                                                                EMBARGO - FOR BAGGAGE LIMITATIONS SEE ',
                         ' DL MSPPAR  MYTRIPANDMORE.COM\/BAGGAGEDETAILSDL.BAGG         ',
-                        '                                                                BAGGAGE DISCOUNTS MAY APPLY BASED ON FREQUENT FLYER STATUS\/',
+                        '                                                                BAGGAGE DISCOUNTS MAY APPLY BASED ON FREQUENT FLYER STATUS/',
                         'ONLINE CHECKIN\/FORM OF PAYMENT\/MILITARY\/ETC.',
                         '',
                     ]),
@@ -478,7 +478,7 @@ class SessionStateProcessorTest extends require('../../../../../../backend/Trans
                         '                                                                EMBARGO - FOR BAGGAGE LIMITATIONS SEE ',
                         ' DL CHINYC  MYTRIPANDMORE.COM\/BAGGAGEDETAILSDL.BAGG         ',
                         ' DL NYCMSP  MYTRIPANDMORE.COM\/BAGGAGEDETAILSDL.BAGG         ',
-                        '                                                                BAGGAGE DISCOUNTS MAY APPLY BASED ON FREQUENT FLYER STATUS\/',
+                        '                                                                BAGGAGE DISCOUNTS MAY APPLY BASED ON FREQUENT FLYER STATUS/',
                         'ONLINE CHECKIN\/FORM OF PAYMENT\/MILITARY\/ETC.',
                         '',
                     ]),
@@ -1664,8 +1664,8 @@ class SessionStateProcessorTest extends require('../../../../../../backend/Trans
                 {
                     'cmd': 'SS1Y1',
                     'output': php.implode(php.PHP_EOL, [
-                        '\/$--- MSC ---',
-                        'RP\/SFO1S2195\/',
+                        '/$--- MSC ---',
+                        'RP\/SFO1S2195/',
                         '  1  SU1845 Y 10DEC 7*KIVSVO DK1   140A 535A 10DEC  E  0 32A S',
                         '     SEE RTSVC',
                         '  2  SU2682 Y 10DEC 7*SVORIX DK1   925A1005A 10DEC  E  0 320 S',
@@ -1706,8 +1706,8 @@ class SessionStateProcessorTest extends require('../../../../../../backend/Trans
                 {
                     'cmd': 'SS1Y2',
                     'output': php.implode(php.PHP_EOL, [
-                        '\/$--- MSC ---',
-                        'RP\/SFO1S2195\/',
+                        '/$--- MSC ---',
+                        'RP\/SFO1S2195/',
                         '  1  SU1845 Y 10DEC 7*KIVSVO DK1   140A 535A 10DEC  E  0 32A S',
                         '     SEE RTSVC',
                         '  2  SU1845 Y 10DEC 7*KIVSVO DK1   140A 535A 10DEC  E  0 32A S',
@@ -1727,13 +1727,13 @@ class SessionStateProcessorTest extends require('../../../../../../backend/Trans
             'calledCommands': [
                 {
                     'cmd': 'RT',
-                    'output': php.implode(php.PHP_EOL, ['\/$INVALID', ' ']),
+                    'output': php.implode(php.PHP_EOL, ['/$INVALID', ' ']),
                     'state': {'has_pnr': false, 'is_pnr_stored': false},
                 },
                 {
                     'cmd': 'RT\/A',
                     'output': php.implode(php.PHP_EOL, [
-                        '\/$RT\/A',
+                        '/$RT\/A',
                         '  1 ADERIYE\/ADEFEMI       NO ACTIVE ITINERARY           M68244',
                         '  2 AGBORTAR\/MARY         NO ACTIVE ITINERARY           OM59DW',
                         '  3 AGBORUA\/ACHOJANO FR+  ET  509  T  13JUL  EWRLFW   1 2S4RBK',
@@ -1754,7 +1754,7 @@ class SessionStateProcessorTest extends require('../../../../../../backend/Trans
                 {
                     'cmd': 'RT\/LIBER',
                     'output': php.implode(php.PHP_EOL, [
-                        '\/$RT\/LIBER',
+                        '/$RT\/LIBER',
                         '  1 LIBERMANE\/LEPIN       NO ACTIVE ITINERARY           QMLDKB',
                         '  2 LIBERMANE\/MARINA      SU  1845 Y  10DEC  KIVSVO   1 QTQEEL',
                         '  3 LIBERMANE\/MARINA      NO ACTIVE ITINERARY           QMLDKB',
@@ -1765,7 +1765,7 @@ class SessionStateProcessorTest extends require('../../../../../../backend/Trans
                 {
                     'cmd': 'RT\/LEPIN',
                     'output': php.implode(php.PHP_EOL, [
-                        '\/$RT\/LEPIN',
+                        '/$RT\/LEPIN',
                         'NO NAME',
                         ' ',
                     ]),
@@ -1774,7 +1774,7 @@ class SessionStateProcessorTest extends require('../../../../../../backend/Trans
                 {
                     'cmd': 'RT\/10DEC-LIBERMANE\/MARINA',
                     'output': php.implode(php.PHP_EOL, [
-                        '\/$--- RLR MSC ---',
+                        '/$--- RLR MSC ---',
                         'RP\/SFO1S2195\/SFO1S2195            WS\/SU   7JUL17\/1923Z   QTQEEL',
                         'SFO1S2195\/9998WS\/7JUL17',
                         '  1.LIBERMANE\/MARINA',
@@ -1790,7 +1790,7 @@ class SessionStateProcessorTest extends require('../../../../../../backend/Trans
                 {
                     'cmd': 'XI',
                     'output': php.implode(php.PHP_EOL, [
-                        '\/$--- RLR ---',
+                        '/$--- RLR ---',
                         'RP\/SFO1S2195\/SFO1S2195            WS\/SU   7JUL17\/1923Z   QTQEEL',
                         'SFO1S2195\/9998WS\/7JUL17',
                         '  1.LIBERMANE\/MARINA',
@@ -1804,7 +1804,7 @@ class SessionStateProcessorTest extends require('../../../../../../backend/Trans
                 {
                     'cmd': 'RF KLESUN',
                     'output': php.implode(php.PHP_EOL, [
-                        '\/$--- RLR ---',
+                        '/$--- RLR ---',
                         'RP\/SFO1S2195\/SFO1S2195            WS\/SU   7JUL17\/1923Z   QTQEEL',
                         'SFO1S2195\/9998WS\/7JUL17',
                         'RF KLESUN',
@@ -1819,7 +1819,7 @@ class SessionStateProcessorTest extends require('../../../../../../backend/Trans
                 {
                     'cmd': 'ET',
                     'output': php.implode(php.PHP_EOL, [
-                        '\/',
+                        '/',
                         'END OF TRANSACTION COMPLETE - QTQEEL',
                         ' ',
                     ]),
@@ -1832,13 +1832,13 @@ class SessionStateProcessorTest extends require('../../../../../../backend/Trans
             'calledCommands': [
                 {
                     'cmd': 'RT',
-                    'output': php.implode(php.PHP_EOL, ['\/$INVALID', ' ']),
+                    'output': php.implode(php.PHP_EOL, ['/$INVALID', ' ']),
                     'state': {'is_pnr_stored': false},
                 },
                 {
                     'cmd': 'RT2FFWXZ',
                     'output': php.implode(php.PHP_EOL, [
-                        '\/$--- TST RLR SFP ---',
+                        '/$--- TST RLR SFP ---',
                         'RP\/SFO1S2195\/SFO1S2195            ET\/RM  21MAR17\/1525Z   2FFWXZ',
                         'SFO1S2195\/0035AA\/18JAN17',
                         '  1.KOBIEPSEGRAH\/MRANDJO SOLANGE',
@@ -1866,7 +1866,7 @@ class SessionStateProcessorTest extends require('../../../../../../backend/Trans
                 {
                     'cmd': 'IR',
                     'output': php.implode(php.PHP_EOL, [
-                        '\/$--- TST RLR SFP ---',
+                        '/$--- TST RLR SFP ---',
                         'RP\/SFO1S2195\/SFO1S2195            ET\/RM  21MAR17\/1525Z   2FFWXZ',
                         'SFO1S2195\/0035AA\/18JAN17',
                         '  1.KOBIEPSEGRAH\/MRANDJO SOLANGE',
@@ -1894,7 +1894,7 @@ class SessionStateProcessorTest extends require('../../../../../../backend/Trans
                 {
                     'cmd': 'IG',
                     'output': php.implode(php.PHP_EOL, [
-                        '\/',
+                        '/',
                         'IGNORED - 2FFWXZ',
                         ' ',
                     ]),
@@ -1908,7 +1908,7 @@ class SessionStateProcessorTest extends require('../../../../../../backend/Trans
                 {
                     'cmd': 'RT\/T',
                     'output': php.implode(php.PHP_EOL, [
-                        '\/$RT\/T',
+                        '/$RT\/T',
                         '  1 TOURE\/AOUSSA          KP  17   Q  05SEP  BKOLFW   3 62E5I8',
                         '  2 TOURE\/AOUSSA          KP  17   Q  05SEP  BKOLFW   3 VIVCHE',
                         '  3 TOURE\/AOUSSA          NO ACTIVE ITINERARY           62HVL3',
@@ -1924,7 +1924,7 @@ class SessionStateProcessorTest extends require('../../../../../../backend/Trans
                 {
                     'cmd': 'RT0',
                     'output': php.implode(php.PHP_EOL, [
-                        '\/$RT\/T',
+                        '/$RT\/T',
                         '  1 TOURE\/AOUSSA          KP  17   Q  05SEP  BKOLFW   3 62E5I8',
                         '  2 TOURE\/AOUSSA          KP  17   Q  05SEP  BKOLFW   3 VIVCHE',
                         '  3 TOURE\/AOUSSA          NO ACTIVE ITINERARY           62HVL3',
@@ -1940,14 +1940,14 @@ class SessionStateProcessorTest extends require('../../../../../../backend/Trans
                 {
                     'cmd': 'RT4',
                     'output': php.implode(php.PHP_EOL, [
-                        '\/$--- SFP ---',
+                        '/$--- SFP ---',
                         'RP\/SFO1S2195\/SFO1S2195            KP\/RM   7MAY17\/0237Z   62E5I8',
                         'SFO1S2195\/0035AA\/6APR17',
                         '  1.DRAME\/YAGARE   2.TOURE\/AOUSSA   3.TOURE\/DJENEBA(C10)',
                         '  4  ET 509 T 27JUN 2 EWRLFW         FLWN',
                         '  5  KP 016 Q 28JUN 3 LFWBKO         FLWN',
-                        '  6  KP 017 Q 05SEP 2 BKOLFW HX3   850A1125A 05SEP  E  KP\/',
-                        '  7  ET 508 T 05SEP 2 LFWEWR HX3  1230P 715P 05SEP  E  ET\/',
+                        '  6  KP 017 Q 05SEP 2 BKOLFW HX3   850A1125A 05SEP  E  KP/',
+                        '  7  ET 508 T 05SEP 2 LFWEWR HX3  1230P 715P 05SEP  E  ET/',
                         '  8 AP SFO 888 585-2727 - ITN CORP. - A',
                         '  9 TK TL06APR\/SFO1S2195',
                         ' 10 SSR OTHS 1A SEGMENTS WILL BE CANCELLED IF NOT TKTD BEFORE',
@@ -2000,8 +2000,8 @@ class SessionStateProcessorTest extends require('../../../../../../backend/Trans
                 {
                     'cmd': 'SS2Y1;NM1LIBERMANE\/MARINA;NM1LIBERMANE\/LEPIN(C05)',
                     'output': php.implode(php.PHP_EOL, [
-                        '\/$--- MSC ---',
-                        'RP\/SFO1S2195\/',
+                        '/$--- MSC ---',
+                        'RP\/SFO1S2195/',
                         '  1.LIBERMANE\/LEPIN(C05)   2.LIBERMANE\/MARINA',
                         '  3  SU1845 Y 10DEC 7*KIVSVO DK2   140A 535A 10DEC  E  0 32A S',
                         '     SEE RTSVC',
@@ -2014,8 +2014,8 @@ class SessionStateProcessorTest extends require('../../../../../../backend/Trans
                 {
                     'cmd': 'UHP\/CREATED IN GDS DIRECT BY STANISLAW',
                     'output': php.implode(php.PHP_EOL, [
-                        '\/$--- MSC ---',
-                        'RP\/SFO1S2195\/',
+                        '/$--- MSC ---',
+                        'RP\/SFO1S2195/',
                         '------- PRIORITY',
                         'M  CREATED IN GDS DIRECT BY STANISLAW',
                         '-------',
@@ -2031,15 +2031,15 @@ class SessionStateProcessorTest extends require('../../../../../../backend/Trans
                 {
                     'cmd': 'RMSTANISLAW\/ID2838\/CREATED FOR STANISLAW\/ID2838\/REQ. ID-1;TKTL18JUL;RFSTANISLAW;ER',
                     'output': php.implode(php.PHP_EOL, [
-                        '\/$--- RLR MSC ---',
+                        '/$--- RLR MSC ---',
                         'RP\/SFO1S2195\/SFO1S2195            WS\/SU  18JUL17\/2004Z   SODFUA',
                         '------- PRIORITY',
                         'M  CREATED IN GDS DIRECT BY STANISLAW',
                         '-------',
                         'SFO1S2195\/9998WS\/18JUL17',
                         '  1.LIBERMANE\/LEPIN(C05)   2.LIBERMANE\/MARINA',
-                        '  3  SU1845 Y 10DEC 7*KIVSVO HK2   140A 535A 10DEC  E  SU\/',
-                        '  4  SU2682 Y 10DEC 7*SVORIX HK2   925A1005A 10DEC  E  SU\/',
+                        '  3  SU1845 Y 10DEC 7*KIVSVO HK2   140A 535A 10DEC  E  SU/',
+                        '  4  SU2682 Y 10DEC 7*SVORIX HK2   925A1005A 10DEC  E  SU/',
                         '  5 AP SFO 888 585-2727 - ITN CORP. - A',
                         '  6 TK TL18JUL\/SFO1S2195',
                         '  7 RM STANISLAW\/ID2838\/CREATED FOR STANISLAW\/ID2838\/REQ. ID-1',
@@ -2254,7 +2254,7 @@ class SessionStateProcessorTest extends require('../../../../../../backend/Trans
                         ' 1.2LIBERMANE\/MARINA\/STAS  2.1LIBERMANE\/ZIMICH',
                         'NO ITIN',
                         'TKT\/TIME LIMIT',
-                        '  1.TAWL3II10SEP009\/0400A\/',
+                        '  1.TAWL3II10SEP009\/0400A/',
                         'PHONES',
                         '  1.SFO0181-577-4670-A',
                         'REMARKS',
@@ -2285,7 +2285,7 @@ class SessionStateProcessorTest extends require('../../../../../../backend/Trans
                         ' 1.2LIBERMANE\/MARINA\/STAS  2.1LIBERMANE\/ZIMICH',
                         'NO ITIN',
                         'TKT\/TIME LIMIT',
-                        '  1.TAWL3II10SEP009\/0400A\/',
+                        '  1.TAWL3II10SEP009\/0400A/',
                         'PHONES',
                         '  1.SFO0181-577-4670-A',
                         'REMARKS',
@@ -2315,7 +2315,7 @@ class SessionStateProcessorTest extends require('../../../../../../backend/Trans
                         ' 1.2LIBERMANE\/MARINA\/STAS  2.1LIBERMANE\/ZIMICH',
                         'NO ITIN',
                         'TKT\/TIME LIMIT',
-                        '  1.TAWL3II10SEP009\/0400A\/',
+                        '  1.TAWL3II10SEP009\/0400A/',
                         'PHONES',
                         '  1.SFO0181-577-4670-A',
                         'REMARKS',
@@ -2367,7 +2367,7 @@ class SessionStateProcessorTest extends require('../../../../../../backend/Trans
                 {
                     'cmd': 'RTKA6W8P',
                     'output': php.implode(php.PHP_EOL, [
-                        '\/$--- TST ---',
+                        '/$--- TST ---',
                         'RP\/SFO1S2195\/SFO1S2195            AA\/GS  12APR17\/2252Z   KA6W8P',
                         'SFO1S2195\/0035AA\/12APR17',
                         '  1.KIMBERLEY\/COURTNEY',
@@ -2380,12 +2380,12 @@ class SessionStateProcessorTest extends require('../../../../../../backend/Trans
                 {
                     'cmd': 'RTQWERTY',
                     'output': php.implode(php.PHP_EOL, [
-                        '\/$NO MATCH FOR RECORD LOCATOR',
+                        '/$NO MATCH FOR RECORD LOCATOR',
                         ' ',
                     ]),
                     'state': {'has_pnr': false, 'is_pnr_stored': false},
                 },
-                {'cmd': 'RT', 'output': php.implode(php.PHP_EOL, ['\/$INVALID', ' '])},
+                {'cmd': 'RT', 'output': php.implode(php.PHP_EOL, ['/$INVALID', ' '])},
             ],
         });
         $sessionRecords.push({
@@ -2403,7 +2403,7 @@ class SessionStateProcessorTest extends require('../../../../../../backend/Trans
                 {
                     'cmd': 'RTQWERTY',
                     'output': php.implode(php.PHP_EOL, [
-                        '\/$FINISH OR IGNORE',
+                        '/$FINISH OR IGNORE',
                         ' ',
                     ]),
                     'state': {'has_pnr': true, 'is_pnr_stored': false},
@@ -2417,7 +2417,7 @@ class SessionStateProcessorTest extends require('../../../../../../backend/Trans
                 {
                     'cmd': 'RT\/K',
                     'output': php.implode(php.PHP_EOL, [
-                        '\/$RT\/K',
+                        '/$RT\/K',
                         '  1 KIMBERLEY\/COURTNEY    NO ACTIVE ITINERARY           KA6W8P',
                         '  2 KOBIEPSEGRAH\/MRANDJ+  NO ACTIVE ITINERARY           2FFWXZ',
                         '  3 KOBIEPSEGRAH\/MRANJO+  NO ACTIVE ITINERARY           2FFPS3',
@@ -2433,7 +2433,7 @@ class SessionStateProcessorTest extends require('../../../../../../backend/Trans
                 {
                     'cmd': 'RT5',
                     'output': php.implode(php.PHP_EOL, [
-                        '\/$RP\/SFO1S2195\/SFO1S2195            AA\/GS  15DEC16\/0139Z   YKZBLT',
+                        '/$RP\/SFO1S2195\/SFO1S2195            AA\/GS  15DEC16\/0139Z   YKZBLT',
                         'SFO1S2195\/0047AA\/15DEC16',
                         '  1.KPOMASSY\/DATE YAO   2.KPOMASSY\/DIANE DELA',
                         '  3.KPOMASSY\/GABRIEL TODD(C10)   4.KPOMASSY\/MICHAEL TIM(C11)',
@@ -2608,7 +2608,7 @@ class SessionStateProcessorTest extends require('../../../../../../backend/Trans
                         ' 1 BT 402Y 10DEC S RIXKBP NO3  1250P  240P \/E',
                         ' 2 BA 883Y 20DEC W KBPLHR GK3   200P  350P \/E',
                         'TKT\/TIME LIMIT',
-                        '  1.TAWL3II10SEP009\/0400A\/',
+                        '  1.TAWL3II10SEP009\/0400A/',
                         'PHONES',
                         '  1.SFO0181-577-4670-A',
                         'PASSENGER EMAIL DATA EXISTS  *PE TO DISPLAY ALL',
@@ -2654,7 +2654,7 @@ class SessionStateProcessorTest extends require('../../../../../../backend/Trans
                         ' 1 BT 402Y 10DEC S RIXKBP NO3  1250P  240P \/E',
                         ' 2 BA 883Y 20DEC W KBPLHR GK3   200P  350P \/E',
                         'TKT\/TIME LIMIT',
-                        '  1.TAWL3II10SEP009\/0400A\/',
+                        '  1.TAWL3II10SEP009\/0400A/',
                         'PHONES',
                         '  1.SFO0181-577-4670-A',
                         'PASSENGER EMAIL DATA EXISTS  *PE TO DISPLAY ALL',
@@ -2691,7 +2691,7 @@ class SessionStateProcessorTest extends require('../../../../../../backend/Trans
                         ' 1 BT 402Y 10DEC S RIXKBP NO3  1250P  240P \/E',
                         ' 2 BA 883Y 20DEC W KBPLHR GK3   200P  350P \/E',
                         'TKT\/TIME LIMIT',
-                        '  1.TAWL3II10SEP009\/0400A\/',
+                        '  1.TAWL3II10SEP009\/0400A/',
                         'PHONES',
                         '  1.SFO0181-577-4670-A',
                         'PASSENGER EMAIL DATA EXISTS  *PE TO DISPLAY ALL',
@@ -2859,7 +2859,7 @@ class SessionStateProcessorTest extends require('../../../../../../backend/Trans
                 {
                     'cmd': 'RTLC7226',
                     'output': php.implode(php.PHP_EOL, [
-                        '\/$RP\/SFO1S2195\/SFO1S2195            WS\/SU   9AUG17\/2235Z   LC7226',
+                        '/$RP\/SFO1S2195\/SFO1S2195            WS\/SU   9AUG17\/2235Z   LC7226',
                         'SFO1S2195\/9998WS\/9AUG17',
                         '  1.LIBERMANE\/MARINA',
                         '  2 AP SFO 888 585-2727 - ITN CORP. - A',
@@ -2870,10 +2870,10 @@ class SessionStateProcessorTest extends require('../../../../../../backend/Trans
                 },
                 {
                     'cmd': 'RT\/ZIMICH',
-                    'output': php.implode(php.PHP_EOL, ['\/$RT\/ZIMICH', 'NO NAME', ' ']),
+                    'output': php.implode(php.PHP_EOL, ['/$RT\/ZIMICH', 'NO NAME', ' ']),
                     'state': {'has_pnr': false},
                 },
-                {'cmd': 'RT', 'output': php.implode(php.PHP_EOL, ['\/$INVALID', ' '])},
+                {'cmd': 'RT', 'output': php.implode(php.PHP_EOL, ['/$INVALID', ' '])},
             ],
         });
         $sessionRecords.push({

@@ -130,7 +130,7 @@ class MakeMultiPccTariffDumpAction {
 		$fareTypeMark = {
 			'public': '',
 			'airlinePrivate': '-',
-			'agencyPrivate': '\/',
+			'agencyPrivate': '/',
 			'accountPrivate': '*',
 		}[$fare['fareType'] || null];
 		$fareTypeMark = $fareTypeMark === undefined ? '?' : $fareTypeMark;

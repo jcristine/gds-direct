@@ -28,7 +28,7 @@ class CmsAmadeusTerminal
                 return $page;
             } else {
                 $isComplete = false;
-                return '\/$';
+                return '/$';
             }
         };
         $fullOutput = PagingHelper.fetchAllParenthesisOutput($runCmd, 'MDR');
@@ -139,10 +139,10 @@ class CmsAmadeusTerminal
         for ($mods of Object.values($cmdData['pricingStores'])) {
             $mods = php.array_combine(php.array_column($mods, 'type'), $mods);
             if ((($mods['fareBasis'] || {})['parsed'] || {})['override'] || false) {
-                $errors.push(Errors.getMessage(Errors.BAD_MOD_BASIS_OVERRIDE, {'modifier': '\/'+$mods['fareBasis']['raw']}));
+                $errors.push(Errors.getMessage(Errors.BAD_MOD_BASIS_OVERRIDE, {'modifier': '/'+$mods['fareBasis']['raw']}));
             }
             if ($sMod = $mods['segments']) {
-                $errors.push(Errors.getMessage(Errors.BAD_MOD_SEGMENT, {'modifier': '\/'+$sMod['raw']+'\/'}));
+                $errors.push(Errors.getMessage(Errors.BAD_MOD_SEGMENT, {'modifier': '/'+$sMod['raw']+'/'}));
             }
             if ($cmdData['baseCmd'] === 'FXL') {
                 $errors.push(Errors.getMessage(Errors.BAD_MOD_IGNORE_AVAILABILITY, {'modifier': 'FXL'}));

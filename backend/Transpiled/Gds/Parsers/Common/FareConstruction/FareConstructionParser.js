@@ -17,7 +17,7 @@ class FareConstructionParser {
 	// 'X/', 'E/X/', '', 'R/'
 	static parseFlags($flagsText) {
 		let $letters, $codes;
-		$letters = php.explode('\/', $flagsText);
+		$letters = php.explode('/', $flagsText);
 		php.array_pop($letters);
 		$codes = {
 			'X': 'noStopover',
@@ -129,7 +129,7 @@ class FareConstructionParser {
 			} else if ($lexeme === 'nextDeparture') {
 				[$faredMark, $flags, $city] = $data;
 				$segment['nextDeparture'] = {
-					'fared': $faredMark === '\/',
+					'fared': $faredMark === '/',
 					'flags': this.parseFlags($flags),
 					'city': $city,
 				};

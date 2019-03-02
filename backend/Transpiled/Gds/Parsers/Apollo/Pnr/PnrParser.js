@@ -22,7 +22,7 @@ class PnrParser {
 			'FOP:', 'GFAX', 'QMDR', 'RMKS', 'TKTG',
 			'TRMK', 'TI',
 		];
-		if (php.preg_match('\/^(?<sectionName>' + php.implode('|', $sectionHeaders) + ')-\/', $line, $matches = []) ||
+		if (php.preg_match('/^(?<sectionName>' + php.implode('|', $sectionHeaders) + ')-/', $line, $matches = []) ||
 			php.preg_match(/^\d\/(?<sectionName>ATFQ)-/, $line, $matches = [])
 		) {
 			return $matches['sectionName'];

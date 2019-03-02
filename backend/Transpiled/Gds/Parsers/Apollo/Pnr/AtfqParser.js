@@ -95,11 +95,11 @@ class AtfqParser {
 	// "2/ATFQ-REPR/N2/ITNG13796/Z$29.00/GBG2PC|EBNONEND-TK@ONLY|TDFB14|B/FEX/ET/CTK"
 	static parseAtfqLine($line) {
 		let $regex, $matches, $parsedCommand, $pricingModifiers;
-		$regex = '\/^' +
+		$regex = '/^' +
 			'((?<lineNumber>\\d+)\\\/|)' +
-			'(?<atfqType>ATFQ-[A-Z]+)\\\/' +
+			'(?<atfqType>ATFQ-[A-Z]+)\\/' +
 			'(?<pricingCommand>.+?)' +
-			'\\s*$\/';
+			'\\s*$/';
 		if (php.preg_match($regex, $line, $matches = [])) {
 			if ($parsedCommand = this.parsePricingCommand($matches['pricingCommand'])) {
 
@@ -119,11 +119,11 @@ class AtfqParser {
 
 	static parsePricingCommand($command) {
 		let $regex, $matches, $pricingModifiers;
-		$regex = '\/^' +
+		$regex = '/^' +
 			'(?<baseCmd>\\$B(BQ\\d+|B[AC0]?)?|P|)' +
 			'\\\/?' +
 			'(?<pricingModifiers>.*)' +
-			'$\/';
+			'$/';
 		if (php.preg_match($regex, $command, $matches = [])) {
 			$pricingModifiers = this.parsePricingModifiers($matches['pricingModifiers']);
 			return {
