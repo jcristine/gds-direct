@@ -1,7 +1,7 @@
 
-let aklesuns = require('./Migration/aklesuns.js');
-let Db = require('./Utils/Db.js');
-let {client, keys} = require('./LibWrappers/Redis.js');
+let aklesuns = require('../Migration/aklesuns.js');
+let Db = require('../Utils/Db.js');
+let {client, keys} = require('../LibWrappers/Redis.d.ts');
 
 let TABLE_NAME = 'migrations';
 

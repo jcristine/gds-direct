@@ -6,7 +6,7 @@ const Config = require('./backend/Config.js');
 	console.log('initializing Web Routes');
 	require('./backend/WebRoutes.js');
 	let Diag = require('./backend/LibWrappers/Diag.js');
-	let Migration = require('./backend/Migration.js');
+	let Migration = require('./backend/Maintenance/Migration.js');
 	Migration.run()
 		.then(result => Diag.notice('Migration was successful', result))
 		.catch(exc => {
