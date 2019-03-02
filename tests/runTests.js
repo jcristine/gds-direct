@@ -4,6 +4,7 @@ let Config = require('../backend/Config.js');
 await Config.getConfig();
 
 console.log('Starting unit tests');
+let args = process.argv.slice(process.execArgv.length + 2);
 
 // should probably load them implicitly like phpunit does...
 let tests = [
@@ -15,6 +16,7 @@ let tests = [
 	.concat(new (require("./backend/Transpiled/Gds/Parsers/Apollo/CommandParserTest.js"))().getTests())
 	.concat(new (require("./backend/Transpiled/Gds/Parsers/Sabre/CommandParserTest.js"))().getTests())
 	.concat(new (require("./backend/Transpiled/Gds/Parsers/Amadeus/CommandParserTest.js"))().getTests())
+	.concat(new (require("./backend/Transpiled/Gds/Parsers/Galileo/CommandParserTest.js"))().getTests())
 	.concat(new (require("./backend/Transpiled/Gds/Parsers/Apollo/Pnr/PnrParserTest.js"))().getTests())
 	.concat(new (require("./backend/Transpiled/Gds/Parsers/Sabre/Pnr/PnrParserTest.js"))().getTests())
 	.concat(new (require("./backend/Transpiled/Gds/Parsers/Amadeus/Pnr/PnrParserTest.js"))().getTests())
@@ -39,9 +41,10 @@ let perform = async (tests) => {
 		let error = await test();
 		if (error) {
 			errors.push(error);
-			/** @debug */
-			//console.error(error);
-			//process.exit(-100);
+			if (args.includes('debug')) {
+				console.error(error);
+				process.exit(-100);
+			}
 		} else {
 			++oks;
 		}

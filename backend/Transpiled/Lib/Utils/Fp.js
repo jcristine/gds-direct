@@ -230,8 +230,8 @@ class Fp {
 		return $result;
 	}
 
-	static sortBy(getValue, arr) {
-		return Object.values(arr)
+	static sortBy(getValue, arr, reversed = false) {
+		let result = Object.values(arr)
 			// see https://stackoverflow.com/a/31213792/2750743
 			// v8 does not seem to keep order of same values
 			.map((data, idx) => ({data, idx}))
@@ -247,6 +247,10 @@ class Fp {
 				}
 			})
 			.map(a => a.data);
+		if (reversed) {
+			result = result.reverse();
+		}
+		return result;
 	}
 }
 
