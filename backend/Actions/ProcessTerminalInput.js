@@ -7,6 +7,8 @@ const ProcessApolloTerminalInputAction = require("../Transpiled/Rbs/GdsDirect/Ac
 const CommandParser = require("../Transpiled/Gds/Parsers/Apollo/CommandParser");
 const Misc = require("../Transpiled/Lib/Utils/Misc");
 const CommonDataHelper = require("../Transpiled/Rbs/GdsDirect/CommonDataHelper");
+const CmsSabreTerminal = require("../Transpiled/Rbs/GdsDirect/GdsInterface/CmsSabreTerminal");
+const CmsApolloTerminal = require("../Transpiled/Rbs/GdsDirect/GdsInterface/CmsApolloTerminal");
 const matchAll = require("../Utils/Str").matchAll;
 const nonEmpty = require("../Utils/Rej").nonEmpty;
 
@@ -25,8 +27,14 @@ let shouldWrap = (cmd) => {
 let encodeTpCmdForCms = ($cmd) =>
 	$cmd.replace(/\|/g, '+').replace(/@/g, '¤');
 
-let decodeCmsInput = ($cmd) =>
-	$cmd.replace(/\+/g, '|').replace(/¤/g, '@');
+let decodeCmsInput = ($cmd, gds) => {
+	if (['apollo', 'galileo'].includes(gds)) {
+		$cmd = new CmsApolloTerminal().decodeCmsInput($cmd);
+	} else if (gds === 'sabre') {
+		$cmd = new CmsSabreTerminal().decodeCmsInput($cmd);
+	}
+	return $cmd;
+};
 
 let encodeTpOutputForCms = ($dump) => {
 	$dump = $dump.replace(/\|/g, '+').replace(/;/g, '·');
@@ -158,7 +166,7 @@ let transformCalledCommand = (rec, stateful) => {
 };
 
 let runCmdRq =  async (inputCmd, stateful) => {
-	inputCmd = decodeCmsInput(inputCmd);
+	inputCmd = decodeCmsInput(inputCmd, stateful.gds);
 	if (stateful.gds === 'apollo') {
 		let gdsResult = await (new ProcessApolloTerminalInputAction(stateful).execute(inputCmd));
 		let grectResult = makeGrectResult(gdsResult.calledCommands, stateful.getFullState());
@@ -203,7 +211,12 @@ module.exports = async (session, rqBody) => {
 						r.defaultPcc)[0])
 					.then(nonEmpty())
 					.then(row => {
-						let cmd = 'SEM/' + row.defaultPcc + '/AG';
+						let cmd = {
+							apollo: 'SEM/' + row.defaultPcc + '/AG',
+							galileo: 'SEM/' + row.defaultPcc + '/AG',
+							sabre: 'AAA' + row.defaultPcc,
+							amadeus: 'JUM/O-' + row.defaultPcc,
+						}[gds];
 						return stateful.runCmd(cmd)
 							.then(cmdRec => {
 								let calledCommands = (grectResult.calledCommands || []).concat([cmdRec]);
