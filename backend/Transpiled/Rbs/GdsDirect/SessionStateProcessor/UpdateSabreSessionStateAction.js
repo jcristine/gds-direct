@@ -15,12 +15,11 @@ const ImportPnrAction = require('../../../Rbs/Process/Common/ImportPnr/ImportPnr
 const SabrePnr = require('../../../Rbs/TravelDs/SabrePnr.js');
 const SessionStateHelper = require("./SessionStateHelper");
 const SessionStateProcessor = require("./SessionStateProcessor");
-const SessionStateDs = require("./SessionStateDs");
 
 const php = require('../../../php.js');
 class UpdateSabreSessionStateAction
 {
-    constructor($initialState, $getAreaData)  {
+    constructor($getAreaData)  {
         this.$getAreaData = $getAreaData;
     }
 
@@ -183,10 +182,9 @@ class UpdateSabreSessionStateAction
 
     /** @param $getAreaData = function($letter){return DbSessionState::getAreaData();} */
     static execute($cmd, $output, $sessionData, $getAreaData)  {
-        let $initialState, $self, $cmdParsed, $flatCmds, $cmdRec;
-        $initialState = SessionStateDs.makeFromArray($sessionData);
+        let $self, $cmdParsed, $flatCmds, $cmdRec;
         let $getAreaDataNorm = (letter) => ({...$getAreaData(letter)});
-        $self = new this($initialState, $getAreaDataNorm);
+        $self = new this($getAreaDataNorm);
         $cmdParsed = CommandParser.parse($cmd);
         $flatCmds = php.array_merge([$cmdParsed], $cmdParsed['followingCommands'] || []);
         for ($cmdRec of Object.values($flatCmds)) {

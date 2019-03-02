@@ -14,6 +14,7 @@ class SessionStateDs
 {
 	constructor() {
 		this.$canCreatePq = null;
+		this.$pricingCmd = null;
 		this.$area = null;
 		this.$recordLocator = null;
 		this.$pcc = null;
@@ -26,11 +27,12 @@ class SessionStateDs
 
         $self = new this();
         $self.$canCreatePq = $row['can_create_pq'] || '';
+        $self.$pricingCmd = $row['pricing_cmd'] || '';
         $self.$area = $row['area'] || '';
         $self.$recordLocator = $row['record_locator'] || '';
         $self.$pcc = $row['pcc'] || '';
         $self.$hasPnr = $row['has_pnr'] || false;
-        $self.$isPnrStored = $row['is_pnr_stored'] || '';
+        $self.$isPnrStored = $row['is_pnr_stored'] || false;
         return $self;
     }
 
@@ -38,6 +40,7 @@ class SessionStateDs
 
         return {
             'can_create_pq': this.$canCreatePq,
+            'pricing_cmd': this.$pricingCmd,
             'area': this.$area,
             'record_locator': this.$recordLocator,
             'pcc': this.$pcc,
@@ -49,6 +52,7 @@ class SessionStateDs
     updateFrom($that)  {
 
         this.$canCreatePq = $that.$canCreatePq;
+        this.$pricingCmd = $that.$pricingCmd;
         this.$area = $that.$area;
         this.$recordLocator = $that.$recordLocator;
         this.$pcc = $that.$pcc;

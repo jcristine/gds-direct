@@ -18,12 +18,16 @@ class SessionStateProcessor
 
     /** "safe" means it does not write to DB */
     static updateStateSafe($cmd, $output, gds, $sessionState, $getAreaData)  {
+        let $getAreaDataNorm = (letter) => ({...$getAreaData(letter)});
         if (gds === 'apollo') {
             let UpdateApolloSessionStateAction = require('./UpdateApolloSessionStateAction.js');
-            return UpdateApolloSessionStateAction.execute($cmd, $output, $sessionState, $getAreaData);
+            return UpdateApolloSessionStateAction.execute($cmd, $output, $sessionState, $getAreaDataNorm);
         } else if (gds === 'sabre') {
             let UpdateSabreSessionStateAction = require('./UpdateSabreSessionStateAction.js');
-            return UpdateSabreSessionStateAction.execute($cmd, $output, $sessionState, $getAreaData);
+            return UpdateSabreSessionStateAction.execute($cmd, $output, $sessionState, $getAreaDataNorm);
+        } else if (gds === 'amadeus') {
+            let UpdateAmadeusSessionStateAction = require('./UpdateAmadeusSessionStateAction.js');
+            return UpdateAmadeusSessionStateAction.execute($cmd, $output, $sessionState, $getAreaDataNorm).toArray();
         } else {
             throw new Error('Session State Processor is not implemented for '+$sessionState['gds']+' GDS yet');
         }

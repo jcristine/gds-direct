@@ -74,6 +74,8 @@ class TestCase
 				this.assertLessThanOrEqual(php.count($expectation), php.count($reality), $message+' actual list is longer than expected');
 			}
 		} else {
+			let notArray = !php.is_array($expectation) ? 'expected' : 'actual';
+			$message += ' (' + notArray + ' is not array)';
 			this.assertSame($expectation, $reality, $message);
 		}
 	}

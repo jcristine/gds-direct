@@ -3936,7 +3936,7 @@ class SessionStateProcessorTest extends require('../../../../../../backend/Trans
         let $state, $calledCommands, $letterToArea, $getAreaData, $i, $cmdRecord, $cmd, $output, $expected, $allCmds;
         // TODO: support all GDS-es one day
         let gds = $sessionRecord.initialState.gds;
-        if (!['apollo', 'sabre'].includes(gds)) {
+        if (!['apollo', 'sabre', 'amadeus'].includes(gds)) {
             return;
         }
 
