@@ -314,7 +314,6 @@ class GetMultiPccTariffDisplayActionTest extends require('../../../../../../../b
         try {
             this.assertSameNoKeyAsNull($expected, $actual);
         } catch (exc) {
-            console.debug($actual);
             throw exc;
         }
     }

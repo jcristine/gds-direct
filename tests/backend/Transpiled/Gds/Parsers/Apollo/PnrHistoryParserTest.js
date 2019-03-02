@@ -1418,8 +1418,6 @@ class PnrHistoryParserTest extends require('../../../../../../backend/Transpiled
 		try {
 			this.assertArrayElementsSubset($expectedResult, $actualResult);
 		} catch (exc) {
-			/** @debug */
-			console.debug(JSON.stringify($actualResult));
 			throw exc;
 		}
 	}

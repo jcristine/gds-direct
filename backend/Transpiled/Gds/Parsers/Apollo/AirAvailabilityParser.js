@@ -38,7 +38,7 @@ class AirAvailabilityParser
         ) {
             return [];
         } else {
-            $result = [];
+            $result = {};
             $items = $availability ? $availability.split(/\s+/) : [];
             for ($item of Object.values($items)) {
                 $amount = php.strlen($item) > 1 ? $item[1] : '';

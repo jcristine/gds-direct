@@ -537,8 +537,6 @@ class AirAvailabilityParserTest extends require('../../../../../../backend/Trans
         try {
             this.assertArrayElementsSubset($expected, $actual);
         } catch ($exc) {
-            console.error('$actual', $actual);
-            /** @debug */
             throw $exc;
         }
     }
