@@ -154,10 +154,10 @@ class CmsApolloTerminal
         if (!$noWrap) {
             $dump = StringUtil.wrapLinesAt($dump, 64);
         }
-        $dump = this.prototype.encodeOutputForCms($dump);
+        $dump = this.constructor.encodeOutputForCms($dump);
         $dumpPrev = $dump;
-        $dump = this.prototype.trimScrollingIndicator($dump);
-        if (this.prototype.isScrollingAvailable($dumpPrev)) {
+        $dump = this.constructor.trimScrollingIndicator($dump);
+        if (this.constructor.isScrollingAvailable($dumpPrev)) {
             $dump += '\u2514\u2500>';
         }
         return $dump;
@@ -165,11 +165,11 @@ class CmsApolloTerminal
 
     transformCalledCommand($cmdRecord)  {
         return {
-            'cmd': this.prototype.encodeCmdForCms($cmdRecord['cmd']),
+            'cmd': this.constructor.encodeCmdForCms($cmdRecord['cmd']),
             'type': $cmdRecord['type'] || null,
             'output': this.sanitizeOutput($cmdRecord['output'], $cmdRecord['noWrap'] || false),
-            'tabCommands': this.prototype.extractTabCommands($cmdRecord['output']),
-            'clearScreen': this.prototype.isScreenCleaningCommand($cmdRecord['cmd']),
+            'tabCommands': this.constructor.extractTabCommands($cmdRecord['output']),
+            'clearScreen': this.constructor.isScreenCleaningCommand($cmdRecord['cmd']),
             'duration': $cmdRecord['duration'] || null,
         };
     }
