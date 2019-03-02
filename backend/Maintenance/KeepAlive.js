@@ -75,6 +75,7 @@ let processSession = async (accessedMs, session) => {
 	});
 };
 
+exports.shouldClose = shouldClose;
 exports.run = () => {
 	let waiting = null;
 	let resolveTerminated = null;
@@ -82,7 +83,7 @@ exports.run = () => {
 		resolveTerminated = resolve;
 		if (waiting) {
 			clearTimeout(waiting);
-			log('Exiting gracefully after waiting');
+			log('Exiting gracefully from waiting state');
 			resolveTerminated();
 		}
 	};

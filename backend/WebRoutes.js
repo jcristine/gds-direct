@@ -182,7 +182,7 @@ app.post('/terminal/saveSetting/:name/:currentGds', withAuth((reqBody, emcResult
 	return new TerminalBaseController(emcResult).postSaveSettingAction(reqBody, name, currentGds);
 }));
 app.post('/terminal/command', withAuth(GdsSessionController.runInputCmd));
-app.post('/gdsDirect/keepAlive', withAuth(GdsSessionController.keepAlive));
+app.post('/gdsDirect/keepAlive', withAuth(GdsSessionController.keepAliveCurrent));
 app.get('/terminal/getPqItinerary', withAuth(GdsSessionController.getPqItinerary));
 app.get('/terminal/importPq', withAuth(GdsSessionController.importPq));
 app.post('/terminal/makeMco', withAuth(GdsSessionController.makeMco));

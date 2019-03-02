@@ -20,6 +20,7 @@ let ProcessTerminalInput = require('./Actions/ProcessTerminalInput.js');
 const MakeMcoApolloAction = require('./Transpiled/Rbs/GdsDirect/Actions/Apollo/MakeMcoApolloAction.js');
 
 let php = require('./Transpiled/php.js');
+const KeepAlive = require("./Maintenance/KeepAlive");
 
 let isTravelportAllowed = (rqBody) =>
 	admins.includes(+rqBody.agentId);
@@ -224,10 +225,16 @@ let keepAliveSession = (session) => {
 	});
 };
 
-// should restart session if token expired
-exports.keepAlive = (reqBody) => {
-	return GdsSessions.getByContext(reqBody)
-		.then(keepAliveSession);
+exports.keepAliveCurrent = async (reqBody) => {
+	let session = await GdsSessions.getByContext(reqBody);
+	let userAccessMs = await GdsSessions.getUserAccessMs(session);
+	if (!KeepAlive.shouldClose(userAccessMs)) {
+		return keepAliveSession(session);
+	} else {
+		let msg = 'Session was inactive for too long - ' +
+			((Date.now() - userAccessMs) / 1000).toFixed(3) + ' s.';
+		return Promise.reject(LoginTimeOut(msg));
+	}
 };
 
 // should not restart session
