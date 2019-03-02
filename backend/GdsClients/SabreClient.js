@@ -3,6 +3,7 @@ let PersistentHttpRq = require('../Utils/PersistentHttpRq.js');
 let {getSabre} = require('../Repositories/GdsProfiles.js');
 let {parseXml, wrapExc} = require("../Utils/Misc.js");
 let Rej = require("../Utils/Rej.js");
+const LoginTimeOut = require("../Utils/Rej").LoginTimeOut;
 
 exports.startSession = async (params) => {
 	let profileName = params.profileName;
@@ -149,5 +150,11 @@ exports.runCmd = async (rqBody, gdsData) => {
 			exc.message = 'Invalid Sabre cmd response - ' + exc.message;
 			return Promise.reject(exc);
 		});
+	}).catch(exc => {
+		if ((exc + '').indexOf('Invalid or Expired binary security token') > -1) {
+			return LoginTimeOut('Session token expired');
+		} else {
+			return Promise.reject(exc);
+		}
 	});
 };
