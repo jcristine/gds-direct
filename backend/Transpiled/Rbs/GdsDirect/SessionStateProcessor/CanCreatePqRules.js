@@ -1,10 +1,14 @@
 // namespace Rbs\GdsDirect\Actions;
 
+const SabCmdParser = require("../../../Gds/Parsers/Sabre/CommandParser.js");
+
 const Fp = require('../../../Lib/Utils/Fp.js');
 const StringUtil = require('../../../Lib/Utils/StringUtil.js');
 const Errors = require('../Errors.js');
 const CmsApolloTerminal = require('../GdsInterface/CmsApolloTerminal.js');
 const PtcUtil = require('../../Process/Common/PtcUtil.js');
+const php = require('../../../php.js');
+const CmsSabreTerminal = require("../GdsInterface/CmsSabreTerminal");
 
 /**
  * provides functions that validate pricing cmd and
@@ -103,6 +107,15 @@ class CanCreatePqRules {
 			for ($errorRec of $errorRecords) {
 				$errors.push(Errors.getMessage($errorRec['type'], $errorRec['data'] || null));
 			}
+		} else if ($gds === 'sabre') {
+			$cmdParsed = SabCmdParser.parse($pricingCmd);
+			$errors = php.array_merge($errors, CmsSabreTerminal.checkPricingCmdObviousPqRules($cmdParsed['data']));
+		} else if ($gds === 'amadeus') {
+			$cmdParsed = AmaCmdParser.parse($pricingCmd);
+			$errors = php.array_merge($errors, CmsAmadeusTerminal.checkPricingCmdObviousPqRules($cmdParsed['data']));
+		} else if ($gds === 'galileo') {
+			$cmdParsed = GalCmdParser.parse($pricingCmd);
+			$errors = php.array_merge($errors, CmsGalileoTerminal.checkPricingCmdObviousPqRules($cmdParsed['data']));
 		}
 		return $errors;
 	}
