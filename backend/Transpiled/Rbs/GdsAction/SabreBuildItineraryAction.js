@@ -1,0 +1,151 @@
+
+// namespace Rbs\GdsAction;
+
+const DateTime = require('../../Lib/Utils/DateTime.js');
+const Fp = require('../../Lib/Utils/Fp.js');
+const StringUtil = require('../../Lib/Utils/StringUtil.js');
+const AbstractGdsAction = require('./AbstractGdsAction.js');
+const php = require('../../php.js');
+
+var require = require('../../translib.js').stubRequire;
+
+const AirAvailabilityParser = require('../../Gds/Parsers/Sabre/AirAvailabilityParser.js');
+
+class SabreBuildItineraryAction extends AbstractGdsAction
+{
+    constructor() {
+		super();
+		this.$useXml = true;
+    }
+
+    useXml($flag)  {
+
+        this.$useXml = $flag;
+        return this;
+    }
+
+    executeViaTerminal($itinerary, $isParserFormat)  {
+        let $i, $segment, $cmd, $output, $errorType, $tplData;
+
+        $itinerary = Fp.map(($segment) => {
+            let $date, $seatCount;
+
+            $date = $isParserFormat
+                ? $segment['departureDate']['raw']
+                : this.constructor.formatSabreDate($segment['departureDate']);
+            $seatCount = $isParserFormat ? $segment['statusNumber'] : $segment['seatCount'];
+
+            return {
+                'airline': $segment['airline'],
+                'flightNumber': $segment['flightNumber'],
+                'bookingClass': $segment['bookingClass'],
+                'departureDate': $date,
+                'departureAirport': $segment['departureAirport'],
+                'destinationAirport': $segment['destinationAirport'],
+                'segmentStatus': $segment['segmentStatus'],
+                'seatCount': $seatCount,
+            };
+        }, $itinerary);
+
+        for ([$i, $segment] of Object.entries($itinerary)) {
+            $cmd = StringUtil.format('0{airline}{flightNumber}{bookingClass}{departureDate}{departureAirport}{destinationAirport}{segmentStatus}{seatCount}', $segment);
+            $output = this.sabre($cmd);
+            if (!this.constructor.isOutputValid($output)) {
+                if (this.constructor.isAvailabilityOutput($output)) {
+                    $errorType = this.constructor.ERROR_NO_AVAIL;
+                } else {
+                    $errorType = this.constructor.ERROR_GDS_ERROR;
+                }
+                $tplData = {
+                    'segmentNumber': $i + 1,
+                    'from': $segment['departureDate'],
+                    'to': $segment['destinationAirport'],
+                    'response': php.trim($output),
+                };
+                return {'success': false, 'errorType': $errorType, 'errorData': $tplData};
+            }}
+        return {'success': true};
+    }
+
+    executeViaXml($itinerary, $isParserFormat)  {
+        let $startDt, $params, $gtlResult, $funcResult, $errorData;
+
+        $startDt = php.is_callable(this.session.getStartDt) ? this.session.getStartDt() : php.date('Y-m-d');
+
+        $params = {
+            'addAirSegments': Fp.map(($seg) => {
+                let $departureDt;
+
+                $departureDt = !$isParserFormat ? $seg['departureDate'] :
+                    DateTime.decodeRelativeDateInFuture($seg['departureDate']['parsed'], $startDt);
+                return {
+                    'airline': $seg['airline'],
+                    'flightNumber': $seg['flightNumber'],
+                    'bookingClass': $seg['bookingClass'],
+                    'departureDt': $departureDt,
+                    'destinationDt': null, // needed if times specified
+                    'departureAirport': $seg['departureAirport'],
+                    'destinationAirport': $seg['destinationAirport'],
+                    'segmentStatus': $seg['segmentStatus'],
+                    'seatCount': $isParserFormat ? $seg['statusNumber'] : $seg['seatCount'],
+                };
+            }, $itinerary),
+        };
+        this.log('Xml params: (addAirSegments())', $params);
+        $gtlResult = this.getSabre().addAirSegments($params);
+        $funcResult = $gtlResult.isOk() ? $gtlResult.unwrap() :
+            (($gtlResult.$error.$rpcResult || {})['result']);
+        this.log('Xml result: (addSabreAirSegments())', $funcResult);
+        if ($gtlResult.isOk()) {
+            return {'success': true};
+        } else {
+            this.log('ERROR: Failed to sell segments via XML: '+$gtlResult.$error.getMessage());
+            $errorData = {'response': $gtlResult.$error.getMessage()};
+            return {'success': false, 'errorType': this.constructor.ERROR_MULTISEGMENT, 'errorData': $errorData};
+        }
+    }
+
+    static isOutputValid($output)  {
+        let $filter;
+
+        $filter = ['\/',
+            '\\s*',
+            '(?<departureTime>\\d{2,4}[A-Z])',
+            '\\s+',
+            '(?<destinationTime>\\d{2,4}[A-Z])',
+            '.+',
+            'SEG\\s*(?<lastSegmentNumber>\\d+)',
+            '\/'
+        ];
+        if (php.preg_match(php.implode('', $filter), $output)) {
+            return true;
+        }
+        return false;
+    }
+
+    static formatSabreDate($dt)  {
+
+        return php.strtoupper(php.date('dM', php.strtotime($dt)));
+    }
+
+    static isAvailabilityOutput($output)  {
+
+        // if there are no seats available, Sabre
+        // displays availability instead of error
+        return AirAvailabilityParser.parse($output)['flights'] ? true : false;
+    }
+
+    /** @param $itinerary = ItineraryParser::parse() */
+    execute($itinerary, $isParserFormat)  {
+
+        if (this.$useXml) {
+            return this.executeViaXml($itinerary, $isParserFormat);
+        } else {
+            return this.executeViaTerminal($itinerary, $isParserFormat);
+        }
+    }
+}
+SabreBuildItineraryAction.ERROR_GDS_ERROR = 'ERROR_GDS_ERROR';
+SabreBuildItineraryAction.ERROR_MULTISEGMENT = 'ERROR_MULTISEGMENT';
+SabreBuildItineraryAction.ERROR_NO_AVAIL = 'ERROR_NO_AVAIL';
+module.exports = SabreBuildItineraryAction;
