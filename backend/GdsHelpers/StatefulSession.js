@@ -45,7 +45,7 @@ let StatefulSession = async (session) => {
 				let type = null;
 				try {
 					fullState = SessionStateProcessor
-						.updateFullState(cmd, gdsResult.output, 'apollo', fullState);
+						.updateFullState(cmd, gdsResult.output, gds, fullState);
 					GdsSessions.updateFullState(session, fullState);
 					type = fullState.areas[fullState.area].cmdType;
 				} catch (exc) {
