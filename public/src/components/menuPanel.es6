@@ -11,6 +11,7 @@ import {Quotes}                 from "./menu/quotes";
 import {MenuHideButton}         from "./menu/hideMenu";
 import {UseRbsFlag} from "./menu/useRbsFlag";
 import {RUN_COMMAND_LIST} from "../actions/settings";
+let Help = require('./popovers/help.es6').default;
 
 export default class MenuPanel extends Component
 {
@@ -64,28 +65,11 @@ export default class MenuPanel extends Component
 
 		this.observe(
 			new Component('article')
-				.observe(
-					new Component('button.btn btn-sm btn-mozilla font-bold[Run Test]', {
-						onclick: (e) => {
-							e.target.blur();
-							RUN_COMMAND_LIST([
-								'I',
-								'I',
-								'SEM/2I61/AG',
-								'0 DL8456Z 24APR SFOCDG GK2',
-								'0 AF7626J 25APR CDGBOD GK2',
-								'0 DL9359Z 11MAY BODAMS GK2',
-								'0 DL9380Z 11MAY AMSSFO GK2',
-								'$B:A',
-								'FQN',
-								'FN1/ALL',
-								'MD',
-								'MD',
-								'MD',
-							]);
-						},
-					})
-				)
+				.attach([
+					new Help({
+						icon: '<i class="fa t-f-size-14">HELP</i>',
+					}).getTrigger(),
+				])
 		);
 
 		// I hope nobody used it. It covered other buttons, that was annoying
