@@ -25,6 +25,18 @@ class ImportPnrAction
                 // output, so matching anything that is not an error is safer
                 $status = 'available';
             }
+        } else if ($gds === 'sabre') {
+            if (require('../../../../Rbs/TravelDs/SabrePnr.js').checkDumpIsNotExisting($dump)) {
+                $status = 'notExisting';
+            } else if (require('../../../../Rbs/TravelDs/SabrePnr.js').checkDumpIsRestricted($dump)) {
+                $status = 'isRestricted';
+            } else if (php.trim($dump) === '\u00A5FIN OR IG\u00A5') {
+                $status = 'finishOrIgnore';
+            } else if (php.preg_match(/^\s*¥.+¥\s*$/, php.trim($dump))) {
+                $status = 'customError';
+            } else {
+                $status = 'available';
+            }
         } else {
             throw new Error('Unsupported GDS - '+$gds);
         }
