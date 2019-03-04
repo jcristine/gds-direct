@@ -39,6 +39,7 @@ exports.Conflict = toReject(409);
 exports.LoginTimeOut = toReject(440);
 
 // server errors
+exports.InternalServerError = toReject(500);
 exports.NotImplemented = toReject(501);
 exports.BadGateway = toReject(502);
 

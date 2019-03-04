@@ -22,6 +22,7 @@ let Migration = require("./Maintenance/Migration");
 const CommandParser = require("./Transpiled/Gds/Parsers/Apollo/CommandParser");
 const PnrParser = require("./Transpiled/Gds/Parsers/Apollo/Pnr/PnrParser");
 const FareConstructionParser = require("./Transpiled/Gds/Parsers/Common/FareConstruction/FareConstructionParser");
+const InternalServerError = require("./Utils/Rej").InternalServerError;
 const {getExcData, safe} = require('./Utils/Misc.js');
 
 let app = express();
@@ -111,6 +112,9 @@ let withAuth = (action) => (req, res) => {
 		}]));
 
 	return toHandleHttp((rqBody, routeParams) => {
+		if (typeof action !== 'function') {
+			return InternalServerError('Action is not a function - ' + action);
+		}
 		return Emc.getCachedSessionInfo(rqBody.emcSessionId)
 			.catch(exc => {
 				let error = new Error('EMC auth error - ' + exc);
@@ -351,7 +355,7 @@ socketIo.on('connection', /** @param {Socket} socket */ socket => {
 		if (rq.path === '/terminal/command') {
 			withAuth(GdsSessionController.runInputCmd)(rq, rs);
 		} else if (rq.path === '/gdsDirect/keepAlive') {
-			withAuth(GdsSessionController.keepAlive)(rq, rs);
+			withAuth(GdsSessionController.keepAliveCurrent)(rq, rs);
 		} else {
 			rs.status(501);
 			rs.send('Unsupported path - ' + rq.path);
