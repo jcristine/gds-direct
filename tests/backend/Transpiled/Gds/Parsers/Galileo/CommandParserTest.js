@@ -819,7 +819,6 @@ class CommandParserTest extends require('../../../Lib/TestCase.js')
 		try {
 			this.assertArrayElementsSubset($expected, $actual);
 		} catch (exc) {
-			console.debug('\nactual cmd result\n', JSON.stringify($actual));
 			throw exc;
 		}
 	}

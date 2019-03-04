@@ -542,10 +542,10 @@ class CommandParser {
 		$regex =
 			'/^' +
 			'(?<baseCmd>9S|9X)' +
-			'(\\\/N(?<paxNums>\\d+[-|\\d]*))?' +
-			'(\\\/S(?<segNums>\\d+[*|\\d]*))?' +
-			'(\\\/(?<aisleMark>A))?' +
-			'(\\\/(?<seatCodes>(\\d+[A-Z]+)+))?' +
+			'(\\/N(?<paxNums>\\d+[-|\\d]*))?' +
+			'(\\/S(?<segNums>\\d+[*|\\d]*))?' +
+			'(\\/(?<aisleMark>A))?' +
+			'(\\/(?<seatCodes>(\\d+[A-Z]+)+))?' +
 			'$/';
 		if (php.preg_match($regex, $cmd, $matches = [])) {
 			$seatCodesStr = $matches['seatCodes'] || '';

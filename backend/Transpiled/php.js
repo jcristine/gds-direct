@@ -125,25 +125,38 @@ php.date = (format, epoch) => {
 	} else {
 		dtObj = new Date(epoch * 1000);
 	}
+	let iso;
+	try {
+		iso = dtObj.toISOString();
+	} catch (exc) {
+		return null;
+	}
 	if (format === 'Y-m-d H:i:s') {
-		return safe(() => dtObj.toISOString().slice(0, '2018-12-05T22:13:41'.length).replace('T', ' '));
+		return safe(() => iso.slice(0, '2018-12-05T22:13:41'.length).replace('T', ' '));
 	} else if (format === 'Y-m-d') {
-		return safe(() => dtObj.toISOString().slice(0, '2018-12-05'.length));
+		return safe(() => iso.slice(0, '2018-12-05'.length));
 	} else if (format === 'm-d') {
-		return safe(() => dtObj.toISOString().slice('2018-'.length, '2018-12-05'.length));
+		return safe(() => iso.slice('2018-'.length, '2018-12-05'.length));
 	} else if (format === 'H:i') {
-		return safe(() => dtObj.toISOString().slice('2018-12-05T'.length, '2018-12-05T22:13'.length));
+		return safe(() => iso.slice('2018-12-05T'.length, '2018-12-05T22:13'.length));
 	} else if (format === 'y') {
-		return safe(() => dtObj.toISOString().slice('20'.length, '2018'.length));
+		return safe(() => iso.slice('20'.length, '2018'.length));
 	} else if (format === 'my') {
-		return safe(() => dtObj.toISOString().slice('2018-'.length, '2018-12'.length)
-						+ dtObj.toISOString().slice('20'.length, '2018'.length));
+		return safe(() => iso.slice('2018-'.length, '2018-12'.length)
+						+ iso.slice('20'.length, '2018'.length));
 	} else if (format === 'Y') {
-		return safe(() => dtObj.toISOString().slice(0, '2018'.length));
+		return safe(() => iso.slice(0, '2018'.length));
 	} else if (format === 'dM') {
 		return safe(() => {
-        let months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-		return ('00' + dtObj.getUTCDate()).slice(-2) + months[dtObj.getUTCMonth()];
+			let months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+			return ('00' + dtObj.getUTCDate()).slice(-2) + months[dtObj.getUTCMonth()];
+		});
+	} else if (format === 'dMy') {
+		return safe(() => {
+			let months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+			return ('00' + dtObj.getUTCDate()).slice(-2)
+				+ months[dtObj.getUTCMonth()]
+				+ iso.slice('20'.length, '2018'.length);
 		});
 	} else {
 		throw new Error('Unsupported date format - ' + format);
@@ -198,12 +211,13 @@ php.str_pad = ($input, $pad_length, $pad_string = " ", $pad_type = php.STR_PAD_R
 };
 php.str_repeat = (str, n) => strval(str).repeat(n);
 
-php.implode = (delim, values) => {
+php.implode = (...args) => {
+	let [delim, values] = args;
 	if (values === undefined) {
 		values = delim;
 		delim = '';
 	}
-	return values.join(delim);
+	return Object.values(values).join(delim);
 };
 php.explode = (delim, str) => strval(str).split(delim);
 
@@ -230,7 +244,12 @@ php.strpos = (str, substr) => {
 	return index > -1 ? index : false;
 };
 let escapeRegex = (str) => str.replace(/([.*+?^=!:${}()|\[\]\/\\])/g, "\\$1");
-php.str_replace = (search, replace, str) => str.replace(new RegExp(escapeRegex(search), 'g'), replace);
+php.str_replace = (search, replace, str) => {
+	str = strval(str);
+	let regSrc = escapeRegex(search);
+	let reg = new RegExp(regSrc, 'g');
+	return str.replace(reg, replace);
+};
 php.str_split = (str, size = 1) => {
 	if (size < 1) {
 		throw new Error('Invalid chunk size - ' + size + ', it must be >= 1');
@@ -248,7 +267,8 @@ php.str_split = (str, size = 1) => {
 
 let normReg = (pattern) => {
 	if (typeof pattern === 'string') {
-		let match = pattern.match(/^\/(.*)\/([a-z]*)$/);
+		let match = pattern.match(/^\/(.*)\/([a-z]*)$/) ||
+					pattern.match(/^#(.*)#([a-z]*)$/); // damn, Roma!
 		if (match) {
 			let [_, content, flags] = match;
 			// php takes content and flags in one string,
@@ -276,11 +296,18 @@ php.preg_split = (regex, str, limit = -1, flags = 0) => {
 	}
 	return result;
 };
-php.preg_replace = (pattern, replace, str) => {
+php.preg_replace = (pattern, replace, str, limit = -1) => {
 	let reg = normReg(pattern);
-	if (!reg.flags.includes('g')) {
-		reg = new RegExp(reg.source, reg.flags + 'g');
+	if (limit > 1) {
+		throw new Error('preg_replace with limit > 1 is not supported');
 	}
+	let flags = new Set(reg.flags.split(''));
+	if (limit === 1) {
+		flags.delete('g');
+	} else {
+		flags.add('g');
+	}
+	reg = new RegExp(reg.source, [...flags].join(''));
 	return str.replace(reg, replace);
 };
 php.preg_replace_callback = (pattern, callback, str) => {
@@ -300,6 +327,7 @@ let normMatch = match => {
 		Object.assign(match, match.groups);
 		delete(match.groups);
 		delete(match.index);
+		delete(match.input);
 	}
 	return match;
 };
@@ -324,7 +352,13 @@ php.preg_match_all = (pattern, str, dest, bitMask) => {
 	}
 	let inSetOrder = [];
 	let match;
+	let lastIndex = -1;
 	while ((match = regex.exec(str)) !== null) {
+		if (lastIndex === regex.lastIndex) {
+			//throw new Error('preg_match_all pattern matched empty string at ' + lastIndex + ' - ' + regex + ' - ' + str);
+			break;
+		}
+		lastIndex = regex.lastIndex;
 		inSetOrder.push(normMatch(match));
 	}
 	if (inSetOrder.length === 0) {
@@ -352,6 +386,14 @@ php.preg_match_all = (pattern, str, dest, bitMask) => {
 php.array_keys = (obj) => Object.keys(obj);
 php.array_values = (obj) => Object.values(obj);
 php.in_array = (value, arr) => Object.values(arr).indexOf(value) > -1;
+php.array_search = (needle, haystack, strict = false) => {
+	for (let [k,v] of Object.entries(haystack)) {
+		if (php.equals(v, needle, strict)) {
+			return k;
+		}
+	}
+	return false;
+};
 /** @param {Array} arr */
 php.array_shift = (arr) => arr.shift();
 php.array_push = (arr, el) => arr.push(el);
@@ -411,6 +453,16 @@ php.array_flip = (obj) => {
 	}
 	return newObj;
 };
+php.asort = (obj, flags = undefined) => {
+	if (flags !== undefined) {
+		throw new Error('php asort flags arg is not supported');
+	}
+	let result = {};
+	Object.entries(obj)
+		.sort(([,a], [,b]) => a > b ? 1 : a < b ? -1 : 0)
+		.forEach(([k,v]) => result[k] = v);
+	return result;
+};
 php.ksort = (obj) => {
 	for (let k of Object.keys(obj).sort()) {
 		let value = obj[k];
@@ -439,16 +491,29 @@ php.range = (start, end, step = 1) => {
 	return arr;
 };
 php.array_unique = (arr) => {
-	arr = Array.isArray(arr) ? [...arr] : {...arr};
 	let occurrences = new Set();
-	for (let k in arr) {
-		if (occurrences.has(arr[k])) {
-			delete arr[k];
-		} else {
-			occurrences.add(arr[k]);
+	if (Array.isArray(arr)) {
+		// will drop indexes unlike php, but who cares, really?
+		// At least arr.length will return correct value
+		let newArr = [];
+		for (let el of Object.values(arr)) {
+			if (!occurrences.has(el)) {
+				newArr.push(el);
+				occurrences.add(el);
+			}
 		}
+		return newArr;
+	} else {
+		let obj = {};
+		for (let k in arr) {
+			if (occurrences.has(arr[k])) {
+				delete arr[k];
+			} else {
+				occurrences.add(arr[k]);
+			}
+		}
+		return obj;
 	}
-	return arr;
 };
 php.array_reverse = (arr) => Object.values(arr).reverse();
 php.array_chunk = (arr, size) => {

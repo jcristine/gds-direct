@@ -562,10 +562,32 @@ class CommandParserTest extends require('../../../Lib/TestCase.js') {
 		$list.push(['WC\u00A51', {'type': 'sellFromLowFareSearch'}]);
 		$list.push(['WC\u00A51X', {'type': 'sellFromLowFareSearch'}]);
 
-		$list.push(['WC1F', {'type': 'changeBookingClass'}]);
+		$list.push(['WC1F', {'type': 'changeBookingClass', data: {
+			segments: [{segmentNumber: 1, bookingClass: 'F'}],
+		}}]);
 		$list.push(['WCAF', {'type': 'changeBookingClass'}]);
-		$list.push(['WC1-3B', {'type': 'changeBookingClass'}]);
-		$list.push(['WC2B\/3N', {'type': 'changeBookingClass'}]);
+		$list.push(['WC1-3B', {'type': 'changeBookingClass', data: {
+			segments: [
+				{segmentNumber: 1, bookingClass: 'B'},
+				{segmentNumber: 2, bookingClass: 'B'},
+				{segmentNumber: 3, bookingClass: 'B'},
+			],
+		}}]);
+		$list.push(['WC2B\/3N', {'type': 'changeBookingClass', data: {
+			segments: [
+				{segmentNumber: 2, bookingClass: 'B'},
+				{segmentNumber: 3, bookingClass: 'N'},
+			],
+		}}]);
+		$list.push(['WC1Y/3-4Y', {'type': 'changeBookingClass', data: {
+			segments: [
+				{segmentNumber: 1, bookingClass: 'Y'},
+				{segmentNumber: 3, bookingClass: 'Y'},
+				{segmentNumber: 4, bookingClass: 'Y'},
+			],
+		}}]);
+		// not a 'changeBookingClass' actually, but oh well...
+		$list.push(['WC¥1', {'data': null}]);
 
 		// session id: 2000908
 		$list.push(['317\u00A4', {'type': 'changeSsr'}]);

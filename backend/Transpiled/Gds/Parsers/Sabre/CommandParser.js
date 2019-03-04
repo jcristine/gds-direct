@@ -332,7 +332,7 @@ class CommandParser {
 			'|' +
 			'(?<airline>[A-Z0-9]{2})' +
 			'(?<code>[A-Z0-9]+)' +
-			'(\\/' +
+			'(\/' +
 			'(?<partners>[A-Z0-9]{2}(,[A-Z0-9]{2})*|)' +
 			'(?<segNums>\\d+[-,\\d]*|)' +
 			')?' +
@@ -381,7 +381,7 @@ class CommandParser {
 			$seatCodesStr = $matches['seatCodes'] || '';
 			$seatMatches = php.preg_match_all(/(\d+)([A-Z]+)/, $seatCodesStr, $seatMatches = [], php.PREG_SET_ORDER);
 			$seatCodes = [];
-			for ([$_, $rowNumber, $letters] of Object.values($seatMatches)) {
+			for ([$_, $rowNumber, $letters] of Object.values($seatMatches || {})) {
 				for ($letter of Object.values(php.str_split($letters, 1))) {
 					$seatCodes.push($rowNumber + $letter);
 				}
@@ -409,6 +409,36 @@ class CommandParser {
 		} else {
 			return null;
 		}
+	}
+
+	/**
+	 * does not support all possible formats yet
+	 * note that there is also an unrelated format
+	 * starting with WC for selling from WPNI - WC¥1
+	 * 'WC1-3B' - change segments 1-3 class to B
+	 * 'WC2B/3N' - change segment 2 class to B and segment 3 class to N
+	 * 'WCAF' - change class of all segments to F
+	 */
+	static parseChangeBookingClasses(cmd) {
+		if (!cmd.startsWith('WC')) {
+			return null;
+		}
+		let selection = cmd.slice('WC'.length);
+		let segments = [];
+		for (let rangeStr of selection.split('/')) {
+			let matches = rangeStr.match(/^(\d+)(-\d+|)([A-Z])$/);
+			if (!matches) {
+				return null;
+			}
+			let [_, from, to, cls] = matches;
+			to = to ? -to : from; // -1 x -1 = +1, problem?
+			for (let i = +from; i <= to; ++i) {
+				segments.push({segmentNumber: i, bookingClass: cls});
+			}
+		}
+		return {
+			segments: segments,
+		};
 	}
 
 	static parseBulkCommand($cmd) {
@@ -462,6 +492,8 @@ class CommandParser {
 		} else if ($parsed = this.parseSeatChange($cmd)) {
 			$type = $parsed['type'];
 			$data = $parsed['data'];
+		} else if ($data = this.parseChangeBookingClasses($cmd)) {
+			$type = 'changeBookingClass';
 		} else if (php.preg_match(/^DK(.+)$/, $cmd, $matches = [])) {
 			$type = 'addDkNumber';
 			$data = $matches[1];

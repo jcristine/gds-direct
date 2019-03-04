@@ -32,6 +32,7 @@ let tests = [
 	.concat(new (require('./backend/Transpiled/Rbs/GdsDirect/Actions/Common/MakeMultiPccTariffDumpActionTest.js'))().getTests())
 	.concat(new (require('./backend/Transpiled/Rbs/GdsDirect/Actions/Common/GetMultiPccTariffDisplayActionTest.js'))().getTests())
 	.concat(new (require('./backend/Transpiled/Rbs/GdsAction/ApolloMakeMcoActionTest.js'))().getTests())
+	.concat(new (require('./backend/Transpiled/Rbs/GdsDirect/DialectTranslator/GdsDialectTranslatorTest.js'))().getTests())
 	;
 
 let oks = 0;

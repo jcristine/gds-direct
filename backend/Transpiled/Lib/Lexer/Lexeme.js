@@ -34,15 +34,25 @@ class Lexeme {
 		let $constraint;
 		$constraint = ($context) => {
 			let $previousLexeme;
-			$previousLexeme = php.array_pop($context['lexemes']);
+			$previousLexeme = $context['lexemes'].slice(-1)[0];
 			return $previousLexeme && php.in_array($previousLexeme['lexeme'], $lexemes);
 		};
 		return this.hasConstraint($constraint);
 	}
 
+	// alias for hasPreviousLexemeConstraint
+	after($lexemes) {
+		return this.hasPreviousLexemeConstraint($lexemes);
+	}
+
 	preprocessData($dataPreprocessor) {
 		this.$dataPreprocessor = $dataPreprocessor;
 		return this;
+	}
+
+	// alias for preprocessData()
+	map($dataPreprocessor) {
+		return this.preprocessData($dataPreprocessor);
 	}
 
 	preprocessDataFilterTokens($tokens) {
