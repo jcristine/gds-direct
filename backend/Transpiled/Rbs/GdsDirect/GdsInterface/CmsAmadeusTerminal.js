@@ -13,7 +13,7 @@ var require = require('../../../translib.js').stubRequire;
 
 const AmadeusPnr = require('../../../Rbs/TravelDs/AmadeusPnr.js');
 const AmadeusPnrCommonFormatAdapter = require('../../../Rbs/FormatAdapters/AmadeusPnrCommonFormatAdapter.js');
-const PagingHelper = require('../../../Rbs/Process/Amadeus/PagingHelper.js');
+const PagingHelper = require('../../../../GdsHelpers/AmadeusUtils.js');
 
 class CmsAmadeusTerminal
 {
@@ -178,7 +178,7 @@ class CmsAmadeusTerminal
     sanitizeOutput($output)  {
         let $asRt, $asHe;
 
-        $asRt = PagingHelper.parseParenthesisPager($output);
+        $asRt = PagingHelper.parseRtPager($output);
         $asHe = PagingHelper.parseHelpPager($output);
         if ($asRt['hasMore']) {
             $output = $asRt['content']+php.PHP_EOL+'\u2514\u2500>';

@@ -52,6 +52,8 @@ exports.AMADEUS = StrConsts({
 	get AMADEUS_PROD_1ASIWTUTICO() { never(); },
 	// To login in GoWay Canada PCCs: LAXGO3106 & YTOGO310E
 	get AMADEUS_PROD_1ASIWTUT0GW() { never(); },
+	// for NYC1S21P8
+	get AMADEUS_PROD_1ASIWTUTDTT() { never(); },
 });
 
 exports.SABRE = StrConsts({
@@ -75,6 +77,18 @@ exports.getAmadeus = (profileName) =>
 		endpoint: mand(data.endpoint), // 'https://nodeD1.test.webservices.amadeus.com/1ASIWTUTICO',
 		profileName: profileName,
 	}));
+
+exports.chooseAmaProfile = (pcc) => {
+	let mainPcc = 'AMADEUS_PROD_1ASIWTUTICO';
+	return {
+		NYC1S2186: mainPcc,
+		SFO1S2195: mainPcc,
+		SFO1S21D2: mainPcc,
+		LAXGO3106: 'AMADEUS_PROD_1ASIWTUT0GW',
+		YTOGO310E: 'AMADEUS_PROD_1ASIWTUT0GW',
+		NYC1S21P8: 'AMADEUS_PROD_1ASIWTUTDTT',
+	}[pcc] || mainPcc;
+};
 
 exports.getSabre = (profileName) =>
 	getOne('sabre', profileName).then(data => ({
