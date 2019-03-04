@@ -6,16 +6,13 @@ const Fp = require('../../Lib/Utils/Fp.js');
 const StringUtil = require('../../Lib/Utils/StringUtil.js');
 const AbstractGdsAction = require('./AbstractGdsAction.js');
 const php = require('../../php.js');
-
-var require = require('../../translib.js').stubRequire;
-
 const AirAvailabilityParser = require('../../Gds/Parsers/Sabre/AirAvailabilityParser.js');
 
 class SabreBuildItineraryAction extends AbstractGdsAction
 {
     constructor() {
 		super();
-		this.$useXml = true;
+		this.$useXml = false;
     }
 
     useXml($flag)  {
@@ -24,32 +21,20 @@ class SabreBuildItineraryAction extends AbstractGdsAction
         return this;
     }
 
-    executeViaTerminal($itinerary, $isParserFormat)  {
+    async executeViaTerminal($itinerary, $isParserFormat)  {
         let $i, $segment, $cmd, $output, $errorType, $tplData;
 
         $itinerary = Fp.map(($segment) => {
-            let $date, $seatCount;
-
-            $date = $isParserFormat
+            let $date = $isParserFormat
                 ? $segment['departureDate']['raw']
                 : this.constructor.formatSabreDate($segment['departureDate']);
-            $seatCount = $isParserFormat ? $segment['statusNumber'] : $segment['seatCount'];
 
-            return {
-                'airline': $segment['airline'],
-                'flightNumber': $segment['flightNumber'],
-                'bookingClass': $segment['bookingClass'],
-                'departureDate': $date,
-                'departureAirport': $segment['departureAirport'],
-                'destinationAirport': $segment['destinationAirport'],
-                'segmentStatus': $segment['segmentStatus'],
-                'seatCount': $seatCount,
-            };
+            return {...$segment, 'departureDate': $date};
         }, $itinerary);
 
         for ([$i, $segment] of Object.entries($itinerary)) {
             $cmd = StringUtil.format('0{airline}{flightNumber}{bookingClass}{departureDate}{departureAirport}{destinationAirport}{segmentStatus}{seatCount}', $segment);
-            $output = this.sabre($cmd);
+            $output = (await this.runCmd($cmd)).output;
             if (!this.constructor.isOutputValid($output)) {
                 if (this.constructor.isAvailabilityOutput($output)) {
                     $errorType = this.constructor.ERROR_NO_AVAIL;
@@ -63,7 +48,8 @@ class SabreBuildItineraryAction extends AbstractGdsAction
                     'response': php.trim($output),
                 };
                 return {'success': false, 'errorType': $errorType, 'errorData': $tplData};
-            }}
+            }
+        }
         return {'success': true};
     }
 
@@ -132,11 +118,11 @@ class SabreBuildItineraryAction extends AbstractGdsAction
 
         // if there are no seats available, Sabre
         // displays availability instead of error
-        return AirAvailabilityParser.parse($output)['flights'] ? true : false;
+        return !php.empty(AirAvailabilityParser.parse($output)['flights']);
     }
 
     /** @param $itinerary = ItineraryParser::parse() */
-    execute($itinerary, $isParserFormat)  {
+    async execute($itinerary, $isParserFormat)  {
 
         if (this.$useXml) {
             return this.executeViaXml($itinerary, $isParserFormat);
