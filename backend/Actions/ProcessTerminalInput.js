@@ -11,6 +11,7 @@ const CmsSabreTerminal = require("../Transpiled/Rbs/GdsDirect/GdsInterface/CmsSa
 const CmsApolloTerminal = require("../Transpiled/Rbs/GdsDirect/GdsInterface/CmsApolloTerminal");
 const matchAll = require("../Utils/Str").matchAll;
 const nonEmpty = require("../Utils/Rej").nonEmpty;
+const GdsDialectTranslator = require('../Transpiled/Rbs/GdsDirect/DialectTranslator/GdsDialectTranslator.js');
 
 // this is not complete list
 let shouldWrap = (cmd) => {
@@ -166,7 +167,6 @@ let transformCalledCommand = (rec, stateful) => {
 };
 
 let runCmdRq =  async (inputCmd, stateful) => {
-	inputCmd = decodeCmsInput(inputCmd, stateful.gds);
 	if (stateful.gds === 'apollo') {
 		let gdsResult = await (new ProcessApolloTerminalInputAction(stateful).execute(inputCmd));
 		let grectResult = makeGrectResult(gdsResult.calledCommands, stateful.getFullState());
@@ -188,6 +188,27 @@ let runCmdRq =  async (inputCmd, stateful) => {
 	}
 };
 
+let translateCmd = (fromGds, toGds, inputCmd) => {
+	let forTranslation = decodeCmsInput(inputCmd, fromGds);
+	let translated = (new GdsDialectTranslator())
+		.translate(fromGds, toGds, forTranslation);
+	let errors = translated.errors || [];
+	let messages = translated.messages || [];
+	let resultCmd;
+	if (translated.output) {
+		resultCmd = translated.output;
+	} else {
+		// command not translated, likely because it was a native command
+		resultCmd = decodeCmsInput(inputCmd, toGds);
+	}
+	return {
+		cmd: resultCmd,
+		messages: []
+			.concat(errors.map(e => ({type: 'console_error', text: e})))
+			.concat(messages.map(e => ({type: 'pop_up', text: e}))),
+	};
+};
+
 /**
  * auto-correct typos in the command, convert it between
  * GDS dialects, run _alias_ chain of commands, etc...
@@ -198,6 +219,8 @@ module.exports = async (session, rqBody) => {
 	let stateful = await StatefulSession(session);
 	let cmdRq = rqBody.command;
 	let gds = session.context.gds;
+	let dialect = rqBody.language || gds;
+	cmdRq = translateCmd(dialect, gds, cmdRq).cmd;
 
 	return runCmdRq(cmdRq, stateful)
 		.then(grectResult => {
