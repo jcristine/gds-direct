@@ -17,7 +17,6 @@ const ApolloReservationItineraryParser = require('../../../../Gds/Parsers/Apollo
 const ApolloReservationParser = require('../../../../Gds/Parsers/Apollo/Pnr/PnrParser.js');
 const CommandParser = require('../../../../Gds/Parsers/Apollo/CommandParser.js');
 const CommonParserHelpers = require('../../../../Gds/Parsers/Apollo/CommonParserHelpers.js');
-const PricingParser = require('../../../../Gds/Parsers/Apollo/PricingParser/PricingParser.js');
 const GenericRemarkParser = require('../../../../Gds/Parsers/Common/GenericRemarkParser.js');
 const PtcUtil = require('../../../../Rbs/Process/Common/PtcUtil.js');
 const {fetchAll, extractPager} = require('../../../../../GdsHelpers/TravelportUtils.js');
@@ -908,7 +907,9 @@ class ProcessApolloTerminalInputAction {
 	async priceInAnotherPcc($cmd, $target, $dialect) {
 		let $pnr;
 		$pnr = await this.getCurrentPnr();
-		return (new RepriceInAnotherPccAction()).execute($pnr, $cmd, $dialect, $target, this.$statefulSession);
+		return (new RepriceInAnotherPccAction())
+			.setLog((msg, data) => this.$statefulSession.logit(msg, data))
+			.execute($pnr, $cmd, $dialect, $target, this.$statefulSession);
 	}
 
 	// Parse strings like '1,2,4-7,9'
