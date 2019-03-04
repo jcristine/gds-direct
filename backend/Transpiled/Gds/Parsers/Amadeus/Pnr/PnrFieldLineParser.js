@@ -103,8 +103,8 @@ class PnrFieldLineParser
             '(?<airlineNumber>\\d{3})-'+
             '(?<documentNumber>\\d{10})'+
             '(?<location>[A-Z]{3})'+
-            '(?<date>\\d{1,2}[A-Z]{3}\\d{2,4})\\/'+
-            '(?<iata>\\d{8})\\/'+
+            '(?<date>\\d{1,2}[A-Z]{3}\\d{2,4})\/'+
+            '(?<iata>\\d{8})\/'+
             '(?<exchangedForAirlineNumber>\\d{3})-'+
             '(?<exchangedForDocumentNumber>\\d{10})'+
             '\\s*$/';

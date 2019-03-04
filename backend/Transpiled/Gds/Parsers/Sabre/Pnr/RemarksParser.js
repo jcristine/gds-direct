@@ -158,9 +158,9 @@ class RemarksParser {
 		let $regex, $matches, $pcc, $agentInitials;
 
 		$regex =
-			'/^DIVIDED\\/' +
+			'/^DIVIDED\/' +
 			'(?<agentSign>.+?)\\s+' +
-			'(?<time>\\d{2,4})\\/' +
+			'(?<time>\\d{2,4})\/' +
 			'(?<date>\\d{1,2}[A-Z]{3}\\d*)\\s+' +
 			'(?<recordLocator>[A-Z]{6})' +
 			'$/';

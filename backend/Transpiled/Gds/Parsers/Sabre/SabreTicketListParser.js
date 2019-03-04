@@ -104,7 +104,7 @@ class SabreTicketListParser
                 '|'+
                 '(?<otherMadeByIndicator>[^\\s]+)?'+
             ')\\s+'+
-            '(?<issueTime>\\d{4})\\/'+
+            '(?<issueTime>\\d{4})\/'+
             '(?<issueDate>\\d{2}[A-Z]{3})\\s?'+
             '(?<cashFopMark>\\*)?'+
             '(?<remark>[^\\s]+)?'+

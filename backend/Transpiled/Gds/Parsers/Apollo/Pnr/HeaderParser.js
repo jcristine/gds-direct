@@ -51,7 +51,7 @@ class HeaderParser
         let $pattern1, $pattern2, $pattern3, $tokens, $creatorToken, $matches, $_, $agencyToken, $agentToken;
         $pattern1 = '/^'+
                     '(?<recordLocator>[A-Z0-9]{6})'+
-                    '\\/'+
+                    '\/'+
                     '(?<focalPointInitials>[A-Z0-9]{2})'+
                     '\\s'+
                     '(?<agencyId>[A-Z0-9]{5})'+ // this QSBSB token, which usually is different for other agency reservations, nobody knows what it actually is
@@ -62,7 +62,7 @@ class HeaderParser
                     '$/';
         $pattern2 = '/^'+
                     '(?<recordLocator>[A-Z0-9]{6})'+
-                    '\\/'+
+                    '\/'+
                     '(?<focalPointInitials>[A-Z0-9]{2})'+
                     '\\s'+
                     '(?<agencyId>[A-Z0-9]{3})'+ // Looks like an airport, but stands in place of this 'QSBSB' thing
@@ -73,7 +73,7 @@ class HeaderParser
                     '$/';
         $pattern3 = '/^'+
                     '(?<recordLocator>[A-Z0-9]{6})'+
-                    '\\/'+
+                    '\/'+
                     '(?<focalPointInitials>[A-Z0-9]{2})'+
                     '\\s+'+
                     '(?<agencyId>[A-Z0-9]{3,5})'+

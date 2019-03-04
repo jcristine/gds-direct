@@ -66,7 +66,7 @@ class StoredPricingListParser
             '(?<pricingNumber>\\d+)\\s*-\\s*S'+
             '(?<segmentNumbers>\\d+[-.\\d]*)\\s+.*'+
             '(?<addedDate>\\d{1,2}[A-Z]{3}\\d{0,4})\\s+'+
-            '(?<agentInitials>[A-Z0-9]{2})\\/'+
+            '(?<agentInitials>[A-Z0-9]{2})\/'+
             '(?<dutyCode>[A-Z0-9]{2})'+
             '/';
         if (php.preg_match($regex, $line, $matches = [])) {

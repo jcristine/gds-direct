@@ -59,7 +59,7 @@ class PnrHistoryParser {
 			'(?<departureDate>\\d{2}[A-Z]{3})\\s+' +
 			'(?<departureAirport>[A-Z]{3})' +
 			'(?<destinationAirport>[A-Z]{3})\\s+' +
-			'(?<segmentStatusWas>[A-Z]{2})\\/' +
+			'(?<segmentStatusWas>[A-Z]{2})\/' +
 			'(?<segmentStatusBecame>[A-Z]{2})' +
 			'(?<seatCount>\\d*)' +
 			'.{2}\\s*' + // two spaces, i suspect something may appear here
@@ -185,9 +185,9 @@ class PnrHistoryParser {
 			}
 		} else if ($originType === 'airline') {
 			$regex = '/^' +
-				'(?<token1>\\d+)\\/' +
-				'(?<token2>[A-Z0-9]*)\\/' +
-				'(?<token3>[A-Z0-9]+)\\/' +
+				'(?<token1>\\d+)\/' +
+				'(?<token2>[A-Z0-9]*)\/' +
+				'(?<token3>[A-Z0-9]+)\/' +
 				'(?<token4>.*?)' +
 				'\\s*$/';
 
@@ -379,7 +379,7 @@ class PnrHistoryParser {
 			'(?<receivedDtRaw>' +
 			'(?<receivedTime>\\d{3,4})' +
 			'(?<receivedTimezone>[A-Z])' +
-			'\\/' +
+			'\/' +
 			'(?<receivedDate>\\d{1,2}[A-Z]{3})' +
 			')' +
 			'\\s*$/';

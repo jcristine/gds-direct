@@ -194,7 +194,7 @@ class SabrePricingParser {
 		$regex =
 			'/^' +
 			'(?<departureDate>\\d{2}[A-Z]{3})\\sDEPARTURE\\sDATE-+' +
-			'LAST\\sDAY\\sTO\\sPURCHASE\\s(?<lastDateToPurchase>\\d{1,2}[A-Z]{3})\\/' +
+			'LAST\\sDAY\\sTO\\sPURCHASE\\s(?<lastDateToPurchase>\\d{1,2}[A-Z]{3})\/' +
 			'(?<lastTimeToPurchase>\\d{1,4})' +
 			'$/';
 

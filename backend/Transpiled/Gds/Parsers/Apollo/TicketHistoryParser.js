@@ -43,12 +43,12 @@ class TicketHistoryParser
             '((?<historyActionCode>[A-Z]{2})\\s+)?'+
             '(?<lastName>[^\\\/-]+)\\\/?'+
             '(?<firstName>[^-]*)-'+
-            '(?<stockNumber>\\d*(-\\d+)?)\\/'+
+            '(?<stockNumber>\\d*(-\\d+)?)\/'+
             '(?<ticketNumber>\\d{13})'+
-            '(-(?<ticketExtension>\\d+))?\\/'+
+            '(-(?<ticketExtension>\\d+))?\/'+
             '(?<invoiceNumber>\\d*)-'+
-            '(?<currency>[A-Z]{3})\\/'+
-            '(?<amount>\\d*\\.?\\d+)\\/'+
+            '(?<currency>[A-Z]{3})\/'+
+            '(?<amount>\\d*\\.?\\d+)\/'+
             '((?<transactionIndicator>[A-Z]{2})\\\/)?'+
             '(?<transactionDt>.*?)'+
             '\\s*$/';

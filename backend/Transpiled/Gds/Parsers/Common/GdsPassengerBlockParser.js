@@ -79,7 +79,7 @@ class GdsPassengerBlockParser
         let $regex, $matches, $age, $dob, $ptc, $parsedChildToken;
         $regex = '/^'+
             '(?<number>\\d+\\.(I\\\/\\d+|\\d+))'+
-            '(?<lastName>(\\w|\\s|-)+)\\/'+
+            '(?<lastName>(\\w|\\s|-)+)\/'+
             '(?<firstName>(\\w|\\s)+)'+
             '(?<joinedFirstNames>(\\\/(\\w|\\s)+)*)'+
             '(\\*(?<childToken>.+))?'+

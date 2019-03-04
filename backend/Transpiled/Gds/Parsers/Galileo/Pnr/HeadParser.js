@@ -23,7 +23,7 @@ class HeadParser
         $regex =
             '/^'+
             '(?<recordLocator>[A-Z0-9]{6})'+
-            '\/'+
+            '/'+
             '(?<focalPointInitials>[A-Z0-9]{2})'+
             '\\s'+
             '(?<agencyId>[A-Z0-9]{5})'+ // this QSBSB token, which usually is different for other agency reservations, nobody knows what it actually is

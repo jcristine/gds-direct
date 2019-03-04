@@ -97,7 +97,7 @@ class AtfqParser {
 		let $regex, $matches, $parsedCommand, $pricingModifiers;
 		$regex = '/^' +
 			'((?<lineNumber>\\d+)\\\/|)' +
-			'(?<atfqType>ATFQ-[A-Z]+)\\/' +
+			'(?<atfqType>ATFQ-[A-Z]+)\/' +
 			'(?<pricingCommand>.+?)' +
 			'\\s*$/';
 		if (php.preg_match($regex, $line, $matches = [])) {

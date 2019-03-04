@@ -217,9 +217,9 @@ class AmadeusReservationParser
 
         $regex =
             '/^\\s{2}\\*\\sSP\\s+'+
-            '(?<date>\\d{1,2}[A-Z]{3}\\d*)\\/'+
+            '(?<date>\\d{1,2}[A-Z]{3}\\d*)\/'+
             '(?<agentInitials>[A-Z0-9]{2})'+
-            '(?<dutyCode>[A-Z0-9]{2})\\/'+
+            '(?<dutyCode>[A-Z0-9]{2})\/'+
             '(?<pcc>[A-Z0-9]{3,})-'+
             '(?<recordLocator>[A-Z0-9]{6})'+
             '/';
@@ -250,7 +250,7 @@ class AmadeusReservationParser
             '(?<lineNumber>\\d+)\\s+MCO\\s+'+
             '(?<airline>[A-Z0-9]{2})'+
             '.*'+
-            '(?<date>\\d{1,2}[A-Z]{3})\\/'+
+            '(?<date>\\d{1,2}[A-Z]{3})\/'+
             '(?<currency>[A-Z]{3})\\s*'+
             '(?<amount>\\d*\\.?\\d+)'+
             '(\\\/\\*(?<service>.*?))?'+
@@ -603,9 +603,9 @@ class AmadeusReservationParser
 
         $regex =
             '/^'+
-            '(?<officeId>[A-Z0-9]{3,})\\/'+
+            '(?<officeId>[A-Z0-9]{3,})\/'+
             '(?<agentNumber>\\d+)'+
-            '(?<agentInitials>[A-Z0-9]{2,3})\\/'+
+            '(?<agentInitials>[A-Z0-9]{2,3})\/'+
             '(?<date>\\d{1,2}[A-Z]{3}\\d{2,4})'+
             '\\s*$/';
 
@@ -629,16 +629,16 @@ class AmadeusReservationParser
         // 'RP/SFO1S2195/SWI1GCFZKRE/5RB/45520300    24SEP16/2215Z   3R593V',
         $regex =
             '/^'+
-            '[A-Z\\d]{2}\\/'+
-            '(?<responsibleOfficeId>[A-Z0-9]+)\\/'+
+            '[A-Z\\d]{2}\/'+
+            '(?<responsibleOfficeId>[A-Z0-9]+)\/'+
             '(?<queueingOfficeId>[A-Z0-9]+)'+
             '.+?'+
             '(\\s+'+
-                '(?<agentInitials>[A-Z0-9]{2,3})\\/'+
+                '(?<agentInitials>[A-Z0-9]{2,3})\/'+
                 '(?<dutyCode>[A-Z0-9]{2,3})'+
             ')?'+
             '\\s+'+
-            '(?<date>\\d{1,2}[A-Z]{3}\\d{2})\\/'+
+            '(?<date>\\d{1,2}[A-Z]{3}\\d{2})\/'+
             '(?<time>\\d{3,4})'+
             '(?<timezone>[A-Z]?)'+
             '\\s+'+

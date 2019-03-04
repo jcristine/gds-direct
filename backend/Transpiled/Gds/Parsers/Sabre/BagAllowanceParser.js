@@ -211,7 +211,7 @@ return StringUtil.startsWith($line, '*');};
                 '(?<allowanceCode>[A-Z\\d]+)'+
                 '|'+
                 '(?<noPriceDueTo>\\*|[A-Z ]+)'+
-            ')\\/'+
+            ')\/'+
             '(?<airline>[A-Z\\d]{2})'+
             '(\\\/(?<sizeInfo>.+))? *'+
             '$/';
@@ -254,9 +254,9 @@ return StringUtil.startsWith($line, '*');};
                 '(?<amount>\\d+(\\.\\d*)?)'+
                 '|'+
                 '(?<noPriceDueTo>\\*|[A-Z ]+)'+
-            ')\\/'+
+            ')\/'+
             '(?<airline>[A-Z\\d]{2})'+
-            '(\\/'+
+            '(\/'+
                 '(?<sizeInfo>[^\\*]+)'+
                 '(?<generalRemarkIndicator>\\*\\*)?'+
             ')? *'+

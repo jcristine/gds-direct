@@ -166,7 +166,7 @@ class FactsBlockParser
             '(?<airline>AA) '+
             '(?<flightNumber>\\d{1,4})'+
             '(?<bookingClass>[A-Z])?'+
-            '(?<departureDate>\\d+[A-Z]{3})\\/'+
+            '(?<departureDate>\\d+[A-Z]{3})\/'+
             '(?<status>[A-Z]{2})'+
             '(?<statusNumber>\\d+).*'+
             '$\/s';

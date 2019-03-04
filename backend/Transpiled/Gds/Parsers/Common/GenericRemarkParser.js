@@ -45,11 +45,11 @@ class GenericRemarkParser
         $regex =
             '/'+
             '(GD-)?'+
-            '(?<agentLogin>[^\\\/]+)\\/'+
-            'ID(?<agentId>\\d+)\\/'+
+            '(?<agentLogin>[^\\\/]+)\/'+
+            'ID(?<agentId>\\d+)\/'+
             '('+
-                'CREATED FOR (?<leadCreatorLogin>[^\\\/]+)\\/'+
-                'ID(?<leadCreatorId>\\d+)\\/'+
+                'CREATED FOR (?<leadCreatorLogin>[^\\\/]+)\/'+
+                'ID(?<leadCreatorId>\\d+)\/'+
             ')?'+
             'REQ. ID-(?<leadId>\\d+)'+
             '(?:\\s*IN\\s+(?<pcc>[A-Z0-9]{3,9}))?'+
@@ -76,11 +76,11 @@ class GenericRemarkParser
         $regex =
             '/'+
             'GD-'+
-            '(?<agentLogin>[^\\\/]+)\\/'+
+            '(?<agentLogin>[^\\\/]+)\/'+
             '(?<agentId>\\d+)'+
             '('+
                 '\\\/FOR\\s+'+
-                '(?<leadCreatorLogin>[^\\\/]+)\\/'+
+                '(?<leadCreatorLogin>[^\\\/]+)\/'+
                 '(?<leadCreatorId>\\d+)'+
             ')?'+
             '(\\\/LEAD-(?<leadId>\\d+))?\\s*'+

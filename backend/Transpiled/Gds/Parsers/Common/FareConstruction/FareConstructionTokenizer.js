@@ -23,12 +23,8 @@ class FareConstructionTokenizer {
 	/** @see >HELP PRICING-LINEAR FCONST SYMBOLS; */
 	static makeLexemes() {
 		let $isFirst, $getTuple, $onlyFareInSegment, $getFirst;
-		$isFirst = ($context) => {
-			return $context && php.count($context['lexemes']) === 0;
-		};
-		$getTuple = ($matches) => {
-			return php.array_slice($matches, 1);
-		};
+		$isFirst = ($context) => $context && php.count($context['lexemes']) === 0;
+		$getTuple = ($matches) => php.array_slice($matches, 1);
 		$onlyFareInSegment = ($context) => {
 			let $lexemes, $i, $lexeme;
 			if ($lexemes = $context['lexemes'] || null) {
