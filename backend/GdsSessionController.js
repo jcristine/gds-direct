@@ -105,7 +105,7 @@ let runInputCmdRestartAllowed = (reqBody) => {
 			: Promise.reject(exc))
 		.then(session => runInSession(session, reqBody)
 			.catch(exc => {
-				logExc('WARNING: Failed to run cmd in session, restarting...', session.logId, exc);
+				logExc('WARNING: Failed to run cmd in session...', session.logId, exc);
 				return shouldRestart(exc, session)
 					? runInNewSession(reqBody, exc)
 					: Promise.reject(exc);
