@@ -60,7 +60,7 @@ let StatefulSession = async (session) => {
 				};
 				calledCommands.push(cmdRec);
 				let masked = Misc.maskCcNumbers(cmdRec);
-				logit('Gds result: ' + cmd, session.logId, {...masked, state: fullState.areas[fullState.area]});
+				logit('GDS result: ' + cmd, session.logId, {...masked, state: fullState.areas[fullState.area]});
 				return cmdRec;
 			});
 		},
