@@ -31,6 +31,7 @@ php.empty = empty;
 php.get_class = (value) => value ? (value.constructor || {}).name || null : null;
 php.is_null = (value) => value === null || value === undefined;
 php.is_string = (value) => typeof value === 'string';
+php.is_callable = (func) => typeof func === 'function';
 php.intval = (value) => +value;
 php.boolval = (value) => empty(value) ? true : false;
 php.abs = (value) => Math.abs(value);

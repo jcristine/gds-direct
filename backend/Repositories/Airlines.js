@@ -41,7 +41,7 @@ exports.updateFromService = async () => {
 
 exports.findByCode = async (iataCode) => {
 	/** @var row = normalizeRow() */
-	let row = Db.with(db => db.fetchOne({
+	let row = await Db.with(db => db.fetchOne({
 		table: TABLE,
 		where: [
 			['iata_code', '=', iataCode],

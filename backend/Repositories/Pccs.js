@@ -3,6 +3,8 @@ const {getConfig} = require('../Config.js');
 
 let Db = require('../Utils/Db.js');
 let php = require('../Transpiled/php.js');
+const Conflict = require("../Utils/Rej").Conflict;
+const NotFound = require("../Utils/Rej").NotFound;
 
 const TABLE = 'pccs';
 
@@ -51,7 +53,7 @@ exports.updateFromService = async () => {
 
 exports.findByCode = async (gds, pcc) => {
 	/** @var row = normalizeRow() */
-	let row = Db.with(db => db.fetchOne({
+	let row = await Db.with(db => db.fetchOne({
 		table: TABLE,
 		where: [
 			['gds', '=', gds],
@@ -59,4 +61,19 @@ exports.findByCode = async (gds, pcc) => {
 		],
 	}));
 	return row;
+};
+
+exports.getGdsByPcc = async (pcc) => {
+	let rows = await Db.with(db => db.fetchAll({
+		table: TABLE,
+		where: [['pcc', '=', pcc]],
+	}));
+	let gdses = new Set(rows.map(r => r.gds));
+	if (gdses.size === 0) {
+		return NotFound('No such PCC in DB - ' + pcc);
+	} else if (gdses.size === 1) {
+		return [...gdses][0];
+	} else {
+		return Conflict('Ambiguous PCC ' + pcc + ' belongs multiple GDS-es: ' + [...gdses].join(', '));
+	}
 };
