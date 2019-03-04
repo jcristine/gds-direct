@@ -72,16 +72,16 @@ class CmsGalileoTerminal {
 		$typeToMod = php.array_combine(php.array_column($mods, 'type'), $mods);
 
 		if ($cmdData['baseCmd'] === 'FQBA') {
-			$errors.push(Errors.getMessage(Errors.BAD_MOD_IGNORE_AVAILABILITY, {'modifier': '\/' + $cmdData['baseCmd'] + '\/'}));
+			$errors.push(Errors.getMessage(Errors.BAD_MOD_IGNORE_AVAILABILITY, {'modifier': '/' + $cmdData['baseCmd'] + '/'}));
 		}
 		if ($sMod = $typeToMod['segments']) {
 			$bundles = $sMod['parsed']['bundles'];
 			if ($bundles[0]['segmentNumbers'] !== []) {
-				$errors.push(Errors.getMessage(Errors.BAD_MOD_SEGMENT, {'modifier': '\/' + $sMod['raw'] + '\/'}));
+				$errors.push(Errors.getMessage(Errors.BAD_MOD_SEGMENT, {'modifier': '/' + $sMod['raw'] + '/'}));
 			}
 			$fareBases = php.array_filter(php.array_column($bundles, 'fareBasis'));
 			if ($fareBases) {
-				$errors.push(Errors.getMessage(Errors.BAD_MOD_BASIS_OVERRIDE, {'modifier': '\/@' + php.implode('@', $fareBases) + '\/'}));
+				$errors.push(Errors.getMessage(Errors.BAD_MOD_BASIS_OVERRIDE, {'modifier': '/@' + php.implode('@', $fareBases) + '/'}));
 			}
 		}
 		return $errors;
