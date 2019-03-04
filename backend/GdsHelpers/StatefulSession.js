@@ -81,6 +81,7 @@ let StatefulSession = async (session) => {
 		getAreaRows: () => fullState.areas,
 		flushCalledCommands: () => calledCommands.splice(0),
 		handlePnrSave: () => {},
+		handleFsUsage: () => {},
 		getSessionData: getSessionData,
 		getLeadData: () => ({
 			leadId: session.context.travelRequestId,
