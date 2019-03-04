@@ -5,6 +5,7 @@ let crypto = require('crypto');
 let util = require('util');
 let {parseXml, wrapExc} = require("../Utils/Misc.js");
 let Rej = require("../Utils/Rej.js");
+const GdsProfiles = require("../Repositories/GdsProfiles");
 
 let chr = (charCode) => String.fromCharCode(charCode);
 
@@ -69,29 +70,27 @@ let makeStartSoapEnvXml = (profileData, payloadXml) => {
 };
 
 /** @param gdsData = parseCmdRs().gdsData */
-let makeContinueSoapEnvXml = (gdsData, payloadXml) => [
+let makeContinueSoapEnvXml = ({gdsData, payloadXml, status, action}) => [
 	'<?xml version="1.0" encoding="UTF-8"?>',
 	'<SOAP-ENV:Envelope ',
 	'    xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/" ',
-	'    xmlns:ns1="http://xml.amadeus.com/HSFREQ_07_3_1A" ',
-	'    xmlns:ns2="http://xml.amadeus.com/2010/06/Session_v3" ',
-	'    xmlns:ns3="http://www.w3.org/2005/08/addressing">',
+	'    xmlns:addr="http://www.w3.org/2005/08/addressing">',
 	'  <SOAP-ENV:Header>',
-	'    <awsse:Session xmlns:awsse="http://xml.amadeus.com/2010/06/Session_v3" TransactionStatusCode="InSeries">',
+	'    <awsse:Session xmlns:awsse="http://xml.amadeus.com/2010/06/Session_v3" TransactionStatusCode="' + status + '">',
 	'      <awsse:SessionId>' + gdsData.sessionId + '</awsse:SessionId>',
 	'      <awsse:SequenceNumber>' + gdsData.seqNumber + '</awsse:SequenceNumber>',
 	'      <awsse:SecurityToken>' + gdsData.securityToken + '</awsse:SecurityToken>',
 	'    </awsse:Session>',
-	'    <ns3:MessageID>' + uuidv4() + '</ns3:MessageID>',
-	'    <ns3:Action>http://webservices.amadeus.com/HSFREQ_07_3_1A</ns3:Action>',
-	'    <ns3:To>https://nodeD1.production.webservices.amadeus.com/1ASIWTUTICO</ns3:To>',
+	'    <addr:MessageID>' + uuidv4() + '</addr:MessageID>',
+	'    <addr:Action>http://webservices.amadeus.com/' + action + '</addr:Action>',
+	'    <addr:To>https://nodeD1.production.webservices.amadeus.com/1ASIWTUTICO</addr:To>',
 	'  </SOAP-ENV:Header>',
 	'  <SOAP-ENV:Body>' + payloadXml + '</SOAP-ENV:Body>',
 	'</SOAP-ENV:Envelope>',
 ].join('\n');
 
 let makeCmdPayloadXml = (cmd) =>[
-	'    <ns1:Command_Cryptic>',
+	'    <ns1:Command_Cryptic xmlns:ns1="http://xml.amadeus.com/HSFREQ_07_3_1A">',
 	'      <ns1:messageAction>',
 	'        <ns1:messageFunctionDetails>',
 	'          <ns1:messageFunction>M</ns1:messageFunction>',
@@ -115,7 +114,7 @@ let parseCmdRs = (dom, profileData) => ({
 	output: dom.querySelector('Command_CrypticReply > longTextString > textStringDetails').textContent,
 });
 
-exports.startSession = async (params) => {
+let startSession = async (params) => {
 	let profileName = params.profileName;
 	let profileData = await getAmadeus(profileName);
 
@@ -143,13 +142,15 @@ exports.startSession = async (params) => {
 };
 
 /** @param gdsData = parseCmdRs().gdsData */
-exports.runCmd = async (rqBody, gdsData) => {
+let runCmd = async (rqBody, gdsData) => {
 	let cmd = rqBody.command;
 	let profileName = gdsData.profileName;
 	let profileData = await getAmadeus(profileName);
 
-	let payloadXml = makeCmdPayloadXml(cmd);
-	let soapEnvXml = makeContinueSoapEnvXml(gdsData, payloadXml);
+	let soapEnvXml = makeContinueSoapEnvXml({
+		gdsData, payloadXml: makeCmdPayloadXml(cmd),
+		status: 'InSeries', action: 'HSFREQ_07_3_1A',
+	});
 
 	return PersistentHttpRq({
 		url: profileData.endpoint,
@@ -165,5 +166,52 @@ exports.runCmd = async (rqBody, gdsData) => {
 			exc.message = 'Invalid Amadeus cmd response - ' + exc.message;
 			return Promise.reject(exc);
 		});
+	});
+};
+
+let closeSession = async (gdsData) => {
+	let profileName = gdsData.profileName;
+	let profileData = await getAmadeus(profileName);
+
+	let payloadXml = '<ns1:Security_SignOut xmlns:ns1="http://xml.amadeus.com/VLSSOQ_04_1_1A"/>';
+	let soapEnvXml = makeContinueSoapEnvXml({
+		gdsData, payloadXml,
+		status: 'InSeries',
+		action: 'VLSSOQ_04_1_1A',
+	});
+
+	return PersistentHttpRq({
+		url: profileData.endpoint,
+		headers: {
+			'SOAPAction': 'http://webservices.amadeus.com/VLSSOQ_04_1_1A',
+			'Content-Type': 'text/xml; charset=utf-8',
+		},
+		body: soapEnvXml,
+	}).then(rs => rs.body).then(rsXml => {
+		let dom = parseXml(rsXml);
+		return {
+			status: dom.querySelector('Security_SignOutReply > processStatus > statusCode').textContent,
+		};
+	});
+};
+
+let makeSession = (gdsData) => ({
+	gdsData: gdsData,
+	runCmd: (cmd) => runCmd({command: cmd}, gdsData)
+		.then(result => ({cmd, ...result})),
+});
+
+exports.startSession = startSession;
+exports.runCmd = runCmd;
+exports.withSession = async (params, action) => {
+	let profileName = params.profileName
+		|| GdsProfiles.AMADEUS.AMADEUS_PROD_1ASIWTUTICO;
+	return startSession({profileName}).then(gdsData => {
+		let session = makeSession(gdsData);
+		return Promise.resolve()
+			.then(() => action(session))
+			.finally(() => {
+				closeSession(gdsData);
+			});
 	});
 };
