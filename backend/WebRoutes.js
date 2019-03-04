@@ -22,6 +22,7 @@ let Migration = require("./Maintenance/Migration");
 const CommandParser = require("./Transpiled/Gds/Parsers/Apollo/CommandParser");
 const PnrParser = require("./Transpiled/Gds/Parsers/Apollo/Pnr/PnrParser");
 const FareConstructionParser = require("./Transpiled/Gds/Parsers/Common/FareConstruction/FareConstructionParser");
+const KeepAlive = require("./Maintenance/KeepAlive");
 const InternalServerError = require("./Utils/Rej").InternalServerError;
 const {getExcData, safe} = require('./Utils/Misc.js');
 
@@ -280,6 +281,15 @@ app.get('/doSomeHeavyStuff', withAuth((reqBody, emcResult) => {
 app.get('/runMigrations', withAuth((reqBody, emcResult) => {
 	if (emcResult.user.id == 6206) {
 		return Migration.run();
+	} else {
+		return Forbidden('Sorry, you must be me in order to use that');
+	}
+}));
+app.get('/runKeepAlive', withAuth((reqBody, emcResult) => {
+	if (emcResult.user.id == 6206) {
+		let keepAlive = KeepAlive.run();
+		keepAlive.onIdle = () => keepAlive.terminate();
+		return {workerLogId: keepAlive.workerLogId};
 	} else {
 		return Forbidden('Sorry, you must be me in order to use that');
 	}

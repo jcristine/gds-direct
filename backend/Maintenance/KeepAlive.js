@@ -77,6 +77,7 @@ let processSession = async (accessedMs, session) => {
 
 exports.shouldClose = shouldClose;
 exports.run = () => {
+	let onIdles = [];
 	let waiting = null;
 	let resolveTerminated = null;
 	let terminate = (resolve) => {
@@ -113,12 +114,17 @@ exports.run = () => {
 				}
 				logExc(msg, workerLogId, exc);
 				waiting = setTimeout(processNextSession, delay);
+				onIdles.forEach(cb => cb());
 			});
 	};
 
 	processNextSession();
 
 	return {
+		workerLogId: workerLogId,
 		terminate: () => new Promise((resolve) => terminate(resolve)),
+		set onIdle(callback) {
+			onIdles.push(callback);
+		}
 	};
 };
