@@ -2,6 +2,7 @@ let {getTravelport} = require("../Repositories/GdsProfiles.js");
 let {LoginTimeOut, BadGateway} = require("../Utils/Rej");
 let {parseXml} = require("../Utils/Misc.js");
 let PersistentHttpRq = require('../Utils/PersistentHttpRq.js');
+const GdsProfiles = require("../Repositories/GdsProfiles");
 const Conflict = require("../Utils/Rej").Conflict;
 
 /**
@@ -42,7 +43,7 @@ let startSession = (params) => {
 	});
 };
 
-let runOneCmd = (cmd, gdsData) => {
+let runCmd = (cmd, gdsData) => {
 	let token = gdsData.sessionToken;
 	let profileName = gdsData.profileName;
 	let body = `<?xml version="1.0" encoding="UTF-8"?>
@@ -71,7 +72,7 @@ let runOneCmd = (cmd, gdsData) => {
 /** @param {{command: '*R', gds: 'apollo', language: 'sabre', agentId: '6206'}} reqBody */
 let TravelportClient = (reqBody) => {
 	return {
-		runCmd: (gdsData) => runOneCmd(reqBody.command, gdsData),
+		runCmd: (gdsData) => runCmd(reqBody.command, gdsData),
 	};
 };
 
@@ -89,6 +90,25 @@ TravelportClient.closeSession = (gdsData) => {
 	    '</SOAP-ENV:Envelope>',
 	].join('\n');
 	return sendRequest(body, gdsData.profileName);
+};
+
+let makeSession = (gdsData) => ({
+	gdsData: gdsData,
+	runCmd: (cmd) => runCmd(cmd, gdsData)
+		.then(result => ({cmd, ...result})),
+});
+
+TravelportClient.withSession = (params, action) => {
+	let profileName = params.profileName
+		|| GdsProfiles.TRAVELPORT.DynApolloProd_2F3K;
+	return startSession({profileName}).then(gdsData => {
+		let session = makeSession(gdsData);
+		return Promise.resolve()
+			.then(() => action(session))
+			.finally(() => {
+				TravelportClient.closeSession(gdsData);
+			})
+	});
 };
 
 module.exports = TravelportClient;

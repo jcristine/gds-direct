@@ -199,7 +199,6 @@ exports.withSession = (params, action) => {
 			.then(() => action(session))
 			.finally(() => {
 				closeSession(gdsData);
-				return Promise.resolve();
 			});
 	});
 };

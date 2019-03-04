@@ -151,8 +151,7 @@ class UpdateGalileoSessionStateAction
         $sections = GalileoReservationParser.splitToSections($clean);
         delete($sections['HEAD']);
 
-        $isEmpty = ($var) => {
-return php.empty($var);};
+        $isEmpty = ($var) => php.empty($var);
         $isValidPnrOutput = !php.empty($parsed['itineraryData'])
             || !php.empty($parsed['passengers']['passengerList'])
             || !Fp.all($isEmpty, $sections);
