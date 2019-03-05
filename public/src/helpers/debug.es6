@@ -34,7 +34,7 @@ export const debugRequest = err => {
 
 export const showUserMessages = response => {
 
-	if (response && response['userMessages'])
+	if (response && response['userMessages'] && response['userMessages'].length > 0)
 	{
 		const userMessages = response['userMessages'];
 

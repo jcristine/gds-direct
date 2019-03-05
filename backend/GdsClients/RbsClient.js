@@ -1,7 +1,7 @@
 
 const iqJson = require("../Utils/Misc").iqJson;
 
-let {LoginTimeOut, BadRequest, BadGateway, NotImplemented} = require("../Utils/Rej.js");
+let {LoginTimeOut, BadRequest, BadGateway, NotImplemented, UnprocessableEntity} = require("../Utils/Rej.js");
 let Config = require("../Config.js");
 let Crypt;
 try {
@@ -39,7 +39,7 @@ let callRbs = async (functionName, params) => {
 			if (resp.result.response_code == 104) {
 				return BadRequest('RBS says passed params are invalid - ' + errorStr);
 			} else {
-				return BadGateway('RBS returned error - ' + resp.result.response_code + ' - ' + errorStr);
+				return UnprocessableEntity('RBS returned error - ' + resp.result.response_code + ' - ' + errorStr);
 			}
 		} else if (resp.result.response_code == 3) {
 			let rpcErrors = resp.result.errors || [];
