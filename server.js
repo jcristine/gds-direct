@@ -2,7 +2,7 @@
 const Config = require('./backend/Config.js');
 (async () => {
 	console.log('fetching external config');
-	await Config.fetchExternalConfig();
+	await Config.getConfig();
 	console.log('initializing Web Routes');
 	require('./backend/WebRoutes.js');
 	let Diag = require('./backend/LibWrappers/Diag.js');

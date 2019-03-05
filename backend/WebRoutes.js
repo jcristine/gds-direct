@@ -16,7 +16,7 @@ let FluentLogger = require('./LibWrappers/FluentLogger.js');
 let HighlightRulesRepository = require('./Actions/HighlightRulesRepository.js');
 let Redis = require('./LibWrappers/Redis.js');
 let initSocketIo = require('socket.io');
-let Config = require('./Config.js');
+let {getConfig} = require('./Config.js');
 let GdsSessions = require('./Repositories/GdsSessions.js');
 let Migration = require("./Maintenance/Migration");
 const CommandParser = require("./Transpiled/Gds/Parsers/Apollo/CommandParser");
@@ -256,7 +256,8 @@ app.post('/admin/terminal/sessionsGet', toHandleHttp(async rqBody => {
 
 app.get('/emcLoginUrl', toHandleHttp(async rqBody => {
 	let returnUrl = rqBody.returnUrl;
-	let result = await Emc.client.getLoginPage(Config.external_service.emc.projectName, returnUrl);
+	let config = await getConfig();
+	let result = await Emc.client.getLoginPage(config.external_service.emc.projectName, returnUrl);
 	return {emcLoginUrl: result.data.data};
 }));
 app.get('/authorizeEmcToken', toHandleHttp(async rqBody => {
@@ -319,8 +320,10 @@ app.get('/parser/test', toHandleHttp((rqBody) => {
 	return result;
 }));
 
-app.listen(+Config.HTTP_PORT, Config.HOST, function () {
-	console.log('listening on *:' + Config.HTTP_PORT + ' - for standard http request handling');
+getConfig().then(config => {
+	app.listen(+config.HTTP_PORT, config.HOST, function () {
+		console.log('listening on *:' + config.HTTP_PORT + ' - for standard http request handling');
+	});
 });
 
 // UnhandledPromiseRejectionWarning
@@ -375,12 +378,14 @@ socketIo.on('connection', /** @param {Socket} socket */ socket => {
 		console.log('delivered testMessage to client', response);
 	});
 });
-try {
-	socketIo.listen(Config.SOCKET_PORT);
-} catch (exc) {
-	// TypeError: Cannot read property 'listeners' of undefined if SOCKET_PORT is not defined
-	Diag.error('Failed to listen to socket port (' + Config.SOCKET_PORT + ') - ' + exc)
-}
+getConfig().then(config => {
+	try {
+		socketIo.listen(config.SOCKET_PORT);
+	} catch (exc) {
+		// TypeError: Cannot read property 'listeners' of undefined if SOCKET_PORT is not defined
+		Diag.error('Failed to listen to socket port (' + config.SOCKET_PORT + ') - ' + exc)
+	}
+});
 
 
 app.get('/ping', toHandleHttp((rqBody) => {
