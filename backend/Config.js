@@ -47,6 +47,15 @@ let Config = {
 			login: 'cms_json_service',
 			password: isProd ? '4plj42hy2EvhoZgKYthc' : 'SK8BmH2XrAlwgr3U6Hem',
 		},
+		cms: {
+			// CMS uses your EMC login/password for authentication, but since GDSD is a
+			// new project, it only has the token, no password, so using CMS credentials
+			host: isProd
+				? 'http://cms.asaptickets.com/jsonService.php'
+				: 'http://10.128.8.117:1337/jsonService.php',
+			login: 'lms',
+			password: isProd ? 'zB3+(nCy' : 'qwerty',
+		},
 	},
 
 	apolloAuthToken: env.apolloAuthToken,

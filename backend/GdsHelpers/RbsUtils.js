@@ -1,7 +1,7 @@
 
 // should probably use some RBS API instead of following functions
 
-const RbsClient = require("../GdsClients/RbsClient");
+const RbsClient = require("../IqClients/RbsClient");
 
 exports.getRbsPqInfo = async (pnrDump, pricingDump, gds) => {
 	// a hack, RBS does not accept dumps without rec

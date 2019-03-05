@@ -24,7 +24,8 @@ let PersistentHttpRq = (params) => new Promise((resolve, reject) => {
 	let requestAgent = params.dropConnection ? undefined :
 		parsedUrl.protocol.startsWith('https') ? httpsAgent : httpAgent;
 	let req = request({
-		host: parsedUrl.host,
+		host: parsedUrl.hostname,
+		port: parsedUrl.port,
 		path: parsedUrl.path,
 		headers: params.headers,
 		method: params.method || 'POST',

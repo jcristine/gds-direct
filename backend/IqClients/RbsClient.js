@@ -1,8 +1,9 @@
+const CmsClient = require("./CmsClient");
 
 const iqJson = require("../Utils/Misc").iqJson;
 
 let {LoginTimeOut, BadRequest, BadGateway, NotImplemented, UnprocessableEntity} = require("../Utils/Rej.js");
-let Config = require("../Config.js");
+let {getConfig} = require("../Config.js");
 let Crypt;
 try {
 	Crypt = require("../../node_modules/dynatech-client-component/lib/Crypt.js").default;
@@ -15,15 +16,15 @@ try {
 	};
 }
 
-
 let callRbs = async (functionName, params) => {
 	let logId = 'rbs.5bf6e431.9577485';
-	let url = Config.production
+	let config = await getConfig();
+	let url = config.production
 		? 'http://rbs-asaptickets.lan.dyninno.net/jsonExternalInterface.php?log_id=' + logId
 		: 'http://st-rbs.sjager.php7.dyninno.net/jsonExternalInterface.php?log_id=' + logId;
 		// : 'http://rbs-dev.aklesuns.php7.dyninno.net/jsonExternalInterface.php?log_id=' + logId;
 
-	let rbsPassword = Config.RBS_PASSWORD;
+	let rbsPassword = config.RBS_PASSWORD;
 	if (!rbsPassword) {
 		return Promise.reject('RBS password not defined in env');
 	}
@@ -51,29 +52,42 @@ let callRbs = async (functionName, params) => {
 	});
 };
 
-let getLeadData = (travelRequestId) => {
-	return !travelRequestId ? null : {
-		// TODO: fetch from CMS
-		leadId: +travelRequestId || null,
-		leadOwnerId: null,
-		leadUrl: 'https://cms.asaptickets.com/leadInfo?id=' + travelRequestId,
-		projectName: null,
-		paxNumAdults: 1,
-		paxNumChildren: 0,
-		paxNumInfants: 0,
-	};
-};
+let getLeadData = async (travelRequestId) =>
+	!travelRequestId
+		? Promise.resolve(null)
+		: CmsClient.getRequestBriefData({requestId: travelRequestId})
+			.then(rpcRs => {
+				let cmsData = rpcRs.result.data;
+				let ageGroupToCnt = {};
+				for (let group of cmsData.requestedAgeGroups) {
+					ageGroupToCnt[group.ageGroup] = group.quantity;
+				}
+				return {
+					leadId: travelRequestId,
+					leadOwnerId: cmsData.leadOwnerId,
+					projectName: cmsData.projectName,
+					leadUrl: 'https://cms.asaptickets.com/leadInfo?id=' + travelRequestId,
+					paxNumAdults: ageGroupToCnt['adult'] || 0,
+					paxNumChildren: ageGroupToCnt['child'] || 0,
+					paxNumInfants: ageGroupToCnt['infant'] || 0,
+				};
+			})
+			.catch(exc => ({
+				leadId: travelRequestId,
+				leadUrl: 'https://cms.asaptickets.com/leadInfo?id=' + travelRequestId,
+				debug: exc + '',
+			}));
 
 /** @param {{command: '*R', gds: 'apollo', language: 'sabre', agentId: '6206'}} reqBody */
 let RbsClient = (reqBody) => {
 	let {gds, travelRequestId} = reqBody;
 	return {
-		runInputCmd: ({rbsSessionId}) => callRbs('terminal.runCommand', {
+		runInputCmd: async ({rbsSessionId}) => callRbs('terminal.runCommand', {
 			gds: gds,
 			command: reqBody.command,
 			dialect: reqBody.language,
 			sessionId: rbsSessionId,
-			context: getLeadData(travelRequestId),
+			context: null,
 		}).then(result => result.result.result).catch(exc => {
 			if ((exc + '').indexOf('Session token expired') > -1) {
 				return LoginTimeOut('Session token expired');
@@ -81,15 +95,15 @@ let RbsClient = (reqBody) => {
 				return Promise.reject(exc);
 			}
 		}),
-		getPqItinerary: ({rbsSessionId}) => callRbs('terminal.getPqItinerary', {
+		getPqItinerary: async ({rbsSessionId}) => callRbs('terminal.getPqItinerary', {
 			sessionId: rbsSessionId,
 			gds: gds,
-			context: getLeadData(reqBody.pqTravelRequestId),
+			context: await getLeadData(reqBody.pqTravelRequestId),
 		}).then(rbsResp => rbsResp.result.result),
-		importPq: ({rbsSessionId}) => callRbs('terminal.importPq', {
+		importPq: async ({rbsSessionId}) => callRbs('terminal.importPq', {
 			sessionId: rbsSessionId,
 			gds: gds,
-			context: getLeadData(reqBody.pqTravelRequestId),
+			context: null,
 		}).then(rbsResp => rbsResp.result.result),
 		/** @param {IRebuildItineraryRq} params */
 		rebuildItinerary: (params) => callRbs('terminal.rebuildItinerary', params)
