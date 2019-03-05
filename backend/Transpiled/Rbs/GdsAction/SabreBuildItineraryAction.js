@@ -73,7 +73,7 @@ class SabreBuildItineraryAction extends AbstractGdsAction
                     'departureAirport': $seg['departureAirport'],
                     'destinationAirport': $seg['destinationAirport'],
                     'segmentStatus': $seg['segmentStatus'],
-                    'seatCount': $isParserFormat ? $seg['statusNumber'] : $seg['seatCount'],
+                    'seatCount': $seg['seatCount'],
                 };
             }, $itinerary),
         };

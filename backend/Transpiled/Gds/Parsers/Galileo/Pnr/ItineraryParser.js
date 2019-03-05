@@ -52,7 +52,7 @@ class ItineraryParser {
 			'(?<destinationAirport>[A-Z]{3})' +
 			'\\s+' +
 			'(?<segmentStatus>[A-Z]{2})' +
-			'(?<statusNumber>\\d{0,2})' +
+			'(?<seatCount>\\d{0,2})' +
 			'(' +
 			'\\s+' +
 			'(?<departureTime>\\d+[A-Z]?)' +
@@ -89,7 +89,7 @@ class ItineraryParser {
 				'departureAirport': php.trim($matches['departureAirport']),
 				'destinationAirport': php.trim($matches['destinationAirport']),
 				'segmentStatus': php.trim($matches['segmentStatus']),
-				'statusNumber': php.intval(php.trim($matches['statusNumber'])),
+				'seatCount': php.intval(php.trim($matches['seatCount'])),
 				'departureTime': php.empty($matches['departureTime']) ? null : {
 					'raw': php.trim($matches['departureTime']),
 					'parsed': CommonParserHelpers.decodeApolloTime(php.trim($matches['departureTime'])),
@@ -291,7 +291,7 @@ class ItineraryParser {
 			'(?<vendorCode>[A-Z\\d]{2})' +
 			'\\s+' +
 			'(?<segmentStatus>[A-Z]{2})' +
-			'(?<statusNumber>\\d{0,2})' +
+			'(?<seatCount>\\d{0,2})' +
 			'\\s+' +
 			'(?<airport>[A-Z]{3})' +
 			'\\s+' +
@@ -312,7 +312,7 @@ class ItineraryParser {
 				'segmentType': this.SEGMENT_TYPE_CAR,
 				'vendorCode': php.trim($matches['vendorCode']),
 				'segmentStatus': php.trim($matches['segmentStatus']),
-				'statusNumber': php.intval(php.trim($matches['statusNumber'])),
+				'seatCount': php.intval(php.trim($matches['seatCount'])),
 				'airport': php.trim($matches['airport']),
 				'arrivalDate': {
 					'raw': $matches['arrivalDate'],

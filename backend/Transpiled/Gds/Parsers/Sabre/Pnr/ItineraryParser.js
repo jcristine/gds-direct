@@ -125,7 +125,7 @@ class ItineraryParser {
 			// Row added to use itinerary parser to parse IMSL dump segments, these keys will be empty for usual dump
 			'\\s*' +
 			'(?<segmentStatus>[A-Z]{2})' +
-			'(?<statusNumber>\\d+)' +
+			'(?<seatCount>\\d+)' +
 			'\\s+' +
 			'(?<departureTime>\\d{2,4}([A-Z]|\\s+))' +
 			'\\s*' +
@@ -154,7 +154,7 @@ class ItineraryParser {
 				'marriageNumber': $tokens['marriageNumber'] || null,
 				'marriageOrder': $tokens['marriageOrder'] || null,
 				'segmentStatus': $tokens['segmentStatus'],
-				'statusNumber': $tokens['statusNumber'],
+				'seatCount': $tokens['seatCount'],
 				'departureTime': {
 					'raw': $tokens['departureTime'] || null,
 					'parsed': this.parseTime($tokens['departureTime'] || null),

@@ -426,7 +426,7 @@ class AmadeusReservationParser
             'departureAirport': $split['R'],
             'destinationAirport': $split['N'],
             'segmentStatus': $split['S'],
-            'statusNumber': $split['Q'],
+            'seatCount': $split['Q'],
             'terminalTime': this.parseTime($split['U']),
             'terminal': $split['G'],
             'departureTime': this.parseTime($split['t']),
@@ -476,7 +476,7 @@ class AmadeusReservationParser
             '(?<destinationAirport>[A-Z]{3})'+
             '\\s'+
             '(?<segmentStatus>[A-Z]{2})'+
-            '(?<statusNumber>\\d+)'+
+            '(?<seatCount>\\d+)'+
             '\\s+'+
             '(?<departureTime>\\d{3,4}[A-Z]?)'+
             '\\s?'+
@@ -504,7 +504,7 @@ class AmadeusReservationParser
                 'departureAirport': $tokens['departureAirport'],
                 'destinationAirport': $tokens['destinationAirport'],
                 'segmentStatus': $tokens['segmentStatus'],
-                'statusNumber': $tokens['statusNumber'],
+                'seatCount': $tokens['seatCount'],
                 'eticket': $tokens['eticket'] ? true : false,
                 'departureTime': this.parseTime($tokens['departureTime']),
                 'destinationTime': this.parseTime($tokens['destinationTime']),

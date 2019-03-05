@@ -272,7 +272,7 @@ class PnrParserTest extends require('../../../../Lib/TestCase.js')
                             'departureAirport': 'ROB',
                             'destinationAirport': 'LOS',
                             'segmentStatus': 'HK',
-                            'statusNumber': '1',
+                            'seatCount': '1',
                             'departureTime': {
                                 'raw': '1140A',
                                 'parsed': '11:40',
@@ -302,7 +302,7 @@ class PnrParserTest extends require('../../../../Lib/TestCase.js')
                             'departureAirport': 'LOS',
                             'destinationAirport': 'JFK',
                             'segmentStatus': 'HK',
-                            'statusNumber': '1',
+                            'seatCount': '1',
                             'departureTime': {
                                 'raw': '1130P',
                                 'parsed': '23:30',
@@ -413,7 +413,7 @@ class PnrParserTest extends require('../../../../Lib/TestCase.js')
                             'departureAirport': 'LOS',
                             'destinationAirport': 'JFK',
                             'segmentStatus': 'HK',
-                            'statusNumber': '1',
+                            'seatCount': '1',
                             'departureTime': {
                                 'raw': '1130P',
                                 'parsed': '23:30',
@@ -633,7 +633,7 @@ class PnrParserTest extends require('../../../../Lib/TestCase.js')
                             'departureAirport': 'JFK',
                             'destinationAirport': 'LOS',
                             'segmentStatus': 'HK',
-                            'statusNumber': '1',
+                            'seatCount': '1',
                             'departureTime': {
                                 'raw': '1225P',
                                 'parsed': '12:25',
@@ -664,7 +664,7 @@ class PnrParserTest extends require('../../../../Lib/TestCase.js')
                             'departureAirport': 'LOS',
                             'destinationAirport': 'ACC',
                             'segmentStatus': 'HK',
-                            'statusNumber': '1',
+                            'seatCount': '1',
                             'departureTime': {
                                 'raw': '720A',
                                 'parsed': '07:20',
@@ -895,7 +895,7 @@ class PnrParserTest extends require('../../../../Lib/TestCase.js')
                             'departureAirport': 'ADD',
                             'destinationAirport': 'DOH',
                             'segmentStatus': 'HK',
-                            'statusNumber': '1',
+                            'seatCount': '1',
                             'departureTime': {
                                 'raw': '140A',
                                 'parsed': '01:40',
@@ -927,7 +927,7 @@ class PnrParserTest extends require('../../../../Lib/TestCase.js')
                             'departureAirport': 'DOH',
                             'destinationAirport': 'IAD',
                             'segmentStatus': 'HK',
-                            'statusNumber': '1',
+                            'seatCount': '1',
                             'departureTime': {
                                 'raw': '815A',
                                 'parsed': '08:15',
@@ -1190,7 +1190,7 @@ class PnrParserTest extends require('../../../../Lib/TestCase.js')
                             'departureAirport': 'TPA',
                             'destinationAirport': 'FRA',
                             'segmentStatus': 'HK',
-                            'statusNumber': '1',
+                            'seatCount': '1',
                             'departureTime': {
                                 'raw': '801P',
                                 'parsed': '20:01',
@@ -1221,7 +1221,7 @@ class PnrParserTest extends require('../../../../Lib/TestCase.js')
                             'departureAirport': 'FRA',
                             'destinationAirport': 'BEY',
                             'segmentStatus': 'HK',
-                            'statusNumber': '1',
+                            'seatCount': '1',
                             'departureTime': {
                                 'raw': '1200P',
                                 'parsed': '12:00',
@@ -1846,7 +1846,7 @@ class PnrParserTest extends require('../../../../Lib/TestCase.js')
                             'departureAirport': 'KIV',
                             'destinationAirport': 'KBP',
                             'segmentStatus': 'HK',
-                            'statusNumber': '2',
+                            'seatCount': '2',
                             'departureTime': {'raw': '710A','parsed': '07:10'},
                             'destinationTime': {'raw': '820A','parsed': '08:20'},
                             'dayOffset': 0,
@@ -1870,7 +1870,7 @@ class PnrParserTest extends require('../../../../Lib/TestCase.js')
                             'departureAirport': 'AKL',
                             'destinationAirport': 'MEL',
                             'segmentStatus': 'GK',
-                            'statusNumber': '1',
+                            'seatCount': '1',
                             'departureTime': {'raw': '630A','parsed': '06:30'},
                             'destinationTime': {'raw': '840A','parsed': '08:40'},
                             'dayOffset': 0,
@@ -1951,7 +1951,7 @@ class PnrParserTest extends require('../../../../Lib/TestCase.js')
                             'departureAirport': 'HEL',
                             'destinationAirport': 'HKG',
                             'segmentStatus': 'DK',
-                            'statusNumber': '1',
+                            'seatCount': '1',
                             'eticket': true,
                             'departureTime': {'raw': '1150P','parsed': '23:50'},
                             'destinationTime': {'raw': '230P','parsed': '14:30'},
