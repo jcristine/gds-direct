@@ -1,7 +1,38 @@
 // namespace LocalLib\Lexer;
 
-const Fp = require('../../Lib/Utils/Fp.js');
-const php = require("../../php");
+let normReg = (pattern) => {
+	if (typeof pattern === 'string') {
+		let match = pattern.match(/^\/(.*)\/([a-z]*)$/) ||
+					pattern.match(/^#(.*)#([a-z]*)$/); // oh, Roma...
+		if (match) {
+			let [_, content, flags] = match;
+			// php takes content and flags in one string,
+			// but js takes them as separate arguments
+			pattern = new RegExp(content, flags);
+		}
+	}
+	return pattern;
+};
+
+let normMatch = match => {
+	if (match) {
+		Object.assign(match, match.groups);
+		delete(match.groups);
+		delete(match.index);
+		delete(match.input);
+	}
+	return match;
+};
+
+let preg_match = (pattern, str, dest = []) => {
+	pattern = normReg(pattern);
+	let matches = normMatch(str.match(pattern));
+	if (matches) {
+		Object.assign(dest, matches);
+	}
+	delete(dest.groups);
+	return matches;
+};
 
 class Lexeme {
 
@@ -19,10 +50,8 @@ class Lexeme {
 
 	passesConstraints($context) {
 		let $passesConstraint;
-		$passesConstraint = ($constraint) => {
-			return $constraint($context);
-		};
-		return Fp.all($passesConstraint, this.$constraints);
+		$passesConstraint = ($constraint) => $constraint($context);
+		return this.$constraints.every($passesConstraint);
 	}
 
 	hasConstraint($constraint) {
@@ -35,7 +64,7 @@ class Lexeme {
 		$constraint = ($context) => {
 			let $previousLexeme;
 			$previousLexeme = $context['lexemes'].slice(-1)[0];
-			return $previousLexeme && php.in_array($previousLexeme['lexeme'], $lexemes);
+			return $previousLexeme && $lexemes.includes($previousLexeme['lexeme']);
 		};
 		return this.hasConstraint($constraint);
 	}
@@ -55,57 +84,17 @@ class Lexeme {
 		return this.preprocessData($dataPreprocessor);
 	}
 
-	preprocessDataFilterTokens($tokens) {
-		let $dataPreprocessor;
-		$dataPreprocessor = ($data) => {
-			let $result, $token;
-			$result = [];
-			for ($token of $tokens) {
-				$result[$token] = $data[$token] || null;
-			}
-			return $result;
-		};
-		return this.preprocessData($dataPreprocessor);
-	}
-
-	preprocessDataEmpty() {
-		let $dataPreprocessor;
-		$dataPreprocessor = ($data) => {
-			return $data;
-		};
-		return this.preprocessData($dataPreprocessor);
-	}
-
 	preprocessDataRemoveNumericKeys() {
 		let $dataPreprocessor;
 		$dataPreprocessor = ($data) => {
 			let $result, $key, $value;
 			$result = [];
 			for ([$key, $value] of Object.entries($data)) {
-				if (!php.is_integer($key)) {
+				if (isNaN(parseInt($key))) {
 					$result[$key] = $value;
 				}
 			}
 			return $result;
-		};
-		return this.preprocessData($dataPreprocessor);
-	}
-
-	preprocessDataReturnOnlyToken() {
-		let $dataPreprocessor;
-		$dataPreprocessor = ($data) => {
-			let $result, $key, $value;
-			$result = [];
-			for ([$key, $value] of Object.entries($data)) {
-				if (!php.is_integer($key)) {
-					$result[$key] = $value;
-				}
-			}
-			if (php.count($result) === 1) {
-				return php.array_pop($result);
-			} else {
-				return null;
-			}
 		};
 		return this.preprocessData($dataPreprocessor);
 	}
@@ -116,13 +105,14 @@ class Lexeme {
 			let $result, $key, $value;
 			$result = [];
 			for ([$key, $value] of Object.entries($data)) {
-				if (!php.is_integer($key)) {
+				if (isNaN(parseInt($key))) {
 					$result[$key] = $value;
 				}
 			}
-			if (php.count($result) === 1) {
-				return php.array_pop($result);
-			} else if (php.count($result) > 1) {
+			let keys = Object.keys($result);
+			if (keys.length === 1) {
+				return $result[keys[0]];
+			} else if (keys.length > 1) {
 				return $result;
 			} else {
 				return null;
@@ -134,12 +124,14 @@ class Lexeme {
 	match($text, $context) {
 		let $dataPreprocessor, $matches;
 		$dataPreprocessor = this.$dataPreprocessor;
-		if (php.preg_match(this.$regex, $text, $matches = []) && this.passesConstraints($context) && $matches[0] !== '') {
+		if (preg_match(this.$regex, $text, $matches = []) &&
+			this.passesConstraints($context) && $matches[0] !== ''
+		) {
 			return {
 				'lexeme': this.$name,
 				'data': $dataPreprocessor($matches),
 				'raw': $matches[0],
-				'textLeft': php.mb_substr($text, php.mb_strlen($matches[0])),
+				'textLeft': $text.slice($matches[0].length),
 			};
 		} else {
 			return null;

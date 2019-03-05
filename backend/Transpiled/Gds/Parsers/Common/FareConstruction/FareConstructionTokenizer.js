@@ -1,7 +1,6 @@
 // namespace Gds\Parsers\Common\FareConstruction;
 
 const Lexeme = require('../../../../Lib/Lexer/Lexeme.js');
-const php = require('../../../../php');
 
 /**
  * Whereas Lexer+php works with cases where single text
@@ -23,12 +22,12 @@ class FareConstructionTokenizer {
 	/** @see >HELP PRICING-LINEAR FCONST SYMBOLS; */
 	static makeLexemes() {
 		let $isFirst, $getTuple, $onlyFareInSegment, $getFirst;
-		$isFirst = ($context) => $context && php.count($context['lexemes']) === 0;
-		$getTuple = ($matches) => php.array_slice($matches, 1);
+		$isFirst = ($context) => $context && $context['lexemes'].length === 0;
+		$getTuple = ($matches) => $matches.slice(1);
 		$onlyFareInSegment = ($context) => {
 			let $lexemes, $i, $lexeme;
 			if ($lexemes = $context['lexemes'] || null) {
-				for ($i = php.count($lexemes) - 1; $i >= 0; --$i) {
+				for ($i = $lexemes.length - 1; $i >= 0; --$i) {
 					$lexeme = $lexemes[$i];
 					if ($lexeme['lexeme'] === 'segment') {
 						return true;
@@ -141,7 +140,7 @@ class FareConstructionTokenizer {
 				yield $subContext;
 			}
 			if (!$gotAny) yield {'text': $textLeft, 'lexemes': $prevLexemes};
-			php.array_pop($prevLexemes);
+			$prevLexemes.pop();
 		}
 	}
 
