@@ -5,7 +5,7 @@ let ApoPnrParser = require("./Transpiled/Gds/Parsers/Apollo/Pnr/PnrParser.js");
 let SabPnrParser = require("./Transpiled/Gds/Parsers/Sabre/Pnr/PnrParser.js");
 let AmaPnrParser = require("./Transpiled/Gds/Parsers/Amadeus/Pnr/PnrParser.js");
 let GalPnrParser = require("./Transpiled/Gds/Parsers/Galileo/Pnr/PnrParser.js");
-let RbsClient = require('./GdsClients/RbsClient.js');
+let RbsClient = require('./IqClients/RbsClient.js');
 let TravelportClient = require('./GdsClients/TravelportClient.js');
 let Db = require('./Utils/Db.js');
 let TerminalService = require('./Transpiled/App/Services/TerminalService.js');
@@ -25,6 +25,7 @@ const MakeMcoApolloAction = require('./Transpiled/Rbs/GdsDirect/Actions/Apollo/M
 
 let php = require('./Transpiled/php.js');
 const KeepAlive = require("./Maintenance/KeepAlive");
+const CmsClient = require("./IqClients/CmsClient");
 const UnprocessableEntity = require("./Utils/Rej").UnprocessableEntity;
 
 let isTravelportAllowed = (rqBody) =>
@@ -119,8 +120,16 @@ let runInputCmdRestartAllowed = (reqBody) => {
 
 /** @param {IEmcResult} emcResult */
 exports.runInputCmd = (reqBody, emcResult) => {
+	let calledDtObj = new Date();
 	let running = runInputCmdRestartAllowed(reqBody, emcResult)
 		.then(async ({session, rbsResult}) => {
+			// TODO: do not count same commands in a row except ['MD', 'MU', 'A*', '1*']
+			CmsClient.reportCmdCalled({
+				cmd: reqBody.command,
+				agentId: reqBody.agentId,
+				calledDt: calledDtObj.toISOString(),
+				duration: ((Date.now() - calledDtObj.getTime()) / 1000).toFixed(3),
+			});
 			let termSvc = new TerminalService(reqBody.gds, reqBody.agentId, reqBody.travelRequestId);
 			let rbsResp = await termSvc.addHighlighting(reqBody.command, reqBody.language || reqBody.gds, rbsResult);
 			return {...rbsResp, session: session};
