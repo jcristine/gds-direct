@@ -14,15 +14,15 @@ class GetMultiPccTariffDisplayActionTest extends require('../../../../../../../b
         let $airportRows;
         $airportRows = ArrayUtil.makeTableRows([
             ['iata_code' , 'name'                          , 'country_code' , 'country_name'   , 'state_code' , 'city_code' , 'city_name'   , 'lat'     , 'lon'      , 'tz'                , 'region_id' , 'region_name'  ],
-            ['ABZ'       , 'Dyce Airport'                  , 'GB'           , 'United Kingdom' , null         , 'ABZ'       , 'Aberdeen'    , '57.2019' , '-2.1978'  , 'Europe\/London'     ,        '33' , 'Europe'       ],
-            ['AMM'       , 'Queen Alia Intl Arpt'          , 'JO'           , 'Jordan'         , null         , 'AMM'       , 'Amman'       , '31.7226' , '35.9932'  , 'Asia\/Amman'        ,        '35' , 'Middle East'  ],
-            ['AMS'       , 'Schiphol Arpt'                 , 'NL'           , 'Netherlands'    , null         , 'AMS'       , 'Amsterdam'   , '52.3086' , '4.7639'   , 'Europe\/Amsterdam'  ,        '33' , 'Europe'       ],
-            ['JFK'       , 'John F Kennedy Intl Arpt'      , 'US'           , 'United States'  , 'NY'         , 'NYC'       , 'New York'    , '40.6398' , '-73.7789' , 'America\/New_York'  ,        '38' , 'North America'],
-            ['KIV'       , 'Chisinau Arpt'                 , 'MD'           , 'Moldova'        , null         , 'KIV'       , 'Chisinau'    , '46.9277' , '28.9310'  , 'Europe\/Chisinau'   ,        '33' , 'Europe'       ],
-            ['LGA'       , 'La Guardia Arpt'               , 'US'           , 'United States'  , 'NY'         , 'NYC'       , 'New York'    , '40.7772' , '-73.8726' , 'America\/New_York'  ,        '38' , 'North America'],
-            ['LOS'       , 'Murtala Muhammed Arpt'         , 'NG'           , 'Nigeria'        , null         , 'LOS'       , 'Lagos'       , '6.5774'  , '3.3212'   , 'Africa\/Lagos'      ,        '34' , 'Africa'       ],
-            ['MSP'       , 'Minneapolis St Paul Intl Arpt' , 'US'           , 'United States'  , 'MN'         , 'MSP'       , 'Minneapolis' , '44.8820' , '-93.2218' , 'America\/Chicago'   ,        '38' , 'North America'],
-            ['TUL'       , 'Tulsa Intl Arpt'               , 'US'           , 'United States'  , 'OK'         , 'TUL'       , 'Tulsa'       , '36.1984' , '-95.8881' , 'America\/Chicago'   ,        '38' , 'North America'],
+            ['ABZ'       , 'Dyce Airport'                  , 'GB'           , 'United Kingdom' , null         , 'ABZ'       , 'Aberdeen'    , '57.2019' , '-2.1978'  , 'Europe/London'     ,        '33' , 'Europe'       ],
+            ['AMM'       , 'Queen Alia Intl Arpt'          , 'JO'           , 'Jordan'         , null         , 'AMM'       , 'Amman'       , '31.7226' , '35.9932'  , 'Asia/Amman'        ,        '35' , 'Middle East'  ],
+            ['AMS'       , 'Schiphol Arpt'                 , 'NL'           , 'Netherlands'    , null         , 'AMS'       , 'Amsterdam'   , '52.3086' , '4.7639'   , 'Europe/Amsterdam'  ,        '33' , 'Europe'       ],
+            ['JFK'       , 'John F Kennedy Intl Arpt'      , 'US'           , 'United States'  , 'NY'         , 'NYC'       , 'New York'    , '40.6398' , '-73.7789' , 'America/New_York'  ,        '38' , 'North America'],
+            ['KIV'       , 'Chisinau Arpt'                 , 'MD'           , 'Moldova'        , null         , 'KIV'       , 'Chisinau'    , '46.9277' , '28.9310'  , 'Europe/Chisinau'   ,        '33' , 'Europe'       ],
+            ['LGA'       , 'La Guardia Arpt'               , 'US'           , 'United States'  , 'NY'         , 'NYC'       , 'New York'    , '40.7772' , '-73.8726' , 'America/New_York'  ,        '38' , 'North America'],
+            ['LOS'       , 'Murtala Muhammed Arpt'         , 'NG'           , 'Nigeria'        , null         , 'LOS'       , 'Lagos'       , '6.5774'  , '3.3212'   , 'Africa/Lagos'      ,        '34' , 'Africa'       ],
+            ['MSP'       , 'Minneapolis St Paul Intl Arpt' , 'US'           , 'United States'  , 'MN'         , 'MSP'       , 'Minneapolis' , '44.8820' , '-93.2218' , 'America/Chicago'   ,        '38' , 'North America'],
+            ['TUL'       , 'Tulsa Intl Arpt'               , 'US'           , 'United States'  , 'OK'         , 'TUL'       , 'Tulsa'       , '36.1984' , '-95.8881' , 'America/Chicago'   ,        '38' , 'North America'],
         ])
         ;
         return new StubLocationGeographyProvider($airportRows);
@@ -251,33 +251,32 @@ class GetMultiPccTariffDisplayActionTest extends require('../../../../../../../b
         // should use agent's mods in Sabre and mods from rules everywhere else
         // should not repeat same PCC-s from GB -> anywhere and US -> Europe (33)
         // rules, but should include all of them from both rules (G8T, U2E5, etc...)
-        // TODO: uncomment when TariffCmdParser is transpiled
-        // $list.push([
-        //     {
-        //         'gds': 'sabre', 'pcc': '0EKH',
-        //         'cmd': 'FQABZMSP18MAR\u00A5RR*BSAG\u00A5PITX',
-        //     },
-        //     ArrayUtil.makeTableRows([
-        //         ['pcc'       , 'gds'     , 'ptc' , 'departureDate' , 'returnDate' , 'departureAirport' , 'destinationAirport' , 'accountCode' , 'fareType'],
-        //         ['13NM'      , 'apollo'  , 'JWZ' , '2019-03-18'    , null         , 'ABZ'              , 'MSP'                , null          , null      ],
-        //         ['0EKH'      , 'sabre'   , 'ITX' , '2019-03-18'    , null         , 'ABZ'              , 'MSP'                , 'BSAG'        , null      ],
-        //         ['5E9H'      , 'sabre'   , 'ITX' , '2019-03-18'    , null         , 'ABZ'              , 'MSP'                , 'BSAG'        , null      ],
-        //         ['K2MI'      , 'sabre'   , 'ITX' , '2019-03-18'    , null         , 'ABZ'              , 'MSP'                , 'BSAG'        , null      ],
-        //         ['DK8H'      , 'sabre'   , 'ITX' , '2019-03-18'    , null         , 'ABZ'              , 'MSP'                , 'BSAG'        , null      ],
-        //         ['K9P'       , 'galileo' , 'ITX' , '2019-03-18'    , null         , 'ABZ'              , 'MSP'                , 'TPACK'       , 'private' ],
-        //         ['K9P'       , 'galileo' , null  , '2019-03-18'    , null         , 'ABZ'              , 'MSP'                , 'TPACK'       , 'private' ],
-        //         ['G8T'       , 'galileo' , 'ITX' , '2019-03-18'    , null         , 'ABZ'              , 'MSP'                , 'TPACK'       , 'private' ],
-        //         ['G8T'       , 'galileo' , null  , '2019-03-18'    , null         , 'ABZ'              , 'MSP'                , 'TPACK'       , 'private' ],
-        //         ['3ZV4'      , 'galileo' , 'ITX' , '2019-03-18'    , null         , 'ABZ'              , 'MSP'                , 'BSAG'        , 'private' ],
-        //         ['3ZV4'      , 'galileo' , null  , '2019-03-18'    , null         , 'ABZ'              , 'MSP'                , 'BSAG'        , 'private' ],
-        //
-        //         ['1O3K'      , 'apollo'  , 'JWZ' , '2019-03-18'    , null         , 'ABZ'              , 'MSP'                , null          , null      ],
-        //         ['2G2H'      , 'apollo'  , 'JWZ' , '2019-03-18'    , null         , 'ABZ'              , 'MSP'                , null          , null      ],
-        //         ['2G52'      , 'apollo'  , 'JWZ' , '2019-03-18'    , null         , 'ABZ'              , 'MSP'                , null          , null      ],
-        //         ['U2E5'      , 'sabre'   , 'ITX' , '2019-03-18'    , null         , 'ABZ'              , 'MSP'                , 'BSAG'        , null      ],
-        //         ['LAXGO3106' , 'amadeus' , null  , '2019-03-18'    , null         , 'ABZ'              , 'MSP'                , null          , 'private' ],
-        //     ]),
-        // ]);
+        $list.push([
+            {
+                'gds': 'sabre', 'pcc': '0EKH',
+                'cmd': 'FQABZMSP18MAR¥RR*BSAG¥PITX',
+            },
+            ArrayUtil.makeTableRows([
+                ['pcc'       , 'gds'     , 'ptc' , 'departureDate' , 'returnDate' , 'departureAirport' , 'destinationAirport' , 'accountCode' , 'fareType'],
+                ['13NM'      , 'apollo'  , 'JWZ' , '2019-03-18'    , null         , 'ABZ'              , 'MSP'                , null          , null      ],
+                ['0EKH'      , 'sabre'   , 'ITX' , '2019-03-18'    , null         , 'ABZ'              , 'MSP'                , 'BSAG'        , null      ],
+                ['5E9H'      , 'sabre'   , 'ITX' , '2019-03-18'    , null         , 'ABZ'              , 'MSP'                , 'BSAG'        , null      ],
+                ['K2MI'      , 'sabre'   , 'ITX' , '2019-03-18'    , null         , 'ABZ'              , 'MSP'                , 'BSAG'        , null      ],
+                ['DK8H'      , 'sabre'   , 'ITX' , '2019-03-18'    , null         , 'ABZ'              , 'MSP'                , 'BSAG'        , null      ],
+                ['K9P'       , 'galileo' , 'ITX' , '2019-03-18'    , null         , 'ABZ'              , 'MSP'                , 'TPACK'       , 'private' ],
+                ['K9P'       , 'galileo' , null  , '2019-03-18'    , null         , 'ABZ'              , 'MSP'                , 'TPACK'       , 'private' ],
+                ['G8T'       , 'galileo' , 'ITX' , '2019-03-18'    , null         , 'ABZ'              , 'MSP'                , 'TPACK'       , 'private' ],
+                ['G8T'       , 'galileo' , null  , '2019-03-18'    , null         , 'ABZ'              , 'MSP'                , 'TPACK'       , 'private' ],
+                ['3ZV4'      , 'galileo' , 'ITX' , '2019-03-18'    , null         , 'ABZ'              , 'MSP'                , 'BSAG'        , 'private' ],
+                ['3ZV4'      , 'galileo' , null  , '2019-03-18'    , null         , 'ABZ'              , 'MSP'                , 'BSAG'        , 'private' ],
+        
+                ['1O3K'      , 'apollo'  , 'JWZ' , '2019-03-18'    , null         , 'ABZ'              , 'MSP'                , null          , null      ],
+                ['2G2H'      , 'apollo'  , 'JWZ' , '2019-03-18'    , null         , 'ABZ'              , 'MSP'                , null          , null      ],
+                ['2G52'      , 'apollo'  , 'JWZ' , '2019-03-18'    , null         , 'ABZ'              , 'MSP'                , null          , null      ],
+                ['U2E5'      , 'sabre'   , 'ITX' , '2019-03-18'    , null         , 'ABZ'              , 'MSP'                , 'BSAG'        , null      ],
+                ['LAXGO3106' , 'amadeus' , null  , '2019-03-18'    , null         , 'ABZ'              , 'MSP'                , null          , 'private' ],
+            ]),
+        ]);
         return $list;
     }
 
@@ -314,6 +313,10 @@ class GetMultiPccTariffDisplayActionTest extends require('../../../../../../../b
         try {
             this.assertSameNoKeyAsNull($expected, $actual);
         } catch (exc) {
+            let args = process.argv.slice(process.execArgv.length + 2);
+            if (args.includes('debug')) {
+                console.log('\nactual\n', JSON.stringify($actual));
+            }
             throw exc;
         }
     }

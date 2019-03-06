@@ -6,12 +6,6 @@ const DateTime = require('../../../../Lib/Utils/DateTime.js');
 
 let php = require('../../../../php.js');
 
-var require = require('../../../../translib.js').stubRequire;
-
-const Sabre = require('../../../../Gds/Parsers/Sabre.js');
-const Amadeus = require('../../../../Gds/Parsers/Amadeus.js');
-const Galileo = require('../../../../Gds/Parsers/Galileo.js');
-
 /** takes gds and tariff cmd like $D10DECKIVRIX and parses it into a structure common to all GDS-es */
 class NormalizeTariffCmd
 {
@@ -105,15 +99,18 @@ class NormalizeTariffCmd
             $cmdData = ApolloCmdParser.parseFareSearch($cmd);
             $cmdData = this.constructor.normalizeApolloCmd($cmdData);
         } else if ($gds === 'sabre') {
-            $cmdData = require('Sabre/Commands/TariffCmdParser.js').parse($cmd);
+            $cmdData = require('../../../../Gds/Parsers/Sabre/Commands/TariffCmdParser.js').parse($cmd);
             $cmdData = this.constructor.normalizeSabreCmd($cmdData);
         } else if ($gds === 'amadeus') {
-            $cmdData = require('Amadeus/Commands/TariffCmdParser.js').parse($cmd);
+            $cmdData = require('../../../../Gds/Parsers/Amadeus/Commands/TariffCmdParser.js').parse($cmd);
             $cmdData = this.constructor.normalizeAmadeusCmd($cmdData);
         } else if ($gds === 'galileo') {
-            $cmdData = require('Galileo/CommandParser.js').parseFareSearch($cmd);
+            $cmdData = require('../../../../Gds/Parsers/Sabre/Commands/TariffCmdParser.js').parse($cmd);
             $cmdData = this.constructor.normalizeGalileoCmd($cmdData);
         } else {
+            return null;
+        }
+        if (!$cmdData) {
             return null;
         }
         $cmdData['departureDate'] = this.normalizeDate($cmdData['departureDate'] || null);
