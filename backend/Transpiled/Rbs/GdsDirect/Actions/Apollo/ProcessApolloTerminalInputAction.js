@@ -30,15 +30,17 @@ const getRbsPqInfo = require("../../../../../GdsHelpers/RbsUtils").getRbsPqInfo;
 const PnrHistoryParser = require('../../../../Gds/Parsers/Apollo/PnrHistoryParser.js');
 const DisplayHistoryActionHelper = require('./DisplayHistoryActionHelper.js');
 const GetMultiPccTariffDisplayAction = require('../../../../Rbs/GdsDirect/Actions/Common/GetMultiPccTariffDisplayAction.js');
+const fetchUntil = require("../../../../../GdsHelpers/TravelportUtils").fetchUntil;
+const UnprocessableEntity = require("../../../../../Utils/Rej").UnprocessableEntity;
+const TariffDisplayParser = require('../../../../Gds/Parsers/Apollo/TariffDisplay/TariffDisplayParser.js');
+const FareDisplayDomesticParser = require('../../../../Gds/Parsers/Apollo/TariffDisplay/FareDisplayDomesticParser.js');
+const FareDisplayInternationalParser = require('../../../../Gds/Parsers/Apollo/TariffDisplay/FareDisplayInternationalParser.js');
 
 let php = require('../../../../php.js');
 
 /** @debug */
 var require = translib.stubRequire;
 
-const FareDisplayDomesticParser = require('../../../../Gds/Parsers/Apollo/FareDisplayDomesticParser.js');
-const FareDisplayInternationalParser = require('../../../../Gds/Parsers/Apollo/FareDisplayInternationalParser.js');
-const TariffDisplayParser = require('../../../../Gds/Parsers/Apollo/TariffDisplay/TariffDisplayParser.js');
 const RetrieveApolloTicketsAction = require('../../../../Rbs/Process/Apollo/ImportPnr/Actions/RetrieveApolloTicketsAction.js');
 
 class ProcessApolloTerminalInputAction {
@@ -140,24 +142,40 @@ class ProcessApolloTerminalInputAction {
 		return this.$statefulSession.getLeadAgent();
 	}
 
-	findOnLastTariffDisplay($lineNumber) {
-		let $fare;
-		for ($fare of Object.values(this.getLastTariffDisplay()['result'] || [])) {
-			if ($fare['lineNumber'] == $lineNumber) {
-				return $fare;
-			}
+	async findOnLastTariffDisplay(lineNumber) {
+		if (lineNumber < 1 || lineNumber > 250) {
+			return Promise.reject('Invalid fare number - ' + lineNumber + ', out of range');
 		}
-		return null;
+		let requestedFare = null;
+		let pages = [];
+		// TODO: take from command log instead of calling *$D
+		await fetchUntil('*$D', this.$statefulSession, ({output}) => {
+			pages.push(output);
+			let parsed = TariffDisplayParser.parse(pages.join('\n'));
+			if (parsed.error) {
+				return Promise.reject('Failed to parse tariff display - ' + parsed.error + ' - ' + output);
+			}
+			let fares = parsed.result || [];
+			for (let fare of fares) {
+				if (fare['lineNumber'] == lineNumber) {
+					requestedFare = fare;
+					return true;
+				}
+			}
+		});
+		return requestedFare
+			? Promise.resolve(requestedFare)
+			: UnprocessableEntity('Could not find fare #' + lineNumber + ' on last tariff display');
 	}
 
 	/** @return string|null - null means "not changed" */
-	preprocessPricingCommand($data) {
+	async preprocessPricingCommand($data) {
 		let $rawMods, $mod, $matches, $fare;
 		if (!$data) return null;
 		$rawMods = [];
 		for ($mod of Object.values($data['pricingModifiers'])) {
 			if (php.preg_match(/^@(\d+)$/, $mod['raw'], $matches = [])) {
-				if ($fare = this.findOnLastTariffDisplay($matches[1])) {
+				if ($fare = await this.findOnLastTariffDisplay($matches[1])) {
 					$rawMods.push('@' + $fare['fareBasis']);
 				} else {
 					$rawMods.push($mod['raw']);
@@ -334,7 +352,7 @@ class ProcessApolloTerminalInputAction {
 		return php.implode(php.PHP_EOL, $modified);
 	}
 
-	preprocessCommand($cmd) {
+	async preprocessCommand($cmd) {
 		let $parsed, $lastCmdRec;
 		$parsed = CommandParser.parse($cmd);
 		if ($cmd === 'MD') {
@@ -349,7 +367,7 @@ class ProcessApolloTerminalInputAction {
 				$cmd = 'MR';
 			}
 		} else if ($parsed['type'] === 'priceItinerary') {
-			$cmd = this.preprocessPricingCommand($parsed['data']) || $cmd;
+			$cmd = await this.preprocessPricingCommand($parsed['data']) || $cmd;
 		}
 		return $cmd;
 	}
@@ -579,23 +597,6 @@ class ProcessApolloTerminalInputAction {
 		$navCmdTypes = ['moveRest', 'moveUp', 'moveDown', 'moveBottom', 'moveTop'];
 		$lastCmds = this.$statefulSession.getLog().getLastCommandsOfTypes($navCmdTypes);
 		return ArrayUtil.getFirst($lastCmds);
-	}
-
-	getLastTariffDisplay() {
-		let $cmdRows, $cmds, $tariffTypes, $cmdRecord;
-		$cmdRows = this.$statefulSession.getLog().getAllCommands();
-		$cmds = Fp.map(($row) => {
-			return {
-				'cmd': $row['cmd_performed'],
-				'output': $row['output'],
-			};
-		}, $cmdRows);
-		$tariffTypes = ['fareSearch', 'redisplayFareSearch'];
-		if (!($cmdRecord = ImportPqApolloAction.findLastCommandIn($tariffTypes, $cmds))) {
-			return {'error': 'No recent $D'};
-		} else {
-			return TariffDisplayParser.parse($cmdRecord['output']);
-		}
 	}
 
 	async getCurrentPnr() {
@@ -1301,7 +1302,7 @@ class ProcessApolloTerminalInputAction {
 	async processRealCommand($cmd, $fetchAll) {
 		let $calledCommands, $errors, $userMessages, $cmdRecord;
 		$calledCommands = [];
-		$cmd = this.preprocessCommand($cmd);
+		$cmd = await this.preprocessCommand($cmd);
 		if (!php.empty($errors = await this.checkIsForbidden($cmd))) {
 			return {'errors': $errors};
 		}
