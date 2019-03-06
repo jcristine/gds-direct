@@ -6,8 +6,7 @@ let Emc = require('./LibWrappers/Emc.js');
 let GdsSessionController = require('./GdsSessionController.js');
 let TerminalBaseController = require('./Transpiled/App/Controllers/TerminalBaseController.js');
 let {hrtimeToDecimal} = require('./Utils/Misc.js');
-let {Forbidden, NotImplemented} = require('./Utils/Rej.js');
-let cluster = require('cluster');
+let {Forbidden, NotImplemented, LoginTimeOut, InternalServerError} = require('./Utils/Rej.js');
 let {admins} = require('./Constants.js');
 let UpdateHighlightRulesFromProd = require('./Actions/UpdateHighlightRulesFromProd.js');
 let Db = require('./Utils/Db.js');
@@ -23,13 +22,14 @@ const CommandParser = require("./Transpiled/Gds/Parsers/Apollo/CommandParser");
 const PnrParser = require("./Transpiled/Gds/Parsers/Apollo/Pnr/PnrParser");
 const FareConstructionParser = require("./Transpiled/Gds/Parsers/Common/FareConstruction/FareConstructionParser");
 const KeepAlive = require("./Maintenance/KeepAlive");
-const InternalServerError = require("./Utils/Rej").InternalServerError;
 const {getExcData, safe} = require('./Utils/Misc.js');
+const PersistentHttpRq = require('./Utils/PersistentHttpRq.js');
 
 let app = express();
 
 let shouldDiag = (exc) =>
 	!Forbidden.matches(exc.httpStatusCode) &&
+	!LoginTimeOut.matches(exc.httpStatusCode) &&
 	!NotImplemented.matches(exc.httpStatusCode);
 
 let toHandleHttp = (action, logger = null) => (req, res) => {
@@ -67,7 +67,7 @@ let toHandleHttp = (action, logger = null) => (req, res) => {
 			res.send(JSON.stringify(Object.assign({
 				rqTakenMs: rqTakenMs,
 				rsSentMs: Date.now(),
-				message: 'GRECT HTTP OK', workerId: (cluster.worker || {}).id,
+				message: 'GRECT HTTP OK',
 			}, result)));
 		})
 		.catch(exc => {
@@ -274,7 +274,7 @@ app.get('/doSomeHeavyStuff', withAuth((reqBody, emcResult) => {
 			sum += i % 2 ? i : -i;
 		}
 		let hrtimeDiff = process.hrtime(hrtimeStart);
-		return {message: 'Done in ' + hrtimeToDecimal(hrtimeDiff) + ' ' + sum + ' on worker #' + cluster.worker.id};
+		return {message: 'Done in ' + hrtimeToDecimal(hrtimeDiff) + ' ' + sum};
 	} else {
 		return Forbidden('Sorry, you must be me in order to use that');
 	}
@@ -291,6 +291,15 @@ app.get('/runKeepAlive', withAuth((reqBody, emcResult) => {
 		let keepAlive = KeepAlive.run();
 		keepAlive.onIdle = () => keepAlive.terminate();
 		return {workerLogId: keepAlive.workerLogId};
+	} else {
+		return Forbidden('Sorry, you must be me in order to use that');
+	}
+}));
+app.get('/testHttpRq', withAuth((reqBody, emcResult) => {
+	if (emcResult.user.id == 6206) {
+		let rqParams = JSON.parse(reqBody.rqParams);
+		rqParams.dropConnection = true;
+		return PersistentHttpRq(rqParams);
 	} else {
 		return Forbidden('Sorry, you must be me in order to use that');
 	}
@@ -349,8 +358,6 @@ let socketIo = initSocketIo();
 socketIo.on('connection', /** @param {Socket} socket */ socket => {
 	console.log('got a socket connection', socket.id);
 	socket.on('message', (data, reply) => {
-		console.log('message from client', data);
-
 		let fallbackBody = JSON.stringify({error: 'Your request was not handled'});
 		let rsData = {body: fallbackBody, status: 501, headers: {}};
 		let rq = {url: data.url, path: data.url.split('?')[0], body: data.body, params: {}};
