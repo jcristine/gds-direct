@@ -31,8 +31,6 @@ let PersistentHttpRq = (params) => new Promise((resolve, reject) => {
 		method: params.method || 'POST',
 		body: params.body || undefined,
 		agent: requestAgent,
-		/** @debug, see https://github.com/nodejs/node/issues/5436#issuecomment-189474356 */
-		family: 4,
 	}, (res) => {
 		let responseBody = '';
 		res.setEncoding('utf8');
