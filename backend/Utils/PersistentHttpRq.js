@@ -25,12 +25,14 @@ let PersistentHttpRq = (params) => new Promise((resolve, reject) => {
 		parsedUrl.protocol.startsWith('https') ? httpsAgent : httpAgent;
 	let req = request({
 		host: parsedUrl.hostname,
-		port: parsedUrl.port,
+		port: parsedUrl.port || undefined,
 		path: parsedUrl.path,
 		headers: params.headers,
 		method: params.method || 'POST',
 		body: params.body || undefined,
 		agent: requestAgent,
+		/** @debug, see https://github.com/nodejs/node/issues/5436#issuecomment-189474356 */
+		family: 4,
 	}, (res) => {
 		let responseBody = '';
 		res.setEncoding('utf8');
