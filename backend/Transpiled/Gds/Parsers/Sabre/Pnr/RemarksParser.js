@@ -47,7 +47,7 @@ class RemarksParser {
 		let $filter, $tokens;
 
 		$filter =
-			'/^\\.*-\\*?(?:(?<cash>CK|CHECK|CASH)|(?<card>[A-Z]{2}[\\d\\X\u00A5\\\/]{16,}))/ms';
+			'/^\\.*-\\*?(?:(?<cash>CK|CHECK|CASH)|(?<card>[A-Z]{2}[\\d\\X¥\\\/]{16,}))/ms';
 		if (php.preg_match($filter, $remark, $tokens = [])) {
 			if (!php.empty($tokens['cash'])) {
 				return {'type': this.TYPE_CASH};

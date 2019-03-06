@@ -34,27 +34,23 @@ class TariffCmdParser {
 
 	static parseMods($modsPart) {
 		let $getFirst, $parseDate, $end, $lexer;
-		$getFirst = ($matches) => {
-			return $matches[1];
-		};
-		$parseDate = ($matches) => {
-			return this.parseDate($matches[1]);
-		};
+		$getFirst = ($matches) => $matches[1];
+		$parseDate = ($matches) => this.parseDate($matches[1]);
 		$end = '(?![A-Z0-9])';
 		$lexer = new Lexer([
-			(new Lexeme('returnDate', '/^\u00A5R(\\d{1,2}[A-Z]{3}\\d{0,2})' + $end + '/')).preprocessData($parseDate),
+			(new Lexeme('returnDate', '/^¥R(\\d{1,2}[A-Z]{3}\\d{0,2})' + $end + '/')).preprocessData($parseDate),
 			(new Lexeme('currency', '/^\\\/([A-Z]{3})' + $end + '/')).preprocessData($getFirst),
-			(new Lexeme('tripType', '/^\u00A5(RT|OW)' + $end + '/')).preprocessData($getFirst),
+			(new Lexeme('tripType', '/^¥(RT|OW)' + $end + '/')).preprocessData($getFirst),
 			(new Lexeme('cabinClass', '/^(' + php.implode('|', php.array_values(this.getCabinClasses())) + ')' + $end + '/')).preprocessData(($matches) => {
 				return (php.array_flip(this.getCabinClasses()) || {})[$matches[1]];
 			}),
-			(new Lexeme('fareType', '/^\u00A5(PV|PL)' + $end + '/')).preprocessData(($matches) => {
+			(new Lexeme('fareType', '/^¥(PV|PL)' + $end + '/')).preprocessData(($matches) => {
 				return {
 					'PV': 'private', 'PL': 'public',
 				}[$matches[1]];
 			}),
-			(new Lexeme('accountCode', '/^\u00A5RR\\*([A-Z0-9]+)' + $end + '/')).preprocessData($getFirst),
-			(new Lexeme('ptc', '/^\u00A5P([A-Z][A-Z0-9]{2})' + $end + '/')).preprocessData($getFirst),
+			(new Lexeme('accountCode', '/^¥RR\\*([A-Z0-9]+)' + $end + '/')).preprocessData($getFirst),
+			(new Lexeme('ptc', '/^¥P([A-Z][A-Z0-9]{2})' + $end + '/')).preprocessData($getFirst),
 			(new Lexeme('airlines', '/^(-[A-Z0-9]{2})+' + $end + '/')).preprocessData(($matches) => {
 				return php.explode('-', php.ltrim($matches[0], '-'));
 			}),
@@ -79,11 +75,11 @@ class TariffCmdParser {
 			'ticketingDate': this.parseDate($issueDate),
 			'departureAirport': $departureAirport,
 			'destinationAirport': $destinationAirport,
-			'modifiers': Fp.map(($rec) => {
-				return {
-					'type': $rec['lexeme'], 'raw': $rec['raw'], 'parsed': $rec['data'],
-				};
-			}, $lexed['lexemes']),
+			'modifiers': $lexed['lexemes'].map(($rec) => ({
+				'type': $rec['lexeme'],
+				'raw': $rec['raw'],
+				'parsed': $rec['data'],
+			})),
 			'unparsed': $lexed['text'],
 		};
 	}

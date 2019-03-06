@@ -54,7 +54,7 @@ class CommandParser {
 			'SO': 'signOut',
 			'WV*': 'voidList',
 			'WV': 'exchangeTicket',
-			'W\u00A5': 'issueTickets',
+			'W¥': 'issueTickets',
 			'WETRR': 'refundTicket',
 			'4G': 'seatMap',
 			'QP': 'movePnrToQueue',
@@ -65,7 +65,7 @@ class CommandParser {
 			'H*CST': 'agentList', // full agent lists
 			// >PE*6IIF
 			'PE*': 'lniataList', // show all lniatas of pcc
-			'PE\u00A5': 'addEmail',
+			'PE¥': 'addEmail',
 			'FQ': 'fareSearch',
 			'WETR*': 'ticketMask', // show i-th ticket mask
 			'WP*': 'redisplayPriceItinerary',
@@ -165,7 +165,7 @@ class CommandParser {
 		} else if (StringUtil.startsWith($textLeft, 'M')) {
 			$result['sendEmail'] = true;
 			$textLeft = php.substr($textLeft, 1);
-			$rawModifiers = php.explode('\u00A5', $textLeft);
+			$rawModifiers = php.explode('¥', $textLeft);
 			$emailCode = php.array_shift($rawModifiers);
 			if (StringUtil.endsWith($emailCode, 'R')) {
 				$result['keepPnr'] = true;
@@ -201,7 +201,7 @@ class CommandParser {
 			// Not all formats are possible to display pnr
 			'^\\*-.*',
 			'^\\*[A-Z0-9]{2}\\d{1,4}[-\\\/].*',
-			'^\\*[IL]?\u00A5.*',
+			'^\\*[IL]?¥.*',
 			'^\\*\\*\\d{1,3}-.*',
 			'^\\*(?:TKT|PTA-|TOD-)\\d+.*',
 		]) + '/';
@@ -237,7 +237,7 @@ class CommandParser {
 		$command = php.substr($cmd, 0, 5);
 		if ($command === 'WPRD*') {
 			$modsStr = php.substr($cmd, 5);
-			$rawData = $modsStr ? php.explode('\u00A5', $modsStr) : [];
+			$rawData = $modsStr ? php.explode('¥', $modsStr) : [];
 			return {'rawModifiers': $rawData};
 		} else {
 			return null;

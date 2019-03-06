@@ -36,7 +36,7 @@ class SabrePnr {
 	getAgencyLastTicketingDate($baseDate) {
 		let $ticketingInfo, $reservationDt;
 
-		if ($ticketingInfo = (((this.$parsed || {})['parsedData'] || {})['tktgData'] || {})['ticketingInfo']) {
+		if ($ticketingInfo = (this.$parsed['parsedData']['tktgData'] || {})['ticketingInfo']) {
 			if ($ticketingInfo['type'] === 'timeLimit') {
 				if ($reservationDt = this.getReservationDt($baseDate)) {
 					return DateTime.decodeRelativeDateInFuture($ticketingInfo['tauDate']['parsed'], $reservationDt);
@@ -59,7 +59,7 @@ class SabrePnr {
 
 	getRecordLocator() {
 
-		return this.$parsed['parsedData']['pnrInfo']['recordLocator'];
+		return (this.$parsed['parsedData']['pnrInfo'] || {})['recordLocator'];
 	}
 
 	getGdsName() {
@@ -69,7 +69,7 @@ class SabrePnr {
 
 	getAgentInitials() {
 
-		return this.$parsed['parsedData']['pnrInfo']['agentInitials'];
+		return (this.$parsed['parsedData']['pnrInfo'] || {})['agentInitials'];
 	}
 
 	wasCreatedInGdsDirect() {

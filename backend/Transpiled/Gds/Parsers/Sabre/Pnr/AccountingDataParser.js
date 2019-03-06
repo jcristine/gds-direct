@@ -39,7 +39,7 @@ class AccountingDataParser {
 		$regex =
 			'/^\\s*' +
 			'(?<airline>[A-Z0-9]{2})\\s*' +
-			'(?<source>\u00A5|\\\/|\u00A4)\\s*' +
+			'(?<source>¥|\\\/|\u00A4)\\s*' +
 			'(?<partialTicketNumber>\\d{10})\\s*\\\/\\s*' +
 			'(?<agencyCommission>\\d*\\.?\\d+)\\s*\\\/\\s*' +
 			'(?<baseAmount>\\d*\\.?\\d+)\\s*\\\/\\s*' +
@@ -61,7 +61,7 @@ class AccountingDataParser {
 			$matches['source'] = {
 				'raw': $matches['source'],
 				'parsed': ({
-					'\u00A5': 'automatic',
+					'¥': 'automatic',
 					'/': 'manual',
 					'\u00A4': 'msif',
 				} || {})[$matches['source']],

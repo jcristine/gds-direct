@@ -1508,7 +1508,7 @@ class SessionStateProcessorTest extends require('../../../../../../backend/Trans
                 {
                     'cmd': '110DECKIVRIX',
                     'output': php.implode(php.PHP_EOL, [
-                        ' 10DEC  SUN   KIV/Z\u00A52     RIX/\u00A50',
+                        ' 10DEC  SUN   KIV/Z¥2     RIX/¥0',
                         '1PS     898 C3 D3 Z3 S9*KIVKBP  710A  820A E90 H/F 0 DCA /E',
                         '            Y9 P9 W9 E9 K9 L9 M4 O9 R9 G5',
                         '2PS     185 C3 D3 Z3 S9*   RIX  920A 1100A E90 H/F 0 DCA /E',
@@ -1536,7 +1536,7 @@ class SessionStateProcessorTest extends require('../../../../../../backend/Trans
                 },
                 {
                     'cmd': '*-BECK',
-                    'output': '\u00A5FIN OR IG\u00A5',
+                    'output': '¥FIN OR IG¥',
                     'state': {'is_pnr_stored': false},
                 },
                 {
@@ -2268,7 +2268,7 @@ class SessionStateProcessorTest extends require('../../../../../../backend/Trans
                 },
                 {
                     'cmd': '*QWERTY',
-                    'output': '\u00A5RESTRICTED\u00A5 *NOT AA PNR*',
+                    'output': '¥RESTRICTED¥ *NOT AA PNR*',
                     'state': {'has_pnr': false, 'is_pnr_stored': false},
                 },
                 {'cmd': '*R', 'output': 'NO DATA'},
@@ -2299,7 +2299,7 @@ class SessionStateProcessorTest extends require('../../../../../../backend/Trans
                 },
                 {
                     'cmd': '*QWE12',
-                    'output': '\u00A5ADDR\u00A5',
+                    'output': '¥ADDR¥',
                     'state': {'has_pnr': false, 'is_pnr_stored': false},
                 },
                 {'cmd': '*R', 'output': 'NO DATA'},
@@ -2348,7 +2348,7 @@ class SessionStateProcessorTest extends require('../../../../../../backend/Trans
                 },
                 {
                     'cmd': '*RCDKSD',
-                    'output': '\u00A5FIN OR IG\u00A5',
+                    'output': '¥FIN OR IG¥',
                     'state': {'has_pnr': true, 'is_pnr_stored': false},
                 },
                 {
@@ -2965,13 +2965,13 @@ class SessionStateProcessorTest extends require('../../../../../../backend/Trans
                         'VALIDATING CARRIER - TK',
                         'CAT 15 SALES RESTRICTIONS FREE TEXT FOUND - VERIFY RULES',
                         '                                                               ',
-                        '* USE WC\u00A5OPTION NUMBER TO SELL NEW ITINERARY *.',
+                        '* USE WC¥OPTION NUMBER TO SELL NEW ITINERARY *.',
                     ]),
                 },
                 {'cmd': 'I', 'output': 'IGD ', 'state': {'has_pnr': false}},
                 {'cmd': '*R', 'output': 'NO DATA'},
                 {
-                    'cmd': 'WC\u00A51',
+                    'cmd': 'WC¥1',
                     'output': php.implode(php.PHP_EOL, [
                         '03NOV DEPARTURE DATE-----LAST DAY TO PURCHASE 24OCT/2359',
                         '       BASE FARE                 TAXES/FEES/CHARGES    TOTAL',

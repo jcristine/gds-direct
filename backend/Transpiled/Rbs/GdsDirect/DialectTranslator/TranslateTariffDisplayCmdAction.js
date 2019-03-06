@@ -211,7 +211,7 @@ class TranslateTariffDisplayCmdAction
             'flightType': {
                 'apollo': [null, ':RT', ':OW'],
                 'galileo': [null, '-RT', '-OW'],
-                'sabre': [null, '\u00A5RT', '\u00A5OW'],
+                'sabre': [null, '¥RT', '¥OW'],
                 'amadeus': [null, '/IR', '/IO'],
             },
             'class': {
@@ -223,19 +223,19 @@ class TranslateTariffDisplayCmdAction
             'paxType': {
                 'apollo': ['-'],
                 'galileo': ['*'],
-                'sabre': ['\u00A5P'],
+                'sabre': ['¥P'],
                 'amadeus': [',-'],
             },
             'fareType': {
                 'apollo': [null, ':N', '/:N',  ':A', '/:A' , ':P' , ':G' ],
                 'galileo': [null, ':N',  ':N',  ':A',  ':A' , ':P' , ':G' ],
-                'sabre': [null, '\u00A5PL', '\u00A5PL', '\u00A5PV', '\u00A5PV', '\u00A5PV', '\u00A5PV'],
+                'sabre': [null, '¥PL', '¥PL', '¥PV', '¥PV', '¥PV', '¥PV'],
                 'amadeus': [null, ',P',  ',P',  ',U',  ',U' , ',U' , ',U' ],
             },
             'changeBookClass': {
                 'apollo': ['-'],
                 'galileo': ['-'],
-                'sabre': ['\u00A5B'],
+                'sabre': ['¥B'],
                 'amadeus': ['/C'],
             },
             'changeDeparture': {
@@ -263,7 +263,7 @@ class TranslateTariffDisplayCmdAction
             },
             'returnDatePredicate': {
                 'apollo': [''],
-                'sabre': ['\u00A5R'],
+                'sabre': ['¥R'],
                 'amadeus': ['*'],
             },
         };
@@ -428,15 +428,15 @@ class TranslateTariffDisplayCmdAction
                 'issueDate': ['\\d{1,2}[A-Z]{3}(\\d{2})?', l => l.after(['tariff'])],
                 'cityPair': '[A-Z]{6}',
                 'date': ['\\d{1,2}[A-Z]{3}(\\d{2})?', l => l.after(['cityPair'])],
-                'rDate': '\u00A5R\\d{1,2}[A-Z]{3}(\\d{2})?',
+                'rDate': '¥R\\d{1,2}[A-Z]{3}(\\d{2})?',
 
                 'class': '[YSBF]B',
-                'bookClass': '\u00A5B[A-Z]',
+                'bookClass': '¥B[A-Z]',
                 'airlines': '(-[A-Z\\d]{2})+',
                 'currency': '/[A-Z]{3}',
-                'paxType': '\u00A5P([A-Z][A-Z0-9]{2})',
-                'flightType': '\u00A5(OW|RT)',
-                'fareType': '\u00A5P[LV]',
+                'paxType': '¥P([A-Z][A-Z0-9]{2})',
+                'flightType': '¥(OW|RT)',
+                'fareType': '¥P[LV]',
             },
             'amadeus': {
                 'tariff': '^(MP)?FQD',

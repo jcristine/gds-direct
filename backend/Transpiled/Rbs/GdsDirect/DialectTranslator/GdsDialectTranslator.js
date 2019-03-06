@@ -118,7 +118,7 @@ class GdsDialectTranslator
             {
                 'apollo': 'A*+{int_num}',
                 'galileo': 'A#{int_num}',
-                'sabre': '1\u00A5{int_num}',
+                'sabre': '1¥{int_num}',
                 'amadeus': 'AC{int_num}',
             },
             // Air availability additional classes
@@ -177,7 +177,7 @@ class GdsDialectTranslator
             {
                 'apollo': 'A*-{al}',
                 'galileo': 'A/{al}-',
-                'sabre': '1\u00A5*{al}',
+                'sabre': '1¥*{al}',
                 'amadeus': 'AC/A-{al}',
             },
             // Change air availability by time
@@ -191,7 +191,7 @@ class GdsDialectTranslator
             {
                 'apollo': 'A*+{int_num}',
                 'galileo': 'A#{int_num}',
-                'sabre': '1\u00A5{int_num}',
+                'sabre': '1¥{int_num}',
                 'amadeus': 'AC{int_num}',
             },
             // Change air availability to previous number of days
@@ -657,7 +657,7 @@ class GdsDialectTranslator
             {
                 'apollo': 'FS{fare_num}',
                 'galileo': 'FSK{fare_num}',
-                'sabre': 'WC\u00A5{fare_num}X',
+                'sabre': 'WC¥{fare_num}X',
                 'amadeus': 'FXZ{fare_num}',
             },
             // Find lowest itineraries with direct flights
@@ -678,14 +678,14 @@ class GdsDialectTranslator
             {
                 'apollo': 'FS//-{int_num}',
                 'galileo': 'FS++-{int_num}',
-                'sabre': 'WPNI\u00A5M{int_num}',
+                'sabre': 'WPNI¥M{int_num}',
                 'amadeus': 'FXD//D-{int_num}',
             },
             // Find better fares, X days later than current itinerary
             {
                 'apollo': 'FS//+{int_num}',
                 'galileo': 'FS++#{int_num}',
-                'sabre': 'WPNI\u00A5P{int_num}',
+                'sabre': 'WPNI¥P{int_num}',
                 'amadeus': 'FXD//D{int_num}',
             },
             // Find better fares with time range comparing to current itinerary
@@ -698,7 +698,7 @@ class GdsDialectTranslator
             {
                 'apollo': 'FS:{currency}',
                 'galileo': 'FS:{currency}',
-                'sabre': 'WPNI\u00A5M{currency}',
+                'sabre': 'WPNI¥M{currency}',
                 'amadeus': 'FXD/R,FC-{currency}',
             },
             // Find lowest itineraries for specific airlines
@@ -712,14 +712,14 @@ class GdsDialectTranslator
             {
                 'apollo': 'FSS{special_rebook_segment_numbers}',
                 'galileo': 'FS+S{special_rebook_segment_numbers}',
-                'sabre': 'WPNI\u00A5S{special_rebook_segment_numbers}',
+                'sabre': 'WPNI¥S{special_rebook_segment_numbers}',
                 'amadeus': 'FXD/S{special_rebook_segment_numbers}',
             },
             // Find new itinerary for PTC
             {
                 'apollo': 'FS//*{ptc}',
                 'galileo': 'FS+*{ptc}',
-                'sabre': 'WPNI\u00A5P{ptc}',
+                'sabre': 'WPNI¥P{ptc}',
                 'amadeus': 'FXD/R{ptc}',
             },
             // Find new itinerary with lower fares with the same connecting cities
@@ -733,35 +733,35 @@ class GdsDialectTranslator
             {
                 'apollo': 'FS//@C',
                 'galileo': 'FS++-BUSNS',
-                'sabre': 'WPNI\u00A5TC-BB',
+                'sabre': 'WPNI¥TC-BB',
                 'amadeus': 'FXD//KC',
             },
             // Find better fare for first class
             {
                 'apollo': 'FS//@F',
                 'galileo': 'FS++-FIRST',
-                'sabre': 'WPNI\u00A5TC-FB',
+                'sabre': 'WPNI¥TC-FB',
                 'amadeus': 'FXD//KF',
             },
             // Find better fare for economy class
             {
                 'apollo': 'FS//@Y',
                 'galileo': 'FS++-ECON',
-                'sabre': 'WPNI\u00A5TC-YB',
+                'sabre': 'WPNI¥TC-YB',
                 'amadeus': 'FXD//KM',
             },
             // Find better fare for premium economy class
             {
                 'apollo': 'FS//@W',
                 'galileo': 'FS++-PREME',
-                'sabre': 'WPNI\u00A5TC-SB',
+                'sabre': 'WPNI¥TC-SB',
                 'amadeus': 'FXD//KY',
             },
             // Find better fare for premium first class
             {
                 'apollo': 'FS//@P',
                 'galileo': 'FS++-PREMF',
-                'sabre': 'WPNI\u00A5TC-PB',
+                'sabre': 'WPNI¥TC-PB',
                 'amadeus': null, // DOES NOT EXIST
             },
             // FS without PNR
@@ -866,7 +866,7 @@ class GdsDialectTranslator
             {
                 'apollo': 'X{special_rebook_segment_numbers}/0{number}{class_list}{star}',
                 'galileo': 'X{special_rebook_segment_numbers}+0{number}{class_list}{star}',
-                'sabre': 'X{special_rebook_segment_numbers}\u00A50{number}{class_list}{star}',
+                'sabre': 'X{special_rebook_segment_numbers}¥0{number}{class_list}{star}',
             },
             // Delete Single Segment
             {
@@ -914,14 +914,14 @@ class GdsDialectTranslator
             {
                 'apollo': 'X{seg_num}/0{date}',
                 'galileo': '@{seg_num}/{date}',
-                'sabre': 'X{seg_num}\u00A500{date}',
+                'sabre': 'X{seg_num}¥00{date}',
                 'amadeus': 'SB{date}{seg_num}',
             },
             // Multiple Segments Date Rebook
             {
                 'apollo': 'X{seg_num}-{seg_num}/0{date}',
                 'galileo': '@{seg_num}-{seg_num}/{date}',
-                'sabre': 'X{seg_num}-{seg_num}\u00A500{date}',
+                'sabre': 'X{seg_num}-{seg_num}¥00{date}',
                 'amadeus': 'SB{date}{seg_num},{seg_num}',
             },
             // Delete TSA

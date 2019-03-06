@@ -37,7 +37,7 @@ class TranslatePricingCmdAction {
 				$input = php.trim($input, '/');
 			}
 		} else if ($gds == 'sabre') {
-			$input = php.preg_replace('#^WP(?!\u00A5)(?!$)#', 'WP\u00A5', $input);
+			$input = php.preg_replace('#^WP(?!¥)(?!$)#', 'WP¥', $input);
 		}
 		return $input;
 	}
@@ -47,7 +47,7 @@ class TranslatePricingCmdAction {
 		if ($gds == 'apollo' && $key != 'cabin') {
 			$input = php.preg_replace('#^/#', '', $input);
 		} else if ($gds == 'sabre') {
-			$input = php.preg_replace('#^\u00A5#', '', $input);
+			$input = php.preg_replace('#^¥#', '', $input);
 		} else if ($gds == 'amadeus') {
 			$input = php.preg_replace('#^/#', '', $input);
 		}
@@ -148,7 +148,7 @@ class TranslatePricingCmdAction {
 				$cnt = php.count($ptcs) > 1 || php.count($grouped) > 1 ? php.count($ptcs) : '';
 				return $cnt + ($ptcs[0] || 'ADT');
 			};
-			return php.implode('\u00A5', php.array_filter([
+			return php.implode('¥', php.array_filter([
 				$paxNums.length > 0 ? 'N' + php.implode('/', $paxNums) : '',
 				$ptcs.length > 0 ? 'P' + php.implode('/', Fp.map($addCnt, $grouped)) : '',
 			]));
@@ -305,7 +305,7 @@ class TranslatePricingCmdAction {
 			};
 			$pricing = $data['pricing'];
 			delete ($data['pricing']);
-			$command = $pricing + php.implode('\u00A5', php.array_filter(php.array_merge($sortArray, $data)));
+			$command = $pricing + php.implode('¥', php.array_filter(php.array_merge($sortArray, $data)));
 		} else if ($toGds == 'amadeus') {
 			if (!php.empty($data['store'])) {
 				$data['booking'] = $data['store'];
@@ -534,22 +534,22 @@ class TranslatePricingCmdAction {
 				'fareType': '/?:[AN]',
 			},
 			'sabre': {
-				'store': '\u00A5RQ',
+				'store': '¥RQ',
 				'pricing': '^WP',
-				'booking': '(\u00A5|)NC[SB]?',
-				//'booking': '(\u00A5|(?<=^WP))NC[SB]?',
-				'singlePax': '\u00A5P[A-Z]([A-Z]{2}|\\d{2})(?!/)',
-				'paxes': '\u00A5P(?:\\d[A-Z]([A-Z]{2}|\\d{2})/?)+',
+				'booking': '(¥|)NC[SB]?',
+				//'booking': '(¥|(?<=^WP))NC[SB]?',
+				'singlePax': '¥P[A-Z]([A-Z]{2}|\\d{2})(?!/)',
+				'paxes': '¥P(?:\\d[A-Z]([A-Z]{2}|\\d{2})/?)+',
 
-				'cabin': '\u00A5TC-[YSBF]B',
-				'segments': '\u00A5S(?:\\d{1,2}[-/]?)+',
-				'currency': '\u00A5M[A-Z]{3}',
-				'ticketDate': '\u00A5B\\d{2}[A-Z]{3}\\d{2}',
-				'fareBase': '\u00A5Q[^\u00A5]+',
-				'commission': '\u00A5KP\\d',
-				'specClass': '\u00A5OC-B[A-Z]',
-				'validating': '\u00A5(C-|A)[A-Z\\d]{2}',
-				'fareType': '\u00A5P[VL]',
+				'cabin': '¥TC-[YSBF]B',
+				'segments': '¥S(?:\\d{1,2}[-/]?)+',
+				'currency': '¥M[A-Z]{3}',
+				'ticketDate': '¥B\\d{2}[A-Z]{3}\\d{2}',
+				'fareBase': '¥Q[^¥]+',
+				'commission': '¥KP\\d',
+				'specClass': '¥OC-B[A-Z]',
+				'validating': '¥(C-|A)[A-Z\\d]{2}',
+				'fareType': '¥P[VL]',
 			},
 			'amadeus': {
 				'store': ['P', l => l.hasPreviousLexemeConstraint(['pricing'])],

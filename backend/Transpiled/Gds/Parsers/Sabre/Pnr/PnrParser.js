@@ -124,7 +124,7 @@ return $line['line'];}, $sectionLines));}
                 // Skip
             } else {
                 $line = php.preg_replace(/(â€¡|‡)\s*$/, '', $line); // scrolling available mark
-                $line = php.preg_replace(/(â€¡|‡)/, '\u00A5', $line); // Sabre Red transforms ‡ to ¥ on copy-paste
+                $line = php.preg_replace(/(â€¡|‡)/, '¥', $line); // Sabre Red transforms ‡ to ¥ on copy-paste
                 $resultLines.push($line);
             }}
         return php.implode(php.PHP_EOL, $resultLines);

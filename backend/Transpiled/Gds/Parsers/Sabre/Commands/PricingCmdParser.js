@@ -158,7 +158,7 @@ let parsePricingQualifier = ($token) => {
 let parsePricingQualifiers = ($qualifiers) => {
 	let $parsedQualifiers, $qualifier, $name, $data;
 	$parsedQualifiers = [];
-	for ($qualifier of Object.values($qualifiers ? php.explode('\u00A5', $qualifiers) : [])) {
+	for ($qualifier of Object.values($qualifiers ? php.explode('¥', $qualifiers) : [])) {
 		[$name, $data] = parsePricingQualifier($qualifier);
 		$parsedQualifiers.push({
 			'raw': $qualifier,

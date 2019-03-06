@@ -30,7 +30,7 @@ class ImportPnrAction
                 $status = 'notExisting';
             } else if (require('../../../../Rbs/TravelDs/SabrePnr.js').checkDumpIsRestricted($dump)) {
                 $status = 'isRestricted';
-            } else if (php.trim($dump) === '\u00A5FIN OR IG\u00A5') {
+            } else if (php.trim($dump) === '¥FIN OR IG¥') {
                 $status = 'finishOrIgnore';
             } else if (php.preg_match(/^\s*¥.+¥\s*$/, php.trim($dump))) {
                 $status = 'customError';

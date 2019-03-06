@@ -67,7 +67,7 @@ class SeatsParser
             '(?<seatCode>[A-Z0-9]+)\\s+'+
             '(?<zone>[A-Z])'+
             '((?<location>[A-Z]{1,2})|\\s)'+
-            '(\u00A5(?<passIssuePermission>RB|RS|RG|RC).{2}'+
+            '(¥(?<passIssuePermission>RB|RS|RG|RC).{2}'+
             '|\\s{5}'+
             '|(?<undocumentedToken>.{5}))\\s'+
             '(?<passengerNumber>\\d+\\.\\d+)\\s+'+

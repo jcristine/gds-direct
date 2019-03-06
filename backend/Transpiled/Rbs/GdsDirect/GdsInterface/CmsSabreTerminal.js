@@ -54,7 +54,7 @@ class CmsSabreTerminal
     isInvalidCommandOutput($cmd, $output)  {
         let $staticResponses;
 
-        $staticResponses = ['\u00A5 INVALID ACTION CODE \u00A5', '\u00A5FORMAT\u00A5', 'INVALID ACTION CODE', 'FORMAT'];
+        $staticResponses = ['¥ INVALID ACTION CODE ¥', '¥FORMAT¥', 'INVALID ACTION CODE', 'FORMAT'];
         return php.in_array(php.trim($output), $staticResponses);
     }
 
@@ -139,8 +139,8 @@ class CmsSabreTerminal
 
     decodeCmsInput($cmd)  {
 
-        $cmd = php.str_replace('\u2021', '\u00A5', $cmd);
-        $cmd = php.str_replace('+', '\u00A5', $cmd);
+        $cmd = php.str_replace('\u2021', '¥', $cmd);
+        $cmd = php.str_replace('+', '¥', $cmd);
 
         return $cmd;
     }

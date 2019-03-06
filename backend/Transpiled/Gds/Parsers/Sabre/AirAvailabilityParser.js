@@ -34,10 +34,10 @@ class AirAvailabilityParser
             '(?<dayOfWeek>[A-Z]{3})\\s+'+
             '(?<departureCity>[A-Z]{3})\\\/'+
             '(?<departureTz>[A-Z]*)'+
-            '(?<departureTzOffset>(-|\u00A5)\\d*\\.?\\d+|)\\s+'+
+            '(?<departureTzOffset>(-|¥)\\d*\\.?\\d+|)\\s+'+
             '(?<destinationCity>[A-Z]{3})\\\/'+
             '(?<destinationTz>[A-Z]*)'+
-            '(?<destinationTzOffset>(-|\u00A5)\\d*\\.?\\d+|)'+
+            '(?<destinationTzOffset>(-|¥)\\d*\\.?\\d+|)'+
             '\/';
         if (php.preg_match($regex, $line, $matches = [])) {
             return {
@@ -49,12 +49,12 @@ class AirAvailabilityParser
                 'departureCity': $matches['departureCity'],
                 'departureTz': {
                     'raw': $matches['departureTz'],
-                    'offset': php.str_replace('\u00A5', '+', $matches['departureTzOffset']),
+                    'offset': php.str_replace('¥', '+', $matches['departureTzOffset']),
                 },
                 'destinationCity': $matches['destinationCity'],
                 'destinationTz': {
                     'raw': $matches['destinationTz'],
-                    'offset': php.str_replace('\u00A5', '+', $matches['destinationTzOffset']),
+                    'offset': php.str_replace('¥', '+', $matches['destinationTzOffset']),
                 },
             };
         } else {
@@ -65,7 +65,7 @@ class AirAvailabilityParser
     /** @param $raw = '-' || '¥' || '-1' || '¥1' || '¥2' */
     static parseDayOffset($expr)  {
 
-        $expr = php.str_replace('\u00A5', '+', php.trim($expr));
+        $expr = php.str_replace('¥', '+', php.trim($expr));
         $expr = ({
             '+': '+1',
             '-': '-1',
@@ -126,10 +126,10 @@ class AirAvailabilityParser
             '(?<departureAirport>[A-Z]{3}|)'+
             '(?<destinationAirport>[A-Z]{3})'+
             '(?<ontimeMarker>\\s+([A-Z]|[0-9]{1,3})\\s+|)'+
-            '(?<departureDayOffset>\\s*\\d*(-|\u00A5)|)\\s*'+
+            '(?<departureDayOffset>\\s*\\d*(-|¥)|)\\s*'+
             '(?<departureTime>\\d{1,4}[A-Z])\\s*'+
             '(?<destinationTime>\\d{1,4}[A-Z])'+
-            '(?<destinationDayOffset>(-|\u00A5)\\d*|)\\s+'+
+            '(?<destinationDayOffset>(-|¥)\\d*|)\\s+'+
             '('+
                 '(?<aircraft>[A-Z0-9]{3})\\s+'+
                 '(?<meals>[A-Z]+\\s+)?'+

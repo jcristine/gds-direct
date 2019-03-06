@@ -59,21 +59,21 @@ class UpdateSabreStateAction
         let $regex;
         $regex = /(FOR MORE NAMES|NO MORE)\s*$/;
         return php.preg_match($regex, $output)
-            || php.trim($output) === '\u00A5NO NAMES\u00A5';
+            || php.trim($output) === '¥NO NAMES¥';
     }
 
     static wasSinglePnrOpenedFromSearch($output)  {
         return !this.isPnrListOutput($output)
-            && php.trim($output) !== '\u00A5FIN OR IG\u00A5'
-            && php.trim($output) !== '\u00A5NO NAMES\u00A5';
+            && php.trim($output) !== '¥FIN OR IG¥'
+            && php.trim($output) !== '¥NO NAMES¥';
     }
 
     static wasPnrOpenedFromList($output)  {
         let $anyErrorRegex;
         $anyErrorRegex = /^\s*¥.*¥\s*$/;
-        return php.trim($output) !== '\u00A5FIN OR IG\u00A5'
-            && php.trim($output) !== '\u00A5LIST NBR\u00A5'
-            && php.trim($output) !== '\u00A5NO LIST\u00A5'
+        return php.trim($output) !== '¥FIN OR IG¥'
+            && php.trim($output) !== '¥LIST NBR¥'
+            && php.trim($output) !== '¥NO LIST¥'
             && !php.preg_match($anyErrorRegex, $output);
     }
 
