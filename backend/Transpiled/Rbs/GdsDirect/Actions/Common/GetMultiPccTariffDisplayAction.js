@@ -86,7 +86,7 @@ class GetMultiPccTariffDisplayAction {
 	}
 
 	static matchesLocation($airport, $locationItems, $geo) {
-		return !$locationItems || Fp.any(($item) => {
+		return php.empty($locationItems) || Fp.any(($item) => {
 			if ($item['type'] === 'airport') {
 				return $item['value'] === $airport;
 			} else if ($item['type'] === 'city') {
