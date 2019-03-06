@@ -162,7 +162,7 @@ class Errors
         if ($template = (this.getMapping()[$errorName] || {})['pattern'] || null) {
             return StringUtil.format($template, $templateData);
         } else {
-            return 'Unregistered error constant - '+$errorName+' - '+php.json_encode($templateData);
+            throw new Error('Unregistered error constant - '+$errorName+' - '+php.json_encode($templateData));
         }
     }
 }

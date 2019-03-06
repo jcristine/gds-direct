@@ -1253,7 +1253,7 @@ class ProcessApolloTerminalInputAction {
 		} else if (this.doesDivideFpBooking($cmd)) {
 			// all commands between >DN...; and >F; affect only the new PNR
 			$leadData = this.$statefulSession.getLeadData();
-			$msg = CommonDataHelper.createCredentialMessage(this.$statefulSession);
+			$msg = await CommonDataHelper.createCredentialMessage(this.$statefulSession);
 			await this.runCommand('@:5' + $msg);
 		}
 		return $calledCommands;

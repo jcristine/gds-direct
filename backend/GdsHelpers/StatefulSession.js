@@ -86,6 +86,7 @@ let StatefulSession = async (session) => {
 		getLeadData: () => ({
 			leadId: session.context.travelRequestId,
 			agentId: session.context.agentId,
+			leadOwnerId: null, // should call CMS outside
 		}),
 		getGeoProvider: () => new LocationGeographyProvider(),
 		getPccDataProvider: () => (gds, pcc) => Pccs.findByCode(gds, pcc),

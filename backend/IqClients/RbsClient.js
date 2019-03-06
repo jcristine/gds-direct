@@ -57,16 +57,6 @@ let getLeadData = async (travelRequestId) =>
 		? Promise.resolve(null)
 		: CmsClient.getRequestBriefData({requestId: travelRequestId})
 			.then(rpcRs => {
-				if (!rpcRs.result.success) {
-					let error = rpcRs.result.erroMessage
-						|| rpcRs.result.msg
-						|| 'CMS did not return success=true - ' + JSON.stringify(rpcRs);
-					return UnprocessableEntity(error);
-				} else {
-					return Promise.resolve(rpcRs);
-				}
-			})
-			.then(rpcRs => {
 				let cmsData = rpcRs.result.data;
 				let ageGroupToCnt = {};
 				for (let group of cmsData.requestedAgeGroups) {

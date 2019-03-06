@@ -1,3 +1,4 @@
+const UnprocessableEntity = require("../Utils/Rej").UnprocessableEntity;
 const iqJson = require("../Utils/Misc").iqJson;
 const {getConfig} = require('../Config.js');
 
@@ -19,6 +20,15 @@ exports.getRequestBriefData = ({requestId}) => {
 	return callCms({
 		functionName: 'getRequestBriefData',
 		params: {requestId},
+	}).then(rpcRs => {
+		if (!rpcRs.result.success) {
+			let error = rpcRs.result.errorMessage
+				|| rpcRs.result.msg
+				|| 'CMS did not return success=true - ' + JSON.stringify(rpcRs);
+			return UnprocessableEntity(error);
+		} else {
+			return Promise.resolve(rpcRs);
+		}
 	});
 };
 
