@@ -6,7 +6,7 @@ let callCms = async ({functionName, params}) => {
 	return iqJson({
 		functionName: functionName,
 		params: params,
-		serviceName: 'gdsd',
+		serviceName: 'gdsDirect',
 		credentials: {
 			login: config.external_service.cms.login,
 			passwd: config.external_service.cms.password,

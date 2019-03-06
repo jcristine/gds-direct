@@ -57,6 +57,16 @@ let getLeadData = async (travelRequestId) =>
 		? Promise.resolve(null)
 		: CmsClient.getRequestBriefData({requestId: travelRequestId})
 			.then(rpcRs => {
+				if (!rpcRs.result.success) {
+					let error = rpcRs.result.erroMessage
+						|| rpcRs.result.msg
+						|| 'CMS did not return success=true - ' + JSON.stringify(rpcRs);
+					return UnprocessableEntity(error);
+				} else {
+					return Promise.resolve(rpcRs);
+				}
+			})
+			.then(rpcRs => {
 				let cmsData = rpcRs.result.data;
 				let ageGroupToCnt = {};
 				for (let group of cmsData.requestedAgeGroups) {
@@ -98,12 +108,16 @@ let RbsClient = (reqBody) => {
 		getPqItinerary: async ({rbsSessionId}) => callRbs('terminal.getPqItinerary', {
 			sessionId: rbsSessionId,
 			gds: gds,
-			context: await getLeadData(reqBody.pqTravelRequestId),
+			context: await getLeadData(travelRequestId),
 		}).then(rbsResp => rbsResp.result.result),
 		importPq: async ({rbsSessionId}) => callRbs('terminal.importPq', {
 			sessionId: rbsSessionId,
 			gds: gds,
-			context: null,
+			context: {
+				// no need to pas paxes for validation, since we already checked them in
+				// getPqItinerary, but leadId is mandatory in RBS for importPq/getPqItinerary
+				leadId: travelRequestId,
+			},
 		}).then(rbsResp => rbsResp.result.result),
 		/** @param {IRebuildItineraryRq} params */
 		rebuildItinerary: (params) => callRbs('terminal.rebuildItinerary', params)
