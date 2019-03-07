@@ -48,7 +48,10 @@ class CmsSabreTerminal
 
         // "SIGN IN D", "6IIF.L3II*AWS.D"
         return (php.preg_match(/SIGN\sIN\s[A-Z]/, $output)
-            || php.preg_match(/\*AWS\.[A-Z]$/, $output));
+            || php.preg_match(/\*AWS\.[A-Z]$/, $output))
+            // ATH:Shared/IDL:IceSess\/SessMgr:1\.0.IDL/Common/!ICESMS\/RESD!ICESMSLB\/RES.LB!1551915409835!9222!9!1!E2E-1
+            || $output.startsWith('ATH:') // if it was >¤B§OIATH;
+            ;
     }
 
     isInvalidCommandOutput($cmd, $output)  {
