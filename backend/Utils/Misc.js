@@ -31,8 +31,8 @@ let jsExport = function ($var, $margin, inlineLimit) {
 				? '{\n'
 				+ Object.keys($var).map(k => $margin + ind + JSON.stringify(k) + ': ' + jsExport($var[k], $margin + ind, inlineLimit)).join(',\n')
 				+ '\n' + $margin + '}'
-				: (typeof $var === 'string' && $var.indexOf('\n') > -1)
-					? jsExport($var.split('\n'), $margin) + '.join("\\n")'
+				: (typeof $var === 'string' && $var.match(/\r\n|\n|\r/))
+					? jsExport($var.split(/\r\n|\n|\r/g), $margin) + '.join("\\n")'
 					: JSON.stringify($var);
 };
 
