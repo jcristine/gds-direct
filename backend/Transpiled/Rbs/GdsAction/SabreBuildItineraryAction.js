@@ -35,6 +35,9 @@ class SabreBuildItineraryAction extends AbstractGdsAction
         for ([$i, $segment] of Object.entries($itinerary)) {
             $cmd = StringUtil.format('0{airline}{flightNumber}{bookingClass}{departureDate}{departureAirport}{destinationAirport}{segmentStatus}{seatCount}', $segment);
             $output = (await this.runCmd($cmd)).output;
+            if ($output.match(/UNABLE - SYSTEM ERROR[\s\S]*CONTINUE WITH PNR CREATION/)) {
+                $output = (await this.runCmd($cmd)).output;
+            }
             if (!this.constructor.isOutputValid($output)) {
                 if (this.constructor.isAvailabilityOutput($output)) {
                     $errorType = this.constructor.ERROR_NO_AVAIL;
@@ -50,7 +53,11 @@ class SabreBuildItineraryAction extends AbstractGdsAction
                 return {'success': false, 'errorType': $errorType, 'errorData': $tplData};
             }
         }
-        return {'success': true};
+        // a workaround for Sabre CONTINUE WITH PNR CREATION auto-claim bug
+        // happening on the next command after passive segment sell of some
+        // airlines, for example: >0DY7088C20APRLAXARNGK1;
+        let pnrDump = await this.runCmd('*R');
+        return {'success': true, pnrDump};
     }
 
     executeViaXml($itinerary, $isParserFormat)  {
@@ -122,7 +129,7 @@ class SabreBuildItineraryAction extends AbstractGdsAction
     }
 
     /** @param $itinerary = ItineraryParser::parse() */
-    async execute($itinerary, $isParserFormat)  {
+    async execute($itinerary, $isParserFormat = true)  {
 
         if (this.$useXml) {
             return this.executeViaXml($itinerary, $isParserFormat);
