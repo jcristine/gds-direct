@@ -29,7 +29,6 @@ const UnprocessableEntity = require("../../../../../Utils/Rej").UnprocessableEnt
 /** @debug */
 var require = translib.stubRequire;
 
-const PriceQuoteSummaryParser = require('../../../../Gds/Parsers/Sabre/Pricing/PriceQuoteSummaryParser.js');
 const SabreTicketParser = require('../../../../Gds/Parsers/Sabre/SabreTicketParser.js');
 
 class ProcessSabreTerminalInputAction {
@@ -797,7 +796,7 @@ class ProcessSabreTerminalInputAction {
 	}
 
 	async processSortItinerary() {
-		let $pnr, $pnrDump, $itinerary, $geoProvider, $getUtcTime, $times, $noTz, $moves, $makeMoveCmd, $commands,
+		let $pnr, $pnrDump, $itinerary,
 			$calledCommands, $cmd;
 
 		$pnr = await this.getCurrentPnr();
@@ -885,7 +884,7 @@ class ProcessSabreTerminalInputAction {
 	}
 
 	async storePricing($aliasData) {
-		let $pnr, $cmd, $errors, $output, $pqsOutput, $pqsParsed, $pqNums, $newPqNum, $cmdRecord;
+		let $pnr, $cmd, $errors, $output, $cmdRecord;
 
 		$pnr = await this.getCurrentPnr();
 
@@ -897,20 +896,13 @@ class ProcessSabreTerminalInputAction {
 
 		$output = await this.runCommand($cmd['cmd']);
 		if (await this.needsPl($cmd['cmd'], $output, $pnr)) {
-			$pqsOutput = this.runCommand('*PQS');
-			$pqsParsed = PriceQuoteSummaryParser.parse($pqsOutput);
-			$pqNums = php.array_column($pqsParsed['retainedFare'], 'priceQuoteNumber');
-			if ($pqNums) {
-				$newPqNum = php.max($pqNums);
-				// delete PQ we just created and store a correct one, with /PL/ mod
-				await this.runCommand('PQD' + $newPqNum);
-				$cmd = this.makeStorePricingCmd($pnr, $aliasData, true);
-				if ($errors = $cmd['errors'] || []) {
-					return {'errors': $errors};
-				}
-
-				$output = await this.runCommand($cmd['cmd']);
+			// delete PQ we just created and store a correct one, with /PL/ mod
+			await this.runCommand('PQD-ALL');
+			$cmd = this.makeStorePricingCmd($pnr, $aliasData, true);
+			if ($errors = $cmd['errors'] || []) {
+				return {'errors': $errors};
 			}
+			$output = await this.runCommand($cmd['cmd']);
 		}
 		$cmdRecord = {'cmd': $cmd['cmd'], 'output': $output};
 		return {'calledCommands': [$cmdRecord]};
@@ -933,7 +925,6 @@ class ProcessSabreTerminalInputAction {
 	}
 
 	canSavePnrInThisPcc() {
-
 		return !php.in_array(this.getSessionData()['pcc'], ['DK8H', '5E9H']);
 	}
 
