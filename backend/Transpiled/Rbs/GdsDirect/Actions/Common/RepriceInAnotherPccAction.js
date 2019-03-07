@@ -187,7 +187,7 @@ class RepriceInAnotherPccAction {
 		itinerary = itinerary.map(seg => {
 			// AA does not allow GK status on AA segments
 			return seg.airline === 'AA'
-				? {...seg, segmentStatus: 'LL', bookingClass: 'Y'}
+				? {...seg, segmentStatus: 'LL'}
 				: {...seg, segmentStatus: 'GK'};
 		});
 		return SabreClient.withSession({}, async session => {
