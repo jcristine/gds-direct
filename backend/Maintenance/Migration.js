@@ -71,7 +71,7 @@ let Migration = () => {
 			let lockKey = keys.MIGRATION_PROCESS_LOCK;
 			let migrationLock = await client.set(lockKey, 'locked', 'EX', lockSeconds, 'NX');
 			if (!migrationLock) {
-				return Promise.resolve('Migration is already being handled by other cluster');
+				return Promise.resolve('Migration is already being handled by other cluster ' + JSON.stringify(migrationLock));
 			}
 			return runLocked().finally(() => client.del(lockKey));
 		},
