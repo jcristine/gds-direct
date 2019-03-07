@@ -1,3 +1,21 @@
+
+interface IGetAirlineBookingClassesRs {
+    "status": "OK",
+    "result": {
+        "type": "content",
+        "work_time": 0.18,
+        "result_count": 406,
+        "log_id": "ACT.5c818560.fa7bf49",
+        "content": {
+            "MU": {
+                "business": {"C":true,"D":true,"I":true,"J":true,"Q":true},
+                "economy": {"E":true,"H":true,"K":true,"L":true,"M":true,"N":true,"R":true,"S":true,"T":true,"V":true,"Y":true,"Z":true,"B":true},
+                "first_class": {"F":true,"P":true,"U":true}
+            }
+        }
+    }
+}
+
 interface IGetPccsAllRs {
     "status": "OK",
     "result": {

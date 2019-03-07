@@ -4,6 +4,7 @@ let Airports = require('../Repositories/Airports.js');
 let Emc = require('../LibWrappers/Emc');
 const Pccs = require("../Repositories/Pccs.js");
 const Airlines = require("../Repositories/Airlines");
+const BookingClasses = require("../Repositories/BookingClasses");
 
 module.exports.migrations = [
 	{
@@ -277,5 +278,20 @@ module.exports.migrations = [
 	{
 		name: 'GRECT/2019.03.01001-fetch-airlines-2',
 		perform: (db) => Airlines.updateFromService(),
+	},
+	{
+		name: 'GRECT/2019.03.07005-create-airlines-table',
+		perform: (db) => db.query([
+			'CREATE TABLE `airline_booking_classes` (',
+			'  `airline` varchar(2) NOT NULL,',
+			'  `cabin_class` varchar(20) NOT NULL,',
+			'  `booking_class` char(1) NOT NULL,',
+			'  UNIQUE KEY `airline_booking_class` (`airline`,`booking_class`)',
+			') ENGINE=InnoDB CHARSET=utf8',
+		].join('\n')),
+	},
+	{
+		name: 'GRECT/2019.03.07005-fetch-booking-classes',
+		perform: (db) => BookingClasses.updateFromService(),
 	},
 ];
