@@ -12,6 +12,7 @@ const CmsApolloTerminal = require("../Transpiled/Rbs/GdsDirect/GdsInterface/CmsA
 const matchAll = require("../Utils/Str").matchAll;
 const nonEmpty = require("../Utils/Rej").nonEmpty;
 const GdsDialectTranslator = require('../Transpiled/Rbs/GdsDirect/DialectTranslator/GdsDialectTranslator.js');
+const ProcessSabreTerminalInputAction = require("../Transpiled/Rbs/GdsDirect/Actions/Sabre/ProcessSabreTerminalInputAction");
 
 // this is not complete list
 let shouldWrap = (cmd) => {
@@ -169,6 +170,13 @@ let transformCalledCommand = (rec, stateful) => {
 let runCmdRq =  async (inputCmd, stateful) => {
 	if (stateful.gds === 'apollo') {
 		let gdsResult = await (new ProcessApolloTerminalInputAction(stateful).execute(inputCmd));
+		let grectResult = makeGrectResult(gdsResult.calledCommands, stateful.getFullState());
+		grectResult.status = gdsResult.status;
+		grectResult.messages = (gdsResult.userMessages || []).map(msg => ({type: 'error', text: msg}));
+		grectResult.actions = gdsResult.actions || [];
+		return grectResult;
+	} else if (stateful.gds === 'sabre') {
+		let gdsResult = await (new ProcessSabreTerminalInputAction(stateful).execute(inputCmd));
 		let grectResult = makeGrectResult(gdsResult.calledCommands, stateful.getFullState());
 		grectResult.status = gdsResult.status;
 		grectResult.messages = (gdsResult.userMessages || []).map(msg => ({type: 'error', text: msg}));
