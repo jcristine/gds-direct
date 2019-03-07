@@ -5,10 +5,12 @@ const GdsSessions = require("../Repositories/GdsSessions.js");
 const SessionStateProcessor = require("../Transpiled/Rbs/GdsDirect/SessionStateProcessor/SessionStateProcessor.js");
 const hrtimeToDecimal = require("../Utils/Misc").hrtimeToDecimal;
 const {NotImplemented, BadRequest} = require("../Utils/Rej.js");
-const {logit, logExc} = require("../LibWrappers/FluentLogger.js");
+const FluentLogger = require("../LibWrappers/FluentLogger.js");
 const LocationGeographyProvider = require('../Transpiled/Rbs/DataProviders/LocationGeographyProvider.js');
 const Pccs = require("../Repositories/Pccs");
 const Misc = require("../Transpiled/Lib/Utils/Misc");
+const {getConfig} = require('../Config.js');
+const {jsExport} = require('../Utils/Misc.js');
 
 /**
  * a generic session that can be either apollo, sabre, galileo, amadeus, etc...
@@ -19,10 +21,17 @@ const Misc = require("../Transpiled/Lib/Utils/Misc");
  */
 let StatefulSession = async (session) => {
 	let fullState = await GdsSessions.getFullState(session);
+	let config = await getConfig();
 	let gds = session.context.gds;
 	let startDt = new Date().toISOString();
 	let calledCommands = [];
 	let getSessionData = () => fullState.areas[fullState.area] || {};
+	let logit = (msg, data) => {
+		if (!config.production) {
+			console.log(msg, typeof data === 'string' ? data : jsExport(data));
+		}
+		return FluentLogger.logit(msg, session.logId, data);
+	};
 	return {
 		runCmd: (cmd) => {
 			if (!cmd) {
@@ -40,7 +49,7 @@ let StatefulSession = async (session) => {
 			} else {
 				running = NotImplemented('Unsupported stateful GDS - ' + gds);
 			}
-			running.catch(exc => logExc('ERROR: Failed to run cmd [' + cmd + '] in GDS', session.logId, exc));
+			running.catch(exc => FluentLogger.logExc('ERROR: Failed to run cmd [' + cmd + '] in GDS', session.logId, exc));
 			return running.then(gdsResult => {
 				let type = null;
 				try {
@@ -49,7 +58,7 @@ let StatefulSession = async (session) => {
 					GdsSessions.updateFullState(session, fullState);
 					type = fullState.areas[fullState.area].cmdType;
 				} catch (exc) {
-					logExc('ERROR: Failed to process state', session.logId, exc);
+					FluentLogger.logExc('ERROR: Failed to process state', session.logId, exc);
 				}
 				let hrtimeDiff = process.hrtime(hrtimeStart);
 				let cmdRec = {
@@ -60,14 +69,23 @@ let StatefulSession = async (session) => {
 				};
 				calledCommands.push(cmdRec);
 				let masked = Misc.maskCcNumbers(cmdRec);
-				logit('GDS result: ' + cmd, session.logId, {...masked, state: fullState.areas[fullState.area]});
+				logit('GDS result: ' + cmd, jsExport({...masked, state: fullState.areas[fullState.area]}));
 				return cmdRec;
 			});
 		},
 		getFullState: () => fullState,
+		updateFullState: (newFullState) => {
+			fullState = newFullState;
+			return GdsSessions.updateFullState(session, newFullState);
+		},
+		getGdsData: () => session.gdsData,
+		updateGdsData: (gdsData) => {
+			session.gdsData = gdsData;
+			return GdsSessions.update(session);
+		},
 		gds: gds,
-		logit: (msg, data) => logit(msg, session.logId, data),
-		logExc: (msg, exc) => logExc(msg, session.logId, exc),
+		logit: logit,
+		logExc: (msg, exc) => FluentLogger.logExc(msg, session.logId, exc),
 
 		// following is RBS CmsStatefulSession.php implementation
 

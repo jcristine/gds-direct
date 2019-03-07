@@ -60,6 +60,11 @@ exports.storeNew = (context, gdsData) => {
 	});
 };
 
+/** @param session = makeSessionRecord() */
+exports.update = (session) => {
+	return client.hset(keys.SESSION_TO_RECORD, session.id, JSON.stringify(session));
+};
+
 exports.getByContext = (context) => {
 	let contextStr = JSON.stringify(normalizeContext(context));
 	return client.hget(keys.SESSION_BY_CONTEXT, contextStr)
