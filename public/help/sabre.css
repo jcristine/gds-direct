@@ -1,0 +1,38 @@
+.formatTable .formatCellExample {
+    display: block;
+    color: #0000FF;
+    word-wrap: break-word;
+}
+
+tr:hover {
+    background-color: #d3f7ff;
+}
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+body {
+    padding-left: 20px;
+    padding-right: 20px;
+}
+td {
+    border-top: solid 1px lightgray;
+    border-bottom: solid 1px lightgray;
+}
+.categoryHeader {
+    width: 100%;
+    background-color: lightgray;
+    cursor: pointer;
+}
+.categoryHeader th {
+    text-align: left;
+}
+tbody.collapsed > tr:not(.categoryHeader) {
+    visibility: collapse;
+}
+table.formatTable {
+    margin-top: 4px;
+}
+td.formatCell {
+    width: 400px;
+}
