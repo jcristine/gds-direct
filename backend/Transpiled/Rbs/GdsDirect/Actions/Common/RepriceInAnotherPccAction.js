@@ -19,6 +19,10 @@ const AmadeusClient = require("../../../../../GdsClients/AmadeusClient");
 const fetchAll = require("../../../../../GdsHelpers/TravelportUtils").fetchAll;
 const {fetchAllFx} = require('../../../../../GdsHelpers/AmadeusUtils.js');
 const AmadeusBuildItineraryAction = require('../../../GdsAction/AmadeusBuiltItineraryAction.js');
+const ApoCmdParser = require('../../../../Gds/Parsers/Apollo/CommandParser.js');
+const SabCmdParser = require('../../../../Gds/Parsers/Sabre/CommandParser.js');
+const AmaCmdParser = require('../../../../Gds/Parsers/Amadeus/CommandParser.js');
+const GalCmdParser = require('../../../../Gds/Parsers/Galileo/CommandParser.js');
 
 let withLog = (session, log) => ({
 	...session, runCmd: async (cmd) => {
@@ -28,6 +32,44 @@ let withLog = (session, log) => ({
 		return cmdRec;
 	},
 });
+
+let extendApolloCmd = (cmd) => {
+	let parsed = ApoCmdParser.parse(cmd);
+	if (parsed.type !== 'priceItinerary' || !parsed.data) {
+		return cmd; // don't modify if could not parse
+	} else {
+		/** @var data = require('AtfqParser.js').parsePricingCommand() */
+		let data = parsed.data;
+		let baseCmd = data.baseCmd;
+		let mods = data.pricingModifiers;
+		let rawMods = mods.map(m => m.raw);
+		if (!mods.some(m => m.type === 'passengers')) {
+			// JWZ is a magical PTC, that results in
+			// the cheapest of JCB, ITX, ADT, etc...
+			rawMods.push('*JWZ');
+		}
+		return [baseCmd].concat(rawMods).join('/');
+	}
+};
+
+let extendGalileoCmd = (cmd) => {
+	let parsed = GalCmdParser.parse(cmd);
+	if (parsed.type !== 'priceItinerary' || !parsed.data) {
+		return cmd; // don't modify if could not parse
+	} else {
+		/** @var data = require('FqCmdParser.js').parse() */
+		let data = parsed.data;
+		let baseCmd = data.baseCmd;
+		let mods = data.pricingModifiers;
+		let rawMods = mods.map(m => m.raw);
+		if (!mods.some(m => m.type === 'passengers')) {
+			// it is a coincidence that code here is similar to extendApolloCmd(),
+			// most other formats are actually different in apollo and galileo
+			rawMods.push('*JWZ');
+		}
+		return [baseCmd].concat(rawMods).join('/');
+	}
+};
 
 /**
  * Open a separate session, rebuild itinerary and price with given cmd
@@ -109,6 +151,7 @@ class RepriceInAnotherPccAction {
 				return UnprocessableEntity('Could not rebuild PNR in Apollo - '
 					+ built.errorType + ' ' + JSON.stringify(built.errorData));
 			}
+			pricingCmd = extendApolloCmd(pricingCmd);
 			let cmdRec = await fetchAll(pricingCmd, session);
 			return {calledCommands: [cmdRec]};
 		});
@@ -171,6 +214,7 @@ class RepriceInAnotherPccAction {
 				return UnprocessableEntity('Could not rebuild PNR in Galileo - '
 					+ built.errorType + ' ' + JSON.stringify(built.errorData));
 			}
+			pricingCmd = extendGalileoCmd(pricingCmd);
 			let cmdRec = await fetchAll(pricingCmd, session);
 			return {calledCommands: [cmdRec]};
 		});

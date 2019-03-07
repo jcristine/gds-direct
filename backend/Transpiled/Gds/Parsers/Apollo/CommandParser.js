@@ -673,8 +673,9 @@ class CommandParser {
 
 	static parsePriceItinerary($cmd) {
 		let $data;
-		if (php.preg_match(/^\$B{1,2}/, $cmd)
-		&& ($data = AtfqParser.parsePricingCommand($cmd))) {
+		if (php.preg_match(/^\$B{1,2}/, $cmd) &&
+			($data = AtfqParser.parsePricingCommand($cmd))
+		) {
 			return $data;
 		} else {
 			return null;
