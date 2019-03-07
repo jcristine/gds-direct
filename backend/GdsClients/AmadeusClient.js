@@ -203,6 +203,7 @@ let makeSession = (gdsData) => ({
 
 exports.startSession = startSession;
 exports.runCmd = runCmd;
+exports.closeSession = closeSession;
 exports.withSession = async (params, action) => {
 	let profileName = params.profileName
 		|| GdsProfiles.AMADEUS.AMADEUS_PROD_1ASIWTUTICO;
