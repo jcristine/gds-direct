@@ -5,6 +5,7 @@ const Fp = require('../../Lib/Utils/Fp.js');
 const ApolloReservationItineraryParser = require('../../Gds/Parsers/Apollo/Pnr/ItineraryParser.js');
 const SsrBlockParser = require('../../Gds/Parsers/Apollo/Pnr/SsrBlockParser.js');
 const ImportPnrCommonFormatAdapter = require('../../Rbs/Process/Common/ImportPnr/ImportPnrCommonFormatAdapter.js');
+const ItineraryParser = require('../../Gds/Parsers/Sabre/Pnr/ItineraryParser.js');
 
 let php = require('../../php.js');
 
@@ -29,23 +30,76 @@ class FormatAdapter
     }
 
     /**
+     * @param $segment = ItineraryParser::parseSegmentLine()
+     */
+    static adaptSabreSegmentParseForClient($segment)  {
+        let $daysOfWeek, $dprt, $dstn;
+
+        $daysOfWeek = null;
+        if ($dprt = ($segment['departureDayOfWeek'] || {})['parsed']) {
+            $daysOfWeek = $dprt;
+            if ($dstn = ($segment['destinationDayOfWeek'] || {})['parsed']) {
+                $daysOfWeek += '\/'+$dstn;
+            }
+        }
+
+        return {
+            'segmentNumber': $segment['segmentNumber'],
+            'airline': $segment['airline'],
+            'flightNumber': $segment['flightNumber'],
+            'bookingClass': $segment['bookingClass'],
+            'departureDate': $segment['departureDate'],
+            'departureTime': $segment['departureTime'],
+            'daysOfWeek': $daysOfWeek,
+            'departureAirport': $segment['departureAirport'],
+            'destinationAirport': $segment['destinationAirport'],
+            'segmentStatus': $segment['segmentStatus'],
+            'seatCount': $segment['statusNumber'],
+            'eticket': $segment['eticket'] ? true : false,
+            'destinationDate': (($segment['destinationDate'] || {})['raw'] || '') !== ''
+                ? $segment['destinationDate']
+                : $segment['departureDate'],
+            'destinationTime': $segment['destinationTime'],
+            'confirmedByAirline': !php.empty($segment['confirmationNumber']),
+            'confirmationAirline': $segment['confirmationAirline'],
+            'confirmationNumber': $segment['confirmationNumber'],
+            'operatedBy': $segment['operatedBy'],
+            'operatedByCode': $segment['operatedByCode'],
+            'raw': $segment['raw'],
+        };
+    }
+
+    static transformSabreAirSegment($parsed, $baseDate)  {
+        let $segment;
+
+        $segment = this.adaptSabreSegmentParseForClient($parsed);
+        if ($baseDate !== null) {
+            $segment = this.addFullDateToSabreSegment($segment, $baseDate);
+        }
+        return $segment;
+    }
+
+    static adaptSabreItineraryParseForClient($parse, $baseDate)  {
+        return $parse
+            .filter(s => s['segmentType'] === ItineraryParser.SEGMENT_TYPE_ITINERARY_SEGMENT)
+            .map(s => this.transformSabreAirSegment(s, $baseDate));
+    }
+
+    /**
      * @param array $parse - output of the
      * @see SabreReservationParser::parse()
      */
     static adaptSabrePnrParseForClient($parse, $creationDate)  {
         let $baseDate, $common;
-        $baseDate = $parse['parsedData']['pnrInfo']['date']['parsed'] || $creationDate || null;
+        $baseDate = (($parse['parsedData']['pnrInfo'] || {})['date'] || {})['parsed'] || $creationDate || null;
         $baseDate = $baseDate
             ? php.date('Y-m-d', php.strtotime('-2 day', php.strtotime($baseDate)))
             : null;
         $common = {
-            'passengers': $parse['parsedData']['passengers']['parsedData']['passengerList'] || [],
-
+            'passengers': ($parse['parsedData']['passengers']['parsedData'] || {})['passengerList'] || [],
             'itinerary': this.adaptSabreItineraryParseForClient($parse['parsedData']['itinerary'] || [], $baseDate),
-
             'remarks': this.transformSabreRemarks($parse['parsedData']['remarks'] || []),
-
-            'pnrInfo': {
+            'pnrInfo': !$parse['parsedData']['pnrInfo'] ? null : {
                 'pcc': $parse['parsedData']['pnrInfo']['pcc'],
                 'homePcc': $parse['parsedData']['pnrInfo']['homePcc'],
                 'agentInitials': $parse['parsedData']['pnrInfo']['agentInitials'],
