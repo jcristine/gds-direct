@@ -19,10 +19,11 @@ const AmadeusClient = require("../../../../../GdsClients/AmadeusClient");
 const fetchAll = require("../../../../../GdsHelpers/TravelportUtils").fetchAll;
 const {fetchAllFx} = require('../../../../../GdsHelpers/AmadeusUtils.js');
 const AmadeusBuildItineraryAction = require('../../../GdsAction/AmadeusBuiltItineraryAction.js');
-const ApoCmdParser = require('../../../../Gds/Parsers/Apollo/CommandParser.js');
 const SabCmdParser = require('../../../../Gds/Parsers/Sabre/CommandParser.js');
 const AmaCmdParser = require('../../../../Gds/Parsers/Amadeus/CommandParser.js');
-const GalCmdParser = require('../../../../Gds/Parsers/Galileo/CommandParser.js');
+const AtfqParser = require("../../../../Gds/Parsers/Apollo/Pnr/AtfqParser");
+const FqCmdParser = require("../../../../Gds/Parsers/Galileo/Commands/FqCmdParser");
+const AmdPricingCmdParser = require("../../../../Gds/Parsers/Amadeus/Commands/PricingCmdParser");
 
 let withLog = (session, log) => ({
 	...session, runCmd: async (cmd) => {
@@ -34,12 +35,10 @@ let withLog = (session, log) => ({
 });
 
 let extendApolloCmd = (cmd) => {
-	let parsed = ApoCmdParser.parse(cmd);
-	if (parsed.type !== 'priceItinerary' || !parsed.data) {
+	let data = AtfqParser.parsePricingCommand(cmd);
+	if (!data) {
 		return cmd; // don't modify if could not parse
 	} else {
-		/** @var data = require('AtfqParser.js').parsePricingCommand() */
-		let data = parsed.data;
 		let baseCmd = data.baseCmd;
 		let mods = data.pricingModifiers;
 		let rawMods = mods.map(m => m.raw);
@@ -53,12 +52,10 @@ let extendApolloCmd = (cmd) => {
 };
 
 let extendGalileoCmd = (cmd) => {
-	let parsed = GalCmdParser.parse(cmd);
-	if (parsed.type !== 'priceItinerary' || !parsed.data) {
+	let data = FqCmdParser.parse(cmd);
+	if (!data) {
 		return cmd; // don't modify if could not parse
 	} else {
-		/** @var data = require('FqCmdParser.js').parse() */
-		let data = parsed.data;
 		let baseCmd = data.baseCmd;
 		let mods = data.pricingModifiers;
 		let rawMods = mods.map(m => m.raw);
@@ -67,6 +64,35 @@ let extendGalileoCmd = (cmd) => {
 			// most other formats are actually different in apollo and galileo
 			rawMods.push('*JWZ');
 		}
+		return [baseCmd].concat(rawMods).join('/');
+	}
+};
+
+let extendAmadeusCmd = (cmd) => {
+	let data = AmdPricingCmdParser.parse(cmd);
+	if (!data) {
+		return cmd; // don't modify if could not parse
+	} else {
+		let baseCmd = data.baseCmd;
+		let mods = php.array_combine(
+			(data.pricingStores[0] || []).map(m => m.type),
+			(data.pricingStores[0] || []),
+		);
+
+		let generic = mods['generic'] || null;
+		let ptcs = generic ? generic.parsed.ptcs : [];
+		let rSubMods = php.array_combine(
+			(generic ? generic.parsed.rSubModifiers : []).map(m => m.type),
+			(generic ? generic.parsed.rSubModifiers : [])
+		);
+		// always search both private and published fares
+		rSubMods['fareType'] = {raw: 'UP'};
+		mods['generic'] = {
+			raw: 'R' + ptcs.join('*') + ',' + Object
+				.values(rSubMods).map(m => m.raw).join(','),
+		};
+
+		let rawMods = Object.values(mods).map(m => m.raw);
 		return [baseCmd].concat(rawMods).join('/');
 	}
 };
@@ -193,6 +219,7 @@ class RepriceInAnotherPccAction {
 				return UnprocessableEntity('Could not rebuild PNR in Amadeus - '
 					+ built.errorType + ' ' + JSON.stringify(built.errorData));
 			}
+			pricingCmd = extendAmadeusCmd(pricingCmd);
 			let cmdRec = await fetchAllFx(pricingCmd, session);
 			return {calledCommands: [cmdRec]};
 		});
