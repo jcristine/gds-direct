@@ -6,6 +6,7 @@ let util = require('util');
 let {parseXml, wrapExc} = require("../Utils/Misc.js");
 let Rej = require("../Utils/Rej.js");
 const GdsProfiles = require("../Repositories/GdsProfiles");
+const LoginTimeOut = require("../Utils/Rej").LoginTimeOut;
 
 let chr = (charCode) => String.fromCharCode(charCode);
 
@@ -165,6 +166,12 @@ let runCmd = async (rqBody, gdsData) => {
 			exc.httpStatusCode = Rej.BadGateway.httpStatusCode;
 			exc.message = 'Invalid Amadeus cmd response - ' + exc.message;
 			return Promise.reject(exc);
+		}).catch(exc => {
+			if (rsXml.indexOf('95|Session|Inactive conversation') > -1) {
+				return LoginTimeOut('Session token expired');
+			} else {
+				return Promise.reject(exc);
+			}
 		});
 	});
 };
