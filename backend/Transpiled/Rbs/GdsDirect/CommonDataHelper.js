@@ -33,7 +33,7 @@ class CommonDataHelper
     static getTotallyForbiddenCommands()  {
         return [
             'signIn', 'signOut', 'createAgent', 'branchTo', 'agentList', 'lniataList',
-            'storePnrSendEmail',
+            'storePnrSendEmail', 'showSessionToken',
         ];
     }
 

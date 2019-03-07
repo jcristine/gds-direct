@@ -87,6 +87,7 @@ class CommandParser {
 			'PQD': 'deleteStoredPricing',
 			',': 'increaseSeatCount',
 			'W-': 'addAddress',
+			'OIATH': 'showSessionToken',
 		};
 		$regex = {
 			[/^WP(.*¥)?NI/]: 'lowFareSearchFromPnr',
