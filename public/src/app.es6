@@ -105,7 +105,7 @@ window.InitGdsDirectPlusApp = (params) => {
 	window.GdsDirectPlusParams.cmsUrl = params.cmsUrl;
 	window.GdsDirectPlusParams.socketHost = params.socketHost || window.GdsDirectPlusParams.socketHost;
 	initGlobEvents();
-	params.htmlRootDom.innerHTML = '<h2 class="pls-wait-placeholder" style="background-color: white; color: black">Please wait, loading user data...</h2>';
+	params.htmlRootDom.innerHTML = '<h2 class="pls-wait-placeholder" style="background-color: black; color: white">Please wait, loading user data...</h2>';
 
 	let loadView = requests.get('/gdsDirect/view');
 	let loadThemes = requests.get('/gdsDirect/themes');
