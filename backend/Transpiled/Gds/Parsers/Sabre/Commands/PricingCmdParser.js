@@ -151,6 +151,15 @@ let parsePricingQualifier = ($token) => {
 		[$name, $data] = ['lowestFareAndRebook', true];
 	} else if (php.preg_match(/^Q([A-Z][A-Z0-9]*)$/, $token, $matches = [])) {
 		[$name, $data] = ['fareBasis', $matches[1]];
+	} else if (php.preg_match(/^TC-([A-Z]{2})$/, $token, $matches = [])) {
+		[$name, $data] = ['cabinClass', {
+			'YV': 'economy',
+			'SB': 'premiumEconomy',
+			'BB': 'business',
+			'JB': 'premiumBusiness',
+			'FB': 'first',
+			'PB': 'premiumFirst',
+		}[$matches[1]]];
 	}
 	return [$name, $data];
 };

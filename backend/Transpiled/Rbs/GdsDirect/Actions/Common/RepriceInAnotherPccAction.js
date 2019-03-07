@@ -1,5 +1,6 @@
 // namespace Rbs\GdsDirect\Actions\Common;
 
+const SabPricingCmdParser = require("../../../../Gds/Parsers/Sabre/Commands/PricingCmdParser");
 const Fp = require('../../../../Lib/Utils/Fp.js');
 const ApolloBuildItineraryAction = require('../../../../Rbs/GdsAction/ApolloBuildItineraryAction.js');
 const GalileoBuildItineraryAction = require('../../../../Rbs/GdsAction/GalileoBuildItineraryAction.js');
@@ -24,6 +25,8 @@ const AmaCmdParser = require('../../../../Gds/Parsers/Amadeus/CommandParser.js')
 const AtfqParser = require("../../../../Gds/Parsers/Apollo/Pnr/AtfqParser");
 const FqCmdParser = require("../../../../Gds/Parsers/Galileo/Commands/FqCmdParser");
 const AmdPricingCmdParser = require("../../../../Gds/Parsers/Amadeus/Commands/PricingCmdParser");
+const BookingClasses = require("../../../../../Repositories/BookingClasses");
+const {ERROR_NO_AVAIL} = require('../../../GdsAction/SabreBuildItineraryAction.js');
 
 let withLog = (session, log) => ({
 	...session, runCmd: async (cmd) => {
@@ -94,6 +97,47 @@ let extendAmadeusCmd = (cmd) => {
 
 		let rawMods = Object.values(mods).map(m => m.raw);
 		return [baseCmd].concat(rawMods).join('/');
+	}
+};
+
+let getItinCabinClass = async (itinerary) => {
+	let cabinClasses = new Set();
+	for (let seg of itinerary) {
+		let cabinClass = await BookingClasses.find(seg)
+			.then(r => r.cabin_class).catch(exc => null);
+		cabinClasses.add(cabinClass);
+	}
+	if (cabinClasses.size === 1) {
+		return [...cabinClasses][0];
+	} else {
+		return null;
+	}
+};
+
+let extendSabreCmd = async ({cmd, yFallback, srcItin}) => {
+	let data = SabPricingCmdParser.parse(cmd);
+	if (!data) {
+		return cmd; // don't modify if could not parse
+	} else {
+		let baseCmd = data.baseCmd;
+		let mods = php.array_combine(
+			data.pricingModifiers.map(m => m.type),
+			data.pricingModifiers,
+		);
+		if (yFallback) {
+			let cabinClass = await getItinCabinClass(srcItin);
+			mods['lowestFare'] = {raw: 'NC'};
+			let cabinCode = {
+				'economy': 'YV',
+				'premium_economy': 'SB',
+				'business': 'BB',
+				'first_class': 'FB',
+			}[cabinClass] || 'AB'; // AB - all classes
+			mods['cabinClass'] = {raw: 'TC-' + cabinCode};
+		}
+
+		let rawMods = Object.values(mods).map(m => m.raw);
+		return baseCmd + rawMods.join('¥');
 	}
 };
 
@@ -197,12 +241,20 @@ class RepriceInAnotherPccAction {
 				return Forbidden('Could not emulate '
 					+ pcc + ' - ' + aaaRs.output.trim());
 			}
-			let built = await new SabreBuildItineraryAction()
-				.setSession(session).execute(itinerary, true);
+			let build = await new SabreBuildItineraryAction().setSession(session);
+			let built = await build.execute(itinerary, true);
+			let yFallback = false;
+			if (built.errorType === ERROR_NO_AVAIL) {
+				yFallback = true;
+				await session.runCmd('XI');
+				let yItin = itinerary.map(seg => ({...seg, bookingClass: 'Y'}));
+				built = await build.execute(yItin, true);
+			}
 			if (built.errorType) {
 				return UnprocessableEntity('Could not rebuild PNR in Sabre - '
 					+ built.errorType + ' ' + JSON.stringify(built.errorData));
 			}
+			pricingCmd = await extendSabreCmd({cmd: pricingCmd, yFallback, srcItin: itinerary});
 			let cmdRec = await session.runCmd(pricingCmd);
 			return {calledCommands: [cmdRec]};
 		});
