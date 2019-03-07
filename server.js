@@ -8,7 +8,10 @@ const Config = require('./backend/Config.js');
 	let Diag = require('./backend/LibWrappers/Diag.js');
 	let Migration = require('./backend/Maintenance/Migration.js');
 	Migration.run()
-		.then(result => Diag.notice('Migration was successful', result))
+		.then(result => {
+			console.log('Migration was successful', result);
+			Diag.notice('Migration was successful', result);
+		})
 		.catch(exc => {
 			let msg = 'Migration failed';
 			let data = {
