@@ -41,7 +41,7 @@ let PersistentHttpRq = (params) => new Promise((resolve, reject) => {
 					res.statusCode + ' - ' + parsedUrl.path + ' - ' + responseBody;
 				reject(BadGateway(msg).exc);
 			} else {
-				resolve({body: responseBody});
+				resolve({headers: res.headers, body: responseBody});
 			}
 		});
 	});
