@@ -1,4 +1,6 @@
 
+// it looks like besides the 2 clusters server.js also gets called by someone else who has access to redis, but not diag
+
 const Config = require('./backend/Config.js');
 (async () => {
 	console.log('fetching external config');
