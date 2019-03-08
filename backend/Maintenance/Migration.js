@@ -76,7 +76,7 @@ let Migration = () => {
 		run: async () => {
 			// there are currently 2 supposedly equal servers
 			let lockSeconds = 5 * 60; // 5 minutes
-			let lockKey = keys.MIG_LOCK;
+			let lockKey = keys.MIGR_LOCK;
 			Diag.log('about to acquire ' + lockKey + ' lock for process ' + process.pid);
 			let migrationLock = await client.set(lockKey, process.pid, 'NX', 'EX', lockSeconds);
 			if (!migrationLock) {
