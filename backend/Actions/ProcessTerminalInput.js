@@ -4,7 +4,10 @@ const StatefulSession = require("../GdsHelpers/StatefulSession.js");
 const AreaSettings = require("../Repositories/AreaSettings");
 const ItineraryParser = require("../Transpiled/Gds/Parsers/Apollo/Pnr/ItineraryParser");
 const ProcessApolloTerminalInputAction = require("../Transpiled/Rbs/GdsDirect/Actions/Apollo/ProcessApolloTerminalInputAction");
-const CommandParser = require("../Transpiled/Gds/Parsers/Apollo/CommandParser");
+const ApoCommandParser = require("../Transpiled/Gds/Parsers/Apollo/CommandParser");
+const SabCommandParser = require("../Transpiled/Gds/Parsers/Sabre/CommandParser");
+const AmaCommandParser = require("../Transpiled/Gds/Parsers/Amadeus/CommandParser");
+const GalCommandParser = require("../Transpiled/Gds/Parsers/Galileo/CommandParser");
 const Misc = require("../Transpiled/Lib/Utils/Misc");
 const CommonDataHelper = require("../Transpiled/Rbs/GdsDirect/CommonDataHelper");
 const CmsSabreTerminal = require("../Transpiled/Rbs/GdsDirect/GdsInterface/CmsSabreTerminal");
@@ -118,14 +121,27 @@ let makeGrectResult = (calledCommands, fullState) => {
 
 let isScreenCleaningCommand = (rec, gds) => {
 	if (gds === 'apollo') {
-		let type = rec.type || CommandParser.parse(rec.cmd);
+		let type = rec.type || ApoCommandParser.parse(rec.cmd);
 		return ['seatMap', 'changeArea', 'ignoreKeepPnr', 'reorderSegments'].includes(type)
 			|| rec.cmd.startsWith('A')
 			|| rec.cmd.startsWith('*')
 			|| rec.cmd.startsWith('$')
 			|| rec.cmd.startsWith('MDA')
-			|| rec.cmd.startsWith('MT')
-			;
+			|| rec.cmd.startsWith('MT');
+	} else if (gds === 'galileo') {
+		let type = rec.type || GalCommandParser.parse(rec.cmd);
+		let clearScreenTypes = [
+			'seatMap', 'changeArea', 'ignoreKeepPnr', 'reorderSegments', 'airAvailability',
+			// Apollo $... command analogs follow...
+			'priceItinerary', 'fareRulesFromMenu', 'fareRulesMenuFromTariff', 'fareSearch',
+			'routingFromTariff', 'showBookingClassOfFare',
+		];
+		return clearScreenTypes.includes(type)
+			|| rec.cmd.startsWith('*')
+			|| rec.cmd.startsWith('MDA');
+	} else if (gds === 'sabre') {
+		let type = rec.type || SabCommandParser.parse(rec.cmd);
+		return ['seatMap', 'changeArea', 'ignoreKeepPnr', 'reorderSegments'].includes(type);
 	} else {
 		// TODO: rest GDS-es when we parse them
 		return false;
