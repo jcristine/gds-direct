@@ -75,6 +75,7 @@ let processSession = async (accessedMs, session) => {
 	});
 };
 
+exports.expired = expired;
 exports.shouldClose = shouldClose;
 exports.run = () => {
 	let onIdles = [];
