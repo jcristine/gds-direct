@@ -1,6 +1,7 @@
 let Redis = require("../LibWrappers/Redis.js");
 let {never, StrConsts} = require('../Utils/StrConsts.js');
 let Rej = require('../Utils/Rej.js');
+const RbsClient = require("../IqClients/RbsClient");
 let {mand} = require('../Utils/Misc.js');
 
 /** @return Promise<IGdsProfileMap> */
@@ -35,6 +36,27 @@ let getOne = async (service, profileName) => {
 	} else {
 		return Rej.NotImplemented('No data for ' + service + ' profile ' + profileName);
 	}
+};
+
+let whenSessionLimits = null;
+let getSessionLimits = async () => {
+	if (!whenSessionLimits) {
+		whenSessionLimits = RbsClient.getSessionLimits()
+			.then(rs => rs.result.result.gdsUsers['GDSD']);
+	}
+	return whenSessionLimits;
+};
+
+exports.getLimit = async (gds, profileName) => {
+	let limitProfiles = await getSessionLimits().catch(exc => []);
+	for (let limitProfile of limitProfiles) {
+		if (limitProfile.gds === gds &&
+			limitProfile.gds_profile === profileName
+		) {
+			return limitProfile.session_limit;
+		}
+	}
+	return null;
 };
 
 exports.TRAVELPORT = StrConsts({
