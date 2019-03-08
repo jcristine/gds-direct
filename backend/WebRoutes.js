@@ -349,9 +349,12 @@ process.on('unhandledRejection', (exc, promise) => {
 });
 
 getConfig().then(config => {
+	Diag.log(new Date().toISOString() + ': About to start listening http by ' + process.pid + ' on port ' + config.HTTP_PORT);
 	app.listen(+config.HTTP_PORT, config.HOST, function () {
+		Diag.log(new Date().toISOString() + ': Started listening http by ' + process.pid);
 		console.log('listening on *:' + config.HTTP_PORT + ' - for standard http request handling');
 	});
+	Diag.log(new Date().toISOString() + ': Sent HTTP listening request ' + process.pid);
 });
 
 let socketIo = initSocketIo();
