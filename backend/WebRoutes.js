@@ -329,12 +329,6 @@ app.get('/parser/test', toHandleHttp((rqBody) => {
 	return result;
 }));
 
-getConfig().then(config => {
-	app.listen(+config.HTTP_PORT, config.HOST, function () {
-		console.log('listening on *:' + config.HTTP_PORT + ' - for standard http request handling');
-	});
-});
-
 // UnhandledPromiseRejectionWarning
 // it's actually pretty weird that we ever get here, probably
 // something is wrong with the Promise chain in toHandleHttp()
@@ -352,6 +346,12 @@ process.on('unhandledRejection', (exc, promise) => {
 	} else {
 		console.log('(ignored) Unhandled Promise Rejection', data);
 	}
+});
+
+getConfig().then(config => {
+	app.listen(+config.HTTP_PORT, config.HOST, function () {
+		console.log('listening on *:' + config.HTTP_PORT + ' - for standard http request handling');
+	});
 });
 
 let socketIo = initSocketIo();

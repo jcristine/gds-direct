@@ -31,7 +31,7 @@ exports.updateFromService = async () => {
 		for (let [cabinClass, bookingClasses] of Object.entries(cabinClasses)) {
 			for (let [bookingClass, exists] of Object.entries(bookingClasses)) {
 				let row = normalizeRow(airline, bookingClass, cabinClass);
-				rows.push();
+				rows.push(row);
 			}
 		}
 	}

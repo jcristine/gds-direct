@@ -1,5 +1,6 @@
 
-// it looks like besides the 2 clusters server.js also gets called by someone else who has access to redis, but not diag
+// it looks like besides the 2 clusters server.js also gets called by someone else located on ap01prtr same as one
+// of clusters, but my guess is that it exits after attempt to listen to the port already occupied by other worker
 
 const Config = require('./backend/Config.js');
 (async () => {
@@ -12,10 +13,10 @@ const Config = require('./backend/Config.js');
 	Migration.run()
 		.then(result => {
 			console.log('Migration was successful', result);
-			Diag.notice('Migration was successful', result);
+			Diag.notice(new Date().toISOString() + ': Migration was successful', result);
 		})
 		.catch(exc => {
-			let msg = 'Migration failed';
+			let msg = new Date().toISOString() + ': Migration failed';
 			let data = {
 				httpStatusCode: exc.httpStatusCode,
 				message: exc + '',
