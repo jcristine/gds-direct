@@ -26,31 +26,40 @@ const MakeMcoApolloAction = require('./Transpiled/Rbs/GdsDirect/Actions/Apollo/M
 let php = require('./Transpiled/php.js');
 const KeepAlive = require("./Maintenance/KeepAlive");
 const CmsClient = require("./IqClients/CmsClient");
+const GdsProfiles = require("./Repositories/GdsProfiles");
+const TooManyRequests = require("./Utils/Rej").TooManyRequests;
 const UnprocessableEntity = require("./Utils/Rej").UnprocessableEntity;
 
-let isTravelportAllowed = (rqBody) =>
-	admins.includes(+rqBody.agentId);
-
-let startNewSession = (rqBody) => {
-	let starting;
-	if (+rqBody.useRbs) {
-		starting = RbsClient.startSession(rqBody);
-	} else {
-		if (!isTravelportAllowed(rqBody)) {
-			starting = Forbidden('You are not allowed to use RBS-free connection');
-		} else if (rqBody.gds === 'apollo') {
-			starting = TravelportClient.startSession({profileName: TRAVELPORT.DynApolloProd_2F3K});
-		} else if (rqBody.gds === 'galileo') {
-			starting = TravelportClient.startSession({profileName: TRAVELPORT.DynGalileoProd_711M});
-		} else if (rqBody.gds === 'amadeus') {
-			starting = AmadeusClient.startSession({profileName: AMADEUS.AMADEUS_PROD_1ASIWTUTICO});
-		} else if (rqBody.gds === 'sabre') {
-			starting = SabreClient.startSession({profileName: SABRE.SABRE_PROD_L3II});
-		} else {
-			starting = NotImplemented('Unsupported GDS ' + rqBody.gds + ' for session creation');
+let startByGds = async (gds) => {
+	let tuples = [
+		['apollo' , TravelportClient, TRAVELPORT.DynApolloProd_2F3K],
+		['galileo', TravelportClient, TRAVELPORT.DynGalileoProd_711M],
+		['amadeus', AmadeusClient   , AMADEUS.AMADEUS_PROD_1ASIWTUTICO],
+		['sabre'  , SabreClient     , SABRE.SABRE_PROD_L3II],
+	];
+	for (let [clientGds, client, profileName] of tuples) {
+		if (gds === clientGds) {
+			let limit = await GdsProfiles.getLimit(gds, profileName);
+			let taken = await GdsSessions.countActive(gds, profileName);
+			if (limit !== null && taken >= limit) {
+				// actually, instead of returning error, we could close the most
+				// inactive session of another agent (idle for at least 10 minutes)
+				return TooManyRequests('Too many sessions, ' + taken + ' (>= ' + limit + ') opened for this GDS profile ATM. Wait for few minutes and try again.');
+			} else {
+				return client.startSession({profileName})
+					.then(gdsData => ({...gdsData, limit, taken, profileName}));
+			}
 		}
 	}
-	return starting.then(gdsData => GdsSessions.storeNew(rqBody, gdsData));
+	return NotImplemented('Unsupported GDS ' + gds + ' for session creation');
+};
+
+let startNewSession = (rqBody) => {
+	let starting = +rqBody.useRbs
+		? RbsClient.startSession(rqBody)
+		: startByGds(rqBody.gds);
+	return starting.then(gdsData =>
+		GdsSessions.storeNew(rqBody, gdsData));
 };
 
 let runInSession = (session, rqBody) => {
