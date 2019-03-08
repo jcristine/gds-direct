@@ -31,6 +31,28 @@ class GetMultiPccTariffDisplayActionTest extends require('../../../../../../../b
     static getRepriceRules()  {
         return [
             {
+                // fallback rule
+                'departure_items': [],
+                'destination_items': [],
+                'reprice_pcc_records': [
+                    {'gds': 'apollo', 'pcc': '1O3K', 'ptc': 'JWZ'},
+                    {'gds': 'apollo', 'pcc': '2G52', 'ptc': 'JWZ'},
+                    {'gds': 'apollo', 'pcc': '2F9B', 'ptc': 'JWZ'},
+                    {'gds': 'apollo', 'pcc': '13NM', 'ptc': 'JWZ'},
+                    {'gds': 'apollo', 'pcc': '2G2H', 'ptc': 'JWZ'},
+                    {'gds': 'sabre', 'pcc': 'U2E5', 'ptc': 'JCB'},
+                    {'gds': 'sabre', 'pcc': '5E9H', 'ptc': 'JCB'},
+                    {'gds': 'sabre', 'pcc': 'DK8H', 'ptc': 'JCB'},
+                    {'gds': 'sabre', 'pcc': '0EKH', 'account_code': 'BSAG', 'ptc': 'ITX'},
+                    {'gds': 'sabre', 'pcc': '0EKH', 'account_code': 'BSAG', 'ptc': null},
+                    {'gds': 'sabre', 'pcc': 'K2MI'},
+                    {'gds': 'galileo', 'pcc': 'K9P', 'account_code': 'TPACK', 'fare_type': 'private', 'ptc': 'ITX'},
+                    {'gds': 'galileo', 'pcc': 'K9P', 'account_code': 'TPACK', 'fare_type': 'private', 'ptc': null},
+                    {'gds': 'galileo', 'pcc': 'G8T', 'account_code': 'TPACK', 'fare_type': 'private', 'ptc': 'ITX'},
+                    {'gds': 'galileo', 'pcc': 'G8T', 'account_code': 'TPACK', 'fare_type': 'private', 'ptc': null},
+                ],
+            },
+            {
                 'departure_items': [{'type': 'country','value': 'US'}],
                 'destination_items': [{'type': 'region','value': '35'}],
                 'reprice_pcc_records': [
