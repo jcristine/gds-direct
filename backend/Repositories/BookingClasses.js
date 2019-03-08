@@ -35,6 +35,9 @@ exports.updateFromService = async () => {
 			}
 		}
 	}
+	if (rows.length === 0) {
+		return Promise.reject('Unexpected ACT response format - ' + JSON.stringify(serviceResult));
+	}
 
 	let written = await Db.with(db => db.writeRows(TABLE, rows));
 	return {

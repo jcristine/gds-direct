@@ -22,6 +22,6 @@ const Config = require('./backend/Config.js');
 				stack: exc.stack,
 			};
 			console.error(msg, data);
-			return Diag.critical(msg, data);
+			return Diag.error(msg, data);
 		});
 })();

@@ -291,7 +291,7 @@ module.exports.migrations = [
 		].join('\n')),
 	},
 	{
-		name: 'GRECT/2019.03.07005-fetch-booking-classes',
+		name: 'GRECT/2019.03.07005-fetch-booking-classes-2',
 		perform: (db) => BookingClasses.updateFromService(),
 	},
 ];

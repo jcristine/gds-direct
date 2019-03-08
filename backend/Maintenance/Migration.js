@@ -23,13 +23,18 @@ let Migration = () => {
 				log('Skipping migration #' + name + ' completed at ' + rows[0].dt);
 				return Promise.resolve();
 			} else {
+				Diag.log('About to run migration #' + name);
 				return perform(db)
-					.catch(exc => Promise.reject('Migration #' + name + ' failed ' + exc))
+					.catch(exc => {
+						Diag.error('Migration #' + name + ' failed ' + exc);
+						return Promise.reject('Migration #' + name + ' failed ' + exc);
+					})
 					.then(result =>
 						db.writeRows(TABLE_NAME, [{
 							name: name,
 							dt: new Date().toISOString(),
 						}]).then(writeResult => {
+							Diag.log('Done migration #' + name, result);
 							log('Executed migration #' + name, result);
 							return result;
 						}));
@@ -61,8 +66,10 @@ let Migration = () => {
 			].join('\n'))
 				.then(() => runNext(db));
 
-		return Db.with(db => start(db))
-			.then(result => ({result: result, logs: logs}));
+		return Db.with(db => {
+			Diag.log('Got DB from pool');
+			return start(db);
+		}).then(result => ({result: result, logs: logs}));
 	};
 
 	return {
@@ -70,14 +77,16 @@ let Migration = () => {
 			// there are currently 2 supposedly equal servers
 			let lockSeconds = 5 * 60; // 5 minutes
 			let lockKey = keys.MIG_LOCK;
-			Diag.log('about to acquire ' + lockKey + ' lock for process ' + process.pid + ' ' + ((require || {}).main || {}).filename);
+			Diag.log('about to acquire ' + lockKey + ' lock for process ' + process.pid);
 			let migrationLock = await client.set(lockKey, process.pid, 'NX', 'EX', lockSeconds);
 			if (!migrationLock) {
 				let lastValue = await client.get(lockKey);
 				return Promise.resolve('Migration is already being handled by other cluster ' + JSON.stringify(migrationLock) + ' lock name: ' + lockKey + ' last value: ' + lastValue);
 			}
+			Diag.log('Acquired the lock for process ' + process.pid);
 			/** @debug */
 			await new Promise(resolve => setTimeout(resolve, 15000));
+			Diag.log('Waited for 15 seconds ' + process.pid);
 			return runLocked()
 				.then(async (res) => {
 					let delOut = await client.del(lockKey);
