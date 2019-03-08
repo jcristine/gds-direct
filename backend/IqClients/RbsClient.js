@@ -21,8 +21,8 @@ let callRbs = async (functionName, params) => {
 	let config = await getConfig();
 	let url = config.production
 		? 'http://rbs-asaptickets.lan.dyninno.net/jsonExternalInterface.php?log_id=' + logId
-		: 'http://st-rbs.sjager.php7.dyninno.net/jsonExternalInterface.php?log_id=' + logId;
-		// : 'http://rbs-dev.aklesuns.php7.dyninno.net/jsonExternalInterface.php?log_id=' + logId;
+		// : 'http://st-rbs.sjager.php7.dyninno.net/jsonExternalInterface.php?log_id=' + logId;
+		: 'http://rbs-st.aklesuns.php7.dyninno.net/jsonExternalInterface.php?log_id=' + logId;
 
 	let rbsPassword = config.RBS_PASSWORD;
 	if (!rbsPassword) {
@@ -145,6 +145,22 @@ RbsClient.getTariffDisplay = (params) => {
  */
 RbsClient.importPnrFromDumps = (params) => {
 	return callRbs('pnr.importPnrFromDumps', params);
+};
+
+RbsClient.getSessionLimits = (params = {}) => {
+	return callRbs('info.getSessionLimits', params);
+};
+
+RbsClient.reportCreatedPnr = (params) => {
+	return callRbs('pnr.reportCreated', params);
+};
+
+RbsClient.getMultiPccTariffRules = (params = {}) => {
+	return callRbs('search.getMultiPccTariffRules', params);
+};
+
+RbsClient.reportMultiPccTariffResult = (params) => {
+	return callRbs('search.reportMultiPccTariffResult', params);
 };
 
 module.exports = RbsClient;
