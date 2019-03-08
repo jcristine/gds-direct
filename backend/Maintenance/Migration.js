@@ -77,15 +77,15 @@ let Migration = () => {
 			// there are currently 2 supposedly equal servers
 			let lockSeconds = 5 * 60; // 5 minutes
 			let lockKey = keys.MIGRAT_LOCK;
-			Diag.log(new Date().toISOString() + ': Waiting for 10 seconds ' + process.pid);
-			await new Promise(resolve => setTimeout(resolve, 10000));
-			Diag.log(new Date().toISOString() + ': about to acquire ' + lockKey + ' lock for process ' + process.pid);
+			Diag.log('Waiting for 5 seconds ' + process.pid);
+			await new Promise(resolve => setTimeout(resolve, 5000));
+			Diag.log('About to acquire ' + lockKey + ' lock for process ' + process.pid);
 			let migrationLock = await client.set(lockKey, process.pid, 'NX', 'EX', lockSeconds);
 			if (!migrationLock) {
 				let lastValue = await client.get(lockKey);
-				return Promise.resolve(new Date().toISOString() + ': Migration is already being handled by other cluster ' + JSON.stringify(migrationLock) + ' lock name: ' + lockKey + ' last value: ' + lastValue);
+				return Promise.resolve('Migration is already being handled by other cluster ' + JSON.stringify(migrationLock) + ' lock name: ' + lockKey + ' last value: ' + lastValue);
 			}
-			Diag.log(new Date().toISOString() + ': Acquired the lock for process ' + process.pid);
+			Diag.log('Acquired the lock for process ' + process.pid);
 			return runLocked()
 				.then(async (res) => {
 					let delOut = await client.del(lockKey);
