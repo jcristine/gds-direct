@@ -10,7 +10,7 @@
  */
 
 let util = require('util');
-let {safe} = require('../Utils/Misc.js');
+let {safe, chunk} = require('../Utils/Misc.js');
 
 let php = {};
 
@@ -527,13 +527,7 @@ php.array_unique = (arr) => {
 	}
 };
 php.array_reverse = (arr) => Object.values(arr).reverse();
-php.array_chunk = (arr, size) => {
-	let chunks = [];
-	for (let i = 0; i < arr.length; i += size) {
-		chunks.push(arr.slice(i, i + size));
-	}
-	return chunks;
-};
+php.array_chunk = chunk;
 php.array_pad = (array, size, value) => {
 	array = Object.values(array);
 	let absLen = Math.abs(size);

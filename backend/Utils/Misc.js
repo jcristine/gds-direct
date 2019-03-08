@@ -2,7 +2,6 @@
 let PresistentHttpRq = require('./PersistentHttpRq.js');
 const BadGateway = require("./Rej").BadGateway;
 let querystring = require('querystring');
-let php = require('../Transpiled/php.js');
 
 exports.hrtimeToDecimal = (hrtime) => {
 	let [seconds, nanos] = hrtime;
@@ -10,7 +9,13 @@ exports.hrtimeToDecimal = (hrtime) => {
 	return seconds + '.' + rest;
 };
 
-exports.chunk = php.array_chunk;
+exports.chunk = (arr, size) => {
+	let chunks = [];
+	for (let i = 0; i < arr.length; i += size) {
+		chunks.push(arr.slice(i, i + size));
+	}
+	return chunks;
+};
 
 let jsExport = function ($var, $margin, inlineLimit) {
 	"use strict";
