@@ -70,7 +70,7 @@ let Migration = () => {
 			// there are currently 2 supposedly equal servers
 			let lockSeconds = 5 * 60; // 5 minutes
 			let lockKey = keys.MIGR_LOCK;
-			Diag.log('about to acquire ' + lockKey + ' lock for process ' + process.pid + ' ' + JSON.stringify(process.argv));
+			Diag.log('about to acquire ' + lockKey + ' lock for process ' + process.pid + ' ' + require.main.filename);
 			let migrationLock = await client.set(lockKey, process.pid, 'NX', 'EX', lockSeconds);
 			if (!migrationLock) {
 				let lastValue = await client.get(lockKey);
