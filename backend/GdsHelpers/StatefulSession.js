@@ -9,6 +9,7 @@ const FluentLogger = require("../LibWrappers/FluentLogger.js");
 const LocationGeographyProvider = require('../Transpiled/Rbs/DataProviders/LocationGeographyProvider.js');
 const Pccs = require("../Repositories/Pccs");
 const Misc = require("../Transpiled/Lib/Utils/Misc");
+const RbsClient = require("../IqClients/RbsClient");
 const {getConfig} = require('../Config.js');
 const {jsExport} = require('../Utils/Misc.js');
 
@@ -98,7 +99,14 @@ let StatefulSession = async (session) => {
 		getStartDt: () => startDt,
 		getAreaRows: () => fullState.areas,
 		flushCalledCommands: () => calledCommands.splice(0),
-		handlePnrSave: () => {},
+		handlePnrSave: (recordLocator) => {
+			RbsClient.reportCreatedPnr({
+				recordLocator: recordLocator,
+				gds: gds,
+				pcc: getSessionData().pcc,
+				agentId: session.context.agentId,
+			});
+		},
 		handleFsUsage: () => {},
 		getSessionData: getSessionData,
 		getLeadData: () => ({
