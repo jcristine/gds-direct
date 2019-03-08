@@ -1,8 +1,10 @@
 
 let {client, keys, withNewConnection} = require('./../LibWrappers/Redis.js');
 let FluentLogger = require('./../LibWrappers/FluentLogger.js');
+const KeepAlive = require("../Maintenance/KeepAlive");
 let {NoContent, Conflict, NotFound, nonEmpty} = require('./../Utils/Rej.js');
-let {chunk} = require('./../Utils/Misc.js');
+let Misc = require('./../Utils/Misc.js');
+let {chunk} = Misc;
 
 let normalizeContext = (reqBody) => {
 	return {
@@ -153,4 +155,26 @@ exports.remove = (session) => {
 		client.hdel(keys.SESSION_TO_STATE, session.id),
 		client.zrem(keys.SESSION_ACTIVES, session.id),
 	]);
+};
+
+exports.countActive = (gds, profileName) => {
+	return Promise.all([
+		// could add an index by GDS, but nah for now
+		client.hgetall(keys.SESSION_TO_RECORD),
+		// should not be needed if crons work properly I guess...
+		client.zrange(keys.SESSION_ACTIVES, 0, -1, 'WITHSCORES'),
+	]).then(([idToSession, allActivities]) => {
+		let accessPairs = chunk(allActivities, 2);
+		return accessPairs.filter(([id, accessMs]) => {
+			let sessionStr = idToSession[id];
+			if (!sessionStr) {
+				return false;
+			} else {
+				let session = JSON.parse(sessionStr);
+				return session.context.gds === gds
+					&& session.gdsData.profileName === profileName
+					&& !KeepAlive.expired(session, accessMs);
+			}
+		}).length;
+	});
 };
