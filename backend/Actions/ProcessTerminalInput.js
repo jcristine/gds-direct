@@ -18,6 +18,7 @@ const GdsDialectTranslator = require('../Transpiled/Rbs/GdsDirect/DialectTransla
 const ProcessSabreTerminalInputAction = require("../Transpiled/Rbs/GdsDirect/Actions/Sabre/ProcessSabreTerminalInputAction");
 const TerminalService = require('../Transpiled/App/Services/TerminalService.js');
 const TerminalBuffering = require("../Repositories/CmdRqLog");
+const ProcessAmadeusTerminalInputAction = require("../Transpiled/Rbs/GdsDirect/Actions/Amadeus/ProcessAmadeusTerminalInputAction");
 
 // this is not complete list
 let shouldWrap = (cmd) => {
@@ -194,6 +195,13 @@ let runCmdRq =  async (inputCmd, stateful) => {
 		return grectResult;
 	} else if (stateful.gds === 'sabre') {
 		let gdsResult = await (new ProcessSabreTerminalInputAction(stateful).execute(inputCmd));
+		let grectResult = makeRbsResult(gdsResult.calledCommands, stateful.getFullState());
+		grectResult.status = gdsResult.status;
+		grectResult.messages = (gdsResult.userMessages || []).map(msg => ({type: 'error', text: msg}));
+		grectResult.actions = gdsResult.actions || [];
+		return grectResult;
+	} else if (stateful.gds === 'amadeus') {
+		let gdsResult = await (new ProcessAmadeusTerminalInputAction(stateful).execute(inputCmd));
 		let grectResult = makeRbsResult(gdsResult.calledCommands, stateful.getFullState());
 		grectResult.status = gdsResult.status;
 		grectResult.messages = (gdsResult.userMessages || []).map(msg => ({type: 'error', text: msg}));
