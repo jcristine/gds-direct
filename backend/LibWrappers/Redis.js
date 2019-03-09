@@ -8,13 +8,11 @@ const nonEmpty = require("../Utils/Rej").nonEmpty;
 let client = new ioredis(config.REDIS_PORT, config.REDIS_HOST);
 
 exports.keys = StrConsts({
-	get SESSION_LAST_INSERT_ID() { never() },
 	get SESSION_ACTIVES() { never() },
 	get SESSION_TO_USER_ACCESS_MS() { never() },
 	get SESSION_BY_CONTEXT() { never() },
 	get SESSION_TO_RECORD() { never() },
 	get SESSION_TO_STATE() { never() },
-	get CMD_RQ_LAST_INSERT_ID() { never() },
 	get USER_TO_TMP_SETTINGS() { never() },
 	get EMC_TOKEN_TO_USER() { never() },
 	get MIGRAT_LOCK() { never() },
