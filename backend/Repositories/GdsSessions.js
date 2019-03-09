@@ -5,6 +5,9 @@ const KeepAlive = require("../Maintenance/KeepAlive");
 let {NoContent, Conflict, NotFound, nonEmpty} = require('./../Utils/Rej.js');
 let Misc = require('./../Utils/Misc.js');
 let {chunk} = Misc;
+let Db = require('../Utils/Db.js');
+
+let TABLE = 'terminal_sessions';
 
 let normalizeContext = (reqBody) => {
 	return {
@@ -50,16 +53,22 @@ exports.getAll = () => {
 };
 
 /** @param context = normalizeContext() */
-exports.storeNew = (context, gdsData) => {
+exports.storeNew = async (context, gdsData) => {
 	let normalized = normalizeContext(context);
 	let contextStr = JSON.stringify(normalized);
-	return client.incr(keys.SESSION_LAST_INSERT_ID).then(id => {
-		let session = makeSessionRecord(id, context, gdsData);
-		client.zadd(keys.SESSION_ACTIVES, Date.now(), id);
-		client.hset(keys.SESSION_BY_CONTEXT, contextStr, id);
-		client.hset(keys.SESSION_TO_RECORD, id, JSON.stringify(session));
-		return session;
-	});
+	let id = await Db.with(db => db.writeRows(TABLE, [{
+		gds: context.gds,
+		created_dt: new Date().toISOString(),
+		agent_id: context.agentId,
+		lead_id: context.travelRequestId,
+	}])).then(inserted => inserted.insertId)
+		.then(nonEmpty('Could not get session id from DB'));
+
+	let session = makeSessionRecord(id, context, gdsData);
+	client.zadd(keys.SESSION_ACTIVES, Date.now(), id);
+	client.hset(keys.SESSION_BY_CONTEXT, contextStr, id);
+	client.hset(keys.SESSION_TO_RECORD, id, JSON.stringify(session));
+	return session;
 };
 
 /** @param session = makeSessionRecord() */
