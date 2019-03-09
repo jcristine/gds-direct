@@ -20,9 +20,7 @@ class Misc {
 
 	static maskCcNumbers($data, $showDigits = 4) {
 		if (php.is_array($data)) {
-			return Fp.map(($sub) => {
-				return this.maskCcNumbers($sub, $showDigits);
-			}, $data);
+			return Fp.map(($sub) => this.maskCcNumbers($sub, $showDigits), $data);
 		} else if (php.is_string($data)) {
 			return this.maskCcNumbersInString($data, $showDigits);
 		} else {

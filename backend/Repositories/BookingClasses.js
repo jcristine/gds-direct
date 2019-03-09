@@ -1,6 +1,7 @@
 
 let {getConfig} = require('../Config.js');
 let Db = require('../Utils/Db.js');
+const UnprocessableEntity = require("../Utils/Rej").UnprocessableEntity;
 const iqJson = require("../Utils/Misc").iqJson;
 
 let TABLE = 'airline_booking_classes';
@@ -36,7 +37,7 @@ exports.updateFromService = async () => {
 		}
 	}
 	if (rows.length === 0) {
-		return Promise.reject('Unexpected ACT response format - ' + JSON.stringify(serviceResult));
+		return BadGateway('Unexpected ACT response format - ' + JSON.stringify(serviceResult));
 	}
 
 	let written = await Db.with(db => db.writeRows(TABLE, rows));

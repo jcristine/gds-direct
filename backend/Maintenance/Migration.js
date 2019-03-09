@@ -3,6 +3,8 @@ let aklesuns = require('../Migration/aklesuns.js');
 let Db = require('../Utils/Db.js');
 let {client, keys} = require('../LibWrappers/Redis.js');
 let Diag = require('../LibWrappers/Diag.js');
+const InternalServerError = require("../Utils/Rej").InternalServerError;
+let {getConfig} = require('../Config.js');
 
 let TABLE_NAME = 'migrations';
 
@@ -27,7 +29,7 @@ let Migration = () => {
 				return perform(db)
 					.catch(exc => {
 						Diag.error('Migration #' + name + ' failed ' + exc);
-						return Promise.reject('Migration #' + name + ' failed ' + exc);
+						return InternalServerError('Migration #' + name + ' failed ' + exc);
 					})
 					.then(result =>
 						db.writeRows(TABLE_NAME, [{
@@ -74,11 +76,16 @@ let Migration = () => {
 
 	return {
 		run: async () => {
+			let config = await getConfig();
 			// there are currently 2 supposedly equal servers
 			let lockSeconds = 5 * 60; // 5 minutes
 			let lockKey = keys.MIGRAT_LOCK;
-			Diag.log('Waiting for 5 seconds ' + process.pid);
-			await new Promise(resolve => setTimeout(resolve, 5000));
+			if (config.production) {
+				// sometimes one additional process gets spawned and dies after a
+				// few seconds leaving migration lock hanging - this is a workaround
+				Diag.log('Waiting for 5 seconds ' + process.pid);
+				await new Promise(resolve => setTimeout(resolve, 5000));
+			}
 			Diag.log('About to acquire ' + lockKey + ' lock for process ' + process.pid);
 			let migrationLock = await client.set(lockKey, process.pid, 'NX', 'EX', lockSeconds);
 			if (!migrationLock) {

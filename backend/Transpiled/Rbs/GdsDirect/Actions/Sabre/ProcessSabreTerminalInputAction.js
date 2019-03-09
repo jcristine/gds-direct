@@ -25,6 +25,7 @@ const SabreReservationParser = require('../../../../Gds/Parsers/Sabre/Pnr/PnrPar
 const Pccs = require("../../../../../Repositories/Pccs");
 const getRbsPqInfo = require("../../../../../GdsHelpers/RbsUtils").getRbsPqInfo;
 const UnprocessableEntity = require("../../../../../Utils/Rej").UnprocessableEntity;
+const NotImplemented = require("../../../../../Utils/Rej").NotImplemented;
 
 /** @debug */
 var require = translib.stubRequire;
@@ -496,7 +497,7 @@ class ProcessSabreTerminalInputAction {
 		) {
 			// area signed in same session using real command somehow
 			// will happen when we switch between real and imitated functionality
-			return await this.changeAreaInGds($area);
+			return this.changeAreaInGds($area);
 		}
 		this.stateful.getLog().updateAreaState($row, {
 			'type': 'changeArea',
@@ -514,9 +515,9 @@ class ProcessSabreTerminalInputAction {
 
 		$useBuiltInAreas = this.constructor.USE_BUILT_IN_AREAS;
 		if ($useBuiltInAreas) {
-			return await this.changeAreaInGds($area);
+			return this.changeAreaInGds($area);
 		} else {
-			return await this.changeAreaImitated($area);
+			return this.changeAreaImitated($area);
 		}
 	}
 
@@ -810,7 +811,7 @@ class ProcessSabreTerminalInputAction {
 			let utc = await this._getSegUtc(seg);
 			return utc
 				? Promise.resolve({utc, seg})
-				: Promise.reject('No tz for seg ' + seg.segmentNumber + ' ' + seg.departureAirport);
+				: NotImplemented('No tz for seg ' + seg.segmentNumber + ' ' + seg.departureAirport);
 		});
 		let utcRecords = await Promise.all(promises);
 

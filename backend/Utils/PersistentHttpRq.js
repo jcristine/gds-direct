@@ -45,7 +45,7 @@ let PersistentHttpRq = (params) => new Promise((resolve, reject) => {
 			}
 		});
 	});
-	req.on('error', (e) => reject('Failed to make request - ' + e));
+	req.on('error', (e) => BadGateway('Failed to make request - ' + e));
 	req.end(params.body);
 });
 

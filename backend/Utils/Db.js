@@ -1,6 +1,9 @@
 
 let mysql = require('promise-mysql');
 let Config = require('../Config.js');
+const NotFound = require("./Rej").NotFound;
+const BadRequest = require("./Rej").BadRequest;
+const InternalServerError = require("./Rej").InternalServerError;
 let dbPool = mysql.createPool({
 	host: Config.DB_HOST,
 	user: Config.DB_USER,
@@ -18,6 +21,8 @@ let dbPool = mysql.createPool({
  * @param {PoolConnection} dbConn
  */
 let Db = (dbConn) => {
+	let query = (...args) => dbConn.query(...args);
+
 	/**
 	 * @return {Promise<IPromiseMysqlQueryResult>}
 	 */
@@ -34,12 +39,12 @@ let Db = (dbConn) => {
 					let value = $row[$colName];
 					let primitives = ['string', 'number', 'boolean', 'undefined'];
 					if (!primitives.includes(typeof value) && value !== null) {
-						return Promise.reject('Invalid insert value on key `' + $colName + '` in the ' + $i + '-th row - ' + (typeof value));
+						return BadRequest('Invalid insert value on key `' + $colName + '` in the ' + $i + '-th row - ' + (typeof value));
 					} else {
 						$dataToInsert.push(value);
 					}
 				} else {
-					return Promise.reject('No key `' + $colName + '` in the ' + $i + '-th row required to insert many');
+					return BadRequest('No key `' + $colName + '` in the ' + $i + '-th row required to insert many');
 				}
 			}
 		}
@@ -57,12 +62,12 @@ let Db = (dbConn) => {
 				.join(', '),
 		].join('\n');
 
-		return dbConn.query($sql, $dataToInsert);
+		return query($sql, $dataToInsert);
 	};
 
 	/**
 	 * @param {{
-	 *     table: 'terminalBuffering',
+	 *     table: 'cmd_rq_log',
 	 *     where?: [
 	 *         ['gds', '=', 'apollo'],
 	 *         ['terminalNumber', '=', '2'],
@@ -110,7 +115,7 @@ let Db = (dbConn) => {
 				.map(([col, op, val]) => val))
 				.reduce((a,b) => a.concat(b), []),
 		);
-		return dbConn.query(sql, placedValues);
+		return query(sql, placedValues);
 	};
 
 	return {
@@ -118,11 +123,11 @@ let Db = (dbConn) => {
 		fetchAll: fetchAll,
 		fetchOne: params => fetchAll(params)
 			.then(rows => rows.length > 0 ? rows[0] :
-				Promise.reject('Could not find ' +
+				NotFound('Could not find ' +
 					params.table + ' record in DB ' +
 					(params.where ? JSON.stringify(params.where) : ''))),
 		// for custom stuff
-		query: (...args) => dbConn.query(...args),
+		query: query,
 	};
 };
 Db.with = (process) => dbPool.getConnection()

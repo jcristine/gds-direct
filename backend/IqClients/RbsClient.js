@@ -26,14 +26,14 @@ let callRbs = async (functionName, params) => {
 
 	let rbsPassword = config.RBS_PASSWORD;
 	if (!rbsPassword) {
-		return Promise.reject('RBS password not defined in env');
+		return NotImplemented('RBS password not defined in env');
 	}
 	let ec = new Crypt(process.env.RANDOM_KEY, 'des-ede3');
 	let credentials = {login: 'CMS', password: ec.encryptToken(rbsPassword)};
 
 	return iqJson({url, credentials, functionName, params}).then(resp => {
 		if (!resp.result || !resp.result.response_code) {
-			return Promise.reject('Unexpected RBS response format - ' + body);
+			return Promise.reject('Unexpected RBS response format - ' + JSON.stringify(resp));
 		} else if (![1,2,3].includes(resp.result.response_code)) {
 			let rpcErrors = resp.result.errors;
 			let errorStr = resp.result.response_code + ' - ' + JSON.stringify(rpcErrors);

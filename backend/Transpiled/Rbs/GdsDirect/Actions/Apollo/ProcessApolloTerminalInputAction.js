@@ -35,6 +35,8 @@ const UnprocessableEntity = require("../../../../../Utils/Rej").UnprocessableEnt
 const TariffDisplayParser = require('../../../../Gds/Parsers/Apollo/TariffDisplay/TariffDisplayParser.js');
 const FareDisplayDomesticParser = require('../../../../Gds/Parsers/Apollo/TariffDisplay/FareDisplayDomesticParser.js');
 const FareDisplayInternationalParser = require('../../../../Gds/Parsers/Apollo/TariffDisplay/FareDisplayInternationalParser.js');
+const BadRequest = require("../../../../../Utils/Rej").BadRequest;
+const NotImplemented = require("../../../../../Utils/Rej").NotImplemented;
 
 let php = require('../../../../php.js');
 
@@ -144,7 +146,7 @@ class ProcessApolloTerminalInputAction {
 
 	async findOnLastTariffDisplay(lineNumber) {
 		if (lineNumber < 1 || lineNumber > 250) {
-			return Promise.reject('Invalid fare number - ' + lineNumber + ', out of range');
+			return BadRequest('Invalid fare number - ' + lineNumber + ', out of range');
 		}
 		let requestedFare = null;
 		let pages = [];
@@ -153,7 +155,7 @@ class ProcessApolloTerminalInputAction {
 			pages.push(output);
 			let parsed = TariffDisplayParser.parse(pages.join('\n'));
 			if (parsed.error) {
-				return Promise.reject('Failed to parse tariff display - ' + parsed.error + ' - ' + output);
+				return UnprocessableEntity('Failed to parse tariff display - ' + parsed.error + ' - ' + output);
 			}
 			let fares = parsed.result || [];
 			for (let fare of fares) {
@@ -958,7 +960,7 @@ class ProcessApolloTerminalInputAction {
 			return {'errors': [Errors.getMessage(Errors.NO_FREE_AREAS)]};
 		}
 		if (!this.getSessionData()['is_pnr_stored'] && !$aliasData['keepOriginal'] && $segmentStatus !== 'GK') {
-			await this.ignoreWithoutWarning(); // ignore the itinerary it initial area
+			await this.ignoreWithoutWarning(); // ignore the itinerary in initial area
 		}
 		$recoveryPcc = this.getSessionData()['pcc'];
 		$area = $emptyAreas[0];
@@ -1090,7 +1092,7 @@ class ProcessApolloTerminalInputAction {
 			let utc = await this._getSegUtc(seg);
 			return utc
 				? Promise.resolve({utc, seg})
-				: Promise.reject('No tz for seg ' + seg.segmentNumber + ' ' + seg.departureAirport);
+				: NotImplemented('No tz for seg ' + seg.segmentNumber + ' ' + seg.departureAirport);
 		});
 		let utcRecords = await Promise.all(promises);
 
