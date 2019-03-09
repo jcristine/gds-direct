@@ -1,0 +1,33 @@
+{
+  "parserOptions": {
+    "ecmaVersion": 2019
+  },
+  "rules": {
+    "for-direction": "error",
+    "semi": ["error", "always"],
+    "valid-typeof": "error",
+    "no-invalid-this": "error",
+    "no-loop-func": "error",
+    "no-octal": "error",
+    "no-return-await": "error",
+    "no-unmodified-loop-condition": "error",
+    "no-warning-comments": "warn",
+    "no-undef": "error",
+    "comma-dangle": ["error", {
+      "arrays": "always-multiline",
+      "objects": "always-multiline"
+    }]
+  },
+  "globals": {
+    "console": false,
+    "setTimeout": false,
+
+    "Promise": false,
+    "Set": false,
+
+    "process": false,
+    "module": false,
+    "exports": false,
+    "require": false
+  }
+}
