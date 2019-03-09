@@ -104,6 +104,10 @@ let fetchAllWith = async ($runCmd, $cmd, $mrCmd, $parsePager) => {
 };
 
 class AmadeusUtils {
+	static parseRtPager(page) {
+		return parseRtPager(page);
+	}
+
 	/**
 	 * for >DO...; command
 	 * probably also works in >RT; and other commands that use ")" and "/$" to separate pages
