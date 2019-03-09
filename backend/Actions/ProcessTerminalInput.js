@@ -16,6 +16,8 @@ const matchAll = require("../Utils/Str").matchAll;
 const nonEmpty = require("../Utils/Rej").nonEmpty;
 const GdsDialectTranslator = require('../Transpiled/Rbs/GdsDirect/DialectTranslator/GdsDialectTranslator.js');
 const ProcessSabreTerminalInputAction = require("../Transpiled/Rbs/GdsDirect/Actions/Sabre/ProcessSabreTerminalInputAction");
+const TerminalService = require('../Transpiled/App/Services/TerminalService.js');
+const TerminalBuffering = require("../Repositories/CmdRqLog");
 
 // this is not complete list
 let shouldWrap = (cmd) => {
@@ -100,7 +102,7 @@ let parseAlias = (cmd) => {
 	};
 };
 
-let makeGrectResult = (calledCommands, fullState) => {
+let makeRbsResult = (calledCommands, fullState) => {
 	let areaState = fullState.areas[fullState.area] || {};
 	return ({
 		calledCommands: calledCommands.map(a => a),
@@ -186,14 +188,14 @@ let transformCalledCommand = (rec, stateful) => {
 let runCmdRq =  async (inputCmd, stateful) => {
 	if (stateful.gds === 'apollo') {
 		let gdsResult = await (new ProcessApolloTerminalInputAction(stateful).execute(inputCmd));
-		let grectResult = makeGrectResult(gdsResult.calledCommands, stateful.getFullState());
+		let grectResult = makeRbsResult(gdsResult.calledCommands, stateful.getFullState());
 		grectResult.status = gdsResult.status;
 		grectResult.messages = (gdsResult.userMessages || []).map(msg => ({type: 'error', text: msg}));
 		grectResult.actions = gdsResult.actions || [];
 		return grectResult;
 	} else if (stateful.gds === 'sabre') {
 		let gdsResult = await (new ProcessSabreTerminalInputAction(stateful).execute(inputCmd));
-		let grectResult = makeGrectResult(gdsResult.calledCommands, stateful.getFullState());
+		let grectResult = makeRbsResult(gdsResult.calledCommands, stateful.getFullState());
 		grectResult.status = gdsResult.status;
 		grectResult.messages = (gdsResult.userMessages || []).map(msg => ({type: 'error', text: msg}));
 		grectResult.actions = gdsResult.actions || [];
@@ -208,7 +210,7 @@ let runCmdRq =  async (inputCmd, stateful) => {
 				: (await stateful.runCmd(cmd));
 			calledCommands.push(cmdRec);
 		}
-		return makeGrectResult(calledCommands, stateful.getFullState());
+		return makeRbsResult(calledCommands, stateful.getFullState());
 	}
 };
 
@@ -233,6 +235,37 @@ let translateCmd = (fromGds, toGds, inputCmd) => {
 	};
 };
 
+// better to do it separately in each GDS, since Sabre logs into current PCC
+// in all areas on SI*, and Amadeus needs a separate session for each area
+let useConfigPcc = (grectResult, stateful, agentId) => {
+	let {area, pcc} = grectResult.sessionInfo;
+	if (!pcc) {
+		// emulate to default pcc
+		return AreaSettings.getByAgent(agentId)
+			.then(rows => rows.filter(r =>
+				r.gds === gds &&
+				r.area === area &&
+				r.defaultPcc)[0])
+			.then(nonEmpty())
+			.then(row => {
+				let cmd = {
+					apollo: 'SEM/' + row.defaultPcc + '/AG',
+					galileo: 'SEM/' + row.defaultPcc + '/AG',
+					sabre: 'AAA' + row.defaultPcc,
+					amadeus: 'JUM/O-' + row.defaultPcc,
+				}[gds];
+				return stateful.runCmd(cmd)
+					.then(cmdRec => {
+						let calledCommands = (grectResult.calledCommands || []).concat([cmdRec]);
+						return makeRbsResult(calledCommands, stateful.getFullState());
+					});
+			})
+			.catch(exc => grectResult);
+	} else {
+		return grectResult;
+	}
+};
+
 /**
  * auto-correct typos in the command, convert it between
  * GDS dialects, run _alias_ chain of commands, etc...
@@ -240,44 +273,27 @@ let translateCmd = (fromGds, toGds, inputCmd) => {
  * @param {{command: '*R'}} rqBody
  */
 module.exports = async (session, rqBody) => {
-	let stateful = await StatefulSession(session);
+	let whenCmdRqId = TerminalBuffering.storeNew(rqBody, session);
+	let stateful = await StatefulSession({session, whenCmdRqId});
 	let cmdRq = rqBody.command;
 	let gds = session.context.gds;
 	let dialect = rqBody.language || gds;
 	cmdRq = translateCmd(dialect, gds, cmdRq).cmd;
 
-	return runCmdRq(cmdRq, stateful)
-		.then(grectResult => {
-			let {area, pcc} = grectResult.sessionInfo;
-			if (!pcc) {
-				// emulate to default pcc
-				return AreaSettings.getByAgent(rqBody.agentId)
-					.then(rows => rows.filter(r =>
-						r.gds === gds &&
-						r.area === area &&
-						r.defaultPcc)[0])
-					.then(nonEmpty())
-					.then(row => {
-						let cmd = {
-							apollo: 'SEM/' + row.defaultPcc + '/AG',
-							galileo: 'SEM/' + row.defaultPcc + '/AG',
-							sabre: 'AAA' + row.defaultPcc,
-							amadeus: 'JUM/O-' + row.defaultPcc,
-						}[gds];
-						return stateful.runCmd(cmd)
-							.then(cmdRec => {
-								let calledCommands = (grectResult.calledCommands || []).concat([cmdRec]);
-								return makeGrectResult(calledCommands, stateful.getFullState());
-							});
-					})
-					.catch(exc => grectResult);
-			} else {
-				return grectResult;
-			}
-		})
-		.then(grectResult => ({
-			...grectResult,
-			calledCommands: grectResult.calledCommands
+	let whenRbsResult = runCmdRq(cmdRq, stateful)
+		.then(rbsResult => useConfigPcc(rbsResult, stateful, rqBody.agentId))
+		.then(rbsResult => ({
+			...rbsResult,
+			calledCommands: rbsResult.calledCommands
 				.map(r => transformCalledCommand(r, stateful)),
 		}));
+
+	let whenCmsResult = whenRbsResult.then(rbsResult => {
+		let termSvc = new TerminalService(gds, rqBody.agentId, rqBody.travelRequestId);
+		return termSvc.addHighlighting(rqBody.command, rqBody.language || rqBody.gds, rbsResult);
+	});
+
+	TerminalBuffering.logOutput(rqBody, whenCmdRqId, whenCmsResult);
+
+	return whenCmsResult;
 };

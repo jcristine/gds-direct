@@ -127,7 +127,7 @@ class TerminalService
 			// session, not all commands of the agent...
 			// also keeping scrolled command in memory would be better than using DB
 			let rows = await Db.with(db => db.fetchAll({
-				table: 'terminalBuffering',
+				table: 'cmd_rq_log',
 				where: [
 					['agentId', '=', this.agentId],
 					['requestId', '=', this.travelRequestId || 0],

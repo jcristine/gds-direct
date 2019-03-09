@@ -14,7 +14,7 @@ let GdsSessions = require('./Repositories/GdsSessions.js');
 let {TRAVELPORT, AMADEUS, SABRE} = require('./Repositories/GdsProfiles.js');
 //const ImportPqAction = require("./Transpiled/Rbs/GdsDirect/Actions/ImportPqAction");
 //const CmsStatefulSession = require("./Transpiled/Rbs/GdsDirect/CmsStatefulSession");
-const TerminalBuffering = require("./Repositories/TerminalBuffering");
+const TerminalBuffering = require("./Repositories/CmdRqLog");
 let {logit, logExc} = require('./LibWrappers/FluentLogger.js');
 let {Forbidden, NotImplemented, LoginTimeOut, NotFound} = require('./Utils/Rej.js');
 let {fetchAll} = require('./GdsHelpers/TravelportUtils.js');
@@ -71,7 +71,7 @@ let runInSession = (session, rqBody) => {
 		running = ProcessTerminalInput(session, rqBody);
 	}
 	GdsSessions.updateAccessTime(session);
-	return running.then(rbsResult => ({session, rbsResult}));
+	return running.then(cmsResult => ({...cmsResult, session}));
 };
 
 let runInNewSession = (rqBody, exc) => {
@@ -81,8 +81,8 @@ let runInNewSession = (rqBody, exc) => {
 			return runInSession(session, rqBody);
 		})
 		.then(runt => {
-			runt.rbsResult.startNewSession = true;
-			runt.rbsResult.messages = [{type: 'pop_up', text: 'New session started, reason: ' + (exc + '').slice(0, 800) + '...\n'}];
+			runt.startNewSession = true;
+			runt.userMessages = ['New session started, reason: ' + (exc + '').slice(0, 800) + '...\n'];
 			return runt;
 		});
 };
@@ -99,7 +99,7 @@ let closeSession = (session) => {
 	} else if ('amadeus' === session.context.gds) {
 		closing = AmadeusClient.closeSession(session.gdsData);
 	} else {
-		closing = Promise.reject('closeSession() not implemented for GDS - ' + session.context.gds);
+		closing = NotImplemented('closeSession() not implemented for GDS - ' + session.context.gds);
 	}
 	GdsSessions.remove(session);
 	return closing.then(result => {
@@ -131,23 +131,28 @@ let runInputCmdRestartAllowed = (reqBody) => {
 			}));
 };
 
-/** @param {IEmcResult} emcResult */
-exports.runInputCmd = (reqBody, emcResult) => {
+exports.runInputCmd = (rqBody) => {
 	let calledDtObj = new Date();
-	let running = runInputCmdRestartAllowed(reqBody, emcResult)
-		.then(async ({session, rbsResult}) => {
+	let running = runInputCmdRestartAllowed(rqBody)
+		.then(async (cmsResult) => {
+			let session = cmsResult.session;
+			GdsSessions.updateUserAccessTime(session);
+
 			// TODO: do not count same commands in a row except ['MD', 'MU', 'A*', '1*']
+			let duration = ((Date.now() - calledDtObj.getTime()) / 1000).toFixed(3);
 			CmsClient.reportCmdCalled({
-				cmd: reqBody.command,
-				agentId: reqBody.agentId,
+				cmd: rqBody.command,
+				agentId: rqBody.agentId,
 				calledDt: calledDtObj.toISOString(),
-				duration: ((Date.now() - calledDtObj.getTime()) / 1000).toFixed(3),
+				duration: duration,
 			});
-			let termSvc = new TerminalService(reqBody.gds, reqBody.agentId, reqBody.travelRequestId);
-			let rbsResp = await termSvc.addHighlighting(reqBody.command, reqBody.language || reqBody.gds, rbsResult);
-			return {...rbsResp, session: session};
+
+			logit('TODO: Executed cmd: ' + rqBody.command + ' in ' + duration + ' s.', session.logId, cmsResult);
+			logit('Process log: ' + rqBody.processLogId, session.logId);
+			logit('Session log: ' + session.logId, rqBody.processLogId);
+
+			return cmsResult;
 		});
-	TerminalBuffering.logCommand(reqBody, running);
 	return running;
 };
 
@@ -177,7 +182,7 @@ let getItinerary = async (stateful) => {
  * slow, so it's just a temporary solution till I re-implement importPq here
  */
 let withRbsPqCopy = async (session, action) => {
-	let stateful = await StatefulSession(session);
+	let stateful = await StatefulSession({session});
 	let full = stateful.getFullState();
 	let areaState = full.areas[full.area] || {};
 	let pricingCmd = areaState.pricing_cmd;
@@ -204,9 +209,8 @@ let withRbsPqCopy = async (session, action) => {
 		.then(rebuilt => RbsClient({...ctx, command: pricingCmd}).runInputCmd({rbsSessionId}))
 		.then(priced => {
 			let pqErrors = priced.sessionInfo.canCreatePqErrors;
-			if (pqErrors.length > 0) {
-				return UnprocessableEntity('Could not reprice in RBS - ' + pqErrors.join('; '));
-			}
+			return pqErrors.length === 0 ? priced :
+				UnprocessableEntity('Could not reprice in RBS - ' + pqErrors.join('; '));
 		})
 		.then(priced => action({rbsSessionId}))
 		.finally(() => RbsClient.closeSession({context: ctx, gdsData: gdsData}));
@@ -238,13 +242,13 @@ exports.makeMco = async (reqBody) => {
 	return GdsSessions.getByContext(reqBody)
 		.then(async session => {
 			if (session.context.gds !== 'apollo') {
-				return Promise.reject('Unsupported GDS makeMco - ' + session.context.gds);
+				return NotImplemented('Unsupported GDS makeMco - ' + session.context.gds);
 			}
-			let stateful = await StatefulSession(session);
+			let stateful = await StatefulSession({session});
 			let mcoResult = await (new MakeMcoApolloAction())
 				.setSession(stateful).execute(mcoData);
 			if (!php.empty(mcoResult.errors)) {
-				return Promise.reject('Failed to MCO - ' + mcoResult.errors.join('; '));
+				return UnprocessableEntity('Failed to MCO - ' + mcoResult.errors.join('; '));
 			} else {
 				return Promise.resolve({
 					output: mcoResult.calledCommands
@@ -297,7 +301,7 @@ exports.getLastCommands = (reqBody) => {
 	let gds = reqBody.gds;
 	let requestId = reqBody.travelRequestId || 0;
 	return Db.with(db => db.fetchAll({
-		table: 'terminalBuffering',
+		table: 'cmd_rq_log',
 		where: [
 			['gds', '=', gds],
 			['agentId', '=', agentId],
