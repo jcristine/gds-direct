@@ -8,12 +8,12 @@ const php = require('../../../php.js');
 const Errors = require('../../../Rbs/GdsDirect/Errors.js');
 const AmadeusReservationParser = require('../../../Gds/Parsers/Amadeus/Pnr/PnrParser.js');
 const GetPqItineraryAction = require('../SessionStateProcessor/CanCreatePqRules.js');
+const AmadeusPnrCommonFormatAdapter = require('../../../Rbs/FormatAdapters/AmadeusPnrCommonFormatAdapter.js');
+const PagingHelper = require('../../../../GdsHelpers/AmadeusUtils.js');
 
 var require = require('../../../translib.js').stubRequire;
 
 const AmadeusPnr = require('../../../Rbs/TravelDs/AmadeusPnr.js');
-const AmadeusPnrCommonFormatAdapter = require('../../../Rbs/FormatAdapters/AmadeusPnrCommonFormatAdapter.js');
-const PagingHelper = require('../../../../GdsHelpers/AmadeusUtils.js');
 
 class CmsAmadeusTerminal
 {
@@ -31,7 +31,7 @@ class CmsAmadeusTerminal
                 return '/$';
             }
         };
-        $fullOutput = PagingHelper.fetchAllParenthesisOutput($runCmd, 'MDR');
+        $fullOutput = PagingHelper.fetchAllRt('MDR', {runCmd: $runCmd});
         if ($isComplete) {
             return $fullOutput;
         } else {
@@ -51,13 +51,13 @@ class CmsAmadeusTerminal
             } else if ($mdrs && $cmdRec['cmd_performed'] === 'MDR') {
                 $mdrs.push($cmdRec['output']);
             } else {
-                if ($joined = this.constructor.joinRtMdrs($mdrs)) {
+                if ($joined = this.joinRtMdrs($mdrs)) {
                     return $joined;
                 } else {
                     $mdrs = [];
                 }
             }}
-        return this.constructor.joinRtMdrs($mdrs) || null;
+        return this.joinRtMdrs($mdrs) || null;
     }
 
     getFullPnrDump($cmdLog)  {
