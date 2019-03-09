@@ -47,7 +47,7 @@ const RetrieveApolloTicketsAction = require('../../../../Rbs/Process/Apollo/Impo
 
 class ProcessApolloTerminalInputAction {
 	useXml($flag) {
-		this.$statefulSession = null;
+		this.stateful = null;
 		this.$log = null;
 		this.$useXml = $flag;
 		return this;
@@ -55,7 +55,7 @@ class ProcessApolloTerminalInputAction {
 
 	/** @param $statefulSession = await require('StatefulSession.js')() */
 	constructor($statefulSession) {
-		this.$statefulSession = $statefulSession;
+		this.stateful = $statefulSession;
 		this.$log = ($msg, $data) => {};
 		this.$useXml = false; // TODO: implement and set to true
 	}
@@ -132,16 +132,16 @@ class ProcessApolloTerminalInputAction {
 	}
 
 	getSessionData() {
-		return this.$statefulSession.getSessionData();
+		return this.stateful.getSessionData();
 	}
 
 	getAgent() {
-		return this.$statefulSession.getAgent();
+		return this.stateful.getAgent();
 	}
 
 	/** @return Agent|null */
 	getLeadAgent() {
-		return this.$statefulSession.getLeadAgent();
+		return this.stateful.getLeadAgent();
 	}
 
 	async findOnLastTariffDisplay(lineNumber) {
@@ -151,7 +151,7 @@ class ProcessApolloTerminalInputAction {
 		let requestedFare = null;
 		let pages = [];
 		// TODO: take from command log instead of calling *$D
-		await fetchUntil('*$D', this.$statefulSession, ({output}) => {
+		await fetchUntil('*$D', this.stateful, ({output}) => {
 			pages.push(output);
 			let parsed = TariffDisplayParser.parse(pages.join('\n'));
 			if (parsed.error) {
@@ -396,7 +396,7 @@ class ProcessApolloTerminalInputAction {
 		$cmdParsed = CommandParser.parse($scrolledCmd);
 		$type = $cmdParsed['type'] || null;
 		if (php.in_array($type, ['searchPnr', 'displayPnrFromList']) &&
-			!this.$statefulSession.getAgent().canOpenPrivatePnr()
+			!this.stateful.getAgent().canOpenPrivatePnr()
 		) {
 			$output = StringUtil.wrapLinesAt($calledCommand['output'], 64);
 			$lines = StringUtil.lines($output);
@@ -457,10 +457,10 @@ class ProcessApolloTerminalInputAction {
 
 	makeCmsRemarkCmdIfNeeded() {
 		let $cmdLog, $sessionData, $leadData, $msg;
-		$cmdLog = this.$statefulSession.getLog();
+		$cmdLog = this.stateful.getLog();
 		$sessionData = $cmdLog.getSessionData();
-		$leadData = this.$statefulSession.getLeadData();
-		$msg = CommonDataHelper.createCredentialMessage(this.$statefulSession);
+		$leadData = this.stateful.getLeadData();
+		$msg = CommonDataHelper.createCredentialMessage(this.stateful);
 		if (CommonDataHelper.shouldAddCreationRemark($msg, $cmdLog)) {
 			return '@:5' + $msg;
 		}
@@ -470,7 +470,7 @@ class ProcessApolloTerminalInputAction {
 	makePsRemarkCmdIfNeeded() {
 		let $msg;
 		$msg = 'CREATED IN GDS DIRECT BY ' + php.strtoupper(this.getAgent().getLogin());
-		if (this.constructor.shouldAddPsRemark($msg, this.$statefulSession.getLog())) {
+		if (this.constructor.shouldAddPsRemark($msg, this.stateful.getLog())) {
 			return 'PS-' + $msg;
 		}
 		return null;
@@ -496,7 +496,7 @@ class ProcessApolloTerminalInputAction {
 	doesDivideFpBooking($cmd) {
 		let $pnrCmds, $typeToOutput, $dnOutput, $pnrDump, $pnr;
 		if ($cmd === 'F') {
-			$pnrCmds = this.$statefulSession.getLog().getCurrentPnrCommands();
+			$pnrCmds = this.stateful.getLog().getCurrentPnrCommands();
 			$typeToOutput = php.array_combine(php.array_column($pnrCmds, 'cmd_type'),
 				php.array_column($pnrCmds, 'output'));
 			if ($dnOutput = $typeToOutput['divideBooking'] || null) {
@@ -510,10 +510,10 @@ class ProcessApolloTerminalInputAction {
 
 	async runCmd($cmd, $fetchAll) {
 		let $cmdRec = $fetchAll
-			? await fetchAll($cmd, this.$statefulSession)
-			: await this.$statefulSession.runCmd($cmd);
+			? await fetchAll($cmd, this.stateful)
+			: await this.stateful.runCmd($cmd);
 		if (this.constructor.isSuccessfulFsCommand($cmdRec.cmd, $cmdRec.output)) {
-			this.$statefulSession.handleFsUsage();
+			this.stateful.handleFsUsage();
 		}
 		return $cmdRec;
 	}
@@ -597,13 +597,13 @@ class ProcessApolloTerminalInputAction {
 	getScrolledCmdRow() {
 		let $navCmdTypes, $lastCmds;
 		$navCmdTypes = ['moveRest', 'moveUp', 'moveDown', 'moveBottom', 'moveTop'];
-		$lastCmds = this.$statefulSession.getLog().getLastCommandsOfTypes($navCmdTypes);
+		$lastCmds = this.stateful.getLog().getLastCommandsOfTypes($navCmdTypes);
 		return ArrayUtil.getFirst($lastCmds);
 	}
 
 	async getCurrentPnr() {
 		let $cmdRows, $cmds, $cmdToFullOutput, $cmd, $output, $showsFullPnr, $pnrDump;
-		$cmdRows = this.$statefulSession.getLog().getLastStateSafeCommands();
+		$cmdRows = this.stateful.getLog().getLastStateSafeCommands();
 		$cmds = Fp.map(($row) => ({
 			'cmd': $row['cmd_performed'],
 			'output': $row['output'],
@@ -622,7 +622,7 @@ class ProcessApolloTerminalInputAction {
 
 	areAllCouponsVoided() {
 		let $ticketData, $ticket, $isVoid;
-		$ticketData = (new RetrieveApolloTicketsAction()).setApollo(this.$statefulSession).execute();
+		$ticketData = (new RetrieveApolloTicketsAction()).setApollo(this.stateful).execute();
 		if (!php.empty($ticketData['error'])) {
 			return false;
 		}
@@ -707,10 +707,10 @@ class ProcessApolloTerminalInputAction {
 				for ($remark of Object.values($pnr.getRemarks())) {
 					if ($remark['remarkType'] !== GenericRemarkParser.CMS_LEAD_REMARK) continue;
 					if (!($pnrCreationPcc = $remark['data']['pcc'] || null)) continue;
-					$currentPcc = this.$statefulSession.getSessionData()['pcc'];
+					$currentPcc = this.stateful.getSessionData()['pcc'];
 					$errors = php.array_merge($errors, this.constructor.checkSavePcc($pnrCreationPcc, $currentPcc));
 				}
-			} else if (php.empty(this.$statefulSession.getLeadData()['leadId'])) {
+			} else if (php.empty(this.stateful.getLeadData()['leadId'])) {
 				if (!$agent.canSavePnrWithoutLead()) {
 					$errors.push(Errors.getMessage(Errors.LEAD_ID_IS_REQUIRED));
 				}
@@ -764,7 +764,7 @@ class ProcessApolloTerminalInputAction {
 		let $errors, $isGkRebookPossible, $newItinerary, $gkSegments, $result, $error, $gkRebook,
 			$failedSegNums, $sortResult;
 		$errors = [];
-		this.$statefulSession.flushCalledCommands();
+		this.stateful.flushCalledCommands();
 		$isGkRebookPossible = ($seg) => {
 			return $fallbackToGk
 				&& $seg['segmentStatus'] !== 'GK';
@@ -780,11 +780,11 @@ class ProcessApolloTerminalInputAction {
 		}, $itinerary);
 		$gkSegments = Fp.filter($isGkRebookPossible, $itinerary);
 		$result = await (new ApolloBuildItineraryAction())
-			.setSession(this.$statefulSession)
+			.setSession(this.stateful)
 			.execute($newItinerary, true);
 		if ($error = this.constructor.transformBuildError($result)) {
 			return {
-				'calledCommands': this.$statefulSession.flushCalledCommands(),
+				'calledCommands': this.stateful.flushCalledCommands(),
 				'errors': [$error],
 			};
 		} else {
@@ -792,10 +792,10 @@ class ProcessApolloTerminalInputAction {
 			if (!php.empty($failedSegNums = $gkRebook['failedSegmentNumbers'])) {
 				$errors.push(Errors.getMessage(Errors.REBUILD_FALLBACK_TO_GK, {'segNums': php.implode(',', $failedSegNums)}));
 			}
-			this.$statefulSession.flushCalledCommands();
+			this.stateful.flushCalledCommands();
 			$sortResult = await this.processSortItinerary();
 			if (!php.empty($sortResult['errors'])) {
-				return {'calledCommands': this.$statefulSession.flushCalledCommands(), 'errors': $errors};
+				return {'calledCommands': this.stateful.flushCalledCommands(), 'errors': $errors};
 			} else {
 				return {'calledCommands': $sortResult['calledCommands'], 'errors': $errors};
 			}
@@ -853,14 +853,14 @@ class ProcessApolloTerminalInputAction {
 				$newSegments.push($seg);
 			}
 		}
-		this.$statefulSession.flushCalledCommands();
+		this.stateful.flushCalledCommands();
 		$xOutput = await this.runCommand('X' + php.implode('|', $segNums));
 		if (!this.constructor.isSuccessXiOutput($xOutput) &&
 			!php.preg_match(/^\s*NEXT REPLACES\s*\d+\s*(><)?$/, $xOutput)
 		) {
 			return {
 				'errors': ['Could not cancel segments - ' + php.trim($xOutput)],
-				'calledCommands': this.$statefulSession.flushCalledCommands(),
+				'calledCommands': this.stateful.flushCalledCommands(),
 			};
 		}
 		return this.bookItinerary($newSegments, false);
@@ -891,7 +891,7 @@ class ProcessApolloTerminalInputAction {
 	async rebookAsSs($data) {
 		let $allowCutting, $gkSegments, $xCmd, $newSegs;
 		$allowCutting = $data['allowCutting'] || false;
-		this.$statefulSession.flushCalledCommands();
+		this.stateful.flushCalledCommands();
 		let pnr = await this.getCurrentPnr();
 		$gkSegments = pnr.getItinerary().filter(($seg) => $seg['segmentStatus'] === 'GK');
 		if (php.empty($gkSegments)) {
@@ -904,15 +904,15 @@ class ProcessApolloTerminalInputAction {
 	}
 
 	async getMultiPccTariffDisplay($cmd) {
-		return (new GetMultiPccTariffDisplayAction()).execute($cmd, this.$statefulSession);
+		return (new GetMultiPccTariffDisplayAction()).execute($cmd, this.stateful);
 	}
 
 	async priceInAnotherPcc($cmd, $target, $dialect) {
 		let $pnr;
 		$pnr = await this.getCurrentPnr();
 		return (new RepriceInAnotherPccAction())
-			.setLog((msg, data) => this.$statefulSession.logit(msg, data))
-			.execute($pnr, $cmd, $dialect, $target, this.$statefulSession);
+			.setLog((msg, data) => this.stateful.logit(msg, data))
+			.execute($pnr, $cmd, $dialect, $target, this.stateful);
 	}
 
 	// Parse strings like '1,2,4-7,9'
@@ -938,7 +938,7 @@ class ProcessApolloTerminalInputAction {
 	getEmptyAreasFromDbState() {
 		let $isOccupied, $occupiedRows, $occupiedAreas;
 		$isOccupied = ($row) => $row['has_pnr'];
-		$occupiedRows = Fp.filter($isOccupied, this.$statefulSession.getAreaRows());
+		$occupiedRows = Fp.filter($isOccupied, this.stateful.getAreaRows());
 		$occupiedAreas = php.array_column($occupiedRows, 'area');
 		$occupiedAreas.push(this.getSessionData()['area']);
 		return php.array_values(php.array_diff(['A', 'B', 'C', 'D', 'E'], $occupiedAreas));
@@ -990,14 +990,14 @@ class ProcessApolloTerminalInputAction {
 	}
 
 	handlePnrSave($recordLocator) {
-		this.$statefulSession.handlePnrSave($recordLocator);
+		this.stateful.handlePnrSave($recordLocator);
 	}
 
 	async prepareToSavePnr() {
 		let $writeCommands, $usedCmds, $flatCmds, $usedCmdTypes, $remarkCmd;
 		$writeCommands = [];
 		if (!this.getSessionData()['is_pnr_stored']) {
-			$usedCmds = this.$statefulSession.getLog().getCurrentPnrCommands();
+			$usedCmds = this.stateful.getLog().getCurrentPnrCommands();
 			$flatCmds = this.flattenCmds($usedCmds);
 			$usedCmdTypes = php.array_column($flatCmds, 'type');
 			if ($remarkCmd = this.makeCmsRemarkCmdIfNeeded()) {
@@ -1020,7 +1020,7 @@ class ProcessApolloTerminalInputAction {
 	async processSavePnr() {
 		let $pnr, $pnrDump, $errors, $usedCmds, $flatCmds, $usedCmdTypes, $login, $writeCommands, $cmd, $output,
 			$saveResult, $cmdRecord;
-		if (php.empty(this.$statefulSession.getLeadData()['leadId'])) {
+		if (php.empty(this.stateful.getLeadData()['leadId'])) {
 			if (!this.getAgent().canSavePnrWithoutLead()) {
 				return {'errors': [Errors.getMessage(Errors.LEAD_ID_IS_REQUIRED)]};
 			}
@@ -1032,7 +1032,7 @@ class ProcessApolloTerminalInputAction {
 		} else if (!php.empty($errors = CommonDataHelper.checkSeatCount($pnr))) {
 			return {'errors': $errors};
 		}
-		$usedCmds = this.$statefulSession.getLog().getCurrentPnrCommands();
+		$usedCmds = this.stateful.getLog().getCurrentPnrCommands();
 		$flatCmds = this.flattenCmds($usedCmds);
 		$usedCmdTypes = php.array_column($flatCmds, 'type');
 		$login = this.getAgent().getLogin();
@@ -1043,7 +1043,7 @@ class ProcessApolloTerminalInputAction {
 			php.array_unshift($writeCommands, 'R:' + php.strtoupper($login));
 		}
 		if (!php.in_array('addTicketingDateLimit', $usedCmdTypes)) {
-			php.array_unshift($writeCommands, 'T:TAU/' + php.strtoupper(php.date('dM', php.strtotime(this.$statefulSession.getStartDt()))));
+			php.array_unshift($writeCommands, 'T:TAU/' + php.strtoupper(php.date('dM', php.strtotime(this.stateful.getStartDt()))));
 		}
 		if (!php.in_array('addAgencyPhone', $usedCmdTypes)) {
 			php.array_unshift($writeCommands, 'P:SFOAS\/800-750-2238 ASAP CUSTOMER SUPPORT');
@@ -1066,7 +1066,7 @@ class ProcessApolloTerminalInputAction {
 	}
 
 	async _getSegUtc($seg) {
-		let $geoProvider = this.$statefulSession.getGeoProvider();
+		let $geoProvider = this.stateful.getGeoProvider();
 		let fullDt = DateTime.decodeRelativeDateInFuture(
 			$seg.departureDate.parsed, new Date().toISOString()
 		) + ' ' + $seg.departureTime.parsed + ':00';
@@ -1135,7 +1135,7 @@ class ProcessApolloTerminalInputAction {
 			return {'errors': $errors};
 		}
 		$tripEndDate = ArrayUtil.getLast($pnr.getItinerary())['departureDate']['parsed'] || null;
-		$tripEndDt = $tripEndDate ? DateTime.decodeRelativeDateInFuture($tripEndDate, this.$statefulSession.getStartDt()) : null;
+		$tripEndDt = $tripEndDate ? DateTime.decodeRelativeDateInFuture($tripEndDate, this.stateful.getStartDt()) : null;
 		$paxCmdParts = [];
 		for ($pax of Object.values($pnr.getPassengers())) {
 			$nameNumFormat = $pax['nameNumber']['fieldNumber'] +
@@ -1254,8 +1254,8 @@ class ProcessApolloTerminalInputAction {
 			}
 		} else if (this.doesDivideFpBooking($cmd)) {
 			// all commands between >DN...; and >F; affect only the new PNR
-			$leadData = this.$statefulSession.getLeadData();
-			$msg = await CommonDataHelper.createCredentialMessage(this.$statefulSession);
+			$leadData = this.stateful.getLeadData();
+			$msg = await CommonDataHelper.createCredentialMessage(this.stateful);
 			await this.runCommand('@:5' + $msg);
 		}
 		return $calledCommands;
@@ -1292,7 +1292,7 @@ class ProcessApolloTerminalInputAction {
 					&& $pax['firstName'] === 'ALEX';
 			};
 			if (Fp.any($isAlex, $parsed['passengers']['passengerList'] || []) &&
-				!this.$statefulSession.getAgent().canOpenPrivatePnr()
+				!this.stateful.getAgent().canOpenPrivatePnr()
 			) {
 				await this.runCommand('I');
 				return {'errors': ['Restricted PNR']};
@@ -1321,7 +1321,7 @@ class ProcessApolloTerminalInputAction {
 		$cities = php.explode('/', php.trim($citiesRaw, '/'));
 		for ($city of Object.values($cities)) {
 			$cmd = $availability + $city + $airlines;
-			$output = (await this.$statefulSession.runCmd($cmd)).output;
+			$output = (await this.stateful.runCmd($cmd)).output;
 			if (php.preg_match('/^FIRAV/', $output, $matches = [])) {
 				// FIRAV means OK, got availability for a city - job's done
 				$calledCommands.push({'cmd': $cmd, 'output': $output});
@@ -1338,12 +1338,12 @@ class ProcessApolloTerminalInputAction {
 			$hasPredefinedPax, $predefinedPax, $mcoParams, $key, $value, $calledCommands, $userMessages, $result;
 		$getPaxName = ($pax) => $pax['lastName'] + '/' + $pax['firstName'];
 		$pcc = this.getSessionData()['pcc'];
-		$pccPointOfSaleCountry = await this.$statefulSession.getPccDataProvider()('apollo', $pcc)
+		$pccPointOfSaleCountry = await this.stateful.getPccDataProvider()('apollo', $pcc)
 			.then(r => r.point_of_sale_country).catch(exc => null);
 		if ($pccPointOfSaleCountry !== 'US') {
 			return {'errors': ['You\\\'re emulated to ' + $pcc + '. Split MCO can be issued only in a USA PCC']};
 		}
-		$agent = this.$statefulSession.getAgent();
+		$agent = this.stateful.getAgent();
 		if (!$agent.canUseMco()) {
 			return {'errors': ['Not allowed to use HHMCO']};
 		}
@@ -1452,7 +1452,7 @@ class ProcessApolloTerminalInputAction {
 			return this.makeMultipleCityAvailabilitySearch($availability, $cityRow, $airlines);
 		} else if (php.preg_match(/^SEM\/([\w\d]{3,4})\/AG$/, $cmd, $matches = [])) {
 			return this.emulatePcc($matches[1]);
-		} else if (!php.empty($itinerary = AliasParser.parseCmdAsItinerary($cmd, this.$statefulSession))) {
+		} else if (!php.empty($itinerary = AliasParser.parseCmdAsItinerary($cmd, this.stateful))) {
 			return this.bookItinerary($itinerary, true);
 		} else {
 			$cmd = $alias['realCmd'];
