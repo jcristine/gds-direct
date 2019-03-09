@@ -196,22 +196,25 @@ class ProcessSabreTerminalInputAction {
 		return this.stateful.getLeadAgent();
 	}
 
-	async runCommand($cmd) {
+	async runCmd($cmd) {
 		let $cmdStartsWith, $prevState, $output;
 
 		$cmdStartsWith = ($str) => StringUtil.startsWith($cmd, $str);
 
 		$prevState = this.getSessionData();
-		$output = (await this.stateful.runCmd($cmd)).output;
-		this.log('Sabre result: (' + $cmd + ')', $output);
+		let cmdRec = await this.stateful.runCmd($cmd);
 
-		if (this.constructor.isSuccessfulFsCommand($cmd, $output)) {
+		if (this.constructor.isSuccessfulFsCommand($cmd, cmdRec.output)) {
 			this.stateful.handleFsUsage();
 		}
 		if (Fp.any($cmdStartsWith, ['FQ', 'PQ', '*PQ'])) {
-			$output = this.constructor.hideSeaPassengers($output);
+			cmdRec = {...cmdRec, output: this.constructor.hideSeaPassengers($output)};
 		}
-		return $output;
+		return cmdRec;
+	}
+
+	async runCommand($cmd) {
+		return (await this.runCmd($cmd)).output;
 	}
 
 	static isSuccessfulFsCommand($cmd, $dump) {
@@ -961,17 +964,16 @@ class ProcessSabreTerminalInputAction {
 	}
 
 	async processRealCommand($cmd) {
-		let $errors, $calledCommands, $output, $userMessages, $cmdRecord;
+		let $errors, $calledCommands, $userMessages;
 
 		if (!php.empty($errors = await this.checkIsForbidden($cmd))) {
 			return {'errors': $errors};
 		}
 		$calledCommands = [];
 		$calledCommands = php.array_merge($calledCommands, await this.callImplicitCommandsBefore($cmd));
-		$output = await this.runCommand($cmd);
-		$userMessages = this.makeCmdMessages($cmd, $output);
-		$cmdRecord = {'cmd': $cmd, 'output': $output};
-		return this.callImplicitCommandsAfter($cmdRecord, $calledCommands, $userMessages);
+		let cmdRec = await this.runCmd($cmd);
+		$userMessages = this.makeCmdMessages($cmd, cmdRec.output);
+		return this.callImplicitCommandsAfter(cmdRec, $calledCommands, $userMessages);
 	}
 
 	async multiPriceItinerary($aliasData) {
