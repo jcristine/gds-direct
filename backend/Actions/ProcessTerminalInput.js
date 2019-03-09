@@ -145,7 +145,6 @@ let isScreenCleaningCommand = (rec, gds) => {
 		let type = rec.type || SabCommandParser.parse(rec.cmd);
 		return ['seatMap', 'changeArea', 'ignoreKeepPnr', 'reorderSegments'].includes(type);
 	} else {
-		// TODO: rest GDS-es when we parse them
 		return false;
 	}
 };
@@ -239,6 +238,7 @@ let translateCmd = (fromGds, toGds, inputCmd) => {
 // in all areas on SI*, and Amadeus needs a separate session for each area
 let useConfigPcc = (grectResult, stateful, agentId) => {
 	let {area, pcc} = grectResult.sessionInfo;
+	let gds = stateful.gds;
 	if (!pcc) {
 		// emulate to default pcc
 		return AreaSettings.getByAgent(agentId)
@@ -278,12 +278,14 @@ module.exports = async (session, rqBody) => {
 	let cmdRq = rqBody.command;
 	let gds = session.context.gds;
 	let dialect = rqBody.language || gds;
-	cmdRq = translateCmd(dialect, gds, cmdRq).cmd;
+	let translated = translateCmd(dialect, gds, cmdRq);
+	cmdRq = translated.cmd;
 
 	let whenRbsResult = runCmdRq(cmdRq, stateful)
 		.then(rbsResult => useConfigPcc(rbsResult, stateful, rqBody.agentId))
 		.then(rbsResult => ({
 			...rbsResult,
+			messages: (rbsResult.messages || []).concat(translated.messages),
 			calledCommands: rbsResult.calledCommands
 				.map(r => transformCalledCommand(r, stateful)),
 		}));
