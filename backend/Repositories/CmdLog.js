@@ -1,17 +1,23 @@
 
 let TABLE = 'terminal_command_log';
 let Db = require('../Utils/Db.js');
+const CommonDataHelper = require("../Transpiled/Rbs/GdsDirect/CommonDataHelper");
 
 /**
  * @param cmdRec = at('ProcessTerminalInput.js').cmdRec
  * @param session = at('GdsSessions.js').makeSessionRecord()
  */
 exports.storeNew = (cmdRec, session, cmdRqId, prevState) => {
+	let gds = session.context.gds;
+	let scrolledCmd = (cmdRec.state || {}).scrolledCmd;
+	let scrolledType = !scrolledCmd ? null :
+		CommonDataHelper.parseByGds(gds, scrolledCmd).type;
+
 	return Db.with(db => db.writeRows(TABLE, [{
 		session_id: session.id,
-		gds: session.context.gds,
-		type: cmdRec.type,
-		is_mr: null, // TODO: in case of MD/MR/MT/MU/... store the _scrolled_ command as type, and is_mr = true
+		gds: gds,
+		type: scrolledType || cmdRec.type,
+		is_mr: scrolledType && scrolledType !== cmdRec.type,
 		dt: new Date().toISOString(),
 		cmd: cmdRec.cmd,
 		duration: cmdRec.duration,

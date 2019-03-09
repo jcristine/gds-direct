@@ -1,11 +1,6 @@
 
 // namespace Rbs\GdsDirect\DialectTranslator;
 
-const ApoCmdParser = require('../../../Gds/Parsers/Apollo/CommandParser.js');
-const GalCmdParser = require('../../../Gds/Parsers/Galileo/CommandParser.js');
-const SabCmdParser = require('../../../Gds/Parsers/Sabre/CommandParser.js');
-const AmaCmdParser = require('../../../Gds/Parsers/Amadeus/CommandParser.js');
-
 /**
  * GdsDialectTranslator::translate('apollo', 'sabre', 'A01MARRIXLAX');
  * ==> [
@@ -23,6 +18,7 @@ const TranslatePricingCmdAction = require("./TranslatePricingCmdAction");
 const TranslateAssignOrCancelSeat = require("./TranslateAssignOrCancelSeat");
 const TranslateAddFrequentFlyerNumber = require("./TranslateAddFrequentFlyerNumber");
 const TranslateChangeFrequentFlyerNumber = require("./TranslateChangeFrequentFlyerNumber");
+const CommonDataHelper = require("../CommonDataHelper");
 
 /**
  * I hope this will save us at least few of these 10
@@ -1203,28 +1199,11 @@ class GdsDialectTranslator
         ];
     }
 
-    static parseByGds($gds, $cmd)  {
-        let $parsed;
-
-        if ($gds === 'apollo') {
-            $parsed = ApoCmdParser.parse($cmd);
-        } else if ($gds === 'galileo') {
-            $parsed = GalCmdParser.parse($cmd);
-        } else if ($gds === 'sabre') {
-            $parsed = SabCmdParser.parse($cmd);
-        } else if ($gds === 'amadeus') {
-            $parsed = AmaCmdParser.parse($cmd);
-        } else {
-            return null;
-        }
-        return $parsed;
-    }
-
     translateThroughSeparateFunctions($fromGds, $toGds, $userInput)  {
         let $result, $parsed;
 
         $result = null;
-        $parsed = this.constructor.parseByGds($fromGds, $userInput);
+        $parsed = CommonDataHelper.parseByGds($fromGds, $userInput);
         if (TranslateAvailabilityCmdAction.isAvailabilityCommand($userInput, $fromGds)) {
             $result = TranslateAvailabilityCmdAction.translate($userInput, $fromGds, $toGds);
         } else if (TranslateTariffDisplayCmdAction.isTariffDisplayCommand($userInput, $fromGds)) {

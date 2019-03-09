@@ -41,6 +41,8 @@ class SessionStateProcessor
         let getArea = letter => fullState.areas[letter] || {};
         let oldState = fullState.areas[fullState.area] || {};
         let newState = this.updateStateSafe(cmd, output, gds, oldState, getArea);
+        let isMr = this.mrCmdTypes.includes(newState.cmdType);
+        newState.scrolledCmd = isMr ? oldState.scrolledCmd : cmd;
         fullState.area = newState.area;
         fullState.areas[newState.area] = newState;
         return fullState;
@@ -50,9 +52,13 @@ class SessionStateProcessor
 SessionStateProcessor.GDS_APOLLO = 'apollo';
 SessionStateProcessor.GDS_SABRE = 'sabre';
 
+SessionStateProcessor.mrCmdTypes = [
+    'moveRest', 'moveDown', 'moveUp', 'moveTop', 'moveBottom', 'moveDownShort',
+];
 // "not affecting" means they do not change current PNR or pricing
 SessionStateProcessor.$nonAffectingTypes = [
-    'redisplayPnr', 'itinerary', 'moveRest', 'moveDown', 'storedPricing', 'storedPricingNameData',
+    ...SessionStateProcessor.mrCmdTypes,
+    'redisplayPnr', 'itinerary', 'storedPricing', 'storedPricingNameData',
     'ticketList', 'ticketMask', 'passengerData', 'names', 'ticketing',
     'flightServiceInfo', 'frequentFlyerData', 'verifyConnectionTimes',
     'airItinerary', 'history', 'showTime', 'workAreas', 'fareList', 'fareRules', 'flightRoutingAndTimes',
@@ -63,6 +69,5 @@ SessionStateProcessor.$dropPnrContextCommands = [
     'ignore', 'ignoreAndCopyPnr','storePnr', 'storeAndCopyPnr',
     'priceItineraryManually', 'ignoreMoveToQueue','movePnrToQueue', 'movePnrToPccQueue',
 ];
-
 
 module.exports = SessionStateProcessor;

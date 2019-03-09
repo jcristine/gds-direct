@@ -5,6 +5,7 @@ const GetPqItineraryAction = require('./CanCreatePqRules.js');
 const Errors = require('../../../Rbs/GdsDirect/Errors.js');
 const SessionStateProcessor = require('../../../Rbs/GdsDirect/SessionStateProcessor/SessionStateProcessor.js');
 const CmsApolloTerminal = require('../../../Rbs/GdsDirect/GdsInterface/CmsApolloTerminal');
+const php = require('../../../php.js');
 
 /**
  * provides functions that work with

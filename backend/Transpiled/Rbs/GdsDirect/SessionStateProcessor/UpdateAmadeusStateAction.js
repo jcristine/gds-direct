@@ -87,16 +87,16 @@ class UpdateAmadeusStateAction
 
     openPnr($recordLocator)  {
 
-        this.$state.$hasPnr = true;
-        this.$state.$isPnrStored = true;
-        this.$state.$recordLocator = $recordLocator;
+        this.$state.hasPnr = true;
+        this.$state.isPnrStored = true;
+        this.$state.recordLocator = $recordLocator;
     }
 
     dropPnr()  {
 
-        this.$state.$hasPnr = false;
-        this.$state.$isPnrStored = false;
-        this.$state.$recordLocator = '';
+        this.$state.hasPnr = false;
+        this.$state.isPnrStored = false;
+        this.$state.recordLocator = '';
     }
 
     static wasIgnoredOk($output)  {
@@ -113,17 +113,17 @@ class UpdateAmadeusStateAction
         $data = $cmdParsed['data'];
 
         if ($type === 'priceItinerary' && this.constructor.isPricingValidForPq($data, $output)) {
-            this.$state.$canCreatePq = true;
-            this.$state.$pricingCmd = $cmd;
+            this.$state.canCreatePq = true;
+            this.$state.pricingCmd = $cmd;
         } else if (!php.in_array($type, SessionStateProcessor.getCanCreatePqSafeTypes())) {
-            this.$state.$canCreatePq = false;
-			this.$state.$pricingCmd = null;
+            this.$state.canCreatePq = false;
+			this.$state.pricingCmd = null;
         }
         $parsedPnr = AmadeusReservationParser.parse($output);
         if ($parsedPnr['success']) {
             // Amadeus redisplays resulting PNR after each writing command, and even if it is
             // not a writing command, if it outputs PNR, that means there is a PNR right?
-            this.$state.$hasPnr = true;
+            this.$state.hasPnr = true;
         }
 
         if ($type === 'ignore') {
@@ -136,7 +136,7 @@ class UpdateAmadeusStateAction
             }
         } else if ($type == 'changePcc') {
             if ($helper.isSuccessChangePccOutput($output, $data)) {
-                this.$state.$pcc = $data;
+                this.$state.pcc = $data;
             }
         } else if ($type == 'openPnr') {
             $openPnrStatus = this.constructor.detectOpenPnrStatus($output);
@@ -162,7 +162,7 @@ class UpdateAmadeusStateAction
         } else if ($type == 'changeArea') {
             if ($helper.isSuccessChangeAreaOutput($output)) {
                 this.$state.updateFrom(this.getAreaState($data));
-                this.$state.$area = $data;
+                this.$state.area = $data;
             }
         }
     }
@@ -176,7 +176,9 @@ class UpdateAmadeusStateAction
         $cmdParsed = CommandParser.parse($cmd);
         $flatCmds = php.array_merge([$cmdParsed], $cmdParsed['followingCommands'] || []);
         for ($cmdRec of Object.values($flatCmds)) {
-            $self.updateState($cmdRec['cmd'], $output);}
+            $self.updateState($cmdRec['cmd'], $output);
+        }
+        $self.$state.cmdType = $cmdParsed ? $cmdParsed.type : null;
         return $self.$state;
     }
 }

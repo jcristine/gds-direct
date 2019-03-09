@@ -7,6 +7,11 @@ const Errors = require("./Errors");
 let php = require('../../php.js');
 const CmsClient = require("../../../IqClients/CmsClient");
 
+const ApoCmdParser = require('../../Gds/Parsers/Apollo/CommandParser.js');
+const GalCmdParser = require('../../Gds/Parsers/Galileo/CommandParser.js');
+const SabCmdParser = require('../../Gds/Parsers/Sabre/CommandParser.js');
+const AmaCmdParser = require('../../Gds/Parsers/Amadeus/CommandParser.js');
+
 /**
  * provides functions that process generalized data from any GDS
  */
@@ -45,7 +50,7 @@ class CommonDataHelper
         }
         $commands = $cmdLog.getCurrentPnrCommands();
         for ($cmdRecord of Object.values($commands)) {
-            $parsed = this.getParsedCommand($sessionData['gds'], $cmdRecord['cmd_performed']);
+            $parsed = this.parseByGds($sessionData['gds'], $cmdRecord['cmd_performed']);
             $flatCmds = php.array_merge([$parsed], $parsed['followingCommands']);
             for ($flatCmd of Object.values($flatCmds)) {
                 if ($flatCmd['type'] === 'addRemark' && $flatCmd['data'] === $msg) {
@@ -162,12 +167,22 @@ class CommonDataHelper
         return false;
     }
 
-    static getParsedCommand($gds, $cmd)  {
-        return GdsDirect.makeGdsInterface($gds).parseCommand($cmd);
+    static parseByGds($gds, $cmd)  {
+        if ($gds === 'apollo') {
+            return ApoCmdParser.parse($cmd);
+        } else if ($gds === 'galileo') {
+            return GalCmdParser.parse($cmd);
+        } else if ($gds === 'sabre') {
+            return SabCmdParser.parse($cmd);
+        } else if ($gds === 'amadeus') {
+            return AmaCmdParser.parse($cmd);
+        } else {
+            return null;
+        }
     }
 
     static getCommandType($gds, $cmd)  {
-        return CommonDataHelper.getParsedCommand($gds, $cmd)['type'];
+        return CommonDataHelper.parseByGds($gds, $cmd)['type'];
     }
 }
 module.exports = CommonDataHelper;

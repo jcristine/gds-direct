@@ -37,6 +37,7 @@ const FareDisplayDomesticParser = require('../../../../Gds/Parsers/Apollo/Tariff
 const FareDisplayInternationalParser = require('../../../../Gds/Parsers/Apollo/TariffDisplay/FareDisplayInternationalParser.js');
 const BadRequest = require("../../../../../Utils/Rej").BadRequest;
 const NotImplemented = require("../../../../../Utils/Rej").NotImplemented;
+const SessionStateProcessor = require("../../SessionStateProcessor/SessionStateProcessor");
 
 let php = require('../../../../php.js');
 
@@ -596,7 +597,7 @@ class ProcessApolloTerminalInputAction {
 	 * (last command that was not one of MD, MU, MT, MB */
 	getScrolledCmdRow() {
 		let $navCmdTypes, $lastCmds;
-		$navCmdTypes = ['moveRest', 'moveUp', 'moveDown', 'moveBottom', 'moveTop'];
+		$navCmdTypes = SessionStateProcessor.mrCmdTypes;
 		$lastCmds = this.stateful.getLog().getLastCommandsOfTypes($navCmdTypes);
 		return ArrayUtil.getFirst($lastCmds);
 	}

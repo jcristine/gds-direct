@@ -29,16 +29,16 @@ class UpdateGalileoSessionStateAction
 
     openPnr($recordLocator)  {
 
-        this.$state.$hasPnr = true;
-        this.$state.$isPnrStored = true;
-        this.$state.$recordLocator = $recordLocator;
+        this.$state.hasPnr = true;
+        this.$state.isPnrStored = true;
+        this.$state.recordLocator = $recordLocator;
     }
 
     dropPnr()  {
 
-        this.$state.$hasPnr = false;
-        this.$state.$isPnrStored = false;
-        this.$state.$recordLocator = '';
+        this.$state.hasPnr = false;
+        this.$state.isPnrStored = false;
+        this.$state.recordLocator = '';
     }
 
     /** @param $data = CommandParser::parsePriceItinerary() */
@@ -158,9 +158,9 @@ class UpdateGalileoSessionStateAction
 
         if ($isValidPnrOutput) {
             // PNR data data was copied
-            this.$state.$recordLocator = '';
-            this.$state.$isPnrStored = false;
-            this.$state.$hasPnr = true;
+            this.$state.recordLocator = '';
+            this.$state.isPnrStored = false;
+            this.$state.hasPnr = true;
         } else if (StringUtil.contains($clean, '*UNABLE - CLASS DOES NOT EXIST FOR THIS FLIGHT*')) {
             this.dropPnr();
         } else if (php.trim($clean) === 'MODIFY BOOKING') {
@@ -208,16 +208,16 @@ class UpdateGalileoSessionStateAction
         $data = $cmdParsed['data'];
 
         if ($type === 'priceItinerary' && this.constructor.isPricingValidForPq($data, $output)) {
-            this.$state.$canCreatePq = true;
-			this.$state.$pricingCmd = $cmd;
+            this.$state.canCreatePq = true;
+			this.$state.pricingCmd = $cmd;
         } else if (!php.in_array($type, SessionStateProcessor.getCanCreatePqSafeTypes())) {
-            this.$state.$canCreatePq = false;
-            this.$state.$pricingCmd = null;
+            this.$state.canCreatePq = false;
+            this.$state.pricingCmd = null;
         }
         if (php.trim($clean) === '*') {
             // "*" output is returned by most Galileo writing commands
             // on success - this triggers PNR creation if context was empty
-            this.$state.$hasPnr = true;
+            this.$state.hasPnr = true;
         }
 
         if ($type === 'ignore') {
@@ -265,20 +265,20 @@ class UpdateGalileoSessionStateAction
             }
         } else if ($type === 'changePcc') {
             if (this.constructor.wasPccChangedOk($output)) {
-                this.$state.$pcc = $data['pcc'];
+                this.$state.pcc = $data['pcc'];
             }
         } else if ($type === 'changeArea') {
             if (this.constructor.isSuccessChangeAreaOutput($clean)) {
                 this.$state.updateFrom(this.getAreaState($data['area']));
-                this.$state.$area = $data['area'];
+                this.$state.area = $data['area'];
             }
         } else if ($type === 'sell') {
             if (this.constructor.isSuccessSellOutput($clean)) {
-                this.$state.$hasPnr = true;
+                this.$state.hasPnr = true;
             }
         } else if ($type === 'sellFromLowFareSearch') {
             if (StringUtil.startsWith($clean, '>FSK')) {
-                this.$state.$hasPnr = true;
+                this.$state.hasPnr = true;
             }
         } else if ($type === 'redisplayPnr') {
             if (php.trim($clean) === 'NO B.F. TO DISPLAY - CREATE OR RETRIEVE FIRST') {

@@ -13,51 +13,55 @@ const php = require('../../../php.js');
 class SessionStateDs
 {
 	constructor() {
-		this.$canCreatePq = null;
-		this.$pricingCmd = null;
-		this.$area = null;
-		this.$recordLocator = null;
-		this.$pcc = null;
-		this.$hasPnr = null;
-		this.$isPnrStored = null;
+		this.canCreatePq = null;
+		this.pricingCmd = null;
+		this.area = null;
+		this.recordLocator = null;
+		this.pcc = null;
+		this.hasPnr = null;
+		this.isPnrStored = null;
+		this.cmdType = null;
 	}
 
     static makeFromArray($row)  {
         let $self;
 
         $self = new this();
-        $self.$canCreatePq = $row['can_create_pq'] || '';
-        $self.$pricingCmd = $row['pricing_cmd'] || '';
-        $self.$area = $row['area'] || '';
-        $self.$recordLocator = $row['record_locator'] || '';
-        $self.$pcc = $row['pcc'] || '';
-        $self.$hasPnr = $row['has_pnr'] || false;
-        $self.$isPnrStored = $row['is_pnr_stored'] || false;
+        $self.canCreatePq = $row['can_create_pq'] || '';
+        $self.pricingCmd = $row['pricing_cmd'] || '';
+        $self.area = $row['area'] || '';
+        $self.recordLocator = $row['record_locator'] || '';
+        $self.pcc = $row['pcc'] || '';
+        $self.hasPnr = $row['has_pnr'] || false;
+        $self.isPnrStored = $row['is_pnr_stored'] || false;
+        $self.cmdType = $row['cmdType'] || false;
         return $self;
     }
 
     toArray()  {
 
         return {
-            'can_create_pq': this.$canCreatePq,
-            'pricing_cmd': this.$pricingCmd,
-            'area': this.$area,
-            'record_locator': this.$recordLocator,
-            'pcc': this.$pcc,
-            'has_pnr': this.$hasPnr,
-            'is_pnr_stored': this.$isPnrStored,
+            'can_create_pq': this.canCreatePq,
+            'pricing_cmd': this.pricingCmd,
+            'area': this.area,
+            'record_locator': this.recordLocator,
+            'pcc': this.pcc,
+            'has_pnr': this.hasPnr,
+            'is_pnr_stored': this.isPnrStored,
+            'cmdType': this.cmdType,
         };
     }
 
     updateFrom($that)  {
 
-        this.$canCreatePq = $that.$canCreatePq;
-        this.$pricingCmd = $that.$pricingCmd;
-        this.$area = $that.$area;
-        this.$recordLocator = $that.$recordLocator;
-        this.$pcc = $that.$pcc;
-        this.$hasPnr = $that.$hasPnr;
-        this.$isPnrStored = $that.$isPnrStored;
+        this.canCreatePq = $that.canCreatePq;
+        this.pricingCmd = $that.pricingCmd;
+        this.area = $that.area;
+        this.recordLocator = $that.recordLocator;
+        this.pcc = $that.pcc;
+        this.hasPnr = $that.hasPnr;
+        this.isPnrStored = $that.isPnrStored;
+        this.cmdType = $that.cmdType;
     }
 }
 module.exports = SessionStateDs;

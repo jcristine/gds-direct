@@ -190,6 +190,7 @@ class UpdateSabreStateAction
         for ($cmdRec of Object.values($flatCmds)) {
             $sessionData = $self.updateState($cmdRec['cmd'], $output, $sessionData);
         }
+        $sessionData.cmdType = $cmdParsed ? $cmdParsed.type : null;
         return $sessionData;
     }
 }
