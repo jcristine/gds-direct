@@ -7,7 +7,6 @@ const GalCmdParser = require('../../../Gds/Parsers/Galileo/CommandParser.js');
 
 const php = require('../../../php.js');
 const separateWithLex = require("./Helper").separateWithLex;
-const parseByGds = require("./Helper").parseByGds;
 
 class TranslatePricingCmdAction {
 	constructor() {
@@ -597,14 +596,10 @@ class TranslatePricingCmdAction {
 		return false;
 	}
 
-	translate($input, $fromGds, $toGds) {
+	translate($input, $fromGds, $toGds, parsedCmd) {
 		let $parsed, $stores, $modItems, $separatedData, $translatedData;
 
 		if (php.empty($input)) {
-			return null;
-		}
-		let parsedCmd = parseByGds($fromGds, $input || '');
-		if (!['priceItinerary', 'storePricing'].includes(parsedCmd.type)) {
 			return null;
 		}
 		$parsed = parsedCmd.data;

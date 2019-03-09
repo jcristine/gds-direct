@@ -6,23 +6,6 @@ const GalCmdParser = require('../../../Gds/Parsers/Galileo/CommandParser.js');
 const SabCmdParser = require('../../../Gds/Parsers/Sabre/CommandParser.js');
 const AmaCmdParser = require('../../../Gds/Parsers/Amadeus/CommandParser.js');
 
-exports.parseByGds = ($gds, $cmd) => {
-	let $parsed;
-
-	if ($gds === 'apollo') {
-		$parsed = ApoCmdParser.parse($cmd);
-	} else if ($gds === 'galileo') {
-		$parsed = GalCmdParser.parse($cmd);
-	} else if ($gds === 'sabre') {
-		$parsed = SabCmdParser.parse($cmd);
-	} else if ($gds === 'amadeus') {
-		$parsed = AmaCmdParser.parse($cmd);
-	} else {
-		return null;
-	}
-	return $parsed;
-};
-
 // since unlike php's preg_match, js returns just one name from ((?<name1>asd)(?<name2>dsa))*
 exports.separateWithLex = ($input, nameToPattern) => {
 	let lexemes = Object.entries(nameToPattern).map(([nme, pat]) => {

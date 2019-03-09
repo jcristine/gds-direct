@@ -106,7 +106,7 @@ class PatternTranslator {
 
 		if ($fromGds == 'apollo') { //  temp solution
 			$cmd = php.preg_replace(/\|/, '+', $cmd);
-			$cmd = php.preg_replace(/N:\s/, 'N:', $cmd);
+			$cmd = php.preg_replace(/^N:\s/, 'N:', $cmd);
 		}
 		if ($fromGds == 'sabre') {
 			if (php.preg_match(/^T¤/, $cmd, $matches = [])) {

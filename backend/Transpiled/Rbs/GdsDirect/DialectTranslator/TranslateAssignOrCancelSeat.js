@@ -2,7 +2,6 @@
 
 const Fp = require('../../../Lib/Utils/Fp.js');
 const php = require('../../../php.js');
-const parseByGds = require("./Helper").parseByGds;
 
 class TranslateAssignOrCancelSeat {
 	static flattenPaxNums($paxRanges) {
@@ -162,26 +161,7 @@ class TranslateAssignOrCancelSeat {
 		}
 	}
 
-	static parseByGds($gds, $cmd) {
-		let $parsed = parseByGds($gds, $cmd);
-		if ($parsed && php.in_array($parsed['type'], ['requestSeats', 'cancelSeats'])) {
-			return $parsed;
-		} else {
-			return null;
-		}
-	}
-
-	static isAssignOrCancelSeatCommand($input, $gds) {
-		let $parsed;
-
-		$parsed = this.parseByGds($gds, $input);
-		return $parsed && php.in_array($parsed['type'], ['requestSeats', 'cancelSeats']);
-	}
-
-	static translate($input, $fromGds, $toGds) {
-		let $parsed;
-
-		$parsed = this.parseByGds($fromGds, $input);
+	static translate($parsed, $fromGds, $toGds) {
 		return this.glueTranslatedData($toGds, $parsed);
 	}
 }

@@ -23,6 +23,18 @@ const TranslatePricingCmdAction = require("./TranslatePricingCmdAction");
 const TranslateAssignOrCancelSeat = require("./TranslateAssignOrCancelSeat");
 const TranslateAddFrequentFlyerNumber = require("./TranslateAddFrequentFlyerNumber");
 const TranslateChangeFrequentFlyerNumber = require("./TranslateChangeFrequentFlyerNumber");
+
+/**
+ * I hope this will save us at least few of these 10
+ * ms spent on each cmd in the following monstrous logic
+ * Upd.: 1-2 ms with this vs 10-20 ms without it
+ */
+let prefixMatches = (pattern, cmd) => {
+    let patterns = Array.isArray(pattern) ? pattern : [pattern];
+    let prefixes = patterns.map(p => p.replace(/{.*/, ''));
+    return prefixes.some(p => cmd.startsWith(p));
+};
+
 class GdsDialectTranslator
 {
 	constructor() {
@@ -1212,20 +1224,20 @@ class GdsDialectTranslator
         let $result, $parsed;
 
         $result = null;
+        $parsed = this.constructor.parseByGds($fromGds, $userInput);
         if (TranslateAvailabilityCmdAction.isAvailabilityCommand($userInput, $fromGds)) {
             $result = TranslateAvailabilityCmdAction.translate($userInput, $fromGds, $toGds);
         } else if (TranslateTariffDisplayCmdAction.isTariffDisplayCommand($userInput, $fromGds)) {
             $result = TranslateTariffDisplayCmdAction.translate($userInput, $fromGds, $toGds);
-        } else if (TranslatePricingCmdAction.isPricingCommand($userInput, $fromGds)) {
-            $result = (new TranslatePricingCmdAction()).setBaseDate(this.$baseDate).translate($userInput, $fromGds, $toGds);
-        } else if (TranslateAssignOrCancelSeat.isAssignOrCancelSeatCommand($userInput, $fromGds)) {
-            $result = TranslateAssignOrCancelSeat.translate($userInput, $fromGds, $toGds);
-        } else {
-            $parsed = this.constructor.parseByGds($fromGds, $userInput);
+        } else if ($parsed.data) {
             if ($parsed['type'] === 'addFrequentFlyerNumber') {
                 $result = TranslateAddFrequentFlyerNumber.translate($parsed['data'], $fromGds, $toGds);
             } else if ($parsed['type'] === 'changeFrequentFlyerNumber') {
                 $result = TranslateChangeFrequentFlyerNumber.translate($parsed['data'], $fromGds, $toGds);
+            } else if (['requestSeats', 'cancelSeats'].includes($parsed['type'])) {
+                $result = TranslateAssignOrCancelSeat.translate($parsed, $fromGds, $toGds);
+            } else if (['priceItinerary', 'storePricing'].includes($parsed['type'])) {
+                $result = (new TranslatePricingCmdAction()).setBaseDate(this.$baseDate).translate($userInput, $fromGds, $toGds, $parsed);
             }
         }
         if (!php.empty($result)) {
@@ -1243,7 +1255,10 @@ class GdsDialectTranslator
 
         $userInput = PatternTranslator.preformatInput($userInput, $fromGds);
         for ($patternData of Object.values(this.getPatternList())) {
-            if (php.empty($patternData[$fromGds]) || php.empty($patternData[$toGds])) {
+            if (php.empty($patternData[$fromGds]) ||
+                php.empty($patternData[$toGds]) ||
+                !prefixMatches($patternData[$fromGds], $userInput)
+            ) {
                 continue;
             }
             $result = PatternTranslator.translatePattern($userInput, $fromGds, $toGds, $patternData[$fromGds], $patternData[$toGds]);
