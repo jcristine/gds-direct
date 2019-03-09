@@ -161,6 +161,12 @@ module.exports.migrations = [
 		].join('\n')),
 	},
 	{
+		name: 'GRECT/2019.03.08008-drop-old-terminal-buffering-table',
+		perform: (db) => db.query([
+			'DROP TABLE terminalBuffering'
+		].join('\n')),
+	},
+	{
 		// `terminalBuffering` is the _requested_ command, whereas `terminalCommandLog`
 		// is the command(s) that were actually called in GDS, possibly auto-corrected
 		// one `terminalBuffering` record can own multiple `terminalCommandLog` records
@@ -182,6 +188,10 @@ module.exports.migrations = [
 			'  KEY `sessionId_redisRunId` (`sessionId`, `redisRunId`)',
 			') ENGINE=InnoDB CHARSET=utf8',
 		].join('\n')),
+	},
+	{
+		name: 'GRECT/2019.03.08008-drop-wrong-tcl-table',
+		perform: (db) => db.query('DROP TABLE terminalCommandLog'),
 	},
 	{
 		name: 'GRECT/2019.02.26005-create-roles-amr',
@@ -293,5 +303,68 @@ module.exports.migrations = [
 	{
 		name: 'GRECT/2019.03.07005-fetch-booking-classes-2',
 		perform: (db) => BookingClasses.updateFromService(),
+	},
+	{
+		name: 'GRECT/2019.03.08008-create-terminal-sessions-table',
+		perform: (db) => db.query([
+		"CREATE TABLE `terminal_sessions` (",
+			"  `id` int(11) NOT NULL AUTO_INCREMENT,",
+			"  `gds` varchar(10) NOT NULL,",
+			"  `created_dt` datetime NOT NULL,",
+			"  `agent_id` int(11) NOT NULL,",
+			"  `lead_id` int(11) DEFAULT NULL,",
+			"  `log_id` varchar(100) DEFAULT NULL,",
+			"  PRIMARY KEY (`id`),",
+			"  KEY `gds` (`gds`),",
+			"  KEY `agent_id` (`agent_id`)",
+			") ENGINE=InnoDB CHARSET=utf8",
+		].join('\n')),
+	},
+	{
+		name: 'GRECT/2019.03.08008-create-new-tcl-table-3',
+		perform: (db) => db.query([
+			"CREATE TABLE `terminal_command_log` (",
+			"  `id` BIGINT NOT NULL AUTO_INCREMENT,",
+			"  `session_id` int(11) DEFAULT NULL,",
+			"  `gds` varchar(10) DEFAULT NULL,",
+			"  `type` varchar(50) DEFAULT NULL,",
+			"  `is_mr` BOOLEAN DEFAULT NULL,",
+			"  `dt` datetime NOT NULL,",
+			"  `cmd` varchar(255) NOT NULL,",
+			"  `duration` decimal(10,4) NOT NULL,",
+			"  `cmd_rq_id` BIGINT DEFAULT NULL,",
+			"  `area` char(1) DEFAULT NULL,",
+			"  `record_locator` char(6) DEFAULT '',",
+			"  `has_pnr` tinyint(1) DEFAULT '0',",
+			"  `is_pnr_stored` tinyint(1) DEFAULT '0',",
+			"  `output` text NOT NULL,",
+			"  PRIMARY KEY (`id`),",
+			"  KEY `dt` (`dt`),",
+			"  KEY `session_id` (`session_id`),",
+			"  KEY `gds_type_dt` (`gds`,`type`, `dt`)",
+			") ENGINE=InnoDB CHARSET=utf8",
+		].join('\n')),
+	},
+	{
+		name: 'GRECT/2019.03.08008-re-create-terminal-buffering-table-again-2',
+		perform: (db) => db.query([
+			'CREATE TABLE `cmd_rq_log` (',
+			'  `id` bigint(20) unsigned PRIMARY KEY AUTO_INCREMENT,',
+			'  `agentId` int(10) unsigned NOT NULL,',
+			'  `requestId` int(10) unsigned NOT NULL DEFAULT 0,',
+			'  `gds` VARCHAR(15),',
+			'  `dialect` VARCHAR(15),',
+			'  `sessionId` INTEGER NOT NULL,',
+			'  `area` char(1) DEFAULT NULL,',
+			'  `terminalNumber` tinyint(3) unsigned NOT NULL,',
+			'  `processedTime` decimal(10,5) NOT NULL DEFAULT "0.00000",',
+			'  `command` varchar(127) DEFAULT NULL,',
+			'  `output` text,',
+			'  `requestTimestamp` int(10) unsigned DEFAULT NULL,',
+			'  `responseTimestamp` int(10) unsigned DEFAULT NULL,',
+			'  KEY `agentId_requestId` (`agentId`, `requestId`),',
+			'  KEY `sessionId` (`sessionId`)',
+			') ENGINE=InnoDB CHARSET=utf8',
+		].join('\n')),
 	},
 ];

@@ -6,7 +6,7 @@ let {admins} = require('./Constants.js');
 
 let getCommandBufferRows = (reqBody, emcResult) =>
     Db.with(db => db.fetchAll({
-        table: 'terminalBuffering',
+        table: 'cmd_rq_log',
         where: [
             ['agentId', '=', emcResult.user.id],
             ['requestId', '=', reqBody.travelRequestId || 0],
