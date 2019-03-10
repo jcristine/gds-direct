@@ -112,7 +112,8 @@ let parseCmdRs = (dom, profileData) => ({
 		pcc: profileData.default_pcc,
 		profileName: profileData.profileName,
 	},
-	output: dom.querySelector('Command_CrypticReply > longTextString > textStringDetails').textContent,
+	// parsers expect \n everywhere, so it's easier to fix this at once
+	output: dom.querySelector('Command_CrypticReply > longTextString > textStringDetails').textContent.replace(/\r/g, '\n'),
 });
 
 let startSession = async (params) => {
