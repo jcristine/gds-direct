@@ -46,9 +46,9 @@ class CmsAmadeusTerminal
         $mdrs = [];
 
         for ($cmdRec of Object.values($safeCmds)) {
-            if ($cmdRec['cmd_performed'] === $cmd) {
+            if ($cmdRec['cmd'] === $cmd) {
                 $mdrs = [$cmdRec['output']];
-            } else if ($mdrs && $cmdRec['cmd_performed'] === 'MDR') {
+            } else if ($mdrs && $cmdRec['cmd'] === 'MDR') {
                 $mdrs.push($cmdRec['output']);
             } else {
                 if ($joined = this.joinRtMdrs($mdrs)) {

@@ -161,7 +161,7 @@ class ProcessAmadeusTerminalInputAction {
 				let $parsed = CommandParser.parse($cmd);
 				return php.array_column(php.array_merge([$parsed], $parsed['followingCommands']), 'cmd');
 			};
-			$performedCmds = php.array_column($cmdLog.getCurrentPnrCommands(), 'cmd_performed');
+			$performedCmds = php.array_column($cmdLog.getCurrentPnrCommands(), 'cmd');
 			$flatPerformedCmds = Fp.flatten(Fp.map($flattenCmd, $performedCmds));
 
 			if (!php.in_array($remarkCmd, $flatPerformedCmds)) {
@@ -177,7 +177,7 @@ class ProcessAmadeusTerminalInputAction {
 		$cmdLog = this.stateful.getLog();
 		$sessionData = $cmdLog.getSessionData();
 		if (!$sessionData['is_pnr_stored']) {
-			$performedCmds = php.array_column($cmdLog.getCurrentPnrCommands(), 'cmd_performed');
+			$performedCmds = php.array_column($cmdLog.getCurrentPnrCommands(), 'cmd');
 			$msg = 'CREATED IN GDS DIRECT BY ' + php.strtoupper(this.getAgent().getLogin());
 			$cmd = 'UHP\/' + $msg;
 			if (!php.in_array($cmd, $performedCmds)) {

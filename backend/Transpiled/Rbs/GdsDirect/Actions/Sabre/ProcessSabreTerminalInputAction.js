@@ -138,7 +138,7 @@ class ProcessSabreTerminalInputAction {
 
 		$commands = await $cmdLog.getCurrentPnrCommands();
 		for ($cmdRecord of Object.values($commands)) {
-			$parsed = CommandParser.parse($cmdRecord['cmd_performed']);
+			$parsed = CommandParser.parse($cmdRecord['cmd']);
 			$flatCmds = php.array_merge([$parsed], $parsed['followingCommands']);
 			for (let flatCmd of $flatCmds) {
 				yield flatCmd;
@@ -293,9 +293,9 @@ class ProcessSabreTerminalInputAction {
 		let $showsFullPnr, $lastCmds, $pnrDump;
 
 		$showsFullPnr = ($cmdRow) => {
-			return $cmdRow['cmd_performed'] === '*R'
-				|| $cmdRow['cmd_performed'] === 'IR'
-				|| php.preg_match(/^\*[A-Z]{6}$/, $cmdRow['cmd_performed']);
+			return $cmdRow['cmd'] === '*R'
+				|| $cmdRow['cmd'] === 'IR'
+				|| php.preg_match(/^\*[A-Z]{6}$/, $cmdRow['cmd']);
 		};
 		$lastCmds = this.stateful.getLog().getLastStateSafeCommands();
 		$pnrDump = (ArrayUtil.getLast(Fp.filter($showsFullPnr, $lastCmds)) || {})['output'] || await this.runCommand('*R');
@@ -709,7 +709,7 @@ class ProcessSabreTerminalInputAction {
 
 		$allFlatCmds = [];
 		for ($cmdRecord of Object.values($cmdRecs)) {
-			$parsedCmd = CommandParser.parse($cmdRecord['cmd_performed']);
+			$parsedCmd = CommandParser.parse($cmdRecord['cmd']);
 			$flatCmds = php.array_merge([$parsedCmd], $parsedCmd['followingCommands']);
 			$allFlatCmds = php.array_merge($allFlatCmds, $flatCmds);
 		}

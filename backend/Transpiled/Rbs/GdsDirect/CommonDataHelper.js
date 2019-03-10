@@ -50,7 +50,7 @@ class CommonDataHelper
         }
         $commands = $cmdLog.getCurrentPnrCommands();
         for ($cmdRecord of Object.values($commands)) {
-            $parsed = this.parseByGds($sessionData['gds'], $cmdRecord['cmd_performed']);
+            $parsed = this.parseByGds($sessionData['gds'], $cmdRecord['cmd']);
             $flatCmds = php.array_merge([$parsed], $parsed['followingCommands']);
             for ($flatCmd of Object.values($flatCmds)) {
                 if ($flatCmd['type'] === 'addRemark' && $flatCmd['data'] === $msg) {

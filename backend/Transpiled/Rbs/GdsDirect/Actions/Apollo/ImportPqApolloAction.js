@@ -61,7 +61,7 @@ class ImportPqApolloAction {
 	setPreCalledCommandsFromDb($commands, $sessionState) {
 		this.$preCalledCommands = Fp.map(($row) => {
 			return {
-				'cmd': $row['cmd_performed'],
+				'cmd': $row['cmd'],
 				'output': $row['output'],
 			};
 		}, $commands);

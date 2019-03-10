@@ -51,7 +51,7 @@ class SessionStateHelper
         return $sessionData;
     }
 
-    static makeSessionInfo($cmdLog, $leadData)  {
+    static async makeSessionInfo($cmdLog, $leadData)  {
         let $row;
         $row = $cmdLog.getSessionData();
         return {
@@ -63,21 +63,21 @@ class SessionStateHelper
             'recordLocator': $row['record_locator'] || '',
             'hasPnr': $row['has_pnr'] || false,
             'isPnrStored': $row['is_pnr_stored'] || false,
-            'canCreatePqErrors': this.checkCanCreatePq($cmdLog, $leadData),
-            'canCreatePqFor': this.getPricedAgeGroups($cmdLog),
+            'canCreatePqErrors': await this.checkCanCreatePq($cmdLog, $leadData),
+            'canCreatePqFor': await this.getPricedAgeGroups($cmdLog),
         };
     }
 
-    static getPricingCmdRow($cmdLog)  {
+    static async getPricingCmdRow($cmdLog)  {
         let $cmdRows, $typeToCmdRow;
-        $cmdRows = $cmdLog.getLastCommandsOfTypes(SessionStateProcessor.getCanCreatePqSafeTypes());
-        $typeToCmdRow = php.array_combine(php.array_column($cmdRows, 'cmd_type'), $cmdRows);
+        $cmdRows = await $cmdLog.getLastCommandsOfTypes(SessionStateProcessor.getCanCreatePqSafeTypes());
+        $typeToCmdRow = php.array_combine(php.array_column($cmdRows, 'type'), $cmdRows);
         return $typeToCmdRow['priceItinerary'] || null;
     }
 
-    static getPricedAgeGroups($cmdLog)  {
+    static async getPricedAgeGroups($cmdLog)  {
         let $cmdRow, $priced;
-        if ($cmdRow = this.getPricingCmdRow($cmdLog)) {
+        if ($cmdRow = await this.getPricingCmdRow($cmdLog)) {
         	let gds = $cmdLog.getSessionData()['gds'];
         	let ifc;
 			if (gds === 'apollo') {
@@ -85,14 +85,14 @@ class SessionStateHelper
 			} else {
 				return ['Unsupported GDS for checkCanCreatePq - ' + gds];
 			}
-            $priced = ifc.getPricedPtcs($cmdRow['cmd_performed']);
+            $priced = ifc.getPricedPtcs($cmdRow['cmd']);
             return GetPqItineraryAction.ptcsToAgeGroups($priced['ptcs'] || []);
         } else {
             return [];
         }
     }
 
-    static checkCanCreatePq($cmdLog, $leadData)  {
+    static async checkCanCreatePq($cmdLog, $leadData)  {
         let $errors, $gds, $gdsInterface, $cmdList, $cmdPricing, $cmdItinerary, $cmdRecord;
         $errors = [];
         $gds = $cmdLog.getSessionData()['gds'];
@@ -102,18 +102,18 @@ class SessionStateHelper
         	$errors.push('Unsupported GDS for checkCanCreatePq - ' + $gds);
         	return $errors;
 		}
-        $cmdList = $cmdLog.getLastCommandsOfTypes(SessionStateProcessor.getCanCreatePqSafeTypes());
-        $cmdPricing = this.getPricingCmdRow($cmdLog);
+        $cmdList = await $cmdLog.getLastCommandsOfTypes(SessionStateProcessor.getCanCreatePqSafeTypes());
+        $cmdPricing = await this.getPricingCmdRow($cmdLog);
         $cmdItinerary = null;
         for ($cmdRecord of $cmdList) {
-            if (php.in_array($cmdRecord['cmd_type'], ['redisplayPnr', 'itinerary'])) {
+            if (php.in_array($cmdRecord['type'], ['redisplayPnr', 'itinerary'])) {
                 $cmdItinerary = $cmdRecord;
             }}
         if (!$cmdPricing) {
             $errors.push(Errors.getMessage(Errors.NO_RECENT_PRICING));
         } else {
             $errors = php.array_merge($errors, GetPqItineraryAction.checkPricingOutput($gds, $cmdPricing['output'], $leadData));
-            $errors = php.array_merge($errors, GetPqItineraryAction.checkPricingCommand($gds, $cmdPricing['cmd_performed'], $leadData));
+            $errors = php.array_merge($errors, GetPqItineraryAction.checkPricingCommand($gds, $cmdPricing['cmd'], $leadData));
             // prevent duplicate errors from entered cmd and cmd in pricing output
             $errors = php.array_values(php.array_unique($errors));
         }

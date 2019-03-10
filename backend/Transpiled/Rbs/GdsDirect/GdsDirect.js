@@ -82,12 +82,6 @@ class GdsDirect {
 			'sessionLogId': $logId,
 		};
 	}
-
-	static makeForbiddenReturn($cmdLog, $errors) {
-		let $sessionInfo;
-		$sessionInfo = SessionStateHelper.makeSessionInfo($cmdLog, []);
-		return this.cannotSatisfy(GdsDirect.STATUS_FORBIDDEN, $sessionInfo, $errors);
-	}
 }
 
 GdsDirect.STATUS_EXECUTED = 'executed';

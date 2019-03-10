@@ -51,8 +51,8 @@
 //         $lastStateSafeCommands = [];
 //         $isPricingMd = false;
 //         for ($cmdRow of $mixed) {
-//             $belongsToPricing = $cmdRow['cmd_type'] === 'priceItinerary'
-//                 || $isPricingMd && php.in_array($cmdRow['cmd_type'], ['moveRest', 'moveDown']);
+//             $belongsToPricing = $cmdRow['type'] === 'priceItinerary'
+//                 || $isPricingMd && php.in_array($cmdRow['type'], ['moveRest', 'moveDown']);
 //             if ($belongsToPricing) {
 //                 $isPricingMd = true;
 //                 $lastStateSafeCommands = [];

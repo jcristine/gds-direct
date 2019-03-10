@@ -89,10 +89,10 @@ class ProcessApolloTerminalInputAction {
 		$commandLog = [];
 		for ($commandData of Object.values($fullLog)) {
 			$commandLog.push({
-				'cmd': $commandData['cmd_performed'],
+				'cmd': $commandData['cmd'],
 				'output': $commandData['output'],
 			});
-			if ($commandData['cmd_type'] != 'moveRest') {
+			if ($commandData['type'] != 'moveRest') {
 				// array_reverse for chronological
 				return php.array_reverse($commandLog);
 			}
@@ -327,11 +327,11 @@ class ProcessApolloTerminalInputAction {
 		if ($parsedHead['dumpType'] === 'DOMESTIC') {
 			//         '  3-B6  338.00R SH2QBEN5 21| --/--  ||     -/15JUNC     -/-    ',
 			$pattern = '<<<<<<FFFFFFFF>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>';
-			$isFareLine = [FareDisplayDomesticParser.class, 'parseFareLine'];
+			$isFareLine = l => FareDisplayDomesticParser.parseFareLine(l);
 		} else if ($parsedHead['dumpType'] === 'INTERNATIONAL') {
 			//         '  4 -SQ   324.00R QSQV     Q    |   /12M  01JAN -31DEC  R  PA D',
 			$pattern = '<<<<<<<FFFFFFFFF>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>';
-			$isFareLine = [FareDisplayInternationalParser.class, 'parseFareLine'];
+			$isFareLine = l => FareDisplayInternationalParser.parseFareLine(l);
 		} else {
 			// unsupported column format
 			return $output;
@@ -359,11 +359,11 @@ class ProcessApolloTerminalInputAction {
 		let $parsed, $lastCmdRec;
 		$parsed = CommandParser.parse($cmd);
 		if ($cmd === 'MD') {
-			$lastCmdRec = this.getScrolledCmdRow();
-			if ($lastCmdRec && $lastCmdRec['cmd_type'] === 'operationalInfo') {
+			$lastCmdRec = await this.getScrolledCmdRow();
+			if ($lastCmdRec && $lastCmdRec['type'] === 'operationalInfo') {
 				// "F:" shows output from airline's GDS and MR does not work there
 				$cmd = 'MD';
-			} else if ($lastCmdRec && StringUtil.startsWith($lastCmdRec['cmd_performed'], 'TI')) {
+			} else if ($lastCmdRec && StringUtil.startsWith($lastCmdRec['cmd'], 'TI')) {
 				// timatic screen uses TIPN instead of MD
 				$cmd = 'TIPN';
 			} else {
@@ -388,12 +388,12 @@ class ProcessApolloTerminalInputAction {
 		return $userMessages;
 	}
 
-	modifyOutput($calledCommand) {
+	async modifyOutput($calledCommand) {
 		$calledCommand = {...$calledCommand};
 		let $scrolledCmdRow, $scrolledCmd, $cmdParsed, $type, $output, $lines, $isSafe, $alias, $decrease, $clean, $pcc,
 			$isOk;
-		$scrolledCmdRow = this.getScrolledCmdRow();
-		$scrolledCmd = ($scrolledCmdRow || {})['cmd_performed'] || $calledCommand['cmd'];
+		$scrolledCmdRow = await this.getScrolledCmdRow();
+		$scrolledCmd = ($scrolledCmdRow || {})['cmd'] || $calledCommand['cmd'];
 		$cmdParsed = CommandParser.parse($scrolledCmd);
 		$type = $cmdParsed['type'] || null;
 		if (php.in_array($type, ['searchPnr', 'displayPnrFromList']) &&
@@ -428,7 +428,7 @@ class ProcessApolloTerminalInputAction {
 		let $allFlatCmds, $cmdRecord, $parsedCmd, $flatCmds;
 		$allFlatCmds = [];
 		for ($cmdRecord of Object.values($cmdRecs)) {
-			$parsedCmd = CommandParser.parse($cmdRecord['cmd_performed']);
+			$parsedCmd = CommandParser.parse($cmdRecord['cmd']);
 			$flatCmds = php.array_merge([$parsedCmd], $parsedCmd['followingCommands']);
 			$allFlatCmds = php.array_merge($allFlatCmds, $flatCmds);
 		}
@@ -443,7 +443,7 @@ class ProcessApolloTerminalInputAction {
 		}
 		$commands = $cmdLog.getCurrentPnrCommands();
 		for ($cmdRecord of Object.values($commands)) {
-			$parsedCmd = CommandParser.parse($cmdRecord['cmd_performed']);
+			$parsedCmd = CommandParser.parse($cmdRecord['cmd']);
 			$flatCmds = php.array_merge([$parsedCmd], $parsedCmd['followingCommands']);
 			for ($flatCmd of Object.values($flatCmds)) {
 				if ($flatCmd['type'] === 'psRemark') {
@@ -498,7 +498,7 @@ class ProcessApolloTerminalInputAction {
 		let $pnrCmds, $typeToOutput, $dnOutput, $pnrDump, $pnr;
 		if ($cmd === 'F') {
 			$pnrCmds = this.stateful.getLog().getCurrentPnrCommands();
-			$typeToOutput = php.array_combine(php.array_column($pnrCmds, 'cmd_type'),
+			$typeToOutput = php.array_combine(php.array_column($pnrCmds, 'type'),
 				php.array_column($pnrCmds, 'output'));
 			if ($dnOutput = $typeToOutput['divideBooking'] || null) {
 				$pnrDump = this.constructor.isScrollingAvailable($dnOutput);
@@ -595,10 +595,10 @@ class ProcessApolloTerminalInputAction {
 
 	/** @return array|null - the command we are currently scrolling
 	 * (last command that was not one of MD, MU, MT, MB */
-	getScrolledCmdRow() {
+	async getScrolledCmdRow() {
 		let $navCmdTypes, $lastCmds;
 		$navCmdTypes = SessionStateProcessor.mrCmdTypes;
-		$lastCmds = this.stateful.getLog().getLastCommandsOfTypes($navCmdTypes);
+		$lastCmds = await this.stateful.getLog().getLastCommandsOfTypes($navCmdTypes);
 		return ArrayUtil.getFirst($lastCmds);
 	}
 
@@ -606,7 +606,7 @@ class ProcessApolloTerminalInputAction {
 		let $cmdRows, $cmds, $cmdToFullOutput, $cmd, $output, $showsFullPnr, $pnrDump;
 		$cmdRows = this.stateful.getLog().getLastStateSafeCommands();
 		$cmds = Fp.map(($row) => ({
-			'cmd': $row['cmd_performed'],
+			'cmd': $row['cmd'],
 			'output': $row['output'],
 		}), $cmdRows);
 		$cmdToFullOutput = ImportPqApolloAction.collectCmdToFullOutput($cmds);
@@ -1228,7 +1228,7 @@ class ProcessApolloTerminalInputAction {
 				$nextPage = php.isset($lastCommandArray[$iteration])
 					? $lastCommandArray[$iteration]['output']
 					: await this.runCommand('MR', false);
-				$sanitized = this.modifyOutput({'cmd': 'MR', 'output': $nextPage});
+				$sanitized = await this.modifyOutput({'cmd': 'MR', 'output': $nextPage});
 				$nextPage = $sanitized['output'];
 
 				$output = ($output ? extractPager($output)[0] : '') + $nextPage;
@@ -1275,7 +1275,7 @@ class ProcessApolloTerminalInputAction {
 			$fetchAll = this.constructor.shouldFetchAll($cmdRecord['cmd']);
 			$cmdRecord['output'] = await this.runCommand($cmdRecord['cmd'], $fetchAll);
 		}
-		$calledCommands.push(this.modifyOutput($cmdRecord));
+		$calledCommands.push(await this.modifyOutput($cmdRecord));
 		if (this.constructor.doesStorePnr($cmdRecord['cmd'])) {
 			$parsedData = TApolloSavePnr.parseSavePnrOutput($cmdRecord['output']);
 			if ($parsedData['success']) {
