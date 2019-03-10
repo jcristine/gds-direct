@@ -1221,7 +1221,7 @@ class ProcessApolloTerminalInputAction {
 		let $calledCommands, $lastCommandArray, $output, $iteration, $nextPage, $sanitized, $cmd;
 		$pageLimit = $pageLimit || 100;
 		$calledCommands = [];
-		$lastCommandArray = calledCommands.slice(-1);
+		$lastCommandArray = calledCommands;
 		if (!php.empty($lastCommandArray)) {
 			$output = '';
 			for ($iteration = 0; $iteration < $pageLimit; $iteration++) {
@@ -1236,7 +1236,7 @@ class ProcessApolloTerminalInputAction {
 					break;
 				}
 			}
-			$cmd = $lastCommandArray[0]['cmd'];
+			$cmd = $lastCommandArray.length > 0 ? $lastCommandArray[0]['cmd'] : 'MDA';
 			$calledCommands.push({
 				'cmd': $cmd,
 				'output': $output,
@@ -1411,13 +1411,15 @@ class ProcessApolloTerminalInputAction {
 		$alias = this.constructor.parseAlias($cmd);
 		if ($mdaData = $alias['moveDownAll'] || null) {
 			$limit = $mdaData['limit'] || null;
-			$cmdReal = $alias['realCmd'] || 'MT';
-			// TODO: take last command from DB instead of using MT
-			$result = await this.processRealCommand($cmdReal, false);
-			if (php.empty($result['errors'])) {
-				$result['calledCommands'] = await this.moveDownAll($limit, $result.calledCommands);
+			if ($cmdReal = $alias['realCmd']) {
+				$result = await this.processRealCommand($cmdReal, false);
+				$result['calledCommands'] = await this.moveDownAll($limit, $result.calledCommands || []);
+			} else {
+				let mrTypes = SessionStateProcessor.mrCmdTypes;
+				let mdCmdRows = await this.stateful.getLog().getLastCommandsOfTypes(mrTypes);
+				let calledCommands = await this.moveDownAll($limit, mdCmdRows);
+				return {calledCommands};
 			}
-			return $result;
 		} else if (php.preg_match(/^PNR$/, $cmd, $matches = [])) {
 			return this.processSavePnr();
 		} else if (php.preg_match(/^HHMCO$/, $cmd, $matches = [])) {
