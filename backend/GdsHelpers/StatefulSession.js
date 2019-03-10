@@ -13,6 +13,7 @@ const RbsClient = require("../IqClients/RbsClient");
 const CmdLog = require("../Repositories/CmdLog");
 const {getConfig} = require('../Config.js');
 const {jsExport} = require('../Utils/Misc.js');
+const php = require('../Transpiled/php.js');
 
 /**
  * a generic session that can be either apollo, sabre, galileo, amadeus, etc...
@@ -154,8 +155,35 @@ let StatefulSession = async ({session, whenCmdRqId = null}) => {
 		getLog: () => ({
 			getSessionData: getSessionData,
 			getCurrentPnrCommands: () => [],
-			getLastCommandsOfTypes: () => [],
+			/** get all commands starting from last not in the provided type list inclusive */
+			getLastCommandsOfTypes: async (types) => {
+				// TODO: filter them in SQL to make sure 5K logs won't affect response time
+				// for compatibility with transpiled code, where MR was not marked as scrolled cmd type
+				let isMr = php.equals(types, SessionStateProcessor.mrCmdTypes);
+				let allCmdsDesc = await CmdLog.getAll(session.id);
+				let matched = [];
+				for (let cmdRec of allCmdsDesc) {
+					if (cmdRec.area === fullState.area) {
+						matched.unshift(cmdRec);
+						let matches = types.includes(cmdRec.type)
+							|| isMr && cmdRec.is_mr;
+						if (!matches) {
+							break;
+						}
+					}
+				}
+				return matched;
+			},
+			/**
+			 * get last commands that for sure did not affect PNR
+			 * and pricing including the last command that did
+			 * for example, from: >01Y1; >*R; >01y2; >*I; >*SVC;
+			 * will be returned:              >01y2; >*I; >*SVC;
+			 */
 			getLastStateSafeCommands: () => [],
+			getLastCalledCommand: () => {
+				return CmdLog.getLast(session.id);
+			},
 		}),
 		getStartDt: () => startDt,
 		getAreaRows: () => fullState.areas,
