@@ -145,10 +145,33 @@ class ProcessApolloTerminalInputAction {
 		return this.stateful.getLeadAgent();
 	}
 
+	async getLastTariffDisplay() {
+		let $cmds = await this.stateful.getLog().getAllCommands();
+		let $tariffTypes = ['fareSearch', 'redisplayFareSearch'];
+		let $cmdRecord = ImportPqApolloAction.findLastCommandIn($tariffTypes, $cmds);
+		if (!$cmdRecord) {
+			return Promise.reject('No recent $D');
+		} else {
+			return TariffDisplayParser.parse($cmdRecord['output']);
+		}
+	}
+
 	async findOnLastTariffDisplay(lineNumber) {
 		if (lineNumber < 1 || lineNumber > 250) {
 			return BadRequest('Invalid fare number - ' + lineNumber + ', out of range');
 		}
+		let parsed = await this.getLastTariffDisplay().catch(exc => null);
+		if (parsed) {
+			for (let fare of parsed.result || []) {
+				if (fare.lineNumber == lineNumber) {
+					return fare;
+				}
+			}
+			return BadRequest('There is no fare #' + lineNumber + ' on last tariff display');
+		}
+
+		// could not find $D in command log - try redisplaying it in GDS
+
 		let requestedFare = null;
 		let pages = [];
 		// TODO: take from command log instead of calling *$D

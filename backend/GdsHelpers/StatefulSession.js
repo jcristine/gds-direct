@@ -184,6 +184,9 @@ let StatefulSession = async ({session, whenCmdRqId = null}) => {
 			getLastCalledCommand: () => {
 				return CmdLog.getLast(session.id);
 			},
+			getAllCommands: () => {
+				return Object.values(CmdLog.getAll(session.id)).reverse();
+			},
 		}),
 		getStartDt: () => startDt,
 		getAreaRows: () => fullState.areas,
