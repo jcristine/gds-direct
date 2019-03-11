@@ -28,7 +28,7 @@ let StatefulSession = async ({session, whenCmdRqId = null}) => {
 	let gds = session.context.gds;
 	let startDt = new Date().toISOString();
 	let calledCommands = [];
-	let getSessionData = () => fullState.areas[fullState.area] || {};
+	let getSessionData = () => ({...fullState.areas[fullState.area] || {}, gds: gds});
 	let logit = (msg, data) => {
 		if (!config.production) {
 			console.log(msg, typeof data === 'string' ? data : jsExport(data));
@@ -154,7 +154,25 @@ let StatefulSession = async ({session, whenCmdRqId = null}) => {
 
 		getLog: () => ({
 			getSessionData: getSessionData,
-			getCurrentPnrCommands: () => [],
+			getCurrentPnrCommands: async () => {
+				if (!getSessionData().has_pnr) {
+					return [];
+				}
+				// TODO: filter them in SQL to make sure 5K logs won't affect response time
+				let allCmdsDesc = await CmdLog.getAll(session.id);
+				let matched = [];
+				for (let cmdRec of allCmdsDesc) {
+					if (cmdRec.area === fullState.area) {
+						matched.unshift(cmdRec);
+						let samePnr = !cmdRec.record_locator
+							|| cmdRec.record_locator === getSessionData().record_locator;
+						if (!cmdRec.has_pnr || !samePnr) {
+							break;
+						}
+					}
+				}
+				return matched;
+			},
 			/** get all commands starting from last not in the provided type list inclusive */
 			getLastCommandsOfTypes: async (types) => {
 				// TODO: filter them in SQL to make sure 5K logs won't affect response time

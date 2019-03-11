@@ -42,13 +42,13 @@ class CommonDataHelper
         ];
     }
 
-    static shouldAddCreationRemark($msg, $cmdLog)  {
+    static async shouldAddCreationRemark($msg, $cmdLog)  {
         let $sessionData, $commands, $cmdRecord, $parsed, $flatCmds, $flatCmd;
         $sessionData = $cmdLog.getSessionData();
         if ($sessionData['is_pnr_stored']) {
             return false;
         }
-        $commands = $cmdLog.getCurrentPnrCommands();
+        $commands = await $cmdLog.getCurrentPnrCommands();
         for ($cmdRecord of Object.values($commands)) {
             $parsed = this.parseByGds($sessionData['gds'], $cmdRecord['cmd']);
             $flatCmds = php.array_merge([$parsed], $parsed['followingCommands']);

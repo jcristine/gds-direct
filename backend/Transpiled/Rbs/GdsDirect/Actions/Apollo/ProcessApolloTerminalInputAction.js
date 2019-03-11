@@ -82,24 +82,6 @@ class ProcessApolloTerminalInputAction {
 			|| php.preg_match(/^\s*CNLD FROM\s*\d+\s*(><)?$/, $output);
 	}
 
-	// get the last command array including all MD-s
-	static getLastCommandArrayIncludeMd($cmdLog) {
-		let $fullLog, $commandLog, $commandData;
-		$fullLog = php.array_reverse($cmdLog.getLastStateSafeCommands());
-		$commandLog = [];
-		for ($commandData of Object.values($fullLog)) {
-			$commandLog.push({
-				'cmd': $commandData['cmd'],
-				'output': $commandData['output'],
-			});
-			if ($commandData['type'] != 'moveRest') {
-				// array_reverse for chronological
-				return php.array_reverse($commandLog);
-			}
-		}
-		return [];
-	}
-
 	static isScrollingAvailable($dumpPage) {
 		let $exc;
 		try {
@@ -174,7 +156,6 @@ class ProcessApolloTerminalInputAction {
 
 		let requestedFare = null;
 		let pages = [];
-		// TODO: take from command log instead of calling *$D
 		await fetchUntil('*$D', this.stateful, ({output}) => {
 			pages.push(output);
 			let parsed = TariffDisplayParser.parse(pages.join('\n'));
@@ -458,13 +439,13 @@ class ProcessApolloTerminalInputAction {
 		return $allFlatCmds;
 	}
 
-	static shouldAddPsRemark($msg, $cmdLog) {
+	static async shouldAddPsRemark($msg, $cmdLog) {
 		let $sessionData, $commands, $cmdRecord, $parsedCmd, $flatCmds, $flatCmd;
 		$sessionData = $cmdLog.getSessionData();
 		if ($sessionData['is_pnr_stored']) {
 			return false;
 		}
-		$commands = $cmdLog.getCurrentPnrCommands();
+		$commands = await $cmdLog.getCurrentPnrCommands();
 		for ($cmdRecord of Object.values($commands)) {
 			$parsedCmd = CommandParser.parse($cmdRecord['cmd']);
 			$flatCmds = php.array_merge([$parsedCmd], $parsedCmd['followingCommands']);
@@ -479,22 +460,22 @@ class ProcessApolloTerminalInputAction {
 		return true;
 	}
 
-	makeCmsRemarkCmdIfNeeded() {
+	async makeCmsRemarkCmdIfNeeded() {
 		let $cmdLog, $sessionData, $leadData, $msg;
 		$cmdLog = this.stateful.getLog();
 		$sessionData = $cmdLog.getSessionData();
 		$leadData = this.stateful.getLeadData();
-		$msg = CommonDataHelper.createCredentialMessage(this.stateful);
-		if (CommonDataHelper.shouldAddCreationRemark($msg, $cmdLog)) {
+		$msg = await CommonDataHelper.createCredentialMessage(this.stateful);
+		if (await CommonDataHelper.shouldAddCreationRemark($msg, $cmdLog)) {
 			return '@:5' + $msg;
 		}
 		return null;
 	}
 
-	makePsRemarkCmdIfNeeded() {
+	async makePsRemarkCmdIfNeeded() {
 		let $msg;
 		$msg = 'CREATED IN GDS DIRECT BY ' + php.strtoupper(this.getAgent().getLogin());
-		if (this.constructor.shouldAddPsRemark($msg, this.stateful.getLog())) {
+		if (await this.constructor.shouldAddPsRemark($msg, this.stateful.getLog())) {
 			return 'PS-' + $msg;
 		}
 		return null;
@@ -517,10 +498,10 @@ class ProcessApolloTerminalInputAction {
 		}
 	}
 
-	doesDivideFpBooking($cmd) {
+	async doesDivideFpBooking($cmd) {
 		let $pnrCmds, $typeToOutput, $dnOutput, $pnrDump, $pnr;
 		if ($cmd === 'F') {
-			$pnrCmds = this.stateful.getLog().getCurrentPnrCommands();
+			$pnrCmds = await this.stateful.getLog().getCurrentPnrCommands();
 			$typeToOutput = php.array_combine(php.array_column($pnrCmds, 'type'),
 				php.array_column($pnrCmds, 'output'));
 			if ($dnOutput = $typeToOutput['divideBooking'] || null) {
@@ -1021,13 +1002,13 @@ class ProcessApolloTerminalInputAction {
 		let $writeCommands, $usedCmds, $flatCmds, $usedCmdTypes, $remarkCmd;
 		$writeCommands = [];
 		if (!this.getSessionData()['is_pnr_stored']) {
-			$usedCmds = this.stateful.getLog().getCurrentPnrCommands();
+			$usedCmds = await this.stateful.getLog().getCurrentPnrCommands();
 			$flatCmds = this.flattenCmds($usedCmds);
 			$usedCmdTypes = php.array_column($flatCmds, 'type');
-			if ($remarkCmd = this.makeCmsRemarkCmdIfNeeded()) {
+			if ($remarkCmd = await this.makeCmsRemarkCmdIfNeeded()) {
 				php.array_unshift($writeCommands, $remarkCmd);
 			}
-			if ($remarkCmd = this.makePsRemarkCmdIfNeeded()) {
+			if ($remarkCmd = await this.makePsRemarkCmdIfNeeded()) {
 				php.array_unshift($writeCommands, $remarkCmd);
 			}
 			if (php.in_array(this.getSessionData()['pcc'], ['2F9B']) &&
@@ -1035,7 +1016,7 @@ class ProcessApolloTerminalInputAction {
 			) {
 				await this.runCommand('S*ITN', false);
 				await this.runCommand('SL*1', false);
-				await this.runCommand('MV\/|*' + this.getAgent().getLogin(), false);
+				await this.runCommand('MV/|*' + this.getAgent().getLogin(), false);
 			}
 		}
 		return $writeCommands;
@@ -1056,7 +1037,7 @@ class ProcessApolloTerminalInputAction {
 		} else if (!php.empty($errors = CommonDataHelper.checkSeatCount($pnr))) {
 			return {'errors': $errors};
 		}
-		$usedCmds = this.stateful.getLog().getCurrentPnrCommands();
+		$usedCmds = await this.stateful.getLog().getCurrentPnrCommands();
 		$flatCmds = this.flattenCmds($usedCmds);
 		$usedCmdTypes = php.array_column($flatCmds, 'type');
 		$login = this.getAgent().getLogin();
@@ -1276,7 +1257,7 @@ class ProcessApolloTerminalInputAction {
 			if (!php.empty($batchCmds)) {
 				await this.runCommand(php.implode('|', $batchCmds));
 			}
-		} else if (this.doesDivideFpBooking($cmd)) {
+		} else if (await this.doesDivideFpBooking($cmd)) {
 			// all commands between >DN...; and >F; affect only the new PNR
 			$leadData = this.stateful.getLeadData();
 			$msg = await CommonDataHelper.createCredentialMessage(this.stateful);

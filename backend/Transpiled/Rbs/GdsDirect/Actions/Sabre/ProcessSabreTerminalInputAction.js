@@ -154,7 +154,7 @@ class ProcessSabreTerminalInputAction {
 		$leadData = this.stateful.getLeadData();
 		$msg = await CommonDataHelper.createCredentialMessage(this.stateful);
 		$cmd = '5' + $msg;
-		if (CommonDataHelper.shouldAddCreationRemark($msg, $cmdLog)) {
+		if (await CommonDataHelper.shouldAddCreationRemark($msg, $cmdLog)) {
 			return $cmd;
 		}
 		return null;
