@@ -6,12 +6,11 @@ let Emc = require('./LibWrappers/Emc.js');
 let GdsSessionController = require('./GdsSessionController.js');
 let TerminalBaseController = require('./Transpiled/App/Controllers/TerminalBaseController.js');
 let {hrtimeToDecimal} = require('./Utils/Misc.js');
-let {Forbidden, NotImplemented, LoginTimeOut, InternalServerError} = require('./Utils/Rej.js');
+let {Forbidden} = require('./Utils/Rej.js');
 let {admins} = require('./Constants.js');
 let UpdateHighlightRulesFromProd = require('./Actions/UpdateHighlightRulesFromProd.js');
 let Db = require('./Utils/Db.js');
 let Diag = require('./LibWrappers/Diag.js');
-let FluentLogger = require('./LibWrappers/FluentLogger.js');
 let HighlightRulesRepository = require('./Actions/HighlightRulesRepository.js');
 let Redis = require('./LibWrappers/Redis.js');
 let initSocketIo = require('socket.io');
@@ -22,117 +21,12 @@ const CommandParser = require("./Transpiled/Gds/Parsers/Apollo/CommandParser");
 const PnrParser = require("./Transpiled/Gds/Parsers/Apollo/Pnr/PnrParser");
 const FareConstructionParser = require("./Transpiled/Gds/Parsers/Common/FareConstruction/FareConstructionParser");
 const KeepAlive = require("./Maintenance/KeepAlive");
-const {getExcData, safe} = require('./Utils/Misc.js');
+const {safe} = require('./Utils/Misc.js');
 const PersistentHttpRq = require('./Utils/PersistentHttpRq.js');
+const toHandleHttp = require("./HttpControllers/MainController").toHandleHttp;
+const withAuth = require("./HttpControllers/MainController").withAuth;
 
 let app = express();
-
-let shouldDiag = (exc) =>
-	!Forbidden.matches(exc.httpStatusCode) &&
-	!LoginTimeOut.matches(exc.httpStatusCode) &&
-	!NotImplemented.matches(exc.httpStatusCode);
-
-let toHandleHttp = (action, logger = null) => (req, res) => {
-	let log = logger ? logger.log : (() => {});
-	let logId = logger ? logger.logId :null;
-	let rqBody = req.body;
-	let rqTakenMs = Date.now();
-	if (Object.keys(rqBody).length === 0) {
-		let querystring = require('querystring');
-		let queryStr = req.url.split('?')[1] || '';
-		rqBody = querystring.parse(queryStr);
-	}
-	let maskedBody = Object.assign({}, rqBody, {
-		emcSessionId: '******' + (rqBody.emcSessionId || '').slice(-4),
-	});
-	log('Processing HTTP request ' + req.path + ' with params:', maskedBody);
-	return Promise.resolve()
-		.then(() => action(rqBody, req.params))
-		.catch(exc => {
-			let excData = getExcData(exc);
-			if (typeof excData === 'string') {
-				excData = new Error('HTTP action failed - ' + exc);
-			} else {
-				excData.message = 'HTTP action failed - ' + excData.message;
-				let cause = excData.stack ? '\nCaused by:\n' + excData.stack : '';
-				excData.stack = new Error().stack + cause;
-			}
-			excData.httpStatusCode = exc.httpStatusCode || 520;
-			return Promise.reject(excData);
-		})
-		.then(result => {
-			log('HTTP action result:', result);
-			res.setHeader('Content-Type', 'application/json');
-			res.status(200);
-			res.send(JSON.stringify(Object.assign({
-				rqTakenMs: rqTakenMs,
-				rsSentMs: Date.now(),
-				message: 'GRECT HTTP OK',
-			}, result)));
-		})
-		.catch(exc => {
-			exc = exc || 'Empty error ' + exc;
-			res.status(exc.httpStatusCode || 500);
-			res.setHeader('Content-Type', 'application/json');
-			res.send(JSON.stringify({error: exc.message || exc + '', processLogId: logId}));
-			let errorData = getExcData(exc, {
-				message: exc.message || '' + exc,
-				httpStatusCode: exc.httpStatusCode,
-				requestPath: req.path,
-				requestBody: maskedBody,
-				stack: exc.stack,
-				processLogId: logId,
-			});
-			if (shouldDiag(exc)) {
-				FluentLogger.logExc('ERROR: HTTP request failed', logId, errorData);
-				Diag.error('HTTP request failed', errorData);
-			} else {
-				log('HTTP request was not satisfied', errorData);
-			}
-		});
-};
-
-let normalizeRqBody = (rqBody, emcData, logId) => {
-	return {
-		emcUser: emcData.data.user,
-		agentId: +emcData.data.user.id,
-		processLogId: logId,
-		// action-specific fields follow
-		...rqBody,
-	};
-};
-
-let withAuth = (action) => (req, res) => {
-	let logger = FluentLogger.init();
-	let {log, logId} = logger;
-	let logToTable = (agentId) => Db.with(db =>
-		db.writeRows('http_rq_log', [{
-			path: req.path,
-			dt: new Date().toISOString(),
-			agentId: agentId,
-			logId: logId,
-		}]));
-
-	return toHandleHttp((rqBody, routeParams) => {
-		if (typeof action !== 'function') {
-			return InternalServerError('Action is not a function - ' + action);
-		}
-		return Emc.getCachedSessionInfo(rqBody.emcSessionId)
-			.catch(exc => {
-				let error = new Error('EMC auth error - ' + exc);
-				error.httpStatusCode = 401;
-				error.stack += '\nCaused by:\n' + exc.stack;
-				return Promise.reject(error);
-			})
-			.then(emcData => {
-				rqBody = normalizeRqBody(rqBody, emcData, logId);
-				log('Authorized agent: ' + rqBody.agentId + ' ' + emcData.data.user.displayName, emcData.data.user.roles);
-				logToTable(rqBody.agentId);
-				return Promise.resolve()
-					.then(() => action(rqBody, emcData.result, routeParams));
-			});
-	}, logger)(req, res);
-};
 
 app.use(express.json({limit: '1mb'}));
 app.use(express.urlencoded({extended: true}));
@@ -326,25 +220,6 @@ app.get('/parser/test', toHandleHttp((rqBody) => {
 	result = FareConstructionParser.parse(rqBody.input);
 	return result;
 }));
-
-// UnhandledPromiseRejectionWarning
-// it's actually pretty weird that we ever get here, probably
-// something is wrong with the Promise chain in toHandleHttp()
-process.on('unhandledRejection', (exc, promise) => {
-	exc = exc || 'Empty error ' + exc;
-	let data = typeof exc === 'string' ? exc : {
-		message: exc + ' ' + promise,
-		stack: exc.stack,
-		promise: promise,
-		...exc,
-	};
-	if (shouldDiag(exc)) {
-		console.error('Unhandled Promise Rejection', data);
-		Diag.error('Unhandled Promise Rejection', data);
-	} else {
-		console.log('(ignored) Unhandled Promise Rejection', data);
-	}
-});
 
 getConfig().then(config => {
 	Diag.log(new Date().toISOString() + ': About to start listening http by ' + process.pid + ' on port ' + config.HTTP_PORT);
