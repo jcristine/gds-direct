@@ -89,12 +89,13 @@ let toHandleHttp = (action, logger = null) => (req, res) => {
 			} else {
 				log('HTTP request was not satisfied', errorData);
 			}
-		})
+		});
 };
 
 let normalizeRqBody = (rqBody, emcData, logId) => {
 	return {
-		agentId: +emcData.result.user.id,
+		emcUser: emcData.data.user,
+		agentId: +emcData.data.user.id,
 		processLogId: logId,
 		// action-specific fields follow
 		...rqBody,
@@ -124,11 +125,8 @@ let withAuth = (action) => (req, res) => {
 				return Promise.reject(error);
 			})
 			.then(emcData => {
-				// compatibility with v14, should refactor everything that uses result probably...
-				emcData.result = emcData.data;
-
 				rqBody = normalizeRqBody(rqBody, emcData, logId);
-				log('Authorized agent: ' + rqBody.agentId + ' ' + emcData.result.user.displayName, emcData.result.user.roles);
+				log('Authorized agent: ' + rqBody.agentId + ' ' + emcData.data.user.displayName, emcData.data.user.roles);
 				logToTable(rqBody.agentId);
 				return Promise.resolve()
 					.then(() => action(rqBody, emcData.result, routeParams));
@@ -213,7 +211,7 @@ app.post('/admin/terminal/themes/save', withAuth(rqBody => {
 }));
 app.post('/admin/terminal/themes/delete', withAuth(rqBody => {
 	let sql = 'DELETE FROM terminalThemes WHERE id = ?';
-	return Db.with(db => db.query(sql, [rqBody.id]))
+	return Db.with(db => db.query(sql, [rqBody.id]));
 }));
 app.get('/gdsDirect/themes', toHandleHttp(() =>
 	Db.with(db => db.fetchAll({table: 'terminalThemes'}))
@@ -393,7 +391,7 @@ getConfig().then(config => {
 		socketIo.listen(config.SOCKET_PORT);
 	} catch (exc) {
 		// TypeError: Cannot read property 'listeners' of undefined if SOCKET_PORT is not defined
-		Diag.error('Failed to listen to socket port (' + config.SOCKET_PORT + ') - ' + exc)
+		Diag.error('Failed to listen to socket port (' + config.SOCKET_PORT + ') - ' + exc);
 	}
 });
 
@@ -422,7 +420,7 @@ app.get('/ping', toHandleHttp((rqBody) => {
 				used_memory_peak_human: redisLines.used_memory_peak_human,
 			},
 			system: {
-				memory: memory
+				memory: memory,
 			},
 			persistentHttpRqInfo: PersistentHttpRq.getInfo(),
 		};
