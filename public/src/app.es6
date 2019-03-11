@@ -93,14 +93,10 @@ window.GdsDirectPlusParams = window.GdsDirectPlusParams || {
     auth: null,
 };
 
-/**
- * supposed to be injected in a <script> tag (either
- * statically or via js dynamic DOM generation)
- */
-window.InitGdsDirectPlusApp = (params) => {
+let onEmcSessionId = (emcSessionId, params) => {
 	// probably better would be to pass it through all these abstractions
 	// to the session.es6 instead of making a global variable...
-	window.GdsDirectPlusParams.emcSessionId = params.emcSessionId;
+	window.GdsDirectPlusParams.emcSessionId = emcSessionId;
 	window.GdsDirectPlusParams.travelRequestId = params.travelRequestId;
 	window.GdsDirectPlusParams.cmsUrl = params.cmsUrl;
 	window.GdsDirectPlusParams.socketHost = params.socketHost || window.GdsDirectPlusParams.socketHost;
@@ -118,6 +114,52 @@ window.InitGdsDirectPlusApp = (params) => {
 			return new GdsDirectPlusApp(params, viewData, themeData);
 		});
 };
+
+let getEmcSessionIdFromCookie = () => {
+	let cookieData = {};
+	for (let pair of document.cookie.split('; ')) {
+		let [key, value] = pair.split('=');
+		cookieData[key] = value;
+	}
+	let emcSessionId = cookieData['GDS_DIRECT_PLUS_AUTH'];
+	if (!emcSessionId) {
+		return Promise.reject('No EMC session id in cookie');
+	} else {
+		return fetch(rootUrl + '/checkEmcSessionId?emcSessionId=' + emcSessionId)
+			.then(rs => rs.json()).then(data => data.isValid
+				? Promise.resolve(emcSessionId)
+				: Promise.reject('EMC session id from cookie is not valid'));
+	}
+};
+
+/**
+ * supposed to be injected in a <script> tag (either
+ * statically or via js dynamic DOM generation)
+ */
+window.InitGdsDirectPlusApp = (params) => {
+	let whenEmcSessionId = !params.getCrossAuthToken
+		? Promise.resolve(params.emcSessionId)
+		: getEmcSessionIdFromCookie()
+			.catch(() => Promise.resolve()
+				.then(() => params.getCrossAuthToken())
+				.then(token => token ? token : Promise.reject('Provided cross-auth token was empty'))
+				.then(token => fetch(rootUrl + '/authorizeEmcToken?token=' + token))
+				.then(rs => rs.json()).then(data => data.emcSessionId)
+				.then(emcSessionId => {
+					document.cookie = 'GDS_DIRECT_PLUS_AUTH=' + emcSessionId;
+					return emcSessionId;
+				}))
+			.catch(exc => {
+				document.cookie = 'GDS_DIRECT_PLUS_AUTH=';
+				return params.emcSessionId
+					? Promise.resolve(params.emcSessionId)
+					: Promise.reject(exc);
+			});
+	return whenEmcSessionId.then(emcSessionId => {
+		return onEmcSessionId(emcSessionId, params);
+	});
+};
+
 window.InitGdsDirectPlusApp.AdminApps = () => {
 	// required for modals.js, not included in injected
 	// part of the app, because it conflicts with CMS UI

@@ -27,9 +27,8 @@ let Config = {
 
 	external_service: {
 		emc: {
-			// no gdsd service user on dev
-			projectName: isProd ? 'GDSD' : 'LMS',
-			login: isProd ? 'gdsd' : 'lms',
+			projectName: 'GDSD',
+			login: 'gdsd',
 			password: isProd ? '' : 'qwerty',
 			token: isProd ? 'byXWu*Yu^8HyD23BJ4Gu' : '',
 		},

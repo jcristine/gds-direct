@@ -157,6 +157,12 @@ app.get('/authorizeEmcToken', toHandleHttp(async rqBody => {
 	let result = await Emc.client.authorizeToken(token);
 	return {emcSessionId: result.data.sessionKey};
 }));
+app.get('/checkEmcSessionId', toHandleHttp(async rqBody => {
+	let sessionInfo = await Emc.getCachedSessionInfo(rqBody.emcSessionId).catch(exc => null);
+	return {
+		isValid: (((sessionInfo || {}).data || {}).user || {}).id > 0,
+	};
+}));
 
 app.get('/doSomeHeavyStuff', withAuth((reqBody, emcResult) => {
 	if (emcResult.user.id == 6206) {
