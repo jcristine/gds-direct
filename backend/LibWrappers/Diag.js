@@ -7,6 +7,8 @@ try {
         setProjectId() {};
         setIsProduction() {};
         setHostname() {};
+        log() {};
+        notice() {};
         error() {};
     };
 }
