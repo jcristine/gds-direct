@@ -22,7 +22,8 @@ const php = require('../Transpiled/php.js');
  *
  * @param session = at('GdsSessions.js').makeSessionRecord()
  */
-let StatefulSession = async ({session, whenCmdRqId = null}) => {
+let StatefulSession = async ({session, whenCmdRqId}) => {
+	whenCmdRqId = whenCmdRqId || Promise.resolve(null);
 	let fullState = await GdsSessions.getFullState(session);
 	let config = await getConfig();
 	let gds = session.context.gds;
