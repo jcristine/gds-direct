@@ -80,7 +80,7 @@ let getLeadData = async (travelRequestId) =>
 
 /** @param {{command: '*R', gds: 'apollo', language: 'sabre', agentId: '6206'}} reqBody */
 let RbsClient = (reqBody) => {
-	let {gds, travelRequestId} = reqBody;
+	let {gds} = reqBody;
 	return {
 		runInputCmd: async ({rbsSessionId}) => callRbs('terminal.runCommand', {
 			gds: gds,
@@ -95,18 +95,18 @@ let RbsClient = (reqBody) => {
 				return Promise.reject(exc);
 			}
 		}),
-		getPqItinerary: async ({rbsSessionId}) => callRbs('terminal.getPqItinerary', {
+		getPqItinerary: async ({rbsSessionId, leadId}) => callRbs('terminal.getPqItinerary', {
 			sessionId: rbsSessionId,
 			gds: gds,
-			context: await getLeadData(travelRequestId),
+			context: await getLeadData(leadId),
 		}).then(rbsResp => rbsResp.result.result),
-		importPq: async ({rbsSessionId}) => callRbs('terminal.importPq', {
+		importPq: async ({rbsSessionId, leadId}) => callRbs('terminal.importPq', {
 			sessionId: rbsSessionId,
 			gds: gds,
 			context: {
 				// no need to pas paxes for validation, since we already checked them in
 				// getPqItinerary, but leadId is mandatory in RBS for importPq/getPqItinerary
-				leadId: travelRequestId,
+				leadId: leadId,
 			},
 		}).then(rbsResp => rbsResp.result.result),
 		/** @param {IRebuildItineraryRq} params */

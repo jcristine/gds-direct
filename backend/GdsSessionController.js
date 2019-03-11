@@ -221,7 +221,9 @@ exports.getPqItinerary = (reqBody) =>
 		reqBody.useRbs
 			? RbsClient(reqBody).getPqItinerary(session.gdsData)
 			: withRbsPqCopy(session, ({rbsSessionId}) =>
-				RbsClient(reqBody).getPqItinerary({rbsSessionId})
+				RbsClient(reqBody).getPqItinerary({rbsSessionId,
+					leadId: reqBody.pqTravelRequestId || reqBody.travelRequestId,
+				})
 			)
 	);
 
@@ -230,7 +232,9 @@ exports.importPq = (reqBody) =>
 		reqBody.useRbs
 			? RbsClient(reqBody).importPq(session.gdsData)
 			: withRbsPqCopy(session, ({rbsSessionId}) =>
-				RbsClient(reqBody).importPq({rbsSessionId})
+				RbsClient(reqBody).importPq({rbsSessionId,
+					leadId: reqBody.pqTravelRequestId || reqBody.travelRequestId,
+				})
 			)
 	);
 
