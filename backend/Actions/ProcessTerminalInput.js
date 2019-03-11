@@ -19,6 +19,7 @@ const ProcessSabreTerminalInputAction = require("../Transpiled/Rbs/GdsDirect/Act
 const TerminalService = require('../Transpiled/App/Services/TerminalService.js');
 const TerminalBuffering = require("../Repositories/CmdRqLog");
 const ProcessAmadeusTerminalInputAction = require("../Transpiled/Rbs/GdsDirect/Actions/Amadeus/ProcessAmadeusTerminalInputAction");
+const Agents = require("../Repositories/Agents");
 
 // this is not complete list
 let shouldWrap = (cmd) => {
@@ -278,16 +279,24 @@ let useConfigPcc = (grectResult, stateful, agentId) => {
  * auto-correct typos in the command, convert it between
  * GDS dialects, run _alias_ chain of commands, etc...
  * @param session = at('GdsSessions.js').makeSessionRecord()
- * @param {{command: '*R'}} rqBody
+ * @param {{command: '*R'}} rqBody = at('MainController.js').normalizeRqBody()
  */
 module.exports = async (session, rqBody) => {
 	let whenCmdRqId = TerminalBuffering.storeNew(rqBody, session);
-	let stateful = await StatefulSession({session, whenCmdRqId});
+	let stateful = await StatefulSession({session, whenCmdRqId, emcUser: rqBody.emcUser});
 	let cmdRq = rqBody.command;
 	let gds = session.context.gds;
 	let dialect = rqBody.language || gds;
 	let translated = translateCmd(dialect, gds, cmdRq);
 	cmdRq = translated.cmd;
+
+	let callsLimit = (rqBody.emcUser.settings || {}).gds_direct_usage_limit || null;
+	if (callsLimit) {
+		let callsUsed = await Agents.getGdsDirectCallsUsed(rqBody.emcUser.id);
+		if (callsUsed >= callsLimit) {
+			return Promise.reject('Too many calls, ' + callsUsed + ' >= ' + callsLimit + ' in last 24h');
+		}
+	}
 
 	let whenRbsResult = runCmdRq(cmdRq, stateful)
 		.then(rbsResult => useConfigPcc(rbsResult, stateful, rqBody.agentId))

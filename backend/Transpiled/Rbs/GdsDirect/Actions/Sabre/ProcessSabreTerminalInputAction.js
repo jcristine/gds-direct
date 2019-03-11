@@ -243,14 +243,14 @@ class ProcessSabreTerminalInputAction {
 		return $isFsCmd && $isFsSuccessful;
 	}
 
-	makeCmdMessages($cmd, $output) {
+	async makeCmdMessages($cmd, $output) {
 		let $userMessages, $type, $agent, $left, $wpniLeftMsg;
 
 		$userMessages = [];
 		$type = CommandParser.parse($cmd)['type'];
 		if (php.in_array($type, CommonDataHelper.getCountedFsCommands())) {
 			$agent = this.getAgent();
-			$left = $agent.getFsLimit() - $agent.getFsCallsUsed();
+			$left = $agent.getFsLimit() - await $agent.getFsCallsUsed();
 			$wpniLeftMsg = $left + ' WPNI COMMANDS REMAINED';
 			$userMessages.push($wpniLeftMsg);
 		}
@@ -360,7 +360,7 @@ class ProcessSabreTerminalInputAction {
 			$totalAllowed = $agent.getFsLimit();
 			if (!$totalAllowed) {
 				$errors.push(Errors.getMessage(Errors.CMD_FORBIDDEN, {'cmd': $cmd, 'type': $type}));
-			} else if ($agent.getFsCallsUsed() >= $totalAllowed) {
+			} else if ((await $agent.getFsCallsUsed()) >= $totalAllowed) {
 				$errors.push(Errors.getMessage(Errors.FS_LIMIT_EXHAUSTED, {'totalAllowed': $totalAllowed}));
 			}
 		} else if (php.in_array($type, CommonDataHelper.getCountedFsCommands())) {
@@ -972,7 +972,7 @@ class ProcessSabreTerminalInputAction {
 		$calledCommands = [];
 		$calledCommands = php.array_merge($calledCommands, await this.callImplicitCommandsBefore($cmd));
 		let cmdRec = await this.runCmd($cmd);
-		$userMessages = this.makeCmdMessages($cmd, cmdRec.output);
+		$userMessages = await this.makeCmdMessages($cmd, cmdRec.output);
 		return this.callImplicitCommandsAfter(cmdRec, $calledCommands, $userMessages);
 	}
 

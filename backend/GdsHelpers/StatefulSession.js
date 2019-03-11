@@ -14,6 +14,8 @@ const CmdLog = require("../Repositories/CmdLog");
 const {getConfig} = require('../Config.js');
 const {jsExport} = require('../Utils/Misc.js');
 const php = require('../Transpiled/php.js');
+const Agent = require('../DataFormats/Wrappers/Agent.js');
+const Db = require('../Utils/Db.js');
 
 /**
  * a generic session that can be either apollo, sabre, galileo, amadeus, etc...
@@ -21,8 +23,9 @@ const php = require('../Transpiled/php.js');
  * state based on that - both in the instance and in the storage
  *
  * @param session = at('GdsSessions.js').makeSessionRecord()
+ * @param {IEmcUser} emcUser
  */
-let StatefulSession = async ({session, whenCmdRqId}) => {
+let StatefulSession = async ({session, whenCmdRqId, emcUser}) => {
 	whenCmdRqId = whenCmdRqId || Promise.resolve(null);
 	let fullState = await GdsSessions.getFullState(session);
 	let config = await getConfig();
@@ -90,50 +93,7 @@ let StatefulSession = async ({session, whenCmdRqId}) => {
 		}
 	};
 
-	let getAgent = () => {
-		// TODO: use actual agent data (will need to migrate GDS_DIRECT_* roles from RBS)
-		let tmpRoles = [
-			'GDS_DIRECT_ACCESS',
-			//'GDS_DIRECT_TICKETING',
-			//'GDS_DIRECT_QUEUE_PROCESSING',
-			'GDS_DIRECT_PNR_SEARCH',
-			//'GDS_DIRECT_EDIT_TICKETED_PNR',
-			//'GDS_DIRECT_EDIT_VOID_TICKETED_PNR',
-			//'GDS_DIRECT_CC_ACCESS',
-			//'GDS_DIRECT_CONTACT_INFO_ACCESS',
-			//'GDS_DIRECT_EMULATE_ANY_PCC',
-			//'GDS_DIRECT_ANY_PCC_AVAILABILITY',
-			//'GDS_DIRECT_CAN_EMULATE_TO_RESTRICTED_SABRE_PCCS',
-			//'GDS_DIRECT_NO_LEAD_PNR',
-			//'GDS_DIRECT_PRIVATE_PNR_ACCESS',
-			'GDS_DIRECT_MULTI_PCC_TARIFF_DISPLAY',
-			'GDS_DIRECT_PASTE_ITINERARY',
-			'GDS_DIRECT_HHMCO',
-		];
-		let hasRole = (role) => tmpRoles.includes(role);
-		return {
-			getId: () => 6206,
-			getLogin: () => 'aklesuns',
-			getFsCallsUsed: () => 13,
-			getFsLimit: () => 50,
-			canUseGdsDirect: () => hasRole('GDS_DIRECT_ACCESS'),
-			canIssueTickets: () => hasRole('GDS_DIRECT_TICKETING'),
-			canProcessQueues: () => hasRole('GDS_DIRECT_QUEUE_PROCESSING'),
-			canSearchPnr: () => hasRole('GDS_DIRECT_PNR_SEARCH'),
-			canEditTicketedPnr: () => hasRole('GDS_DIRECT_EDIT_TICKETED_PNR'),
-			canEditVoidTicketedPnr: () => hasRole('GDS_DIRECT_EDIT_VOID_TICKETED_PNR'),
-			canSeeCcNumbers: () => hasRole('GDS_DIRECT_CC_ACCESS'),
-			canSeeContactInfo: () => hasRole('GDS_DIRECT_CONTACT_INFO_ACCESS'),
-			canSwitchToAnyPcc: () => hasRole('GDS_DIRECT_EMULATE_ANY_PCC'),
-			canPerformAnyPccAvailability: () => hasRole('GDS_DIRECT_ANY_PCC_AVAILABILITY'),
-			canEmulateToRestrictedSabrePccs: () => hasRole('GDS_DIRECT_CAN_EMULATE_TO_RESTRICTED_SABRE_PCCS'),
-			canSavePnrWithoutLead: () => hasRole('GDS_DIRECT_NO_LEAD_PNR'),
-			canOpenPrivatePnr: () => hasRole('GDS_DIRECT_PRIVATE_PNR_ACCESS'),
-			canUseMultiPccTariffDisplay: () => hasRole('GDS_DIRECT_MULTI_PCC_TARIFF_DISPLAY'),
-			canPasteItinerary: () => hasRole('GDS_DIRECT_PASTE_ITINERARY'),
-			canUseMco: () => hasRole('GDS_DIRECT_HHMCO'),
-		};
-	};
+	let getAgent = () => Agent(emcUser);
 
 	return {
 		runCmd: runCmd,
@@ -218,7 +178,9 @@ let StatefulSession = async ({session, whenCmdRqId}) => {
 				agentId: session.context.agentId,
 			});
 		},
-		handleFsUsage: () => {},
+		handleFsUsage: () => Db.with(db => db.writeRows('counted_fs_usages', [{
+			agent_id: emcUser.id, dt: new Date().toISOString(),
+		}])),
 		getSessionData: getSessionData,
 		getLeadData: () => ({
 			leadId: session.context.travelRequestId,

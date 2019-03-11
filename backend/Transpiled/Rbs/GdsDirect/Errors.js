@@ -148,8 +148,8 @@ class Errors
                 'pattern': 'You exhausted your GDS Direct usage limit for today',
             },
             [this.FS_LIMIT_EXHAUSTED]: {
-                'pattern': 'You exhausted your GDS Direct usage limit ({totalAllowed} entries) for 24 hours.',
-                'sampleData': {'totalAllowed': 2000},
+                'pattern': 'You exhausted your GDS Direct usage limit ({totalAllowed} entries) for 24 hours ({callsUsed} used, earliest: {minDt}Z).',
+                'sampleData': {'totalAllowed': 2000, 'callsUsed': 3142, 'minDt': '2018-12-13 20:13:48.012'},
             },
         };
     }

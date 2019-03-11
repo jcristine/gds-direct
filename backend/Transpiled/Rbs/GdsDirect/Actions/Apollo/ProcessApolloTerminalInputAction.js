@@ -379,13 +379,13 @@ class ProcessApolloTerminalInputAction {
 		return $cmd;
 	}
 
-	makeCmdMessages($cmd, $output) {
+	async makeCmdMessages($cmd, $output) {
 		let $userMessages, $type, $agent, $left, $fsLeftMsg;
 		$userMessages = [];
 		$type = CommandParser.parse($cmd)['type'];
 		if (php.in_array($type, CommonDataHelper.getCountedFsCommands())) {
 			$agent = this.getAgent();
-			$left = $agent.getFsLimit() - $agent.getFsCallsUsed();
+			$left = $agent.getFsLimit() - await $agent.getFsCallsUsed();
 			$fsLeftMsg = $left + ' FS COMMANDS REMAINED';
 			$userMessages.push($fsLeftMsg);
 		}
@@ -661,7 +661,7 @@ class ProcessApolloTerminalInputAction {
 	}
 
 	async checkIsForbidden($cmd) {
-		let $errors, $parsedCmd, $flatCmds, $type, $agent, $isQueueCmd, $totalAllowed, $pnr, $canChange, $remark,
+		let $errors, $parsedCmd, $flatCmds, $type, $agent, $isQueueCmd, $pnr, $canChange, $remark,
 			$pnrCreationPcc, $currentPcc, $flatCmd;
 		$errors = [];
 		$parsedCmd = CommandParser.parse($cmd);
@@ -676,11 +676,14 @@ class ProcessApolloTerminalInputAction {
 				$errors.push(Errors.getMessage(Errors.CMD_FORBIDDEN, {'cmd': $cmd, 'type': $type}));
 			}
 		} else if (php.in_array($type, CommonDataHelper.getCountedFsCommands())) {
-			$totalAllowed = $agent.getFsLimit();
-			if (!$totalAllowed) {
+			let totalAllowed = $agent.getFsLimit();
+			if (!totalAllowed) {
 				$errors.push(Errors.getMessage(Errors.CMD_FORBIDDEN, {'cmd': $cmd, 'type': $type}));
-			} else if ($agent.getFsCallsUsed() >= $totalAllowed) {
-				$errors.push(Errors.getMessage(Errors.FS_LIMIT_EXHAUSTED, {'totalAllowed': $totalAllowed}));
+			} else {
+				let {cnt, minDt} = await $agent.getFsCallsUsedRec();
+				if (cnt >= totalAllowed) {
+					$errors.push(Errors.getMessage(Errors.FS_LIMIT_EXHAUSTED, {totalAllowed, callsUsed: cnt, minDt}));
+				}
 			}
 		} else if ($isQueueCmd && !php.in_array($type, ['movePnrToQueue', 'qmdr'])) {
 			if (!$agent.canProcessQueues()) {
@@ -1315,7 +1318,7 @@ class ProcessApolloTerminalInputAction {
 		}
 		$calledCommands = php.array_merge($calledCommands, await this.callImplicitCommandsBefore($cmd));
 		$cmdRecord = await this.runCmd($cmd, $fetchAll);
-		$userMessages = this.makeCmdMessages($cmd, $cmdRecord.output);
+		$userMessages = await this.makeCmdMessages($cmd, $cmdRecord.output);
 		return this.callImplicitCommandsAfter($cmdRecord, $calledCommands, $userMessages);
 	}
 

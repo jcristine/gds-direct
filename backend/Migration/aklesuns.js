@@ -307,7 +307,7 @@ module.exports.migrations = [
 	{
 		name: 'GRECT/2019.03.08008-create-terminal-sessions-table',
 		perform: (db) => db.query([
-		"CREATE TABLE `terminal_sessions` (",
+			"CREATE TABLE `terminal_sessions` (",
 			"  `id` int(11) NOT NULL AUTO_INCREMENT,",
 			"  `gds` varchar(10) NOT NULL,",
 			"  `created_dt` datetime NOT NULL,",
@@ -318,6 +318,14 @@ module.exports.migrations = [
 			"  KEY `gds` (`gds`),",
 			"  KEY `agent_id` (`agent_id`)",
 			") ENGINE=InnoDB CHARSET=utf8",
+		].join('\n')),
+	},
+	{
+		name: 'GRECT/2019.03.08008-add-dt-to-session-table-agent-index',
+		perform: (db) => db.query([
+			"ALTER TABLE terminal_sessions DROP INDEX agent_id,",
+			"ADD COLUMN closed_dt DATETIME DEFAULT NULL,",
+			"ADD INDEX closed_dt_agent_id (closed_dt, agent_id)",
 		].join('\n')),
 	},
 	{
@@ -365,6 +373,16 @@ module.exports.migrations = [
 			'  KEY `agentId_requestId` (`agentId`, `requestId`),',
 			'  KEY `sessionId` (`sessionId`)',
 			') ENGINE=InnoDB CHARSET=utf8',
+		].join('\n')),
+	},
+	{
+		name: 'GRECT/2019.03.08008-create-counted-fs-usages',
+		perform: (db) => db.query([
+			"CREATE TABLE `counted_fs_usages` (",
+			"  `agent_id` int(11) NOT NULL,",
+			"  `dt` datetime NOT NULL,",
+			"  KEY `agent_date` (`agent_id`,`dt`)",
+			") ENGINE=InnoDB CHARSET=utf8",
 		].join('\n')),
 	},
 ];

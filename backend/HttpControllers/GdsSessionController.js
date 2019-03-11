@@ -181,8 +181,8 @@ let getItinerary = async (stateful) => {
  *
  * slow, so it's just a temporary solution till I re-implement importPq here
  */
-let withRbsPqCopy = async (session, action) => {
-	let stateful = await StatefulSession({session});
+let withRbsPqCopy = async (session, emcUser, action) => {
+	let stateful = await StatefulSession({session, emcUser});
 	let full = stateful.getFullState();
 	let areaState = full.areas[full.area] || {};
 	let pricingCmd = areaState.pricing_cmd;
@@ -220,7 +220,7 @@ exports.getPqItinerary = (reqBody) =>
 	GdsSessions.getByContext(reqBody).then(session =>
 		reqBody.useRbs
 			? RbsClient(reqBody).getPqItinerary(session.gdsData)
-			: withRbsPqCopy(session, ({rbsSessionId}) =>
+			: withRbsPqCopy(session, reqBody.emcUser, ({rbsSessionId}) =>
 				RbsClient(reqBody).getPqItinerary({rbsSessionId,
 					leadId: reqBody.pqTravelRequestId || reqBody.travelRequestId,
 				})
@@ -231,7 +231,7 @@ exports.importPq = (reqBody) =>
 	GdsSessions.getByContext(reqBody).then(session =>
 		reqBody.useRbs
 			? RbsClient(reqBody).importPq(session.gdsData)
-			: withRbsPqCopy(session, ({rbsSessionId}) =>
+			: withRbsPqCopy(session, reqBody.emcUser, ({rbsSessionId}) =>
 				RbsClient(reqBody).importPq({rbsSessionId,
 					leadId: reqBody.pqTravelRequestId || reqBody.travelRequestId,
 				})
@@ -265,19 +265,20 @@ exports.makeMco = async (reqBody) => {
 		});
 };
 
-// TODO: use terminal.keepAlive so that RBS logs were not trashed with these MD0-s
-let makeKeepAliveParams = (context) => ({
-	agentId: context.agentId,
-	useRbs: +context.useRbs ? true : false,
-	gds: context.gds,
-	travelRequestId: context.travelRequestId,
-	command: 'MD0',
-	language: 'apollo',
-});
+let keepAliveByGds = (gds, gdsData) => {
+	if (['galileo', 'apollo'].includes(gds)) {
+		return TravelportClient({command: 'MD0'}).runCmd(gdsData)
+			.then(result => ({message: 'Success - ' + result.output}));
+	} else {
+		// no keepAlive is needed in other GDS, since their
+		// sessions live for 15-30 minutes themselves
+		return Promise.resolve({message: 'Success by default'});
+	}
+};
 
-let keepAliveSession = (session) => {
-	let rqBody = makeKeepAliveParams(session.context);
-	return runInSession(session, rqBody).then(result => {
+let keepAliveSession = async (session) => {
+	let keeping = keepAliveByGds(session.context.gds, session.gdsData);
+	return keeping.then(result => {
 		logit('INFO: keepAlive result:', session.logId, result);
 		return result;
 	});

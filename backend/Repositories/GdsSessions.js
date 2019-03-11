@@ -163,6 +163,9 @@ exports.remove = (session) => {
 		client.hdel(keys.SESSION_TO_RECORD, session.id),
 		client.hdel(keys.SESSION_TO_STATE, session.id),
 		client.zrem(keys.SESSION_ACTIVES, session.id),
+		Db.with(db => db.writeRows(TABLE, [{
+			id: session.id, closed_dt: new Date().toISOString(),
+		}])),
 	]);
 };
 

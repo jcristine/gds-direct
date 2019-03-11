@@ -71,6 +71,7 @@ let toHandleHttp = (action, logger = null) => (req, res) => {
 		});
 };
 
+/** @param {{data: IEmcResult}} emcData */
 let normalizeRqBody = (rqBody, emcData, logId) => {
 	return {
 		emcUser: emcData.data.user,
