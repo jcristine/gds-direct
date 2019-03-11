@@ -1,9 +1,9 @@
 
 let express = require('express');
-let UserController = require('./UserController.js');
-let CompletionData = require('./CompletionData.js');
+let UserController = require('./HttpControllers/UserController.js');
+let CompletionData = require('./HttpControllers/CompletionData.js');
 let Emc = require('./LibWrappers/Emc.js');
-let GdsSessionController = require('./GdsSessionController.js');
+let GdsSessionController = require('./HttpControllers/GdsSessionController.js');
 let TerminalBaseController = require('./Transpiled/App/Controllers/TerminalBaseController.js');
 let {hrtimeToDecimal} = require('./Utils/Misc.js');
 let {Forbidden} = require('./Utils/Rej.js');

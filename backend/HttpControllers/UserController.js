@@ -1,8 +1,8 @@
-let MultiLevelMap = require('./Utils/MultiLevelMap.js');
-let Db = require('./Utils/Db.js');
-let TerminalSettings = require('./Transpiled/App/Models/Terminal/TerminalSettings.js');
-const GdsSessions = require("./Repositories/GdsSessions");
-let {admins} = require('./Constants.js');
+let MultiLevelMap = require('../Utils/MultiLevelMap.js');
+let Db = require('../Utils/Db.js');
+let TerminalSettings = require('../Transpiled/App/Models/Terminal/TerminalSettings.js');
+const GdsSessions = require("../Repositories/GdsSessions");
+let {admins} = require('../Constants.js');
 
 let getCommandBufferRows = (reqBody, emcResult) =>
     Db.with(db => db.fetchAll({

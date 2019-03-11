@@ -1,5 +1,5 @@
 
-let GdsSessionController = require('./../GdsSessionController.js');
+let GdsSessionController = require('../HttpControllers/GdsSessionController.js');
 let GdsSessions = require('./../Repositories/GdsSessions.js');
 let FluentLogger = require('./../LibWrappers/FluentLogger.js');
 let {NoContent, LoginTimeOut} = require('./../Utils/Rej.js');
