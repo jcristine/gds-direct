@@ -48,8 +48,8 @@ app.use('/public', (rq, rs, next) => {
 app.use('/public', express.static(__dirname + '/../public'));
 
 app.get('/gdsDirect/view', withAuth(UserController.getView));
-app.get('/autoComplete', (req, res) => {
-	res.send(JSON.stringify(CompletionData.getData(req)));
+app.get('/autoComplete', async (req, res) => {
+	res.send(JSON.stringify(await CompletionData.getData(req)));
 });
 
 /**

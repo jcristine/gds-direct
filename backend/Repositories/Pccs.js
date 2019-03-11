@@ -77,3 +77,14 @@ exports.getGdsByPcc = async (pcc) => {
 		return Conflict('Ambiguous PCC ' + pcc + ' belongs multiple GDS-es: ' + [...gdses].join(', '));
 	}
 };
+
+exports.getAll = async () => {
+	let rows = await Db.with(db => db.fetchAll({
+		table: TABLE,
+	}));
+	return rows.map(r => {
+		/** @var typed = normalizeRow() */
+		let typed = r;
+		return typed;
+	});
+};
