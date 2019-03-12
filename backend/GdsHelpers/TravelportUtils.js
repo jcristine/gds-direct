@@ -1,4 +1,3 @@
-
 const hrtimeToDecimal = require("../Utils/Misc").hrtimeToDecimal;
 
 /**
@@ -8,9 +7,9 @@ const hrtimeToDecimal = require("../Utils/Misc").hrtimeToDecimal;
 
 let extractPager = (text) => {
 	let [_, clean, pager] =
-		text.match(/([\s\S]*)(\)\>\<)$/) ||
-		text.match(/([\s\S]*)(\>\<)$/) ||
-		[null, text, null];
+	text.match(/([\s\S]*)(\)\>\<)$/) ||
+	text.match(/([\s\S]*)(\>\<)$/) ||
+	[null, text, null];
 	return [clean, pager];
 };
 
@@ -21,7 +20,7 @@ let extractPager = (text) => {
  * note that if shouldStop returns Promise.reject(), then
  * fetchUntil() will be interrupted with this rejection
  */
-let fetchUntil =  async (nextCmd, session, shouldStop) => {
+let fetchUntil = async (nextCmd, session, shouldStop) => {
 	let finalResult = null;
 	while (nextCmd) {
 		let cmdRec = (await session.runCmd(nextCmd));
@@ -46,6 +45,11 @@ exports.fetchAll = async (nextCmd, session) => {
 	let hrtimeStart = process.hrtime();
 	await fetchUntil(nextCmd, session, (cmdRec) => {
 		fullCmdRec = fullCmdRec || cmdRec;
+		if (pages.length > 0 && pages.slice(-1)[0].output === fullCmdRec.output) {
+			// Galileo has bugs that cause it to
+			// show )>< instead of >< sometimes
+			return true;
+		}
 		pages.push(cmdRec.output);
 	});
 	let hrtimeDiff = process.hrtime(hrtimeStart);
