@@ -81,7 +81,7 @@ let StatefulSession = async ({session, whenCmdRqId, emcUser}) => {
 
 		getLog: () => cmdLog,
 		getStartDt: () => startDt,
-		getAreaRows: () => cmdLog.getFullState.areas,
+		getAreaRows: () => cmdLog.getFullState().areas,
 		flushCalledCommands: () => calledCommands.splice(0),
 		handlePnrSave: (recordLocator) => {
 			RbsClient.reportCreatedPnr({
