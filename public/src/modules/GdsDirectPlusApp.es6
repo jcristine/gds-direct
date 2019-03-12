@@ -197,8 +197,14 @@ export default class GdsDirectPlusApp
 
 		const rRows = rows + 1;
 
-		const height		= Math.floor(this.container.context.clientHeight / rRows); // - (BORDER_SIZE * rRows) );
-		const width 		= Math.floor((this.container.context.clientWidth - this.getOffset()) / (cells + (hasWide ? 2 : 1) ) );
+		let appHeight = this.container.context.clientHeight;
+		let appWidth = this.container.context.clientWidth;
+
+		appHeight = Math.max(appHeight, 600);
+		appHeight = Math.min(appHeight, 1080);
+
+		const height		= Math.floor(appHeight / rRows); // - (BORDER_SIZE * rRows) );
+		const width 		= Math.floor((appWidth - this.getOffset()) / (cells + (hasWide ? 2 : 1) ) );
 
 		const numOf = {
 			numOfRows 	: Math.floor( (height - BORDER_SIZE)	/ char.height ),
