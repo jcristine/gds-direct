@@ -1,6 +1,6 @@
 import Component from "../../modules/component";
 
-export default class AreaSelect extends Component{
+export default class PccSelect extends Component{
     constructor({defaultPcc, pccs, disabled})
     {
         super('select.form-control default-pcc', {style : 'z-index: 9999'});

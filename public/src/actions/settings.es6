@@ -80,7 +80,12 @@ export const CHANGE_ACTIVE_TERMINAL = ({curTerminalId}) => {
 export const CHANGE_SESSION_BY_MENU = area => {
 	getters('area', area);
 
-	const command = (getStore().app.Gds.isApollo() ? 'S': '¤') + area;
+	const command = {
+		apollo: 'S' + area,
+		galileo: 'S' + area,
+		sabre: '¤' + area,
+		amadeus: 'JM' + area,
+	}[getStore().app.Gds.name];
 	return getStore().app.Gds.runCommand([command])
 };
 
