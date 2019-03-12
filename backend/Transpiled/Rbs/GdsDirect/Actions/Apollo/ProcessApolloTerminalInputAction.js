@@ -360,14 +360,15 @@ class ProcessApolloTerminalInputAction {
 	}
 
 	async preprocessCommand($cmd) {
-		let $parsed, $lastCmdRec;
+		let $parsed;
 		$parsed = CommandParser.parse($cmd);
 		if ($cmd === 'MD') {
-			$lastCmdRec = await this.getScrolledCmdRow();
-			if ($lastCmdRec && $lastCmdRec['type'] === 'operationalInfo') {
+			let scrolledCmd = await this.getScrolledCmd();
+			let scrolledType = !scrolledCmd ? null : CommandParser.parse(scrolledCmd).type;
+			if (scrolledType === 'operationalInfo') {
 				// "F:" shows output from airline's GDS and MR does not work there
 				$cmd = 'MD';
-			} else if ($lastCmdRec && StringUtil.startsWith($lastCmdRec['cmd'], 'TI')) {
+			} else if (scrolledCmd && StringUtil.startsWith(scrolledCmd, 'TI')) {
 				// timatic screen uses TIPN instead of MD
 				$cmd = 'TIPN';
 			} else {
@@ -396,8 +397,7 @@ class ProcessApolloTerminalInputAction {
 		$calledCommand = {...$calledCommand};
 		let $scrolledCmdRow, $scrolledCmd, $cmdParsed, $type, $output, $lines, $isSafe, $alias, $decrease, $clean, $pcc,
 			$isOk;
-		$scrolledCmdRow = await this.getScrolledCmdRow();
-		$scrolledCmd = ($scrolledCmdRow || {})['cmd'] || $calledCommand['cmd'];
+		$scrolledCmd = await this.getScrolledCmd() || $calledCommand['cmd'];
 		$cmdParsed = CommandParser.parse($scrolledCmd);
 		$type = $cmdParsed['type'] || null;
 		if (php.in_array($type, ['searchPnr', 'displayPnrFromList']) &&
@@ -408,6 +408,7 @@ class ProcessApolloTerminalInputAction {
 			$isSafe = ($line) => !StringUtil.contains($line, 'WEINSTEIN\/ALEX');
 			$calledCommand['output'] = php.implode(php.PHP_EOL, Fp.filter($isSafe, $lines));
 		}
+		// TODO: there is no cmd_requested anymore
 		$alias = this.constructor.parseAlias(($scrolledCmdRow || {})['cmd_requested'] || '');
 		if ($alias['type'] === 'fareSearchWithDecrease') {
 			$decrease = $alias['data'] || null;
@@ -597,13 +598,10 @@ class ProcessApolloTerminalInputAction {
 		return $errors;
 	}
 
-	/** @return array|null - the command we are currently scrolling
+	/** @return Promise<string> - the command we are currently scrolling
 	 * (last command that was not one of MD, MU, MT, MB */
-	async getScrolledCmdRow() {
-		let $navCmdTypes, $lastCmds;
-		$navCmdTypes = SessionStateProcessor.mrCmdTypes;
-		$lastCmds = await this.stateful.getLog().getLastCommandsOfTypes($navCmdTypes);
-		return ArrayUtil.getFirst($lastCmds);
+	getScrolledCmd() {
+		return this.stateful.getSessionData().scrolledCmd;
 	}
 
 	async getCurrentPnr() {
@@ -801,7 +799,8 @@ class ProcessApolloTerminalInputAction {
 				$errors.push(Errors.getMessage(Errors.REBUILD_FALLBACK_TO_GK, {'segNums': php.implode(',', $failedSegNums)}));
 			}
 			this.stateful.flushCalledCommands();
-			$sortResult = await this.processSortItinerary();
+			$sortResult = await this.processSortItinerary()
+				.catch(exc => ({errors: ['Did not SORT' + exc]}));
 			if (!php.empty($sortResult['errors'])) {
 				return {'calledCommands': this.stateful.flushCalledCommands(), 'errors': $errors};
 			} else {
@@ -1073,46 +1072,17 @@ class ProcessApolloTerminalInputAction {
 		return {'calledCommands': [$cmdRecord]};
 	}
 
-	async _getSegUtc($seg) {
-		let $geoProvider = this.stateful.getGeoProvider();
-		let fullDt = DateTime.decodeRelativeDateInFuture(
-			$seg.departureDate.parsed, new Date().toISOString()
-		) + ' ' + $seg.departureTime.parsed + ':00';
-		let tz = await $geoProvider.getTimezone($seg.departureAirport);
-		if (tz) {
-			return DateTime.toUtc(fullDt, tz);
-		} else {
-			return null;
-		}
-	}
-
 	async processSortItinerary() {
-		let $pnr, $pnrDump, $itinerary, $calledCommands, $sorted,
+		let $pnr, $pnrDump, $calledCommands,
 			$cmd;
+
 		$pnr = await this.getCurrentPnr();
 		$pnrDump = $pnr.getDump();
-		if (!CommonDataHelper.isValidPnr($pnr)) {
-			return {'errors': ['No itinerary to sort']};
-		}
-		$itinerary = $pnr.getItinerary();
-
-		let promises = $itinerary.map(async seg => {
-			let utc = await this._getSegUtc(seg);
-			return utc
-				? Promise.resolve({utc, seg})
-				: NotImplemented('No tz for seg ' + seg.segmentNumber + ' ' + seg.departureAirport);
-		});
-		let utcRecords = await Promise.all(promises);
+		let {itinerary} = await CommonDataHelper.sortSegmentsByUtc($pnr, this.stateful.getGeoProvider());
 
 		$calledCommands = [];
-		$sorted = Fp.sortBy(r => r.utc, utcRecords).map(r => r.seg);
-		if (!php.equals($sorted, $itinerary)) {
-			$cmd = /0/ + php.implode('|', Fp.map(s => s.segmentNumber, $sorted));
-			$calledCommands.push(await this.runCmd($cmd));
-		}
-		if (php.empty($calledCommands)) {
-			$calledCommands.push({'cmd': '*R', 'output': $pnrDump});
-		}
+		$cmd = '/0/' + itinerary.map(s => s.segmentNumber).join('|');
+		$calledCommands.push(await this.runCmd($cmd));
 		return {'calledCommands': $calledCommands};
 	}
 

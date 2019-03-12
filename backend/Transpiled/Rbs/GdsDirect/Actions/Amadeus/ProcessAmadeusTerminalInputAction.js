@@ -281,48 +281,18 @@ class ProcessAmadeusTerminalInputAction {
 		return {'calledCommands': $calledCommands};
 	}
 
-	async _getSegUtc($seg) {
-		let $geoProvider = this.stateful.getGeoProvider();
-		let fullDt = DateTime.decodeRelativeDateInFuture(
-			$seg.departureDate.parsed, new Date().toISOString()
-		) + ' ' + $seg.departureTime.parsed + ':00';
-		let tz = await $geoProvider.getTimezone($seg.departureAirport);
-		if (tz) {
-			return DateTime.toUtc(fullDt, tz);
-		} else {
-			return null;
-		}
-	}
-
 	async processSortItinerary() {
-		let $pnr, $pnrDump, $itinerary, $geoProvider, $getUtcTime, $times, $noTz, $moves, $makeMoveCmd, $commands,
+		let $pnr, $pnrDump,
 			$calledCommands, $cmd;
 
 		$pnr = await this.getCurrentPnr();
 		$pnrDump = $pnr.getDump();
-		if (!CommonDataHelper.isValidPnr($pnr)) {
-			return {'errors': ['No itinerary to sort']};
-		}
-		$itinerary = $pnr.getItinerary();
-
-		let promises = $itinerary.map(async seg => {
-			let utc = await this._getSegUtc(seg);
-			return utc
-				? Promise.resolve({utc, seg})
-				: Promise.reject('No tz for seg ' + seg.segmentNumber + ' ' + seg.departureAirport);
-		});
-		let utcRecords = await Promise.all(promises);
+		let {itinerary} = await CommonDataHelper.sortSegmentsByUtc($pnr, this.stateful.getGeoProvider());
 
 		$calledCommands = [];
-		let $sorted = Fp.sortBy(r => r.utc, utcRecords).map(r => r.seg);
-		if (!php.equals($sorted, $itinerary)) {
-			$cmd = 'RS' + php.implode(',', Fp.map(s => s.segmentNumber, $sorted));
-			let output = await this.runCommand($cmd);
-			$calledCommands.push({cmd: $cmd, output});
-		}
-		if (php.empty($calledCommands)) {
-			$calledCommands.push({'cmd': '*R', 'output': $pnrDump});
-		}
+		$cmd = 'RS' + itinerary.map(s => s.segmentNumber).join(',');
+		let output = await this.runCommand($cmd);
+		$calledCommands.push({cmd: $cmd, output});
 		return {'calledCommands': $calledCommands};
 	}
 
