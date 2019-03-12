@@ -17,7 +17,7 @@ const makeRule		= (rule, key, isPattern = '') => {
 
 	if (isInteract)
 	{
-		searchIndex = `replace_${key}_${isPattern.replace('*', '')}`;
+		searchIndex = `replace_${key}_${isPattern.replace('*', '').replace(/ /g, '_').replace(/@/g, 'at')}`;
 		tips = {...tips, [searchIndex] : rule};
 	}
 
@@ -172,8 +172,14 @@ export const replaceInTerminal = ($div, tips) => {
 	};
 
 	Object.keys(tips).map(key => {
-		[...$div[0].querySelectorAll('.' + key)]
-			.forEach(findSpan(key));
+		try {
+			[...$div[0].querySelectorAll('.' + key)]
+				.forEach(findSpan(key));
+		} catch (exc) {
+			// sometimes matched text may contain "@" character and, which is not a valid selector
+			// example: '.replace_0_1 MNL HKG 0525 0740 @KA5'
+			console.error('Failed to highlight key: ' + key, exc);
+		}
 	});
 
 	// $().terminal() re-renders content on focus change leaving broken tether
