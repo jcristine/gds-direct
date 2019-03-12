@@ -18,7 +18,10 @@ const initGlobEvents = () => {
 		// 	clearInterval(resizeTimeout);
 		// }
 
-		getStore().updateView();
+		let store = getStore();
+		if (store) {
+			store.updateView();
+		}
 		// resizeTimeout = setTimeout( () => getStore().updateView(), 0 );
 	};
 };
