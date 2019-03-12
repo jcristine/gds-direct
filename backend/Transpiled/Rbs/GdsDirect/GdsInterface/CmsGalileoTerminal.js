@@ -116,7 +116,7 @@ class CmsGalileoTerminal {
 		return php.trim(php.strtoupper($cmd));
 	}
 
-	_trimScrollingIndicator($resp) {
+	static trimScrollingIndicator($resp) {
 		if (php.substr($resp, -6) == '>TIPN<') {
 			return php.substr($resp, 0, -6);
 		} else if (php.substr($resp, -3) == ')><') {
@@ -136,7 +136,7 @@ class CmsGalileoTerminal {
 		}
 		$dumpPrev = $dump;
 
-		$dump = this._trimScrollingIndicator($dump);
+		$dump = this.constructor.trimScrollingIndicator($dump);
 		if (this.constructor.isScrollingAvailable($dumpPrev)) {
 			$dump += '\u2514\u2500>';
 		}
