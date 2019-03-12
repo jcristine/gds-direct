@@ -94,6 +94,15 @@
 }
 
 .terminal-wrap-custom {
+	/* reset global changes to pre caused by bootstrap 3.3.7 */
+	.terminal .terminal-output pre {
+		border: none;
+		padding: 0px;
+		/* repeating jquery.terminal style */
+		font-size: calc(var(--size, 1) * 12px);
+		line-height: calc(var(--size, 1) * 14px);
+	}
+
 	@import "../buttons.less";
 	@import "../pqQuotes.less";
 	@import "../helpers.less";

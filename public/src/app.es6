@@ -68,6 +68,7 @@ let initThemeStyles = (responseData, htmlRootDom) => {
 					props.push(k1 + ':' + v1 + ';');
 				}
 				cssLines.push(prefix + ' .' + className + ' { ' + props.join(' ') + ' }');
+				cssLines.push(prefix + ' .' + className + ' pre { ' + props.join(' ') + ' }');
 			}
 		}
 		for (let cls in row.colorsParsed) {
@@ -78,6 +79,7 @@ let initThemeStyles = (responseData, htmlRootDom) => {
 				props.push(k1 + ':' + v1 + ';');
 			}
 			cssLines.push(prefix + ' .' + cls + ' { ' + props.join(' ') + ' }');
+			cssLines.push(prefix + ' .' + cls + ' pre { ' + props.join(' ') + ' }');
 		}
 	}
 	addCss(cssLines.join('\n'), htmlRootDom);
