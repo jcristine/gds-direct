@@ -20,6 +20,8 @@ const TerminalService = require('../Transpiled/App/Services/TerminalService.js')
 const TerminalBuffering = require("../Repositories/CmdRqLog");
 const ProcessAmadeusTerminalInputAction = require("../Transpiled/Rbs/GdsDirect/Actions/Amadeus/ProcessAmadeusTerminalInputAction");
 const Agents = require("../Repositories/Agents");
+const ProcessGalileoTerminalInputAction = require("../Transpiled/Rbs/GdsDirect/Actions/Galileo/ProcessGalileoTerminalInputAction");
+const NotImplemented = require("../Utils/Rej").NotImplemented;
 
 // this is not complete list
 let shouldWrap = (cmd) => {
@@ -50,58 +52,6 @@ let encodeTpOutputForCms = ($dump) => {
 	$dump = $dump.replace(/\n?\)><$/, '\n└─>');
 	$dump = $dump.replace(/><$/, '');
 	return $dump;
-};
-
-/** @param segment = ItineraryParser.parseSegmentLine() */
-let makeSellCmd = (segment) => {
-	return [
-		'0',
-		segment.airline,
-		segment.flightNumber,
-		segment.bookingClass,
-		segment.departureDate.raw,
-		segment.departureAirport,
-		segment.destinationAirport,
-		segment.segmentStatus,
-		segment.seatCount,
-	].join('');
-};
-
-let parseCmdAsItinerary = (dump) => {
-	try {
-		let parsed = ItineraryParser.parse(dump);
-		if (parsed.segments.length > 0) {
-			console.log('parsed itinerary', {dump, parsed});
-			return {
-				bulkCmds: parsed.segments.map(makeSellCmd),
-			};
-		}
-	} catch (exc) {
-		// should not happen, but who knows...
-	}
-	return null;
-};
-
-let parseAlias = (cmd) => {
-	let type = null, data = null, fetchAll = false, realCmd = '';
-
-	if (cmd.endsWith('/MDA')) {
-		realCmd = cmd.slice(0, -4);
-		fetchAll = true;
-	} else if (cmd === 'MDA') {
-		realCmd = 'MD';
-		fetchAll = true;
-	} else if (data = parseCmdAsItinerary(cmd)) {
-		type = 'itinerary';
-	} else {
-		realCmd = cmd;
-	}
-	return {
-		realCmd: realCmd,
-		fetchAll: fetchAll,
-		data: data,
-		type: type,
-	};
 };
 
 let makeRbsResult = (calledCommands, fullState) => {
@@ -187,39 +137,23 @@ let transformCalledCommand = (rec, stateful) => {
 };
 
 let runCmdRq =  async (inputCmd, stateful) => {
+	let gdsResult;
 	if (stateful.gds === 'apollo') {
-		let gdsResult = await (new ProcessApolloTerminalInputAction(stateful).execute(inputCmd));
-		let grectResult = makeRbsResult(gdsResult.calledCommands, stateful.getFullState());
-		grectResult.status = gdsResult.status;
-		grectResult.messages = (gdsResult.userMessages || []).map(msg => ({type: 'error', text: msg}));
-		grectResult.actions = gdsResult.actions || [];
-		return grectResult;
+		gdsResult = await (new ProcessApolloTerminalInputAction(stateful).execute(inputCmd));
 	} else if (stateful.gds === 'sabre') {
-		let gdsResult = await (new ProcessSabreTerminalInputAction(stateful).execute(inputCmd));
-		let grectResult = makeRbsResult(gdsResult.calledCommands, stateful.getFullState());
-		grectResult.status = gdsResult.status;
-		grectResult.messages = (gdsResult.userMessages || []).map(msg => ({type: 'error', text: msg}));
-		grectResult.actions = gdsResult.actions || [];
-		return grectResult;
+		gdsResult = await (new ProcessSabreTerminalInputAction(stateful).execute(inputCmd));
 	} else if (stateful.gds === 'amadeus') {
-		let gdsResult = await (new ProcessAmadeusTerminalInputAction(stateful).execute(inputCmd));
-		let grectResult = makeRbsResult(gdsResult.calledCommands, stateful.getFullState());
-		grectResult.status = gdsResult.status;
-		grectResult.messages = (gdsResult.userMessages || []).map(msg => ({type: 'error', text: msg}));
-		grectResult.actions = gdsResult.actions || [];
-		return grectResult;
+		gdsResult = await (new ProcessAmadeusTerminalInputAction(stateful).execute(inputCmd));
+	} else if (stateful.gds === 'galileo') {
+		gdsResult = await (new ProcessGalileoTerminalInputAction(stateful).execute(inputCmd));
 	} else {
-		let {realCmd: cmd, fetchAll, type, data} = parseAlias(inputCmd);
-		let cmdsLeft = (data ? data.bulkCmds : null) || [cmd];
-		let calledCommands = [];
-		for (let cmd of cmdsLeft) {
-			let cmdRec = fetchAll
-				? await fetchAll(cmd, stateful)
-				: (await stateful.runCmd(cmd));
-			calledCommands.push(cmdRec);
-		}
-		return makeRbsResult(calledCommands, stateful.getFullState());
+		return NotImplemented('Unsupported GDS for runCmdRq() - ' + stateful.gds);
 	}
+	let rbsResult = makeRbsResult(gdsResult.calledCommands, stateful.getFullState());
+	rbsResult.status = gdsResult.status;
+	rbsResult.messages = (gdsResult.userMessages || []).map(msg => ({type: 'error', text: msg}));
+	rbsResult.actions = gdsResult.actions || [];
+	return rbsResult;
 };
 
 let translateCmd = (fromGds, toGds, inputCmd) => {
