@@ -1502,22 +1502,15 @@
     .pull-none-xs{float: none !important;}
     .hidden-xs.show{display: inherit !important;}
   }
-}
 
+  /* Select2 styles */
+  @import "plugins/select2.less";
+  @import "plugins/select2-bootstrap.less";
+  @import "reset/select2-bootstrap.less";
 
-/*@import "app/app.less";*/
-/*@import "app/app.nav.less";*/
+  @import "plugins/autocomplete.less";
 
-/*@import "plugins/fuelux/checkbox.less";*/
-
-/* Select2 styles */
-@import "plugins/select2.less";
-@import "plugins/select2-bootstrap.less";
-@import "reset/select2-bootstrap.less";
-
-@import "plugins/autocomplete.less";
-
-
-select.input-sm {
-	padding: 4px 10px;
+  select.input-sm {
+  	padding: 4px 10px;
+  }
 }
