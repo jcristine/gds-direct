@@ -1,6 +1,7 @@
 
 let Db = require('../Utils/Db.js');
 const CommonDataHelper = require("../Transpiled/Rbs/GdsDirect/CommonDataHelper");
+const nonEmpty = require("../Utils/Rej").nonEmpty;
 
 let TABLE = 'terminal_command_log';
 
@@ -25,7 +26,10 @@ let storeNew = (cmdRec, session, cmdRqId, prevState) => {
         is_pnr_stored: prevState.is_pnr_stored,
         output: cmdRec.output,
     };
-    return Db.with(db => db.writeRows(TABLE, [row]));
+    return Db.with(db => db.writeRows(TABLE, [row]))
+		.then(inserted => inserted.insertId)
+		.then(nonEmpty('Failed to store >' + cmdRec.cmd + '; cmd to DB and get id'))
+		.then(id => ({id, ...row}));
 };
 
 /**

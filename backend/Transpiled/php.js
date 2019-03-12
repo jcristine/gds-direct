@@ -549,6 +549,9 @@ php.array_splice = (arr, start, length = undefined) => {
 };
 php.array_slice = (arr, start, length = undefined) => {
 	arr = Object.values(arr);
+	if (start < 0) {
+		start = arr.length + start;
+	}
 	length = length === undefined ? arr.length : length;
 	return arr.slice(start, start + length);
 };
