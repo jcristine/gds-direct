@@ -50,20 +50,17 @@ class GalileoPnrCommonFormatAdapter
             'pnrInfo': $pnrInfo,
             'passengers': $parsed['passengers']['passengerList'],
             'itinerary': $itinerary,
-            'confirmationNumbers': Fp.map(($rec) => {
-
-                return {
-                    'airline': $rec['airline'],
-                    'confirmationNumber': $rec['recordLocator'],
-                    'segmentNumber': null,
-                    'date': {
-                        'raw': $rec['date']['raw'],
-                        'parsed': $rec['date']['parsed'],
-                        'full': $pnrInfo ? DateTime.decodeRelativeDateInFuture($rec['date']['parsed'],
-                            $pnrInfo['reservationDate']['full']) : null,
-                    },
-                };
-            }, php.array_filter($parsed['vlocData'] || [])),
+            'confirmationNumbers': Fp.map(($rec) => ({
+				'airline': $rec['airline'],
+				'confirmationNumber': $rec['recordLocator'],
+				'segmentNumber': null,
+				'date': {
+					'raw': $rec['date']['raw'],
+					'parsed': $rec['date']['parsed'],
+					'full': $pnrInfo ? DateTime.decodeRelativeDateInFuture($rec['date']['parsed'],
+						$pnrInfo['reservationDate']['full']) : null,
+				},
+			}), php.array_filter($parsed['vlocData'] || [])),
             'dataExistsInfo': {
                 'dividedBookingExists': $parsed['dataExistsInfo']['dividedBookingExists'],
                 'mileageProgramsExist': $parsed['dataExistsInfo']['membershipDataExists'],

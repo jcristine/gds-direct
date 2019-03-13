@@ -182,7 +182,7 @@ class PricingParser
                     $text = php.implode(php.PHP_EOL, $lines);
                     $structureWriter.unparsedInfoLineFound($line);
                 } else {
-                    throw new Error($text);
+                    throw new Error('No text left at state ' + $state);
                 }
             } else if ($state == ParserState.BAGGAGE_ALLOWANCE_START_LINE_FOUND) {
                 if ($res = NextToken.matchPassengerTypeCodeLine($text)) {

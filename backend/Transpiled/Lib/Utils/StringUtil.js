@@ -23,7 +23,7 @@ class StringUtil
                 $letters[$markerChar] = php.mb_substr($str, $position, 1);
             }
             ++$position;}
-        $result = [];
+        $result = {};
         for ([$markerChar, $name] of Object.entries($names)) {
             $result[$name] = $trim ? php.trim($letters[$markerChar]) : $letters[$markerChar];}
         return $result;

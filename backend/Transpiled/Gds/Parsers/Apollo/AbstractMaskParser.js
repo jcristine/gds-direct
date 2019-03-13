@@ -32,7 +32,7 @@ class AbstractMaskParser
     static parseMask($mask, $fields, $dump)  {
         let $positions, $result, $field, $position;
         $positions = this.getMaskTokenPositions($mask);
-        $result = [];
+        $result = {};
         for ([$field, $position] of Object.values(Fp.zip([$fields, $positions]))) {
             $result[$field] = php.trim(php.mb_substr($dump, $position[0], $position[1] - $position[0] + 1, 'utf-8'), '.');
         }

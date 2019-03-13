@@ -99,7 +99,7 @@ class CarLineParser
             '(?<seeInfo>\\s*\\**SEE\\s[A-Z\\d]+.+)?'+
             '$/s';
 
-        $result = [];
+        $result = {};
         if (php.preg_match($filter, $line, $matches = [])) {
             for ([$key, $value] of Object.entries($matches)) {
                 if (!php.is_numeric($key)) {

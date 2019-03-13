@@ -65,7 +65,7 @@ class HotelLineParser
             '$/s';
 
         if (php.preg_match($filter, $line, $matches = {})) {
-            $result = [];
+            $result = {};
             for ([$key, $value] of Object.entries($matches)) {
                 if (!php.is_numeric($key)) {
                     if ($key === 'startDate' || $key === 'endDate') {

@@ -82,7 +82,7 @@ class Fp {
 	 */
 	static groupBy($function, $iterable) {
 		let $result, $value, $factorGroup;
-		$result = [];
+		$result = {};
 		for ($value of $iterable) {
 			$factorGroup = $function($value);
 			if (php.array_key_exists($factorGroup, $result)) {

@@ -357,7 +357,7 @@ return StringUtil.startsWith($line, '*');};
             $text = $matches[1];
         }
 
-        $result = [];
+        $result = {};
 
         for ($and of Object.values(php.explode(' AND ', $text))) {
             if (php.preg_match(/^\s*UP TO\s*(.*)$/, $and, $matches = [])) {
