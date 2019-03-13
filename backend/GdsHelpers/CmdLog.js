@@ -95,18 +95,14 @@ let CmdLog = async ({session, whenCmdRqId}) => {
 		/** get all commands starting from last not in the provided type list inclusive */
 		getLastCommandsOfTypes: async (types) => {
 			// TODO: filter them in SQL to make sure 5K logs won't affect response time
-			// for compatibility with transpiled code, where MR was not marked as scrolled cmd type
-			let isMr = types.every(t => SessionStateProcessor.mrCmdTypes.includes(t));
 			let allCmdsDesc = (await getAll()).reverse();
 			let matched = [];
 			for (let cmdRec of allCmdsDesc) {
 				if (cmdRec.area === fullState.area) {
 					matched.unshift(cmdRec);
-					let matches = types.includes(cmdRec.type)
-						|| isMr && cmdRec.is_mr && types.includes(
-							CommonDataHelper.parseByGds(gds, cmdRec.cmd)['type']
-						);
-					if (!matches) {
+					let type = !cmdRec.is_mr ? cmdRec.type :
+						CommonDataHelper.parseCmdByGds(gds, cmdRec.cmd)['type'];
+					if (!types.includes(type)) {
 						break;
 					}
 				}
@@ -119,7 +115,21 @@ let CmdLog = async ({session, whenCmdRqId}) => {
 		 * for example, from: >01Y1; >*R; >01y2; >*I; >*SVC;
 		 * will be returned:              >01y2; >*I; >*SVC;
 		 */
-		getLastStateSafeCommands: () => [],
+		getLastStateSafeCommands: async () => {
+			let allCmdsDesc = (await getAll()).reverse();
+			let matched = [];
+			for (let cmdRec of allCmdsDesc) {
+				if (cmdRec.area === fullState.area) {
+					matched.unshift(cmdRec);
+					let types = SessionStateProcessor.$nonAffectingTypes;
+					let matches = types.includes(cmdRec.type) || cmdRec.is_mr;
+					if (!matches) {
+						break;
+					}
+				}
+			}
+			return matched;
+		},
 		getLastCalledCommand: () => {
 			return calledPromises.length > 0
 				? calledPromises.slice(-1)[0]
