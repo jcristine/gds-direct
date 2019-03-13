@@ -7,6 +7,7 @@ const ApolloBaggageAdapter = require('../../../../Rbs/FormatAdapters/ApolloBagga
 const ApolloPricingAdapter = require('../../../../Rbs/FormatAdapters/ApolloPricingAdapter.js');
 const FormatAdapter = require('../../../../Rbs/IqControllers/FormatAdapter.js');
 const ImportPnrCommonFormatAdapter = require('../../../../Rbs/Process/Common/ImportPnr/ImportPnrCommonFormatAdapter.js');
+const php = require('../../../../php.js');
 
 /**
  * transforms output of the ImportApolloPnrAction to a common for any GDS structure
@@ -26,10 +27,10 @@ class ImportApolloPnrFormatAdapter
         if (php.isset($parsedData['error'])) {
             return $parsedData;
         }
-        $recentPast = php.date('Y-m-d', php.strtotime($baseDate+' -2 days'));
-        $nearFuture = php.date('Y-m-d', php.strtotime($baseDate+' +2 days'));
+        $recentPast = !$baseDate ? null : php.date('Y-m-d', php.strtotime('-2 days'), php.strtotime($baseDate)); // -2 for timezone error
+        $nearFuture = !$baseDate ? null : php.date('Y-m-d', php.strtotime('+2 days'), php.strtotime($baseDate)); // +2 for timezone error
         $nameRecords = $parsedData['passengers']['passengerList'] || [];
-        $reservation = [];
+        $reservation = {};
         $pnrInfo = !php.empty($parsedData['headerData']['reservationInfo'])
             ? this.transformPnrInfo($parsedData['headerData'], $nearFuture)
             : null;
@@ -145,77 +146,12 @@ class ImportApolloPnrFormatAdapter
         } : $parsedData;
     }
 
-    static transformRestoredPricing($parsedData, $passengers)  {
-        return !php.isset($parsedData['error']) ? {
-            'pricingList': php.array_map(($pricing, $i) => {
-                let $common;
-                $common = (new ApolloPricingAdapter()).setNameRecords($passengers).transform($pricing);
-                $common['quoteNumber'] = $i + 1;
-                return $common;
-            }, $parsedData['pricingList'], php.array_keys($parsedData['pricingList'])),
-            'dumpNumbers': $parsedData['dumpNumbers'] || null,
-        } : $parsedData;
-    }
-
-    static transformTicketInfo($parsedData, $reservationDate)  {
-        return !php.isset($parsedData['error'])
-            ? {
-                'tickets': Fp.map(($tick) => {
-                    return this.transformTicket($tick, $reservationDate);
-                }, $parsedData['tickets']),
-                'dumpNumbers': $parsedData['dumpNumbers'] || null,
-            }
-            : $parsedData;
-    }
-
-    static transformTicketingAgentInfo($tktgData, $reservationDate)  {
-        let $ticketingDate;
-        if ($ticketingDate = $tktgData['ticketingDate'] || null) {
-            $ticketingDate['full'] = DateTime.decodeRelativeDateInFuture($ticketingDate['parsed'], $reservationDate);
-        }
-        return php.isset($tktgData) ? {
-            'agentInitials': $tktgData['fpInitials'] || null,
-            'ticketingDate': $ticketingDate,
-            'agencyInfo': php.isset($tktgData['agencyCode']) ? {
-                'agencyCode': $tktgData['agencyCode'],
-            } : null,
-        } : null;
-    }
-
-    /**
-     * @param array $parsed = TicketHistoryParser::parse()
-     */
-    static transformTicketInvoiceRecords($parsed, $reservationDt)  {
-        return Fp.map(($ticket) => {
-            let $dt, $tm;
-            [$dt, $tm] = php.explode(' ', $ticket['transactionDt']['parsed']);
-            return {
-                'ticketNumber': $ticket['ticketNumber'],
-                'invoiceNumber': $ticket['invoiceNumber'] || null,
-                'netPrice': {
-                    'currency': $ticket['currency'],
-                    'amount': $ticket['amount'],
-                },
-                'dt': {
-                    'raw': $ticket['transactionDt']['raw'],
-                    'parsed': $dt,
-                    'full': $dt && $tm ? DateTime.decodeRelativeDateInFuture($dt, $reservationDt)+' '+$tm+':00' : null,
-                    'tz': $ticket['transactionDt']['tz'],
-                },
-                'isVoided': $ticket['historyActionCode'] ? true : false,
-            };
-        }, php.array_merge($parsed['deletedTickets'],
-            $parsed['currentTickets']));
-    }
-
     /** @param $airlineMcoRecords = GetMcoDataAction::execute()['records']
      * @param $htParsed = TicketHistoryParser::parse()
      * @param $nameRecords = GdsPassengerBlockParser::flattenPassengers() */
     static transformMcoData($airlineMcoRecords, $htParsed, $nameRecords)  {
         let $getFullNum, $fullNumToAirMcos, $allDocs, $mcoRecords, $doc, $airMco;
-        $getFullNum = ($mco) => {
-return $mco['documentNumber'];
-        };
+        $getFullNum = ($mco) => $mco['documentNumber'];
         $fullNumToAirMcos = Fp.groupBy($getFullNum, $airlineMcoRecords);
         $allDocs = php.array_merge($htParsed['currentTickets'], $htParsed['deletedTickets']);
         $mcoRecords = [];
@@ -477,32 +413,6 @@ return $mco['documentNumber'];
             'data': $fareRuleRecords,
             'dumpNumbers': $dumpNumbers,
         };
-    }
-
-    static transformBaggageQuoteInfo($restoredPricingInfo, $passengers)  {
-        let $baggageQuotes, $dumps, $pricingIndex, $pricingData, $storeBagRecords, $record;
-        $baggageQuotes = [];
-        $dumps = [];
-        if (!php.isset($restoredPricingInfo['error'])) {
-            for ([$pricingIndex, $pricingData] of Object.entries($restoredPricingInfo['pricingList'] || [])) {
-                $storeBagRecords = this.transformStoreBaggageQuoteInfo($pricingData, $passengers);
-                for ($record of $storeBagRecords) {
-                    $dumps[$pricingIndex].push($record['raw']);
-                    $record['pricingNumber'] = $pricingIndex + 1;
-                    $record['baggageInfo'] = $record['parsed'];
-                    delete($record['raw'], $record['parsed']);
-                    $baggageQuotes.push($record);}}
-        } else {
-            return {'error': $restoredPricingInfo['error']};
-        }
-        return {
-            'baggageQuotes': $baggageQuotes,
-            'dumpPartsByPricingIndex': $dumps,
-        };
-    }
-
-    static transformStoreBaggageQuoteInfo($storePricing, $nameRecords, $cmd)  {
-        return (new ApolloBaggageAdapter()).setPricingCommand($cmd).setNameRecords($nameRecords).transform($storePricing);
     }
 
     // ======================

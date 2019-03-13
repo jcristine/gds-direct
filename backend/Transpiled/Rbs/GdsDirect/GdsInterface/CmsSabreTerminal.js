@@ -5,8 +5,6 @@ const TSabreSavePnr = require('../../../Rbs/GdsAction/Traits/TSabreSavePnr.js');
 const Errors = require('../../../Rbs/GdsDirect/Errors.js');
 const SessionStateProcessor = require('../../../Rbs/GdsDirect/SessionStateProcessor/SessionStateProcessor.js');
 const CommandParser = require('../../../Gds/Parsers/Sabre/CommandParser.js');
-const GetPqItineraryAction = require('../SessionStateProcessor/CanCreatePqRules.js');
-const SabrePnr = require('../../../Rbs/TravelDs/SabrePnr.js');
 const php = require('../../../php.js');
 
 var require = require('../../../translib.js').stubRequire;
@@ -78,14 +76,6 @@ class CmsSabreTerminal
         } else {
             return {'errors': ['Failed to parse pricing command - '+$cmd]};
         }
-    }
-
-    checkPqPnrDump($pnrDump)  {
-        let $pnr, $reservation;
-
-        $pnr = SabrePnr.makeFromDump($pnrDump);
-        $reservation = ImportSabrePnrFormatAdapter.transformReservation($pnr.getParsedData(), php.date('Y-m-d H:i:s'));
-        return GetPqItineraryAction.checkPnrData($reservation);
     }
 
     /** @param $cmdData = ['pricingModifiers' => PqParser::parsePricingQualifiers()] */

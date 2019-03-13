@@ -9,6 +9,10 @@ const CmsApolloTerminal = require('../GdsInterface/CmsApolloTerminal.js');
 const PtcUtil = require('../../Process/Common/PtcUtil.js');
 const php = require('../../../php.js');
 const CmsSabreTerminal = require("../GdsInterface/CmsSabreTerminal");
+const AmaCmdParser = require("../../../Gds/Parsers/Amadeus/CommandParser");
+const GalCmdParser = require("../../../Gds/Parsers/Galileo/CommandParser");
+const CmsGalileoTerminal = require("../GdsInterface/CmsGalileoTerminal");
+const CmsAmadeusTerminal = require("../GdsInterface/CmsAmadeusTerminal");
 
 /**
  * provides functions that validate pricing cmd and
@@ -61,7 +65,7 @@ class CanCreatePqRules {
 				$errors = php.array_merge($errors, $cmdErrors);
 			}
 		} else {
-			$errors.push('Unexpected start of command copy - ' + ($cmdLine[0] || '(nothing)'));
+			$errors.push('Unexpected start of command copy - ' + ($cmdLine.slice(0, 10) || '(nothing)'));
 		}
 		return $errors;
 	}
@@ -159,9 +163,7 @@ class CanCreatePqRules {
 
 	static ptcsToAgeGroups($pricedPtcs) {
 		$pricedPtcs = $pricedPtcs || ['ADT'];
-		$pricedPtcs = Fp.map(($ptc) => {
-			return $ptc || 'ADT';
-		}, $pricedPtcs);
+		$pricedPtcs = Fp.map(($ptc) => $ptc || 'ADT', $pricedPtcs);
 		return php.array_column(Fp.map([PtcUtil.class, 'parsePtc'], $pricedPtcs), 'ageGroup');
 	}
 
@@ -196,20 +198,16 @@ class CanCreatePqRules {
 		return $result;
 	}
 
-	static toConst($value) {
-		return () => {
-			return $value;
-		};
-	}
-
 	/**
 	 * @param $quantities = ['paxNumAdults' => 2, 'paxNumChildren' => 1, 'paxNumInfants' => 2];
 	 * @return array like ['adult', 'adult', 'child', 'infant', 'infant']
 	 */
 	static makeAgeGroups($quantities) {
-		return php.array_merge(Fp.map(this.toConst('adult'), this.range(0, $quantities['paxNumAdults'] || 0)),
-			Fp.map(this.toConst('child'), this.range(0, $quantities['paxNumChildren'] || 0)),
-			Fp.map(this.toConst('infant'), this.range(0, $quantities['paxNumInfants'] || 0)));
+		return php.array_merge(
+			Fp.map(() => 'adult', this.range(0, $quantities['paxNumAdults'] || 0)),
+			Fp.map(() => 'child', this.range(0, $quantities['paxNumChildren'] || 0)),
+			Fp.map(() => 'infant', this.range(0, $quantities['paxNumInfants'] || 0)),
+		);
 	}
 }
 

@@ -7,8 +7,6 @@ const CommandParser = require('../../../Gds/Parsers/Amadeus/CommandParser.js');
 const php = require('../../../php.js');
 const Errors = require('../../../Rbs/GdsDirect/Errors.js');
 const AmadeusReservationParser = require('../../../Gds/Parsers/Amadeus/Pnr/PnrParser.js');
-const GetPqItineraryAction = require('../SessionStateProcessor/CanCreatePqRules.js');
-const AmadeusPnrCommonFormatAdapter = require('../../../Rbs/FormatAdapters/AmadeusPnrCommonFormatAdapter.js');
 const PagingHelper = require('../../../../GdsHelpers/AmadeusUtils.js');
 
 var require = require('../../../translib.js').stubRequire;
@@ -121,14 +119,6 @@ class CmsAmadeusTerminal
         } else {
             return {'errors': ['Failed to parse pricing command - '+$cmd]};
         }
-    }
-
-    checkPqPnrDump($pnrDump)  {
-        let $pnr, $reservation;
-
-        $pnr = AmadeusPnr.makeFromDump($pnrDump);
-        $reservation = AmadeusPnrCommonFormatAdapter.transform($pnr.getParsedData(), php.date('Y-m-d H:i:s'));
-        return GetPqItineraryAction.checkPnrData($reservation);
     }
 
     /** @param $cmdData = CommandParser::parsePriceItinerary() */

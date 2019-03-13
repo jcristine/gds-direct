@@ -6,6 +6,7 @@ const Errors = require('../../../Rbs/GdsDirect/Errors.js');
 const SessionStateProcessor = require('../../../Rbs/GdsDirect/SessionStateProcessor/SessionStateProcessor.js');
 const CmsApolloTerminal = require('../../../Rbs/GdsDirect/GdsInterface/CmsApolloTerminal');
 const php = require('../../../php.js');
+const CommonDataHelper = require("../CommonDataHelper");
 
 /**
  * provides functions that work with
@@ -71,6 +72,7 @@ class SessionStateHelper
     static async getPricingCmdRow($cmdLog)  {
         let $cmdRows, $typeToCmdRow;
         $cmdRows = await $cmdLog.getLastCommandsOfTypes(SessionStateProcessor.getCanCreatePqSafeTypes());
+        $cmdRows = $cmdRows.filter(row => !row.is_mr);
         $typeToCmdRow = php.array_combine(php.array_column($cmdRows, 'type'), $cmdRows);
         return $typeToCmdRow['priceItinerary'] || null;
     }
@@ -106,7 +108,7 @@ class SessionStateHelper
         $cmdPricing = await this.getPricingCmdRow($cmdLog);
         $cmdItinerary = null;
         for ($cmdRecord of $cmdList) {
-            if (php.in_array($cmdRecord['type'], ['redisplayPnr', 'itinerary'])) {
+            if (php.in_array($cmdRecord['type'], ['redisplayPnr', 'itinerary']) && !$cmdRecord.is_mr) {
                 $cmdItinerary = $cmdRecord;
             }}
         if (!$cmdPricing) {
@@ -118,7 +120,8 @@ class SessionStateHelper
             $errors = php.array_values(php.array_unique($errors));
         }
         if ($cmdItinerary) {
-            $errors = php.array_merge($errors, $gdsInterface.checkPqPnrDump($cmdItinerary['output']));
+            let reservation = CommonDataHelper.parsePnrByGds($gds, $cmdItinerary['output']);
+            $errors = php.array_merge($errors, GetPqItineraryAction.checkPnrData(reservation));
         }
         return $errors;
     }

@@ -1,14 +1,11 @@
 // namespace Rbs\GdsDirect\GdsInterface;
 
 const StringUtil = require('../../../Lib/Utils/StringUtil.js');
-const GetPqItineraryAction = require('../SessionStateProcessor/CanCreatePqRules.js');
 const Errors = require('../../../Rbs/GdsDirect/Errors.js');
 const CommandParser = require('../../../Gds/Parsers/Galileo/CommandParser.js');
-const GalileoReservationParser = require('../../../Gds/Parsers/Galileo/Pnr/PnrParser.js');
 const php = require('../../../php.js');
 
 var require = require('../../../translib.js').stubRequire;
-const GalileoPnrCommonFormatAdapter = require('../../../Rbs/FormatAdapters/GalileoPnrCommonFormatAdapter.js');
 
 class CmsGalileoTerminal {
 	static isScreenCleaningCommand($cmd) {
@@ -53,14 +50,6 @@ class CmsGalileoTerminal {
 		} else {
 			return {'errors': ['Failed to parse pricing command - ' + $cmd]};
 		}
-	}
-
-	checkPqPnrDump($pnrDump) {
-		let $parsed, $reservation;
-
-		$parsed = GalileoReservationParser.parse($pnrDump);
-		$reservation = GalileoPnrCommonFormatAdapter.transform($parsed, php.date('Y-m-d H:i:s'));
-		return GetPqItineraryAction.checkPnrData($reservation);
 	}
 
 	/** @param $cmdData = CommandParser::parsePriceItinerary() */

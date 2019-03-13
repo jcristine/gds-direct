@@ -1,10 +1,13 @@
 
 // namespace Rbs\Process\Apollo\ImportPnr;
 
+const php = require('../../../../php.js');
+
 class ApolloPnrFieldsOnDemand
 {
     static detectPricingErrorResponse($dump)  {
-        return this.detectPricingErrorResponseType($dump)['error'] || null;
+        let errorData = this.detectPricingErrorResponseType($dump);
+        return errorData ? errorData['error'] : null;
     }
 
     static detectPricingErrorResponseType($dump)  {

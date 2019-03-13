@@ -78,12 +78,14 @@ class CmsApolloTerminal
         let $parsed, $nameMod, $ptcs;
         $parsed = CommandParser.parse($cmd);
         if ($parsed && $parsed['type'] === 'priceItinerary') {
-            $nameMod = php.array_combine(php.array_column($parsed['data']['pricingModifiers'], 'type'),
-                php.array_column($parsed['data']['pricingModifiers'], 'parsed'))['passengers'] || null;
-            $ptcs = php.array_column($nameMod['passengerProperties'] || [], 'ptc');
+            $nameMod = php.array_combine(
+                php.array_column($parsed['data']['pricingModifiers'], 'type'),
+                php.array_column($parsed['data']['pricingModifiers'], 'parsed')
+            )['passengers'] || null;
+            $ptcs = !$nameMod ? [] : php.array_column($nameMod['passengerProperties'], 'ptc');
             return {'ptcs': $ptcs};
         } else {
-            return {'errors': ['Failed to parse pricing command - '+$cmd]};
+            return {'errors': ['Failed to parse pricing command for PTC matching - '+$cmd]};
         }
     }
 
@@ -91,6 +93,10 @@ class CmsApolloTerminal
         let $errorRecords, $cmdData, $mods, $sMod, $bundles, $fareBases;
         $errorRecords = [];
         $cmdData = CommandParser.parse($pricingCmd)['data'] || null;
+        if (!$cmdData) {
+            $errorRecords.push({'type': Errors.CUSTOM, 'data': {'text': 'Failed to parse pricing command - >' + $pricingCmd + '; for PQ validation'}});
+            return $errorRecords;
+        }
         $mods = $cmdData['pricingModifiers'] || [];
         $mods = php.array_combine(php.array_column($mods, 'type'), $mods);
         if ($sMod = $mods['segments'] || null) {
