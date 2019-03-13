@@ -1,4 +1,5 @@
 const CmsClient = require("./CmsClient");
+const getLeadData = require("./CmsClient").getLeadData;
 
 const iqJson = require("../Utils/Misc").iqJson;
 
@@ -52,33 +53,6 @@ let callRbs = async (functionName, params) => {
 	});
 };
 
-let getLeadData = async (travelRequestId) =>
-	!travelRequestId
-		? Promise.resolve(null)
-		: CmsClient.getRequestBriefData({requestId: travelRequestId})
-			.then(rpcRs => {
-				let cmsData = rpcRs.result.data;
-				let ageGroupToCnt = {};
-				for (let group of cmsData.requestedAgeGroups) {
-					ageGroupToCnt[group.ageGroup] = group.quantity;
-				}
-				return {
-					leadId: travelRequestId,
-					leadOwnerId: cmsData.leadOwnerId,
-					projectName: cmsData.projectName,
-					leadUrl: 'https://cms.asaptickets.com/leadInfo?id=' + travelRequestId,
-					paxNumAdults: ageGroupToCnt['adult'] || 0,
-					paxNumChildren: ageGroupToCnt['child'] || 0,
-					paxNumInfants: ageGroupToCnt['infant'] || 0,
-				};
-			})
-			.catch(exc => ({
-				leadId: travelRequestId,
-				leadUrl: 'https://cms.asaptickets.com/leadInfo?id=' + travelRequestId,
-				debug: exc + '',
-			}));
-
-/** @param {{command: '*R', gds: 'apollo', language: 'sabre', agentId: '6206'}} reqBody */
 let RbsClient = (reqBody) => {
 	let {gds} = reqBody;
 	return {

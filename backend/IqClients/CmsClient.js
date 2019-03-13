@@ -16,7 +16,7 @@ let callCms = async ({functionName, params}) => {
 	});
 };
 
-exports.getRequestBriefData = ({requestId}) => {
+let getRequestBriefData = ({requestId}) => {
 	return callCms({
 		functionName: 'getRequestBriefData',
 		params: {requestId},
@@ -31,6 +31,36 @@ exports.getRequestBriefData = ({requestId}) => {
 		}
 	});
 };
+
+let getLeadData = async (travelRequestId) =>
+	!travelRequestId
+		? Promise.resolve(null)
+		: getRequestBriefData({requestId: travelRequestId})
+			.then(rpcRs => {
+				let cmsData = rpcRs.result.data;
+				let ageGroupToCnt = {};
+				for (let group of cmsData.requestedAgeGroups) {
+					ageGroupToCnt[group.ageGroup] = group.quantity;
+				}
+				return {
+					leadId: travelRequestId,
+					leadOwnerId: cmsData.leadOwnerId,
+					projectName: cmsData.projectName,
+					leadUrl: 'https://cms.asaptickets.com/leadInfo?id=' + travelRequestId,
+					paxNumAdults: ageGroupToCnt['adult'] || 0,
+					paxNumChildren: ageGroupToCnt['child'] || 0,
+					paxNumInfants: ageGroupToCnt['infant'] || 0,
+				};
+			})
+			.catch(exc => ({
+				leadId: travelRequestId,
+				leadUrl: 'https://cms.asaptickets.com/leadInfo?id=' + travelRequestId,
+				debug: exc + '',
+			}));
+
+exports.getRequestBriefData = getRequestBriefData;
+/** in RBS-compatible format */
+exports.getLeadData = getLeadData;
 
 exports.reportCmdCalled = async ({cmd, calledDt, agentId, duration}) => {
 	return callCms({
