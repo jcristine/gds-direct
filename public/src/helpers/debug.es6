@@ -15,12 +15,18 @@ export const Debug = (txt, type) => {
 	}).show();
 };
 
-export const debugRequest = err => {
+export const debugRequest = (err, status = null) => {
+	let type = {
+		440: 'warning', // LoginTimeOut, on /terminal/keepAlive usually
+		500: 'error', // InternalServerError
+		502: 'error', // BadGateway
+		520: 'error', // catch-all response
+	}[status] || 'error';
 	new Noty({
-		text	: `SERVER ERROR : ${err}`,
+		text	: `SERVER ERROR ${status}: ${err}`,
 		layout 	: 'bottomRight',
-		timeout : 5000,
-		type 	: 'error',
+		timeout : 10000,
+		type 	: type,
 		progressBar : false,
 		animation: {
 			open	: 'animated fadeIn', // Animate.css class names

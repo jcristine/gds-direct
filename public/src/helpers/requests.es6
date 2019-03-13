@@ -105,6 +105,7 @@ const Ask = (url, fetchParams) => {
 				}));
 
 	return whenFetched
+		.catch(debugRequest)
 		.then(({body, status}) => {
 			if (status && status === 200) {
 				return Promise.resolve(body);
@@ -112,11 +113,12 @@ const Ask = (url, fetchParams) => {
 				console.log("HTTP request ERROR:   ", body);
 
 				let error = body.error || JSON.stringify(body);
-				return Promise.reject('Request error - ' + error.slice(0, 200));
+				let msg = 'Request error - ' + error.slice(0, 200);
+				debugRequest(msg, status);
+				return Promise.reject(msg);
 			}
 		})
-		.then( showUserMessages )
-		.catch( debugRequest );
+		.then( showUserMessages );
 };
 
 export const get = (url) => {
