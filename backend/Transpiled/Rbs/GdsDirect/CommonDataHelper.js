@@ -14,6 +14,14 @@ const DateTime = require('../../Lib/Utils/DateTime.js');
 const BadRequest = require("../../../Utils/Rej").BadRequest;
 const NotImplemented = require("../../../Utils/Rej").NotImplemented;
 const Fp = require('../../Lib/Utils/Fp.js');
+const GalileoReservationParser = require("../../Gds/Parsers/Galileo/Pnr/PnrParser");
+const GalileoPnrCommonFormatAdapter = require("../FormatAdapters/GalileoPnrCommonFormatAdapter");
+const ApolloPnr = require("../TravelDs/ApolloPnr");
+const ImportApolloPnrFormatAdapter = require("../Process/Apollo/ImportPnr/ImportApolloPnrFormatAdapter");
+const SabrePnr = require("../TravelDs/SabrePnr");
+const FormatAdapter = require("../IqControllers/FormatAdapter");
+const AmadeusPnr = require("../TravelDs/AmadeusPnr");
+const AmadeusPnrCommonFormatAdapter = require("../FormatAdapters/AmadeusPnrCommonFormatAdapter");
 const NoContent = require("../../../Utils/Rej").NoContent;
 
 /**
@@ -53,7 +61,7 @@ class CommonDataHelper {
 		}
 		$commands = await $cmdLog.getCurrentPnrCommands();
 		for ($cmdRecord of Object.values($commands)) {
-			$parsed = this.parseByGds($sessionData['gds'], $cmdRecord['cmd']);
+			$parsed = this.parseCmdByGds($sessionData['gds'], $cmdRecord['cmd']);
 			$flatCmds = php.array_merge([$parsed], $parsed['followingCommands']);
 			for ($flatCmd of Object.values($flatCmds)) {
 				if ($flatCmd['type'] === 'addRemark' && $flatCmd['data'] === $msg) {
@@ -175,7 +183,7 @@ class CommonDataHelper {
 		return false;
 	}
 
-	static parseByGds($gds, $cmd) {
+	static parseCmdByGds($gds, $cmd) {
 		if ($gds === 'apollo') {
 			return ApoCmdParser.parse($cmd);
 		} else if ($gds === 'galileo') {
@@ -184,6 +192,25 @@ class CommonDataHelper {
 			return SabCmdParser.parse($cmd);
 		} else if ($gds === 'amadeus') {
 			return AmaCmdParser.parse($cmd);
+		} else {
+			return null;
+		}
+	}
+
+	static parsePnrByGds($gds, $pnrDump) {
+		let baseDt = php.date('Y-m-d H:i:s');
+		if ($gds === 'apollo') {
+			let $pnr = ApolloPnr.makeFromDump($pnrDump);
+			return ImportApolloPnrFormatAdapter.transformReservation($pnr.getParsedData(), baseDt);
+		} else if ($gds === 'galileo') {
+			let $parsed = GalileoReservationParser.parse($pnrDump);
+			return GalileoPnrCommonFormatAdapter.transform($parsed, baseDt);
+		} else if ($gds === 'sabre') {
+			let $pnr = SabrePnr.makeFromDump($pnrDump);
+			return FormatAdapter.adaptSabrePnrParseForClient($pnr.getParsedData(), baseDt);
+		} else if ($gds === 'amadeus') {
+			let $pnr = AmadeusPnr.makeFromDump($pnrDump);
+			return AmadeusPnrCommonFormatAdapter.transform($pnr.getParsedData(), baseDt);
 		} else {
 			return null;
 		}

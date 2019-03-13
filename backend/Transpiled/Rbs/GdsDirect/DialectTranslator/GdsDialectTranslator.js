@@ -1203,7 +1203,7 @@ class GdsDialectTranslator
         let $result, $parsed;
 
         $result = null;
-        $parsed = CommonDataHelper.parseByGds($fromGds, $userInput);
+        $parsed = CommonDataHelper.parseCmdByGds($fromGds, $userInput);
         if (TranslateAvailabilityCmdAction.isAvailabilityCommand($userInput, $fromGds)) {
             $result = TranslateAvailabilityCmdAction.translate($userInput, $fromGds, $toGds);
         } else if (TranslateTariffDisplayCmdAction.isTariffDisplayCommand($userInput, $fromGds)) {

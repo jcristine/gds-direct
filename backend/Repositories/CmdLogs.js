@@ -9,7 +9,7 @@ let storeNew = (cmdRec, session, cmdRqId, prevState) => {
     let gds = session.context.gds;
     let scrolledCmd = (cmdRec.state || {}).scrolledCmd;
     let scrolledType = !scrolledCmd ? null :
-        CommonDataHelper.parseByGds(gds, scrolledCmd).type;
+        CommonDataHelper.parseCmdByGds(gds, scrolledCmd).type;
 
     let row = {
         session_id: session.id,
