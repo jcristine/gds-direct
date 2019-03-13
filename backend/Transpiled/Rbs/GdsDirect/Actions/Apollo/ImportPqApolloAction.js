@@ -12,34 +12,30 @@ const PricingParser = require('../../../../Gds/Parsers/Apollo/PricingParser/Pric
 const ImportPnrAction = require('../../../../Rbs/Process/Common/ImportPnr/ImportPnrAction.js');
 const ApolloPnrFieldsOnDemand = require('../../../../Rbs/Process/Apollo/ImportPnr/ApolloPnrFieldsOnDemand.js');
 const ImportApolloPnrFormatAdapter = require('../../../../Rbs/Process/Apollo/ImportPnr/ImportApolloPnrFormatAdapter.js');
+const AbstractGdsAction = require('../../../GdsAction/AbstractGdsAction.js');
+const {fetchAll} = require('../../../../../GdsHelpers/TravelportUtils.js');
+const ApolloBaggageAdapter = require('../../../FormatAdapters/ApolloBaggageAdapter.js');
+const RbsUtils = require("../../../../../GdsHelpers/RbsUtils");
 
 let php = require('../../../../php.js');
 
 /** @debug */
-var require = (path) => {
-	let reportError = (name) => {
-		throw new Error('Tried to use ' + name + ' of untranspilled module - ' + path)
-	};
-	return new Proxy({}, {
-		get: (target, name) => reportError(name),
-		set: (target, name, value) => reportError(name),
-	});
-};
+var require = require('../../../../translib.js').stubRequire;
 
 const ImportFareComponentsAction = require('../../../../Rbs/Process/Apollo/ImportPnr/Actions/ImportFareComponentsAction.js');
 const RetrieveFlightServiceInfoAction = require('../../../../Rbs/Process/Apollo/ImportPnr/Actions/RetrieveFlightServiceInfoAction.js');
 const DumpStorage = require('../../../../Rbs/Process/Common/ImportPnr/DumpStorage.js');
 
 /** @see ImportPqAmadeusAction description */
-class ImportPqApolloAction {
+class ImportPqApolloAction extends AbstractGdsAction {
 	constructor() {
+		super();
 		this.$leadData = [];
 		this.$fetchOptionalFields = true;
-		this.$baseDate;
+		this.$baseDate = null;
 		this.$cmdToFullOutput = [];
 		this.$allCommands = [];
 		this.$preCalledCommands = [];
-		this.$initialSessionState = null;
 	}
 
 	setLeadData($leadData) {
@@ -59,19 +55,9 @@ class ImportPqApolloAction {
 
 	/** @param $sessionState = Db::fetchOne('SELECT * FROM terminal_sessions') */
 	setPreCalledCommandsFromDb($commands, $sessionState) {
-		this.$preCalledCommands = Fp.map(($row) => {
-			return {
-				'cmd': $row['cmd'],
-				'output': $row['output'],
-			};
-		}, $commands);
-		this.$cmdToFullOutput = this.constructor.collectCmdToFullOutput(this.$preCalledCommands);
-		this.$initialSessionState = $sessionState;
+		this.$preCalledCommands = $commands;
+		this.$cmdToFullOutput = this.constructor.collectCmdToFullOutput($commands);
 		return this;
-	}
-
-	static sanitizeOutput($inWsEncoding) {
-		return (new CmsApolloTerminal()).sanitizeOutput($inWsEncoding);
 	}
 
 	getBaseDate() {
@@ -79,9 +65,9 @@ class ImportPqApolloAction {
 			|| (this.$baseDate = php.date('Y-m-d H:i:s'));
 	}
 
-	runOrReuse($cmd) {
+	async runOrReuse($cmd) {
 		let $output;
-		$output = this.$cmdToFullOutput[$cmd] || this.apollo($cmd);
+		$output = this.$cmdToFullOutput[$cmd] || (await fetchAll($cmd, this)).output;
 		this.$cmdToFullOutput[$cmd] = $output;
 		this.$allCommands.push({'cmd': $cmd, 'output': $output});
 		return $output;
@@ -159,18 +145,18 @@ class ImportPqApolloAction {
 		return null;
 	}
 
-	getReservation() {
+	async getReservation() {
 		let $raw, $parsed, $common, $result, $errors;
-		$raw = this.runOrReuse('*R');
+		$raw = await this.runOrReuse('*R');
 		$parsed = ApolloReservationParser.parse($raw);
 		$common = ImportApolloPnrFormatAdapter.transformReservation($parsed, this.getBaseDate());
-		$result = {'raw': $raw, 'rawInDisplayEncoding': this.constructor.sanitizeOutput($raw)};
+		$result = {'raw': $raw};
 		if ($result['error'] = $common['error'] || null) {
 			return $result;
 		} else {
 			$result['parsed'] = $common;
 		}
-		if ($errors = CanCreatePqRules.checkPnrData($common)) {
+		if (!php.empty($errors = CanCreatePqRules.checkPnrData($common))) {
 			$result['error'] = 'Invalid PNR data - ' + php.implode(';', $errors);
 			return $result;
 		}
@@ -186,12 +172,10 @@ class ImportPqApolloAction {
 			.setDumpStorage($dumps).setCachedCommands({'*SVC': $raw})
 			.execute($itinerary);
 		$common = ImportApolloPnrFormatAdapter.transformFlightServiceInfo($actionResult, this.getBaseDate());
-		$vitCmds = Fp.map(($cmdRec) => {
-			return {
-				'cmd': $cmdRec['cmd'],
-				'output': $cmdRec['dump'],
-			};
-		}, Fp.filter(($cmdRec) => {
+		$vitCmds = Fp.map(($cmdRec) => ({
+			'cmd': $cmdRec['cmd'],
+			'output': $cmdRec['dump'],
+		}), Fp.filter(($cmdRec) => {
 			return StringUtil.startsWith($cmdRec['cmd'], 'VIT');
 		}, $dumps.getAll()));
 		$result = {'raw': $raw, 'rawInDisplayEncoding': this.constructor.sanitizeOutput($raw)};
@@ -206,17 +190,23 @@ class ImportPqApolloAction {
 	}
 
 	static parsePricing($dump, $nameRecords, $cmd) {
-		let $result, $parsed, $exc, $common, $ptcBagRecords;
+		let $parsed, $exc, $common, $ptcBagRecords;
+		let $result = {};
 		if ($result['error'] = ApolloPnrFieldsOnDemand.detectPricingErrorResponse($dump)) return $result;
+
 		try {
 			$parsed = PricingParser.parse($dump);
 		} catch ($exc) {
-			$result['error'] = 'Failed to parse pricing - ' + php.get_class($exc) + ' ' + $exc.getMessage();
+			$result['error'] = 'Failed to parse pricing - ' + php.get_class($exc) + ' ' + $exc.message + ' - ' + $dump;
 			return $result;
 		}
 		if (!$parsed) return {'error': 'Gds returned error - ' + php.trim($dump)};
-		$common = (new ApolloPricingAdapter()).setPricingCommand($cmd).setNameRecords($nameRecords).transform($parsed);
-		$ptcBagRecords = ImportApolloPnrFormatAdapter.transformStoreBaggageQuoteInfo($parsed, $nameRecords, $cmd);
+		let pricingAdapter = (new ApolloPricingAdapter())
+			.setPricingCommand($cmd)
+			.setNameRecords($nameRecords);
+		$common = pricingAdapter.transform($parsed);
+		$ptcBagRecords = (new ApolloBaggageAdapter())
+			.transform($parsed, pricingAdapter);
 		return {
 			'store': $common,
 			'bagPtcPricingBlocks': $ptcBagRecords,
@@ -226,13 +216,15 @@ class ImportPqApolloAction {
 	processPricingOutput($output, $cmd, $nameRecords) {
 		let $errors, $result;
 		$errors = CanCreatePqRules.checkPricingOutput('apollo', $output, this.$leadData);
-		if ($errors) {
+		if (!php.empty($errors)) {
 			$result = {'error': 'Invalid pricing data - ' + php.implode(';', $errors)};
 		} else {
 			$result = this.constructor.parsePricing($output, $nameRecords, $cmd);
 		}
 		$result['bagPtcPricingBlocks'] = Fp.map(($ptcBlock) => {
-			$ptcBlock['rawInDisplayEncoding'] = $ptcBlock['raw'] ? (new CmsApolloTerminal).sanitizeOutput($ptcBlock['raw']) : null;
+			$ptcBlock['rawInDisplayEncoding'] = $ptcBlock['raw']
+				? (new CmsApolloTerminal).sanitizeOutput($ptcBlock['raw'])
+				: null;
 			return $ptcBlock;
 		}, $result['bagPtcPricingBlocks'] || []);
 		return $result;
@@ -243,10 +235,10 @@ class ImportPqApolloAction {
 		$numToSeg = php.array_combine(php.array_column($segmentsLeft, 'segmentNumber'), $segmentsLeft);
 		$mods = AtfqParser.parsePricingCommand($cmdRecord['cmd'])['pricingModifiers'] || [];
 		$mods = php.array_combine(php.array_column($mods, 'type'), php.array_column($mods, 'parsed'));
-		$bundles = $mods['segments']['bundles'] || [];
-		if (!$bundles || $bundles[0]['segmentNumbers'] === []) {
+		$bundles = ($mods['segments'] || {})['bundles'] || [];
+		if (php.empty($bundles) || $bundles[0]['segmentNumbers'].length === 0) {
 			// applies to all segments
-			if ($followingCommands) {
+			if (!php.empty($followingCommands)) {
 				// have more recent commands with segment select
 				$error = 'Last pricing commands ' + php.implode(' & ', php.array_column($followingCommands, 'cmd')) +
 					' do not cover some itinerary segments: ' +
@@ -274,7 +266,7 @@ class ImportPqApolloAction {
 		let $cmdRecords, $mrs, $cmdRecord, $parsed, $logCmdType, $calculated;
 		$cmdRecords = [];
 		$mrs = [];
-		for ($cmdRecord of php.array_reverse(this.$preCalledCommands)) {
+		for ($cmdRecord of php.array_reverse([...this.$preCalledCommands])) {
 			php.array_unshift($mrs, $cmdRecord['output']);
 			$parsed = CommandParser.parse($cmdRecord['cmd']);
 			$logCmdType = $parsed['type'];
@@ -286,7 +278,7 @@ class ImportPqApolloAction {
 				} else {
 					$cmdRecords.push($cmdRecord);
 					$segmentsLeft = $calculated['segmentsLeft'];
-					if (!$segmentsLeft) {
+					if (php.empty($segmentsLeft)) {
 						return {'cmdRecords': php.array_reverse($cmdRecords)};
 					}
 				}
@@ -295,7 +287,7 @@ class ImportPqApolloAction {
 			}
 		}
 		return {
-			'error': $cmdRecords
+			'error': !php.empty($cmdRecords)
 				? 'Last pricing commands ' + php.implode(' & ', php.array_column($cmdRecords, 'cmd')) +
 				' do not cover some itinerary segments: ' +
 				php.implode(',', php.array_column($segmentsLeft, 'segmentNumber'))
@@ -303,9 +295,8 @@ class ImportPqApolloAction {
 		};
 	}
 
-	getPricing($reservation) {
-		let $collected, $cmdRecords, $result, $i, $cmdRecord, $pricingCommand, $errors, $cmd, $raw, $processed,
-			$bagBlocks;
+	async getPricing($reservation) {
+		let $collected, $cmdRecords, $result, $i, $cmdRecord, $pricingCommand, $errors, $cmd, $raw, $processed;
 		$collected = this.collectPricingCmds($reservation['itinerary']);
 		if (!php.empty($collected['error'])) {
 			return {'error': $collected['error']};
@@ -315,19 +306,22 @@ class ImportPqApolloAction {
 			'pricingPart': {
 				'cmd': php.implode('&', php.array_column($cmdRecords, 'cmd')),
 				'raw': php.implode(php.PHP_EOL + '&' + php.PHP_EOL, php.array_column($cmdRecords, 'output')),
+				'parsed': {'pricingList': []},
 			},
 			'bagPtcPricingBlocks': [],
 		};
+		let pnrDump = $reservation.itinerary.map(s => s.raw).join('\n');
 		for ([$i, $cmdRecord] of Object.entries($cmdRecords)) {
 			$pricingCommand = $cmdRecord['cmd'];
-			if ($errors = CanCreatePqRules.checkPricingCommand('apollo', $pricingCommand, this.$leadData)) {
+			$errors = CanCreatePqRules.checkPricingCommand('apollo', $pricingCommand, this.$leadData);
+			if (!php.empty($errors)) {
 				$result['error'] = 'Invalid pricing command - ' + $pricingCommand + ' - ' + php.implode(';', $errors);
 				return $result;
 			}
 			if (this.constructor.isScrollingAvailable($cmdRecord['output'])) {
 				if ($i == php.count($cmdRecords) - 1) { // last (current) pricing command
 					$cmd = StringUtil.startsWith($pricingCommand, '$BB') ? '*$BB' : '*$B';
-					$raw = this.runOrReuse($cmd);
+					$raw = await this.runOrReuse($cmd);
 				} else {
 					$result['error'] = 'Some unscrolled output left in the >' + $cmdRecord['cmd'] + ';';
 					return $result;
@@ -342,10 +336,9 @@ class ImportPqApolloAction {
 				return $result;
 			}
 			$processed['store']['pricingNumber'] = $i + 1;
-			$bagBlocks = Fp.map(($bagBlock) => {
-				$bagBlock['pricingNumber'] = $i + 1;
-				return $bagBlock;
-			}, $processed['bagPtcPricingBlocks']);
+			$processed['store']['rbsInfo'] = await RbsUtils.getRbsPqInfo(pnrDump, $raw, 'apollo');
+			let $bagBlocks = $processed['bagPtcPricingBlocks']
+				.map(($bagBlock) => ({...$bagBlock, pricingNumber: $i + 1}));
 			$result['pricingPart']['parsed']['pricingList'].push($processed['store']);
 			$result['bagPtcPricingBlocks'] = php.array_merge($result['bagPtcPricingBlocks'], $bagBlocks);
 		}
@@ -444,9 +437,7 @@ class ImportPqApolloAction {
 						: null;
 					return $section;
 				}, $fareComp['sections'] || []);
-				$isNotError = ($sec) => {
-					return !php.isset($sec['error']);
-				};
+				$isNotError = ($sec) => !php.isset($sec['error']);
 				$sections = Fp.filter($isNotError, $sections);
 				$byNumber = php.array_combine(php.array_column($sections, 'sectionNumber'), $sections);
 				$fareComp['sections'] = {
@@ -457,20 +448,22 @@ class ImportPqApolloAction {
 		};
 	}
 
-	collectPnrData() {
+	async collectPnrData() {
 		let $result, $reservationRecord, $nameRecords, $pricingRecord, $flightServiceRecord, $pricing, $fareRuleData,
 			$publishedPricingRecord;
-		$result = {'pnrData': []};
-		$reservationRecord = this.getReservation();
+		$result = {'pnrData': {}};
+		$reservationRecord = await this.getReservation();
 		if ($result['error'] = $reservationRecord['error'] || null) return $result;
+
 		$result['pnrData']['reservation'] = $reservationRecord;
 		$nameRecords = $reservationRecord['parsed']['passengers'];
-		$pricingRecord = this.getPricing($reservationRecord['parsed']);
+		$pricingRecord = await this.getPricing($reservationRecord['parsed']);
 		if ($result['error'] = $pricingRecord['error'] || null) return $result;
+
 		$result['pnrData']['currentPricing'] = $pricingRecord['pricingPart'];
 		$result['pnrData']['bagPtcPricingBlocks'] = $pricingRecord['bagPtcPricingBlocks'];
 		if (this.$fetchOptionalFields) {
-			$flightServiceRecord = this.getFlightService($reservationRecord['parsed']['itinerary']);
+			$flightServiceRecord = await this.getFlightService($reservationRecord['parsed']['itinerary']);
 			if ($result['error'] = $flightServiceRecord['error'] || null) return $result;
 			$result['pnrData']['flightServiceInfo'] = $flightServiceRecord;
 
@@ -478,7 +471,7 @@ class ImportPqApolloAction {
 				$flightServiceRecord['parsed']['segments']);
 
 			$pricing = $pricingRecord['pricingPart']['parsed'];
-			$fareRuleData = this.getFareRules($pricing,
+			$fareRuleData = await this.getFareRules($pricing,
 				$reservationRecord['parsed']['itinerary']);
 			if ($result['error'] = $fareRuleData['error'] || null) return $result;
 
@@ -486,7 +479,7 @@ class ImportPqApolloAction {
 			$result['pnrData']['fareRules'] = $fareRuleData['ruleRecords'];
 
 			// it is important that it's at the end because it affects fare rules
-			$publishedPricingRecord = this.getPublishedPricing($pricing, $nameRecords);
+			$publishedPricingRecord = await this.getPublishedPricing($pricing, $nameRecords);
 			if ($result['error'] = $publishedPricingRecord['error'] || null) return $result;
 			$result['pnrData']['publishedPricing'] = $publishedPricingRecord;
 		}
@@ -513,10 +506,11 @@ class ImportPqApolloAction {
 		return $cmdRec;
 	}
 
-	execute() {
+	async execute() {
 		let $result;
-		$result = this.collectPnrData();
-		$result['allCommands'] = php.array_map([this.constructor.class, 'transformCmdForCms'], this.$allCommands);
+		$result = await this.collectPnrData();
+		$result['allCommands'] = this.$allCommands
+			.map(c => this.constructor.transformCmdForCms(c));
 		return $result;
 	}
 }
