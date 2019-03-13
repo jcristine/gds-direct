@@ -11,6 +11,11 @@ class Errors
 {
     static getMapping()  {
         return {
+            [Errors.CUSTOM]: {
+                'pattern': '{text}',
+                'sampleData': {'text': 'Failed to parse pricing command - >$ABASDAD; for PQ validation'},
+            },
+
             [this.CMD_FORBIDDEN]: {
                 'pattern': 'FORBIDDEN COMMAND',
                 'sampleData': {'cmd': 'Q\/18', 'type': 'openQueue'},
@@ -166,6 +171,8 @@ class Errors
         }
     }
 }
+
+Errors.CUSTOM = 'CUSTOM';
 
 Errors.CMD_FORBIDDEN = 'CMD_FORBIDDEN';
 Errors.CANT_CHANGE_TICKETED_PNR = 'CANT_CHANGE_TICKETED_PNR';
