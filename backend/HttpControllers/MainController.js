@@ -1,12 +1,13 @@
 
 let Emc = require('../LibWrappers/Emc.js');
-let {Forbidden, NotImplemented, LoginTimeOut, InternalServerError} = require('../Utils/Rej.js');
+let {Forbidden, BadRequest, NotImplemented, LoginTimeOut, InternalServerError} = require('../Utils/Rej.js');
 let Db = require('../Utils/Db.js');
 let Diag = require('../LibWrappers/Diag.js');
 let FluentLogger = require('../LibWrappers/FluentLogger.js');
 const {getExcData} = require('../Utils/Misc.js');
 
 let shouldDiag = (exc) =>
+	!BadRequest.matches(exc.httpStatusCode) &&
 	!Forbidden.matches(exc.httpStatusCode) &&
 	!LoginTimeOut.matches(exc.httpStatusCode) &&
 	!NotImplemented.matches(exc.httpStatusCode);
