@@ -314,19 +314,20 @@ class RepriceInAnotherPccAction {
 	}
 
 	/**
-	 *  @param {ApolloPnr|SabrePnr|AmadeusPnr|GalileoPnr} $pnr
-	 *  @param $sessionData = ICmdLogRead::getSessionData()
-	 **/
+	 * @param {ApolloPnr|SabrePnr|AmadeusPnr|GalileoPnr} $pnr
+	 * @param $currentSession = await require('StatefulSession.js')()
+	 */
 	async execute($pnr, $cmd, $dialect, $targetStr, $currentSession) {
 		let $currentGds, $startDt, $log, $target, $itinerary,
 			$translatorResult, $targetCmd;
+		$currentSession.updateAreaState({can_create_pq: false});
 		$currentGds = $currentSession.getSessionData()['gds'];
 		$startDt = $currentSession.getStartDt();
 		$log = this.$log;
 
 		$target = await this.constructor.getTargetGdsAndPcc($targetStr);
 		if (!$target) {
-			return {'errors': 'Unknown GDS\/PCC target [' + $targetStr + ']'};
+			return {'errors': 'Unknown GDS/PCC target [' + $targetStr + ']'};
 		}
 		$itinerary = $pnr.getItinerary();
 		if (php.empty($itinerary)) {

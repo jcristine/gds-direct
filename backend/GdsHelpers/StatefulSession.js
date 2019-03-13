@@ -68,6 +68,11 @@ let StatefulSession = async ({session, whenCmdRqId, emcUser}) => {
 		runCmd: runCmd,
 		getFullState: () => cmdLog.getFullState(),
 		updateFullState: (newFullState) => cmdLog.updateFullState(newFullState),
+		updateAreaState: (newAreaState) => {
+			let full = cmdLog.getFullState();
+			full.areas[full.area] = {...full.areas[full.area], ...newAreaState};
+			return cmdLog.updateFullState(full);
+		},
 		getGdsData: () => session.gdsData,
 		updateGdsData: (gdsData) => {
 			session.gdsData = gdsData;

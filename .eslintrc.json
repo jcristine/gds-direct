@@ -7,7 +7,6 @@
     "semi": ["error", "always"],
     "valid-typeof": "error",
     "no-invalid-this": "error",
-    "no-loop-func": "error",
     "no-octal": "error",
     "no-return-await": "error",
     "no-unmodified-loop-condition": "error",
@@ -24,6 +23,7 @@
 
     "Promise": false,
     "Set": false,
+    "Proxy": false,
 
     "process": false,
     "module": false,
