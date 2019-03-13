@@ -25,7 +25,7 @@ let fetchUntil = async (nextCmd, session, shouldStop) => {
 	while (nextCmd) {
 		let cmdRec = (await session.runCmd(nextCmd));
 		let [page, pager] = extractPager(cmdRec.output);
-		cmdRec.output = page;
+		cmdRec = {...cmdRec, output: page};
 		let result = await shouldStop(cmdRec);
 		if (result) {
 			finalResult = result;
