@@ -38,7 +38,7 @@ class ApolloPricingAdapter
     /** @param $fc = FareConstructionParser::parse() */
     static transformFareInfo($fc)  {
         let $result;
-        $result = [];
+        $result = {};
         $result['baseFare'] = {
             'currency': $fc['fareAndMarkup']['currency'],
             'amount': $fc['fareAndMarkup']['amount'],
