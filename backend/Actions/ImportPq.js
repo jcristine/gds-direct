@@ -161,12 +161,19 @@ let ImportPq = async ({stateful, leadData, fetchOptionalFields = true}) => {
 
 	let execute = async () => {
 		let importAct;
-		if (gds === 'apollo') {
+		if (gds === 'apollo' && !fetchOptionalFields) {
+			let stateErrors = await SessionStateHelper.checkCanCreatePq(stateful.getLog(), leadData);
+			if (stateErrors.length > 0) {
+				return BadRequest('Invalid PQ state - ' + stateErrors.join('; '));
+			}
 			importAct = new ImportPqApolloAction();
 		} else {
 			// temporary fallback till real importPq implemented for all GDS on our side
-			let onRbsSession = ({rbsSessionId}) => RbsClient({gds, agentId})
-				.getPqItinerary({rbsSessionId, leadId: leadData.leadId});
+			let onRbsSession = !fetchOptionalFields
+				? ({rbsSessionId}) => RbsClient({gds, agentId})
+					.getPqItinerary({rbsSessionId, leadId: leadData.leadId})
+				: ({rbsSessionId}) => RbsClient({gds, agentId})
+					.importPq({rbsSessionId, leadId: leadData.leadId});
 			return withRbsPqCopy(onRbsSession);
 		}
 		let cmdRecs = await getCurrentStateCommands(stateful);

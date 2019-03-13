@@ -135,7 +135,7 @@ class CanCreatePqRules {
 			return $errors;
 		}
 		$priced = ifc.getPricedPtcs($cmd);
-		if ($ptcErrors = $priced['errors'] || []) {
+		if (!php.empty($ptcErrors = $priced['errors'] || [])) {
 			$errors = php.array_merge($errors, $ptcErrors);
 		} else {
 			$ageGroups = this.ptcsToAgeGroups($priced['ptcs']);
@@ -164,7 +164,7 @@ class CanCreatePqRules {
 	static ptcsToAgeGroups($pricedPtcs) {
 		$pricedPtcs = $pricedPtcs || ['ADT'];
 		$pricedPtcs = Fp.map(($ptc) => $ptc || 'ADT', $pricedPtcs);
-		return php.array_column(Fp.map([PtcUtil.class, 'parsePtc'], $pricedPtcs), 'ageGroup');
+		return php.array_column(Fp.map(p => PtcUtil.parsePtc(p), $pricedPtcs), 'ageGroup');
 	}
 
 	static checkPricedAgeGroups($pricingAgeGroups, $leadData) {
