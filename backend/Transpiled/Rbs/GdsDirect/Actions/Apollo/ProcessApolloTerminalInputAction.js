@@ -486,9 +486,7 @@ class ProcessApolloTerminalInputAction {
 		let $type, $isConsidered, $errorRecords, $consideredErrors;
 		$type = CommandParser.parse($cmd)['type'];
 		if (StringUtil.startsWith($cmd, '$B')) {
-			$isConsidered = ($errRec) => {
-				return $errRec['type'] === Errors.BAD_MOD_IGNORE_AVAILABILITY;
-			};
+			$isConsidered = ($errRec) => $errRec['type'] === Errors.BAD_MOD_IGNORE_AVAILABILITY;
 			$errorRecords = CmsApolloTerminal.checkPricingCmdObviousPqRuleRecords($cmd);
 			$consideredErrors = Fp.filter($isConsidered, $errorRecords);
 			return php.empty($consideredErrors);
@@ -1391,6 +1389,7 @@ class ProcessApolloTerminalInputAction {
 			if ($cmdReal = $alias['realCmd']) {
 				$result = await this.processRealCommand($cmdReal, false);
 				$result['calledCommands'] = await this.moveDownAll($limit, $result.calledCommands || []);
+				return $result;
 			} else {
 				let mrTypes = SessionStateProcessor.mrCmdTypes;
 				let mdCmdRows = await this.stateful.getLog().getLastCommandsOfTypes(mrTypes);
