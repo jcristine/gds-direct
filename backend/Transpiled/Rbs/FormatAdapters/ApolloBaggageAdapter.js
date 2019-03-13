@@ -14,8 +14,9 @@ class ApolloBaggageAdapter
             'airline': $segmentDetails['airline'],
             'departureAirport': $segmentDetails['departureAirport'],
             'destinationAirport': $segmentDetails['destinationAirport'],
-            'bagWithoutFeeNumber': $segmentDetails['freeBaggageAmount']['raw'] || null,
-            'bagWithoutFeeNumberParsed': $segmentDetails['freeBaggageAmount']['parsed'] || null,
+            // may be null on some infant segments for example
+            'bagWithoutFeeNumber': !$segmentDetails['freeBaggageAmount'] ? null : $segmentDetails['freeBaggageAmount']['raw'],
+            'bagWithoutFeeNumberParsed': !$segmentDetails['freeBaggageAmount'] ? null : $segmentDetails['freeBaggageAmount']['parsed'],
             'isAvailable': $segmentDetails['isAvailable'],
             'error': $segmentDetails['error'] || null,
         };
