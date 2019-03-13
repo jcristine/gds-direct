@@ -41,7 +41,7 @@ let callRbs = async (functionName, params) => {
 			if (resp.result.response_code == 104) {
 				return BadRequest('RBS says passed params are invalid - ' + errorStr);
 			} else {
-				return UnprocessableEntity('RBS returned error - ' + resp.result.response_code + ' - ' + errorStr);
+				return UnprocessableEntity('RBS returned error - ' + errorStr);
 			}
 		} else if (resp.result.response_code == 3) {
 			let rpcErrors = resp.result.errors || [];
