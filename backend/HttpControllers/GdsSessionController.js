@@ -1,24 +1,12 @@
 let AmadeusClient = require("../GdsClients/AmadeusClient.js");
 let SabreClient = require("../GdsClients/SabreClient.js");
-let DateTime = require("../Transpiled/Lib/Utils/DateTime.js");
-let ApoPnrParser = require("../Transpiled/Gds/Parsers/Apollo/Pnr/PnrParser.js");
-let SabPnrParser = require("../Transpiled/Gds/Parsers/Sabre/Pnr/PnrParser.js");
-let AmaPnrParser = require("../Transpiled/Gds/Parsers/Amadeus/Pnr/PnrParser.js");
-let GalPnrParser = require("../Transpiled/Gds/Parsers/Galileo/Pnr/PnrParser.js");
 let RbsClient = require('../IqClients/RbsClient.js');
 let TravelportClient = require('../GdsClients/TravelportClient.js');
 let Db = require('../Utils/Db.js');
-let TerminalService = require('../Transpiled/App/Services/TerminalService.js');
-let {admins} = require('../Constants.js');
 let GdsSessions = require('../Repositories/GdsSessions.js');
 let {TRAVELPORT, AMADEUS, SABRE} = require('../Repositories/GdsProfiles.js');
-//const ImportPqAction = require("./Transpiled/Rbs/GdsDirect/Actions/ImportPqAction");
-//const CmsStatefulSession = require("./Transpiled/Rbs/GdsDirect/CmsStatefulSession");
-const TerminalBuffering = require("../Repositories/CmdRqLog");
 let {logit, logExc} = require('../LibWrappers/FluentLogger.js');
 let {Forbidden, NotImplemented, LoginTimeOut, NotFound} = require('../Utils/Rej.js');
-let {fetchAll} = require('../GdsHelpers/TravelportUtils.js');
-let {fetchAllRt} = require('../GdsHelpers/AmadeusUtils.js');
 let StatefulSession = require('../GdsHelpers/StatefulSession.js');
 let ProcessTerminalInput = require('../Actions/ProcessTerminalInput.js');
 const MakeMcoApolloAction = require('../Transpiled/Rbs/GdsDirect/Actions/Apollo/MakeMcoApolloAction.js');
@@ -29,6 +17,7 @@ const CmsClient = require("../IqClients/CmsClient");
 const GdsProfiles = require("../Repositories/GdsProfiles");
 const TooManyRequests = require("../Utils/Rej").TooManyRequests;
 const UnprocessableEntity = require("../Utils/Rej").UnprocessableEntity;
+const ImportPq = require('../Actions/ImportPq.js');
 
 let startByGds = async (gds) => {
 	let tuples = [
@@ -156,87 +145,21 @@ exports.runInputCmd = (rqBody) => {
 	return running;
 };
 
-let getItinerary = async (stateful) => {
-	let gds = stateful.gds;
-	if (gds === 'apollo') {
-		let pnrDump = (await fetchAll('*R', stateful)).output;
-		return ApoPnrParser.parse(pnrDump).itineraryData;
-	} else if (gds === 'sabre') {
-		let pnrDump = (await stateful.runCmd('*R')).output;
-		return SabPnrParser.parse(pnrDump).parsedData.itinerary;
-	} else if (gds === 'amadeus') {
-		let pnrDump = (await fetchAllRt('RT', stateful)).output;
-		return AmaPnrParser.parse(pnrDump).parsed.itinerary;
-	} else if (gds === 'galileo') {
-		let pnrDump = (await fetchAll('*R', stateful)).output;
-		return GalPnrParser.parse(pnrDump).itineraryData;
-	} else {
-		return NotImplemented('Unsupported GDS ' + gds + ' for getItinerary()');
-	}
-};
-
-/**
- * creates an RBS session, copies current itinerary there, performs
- * the requested action (getPqItinerary/importPq) and close RBS session
- *
- * slow, so it's just a temporary solution till I re-implement importPq here
- */
-let withRbsPqCopy = async (session, emcUser, action) => {
-	let stateful = await StatefulSession({session, emcUser});
-	let full = stateful.getFullState();
-	let areaState = full.areas[full.area] || {};
-	let pricingCmd = areaState.pricing_cmd;
-	let pcc = areaState.pcc;
-	let itinerary = await getItinerary(stateful);
-	let ctx = session.context;
-	let gdsData = await RbsClient.startSession(ctx);
-	let rbsSessionId = gdsData.rbsSessionId;
-	return Promise.resolve()
-		.then(() => RbsClient(ctx).rebuildItinerary({
-			sessionId: rbsSessionId,
-			pcc: pcc,
-			itinerary: itinerary.map(seg => ({
-				...seg,
-				segmentStatus:
-					ctx.gds === 'galileo' ? 'AK' :
-					ctx.gds === 'sabre' && seg.airline === 'AA' ? 'NN' :
-					'GK',
-				departureDate: DateTime.decodeRelativeDateInFuture(
-					seg.departureDate.parsed, new Date().toISOString()
-				),
-			})),
-		}))
-		.then(rebuilt => RbsClient({...ctx, command: pricingCmd}).runInputCmd({rbsSessionId}))
-		.then(priced => {
-			let pqErrors = priced.sessionInfo.canCreatePqErrors;
-			return pqErrors.length === 0 ? priced :
-				UnprocessableEntity('Could not reprice in RBS - ' + pqErrors.join('; '));
-		})
-		.then(priced => action({rbsSessionId}))
-		.finally(() => RbsClient.closeSession({context: ctx, gdsData: gdsData}));
-};
-
 exports.getPqItinerary = (reqBody) =>
-	GdsSessions.getByContext(reqBody).then(session =>
-		reqBody.useRbs
-			? RbsClient(reqBody).getPqItinerary(session.gdsData)
-			: withRbsPqCopy(session, reqBody.emcUser, ({rbsSessionId}) =>
-				RbsClient(reqBody).getPqItinerary({rbsSessionId,
-					leadId: reqBody.pqTravelRequestId || reqBody.travelRequestId,
-				})
-			)
-	);
+	GdsSessions.getByContext(reqBody).then(async session => {
+		// could Promise.all to safe some time...
+		let leadData = await CmsClient.getLeadData(reqBody.pqTravelRequestId);
+		let stateful = await StatefulSession({session, emcUser: reqBody.emcUser});
+		return ImportPq({stateful, leadData, fetchOptionalFields: false});
+	});
 
 exports.importPq = (reqBody) =>
-	GdsSessions.getByContext(reqBody).then(session =>
-		reqBody.useRbs
-			? RbsClient(reqBody).importPq(session.gdsData)
-			: withRbsPqCopy(session, reqBody.emcUser, ({rbsSessionId}) =>
-				RbsClient(reqBody).importPq({rbsSessionId,
-					leadId: reqBody.pqTravelRequestId || reqBody.travelRequestId,
-				})
-			)
-	);
+	GdsSessions.getByContext(reqBody).then(async session => {
+		// could Promise.all to safe some time...
+		let leadData = await CmsClient.getLeadData(reqBody.pqTravelRequestId);
+		let stateful = await StatefulSession({session, emcUser: reqBody.emcUser});
+		return ImportPq({stateful, leadData, fetchOptionalFields: true});
+	});
 
 exports.makeMco = async (reqBody) => {
 	let mcoData = {};
