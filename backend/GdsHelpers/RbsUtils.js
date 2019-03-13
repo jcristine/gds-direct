@@ -2,6 +2,7 @@
 // should probably use some RBS API instead of following functions
 
 const RbsClient = require("../IqClients/RbsClient");
+const UnprocessableEntity = require("../Utils/Rej").UnprocessableEntity;
 
 exports.getRbsPqInfo = async (pnrDump, pricingDump, gds) => {
 	// a hack, RBS does not accept dumps without rec
@@ -30,15 +31,45 @@ exports.getRbsPqInfo = async (pnrDump, pricingDump, gds) => {
 		pnrDump: pnrDump,
 		storedPricingDump: pricingDump,
 	});
+	/** @type {IRbsPnrData} */
 	let pnrFields = rbsRs.result.result.pnrFields;
+
+	let extendPricingStore = async (gdStore) => {
+		try {
+			// maybe taking agency incentive from DB on this side would make more sense...
+			let rbsStore = pnrFields.fareQuoteInfo.pricingList[0];
+			for (let i = 0; i < rbsStore.pricingBlockList.length; ++i) {
+				let rbsBlock = rbsStore.pricingBlockList[i];
+				let gdBlock = gdStore.pricingBlockList[i];
+				gdBlock.fareType = rbsBlock.fareType;
+				for (let j = 0; j < rbsBlock.fareInfo.fareConstruction.segments.length; ++j) {
+					let rbsSeg = rbsBlock.fareInfo.fareConstruction.segments[j];
+					let gdSeg = gdBlock.fareInfo.fareConstruction.segments[j];
+					gdSeg.agencyIncentiveAmount = rbsSeg.agencyIncentiveAmount;
+				}
+			}
+			gdStore.correctAgentPricingFormat = rbsStore.correctAgentPricingFormat;
+			gdStore.pricingPcc = rbsStore.pricingPcc;
+			return gdStore;
+		} catch (exc) {
+			exc.httpStatusCode = UnprocessableEntity.httpStatusCode;
+			exc.message = 'Could not link RBS data to PQ - ' + exc.message;
+			return Promise.reject(exc);
+		}
+	};
+
 	let fareTypes = [];
 	for (let store of (pnrFields.fareQuoteInfo || {}).pricingList || []) {
 		for (let ptcBlock of store.pricingBlockList || []) {
 			fareTypes.push(ptcBlock.fareType);
 		}
 	}
+
 	return Promise.resolve({
 		isBrokenFare: (pnrFields.destinationsFromLinearFare || {}).isBrokenFare ? true : false,
 		isPrivateFare: fareTypes.includes('tour') || fareTypes.includes('private'),
+		extendPricingStore: extendPricingStore,
+		contractInfo: pnrFields.contractInfo,
+		itinerary: pnrFields.reservation.itinerary,
 	});
 };
