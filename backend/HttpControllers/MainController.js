@@ -117,7 +117,8 @@ let withGdsSession = (sessionAction) => (req, res) => {
 		return Promise.resolve()
 			.then(() => sessionAction({rqBody, session, emcUser}))
 			.then(result => {
-				FluentLogger.logit('TODO: Processed HTTP RQ in ' + ((Date.now() - startMs) / 1000).toFixed(3) + ' s.', session.logId, result);
+				//                 'TODO: Processing HTTP RQ'
+				FluentLogger.logit('TODO: .......... HTTP RQ result (in ' + ((Date.now() - startMs) / 1000).toFixed(3) + ' s.)', session.logId, result);
 				return Promise.resolve(result);
 			})
 			.catch(exc => {
