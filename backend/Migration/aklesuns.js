@@ -109,6 +109,12 @@ module.exports.migrations = [
 		].join('\n')),
 	},
 	{
+		name: 'GRECT/2019.03.14008-drop-http-rq-table',
+		perform: (db) => db.query([
+			"DROP TABLE http_rq_log",
+		].join('\n')),
+	},
+	{
 		name: '00.00.08-create-themes-table',
 		perform: (db) => db.query([
 			"CREATE TABLE `terminalThemes` (",
