@@ -5,6 +5,7 @@ let Db = require('../Utils/Db.js');
 let Diag = require('../LibWrappers/Diag.js');
 let FluentLogger = require('../LibWrappers/FluentLogger.js');
 const {getExcData} = require('../Utils/Misc.js');
+const php = require('../Transpiled/php.js');
 
 let shouldDiag = (exc) =>
 	!BadRequest.matches(exc.httpStatusCode) &&
@@ -44,7 +45,9 @@ let toHandleHttp = (action, logger = null) => (req, res) => {
 			log('HTTP action result:', result);
 			res.setHeader('Content-Type', 'application/json');
 			res.status(200);
-			res.send(JSON.stringify(Object.assign({
+			// not JSON.stringify, because there are a lot of transpiled parsers that
+			// assign keys to an [] and they will be missing in normal JSON.stringify
+			res.send(php.json_encode(Object.assign({
 				rqTakenMs: rqTakenMs,
 				rsSentMs: Date.now(),
 				message: 'GRECT HTTP OK',
@@ -54,7 +57,7 @@ let toHandleHttp = (action, logger = null) => (req, res) => {
 			exc = exc || 'Empty error ' + exc;
 			res.status(exc.httpStatusCode || 500);
 			res.setHeader('Content-Type', 'application/json');
-			res.send(JSON.stringify({error: exc.message || exc + '', processLogId: logId}));
+			res.send(php.json_encode({error: exc.message || exc + '', processLogId: logId}));
 			let errorData = getExcData(exc, {
 				message: exc.message || '' + exc,
 				httpStatusCode: exc.httpStatusCode,
