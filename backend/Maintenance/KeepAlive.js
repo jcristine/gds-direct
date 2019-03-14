@@ -126,6 +126,6 @@ exports.run = () => {
 		terminate: () => new Promise((resolve) => terminate(resolve)),
 		set onIdle(callback) {
 			onIdles.push(callback);
-		}
+		},
 	};
 };

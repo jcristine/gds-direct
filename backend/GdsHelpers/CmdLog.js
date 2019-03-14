@@ -23,7 +23,7 @@ let CmdLog = async ({session, whenCmdRqId}) => {
 
 	let logCommand = (cmd, running) => {
 		let hrtimeStart = process.hrtime();
-		running.catch(exc => FluentLogger.logExc('ERROR: Failed to run cmd [' + cmd + '] in GDS', session.logId, exc));
+		running.catch(exc => FluentLogger.logExc('WARNING: Failed to run cmd [' + cmd + '] in GDS', session.logId, exc));
 		return running.then(gdsResult => {
 			let prevState = fullState.areas[fullState.area];
 
