@@ -129,12 +129,18 @@ process.on('unhandledRejection', (exc, promise) => {
 		promise: promise,
 		...exc,
 	};
-	if (shouldDiag(exc)) {
-		console.error('Unhandled Promise Rejection', data);
-		Diag.error('Unhandled Promise Rejection', data);
-	} else {
-		console.log('(ignored) Unhandled Promise Rejection', data);
-	}
+	// ignoring for now because this event appears to fire even if you _did_ catch
+	// rejection, dunno if it's v8 bug or my misunderstanding of how it should work
+	// for example: calling runInSession() at GdsSessionController.js results in rejection
+	// if token is outdated - you can see me catching it in runInputCmdRestartAllowed() and
+	// client does receive response generated in this catch, but 'unhandledRejection' fires
+	// nevertheless, with almost empty stack trace (just the PersistentHttpRq.js)
+	//if (shouldDiag(exc)) {
+	//	console.error('Unhandled Promise Rejection', data);
+	//	Diag.error('Unhandled Promise Rejection', data);
+	//} else {
+	//	console.log('(ignored) Unhandled Promise Rejection', data);
+	//}
 });
 
 exports.toHandleHttp = toHandleHttp;

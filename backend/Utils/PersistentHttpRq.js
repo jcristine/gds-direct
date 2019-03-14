@@ -19,9 +19,6 @@ let httpAgent = new http.Agent(agentParams);
  * it also returns a promise
  */
 let PersistentHttpRq = (params) => {
-	// bad for performance, but Promises do not include
-	// original trace sadly (waiting for node v12)
-	let originalStack = new Error().stack;
 	return new Promise((resolve, reject) => {
 		let parsedUrl = url.parse(params.url);
 		let request = parsedUrl.protocol.startsWith('https') ? https.request : http.request;
@@ -44,7 +41,6 @@ let PersistentHttpRq = (params) => {
 					let msg = 'Http request to external service failed - ' +
 						res.statusCode + ' - ' + parsedUrl.path + ' - ' + responseBody;
 					let exc = BadGateway(msg).exc;
-					exc.stack = exc.stack + '\nCaused by:\n' + originalStack;
 					reject(exc);
 				} else {
 					resolve({headers: res.headers, body: responseBody});

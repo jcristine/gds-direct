@@ -107,7 +107,7 @@ TravelportClient.withSession = (params, action) => {
 			.then(() => action(session))
 			.finally(() => {
 				TravelportClient.closeSession(gdsData);
-			})
+			});
 	});
 };
 
