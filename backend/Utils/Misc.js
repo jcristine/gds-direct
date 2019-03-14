@@ -102,14 +102,16 @@ exports.wrapExc = getter => {
 exports.allWrap = promises => new Promise((resolve) => {
 	let resolved = [];
 	let rejected = [];
+	let checkResolved = () => {
+		if (resolved.length + rejected.length === promises.length) {
+			resolve({resolved, rejected});
+		}
+	};
+	checkResolved();
 	promises.forEach(p => p
 		.then(result => resolved.push(result))
 		.catch(exc => rejected.push(exc))
-		.finally(() => {
-			if (resolved.length + rejected.length === promises.length) {
-				resolve({resolved, rejected});
-			}
-		}));
+		.finally(checkResolved));
 });
 
 exports.timeout = (seconds, promise) => {
