@@ -12,7 +12,7 @@ class CommandParserTest extends require('../../../Lib/TestCase.js') {
 
 		$list.push([
 			'*R',
-			{'type': 'redisplayPnr'}
+			{'type': 'redisplayPnr'},
 		]);
 
 		$list.push([
@@ -30,7 +30,7 @@ class CommandParserTest extends require('../../../Lib/TestCase.js') {
 						'type': 'storeKeepPnr',
 					},
 				],
-			}
+			},
 		]);
 
 		$list.push([
@@ -51,7 +51,7 @@ class CommandParserTest extends require('../../../Lib/TestCase.js') {
 						'type': 'storeKeepPnr',
 					},
 				],
-			}
+			},
 		]);
 
 		$list.push([
@@ -83,7 +83,7 @@ class CommandParserTest extends require('../../../Lib/TestCase.js') {
 				'pricingModifiers': [
 					{'raw': 'NCB', 'type': 'lowestFareAndRebook'},
 				],
-			}
+			},
 		}]);
 
 		$list.push(['WPNCB¥MEUR', {
@@ -91,7 +91,7 @@ class CommandParserTest extends require('../../../Lib/TestCase.js') {
 				'pricingModifiers': [
 					{'raw': 'NCB', 'type': 'lowestFareAndRebook'},
 				],
-			}
+			},
 		}]);
 
 		$list.push(['WPNCB¥PJCB', {
@@ -99,7 +99,7 @@ class CommandParserTest extends require('../../../Lib/TestCase.js') {
 				'pricingModifiers': [
 					{'raw': 'NCB', 'type': 'lowestFareAndRebook'},
 				],
-			}
+			},
 		}]);
 
 		$list.push(['WPNCB¥P1ITX\/1I06\/1ITF', {
@@ -107,7 +107,7 @@ class CommandParserTest extends require('../../../Lib/TestCase.js') {
 				'pricingModifiers': [
 					{'raw': 'NCB', 'type': 'lowestFareAndRebook'},
 				],
-			}
+			},
 		}]);
 
 		$list.push(['WPPC05¥NCB', {
@@ -116,7 +116,7 @@ class CommandParserTest extends require('../../../Lib/TestCase.js') {
 					{'raw': 'PC05', 'type': 'ptc'},
 					{'raw': 'NCB', 'type': 'lowestFareAndRebook'},
 				],
-			}
+			},
 		}]);
 
 		$list.push(['WPP1JCB\/1J05¥NCB', {
@@ -125,7 +125,7 @@ class CommandParserTest extends require('../../../Lib/TestCase.js') {
 					{'raw': 'P1JCB\/1J05', 'type': 'ptc'},
 					{'raw': 'NCB', 'type': 'lowestFareAndRebook'},
 				],
-			}
+			},
 		}]);
 
 		$list.push(['WPP1ADT\/1C05¥NCB¥S1\/2\/5\/6', {
@@ -135,7 +135,7 @@ class CommandParserTest extends require('../../../Lib/TestCase.js') {
 					{'raw': 'NCB', 'type': 'lowestFareAndRebook'},
 					{'raw': 'S1\/2\/5\/6', 'type': 'segments'},
 				],
-			}
+			},
 		}]);
 
 		$list.push(['WPRQ¥P3ADT\/1JCB', {
@@ -144,7 +144,7 @@ class CommandParserTest extends require('../../../Lib/TestCase.js') {
 					{'raw': 'RQ', 'type': 'createPriceQuote'},
 					{'raw': 'P3ADT\/1JCB', 'type': 'ptc'},
 				],
-			}
+			},
 		}]);
 
 		$list.push(['WPPJCB¥RQ', {
@@ -153,7 +153,7 @@ class CommandParserTest extends require('../../../Lib/TestCase.js') {
 					{'raw': 'PJCB', 'type': 'ptc'},
 					{'raw': 'RQ', 'type': 'createPriceQuote'},
 				],
-			}
+			},
 		}]);
 
 		$list.push([
@@ -181,7 +181,7 @@ class CommandParserTest extends require('../../../Lib/TestCase.js') {
 							'type': 'ptc', 'parsed': [
 								{'quantity': 1, 'ptc': 'ADT'},
 								{'quantity': 2, 'ptc': 'INF'},
-							]
+							],
 						},
 					],
 				},
@@ -198,7 +198,7 @@ class CommandParserTest extends require('../../../Lib/TestCase.js') {
 								{'ptc': 'ADT'},
 								{'ptc': 'INF'},
 								{'ptc': 'CNN'},
-							]
+							],
 						},
 					],
 				},
@@ -216,13 +216,13 @@ class CommandParserTest extends require('../../../Lib/TestCase.js') {
 								{'fieldNumber': '1', 'firstNameNumber': '1'},
 								{'fieldNumber': '1', 'firstNameNumber': '2'},
 								{'fieldNumber': '2', 'firstNameNumber': '1'},
-							]
+							],
 						},
 						{
 							'type': 'ptc', 'parsed': [
 								{'quantity': 2, 'ptc': 'ADT'},
 								{'ptc': 'INF'},
-							]
+							],
 						},
 					],
 				},
@@ -242,14 +242,14 @@ class CommandParserTest extends require('../../../Lib/TestCase.js') {
 									'firstNameNumber': '1',
 									'through': {'fieldNumber': '2', 'firstNameNumber': '1'},
 								},
-							]
+							],
 						},
 						{
 							'type': 'ptc', 'parsed': [
 								{'quantity': null, 'ptc': 'ADT'},
 								{'quantity': 1, 'ptc': 'C06'},
 								{'quantity': null, 'ptc': 'INF'},
-							]
+							],
 						},
 					],
 				},
@@ -279,14 +279,14 @@ class CommandParserTest extends require('../../../Lib/TestCase.js') {
 									'firstNameNumber': '0',
 									'through': null,
 								},
-							]
+							],
 						},
 						{
 							'type': 'ptc', 'parsed': [
 								{'quantity': 2, 'ptc': 'ADT'},
 								{'ptc': 'INF'},
 								{'quantity': 3, 'ptc': 'CNN'},
-							]
+							],
 						},
 					],
 				},
@@ -431,7 +431,7 @@ class CommandParserTest extends require('../../../Lib/TestCase.js') {
 			'data': {
 				'ranges': [
 					{'from': '3', 'to': '3'},
-				]
+				],
 			},
 		}]);
 
@@ -441,7 +441,7 @@ class CommandParserTest extends require('../../../Lib/TestCase.js') {
 			'data': {
 				'ranges': [
 					{'from': '9', 'to': '12'},
-				]
+				],
 			},
 		}]);
 
@@ -452,7 +452,7 @@ class CommandParserTest extends require('../../../Lib/TestCase.js') {
 				'ranges': [
 					{'from': '9', 'to': '9'},
 					{'from': '12', 'to': '12'},
-				]
+				],
 			},
 		}]);
 
@@ -464,8 +464,8 @@ class CommandParserTest extends require('../../../Lib/TestCase.js') {
 					'type': 'changePnrRemarks', 'data': {
 						'ranges': [
 							{'from': '1', 'to': '3'},
-						]
-					}
+						],
+					},
 				},
 				{'type': 'redisplayPnr'},
 			],
@@ -628,7 +628,7 @@ class CommandParserTest extends require('../../../Lib/TestCase.js') {
 			'type': 'addFrequentFlyerNumber', 'data': {
 				'airline': 'UA', 'code': '12345678910',
 				'majorPaxNum': '1', 'minorPaxNum': '1',
-			}
+			},
 		}]);
 		$list.push(['FFUA12345678910\/LH', {'type': 'addFrequentFlyerNumber'}]);
 		$list.push(['FFUA12345678910-1.1', {'type': 'addFrequentFlyerNumber'}]);
@@ -637,20 +637,20 @@ class CommandParserTest extends require('../../../Lib/TestCase.js') {
 			'type': 'addFrequentFlyerNumber', 'data': {
 				'airline': 'AA', 'code': '987654321',
 				'paxName': 'HOFFMAN\/REICHE',
-			}
+			},
 		}]);
 		$list.push(['FFAA987654321\/CX,AS,EI,QF-2.2', {
 			'type': 'addFrequentFlyerNumber', 'data': {
 				'airline': 'AA', 'code': '987654321',
 				'partners': ['CX', 'AS', 'EI', 'QF'],
 				'majorPaxNum': '2', 'minorPaxNum': '2',
-			}
+			},
 		}]);
 		$list.push(['FFAA987654321\/1,2-2.3', {
 			'type': 'addFrequentFlyerNumber', 'data': {
 				'airline': 'AA', 'code': '987654321', 'segNums': [1, 2],
 				'majorPaxNum': '2', 'minorPaxNum': '3',
-			}
+			},
 		}]);
 		$list.push(['*FF', {'type': 'frequentFlyerData'}]);
 		$list.push(['FF\u00A4ALL', {'type': 'changeFrequentFlyerNumber'}]);
@@ -660,19 +660,19 @@ class CommandParserTest extends require('../../../Lib/TestCase.js') {
 		//$list[] = ['FQ*DLON'                              , ['type' => 'fareSearch', 'data' => ['departureAirport' => 'LON']]];
 		$list.push(['FQLONORL6AUG¥RT¥PL', {
 			'type': 'fareSearch',
-			'data': {'departureAirport': 'LON', 'destinationAirport': 'ORL', 'departureDate': {'raw': '6AUG'}}
+			'data': {'departureAirport': 'LON', 'destinationAirport': 'ORL', 'departureDate': {'raw': '6AUG'}},
 		}]);
 		$list.push(['FQLOSLBA4AUG¥RR*BSAG', {
 			'type': 'fareSearch',
-			'data': {'departureAirport': 'LOS', 'destinationAirport': 'LBA', 'departureDate': {'raw': '4AUG'}}
+			'data': {'departureAirport': 'LOS', 'destinationAirport': 'LBA', 'departureDate': {'raw': '4AUG'}},
 		}]);
 		$list.push(['FQSTNIST6AUG', {
 			'type': 'fareSearch',
-			'data': {'departureAirport': 'STN', 'destinationAirport': 'IST', 'departureDate': {'raw': '6AUG'}}
+			'data': {'departureAirport': 'STN', 'destinationAirport': 'IST', 'departureDate': {'raw': '6AUG'}},
 		}]);
 		$list.push(['FQLGWSAN7OCT', {
 			'type': 'fareSearch',
-			'data': {'departureAirport': 'LGW', 'destinationAirport': 'SAN', 'departureDate': {'raw': '7OCT'}}
+			'data': {'departureAirport': 'LGW', 'destinationAirport': 'SAN', 'departureDate': {'raw': '7OCT'}},
 		}]);
 		$list.push(['FQLONCLT29AUG¥RT¥PITX¥RR*BSAG', {
 			'type': 'fareSearch', 'data': {
@@ -684,23 +684,23 @@ class CommandParserTest extends require('../../../Lib/TestCase.js') {
 					{'type': 'ptc', 'raw': '¥PITX', 'parsed': 'ITX'},
 					{'type': 'accountCode', 'raw': '¥RR*BSAG', 'parsed': 'BSAG'},
 				],
-			}
+			},
 		}]);
 		$list.push(['FQLONDFW10OCT¥RR*BSAG¥PITX', {
 			'type': 'fareSearch',
-			'data': {'departureAirport': 'LON', 'destinationAirport': 'DFW', 'departureDate': {'raw': '10OCT'}}
+			'data': {'departureAirport': 'LON', 'destinationAirport': 'DFW', 'departureDate': {'raw': '10OCT'}},
 		}]);
 		$list.push(['FQATLDFW18NOV-AA', {
 			'type': 'fareSearch',
-			'data': {'departureAirport': 'ATL', 'destinationAirport': 'DFW', 'departureDate': {'raw': '18NOV'}}
+			'data': {'departureAirport': 'ATL', 'destinationAirport': 'DFW', 'departureDate': {'raw': '18NOV'}},
 		}]);
 		$list.push(['FQDXBNYC04NOV-DI¥OW', {
 			'type': 'fareSearch',
-			'data': {'departureAirport': 'DXB', 'destinationAirport': 'NYC', 'departureDate': {'raw': '04NOV'}}
+			'data': {'departureAirport': 'DXB', 'destinationAirport': 'NYC', 'departureDate': {'raw': '04NOV'}},
 		}]);
 		$list.push(['FQMANHOU27MAR', {
 			'type': 'fareSearch',
-			'data': {'departureAirport': 'MAN', 'destinationAirport': 'HOU', 'departureDate': {'raw': '27MAR'}}
+			'data': {'departureAirport': 'MAN', 'destinationAirport': 'HOU', 'departureDate': {'raw': '27MAR'}},
 		}]);
 		$list.push(['FQEDILEX11AUGBB¥RT', {
 			'type': 'fareSearch', 'data': {
@@ -711,19 +711,19 @@ class CommandParserTest extends require('../../../Lib/TestCase.js') {
 					{'type': 'cabinClass', 'raw': 'BB', 'parsed': 'business'},
 					{'type': 'tripType', 'raw': '¥RT', 'parsed': 'RT'},
 				],
-			}
+			},
 		}]);
 		$list.push(['FQLONORL11AUG-VS', {
 			'type': 'fareSearch',
-			'data': {'departureAirport': 'LON', 'destinationAirport': 'ORL', 'departureDate': {'raw': '11AUG'}}
+			'data': {'departureAirport': 'LON', 'destinationAirport': 'ORL', 'departureDate': {'raw': '11AUG'}},
 		}]);
 		$list.push(['FQATHNYC26AUGBB-DY¥OW', {
 			'type': 'fareSearch',
-			'data': {'departureAirport': 'ATH', 'destinationAirport': 'NYC', 'departureDate': {'raw': '26AUG'}}
+			'data': {'departureAirport': 'ATH', 'destinationAirport': 'NYC', 'departureDate': {'raw': '26AUG'}},
 		}]);
 		$list.push(['FQTLVCHI06NOV-DY', {
 			'type': 'fareSearch',
-			'data': {'departureAirport': 'TLV', 'destinationAirport': 'CHI', 'departureDate': {'raw': '06NOV'}}
+			'data': {'departureAirport': 'TLV', 'destinationAirport': 'CHI', 'departureDate': {'raw': '06NOV'}},
 		}]);
 		$list.push(['FQ27APR18NBOJFK02MAY18-BA¥PL¥RT¥BQ', {
 			'type': 'fareSearch',
@@ -731,8 +731,8 @@ class CommandParserTest extends require('../../../Lib/TestCase.js') {
 				'ticketingDate': {'raw': '27APR18'},
 				'departureAirport': 'NBO',
 				'destinationAirport': 'JFK',
-				'departureDate': {'raw': '02MAY18'}
-			}
+				'departureDate': {'raw': '02MAY18'},
+			},
 		}]);
 		$list.push(['FQ07JUN18MEMLAS10AUG18¥PADT-AA¥PL¥BG', {
 			'type': 'fareSearch', 'data': {
@@ -746,7 +746,7 @@ class CommandParserTest extends require('../../../Lib/TestCase.js') {
 					{'type': 'fareType', 'raw': '¥PL', 'parsed': 'public'},
 					{'type': 'bookingClass', 'raw': '¥BG', 'parsed': 'G'},
 				],
-			}
+			},
 		}]);
 		$list.push(['FQ26JUL18ATLDFW02SEP18-AA', {
 			'type': 'fareSearch',
@@ -754,8 +754,8 @@ class CommandParserTest extends require('../../../Lib/TestCase.js') {
 				'ticketingDate': {'raw': '26JUL18'},
 				'departureAirport': 'ATL',
 				'destinationAirport': 'DFW',
-				'departureDate': {'raw': '02SEP18'}
-			}
+				'departureDate': {'raw': '02SEP18'},
+			},
 		}]);
 		$list.push(['FQ07JUN18LONMEM06AUG18¥PADT-UA¥PL¥BV', {
 			'type': 'fareSearch',
@@ -763,8 +763,8 @@ class CommandParserTest extends require('../../../Lib/TestCase.js') {
 				'ticketingDate': {'raw': '07JUN18'},
 				'departureAirport': 'LON',
 				'destinationAirport': 'MEM',
-				'departureDate': {'raw': '06AUG18'}
-			}
+				'departureDate': {'raw': '06AUG18'},
+			},
 		}]);
 		$list.push(['FQ27APR18NBONYC05AUG18-BA¥BK', {
 			'type': 'fareSearch',
@@ -772,8 +772,8 @@ class CommandParserTest extends require('../../../Lib/TestCase.js') {
 				'ticketingDate': {'raw': '27APR18'},
 				'departureAirport': 'NBO',
 				'destinationAirport': 'NYC',
-				'departureDate': {'raw': '05AUG18'}
-			}
+				'departureDate': {'raw': '05AUG18'},
+			},
 		}]);
 		$list.push(['FQ11JUL18EWRACC23AUG18CB¥BH-ET', {
 			'type': 'fareSearch',
@@ -781,8 +781,8 @@ class CommandParserTest extends require('../../../Lib/TestCase.js') {
 				'ticketingDate': {'raw': '11JUL18'},
 				'departureAirport': 'EWR',
 				'destinationAirport': 'ACC',
-				'departureDate': {'raw': '23AUG18'}
-			}
+				'departureDate': {'raw': '23AUG18'},
+			},
 		}]);
 		// from multi-pcc tariff test case
 		$list.push(['FQABZMSP18MAR¥RR*BSAG¥PITX', {
@@ -795,7 +795,7 @@ class CommandParserTest extends require('../../../Lib/TestCase.js') {
 					{'raw': '¥RR*BSAG'},
 					{'raw': '¥PITX'},
 				],
-			}
+			},
 		}]);
 		// invalid tariff cmd - departure date can't be before airports in Sabre
 		$list.push(['FQ10MAYJFKMNL', {
@@ -821,7 +821,7 @@ class CommandParserTest extends require('../../../Lib/TestCase.js') {
 					},
 					{'raw': 'N3', 'type': 'names', 'parsed': [{'fieldNumber': '3', 'firstNameNumber': '0'}]},
 				],
-			}
+			},
 		}]);
 
 		$list.push(['WPNC¥FXD', {
@@ -831,7 +831,7 @@ class CommandParserTest extends require('../../../Lib/TestCase.js') {
 					{'raw': 'NC', 'type': 'lowestFare'},
 					{'raw': 'FXD', 'type': 'forceProperEconomy'},
 				],
-			}
+			},
 		}]);
 
 		$list.push(['WPNC¥MPC-ANY', {
@@ -842,10 +842,19 @@ class CommandParserTest extends require('../../../Lib/TestCase.js') {
 					{
 						'raw': 'MPC-ANY', 'type': 'maxPenaltyForChange', 'parsed': {
 							'value': 'ANY',
-						}
+						},
 					},
 				],
-			}
+			},
+		}]);
+
+		$list.push(['WPP0ADT/0C05/0INF', {
+			'type': 'priceItinerary', 'data': {
+				'baseCmd': 'WP',
+				'pricingModifiers': [
+					{'raw': 'P0ADT/0C05/0INF', 'type': 'ptc'},
+				],
+			},
 		}]);
 
 		return $list;
