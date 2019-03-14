@@ -76,6 +76,7 @@ let closeSession = (session) => {
 let shouldRestart = (exc, session) => {
 	let lifetimeMs = Date.now() - session.createdMs;
 	return LoginTimeOut.matches(exc.httpStatusCode)
+		//|| !exc.httpStatusCode // runtime errors, like null-pointer exceptions
 		// 1 hour, to exclude cases like outdated format of gdsData
 		|| lifetimeMs > 60 * 60 * 1000;
 };
@@ -134,45 +135,40 @@ exports.runInputCmd = ({rqBody, session, emcUser}) => {
 };
 
 exports.getPqItinerary = async ({rqBody, session, emcUser}) => {
-	// could Promise.all to safe some time...
+	// could Promise.all to save some time...
 	let leadData = await CmsClient.getLeadData(rqBody.pqTravelRequestId);
 	let stateful = await StatefulSession({session, emcUser});
 	return ImportPq({stateful, leadData, fetchOptionalFields: false});
 };
 
-exports.importPq = (reqBody) =>
-	GdsSessions.getByContext(reqBody).then(async session => {
-		// could Promise.all to safe some time...
-		let leadData = await CmsClient.getLeadData(reqBody.pqTravelRequestId);
-		let stateful = await StatefulSession({session, emcUser: reqBody.emcUser});
-		return ImportPq({stateful, leadData, fetchOptionalFields: true});
-	});
+exports.importPq = async ({rqBody, session, emcUser}) => {
+	// could Promise.all to save some time...
+	let leadData = await CmsClient.getLeadData(rqBody.pqTravelRequestId);
+	let stateful = await StatefulSession({session, emcUser});
+	return ImportPq({stateful, leadData, fetchOptionalFields: true});
+};
 
-exports.makeMco = async (reqBody) => {
+exports.makeMco = async ({rqBody, session, emcUser}) => {
 	let mcoData = {};
-	for (let {key, value} of reqBody.fields) {
+	for (let {key, value} of rqBody.fields) {
 		mcoData[key] = value.toUpperCase();
 	}
-	return GdsSessions.getByContext(reqBody)
-		.then(async session => {
-			if (session.context.gds !== 'apollo') {
-				return NotImplemented('Unsupported GDS makeMco - ' + session.context.gds);
-			}
-			let stateful = await StatefulSession({session});
-			let mcoResult = await (new MakeMcoApolloAction())
-				.setSession(stateful).execute(mcoData);
-			if (!php.empty(mcoResult.errors)) {
-				return UnprocessableEntity('Failed to MCO - ' + mcoResult.errors.join('; '));
-			} else {
-				return Promise.resolve({
-					output: mcoResult.calledCommands
-						.map(rec => '\n>' + rec.cmd + '\n' + rec.output)
-						.join('\n'),
-					calledCommands: mcoResult.calledCommands,
-				});
-			}
-
+	if (session.context.gds !== 'apollo') {
+		return NotImplemented('Unsupported GDS for makeMco - ' + session.context.gds);
+	}
+	let stateful = await StatefulSession({session, emcUser});
+	let mcoResult = await (new MakeMcoApolloAction())
+		.setSession(stateful).execute(mcoData);
+	if (!php.empty(mcoResult.errors)) {
+		return UnprocessableEntity('Failed to MCO - ' + mcoResult.errors.join('; '));
+	} else {
+		return Promise.resolve({
+			output: mcoResult.calledCommands
+				.map(rec => '\n>' + rec.cmd + '\n' + rec.output)
+				.join('\n'),
+			calledCommands: mcoResult.calledCommands,
 		});
+	}
 };
 
 let keepAliveByGds = (gds, gdsData) => {
@@ -194,8 +190,7 @@ let keepAliveSession = async (session) => {
 	});
 };
 
-exports.keepAliveCurrent = async (reqBody) => {
-	let session = await GdsSessions.getByContext(reqBody);
+exports.keepAliveCurrent = async ({session}) => {
 	let userAccessMs = await GdsSessions.getUserAccessMs(session);
 	if (!KeepAlive.shouldClose(userAccessMs)) {
 		return keepAliveSession(session);

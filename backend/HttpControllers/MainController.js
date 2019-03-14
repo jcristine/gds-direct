@@ -100,10 +100,10 @@ let withAuth = (userAction) => (req, res) => {
 };
 
 /** @param {function({rqBody, session, emcUser}): Promise} sessionAction */
-let withGdsSession = (sessionAction) => (req, res) => {
+let withGdsSession = (sessionAction, canStartNew = false) => (req, res) => {
 	return withAuth(async (rqBody) => {
 		let session = await GdsSessions.getByContext(rqBody)
-			.catch(exc => NotFound.matches(exc.httpStatusCode)
+			.catch(exc => NotFound.matches(exc.httpStatusCode) && canStartNew
 				? GdsSessionsController.startNewSession(rqBody)
 				: Promise.reject(rqBody));
 		let emcUser = rqBody.emcUser;

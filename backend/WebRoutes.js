@@ -79,11 +79,11 @@ app.post('/terminal/saveSetting/:name/:currentGds', withAuth((reqBody, emcResult
 	let {name, currentGds} = routeParams;
 	return new TerminalBaseController(emcResult).postSaveSettingAction(reqBody, name, currentGds);
 }));
-app.post('/terminal/command', withGdsSession(GdsSessionController.runInputCmd));
-app.post('/gdsDirect/keepAlive', withAuth(GdsSessionController.keepAliveCurrent));
+app.post('/terminal/command', withGdsSession(GdsSessionController.runInputCmd, true));
+app.post('/gdsDirect/keepAlive', withGdsSession(GdsSessionController.keepAliveCurrent));
 app.get('/terminal/getPqItinerary', withGdsSession(GdsSessionController.getPqItinerary));
-app.get('/terminal/importPq', withAuth(GdsSessionController.importPq));
-app.post('/terminal/makeMco', withAuth(GdsSessionController.makeMco));
+app.get('/terminal/importPq', withGdsSession(GdsSessionController.importPq));
+app.post('/terminal/makeMco', withGdsSession(GdsSessionController.makeMco));
 app.get('/terminal/lastCommands', withAuth(GdsSessionController.getLastCommands));
 app.get('/terminal/clearBuffer', withAuth(GdsSessionController.clearBuffer));
 //app.use('/admin/updateHighlightRules', express.bodyParser({limit: '10mb'}));
@@ -255,7 +255,7 @@ socketIo.on('connection', /** @param {Socket} socket */ socket => {
 		if (rq.path === '/terminal/command') {
 			withGdsSession(GdsSessionController.runInputCmd)(rq, rs);
 		} else if (rq.path === '/gdsDirect/keepAlive') {
-			withAuth(GdsSessionController.keepAliveCurrent)(rq, rs);
+			withGdsSession(GdsSessionController.keepAliveCurrent)(rq, rs);
 		} else {
 			rs.status(501);
 			rs.send('Unsupported path - ' + rq.path);

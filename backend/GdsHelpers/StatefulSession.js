@@ -23,6 +23,7 @@ const CmdLog = require('./CmdLog.js');;
  * @param {IEmcUser} emcUser
  */
 let StatefulSession = async ({session, whenCmdRqId, emcUser}) => {
+	whenCmdRqId = whenCmdRqId || Promise.resolve(null);
 	let cmdLog = await CmdLog({session, whenCmdRqId});
 
 	let config = await getConfig();
