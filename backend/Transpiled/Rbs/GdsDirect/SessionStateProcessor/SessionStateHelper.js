@@ -5,6 +5,9 @@ const GetPqItineraryAction = require('./CanCreatePqRules.js');
 const Errors = require('../../../Rbs/GdsDirect/Errors.js');
 const SessionStateProcessor = require('../../../Rbs/GdsDirect/SessionStateProcessor/SessionStateProcessor.js');
 const CmsApolloTerminal = require('../../../Rbs/GdsDirect/GdsInterface/CmsApolloTerminal');
+const CmsSabreTerminal = require('../../../Rbs/GdsDirect/GdsInterface/CmsSabreTerminal');
+const CmsAmadeusTerminal = require('../../../Rbs/GdsDirect/GdsInterface/CmsAmadeusTerminal');
+const CmsGalileoTerminal = require('../../../Rbs/GdsDirect/GdsInterface/CmsGalileoTerminal');
 const php = require('../../../php.js');
 const CommonDataHelper = require("../CommonDataHelper");
 
@@ -81,12 +84,7 @@ class SessionStateHelper
         let $cmdRow, $priced;
         if ($cmdRow = await this.getPricingCmdRow($cmdLog)) {
         	let gds = $cmdLog.getSessionData()['gds'];
-        	let ifc;
-			if (gds === 'apollo') {
-				ifc = new CmsApolloTerminal();
-			} else {
-				return ['Unsupported GDS for checkCanCreatePq - ' + gds];
-			}
+        	let ifc = CommonDataHelper.makeIfcByGds(gds);
             $priced = ifc.getPricedPtcs($cmdRow['cmd']);
             return GetPqItineraryAction.ptcsToAgeGroups($priced['ptcs'] || []);
         } else {
@@ -98,12 +96,7 @@ class SessionStateHelper
         let $errors, $gds, $gdsInterface, $cmdList, $cmdPricing, $cmdItinerary, $cmdRecord;
         $errors = [];
         $gds = $cmdLog.getSessionData()['gds'];
-        if ($gds === 'apollo') {
-        	$gdsInterface = new CmsApolloTerminal();
-		} else {
-        	$errors.push('Unsupported GDS for checkCanCreatePq - ' + $gds);
-        	return $errors;
-		}
+        $gdsInterface = CommonDataHelper.makeIfcByGds($gds);
         $cmdList = await $cmdLog.getLastCommandsOfTypes(SessionStateProcessor.getCanCreatePqSafeTypes());
         $cmdPricing = await this.getPricingCmdRow($cmdLog);
         $cmdItinerary = null;
