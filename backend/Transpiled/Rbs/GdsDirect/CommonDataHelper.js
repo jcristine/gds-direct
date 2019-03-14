@@ -24,6 +24,11 @@ const AmadeusPnr = require("../TravelDs/AmadeusPnr");
 const AmadeusPnrCommonFormatAdapter = require("../FormatAdapters/AmadeusPnrCommonFormatAdapter");
 const NoContent = require("../../../Utils/Rej").NoContent;
 
+const CmsApolloTerminal = require('../../Rbs/GdsDirect/GdsInterface/CmsApolloTerminal');
+const CmsSabreTerminal = require('../../Rbs/GdsDirect/GdsInterface/CmsSabreTerminal');
+const CmsAmadeusTerminal = require('../../Rbs/GdsDirect/GdsInterface/CmsAmadeusTerminal');
+const CmsGalileoTerminal = require('../../Rbs/GdsDirect/GdsInterface/CmsGalileoTerminal');
+
 /**
  * provides functions that process generalized data from any GDS
  */
@@ -173,8 +178,7 @@ class CommonDataHelper {
 	}
 
 	static isValidPnr($pnr) {
-		if (
-			$pnr.hasItinerary() ||
+		if ($pnr.hasItinerary() ||
 			!php.empty($pnr.getPassengers()) ||
 			!php.empty($pnr.getRecordLocator())
 		) {
@@ -213,6 +217,20 @@ class CommonDataHelper {
 			return AmadeusPnrCommonFormatAdapter.transform($pnr.getParsedData(), baseDt);
 		} else {
 			return null;
+		}
+	}
+
+	static makeIfcByGds(gds) {
+		if (gds === 'apollo') {
+			return new CmsApolloTerminal();
+		} else if (gds === 'sabre') {
+			return new CmsSabreTerminal();
+		} else if (gds === 'amadeus') {
+			return new CmsAmadeusTerminal();
+		} else if (gds === 'galileo') {
+			return new CmsGalileoTerminal();
+		} else {
+			throw new Error('Unsupported GDS - no interface implementation');
 		}
 	}
 
