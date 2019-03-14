@@ -49,7 +49,7 @@ exports.updateFromService = async () => {
 		$designators = $response['content'] || [];
 
 		$rows = php.array_map((...args) => normalizeRow(...args), $designators);
-		$importedTds = php.array_merge($importedTds, $designators);
+		$importedTds = $importedTds.concat($rows.map(r => r.code));
 		$lastRow = $rows.slice(-1)[0];
 		$cols = php.array_keys($lastRow || []);
 		await Db.with(db => db.writeRows(TABLE, $rows));
@@ -64,7 +64,7 @@ exports.updateFromService = async () => {
 	}
 
 	return {
-		message: 'imported ' + new Set($designators).size + ' ticket designators',
+		message: 'imported ' + new Set($importedTds).size + ' ticket designators',
 	};
 };
 

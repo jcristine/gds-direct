@@ -413,7 +413,7 @@ module.exports.migrations = [
 		].join('\n')),
 	},
 	{
-		name: 'GRECT/2019.03.12001-fill-td-table',
+		name: 'GRECT/2019.03.12001-fill-td-table-4',
 		perform: (db) => TicketDesignators.updateFromService(),
 	},
 ];
