@@ -38,8 +38,6 @@ exports.getGdsDirectCallsUsed = async (agentId) => {
 		php.date('Y-m-d H:i:s', php.strtotime('-1 day')),
 	];
 
-	console.debug('getGdsDirectCallsUsed', {sql, values});
-
 	let rows = await Db.with(db => db.query(sql, values));
 	let cnt = rows[0].cnt;
 
