@@ -5,6 +5,7 @@ let Emc = require('../LibWrappers/Emc');
 const Pccs = require("../Repositories/Pccs.js");
 const Airlines = require("../Repositories/Airlines");
 const BookingClasses = require("../Repositories/BookingClasses");
+const TicketDesignators = require("../Repositories/TicketDesignators");
 
 module.exports.migrations = [
 	{
@@ -384,5 +385,35 @@ module.exports.migrations = [
 			"  KEY `agent_date` (`agent_id`,`dt`)",
 			") ENGINE=InnoDB CHARSET=utf8",
 		].join('\n')),
+	},
+	{
+		name: 'GRECT/2019.03.12001-create-td-table',
+		perform: (db) => db.query([
+			"CREATE TABLE `ticket_designators` (",
+			"  `id` int(11) NOT NULL AUTO_INCREMENT,",
+			"  `code` varchar(15) NOT NULL,",
+			"  `is_published` tinyint(1) NOT NULL DEFAULT '0',",
+			"  `is_deleted` tinyint(1) NOT NULL DEFAULT '0',",
+			"  `updated_dt` datetime DEFAULT NULL,",
+			"  `ticketing_correct_pricing_command` varchar(250) DEFAULT NULL,",
+			"  `ticketing_gds` varchar(15) DEFAULT NULL,",
+			"  `ticketing_pcc` varchar(15) DEFAULT NULL,",
+			"  `sale_correct_pricing_command` varchar(250) DEFAULT NULL,",
+			"  `tour_code` varchar(50) DEFAULT NULL,",
+			"  `updated_in_act_dt` datetime DEFAULT NULL,",
+			"  `agency_incentive_value` decimal(10,2) DEFAULT NULL,",
+			"  `agency_incentive_units` varchar(30) DEFAULT NULL,",
+			"  `currency` char(3) DEFAULT NULL,",
+			"  `drop_net_value` decimal(10,2) DEFAULT NULL,",
+			"  `drop_net_units` varchar(30) DEFAULT NULL,",
+			"  PRIMARY KEY (`id`),",
+			"  UNIQUE KEY `code` (`code`),",
+			"  KEY `updated_in_act_dt` (`updated_in_act_dt`)",
+			") ENGINE=InnoDB DEFAULT CHARSET=utf8",
+		].join('\n')),
+	},
+	{
+		name: 'GRECT/2019.03.12001-fill-td-table',
+		perform: (db) => TicketDesignators.updateFromService(),
 	},
 ];
