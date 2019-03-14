@@ -57,7 +57,7 @@ let StatefulSession = async ({session, whenCmdRqId, emcUser}) => {
 			let cmdRec = await cmdLog.logCommand(cmd, running);
 			calledCommands.push(cmdRec);
 			let masked = Misc.maskCcNumbers(cmdRec);
-			logit('GDS result: ' + cmd, jsExport(masked));
+			logit('GDS result: ' + cmd, jsExport(masked, null, 256));
 			return cmdRec;
 		}
 	};
