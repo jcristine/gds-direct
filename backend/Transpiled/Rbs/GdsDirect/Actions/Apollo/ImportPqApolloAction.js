@@ -178,7 +178,7 @@ class ImportPqApolloAction extends AbstractGdsAction {
 		}), Fp.filter(($cmdRec) => {
 			return StringUtil.startsWith($cmdRec['cmd'], 'VIT');
 		}, $dumps.getAll()));
-		$result = {'raw': $raw, 'rawInDisplayEncoding': this.constructor.sanitizeOutput($raw)};
+		$result = {'raw': $raw};
 		$result['hiddenStopTimeCommands'] = $vitCmds;
 		this.$allCommands = php.array_merge(this.$allCommands, $vitCmds);
 		if ($result['error'] = $common['error'] || null) {
@@ -221,12 +221,6 @@ class ImportPqApolloAction extends AbstractGdsAction {
 		} else {
 			$result = this.constructor.parsePricing($output, $nameRecords, $cmd);
 		}
-		$result['bagPtcPricingBlocks'] = Fp.map(($ptcBlock) => {
-			$ptcBlock['rawInDisplayEncoding'] = $ptcBlock['raw']
-				? (new CmsApolloTerminal).sanitizeOutput($ptcBlock['raw'])
-				: null;
-			return $ptcBlock;
-		}, $result['bagPtcPricingBlocks'] || []);
 		return $result;
 	}
 
@@ -289,8 +283,8 @@ class ImportPqApolloAction extends AbstractGdsAction {
 		return {
 			'error': !php.empty($cmdRecords)
 				? 'Last pricing commands ' + php.implode(' & ', php.array_column($cmdRecords, 'cmd')) +
-				' do not cover some itinerary segments: ' +
-				php.implode(',', php.array_column($segmentsLeft, 'segmentNumber'))
+					' do not cover some itinerary segments: ' +
+					php.implode(',', php.array_column($segmentsLeft, 'segmentNumber'))
 				: 'Failed to determine current pricing command',
 		};
 	}
@@ -336,7 +330,6 @@ class ImportPqApolloAction extends AbstractGdsAction {
 				return $result;
 			}
 			$processed['store']['pricingNumber'] = $i + 1;
-			$processed['store']['rbsInfo'] = await RbsUtils.getRbsPqInfo(pnrDump, $raw, 'apollo');
 			let $bagBlocks = $processed['bagPtcPricingBlocks']
 				.map(($bagBlock) => ({...$bagBlock, pricingNumber: $i + 1}));
 			$result['pricingPart']['parsed']['pricingList'].push($processed['store']);
@@ -361,7 +354,7 @@ class ImportPqApolloAction extends AbstractGdsAction {
 		}
 		$result = {'isRequired': $isPrivateFare, 'raw': null, 'parsed': null};
 		if (!$isPrivateFare) return $result;
-		$cmd = '$BB\/:N';
+		$cmd = '$BB/:N';
 		$raw = this.runOrReuse($cmd);
 		$processed = this.constructor.parsePricing($raw, $nameRecords, $cmd);
 		$result['cmd'] = $cmd;
@@ -422,21 +415,13 @@ class ImportPqApolloAction extends AbstractGdsAction {
 		if ($error = $common['error'] || null) {
 			$raw = $common['raw'] || null;
 			$sanitized = $raw ? this.constructor.sanitizeOutput($raw) : null;
-			return {'error': $error, 'raw': $raw, 'rawInDisplayEncoding': $sanitized};
+			return {'error': $error, 'raw': $raw};
 		}
 		return {
-			'fareListRecords': Fp.map(($rec) => {
-				$rec['rawInDisplayEncoding'] = php.isset($rec['raw']) ? this.constructor.sanitizeOutput($rec['raw']) : null;
-				return $rec;
-			}, $common['fareListRecords']),
+			'fareListRecords': $common['fareListRecords'],
 			'ruleRecords': Fp.map(($fareComp) => {
 				let $sections, $isNotError, $byNumber;
-				$sections = Fp.map(($section) => {
-					$section['rawInDisplayEncoding'] = php.isset($section['raw'])
-						? this.constructor.sanitizeOutput($section['raw'])
-						: null;
-					return $section;
-				}, $fareComp['sections'] || []);
+				$sections = $fareComp['sections'] || [];
 				$isNotError = ($sec) => !php.isset($sec['error']);
 				$sections = Fp.filter($isNotError, $sections);
 				$byNumber = php.array_combine(php.array_column($sections, 'sectionNumber'), $sections);

@@ -11,15 +11,17 @@ let GalPnrParser = require("../Transpiled/Gds/Parsers/Galileo/Pnr/PnrParser.js")
 const BadRequest = require("../Utils/Rej").BadRequest;
 let {fetchAll} = require('../GdsHelpers/TravelportUtils.js');
 let {fetchAllRt} = require('../GdsHelpers/AmadeusUtils.js');
-const Fp = require('../Transpiled/Lib/Utils/Fp.js');
-const ArrayUtil = require('../Transpiled/Lib/Utils/ArrayUtil.js');
-const PnrFieldsCommonHelper = require('../Transpiled/Rbs/Process/Common/ImportPnr/PnrFieldsCommonHelper.js');
 const ImportPnrAction = require('../Transpiled/Rbs/Process/Common/ImportPnr/ImportPnrAction.js');
 const SessionStateHelper = require("../Transpiled/Rbs/GdsDirect/SessionStateProcessor/SessionStateHelper");
+const ImportPqSabreAction = require('../Transpiled/Rbs/GdsDirect/Actions/Sabre/ImportPqSabreAction.js');
+const RbsUtils = require("../GdsHelpers/RbsUtils");
+const TicketDesignators = require('../Repositories/TicketDesignators.js');
+const LocationGeographyProvider = require('../Transpiled/Rbs/DataProviders/LocationGeographyProvider.js');
 
 let ImportPq = async ({stateful, leadData, fetchOptionalFields = true}) => {
 	let gds = stateful.gds;
 	let agentId = stateful.getAgent().getId();
+	let geo = new LocationGeographyProvider();
 
 	let getItinerary = async () => {
 		if (gds === 'apollo') {
@@ -104,28 +106,55 @@ let ImportPq = async ({stateful, leadData, fetchOptionalFields = true}) => {
 		return php.array_merge($priorPricingCommands, $lastStateSafeCommands);
 	};
 
+	let extendPricingStore = async (store) => {
+		let correctCmds = new Set();
+		let pcc = store.pricingPcc || stateful.getSessionData()['pcc'];
+		for (let ptcBlock of store.pricingBlockList) {
+			ptcBlock.fareType = await RbsUtils.getFareTypeV2(gds, pcc, ptcBlock);
+			for (let fcSeg of ptcBlock.fareInfo.fareConstruction.segments) {
+				if (fcSeg.fare) {
+					let td = fcSeg.ticketDesignator;
+					let tdInfo = td && ['apollo', 'galileo'].includes(gds)
+						? await TicketDesignators.findByCode(gds, td).catch(exc => null)
+						: null;
+					if (tdInfo) {
+						if (tdInfo.sale_correct_pricing_command) {
+							correctCmds.add(tdInfo.sale_correct_pricing_command);
+						}
+						if (tdInfo.agency_incentive_units === 'amount' &&
+							tdInfo.currency === ptcBlock.fareInfo.totalFare.currency
+						) {
+							fcSeg.agencyIncentiveAmount = tdInfo.agency_incentive_value;
+						}
+					}
+				}
+			}
+		}
+		store.correctAgentPricingFormat = correctCmds.size === 1 ? [...correctCmds][0] : null;
+		store.pricingPcc = pcc;
+		return store;
+	};
+
 	let postProcessPricing = async ($currentPricing) => {
-		let storePromises = $currentPricing['parsed']['pricingList']
-			.map(async ($store) => {
-				$store = await $store.rbsInfo.extendPricingStore($store);
-				$store.pricingPcc = $store.pricingPcc || stateful.getSessionData()['pcc'];
-				return $store;
-			});
-		$currentPricing['parsed']['pricingList'] = await Promise.all(storePromises);
+		for (let store of $currentPricing['parsed']['pricingList']) {
+			await extendPricingStore(store);
+		}
 		return $currentPricing;
 	};
 
-	let mergeContractInfo = (contractInfos) => {
-		let fareTypes = new Set(contractInfos.map(c => c.fareType));
-		let fareType = fareTypes.size === 1 ? [...fareTypes][0] : null;
-		return {
-			isStoredInConsolidatorCurrency: contractInfos
-				.every(c => c.isStoredInConsolidatorCurrency),
-			isBasicEconomy: contractInfos
-				.some(c => c.isBasicEconomy),
-			fareType: fareType,
-			isTourFare: fareType === 'tour',
-		};
+	let makeUtcDtRec = async (localDtRec, airportCode) => {
+		if (localDtRec) {
+			let tz = await geo.getTimezone(airportCode).catch(exc => null);
+			let utc = !tz ? null : await DateTime.toUtc(localDtRec.full, tz);
+			return {...localDtRec, tz, utc};
+		} else {
+			return null;
+		}
+	};
+
+	let addUtcTimes = async (segment) => {
+		segment.departureDt = await makeUtcDtRec(segment.departureDt, segment.departureAirport);
+		segment.destinationDt = await makeUtcDtRec(segment.destinationDt, segment.destinationAirport);
 	};
 
 	/**
@@ -134,12 +163,14 @@ let ImportPq = async ({stateful, leadData, fetchOptionalFields = true}) => {
 	let postprocessPnrData = async ($pnrData) => {
 		$pnrData['currentPricing'] = await postProcessPricing($pnrData['currentPricing']);
 
-		let contractInfos = $pnrData['currentPricing'].parsed.pricingList
-			.map(store => store.rbsInfo.contractInfo);
-		$pnrData['contractInfo'] = mergeContractInfo(contractInfos);
+		let pricingList = $pnrData['currentPricing'].parsed.pricingList;
+		$pnrData['contractInfo'] = await RbsUtils.makeContractInfo(gds, pricingList);
 
-		// RBS itinerary includes cabin classes and UTC times
-		let itinerary = $pnrData['currentPricing'].parsed.pricingList[0].rbsInfo.itinerary;
+		let itinerary = $pnrData['reservation']['parsed']['itinerary'];
+		for (let segment of itinerary) {
+			await addUtcTimes(segment);
+		}
+
 		let svcSegments = (($pnrData['flightServiceInfo'] || {})['parsed'] || {})['segments'] || [];
 		if (svcSegments.length > 0) {
 			itinerary = ImportPnrAction.combineItineraryAndSvc(itinerary, svcSegments);
@@ -162,12 +193,11 @@ let ImportPq = async ({stateful, leadData, fetchOptionalFields = true}) => {
 	let execute = async () => {
 		let importAct;
 		if (gds === 'apollo' && !fetchOptionalFields) {
-			let stateErrors = await SessionStateHelper.checkCanCreatePq(stateful.getLog(), leadData);
-			if (stateErrors.length > 0) {
-				return BadRequest('Invalid PQ state - ' + stateErrors.join('; '));
-			}
 			importAct = new ImportPqApolloAction();
+		} else if (gds === 'sabre' && !fetchOptionalFields) {
+			importAct = new ImportPqSabreAction();
 		} else {
+			// TODO: implement rest GDS-es and fetchOptionalFields=true
 			// temporary fallback till real importPq implemented for all GDS on our side
 			let onRbsSession = !fetchOptionalFields
 				? ({rbsSessionId}) => RbsClient({gds, agentId})
@@ -175,6 +205,10 @@ let ImportPq = async ({stateful, leadData, fetchOptionalFields = true}) => {
 				: ({rbsSessionId}) => RbsClient({gds, agentId})
 					.importPq({rbsSessionId, leadId: leadData.leadId});
 			return withRbsPqCopy(onRbsSession);
+		}
+		let stateErrors = await SessionStateHelper.checkCanCreatePq(stateful.getLog(), leadData);
+		if (stateErrors.length > 0) {
+			return BadRequest('Invalid PQ state - ' + stateErrors.join('; '));
 		}
 		let cmdRecs = await getCurrentStateCommands(stateful);
 		let imported = await importAct
