@@ -134,7 +134,7 @@ export default class TerminalPlugin
 				if (e.target.tagName.toLowerCase() === 'input') {
 				        return true;
 				}
-				const replacement = getReplacement( e, window.GdsDirectPlusState.isLanguageApollo() );
+				const replacement = getReplacement( e, window.GdsDirectPlusState.isLanguageApollo(), this.gdsName );
 
 				if (replacement)
 				{

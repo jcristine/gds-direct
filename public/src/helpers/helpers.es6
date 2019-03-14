@@ -39,9 +39,9 @@ export const getFirstNumber = line 	=> line.match(/^\d+|\d+\b|\d+(?=\w)/)[0];
 export const escapeSpecials	= value => value.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, '\\$&');
 
 
-export const getReplacement = ( evt, isApollo ) => {
+export const getReplacement = ( evt, isApollo, targetGds ) => {
 	const char = String.fromCharCode(evt.keyCode || evt.which);
-	return isApollo ? apolloLayout[char] : sabreLayout[char];
+	return isApollo && targetGds === 'apollo' ? apolloLayout[char] : sabreLayout[char];
 };
 
 const chunkIntoPages = ( linesArr , rowsPerScreen ) => {
