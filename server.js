@@ -12,7 +12,7 @@ const Config = require('./backend/Config.js');
 	let Migration = require('./backend/Maintenance/Migration.js');
 	Migration.run()
 		.then(result => {
-			console.log('Migration was successful', result);
+			console.log('Migration was successful\n', JSON.stringify(result));
 			Diag.notice(new Date().toISOString() + ': Migration was successful', result);
 		})
 		.catch(exc => {
