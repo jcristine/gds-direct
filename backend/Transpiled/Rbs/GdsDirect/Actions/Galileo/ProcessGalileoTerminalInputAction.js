@@ -658,7 +658,7 @@ class ProcessGalileoTerminalInputAction {
 		$isSellStatus = php.in_array($segmentStatus, ['HS', 'SS']);
 		for ([$key, $segment] of Object.entries($itinerary)) {
 			if ($seatNumber >= 1 && $seatNumber <= 9) {
-				$itinerary[$key]['statusNumber'] = $seatNumber;
+				$itinerary[$key]['seatCount'] = $seatNumber;
 			}
 			$itinerary[$key]['segmentStatus'] = ({
 				// you have to sell in NN to get HS status in Galileo

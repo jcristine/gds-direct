@@ -54,7 +54,7 @@ class FormatAdapter
             'departureAirport': $segment['departureAirport'],
             'destinationAirport': $segment['destinationAirport'],
             'segmentStatus': $segment['segmentStatus'],
-            'seatCount': $segment['statusNumber'],
+            'seatCount': $segment['seatCount'],
             'eticket': $segment['eticket'] ? true : false,
             'destinationDate': (($segment['destinationDate'] || {})['raw'] || '') !== ''
                 ? $segment['destinationDate']

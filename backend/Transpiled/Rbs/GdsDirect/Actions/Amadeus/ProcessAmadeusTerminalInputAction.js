@@ -365,7 +365,7 @@ class ProcessAmadeusTerminalInputAction {
 			return $deleted;
 		}
 		for ($i = 0; $i < php.count($matchedSegments); ++$i) {
-			$matchedSegments[$i]['statusNumber'] = $params['seatAmount'];
+			$matchedSegments[$i]['seatCount'] = $params['seatAmount'];
 			$matchedSegments[$i]['segmentStatus'] = $params['segmentStatus'];
 		}
 		return this.bookItinerary($matchedSegments);
@@ -403,7 +403,7 @@ class ProcessAmadeusTerminalInputAction {
 
 		for ([$key, $segment] of Object.entries($itinerary)) {
 			if ($seatNumber >= 1 && $seatNumber <= 9) {
-				$itinerary[$key]['statusNumber'] = $seatNumber;
+				$itinerary[$key]['seatCount'] = $seatNumber;
 			}
 			$itinerary[$key]['segmentStatus'] = $segmentStatus;
 			$itinerary[$key]['lineNumber'] = $key + 1;

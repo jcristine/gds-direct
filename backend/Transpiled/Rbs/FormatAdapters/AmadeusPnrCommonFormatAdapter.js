@@ -53,7 +53,6 @@ class AmadeusPnrCommonFormatAdapter
                 $segment['operatedBy'] = $segment['operatedBy'];
                 delete($segment['segmentType']);
                 delete($segment['dayOfWeek']);
-                delete($segment['statusNumber']);
 
                 $result.push($segment);
             }}

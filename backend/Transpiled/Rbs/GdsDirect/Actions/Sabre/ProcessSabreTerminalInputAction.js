@@ -638,7 +638,7 @@ class ProcessSabreTerminalInputAction {
 			return {'errors': $errors};
 		}
 		$desiredSegments = $oldSegments.map(($seg) => {
-			$seg['statusNumber'] = $seatNumber || $seg['statusNumber'];
+			$seg['seatCount'] = $seatNumber || $seg['seatCount'];
 			$seg['segmentStatus'] = $newStatus;
 			return $seg;
 		});
