@@ -64,7 +64,7 @@ let makeRbsResult = (calledCommands, fullState) => {
 			canCreatePq: areaState.can_create_pq ? true : false,
 			pricingCmd: areaState.pricing_cmd || '',
 			canCreatePqErrors: areaState.can_create_pq
-				? [] : ['Local state processor does not allow creating PQ'],
+				? [] : ['No recent valid pricing'],
 			area: areaState.area || '',
 			pcc: areaState.pcc || '',
 			hasPnr: areaState.has_pnr ? true : false,
@@ -215,18 +215,18 @@ let useConfigPcc = (grectResult, stateful, agentId) => {
  * @param session = at('GdsSessions.js').makeSessionRecord()
  * @param {{command: '*R'}} rqBody = at('MainController.js').normalizeRqBody()
  */
-module.exports = async (session, rqBody) => {
+module.exports = async ({session, rqBody, emcUser}) => {
 	let whenCmdRqId = TerminalBuffering.storeNew(rqBody, session);
-	let stateful = await StatefulSession({session, whenCmdRqId, emcUser: rqBody.emcUser});
+	let stateful = await StatefulSession({session, whenCmdRqId, emcUser});
 	let cmdRq = rqBody.command;
 	let gds = session.context.gds;
 	let dialect = rqBody.language || gds;
 	let translated = translateCmd(dialect, gds, cmdRq);
 	cmdRq = translated.cmd;
 
-	let callsLimit = (rqBody.emcUser.settings || {}).gds_direct_usage_limit || null;
+	let callsLimit = (emcUser.settings || {}).gds_direct_usage_limit || null;
 	if (callsLimit) {
-		let callsUsed = await Agents.getGdsDirectCallsUsed(rqBody.emcUser.id);
+		let callsUsed = await Agents.getGdsDirectCallsUsed(emcUser.id);
 		if (callsUsed >= callsLimit) {
 			return Promise.reject('Too many calls, ' + callsUsed + ' >= ' + callsLimit + ' in last 24h');
 		}
@@ -242,7 +242,7 @@ module.exports = async (session, rqBody) => {
 		}));
 
 	let whenCmsResult = whenRbsResult.then(rbsResult => {
-		let termSvc = new TerminalService(gds, rqBody.agentId, rqBody.travelRequestId);
+		let termSvc = new TerminalService(gds, emcUser.id, rqBody.travelRequestId);
 		return termSvc.addHighlighting(rqBody.command, rqBody.language || rqBody.gds, rbsResult);
 	});
 

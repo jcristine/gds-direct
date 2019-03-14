@@ -23,6 +23,7 @@ const FareConstructionParser = require("./Transpiled/Gds/Parsers/Common/FareCons
 const KeepAlive = require("./Maintenance/KeepAlive");
 const {safe} = require('./Utils/Misc.js');
 const PersistentHttpRq = require('./Utils/PersistentHttpRq.js');
+const withGdsSession = require("./HttpControllers/MainController").withGdsSession;
 const toHandleHttp = require("./HttpControllers/MainController").toHandleHttp;
 const withAuth = require("./HttpControllers/MainController").withAuth;
 
@@ -78,9 +79,9 @@ app.post('/terminal/saveSetting/:name/:currentGds', withAuth((reqBody, emcResult
 	let {name, currentGds} = routeParams;
 	return new TerminalBaseController(emcResult).postSaveSettingAction(reqBody, name, currentGds);
 }));
-app.post('/terminal/command', withAuth(GdsSessionController.runInputCmd));
+app.post('/terminal/command', withGdsSession(GdsSessionController.runInputCmd));
 app.post('/gdsDirect/keepAlive', withAuth(GdsSessionController.keepAliveCurrent));
-app.get('/terminal/getPqItinerary', withAuth(GdsSessionController.getPqItinerary));
+app.get('/terminal/getPqItinerary', withGdsSession(GdsSessionController.getPqItinerary));
 app.get('/terminal/importPq', withAuth(GdsSessionController.importPq));
 app.post('/terminal/makeMco', withAuth(GdsSessionController.makeMco));
 app.get('/terminal/lastCommands', withAuth(GdsSessionController.getLastCommands));
@@ -228,12 +229,9 @@ app.get('/parser/test', toHandleHttp((rqBody) => {
 }));
 
 getConfig().then(config => {
-	Diag.log(new Date().toISOString() + ': About to start listening http by ' + process.pid + ' on port ' + config.HTTP_PORT);
 	app.listen(+config.HTTP_PORT, config.HOST, function () {
-		Diag.log(new Date().toISOString() + ': Started listening http by ' + process.pid);
 		console.log('listening on *:' + config.HTTP_PORT + ' - for standard http request handling');
 	});
-	Diag.log(new Date().toISOString() + ': Sent HTTP listening request ' + process.pid);
 });
 
 let socketIo = initSocketIo();
@@ -255,7 +253,7 @@ socketIo.on('connection', /** @param {Socket} socket */ socket => {
 			},
 		};
 		if (rq.path === '/terminal/command') {
-			withAuth(GdsSessionController.runInputCmd)(rq, rs);
+			withGdsSession(GdsSessionController.runInputCmd)(rq, rs);
 		} else if (rq.path === '/gdsDirect/keepAlive') {
 			withAuth(GdsSessionController.keepAliveCurrent)(rq, rs);
 		} else {

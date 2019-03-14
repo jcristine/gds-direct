@@ -18,6 +18,7 @@ const GdsProfiles = require("../Repositories/GdsProfiles");
 const TooManyRequests = require("../Utils/Rej").TooManyRequests;
 const UnprocessableEntity = require("../Utils/Rej").UnprocessableEntity;
 const ImportPq = require('../Actions/ImportPq.js');
+const FluentLogger = require("../LibWrappers/FluentLogger");
 
 let startByGds = async (gds) => {
 	let tuples = [
@@ -51,31 +52,6 @@ let startNewSession = (rqBody) => {
 		GdsSessions.storeNew(rqBody, gdsData));
 };
 
-let runInSession = (session, rqBody) => {
-	let running;
-	let gdsData = session.gdsData;
-	if (+session.context.useRbs) {
-		running = RbsClient(rqBody).runInputCmd(gdsData);
-	} else {
-		running = ProcessTerminalInput(session, rqBody);
-	}
-	GdsSessions.updateAccessTime(session);
-	return running.then(cmsResult => ({...cmsResult, session}));
-};
-
-let runInNewSession = (rqBody, exc) => {
-	return startNewSession(rqBody)
-		.then(session => {
-			logExc('WARNING: Restarting session due to exception', session.id, exc);
-			return runInSession(session, rqBody);
-		})
-		.then(runt => {
-			runt.startNewSession = true;
-			runt.userMessages = ['New session started, reason: ' + (exc + '').slice(0, 800) + '...\n'];
-			return runt;
-		});
-};
-
 /** @param session = at('GdsSessions.js').makeSessionRecord() */
 let closeSession = (session) => {
 	let closing;
@@ -104,27 +80,43 @@ let shouldRestart = (exc, session) => {
 		|| lifetimeMs > 60 * 60 * 1000;
 };
 
-/** @param reqBody = at('WebRoutes.js').normalizeRqBody() */
-let runInputCmdRestartAllowed = (reqBody) => {
-	reqBody.command = reqBody.command.trim();
-	return GdsSessions.getByContext(reqBody)
-		.catch(exc => NotFound.matches(exc.httpStatusCode)
-			? startNewSession(reqBody)
-			: Promise.reject(exc))
-		.then(session => runInSession(session, reqBody)
-			.catch(exc => {
-				logExc('WARNING: Failed to run cmd in session...', session.logId, exc);
-				return shouldRestart(exc, session)
-					? runInNewSession(reqBody, exc)
-					: Promise.reject(exc);
-			}));
+let runInSession = ({session, rqBody, emcUser}) => {
+	let running;
+	let gdsData = session.gdsData;
+	if (+session.context.useRbs) {
+		running = RbsClient(rqBody).runInputCmd(gdsData);
+	} else {
+		running = ProcessTerminalInput({session, rqBody, emcUser});
+	}
+	GdsSessions.updateAccessTime(session);
+	return running.then(cmsResult => ({...cmsResult, session}));
 };
 
-exports.runInputCmd = (rqBody) => {
+/** @param rqBody = at('WebRoutes.js').normalizeRqBody() */
+let runInputCmdRestartAllowed = async ({rqBody, session, emcUser}) => {
+	rqBody.command = rqBody.command.trim();
+	return runInSession({session, rqBody, emcUser})
+		.catch(async exc => {
+			if (shouldRestart(exc, session)) {
+				FluentLogger.logExc('INFO: Session expired', session.logId, exc);
+				await GdsSessions.remove(session);
+				let newSession = await startNewSession(rqBody);
+				FluentLogger.logit('INFO: New session in ' + newSession.logId, session.logId, newSession);
+				FluentLogger.logit('INFO: Old session in ' + session.logId, newSession.logId, newSession);
+				let runt = await runInSession({newSession, rqBody, emcUser});
+				runt.startNewSession = true;
+				runt.userMessages = ['New session started, reason: ' + (exc + '').slice(0, 800) + '...\n'];
+				return runt;
+			} else {
+				return Promise.reject(exc);
+			}
+		});
+};
+
+exports.runInputCmd = ({rqBody, session, emcUser}) => {
 	let calledDtObj = new Date();
-	let running = runInputCmdRestartAllowed(rqBody)
+	let running = runInputCmdRestartAllowed({rqBody, session, emcUser})
 		.then(async (cmsResult) => {
-			let session = cmsResult.session;
 			GdsSessions.updateUserAccessTime(session);
 
 			// TODO: do not count same commands in a row except ['MD', 'MU', 'A*', '1*']
@@ -136,22 +128,17 @@ exports.runInputCmd = (rqBody) => {
 				duration: duration,
 			});
 
-			logit('TODO: Executed cmd: ' + rqBody.command + ' in ' + duration + ' s.', session.logId, cmsResult);
-			logit('Process log: ' + rqBody.processLogId, session.logId);
-			logit('Session log: ' + session.logId, rqBody.processLogId);
-
 			return cmsResult;
 		});
 	return running;
 };
 
-exports.getPqItinerary = (reqBody) =>
-	GdsSessions.getByContext(reqBody).then(async session => {
-		// could Promise.all to safe some time...
-		let leadData = await CmsClient.getLeadData(reqBody.pqTravelRequestId);
-		let stateful = await StatefulSession({session, emcUser: reqBody.emcUser});
-		return ImportPq({stateful, leadData, fetchOptionalFields: false});
-	});
+exports.getPqItinerary = async ({rqBody, session, emcUser}) => {
+	// could Promise.all to safe some time...
+	let leadData = await CmsClient.getLeadData(rqBody.pqTravelRequestId);
+	let stateful = await StatefulSession({session, emcUser});
+	return ImportPq({stateful, leadData, fetchOptionalFields: false});
+};
 
 exports.importPq = (reqBody) =>
 	GdsSessions.getByContext(reqBody).then(async session => {
@@ -222,6 +209,7 @@ exports.keepAliveCurrent = async (reqBody) => {
 // should not restart session
 exports.keepAliveSession = keepAliveSession;
 
+exports.startNewSession = startNewSession;
 exports.closeSession = closeSession;
 
 exports.getLastCommands = (reqBody) => {
