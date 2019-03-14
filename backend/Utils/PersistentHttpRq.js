@@ -18,39 +18,43 @@ let httpAgent = new http.Agent(agentParams);
  * Travelport response takes 0.17 seconds instead of 0.7 from Europe when you preserve the connection
  * it also returns a promise
  */
-let PersistentHttpRq = (params) => new Promise((resolve, reject) => {
-	let originalStack = new Error().stack; // bad for performance, but Promises do not include original trace sadly
-	let parsedUrl = url.parse(params.url);
-	let request = parsedUrl.protocol.startsWith('https') ? https.request : http.request;
-	let requestAgent = params.dropConnection ? undefined :
-		parsedUrl.protocol.startsWith('https') ? httpsAgent : httpAgent;
-	let req = request({
-		host: parsedUrl.hostname,
-		port: parsedUrl.port || undefined,
-		path: parsedUrl.path,
-		headers: params.headers,
-		method: params.method || 'POST',
-		body: params.body || undefined,
-		agent: requestAgent,
-	}, (res) => {
-		let responseBody = '';
-		res.setEncoding('utf8');
-		res.on('data', (chunk) => responseBody += chunk);
-		res.on('end', () => {
-			if (res.statusCode != 200) {
-				let msg = 'Http request to external service failed - ' +
-					res.statusCode + ' - ' + parsedUrl.path + ' - ' + responseBody;
-				let exc = BadGateway(msg).exc;
-				exc.stack = exc.stack + '\nCaused by:\n' + originalStack;
-				reject(exc);
-			} else {
-				resolve({headers: res.headers, body: responseBody});
-			}
+let PersistentHttpRq = (params) => {
+	// bad for performance, but Promises do not include
+	// original trace sadly (waiting for node v12)
+	let originalStack = new Error().stack;
+	return new Promise((resolve, reject) => {
+		let parsedUrl = url.parse(params.url);
+		let request = parsedUrl.protocol.startsWith('https') ? https.request : http.request;
+		let requestAgent = params.dropConnection ? undefined :
+			parsedUrl.protocol.startsWith('https') ? httpsAgent : httpAgent;
+		let req = request({
+			host: parsedUrl.hostname,
+			port: parsedUrl.port || undefined,
+			path: parsedUrl.path,
+			headers: params.headers,
+			method: params.method || 'POST',
+			body: params.body || undefined,
+			agent: requestAgent,
+		}, (res) => {
+			let responseBody = '';
+			res.setEncoding('utf8');
+			res.on('data', (chunk) => responseBody += chunk);
+			res.on('end', () => {
+				if (res.statusCode != 200) {
+					let msg = 'Http request to external service failed - ' +
+						res.statusCode + ' - ' + parsedUrl.path + ' - ' + responseBody;
+					let exc = BadGateway(msg).exc;
+					exc.stack = exc.stack + '\nCaused by:\n' + originalStack;
+					reject(exc);
+				} else {
+					resolve({headers: res.headers, body: responseBody});
+				}
+			});
 		});
+		req.on('error', (e) => BadGateway('Failed to make request - ' + e));
+		req.end(params.body);
 	});
-	req.on('error', (e) => BadGateway('Failed to make request - ' + e));
-	req.end(params.body);
-});
+};
 
 let countSockets = (hostToSockets) => {
 	let result = {};

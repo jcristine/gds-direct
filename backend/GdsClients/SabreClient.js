@@ -21,7 +21,7 @@ let sendRequest = async (soapEnvXml, format) => {
 			exc.message = 'Invalid Sabre session response format - ' + exc.message;
 			exc.rsXml = rsXml;
 			return Promise.reject(exc);
-		})
+		});
 	});
 };
 
@@ -133,6 +133,7 @@ let parseInSessionExc = (exc) => {
 	if ((exc + '').indexOf('Invalid or Expired binary security token') > -1) {
 		return LoginTimeOut('Session token expired');
 	} else {
+		exc.debug123 = exc + '';
 		return Promise.reject(exc);
 	}
 };
