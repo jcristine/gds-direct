@@ -19,6 +19,7 @@ let httpAgent = new http.Agent(agentParams);
  * it also returns a promise
  */
 let PersistentHttpRq = (params) => new Promise((resolve, reject) => {
+	let originalStack = new Error().stack; // bad for performance, but Promises do not include original trace sadly
 	let parsedUrl = url.parse(params.url);
 	let request = parsedUrl.protocol.startsWith('https') ? https.request : http.request;
 	let requestAgent = params.dropConnection ? undefined :
@@ -39,7 +40,9 @@ let PersistentHttpRq = (params) => new Promise((resolve, reject) => {
 			if (res.statusCode != 200) {
 				let msg = 'Http request to external service failed - ' +
 					res.statusCode + ' - ' + parsedUrl.path + ' - ' + responseBody;
-				reject(BadGateway(msg).exc);
+				let exc = BadGateway(msg).exc;
+				exc.stack = exc.stack + '\nCaused by:\n' + originalStack;
+				reject(exc);
 			} else {
 				resolve({headers: res.headers, body: responseBody});
 			}
