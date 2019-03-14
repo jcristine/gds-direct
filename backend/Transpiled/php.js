@@ -99,7 +99,27 @@ php.min = (...args) => {
 };
 
 php.call_user_func = (func, arg) => normFunc(func)(arg);
-php.json_encode = (str) => JSON.stringify(str);
+
+let normalizeJsonData = data => {
+	if (typeof data === 'object') {
+		let entries = Object.entries(data);
+		// casts [] with string keys to {}
+		let isRealArray = Array.isArray(data) &&
+			(data.length > 0 || entries.length === 0);
+		let result = isRealArray ? [] : {};
+		for (let [k,v] of entries) {
+			result[k] = v;
+		}
+		return result;
+	} else {
+		return data;
+	}
+};
+
+php.json_encode = (data) => {
+	data = normalizeJsonData(data);
+	return JSON.stringify(data);
+};
 php.json_decode = (str) => str ? JSON.parse(str) : null;
 
 // --------------------------------------
