@@ -13,6 +13,7 @@ const AmaCmdParser = require("../../../Gds/Parsers/Amadeus/CommandParser");
 const GalCmdParser = require("../../../Gds/Parsers/Galileo/CommandParser");
 const CmsGalileoTerminal = require("../GdsInterface/CmsGalileoTerminal");
 const CmsAmadeusTerminal = require("../GdsInterface/CmsAmadeusTerminal");
+const CommonDataHelper = require("../CommonDataHelper");
 
 /**
  * provides functions that validate pricing cmd and
@@ -127,13 +128,7 @@ class CanCreatePqRules {
 	static checkPricingCommand($gds, $cmd, $leadData) {
 		let $errors, $priced, $ptcErrors, $ageGroups, $paxNumInfants, $paxNumChildren, $ageGroupsPlural;
 		$errors = this.checkPricingCommandObviousRules($gds, $cmd);
-		let ifc;
-		if ($gds === 'apollo') {
-			ifc = new CmsApolloTerminal();
-		} else {
-			$errors.push('Unsupported GDS ' + $gds + ' for pricing command check');
-			return $errors;
-		}
+		let ifc = CommonDataHelper.makeIfcByGds($gds);
 		$priced = ifc.getPricedPtcs($cmd);
 		if (!php.empty($ptcErrors = $priced['errors'] || [])) {
 			$errors = php.array_merge($errors, $ptcErrors);
@@ -162,7 +157,7 @@ class CanCreatePqRules {
 	}
 
 	static ptcsToAgeGroups($pricedPtcs) {
-		$pricedPtcs = $pricedPtcs || ['ADT'];
+		$pricedPtcs = php.empty($pricedPtcs) ? ['ADT'] : $pricedPtcs;
 		$pricedPtcs = Fp.map(($ptc) => $ptc || 'ADT', $pricedPtcs);
 		return php.array_column(Fp.map(p => PtcUtil.parsePtc(p), $pricedPtcs), 'ageGroup');
 	}
