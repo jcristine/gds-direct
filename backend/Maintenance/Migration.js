@@ -25,7 +25,6 @@ let Migration = () => {
 				log('Skipping migration #' + name + ' completed at ' + rows[0].dt);
 				return Promise.resolve();
 			} else {
-				Diag.log('About to run migration #' + name);
 				return perform(db)
 					.catch(exc => {
 						Diag.error('Migration #' + name + ' failed ' + exc);
@@ -36,7 +35,6 @@ let Migration = () => {
 							name: name,
 							dt: new Date().toISOString(),
 						}]).then(writeResult => {
-							Diag.log('Done migration #' + name, result);
 							log('Executed migration #' + name, result);
 							return result;
 						}));
@@ -69,7 +67,6 @@ let Migration = () => {
 				.then(() => runNext(db));
 
 		return Db.with(db => {
-			Diag.log('Got DB from pool');
 			return start(db);
 		}).then(result => ({result: result, logs: logs}));
 	};
@@ -83,7 +80,7 @@ let Migration = () => {
 			if (config.production) {
 				// sometimes one additional process gets spawned and dies after a
 				// few seconds leaving migration lock hanging - this is a workaround
-				Diag.log('Waiting for 5 seconds ' + process.pid);
+				Diag.log('Waiting for 5 seconds before taking migration lock - ' + process.pid);
 				await new Promise(resolve => setTimeout(resolve, 5000));
 			}
 			Diag.log('About to acquire ' + lockKey + ' lock for process ' + process.pid);
