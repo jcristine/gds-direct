@@ -1,11 +1,13 @@
 
 let Emc = require('../LibWrappers/Emc.js');
-let {Forbidden, BadRequest, NotImplemented, LoginTimeOut, InternalServerError} = require('../Utils/Rej.js');
+let {Forbidden, BadRequest, NotImplemented, LoginTimeOut, InternalServerError, NotFound} = require('../Utils/Rej.js');
 let Db = require('../Utils/Db.js');
 let Diag = require('../LibWrappers/Diag.js');
 let FluentLogger = require('../LibWrappers/FluentLogger.js');
 const {getExcData} = require('../Utils/Misc.js');
 const php = require('../Transpiled/php.js');
+const GdsSessions = require("../Repositories/GdsSessions");
+const GdsSessionsController = require("./GdsSessionController");
 
 let shouldDiag = (exc) =>
 	!BadRequest.matches(exc.httpStatusCode) &&
@@ -13,9 +15,7 @@ let shouldDiag = (exc) =>
 	!LoginTimeOut.matches(exc.httpStatusCode) &&
 	!NotImplemented.matches(exc.httpStatusCode);
 
-let toHandleHttp = (action, logger = null) => (req, res) => {
-	let log = logger ? logger.log : (() => {});
-	let logId = logger ? logger.logId :null;
+let toHandleHttp = (httpAction) => (req, res) => {
 	let rqBody = req.body;
 	let rqTakenMs = Date.now();
 	if (Object.keys(rqBody).length === 0) {
@@ -26,9 +26,8 @@ let toHandleHttp = (action, logger = null) => (req, res) => {
 	let maskedBody = Object.assign({}, rqBody, {
 		emcSessionId: '******' + (rqBody.emcSessionId || '').slice(-4),
 	});
-	log('Processing HTTP request ' + req.path + ' with params:', maskedBody);
 	return Promise.resolve()
-		.then(() => action(rqBody, req.params))
+		.then(() => httpAction(rqBody, req.params))
 		.catch(exc => {
 			let excData = getExcData(exc);
 			if (typeof excData === 'string') {
@@ -42,7 +41,6 @@ let toHandleHttp = (action, logger = null) => (req, res) => {
 			return Promise.reject(excData);
 		})
 		.then(result => {
-			log('HTTP action result:', result);
 			res.setHeader('Content-Type', 'application/json');
 			res.status(200);
 			// not JSON.stringify, because there are a lot of transpiled parsers that
@@ -57,49 +55,34 @@ let toHandleHttp = (action, logger = null) => (req, res) => {
 			exc = exc || 'Empty error ' + exc;
 			res.status(exc.httpStatusCode || 500);
 			res.setHeader('Content-Type', 'application/json');
-			res.send(php.json_encode({error: exc.message || exc + '', processLogId: logId}));
+			res.send(php.json_encode({error: exc.message || exc + ''}));
 			let errorData = getExcData(exc, {
 				message: exc.message || '' + exc,
 				httpStatusCode: exc.httpStatusCode,
 				requestPath: req.path,
 				requestBody: maskedBody,
 				stack: exc.stack,
-				processLogId: logId,
 			});
 			if (shouldDiag(exc)) {
-				FluentLogger.logExc('ERROR: HTTP request failed', logId, errorData);
 				Diag.error('HTTP request failed', errorData);
-			} else {
-				log('HTTP request was not satisfied', errorData);
 			}
 		});
 };
 
 /** @param {{data: IEmcResult}} emcData */
-let normalizeRqBody = (rqBody, emcData, logId) => {
+let normalizeRqBody = (rqBody, emcData) => {
 	return {
 		emcUser: emcData.data.user,
 		agentId: +emcData.data.user.id,
-		processLogId: logId,
 		// action-specific fields follow
 		...rqBody,
 	};
 };
 
-let withAuth = (action) => (req, res) => {
-	let logger = FluentLogger.init();
-	let {log, logId} = logger;
-	let logToTable = (agentId) => Db.with(db =>
-		db.writeRows('http_rq_log', [{
-			path: req.path,
-			dt: new Date().toISOString(),
-			agentId: agentId,
-			logId: logId,
-		}]));
-
+let withAuth = (userAction) => (req, res) => {
 	return toHandleHttp((rqBody, routeParams) => {
-		if (typeof action !== 'function') {
-			return InternalServerError('Action is not a function - ' + action);
+		if (typeof userAction !== 'function') {
+			return InternalServerError('Action is not a function - ' + userAction);
 		}
 		return Emc.getCachedSessionInfo(rqBody.emcSessionId)
 			.catch(exc => {
@@ -109,13 +92,38 @@ let withAuth = (action) => (req, res) => {
 				return Promise.reject(error);
 			})
 			.then(emcData => {
-				rqBody = normalizeRqBody(rqBody, emcData, logId);
-				log('Authorized agent: ' + rqBody.agentId + ' ' + emcData.data.user.displayName, emcData.data.user.roles);
-				logToTable(rqBody.agentId);
+				rqBody = normalizeRqBody(rqBody, emcData);
 				return Promise.resolve()
-					.then(() => action(rqBody, emcData.data, routeParams));
+					.then(() => userAction(rqBody, emcData.data, routeParams));
 			});
-	}, logger)(req, res);
+	})(req, res);
+};
+
+/** @param {function({rqBody, session, emcUser}): Promise} sessionAction */
+let withGdsSession = (sessionAction) => (req, res) => {
+	return withAuth(async (rqBody) => {
+		let session = await GdsSessions.getByContext(rqBody)
+			.catch(exc => NotFound.matches(exc.httpStatusCode)
+				? GdsSessionsController.startNewSession(rqBody)
+				: Promise.reject(rqBody));
+		let emcUser = rqBody.emcUser;
+		delete(rqBody.emcUser);
+		let briefing = req.path === '/terminal/command' ? ' >' + rqBody.command + ';' : '';
+		let msg = 'TODO: Processing HTTP RQ ' + req.path + briefing;
+		let startMs = Date.now();
+		FluentLogger.logit(msg, session.logId, rqBody);
+		return Promise.resolve()
+			.then(() => sessionAction({rqBody, session, emcUser}))
+			.then(result => {
+				FluentLogger.logit('TODO: Processed HTTP RQ in ' + ((Date.now() - startMs) / 1000).toFixed(3) + ' s.', session.logId, result);
+				return Promise.resolve(result);
+			})
+			.catch(exc => {
+				let msg = 'ERROR: HTTP RQ was not satisfied ' + (exc.httpStatusCode || '(runtime error)');
+				FluentLogger.logExc(msg, session.logId, exc);
+				return Promise.reject(exc);
+			});
+	})(req, res);
 };
 
 // UnhandledPromiseRejectionWarning
@@ -145,3 +153,4 @@ process.on('unhandledRejection', (exc, promise) => {
 
 exports.toHandleHttp = toHandleHttp;
 exports.withAuth = withAuth;
+exports.withGdsSession = withGdsSession;
