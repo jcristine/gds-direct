@@ -24,12 +24,12 @@ const translib = require('../../../../translib.js');
 const MoveDownAllAction = require('./MoveDownAllAction.js');
 const AmadeusPnr = require('../../../../Rbs/TravelDs/AmadeusPnr.js');
 const AmadeusBuildItineraryAction = require('../../../../Rbs/GdsAction/AmadeusBuildItineraryAction.js');
+const MarriageItineraryParser = require('../../../../Gds/Parsers/Amadeus/MarriageItineraryParser.js');
 
 var require = translib.stubRequire;
 
 const FxParser = require('../../../../Gds/Parsers/Amadeus/Pricing/FxParser.js');
 const TicketMaskParser = require('../../../../Gds/Parsers/Amadeus/TicketMaskParser.js');
-const MarriageItineraryParser = require('../../../../Gds/Parsers/Amadeus/MarriageItineraryParser.js');
 
 class ProcessAmadeusTerminalInputAction {
 	/** @param $statefulSession = require('StatefulSession.js')() */
@@ -439,10 +439,9 @@ class ProcessAmadeusTerminalInputAction {
 			$segment['lineNumber'] = +$i + 1; // $segment['lineNumber'] || $i + 1;
 		}
 		$bookItinerary = $itinerary.map(($segment) => {
-			if (!php.in_array($segment['segmentStatus'], this.constructor.PASSIVE_STATUSES)) {
-				$segment['bookingClass'] = 'Y';
-			}
-			return $segment;
+			let cls = !php.in_array($segment['segmentStatus'], this.constructor.PASSIVE_STATUSES)
+				? 'Y' : $segment['bookingClass'];
+			return {...$segment, bookingClass: cls};
 		});
 
 		$result = await (new AmadeusBuildItineraryAction())
@@ -487,10 +486,16 @@ class ProcessAmadeusTerminalInputAction {
 		$output = await this.runCommand('SB' + $class + $numberStr);
 		$parsed = AmadeusReservationParser.parse($output);
 		if (!$parsed['success']) {
-			return Errors.getMessage(Errors.REBOOK_FAILURE, {
-				'segNums': $numberStr,
-				'output': php.trim($output),
-			});
+			if (AmadeusBuildItineraryAction.isAvailabilityOutput($output)) {
+				return Errors.getMessage(Errors.CUSTOM, {
+					text: 'Failed to change booking class in ' + $numberStr + ' segment(s) due to no availability',
+				});
+			} else {
+				return Errors.getMessage(Errors.REBOOK_FAILURE, {
+					'segNums': $numberStr,
+					'output': php.trim($output),
+				});
+			}
 		}
 		return null;
 	}

@@ -35,8 +35,6 @@ class AmadeusBuildItineraryAction extends AbstractGdsAction {
 			$segmentStatus = php.in_array($segmentStatus, passiveStatuses) ? $segmentStatus : '';
 			$segmentStatusParam = php.in_array($segmentStatus, this.constructor.PASSIVE_SEGMENTS) ? '/A' : '';
 
-			console.debug('asdasd ama build\n', JSON.stringify({$itinerary, $segment}));
-
 			$cmd = $cmd = 'SS' + php.implode('', [
 				$segment['airline'],
 				$segment['flightNumber'],
