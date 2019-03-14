@@ -356,8 +356,6 @@ class ItineraryParser {
 		$lines = require('../../../../Lib/Utils/StringUtil.js').lines($dump);
 		$blocks = this.joinIndentedLines($lines);
 
-		console.debug('\n$blocks\n', $blocks);
-
 		while (!php.empty($blocks)) {
 			$block = php.array_shift($blocks);
 			$segment = this.parseAirSegmentBlock($block)
