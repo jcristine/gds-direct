@@ -20,6 +20,7 @@
   "globals": {
     "console": false,
     "setTimeout": false,
+    "clearTimeout": false,
 
     "Promise": false,
     "Set": false,
