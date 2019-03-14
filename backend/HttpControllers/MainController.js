@@ -108,6 +108,8 @@ let withGdsSession = (sessionAction) => (req, res) => {
 				: Promise.reject(rqBody));
 		let emcUser = rqBody.emcUser;
 		delete(rqBody.emcUser);
+		delete(rqBody.emcSessionId);
+
 		let briefing = req.path === '/terminal/command' ? ' >' + rqBody.command + ';' : '';
 		let msg = 'TODO: Processing HTTP RQ ' + req.path + briefing;
 		let startMs = Date.now();
