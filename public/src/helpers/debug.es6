@@ -15,7 +15,8 @@ export const Debug = (txt, type) => {
 	}).show();
 };
 
-export const debugRequest = (err, status = null) => {
+export const debugRequest = (url, err, status = null) => {
+	url = url.split('?')[0];
 	let type = {
 		440: 'warning', // LoginTimeOut, on /terminal/keepAlive usually
 		500: 'error', // InternalServerError
@@ -23,7 +24,7 @@ export const debugRequest = (err, status = null) => {
 		520: 'error', // catch-all response
 	}[status] || 'error';
 	new Noty({
-		text	: `SERVER ERROR ${status}: ${err}`,
+		text	: `ERROR ${status}: ${err} - on ${url}`,
 		layout 	: 'bottomRight',
 		timeout : 10000,
 		type 	: type,
