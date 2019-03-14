@@ -23,13 +23,13 @@ const getRbsPqInfo = require("../../../../../GdsHelpers/RbsUtils").getRbsPqInfo;
 const translib = require('../../../../translib.js');
 const MoveDownAllAction = require('./MoveDownAllAction.js');
 const AmadeusPnr = require('../../../../Rbs/TravelDs/AmadeusPnr.js');
+const AmadeusBuildItineraryAction = require('../../../../Rbs/GdsAction/AmadeusBuildItineraryAction.js');
 
 var require = translib.stubRequire;
 
 const FxParser = require('../../../../Gds/Parsers/Amadeus/Pricing/FxParser.js');
 const TicketMaskParser = require('../../../../Gds/Parsers/Amadeus/TicketMaskParser.js');
 const MarriageItineraryParser = require('../../../../Gds/Parsers/Amadeus/MarriageItineraryParser.js');
-const AmadeusBuildItineraryAction = require('../../../../Rbs/GdsAction/AmadeusBuildItineraryAction.js');
 
 class ProcessAmadeusTerminalInputAction {
 	/** @param $statefulSession = require('StatefulSession.js')() */
@@ -49,16 +49,6 @@ class ProcessAmadeusTerminalInputAction {
 
 		$log = this.$log;
 		$log($msg, $data);
-	}
-
-	static doesRedisplayPnr($cmd) {
-		let $parsedCmd, $flatCmds, $cmdTypes;
-
-		$parsedCmd = CommandParser.parse($cmd);
-		$flatCmds = php.array_merge([$parsedCmd], $parsedCmd['followingCommands'] || []);
-		$cmdTypes = php.array_column($flatCmds, 'type');
-		// there are actually more - almost all changing commands redisplay PNR in Amadeus
-		return php.array_intersect($cmdTypes, ['redisplayPnr', 'itinerary', 'storeKeepPnr', 'sell']);
 	}
 
 	static doesStorePnr($cmd) {
@@ -445,7 +435,8 @@ class ProcessAmadeusTerminalInputAction {
 		this.stateful.flushCalledCommands();
 
 		for ([$i, $segment] of Object.entries($itinerary)) {
-			$segment['lineNumber'] = $segment['lineNumber'] || $i + 1;
+			// in most cases there are no paxes in destination PNR, so first segment number will be 1
+			$segment['lineNumber'] = +$i + 1; // $segment['lineNumber'] || $i + 1;
 		}
 		$bookItinerary = $itinerary.map(($segment) => {
 			if (!php.in_array($segment['segmentStatus'], this.constructor.PASSIVE_STATUSES)) {
@@ -454,7 +445,7 @@ class ProcessAmadeusTerminalInputAction {
 			return $segment;
 		});
 
-		$result = await (new AmadeusBuildItineraryAction()).setLog(this.$log)
+		$result = await (new AmadeusBuildItineraryAction())
 			.setSession(this.stateful).execute($bookItinerary, true);
 
 		if ($error = this.constructor.transformBuildError($result)) {

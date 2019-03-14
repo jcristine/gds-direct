@@ -29,7 +29,7 @@ class AmadeusPnrCommonFormatAdapter
     static transformItinerary($itinerary, $baseDate)  {
         let $result, $i, $segment, $departureDt, $dayOffset, $destinationDt;
 
-        $result = {};
+        $result = [];
 
         for ([$i, $segment] of Object.entries($itinerary)) {
             if ($segment['segmentType'] === 'ITINERARY_SEGMENT') {
@@ -49,7 +49,6 @@ class AmadeusPnrCommonFormatAdapter
                 $segment['segmentNumber'] = $segment['lineNumber'];
                 $segment['departureDt'] = $departureDt;
                 $segment['destinationDt'] = $destinationDt;
-                $segment['seatCount'] = $segment['statusNumber'];
                 $segment['eticket'] = $segment['eticket'] ? true : false;
                 $segment['operatedBy'] = $segment['operatedBy'];
                 delete($segment['segmentType']);

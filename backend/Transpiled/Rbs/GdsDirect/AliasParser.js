@@ -75,7 +75,7 @@ class AliasParser
             'dump': $cmd,
             'creationDate': $session.getStartDt(),
         })['result'] || null;
-        if (php.in_array($guess['type'], ['apollo_itinerary', 'sabre_itinerary', 'galileo_itinerary'])) {
+        if (php.in_array($guess['type'], ['apollo_itinerary', 'sabre_itinerary', 'galileo_itinerary', 'amadeus_itinerary'])) {
             return $guess['data']['itinerary'] || [];
         } else {
             return [];

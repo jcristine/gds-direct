@@ -337,7 +337,7 @@ class ItineraryParser {
 
 		$blocks = [];
 		for ($line of Object.values($lines)) {
-			if ($blocks && StringUtil.startsWith($line, '    ')) {
+			if (!php.empty($blocks) && StringUtil.startsWith($line, '    ')) {
 				$blocks[php.count($blocks) - 1] += php.PHP_EOL + $line;
 			} else {
 				$blocks.push($line);
@@ -355,6 +355,9 @@ class ItineraryParser {
 
 		$lines = require('../../../../Lib/Utils/StringUtil.js').lines($dump);
 		$blocks = this.joinIndentedLines($lines);
+
+		console.debug('\n$blocks\n', $blocks);
+
 		while (!php.empty($blocks)) {
 			$block = php.array_shift($blocks);
 			$segment = this.parseAirSegmentBlock($block)

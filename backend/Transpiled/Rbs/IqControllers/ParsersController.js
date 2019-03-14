@@ -30,7 +30,10 @@ class ParsersController {
 				};
 			}
 		} else if ($dumpType === 'amadeus_itinerary') {
-			$parsed = AmadeusReservationParser.parse($dump);
+			// make sure first line trimmed space is restored,
+			// since Amadeus parser is strict about indentation
+			let itinDump = $dump.replace(/^\s*/, '  ');
+			$parsed = AmadeusReservationParser.parse(itinDump);
 			if (php.empty($parsed['parsed']['passengers']) &&
 				!php.empty($parsed['parsed']['itinerary'])
 			) {
@@ -89,10 +92,8 @@ class ParsersController {
 	}
 
 	guessDumpType($params) {
-		let $dump, $log, $types, $type, $result;
+		let $dump, $types, $type, $result;
 		$dump = php.strtoupper($params['dump']);
-		$log = ($msg, $params) => {
-		};
 		$types = [
 			'galileo_pnr',
 			'apollo_pnr',
@@ -112,7 +113,7 @@ class ParsersController {
 						'type': $type,
 						'data': $result['result'],
 					},
-					'errors': []
+					'errors': [],
 				};
 			}
 		}
@@ -122,7 +123,7 @@ class ParsersController {
 				'type': 'unknown',
 				'data': null,
 			},
-			'errors': []
+			'errors': [],
 		};
 	}
 }
