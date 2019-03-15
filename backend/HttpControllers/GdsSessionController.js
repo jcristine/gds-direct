@@ -185,6 +185,7 @@ let keepAliveByGds = (gds, gdsData) => {
 let keepAliveSession = async (session) => {
 	let keeping = keepAliveByGds(session.context.gds, session.gdsData);
 	return keeping.then(result => {
+		GdsSessions.updateAccessTime(session);
 		logit('INFO: keepAlive result:', session.logId, result);
 		return result;
 	});
