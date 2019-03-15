@@ -11,9 +11,9 @@ let log = (msg, ...data) => {
 	console.log((new Date()).toISOString() + ': ' + msg, ...data);
 };
 
-let logExc = (msg, ...data) => {
-	FluentLogger.logExc(msg, workerLogId, ...data);
-	console.log((new Date()).toISOString() + ': ' + msg, ...data);
+let logExc = (msg, logId, data) => {
+	FluentLogger.logExc(msg, logId, data);
+	console.log((new Date()).toISOString() + ': ' + msg, data);
 };
 
 let expired = (session, accessedMs) => {
