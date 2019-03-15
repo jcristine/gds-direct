@@ -17,6 +17,7 @@ const ImportPqSabreAction = require('../Transpiled/Rbs/GdsDirect/Actions/Sabre/I
 const RbsUtils = require("../GdsHelpers/RbsUtils");
 const TicketDesignators = require('../Repositories/TicketDesignators.js');
 const LocationGeographyProvider = require('../Transpiled/Rbs/DataProviders/LocationGeographyProvider.js');
+const GdsDirect = require("../Transpiled/Rbs/GdsDirect/GdsDirect");
 
 let ImportPq = async ({stateful, leadData, fetchOptionalFields = true}) => {
 	let gds = stateful.gds;
@@ -192,7 +193,7 @@ let ImportPq = async ({stateful, leadData, fetchOptionalFields = true}) => {
 
 	let execute = async () => {
 		let importAct;
-		if (gds === 'apollo' && !fetchOptionalFields) {
+		if (gds === 'apollo') {
 			importAct = new ImportPqApolloAction();
 		} else if (gds === 'sabre' && !fetchOptionalFields) {
 			importAct = new ImportPqSabreAction();
@@ -217,14 +218,28 @@ let ImportPq = async ({stateful, leadData, fetchOptionalFields = true}) => {
 			.setSession(stateful)
 			.fetchOptionalFields(fetchOptionalFields)
 			.execute();
+		let userMessages = [];
+		let status = GdsDirect.STATUS_EXECUTED;
 		if (imported.error) {
-			return UnprocessableEntity('PQ not imported - ' + imported.error);
+			userMessages.push(imported.error);
+			delete(imported.error);
+			if (!(imported.pnrData || {}).currentPricing) {
+				status = GdsDirect.STATUS_FORBIDDEN;
+			} else {
+				status = GdsDirect.STATUS_EXECUTED;
+			}
 		} else if (hasConflictingCurrencies(imported.pnrData)) {
-			return BadRequest('Pricing has conflicting currencies');
-		} else {
+			userMessages.push('Pricing has conflicting currencies');
+			status = GdsDirect.STATUS_FORBIDDEN;
+		}
+		imported.status = status;
+		imported.userMessages = userMessages;
+		imported.sessionInfo = await SessionStateHelper.makeSessionInfo(stateful.getLog(), leadData);
+		if (status === GdsDirect.STATUS_EXECUTED) {
 			imported.pnrData = await postprocessPnrData(imported.pnrData);
-			imported.sessionInfo = await SessionStateHelper.makeSessionInfo(stateful.getLog(), leadData);
 			return imported;
+		} else {
+			return UnprocessableEntity('PQ not imported - ' + userMessages.join('; '));
 		}
 	};
 
