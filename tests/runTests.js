@@ -30,6 +30,7 @@ let tests = [
 	.concat(new (require("./backend/Transpiled/App/Services/TerminalServiceTest"))().getTests())
 	.concat(new (require('./backend/Transpiled/Gds/Parsers/Apollo/PnrHistoryParserTest.js'))().getTests())
 	.concat(new (require('./backend/Transpiled/Gds/Parsers/Apollo/TariffDisplay/TariffDisplayParserTest.js'))().getTests())
+	.concat(new (require('./backend/Transpiled/Gds/Parsers/Apollo/ApolloSvcParser/ApolloSvcParserTest.js'))().getTests())
 	.concat(new (require('./backend/Transpiled/Rbs/GdsDirect/Actions/Apollo/DisplayHistoryActionHelperTest.js'))().getTests())
 	.concat(new (require('./backend/Transpiled/Rbs/GdsDirect/Actions/Common/MakeMultiPccTariffDumpActionTest.js'))().getTests())
 	.concat(new (require('./backend/Transpiled/Rbs/GdsDirect/Actions/Common/GetMultiPccTariffDisplayActionTest.js'))().getTests())
