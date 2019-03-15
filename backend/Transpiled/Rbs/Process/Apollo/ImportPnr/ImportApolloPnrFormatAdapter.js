@@ -84,10 +84,10 @@ class ImportApolloPnrFormatAdapter
     static transformFlightServiceInfo($parsedData, $baseDate)  {
         return !php.isset($parsedData['error']) ? {
             'segments': Fp.map(($svcSegData) => {
-                let $legs, $i, $legData, $leg, $fullDepartureDate, $fullDestinationDate, $relDate, $firstLegDepartureDate, $dayOffset;
+                let $legs, $i, $legData, $leg, $fullDepartureDate, $relDate, $dayOffset;
                 $legs = [];
                 for ([$i, $legData] of Object.entries(php.array_values($svcSegData['legs']))) {
-                    $leg = [];
+                    $leg = {};
                     $leg['departureTerminal'] = php.isset($svcSegData['departureTerminal']) && $i === 0
                         ? {
                             'raw': $svcSegData['departureTerminal'],
@@ -111,14 +111,18 @@ class ImportApolloPnrFormatAdapter
                     $fullDepartureDate = php.isset($legData['departureDate'])
                         ? DateTime.decodeRelativeDateInFuture($legData['departureDate'], $baseDate)
                         : null;
-                    $fullDestinationDate = null;
+                    let $fullDestinationDate = null;
+                    let $firstLegDepartureDate = $legs.length > 0
+                        ? $legs[0]['departureDt']['full']
+                        : $fullDepartureDate;
+
                     if ($relDate = $legData['destinationDateInfo']['date'] || null) {
                         $fullDestinationDate = DateTime.decodeRelativeDateInFuture($relDate, $baseDate);
-                    } else if ($firstLegDepartureDate = $legs[0]['departureDt']['full'] || $fullDepartureDate) {
-                        $dayOffset = $legData['destinationDateInfo']['dayOffset'] || null;
+                    } else if ($firstLegDepartureDate) {
+                        $dayOffset = $legData['destinationDateInfo']['dayOffset'];
                         if ($dayOffset !== null) {
                             $fullDestinationDate = $firstLegDepartureDate
-                                ? php.date('Y-m-d', php.strtotime($firstLegDepartureDate+' +'+$dayOffset+' day'))
+                                ? php.date('Y-m-d', php.strtotime('+'+$dayOffset+' day', php.strtotime($firstLegDepartureDate)))
                                 : null;
                         }
                     }
