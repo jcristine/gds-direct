@@ -31,7 +31,7 @@ let toHandleHttp = (httpAction) => (req, res) => {
 		.catch(exc => {
 			let excData = getExcData(exc);
 			if (typeof excData === 'string') {
-				excData = new Error('HTTP action failed - ' + exc);
+				excData = new Error('HTTP action failed - ' + excData);
 			} else {
 				excData.message = 'HTTP action failed - ' + excData.message;
 				let cause = excData.stack ? '\nCaused by:\n' + excData.stack : '';
@@ -105,7 +105,7 @@ let withGdsSession = (sessionAction, canStartNew = false) => (req, res) => {
 		let session = await GdsSessions.getByContext(rqBody)
 			.catch(exc => NotFound.matches(exc.httpStatusCode) && canStartNew
 				? GdsSessionsController.startNewSession(rqBody)
-				: Promise.reject(rqBody));
+				: Promise.reject(exc));
 		let emcUser = rqBody.emcUser;
 		delete(rqBody.emcUser);
 		delete(rqBody.emcSessionId);

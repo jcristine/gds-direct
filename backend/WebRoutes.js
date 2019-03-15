@@ -253,7 +253,7 @@ socketIo.on('connection', /** @param {Socket} socket */ socket => {
 			},
 		};
 		if (rq.path === '/terminal/command') {
-			withGdsSession(GdsSessionController.runInputCmd)(rq, rs);
+			withGdsSession(GdsSessionController.runInputCmd, true)(rq, rs);
 		} else if (rq.path === '/gdsDirect/keepAlive') {
 			withGdsSession(GdsSessionController.keepAliveCurrent)(rq, rs);
 		} else {

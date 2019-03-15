@@ -8,12 +8,10 @@ let workerLogId = FluentLogger.logNewId('bgworker');
 
 let log = (msg, ...data) => {
 	FluentLogger.logit(msg, workerLogId, ...data);
-	console.log((new Date()).toISOString() + ': ' + msg, ...data);
 };
 
 let logExc = (msg, logId, data) => {
 	FluentLogger.logExc(msg, logId, data);
-	console.log((new Date()).toISOString() + ': ' + msg, data);
 };
 
 let expired = (session, accessedMs) => {
