@@ -37,7 +37,7 @@ export default class Session
 			if (!callInProgress && !closed && window.performance.now() - lastUsedAt >= pingInterval) {
 				lastUsedAt = window.performance.now();
 				callInProgress = true;
-				post('/gdsDirect/keepAlive', makeParams(this, {}))
+				post('/gdsDirect/keepAlive', makeParams(this, {skipErrorPopup: true}))
 					.catch(exc => closed = true)
 					.then(result => callInProgress = false);
 			}

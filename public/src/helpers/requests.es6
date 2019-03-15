@@ -114,7 +114,9 @@ const Ask = (url, fetchParams) => {
 
 				let error = body.error || JSON.stringify(body);
 				let msg = 'Request error - ' + error.slice(0, 300);
-				debugRequest(url, msg, status);
+				if (!fetchParams.skipErrorPopup) {
+					debugRequest(url, msg, status);
+				}
 				return Promise.reject(msg);
 			}
 		})
