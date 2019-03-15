@@ -3,7 +3,6 @@
 // of clusters, but my guess is that it exits after attempt to listen to the port already occupied by other worker
 
 const Config = require('./backend/Config.js');
-const KeepAlive = require("./backend/Maintenance/KeepAlive");
 (async () => {
 	console.log('fetching external config');
 	await Config.getConfig();
@@ -11,6 +10,7 @@ const KeepAlive = require("./backend/Maintenance/KeepAlive");
 	require('./backend/WebRoutes.js');
 	let Diag = require('./backend/LibWrappers/Diag.js');
 	let Migration = require('./backend/Maintenance/Migration.js');
+	let KeepAlive = require("./backend/Maintenance/KeepAlive");
 	Migration.run()
 		.then(result => {
 			console.log('Migration was successful\n', JSON.stringify(result));
