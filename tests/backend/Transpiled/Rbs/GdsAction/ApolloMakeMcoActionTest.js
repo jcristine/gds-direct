@@ -43,7 +43,7 @@ class ApolloMakeMcoActionTest extends require('../../../../../backend/Transpiled
                 ' REMARK1;..............................................         ',
                 ' REMARK2;...................................................... ',
                 ' VALIDATING CARRIER;SA                  ISSUE NOW;Y',
-            ])
+            ]),
         ]);
         return $list;
     }
@@ -96,7 +96,7 @@ class ApolloMakeMcoActionTest extends require('../../../../../backend/Transpiled
                         " END BOX;...................................................... ",
                         " REMARK1;..............................................         ",
                         " REMARK2;...................................................... ",
-                        " VALIDATING CARRIER;LO                  ISSUE NOW;N"
+                        " VALIDATING CARRIER;LO                  ISSUE NOW;N",
                     ].join(''),
                     "output": "MCO DATA STORED \n><",
                     "duration": "0.211568601",
@@ -126,7 +126,7 @@ class ApolloMakeMcoActionTest extends require('../../../../../backend/Transpiled
                     "MCO ISSUED TTL FARE  USD     3.00",
                     "ITIN/INVOICE ISSUED",
                     "TAB AND ENTER TO REDISPLAY PNR >*LCF9T0;",
-                    ""
+                    "",
                 ].join("\n"),
             },
             calledCommands: [
@@ -136,7 +136,7 @@ class ApolloMakeMcoActionTest extends require('../../../../../backend/Transpiled
                         "MCO ISSUED TTL FARE  USD     3.00",
                         "ITIN/INVOICE ISSUED",
                         "TAB AND ENTER TO REDISPLAY PNR >*LCF9T0;",
-                        "><"
+                        "><",
                     ].join("\n"),
                     "duration": "0.256330192",
                 },

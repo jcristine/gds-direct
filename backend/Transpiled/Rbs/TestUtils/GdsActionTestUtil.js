@@ -21,7 +21,10 @@ class GdsActionTestUtil
 			unit.assertEmpty($commandsLeft, 'There are some expected commands left that '+
                 'were not used - '+php.implode(', ', php.array_column($commandsLeft, 'cmd')));
         } catch ($exc) {
-            /** @debug */
+            let args = process.argv.slice(process.execArgv.length + 2);
+            if (args.includes('debug')) {
+                console.log('\n$actual\n', JSON.stringify($actual));
+            }
             throw $exc;
         }
     }
