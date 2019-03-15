@@ -31,10 +31,12 @@ let tests = [
 	.concat(new (require('./backend/Transpiled/Gds/Parsers/Apollo/PnrHistoryParserTest.js'))().getTests())
 	.concat(new (require('./backend/Transpiled/Gds/Parsers/Apollo/TariffDisplay/TariffDisplayParserTest.js'))().getTests())
 	.concat(new (require('./backend/Transpiled/Gds/Parsers/Apollo/ApolloSvcParser/ApolloSvcParserTest.js'))().getTests())
+	.concat(new (require('./backend/Transpiled/Gds/Parsers/Apollo/ApolloVitParser/ApolloVitParserTest.js'))().getTests())
 	.concat(new (require('./backend/Transpiled/Rbs/GdsDirect/Actions/Apollo/DisplayHistoryActionHelperTest.js'))().getTests())
 	.concat(new (require('./backend/Transpiled/Rbs/GdsDirect/Actions/Common/MakeMultiPccTariffDumpActionTest.js'))().getTests())
 	.concat(new (require('./backend/Transpiled/Rbs/GdsDirect/Actions/Common/GetMultiPccTariffDisplayActionTest.js'))().getTests())
 	.concat(new (require('./backend/Transpiled/Rbs/GdsAction/ApolloMakeMcoActionTest.js'))().getTests())
+	.concat(new (require('./backend/Transpiled/Rbs/Process/Apollo/ImportPnr/Actions/RetrieveFlightServiceInfoActionTest.js'))().getTests())
 	.concat(new (require('./backend/Transpiled/Rbs/GdsDirect/DialectTranslator/GdsDialectTranslatorTest.js'))().getTests())
 	;
 
