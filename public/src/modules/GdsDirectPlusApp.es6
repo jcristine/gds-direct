@@ -262,9 +262,10 @@ export default class GdsDirectPlusApp
 	{
 		if (pnrCode)
 		{
+			let cmd = gdsName === 'amadeus' ? 'RT' + pnrCode : '*' + pnrCode;
 			CHANGE_GDS(gdsName);
 			CHANGE_ACTIVE_TERMINAL({curTerminalId : 0});
-			DEV_CMD_STACK_RUN('*' + pnrCode);
+			DEV_CMD_STACK_RUN(cmd);
 		}
 	}
 
