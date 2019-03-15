@@ -9,13 +9,12 @@ const CmsApolloTerminal = require('../../../../Rbs/GdsDirect/GdsInterface/CmsApo
 const ApolloReservationParser = require('../../../../Gds/Parsers/Apollo/Pnr/PnrParser.js');
 const CommandParser = require('../../../../Gds/Parsers/Apollo/CommandParser.js');
 const PricingParser = require('../../../../Gds/Parsers/Apollo/PricingParser/PricingParser.js');
-const ImportPnrAction = require('../../../../Rbs/Process/Common/ImportPnr/ImportPnrAction.js');
 const ApolloPnrFieldsOnDemand = require('../../../../Rbs/Process/Apollo/ImportPnr/ApolloPnrFieldsOnDemand.js');
 const ImportApolloPnrFormatAdapter = require('../../../../Rbs/Process/Apollo/ImportPnr/ImportApolloPnrFormatAdapter.js');
 const AbstractGdsAction = require('../../../GdsAction/AbstractGdsAction.js');
 const {fetchAll} = require('../../../../../GdsHelpers/TravelportUtils.js');
 const ApolloBaggageAdapter = require('../../../FormatAdapters/ApolloBaggageAdapter.js');
-const RbsUtils = require("../../../../../GdsHelpers/RbsUtils");
+const RetrieveFlightServiceInfoAction = require('../../../../Rbs/Process/Apollo/ImportPnr/Actions/RetrieveFlightServiceInfoAction.js');
 
 let php = require('../../../../php.js');
 
@@ -23,7 +22,6 @@ let php = require('../../../../php.js');
 var require = require('../../../../translib.js').stubRequire;
 
 const ImportFareComponentsAction = require('../../../../Rbs/Process/Apollo/ImportPnr/Actions/ImportFareComponentsAction.js');
-const RetrieveFlightServiceInfoAction = require('../../../../Rbs/Process/Apollo/ImportPnr/Actions/RetrieveFlightServiceInfoAction.js');
 const DumpStorage = require('../../../../Rbs/Process/Common/ImportPnr/DumpStorage.js');
 
 /** @see ImportPqAmadeusAction description */
@@ -163,24 +161,22 @@ class ImportPqApolloAction extends AbstractGdsAction {
 		return $result;
 	}
 
-	getFlightService($itinerary) {
-		let $raw, $dumps, $actionResult, $common, $vitCmds, $result;
-		$raw = this.runOrReuse('*SVC');
-		$dumps = new DumpStorage();
-		$actionResult = (new RetrieveFlightServiceInfoAction())
-			.setLog(this.$log).setApollo(this.getApollo())
-			.setDumpStorage($dumps).setCachedCommands({'*SVC': $raw})
-			.execute($itinerary);
+	async getFlightService($itinerary) {
+		let $actionResult, $common, $result = {};
+
+		let calledCommands = [];
+		let capturing = {
+			runCmd: async (cmd) => {
+				let cmdRec = await this.session.runCmd(cmd);
+				calledCommands.push(cmdRec);
+				return cmdRec;
+			},
+		};
+
+		$actionResult = await (new RetrieveFlightServiceInfoAction())
+			.setSession(capturing).execute($itinerary);
 		$common = ImportApolloPnrFormatAdapter.transformFlightServiceInfo($actionResult, this.getBaseDate());
-		$vitCmds = Fp.map(($cmdRec) => ({
-			'cmd': $cmdRec['cmd'],
-			'output': $cmdRec['dump'],
-		}), Fp.filter(($cmdRec) => {
-			return StringUtil.startsWith($cmdRec['cmd'], 'VIT');
-		}, $dumps.getAll()));
-		$result = {'raw': $raw};
-		$result['hiddenStopTimeCommands'] = $vitCmds;
-		this.$allCommands = php.array_merge(this.$allCommands, $vitCmds);
+		this.$allCommands = php.array_merge(this.$allCommands, calledCommands);
 		if ($result['error'] = $common['error'] || null) {
 			return $result;
 		} else {
@@ -304,7 +300,6 @@ class ImportPqApolloAction extends AbstractGdsAction {
 			},
 			'bagPtcPricingBlocks': [],
 		};
-		let pnrDump = $reservation.itinerary.map(s => s.raw).join('\n');
 		for ([$i, $cmdRecord] of Object.entries($cmdRecords)) {
 			$pricingCommand = $cmdRecord['cmd'];
 			$errors = CanCreatePqRules.checkPricingCommand('apollo', $pricingCommand, this.$leadData);
@@ -342,7 +337,7 @@ class ImportPqApolloAction extends AbstractGdsAction {
 	 * @param $currentStore = AmadeusGetPricingPtcBlocksAction::execute()['pricingList'][0]
 	 * fetches published pricing if current pricing fare is private
 	 */
-	getPublishedPricing($pricing, $nameRecords) {
+	async getPublishedPricing($pricing, $nameRecords) {
 		let $isPrivateFare, $store, $ptcBlock, $result, $cmd, $raw, $processed, $error;
 		$isPrivateFare = false;
 		for ($store of $pricing['pricingList']) {
@@ -355,7 +350,7 @@ class ImportPqApolloAction extends AbstractGdsAction {
 		$result = {'isRequired': $isPrivateFare, 'raw': null, 'parsed': null};
 		if (!$isPrivateFare) return $result;
 		$cmd = '$BB/:N';
-		$raw = this.runOrReuse($cmd);
+		$raw = await this.runOrReuse($cmd);
 		$processed = this.constructor.parsePricing($raw, $nameRecords, $cmd);
 		$result['cmd'] = $cmd;
 		$result['raw'] = $raw;
@@ -366,14 +361,13 @@ class ImportPqApolloAction extends AbstractGdsAction {
 		return $result;
 	}
 
-	getApolloFareRules($sections, $itinerary) {
+	async getApolloFareRules($sections, $itinerary) {
 		let $dumpStorage, $result, $error, $fqnDump, $dumpRec, $cmd, $recordBase, $ruleRecords, $fareData, $common,
 			$fareListRecord;
-		$dumpStorage = new DumpStorage();
-		$result = (new ImportFareComponentsAction())
-			.setDumpStorage($dumpStorage).setLog(this.$log)
-			.setApollo(this.getApollo()).execute($sections, 1);
+		$result = await (new ImportFareComponentsAction())
+			.setSession(this.session).execute($sections, 1);
 		if ($error = $result['error'] || null) return {'error': $error};
+
 		$fqnDump = php.isset($result['dumpNumber']) ? $dumpStorage.get($result['dumpNumber'])['dump'] : null;
 		for ($dumpRec of $dumpStorage.getAll()) {
 			if ($cmd = $dumpRec['cmd'] || null) {
@@ -405,16 +399,15 @@ class ImportPqApolloAction extends AbstractGdsAction {
 		};
 	}
 
-	getFareRules($pricing, $itinerary) {
-		let $sections, $common, $error, $raw, $sanitized;
+	async getFareRules($pricing, $itinerary) {
+		let $sections, $common, $error, $raw;
 		if (php.count($pricing['pricingList']) > 1) {
 			return {'error': 'Fare rules are not supported in multi-pricing PQ'};
 		}
 		$sections = [16];
-		$common = this.getApolloFareRules($sections, $itinerary);
+		$common = await this.getApolloFareRules($sections, $itinerary);
 		if ($error = $common['error'] || null) {
 			$raw = $common['raw'] || null;
-			$sanitized = $raw ? this.constructor.sanitizeOutput($raw) : null;
 			return {'error': $error, 'raw': $raw};
 		}
 		return {
@@ -452,12 +445,9 @@ class ImportPqApolloAction extends AbstractGdsAction {
 			if ($result['error'] = $flightServiceRecord['error'] || null) return $result;
 			$result['pnrData']['flightServiceInfo'] = $flightServiceRecord;
 
-			$result['pnrData']['reservation']['parsed']['itinerary'] = ImportPnrAction.combineItineraryAndSvc($reservationRecord['parsed']['itinerary'],
-				$flightServiceRecord['parsed']['segments']);
-
 			$pricing = $pricingRecord['pricingPart']['parsed'];
 			$fareRuleData = await this.getFareRules($pricing,
-				$reservationRecord['parsed']['itinerary']);
+				$reservationRecord['parsed']['itinerary']).catch(exc => ({error: 'Exc - ' + exc}));
 			if ($result['error'] = $fareRuleData['error'] || null) return $result;
 
 			$result['pnrData']['fareComponentListInfo'] = $fareRuleData['fareListRecords'];
