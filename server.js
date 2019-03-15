@@ -3,6 +3,7 @@
 // of clusters, but my guess is that it exits after attempt to listen to the port already occupied by other worker
 
 const Config = require('./backend/Config.js');
+const KeepAlive = require("./backend/Maintenance/KeepAlive");
 (async () => {
 	console.log('fetching external config');
 	await Config.getConfig();
@@ -25,4 +26,6 @@ const Config = require('./backend/Config.js');
 			console.error(msg, data);
 			return Diag.error(msg, data);
 		});
+	let keepAlive = KeepAlive.run();
+	Diag.log('Started keepAlive process with log id: ' + keepAlive.workerLogId);
 })();
