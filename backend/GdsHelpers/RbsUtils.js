@@ -117,10 +117,9 @@ let isTourPcc = async (gds, pcc) => {
 };
 
 let isPrivateFareTour = async (gds, store) => {
-	let isTour;
 	let pricingPcc = store.pricingPcc;
 	if (!pricingPcc) {
-		isTour = false;
+		return false;
 	} else if (
 		gds === 'galileo' && ['0GF', '3ZV4', 'C2Y', '3NH'].includes('pricingPcc') ||
 		gds === 'sabre' && ['0BWH', '0EKH'].includes('pricingPcc') ||
@@ -129,7 +128,7 @@ let isPrivateFareTour = async (gds, store) => {
 		let isItx = ptcBlock => PtcUtil.getFareType(ptcBlock.ptcInfo.ptc) === 'inclusiveTour';
 		return store.pricingBlockList.some(isItx);
 	} else {
-		isTour = await isTourPcc(gds, pricingPcc);
+		return isTourPcc(gds, pricingPcc);
 	}
 };
 
