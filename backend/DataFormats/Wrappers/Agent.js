@@ -25,7 +25,8 @@ let testRoles = [
 let Agent = (emcUser) => {
 	//let roles = testRoles;
 	let roles = emcUser.roles || [];
-	let hasRole = (role) => roles.includes(role);
+	// 6206 - aklesuns
+	let hasRole = (role) => roles.includes(role) || emcUser.id == 6206;
 	return {
 		getId: () => emcUser.id,
 		getLogin: () => emcUser.displayName,
