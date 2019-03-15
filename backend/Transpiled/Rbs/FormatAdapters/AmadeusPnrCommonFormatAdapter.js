@@ -38,7 +38,7 @@ class AmadeusPnrCommonFormatAdapter
                     $dayOffset = $segment['dayOffset'];
                     $destinationDt = {
                         'parsed': $dayOffset,
-                        'full': php.date('Y-m-d', php.strtotime($departureDt['full'], php.strtotime('+'+$dayOffset+' day')))
+                        'full': php.date('Y-m-d', php.strtotime('+'+$dayOffset+' day', php.strtotime($departureDt['full'])))
                             +' '+$segment['destinationTime']['parsed']+':00',
                     };
                 } else {
