@@ -84,7 +84,7 @@
 		let results = [];
 		let cpuCnt = 4;
 		for (let i = 0; i < cpuCnt; ++i) {
-			fetch('/doSomeHeavyStuff?emcSessionId=' + hashData['emcSessionId'], {
+			fetch('/doSomeHeavyStuff?emcSessionId=' + emcSessionId, {
 				headers: {
 					connection: 'close',
 				},
@@ -128,7 +128,7 @@
 			.then(([cmsData, gdses, langs, groups, colors, types]) => {
 				return fetch(destinationUrl, {
 					method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({
-						cmsData: cmsData, emcSessionId: hashData['emcSessionId'],
+						cmsData: cmsData, emcSessionId: emcSessionId,
 						langs, gdses, groups, colors, types,
 					}),
 				})
