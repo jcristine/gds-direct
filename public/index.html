@@ -34,8 +34,8 @@
 			htmlRootDom		: document.getElementById('terminalContext'),
 			emcSessionId    : emcSessionId,
 			cmsUrl			: isDev
-				? 'http://cms.gitlab-runner.snx702.dyninno.net/'
-				: 'https://cms.asaptickets.com/',
+				? 'http://cms.gitlab-runner.snx702.dyninno.net'
+				: 'https://cms.asaptickets.com',
 			PqPriceModal	: (pqData, closeModal, importPq) => {
 				console.log('getPqItinerary data', pqData);
 				importPq().then(fullData => {
