@@ -1,7 +1,7 @@
 
 let aklesuns = require('../Migration/aklesuns.js');
 let Db = require('../Utils/Db.js');
-let {client, keys} = require('../LibWrappers/Redis.js');
+let {getClient, keys} = require('../LibWrappers/Redis.js');
 let Diag = require('../LibWrappers/Diag.js');
 const InternalServerError = require("../Utils/Rej").InternalServerError;
 let {getConfig} = require('../Config.js');
@@ -84,6 +84,7 @@ let Migration = () => {
 				await new Promise(resolve => setTimeout(resolve, 5000));
 			}
 			Diag.log('About to acquire ' + lockKey + ' lock for process ' + process.pid);
+			let client = await getClient();
 			let migrationLock = await client.set(lockKey, process.pid, 'NX', 'EX', lockSeconds);
 			if (!migrationLock) {
 				let lastValue = await client.get(lockKey);

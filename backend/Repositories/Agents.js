@@ -1,7 +1,7 @@
 
 let Db = require('./../Utils/Db.js');
 let php = require('../Transpiled/php.js');
-let {client, keys} = require('../LibWrappers/Redis.js');
+let {getClient, keys} = require('../LibWrappers/Redis.js');
 
 exports.getFsCallsUsed = async (agentId) => {
 	let rows = await Db.with(db => db.query([
@@ -19,6 +19,7 @@ exports.getFsCallsUsed = async (agentId) => {
 
 exports.getGdsDirectCallsUsed = async (agentId) => {
 	let cacheKey = keys.AGENT_CMD_COUNTER + ':' + agentId;
+	let client = await getClient();
 	let cached = await client.get(cacheKey).catch(exc => null);
 	if (cached !== null) {
 		return cached;

@@ -1,11 +1,8 @@
 
 let ioredis = require("ioredis");
-let config = require('../Config.js');
+let Config = require('../Config.js');
 let {never, StrConsts} = require('../Utils/StrConsts.js');
 const nonEmpty = require("../Utils/Rej").nonEmpty;
-
-/** @type IIoRedisClient */
-let client = new ioredis(config.REDIS_PORT, config.REDIS_HOST);
 
 exports.keys = StrConsts({
 	get SESSION_ACTIVES() { never(); },
@@ -18,15 +15,30 @@ exports.keys = StrConsts({
 	get MIGRAT_LOCK() { never(); },
 	get AGENT_CMD_COUNTER() { never(); },
 }, 'GRECT_');
-exports.client = client;
+
+let whenConfig = Config.getConfig();
+
+let whenClient = null;
+/** @return Promise<IIoRedisClient> */
+let getClient = () => {
+	if (whenClient === null) {
+		whenClient = whenConfig.then(cfg => {
+			return new ioredis(cfg.REDIS_PORT, cfg.REDIS_HOST);
+		});
+	}
+	return whenClient;
+};
+
+exports.getClient = getClient;
 
 /**
  * for WATCH/MULTI/EXEC transactions
  * @param {{(client: IIoRedisClient): Promise<T>}} process
  * @return Promise<T>
  */
-exports.withNewConnection = (process) => {
-	let client = new ioredis(config.REDIS_PORT, config.REDIS_HOST);
+exports.withNewConnection = async (process) => {
+	let cfg = await whenConfig;
+	let client = new ioredis(cfg.REDIS_PORT, cfg.REDIS_HOST);
 	return process(client).then(result => {
 		client.quit();
 		return result;
@@ -36,7 +48,8 @@ exports.withNewConnection = (process) => {
 	});
 };
 
-exports.getInfo = () => {
+exports.getInfo = async () => {
+	let client = await getClient();
 	return client.info().then(text => {
 		let kvPairs = text.split(/[\n\r]+/)
 			.filter(l => !l.startsWith('#'))

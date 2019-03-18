@@ -203,9 +203,10 @@ app.get('/testHttpRq', withAuth((reqBody, emcResult) => {
 		return Forbidden('Sorry, you must be me in order to use that');
 	}
 }));
-app.get('/testRedisWrite', withAuth((reqBody, emcResult) => {
+app.get('/testRedisWrite', withAuth(async (reqBody, emcResult) => {
 	if (emcResult.user.id == 6206) {
-		return Redis.client.hset(Redis.keys.USER_TO_TMP_SETTINGS + ':' + emcResult.user.id, reqBody.key, reqBody.val)
+		let redis = await Redis.getClient();
+		return redis.hset(Redis.keys.USER_TO_TMP_SETTINGS + ':' + emcResult.user.id, reqBody.key, reqBody.val)
 			.then(rs => ({rs}));
 	} else {
 		return Forbidden('Sorry, you must be me in order to use that');

@@ -7,7 +7,8 @@ let {mand} = require('../Utils/Misc.js');
 /** @return Promise<IGdsProfileMap> */
 let getAll = async () => {
 	let redisKey = Redis.keys.USER_TO_TMP_SETTINGS + ':6206';
-	let dataStr = await Redis.client.hget(redisKey, 'gdsProfiles');
+	let redis = await Redis.getClient();
+	let dataStr = await redis.hget(redisKey, 'gdsProfiles');
 	if (dataStr) {
 		return JSON.parse(dataStr);
 	} else {
