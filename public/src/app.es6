@@ -102,7 +102,9 @@ let onEmcSessionId = (emcSessionId, params) => {
 	// probably better would be to pass it through all these abstractions
 	// to the session.es6 instead of making a global variable...
 	window.GdsDirectPlusParams.emcSessionId = emcSessionId;
-	window.GdsDirectPlusParams.travelRequestId = params.travelRequestId;
+	// problems? should, like, prefix them at some point maybe...
+	let leadId = params.scheduleChangeId || params.travelRequestId;
+	window.GdsDirectPlusParams.travelRequestId = leadId;
 	window.GdsDirectPlusParams.cmsUrl = params.cmsUrl;
 	window.GdsDirectPlusParams.socketHost = params.socketHost || window.GdsDirectPlusParams.socketHost;
 	initGlobEvents();
