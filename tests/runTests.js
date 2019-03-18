@@ -1,7 +1,3 @@
-let Config = require('../backend/Config.js');
-
-(async () => {
-await Config.getConfig();
 
 console.log('Starting unit tests');
 let args = process.argv.slice(process.execArgv.length + 2);
@@ -71,5 +67,3 @@ let perform = async (tests) => {
 };
 
 perform(tests);
-
-})();

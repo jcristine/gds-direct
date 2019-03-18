@@ -1,11 +1,5 @@
 
-// it looks like besides the 2 clusters server.js also gets called by someone else located on ap01prtr same as one
-// of clusters, but my guess is that it exits after attempt to listen to the port already occupied by other worker
-
-const Config = require('./backend/Config.js');
 (async () => {
-	console.log('fetching external config');
-	await Config.getConfig();
 	console.log('initializing Web Routes');
 	require('./backend/WebRoutes.js');
 	let Diag = require('./backend/LibWrappers/Diag.js');

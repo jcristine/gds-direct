@@ -1,10 +1,4 @@
 
-let Config = require('./backend/Config.js');
-
-(async () => {
-
-await Config.getConfig();
-
 const KeepAlive = require("./backend/Maintenance/KeepAlive");
 let FluentLogger = require('./backend/LibWrappers/FluentLogger.js');
 
@@ -27,5 +21,3 @@ let terminate = (signal) =>
 process.on('SIGINT', terminate);
 process.on('SIGTERM', terminate);
 process.on('SIGHUP', terminate);
-
-})();

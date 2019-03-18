@@ -3,7 +3,6 @@ let mysql = require('promise-mysql');
 let {getConfig} = require('../Config.js');
 const NotFound = require("./Rej").NotFound;
 const BadRequest = require("./Rej").BadRequest;
-const InternalServerError = require("./Rej").InternalServerError;
 
 let whenPool = null;
 let getPool = () => {

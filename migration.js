@@ -1,8 +1,5 @@
 
-let Config = require('./backend/Config.js');
-
 (async () => {
-	await Config.getConfig();
 	let Migration = require('./backend/Maintenance/Migration.js');
 	Migration.run()
 		.then((result) => {
