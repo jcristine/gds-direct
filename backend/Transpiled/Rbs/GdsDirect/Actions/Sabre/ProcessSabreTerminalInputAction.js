@@ -133,17 +133,19 @@ class ProcessSabreTerminalInputAction {
 		return php.str_replace('SEAMAN', 'ITSPE', $gdsOutput);
 	}
 
-	static async *getPerformedCommands($cmdLog) {
+	static async getPerformedCommands($cmdLog) {
 		let $commands, $cmdRecord, $parsed, $flatCmds;
 
+		let result = [];
 		$commands = await $cmdLog.getCurrentPnrCommands();
 		for ($cmdRecord of Object.values($commands)) {
 			$parsed = CommandParser.parse($cmdRecord['cmd']);
 			$flatCmds = php.array_merge([$parsed], $parsed['followingCommands']);
 			for (let flatCmd of $flatCmds) {
-				yield flatCmd;
+				result.push(flatCmd);
 			}
 		}
+		return result;
 	}
 
 	async makeCmsRemarkCmdIfNeeded() {
