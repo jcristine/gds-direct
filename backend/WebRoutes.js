@@ -286,10 +286,10 @@ app.get('/ping', toHandleHttp((rqBody) => {
 	}
 	let PersistentHttpRq = require('./Utils/PersistentHttpRq.js');
 
-	return Redis.getInfo().then(redisLines => {
+	return Redis.getInfo().then(async redisLines => {
 		const data = {
 			pid: process.pid,
-			'dbPool': Db.getInfo(),
+			'dbPool': await Db.getInfo(),
 			sockets: {
 				'totalConnection': socketIo.engine.clientsCount,
 			},

@@ -7,7 +7,7 @@ let makeClient = cfg => {
 	let {Emc} = require('dynatech-client-component-emc');
 	let client = new Emc();
 
-	if (Config.production) {
+	if (cfg.production) {
 		client.setLink('http://auth-asaptickets-com.lan.dyninno.net/jsonService.php');
 	} else {
 		client.setLink('http://auth.gitlab-runner.snx702.dyninno.net/jsonService.php');
