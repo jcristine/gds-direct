@@ -150,12 +150,14 @@ app.post('/admin/terminal/sessionsGet', toHandleHttp(async rqBody => {
 app.get('/emcLoginUrl', toHandleHttp(async rqBody => {
 	let returnUrl = rqBody.returnUrl;
 	let config = await getConfig();
-	let result = await Emc.client.getLoginPage(config.external_service.emc.projectName, returnUrl);
+	let emc = await Emc.getClient();
+	let result = await emc.getLoginPage(config.external_service.emc.projectName, returnUrl);
 	return {emcLoginUrl: result.data.data};
 }));
 app.get('/authorizeEmcToken', toHandleHttp(async rqBody => {
 	let token = rqBody.token;
-	let result = await Emc.client.authorizeToken(token);
+	let emc = await Emc.getClient();
+	let result = await emc.authorizeToken(token);
 	return {emcSessionId: result.data.sessionKey};
 }));
 app.get('/checkEmcSessionId', toHandleHttp(async rqBody => {
