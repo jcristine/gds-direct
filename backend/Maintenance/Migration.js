@@ -11,7 +11,6 @@ let TABLE_NAME = 'migrations';
 let Migration = () => {
 	let logs = [];
 	let log = (msg, data) => {
-		console.log(msg, data);
 		logs.push({dt: new Date().toISOString(), msg, data});
 	};
 

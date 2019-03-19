@@ -187,7 +187,6 @@ class TerminalHighlightService {
 						matches = Str.matchAll(regex, $output);
 					} catch ($e) {
 						matches = [];
-						console.error('Invalid output regex ' + $e, {$e, gdsRow});
 						setOutputRegexError(gdsRow['id']);
 					}
 					for (let match of matches) {

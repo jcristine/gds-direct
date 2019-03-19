@@ -233,13 +233,12 @@ app.get('/parser/test', toHandleHttp((rqBody) => {
 
 getConfig().then(config => {
 	app.listen(+config.HTTP_PORT, config.HOST, function () {
-		console.log('listening on *:' + config.HTTP_PORT + ' - for standard http request handling');
+		//console.log('listening on *:' + config.HTTP_PORT + ' - for standard http request handling');
 	});
 });
 
 let socketIo = initSocketIo();
 socketIo.on('connection', /** @param {Socket} socket */ socket => {
-	console.log('got a socket connection', socket.id);
 	socket.on('message', (data, reply) => {
 		let fallbackBody = JSON.stringify({error: 'Your request was not handled'});
 		let rsData = {body: fallbackBody, status: 501, headers: {}};
@@ -265,7 +264,7 @@ socketIo.on('connection', /** @param {Socket} socket */ socket => {
 		}
 	});
 	socket.send({testMessage: 'hello, how are you?'}, (response) => {
-		console.log('delivered testMessage to client', response);
+		//console.log('delivered testMessage to client', response);
 	});
 });
 getConfig().then(config => {
@@ -306,7 +305,6 @@ app.get('/ping', toHandleHttp((rqBody) => {
 			},
 			persistentHttpRqInfo: PersistentHttpRq.getInfo(),
 		};
-		console.log(JSON.stringify(data));
 		data['msg'] = 'pong';
 		return {status: 'OK', result: data};
 	});

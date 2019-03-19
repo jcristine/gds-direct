@@ -405,7 +405,7 @@ class TranslateAvailabilityCmdAction {
 			if (!php.is_null($translated)) {
 				$result[$key] = $translated;
 			} else {
-				console.error('\nCould not translate avail cmd part ' + $key + ' - ' + $value);
+				//console.error('\nCould not translate avail cmd part ' + $key + ' - ' + $value);
 				return null;
 			}
 		}
