@@ -433,7 +433,7 @@ class ProcessSabreTerminalInputAction {
 			Object.values(fullState.areas).some(a => !a.pcc)
 		) {
 			// Sabre requires "logging" into all areas before
-			// switching between them, our our OIATH trick will fail
+			// switching between them, or our OIATH trick will fail
 			let siOutput = await this.runCommand('SI*');
 			let siMatch = siOutput.match(/^([A-Z0-9]{3,4})\.([A-Z0-9]{3,4})\*AWS((?:\.[A-Z])+)/);
 			if (siMatch) {
@@ -462,7 +462,8 @@ class ProcessSabreTerminalInputAction {
 			let gdsData = this.stateful.getGdsData();
 			gdsData.binarySecurityToken = newToken;
 			this.stateful.updateGdsData(gdsData);
-			return {'calledCommands': [{'cmd': cmd, 'output': out}]};
+			let cmdRecs = [{'cmd': cmd, 'output': 'Successfully changed area to ' + $area}];
+			return {'calledCommands': cmdRecs};
 		} else {
 			return UnprocessableEntity('Could not change are to ' + $area + ' - ' + out.trim());
 		}
