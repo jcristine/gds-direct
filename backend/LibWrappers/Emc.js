@@ -1,7 +1,8 @@
 let Redis = require("./Redis.js");
 let Config = require('../Config.js');
 
-let SESSION_EXPIRE = 60 * 10 * 1000;
+// 1 hour
+let SESSION_EXPIRE = 3600;
 
 let makeClient = cfg => {
 	let {Emc} = require('dynatech-client-component-emc');

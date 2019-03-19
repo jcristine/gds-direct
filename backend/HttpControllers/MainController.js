@@ -8,8 +8,9 @@ const {getExcData} = require('../Utils/Misc.js');
 const php = require('../Transpiled/php.js');
 const GdsSessions = require("../Repositories/GdsSessions");
 const GdsSessionsController = require("./GdsSessionController");
+const Config = require('../Config.js');
 
-let shouldDiag = (exc) =>
+let isSystemError = (exc) =>
 	!BadRequest.matches(exc.httpStatusCode) &&
 	!Forbidden.matches(exc.httpStatusCode) &&
 	!LoginTimeOut.matches(exc.httpStatusCode) &&
@@ -63,7 +64,7 @@ let toHandleHttp = (httpAction) => (req, res) => {
 				requestBody: maskedBody,
 				stack: exc.stack,
 			});
-			if (shouldDiag(exc)) {
+			if (isSystemError(exc)) {
 				Diag.error('HTTP request failed', errorData);
 			}
 		});
@@ -146,12 +147,11 @@ process.on('unhandledRejection', (exc, promise) => {
 	// if token is outdated - you can see me catching it in runInputCmdRestartAllowed() and
 	// client does receive response generated in this catch, but 'unhandledRejection' fires
 	// nevertheless, with almost empty stack trace (just the PersistentHttpRq.js)
-	//if (shouldDiag(exc)) {
-	//	console.error('Unhandled Promise Rejection', data);
-	//	Diag.error('Unhandled Promise Rejection', data);
-	//} else {
-	//	console.log('(ignored) Unhandled Promise Rejection', data);
-	//}
+	if (isSystemError(exc)) {
+		if (!Config.production) {
+			console.error('Unhandled Promise Rejection', data);
+		}
+	}
 });
 
 exports.toHandleHttp = toHandleHttp;
