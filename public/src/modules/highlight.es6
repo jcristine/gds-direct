@@ -55,6 +55,7 @@ export const seedOutputString = (outputText, appliedRules) => {
 	tips = {};
 
 	const loop 	= (rule, key) => {
+		console.log('ololo looping', {...rule, key});
 		const value = rule.value;
 
 		const replaceWith = (pattern = '', patternReplaced = '') => {
@@ -77,9 +78,10 @@ export const seedOutputString = (outputText, appliedRules) => {
 		};
 		const findInjection 	= line => {
 			const pos = line.indexOf(value);
-			return pos > -1 && !hasBrokenTokens(line.slice(0, pos));
+			return pos > -1;
 		};
-		const replacePerLine 	= (pattern, onClickCmd) => splitLines(outputText).filter(findInjection).map(replaceOutput(pattern, onClickCmd));
+		const replacePerLine 	= (pattern, onClickCmd) => splitLines(outputText)
+			.filter(findInjection).map(replaceOutput(pattern, onClickCmd));
 
 		if (rule.onClickCommand.indexOf('{lnNumber}') > -1)
 		{
