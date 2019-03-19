@@ -54,22 +54,17 @@ let encodeTpOutputForCms = ($dump) => {
 	return $dump;
 };
 
-let makeRbsResult = (calledCommands, fullState) => {
+let makeBriefSessionInfo = (fullState) => {
 	let areaState = fullState.areas[fullState.area] || {};
 	return ({
-		calledCommands: calledCommands.map(a => a),
-		messages: [],
-		clearScreen: false,
-		sessionInfo: {
-			canCreatePq: areaState.can_create_pq ? true : false,
-			pricingCmd: areaState.pricing_cmd || '',
-			canCreatePqErrors: areaState.can_create_pq
-				? [] : ['No recent valid pricing'],
-			area: areaState.area || '',
-			pcc: areaState.pcc || '',
-			hasPnr: areaState.has_pnr ? true : false,
-			recordLocator: areaState.record_locator || '',
-		},
+		canCreatePq: areaState.can_create_pq ? true : false,
+		pricingCmd: areaState.pricing_cmd || '',
+		canCreatePqErrors: areaState.can_create_pq
+			? [] : ['No recent valid pricing'],
+		area: areaState.area || '',
+		pcc: areaState.pcc || '',
+		hasPnr: areaState.has_pnr ? true : false,
+		recordLocator: areaState.record_locator || '',
 	});
 };
 
@@ -149,11 +144,13 @@ let runCmdRq =  async (inputCmd, stateful) => {
 	} else {
 		return NotImplemented('Unsupported GDS for runCmdRq() - ' + stateful.gds);
 	}
-	let rbsResult = makeRbsResult(gdsResult.calledCommands, stateful.getFullState());
-	rbsResult.status = gdsResult.status;
-	rbsResult.messages = (gdsResult.userMessages || []).map(msg => ({type: 'error', text: msg}));
-	rbsResult.actions = gdsResult.actions || [];
-	return rbsResult;
+	return {
+		status: gdsResult.status,
+		messages: (gdsResult.userMessages || []).map(msg => ({type: 'error', text: msg})),
+		actions: gdsResult.actions || [],
+		calledCommands: gdsResult.calledCommands || [],
+		sessionInfo: makeBriefSessionInfo(stateful.getFullState()),
+	};
 };
 
 let translateCmd = (fromGds, toGds, inputCmd) => {
@@ -199,10 +196,11 @@ let useConfigPcc = (grectResult, stateful, agentId, activeAreas) => {
 					sabre: 'AAA' + row.defaultPcc,
 					amadeus: 'JUM/O-' + row.defaultPcc,
 				}[gds];
-				return stateful.runCmd(cmd)
-					.then(cmdRec => {
-						let calledCommands = (grectResult.calledCommands || []).concat([cmdRec]);
-						return makeRbsResult(calledCommands, stateful.getFullState());
+				return runCmdRq(cmd, stateful)
+					.then(semResult => {
+						semResult.messages.unshift(...grectResult.messages || []);
+						semResult.calledCommands.unshift(...grectResult.calledCommands || []);
+						return semResult;
 					});
 			})
 			.catch(exc => grectResult);

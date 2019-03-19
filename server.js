@@ -10,7 +10,6 @@ let Config = require("./backend/Config.js");
 		Diag.log('Waiting for 5 seconds before starting server, pid ' + process.pid);
 		await new Promise(resolve => setTimeout(resolve, 5000));
 	}
-	console.log('initializing Web Routes');
 	require('./backend/WebRoutes.js');
 	Migration.run()
 		.then(result => {
