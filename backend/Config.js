@@ -26,7 +26,7 @@ let hardcodedConfig = {
 
 	// set by admins in env variable
 	SOCKET_PORT: env.SOCKET_PORT || 3022,
-	HTTP_PORT: env.HTTP_PORT || 3011,
+	HTTP_PORT: env.HTTP_PORT || 3012,
 	HOST: env.HOST || '0.0.0.0',
 
 	external_service: {
