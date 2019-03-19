@@ -4,7 +4,7 @@ import {CHANGE_SETTINGS} 	from '../../actions/settings';
 import {getBindingForKey} 	from '../../helpers/keyBinding';
 import {GDS_LIST} 			from '../../constants';
 import {getStore} 			from './../../store';
-import PccSelect 			from "./pccSelect";
+import AreaPccSelect 			from "./areaPccSelect";
 import {get} 				from "../../helpers/requests";
 import "select2";
 
@@ -140,7 +140,7 @@ class Context
                 // these PCC-s are used as fallback, but A is instantly
                 // logged in, so there is no point in a fallback
                 const disabled      = letter === 'A';
-                const select        = new PccSelect({defaultPcc, pccs, disabled}).getContext();
+                const select        = new AreaPccSelect({gds, defaultPcc, pccs, disabled}).getContext();
 
                 container.setAttribute('data-area', letter);
                 container.appendChild(Dom(`label[Area ${letter}]`, {style: 'text-align: right; padding-right: 6px;'}));

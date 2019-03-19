@@ -1,14 +1,19 @@
 import Component from "../../modules/component";
 
-export default class PccSelect extends Component{
-    constructor({defaultPcc, pccs, disabled})
+export default class AreaPccSelect extends Component{
+    constructor({gds, defaultPcc, pccs, disabled})
     {
         super('select.form-control default-pcc', {style : 'z-index: 9999'});
 
         let notSelectedMsg = 'Not selected';
         if (disabled) {
             this.getContext().setAttribute('disabled', 'disabled');
-            notSelectedMsg = 'Home PCC';
+            notSelectedMsg = {
+                apollo: '2F3K - ITN Corp',
+                galileo: '711M - ITN Corp',
+                sabre: '6IIF - ITN Corp',
+                amadeus: 'SFO1S2195 - ITN Corp',
+            }[gds] || 'Home PCC';
         }
 
         this.context.appendChild(
