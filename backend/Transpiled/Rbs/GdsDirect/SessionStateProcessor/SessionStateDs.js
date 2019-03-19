@@ -53,15 +53,7 @@ class SessionStateDs
     }
 
     updateFrom($that)  {
-
-        this.canCreatePq = $that.canCreatePq;
-        this.pricingCmd = $that.pricingCmd;
-        this.area = $that.area;
-        this.recordLocator = $that.recordLocator;
-        this.pcc = $that.pcc;
-        this.hasPnr = $that.hasPnr;
-        this.isPnrStored = $that.isPnrStored;
-        this.cmdType = $that.cmdType;
+		Object.assign(this, $that);
     }
 }
 module.exports = SessionStateDs;

@@ -46,7 +46,7 @@ class SessionStateHelper
 
     static updateFromArea($sessionData, $areaData)  {
         $sessionData = {...$sessionData};
-        $sessionData['area'] = $areaData['work_area_letter'] || $areaData['area'];
+        $sessionData['area'] = $areaData['area'];
         $sessionData['record_locator'] = $areaData['record_locator'];
         $sessionData['has_pnr'] = $areaData['has_pnr'];
         $sessionData['is_pnr_stored'] = $areaData['is_pnr_stored'];
