@@ -1023,23 +1023,30 @@ class ProcessSabreTerminalInputAction {
 	}
 
 	async execute($cmdRequested) {
-		let $callResult, $errors, $status, $calledCommands, $userMessages;
+		let $callResult, $errors, $status, $userMessages;
+		let calledCommands = [];
+
+		let areaState = this.stateful.getSessionData();
+		if (areaState.area === 'A' && !areaState.scrolledCmd) {
+			// ensure we are emulated in 6IIF on startup
+			calledCommands.push(await this.stateful.runCmd('AAA6IIF'));
+		}
 
 		$callResult = await this.processRequestedCommand($cmdRequested);
 
 		if (!php.empty($errors = $callResult['errors'])) {
 			$status = GdsDirect.STATUS_FORBIDDEN;
-			$calledCommands = $callResult['calledCommands'] || [];
+			calledCommands.push(...$callResult['calledCommands'] || []);
 			$userMessages = $errors;
 		} else {
 			$status = GdsDirect.STATUS_EXECUTED;
-			$calledCommands = $callResult['calledCommands'];
+			calledCommands.push(...$callResult['calledCommands']);
 			$userMessages = $callResult['userMessages'] || [];
 		}
 
 		return {
 			'status': $status,
-			'calledCommands': $calledCommands.map(a => a),
+			'calledCommands': calledCommands,
 			'userMessages': $userMessages,
 		};
 	}

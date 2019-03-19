@@ -179,15 +179,17 @@ let translateCmd = (fromGds, toGds, inputCmd) => {
 
 // better to do it separately in each GDS, since Sabre logs into current PCC
 // in all areas on SI*, and Amadeus needs a separate session for each area
-let useConfigPcc = (grectResult, stateful, agentId) => {
+let useConfigPcc = (grectResult, stateful, agentId, activeAreas) => {
 	let {area, pcc} = grectResult.sessionInfo;
 	let gds = stateful.gds;
-	if (!pcc) {
+	let cmdType = stateful.getSessionData().cmdType;
+	if (cmdType === 'changeArea' && !activeAreas.includes(area)) {
 		// emulate to default pcc
 		return AreaSettings.getByAgent(agentId)
 			.then(rows => rows.filter(r =>
 				r.gds === gds &&
 				r.area === area &&
+				r.defaultPcc !== pcc &&
 				r.defaultPcc)[0])
 			.then(nonEmpty())
 			.then(row => {
@@ -232,8 +234,13 @@ module.exports = async ({session, rqBody, emcUser}) => {
 		}
 	}
 
+	let activeAreas = Object
+		.values(stateful.getFullState().areas)
+		.filter(r => !!r.scrolledCmd)
+		.map(r => r.area);
+
 	let whenRbsResult = runCmdRq(cmdRq, stateful)
-		.then(rbsResult => useConfigPcc(rbsResult, stateful, rqBody.agentId))
+		.then(rbsResult => useConfigPcc(rbsResult, stateful, rqBody.agentId, activeAreas))
 		.then(rbsResult => ({
 			...rbsResult,
 			messages: (rbsResult.messages || []).concat(translated.messages),
