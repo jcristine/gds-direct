@@ -1027,6 +1027,11 @@ class ProcessSabreTerminalInputAction {
 		let $callResult, $errors, $status, $userMessages;
 		let calledCommands = [];
 
+		if ($cmdRequested.match(/^.+\/MDA$/)) {
+			// no /MDA in sabre
+			$cmdRequested = $cmdRequested.slice(0, -'/MDA'.length);
+		}
+
 		let areaState = this.stateful.getSessionData();
 		if (areaState.area === 'A' && !areaState.scrolledCmd) {
 			// ensure we are emulated in 6IIF on startup
