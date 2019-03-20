@@ -209,7 +209,7 @@ let ImportPq = async ({stateful, leadData, fetchOptionalFields = true}) => {
 		}
 		let stateErrors = await SessionStateHelper.checkCanCreatePq(stateful.getLog(), leadData);
 		if (stateErrors.length > 0) {
-			return BadRequest('Invalid PQ state - ' + stateErrors.join('; '));
+			return {userMessages: ['Invalid PQ state'].concat(stateErrors)};
 		}
 		let cmdRecs = await getCurrentStateCommands(stateful);
 		let imported = await importAct

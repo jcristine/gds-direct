@@ -46,9 +46,9 @@ export const showUserMessages = response => {
 		const userMessages = response['userMessages'];
 
 		notify({
-			msg 	: userMessages.join(''),
+			msg 	: userMessages.map(msg => '- ' + msg).join('<br/>'),
 			type 	: 'warning',
-			timeout	: 4000
+			timeout	: 12000,
 		});
 	}
 
