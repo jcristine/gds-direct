@@ -74,8 +74,11 @@ class TestCase
 				this.assertLessThanOrEqual(php.count($expectation), php.count($reality), $message+' actual list is longer than expected');
 			}
 		} else {
-			let notArray = !php.is_array($expectation) ? 'expected' : 'actual';
-			$message += ' (' + notArray + ' is not array)';
+			if (php.is_array($expectation) && !php.is_array($reality)) {
+				$message += ' (actual is not array)';
+			} else if (!php.is_array($expectation) && php.is_array($reality)) {
+				$message += ' (expected is not array)';
+			}
 			this.assertSame($expectation, $reality, $message);
 		}
 	}
@@ -139,24 +142,26 @@ class TestCase
 
 	// ew, I lost the point while writing this, so it's now
 	// messed up with both exceptions and logging... sorry
-	getTests() {
-		return this.getTestMapping()
-			.map(([provide, test]) => {
-				return provide.call(this).map((dataset, i) => async () => {
-					let testEvents = [];
-					this.log = (e) => testEvents.push(e);
-					try {
-						await test.call(this, ...dataset);
-					} catch (exc) {
-						testEvents.push({type: 'error', msg: 'Uncaught exception ' + exc.message + '\n' + exc.stack});
-					}
-					this.log = (e) => { throw new Error('Please define test event logger'); };
-					return testEvents.every(e => e.type === 'ok') ? null :
-						'\ndataset ' + this.constructor.name + '.' + test.name + ' #' + i + ' ' + testEvents
-							.filter(e => e.type === 'error').map((e) => e.msg).join('\n');
-				});
-			})
-			.reduce((all,chunk) => all.concat(chunk), []);
+	async getTests() {
+		let tests = [];
+		for (let [provide, test] of this.getTestMapping()) {
+			let testCases = await provide.call(this);
+			let moreTests = testCases.map((dataset, i) => async () => {
+				let testEvents = [];
+				this.log = (e) => testEvents.push(e);
+				try {
+					await test.call(this, ...dataset);
+				} catch (exc) {
+					testEvents.push({type: 'error', msg: 'Uncaught exception ' + exc.message + '\n' + exc.stack});
+				}
+				this.log = (e) => { throw new Error('Please define test event logger'); };
+				return testEvents.every(e => e.type === 'ok') ? null :
+					'\ndataset ' + this.constructor.name + '.' + test.name + ' #' + i + ' ' + testEvents
+						.filter(e => e.type === 'error').map((e) => e.msg).join('\n');
+			});
+			tests.push(...moreTests);
+		}
+		return tests;
 	}
 }
 
