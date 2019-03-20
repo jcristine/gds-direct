@@ -2,7 +2,6 @@
 let {fetchAll, wrap} = require('../GdsHelpers/TravelportUtils.js');
 const StatefulSession = require("../GdsHelpers/StatefulSession.js");
 const AreaSettings = require("../Repositories/AreaSettings");
-const ItineraryParser = require("../Transpiled/Gds/Parsers/Apollo/Pnr/ItineraryParser");
 const ProcessApolloTerminalInputAction = require("../Transpiled/Rbs/GdsDirect/Actions/Apollo/ProcessApolloTerminalInputAction");
 const ApoCommandParser = require("../Transpiled/Gds/Parsers/Apollo/CommandParser");
 const SabCommandParser = require("../Transpiled/Gds/Parsers/Sabre/CommandParser");

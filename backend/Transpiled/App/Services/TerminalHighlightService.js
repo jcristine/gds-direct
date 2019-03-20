@@ -261,8 +261,9 @@ class TerminalHighlightService {
 	}
 
 	/**
-	 * @param string $language
-	 * @param string $enteredCommand
+	 * @param string $language - deprecated, should be same as $gds
+	 * @param string $enteredCommand - should be the actual command called
+	 *                 in GDS, not the command agent entered (untranslated)
 	 * @param string $gds
 	 * @param string $output
 	 * @return {Promise}

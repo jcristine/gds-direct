@@ -75,7 +75,7 @@ class TerminalService
 					$command += PHP_EOL + this.color("&gt;" + $row['cmd'], 'usedCommand') + PHP_EOL;
 				}
 			}
-			let highlighted = await this.highlightOutput(svc, $enteredCommand, $language, this.clearOutput($row['output']));
+			let highlighted = await this.highlightOutput(svc, $row['cmd'], this.gds, this.clearOutput($row['output']));
 			$output += $command + highlighted;
 			appliedRules.push(...svc.getAppliedRules());
 		}
