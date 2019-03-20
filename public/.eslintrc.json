@@ -1,5 +1,6 @@
 {
   "parserOptions": {
+    "sourceType": "module",
     "ecmaVersion": 2019
   },
   "rules": {
@@ -18,18 +19,21 @@
     }]
   },
   "globals": {
+    // browser-specific
+    "window": false,
+    "document": false,
+    "fetch": false,
+    "URL": false,
+
+    // webpack
+    "require": false,
+
     "console": false,
     "setTimeout": false,
     "clearTimeout": false,
 
     "Promise": false,
     "Set": false,
-    "Proxy": false,
-
-    "process": false,
-    "module": false,
-    "exports": false,
-    "__dirname": false,
-    "require": false
+    "Proxy": false
   }
 }
