@@ -55,7 +55,6 @@ export const seedOutputString = (outputText, appliedRules) => {
 	tips = {};
 
 	const loop 	= (rule, key) => {
-		console.log('ololo looping', {...rule, key});
 		const value = rule.value;
 
 		const replaceWith = (pattern = '', patternReplaced = '') => {
