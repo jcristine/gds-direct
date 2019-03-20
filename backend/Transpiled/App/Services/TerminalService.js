@@ -75,7 +75,8 @@ class TerminalService
 					$command += PHP_EOL + this.color("&gt;" + $row['cmd'], 'usedCommand') + PHP_EOL;
 				}
 			}
-			let highlighted = await this.highlightOutput(svc, $row['cmd'], this.gds, this.clearOutput($row['output']));
+			let scrolledCmd = $row.scrolledCmd || $row.cmd;
+			let highlighted = await this.highlightOutput(svc, scrolledCmd, this.gds, this.clearOutput($row['output']));
 			$output += $command + highlighted;
 			appliedRules.push(...svc.getAppliedRules());
 		}
@@ -111,38 +112,7 @@ class TerminalService
 	 * @return {Promise}
 	 */
 	async highlightOutput(svc, $enteredCommand, $language, $output) {
-		$enteredCommand = await this.getScrolledCmd($enteredCommand);
 		return svc.replace($language, $enteredCommand, this.gds, $output);
-	}
-
-	/**
-	 * get last non-MD command, i.e. the command
-	 * current output actually belongs to
-	 * @param string $enteredCommand
-	 * @return string
-	 */
-	async getScrolledCmd($enteredCommand) {
-		if ($enteredCommand.match(self.MD_PATTERNS)) {
-			// it should actually be commands of current
-			// session, not all commands of the agent...
-			// also keeping scrolled command in memory would be better than using DB
-			let rows = await Db.with(db => db.fetchAll({
-				table: 'cmd_rq_log',
-				where: [
-					['agentId', '=', this.agentId],
-					['requestId', '=', this.travelRequestId || 0],
-				],
-				orderBy: 'id DESC',
-				limit: 50,
-			}));
-			for (let row of rows) {
-				let cmd = row.command || '';
-				if (!cmd.match(self.MD_PATTERNS)) {
-					return cmd;
-				}
-			}
-		}
-		return $enteredCommand;
 	}
 
 	/**Highlight Errors

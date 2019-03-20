@@ -95,15 +95,20 @@ let isScreenCleaningCommand = (rec, gds) => {
 	}
 };
 
+let encodeCmdForCms = (gds, cmd) => {
+	if (['galileo', 'apollo'].includes(gds)) {
+		cmd = encodeTpCmdForCms(cmd);
+	}
+	return cmd;
+};
+
 let transformCalledCommand = (rec, stateful) => {
 	let gds = stateful.gds;
 	let agent = stateful.getAgent();
-	let cmd = rec.cmd;
 	let output = rec.output;
 	let type = rec.type;
 	let tabCommands = [];
 	if (['galileo', 'apollo'].includes(gds)) {
-		cmd = encodeTpCmdForCms(cmd);
 		if (!rec.noWrap) {
 			output = wrap(rec.output);
 		}
@@ -115,18 +120,19 @@ let transformCalledCommand = (rec, stateful) => {
 		output = output.replace(/\r\n|\r/g, '\n');
 	}
 	if (!agent.canSeeCcNumbers()) {
-		output = Misc.maskCcNumbers(output)
+		output = Misc.maskCcNumbers(output);
 	}
 	if (!agent.canSeeContactInfo()) {
 		output = CommonDataHelper.maskSsrContactInfo(output);
 	}
 	return {
-		cmd: cmd,
+		cmd: encodeCmdForCms(gds, rec.cmd),
 		type: type,
 		output: output,
 		duration: rec.duration || null,
 		clearScreen: isScreenCleaningCommand(rec, gds),
 		tabCommands: tabCommands,
+		scrolledCmd: rec.scrolledCmd ? encodeCmdForCms(gds, rec.scrolledCmd) : null,
 	};
 };
 
