@@ -1,8 +1,6 @@
-
 let TerminalService = require('../../../../../backend/Transpiled/App/Services/TerminalService');
 
-class TerminalServiceTest extends require('../../../../../backend/Transpiled/Lib/TestCase.js')
-{
+class TerminalServiceTest extends require('../../../../../backend/Transpiled/Lib/TestCase.js') {
 	provideFormatOutput() {
 		let list = [];
 
@@ -26,7 +24,7 @@ class TerminalServiceTest extends require('../../../../../backend/Transpiled/Lib
 							"7+ DL 181 J9 C9 D9 I9 Z9 W9 Y9 B9 M9 H9+   MNL 400P+ 755P+76W  0",
 							"FLY TO FIJI / STOPOVER ON THE WAY TO PACIFIC             >AH*1· ",
 							"HILTON MNL*DIRECT CONNECTION TO APORT  >> 7880 PHP       >AH*2· ",
-							"MEALS>A*M·  CLASSES>A*C·..  ><"
+							"MEALS>A*M·  CLASSES>A*C·..  ><",
 						].join("\n"),
 					},
 				],
@@ -34,18 +32,78 @@ class TerminalServiceTest extends require('../../../../../backend/Transpiled/Lib
 			expected: {
 				$output: [
 					"NEUTRAL DISPLAY*   %FR 10MAY% NYCMNL+12:00 HR                     ",
-					"1%+% PR 127 %J7% %C7% %D7% %I7% %Z2% %W7% %N7% %Y7% %S7% %L7%+%JFK%MNL 145A  615A+350  0",
-					"2%+% KE  82 %P9% A0 %J9% %C9% %D9% %I9% %R9% %Z9% %Y9% %B9%+%JFK%ICN 200P  520P+388  0",
-					"3%+% KE 623 %F4% A0 %J9% %C9% %D9% %I9% %R6% %Z7% %Y9% %B9%+   MNL 645P+ 955P+773  0",
-					"4%+% NH   9 %F7% %A4% %J9% %C9% %D9% %Z9% %P9% %G9% %E9% N0+%JFK%NRT1200N  300P+77W  0",
-					"5%+% DL 181 %J9% %C9% %D9% %I9% %Z9% %W9% %Y9% %B9% %M9% %H9%+   MNL 400P+ 755P+76W  0",
-					"6%+% UA7998 %J9% %C9% %D9% %Z9% %P9% %O9% %A9% R0 %Y9% %B9%+%JFK%NRT1200N  300P+77W%*% 0",
-					"7%+% DL 181 %J9% %C9% %D9% %I9% %Z9% %W9% %Y9% %B9% %M9% %H9%+   MNL 400P+ 755P+76W  0",
+					"1%+% %PR% 127 %J7% %C7% %D7% %I7% %Z2% %W7% %N7% %Y7% %S7% %L7%+%JFK%MNL 145A  615A+350  0",
+					"2%+% %KE%  82 %P9% A0 %J9% %C9% %D9% %I9% %R9% %Z9% %Y9% %B9%+%JFK%ICN 200P  520P+388  0",
+					"3%+% %KE% 623 %F4% A0 %J9% %C9% %D9% %I9% %R6% %Z7% %Y9% %B9%+   MNL 645P+ 955P+773  0",
+					"4%+% %NH%   9 %F7% %A4% %J9% %C9% %D9% %Z9% %P9% %G9% %E9% N0+%JFK%NRT1200N  300P+77W  0",
+					"5%+% %DL% 181 %J9% %C9% %D9% %I9% %Z9% %W9% %Y9% %B9% %M9% %H9%+   MNL 400P+ 755P+76W  0",
+					"6%+% %UA%7998 %J9% %C9% %D9% %Z9% %P9% %O9% %A9% R0 %Y9% %B9%+%JFK%NRT1200N  300P+77W%*% 0",
+					"7%+% %DL% 181 %J9% %C9% %D9% %I9% %Z9% %W9% %Y9% %B9% %M9% %H9%+   MNL 400P+ 755P+76W  0",
 					"FLY TO FIJI / STOPOVER ON THE WAY TO PAC%IFI%C             >AH*1· ",
 					"HILTON MNL*DIRECT CONNECTION TO APORT  >> 7880 PHP       >AH*2· ",
-					"MEALS>%A*M·%  CLASSES>%A*C·..%"
+					"MEALS>%A*M·%  CLASSES>%A*C·..%",
 				].join("\n"),
 				appliedRules: [
+					{
+						"id": 6,
+						"value": "%PR%",
+						"onMouseOver": "",
+						"onClickMessage": "",
+						"onClickCommand": "S*AIR/{pattern}/MDA",
+						"color": "specialHighlight",
+						"backgroundColor": "",
+						"isInSameWindow": 0,
+						"decoration": ["large"],
+						"offsets": [{"index": 68, "end": 70}],
+					},
+					{
+						"id": 6,
+						"value": "%KE%",
+						"onMouseOver": "",
+						"onClickMessage": "",
+						"onClickCommand": "S*AIR/{pattern}/MDA",
+						"color": "specialHighlight",
+						"backgroundColor": "",
+						"isInSameWindow": 0,
+						"decoration": ["large"],
+						"offsets": [{"index": 198, "end": 200}],
+					},
+					{
+						"id": 6,
+						"value": "%NH%",
+						"onMouseOver": "",
+						"onClickMessage": "",
+						"onClickCommand": "S*AIR/{pattern}/MDA",
+						"color": "specialHighlight",
+						"backgroundColor": "",
+						"isInSameWindow": 0,
+						"decoration": ["large"],
+						"offsets": [{"index": 263, "end": 265}],
+					},
+					{
+						"id": 6,
+						"value": "%DL%",
+						"onMouseOver": "",
+						"onClickMessage": "",
+						"onClickCommand": "S*AIR/{pattern}/MDA",
+						"color": "specialHighlight",
+						"backgroundColor": "",
+						"isInSameWindow": 0,
+						"decoration": ["large"],
+						"offsets": [{"index": 458, "end": 460}],
+					},
+					{
+						"id": 6,
+						"value": "%UA%",
+						"onMouseOver": "",
+						"onClickMessage": "",
+						"onClickCommand": "S*AIR/{pattern}/MDA",
+						"color": "specialHighlight",
+						"backgroundColor": "",
+						"isInSameWindow": 0,
+						"decoration": ["large"],
+						"offsets": [{"index": 393, "end": 395}],
+					},
 					{
 						"id": 40,
 						"value": "%A*M·%",
@@ -54,7 +112,7 @@ class TerminalServiceTest extends require('../../../../../backend/Transpiled/Lib
 						"color": "usedCommand",
 						"isInSameWindow": 1,
 						"decoration": ["bordered"],
-						"offsets": [{"index":656,"end":660}]
+						"offsets": [{"index": 656, "end": 660}],
 					},
 					{
 						"id": 42,
@@ -62,7 +120,19 @@ class TerminalServiceTest extends require('../../../../../backend/Transpiled/Lib
 						"onMouseOver": "Expanded Classes screen",
 						"color": "usedCommand",
 						"isInSameWindow": 0,
-						"offsets": [{"index":670,"end":676}]
+						"offsets": [{"index": 670, "end": 676}],
+					},
+					{
+						"id": 76,
+						"value": "%JFK%",
+						"onMouseOver": "",
+						"onClickMessage": "",
+						"onClickCommand": "S*CTY/{pattern}",
+						"color": "specialHighlight",
+						"backgroundColor": null,
+						"isInSameWindow": 0,
+						"decoration": ["bold"],
+						"offsets": [{"index": 430, "end": 433}],
 					},
 					{
 						"id": 122,
@@ -70,15 +140,7 @@ class TerminalServiceTest extends require('../../../../../backend/Transpiled/Lib
 						"onMouseOver": "This airline is an Inside Availability ™  participant",
 						"color": "specialHighlight",
 						"isInSameWindow": 0,
-						"offsets": [{"index":456,"end":457}]
-					},
-					{
-						"id": 124,
-						"value": "%JFK%",
-						"onMouseOver": "Test",
-						"color": "specialHighlight",
-						"isInSameWindow": 0,
-						"offsets": [{"index":430,"end":433}]
+						"offsets": [{"index": 456, "end": 457}],
 					},
 					{
 						"id": 124,
@@ -86,7 +148,7 @@ class TerminalServiceTest extends require('../../../../../backend/Transpiled/Lib
 						"onMouseOver": "Test",
 						"color": "specialHighlight",
 						"isInSameWindow": 0,
-						"offsets": [{"index":560,"end":563}]
+						"offsets": [{"index": 560, "end": 563}],
 					},
 					{
 						"id": 128,
@@ -94,7 +156,7 @@ class TerminalServiceTest extends require('../../../../../backend/Transpiled/Lib
 						"onMouseOver": "",
 						"color": "specialHighlight",
 						"isInSameWindow": 0,
-						"offsets": [{"index":19,"end":27}]
+						"offsets": [{"index": 19, "end": 27}],
 					},
 					{
 						"id": 120,
@@ -103,7 +165,7 @@ class TerminalServiceTest extends require('../../../../../backend/Transpiled/Lib
 						"onClickCommand": "A*M",
 						"color": "specialHighlight",
 						"isInSameWindow": 1,
-						"offsets": [{"index":451,"end":452}]
+						"offsets": [{"index": 451, "end": 452}],
 					},
 					{
 						"id": 118,
@@ -111,7 +173,7 @@ class TerminalServiceTest extends require('../../../../../backend/Transpiled/Lib
 						"onMouseOver": "",
 						"color": "startSession",
 						"isInSameWindow": 0,
-						"offsets": [{"index":75,"end":77}]
+						"offsets": [{"index": 75, "end": 77}],
 					},
 					{
 						"id": 118,
@@ -119,7 +181,7 @@ class TerminalServiceTest extends require('../../../../../backend/Transpiled/Lib
 						"onMouseOver": "",
 						"color": "startSession",
 						"isInSameWindow": 0,
-						"offsets": [{"index":78,"end":80}]
+						"offsets": [{"index": 78, "end": 80}],
 					},
 					{
 						"id": 118,
@@ -127,7 +189,7 @@ class TerminalServiceTest extends require('../../../../../backend/Transpiled/Lib
 						"onMouseOver": "",
 						"color": "startSession",
 						"isInSameWindow": 0,
-						"offsets": [{"index":81,"end":83}]
+						"offsets": [{"index": 81, "end": 83}],
 					},
 					{
 						"id": 118,
@@ -135,7 +197,7 @@ class TerminalServiceTest extends require('../../../../../backend/Transpiled/Lib
 						"onMouseOver": "",
 						"color": "startSession",
 						"isInSameWindow": 0,
-						"offsets": [{"index":84,"end":86}]
+						"offsets": [{"index": 84, "end": 86}],
 					},
 					{
 						"id": 118,
@@ -143,7 +205,7 @@ class TerminalServiceTest extends require('../../../../../backend/Transpiled/Lib
 						"onMouseOver": "",
 						"color": "startSession",
 						"isInSameWindow": 0,
-						"offsets": [{"index":87,"end":89}]
+						"offsets": [{"index": 87, "end": 89}],
 					},
 					{
 						"id": 118,
@@ -151,7 +213,7 @@ class TerminalServiceTest extends require('../../../../../backend/Transpiled/Lib
 						"onMouseOver": "",
 						"color": "startSession",
 						"isInSameWindow": 0,
-						"offsets": [{"index":90,"end":92}]
+						"offsets": [{"index": 90, "end": 92}],
 					},
 					{
 						"id": 118,
@@ -159,7 +221,7 @@ class TerminalServiceTest extends require('../../../../../backend/Transpiled/Lib
 						"onMouseOver": "",
 						"color": "startSession",
 						"isInSameWindow": 0,
-						"offsets": [{"index":93,"end":95}]
+						"offsets": [{"index": 93, "end": 95}],
 					},
 					{
 						"id": 118,
@@ -167,7 +229,7 @@ class TerminalServiceTest extends require('../../../../../backend/Transpiled/Lib
 						"onMouseOver": "",
 						"color": "startSession",
 						"isInSameWindow": 0,
-						"offsets": [{"index":96,"end":98}]
+						"offsets": [{"index": 96, "end": 98}],
 					},
 					{
 						"id": 118,
@@ -175,7 +237,7 @@ class TerminalServiceTest extends require('../../../../../backend/Transpiled/Lib
 						"onMouseOver": "",
 						"color": "startSession",
 						"isInSameWindow": 0,
-						"offsets": [{"index":99,"end":101}]
+						"offsets": [{"index": 99, "end": 101}],
 					},
 					{
 						"id": 118,
@@ -183,7 +245,7 @@ class TerminalServiceTest extends require('../../../../../backend/Transpiled/Lib
 						"onMouseOver": "",
 						"color": "startSession",
 						"isInSameWindow": 0,
-						"offsets": [{"index":102,"end":104}]
+						"offsets": [{"index": 102, "end": 104}],
 					},
 					{
 						"id": 118,
@@ -191,7 +253,7 @@ class TerminalServiceTest extends require('../../../../../backend/Transpiled/Lib
 						"onMouseOver": "",
 						"color": "startSession",
 						"isInSameWindow": 0,
-						"offsets": [{"index":412,"end":414}]
+						"offsets": [{"index": 412, "end": 414}],
 					},
 					{
 						"id": 118,
@@ -199,7 +261,7 @@ class TerminalServiceTest extends require('../../../../../backend/Transpiled/Lib
 						"onMouseOver": "",
 						"color": "startSession",
 						"isInSameWindow": 0,
-						"offsets": [{"index":465,"end":467}]
+						"offsets": [{"index": 465, "end": 467}],
 					},
 					{
 						"id": 118,
@@ -207,7 +269,7 @@ class TerminalServiceTest extends require('../../../../../backend/Transpiled/Lib
 						"onMouseOver": "",
 						"color": "startSession",
 						"isInSameWindow": 0,
-						"offsets": [{"index":468,"end":470}]
+						"offsets": [{"index": 468, "end": 470}],
 					},
 					{
 						"id": 118,
@@ -215,7 +277,7 @@ class TerminalServiceTest extends require('../../../../../backend/Transpiled/Lib
 						"onMouseOver": "",
 						"color": "startSession",
 						"isInSameWindow": 0,
-						"offsets": [{"index":471,"end":473}]
+						"offsets": [{"index": 471, "end": 473}],
 					},
 					{
 						"id": 118,
@@ -223,7 +285,7 @@ class TerminalServiceTest extends require('../../../../../backend/Transpiled/Lib
 						"onMouseOver": "",
 						"color": "startSession",
 						"isInSameWindow": 0,
-						"offsets": [{"index":474,"end":476}]
+						"offsets": [{"index": 474, "end": 476}],
 					},
 					{
 						"id": 118,
@@ -231,7 +293,7 @@ class TerminalServiceTest extends require('../../../../../backend/Transpiled/Lib
 						"onMouseOver": "",
 						"color": "startSession",
 						"isInSameWindow": 0,
-						"offsets": [{"index":158,"end":160}]
+						"offsets": [{"index": 158, "end": 160}],
 					},
 					{
 						"id": 118,
@@ -239,7 +301,7 @@ class TerminalServiceTest extends require('../../../../../backend/Transpiled/Lib
 						"onMouseOver": "",
 						"color": "startSession",
 						"isInSameWindow": 0,
-						"offsets": [{"index":477,"end":479}]
+						"offsets": [{"index": 477, "end": 479}],
 					},
 					{
 						"id": 118,
@@ -247,7 +309,7 @@ class TerminalServiceTest extends require('../../../../../backend/Transpiled/Lib
 						"onMouseOver": "",
 						"color": "startSession",
 						"isInSameWindow": 0,
-						"offsets": [{"index":483,"end":485}]
+						"offsets": [{"index": 483, "end": 485}],
 					},
 					{
 						"id": 118,
@@ -255,7 +317,7 @@ class TerminalServiceTest extends require('../../../../../backend/Transpiled/Lib
 						"onMouseOver": "",
 						"color": "startSession",
 						"isInSameWindow": 0,
-						"offsets": [{"index":486,"end":488}]
+						"offsets": [{"index": 486, "end": 488}],
 					},
 					{
 						"id": 118,
@@ -263,7 +325,7 @@ class TerminalServiceTest extends require('../../../../../backend/Transpiled/Lib
 						"onMouseOver": "",
 						"color": "startSession",
 						"isInSameWindow": 0,
-						"offsets": [{"index":205,"end":207}]
+						"offsets": [{"index": 205, "end": 207}],
 					},
 					{
 						"id": 118,
@@ -271,7 +333,7 @@ class TerminalServiceTest extends require('../../../../../backend/Transpiled/Lib
 						"onMouseOver": "",
 						"color": "startSession",
 						"isInSameWindow": 0,
-						"offsets": [{"index":223,"end":225}]
+						"offsets": [{"index": 223, "end": 225}],
 					},
 					{
 						"id": 118,
@@ -279,7 +341,7 @@ class TerminalServiceTest extends require('../../../../../backend/Transpiled/Lib
 						"onMouseOver": "",
 						"color": "startSession",
 						"isInSameWindow": 0,
-						"offsets": [{"index":226,"end":228}]
+						"offsets": [{"index": 226, "end": 228}],
 					},
 					{
 						"id": 118,
@@ -287,7 +349,7 @@ class TerminalServiceTest extends require('../../../../../backend/Transpiled/Lib
 						"onMouseOver": "",
 						"color": "startSession",
 						"isInSameWindow": 0,
-						"offsets": [{"index":270,"end":272}]
+						"offsets": [{"index": 270, "end": 272}],
 					},
 					{
 						"id": 118,
@@ -295,7 +357,7 @@ class TerminalServiceTest extends require('../../../../../backend/Transpiled/Lib
 						"onMouseOver": "",
 						"color": "startSession",
 						"isInSameWindow": 0,
-						"offsets": [{"index":273,"end":275}]
+						"offsets": [{"index": 273, "end": 275}],
 					},
 					{
 						"id": 118,
@@ -303,7 +365,7 @@ class TerminalServiceTest extends require('../../../../../backend/Transpiled/Lib
 						"onMouseOver": "",
 						"color": "startSession",
 						"isInSameWindow": 0,
-						"offsets": [{"index":291,"end":293}]
+						"offsets": [{"index": 291, "end": 293}],
 					},
 					{
 						"id": 118,
@@ -311,7 +373,7 @@ class TerminalServiceTest extends require('../../../../../backend/Transpiled/Lib
 						"onMouseOver": "",
 						"color": "startSession",
 						"isInSameWindow": 0,
-						"offsets": [{"index":294,"end":296}]
+						"offsets": [{"index": 294, "end": 296}],
 					},
 					{
 						"id": 118,
@@ -319,7 +381,7 @@ class TerminalServiceTest extends require('../../../../../backend/Transpiled/Lib
 						"onMouseOver": "",
 						"color": "startSession",
 						"isInSameWindow": 0,
-						"offsets": [{"index":480,"end":482}]
+						"offsets": [{"index": 480, "end": 482}],
 					},
 					{
 						"id": 118,
@@ -327,7 +389,7 @@ class TerminalServiceTest extends require('../../../../../backend/Transpiled/Lib
 						"onMouseOver": "",
 						"color": "startSession",
 						"isInSameWindow": 0,
-						"offsets": [{"index":489,"end":491}]
+						"offsets": [{"index": 489, "end": 491}],
 					},
 					{
 						"id": 118,
@@ -335,7 +397,7 @@ class TerminalServiceTest extends require('../../../../../backend/Transpiled/Lib
 						"onMouseOver": "",
 						"color": "startSession",
 						"isInSameWindow": 0,
-						"offsets": [{"index":492,"end":494}]
+						"offsets": [{"index": 492, "end": 494}],
 					},
 					{
 						"id": 118,
@@ -343,7 +405,7 @@ class TerminalServiceTest extends require('../../../../../backend/Transpiled/Lib
 						"onMouseOver": "",
 						"color": "startSession",
 						"isInSameWindow": 0,
-						"offsets": [{"index":415,"end":417}]
+						"offsets": [{"index": 415, "end": 417}],
 					},
 					{
 						"id": 118,
@@ -351,8 +413,8 @@ class TerminalServiceTest extends require('../../../../../backend/Transpiled/Lib
 						"onMouseOver": "",
 						"color": "startSession",
 						"isInSameWindow": 0,
-						"offsets": [{"index":418,"end":420}]
-					}
+						"offsets": [{"index": 418, "end": 420}],
+					},
 				],
 			},
 		}]);
@@ -372,7 +434,7 @@ class TerminalServiceTest extends require('../../../../../backend/Transpiled/Lib
 							"*** LINEAR FARE DATA EXISTS *** >*LF· ",
 							"ATFQ-OK/$B-*1O3K/TA1O3K/CPR/ET",
 							" FQ-USD 1247.00/USD 18.60US/USD 76.10XT/USD 1341.70 - 11FEB NLOW",
-							"><"
+							"><",
 						].join("\n"),
 					},
 				],
@@ -383,17 +445,114 @@ class TerminalServiceTest extends require('../../../../../backend/Transpiled/Lib
 					" 1 %PR% 127%N% 10MAY %JFKMNL% %SS1%   145A  615A+*      FR/SA   E",
 					"*** LINEAR FARE DATA EXISTS *** >%*LF·% ",
 					"%ATFQ-%OK/$B-*%1O3K%/TA1O3K/CPR/ET",
-					" FQ-USD 1247.00/USD 18.60US/USD 76.10XT/USD 1341.70 - 11FEB NLOW"
+					" FQ-USD 1247.00/USD 18.60US/USD 76.10XT/USD 1341.70 - 11FEB NLOW",
 				].join("\n"),
 				"appliedRules": [
-					{id: 66, value: "%PR%", color: "startSession"} ,
-					{id: 66, value: "%N%", color: "startSession"} ,
-					{id: 30, value: "%SS1%", onMouseOver: "Click to open a seat map", onClickCommand: "9V/S{lnNumber}/MDA", color: "usedCommand"},
-					{id: 32, value: "%JFKMNL%", color: "startSession"} ,
-					{id: 36, value: "%LIB/MAR%", color: "warningMessage", "decoration":[]},
-					{id: 28, value: "%*LF·%", onMouseOver: "Click to open the stored fare", onClickCommand: "*LF/MDA", color: "usedCommand", decoration:["bold","bordered"]},
-					{id: 170, value: "%ATFQ-%", onMouseOver: "undefined", onClickCommand: "{patter}", color: "specialHighlight"},
-					{id: 191, value: "%1O3K%", onClickCommand: "SEM/{pattern}/AG", color: "specialHighlight", decoration: ["bordered"]},
+					{id: 66, value: "%PR%", color: "startSession"},
+					{id: 66, value: "%N%", color: "startSession"},
+					{
+						id: 30,
+						value: "%SS1%",
+						onMouseOver: "Click to open a seat map",
+						onClickCommand: "9V/S{lnNumber}/MDA",
+						color: "usedCommand",
+					},
+					{id: 32, value: "%JFKMNL%", color: "startSession"},
+					{id: 36, value: "%LIB/MAR%", color: "warningMessage", "decoration": []},
+					{
+						id: 28,
+						value: "%*LF·%",
+						onMouseOver: "Click to open the stored fare",
+						onClickCommand: "*LF/MDA",
+						color: "usedCommand",
+						decoration: ["bold", "bordered"],
+					},
+					{
+						id: 170,
+						value: "%ATFQ-%",
+						onMouseOver: "undefined",
+						onClickCommand: "{patter}",
+						color: "specialHighlight",
+					},
+					{
+						id: 191,
+						value: "%1O3K%",
+						onClickCommand: "SEM/{pattern}/AG",
+						color: "specialHighlight",
+						decoration: ["bordered"],
+					},
+				],
+			},
+		}]);
+
+		// /...\K.../ example - should highlight "1412.70TTL"
+		list.push([{
+			input: {
+				$enteredCommand: 'WP',
+				$language: 'sabre',
+				calledCommands: [
+					{
+						"cmd": "WP",
+						"type": "priceItinerary",
+						"output": [
+							"       BASE FARE                 TAXES/FEES/CHARGES    TOTAL",
+							" 1-   USD1313.00                     99.70XT      USD1412.70ADT",
+							"    XT     70.00YQ       1.00YR      18.60US       5.60AY ",
+							"            4.50XF ",
+							"         1313.00                     99.70           1412.70TTL",
+							"ADT-01  NLOWFNY",
+							" NYC PR MNL1313.00NUC1313.00END ROE1.00 XFJFK4.5",
+							"FARE RULES APPLY/PREMIUM ECONOMY",
+							"VALIDATING CARRIER - PR",
+							"BAG ALLOWANCE     -JFKMNL-02P/PR/EACH PIECE UP TO 55 POUNDS/25 ",
+							"KILOGRAMS",
+							"CARRY ON ALLOWANCE",
+							"JFKMNL-01P/07KG/PR",
+							"CARRY ON CHARGES",
+							"JFKMNL-PR-CARRY ON FEES UNKNOWN-CONTACT CARRIER",
+							"ADDITIONAL ALLOWANCES AND/OR DISCOUNTS MAY APPLY",
+							"                                                               ",
+							"AIR EXTRAS AVAILABLE - SEE WP*AE",
+							".",
+						].join("\n"),
+						"duration": "0.877256166",
+						"clearScreen": false,
+						"tabCommands": [],
+					},
+				],
+			},
+			expected: {
+				$output: [
+					"       BASE FARE                 TAXES/FEES/CHARGES    TOTAL",
+					" 1-   USD1313.00                     99.70XT      USD1412.70ADT",
+					"    XT     70.00YQ       1.00YR      18.60US       5.60AY ",
+					"            4.50XF ",
+					"         %1313.00%                     99.70           %1412.70TTL%",
+					"ADT-01  NLOWFNY",
+					" NYC PR %MNL1313.00%NUC1313.00END ROE1.00 XFJFK4.5",
+					"FARE RULES APPLY/PREMIUM ECONOMY",
+					"VALIDATING CARRIER - PR",
+					"%BAG ALLOWANCE     -JFKMNL-02P%/PR/EACH PIECE UP TO 55 POUNDS/25 ",
+					"KILOGRAMS",
+					"CARRY ON ALLOWANCE",
+					"JFKMNL-01P/07KG/PR",
+					"CARRY ON CHARGES",
+					"JFKMNL-PR-CARRY ON FEES UNKNOWN-CONTACT CARRIER",
+					"ADDITIONAL ALLOWANCES AND/OR DISCOUNTS MAY APPLY",
+					"                                                               ",
+					"AIR EXTRAS AVAILABLE - SEE WP*AE",
+					".",
+				].join("\n"),
+				"appliedRules": [
+					{
+						"id": 10,
+						"color": "startSession",
+						"decoration": ["bordered", "italic", "large"],
+						"value": "%1412.70TTL%",
+					},
+					{"id": 22, "color": "warningMessage", "decoration": [], "value": "%BAG ALLOWANCE     -JFKMNL-02P%"},
+					{"id": 46, "color": "startSession", "decoration": ["bold", "italic"], "value": "%MNL1313.00%"},
+					{"id": 2, "color": "outputFont", "decoration": ["bold"], "value": "%1313.00%"},
 				],
 			},
 		}]);
@@ -403,9 +562,17 @@ class TerminalServiceTest extends require('../../../../../backend/Transpiled/Lib
 
 	async testFormatOutput({input, expected}) {
 		let {$enteredCommand, $language, calledCommands} = input;
-		let actual = await (new TerminalService('apollo', 6206, 123))
+		let actual = await (new TerminalService(input.$language, 6206, 123))
 			.formatOutput($enteredCommand, $language, calledCommands);
-		this.assertArrayElementsSubset(expected, actual);
+		try {
+			this.assertArrayElementsSubset(expected, actual);
+		} catch (exc) {
+			let args = process.argv.slice(process.execArgv.length + 2);
+			if (args.includes('debug')) {
+				console.log('\nactual\n', JSON.stringify(actual));
+			}
+			throw exc;
+		}
 	}
 
 	getTestMapping() {

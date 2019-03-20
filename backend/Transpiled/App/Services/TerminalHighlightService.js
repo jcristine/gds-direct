@@ -1,6 +1,7 @@
 
 const Str = require("../../../Utils/Str.js");
 const Db = require("../../../Utils/Db.js");
+const RegexTranspiler = require("../../Grect/RegexTranspiler");
 const {getFullDataForService} = require('../../../Repositories/HighlightRules.js');
 const {ucfirst, array_key_exists, array_merge, substr_replace, array_flip, array_intersect_key, array_values, sprintf, strlen, implode, preg_match, preg_replace, preg_replace_callback, rtrim, str_replace, strcasecmp, boolval, empty, intval, isset, strtoupper, trim, PHP_EOL, json_encode} = require('../../php.js');
 
@@ -41,17 +42,13 @@ let areNamedCapturesSupported = () => {
  * @retunr {string} = ''
  */
 let makeRegex = (content, flags = undefined) => {
-	if (areNamedCapturesSupported()) {
-		// convert php-format ( ?P< to js format (?<
-		content = content.replace(/(?<!\\)\(\?P</g, '(?<');
-		// /^(\s+|\.+)( ?P<value>OPERATED BY .*)/ -> /^(\s+|\.+)(?<value>OPERATED BY .*)/
-
-		// convert perl's \K to positive lookbehind
-		// ... soon
-	} else {
+	if (!content) {
+		return null;
+	} if (!areNamedCapturesSupported()) {
 		throw new Error('Node version is below v10 - no regex named capture support, can not apply highlight rules');
 	}
-	return new RegExp(content, flags);
+	return RegexTranspiler.transpileSafe(content, flags)
+		|| RegexTranspiler.transpileUnsafe(content, flags);
 };
 
 let normalizeRuleForFrontend = (rule) => {
@@ -100,7 +97,7 @@ class TerminalHighlightService {
 		return getCmdPatterns().then(rows => rows
 			.filter(row => row.dialect === $language)
 			.filter(row => {
-				if (row.regexError) {
+				if (row.regexError || !row.cmdPattern) {
 					return false;
 				}
 				let $command = row.cmdPattern;
