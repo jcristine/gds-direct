@@ -14,6 +14,7 @@ exports.keys = StrConsts({
 	get EMC_TOKEN_TO_USER() { never(); },
 	get MIGRAT_LOCK() { never(); },
 	get AGENT_CMD_COUNTER() { never(); },
+	get HIGHLIGHT_RULES_UPDATE_MS() { never(); },
 }, 'GRECT_');
 
 let whenConfig = Config.getConfig();
