@@ -193,7 +193,7 @@ let ImportPq = async ({stateful, leadData, fetchOptionalFields = true}) => {
 
 	let execute = async () => {
 		let importAct;
-		if (gds === 'apollo') {
+		if (gds === 'apollo' && !fetchOptionalFields) {
 			importAct = new ImportPqApolloAction();
 		} else if (gds === 'sabre' && !fetchOptionalFields) {
 			importAct = new ImportPqSabreAction();
