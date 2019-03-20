@@ -456,17 +456,17 @@ class ProcessSabreTerminalInputAction {
 		// since current gets discarded on area change
 		let areaCmd = '¤' + $area;
 		let cmd = areaCmd + '§OIATH';
-		let out = await this.runCommand(cmd);
-		let athMatch = out.match(/^ATH:(.*)!.*/);
+		let cmdRec = await this.runCmd(cmd);
+		let athMatch = cmdRec.output.match(/^ATH:(.*)!.*/);
 		if (athMatch) {
 			let newToken = athMatch[1];
 			let gdsData = this.stateful.getGdsData();
 			gdsData.binarySecurityToken = newToken;
 			this.stateful.updateGdsData(gdsData);
-			let cmdRecs = [{'cmd': areaCmd, 'output': 'Successfully changed area to ' + $area}];
+			let cmdRecs = [{...cmdRec, cmd: areaCmd, output: 'Successfully changed area to ' + $area}];
 			return {'calledCommands': cmdRecs};
 		} else {
-			return UnprocessableEntity('Could not change are to ' + $area + ' - ' + out.trim());
+			return UnprocessableEntity('Could not change are to ' + $area + ' - ' + cmdRec.output.trim());
 		}
 	}
 
