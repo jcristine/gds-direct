@@ -7,9 +7,25 @@ import HighlightRulesAdminApp from "./modules/HighlightRulesAdminApp";
 import TerminalThemesAdminApp from "./modules/TerminalThemesAdminApp";
 import TerminalSessionListApp from "./modules/TerminalSessionListApp";
 
-const initGlobEvents = () => {
 
-	window.onresize = () => {
+const initGlobEvents = (htmlRootDom) => {
+
+	let ctrlKeyDown = false;
+	let lastCtrlAt = 0;
+
+	let isAppActive = () => htmlRootDom.offsetParent !== null;
+
+	// should return true when it is _Ctrl + W_ as agent often
+	// accidentally type it, since there is such shortcut in Focal Point
+	// if (terminalDom.isVisible && isCtrlKeyPressed)
+	let shouldConfirmClosing = () => {
+		return isAppActive()
+			&& ctrlKeyDown
+			// if ctrl was released outside
+			&& Date.now() - lastCtrlAt < 5 * 1000;
+	};
+
+	window.addEventListener('resize', (e) => {
 
 		// console.warn('on resize');
 
@@ -23,7 +39,28 @@ const initGlobEvents = () => {
 			store.updateView();
 		}
 		// resizeTimeout = setTimeout( () => getStore().updateView(), 0 );
-	};
+	});
+
+	window.addEventListener('beforeunload', (e) => {
+		if (shouldConfirmClosing()) {
+			ctrlKeyDown = false;
+			e.preventDefault(); // firefox
+			// does not affect the prompt message in 2019, but still...
+			let msg = 'Terminal window active, you sure want to close tab?';
+			e.returnValue = msg; // chrome
+			return msg; // chrome
+		}
+	});
+
+	window.addEventListener('keydown', (e) => {
+		if (e.ctrlKey) {
+			lastCtrlAt = Date.now();
+			ctrlKeyDown = true;
+		} else {
+			ctrlKeyDown = false;
+		}
+	});
+	window.addEventListener('keyup', (e) => ctrlKeyDown = e.ctrlKey);
 };
 
 let addCss = (cssText, htmlRootDom) => {
@@ -107,7 +144,6 @@ let onEmcSessionId = (emcSessionId, params) => {
 	window.GdsDirectPlusParams.travelRequestId = leadId;
 	window.GdsDirectPlusParams.cmsUrl = params.cmsUrl;
 	window.GdsDirectPlusParams.socketHost = params.socketHost || window.GdsDirectPlusParams.socketHost;
-	initGlobEvents();
 	params.htmlRootDom.innerHTML = '<h2 class="pls-wait-placeholder" style="background-color: black; color: white">Please wait, loading user data...</h2>';
 
 	let loadView = requests.get('/gdsDirect/view');
@@ -117,6 +153,7 @@ let onEmcSessionId = (emcSessionId, params) => {
 		.then(([viewData, themeData]) => {
 			params.htmlRootDom.querySelectorAll('.pls-wait-placeholder')
 				.forEach(ph => ph.remove());
+			initGlobEvents(params.htmlRootDom);
 			initThemeStyles(themeData, params.htmlRootDom);
 			return new GdsDirectPlusApp(params, viewData, themeData);
 		});
