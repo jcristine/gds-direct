@@ -454,7 +454,8 @@ class ProcessSabreTerminalInputAction {
 
 		// '§OIATH' - needed to extract the new session token,
 		// since current gets discarded on area change
-		let cmd = '¤' + $area + '§OIATH';
+		let areaCmd = '¤' + $area;
+		let cmd = areaCmd + '§OIATH';
 		let out = await this.runCommand(cmd);
 		let athMatch = out.match(/^ATH:(.*)!.*/);
 		if (athMatch) {
@@ -462,7 +463,7 @@ class ProcessSabreTerminalInputAction {
 			let gdsData = this.stateful.getGdsData();
 			gdsData.binarySecurityToken = newToken;
 			this.stateful.updateGdsData(gdsData);
-			let cmdRecs = [{'cmd': cmd, 'output': 'Successfully changed area to ' + $area}];
+			let cmdRecs = [{'cmd': areaCmd, 'output': 'Successfully changed area to ' + $area}];
 			return {'calledCommands': cmdRecs};
 		} else {
 			return UnprocessableEntity('Could not change are to ' + $area + ' - ' + out.trim());
