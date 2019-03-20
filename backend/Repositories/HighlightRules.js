@@ -40,7 +40,7 @@ let toCamelCase = ($value) => {
 };
 
 /** @return {IFullHighlightData} */
-exports.getFullDataForAdminPage = () => fetchFromDb().then(({
+let getFullDataForAdminPage = () => fetchFromDb().then(({
 	highlightRules,
 	highlightOutputPatterns,
 	highlightCmdPatterns,
@@ -111,9 +111,11 @@ let invalidateCache = async () => {
 	return redis.set(key, Date.now());
 };
 
-/** @param {ISaveHighlightRuleParams} rqBody
- * @param {IEmcResult} emcResult */
-exports.saveRule = (rqBody, emcResult) => Db.with(db => {
+/**
+ * @param {ISaveHighlightRuleParams} rqBody
+ * @param {IEmcResult} emcResult
+ */
+let saveRule = (rqBody, emcResult) => Db.with(db => {
 	if (!admins.includes(+emcResult.user.id)) {
 		return Forbidden('You (' + emcResult.user.displayName + ') are not listed as an admin of this project, so you can not change rules');
 	}
@@ -170,6 +172,8 @@ exports.saveRule = (rqBody, emcResult) => Db.with(db => {
 	});
 });
 
+exports.getFullDataForAdminPage = getFullDataForAdminPage;
+exports.saveRule = saveRule;
 exports.getFullDataForService = async () => {
 	if (await didCacheExpire(lastUpdateMs)) {
 		whenRuleMapping = fetchFullDataForService();
