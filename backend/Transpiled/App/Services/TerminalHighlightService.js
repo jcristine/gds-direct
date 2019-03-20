@@ -100,6 +100,9 @@ class TerminalHighlightService {
 		return getCmdPatterns().then(rows => rows
 			.filter(row => row.dialect === $language)
 			.filter(row => {
+				if (row.regexError) {
+					return false;
+				}
 				let $command = row.cmdPattern;
 				try {
 					let regex = makeRegex('^' + $command);
