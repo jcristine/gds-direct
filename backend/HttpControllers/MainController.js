@@ -104,9 +104,18 @@ let withAuth = (userAction) => (req, res) => {
 let withGdsSession = (sessionAction, canStartNew = false) => (req, res) => {
 	return withAuth(async (rqBody) => {
 		let session = await GdsSessions.getByContext(rqBody)
-			.catch(exc => NotFound.matches(exc.httpStatusCode) && canStartNew
-				? GdsSessionsController.startNewSession(rqBody)
-				: Promise.reject(exc));
+			.catch(exc => {
+				if (NotFound.matches(exc.httpStatusCode)) {
+					if (canStartNew) {
+						return GdsSessionsController.startNewSession(rqBody);
+					} else {
+						exc.httpStatusCode = LoginTimeOut.httpStatusCode;
+						return Promise.reject(exc);
+					}
+				} else {
+					return Promise.reject(exc);
+				}
+			});
 		let emcUser = rqBody.emcUser;
 		delete(rqBody.emcUser);
 		delete(rqBody.emcSessionId);
