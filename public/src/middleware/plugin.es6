@@ -151,7 +151,7 @@ export default class TerminalPlugin
 			// clickTimeout	: 300,
 			onTerminalChange: this._changeActiveTerm.bind(this),
 			onBeforeCommand : this._checkBeforeEnter.bind(this),
-			exceptionHandler( err ) { console.warn('exc', err); }
+			exceptionHandler( err ) { console.warn('exc', err); },
 		});
 	}
 
