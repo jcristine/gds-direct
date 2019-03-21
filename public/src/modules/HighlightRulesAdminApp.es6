@@ -39,7 +39,7 @@ const msgLang = {
 	lookForPattern          : 'Look for Pattern in Output of the following GDS Commands',
 	dateFromTo              : 'Date From/To',
 	fontColor               : 'Font-color',
-	background              : 'Background'
+	background              : 'Background',
 };
 
 let highlightGroups = {
@@ -93,12 +93,12 @@ const params = {
 	pageLength: 2000, // if there is ever so much rules sometime in future...
 	method: 'post',
 	rowReorder: {
-		selector: 'td.run-order'
+		selector: 'td.run-order',
 	},
 	order: [[ 2, 'asc' ]],
 	modal: {
 		dialog_class	: 'modal-full',
-		body			: $('<div class="hbox stretch">')
+		body			: $('<div class="hbox stretch">'),
 	},
 	responsive: false,
 	createdRow: (row, data, dataIndex) => {
@@ -114,8 +114,9 @@ const params = {
 				isError = true;
 		});
 
-		if (isError)
-			row.style = 'background-color: #ffbcbc;'
+		if (isError) {
+			row.style = 'background-color: #ffbcbc;';
+		}
 	},
 	onBeforeSave: () =>	{
 		const onClickIsChecked      = document.getElementById('isMessageOnClick').checked;
@@ -159,7 +160,7 @@ const params = {
 			return false;
 		}
 	},
-	columns: []
+	columns: [],
 };
 
 params.columns.push(
@@ -174,7 +175,7 @@ params.columns.push(
 		editable    : false,
 		orderable   : false,
 		title       : '',
-		visible     : true
+		visible     : true,
 	},
 
 	{
@@ -182,7 +183,7 @@ params.columns.push(
 		data: 'id',
 		width: 100,
 		title: msgLang.id,
-		visible: true
+		visible: true,
 	},
 
 	{
@@ -190,7 +191,7 @@ params.columns.push(
 		data: 'priority',
 		width: 100,
 		title: msgLang.priority,
-		visible: true
+		visible: true,
 	},
 
 	{
@@ -201,7 +202,7 @@ params.columns.push(
 		editable: (d, row) => Dom.build.select({
 			name 		: 'highlightGroup',
 			optionsList : highlightGroups,
-		}).val(row['highlightGroup'])
+		}).val(row['highlightGroup']),
 	},
 
 	{
@@ -210,7 +211,7 @@ params.columns.push(
 		validate: ['notBlank'],
 		width: 200,
 		title: msgLang.label,
-		editable: 'input'
+		editable: 'input',
 	},
 
 	{
@@ -218,7 +219,7 @@ params.columns.push(
 		data: () => '',
 		width: 200,
 		title: '&nbsp;',
-		editable: '<hr>'
+		editable: '<hr>',
 	},
 
 	{
@@ -226,7 +227,7 @@ params.columns.push(
 		data: () => '',
 		width: 200,
 		title: '&nbsp;',
-		editable: () => `<label class="control-label" style="width: 100%;text-align: center;">${msgLang.lookForPattern}</label>`
+		editable: () => `<label class="control-label" style="width: 100%;text-align: center;">${msgLang.lookForPattern}</label>`,
 	}
 );
 
@@ -241,7 +242,7 @@ gdses.forEach( lang => {
 			const isError = row['languages'] ? (row['languages'][lang]['regexError'] ? 'text-danger' : '') : '';
 
 			return `<input class="form-control input-sm ${isError}" name="languages[${lang}][cmdPattern]" value="${val}" autocomplete="off">`;
-		}
+		},
 	});
 });
 
@@ -252,7 +253,7 @@ params.columns.push(
 		data: () => '',
 		width: 200,
 		title: '&nbsp;',
-		editable: '<hr>'
+		editable: '<hr>',
 	},
 
 	{
@@ -260,7 +261,7 @@ params.columns.push(
 		data: () => '',
 		width: 200,
 		title: '&nbsp;',
-		editable: () => `<label class="control-label" style="width: 100%;text-align: center;">${msgLang.pattern}</label>`
+		editable: () => `<label class="control-label" style="width: 100%;text-align: center;">${msgLang.pattern}</label>`,
 	}
 );
 
@@ -275,7 +276,7 @@ gdses.forEach( gds => {
 			const isError = row['gds'] ? (row['gds'][gds]['regexError'] ? 'text-danger' : '') : '';
 
 			return `<input class="form-control input-sm ${isError}" name="gds[${gds}][pattern]" value="${val}" autocomplete="off">`;
-		}
+		},
 	});
 });
 
@@ -305,9 +306,9 @@ params.columns.push(
 				$('<div class="row">').append(
 					$('<div class="col-sm-6">').append(highlightType),
 					$('<div class="col-sm-6">').append(isOnlyFirstFound),
-				)
+				),
 			];
-		}
+		},
 	},
 
 	{
@@ -315,7 +316,7 @@ params.columns.push(
 		data: () => '',
 		width: 200,
 		title: '&nbsp;',
-		editable: '<hr>'
+		editable: '<hr>',
 	},
 
 	{
@@ -338,11 +339,11 @@ params.columns.push(
 					$('<div class="col-sm-2">').append($('<label>').text(msgLang.background)),
 					$('<div class="col-sm-4">').append(Dom.build.select({
 						name 		: 'backgroundColor',
-						optionsList : colorsWithNoneOption
+						optionsList : colorsWithNoneOption,
 					}).val(row['backgroundColor'])),
 				),
-			]
-		}
+			];
+		},
 	},
 
 	{
@@ -371,7 +372,7 @@ params.columns.push(
 			return chunk(checkboxes, 2).map((cells) =>
 				$('<div class="row">').append(...cells.map(c =>
 					$('<div class="col-sm-6">').append(c))));
-		}
+		},
 	},
 
 	{
@@ -394,9 +395,9 @@ params.columns.push(
 				$('<div class="row">').append(
 					$('<div class="col-sm-8">').append(text, message),
 					$('<div class="col-sm-4">').append(onClick),
-				)
+				),
 			];
-		}
+		},
 	},
 
 	{
@@ -429,14 +430,14 @@ params.columns.push(
 		visible: false,
 		data: obj => Dom.build.checkbox({
 			name		: 'isInSameWindow',
-			checked		: obj['isInSameWindow'] === 1
+			checked		: obj['isInSameWindow'] === 1,
 		}).prop('outerHTML'),
 		width: 200,
 		title: msgLang.isInSameWindow,
 		editable: (d, row) => Dom.build.checkbox({
 			name		: 'isInSameWindow',
 			checked		: row['isInSameWindow'] === 1,
-		})
+		}),
 	},
 
 	{
@@ -444,7 +445,7 @@ params.columns.push(
 		data: () => '',
 		width: 200,
 		title: '&nbsp;',
-		editable: '<hr>'
+		editable: '<hr>',
 	},
 
 	{
@@ -461,7 +462,7 @@ params.columns.push(
 		editable: (d, row) => Dom.build.checkbox({
 			name		: 'isEnabled',
 			checked		: row['isEnabled'] === 1,
-		})
+		}),
 	},
 
 	{
@@ -478,7 +479,7 @@ params.columns.push(
 		editable: (d, row) => Dom.build.checkbox({
 			name		: 'isForTestersOnly',
 			checked		: row['isForTestersOnly'] === 1,
-		})
+		}),
 	},
 
 	{
@@ -487,7 +488,7 @@ params.columns.push(
 		data: () => '',
 		width: 200,
 		title: '&nbsp;',
-		editable: 'empty'
+		editable: 'empty',
 	},
 
 	{
@@ -496,7 +497,7 @@ params.columns.push(
 		data: () => '',
 		width: 200,
 		title: '&nbsp;',
-		editable: 'empty'
+		editable: 'empty',
 	},
 
 	{
@@ -505,7 +506,7 @@ params.columns.push(
 		data: () => '',
 		width: 200,
 		title: '&nbsp;',
-		editable: 'empty'
+		editable: 'empty',
 	},
 
 	{
@@ -514,7 +515,7 @@ params.columns.push(
 		data: () => '',
 		width: 200,
 		title: '&nbsp;',
-		editable: 'empty'
+		editable: 'empty',
 	},
 
 	{
@@ -523,7 +524,7 @@ params.columns.push(
 		data: () => '',
 		width: 200,
 		title: '&nbsp;',
-		editable: 'empty'
+		editable: 'empty',
 	}
 );
 
