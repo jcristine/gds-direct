@@ -16,6 +16,12 @@ let chunk = (arr, size) => {
 	return chunks;
 };
 
+let HtmlEl = (html) => {
+	let template = document.createElement('template');
+	html = html.trim(); // Never return a text node of whitespace as the result
+	template.innerHTML = html;
+	return template.content.firstChild;
+};
 
 const msgLang = {
 	id                      : 'Id',
@@ -231,6 +237,19 @@ params.columns.push(
 	}
 );
 
+let validateRegexSyntax = (input) => {
+	input.value = input.value.replace(/(?<!\\)\(\?P</g, '(?<');
+	try {
+		let regex = new RegExp(input.value);
+		'some random text'.match(regex);
+		input.setCustomValidity(''); // valid
+	} catch (exc) {
+		let error = exc + '';
+		input.setCustomValidity(error); // invalid
+		input.title = error;
+	}
+};
+
 gdses.forEach( lang => {
 	params.columns.push({
 		visible: false,
@@ -241,7 +260,10 @@ gdses.forEach( lang => {
 			const val     = row['languages'] ? (row['languages'][lang]['cmdPattern'] != null ? row['languages'][lang]['cmdPattern'] : '') : '';
 			const isError = row['languages'] ? (row['languages'][lang]['regexError'] ? 'text-danger' : '') : '';
 
-			return `<input class="form-control input-sm ${isError}" name="languages[${lang}][cmdPattern]" value="${val}" autocomplete="off">`;
+			let html = `<input class="regex-syntax form-control input-sm ${isError}" name="languages[${lang}][cmdPattern]" value="${val}" autocomplete="off">`;
+			let input = HtmlEl(html);
+			input.oninput = (e) => validateRegexSyntax(input, e);
+			return input;
 		},
 	});
 });
@@ -275,7 +297,10 @@ gdses.forEach( gds => {
 			const val     = row['gds'] ? (row['gds'][gds]['pattern'] != null ? row['gds'][gds]['pattern'] : '') : '';
 			const isError = row['gds'] ? (row['gds'][gds]['regexError'] ? 'text-danger' : '') : '';
 
-			return `<input class="form-control input-sm ${isError}" name="gds[${gds}][pattern]" value="${val}" autocomplete="off">`;
+			let html = `<input class="regex-syntax form-control input-sm ${isError}" name="gds[${gds}][pattern]" value="${val}" autocomplete="off">`;
+			let input = HtmlEl(html);
+			input.oninput = (e) => validateRegexSyntax(input, e);
+			return input;
 		},
 	});
 });
