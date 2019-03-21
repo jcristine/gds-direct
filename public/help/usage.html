@@ -9,14 +9,13 @@ You can inject the app on a page in your project to give user access to a GDS (A
 <h3>Usage:</h3>
 
 <pre>
-&lt;div id=&quot;terminalContext&quot; style=&quot;height: 100%;&quot;&gt;&lt;/div&gt;
+&lt;div id=&quot;terminal-app-container&quot; style=&quot;height: 100%;&quot;&gt;&lt;/div&gt;
 &lt;!-- http://dev-w13:20328/public/terminal-bundle.js on dev -&gt;
 &lt;script src=&quot;https://gds-direct-plus.asaptickets.com/public/terminal-bundle.js&quot;&gt;&lt;/script&gt;
 &lt;script&gt;
     window.InitGdsDirectPlusApp({
         htmlRootDom: document.getElementById('terminal-app-container'),
-        // returned by 'authorizeToken' EMC service API
-        // see https://auth.asaptickets.com/help/api#authorizeToken
+        // returned by https://auth.asaptickets.com/help/api#authorizeToken
         emcSessionId: '85f49ee15350fd6e8c6bc9c58a61a43e',
     }).then(nodeApp =&gt; {
         // nodeApp.runPnr({pnrCode: 'QWE123'});
