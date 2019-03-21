@@ -240,7 +240,7 @@ exports.clearBuffer = (rqBody) => {
 	let agentId = rqBody.agentId;
 	let requestId = rqBody.travelRequestId || 0;
 	return Db.with(db => db.query([
-		'DELETE FROM terminalBuffering',
+		'DELETE FROM cmd_rq_log',
 		'WHERE agentId = ?',
 		'  AND requestId = ?',
 	].join('\n'), [agentId, requestId]));
