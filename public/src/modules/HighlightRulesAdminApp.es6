@@ -412,17 +412,17 @@ params.columns.push(
 				const isError = row['languages'] ? (row['languages'][gds]['regexError'] ? 'text-danger' : '') : '';
 
 				inputs += `
-				<div class="col-sm-3">
-					<div class="input-group">
-						<span class="input-group-addon">${gds}</span>
-						<input class="form-control input-sm ${'onClickCommand'} ${isError}" name="languages[${gds}][${'onClickCommand'}]" value="${val}">
-					</div>
-				</div>
-			`;
+					<div>
+						<input type="text" value="${val}"
+							class="${'onClickCommand'} ${isError}"
+							name="languages[${gds}][${'onClickCommand'}]"
+						/>
+						<label>${gds}</label>
+					</div>`;
 			});
 
 			return `<div class="row">${inputs}</div>`;
-		}
+		},
 	},
 
 	{
