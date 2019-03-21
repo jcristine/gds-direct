@@ -72,24 +72,15 @@ let Migration = () => {
 
 	return {
 		run: async () => {
-			let config = await getConfig();
 			// there are currently 2 supposedly equal servers
 			let lockSeconds = 5 * 60; // 5 minutes
 			let lockKey = keys.MIGRAT_LOCK;
-			if (config.production) {
-				// sometimes one additional process gets spawned and dies after a
-				// few seconds leaving migration lock hanging - this is a workaround
-				Diag.log('Waiting for 5 seconds before taking migration lock - ' + process.pid);
-				await new Promise(resolve => setTimeout(resolve, 5000));
-			}
-			Diag.log('About to acquire ' + lockKey + ' lock for process ' + process.pid);
 			let client = await getClient();
 			let migrationLock = await client.set(lockKey, process.pid, 'NX', 'EX', lockSeconds);
 			if (!migrationLock) {
 				let lastValue = await client.get(lockKey);
 				return Promise.resolve('Migration is already being handled by other cluster ' + JSON.stringify(migrationLock) + ' lock name: ' + lockKey + ' last value: ' + lastValue);
 			}
-			Diag.log('Acquired the lock for process ' + process.pid);
 			return runLocked()
 				.then(async (res) => {
 					let delOut = await client.del(lockKey);
