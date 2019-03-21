@@ -7,13 +7,13 @@ let Config = require("./backend/Config.js");
 (async () => {
 	if (Config.production) {
 		// a workaround for an extra job that gets spawned randomly and dies
-		Diag.log('Waiting for 5 seconds before starting server, pid ' + process.pid);
+		Diag.log('pid ' + process.pid + ': waiting for 5 seconds before starting server');
 		await new Promise(resolve => setTimeout(resolve, 5000));
+		Diag.log('pid ' + process.pid + ': done waiting - starting server now');
 	}
 	require('./backend/WebRoutes.js');
 	Migration.run()
 		.then(result => {
-			console.log('Migration was successful\n', JSON.stringify(result));
 			Diag.notice(new Date().toISOString() + ': Migration was successful', result);
 		})
 		.catch(exc => {
