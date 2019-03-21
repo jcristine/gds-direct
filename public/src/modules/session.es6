@@ -32,13 +32,18 @@ export default class Session
 	{
 		this.settings = params;
 		let gds = params.gds;
-		let pingInterval = gds === 'apollo' ? 60 * 1000 : 10 * 60 * 1000;
+		let pingInterval = ['apollo', 'galileo'].includes(gds) ? 60 * 1000 : 10 * 60 * 1000;
 		setInterval(() => {
 			if (!callInProgress && !closed && window.performance.now() - lastUsedAt >= pingInterval) {
 				lastUsedAt = window.performance.now();
 				callInProgress = true;
 				post('/gdsDirect/keepAlive', makeParams(this, {skipErrorPopup: true}))
-					.catch(exc => closed = true)
+					.catch(exc => {
+						if (params.onExpired) {
+							params.onExpired(exc + '');
+						}
+						closed = true;
+					})
 					.then(result => callInProgress = false);
 			}
 		}, pingInterval);
@@ -82,8 +87,8 @@ export default class Session
 				._run( beforeStack.shift()() )
 				.then(resolve) //output result
 				.then(() => promise = '')
-				.then(() => this._runNext())
-		}
+				.then(() => this._runNext());
+		};
 	}
 
 	perform( beforeFn )

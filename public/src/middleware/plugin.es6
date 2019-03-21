@@ -34,7 +34,11 @@ export default class TerminalPlugin
 
 		this.session = new Session({
 			terminalIndex	: params.name,
-			gds				: params.gds
+			gds				: params.gds,
+			onExpired		: (msg) => {
+				msg = '[[;;;startSession]/SESSION EXPIRED]';
+				this.outputLiner.printOutput(msg, false, []);
+			},
 		});
 
 		this.terminal 		= this.init();
@@ -45,7 +49,7 @@ export default class TerminalPlugin
 		this.tabCommands	= new TabManager();
 		this.f8Reader		= new F8Reader({
 			terminal	: this.terminal,
-			gds			: params.gds
+			gds			: params.gds,
 		});
 
 		this.history 		= new History( params.gds );
@@ -223,10 +227,7 @@ export default class TerminalPlugin
 	_displayMcoMask(data)
 	{
 		let mcoForm = McoForm({data, onsubmit: (data) => {
-			let terminalData = apiData ? apiData.terminalData : null;
-			let isStandAlone = terminalData ? +terminalData.isStandAlone : false;
 			let params = {
-				isStandAlone: isStandAlone,
 				gds: this.gdsName,
 				fields: data.fields,
 				useRbs: GdsDirectPlusState.getUseRbs(),
@@ -279,7 +280,7 @@ export default class TerminalPlugin
 
 		if ( window.GdsDirectPlusState.hasPermissions() )
 		{
-			data = {...data, log : loggerOutput(data, command)}
+			data = {...data, log : loggerOutput(data, command)};
 		}
 
 		UPDATE_CUR_GDS({...data, gdsName : this.gdsName});
