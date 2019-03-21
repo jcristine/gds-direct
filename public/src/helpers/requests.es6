@@ -67,7 +67,7 @@ let getHttpSocket = () => {
 	if (httpSocket === undefined) {
 		httpSocket = null; // to make sure we don't start initialising it for second time
 		let host = window.GdsDirectPlusParams.socketHost;
-		initSocket(host).then(obj => httpSocket = obj)
+		initSocket(host).then(obj => httpSocket = obj);
 	}
 	return httpSocket;
 };
@@ -75,14 +75,15 @@ let getHttpSocket = () => {
 const getPostRequestHeader = data => {
 	return {
 		useSocket	: data.useSocket,
+		skipErrorPopup: data.skipErrorPopup,
 		credentials	: 'include',
 		body		: JSON.stringify(data),
 		method		: 'POST',
 		headers		: {
 			'Accept': 'application/json, application/xml, text/plain, text/html, .',
-			'Content-Type': 'application/json; charset=utf-8'
+			'Content-Type': 'application/json; charset=utf-8',
 		},
-	}
+	};
 };
 
 const Ask = (url, fetchParams) => {
@@ -142,5 +143,5 @@ export const post = (url, postParams = {}) => {
 };
 
 export default {
-	get 			: get
+	get 			: get,
 };
