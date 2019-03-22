@@ -56,7 +56,7 @@ exports.storeNew = async (context, gdsData) => {
 	}])).then(inserted => inserted.insertId)
 		.then(nonEmpty('Could not get session id from DB'));
 
-	let session = makeSessionRecord({id, normalized, gdsData, logId});
+	let session = makeSessionRecord({id, context: normalized, gdsData, logId});
 	let client = await getClient();
 	client.zadd(keys.SESSION_ACTIVES, Date.now(), id);
 	client.hset(keys.SESSION_BY_CONTEXT, contextStr, id);

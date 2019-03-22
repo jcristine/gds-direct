@@ -75,9 +75,12 @@ let closeSession = (session) => {
 
 let shouldRestart = (exc, session) => {
 	let lifetimeMs = Date.now() - session.createdMs;
+	let clsName = ((exc || {}).constructor || {}).name;
+	let isTypeError = clsName === 'TypeError';
 	return LoginTimeOut.matches(exc.httpStatusCode)
 		//|| !exc.httpStatusCode // runtime errors, like null-pointer exceptions
 		// 1 hour, to exclude cases like outdated format of gdsData
+		|| isTypeError
 		|| lifetimeMs > 60 * 60 * 1000;
 };
 
@@ -96,11 +99,12 @@ let runInSession = ({session, rqBody, emcUser}) => {
 /** @param rqBody = at('WebRoutes.js').normalizeRqBody() */
 let runInputCmdRestartAllowed = async ({rqBody, session, emcUser}) => {
 	rqBody.command = rqBody.command.trim();
-	return runInSession({session, rqBody, emcUser})
+	return Promise.resolve()
+		.then(() => runInSession({session, rqBody, emcUser}))
 		.catch(async exc => {
 			if (shouldRestart(exc, session)) {
 				FluentLogger.logExc('INFO: Session expired', session.logId, exc);
-				await GdsSessions.remove(session);
+				await GdsSessions.remove(session).catch(exc => {});
 				let newSession = await startNewSession(rqBody);
 				FluentLogger.logit('INFO: New session in ' + newSession.logId, session.logId, newSession);
 				FluentLogger.logit('INFO: Old session in ' + session.logId, newSession.logId, session);
