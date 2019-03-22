@@ -1,5 +1,6 @@
 
 let express = require('express');
+let compression = require('compression');
 let UserController = require('./HttpControllers/UserController.js');
 let CompletionData = require('./HttpControllers/CompletionData.js');
 let Emc = require('./LibWrappers/Emc.js');
@@ -40,6 +41,12 @@ app.use((req, res, next) => {
 	next();
 });
 app.get('/', (req, res) => res.redirect('/public'));
+app.use(compression({filter: (rq, rs) => {
+	if (rq.path !== '/terminal-bundle.js') {
+		return false;
+	}
+	return compression.filter(rq, rs);
+}}));
 app.use('/public', (rq, rs, next) => {
 	if (rq.path.endsWith('.js')) {
 		rs.setHeader('Content-Type', 'application/javascript');
