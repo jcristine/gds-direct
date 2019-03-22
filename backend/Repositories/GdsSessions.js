@@ -18,9 +18,7 @@ let normalizeContext = (reqBody) => {
 	};
 };
 
-let makeSessionRecord = (id, context, gdsData) => {
-	let prefix = context.gds + '_' + context.agentId;
-	let logId = FluentLogger.logNewId(prefix);
+let makeSessionRecord = ({id, context, gdsData, logId}) => {
 	let createdMs = Date.now();
 	let session = {
 		id: id,
@@ -42,31 +40,23 @@ let getById = (id) => {
 		.then(/** @param session = makeSessionRecord() */ (session) => session);
 };
 
-// recently accessed first
-exports.getAll = () => {
-	return getClient()
-		.then(redis => redis.zrevrange(keys.SESSION_ACTIVES, 0, -1, 'WITHSCORES'))
-		.then(values => Promise.all(chunk(values, 2)
-			.map(async ([id, accessMs]) => {
-				let session = await getById(id);
-				session.accessMs = accessMs;
-				return session;
-			})));
-};
-
 /** @param context = normalizeContext() */
 exports.storeNew = async (context, gdsData) => {
 	let normalized = normalizeContext(context);
 	let contextStr = JSON.stringify(normalized);
+	let prefix = context.gds + '_' + context.agentId;
+	let logId = FluentLogger.logNewId(prefix);
+
 	let id = await Db.with(db => db.writeRows(TABLE, [{
 		gds: context.gds,
 		created_dt: new Date().toISOString(),
 		agent_id: context.agentId,
 		lead_id: context.travelRequestId,
+		log_id: logId,
 	}])).then(inserted => inserted.insertId)
 		.then(nonEmpty('Could not get session id from DB'));
 
-	let session = makeSessionRecord(id, normalized, gdsData);
+	let session = makeSessionRecord({id, normalized, gdsData, logId});
 	let client = await getClient();
 	client.zadd(keys.SESSION_ACTIVES, Date.now(), id);
 	client.hset(keys.SESSION_BY_CONTEXT, contextStr, id);
@@ -202,4 +192,25 @@ exports.countActive = async (gds, profileName) => {
 			}
 		}).length;
 	});
+};
+
+exports.getHist = async (params) => {
+	let rows = await Db.with(db => db.fetchAll({
+		table: TABLE,
+		orderBy: 'id DESC',
+		limit: 2000,
+	}));
+
+	return rows.map(session => ({
+		"id": session.id,
+		"externalId": null,
+		"agentId": session.agent_id,
+		"gds": session.gds,
+		"requestId": session.lead_id,
+		"startTime": session.created_dt,
+		"endTime": session.closed_dt,
+		"logId": session.log_id,
+		"isRestarted": false,
+		"startTimestamp": Math.floor(session.createdMs / 1000),
+	}));
 };

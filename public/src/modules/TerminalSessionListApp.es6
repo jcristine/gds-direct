@@ -7,7 +7,6 @@ let isDev = !(window.location.hostname + '').endsWith('.asaptickets.com');
 let init = () => {
 	var msgLang = {
 		id          : 'Id',
-		externalId  : 'External Id',
 		gds         : 'Gds',
 		company     : 'Company',
 		requestId   : 'RequestId',
@@ -45,29 +44,6 @@ let init = () => {
 				editable    : false,
 				width       : 100,
 				title       : msgLang.id
-			},
-
-			{
-				// would be cool to include link to RBS here
-				name        : 'externalId',
-				data        : function (obj)
-				{
-					let baseUrl = isDev
-						? 'http://st-rbs.sjager.php7.dyninno.net/web/gds-direct-session/'
-						: 'https://rbs.asaptickets.com/web/gds-direct-session/';
-					if (obj['useRbs']) {
-						return '<a class="btn-link" target="_blank" href="' + baseUrl +
-							obj['externalId'] + '">' + obj['externalId'] + '</a>';
-					} else {
-						return obj['externalId'];
-					}
-				},
-				className   : 'external-id-cell',
-				searchable  : selfTableName + '.externalId',
-				orderable   : false,
-				editable    : false,
-				width       : 100,
-				title       : msgLang.externalId
 			},
 
 			{

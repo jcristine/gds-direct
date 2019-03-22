@@ -124,28 +124,10 @@ app.get('/gdsDirect/themes', toHandleHttp(() =>
 		}))
 ));
 
-/** @param session = at('GdsSessions.js').makeSessionRecord() */
-let transformSession = (session) => {
-	return {
-		"id": session.id,
-		"externalId": session.gdsData.rbsSessionId || JSON.stringify(session.gdsData),
-		"agentId": session.context.agentId,
-		"gds": session.context.gds,
-		"requestId": session.context.travelRequestId,
-		"startTime": new Date(session.createdMs).toISOString(),
-		"endTime": null,
-		"logId": session.logId,
-		"isRestarted": false,
-		"startTimestamp": Math.floor(session.createdMs / 1000),
-		"accessMs": session.accessMs,
-		"useRbs": session.context.useRbs,
-	};
-};
-
 app.post('/admin/terminal/sessionsGet', toHandleHttp(async rqBody => {
-	let sessions = await GdsSessions.getAll();
+	let sessions = await GdsSessions.getHist(rqBody);
 	return {
-		aaData: sessions.map(transformSession),
+		aaData: sessions,
 	};
 }));
 
