@@ -259,6 +259,11 @@ export default class TerminalPlugin
 		let {output, clearScreen, appliedRules, tabCommands} = data;
 		this.appliedRules = appliedRules;
 
+		if (data.startNewSession) {
+			let msg = '[[;;;startSession]/NEW SESSION STARTED]';
+			this.outputLiner.printOutput(msg, false, []);
+		}
+
 		if (output)
 		{
 			if ( output.trim() === '*')

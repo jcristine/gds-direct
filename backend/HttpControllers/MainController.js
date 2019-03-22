@@ -103,10 +103,12 @@ let withAuth = (userAction) => (req, res) => {
 /** @param {function({rqBody, session, emcUser}): Promise} sessionAction */
 let withGdsSession = (sessionAction, canStartNew = false) => (req, res) => {
 	return withAuth(async (rqBody) => {
+		let startNewSession = false;
 		let session = await GdsSessions.getByContext(rqBody)
 			.catch(exc => {
 				if (NotFound.matches(exc.httpStatusCode)) {
 					if (canStartNew) {
+						startNewSession = true;
 						return GdsSessionsController.startNewSession(rqBody);
 					} else {
 						exc.httpStatusCode = LoginTimeOut.httpStatusCode;
@@ -127,6 +129,9 @@ let withGdsSession = (sessionAction, canStartNew = false) => (req, res) => {
 		return Promise.resolve()
 			.then(() => sessionAction({rqBody, session, emcUser}))
 			.then(result => {
+				if (startNewSession) {
+					result.startNewSession = true;
+				}
 				//                 'TODO: Processing HTTP RQ'
 				FluentLogger.logit('................ HTTP RS (in ' + ((Date.now() - startMs) / 1000).toFixed(3) + ' s.)', session.logId, result);
 				return Promise.resolve(result);
