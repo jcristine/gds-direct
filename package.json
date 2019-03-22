@@ -11,7 +11,6 @@
     "dynatech-logger": "git+ssh://git@gitlab.dyninno.net:1022/node-libraries/logger#e389eede73ec8e7cf6ac5a2eafc8550c92512420"
   },
   "dependencies": {
-    "compression": "^1.7.4",
     "express": "^4.16.4",
     "ioredis": "^4.3.0",
     "jsdom": "^13.0.0",
