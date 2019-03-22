@@ -7,6 +7,9 @@ import {getStore} 			from './../../store';
 import AreaPccSelect 			from "./areaPccSelect";
 import {get} 				from "../../helpers/requests";
 import "select2";
+import {post} from './../../helpers/requests';
+import $ from 'jquery';
+import {UPDATE_ALL_AREA_STATE} from "../../actions/gdsActions";
 
 export default class KeySettings extends ButtonPopOver
 {
@@ -26,7 +29,7 @@ export default class KeySettings extends ButtonPopOver
                         const c = new Context(this, keyBindings, defaultPccs, gdsAreaSettings);
                         this.popContent.appendChild(c.context);
                     });
-			}
+			},
 		});
 	}
 }
@@ -92,8 +95,11 @@ class Context
 			buttonHeader.appendChild(Dom(`label[Autorun]`));
 
 			const inputFields = this._makeInputFieldList(gds);
-			const labelDiv = Dom(`div.settings-input-container`)
-			labelDiv.appendChild(Dom(`label[Default PCC]`));
+			const labelDiv = Dom(`div.settings-input-container`);
+			labelDiv.appendChild(Dom(`button.btn-primary[Default PCC]`, {
+				onclick: () => post('/terminal/resetToDefaultPcc', {gds: gds})
+					.then(rsData => UPDATE_ALL_AREA_STATE(gds, rsData.fullState)),
+			}));
 			tabContent.appendChild(labelDiv);
 			tabContent.appendChild(inputFields.areaGrid);
 
@@ -108,7 +114,7 @@ class Context
 			onclick : () => {
 				this.save();
 				parent.popover.close();
-			}
+			},
 		});
 		header.appendChild(saveBtn);
 
@@ -149,7 +155,7 @@ class Context
                 $(select).select2({
                     theme : "bootstrap",
                     dropdownParent : $(this.context),
-					width : '185px'
+					width : '185px',
                 });
 
                 return container;
@@ -169,7 +175,7 @@ class Context
 				const inputContainer = this._getInputRow({
 					label: prefix ? `${prefix} + F${i}` : `F${i}`,
 					placeholder: placeholder.command,
-					value: this._getKeyBinding(gds, btnName, 'command')
+					value: this._getKeyBinding(gds, btnName, 'command'),
 				});
 
 				// "Autorun" checkbox
@@ -177,10 +183,10 @@ class Context
 				inputContainer.appendChild(
 					Dom('input.form-control ch-box', {
 						type: 'checkbox',
-						checked: userAutorun !== false ? userAutorun : placeholder.autorun
+						checked: userAutorun !== false ? userAutorun : placeholder.autorun,
 					})
-				)
-				data.buttons.push({ key, btnName, placeholder, inputContainer, placeholder });
+				);
+				data.buttons.push({ key, btnName, placeholder, inputContainer });
 			}
 		});
 
@@ -191,7 +197,7 @@ class Context
 
 	_getInputRow({ label, placeholder, value })
 	{
-		const container = Dom(`div.settings-input-container`)
+		const container = Dom(`div.settings-input-container`);
 		container.appendChild(Dom(`label[${label}]`));
 		container.appendChild(Dom('input.form-control settings-input', { placeholder, value }));
 		return container;

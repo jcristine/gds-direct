@@ -125,6 +125,8 @@ exports.getFullState = async (session) => {
 		.catch(exc => makeDefaultState(session));
 };
 
+exports.makeDefaultState = makeDefaultState;
+
 exports.getUserAccessMs = async (session) => {
 	let client = await getClient();
 	return client.hget(keys.SESSION_TO_USER_ACCESS_MS, session.id);

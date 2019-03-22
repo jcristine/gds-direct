@@ -865,6 +865,10 @@ class CommandParserTest extends require('../../../Lib/TestCase.js') {
 			],
 		}]);
 
+		$list.push(['SO', {
+			'type': 'signOut',
+		}]);
+
 		return $list;
 	}
 

@@ -152,6 +152,20 @@ exports.importPq = async ({rqBody, session, emcUser}) => {
 	return ImportPq({stateful, leadData, fetchOptionalFields: true});
 };
 
+/**
+ * @param session = require('GdsSessions.js').makeSessionRecord()
+ * @param {IEmcUser} emcUser
+ */
+exports.resetToDefaultPcc = async ({rqBody, session, emcUser}) => {
+	let gdsData = await startByGds(rqBody.gds);
+	await GdsSessions.remove(session);
+	let newSession = await GdsSessions.storeNew(session.context, gdsData);
+	FluentLogger.logit('INFO: New session in ' + newSession.logId, session.logId, newSession);
+	FluentLogger.logit('INFO: Old session in ' + session.logId, newSession.logId, session);
+	let fullState = GdsSessions.makeDefaultState(newSession);
+	return {fullState};
+};
+
 exports.makeMco = async ({rqBody, session, emcUser}) => {
 	let mcoData = {};
 	for (let {key, value} of rqBody.fields) {
