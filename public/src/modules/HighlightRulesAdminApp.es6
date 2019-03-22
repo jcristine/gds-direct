@@ -238,7 +238,7 @@ params.columns.push(
 );
 
 let validateRegexSyntax = (input) => {
-	input.value = input.value.replace(/(?<!\\)\(\?P</g, '(?<');
+	input.value = input.value.replace(/\(\?P</g, '(?<');
 	try {
 		let regex = new RegExp(input.value);
 		'some random text'.match(regex);
