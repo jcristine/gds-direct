@@ -243,6 +243,7 @@ let validateRegexSyntax = (input) => {
 		let regex = new RegExp(input.value);
 		'some random text'.match(regex);
 		input.setCustomValidity(''); // valid
+		input.title = '';
 	} catch (exc) {
 		let error = exc + '';
 		input.setCustomValidity(error); // invalid
