@@ -99,20 +99,22 @@ exports.updateFullState = async (session, state) => {
 	]);
 };
 
+let makeDefaultAreaState = (gds) => ({
+	area: 'A',
+	pcc: {
+		apollo: '2F3K',
+		galileo: '711M',
+		sabre: 'L3II',
+		amadeus: 'SFO1S2195',
+	}[gds] || null,
+	record_locator: '',
+	can_create_pq: false,
+});
+
 let makeDefaultState = (session) => ({
 	area: 'A',
 	areas: {
-		A: {
-			area: 'A',
-			pcc: {
-				apollo: '2F3K',
-				galileo: '711M',
-				sabre: 'L3II',
-				amadeus: 'SFO1S2195',
-			}[session.context.gds] || null,
-			record_locator: '',
-			can_create_pq: false,
-		},
+		A: makeDefaultAreaState(session.context.gds),
 	},
 });
 
@@ -126,6 +128,7 @@ exports.getFullState = async (session) => {
 };
 
 exports.makeDefaultState = makeDefaultState;
+exports.makeDefaultAreaState = makeDefaultAreaState;
 
 exports.getUserAccessMs = async (session) => {
 	let client = await getClient();

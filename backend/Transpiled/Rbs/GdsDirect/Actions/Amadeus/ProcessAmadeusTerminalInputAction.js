@@ -25,6 +25,8 @@ const MoveDownAllAction = require('./MoveDownAllAction.js');
 const AmadeusPnr = require('../../../../Rbs/TravelDs/AmadeusPnr.js');
 const AmadeusBuildItineraryAction = require('../../../../Rbs/GdsAction/AmadeusBuildItineraryAction.js');
 const MarriageItineraryParser = require('../../../../Gds/Parsers/Amadeus/MarriageItineraryParser.js');
+const AmadeusClient = require("../../../../../GdsClients/AmadeusClient");
+const makeDefaultAreaState = require("../../../../../Repositories/GdsSessions").makeDefaultAreaState;
 
 var require = translib.stubRequire;
 
@@ -286,10 +288,8 @@ class ProcessAmadeusTerminalInputAction {
 		return {'calledCommands': $calledCommands};
 	}
 
-	changeArea($area) {
-		let $calledCommands, $errorData, $sessionId, $areaRows, $isRequested, $row, $stopwatch, $newSession;
-
-		$calledCommands = [];
+	async changeArea($area) {
+		let $errorData, $sessionId, $areaRows, $isRequested, $row;
 
 		if (!php.in_array($area, this.constructor.AREA_LETTERS)) {
 			$errorData = {'area': $area, 'options': php.implode(', ', this.constructor.AREA_LETTERS)};
@@ -300,25 +300,31 @@ class ProcessAmadeusTerminalInputAction {
 		}
 		$sessionId = this.getSessionData()['id'];
 		$areaRows = this.stateful.getAreaRows();
-		$isRequested = ($row) => $row['work_area_letter'] === $area;
+		$isRequested = ($row) => $row['area'] === $area;
 		$row = ArrayUtil.getFirst(Fp.filter($isRequested, $areaRows));
 
-		if (!$row) {
-			$newSession = this.stateful.startNewGdsSession();
-			$row = SessionStateHelper.makeNewAreaData({
-				'id': $sessionId,
-				'area': $area,
-				'internal_token': $newSession.getSessionToken(),
-				'pcc': GdsProfiles.AMADEUS.AMADEUS_PROD_1ASIWTUTICO,
-			});
+		let fullState = this.stateful.getFullState();
+		if (!fullState.areas[fullState.area].gdsData) {
+			// preserve area A session token
+			fullState.areas[fullState.area].gdsData = this.stateful.getGdsData();
+			this.stateful.updateFullState(fullState);
 		}
-		this.stateful.getLog().updateAreaState($row, {
-			'type': 'changeArea',
-			'duration': $stopwatch.stop()['timeDelta'],
-		});
+		if (!$row || !$row.gdsData) {
+			$row = makeDefaultAreaState('amadeus');
+			$row.area = $area;
+			$row.gdsData = await AmadeusClient.startSession({
+				profileName: GdsProfiles.chooseAmaProfile($row.pcc),
+			});
+			fullState.areas[$area] = $row;
+		}
+		fullState.area = $area;
+		await Promise.all([
+			this.stateful.updateFullState(fullState),
+			this.stateful.updateGdsData($row.gdsData),
+		]);
 
 		return {
-			'calledCommands': $calledCommands,
+			'calledCommands': [],
 			'userMessages': ['Successfully changed area to ' + $area],
 		};
 	}
