@@ -51,7 +51,7 @@ let initSocket = (host) => new Promise((resolve, reject) => {
 					let msg = new Date().toISOString() + ' - Socket ' + data.url;
 					msg += makeBriefRsStr(response, startMs)
 						|| ' in ' + ((Date.now() - startMs) / 1000).toFixed(3);
-					console.debug(msg, {rq: data, rs: response});
+					console.debug(msg, {rq: data.body, rs: response.body});
 					resolve(response);
 				});
 			}),
