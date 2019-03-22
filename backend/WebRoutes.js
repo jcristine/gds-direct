@@ -43,6 +43,8 @@ app.get('/', (req, res) => res.redirect('/public'));
 app.use('/public', (rq, rs, next) => {
 	if (rq.path.endsWith('.js')) {
 		rs.setHeader('Content-Type', 'application/javascript');
+	} else if (rq.path.endsWith('.css')) {
+		rs.setHeader('Content-Type', 'text/css');
 	}
 	next();
 });

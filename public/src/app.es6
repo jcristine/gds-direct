@@ -71,13 +71,17 @@ let addCss = (cssText, htmlRootDom) => {
 	htmlRootDom.appendChild(style);
 };
 
-let addExternalStyles = () => {
+let addExternalStyle = (url) => {
 	let link = document.createElement('link');
 	link.class = 'generated-fa-css';
 	link.rel = 'stylesheet';
 	link.type = 'text/css';
 	document.head.appendChild(link);
-	link.setAttribute('href', 'https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css');
+	link.setAttribute('href', url);
+};
+
+let addExternalStyles = () => {
+	addExternalStyle('https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css');
 };
 
 let initThemeStyles = (responseData, htmlRootDom) => {
@@ -208,7 +212,8 @@ window.InitGdsDirectPlusApp.AdminApps = () => {
 	// required for modals.js, not included in injected
 	// part of the app, because it conflicts with CMS UI
 	require('bootstrap');
-	require('./theme/entry/standalone.less');
+	let cssUrl = rootUrl + '/public/src/theme/entry/standalone.css';
+	addExternalStyle(cssUrl);
 	return {
 		HighlightRulesAdminApp: HighlightRulesAdminApp,
 		TerminalThemesAdminApp: TerminalThemesAdminApp,
