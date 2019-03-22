@@ -43,6 +43,7 @@ app.get('/', (req, res) => res.redirect('/public'));
 app.use('/public', (rq, rs, next) => {
 	if (rq.path.endsWith('.js')) {
 		rs.setHeader('Content-Type', 'application/javascript');
+		rs.setHeader('Content-Encoding', 'identity');
 	}
 	next();
 });
