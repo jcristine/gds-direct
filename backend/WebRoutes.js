@@ -43,9 +43,6 @@ app.get('/', (req, res) => res.redirect('/public'));
 app.use('/public', (rq, rs, next) => {
 	if (rq.path.endsWith('.js')) {
 		rs.setHeader('Content-Type', 'application/javascript');
-	} else if (rq.path.endsWith('.html')) {
-		// wanna take a look, will nginx gzip that?
-		rs.setHeader('Content-Type', 'image/png');
 	}
 	next();
 });
