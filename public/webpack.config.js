@@ -12,7 +12,8 @@ module.exports = {
 		filename: "terminal-bundle.js",
 	},
 
-	mode 	: 'development',
+	// turns code minification on
+	mode 	: 'production',
 	devtool	: 'source-map',
 
 	resolve : {
