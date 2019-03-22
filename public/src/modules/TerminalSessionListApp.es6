@@ -15,7 +15,7 @@ let init = () => {
 		endTime     : 'End Time',
 		logId       : 'Logger',
 		restarted   : 'Restarted',
-		terminate   : 'Terminate'
+		terminate   : 'Terminate',
 	};
 
 	var curPageUrl = {
@@ -32,7 +32,7 @@ let init = () => {
 		pageLength: 2000, // if there is ever so much rules sometime in future...
 
 		searching : false,
-		order   : [[6, 'DESC'], [0, 'DESC']],
+		order   : [[0, 'DESC']],
 		edit    : false,
 
 		columns : [
@@ -43,7 +43,7 @@ let init = () => {
 				orderable   : true,
 				editable    : false,
 				width       : 100,
-				title       : msgLang.id
+				title       : msgLang.id,
 			},
 
 			{
@@ -53,7 +53,7 @@ let init = () => {
 				orderable   : false,
 				editable    : false,
 				width       : 120,
-				title       : msgLang.gds
+				title       : msgLang.gds,
 			},
 
 			{
@@ -63,7 +63,7 @@ let init = () => {
 				orderable   : false,
 				editable    : false,
 				width       : 180,
-				title       : msgLang.agentId
+				title       : msgLang.agentId,
 			},
 
 			{
@@ -80,7 +80,7 @@ let init = () => {
 				orderable   : false,
 				editable    : false,
 				width       : 100,
-				title       : msgLang.requestId
+				title       : msgLang.requestId,
 			},
 
 			{
@@ -90,7 +90,7 @@ let init = () => {
 				orderable   : false,
 				editable    : false,
 				width       : 220,
-				title       : msgLang.startTime
+				title       : msgLang.startTime,
 			},
 
 			{
@@ -103,7 +103,7 @@ let init = () => {
 				orderable   : false,
 				editable    : false,
 				width       : 220,
-				title       : msgLang.endTime
+				title       : msgLang.endTime,
 			},
 
 			{
@@ -119,9 +119,9 @@ let init = () => {
 				searchable  : false,
 				orderable   : false,
 				editable    : false,
-				title       : msgLang.logId
+				title       : msgLang.logId,
 			},
-		]
+		],
 	};
 
 	var isFilter 	= document.getElementById('isFilter'),
