@@ -100,7 +100,7 @@ class SessionStateHelper
         $cmdList = await $cmdLog.getLastCommandsOfTypes(SessionStateProcessor.getCanCreatePqSafeTypes());
         $cmdPricing = await this.getPricingCmdRow($cmdLog);
         $cmdItinerary = null;
-        for ($cmdRecord of $cmdList) {
+        for ($cmdRecord of Object.values($cmdList)) {
             if (php.in_array($cmdRecord['type'], ['redisplayPnr', 'itinerary']) && !$cmdRecord.is_mr) {
                 $cmdItinerary = $cmdRecord;
             }}

@@ -30,7 +30,7 @@ class CanCreatePqRules {
 		if (php.empty($parsedReservation['itinerary'])) {
 			$errors.push(Errors.getMessage(Errors.ITINERARY_IS_EMPTY));
 		}
-		for ($segment of $parsedReservation['itinerary']) {
+		for ($segment of Object.values($parsedReservation['itinerary'])) {
 			if (!php.in_array($segment['segmentStatus'], $allowedStatuses)) {
 				$errors.push(Errors.getMessage(Errors.BAD_SEGMENT_STATUS, {
 					'segmentNumber': $segment['segmentNumber'],
@@ -109,7 +109,7 @@ class CanCreatePqRules {
 		$errors = [];
 		if ($gds == 'apollo') {
 			$errorRecords = CmsApolloTerminal.checkPricingCmdObviousPqRuleRecords($pricingCmd);
-			for ($errorRec of $errorRecords) {
+			for ($errorRec of Object.values($errorRecords)) {
 				$errors.push(Errors.getMessage($errorRec['type'], $errorRec['data'] || null));
 			}
 		} else if ($gds === 'sabre') {

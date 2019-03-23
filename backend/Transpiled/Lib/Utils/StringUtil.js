@@ -126,7 +126,7 @@ class StringUtil
         let $res, $char, $positions, $position;
         $res = [];
         for ([$char, $positions] of Object.entries($map['literals'])) {
-            for ($position of $positions) {
+            for ($position of Object.values($positions)) {
                 $res[$position] = {'type': 'literal', 'data': $char};}}
         for ([$char, $positions] of Object.entries($map['map'])) {
             $res[$positions['firstPosition']] = {

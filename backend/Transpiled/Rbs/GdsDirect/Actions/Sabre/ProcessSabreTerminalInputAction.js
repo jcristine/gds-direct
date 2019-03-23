@@ -141,7 +141,7 @@ class ProcessSabreTerminalInputAction {
 		for ($cmdRecord of Object.values($commands)) {
 			$parsed = CommandParser.parse($cmdRecord['cmd']);
 			$flatCmds = php.array_merge([$parsed], $parsed['followingCommands']);
-			for (let flatCmd of $flatCmds) {
+			for (let flatCmd of Object.values($flatCmds)) {
 				result.push(flatCmd);
 			}
 		}

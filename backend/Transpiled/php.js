@@ -630,12 +630,8 @@ php.array_filter = (obj, func, flags = null) => {
 	let newObj = isArr ? [] : {};
 	for (let [key, val] of Object.entries(obj)) {
 		if (func(val)) {
-			if (isArr) {
-				// different from php, but I get weird undefined-s inbetween otherwise
-				newObj.push(val);
-			} else {
-				newObj[key] = val;
-			}
+			// note that for ... of will include empty indices, but Object.values won't
+			newObj[key] = val;
 		}
 	}
 	return newObj;

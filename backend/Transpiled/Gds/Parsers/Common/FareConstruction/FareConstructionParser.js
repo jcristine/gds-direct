@@ -90,7 +90,7 @@ class FareConstructionParser {
 		let $segment, $token, $lexeme, $data, $oceanic, $starMark, $cities, $amount, $number, $faredMark, $flags, $city,
 			$from, $to, $mileage;
 		$segment = {};
-		for ($token of $tokens) {
+		for ($token of Object.values($tokens)) {
 			$lexeme = $token['lexeme'];
 			$data = $token['data'];
 			if ($lexeme === 'segment') {
