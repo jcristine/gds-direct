@@ -626,10 +626,16 @@ php.array_filter = (obj, func, flags = null) => {
 	if (flags) {
 		throw new Error('array_filter php flags are not supported');
 	}
-	let newObj = Array.isArray(obj) ? [] : {};
+	let isArr = Array.isArray(obj);
+	let newObj = isArr ? [] : {};
 	for (let [key, val] of Object.entries(obj)) {
 		if (func(val)) {
-			newObj[key] = val;
+			if (isArr) {
+				// different from php, but I get weird undefined-s inbetween otherwise
+				newObj.push(val);
+			} else {
+				newObj[key] = val;
+			}
 		}
 	}
 	return newObj;
