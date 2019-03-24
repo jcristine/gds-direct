@@ -775,7 +775,8 @@ class ProcessAmadeusTerminalInputAction {
 	async getCurrentPnr() {
 		let $reservationDump;
 
-		$reservationDump = (new CmsAmadeusTerminal()).getFullPnrDump(this.stateful.getLog()) || await this.amadeusRt('RT');
+		$reservationDump = await (new CmsAmadeusTerminal())
+			.getFullPnrDump(this.stateful.getLog()) || await this.amadeusRt('RT');
 		return AmadeusPnr.makeFromDump($reservationDump);
 	}
 

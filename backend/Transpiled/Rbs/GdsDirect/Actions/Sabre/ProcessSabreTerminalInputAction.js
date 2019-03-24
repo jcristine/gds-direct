@@ -299,7 +299,7 @@ class ProcessSabreTerminalInputAction {
 				|| $cmdRow['cmd'] === 'IR'
 				|| php.preg_match(/^\*[A-Z]{6}$/, $cmdRow['cmd']);
 		};
-		$lastCmds = this.stateful.getLog().getLastStateSafeCommands();
+		$lastCmds = await this.stateful.getLog().getLastStateSafeCommands();
 		$pnrDump = (ArrayUtil.getLast(Fp.filter($showsFullPnr, $lastCmds)) || {})['output'] || await this.runCommand('*R');
 		return SabrePnr.makeFromDump($pnrDump);
 	}

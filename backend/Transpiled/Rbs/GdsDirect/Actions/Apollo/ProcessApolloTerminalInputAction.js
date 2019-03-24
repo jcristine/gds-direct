@@ -604,7 +604,7 @@ class ProcessApolloTerminalInputAction {
 
 	async getCurrentPnr() {
 		let $cmdRows, $cmds, $cmdToFullOutput, $cmd, $output, $showsFullPnr, $pnrDump;
-		$cmdRows = this.stateful.getLog().getLastStateSafeCommands();
+		$cmdRows = await this.stateful.getLog().getLastStateSafeCommands();
 		$cmds = Fp.map(($row) => ({
 			'cmd': $row['cmd'],
 			'output': $row['output'],
