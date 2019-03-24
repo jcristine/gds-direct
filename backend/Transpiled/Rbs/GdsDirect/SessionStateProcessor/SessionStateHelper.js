@@ -34,7 +34,7 @@ class SessionStateHelper
     static makeAreaData($sessionData)  {
         return {
             'session_id': $sessionData['id'],
-            'work_area_letter': $sessionData['area'],
+            'area': $sessionData['area'],
             'internal_token': $sessionData['internal_token'] || null,
             'pcc': $sessionData['pcc'] || null,
             'record_locator': $sessionData['record_locator'] || '',

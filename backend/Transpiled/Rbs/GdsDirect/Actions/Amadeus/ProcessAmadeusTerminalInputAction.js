@@ -298,7 +298,6 @@ class ProcessAmadeusTerminalInputAction {
 		if (this.stateful.getSessionData()['area'] === $area) {
 			return {'errors': [Errors.getMessage(Errors.ALREADY_IN_THIS_AREA, {'area': $area})]};
 		}
-		$sessionId = this.getSessionData()['id'];
 		$areaRows = this.stateful.getAreaRows();
 		$isRequested = ($row) => $row['area'] === $area;
 		$row = ArrayUtil.getFirst(Fp.filter($isRequested, $areaRows));
@@ -396,7 +395,7 @@ class ProcessAmadeusTerminalInputAction {
 			await this.runCommand('IG'); // ignore the itinerary it initial area
 		}
 		$area = $emptyAreas[0];
-		$result = this.changeArea($area);
+		$result = await this.changeArea($area);
 		if (!php.empty($result['errors'])) {
 			return $result;
 		}
@@ -1009,7 +1008,7 @@ class ProcessAmadeusTerminalInputAction {
 
 		$areas = [];
 		for ($area of Object.values($areasFromDb)) {
-			$areas[$area['work_area_letter']] = $area;
+			$areas[$area['area']] = $area;
 		}
 		$lines = [
 			'00000000         ' + $sessionData['pcc'],

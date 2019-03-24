@@ -422,7 +422,7 @@ class ProcessSabreTerminalInputAction {
 
 		$isOccupied = ($row) => $row['has_pnr'];
 		$occupiedRows = Fp.filter($isOccupied, this.stateful.getAreaRows());
-		$occupiedAreas = php.array_column($occupiedRows, 'work_area_letter');
+		$occupiedAreas = php.array_column($occupiedRows, 'area');
 		$occupiedAreas.push(this.getSessionData()['area']);
 		return php.array_values(php.array_diff(['A', 'B', 'C', 'D', 'E', 'F'], $occupiedAreas));
 	}
@@ -486,7 +486,7 @@ class ProcessSabreTerminalInputAction {
 		}
 		$sessionId = this.getSessionData()['id'];
 		$areaRows = this.stateful.getAreaRows();
-		$isRequested = ($row) => $row['work_area_letter'] === $area;
+		$isRequested = ($row) => $row['area'] === $area;
 		$row = ArrayUtil.getFirst(Fp.filter($isRequested, $areaRows));
 
 		if (!$row) {
@@ -542,7 +542,7 @@ class ProcessSabreTerminalInputAction {
 		}
 		$area = $emptyAreas[0];
 		$areaChange = await this.changeArea($area);
-		if ($errors = $areaChange['errors'] || []) {
+		if (!php.empty($errors = $areaChange['errors'] || [])) {
 			return {'errors': $errors};
 		} else if (this.getSessionData()['area'] !== $area) {
 			$error = Errors.getMessage(Errors.FAILED_TO_CHANGE_AREA, {
