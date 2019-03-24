@@ -674,15 +674,15 @@ class ProcessSabreTerminalInputAction {
 				'errors': [$error],
 			};
 		} else {
+			let cmdRec = {cmd: '*R', output: $result.pnrDump};
 			if ($fallbackToGk) {
 				$cmd = 'WC' + php.implode('\/', $newSegments.map(($seg) => $seg['segmentNumber'] + $seg['bookingClass']));
-				await this.runCommand($cmd);
+				cmdRec = await this.runCommand($cmd);
 			}
-			this.stateful.flushCalledCommands();
 			$sortResult = await this.processSortItinerary()
 				.catch(exc => ({errors: ['Did not SORT' + exc]}));
 			if (!php.empty($sortResult['errors'])) {
-				return {'calledCommands': this.stateful.flushCalledCommands()};
+				return {'calledCommands': [cmdRec]};
 			} else {
 				return {'calledCommands': $sortResult['calledCommands']};
 			}
