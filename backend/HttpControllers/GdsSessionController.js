@@ -89,9 +89,9 @@ let shouldRestart = (exc, session) => {
 	let clsName = ((exc || {}).constructor || {}).name;
 	let isTypeError = clsName === 'TypeError';
 	return LoginTimeOut.matches(exc.httpStatusCode)
+		//|| isTypeError
 		//|| !exc.httpStatusCode // runtime errors, like null-pointer exceptions
 		// 1 hour, to exclude cases like outdated format of gdsData
-		|| isTypeError
 		|| lifetimeMs > 60 * 60 * 1000;
 };
 
