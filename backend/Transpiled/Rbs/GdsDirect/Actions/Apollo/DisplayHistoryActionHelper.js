@@ -204,7 +204,7 @@ class DisplayHistoryActionHelper {
 	/** @param $history = PnrHistoryParser::parse() */
 	static display($history) {
 		let $lines, $rcvdList, $firstRcvd, $rcvd;
-		if (!$history['rcvdList']) {
+		if (php.empty($history['rcvdList'])) {
 			return 'INVLD';
 		}
 		$lines = [
