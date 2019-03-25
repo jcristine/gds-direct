@@ -14,7 +14,7 @@ import {notify} from "../../helpers/debug";
 
 export default class KeySettings extends ButtonPopOver
 {
-	constructor({ keyBindings, defaultPccs, gdsAreaSettings, ...params })
+	constructor({ keyBindings, gdsAreaSettings, ...params })
 	{
 		super(params, 'div.terminal-menu-popover hotkeysContext');
 
@@ -27,7 +27,7 @@ export default class KeySettings extends ButtonPopOver
                         this.pccs = pccs;
 
                         this.popContent.innerHTML = '';
-                        const c = new Context(this, keyBindings, defaultPccs, gdsAreaSettings);
+                        const c = new Context(this, keyBindings, gdsAreaSettings);
                         this.popContent.appendChild(c.context);
                     });
 			},
@@ -37,12 +37,11 @@ export default class KeySettings extends ButtonPopOver
 
 class Context
 {
-	constructor(popover, keyBindings, defaultPccs, gdsAreaSettings)
+	constructor(popover, keyBindings, gdsAreaSettings)
 	{
 		this.pccs = popover.pccs;
 		this.context = Dom('div');
 		this.currentKeyBindings = keyBindings;
-		this.currentPccs = defaultPccs;
 		this.gdsAreaSettings = gdsAreaSettings;
 		this.inputFields = {};
 		this._makeBody(popover);
@@ -227,11 +226,6 @@ class Context
 		return type === 'command' ? '' : false;
 	}
 
-	_getPcc(gds)
-	{
-		return this.currentPccs && this.currentPccs[gds] ? this.currentPccs[gds] : '';
-	}
-
 	_getAreaPcc(gds, area)
 	{
 		const areaSettings = (this.gdsAreaSettings || {})[gds] || [];
@@ -248,7 +242,7 @@ class Context
 		const result = {};
 
 		GDS_LIST.forEach(gds => {
-			result[gds] = { keyBindings: {}, defaultPcc: null };
+			result[gds] = { keyBindings: {} };
 
 			this.inputFields[gds].buttons.forEach(input => {
 				const placeholder = input.placeholder;
@@ -260,8 +254,6 @@ class Context
 				}
 			});
 
-			// TODO: remove, it is now stored per area
-			result[gds].defaultPcc = null;
 			result[gds].areaSettings = [...this.inputFields[gds].areaGrid.children].map(cont => 1 && {
 				area: cont.getAttribute('data-area'),
 				defaultPcc: [...cont.querySelectorAll('select.default-pcc')]

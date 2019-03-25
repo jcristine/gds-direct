@@ -43,7 +43,7 @@ export default class GdsDirectPlusApp
 		const {settings, buffer, auth} = viewData;
 		window.GdsDirectPlusParams.auth = auth;
 
-		const { keyBindings, defaultPccs, gdsAreaSettings }	= this._getGdsDefaultSettings(settings);
+		const { keyBindings, gdsAreaSettings }	= this._getGdsDefaultSettings(settings);
 
 		this.Gds 	= new GDS({
 			gdsListDb 	: settings.gds,
@@ -72,7 +72,6 @@ export default class GdsDirectPlusApp
 			gdsObjIndex 	: this.Gds.getCurrentIndex(),
 			keyBindings		: keyBindings,
 			gdsAreaSettings	: gdsAreaSettings,
-			defaultPccs		: defaultPccs,
 		});
 
 		// set current PCC on each area button
@@ -110,7 +109,6 @@ export default class GdsDirectPlusApp
 	{
 		const settings = {
 			keyBindings: {},
-			defaultPccs: {},
 			gdsAreaSettings: {},
 		};
 
@@ -137,7 +135,6 @@ export default class GdsDirectPlusApp
 			allSettings.gds[gds].keyBindings = parsedKeyBindings; // It's bad to do like this, I know
 
 			settings.keyBindings[gds] = parsedKeyBindings;
-			settings.defaultPccs[gds] = gdsSettings.defaultPcc || null;
 			settings.gdsAreaSettings[gds] = gdsSettings.areaSettings;
 		});
 

@@ -13,7 +13,6 @@ let State =  {
 	menuHidden	: false,
 	keyBindings	: {},
 	gdsAreaSettings : {},
-	defaultPccs : {}
 
 	// action	: ''
 	// canCreatePq	: ''
