@@ -139,6 +139,7 @@ let withGdsSession = (sessionAction, canStartNew = false) => (req, res) => {
 			.catch(exc => {
 				let msg = 'ERROR: HTTP RQ was not satisfied ' + (exc.httpStatusCode || '(runtime error)');
 				FluentLogger.logExc(msg, session.logId, exc);
+				exc.session = session;
 				return Promise.reject(exc);
 			});
 	})(req, res);
