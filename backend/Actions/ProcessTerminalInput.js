@@ -103,6 +103,11 @@ let encodeCmdForCms = (gds, cmd) => {
 };
 
 let transformCalledCommand = (rec, stateful) => {
+	if (!rec.cmd || !rec.output) {
+		// mostly cases when Promise accidentally returned instead of cmd object
+		let cls = ((rec || {}).constructor || {}).name;
+		throw new Error('Invalid cmdRec format - ' + cls + ' - ' + JSON.stringify(rec));
+	}
 	let gds = stateful.gds;
 	let agent = stateful.getAgent();
 	let output = rec.output;

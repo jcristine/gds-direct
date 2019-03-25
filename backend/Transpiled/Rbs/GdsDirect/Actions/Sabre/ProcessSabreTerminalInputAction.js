@@ -677,7 +677,7 @@ class ProcessSabreTerminalInputAction {
 			let cmdRec = {cmd: '*R', output: $result.pnrDump};
 			if ($fallbackToGk) {
 				$cmd = 'WC' + php.implode('\/', $newSegments.map(($seg) => $seg['segmentNumber'] + $seg['bookingClass']));
-				cmdRec = await this.runCommand($cmd);
+				cmdRec = await this.runCmd($cmd);
 			}
 			$sortResult = await this.processSortItinerary()
 				.catch(exc => ({errors: ['Did not SORT' + exc]}));
