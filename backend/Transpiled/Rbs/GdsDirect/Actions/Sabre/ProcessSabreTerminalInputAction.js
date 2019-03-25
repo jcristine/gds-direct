@@ -674,9 +674,9 @@ class ProcessSabreTerminalInputAction {
 				'errors': [$error],
 			};
 		} else {
-			let cmdRec = {cmd: '*R', output: $result.pnrDump};
+			let cmdRec = $result.pnrCmdRec;
 			if ($fallbackToGk) {
-				$cmd = 'WC' + php.implode('\/', $newSegments.map(($seg) => $seg['segmentNumber'] + $seg['bookingClass']));
+				$cmd = 'WC' + php.implode('/', $newSegments.map(($seg) => $seg['segmentNumber'] + $seg['bookingClass']));
 				cmdRec = await this.runCmd($cmd);
 			}
 			$sortResult = await this.processSortItinerary()
