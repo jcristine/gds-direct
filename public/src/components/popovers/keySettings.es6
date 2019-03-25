@@ -119,6 +119,9 @@ class Context
 			});
 		});
 
+		const manualBtn = Dom('button.btn btn-sm btn-primary font-bold pull-right [Manual]', {
+			onclick: () => window.open('https://docs.google.com/document/d/1ZthW07sWlFDMRFWd3sRQtOLMvDCGUKAMSG4RX05pc64', '_blank'),
+		});
 		const saveBtn = Dom('button.btn btn-sm btn-purple font-bold pull-right [Save]', {
 			onclick : () => {
 				this.save();
@@ -126,6 +129,7 @@ class Context
 			},
 		});
 		header.appendChild(saveBtn);
+		header.appendChild(manualBtn);
 
 		this.context.appendChild( container );
 	}
