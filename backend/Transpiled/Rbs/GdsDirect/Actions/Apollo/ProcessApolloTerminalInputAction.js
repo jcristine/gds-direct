@@ -504,7 +504,7 @@ class ProcessApolloTerminalInputAction {
 			$typeToOutput = php.array_combine(php.array_column($pnrCmds, 'type'),
 				php.array_column($pnrCmds, 'output'));
 			if ($dnOutput = $typeToOutput['divideBooking'] || null) {
-				$pnrDump = this.constructor.isScrollingAvailable($dnOutput);
+				$pnrDump = extractPager($dnOutput)[0];
 				$pnr = ApolloPnr.makeFromDump($pnrDump);
 				return !$pnr.wasCreatedInGdsDirect();
 			}
