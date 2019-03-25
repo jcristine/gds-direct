@@ -19,6 +19,7 @@ const TooManyRequests = require("../Utils/Rej").TooManyRequests;
 const UnprocessableEntity = require("../Utils/Rej").UnprocessableEntity;
 const ImportPq = require('../Actions/ImportPq.js');
 const FluentLogger = require("../LibWrappers/FluentLogger");
+const allWrap = require("../Utils/Misc").allWrap;
 
 let startByGds = async (gds) => {
 	let tuples = [
@@ -74,14 +75,14 @@ let closeSession = async (session) => {
 			gdsDataStrSet.add(JSON.stringify(data.gdsData));
 		}
 	}
-	let promises = [...gdsDataStrSet]
+	let closePromises = [...gdsDataStrSet]
 		.map(str => JSON.parse(str))
 		.map(gdsData => closeByGds(session.context.gds, gdsData));
 
-	promises.push(GdsSessions.remove(session));
-	let result = await Promise.all(promises);
-	logit('NOTICE: close result:', session.logId, result);
-	return result;
+	allWrap(closePromises).then(result =>
+		logit('NOTICE: close result:', session.logId, result));
+
+	return GdsSessions.remove(session);
 };
 
 let shouldRestart = (exc, session) => {
