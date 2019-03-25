@@ -46,8 +46,9 @@ export const CHANGE_SETTINGS = settings => {
 		}, gds);
 		promises.push(promise);
 	});
+	let whenDone = Promise.all(promises);
 	if (promises.length > 0) {
-		Promise.all(promises).then(() => {
+		whenDone.then(() => {
 			notify({
 				type: 'success',
 				msg: 'Saved Successfully',
@@ -55,6 +56,8 @@ export const CHANGE_SETTINGS = settings => {
 		});
 	}
 	getStore().updateView({ keyBindings: newData.keyBindings, gdsAreaSettings: newData.gdsAreaSettings });
+
+	return whenDone;
 };
 
 export const GET_HISTORY 	= () => getters('history');

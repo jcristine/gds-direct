@@ -9,7 +9,7 @@ import {get} 				from "../../helpers/requests";
 import "select2";
 import {post} from './../../helpers/requests';
 import $ from 'jquery';
-import {UPDATE_ALL_AREA_STATE} from "../../actions/gdsActions";
+import {UPDATE_ALL_AREA_STATE, UPDATE_DEFAULT_AREA_PCCS} from "../../actions/gdsActions";
 import {notify} from "../../helpers/debug";
 
 export default class KeySettings extends ButtonPopOver
@@ -123,8 +123,11 @@ class Context
 		});
 		const saveBtn = Dom('button.btn btn-sm btn-purple font-bold pull-right [Save]', {
 			onclick : () => {
-				this.save();
-				parent.popover.close();
+				let saveData = this._collectSaveData();
+				CHANGE_SETTINGS(saveData).then(saved => {
+					UPDATE_DEFAULT_AREA_PCCS(saveData);
+					parent.popover.close();
+				});
 			},
 		});
 		header.appendChild(saveBtn);
@@ -237,7 +240,7 @@ class Context
 	    return null;
 	}
 
-	save()
+	_collectSaveData()
 	{
 		const result = {};
 
@@ -266,6 +269,6 @@ class Context
 			}
 		});
 
-		CHANGE_SETTINGS(result);
+		return result;
 	}
 }
