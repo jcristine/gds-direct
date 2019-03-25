@@ -10,6 +10,7 @@ import "select2";
 import {post} from './../../helpers/requests';
 import $ from 'jquery';
 import {UPDATE_ALL_AREA_STATE} from "../../actions/gdsActions";
+import {notify} from "../../helpers/debug";
 
 export default class KeySettings extends ButtonPopOver
 {
@@ -98,7 +99,15 @@ class Context
 			const labelDiv = Dom(`div.settings-input-container`);
 			labelDiv.appendChild(Dom(`button.btn-primary[Default PCC]`, {
 				onclick: () => post('/terminal/resetToDefaultPcc', {gds: gds})
-					.then(rsData => UPDATE_ALL_AREA_STATE(gds, rsData.fullState)),
+					.then(rsData => {
+						notify({msg: 'Session Areas Reloaded', timeout: 3000, type: 'success'});
+						UPDATE_ALL_AREA_STATE(gds, rsData.fullState);
+						//if (parent.popover) {
+						//	// close since we reloaded UI, and the element
+						//	// drop was bound to does not exist anymore
+						//	parent.popover.close();
+						//}
+					}),
 			}));
 			tabContent.appendChild(labelDiv);
 			tabContent.appendChild(inputFields.areaGrid);
