@@ -21,9 +21,10 @@ export default class AreaPccSelect extends Component{
         );
 
         pccs.map( pcc => {
+            let isSelected = !disabled && pcc.name === defaultPcc;
             this.context.appendChild(
-                new Option(pcc.name + " - " + pcc.consolidatorName, pcc.name, pcc.name === defaultPcc, pcc.name === defaultPcc)
-            )
+                new Option(pcc.name + " - " + pcc.consolidatorName, pcc.name, isSelected, isSelected)
+            );
         } );
     }
 }
