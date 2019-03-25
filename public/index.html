@@ -25,6 +25,18 @@
 	let rawToken = new URL(window.location.href).searchParams.get('token');
 	let emcSessionId = hashData.emcSessionId || cookieData.emcSessionId;
 
+	let redirectToLoginPage = () => {
+		fetch('/emcLoginUrl?returnUrl=' + encodeURIComponent(window.location.href))
+			.then(rs => rs.json())
+			.then(rsBody => {
+				if (rsBody.emcLoginUrl) {
+					window.location.href = rsBody.emcLoginUrl;
+				} else {
+					console.error('Invalid /emcLoginUrl response', rsBody);
+				}
+			});
+	};
+
 	let onEmcSessionId = (emcSessionId) => {
 		document.cookie = 'emcSessionId=' + emcSessionId;
 		window.history.replaceState('', '', '/'); // remove GET params and # params
@@ -49,6 +61,7 @@
 		}).catch(exc => {
 			// remove expired token
 			document.cookie = 'emcSessionId=';
+			redirectToLoginPage();
 			return Promise.reject(exc);
 		});
 	};
@@ -62,15 +75,7 @@
 				.then(rs => rs.json())
 				.then(rsBody => onEmcSessionId(rsBody.emcSessionId));
 		} else {
-			fetch('/emcLoginUrl?returnUrl=' + encodeURIComponent(window.location.href))
-				.then(rs => rs.json())
-				.then(rsBody => {
-					if (rsBody.emcLoginUrl) {
-						window.location.href = rsBody.emcLoginUrl;
-					} else {
-						console.error('Invalid /emcLoginUrl response', rsBody);
-					}
-				});
+			redirectToLoginPage();
 		}
 	}
 </script>
