@@ -141,7 +141,7 @@ class NextToken
     static matchLastDateToPurchaseTicket($text)  {
         let $matches, $textLeft, $raw, $parsed;
         $matches = [];
-        if (php.preg_match(/^LAST DATE TO PURCHASE TICKET: (\d{2}\w{3}\d{2})\s*?\n/, $text, $matches = [])) {
+        if (php.preg_match(/^LAST DATE TO PURCHASE TICKET: (\d{2}\w{3}\d{2}).*?\n/, $text, $matches = [])) {
             $textLeft = php.mb_substr($text, php.mb_strlen($matches[0]));
             $raw = $matches[1];
             $parsed = CommonParserHelpers.parseApolloFullDate($raw);
