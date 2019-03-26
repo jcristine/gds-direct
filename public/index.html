@@ -39,7 +39,7 @@
 
 	let onEmcSessionId = (emcSessionId) => {
 		document.cookie = 'emcSessionId=' + emcSessionId;
-		window.history.replaceState('', '', '/'); // remove GET params and # params
+		window.history.replaceState('', '', window.location.pathname); // remove GET params and # params
 
 		let isDev = !(window.location.hostname + '').endsWith('.asaptickets.com');
 		window.InitGdsDirectPlusApp({
