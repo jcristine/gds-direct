@@ -3,6 +3,7 @@ let mysql = require('promise-mysql');
 let {getConfig} = require('../Config.js');
 const NotFound = require("./Rej").NotFound;
 const BadRequest = require("./Rej").BadRequest;
+const Diag = require('../LibWrappers/Diag.js');
 
 let whenPool = null;
 let getPool = () => {
@@ -141,6 +142,14 @@ Db.with = async (process) => {
 	let dbConn = await dbPool.getConnection();
 	return Promise.resolve()
 		.then(() => process(Db(dbConn)))
+		.catch(exc => {
+			Diag.error('SQL query failed ' + exc, {
+				message: exc.message,
+				stack: exc.stack,
+				exc: exc,
+			});
+			return Promise.reject(exc);
+		})
 		.finally(() => dbPool.releaseConnection(dbConn));
 };
 

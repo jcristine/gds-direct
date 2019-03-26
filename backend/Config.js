@@ -127,7 +127,7 @@ StaticConfig.getConfig = async () => {
 			RBS_PASSWORD: "qwerty",
 		};
 		for (let [k, v] of Object.entries(defaults)) {
-			StaticConfig[k] = StaticConfig[k] || v;
+			hardcodedConfig[k] = hardcodedConfig[k] || v;
 			env[k] = env[k] || v;
 		}
 	}
