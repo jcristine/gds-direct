@@ -11,7 +11,7 @@ let {admins} = require('./Constants.js');
 let UpdateHighlightRulesFromProd = require('./Actions/UpdateHighlightRulesFromProd.js');
 let Db = require('./Utils/Db.js');
 let Diag = require('./LibWrappers/Diag.js');
-let HighlightRulesRepository = require('./Actions/HighlightRulesRepository.js');
+let HighlightRulesRepository = require('./Repositories/HighlightRules.js');
 let Redis = require('./LibWrappers/Redis.js');
 let initSocketIo = require('socket.io');
 let {getConfig} = require('./Config.js');
@@ -43,6 +43,8 @@ app.get('/', (req, res) => res.redirect('/public'));
 app.use('/public', (rq, rs, next) => {
 	if (rq.path.endsWith('.js')) {
 		rs.setHeader('Content-Type', 'application/javascript');
+	} else if (rq.path.endsWith('.css')) {
+		rs.setHeader('Content-Type', 'text/css');
 	}
 	next();
 });
@@ -79,6 +81,7 @@ app.post('/terminal/saveSetting/:name/:currentGds', withAuth((reqBody, emcResult
 	let {name, currentGds} = routeParams;
 	return new TerminalBaseController(emcResult).postSaveSettingAction(reqBody, name, currentGds);
 }));
+app.post('/terminal/resetToDefaultPcc', withGdsSession(GdsSessionController.resetToDefaultPcc));
 app.post('/terminal/command', withGdsSession(GdsSessionController.runInputCmd, true));
 app.post('/gdsDirect/keepAlive', withGdsSession(GdsSessionController.keepAliveCurrent));
 app.get('/terminal/getPqItinerary', withGdsSession(GdsSessionController.getPqItinerary));
@@ -122,40 +125,24 @@ app.get('/gdsDirect/themes', toHandleHttp(() =>
 		}))
 ));
 
-/** @param session = at('GdsSessions.js').makeSessionRecord() */
-let transformSession = (session) => {
-	return {
-		"id": session.id,
-		"externalId": session.gdsData.rbsSessionId || JSON.stringify(session.gdsData),
-		"agentId": session.context.agentId,
-		"gds": session.context.gds,
-		"requestId": session.context.travelRequestId,
-		"startTime": new Date(session.createdMs).toISOString(),
-		"endTime": null,
-		"logId": session.logId,
-		"isRestarted": false,
-		"startTimestamp": Math.floor(session.createdMs / 1000),
-		"accessMs": session.accessMs,
-		"useRbs": session.context.useRbs,
-	};
-};
-
 app.post('/admin/terminal/sessionsGet', toHandleHttp(async rqBody => {
-	let sessions = await GdsSessions.getAll();
+	let sessions = await GdsSessions.getHist(rqBody);
 	return {
-		aaData: sessions.map(transformSession),
+		aaData: sessions,
 	};
 }));
 
 app.get('/emcLoginUrl', toHandleHttp(async rqBody => {
 	let returnUrl = rqBody.returnUrl;
 	let config = await getConfig();
-	let result = await Emc.client.getLoginPage(config.external_service.emc.projectName, returnUrl);
+	let emc = await Emc.getClient();
+	let result = await emc.getLoginPage(config.external_service.emc.projectName, returnUrl);
 	return {emcLoginUrl: result.data.data};
 }));
 app.get('/authorizeEmcToken', toHandleHttp(async rqBody => {
 	let token = rqBody.token;
-	let result = await Emc.client.authorizeToken(token);
+	let emc = await Emc.getClient();
+	let result = await emc.authorizeToken(token);
 	return {emcSessionId: result.data.sessionKey};
 }));
 app.get('/checkEmcSessionId', toHandleHttp(async rqBody => {
@@ -203,9 +190,10 @@ app.get('/testHttpRq', withAuth((reqBody, emcResult) => {
 		return Forbidden('Sorry, you must be me in order to use that');
 	}
 }));
-app.get('/testRedisWrite', withAuth((reqBody, emcResult) => {
+app.get('/testRedisWrite', withAuth(async (reqBody, emcResult) => {
 	if (emcResult.user.id == 6206) {
-		return Redis.client.hset(Redis.keys.USER_TO_TMP_SETTINGS + ':' + emcResult.user.id, reqBody.key, reqBody.val)
+		let redis = await Redis.getClient();
+		return redis.hset(Redis.keys.USER_TO_TMP_SETTINGS + ':' + emcResult.user.id, reqBody.key, reqBody.val)
 			.then(rs => ({rs}));
 	} else {
 		return Forbidden('Sorry, you must be me in order to use that');
@@ -230,13 +218,12 @@ app.get('/parser/test', toHandleHttp((rqBody) => {
 
 getConfig().then(config => {
 	app.listen(+config.HTTP_PORT, config.HOST, function () {
-		console.log('listening on *:' + config.HTTP_PORT + ' - for standard http request handling');
+		//console.log('listening on *:' + config.HTTP_PORT + ' - for standard http request handling');
 	});
 });
 
 let socketIo = initSocketIo();
 socketIo.on('connection', /** @param {Socket} socket */ socket => {
-	console.log('got a socket connection', socket.id);
 	socket.on('message', (data, reply) => {
 		let fallbackBody = JSON.stringify({error: 'Your request was not handled'});
 		let rsData = {body: fallbackBody, status: 501, headers: {}};
@@ -262,7 +249,7 @@ socketIo.on('connection', /** @param {Socket} socket */ socket => {
 		}
 	});
 	socket.send({testMessage: 'hello, how are you?'}, (response) => {
-		console.log('delivered testMessage to client', response);
+		//console.log('delivered testMessage to client', response);
 	});
 });
 getConfig().then(config => {
@@ -283,10 +270,10 @@ app.get('/ping', toHandleHttp((rqBody) => {
 	}
 	let PersistentHttpRq = require('./Utils/PersistentHttpRq.js');
 
-	return Redis.getInfo().then(redisLines => {
+	return Redis.getInfo().then(async redisLines => {
 		const data = {
 			pid: process.pid,
-			'dbPool': Db.getInfo(),
+			'dbPool': await Db.getInfo(),
 			sockets: {
 				'totalConnection': socketIo.engine.clientsCount,
 			},
@@ -303,7 +290,6 @@ app.get('/ping', toHandleHttp((rqBody) => {
 			},
 			persistentHttpRqInfo: PersistentHttpRq.getInfo(),
 		};
-		console.log(JSON.stringify(data));
 		data['msg'] = 'pong';
 		return {status: 'OK', result: data};
 	});

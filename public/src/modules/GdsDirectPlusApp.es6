@@ -1,12 +1,13 @@
 
 import {CHANGE_ACTIVE_TERMINAL} from "../actions/settings";
 import {DEV_CMD_STACK_RUN} from "../actions";
-import {CHANGE_GDS, UPDATE_CUR_GDS} from "../actions/gdsActions";
+import {CHANGE_GDS, UPDATE_CUR_GDS, UPDATE_ALL_AREA_STATE} from "../actions/gdsActions";
 import {GDS} 			from '../modules/gds';
 import ContainerMain 	from "../containers/main";
 import {PqParser} 		from "../modules/pqParser";
 import {OFFSET_DEFAULT, AREA_LIST} from "../constants";
 import {connect, getStore} from "../store";
+import $ from 'jquery';
 
 const BORDER_SIZE = 2;
 
@@ -42,12 +43,12 @@ export default class GdsDirectPlusApp
 		const {settings, buffer, auth} = viewData;
 		window.GdsDirectPlusParams.auth = auth;
 
-		const { keyBindings, defaultPccs, gdsAreaSettings }	= this._getGdsDefaultSettings(settings);
+		const { keyBindings, gdsAreaSettings }	= this._getGdsDefaultSettings(settings);
 
 		this.Gds 	= new GDS({
 			gdsListDb 	: settings.gds,
 			activeName 	: settings['common']['currentGds'] || 'apollo',
-			buffer 		: buffer || {}
+			buffer 		: buffer || {},
 		});
 
 		connect(this);
@@ -71,26 +72,11 @@ export default class GdsDirectPlusApp
 			gdsObjIndex 	: this.Gds.getCurrentIndex(),
 			keyBindings		: keyBindings,
 			gdsAreaSettings	: gdsAreaSettings,
-			defaultPccs		: defaultPccs
 		});
 
 		// set current PCC on each area button
 		for (let [gds, data] of Object.entries(settings.gds)) {
-			let updateArea = (area) => UPDATE_CUR_GDS({
-				canCreatePqErrors: [],
-				area: area,
-				pcc: ((data.fullState.areas || {})[area] || {}).pcc,
-				canCreatePq: ((data.fullState.areas || {})[area] || {}).can_create_pq,
-				pricingCmd: ((data.fullState.areas || {})[area] || {}).pricing_cmd,
-				hasPnr: ((data.fullState.areas || {})[area] || {}).has_pnr,
-				recordLocator: ((data.fullState.areas || {})[area] || {}).record_locator,
-				startNewSession: false,
-				gdsName: gds,
-			});
-			for (let area of AREA_LIST) {
-				updateArea(area); // set data of each area
-			}
-			updateArea(data.fullState.area); // set current area
+			UPDATE_ALL_AREA_STATE(gds, data.fullState);
 		}
 	}
 
@@ -123,7 +109,6 @@ export default class GdsDirectPlusApp
 	{
 		const settings = {
 			keyBindings: {},
-			defaultPccs: {},
 			gdsAreaSettings: {},
 		};
 
@@ -140,7 +125,7 @@ export default class GdsDirectPlusApp
 					} else {
 						c = Object.assign({}, c, {
 							command: data.command,
-							autorun: parseInt(data.autorun)
+							autorun: parseInt(data.autorun),
 						});
 					}
 					parsedKeyBindings[key] = c;
@@ -150,7 +135,6 @@ export default class GdsDirectPlusApp
 			allSettings.gds[gds].keyBindings = parsedKeyBindings; // It's bad to do like this, I know
 
 			settings.keyBindings[gds] = parsedKeyBindings;
-			settings.defaultPccs[gds] = gdsSettings.defaultPcc || null;
 			settings.gdsAreaSettings[gds] = gdsSettings.areaSettings;
 		});
 
@@ -183,7 +167,7 @@ export default class GdsDirectPlusApp
 	}
 
 	// used by Component framework
-	calculateMatrix()
+	calculateMatrix(props = {})
 	{
 		if (this.container.context.offsetParent === null) {
 			// terminal tab is hidden, can't recalculate since clientWidth will be 0
@@ -208,7 +192,7 @@ export default class GdsDirectPlusApp
 
 		const numOf = {
 			numOfRows 	: Math.floor( (height - BORDER_SIZE)	/ char.height ),
-			numOfChars	: Math.floor( (width - BORDER_SIZE) 	/ char.width ) - 2 // 2 - FORGOT ABOUT SCROLL
+			numOfChars	: Math.floor( (width - BORDER_SIZE) 	/ char.width ) - 2, // 2 - FORGOT ABOUT SCROLL
 		};
 
 		const dimensions = {
@@ -217,17 +201,17 @@ export default class GdsDirectPlusApp
 
 			terminalSize 	: {
 				width 	: width - BORDER_SIZE,
-				height 	: (numOf.numOfRows * char.height) //- BORDER_SIZE
+				height 	: (numOf.numOfRows * char.height), //- BORDER_SIZE
 			},
 
 			parent 			: {
 				height	: this.container.context.clientHeight,
-				width 	: this.container.context.clientWidth - this.getOffset()
-			}
+				width 	: this.container.context.clientWidth - this.getOffset(),
+			},
 		};
 
 		dimensions['leftOver'] = {
-			height : Math.floor(   ( this.container.context.clientHeight - ((dimensions.terminalSize.height + BORDER_SIZE) * rRows)  ) / rRows )
+			height : Math.floor(   ( this.container.context.clientHeight - ((dimensions.terminalSize.height + BORDER_SIZE) * rRows)  ) / rRows ),
 		};
 
 		this.Gds.updateMatrix(dimensions);
@@ -237,6 +221,12 @@ export default class GdsDirectPlusApp
 			this.calculateHasWide(dimensions, rows);
 		}
 
+		let store = getStore();
+		store.setState({
+				...props,
+				curGds  : store.app.Gds.getCurrent(),
+		});
+
 		return this;
 	}
 
@@ -245,13 +235,13 @@ export default class GdsDirectPlusApp
 		const wideDimensions = {
 			...dimensions,
 			numOf  			: {...dimensions.numOf},
-			terminalSize  	: {...dimensions.terminalSize}
+			terminalSize  	: {...dimensions.terminalSize},
 		};
 
 		wideDimensions.numOf.numOfRows 		= Math.floor( (dimensions.parent.height - BORDER_SIZE) / dimensions.char.height );
 		wideDimensions.terminalSize.height 	= wideDimensions.numOf.numOfRows * dimensions.char.height;
 		wideDimensions['leftOver'] 			= {
-			height : Math.floor(this.container.context.clientHeight - (wideDimensions.terminalSize.height + BORDER_SIZE))
+			height : Math.floor(this.container.context.clientHeight - (wideDimensions.terminalSize.height + BORDER_SIZE)),
 		};
 
 		this.Gds.update({wideDimensions});

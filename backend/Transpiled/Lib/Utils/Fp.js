@@ -46,7 +46,7 @@ class Fp {
 
 	static any($function, $arr) {
 		let $el;
-		for ($el of $arr) {
+		for ($el of Object.values($arr)) {
 			if (php.call_user_func($function, $el)) {
 				return true;
 			}
@@ -57,8 +57,8 @@ class Fp {
 	static flatten($iterables) {
 		let $res, $iterable, $value;
 		$res = [];
-		for ($iterable of $iterables) {
-			for ($value of $iterable) {
+		for ($iterable of Object.values($iterables)) {
+			for ($value of Object.values($iterable)) {
 				$res.push($value);
 			}
 		}
@@ -83,7 +83,7 @@ class Fp {
 	static groupBy($function, $iterable) {
 		let $result, $value, $factorGroup;
 		$result = {};
-		for ($value of $iterable) {
+		for ($value of Object.values($iterable)) {
 			$factorGroup = $function($value);
 			if (php.array_key_exists($factorGroup, $result)) {
 				$result[$factorGroup].push($value);
@@ -105,7 +105,7 @@ class Fp {
 		let $minVal, $minCost, $value, $cost;
 		$minVal = null;
 		$minCost = null;
-		for ($value of $arr) {
+		for ($value of Object.values($arr)) {
 			$cost = $f($value);
 			if (php.is_null($minCost) || $minCost > $cost) {
 				$minCost = $cost;
@@ -119,7 +119,7 @@ class Fp {
 		let $maxVal, $maxCost, $value, $cost;
 		$maxVal = null;
 		$maxCost = null;
-		for ($value of $arr) {
+		for ($value of Object.values($arr)) {
 			$cost = $f($value);
 			if (php.is_null($maxCost) || $maxCost < $cost) {
 				$maxCost = $cost;
@@ -181,10 +181,10 @@ class Fp {
 		let $pools, $result, $pool, $resultInner, $x, $y;
 		$pools = php.array_map([this.class, 'iter'], $args);
 		$result = [[]];
-		for ($pool of $pools) {
+		for ($pool of Object.values($pools)) {
 			$resultInner = [];
-			for ($x of $result) {
-				for ($y of $pool) {
+			for ($x of Object.values($result)) {
+				for ($y of Object.values($pool)) {
 					$resultInner.push(php.array_merge($x, [$y]));
 				}
 			}
@@ -209,7 +209,7 @@ class Fp {
 		}
 		$result = [];
 		$currentChunk = [];
-		for ($el of $collection) {
+		for ($el of Object.values($collection)) {
 			if ($predicate($el)) {
 				if ($mode === 'last') {
 					$currentChunk.push($el);

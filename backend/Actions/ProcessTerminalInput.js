@@ -2,7 +2,6 @@
 let {fetchAll, wrap} = require('../GdsHelpers/TravelportUtils.js');
 const StatefulSession = require("../GdsHelpers/StatefulSession.js");
 const AreaSettings = require("../Repositories/AreaSettings");
-const ItineraryParser = require("../Transpiled/Gds/Parsers/Apollo/Pnr/ItineraryParser");
 const ProcessApolloTerminalInputAction = require("../Transpiled/Rbs/GdsDirect/Actions/Apollo/ProcessApolloTerminalInputAction");
 const ApoCommandParser = require("../Transpiled/Gds/Parsers/Apollo/CommandParser");
 const SabCommandParser = require("../Transpiled/Gds/Parsers/Sabre/CommandParser");
@@ -54,22 +53,17 @@ let encodeTpOutputForCms = ($dump) => {
 	return $dump;
 };
 
-let makeRbsResult = (calledCommands, fullState) => {
+let makeBriefSessionInfo = (fullState) => {
 	let areaState = fullState.areas[fullState.area] || {};
 	return ({
-		calledCommands: calledCommands.map(a => a),
-		messages: [],
-		clearScreen: false,
-		sessionInfo: {
-			canCreatePq: areaState.can_create_pq ? true : false,
-			pricingCmd: areaState.pricing_cmd || '',
-			canCreatePqErrors: areaState.can_create_pq
-				? [] : ['No recent valid pricing'],
-			area: areaState.area || '',
-			pcc: areaState.pcc || '',
-			hasPnr: areaState.has_pnr ? true : false,
-			recordLocator: areaState.record_locator || '',
-		},
+		canCreatePq: areaState.can_create_pq ? true : false,
+		pricingCmd: areaState.pricing_cmd || '',
+		canCreatePqErrors: areaState.can_create_pq
+			? [] : ['No recent valid pricing'],
+		area: areaState.area || '',
+		pcc: areaState.pcc || '',
+		hasPnr: areaState.has_pnr ? true : false,
+		recordLocator: areaState.record_locator || '',
 	});
 };
 
@@ -101,15 +95,25 @@ let isScreenCleaningCommand = (rec, gds) => {
 	}
 };
 
+let encodeCmdForCms = (gds, cmd) => {
+	if (['galileo', 'apollo'].includes(gds)) {
+		cmd = encodeTpCmdForCms(cmd);
+	}
+	return cmd;
+};
+
 let transformCalledCommand = (rec, stateful) => {
+	if (!rec.cmd || !rec.output) {
+		// mostly cases when Promise accidentally returned instead of cmd object
+		let cls = ((rec || {}).constructor || {}).name;
+		throw new Error('Invalid cmdRec format - ' + cls + ' - ' + JSON.stringify(rec));
+	}
 	let gds = stateful.gds;
 	let agent = stateful.getAgent();
-	let cmd = rec.cmd;
 	let output = rec.output;
 	let type = rec.type;
 	let tabCommands = [];
 	if (['galileo', 'apollo'].includes(gds)) {
-		cmd = encodeTpCmdForCms(cmd);
 		if (!rec.noWrap) {
 			output = wrap(rec.output);
 		}
@@ -121,18 +125,19 @@ let transformCalledCommand = (rec, stateful) => {
 		output = output.replace(/\r\n|\r/g, '\n');
 	}
 	if (!agent.canSeeCcNumbers()) {
-		output = Misc.maskCcNumbers(output)
+		output = Misc.maskCcNumbers(output);
 	}
 	if (!agent.canSeeContactInfo()) {
 		output = CommonDataHelper.maskSsrContactInfo(output);
 	}
 	return {
-		cmd: cmd,
+		cmd: encodeCmdForCms(gds, rec.cmd),
 		type: type,
 		output: output,
 		duration: rec.duration || null,
 		clearScreen: isScreenCleaningCommand(rec, gds),
 		tabCommands: tabCommands,
+		scrolledCmd: rec.scrolledCmd ? encodeCmdForCms(gds, rec.scrolledCmd) : null,
 	};
 };
 
@@ -149,11 +154,13 @@ let runCmdRq =  async (inputCmd, stateful) => {
 	} else {
 		return NotImplemented('Unsupported GDS for runCmdRq() - ' + stateful.gds);
 	}
-	let rbsResult = makeRbsResult(gdsResult.calledCommands, stateful.getFullState());
-	rbsResult.status = gdsResult.status;
-	rbsResult.messages = (gdsResult.userMessages || []).map(msg => ({type: 'error', text: msg}));
-	rbsResult.actions = gdsResult.actions || [];
-	return rbsResult;
+	return {
+		status: gdsResult.status,
+		messages: (gdsResult.userMessages || []).map(msg => ({type: 'error', text: msg})),
+		actions: gdsResult.actions || [],
+		calledCommands: gdsResult.calledCommands || [],
+		sessionInfo: makeBriefSessionInfo(stateful.getFullState()),
+	};
 };
 
 let translateCmd = (fromGds, toGds, inputCmd) => {
@@ -179,15 +186,17 @@ let translateCmd = (fromGds, toGds, inputCmd) => {
 
 // better to do it separately in each GDS, since Sabre logs into current PCC
 // in all areas on SI*, and Amadeus needs a separate session for each area
-let useConfigPcc = (grectResult, stateful, agentId) => {
+let useConfigPcc = (grectResult, stateful, agentId, activeAreas) => {
 	let {area, pcc} = grectResult.sessionInfo;
 	let gds = stateful.gds;
-	if (!pcc) {
+	let cmdType = stateful.getSessionData().cmdType;
+	if (cmdType === 'changeArea' && !activeAreas.includes(area)) {
 		// emulate to default pcc
 		return AreaSettings.getByAgent(agentId)
 			.then(rows => rows.filter(r =>
 				r.gds === gds &&
 				r.area === area &&
+				r.defaultPcc !== pcc &&
 				r.defaultPcc)[0])
 			.then(nonEmpty())
 			.then(row => {
@@ -197,10 +206,11 @@ let useConfigPcc = (grectResult, stateful, agentId) => {
 					sabre: 'AAA' + row.defaultPcc,
 					amadeus: 'JUM/O-' + row.defaultPcc,
 				}[gds];
-				return stateful.runCmd(cmd)
-					.then(cmdRec => {
-						let calledCommands = (grectResult.calledCommands || []).concat([cmdRec]);
-						return makeRbsResult(calledCommands, stateful.getFullState());
+				return runCmdRq(cmd, stateful)
+					.then(semResult => {
+						semResult.messages.unshift(...grectResult.messages || []);
+						semResult.calledCommands.unshift(...grectResult.calledCommands || []);
+						return semResult;
 					});
 			})
 			.catch(exc => grectResult);
@@ -232,8 +242,13 @@ module.exports = async ({session, rqBody, emcUser}) => {
 		}
 	}
 
+	let activeAreas = Object
+		.values(stateful.getFullState().areas)
+		.filter(r => !!r.scrolledCmd)
+		.map(r => r.area);
+
 	let whenRbsResult = runCmdRq(cmdRq, stateful)
-		.then(rbsResult => useConfigPcc(rbsResult, stateful, rqBody.agentId))
+		.then(rbsResult => useConfigPcc(rbsResult, stateful, rqBody.agentId, activeAreas))
 		.then(rbsResult => ({
 			...rbsResult,
 			messages: (rbsResult.messages || []).concat(translated.messages),

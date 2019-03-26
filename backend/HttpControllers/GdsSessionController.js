@@ -19,6 +19,7 @@ const TooManyRequests = require("../Utils/Rej").TooManyRequests;
 const UnprocessableEntity = require("../Utils/Rej").UnprocessableEntity;
 const ImportPq = require('../Actions/ImportPq.js');
 const FluentLogger = require("../LibWrappers/FluentLogger");
+const allWrap = require("../Utils/Misc").allWrap;
 
 let startByGds = async (gds) => {
 	let tuples = [
@@ -44,7 +45,7 @@ let startByGds = async (gds) => {
 	return NotImplemented('Unsupported GDS ' + gds + ' for session creation');
 };
 
-let startNewSession = (rqBody) => {
+let startNewSession = async (rqBody) => {
 	let starting = +rqBody.useRbs
 		? RbsClient.startSession(rqBody)
 		: startByGds(rqBody.gds);
@@ -52,30 +53,44 @@ let startNewSession = (rqBody) => {
 		GdsSessions.storeNew(rqBody, gdsData));
 };
 
-/** @param session = at('GdsSessions.js').makeSessionRecord() */
-let closeSession = (session) => {
-	let closing;
-	if (+session.context.useRbs) {
-		closing = RbsClient.closeSession(session);
-	} else if (['apollo', 'galileo'].includes(session.context.gds)) {
-		closing = TravelportClient.closeSession(session.gdsData);
-	} else if ('sabre' === session.context.gds) {
-		closing = SabreClient.closeSession(session.gdsData);
-	} else if ('amadeus' === session.context.gds) {
-		closing = AmadeusClient.closeSession(session.gdsData);
+let closeByGds = (gds, gdsData) => {
+	if (['apollo', 'galileo'].includes(gds)) {
+		return TravelportClient.closeSession(gdsData);
+	} else if ('sabre' === gds) {
+		return SabreClient.closeSession(gdsData);
+	} else if ('amadeus' === gds) {
+		return AmadeusClient.closeSession(gdsData);
 	} else {
-		closing = NotImplemented('closeSession() not implemented for GDS - ' + session.context.gds);
+		return NotImplemented('closeSession() not implemented for GDS - ' + gds);
 	}
-	GdsSessions.remove(session);
-	return closing.then(result => {
-		logit('NOTICE: close result:', session.logId, result);
-		return result;
-	});
+};
+
+/** @param session = at('GdsSessions.js').makeSessionRecord() */
+let closeSession = async (session) => {
+	let gdsDataStrSet = new Set([JSON.stringify(session.gdsData)]);
+	let fullState = await GdsSessions.getFullState(session);
+	for (let [area, data] of Object.entries(fullState.areas)) {
+		// Amadeus fake areas, maybe also Sabre
+		if (data.gdsData) {
+			gdsDataStrSet.add(JSON.stringify(data.gdsData));
+		}
+	}
+	let closePromises = [...gdsDataStrSet]
+		.map(str => JSON.parse(str))
+		.map(gdsData => closeByGds(session.context.gds, gdsData));
+
+	allWrap(closePromises).then(result =>
+		logit('NOTICE: close result:', session.logId, result));
+
+	return GdsSessions.remove(session);
 };
 
 let shouldRestart = (exc, session) => {
 	let lifetimeMs = Date.now() - session.createdMs;
+	let clsName = ((exc || {}).constructor || {}).name;
+	let isTypeError = clsName === 'TypeError';
 	return LoginTimeOut.matches(exc.httpStatusCode)
+		//|| isTypeError
 		//|| !exc.httpStatusCode // runtime errors, like null-pointer exceptions
 		// 1 hour, to exclude cases like outdated format of gdsData
 		|| lifetimeMs > 60 * 60 * 1000;
@@ -96,11 +111,12 @@ let runInSession = ({session, rqBody, emcUser}) => {
 /** @param rqBody = at('WebRoutes.js').normalizeRqBody() */
 let runInputCmdRestartAllowed = async ({rqBody, session, emcUser}) => {
 	rqBody.command = rqBody.command.trim();
-	return runInSession({session, rqBody, emcUser})
+	return Promise.resolve()
+		.then(() => runInSession({session, rqBody, emcUser}))
 		.catch(async exc => {
 			if (shouldRestart(exc, session)) {
 				FluentLogger.logExc('INFO: Session expired', session.logId, exc);
-				await GdsSessions.remove(session);
+				await GdsSessions.remove(session).catch(exc => {});
 				let newSession = await startNewSession(rqBody);
 				FluentLogger.logit('INFO: New session in ' + newSession.logId, session.logId, newSession);
 				FluentLogger.logit('INFO: Old session in ' + session.logId, newSession.logId, session);
@@ -146,6 +162,20 @@ exports.importPq = async ({rqBody, session, emcUser}) => {
 	let leadData = await CmsClient.getLeadData(rqBody.pqTravelRequestId);
 	let stateful = await StatefulSession({session, emcUser});
 	return ImportPq({stateful, leadData, fetchOptionalFields: true});
+};
+
+/**
+ * @param session = require('GdsSessions.js').makeSessionRecord()
+ * @param {IEmcUser} emcUser
+ */
+exports.resetToDefaultPcc = async ({rqBody, session, emcUser}) => {
+	let gdsData = await startByGds(rqBody.gds);
+	await closeSession(session);
+	let newSession = await GdsSessions.storeNew(session.context, gdsData);
+	FluentLogger.logit('INFO: New session in ' + newSession.logId, session.logId, newSession);
+	FluentLogger.logit('INFO: Old session in ' + session.logId, newSession.logId, session);
+	let fullState = GdsSessions.makeDefaultState(newSession);
+	return {fullState};
 };
 
 exports.makeMco = async ({rqBody, session, emcUser}) => {
@@ -240,7 +270,7 @@ exports.clearBuffer = (rqBody) => {
 	let agentId = rqBody.agentId;
 	let requestId = rqBody.travelRequestId || 0;
 	return Db.with(db => db.query([
-		'DELETE FROM terminalBuffering',
+		'DELETE FROM cmd_rq_log',
 		'WHERE agentId = ?',
 		'  AND requestId = ?',
 	].join('\n'), [agentId, requestId]));

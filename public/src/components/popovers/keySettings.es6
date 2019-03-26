@@ -4,13 +4,17 @@ import {CHANGE_SETTINGS} 	from '../../actions/settings';
 import {getBindingForKey} 	from '../../helpers/keyBinding';
 import {GDS_LIST} 			from '../../constants';
 import {getStore} 			from './../../store';
-import PccSelect 			from "./pccSelect";
+import AreaPccSelect 			from "./areaPccSelect";
 import {get} 				from "../../helpers/requests";
 import "select2";
+import {post} from './../../helpers/requests';
+import $ from 'jquery';
+import {UPDATE_ALL_AREA_STATE, UPDATE_DEFAULT_AREA_PCCS} from "../../actions/gdsActions";
+import {notify} from "../../helpers/debug";
 
 export default class KeySettings extends ButtonPopOver
 {
-	constructor({ keyBindings, defaultPccs, gdsAreaSettings, ...params })
+	constructor({ keyBindings, gdsAreaSettings, ...params })
 	{
 		super(params, 'div.terminal-menu-popover hotkeysContext');
 
@@ -23,22 +27,21 @@ export default class KeySettings extends ButtonPopOver
                         this.pccs = pccs;
 
                         this.popContent.innerHTML = '';
-                        const c = new Context(this, keyBindings, defaultPccs, gdsAreaSettings);
+                        const c = new Context(this, keyBindings, gdsAreaSettings);
                         this.popContent.appendChild(c.context);
                     });
-			}
+			},
 		});
 	}
 }
 
 class Context
 {
-	constructor(popover, keyBindings, defaultPccs, gdsAreaSettings)
+	constructor(popover, keyBindings, gdsAreaSettings)
 	{
 		this.pccs = popover.pccs;
 		this.context = Dom('div');
 		this.currentKeyBindings = keyBindings;
-		this.currentPccs = defaultPccs;
 		this.gdsAreaSettings = gdsAreaSettings;
 		this.inputFields = {};
 		this._makeBody(popover);
@@ -92,8 +95,19 @@ class Context
 			buttonHeader.appendChild(Dom(`label[Autorun]`));
 
 			const inputFields = this._makeInputFieldList(gds);
-			const labelDiv = Dom(`div.settings-input-container`)
-			labelDiv.appendChild(Dom(`label[Default PCC]`));
+			const labelDiv = Dom(`div.settings-input-container`);
+			labelDiv.appendChild(Dom(`button.btn-primary[Default PCC]`, {
+				onclick: () => post('/terminal/resetToDefaultPcc', {gds: gds})
+					.then(rsData => {
+						notify({msg: 'Session Areas Reloaded', timeout: 3000, type: 'success'});
+						UPDATE_ALL_AREA_STATE(gds, rsData.fullState);
+						//if (parent.popover) {
+						//	// close since we reloaded UI, and the element
+						//	// drop was bound to does not exist anymore
+						//	parent.popover.close();
+						//}
+					}),
+			}));
 			tabContent.appendChild(labelDiv);
 			tabContent.appendChild(inputFields.areaGrid);
 
@@ -104,13 +118,20 @@ class Context
 			});
 		});
 
+		const manualBtn = Dom('button.btn btn-sm btn-primary font-bold pull-right [Manual]', {
+			onclick: () => window.open('https://docs.google.com/document/d/1ZthW07sWlFDMRFWd3sRQtOLMvDCGUKAMSG4RX05pc64', '_blank'),
+		});
 		const saveBtn = Dom('button.btn btn-sm btn-purple font-bold pull-right [Save]', {
 			onclick : () => {
-				this.save();
-				parent.popover.close();
-			}
+				let saveData = this._collectSaveData();
+				CHANGE_SETTINGS(saveData).then(saved => {
+					UPDATE_DEFAULT_AREA_PCCS(saveData);
+					parent.popover.close();
+				});
+			},
 		});
 		header.appendChild(saveBtn);
+		header.appendChild(manualBtn);
 
 		this.context.appendChild( container );
 	}
@@ -140,7 +161,7 @@ class Context
                 // these PCC-s are used as fallback, but A is instantly
                 // logged in, so there is no point in a fallback
                 const disabled      = letter === 'A';
-                const select        = new PccSelect({defaultPcc, pccs, disabled}).getContext();
+                const select        = new AreaPccSelect({gds, defaultPcc, pccs, disabled}).getContext();
 
                 container.setAttribute('data-area', letter);
                 container.appendChild(Dom(`label[Area ${letter}]`, {style: 'text-align: right; padding-right: 6px;'}));
@@ -149,7 +170,7 @@ class Context
                 $(select).select2({
                     theme : "bootstrap",
                     dropdownParent : $(this.context),
-					width : '185px'
+					width : '185px',
                 });
 
                 return container;
@@ -169,7 +190,7 @@ class Context
 				const inputContainer = this._getInputRow({
 					label: prefix ? `${prefix} + F${i}` : `F${i}`,
 					placeholder: placeholder.command,
-					value: this._getKeyBinding(gds, btnName, 'command')
+					value: this._getKeyBinding(gds, btnName, 'command'),
 				});
 
 				// "Autorun" checkbox
@@ -177,10 +198,10 @@ class Context
 				inputContainer.appendChild(
 					Dom('input.form-control ch-box', {
 						type: 'checkbox',
-						checked: userAutorun !== false ? userAutorun : placeholder.autorun
+						checked: userAutorun !== false ? userAutorun : placeholder.autorun,
 					})
-				)
-				data.buttons.push({ key, btnName, placeholder, inputContainer, placeholder });
+				);
+				data.buttons.push({ key, btnName, placeholder, inputContainer });
 			}
 		});
 
@@ -191,7 +212,7 @@ class Context
 
 	_getInputRow({ label, placeholder, value })
 	{
-		const container = Dom(`div.settings-input-container`)
+		const container = Dom(`div.settings-input-container`);
 		container.appendChild(Dom(`label[${label}]`));
 		container.appendChild(Dom('input.form-control settings-input', { placeholder, value }));
 		return container;
@@ -208,11 +229,6 @@ class Context
 		return type === 'command' ? '' : false;
 	}
 
-	_getPcc(gds)
-	{
-		return this.currentPccs && this.currentPccs[gds] ? this.currentPccs[gds] : '';
-	}
-
 	_getAreaPcc(gds, area)
 	{
 		const areaSettings = (this.gdsAreaSettings || {})[gds] || [];
@@ -224,12 +240,12 @@ class Context
 	    return null;
 	}
 
-	save()
+	_collectSaveData()
 	{
 		const result = {};
 
 		GDS_LIST.forEach(gds => {
-			result[gds] = { keyBindings: {}, defaultPcc: null };
+			result[gds] = { keyBindings: {} };
 
 			this.inputFields[gds].buttons.forEach(input => {
 				const placeholder = input.placeholder;
@@ -241,8 +257,6 @@ class Context
 				}
 			});
 
-			// TODO: remove, it is now stored per area
-			result[gds].defaultPcc = null;
 			result[gds].areaSettings = [...this.inputFields[gds].areaGrid.children].map(cont => 1 && {
 				area: cont.getAttribute('data-area'),
 				defaultPcc: [...cont.querySelectorAll('select.default-pcc')]
@@ -255,6 +269,6 @@ class Context
 			}
 		});
 
-		CHANGE_SETTINGS(result);
+		return result;
 	}
 }

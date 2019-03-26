@@ -1,19 +1,19 @@
 
-// it looks like besides the 2 clusters server.js also gets called by someone else located on ap01prtr same as one
-// of clusters, but my guess is that it exits after attempt to listen to the port already occupied by other worker
+let Diag = require('./backend/LibWrappers/Diag.js');
+let Migration = require('./backend/Maintenance/Migration.js');
+let KeepAlive = require("./backend/Maintenance/KeepAlive");
+let Config = require("./backend/Config.js");
 
-const Config = require('./backend/Config.js');
 (async () => {
-	console.log('fetching external config');
-	await Config.getConfig();
-	console.log('initializing Web Routes');
+	if (Config.production) {
+		// a workaround for an extra job that gets spawned randomly and dies
+		Diag.log('pid ' + process.pid + ': waiting for 5 seconds before starting server');
+		await new Promise(resolve => setTimeout(resolve, 5000));
+		Diag.log('pid ' + process.pid + ': done waiting - starting server now');
+	}
 	require('./backend/WebRoutes.js');
-	let Diag = require('./backend/LibWrappers/Diag.js');
-	let Migration = require('./backend/Maintenance/Migration.js');
-	let KeepAlive = require("./backend/Maintenance/KeepAlive");
 	Migration.run()
 		.then(result => {
-			console.log('Migration was successful\n', JSON.stringify(result));
 			Diag.notice(new Date().toISOString() + ': Migration was successful', result);
 		})
 		.catch(exc => {

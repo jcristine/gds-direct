@@ -75,6 +75,8 @@ export class PqParser
 
 		let useRbs = GdsDirectPlusState.getUseRbs() ? '1' : '';
 		return blockAllUi(`terminal/getPqItinerary?pqTravelRequestId=${rId}&isStandAlone=${isStandAlone}&gds=${gds.get('name')}&useRbs=${useRbs}`)
+			.then(rbsData => rbsData.pnrData ? rbsData :
+				Promise.reject('Invalid Response'))
 			.then(rbsData => {
 				updateSessionState(rbsData, gds.get('name'));
 				return {pqTravelRequestId: rId, gds: gds.get('name'), rbsData: rbsData};

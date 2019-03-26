@@ -12,13 +12,13 @@ export class SettingsButtons extends Component
 		super('article.small-buttons');
 	}
 
-	mount({theme, terminalThemes, fontSize, keyBindings, defaultPccs, gdsAreaSettings })
+	mount({theme, terminalThemes, fontSize, keyBindings, gdsAreaSettings })
 	{
-		this.children({theme, terminalThemes, fontSize, keyBindings, defaultPccs, gdsAreaSettings})
+		this.children({theme, terminalThemes, fontSize, keyBindings, gdsAreaSettings})
 			.map( element => this.context.appendChild( element ) );
 	}
 
-	children({theme, terminalThemes, fontSize, keyBindings, defaultPccs, gdsAreaSettings})
+	children({theme, terminalThemes, fontSize, keyBindings, gdsAreaSettings})
 	{
 		const themeBtn 	= new Theme({
 			icon	: '<i class="fa fa-paint-brush t-f-size-14"></i>',
@@ -39,7 +39,6 @@ export class SettingsButtons extends Component
 			icon	: '<i class="fa fa-gear t-f-size-14"></i>',
 			keyBindings,
 			gdsAreaSettings,
-			defaultPccs
 		}).getTrigger();
 
 		let buttons = [themeBtn, textSize, history, keySettings];
@@ -54,10 +53,10 @@ export class SettingsButtons extends Component
 		return buttons;
 	}
 
-	_renderer({theme, terminalThemes, fontSize, keyBindings, defaultPccs, gdsAreaSettings})
+	_renderer({theme, terminalThemes, fontSize, keyBindings, gdsAreaSettings})
 	{
 		this.context.innerHTML = '';
-		this.children({theme, terminalThemes, fontSize, keyBindings, defaultPccs, gdsAreaSettings})
+		this.children({theme, terminalThemes, fontSize, keyBindings, gdsAreaSettings})
 			.map( element => this.context.appendChild( element ) );
 	}
 }

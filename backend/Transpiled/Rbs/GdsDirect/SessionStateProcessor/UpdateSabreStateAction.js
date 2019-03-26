@@ -151,8 +151,8 @@ class UpdateSabreStateAction
             }
         } else if ($type == 'changeArea' && $gdsInterface.isSuccessChangeAreaOutput($output)) {
             $areaData = $getAreaData($data);
-            $areaData['work_area_letter'] = $data;
-            $sessionState = SessionStateHelper.updateFromArea($sessionState, $areaData);
+            $areaData['area'] = $data;
+            $sessionState = {...$areaData};
         } else if ($type === 'sell') {
             if (this.constructor.isSuccessSellOutput($output)) {
                 $sessionState['has_pnr'] = true;

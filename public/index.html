@@ -6,7 +6,7 @@
 </head>
 <body>
 
-<div id="terminalContext"></div>
+<div id="terminalContext" style="height: 100%;"></div>
 <script src="terminal-bundle.js"></script>
 <script>
 	// TODO: move this authentication code to a module and use it from all admin pages
@@ -25,6 +25,18 @@
 	let rawToken = new URL(window.location.href).searchParams.get('token');
 	let emcSessionId = hashData.emcSessionId || cookieData.emcSessionId;
 
+	let redirectToLoginPage = () => {
+		fetch('/emcLoginUrl?returnUrl=' + encodeURIComponent(window.location.href))
+			.then(rs => rs.json())
+			.then(rsBody => {
+				if (rsBody.emcLoginUrl) {
+					window.location.href = rsBody.emcLoginUrl;
+				} else {
+					console.error('Invalid /emcLoginUrl response', rsBody);
+				}
+			});
+	};
+
 	let onEmcSessionId = (emcSessionId) => {
 		document.cookie = 'emcSessionId=' + emcSessionId;
 		window.history.replaceState('', '', '/'); // remove GET params and # params
@@ -34,8 +46,8 @@
 			htmlRootDom		: document.getElementById('terminalContext'),
 			emcSessionId    : emcSessionId,
 			cmsUrl			: isDev
-				? 'http://cms.gitlab-runner.snx702.dyninno.net/'
-				: 'https://cms.asaptickets.com/',
+				? 'http://cms.gitlab-runner.snx702.dyninno.net'
+				: 'https://cms.asaptickets.com',
 			PqPriceModal	: (pqData, closeModal, importPq) => {
 				console.log('getPqItinerary data', pqData);
 				importPq().then(fullData => {
@@ -49,6 +61,7 @@
 		}).catch(exc => {
 			// remove expired token
 			document.cookie = 'emcSessionId=';
+			redirectToLoginPage();
 			return Promise.reject(exc);
 		});
 	};
@@ -62,15 +75,7 @@
 				.then(rs => rs.json())
 				.then(rsBody => onEmcSessionId(rsBody.emcSessionId));
 		} else {
-			fetch('/emcLoginUrl?returnUrl=' + encodeURIComponent(window.location.href))
-				.then(rs => rs.json())
-				.then(rsBody => {
-					if (rsBody.emcLoginUrl) {
-						window.location.href = rsBody.emcLoginUrl;
-					} else {
-						console.error('Invalid /emcLoginUrl response', rsBody);
-					}
-				});
+			redirectToLoginPage();
 		}
 	}
 </script>
@@ -84,7 +89,7 @@
 		let results = [];
 		let cpuCnt = 4;
 		for (let i = 0; i < cpuCnt; ++i) {
-			fetch('/doSomeHeavyStuff?emcSessionId=' + hashData['emcSessionId'], {
+			fetch('/doSomeHeavyStuff?emcSessionId=' + emcSessionId, {
 				headers: {
 					connection: 'close',
 				},
@@ -128,7 +133,7 @@
 			.then(([cmsData, gdses, langs, groups, colors, types]) => {
 				return fetch(destinationUrl, {
 					method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({
-						cmsData: cmsData, emcSessionId: hashData['emcSessionId'],
+						cmsData: cmsData, emcSessionId: emcSessionId,
 						langs, gdses, groups, colors, types,
 					}),
 				})

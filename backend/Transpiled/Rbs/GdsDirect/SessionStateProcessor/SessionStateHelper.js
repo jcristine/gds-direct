@@ -21,7 +21,7 @@ class SessionStateHelper
     static makeNewAreaData($sessionData)  {
         return {
             'session_id': $sessionData['id'],
-            'work_area_letter': $sessionData['area'],
+            'area': $sessionData['area'],
             'internal_token': $sessionData['internal_token'],
             'pcc': $sessionData['pcc'],
             'record_locator': '',
@@ -34,7 +34,7 @@ class SessionStateHelper
     static makeAreaData($sessionData)  {
         return {
             'session_id': $sessionData['id'],
-            'work_area_letter': $sessionData['area'],
+            'area': $sessionData['area'],
             'internal_token': $sessionData['internal_token'] || null,
             'pcc': $sessionData['pcc'] || null,
             'record_locator': $sessionData['record_locator'] || '',
@@ -46,7 +46,7 @@ class SessionStateHelper
 
     static updateFromArea($sessionData, $areaData)  {
         $sessionData = {...$sessionData};
-        $sessionData['area'] = $areaData['work_area_letter'] || $areaData['area'];
+        $sessionData['area'] = $areaData['area'];
         $sessionData['record_locator'] = $areaData['record_locator'];
         $sessionData['has_pnr'] = $areaData['has_pnr'];
         $sessionData['is_pnr_stored'] = $areaData['is_pnr_stored'];
@@ -100,7 +100,7 @@ class SessionStateHelper
         $cmdList = await $cmdLog.getLastCommandsOfTypes(SessionStateProcessor.getCanCreatePqSafeTypes());
         $cmdPricing = await this.getPricingCmdRow($cmdLog);
         $cmdItinerary = null;
-        for ($cmdRecord of $cmdList) {
+        for ($cmdRecord of Object.values($cmdList)) {
             if (php.in_array($cmdRecord['type'], ['redisplayPnr', 'itinerary']) && !$cmdRecord.is_mr) {
                 $cmdItinerary = $cmdRecord;
             }}

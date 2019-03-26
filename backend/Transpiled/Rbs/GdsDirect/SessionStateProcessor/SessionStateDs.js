@@ -21,6 +21,7 @@ class SessionStateDs
 		this.hasPnr = null;
 		this.isPnrStored = null;
 		this.cmdType = null;
+		this.gdsData = null; // for GDS-es without native area support
 	}
 
     static makeFromArray($row)  {
@@ -35,6 +36,7 @@ class SessionStateDs
         $self.hasPnr = $row['has_pnr'] || false;
         $self.isPnrStored = $row['is_pnr_stored'] || false;
         $self.cmdType = $row['cmdType'] || false;
+        $self.gdsData = $row['gdsData'] || false;
         return $self;
     }
 
@@ -49,19 +51,12 @@ class SessionStateDs
             'has_pnr': this.hasPnr,
             'is_pnr_stored': this.isPnrStored,
             'cmdType': this.cmdType,
+            'gdsData': this.gdsData,
         };
     }
 
     updateFrom($that)  {
-
-        this.canCreatePq = $that.canCreatePq;
-        this.pricingCmd = $that.pricingCmd;
-        this.area = $that.area;
-        this.recordLocator = $that.recordLocator;
-        this.pcc = $that.pcc;
-        this.hasPnr = $that.hasPnr;
-        this.isPnrStored = $that.isPnrStored;
-        this.cmdType = $that.cmdType;
+		Object.assign(this, $that);
     }
 }
 module.exports = SessionStateDs;

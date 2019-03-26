@@ -79,8 +79,8 @@ class SabreBuildItineraryAction extends AbstractGdsAction {
 		// a workaround for Sabre CONTINUE WITH PNR CREATION auto-claim bug
 		// happening on the next command after passive segment sell of some
 		// airlines, for example: >0DY7088C20APRLAXARNGK1;
-		let pnrDump = await this.runCmd('*R');
-		return {'success': true, pnrDump};
+		let pnrCmdRec = await this.runCmd('*R');
+		return {'success': true, pnrCmdRec};
 	}
 
 	executeViaXml($itinerary, $isParserFormat) {

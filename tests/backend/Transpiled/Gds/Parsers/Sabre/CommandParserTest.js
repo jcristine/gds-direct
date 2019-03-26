@@ -857,6 +857,18 @@ class CommandParserTest extends require('../../../Lib/TestCase.js') {
 			},
 		}]);
 
+		$list.push(['¤E§OIATH', {
+			'type': 'changeArea',
+			'data': 'E',
+			'followingCommands': [
+				{'cmd': 'OIATH'},
+			],
+		}]);
+
+		$list.push(['SO', {
+			'type': 'signOut',
+		}]);
+
 		return $list;
 	}
 

@@ -1,33 +1,38 @@
 let Redis = require("./Redis.js");
 let Config = require('../Config.js');
 
-let SESSION_EXPIRE = 60 * 10 * 1000;
+// 1 hour
+let SESSION_EXPIRE = 3600;
 
-/** @type IEmcClient */
-let client;
-try {
+let makeClient = cfg => {
 	let {Emc} = require('dynatech-client-component-emc');
-	client = new Emc();
+	let client = new Emc();
 
-	if (Config.production) {
+	if (cfg.production) {
 		client.setLink('http://auth-asaptickets-com.lan.dyninno.net/jsonService.php');
 	} else {
 		client.setLink('http://auth.gitlab-runner.snx702.dyninno.net/jsonService.php');
 	}
-	client.setLogin(Config.external_service.emc.login);
-	client.setPassword(Config.external_service.emc.password);
-	client.setToken(Config.external_service.emc.token);
-	client.setDiagServiceProjectId(Config.mantisId);
-	client.setProject(Config.external_service.emc.projectName);
-} catch (exc) {
-	client = {
-		sessionInfo: (token) => {
-			return Promise.reject('EMC could not be required, possibly due to no rights - ' + exc);
-		},
-	};
-}
+	client.setLogin(cfg.external_service.emc.login);
+	client.setPassword(cfg.external_service.emc.password);
+	client.setToken(cfg.external_service.emc.token);
+	client.setDiagServiceProjectId(cfg.mantisId);
+	client.setProject(cfg.external_service.emc.projectName);
+	return client;
+};
 
-exports.client = client;
+let whenConfig = Config.getConfig();
+
+let whenClient = null;
+/** @return Promise<IEmcClient> */
+let getClient = () => {
+	if (whenClient === null) {
+		whenClient = whenConfig.then(cfg => makeClient(cfg));
+	}
+	return whenClient;
+};
+
+exports.getClient = getClient;
 exports.getCachedSessionInfo = async (sessionKey) => {
     if (!sessionKey) {
         return Promise.reject('Passed EMC session token is empty');
@@ -36,14 +41,16 @@ exports.getCachedSessionInfo = async (sessionKey) => {
 	// instead would save us few milliseconds...
 	const cacheKey = Redis.keys.EMC_TOKEN_TO_USER + ':' + sessionKey;
 	const keyExpire = SESSION_EXPIRE;
-	const session = await Redis.client.get(cacheKey);
+	const redis = await Redis.getClient();
+	const session = await redis.get(cacheKey);
 	let sessionInfo;
 	if (session !== null && session) {
 		sessionInfo = JSON.parse(session);
 	} else {
+		let client = await getClient();
 	    sessionInfo = await client.sessionInfo(sessionKey);
 	}
-	Redis.client.set(cacheKey, JSON.stringify(sessionInfo), 'EX', keyExpire);
+	redis.set(cacheKey, JSON.stringify(sessionInfo), 'EX', keyExpire);
 	let userId = (((sessionInfo || {}).data || {}).user || {}).id;
 	if (!userId) {
 	    return Promise.reject('No user id in EMC rs - ' + JSON.stringify(sessionInfo));

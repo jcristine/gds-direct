@@ -504,7 +504,7 @@ class ProcessApolloTerminalInputAction {
 			$typeToOutput = php.array_combine(php.array_column($pnrCmds, 'type'),
 				php.array_column($pnrCmds, 'output'));
 			if ($dnOutput = $typeToOutput['divideBooking'] || null) {
-				$pnrDump = this.constructor.isScrollingAvailable($dnOutput);
+				$pnrDump = extractPager($dnOutput)[0];
 				$pnr = ApolloPnr.makeFromDump($pnrDump);
 				return !$pnr.wasCreatedInGdsDirect();
 			}
@@ -604,7 +604,7 @@ class ProcessApolloTerminalInputAction {
 
 	async getCurrentPnr() {
 		let $cmdRows, $cmds, $cmdToFullOutput, $cmd, $output, $showsFullPnr, $pnrDump;
-		$cmdRows = this.stateful.getLog().getLastStateSafeCommands();
+		$cmdRows = await this.stateful.getLog().getLastStateSafeCommands();
 		$cmds = Fp.map(($row) => ({
 			'cmd': $row['cmd'],
 			'output': $row['output'],
@@ -1053,7 +1053,8 @@ class ProcessApolloTerminalInputAction {
 		if (!php.in_array('addAgencyPhone', $usedCmdTypes)) {
 			php.array_unshift($writeCommands, 'P:SFOAS\/800-750-2238 ASAP CUSTOMER SUPPORT');
 		}
-		if (php.in_array(this.getSessionData()['pcc'], ['2E8R', '1RZ2'])
+		// Add accounting line ("customer account" in apollo docs): smth like DK number in Sabre
+		if (php.in_array(this.getSessionData()['pcc'], ['2E8R', '1RZ2', '2G8P'])
 			&& !php.in_array('addAccountingLine', $usedCmdTypes)
 		) {
 			php.array_unshift($writeCommands, 'T-CA-SFO@$0221686');

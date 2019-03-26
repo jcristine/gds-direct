@@ -1,19 +1,25 @@
 
 let mysql = require('promise-mysql');
-let Config = require('../Config.js');
+let {getConfig} = require('../Config.js');
 const NotFound = require("./Rej").NotFound;
 const BadRequest = require("./Rej").BadRequest;
-const InternalServerError = require("./Rej").InternalServerError;
-let dbPool = mysql.createPool({
-	host: Config.DB_HOST,
-	user: Config.DB_USER,
-	password: Config.DB_PASS,
-	database: Config.DB_NAME,
-	port: Config.DB_PORT || 3306,
-	connectionLimit: 20,
-	// return datetime as string, not Date object
-	dateStrings: true,
-});
+
+let whenPool = null;
+let getPool = () => {
+	if (whenPool === null) {
+		whenPool = getConfig().then(cfg => mysql.createPool({
+			host: cfg.DB_HOST,
+			user: cfg.DB_USER,
+			password: cfg.DB_PASS,
+			database: cfg.DB_NAME,
+			port: cfg.DB_PORT || 3306,
+			connectionLimit: 20,
+			// return datetime as string, not Date object
+			dateStrings: true,
+		}));
+	}
+	return whenPool;
+};
 
 /**
  * a wrapper for DB connection
@@ -130,25 +136,21 @@ let Db = (dbConn) => {
 		query: query,
 	};
 };
-Db.with = (process) => dbPool.getConnection()
-	.then(dbConn => Promise.resolve()
+Db.with = async (process) => {
+	let dbPool = await getPool();
+	let dbConn = await dbPool.getConnection();
+	return Promise.resolve()
 		.then(() => process(Db(dbConn)))
-		.then(result => {
-			dbPool.releaseConnection(dbConn);
-			return result;
-		})
-		.catch(exc => {
-			dbPool.releaseConnection(dbConn);
-			return Promise.reject(exc);
-		})
-	);
+		.finally(() => dbPool.releaseConnection(dbConn));
+};
 
-Db.getInfo = () => {
+Db.getInfo = async () => {
+	let dbPool = await getPool();
 	return {
 		acquiringConnections: dbPool.pool._acquiringConnections.length,
 		allConnections: dbPool.pool._allConnections.length,
 		freeConnections: dbPool.pool._freeConnections.length,
-		connectionQueue: dbPool.pool._connectionQueue.length
+		connectionQueue: dbPool.pool._connectionQueue.length,
 	};
 };
 

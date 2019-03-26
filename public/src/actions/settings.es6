@@ -2,6 +2,7 @@ import {getters} from "../state";
 import {getStore} from "../store";
 import {GDS_LIST} from "../constants";
 import {notify} from '../helpers/debug.es6';
+import $ from 'jquery';
 
 export const CHANGE_STYLE = theme => {
 	getters('theme', theme);
@@ -34,28 +35,29 @@ export const CHANGE_USE_RBS = useRbs => {
 export const CHANGE_SETTINGS = settings => {
 	getters('settings', settings);
 
-	const newData = { keyBindings: {}, defaultPccs: {}, gdsAreaSettings: {} };
+	const newData = { keyBindings: {}, gdsAreaSettings: {} };
 	let promises = [];
 	$.each(settings, (gds, value) => {
 		newData.keyBindings[gds] = value.keyBindings || {};
         newData.gdsAreaSettings[gds] = value.areaSettings || [];
-		newData.defaultPccs[gds] = value.defaultPcc || '';
 		let promise = getStore().app.Gds.update({
 			keyBindings: newData.keyBindings[gds],
             areaSettings: newData.gdsAreaSettings[gds],
-			defaultPcc: newData.defaultPccs[gds]
 		}, gds);
 		promises.push(promise);
 	});
+	let whenDone = Promise.all(promises);
 	if (promises.length > 0) {
-		Promise.all(promises).then(() => {
+		whenDone.then(() => {
 			notify({
 				type: 'success',
 				msg: 'Saved Successfully',
 			});
 		});
 	}
-	getStore().updateView({ keyBindings: newData.keyBindings, defaultPccs: newData.defaultPccs, gdsAreaSettings: newData.gdsAreaSettings });
+	getStore().updateView({ keyBindings: newData.keyBindings, gdsAreaSettings: newData.gdsAreaSettings });
+
+	return whenDone;
 };
 
 export const GET_HISTORY 	= () => getters('history');

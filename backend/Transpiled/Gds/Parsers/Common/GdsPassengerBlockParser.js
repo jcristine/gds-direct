@@ -38,7 +38,7 @@ class GdsPassengerBlockParser
             $passengerList = [];
 
             $tokens = php.array_filter(Fp.map('trim', $line.split(/(?=\b\d+\.(?:I\/\d+|\d+))/)));
-            for ($token of $tokens) {
+            for ($token of Object.values($tokens)) {
                 $passengerList.push(this.parsePassengerToken($token));}
 
             return {

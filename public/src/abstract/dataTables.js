@@ -281,14 +281,18 @@ export default (function() {
 					body: body,
 
 					cleanUrl: true
-				}).then(a => a.json()).then((resp) => resp.error
+				}).then(a => a.json().then((resp) => resp.error
 					? Promise.reject('Server returned error - ' + resp.error)
 					: Promise.resolve(resp)
 				).then(resp => {
 					disabledSelects.prop('disabled', 1);
-					notify({msg: resp.message || 'Saved successfully', type: 'success', timeout: 3000});
+					if (a.status === 200) {
+						notify({msg: resp.message || 'Saved successfully', type: 'success', timeout: 3000});
+					} else {
+						notify({msg: resp.message || 'Bad response ' + a.status + ' ' + a.statusText, type: 'warning', timeout: 3000});
+					}
 					$(table).DataTable().draw();
-				}).catch(exc => {
+				})).catch(exc => {
 					disabledSelects.prop('disabled', 1);
 					notify({msg: 'Server returned error - ' + exc});
 					return Promise.reject(exc);

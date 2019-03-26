@@ -43,13 +43,13 @@ const DEFAULT_KEY_BINDINGS = {
 		apollo 	: 'S*CTY/',
 		amadeus : 'DAC',
 		sabre 	: 'W/*',
-		galileo	: '.CD'
+		galileo	: '.CD',
 	},
 	'ctrl+113': {
 		apollo 	: 'S*AIR/',
 		amadeus : 'DNA',
 		sabre 	: 'W/*',
-		galileo	: '.AD'
+		galileo	: '.AD',
 	},
 	'shift+116': {
 		apollo 	: { command: 'SEM/2G52/AG', autorun: 1 },
@@ -73,9 +73,9 @@ const DEFAULT_KEY_BINDINGS = {
 		apollo 	: { command: 'P:SFOAS/800-750-2238 ASAP CUSTOMER SUPPORT', autorun: 1 },
 		amadeus : { command: 'AP SFO 800-750-2238-A', autorun: 1 },
 		sabre 	: { command: '91-800-750-2238-A', autorun: 1 },
-		galileo : { command: 'P.SFOT:800-750-2238 ASAP CUSTOMER SUPPORT', autorun: 1 }
-	}
-}
+		galileo : { command: 'P.SFOT:800-750-2238 ASAP CUSTOMER SUPPORT', autorun: 1 },
+	},
+};
 
 /**
  * Converts Event button clicks to readable string
@@ -152,8 +152,11 @@ export const getBindingForKey = (keyName, gds, replaceVariables = true) => {
 		command,
 		autorun: result.autorun || 0,
 	});
-}
+};
 
+/**
+ * @param terminal = $().terminal()
+ */
 export const pressedShortcuts = (evt, terminal, plugin) => {
 		const keymap 	= evt.keyCode || evt.which;
 
@@ -281,7 +284,7 @@ export const pressedShortcuts = (evt, terminal, plugin) => {
 					switchTerminal({keymap : 'prev'});
 				break;
 
-				default : return true
+				default : return true;
 			}
 
 			return false;
@@ -292,7 +295,7 @@ export const pressedShortcuts = (evt, terminal, plugin) => {
 			switch (keymap)
 			{
 				case 8: // + backSpace;
-					terminal.clear();
+					plugin.purge();
 				break;
 
 				case 38 : // Up arrow
@@ -303,7 +306,7 @@ export const pressedShortcuts = (evt, terminal, plugin) => {
 					nextCmd(plugin, terminal);
 				break;
 
-				default : return true
+				default : return true;
 			}
 
 			return false;
@@ -334,7 +337,7 @@ export const pressedShortcuts = (evt, terminal, plugin) => {
 			break;
 
 			case 119 : //F8
-				doF8()
+				doF8();
 			break;
 
 			case 116 : // F5

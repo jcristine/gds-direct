@@ -90,11 +90,7 @@ class TerminalBaseController {
 				saving = Promise.reject('Cant save settings. Unknown key - ' + $name);
 				break;
 		}
-		// TODO: should fix - frontend takes userMessages from data.userMessages instead of data.data.userMessages
-		return saving
-			.then(sqlResult => ({success: true, data: {data:{userMessages: ['Ok writing ' + $name]}}}))
-			//.catch(exc => ({success: false, data: {userMessages: ['Failure - ' + exc]}}))
-			;
+		return saving.then(sqlResult => ({success: true}));
 	}
 }
 

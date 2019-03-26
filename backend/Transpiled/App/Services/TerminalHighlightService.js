@@ -1,43 +1,17 @@
 
 const Str = require("../../../Utils/Str.js");
 const Db = require("../../../Utils/Db.js");
+const RegexTranspiler = require("../../Grect/RegexTranspiler");
+const {getFullDataForService} = require('../../../Repositories/HighlightRules.js');
 const {ucfirst, array_key_exists, array_merge, substr_replace, array_flip, array_intersect_key, array_values, sprintf, strlen, implode, preg_match, preg_replace, preg_replace_callback, rtrim, str_replace, strcasecmp, boolval, empty, intval, isset, strtoupper, trim, PHP_EOL, json_encode} = require('../../php.js');
 
-let whenRuleMapping = null;
-let whenCmdPatterns = null;
-
-let fetchAllRules = (db) => {
-	let whenRules = db.fetchAll({table: 'highlightRules'});
-	let whenPatterns = db.fetchAll({table: 'highlightOutputPatterns'});
-	return Promise.all([whenRules, whenPatterns])
-		.then(([rules, patterns]) => {
-			let mapping = {};
-			for (let rule of rules) {
-				mapping[rule.id] = rule;
-			}
-			for (let pattern of patterns) {
-				if (mapping[pattern.ruleId]) {
-					mapping[pattern.ruleId].patterns = mapping[pattern.ruleId].patterns || [];
-					mapping[pattern.ruleId].patterns.push(pattern);
-				}
-			}
-			return mapping;
-		});
-};
-
-// TODO: reset when rules get changed in the admin page
-let getRuleMapping = () => {
-	whenRuleMapping = whenRuleMapping || Db.with(fetchAllRules);
-	return whenRuleMapping;
-};
-let getCmdPatterns = () => {
-	if (whenCmdPatterns === null) {
-		whenCmdPatterns = Db.with(db => db.fetchAll({
-			table: 'highlightCmdPatterns',
-			where: [['regexError', '=', 0]],
-		}));
+let getCmdPatterns = async () => {
+	let rules = await getFullDataForService();
+	let cmdPatterns = [];
+	for (let rule of Object.values(rules)) {
+		cmdPatterns.push(...rule.cmdPatterns);
 	}
-	return whenCmdPatterns;
+	return cmdPatterns;
 };
 
 let setCmdRegexError = (ruleId, cmdPattern, dialect) =>
@@ -63,19 +37,18 @@ let areNamedCapturesSupported = () => {
 	return +majorVersion >= 10;
 };
 
+/**
+ * @param {string} content = '/^.{43}()/mi' // php regex
+ * @retunr {string} = ''
+ */
 let makeRegex = (content, flags = undefined) => {
-	if (areNamedCapturesSupported()) {
-		// convert php-format ( ?P< to js format (?<
-		content = content.replace(/(?<!\\)\(\?P</g, '(?<');
-		// /^(\s+|\.+)( ?P<value>OPERATED BY .*)/ -> /^(\s+|\.+)(?<value>OPERATED BY .*)/
-	} else {
-		// make all not named groups non-capturing
-		content = content.replace(/(?<!\\)\((?!\?)/g, '(?:');
-		// make all named groups simple groups because node v<10.0.0
-		content = content.replace(/(?<!\\)\(\?P<[A-Za-z_0-9]+>/g, '(');
-		// /^(\s+|\.+)( ?P<value>OPERATED BY .*)/ -> /^(?:\s+|\.+)(OPERATED BY .*)/
+	if (!content) {
+		return null;
+	} if (!areNamedCapturesSupported()) {
+		throw new Error('Node version is below v10 - no regex named capture support, can not apply highlight rules');
 	}
-	return new RegExp(content, flags);
+	return RegexTranspiler.transpileSafe(content, flags)
+		|| RegexTranspiler.transpileUnsafe(content, flags);
 };
 
 let normalizeRuleForFrontend = (rule) => {
@@ -124,6 +97,9 @@ class TerminalHighlightService {
 		return getCmdPatterns().then(rows => rows
 			.filter(row => row.dialect === $language)
 			.filter(row => {
+				if (row.regexError || !row.cmdPattern) {
+					return false;
+				}
 				let $command = row.cmdPattern;
 				try {
 					let regex = makeRegex('^' + $command);
@@ -142,7 +118,7 @@ class TerminalHighlightService {
 	 * @param string $gds
 	 */
 	getRules(cmdPatterns) {
-		return getRuleMapping()
+		return getFullDataForService()
 			.then(ruleMapping => {
 				let result = [];
 				for (let cmdPattern of cmdPatterns) {
@@ -187,7 +163,6 @@ class TerminalHighlightService {
 						matches = Str.matchAll(regex, $output);
 					} catch ($e) {
 						matches = [];
-						console.error('Invalid output regex ' + $e, {$e, gdsRow});
 						setOutputRegexError(gdsRow['id']);
 					}
 					for (let match of matches) {
@@ -262,8 +237,9 @@ class TerminalHighlightService {
 	}
 
 	/**
-	 * @param string $language
-	 * @param string $enteredCommand
+	 * @param string $language - deprecated, should be same as $gds
+	 * @param string $enteredCommand - should be the actual command called
+	 *                 in GDS, not the command agent entered (untranslated)
 	 * @param string $gds
 	 * @param string $output
 	 * @return {Promise}
@@ -278,5 +254,8 @@ class TerminalHighlightService {
 		return $output;
 	}
 }
+
+// exposed for tests
+TerminalHighlightService.makeRegex = makeRegex;
 
 module.exports = TerminalHighlightService;

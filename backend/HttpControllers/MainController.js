@@ -8,8 +8,9 @@ const {getExcData} = require('../Utils/Misc.js');
 const php = require('../Transpiled/php.js');
 const GdsSessions = require("../Repositories/GdsSessions");
 const GdsSessionsController = require("./GdsSessionController");
+const Config = require('../Config.js');
 
-let shouldDiag = (exc) =>
+let isSystemError = (exc) =>
 	!BadRequest.matches(exc.httpStatusCode) &&
 	!Forbidden.matches(exc.httpStatusCode) &&
 	!LoginTimeOut.matches(exc.httpStatusCode) &&
@@ -63,7 +64,7 @@ let toHandleHttp = (httpAction) => (req, res) => {
 				requestBody: maskedBody,
 				stack: exc.stack,
 			});
-			if (shouldDiag(exc)) {
+			if (isSystemError(exc)) {
 				Diag.error('HTTP request failed', errorData);
 			}
 		});
@@ -102,10 +103,21 @@ let withAuth = (userAction) => (req, res) => {
 /** @param {function({rqBody, session, emcUser}): Promise} sessionAction */
 let withGdsSession = (sessionAction, canStartNew = false) => (req, res) => {
 	return withAuth(async (rqBody) => {
+		let startNewSession = false;
 		let session = await GdsSessions.getByContext(rqBody)
-			.catch(exc => NotFound.matches(exc.httpStatusCode) && canStartNew
-				? GdsSessionsController.startNewSession(rqBody)
-				: Promise.reject(exc));
+			.catch(exc => {
+				if (NotFound.matches(exc.httpStatusCode)) {
+					if (canStartNew) {
+						startNewSession = true;
+						return GdsSessionsController.startNewSession(rqBody);
+					} else {
+						exc.httpStatusCode = LoginTimeOut.httpStatusCode;
+						return Promise.reject(exc);
+					}
+				} else {
+					return Promise.reject(exc);
+				}
+			});
 		let emcUser = rqBody.emcUser;
 		delete(rqBody.emcUser);
 		delete(rqBody.emcSessionId);
@@ -117,6 +129,9 @@ let withGdsSession = (sessionAction, canStartNew = false) => (req, res) => {
 		return Promise.resolve()
 			.then(() => sessionAction({rqBody, session, emcUser}))
 			.then(result => {
+				if (startNewSession) {
+					result.startNewSession = true;
+				}
 				//                 'TODO: Processing HTTP RQ'
 				FluentLogger.logit('................ HTTP RS (in ' + ((Date.now() - startMs) / 1000).toFixed(3) + ' s.)', session.logId, result);
 				return Promise.resolve(result);
@@ -124,6 +139,7 @@ let withGdsSession = (sessionAction, canStartNew = false) => (req, res) => {
 			.catch(exc => {
 				let msg = 'ERROR: HTTP RQ was not satisfied ' + (exc.httpStatusCode || '(runtime error)');
 				FluentLogger.logExc(msg, session.logId, exc);
+				exc.session = session;
 				return Promise.reject(exc);
 			});
 	})(req, res);
@@ -146,12 +162,11 @@ process.on('unhandledRejection', (exc, promise) => {
 	// if token is outdated - you can see me catching it in runInputCmdRestartAllowed() and
 	// client does receive response generated in this catch, but 'unhandledRejection' fires
 	// nevertheless, with almost empty stack trace (just the PersistentHttpRq.js)
-	//if (shouldDiag(exc)) {
-	//	console.error('Unhandled Promise Rejection', data);
-	//	Diag.error('Unhandled Promise Rejection', data);
-	//} else {
-	//	console.log('(ignored) Unhandled Promise Rejection', data);
-	//}
+	if (isSystemError(exc)) {
+		if (!Config.production) {
+			console.error('Unhandled Promise Rejection', data);
+		}
+	}
 });
 
 exports.toHandleHttp = toHandleHttp;

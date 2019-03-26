@@ -36,9 +36,10 @@ let CmdLog = async ({session, whenCmdRqId}) => {
 			let hrtimeDiff = process.hrtime(hrtimeStart);
 			let cmdRec = {
 				cmd: cmd,
-				type: type,
 				output: gdsResult.output,
 				duration: hrtimeToDecimal(hrtimeDiff),
+				type: type,
+				scrolledCmd: state.scrolledCmd,
 				state: state,
 			};
 

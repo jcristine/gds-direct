@@ -129,7 +129,7 @@ class DisplayHistoryActionHelper {
 			'date': php.strtoupper(php.date('dM', php.strtotime('2016-' + $rcvd['rcvd']['receivedDt']['date']))),
 			'time': $rcvd['rcvd']['receivedDt']['time'],
 			'timeZone': $rcvd['rcvd']['receivedDt']['timeZone'],
-			'agent': $rcvd['rcvd']['originData']['receivedFrom'] || 'NO ID',
+			'agent': ($rcvd['rcvd']['originData'] || {})['receivedFrom'] || 'NO ID',
 			'pcc': $rcvd['rcvd']['pcc'],
 			'historical': $historical ? 'HISTORICAL SEGMENTS' : '',
 		};
@@ -204,7 +204,7 @@ class DisplayHistoryActionHelper {
 	/** @param $history = PnrHistoryParser::parse() */
 	static display($history) {
 		let $lines, $rcvdList, $firstRcvd, $rcvd;
-		if (!$history['rcvdList']) {
+		if (php.empty($history['rcvdList'])) {
 			return 'INVLD';
 		}
 		$lines = [

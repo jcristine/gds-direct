@@ -25,6 +25,8 @@ const MoveDownAllAction = require('./MoveDownAllAction.js');
 const AmadeusPnr = require('../../../../Rbs/TravelDs/AmadeusPnr.js');
 const AmadeusBuildItineraryAction = require('../../../../Rbs/GdsAction/AmadeusBuildItineraryAction.js');
 const MarriageItineraryParser = require('../../../../Gds/Parsers/Amadeus/MarriageItineraryParser.js');
+const AmadeusClient = require("../../../../../GdsClients/AmadeusClient");
+const makeDefaultAreaState = require("../../../../../Repositories/GdsSessions").makeDefaultAreaState;
 
 var require = translib.stubRequire;
 
@@ -286,10 +288,8 @@ class ProcessAmadeusTerminalInputAction {
 		return {'calledCommands': $calledCommands};
 	}
 
-	changeArea($area) {
-		let $calledCommands, $errorData, $sessionId, $areaRows, $isRequested, $row, $stopwatch, $newSession;
-
-		$calledCommands = [];
+	async changeArea($area) {
+		let $errorData, $sessionId, $areaRows, $isRequested, $row;
 
 		if (!php.in_array($area, this.constructor.AREA_LETTERS)) {
 			$errorData = {'area': $area, 'options': php.implode(', ', this.constructor.AREA_LETTERS)};
@@ -298,27 +298,32 @@ class ProcessAmadeusTerminalInputAction {
 		if (this.stateful.getSessionData()['area'] === $area) {
 			return {'errors': [Errors.getMessage(Errors.ALREADY_IN_THIS_AREA, {'area': $area})]};
 		}
-		$sessionId = this.getSessionData()['id'];
 		$areaRows = this.stateful.getAreaRows();
-		$isRequested = ($row) => $row['work_area_letter'] === $area;
+		$isRequested = ($row) => $row['area'] === $area;
 		$row = ArrayUtil.getFirst(Fp.filter($isRequested, $areaRows));
 
-		if (!$row) {
-			$newSession = this.stateful.startNewGdsSession();
-			$row = SessionStateHelper.makeNewAreaData({
-				'id': $sessionId,
-				'area': $area,
-				'internal_token': $newSession.getSessionToken(),
-				'pcc': GdsProfiles.AMADEUS.AMADEUS_PROD_1ASIWTUTICO,
-			});
+		let fullState = this.stateful.getFullState();
+		if (!fullState.areas[fullState.area].gdsData) {
+			// preserve area A session token
+			fullState.areas[fullState.area].gdsData = this.stateful.getGdsData();
+			this.stateful.updateFullState(fullState);
 		}
-		this.stateful.getLog().updateAreaState($row, {
-			'type': 'changeArea',
-			'duration': $stopwatch.stop()['timeDelta'],
-		});
+		if (!$row || !$row.gdsData) {
+			$row = makeDefaultAreaState('amadeus');
+			$row.area = $area;
+			$row.gdsData = await AmadeusClient.startSession({
+				profileName: GdsProfiles.chooseAmaProfile($row.pcc),
+			});
+			fullState.areas[$area] = $row;
+		}
+		fullState.area = $area;
+		await Promise.all([
+			this.stateful.updateFullState(fullState),
+			this.stateful.updateGdsData($row.gdsData),
+		]);
 
 		return {
-			'calledCommands': $calledCommands,
+			'calledCommands': [],
 			'userMessages': ['Successfully changed area to ' + $area],
 		};
 	}
@@ -390,7 +395,7 @@ class ProcessAmadeusTerminalInputAction {
 			await this.runCommand('IG'); // ignore the itinerary it initial area
 		}
 		$area = $emptyAreas[0];
-		$result = this.changeArea($area);
+		$result = await this.changeArea($area);
 		if (!php.empty($result['errors'])) {
 			return $result;
 		}
@@ -769,7 +774,8 @@ class ProcessAmadeusTerminalInputAction {
 	async getCurrentPnr() {
 		let $reservationDump;
 
-		$reservationDump = (new CmsAmadeusTerminal()).getFullPnrDump(this.stateful.getLog()) || await this.amadeusRt('RT');
+		$reservationDump = await (new CmsAmadeusTerminal())
+			.getFullPnrDump(this.stateful.getLog()) || await this.amadeusRt('RT');
 		return AmadeusPnr.makeFromDump($reservationDump);
 	}
 
@@ -1002,7 +1008,7 @@ class ProcessAmadeusTerminalInputAction {
 
 		$areas = [];
 		for ($area of Object.values($areasFromDb)) {
-			$areas[$area['work_area_letter']] = $area;
+			$areas[$area['area']] = $area;
 		}
 		$lines = [
 			'00000000         ' + $sessionData['pcc'],

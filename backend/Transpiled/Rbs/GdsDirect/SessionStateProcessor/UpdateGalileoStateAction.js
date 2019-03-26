@@ -296,7 +296,9 @@ class UpdateGalileoSessionStateAction
         $cmdParsed = CommandParser.parse($cmd);
         $flatCmds = php.array_merge([$cmdParsed], $cmdParsed['followingCommands'] || []);
         for ($cmdRec of Object.values($flatCmds)) {
-            $self.updateState($cmdRec['cmd'], $output);}
+            $self.updateState($cmdRec['cmd'], $output);
+        }
+        $self.$state.cmdType = $cmdParsed ? $cmdParsed.type : null;
         return $self.$state;
     }
 }

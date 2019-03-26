@@ -698,7 +698,7 @@ class CommandParser {
 			$availableCommands = [
 				'IA', 'IX', 'I', 'IC', 'IH', 'I', 'IN', 'IT',
 				'PW', 'PC', 'PD', 'R', 'N', 'PO', 'P', 'PP',
-				'P1', 'QM', 'PR', 'PRH', 'PS', 'PT', 'T'
+				'P1', 'QM', 'PR', 'PRH', 'PS', 'PT', 'T',
 			];
 			$parts = [];
 			$substr = php.explode('|', php.substr($cmd, 1));

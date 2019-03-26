@@ -161,8 +161,8 @@ class UpdateApolloStateAction {
 			}
 		} else if ($type == 'changeArea' && $gdsInterface.isSuccessChangeAreaOutput($output)) {
 			$areaData = $getAreaData($data);
-			$areaData['work_area_letter'] = $data;
-			$sessionState = SessionStateHelper.updateFromArea($sessionState, $areaData);
+			$areaData['area'] = $data;
+			$sessionState = {...$areaData};
 		} else if ($type === 'sell') {
 			if (ApolloBuildItineraryAction.isOutputValid($output) ||
 				ApolloAddCustomSegmentAction.parseAddSegmentOutput($clean)

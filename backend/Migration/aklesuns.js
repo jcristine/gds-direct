@@ -1,7 +1,7 @@
 
 let Airports = require('../Repositories/Airports.js');
 
-let Emc = require('../LibWrappers/Emc');
+let Emc = require('../LibWrappers/Emc.js');
 const Pccs = require("../Repositories/Pccs.js");
 const Airlines = require("../Repositories/Airlines");
 const BookingClasses = require("../Repositories/BookingClasses");
@@ -123,24 +123,31 @@ module.exports.migrations = [
 	},
 	{
 		name: 'GRECT/2019.02.26005-create-roles-amr',
-		perform: (db) => Emc.client.addRole([
-			{"name":"NEW_GDS_DIRECT_ACCESS","project":"GDSD","description":"Same as in RBS"},
-			{"name":"NEW_GDS_DIRECT_TICKETING","project":"GDSD","description":"Same as in RBS"},
-			{"name":"NEW_GDS_DIRECT_QUEUE_PROCESSING","project":"GDSD","description":"Same as in RBS"},
-			{"name":"NEW_GDS_DIRECT_PNR_SEARCH","project":"GDSD","description":"Same as in RBS"},
-			{"name":"NEW_GDS_DIRECT_EDIT_TICKETED_PNR","project":"GDSD","description":"Same as in RBS"},
-			{"name":"NEW_GDS_DIRECT_EDIT_VOID_TICKETED_PNR","project":"GDSD","description":"Same as in RBS"},
-			{"name":"NEW_GDS_DIRECT_CC_ACCESS","project":"GDSD","description":"Same as in RBS"},
-			{"name":"NEW_GDS_DIRECT_CONTACT_INFO_ACCESS","project":"GDSD","description":"Same as in RBS"},
-			{"name":"NEW_GDS_DIRECT_EMULATE_ANY_PCC","project":"GDSD","description":"Same as in RBS"},
-			{"name":"NEW_GDS_DIRECT_ANY_PCC_AVAILABILITY","project":"GDSD","description":"Same as in RBS"},
-			{"name":"NEW_GDS_DIRECT_CAN_EMULATE_TO_RESTRICTED_SABRE_PCCS","project":"GDSD","description":"Same as in RBS"},
-			{"name":"NEW_GDS_DIRECT_NO_LEAD_PNR","project":"GDSD","description":"Same as in RBS"},
-			{"name":"NEW_GDS_DIRECT_PRIVATE_PNR_ACCESS","project":"GDSD","description":"Same as in RBS"},
-			{"name":"NEW_GDS_DIRECT_MULTI_PCC_TARIFF_DISPLAY","project":"GDSD","description":"Same as in RBS"},
-			{"name":"NEW_GDS_DIRECT_PASTE_ITINERARY","project":"GDSD","description":"Same as in RBS"},
-			{"name":"NEW_GDS_DIRECT_HHMCO","project":"GDSD","description":"Same as in RBS"},
-		]),
+		perform: async (db) => {
+			let emc = await Emc.getClient();
+			return emc.addRole([
+				{"name": "NEW_GDS_DIRECT_ACCESS", "project": "GDSD", "description": "Same as in RBS"},
+				{"name": "NEW_GDS_DIRECT_TICKETING", "project": "GDSD", "description": "Same as in RBS"},
+				{"name": "NEW_GDS_DIRECT_QUEUE_PROCESSING", "project": "GDSD", "description": "Same as in RBS"},
+				{"name": "NEW_GDS_DIRECT_PNR_SEARCH", "project": "GDSD", "description": "Same as in RBS"},
+				{"name": "NEW_GDS_DIRECT_EDIT_TICKETED_PNR", "project": "GDSD", "description": "Same as in RBS"},
+				{"name": "NEW_GDS_DIRECT_EDIT_VOID_TICKETED_PNR", "project": "GDSD", "description": "Same as in RBS"},
+				{"name": "NEW_GDS_DIRECT_CC_ACCESS", "project": "GDSD", "description": "Same as in RBS"},
+				{"name": "NEW_GDS_DIRECT_CONTACT_INFO_ACCESS", "project": "GDSD", "description": "Same as in RBS"},
+				{"name": "NEW_GDS_DIRECT_EMULATE_ANY_PCC", "project": "GDSD", "description": "Same as in RBS"},
+				{"name": "NEW_GDS_DIRECT_ANY_PCC_AVAILABILITY", "project": "GDSD", "description": "Same as in RBS"},
+				{
+					"name": "NEW_GDS_DIRECT_CAN_EMULATE_TO_RESTRICTED_SABRE_PCCS",
+					"project": "GDSD",
+					"description": "Same as in RBS"
+				},
+				{"name": "NEW_GDS_DIRECT_NO_LEAD_PNR", "project": "GDSD", "description": "Same as in RBS"},
+				{"name": "NEW_GDS_DIRECT_PRIVATE_PNR_ACCESS", "project": "GDSD", "description": "Same as in RBS"},
+				{"name": "NEW_GDS_DIRECT_MULTI_PCC_TARIFF_DISPLAY", "project": "GDSD", "description": "Same as in RBS"},
+				{"name": "NEW_GDS_DIRECT_PASTE_ITINERARY", "project": "GDSD", "description": "Same as in RBS"},
+				{"name": "NEW_GDS_DIRECT_HHMCO", "project": "GDSD", "description": "Same as in RBS"},
+			]);
+		},
 	},
 	{
 		name: 'GRECT/2019.02.27002-create-airports-table',

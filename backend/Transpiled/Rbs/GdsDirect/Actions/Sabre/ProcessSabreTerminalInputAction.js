@@ -141,7 +141,7 @@ class ProcessSabreTerminalInputAction {
 		for ($cmdRecord of Object.values($commands)) {
 			$parsed = CommandParser.parse($cmdRecord['cmd']);
 			$flatCmds = php.array_merge([$parsed], $parsed['followingCommands']);
-			for (let flatCmd of $flatCmds) {
+			for (let flatCmd of Object.values($flatCmds)) {
 				result.push(flatCmd);
 			}
 		}
@@ -299,7 +299,7 @@ class ProcessSabreTerminalInputAction {
 				|| $cmdRow['cmd'] === 'IR'
 				|| php.preg_match(/^\*[A-Z]{6}$/, $cmdRow['cmd']);
 		};
-		$lastCmds = this.stateful.getLog().getLastStateSafeCommands();
+		$lastCmds = await this.stateful.getLog().getLastStateSafeCommands();
 		$pnrDump = (ArrayUtil.getLast(Fp.filter($showsFullPnr, $lastCmds)) || {})['output'] || await this.runCommand('*R');
 		return SabrePnr.makeFromDump($pnrDump);
 	}
@@ -422,7 +422,7 @@ class ProcessSabreTerminalInputAction {
 
 		$isOccupied = ($row) => $row['has_pnr'];
 		$occupiedRows = Fp.filter($isOccupied, this.stateful.getAreaRows());
-		$occupiedAreas = php.array_column($occupiedRows, 'work_area_letter');
+		$occupiedAreas = php.array_column($occupiedRows, 'area');
 		$occupiedAreas.push(this.getSessionData()['area']);
 		return php.array_values(php.array_diff(['A', 'B', 'C', 'D', 'E', 'F'], $occupiedAreas));
 	}
@@ -433,7 +433,7 @@ class ProcessSabreTerminalInputAction {
 			Object.values(fullState.areas).some(a => !a.pcc)
 		) {
 			// Sabre requires "logging" into all areas before
-			// switching between them, our our OIATH trick will fail
+			// switching between them, or our OIATH trick will fail
 			let siOutput = await this.runCommand('SI*');
 			let siMatch = siOutput.match(/^([A-Z0-9]{3,4})\.([A-Z0-9]{3,4})\*AWS((?:\.[A-Z])+)/);
 			if (siMatch) {
@@ -454,17 +454,19 @@ class ProcessSabreTerminalInputAction {
 
 		// '§OIATH' - needed to extract the new session token,
 		// since current gets discarded on area change
-		let cmd = '¤' + $area + '§OIATH';
-		let out = await this.runCommand(cmd);
-		let athMatch = out.match(/^ATH:(.*)!.*/);
+		let areaCmd = '¤' + $area;
+		let cmd = areaCmd + '§OIATH';
+		let cmdRec = await this.runCmd(cmd);
+		let athMatch = cmdRec.output.match(/^ATH:(.*)!.*/);
 		if (athMatch) {
 			let newToken = athMatch[1];
 			let gdsData = this.stateful.getGdsData();
 			gdsData.binarySecurityToken = newToken;
 			this.stateful.updateGdsData(gdsData);
-			return {'calledCommands': [{'cmd': cmd, 'output': out}]};
+			let cmdRecs = [{...cmdRec, cmd: areaCmd, output: 'Successfully changed area to ' + $area}];
+			return {'calledCommands': cmdRecs};
 		} else {
-			return UnprocessableEntity('Could not change are to ' + $area + ' - ' + out.trim());
+			return UnprocessableEntity('Could not change are to ' + $area + ' - ' + cmdRec.output.trim());
 		}
 	}
 
@@ -484,7 +486,7 @@ class ProcessSabreTerminalInputAction {
 		}
 		$sessionId = this.getSessionData()['id'];
 		$areaRows = this.stateful.getAreaRows();
-		$isRequested = ($row) => $row['work_area_letter'] === $area;
+		$isRequested = ($row) => $row['area'] === $area;
 		$row = ArrayUtil.getFirst(Fp.filter($isRequested, $areaRows));
 
 		if (!$row) {
@@ -540,7 +542,7 @@ class ProcessSabreTerminalInputAction {
 		}
 		$area = $emptyAreas[0];
 		$areaChange = await this.changeArea($area);
-		if ($errors = $areaChange['errors'] || []) {
+		if (!php.empty($errors = $areaChange['errors'] || [])) {
 			return {'errors': $errors};
 		} else if (this.getSessionData()['area'] !== $area) {
 			$error = Errors.getMessage(Errors.FAILED_TO_CHANGE_AREA, {
@@ -672,15 +674,15 @@ class ProcessSabreTerminalInputAction {
 				'errors': [$error],
 			};
 		} else {
+			let cmdRec = $result.pnrCmdRec;
 			if ($fallbackToGk) {
-				$cmd = 'WC' + php.implode('\/', $newSegments.map(($seg) => $seg['segmentNumber'] + $seg['bookingClass']));
-				await this.runCommand($cmd);
+				$cmd = 'WC' + php.implode('/', $newSegments.map(($seg) => $seg['segmentNumber'] + $seg['bookingClass']));
+				cmdRec = await this.runCmd($cmd);
 			}
-			this.stateful.flushCalledCommands();
 			$sortResult = await this.processSortItinerary()
 				.catch(exc => ({errors: ['Did not SORT' + exc]}));
 			if (!php.empty($sortResult['errors'])) {
-				return {'calledCommands': this.stateful.flushCalledCommands()};
+				return {'calledCommands': [cmdRec]};
 			} else {
 				return {'calledCommands': $sortResult['calledCommands']};
 			}
@@ -1022,23 +1024,35 @@ class ProcessSabreTerminalInputAction {
 	}
 
 	async execute($cmdRequested) {
-		let $callResult, $errors, $status, $calledCommands, $userMessages;
+		let $callResult, $errors, $status, $userMessages;
+		let calledCommands = [];
+
+		if ($cmdRequested.match(/^.+\/MDA$/)) {
+			// no /MDA in sabre
+			$cmdRequested = $cmdRequested.slice(0, -'/MDA'.length);
+		}
+
+		let areaState = this.stateful.getSessionData();
+		if (areaState.area === 'A' && !areaState.scrolledCmd) {
+			// ensure we are emulated in 6IIF on startup
+			calledCommands.push(await this.stateful.runCmd('AAA6IIF'));
+		}
 
 		$callResult = await this.processRequestedCommand($cmdRequested);
 
 		if (!php.empty($errors = $callResult['errors'])) {
 			$status = GdsDirect.STATUS_FORBIDDEN;
-			$calledCommands = $callResult['calledCommands'] || [];
+			calledCommands.push(...$callResult['calledCommands'] || []);
 			$userMessages = $errors;
 		} else {
 			$status = GdsDirect.STATUS_EXECUTED;
-			$calledCommands = $callResult['calledCommands'];
+			calledCommands.push(...$callResult['calledCommands']);
 			$userMessages = $callResult['userMessages'] || [];
 		}
 
 		return {
 			'status': $status,
-			'calledCommands': $calledCommands.map(a => a),
+			'calledCommands': calledCommands,
 			'userMessages': $userMessages,
 		};
 	}

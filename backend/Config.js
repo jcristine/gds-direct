@@ -4,13 +4,14 @@ let PersistentHttpRq = require('./Utils/PersistentHttpRq.js');
 
 let isProd = env.NODE_ENV === 'production';
 
-let Config = {
-
+let StaticConfig = {
 	mantisId: 677,
-
 	production: isProd,
+};
 
-	// set by fetchExternalConfig()
+/** will likely be fetched from LAN one day */
+let hardcodedConfig = {
+	// set by fetchDbConfig()
 	DB_HOST: null,
 	DB_USER: null,
 	DB_PASS: null,
@@ -19,10 +20,13 @@ let Config = {
 
 	RBS_PASSWORD: env.RBS_PASSWORD,
 
+	// set by fetchRedisConfig()
 	REDIS_HOST: env.REDIS_HOST,
 	REDIS_PORT: env.REDIS_PORT,
+
+	// set by admins in env variable
 	SOCKET_PORT: env.SOCKET_PORT || 3022,
-	HTTP_PORT: env.HTTP_PORT || 3011,
+	HTTP_PORT: env.HTTP_PORT || 3012,
 	HOST: env.HOST || '0.0.0.0',
 
 	external_service: {
@@ -59,55 +63,58 @@ let Config = {
 			password: isProd ? 'zB3+(nCy' : 'qwerty',
 		},
 	},
+};
 
-	apolloAuthToken: env.apolloAuthToken,
+let fetchDbConfig = (dbUrl) => PersistentHttpRq({
+	url: dbUrl,
+	method: 'GET',
+	dropConnection: true,
+}).then(rs => JSON.parse(rs.body)).then((body) => {
+	let dbConfig = {};
+	if (body['dbhost'] && body.dbhost.length) {
+		dbConfig.DB_USER = body.dbuser;
+		dbConfig.DB_PASS = body.dbpass;
+		dbConfig.DB_NAME = body.dbname;
+		// should probably support when there are more of them...
+		const host = body.dbhost[0];
+		const h = host.split(":");
+		dbConfig.DB_HOST = h[0];
+		dbConfig.DB_PORT = parseInt(h[1]);
+	}
+	return dbConfig;
+});
 
-	fetchExternalConfig: () => {
-		const dbUrl = env.CONFIG_LAN + '/db.php?db=' + env.DB_NAME;
-		const redisUrl = env.CONFIG_LAN + '/v0/redis/' + env.REDIS_CLUSTER_NAME;
-		const promise = [];
+let fetchRedisConfig = (redisUrl) => PersistentHttpRq({
+	url: redisUrl,
+	method: 'GET',
+}).then(rs => JSON.parse(rs.body)).then((body) => {
+	let redisConfig = {};
+	if (body && body.length) {
+		const t = body[0].split(':');
+		redisConfig.REDIS_HOST = t[0];
+		redisConfig.REDIS_PORT = parseInt(t[1]);
+	}
+	return redisConfig;
+});
 
-		promise.push(PersistentHttpRq({
-			url: dbUrl,
-			method: 'GET',
-			dropConnection: true,
-		}).then(rs => JSON.parse(rs.body)).then((body) => {
-			if (body['dbhost'] && body.dbhost.length) {
-				Config.DB_USER = body.dbuser;
-				Config.DB_PASS = body.dbpass;
-				Config.DB_NAME = body.dbname;
-				// should probably support when there are more of them...
-				const host = body.dbhost[0];
-				const h = host.split(":");
-				Config.DB_HOST = h[0];
-				Config.DB_PORT = parseInt(h[1]);
-			}
-		}));
+let fetchExternalConfig = () => {
+	const dbUrl = env.CONFIG_LAN + '/db.php?db=' + env.DB_NAME;
+	const redisUrl = env.CONFIG_LAN + '/v0/redis/' + env.REDIS_CLUSTER_NAME;
+	const promises = [];
 
-		promise.push(PersistentHttpRq({
-			url: redisUrl,
-			method: 'GET',
-		}).then(rs => JSON.parse(rs.body)).then((body) => {
-			if (body && body.length) {
-				const t = body[0].split(':');
-				Config.REDIS_HOST = t[0];
-				Config.REDIS_PORT = parseInt(t[1]);
-			}
-		}));
+	promises.push(fetchDbConfig(dbUrl));
+	promises.push(fetchRedisConfig(redisUrl));
 
-		return Promise.all(promise)
-			.then(() => {
-				// make some validation
-			});
-	},
+	return Promise.all(promises)
+		.then((configs) => Object.assign({}, ...configs));
 };
 
 let fetching = null;
-Config.getConfig = async () => {
+StaticConfig.getConfig = async () => {
 	if (fetching) {
 		return fetching;
 	}
-	if (!Config.production) {
+	if (!isProd) {
 		let defaults = {
 			NODE_ENV: 'development',
 			HOST: '0.0.0.0',
@@ -120,12 +127,14 @@ Config.getConfig = async () => {
 			RBS_PASSWORD: "qwerty",
 		};
 		for (let [k, v] of Object.entries(defaults)) {
-			Config[k] = Config[k] || v;
+			StaticConfig[k] = StaticConfig[k] || v;
 			env[k] = env[k] || v;
 		}
 	}
-	fetching = Config.fetchExternalConfig().then(() => Config);
+	fetching = fetchExternalConfig().then((lanConfig) => {
+		return Object.assign({}, StaticConfig, hardcodedConfig, lanConfig);
+	});
 	return fetching;
 };
 
-module.exports = Config;
+module.exports = StaticConfig;

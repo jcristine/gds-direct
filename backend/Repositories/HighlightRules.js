@@ -1,13 +1,18 @@
 
 let Db = require("../Utils/Db.js");
+let Redis = require('../LibWrappers/Redis.js');
 let MultiLevelMap = require('../Utils/MultiLevelMap.js');
-let {admins} = require('./../Constants.js');
-let {Forbidden} = require('./../Utils/Rej.js');
+let {admins} = require('../Constants.js');
+let {Forbidden} = require('../Utils/Rej.js');
+
+const TABLE = 'highlightRules';
+const TABLE_CMD = 'highlightCmdPatterns';
+const TABLE_OUTPUT = 'highlightOutputPatterns';
 
 let fetchFromDb = () => Db.with((db) => Promise.all([
-	db.fetchAll({table: 'highlightRules'}),
-	db.fetchAll({table: 'highlightCmdPatterns'}),
-	db.fetchAll({table: 'highlightOutputPatterns'}),
+	db.fetchAll({table: TABLE}),
+	db.fetchAll({table: TABLE_CMD}),
+	db.fetchAll({table: TABLE_OUTPUT}),
 ]).then(/**
  * @param {IHighlightRules[]}         highlightRules
  * @param {highlightCmdPatterns[]}    highlightCmdPatterns
@@ -35,7 +40,7 @@ let toCamelCase = ($value) => {
 };
 
 /** @return {IFullHighlightData} */
-exports.getFullDataForAdminPage = () => fetchFromDb().then(({
+let getFullDataForAdminPage = () => fetchFromDb().then(({
 	highlightRules,
 	highlightOutputPatterns,
 	highlightCmdPatterns,
@@ -57,9 +62,60 @@ exports.getFullDataForAdminPage = () => fetchFromDb().then(({
 	return {aaData: aaData};
 });
 
-/** @param {ISaveHighlightRuleParams} rqBody
- * @param {IEmcResult} emcResult */
-exports.saveRule = (rqBody, emcResult) => Db.with(db => {
+// TODO: merge with getFullDataForAdminPage() somehow if possible
+let fetchFullDataForService = async () => {
+	let record = await fetchFromDb();
+	let mapping = {};
+	for (let rule of record.highlightRules) {
+		mapping[rule.id] = rule;
+	}
+	for (let cmdPattern of record.highlightCmdPatterns) {
+		if (mapping[cmdPattern.ruleId]) {
+			mapping[cmdPattern.ruleId].cmdPatterns = mapping[cmdPattern.ruleId].cmdPatterns || [];
+			mapping[cmdPattern.ruleId].cmdPatterns.push(cmdPattern);
+		}
+	}
+	for (let pattern of record.highlightOutputPatterns) {
+		if (mapping[pattern.ruleId]) {
+			mapping[pattern.ruleId].patterns = mapping[pattern.ruleId].patterns || [];
+			mapping[pattern.ruleId].patterns.push(pattern);
+		}
+	}
+	return mapping;
+};
+
+let lastUpdateMs = null;
+let whenRuleMapping = null;
+
+let didCacheExpire = async (lastUpdateMs) => {
+	if (!lastUpdateMs) {
+		return true;
+	} else if (Date.now() - lastUpdateMs < 10 * 1000) {
+		// ping Redis not more often than once in 10 seconds
+		// actually could make this timeout much greater, like 10 minutes,
+		// if all requests worked via web-sockets: setting just 10 seconds
+		// because user would want to see changes ~instantly while editing
+		return false;
+	} else {
+		let redis = await Redis.getClient();
+		let key = Redis.keys.HIGHLIGHT_RULES_UPDATE_MS;
+		let updateMs = await redis.get(key).catch(exc => null);
+		return updateMs && lastUpdateMs < updateMs;
+	}
+};
+
+let invalidateCache = async () => {
+	let key = Redis.keys.HIGHLIGHT_RULES_UPDATE_MS;
+	let redis = await Redis.getClient();
+	lastUpdateMs = null;
+	return redis.set(key, Date.now());
+};
+
+/**
+ * @param {ISaveHighlightRuleParams} rqBody
+ * @param {IEmcResult} emcResult
+ */
+let saveRule = (rqBody, emcResult) => Db.with(db => {
 	if (!admins.includes(+emcResult.user.id)) {
 		return Forbidden('You (' + emcResult.user.displayName + ') are not listed as an admin of this project, so you can not change rules');
 	}
@@ -69,7 +125,7 @@ exports.saveRule = (rqBody, emcResult) => Db.with(db => {
 			decoration.push(key);
 		}
 	}
-	return db.writeRows('highlightRules', [{
+	return db.writeRows(TABLE, [{
 		id: rqBody.id || undefined,
 		highlightGroup: rqBody.highlightGroup,
 		color: rqBody.color,
@@ -92,7 +148,7 @@ exports.saveRule = (rqBody, emcResult) => Db.with(db => {
 		let promises = [];
 		for (let gds in rqBody.languages) {
 			let rec = rqBody.languages[gds];
-			promises.push(db.writeRows('highlightCmdPatterns', [{
+			promises.push(db.writeRows(TABLE_CMD, [{
 				ruleId: ruleId,
 				dialect: gds,
 				cmdPattern: rec.cmdPattern,
@@ -101,14 +157,27 @@ exports.saveRule = (rqBody, emcResult) => Db.with(db => {
 		}
 		for (let gds in rqBody.gds) {
 			let rec = rqBody.gds[gds];
-			promises.push(db.writeRows('highlightOutputPatterns', [{
+			promises.push(db.writeRows(TABLE_OUTPUT, [{
 				ruleId: ruleId,
 				gds: gds,
 				pattern: rec.pattern,
 			}]));
 		}
 		return Promise.all(promises);
-	}).then(results => ({
-		message: 'Written to DB successfully with ' + results.length + ' sub-queries',
-	}));
+	}).then(results => {
+		invalidateCache();
+		return ({
+			message: 'Written to DB successfully with ' + results.length + ' sub-queries',
+		});
+	});
 });
+
+exports.getFullDataForAdminPage = getFullDataForAdminPage;
+exports.saveRule = saveRule;
+exports.getFullDataForService = async () => {
+	if (await didCacheExpire(lastUpdateMs)) {
+		whenRuleMapping = fetchFullDataForService();
+		lastUpdateMs = Date.now();
+	}
+	return whenRuleMapping;
+};

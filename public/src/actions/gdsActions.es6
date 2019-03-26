@@ -22,8 +22,8 @@ const update_cur_gds = (sessionInfo) => {
 
 	return {
 		log,
-		canCreatePq
-	}
+		canCreatePq,
+	};
 };
 
 export const CHANGE_GDS = gdsName => {
@@ -41,13 +41,56 @@ export const CHANGE_GDS = gdsName => {
 		gdsObjIndex : getStore().app.Gds.getCurrentIndex(),
 		fontSize,
 		language,
-		theme
+		theme,
 	});
 };
 
 export const UPDATE_CUR_GDS = props => {
-
 	getStore().setState({
-		...update_cur_gds(props)
+		...update_cur_gds(props),
 	});
+};
+
+export const UPDATE_ALL_AREA_STATE = (gds, fullState) => {
+	let updateArea = (area) => UPDATE_CUR_GDS({
+		canCreatePqErrors: [],
+		area: area,
+		pcc: ((fullState.areas || {})[area] || {}).pcc,
+		canCreatePq: ((fullState.areas || {})[area] || {}).can_create_pq,
+		pricingCmd: ((fullState.areas || {})[area] || {}).pricing_cmd,
+		hasPnr: ((fullState.areas || {})[area] || {}).has_pnr,
+		recordLocator: ((fullState.areas || {})[area] || {}).record_locator,
+		startNewSession: false,
+		gdsName: gds,
+	});
+	for (let area of AREA_LIST) {
+		updateArea(area); // set data of each area
+	}
+	updateArea(fullState.area); // set current area
+};
+
+/**
+ * update PCC-s displayed on each area button if not signed in yet
+ * @param saveData = at('keySettings.es6').Context.prototype._collectSaveData()
+ */
+export const UPDATE_DEFAULT_AREA_PCCS = (gdsToSetting) => {
+	for (let [gdsName, gdsSetting] of Object.entries(gdsToSetting)) {
+		let gdsUnit = getStore().app.Gds.getGds(gdsName);
+		if (!gdsUnit) continue; // just in case
+
+		let idxToInfo = gdsUnit.get('idxToInfo') || {};
+		for (let areaSetting of gdsSetting.areaSettings) {
+			let defaultPcc = areaSetting.defaultPcc;
+			let area = areaSetting.area;
+			let areaIdx = AREA_LIST.indexOf(area);
+			let areaInfo = idxToInfo[areaIdx] || {};
+			if (areaInfo.pcc) continue; // some PCC already emulated
+
+			let idxToPcc = getStore().app.Gds.getGds(gdsName).get('pcc');
+			if (idxToPcc[areaIdx] == defaultPcc) continue;
+
+			getStore().app.Gds.update({pcc: {...idxToPcc, [areaIdx]: defaultPcc}}, gdsName);
+			getStore().setState({}); // to redraw UI
+		}
+	}
 };

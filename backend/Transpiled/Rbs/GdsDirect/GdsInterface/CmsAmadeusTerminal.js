@@ -37,10 +37,10 @@ class CmsAmadeusTerminal
         }
     }
 
-    getFullRtFormatDump($cmdLog, $cmd)  {
+    async getFullRtFormatDump($cmdLog, $cmd)  {
         let $safeCmds, $mdrs, $cmdRec, $joined;
 
-        $safeCmds = $cmdLog.getLastStateSafeCommands();
+        $safeCmds = await $cmdLog.getLastStateSafeCommands();
         $mdrs = [];
 
         for ($cmdRec of Object.values($safeCmds)) {
@@ -58,9 +58,9 @@ class CmsAmadeusTerminal
         return this.joinRtMdrs($mdrs) || null;
     }
 
-    getFullPnrDump($cmdLog)  {
+    async getFullPnrDump($cmdLog)  {
 
-        return this.getFullRtFormatDump($cmdLog, 'RT');
+        return await this.getFullRtFormatDump($cmdLog, 'RT');
     }
 
     parseSavePnr($dump, $keptInSession)  {

@@ -101,7 +101,7 @@ php.min = (...args) => {
 php.call_user_func = (func, arg) => normFunc(func)(arg);
 
 let normalizeJsonData = data => {
-	if (typeof data === 'object') {
+	if (typeof data === 'object' && data !== null) {
 		let entries = Object.entries(data);
 		// casts [] with string keys to {}
 		let isRealArray = Array.isArray(data) &&
@@ -626,9 +626,11 @@ php.array_filter = (obj, func, flags = null) => {
 	if (flags) {
 		throw new Error('array_filter php flags are not supported');
 	}
-	let newObj = Array.isArray(obj) ? [] : {};
+	let isArr = Array.isArray(obj);
+	let newObj = isArr ? [] : {};
 	for (let [key, val] of Object.entries(obj)) {
 		if (func(val)) {
+			// note that for ... of will include empty indices, but Object.values won't
 			newObj[key] = val;
 		}
 	}

@@ -351,7 +351,7 @@ class SessionStateProcessorTest extends require('../../../../../../backend/Trans
                         ' 5 DL 140T 17JUL MSPCDG SS2   424P  730A|*      MO/TU   E',
                         '><',
                     ]),
-                    'state': {'area': 'A', 'pcc': '2G55', 'can_create_pq': false, 'has_pnr': true, 'is_pnr_stored': false},
+                    'state': {'area': 'A', 'pcc': '2G55', 'can_create_pq': true, 'has_pnr': true, 'is_pnr_stored': false},
                 },
                 {
                     'cmd': 'X3|4',

@@ -30,12 +30,7 @@ class Store
 
 	updateView(props)
 	{
-		store.app.calculateMatrix();
-
-		this.setState({
-			...props,
-			curGds	: store.app.Gds.getCurrent()
-		})
+		store.app.calculateMatrix(props);
 	}
 }
 

@@ -15,7 +15,7 @@ export class GDS_UNIT
 
 			matrix			: matrix || getStorageMatrix(),
 			sessionIndex 	: AREA_LIST.indexOf( area ),
-			defaultPcc		: settings.pcc || null,
+			// area index to PCC mapping
 			pcc				: {},
 			canCreatePq		: false, //1
 			canCreatePqErrors: [],
@@ -28,6 +28,8 @@ export class GDS_UNIT
 			fontSize		: settings.fontSize || 1,
 			keyBindings		: settings.keyBindings || {},
 			theme			: settings.theme || 4,
+			// area index to session state info mapping
+			idxToInfo		: {},
 		};
 
 		return this;

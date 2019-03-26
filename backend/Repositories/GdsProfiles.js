@@ -4,10 +4,38 @@ let Rej = require('../Utils/Rej.js');
 const RbsClient = require("../IqClients/RbsClient");
 let {mand} = require('../Utils/Misc.js');
 
+
+const TRAVELPORT = StrConsts({
+	// apollo
+	get DynApolloProd_1O3K() { never(); }, // importPnr
+	get DynApolloCopy_1O3K() { never(); }, // importPnr dev
+	get DynApolloProd_2F3K() { never(); }, // GDS Direct
+	get DynApolloProd_2G55() { never(); }, // GDS Direct old
+	// galileo
+	get DynGalileoProd_711M() { never(); },
+});
+
+const SABRE = StrConsts({
+	get SABRE_PROD_L3II() { never(); },
+	get SABRE_PROD_Z2NI() { never(); },
+	get SABRE_PROD_6IIF() { never(); },
+	get SABRE_PROD_8ZFH() { never(); },
+});
+
+const AMADEUS = StrConsts({
+	get AMADEUS_TEST_1ASIWTUTICO() { never(); },
+	get AMADEUS_PROD_1ASIWTUTICO() { never(); },
+	// To login in GoWay Canada PCCs: LAXGO3106 & YTOGO310E
+	get AMADEUS_PROD_1ASIWTUT0GW() { never(); },
+	// for NYC1S21P8
+	get AMADEUS_PROD_1ASIWTUTDTT() { never(); },
+});
+
 /** @return Promise<IGdsProfileMap> */
 let getAll = async () => {
 	let redisKey = Redis.keys.USER_TO_TMP_SETTINGS + ':6206';
-	let dataStr = await Redis.client.hget(redisKey, 'gdsProfiles');
+	let redis = await Redis.getClient();
+	let dataStr = await redis.hget(redisKey, 'gdsProfiles');
 	if (dataStr) {
 		return JSON.parse(dataStr);
 	} else {
@@ -42,7 +70,12 @@ let whenSessionLimits = null;
 let getSessionLimits = async () => {
 	if (!whenSessionLimits) {
 		whenSessionLimits = RbsClient.getSessionLimits()
-			.then(rs => rs.result.result.gdsUsers['GDSD']);
+			.then(rs => rs.result.result.gdsUsers['GDSD'])
+			.catch(exc => [
+				// fallback limits - low enough to not affect RBS
+				{gds: 'apollo', gds_profile: TRAVELPORT.DynApolloProd_2F3K, session_limit: 200},
+				{gds: 'sabre', gds_profile: SABRE.SABRE_PROD_L3II, session_limit: 50},
+			]);
 	}
 	return whenSessionLimits;
 };
@@ -59,31 +92,9 @@ exports.getLimit = async (gds, profileName) => {
 	return null;
 };
 
-exports.TRAVELPORT = StrConsts({
-	// apollo
-	get DynApolloProd_1O3K() { never(); }, // importPnr
-	get DynApolloCopy_1O3K() { never(); }, // importPnr dev
-	get DynApolloProd_2F3K() { never(); }, // GDS Direct
-	get DynApolloProd_2G55() { never(); }, // GDS Direct old
-	// galileo
-	get DynGalileoProd_711M() { never(); },
-});
-
-exports.AMADEUS = StrConsts({
-	get AMADEUS_TEST_1ASIWTUTICO() { never(); },
-	get AMADEUS_PROD_1ASIWTUTICO() { never(); },
-	// To login in GoWay Canada PCCs: LAXGO3106 & YTOGO310E
-	get AMADEUS_PROD_1ASIWTUT0GW() { never(); },
-	// for NYC1S21P8
-	get AMADEUS_PROD_1ASIWTUTDTT() { never(); },
-});
-
-exports.SABRE = StrConsts({
-	get SABRE_PROD_L3II() { never(); },
-	get SABRE_PROD_Z2NI() { never(); },
-	get SABRE_PROD_6IIF() { never(); },
-	get SABRE_PROD_8ZFH() { never(); },
-});
+exports.TRAVELPORT = TRAVELPORT;
+exports.AMADEUS = AMADEUS;
+exports.SABRE = SABRE;
 
 exports.getTravelport = (profileName) =>
 	getOne('travelport', profileName).then(data => ({

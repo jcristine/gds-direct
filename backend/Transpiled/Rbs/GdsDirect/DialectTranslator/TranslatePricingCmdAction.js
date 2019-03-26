@@ -457,7 +457,7 @@ class TranslatePricingCmdAction {
 			if (!php.is_null($translated)) {
 				$result[$key] = $translated;
 			} else {
-				console.error('\nCould not translate pricing cmd part ' + $key + ' - ' + $value, $typeToModData);
+				//console.error('\nCould not translate pricing cmd part ' + $key + ' - ' + $value, $typeToModData);
 				return null;
 			}
 		}

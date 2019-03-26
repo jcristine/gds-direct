@@ -24,7 +24,7 @@ export default class Terminal
 			gds 		: this.settings['gds'],
 			numOfRows 	: this.numOfRows,
 			numOfChars 	: this.numOfChars,
-			charHeight 	: this.charHeight
+			charHeight 	: this.charHeight,
 		});
 
 		if (this.settings.name === 0) // when all terminals init at once first is current but never gets selected
@@ -73,7 +73,7 @@ export default class Terminal
 			this.plugin.resize({
 				numOfChars 	: this.numOfChars,
 				numOfRows 	: this.numOfRows,
-				charHeight	: this.charHeight
+				charHeight	: this.charHeight,
 			});
 		} else
 		{

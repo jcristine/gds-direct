@@ -31,6 +31,7 @@ let makeSabre = () => {
 	let section = document.createElement('div');
 	let label = document.createElement('span');
 	let a = document.createElement('a');
+	a.setAttribute('target', '_blank');
 
 	a.textContent = 'formats';
 	a.setAttribute('href', GdsDirectPlusParams.rootUrl + '/public/help/sabre.html');
