@@ -191,7 +191,9 @@ window.InitGdsDirectPlusApp = (params) => {
 			.catch(() => Promise.resolve()
 				.then(() => params.getCrossAuthToken())
 				.then(token => token ? token : Promise.reject('Provided cross-auth token was empty'))
-				.then(token => fetch(rootUrl + '/authorizeEmcToken?token=' + token))
+				.then(token => fetch(rootUrl + '/authorizeEmcToken?token=' + token, {
+					headers: {'Cache-Control': 'no-cache'},
+				}))
 				.then(rs => rs.json()).then(data => data.emcSessionId)
 				.then(emcSessionId => {
 					document.cookie = 'GDS_DIRECT_PLUS_AUTH=' + emcSessionId;
