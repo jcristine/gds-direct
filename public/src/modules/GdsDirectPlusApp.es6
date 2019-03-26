@@ -167,7 +167,7 @@ export default class GdsDirectPlusApp
 	}
 
 	// used by Component framework
-	calculateMatrix()
+	calculateMatrix(props = {})
 	{
 		if (this.container.context.offsetParent === null) {
 			// terminal tab is hidden, can't recalculate since clientWidth will be 0
@@ -220,6 +220,12 @@ export default class GdsDirectPlusApp
 		{
 			this.calculateHasWide(dimensions, rows);
 		}
+
+		let store = getStore();
+		store.setState({
+				...props,
+				curGds  : store.app.Gds.getCurrent(),
+		});
 
 		return this;
 	}
