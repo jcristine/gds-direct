@@ -64,52 +64,19 @@ class ApolloMakeMcoAction extends AbstractGdsAction
         };
     }
 
-    static getPositions($cmd)  {
-        let $positions, $makeStartAndLength;
-        $positions = AbstractMaskParser.getMaskTokenPositions($cmd);
-        $makeStartAndLength = ($tuple) => {
-            let $start, $end;
-            [$start, $end] = $tuple;
-            return [$start, $end - $start + 1];
-        };
-        return Fp.map($makeStartAndLength, $positions);
-    }
-
-    static overwriteStr($str, $needle, $position)  {
-        let $replaceLength;
-        $replaceLength = php.mb_strlen($needle);
-        if ($replaceLength) {
-            return php.mb_substr($str, 0, $position)+$needle+php.mb_substr($str, $position + $replaceLength);
-        } else {
-            return $str;
-        }
-    }
-
-    static makeCmd($params)  {
-        let $cmd, $positions, $fields, $missingFields, $field, $start, $length, $token;
+    static async makeCmd($params)  {
         $params = php.array_merge(this.getDefaultParams(), $params);
         $params['expirationDate'] = php.date('my', php.strtotime($params['expirationDate']));
-        $cmd = this.getMask();
-        $positions = this.getPositions($cmd);
-        $fields = this.getFields();
-        $missingFields = php.array_keys(php.array_diff_key(php.array_flip($fields), $params));
-        if (!php.empty($missingFields)) {
-            throw new Error('Missing necessary params for MCO: ['+php.implode(', ', $missingFields)+']');
-        }
-        let tuples = Fp.zip([$fields, $positions]);
-        for ([$field, [$start, $length]] of tuples) {
-            $token = $params[$field] || '';
-            if (php.mb_strlen($token) > $length) {
-                $token = php.mb_substr($token, 0, $length);
-            }
-            $cmd = this.overwriteStr($cmd, $token, $start);
-        }
-        return $cmd;
+        return AbstractMaskParser.makeCmd({
+            baseMask: this.getMask(),
+            fields: this.getFields(),
+            params: $params,
+        });
     }
 
     async execute($params)  {
         let $cmd, $result;
-        $cmd = this.constructor.makeCmd($params);
+        $cmd = await this.constructor.makeCmd($params);
         $result = (await fetchAll($cmd, this)).output;
         return {
             'success': StringUtil.startsWith($result, 'MCO ISSUED')

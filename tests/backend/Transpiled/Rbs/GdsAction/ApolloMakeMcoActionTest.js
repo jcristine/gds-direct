@@ -150,9 +150,9 @@ class ApolloMakeMcoActionTest extends require('../../../../../backend/Transpiled
      * @test
      * @dataProvider provideTestCases
      */
-    testMakeCmd($params, $expectedOutput)  {
+    async testMakeCmd($params, $expectedOutput)  {
         let $actualCmd;
-        $actualCmd = ApolloMakeMcoAction.makeCmd($params);
+        $actualCmd = await ApolloMakeMcoAction.makeCmd($params);
         this.assertEquals($expectedOutput, $actualCmd);
     }
 
