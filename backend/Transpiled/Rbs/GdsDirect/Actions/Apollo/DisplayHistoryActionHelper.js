@@ -125,6 +125,9 @@ class DisplayHistoryActionHelper {
 	static displayRcvdHeader($rcvd, $historical) {
 		let $lines, $params;
 		$lines = [];
+		if (!$rcvd['rcvd']['receivedDt']) {
+			return $rcvd['rcvd']['raw'] || JSON.stringify($rcvd['rcvd']);
+		}
 		$params = {
 			'date': php.strtoupper(php.date('dM', php.strtotime('2016-' + $rcvd['rcvd']['receivedDt']['date']))),
 			'time': $rcvd['rcvd']['receivedDt']['time'],

@@ -7,9 +7,9 @@ const hrtimeToDecimal = require("../Utils/Misc").hrtimeToDecimal;
 
 let extractPager = (text) => {
 	let [_, clean, pager] =
-	text.match(/([\s\S]*)(\)\>\<)$/) ||
-	text.match(/([\s\S]*)(\>\<)$/) ||
-	[null, text, null];
+		text.match(/([\s\S]*)(\)\>\<)$/) ||
+		text.match(/([\s\S]*)(\>\<)$/) ||
+		[null, text, null];
 	return [clean, pager];
 };
 
@@ -53,7 +53,7 @@ exports.fetchAll = async (nextCmd, session) => {
 		pages.push(cmdRec.output);
 	});
 	let hrtimeDiff = process.hrtime(hrtimeStart);
-	fullCmdRec.output = pages.join('\n');
+	fullCmdRec.output = pages.join('');
 	fullCmdRec.duration = hrtimeToDecimal(hrtimeDiff);
 	return fullCmdRec;
 };
