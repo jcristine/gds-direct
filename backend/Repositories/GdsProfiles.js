@@ -73,8 +73,8 @@ let getSessionLimits = async () => {
 			.then(rs => rs.result.result.gdsUsers['GDSD'])
 			.catch(exc => [
 				// fallback limits - low enough to not affect RBS
-				{gds: 'apollo', gds_profile: TRAVELPORT.DynApolloProd_2F3K, session_limit: 200},
-				{gds: 'sabre', gds_profile: SABRE.SABRE_PROD_L3II, session_limit: 50},
+				{gds: 'apollo', gds_profile: TRAVELPORT.DynApolloProd_2F3K, session_limit: 400},
+				{gds: 'sabre', gds_profile: SABRE.SABRE_PROD_L3II, session_limit: 100},
 			]);
 	}
 	return whenSessionLimits;
