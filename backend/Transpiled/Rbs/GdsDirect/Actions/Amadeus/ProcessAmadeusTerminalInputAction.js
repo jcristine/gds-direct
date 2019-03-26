@@ -398,7 +398,7 @@ class ProcessAmadeusTerminalInputAction {
 		$segmentStatus = $aliasData['segmentStatus'] || 'GK';
 		$seatNumber = $aliasData['seatCount'] || 0;
 
-		$pnrDump = (await AmadeusUtil.fetchAllRt('RTAM', this.runCommand)).output;
+		$pnrDump = (await AmadeusUtil.fetchAllRt('RTAM', this.stateful)).output;
 
 		if (php.empty($itinerary = MarriageItineraryParser.parse($pnrDump))) {
 			return {'errors': [Errors.getMessage(Errors.ITINERARY_IS_EMPTY)]};
@@ -534,7 +534,7 @@ class ProcessAmadeusTerminalInputAction {
 			$seg['segmentStatus'] = '';
 			return $seg;
 		}, $gkSegments);
-		$result = await (new AmadeusBuildItineraryAction()).setLog(this.$log)
+		$result = await (new AmadeusBuildItineraryAction())
 			.setSession(this.stateful).execute($newSegments, true);
 
 		$calledCommands = this.stateful.flushCalledCommands();
