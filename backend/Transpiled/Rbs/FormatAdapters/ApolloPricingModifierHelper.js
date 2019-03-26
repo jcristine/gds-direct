@@ -57,7 +57,7 @@ class ApolloPricingModifierHelper {
 						$matched.push($nameRecord);
 					}
 				}
-				if ($matched) {
+				if (!php.empty($matched)) {
 					for ($nameRecord of $matched) {
 						$flatAtfqPaxes.push({
 							'ptc': $atfqPax['ptc'] || $nameRecord['ptc']
