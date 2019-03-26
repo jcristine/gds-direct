@@ -23,6 +23,7 @@ let testPromises = [
 	new (require("./backend/Transpiled/Gds/Parsers/Apollo/AirAvailabilityParserTest"))().getTests(),
 	new (require("./backend/Transpiled/Gds/Parsers/Sabre/AirAvailabilityParserTest"))().getTests(),
 	new (require("./backend/Transpiled/Gds/Parsers/Amadeus/PnrSearchParserTest.js"))().getTests(),
+	new (require("./backend/Transpiled/Gds/Parsers/Amadeus/WorkAreaScreenParserTest.js"))().getTests(),
 	new (require("./backend/Transpiled/App/Services/TerminalHighlightServiceTest"))().getTests(),
 	new (require("./backend/Transpiled/App/Services/TerminalServiceTest"))().getTests(),
 	new (require('./backend/Transpiled/Gds/Parsers/Apollo/PnrHistoryParserTest.js'))().getTests(),
