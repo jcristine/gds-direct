@@ -506,7 +506,7 @@ class ProcessSabreTerminalInputAction {
 			// will happen when we switch between real and imitated functionality
 			return this.changeAreaInGds($area);
 		}
-		this.stateful.getLog().updateAreaState($row, {
+		this.stateful.getLog().updateGdsData($row, {
 			'type': 'changeArea',
 			'duration': $stopwatch.stop()['timeDelta'],
 		});

@@ -13,7 +13,6 @@ const GdsDirect = require('../../../../Rbs/GdsDirect/GdsDirect.js');
 const AmadeusReservationParser = require('../../../../Gds/Parsers/Amadeus/Pnr/PnrParser.js');
 const GenericRemarkParser = require('../../../../Gds/Parsers/Common/GenericRemarkParser.js');
 const CommonDataHelper = require('../../../../Rbs/GdsDirect/CommonDataHelper.js');
-const SessionStateHelper = require('../../../../Rbs/GdsDirect/SessionStateProcessor/SessionStateHelper.js');
 const PtcUtil = require('../../../../Rbs/Process/Common/PtcUtil.js');
 const CommandParser = require('../../../../Gds/Parsers/Amadeus/CommandParser.js');
 const CmsAmadeusTerminal = require('../../../../Rbs/GdsDirect/GdsInterface/CmsAmadeusTerminal.js');
@@ -27,6 +26,8 @@ const AmadeusBuildItineraryAction = require('../../../../Rbs/GdsAction/AmadeusBu
 const MarriageItineraryParser = require('../../../../Gds/Parsers/Amadeus/MarriageItineraryParser.js');
 const AmadeusClient = require("../../../../../GdsClients/AmadeusClient");
 const makeDefaultAreaState = require("../../../../../Repositories/GdsSessions").makeDefaultAreaState;
+const WorkAreaScreenParser = require("../../../../Gds/Parsers/Amadeus/WorkAreaScreenParser");
+const UnprocessableEntity = require("../../../../../Utils/Rej").UnprocessableEntity;
 
 var require = translib.stubRequire;
 
@@ -71,10 +72,10 @@ class ProcessAmadeusTerminalInputAction {
 
 	static formatGtlPccError($exc) {
 
-		if (php.preg_match(/\bSoapFault: *11|\Session\b/, $exc.getMessage())) {
+		if (php.preg_match(/\bSoapFault: *11|\Session\b/, ($exc.message || ''))) {
 			return 'Invalid PCC';
 		} else {
-			return 'Unexpected GTL error - ' + php.preg_replace(/\s+/, ' ', php.substr($exc.getMessage(), -100));
+			return 'Unexpected GTL error - ' + php.preg_replace(/\s+/, ' ', php.substr($exc.message || '', -100));
 		}
 	}
 
@@ -288,8 +289,31 @@ class ProcessAmadeusTerminalInputAction {
 		return {'calledCommands': $calledCommands};
 	}
 
+	async startNewAreaSession(area, pcc = null) {
+		let $row = makeDefaultAreaState('amadeus');
+		pcc = pcc || $row.pcc;
+		$row.area = area;
+		$row.pcc = pcc;
+		$row.gdsData = await AmadeusClient.startSession({
+			profileName: GdsProfiles.chooseAmaProfile($row.pcc),
+			pcc: pcc,
+		});
+		return $row;
+	}
+
+	async updateGdsData(newAreaState) {
+		let fullState = this.stateful.getFullState();
+		fullState.areas[newAreaState.area] = newAreaState;
+		fullState.area = newAreaState.area;
+		let updated = await Promise.all([
+			this.stateful.updateFullState(fullState),
+			this.stateful.updateGdsData(newAreaState.gdsData),
+		]);
+		return updated;
+	}
+
 	async changeArea($area) {
-		let $errorData, $sessionId, $areaRows, $isRequested, $row;
+		let $errorData, $areaRows, $isRequested, $row;
 
 		if (!php.in_array($area, this.constructor.AREA_LETTERS)) {
 			$errorData = {'area': $area, 'options': php.implode(', ', this.constructor.AREA_LETTERS)};
@@ -309,18 +333,9 @@ class ProcessAmadeusTerminalInputAction {
 			this.stateful.updateFullState(fullState);
 		}
 		if (!$row || !$row.gdsData) {
-			$row = makeDefaultAreaState('amadeus');
-			$row.area = $area;
-			$row.gdsData = await AmadeusClient.startSession({
-				profileName: GdsProfiles.chooseAmaProfile($row.pcc),
-			});
-			fullState.areas[$area] = $row;
+			$row = await this.startNewAreaSession($area);
 		}
-		fullState.area = $area;
-		await Promise.all([
-			this.stateful.updateFullState(fullState),
-			this.stateful.updateGdsData($row.gdsData),
-		]);
+		await this.updateGdsData($row);
 
 		return {
 			'calledCommands': [],
@@ -400,7 +415,7 @@ class ProcessAmadeusTerminalInputAction {
 			return $result;
 		}
 		if (this.getSessionData()['pcc'] !== $pcc) {
-			$result = this.changePcc($pcc);
+			$result = await this.changePcc($pcc);
 			if (!php.empty($result['errors'])) {
 				return $result;
 			}
@@ -649,9 +664,8 @@ class ProcessAmadeusTerminalInputAction {
 		return php.array_values(php.array_diff(this.constructor.AREA_LETTERS, $occupiedAreas));
 	}
 
-	changePcc($pcc) {
-		let $calledCommands, $jdDump, $parsed, $isCurrentArea, $area, $stopwatch, $newSession, $sessionToken, $exc,
-			$areaData;
+	async changePcc($pcc) {
+		let $calledCommands, $jdDump, $parsed;
 
 		$calledCommands = [];
 
@@ -660,37 +674,30 @@ class ProcessAmadeusTerminalInputAction {
 		}
 
 		// check that there is no PNR in session to match GDS behaviour
-		$jdDump = this.runCommand('JD');
-		$parsed = WorkAreaScreenParser.parse($jdDump);
-		$isCurrentArea = ($area) => $area['isCurrentArea'];
-		if (!($area = ArrayUtil.getFirst(Fp.filter($isCurrentArea, $parsed['records'] || [])))) {
-			return {'errors': ['Failed to determine current area - ' + ($parsed['error'] || 'none of areas is active')]};
-		}
-		if ($area['hasPnr']) {
+		if (this.stateful.getSessionData().has_pnr) {
 			return {'errors': [Errors.getMessage(Errors.LEAVE_PNR_CONTEXT, {'pcc': $pcc})]};
 		}
 
-		try {
-			$newSession = this.stateful.startNewGdsSession({'pcc': $pcc});
-			$sessionToken = $newSession.getSessionToken();
-			// we need to call some command to trigger actual communication with Amadeus to check that PCC is ok
-			$jdDump = $newSession.runSimpleCommand('JD');
-			$parsed = WorkAreaScreenParser.parse($jdDump);
-			if ($parsed['pcc'] !== $pcc) {
-				$newSession.closeSession();
-				return {'errors': ['Failed to change PCC - resulting PCC ' + $parsed['pcc'] + ' does not match requested PCC ' + $pcc]};
-			}
-		} catch ($exc) {
-			return {'errors': ['Failed to start session with PCC ' + $pcc + ' - ' + this.constructor.formatGtlPccError($exc)]};
+		let areaState = await this.startNewAreaSession(this.stateful.getSessionData().area, $pcc)
+			.catch(exc => UnprocessableEntity('Failed to start session with PCC ' +
+				$pcc + ' - ' + this.constructor.formatGtlPccError(exc)));
+
+		// sometimes when you request invalid PCC, Amadeus fallbacks to
+		// SFO1S2195 - should call >JD; and check that PCC is what we requested
+		let jdCmdRec = await AmadeusClient.runCmd({command: 'JD'}, areaState.gdsData);
+		$jdDump = jdCmdRec.output;
+		$parsed = WorkAreaScreenParser.parse($jdDump);
+		if ($parsed['pcc'] !== $pcc) {
+			AmadeusClient.closeSession(areaState.gdsData);
+			return {
+				'calledCommands': [{cmd: 'JD', output: $jdDump}],
+				'errors': ['Failed to change PCC - resulting PCC ' + $parsed['pcc'] + ' does not match requested PCC ' + $pcc],
+			};
 		}
-		$areaData = SessionStateHelper.makeNewAreaData(this.getSessionData());
-		this.stateful.getGdsSession().closeSession();
-		$areaData['internal_token'] = $sessionToken;
-		$areaData['pcc'] = $pcc;
-		this.stateful.getLog().updateAreaState($areaData, {
-			'type': 'changePcc',
-			'duration': $stopwatch.stop()['timeDelta'],
-		});
+
+		let oldGdsData = this.stateful.getGdsData();
+		await this.updateGdsData(areaState);
+		AmadeusClient.closeSession(oldGdsData);
 
 		return {
 			'calledCommands': $calledCommands,

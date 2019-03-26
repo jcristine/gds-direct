@@ -32,7 +32,7 @@ let makePasswordHash = (nonce, timestamp, password) => {
 	return sha1(resultSrc).digest('base64');
 };
 
-let makeStartSoapEnvXml = (profileData, payloadXml) => {
+let makeStartSoapEnvXml = ({profileData, payloadXml}) => {
 	let nonceBytes = crypto.randomBytes(16);
 	let nonce = nonceBytes.toString('base64');
 	let timestamp = new Date().toISOString(); // '2019-02-21T19:37:28.361Z'
@@ -51,7 +51,7 @@ let makeStartSoapEnvXml = (profileData, payloadXml) => {
 		'    <awsse:Session xmlns:awsse="http://xml.amadeus.com/2010/06/Session_v3" TransactionStatusCode="Start"/>',
 		'    <ns3:MessageID>' + uuidv4() + '</ns3:MessageID>',
 		'    <ns3:Action>http://webservices.amadeus.com/HSFREQ_07_3_1A</ns3:Action>',
-		'    <ns3:To>https://nodeD1.production.webservices.amadeus.com/1ASIWTUTICO</ns3:To>',
+		'    <ns3:To>' + profileData.endpoint + '</ns3:To>',
 		'    <ns4:TransactionFlowLink/>',
 		'    <oas:Security xmlns:oas="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd">',
 		'      <oas:UsernameToken xmlns:oas1="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd" oas1:Id="UsernameToken-1">',
@@ -62,7 +62,7 @@ let makeStartSoapEnvXml = (profileData, payloadXml) => {
 		'      </oas:UsernameToken>',
 		'    </oas:Security>',
 		'    <AMA_SecurityHostedUser xmlns="http://xml.amadeus.com/2010/06/Security_v1">',
-		'      <UserID AgentDutyCode="SU" RequestorType="U" PseudoCityCode="' + profileData.default_pcc + '" POS_Type="1"/>',
+		'      <UserID AgentDutyCode="SU" RequestorType="U" PseudoCityCode="' + profileData.pcc + '" POS_Type="1"/>',
 		'    </AMA_SecurityHostedUser>',
 		'  </SOAP-ENV:Header>',
 		'  <SOAP-ENV:Body>' + payloadXml + '</SOAP-ENV:Body>',
@@ -71,7 +71,7 @@ let makeStartSoapEnvXml = (profileData, payloadXml) => {
 };
 
 /** @param gdsData = parseCmdRs().gdsData */
-let makeContinueSoapEnvXml = ({gdsData, payloadXml, status, action}) => [
+let makeContinueSoapEnvXml = ({gdsData, payloadXml, status, action, profileData}) => [
 	'<?xml version="1.0" encoding="UTF-8"?>',
 	'<SOAP-ENV:Envelope ',
 	'    xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/" ',
@@ -84,7 +84,7 @@ let makeContinueSoapEnvXml = ({gdsData, payloadXml, status, action}) => [
 	'    </awsse:Session>',
 	'    <addr:MessageID>' + uuidv4() + '</addr:MessageID>',
 	'    <addr:Action>http://webservices.amadeus.com/' + action + '</addr:Action>',
-	'    <addr:To>https://nodeD1.production.webservices.amadeus.com/1ASIWTUTICO</addr:To>',
+	'    <addr:To>' + profileData.endpoint + '</addr:To>',
 	'  </SOAP-ENV:Header>',
 	'  <SOAP-ENV:Body>' + payloadXml + '</SOAP-ENV:Body>',
 	'</SOAP-ENV:Envelope>',
@@ -104,13 +104,12 @@ let makeCmdPayloadXml = (cmd) =>[
 ].join('\n');
 
 /** @throws TypeError */
-let parseCmdRs = (dom, profileData) => ({
+let parseCmdRs = (dom, profileName) => ({
 	gdsData: {
 		sessionId: dom.querySelector('awsse\\:SessionId').textContent,
 		seqNumber: dom.querySelector('awsse\\:SequenceNumber').textContent,
 		securityToken: dom.querySelector('awsse\\:SecurityToken').textContent,
-		pcc: profileData.default_pcc,
-		profileName: profileData.profileName,
+		profileName: profileName,
 	},
 	// parsers expect \n everywhere, so it's easier to fix this at once
 	output: dom.querySelector('Command_CrypticReply > longTextString > textStringDetails').textContent.replace(/\r/g, '\n'),
@@ -119,9 +118,11 @@ let parseCmdRs = (dom, profileData) => ({
 let startSession = async (params) => {
 	let profileName = params.profileName;
 	let profileData = await getAmadeus(profileName);
+	let pcc = params.pcc || profileData.default_pcc;
+	profileData = {...profileData, pcc};
 
 	let payloadXml = makeCmdPayloadXml('MD0');
-	let soapEnvXml = makeStartSoapEnvXml(profileData, payloadXml);
+	let soapEnvXml = makeStartSoapEnvXml({profileData, payloadXml});
 
 	return PersistentHttpRq({
 		// it's probably worth looking in the docs if they have region-specific urls, since this endpoint is
@@ -135,7 +136,7 @@ let startSession = async (params) => {
 		body: soapEnvXml,
 	}).then(rs => rs.body).then(rsXml => {
 		let dom = parseXml(rsXml);
-		return wrapExc(() => parseCmdRs(dom, profileData)).catch(exc => {
+		return wrapExc(() => parseCmdRs(dom, profileName)).catch(exc => {
 			exc.httpStatusCode = Rej.BadGateway.httpStatusCode;
 			exc.message = 'Invalid Amadeus cmd response - ' + exc.message;
 			return Promise.reject(exc);
@@ -150,7 +151,7 @@ let runCmd = async (rqBody, gdsData) => {
 	let profileData = await getAmadeus(profileName);
 
 	let soapEnvXml = makeContinueSoapEnvXml({
-		gdsData, payloadXml: makeCmdPayloadXml(cmd),
+		gdsData, profileData, payloadXml: makeCmdPayloadXml(cmd),
 		status: 'InSeries', action: 'HSFREQ_07_3_1A',
 	});
 
@@ -163,7 +164,7 @@ let runCmd = async (rqBody, gdsData) => {
 		body: soapEnvXml,
 	}).then(rs => rs.body).then(rsXml => {
 		let dom = parseXml(rsXml);
-		return wrapExc(() => parseCmdRs(dom, profileData)).catch(exc => {
+		return wrapExc(() => parseCmdRs(dom, profileName)).catch(exc => {
 			exc.httpStatusCode = Rej.BadGateway.httpStatusCode;
 			exc.message = 'Invalid Amadeus cmd response - ' + exc.message;
 			return Promise.reject(exc);
@@ -183,7 +184,7 @@ let closeSession = async (gdsData) => {
 
 	let payloadXml = '<ns1:Security_SignOut xmlns:ns1="http://xml.amadeus.com/VLSSOQ_04_1_1A"/>';
 	let soapEnvXml = makeContinueSoapEnvXml({
-		gdsData, payloadXml,
+		gdsData, profileData, payloadXml,
 		status: 'InSeries',
 		action: 'VLSSOQ_04_1_1A',
 	});
@@ -213,9 +214,10 @@ exports.startSession = startSession;
 exports.runCmd = runCmd;
 exports.closeSession = closeSession;
 exports.withSession = async (params, action) => {
+	let pcc = params.pcc || null;
 	let profileName = params.profileName
 		|| GdsProfiles.AMADEUS.AMADEUS_PROD_1ASIWTUTICO;
-	return startSession({profileName}).then(gdsData => {
+	return startSession({profileName, pcc}).then(gdsData => {
 		let session = makeSession(gdsData);
 		return Promise.resolve()
 			.then(() => action(session))

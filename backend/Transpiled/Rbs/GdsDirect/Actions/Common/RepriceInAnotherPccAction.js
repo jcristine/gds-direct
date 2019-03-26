@@ -263,7 +263,7 @@ class RepriceInAnotherPccAction {
 	async repriceInAmadeus(pcc, itinerary, pricingCmd) {
 		itinerary = itinerary.map(seg => ({...seg, segmentStatus: 'GK'}));
 		let profileName = GdsProfiles.chooseAmaProfile(pcc);
-		return AmadeusClient.withSession({profileName}, async session => {
+		return AmadeusClient.withSession({profileName, pcc}, async session => {
 			session = withLog(session, this.$log);
 			let built = await new AmadeusBuildItineraryAction()
 				.setSession(session).execute(itinerary, true);
@@ -320,7 +320,7 @@ class RepriceInAnotherPccAction {
 	async execute($pnr, $cmd, $dialect, $targetStr, $currentSession) {
 		let $currentGds, $startDt, $log, $target, $itinerary,
 			$translatorResult, $targetCmd;
-		$currentSession.updateAreaState({can_create_pq: false});
+		$currentSession.updateGdsData({can_create_pq: false});
 		$currentGds = $currentSession.getSessionData()['gds'];
 		$startDt = $currentSession.getStartDt();
 		$log = this.$log;
