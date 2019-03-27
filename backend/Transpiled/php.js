@@ -115,7 +115,7 @@ let normalizeJsonData = fullData => {
 			for (let [k,v] of entries) {
 				chain.add(data);
 				result[k] = normalizeInternal(v);
-				chain.remove(data);
+				chain.delete(data);
 			}
 			return result;
 		} else {
