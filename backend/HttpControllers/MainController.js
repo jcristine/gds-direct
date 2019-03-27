@@ -111,7 +111,11 @@ let withGdsSession = (sessionAction, canStartNew = false) => (req, res) => {
 				if (NotFound.matches(exc.httpStatusCode)) {
 					if (canStartNew) {
 						startNewSession = true;
-						return GdsSessionsController.startNewSession(rqBody);
+						return GdsSessionsController.startNewSession(rqBody)
+							.then(session => {
+								FluentLogger.logit('INFO: emcUser', session.logId, rqBody.emcUser);
+								return session;
+							});
 					} else {
 						exc.httpStatusCode = LoginTimeOut.httpStatusCode;
 						return Promise.reject(exc);
