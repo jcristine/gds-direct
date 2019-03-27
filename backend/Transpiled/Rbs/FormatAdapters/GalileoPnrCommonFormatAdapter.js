@@ -17,7 +17,7 @@ class GalileoPnrCommonFormatAdapter
         let $parsedData, $pnrInfo;
 
         $parsedData = $headerData['reservationInfo'];
-        $pnrInfo = [];
+        $pnrInfo = {};
 
         $pnrInfo['recordLocator'] = $parsedData['recordLocator'];
         $pnrInfo['agentInitials'] = $parsedData['focalPointInitials'];

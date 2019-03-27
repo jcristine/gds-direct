@@ -427,7 +427,7 @@ class ImportApolloPnrFormatAdapter
     static transformPnrInfo($headerData, $fetchedDt)  {
         let $parsedData, $pnrInfo;
         $parsedData = $headerData['reservationInfo'];
-        $pnrInfo = [];
+        $pnrInfo = {};
         $pnrInfo['recordLocator'] = $parsedData['recordLocator'];
         $pnrInfo['agentInitials'] = $parsedData['focalPointInitials'];
         $pnrInfo['receivedFrom'] = $headerData['agentName'] || null;
