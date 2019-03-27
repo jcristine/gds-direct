@@ -117,7 +117,7 @@ class FareDisplayCommonParser
                 'ptc': [],
             };
             $line += ' ';
-            $matches = php.preg_match_all(/(?<name>[A-Z]+):\s*(?<value>([A-Z\d]+\s)*)/, $line, $matches = []);
+            php.preg_match_all(/(?<name>[A-Z]+):\s*(?<value>([A-Z\d]+\s)*)/, $line, $matches = []);
             $pairs = php.array_map(
                 ([$name, $value]) => ({'name': php.trim($name), 'value': php.trim($value)}),
                 Fp.zip([$matches['name'], $matches['value']])

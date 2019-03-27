@@ -245,7 +245,7 @@ class AirAvailabilityParser
     static parseFooterLine($line)  {
         let $regex, $matches, $records, $_, $label, $command, $labels;
         $regex = /\s*\b(\S.*?)>(\S+);\s*/;
-        if ($matches = php.preg_match_all($regex, $line, $matches = [], php.PREG_SET_ORDER)) {
+        if (php.preg_match_all($regex, $line, $matches = [], php.PREG_SET_ORDER)) {
             $records = [];
             for ([$_, $label, $command] of Object.values($matches)) {
                 $records.push({'label': $label, 'command': $command});}

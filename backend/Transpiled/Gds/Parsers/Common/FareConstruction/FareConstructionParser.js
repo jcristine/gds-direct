@@ -68,7 +68,7 @@ class FareConstructionParser {
 		}
 		$facilityCharges = [];
 		if ([$xfTotal, $airports] = $data['facilityCharge'] || [null, null]) {
-			if ($matches = php.preg_match_all(/([A-Z]{3})([\.\d]+)/, $airports, $matches = [], php.PREG_SET_ORDER)) {
+			if (php.preg_match_all(/([A-Z]{3})([\.\d]+)/, $airports, $matches = [], php.PREG_SET_ORDER)) {
 				for ([$_, $airport, $amount] of $matches) {
 					$facilityCharges.push({'airport': $airport, 'amount': $amount});
 				}

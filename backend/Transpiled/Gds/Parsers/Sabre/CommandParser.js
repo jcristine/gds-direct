@@ -380,7 +380,7 @@ class CommandParser {
 			'$/';
 		if (php.preg_match($regex, $cmd, $matches = [])) {
 			$seatCodesStr = $matches['seatCodes'] || '';
-			$seatMatches = php.preg_match_all(/(\d+)([A-Z]+)/, $seatCodesStr, $seatMatches = [], php.PREG_SET_ORDER);
+			php.preg_match_all(/(\d+)([A-Z]+)/, $seatCodesStr, $seatMatches = [], php.PREG_SET_ORDER);
 			$seatCodes = [];
 			for ([$_, $rowNumber, $letters] of Object.values($seatMatches || {})) {
 				for ($letter of Object.values(php.str_split($letters, 1))) {
