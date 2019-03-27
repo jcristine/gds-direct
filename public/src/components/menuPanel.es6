@@ -8,9 +8,6 @@ import {GdsAreas}  			    from "./menu/gdsAreas";
 import {LanguageButtons} 	    from "./menu/languageButtons";
 import {LogButton} 			    from "./popovers/logButton";
 import {Quotes}                 from "./menu/quotes";
-import {MenuHideButton}         from "./menu/hideMenu";
-import {UseRbsFlag} from "./menu/useRbsFlag";
-import {RUN_COMMAND_LIST} from "../actions/settings";
 let Help = require('./popovers/help.es6').default;
 
 export default class MenuPanel extends Component

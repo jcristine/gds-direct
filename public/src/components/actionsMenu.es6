@@ -84,7 +84,6 @@ class Trigger extends ButtonPopover
 			new LanguageButtons(),
 			new Quotes(),
 			new PqButton(),
-			new UseRbsFlag(),
 		]);
 
 		if (this.state.permissions)
