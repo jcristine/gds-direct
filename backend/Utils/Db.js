@@ -143,11 +143,13 @@ Db.with = async (process) => {
 	return Promise.resolve()
 		.then(() => process(Db(dbConn)))
 		.catch(exc => {
-			Diag.error('SQL query failed ' + exc, {
-				message: exc.message,
-				stack: exc.stack,
-				exc: exc,
-			});
+			if (exc.httpStatusCode !== NotFound.httpStatusCode) {
+				Diag.error('SQL query failed ' + exc, {
+					message: exc.message,
+					stack: exc.stack,
+					exc: exc,
+				});
+			}
 			return Promise.reject(exc);
 		})
 		.finally(() => dbPool.releaseConnection(dbConn));

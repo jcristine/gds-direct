@@ -3,6 +3,7 @@ const {getConfig} = require('../Config.js');
 
 let Db = require('../Utils/Db.js');
 let php = require('../Transpiled/php.js');
+const NotFound = require("../Utils/Rej").NotFound;
 
 const TABLE = 'ticket_designators';
 
@@ -69,6 +70,9 @@ exports.updateFromService = async () => {
 };
 
 exports.findByCode = async (gds, code) => {
+	if ((code || '').length !== 10) {
+		return NotFound('Not an ITN ticket designator');
+	}
 	/** @var row = normalizeRow() */
 	let row = await Db.with(db => db.fetchOne({
 		table: TABLE,
