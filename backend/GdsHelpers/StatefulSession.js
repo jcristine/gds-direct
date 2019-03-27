@@ -82,6 +82,7 @@ let StatefulSession = async ({session, whenCmdRqId, emcUser}) => {
 		gds: gds,
 		logit: logit,
 		logExc: (msg, exc) => FluentLogger.logExc(msg, session.logId, exc),
+		logId: session.logId,
 
 		// following is RBS CmsStatefulSession.php implementation
 
