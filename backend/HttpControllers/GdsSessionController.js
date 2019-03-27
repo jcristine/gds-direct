@@ -19,7 +19,10 @@ const TooManyRequests = require("../Utils/Rej").TooManyRequests;
 const UnprocessableEntity = require("../Utils/Rej").UnprocessableEntity;
 const ImportPq = require('../Actions/ImportPq.js');
 const FluentLogger = require("../LibWrappers/FluentLogger");
+const GdsDirect = require("../Transpiled/Rbs/GdsDirect/GdsDirect");
+const Misc = require("../Utils/Misc");
 const allWrap = require("../Utils/Misc").allWrap;
+const {getConfig} = require('../Config.js');
 
 let startByGds = async (gds) => {
 	let tuples = [
@@ -150,11 +153,65 @@ exports.runInputCmd = ({rqBody, session, emcUser}) => {
 	return running;
 };
 
+let sendPqToPqt = async ({stateful, leadData, imported}) => {
+	let $sessionData = stateful.getSessionData();
+	let logId = stateful.logId;
+
+	let $pnrDump = imported['pnrData']['reservation']['raw'];
+	let $pricingDump = (imported['adultPricingInfoForPqt'] || {})['pricingDump']
+		|| imported['pnrData']['currentPricing']['raw'];
+	let $pricingCommand = (imported['adultPricingInfoForPqt'] || {})['pricingCmd']
+		|| imported['pnrData']['currentPricing']['cmd'];
+	let $linearFareDump = (imported['adultPricingInfoForPqt'] || {})['linearFareDump'];
+
+	let params = {
+		'gds': $sessionData['gds'],
+		'pcc': $sessionData['pcc'],
+		'agentId': $sessionData['agent_id'],
+		'leadId': $sessionData['lead_id'],
+		'source': 'GDS_DIRECT_PQ',
+		'creationDate': php.date('Y-m-d H:i:s'),
+		'pricingCommand': $pricingCommand,
+		'pnrDump': $pnrDump,
+		'pricingDump': $pricingDump,
+		'projectName': leadData['project_name'],
+		'leadUrl': leadData['lead_url'],
+		'linearFareDump': $linearFareDump,
+	};
+	let config = await getConfig();
+	let Crypt = require("../../node_modules/dynatech-client-component/lib/Crypt.js").default;
+	let rbsPassword = config.RBS_PASSWORD;
+	if (!rbsPassword) {
+		let rej = NotImplemented('PQT password not defined in env');
+		stateful.logExc('ERROR: Failed to send PQ to PQT', rej.exc);
+		return rej;
+	}
+	let ec = new Crypt(process.env.RANDOM_KEY, 'des-ede3');
+	let credentials = {login: 'CMS', password: ec.encryptToken(rbsPassword)};
+
+	return Misc.iqJson({
+		functionName: 'dataInput.addPriceQuoteFromDumps',
+		params: params,
+		url: config.production
+			? 'http://pqt-asaptickets.lan.dyninno.net/rpc/iq-json?log_id=' + logId
+			: 'http://st-pqt.sjager.php7.dyninno.net/rpc/iq-json?log_id=' + logId,
+		credentials: credentials,
+	}).then(svcRs => {
+		stateful.logit('PQ was successfully sent to PQT', svcRs);
+	}).catch(exc => {
+		stateful.logExc('ERROR: Failed to send PQ to PQT', exc);
+	});
+};
+
 exports.getPqItinerary = async ({rqBody, session, emcUser}) => {
 	// could Promise.all to save some time...
 	let leadData = await CmsClient.getLeadData(rqBody.pqTravelRequestId);
 	let stateful = await StatefulSession({session, emcUser});
-	return ImportPq({stateful, leadData, fetchOptionalFields: false});
+	let imported = await ImportPq({stateful, leadData, fetchOptionalFields: false});
+	if (imported.status === GdsDirect.STATUS_EXECUTED) {
+		sendPqToPqt({stateful, leadData, imported});
+	}
+	return imported;
 };
 
 exports.importPq = async ({rqBody, session, emcUser}) => {
