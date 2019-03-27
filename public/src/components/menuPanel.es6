@@ -57,10 +57,6 @@ export default class MenuPanel extends Component
 		);
 
 		this.observe(
-			new UseRbsFlag()
-		);
-
-		this.observe(
 			new Component('article')
 				.attach([
 					new Help({
