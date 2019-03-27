@@ -199,6 +199,15 @@ app.get('/testRedisWrite', withAuth(async (reqBody, emcResult) => {
 		return Forbidden('Sorry, you must be me in order to use that');
 	}
 }));
+app.get('/getAgentList', withAuth(async (reqBody, emcResult) => {
+	if (emcResult.user.id == 6206) {
+		let emc = await Emc.getClient();
+		let users = await emc.getUsers();
+		return users;
+	} else {
+		return Forbidden('Sorry, you must be me in order to use that');
+	}
+}));
 app.get('/parser/test', toHandleHttp((rqBody) => {
 	let result;
 	result = CommandParser.parse(rqBody.input);
