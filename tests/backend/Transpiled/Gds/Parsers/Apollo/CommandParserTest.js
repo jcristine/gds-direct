@@ -815,6 +815,21 @@ class CommandParserTest extends require('../../../../../../backend/Transpiled/Li
         $list.push(['9X', {'type': 'cancelSeats', 'data': {
             'seatCodes': [],
         }}]);
+        $list.push([
+            'PS-CREATED IN GDS DIRECT BY JAYDEN|@:5GD-JAYDEN/1092/FOR AGENT/1092/LEAD-11081962 IN 2G8P|T-CA-SFO@$0221686|P:SFOAS/800-750-2238 ASAP CUSTOMER SUPPORT|T:TAU/27MAR|R:JAYDEN|ER',
+            {
+                type: 'psRemark',
+                cmd: 'PS-CREATED IN GDS DIRECT BY JAYDEN',
+                followingCommands: [
+                    {cmd: '@:5GD-JAYDEN/1092/FOR AGENT/1092/LEAD-11081962 IN 2G8P'},
+                    {cmd: 'T-CA-SFO@$0221686'},
+                    {cmd: 'P:SFOAS/800-750-2238 ASAP CUSTOMER SUPPORT'},
+                    {cmd: 'T:TAU/27MAR'},
+                    {cmd: 'R:JAYDEN'},
+                    {cmd: 'ER', type: 'storeKeepPnr'},
+                ],
+            },
+        ]);
         return $list;
     }
 

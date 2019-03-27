@@ -3921,6 +3921,25 @@ class SessionStateProcessorTest extends require('../../../../../../backend/Trans
                 },
             ],
         });
+        $sessionRecords.push({
+            "initialState": {"gds": "apollo", "area":"B","cmdType":"redisplayPnr","scrolledCmd":"*R","can_create_pq":false,"pricing_cmd":null,"pcc":"2G8P","has_pnr":true},
+            "calledCommands": [
+                {
+                    "cmd": "PS-CREATED IN GDS DIRECT BY JAYDEN|@:5GD-JAYDEN/1092/FOR AGENT/1092/LEAD-11081962 IN 2G8P|T-CA-SFO@$0221686|P:SFOAS/800-750-2238 ASAP CUSTOMER SUPPORT|T:TAU/27MAR|R:JAYDEN|ER",
+                    "output": "OK - VMML8E-DOWNTOWN TRAVEL          ATL\n><",
+                    "state": {
+                        "area": "B",
+                        "cmdType": "psRemark",
+                        "can_create_pq": false,
+                        "pricing_cmd": null,
+                        "pcc": "2G8P",
+                        "has_pnr": true,
+                        "is_pnr_stored": true,
+                        "record_locator": "VMML8E",
+                    },
+                },
+            ],
+        });
         $argumentTuples = [];
         for ($sessionRecord of $sessionRecords) {
             $argumentTuples.push([$sessionRecord]);}

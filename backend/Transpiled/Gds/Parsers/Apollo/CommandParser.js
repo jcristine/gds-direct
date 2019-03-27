@@ -105,7 +105,6 @@ class CommandParser {
 			'$LR': 'routingFromTariff',
 			'L@': 'availabilityThroughLink',
 			'DCT': 'minConnectionTimeTable',
-			'T-CA': 'addAccountingLine',
 		};
 		$regex = {
 			[/^VIT[A-Z0-9]{2}\d+\/\d{1,2}[A-Z]{3}$/]: 'flightRoutingAndTimes', // flight routing and times
@@ -234,6 +233,7 @@ class CommandParser {
 			[/^R:(.*?)(\||$)/]: 'addReceivedFrom',
 			[/^N:(.*?)(\||$)/]: 'addName',
 			[/^T:TAU\/(.*?)(\||$)/]: 'addTicketingDateLimit',
+			[/^T-CA(.*?)(\||$)/]: 'addAccountingLine',
 			[/^\*([A-Z0-9]{6})(\||$)/]: 'openPnr',
 			[/^C:(\d+)@:3(\||$)/]: 'cancelSsr',
 			[/^\*(\d{1,3})(\||$)/]: 'displayPnrFromList',
@@ -722,7 +722,7 @@ class CommandParser {
 				return {
 					'cmd': $cmd,
 					'type': 'showPnrFields',
-					'data': $parts
+					'data': $parts,
 				};
 			}
 		}
