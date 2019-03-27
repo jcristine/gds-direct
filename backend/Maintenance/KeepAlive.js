@@ -4,7 +4,7 @@ let GdsSessions = require('./../Repositories/GdsSessions.js');
 let FluentLogger = require('./../LibWrappers/FluentLogger.js');
 let {NoContent, LoginTimeOut} = require('./../Utils/Rej.js');
 
-let workerLogId = FluentLogger.logNewId('bgworker');
+let workerLogId = FluentLogger.logNewId('keepAlive');
 
 let log = (msg, ...data) => {
 	FluentLogger.logit(msg, workerLogId, ...data);

@@ -74,17 +74,21 @@ let Migration = () => {
 		run: async () => {
 			// there are currently 2 supposedly equal servers
 			let lockSeconds = 5 * 60; // 5 minutes
-			let lockKey = keys.MIGRAT_LOCK;
+			let lockKey = keys.MIGRATION_LOCK;
 			let client = await getClient();
 			let migrationLock = await client.set(lockKey, process.pid, 'NX', 'EX', lockSeconds);
 			if (!migrationLock) {
 				let lastValue = await client.get(lockKey);
-				return Promise.resolve('Migration is already being handled by other cluster ' + JSON.stringify(migrationLock) + ' lock name: ' + lockKey + ' last value: ' + lastValue);
+				return Promise.resolve({
+					status: 'alreadyHandled',
+					message: 'Migration is already being handled by other cluster ' + JSON.stringify(migrationLock) + ' lock name: ' + lockKey + ' last value: ' + lastValue,
+				});
 			}
 			return runLocked()
 				.then(async (res) => {
 					let delOut = await client.del(lockKey);
 					res.delOut = delOut;
+					res.status = 'executed';
 					return res;
 				})
 				.catch((exc) => {

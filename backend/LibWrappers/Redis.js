@@ -12,7 +12,8 @@ exports.keys = StrConsts({
 	get SESSION_TO_STATE() { never(); },
 	get USER_TO_TMP_SETTINGS() { never(); },
 	get EMC_TOKEN_TO_USER() { never(); },
-	get MIGRAT_LOCK() { never(); },
+	get MIGRATION_LOCK() { never(); },
+	get UPDATE_DATA_LOCK() { never(); },
 	get AGENT_CMD_COUNTER() { never(); },
 	get HIGHLIGHT_RULES_UPDATE_MS() { never(); },
 }, 'GRECT_');
