@@ -1163,7 +1163,7 @@ class ProcessApolloTerminalInputAction {
 				await this.runCommand('XT' + $newAtfqNum, false);
 				$storeCmdRec = this.makeStorePricingCmd($pnr, $aliasData, true);
 
-				if ($errors = $storeCmdRec['errors'] || []) {
+				if (!php.empty($errors = $storeCmdRec['errors'] || [])) {
 					return $storeCmdRec;
 				}
 

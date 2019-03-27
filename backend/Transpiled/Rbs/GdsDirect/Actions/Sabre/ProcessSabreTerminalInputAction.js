@@ -878,7 +878,7 @@ class ProcessSabreTerminalInputAction {
 			// delete PQ we just created and store a correct one, with /PL/ mod
 			await this.runCommand('PQD-ALL');
 			$cmd = this.makeStorePricingCmd($pnr, $aliasData, true);
-			if ($errors = $cmd['errors'] || []) {
+			if (!php.empty($errors = $cmd['errors'] || [])) {
 				return {'errors': $errors};
 			}
 			$output = await this.runCommand($cmd['cmd']);
