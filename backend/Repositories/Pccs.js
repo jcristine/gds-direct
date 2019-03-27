@@ -37,7 +37,7 @@ exports.updateFromService = async () => {
 			passwd: config.external_service.act.password,
 		},
 		functionName: 'getPCCsAll',
-		serviceName: 'cms',
+		serviceName: 'rbs',
 	});
 
 	let rows = Object

@@ -1,6 +1,7 @@
 
 let {getConfig} = require('../Config.js');
 let Db = require('../Utils/Db.js');
+const BadGateway = require("../Utils/Rej").BadGateway;
 const UnprocessableEntity = require("../Utils/Rej").UnprocessableEntity;
 const iqJson = require("../Utils/Misc").iqJson;
 
@@ -24,7 +25,7 @@ exports.updateFromService = async () => {
 			passwd: config.external_service.act.password,
 		},
 		functionName: 'getAirlineBookingClasses',
-		serviceName: 'cms',
+		serviceName: 'rbs',
 	});
 
 	let rows = [];
