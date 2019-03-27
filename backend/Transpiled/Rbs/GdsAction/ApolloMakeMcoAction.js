@@ -70,7 +70,7 @@ class ApolloMakeMcoAction extends AbstractGdsAction
         return AbstractMaskParser.makeCmd({
             baseMask: this.getMask(),
             fields: this.getFields(),
-            params: $params,
+            values: $params,
         });
     }
 

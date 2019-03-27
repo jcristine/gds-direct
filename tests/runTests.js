@@ -6,6 +6,7 @@ let args = process.argv.slice(process.execArgv.length + 2);
 let testPromises = [
 	Promise.resolve([() => 3 > 4 ? 'Your code says that 3 > 4, this is wrong' : null]),
 	Promise.resolve([() => 5 < 4 ? Promise.resolve('Five can not be less than four, silly') : null]),
+	new (require('./backend/Actions/ExchangeApolloTicketTest.js'))().getTests(),
 	new (require('./backend/GdsHelpers/TravelportUtilsTest.js'))().getTests(),
 	new (require('./backend/Transpiled/Gds/Parsers/Apollo/Pnr/ItineraryParserTest.js'))().getTests(),
 	new (require('./backend/Transpiled/Gds/Parsers/Sabre/Pnr/ItineraryParserTest.js'))().getTests(),

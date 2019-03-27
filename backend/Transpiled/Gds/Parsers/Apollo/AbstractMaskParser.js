@@ -4,20 +4,26 @@
 const Fp = require('../../../Lib/Utils/Fp.js');
 
 let php = require('../../../php.js');
+const StringUtil = require('../../../Lib/Utils/StringUtil.js');
 const BadRequest = require("../../../../Utils/Rej").BadRequest;
 
 class AbstractMaskParser
 {
-    /** @return {[int, int][]} - start/end tuples */
+    /**
+     * @return {[int, int][]} - start/end tuples
+     * note that '..' in 'HHMCU..' should match, but '.' in 'TX1 USD   67.60 US' should not
+     */
     static getMaskTokenPositions($mask)  {
         let $i, $inMask, $positions, $ch, $start, $end;
         $mask = $mask+' ';
-        $i = 0;
+        $i = 1;
         $inMask = false;
         $positions = [];
         while ($i < php.mb_strlen($mask)) {
+            let prev = $mask[$i - 1];
             $ch = php.mb_substr($mask, $i, 1, 'utf-8');
-            if ($ch === '.' && !$inMask) {
+            let next = $mask[$i + 1] || null;
+            if ((prev === ';' || next === '.') && $ch === '.' && !$inMask) {
                 $start = $i;
                 $inMask = true;
             }
@@ -53,6 +59,21 @@ class AbstractMaskParser
         return true;
     }
 
+    /**
+     * @param {string} output - GDS output of commands like HB:FEX or HHMCO
+     * @return {string} - valid mask: each line is padded with trailing whitespace to 64
+     *                  characters, '>' on first line is removed, then line breaks are removed
+     */
+    static normalizeMask(output) {
+        output = output.replace(/\s*><$/, '');
+        output = StringUtil.wrapLinesAt(output, 64);
+        return StringUtil.lines(output)
+            .map(l => (l + ' '.repeat(64)).slice(0, 64))
+            .join('')
+            .replace(/^>/, '')
+            .replace(/\s*$/, '');
+    }
+
     //==================================
     // Following related to dump generation
     //==================================
@@ -79,9 +100,9 @@ class AbstractMaskParser
         }
     }
 
-    /** @param {Object} params - value mapping with field names as keys */
-    static makeCmd({baseMask, fields, params}) {
-        let missingFields = php.array_keys(php.array_diff_key(php.array_flip(fields), params));
+    /** @param {Object} values - value mapping with field names as keys */
+    static makeCmd({baseMask, fields, values}) {
+        let missingFields = php.array_keys(php.array_diff_key(php.array_flip(fields), values));
         if (!php.empty(missingFields)) {
             return BadRequest('Missing necessary params for MCO: ['+php.implode(', ', missingFields)+']');
         }
@@ -89,7 +110,7 @@ class AbstractMaskParser
         let cmd = baseMask;
         let tuples = Fp.zip([fields, positions]);
         for (let [field, [start, length]] of tuples) {
-            let token = params[field] || '';
+            let token = values[field] || '';
             if (php.mb_strlen(token) > length) {
                 token = php.mb_substr(token, 0, length);
             }
