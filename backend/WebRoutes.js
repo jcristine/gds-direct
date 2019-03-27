@@ -35,7 +35,7 @@ app.use(express.urlencoded({extended: true}));
 app.use((req, res, next) => {
 	res.setHeader('Access-Control-Allow-Origin', req.headers.origin || '*');
 	res.setHeader('Access-Control-Allow-Methods', 'GET, POST');
-	res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With,content-type');
+	res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With,content-type,cache-control');
 	res.setHeader('Access-Control-Allow-Credentials', true);
 	next();
 });
