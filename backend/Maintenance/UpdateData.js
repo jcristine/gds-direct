@@ -42,7 +42,8 @@ let UpdateData = () => {
 	};
 
 	// run every hour at :41 minute
-	schedule.scheduleJob('41 * * * *', async () => {
+	let timeMask = '41 * * * *';
+	schedule.scheduleJob(timeMask, async () => {
 		for (let i = 0; i < hourlyJobs.length; ++i) {
 			let job = hourlyJobs[i];
 			await withLock(job, i)
@@ -56,6 +57,8 @@ let UpdateData = () => {
 				.catch(exc => logExc('ERROR: Job #' + i + ' ' + job.name + ' failed', exc));
 		}
 	});
+
+	logit('Scheduled ' + hourlyJobs.length + ' to be executed at ' + timeMask);
 
 	return {
 		workerLogId: workerLogId,
