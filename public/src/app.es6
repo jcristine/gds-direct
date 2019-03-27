@@ -200,6 +200,7 @@ window.InitGdsDirectPlusApp = (params) => {
 					return emcSessionId;
 				}))
 			.catch(exc => {
+				console.error('Failed to cross-authorize token, falling back to CMS auth', exc);
 				document.cookie = 'GDS_DIRECT_PLUS_AUTH=';
 				return params.emcSessionId
 					? Promise.resolve(params.emcSessionId)
