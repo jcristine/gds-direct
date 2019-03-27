@@ -100,20 +100,29 @@ php.min = (...args) => {
 
 php.call_user_func = (func, arg) => normFunc(func)(arg);
 
-let normalizeJsonData = data => {
-	if (typeof data === 'object' && data !== null) {
-		let entries = Object.entries(data);
-		// casts [] with string keys to {}
-		let isRealArray = Array.isArray(data) &&
-			(data.length > 0 || entries.length === 0);
-		let result = isRealArray ? [] : {};
-		for (let [k,v] of entries) {
-			result[k] = v;
+let normalizeJsonData = fullData => {
+	let occurrences = new Set();
+	let normalizeInternal = (data) => {
+		if (typeof data === 'object' && data !== null) {
+			if (occurrences.has(data)) {
+				return null;
+			} else {
+				occurrences.add(data);
+			}
+			let entries = Object.entries(data);
+			// casts [] with string keys to {}
+			let isRealArray = Array.isArray(data) &&
+				(data.length > 0 || entries.length === 0);
+			let result = isRealArray ? [] : {};
+			for (let [k,v] of entries) {
+				result[k] = normalizeInternal(v);
+			}
+			return result;
+		} else {
+			return data;
 		}
-		return result;
-	} else {
-		return data;
-	}
+	};
+	return normalizeInternal(fullData);
 };
 
 php.json_encode = (data) => {
