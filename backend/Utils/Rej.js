@@ -33,6 +33,7 @@ exports.NoContent = toReject(204, isOk);
 
 // user errors
 exports.BadRequest = toReject(400);
+exports.NotAuthorized = toReject(401);
 exports.Forbidden = toReject(403, isOk);
 exports.NotFound = toReject(404);
 exports.Conflict = toReject(409);

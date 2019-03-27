@@ -1,6 +1,6 @@
 
 let Emc = require('../LibWrappers/Emc.js');
-let {Forbidden, BadRequest, NotImplemented, LoginTimeOut, InternalServerError, NotFound} = require('../Utils/Rej.js');
+let {Forbidden, NotAuthorized, BadRequest, NotImplemented, LoginTimeOut, InternalServerError, NotFound} = require('../Utils/Rej.js');
 let Db = require('../Utils/Db.js');
 let Diag = require('../LibWrappers/Diag.js');
 let FluentLogger = require('../LibWrappers/FluentLogger.js');
@@ -88,7 +88,9 @@ let withAuth = (userAction) => (req, res) => {
 		return Emc.getCachedSessionInfo(rqBody.emcSessionId)
 			.catch(exc => {
 				let error = new Error('EMC auth error - ' + exc);
-				error.httpStatusCode = 401;
+				error.httpStatusCode = (exc + '').match(/Session not found/)
+					? LoginTimeOut.httpStatusCode
+					: NotAuthorized.httpStatusCode;
 				error.stack += '\nCaused by:\n' + exc.stack;
 				return Promise.reject(error);
 			})
