@@ -101,13 +101,11 @@ php.min = (...args) => {
 php.call_user_func = (func, arg) => normFunc(func)(arg);
 
 let normalizeJsonData = fullData => {
-	let occurrences = new Set();
+	let chain = new Set();
 	let normalizeInternal = (data) => {
 		if (typeof data === 'object' && data !== null) {
-			if (occurrences.has(data)) {
-				return null;
-			} else {
-				occurrences.add(data);
+			if (chain.has(data)) {
+				return {error: 'circular reference ' + [...chain].join(',')};
 			}
 			let entries = Object.entries(data);
 			// casts [] with string keys to {}
@@ -115,7 +113,9 @@ let normalizeJsonData = fullData => {
 				(data.length > 0 || entries.length === 0);
 			let result = isRealArray ? [] : {};
 			for (let [k,v] of entries) {
+				chain.add(data);
 				result[k] = normalizeInternal(v);
+				chain.remove(data);
 			}
 			return result;
 		} else {
