@@ -3,6 +3,7 @@ let Diag = require('./backend/LibWrappers/Diag.js');
 let Migration = require('./backend/Maintenance/Migration.js');
 let KeepAlive = require("./backend/Maintenance/KeepAlive");
 let Config = require("./backend/Config.js");
+const UpdateData = require("./backend/Maintenance/UpdateData");
 
 (async () => {
 	if (Config.production) {
@@ -28,4 +29,6 @@ let Config = require("./backend/Config.js");
 		});
 	let keepAlive = KeepAlive.run();
 	Diag.log('Started keepAlive process with log id: ' + keepAlive.workerLogId);
+	let updateData = UpdateData.run();
+	Diag.log('Started updateData process with log id: ' + updateData.workerLogId);
 })();
