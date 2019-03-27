@@ -28,7 +28,7 @@ class LinearFareParser
             '/s';
         if (php.preg_match($regex, $line, $matches = [])) {
             $matches = php.array_filter($matches);
-            $taxMatches = php.preg_match_all('/'+$taxPattern+'/', $matches['taxList'] || '', $taxMatches = [], php.PREG_SET_ORDER);
+            php.preg_match_all('/'+$taxPattern+'/', $matches['taxList'] || '', $taxMatches = [], php.PREG_SET_ORDER);
             return {
                 'fareAndMarkup': {
                     'currency': $matches['baseCurrency'],

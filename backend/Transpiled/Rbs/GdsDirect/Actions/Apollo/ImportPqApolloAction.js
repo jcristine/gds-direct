@@ -193,6 +193,9 @@ class ImportPqApolloAction extends AbstractGdsAction {
 		try {
 			$parsed = PricingParser.parse($dump);
 		} catch ($exc) {
+			if (($exc + '').match(/TypeError/)) {
+				throw $exc;
+			}
 			$result['error'] = 'Failed to parse pricing - ' + php.get_class($exc) + ' ' + $exc.message + ' - ' + $dump;
 			return $result;
 		}
