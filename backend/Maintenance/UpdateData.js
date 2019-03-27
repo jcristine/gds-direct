@@ -1,0 +1,65 @@
+
+let schedule = require('node-schedule');
+const TicketDesignators = require("../Repositories/TicketDesignators");
+const BookingClasses = require("../Repositories/BookingClasses");
+const Airlines = require("../Repositories/Airlines");
+const Pccs = require("../Repositories/Pccs");
+const Airports = require("../Repositories/Airports");
+const FluentLogger = require("../LibWrappers/FluentLogger");
+const Redis = require("../LibWrappers/Redis");
+
+/**
+ * fetch external data like airports, ticket designators, etc... hourly
+ * also will manage cleanup of tables like terminal log
+ */
+let UpdateData = () => {
+	let workerLogId = FluentLogger.logNewId('updateData');
+	let logit = (msg, data) => FluentLogger.logit(msg, workerLogId, data);
+	let logExc = (msg, exc) => FluentLogger.logExc(msg, workerLogId, exc);
+
+	let hourlyJobs = [
+		BookingClasses.updateFromService,
+		TicketDesignators.updateFromService,
+		Airlines.updateFromService,
+		Pccs.updateFromService,
+		Airports.updateFromService,
+	];
+
+	let withLock = async (job, i) => {
+		let lockSeconds = 5 * 60; // 5 minutes - make sure it's lower than cron interval
+		let lockKey = Redis.keys.UPDATE_DATA_LOCK + ':' + i;
+		let redis = await Redis.getClient();
+		let updateDataLock = await redis.set(lockKey, process.pid, 'NX', 'EX', lockSeconds);
+		if (!updateDataLock) {
+			let lastValue = await redis.get(lockKey);
+			return Promise.resolve({status: 'alreadyHandled', lastValue: lastValue});
+		} else {
+			logit('Processing job #' + i + ' ' + job.name);
+			return Promise.resolve()
+				.then(() => job())
+				.then(result => ({...result, status: 'executed'}));
+		}
+	};
+
+	// run every hour at :41 minute
+	schedule.scheduleJob('41 * * * *', async () => {
+		for (let i = 0; i < hourlyJobs.length; ++i) {
+			let job = hourlyJobs[i];
+			await withLock(job, i)
+				.then(result => {
+					if (result.status === 'executed') {
+						logit('TODO: Processed job #' + i + ' ' + job.name + ' successfully', result);
+					} else if (result.status === 'alreadyHandled') {
+						logit('INFO: Skipping job #' + i + ' ' + job.name + ' as it is already being handled by other process', + result);
+					}
+				})
+				.catch(exc => logExc('ERROR: Job #' + i + ' ' + job.name + ' failed', exc));
+		}
+	});
+
+	return {
+		workerLogId: workerLogId,
+	};
+};
+
+exports.run = () => UpdateData();
