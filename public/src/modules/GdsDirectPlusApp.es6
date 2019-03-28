@@ -27,7 +27,7 @@ export default class GdsDirectPlusApp
 	 */
 	constructor(params, viewData, themeData)
 	{
-		const {htmlRootDom, PqPriceModal, travelRequestId} = params;
+		const {htmlRootDom, PqPriceModal, travelRequestId, chatContainerId} = params;
 
 		htmlRootDom.classList.add('gds-direct-plus-root');
 
@@ -35,6 +35,7 @@ export default class GdsDirectPlusApp
 		let isStandAlone = !travelRequestId;
 
 		this.params 		= {travelRequestId, isStandAlone};
+		this.chatContainer	= document.getElementById(chatContainerId || 'chat-plugin-container');
 		this.offset			= OFFSET_DEFAULT; //menu
 		this.pqParser 		= new PqParser(PqPriceModal);
 		this.container 		= new ContainerMain(htmlRootDom);
@@ -163,7 +164,15 @@ export default class GdsDirectPlusApp
 
 	setOffset(value)
 	{
+		this.moveChatContainer(value);
 		this.offset = value;
+	}
+
+	moveChatContainer(value)
+	{
+		if (this.chatContainer)	{
+			this.chatContainer.style.right = ((value || 60) + 11) + 'px';
+		}
 	}
 
 	// used by Component framework
