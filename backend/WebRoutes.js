@@ -202,7 +202,9 @@ app.get('/testRedisWrite', withAuth(async (reqBody, emcResult) => {
 app.get('/getAgentList', withAuth(async (reqBody, emcResult) => {
 	if (emcResult.user.id == 6206) {
 		let emc = await Emc.getClient();
-		let users = await emc.getUsers();
+		// keeping useCache false will cause "Not ready yet. Project: 178, Company:" error
+		emc.setMethod('getUsers');
+		let users = await emc.call();
 		return users;
 	} else {
 		return Forbidden('Sorry, you must be me in order to use that');
