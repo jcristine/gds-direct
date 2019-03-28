@@ -104,20 +104,30 @@ class ImportPqApolloAction extends AbstractGdsAction {
 		return $fullDump;
 	}
 
-	static collectCmdToFullOutput($calledCommands) {
+	static collectFullCmdRecs($calledCommands) {
 		let $cachedCommands, $mrs, $cmdRecord, $logCmdType;
 		$cachedCommands = [];
 		$mrs = [];
+		let fullCmdRecs = [];
 		for ($cmdRecord of php.array_reverse($calledCommands)) {
 			php.array_unshift($mrs, $cmdRecord['output']);
 			$logCmdType = CommandParser.parse($cmdRecord['cmd'])['type'];
 			if ($logCmdType !== 'moveRest') {
 				$cmdRecord['output'] = this.joinFullOutput($mrs);
 				if (!this.isScrollingAvailable($cmdRecord['output'])) {
-					$cachedCommands[$cmdRecord['cmd']] = $cmdRecord['output'];
+					fullCmdRecs.push($cmdRecord);
 				}
 				$mrs = [];
 			}
+		}
+		return fullCmdRecs;
+	}
+
+	static collectCmdToFullOutput($calledCommands) {
+		let fullCmdRecs = this.collectFullCmdRecs($calledCommands);
+		let $cachedCommands = {};
+		for (let {cmd, output} of fullCmdRecs) {
+			$cachedCommands[cmd] = output;
 		}
 		return $cachedCommands;
 	}
@@ -239,7 +249,7 @@ class ImportPqApolloAction extends AbstractGdsAction {
 			for ($bundle of $bundles) {
 				for ($segNum of $bundle['segmentNumbers']) {
 					if (!php.array_key_exists($segNum, $numToSeg)) {
-						return {'error': 'Wrong segment number ' + $segNum + ' covered by >' + $cmdRecord['cmd'] + ';'};
+						return {'error': 'Repeating segment number ' + $segNum + ' covered by >' + $cmdRecord['cmd'] + ';'};
 					} else {
 						delete ($numToSeg[$segNum]);
 					}
@@ -461,7 +471,7 @@ class ImportPqApolloAction extends AbstractGdsAction {
 	async execute() {
 		let $result;
 		$result = await this.collectPnrData();
-		$result['allCommands'] = this.$allCommands
+		$result['allCommands'] = this.constructor.collectFullCmdRecs(this.$allCommands)
 			.map(c => this.constructor.transformCmdForCms(c));
 		return $result;
 	}
