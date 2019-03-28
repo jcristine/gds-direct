@@ -1,4 +1,3 @@
-
 let PresistentHttpRq = require('./PersistentHttpRq.js');
 const BadGateway = require("./Rej").BadGateway;
 let querystring = require('querystring');
@@ -69,6 +68,17 @@ exports.parseXml = (xml) => {
 	let jsdomObj = new jsdom.JSDOM(xml, {contentType: 'text/xml'});
 	return jsdomObj.window.document;
 };
+
+exports.escapeXml = (unsafe) =>
+	unsafe.replace(/[<>&'"]/g, (c) => {
+		switch (c) {
+			case '<': return '&lt;';
+			case '>': return '&gt;';
+			case '&': return '&amp;';
+			case '\'': return '&apos;';
+			case '"': return '&quot;';
+		}
+	});
 
 exports.mand = (val) => {
 	if (!val) {

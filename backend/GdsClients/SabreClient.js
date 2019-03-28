@@ -4,6 +4,7 @@ let {getSabre} = require('../Repositories/GdsProfiles.js');
 let {parseXml, wrapExc} = require("../Utils/Misc.js");
 let Rej = require("../Utils/Rej.js");
 const GdsProfiles = require("../Repositories/GdsProfiles");
+const escapeXml = require("../Utils/Misc").escapeXml;
 const LoginTimeOut = require("../Utils/Rej").LoginTimeOut;
 
 let sendRequest = async (soapEnvXml, format) => {
@@ -144,7 +145,7 @@ let runCmd = async (rqBody, gdsData) => {
 	let payloadXml = [
 		'    <ns1:SabreCommandLLSRQ xmlns:ns1="http://webservices.sabre.com/sabreXML/2003/07">',
 		'      <ns1:Request>',
-		'        <ns1:HostCommand>' + cmd + '</ns1:HostCommand>',
+		'        <ns1:HostCommand>' + escapeXml(cmd) + '</ns1:HostCommand>',
 		'      </ns1:Request>',
 		'    </ns1:SabreCommandLLSRQ>',
 	].join('\n');

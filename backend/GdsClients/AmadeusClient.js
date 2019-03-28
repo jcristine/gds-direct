@@ -6,6 +6,7 @@ let util = require('util');
 let {parseXml, wrapExc} = require("../Utils/Misc.js");
 let Rej = require("../Utils/Rej.js");
 const GdsProfiles = require("../Repositories/GdsProfiles");
+const escapeXml = require("../Utils/Misc").escapeXml;
 const LoginTimeOut = require("../Utils/Rej").LoginTimeOut;
 
 let chr = (charCode) => String.fromCharCode(charCode);
@@ -98,7 +99,7 @@ let makeCmdPayloadXml = (cmd) =>[
 	'        </ns1:messageFunctionDetails>',
 	'      </ns1:messageAction>',
 	'      <ns1:longTextString>',
-	'        <ns1:textStringDetails>' + cmd + '</ns1:textStringDetails>',
+	'        <ns1:textStringDetails>' + escapeXml(cmd) + '</ns1:textStringDetails>',
 	'      </ns1:longTextString>',
 	'    </ns1:Command_Cryptic>',
 ].join('\n');

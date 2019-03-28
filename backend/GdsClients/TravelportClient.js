@@ -1,6 +1,6 @@
 let {getTravelport} = require("../Repositories/GdsProfiles.js");
 let {LoginTimeOut, BadGateway} = require("../Utils/Rej");
-let {parseXml} = require("../Utils/Misc.js");
+let {escapeXml, parseXml} = require("../Utils/Misc.js");
 let PersistentHttpRq = require('../Utils/PersistentHttpRq.js');
 const GdsProfiles = require("../Repositories/GdsProfiles");
 const Conflict = require("../Utils/Rej").Conflict;
@@ -47,7 +47,7 @@ let runCmd = (cmd, gdsData) => {
 	let token = gdsData.sessionToken;
 	let profileName = gdsData.profileName;
 	let body = `<?xml version="1.0" encoding="UTF-8"?>
-<SOAP-ENV:Envelope xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ns1="http://webservices.galileo.com"><SOAP-ENV:Body><ns1:SubmitTerminalTransaction><ns1:Token>` + token + `</ns1:Token><ns1:Request>` + cmd + `</ns1:Request><ns1:IntermediateResponse></ns1:IntermediateResponse></ns1:SubmitTerminalTransaction></SOAP-ENV:Body></SOAP-ENV:Envelope>`;
+<SOAP-ENV:Envelope xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ns1="http://webservices.galileo.com"><SOAP-ENV:Body><ns1:SubmitTerminalTransaction><ns1:Token>` + token + `</ns1:Token><ns1:Request>` + escapeXml(cmd) + `</ns1:Request><ns1:IntermediateResponse></ns1:IntermediateResponse></ns1:SubmitTerminalTransaction></SOAP-ENV:Body></SOAP-ENV:Envelope>`;
 	return sendRequest(body, profileName).then(resp => {
 		let resultTag = parseXml(resp).querySelectorAll('SubmitTerminalTransactionResult')[0];
 		if (resultTag) {
