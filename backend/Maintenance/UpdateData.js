@@ -7,6 +7,7 @@ const Pccs = require("../Repositories/Pccs");
 const Airports = require("../Repositories/Airports");
 const FluentLogger = require("../LibWrappers/FluentLogger");
 const Redis = require("../LibWrappers/Redis");
+const Agents = require("../Repositories/Agents");
 
 /**
  * fetch external data like airports, ticket designators, etc... hourly
@@ -17,9 +18,12 @@ let UpdateData = () => {
 	let logit = (msg, data) => FluentLogger.logit(msg, workerLogId, data);
 	let logExc = (msg, exc) => FluentLogger.logExc(msg, workerLogId, exc);
 
+	// putting longest jobs first should make sense as the sooner
+	// some worker takes it, the faster all updates will be done
 	let hourlyJobs = [
-		BookingClasses.updateFromService,
 		TicketDesignators.updateFromService,
+		Agents.updateFromService,
+		BookingClasses.updateFromService,
 		Airlines.updateFromService,
 		Pccs.updateFromService,
 		Airports.updateFromService,
