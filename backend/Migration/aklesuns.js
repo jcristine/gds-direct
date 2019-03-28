@@ -173,10 +173,6 @@ module.exports.migrations = [
 		].join('\n')),
 	},
 	{
-		name: 'GRECT/2019.02.27002-fetch-airports',
-		perform: (db) => Airports.updateFromService(),
-	},
-	{
 		name: 'GRECT/2019.02.27004-add-key-by-city',
 		perform: (db) => db.query([
 			'ALTER TABLE airports ADD INDEX city_code (city_code);',
@@ -205,10 +201,6 @@ module.exports.migrations = [
 		].join('\n')),
 	},
 	{
-		name: 'GRECT/2019.02.28002-fetch-pccs-2',
-		perform: (db) => Pccs.updateFromService(),
-	},
-	{
 		name: 'GRECT/2019.03.01001-create-airlines-table',
 		perform: (db) => db.query([
 			"CREATE TABLE `airlines` (",
@@ -221,10 +213,6 @@ module.exports.migrations = [
 		].join('\n')),
 	},
 	{
-		name: 'GRECT/2019.03.01001-fetch-airlines-2',
-		perform: (db) => Airlines.updateFromService(),
-	},
-	{
 		name: 'GRECT/2019.03.07005-create-airlines-table',
 		perform: (db) => db.query([
 			'CREATE TABLE `airline_booking_classes` (',
@@ -234,10 +222,6 @@ module.exports.migrations = [
 			'  UNIQUE KEY `airline_booking_class` (`airline`,`booking_class`)',
 			') ENGINE=InnoDB CHARSET=utf8',
 		].join('\n')),
-	},
-	{
-		name: 'GRECT/2019.03.07005-fetch-booking-classes-2',
-		perform: (db) => BookingClasses.updateFromService(),
 	},
 	{
 		name: 'GRECT/2019.03.08008-create-terminal-sessions-table',
@@ -347,7 +331,26 @@ module.exports.migrations = [
 		].join('\n')),
 	},
 	{
-		name: 'GRECT/2019.03.12001-fill-td-table-4',
-		perform: (db) => TicketDesignators.updateFromService(),
+		name: 'GRECT/2019.03.28001-create-agents-table',
+		perform: (db) => db.query([
+		    "CREATE TABLE `agents` (",
+		    "  `id` int(11) NOT NULL,",
+		    "  `login` varchar(250) COLLATE utf8_unicode_ci DEFAULT NULL,",
+		    "  `name` varchar(250) COLLATE utf8_unicode_ci DEFAULT NULL,",
+		    "  `fp_initials` char(3) COLLATE utf8_unicode_ci DEFAULT NULL,",
+		    "  `sabre_initials` varchar(3) COLLATE utf8_unicode_ci DEFAULT NULL,",
+		    "  `sabre_lniata` varchar(10) COLLATE utf8_unicode_ci DEFAULT NULL,",
+		    "  `sabre_id` varchar(10) COLLATE utf8_unicode_ci DEFAULT NULL,",
+		    "  `team_id` int(11) DEFAULT NULL,",
+		    "  `is_active` tinyint(1) DEFAULT NULL,",
+		    "  `deactivated_dt` datetime DEFAULT NULL,",
+		    "  `updated_dt` datetime DEFAULT NULL,",
+		    "  `email_list` text COLLATE utf8_unicode_ci,",
+		    "  `gds_direct_fs_limit` int(11) DEFAULT NULL,",
+		    "  `gds_direct_usage_limit` int(11) DEFAULT NULL,",
+		    "  `roles` text default '',",
+		    "  PRIMARY KEY (`id`)",
+		    ") ENGINE=InnoDB DEFAULT CHARSET=utf8",
+		].join('\n')),
 	},
 ];
