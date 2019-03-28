@@ -133,6 +133,7 @@ window.GdsDirectPlusParams = window.GdsDirectPlusParams || {
 	socketHost: isDev
 		? rootUrl.replace(/:\d+$/, '') + ':' + 3022
 		: rootUrl,
+	isForeignProjectEmcId: false,
 	emcSessionId: null,
 	travelRequestId: null,
 	cmsUrl: null,
@@ -185,9 +186,12 @@ let getEmcSessionIdFromCookie = () => {
  * statically or via js dynamic DOM generation)
  */
 window.InitGdsDirectPlusApp = (params) => {
-	let whenEmcSessionId = !params.getCrossAuthToken
-		? Promise.resolve(params.emcSessionId)
-		: getEmcSessionIdFromCookie()
+	let whenEmcSessionId;
+	if (!params.getCrossAuthToken) {
+		window.GdsDirectPlusParams.isForeignProjectEmcId = true;
+		whenEmcSessionId = Promise.resolve(params.emcSessionId);
+	} else {
+		whenEmcSessionId = getEmcSessionIdFromCookie()
 			.catch(() => Promise.resolve()
 				.then(() => params.getCrossAuthToken())
 				.then(token => token ? token : Promise.reject('Provided cross-auth token was empty'))
@@ -200,12 +204,14 @@ window.InitGdsDirectPlusApp = (params) => {
 					return emcSessionId;
 				}))
 			.catch(exc => {
+				window.GdsDirectPlusParams.isForeignProjectEmcId = true;
 				console.error('Failed to cross-authorize token, falling back to CMS auth', exc);
 				document.cookie = 'GDS_DIRECT_PLUS_AUTH=';
 				return params.emcSessionId
 					? Promise.resolve(params.emcSessionId)
 					: Promise.reject(exc);
 			});
+	}
 	return whenEmcSessionId.then(emcSessionId => {
 		return onEmcSessionId(emcSessionId, params);
 	});

@@ -1,7 +1,6 @@
 
 let Emc = require('../LibWrappers/Emc.js');
 let {Forbidden, NotAuthorized, BadRequest, NotImplemented, LoginTimeOut, InternalServerError, NotFound} = require('../Utils/Rej.js');
-let Db = require('../Utils/Db.js');
 let Diag = require('../LibWrappers/Diag.js');
 let FluentLogger = require('../LibWrappers/FluentLogger.js');
 const {getExcData} = require('../Utils/Misc.js');
@@ -9,6 +8,7 @@ const php = require('../Transpiled/php.js');
 const GdsSessions = require("../Repositories/GdsSessions");
 const GdsSessionsController = require("./GdsSessionController");
 const Config = require('../Config.js');
+const Agents = require("../Repositories/Agents");
 
 let isSystemError = (exc) =>
 	!BadRequest.matches(exc.httpStatusCode) &&
@@ -80,6 +80,18 @@ let normalizeRqBody = (rqBody, emcData) => {
 	};
 };
 
+/**
+ * may be needed in SCS project for example, as they are currently
+ * passing just their token instead of authorizing in GDSD
+ * and when they do so, 'roles' contains the roles of _their_ project, not of GDSD
+ */
+let normalizeForeignProjectEmcData = async (emcData) => {
+	let row = await Agents.getById(emcData.data.user.id);
+	let roles = row.roles ? row.roles.split(',') : [];
+	emcData.data.user.roles = roles;
+	return emcData;
+};
+
 let withAuth = (userAction) => (req, res) => {
 	return toHandleHttp((rqBody, routeParams) => {
 		if (typeof userAction !== 'function') {
@@ -94,7 +106,10 @@ let withAuth = (userAction) => (req, res) => {
 				error.stack += '\nCaused by:\n' + exc.stack;
 				return Promise.reject(error);
 			})
-			.then(emcData => {
+			.then(async emcData => {
+				if (rqBody.isForeignProjectEmcId) {
+					emcData = await normalizeForeignProjectEmcData(emcData).catch(exc => emcData);
+				}
 				rqBody = normalizeRqBody(rqBody, emcData);
 				return Promise.resolve()
 					.then(() => userAction(rqBody, emcData.data, routeParams));

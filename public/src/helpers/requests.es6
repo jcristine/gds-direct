@@ -129,6 +129,7 @@ export const get = (url) => {
 	url += delim + [
 		'emcSessionId=' + window.GdsDirectPlusParams.emcSessionId,
 		'travelRequestId=' + (window.GdsDirectPlusParams.travelRequestId || 0),
+		'isForeignProjectEmcId=' + window.GdsDirectPlusParams.isForeignProjectEmcId ? '1' : '',
 	].join('&');
 	return Ask( url, { credentials: 'include' });
 };
@@ -137,6 +138,7 @@ export const post = (url, postParams = {}) => {
 	postParams = {...postParams,
 		emcSessionId: window.GdsDirectPlusParams.emcSessionId || '',
 		travelRequestId: window.GdsDirectPlusParams.travelRequestId || 0,
+		isForeignProjectEmcId: window.GdsDirectPlusParams.isForeignProjectEmcId ? true : false,
 	};
 
 	return Ask(url, { ...getPostRequestHeader(postParams) });

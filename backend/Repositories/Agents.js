@@ -100,3 +100,10 @@ exports.updateFromService = async () => {
 		sqlResult: written,
 	};
 };
+
+exports.getById = async (id) => {
+	return Db.with(db => db.fetchOne({
+		table: TABLE,
+		where: [['id', '=', id]],
+	}));
+};
