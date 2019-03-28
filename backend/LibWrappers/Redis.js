@@ -1,6 +1,7 @@
 
 let ioredis = require("ioredis");
 let Config = require('../Config.js');
+const Conflict = require("../Utils/Rej").Conflict;
 let {never, StrConsts} = require('../Utils/StrConsts.js');
 const nonEmpty = require("../Utils/Rej").nonEmpty;
 
@@ -14,6 +15,7 @@ exports.keys = StrConsts({
 	get EMC_TOKEN_TO_USER() { never(); },
 	get MIGRATION_LOCK() { never(); },
 	get UPDATE_DATA_LOCK() { never(); },
+	get GDS_SESSION_ACTION_LOCK() { never(); },
 	get AGENT_CMD_COUNTER() { never(); },
 	get HIGHLIGHT_RULES_UPDATE_MS() { never(); },
 }, 'GRECT_');
@@ -48,6 +50,19 @@ exports.withNewConnection = async (process) => {
 		client.quit();
 		return Promise.reject(exc);
 	});
+};
+
+exports.withLock = async ({lockKey, action, lockSeconds = 1 * 60, lockValue = 'lockedForReal'}) => {
+	let redis = await getClient();
+	let didAcquire = await redis.set(lockKey, lockValue, 'NX', 'EX', lockSeconds);
+	if (!didAcquire) {
+		let lastValue = await redis.get(lockKey);
+		return Conflict('Process ' + lockKey + ' is locked. Last Value - ' + lastValue);
+	} else {
+		return Promise.resolve()
+			.then(() => action())
+			.finally(() => redis.del(lockKey));
+	}
 };
 
 exports.getInfo = async () => {

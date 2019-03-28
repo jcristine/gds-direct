@@ -41,7 +41,8 @@ let UpdateData = () => {
 			logit('Processing job #' + i + ' ' + job.name);
 			return Promise.resolve()
 				.then(() => job())
-				.then(result => ({...result, status: 'executed'}));
+				.then(result => ({...result, status: 'executed'}))
+				.finally(() => redis.del(lockKey));
 		}
 	};
 

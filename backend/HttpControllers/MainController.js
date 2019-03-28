@@ -9,6 +9,7 @@ const GdsSessions = require("../Repositories/GdsSessions");
 const GdsSessionsController = require("./GdsSessionController");
 const Config = require('../Config.js');
 const Agents = require("../Repositories/Agents");
+const {keys, withLock} = require("../LibWrappers/Redis");
 
 let isSystemError = (exc) =>
 	!BadRequest.matches(exc.httpStatusCode) &&
@@ -148,7 +149,11 @@ let withGdsSession = (sessionAction, canStartNew = false) => (req, res) => {
 		let startMs = Date.now();
 		FluentLogger.logit(msg, session.logId, rqBody);
 		return Promise.resolve()
-			.then(() => sessionAction({rqBody, session, emcUser}))
+			.then(() => withLock({
+				lockKey: keys.GDS_SESSION_ACTION_LOCK + ':' + session.id,
+				action: () => sessionAction({rqBody, session, emcUser}),
+				lockValue: briefing || req.path,
+			}))
 			.then(result => {
 				if (startNewSession) {
 					result.startNewSession = true;
