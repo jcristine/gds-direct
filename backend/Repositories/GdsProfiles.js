@@ -51,6 +51,9 @@ let gdsProfileCache = {
 };
 
 let getOne = async (service, profileName) => {
+	if (!profileName) {
+		return Rej.BadRequest('Tried to get profile data by empty name for ' + service);
+	}
 	if (gdsProfileCache[service] && gdsProfileCache[service][profileName]) {
 		return gdsProfileCache[service][profileName];
 	}
