@@ -1,7 +1,41 @@
 
 let Db = require('./../Utils/Db.js');
 let php = require('../Transpiled/php.js');
+const Emc = require("../LibWrappers/Emc");
 let {getClient, keys} = require('../LibWrappers/Redis.js');
+
+const TABLE = 'agents';
+
+/** @param {getUsers_rs_el} $row */
+let normalizeRow = ($row) => {
+	let $sabreLniata, $emails, $companyName, $companyData, $userData;
+
+	$sabreLniata = ($row['settings'] || {})['Sabre LNIATA'] || [];
+	$emails = [];
+	for ($companyName of Object.values($row['availableCompanies'] || [])) {
+		$companyData = ($row['companySettings'] || {})[$companyName];
+		if ($companyData && $companyData['email']) {
+			$emails[$companyName] = $companyData['email'];
+		}
+	}
+	return {
+		'id': $row['id'],
+		'login': $row['displayName'],
+		'name': $row['name'],
+		'is_active': $row['isActive'],
+		'fp_initials': ($row['settings'] || {})['fp_initials'] || '',
+		'email_list': !php.empty($emails) ? php.json_encode($emails) : '',
+		'sabre_initials': ($row['settings'] || {})['Sabre Initials'] || '',
+		'sabre_lniata': php.is_array($sabreLniata) ? php.implode(', ', $sabreLniata) : $sabreLniata,
+		'sabre_id': ($row['settings'] || {})['Sabre ID'] || '',
+		'team_id': $row['teamId'] || '',
+		'updated_dt': php.date('Y-m-d H:i:s'),
+		'deactivated_dt': ($row['settings'] || {})['unactivatedDt'],
+		'gds_direct_fs_limit': ($row['settings'] || {})['gds_direct_fs_limit'],
+		'gds_direct_usage_limit': ($row['settings'] || {})['gds_direct_usage_limit'],
+		'roles': ($row.roles || []).join(','),
+	};
+};
 
 exports.getFsCallsUsed = async (agentId) => {
 	let rows = await Db.with(db => db.query([
@@ -45,4 +79,24 @@ exports.getGdsDirectCallsUsed = async (agentId) => {
 	client.set(cacheKey, cnt, 'EX', 5 * 60);
 
 	return cnt;
+};
+
+exports.updateFromService = async () => {
+	let emc = await Emc.getClient();
+	// keeping useCache false will cause "Not ready yet. Project: 178,
+	// Company:" error, so the only choice is to make a low-level request
+	emc.setMethod('getUsers');
+	/** @type {getUsers_rs} */
+	let serviceResult = await emc.call();
+
+	let rows = Object
+		.values(serviceResult.data.users)
+		.filter(u => u.id) // older versions of EMC may return empty rows
+		.map(normalizeRow);
+
+	let written = await Db.with(db => db.writeRows(TABLE, rows));
+	return {
+		message: 'written ' + rows.length + ' rows to db',
+		sqlResult: written,
+	};
 };
