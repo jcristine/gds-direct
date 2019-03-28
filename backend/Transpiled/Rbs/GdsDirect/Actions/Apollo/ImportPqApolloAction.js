@@ -15,14 +15,9 @@ const AbstractGdsAction = require('../../../GdsAction/AbstractGdsAction.js');
 const {fetchAll} = require('../../../../../GdsHelpers/TravelportUtils.js');
 const ApolloBaggageAdapter = require('../../../FormatAdapters/ApolloBaggageAdapter.js');
 const RetrieveFlightServiceInfoAction = require('../../../../Rbs/Process/Apollo/ImportPnr/Actions/RetrieveFlightServiceInfoAction.js');
+const ImportFareComponentsAction = require('../../../../Rbs/Process/Apollo/ImportPnr/Actions/ImportFareComponentsAction.js');
 
 let php = require('../../../../php.js');
-
-/** @debug */
-var require = require('../../../../translib.js').stubRequire;
-
-const ImportFareComponentsAction = require('../../../../Rbs/Process/Apollo/ImportPnr/Actions/ImportFareComponentsAction.js');
-const DumpStorage = require('../../../../Rbs/Process/Common/ImportPnr/DumpStorage.js');
 
 /** @see ImportPqAmadeusAction description */
 class ImportPqApolloAction extends AbstractGdsAction {
@@ -365,40 +360,19 @@ class ImportPqApolloAction extends AbstractGdsAction {
 	}
 
 	async getApolloFareRules($sections, $itinerary) {
-		let $dumpStorage, $result, $error, $fqnDump, $dumpRec, $cmd, $recordBase, $ruleRecords, $fareData, $common,
-			$fareListRecord;
+		let $result, $error;
 		$result = await (new ImportFareComponentsAction())
 			.setSession(this.session).execute($sections, 1);
 		if ($error = $result['error'] || null) return {'error': $error};
 
-		$fqnDump = php.isset($result['dumpNumber']) ? $dumpStorage.get($result['dumpNumber'])['dump'] : null;
-		for ($dumpRec of $dumpStorage.getAll()) {
-			if ($cmd = $dumpRec['cmd'] || null) {
-				this.$allCommands.push({'cmd': $cmd, 'output': $dumpRec['dump']});
-			}
+		this.$allCommands.push($result.cmdRec);
+		for (let $fareData of Object.values($result['fareList'])) {
+			this.$allCommands.push($fareData.cmdRec);
 		}
-		$recordBase = {
-			'pricingNumber': null,
-			// we return only FQN of the first ptc for
-			// now cause Apollo does not filter rules by ptc
-			'subPricingNumber': 1,
-		};
-		$ruleRecords = [];
-		for ($fareData of $result['fareList']) {
-			$ruleRecords.push(php.array_merge($recordBase, {
-				'fareComponentNumber': $fareData['componentNumber'],
-				'sections': $fareData['ruleSections'],
-			}));
-		}
-		$common = ImportApolloPnrFormatAdapter.transformFareList($result['fareList'], $itinerary);
-		if ($error = $common['error'] || null) return {'error': $error};
-		$fareListRecord = php.array_merge($recordBase, {
-			'parsed': $common['fareList'],
-			'raw': $fqnDump,
-		});
 		return {
-			'fareListRecords': [$fareListRecord],
-			'ruleRecords': $ruleRecords,
+			// could parse them, but nah for now
+			'fareListRecords': [],
+			'ruleRecords': [],
 		};
 	}
 
