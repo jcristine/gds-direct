@@ -210,7 +210,7 @@ class ProcessSabreTerminalInputAction {
 			this.stateful.handleFsUsage();
 		}
 		if (Fp.any($cmdStartsWith, ['FQ', 'PQ', '*PQ'])) {
-			cmdRec = {...cmdRec, output: this.constructor.hideSeaPassengers($output)};
+			cmdRec = {...cmdRec, output: this.constructor.hideSeaPassengers(cmdRec.output)};
 		}
 		return cmdRec;
 	}
