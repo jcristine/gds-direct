@@ -1168,6 +1168,29 @@ class PnrParserTest extends require('../../../../Lib/TestCase.js')
             },
         ]);
 
+        // seems like no headerData in output for some reason
+        $list.push([
+            php.implode(php.PHP_EOL, [
+                '** THIS BF IS CURRENTLY IN USE **',
+                'NSBF34/WS QSBIV VTL9WS  AG 05578602 28MAR',
+                '  1.1IGLESIASDELRIO/MARCOANTONIO',
+                ' 1. DI 7044 P  10APR MIALGW HK1   500P # 620A O*         WE',
+                ' 2. D8 6051 M  11APR LGWMAD HK1  1005A   130P O*         TH',
+                '** FILED FARE DATA EXISTS **           >*FF·',
+                '** VENDOR LOCATOR DATA EXISTS **       >*VL·',
+                'FONE-SFOR*800-750-2238 ASAP CUSTOMER SUPPORT',
+                'TKTG-TAU/TH28MAR',
+                'NOTE-',
+                '  1. GD-AMARANTA/23964/FOR AGENT/102152/LEAD-10939640 IN 711M WS',
+                '      28MAR 2259Z',
+            ]),
+            {
+                'headerData': {
+                    'reservationInfo': {'recordLocator': 'NSBF34'},
+                },
+            },
+        ]);
+
         // due to a bug in Galileo, *QWE123|*ALL ends with 'T*FFALL)><' if CONFIDENTIAL DATA EXISTS
         // should not treat it as SSR
         $list.push([

@@ -6,7 +6,7 @@ let Emc = require('./LibWrappers/Emc.js');
 let GdsSessionController = require('./HttpControllers/GdsSessionController.js');
 let TerminalBaseController = require('./Transpiled/App/Controllers/TerminalBaseController.js');
 let {hrtimeToDecimal} = require('./Utils/Misc.js');
-let {Forbidden} = require('./Utils/Rej.js');
+let {Forbidden, BadReqeust} = require('./Utils/Rej.js');
 let {admins} = require('./Constants.js');
 let UpdateHighlightRulesFromProd = require('./Actions/UpdateHighlightRulesFromProd.js');
 let Db = require('./Utils/Db.js');
@@ -226,8 +226,15 @@ app.get('/parser/test', toHandleHttp((rqBody) => {
 	result = FareConstructionParser.parse(rqBody.input);
 	return result;
 }));
-app.post('/keepAliveEmc', withAuth((rqBody, emcResult) => {
-	return {message: 'Session is alive OK'};
+app.post('/keepAliveEmc', toHandleHttp(async (rqBody) => {
+	if (!rqBody.emcSessionId) {
+		return BadReqeust('emcSessionId parameter is mandatory');
+	} else if (rqBody.isForeignProjectEmcId) {
+		return Promise.resolve({message: 'Foreign Project EMC id - success by default'});
+	} else {
+		let emc = await Emc.getClient();
+		return emc.doAuth(rqBody.emcSessionId);
+	}
 }));
 
 getConfig().then(config => {
