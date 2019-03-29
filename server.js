@@ -8,8 +8,8 @@ const UpdateData = require("./backend/Maintenance/UpdateData");
 (async () => {
 	if (Config.production) {
 		// a workaround for an extra job that gets spawned randomly and dies
-		Diag.log('pid ' + process.pid + ': waiting for 5 seconds before starting server');
-		await new Promise(resolve => setTimeout(resolve, 5000));
+		Diag.log('pid ' + process.pid + ': waiting for 1 second before starting server');
+		await new Promise(resolve => setTimeout(resolve, 1000));
 		Diag.log('pid ' + process.pid + ': done waiting - starting server now');
 	}
 	require('./backend/WebRoutes.js');
