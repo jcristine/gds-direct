@@ -83,7 +83,7 @@ export default class GdsDirectPlusApp
 
 		// ping EMC session every 10 minutes to avoid state where
 		// CMS session is still alive, but GDSD session expired
-		setInterval(() => post('/keepAliveEmc'), 10 * 60 * 1000);
+		setInterval(() => post('/keepAliveEmc', {skipErrorPopup: true}), 10 * 60 * 1000);
 	}
 
 	set(key, val)
