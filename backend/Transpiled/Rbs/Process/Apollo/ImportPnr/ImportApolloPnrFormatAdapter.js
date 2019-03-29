@@ -27,8 +27,9 @@ class ImportApolloPnrFormatAdapter
         if (php.isset($parsedData['error'])) {
             return $parsedData;
         }
-        $recentPast = !$baseDate ? null : php.date('Y-m-d', php.strtotime('-2 days'), php.strtotime($baseDate)); // -2 for timezone error
-        $nearFuture = !$baseDate ? null : php.date('Y-m-d', php.strtotime('+2 days'), php.strtotime($baseDate)); // +2 for timezone error
+        $recentPast = !$baseDate ? null : php.date('Y-m-d', php.strtotime('-2 days', php.strtotime($baseDate))); // -2 for timezone error
+        $nearFuture = !$baseDate ? null : php.date('Y-m-d', php.strtotime('+2 days', php.strtotime($baseDate))); // +2 for timezone error
+
         $nameRecords = $parsedData['passengers']['passengerList'] || [];
         $reservation = {};
         $pnrInfo = !php.empty($parsedData['headerData']['reservationInfo'])

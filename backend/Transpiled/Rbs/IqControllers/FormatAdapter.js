@@ -18,57 +18,6 @@ let php = require('../../php.js');
  */
 class FormatAdapter
 {
-    constructor() {
-        this.$recentPast = null;
-        this.$nearFuture = null;
-    }
-
-    setBaseDate($baseDate)  {
-        this.$recentPast = php.date('Y-m-d', php.strtotime($baseDate+' -2 days'));
-        this.$nearFuture = php.date('Y-m-d', php.strtotime($baseDate+' +2 days'));
-        return this;
-    }
-
-    /**
-     * @param $segment = ItineraryParser::parseSegmentLine()
-     */
-    static adaptSabreSegmentParseForClient($segment)  {
-        let $daysOfWeek, $dprt, $dstn;
-
-        $daysOfWeek = null;
-        if ($dprt = ($segment['departureDayOfWeek'] || {})['parsed']) {
-            $daysOfWeek = $dprt;
-            if ($dstn = ($segment['destinationDayOfWeek'] || {})['parsed']) {
-                $daysOfWeek += '\/'+$dstn;
-            }
-        }
-
-        return {
-            'segmentNumber': $segment['segmentNumber'],
-            'airline': $segment['airline'],
-            'flightNumber': $segment['flightNumber'],
-            'bookingClass': $segment['bookingClass'],
-            'departureDate': $segment['departureDate'],
-            'departureTime': $segment['departureTime'],
-            'daysOfWeek': $daysOfWeek,
-            'departureAirport': $segment['departureAirport'],
-            'destinationAirport': $segment['destinationAirport'],
-            'segmentStatus': $segment['segmentStatus'],
-            'seatCount': $segment['seatCount'],
-            'eticket': $segment['eticket'] ? true : false,
-            'destinationDate': (($segment['destinationDate'] || {})['raw'] || '') !== ''
-                ? $segment['destinationDate']
-                : $segment['departureDate'],
-            'destinationTime': $segment['destinationTime'],
-            'confirmedByAirline': !php.empty($segment['confirmationNumber']),
-            'confirmationAirline': $segment['confirmationAirline'],
-            'confirmationNumber': $segment['confirmationNumber'],
-            'operatedBy': $segment['operatedBy'],
-            'operatedByCode': $segment['operatedByCode'],
-            'raw': $segment['raw'],
-        };
-    }
-
     static transformSabreAirSegment($parsed, $baseDate)  {
         let $segment;
 
@@ -116,18 +65,21 @@ class FormatAdapter
         return $common;
     }
 
+
     /**
      * @param $segment = ItineraryParser::parseSegmentLine()
      */
     static adaptSabreSegmentParseForClient($segment)  {
         let $daysOfWeek, $dprt, $dstn;
+
         $daysOfWeek = null;
-        if ($dprt = $segment['departureDayOfWeek']['parsed'] || null) {
+        if ($dprt = ($segment['departureDayOfWeek'] || {})['parsed']) {
             $daysOfWeek = $dprt;
-            if ($dstn = $segment['destinationDayOfWeek']['parsed'] || null) {
-                $daysOfWeek += '/'+$dstn;
+            if ($dstn = ($segment['destinationDayOfWeek'] || {})['parsed']) {
+                $daysOfWeek += '\/'+$dstn;
             }
         }
+
         return {
             'segmentNumber': $segment['segmentNumber'],
             'airline': $segment['airline'],
@@ -141,15 +93,15 @@ class FormatAdapter
             'segmentStatus': $segment['segmentStatus'],
             'seatCount': $segment['seatCount'],
             'eticket': $segment['eticket'] ? true : false,
-            'destinationDate': ($segment['destinationDate']['raw'] || '') !== ''
+            'destinationDate': (($segment['destinationDate'] || {})['raw'] || '') !== ''
                 ? $segment['destinationDate']
                 : $segment['departureDate'],
             'destinationTime': $segment['destinationTime'],
             'confirmedByAirline': !php.empty($segment['confirmationNumber']),
-            'confirmationAirline': $segment['confirmationAirline'] || null,
-            'confirmationNumber': $segment['confirmationNumber'] || null,
-            'operatedBy': $segment['operatedBy'] || null,
-            'operatedByCode': $segment['operatedByCode'] || null,
+            'confirmationAirline': $segment['confirmationAirline'],
+            'confirmationNumber': $segment['confirmationNumber'],
+            'operatedBy': $segment['operatedBy'],
+            'operatedByCode': $segment['operatedByCode'],
             'raw': $segment['raw'],
         };
     }
@@ -394,10 +346,9 @@ class FormatAdapter
 
     static addFullDateToApolloSegment($segment, $baseDate)  {
         let $fullDepartureDate, $fullDestinationDate;
-        $fullDepartureDate = DateTime.decodeRelativeDateInFuture($segment['departureDate']['parsed'],
-            $baseDate);
+        $fullDepartureDate = DateTime.decodeRelativeDateInFuture($segment['departureDate']['parsed'], $baseDate);
         $fullDestinationDate = $fullDepartureDate
-            ? php.date('Y-m-d', php.strtotime($fullDepartureDate) + 24 * 60 * 60)
+            ? php.date('Y-m-d', php.strtotime($fullDepartureDate) + $segment.dayOffset * 24 * 60 * 60)
             : null;
         $segment['destinationDate'] = {
 //            'raw' => $parsedData['departureDate']['raw'].' +'.$parsedData['dayOffset'],
@@ -459,31 +410,6 @@ class FormatAdapter
                 'data': $remark['data'],
             };
         }, $remarks);
-    }
-
-    // ============================
-    //  instance methods follow...
-    // ===========================
-
-    /** @param $carSeg = ApolloReservationItineraryParser::parseCarSegmentLine() */
-    transformApolloCar($carSeg)  {
-        let $baseDt;
-        if ($baseDt = this.$recentPast) {
-            $carSeg['arrivalDate']['full'] = DateTime.decodeRelativeDateInFuture($carSeg['arrivalDate']['parsed'], $baseDt);
-            $carSeg['returnDate']['full'] = DateTime.decodeRelativeDateInFuture($carSeg['returnDate']['parsed'], $baseDt);
-        }
-        return $carSeg;
-    }
-
-    /** @param $hotelSeg = ApolloReservationItineraryParser::parseHotelSegmentLine() */
-    transformApolloHotel($hotelSeg)  {
-        let $baseDt;
-        delete($hotelSeg['segmentNumber']);
-        if ($baseDt = this.$recentPast) {
-            $hotelSeg['startDate']['full'] = DateTime.decodeRelativeDateInFuture($hotelSeg['startDate']['parsed'], $baseDt);
-            $hotelSeg['endDate']['full'] = DateTime.decodeRelativeDateInFuture($hotelSeg['endDate']['parsed'], $baseDt);
-        }
-        return $hotelSeg;
     }
 }
 module.exports = FormatAdapter;

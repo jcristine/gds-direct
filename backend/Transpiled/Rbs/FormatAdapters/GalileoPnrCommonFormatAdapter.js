@@ -40,8 +40,8 @@ class GalileoPnrCommonFormatAdapter
         let $recentPast, $nearFuture, $pnrInfo, $itinerary, $common;
 
         // Galileo allows booking segments up to (365 - 4) days from now
-        $recentPast = !$baseDate ? null : php.date('Y-m-d', php.strtotime('-2 days'), php.strtotime($baseDate)); // -2 for timezone error
-        $nearFuture = !$baseDate ? null : php.date('Y-m-d', php.strtotime('+2 days'), php.strtotime($baseDate)); // +2 for timezone error
+        $recentPast = !$baseDate ? null : php.date('Y-m-d', php.strtotime('-2 days', php.strtotime($baseDate))); // -2 for timezone error
+        $nearFuture = !$baseDate ? null : php.date('Y-m-d', php.strtotime('+2 days', php.strtotime($baseDate))); // +2 for timezone error
         $pnrInfo = !php.empty($parsed['headerData']['reservationInfo'])
             ? this.transformPnrInfo($parsed['headerData'], $nearFuture)
             : null;

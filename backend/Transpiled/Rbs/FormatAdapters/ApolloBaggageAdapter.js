@@ -80,7 +80,7 @@ class ApolloBaggageAdapter
                 delete($ptcInfo['nameNumbers']);
                 $records.push({
                     'pricingNumber': null,
-                    'subPricingNumber': $j + 1,
+                    'subPricingNumber': +$j + 1,
                     'passengerNameNumbers': $nameNumbers,
                     'ptcInfo': $ptcInfo,
                     'parsed': php.isset($baggageInfo['parsed'])

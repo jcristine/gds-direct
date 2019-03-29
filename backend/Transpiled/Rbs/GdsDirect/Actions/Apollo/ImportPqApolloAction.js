@@ -47,7 +47,7 @@ class ImportPqApolloAction extends AbstractGdsAction {
 	}
 
 	/** @param $sessionState = Db::fetchOne('SELECT * FROM terminal_sessions') */
-	setPreCalledCommandsFromDb($commands, $sessionState) {
+	setPreCalledCommandsFromDb($commands) {
 		this.$preCalledCommands = $commands;
 		this.$cmdToFullOutput = this.constructor.collectCmdToFullOutput($commands);
 		return this;
@@ -115,7 +115,7 @@ class ImportPqApolloAction extends AbstractGdsAction {
 			if ($logCmdType !== 'moveRest') {
 				$cmdRecord['output'] = this.joinFullOutput($mrs);
 				if (!this.isScrollingAvailable($cmdRecord['output'])) {
-					fullCmdRecs.push($cmdRecord);
+					fullCmdRecs.unshift($cmdRecord);
 				}
 				$mrs = [];
 			}

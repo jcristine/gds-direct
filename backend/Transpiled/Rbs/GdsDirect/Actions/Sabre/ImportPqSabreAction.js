@@ -147,7 +147,7 @@ class ImportPqSabreAction extends AbstractGdsAction {
 				$ptcPricing = $ptcPricingBlocks[$i];
 				$parsed = $priceQuote['baggageInfo'];
 				return {
-					'subPricingNumber': $i + 1,
+					'subPricingNumber': +$i + 1,
 					'passengerNameNumbers': $ptcPricing['passengerNameNumbers'],
 					'ptcInfo': $ptcPricing['ptcInfo'],
 					'parsed': $parsed
@@ -235,7 +235,7 @@ class ImportPqSabreAction extends AbstractGdsAction {
 			if ($error = $common['error']) return {'error': $error};
 			$recordBase = {
 				'pricingNumber': null,
-				'subPricingNumber': $i + 1,
+				'subPricingNumber': +$i + 1,
 			};
 			$dumpNumber = ($common['dumpNumbers'] || {})[0];
 			$raw = $dumpNumber ? $dumpStorage.get($dumpNumber)['dump'] : null;
