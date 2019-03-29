@@ -226,6 +226,9 @@ app.get('/parser/test', toHandleHttp((rqBody) => {
 	result = FareConstructionParser.parse(rqBody.input);
 	return result;
 }));
+app.post('/keepAliveEmc', withAuth((rqBody, emcResult) => {
+	return {message: 'Session is alive OK'};
+}));
 
 getConfig().then(config => {
 	app.listen(+config.HTTP_PORT, config.HOST, function () {

@@ -21,7 +21,9 @@ let makeParams = (session, callParams) => {
 };
 
 let formatSystemError = (exc) => {
-	let msg = 'SYSTEM ERROR - ' + (exc + '').replace('\n', ' ').slice(0, 300);
+	let msg = 'ERROR RS - ' + (exc + '').replace('\n', ' ')
+		.replace(/Request error - HTTP action failed - Error: /, '')
+		.slice(0, 300);
 	let output = '[[;;;errorMessage]' + msg + ']';
 	return {output: output};
 };

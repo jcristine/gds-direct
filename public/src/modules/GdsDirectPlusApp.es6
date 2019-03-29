@@ -8,6 +8,7 @@ import {PqParser} 		from "../modules/pqParser";
 import {OFFSET_DEFAULT, AREA_LIST} from "../constants";
 import {connect, getStore} from "../store";
 import $ from 'jquery';
+let {post} = require('../helpers/requests.es6');
 
 const BORDER_SIZE = 2;
 
@@ -79,6 +80,10 @@ export default class GdsDirectPlusApp
 		for (let [gds, data] of Object.entries(settings.gds)) {
 			UPDATE_ALL_AREA_STATE(gds, data.fullState);
 		}
+
+		// ping EMC session every 10 minutes to avoid state where
+		// CMS session is still alive, but GDSD session expired
+		setInterval(() => post('/keepAliveEmc'), 10 * 60 * 1000);
 	}
 
 	set(key, val)
