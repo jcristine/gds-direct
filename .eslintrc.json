@@ -16,11 +16,11 @@
     "no-return-await": "error",
     "no-unmodified-loop-condition": "error",
     "no-warning-comments": "warn",
-    "no-undef": "error",
-    "comma-dangle": ["error", {
-      "arrays": "always-multiline",
-      "objects": "always-multiline"
-    }]
+    "no-undef": "error"
+    //,"comma-dangle": ["error", {
+    //  "arrays": "always-multiline",
+    //  "objects": "always-multiline"
+    //}]
   },
   "globals": {
     "setTimeout": false,

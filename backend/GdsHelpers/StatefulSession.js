@@ -12,7 +12,26 @@ const {getConfig} = require('../Config.js');
 const {jsExport} = require('../Utils/Misc.js');
 const Agent = require('../DataFormats/Wrappers/Agent.js');
 const Db = require('../Utils/Db.js');
-const CmdLog = require('./CmdLog.js');;
+const CmdLog = require('./CmdLog.js');
+const NotFound = require("../Utils/Rej").NotFound;
+
+let GdsSession = (session) => {
+	let gds = session.context.gds;
+	let runByGds = (cmd) => {
+		if (['apollo', 'galileo'].includes(gds)) {
+			return TravelportClient({command: cmd}).runCmd(session.gdsData);
+		} else if (gds === 'amadeus') {
+			return AmadeusClient.runCmd({command: cmd}, session.gdsData);
+		} else if (gds === 'sabre') {
+			return SabreClient.runCmd({command: cmd}, session.gdsData);
+		} else {
+			return NotImplemented('Unsupported stateful GDS - ' + gds);
+		}
+	};
+	return {
+		runCmd: runByGds,
+	};
+};
 
 /**
  * a generic session that can be either apollo, sabre, galileo, amadeus, etc...
@@ -22,9 +41,7 @@ const CmdLog = require('./CmdLog.js');;
  * @param session = at('GdsSessions.js').makeSessionRecord()
  * @param {IEmcUser} emcUser
  */
-let StatefulSession = async ({session, whenCmdRqId, emcUser}) => {
-	whenCmdRqId = whenCmdRqId || Promise.resolve(null);
-	let cmdLog = await CmdLog({session, whenCmdRqId});
+let StatefulSession = async ({session, emcUser, gdsSession, cmdLog}) => {
 
 	let config = await getConfig();
 	let gds = session.context.gds;
@@ -38,23 +55,11 @@ let StatefulSession = async ({session, whenCmdRqId, emcUser}) => {
 		return FluentLogger.logit(msg, session.logId, data);
 	};
 
-	let runByGds = (cmd) => {
-		if (['apollo', 'galileo'].includes(gds)) {
-			return TravelportClient({command: cmd}).runCmd(session.gdsData);
-		} else if (gds === 'amadeus') {
-			return AmadeusClient.runCmd({command: cmd}, session.gdsData);
-		} else if (gds === 'sabre') {
-			return SabreClient.runCmd({command: cmd}, session.gdsData);
-		} else {
-			return NotImplemented('Unsupported stateful GDS - ' + gds);
-		}
-	};
-
 	let runCmd = async (cmd) => {
 		if (!cmd) {
 			return BadRequest('An empty string was passed instead of command to call in GDS');
 		} else {
-			let running = runByGds(cmd);
+			let running = gdsSession.runCmd(cmd);
 			let cmdRec = await cmdLog.logCommand(cmd, running);
 			calledCommands.push(cmdRec);
 			let masked = Misc.maskCcNumbers(cmdRec);
@@ -114,4 +119,33 @@ let StatefulSession = async ({session, whenCmdRqId, emcUser}) => {
 	};
 };
 
-module.exports = StatefulSession;
+StatefulSession.makeFromDb = async ({session, whenCmdRqId, emcUser}) => {
+	whenCmdRqId = whenCmdRqId || Promise.resolve(null);
+	let fullState = await GdsSessions.getFullState(session);
+	let cmdLog = await CmdLog({session, fullState, whenCmdRqId});
+	let gdsSession = GdsSession(session);
+	return StatefulSession({
+		session, emcUser,
+		gdsSession, cmdLog
+	});
+};
+
+StatefulSession.makeStub = async ({session, emcUser, fullState, gdsSession}) => {
+	let cmdLog = await CmdLog({
+		session, fullState,
+		CmdLogs: {
+			getAll: () => Promise.resolve([]),
+			storeNew: (row) => Promise.resolve(row),
+			getLast: () => NotFound('No records: non-storing storage'),
+		},
+		GdsSessions: {
+			updateFullState: () => Promise.resolve(),
+		},
+	});
+	return StatefulSession({
+		session, emcUser,
+		gdsSession, cmdLog
+	});
+};
+
+module.exports = StatefulSession.makeFromDb;

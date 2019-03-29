@@ -1,14 +1,15 @@
 
-const CmdLogs = require("../Repositories/CmdLogs");
-const GdsSessions = require("../Repositories/GdsSessions");
 const SessionStateProcessor = require('../Transpiled/Rbs/GdsDirect/SessionStateProcessor/SessionStateProcessor.js');
 const CommonDataHelper = require("../Transpiled/Rbs/GdsDirect/CommonDataHelper");
-const FluentLogger = require("../LibWrappers/FluentLogger");
+const makeRow = require("../Repositories/CmdLogs").makeRow;
 const hrtimeToDecimal = require("../Utils/Misc").hrtimeToDecimal;
 
-let CmdLog = async ({session, whenCmdRqId}) => {
+let CmdLog = async ({
+	session, whenCmdRqId, fullState,
+	CmdLogs = require("../Repositories/CmdLogs"),
+	GdsSessions = require("../Repositories/GdsSessions"),
+}) => {
 	whenCmdRqId = whenCmdRqId || Promise.resolve(null);
-	let fullState = await GdsSessions.getFullState(session);
 	let gds = session.context.gds;
 	let getSessionData = () => ({...fullState.areas[fullState.area] || {}, gds: gds});
 	let whenRowsFromDb = null;
@@ -23,7 +24,6 @@ let CmdLog = async ({session, whenCmdRqId}) => {
 
 	let logCommand = (cmd, running) => {
 		let hrtimeStart = process.hrtime();
-		running.catch(exc => FluentLogger.logExc('WARNING: Failed to run cmd [' + cmd + '] in GDS', session.logId, exc));
 		return running.then(gdsResult => {
 			let prevState = fullState.areas[fullState.area];
 
@@ -43,8 +43,10 @@ let CmdLog = async ({session, whenCmdRqId}) => {
 				state: state,
 			};
 
-			let storing = whenCmdRqId.then(async cmdRqId =>
-				CmdLogs.storeNew(cmdRec, session, cmdRqId, prevState));
+			let storing = whenCmdRqId.then(async cmdRqId => {
+				let row = makeRow(cmdRec, session, cmdRqId, prevState);
+				return CmdLogs.storeNew(row);
+			});
 			calledPromises.push(storing);
 
 			return cmdRec;
@@ -54,15 +56,10 @@ let CmdLog = async ({session, whenCmdRqId}) => {
 	let getAll = async () => {
 		let fromDb = await getRowsFromDb();
 		let called = await Promise.all(calledPromises);
-		let occurrences = new Set();
-		let joined = [];
-		// probably could use some optimization...
-		for (let row of fromDb.concat(called)) {
-			if (!occurrences.has(row.id)) {
-				occurrences.add(row.id);
-				joined.push(row);
-			}
-		}
+		let startId = called.length > 0 ? called[0].id : null;
+		let joined = fromDb
+			.filter(row => !startId || row.id < startId)
+			.concat(called);
 		return joined;
 	};
 

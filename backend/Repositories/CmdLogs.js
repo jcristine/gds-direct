@@ -5,32 +5,37 @@ const nonEmpty = require("../Utils/Rej").nonEmpty;
 
 let TABLE = 'terminal_command_log';
 
-let storeNew = (cmdRec, session, cmdRqId, prevState) => {
-    let gds = session.context.gds;
-    let scrolledCmd = (cmdRec.state || {}).scrolledCmd;
-    let scrolledType = !scrolledCmd ? null :
-        CommonDataHelper.parseCmdByGds(gds, scrolledCmd).type;
+let makeRow = (cmdRec, session, cmdRqId, prevState) => {
+	let gds = session.context.gds;
+	let scrolledCmd = (cmdRec.state || {}).scrolledCmd;
+	let scrolledType = !scrolledCmd ? null :
+		CommonDataHelper.parseCmdByGds(gds, scrolledCmd).type;
 
-    let row = {
-        session_id: session.id,
-        gds: gds,
-        type: scrolledType || cmdRec.type,
-        is_mr: scrolledType && scrolledType !== cmdRec.type,
-        dt: new Date().toISOString(),
-        cmd: cmdRec.cmd,
-        duration: cmdRec.duration,
-        cmd_rq_id: cmdRqId,
-        area: prevState.area,
-        record_locator: prevState.record_locator,
-        has_pnr: prevState.has_pnr,
-        is_pnr_stored: prevState.is_pnr_stored,
-        output: cmdRec.output,
-    };
+	return {
+		session_id: session.id,
+		gds: gds,
+		type: scrolledType || cmdRec.type,
+		is_mr: scrolledType && scrolledType !== cmdRec.type,
+		dt: new Date().toISOString(),
+		cmd: cmdRec.cmd,
+		duration: cmdRec.duration,
+		cmd_rq_id: cmdRqId,
+		area: prevState.area,
+		record_locator: prevState.record_locator,
+		has_pnr: prevState.has_pnr,
+		is_pnr_stored: prevState.is_pnr_stored,
+		output: cmdRec.output,
+	};
+};
+
+let storeNew = (row) => {
     return Db.with(db => db.writeRows(TABLE, [row]))
 		.then(inserted => inserted.insertId)
-		.then(nonEmpty('Failed to store >' + cmdRec.cmd + '; cmd to DB and get id'))
+		.then(nonEmpty('Failed to store cmd to DB and get the id'))
 		.then(id => ({id, ...row}));
 };
+
+exports.makeRow = makeRow;
 
 /**
  * @param cmdRec = at('ProcessTerminalInput.js').cmdRec
