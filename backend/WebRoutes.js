@@ -146,7 +146,9 @@ app.get('/authorizeEmcToken', toHandleHttp(async rqBody => {
 	return {emcSessionId: result.data.sessionKey};
 }));
 app.get('/checkEmcSessionId', toHandleHttp(async rqBody => {
-	let sessionInfo = await Emc.getCachedSessionInfo(rqBody.emcSessionId).catch(exc => null);
+	let sessionInfo = await Emc.getClient()
+		.then(emc => emc.sessionInfo(rqBody.emcSessionId))
+		.catch(exc => null);
 	return {
 		isValid: (((sessionInfo || {}).data || {}).user || {}).id > 0,
 	};
