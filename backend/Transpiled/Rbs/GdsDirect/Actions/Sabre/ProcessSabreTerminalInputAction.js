@@ -149,11 +149,9 @@ class ProcessSabreTerminalInputAction {
 	}
 
 	async makeCmsRemarkCmdIfNeeded() {
-		let $cmdLog, $sessionData, $leadData, $msg, $cmd;
+		let $cmdLog, $msg, $cmd;
 
 		$cmdLog = this.stateful.getLog();
-		$sessionData = $cmdLog.getSessionData();
-		$leadData = this.stateful.getLeadData();
 		$msg = await CommonDataHelper.createCredentialMessage(this.stateful);
 		$cmd = '5' + $msg;
 		if (await CommonDataHelper.shouldAddCreationRemark($msg, $cmdLog)) {
@@ -399,7 +397,7 @@ class ProcessSabreTerminalInputAction {
 			if (!this.canSavePnrInThisPcc()) {
 				$errors.push('Unfortunately, PNR\\\'s in this PCC cannot be created. Please use a special Sabre login in SabreRed.');
 			}
-			if (php.empty(this.stateful.getLeadData()['leadId'])) {
+			if (php.empty(this.stateful.getLeadId())) {
 				if (!$agent.canSavePnrWithoutLead()) {
 					$errors.push(Errors.getMessage(Errors.LEAD_ID_IS_REQUIRED));
 				}
@@ -736,7 +734,7 @@ class ProcessSabreTerminalInputAction {
 				'errors': ['Unfortunately, PNR\'s in this PCC cannot be created. Please use a special Sabre login in SabreRed.'],
 			};
 		}
-		if (php.empty(this.stateful.getLeadData()['leadId'])) {
+		if (php.empty(this.stateful.getLeadId())) {
 			if (!this.getAgent().canSavePnrWithoutLead()) {
 				return {'errors': [Errors.getMessage(Errors.LEAD_ID_IS_REQUIRED)]};
 			}
@@ -747,7 +745,7 @@ class ProcessSabreTerminalInputAction {
 		} else if (!php.empty($errors = CommonDataHelper.checkSeatCount($pnr))) {
 			return {'errors': $errors};
 		}
-		if (php.empty(this.stateful.getLeadData()['leadId'])) {
+		if (php.empty(this.stateful.getLeadId())) {
 			$errors.push(Errors.getMessage(Errors.LEAD_ID_IS_REQUIRED));
 		}
 

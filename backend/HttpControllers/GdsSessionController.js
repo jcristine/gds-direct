@@ -206,7 +206,7 @@ let sendPqToPqt = async ({stateful, leadData, imported}) => {
 exports.getPqItinerary = async ({rqBody, session, emcUser}) => {
 	// could Promise.all to save some time...
 	let leadData = await CmsClient.getLeadData(rqBody.pqTravelRequestId);
-	let stateful = await StatefulSession({session, emcUser});
+	let stateful = await StatefulSession.makeFromDb({session, emcUser});
 	let imported = await ImportPq({stateful, leadData, fetchOptionalFields: false});
 	if (imported.status === GdsDirect.STATUS_EXECUTED) {
 		sendPqToPqt({stateful, leadData, imported});
@@ -217,7 +217,7 @@ exports.getPqItinerary = async ({rqBody, session, emcUser}) => {
 exports.importPq = async ({rqBody, session, emcUser}) => {
 	// could Promise.all to save some time...
 	let leadData = await CmsClient.getLeadData(rqBody.pqTravelRequestId);
-	let stateful = await StatefulSession({session, emcUser});
+	let stateful = await StatefulSession.makeFromDb({session, emcUser});
 	return ImportPq({stateful, leadData, fetchOptionalFields: true});
 };
 
@@ -243,7 +243,7 @@ exports.makeMco = async ({rqBody, session, emcUser}) => {
 	if (session.context.gds !== 'apollo') {
 		return NotImplemented('Unsupported GDS for makeMco - ' + session.context.gds);
 	}
-	let stateful = await StatefulSession({session, emcUser});
+	let stateful = await StatefulSession.makeFromDb({session, emcUser});
 	let mcoResult = await (new MakeMcoApolloAction())
 		.setSession(stateful).execute(mcoData);
 	if (!php.empty(mcoResult.errors)) {

@@ -142,12 +142,11 @@ class ProcessAmadeusTerminalInputAction {
 	}
 
 	async makeCreatedForCmdIfNeeded() {
-		let $cmdLog, $sessionData, $leadData, $remarkCmd, $flattenCmd, $performedCmds, $flatPerformedCmds;
+		let $cmdLog, $sessionData, $remarkCmd, $flattenCmd, $performedCmds, $flatPerformedCmds;
 
 		$cmdLog = this.stateful.getLog();
 		$sessionData = $cmdLog.getSessionData();
 		if (!$sessionData['is_pnr_stored']) {
-			$leadData = this.stateful.getLeadData();
 			$remarkCmd = 'RM' + await CommonDataHelper.createCredentialMessage(this.stateful);
 
 			$flattenCmd = ($cmd) => {
@@ -229,7 +228,7 @@ class ProcessAmadeusTerminalInputAction {
 
 		$calledCommands = [];
 
-		if (php.empty(this.stateful.getLeadData()['leadId'])) {
+		if (php.empty(this.stateful.getLeadId())) {
 			if (!this.getAgent().canSavePnrWithoutLead()) {
 				return {'errors': [Errors.getMessage(Errors.LEAD_ID_IS_REQUIRED)]};
 			}
@@ -869,7 +868,7 @@ class ProcessAmadeusTerminalInputAction {
 			}
 		}
 		if (this.constructor.doesStorePnr($cmd)) {
-			if (php.empty(this.stateful.getLeadData()['leadId'])) {
+			if (php.empty(this.stateful.getLeadId())) {
 				if (!$agent.canSavePnrWithoutLead()) {
 					$errors.push(Errors.getMessage(Errors.LEAD_ID_IS_REQUIRED));
 				}

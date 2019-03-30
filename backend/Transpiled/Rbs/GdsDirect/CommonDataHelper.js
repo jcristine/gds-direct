@@ -79,15 +79,9 @@ class CommonDataHelper {
 
 	/** @param stateful = await require('StatefulSession.js')() */
 	static async createCredentialMessage(stateful) {
-		let $leadData = stateful.getLeadData();
-		if ($leadData.leadId) {
-			let cmsData = await CmsClient.getRequestBriefData({requestId: $leadData.leadId})
-				.then(rpcRs => rpcRs.result.data).catch(() => ({}));
-			$leadData.leadOwnerId = cmsData.leadOwnerId;
-		}
+		let $leadData = await stateful.getGdRemarkData();
 
 		let $agent = stateful.getAgent();
-		let $leadAgent = stateful.getLeadAgent();
 		let $maxLen, $leadPart, $pattern, $minLen;
 		$maxLen = {
 			'apollo': 87 - php.strlen('@:5'),
@@ -115,7 +109,7 @@ class CommonDataHelper {
 			}));
 			return php.strtoupper(StringUtil.format($pattern, {
 				'pnrAgent': php.mb_substr($agent.getLogin(), 0, php.floor(($maxLen - $minLen) / 2)),
-				'leadAgent': php.mb_substr($leadAgent ? $leadAgent.getLogin() : 'AGENT', 0, php.floor(($maxLen - $minLen) / 2)),
+				'leadAgent': php.mb_substr($leadData.leadOwnerLogin, 0, php.floor(($maxLen - $minLen) / 2)),
 			}));
 		}
 		throw new Error('Not found agent');

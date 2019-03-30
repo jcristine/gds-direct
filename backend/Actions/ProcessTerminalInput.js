@@ -227,7 +227,7 @@ let useConfigPcc = (grectResult, stateful, agentId, activeAreas) => {
  */
 module.exports = async ({session, rqBody, emcUser}) => {
 	let whenCmdRqId = TerminalBuffering.storeNew(rqBody, session);
-	let stateful = await StatefulSession({session, whenCmdRqId, emcUser});
+	let stateful = await StatefulSession.makeFromDb({session, whenCmdRqId, emcUser});
 	let cmdRq = rqBody.command;
 	let gds = session.context.gds;
 	let dialect = rqBody.language || gds;

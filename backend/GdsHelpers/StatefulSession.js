@@ -7,13 +7,12 @@ const FluentLogger = require("../LibWrappers/FluentLogger.js");
 const LocationGeographyProvider = require('../Transpiled/Rbs/DataProviders/LocationGeographyProvider.js');
 const Pccs = require("../Repositories/Pccs");
 const Misc = require("../Transpiled/Lib/Utils/Misc");
-const RbsClient = require("../IqClients/RbsClient");
 const {getConfig} = require('../Config.js');
 const {jsExport} = require('../Utils/Misc.js');
 const Agent = require('../DataFormats/Wrappers/Agent.js');
-const Db = require('../Utils/Db.js');
 const CmdLog = require('./CmdLog.js');
-const NotFound = require("../Utils/Rej").NotFound;
+const CmsClient = require("../IqClients/CmsClient");
+const Agents = require("../Repositories/Agents");
 
 let GdsSession = (session) => {
 	let gds = session.context.gds;
@@ -41,19 +40,16 @@ let GdsSession = (session) => {
  * @param session = at('GdsSessions.js').makeSessionRecord()
  * @param {IEmcUser} emcUser
  */
-let StatefulSession = async ({session, emcUser, gdsSession, cmdLog}) => {
-
-	let config = await getConfig();
+let StatefulSession = ({
+	session, emcUser, gdsSession, cmdLog, logit = () => {},
+	Db = require('../Utils/Db.js'),
+	RbsClient = require("../IqClients/RbsClient"),
+	leadData = null,
+	startDt = new Date().toISOString(),
+}) => {
 	let gds = session.context.gds;
-	let startDt = new Date().toISOString();
 	let calledCommands = [];
 	let getSessionData = () => cmdLog.getSessionData();
-	let logit = (msg, data) => {
-		if (!config.production) {
-			console.log(msg, typeof data === 'string' ? data : jsExport(data));
-		}
-		return FluentLogger.logit(msg, session.logId, data);
-	};
 
 	let runCmd = async (cmd) => {
 		if (!cmd) {
@@ -107,15 +103,26 @@ let StatefulSession = async ({session, emcUser, gdsSession, cmdLog}) => {
 			agent_id: emcUser.id, dt: new Date().toISOString(),
 		}])),
 		getSessionData: getSessionData,
-		getLeadData: () => ({
-			leadId: session.context.travelRequestId,
-			agentId: session.context.agentId,
-			leadOwnerId: null, // should call CMS outside
-		}),
+		getLeadId: () => session.context.travelRequestId,
+		getGdRemarkData: async () => {
+			if (!leadData) {
+				leadData = await CmsClient.getLeadData(session.context.travelRequestId);
+				if (leadData.leadOwnerId == emcUser.id) {
+					leadData.leadOwnerLogin = emcUser.displayName;
+				} else if (leadData.leadOwnerId) {
+					leadData.leadOwnerLogin = await Agents.getById(leadData.leadOwnerId)
+						.then(row => row.login)
+						.catch(exc => null);
+				}
+			}
+			return leadData;
+		},
 		getGeoProvider: () => new LocationGeographyProvider(),
 		getPccDataProvider: () => (gds, pcc) => Pccs.findByCode(gds, pcc),
 		getLeadAgent: () => null,
 		getAgent: getAgent,
+
+		getGdsSession: () => gdsSession,
 	};
 };
 
@@ -124,28 +131,17 @@ StatefulSession.makeFromDb = async ({session, whenCmdRqId, emcUser}) => {
 	let fullState = await GdsSessions.getFullState(session);
 	let cmdLog = await CmdLog({session, fullState, whenCmdRqId});
 	let gdsSession = GdsSession(session);
+	let logit = async (msg, data) => {
+		let config = await getConfig();
+		if (!config.production) {
+			console.log(msg, typeof data === 'string' ? data : jsExport(data));
+		}
+		return FluentLogger.logit(msg, session.logId, data);
+	};
 	return StatefulSession({
-		session, emcUser,
-		gdsSession, cmdLog
+		session, emcUser, logit,
+		gdsSession, cmdLog,
 	});
 };
 
-StatefulSession.makeStub = async ({session, emcUser, fullState, gdsSession}) => {
-	let cmdLog = await CmdLog({
-		session, fullState,
-		CmdLogs: {
-			getAll: () => Promise.resolve([]),
-			storeNew: (row) => Promise.resolve(row),
-			getLast: () => NotFound('No records: non-storing storage'),
-		},
-		GdsSessions: {
-			updateFullState: () => Promise.resolve(),
-		},
-	});
-	return StatefulSession({
-		session, emcUser,
-		gdsSession, cmdLog
-	});
-};
-
-module.exports = StatefulSession.makeFromDb;
+module.exports = StatefulSession;

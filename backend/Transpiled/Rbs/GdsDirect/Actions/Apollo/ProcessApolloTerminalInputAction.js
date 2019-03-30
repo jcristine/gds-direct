@@ -462,10 +462,8 @@ class ProcessApolloTerminalInputAction {
 	}
 
 	async makeCmsRemarkCmdIfNeeded() {
-		let $cmdLog, $sessionData, $leadData, $msg;
+		let $cmdLog, $msg;
 		$cmdLog = this.stateful.getLog();
-		$sessionData = $cmdLog.getSessionData();
-		$leadData = this.stateful.getLeadData();
 		$msg = await CommonDataHelper.createCredentialMessage(this.stateful);
 		if (await CommonDataHelper.shouldAddCreationRemark($msg, $cmdLog)) {
 			return '@:5' + $msg;
@@ -609,8 +607,8 @@ class ProcessApolloTerminalInputAction {
 			'cmd': $row['cmd'],
 			'output': $row['output'],
 		}), $cmdRows);
-		$cmdToFullOutput = ImportPqApolloAction.collectCmdToFullOutput($cmds);
-		for ([$cmd, $output] of Object.entries(php.array_reverse($cmdToFullOutput))) {
+		$cmdToFullOutput = ImportPqApolloAction.collectCmdToFullOutput(php.array_reverse($cmds));
+		for ([$cmd, $output] of Object.entries($cmdToFullOutput)) {
 			$showsFullPnr = $cmd === '*R' || $cmd === 'IR'
 				|| php.preg_match(/^\*[A-Z]{6}$/, $cmd);
 			if ($showsFullPnr) {
@@ -714,7 +712,7 @@ class ProcessApolloTerminalInputAction {
 					$currentPcc = this.stateful.getSessionData()['pcc'];
 					$errors = php.array_merge($errors, this.constructor.checkSavePcc($pnrCreationPcc, $currentPcc));
 				}
-			} else if (php.empty(this.stateful.getLeadData()['leadId'])) {
+			} else if (php.empty(this.stateful.getLeadId())) {
 				if (!$agent.canSavePnrWithoutLead()) {
 					$errors.push(Errors.getMessage(Errors.LEAD_ID_IS_REQUIRED));
 				}
@@ -883,7 +881,7 @@ class ProcessApolloTerminalInputAction {
 
 				$cmd = 'SEM/' + $recoveryPcc + '/AG';
 
-				$recoveryResult = this.processRealCommand($cmd, false);
+				$recoveryResult = await this.processRealCommand($cmd, false);
 
 				if (!php.empty($recoveryResult['errors'])) {
 					return $recoveryResult;
@@ -979,7 +977,7 @@ class ProcessApolloTerminalInputAction {
 		let emulated = await this.emulatePcc($pcc, $recoveryPcc);
 		$output = ArrayUtil.getFirst(emulated['calledCommands'] || [])['output'] || null;
 		if (this.getSessionData()['pcc'] !== $pcc) {
-			$error = $output === 'ERR: INVALID - NOT ' + $pcc + ' - APOLLO'
+			$error = $output.startsWith('ERR: INVALID - NOT ' + $pcc + ' - APOLLO')
 				? Errors.getMessage(Errors.PCC_NOT_ALLOWED_BY_GDS, {'pcc': $pcc, 'gds': 'apollo'})
 				: Errors.getMessage(Errors.PCC_GDS_ERROR, {'pcc': $pcc, 'response': php.trim($output)});
 			return {'errors': [$error]};
@@ -1025,7 +1023,7 @@ class ProcessApolloTerminalInputAction {
 	async processSavePnr() {
 		let $pnr, $pnrDump, $errors, $usedCmds, $flatCmds, $usedCmdTypes, $login, $writeCommands, $cmd, $output,
 			$saveResult, $cmdRecord;
-		if (php.empty(this.stateful.getLeadData()['leadId'])) {
+		if (php.empty(this.stateful.getLeadId())) {
 			if (!this.getAgent().canSavePnrWithoutLead()) {
 				return {'errors': [Errors.getMessage(Errors.LEAD_ID_IS_REQUIRED)]};
 			}
@@ -1231,7 +1229,6 @@ class ProcessApolloTerminalInputAction {
 			}
 		} else if (await this.doesDivideFpBooking($cmd)) {
 			// all commands between >DN...; and >F; affect only the new PNR
-			$leadData = this.stateful.getLeadData();
 			$msg = await CommonDataHelper.createCredentialMessage(this.stateful);
 			await this.runCommand('@:5' + $msg);
 		}

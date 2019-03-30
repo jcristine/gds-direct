@@ -302,14 +302,12 @@ class ProcessGalileoTerminalInputAction {
 	}
 
 	async makeCreatedForCmdIfNeeded() {
-		let $cmdLog, $sessionData, $agent, $leadAgent, $leadData, $remarkCmd, $flatPerformedCmds;
+		let $cmdLog, $sessionData, $agent, $remarkCmd, $flatPerformedCmds;
 
 		$cmdLog = this.stateful.getLog();
 		$sessionData = $cmdLog.getSessionData();
 		if (!$sessionData['is_pnr_stored']) {
 			$agent = this.stateful.getAgent();
-			$leadAgent = this.stateful.getLeadAgent();
-			$leadData = this.stateful.getLeadData();
 			let msg = await CommonDataHelper.createCredentialMessage(this.stateful);
 			$remarkCmd = 'NP.' + msg;
 			$flatPerformedCmds = php.array_column(await this.getFlatUsedCmds(), 'cmd');
@@ -565,7 +563,7 @@ class ProcessGalileoTerminalInputAction {
 		let $pcc, $pnr, $pnrDump, $errors, $flatCmds, $usedCmdTypes, $performedCmds, $login, $writeCommands, $remarkCmd,
 			$cmd, $output, $savedPnr, $rloc, $cmdRecord;
 
-		if (php.empty(this.stateful.getLeadData()['leadId'])) {
+		if (php.empty(this.stateful.getLeadId())) {
 			if (!this.stateful.getAgent().canSavePnrWithoutLead()) {
 				return {'errors': [Errors.getMessage(Errors.LEAD_ID_IS_REQUIRED)]};
 			}
