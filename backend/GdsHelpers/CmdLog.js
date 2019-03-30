@@ -4,7 +4,7 @@ const CommonDataHelper = require("../Transpiled/Rbs/GdsDirect/CommonDataHelper")
 const makeRow = require("../Repositories/CmdLogs").makeRow;
 const hrtimeToDecimal = require("../Utils/Misc").hrtimeToDecimal;
 
-let CmdLog = async ({
+let CmdLog = ({
 	session, whenCmdRqId, fullState,
 	CmdLogs = require("../Repositories/CmdLogs"),
 	GdsSessions = require("../Repositories/GdsSessions"),
