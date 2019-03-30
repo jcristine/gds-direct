@@ -26,7 +26,7 @@ let Agent = (emcUser) => {
 	//let roles = testRoles;
 	let roles = emcUser.roles || [];
 	// 6206 - aklesuns
-	let hasRole = (role) => roles.includes(role) || emcUser.id == 6206;
+	let hasRole = (role) => roles.includes(role);
 	return {
 		getId: () => emcUser.id,
 		getLogin: () => emcUser.displayName,
@@ -50,7 +50,22 @@ let Agent = (emcUser) => {
 		canUseMultiPccTariffDisplay: () => hasRole('NEW_GDS_DIRECT_MULTI_PCC_TARIFF_DISPLAY'),
 		canPasteItinerary: () => true, // hasRole('NEW_GDS_DIRECT_PASTE_ITINERARY'),
 		canUseMco: () => hasRole('NEW_GDS_DIRECT_HHMCO'),
+
+		getRoles: () => roles,
 	};
+};
+
+Agent.makeStub = (params) => {
+	let row = params.row;
+	return Agent({
+		id: row.id,
+		displayName: row.login,
+		settings: {
+			gds_direct_fs_limit: row.gds_direct_fs_limit,
+			gds_direct_usage_limit: row.gds_direct_usage_limit,
+		},
+		roles: (params.roleRows || []).map(r => r.role),
+	});
 };
 
 module.exports = Agent;
