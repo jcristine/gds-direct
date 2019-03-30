@@ -3,6 +3,10 @@
 let php = require('../../php');
 const Agent = require("../../../DataFormats/Wrappers/Agent");
 const Fp = require('../../Lib/Utils/Fp.js');
+const AnyGdsStubSession = require('./AnyGdsStubSession.js');
+const CmdLog = require('../../../GdsHelpers/CmdLog.js');
+const NotFound = require('../../../Utils/Rej.js');
+const StatefulSession = require('../../../GdsHelpers/StatefulSession.js');
 
 /**
  * provides default session data/agent data/etc...
@@ -166,6 +170,64 @@ class GdsDirectDefaults {
 		$getId = ($agent) => $agent.getId();
 		$idToAgents = Fp.groupBy($getId, $agents);
 		return ($idToAgents[$id] || {})[0];
+	}
+
+	static makeStatefulSession(gds, $input, $sessionInfo) {
+		let {initialState, initialCommands, performedCommands} = $sessionInfo;
+		let gdsSession = (new AnyGdsStubSession(performedCommands)).setGds(gds);
+		let session = {
+			context: {
+				gds: gds,
+				travelRequestId: initialState.lead_id || 1,
+			},
+		};
+		let fullState = {
+			area: 'A',
+			areas: {'A': initialState},
+		};
+		let cmdLog = CmdLog({
+			session, fullState,
+			CmdLogs: {
+				getAll: () => Promise.resolve([]),
+				storeNew: (row) => Promise.resolve(row),
+				getLast: () => NotFound('No records: non-storing storage'),
+			},
+			GdsSessions: {
+				updateFullState: () => Promise.resolve(),
+			},
+		});
+		for (let cmdRec of initialCommands) {
+			cmdLog.logCommand(cmdRec.cmd, Promise.resolve(cmdRec));
+		}
+		let makeAgent = (id) => {
+			return ($input.stubAgents || []).filter(a => a.getId() == id)[0]
+				|| GdsDirectDefaults.makeStubAgentById(id);
+		};
+		// GdsDirectDefaults.makeStatefulSession($input, $sessionInfo);
+		let agentId = initialState.agent_id || 6206322;
+		let agent = makeAgent(agentId);
+		let leadOwnerId = initialState.lead_creator_id || 6206;
+		let leadOwner = makeAgent(leadOwnerId);
+		return StatefulSession({
+			gdsSession, cmdLog, session, fullState,
+			startDt: $input.baseDate || '2019-03-29 23:43:05',
+			emcUser: {
+				id: agentId,
+				displayName: agent ? agent.getLogin() : null,
+				roles: agent.getRoles(),
+			},
+			Db: {
+				writeRows: () => Promise.resolve(),
+			},
+			RbsClient: {
+				reportCreatedPnr: () => Promise.resolve(),
+			},
+			leadData: {
+				leadId: session.context.travelRequestId,
+				leadOwnerId: leadOwnerId,
+				leadOwnerLogin: leadOwner ? leadOwner.getLogin() : null,
+			},
+		});
 	}
 }
 
