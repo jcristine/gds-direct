@@ -17,12 +17,11 @@ try {
 }
 
 let callRbs = async (functionName, params) => {
-	let logId = 'rbs.5bf6e431.9577485';
 	let config = await getConfig();
 	let url = config.production
-		? 'http://rbs-asaptickets.lan.dyninno.net/jsonExternalInterface.php?log_id=' + logId
+		? 'http://rbs-asaptickets.lan.dyninno.net/jsonExternalInterface.php'
 		// : 'http://st-rbs.sjager.php7.dyninno.net/jsonExternalInterface.php?log_id=' + logId;
-		: 'http://rbs-st.aklesuns.php7.dyninno.net/jsonExternalInterface.php?log_id=' + logId;
+		: 'http://rbs-st.aklesuns.php7.dyninno.net/jsonExternalInterface.php';
 
 	let rbsPassword = config.RBS_PASSWORD;
 	if (!rbsPassword) {
