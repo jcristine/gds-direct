@@ -8,7 +8,7 @@ const TABLE = 'agents';
 
 /** @param {getUsers_rs_el} $row */
 let normalizeRow = ($row) => {
-	let $sabreLniata, $emails, $companyName, $companyData, $userData;
+	let $sabreLniata, $emails, $companyName, $companyData;
 
 	$sabreLniata = ($row['settings'] || {})['Sabre LNIATA'] || [];
 	$emails = [];
@@ -102,8 +102,10 @@ exports.updateFromService = async () => {
 };
 
 exports.getById = async (id) => {
-	return Db.with(db => db.fetchOne({
+	/** @var row = normalizeRow() */
+	let row = await Db.with(db => db.fetchOne({
 		table: TABLE,
 		where: [['id', '=', id]],
 	}));
+	return row;
 };
