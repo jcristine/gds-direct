@@ -361,7 +361,7 @@ class ProcessGalileoTerminalInputAction {
 			'output': $row['output'],
 		}), $cmdRows);
 		$cmdToFullOutput = ImportPqGalileoAction.collectCmdToFullOutput($cmds);
-		for ([$cmd, $output] of Object.entries(php.array_reverse($cmdToFullOutput))) {
+		for ([$cmd, $output] of php.array_reverse(Object.entries($cmdToFullOutput))) {
 			$showsFullPnr = $cmd === '*R' || $cmd === 'IR'
 				|| php.preg_match(/^\*[A-Z]{6}$/, $cmd);
 			if ($showsFullPnr) {

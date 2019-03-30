@@ -601,14 +601,10 @@ class ProcessApolloTerminalInputAction {
 	}
 
 	async getCurrentPnr() {
-		let $cmdRows, $cmds, $cmdToFullOutput, $cmd, $output, $showsFullPnr, $pnrDump;
+		let $cmdRows, $cmdToFullOutput, $cmd, $output, $showsFullPnr, $pnrDump;
 		$cmdRows = await this.stateful.getLog().getLastStateSafeCommands();
-		$cmds = Fp.map(($row) => ({
-			'cmd': $row['cmd'],
-			'output': $row['output'],
-		}), $cmdRows);
-		$cmdToFullOutput = ImportPqApolloAction.collectCmdToFullOutput(php.array_reverse($cmds));
-		for ([$cmd, $output] of Object.entries($cmdToFullOutput)) {
+		$cmdToFullOutput = ImportPqApolloAction.collectCmdToFullOutput($cmdRows);
+		for ([$cmd, $output] of php.array_reverse(Object.entries($cmdToFullOutput))) {
 			$showsFullPnr = $cmd === '*R' || $cmd === 'IR'
 				|| php.preg_match(/^\*[A-Z]{6}$/, $cmd);
 			if ($showsFullPnr) {
