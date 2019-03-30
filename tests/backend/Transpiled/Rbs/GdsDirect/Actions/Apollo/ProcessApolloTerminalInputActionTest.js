@@ -2951,378 +2951,378 @@ class ProcessApolloTerminalInputActionTest extends require('../../../../Lib/Test
 			},
 		});
 
-		// // NEW_GDS_DIRECT_EDIT_VOID_TICKETED_PNR logic example - forbidden
-		// // some tickets are void, but some are still active, so should not be allowed to change PNR
-		// $agentBaseDate = GdsDirectDefaults.makeAgentBaseData();
-		// $list.push({
-		// 	'input': {
-		// 		'cmdRequested': 'XI',
-		// 		'baseDate': '2018-06-04',
-		// 		'ticketDesignators': [],
-		// 		'stubAgents': [
-		// 			Agent.makeStub(php.array_merge(GdsDirectDefaults.makeAgentBaseData(), {
-		// 				'row': php.array_merge($agentBaseDate['row'], {
-		// 					'id': '346',
-		// 					'login': 'lepin',
-		// 					'name': 'Lepin Lepin',
-		// 					'team_id': '1',
-		// 				}),
-		// 				'roleRows': [
-		// 					{'company': 'ITN', 'role': 'NEW_GDS_DIRECT_EDIT_VOID_TICKETED_PNR'},
-		// 				],
-		// 			})),
-		// 		],
-		// 	},
-		// 	'output': {
-		// 		'status': 'forbidden',
-		// 		'userMessages': [
-		// 			'Forbidden command, cant delete fields in ticketed PNR',
-		// 		],
-		// 		'calledCommands': [],
-		// 	},
-		// 	'sessionInfo': {
-		// 		'initialState': php.array_merge(GdsDirectDefaults.makeDefaultApolloState(), {
-		// 			'agent_id': 346,
-		// 			'has_pnr': true,
-		// 			'is_pnr_stored': true,
-		// 			'record_locator': 'XXNFVG',
-		// 		}),
-		// 		'initialCommands': [
-		// 			{
-		// 				'cmd': '*R',
-		// 				'output': php.implode(php.PHP_EOL, [
-		// 					'MAESTRO@GDS',
-		// 					'2G2H - SKYBIRD                  SFO',
-		// 					'XXNFVG/WS QSBYC DPBVWS  AG 23854526 14SEP',
-		// 					' 1.1MESSAMAKER/SELINA ALBA ',
-		// 					' 1 DL5365X 03DEC DSMDTW HK1   629A  922A *         MO   E  4',
-		// 					'         OPERATED BY ENDEAVOR AIR DBA DELTA CONNECTION',
-		// 					' 2 DL 275X 03DEC DTWNRT HK1  1232P  350P|*      MO/TU   E  4',
-		// 					' 3 DL 181X 04DEC NRTMNL HK1   515P  925P *         TU   E  4',
-		// 					' 4 PR 422H 10JAN MNLHND HK1   855A  200P *         TH   E',
-		// 					' 5 DL 120X 10JAN HNDMSP HK1   425P 1246P *         TH   E  2',
-		// 					' 6 DL5334X 10JAN MSPDSM HK1   233P  353P *         TH   E  2',
-		// 					'         OPERATED BY ENDEAVOR AIR DBA DELTA CONNECTION',
-		// 					' 7 OTH ZO GK1  XXX 14JUL-PRESERVEPNR',
-		// 					')><',
-		// 				]),
-		// 			},
-		// 			{
-		// 				'cmd': 'MR',
-		// 				'output': php.implode(php.PHP_EOL, [
-		// 					' 8 OTH ZO GK1  XXX 15JUL-PRESERVEPNR',
-		// 					'*** SEAT DATA EXISTS *** >9D; ',
-		// 					'FONE-SFOAS/800-750-2238 ASAP CUSTOMER SUPPORT',
-		// 					'FOP:-CA5511293600121000/D0420/*973824',
-		// 					'TKTG-T/QSB 15SEP1824Z EL AG **ELECTRONIC DATA EXISTS** >*HTE;',
-		// 					'*** TIN REMARKS EXIST *** >*T; ',
-		// 					'*** LINEAR FARE DATA EXISTS *** >*LF; ',
-		// 					'ATFQ-REPR/$B/:N/Z0/ET/TA1O3K/CDL',
-		// 					' FQ-USD 1160.00/USD 36.60US/USD 207.11XT/USD 1403.71 - 15SEP XKXGXNMA.XKXGXNMA.XKXGXNMA.XKXGXNMA.XKXGXNMA.XKXGXNMA',
-		// 					'GFAX-SSRADTK1VADV TKT BY 29SEP18 1800 SFO OR SEG WILL BE CXLD',
-		// 					'   2 SSRCTCEDLHK1/KAI1031.SA//GMAIL.COM-1MESSAMAKER/SELINA ALBA',
-		// 					'   3 SSRCTCEPRHK1/KAI1031.SA//GMAIL.COM-1MESSAMAKER/SELINA ALBA',
-		// 					')><',
-		// 				]),
-		// 			},
-		// 			{
-		// 				'cmd': 'MR',
-		// 				'output': php.implode(php.PHP_EOL, [
-		// 					'   4 SSRCTCMDLHK1/16412171002-1MESSAMAKER/SELINA ALBA',
-		// 					'   5 SSRCTCMPRHK1/16412171002-1MESSAMAKER/SELINA ALBA',
-		// 					'   6 SSRDOCSDLHK1/////31OCT69/F//MESSAMAKER/SELINA/ALBA-1MESSAMAKER/SELINA ALBA',
-		// 					'   7 SSRDOCSPRHK1/////31OCT69/F//MESSAMAKER/SELINA/ALBA-1MESSAMAKER/SELINA ALBA',
-		// 					'   8 SSRADTK1VTODL BY 12NOV 2359 SFO OTHERWISE MAY BE XLD',
-		// 					'   9 SSRADTK1VTODL BY 12NOV FARE MAY NEED EARLIER TKT DTE',
-		// 					'  10 SSRTKNEPRHK01 MNLHND 0422H 10JAN-1MESSAMAKER/SE.0067192901908C4/908-909',
-		// 					'  11 SSRTKNEDLHK01 HNDMSP 0120X 10JAN-1MESSAMAKER/SE.0067192901909C1/908-909',
-		// 					'  12 SSRTKNEDLHK01 MSPDSM 5334X 10JAN-1MESSAMAKER/SE.00671929019)><',
-		// 				]),
-		// 			},
-		// 			{
-		// 				'cmd': 'MR',
-		// 				'output': php.implode(php.PHP_EOL, [
-		// 					'09C2/908-909',
-		// 					'  13 SSRTKNEDLHK01 DSMDTW 5365X 03DEC-1MESSAMAKER/SE.0067192902534C1/534-535',
-		// 					'  14 SSRTKNEDLHK01 DTWNRT 0275X 03DEC-1MESSAMAKER/SE.0067192902534C2/534-535',
-		// 					'  15 SSRTKNEDLHK01 NRTMNL 0181X 04DEC-1MESSAMAKER/SE.0067192902534C3/534-535',
-		// 					'  16 SSRTKNEPRHK01 MNLHND 0422H 10JAN-1MESSAMAKER/SE.0067192902534C4/534-535',
-		// 					'  17 SSRTKNEDLHK01 HNDMSP 0120X 10JAN-1MESSAMAKER/SE.0067192902535C1/534-535',
-		// 					'  18 SSRTKNEDLHK01 MSPDSM 5334X 10JAN-1MESSAMAKER/SE.0067192902535C2/534-535',
-		// 					')><',
-		// 				]),
-		// 			},
-		// 			{
-		// 				'cmd': 'MR',
-		// 				'output': php.implode(php.PHP_EOL, [
-		// 					'RMKS-GD-HERMES/22860/FOR HERMES/22860/LEAD-9262648 IN 2G2H',
-		// 					'ACKN-DL JNLVHF   14SEP 1608',
-		// 					'   2 PR GPGAKJ   14SEP 1609',
-		// 					'   3 PR GPGAKJ   14SEP 1609',
-		// 					'   4 DL JNLVHF   14SEP 2021',
-		// 					'   5 DL JNLVHF   14SEP 2021',
-		// 					'   6 DL JNLVHF   14SEP 2021',
-		// 					'   7 DL JNLVHF   14SEP 2021',
-		// 					'   8 DL JNLVHF   14SEP 2022',
-		// 					'   9 DL JNLVHF   14SEP 2022',
-		// 					'  10 DL JNLVHF   14SEP 2022',
-		// 					'  11 DL JNLVHF   14SEP 2022',
-		// 					'  12 DL JNLVHF   14SEP 2023',
-		// 					')><',
-		// 				]),
-		// 			},
-		// 			{
-		// 				'cmd': 'MR',
-		// 				'output': php.implode(php.PHP_EOL, ['  13 DL JNLVHF   14SEP 2023', '  14 DL JNLVHF   15SEP 1824', '><']),
-		// 			},
-		// 		],
-		// 		'performedCommands': [
-		// 			{
-		// 				'cmd': '*HTE',
-		// 				'output': 'ELECTRONIC TICKET LIST BY *HTE                                            NAME             TICKET NUMBER                        >*TE001;  MESSAMAKER/SEL   0067192902534-535                    >*TE002;  MESSAMAKER/SEL   0067192901908-909                    END OF LIST                                                     ><',
-		// 			},
-		// 			{
-		// 				'cmd': '*TE001',
-		// 				'output': php.implode(php.PHP_EOL, [
-		// 					'TKT: 006 7192 902534-535 NAME: MESSAMAKER/SELINA ALBA            CC: CA5511293600121000                            ',
-		// 					'ISSUED: 15SEP18          FOP:CA5511293600121000-973824          PSEUDO: 1O3K  PLATING CARRIER: DL  ISO: US  IATA: 05578602   ',
-		// 					'   USE  CR FLT  CLS  DATE BRDOFF TIME  ST F/B        FARE   CPN',
-		// 					'   OPEN DL 5365  X  03DEC DSMDTW 0629A OK XKXGXNMA           1',
-		// 					'                                          NVB03DEC NVA03DEC',
-		// 					'   OPEN DL  275  X  03DEC DTWNRT 1232P OK XKXGXNMA           2',
-		// 					'                                          NVB03DEC NVA03DEC',
-		// 					'   OPEN DL  181  X  04DEC NRTMNL 0515P OK XKXGXNMA           3',
-		// 					'                                          NVB04DEC NVA04DEC',
-		// 					'   ARPT PR  422  H  10JAN MNLHND 0855A OK XKXGXNMA           4',
-		// 					'                                          NVB10JAN NVA10JAN',
-		// 					')><',
-		// 				]),
-		// 			},
-		// 			{
-		// 				'cmd': 'MR',
-		// 				'output': php.implode(php.PHP_EOL, [
-		// 					'----535----',
-		// 					'   OPEN DL  120  X  10JAN HNDMSP 0425P OK XKXGXNMA           1',
-		// 					'                                          NVB10JAN NVA10JAN',
-		// 					'   OPEN DL 5334  X  10JAN MSPDSM 0233P OK XKXGXNMA           2',
-		// 					'                                          NVB10JAN NVA10JAN',
-		// 					' ',
-		// 					'FARE USD 1160.00 TAX    36.60 US TAX   207.11 XT',
-		// 					'TOTAL USD 1403.71',
-		// 					'   NONREF-PENALTY APPLIES       ',
-		// 					' ',
-		// 					'FC 3DEC DSM DL X/DTT DL X/TYO DL MNL M505.00PR X/TY',
-		// 					'O S150.00 DL X/MSP DL DSM M505.00NUC1160.00END ROE1             .0 XT 130.00YR 20.90SW 11.20AY 10.20LI 7.00XY 5.65Y             )><',
-		// 				]),
-		// 			},
-		// 			{
-		// 				'cmd': 'MR',
-		// 				'output': php.implode(php.PHP_EOL, [
-		// 					'C 4.70OI 3.96XA 13.50XFDSM4.5DTW4.5MSP4.5                       RLOC 1V XXNFVG    DL JNLVHF                                            ',
-		// 					'><',
-		// 				]),
-		// 			},
-		// 			{
-		// 				'cmd': '*TE002',
-		// 				'output': php.implode(php.PHP_EOL, [
-		// 					'TKT: 006 7192 901908-909 NAME: MESSAMAKER/SELINA ALBA            CC: CA5511293600121000                            ',
-		// 					'ISSUED: 14SEP18          FOP:CA5511293600121000-973824          PSEUDO: 1O3K  PLATING CARRIER: DL  ISO: US  IATA: 05578602   ',
-		// 					'   USE  CR FLT  CLS  DATE BRDOFF TIME  ST F/B        FARE   CPN',
-		// 					'   VOID DL 5365  T  03DEC DSMDTW 0629A OK TKX8XNMA           1',
-		// 					'                                          NVB03DEC NVA03DEC',
-		// 					'   VOID DL  275  T  03DEC DTWNRT 1232P OK TKX8XNMA           2',
-		// 					'                                          NVB03DEC NVA03DEC',
-		// 					'   VOID DL  181  T  04DEC NRTMNL 0515P OK TKX8XNMA           3',
-		// 					'                                          NVB04DEC NVA04DEC',
-		// 					'   VOID PR  422  H  10JAN MNLHND 0855A OK XKXGXNMA           4',
-		// 					'                                          NVB10JAN NVA10JAN',
-		// 					')><',
-		// 				]),
-		// 			},
-		// 			{
-		// 				'cmd': 'MR',
-		// 				'output': php.implode(php.PHP_EOL, [
-		// 					'----909----',
-		// 					'   VOID DL  120  X  10JAN HNDMSP 0425P OK XKXGXNMA           1',
-		// 					'                                          NVB10JAN NVA10JAN',
-		// 					'   VOID DL 5334  X  10JAN MSPDSM 0233P OK XKXGXNMA           2',
-		// 					'                                          NVB10JAN NVA10JAN',
-		// 					' ',
-		// 					'FARE USD 1180.00 TAX    36.60 US TAX   207.11 XT',
-		// 					'TOTAL USD 1423.71',
-		// 					'   NONREF-PENALTY APPLIES       ',
-		// 					' ',
-		// 					'FC 3DEC DSM DL X/DTT DL X/TYO DL MNL M525.00PR X/TY',
-		// 					'O S150.00 DL X/MSP DL DSM M505.00NUC1180.00END ROE1             .0 XT 130.00YR 20.90SW 11.20AY 10.20LI 7.00XY 5.65Y             )><',
-		// 				]),
-		// 			},
-		// 			{
-		// 				'cmd': 'MR',
-		// 				'output': php.implode(php.PHP_EOL, [
-		// 					'C 4.70OI 3.96XA 13.50XFDSM4.5DTW4.5MSP4.5                       RLOC 1V XXNFVG    DL JNLVHF                                            ',
-		// 					'><',
-		// 				]),
-		// 			},
-		// 		],
-		// 	},
-		// });
-		//
-		// // NEW_GDS_DIRECT_EDIT_VOID_TICKETED_PNR logic example - success
-		// // all tickets are void, so should be allowed to change PNR
-		// $agentBaseDate = GdsDirectDefaults.makeAgentBaseData();
-		// $list.push({
-		// 	'input': {
-		// 		'cmdRequested': 'XI',
-		// 		'baseDate': '2018-06-04',
-		// 		'ticketDesignators': [],
-		// 		'stubAgents': [
-		// 			Agent.makeStub(php.array_merge(GdsDirectDefaults.makeAgentBaseData(), {
-		// 				'row': php.array_merge($agentBaseDate['row'], {
-		// 					'id': '346',
-		// 					'login': 'lepin',
-		// 					'name': 'Lepin Lepin',
-		// 					'team_id': '1',
-		// 				}),
-		// 				'roleRows': [
-		// 					{'company': 'ITN', 'role': 'NEW_GDS_DIRECT_EDIT_VOID_TICKETED_PNR'},
-		// 				],
-		// 			})),
-		// 		],
-		// 	},
-		// 	'output': {
-		// 		'status': 'executed',
-		// 		'calledCommands': [
-		// 			{'cmd': 'XI'},
-		// 		],
-		// 	},
-		// 	'sessionInfo': {
-		// 		'initialState': php.array_merge(GdsDirectDefaults.makeDefaultApolloState(), {
-		// 			'agent_id': 346,
-		// 			'has_pnr': true,
-		// 			'is_pnr_stored': true,
-		// 			'record_locator': 'L8C0GW',
-		// 		}),
-		// 		'initialCommands': [
-		// 			{
-		// 				'cmd': '*R',
-		// 				'output': php.implode(php.PHP_EOL, [
-		// 					'CRIMS@VOID',
-		// 					'2G56 - AAVAN VACATIONS          SFO',
-		// 					'L8C0GW/WS QSBYC DPBVWS  AG 05700063 12SEP',
-		// 					' 1.1OKIN/A PETER BRIAN  2.1GODFREY/ANNA ',
-		// 					' 1 JL  61I 20NOV LAXNRT GK2  1150A  445P|       TU/WE',
-		// 					' 2 JL 745I 21NOV NRTMNL GK2   610P 1015P           WE',
-		// 					' 3 JL 746I 13DEC MNLNRT GK2   950A  300P           TH',
-		// 					' 4 JL  62I 13DEC NRTLAX GK2   505P  950A           TH',
-		// 					'FONE-SFOAS/800-750-2238 ASAP CUSTOMER SUPPORT',
-		// 					'FOP:-CK',
-		// 					'TKTG-TAU/15SEP',
-		// 					'*** TIN REMARKS EXIST *** >*T; ',
-		// 					'GFAX-SSRADTK1VTOJL BY 19SEP 2359 SFO TIME ZONE OTHERWISE WILL BE)><',
-		// 				]),
-		// 			},
-		// 			{
-		// 				'cmd': 'MR',
-		// 				'output': php.implode(php.PHP_EOL, [
-		// 					' XLD',
-		// 					'   2 SSRDOCSJLHK1/////21OCT76/M//OKIN/A PETER BRIAN-1OKIN/A PETER BRIAN',
-		// 					'   3 SSRDOCSJLHK1/////22DEC91/F//GODFREY/ANNA MARIA-1GODFREY/ANNA',
-		// 					'   4 SSRRQSTJLKK1LAXNRT0061I20NOV-1OKIN/A PETER BRIAN.09KN',
-		// 					'   5 SSRRQSTJLKK1LAXNRT0061I20NOV-1GODFREY/ANNA.09HN',
-		// 					'   6 SSRRQSTJLKK1NRTMNL0745I21NOV-1OKIN/A PETER BRIAN.03KN',
-		// 					'   7 SSRRQSTJLKK1NRTMNL0745I21NOV-1GODFREY/ANNA.04KN',
-		// 					'   8 SSRRQSTJLKK1MNLNRT0746I13DEC-1OKIN/A PETER BRIAN.04KN',
-		// 					'   9 SSRRQSTJLKK1MNLNRT0746I13DEC-1GODFREY/ANNA.03KN',
-		// 					'  10 SSRRQSTJLKK1NRTLAX0062I13DEC-1OKIN/A PETER BRIAN.09KN',
-		// 					'  11 SSRRQSTJLKK1NRTLAX0062I13DEC-1GODFREY/ANNA.09HN',
-		// 					')><',
-		// 				]),
-		// 			},
-		// 			{
-		// 				'cmd': 'MR',
-		// 				'output': php.implode(php.PHP_EOL, [
-		// 					'  12 SSRADTK1VTOJL BY 19SEP 2359 SFO TIME ZONE OTHERWISE WILL BE XLD',
-		// 					'  13 SSRADTK1VTOJL BY 19SEP 2359 SFO TIME ZONE OTHERWISE WILL BE XLD',
-		// 					'RMKS-GD-REMUS CARTER/21432/FOR REMUS CARTER/21432/LEAD-9257616 IN 2G56',
-		// 					'TRMK-CA ACCT-SFO@$0221686',
-		// 					'ACKN-1A PHH5C6   13SEP 0257',
-		// 					'   2 1A PHH5C6   13SEP 0257',
-		// 					'><',
-		// 				]),
-		// 			},
-		// 		],
-		// 		'performedCommands': [
-		// 			{
-		// 				'cmd': '*HTE',
-		// 				'output': 'ELECTRONIC TICKET LIST BY *HTE                                            NAME             TICKET NUMBER                        >*TE001;  OKIN/APETERB     1317190552109                        >*TE002;  GODFREY/ANNA     1317190552110                        END OF LIST                                                     ><',
-		// 			},
-		// 			{
-		// 				'cmd': '*TE001',
-		// 				'output': php.implode(php.PHP_EOL, [
-		// 					'TKT: 131 7190 552109     NAME: OKIN/A PETER BRIAN                ',
-		// 					'ISSUED: 12SEP18          FOP:CHECK                              PSEUDO: 2E8R  PLATING CARRIER: JL  ISO: US  IATA: 05700063   ',
-		// 					'   USE  CR FLT  CLS  DATE BRDOFF TIME  ST F/B        FARE   CPN',
-		// 					'   VOID JL   61  I  20NOV LAXNRT 1150A OK ILU07DN0/F188      1',
-		// 					'                                          NVB20NOV NVA20NOV',
-		// 					'   VOID JL  745  I  21NOV NRTMNL 0610P OK ILU07DN0/F188      2',
-		// 					'                                          NVB21NOV NVA21NOV',
-		// 					'   VOID JL  746  I  13DEC MNLNRT 0950A OK ILU07DN0/F188      3',
-		// 					'                                          NVB13DEC NVA13DEC',
-		// 					'   VOID JL   62  I  13DEC NRTLAX 0505P OK ILU07DN0/F188      4',
-		// 					'                                          NVB13DEC NVA13DEC',
-		// 					')><',
-		// 				]),
-		// 			},
-		// 			{
-		// 				'cmd': 'MR',
-		// 				'output': php.implode(php.PHP_EOL, [
-		// 					' ',
-		// 					'FARE          BT TAX    36.60 US TAX   208.11 XT',
-		// 					'TOTAL USD      BT',
-		// 					'   NONEND-FEE FOR RFND CHG/L1800- PTC IT                         ',
-		// 					'FC M/BT END ROE1.0 XT 142.80YQ 19.00SW 10.20LI 9.40',
-		// 					'OI 7.00XY 5.65YC 5.60AY 3.96XA 4.50XFLAX4.5                     TOUR CODE: L1800          ',
-		// 					'RLOC 1V L8C0GW    1A PHH5C6                                            ',
-		// 					'><',
-		// 				]),
-		// 			},
-		// 			{
-		// 				'cmd': '*TE002',
-		// 				'output': php.implode(php.PHP_EOL, [
-		// 					'TKT: 131 7190 552110     NAME: GODFREY/ANNA                      ',
-		// 					'ISSUED: 12SEP18          FOP:CHECK                              PSEUDO: 2E8R  PLATING CARRIER: JL  ISO: US  IATA: 05700063   ',
-		// 					'   USE  CR FLT  CLS  DATE BRDOFF TIME  ST F/B        FARE   CPN',
-		// 					'   VOID JL   61  I  20NOV LAXNRT 1150A OK ILU07DN0/F188      1',
-		// 					'                                          NVB20NOV NVA20NOV',
-		// 					'   VOID JL  745  I  21NOV NRTMNL 0610P OK ILU07DN0/F188      2',
-		// 					'                                          NVB21NOV NVA21NOV',
-		// 					'   VOID JL  746  I  13DEC MNLNRT 0950A OK ILU07DN0/F188      3',
-		// 					'                                          NVB13DEC NVA13DEC',
-		// 					'   VOID JL   62  I  13DEC NRTLAX 0505P OK ILU07DN0/F188      4',
-		// 					'                                          NVB13DEC NVA13DEC',
-		// 					')><',
-		// 				]),
-		// 			},
-		// 			{
-		// 				'cmd': 'MR',
-		// 				'output': php.implode(php.PHP_EOL, [
-		// 					' ',
-		// 					'FARE          BT TAX    36.60 US TAX   208.11 XT',
-		// 					'TOTAL USD      BT',
-		// 					'   NONEND-FEE FOR RFND CHG/L1800- PTC IT                         ',
-		// 					'FC M/BT END ROE1.0 XT 142.80YQ 19.00SW 10.20LI 9.40',
-		// 					'OI 7.00XY 5.65YC 5.60AY 3.96XA 4.50XFLAX4.5                     TOUR CODE: L1800          ',
-		// 					'RLOC 1V L8C0GW    1A PHH5C6                                            ',
-		// 					'><',
-		// 				]),
-		// 			},
-		// 			{
-		// 				'cmd': 'XI',
-		// 				'output': php.implode(php.PHP_EOL, ['PASSIVE SEG/NO CXL MSG SENT/CALL CARRIER', 'CNLD FROM  1', '><']),
-		// 			},
-		// 		],
-		// 	},
-		// });
+		// NEW_GDS_DIRECT_EDIT_VOID_TICKETED_PNR logic example - forbidden
+		// some tickets are void, but some are still active, so should not be allowed to change PNR
+		$agentBaseDate = GdsDirectDefaults.makeAgentBaseData();
+		$list.push({
+			'input': {
+				'cmdRequested': 'XI',
+				'baseDate': '2018-06-04',
+				'ticketDesignators': [],
+				'stubAgents': [
+					Agent.makeStub(php.array_merge(GdsDirectDefaults.makeAgentBaseData(), {
+						'row': php.array_merge($agentBaseDate['row'], {
+							'id': '346',
+							'login': 'lepin',
+							'name': 'Lepin Lepin',
+							'team_id': '1',
+						}),
+						'roleRows': [
+							{'company': 'ITN', 'role': 'NEW_GDS_DIRECT_EDIT_VOID_TICKETED_PNR'},
+						],
+					})),
+				],
+			},
+			'output': {
+				'status': 'forbidden',
+				'userMessages': [
+					'Forbidden command, cant delete fields in ticketed PNR',
+				],
+				'calledCommands': [],
+			},
+			'sessionInfo': {
+				'initialState': php.array_merge(GdsDirectDefaults.makeDefaultApolloState(), {
+					'agent_id': 346,
+					'has_pnr': true,
+					'is_pnr_stored': true,
+					'record_locator': 'XXNFVG',
+				}),
+				'initialCommands': [
+					{
+						'cmd': '*R',
+						'output': php.implode(php.PHP_EOL, [
+							'MAESTRO@GDS',
+							'2G2H - SKYBIRD                  SFO',
+							'XXNFVG/WS QSBYC DPBVWS  AG 23854526 14SEP',
+							' 1.1MESSAMAKER/SELINA ALBA ',
+							' 1 DL5365X 03DEC DSMDTW HK1   629A  922A *         MO   E  4',
+							'         OPERATED BY ENDEAVOR AIR DBA DELTA CONNECTION',
+							' 2 DL 275X 03DEC DTWNRT HK1  1232P  350P|*      MO/TU   E  4',
+							' 3 DL 181X 04DEC NRTMNL HK1   515P  925P *         TU   E  4',
+							' 4 PR 422H 10JAN MNLHND HK1   855A  200P *         TH   E',
+							' 5 DL 120X 10JAN HNDMSP HK1   425P 1246P *         TH   E  2',
+							' 6 DL5334X 10JAN MSPDSM HK1   233P  353P *         TH   E  2',
+							'         OPERATED BY ENDEAVOR AIR DBA DELTA CONNECTION',
+							' 7 OTH ZO GK1  XXX 14JUL-PRESERVEPNR',
+							')><',
+						]),
+					},
+					{
+						'cmd': 'MR',
+						'output': php.implode(php.PHP_EOL, [
+							' 8 OTH ZO GK1  XXX 15JUL-PRESERVEPNR',
+							'*** SEAT DATA EXISTS *** >9D; ',
+							'FONE-SFOAS/800-750-2238 ASAP CUSTOMER SUPPORT',
+							'FOP:-CA5511293600121000/D0420/*973824',
+							'TKTG-T/QSB 15SEP1824Z EL AG **ELECTRONIC DATA EXISTS** >*HTE;',
+							'*** TIN REMARKS EXIST *** >*T; ',
+							'*** LINEAR FARE DATA EXISTS *** >*LF; ',
+							'ATFQ-REPR/$B/:N/Z0/ET/TA1O3K/CDL',
+							' FQ-USD 1160.00/USD 36.60US/USD 207.11XT/USD 1403.71 - 15SEP XKXGXNMA.XKXGXNMA.XKXGXNMA.XKXGXNMA.XKXGXNMA.XKXGXNMA',
+							'GFAX-SSRADTK1VADV TKT BY 29SEP18 1800 SFO OR SEG WILL BE CXLD',
+							'   2 SSRCTCEDLHK1/KAI1031.SA//GMAIL.COM-1MESSAMAKER/SELINA ALBA',
+							'   3 SSRCTCEPRHK1/KAI1031.SA//GMAIL.COM-1MESSAMAKER/SELINA ALBA',
+							')><',
+						]),
+					},
+					{
+						'cmd': 'MR',
+						'output': php.implode(php.PHP_EOL, [
+							'   4 SSRCTCMDLHK1/16412171002-1MESSAMAKER/SELINA ALBA',
+							'   5 SSRCTCMPRHK1/16412171002-1MESSAMAKER/SELINA ALBA',
+							'   6 SSRDOCSDLHK1/////31OCT69/F//MESSAMAKER/SELINA/ALBA-1MESSAMAKER/SELINA ALBA',
+							'   7 SSRDOCSPRHK1/////31OCT69/F//MESSAMAKER/SELINA/ALBA-1MESSAMAKER/SELINA ALBA',
+							'   8 SSRADTK1VTODL BY 12NOV 2359 SFO OTHERWISE MAY BE XLD',
+							'   9 SSRADTK1VTODL BY 12NOV FARE MAY NEED EARLIER TKT DTE',
+							'  10 SSRTKNEPRHK01 MNLHND 0422H 10JAN-1MESSAMAKER/SE.0067192901908C4/908-909',
+							'  11 SSRTKNEDLHK01 HNDMSP 0120X 10JAN-1MESSAMAKER/SE.0067192901909C1/908-909',
+							'  12 SSRTKNEDLHK01 MSPDSM 5334X 10JAN-1MESSAMAKER/SE.00671929019)><',
+						]),
+					},
+					{
+						'cmd': 'MR',
+						'output': php.implode(php.PHP_EOL, [
+							'09C2/908-909',
+							'  13 SSRTKNEDLHK01 DSMDTW 5365X 03DEC-1MESSAMAKER/SE.0067192902534C1/534-535',
+							'  14 SSRTKNEDLHK01 DTWNRT 0275X 03DEC-1MESSAMAKER/SE.0067192902534C2/534-535',
+							'  15 SSRTKNEDLHK01 NRTMNL 0181X 04DEC-1MESSAMAKER/SE.0067192902534C3/534-535',
+							'  16 SSRTKNEPRHK01 MNLHND 0422H 10JAN-1MESSAMAKER/SE.0067192902534C4/534-535',
+							'  17 SSRTKNEDLHK01 HNDMSP 0120X 10JAN-1MESSAMAKER/SE.0067192902535C1/534-535',
+							'  18 SSRTKNEDLHK01 MSPDSM 5334X 10JAN-1MESSAMAKER/SE.0067192902535C2/534-535',
+							')><',
+						]),
+					},
+					{
+						'cmd': 'MR',
+						'output': php.implode(php.PHP_EOL, [
+							'RMKS-GD-HERMES/22860/FOR HERMES/22860/LEAD-9262648 IN 2G2H',
+							'ACKN-DL JNLVHF   14SEP 1608',
+							'   2 PR GPGAKJ   14SEP 1609',
+							'   3 PR GPGAKJ   14SEP 1609',
+							'   4 DL JNLVHF   14SEP 2021',
+							'   5 DL JNLVHF   14SEP 2021',
+							'   6 DL JNLVHF   14SEP 2021',
+							'   7 DL JNLVHF   14SEP 2021',
+							'   8 DL JNLVHF   14SEP 2022',
+							'   9 DL JNLVHF   14SEP 2022',
+							'  10 DL JNLVHF   14SEP 2022',
+							'  11 DL JNLVHF   14SEP 2022',
+							'  12 DL JNLVHF   14SEP 2023',
+							')><',
+						]),
+					},
+					{
+						'cmd': 'MR',
+						'output': php.implode(php.PHP_EOL, ['  13 DL JNLVHF   14SEP 2023', '  14 DL JNLVHF   15SEP 1824', '><']),
+					},
+				],
+				'performedCommands': [
+					{
+						'cmd': '*HTE',
+						'output': 'ELECTRONIC TICKET LIST BY *HTE                                            NAME             TICKET NUMBER                        >*TE001;  MESSAMAKER/SEL   0067192902534-535                    >*TE002;  MESSAMAKER/SEL   0067192901908-909                    END OF LIST                                                     ><',
+					},
+					{
+						'cmd': '*TE001',
+						'output': php.implode(php.PHP_EOL, [
+							'TKT: 006 7192 902534-535 NAME: MESSAMAKER/SELINA ALBA            CC: CA5511293600121000                            ',
+							'ISSUED: 15SEP18          FOP:CA5511293600121000-973824          PSEUDO: 1O3K  PLATING CARRIER: DL  ISO: US  IATA: 05578602   ',
+							'   USE  CR FLT  CLS  DATE BRDOFF TIME  ST F/B        FARE   CPN',
+							'   OPEN DL 5365  X  03DEC DSMDTW 0629A OK XKXGXNMA           1',
+							'                                          NVB03DEC NVA03DEC',
+							'   OPEN DL  275  X  03DEC DTWNRT 1232P OK XKXGXNMA           2',
+							'                                          NVB03DEC NVA03DEC',
+							'   OPEN DL  181  X  04DEC NRTMNL 0515P OK XKXGXNMA           3',
+							'                                          NVB04DEC NVA04DEC',
+							'   ARPT PR  422  H  10JAN MNLHND 0855A OK XKXGXNMA           4',
+							'                                          NVB10JAN NVA10JAN',
+							')><',
+						]),
+					},
+					{
+						'cmd': 'MR',
+						'output': php.implode(php.PHP_EOL, [
+							'----535----',
+							'   OPEN DL  120  X  10JAN HNDMSP 0425P OK XKXGXNMA           1',
+							'                                          NVB10JAN NVA10JAN',
+							'   OPEN DL 5334  X  10JAN MSPDSM 0233P OK XKXGXNMA           2',
+							'                                          NVB10JAN NVA10JAN',
+							' ',
+							'FARE USD 1160.00 TAX    36.60 US TAX   207.11 XT',
+							'TOTAL USD 1403.71',
+							'   NONREF-PENALTY APPLIES       ',
+							' ',
+							'FC 3DEC DSM DL X/DTT DL X/TYO DL MNL M505.00PR X/TY',
+							'O S150.00 DL X/MSP DL DSM M505.00NUC1160.00END ROE1             .0 XT 130.00YR 20.90SW 11.20AY 10.20LI 7.00XY 5.65Y             )><',
+						]),
+					},
+					{
+						'cmd': 'MR',
+						'output': php.implode(php.PHP_EOL, [
+							'C 4.70OI 3.96XA 13.50XFDSM4.5DTW4.5MSP4.5                       RLOC 1V XXNFVG    DL JNLVHF                                            ',
+							'><',
+						]),
+					},
+					{
+						'cmd': '*TE002',
+						'output': php.implode(php.PHP_EOL, [
+							'TKT: 006 7192 901908-909 NAME: MESSAMAKER/SELINA ALBA            CC: CA5511293600121000                            ',
+							'ISSUED: 14SEP18          FOP:CA5511293600121000-973824          PSEUDO: 1O3K  PLATING CARRIER: DL  ISO: US  IATA: 05578602   ',
+							'   USE  CR FLT  CLS  DATE BRDOFF TIME  ST F/B        FARE   CPN',
+							'   VOID DL 5365  T  03DEC DSMDTW 0629A OK TKX8XNMA           1',
+							'                                          NVB03DEC NVA03DEC',
+							'   VOID DL  275  T  03DEC DTWNRT 1232P OK TKX8XNMA           2',
+							'                                          NVB03DEC NVA03DEC',
+							'   VOID DL  181  T  04DEC NRTMNL 0515P OK TKX8XNMA           3',
+							'                                          NVB04DEC NVA04DEC',
+							'   VOID PR  422  H  10JAN MNLHND 0855A OK XKXGXNMA           4',
+							'                                          NVB10JAN NVA10JAN',
+							')><',
+						]),
+					},
+					{
+						'cmd': 'MR',
+						'output': php.implode(php.PHP_EOL, [
+							'----909----',
+							'   VOID DL  120  X  10JAN HNDMSP 0425P OK XKXGXNMA           1',
+							'                                          NVB10JAN NVA10JAN',
+							'   VOID DL 5334  X  10JAN MSPDSM 0233P OK XKXGXNMA           2',
+							'                                          NVB10JAN NVA10JAN',
+							' ',
+							'FARE USD 1180.00 TAX    36.60 US TAX   207.11 XT',
+							'TOTAL USD 1423.71',
+							'   NONREF-PENALTY APPLIES       ',
+							' ',
+							'FC 3DEC DSM DL X/DTT DL X/TYO DL MNL M525.00PR X/TY',
+							'O S150.00 DL X/MSP DL DSM M505.00NUC1180.00END ROE1             .0 XT 130.00YR 20.90SW 11.20AY 10.20LI 7.00XY 5.65Y             )><',
+						]),
+					},
+					{
+						'cmd': 'MR',
+						'output': php.implode(php.PHP_EOL, [
+							'C 4.70OI 3.96XA 13.50XFDSM4.5DTW4.5MSP4.5                       RLOC 1V XXNFVG    DL JNLVHF                                            ',
+							'><',
+						]),
+					},
+				],
+			},
+		});
+
+		// NEW_GDS_DIRECT_EDIT_VOID_TICKETED_PNR logic example - success
+		// all tickets are void, so should be allowed to change PNR
+		$agentBaseDate = GdsDirectDefaults.makeAgentBaseData();
+		$list.push({
+			'input': {
+				'cmdRequested': 'XI',
+				'baseDate': '2018-06-04',
+				'ticketDesignators': [],
+				'stubAgents': [
+					Agent.makeStub(php.array_merge(GdsDirectDefaults.makeAgentBaseData(), {
+						'row': php.array_merge($agentBaseDate['row'], {
+							'id': '346',
+							'login': 'lepin',
+							'name': 'Lepin Lepin',
+							'team_id': '1',
+						}),
+						'roleRows': [
+							{'company': 'ITN', 'role': 'NEW_GDS_DIRECT_EDIT_VOID_TICKETED_PNR'},
+						],
+					})),
+				],
+			},
+			'output': {
+				'status': 'executed',
+				'calledCommands': [
+					{'cmd': 'XI'},
+				],
+			},
+			'sessionInfo': {
+				'initialState': php.array_merge(GdsDirectDefaults.makeDefaultApolloState(), {
+					'agent_id': 346,
+					'has_pnr': true,
+					'is_pnr_stored': true,
+					'record_locator': 'L8C0GW',
+				}),
+				'initialCommands': [
+					{
+						'cmd': '*R',
+						'output': php.implode(php.PHP_EOL, [
+							'CRIMS@VOID',
+							'2G56 - AAVAN VACATIONS          SFO',
+							'L8C0GW/WS QSBYC DPBVWS  AG 05700063 12SEP',
+							' 1.1OKIN/A PETER BRIAN  2.1GODFREY/ANNA ',
+							' 1 JL  61I 20NOV LAXNRT GK2  1150A  445P|       TU/WE',
+							' 2 JL 745I 21NOV NRTMNL GK2   610P 1015P           WE',
+							' 3 JL 746I 13DEC MNLNRT GK2   950A  300P           TH',
+							' 4 JL  62I 13DEC NRTLAX GK2   505P  950A           TH',
+							'FONE-SFOAS/800-750-2238 ASAP CUSTOMER SUPPORT',
+							'FOP:-CK',
+							'TKTG-TAU/15SEP',
+							'*** TIN REMARKS EXIST *** >*T; ',
+							'GFAX-SSRADTK1VTOJL BY 19SEP 2359 SFO TIME ZONE OTHERWISE WILL BE)><',
+						]),
+					},
+					{
+						'cmd': 'MR',
+						'output': php.implode(php.PHP_EOL, [
+							' XLD',
+							'   2 SSRDOCSJLHK1/////21OCT76/M//OKIN/A PETER BRIAN-1OKIN/A PETER BRIAN',
+							'   3 SSRDOCSJLHK1/////22DEC91/F//GODFREY/ANNA MARIA-1GODFREY/ANNA',
+							'   4 SSRRQSTJLKK1LAXNRT0061I20NOV-1OKIN/A PETER BRIAN.09KN',
+							'   5 SSRRQSTJLKK1LAXNRT0061I20NOV-1GODFREY/ANNA.09HN',
+							'   6 SSRRQSTJLKK1NRTMNL0745I21NOV-1OKIN/A PETER BRIAN.03KN',
+							'   7 SSRRQSTJLKK1NRTMNL0745I21NOV-1GODFREY/ANNA.04KN',
+							'   8 SSRRQSTJLKK1MNLNRT0746I13DEC-1OKIN/A PETER BRIAN.04KN',
+							'   9 SSRRQSTJLKK1MNLNRT0746I13DEC-1GODFREY/ANNA.03KN',
+							'  10 SSRRQSTJLKK1NRTLAX0062I13DEC-1OKIN/A PETER BRIAN.09KN',
+							'  11 SSRRQSTJLKK1NRTLAX0062I13DEC-1GODFREY/ANNA.09HN',
+							')><',
+						]),
+					},
+					{
+						'cmd': 'MR',
+						'output': php.implode(php.PHP_EOL, [
+							'  12 SSRADTK1VTOJL BY 19SEP 2359 SFO TIME ZONE OTHERWISE WILL BE XLD',
+							'  13 SSRADTK1VTOJL BY 19SEP 2359 SFO TIME ZONE OTHERWISE WILL BE XLD',
+							'RMKS-GD-REMUS CARTER/21432/FOR REMUS CARTER/21432/LEAD-9257616 IN 2G56',
+							'TRMK-CA ACCT-SFO@$0221686',
+							'ACKN-1A PHH5C6   13SEP 0257',
+							'   2 1A PHH5C6   13SEP 0257',
+							'><',
+						]),
+					},
+				],
+				'performedCommands': [
+					{
+						'cmd': '*HTE',
+						'output': 'ELECTRONIC TICKET LIST BY *HTE                                            NAME             TICKET NUMBER                        >*TE001;  OKIN/APETERB     1317190552109                        >*TE002;  GODFREY/ANNA     1317190552110                        END OF LIST                                                     ><',
+					},
+					{
+						'cmd': '*TE001',
+						'output': php.implode(php.PHP_EOL, [
+							'TKT: 131 7190 552109     NAME: OKIN/A PETER BRIAN                ',
+							'ISSUED: 12SEP18          FOP:CHECK                              PSEUDO: 2E8R  PLATING CARRIER: JL  ISO: US  IATA: 05700063   ',
+							'   USE  CR FLT  CLS  DATE BRDOFF TIME  ST F/B        FARE   CPN',
+							'   VOID JL   61  I  20NOV LAXNRT 1150A OK ILU07DN0/F188      1',
+							'                                          NVB20NOV NVA20NOV',
+							'   VOID JL  745  I  21NOV NRTMNL 0610P OK ILU07DN0/F188      2',
+							'                                          NVB21NOV NVA21NOV',
+							'   VOID JL  746  I  13DEC MNLNRT 0950A OK ILU07DN0/F188      3',
+							'                                          NVB13DEC NVA13DEC',
+							'   VOID JL   62  I  13DEC NRTLAX 0505P OK ILU07DN0/F188      4',
+							'                                          NVB13DEC NVA13DEC',
+							')><',
+						]),
+					},
+					{
+						'cmd': 'MR',
+						'output': php.implode(php.PHP_EOL, [
+							' ',
+							'FARE          BT TAX    36.60 US TAX   208.11 XT',
+							'TOTAL USD      BT',
+							'   NONEND-FEE FOR RFND CHG/L1800- PTC IT                         ',
+							'FC M/BT END ROE1.0 XT 142.80YQ 19.00SW 10.20LI 9.40',
+							'OI 7.00XY 5.65YC 5.60AY 3.96XA 4.50XFLAX4.5                     TOUR CODE: L1800          ',
+							'RLOC 1V L8C0GW    1A PHH5C6                                            ',
+							'><',
+						]),
+					},
+					{
+						'cmd': '*TE002',
+						'output': php.implode(php.PHP_EOL, [
+							'TKT: 131 7190 552110     NAME: GODFREY/ANNA                      ',
+							'ISSUED: 12SEP18          FOP:CHECK                              PSEUDO: 2E8R  PLATING CARRIER: JL  ISO: US  IATA: 05700063   ',
+							'   USE  CR FLT  CLS  DATE BRDOFF TIME  ST F/B        FARE   CPN',
+							'   VOID JL   61  I  20NOV LAXNRT 1150A OK ILU07DN0/F188      1',
+							'                                          NVB20NOV NVA20NOV',
+							'   VOID JL  745  I  21NOV NRTMNL 0610P OK ILU07DN0/F188      2',
+							'                                          NVB21NOV NVA21NOV',
+							'   VOID JL  746  I  13DEC MNLNRT 0950A OK ILU07DN0/F188      3',
+							'                                          NVB13DEC NVA13DEC',
+							'   VOID JL   62  I  13DEC NRTLAX 0505P OK ILU07DN0/F188      4',
+							'                                          NVB13DEC NVA13DEC',
+							')><',
+						]),
+					},
+					{
+						'cmd': 'MR',
+						'output': php.implode(php.PHP_EOL, [
+							' ',
+							'FARE          BT TAX    36.60 US TAX   208.11 XT',
+							'TOTAL USD      BT',
+							'   NONEND-FEE FOR RFND CHG/L1800- PTC IT                         ',
+							'FC M/BT END ROE1.0 XT 142.80YQ 19.00SW 10.20LI 9.40',
+							'OI 7.00XY 5.65YC 5.60AY 3.96XA 4.50XFLAX4.5                     TOUR CODE: L1800          ',
+							'RLOC 1V L8C0GW    1A PHH5C6                                            ',
+							'><',
+						]),
+					},
+					{
+						'cmd': 'XI',
+						'output': php.implode(php.PHP_EOL, ['PASSIVE SEG/NO CXL MSG SENT/CALL CARRIER', 'CNLD FROM  1', '><']),
+					},
+				],
+			},
+		});
 
 		// problematic cases follow
 		/*

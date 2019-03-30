@@ -36,15 +36,10 @@ const TariffDisplayParser = require('../../../../Gds/Parsers/Apollo/TariffDispla
 const FareDisplayDomesticParser = require('../../../../Gds/Parsers/Apollo/TariffDisplay/FareDisplayDomesticParser.js');
 const FareDisplayInternationalParser = require('../../../../Gds/Parsers/Apollo/TariffDisplay/FareDisplayInternationalParser.js');
 const BadRequest = require("../../../../../Utils/Rej").BadRequest;
-const NotImplemented = require("../../../../../Utils/Rej").NotImplemented;
 const SessionStateProcessor = require("../../SessionStateProcessor/SessionStateProcessor");
+const RetrieveApolloTicketsAction = require('../../../../Rbs/Process/Apollo/ImportPnr/Actions/RetrieveApolloTicketsAction.js');
 
 let php = require('../../../../php.js');
-
-/** @debug */
-var require = translib.stubRequire;
-
-const RetrieveApolloTicketsAction = require('../../../../Rbs/Process/Apollo/ImportPnr/Actions/RetrieveApolloTicketsAction.js');
 
 class ProcessApolloTerminalInputAction {
 	useXml($flag) {
@@ -615,16 +610,15 @@ class ProcessApolloTerminalInputAction {
 		return ApolloPnr.makeFromDump($pnrDump);
 	}
 
-	areAllCouponsVoided() {
+	async areAllCouponsVoided() {
 		let $ticketData, $ticket, $isVoid;
-		$ticketData = (new RetrieveApolloTicketsAction()).setApollo(this.stateful).execute();
+		$ticketData = await (new RetrieveApolloTicketsAction())
+			.setSession(this.stateful).execute();
 		if (!php.empty($ticketData['error'])) {
 			return false;
 		}
 		for ($ticket of Object.values($ticketData['tickets'])) {
-			$isVoid = ($seg) => {
-				return $seg['couponStatus'] === 'VOID';
-			};
+			$isVoid = ($seg) => $seg['couponStatus'] === 'VOID';
 			if (!php.empty($ticket['error']) ||
 				!Fp.all($isVoid, $ticket['segments'])
 			) {
@@ -693,7 +687,7 @@ class ProcessApolloTerminalInputAction {
 				if ($pnr = await this.getStoredPnr()) {
 					$canChange = !$pnr.hasEtickets()
 						|| $agent.canEditVoidTicketedPnr()
-						&& this.areAllCouponsVoided();
+						&& await this.areAllCouponsVoided();
 					if (!$canChange) {
 						$errors.push(Errors.getMessage(Errors.CANT_CHANGE_TICKETED_PNR));
 					}
