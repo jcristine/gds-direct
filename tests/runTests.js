@@ -1,4 +1,6 @@
 
+const {getConfig} = require('../backend/Config');
+
 console.log('Starting unit tests');
 let args = process.argv.slice(process.execArgv.length + 2);
 
@@ -6,6 +8,7 @@ let args = process.argv.slice(process.execArgv.length + 2);
 let testPromises = [
 	Promise.resolve([() => 3 > 4 ? 'Your code says that 3 > 4, this is wrong' : null]),
 	Promise.resolve([() => 5 < 4 ? Promise.resolve('Five can not be less than four, silly') : null]),
+	new (require('./backend/Transpiled/Rbs/GdsDirect/Actions/Apollo/ProcessApolloTerminalInputActionTest.js'))().getTests(),
 	new (require('./backend/Transpiled/Rbs/GdsDirect/Actions/Apollo/ImportPqApolloActionTest.js'))().getTests(),
 	new (require('./backend/Actions/ExchangeApolloTicketTest.js'))().getTests(),
 	new (require('./backend/GdsHelpers/TravelportUtilsTest.js'))().getTests(),
@@ -45,6 +48,17 @@ let oks = 0;
 let errors = [];
 
 let perform = async (testPromises) => {
+	let config = await getConfig();
+
+	config.external_service = {};
+	config.RBS_PASSWORD = null;
+	// TODO: get rid of taking highlight rules from DB and uncomment following
+	//config.REDIS_HOST = null;
+	//config.REDIS_PORT = null;
+	//config.SOCKET_PORT = null;
+	//config.HTTP_PORT = null;
+	//config.HOST = null;
+
 	for (let whenTests of testPromises) {
 		let tests = await whenTests;
 		for (let test of tests) {
