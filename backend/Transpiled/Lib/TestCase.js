@@ -54,16 +54,7 @@ class TestCase
 		return !$arr || php.array_keys($arr) === php.range(0, php.count($arr) - 1);
 	}
 
-	/**
-	 * Asserts arraySubset, but more verbosily
-	 *
-	 * @param bool $noExtraIndexes - checks number of elements in non-associative
-	 * arrays - useful if you need to test that empty array is returned for example
-	 *
-	 * @param  string  $message
-	 * @throws PHPUnit_Framework_AssertionFailedError
-	 */
-	assertArrayElementsSubset($expectation, $reality, $message = '', $noExtraIndexes = false)  {
+	assertArrayElementsSubsetInternal($expectation, $reality, $message = '', $noExtraIndexes = false) {
 		let $key, $value;
 		if (php.is_array($expectation) && php.is_array($reality)) {
 			for ([$key, $value] of Object.entries($expectation)) {
@@ -80,6 +71,27 @@ class TestCase
 				$message += ' (expected is not array)';
 			}
 			this.assertSame($expectation, $reality, $message);
+		}
+	}
+
+	/**
+	 * Asserts arraySubset, but more verbosily
+	 *
+	 * @param bool $noExtraIndexes - checks number of elements in non-associative
+	 * arrays - useful if you need to test that empty array is returned for example
+	 *
+	 * @param  string  $message
+	 * @throws PHPUnit_Framework_AssertionFailedError
+	 */
+	assertArrayElementsSubset($expectation, $reality, $message = '', $noExtraIndexes = false)  {
+		try {
+			return this.assertArrayElementsSubsetInternal($expectation, $reality, $message, $noExtraIndexes);
+		} catch (exc) {
+			let args = process.argv.slice(process.execArgv.length + 2);
+			if (args.includes('debug')) {
+				console.log('\n$reality\n', $reality);
+			}
+			throw exc;
 		}
 	}
 
