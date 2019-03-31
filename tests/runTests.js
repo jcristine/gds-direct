@@ -37,6 +37,8 @@ let perform = async () => {
 	let i = 0;
 	for await (let file of getFiles(__dirname + '/backend/')) {
 		if (file === __dirname + '/backend/Transpiled/Lib/TestCase.js' ||
+			file === __dirname + '/backend/Transpiled/Rbs/TestUtils/AnyGdsStubSession.js' ||
+			file === __dirname + '/backend/Transpiled/Rbs/TestUtils/GdsDirectDefaults.js' ||
 			file === __dirname + '/backend/Transpiled/php.js'
 		) {
 			// placed there as a workaround for transpilation, as root

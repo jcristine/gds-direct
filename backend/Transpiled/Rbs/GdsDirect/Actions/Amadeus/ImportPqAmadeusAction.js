@@ -184,7 +184,8 @@ class ImportPqAmadeusAction extends AbstractGdsAction {
 	async runOrReuseRt($cmd) {
 		let $output;
 
-		$output = await (new CmsAmadeusTerminal()).getFullRtFormatDump(this.getCmdLog(), $cmd);
+		$output = await (new CmsAmadeusTerminal())
+			.getFullRtFormatDump(this.getCmdLog(), $cmd);
 		if (!$output) {
 			$output = await this.amadeusRt($cmd);
 		}

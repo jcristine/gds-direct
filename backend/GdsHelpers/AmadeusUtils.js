@@ -131,7 +131,6 @@ class AmadeusUtils {
 	 * each page ends with a "PAGE 19/19"-like line
 	 */
 	static async fetchAllFx(cmd, session) {
-
 		let output = await fetchAllWith(cmd => session.runCmd(cmd), cmd,
 			'MD', (...args) => parseFxPager(...args));
 		return {cmd, output};

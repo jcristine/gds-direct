@@ -14,6 +14,7 @@ const AmadeusPnr = require('../../../Rbs/TravelDs/AmadeusPnr.js');
 
 class CmsAmadeusTerminal {
 	async joinRtMdrs($mdrs) {
+		$mdrs = [...$mdrs];
 		let $isComplete, $runCmd, $fullOutput;
 
 		$isComplete = true;
@@ -21,10 +22,10 @@ class CmsAmadeusTerminal {
 			let $page;
 
 			if ($cmd === 'MDR' && ($page = php.array_shift($mdrs))) {
-				return $page;
+				return {cmd: $cmd, output: $page};
 			} else {
 				$isComplete = false;
-				return '/$';
+				return {cmd: $cmd, output: '/$'};
 			}
 		};
 		$fullOutput = (await PagingHelper.fetchAllRt('MDR', {runCmd: $runCmd})).output;
