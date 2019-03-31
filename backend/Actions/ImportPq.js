@@ -14,6 +14,7 @@ let {fetchAllRt} = require('../GdsHelpers/AmadeusUtils.js');
 const ImportPnrAction = require('../Transpiled/Rbs/Process/Common/ImportPnr/ImportPnrAction.js');
 const SessionStateHelper = require("../Transpiled/Rbs/GdsDirect/SessionStateProcessor/SessionStateHelper");
 const ImportPqSabreAction = require('../Transpiled/Rbs/GdsDirect/Actions/Sabre/ImportPqSabreAction.js');
+const ImportPqAmadeusAction = require('../Transpiled/Rbs/GdsDirect/Actions/Amadeus/ImportPqAmadeusAction.js');
 const RbsUtils = require("../GdsHelpers/RbsUtils");
 const TicketDesignators = require('../Repositories/TicketDesignators.js');
 const LocationGeographyProvider = require('../Transpiled/Rbs/DataProviders/LocationGeographyProvider.js');
@@ -200,6 +201,8 @@ let ImportPq = async ({stateful, leadData, fetchOptionalFields = true}) => {
 			importAct = new ImportPqSabreAction();
 		} else if (gds === 'galileo' && !fetchOptionalFields) {
 			importAct = new ImportPqGalileoAction();
+		} else if (gds === 'amadeus' && !fetchOptionalFields) {
+			importAct = new ImportPqAmadeusAction();
 		} else {
 			// TODO: implement rest GDS-es and fetchOptionalFields=true
 			// temporary fallback till real importPq implemented for all GDS on our side
