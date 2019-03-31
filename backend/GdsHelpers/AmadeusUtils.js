@@ -108,6 +108,10 @@ class AmadeusUtils {
 		return parseRtPager(page);
 	}
 
+	static parseFxPager(page) {
+		return parseFxPager(page);
+	}
+
 	/**
 	 * for >DO...; command
 	 * probably also works in >RT; and other commands that use ")" and "/$" to separate pages
