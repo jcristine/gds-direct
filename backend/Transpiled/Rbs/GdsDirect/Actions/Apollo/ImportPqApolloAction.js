@@ -18,6 +18,7 @@ const RetrieveFlightServiceInfoAction = require('../../../../Rbs/Process/Apollo/
 const ImportFareComponentsAction = require('../../../../Rbs/Process/Apollo/ImportPnr/Actions/ImportFareComponentsAction.js');
 
 let php = require('../../../../php.js');
+const withCapture = require("../../../../../GdsHelpers/CommonUtils").withCapture;
 
 /** @see ImportPqAmadeusAction description */
 class ImportPqApolloAction extends AbstractGdsAction {
@@ -169,19 +170,11 @@ class ImportPqApolloAction extends AbstractGdsAction {
 	async getFlightService($itinerary) {
 		let $actionResult, $common, $result = {};
 
-		let calledCommands = [];
-		let capturing = {
-			runCmd: async (cmd) => {
-				let cmdRec = await this.session.runCmd(cmd);
-				calledCommands.push(cmdRec);
-				return cmdRec;
-			},
-		};
-
+		let capturing = withCapture(this.session);
 		$actionResult = await (new RetrieveFlightServiceInfoAction())
 			.setSession(capturing).execute($itinerary);
 		$common = ImportApolloPnrFormatAdapter.transformFlightServiceInfo($actionResult, this.getBaseDate());
-		this.$allCommands = php.array_merge(this.$allCommands, calledCommands);
+		this.$allCommands.push(...capturing.getCalledCommands());
 		if ($result['error'] = $common['error'] || null) {
 			return $result;
 		} else {

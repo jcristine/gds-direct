@@ -26,16 +26,8 @@ const AtfqParser = require("../../../../Gds/Parsers/Apollo/Pnr/AtfqParser");
 const FqCmdParser = require("../../../../Gds/Parsers/Galileo/Commands/FqCmdParser");
 const AmdPricingCmdParser = require("../../../../Gds/Parsers/Amadeus/Commands/PricingCmdParser");
 const BookingClasses = require("../../../../../Repositories/BookingClasses");
+const withLog = require("../../../../../GdsHelpers/CommonUtils").withLog;
 const {ERROR_NO_AVAIL} = require('../../../GdsAction/SabreBuildItineraryAction.js');
-
-let withLog = (session, log) => ({
-	...session, runCmd: async (cmd) => {
-		let cmdRec = await session.runCmd(cmd);
-		let masked = Misc.maskCcNumbers(cmdRec);
-		log('GDS result: ' + cmd, masked);
-		return cmdRec;
-	},
-});
 
 let extendApolloCmd = (cmd) => {
 	let data = AtfqParser.parsePricingCommand(cmd);
