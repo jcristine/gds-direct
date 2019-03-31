@@ -77,7 +77,8 @@ class AmadeusPricingCommonFormatAdapter {
 		$cmdPaxes = [];
 		$getPaxNum = ($nameRec) => $nameRec['nameNumber']['fieldNumber'];
 		$paxNumToNameRec = Fp.groupBy($getPaxNum, $nameRecords);
-		for ($storeMods of Object.values($stores || [[]])) {
+		$stores = php.empty($stores) ? [[]] : $stores;
+		for ($storeMods of Object.values($stores)) {
 			$mods = php.array_combine(
 				php.array_column($storeMods, 'type'),
 				php.array_column($storeMods, 'parsed')

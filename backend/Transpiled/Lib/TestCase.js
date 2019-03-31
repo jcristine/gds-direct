@@ -59,7 +59,7 @@ class TestCase
 		if (php.is_array($expectation) && php.is_array($reality)) {
 			for ([$key, $value] of Object.entries($expectation)) {
 				this.assertArrayHasKey($key, $reality, $message);
-				this.assertArrayElementsSubset($value, $reality[$key], $message+'['+$key+']', $noExtraIndexes);
+				this.assertArrayElementsSubsetInternal($value, $reality[$key], $message+'['+$key+']', $noExtraIndexes);
 			}
 			if ($noExtraIndexes && this._isList($expectation)) {
 				this.assertLessThanOrEqual(php.count($expectation), php.count($reality), $message+' actual list is longer than expected');

@@ -176,7 +176,6 @@ class AmadeusPricingCommonFormatAdapterTest extends require('../../Lib/TestCase.
             ],
         ]);
 
-        // no passengers specified in pricing command
         $list.push([
             {
                 'pricingDump': php.implode(php.PHP_EOL, [
@@ -227,6 +226,55 @@ class AmadeusPricingCommonFormatAdapterTest extends require('../../Lib/TestCase.
                     'storeNumber': 2,
                     'nameNumbers': [
                         {'fieldNumber': '1', 'absolute': 2},
+                    ],
+                },
+            ],
+        ]);
+
+        // no passengers specified in pricing command
+        $list.push([
+            {
+                'pricingDump': php.implode(php.PHP_EOL, [
+                    'FXX',
+                    '',
+                    '',
+                    '   PASSENGER         PTC    NP  FARE USD  TAX/FEE   PER PSGR',
+                    '01 LIBERMANE/LEPIN   CNN     1     297.00   71.24     368.24',
+                    '02 LIBERMANE/ZIMICH  CNN     1     297.00   71.24     368.24',
+                    '03 LIBERMANE/MARINA  ADT     1     395.00   71.24     466.24',
+                    '04 LIBERMANE/STAS    ADT     1     395.00   71.24     466.24',
+                    '05 LIBERMANE/KATJA   INF     1      40.00    0.00      40.00',
+                    '',
+                    '                   TOTALS    5    1424.00  284.96    1708.96',
+                    '',
+                    '1-5 LAST TKT DTE 07AUG17 - SEE SALES RSTNS',
+                    '1-5 60 PERCENT PENALTY APPLIES',
+                ]),
+                'nameRecords': ((AmadeusReservationParser.parse(php.implode(php.PHP_EOL, [
+                    '  1.LIBERMANE/LEPIN(CHD/05APR10)',
+                    '  2.LIBERMANE/MARINA(ADT)(INF/KATJA/20JAN17)   3.LIBERMANE/STAS',
+                    '  4.LIBERMANE/ZIMICH(CHD/04APR10)',
+                ])) || {})['parsed'] || {})['passengers'] || [],
+            },
+            [
+                {
+                    'ptc': 'CNN',
+                    'nameNumbers': [
+                        {'fieldNumber': '1', 'absolute': 1},
+                        {'fieldNumber': '4', 'absolute': 5},
+                    ],
+                },
+                {
+                    'ptc': 'ADT',
+                    'nameNumbers': [
+                        {'fieldNumber': '2', 'absolute': 2},
+                        {'fieldNumber': '3', 'absolute': 4},
+                    ],
+                },
+                {
+                    'ptc': 'INF',
+                    'nameNumbers': [
+                        {'fieldNumber': '2', 'absolute': 3},
                     ],
                 },
             ],
