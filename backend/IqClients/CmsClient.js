@@ -13,15 +13,8 @@ let callCms = async ({functionName, params}) => {
 			passwd: config.external_service.cms.password,
 		},
 		url: config.external_service.cms.host,
-	});
-};
-
-let getRequestBriefData = ({requestId}) => {
-	return callCms({
-		functionName: 'getRequestBriefData',
-		params: {requestId},
 	}).then(rpcRs => {
-		if (!rpcRs.result.success) {
+		if (rpcRs.result.success === 0) {
 			let error = rpcRs.result.errorMessage
 				|| rpcRs.result.msg
 				|| 'CMS did not return success=true - ' + JSON.stringify(rpcRs);
@@ -29,6 +22,20 @@ let getRequestBriefData = ({requestId}) => {
 		} else {
 			return Promise.resolve(rpcRs);
 		}
+	});
+};
+
+let getRequestBriefData = ({requestId}) => {
+	return callCms({
+		functionName: 'getRequestBriefData',
+		params: {requestId},
+	});
+};
+
+let getItineraryData = ({itineraryId}) => {
+	return callCms({
+		functionName: 'getItineraryData',
+		params: {itineraryId},
 	});
 };
 
@@ -59,6 +66,7 @@ let getLeadData = async (travelRequestId) =>
 			}));
 
 exports.getRequestBriefData = getRequestBriefData;
+exports.getItineraryData = getItineraryData;
 /** in RBS-compatible format */
 exports.getLeadData = getLeadData;
 
