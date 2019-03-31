@@ -53,7 +53,7 @@ class RebuildInPccAction extends AbstractGdsAction {
 				$cmd = '@' + php.implode('.', php.array_column($clsSegs, 'segmentNumber')) + '\/' + $cls;
 				$output = (await this.runCmd($cmd)).output;
 				if (!this.constructor.isSuccessRebookOutput($output)) {
-					$failedSegNums = php.array_merge($failedSegNums, php.array_column($clsSegs, 'segmentNumber'));
+					$failedSegNums.push(php.array_column($clsSegs, 'segmentNumber'));
 				}
 			}
 		}
@@ -76,6 +76,11 @@ class RebuildInPccAction extends AbstractGdsAction {
 
 	async bookItinerary($itinerary) {
 		let $errors, $isAkRebookPossible, $akItinerary, $result, $error, $gkRebook, $failedSegNums;
+		$itinerary = $itinerary.map((s,i) => ({
+			segmentNumber: i + 1,
+			...s,
+			segmentStatus: s.segmentStatus === 'GK' ? 'AK' : s.segmentStatus,
+		}));
 
 		$errors = [];
 		// Galileo returns UNABLE - DUPLICATE SEGMENT if you try to rebook AK Y to HS Y
@@ -86,6 +91,7 @@ class RebuildInPccAction extends AbstractGdsAction {
 				&& $seg['segmentStatus'] !== 'AK';
 		};
 		$akItinerary = Fp.map(($seg) => {
+			$seg = {...$seg};
 			if ($isAkRebookPossible($seg)) {
 				$seg['bookingClass'] = 'Y';
 				$seg['segmentStatus'] = 'AK';
