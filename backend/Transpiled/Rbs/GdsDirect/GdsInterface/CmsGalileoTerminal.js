@@ -45,7 +45,7 @@ class CmsGalileoTerminal {
 		if ($parsed && $parsed['type'] === 'priceItinerary') {
 			$pMod = (php.array_combine(php.array_column($parsed['data']['pricingModifiers'], 'type'),
 				php.array_column($parsed['data']['pricingModifiers'], 'parsed')) || {})['passengers'];
-			$ptcs = php.array_column($pMod['ptcGroups'] || [], 'ptc');
+			$ptcs = !$pMod ? [] : php.array_column($pMod['ptcGroups'], 'ptc');
 			return {'ptcs': $ptcs};
 		} else {
 			return {'errors': ['Failed to parse pricing command - ' + $cmd]};
