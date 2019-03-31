@@ -141,7 +141,7 @@ class ImportPqGalileoAction extends AbstractGdsAction {
 	static transformBagPtcBlock($ptcBlock, $i) {
 
 		return {
-			'subPricingNumber': $i + 1,
+			'subPricingNumber': +$i + 1,
 			'passengerNameNumbers': $ptcBlock['passengerNameNumbers'],
 			'ptcInfo': $ptcBlock['ptcInfo'],
 			'raw': $ptcBlock['baggageInfo']['raw'],

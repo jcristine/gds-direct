@@ -766,8 +766,7 @@ class ImportPqApolloActionTest extends require('../../../../Lib/TestCase.js') {
 		let $actual;
 
 		$actual = await (new ImportPqApolloAction())
-			.setSession((new AnyGdsStubSession($calledCommands))
-				.setGds('apollo'))
+			.setSession((new AnyGdsStubSession($calledCommands)).setGds('apollo'))
 			.setPreCalledCommandsFromDb($input['previousCommands'])
 			.setBaseDate('2018-03-20')
 			.execute();

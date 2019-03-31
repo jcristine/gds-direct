@@ -89,7 +89,7 @@ class TestCase
 		} catch (exc) {
 			let args = process.argv.slice(process.execArgv.length + 2);
 			if (args.includes('debug')) {
-				console.log('\n$reality\n', $reality);
+				console.log('\n$reality\n', JSON.stringify($reality));
 			}
 			throw exc;
 		}
