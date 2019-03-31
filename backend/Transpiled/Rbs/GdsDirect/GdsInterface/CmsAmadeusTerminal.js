@@ -13,7 +13,7 @@ var require = require('../../../translib.js').stubRequire;
 const AmadeusPnr = require('../../../Rbs/TravelDs/AmadeusPnr.js');
 
 class CmsAmadeusTerminal {
-	joinRtMdrs($mdrs) {
+	async joinRtMdrs($mdrs) {
 		let $isComplete, $runCmd, $fullOutput;
 
 		$isComplete = true;
@@ -27,7 +27,7 @@ class CmsAmadeusTerminal {
 				return '/$';
 			}
 		};
-		$fullOutput = PagingHelper.fetchAllRt('MDR', {runCmd: $runCmd});
+		$fullOutput = (await PagingHelper.fetchAllRt('MDR', {runCmd: $runCmd})).output;
 		if ($isComplete) {
 			return $fullOutput;
 		} else {
@@ -44,22 +44,22 @@ class CmsAmadeusTerminal {
 		for ($cmdRec of Object.values($safeCmds)) {
 			if ($cmdRec['cmd'] === $cmd) {
 				$mdrs = [$cmdRec['output']];
-			} else if ($mdrs && $cmdRec['cmd'] === 'MDR') {
+			} else if (!php.empty($mdrs) && $cmdRec['cmd'] === 'MDR') {
 				$mdrs.push($cmdRec['output']);
 			} else {
-				if ($joined = this.joinRtMdrs($mdrs)) {
+				if ($joined = await this.joinRtMdrs($mdrs)) {
 					return $joined;
 				} else {
 					$mdrs = [];
 				}
 			}
 		}
-		return this.joinRtMdrs($mdrs) || null;
+		return this.joinRtMdrs($mdrs);
 	}
 
 	async getFullPnrDump($cmdLog) {
 
-		return await this.getFullRtFormatDump($cmdLog, 'RT');
+		return this.getFullRtFormatDump($cmdLog, 'RT');
 	}
 
 	parseSavePnr($dump, $keptInSession) {
@@ -169,7 +169,7 @@ class CmsAmadeusTerminal {
 		let $asRt, $asHe;
 
 		$asRt = PagingHelper.parseRtPager($output);
-		$asHe = PagingHelper.parseHelpPager($output);
+		$asHe = PagingHelper.parseHePager($output);
 		if ($asRt['hasMore']) {
 			$output = $asRt['content'] + php.PHP_EOL + '\u2514\u2500>';
 		} else if ($asHe['hasMore']) {

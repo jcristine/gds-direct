@@ -49,7 +49,7 @@ let parseFxPager = ($page) => {
 	}
 };
 
-let parseHelpPager = ($page) => {
+let parseHePager = ($page) => {
 	let $matches, $content, $hasPageMark, $hasMore;
 
 	if (php.preg_match(/^\/\$(.+?\s+?)(\n\s*|)MD\n\s*$/s, $page, $matches = [])) {
@@ -112,6 +112,10 @@ class AmadeusUtils {
 		return parseFxPager(page);
 	}
 
+	static parseHePager(page) {
+		return parseHePager(page);
+	}
+
 	/**
 	 * for >DO...; command
 	 * probably also works in >RT; and other commands that use ")" and "/$" to separate pages
@@ -139,7 +143,7 @@ class AmadeusUtils {
 	 */
 	static async fetchAllHe(cmd, session) {
 		let output = await fetchAllWith(cmd => session.runCmd(cmd), cmd,
-			'MD', (...args) => parseHelpPager(...args));
+			'MD', (...args) => parseHePager(...args));
 		return {cmd, output};
 	}
 
@@ -161,7 +165,7 @@ class AmadeusUtils {
 			},
 			{
 				'moveRestCmd': 'MD',
-				'parsePager': (...args) => parseHelpPager(...args),
+				'parsePager': (...args) => parseHePager(...args),
 				'prefixes': ['HE', 'GP', 'MS'],
 			},
 		];

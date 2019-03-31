@@ -117,7 +117,7 @@ class CanCreatePqRules {
 			$errors = php.array_merge($errors, CmsSabreTerminal.checkPricingCmdObviousPqRules($cmdParsed['data']));
 		} else if ($gds === 'amadeus') {
 			$cmdParsed = AmaCmdParser.parse($pricingCmd);
-			$errors = php.array_merge($errors, CmsAmadeusTerminal.checkPricingCmdObviousPqRules($cmdParsed['data']));
+			$errors = php.array_merge($errors, CmsAmadeusTerminal.checkPricingCommandObviousPqRules($cmdParsed['data']));
 		} else if ($gds === 'galileo') {
 			$cmdParsed = GalCmdParser.parse($pricingCmd);
 			$errors = php.array_merge($errors, CmsGalileoTerminal.checkPricingCmdObviousPqRules($cmdParsed['data']));
