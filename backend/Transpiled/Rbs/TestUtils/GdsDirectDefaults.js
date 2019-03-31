@@ -185,17 +185,7 @@ class GdsDirectDefaults {
 			area: 'A',
 			areas: {'A': initialState},
 		};
-		let cmdLog = CmdLog({
-			session, fullState,
-			CmdLogs: {
-				getAll: () => Promise.resolve([]),
-				storeNew: (row) => Promise.resolve(row),
-				getLast: () => NotFound('No records: non-storing storage'),
-			},
-			GdsSessions: {
-				updateFullState: () => Promise.resolve(),
-			},
-		});
+		let cmdLog = CmdLog.noDb({gds, fullState});
 		for (let cmdRec of initialCommands) {
 			cmdLog.logCommand(cmdRec.cmd, Promise.resolve(cmdRec));
 		}

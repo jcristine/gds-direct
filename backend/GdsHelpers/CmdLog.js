@@ -1,6 +1,7 @@
 
 const SessionStateProcessor = require('../Transpiled/Rbs/GdsDirect/SessionStateProcessor/SessionStateProcessor.js');
 const CommonDataHelper = require("../Transpiled/Rbs/GdsDirect/CommonDataHelper");
+const NotFound = require("../Utils/Rej").NotFound;
 const makeRow = require("../Repositories/CmdLogs").makeRow;
 const hrtimeToDecimal = require("../Utils/Misc").hrtimeToDecimal;
 
@@ -137,6 +138,25 @@ let CmdLog = ({
 			return getAll();
 		},
 	};
+};
+
+CmdLog.noDb = ({gds, fullState}) => {
+	return CmdLog({
+		session: {
+			context: {
+				gds: gds,
+			},
+		},
+		fullState,
+		CmdLogs: {
+			getAll: () => Promise.resolve([]),
+			storeNew: (row) => Promise.resolve(row),
+			getLast: () => NotFound('No records: non-storing storage'),
+		},
+		GdsSessions: {
+			updateFullState: () => Promise.resolve(),
+		},
+	});
 };
 
 module.exports = CmdLog;
