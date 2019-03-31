@@ -422,7 +422,7 @@ class ProcessGalileoTerminalInputAction {
 			$totalAllowed = $agent.getFsLimit();
 			if (!$totalAllowed) {
 				$errors.push(Errors.getMessage(Errors.CMD_FORBIDDEN, {'cmd': $cmd, 'type': $type}));
-			} else if ($agent.getFsCallsUsed() >= $totalAllowed) {
+			} else if (await $agent.getFsCallsUsed() >= $totalAllowed) {
 				$errors.push(Errors.getMessage(Errors.FS_LIMIT_EXHAUSTED, {'totalAllowed': $totalAllowed}));
 			}
 		} else if ($isQueueCmd && !php.in_array($type, ['movePnrToQueue'])) {
