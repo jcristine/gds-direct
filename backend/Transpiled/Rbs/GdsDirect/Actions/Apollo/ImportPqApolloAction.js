@@ -113,7 +113,7 @@ class ImportPqApolloAction extends AbstractGdsAction {
 			php.array_unshift($mrs, $cmdRecord['output']);
 			$logCmdType = CommandParser.parse($cmdRecord['cmd'])['type'];
 			if ($logCmdType !== 'moveRest') {
-				$cmdRecord['output'] = this.joinFullOutput($mrs);
+				$cmdRecord = {...$cmdRecord, output: this.joinFullOutput($mrs)};
 				if (!this.isScrollingAvailable($cmdRecord['output'])) {
 					fullCmdRecs.unshift($cmdRecord);
 				}
