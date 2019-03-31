@@ -996,7 +996,7 @@ class ProcessSabreTerminalInputAction {
 			return this.rebookAsSs();
 		} else if (php.preg_match(/^(FQ.*)\/MIX$/, $cmd, $matches = [])) {
 			return this.getMultiPccTariffDisplay($matches[1]);
-		} else if (!php.empty($itinerary = AliasParser.parseCmdAsItinerary($cmd, this.stateful))) {
+		} else if (!php.empty($itinerary = await AliasParser.parseCmdAsItinerary($cmd, this.stateful))) {
 			return this.bookItinerary($itinerary, true);
 		} else if ($result = RepriceInAnotherPccAction.parseAlias($cmd)) {
 			return this.priceInAnotherPcc($result['cmd'], $result['target'], $result['dialect']);

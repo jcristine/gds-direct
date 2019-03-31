@@ -956,7 +956,7 @@ class ProcessAmadeusTerminalInputAction {
 			.execute($pnr, $cmd, $dialect, $target, this.stateful);
 	}
 
-	processRequestedCommand($cmd) {
+	async processRequestedCommand($cmd) {
 		let $matches, $area, $pcc, $mdaData, $limit, $cmdReal, $reData, $aliasData, $params, $itinerary, $result;
 
 		if (php.preg_match(/^JM *([A-Z])$/, $cmd, $matches = [])) {
@@ -988,7 +988,7 @@ class ProcessAmadeusTerminalInputAction {
 			return this.rebookAsSs();
 		} else if (php.preg_match(/^(FQD.*)\/MIX$/, $cmd, $matches = [])) {
 			return this.getMultiPccTariffDisplay($matches[1]);
-		} else if (!php.empty($itinerary = AliasParser.parseCmdAsItinerary($cmd, this.stateful))) {
+		} else if (!php.empty($itinerary = await AliasParser.parseCmdAsItinerary($cmd, this.stateful))) {
 			return this.bookItinerary($itinerary);
 		} else if ($result = RepriceInAnotherPccAction.parseAlias($cmd)) {
 			return this.priceInAnotherPcc($result['cmd'], $result['target'], $result['dialect']);

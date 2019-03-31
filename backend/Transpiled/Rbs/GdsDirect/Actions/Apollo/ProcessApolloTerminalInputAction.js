@@ -1419,7 +1419,7 @@ class ProcessApolloTerminalInputAction {
 			return this.makeMultipleCityAvailabilitySearch($availability, $cityRow, $airlines);
 		} else if (php.preg_match(/^SEM\/([\w\d]{3,4})\/AG$/, $cmd, $matches = [])) {
 			return this.emulatePcc($matches[1]);
-		} else if (!php.empty($itinerary = AliasParser.parseCmdAsItinerary($cmd, this.stateful))) {
+		} else if (!php.empty($itinerary = await AliasParser.parseCmdAsItinerary($cmd, this.stateful))) {
 			return this.bookItinerary($itinerary, true);
 		} else {
 			$cmd = $alias['realCmd'];

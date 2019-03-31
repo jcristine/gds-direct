@@ -6,6 +6,8 @@ const Fp = require('../../Lib/Utils/Fp.js');
 const ParsersController = require('../../Rbs/IqControllers/ParsersController.js');
 
 let php = require('../../php.js');
+const CmsClient = require("../../../IqClients/CmsClient");
+const Rej = require("../../../Utils/Rej");
 
 /**
  * provides functions to parse our custom formats
@@ -31,6 +33,29 @@ class AliasParser
                 'seatCount': $matches['seatCount'] || '',
                 'keepOriginal': !php.empty($matches['keepOriginalMark']),
             };
+        } else {
+            return null;
+        }
+    }
+
+    /**
+     * @return {Promise<null|{...}>} - rejection if it _is_ REBUILD command, but failed
+     *                                 to retrieve data, null if it is not REBUILD command
+     */
+    static async parseCmsRebuild(cmd) {
+        let asRebuild = cmd.match(/^REBUILD\/(\d+)\/([A-Z]{2})\/(\d+)$/);
+        if (asRebuild) {
+            let [_, itineraryId, segmentStatus, seatCount] = asRebuild;
+            let cmsData = await CmsClient.getItineraryData({itineraryId});
+            console.debug('\ncmsData\n', JSON.stringify(cmsData));
+            let segments = cmsData.result.data.segments.map(s => {
+                let gdsDate = php.strtoupper(php.date('dM', php.strtotime(s.departureDate)));
+                return ({
+                    ...s, segmentStatus, seatCount,
+                    departureDate: {raw: gdsDate, full: s.departureDate},
+                });
+            });
+            return {segments};
         } else {
             return null;
         }
@@ -66,10 +91,14 @@ class AliasParser
         }
     }
 
-    static parseCmdAsItinerary($cmd, $session)  {
+    static async parseCmdAsItinerary($cmd, $session)  {
         let $guess;
         if (!$session.getAgent().canPasteItinerary()) {
             return [];
+        }
+        let fromCms = await this.parseCmsRebuild($cmd);
+        if (fromCms) {
+            return fromCms.segments;
         }
         $guess = (new ParsersController()).guessDumpType({
             'dump': $cmd,

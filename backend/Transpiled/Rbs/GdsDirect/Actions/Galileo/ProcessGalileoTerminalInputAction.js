@@ -887,7 +887,7 @@ class ProcessGalileoTerminalInputAction {
 			return this.priceInAnotherPcc($result['cmd'], $result['target'], $result['dialect']);
 		} else if ($parsed['type'] === 'priceItinerary') {
 			return this.priceItinerary($cmd, $parsed['data']);
-		} else if (!php.empty($itinerary = AliasParser.parseCmdAsItinerary($cmd, this.stateful))) {
+		} else if (!php.empty($itinerary = await AliasParser.parseCmdAsItinerary($cmd, this.stateful))) {
 			$result = await (new RebuildInPccAction()).setSession(this.stateful)
 				.fallbackToAk(true).bookItinerary($itinerary);
 			$result['calledCommands'] = this.stateful.flushCalledCommands();
