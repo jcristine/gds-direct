@@ -20,25 +20,29 @@ const TicketDesignators = require('../Repositories/TicketDesignators.js');
 const LocationGeographyProvider = require('../Transpiled/Rbs/DataProviders/LocationGeographyProvider.js');
 const GdsDirect = require("../Transpiled/Rbs/GdsDirect/GdsDirect");
 const ImportPqGalileoAction = require('../Transpiled/Rbs/GdsDirect/Actions/Galileo/ImportPqGalileoAction.js');
+const ApolloPnr = require("../Transpiled/Rbs/TravelDs/ApolloPnr");
+const SabrePnr = require("../Transpiled/Rbs/TravelDs/SabrePnr");
+const AmadeusPnr = require("../Transpiled/Rbs/TravelDs/AmadeusPnr");
+const GalileoPnr = require("../Transpiled/Rbs/TravelDs/GalileoPnr");
 
 let ImportPq = async ({stateful, leadData, fetchOptionalFields = true}) => {
 	let gds = stateful.gds;
 	let agentId = stateful.getAgent().getId();
 	let geo = new LocationGeographyProvider();
 
-	let getItinerary = async () => {
+	let getPnr = async () => {
 		if (gds === 'apollo') {
 			let pnrDump = (await fetchAll('*R', stateful)).output;
-			return ApoPnrParser.parse(pnrDump).itineraryData;
+			return ApolloPnr.makeFromDump(pnrDump);
 		} else if (gds === 'sabre') {
 			let pnrDump = (await stateful.runCmd('*R')).output;
-			return SabPnrParser.parse(pnrDump).parsedData.itinerary;
+			return SabrePnr.makeFromDump(pnrDump);
 		} else if (gds === 'amadeus') {
 			let pnrDump = (await fetchAllRt('RT', stateful)).output;
-			return AmaPnrParser.parse(pnrDump).parsed.itinerary;
+			return AmadeusPnr.makeFromDump(pnrDump);
 		} else if (gds === 'galileo') {
 			let pnrDump = (await fetchAll('*R', stateful)).output;
-			return GalPnrParser.parse(pnrDump).itineraryData;
+			return GalileoPnr.makeFromDump(pnrDump);
 		} else {
 			return NotImplemented('Unsupported GDS ' + gds + ' for getItinerary()');
 		}
@@ -55,23 +59,28 @@ let ImportPq = async ({stateful, leadData, fetchOptionalFields = true}) => {
 		let areaState = full.areas[full.area] || {};
 		let pricingCmd = areaState.pricing_cmd;
 		let pcc = areaState.pcc;
-		let itinerary = await getItinerary(stateful);
+		let pnr = await getPnr(stateful);
 		let gdsData = await RbsClient.startSession({gds, agentId});
 		let rbsSessionId = gdsData.rbsSessionId;
 		return Promise.resolve()
-			.then(() => RbsClient({gds}).rebuildItinerary({
-				sessionId: rbsSessionId,
-				pcc: pcc,
-				itinerary: itinerary.map(seg => ({
-					...seg,
-					segmentStatus:
-						gds === 'galileo' ? 'AK' :
-							gds === 'sabre' && seg.airline === 'AA' ? 'NN' :
-								'GK',
-					departureDate: DateTime.decodeRelativeDateInFuture(
-						seg.departureDate.parsed, new Date().toISOString()
-					),
-				})),
+			.then(() => pnr.getRecordLocator()
+				? RbsClient({
+					gds, language: 'apollo',
+					command: '*' + pnr.getRecordLocator(),
+				}).runInputCmd({rbsSessionId})
+				: RbsClient({gds}).rebuildItinerary({
+					sessionId: rbsSessionId,
+					pcc: pcc,
+					itinerary: pnr.getItinerary().map(seg => ({
+						...seg,
+						segmentStatus:
+							gds === 'galileo' ? 'AK' :
+								gds === 'sabre' && seg.airline === 'AA' ? 'NN' :
+									'GK',
+						departureDate: DateTime.decodeRelativeDateInFuture(
+							seg.departureDate.parsed, new Date().toISOString()
+						),
+					})),
 			}))
 			.then(rebuilt => RbsClient({gds, command: pricingCmd}).runInputCmd({rbsSessionId}))
 			.then(priced => {

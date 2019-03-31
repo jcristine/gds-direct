@@ -114,7 +114,9 @@ class CmsAmadeusTerminal {
 		$parsed = this.parseCommand($cmd);
 		if ($parsed['type'] === 'priceItinerary') {
 			$flatMods = Fp.flatten($parsed['data']['pricingStores']);
-			$discounts = Fp.flatten(php.array_column(php.array_column($flatMods, 'parsed'), 'ptcs'));
+			$discounts = $flatMods
+				.map(m => ((m.parsed || {}).ptcs || []))
+				.reduce((a,b) => a.concat(b), []);
 			return {'ptcs': $discounts};
 		} else {
 			return {'errors': ['Failed to parse pricing command - ' + $cmd]};
