@@ -235,6 +235,11 @@ php.rtrim = (str, chars = ' \n\t') => {
 };
 php.trim = (value, chars = ' \n\t') => php.ltrim(php.rtrim(value, chars), chars);
 php.strval = strval;
+php.strcmp = (a,b) => {
+	a = strval(a);
+	b = strval(b);
+	return a > b ? 1 : a < b ? -1 : 0;
+};
 php.floatval = num => +num;
 php.strtoupper = (value) => strval(value).toUpperCase();
 php.strtolower = (value) => strval(value).toLowerCase();
@@ -425,7 +430,18 @@ php.preg_match_all = (pattern, str, dest, bitMask) => {
 
 php.array_keys = (obj) => Object.keys(obj);
 php.array_values = (obj) => Object.values(obj);
-php.in_array = (value, arr) => Object.values(arr).indexOf(value) > -1;
+php.in_array = (value, arr) => {
+	if ((value + '').match(/^\d+$/)) {
+		for (let el of Object.values(arr)) {
+			if (+el === +value) {
+				return true;
+			}
+		}
+		return false;
+	} else {
+		return Object.values(arr).indexOf(value) > -1;
+	}
+};
 php.array_search = (needle, haystack, strict = false) => {
 	for (let [k,v] of Object.entries(haystack)) {
 		if (php.equals(v, needle, strict)) {
@@ -492,6 +508,10 @@ php.array_flip = (obj) => {
 		newObj[val] = key;
 	}
 	return newObj;
+};
+php.usort = (arr, compare) => {
+	compare = normFunc(compare);
+	arr.sort(compare);
 };
 php.asort = (obj, flags = undefined) => {
 	if (flags !== undefined) {
