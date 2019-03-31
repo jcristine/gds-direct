@@ -117,7 +117,7 @@ class AmadeusUtils {
 	 * probably also works in >RT; and other commands that use ")" and "/$" to separate pages
 	 */
 	static async fetchAllRt(cmd, session) {
-		let output = await fetchAllWith(session.runCmd, cmd,
+		let output = await fetchAllWith(cmd => session.runCmd(cmd), cmd,
 			'MDR', (...args) => parseRtPager(...args));
 		return {cmd, output};
 	}
@@ -128,7 +128,7 @@ class AmadeusUtils {
 	 */
 	static async fetchAllFx(cmd, session) {
 
-		let output = await fetchAllWith(session.runCmd, cmd,
+		let output = await fetchAllWith(cmd => session.runCmd(cmd), cmd,
 			'MD', (...args) => parseFxPager(...args));
 		return {cmd, output};
 	}
@@ -138,7 +138,7 @@ class AmadeusUtils {
 	 * each page starts with "/$" ends with a " MD" or "*** END OF DISPLAY ***"
 	 */
 	static async fetchAllHe(cmd, session) {
-		let output = await fetchAllWith(session.runCmd, cmd,
+		let output = await fetchAllWith(cmd => session.runCmd(cmd), cmd,
 			'MD', (...args) => parseHelpPager(...args));
 		return {cmd, output};
 	}
