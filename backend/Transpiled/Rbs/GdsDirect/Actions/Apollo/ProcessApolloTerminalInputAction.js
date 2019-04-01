@@ -1385,6 +1385,9 @@ class ProcessApolloTerminalInputAction {
 			return {calledCommands: [{cmd, output}], errors: ['Invalid HB:FEX response']};
 		}
 		let [_, staticPart, currency] = match;
+		let defaults = {
+			originalTicketStar: '*',
+		};
 		let result = {
 			calledCommands: [{
 				cmd: cmd,
@@ -1394,7 +1397,7 @@ class ProcessApolloTerminalInputAction {
 				type: 'displayExchangeMask',
 				data: {
 					fields: ExchangeApolloTicket.FIELDS.map(f => ({
-						key: f, value: '', enabled: true,
+						key: f, value: defaults[f] || '', enabled: true,
 					})),
 					currency: currency,
 					maskOutput: output,
