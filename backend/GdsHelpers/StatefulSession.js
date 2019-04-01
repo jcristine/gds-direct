@@ -105,8 +105,11 @@ let StatefulSession = ({
 		getSessionData: getSessionData,
 		getLeadId: () => session.context.travelRequestId,
 		getGdRemarkData: async () => {
-			if (!leadData) {
-				leadData = await CmsClient.getLeadData(session.context.travelRequestId);
+			let leadId = session.context.travelRequestId;
+			// TODO: separate parameter!
+			let isScheduleChangeId = leadId && leadId < 1000000;
+			if (!leadData && leadId && !isScheduleChangeId) {
+				leadData = await CmsClient.getLeadData(leadId);
 				if (leadData.leadOwnerId == emcUser.id) {
 					leadData.leadOwnerLogin = emcUser.displayName;
 				} else if (leadData.leadOwnerId) {
