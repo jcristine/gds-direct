@@ -90,7 +90,7 @@ class CommonDataHelper {
 			'sabre': 71 - php.strlen('5'),
 			'amadeus': 126 - php.strlen('RM'),
 		}[stateful.gds];
-		$leadPart = php.empty($leadData['leadId']) ? '' : (
+		$leadPart = php.empty($leadData) ? '' : (
 			($agent.canSavePnrWithoutLead() ? '' : /FOR {leadAgent}/ + ($leadData['leadOwnerId'] || '')) +
 			'/LEAD-' + $leadData['leadId']
 		);
@@ -109,7 +109,7 @@ class CommonDataHelper {
 			}));
 			return php.strtoupper(StringUtil.format($pattern, {
 				'pnrAgent': php.mb_substr($agent.getLogin(), 0, php.floor(($maxLen - $minLen) / 2)),
-				'leadAgent': php.mb_substr($leadData.leadOwnerLogin, 0, php.floor(($maxLen - $minLen) / 2)),
+				'leadAgent': php.mb_substr(!$leadData ? '' : $leadData.leadOwnerLogin, 0, php.floor(($maxLen - $minLen) / 2)),
 			}));
 		}
 		throw new Error('Not found agent');
