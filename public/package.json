@@ -8,8 +8,7 @@
   "license": "BSD-2-Clause",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "watch": "webpack --progress --watch --display-modules --sort-modules-by size",
-    "vendor": "webpack --config vendor.webpack.config.js --progress --display-modules --sort-modules-by size"
+    "watch": "webpack --mode development --progress --watch --display-modules --sort-modules-by size"
   },
   "devDependencies": {
     "babel-core": "^6.26.0",
