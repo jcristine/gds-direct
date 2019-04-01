@@ -21,6 +21,9 @@ import {post} from "../helpers/requests";
 import {McoForm} from "../components/popovers/maskForms/mcoForm";
 import {ExchangeForm} from "../components/popovers/maskForms/exchangeForm";
 
+let Component = require('../modules/component.es6').default;
+let Cmp = (...args) => new Component(...args);
+
 export default class TerminalPlugin
 {
 	constructor( params )
@@ -225,6 +228,13 @@ export default class TerminalPlugin
 		return command;
 	}
 
+	_withSpinner(action) {
+		this.spinner.start();
+		return Promise.resolve()
+			.then(() => action())
+			.finally(() => this.spinner.end());
+	}
+
 	_displayMcoMask(data)
 	{
 		let formCmp = McoForm({data, onsubmit: (data) => {
@@ -232,16 +242,11 @@ export default class TerminalPlugin
 				gds: this.gdsName,
 				fields: data.fields,
 			};
-			this.spinner.start();
-			return post('terminal/makeMco', params)
+			return this._withSpinner(() => post('terminal/makeMco', params)
 				.then(resp => {
-					this.spinner.end();
 					this.parseBackEnd(resp, 'HHMCU');
 					return {canClosePopup: resp && resp.output};
-				}).catch(exc => {
-					this.spinner.end();
-					return {canClosePopup: false};
-				});
+				}));
 		}});
 		this.context.appendChild(formCmp.context);
 		let inp = formCmp.context.querySelector('input:not([disabled]):not([type="hidden"])');
@@ -254,22 +259,72 @@ export default class TerminalPlugin
 
 	_displayExchangeMask(data)
 	{
-		let formCmp = ExchangeForm({data, onsubmit: (data) => {
+		let formCmp = ExchangeForm({data, onsubmit: (formResult) => {
 			let params = {
 				gds: this.gdsName,
-				fields: data.fields,
+				fields: formResult.fields,
+				maskOutput: data.maskOutput,
 			};
-			this.spinner.start();
-			return post('terminal/exchangeTicket', params)
+			return this._withSpinner(() => post('terminal/exchangeTicket', params)
 				.then(resp => {
-					this.spinner.end();
-					this.parseBackEnd(resp, 'HB:FEX');
+					this.parseBackEnd(resp, '$EX...');
 					return {canClosePopup: resp && resp.output};
-				}).catch(exc => {
-					this.spinner.end();
-					return {canClosePopup: false};
-				});
+				}));
 		}});
+		this.context.appendChild(formCmp.context);
+		let inp = formCmp.context.querySelector('input:not([disabled]):not([type="hidden"])');
+		if (inp) {
+			inp.focus();
+		}
+		this.terminal.scroll_to_bottom();
+		this.outputLiner.removeEmpty();
+	}
+
+	_displayExchangeFareDifferenceMask(data)
+	{
+		// ">$MR       TOTAL ADD COLLECT   USD   783.30",
+		// " /F;..............................................",
+		let fopInputCmp = Cmp('input', {type: 'text', name: 'formOfPayment'});
+		let formCmp = Cmp('form.mask-form').attach([
+			Cmp('br'),
+			Cmp('div').attach([
+				Cmp('div').attach([
+					Cmp('span', {innerHTML: '>$MR       TOTAL ADD COLLECT   '}),
+					Cmp('span', {innerHTML: data.currency}),
+					Cmp('span', {innerHTML: data.amount}),
+				]),
+				Cmp('div').attach([
+					Cmp('span', {innerHTML: ' /F'}),
+					fopInputCmp,
+				]),
+				Cmp('div.float-right').attach([
+					Cmp('button[Submit]'),
+					Cmp('button[Cancel]', {type: 'button', onclick: () => formCmp.context.remove()}),
+				]),
+			]),
+			Cmp('br', {clear: 'all'}),
+		]);
+		for (let field of data.fields) {
+			[...formCmp.context.querySelectorAll('input[name="' + field.key + '"]')]
+				.forEach(inp => inp.value = field.value);
+		}
+		formCmp.context.onsubmit = () => {
+			let result = {
+				gds: this.gdsName,
+				fields: [{
+					key: 'formOfPayment', value: fopInputCmp.context.value,
+				}],
+				maskOutput: data.maskOutput,
+			};
+			this._withSpinner(() => post('terminal/confirmExchangeFareDifference', result)
+				.then(resp => {
+					this.parseBackEnd(resp, '$MR...');
+					if (resp && resp.output) {
+						formCmp.context.remove();
+					}
+				}));
+			return false;
+		};
 		this.context.appendChild(formCmp.context);
 		let inp = formCmp.context.querySelector('input:not([disabled]):not([type="hidden"])');
 		if (inp) {
@@ -323,6 +378,8 @@ export default class TerminalPlugin
 				this._displayMcoMask(action.data);
 			} else if (action.type === 'displayExchangeMask') {
 				this._displayExchangeMask(action.data);
+			} else if (action.type === 'displayExchangeFareDifferenceMask') {
+				this._displayExchangeFareDifferenceMask(action.data);
 			}
 		}
 	}

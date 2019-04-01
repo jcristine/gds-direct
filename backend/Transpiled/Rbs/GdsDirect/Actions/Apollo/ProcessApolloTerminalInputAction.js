@@ -1393,7 +1393,7 @@ class ProcessApolloTerminalInputAction {
 			actions: [{
 				type: 'displayExchangeMask',
 				data: {
-					fields: ExchangeApolloTicket.fields.map(f => ({
+					fields: ExchangeApolloTicket.FIELDS.map(f => ({
 						key: f, value: '', enabled: true,
 					})),
 					currency: currency,

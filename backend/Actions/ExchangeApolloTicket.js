@@ -1,4 +1,5 @@
 const AbstractMaskParser = require("../Transpiled/Gds/Parsers/Apollo/AbstractMaskParser");
+const {fetchAll} = require('../GdsHelpers/TravelportUtils.js');
 
 const baseMaskExample = [
 	"$EX NAME ARTURS/KLESUNS                     PSGR  1/ 1         ",
@@ -16,7 +17,7 @@ const baseMaskExample = [
 	"PENALTY USD;............  COMM ON PENALTY;...........",
 ];
 
-const fields = [
+const FIELDS = [
 	'exchangedTicketNumber', 'exchangedTicketExtension',
 	'ticketNumber1', 'couponNumber1', 'ticketNumber2', 'couponNumber2',
 	'commission', 'originalFormOfPayment', 'evenIndicator',
@@ -29,6 +30,7 @@ const fields = [
 ];
 
 let parseOutput = (output) => {
+	let match;
 	if (output.match(/ELECTRONIC MESSAGE DELIVERED/)) {
 		// "ELECTRONIC MESSAGE DELIVERED",
 		// "TKT ISSUED TTL FARE  USD   983.30",
@@ -39,11 +41,15 @@ let parseOutput = (output) => {
 		// "><"
 		// could parse the amount at some point I guess
 		return {status: 'success'};
-	} else if (output.match(/TOTAL ADD COLLECT/)) {
+	} else if (match = output.match(/TOTAL ADD COLLECT\s+([A-Z]{3})\s*(\d*\.?\d+)/)) {
 		// ">$MR       TOTAL ADD COLLECT   USD   783.30",
 		// " /F;..............................................",
-		// "><"
-		return {status: 'fareDifference'};
+		let [currency, amount] = match;
+		return {
+			status: 'fareDifference',
+			currency: currency,
+			amount: amount,
+		};
 	} else {
 		return {status: 'error'};
 	}
@@ -53,16 +59,17 @@ let parseOutput = (output) => {
  * performs HB:FEX mask action which issues a new ticket from existing ticket or MCO
  * used to partially or fully pay for a new ticket with the old one
  */
-let ExchangeApolloTicket = async ({maskOutput, values, session}) => {
+let ExchangeApolloTicket = async ({maskOutput, values, session, maskFields = null}) => {
 	let baseMask = AbstractMaskParser.normalizeMask(maskOutput);
+	let fields = maskFields || FIELDS;
 	let cmd = await AbstractMaskParser.makeCmd({baseMask, fields, values});
-	let cmdRec = await session.runCmd(cmd);
+	let cmdRec = await fetchAll(cmd, session);
 	let result = parseOutput(cmdRec.output);
 	result.output = cmdRec.output;
 
 	return result;
 };
 
-ExchangeApolloTicket.fields = fields;
+ExchangeApolloTicket.FIELDS = FIELDS;
 
 module.exports = ExchangeApolloTicket;

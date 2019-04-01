@@ -23,6 +23,7 @@ const GdsDirect = require("../Transpiled/Rbs/GdsDirect/GdsDirect");
 const Misc = require("../Utils/Misc");
 const allWrap = require("../Utils/Misc").allWrap;
 const {getConfig} = require('../Config.js');
+const ExchangeApolloTicket = require('../Actions/ExchangeApolloTicket.js');
 
 let startByGds = async (gds) => {
 	let tuples = [
@@ -255,6 +256,71 @@ exports.makeMco = async ({rqBody, session, emcUser}) => {
 				.join('\n'),
 			calledCommands: mcoResult.calledCommands,
 		});
+	}
+};
+
+exports.exchangeTicket = async ({rqBody, session, emcUser}) => {
+	let maskOutput = rqBody.maskOutput;
+	let values = {};
+	for (let {key, value} of rqBody.fields) {
+		values[key] = value.toUpperCase();
+	}
+	if (session.context.gds !== 'apollo') {
+		return NotImplemented('Unsupported GDS for exchangeTicket - ' + session.context.gds);
+	}
+	let stateful = await StatefulSession.makeFromDb({session, emcUser});
+	let result = await ExchangeApolloTicket({
+		maskOutput, values, session: stateful,
+	});
+	if (result.status === 'success') {
+		return Promise.resolve({
+			output: result.output,
+			calledCommands: [{cmd: '$EX...', output: result.output}],
+		});
+	} else if (result.status === 'fareDifference') {
+		// ">$MR       TOTAL ADD COLLECT   USD   783.30",
+		// " /F;..............................................",
+		return Promise.resolve({
+			output: result.output,
+			calledCommands: [{cmd: '$EX...', output: 'SEE FARE DIFFERENCE FORM BELOW'}],
+			actions: [{
+				type: 'displayExchangeFareDifferenceMask',
+				data: {
+					fields: [{
+						key: 'formOfPayment', value: '', enabled: true,
+					}],
+					currency: result.currency,
+					amount: result.amount,
+					maskOutput: result.output,
+				},
+			}],
+		});
+	} else {
+		return UnprocessableEntity('GDS returned ' + result.status + ' - \n' + result.output);
+	}
+};
+
+exports.confirmExchangeFareDifference = async ({rqBody, session, emcUser}) => {
+	let maskOutput = rqBody.maskOutput;
+	let values = {};
+	for (let {key, value} of rqBody.fields) {
+		values[key] = value.toUpperCase();
+	}
+	if (session.context.gds !== 'apollo') {
+		return NotImplemented('Unsupported GDS for exchangeTicket - ' + session.context.gds);
+	}
+	let stateful = await StatefulSession.makeFromDb({session, emcUser});
+	let result = await ExchangeApolloTicket({
+		maskOutput, values, session: stateful,
+		maskFields: rqBody.fields.map(f => f.key),
+	});
+	if (result.status === 'success') {
+		return Promise.resolve({
+			output: result.output,
+			calledCommands: [{cmd: '$EX...', output: result.output}],
+		});
+	} else {
+		return UnprocessableEntity('GDS returned ' + result.status + ' - ' + result.output);
 	}
 };
 

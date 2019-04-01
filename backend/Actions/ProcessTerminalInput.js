@@ -257,7 +257,7 @@ module.exports = async ({session, rqBody, emcUser}) => {
 		}));
 
 	let whenCmsResult = whenRbsResult.then(rbsResult => {
-		let termSvc = new TerminalService(gds, emcUser.id, rqBody.travelRequestId);
+		let termSvc = new TerminalService(gds);
 		return termSvc.addHighlighting(rqBody.command, rqBody.language || rqBody.gds, rbsResult);
 	});
 

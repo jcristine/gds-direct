@@ -33,7 +33,7 @@ let dataToDom = (data) => {
 		return fld;
 	};
 
-	let mcoForm = Cmp('form.mask-form exchange-mask').attach([
+	let formCmp = Cmp('form.mask-form exchange-mask').attach([
 		Cmp('br'),
 		Cmp('div').attach([
 			Cmp('div.align-caption').attach([
@@ -101,12 +101,12 @@ let dataToDom = (data) => {
 			]),
 			Cmp('div.float-right').attach([
 				Cmp('button[Submit]'),
-				Cmp('button[Cancel]', {type: 'button', onclick: () => mcoForm.context.remove()}),
+				Cmp('button[Cancel]', {type: 'button', onclick: () => formCmp.context.remove()}),
 			]),
 		]),
 		Cmp('br', {clear: 'all'}),
 	]);
-	return mcoForm;
+	return formCmp;
 };
 let domToData = (mcoForm) => {
 	let fields = [...mcoForm.context.querySelectorAll('input, select')]
@@ -131,20 +131,17 @@ let domToData = (mcoForm) => {
 //   'ORIG ISS;...... ORIG DATE;....... ORIG IATA NBR;.........       ',
 //   'ORIG TKT;..............-;...  ORIG INV NBR;.........            ',
 export let ExchangeForm = ({data, onsubmit = null}) => {
-	let mcoForm = dataToDom(data);
-	mcoForm.context.onsubmit = () => {
+	let formCmp = dataToDom(data);
+	formCmp.context.onsubmit = () => {
 		if (onsubmit) {
-			let result = {
-				...domToData(mcoForm),
-				maskOutput: data.maskOutput,
-			};
+			let result = domToData(formCmp);
 			onsubmit(result).then(({canClosePopup}) => {
 				if (canClosePopup) {
-					mcoForm.context.remove();
+					formCmp.context.remove();
 				}
 			});
 		}
 		return false;
 	};
-	return mcoForm;
+	return formCmp;
 };

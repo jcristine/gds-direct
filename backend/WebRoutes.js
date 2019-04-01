@@ -87,6 +87,8 @@ app.post('/gdsDirect/keepAlive', withGdsSession(GdsSessionController.keepAliveCu
 app.get('/terminal/getPqItinerary', withGdsSession(GdsSessionController.getPqItinerary));
 app.get('/terminal/importPq', withGdsSession(GdsSessionController.importPq));
 app.post('/terminal/makeMco', withGdsSession(GdsSessionController.makeMco));
+app.post('/terminal/exchangeTicket', withGdsSession(GdsSessionController.exchangeTicket));
+app.post('/terminal/confirmExchangeFareDifference', withGdsSession(GdsSessionController.confirmExchangeFareDifference));
 app.get('/terminal/lastCommands', withAuth(GdsSessionController.getLastCommands));
 app.get('/terminal/clearBuffer', withAuth(GdsSessionController.clearBuffer));
 //app.use('/admin/updateHighlightRules', express.bodyParser({limit: '10mb'}));

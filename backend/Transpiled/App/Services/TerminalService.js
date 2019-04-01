@@ -36,10 +36,8 @@ let hrtimeToDecimal = (hrtime) => {
 
 class TerminalService
 {
-	constructor(gds, agentId, travelRequestId) {
+	constructor(gds) {
 		this.gds = gds;
-		this.agentId = agentId;
-		this.travelRequestId = travelRequestId;
 	}
 
 	/**
