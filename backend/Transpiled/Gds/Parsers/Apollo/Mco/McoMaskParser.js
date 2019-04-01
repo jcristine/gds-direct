@@ -90,12 +90,9 @@ class McoMaskParser extends AbstractMaskParser
             'validatingCarrier', 'issueNow',
         ];
         $dump = StringUtil.padLines($dump, 63, ' ');
-        if (!this.doesDumpMatchMask($dump, $mask)) {
-            return {'error': 'Dump doesn\\\'t match MCO mask: '+php.PHP_EOL+
-                $dump+php.PHP_EOL+
-                '==============================================================='+php.PHP_EOL+
-                $mask
-            };
+        let error = this.checkDumpMatchesMask($dump, $mask);
+        if (error) {
+            return {'error': 'Bad MCO mask output: ' + error + php.PHP_EOL + $dump+php.PHP_EOL};
         }
         return this.transformResult(this.parseMask($mask, $fields, $dump));
     }

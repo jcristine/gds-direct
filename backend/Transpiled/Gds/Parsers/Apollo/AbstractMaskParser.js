@@ -47,16 +47,16 @@ class AbstractMaskParser
         return $result;
     }
 
-    static doesDumpMatchMask($dump, $mask)  {
+    static checkDumpMatchesMask($dump, $mask)  {
         let $i, $dumpCh, $maskCh;
         for ($i = 0; $i < php.mb_strlen($mask); $i++) {
             $dumpCh = php.mb_substr($dump, $i, 1);
             $maskCh = php.mb_substr($mask, $i, 1);
             if ($dumpCh !== $maskCh && $maskCh !== '.') {
-                return false;
+                return 'at: ' + $i + '; found: ' + $dumpCh + '; expected: ' + $maskCh;
             }
         }
-        return true;
+        return null;
     }
 
     /**
