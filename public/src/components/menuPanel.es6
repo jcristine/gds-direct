@@ -88,5 +88,19 @@ export default class MenuPanel extends Component
 					)
 			)
 		}
+
+		let isStandalone = window.location.href.startsWith(window.GdsDirectPlusParams.rootUrl);
+		if (isStandalone) {
+			this.observe(
+				new Component('article').attach([
+					new Component('button.btn btn-primary font-bold[Logout]', {
+						onclick: () => {
+							document.cookie = 'emcSessionId=';
+							window.location.reload();
+						},
+					}),
+				]),
+			);
+		}
 	}
 }
