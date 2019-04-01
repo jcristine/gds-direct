@@ -50,6 +50,11 @@ export default class Session
 
 	_run(cmd)
 	{
+
+		if (cmd === '!DEBUG:THROWERROR') {
+			let obj = undefined;
+			obj.doSomething();
+		}
 		if (!cmd)
 		{
 			return Promise.resolve('');

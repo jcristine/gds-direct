@@ -13,7 +13,7 @@ module.exports = {
 	},
 
 	// turns code minification on
-	mode 	: 'development',
+	mode 	: 'production',
 	devtool	: 'source-map',
 
 	resolve : {
