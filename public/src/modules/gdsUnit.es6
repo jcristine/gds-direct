@@ -83,6 +83,12 @@ export class GDS_UNIT
 		this.set('dimensions', dimensions);
 	}
 
+	/** @return {Terminal[]} */
+	getTerminals()
+	{
+		return Object.values(this.get('terminals'));
+	}
+
 	getActiveTerminal()
 	{
 		return this.get('terminals')[ this.get('curTerminalId') ];

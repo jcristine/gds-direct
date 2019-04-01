@@ -13,14 +13,6 @@ let State =  {
 	menuHidden	: false,
 	keyBindings	: {},
 	gdsAreaSettings : {},
-
-	// action	: ''
-	// canCreatePq	: ''
-	// gdsObjIndex	: ''
-	// theme : '',
-	// terminalThemes : '',
-	// permissions : '',
-	// log : '',
 };
 
 window.GdsDirectPlusState = {

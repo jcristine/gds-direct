@@ -15,6 +15,7 @@ export class GDS
 		});
 	}
 
+	/** @return {GDS_UNIT[]} */
 	getList()
 	{
 		return this.gdsSet;

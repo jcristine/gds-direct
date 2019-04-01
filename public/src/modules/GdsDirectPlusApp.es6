@@ -32,13 +32,9 @@ export default class GdsDirectPlusApp
 
 		htmlRootDom.classList.add('gds-direct-plus-root');
 
-		// should not be needed anymore anywhere actually...
-		let isStandAlone = !travelRequestId;
-
-		this.params 		= {travelRequestId, isStandAlone};
+		this.params 		= {travelRequestId};
 		this.chatContainer	= document.getElementById(chatContainerId || 'chat-plugin-container');
 		this.offset			= OFFSET_DEFAULT; //menu
-		this.pqParser 		= new PqParser(PqPriceModal);
 		this.container 		= new ContainerMain(htmlRootDom);
 
 		const terminalThemes = themeData.terminalThemes;
@@ -47,11 +43,13 @@ export default class GdsDirectPlusApp
 
 		const { keyBindings, gdsAreaSettings }	= this._getGdsDefaultSettings(settings);
 
-		this.Gds 	= new GDS({
+		let gdsSwitch = new GDS({
 			gdsListDb 	: settings.gds,
 			activeName 	: settings['common']['currentGds'] || 'apollo',
 			buffer 		: buffer || {},
 		});
+		this.Gds = gdsSwitch;
+		this.pqParser = new PqParser(PqPriceModal, gdsSwitch);
 
 		connect(this);
 

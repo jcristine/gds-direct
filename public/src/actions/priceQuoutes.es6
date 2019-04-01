@@ -24,7 +24,7 @@ export const HIDE_PQ_QUOTES = () => {
 };
 
 const openPq = (app, pqTravelRequestId) => {
-	app.pqParser.show( app.getGds(), pqTravelRequestId, app.params.isStandAlone )
+	app.pqParser.show( app.getGds(), pqTravelRequestId )
 		.then(() => {
 			showPq({menuHidden: true}, 0);
 			getStore().app.moveChatContainer(560);

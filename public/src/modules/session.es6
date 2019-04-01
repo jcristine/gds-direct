@@ -1,10 +1,6 @@
 import {get, post} from "../helpers/requests";
 import {notify} from "../helpers/debug";
 
-let beforeStack	= [];
-let stack		= [];
-let promise 	= '';
-
 let lastUsedAt = window.performance.now();
 let callInProgress = false;
 let closed = false;
@@ -32,6 +28,7 @@ export default class Session
 {
 	constructor( params )
 	{
+		this.lastPromise = Promise.resolve();
 		this.settings = params;
 		let gds = params.gds;
 		let pingInterval = ['apollo', 'galileo'].includes(gds) ? 60 * 1000 : 10 * 60 * 1000;
@@ -69,37 +66,23 @@ export default class Session
 			});
 	}
 
-	_runNext()
-	{
-		if (!promise)
-		{
-			const nextRun = stack.shift();
-
-			if (nextRun)
-			{
-				promise = nextRun();
-			}
-		}
-	}
-
-	_makePromise( resolve )
-	{
-		return () => {
-			return this
-				._run( beforeStack.shift()() )
-				.then(resolve) //output result
-				.then(() => promise = '')
-				.then(() => this._runNext());
-		};
-	}
-
 	perform( beforeFn )
 	{
-		beforeStack.push( beforeFn );
+		// make sure just one command is active at a time
+		this.lastPromise = this.lastPromise
+			.catch(exc => null)
+			.then(() => beforeFn())
+			.then(cmd => this._run(cmd));
+		return this.lastPromise;
+	}
 
-		return new Promise( resolve => {
-			stack.push( this._makePromise(resolve) );
-			this._runNext();
-		});
+	/**
+	 * do not invoke next command before `promise` is done - for
+	 * importPq and other non-command actions that lock session
+	 */
+	waitFor(promise)
+	{
+		this.lastPromise = this.lastPromise
+			.finally(() => promise);
 	}
 }
