@@ -63,4 +63,6 @@ let ExchangeApolloTicket = async ({maskOutput, values, session}) => {
 	return result;
 };
 
+ExchangeApolloTicket.fields = fields;
+
 module.exports = ExchangeApolloTicket;

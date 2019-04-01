@@ -40,6 +40,7 @@ const SessionStateProcessor = require("../../SessionStateProcessor/SessionStateP
 const RetrieveApolloTicketsAction = require('../../../../Rbs/Process/Apollo/ImportPnr/Actions/RetrieveApolloTicketsAction.js');
 
 let php = require('../../../../php.js');
+const ExchangeApolloTicket = require("../../../../../Actions/ExchangeApolloTicket");
 
 class ProcessApolloTerminalInputAction {
 	useXml($flag) {
@@ -1348,7 +1349,7 @@ class ProcessApolloTerminalInputAction {
 			[$key, $value, $enabled] = $field;
 			return {'key': $key, 'value': $value, 'enabled': $enabled};
 		}, $mcoParams);
-		$calledCommands = [{'cmd': 'HHMCO', 'output': '', 'tabCommands': [], 'clearScreen': true}];
+		$calledCommands = [{'cmd': 'HHMCO', 'output': 'SEE MCO FORM BELOW', 'tabCommands': [], 'clearScreen': true}];
 		$userMessages = [];
 		$result = {
 			'calledCommands': $calledCommands, 'userMessages': $userMessages,
@@ -1366,6 +1367,44 @@ class ProcessApolloTerminalInputAction {
 			$result = Misc.maskCcNumbers($result);
 		}
 		return $result;
+	}
+
+	async prepareHbFexMask(storeNumber, ticketNumber) {
+		let agent = this.stateful.getAgent();
+		if (!agent.canIssueTickets()) {
+			return {'errors': ['You have no ticketing rights']};
+		}
+		let pnr = await this.getCurrentPnr();
+		if (!pnr.getRecordLocator()) {
+			return {'errors': ['Must be in a PNR']};
+		}
+		let cmd = 'HB' + storeNumber + ':FEX' + (ticketNumber || '');
+		let output = (await this.runCmd(cmd)).output;
+		let match = output.match(/^(>\$EX NAME [\s\S]+?)\n\s*\n[\s\S]+TTL VALUE OF EX TKTS ([A-Z]{3})/);
+		if (!match) {
+			return {calledCommands: [{cmd, output}], errors: ['Invalid HB:FEX response']};
+		}
+		let [_, staticPart, currency] = match;
+		let result = {
+			calledCommands: [{
+				cmd: cmd,
+				output: staticPart,
+			}],
+			actions: [{
+				type: 'displayExchangeMask',
+				data: {
+					fields: ExchangeApolloTicket.fields.map(f => ({
+						key: f, value: '', enabled: true,
+					})),
+					currency: currency,
+					maskOutput: output,
+				},
+			}],
+		};
+		if (!agent.canSeeCcNumbers()) {
+			result = Misc.maskCcNumbers(result);
+		}
+		return result;
 	}
 
 	async processRequestedCommand($cmd) {
@@ -1388,6 +1427,9 @@ class ProcessApolloTerminalInputAction {
 			return this.processSavePnr();
 		} else if (php.preg_match(/^HHMCO$/, $cmd, $matches = [])) {
 			return this.prepareMcoMask();
+		} else if (php.preg_match(/^HB(\d*):FEX\s*(\d{13}|)$/, $cmd, $matches = [])) {
+			let [_, storeNumber, ticketNumber] = $matches;
+			return this.prepareHbFexMask(storeNumber || 1, ticketNumber || null);
 		} else if (php.preg_match(/^SORT$/, $cmd, $matches = [])) {
 			return this.processSortItinerary();
 		} else if ($alias['type'] === 'rebookInPcc') {
