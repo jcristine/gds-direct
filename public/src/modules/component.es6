@@ -24,7 +24,11 @@ export default class Component
 {
 	constructor(selector, params)
 	{
-		this.context 	= Dom( selector, params);
+		if (typeof selector === 'string') {
+			this.context 	= Dom( selector, params);
+		} else {
+			this.context 	= selector.context;
+		}
 		this.observers 	= [];
 	}
 

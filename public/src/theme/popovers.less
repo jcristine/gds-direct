@@ -265,17 +265,46 @@
 	}
 }
 
+.mask-form {
+  background-color: #747198;
+  font-weight: normal;
+  color: #2f2f2f;
+  input[disabled] {
+      color: #fff;
+      background-color: grey;
+  }
+  .enabled label {
+      color: white;
+  }
+  > div {
+      max-width: 750px;
+      padding-right: 16px;
+  }
+  label {
+      text-align: right;
+      margin-left: 6px;
+      margin-right: 6px;
+  }
+  .float-right {
+      float: right;
+  }
+  .align-caption > div {
+      margin-top: 0px;
+      margin-bottom: 4px;
+      white-space: nowrap;
+      clear: both;
+  }
+}
+.exchange-mask {
+  .align-caption > div {
+    display: flex;
+    justify-content: space-between;
+  }
+  > div {
+      max-width: 560px;
+  }
+}
 .mco-mask {
-    background-color: #747198;
-    font-weight: normal;
-    color: #2f2f2f;
-    input[disabled] {
-        color: #fff;
-        background-color: grey;
-    }
-    .enabled label {
-        color: white;
-    }
     .cmd-line {
         color: yellow;
         display: flex;
@@ -285,22 +314,9 @@
         text-align: center;
     }
 
-    > div {
-        max-width: 750px;
-        padding-right: 16px;
-    }
     span[data-field-name="at"],
     span[data-field-name="ticketNumber"],
-    span[data-field-name="issueNow"],
-    .float-right{
-        float: right;
-    }
-    label {
-        text-align: right;
-        margin-left: 6px;
-        margin-right: 6px;
-    }
-    .align-caption > div {
+    span[data-field-name="issueNow"] {
         margin-top: 0px;
         margin-bottom: 4px;
         white-space: nowrap;

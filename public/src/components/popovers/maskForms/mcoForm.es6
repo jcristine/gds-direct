@@ -1,5 +1,5 @@
 
-let Component = require('../../modules/component.es6').default;
+let Component = require('../../../modules/component.es6').default;
 
 /** '2020-07-01' -> '07/20' */
 let formatExpirationDate = (full) => {
@@ -64,32 +64,32 @@ let dataToDom = (data) => {
 	let small = 6;
 	let tiny = 3;
 	// I would be glad to move this to an html file...
-	let mcoForm = mkCmp('form.mco-mask').attach([
+	let mcoForm = mkCmp('form.mask-form mco-mask').attach([
 		mkCmp('br'),
 		mkCmp('div').attach([
 			mkCmp('div.align-caption').attach([
-				mkCmp('div.cmd-line').attach([
+				mkCmp('div.cmd-line').attach([ // 'HHMCU..         *** MISC CHARGE ORDER ***                       ',
 					mkCmp('span').attach([mkCmp('label[HHMCU' + (values.mcoNumber || '') + ']')]),
 					mkCmp('span.screen-name').attach([mkCmp('label[*** MISC CHARGE ORDER ***]')]),
 				]),
-				mkCmp('div').attach([
+				mkCmp('div').attach([ // ' PASSENGER NAME;........................................        ',
 					mkFld('PAX NAME', 'passengerName'),
 				]),
-				mkCmp('div').attach([
+				mkCmp('div').attach([ // ' TO;........................................ AT;............... ',
 					mkFld('TO', 'to', normal),
 					mkFld('AT', 'at', normal),
 				]),
-				mkCmp('div').attach([
+				mkCmp('div').attach([ // ' VALID FOR;.................................................... ',
 					mkFld('VALID FOR', 'validFor'),
 				]),
-				mkCmp('div').attach([
+				mkCmp('div').attach([ // ' TOUR CODE;............... RELATED TKT NBR;.............        ',
 					mkFld('TOUR CODE', 'tourCode', normal),
 					mkFld('RELATED TKT NBR', 'ticketNumber', normal),
 				]),
-				mkCmp('div').attach([
+				mkCmp('div').attach([ // ' FOP;.......................................................... ',
 					mkFld('FOP', 'formOfPayment'),
 				]),
-				mkCmp('div').attach([
+				mkCmp('div').attach([ // ' EXP DATE;.... APVL CODE;...... COMM;........ TAX;........-;..  ',
 					mkFld('EXP DATE', 'expirationDate', normal),
 					mkFld('APVL CODE', 'approvalCode', small),
 					mkFld('COMM', 'commission', small),
@@ -99,7 +99,7 @@ let dataToDom = (data) => {
 						mkFld('-', 'taxCode', tiny),
 					]),
 				]),
-				mkCmp('div').attach([
+				mkCmp('div').attach([ // ' AMOUNT;........-;... EQUIV ;........-;... BSR;..........       ',
 					mkFld('AMOUNT', 'amount', small),
 					mkFld('-', 'amountCurrency', small),
 
@@ -109,17 +109,17 @@ let dataToDom = (data) => {
 						mkFld('BSR', 'rateOfExchange', small),
 					]),
 				]),
-				mkCmp('div').attach([
+				mkCmp('div').attach([ // ' END BOX;...................................................... ',
 					mkFld('END BOX', 'endorsementBox'),
 				]),
-				mkCmp('div').attach([
+				mkCmp('div').attach([ // ' REMARK1;..............................................         ',
 					mkFld('REMARK1', 'remark1'),
 				]),
-				mkCmp('div').attach([
+				mkCmp('div').attach([ //  ' REMARK2;...................................................... ',
 					mkFld('REMARK2', 'remark2'),
 				]),
 			]),
-			mkCmp('div').attach([
+			mkCmp('div').attach([ // ' VALIDATING CARRIER;..                  ISSUE NOW;.             ',
 				mkFld('VALIDATING CARRIER', 'validatingCarrier', normal),
 				mkFld('ISSUE NOW', 'issueNow', small),
 			]),

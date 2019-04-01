@@ -18,7 +18,8 @@ import {UPDATE_CUR_GDS} from "../actions/gdsActions";
 // import {debugOutput} from "../helpers/logger";
 import {loggerOutput} from "../helpers/logger";
 import {post} from "../helpers/requests";
-import {McoForm} from "../components/popovers/mcoForm";
+import {McoForm} from "../components/popovers/maskForms/mcoForm";
+import {ExchangeForm} from "../components/popovers/maskForms/exchangeForm";
 
 export default class TerminalPlugin
 {
@@ -226,11 +227,10 @@ export default class TerminalPlugin
 
 	_displayMcoMask(data)
 	{
-		let mcoForm = McoForm({data, onsubmit: (data) => {
+		let formCmp = McoForm({data, onsubmit: (data) => {
 			let params = {
 				gds: this.gdsName,
 				fields: data.fields,
-				useRbs: GdsDirectPlusState.getUseRbs(),
 			};
 			this.spinner.start();
 			return post('terminal/makeMco', params)
@@ -243,12 +243,40 @@ export default class TerminalPlugin
 					return {canClosePopup: false};
 				});
 		}});
-		this.context.appendChild(mcoForm.context);
-		let inp = mcoForm.context.querySelector('input:not([disabled]):not([type="hidden"])');
+		this.context.appendChild(formCmp.context);
+		let inp = formCmp.context.querySelector('input:not([disabled]):not([type="hidden"])');
 		if (inp) {
 			inp.focus();
 		}
 		this.terminal.scroll_to_bottom();
+		this.outputLiner.removeEmpty();
+	}
+
+	_displayExchangeMask(data)
+	{
+		let formCmp = ExchangeForm({data, onsubmit: (data) => {
+			let params = {
+				gds: this.gdsName,
+				fields: data.fields,
+			};
+			this.spinner.start();
+			return post('terminal/exchangeTicket', params)
+				.then(resp => {
+					this.spinner.end();
+					this.parseBackEnd(resp, 'HB:FEX');
+					return {canClosePopup: resp && resp.output};
+				}).catch(exc => {
+					this.spinner.end();
+					return {canClosePopup: false};
+				});
+		}});
+		this.context.appendChild(formCmp.context);
+		let inp = formCmp.context.querySelector('input:not([disabled]):not([type="hidden"])');
+		if (inp) {
+			inp.focus();
+		}
+		this.terminal.scroll_to_bottom();
+		this.outputLiner.removeEmpty();
 	}
 
 	parseBackEnd(data, command)
@@ -293,7 +321,8 @@ export default class TerminalPlugin
 		for (let action of data.actions || []) {
 			if (action.type === 'displayMcoMask') {
 				this._displayMcoMask(action.data);
-				this.outputLiner.removeEmpty();
+			} else if (action.type === 'displayExchangeMask') {
+				this._displayExchangeMask(action.data);
 			}
 		}
 	}
