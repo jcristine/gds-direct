@@ -42,7 +42,7 @@ class ExchangeApolloTicketTest extends require('../Transpiled/Lib/TestCase.js')
 				output: [
 					">$MR       TOTAL ADD COLLECT   USD   783.30",
 					" /F;..............................................",
-					"><",
+					"",
 				].join("\n"),
 			},
 			calledCommands: [
