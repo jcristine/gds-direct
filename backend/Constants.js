@@ -11,4 +11,5 @@ exports.admins = [
 	1092, // Jayden
 	3021, // Louis, Jayden's assistant
 	101395, // aprokopcuks
+	5820, // Rico
 ];
