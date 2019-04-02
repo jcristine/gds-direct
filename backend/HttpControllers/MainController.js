@@ -1,6 +1,6 @@
 
 let Emc = require('../LibWrappers/Emc.js');
-let {Forbidden, NotAuthorized, BadRequest, NotImplemented, LoginTimeOut, InternalServerError, NotFound} = require('../Utils/Rej.js');
+let {NoContent, Forbidden, NotAuthorized, BadRequest, NotImplemented, LoginTimeOut, InternalServerError, NotFound} = require('../Utils/Rej.js');
 let Diag = require('../LibWrappers/Diag.js');
 let FluentLogger = require('../LibWrappers/FluentLogger.js');
 const {getExcData} = require('../Utils/Misc.js');
@@ -12,6 +12,7 @@ const Agents = require("../Repositories/Agents");
 const {keys, withLock} = require("../LibWrappers/Redis");
 
 let isSystemError = (exc) =>
+	!NoContent.matches(exc.httpStatusCode) &&
 	!BadRequest.matches(exc.httpStatusCode) &&
 	!Forbidden.matches(exc.httpStatusCode) &&
 	!LoginTimeOut.matches(exc.httpStatusCode) &&
