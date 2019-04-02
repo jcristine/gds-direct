@@ -47,7 +47,6 @@ class AliasParser
         if (asRebuild) {
             let [_, itineraryId, segmentStatus, seatCount] = asRebuild;
             let cmsData = await CmsClient.getItineraryData({itineraryId});
-            console.debug('\ncmsData\n', JSON.stringify(cmsData));
             let segments = cmsData.result.data.segments.map(s => {
                 let gdsDate = php.strtoupper(php.date('dM', php.strtotime(s.departureDate)));
                 return ({
