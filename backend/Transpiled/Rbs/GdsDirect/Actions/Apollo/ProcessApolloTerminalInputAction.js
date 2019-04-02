@@ -1398,7 +1398,7 @@ class ProcessApolloTerminalInputAction {
 					fields: parsed.fields.map(f => ({
 						key: f.key,
 						value: f.value || defaults[f.key] || '',
-						enabled: true,
+						enabled: !f.value,
 					})),
 					currency: parsed.currency,
 					maskOutput: output,
