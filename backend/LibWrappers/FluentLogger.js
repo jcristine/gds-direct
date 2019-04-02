@@ -11,6 +11,7 @@ try {
 }
 const Config = require('../Config.js');
 const Diag = require('./Diag.js');
+const jsExport = require("../Utils/Misc").jsExport;
 const {getExcData} = require('./../Utils/Misc.js');
 
 process.env.NODE_ENV = Config.production ? 'production' : 'development'; // accept development | stage | production
@@ -19,6 +20,10 @@ const logger = new Logger();
 
 let logit = (msg, id, obj = {}) => {
 	try {
+		if (typeof obj !== 'string') {
+			// it will be print_r-ed otherwise
+			obj = jsExport(obj);
+		}
 		return Promise.resolve(logger.logit(msg, id, obj));
 	} catch (exc) {
 		let ignore = (exc + '').indexOf('Log id is older than 2 day') > -1;

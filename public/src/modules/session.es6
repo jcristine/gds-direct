@@ -13,7 +13,8 @@ let makeParams = (session, callParams) => {
 		gds				: session.settings['gds'],
 		language		: window.GdsDirectPlusState.getLanguage().toLowerCase(),
 	};
-	return Object.assign({}, baseParams, callParams);
+	// callParams twice to make them show first, but override baseParams
+	return Object.assign({}, callParams, baseParams, callParams);
 };
 
 let formatSystemError = (exc) => {

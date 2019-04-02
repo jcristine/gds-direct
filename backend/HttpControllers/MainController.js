@@ -74,10 +74,10 @@ let toHandleHttp = (httpAction) => (req, res) => {
 /** @param {{data: IEmcResult}} emcData */
 let normalizeRqBody = (rqBody, emcData) => {
 	return {
-		emcUser: emcData.data.user,
-		agentId: +emcData.data.user.id,
-		// action-specific fields follow
 		...rqBody,
+		emcUser: emcData.data.user,
+		// should get rid of it eventually, since there is 'emcUser' now
+		agentId: +emcData.data.user.id,
 	};
 };
 
