@@ -3,9 +3,23 @@ import {TableSections} from "./sectionsWrap";
 import {TempTerminal} from "../components/tempTerminal";
 import {THEME_CLASS_NAME} from "../constants";
 
-export default class ContainerMain extends Component
+export let normalizeThemeId = (themeId, terminalThemes) => {
+	// theme may have been deleted - take any other in
+	// such case (otherwise user sees white screen)
+	let noTheme = !themeId
+		|| !terminalThemes.some(t => +t.id === +themeId);
+	if (noTheme && terminalThemes.length > 0) {
+		let apolloDefault = terminalThemes
+			.filter(t => t.label === 'Apollo Default')
+			.map(t => t.id)[0];
+		themeId = apolloDefault || terminalThemes[0].id;
+	}
+	return themeId;
+};
+
+export class ContainerMain extends Component
 {
-	constructor( htmlRootDom )
+	constructor({htmlRootDom, terminalThemes})
 	{
 		super(`section.terminal-wrap-custom`);
 
@@ -14,6 +28,7 @@ export default class ContainerMain extends Component
 		);
 
 		this.parent = htmlRootDom;
+		this.terminalThemes = terminalThemes;
 
 		this.parent.appendChild(
 			this.getContext()
@@ -23,7 +38,7 @@ export default class ContainerMain extends Component
 
 		this.append(
 			this.tempTerminal
-		)
+		);
 	}
 
 	changeFontClass(fontSize)
@@ -38,6 +53,7 @@ export default class ContainerMain extends Component
 
 	changeStyle(themeName)
 	{
+		themeName = normalizeThemeId(themeName, this.terminalThemes);
 		this.parent.classList.remove( THEME_CLASS_NAME + this.themeName );
 		this.themeName = themeName;
 		this.parent.classList.add( THEME_CLASS_NAME + themeName );

@@ -3,7 +3,7 @@ import {CHANGE_ACTIVE_TERMINAL} from "../actions/settings";
 import {DEV_CMD_STACK_RUN} from "../actions";
 import {CHANGE_GDS, UPDATE_CUR_GDS, UPDATE_ALL_AREA_STATE} from "../actions/gdsActions";
 import {GDS} 			from '../modules/gds';
-import ContainerMain 	from "../containers/main";
+import {ContainerMain, normalizeThemeId} from "../containers/main";
 import {PqParser} 		from "../modules/pqParser";
 import {OFFSET_DEFAULT, AREA_LIST} from "../constants";
 import {connect, getStore} from "../store";
@@ -29,16 +29,16 @@ export default class GdsDirectPlusApp
 	constructor(params, viewData, themeData)
 	{
 		const {htmlRootDom, PqPriceModal, travelRequestId, chatContainerId} = params;
+		const terminalThemes = themeData.terminalThemes;
+		const {settings, buffer, auth} = viewData;
 
 		htmlRootDom.classList.add('gds-direct-plus-root');
 
 		this.params 		= {travelRequestId};
 		this.chatContainer	= document.getElementById(chatContainerId || 'chat-plugin-container');
 		this.offset			= OFFSET_DEFAULT; //menu
-		this.container 		= new ContainerMain(htmlRootDom);
+		this.container 		= new ContainerMain({htmlRootDom, terminalThemes});
 
-		const terminalThemes = themeData.terminalThemes;
-		const {settings, buffer, auth} = viewData;
 		window.GdsDirectPlusParams.auth = auth;
 
 		const { keyBindings, gdsAreaSettings }	= this._getGdsDefaultSettings(settings);
@@ -105,13 +105,7 @@ export default class GdsDirectPlusApp
 			const themeId = settings && settings[this.Gds.name] && settings[this.Gds.name].theme
 				? settings[this.Gds.name].theme
 				: 4; // 4  Apollo Default
-			this.themeId = themeId;
-			if (!terminalThemes.some(t => +t.id === +themeId) && terminalThemes.length > 0) {
-				let apolloDefault = terminalThemes
-					.filter(t => t.label === 'Apollo Default')
-					.map(t => t.id)[0];
-				this.themeId = apolloDefault || terminalThemes[0].id;
-			}
+			this.themeId = normalizeThemeId(themeId, terminalThemes);
 			this.container.changeStyle(this.themeId);
 		}
 
