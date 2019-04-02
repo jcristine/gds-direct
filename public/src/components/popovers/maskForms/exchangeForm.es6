@@ -12,11 +12,11 @@ let dataToDom = (data) => {
 
 	let Cmp = (...args) => new Component(...args);
 
-	let Fld = (caption, name, size = null, props = {}) => {
+	let Fld = (caption, name, size = null) => {
 		let cls = enableds[name] ? '.enabled' : '';
 		let fld = Cmp('span' + cls);
 		let inp;
-		inp = Cmp('input', {type: 'text', value: values[name], name: name, ...props});
+		inp = Cmp('input', {type: 'text', value: values[name], name: name, placeholder: '.'.repeat(size || 0)});
 		if (!enableds[name]) {
 			inp.context.setAttribute('disabled', 'disabled');
 		}
@@ -45,8 +45,8 @@ let dataToDom = (data) => {
 				]),
 				Cmp('div').attach([ // "TKT1;.............. CPN;.... TKT2;.............. CPN;....       ",
 					Cmp('span').attach([
-						Fld('TKT1', 'ticketNumber1', 14, {placeholder: '0161111111111'}),
-						Fld('CPN', 'couponNumber1', 4, {placeholder: '1'}),
+						Fld('TKT1', 'ticketNumber1', 14),
+						Fld('CPN', 'couponNumber1', 4),
 					]),
 					Cmp('span').attach([
 						Fld('TKT2', 'ticketNumber2', 14),
@@ -54,9 +54,9 @@ let dataToDom = (data) => {
 					]),
 				]),
 				Cmp('div').attach([ // "COMM;.........  ORIG FOP;................... EVEN;.             ",
-					Fld('COMM', 'commission', 9, {placeholder: '0.00/'}),
-					Fld('ORIG FOP', 'originalFormOfPayment', 19, {placeholder: 'VI4444333322221111'}),
-					Fld('EVEN', 'evenIndicator', 2, {placeholder: 'Y/N'}),
+					Fld('COMM', 'commission', 9),
+					Fld('ORIG FOP', 'originalFormOfPayment', 19),
+					Fld('EVEN', 'evenIndicator', 2),
 				]),
 				Cmp('div').attach([ // "                                                                ",
 					Cmp('span', {innerHTML: '&nbsp;'}),
@@ -83,13 +83,13 @@ let dataToDom = (data) => {
 					]),
 				]),
 				Cmp('div').attach([ // "ORIG ISS;...... ORIG DATE;....... ORIG IATA NBR;.........       ",
-					Fld('ORIG ISS', 'originalIssuePoint', 6, {placeholder: 'SFO'}),
+					Fld('ORIG ISS', 'originalIssuePoint', 6),
 					Fld('ORIG DATE', 'originalIssueDate', 7),
 					Fld('ORIG IATA NBR', 'originalAgencyIata', 9),
 				]),
 				Cmp('div').attach([ // "ORIG TKT;..............-;...  ORIG INV NBR;.........            ",
 					Cmp('span').attach([
-						Fld('ORIG TKT', 'originalTicketStar', 14, {placeholder: '*'}),
+						Fld('ORIG TKT', 'originalTicketStar', 14),
 						Fld('-', 'originalTicketStarExtension', 3),
 					]),
 					Fld('ORIG INV NBR', 'originalInvoiceNumber', 9),
