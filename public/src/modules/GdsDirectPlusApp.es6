@@ -107,7 +107,9 @@ export default class GdsDirectPlusApp
 				: 4; // 4  Apollo Default
 			this.themeId = themeId;
 			if (!terminalThemes.some(t => +t.id === +themeId) && terminalThemes.length > 0) {
-				let apolloDefault = terminalThemes.filter(t => t.label === 'Apollo Default').map(t => t.id);
+				let apolloDefault = terminalThemes
+					.filter(t => t.label === 'Apollo Default')
+					.map(t => t.id)[0];
 				this.themeId = apolloDefault || terminalThemes[0].id;
 			}
 			this.container.changeStyle(this.themeId);
