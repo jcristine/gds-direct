@@ -167,8 +167,9 @@ class TestCase
 					testEvents.push({type: 'error', msg: 'Uncaught exception ' + exc.message + '\n' + exc.stack});
 				}
 				this.log = (e) => { throw new Error('Please define test event logger'); };
+				let title = ((dataset || [])[0] || {}).title || '';
 				return testEvents.every(e => e.type === 'ok') ? null :
-					'\ndataset ' + this.constructor.name + '.' + test.name + ' #' + i + ' ' + testEvents
+					'\n' + (title ? '# ' + title + '\n' : '') + 'dataset ' + this.constructor.name + '.' + test.name + ' #' + i + ' ' + testEvents
 						.filter(e => e.type === 'error').map((e) => e.msg).join('\n');
 			});
 			tests.push(...moreTests);

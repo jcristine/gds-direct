@@ -1,7 +1,7 @@
 const AbstractMaskParser = require("../Transpiled/Gds/Parsers/Apollo/AbstractMaskParser");
 const {fetchAll} = require('../GdsHelpers/TravelportUtils.js');
 
-const baseMaskExample = [
+const EMPTY_MASK_EXAMPLE = [
 	"$EX NAME ARTURS/KLESUNS                     PSGR  1/ 1         ",
 	"FARE USD   903.40  TOTAL USD   983.30                           ",
 	"TX1 USD   69.60 US   TX2 USD   14.30 XT   TX3                   ",
@@ -15,7 +15,7 @@ const baseMaskExample = [
 	"ORIG ISS;...... ORIG DATE;....... ORIG IATA NBR;.........       ",
 	"ORIG TKT;..............-;...  ORIG INV NBR;.........            ",
 	"PENALTY USD;............  COMM ON PENALTY;...........",
-];
+].join('');
 
 const FIELDS = [
 	'exchangedTicketNumber', 'exchangedTicketExtension',
@@ -71,5 +71,24 @@ let ExchangeApolloTicket = async ({maskOutput, values, session, maskFields = nul
 };
 
 ExchangeApolloTicket.FIELDS = FIELDS;
+
+ExchangeApolloTicket.parseMask = (output) => {
+	let match = output.match(/^(>\$EX NAME [\s\S]+?)\n\s*\n[\s\S]+TTL VALUE OF EX TKTS ([A-Z]{3})/);
+	if (!match) {
+		return null;
+	} else {
+		let [_, rawHeader, currency] = match;
+		let normalized = AbstractMaskParser.normalizeMask(output);
+		let parsed = AbstractMaskParser.parseMask(
+			EMPTY_MASK_EXAMPLE, FIELDS, normalized
+		);
+		return {
+			rawHeader: rawHeader,
+			currency: currency,
+			fields: Object.entries(parsed)
+				.map(([key,value]) => ({key, value})),
+		};
+	}
+};
 
 module.exports = ExchangeApolloTicket;

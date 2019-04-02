@@ -1380,26 +1380,27 @@ class ProcessApolloTerminalInputAction {
 		}
 		let cmd = 'HB' + storeNumber + ':FEX' + (ticketNumber || '');
 		let output = (await this.runCmd(cmd)).output;
-		let match = output.match(/^(>\$EX NAME [\s\S]+?)\n\s*\n[\s\S]+TTL VALUE OF EX TKTS ([A-Z]{3})/);
-		if (!match) {
+		let parsed = ExchangeApolloTicket.parseMask(output);
+		if (!parsed) {
 			return {calledCommands: [{cmd, output}], errors: ['Invalid HB:FEX response']};
 		}
-		let [_, staticPart, currency] = match;
 		let defaults = {
 			originalTicketStar: '*',
 		};
 		let result = {
 			calledCommands: [{
 				cmd: cmd,
-				output: staticPart,
+				output: parsed.rawHeader,
 			}],
 			actions: [{
 				type: 'displayExchangeMask',
 				data: {
-					fields: ExchangeApolloTicket.FIELDS.map(f => ({
-						key: f, value: defaults[f] || '', enabled: true,
+					fields: parsed.fields.map(f => ({
+						key: f.key,
+						value: f.value || defaults[f.key] || '',
+						enabled: true,
 					})),
-					currency: currency,
+					currency: parsed.currency,
 					maskOutput: output,
 				},
 			}],
@@ -1429,7 +1430,7 @@ class ProcessApolloTerminalInputAction {
 			return this.processSavePnr();
 		} else if (php.preg_match(/^HHMCO$/, $cmd, $matches = [])) {
 			return this.prepareMcoMask();
-		} else if (php.preg_match(/^HB(\d*):FEX\s*(\d{13}|)$/, $cmd, $matches = [])) {
+		} else if (php.preg_match(/^HB(\d*):FEX\s*([\d\s]{13,}|)$/, $cmd, $matches = [])) {
 			let [_, storeNumber, ticketNumber] = $matches;
 			return this.prepareHbFexMask(storeNumber || 1, ticketNumber || null);
 		} else if (php.preg_match(/^SORT$/, $cmd, $matches = [])) {
