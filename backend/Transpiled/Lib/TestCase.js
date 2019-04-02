@@ -21,8 +21,8 @@ let describeMismatch = (expected, infix, actual, msg = '') => {
 	if (typeof expected === 'string' && typeof actual === 'string') {
 		let mismatchAt = findStrMismatch(expected, actual);
 		explanation += '\n'
-			+ ' expected ...' + jsExport(expected.slice(mismatchAt, mismatchAt + 50))
-			+ ' actual ...' + jsExport(actual.slice(mismatchAt, mismatchAt + 50))
+			+ ' expected ...' + JSON.stringify(expected.slice(mismatchAt, mismatchAt + 50))
+			+ ' actual ...' + JSON.stringify(actual.slice(mismatchAt, mismatchAt + 50))
 			;
 	}
 	return 'Failed asserting that expected value \n' +
