@@ -100,14 +100,19 @@ class AbstractMaskParser
         }
     }
 
-    /** @param {Object} values - value mapping with field names as keys */
-    static makeCmd({baseMask, fields, values}) {
+    /**
+     * @param {string} emptyMask - a mask without any values entered used to calculate positions. Supposedly hardcoded.
+     * @param {string} destinationMask - the mask to which values are added. Note that
+     * some masks include non-static data, so you can't always use the emptyMask as destination.
+     * @param {Object} values - value mapping with field names as keys
+     */
+    static makeCmd({emptyMask, destinationMask, fields, values}) {
         let missingFields = php.array_keys(php.array_diff_key(php.array_flip(fields), values));
         if (!php.empty(missingFields)) {
             return BadRequest('Missing necessary params for MCO: ['+php.implode(', ', missingFields)+']');
         }
-        let positions = this.getPositions(baseMask);
-        let cmd = baseMask;
+        let positions = this.getPositions(emptyMask);
+        let cmd = destinationMask;
         let tuples = Fp.zip([fields, positions]);
         for (let [field, [start, length]] of tuples) {
             let token = values[field] || '';

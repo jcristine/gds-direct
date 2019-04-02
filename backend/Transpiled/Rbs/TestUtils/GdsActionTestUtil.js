@@ -15,18 +15,10 @@ class GdsActionTestUtil
         $calledCommands = $testCase['calledCommands'];
         $stubSession = new AnyGdsStubSession($calledCommands);
         $actual = await $getActual($stubSession, $input);
-        try {
-            $commandsLeft = $stubSession.getCommandsLeft();
-			unit.assertArrayElementsSubset($expectedOutput, $actual);
-			unit.assertEmpty($commandsLeft, 'There are some expected commands left that '+
-                'were not used - '+php.implode(', ', php.array_column($commandsLeft, 'cmd')));
-        } catch ($exc) {
-            let args = process.argv.slice(process.execArgv.length + 2);
-            if (args.includes('debug')) {
-                console.log('\n$actual\n', JSON.stringify($actual));
-            }
-            throw $exc;
-        }
+        $commandsLeft = $stubSession.getCommandsLeft();
+        unit.assertArrayElementsSubset($expectedOutput, $actual);
+        unit.assertEmpty($commandsLeft, 'There are some expected commands left that '+
+            'were not used - '+php.implode(', ', php.array_column($commandsLeft, 'cmd')));
     }
 }
 module.exports = GdsActionTestUtil;

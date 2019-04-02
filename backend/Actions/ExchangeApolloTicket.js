@@ -60,11 +60,16 @@ let parseOutput = (output) => {
  * used to partially or fully pay for a new ticket with the old one
  */
 let ExchangeApolloTicket = async ({maskOutput, values, session, maskFields = null}) => {
-	let baseMask = AbstractMaskParser.normalizeMask(maskOutput);
+	let destinationMask = AbstractMaskParser.normalizeMask(maskOutput);
 	let fields = maskFields || FIELDS;
-	let cmd = await AbstractMaskParser.makeCmd({baseMask, fields, values});
+	let cmd = await AbstractMaskParser.makeCmd({
+		emptyMask: EMPTY_MASK_EXAMPLE,
+		destinationMask: destinationMask,
+		fields, values
+	});
 	let cmdRec = await fetchAll(cmd, session);
 	let result = parseOutput(cmdRec.output);
+	result.cmd = cmdRec;
 	result.output = cmdRec.output;
 
 	return result;

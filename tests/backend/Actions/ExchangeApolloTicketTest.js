@@ -39,6 +39,7 @@ class ExchangeApolloTicketTest extends require('../Transpiled/Lib/TestCase.js')
 			},
 			output: {
 				status: 'fareDifference',
+				"cmd": "$EX NAME ARTURS/KLESUNS                     PSGR  1/ 1         FARE USD   901.40  TOTAL USD   983.30                           TX1 USD   67.60 US   TX2 USD   14.30 XT   TX3                                                                                   EXCHANGE TKTS ;0161111111111.-;...  CPN ALL                     TKT1;.............. CPN;.... TKT2;.............. CPN;....       COMM;00.0/....  ORIG FOP;CK................. EVEN;.                                                                             TTL VALUE OF EX TKTS USD;200.00.......  ORIG BRD/OFF;...;...    TX1 USD;67.60..;us   TX2 USD;14.30..;xt   TX3 USD;.......;..    ORIG ISS;SFO... ORIG DATE;26mar19 ORIG IATA NBR;.........       ORIG TKT;*.............-;...  ORIG INV NBR;.........            PENALTY USD;............  COMM ON PENALTY;...........",
 				output: [
 					">$MR       TOTAL ADD COLLECT   USD   783.30",
 					" /F;..............................................",
@@ -68,6 +69,104 @@ class ExchangeApolloTicketTest extends require('../Transpiled/Lib/TestCase.js')
 				        " /F;..............................................",
 				        "><",
 				    ].join("\n"),
+				},
+			],
+		});
+
+		// failed with null-pointer exception on mask generation
+		testCases.push({
+			input: {
+				maskOutput: [
+					">$EX NAME RICO/SRICO                         PSGR  1/ 1",
+					"FARE USD   617.68  TOTAL USD   678.30",
+					"TX1 USD   46.32 US   TX2 USD   14.30 XT   TX3               ",
+					"",
+					"EXCHANGE TKTS ;..............-;...  CPN ALL",
+					"TKT1;00672891061625 CPN;1... TKT2;.............. CPN;....",
+					"COMM;.........  ORIG FOP;AXXXXXXXXXXXX1052   EVEN;.",
+					"",
+					"TTL VALUE OF EX TKTS USD;678.30.........ORIG BRD/OFF;SFO;LAX",
+					"TX1 USD;46.32..;US   TX2 USD;14.30..;XT   TX3 USD;.......;..",
+					"ORIG ISS;SFO....ORIG DATE;02APR19 ORIG IATA NBR;05578602 ",
+					"ORIG TKT;0065056180982.-;...  ORIG INV NBR;.........",
+					"PENALTY USD;............  COMM ON PENALTY;...........",
+					"><"
+				].join("\n"),
+				values: {
+					"exchangedTicketNumber": "",
+					"exchangedTicketExtension": "",
+					"ticketNumber1": "00672891061625",
+					"couponNumber1": "1",
+					"ticketNumber2": "",
+					"couponNumber2": "",
+					"commission": "0.00/",
+					"originalFormOfPayment": "AXXXXXXXXXXXX1052  ",
+					"evenIndicator": "",
+					"exchangedTicketTotalValue": "678.30",
+					"originalBoardPoint": "SFO",
+					"originalOffPoint": "LAX",
+					"taxAmount1": "46.32",
+					"taxCode1": "US",
+					"taxAmount2": "14.30",
+					"taxCode2": "XT",
+					"taxAmount3": "",
+					"taxCode3": "",
+					"originalIssuePoint": "SFO",
+					"originalIssueDate": "02APR19",
+					"originalAgencyIata": "05578602 ",
+					"originalTicketStar": "0065056180982",
+					"originalTicketStarExtension": "",
+					"originalInvoiceNumber": "",
+					"penaltyAmount": "1.00",
+					"commOnPenaltyAmount": ""
+				},
+			},
+			output: {
+				status: 'fareDifference',
+				"cmd": [
+					"$EX NAME RICO/SRICO                         PSGR  1/ 1         ",
+					"FARE USD   617.68  TOTAL USD   678.30                           ",
+					"TX1 USD   46.32 US   TX2 USD   14.30 XT   TX3                   ",
+					"                                                                ",
+					"EXCHANGE TKTS ;..............-;...  CPN ALL                     ",
+					"TKT1;00672891061625 CPN;1... TKT2;.............. CPN;....       ",
+					"COMM;0.00/....  ORIG FOP;AXXXXXXXXXXXX1052   EVEN;.             ",
+					"                                                                ",
+					"TTL VALUE OF EX TKTS USD;678.30.........ORIG BRD/OFF;SFO;LAX    ",
+					"TX1 USD;46.32..;US   TX2 USD;14.30..;XT   TX3 USD;.......;..    ",
+					"ORIG ISS;SFO....ORIG DATE;02APR19 ORIG IATA NBR;05578602        ",
+					"ORIG TKT;0065056180982.-;...  ORIG INV NBR;.........            ",
+					"PENALTY USD;1.00........  COMM ON PENALTY;...........",
+				].join(""),
+				output: [
+					// forged
+					">$MR       TOTAL ADD COLLECT   USD     0.01",
+					" /F;..............................................",
+					"",
+				].join("\n"),
+			},
+			calledCommands: [
+				{
+					"cmd": [
+						"$EX NAME RICO/SRICO                         PSGR  1/ 1         ",
+						"FARE USD   617.68  TOTAL USD   678.30                           ",
+						"TX1 USD   46.32 US   TX2 USD   14.30 XT   TX3                   ",
+						"                                                                ",
+						"EXCHANGE TKTS ;..............-;...  CPN ALL                     ",
+						"TKT1;00672891061625 CPN;1... TKT2;.............. CPN;....       ",
+						"COMM;0.00/....  ORIG FOP;AXXXXXXXXXXXX1052   EVEN;.             ",
+						"                                                                ",
+						"TTL VALUE OF EX TKTS USD;678.30.........ORIG BRD/OFF;SFO;LAX    ",
+						"TX1 USD;46.32..;US   TX2 USD;14.30..;XT   TX3 USD;.......;..    ",
+						"ORIG ISS;SFO....ORIG DATE;02APR19 ORIG IATA NBR;05578602        ",
+						"ORIG TKT;0065056180982.-;...  ORIG INV NBR;.........            ",
+						"PENALTY USD;1.00........  COMM ON PENALTY;...........",
+					].join(""),
+					"output": [
+						">$MR       TOTAL ADD COLLECT   USD     0.01",
+						" /F;..............................................",
+						"><",
+					].join("\n"),
 				},
 			],
 		});

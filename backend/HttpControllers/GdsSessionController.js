@@ -24,6 +24,7 @@ const Misc = require("../Utils/Misc");
 const allWrap = require("../Utils/Misc").allWrap;
 const {getConfig} = require('../Config.js');
 const ExchangeApolloTicket = require('../Actions/ExchangeApolloTicket.js');
+const StringUtil = require('../Transpiled/Lib/Utils/StringUtil.js');
 
 let startByGds = async (gds) => {
 	let tuples = [
@@ -272,17 +273,18 @@ exports.exchangeTicket = async ({rqBody, session, emcUser}) => {
 	let result = await ExchangeApolloTicket({
 		maskOutput, values, session: stateful,
 	});
+	let maskCmd = StringUtil.wrapLinesAt('>' + result.cmd, 64);
 	if (result.status === 'success') {
 		return Promise.resolve({
-			output: result.output,
-			calledCommands: [{cmd: '$EX...', output: result.output}],
+			output: maskCmd,
+			calledCommands: [{cmd: '$EX...', output: maskCmd}],
 		});
 	} else if (result.status === 'fareDifference') {
 		// ">$MR       TOTAL ADD COLLECT   USD   783.30",
 		// " /F;..............................................",
 		return Promise.resolve({
-			output: result.output,
-			calledCommands: [{cmd: '$EX...', output: 'SEE FARE DIFFERENCE FORM BELOW'}],
+			output: maskCmd,
+			calledCommands: [{cmd: '$EX...', output: maskCmd}],
 			actions: [{
 				type: 'displayExchangeFareDifferenceMask',
 				data: {
@@ -315,9 +317,10 @@ exports.confirmExchangeFareDifference = async ({rqBody, session, emcUser}) => {
 		maskFields: rqBody.fields.map(f => f.key),
 	});
 	if (result.status === 'success') {
+		let maskCmd = StringUtil.wrapLinesAt('>' + result.cmd, 64);
 		return Promise.resolve({
 			output: result.output,
-			calledCommands: [{cmd: '$EX...', output: result.output}],
+			calledCommands: [{cmd: '$EX...', output: maskCmd}],
 		});
 	} else {
 		return UnprocessableEntity('GDS returned ' + result.status + ' - ' + result.output);
