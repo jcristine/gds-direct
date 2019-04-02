@@ -43,6 +43,9 @@ app.get('/', (req, res) => res.redirect('/public'));
 app.use('/public', (rq, rs, next) => {
 	if (rq.path.endsWith('.js')) {
 		rs.setHeader('Content-Type', 'application/javascript');
+		// 10 minutes. Should eventually start sending a bg request
+		// to server to invalidate cache if response is not 304
+		rs.setHeader('Cache-Control', 'public, max-age=600');
 	} else if (rq.path.endsWith('.css')) {
 		rs.setHeader('Content-Type', 'text/css');
 	}
