@@ -3324,6 +3324,137 @@ class ProcessApolloTerminalInputActionTest extends require('../../../../Lib/Test
 			},
 		});
 
+		$list.push({
+			'input': {
+				'cmdRequested': 'HB:FEX',
+			},
+			'output': {
+				'status': 'executed',
+				'calledCommands': [
+					{
+						'cmd': 'HB1:FEX',
+						"output": [
+							">$EX NAME UZUMAKI/NARUTO                     PSGR  1/ 1",
+							"FARE USD   901.40  TOTAL USD   983.30",
+							"TX1 USD   67.60 US   TX2 USD   14.30 XT   TX3               "
+						].join("\n"),
+					},
+				],
+				"actions": [
+					{
+						"type": "displayExchangeMask",
+						"data": {
+							"fields": [
+								{"key": "exchangedTicketNumber", "value": "", "enabled": true},
+								{"key": "exchangedTicketExtension", "value": "", "enabled": true},
+								{"key": "ticketNumber1", "value": "", "enabled": true},
+								{"key": "couponNumber1", "value": "", "enabled": true},
+								{"key": "ticketNumber2", "value": "", "enabled": true},
+								{"key": "couponNumber2", "value": "", "enabled": true},
+								{"key": "commission", "value": "", "enabled": true},
+								{"key": "originalFormOfPayment", "value": "", "enabled": true},
+								{"key": "evenIndicator", "value": "", "enabled": true},
+								{"key": "exchangedTicketTotalValue", "value": "", "enabled": true},
+								{"key": "originalBoardPoint", "value": "", "enabled": true},
+								{"key": "originalOffPoint", "value": "", "enabled": true},
+								{"key": "taxAmount1", "value": "", "enabled": true},
+								{"key": "taxCode1", "value": "", "enabled": true},
+								{"key": "taxAmount2", "value": "", "enabled": true},
+								{"key": "taxCode2", "value": "", "enabled": true},
+								{"key": "taxAmount3", "value": "", "enabled": true},
+								{"key": "taxCode3", "value": "", "enabled": true},
+								{"key": "originalIssuePoint", "value": "", "enabled": true},
+								{"key": "originalIssueDate", "value": "", "enabled": true},
+								{"key": "originalAgencyIata", "value": "", "enabled": true},
+								{"key": "originalTicketStar", "value": "*", "enabled": true},
+								{"key": "originalTicketStarExtension", "value": "", "enabled": true},
+								{"key": "originalInvoiceNumber", "value": "", "enabled": true},
+								{"key": "penaltyAmount", "value": "", "enabled": true},
+								{"key": "commOnPenaltyAmount", "value": "", "enabled": true}
+							],
+							"currency": "USD",
+							"maskOutput": [
+								">$EX NAME UZUMAKI/NARUTO                     PSGR  1/ 1",
+								"FARE USD   901.40  TOTAL USD   983.30",
+								"TX1 USD   67.60 US   TX2 USD   14.30 XT   TX3               ",
+								"",
+								"EXCHANGE TKTS ;..............-;...  CPN ALL",
+								"TKT1;.............. CPN;.... TKT2;.............. CPN;....",
+								"COMM;.........  ORIG FOP;................... EVEN;.",
+								"",
+								"TTL VALUE OF EX TKTS USD;.............  ORIG BRD/OFF;...;...",
+								"TX1 USD;.......;..   TX2 USD;.......;..   TX3 USD;.......;..",
+								"ORIG ISS;...... ORIG DATE;....... ORIG IATA NBR;.........",
+								"ORIG TKT;..............-;...  ORIG INV NBR;.........",
+								"PENALTY USD;............  COMM ON PENALTY;...........",
+								"><"
+							].join("\n")
+						}
+					}
+				],
+			},
+			'sessionInfo': {
+				'initialState': php.array_merge(GdsDirectDefaults.makeDefaultApolloState(), {
+					'agent_id': 8050,
+					'has_pnr': true,
+					'is_pnr_stored': true,
+					'pcc': '2F3K',
+					'record_locator': 'PZWSV5',
+				}),
+				'initialCommands': [],
+				'performedCommands': [
+					{
+					    "cmd": "*R",
+					    "output": [
+					        "CREATED IN GDS DIRECT BY AKLESUNS",
+					        "PZWSV5/WS QSBYC DPBVWS  AG 05578602 01APR",
+					        " 1.1UZUMAKI/NARUTO ",
+					        " 1 UA 613Y 25JUN SFOLAX HK1   630A  816A *         TU   E",
+					        " 2 TUR ZZ BK1  YYZ 15FEB-RETENTION LINE",
+					        " 3 TUR ZZ BK1  YYZ 15FEB-RETENTION LINE",
+					        "FONE-SFOAS/800-750-2238 ASAP CUSTOMER SUPPORT",
+					        "FOP:-VIXXXXXXXXXXXX1111/D1221/*ABC123",
+					        "TKTG-TAU/01APR",
+					        "*** LINEAR FARE DATA EXISTS *** >*LF; ",
+					        "ATFQ-TKTE/$B-*2F3K/FEX/ET/TA2F3K/CUA",
+					        " FQ-USD 901.40/USD 67.60US/USD 14.30XT/USD 983.30 - 1APR YAA0AFEY",
+					        ")><"
+					    ].join("\n"),
+					},
+					{
+					    "cmd": "MR",
+					    "output": [
+					        "GFAX-SSRDOCSUAHK1/////10MAY90/M//UZUMMAKI/NARUTO-1UZUMAKI/NARUTO",
+					        "   2 SSRADTK1VKK1.TKT UA SEGS BY 22JUN19 TO AVOID AUTO CXL /EARLIER",
+					        "   3 SSRADTK1VKK1.TICKETING MAY BE REQUIRED BY FARE RULE",
+					        "RMKS-GD-AKLESUNS/6206/LEAD-8013096 IN 2F3K",
+					        "ACKN-UA JSMMZL   01APR 1029                       ",
+					        "><"
+					    ].join("\n"),
+					},
+					{
+					    "cmd": "HB1:FEX",
+						"output": [
+							">$EX NAME UZUMAKI/NARUTO                     PSGR  1/ 1",
+							"FARE USD   901.40  TOTAL USD   983.30",
+							"TX1 USD   67.60 US   TX2 USD   14.30 XT   TX3               ",
+							"",
+							"EXCHANGE TKTS ;..............-;...  CPN ALL",
+							"TKT1;.............. CPN;.... TKT2;.............. CPN;....",
+							"COMM;.........  ORIG FOP;................... EVEN;.",
+							"",
+							"TTL VALUE OF EX TKTS USD;.............  ORIG BRD/OFF;...;...",
+							"TX1 USD;.......;..   TX2 USD;.......;..   TX3 USD;.......;..",
+							"ORIG ISS;...... ORIG DATE;....... ORIG IATA NBR;.........",
+							"ORIG TKT;..............-;...  ORIG INV NBR;.........",
+							"PENALTY USD;............  COMM ON PENALTY;...........",
+							"><"
+						].join("\n"),
+					},
+				],
+			},
+		});
+
 		// problematic cases follow
 		/*
 		// STORE alias, same as previous, but this time let's remove
