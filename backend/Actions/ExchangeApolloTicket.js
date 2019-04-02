@@ -69,7 +69,7 @@ let ExchangeApolloTicket = async ({maskOutput, values, session, maskFields = nul
 	});
 	let cmdRec = await fetchAll(cmd, session);
 	let result = parseOutput(cmdRec.output);
-	result.cmd = cmdRec;
+	result.cmd = cmdRec.cmd;
 	result.output = cmdRec.output;
 
 	return result;
