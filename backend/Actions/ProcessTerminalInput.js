@@ -115,7 +115,7 @@ let transformCalledCommand = (rec, stateful) => {
 	let tabCommands = [];
 	if (['galileo', 'apollo'].includes(gds)) {
 		if (!rec.noWrap) {
-			output = wrap(rec.output);
+			output = wrap(rec.output, gds);
 		}
 		output = encodeTpOutputForCms(output);
 		tabCommands = matchAll(/>([^>]+?)(?:·|;)/g, output).map(m => m[1]);

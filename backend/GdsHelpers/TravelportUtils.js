@@ -1,3 +1,4 @@
+const PnrHistoryParser = require("../Transpiled/Gds/Parsers/Apollo/PnrHistoryParser");
 const hrtimeToDecimal = require("../Utils/Misc").hrtimeToDecimal;
 
 /**
@@ -36,6 +37,20 @@ let fetchUntil = async (nextCmd, session, shouldStop) => {
 	return finalResult;
 };
 
+let shouldKeepFullLine = (line) => {
+	return line.match(/^ATFQ-/)
+		|| line.match(/^GFAX-/)
+		|| line.match(/^\sF[QM]-/)
+		|| line.match(/^\s*\d+\s*SSR/)
+		// *H follows
+		|| line.match(/^AG\s+SSR/)
+		|| line.match(/^XG\s+SSR/)
+		// pricing lines may be glued in history
+		|| line.match(/^A\$\s+/) && !Object.keys(PnrHistoryParser.HISTORY_EVENT_CODES)
+			.some(code => line.slice(64).startsWith(code + ' '))
+		;
+};
+
 exports.extractPager = extractPager;
 
 /** @param {{runCmd: function(string): Promise<{output: string}>}} session */
@@ -58,11 +73,19 @@ exports.fetchAll = async (nextCmd, session) => {
 	return fullCmdRec;
 };
 
-exports.wrap = (text) => {
+/**
+ * this wrapping is for display, not for processing, since it has pretty
+ * loos rules that do not take type of command into account for example
+ */
+exports.wrap = (text, gds) => {
 	let result = [];
 	for (let line of text.split('\n')) {
-		for (let chunk of (line.match(/.{1,64}/g) || [''])) {
-			result.push(chunk);
+		if (gds === 'apollo' && shouldKeepFullLine(line)) {
+			result.push(line);
+		} else {
+			for (let chunk of (line.match(/.{1,64}/g) || [''])) {
+				result.push(chunk);
+			}
 		}
 	}
 	if (result.slice(-1)[0].length === 64) {
