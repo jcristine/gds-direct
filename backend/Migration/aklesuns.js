@@ -353,4 +353,13 @@ module.exports.migrations = [
 		    ") ENGINE=InnoDB DEFAULT CHARSET=utf8",
 		].join('\n')),
 	},
+	{
+		name: 'GRECT/2019.04.02006-create-role-NEW_GDS_DIRECT_DEV_ACCESS',
+		perform: async (db) => {
+			let emc = await Emc.getClient();
+			return emc.addRole([
+				{"name": "NEW_GDS_DIRECT_DEV_ACCESS", "project": "GDSD", "description": "Allows seeing session log and other utility actions like running maintenance scripts, getting request debug info, etc..."},
+			]);
+		},
+	},
 ];
