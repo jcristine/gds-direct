@@ -22,8 +22,9 @@ let jsExport = function ($var, $margin, inlineLimit) {
 	$margin = $margin || '';
 	inlineLimit = inlineLimit || 64;
 
-	if ($var === undefined) {
-		return 'undefined';
+	let varType = typeof $var;
+	if (['undefined', 'function', 'symbol'].includes(varType)) {
+		return varType;
 	}
 
 	return JSON.stringify($var).length < inlineLimit ? JSON.stringify($var)

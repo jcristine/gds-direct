@@ -18,8 +18,9 @@ process.env.NODE_ENV = Config.production ? 'production' : 'development'; // acce
 
 const logger = new Logger();
 
-let logit = (msg, id, obj = {}) => {
+let logit = (msg, id, obj = undefined) => {
 	try {
+		obj = obj || '';
 		if (typeof obj !== 'string') {
 			// it will be print_r-ed otherwise
 			obj = jsExport(obj);
