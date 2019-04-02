@@ -1384,9 +1384,11 @@ class ProcessApolloTerminalInputAction {
 		if (!parsed) {
 			return {calledCommands: [{cmd, output}], errors: ['Invalid HB:FEX response']};
 		}
-		let defaults = {
-			originalTicketStar: '*',
-		};
+		let readonlyFields = new Set([
+			'originalBoardPoint', 'originalOffPoint',
+			'originalAgencyIata', 'originalInvoiceNumber',
+			'originalTicketStarExtension',
+		]);
 		let result = {
 			calledCommands: [{
 				cmd: cmd,
@@ -1397,8 +1399,8 @@ class ProcessApolloTerminalInputAction {
 				data: {
 					fields: parsed.fields.map(f => ({
 						key: f.key,
-						value: f.value || defaults[f.key] || '',
-						enabled: !f.value,
+						value: f.value,
+						enabled: !f.value && !readonlyFields.has(f.key),
 					})),
 					currency: parsed.currency,
 					maskOutput: output,
