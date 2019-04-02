@@ -26,7 +26,7 @@ export const debugRequest = (url, err, status = null) => {
 	new Noty({
 		text	: `ERROR ${status}: ${err} - on ${url}`,
 		layout 	: 'bottomRight',
-		timeout : 10000,
+		timeout : 20000,
 		type 	: type,
 		progressBar : false,
 		animation: {
