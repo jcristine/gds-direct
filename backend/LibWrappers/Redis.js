@@ -52,7 +52,7 @@ exports.withNewConnection = async (process) => {
 	});
 };
 
-exports.withLock = async ({lockKey, action, lockSeconds = 1 * 60, lockValue = 'lockedForReal'}) => {
+exports.withLock = async ({lockKey, action, lockSeconds = 30, lockValue = 'lockedForReal'}) => {
 	let redis = await getClient();
 	let didAcquire = await redis.set(lockKey, lockValue, 'NX', 'EX', lockSeconds);
 	if (!didAcquire) {
