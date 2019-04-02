@@ -1,6 +1,9 @@
 import {get, post} from "../helpers/requests";
 import {notify} from "../helpers/debug";
 
+// it actually does not have to be global - just common
+// for all terminal cells of same GDS, but oh well...
+let lastGlobalPromise = Promise.resolve();
 let lastUsedAt = window.performance.now();
 let callInProgress = false;
 let closed = false;
@@ -29,7 +32,6 @@ export default class Session
 {
 	constructor( params )
 	{
-		this.lastPromise = Promise.resolve();
 		this.settings = params;
 		let gds = params.gds;
 		let pingInterval = ['apollo', 'galileo'].includes(gds) ? 60 * 1000 : 10 * 60 * 1000;
@@ -51,11 +53,6 @@ export default class Session
 
 	_run(cmd)
 	{
-
-		if (cmd === '!DEBUG:THROWERROR') {
-			let obj = undefined;
-			obj.doSomething();
-		}
 		if (!cmd)
 		{
 			return Promise.resolve('');
@@ -75,11 +72,11 @@ export default class Session
 	perform( beforeFn )
 	{
 		// make sure just one command is active at a time
-		this.lastPromise = this.lastPromise
+		lastGlobalPromise = lastGlobalPromise
 			.catch(exc => null)
 			.then(() => beforeFn())
 			.then(cmd => this._run(cmd));
-		return this.lastPromise;
+		return lastGlobalPromise;
 	}
 
 	/**
@@ -88,7 +85,7 @@ export default class Session
 	 */
 	waitFor(promise)
 	{
-		this.lastPromise = this.lastPromise
+		lastGlobalPromise = lastGlobalPromise
 			.finally(() => promise);
 	}
 }
