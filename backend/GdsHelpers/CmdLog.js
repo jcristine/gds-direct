@@ -109,6 +109,21 @@ let CmdLog = ({
 			return matched;
 		},
 		/**
+		 * unlike getLastCommandsOfTypes() this one will include the area change
+		 * command when it is the last entered command (it displays PNR if any)
+		 */
+		getScrolledCmdMrs: async () => {
+			let allCmdsDesc = (await getAll()).reverse();
+			let matched = [];
+			for (let cmdRec of allCmdsDesc) {
+				matched.unshift(cmdRec);
+				if (!cmdRec.is_mr) {
+					break;
+				}
+			}
+			return matched;
+		},
+		/**
 		 * get last commands that for sure did not affect PNR
 		 * and pricing including the last command that did
 		 * for example, from: >01Y1; >*R; >01y2; >*I; >*SVC;

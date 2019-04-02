@@ -1421,8 +1421,7 @@ class ProcessApolloTerminalInputAction {
 				$result['calledCommands'] = await this.moveDownAll($limit, $result.calledCommands || []);
 				return $result;
 			} else {
-				let mrTypes = SessionStateProcessor.mrCmdTypes;
-				let mdCmdRows = await this.stateful.getLog().getLastCommandsOfTypes(mrTypes);
+				let mdCmdRows = await this.stateful.getLog().getScrolledCmdMrs();
 				let calledCommands = await this.moveDownAll($limit, mdCmdRows);
 				return {calledCommands};
 			}
