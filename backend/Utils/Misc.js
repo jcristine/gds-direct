@@ -27,18 +27,20 @@ let jsExport = function ($var, $margin, inlineLimit) {
 		return varType;
 	}
 
-	return JSON.stringify($var).length < inlineLimit ? JSON.stringify($var)
+	return typeof $var === 'string' && $var.match(/\r\n|\n|\r/)
+			? jsExport($var.split(/\r\n|\n|\r/g), $margin, 1) + '.join("\\n")'
+		: JSON.stringify($var).length < inlineLimit
+			? JSON.stringify($var)
 		: Array.isArray($var)
 			? '[\n'
 			+ $var.map((el) => $margin + ind + jsExport(el, $margin + ind, inlineLimit)).join(',\n')
 			+ '\n' + $margin + ']'
-			: (typeof $var === 'object' && $var !== null)
-				? '{\n'
-				+ Object.keys($var).map(k => $margin + ind + JSON.stringify(k) + ': ' + jsExport($var[k], $margin + ind, inlineLimit)).join(',\n')
-				+ '\n' + $margin + '}'
-				: (typeof $var === 'string' && $var.match(/\r\n|\n|\r/))
-					? jsExport($var.split(/\r\n|\n|\r/g), $margin) + '.join("\\n")'
-					: JSON.stringify($var);
+		: (typeof $var === 'object' && $var !== null)
+			? '{\n'
+			+ Object.keys($var).map(k => $margin + ind + JSON.stringify(k) + ': ' +
+				jsExport($var[k], $margin + ind, inlineLimit)).join(',\n')
+			+ '\n' + $margin + '}'
+		: JSON.stringify($var);
 };
 
 /**
