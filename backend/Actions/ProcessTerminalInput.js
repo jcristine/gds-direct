@@ -20,6 +20,7 @@ const TerminalBuffering = require("../Repositories/CmdRqLog");
 const ProcessAmadeusTerminalInputAction = require("../Transpiled/Rbs/GdsDirect/Actions/Amadeus/ProcessAmadeusTerminalInputAction");
 const Agents = require("../Repositories/Agents");
 const ProcessGalileoTerminalInputAction = require("../Transpiled/Rbs/GdsDirect/Actions/Galileo/ProcessGalileoTerminalInputAction");
+const TooManyRequests = require("../Utils/Rej").TooManyRequests;
 const NotImplemented = require("../Utils/Rej").NotImplemented;
 
 // this is not complete list
@@ -237,8 +238,8 @@ module.exports = async ({session, rqBody, emcUser}) => {
 	let callsLimit = (emcUser.settings || {}).gds_direct_usage_limit || null;
 	if (callsLimit) {
 		let callsUsed = await Agents.getGdsDirectCallsUsed(emcUser.id);
-		if (callsUsed >= callsLimit) {
-			return Promise.reject('Too many calls, ' + callsUsed + ' >= ' + callsLimit + ' in last 24h');
+		if (+callsUsed >= +callsLimit) {
+			return TooManyRequests('Too many calls, ' + callsUsed + ' >= ' + callsLimit + ' in last 24h');
 		}
 	}
 
