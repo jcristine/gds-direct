@@ -33,12 +33,13 @@ let makeBriefRsStr = (response, startMs) => {
 let initSocket = (host) => new Promise((resolve, reject) => {
 	/** @type {Socket} */
 	const socket = io(host);
+	let rejects = new Set();
+	socket.on('message', (data, reply) => {
+		console.log('socket message from GRECT server', data);
+		reply('I confirm this message');
+	});
 	socket.on('connect', () => {
-		console.log('Connected to a Web Socket');
-		socket.on('message', (data, reply) => {
-			console.log('socket message from server', data);
-			reply('I confirm this message');
-		});
+		console.log('Connected to GRECT Web Socket');
 		resolve({
 			send: (url, fetchParams) => new Promise((resolve, reject) => {
 				let data = {
@@ -47,20 +48,23 @@ let initSocket = (host) => new Promise((resolve, reject) => {
 					headers: fetchParams.headers || {},
 				};
 				let startMs = Date.now();
+				rejects.add(reject);
 				socket.send(data, (response) => {
 					let msg = new Date().toISOString() + ' - Socket ' + data.url;
 					msg += makeBriefRsStr(response, startMs)
 						|| ' in ' + ((Date.now() - startMs) / 1000).toFixed(3);
 					console.debug(msg, {rq: data.body, rs: response.body});
 					resolve(response);
+					rejects.delete(reject);
 				});
 			}),
 		});
 	});
-	socket.on('error', (...args) => {
-		console.error('socket error occurred', args);
+	socket.on('disconnect', (...args) => {
+		[...rejects].forEach(rej => rej('Socket Disconnected (prod restart)'));
+		rejects.clear();
+		console.error('socket disconnected', args);
 	});
-	console.debug('Created socket.io instance:', socket);
 });
 
 let getHttpSocket = () => {
