@@ -148,7 +148,7 @@ class TerminalService
 	 * @param {IRbsRunCommandResult} rbsResp
 	 */
 	addHighlighting($command, $language, rbsResp) {
-		let {calledCommands, messages} = rbsResp;
+		let {calledCommands, messages = []} = rbsResp;
 		let typeToMsgs = {};
 		for (let msgRec of messages) {
 			typeToMsgs[msgRec.type] = typeToMsgs[msgRec.type] || [];
@@ -170,13 +170,13 @@ class TerminalService
 					legend: [],
 
 					tabCommands: calledCommands
-						.map(call => call.tabCommands)
+						.map(call => call.tabCommands || [])
 						.reduce((a,b) => a.concat(b), [])
 						.filter(cmd => cmd.trim()),
 					clearScreen: rbsResp.clearScreen || rbsResp.calledCommands
 						.filter(rec => rec.clearScreen).length > 0,
 
-					...rbsResp.sessionInfo,
+					...(rbsResp.sessionInfo || {}),
 					highlightTime: hrtimeToDecimal(process.hrtime(hrtimeStart)),
 					gdsTime: cmdTimes.length > 0 ? cmdTimes.reduce((a,b) => a + b) : null,
 					startNewSession: rbsResp.startNewSession || false,

@@ -103,6 +103,11 @@ let encodeCmdForCms = (gds, cmd) => {
 	return cmd;
 };
 
+let extractTpTabCmds = (output) => {
+	let tabCommands = matchAll(/>([^>\n]+?)(?:·|;)/g, output).map(m => m[1]);
+	return [...new Set(tabCommands)];
+};
+
 let transformCalledCommand = (rec, stateful) => {
 	if (!rec.cmd || !rec.output) {
 		// mostly cases when Promise accidentally returned instead of cmd object
@@ -119,8 +124,7 @@ let transformCalledCommand = (rec, stateful) => {
 			output = wrap(rec.output, gds);
 		}
 		output = encodeTpOutputForCms(output);
-		tabCommands = matchAll(/>([^>]+?)(?:·|;)/g, output).map(m => m[1]);
-		tabCommands = [...new Set(tabCommands)];
+		tabCommands = extractTpTabCmds(rec.output);
 	} else if (gds === 'amadeus') {
 		// they are using past century macs apparently - with just \r as a line break...
 		output = output.replace(/\r\n|\r/g, '\n');
@@ -226,7 +230,7 @@ let useConfigPcc = (grectResult, stateful, agentId, activeAreas) => {
  * @param session = at('GdsSessions.js').makeSessionRecord()
  * @param {{command: '*R'}} rqBody = at('MainController.js').normalizeRqBody()
  */
-module.exports = async ({session, rqBody, emcUser}) => {
+let ProcessTerminalInput = async ({session, rqBody, emcUser}) => {
 	let whenCmdRqId = TerminalBuffering.storeNew(rqBody, session);
 	let stateful = await StatefulSession.makeFromDb({session, whenCmdRqId, emcUser});
 	let cmdRq = rqBody.command;
@@ -266,3 +270,7 @@ module.exports = async ({session, rqBody, emcUser}) => {
 
 	return whenCmsResult;
 };
+
+ProcessTerminalInput.extractTpTabCmds = extractTpTabCmds;
+
+module.exports = ProcessTerminalInput;

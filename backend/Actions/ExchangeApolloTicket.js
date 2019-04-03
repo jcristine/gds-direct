@@ -59,11 +59,11 @@ let parseOutput = (output) => {
  * performs HB:FEX mask action which issues a new ticket from existing ticket or MCO
  * used to partially or fully pay for a new ticket with the old one
  */
-let ExchangeApolloTicket = async ({maskOutput, values, session, maskFields = null}) => {
+let ExchangeApolloTicket = async ({emptyMask, maskOutput, values, session, maskFields = null}) => {
 	let destinationMask = AbstractMaskParser.normalizeMask(maskOutput);
 	let fields = maskFields || FIELDS;
 	let cmd = await AbstractMaskParser.makeCmd({
-		emptyMask: EMPTY_MASK_EXAMPLE,
+		emptyMask: emptyMask,
 		destinationMask: destinationMask,
 		fields, values
 	});
@@ -136,5 +136,7 @@ ExchangeApolloTicket.parseMask = (output) => {
 		};
 	}
 };
+
+ExchangeApolloTicket.EMPTY_MASK_EXAMPLE = EMPTY_MASK_EXAMPLE;
 
 module.exports = ExchangeApolloTicket;

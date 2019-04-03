@@ -10,6 +10,7 @@ let {Forbidden, NotImplemented, LoginTimeOut, NotFound} = require('../Utils/Rej.
 let StatefulSession = require('../GdsHelpers/StatefulSession.js');
 let ProcessTerminalInput = require('../Actions/ProcessTerminalInput.js');
 const MakeMcoApolloAction = require('../Transpiled/Rbs/GdsDirect/Actions/Apollo/MakeMcoApolloAction.js');
+const TerminalService = require('../Transpiled/App/Services/TerminalService.js');
 
 let php = require('../Transpiled/php.js');
 const KeepAlive = require("../Maintenance/KeepAlive");
@@ -25,6 +26,7 @@ const allWrap = require("../Utils/Misc").allWrap;
 const {getConfig} = require('../Config.js');
 const ExchangeApolloTicket = require('../Actions/ExchangeApolloTicket.js');
 const StringUtil = require('../Transpiled/Lib/Utils/StringUtil.js');
+const AbstractMaskParser = require("../Transpiled/Gds/Parsers/Apollo/AbstractMaskParser");
 
 let startByGds = async (gds) => {
 	let tuples = [
@@ -260,6 +262,14 @@ exports.makeMco = async ({rqBody, session, emcUser}) => {
 	}
 };
 
+let makeHbFexRs = (calledCommands, actions = []) => new TerminalService('apollo')
+	.addHighlighting('', 'apollo', {
+		calledCommands: calledCommands.map(cmdRec => ({
+			...cmdRec, tabCommands: ProcessTerminalInput.extractTpTabCmds(cmdRec.output),
+		})),
+		actions: actions,
+	});
+
 exports.exchangeTicket = async ({rqBody, session, emcUser}) => {
 	let maskOutput = rqBody.maskOutput;
 	let values = {};
@@ -271,32 +281,31 @@ exports.exchangeTicket = async ({rqBody, session, emcUser}) => {
 	}
 	let stateful = await StatefulSession.makeFromDb({session, emcUser});
 	let result = await ExchangeApolloTicket({
+		emptyMask: ExchangeApolloTicket.EMPTY_MASK_EXAMPLE,
 		maskOutput, values, session: stateful,
 	});
 	let maskCmd = StringUtil.wrapLinesAt('>' + result.cmd, 64);
 	if (result.status === 'success') {
-		return Promise.resolve({
-			output: maskCmd,
-			calledCommands: [{cmd: '$EX...', output: maskCmd}],
-		});
+		return makeHbFexRs([
+			{cmd: 'HB:FEX', output: maskCmd},
+			{cmd: '$EX...', output: result.output},
+		]);
 	} else if (result.status === 'fareDifference') {
 		// ">$MR       TOTAL ADD COLLECT   USD   783.30",
 		// " /F;..............................................",
-		return Promise.resolve({
-			output: maskCmd,
-			calledCommands: [{cmd: '$EX...', output: maskCmd}],
-			actions: [{
-				type: 'displayExchangeFareDifferenceMask',
-				data: {
-					fields: [{
-						key: 'formOfPayment', value: '', enabled: true,
-					}],
-					currency: result.currency,
-					amount: result.amount,
-					maskOutput: result.output,
-				},
-			}],
-		});
+		return makeHbFexRs([
+			{cmd: 'HB:FEX', output: maskCmd},
+		], [{
+			type: 'displayExchangeFareDifferenceMask',
+			data: {
+				fields: [{
+					key: 'formOfPayment', value: '', enabled: true,
+				}],
+				currency: result.currency,
+				amount: result.amount,
+				maskOutput: result.output,
+			},
+		}]);
 	} else {
 		return UnprocessableEntity('GDS gave ' + result.status + ' - \n' + result.output);
 	}
@@ -313,15 +322,16 @@ exports.confirmExchangeFareDifference = async ({rqBody, session, emcUser}) => {
 	}
 	let stateful = await StatefulSession.makeFromDb({session, emcUser});
 	let result = await ExchangeApolloTicket({
+		emptyMask: AbstractMaskParser.normalizeMask(maskOutput),
 		maskOutput, values, session: stateful,
 		maskFields: rqBody.fields.map(f => f.key),
 	});
 	if (result.status === 'success') {
 		let maskCmd = StringUtil.wrapLinesAt('>' + result.cmd, 64);
-		return Promise.resolve({
-			output: result.output,
-			calledCommands: [{cmd: '$EX...', output: maskCmd}],
-		});
+		return makeHbFexRs([
+			{cmd: '$EX...', output: maskCmd},
+			{cmd: '$MR...', output: result.output},
+		]);
 	} else {
 		return UnprocessableEntity('GDS gave ' + result.status + ' - ' + result.output);
 	}
