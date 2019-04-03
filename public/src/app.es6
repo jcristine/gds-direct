@@ -140,6 +140,42 @@ window.GdsDirectPlusParams = window.GdsDirectPlusParams || {
     auth: null,
 };
 
+let cookies = {
+	get: (key) => {
+		let cookieData = {};
+		for (let pair of document.cookie.split('; ')) {
+			let [key, value] = pair.split('=');
+			cookieData[key] = value;
+		}
+		return cookieData[key];
+	},
+	set: (key, value) => {
+		document.cookie = key + '=' + value;
+	},
+};
+
+/**
+ * I'm going to set Cache-Control: 3600, but I still
+ * want agents to get updated code after refresh
+ */
+let syncJsCache = () => {
+	let versionKey = 'GDS_DIRECT_PLUS_VERSION';
+	let lastVersion = cookies.get(versionKey);
+	fetch(rootUrl + '/public/CURRENT_PRODUCTION_TAG', {
+		headers: {'Cache-Control': 'no-cache'},
+	})	.then(rs => rs.text())
+		.then(currentVersion => {
+			if (currentVersion !== lastVersion) {
+				// update the cached code - on next reload user will get up-to-date js
+				fetch(rootUrl + '/public/terminal-bundle.js', {cache: 'reload'})
+					.then(rs => rs.text())
+					.then(currentCode => {
+						cookies.set(versionKey, currentVersion);
+					});
+			}
+		});
+};
+
 let onEmcSessionId = (emcSessionId, params) => {
 	// probably better would be to pass it through all these abstractions
 	// to the session.es6 instead of making a global variable...
@@ -160,17 +196,13 @@ let onEmcSessionId = (emcSessionId, params) => {
 				.forEach(ph => ph.remove());
 			initGlobEvents(params.htmlRootDom);
 			initThemeStyles(themeData, params.htmlRootDom);
+			syncJsCache();
 			return new GdsDirectPlusApp(params, viewData, themeData);
 		});
 };
 
 let getEmcSessionIdFromCookie = () => {
-	let cookieData = {};
-	for (let pair of document.cookie.split('; ')) {
-		let [key, value] = pair.split('=');
-		cookieData[key] = value;
-	}
-	let emcSessionId = cookieData['GDS_DIRECT_PLUS_AUTH'];
+	let emcSessionId = cookies.get('GDS_DIRECT_PLUS_AUTH');
 	if (!emcSessionId) {
 		return Promise.reject('No EMC session id in cookie');
 	} else {
@@ -200,13 +232,13 @@ window.InitGdsDirectPlusApp = (params) => {
 				}))
 				.then(rs => rs.json()).then(data => data.emcSessionId)
 				.then(emcSessionId => {
-					document.cookie = 'GDS_DIRECT_PLUS_AUTH=' + emcSessionId;
+					cookies.set('GDS_DIRECT_PLUS_AUTH', emcSessionId);
 					return emcSessionId;
 				}))
 			.catch(exc => {
 				window.GdsDirectPlusParams.isForeignProjectEmcId = true;
 				console.error('Failed to cross-authorize token, falling back to CMS auth', exc);
-				document.cookie = 'GDS_DIRECT_PLUS_AUTH=';
+				cookies.set('GDS_DIRECT_PLUS_AUTH', '');
 				return params.emcSessionId
 					? Promise.resolve(params.emcSessionId)
 					: Promise.reject(exc);

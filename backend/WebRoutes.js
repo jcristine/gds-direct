@@ -45,7 +45,7 @@ app.use('/public', (rq, rs, next) => {
 		rs.setHeader('Content-Type', 'application/javascript');
 		// 10 minutes. Should eventually start sending a bg request
 		// to server to invalidate cache if response is not 304
-		rs.setHeader('Cache-Control', 'public, max-age=600');
+		rs.setHeader('Cache-Control', 'public, max-age=3600');
 	} else if (rq.path.endsWith('.css')) {
 		rs.setHeader('Content-Type', 'text/css');
 	} else if (rq.path.endsWith('CURRENT_PRODUCTION_TAG')) {
