@@ -67,7 +67,7 @@ fi;
 
 # update node_modules and build webpack
 ./build.sh
-echo "$nextTag" > public/CURRENT_PRODUCTIION_TAG
+echo "$nextTag" > public/CURRENT_PRODUCTION_TAG
 
 # add node_modules and webpack changes
 git add --force node_modules
