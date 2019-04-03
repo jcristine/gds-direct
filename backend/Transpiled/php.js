@@ -666,7 +666,16 @@ php.array_filter = (obj, func, flags = null) => {
 	return newObj;
 };
 
-let isPlainObject = (val) => val && val.constructor && val.constructor.name === 'Object';
+let isPlainObject = (val) => {
+	if (!val) {
+		return false;
+	} else if (!val.constructor) {
+		// 'asd'.match(/^(?<ololo>[a-z]+)$/).groups.constructor; undefined
+		return Object.keys(val).length > 0;
+	} else {
+		return val.constructor.name === 'Object';
+	}
+};
 php.count = val => Object.values(val).length;
 
 //php.PREG_OFFSET_CAPTURE = 256;

@@ -1392,17 +1392,17 @@ class ProcessApolloTerminalInputAction {
 		let result = {
 			calledCommands: [{
 				cmd: cmd,
-				output: parsed.rawHeader,
+				output: 'SEE MASK FORM BELOW',
 			}],
 			actions: [{
 				type: 'displayExchangeMask',
 				data: {
+					headerData: parsed.headerData,
 					fields: parsed.fields.map(f => ({
 						key: f.key,
 						value: f.value,
 						enabled: !f.value && !readonlyFields.has(f.key),
 					})),
-					currency: parsed.currency,
 					maskOutput: output,
 				},
 			}],

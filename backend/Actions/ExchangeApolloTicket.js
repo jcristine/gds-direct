@@ -77,19 +77,60 @@ let ExchangeApolloTicket = async ({maskOutput, values, session, maskFields = nul
 
 ExchangeApolloTicket.FIELDS = FIELDS;
 
+/** @return {IExchangeApolloTicketParsedMask} */
 ExchangeApolloTicket.parseMask = (output) => {
-	let match = output.match(/^(>\$EX NAME [\s\S]+?)\n\s*\n[\s\S]+TTL VALUE OF EX TKTS ([A-Z]{3})/);
+	let mkReg = (parts) => parts
+		.map(r => typeof r === 'string' ? r : r.source)
+		.join('');
+	//"$EX NAME ARTURS/KLESUNS                     PSGR  1/ 1         ",
+	//"FARE USD   903.40  TOTAL USD   983.30                           ",
+	//"TX1 USD   69.60 US   TX2 USD   14.30 XT   TX3                   ",
+	let regex = new RegExp(mkReg([
+		/^>\$EX NAME\s+/,
+		/(?<lastName>[A-Z][^\/]*)\//,
+		/(?<firstName>[A-Z].*?)\s+/,
+		/PSGR\s*/,
+		/(?<majorNumber>\d+)\/\s*/,
+		/(?<minorNumber>\d+)\s*\n/,
+		/FARE\s+/,
+		/(?<baseFareCurrency>[A-Z]{3})\s*/,
+		/(?<baseFareAmount>\d*\.?\d+)\s*/,
+		/TOTAL\s+/,
+		/(?<netPriceCurrency>[A-Z]{3})\s*/,
+		/(?<netPriceAmount>\d*\.?\d+)\s*/,
+		/(?<equivalentPart>.*?)\s*\n/,
+		/TX1\s+/,
+		'(' + mkReg([
+			/(?<taxCurrency1>[A-Z]{3})\s*/,
+			/(?<taxAmount1>\d*\.?\d+)\s*/,
+			/(?<taxCode1>[A-Z0-9]{2})/,
+		]) + ')?\\s+',
+		/TX2\s+/,
+		'(' + mkReg([
+			/(?<taxCurrency2>[A-Z]{3})\s*/,
+			/(?<taxAmount2>\d*\.?\d+)\s*/,
+			/(?<taxCode2>[A-Z0-9]{2})/,
+		]) + ')?\\s+',
+		/TX3\s+/,
+		'(' + mkReg([
+			/(?<taxCurrency3>[A-Z]{3})\s*/,
+			/(?<taxAmount3>\d*\.?\d+)\s*/,
+			/(?<taxCode3>[A-Z0-9]{2})/,
+		]) + ')?\\s*',
+		/[\s\S]+/,
+		/TTL VALUE OF EX TKTS\s+/,
+		/(?<exchangedTicketCurrency>[A-Z]{3})/,
+	]));
+	let match = output.match(regex);
 	if (!match) {
 		return null;
 	} else {
-		let [_, rawHeader, currency] = match;
 		let normalized = AbstractMaskParser.normalizeMask(output);
 		let parsed = AbstractMaskParser.parseMask(
 			EMPTY_MASK_EXAMPLE, FIELDS, normalized
 		);
 		return {
-			rawHeader: rawHeader,
-			currency: currency,
+			headerData: match.groups,
 			fields: Object.entries(parsed)
 				.map(([key,value]) => ({key, value})),
 		};

@@ -1,6 +1,7 @@
 {
   "env": {
-    "browser": true,
+    // includes some random global vars like "name" (name of the window I guess)
+    //"browser": true,
     "node": false
   },
   "parserOptions": {

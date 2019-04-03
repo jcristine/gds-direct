@@ -3334,17 +3334,37 @@ class ProcessApolloTerminalInputActionTest extends require('../../../../Lib/Test
 				'calledCommands': [
 					{
 						'cmd': 'HB1:FEX',
-						"output": [
-							">$EX NAME UZUMAKI/NARUTO                     PSGR  1/ 1",
-							"FARE USD   901.40  TOTAL USD   983.30",
-							"TX1 USD   67.60 US   TX2 USD   14.30 XT   TX3               "
-						].join("\n"),
+						'output': 'SEE MASK FORM BELOW',
 					},
 				],
 				"actions": [
 					{
 						"type": "displayExchangeMask",
 						"data": {
+							//">$EX NAME UZUMAKI/NARUTO                     PSGR  1/ 1",
+							//"FARE USD   901.40  TOTAL USD   983.30",
+							//"TX1 USD   67.60 US   TX2 USD   14.30 XT   TX3               "
+							"headerData": {
+								lastName: 'UZUMAKI',
+								firstName: 'NARUTO',
+								majorNumber: '1',
+								minorNumber: '1',
+								baseFareCurrency: 'USD',
+								baseFareAmount: '901.40',
+								netPriceCurrency: 'USD',
+								netPriceAmount: '983.30',
+								equivalentPart: '',
+								taxCurrency1: 'USD',
+								taxAmount1: '67.60',
+								taxCode1: 'US',
+								taxCurrency2: 'USD',
+								taxAmount2: '14.30',
+								taxCode2: 'XT',
+								taxCurrency3: undefined,
+								taxAmount3: undefined,
+								taxCode3: undefined,
+								exchangedTicketCurrency: 'USD',
+							},
 							"fields": [
 								{"enabled": true , "key": "exchangedTicketNumber", "value": ""},
 								{"enabled": true , "key": "exchangedTicketExtension", "value": ""},
@@ -3373,7 +3393,6 @@ class ProcessApolloTerminalInputActionTest extends require('../../../../Lib/Test
 								{"enabled": true , "key": "penaltyAmount", "value": ""},
 								{"enabled": true , "key": "commOnPenaltyAmount", "value": ""}
 							],
-							"currency": "USD",
 							"maskOutput": [
 								">$EX NAME UZUMAKI/NARUTO                     PSGR  1/ 1",
 								"FARE USD   901.40  TOTAL USD   983.30",
@@ -3466,17 +3485,37 @@ class ProcessApolloTerminalInputActionTest extends require('../../../../Lib/Test
 				'calledCommands': [
 					{
 						'cmd': 'HB1:FEX016 7293 600184',
-						"output": [
-							">$EX NAME RICO/SRICO                         PSGR  1/ 1",
-							"FARE USD   901.40  TOTAL USD   983.30",
-							"TX1 USD   67.60 US   TX2 USD   14.30 XT   TX3               ",
-						].join("\n"),
+						"output": 'SEE MASK FORM BELOW',
 					},
 				],
 				"actions": [
 					{
 						"type": "displayExchangeMask",
 						"data": {
+							//">$EX NAME RICO/SRICO                         PSGR  1/ 1",
+							//"FARE USD   901.40  TOTAL USD   983.30",
+							//"TX1 USD   67.60 US   TX2 USD   14.30 XT   TX3               ",
+							"headerData": {
+								lastName: 'RICO',
+								firstName: 'SRICO',
+								majorNumber: '1',
+								minorNumber: '1',
+								baseFareCurrency: 'USD',
+								baseFareAmount: '901.40',
+								netPriceCurrency: 'USD',
+								netPriceAmount: '983.30',
+								equivalentPart: '',
+								taxCurrency1: 'USD',
+								taxAmount1: '67.60',
+								taxCode1: 'US',
+								taxCurrency2: 'USD',
+								taxAmount2: '14.30',
+								taxCode2: 'XT',
+								taxCurrency3: undefined,
+								taxAmount3: undefined,
+								taxCode3: undefined,
+								exchangedTicketCurrency: 'USD',
+							},
 							"fields": [
 								{"enabled": true , "key": "exchangedTicketNumber"      , "value": ""},
 								{"enabled": true , "key": "exchangedTicketExtension"   , "value": ""},
@@ -3505,7 +3544,6 @@ class ProcessApolloTerminalInputActionTest extends require('../../../../Lib/Test
 								{"enabled": true , "key": "penaltyAmount"              , "value": ""},
 								{"enabled": true , "key": "commOnPenaltyAmount"        , "value": ""},
 							],
-							"currency": "USD",
 							"maskOutput": [
 								">$EX NAME RICO/SRICO                         PSGR  1/ 1",
 								"FARE USD   901.40  TOTAL USD   983.30",
@@ -3598,17 +3636,37 @@ class ProcessApolloTerminalInputActionTest extends require('../../../../Lib/Test
 				'calledCommands': [
 					{
 					    "cmd": "HB1:FEX016 7289 106161",
-					    "output": [
-					        ">$EX NAME UZUMAKI/NARUTO                     PSGR  1/ 1",
-					        "FARE USD   901.40  TOTAL USD   983.30",
-					        "TX1 USD   67.60 US   TX2 USD   14.30 XT   TX3               ",
-					    ].join("\n"),
+					    "output": 'SEE MASK FORM BELOW',
 					},
 				],
 				"actions": [
 					{
 						"type": "displayExchangeMask",
 						"data": {
+							//">$EX NAME UZUMAKI/NARUTO                     PSGR  1/ 1",
+							//"FARE USD   901.40  TOTAL USD   983.30",
+							//"TX1 USD   67.60 US   TX2 USD   14.30 XT   TX3               ",
+							"headerData": {
+								lastName: 'UZUMAKI',
+								firstName: 'NARUTO',
+								majorNumber: '1',
+								minorNumber: '1',
+								baseFareCurrency: 'USD',
+								baseFareAmount: '901.40',
+								netPriceCurrency: 'USD',
+								netPriceAmount: '983.30',
+								equivalentPart: '',
+								taxCurrency1: 'USD',
+								taxAmount1: '67.60',
+								taxCode1: 'US',
+								taxCurrency2: 'USD',
+								taxAmount2: '14.30',
+								taxCode2: 'XT',
+								taxCurrency3: undefined,
+								taxAmount3: undefined,
+								taxCode3: undefined,
+								exchangedTicketCurrency: 'USD',
+							},
 							"fields": [
 								{"enabled": true , "key": "exchangedTicketNumber", "value": ""},
 								{"enabled": true , "key": "exchangedTicketExtension", "value": ""},
@@ -3637,7 +3695,6 @@ class ProcessApolloTerminalInputActionTest extends require('../../../../Lib/Test
 								{"enabled": true , "key": "penaltyAmount", "value": ""},
 								{"enabled": true , "key": "commOnPenaltyAmount", "value": ""}
 							],
-							"currency": "USD",
 							"maskOutput": [
 								">$EX NAME UZUMAKI/NARUTO                     PSGR  1/ 1",
 								"FARE USD   901.40  TOTAL USD   983.30",

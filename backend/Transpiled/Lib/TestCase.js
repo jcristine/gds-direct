@@ -66,9 +66,9 @@ class TestCase
 			}
 		} else {
 			if (php.is_array($expectation) && !php.is_array($reality)) {
-				$message += ' (actual is not array)';
+				$message += ' (actual is not array/obj)';
 			} else if (!php.is_array($expectation) && php.is_array($reality)) {
-				$message += ' (expected is not array)';
+				$message += ' (expected is not array/obj)';
 			}
 			this.assertSame($expectation, $reality, $message);
 		}
