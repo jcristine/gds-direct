@@ -56,7 +56,7 @@ let dataToDom = (data) => {
 				Cmp('div').attach([ // "COMM;.........  ORIG FOP;................... EVEN;.             ",
 					Fld('COMM', 'commission', 9),
 					Fld('ORIG FOP', 'originalFormOfPayment', 19),
-					Fld('EVEN', 'evenIndicator', 2),
+					Fld('EVEN', 'evenIndicator', 1),
 				]),
 				Cmp('div').attach([ // "                                                                ",
 					Cmp('span', {innerHTML: '&nbsp;'}),
