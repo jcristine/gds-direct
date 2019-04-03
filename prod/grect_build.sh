@@ -73,7 +73,7 @@ echo "$nextTag" > public/CURRENT_PRODUCTION_TAG
 git add --force node_modules
 git add --force public/terminal-bundle.js
 git add --force public/terminal-bundle.js.map
-git add --force public/CURRENT_PRODUCTIION_TAG
+git add --force public/CURRENT_PRODUCTION_TAG
 
 # commit vendor changes
 git commit -m "Update node_modules and webpack output for ${nextTag}"
