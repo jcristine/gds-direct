@@ -30,7 +30,13 @@ const makeRule		= (rule, key, isPattern = '') => {
 		if (hasBrokenTokens(fullStr.slice(0, offset))) {
 			return match; // skip this match
 		} else {
-			return `[[;;;${className}]${replaceChar(rule.value, '%')}]`; // creates span like span.usedCommand term-highlight replace_0
+			let tokenText = replaceChar(rule.value, '%');
+			// $().terminal format does not support line breaks inside [[;;;cls]content]
+			return (tokenText || '')
+				.split('\n')
+				// creates span like span.usedCommand term-highlight replace_0
+				.map(part => `[[;;;${className}]${part}]`)
+				.join('\n');
 		}
 	};
 };
@@ -101,7 +107,7 @@ export const seedOutputString = (outputText, appliedRules) => {
 
 	appliedRules.forEach(loop);
 
-	return {tips, outputText}
+	return {tips, outputText};
 };
 
 export const replaceInTerminal = ($div, tips) => {
