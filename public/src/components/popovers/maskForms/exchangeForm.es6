@@ -16,7 +16,13 @@ let dataToDom = (data) => {
 		let cls = enableds[name] ? '.enabled' : '';
 		let fld = Cmp('span' + cls);
 		let inp;
-		inp = Cmp('input', {type: 'text', value: values[name], name: name, placeholder: '.'.repeat(size || 0)});
+		inp = Cmp('input', {
+			type: 'text',
+			value: values[name],
+			name: name,
+			placeholder: '.'.repeat(size || 0),
+			...(size ? {maxLength: size} : {}),
+		});
 		if (!enableds[name]) {
 			inp.context.setAttribute('disabled', 'disabled');
 		}

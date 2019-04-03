@@ -298,7 +298,7 @@ exports.exchangeTicket = async ({rqBody, session, emcUser}) => {
 			}],
 		});
 	} else {
-		return UnprocessableEntity('GDS returned ' + result.status + ' - \n' + result.output);
+		return UnprocessableEntity('GDS gave ' + result.status + ' - \n' + result.output);
 	}
 };
 
@@ -323,7 +323,7 @@ exports.confirmExchangeFareDifference = async ({rqBody, session, emcUser}) => {
 			calledCommands: [{cmd: '$EX...', output: maskCmd}],
 		});
 	} else {
-		return UnprocessableEntity('GDS returned ' + result.status + ' - ' + result.output);
+		return UnprocessableEntity('GDS gave ' + result.status + ' - ' + result.output);
 	}
 };
 
