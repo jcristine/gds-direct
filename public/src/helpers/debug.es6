@@ -15,23 +15,36 @@ export const Debug = (txt, type) => {
 	}).show();
 };
 
+let codeToDescr = {
+	204: {severity: 'warning', name: 'NoContent'},
+	400: {severity: 'error'  , name: 'BadRequest'},
+	401: {severity: 'error'  , name: 'NotAuthorized'},
+	403: {severity: 'error'  , name: 'Forbidden'},
+	404: {severity: 'error'  , name: 'NotFound'},
+	409: {severity: 'error'  , name: 'Conflict'}, // if tried to call a command when session is locked by other process
+	422: {severity: 'error'  , name: 'UnprocessableEntity'}, // GDS error usually
+	429: {severity: 'warning', name: 'TooManyRequests'}, // too many total opened session, too many FS calls used, etc...
+	440: {severity: 'warning', name: 'LoginTimeOut'}, // on /terminal/keepAlive usually
+	500: {severity: 'error'  , name: 'InternalServerError'},
+	501: {severity: 'error'  , name: 'NotImplemented'},
+	502: {severity: 'error'  , name: 'BadGateway'},
+	520: {severity: 'error'  , name: 'UnknownError'}, // catch-all response
+};
+
 export const debugRequest = (url, err, status = null) => {
 	url = url.split('?')[0];
-	let type = {
-		440: 'warning', // LoginTimeOut, on /terminal/keepAlive usually
-		500: 'error', // InternalServerError
-		502: 'error', // BadGateway
-		520: 'error', // catch-all response
-	}[status] || 'error';
+	let descr = codeToDescr[status];
+	let type = descr ? descr.severity : 'error';
+	let name = descr ? descr.name : 'HTTP ERROR';
 	new Noty({
-		text	: `ERROR ${status}: ${err} - on ${url}`,
+		text	: `${err} - ${name} - on ${url}`,
 		layout 	: 'bottomRight',
 		timeout : 20000,
 		type 	: type,
 		progressBar : false,
 		animation: {
 			open	: 'animated fadeIn', // Animate.css class names
-			close	: 'animated fadeOut' // Animate.css class names
+			close	: 'animated fadeOut', // Animate.css class names
 		}
 	}).show();
 
