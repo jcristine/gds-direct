@@ -114,7 +114,7 @@ const Ask = (url, fetchParams) => {
 				console.log("HTTP request ERROR:   ", body);
 
 				let error = body.error || JSON.stringify(body);
-				let msg = 'Request error - ' + error.slice(0, 300);
+				let msg = error.slice(0, 300);
 				if (!fetchParams.skipErrorPopup) {
 					debugRequest(url, msg, status);
 				}
