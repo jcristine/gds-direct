@@ -1388,7 +1388,7 @@ class ProcessApolloTerminalInputAction {
 		}
 	}
 
-	async prepareHbFexMask(storeNumber, ticketNumber) {
+	async prepareHbFexMask(storeNumber = '', ticketNumber = '') {
 		let agent = this.stateful.getAgent();
 		if (!agent.canIssueTickets()) {
 			return {'errors': ['You have no ticketing rights']};
@@ -1455,7 +1455,7 @@ class ProcessApolloTerminalInputAction {
 			return this.prepareMcoMask();
 		} else if (php.preg_match(/^HB(\d*):FEX\s*([\d\s]{13,}|)$/, $cmd, $matches = [])) {
 			let [_, storeNumber, ticketNumber] = $matches;
-			return this.prepareHbFexMask(storeNumber || 1, ticketNumber || null);
+			return this.prepareHbFexMask(storeNumber, ticketNumber || '');
 		} else if (php.preg_match(/^SORT$/, $cmd, $matches = [])) {
 			return this.processSortItinerary();
 		} else if ($alias['type'] === 'rebookInPcc') {
