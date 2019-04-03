@@ -35,10 +35,6 @@ let toHandleHttp = (httpAction) => (req, res) => {
 			let excData = getExcData(exc);
 			if (typeof excData === 'string') {
 				excData = new Error('HTTP action failed - ' + excData);
-			} else {
-				excData.message = 'HTTP action failed - ' + excData.message;
-				let cause = excData.stack ? '\nCaused by:\n' + excData.stack : '';
-				excData.stack = new Error().stack + cause;
 			}
 			excData.httpStatusCode = exc.httpStatusCode || 520;
 			return Promise.reject(excData);
@@ -58,7 +54,7 @@ let toHandleHttp = (httpAction) => (req, res) => {
 			exc = exc || 'Empty error ' + exc;
 			res.status(exc.httpStatusCode || 500);
 			res.setHeader('Content-Type', 'application/json');
-			res.send(php.json_encode({error: exc.message || exc + ''}));
+			res.send(php.json_encode({error: (exc.message || exc + '').replace(/^Error: /, '')}));
 			let errorData = getExcData(exc, {
 				message: exc.message || '' + exc,
 				httpStatusCode: exc.httpStatusCode,
