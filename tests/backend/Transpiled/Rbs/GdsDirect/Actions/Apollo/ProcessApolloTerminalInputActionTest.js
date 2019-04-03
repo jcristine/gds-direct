@@ -3333,7 +3333,7 @@ class ProcessApolloTerminalInputActionTest extends require('../../../../Lib/Test
 				'status': 'executed',
 				'calledCommands': [
 					{
-						'cmd': 'HB1:FEX',
+						'cmd': 'HB:FEX',
 						'output': 'SEE MASK FORM BELOW',
 					},
 				],
@@ -3453,7 +3453,7 @@ class ProcessApolloTerminalInputActionTest extends require('../../../../Lib/Test
 					    ].join("\n"),
 					},
 					{
-					    "cmd": "HB1:FEX",
+					    "cmd": "HB:FEX",
 						"output": [
 							">$EX NAME UZUMAKI/NARUTO                     PSGR  1/ 1",
 							"FARE USD   901.40  TOTAL USD   983.30",
@@ -3484,7 +3484,7 @@ class ProcessApolloTerminalInputActionTest extends require('../../../../Lib/Test
 				'status': 'executed',
 				'calledCommands': [
 					{
-						'cmd': 'HB1:FEX016 7293 600184',
+						'cmd': 'HB:FEX016 7293 600184',
 						"output": 'SEE MASK FORM BELOW',
 					},
 				],
@@ -3492,6 +3492,7 @@ class ProcessApolloTerminalInputActionTest extends require('../../../../Lib/Test
 					{
 						"type": "displayExchangeMask",
 						"data": {
+							"mcoRows": [],
 							//">$EX NAME RICO/SRICO                         PSGR  1/ 1",
 							//"FARE USD   901.40  TOTAL USD   983.30",
 							//"TX1 USD   67.60 US   TX2 USD   14.30 XT   TX3               ",
@@ -3604,7 +3605,7 @@ class ProcessApolloTerminalInputActionTest extends require('../../../../Lib/Test
 					    ].join("\n"),
 					},
 					{
-					    "cmd": "HB1:FEX016 7293 600184",
+					    "cmd": "HB:FEX016 7293 600184",
 						"output": [
 							">$EX NAME RICO/SRICO                         PSGR  1/ 1",
 							"FARE USD   901.40  TOTAL USD   983.30",
@@ -3635,7 +3636,7 @@ class ProcessApolloTerminalInputActionTest extends require('../../../../Lib/Test
 				'status': 'executed',
 				'calledCommands': [
 					{
-					    "cmd": "HB1:FEX016 7289 106161",
+					    "cmd": "HB:FEX016 7289 106161",
 					    "output": 'SEE MASK FORM BELOW',
 					},
 				],
@@ -3643,6 +3644,7 @@ class ProcessApolloTerminalInputActionTest extends require('../../../../Lib/Test
 					{
 						"type": "displayExchangeMask",
 						"data": {
+							"mcoRows": [],
 							//">$EX NAME UZUMAKI/NARUTO                     PSGR  1/ 1",
 							//"FARE USD   901.40  TOTAL USD   983.30",
 							//"TX1 USD   67.60 US   TX2 USD   14.30 XT   TX3               ",
@@ -3744,7 +3746,7 @@ class ProcessApolloTerminalInputActionTest extends require('../../../../Lib/Test
 				],
 				'performedCommands': [
 					{
-					    "cmd": "HB1:FEX016 7289 106161",
+					    "cmd": "HB:FEX016 7289 106161",
 					    "output": [
 					        ">$EX NAME UZUMAKI/NARUTO                     PSGR  1/ 1",
 					        "FARE USD   901.40  TOTAL USD   983.30",
@@ -3759,6 +3761,185 @@ class ProcessApolloTerminalInputActionTest extends require('../../../../Lib/Test
 					        "ORIG ISS;SFO....ORIG DATE;02APR19 ORIG IATA NBR;00000000 ",
 					        "ORIG TKT;0161111111111.-;...  ORIG INV NBR;.........",
 					        "PENALTY USD;............  COMM ON PENALTY;...........",
+					        "><"
+					    ].join("\n"),
+					},
+				],
+			},
+		});
+
+		$list.push({
+			'input': {
+				'title': 'HB:FEX with MCO document number completion data',
+				'cmdRequested': 'HB2:FEX',
+			},
+			'output': {
+				'status': 'executed',
+				'calledCommands': [
+					{
+					    "cmd": "HB2:FEX",
+					    "output": 'SEE MASK FORM BELOW',
+					},
+				],
+				"actions": [
+					{
+						"type": "displayExchangeMask",
+						"data": {
+							"mcoRows": [
+								{
+									"command": "*MCO2",
+									"passengerName": "ARTUS/KL",
+									"documentNumber": "0065056180984",
+									"issueDate": {"raw": "03APR19", "parsed": "2019-04-03"},
+									"amount": "100.00"
+								}
+							],
+							"headerData": {
+								"lastName": "ARTUS",
+								"firstName": "KLESUN",
+								"majorNumber": "1",
+								"minorNumber": "1",
+								"baseFareCurrency": "USD",
+								"baseFareAmount": "617.68",
+								"netPriceCurrency": "USD",
+								"netPriceAmount": "678.30",
+								"equivalentPart": "",
+								"taxCurrency1": "USD",
+								"taxAmount1": "46.32",
+								"taxCode1": "US",
+								"taxCurrency2": "USD",
+								"taxAmount2": "14.30",
+								"taxCode2": "XT",
+								"taxCurrency3": undefined,
+								"taxAmount3": undefined,
+								"taxCode3": undefined,
+								"exchangedTicketCurrency": "USD"
+							},
+							"fields": [
+								{"key": "exchangedTicketNumber", "value": "", "enabled": true},
+								{"key": "exchangedTicketExtension", "value": "", "enabled": true},
+								{"key": "ticketNumber1", "value": "", "enabled": true},
+								{"key": "couponNumber1", "value": "", "enabled": true},
+								{"key": "ticketNumber2", "value": "", "enabled": true},
+								{"key": "couponNumber2", "value": "", "enabled": true},
+								{"key": "commission", "value": "", "enabled": true},
+								{"key": "originalFormOfPayment", "value": "", "enabled": true},
+								{"key": "evenIndicator", "value": "", "enabled": true},
+								{"key": "exchangedTicketTotalValue", "value": "", "enabled": true},
+								{"key": "originalBoardPoint", "value": "", "enabled": false},
+								{"key": "originalOffPoint", "value": "", "enabled": false},
+								{"key": "taxAmount1", "value": "", "enabled": true},
+								{"key": "taxCode1", "value": "", "enabled": true},
+								{"key": "taxAmount2", "value": "", "enabled": true},
+								{"key": "taxCode2", "value": "", "enabled": true},
+								{"key": "taxAmount3", "value": "", "enabled": true},
+								{"key": "taxCode3", "value": "", "enabled": true},
+								{"key": "originalIssuePoint", "value": "", "enabled": true},
+								{"key": "originalIssueDate", "value": "", "enabled": true},
+								{"key": "originalAgencyIata", "value": "", "enabled": false},
+								{"key": "originalTicketStar", "value": "", "enabled": true},
+								{
+									"key": "originalTicketStarExtension",
+									"value": "",
+									"enabled": false
+								},
+								{"key": "originalInvoiceNumber", "value": "", "enabled": false},
+								{"key": "penaltyAmount", "value": "", "enabled": true},
+								{"key": "commOnPenaltyAmount", "value": "", "enabled": true}
+							],
+							"maskOutput": [
+								">$EX NAME ARTUS/KLESUN                       PSGR  1/ 1",
+								"FARE USD   617.68  TOTAL USD   678.30",
+								"TX1 USD   46.32 US   TX2 USD   14.30 XT   TX3               ",
+								"",
+								"EXCHANGE TKTS ;..............-;...  CPN ALL",
+								"TKT1;.............. CPN;.... TKT2;.............. CPN;....",
+								"COMM;.........  ORIG FOP;................... EVEN;.",
+								"",
+								"TTL VALUE OF EX TKTS USD;.............  ORIG BRD/OFF;...;...",
+								"TX1 USD;.......;..   TX2 USD;.......;..   TX3 USD;.......;..",
+								"ORIG ISS;...... ORIG DATE;....... ORIG IATA NBR;.........",
+								"ORIG TKT;..............-;...  ORIG INV NBR;.........",
+								"PENALTY USD;............  COMM ON PENALTY;...........",
+								"><"
+							].join("\n")
+						}
+					}
+				],
+			},
+			'sessionInfo': {
+				'initialState': php.array_merge(GdsDirectDefaults.makeDefaultApolloState(), {
+					'agent_id': 8050,
+					'has_pnr': true,
+					'is_pnr_stored': true,
+					'pcc': '2F3K',
+					'record_locator': 'Q5FHPH',
+				}),
+				'initialCommands': [],
+				'performedCommands': [
+					{
+					    "cmd": "*R",
+					    "output": [
+					        "RICO@TEST",
+					        "Q5FHPH/WS QSBYC DPBVWS  AG 05578602 03APR",
+					        " 1.1BITCA/IURI  2.1ARTUS/KLESUN ",
+					        " 1 DL 585Y 25SEP SFOLAX HK2   615A  747A *         WE   E",
+					        "FONE-SFO1",
+					        "FOP:-AXXXXXXXXXXXX1052/D0223/*124259",
+					        "TKTG-T/QSB 03APR1437Z WS AG *",
+					        "*** TIN REMARKS EXIST *** >*T; ",
+					        "*** MISCELLANEOUS DOCUMENT DATA EXISTS *** >*MPD; ",
+					        "*** LINEAR FARE DATA EXISTS *** >*LF; ",
+					        "1/ATFQ-UTCC/$BN1/:N/Z0/FEX/ET/TA2F3K/CDL",
+					        " FQ-USD 617.68/USD 46.32US/USD 14.30XT/USD 678.30 - 3APR Y0",
+					        "2/ATFQ-UTCC/$BN2/:N/Z0/FEX/ET/TA2F3K/CDL",
+					        ")><"
+					    ].join("\n"),
+					},
+					{
+					    "cmd": "MR",
+					    "output": [
+					        " FQ-USD 617.68/USD 46.32US/USD 14.30XT/USD 678.30 - 3APR Y0",
+					        "GFAX-SSRDOCSDLHK1/////10MAY90/M//RICO/SRICO-1BITCA/IURI",
+					        "   2 SSRDOCSDLHK1/////10MAY90/M//RICO/SRICO-1ARTUS/KLESUN",
+					        "   3 SSRADTK1VTODL BY 26AUG 2359 SFO OTHERWISE MAY BE XLD",
+					        "   4 SSRADTK1VTODL BY 26AUG FARE MAY NEED EARLIER TKT DTE",
+					        "RMKS-GD-RICO/5820 IN 2F3K",
+					        "ACKN-DL JLYTZO   03APR 1427",
+					        "><"
+					    ].join("\n"),
+					},
+					{
+					    "cmd": "HB2:FEX",
+					    "output": [
+					        ">$EX NAME ARTUS/KLESUN                       PSGR  1/ 1",
+					        "FARE USD   617.68  TOTAL USD   678.30",
+					        "TX1 USD   46.32 US   TX2 USD   14.30 XT   TX3               ",
+					        "",
+					        "EXCHANGE TKTS ;..............-;...  CPN ALL",
+					        "TKT1;.............. CPN;.... TKT2;.............. CPN;....",
+					        "COMM;.........  ORIG FOP;................... EVEN;.",
+					        "",
+					        "TTL VALUE OF EX TKTS USD;.............  ORIG BRD/OFF;...;...",
+					        "TX1 USD;.......;..   TX2 USD;.......;..   TX3 USD;.......;..",
+					        "ORIG ISS;...... ORIG DATE;....... ORIG IATA NBR;.........",
+					        "ORIG TKT;..............-;...  ORIG INV NBR;.........",
+					        "PENALTY USD;............  COMM ON PENALTY;...........",
+					        "><"
+					    ].join("\n"),
+					    "duration": "1.634242412",
+					    "type": "issueTickets",
+					    "scrolledCmd": "HB2:FEX",
+					    "state": {"area":"A","pcc":"2F3K","record_locator":"Q5FHPH","can_create_pq":false,"pricing_cmd":null,"has_pnr":true,"is_pnr_stored":true,"cmdType":"issueTickets","scrolledCmd":"HB2:FEX"}
+					},
+					{
+					    "cmd": "*MPD",
+					    "output": [
+					        "*MPD             MISCELLANEOUS DOCUMENT LIST",
+					        "          NAME         DOCUMENT NBR   ISSUED       AMOUNT",
+					        ">*MCO1;   BITCA/IU    0065056180983   03APR19          100.00 ",
+					        ">*MCO2;   ARTUS/KL    0065056180984   03APR19          100.00 ",
+					        "END OF DISPLAY",
 					        "><"
 					    ].join("\n"),
 					},
