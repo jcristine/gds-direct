@@ -8,6 +8,7 @@ class ExchangeApolloTicketTest extends require('../Transpiled/Lib/TestCase.js')
 
 		testCases.push({
 			input: {
+				emptyMask: ExchangeApolloTicket.EMPTY_MASK_EXAMPLE,
 				maskOutput: [
 					">$EX NAME ARTURS/KLESUNS                     PSGR  1/ 1",
 					"FARE USD   901.40  TOTAL USD   983.30",
@@ -76,6 +77,7 @@ class ExchangeApolloTicketTest extends require('../Transpiled/Lib/TestCase.js')
 		// failed with null-pointer exception on mask generation
 		testCases.push({
 			input: {
+				emptyMask: ExchangeApolloTicket.EMPTY_MASK_EXAMPLE,
 				maskOutput: [
 					">$EX NAME RICO/SRICO                         PSGR  1/ 1",
 					"FARE USD   617.68  TOTAL USD   678.30",
