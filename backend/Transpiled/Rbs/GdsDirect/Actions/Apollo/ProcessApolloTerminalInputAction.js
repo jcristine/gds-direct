@@ -41,6 +41,7 @@ const RetrieveApolloTicketsAction = require('../../../../Rbs/Process/Apollo/Impo
 
 let php = require('../../../../php.js');
 const ExchangeApolloTicket = require("../../../../../Actions/ExchangeApolloTicket");
+const McoListParser = require("../../../../Gds/Parsers/Apollo/Mco/McoListParser");
 
 class ProcessApolloTerminalInputAction {
 	useXml($flag) {
@@ -1369,6 +1370,24 @@ class ProcessApolloTerminalInputAction {
 		return $result;
 	}
 
+	/** @param {ApolloPnr} pnr */
+	async getMcoRows(pnr, headerData) {
+		if (!pnr.hasMcoInfo()) {
+			return [];
+		}
+		let cmdRec = await fetchAll('*MPD', this.stateful);
+		let parsed = McoListParser.parse(cmdRec.output);
+		if (parsed.error) {
+			return UnprocessableEntity('Bad *MPD reply - ' + parsed.error);
+		} else {
+			return parsed.mcoRows.filter(mcoRow => {
+				let [lnme, fnme] = mcoRow.passengerName.split('/');
+				return headerData.lastName.startsWith(lnme)
+					&& headerData.firstName.startsWith(fnme);
+			});
+		}
+	}
+
 	async prepareHbFexMask(storeNumber, ticketNumber) {
 		let agent = this.stateful.getAgent();
 		if (!agent.canIssueTickets()) {
@@ -1397,6 +1416,8 @@ class ProcessApolloTerminalInputAction {
 			actions: [{
 				type: 'displayExchangeMask',
 				data: {
+					mcoRows: ticketNumber ? [] : await
+						this.getMcoRows(pnr, parsed.headerData),
 					headerData: parsed.headerData,
 					fields: parsed.fields.map(f => ({
 						key: f.key,

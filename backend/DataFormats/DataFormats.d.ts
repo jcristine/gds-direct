@@ -571,6 +571,13 @@ interface IGdsProfileMap {
 }
 
 type IExchangeApolloTicketParsedMask = {
+    mcoRows: [{
+        command: '*MCO1',
+        passengerName: 'BITCA/IU',
+        documentNumber: '0065056180983',
+        issueDate: {raw: '03APR19', parsed: '2019-04-03'},
+        amount: '100.00',
+    }],
     headerData: {
         lastName: string,
         firstName: string,

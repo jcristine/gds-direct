@@ -12,6 +12,8 @@ let php = require('../../../../php.js');
  * '          NAME         DOCUMENT NBR   ISSUED       AMOUNT',
  * '>*MCO1;   CALSADA/    9885053117301   28FEB18          713.00',
  * '>*MCO2;   CALSADA/    9885053117302   28FEB18          713.00',
+ * '>*MCO1;   MONTENEG    1395056219091   21MAR19          610.28',
+ * '>*MCO1·   BITCA/IU    0065056180983   03APR19          100.00',
  * 'END OF DISPLAY',
  */
 class McoListParser

@@ -1,5 +1,8 @@
 
 let Component = require('../../../modules/component.es6').default;
+let Cmp = (...args) => new Component(...args);
+
+let lastUniqueId = 0;
 
 /** @param {IExchangeApolloTicketParsedMask} data */
 let dataToDom = (data) => {
@@ -12,7 +15,13 @@ let dataToDom = (data) => {
 	let head = data.headerData;
 	let currency = head.exchangedTicketCurrency;
 
-	let Cmp = (...args) => new Component(...args);
+	let datalistId = 'mco-doc-nums-' + (++lastUniqueId);
+	let datalistDom = Cmp('datalist', {id: datalistId})
+		.attach(data.mcoRows.map(mcoRow => Cmp('option', {
+			value: mcoRow.documentNumber,
+		}))).context;
+
+	let onTickNum = (ticketNumber) => {};
 
 	let Fld = (caption, name, size) => {
 		let cls = enableds[name] ? '.enabled' : '';
@@ -28,10 +37,17 @@ let dataToDom = (data) => {
 		if (!enableds[name]) {
 			inp.context.setAttribute('disabled', 'disabled');
 		}
+		inp.context.setAttribute('size', size);
+		if (name === 'ticketNumber1') {
+			inp.context.setAttribute('list', datalistId);
+			inp.context.setAttribute('size', size + 2); // extend for completion arrow
+			// remove browser input value caching
+			inp.context.setAttribute('autocomplete', 'off');
+			inp.context.oninput = () => onTickNum(inp.context.value);
+		}
 		fld.attach([
 			Cmp('label[' + caption + ']'), inp,
 		]);
-		inp.context.setAttribute('size', size);
 		fld.context.setAttribute('data-field-name', name);
 		return fld;
 	};
@@ -79,6 +95,7 @@ let dataToDom = (data) => {
 				]),
 				Cmp('div').attach([ // "TKT1;.............. CPN;.... TKT2;.............. CPN;....       ",
 					Cmp('span').attach([
+						Cmp({context: datalistDom}),
 						Fld('TKT1', 'ticketNumber1', 14),
 						Fld('CPN', 'couponNumber1', 4),
 					]),
@@ -140,6 +157,16 @@ let dataToDom = (data) => {
 		]),
 		Cmp('br', {clear: 'all'}),
 	]);
+
+	onTickNum = (ticketNumber) => data.mcoRows
+		.filter(mcoRow => mcoRow.documentNumber == ticketNumber)
+		.forEach(mcoRow => {
+			[...formCmp.context.querySelectorAll('input[name="exchangedTicketTotalValue"]')]
+				.forEach(inp => inp.value = inp.value || mcoRow.amount);
+			[...formCmp.context.querySelectorAll('input[name="originalIssueDate"]')]
+				.forEach(inp => inp.value = inp.value || mcoRow.issueDate.raw);
+		});
+
 	return formCmp;
 };
 let domToData = (mcoForm) => {

@@ -272,7 +272,7 @@ export default class TerminalPlugin
 				}));
 		}});
 		this.context.appendChild(formCmp.context);
-		let inp = formCmp.context.querySelector('input:not([disabled]):not([type="hidden"])');
+		let inp = formCmp.context.querySelector('input[name="ticketNumber1"]');
 		if (inp) {
 			inp.focus();
 		}
