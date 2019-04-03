@@ -48,6 +48,8 @@ app.use('/public', (rq, rs, next) => {
 		rs.setHeader('Cache-Control', 'public, max-age=600');
 	} else if (rq.path.endsWith('.css')) {
 		rs.setHeader('Content-Type', 'text/css');
+	} else if (rq.path.endsWith('CURRENT_PRODUCTION_TAG')) {
+		rs.setHeader('Content-Type', 'text/plain');
 	}
 	next();
 });
