@@ -17,10 +17,14 @@ let dataToDom = (data) => {
 
 	let datalistId = 'mco-doc-nums-' + (++lastUniqueId);
 	let datalistDom = Cmp('datalist', {id: datalistId})
-		.attach(data.mcoRows.map(mcoRow => Cmp('option', {
-			value: mcoRow.documentNumber,
-			textContent: mcoRow.documentNumber + ' ' + mcoRow.command,
-		}))).context;
+		.attach(data.mcoRows.map(mcoRow => {
+			let name = !mcoRow.fullData ? mcoRow.passengerName :
+						mcoRow.fullData.passengerName;
+			return Cmp('option', {
+				value: mcoRow.documentNumber,
+				textContent: mcoRow.documentNumber + ' ' + mcoRow.command + ' ' + name,
+			});
+		})).context;
 
 	let onTickNum = (ticketNumber) => {};
 
