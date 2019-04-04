@@ -59,7 +59,7 @@ export default class Session
 
 		lastUsedAt = window.performance.now();
 		callInProgress = true;
-		return post('/terminal/command?cmd=' + cmd, makeParams(this, {command: cmd}))
+		return post('/terminal/command?cmd=' + cmd, makeParams(this, {command: cmd, skipErrorPopup: true}))
 			.catch(formatSystemError)
 			.then(result => {
 				closed = false;
