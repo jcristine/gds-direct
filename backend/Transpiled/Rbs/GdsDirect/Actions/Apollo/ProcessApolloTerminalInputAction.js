@@ -42,6 +42,7 @@ const RetrieveApolloTicketsAction = require('../../../../Rbs/Process/Apollo/Impo
 let php = require('../../../../php.js');
 const ExchangeApolloTicket = require("../../../../../Actions/ExchangeApolloTicket");
 const McoListParser = require("../../../../Gds/Parsers/Apollo/Mco/McoListParser");
+const McoMaskParser = require("../../../../Gds/Parsers/Apollo/Mco/McoMaskParser");
 
 class ProcessApolloTerminalInputAction {
 	useXml($flag) {
@@ -1370,6 +1371,31 @@ class ProcessApolloTerminalInputAction {
 		return $result;
 	}
 
+	/** @param {string} passengerName = 'LONGLONG' || 'BITCA/IU' || 'BITCA/IURI' */
+	matchesMcoName(passengerName, headerData) {
+		let [lnme, fnme] = passengerName.split('/');
+		return headerData.lastName.startsWith(lnme)
+			&& headerData.firstName.startsWith(fnme);
+	}
+
+	async filterMcoRowsByMask(matchingPartial, headerData) {
+		let matchingFull = [];
+		for (let mcoRow of matchingPartial) {
+			if (mcoRow.command) {
+				let cmd = mcoRow.command;
+				let mcoDump = (await fetchAll(cmd, this)).output;
+				let parsed = McoMaskParser.parse(mcoDump);
+				if (parsed.error) {
+					return UnprocessableEntity('Bad ' + cmd + ' reply - ' + parsed.error);
+				} else if (this.matchesMcoName(parsed.passengerName, headerData)) {
+					mcoRow.fullData = parsed;
+					matchingFull.push(mcoRow);
+				}
+			}
+		}
+		return matchingFull;
+	}
+
 	/** @param {ApolloPnr} pnr */
 	async getMcoRows(pnr, headerData) {
 		if (!pnr.hasMcoInfo()) {
@@ -1379,12 +1405,16 @@ class ProcessApolloTerminalInputAction {
 		let parsed = McoListParser.parse(cmdRec.output);
 		if (parsed.error) {
 			return UnprocessableEntity('Bad *MPD reply - ' + parsed.error);
+		}
+		let matchingPartial = parsed.mcoRows.filter(mcoRow => {
+			return this.matchesMcoName(mcoRow.passengerName, headerData);
+		});
+		if (matchingPartial.length <= 1) {
+			return matchingPartial;
 		} else {
-			return parsed.mcoRows.filter(mcoRow => {
-				let [lnme, fnme] = mcoRow.passengerName.split('/');
-				return headerData.lastName.startsWith(lnme)
-					&& headerData.firstName.startsWith(fnme);
-			});
+			// multiple paxes with name starting with same 8 letters
+			return this.filterMcoRowsByMask(matchingPartial, headerData)
+				.catch(exc => matchingPartial);
 		}
 	}
 
