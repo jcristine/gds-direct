@@ -1366,9 +1366,6 @@ class ProcessApolloTerminalInputAction {
 				},
 			],
 		};
-		if (!$agent.canSeeCcNumbers()) {
-			$result = Misc.maskCcNumbers($result);
-		}
 		return $result;
 	}
 

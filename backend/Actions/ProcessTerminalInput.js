@@ -20,6 +20,8 @@ const TerminalBuffering = require("../Repositories/CmdRqLog");
 const ProcessAmadeusTerminalInputAction = require("../Transpiled/Rbs/GdsDirect/Actions/Amadeus/ProcessAmadeusTerminalInputAction");
 const Agents = require("../Repositories/Agents");
 const ProcessGalileoTerminalInputAction = require("../Transpiled/Rbs/GdsDirect/Actions/Galileo/ProcessGalileoTerminalInputAction");
+const GdsDirect = require("../Transpiled/Rbs/GdsDirect/GdsDirect");
+const BadRequest = require("../Utils/Rej").BadRequest;
 const TooManyRequests = require("../Utils/Rej").TooManyRequests;
 const NotImplemented = require("../Utils/Rej").NotImplemented;
 
@@ -129,9 +131,6 @@ let transformCalledCommand = (rec, stateful) => {
 		// they are using past century macs apparently - with just \r as a line break...
 		output = output.replace(/\r\n|\r/g, '\n');
 	}
-	if (!agent.canSeeCcNumbers()) {
-		output = Misc.maskCcNumbers(output);
-	}
 	if (!agent.canSeeContactInfo()) {
 		output = CommonDataHelper.maskSsrContactInfo(output);
 	}
@@ -146,7 +145,7 @@ let transformCalledCommand = (rec, stateful) => {
 	};
 };
 
-let runCmdRq =  async (inputCmd, stateful) => {
+let runByGds = async (inputCmd, stateful) => {
 	let gdsResult;
 	if (stateful.gds === 'apollo') {
 		gdsResult = await (new ProcessApolloTerminalInputAction(stateful).execute(inputCmd));
@@ -159,11 +158,45 @@ let runCmdRq =  async (inputCmd, stateful) => {
 	} else {
 		return NotImplemented('Unsupported GDS for runCmdRq() - ' + stateful.gds);
 	}
+	return gdsResult;
+};
+
+let runCmdRq =  async (inputCmd, stateful) => {
+	let status = 'success';
+	let messages = [];
+	let actions = [];
+	let calledCommands = [];
+	let bulkCmds = inputCmd.match(/^\s*[1-9]/)
+		? [inputCmd] // itinerary, keep intact for rebook
+		: inputCmd.split('\n');
+	if (bulkCmds.length > 10) {
+		return BadRequest('Too many lines (' + bulkCmds + ') in your input for bulk invocation');
+	}
+	for (let cmd of bulkCmds) {
+		let running = runByGds(cmd.trim(), stateful);
+		if (bulkCmds.length > 1) {
+			running = running.catch(exc => ({
+				status: GdsDirect.STATUS_FORBIDDEN,
+				userMessages: ['' + exc],
+				calledCommands: stateful.flushCalledCommands(),
+			}));
+		}
+		let gdsResult = await running;
+		messages.push(...(gdsResult.userMessages || [])
+			.map(msg => ({type: 'error', text: msg})));
+		actions.push(...(gdsResult.actions || []));
+		calledCommands.push(...(gdsResult.calledCommands || []));
+		status = gdsResult.status || '(no status)';
+		if (status !== GdsDirect.STATUS_EXECUTED) {
+			break;
+		}
+		stateful.flushCalledCommands();
+	}
 	return {
-		status: gdsResult.status,
-		messages: (gdsResult.userMessages || []).map(msg => ({type: 'error', text: msg})),
-		actions: gdsResult.actions || [],
-		calledCommands: gdsResult.calledCommands || [],
+		status: status,
+		messages: messages,
+		actions: actions,
+		calledCommands: calledCommands,
 		sessionInfo: makeBriefSessionInfo(stateful.getFullState()),
 	};
 };

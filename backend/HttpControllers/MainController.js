@@ -10,6 +10,8 @@ const GdsSessionsController = require("./GdsSessionController");
 const Config = require('../Config.js');
 const Agents = require("../Repositories/Agents");
 const {keys, withLock} = require("../LibWrappers/Redis");
+const Agent = require('../DataFormats/Wrappers/Agent.js');
+const Misc = require("../Transpiled/Lib/Utils/Misc");
 
 let isSystemError = (exc) =>
 	!NoContent.matches(exc.httpStatusCode) &&
@@ -138,6 +140,7 @@ let withGdsSession = (sessionAction, canStartNew = false) => (req, res) => {
 				}
 			});
 		let emcUser = rqBody.emcUser;
+		let agent = Agent(emcUser);
 		delete(rqBody.emcUser);
 		delete(rqBody.emcSessionId);
 
@@ -154,6 +157,9 @@ let withGdsSession = (sessionAction, canStartNew = false) => (req, res) => {
 			.then(result => {
 				if (startNewSession) {
 					result.startNewSession = true;
+				}
+				if (!agent.canSeeCcNumbers()) {
+					result = Misc.maskCcNumbers(result);
 				}
 				//                 'TODO: Processing HTTP RQ'
 				FluentLogger.logit('................ HTTP RS (in ' + ((Date.now() - startMs) / 1000).toFixed(3) + ' s.)', session.logId, result);
