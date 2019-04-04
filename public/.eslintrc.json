@@ -36,6 +36,8 @@
     "console": false,
     "setTimeout": false,
     "clearTimeout": false,
+    "setInterval": false,
+    "clearInterval": false,
 
     "Promise": false,
     "Set": false,
