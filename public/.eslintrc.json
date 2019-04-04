@@ -29,6 +29,7 @@
     "document": false,
     "fetch": false,
     "URL": false,
+    "URLSearchParams": false,
 
     // webpack
     "require": false,
