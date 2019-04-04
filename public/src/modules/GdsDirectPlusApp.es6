@@ -9,6 +9,7 @@ import {OFFSET_DEFAULT, AREA_LIST} from "../constants";
 import {connect, getStore} from "../store";
 import $ from 'jquery';
 let {post} = require('../helpers/requests.es6');
+import {CHANGE_INPUT_LANGUAGE} from "../actions/settings";
 
 const BORDER_SIZE = 2;
 
@@ -78,6 +79,9 @@ export default class GdsDirectPlusApp
 		for (let [gds, data] of Object.entries(settings.gds)) {
 			UPDATE_ALL_AREA_STATE(gds, data.fullState);
 		}
+
+		let queryObj = new URLSearchParams(window.location.search);
+		this.initFromQuery(queryObj);
 
 		// ping EMC session every 10 minutes to avoid state where
 		// CMS session is still alive, but GDSD session expired
@@ -262,15 +266,45 @@ export default class GdsDirectPlusApp
 		this.Gds.update({wideDimensions});
 	}
 
+	_changePcc(gds, pcc) {
+		if (pcc) {
+			let cmd = {
+				apollo: 'SEM/' + pcc + '/AG',
+				sabre: 'AAA' + pcc,
+				amadeus: 'JUM/O-' + pcc,
+				galileo: 'SEM/' + pcc + '/AG',
+			}[gds || 'apollo'];
+			DEV_CMD_STACK_RUN(cmd);
+		}
+	}
+
+	_changeArea(gds, area) {
+		if (area) {
+			let cmd = {
+				apollo: 'S' + area,
+				sabre: '¤' + area,
+				amadeus: 'JM' + area,
+				galileo: 'S' + area,
+			}[gds || 'apollo'];
+			DEV_CMD_STACK_RUN(cmd);
+		}
+	}
+
+	_openPnr(gds, recordLocator) {
+		if (recordLocator) {
+			let cmd = gds === 'amadeus' ? 'RT' + recordLocator : '*' + recordLocator;
+			DEV_CMD_STACK_RUN(cmd);
+		}
+	}
+
 	// used by CMS - when agent presses on a record locator in PQ list
 	runPnr({pnrCode, gdsName = 'apollo'})
 	{
 		if (pnrCode)
 		{
-			let cmd = gdsName === 'amadeus' ? 'RT' + pnrCode : '*' + pnrCode;
 			CHANGE_GDS(gdsName);
 			CHANGE_ACTIVE_TERMINAL({curTerminalId : 0});
-			DEV_CMD_STACK_RUN(cmd);
+			this._openPnr(gdsName, pnrCode);
 		}
 	}
 
@@ -284,5 +318,29 @@ export default class GdsDirectPlusApp
 			CHANGE_ACTIVE_TERMINAL({curTerminalId : 0});
 			DEV_CMD_STACK_RUN('REBUILD/' + data.itineraryId + '/' + data.segmentStatus + '/' + data.seats);
 		}
+	}
+
+	/** @param {URLSearchParams} queryObj */
+	initFromQuery(queryObj) {
+		let gds = queryObj.get('gds');
+		let pcc = queryObj.get('pcc');
+		let recordLocator = queryObj.get('pnr');
+		let area = queryObj.get('area');
+		let language = queryObj.get('language');
+		let terminal = queryObj.get('terminal');
+
+		if (gds) {
+			CHANGE_GDS(gds);
+			CHANGE_ACTIVE_TERMINAL({curTerminalId : 0});
+		}
+		if (terminal) {
+			CHANGE_ACTIVE_TERMINAL({curTerminalId : terminal});
+		}
+		if (language) {
+			CHANGE_INPUT_LANGUAGE(language);
+		}
+		this._changeArea(gds, area);
+		this._changePcc(gds, pcc);
+		this._openPnr(gds, recordLocator);
 	}
 }
