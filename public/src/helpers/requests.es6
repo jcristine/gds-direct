@@ -110,7 +110,13 @@ const Ask = (url, fetchParams) => {
 				}));
 
 	return whenFetched
-		.catch(exc => debugRequest(url, exc))
+		.catch(exc => {
+			if (!fetchParams.skipErrorPopup) {
+				return debugRequest(url, exc);
+			} else {
+				return Promise.reject(exc);
+			}
+		})
 		.then(({body, status}) => {
 			if (status && status === 200) {
 				return Promise.resolve(body);
