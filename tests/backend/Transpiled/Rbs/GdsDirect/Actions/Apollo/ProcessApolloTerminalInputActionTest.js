@@ -3947,6 +3947,242 @@ class ProcessApolloTerminalInputActionTest extends require('../../../../Lib/Test
 			},
 		});
 
+		$list.push({
+			'input': {
+				'title': 'HB:FEX with MCO document number completion data, multiple paxes with same last name',
+				'cmdRequested': 'HB2:FEX',
+			},
+			'output': {
+				'status': 'executed',
+				'calledCommands': [
+					{
+					    "cmd": "HB2:FEX",
+					    "output": 'SEE MASK FORM BELOW',
+					},
+				],
+				"actions": [
+					{
+						"type": "displayExchangeMask",
+						"data": {
+							"mcoRows": [
+								{
+									"command": "*MCO2",
+									"passengerName": "BITCA/IU",
+									"documentNumber": "0065056180986",
+									"issueDate": {"raw": "04APR19", "parsed": "2019-04-04"},
+									"amount": "100.00",
+									"fullData": {
+										"passengerName": "BITCA/IURI",
+										"to": "DL",
+										"at": "ATL",
+										"validFor": "SPLIT",
+										"tourCode": "",
+										"ticketNumber": "",
+										"formOfPayment": {"raw": "AXXXXXXXXXXXX1052/OK"},
+										"expirationMonth": "02",
+										"expirationYear": "23",
+										"approvalCode": "109678",
+										"commission": "0.00/",
+										"taxAmount": "",
+										"taxCode": "",
+										"baseFare": {"currency": "USD", "amount": "100.00"},
+										"fareEquivalent": null,
+										"rateOfExchange": "",
+										"endorsementBox": "",
+										"remark1": "",
+										"remark2": "",
+										"validatingCarrier": "DL",
+										"issueNow": false
+									}
+								}
+							],
+							"headerData": {
+								"lastName": "BITCA",
+								"firstName": "IURI",
+								"majorNumber": "1",
+								"minorNumber": "1",
+								"baseFareCurrency": "USD",
+								"baseFareAmount": "617.68",
+								"netPriceCurrency": "USD",
+								"netPriceAmount": "678.30",
+								"equivalentPart": "",
+								"taxCurrency1": "USD",
+								"taxAmount1": "46.32",
+								"taxCode1": "US",
+								"taxCurrency2": "USD",
+								"taxAmount2": "14.30",
+								"taxCode2": "XT",
+								"taxCurrency3": undefined,
+								"taxAmount3": undefined,
+								"taxCode3": undefined,
+								"exchangedTicketCurrency": "USD"
+							},
+							"fields": [
+								{"key": "exchangedTicketNumber", "value": "", "enabled": true},
+								{"key": "exchangedTicketExtension", "value": "", "enabled": true},
+								{"key": "ticketNumber1", "value": "", "enabled": true},
+								{"key": "couponNumber1", "value": "", "enabled": true},
+								{"key": "ticketNumber2", "value": "", "enabled": true},
+								{"key": "couponNumber2", "value": "", "enabled": true},
+								{"key": "commission", "value": "", "enabled": true},
+								{"key": "originalFormOfPayment", "value": "", "enabled": true},
+								{"key": "evenIndicator", "value": "", "enabled": true},
+								{"key": "exchangedTicketTotalValue", "value": "", "enabled": true},
+								{"key": "originalBoardPoint", "value": "", "enabled": false},
+								{"key": "originalOffPoint", "value": "", "enabled": false},
+								{"key": "taxAmount1", "value": "", "enabled": true},
+								{"key": "taxCode1", "value": "", "enabled": true},
+								{"key": "taxAmount2", "value": "", "enabled": true},
+								{"key": "taxCode2", "value": "", "enabled": true},
+								{"key": "taxAmount3", "value": "", "enabled": true},
+								{"key": "taxCode3", "value": "", "enabled": true},
+								{"key": "originalIssuePoint", "value": "", "enabled": true},
+								{"key": "originalIssueDate", "value": "", "enabled": true},
+								{"key": "originalAgencyIata", "value": "", "enabled": false},
+								{"key": "originalTicketStar", "value": "", "enabled": true},
+								{
+									"key": "originalTicketStarExtension",
+									"value": "",
+									"enabled": false
+								},
+								{"key": "originalInvoiceNumber", "value": "", "enabled": false},
+								{"key": "penaltyAmount", "value": "", "enabled": true},
+								{"key": "commOnPenaltyAmount", "value": "", "enabled": true}
+							],
+							"maskOutput": [
+								">$EX NAME BITCA/IURI                         PSGR  1/ 1",
+								"FARE USD   617.68  TOTAL USD   678.30",
+								"TX1 USD   46.32 US   TX2 USD   14.30 XT   TX3               ",
+								"",
+								"EXCHANGE TKTS ;..............-;...  CPN ALL",
+								"TKT1;.............. CPN;.... TKT2;.............. CPN;....",
+								"COMM;.........  ORIG FOP;................... EVEN;.",
+								"",
+								"TTL VALUE OF EX TKTS USD;.............  ORIG BRD/OFF;...;...",
+								"TX1 USD;.......;..   TX2 USD;.......;..   TX3 USD;.......;..",
+								"ORIG ISS;...... ORIG DATE;....... ORIG IATA NBR;.........",
+								"ORIG TKT;..............-;...  ORIG INV NBR;.........",
+								"PENALTY USD;............  COMM ON PENALTY;...........",
+								"><"
+							].join("\n")
+						}
+					}
+				],
+			},
+			'sessionInfo': {
+				'initialState': php.array_merge(GdsDirectDefaults.makeDefaultApolloState(), {
+					'agent_id': 8050,
+					'has_pnr': true,
+					'is_pnr_stored': true,
+					'pcc': '2F3K',
+					'record_locator': 'TM6S7O',
+				}),
+				'initialCommands': [],
+				'performedCommands': [
+					{
+					    "cmd": "*R",
+					    "output": [
+					        "CREATED IN GDS DIRECT BY RICO",
+					        "TM6S7O/WS QSBYC DPBVWS  AG 05578602 04APR",
+					        " 1.1ARTURS/KLESUNS  2.1BITCA/IURI ",
+					        " 1 DL2754Y 25OCT LAXSFO HK2  1000A 1146A *         FR   E",
+					        "FONE-SFO1",
+					        "FOP:-AXXXXXXXXXXXX1052/D0223/*109678",
+					        "TKTG-T/QSB 04APR1214Z WS AG *",
+					        "*** TIN REMARKS EXIST *** >*T; ",
+					        "*** MISCELLANEOUS DOCUMENT DATA EXISTS *** >*MPD; ",
+					        "*** LINEAR FARE DATA EXISTS *** >*LF; ",
+					        "1/ATFQ-UT/$BN1/-*2F3K/TA2F3K/CDL/ET",
+					        " FQ-USD 617.68/USD 46.32US/USD 14.30XT/USD 678.30 - 4APR Y0",
+					        "2/ATFQ-UT/$BN2/-*2F3K/TA2F3K/CDL/ET",
+					        ")><"
+					    ].join("\n"),
+					},
+					{
+					    "cmd": "MR",
+					    "output": [
+					        " FQ-USD 617.68/USD 46.32US/USD 14.30XT/USD 678.30 - 4APR Y0",
+					        "GFAX-SSRDOCSDLHK1/////10MAY90/M//RICO/SRICO-1BITCA/IURI",
+					        "   2 SSRDOCSDLHK1/////10MAY90/M//RICO/SRICO-1BITCA/IURI",
+					        "   3 SSRDOCSDLHK1/////10MAY90/M//RICO/SRICO-1ARTURS/KLESUNS",
+					        "   4 SSRADTK1VTODL BY 25SEP 2359 SFO OTHERWISE MAY BE XLD",
+					        "   5 SSRADTK1VTODL BY 25SEP FARE MAY NEED EARLIER TKT DTE",
+					        "RMKS-GD-RICO/5820 IN 2F3K",
+					        "ACKN-DL GP87OI   04APR 1157",
+					        "><"
+					    ].join("\n"),
+					},
+					{
+					    "cmd": "HB2:FEX",
+					    "output": [
+					        ">$EX NAME BITCA/IURI                         PSGR  1/ 1",
+					        "FARE USD   617.68  TOTAL USD   678.30",
+					        "TX1 USD   46.32 US   TX2 USD   14.30 XT   TX3               ",
+					        "",
+					        "EXCHANGE TKTS ;..............-;...  CPN ALL",
+					        "TKT1;.............. CPN;.... TKT2;.............. CPN;....",
+					        "COMM;.........  ORIG FOP;................... EVEN;.",
+					        "",
+					        "TTL VALUE OF EX TKTS USD;.............  ORIG BRD/OFF;...;...",
+					        "TX1 USD;.......;..   TX2 USD;.......;..   TX3 USD;.......;..",
+					        "ORIG ISS;...... ORIG DATE;....... ORIG IATA NBR;.........",
+					        "ORIG TKT;..............-;...  ORIG INV NBR;.........",
+					        "PENALTY USD;............  COMM ON PENALTY;...........",
+					        "><"
+					    ].join("\n"),
+					},
+					{
+					    "cmd": "*MPD",
+					    "output": [
+					        "*MPD             MISCELLANEOUS DOCUMENT LIST",
+					        "          NAME         DOCUMENT NBR   ISSUED       AMOUNT",
+					        ">*MCO1;   BITCA/IU    0065056180985   04APR19          100.00 ",
+					        ">*MCO2;   BITCA/IU    0065056180986   04APR19          100.00 ",
+					        ">*MCO3;   LONGLONG    0065056180987   04APR19          100.00 ",
+					        "END OF DISPLAY",
+					        "><"
+					    ].join("\n"),
+					},
+					{
+					    "cmd": "*MCO1",
+					    "output": [
+					        ">HHMCU1           *** MISC CHARGE ORDER ***",
+					        " PASSENGER NAME;BITCA/IUBELY............................",
+					        " TO;DL...................................... AT;ATL............",
+					        " VALID FOR;SPLIT...............................................",
+					        " TOUR CODE;............... RELATED TKT NBR;.............",
+					        " FOP;AXXXXXXXXXXXX1052/OK......................................",
+					        " EXP DATE;0223 APVL CODE;109678 COMM;0.00/... TAX;........-;..",
+					        " AMOUNT;100.00..-;USD EQUIV ;........-;... BSR;..........",
+					        " END BOX;......................................................",
+					        " REMARK1;..............................................",
+					        " REMARK2;......................................................",
+					        " VALIDATING CARRIER;DL                  ISSUE NOW;.",
+					        "><"
+					    ].join("\n"),
+					},
+					{
+					    "cmd": "*MCO2",
+					    "output": [
+					        ">HHMCU2           *** MISC CHARGE ORDER ***",
+					        " PASSENGER NAME;BITCA/IURI..............................",
+					        " TO;DL...................................... AT;ATL............",
+					        " VALID FOR;SPLIT...............................................",
+					        " TOUR CODE;............... RELATED TKT NBR;.............",
+					        " FOP;AXXXXXXXXXXXX1052/OK......................................",
+					        " EXP DATE;0223 APVL CODE;109678 COMM;0.00/... TAX;........-;..",
+					        " AMOUNT;100.00..-;USD EQUIV ;........-;... BSR;..........",
+					        " END BOX;......................................................",
+					        " REMARK1;..............................................",
+					        " REMARK2;......................................................",
+					        " VALIDATING CARRIER;DL                  ISSUE NOW;.",
+					        "><"
+					    ].join("\n"),
+					},
+				],
+			},
+		});
+
 		// problematic cases follow
 		/*
 		// STORE alias, same as previous, but this time let's remove
