@@ -170,6 +170,10 @@ let dataToDom = (data) => {
 				.forEach(inp => inp.value = inp.value || mcoRow.amount);
 			[...formCmp.context.querySelectorAll('input[name="originalIssueDate"]')]
 				.forEach(inp => inp.value = inp.value || mcoRow.issueDate.raw);
+			[...formCmp.context.querySelectorAll('input[name="couponNumber1"]')]
+				.forEach(inp => inp.value = inp.value || 1);
+			[...formCmp.context.querySelectorAll('input[name="originalIssuePoint"]')]
+				.forEach(inp => inp.value = inp.value || data.currentPos);
 		});
 
 	return formCmp;

@@ -43,6 +43,7 @@ let php = require('../../../../php.js');
 const ExchangeApolloTicket = require("../../../../../Actions/ExchangeApolloTicket");
 const McoListParser = require("../../../../Gds/Parsers/Apollo/Mco/McoListParser");
 const McoMaskParser = require("../../../../Gds/Parsers/Apollo/Mco/McoMaskParser");
+const Pccs = require("../../../../../Repositories/Pccs");
 
 class ProcessApolloTerminalInputAction {
 	useXml($flag) {
@@ -1438,6 +1439,8 @@ class ProcessApolloTerminalInputAction {
 			'originalAgencyIata', 'originalInvoiceNumber',
 			'originalTicketStarExtension',
 		]);
+		let pcc = this.getSessionData().pcc;
+		let pccRow = !pcc ? null : await Pccs.findByCode('apollo', pcc);
 		let result = {
 			calledCommands: [{
 				cmd: cmd,
@@ -1446,6 +1449,7 @@ class ProcessApolloTerminalInputAction {
 			actions: [{
 				type: 'displayExchangeMask',
 				data: {
+					currentPos: !pccRow ? null : pccRow.point_of_sale_city,
 					mcoRows: ticketNumber ? [] : await
 						this.getMcoRows(pnr, parsed.headerData)
 							.catch(exc => []),
