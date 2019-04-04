@@ -1417,7 +1417,8 @@ class ProcessApolloTerminalInputAction {
 				type: 'displayExchangeMask',
 				data: {
 					mcoRows: ticketNumber ? [] : await
-						this.getMcoRows(pnr, parsed.headerData),
+						this.getMcoRows(pnr, parsed.headerData)
+							.catch(exc => []),
 					headerData: parsed.headerData,
 					fields: parsed.fields.map(f => ({
 						key: f.key,

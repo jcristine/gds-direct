@@ -239,6 +239,14 @@ exports.resetToDefaultPcc = async ({rqBody, session, emcUser}) => {
 	return {fullState};
 };
 
+let makeMaskRs = (calledCommands, actions = []) => new TerminalService('apollo')
+	.addHighlighting('', 'apollo', {
+		calledCommands: calledCommands.map(cmdRec => ({
+			...cmdRec, tabCommands: ProcessTerminalInput.extractTpTabCmds(cmdRec.output),
+		})),
+		actions: actions,
+	});
+
 exports.makeMco = async ({rqBody, session, emcUser}) => {
 	let mcoData = {};
 	for (let {key, value} of rqBody.fields) {
@@ -253,22 +261,9 @@ exports.makeMco = async ({rqBody, session, emcUser}) => {
 	if (!php.empty(mcoResult.errors)) {
 		return UnprocessableEntity('Failed to MCO - ' + mcoResult.errors.join('; '));
 	} else {
-		return Promise.resolve({
-			output: mcoResult.calledCommands
-				.map(rec => '\n>' + rec.cmd + '\n' + rec.output)
-				.join('\n'),
-			calledCommands: mcoResult.calledCommands,
-		});
+		return makeMaskRs(mcoResult.calledCommands);
 	}
 };
-
-let makeHbFexRs = (calledCommands, actions = []) => new TerminalService('apollo')
-	.addHighlighting('', 'apollo', {
-		calledCommands: calledCommands.map(cmdRec => ({
-			...cmdRec, tabCommands: ProcessTerminalInput.extractTpTabCmds(cmdRec.output),
-		})),
-		actions: actions,
-	});
 
 exports.exchangeTicket = async ({rqBody, session, emcUser}) => {
 	let maskOutput = rqBody.maskOutput;
@@ -286,14 +281,14 @@ exports.exchangeTicket = async ({rqBody, session, emcUser}) => {
 	});
 	let maskCmd = StringUtil.wrapLinesAt('>' + result.cmd, 64);
 	if (result.status === 'success') {
-		return makeHbFexRs([
+		return makeMaskRs([
 			{cmd: 'HB:FEX', output: maskCmd},
 			{cmd: '$EX...', output: result.output},
 		]);
 	} else if (result.status === 'fareDifference') {
 		// ">$MR       TOTAL ADD COLLECT   USD   783.30",
 		// " /F;..............................................",
-		return makeHbFexRs([
+		return makeMaskRs([
 			{cmd: 'HB:FEX', output: maskCmd},
 		], [{
 			type: 'displayExchangeFareDifferenceMask',
@@ -328,7 +323,7 @@ exports.confirmExchangeFareDifference = async ({rqBody, session, emcUser}) => {
 	});
 	if (result.status === 'success') {
 		let maskCmd = StringUtil.wrapLinesAt('>' + result.cmd, 64);
-		return makeHbFexRs([
+		return makeMaskRs([
 			{cmd: '$EX...', output: maskCmd},
 			{cmd: '$MR...', output: result.output},
 		]);
