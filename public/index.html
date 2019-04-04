@@ -10,9 +10,14 @@
 <script src="terminal-bundle.js"></script>
 <script>
 	// TODO: move this authentication code to a module and use it from all admin pages
+	let urlObj = new URL(window.location.href);
+	let rawToken = urlObj.searchParams.get('token');
+	urlObj.searchParams.delete('token');
+	let hashStr = urlObj.hash.substr(1);
+	urlObj.hash = '';
+
 	let hashData = {};
 	let cookieData = {};
-	let hashStr = window.location.hash.substr(1);
 	for (let pair of hashStr.split('&')) {
 		let [key, value] = pair.split('=');
 		hashData[key] = value;
@@ -22,7 +27,6 @@
 		cookieData[key] = value;
 	}
 
-	let rawToken = new URL(window.location.href).searchParams.get('token');
 	let emcSessionId = hashData.emcSessionId || cookieData.emcSessionId;
 
 	let redirectToLoginPage = () => {
@@ -39,7 +43,7 @@
 
 	let onEmcSessionId = (emcSessionId) => {
 		document.cookie = 'emcSessionId=' + emcSessionId;
-		window.history.replaceState('', '', window.location.pathname); // remove GET params and # params
+		window.history.replaceState('', '', urlObj.href); // remove GET params and # params
 
 		let isDev = !(window.location.hostname + '').endsWith('.asaptickets.com');
 		window.InitGdsDirectPlusApp({
@@ -69,7 +73,6 @@
 	if (emcSessionId) {
 		onEmcSessionId(emcSessionId);
 	} else {
-		window.onhashchange = () => window.location.reload();
 		if (rawToken) {
 			fetch('/authorizeEmcToken?token=' + encodeURIComponent(rawToken))
 				.then(rs => rs.json())
