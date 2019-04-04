@@ -1375,8 +1375,8 @@ class ProcessApolloTerminalInputAction {
 	/** @param {string} passengerName = 'LONGLONG' || 'BITCA/IU' || 'BITCA/IURI' */
 	matchesMcoName(passengerName, headerData) {
 		let [lnme, fnme] = passengerName.split('/');
-		return headerData.lastName.startsWith(lnme)
-			&& headerData.firstName.startsWith(fnme);
+		return headerData.lastName.startsWith(lnme || '')
+			&& headerData.firstName.startsWith(fnme || '');
 	}
 
 	async filterMcoRowsByMask(matchingPartial, headerData) {

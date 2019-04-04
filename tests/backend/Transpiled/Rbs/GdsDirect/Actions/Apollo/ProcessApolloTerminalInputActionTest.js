@@ -4183,6 +4183,173 @@ class ProcessApolloTerminalInputActionTest extends require('../../../../Lib/Test
 			},
 		});
 
+		$list.push({
+			'input': {
+				'title': 'HB:FEX failed to provide *MPD data',
+				'cmdRequested': 'HB:FEX',
+			},
+			'output': {
+				'status': 'executed',
+				'calledCommands': [
+					{
+					    "cmd": "HB:FEX",
+					    "output": 'SEE MASK FORM BELOW',
+					},
+				],
+				"actions": [
+					{
+						"type": "displayExchangeMask",
+						"data": {
+							"mcoRows": [
+								{
+									"command": "*MCO1",
+									"passengerName": "MACABENT",
+									"documentNumber": "9885056203638",
+									"issueDate": {"raw": "04APR19"},
+									"amount": "640.73",
+								}
+							],
+							"headerData": {
+								"lastName": "MACABENTA",
+								"firstName": "ANTONIOJR INAY",
+							},
+							"fields": [
+								{"key":"exchangedTicketNumber","value":"","enabled":true},
+								{"key":"exchangedTicketExtension","value":"","enabled":true},
+								{"key":"ticketNumber1","value":"","enabled":true},
+								{"key":"couponNumber1","value":"","enabled":true},
+								{"key":"ticketNumber2","value":"","enabled":true},
+								{"key":"couponNumber2","value":"","enabled":true},
+								{"key":"commission","value":"","enabled":true},
+								{"key":"originalFormOfPayment","value":"","enabled":true},
+								{"key":"evenIndicator","value":"","enabled":true},
+								{"key":"exchangedTicketTotalValue","value":"","enabled":true},
+								{"key":"originalBoardPoint","value":"","enabled":false},
+								{"key":"originalOffPoint","value":"","enabled":false},
+								{"key":"taxAmount1","value":"","enabled":true},
+								{"key":"taxCode1","value":"","enabled":true},
+								{"key":"taxAmount2","value":"","enabled":true},
+								{"key":"taxCode2","value":"","enabled":true},
+								{"key":"taxAmount3","value":"","enabled":true},
+								{"key":"taxCode3","value":"","enabled":true},
+								{"key":"originalIssuePoint","value":"","enabled":true},
+								{"key":"originalIssueDate","value":"","enabled":true},
+								{"key":"originalAgencyIata","value":"","enabled":false},
+								{"key":"originalTicketStar","value":"","enabled":true},
+								{
+									"key": "originalTicketStarExtension",
+									"value": "",
+									"enabled": false
+								},
+								{"key":"originalInvoiceNumber","value":"","enabled":false},
+								{"key":"penaltyAmount","value":"","enabled":true},
+								{"key":"commOnPenaltyAmount","value":"","enabled":true}
+							],
+							"maskOutput": [
+								">$EX NAME MACABENTA/ANTONIOJR INAY           PSGR  1/ 1",
+								"FARE USD   440.00  TOTAL USD   655.73",
+								"TX1 USD   37.20 US   TX2 USD  178.53 XT   TX3               ",
+								"",
+								"EXCHANGE TKTS ;..............-;...  CPN ALL",
+								"TKT1;.............. CPN;.... TKT2;.............. CPN;....",
+								"COMM;.........  ORIG FOP;................... EVEN;.",
+								"",
+								"TTL VALUE OF EX TKTS USD;.............  ORIG BRD/OFF;...;...",
+								"TX1 USD;.......;..   TX2 USD;.......;..   TX3 USD;.......;..",
+								"ORIG ISS;...... ORIG DATE;....... ORIG IATA NBR;.........",
+								"ORIG TKT;..............-;...  ORIG INV NBR;.........",
+								"PENALTY USD;............  COMM ON PENALTY;...........",
+								"><"
+							].join("\n")
+						}
+					}
+				],
+			},
+			'sessionInfo': {
+				'initialState': php.array_merge(GdsDirectDefaults.makeDefaultApolloState(), {
+					'agent_id': 8050,
+					'has_pnr': true,
+					'is_pnr_stored': true,
+					'pcc': '1O3K',
+					'record_locator': 'WT0BQY',
+				}),
+				'initialCommands': [],
+				'performedCommands': [
+					{
+					    "cmd": "*R",
+					    "output": [
+					        "RICO",
+					        "2G55 - INTERNATIONAL TVL NETWOR SFO",
+					        "WT0BQY/WS QSBYC DPBVWS  AG 05578602 04APR",
+					        " 1.1MACABENTA/ANTONIOJR INAY ",
+					        " 1 OZ 201W 01DEC LAXICN HK1  1100A  530P|*      SU/MO   E",
+					        " 2 OZ 703W 02DEC ICNMNL HK1   750P 1100P *         MO   E",
+					        " 3 OZ 702V 29DEC MNLICN HK1  1205P  440P *         SU   E",
+					        " 4 OZ 204W 29DEC ICNLAX HK1   840P  250P *         SU   E",
+					        "FONE-SFOAS/800-750-2238 ASAP CUSTOMER SUPPORT",
+					        "FOP:-VIXXXXXXXXXXXX6018/D0423/*04711C",
+					        "TKTG-T/QSB 04APR1818Z WS AG *",
+					        "*** TIN REMARKS EXIST *** >*T; ",
+					        "*** MISCELLANEOUS DOCUMENT DATA EXISTS *** >*MPD; ",
+					        ")><"
+					    ].join("\n"),
+					},
+					{
+					    "cmd": "MR",
+					    "output": [
+					        "*** LINEAR FARE DATA EXISTS *** >*LF; ",
+					        "ATFQ-OK/$B/:N/IT9ULDD1WB/Z5/ET/TA1O3K/COZ",
+					        " FQ-USD 440.00/USD 37.20US/USD 178.53XT/USD 655.73 - 4APR WLXAUS14.WLXAUS14.WLXAUS14.WLXAUS14",
+					        "GFAX-SSROTHS1V OZ RSVN IS 0428-9848",
+					        "   2 SSRADTK1VTOOZ BY 07APR 1100 OTHERWISE WILL BE XLD",
+					        "   3 SSRCTCEOZHK1/MACABENTA..JUN//YAHOO.COM-1MACABENTA/ANTONIOJR INAY",
+					        "   4 SSRCTCMOZHK1/2133217785-1MACABENTA/ANTONIOJR INAY",
+					        "   5 SSRDOCSOZHK1/////18NOV59/M//MACABENTA/ANTONIOJR/INAY-1MACABENTA/ANTONIOJR INAY",
+					        "RMKS-GD-GINGER/101193/FOR GINGER/101193/LEAD-11092490 IN 2G55",
+					        "ACKN-1A OY4PP9   04APR 1712",
+					        ")><"
+					    ].join("\n"),
+					},
+					{
+					    "cmd": "MR",
+					    "output": [
+					        "   2 1A OY4PP9   04APR 1712",
+					        "><"
+					    ].join("\n"),
+					},
+					{
+					    "cmd": "HB:FEX",
+					    "output": [
+					        ">$EX NAME MACABENTA/ANTONIOJR INAY           PSGR  1/ 1",
+					        "FARE USD   440.00  TOTAL USD   655.73",
+					        "TX1 USD   37.20 US   TX2 USD  178.53 XT   TX3               ",
+					        "",
+					        "EXCHANGE TKTS ;..............-;...  CPN ALL",
+					        "TKT1;.............. CPN;.... TKT2;.............. CPN;....",
+					        "COMM;.........  ORIG FOP;................... EVEN;.",
+					        "",
+					        "TTL VALUE OF EX TKTS USD;.............  ORIG BRD/OFF;...;...",
+					        "TX1 USD;.......;..   TX2 USD;.......;..   TX3 USD;.......;..",
+					        "ORIG ISS;...... ORIG DATE;....... ORIG IATA NBR;.........",
+					        "ORIG TKT;..............-;...  ORIG INV NBR;.........",
+					        "PENALTY USD;............  COMM ON PENALTY;...........",
+					        "><"
+					    ].join("\n"),
+					},
+					{
+					    "cmd": "*MPD",
+					    "output": [
+					        "*MPD             MISCELLANEOUS DOCUMENT LIST",
+					        "          NAME         DOCUMENT NBR   ISSUED       AMOUNT",
+					        ">*MCO1;   MACABENT    9885056203638   04APR19          640.73 ",
+					        "END OF DISPLAY",
+					        "><"
+					    ].join("\n"),
+					},
+				],
+			},
+		});
+
 		// problematic cases follow
 		/*
 		// STORE alias, same as previous, but this time let's remove
