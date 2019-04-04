@@ -75,6 +75,7 @@ class ExchangeApolloTicketTest extends require('../Transpiled/Lib/TestCase.js')
 		});
 
 		// failed with null-pointer exception on mask generation
+		// example with some data pre-entered because HB:FEX was called with a ticket number parameter
 		testCases.push({
 			input: {
 				emptyMask: ExchangeApolloTicket.EMPTY_MASK_EXAMPLE,
