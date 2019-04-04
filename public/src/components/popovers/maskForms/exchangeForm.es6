@@ -19,6 +19,7 @@ let dataToDom = (data) => {
 	let datalistDom = Cmp('datalist', {id: datalistId})
 		.attach(data.mcoRows.map(mcoRow => Cmp('option', {
 			value: mcoRow.documentNumber,
+			textContent: mcoRow.documentNumber + ' ' + mcoRow.command,
 		}))).context;
 
 	let onTickNum = (ticketNumber) => {};
