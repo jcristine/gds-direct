@@ -57,6 +57,7 @@ export default class TerminalPlugin
 		});
 
 		this.history 		= new History( params.gds );
+		this.injectedForms = [];
 	}
 
 	_parseKeyBinds( evt, terminal )
@@ -101,6 +102,18 @@ export default class TerminalPlugin
 		CHANGE_ACTIVE_TERMINAL({curTerminalId : this.name});
 	}
 
+	clearBrief()
+	{
+		this.injectedForms.forEach(f => f.remove());
+		this.injectedForms = [];
+		this.terminal.clear();
+		this.terminal.cmd().set('');
+	}
+
+	/**
+	 * shortcut to the clear() in terminal.es6,
+	 * which calls clearBrief() and removes history
+	 */
 	purge()
 	{
 		this.settings.clear();
@@ -235,6 +248,20 @@ export default class TerminalPlugin
 			.finally(() => this.spinner.end());
 	}
 
+	// this does not work perfectly still - when you click on an empty space, or enter a
+	// command scrollbar jumps to the top, and you have to scroll back down to get to the form
+	_injectForm(formCmp)
+	{
+		this.context.appendChild(formCmp.context);
+		this.injectedForms.push(formCmp.context);
+		let inp = formCmp.context.querySelector('input:not([disabled]):not([type="hidden"])');
+		if (inp) {
+			inp.focus();
+		}
+		this.terminal.scroll_to_bottom();
+		this.outputLiner.removeEmpty();
+	}
+
 	_displayMcoMask(data)
 	{
 		let formCmp = McoForm({data, onsubmit: (data) => {
@@ -248,13 +275,7 @@ export default class TerminalPlugin
 					return {canClosePopup: resp && resp.output};
 				}));
 		}});
-		this.context.appendChild(formCmp.context);
-		let inp = formCmp.context.querySelector('input:not([disabled]):not([type="hidden"])');
-		if (inp) {
-			inp.focus();
-		}
-		this.terminal.scroll_to_bottom();
-		this.outputLiner.removeEmpty();
+		this._injectForm(formCmp);
 	}
 
 	_displayExchangeMask(data)
@@ -271,13 +292,11 @@ export default class TerminalPlugin
 					return {canClosePopup: resp && resp.output};
 				}));
 		}});
-		this.context.appendChild(formCmp.context);
+		this._injectForm(formCmp);
 		let inp = formCmp.context.querySelector('input[name="ticketNumber1"]');
 		if (inp) {
 			inp.focus();
 		}
-		this.terminal.scroll_to_bottom();
-		this.outputLiner.removeEmpty();
 	}
 
 	_displayExchangeFareDifferenceMask(data)
@@ -325,13 +344,7 @@ export default class TerminalPlugin
 				}));
 			return false;
 		};
-		this.context.appendChild(formCmp.context);
-		let inp = formCmp.context.querySelector('input:not([disabled]):not([type="hidden"])');
-		if (inp) {
-			inp.focus();
-		}
-		this.terminal.scroll_to_bottom();
-		this.outputLiner.removeEmpty();
+		this._injectForm(formCmp);
 	}
 
 	parseBackEnd(data, command)

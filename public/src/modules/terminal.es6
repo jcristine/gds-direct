@@ -95,8 +95,7 @@ export default class Terminal
 	{
 		if (this.plugin)
 		{
-			this.plugin.terminal.clear();
-			this.plugin.terminal.cmd().set('');
+			this.plugin.clearBrief();
 		}
 
 		if (this.bufferDiv)
