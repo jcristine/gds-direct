@@ -39,7 +39,14 @@ app.use((req, res, next) => {
 	res.setHeader('Access-Control-Allow-Credentials', true);
 	next();
 });
-app.get('/', (req, res) => res.redirect('/public'));
+app.get('/', (req, res) => {
+	let queryStr = req.url.split('?')[1] || '';
+	let newUrl = '/public';
+	if (queryStr) {
+		newUrl += '?' + queryStr;
+	}
+	return res.redirect(newUrl);
+});
 app.use('/public', (rq, rs, next) => {
 	if (rq.path.endsWith('.js')) {
 		rs.setHeader('Content-Type', 'application/javascript');
