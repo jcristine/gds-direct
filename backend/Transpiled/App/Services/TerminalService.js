@@ -65,7 +65,7 @@ class TerminalService
 			let svc = new TerminalHighlightService();
 			let $command;
 			if ($index > 0) {
-				let $separator = strcasecmp('*', trim($row['output'])) ? PHP_EOL : "&nbsp;++";
+				let $separator = strcasecmp('*', trim($row['output'])) ? PHP_EOL : "&nbsp;";
 				$command = PHP_EOL + this.color("&gt;" + $row['cmd'], 'usedCommand') + $separator;
 			} else {
 				$command = '';

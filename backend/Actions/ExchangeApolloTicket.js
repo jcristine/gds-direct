@@ -1,33 +1,12 @@
 const AbstractMaskParser = require("../Transpiled/Gds/Parsers/Apollo/AbstractMaskParser");
+const TerminalService = require("../Transpiled/App/Services/TerminalService");
+const ProcessTerminalInput = require("./ProcessTerminalInput");
 const {fetchAll} = require('../GdsHelpers/TravelportUtils.js');
-
-const EMPTY_MASK_EXAMPLE = [
-	"$EX NAME ARTURS/KLESUNS                     PSGR  1/ 1         ",
-	"FARE USD   903.40  TOTAL USD   983.30                           ",
-	"TX1 USD   69.60 US   TX2 USD   14.30 XT   TX3                   ",
-	"                                                                ",
-	"EXCHANGE TKTS ;..............-;...  CPN ALL                     ",
-	"TKT1;.............. CPN;.... TKT2;.............. CPN;....       ",
-	"COMM;.........  ORIG FOP;................... EVEN;.             ",
-	"                                                                ",
-	"TTL VALUE OF EX TKTS USD;.............  ORIG BRD/OFF;...;...    ",
-	"TX1 USD;.......;..   TX2 USD;.......;..   TX3 USD;.......;..    ",
-	"ORIG ISS;...... ORIG DATE;....... ORIG IATA NBR;.........       ",
-	"ORIG TKT;..............-;...  ORIG INV NBR;.........            ",
-	"PENALTY USD;............  COMM ON PENALTY;...........",
-].join('');
-
-const FIELDS = [
-	'exchangedTicketNumber', 'exchangedTicketExtension',
-	'ticketNumber1', 'couponNumber1', 'ticketNumber2', 'couponNumber2',
-	'commission', 'originalFormOfPayment', 'evenIndicator',
-
-	'exchangedTicketTotalValue', 'originalBoardPoint', 'originalOffPoint',
-	'taxAmount1', 'taxCode1', 'taxAmount2', 'taxCode2', 'taxAmount3', 'taxCode3',
-	'originalIssuePoint', 'originalIssueDate', 'originalAgencyIata',
-	'originalTicketStar', 'originalTicketStarExtension', 'originalInvoiceNumber',
-	'penaltyAmount', 'commOnPenaltyAmount',
-];
+const StringUtil = require('../Transpiled/Lib/Utils/StringUtil.js');
+const McoListParser = require("../Transpiled/Gds/Parsers/Apollo/Mco/McoListParser");
+const McoMaskParser = require("../Transpiled/Gds/Parsers/Apollo/Mco/McoMaskParser");
+const {UnprocessableEntity, BadRequest} = require('../Utils/Rej.js');
+const ParseHbFex = require('../Parsers/Apollo/ParseHbFex.js');
 
 let parseOutput = (output) => {
 	let match;
@@ -59,15 +38,15 @@ let parseOutput = (output) => {
  * performs HB:FEX mask action which issues a new ticket from existing ticket or MCO
  * used to partially or fully pay for a new ticket with the old one
  */
-let ExchangeApolloTicket = async ({emptyMask, maskOutput, values, session, maskFields = null}) => {
+let ExchangeApolloTicket = async ({emptyMask, maskOutput, values, gdsSession, maskFields = null}) => {
 	let destinationMask = AbstractMaskParser.normalizeMask(maskOutput);
-	let fields = maskFields || FIELDS;
+	let fields = maskFields || ParseHbFex.FIELDS;
 	let cmd = await AbstractMaskParser.makeCmd({
 		emptyMask: emptyMask,
 		destinationMask: destinationMask,
 		fields, values
 	});
-	let cmdRec = await fetchAll(cmd, session);
+	let cmdRec = await fetchAll(cmd, gdsSession);
 	let result = parseOutput(cmdRec.output);
 	result.cmd = cmdRec.cmd;
 	result.output = cmdRec.output;
@@ -75,68 +54,90 @@ let ExchangeApolloTicket = async ({emptyMask, maskOutput, values, session, maskF
 	return result;
 };
 
-ExchangeApolloTicket.FIELDS = FIELDS;
+let makeMaskRs = (calledCommands, actions = []) => new TerminalService('apollo')
+	.addHighlighting('', 'apollo', {
+		calledCommands: calledCommands.map(cmdRec => ({
+			...cmdRec, tabCommands: ProcessTerminalInput.extractTpTabCmds(cmdRec.output),
+		})),
+		actions: actions,
+	});
 
-/** @return {IExchangeApolloTicketParsedMask} */
-ExchangeApolloTicket.parseMask = (output) => {
-	let mkReg = (parts) => parts
-		.map(r => typeof r === 'string' ? r : r.source)
-		.join('');
-	//"$EX NAME ARTURS/KLESUNS                     PSGR  1/ 1         ",
-	//"FARE USD   903.40  TOTAL USD   983.30                           ",
-	//"TX1 USD   69.60 US   TX2 USD   14.30 XT   TX3                   ",
-	let regex = new RegExp(mkReg([
-		/^>\$EX NAME\s+/,
-		/(?<lastName>[A-Z][^\/]*)\//,
-		/(?<firstName>[A-Z].*?)\s+/,
-		/PSGR\s*/,
-		/(?<majorNumber>\d+)\/\s*/,
-		/(?<minorNumber>\d+)\s*\n/,
-		/FARE\s+/,
-		/(?<baseFareCurrency>[A-Z]{3})\s*/,
-		/(?<baseFareAmount>\d*\.?\d+)\s*/,
-		/TOTAL\s+/,
-		/(?<netPriceCurrency>[A-Z]{3})\s*/,
-		/(?<netPriceAmount>\d*\.?\d+)\s*/,
-		/(?<equivalentPart>.*?)\s*\n/,
-		/TX1\s+/,
-		'(' + mkReg([
-			/(?<taxCurrency1>[A-Z]{3})\s*/,
-			/(?<taxAmount1>\d*\.?\d+)\s*/,
-			/(?<taxCode1>[A-Z0-9]{2})/,
-		]) + ')?\\s+',
-		/TX2\s+/,
-		'(' + mkReg([
-			/(?<taxCurrency2>[A-Z]{3})\s*/,
-			/(?<taxAmount2>\d*\.?\d+)\s*/,
-			/(?<taxCode2>[A-Z0-9]{2})/,
-		]) + ')?\\s+',
-		/TX3\s+/,
-		'(' + mkReg([
-			/(?<taxCurrency3>[A-Z]{3})\s*/,
-			/(?<taxAmount3>\d*\.?\d+)\s*/,
-			/(?<taxCode3>[A-Z0-9]{2})/,
-		]) + ')?\\s*',
-		/[\s\S]+/,
-		/TTL VALUE OF EX TKTS\s+/,
-		/(?<exchangedTicketCurrency>[A-Z]{3})/,
-	]));
-	let match = output.match(regex);
-	if (!match) {
-		return null;
+let getMcoFop = async (documentNumber, gdsSession) => {
+	let cmdRec = await fetchAll('*MPD', gdsSession);
+	let mcoRow = (McoListParser.parse(cmdRec.output).mcoRows || [])
+		.filter(mcoRow => mcoRow.documentNumber == documentNumber)[0];
+	if (!mcoRow) {
+		return BadRequest('Could not unmask FOP: no MCO #' + documentNumber);
+	}
+	let mcoDump = (await fetchAll(mcoRow.command, gdsSession)).output;
+	let parsed = McoMaskParser.parse(mcoDump);
+	if (parsed.error) {
+		return BadRequest('Could not unmask FOP: invalid MCO mask - ' + parsed.error);
 	} else {
-		let normalized = AbstractMaskParser.normalizeMask(output);
-		let parsed = AbstractMaskParser.parseMask(
-			EMPTY_MASK_EXAMPLE, FIELDS, normalized
-		);
-		return {
-			headerData: match.groups,
-			fields: Object.entries(parsed)
-				.map(([key,value]) => ({key, value})),
-		};
+		return parsed.formOfPayment.raw.replace(/\/OK$/, '');
 	}
 };
 
-ExchangeApolloTicket.EMPTY_MASK_EXAMPLE = EMPTY_MASK_EXAMPLE;
+ExchangeApolloTicket.inputHbFexMask = async ({rqBody, gdsSession}) => {
+	let maskOutput = rqBody.maskOutput;
+	let values = {};
+	for (let {key, value} of rqBody.fields) {
+		values[key] = value.toUpperCase();
+	}
+	if (values.originalFormOfPayment && values.originalFormOfPayment.match(/XXXXX/)) {
+		values.originalFormOfPayment = await getMcoFop(values.ticketNumber1, gdsSession);
+	}
+	let result = await ExchangeApolloTicket({
+		emptyMask: ParseHbFex.EMPTY_MASK_EXAMPLE,
+		maskOutput, values, gdsSession,
+	});
+	let maskCmd = StringUtil.wrapLinesAt('>' + result.cmd, 64);
+	if (result.status === 'success') {
+		return makeMaskRs([
+			{cmd: 'HB:FEX', output: maskCmd},
+			{cmd: '$EX...', output: result.output},
+		]);
+	} else if (result.status === 'fareDifference') {
+		// ">$MR       TOTAL ADD COLLECT   USD   783.30",
+		// " /F;..............................................",
+		return makeMaskRs([
+			{cmd: 'HB:FEX', output: maskCmd},
+		], [{
+			type: 'displayExchangeFareDifferenceMask',
+			data: {
+				fields: [{
+					key: 'formOfPayment', value: '', enabled: true,
+				}],
+				currency: result.currency,
+				amount: result.amount,
+				maskOutput: result.output,
+			},
+		}]);
+	} else {
+		return UnprocessableEntity('GDS gave ' + result.status + ' - \n' + result.output);
+	}
+};
+
+ExchangeApolloTicket.confirmFareDifference = async ({rqBody, gdsSession}) => {
+	let maskOutput = rqBody.maskOutput;
+	let values = {};
+	for (let {key, value} of rqBody.fields) {
+		values[key] = value.toUpperCase();
+	}
+	let result = await ExchangeApolloTicket({
+		emptyMask: AbstractMaskParser.normalizeMask(maskOutput),
+		maskOutput, values, gdsSession,
+		maskFields: rqBody.fields.map(f => f.key),
+	});
+	if (result.status === 'success') {
+		let maskCmd = StringUtil.wrapLinesAt('>' + result.cmd, 64);
+		return makeMaskRs([
+			{cmd: '$EX...', output: maskCmd},
+			{cmd: '$MR...', output: result.output},
+		]);
+	} else {
+		return UnprocessableEntity('GDS gave ' + result.status + ' - ' + result.output);
+	}
+};
 
 module.exports = ExchangeApolloTicket;

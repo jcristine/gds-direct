@@ -38,9 +38,9 @@ const FareDisplayInternationalParser = require('../../../../Gds/Parsers/Apollo/T
 const BadRequest = require("../../../../../Utils/Rej").BadRequest;
 const SessionStateProcessor = require("../../SessionStateProcessor/SessionStateProcessor");
 const RetrieveApolloTicketsAction = require('../../../../Rbs/Process/Apollo/ImportPnr/Actions/RetrieveApolloTicketsAction.js');
+const ParseHbFex = require('../../../../../Parsers/Apollo/ParseHbFex.js');
 
 let php = require('../../../../php.js');
-const ExchangeApolloTicket = require("../../../../../Actions/ExchangeApolloTicket");
 const McoListParser = require("../../../../Gds/Parsers/Apollo/Mco/McoListParser");
 const McoMaskParser = require("../../../../Gds/Parsers/Apollo/Mco/McoMaskParser");
 const Pccs = require("../../../../../Repositories/Pccs");
@@ -1422,7 +1422,7 @@ class ProcessApolloTerminalInputAction {
 		}
 		let cmd = 'HB' + storeNumber + ':FEX' + (ticketNumber || '');
 		let output = (await this.runCmd(cmd)).output;
-		let parsed = ExchangeApolloTicket.parseMask(output);
+		let parsed = ParseHbFex(output);
 		if (!parsed) {
 			return {calledCommands: [{cmd, output}], errors: ['Invalid HB:FEX response']};
 		}

@@ -109,7 +109,7 @@ class AbstractMaskParser
     static makeCmd({emptyMask, destinationMask, fields, values}) {
         let missingFields = php.array_keys(php.array_diff_key(php.array_flip(fields), values));
         if (!php.empty(missingFields)) {
-            return BadRequest('Missing necessary params for MCO: ['+php.implode(', ', missingFields)+']');
+            return BadRequest('Missing necessary params for the mask: ['+php.implode(', ', missingFields)+']');
         }
         let positions = this.getPositions(emptyMask);
         let cmd = destinationMask;

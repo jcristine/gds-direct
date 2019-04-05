@@ -1,5 +1,6 @@
 const GdsActionTestUtil = require("../../../backend/Transpiled/Rbs/TestUtils/GdsActionTestUtil");
 const ExchangeApolloTicket = require('../../../backend/Actions/ExchangeApolloTicket.js');
+const ParseHbFex = require('../../../backend/Parsers/Apollo/ParseHbFex.js');
 
 class ExchangeApolloTicketTest extends require('../Transpiled/Lib/TestCase.js')
 {
@@ -8,7 +9,7 @@ class ExchangeApolloTicketTest extends require('../Transpiled/Lib/TestCase.js')
 
 		testCases.push({
 			input: {
-				emptyMask: ExchangeApolloTicket.EMPTY_MASK_EXAMPLE,
+				emptyMask: ParseHbFex.EMPTY_MASK_EXAMPLE,
 				maskOutput: [
 					">$EX NAME ARTURS/KLESUNS                     PSGR  1/ 1",
 					"FARE USD   901.40  TOTAL USD   983.30",
@@ -78,7 +79,7 @@ class ExchangeApolloTicketTest extends require('../Transpiled/Lib/TestCase.js')
 		// example with some data pre-entered because HB:FEX was called with a ticket number parameter
 		testCases.push({
 			input: {
-				emptyMask: ExchangeApolloTicket.EMPTY_MASK_EXAMPLE,
+				emptyMask: ParseHbFex.EMPTY_MASK_EXAMPLE,
 				maskOutput: [
 					">$EX NAME RICO/SRICO                         PSGR  1/ 1",
 					"FARE USD   617.68  TOTAL USD   678.30",
@@ -178,8 +179,8 @@ class ExchangeApolloTicketTest extends require('../Transpiled/Lib/TestCase.js')
 	}
 
 	async testAction(testCase) {
-		await GdsActionTestUtil.testGdsAction(this, testCase, (session, input) =>
-			ExchangeApolloTicket({...input, session}));
+		await GdsActionTestUtil.testGdsAction(this, testCase, (gdsSession, input) =>
+			ExchangeApolloTicket({...input, gdsSession}));
 	}
 
 	getTestMapping() {

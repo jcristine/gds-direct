@@ -266,69 +266,20 @@ exports.makeMco = async ({rqBody, session, emcUser}) => {
 };
 
 exports.exchangeTicket = async ({rqBody, session, emcUser}) => {
-	let maskOutput = rqBody.maskOutput;
-	let values = {};
-	for (let {key, value} of rqBody.fields) {
-		values[key] = value.toUpperCase();
-	}
 	if (session.context.gds !== 'apollo') {
 		return NotImplemented('Unsupported GDS for exchangeTicket - ' + session.context.gds);
-	}
-	let stateful = await StatefulSession.makeFromDb({session, emcUser});
-	let result = await ExchangeApolloTicket({
-		emptyMask: ExchangeApolloTicket.EMPTY_MASK_EXAMPLE,
-		maskOutput, values, session: stateful,
-	});
-	let maskCmd = StringUtil.wrapLinesAt('>' + result.cmd, 64);
-	if (result.status === 'success') {
-		return makeMaskRs([
-			{cmd: 'HB:FEX', output: maskCmd},
-			{cmd: '$EX...', output: result.output},
-		]);
-	} else if (result.status === 'fareDifference') {
-		// ">$MR       TOTAL ADD COLLECT   USD   783.30",
-		// " /F;..............................................",
-		return makeMaskRs([
-			{cmd: 'HB:FEX', output: maskCmd},
-		], [{
-			type: 'displayExchangeFareDifferenceMask',
-			data: {
-				fields: [{
-					key: 'formOfPayment', value: '', enabled: true,
-				}],
-				currency: result.currency,
-				amount: result.amount,
-				maskOutput: result.output,
-			},
-		}]);
 	} else {
-		return UnprocessableEntity('GDS gave ' + result.status + ' - \n' + result.output);
+		let gdsSession = await StatefulSession.makeFromDb({session, emcUser});
+		return ExchangeApolloTicket.inputHbFexMask({rqBody, gdsSession});
 	}
 };
 
 exports.confirmExchangeFareDifference = async ({rqBody, session, emcUser}) => {
-	let maskOutput = rqBody.maskOutput;
-	let values = {};
-	for (let {key, value} of rqBody.fields) {
-		values[key] = value.toUpperCase();
-	}
 	if (session.context.gds !== 'apollo') {
 		return NotImplemented('Unsupported GDS for exchangeTicket - ' + session.context.gds);
-	}
-	let stateful = await StatefulSession.makeFromDb({session, emcUser});
-	let result = await ExchangeApolloTicket({
-		emptyMask: AbstractMaskParser.normalizeMask(maskOutput),
-		maskOutput, values, session: stateful,
-		maskFields: rqBody.fields.map(f => f.key),
-	});
-	if (result.status === 'success') {
-		let maskCmd = StringUtil.wrapLinesAt('>' + result.cmd, 64);
-		return makeMaskRs([
-			{cmd: '$EX...', output: maskCmd},
-			{cmd: '$MR...', output: result.output},
-		]);
 	} else {
-		return UnprocessableEntity('GDS gave ' + result.status + ' - ' + result.output);
+		let gdsSession = await StatefulSession.makeFromDb({session, emcUser});
+		return ExchangeApolloTicket.confirmFareDifference({rqBody, gdsSession});
 	}
 };
 

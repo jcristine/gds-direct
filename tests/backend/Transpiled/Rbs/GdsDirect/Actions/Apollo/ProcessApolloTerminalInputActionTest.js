@@ -4183,6 +4183,8 @@ class ProcessApolloTerminalInputActionTest extends require('../../../../Lib/Test
 			},
 		});
 
+		// note that *MCO1 would be called in real life, but test does not
+		// fail because it catches the exception thrown by AnyGdsSession.js
 		$list.push({
 			'input': {
 				'title': 'HB:FEX failed to provide *MPD data',
