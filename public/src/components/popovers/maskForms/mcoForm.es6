@@ -23,7 +23,7 @@ let dataToDom = (data) => {
 	let mkCmp = (...args) => new Component(...args);
 	let nameOptions = (data.passengers || [])
 		.map(paxName => mkCmp('option[' + paxName + ']', {value: paxName}))
-		.concat([mkCmp('option[SELECT A PASSENGER]', {disabled: 'disabled', selected: 'selected'})]);
+		.concat([mkCmp('option[SELECT A PASSENGER]', {disabled: 'disabled', selected: 'selected', value: ''})]);
 
 	let mkFld = (caption, name, size = null) => {
 		let cls = enableds[name] ? '.enabled' : '';
