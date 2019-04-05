@@ -20,7 +20,13 @@ const prevCmd = (plugin, terminal) => {
  * Object keys are in format "keyNumber" or "ctrl|shift+keyNumber"
  */
 const DEFAULT_KEY_BINDINGS = {
-	116: {
+	113: { // F2 (F1 opens new tab)
+		apollo	: { command: 'A10SEPJFKMNL<Transmit>01N1*GK<Transmit>$BB0', autorun: 1 },
+		amadeus	: { command: 'A10SEPJFKMNL<Transmit>01N1*GK<Transmit>$BB0', autorun: 1 },
+		sabre	: { command: 'A10SEPJFKMNL<Transmit>01N1*GK<Transmit>$BB0', autorun: 1 },
+		galileo	: { command: 'A10SEPJFKMNL<Transmit>01N1*GK<Transmit>$BB0', autorun: 1 },
+	},
+	116: { // F5
 		apollo	: { command: '0TURZZBK1YYZ{{datePlus320}}-RETENTION LINE', autorun: 1 },
 		amadeus	: { command: 'RU1AHK1SFO{{datePlus320}}/RETENTION', autorun: 1 },
 		sabre	: { command: '0OTHYYGK1/RETENTION{{datePlus320}}', autorun: 1 },
@@ -109,7 +115,7 @@ function replaceCommandVariables(command) {
 		.replace('{{dateNow}}', getDate().now)
 		.replace('{{datePlus320}}', getDate().plus320)
 		.replace('{{dateMinus45}}', getDate().minus45)
-		.replace('<Transmit>', '\n');
+		.replace(/<Transmit>/g, '\n');
 }
 
 /**
