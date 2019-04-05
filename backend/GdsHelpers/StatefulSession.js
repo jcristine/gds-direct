@@ -58,8 +58,7 @@ let StatefulSession = ({
 			let running = gdsSession.runCmd(cmd);
 			let cmdRec = await cmdLog.logCommand(cmd, running);
 			calledCommands.push(cmdRec);
-			let masked = Misc.maskCcNumbers(cmdRec);
-			logit('GDS result: ' + cmd, jsExport(masked, null, 256));
+			logit('GDS result: ' + cmd, jsExport(cmdRec, null, 256));
 			return cmdRec;
 		}
 	};
@@ -139,7 +138,8 @@ StatefulSession.makeFromDb = async ({session, whenCmdRqId, emcUser}) => {
 		if (!config.production) {
 			console.log(msg, typeof data === 'string' ? data : jsExport(data));
 		}
-		return FluentLogger.logit(msg, session.logId, data);
+		let masked = !data ? data : Misc.maskCcNumbers(data);
+		return FluentLogger.logit(msg, session.logId, masked);
 	};
 	return StatefulSession({
 		session, emcUser, logit,
