@@ -108,7 +108,8 @@ function replaceCommandVariables(command) {
 		.replace('{{userName}}', auth ? auth.displayName.toUpperCase() : '')
 		.replace('{{dateNow}}', getDate().now)
 		.replace('{{datePlus320}}', getDate().plus320)
-		.replace('{{dateMinus45}}', getDate().minus45);
+		.replace('{{dateMinus45}}', getDate().minus45)
+		.replace('<Transmit>', '\n');
 }
 
 /**
