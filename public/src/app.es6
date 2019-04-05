@@ -138,6 +138,7 @@ window.GdsDirectPlusParams = window.GdsDirectPlusParams || {
 	travelRequestId: null,
 	cmsUrl: null,
     auth: null,
+	codeUpdateInfo: null,
 };
 
 let cookies = {
@@ -160,17 +161,22 @@ let cookies = {
  */
 let syncJsCache = () => {
 	let versionKey = 'GDS_DIRECT_PLUS_VERSION';
-	let lastVersion = cookies.get(versionKey);
+	let effectiveVersion = cookies.get(versionKey);
 	fetch(rootUrl + '/public/CURRENT_PRODUCTION_TAG', {
 		headers: {'Cache-Control': 'no-cache'},
 	})	.then(rs => rs.text())
-		.then(currentVersion => {
-			if (currentVersion !== lastVersion) {
+		.then(latestVersion => {
+			if (latestVersion !== effectiveVersion) {
 				// update the cached code - on next reload user will get up-to-date js
 				fetch(rootUrl + '/public/terminal-bundle.js', {cache: 'reload'})
 					.then(rs => rs.text())
-					.then(currentCode => {
-						cookies.set(versionKey, currentVersion);
+					.then(latestCode => {
+						cookies.set(versionKey, latestVersion);
+						// could show a "please reload page" warning somewhere in corner of screen
+						window.GdsDirectPlusParams.codeUpdateInfo = {
+							effectiveVersion: effectiveVersion,
+							latestVersion: latestVersion,
+						};
 					});
 			}
 		});

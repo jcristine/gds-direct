@@ -174,6 +174,9 @@ let dataToDom = (data) => {
 				.forEach(inp => inp.value = inp.value || 1);
 			[...formCmp.context.querySelectorAll('input[name="originalIssuePoint"]')]
 				.forEach(inp => inp.value = inp.value || data.currentPos);
+			let fop = ((mcoRow.fullData || {}).formOfPayment || {}).raw || '';
+			[...formCmp.context.querySelectorAll('input[name="originalFormOfPayment"]')]
+				.forEach(inp => inp.value = inp.value || fop.replace(/\/OK\s*$/, ''));
 		});
 
 	return formCmp;

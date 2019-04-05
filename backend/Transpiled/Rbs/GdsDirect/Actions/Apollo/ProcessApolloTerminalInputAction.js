@@ -1407,13 +1407,8 @@ class ProcessApolloTerminalInputAction {
 		let matchingPartial = parsed.mcoRows.filter(mcoRow => {
 			return this.matchesMcoName(mcoRow.passengerName, headerData);
 		});
-		if (matchingPartial.length <= 1) {
-			return matchingPartial;
-		} else {
-			// multiple paxes with name starting with same 8 letters
-			return this.filterMcoRowsByMask(matchingPartial, headerData)
-				.catch(exc => matchingPartial);
-		}
+		return this.filterMcoRowsByMask(matchingPartial, headerData)
+			.catch(exc => matchingPartial);
 	}
 
 	async prepareHbFexMask(storeNumber = '', ticketNumber = '') {
