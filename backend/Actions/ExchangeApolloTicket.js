@@ -85,7 +85,8 @@ ExchangeApolloTicket.inputHbFexMask = async ({rqBody, gdsSession}) => {
 		values[key] = value.toUpperCase();
 	}
 	if (values.originalFormOfPayment && values.originalFormOfPayment.match(/XXXXX/)) {
-		values.originalFormOfPayment = await getMcoFop(values.ticketNumber1, gdsSession);
+		values.originalFormOfPayment = await getMcoFop(values.ticketNumber1, gdsSession)
+			.catch(exc => values.originalFormOfPayment);
 	}
 	let result = await ExchangeApolloTicket({
 		emptyMask: ParseHbFex.EMPTY_MASK_EXAMPLE,
