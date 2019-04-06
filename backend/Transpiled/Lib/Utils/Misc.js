@@ -39,10 +39,13 @@ class Misc {
 			['([^0-9]|^)4\\d{' + (15 - $showDigits) + '}(\\d{' + $showDigits + '}([^0-9]|$))']: 16, // VISA
 			['([^0-9]|^)5\\d{' + (15 - $showDigits) + '}(\\d{' + $showDigits + '}([^0-9]|$))']: 16, // MASTER CARD
 			['([^0-9]|^)6\\d{' + (15 - $showDigits) + '}(\\d{' + $showDigits + '}([^0-9]|$))']: 16, // DISCOVER
+			// any other credit card, like Travel Plan: 15-16 digits
+			['([A-Z]{2})\\d{' + (15 - $showDigits) + '}(\\d{' + $showDigits + '}([^0-9]|$))']: 15,
+			['([A-Z]{2})\\d{' + (16 - $showDigits) + '}(\\d{' + $showDigits + '}([^0-9]|$))']: 16,
 		};
 		for ([$ccRegex, $len] of Object.entries($ccRegexList)) {
 			$replacement = php.str_repeat('X', $len - $showDigits);
-			$str = php.preg_replace('/' + $ccRegex + '/', '$1' + $replacement + '$2', $str);
+			$str = php.preg_replace('/' + $ccRegex + '/g', '$1' + $replacement + '$2', $str);
 		}
 		return $str;
 	}
