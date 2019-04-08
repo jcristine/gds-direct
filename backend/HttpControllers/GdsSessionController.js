@@ -171,15 +171,15 @@ let sendPqToPqt = async ({stateful, leadData, imported}) => {
 	let params = {
 		'gds': $sessionData['gds'],
 		'pcc': $sessionData['pcc'],
-		'agentId': $sessionData['agent_id'],
-		'leadId': $sessionData['lead_id'],
+		'agentId': stateful.getAgent().getId(),
+		'leadId': stateful.getLeadId(),
 		'source': 'GDS_DIRECT_PQ',
 		'creationDate': php.date('Y-m-d H:i:s'),
 		'pricingCommand': $pricingCommand,
 		'pnrDump': $pnrDump,
 		'pricingDump': $pricingDump,
-		'projectName': leadData['project_name'],
-		'leadUrl': leadData['lead_url'],
+		'projectName': !leadData ? null : leadData.projectName,
+		'leadUrl': !leadData ? null : leadData.leadUrl,
 		'linearFareDump': $linearFareDump,
 	};
 	let config = await getConfig();
