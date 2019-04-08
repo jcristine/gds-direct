@@ -19,13 +19,19 @@ class Misc {
 	}
 
 	static maskCcNumbers($data, $showDigits = 4) {
-		if (php.is_array($data)) {
-			return Fp.map(($sub) => this.maskCcNumbers($sub, $showDigits), $data);
-		} else if (php.is_string($data)) {
-			return this.maskCcNumbersInString($data, $showDigits);
-		} else {
-			return $data;
-		}
+		let internal = ($data) => {
+			if (php.is_array($data)) {
+				return Fp.map(($sub) => internal($sub), $data);
+			} else if (php.is_string($data)) {
+				return this.maskCcNumbersInString($data, $showDigits);
+			} else {
+				return $data;
+			}
+		};
+		// quazilion of corner cases, like classes, objects
+		// without constructor, etc... so JSON-normalize the data
+		$data = JSON.parse(JSON.stringify($data));
+		return internal($data);
 	}
 
 	/**
