@@ -29,6 +29,7 @@ let hardcodedConfig = {
 	HTTP_PORT: env.HTTP_PORT || 3012,
 	HOST: env.HOST || '0.0.0.0',
 
+	// TODO: move to admin page like in CMS
 	external_service: {
 		emc: {
 			projectName: 'GDSD',
@@ -61,6 +62,13 @@ let hardcodedConfig = {
 				: 'http://10.128.8.117:1337/jsonService.php',
 			login: 'lms',
 			password: isProd ? 'zB3+(nCy' : 'qwerty',
+		},
+		pqt: {
+			host: isProd
+				? 'http://pqt-asaptickets.lan.dyninno.net/rpc/iq-json'
+				: 'http://st-pqt.sjager.php7.dyninno.net/rpc/iq-json',
+			login: isProd ? 'GDSD' : 'CMS',
+			password: isProd ? 'dp6FcHKqATUsGqQxU&4f' : 'qwerty',
 		},
 	},
 };

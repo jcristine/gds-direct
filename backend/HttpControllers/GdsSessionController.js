@@ -184,21 +184,19 @@ let sendPqToPqt = async ({stateful, leadData, imported}) => {
 	};
 	let config = await getConfig();
 	let Crypt = require("../../node_modules/dynatech-client-component/lib/Crypt.js").default;
-	let rbsPassword = config.RBS_PASSWORD;
-	if (!rbsPassword) {
-		let rej = NotImplemented('PQT password not defined in env');
+	let pqtPassword = config.external_service.pqt.password;
+	if (!pqtPassword) {
+		let rej = NotImplemented('PQT password not defined in config');
 		stateful.logExc('ERROR: Failed to send PQ to PQT', rej.exc);
 		return rej;
 	}
 	let ec = new Crypt(process.env.RANDOM_KEY, 'des-ede3');
-	let credentials = {login: 'CMS', password: ec.encryptToken(rbsPassword)};
+	let credentials = {login: config.external_service.pqt.login, password: ec.encryptToken(pqtPassword)};
 
 	return Misc.iqJson({
 		functionName: 'dataInput.addPriceQuoteFromDumps',
 		params: params,
-		url: config.production
-			? 'http://pqt-asaptickets.lan.dyninno.net/rpc/iq-json?log_id=' + logId
-			: 'http://st-pqt.sjager.php7.dyninno.net/rpc/iq-json?log_id=' + logId,
+		url: config.external_service.pqt.host + '?log_id=' + logId,
 		credentials: credentials,
 	}).then(svcRs => {
 		stateful.logit('PQ was successfully sent to PQT', svcRs);
