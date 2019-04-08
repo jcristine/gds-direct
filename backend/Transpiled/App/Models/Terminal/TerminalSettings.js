@@ -3,6 +3,7 @@ const Constants = require('./../../../../Constants.js');
 const {array_map, array_flip, array_intersect_key, empty, json_decode, str_split, intval, isset} = require("../../../php.js");
 const RedisData = require("../../../../LibWrappers/RedisData.js");
 const AreaSettings = require("../../../../Repositories/AreaSettings");
+const GdsSessions = require("../../../../Repositories/GdsSessions");
 
 let TABLE = 'terminalSettings';
 let AREA_TABLE = 'terminalAreaSettings';
@@ -66,7 +67,15 @@ class TerminalSettings {
 			'keyBindings': json_decode($row['keyBindings']),
 			'fontSize': intval($row['fontSize']),
 			'theme': intval($row['terminalTheme']),
-			'areaSettings': areaRows.filter(areaRow => areaRow.gds === $row['gds']),
+			'areaSettings': areaRows
+				.filter(areaRow => areaRow.gds === $row['gds'])
+				.map(areaRow => {
+					let defaultPcc = areaRow.defaultPcc;
+					if (!defaultPcc && areaRow.area === 'A') {
+						defaultPcc = GdsSessions.makeDefaultAreaState(areaRow.gds).pcc;
+					}
+					return {...areaRow, defaultPcc};
+				}),
 			'matrix': json_decode($row['matrixConfiguration']),
 		};
 	}
