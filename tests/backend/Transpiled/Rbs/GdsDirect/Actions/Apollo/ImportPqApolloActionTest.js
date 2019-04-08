@@ -2,8 +2,10 @@
 
 const ImportPqApolloAction = require('../../../../../../../backend/Transpiled/Rbs/GdsDirect/Actions/Apollo/ImportPqApolloAction.js');
 const AnyGdsStubSession = require('../../../../../../../backend/Transpiled/Rbs/TestUtils/AnyGdsStubSession.js');
+const ItineraryParser = require('../../../../../../../backend/Transpiled/Gds/Parsers/Apollo/Pnr/ItineraryParser.js');
 
 const php = require('../../../../php.js');
+const GdsActionTestUtil = require("../../../../../../../backend/Transpiled/Rbs/TestUtils/GdsActionTestUtil");
 
 class ImportPqApolloActionTest extends require('../../../../Lib/TestCase.js') {
 	provideTestCases() {
@@ -758,6 +760,117 @@ class ImportPqApolloActionTest extends require('../../../../Lib/TestCase.js') {
 		return $argumentTuples;
 	}
 
+	provide_getFlightService() {
+		let testCases = [];
+
+		testCases.push({
+			input: {
+				itinerary: ItineraryParser.parse([
+					" 1 UA 551K 29JUL DCAIAH SS1   605A  813A *         MO   E  1",
+					" 2 UA   7K 29JUL IAHNRT SS1  1040A  200P|*      MO/TU   E  1",
+					" 3 NH 819K 30JUL NRTMNL SS1   515P  855P *         TU   E",
+					" 4 UA 184K 27AUG MNLGUM SS1  1130P  540A|*      TU/WE   E  2",
+					" 5 UA 200K 28AUG GUMHNL SS1   710A  625P-*      WE/TU   E  2",
+					" 6 UA 252K 27AUG HNLIAH SS1   755P  836A|*      TU/WE   E  3",
+					" 7 UA6240K 28AUG IAHDCA SS1   945A  140P *         WE   E  3",
+					"         OPERATED BY MESA AIRLINES DBA UNITED EXPRESS",
+				].join('\n')).segments,
+			},
+			output: {
+				parsed: {
+					segments: [
+						{legs: [{destinationAirport: 'IAH', destinationDt: {full: '2019-07-29 08:13:00'}}]},
+						{legs: [{destinationAirport: 'NRT', destinationDt: {full: '2019-07-30 14:00:00'}}]},
+						{legs: [{destinationAirport: 'MNL', destinationDt: {full: '2019-07-30 20:55:00'}}]},
+						{legs: [{destinationAirport: 'GUM', destinationDt: {full: '2019-08-28 05:40:00'}}]},
+						{legs: [{destinationAirport: 'HNL', destinationDt: {full: '2019-08-27 18:25:00'}}]},
+						{legs: [{destinationAirport: 'IAH', destinationDt: {full: '2019-08-28 08:36:00'}}]},
+						{legs: [{destinationAirport: 'DCA', destinationDt: {full: '2019-08-28 13:40:00'}}]},
+					],
+				},
+			},
+			calledCommands: [
+				{
+				    "cmd": "*SVC",
+				    "output": [
+				        " 1 UA  551  K DCAIAH  73G  FOOD TO PURCHASE                3:08",
+				        "                      NON-SMOKING                              ",
+				        "                                                               ",
+				        "           DEPARTS DCA TERMINAL B  - ARRIVES IAH TERMINAL C    ",
+				        "           TSA SECURED FLIGHT                                  ",
+				        "                                                               ",
+				        " 2 UA    7  K IAHNRT  777  LUNCH                          13:20",
+				        "                      NON-SMOKING                              ",
+				        "                                                               ",
+				        "           DEPARTS IAH TERMINAL E  - ARRIVES NRT TERMINAL 1    ",
+				        "           TSA SECURED FLIGHT                                  ",
+				        "                                                               ",
+				        " 3 NH  819  K NRTMNL  788  MEAL                            4:40",
+				        ")><"
+				    ].join("\n"),
+				},
+				{
+				    "cmd": "MR",
+				    "output": [
+				        "                      NON-SMOKING                              ",
+				        "                                                               ",
+				        "           DEPARTS NRT TERMINAL 1  - ARRIVES MNL TERMINAL 3    ",
+				        "                                                               ",
+				        " 4 UA  184  K MNLGUM  73G  DINNER                          4:10",
+				        "                      NON-SMOKING                              ",
+				        "                                                               ",
+				        "           DEPARTS MNL TERMINAL 3                              ",
+				        "           TSA SECURED FLIGHT                                  ",
+				        "                                                               ",
+				        " 5 UA  200  K GUMHNL  777  FOOD TO PURCHASE                7:15",
+				        "                      NON-SMOKING                              ",
+				        "                                                               ",
+				        ")><"
+				    ].join("\n"),
+				},
+				{
+				    "cmd": "MR",
+				    "output": [
+				        "                                     ARRIVES HNL TERMINAL 2    ",
+				        "           TSA SECURED FLIGHT                                  ",
+				        "                                                               ",
+				        " 6 UA  252  K HNLIAH  777  FOOD TO PURCHASE                7:41",
+				        "                      NON-SMOKING                              ",
+				        "                                                               ",
+				        "           DEPARTS HNL TERMINAL 2  - ARRIVES IAH TERMINAL C    ",
+				        "           TSA SECURED FLIGHT                                  ",
+				        "                                                               ",
+				        " 7 UA 6240  K IAHDCA  E7W  MEAL AT COST                    2:55",
+				        "                      NON-SMOKING                              ",
+				        "                                                               ",
+				        "           OPERATED BY MESA AIRLINES DBA UNITED EXPRESS        ",
+				        ")><"
+				    ].join("\n"),
+				},
+				{
+				    "cmd": "MR",
+				    "output": [
+				        "           DEPARTS IAH TERMINAL B  - ARRIVES DCA TERMINAL B    ",
+				        "           TSA SECURED FLIGHT                                  ",
+				        "                                                               ",
+				        "CO2 CALCULATED PER PERSON BY CLIMATENEUTRALGROUP.COM/OFFSET-NOW",
+				        "    CO2 DCAIAH ECONOMY     196.05 KG PREMIUM     294.08 KG     ",
+				        "    CO2 IAHNRT ECONOMY    1034.56 KG PREMIUM    2276.04 KG     ",
+				        "    CO2 NRTMNL ECONOMY     307.89 KG PREMIUM     461.84 KG     ",
+				        "    CO2 MNLGUM ECONOMY     258.98 KG PREMIUM     388.47 KG     ",
+				        "    CO2 GUMHNL ECONOMY     592.44 KG PREMIUM    1303.37 KG     ",
+				        "    CO2 HNLIAH ECONOMY     608.07 KG PREMIUM    1337.76 KG     ",
+				        "    CO2 IAHDCA ECONOMY     196.05 KG PREMIUM     294.08 KG     ",
+				        "    CO2 TOTAL  ECONOMY    3194.05 KG PREMIUM    6355.64 KG     ",
+				        "><"
+				    ].join("\n"),
+				},
+			],
+		});
+
+		return testCases.map(c => [c]);
+	}
+
 	/**
 	 * @test
 	 * @dataProvider provideTestCases
@@ -771,21 +884,22 @@ class ImportPqApolloActionTest extends require('../../../../Lib/TestCase.js') {
 			.setBaseDate('2018-03-20')
 			.execute();
 
-		try {
-			this.assertArrayElementsSubset($expectedOutput, $actual);
-		} catch ($exc) {
-			let args = process.argv.slice(process.execArgv.length + 2);
-			if (args.includes('debug')) {
-				console.log('\n$actual\n', JSON.stringify($actual));
-			}
-			/** @debug */
-			throw $exc;
-		}
+		this.assertArrayElementsSubset($expectedOutput, $actual);
+	}
+
+	async test_getFlightService(testCase) {
+		await GdsActionTestUtil.testGdsAction(this, testCase, (gdsSession, input) => {
+			return (new ImportPqApolloAction())
+				.setSession(gdsSession)
+				.setBaseDate('2019-04-08 15:28:42')
+				.getFlightService(input.itinerary);
+		});
 	}
 
 	getTestMapping() {
 		return [
 			[this.provideTestCases, this.testAction],
+			[this.provide_getFlightService, this.test_getFlightService],
 		];
 	}
 }

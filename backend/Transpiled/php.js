@@ -146,13 +146,13 @@ php.strtotime = (dtStr, nowSec) => {
 		return Date.parse(dtStr) / 1000;
 	} else if (dtStr.match(/^\d{2}:\d{2} [AP]M$/)) {
 		return Date.parse('2016-01-01 ' + dtStr + ' Z') / 1000;
-	} else if (matches = dtStr.match(/^([-+]\d+) days?$/)) {
+	} else if (matches = dtStr.match(/^\+?([-+]\d+) days?$/)) {
 		return nowSec + (+matches[1]) * 24 * 60 * 60;
-	} else if (matches = dtStr.match(/^([-+]\d+) hours?$/)) {
+	} else if (matches = dtStr.match(/^\+?([-+]\d+) hours?$/)) {
 		return nowSec + (+matches[1]) * 60 * 60;
-	} else if (matches = dtStr.match(/^([-+]\d+) minutes?$/)) {
+	} else if (matches = dtStr.match(/^\+?([-+]\d+) minutes?$/)) {
 		return nowSec + (+matches[1]) * 60;
-	} else if (matches = dtStr.match(/^([-+]\d+) seconds?$/)) {
+	} else if (matches = dtStr.match(/^\+?([-+]\d+) seconds?$/)) {
 		return nowSec + (+matches[1]);
 	} else {
 		throw new Error('Unsupported date str format - ' + JSON.stringify(dtStr));
