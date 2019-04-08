@@ -23,6 +23,7 @@ const FareConstructionParser = require("./Transpiled/Gds/Parsers/Common/FareCons
 const KeepAlive = require("./Maintenance/KeepAlive");
 const {safe} = require('./Utils/Misc.js');
 const PersistentHttpRq = require('./Utils/PersistentHttpRq.js');
+const Misc = require("./Transpiled/Lib/Utils/Misc");
 const withGdsSession = require("./HttpControllers/MainController").withGdsSession;
 const toHandleHttp = require("./HttpControllers/MainController").toHandleHttp;
 const withAuth = require("./HttpControllers/MainController").withAuth;
@@ -222,6 +223,22 @@ app.get('/getAgentList', withAuth(async (reqBody, emcResult) => {
 		emc.setMethod('getUsers');
 		let users = await emc.call();
 		return users;
+	} else {
+		return Forbidden('Sorry, you must be me in order to use that');
+	}
+}));
+app.post('/admin/getModel', withAuth(async (reqBody, emcResult) => {
+	if (emcResult.user.id == 6206) {
+		let rows = await Db.with(db => db.fetchAll({
+			table: reqBody.model,
+			where: reqBody.where || [],
+			whereOr: reqBody.whereOr || [],
+			orderBy: reqBody.orderBy || 'id DESC',
+			skip: reqBody.skip,
+			limit: reqBody.limit || 100,
+		}));
+		rows = Misc.maskCcNumbers(rows);
+		return {records: rows};
 	} else {
 		return Forbidden('Sorry, you must be me in order to use that');
 	}
