@@ -30,6 +30,7 @@
     "fetch": false,
     "URL": false,
     "URLSearchParams": false,
+    "Option": false,
 
     // webpack
     "require": false,

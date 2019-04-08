@@ -12,7 +12,9 @@ const update_cur_gds = (sessionInfo) => {
 	for (let areaSetting of (window.GdsDirectPlusState.getGdsAreaSettings()[gdsName] || [])) {
 		// show default PCC on empty areas instead of nothing
 		let idx = AREA_LIST.indexOf(areaSetting.area);
-		pccUpd[idx] = pccUpd[idx] || areaSetting.defaultPcc;
+		if (!pccUpd[idx] || !sessionInfo.cmdCnt) {
+			pccUpd[idx] = areaSetting.defaultPcc;
+		}
 	}
 
 	let idxToInfo = startNewSession ? {} : {...getStore().app.Gds.getGds(gdsName).get('idxToInfo') || {}};
@@ -58,6 +60,8 @@ export const UPDATE_ALL_AREA_STATE = (gds, fullState) => {
 		pcc: ((fullState.areas || {})[area] || {}).pcc,
 		canCreatePq: ((fullState.areas || {})[area] || {}).can_create_pq,
 		pricingCmd: ((fullState.areas || {})[area] || {}).pricing_cmd,
+		scrolledCmd: ((fullState.areas || {})[area] || {}).scrolledCmd,
+		cmdCnt: ((fullState.areas || {})[area] || {}).cmdCnt,
 		hasPnr: ((fullState.areas || {})[area] || {}).has_pnr,
 		recordLocator: ((fullState.areas || {})[area] || {}).record_locator,
 		startNewSession: false,

@@ -56,20 +56,6 @@ let encodeTpOutputForCms = ($dump) => {
 	return $dump;
 };
 
-let makeBriefSessionInfo = (fullState) => {
-	let areaState = fullState.areas[fullState.area] || {};
-	return ({
-		canCreatePq: areaState.can_create_pq ? true : false,
-		pricingCmd: areaState.pricing_cmd || '',
-		canCreatePqErrors: areaState.can_create_pq
-			? [] : ['No recent valid pricing'],
-		area: areaState.area || '',
-		pcc: areaState.pcc || '',
-		hasPnr: areaState.has_pnr ? true : false,
-		recordLocator: areaState.record_locator || '',
-	});
-};
-
 let isScreenCleaningCommand = (rec, gds) => {
 	if (gds === 'apollo') {
 		let type = rec.type || ApoCommandParser.parse(rec.cmd);
@@ -197,7 +183,6 @@ let runCmdRq =  async (inputCmd, stateful) => {
 		messages: messages,
 		actions: actions,
 		calledCommands: calledCommands,
-		sessionInfo: makeBriefSessionInfo(stateful.getFullState()),
 	};
 };
 
@@ -222,39 +207,31 @@ let translateCmd = (fromGds, toGds, inputCmd) => {
 	};
 };
 
-// better to do it separately in each GDS, since Sabre logs into current PCC
-// in all areas on SI*, and Amadeus needs a separate session for each area
-let useConfigPcc = (grectResult, stateful, agentId, activeAreas) => {
-	let {area, pcc} = grectResult.sessionInfo;
+let getDefaultPcc = async (area, stateful) => {
 	let gds = stateful.gds;
-	let cmdType = stateful.getSessionData().cmdType;
-	if (cmdType === 'changeArea' && !activeAreas.includes(area)) {
-		// emulate to default pcc
-		return AreaSettings.getByAgent(agentId)
-			.then(rows => rows.filter(r =>
-				r.gds === gds &&
-				r.area === area &&
-				r.defaultPcc !== pcc &&
-				r.defaultPcc)[0])
-			.then(nonEmpty())
-			.then(row => {
-				let cmd = {
-					apollo: 'SEM/' + row.defaultPcc + '/AG',
-					galileo: 'SEM/' + row.defaultPcc + '/AG',
-					sabre: 'AAA' + row.defaultPcc,
-					amadeus: 'JUM/O-' + row.defaultPcc,
-				}[gds];
-				return runCmdRq(cmd, stateful)
-					.then(semResult => {
-						semResult.messages.unshift(...grectResult.messages || []);
-						semResult.calledCommands.unshift(...grectResult.calledCommands || []);
-						return semResult;
-					});
-			})
-			.catch(exc => grectResult);
-	} else {
-		return grectResult;
+	let agentId = stateful.getAgent().getId();
+	let areaSettings = await AreaSettings.getByAgent(agentId);
+	let configPcc = areaSettings
+		.filter(r => r.area === area && r.gds === stateful.gds)
+		.map(r => r.defaultPcc)[0];
+
+	if (gds === 'sabre' && area === 'A' && !configPcc) {
+		// ensure we are emulated in 6IIF on startup
+		configPcc = '6IIF';
 	}
+	return configPcc;
+};
+
+let ensureConfigPcc = async (stateful) => {
+	let areaState = stateful.getSessionData();
+	if (!areaState.cmdCnt || !areaState.pcc) {
+		let defaultPcc = await getDefaultPcc(areaState.area, stateful);
+		if (defaultPcc && defaultPcc !== areaState.pcc) {
+			let cmd = translateCmd('apollo', stateful.gds, 'SEM/' + defaultPcc + '/AG').cmd;
+			return runCmdRq(cmd, stateful);
+		}
+	}
+	return {calledCommands: [], messages: []};
 };
 
 /**
@@ -280,28 +257,28 @@ let ProcessTerminalInput = async ({session, rqBody, emcUser}) => {
 		}
 	}
 
-	let activeAreas = Object
-		.values(stateful.getFullState().areas)
-		.filter(r => !!r.scrolledCmd)
-		.map(r => r.area);
+	let prePccResult = await ensureConfigPcc(stateful);
+	let rbsResult = await runCmdRq(cmdRq, stateful);
+	let postPccResult = await ensureConfigPcc(stateful); // if this command changed area
 
-	let whenRbsResult = runCmdRq(cmdRq, stateful)
-		.then(rbsResult => useConfigPcc(rbsResult, stateful, rqBody.agentId, activeAreas))
-		.then(rbsResult => ({
-			...rbsResult,
-			messages: (rbsResult.messages || []).concat(translated.messages),
-			calledCommands: rbsResult.calledCommands
-				.map(r => transformCalledCommand(r, stateful)),
-		}));
+	rbsResult = {...rbsResult,
+		calledCommands: []
+			.concat(prePccResult.calledCommands || [])
+			.concat(rbsResult.calledCommands)
+			.concat(postPccResult.calledCommands)
+			.map(r => transformCalledCommand(r, stateful)),
+		messages: []
+			.concat(translated.messages)
+			.concat(prePccResult.messages || [])
+			.concat(rbsResult.messages)
+			.concat(postPccResult.messages),
+	};
 
-	let whenCmsResult = whenRbsResult.then(rbsResult => {
-		let termSvc = new TerminalService(gds);
-		return termSvc.addHighlighting(rqBody.command, rqBody.language || rqBody.gds, rbsResult);
-	});
+	let termSvc = new TerminalService(gds);
+	let cmsResult = await termSvc.addHighlighting(rqBody.command, rbsResult, stateful.getFullState());
+	TerminalBuffering.logOutput(rqBody, whenCmdRqId, cmsResult.output);
 
-	TerminalBuffering.logOutput(rqBody, whenCmdRqId, whenCmsResult);
-
-	return whenCmsResult;
+	return cmsResult;
 };
 
 ProcessTerminalInput.extractTpTabCmds = extractTpTabCmds;

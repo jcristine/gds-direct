@@ -109,6 +109,8 @@ let makeDefaultAreaState = (gds) => ({
 	}[gds] || null,
 	record_locator: '',
 	can_create_pq: false,
+	scrolledCmd: null,
+	cmdCnt: 0,
 });
 
 let makeDefaultState = (session) => ({

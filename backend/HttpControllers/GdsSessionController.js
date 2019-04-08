@@ -238,7 +238,7 @@ exports.resetToDefaultPcc = async ({rqBody, session, emcUser}) => {
 };
 
 let makeMaskRs = (calledCommands, actions = []) => new TerminalService('apollo')
-	.addHighlighting('', 'apollo', {
+	.addHighlighting('', {
 		calledCommands: calledCommands.map(cmdRec => ({
 			...cmdRec, tabCommands: ProcessTerminalInput.extractTpTabCmds(cmdRec.output),
 		})),

@@ -28,10 +28,20 @@ let self = {
 	MD_PATTERNS : /^(MD.*|MU.*|MR.*)/i,
 };
 
-let hrtimeToDecimal = (hrtime) => {
-	let [seconds, nanos] = hrtime;
-	let rest = ('0'.repeat(9) + nanos).slice(-9);
-	return seconds + '.' + rest;
+let makeBriefSessionInfo = (fullState) => {
+	let areaState = fullState.areas[fullState.area] || {};
+	return ({
+		canCreatePq: areaState.can_create_pq ? true : false,
+		pricingCmd: areaState.pricing_cmd || '',
+		canCreatePqErrors: areaState.can_create_pq
+			? [] : ['No recent valid pricing'],
+		area: areaState.area || '',
+		pcc: areaState.pcc || '',
+		hasPnr: areaState.has_pnr ? true : false,
+		recordLocator: areaState.record_locator || '',
+		scrolledCmd: areaState.scrolledCmd || null,
+		cmdCnt: areaState.cmdCnt || 0,
+	});
 };
 
 class TerminalService
@@ -58,7 +68,7 @@ class TerminalService
 	 * @param string $language
 	 * @return string
 	 */
-	async formatOutput($enteredCommand, $language, calledCommands) {
+	async formatOutput($enteredCommand, calledCommands) {
 		let $output = '';
 		let appliedRules = [];
 		for (let [$index, $row] of Object.entries(calledCommands)) {
@@ -147,28 +157,26 @@ class TerminalService
 	 * @param string $command
 	 * @param {IRbsRunCommandResult} rbsResp
 	 */
-	addHighlighting($command, $language, rbsResp) {
+	addHighlighting($command, rbsResp, fullState = null) {
 		let {calledCommands, messages = []} = rbsResp;
 		let typeToMsgs = {};
 		for (let msgRec of messages) {
 			typeToMsgs[msgRec.type] = typeToMsgs[msgRec.type] || [];
 			typeToMsgs[msgRec.type].push(msgRec.text);
 		}
-		let hrtimeStart = process.hrtime();
-		return this.formatOutput($command, $language, calledCommands)
+		let sessionInfo = !fullState ? {} : makeBriefSessionInfo(fullState);
+		return this.formatOutput($command, calledCommands)
 			.then(({$output, appliedRules}) => {
 				$output = this.appendOutput($output, typeToMsgs);
 				let cmdTimes = rbsResp.calledCommands.map(rec => rec.duration).filter(a => a);
 				return {
-					...rbsResp,
-					status: rbsResp.status,
 					cmdType: rbsResp.calledCommands.length > 0 ? rbsResp.calledCommands[0].type : null,
 					output: $output || rbsResp.status,
-					prompt: '',
-					userMessages: typeToMsgs['pop_up'] ? typeToMsgs['pop_up'] : null,
 					appliedRules: appliedRules,
-					legend: [],
+					prompt: '', // unused I believe
+					legend: [], // unused I believe
 
+					startNewSession: rbsResp.startNewSession || false,
 					tabCommands: calledCommands
 						.map(call => call.tabCommands || [])
 						.reduce((a,b) => a.concat(b), [])
@@ -176,11 +184,13 @@ class TerminalService
 					clearScreen: rbsResp.clearScreen || rbsResp.calledCommands
 						.filter(rec => rec.clearScreen).length > 0,
 
-					...(rbsResp.sessionInfo || {}),
-					highlightTime: hrtimeToDecimal(process.hrtime(hrtimeStart)),
 					gdsTime: cmdTimes.length > 0 ? cmdTimes.reduce((a,b) => a + b) : null,
-					startNewSession: rbsResp.startNewSession || false,
+
+					...sessionInfo,
+					sessionInfo: sessionInfo,
+					userMessages: typeToMsgs['pop_up'] ? typeToMsgs['pop_up'] : null,
 					calledCommands: rbsResp.calledCommands,
+					actions: rbsResp.actions || [],
 				};
 			});
 	}

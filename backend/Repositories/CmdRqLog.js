@@ -23,17 +23,14 @@ exports.storeNew = (rqBody, session) => {
 };
 
 /** @param running = require('TerminalService.js').addHighlighting() */
-exports.logOutput = async (rqBody, whenCmdRqId, running) => {
-	let hrtimeStart = process.hrtime();
+exports.logOutput = async (rqBody, whenCmdRqId, output) => {
 	let cmdRqId = await whenCmdRqId;
-	let result = await running;
-	let hrtimeDiff = process.hrtime(hrtimeStart);
-	let processedTime = hrtimeToDecimal(hrtimeDiff);
 	let responseTimestamp = Math.floor(new Date().getTime() / 1000);
 	return Db.with(db => db.writeRows(TABLE, [{
 		id: cmdRqId,
-		processedTime: processedTime,
-		output: result.output,
+		// no point in measuring it anymore, since there is the terminal_command_log now
+		processedTime: '0.000',
+		output: output,
 		responseTimestamp: responseTimestamp,
 	}]));
 };

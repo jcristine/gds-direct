@@ -55,7 +55,7 @@ let ExchangeApolloTicket = async ({emptyMask, maskOutput, values, gdsSession, ma
 };
 
 let makeMaskRs = (calledCommands, actions = []) => new TerminalService('apollo')
-	.addHighlighting('', 'apollo', {
+	.addHighlighting('', {
 		calledCommands: calledCommands.map(cmdRec => ({
 			...cmdRec, tabCommands: ProcessTerminalInput.extractTpTabCmds(cmdRec.output),
 		})),

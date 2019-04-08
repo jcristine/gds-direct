@@ -1030,12 +1030,6 @@ class ProcessSabreTerminalInputAction {
 			$cmdRequested = $cmdRequested.slice(0, -'/MDA'.length);
 		}
 
-		let areaState = this.stateful.getSessionData();
-		if (areaState.area === 'A' && !areaState.scrolledCmd) {
-			// ensure we are emulated in 6IIF on startup
-			calledCommands.push(await this.stateful.runCmd('AAA6IIF'));
-		}
-
 		$callResult = await this.processRequestedCommand($cmdRequested);
 
 		if (!php.empty($errors = $callResult['errors'])) {
