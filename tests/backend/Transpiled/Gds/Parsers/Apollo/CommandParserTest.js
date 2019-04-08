@@ -728,6 +728,7 @@ class CommandParserTest extends require('../../../../../../backend/Transpiled/Li
                 },
             ],
         }}]);
+        $list.push(['*MPD', {'type': 'mcoList'}]);
         $list.push(['*MP', {'type': 'frequentFlyerData'}]);
         $list.push(['MP\/X\/*ALL', {'type': 'changeFrequentFlyerNumber', 'data': {'passengers': []}}]);
         $list.push(['MP\/X\/*AA', {'type': 'changeFrequentFlyerNumber', 'data': {

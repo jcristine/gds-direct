@@ -18,10 +18,10 @@ class CommandParser {
 		let $is, $startsWith, $regex, $pattern, $type, $name;
 		$cmd = php.strtoupper($cmd);
 		$is = {
-			'*LF': 'storedPricing',
 			'IR': 'ignoreKeepPnr',
 			'9D': 'requestedSeats',
 			'*MP': 'frequentFlyerData',
+			'*MPD': 'mcoList',
 			'$V:\/S': 'fareRuleSummary',
 			'*HTE': 'ticketList',
 			'@MT': 'verifyConnectionTimes',
@@ -46,6 +46,7 @@ class CommandParser {
 			'*DV': 'dividedBookings',
 			'OP\/W*': 'workAreas',
 			'F': 'fileDividedBooking',
+			'HHMCO': 'requestMcoMask',
 		};
 		$startsWith = {
 			'@LT': 'showTime',
@@ -55,8 +56,13 @@ class CommandParser {
 			'HELP': 'help',
 			'*H': 'history',
 			'$V:': 'mostRestrictiveSegmentRules',
-			'$V\/CMB': 'ruleCombinations',
+			'$V/CMB': 'ruleCombinations',
+			'$EX NAME': 'exchangeTicketMask',
+			'$MR       TOTAL ADD COLLECT': 'confirmExchangeFareDifferenceMask',
 			'*TE': 'ticketMask',
+			'*LF': 'storedPricing', // '*LF', '*LF1'
+			'HHMCU': 'submitMcoMask',
+			'*MCO': 'storedMcoMask', // '*MCO1', '*MCO2'
 			'@:3SSR': 'addSsr',
 			'@:3': 'addProgrammaticSsr',
 			'B/': 'bridgeTo',
