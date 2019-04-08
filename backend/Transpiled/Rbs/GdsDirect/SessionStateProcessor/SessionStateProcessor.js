@@ -43,10 +43,10 @@ class SessionStateProcessor
         let oldState = fullState.areas[fullState.area] || {};
         let newState = this.updateStateSafe(cmd, output, gds, oldState, getArea);
         let isMr = this.mrCmdTypes.includes(newState.cmdType);
-        fullState.areas[oldArea].cmdCnt = (fullState.areas[oldArea].cmdCnt || 0) + 1;
         newState.scrolledCmd = isMr ? oldState.scrolledCmd : cmd;
         fullState.area = newState.area;
         fullState.areas[newState.area] = newState;
+        fullState.areas[oldArea].cmdCnt = (fullState.areas[oldArea].cmdCnt || 0) + 1;
         return fullState;
     }
 }
