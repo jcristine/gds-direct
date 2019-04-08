@@ -563,7 +563,7 @@ class TerminalServiceTest extends require('../../../../../backend/Transpiled/Lib
 	async testFormatOutput({input, expected}) {
 		let {$enteredCommand, $language, calledCommands} = input;
 		let actual = await (new TerminalService(input.$language))
-			.formatOutput($enteredCommand, $language, calledCommands);
+			.formatOutput($enteredCommand, calledCommands);
 		try {
 			this.assertArrayElementsSubset(expected, actual);
 		} catch (exc) {
