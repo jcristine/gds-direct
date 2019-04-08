@@ -204,7 +204,6 @@ export default class GdsDirectPlusApp
 		let appWidth = this.container.context.clientWidth;
 
 		appHeight = Math.max(appHeight, 200);
-		appHeight = Math.min(appHeight, 1080);
 
 		const height		= Math.floor(appHeight / rRows); // - (BORDER_SIZE * rRows) );
 		const width 		= Math.floor((appWidth - this.getOffset()) / (cells + (hasWide ? 2 : 1) ) );
