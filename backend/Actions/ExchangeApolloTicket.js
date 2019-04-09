@@ -7,6 +7,8 @@ const McoListParser = require("../Transpiled/Gds/Parsers/Apollo/Mco/McoListParse
 const McoMaskParser = require("../Transpiled/Gds/Parsers/Apollo/Mco/McoMaskParser");
 const {UnprocessableEntity, BadRequest} = require('../Utils/Rej.js');
 const ParseHbFex = require('../Parsers/Apollo/ParseHbFex.js');
+const SessionStateProcessor = require('../Transpiled/Rbs/GdsDirect/SessionStateProcessor/SessionStateProcessor.js');
+const Rej = require("../Utils/Rej");
 
 let parseOutput = (output) => {
 	let match;
@@ -78,6 +80,30 @@ let getMcoFop = async (documentNumber, gdsSession) => {
 	}
 };
 
+/** @param stateful = require('StatefulSession.js')() */
+let getPrefilledFop = async (stateful) => {
+	let contextTypes = SessionStateProcessor.$nonAffectingTypes
+		.concat(['exchangeTicketMask', 'mcoList', 'storedMcoMask']);
+	let cmdRecs = await stateful.getLog().getLastCommandsOfTypes(contextTypes);
+	let isHbFex = cmdRec => cmdRec.type === 'issueTickets';
+	let lastHbFex = cmdRecs.filter(isHbFex).slice(-1)[0];
+	if (!lastHbFex) {
+		return Rej.NotFound('Could not find HB:FEX in last ' + cmdRecs.length + ' context commands');
+	}
+	let parsed = ParseHbFex(lastHbFex.output);
+	if (!parsed) {
+		return Rej.UnprocessableEntity('Invalid HB:FEX response');
+	}
+	let fop = parsed.fields
+		.filter(f => f.key === 'originalFormOfPayment')
+		.map(f => f.value)[0];
+	if (!fop) {
+		return Rej.NoContent('FOP was not pre-filled in initial HB:FEX response');
+	} else {
+		return fop;
+	}
+};
+
 ExchangeApolloTicket.inputHbFexMask = async ({rqBody, gdsSession}) => {
 	let maskOutput = rqBody.maskOutput;
 	let values = {};
@@ -85,7 +111,8 @@ ExchangeApolloTicket.inputHbFexMask = async ({rqBody, gdsSession}) => {
 		values[key] = value.toUpperCase();
 	}
 	if (values.originalFormOfPayment && values.originalFormOfPayment.match(/XXXXX/)) {
-		values.originalFormOfPayment = await getMcoFop(values.ticketNumber1, gdsSession)
+		values.originalFormOfPayment = await getPrefilledFop(gdsSession)
+			.catch(exc => getMcoFop(values.ticketNumber1, gdsSession))
 			.catch(exc => values.originalFormOfPayment);
 	}
 	let result = await ExchangeApolloTicket({
