@@ -48,13 +48,18 @@ export default class Output
 		return splitIntoLinesArr( this.outputStrings, this.numOfChars ).filter(line => line !== null).length;
 	}
 
-	_countEmpty()
+	_countEmpty(clearEmptyLines)
 	{
 		const outputRows 		= this.outputStrings ? this._getOutputLength() : 1;
 		const rowsRemoveEmpty	= () => this.emptyLines - outputRows;
 		const rowsToLift 		= () => this.numRows - outputRows - 1; // 1 - cmd line
 
 		this.emptyLines 		= this.clearScreen ? rowsToLift() : rowsRemoveEmpty();
+
+		if (clearEmptyLines)
+		{
+			this.emptyLines = 0;
+		}
 
 		if (this.emptyLines < 0)
 		{
@@ -115,13 +120,13 @@ export default class Output
 		}
 	}
 
-	printOutput(output, isClearScreen = false, appliedRules = '')
+	printOutput(output, isClearScreen = false, appliedRules = '', clearEmptyLines)
 	{
 		this.outputStrings 	= appliedRules ? replaceChar(output, '%') : output;
 		this.clearScreen	= isClearScreen;
 		this.cmdLineOffset 	= this.terminal.cmd()[0].offsetTop; // - this.charHeight; // remember scrollTop height before the command so when clear flag screen is set scroll to this mark
 
-		this._countEmpty()._printOutput(appliedRules, output)._attachEmpty()._scroll();
+		this._countEmpty(clearEmptyLines)._printOutput(appliedRules, output)._attachEmpty()._scroll();
 
 		return this.outputStrings;
 	}
