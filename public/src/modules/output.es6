@@ -64,30 +64,30 @@ export default class Output
 		return this;
 	}
 
-    _printOutput(appliedRules = '', output)
-    {
-        if (appliedRules && appliedRules.length)
-        {
-            const {tips, outputText} = seedOutputString(output, appliedRules);
-            this.outputStrings 	= outputText;
+	_printOutput(appliedRules = '', output)
+	{
+		if (appliedRules && appliedRules.length)
+		{
+			const {tips, outputText} = seedOutputString(output, appliedRules);
+			this.outputStrings 	= outputText;
 
-            let cleanupLast = () => {};
+			let cleanupLast = () => {};
 			this.terminal.echo(outputText, {
 				finalize 	: (div) => {
 					cleanupLast();
 					cleanupLast = replaceInTerminal(div, tips);
 				},
 				// raw 		: true
-            });
-        } else
-        {
-            this.terminal.echo(this.outputStrings);
-        }
+			});
+		} else
+		{
+			this.terminal.echo(this.outputStrings);
+		}
 
-        return this;
-    }
+		return this;
+	}
 
-    removeEmpty()
+	removeEmpty()
 	{
 		this.context.innerHTML = '';
 	}

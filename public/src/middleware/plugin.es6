@@ -62,14 +62,14 @@ export default class TerminalPlugin
 
 	_parseKeyBinds( evt, terminal )
 	{
-        if (this.injectedForms.length)
-        {
-        	this.outputLiner.emptyLines = 0;
-        	this.outputLiner.recalculate({}); // just to re-render / reset settings
-        }
+		if (this.injectedForms.length)
+		{
+			this.outputLiner.emptyLines = 0;
+			this.outputLiner.recalculate({}); // just to re-render / reset settings
+		}
 
 		if (evt.target.tagName.toLowerCase() === 'input') {
-		        return true;
+				return true;
 		}
 
 		const hasNoShortCut = pressedShortcuts( evt, terminal, this );
@@ -159,7 +159,7 @@ export default class TerminalPlugin
 
 			keypress		: (e, terminal) => {
 				if (e.target.tagName.toLowerCase() === 'input') {
-				        return true;
+						return true;
 				}
 				const replacement = getReplacement( e, window.GdsDirectPlusState.isLanguageApollo(), this.gdsName );
 
@@ -395,7 +395,7 @@ export default class TerminalPlugin
 
 			if (this.injectedForms.length)
 			{
-                clearLines = true;
+				clearLines = true;
 			}
 
 			output = this.outputLiner.printOutput(output, clearScreen, appliedRules, clearLines);
