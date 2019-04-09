@@ -62,6 +62,12 @@ export default class TerminalPlugin
 
 	_parseKeyBinds( evt, terminal )
 	{
+        if (this.injectedForms.length)
+        {
+        	this.outputLiner.emptyLines = 0;
+        	this.outputLiner.recalculate({}); // just to re-render / reset settings
+        }
+
 		if (evt.target.tagName.toLowerCase() === 'input') {
 		        return true;
 		}

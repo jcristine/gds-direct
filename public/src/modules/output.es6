@@ -31,6 +31,10 @@ export default class Output
 
 	recalculate({numOfRows, numOfChars, charHeight}) //on view terminal change sizes
 	{
+		numOfRows	= numOfRows	 || this.numRows;
+		numOfChars	= numOfChars || this.numOfChars;
+		charHeight 	= charHeight || this.charHeight;
+
 		this.setOptions({numOfRows, numOfChars, charHeight});
 
 		this
