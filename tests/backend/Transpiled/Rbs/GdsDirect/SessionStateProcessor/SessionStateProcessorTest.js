@@ -32,7 +32,7 @@ class SessionStateProcessorTest extends require('../../../../../../backend/Trans
                 {
                     'cmd': 'A*',
                     'output': 'FIRAV              WE 28JUN PARCHI- 7:00 HR                     1* KL1228 J9 C9 D9 I9 Z5 Y9 B9 M9 P9 U9 CDGAMS 935A 1100A 73W  0          F9 K9 W9 H9 S9 L9 A9 Q9 T8 E0 N0 R0 V0 X0 G0          2* KL 611 J9 C9 D9 I9 Z5 Y9 B9 M9 U9 K9    ORD1225P  155P 74E  0          H9 L9 Q9 T8 E0 N0 R0 V0 G0                            WOW YOUR CLIENT * HILTON CHICAGO RTS FR 119 US           >AH*1; HILTON GARDEN INN * CHICAGO RTS FROM 109 US              >AH*2; MEALS>A*M;  ><',
-                    'state': {'has_pnr': false},
+                    'state': {'hasPnr': false},
                 },
                 {
                     'cmd': '02L1T2',
@@ -48,7 +48,7 @@ class SessionStateProcessorTest extends require('../../../../../../backend/Trans
                         'FOR BORDER CONTROL AND AVIATION SECURITY PURPOSES',
                         '><',
                     ]),
-                    'state': {'has_pnr': true, 'is_pnr_stored': false},
+                    'state': {'hasPnr': true, 'isPnrStored': false},
                 },
                 {
                     'cmd': '*R',
@@ -193,7 +193,7 @@ class SessionStateProcessorTest extends require('../../../../../../backend/Trans
                         ')><',
                     ]),
                     // /S/-egment modifier used
-                    'state': {'area': 'A', 'pcc': '2G55', 'can_create_pq': true, 'has_pnr': true},
+                    'state': {'area': 'A', 'pcc': '2G55', 'canCreatePq': true, 'hasPnr': true},
                 },
                 {
                     'cmd': 'SB',
@@ -201,7 +201,7 @@ class SessionStateProcessorTest extends require('../../../../../../backend/Trans
                         'A-OUT B-IN AG-NOT AUTH - APOLLO',
                         '><',
                     ]),
-                    'state': {'area': 'B', 'pcc': '', 'has_pnr': false},
+                    'state': {'area': 'B', 'pcc': '', 'hasPnr': false},
                 },
                 {
                     'cmd': 'SEM/2G2H/AG',
@@ -238,7 +238,7 @@ class SessionStateProcessorTest extends require('../../../../../../backend/Trans
                 {
                     'cmd': 'A*',
                     'output': 'FIRAV              TH 06JUL CHINYC| 1:00 HR                     1| DL5976 F9 P9 A9 G3 W9 Y9 B9 M9 H9 Q9 ORDLGA 230P  545P E75*60          K9 L9 U9 T9 X9 V9 E9                                  MEALS>A*M;  ><',
-                    'state': {'has_pnr': false},
+                    'state': {'hasPnr': false},
                 },
                 {
                     'cmd': '02E1',
@@ -253,7 +253,7 @@ class SessionStateProcessorTest extends require('../../../../../../backend/Trans
                         'DEPARTS ORD TERMINAL 2  - ARRIVES LGA TERMINAL A ',
                         '><',
                     ]),
-                    'state': {'has_pnr': true},
+                    'state': {'hasPnr': true},
                 },
                 {
                     'cmd': '*R',
@@ -336,7 +336,7 @@ class SessionStateProcessorTest extends require('../../../../../../backend/Trans
                         'ONLINE CHECKIN/FORM OF PAYMENT/MILITARY/ETC.',
                         '',
                     ]),
-                    'state': {'area': 'B', 'pcc': '2G2H', 'can_create_pq': true},
+                    'state': {'area': 'B', 'pcc': '2G2H', 'canCreatePq': true},
                 },
                 {
                     'cmd': 'SA',
@@ -351,7 +351,7 @@ class SessionStateProcessorTest extends require('../../../../../../backend/Trans
                         ' 5 DL 140T 17JUL MSPCDG SS2   424P  730A|*      MO/TU   E',
                         '><',
                     ]),
-                    'state': {'area': 'A', 'pcc': '2G55', 'can_create_pq': true, 'has_pnr': true, 'is_pnr_stored': false},
+                    'state': {'area': 'A', 'pcc': '2G55', 'canCreatePq': true, 'hasPnr': true, 'isPnrStored': false},
                 },
                 {
                     'cmd': 'X3|4',
@@ -423,7 +423,7 @@ class SessionStateProcessorTest extends require('../../../../../../backend/Trans
                         'ONLINE CHECKIN/FORM OF PAYMENT/MILITARY/ETC.',
                         '',
                     ]),
-                    'state': {'area': 'A', 'pcc': '2G55', 'can_create_pq': true},
+                    'state': {'area': 'A', 'pcc': '2G55', 'canCreatePq': true},
                 },
                 {
                     'cmd': 'SB',
@@ -554,7 +554,7 @@ class SessionStateProcessorTest extends require('../../../../../../backend/Trans
                         'SEG CONT SEG 03',
                         '><',
                     ]),
-                    'state': {'area': 'A', 'pcc': '2G55', 'is_pnr_stored': false},
+                    'state': {'area': 'A', 'pcc': '2G55', 'isPnrStored': false},
                 },
                 {
                     'cmd': 'ER',
@@ -562,7 +562,7 @@ class SessionStateProcessorTest extends require('../../../../../../backend/Trans
                         'OK - VH5M50-INTERNATIONAL TVL NETWOR SFO',
                         '><',
                     ]),
-                    'state': {'area': 'A', 'pcc': '2G55', 'is_pnr_stored': true, 'record_locator': 'VH5M50'},
+                    'state': {'area': 'A', 'pcc': '2G55', 'isPnrStored': true, 'recordLocator': 'VH5M50'},
                 },
                 {
                     'cmd': 'T:$B',
@@ -623,7 +623,7 @@ class SessionStateProcessorTest extends require('../../../../../../backend/Trans
                         '   3 1A J8MCV8   06JUN 2022',
                         '',
                     ]),
-                    'state': {'area': 'A', 'pcc': '2G55', 'is_pnr_stored': true, 'record_locator': 'VH5M50'},
+                    'state': {'area': 'A', 'pcc': '2G55', 'isPnrStored': true, 'recordLocator': 'VH5M50'},
                 },
                 {
                     'cmd': 'SB',
@@ -635,7 +635,7 @@ class SessionStateProcessorTest extends require('../../../../../../backend/Trans
                         ' 2 DL1496E 10JUL LGAMSP SS2  1000A 1215P *         MO   E',
                         '><',
                     ]),
-                    'state': {'area': 'B', 'pcc': '2G2H', 'is_pnr_stored': false},
+                    'state': {'area': 'B', 'pcc': '2G2H', 'isPnrStored': false},
                 },
                 {
                     'cmd': '*R',
@@ -681,7 +681,7 @@ class SessionStateProcessorTest extends require('../../../../../../backend/Trans
                         ' *',
                         '><',
                     ]),
-                    'state': {'area': 'B', 'pcc': '2G2H', 'is_pnr_stored': false},
+                    'state': {'area': 'B', 'pcc': '2G2H', 'isPnrStored': false},
                 },
                 {
                     'cmd': 'ER',
@@ -689,7 +689,7 @@ class SessionStateProcessorTest extends require('../../../../../../backend/Trans
                         'OK - VH78R8-SKYBIRD                  SFO',
                         '><',
                     ]),
-                    'state': {'area': 'B', 'pcc': '2G2H', 'is_pnr_stored': true, 'record_locator': 'VH78R8'},
+                    'state': {'area': 'B', 'pcc': '2G2H', 'isPnrStored': true, 'recordLocator': 'VH78R8'},
                 },
                 {
                     'cmd': '*R',
@@ -754,7 +754,7 @@ class SessionStateProcessorTest extends require('../../../../../../backend/Trans
                         'ACKN-DL HGH25V   06JUN 2024',
                         '',
                     ]),
-                    'state': {'has_pnr': true, 'is_pnr_stored': true},
+                    'state': {'hasPnr': true, 'isPnrStored': true},
                 },
                 {
                     'cmd': 'SC',
@@ -762,7 +762,7 @@ class SessionStateProcessorTest extends require('../../../../../../backend/Trans
                         'B-OUT C-IN AG-NOT AUTH - APOLLO',
                         '><',
                     ]),
-                    'state': {'area': 'C', 'pcc': '', 'has_pnr': false, 'is_pnr_stored': false},
+                    'state': {'area': 'C', 'pcc': '', 'hasPnr': false, 'isPnrStored': false},
                 },
                 {
                     'cmd': 'SA',
@@ -781,7 +781,7 @@ class SessionStateProcessorTest extends require('../../../../../../backend/Trans
                         ' FQ-EUR 1652.00/USD 72.00US/USD 732.52XT/USD 2668.52 - 6JUN TKXRDFR.TKXRDFR.THWSRFR/TKXRDFR.TKXRDFR.THWSRFR',
                         ')><',
                     ]),
-                    'state': {'area': 'A', 'pcc': '2G55', 'has_pnr': true, 'is_pnr_stored': true, 'record_locator': 'VH5M50'},
+                    'state': {'area': 'A', 'pcc': '2G55', 'hasPnr': true, 'isPnrStored': true, 'recordLocator': 'VH5M50'},
                 },
                 {
                     'cmd': 'IR',
@@ -800,7 +800,7 @@ class SessionStateProcessorTest extends require('../../../../../../backend/Trans
                         'RMKS-ROLO/ID8084/CREATED FOR ROLO/ID8084/REQ. ID-4096798',
                         ')><',
                     ]),
-                    'state': {'area': 'A', 'pcc': '2G55', 'is_pnr_stored': true, 'record_locator': 'VH5M50'},
+                    'state': {'area': 'A', 'pcc': '2G55', 'isPnrStored': true, 'recordLocator': 'VH5M50'},
                 },
                 {
                     'cmd': 'SB',
@@ -819,7 +819,7 @@ class SessionStateProcessorTest extends require('../../../../../../backend/Trans
                         'ACKN-DL HGH25V   06JUN 2024',
                         '><',
                     ]),
-                    'state': {'area': 'B', 'pcc': '2G2H', 'is_pnr_stored': true, 'record_locator': 'VH78R8'},
+                    'state': {'area': 'B', 'pcc': '2G2H', 'isPnrStored': true, 'recordLocator': 'VH78R8'},
                 },
             ],
         });
@@ -901,7 +901,7 @@ class SessionStateProcessorTest extends require('../../../../../../backend/Trans
                         '><',
                     ]),
                     // even though '**R' looks like a PNR search command, it is not
-                    'state': {'is_pnr_stored': false},
+                    'state': {'isPnrStored': false},
                 },
                 {
                     'cmd': 'SC',
@@ -999,7 +999,7 @@ class SessionStateProcessorTest extends require('../../../../../../backend/Trans
                         ' 4 UA1854T 19JUL ORDFAI SS1   349P  722P *         WE   E  2',
                         '',
                     ]),
-                    'state': {'is_pnr_stored': false, 'area': 'A'},
+                    'state': {'isPnrStored': false, 'area': 'A'},
                 },
                 {
                     'cmd': 'P:SFOAS/800-750-2238 ASAP CUSTOMER SUPPORT|T:TAU/10JUN|R:ZARFI|ER',
@@ -1007,7 +1007,7 @@ class SessionStateProcessorTest extends require('../../../../../../backend/Trans
                         'OK - T8TNC0-SKYBIRD                  SFO',
                         '',
                     ]),
-                    'state': {'is_pnr_stored': true, 'record_locator': 'T8TNC0'},
+                    'state': {'isPnrStored': true, 'recordLocator': 'T8TNC0'},
                 },
             ],
         });
@@ -1032,7 +1032,7 @@ class SessionStateProcessorTest extends require('../../../../../../backend/Trans
                         '*** LINEAR FARE DATA EXISTS *** >*LF; ',
                         ')><',
                     ]),
-                    'state': {'has_pnr': true, 'is_pnr_stored': true, 'record_locator': 'NJK4VN'},
+                    'state': {'hasPnr': true, 'isPnrStored': true, 'recordLocator': 'NJK4VN'},
                 },
                 {
                     'cmd': 'I',
@@ -1040,7 +1040,7 @@ class SessionStateProcessorTest extends require('../../../../../../backend/Trans
                         'IGND ',
                         '><',
                     ]),
-                    'state': {'has_pnr': false},
+                    'state': {'hasPnr': false},
                 },
             ],
         });
@@ -1081,7 +1081,7 @@ class SessionStateProcessorTest extends require('../../../../../../backend/Trans
                         '1| UA9930 J4 C4 D0 Z0 P0 Y4 B4 M4 U4 H4 BRULHR 445P  505P 319* 0          Q4 V4 W4 S4 T4 L2 K0                                  2| UA 123 J4 C4 D0 Z0 P0 Y4 B4 M4 E9 U4    IAD 730A|1050A|752  0          H4 Q4 V4 W4 S4 T4 L2 K0 G0 N0                         3| UA6014 F6 C4 A5 D0 Z0 P0 Y4 B4 M4 E9    YOW1234P| 204P|CR7* 0          U4 H4 Q4 V4 W4 S4 T4 L2 K0 G0 N0                      MEALS>A*M;  MORE>A*;  ',
                         '><',
                     ]),
-                    'state': {'has_pnr': true},
+                    'state': {'hasPnr': true},
                 },
                 {
                     'cmd': 'I',
@@ -1089,7 +1089,7 @@ class SessionStateProcessorTest extends require('../../../../../../backend/Trans
                         'IGND ',
                         '><',
                     ]),
-                    'state': {'has_pnr': false},
+                    'state': {'hasPnr': false},
                 },
             ],
         });
@@ -1118,7 +1118,7 @@ class SessionStateProcessorTest extends require('../../../../../../backend/Trans
                         '1| SN 552 J9 C9 D9 Z9 P6 I0 R0 Y9 B9 M9 YYZBRU 600P  720A|333  0          U9 H9 Q9 V9 W9 S9 T0 E0 L9 K0 G9 X0                   2| SN 357 J9 C9 D9 Z9 P6 I0 R0 Y9 B9 M9    FIH1115A| 615P|333  0          U9 H9 Q9 V9 W9 S9 T0 E0 L9 K0 G9 X0                   MEALS>A*M;  CURRENT>A*C;  MORE>A*;  ',
                         '><',
                     ]),
-                    'state': {'has_pnr': false},
+                    'state': {'hasPnr': false},
                 },
                 {
                     'cmd': '01L1*',
@@ -1134,7 +1134,7 @@ class SessionStateProcessorTest extends require('../../../../../../backend/Trans
                         'FOR BORDER CONTROL AND AVIATION SECURITY PURPOSES',
                         '><',
                     ]),
-                    'state': {'has_pnr': true},
+                    'state': {'hasPnr': true},
                 },
             ],
         });
@@ -1143,10 +1143,10 @@ class SessionStateProcessorTest extends require('../../../../../../backend/Trans
                 'gds': 'apollo',
                 'area': 'A',
                 'pcc': '2BQ6',
-                'record_locator': '',
-                'has_pnr': true,
-                'is_pnr_stored': false,
-                'can_create_pq': false,
+                'recordLocator': '',
+                'hasPnr': true,
+                'isPnrStored': false,
+                'canCreatePq': false,
             },
             'calledCommands': [
                 {
@@ -1162,7 +1162,7 @@ class SessionStateProcessorTest extends require('../../../../../../backend/Trans
                         'OK - SFGDRG-SKY BIRD TRAVEL AND TOUR YSB',
                         '',
                     ]),
-                    'state': {'has_pnr': true, 'is_pnr_stored': true, 'record_locator': 'SFGDRG'},
+                    'state': {'hasPnr': true, 'isPnrStored': true, 'recordLocator': 'SFGDRG'},
                 },
                 {
                     'cmd': 'IR',
@@ -1221,7 +1221,7 @@ class SessionStateProcessorTest extends require('../../../../../../backend/Trans
                         'IGND ',
                         '><',
                     ]),
-                    'state': {'has_pnr': false},
+                    'state': {'hasPnr': false},
                 },
             ],
         });
@@ -1230,10 +1230,10 @@ class SessionStateProcessorTest extends require('../../../../../../backend/Trans
                 'gds': 'apollo',
                 'area': 'A',
                 'pcc': '2BQ6',
-                'record_locator': '',
-                'has_pnr': true,
-                'is_pnr_stored': false,
-                'can_create_pq': false,
+                'recordLocator': '',
+                'hasPnr': true,
+                'isPnrStored': false,
+                'canCreatePq': false,
             },
             'calledCommands': [
                 {
@@ -1249,7 +1249,7 @@ class SessionStateProcessorTest extends require('../../../../../../backend/Trans
                         '         OPERATED BY MESA AIRLINES DBA UNITED EXPRESS',
                         '><',
                     ]),
-                    'state': {'has_pnr': true, 'is_pnr_stored': false},
+                    'state': {'hasPnr': true, 'isPnrStored': false},
                 },
                 {
                     'cmd': '**-BECK',
@@ -1257,9 +1257,9 @@ class SessionStateProcessorTest extends require('../../../../../../backend/Trans
                         'FIN OR IGN ',
                         '><',
                     ]),
-                    // should not set 'is_pnr_stored' flag since we see from
+                    // should not set 'isPnrStored' flag since we see from
                     // output that context was not changed to existing PNR
-                    'state': {'has_pnr': true, 'is_pnr_stored': false},
+                    'state': {'hasPnr': true, 'isPnrStored': false},
                 },
                 {
                     'cmd': 'SA',
@@ -1289,7 +1289,7 @@ class SessionStateProcessorTest extends require('../../../../../../backend/Trans
                         'ERR: FIN OR IGN - APOLLO',
                         '><',
                     ]),
-                    'state': {'has_pnr': true},
+                    'state': {'hasPnr': true},
                 },
                 {
                     'cmd': 'SB',
@@ -1297,7 +1297,7 @@ class SessionStateProcessorTest extends require('../../../../../../backend/Trans
                         'A-OUT B-IN AG-NOT AUTH - APOLLO',
                         '><',
                     ]),
-                    'state': {'has_pnr': false},
+                    'state': {'hasPnr': false},
                 },
                 {
                     'cmd': 'SEM/2BQ6/AG',
@@ -1324,7 +1324,7 @@ class SessionStateProcessorTest extends require('../../../../../../backend/Trans
                         'ATFQ-OK/$B-*2BQ6/TA2BQ6/CSN/ET',
                         ')><',
                     ]),
-                    'state': {'is_pnr_stored': true, 'area': 'B', 'record_locator': 'SFGDRG'},
+                    'state': {'isPnrStored': true, 'area': 'B', 'recordLocator': 'SFGDRG'},
                 },
                 {
                     'cmd': 'I',
@@ -1332,7 +1332,7 @@ class SessionStateProcessorTest extends require('../../../../../../backend/Trans
                         'IGND ',
                         '><',
                     ]),
-                    'state': {'has_pnr': false, 'is_pnr_stored': false},
+                    'state': {'hasPnr': false, 'isPnrStored': false},
                 },
                 {
                     'cmd': '**-BECK',
@@ -1346,7 +1346,7 @@ class SessionStateProcessorTest extends require('../../../../../../backend/Trans
                         'ACKN-UA C62MK9   22MAY 1731                       ',
                         '><',
                     ]),
-                    'state': {'has_pnr': true, 'is_pnr_stored': true, 'area': 'B'},
+                    'state': {'hasPnr': true, 'isPnrStored': true, 'area': 'B'},
                 },
                 {
                     'cmd': '**-TENTE',
@@ -1356,7 +1356,7 @@ class SessionStateProcessorTest extends require('../../../../../../backend/Trans
                         '003   01 TENTE/ALPHONSINE BECK      X 16JUL',
                         '><',
                     ]),
-                    'state': {'is_pnr_stored': false, 'area': 'B'},
+                    'state': {'isPnrStored': false, 'area': 'B'},
                 },
                 {
                     'cmd': 'I',
@@ -1380,7 +1380,7 @@ class SessionStateProcessorTest extends require('../../../../../../backend/Trans
                         'FONE-SFOAS/800-750-2238 ASAP CUSTOMER SUPPORT',
                         '><',
                     ]),
-                    'state': {'is_pnr_stored': false, 'area': 'A'},
+                    'state': {'isPnrStored': false, 'area': 'A'},
                 },
                 {
                     'cmd': 'N:TENTE/ALPHONSINE BECK',
@@ -1395,7 +1395,7 @@ class SessionStateProcessorTest extends require('../../../../../../backend/Trans
                         'OK - SH8JJE-SKY BIRD TRAVEL AND TOUR YSB',
                         '',
                     ]),
-                    'state': {'is_pnr_stored': true, 'record_locator': 'SH8JJE'},
+                    'state': {'isPnrStored': true, 'recordLocator': 'SH8JJE'},
                 },
                 {
                     'cmd': '*R',
@@ -1431,7 +1431,7 @@ class SessionStateProcessorTest extends require('../../../../../../backend/Trans
                         '><',
                     ]),
                     // not opened PNR yet
-                    'state': {'is_pnr_stored': false},
+                    'state': {'isPnrStored': false},
                 },
                 {
                     'cmd': 'N:LIBERMANE/MARINA',
@@ -1476,12 +1476,12 @@ class SessionStateProcessorTest extends require('../../../../../../backend/Trans
                         'FIN OR IGN ',
                         '><',
                     ]),
-                    'state': {'is_pnr_stored': false},
+                    'state': {'isPnrStored': false},
                 },
                 {
                     'cmd': 'P:SFOAS/800-750-2238 ASAP CUSTOMER SUPPORT|T:TAU/19JUN|R:ALEX|ER',
                     'output': 'OK - J3GCPI-INTERNATIONAL TVL NETWOR SFO',
-                    'state': {'is_pnr_stored': true, 'record_locator': 'J3GCPI'},
+                    'state': {'isPnrStored': true, 'recordLocator': 'J3GCPI'},
                 },
             ],
         });
@@ -1496,7 +1496,7 @@ class SessionStateProcessorTest extends require('../../../../../../backend/Trans
                         '  5   BIOBAKU/RUTH  09DEC-14DEC *0 FOR MORE NAMES              ',
                     ]),
                     // not opened PNR yet
-                    'state': {'is_pnr_stored': false},
+                    'state': {'isPnrStored': false},
                 },
                 {
                     'cmd': '-LIBERMANE/MARINA',
@@ -1532,12 +1532,12 @@ class SessionStateProcessorTest extends require('../../../../../../backend/Trans
                         ' 2 PS 185Y   10DEC S KBPRIX SS1   920A 1100A  /DCPS   /E',
                         'NAME CHG NOT ALLOWED FOR PS-Y FARECLASS.',
                     ]),
-                    'state': {'is_pnr_stored': false},
+                    'state': {'isPnrStored': false},
                 },
                 {
                     'cmd': '*-BECK',
                     'output': '¥FIN OR IG¥',
-                    'state': {'is_pnr_stored': false},
+                    'state': {'isPnrStored': false},
                 },
                 {
                     'cmd': '9800-750-2238-A\u00A77TAW/19JUN\u00A76ALEX\u00A7ER',
@@ -1554,7 +1554,7 @@ class SessionStateProcessorTest extends require('../../../../../../backend/Trans
                         'RECEIVED FROM - ALEX',
                         '6IIF.L3II*AWS 1053/19JUN17 KEDPGL H',
                     ]),
-                    'state': {'is_pnr_stored': true, 'record_locator': 'KEDPGL'},
+                    'state': {'isPnrStored': true, 'recordLocator': 'KEDPGL'},
                 },
             ],
         });
@@ -1575,7 +1575,7 @@ class SessionStateProcessorTest extends require('../../../../../../backend/Trans
                         '8+ SU2102 J7 C7 D7 I7 Z7 O2 Y7 B7 M7 U7+   RIX 635P  715P 320  0',
                         'MEALS>A*M\u00B7  CLASSES>A*C\u00B7..  ><',
                     ]),
-                    'state': {'has_pnr': false},
+                    'state': {'hasPnr': false},
                 },
                 {
                     'cmd': '01Y1Y2',
@@ -1591,7 +1591,7 @@ class SessionStateProcessorTest extends require('../../../../../../backend/Trans
                         'FOR BORDER CONTROL AND AVIATION SECURITY PURPOSES',
                         '><',
                     ]),
-                    'state': {'has_pnr': true},
+                    'state': {'hasPnr': true},
                 },
                 {
                     'cmd': 'N:LIBERMANE/MARINA',
@@ -1610,7 +1610,7 @@ class SessionStateProcessorTest extends require('../../../../../../backend/Trans
                 {
                     'cmd': '@:5ALEX/ID1/CREATED FOR ALEX/ID1/REQ. ID-1|P:SFOAS/800-750-2238 ASAP CUSTOMER SUPPORT|T:TAU/19JUN|R:ALEX|ER',
                     'output': 'SNGL ITEM FLD/NOT ENT/T:TAU/19JUN|R:ALEX|ER',
-                    'state': {'has_pnr': true},
+                    'state': {'hasPnr': true},
                 },
                 {
                     'cmd': 'I',
@@ -1618,17 +1618,17 @@ class SessionStateProcessorTest extends require('../../../../../../backend/Trans
                         'THIS IS A NEW PNR-ALL DATA WILL BE IGNORED WITH NEXT I OR IR',
                         '><',
                     ]),
-                    'state': {'has_pnr': true},
+                    'state': {'hasPnr': true},
                 },
                 {
                     'cmd': '@:5ALEX/ID1/CREATED FOR ALEX/ID1/REQ. ID-1|P:SFOAS/800-750-2238 ASAP CUSTOMER SUPPORT|T:TAU/19JUN|R:ALEX|ER',
                     'output': 'SNGL ITEM FLD/NOT ENT/T:TAU/19JUN|R:ALEX|ER',
-                    'state': {'has_pnr': true, 'is_pnr_stored': false},
+                    'state': {'hasPnr': true, 'isPnrStored': false},
                 },
                 {
                     'cmd': 'I',
                     'output': 'IGND',
-                    'state': {'has_pnr': false},
+                    'state': {'hasPnr': false},
                 },
             ],
         });
@@ -1659,7 +1659,7 @@ class SessionStateProcessorTest extends require('../../../../../../backend/Trans
                         '             Y9 B9 M9 A9 H9 S9 O9 E9 Q9 T9 L9 V9 P9 W9 U9 X9 N9 G5',
                         ' ',
                     ]),
-                    'state': {'has_pnr': false},
+                    'state': {'hasPnr': false},
                 },
                 {
                     'cmd': 'SS1Y1',
@@ -1672,7 +1672,7 @@ class SessionStateProcessorTest extends require('../../../../../../backend/Trans
                         '     SEE RTSVC',
                         ' ',
                     ]),
-                    'state': {'has_pnr': true, 'can_create_pq': false},
+                    'state': {'hasPnr': true, 'canCreatePq': false},
                 },
                 {
                     'cmd': 'FXX',
@@ -1701,7 +1701,7 @@ class SessionStateProcessorTest extends require('../../../../../../backend/Trans
                         '                                                  PAGE  2/ 3',
                         '',
                     ]),
-                    'state': {'can_create_pq': true},
+                    'state': {'canCreatePq': true},
                 },
                 {
                     'cmd': 'SS1Y2',
@@ -1718,7 +1718,7 @@ class SessionStateProcessorTest extends require('../../../../../../backend/Trans
                         '     SEE RTSVC',
                         ' ',
                     ]),
-                    'state': {'can_create_pq': false},
+                    'state': {'canCreatePq': false},
                 },
             ],
         });
@@ -1728,7 +1728,7 @@ class SessionStateProcessorTest extends require('../../../../../../backend/Trans
                 {
                     'cmd': 'RT',
                     'output': php.implode(php.PHP_EOL, ['/$INVALID', ' ']),
-                    'state': {'has_pnr': false, 'is_pnr_stored': false},
+                    'state': {'hasPnr': false, 'isPnrStored': false},
                 },
                 {
                     'cmd': 'RT/A',
@@ -1749,7 +1749,7 @@ class SessionStateProcessorTest extends require('../../../../../../backend/Trans
                         ' 13 AZEGBA/FLORENCE       ET  509  H  26NOV  EWRLFW   1 2LFBW8',
                         ' ',
                     ]),
-                    'state': {'has_pnr': false, 'is_pnr_stored': false},
+                    'state': {'hasPnr': false, 'isPnrStored': false},
                 },
                 {
                     'cmd': 'RT/LIBER',
@@ -1760,7 +1760,7 @@ class SessionStateProcessorTest extends require('../../../../../../backend/Trans
                         '  3 LIBERMANE/MARINA      NO ACTIVE ITINERARY           QMLDKB',
                         ' ',
                     ]),
-                    'state': {'has_pnr': false, 'is_pnr_stored': false},
+                    'state': {'hasPnr': false, 'isPnrStored': false},
                 },
                 {
                     'cmd': 'RT/LEPIN',
@@ -1769,7 +1769,7 @@ class SessionStateProcessorTest extends require('../../../../../../backend/Trans
                         'NO NAME',
                         ' ',
                     ]),
-                    'state': {'has_pnr': false, 'is_pnr_stored': false},
+                    'state': {'hasPnr': false, 'isPnrStored': false},
                 },
                 {
                     'cmd': 'RT/10DEC-LIBERMANE/MARINA',
@@ -1785,7 +1785,7 @@ class SessionStateProcessorTest extends require('../../../../../../backend/Trans
                         '  6 TK TL01NOV/SFO1S2195',
                         ' ',
                     ]),
-                    'state': {'has_pnr': true, 'is_pnr_stored': true, 'record_locator': 'QTQEEL'},
+                    'state': {'hasPnr': true, 'isPnrStored': true, 'recordLocator': 'QTQEEL'},
                 },
                 {
                     'cmd': 'XI',
@@ -1799,7 +1799,7 @@ class SessionStateProcessorTest extends require('../../../../../../backend/Trans
                         '  4 TK OK07JUL/SFO1S2195',
                         ' ',
                     ]),
-                    'state': {'is_pnr_stored': true, 'record_locator': 'QTQEEL'},
+                    'state': {'isPnrStored': true, 'recordLocator': 'QTQEEL'},
                 },
                 {
                     'cmd': 'RF KLESUN',
@@ -1814,7 +1814,7 @@ class SessionStateProcessorTest extends require('../../../../../../backend/Trans
                         '  4 TK OK07JUL/SFO1S2195',
                         ' ',
                     ]),
-                    'state': {'has_pnr': true, 'is_pnr_stored': true, 'record_locator': 'QTQEEL'},
+                    'state': {'hasPnr': true, 'isPnrStored': true, 'recordLocator': 'QTQEEL'},
                 },
                 {
                     'cmd': 'ET',
@@ -1823,7 +1823,7 @@ class SessionStateProcessorTest extends require('../../../../../../backend/Trans
                         'END OF TRANSACTION COMPLETE - QTQEEL',
                         ' ',
                     ]),
-                    'state': {'has_pnr': false, 'is_pnr_stored': false, 'record_locator': ''},
+                    'state': {'hasPnr': false, 'isPnrStored': false, 'recordLocator': ''},
                 },
             ],
         });
@@ -1833,7 +1833,7 @@ class SessionStateProcessorTest extends require('../../../../../../backend/Trans
                 {
                     'cmd': 'RT',
                     'output': php.implode(php.PHP_EOL, ['/$INVALID', ' ']),
-                    'state': {'is_pnr_stored': false},
+                    'state': {'isPnrStored': false},
                 },
                 {
                     'cmd': 'RT2FFWXZ',
@@ -1861,7 +1861,7 @@ class SessionStateProcessorTest extends require('../../../../../../backend/Trans
                         ' 15 SK PROT ET HK1 REACC BKG PROTECTION/S5',
                         ') ',
                     ]),
-                    'state': {'has_pnr': true, 'is_pnr_stored': true, 'record_locator': '2FFWXZ'},
+                    'state': {'hasPnr': true, 'isPnrStored': true, 'recordLocator': '2FFWXZ'},
                 },
                 {
                     'cmd': 'IR',
@@ -1889,7 +1889,7 @@ class SessionStateProcessorTest extends require('../../../../../../backend/Trans
                         ' 15 SK PROT ET HK1 REACC BKG PROTECTION/S5',
                         ') ',
                     ]),
-                    'state': {'has_pnr': true, 'is_pnr_stored': true, 'record_locator': '2FFWXZ'},
+                    'state': {'hasPnr': true, 'isPnrStored': true, 'recordLocator': '2FFWXZ'},
                 },
                 {
                     'cmd': 'IG',
@@ -1898,7 +1898,7 @@ class SessionStateProcessorTest extends require('../../../../../../backend/Trans
                         'IGNORED - 2FFWXZ',
                         ' ',
                     ]),
-                    'state': {'has_pnr': false, 'is_pnr_stored': false},
+                    'state': {'hasPnr': false, 'isPnrStored': false},
                 },
             ],
         });
@@ -1919,7 +1919,7 @@ class SessionStateProcessorTest extends require('../../../../../../backend/Trans
                         '  8 TRAORE/MAMADOU JR     NO ACTIVE ITINERARY           JWQ69J',
                         ' ',
                     ]),
-                    'state': {'is_pnr_stored': false},
+                    'state': {'isPnrStored': false},
                 },
                 {
                     'cmd': 'RT0',
@@ -1935,7 +1935,7 @@ class SessionStateProcessorTest extends require('../../../../../../backend/Trans
                         '  8 TRAORE/MAMADOU JR     NO ACTIVE ITINERARY           JWQ69J',
                         ' ',
                     ]),
-                    'state': {'has_pnr': false, 'is_pnr_stored': false},
+                    'state': {'hasPnr': false, 'isPnrStored': false},
                 },
                 {
                     'cmd': 'RT4',
@@ -1964,7 +1964,7 @@ class SessionStateProcessorTest extends require('../../../../../../backend/Trans
                         '       FEDERAL LAWS FORBID THE CARRIAGE OF HAZARDOUS MATERIALS -',
                         ') ',
                     ]),
-                    'state': {'has_pnr': true, 'is_pnr_stored': true, 'record_locator': '62E5I8'},
+                    'state': {'hasPnr': true, 'isPnrStored': true, 'recordLocator': '62E5I8'},
                 },
             ],
         });
@@ -1995,7 +1995,7 @@ class SessionStateProcessorTest extends require('../../../../../../backend/Trans
                         '             Y9 B9 M9 A9 H9 S9 O9 E9 Q9 T9 L9 V9 P9 W9 U9 X9 N9 G5',
                         '',
                     ]),
-                    'state': {'has_pnr': false, 'is_pnr_stored': false},
+                    'state': {'hasPnr': false, 'isPnrStored': false},
                 },
                 {
                     'cmd': 'SS2Y1;NM1LIBERMANE/MARINA;NM1LIBERMANE/LEPIN(C05)',
@@ -2009,7 +2009,7 @@ class SessionStateProcessorTest extends require('../../../../../../backend/Trans
                         '     SEE RTSVC',
                         '',
                     ]),
-                    'state': {'has_pnr': true, 'is_pnr_stored': false},
+                    'state': {'hasPnr': true, 'isPnrStored': false},
                 },
                 {
                     'cmd': 'UHP/CREATED IN GDS DIRECT BY STANISLAW',
@@ -2026,7 +2026,7 @@ class SessionStateProcessorTest extends require('../../../../../../backend/Trans
                         '     SEE RTSVC',
                         '',
                     ]),
-                    'state': {'is_pnr_stored': false},
+                    'state': {'isPnrStored': false},
                 },
                 {
                     'cmd': 'RMSTANISLAW/ID2838/CREATED FOR STANISLAW/ID2838/REQ. ID-1;TKTL18JUL;RFSTANISLAW;ER',
@@ -2045,7 +2045,7 @@ class SessionStateProcessorTest extends require('../../../../../../backend/Trans
                         '  7 RM STANISLAW/ID2838/CREATED FOR STANISLAW/ID2838/REQ. ID-1',
                         '',
                     ]),
-                    'state': {'has_pnr': true, 'is_pnr_stored': true, 'record_locator': 'SODFUA'},
+                    'state': {'hasPnr': true, 'isPnrStored': true, 'recordLocator': 'SODFUA'},
                 },
             ],
         });
@@ -2065,7 +2065,7 @@ class SessionStateProcessorTest extends require('../../../../../../backend/Trans
                         ' *',
                         '><',
                     ]),
-                    'state': {'has_pnr': true},
+                    'state': {'hasPnr': true},
                 },
                 {
                     'cmd': '*R',
@@ -2080,7 +2080,7 @@ class SessionStateProcessorTest extends require('../../../../../../backend/Trans
                         'THIS IS A NEW PNR-ALL DATA WILL BE IGNORED WITH NEXT I OR IR',
                         '><',
                     ]),
-                    'state': {'has_pnr': true},
+                    'state': {'hasPnr': true},
                 },
                 {
                     'cmd': 'IR',
@@ -2088,7 +2088,7 @@ class SessionStateProcessorTest extends require('../../../../../../backend/Trans
                         'NO TRANS AAA',
                         '><',
                     ]),
-                    'state': {'has_pnr': false},
+                    'state': {'hasPnr': false},
                 },
             ],
         });
@@ -2105,7 +2105,7 @@ class SessionStateProcessorTest extends require('../../../../../../backend/Trans
                         '* ',
                         '',
                     ]),
-                    'state': {'has_pnr': true},
+                    'state': {'hasPnr': true},
                 },
                 {
                     'cmd': '*R',
@@ -2118,7 +2118,7 @@ class SessionStateProcessorTest extends require('../../../../../../backend/Trans
                 {
                     'cmd': 'IR',
                     'output': 'IGD ',
-                    'state': {'has_pnr': false},
+                    'state': {'hasPnr': false},
                 },
                 {
                     'cmd': '*R',
@@ -2144,7 +2144,7 @@ class SessionStateProcessorTest extends require('../../../../../../backend/Trans
                         'RMKS-KRUZ/ID20782/CREATED FOR KRUZ/ID20782/REQ. ID-5085852',
                         ')><',
                     ]),
-                    'state': {'has_pnr': true, 'is_pnr_stored': true},
+                    'state': {'hasPnr': true, 'isPnrStored': true},
                 },
                 {
                     'cmd': '*N70D5N',
@@ -2152,7 +2152,7 @@ class SessionStateProcessorTest extends require('../../../../../../backend/Trans
                         'UTR PNR / INVALID RECORD LOCATOR',
                         '><',
                     ]),
-                    'state': {'has_pnr': false, 'is_pnr_stored': false},
+                    'state': {'hasPnr': false, 'isPnrStored': false},
                 },
             ],
         });
@@ -2174,7 +2174,7 @@ class SessionStateProcessorTest extends require('../../../../../../backend/Trans
                         'RMKS-KRUZ/ID20782/CREATED FOR KRUZ/ID20782/REQ. ID-5085852',
                         ')><',
                     ]),
-                    'state': {'has_pnr': true, 'is_pnr_stored': true},
+                    'state': {'hasPnr': true, 'isPnrStored': true},
                 },
                 {
                     'cmd': '*XLGBCY',
@@ -2182,7 +2182,7 @@ class SessionStateProcessorTest extends require('../../../../../../backend/Trans
                         'RESTRICTED PNR-CALL HELP DESK ',
                         '><',
                     ]),
-                    'state': {'has_pnr': false, 'is_pnr_stored': false},
+                    'state': {'hasPnr': false, 'isPnrStored': false},
                 },
             ],
         });
@@ -2204,7 +2204,7 @@ class SessionStateProcessorTest extends require('../../../../../../backend/Trans
                         '   2 1A UBGSRZ   16JUN 1457',
                         '><',
                     ]),
-                    'state': {'has_pnr': true, 'is_pnr_stored': true},
+                    'state': {'hasPnr': true, 'isPnrStored': true},
                 },
                 {
                     'cmd': 'N:LIBERMANE/ZIMICH',
@@ -2219,7 +2219,7 @@ class SessionStateProcessorTest extends require('../../../../../../backend/Trans
                         'FIN OR IGN ',
                         '><',
                     ]),
-                    'state': {'has_pnr': true, 'is_pnr_stored': true, 'record_locator': 'ZVGGHO'},
+                    'state': {'hasPnr': true, 'isPnrStored': true, 'recordLocator': 'ZVGGHO'},
                 },
             ],
         });
@@ -2232,7 +2232,7 @@ class SessionStateProcessorTest extends require('../../../../../../backend/Trans
                         ' *',
                         '><',
                     ]),
-                    'state': {'has_pnr': true, 'is_pnr_stored': false},
+                    'state': {'hasPnr': true, 'isPnrStored': false},
                 },
                 {
                     'cmd': '*N70D5N',
@@ -2240,7 +2240,7 @@ class SessionStateProcessorTest extends require('../../../../../../backend/Trans
                         'FIN OR IGN ',
                         '><',
                     ]),
-                    'state': {'has_pnr': true, 'is_pnr_stored': false},
+                    'state': {'hasPnr': true, 'isPnrStored': false},
                 },
             ],
         });
@@ -2264,12 +2264,12 @@ class SessionStateProcessorTest extends require('../../../../../../backend/Trans
                         'RECEIVED FROM - KLESUN',
                         'L3II.L3II*AWS 1427/17JUL17 ZJPOPZ H',
                     ]),
-                    'state': {'has_pnr': true, 'is_pnr_stored': true},
+                    'state': {'hasPnr': true, 'isPnrStored': true},
                 },
                 {
                     'cmd': '*QWERTY',
                     'output': '¥RESTRICTED¥ *NOT AA PNR*',
-                    'state': {'has_pnr': false, 'is_pnr_stored': false},
+                    'state': {'hasPnr': false, 'isPnrStored': false},
                 },
                 {'cmd': '*R', 'output': 'NO DATA'},
             ],
@@ -2295,12 +2295,12 @@ class SessionStateProcessorTest extends require('../../../../../../backend/Trans
                         'RECEIVED FROM - KLESUN',
                         'L3II.L3II*AWS 1427/17JUL17 ZJPOPZ H',
                     ]),
-                    'state': {'has_pnr': true, 'is_pnr_stored': true},
+                    'state': {'hasPnr': true, 'isPnrStored': true},
                 },
                 {
                     'cmd': '*QWE12',
                     'output': '¥ADDR¥',
-                    'state': {'has_pnr': false, 'is_pnr_stored': false},
+                    'state': {'hasPnr': false, 'isPnrStored': false},
                 },
                 {'cmd': '*R', 'output': 'NO DATA'},
             ],
@@ -2325,12 +2325,12 @@ class SessionStateProcessorTest extends require('../../../../../../backend/Trans
                         'RECEIVED FROM - KLESUN',
                         'L3II.L3II*AWS 1427/17JUL17 ZJPOPZ H',
                     ]),
-                    'state': {'has_pnr': true, 'is_pnr_stored': true},
+                    'state': {'hasPnr': true, 'isPnrStored': true},
                 },
                 {
                     'cmd': '*RCDKSD',
                     'output': ' SECURED PNR              ',
-                    'state': {'has_pnr': false, 'is_pnr_stored': false},
+                    'state': {'hasPnr': false, 'isPnrStored': false},
                 },
                 {'cmd': '*R', 'output': 'NO DATA'},
             ],
@@ -2344,12 +2344,12 @@ class SessionStateProcessorTest extends require('../../../../../../backend/Trans
                         '* ',
                         '',
                     ]),
-                    'state': {'has_pnr': true, 'is_pnr_stored': false},
+                    'state': {'hasPnr': true, 'isPnrStored': false},
                 },
                 {
                     'cmd': '*RCDKSD',
                     'output': '¥FIN OR IG¥',
-                    'state': {'has_pnr': true, 'is_pnr_stored': false},
+                    'state': {'hasPnr': true, 'isPnrStored': false},
                 },
                 {
                     'cmd': '*R',
@@ -2375,7 +2375,7 @@ class SessionStateProcessorTest extends require('../../../../../../backend/Trans
                         '  3 TK OK12APR/SFO1S2195',
                         ' ',
                     ]),
-                    'state': {'has_pnr': true, 'is_pnr_stored': true},
+                    'state': {'hasPnr': true, 'isPnrStored': true},
                 },
                 {
                     'cmd': 'RTQWERTY',
@@ -2383,7 +2383,7 @@ class SessionStateProcessorTest extends require('../../../../../../backend/Trans
                         '/$NO MATCH FOR RECORD LOCATOR',
                         ' ',
                     ]),
-                    'state': {'has_pnr': false, 'is_pnr_stored': false},
+                    'state': {'hasPnr': false, 'isPnrStored': false},
                 },
                 {'cmd': 'RT', 'output': php.implode(php.PHP_EOL, ['/$INVALID', ' '])},
             ],
@@ -2398,7 +2398,7 @@ class SessionStateProcessorTest extends require('../../../../../../backend/Trans
                         '  1.LIBERMANE/MARINA',
                         ' ',
                     ]),
-                    'state': {'has_pnr': true, 'is_pnr_stored': false},
+                    'state': {'hasPnr': true, 'isPnrStored': false},
                 },
                 {
                     'cmd': 'RTQWERTY',
@@ -2406,7 +2406,7 @@ class SessionStateProcessorTest extends require('../../../../../../backend/Trans
                         '/$FINISH OR IGNORE',
                         ' ',
                     ]),
-                    'state': {'has_pnr': true, 'is_pnr_stored': false},
+                    'state': {'hasPnr': true, 'isPnrStored': false},
                 },
                 {'cmd': 'RT', 'output': php.implode(php.PHP_EOL, ['/$RP/SFO1S2195/', '  1.LIBERMANE/MARINA', ' '])},
             ],
@@ -2428,7 +2428,7 @@ class SessionStateProcessorTest extends require('../../../../../../backend/Trans
                         '  8 KPOMASSY/MICHAEL TIM  NO ACTIVE ITINERARY           YKZBLT',
                         ' ',
                     ]),
-                    'state': {'is_pnr_stored': false},
+                    'state': {'isPnrStored': false},
                 },
                 {
                     'cmd': 'RT5',
@@ -2441,7 +2441,7 @@ class SessionStateProcessorTest extends require('../../../../../../backend/Trans
                         '  6 TK OK14DEC/SFO1S2195',
                         ' ',
                     ]),
-                    'state': {'is_pnr_stored': true, 'record_locator': 'YKZBLT'},
+                    'state': {'isPnrStored': true, 'recordLocator': 'YKZBLT'},
                 },
             ],
         });
@@ -2450,9 +2450,9 @@ class SessionStateProcessorTest extends require('../../../../../../backend/Trans
                 'gds': 'apollo',
                 'area': 'C',
                 'pcc': '1O3K',
-                'record_locator': 'LNVPLM',
-                'has_pnr': true,
-                'is_pnr_stored': true,
+                'recordLocator': 'LNVPLM',
+                'hasPnr': true,
+                'isPnrStored': true,
             },
             'calledCommands': [
                 {
@@ -2471,8 +2471,8 @@ class SessionStateProcessorTest extends require('../../../../../../backend/Trans
                         'gds': 'apollo',
                         'area': 'C',
                         'pcc': '1O3K',
-                        'has_pnr': true,
-                        'is_pnr_stored': false,
+                        'hasPnr': true,
+                        'isPnrStored': false,
                     },
                 },
             ],
@@ -2493,17 +2493,17 @@ class SessionStateProcessorTest extends require('../../../../../../backend/Trans
                         'ACKN-CA MLKC3H   11AUG 1051',
                         '><',
                     ]),
-                    'state': {'record_locator': 'VLW9TK', 'is_pnr_stored': true, 'has_pnr': true},
+                    'state': {'recordLocator': 'VLW9TK', 'isPnrStored': true, 'hasPnr': true},
                 },
                 {
                     'cmd': 'REALL',
                     'output': php.implode(php.PHP_EOL, ['MODIFY ', '><']),
-                    'state': {'record_locator': 'VLW9TK', 'is_pnr_stored': true, 'has_pnr': true},
+                    'state': {'recordLocator': 'VLW9TK', 'isPnrStored': true, 'hasPnr': true},
                 },
                 {
                     'cmd': 'R:KLESUN',
                     'output': php.implode(php.PHP_EOL, [' *', '><']),
-                    'state': {'record_locator': 'VLW9TK', 'is_pnr_stored': true, 'has_pnr': true},
+                    'state': {'recordLocator': 'VLW9TK', 'isPnrStored': true, 'hasPnr': true},
                 },
                 {
                     'cmd': 'REALL',
@@ -2513,17 +2513,17 @@ class SessionStateProcessorTest extends require('../../../../../../backend/Trans
                         '   2 SFOAS/800 750-2238 ITN CUSTOMER SUPPORT-PAVEL',
                         '><',
                     ]),
-                    'state': {'is_pnr_stored': false, 'has_pnr': true},
+                    'state': {'isPnrStored': false, 'hasPnr': true},
                 },
                 {
                     'cmd': 'I',
                     'output': php.implode(php.PHP_EOL, ['THIS IS A NEW PNR-ALL DATA WILL BE IGNORED WITH NEXT I OR IR', '><']),
-                    'state': {'is_pnr_stored': false, 'has_pnr': true},
+                    'state': {'isPnrStored': false, 'hasPnr': true},
                 },
                 {
                     'cmd': 'I',
                     'output': php.implode(php.PHP_EOL, ['IGND ', '><']),
-                    'state': {'is_pnr_stored': false, 'has_pnr': false},
+                    'state': {'isPnrStored': false, 'hasPnr': false},
                 },
                 {
                     'cmd': '*VLW9TK',
@@ -2538,7 +2538,7 @@ class SessionStateProcessorTest extends require('../../../../../../backend/Trans
                         'ACKN-CA MLKC3H   11AUG 1051',
                         '><',
                     ]),
-                    'state': {'record_locator': 'VLW9TK', 'is_pnr_stored': true},
+                    'state': {'recordLocator': 'VLW9TK', 'isPnrStored': true},
                 },
                 {
                     'cmd': 'R:KLESUN',
@@ -2547,7 +2547,7 @@ class SessionStateProcessorTest extends require('../../../../../../backend/Trans
                 {
                     'cmd': 'RESALL',
                     'output': php.implode(php.PHP_EOL, [' RE SUCCESSFUL THRU SEGMENT  0', '><']),
-                    'state': {'is_pnr_stored': false},
+                    'state': {'isPnrStored': false},
                 },
                 {
                     'cmd': '*R',
@@ -2571,7 +2571,7 @@ class SessionStateProcessorTest extends require('../../../../../../backend/Trans
                         'ACKN-CA MLKC3H   11AUG 1051',
                         '><',
                     ]),
-                    'state': {'record_locator': 'VLW9TK', 'is_pnr_stored': true},
+                    'state': {'recordLocator': 'VLW9TK', 'isPnrStored': true},
                 },
                 {
                     'cmd': 'RESALLL',
@@ -2579,7 +2579,7 @@ class SessionStateProcessorTest extends require('../../../../../../backend/Trans
                         'INVLD FRMT/NOT ENT/REGIBBERISH',
                         '><',
                     ]),
-                    'state': {'record_locator': 'VLW9TK', 'is_pnr_stored': true},
+                    'state': {'recordLocator': 'VLW9TK', 'isPnrStored': true},
                 },
                 {
                     'cmd': '*R',
@@ -2621,17 +2621,17 @@ class SessionStateProcessorTest extends require('../../../../../../backend/Trans
                 {
                     'cmd': 'EC',
                     'output': 'NO CHANGES MADE TO PNR - UPDATE OR IGNORE',
-                    'state': {'is_pnr_stored': true, 'record_locator': 'IIPTER', 'has_pnr': true},
+                    'state': {'isPnrStored': true, 'recordLocator': 'IIPTER', 'hasPnr': true},
                 },
                 {
                     'cmd': '6KLESUN',
                     'output': php.implode(php.PHP_EOL, ['* ','']),
-                    'state': {'is_pnr_stored': true, 'record_locator': 'IIPTER', 'has_pnr': true},
+                    'state': {'isPnrStored': true, 'recordLocator': 'IIPTER', 'hasPnr': true},
                 },
                 {
                     'cmd': 'EC',
                     'output': 'OK 1050 IIPTER',
-                    'state': {'is_pnr_stored': false, 'has_pnr': true},
+                    'state': {'isPnrStored': false, 'hasPnr': true},
                 },
                 {
                     'cmd': '*R',
@@ -2663,12 +2663,12 @@ class SessionStateProcessorTest extends require('../../../../../../backend/Trans
                         'RECEIVED FROM - KLESUN',
                         'L3II.L3II*AWS 1049/14AUG17 IIPTER H',
                     ]),
-                    'state': {'is_pnr_stored': true, 'record_locator': 'IIPTER'},
+                    'state': {'isPnrStored': true, 'recordLocator': 'IIPTER'},
                 },
                 {
                     'cmd': 'IC',
                     'output': 'IGD ',
-                    'state': {'is_pnr_stored': false, 'has_pnr': true},
+                    'state': {'isPnrStored': false, 'hasPnr': true},
                 },
                 {
                     'cmd': '*R',
@@ -2700,12 +2700,12 @@ class SessionStateProcessorTest extends require('../../../../../../backend/Trans
                         'RECEIVED FROM - KLESUN',
                         'L3II.L3II*AWS 1049/14AUG17 IIPTER H',
                     ]),
-                    'state': {'is_pnr_stored': true, 'record_locator': 'IIPTER'},
+                    'state': {'isPnrStored': true, 'recordLocator': 'IIPTER'},
                 },
                 {
                     'cmd': 'IA',
                     'output': 'IGD ',
-                    'state': {'is_pnr_stored': false, 'has_pnr': false},
+                    'state': {'isPnrStored': false, 'hasPnr': false},
                 },
             ],
         });
@@ -2726,12 +2726,12 @@ class SessionStateProcessorTest extends require('../../../../../../backend/Trans
                         '   3 1A Q5EDVH   15SEP 2238',
                         '   4 WS HYKAJS   15SEP 2345',
                     ]),
-                    'state': {'is_pnr_stored': true, 'record_locator': 'XCGVZG'},
+                    'state': {'isPnrStored': true, 'recordLocator': 'XCGVZG'},
                 },
                 {
                     'cmd': '*R*@*R*',
                     'output': 'INVLD ADRS ',
-                    'state': {'is_pnr_stored': false, 'has_pnr': false},
+                    'state': {'isPnrStored': false, 'hasPnr': false},
                 },
             ],
         });
@@ -2756,7 +2756,7 @@ class SessionStateProcessorTest extends require('../../../../../../backend/Trans
                         '*** LINEAR FARE DATA EXISTS *** >*LF; ',
                         ')><',
                     ]),
-                    'state': {'record_locator': 'XGL0K6', 'has_pnr': true, 'is_pnr_stored': true},
+                    'state': {'recordLocator': 'XGL0K6', 'hasPnr': true, 'isPnrStored': true},
                 },
                 {
                     'cmd': '**B-ABELEDA/SOLEDAD',
@@ -2772,7 +2772,7 @@ class SessionStateProcessorTest extends require('../../../../../../backend/Trans
                         '008   01 ABELEDA/VIOLETA              25JAN',
                         '><',
                     ]),
-                    'state': {'has_pnr': false, 'is_pnr_stored': false},
+                    'state': {'hasPnr': false, 'isPnrStored': false},
                 },
             ],
         });
@@ -2796,12 +2796,12 @@ class SessionStateProcessorTest extends require('../../../../../../backend/Trans
                         'TKTG-T/QSB 10AUG0324Z B2 AG **ELECTRONIC DATA EXISTS** >*HTE;',
                         ')><',
                     ]),
-                    'state': {'has_pnr': true, 'record_locator': 'MZ5PGP'},
+                    'state': {'hasPnr': true, 'recordLocator': 'MZ5PGP'},
                 },
                 {
                     'cmd': '**-YHNUJMIK/QAZWSX',
                     'output': php.implode(php.PHP_EOL, ['NO NAMES ', '><']),
-                    'state': {'has_pnr': false},
+                    'state': {'hasPnr': false},
                 },
                 {'cmd': '*R', 'output': php.implode(php.PHP_EOL, ['INVLD ', '><'])},
             ],
@@ -2826,7 +2826,7 @@ class SessionStateProcessorTest extends require('../../../../../../backend/Trans
                         'RECEIVED FROM - STANISLAW',
                         '6IIF.L3II*AWS 1413/22JUN17 UUFQYD H',
                     ]),
-                    'state': {'has_pnr': true},
+                    'state': {'hasPnr': true},
                 },
                 {
                     'cmd': '*-LIBERMANE/MARINA',
@@ -2848,7 +2848,7 @@ class SessionStateProcessorTest extends require('../../../../../../backend/Trans
                         ' 29   LIBERMANE/MA X     -20DEC  30   LIBERMANE/MA X     -20DEC',
                         '*0 FOR MORE NAMES                                              ',
                     ]),
-                    'state': {'has_pnr': false},
+                    'state': {'hasPnr': false},
                 },
                 {'cmd': '*R', 'output': 'NO DATA'},
             ],
@@ -2866,19 +2866,19 @@ class SessionStateProcessorTest extends require('../../../../../../backend/Trans
                         '  3 TK OK09AUG/SFO1S2195',
                         ' ',
                     ]),
-                    'state': {'has_pnr': true},
+                    'state': {'hasPnr': true},
                 },
                 {
                     'cmd': 'RT/ZIMICH',
                     'output': php.implode(php.PHP_EOL, ['/$RT/ZIMICH', 'NO NAME', ' ']),
-                    'state': {'has_pnr': false},
+                    'state': {'hasPnr': false},
                 },
                 {'cmd': 'RT', 'output': php.implode(php.PHP_EOL, ['/$INVALID', ' '])},
             ],
         });
         $sessionRecords.push({
             'initialState': php.array_merge(GdsDirectDefaults.makeDefaultSabreState(), {
-                'has_pnr': true,
+                'hasPnr': true,
             }),
             'calledCommands': [
                 {
@@ -2968,7 +2968,7 @@ class SessionStateProcessorTest extends require('../../../../../../backend/Trans
                         '* USE WC¥OPTION NUMBER TO SELL NEW ITINERARY *.',
                     ]),
                 },
-                {'cmd': 'I', 'output': 'IGD ', 'state': {'has_pnr': false}},
+                {'cmd': 'I', 'output': 'IGD ', 'state': {'hasPnr': false}},
                 {'cmd': '*R', 'output': 'NO DATA'},
                 {
                     'cmd': 'WC¥1',
@@ -2999,7 +2999,7 @@ class SessionStateProcessorTest extends require('../../../../../../backend/Trans
                         ' 1 PS 232N 03NOV F JFKKBP*SS1   130A  505P /DCPS /E',
                         ' 2 PS 307N 03NOV F KBPFCO*SS1   805P 1000P /DCPS /E.',
                     ]),
-                    'state': {'has_pnr': true},
+                    'state': {'hasPnr': true},
                 },
                 {
                     'cmd': '*R',
@@ -3036,7 +3036,7 @@ class SessionStateProcessorTest extends require('../../../../../../backend/Trans
                         '1  TK 1776 E 10DEC  RIX IST  635P 1035P   SU  73H  EN2PXOW   E* ',
                         ')><',
                     ]),
-                    'state': {'has_pnr': false},
+                    'state': {'hasPnr': false},
                 },
                 {
                     'cmd': 'FS03',
@@ -3052,7 +3052,7 @@ class SessionStateProcessorTest extends require('../../../../../../backend/Trans
                         '>T:$B-*2G55;',
                         '><',
                     ]),
-                    'state': {'has_pnr': true},
+                    'state': {'hasPnr': true},
                 },
                 {
                     'cmd': '*R',
@@ -3087,12 +3087,12 @@ class SessionStateProcessorTest extends require('../../../../../../backend/Trans
                         '1  TK 1776 E 10DEC  RIX IST  635P 1035P   SU  73H  EN2PXOW   E* ',
                         ')><',
                     ]),
-                    'state': {'has_pnr': false},
+                    'state': {'hasPnr': false},
                 },
                 {
                     'cmd': 'FS09',
                     'output': php.implode(php.PHP_EOL, ['INFORMATION HAS NOT BEEN DISPLAYED', '><']),
-                    'state': {'has_pnr': false},
+                    'state': {'hasPnr': false},
                 },
             ],
         });
@@ -3107,7 +3107,7 @@ class SessionStateProcessorTest extends require('../../../../../../backend/Trans
                         '     SEE RTSVC',
                         ' ',
                     ]),
-                    'state': {'has_pnr': true},
+                    'state': {'hasPnr': true},
                 },
             ],
         });
@@ -3117,13 +3117,13 @@ class SessionStateProcessorTest extends require('../../../../../../backend/Trans
                 {
                     'cmd': 'FS3',
                     'output': php.implode(php.PHP_EOL, ['ERROR 47 - INVALID FORMAT/DATA FOR MODIFIER 3', 'FS3', '><']),
-                    'state': {'has_pnr': false},
+                    'state': {'hasPnr': false},
                 },
             ],
         });
         $sessionRecords.push({
             'initialState': php.array_merge(GdsDirectDefaults.makeDefaultApolloState(), {
-                'record_locator': 'X7JDCC', 'is_pnr_stored': true, 'has_pnr': true,
+                'recordLocator': 'X7JDCC', 'isPnrStored': true, 'hasPnr': true,
             }),
             'calledCommands': [
                 {
@@ -3134,13 +3134,13 @@ class SessionStateProcessorTest extends require('../../../../../../backend/Trans
                         ' 2 EK 231T 04DEC DXBIAD SS2   225A  810A *         MO   E',
                         '><',
                     ]),
-                    'state': {'is_pnr_stored': false, 'record_locator': '', 'has_pnr': true},
+                    'state': {'isPnrStored': false, 'recordLocator': '', 'hasPnr': true},
                 },
             ],
         });
         $sessionRecords.push({
             'initialState': php.array_merge(GdsDirectDefaults.makeDefaultApolloState(), {
-                'record_locator': 'X7JDCC', 'is_pnr_stored': true, 'has_pnr': true,
+                'recordLocator': 'X7JDCC', 'isPnrStored': true, 'hasPnr': true,
             }),
             'calledCommands': [
                 {
@@ -3149,12 +3149,12 @@ class SessionStateProcessorTest extends require('../../../../../../backend/Trans
                         'INVLD ',
                         '><',
                     ]),
-                    'state': {'is_pnr_stored': false, 'record_locator': '', 'has_pnr': false},
+                    'state': {'isPnrStored': false, 'recordLocator': '', 'hasPnr': false},
                 },
             ],
         });
         $sessionRecords.push({
-            'initialState': php.array_merge(GdsDirectDefaults.makeDefaultAmadeusState(), {'has_pnr': true, 'can_create_pq': false}),
+            'initialState': php.array_merge(GdsDirectDefaults.makeDefaultAmadeusState(), {'hasPnr': true, 'canCreatePq': false}),
             'calledCommands': [
                 {
                     'cmd': 'FXX',
@@ -3164,7 +3164,7 @@ class SessionStateProcessorTest extends require('../../../../../../backend/Trans
                         'NO FARE FOR BOOKING CODE-TRY OTHER PRICING OPTIONS',
                         ' ',
                     ]),
-                    'state': {'has_pnr': true, 'can_create_pq': false},
+                    'state': {'hasPnr': true, 'canCreatePq': false},
                 },
             ],
         });
@@ -3185,7 +3185,7 @@ class SessionStateProcessorTest extends require('../../../../../../backend/Trans
                         '009   01 BRUCE/WAYNE                X 25JUN',
                         '><',
                     ]),
-                    'state': {'has_pnr': false, 'is_pnr_stored': false},
+                    'state': {'hasPnr': false, 'isPnrStored': false},
                 },
                 {
                     'cmd': '*1',
@@ -3205,7 +3205,7 @@ class SessionStateProcessorTest extends require('../../../../../../backend/Trans
                         'ATFQ-REPR/$B*IF80/-*1O3K/:A/Z$80.00/F|OK/ET/TA1O3K/CEK',
                         ')><',
                     ]),
-                    'state': {'has_pnr': true, 'is_pnr_stored': true},
+                    'state': {'hasPnr': true, 'isPnrStored': true},
                 },
             ],
         });
@@ -3218,7 +3218,7 @@ class SessionStateProcessorTest extends require('../../../../../../backend/Trans
                         'NO B.F. TO DISPLAY - CREATE OR RETRIEVE FIRST',
                         '><',
                     ]),
-                    'state': {'has_pnr': false, 'area': 'A', 'pcc': '711M'},
+                    'state': {'hasPnr': false, 'area': 'A', 'pcc': '711M'},
                 },
                 {
                     'cmd': 'SC',
@@ -3226,7 +3226,7 @@ class SessionStateProcessorTest extends require('../../../../../../backend/Trans
                         'A-OUT C-IN AG-NOT AUTHORISED - GALILEO',
                         '><',
                     ]),
-                    'state': {'has_pnr': false, 'area': 'C', 'pcc': ''},
+                    'state': {'hasPnr': false, 'area': 'C', 'pcc': ''},
                 },
                 {
                     'cmd': 'SEM/69KS/AG',
@@ -3234,12 +3234,12 @@ class SessionStateProcessorTest extends require('../../../../../../backend/Trans
                         'PROCEED/15MAR-INTERNATIONAL TVL NETWOR ATL - GALILEO',
                         '><',
                     ]),
-                    'state': {'has_pnr': false, 'area': 'C', 'pcc': '69KS'},
+                    'state': {'hasPnr': false, 'area': 'C', 'pcc': '69KS'},
                 },
                 {
                     'cmd': 'A10MAYKIVRIX',
                     'output': 'NEUTRAL DISPLAY*   TH 10MAY KIV/RIX                             1 KIV KBP 0720 0825  PS 898 C9 D9 Z9 F9 S9 E9 K9 H9 L9 V9#738C*E2     RIX 0920 1055  PS 185 C9 D9 Z9 F9 S9 E9 K9 H9 L9 V9#73EC*E3 KIV KBP 0720 0825  PS 898 C9 D9 Z9 F9 S9 E9 K9 H9 L9 V9#738C*E4     RIX 0940 1135  BT 401 C3 D3 J2 Y9 S9 M9 B9 H9 O9 Q9#DH4C*E5 KIV VIE 1555 1640  OS 656 J4 C3 D2 Z1 PC Y4 B4 M4 U4 H4#E95C*E6     RIX 1845 2200 @OS7029 J4 C3 D2 Z1 Y4 B4 M4 U4 H4 Q4#735C*E7 KIV VIE 1555 1640  OS 656 J3 C3 D3 Z2 P2 Y9 B9 M9 U9 H9#E95C*E8     RIX 1845 2200  BT 434 C9 D9 J9 Y9 S9 M9 B9 H9 O9 Q9#735C*E><',
-                    'state': {'has_pnr': false, 'area': 'C', 'pcc': '69KS'},
+                    'state': {'hasPnr': false, 'area': 'C', 'pcc': '69KS'},
                 },
                 {
                     'cmd': '01D1D2',
@@ -3253,7 +3253,7 @@ class SessionStateProcessorTest extends require('../../../../../../backend/Trans
                         'OFFER CAR/HOTEL      >CAL;       >HOA; ',
                         '><',
                     ]),
-                    'state': {'has_pnr': true, 'area': 'C', 'pcc': '69KS'},
+                    'state': {'hasPnr': true, 'area': 'C', 'pcc': '69KS'},
                 },
                 {
                     'cmd': 'N.LIBERMANE/MARINA',
@@ -3261,7 +3261,7 @@ class SessionStateProcessorTest extends require('../../../../../../backend/Trans
                         ' *',
                         '><',
                     ]),
-                    'state': {'has_pnr': true, 'area': 'C', 'pcc': '69KS'},
+                    'state': {'hasPnr': true, 'area': 'C', 'pcc': '69KS'},
                 },
                 {
                     'cmd': '*R',
@@ -3271,7 +3271,7 @@ class SessionStateProcessorTest extends require('../../../../../../backend/Trans
                         ' 2. PS  185 D  10MAY KBPRIX HS1   920A  1055A O          TH  1',
                         '><',
                     ]),
-                    'state': {'has_pnr': true, 'area': 'C', 'pcc': '69KS'},
+                    'state': {'hasPnr': true, 'area': 'C', 'pcc': '69KS'},
                 },
             ],
         });
@@ -3296,7 +3296,7 @@ class SessionStateProcessorTest extends require('../../../../../../backend/Trans
                         '** SERVICE INFORMATION EXISTS **       >*SI;',
                         ')><',
                     ]),
-                    'state': {'has_pnr': true, 'is_pnr_stored': true, 'record_locator': 'W4W9FE'},
+                    'state': {'hasPnr': true, 'isPnrStored': true, 'recordLocator': 'W4W9FE'},
                 },
                 {
                     'cmd': 'I',
@@ -3304,7 +3304,7 @@ class SessionStateProcessorTest extends require('../../../../../../backend/Trans
                         'IGNORED',
                         '><',
                     ]),
-                    'state': {'has_pnr': false, 'is_pnr_stored': false, 'record_locator': ''},
+                    'state': {'hasPnr': false, 'isPnrStored': false, 'recordLocator': ''},
                 },
                 {
                     'cmd': '*ASDASD',
@@ -3312,7 +3312,7 @@ class SessionStateProcessorTest extends require('../../../../../../backend/Trans
                         ' INVALID RECORD LOCATOR',
                         '><',
                     ]),
-                    'state': {'has_pnr': false, 'is_pnr_stored': false, 'record_locator': ''},
+                    'state': {'hasPnr': false, 'isPnrStored': false, 'recordLocator': ''},
                 },
                 {
                     'cmd': '*W4W9FE',
@@ -3332,7 +3332,7 @@ class SessionStateProcessorTest extends require('../../../../../../backend/Trans
                         '** SERVICE INFORMATION EXISTS **       >*SI;',
                         ')><',
                     ]),
-                    'state': {'has_pnr': true, 'is_pnr_stored': true, 'record_locator': 'W4W9FE'},
+                    'state': {'hasPnr': true, 'isPnrStored': true, 'recordLocator': 'W4W9FE'},
                 },
                 {
                     'cmd': '*WC6FVO',
@@ -3340,7 +3340,7 @@ class SessionStateProcessorTest extends require('../../../../../../backend/Trans
                         'UNABLE TO RETRIEVE - CALL HELP DESK  ',
                         '><',
                     ]),
-                    'state': {'has_pnr': false, 'is_pnr_stored': false, 'record_locator': ''},
+                    'state': {'hasPnr': false, 'isPnrStored': false, 'recordLocator': ''},
                 },
                 {
                     'cmd': '*R',
@@ -3348,7 +3348,7 @@ class SessionStateProcessorTest extends require('../../../../../../backend/Trans
                         'NO B.F. TO DISPLAY - CREATE OR RETRIEVE FIRST',
                         '><',
                     ]),
-                    'state': {'has_pnr': false, 'is_pnr_stored': false, 'record_locator': ''},
+                    'state': {'hasPnr': false, 'isPnrStored': false, 'recordLocator': ''},
                 },
             ],
         });
@@ -3362,7 +3362,7 @@ class SessionStateProcessorTest extends require('../../../../../../backend/Trans
                         '001 01LIBERMANE/STAS   X 10MAY  002 01LIBERMANE/STAS   X 10MAY',
                         '><',
                     ]),
-                    'state': {'has_pnr': false, 'is_pnr_stored': false, 'record_locator': ''},
+                    'state': {'hasPnr': false, 'isPnrStored': false, 'recordLocator': ''},
                 },
                 {
                     'cmd': '*-KLESUN',
@@ -3370,7 +3370,7 @@ class SessionStateProcessorTest extends require('../../../../../../backend/Trans
                         'NO NAMES ',
                         '><',
                     ]),
-                    'state': {'has_pnr': false, 'is_pnr_stored': false, 'record_locator': ''},
+                    'state': {'hasPnr': false, 'isPnrStored': false, 'recordLocator': ''},
                 },
                 {
                     'cmd': '*1',
@@ -3378,7 +3378,7 @@ class SessionStateProcessorTest extends require('../../../../../../backend/Trans
                         'LIST NUMBER DOES NOT EXIST',
                         '><',
                     ]),
-                    'state': {'has_pnr': false, 'is_pnr_stored': false, 'record_locator': ''},
+                    'state': {'hasPnr': false, 'isPnrStored': false, 'recordLocator': ''},
                 },
                 {
                     'cmd': '*-LIBERMANE',
@@ -3387,7 +3387,7 @@ class SessionStateProcessorTest extends require('../../../../../../backend/Trans
                         '001 01LIBERMANE/STAS   X 10MAY  002 01LIBERMANE/STAS   X 10MAY',
                         '><',
                     ]),
-                    'state': {'has_pnr': false, 'is_pnr_stored': false, 'record_locator': ''},
+                    'state': {'hasPnr': false, 'isPnrStored': false, 'recordLocator': ''},
                 },
                 {
                     'cmd': '*1',
@@ -3399,7 +3399,7 @@ class SessionStateProcessorTest extends require('../../../../../../backend/Trans
                         'FONE-PIXR',
                         '><',
                     ]),
-                    'state': {'has_pnr': true, 'is_pnr_stored': true, 'record_locator': 'Z1NL0S'},
+                    'state': {'hasPnr': true, 'isPnrStored': true, 'recordLocator': 'Z1NL0S'},
                 },
                 {
                     'cmd': '*2',
@@ -3412,7 +3412,7 @@ class SessionStateProcessorTest extends require('../../../../../../backend/Trans
                         'FONE-PIXR',
                         '><',
                     ]),
-                    'state': {'has_pnr': true, 'is_pnr_stored': true, 'record_locator': 'Z1QX6U'},
+                    'state': {'hasPnr': true, 'isPnrStored': true, 'recordLocator': 'Z1QX6U'},
                 },
                 {
                     'cmd': '*0',
@@ -3422,7 +3422,7 @@ class SessionStateProcessorTest extends require('../../../../../../backend/Trans
                         '      END LIST                                                ',
                         '><',
                     ]),
-                    'state': {'has_pnr': true, 'is_pnr_stored': true, 'record_locator': 'Z1QX6U'},
+                    'state': {'hasPnr': true, 'isPnrStored': true, 'recordLocator': 'Z1QX6U'},
                 },
                 {
                     'cmd': '*7',
@@ -3431,7 +3431,7 @@ class SessionStateProcessorTest extends require('../../../../../../backend/Trans
                         '><',
                     ]),
                     // can't say for sure whether current PNR was actually dropped - deciding that not to be on the safe side
-                    'state': {'has_pnr': true, 'is_pnr_stored': true, 'record_locator': 'Z1QX6U'},
+                    'state': {'hasPnr': true, 'isPnrStored': true, 'recordLocator': 'Z1QX6U'},
                 },
                 {
                     'cmd': '*R',
@@ -3440,7 +3440,7 @@ class SessionStateProcessorTest extends require('../../../../../../backend/Trans
                         '><',
                     ]),
                     // this is cheating, but whatever
-                    'state': {'has_pnr': false, 'is_pnr_stored': false, 'record_locator': ''},
+                    'state': {'hasPnr': false, 'isPnrStored': false, 'recordLocator': ''},
                 },
                 {
                     'cmd': '*2',
@@ -3453,7 +3453,7 @@ class SessionStateProcessorTest extends require('../../../../../../backend/Trans
                         'FONE-PIXR',
                         '><',
                     ]),
-                    'state': {'has_pnr': true, 'is_pnr_stored': true, 'record_locator': 'Z1QX6U'},
+                    'state': {'hasPnr': true, 'isPnrStored': true, 'recordLocator': 'Z1QX6U'},
                 },
             ],
         });
@@ -3463,7 +3463,7 @@ class SessionStateProcessorTest extends require('../../../../../../backend/Trans
                 {
                     'cmd': 'A10MAYKIVRIX',
                     'output': 'NEUTRAL DISPLAY*   TH 10MAY KIV/RIX                             1 KIV KBP 0720 0825  PS 898 C9 D9 Z9 F9 S9 E9 K9 H9 L9 V9#738C*E2     RIX 0920 1055  PS 185 C9 D9 Z9 F9 S9 E9 K9 H9 L9 V9#73EC*E3 KIV KBP 0720 0825  PS 898 C9 D9 Z9 F9 S9 E9 K9 H9 L9 V9#738C*E4     RIX 0940 1135  BT 401 C3 D3 J2 Y9 S9 M9 B9 H9 O9 Q9#DH4C*E5 KIV VIE 1555 1640  OS 656 J4 C3 D2 Z1 PC Y4 B4 M4 U4 H4#E95C*E6     RIX 1845 2200 @OS7029 J4 C3 D2 Z1 Y4 B4 M4 U4 H4 Q4#735C*E7 KIV VIE 1555 1640  OS 656 J3 C3 D3 Z2 P2 Y9 B9 M9 U9 H9#E95C*E8     RIX 1845 2200  BT 434 C9 D9 J9 Y9 S9 M9 B9 H9 O9 Q9#735C*E><',
-                    'state': {'has_pnr': false},
+                    'state': {'hasPnr': false},
                 },
                 {
                     'cmd': '01Y1Y2BK|N.1LIBERMANE/MARINA|N.I/PROKOPCHUK/SASHA*15FEB18',
@@ -3472,7 +3472,7 @@ class SessionStateProcessorTest extends require('../../../../../../backend/Trans
                         '>01Y1Y2BK|N.1LIBERMANE/MARINA|N.I/PROKOPCHUK/SASHA*15FEB18',
                         '><',
                     ]),
-                    'state': {'has_pnr': false},
+                    'state': {'hasPnr': false},
                 },
                 {
                     'cmd': '01Y1Y2BK',
@@ -3482,7 +3482,7 @@ class SessionStateProcessorTest extends require('../../../../../../backend/Trans
                         'OFFER CAR/HOTEL      >CAL;       >HOA; ',
                         '><',
                     ]),
-                    'state': {'has_pnr': true},
+                    'state': {'hasPnr': true},
                 },
             ],
         });
@@ -3492,7 +3492,7 @@ class SessionStateProcessorTest extends require('../../../../../../backend/Trans
                 {
                     'cmd': 'A10MAYKIVRIX',
                     'output': 'NEUTRAL DISPLAY*   TH 10MAY KIV/RIX                             1 KIV KBP 0720 0825  PS 898 C9 D9 Z9 F9 S9 E9 K9 H9 L9 V9#738C*E2     RIX 0920 1055  PS 185 C9 D9 Z9 F9 S9 E9 K9 H9 L9 V9#73EC*E3 KIV KBP 0720 0825  PS 898 C9 D9 Z9 F9 S9 E9 K9 H9 L9 V9#738C*E4     RIX 0940 1135  BT 401 C3 D3 J2 Y9 S9 M9 B9 H9 O9 Q9#DH4C*E5 KIV KBP 0720 0825  PS 898 C9 D9 Z9 F9 S9 E9 K9 H9 L9 V9#738C*E6     WAW 0930 1000  PS 801 C9 D9 Z9 F9 S9 E9 K9 H9 L9 V9#738C*E7     RIX 1100 1325  LO 783 C9 D9 Z8 F6 P4 A4 R4 J3 Y9 B9#E70C*E><',
-                    'state': {'has_pnr': false, 'is_pnr_stored': false, 'record_locator': ''},
+                    'state': {'hasPnr': false, 'isPnrStored': false, 'recordLocator': ''},
                 },
                 {
                     'cmd': '01Y1Y2BK',
@@ -3502,7 +3502,7 @@ class SessionStateProcessorTest extends require('../../../../../../backend/Trans
                         'OFFER CAR/HOTEL      >CAL;       >HOA; ',
                         '><',
                     ]),
-                    'state': {'has_pnr': true, 'is_pnr_stored': false, 'record_locator': ''},
+                    'state': {'hasPnr': true, 'isPnrStored': false, 'recordLocator': ''},
                 },
                 {
                     'cmd': 'N.1LIBERMANE/MARINA|N.I/PROKOPCHUK/SASHA*15FEB18|R.KLESUN|P.PIXR|T.TAU/04APR|ER',
@@ -3516,7 +3516,7 @@ class SessionStateProcessorTest extends require('../../../../../../backend/Trans
                         'TKTG-TAU/WE04APR',
                         '><',
                     ]),
-                    'state': {'has_pnr': true, 'is_pnr_stored': true, 'record_locator': 'V85QWS'},
+                    'state': {'hasPnr': true, 'isPnrStored': true, 'recordLocator': 'V85QWS'},
                 },
                 {
                     'cmd': 'I',
@@ -3524,7 +3524,7 @@ class SessionStateProcessorTest extends require('../../../../../../backend/Trans
                         'IGNORED',
                         '><',
                     ]),
-                    'state': {'has_pnr': false, 'is_pnr_stored': false, 'record_locator': ''},
+                    'state': {'hasPnr': false, 'isPnrStored': false, 'recordLocator': ''},
                 },
                 {
                     'cmd': '*R',
@@ -3532,7 +3532,7 @@ class SessionStateProcessorTest extends require('../../../../../../backend/Trans
                         'NO B.F. TO DISPLAY - CREATE OR RETRIEVE FIRST',
                         '><',
                     ]),
-                    'state': {'has_pnr': false, 'is_pnr_stored': false, 'record_locator': ''},
+                    'state': {'hasPnr': false, 'isPnrStored': false, 'recordLocator': ''},
                 },
             ],
         });
@@ -3545,7 +3545,7 @@ class SessionStateProcessorTest extends require('../../../../../../backend/Trans
                         'NO B.F. TO DISPLAY - CREATE OR RETRIEVE FIRST',
                         '><',
                     ]),
-                    'state': {'has_pnr': false, 'is_pnr_stored': false, 'record_locator': ''},
+                    'state': {'hasPnr': false, 'isPnrStored': false, 'recordLocator': ''},
                 },
                 {
                     'cmd': '*-PROKOPCHUK',
@@ -3561,7 +3561,7 @@ class SessionStateProcessorTest extends require('../../../../../../backend/Trans
                         'TKTG-TAU/WE04APR',
                         '><',
                     ]),
-                    'state': {'has_pnr': true, 'is_pnr_stored': true, 'record_locator': 'V8W1ZW'},
+                    'state': {'hasPnr': true, 'isPnrStored': true, 'recordLocator': 'V8W1ZW'},
                 },
             ],
         });
@@ -3575,7 +3575,7 @@ class SessionStateProcessorTest extends require('../../../../../../backend/Trans
                         '001 01PROKOPCHUK/ALENA   10MAY  002 01PROKOPCHUK/ALENA   10MAY',
                         '><',
                     ]),
-                    'state': {'has_pnr': false, 'is_pnr_stored': false, 'record_locator': ''},
+                    'state': {'hasPnr': false, 'isPnrStored': false, 'recordLocator': ''},
                 },
                 {
                     'cmd': '*1|*I',
@@ -3584,7 +3584,7 @@ class SessionStateProcessorTest extends require('../../../../../../backend/Trans
                         ' 2. PS  185 Y  10MAY KBPRIX NO1   920A  1055A            TH',
                         '><',
                     ]),
-                    'state': {'has_pnr': true, 'is_pnr_stored': true, 'record_locator': ''},
+                    'state': {'hasPnr': true, 'isPnrStored': true, 'recordLocator': ''},
                 },
             ],
         });
@@ -3604,7 +3604,7 @@ class SessionStateProcessorTest extends require('../../../../../../backend/Trans
                         'TKTG-TAU/WE04APR',
                         '><',
                     ]),
-                    'state': {'has_pnr': true, 'is_pnr_stored': true, 'record_locator': 'VFZZK0'},
+                    'state': {'hasPnr': true, 'isPnrStored': true, 'recordLocator': 'VFZZK0'},
                 },
                 {
                     'cmd': 'NP.KLESUN WAS HERE',
@@ -3612,7 +3612,7 @@ class SessionStateProcessorTest extends require('../../../../../../backend/Trans
                         ' *',
                         '><',
                     ]),
-                    'state': {'has_pnr': true, 'is_pnr_stored': true, 'record_locator': 'VFZZK0'},
+                    'state': {'hasPnr': true, 'isPnrStored': true, 'recordLocator': 'VFZZK0'},
                 },
                 {
                     'cmd': 'RESALL',
@@ -3620,7 +3620,7 @@ class SessionStateProcessorTest extends require('../../../../../../backend/Trans
                         'NEED RECEIVED',
                         '><',
                     ]),
-                    'state': {'has_pnr': true, 'is_pnr_stored': true, 'record_locator': 'VFZZK0'},
+                    'state': {'hasPnr': true, 'isPnrStored': true, 'recordLocator': 'VFZZK0'},
                 },
                 {
                     'cmd': 'R.KLESUN',
@@ -3628,7 +3628,7 @@ class SessionStateProcessorTest extends require('../../../../../../backend/Trans
                         ' *',
                         '><',
                     ]),
-                    'state': {'has_pnr': true, 'is_pnr_stored': true, 'record_locator': 'VFZZK0'},
+                    'state': {'hasPnr': true, 'isPnrStored': true, 'recordLocator': 'VFZZK0'},
                 },
                 {
                     'cmd': 'RESALL',
@@ -3637,7 +3637,7 @@ class SessionStateProcessorTest extends require('../../../../../../backend/Trans
                         '*UNABLE - CLASS DOES NOT EXIST FOR THIS FLIGHT*',
                         '><',
                     ]),
-                    'state': {'has_pnr': false, 'is_pnr_stored': false, 'record_locator': ''},
+                    'state': {'hasPnr': false, 'isPnrStored': false, 'recordLocator': ''},
                 },
                 {
                     'cmd': '*R',
@@ -3645,7 +3645,7 @@ class SessionStateProcessorTest extends require('../../../../../../backend/Trans
                         'NO B.F. TO DISPLAY - CREATE OR RETRIEVE FIRST',
                         '><',
                     ]),
-                    'state': {'has_pnr': false, 'is_pnr_stored': false, 'record_locator': ''},
+                    'state': {'hasPnr': false, 'isPnrStored': false, 'recordLocator': ''},
                 },
             ],
         });
@@ -3655,7 +3655,7 @@ class SessionStateProcessorTest extends require('../../../../../../backend/Trans
                 {
                     'cmd': 'A10MAYKIVRIX',
                     'output': 'NEUTRAL DISPLAY*   TH 10MAY KIV/RIX                             1 KIV KBP 0720 0825  PS 898 C9 D9 Z9 F9 S9 E9 K9 H9 L9 V9#738C*E2     RIX 0920 1055  PS 185 C9 D9 Z9 F9 S9 E9 K9 H9 L9 V9#73EC*E3 KIV KBP 0720 0825  PS 898 C9 D9 Z9 F9 S9 E9 K9 H9 L9 V9#738C*E4     RIX 0940 1135  BT 401 C3 D3 J2 Y9 S9 M9 B9 H9 O9 Q9#DH4C*E5 KIV VIE 1555 1640  OS 656 J8 C7 D6 Z4 P3 Y9 B9 M9 U9 H9#E95C*E6     RIX 1845 2200  BT 434 C9 D9 J9 Y9 S9 M9 B9 H9 O9 Q9#735C*E><',
-                    'state': {'has_pnr': false, 'is_pnr_stored': false, 'record_locator': ''},
+                    'state': {'hasPnr': false, 'isPnrStored': false, 'recordLocator': ''},
                 },
                 {
                     'cmd': '01D1D2',
@@ -3669,7 +3669,7 @@ class SessionStateProcessorTest extends require('../../../../../../backend/Trans
                         'OFFER CAR/HOTEL      >CAL;       >HOA; ',
                         '><',
                     ]),
-                    'state': {'has_pnr': true, 'is_pnr_stored': false, 'record_locator': ''},
+                    'state': {'hasPnr': true, 'isPnrStored': false, 'recordLocator': ''},
                 },
                 {
                     'cmd': 'N.LIBERMANE/MARINA',
@@ -3677,7 +3677,7 @@ class SessionStateProcessorTest extends require('../../../../../../backend/Trans
                         ' *',
                         '><',
                     ]),
-                    'state': {'has_pnr': true, 'is_pnr_stored': false, 'record_locator': ''},
+                    'state': {'hasPnr': true, 'isPnrStored': false, 'recordLocator': ''},
                 },
                 {
                     'cmd': 'T:TAU/5APR|P:PIXR|R:KLESUN|ER',
@@ -3686,7 +3686,7 @@ class SessionStateProcessorTest extends require('../../../../../../backend/Trans
                         '>T:TAU/5APR|P:PIXR|R:KLESUN|ER',
                         '><',
                     ]),
-                    'state': {'has_pnr': true, 'is_pnr_stored': false, 'record_locator': ''},
+                    'state': {'hasPnr': true, 'isPnrStored': false, 'recordLocator': ''},
                 },
                 {
                     'cmd': 'R.KLESUN|P.PIXR|T.TAU/04APR|ER',
@@ -3701,7 +3701,7 @@ class SessionStateProcessorTest extends require('../../../../../../backend/Trans
                         'TKTG-TAU/WE04APR',
                         '><',
                     ]),
-                    'state': {'has_pnr': true, 'is_pnr_stored': true, 'record_locator': 'W551CG'},
+                    'state': {'hasPnr': true, 'isPnrStored': true, 'recordLocator': 'W551CG'},
                 },
                 {
                     'cmd': 'RESALL',
@@ -3709,7 +3709,7 @@ class SessionStateProcessorTest extends require('../../../../../../backend/Trans
                         'MODIFY BOOKING',
                         '><',
                     ]),
-                    'state': {'has_pnr': true, 'is_pnr_stored': true, 'record_locator': 'W551CG'},
+                    'state': {'hasPnr': true, 'isPnrStored': true, 'recordLocator': 'W551CG'},
                 },
                 {
                     'cmd': 'NP.KLESUN WAS HERE 2|R.KLESUN',
@@ -3717,7 +3717,7 @@ class SessionStateProcessorTest extends require('../../../../../../backend/Trans
                         ' *',
                         '><',
                     ]),
-                    'state': {'has_pnr': true, 'is_pnr_stored': true, 'record_locator': 'W551CG'},
+                    'state': {'hasPnr': true, 'isPnrStored': true, 'recordLocator': 'W551CG'},
                 },
                 {
                     'cmd': 'RESALL',
@@ -3726,7 +3726,7 @@ class SessionStateProcessorTest extends require('../../../../../../backend/Trans
                         ' 2. PS  185 D  10MAY KBPRIX HS1   920A  1055A O          TH  1',
                         '><',
                     ]),
-                    'state': {'has_pnr': true, 'is_pnr_stored': false, 'record_locator': ''},
+                    'state': {'hasPnr': true, 'isPnrStored': false, 'recordLocator': ''},
                 },
                 {
                     'cmd': '*R',
@@ -3744,12 +3744,12 @@ class SessionStateProcessorTest extends require('../../../../../../backend/Trans
                 {
                     'cmd': 'FSLON10JUNNYC',
                     'output': '>FSLON10JUNNYC;                                                                                                                 TTL OF 30   PRICING OPTIONS AND 73    ITINERARY OPTIONS RETURNED                                                                             **ADDITIONAL FEES MAY APPLY**SEE FSOF              PRICING OPTION 1                          SUB TOTAL    407.21USDADT                                    TAX INCLUDED             1 @H1 1929  R  10JUN STN EWR   555P  920P SU  32S  ROWPF      E >FSK1;    >*FS1;    >FQN1;    >FSOF1;                           PRICING OPTION 2                          SUB TOTAL    426.01USDADT                                    TAX INCLUDED             1  FI  455  S  10JUN LHR KEF   910P 1110P SU  75W  SQO2LT     E 2  FI  615  S  11JUN KEF JFK   500P  700P MO  76W  SQO2LT     E )><',
-                    'state': {'has_pnr': false, 'is_pnr_stored': false, 'record_locator': ''},
+                    'state': {'hasPnr': false, 'isPnrStored': false, 'recordLocator': ''},
                 },
                 {
                     'cmd': 'FSK1',
                     'output': '>FSK1;                                                                                                                          *FARE GUARANTEED AT TICKET ISSUANCE*                            *PENALTY-FARE*                                                                                                                  FS-1 ADT                                                        SUM IDENTIFIED AS UB IS A PASSENGER SERVICE CHARGE              OP BY PRIMERA AIR                                               SCANDINAVIA/                                                    BG 1P-23KG/ PLATE 169                                           RATE USED IN EQU TOTAL IS BSR 1GBP - 1.393086USD                LAST DATE TO PURCHASE TICKET: 18MAR18                           TICKETING AGENCY 711M                                           )><',
-                    'state': {'has_pnr': true, 'is_pnr_stored': false, 'record_locator': ''},
+                    'state': {'hasPnr': true, 'isPnrStored': false, 'recordLocator': ''},
                 },
                 {
                     'cmd': '*R',
@@ -3758,24 +3758,24 @@ class SessionStateProcessorTest extends require('../../../../../../backend/Trans
                         '         OPERATED BY PRIMERA AIR SCANDINAVIA',
                         '><',
                     ]),
-                    'state': {'has_pnr': true, 'is_pnr_stored': false, 'record_locator': ''},
+                    'state': {'hasPnr': true, 'isPnrStored': false, 'recordLocator': ''},
                 },
             ],
         });
         $sessionRecords.push({
             'initialState': php.array_merge(GdsDirectDefaults.makeDefaultGalileoState(), {
-                'has_pnr': true, 'is_pnr_stored': true, 'record_locator': 'RLHFDY',
+                'hasPnr': true, 'isPnrStored': true, 'recordLocator': 'RLHFDY',
             }),
             'calledCommands': [
                 {
                     'cmd': '*HTE',
                     'output': 'ELECTRONIC TICKET LIST BY *HTE                                            NAME             TICKET NUMBER                        >*TE001;  SMITH/JOHN       0067105603001                        >*TE002;  SMITH/JOHN       0067105603002                        END OF LIST                                                     ><',
-                    'state': {'has_pnr': true, 'is_pnr_stored': true, 'record_locator': 'RLHFDY'},
+                    'state': {'hasPnr': true, 'isPnrStored': true, 'recordLocator': 'RLHFDY'},
                 },
                 {
                     'cmd': '*1',
                     'output': php.implode(php.PHP_EOL, ['LIST NUMBER DOES NOT EXIST', '><']),
-                    'state': {'has_pnr': true, 'is_pnr_stored': true, 'record_locator': 'RLHFDY'},
+                    'state': {'hasPnr': true, 'isPnrStored': true, 'recordLocator': 'RLHFDY'},
                 },
                 {
                     'cmd': '*TE1',
@@ -3790,7 +3790,7 @@ class SessionStateProcessorTest extends require('../../../../../../backend/Trans
                         'ZP4.50XF JFK4.5                                                 RLOC 1G RLHFDY    DL GMX3DR                                            ',
                         '><',
                     ]),
-                    'state': {'has_pnr': true, 'is_pnr_stored': true, 'record_locator': 'RLHFDY'},
+                    'state': {'hasPnr': true, 'isPnrStored': true, 'recordLocator': 'RLHFDY'},
                 },
             ],
         });
@@ -3815,7 +3815,7 @@ class SessionStateProcessorTest extends require('../../../../../../backend/Trans
                         ' FQ-USD 1190.00/USD 72.00US/USD 206.72XT/USD 1468.72 - 12SEP WKX6R.WKX6R.WKX6R.WKX6R/WKX6R.WKX6R.WKX6R.WKX6R',
                         ')><',
                     ]),
-                    'state': {'has_pnr': true, 'is_pnr_stored': true, 'record_locator': 'MMJ6Q1'},
+                    'state': {'hasPnr': true, 'isPnrStored': true, 'recordLocator': 'MMJ6Q1'},
                 },
                 {
                     'cmd': '*55',
@@ -3823,7 +3823,7 @@ class SessionStateProcessorTest extends require('../../../../../../backend/Trans
                         'INVLD ',
                         '><',
                     ]),
-                    'state': {'has_pnr': true, 'is_pnr_stored': true, 'record_locator': 'MMJ6Q1'},
+                    'state': {'hasPnr': true, 'isPnrStored': true, 'recordLocator': 'MMJ6Q1'},
                 },
                 {
                     'cmd': '*R',
@@ -3842,7 +3842,7 @@ class SessionStateProcessorTest extends require('../../../../../../backend/Trans
                         ' FQ-USD 1190.00/USD 72.00US/USD 206.72XT/USD 1468.72 - 12SEP WKX6R.WKX6R.WKX6R.WKX6R/WKX6R.WKX6R.WKX6R.WKX6R',
                         ')><',
                     ]),
-                    'state': {'has_pnr': true, 'is_pnr_stored': true, 'record_locator': 'MMJ6Q1'},
+                    'state': {'hasPnr': true, 'isPnrStored': true, 'recordLocator': 'MMJ6Q1'},
                 },
             ],
         });
@@ -3867,7 +3867,7 @@ class SessionStateProcessorTest extends require('../../../../../../backend/Trans
                         '012   01 LOBERO/KERTH OMANDAM         15APR',
                         ')><',
                     ]),
-                    'state': {'has_pnr': false, 'is_pnr_stored': false, 'record_locator': ''},
+                    'state': {'hasPnr': false, 'isPnrStored': false, 'recordLocator': ''},
                 },
                 {
                     'cmd': '*MMJ6Q1',
@@ -3886,7 +3886,7 @@ class SessionStateProcessorTest extends require('../../../../../../backend/Trans
                         ' FQ-USD 1190.00/USD 72.00US/USD 206.72XT/USD 1468.72 - 12SEP WKX6R.WKX6R.WKX6R.WKX6R/WKX6R.WKX6R.WKX6R.WKX6R',
                         ')><',
                     ]),
-                    'state': {'has_pnr': true, 'is_pnr_stored': true, 'record_locator': 'MMJ6Q1'},
+                    'state': {'hasPnr': true, 'isPnrStored': true, 'recordLocator': 'MMJ6Q1'},
                 },
                 {
                     'cmd': '*55',
@@ -3895,7 +3895,7 @@ class SessionStateProcessorTest extends require('../../../../../../backend/Trans
                         '><',
                     ]),
                     // we don't know for sure whether PNR was dropped or not - better think that not
-                    'state': {'has_pnr': true, 'is_pnr_stored': true, 'record_locator': 'MMJ6Q1'},
+                    'state': {'hasPnr': true, 'isPnrStored': true, 'recordLocator': 'MMJ6Q1'},
                 },
                 {
                     'cmd': '*R',
@@ -3904,7 +3904,7 @@ class SessionStateProcessorTest extends require('../../../../../../backend/Trans
                         '><',
                     ]),
                     // another cheating
-                    'state': {'has_pnr': false, 'is_pnr_stored': false, 'record_locator': ''},
+                    'state': {'hasPnr': false, 'isPnrStored': false, 'recordLocator': ''},
                 },
             ],
         });
@@ -3917,12 +3917,12 @@ class SessionStateProcessorTest extends require('../../../../../../backend/Trans
                         ' 1 TUR ZZ BK1  YYZ 08JUL - RETENTION LINE',
                         '><',
                     ]),
-                    'state': {'has_pnr': true},
+                    'state': {'hasPnr': true},
                 },
             ],
         });
         $sessionRecords.push({
-            "initialState": {"gds": "apollo", "area":"B","cmdType":"redisplayPnr","scrolledCmd":"*R","can_create_pq":false,"pricing_cmd":null,"pcc":"2G8P","has_pnr":true},
+            "initialState": {"gds": "apollo", "area":"B","cmdType":"redisplayPnr","scrolledCmd":"*R","canCreatePq":false,"pricingCmd":null,"pcc":"2G8P","hasPnr":true},
             "calledCommands": [
                 {
                     "cmd": "PS-CREATED IN GDS DIRECT BY JAYDEN|@:5GD-JAYDEN/1092/FOR AGENT/1092/LEAD-11081962 IN 2G8P|T-CA-SFO@$0221686|P:SFOAS/800-750-2238 ASAP CUSTOMER SUPPORT|T:TAU/27MAR|R:JAYDEN|ER",
@@ -3930,12 +3930,12 @@ class SessionStateProcessorTest extends require('../../../../../../backend/Trans
                     "state": {
                         "area": "B",
                         "cmdType": "psRemark",
-                        "can_create_pq": false,
-                        "pricing_cmd": null,
+                        "canCreatePq": false,
+                        "pricingCmd": null,
                         "pcc": "2G8P",
-                        "has_pnr": true,
-                        "is_pnr_stored": true,
-                        "record_locator": "VMML8E",
+                        "hasPnr": true,
+                        "isPnrStored": true,
+                        "recordLocator": "VMML8E",
                     },
                 },
             ],
@@ -3961,9 +3961,9 @@ class SessionStateProcessorTest extends require('../../../../../../backend/Trans
         $getAreaData = ($letter) => {
             return $letterToArea[$letter] || {
                 'pcc': '',
-                'record_locator': '',
-                'has_pnr': false,
-                'is_pnr_stored': false,
+                'recordLocator': '',
+                'hasPnr': false,
+                'isPnrStored': false,
             };
         };
         for ([$i, $cmdRecord] of Object.entries($calledCommands)) {

@@ -1,11 +1,5 @@
 
-let Airports = require('../Repositories/Airports.js');
-
 let Emc = require('../LibWrappers/Emc.js');
-const Pccs = require("../Repositories/Pccs.js");
-const Airlines = require("../Repositories/Airlines");
-const BookingClasses = require("../Repositories/BookingClasses");
-const TicketDesignators = require("../Repositories/TicketDesignators");
 
 module.exports.migrations = [
 	{

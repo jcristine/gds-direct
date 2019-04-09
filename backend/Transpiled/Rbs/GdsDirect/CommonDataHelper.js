@@ -61,7 +61,7 @@ class CommonDataHelper {
 	static async shouldAddCreationRemark($msg, $cmdLog) {
 		let $sessionData, $commands, $cmdRecord, $parsed, $flatCmds, $flatCmd;
 		$sessionData = $cmdLog.getSessionData();
-		if ($sessionData['is_pnr_stored']) {
+		if ($sessionData['isPnrStored']) {
 			return false;
 		}
 		$commands = await $cmdLog.getCurrentPnrCommands();

@@ -191,7 +191,7 @@ class ProcessApolloTerminalInputActionTest extends require('../../../../Lib/Test
 			'output': {
 				'status': 'executed',
 				'sessionData': {
-					'can_create_pq': true,
+					'canCreatePq': true,
 				},
 				'calledCommands': [
 					{'cmd': '$B'},
@@ -199,7 +199,7 @@ class ProcessApolloTerminalInputActionTest extends require('../../../../Lib/Test
 			},
 			'sessionInfo': {
 				'initialState': php.array_merge(GdsDirectDefaults.makeDefaultApolloState(),
-					{'has_pnr': true}),
+					{'hasPnr': true}),
 				'initialCommands': [],
 				'performedCommands': [
 					{
@@ -265,7 +265,7 @@ class ProcessApolloTerminalInputActionTest extends require('../../../../Lib/Test
 			'output': {
 				'status': 'executed',
 				'sessionData': {
-					'can_create_pq': false,
+					'canCreatePq': false,
 				},
 				'calledCommands': [
 					{
@@ -291,7 +291,7 @@ class ProcessApolloTerminalInputActionTest extends require('../../../../Lib/Test
 			},
 			'sessionInfo': {
 				'initialState': php.array_merge(GdsDirectDefaults.makeDefaultApolloState(),
-					{'has_pnr': true}),
+					{'hasPnr': true}),
 				'initialCommands': [],
 				'performedCommands': [
 					{
@@ -317,7 +317,7 @@ class ProcessApolloTerminalInputActionTest extends require('../../../../Lib/Test
 			},
 		});
 
-		// $B@TVO should implicitly fetch all output even though can_create_pq=false
+		// $B@TVO should implicitly fetch all output even though canCreatePq=false
 		$list.push({
 			'input': {
 				'cmdRequested': '$B@TVO',
@@ -326,7 +326,7 @@ class ProcessApolloTerminalInputActionTest extends require('../../../../Lib/Test
 			'output': {
 				'status': 'executed',
 				'sessionData': {
-					'can_create_pq': false,
+					'canCreatePq': false,
 				},
 				'calledCommands': [
 					{'cmd': '$B/@TVO'},
@@ -334,7 +334,7 @@ class ProcessApolloTerminalInputActionTest extends require('../../../../Lib/Test
 			},
 			'sessionInfo': {
 				'initialState': php.array_merge(GdsDirectDefaults.makeDefaultApolloState(),
-					{'has_pnr': true}),
+					{'hasPnr': true}),
 				'initialCommands': [],
 				'performedCommands': [
 					{
@@ -414,7 +414,7 @@ class ProcessApolloTerminalInputActionTest extends require('../../../../Lib/Test
 			'output': {
 				'status': 'executed',
 				'sessionData': {
-					'can_create_pq': false,
+					'canCreatePq': false,
 				},
 				'calledCommands': [
 					{
@@ -483,7 +483,7 @@ class ProcessApolloTerminalInputActionTest extends require('../../../../Lib/Test
 			},
 			'sessionInfo': {
 				'initialState': php.array_merge(GdsDirectDefaults.makeDefaultApolloState(),
-					{'has_pnr': true}),
+					{'hasPnr': true}),
 				'initialCommands': [
 					{
 						'cmd': 'FN1/1-3/6-12',
@@ -587,9 +587,9 @@ class ProcessApolloTerminalInputActionTest extends require('../../../../Lib/Test
 			'output': {
 				'status': 'executed',
 				'sessionData': {
-					'has_pnr': true,
-					'is_pnr_stored': true,
-					'record_locator': 'VMGD4U',
+					'hasPnr': true,
+					'isPnrStored': true,
+					'recordLocator': 'VMGD4U',
 				},
 				'calledCommands': [
 					{'cmd': 'PNR'},
@@ -597,7 +597,7 @@ class ProcessApolloTerminalInputActionTest extends require('../../../../Lib/Test
 			},
 			'sessionInfo': {
 				'initialState': php.array_merge(GdsDirectDefaults.makeDefaultApolloState(),
-					{'has_pnr': true}),
+					{'hasPnr': true}),
 				'initialCommands': [
 					{
 						'cmd': 'N:LIBERMANE/MARINA',
@@ -654,9 +654,9 @@ class ProcessApolloTerminalInputActionTest extends require('../../../../Lib/Test
 			'output': {
 				'status': 'executed',
 				'sessionData': {
-					'has_pnr': true,
-					'is_pnr_stored': true,
-					'record_locator': 'VSBR50',
+					'hasPnr': true,
+					'isPnrStored': true,
+					'recordLocator': 'VSBR50',
 				},
 				'calledCommands': [
 					{'cmd': 'PNR'},
@@ -664,7 +664,7 @@ class ProcessApolloTerminalInputActionTest extends require('../../../../Lib/Test
 			},
 			'sessionInfo': {
 				'initialState': php.array_merge(GdsDirectDefaults.makeDefaultApolloState(),
-					{'has_pnr': true}),
+					{'hasPnr': true}),
 				'initialCommands': [
 					{
 						'cmd': 'N:LIBERMANE/MARINA',
@@ -720,9 +720,9 @@ class ProcessApolloTerminalInputActionTest extends require('../../../../Lib/Test
 			'output': {
 				'status': 'executed',
 				'sessionData': {
-					'has_pnr': true,
-					'is_pnr_stored': true,
-					'record_locator': 'N5RJSM',
+					'hasPnr': true,
+					'isPnrStored': true,
+					'recordLocator': 'N5RJSM',
 				},
 				'calledCommands': [
 					{'cmd': 'F'},
@@ -809,9 +809,9 @@ class ProcessApolloTerminalInputActionTest extends require('../../../../Lib/Test
 			'output': {
 				'status': 'executed',
 				'sessionData': {
-					'has_pnr': true,
-					'is_pnr_stored': true,
-					'record_locator': 'MPLB32',
+					'hasPnr': true,
+					'isPnrStored': true,
+					'recordLocator': 'MPLB32',
 				},
 				'calledCommands': [
 					{'cmd': 'F'},
@@ -893,7 +893,7 @@ class ProcessApolloTerminalInputActionTest extends require('../../../../Lib/Test
 			},
 			'output': {
 				'status': 'executed',
-				'sessionData': {'has_pnr': true},
+				'sessionData': {'hasPnr': true},
 			},
 			'sessionInfo': {
 				'initialState': php.array_merge(GdsDirectDefaults.makeDefaultApolloState(), {'lead_creator_id': 2838}),
@@ -919,7 +919,7 @@ class ProcessApolloTerminalInputActionTest extends require('../../../../Lib/Test
 			},
 			'output': {
 				'status': 'forbidden',
-				'sessionData': {'has_pnr': true},
+				'sessionData': {'hasPnr': true},
 				'userMessages': [
 					'Forbidden command, cant change GDS Direct \"CREATED FOR\" remark on line 1',
 				],
@@ -964,14 +964,14 @@ class ProcessApolloTerminalInputActionTest extends require('../../../../Lib/Test
 			},
 			'output': {
 				'status': 'executed',
-				'sessionData': {'has_pnr': true, 'record_locator': 'LBWJ00'},
+				'sessionData': {'hasPnr': true, 'recordLocator': 'LBWJ00'},
 				'calledCommands': [
 					{'cmd': 'PNR'},
 				],
 			},
 			'sessionInfo': {
 				'initialState': php.array_merge(GdsDirectDefaults.makeDefaultApolloState(), {
-					'has_pnr': true, 'lead_creator_id': 2838,
+					'hasPnr': true, 'lead_creator_id': 2838,
 				}),
 				'initialCommands': [
 					{
@@ -1037,7 +1037,7 @@ class ProcessApolloTerminalInputActionTest extends require('../../../../Lib/Test
 			'output': {'status': 'executed'},
 			'sessionInfo': {
 				'initialState': php.array_merge(GdsDirectDefaults.makeDefaultApolloState(), {
-					'has_pnr': true, 'lead_creator_id': 2838,
+					'hasPnr': true, 'lead_creator_id': 2838,
 				}),
 				'initialCommands': [],
 				'initialSeatsTaken': [],
@@ -1066,7 +1066,7 @@ class ProcessApolloTerminalInputActionTest extends require('../../../../Lib/Test
 			'output': {'status': 'executed'},
 			'sessionInfo': {
 				'initialState': php.array_merge(GdsDirectDefaults.makeDefaultApolloState(), {
-					'has_pnr': true, 'lead_creator_id': 2838,
+					'hasPnr': true, 'lead_creator_id': 2838,
 				}),
 				'initialCommands': [],
 				'initialSeatsTaken': [
@@ -1125,7 +1125,7 @@ class ProcessApolloTerminalInputActionTest extends require('../../../../Lib/Test
 			'input': {'cmdRequested': 'MD'},
 			'output': {'status': 'executed'},
 			'sessionInfo': {
-				'initialState': php.array_merge(GdsDirectDefaults.makeDefaultApolloState(), {'has_pnr': true}),
+				'initialState': php.array_merge(GdsDirectDefaults.makeDefaultApolloState(), {'hasPnr': true}),
 				'initialCommands': [
 					{
 						'cmd': '$BBA',
@@ -1190,7 +1190,7 @@ class ProcessApolloTerminalInputActionTest extends require('../../../../Lib/Test
 			'input': {'cmdRequested': 'MD'},
 			'output': {'status': 'executed'},
 			'sessionInfo': {
-				'initialState': php.array_merge(GdsDirectDefaults.makeDefaultApolloState(), {'has_pnr': false}),
+				'initialState': php.array_merge(GdsDirectDefaults.makeDefaultApolloState(), {'hasPnr': false}),
 				'initialCommands': [
 					{
 						'cmd': 'F:BA0268/19DEC',
@@ -1218,7 +1218,7 @@ class ProcessApolloTerminalInputActionTest extends require('../../../../Lib/Test
 			'input': {'cmdRequested': 'MD'},
 			'output': {'status': 'executed'},
 			'sessionInfo': {
-				'initialState': php.array_merge(GdsDirectDefaults.makeDefaultApolloState(), {'has_pnr': false}),
+				'initialState': php.array_merge(GdsDirectDefaults.makeDefaultApolloState(), {'hasPnr': false}),
 				'initialCommands': [
 					{
 						'cmd': 'TI-RV/NALAX/DEBKK',
@@ -1291,7 +1291,7 @@ class ProcessApolloTerminalInputActionTest extends require('../../../../Lib/Test
 			'output': {'status': 'executed'},
 			'sessionInfo': {
 				'initialState': php.array_merge(GdsDirectDefaults.makeDefaultApolloState(), {
-					'has_pnr': true, 'lead_creator_id': 2838, 'area': 'B',
+					'hasPnr': true, 'lead_creator_id': 2838, 'area': 'B',
 				}),
 				'initialCommands': [],
 				'initialSeatsTaken': [
@@ -1367,7 +1367,7 @@ class ProcessApolloTerminalInputActionTest extends require('../../../../Lib/Test
 			},
 			'sessionInfo': {
 				'initialState': php.array_merge(GdsDirectDefaults.makeDefaultApolloState(), {
-					'has_pnr': true, 'lead_creator_id': 2838, 'area': 'B',
+					'hasPnr': true, 'lead_creator_id': 2838, 'area': 'B',
 				}),
 				'initialCommands': [
 					{
@@ -1414,7 +1414,7 @@ class ProcessApolloTerminalInputActionTest extends require('../../../../Lib/Test
 			},
 			'sessionInfo': {
 				'initialState': php.array_merge(GdsDirectDefaults.makeDefaultApolloState(), {
-					'has_pnr': true, 'lead_creator_id': 2838, 'area': 'B',
+					'hasPnr': true, 'lead_creator_id': 2838, 'area': 'B',
 				}),
 				'initialCommands': [],
 				'performedCommands': [
@@ -1460,7 +1460,7 @@ class ProcessApolloTerminalInputActionTest extends require('../../../../Lib/Test
 			},
 			'sessionInfo': {
 				'initialState': php.array_merge(GdsDirectDefaults.makeDefaultApolloState(), {
-					'has_pnr': true, 'lead_creator_id': 2838, 'area': 'B',
+					'hasPnr': true, 'lead_creator_id': 2838, 'area': 'B',
 				}),
 				'initialCommands': [],
 				'performedCommands': [
@@ -1493,7 +1493,7 @@ class ProcessApolloTerminalInputActionTest extends require('../../../../Lib/Test
 			},
 			'sessionInfo': {
 				'initialState': php.array_merge(GdsDirectDefaults.makeDefaultApolloState(), {
-					'has_pnr': true, 'area': 'A',
+					'hasPnr': true, 'area': 'A',
 				}),
 				'initialCommands': [],
 				'performedCommands': [
@@ -1554,7 +1554,7 @@ class ProcessApolloTerminalInputActionTest extends require('../../../../Lib/Test
 			'output': {'status': 'executed'},
 			'sessionInfo': {
 				'initialState': php.array_merge(GdsDirectDefaults.makeDefaultApolloState(), {
-					'has_pnr': true,
+					'hasPnr': true,
 					'agent_id': 5368,
 					'lead_creator_id': 5354,
 				}),
@@ -1614,7 +1614,7 @@ class ProcessApolloTerminalInputActionTest extends require('../../../../Lib/Test
 			},
 			'sessionInfo': {
 				'initialState': php.array_merge(GdsDirectDefaults.makeDefaultApolloState(), {
-					'has_pnr': true, 'area': 'A',
+					'hasPnr': true, 'area': 'A',
 				}),
 				'initialCommands': [
 					{
@@ -1721,7 +1721,7 @@ class ProcessApolloTerminalInputActionTest extends require('../../../../Lib/Test
 			},
 			'sessionInfo': {
 				'initialState': php.array_merge(GdsDirectDefaults.makeDefaultApolloState(), {
-					'has_pnr': true, 'area': 'A',
+					'hasPnr': true, 'area': 'A',
 				}),
 				'initialCommands': [
 					{
@@ -1831,7 +1831,7 @@ class ProcessApolloTerminalInputActionTest extends require('../../../../Lib/Test
 			},
 			'sessionInfo': {
 				'initialState': php.array_merge(GdsDirectDefaults.makeDefaultApolloState(), {
-					'has_pnr': true, 'area': 'A',
+					'hasPnr': true, 'area': 'A',
 				}),
 				'initialCommands': [
 					{
@@ -1940,7 +1940,7 @@ class ProcessApolloTerminalInputActionTest extends require('../../../../Lib/Test
 			},
 			'sessionInfo': {
 				'initialState': php.array_merge(GdsDirectDefaults.makeDefaultApolloState(), {
-					'has_pnr': false, 'area': 'A',
+					'hasPnr': false, 'area': 'A',
 				}),
 				'initialCommands': [
 					{
@@ -2036,7 +2036,7 @@ class ProcessApolloTerminalInputActionTest extends require('../../../../Lib/Test
 			},
 			'sessionInfo': {
 				'initialState': php.array_merge(GdsDirectDefaults.makeDefaultApolloState(), {
-					'has_pnr': false, 'agent_id': 8050,
+					'hasPnr': false, 'agent_id': 8050,
 				}),
 				'initialCommands': [],
 				'performedCommands': [
@@ -2103,7 +2103,7 @@ class ProcessApolloTerminalInputActionTest extends require('../../../../Lib/Test
 			},
 			'sessionInfo': {
 				'initialState': php.array_merge(GdsDirectDefaults.makeDefaultApolloState(), {
-					'has_pnr': true,
+					'hasPnr': true,
 				}),
 				'initialCommands': [],
 				'performedCommands': [
@@ -2193,7 +2193,7 @@ class ProcessApolloTerminalInputActionTest extends require('../../../../Lib/Test
 			},
 			'sessionInfo': {
 				'initialState': php.array_merge(GdsDirectDefaults.makeDefaultApolloState(), {
-					'has_pnr': true,
+					'hasPnr': true,
 				}),
 				'initialCommands': [],
 				'performedCommands': [
@@ -2244,7 +2244,7 @@ class ProcessApolloTerminalInputActionTest extends require('../../../../Lib/Test
 			},
 			'sessionInfo': {
 				'initialState': php.array_merge(GdsDirectDefaults.makeDefaultApolloState(), {
-					'has_pnr': true,
+					'hasPnr': true,
 				}),
 				'initialCommands': [
 					{
@@ -2368,7 +2368,7 @@ class ProcessApolloTerminalInputActionTest extends require('../../../../Lib/Test
 			},
 			'sessionInfo': {
 				'initialState': php.array_merge(GdsDirectDefaults.makeDefaultApolloState(), {
-					'has_pnr': true, 'agent_id': '1588',
+					'hasPnr': true, 'agent_id': '1588',
 				}),
 				'initialCommands': [],
 				'performedCommands': [
@@ -2413,7 +2413,7 @@ class ProcessApolloTerminalInputActionTest extends require('../../../../Lib/Test
 			},
 			'sessionInfo': {
 				'initialState': php.array_merge(GdsDirectDefaults.makeDefaultApolloState(), {
-					'has_pnr': true, 'agent_id': '1588',
+					'hasPnr': true, 'agent_id': '1588',
 				}),
 				'initialCommands': [
 					{
@@ -2506,7 +2506,7 @@ class ProcessApolloTerminalInputActionTest extends require('../../../../Lib/Test
 		});
 
 		// when you try searching PNR not being emulated to a PCC, you get "DUTY CODE
-		// NOT AUTH FOR CRT" error, should not set is_pnr_stored = true in such case
+		// NOT AUTH FOR CRT" error, should not set isPnrStored = true in such case
 		$list.push({
 			'input': {
 				'cmdRequested': 'PNR',
@@ -2521,7 +2521,7 @@ class ProcessApolloTerminalInputActionTest extends require('../../../../Lib/Test
 			},
 			'sessionInfo': {
 				'initialState': php.array_merge(GdsDirectDefaults.makeDefaultApolloState(), {
-					'is_pnr_stored': false, 'agent_id': '1588', 'lead_creator_id': '1588',
+					'isPnrStored': false, 'agent_id': '1588', 'lead_creator_id': '1588',
 					'lead_id': '8118936', 'pcc': '', 'area': 'E',
 				}),
 				'initialCommands': [
@@ -2983,9 +2983,9 @@ class ProcessApolloTerminalInputActionTest extends require('../../../../Lib/Test
 			'sessionInfo': {
 				'initialState': php.array_merge(GdsDirectDefaults.makeDefaultApolloState(), {
 					'agent_id': 346,
-					'has_pnr': true,
-					'is_pnr_stored': true,
-					'record_locator': 'XXNFVG',
+					'hasPnr': true,
+					'isPnrStored': true,
+					'recordLocator': 'XXNFVG',
 				}),
 				'initialCommands': [
 					{
@@ -3198,9 +3198,9 @@ class ProcessApolloTerminalInputActionTest extends require('../../../../Lib/Test
 			'sessionInfo': {
 				'initialState': php.array_merge(GdsDirectDefaults.makeDefaultApolloState(), {
 					'agent_id': 346,
-					'has_pnr': true,
-					'is_pnr_stored': true,
-					'record_locator': 'L8C0GW',
+					'hasPnr': true,
+					'isPnrStored': true,
+					'recordLocator': 'L8C0GW',
 				}),
 				'initialCommands': [
 					{
@@ -3416,10 +3416,10 @@ class ProcessApolloTerminalInputActionTest extends require('../../../../Lib/Test
 			'sessionInfo': {
 				'initialState': php.array_merge(GdsDirectDefaults.makeDefaultApolloState(), {
 					'agent_id': 8050,
-					'has_pnr': true,
-					'is_pnr_stored': true,
+					'hasPnr': true,
+					'isPnrStored': true,
 					'pcc': '2F3K',
-					'record_locator': 'PZWSV5',
+					'recordLocator': 'PZWSV5',
 				}),
 				'initialCommands': [],
 				'performedCommands': [
@@ -3568,10 +3568,10 @@ class ProcessApolloTerminalInputActionTest extends require('../../../../Lib/Test
 			'sessionInfo': {
 				'initialState': php.array_merge(GdsDirectDefaults.makeDefaultApolloState(), {
 					'agent_id': 8050,
-					'has_pnr': true,
-					'is_pnr_stored': true,
+					'hasPnr': true,
+					'isPnrStored': true,
 					'pcc': '2F3K',
-					'record_locator': 'PZWSV5',
+					'recordLocator': 'PZWSV5',
 				}),
 				'initialCommands': [],
 				'performedCommands': [
@@ -3720,10 +3720,10 @@ class ProcessApolloTerminalInputActionTest extends require('../../../../Lib/Test
 			'sessionInfo': {
 				'initialState': php.array_merge(GdsDirectDefaults.makeDefaultApolloState(), {
 					'agent_id': 8050,
-					'has_pnr': true,
-					'is_pnr_stored': true,
+					'hasPnr': true,
+					'isPnrStored': true,
 					'pcc': '2F3K',
-					'record_locator': 'XK7G76',
+					'recordLocator': 'XK7G76',
 				}),
 				'initialCommands': [
 					{
@@ -3870,10 +3870,10 @@ class ProcessApolloTerminalInputActionTest extends require('../../../../Lib/Test
 			'sessionInfo': {
 				'initialState': php.array_merge(GdsDirectDefaults.makeDefaultApolloState(), {
 					'agent_id': 8050,
-					'has_pnr': true,
-					'is_pnr_stored': true,
+					'hasPnr': true,
+					'isPnrStored': true,
 					'pcc': '2F3K',
-					'record_locator': 'Q5FHPH',
+					'recordLocator': 'Q5FHPH',
 				}),
 				'initialCommands': [],
 				'performedCommands': [
@@ -3930,7 +3930,7 @@ class ProcessApolloTerminalInputActionTest extends require('../../../../Lib/Test
 					    "duration": "1.634242412",
 					    "type": "issueTickets",
 					    "scrolledCmd": "HB2:FEX",
-					    "state": {"area":"A","pcc":"2F3K","record_locator":"Q5FHPH","can_create_pq":false,"pricing_cmd":null,"has_pnr":true,"is_pnr_stored":true,"cmdType":"issueTickets","scrolledCmd":"HB2:FEX"}
+					    "state": {"area":"A","pcc":"2F3K","recordLocator":"Q5FHPH","canCreatePq":false,"pricingCmd":null,"hasPnr":true,"isPnrStored":true,"cmdType":"issueTickets","scrolledCmd":"HB2:FEX"}
 					},
 					{
 					    "cmd": "*MPD",
@@ -4072,10 +4072,10 @@ class ProcessApolloTerminalInputActionTest extends require('../../../../Lib/Test
 			'sessionInfo': {
 				'initialState': php.array_merge(GdsDirectDefaults.makeDefaultApolloState(), {
 					'agent_id': 8050,
-					'has_pnr': true,
-					'is_pnr_stored': true,
+					'hasPnr': true,
+					'isPnrStored': true,
 					'pcc': '2F3K',
-					'record_locator': 'TM6S7O',
+					'recordLocator': 'TM6S7O',
 				}),
 				'initialCommands': [],
 				'performedCommands': [
@@ -4270,10 +4270,10 @@ class ProcessApolloTerminalInputActionTest extends require('../../../../Lib/Test
 			'sessionInfo': {
 				'initialState': php.array_merge(GdsDirectDefaults.makeDefaultApolloState(), {
 					'agent_id': 8050,
-					'has_pnr': true,
-					'is_pnr_stored': true,
+					'hasPnr': true,
+					'isPnrStored': true,
 					'pcc': '1O3K',
-					'record_locator': 'WT0BQY',
+					'recordLocator': 'WT0BQY',
 				}),
 				'initialCommands': [],
 				'performedCommands': [
@@ -4373,7 +4373,7 @@ class ProcessApolloTerminalInputActionTest extends require('../../../../Lib/Test
 			},
 			'sessionInfo': {
 				'initialState': php.array_merge(GdsDirectDefaults.makeDefaultApolloState(), {
-					'has_pnr': true, 'area': 'A',
+					'hasPnr': true, 'area': 'A',
 				}),
 				'initialCommands': [
 					{
@@ -4658,7 +4658,7 @@ class ProcessApolloTerminalInputActionTest extends require('../../../../Lib/Test
 			},
 			'sessionInfo': {
 				'initialState': php.array_merge(GdsDirectDefaults.makeDefaultApolloState(), {
-					'has_pnr': true, 'agent_id': '1588',
+					'hasPnr': true, 'agent_id': '1588',
 				}),
 				'initialCommands': [],
 				'performedCommands': [
@@ -4714,7 +4714,7 @@ class ProcessApolloTerminalInputActionTest extends require('../../../../Lib/Test
 			},
 			'sessionInfo': {
 				'initialState': php.array_merge(GdsDirectDefaults.makeDefaultApolloState(), {
-					'has_pnr': true, 'agent_id': '1588',
+					'hasPnr': true, 'agent_id': '1588',
 				}),
 				'initialCommands': [],
 				'performedCommands': [
@@ -4755,7 +4755,7 @@ class ProcessApolloTerminalInputActionTest extends require('../../../../Lib/Test
 			},
 			'sessionInfo': {
 				'initialState': php.array_merge(GdsDirectDefaults.makeDefaultApolloState(), {
-					'has_pnr': false, 'area': 'A',
+					'hasPnr': false, 'area': 'A',
 				}),
 				'initialCommands': [
 					{
@@ -4955,7 +4955,7 @@ class ProcessApolloTerminalInputActionTest extends require('../../../../Lib/Test
 			},
 			'sessionInfo': {
 				'initialState': php.array_merge(GdsDirectDefaults.makeDefaultApolloState(), {
-					'has_pnr': true, 'agent_id': '1588',
+					'hasPnr': true, 'agent_id': '1588',
 				}),
 				'initialCommands': [],
 				'performedCommands': [

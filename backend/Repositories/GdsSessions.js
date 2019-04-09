@@ -107,8 +107,8 @@ let makeDefaultAreaState = (gds) => ({
 		sabre: 'L3II',
 		amadeus: 'SFO1S2195',
 	}[gds] || null,
-	record_locator: '',
-	can_create_pq: false,
+	recordLocator: '',
+	canCreatePq: false,
 	scrolledCmd: null,
 	cmdCnt: 0,
 });

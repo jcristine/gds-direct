@@ -170,7 +170,7 @@ class ProcessSabreTerminalInputAction {
 		let $sessionData, $number, $flatCmd;
 
 		$sessionData = $cmdLog.getSessionData();
-		if ($sessionData['is_pnr_stored']) {
+		if ($sessionData['isPnrStored']) {
 			return null;
 		}
 		if (!($number = await this.getDkNumber($sessionData['pcc']))) {
@@ -378,7 +378,7 @@ class ProcessSabreTerminalInputAction {
 			$errors.push(Errors.getMessage(Errors.CMD_FORBIDDEN, {'cmd': $cmd, 'type': $type}));
 		}
 		if (php.in_array('deletePnrField', php.array_column($flatCmds, 'type'))) {
-			if (this.getSessionData()['is_pnr_stored'] &&
+			if (this.getSessionData()['isPnrStored'] &&
 				!$agent.canEditTicketedPnr()
 			) {
 				$pnr = await this.getCurrentPnr();
@@ -418,7 +418,7 @@ class ProcessSabreTerminalInputAction {
 	getEmptyAreasFromDbState() {
 		let $isOccupied, $occupiedRows, $occupiedAreas;
 
-		$isOccupied = ($row) => $row['has_pnr'];
+		$isOccupied = ($row) => $row['hasPnr'];
 		$occupiedRows = Fp.filter($isOccupied, this.stateful.getAreaRows());
 		$occupiedAreas = php.array_column($occupiedRows, 'area');
 		$occupiedAreas.push(this.getSessionData()['area']);
@@ -535,7 +535,7 @@ class ProcessSabreTerminalInputAction {
 		if (php.empty($emptyAreas = this.getEmptyAreas())) {
 			return {'errors': [Errors.getMessage(Errors.NO_FREE_AREAS)]};
 		}
-		if (!this.getSessionData()['is_pnr_stored'] && !$keepOriginal) {
+		if (!this.getSessionData()['isPnrStored'] && !$keepOriginal) {
 			await this.runCommand('I'); // ignore the itinerary it initial area
 		}
 		$area = $emptyAreas[0];

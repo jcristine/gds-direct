@@ -21,9 +21,9 @@ let makeRow = (cmdRec, session, cmdRqId, prevState) => {
 		duration: cmdRec.duration,
 		cmd_rq_id: cmdRqId,
 		area: prevState.area,
-		record_locator: prevState.record_locator,
-		has_pnr: prevState.has_pnr,
-		is_pnr_stored: prevState.is_pnr_stored,
+		record_locator: prevState.recordLocator,
+		has_pnr: prevState.hasPnr,
+		is_pnr_stored: prevState.isPnrStored,
 		output: cmdRec.output,
 	};
 };

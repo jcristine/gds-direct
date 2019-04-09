@@ -28,13 +28,13 @@ class SessionStateDs
         let $self;
 
         $self = new this();
-        $self.canCreatePq = $row['can_create_pq'] || '';
-        $self.pricingCmd = $row['pricing_cmd'] || '';
+        $self.canCreatePq = $row['canCreatePq'] || '';
+        $self.pricingCmd = $row['pricingCmd'] || '';
         $self.area = $row['area'] || '';
-        $self.recordLocator = $row['record_locator'] || '';
+        $self.recordLocator = $row['recordLocator'] || '';
         $self.pcc = $row['pcc'] || '';
-        $self.hasPnr = $row['has_pnr'] || false;
-        $self.isPnrStored = $row['is_pnr_stored'] || false;
+        $self.hasPnr = $row['hasPnr'] || false;
+        $self.isPnrStored = $row['isPnrStored'] || false;
         $self.cmdType = $row['cmdType'] || false;
         $self.gdsData = $row['gdsData'] || false;
         return $self;
@@ -43,13 +43,13 @@ class SessionStateDs
     toArray()  {
 
         return {
-            'can_create_pq': this.canCreatePq,
-            'pricing_cmd': this.pricingCmd,
+            'canCreatePq': this.canCreatePq,
+            'pricingCmd': this.pricingCmd,
             'area': this.area,
-            'record_locator': this.recordLocator,
+            'recordLocator': this.recordLocator,
             'pcc': this.pcc,
-            'has_pnr': this.hasPnr,
-            'is_pnr_stored': this.isPnrStored,
+            'hasPnr': this.hasPnr,
+            'isPnrStored': this.isPnrStored,
             'cmdType': this.cmdType,
             'gdsData': this.gdsData,
         };
