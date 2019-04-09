@@ -5269,7 +5269,7 @@
 					if (fn) {
 						fn();
 					}
-					scroll_to_bottom();
+					//scroll_to_bottom();
 					if ($.isFunction(settings.onResume)) {
 						settings.onResume.call(self);
 					}
@@ -5543,7 +5543,7 @@
 						var bottom = self.is_bottom();
 						command_line.insert(string, stay);
 						if (settings.scrollOnEcho || bottom) {
-							scroll_to_bottom();
+							//scroll_to_bottom();
 						}
 					});
 					return self;
@@ -5638,7 +5638,7 @@
 						} else if ($.isFunction(settings.onResize)) {
 							settings.onResize.call(self, self);
 						}
-						scroll_to_bottom();
+						//scroll_to_bottom();
 
 
 						return;
@@ -5660,7 +5660,7 @@
 						} else if ($.isFunction(settings.onResize)) {
 							settings.onResize.call(self, self);
 						}
-						scroll_to_bottom();
+						//scroll_to_bottom();
 					}
 				}
 				return self;
@@ -5676,7 +5676,7 @@
 					$.each(output_buffer, function(i, line) {
 						if (line === NEW_LINE) {
 							// I. Stinkevics CUSTOMIZATION
-							// Why? When Agents need to copy text from Firefox 
+							// Why? When Agents need to copy text from Firefox
 							// to Google Hangouts they need to preserve formating (line-breaks)
 							wrapper = $('<pre></pre>');
 						} else if ($.isFunction(line)) {
@@ -6397,7 +6397,7 @@
 							}
 						}
 					}
-					scroll_to_bottom();
+					//scroll_to_bottom();
 				},
 				commands: commands
 			});
