@@ -128,7 +128,7 @@ let dataToDom = (data, onCancel) => {
 				mkCmp('button[Cancel]', {
 					type: 'button',
 					onclick: () => {
-                        mcoForm.context.remove();
+						mcoForm.context.remove();
 
 						if (onCancel && typeof onCancel === 'function')
 						{

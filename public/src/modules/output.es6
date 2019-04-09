@@ -56,12 +56,7 @@ export default class Output
 
 		this.emptyLines 		= this.clearScreen ? rowsToLift() : rowsRemoveEmpty();
 
-		if (clearEmptyLines)
-		{
-			this.emptyLines = 0;
-		}
-
-		if (this.emptyLines < 0)
+		if (clearEmptyLines || this.emptyLines < 0)
 		{
 			this.emptyLines = 0;
 		}
