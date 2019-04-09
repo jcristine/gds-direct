@@ -58,7 +58,9 @@ class TestCase
 		let $key, $value;
 		if (php.is_array($expectation) && php.is_array($reality)) {
 			for ([$key, $value] of Object.entries($expectation)) {
-				this.assertArrayHasKey($key, $reality, $message);
+				if ($value !== undefined) {
+					this.assertArrayHasKey($key, $reality, $message);
+				}
 				this.assertArrayElementsSubsetInternal($value, $reality[$key], $message+'['+$key+']', $noExtraIndexes);
 			}
 			if ($noExtraIndexes && this._isList($expectation)) {
