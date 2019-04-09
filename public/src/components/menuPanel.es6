@@ -8,6 +8,7 @@ import {GdsAreas}  			    from "./menu/gdsAreas";
 import {LanguageButtons} 	    from "./menu/languageButtons";
 import {LogButton} 			    from "./popovers/logButton";
 import {Quotes}                 from "./menu/quotes";
+import {MenuHideButton}         from "./menu/hideMenu";
 let Help = require('./popovers/help.es6').default;
 
 export default class MenuPanel extends Component
@@ -65,13 +66,13 @@ export default class MenuPanel extends Component
 				])
 		);
 
-		// I hope nobody used it. It covered other buttons, that was annoying
-		//this.observe(
-		//	new Component('article.align-bottom')
-		//		.observe(
-		//			new MenuHideButton()
-		//		)
-		//);
+		// It covers other buttons, but Bill wants it
+		this.observe(
+			new Component('article.align-bottom')
+				.observe(
+					new MenuHideButton()
+				)
+		);
 
 		if (state.permissions)
 		{
