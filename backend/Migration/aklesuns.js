@@ -267,6 +267,12 @@ module.exports.migrations = [
 		].join('\n')),
 	},
 	{
+		name: 'GRECT/2019.04.09002-increase-cmd-col-size',
+		perform: (db) => db.query([
+			'ALTER TABLE terminal_command_log MODIFY COLUMN cmd TEXT;',
+		].join('\n')),
+	},
+	{
 		name: 'GRECT/2019.03.08008-re-create-terminal-buffering-table-again-2',
 		perform: (db) => db.query([
 			'CREATE TABLE `cmd_rq_log` (',
