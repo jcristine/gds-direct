@@ -161,7 +161,6 @@ interface IEmcResult {
 interface IRbsRunCommandResult {
     "status": "executed",
     "sessionInfo": {
-        "isAlive": true,
         "pcc": "2G55",
         "area": "A",
         "recordLocator": "",

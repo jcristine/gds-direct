@@ -18,7 +18,7 @@ class GdsDirectDefaults {
 			'gds': null,
 			'pcc': null,
 			'area': 'A',
-			'recordLocator': null,
+			'recordLocator': '',
 			'hasPnr': false,
 			'isPnrStored': false,
 			'canCreatePq': false,

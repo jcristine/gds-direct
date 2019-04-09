@@ -4,10 +4,6 @@
 const GetPqItineraryAction = require('./CanCreatePqRules.js');
 const Errors = require('../../../Rbs/GdsDirect/Errors.js');
 const SessionStateProcessor = require('../../../Rbs/GdsDirect/SessionStateProcessor/SessionStateProcessor.js');
-const CmsApolloTerminal = require('../../../Rbs/GdsDirect/GdsInterface/CmsApolloTerminal');
-const CmsSabreTerminal = require('../../../Rbs/GdsDirect/GdsInterface/CmsSabreTerminal');
-const CmsAmadeusTerminal = require('../../../Rbs/GdsDirect/GdsInterface/CmsAmadeusTerminal');
-const CmsGalileoTerminal = require('../../../Rbs/GdsDirect/GdsInterface/CmsGalileoTerminal');
 const php = require('../../../php.js');
 const CommonDataHelper = require("../CommonDataHelper");
 
@@ -17,56 +13,11 @@ const CommonDataHelper = require("../CommonDataHelper");
  */
 class SessionStateHelper
 {
-    /** make _new_ area data */
-    static makeNewAreaData($sessionData)  {
-        return {
-            'session_id': $sessionData['id'],
-            'area': $sessionData['area'],
-            'internal_token': $sessionData['internal_token'],
-            'pcc': $sessionData['pcc'],
-            'recordLocator': '',
-            'hasPnr': false,
-            'isPnrStored': false,
-            'dt': php.date('Y-m-d H:i:s'),
-        };
-    }
-
-    static makeAreaData($sessionData)  {
-        return {
-            'session_id': $sessionData['id'],
-            'area': $sessionData['area'],
-            'internal_token': $sessionData['internal_token'] || null,
-            'pcc': $sessionData['pcc'] || null,
-            'recordLocator': $sessionData['recordLocator'] || '',
-            'hasPnr': $sessionData['hasPnr'] || false,
-            'isPnrStored': $sessionData['isPnrStored'] || false,
-            'dt': php.date('Y-m-d H:i:s'),
-        };
-    }
-
-    static updateFromArea($sessionData, $areaData)  {
-        $sessionData = {...$sessionData};
-        $sessionData['area'] = $areaData['area'];
-        $sessionData['recordLocator'] = $areaData['recordLocator'];
-        $sessionData['hasPnr'] = $areaData['hasPnr'];
-        $sessionData['isPnrStored'] = $areaData['isPnrStored'];
-        $sessionData['pcc'] = $areaData['pcc'];
-        $sessionData['internal_token'] = $areaData['internal_token'] || null;
-        return $sessionData;
-    }
-
     static async makeSessionInfo($cmdLog, $leadData)  {
         let $row;
         $row = $cmdLog.getSessionData();
         return {
-            'isAlive': $row['is_active'] ? true : false,
-            'canCreatePq': $row['canCreatePq'] ? true : false,
-            'pricingCmd': $row['pricingCmd'] || '',
-            'pcc': $row['pcc'],
-            'area': $row['area'],
-            'recordLocator': $row['recordLocator'] || '',
-            'hasPnr': $row['hasPnr'] || false,
-            'isPnrStored': $row['isPnrStored'] || false,
+            ...$row,
             'canCreatePqErrors': await this.checkCanCreatePq($cmdLog, $leadData),
             'canCreatePqFor': await this.getPricedAgeGroups($cmdLog),
         };

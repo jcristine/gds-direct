@@ -56,15 +56,9 @@ export const UPDATE_CUR_GDS = props => {
 export const UPDATE_ALL_AREA_STATE = (gds, fullState) => {
 	let updateArea = (area) => UPDATE_CUR_GDS({
 		canCreatePqErrors: [],
-		area: area,
-		pcc: ((fullState.areas || {})[area] || {}).pcc,
-		canCreatePq: ((fullState.areas || {})[area] || {}).canCreatePq,
-		pricingCmd: ((fullState.areas || {})[area] || {}).pricingCmd,
-		scrolledCmd: ((fullState.areas || {})[area] || {}).scrolledCmd,
-		cmdCnt: ((fullState.areas || {})[area] || {}).cmdCnt,
-		hasPnr: ((fullState.areas || {})[area] || {}).hasPnr,
-		recordLocator: ((fullState.areas || {})[area] || {}).recordLocator,
+		...((fullState.areas || {})[area] || {}),
 		startNewSession: false,
+		area: area,
 		gdsName: gds,
 	});
 	for (let area of AREA_LIST) {

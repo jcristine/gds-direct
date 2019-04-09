@@ -3458,6 +3458,7 @@ class SessionStateProcessorTest extends require('../../../../../../backend/Trans
             ],
         });
         $sessionRecords.push({
+            'title': 'Galileo availability sell hasPnr',
             'initialState': GdsDirectDefaults.makeDefaultGalileoState(),
             'calledCommands': [
                 {
@@ -3487,6 +3488,7 @@ class SessionStateProcessorTest extends require('../../../../../../backend/Trans
             ],
         });
         $sessionRecords.push({
+            'title': 'Galileo ignore PNR',
             'initialState': GdsDirectDefaults.makeDefaultGalileoState(),
             'calledCommands': [
                 {

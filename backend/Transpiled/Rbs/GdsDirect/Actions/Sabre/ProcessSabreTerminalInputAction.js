@@ -468,62 +468,8 @@ class ProcessSabreTerminalInputAction {
 		}
 	}
 
-	async changeAreaImitated($area) {
-		let $calledCommands, $errorData, $sessionData, $sessionId, $areaRows, $isRequested, $row, $stopwatch,
-			$newSession, $sessionToken;
-
-		$calledCommands = [];
-
-		if (!php.in_array($area, this.constructor.AREA_LETTERS)) {
-			$errorData = {'area': $area, 'options': php.implode(', ', this.constructor.AREA_LETTERS)};
-			return {'errors': [Errors.getMessage(Errors.INVALID_AREA_LETTER, $errorData)]};
-		}
-		$sessionData = this.stateful.getSessionData();
-		if ($sessionData['area'] === $area) {
-			return {'errors': [Errors.getMessage(Errors.ALREADY_IN_THIS_AREA, {'area': $area})]};
-		}
-		$sessionId = this.getSessionData()['id'];
-		$areaRows = this.stateful.getAreaRows();
-		$isRequested = ($row) => $row['area'] === $area;
-		$row = ArrayUtil.getFirst(Fp.filter($isRequested, $areaRows));
-
-		if (!$row) {
-			$newSession = this.stateful.startNewGdsSession();
-			$sessionToken = $newSession.getSessionToken();
-			$row = SessionStateHelper.makeNewAreaData({
-				'id': $sessionId,
-				'area': $area,
-				'internal_token': $sessionToken,
-				'pcc': CmsSabreTerminal.START_PCC,
-			});
-		} else if (
-			$sessionData['internal_token'] === $row['internal_token'] &&
-			$sessionData['area'] != $area
-		) {
-			// area signed in same session using real command somehow
-			// will happen when we switch between real and imitated functionality
-			return this.changeAreaInGds($area);
-		}
-		this.stateful.getLog().updateGdsData($row, {
-			'type': 'changeArea',
-			'duration': $stopwatch.stop()['timeDelta'],
-		});
-
-		return {
-			'calledCommands': $calledCommands,
-			'userMessages': ['Successfully changed area to ' + $area],
-		};
-	}
-
 	async changeArea($area) {
-		let $useBuiltInAreas;
-
-		$useBuiltInAreas = this.constructor.USE_BUILT_IN_AREAS;
-		if ($useBuiltInAreas) {
-			return this.changeAreaInGds($area);
-		} else {
-			return this.changeAreaImitated($area);
-		}
+		return this.changeAreaInGds($area);
 	}
 
 	async emulateInFreeArea($pcc, $keepOriginal) {
