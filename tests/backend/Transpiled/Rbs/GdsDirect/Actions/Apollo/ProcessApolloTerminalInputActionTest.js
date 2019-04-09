@@ -5665,17 +5665,8 @@ class ProcessApolloTerminalInputActionTest extends require('../../../../Lib/Test
 			.execute($input['cmdRequested']);
 		$actualOutput['sessionData'] = stateful.getSessionData();
 
-		try {
-			this.assertArrayElementsSubset($output, $actualOutput, php.implode('; ', $actualOutput['userMessages'] || []) + php.PHP_EOL);
-			this.assertEquals(true, stateful.getGdsSession().wereAllCommandsUsed(), 'not all session commands were used');
-		} catch ($exc) {
-			let args = process.argv.slice(process.execArgv.length + 2);
-			if (args.includes('debug')) {
-				console.log('\nactual\n', JSON.stringify($actualOutput));
-			}
-			/** @debug */
-			throw $exc;
-		}
+		this.assertArrayElementsSubset($output, $actualOutput, php.implode('; ', $actualOutput['userMessages'] || []) + php.PHP_EOL);
+		this.assertEquals(true, stateful.getGdsSession().wereAllCommandsUsed(), 'not all session commands were used');
 	}
 
 	getTestMapping() {
