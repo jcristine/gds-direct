@@ -139,6 +139,8 @@ window.GdsDirectPlusParams = window.GdsDirectPlusParams || {
 	cmsUrl: null,
     auth: null,
 	codeUpdateInfo: null,
+	// set to true from console to test
+	disableAllRoles: false,
 };
 
 let cookies = {
