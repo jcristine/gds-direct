@@ -186,7 +186,6 @@ class ExchangeApolloTicketTest extends require('../Transpiled/Lib/TestCase.js')
 		testCases.push({
 			title: 'Forged example with masked FOP taken from command log',
 			input: {
-				emptyMask: ParseHbFex.EMPTY_MASK_EXAMPLE,
 				maskOutput: [
 					">$EX NAME UZUMAKI/NARUTO                     PSGR  1/ 1",
 					"FARE USD   901.40  TOTAL USD   983.30",
@@ -330,6 +329,173 @@ class ExchangeApolloTicketTest extends require('../Transpiled/Lib/TestCase.js')
 						"PENALTY USD;1.00........  COMM ON PENALTY;...........",
 					].join(''),
 				    "output": ">$MR       TOTAL ADD COLLECT   USD     0.01\n /F;..............................................\n><",
+				},
+			],
+		});
+
+		testCases.push({
+			title: 'Real example with masked FOP taken from *MCO1',
+			input: {
+				"maskOutput": [
+					">$EX NAME HERRERA/PEDRO PATAG                PSGR  1/ 1",
+					"FARE USD   386.00  TOTAL USD   594.43",
+					"TX1 USD   37.20 US   TX2 USD  171.23 XT   TX3               ",
+					"",
+					"EXCHANGE TKTS ;..............-;...  CPN ALL",
+					"TKT1;.............. CPN;.... TKT2;.............. CPN;....",
+					"COMM;.........  ORIG FOP;................... EVEN;.",
+					"",
+					"TTL VALUE OF EX TKTS USD;.............  ORIG BRD/OFF;...;...",
+					"TX1 USD;.......;..   TX2 USD;.......;..   TX3 USD;.......;..",
+					"ORIG ISS;...... ORIG DATE;....... ORIG IATA NBR;.........",
+					"ORIG TKT;..............-;...  ORIG INV NBR;.........",
+					"PENALTY USD;............  COMM ON PENALTY;...........",
+					"><"
+				].join("\n"),
+				fields: [
+					{"key":"exchangedTicketNumber","value":"","enabled":true},
+					{"key":"exchangedTicketExtension","value":"","enabled":true},
+					{"key":"ticketNumber1","value":"8515056203728","enabled":true},
+					{"key":"couponNumber1","value":"1","enabled":true},
+					{"key":"ticketNumber2","value":"","enabled":true},
+					{"key":"couponNumber2","value":"","enabled":true},
+					{"key":"commission","value":"0.00/","enabled":true},
+					{
+						"key": "originalFormOfPayment",
+						"value": "VIXXXXXXXXXXXX9910",
+						"enabled": true
+					},
+					{"key":"evenIndicator","value":"","enabled":true},
+					{
+						"key": "exchangedTicketTotalValue",
+						"value": "579.43",
+						"enabled": true
+					},
+					{"key":"originalBoardPoint","value":"","enabled":false},
+					{"key":"originalOffPoint","value":"","enabled":false},
+					{"key":"taxAmount1","value":"37.20","enabled":true},
+					{"key":"taxCode1","value":"us","enabled":true},
+					{"key":"taxAmount2","value":"171.23","enabled":true},
+					{"key":"taxCode2","value":"xt","enabled":true},
+					{"key":"taxAmount3","value":"","enabled":true},
+					{"key":"taxCode3","value":"","enabled":true},
+					{"key":"originalIssuePoint","value":"SFO","enabled":true},
+					{"key":"originalIssueDate","value":"08APR19","enabled":true},
+					{"key":"originalAgencyIata","value":"","enabled":false},
+					{"key":"originalTicketStar","value":"*","enabled":true},
+					{
+						"key": "originalTicketStarExtension",
+						"value": "",
+						"enabled": false
+					},
+					{"key":"originalInvoiceNumber","value":"","enabled":false},
+					{"key":"penaltyAmount","value":"0.00","enabled":true},
+					{"key":"commOnPenaltyAmount","value":"0.00/","enabled":true}
+				],
+			},
+			output: {
+				"actions": [
+					{
+						"type": "displayExchangeFareDifferenceMask",
+						"data": {
+							"fields": [{"key": "formOfPayment", "value": "", "enabled": true}],
+							"currency": "TOTAL ADD COLLECT   USD    15.00",
+							"amount": "USD",
+							"maskOutput": [
+								">$MR       TOTAL ADD COLLECT   USD    15.00",
+								" /F;..............................................",
+								""
+							].join("\n")
+						}
+					}
+				]
+			},
+			initialCommands: [
+				{
+				    "cmd": "HB:FEX",
+				    "output": [
+				        ">$EX NAME HERRERA/PEDRO PATAG                PSGR  1/ 1",
+				        "FARE USD   386.00  TOTAL USD   594.43",
+				        "TX1 USD   37.20 US   TX2 USD  171.23 XT   TX3               ",
+				        "",
+				        "EXCHANGE TKTS ;..............-;...  CPN ALL",
+				        "TKT1;.............. CPN;.... TKT2;.............. CPN;....",
+				        "COMM;.........  ORIG FOP;................... EVEN;.",
+				        "",
+				        "TTL VALUE OF EX TKTS USD;.............  ORIG BRD/OFF;...;...",
+				        "TX1 USD;.......;..   TX2 USD;.......;..   TX3 USD;.......;..",
+				        "ORIG ISS;...... ORIG DATE;....... ORIG IATA NBR;.........",
+				        "ORIG TKT;..............-;...  ORIG INV NBR;.........",
+				        "PENALTY USD;............  COMM ON PENALTY;...........",
+				        "><"
+				    ].join("\n"),
+				    "state": {"area":"A","pcc":"1O3K","record_locator":"NZK0K8","can_create_pq":false,"scrolledCmd":"HB:FEX","cmdCnt":32,"pricing_cmd":null,"has_pnr":true,"is_pnr_stored":true,"cmdType":"issueTickets"}
+				},
+				{
+				    "cmd": "*MPD",
+				    "output": [
+				        "*MPD             MISCELLANEOUS DOCUMENT LIST",
+				        "          NAME         DOCUMENT NBR   ISSUED       AMOUNT",
+				        ">*MCO1;   HERRERA/    8515056203728   08APR19          579.43 ",
+				        "END OF DISPLAY",
+				        "><"
+				    ].join("\n"),
+				},
+				{
+				    "cmd": "*MCO1",
+				    "output": [
+				        ">HHMCU1           *** MISC CHARGE ORDER ***",
+				        " PASSENGER NAME;HERRERA/PEDRO PATAG.....................",
+				        " TO;HX...................................... AT;HKG............",
+				        " VALID FOR;SPLIT...............................................",
+				        " TOUR CODE;............... RELATED TKT NBR;.............",
+				        " FOP;VI4111111111119910/OK.....................................",
+				        " EXP DATE;1222 APVL CODE;15014D COMM;0.00/... TAX;........-;..",
+				        " AMOUNT;579.43..-;USD EQUIV ;........-;... BSR;..........",
+				        " END BOX;......................................................",
+				        " REMARK1;..............................................",
+				        " REMARK2;......................................................",
+				        " VALIDATING CARRIER;HX                  ISSUE NOW;.",
+				        "><"
+				    ].join("\n"),
+				},
+			],
+			calledCommands: [
+				{
+				    "cmd": "*MPD",
+				    "output": [
+				        "*MPD             MISCELLANEOUS DOCUMENT LIST",
+				        "          NAME         DOCUMENT NBR   ISSUED       AMOUNT",
+				        ">*MCO1;   HERRERA/    8515056203728   08APR19          579.43 ",
+				        "END OF DISPLAY",
+				        "><"
+				    ].join("\n"),
+				},
+				{
+				    "cmd": "*MCO1",
+				    "output": [
+				        ">HHMCU1           *** MISC CHARGE ORDER ***",
+				        " PASSENGER NAME;HERRERA/PEDRO PATAG.....................",
+				        " TO;HX...................................... AT;HKG............",
+				        " VALID FOR;SPLIT...............................................",
+				        " TOUR CODE;............... RELATED TKT NBR;.............",
+				        " FOP;VI4111111111119910/OK.....................................",
+				        " EXP DATE;1222 APVL CODE;15014D COMM;0.00/... TAX;........-;..",
+				        " AMOUNT;579.43..-;USD EQUIV ;........-;... BSR;..........",
+				        " END BOX;......................................................",
+				        " REMARK1;..............................................",
+				        " REMARK2;......................................................",
+				        " VALIDATING CARRIER;HX                  ISSUE NOW;.",
+				        "><"
+				    ].join("\n"),
+				},
+				{
+				    "cmd": "$EX NAME HERRERA/PEDRO PATAG                PSGR  1/ 1         FARE USD   386.00  TOTAL USD   594.43                           TX1 USD   37.20 US   TX2 USD  171.23 XT   TX3                                                                                   EXCHANGE TKTS ;..............-;...  CPN ALL                     TKT1;8515056203728. CPN;1... TKT2;.............. CPN;....       COMM;0.00/....  ORIG FOP;VI4111111111119910. EVEN;.                                                                             TTL VALUE OF EX TKTS USD;579.43.......  ORIG BRD/OFF;...;...    TX1 USD;37.20..;US   TX2 USD;171.23.;XT   TX3 USD;.......;..    ORIG ISS;SFO... ORIG DATE;08APR19 ORIG IATA NBR;.........       ORIG TKT;*.............-;...  ORIG INV NBR;.........            PENALTY USD;0.00........  COMM ON PENALTY;0.00/......",
+				    "output": [
+				        ">$MR       TOTAL ADD COLLECT   USD    15.00",
+				        " /F;..............................................",
+				        "><"
+				    ].join("\n"),
 				},
 			],
 		});
