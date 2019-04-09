@@ -79,7 +79,7 @@
             emcSessionId: document.cookie
                   .split('; ')
                   .map(token => token.split('='))
-                  .filter(([k,v]) => k === 'emcSessionId')
+                  .filter(([k,v]) => k === 'emcSessionId' && v)
                   .map(([k,v]) => v)[0],
             model: document.querySelector('input[name="model"]').value || null,
               orderBy: document.querySelector('input[name="orderBy"]').value || null,
