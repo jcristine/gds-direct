@@ -54,9 +54,9 @@ class UpdateApolloStateAction {
 			|| !Fp.all($isEmpty, $sections);
 		if ($isValidPnrOutput || ApolloRepeatItineraryAction.detectPartialSuccessError($output)) {
 			// PNR data data was copied
-			$sessionData['record_locator'] = '';
-			$sessionData['is_pnr_stored'] = false;
-			$sessionData['has_pnr'] = true;
+			$sessionData['recordLocator'] = '';
+			$sessionData['isPnrStored'] = false;
+			$sessionData['hasPnr'] = true;
 		} else if (php.preg_match(/^\s*MODIFY\s*(><)?$/, $output)) {
 			// nothing happened
 		} else {
@@ -102,17 +102,17 @@ class UpdateApolloStateAction {
 		$type = $commandTypeData['type'];
 		$data = $commandTypeData['data'];
 		if (this.constructor.isValidPricing($cmd, $output)) {
-			$sessionState['can_create_pq'] = true;
-			$sessionState['pricing_cmd'] = $cmd !== '$BBQ01'
-				? $cmd : $sessionState['pricing_cmd'];
+			$sessionState['canCreatePq'] = true;
+			$sessionState['pricingCmd'] = $cmd !== '$BBQ01'
+				? $cmd : $sessionState['pricingCmd'];
 		} else if (!php.in_array($type, SessionStateProcessor.getCanCreatePqSafeTypes())) {
-			$sessionState['can_create_pq'] = false;
-			$sessionState['pricing_cmd'] = null;
+			$sessionState['canCreatePq'] = false;
+			$sessionState['pricingCmd'] = null;
 		}
 		if (php.preg_match(/^\s*\*\s*(><)?\s*$/, $output)) {
 			// "*" output is returned by most Apollo writing commands
 			// on success - this triggers PNR creation if context was empty
-			$sessionState['has_pnr'] = true;
+			$sessionState['hasPnr'] = true;
 		}
 		$recordLocator = '';
 		$openPnr = false;
@@ -167,11 +167,11 @@ class UpdateApolloStateAction {
 			if (ApolloBuildItineraryAction.isOutputValid($output) ||
 				ApolloAddCustomSegmentAction.parseAddSegmentOutput($clean)
 			) {
-				$sessionState['has_pnr'] = true;
+				$sessionState['hasPnr'] = true;
 			}
 		} else if ($type === 'sellFromLowFareSearch') {
 			if (php.preg_match(/^FS.*?\s+.*PRICING OPTION.*TOTAL AMOUNT\s*\d*\.?\d+[A-Z]{3}/s, $output)) {
-				$sessionState['has_pnr'] = true;
+				$sessionState['hasPnr'] = true;
 			}
 		} else if ($type === 'redisplayPnr') {
 			if (php.trim($clean) === 'INVLD') {
@@ -179,13 +179,13 @@ class UpdateApolloStateAction {
 			}
 		}
 		if ($openPnr) {
-			$sessionState['record_locator'] = $recordLocator;
-			$sessionState['has_pnr'] = true;
-			$sessionState['is_pnr_stored'] = true;
+			$sessionState['recordLocator'] = $recordLocator;
+			$sessionState['hasPnr'] = true;
+			$sessionState['isPnrStored'] = true;
 		} else if ($dropPnr) {
-			$sessionState['record_locator'] = '';
-			$sessionState['has_pnr'] = false;
-			$sessionState['is_pnr_stored'] = false;
+			$sessionState['recordLocator'] = '';
+			$sessionState['hasPnr'] = false;
+			$sessionState['isPnrStored'] = false;
 		}
 		return $sessionState;
 	}

@@ -6,6 +6,7 @@ let {NoContent, Conflict, NotFound, nonEmpty} = require('./../Utils/Rej.js');
 let Misc = require('./../Utils/Misc.js');
 let {chunk} = Misc;
 let Db = require('../Utils/Db.js');
+const sqlNow = require("../Utils/Misc").sqlNow;
 
 let TABLE = 'terminal_sessions';
 
@@ -49,7 +50,7 @@ exports.storeNew = async (context, gdsData) => {
 
 	let id = await Db.with(db => db.writeRows(TABLE, [{
 		gds: context.gds,
-		created_dt: new Date().toISOString(),
+		created_dt: sqlNow(),
 		agent_id: context.agentId,
 		lead_id: context.travelRequestId,
 		log_id: logId,
@@ -107,8 +108,8 @@ let makeDefaultAreaState = (gds) => ({
 		sabre: 'L3II',
 		amadeus: 'SFO1S2195',
 	}[gds] || null,
-	record_locator: '',
-	can_create_pq: false,
+	recordLocator: '',
+	canCreatePq: false,
 	scrolledCmd: null,
 	cmdCnt: 0,
 });
@@ -173,7 +174,7 @@ exports.remove = async (session) => {
 		client.hdel(keys.SESSION_TO_STATE, session.id),
 		client.zrem(keys.SESSION_ACTIVES, session.id),
 		Db.with(db => db.writeRows(TABLE, [{
-			id: session.id, closed_dt: new Date().toISOString(),
+			id: session.id, closed_dt: sqlNow(),
 		}])),
 	]);
 };

@@ -1,6 +1,7 @@
 
 let Db = require('../Utils/Db.js');
 const CommonDataHelper = require("../Transpiled/Rbs/GdsDirect/CommonDataHelper");
+const sqlNow = require("../Utils/Misc").sqlNow;
 const nonEmpty = require("../Utils/Rej").nonEmpty;
 
 let TABLE = 'terminal_command_log';
@@ -16,14 +17,14 @@ let makeRow = (cmdRec, session, cmdRqId, prevState) => {
 		gds: gds,
 		type: scrolledType || cmdRec.type,
 		is_mr: scrolledType && scrolledType !== cmdRec.type,
-		dt: new Date().toISOString(),
+		dt: sqlNow(),
 		cmd: cmdRec.cmd,
 		duration: cmdRec.duration,
 		cmd_rq_id: cmdRqId,
 		area: prevState.area,
-		record_locator: prevState.record_locator,
-		has_pnr: prevState.has_pnr,
-		is_pnr_stored: prevState.is_pnr_stored,
+		record_locator: prevState.recordLocator,
+		has_pnr: prevState.hasPnr,
+		is_pnr_stored: prevState.isPnrStored,
 		output: cmdRec.output,
 	};
 };

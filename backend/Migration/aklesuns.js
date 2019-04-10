@@ -1,11 +1,5 @@
 
-let Airports = require('../Repositories/Airports.js');
-
 let Emc = require('../LibWrappers/Emc.js');
-const Pccs = require("../Repositories/Pccs.js");
-const Airlines = require("../Repositories/Airlines");
-const BookingClasses = require("../Repositories/BookingClasses");
-const TicketDesignators = require("../Repositories/TicketDesignators");
 
 module.exports.migrations = [
 	{
@@ -270,6 +264,12 @@ module.exports.migrations = [
 			"  KEY `session_id` (`session_id`),",
 			"  KEY `gds_type_dt` (`gds`,`type`, `dt`)",
 			") ENGINE=InnoDB CHARSET=utf8",
+		].join('\n')),
+	},
+	{
+		name: 'GRECT/2019.04.09002-increase-cmd-col-size',
+		perform: (db) => db.query([
+			'ALTER TABLE terminal_command_log MODIFY COLUMN cmd TEXT;',
 		].join('\n')),
 	},
 	{

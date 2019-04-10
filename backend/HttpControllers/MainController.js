@@ -109,6 +109,9 @@ let withAuth = (userAction) => (req, res) => {
 			.then(async emcData => {
 				if (rqBody.isForeignProjectEmcId) {
 					emcData = await normalizeForeignProjectEmcData(emcData).catch(exc => emcData);
+				} else if (rqBody.disableAllRoles) {
+					// for debug - to test app behaviour for simple agents
+					emcData.data.user.roles = [];
 				}
 				rqBody = normalizeRqBody(rqBody, emcData);
 				return Promise.resolve()

@@ -831,6 +831,29 @@ class CommandParserTest extends require('../../../../../../backend/Transpiled/Li
                 ],
             },
         ]);
+        $list.push(['HHMCO', {type: 'requestMcoMask'}]);
+        $list.push(["HHMCU1.         *** MISC CHARGE ORDER ***                       PASSENGER NAME;HERRERA/PEDRO PATAG.....................         TO;HX...................................... AT;HKG............  VALID FOR;SPLIT...............................................  TOUR CODE;............... RELATED TKT NBR;.............         FOP;VIXXXXXXXXXXXX9910/OK.....................................  EXP DATE;1222 APVL CODE;15014D COMM;0.00/... TAX;........-;..   AMOUNT;579.43..-;USD EQUIV ;........-;... BSR;..........        END BOX;......................................................  REMARK1;..............................................          REMARK2;......................................................  VALIDATING CARRIER;HX                  ISSUE NOW;Y", {
+            type: 'submitMcoMask',
+        }]);
+        $list.push(['HB:FEX', {type: 'issueTickets'}]); // request exchange mask
+        $list.push(['HB:FEX01234567890123', {type: 'issueTickets'}]); // exchange with pre-filled original ticket data
+        $list.push(['HB:FEX01234567890123/PT', {type: 'issueTickets'}]);
+        $list.push(['HB:', {type: 'issueTickets'}]); // issue tickets from all ATFQ-s
+        $list.push(['HB2:', {type: 'issueTickets'}]); // issue tickets from ATFQ #2
+        $list.push(['HB2|3:', {type: 'issueTickets'}]); // issue tickets from ATFQ #2 and #3
+        $list.push(['HB:F|*1234:', {type: 'issueTickets'}]); // with credit card approval code
+        $list.push(['HB:F|OK:', {type: 'issueTickets'}]);
+        $list.push(['HB:**-SMITH:', {type: 'issueTickets'}]); // by name
+        $list.push(['HB:FCA57100000000000|D1212:', {type: 'issueTickets'}]); // WITH CREDIT CARD FOP
+        $list.push(['*MPD', {type: 'mcoList'}]);
+        $list.push(['*MCO1', {type: 'storedMcoMask'}]);
+        $list.push(['*MCO2', {type: 'storedMcoMask'}]);
+        $list.push(["$EX NAME HERRERA/PEDRO PATAG                PSGR  1/ 1         FARE USD   386.00  TOTAL USD   594.43                           TX1 USD   37.20 US   TX2 USD  171.23 XT   TX3                                                                                   EXCHANGE TKTS ;..............-;...  CPN ALL                     TKT1;8515056203728. CPN;1... TKT2;.............. CPN;....       COMM;0.00/....  ORIG FOP;VIXXXXXXXXXXXX9910. EVEN;.                                                                             TTL VALUE OF EX TKTS USD;579.43.......  ORIG BRD/OFF;...;...    TX1 USD;37.20..;US   TX2 USD;171.23.;XT   TX3 USD;.......;..    ORIG ISS;SFO... ORIG DATE;08APR19 ORIG IATA NBR;.........       ORIG TKT;*.............-;...  ORIG INV NBR;.........            PENALTY USD;0.00........  COMM ON PENALTY;0.00/......", {
+            type: 'exchangeTicketMask',
+        }]);
+        $list.push(["$MR       TOTAL ADD COLLECT   USD    15.00                      /F;CK............................................", {
+            type: 'confirmExchangeFareDifferenceMask',
+        }]);
         return $list;
     }
 

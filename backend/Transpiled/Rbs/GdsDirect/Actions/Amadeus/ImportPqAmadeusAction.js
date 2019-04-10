@@ -135,9 +135,9 @@ class ImportPqAmadeusAction extends AbstractGdsAction {
 							gds: 'amadeus',
 							area: 'A',
 							pcc: 'SFO1S2195',
-							record_locator: null,
-							has_pnr: false,
-							is_pnr_stored: false,
+							recordLocator: null,
+							hasPnr: false,
+							isPnrStored: false,
 						}
 					},
 				},

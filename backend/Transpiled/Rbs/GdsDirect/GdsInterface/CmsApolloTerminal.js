@@ -3,7 +3,6 @@
 
 const StringUtil = require('../../../Lib/Utils/StringUtil.js');
 const Errors = require('../../../Rbs/GdsDirect/Errors.js');
-const SessionStateProcessor = require('../../../Rbs/GdsDirect/SessionStateProcessor/SessionStateProcessor.js');
 const CommandParser = require('../../../Gds/Parsers/Apollo/CommandParser.js');
 const php = require('../../../php');
 
@@ -114,23 +113,6 @@ class CmsApolloTerminal
 
     static isScrollingAvailable($dumpPage)  {
 		return $dumpPage.endsWith(')><');
-    }
-
-    canAffectPnr($cmd, $output)  {
-        let $stateSafeCmdTypes, $cmdParsed, $mods, $unknownFirstMod, $unsafeBase;
-        $stateSafeCmdTypes = SessionStateProcessor.$nonAffectingTypes;
-        $cmdParsed = CommandParser.parse($cmd);
-        if (php.in_array($cmdParsed['type'], $stateSafeCmdTypes)) {
-            return false;
-        } else if ($cmdParsed['type'] === 'priceItinerary') {
-            $mods = $cmdParsed['data']['pricingModifiers'];
-            $unknownFirstMod = $mods.length > 0 && $mods[0]['type'] !== null;
-            $unsafeBase = StringUtil.startsWith($cmd, '$BBQ')
-                || StringUtil.startsWith($cmd, '$BB0');
-            return $unsafeBase || $unknownFirstMod;
-        } else {
-            return true;
-        }
     }
 
     static trimScrollingIndicator($dumpPage)  {

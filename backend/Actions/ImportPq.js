@@ -57,7 +57,7 @@ let ImportPq = async ({stateful, leadData, fetchOptionalFields = true}) => {
 	let withRbsPqCopy = async (action) => {
 		let full = stateful.getFullState();
 		let areaState = full.areas[full.area] || {};
-		let pricingCmd = areaState.pricing_cmd;
+		let pricingCmd = areaState.pricingCmd;
 		let pcc = areaState.pcc;
 		let pnr = await getPnr(stateful);
 		let gdsData = await RbsClient.startSession({gds, agentId});

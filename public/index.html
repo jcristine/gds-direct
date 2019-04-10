@@ -83,9 +83,11 @@
 	}
 </script>
 
-<button onclick="window.testMultiThreading()">Test Multi-threading</button>
-<button onclick="window.updateHighlightRulesFromProd()">Update Highlight Rules From Prod</button>
-<div class="multi-threading-test-output" style="background-color: white; color: black; min-height: 200px;"></div>
+<div style="display: none">
+	<button onclick="window.testMultiThreading()">Test Multi-threading</button>
+	<button onclick="window.updateHighlightRulesFromProd()">Update Highlight Rules From Prod</button>
+	<div class="multi-threading-test-output" style="background-color: white; color: black; min-height: 200px;"></div>
+</div>
 <script>
 	window.testMultiThreading = () => {
 		let startedAt = window.performance.now();

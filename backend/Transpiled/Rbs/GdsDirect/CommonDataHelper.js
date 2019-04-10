@@ -4,7 +4,6 @@ const StringUtil = require('../../Lib/Utils/StringUtil.js');
 const Errors = require("./Errors");
 
 let php = require('../../php.js');
-const CmsClient = require("../../../IqClients/CmsClient");
 
 const ApoCmdParser = require('../../Gds/Parsers/Apollo/CommandParser.js');
 const GalCmdParser = require('../../Gds/Parsers/Galileo/CommandParser.js');
@@ -61,7 +60,7 @@ class CommonDataHelper {
 	static async shouldAddCreationRemark($msg, $cmdLog) {
 		let $sessionData, $commands, $cmdRecord, $parsed, $flatCmds, $flatCmd;
 		$sessionData = $cmdLog.getSessionData();
-		if ($sessionData['is_pnr_stored']) {
+		if ($sessionData['isPnrStored']) {
 			return false;
 		}
 		$commands = await $cmdLog.getCurrentPnrCommands();

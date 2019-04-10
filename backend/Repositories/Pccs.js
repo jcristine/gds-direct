@@ -3,6 +3,7 @@ const {getConfig} = require('../Config.js');
 
 let Db = require('../Utils/Db.js');
 let php = require('../Transpiled/php.js');
+const sqlNow = require("../Utils/Misc").sqlNow;
 const Conflict = require("../Utils/Rej").Conflict;
 const NotFound = require("../Utils/Rej").NotFound;
 
@@ -23,7 +24,7 @@ let normalizeRow = ($pcc) => {
 		'point_of_sale_city': $pcc['point_of_sale_city'],
 		'default_currency': null, // RBS took it from 'getConsolidatorAll'
 		'ticket_mask_pcc': $pcc['ticket_mask_pcc'],
-		'updated_dt': new Date().toISOString(),
+		'updated_dt': sqlNow(),
 	};
 };
 

@@ -31,16 +31,9 @@ let self = {
 let makeBriefSessionInfo = (fullState) => {
 	let areaState = fullState.areas[fullState.area] || {};
 	return ({
-		canCreatePq: areaState.can_create_pq ? true : false,
-		pricingCmd: areaState.pricing_cmd || '',
-		canCreatePqErrors: areaState.can_create_pq
+		...areaState,
+		canCreatePqErrors: areaState.canCreatePq
 			? [] : ['No recent valid pricing'],
-		area: areaState.area || '',
-		pcc: areaState.pcc || '',
-		hasPnr: areaState.has_pnr ? true : false,
-		recordLocator: areaState.record_locator || '',
-		scrolledCmd: areaState.scrolledCmd || null,
-		cmdCnt: areaState.cmdCnt || 0,
 	});
 };
 

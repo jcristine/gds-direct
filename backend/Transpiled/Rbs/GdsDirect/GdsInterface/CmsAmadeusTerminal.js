@@ -1,7 +1,6 @@
 // namespace Rbs\GdsDirect\GdsInterface;
 
 const Fp = require('../../../Lib/Utils/Fp.js');
-const SessionStateProcessor = require('../../../Rbs/GdsDirect/SessionStateProcessor/SessionStateProcessor.js');
 const CommandParser = require('../../../Gds/Parsers/Amadeus/CommandParser.js');
 const php = require('../../../php.js');
 const Errors = require('../../../Rbs/GdsDirect/Errors.js');
@@ -9,8 +8,6 @@ const AmadeusReservationParser = require('../../../Gds/Parsers/Amadeus/Pnr/PnrPa
 const PagingHelper = require('../../../../GdsHelpers/AmadeusUtils.js');
 
 var require = require('../../../translib.js').stubRequire;
-
-const AmadeusPnr = require('../../../Rbs/TravelDs/AmadeusPnr.js');
 
 class CmsAmadeusTerminal {
 	async joinRtMdrs($mdrs) {
@@ -141,21 +138,6 @@ class CmsAmadeusTerminal {
 			}
 		}
 		return $errors;
-	}
-
-	canAffectPnr($cmd, $output) {
-		let $stateSafeCmdTypes, $cmdParsed, $stateSafeBaseCmds;
-
-		$stateSafeCmdTypes = SessionStateProcessor.$nonAffectingTypes;
-		$cmdParsed = CommandParser.parse($cmd);
-		if (php.in_array($cmdParsed['type'], $stateSafeCmdTypes)) {
-			return false;
-		} else if ($cmdParsed['type'] === 'priceItinerary') {
-			$stateSafeBaseCmds = ['FXA', 'FXX', 'FXL'];
-			return !php.in_array($cmdParsed['data']['baseCmd'], $stateSafeBaseCmds);
-		} else {
-			return true;
-		}
 	}
 
 	decodeCmsInput($cmd) {

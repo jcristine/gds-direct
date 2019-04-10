@@ -161,7 +161,6 @@ interface IEmcResult {
 interface IRbsRunCommandResult {
     "status": "executed",
     "sessionInfo": {
-        "isAlive": true,
         "pcc": "2G55",
         "area": "A",
         "recordLocator": "",
@@ -528,13 +527,13 @@ interface ITestEvent {
 type EAreaLetter = 'A' | 'B' | 'C' | 'D' | 'E' | 'F';
 
 interface IAreaState {
-    can_create_pq: string,
+    canCreatePq: string,
     area: EAreaLetter,
-    record_locator: string,
+    recordLocator: string,
     pcc: string,
     lead_creator_id: string,
-    is_pnr_stored: string,
-    has_pnr: string,
+    isPnrStored: string,
+    hasPnr: string,
 }
 
 type IFullSessionState = IAreaState & {

@@ -32,11 +32,6 @@ class UpdateAmadeusStateAction
         return !$isErrorOutput && $pricedCorrectly;
     }
 
-    static getNonAffectingCmdTypes()  {
-
-        return SessionStateProcessor.$nonAffectingTypes;
-    }
-
     static isPnrListOutput($output)  {
 
         return PnrSearchParser.parse($output)['success']

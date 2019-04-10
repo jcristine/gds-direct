@@ -146,7 +146,7 @@ class ProcessAmadeusTerminalInputAction {
 
 		$cmdLog = this.stateful.getLog();
 		$sessionData = $cmdLog.getSessionData();
-		if (!$sessionData['is_pnr_stored']) {
+		if (!$sessionData['isPnrStored']) {
 			$remarkCmd = 'RM' + await CommonDataHelper.createCredentialMessage(this.stateful);
 
 			$flattenCmd = ($cmd) => {
@@ -168,7 +168,7 @@ class ProcessAmadeusTerminalInputAction {
 
 		$cmdLog = this.stateful.getLog();
 		$sessionData = $cmdLog.getSessionData();
-		if (!$sessionData['is_pnr_stored']) {
+		if (!$sessionData['isPnrStored']) {
 			$performedCmds = php.array_column(await $cmdLog.getCurrentPnrCommands(), 'cmd');
 			$msg = 'CREATED IN GDS DIRECT BY ' + php.strtoupper(this.getAgent().getLogin());
 			$cmd = 'UHP\/' + $msg;
@@ -405,7 +405,7 @@ class ProcessAmadeusTerminalInputAction {
 		if (php.empty($emptyAreas = this.getEmptyAreasFromDbState())) {
 			return {'errors': [Errors.getMessage(Errors.NO_FREE_AREAS)]};
 		}
-		if (!this.getSessionData()['is_pnr_stored'] && !$aliasData['keepOriginal'] && $segmentStatus !== 'GK') {
+		if (!this.getSessionData()['isPnrStored'] && !$aliasData['keepOriginal'] && $segmentStatus !== 'GK') {
 			await this.runCommand('IG'); // ignore the itinerary it initial area
 		}
 		$area = $emptyAreas[0];
@@ -656,7 +656,7 @@ class ProcessAmadeusTerminalInputAction {
 	getEmptyAreasFromDbState() {
 		let $isOccupied, $occupiedRows, $occupiedAreas;
 
-		$isOccupied = ($row) => $row['has_pnr'];
+		$isOccupied = ($row) => $row['hasPnr'];
 		$occupiedRows = Fp.filter($isOccupied, this.stateful.getAreaRows());
 		$occupiedAreas = php.array_column($occupiedRows, 'area');
 		$occupiedAreas.push(this.getSessionData()['area']);
@@ -673,7 +673,7 @@ class ProcessAmadeusTerminalInputAction {
 		}
 
 		// check that there is no PNR in session to match GDS behaviour
-		if (this.stateful.getSessionData().has_pnr) {
+		if (this.stateful.getSessionData().hasPnr) {
 			return {'errors': [Errors.getMessage(Errors.LEAVE_PNR_CONTEXT, {'pcc': $pcc})]};
 		}
 
@@ -855,7 +855,7 @@ class ProcessAmadeusTerminalInputAction {
 			$errors.push(Errors.getMessage(Errors.CMD_FORBIDDEN, {'cmd': $cmd, 'type': $type}));
 		}
 		if ($type == 'deletePnrField' || $type == 'deletePnr') {
-			if (this.stateful.getSessionData()['is_pnr_stored'] &&
+			if (this.stateful.getSessionData()['isPnrStored'] &&
 				!$agent.canEditTicketedPnr()
 			) {
 				$pnr = await this.getCurrentPnr();
@@ -874,7 +874,7 @@ class ProcessAmadeusTerminalInputAction {
 				}
 			}
 		}
-		if (this.getSessionData()['is_pnr_stored']) {
+		if (this.getSessionData()['isPnrStored']) {
 			for ($flatCmd of Object.values($flatCmds)) {
 				if ($flatCmd['type'] === 'changePnrField') {
 					if (await this.isGdRemarkLine($flatCmd['data']['majorNum'])) {
@@ -1023,9 +1023,9 @@ class ProcessAmadeusTerminalInputAction {
 		];
 		for ($letter of Object.values(this.AREA_LETTERS)) {
 			if (php.isset($areas[$letter])) {
-				if ($areas[$letter]['is_pnr_stored']) {
+				if ($areas[$letter]['isPnrStored']) {
 					$status = 'PNR MODIFY';
-				} else if ($areas[$letter]['has_pnr']) {
+				} else if ($areas[$letter]['hasPnr']) {
 					$status = 'PNR CREATE';
 				} else {
 					$status = 'SIGNED';

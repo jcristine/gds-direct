@@ -3,13 +3,10 @@
 
 const TSabreSavePnr = require('../../../Rbs/GdsAction/Traits/TSabreSavePnr.js');
 const Errors = require('../../../Rbs/GdsDirect/Errors.js');
-const SessionStateProcessor = require('../../../Rbs/GdsDirect/SessionStateProcessor/SessionStateProcessor.js');
 const CommandParser = require('../../../Gds/Parsers/Sabre/CommandParser.js');
 const php = require('../../../php.js');
 
 var require = require('../../../translib.js').stubRequire;
-
-const ImportSabrePnrFormatAdapter = require('../../../Rbs/Process/Sabre/ImportPnr/ImportSabrePnrFormatAdapter.js');
 
 class CmsSabreTerminal
 {
@@ -106,28 +103,6 @@ class CmsSabreTerminal
         // we always get full text in our current Sabre setup
         // otherwise a "¥" at the end of output would mean that there is more
         return false;
-    }
-
-    canAffectPnr($cmd, $output)  {
-        let $stateSafeCmdTypes, $cmdParsed, $usedMods, $safeMods, $unsafeMods;
-
-        $stateSafeCmdTypes = SessionStateProcessor.$nonAffectingTypes;
-        $cmdParsed = CommandParser.parse($cmd);
-        if (php.in_array($cmdParsed['type'], $stateSafeCmdTypes)) {
-            return false;
-        } else if ($cmdParsed['type'] === 'priceItinerary') {
-            $usedMods = php.array_column($cmdParsed['data']['pricingModifiers'], 'type');
-            $safeMods = [
-                // known unsafe types: 'createPriceQuote', 'lowestFareAndRebook'
-                'fareType', 'names', 'ptc', 'segments', 'markup', 'commission',
-                'validatingCarrier', 'governingCarrier', 'currency', 'accountCode',
-                'sideTrip', 'lowestFare', 'lowestFareIgnoringAvailability',
-            ];
-            $unsafeMods = php.array_diff($usedMods, $safeMods);
-            return $unsafeMods ? true : false;
-        } else {
-            return true;
-        }
     }
 
     decodeCmsInput($cmd)  {

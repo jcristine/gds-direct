@@ -73,7 +73,7 @@ let CmdLog = ({
 		},
 		getSessionData: getSessionData,
 		getCurrentPnrCommands: async () => {
-			if (!getSessionData().has_pnr) {
+			if (!getSessionData().hasPnr) {
 				return [];
 			}
 			// TODO: filter them in SQL to make sure 5K logs won't affect response time
@@ -83,7 +83,7 @@ let CmdLog = ({
 				if (cmdRec.area === fullState.area) {
 					matched.unshift(cmdRec);
 					let samePnr = !cmdRec.record_locator
-						|| cmdRec.record_locator === getSessionData().record_locator;
+						|| cmdRec.record_locator === getSessionData().recordLocator;
 					if (!cmdRec.has_pnr || !samePnr) {
 						break;
 					}

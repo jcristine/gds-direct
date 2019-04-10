@@ -3,6 +3,7 @@ let aklesuns = require('../Migration/aklesuns.js');
 let Db = require('../Utils/Db.js');
 let {getClient, keys} = require('../LibWrappers/Redis.js');
 let Diag = require('../LibWrappers/Diag.js');
+const sqlNow = require("../Utils/Misc").sqlNow;
 const InternalServerError = require("../Utils/Rej").InternalServerError;
 let {getConfig} = require('../Config.js');
 
@@ -32,7 +33,7 @@ let Migration = () => {
 					.then(result =>
 						db.writeRows(TABLE_NAME, [{
 							name: name,
-							dt: new Date().toISOString(),
+							dt: sqlNow(),
 						}]).then(writeResult => {
 							log('Executed migration #' + name, result);
 							return result;

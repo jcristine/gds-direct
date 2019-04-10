@@ -1,6 +1,7 @@
 
 let {getConfig} = require('../Config.js');
 let Db = require('../Utils/Db.js');
+const sqlNow = require("../Utils/Misc").sqlNow;
 const iqJson = require("../Utils/Misc").iqJson;
 
 let TABLE = 'airlines';
@@ -10,7 +11,7 @@ let normalizeRow = ($row) => {
 		iata_code: $row['code_en'],
 		name: $row['name_en'],
 		hub: $row['code_hub'],
-		updated_dt: new Date().toISOString(),
+		updated_dt: sqlNow(),
 	};
 };
 
