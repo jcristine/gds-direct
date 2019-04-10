@@ -170,3 +170,14 @@ exports.iqJson = async ({url, credentials, functionName, serviceName, params}) =
 			return Promise.resolve(resp);
 		}
 	});
+
+/**
+ * @return string = '2019-04-10 14:02:13'
+ * use this when writing to mysql DATETIME since '2019-04-10T14:02:13Z'
+ * is not a valid date string since recent MariaDB versions
+ */
+exports.sqlNow = () => {
+	return new Date().toISOString()
+		.replace('T', ' ')
+		.replace('Z', '');
+};

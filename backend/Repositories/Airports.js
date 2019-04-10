@@ -1,6 +1,7 @@
 
 let {getConfig} = require('../Config.js');
 let Db = require('../Utils/Db.js');
+const sqlNow = require("../Utils/Misc").sqlNow;
 const iqJson = require("../Utils/Misc").iqJson;
 let {strval, implode, array_column} = require('../Transpiled/php.js');
 
@@ -20,7 +21,7 @@ let normalizeRow = ($row) => ({
 	lat: $row['airport_latitude'],
 	lon: $row['airport_longitude'],
 	tz: strval($row['airport_timezone']),
-	updated_dt: new Date().toISOString(),
+	updated_dt: sqlNow(),
 	alternatives: implode(',', array_column($row['alternatives'] || [], 'code_en')),
 });
 

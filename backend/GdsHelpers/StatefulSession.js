@@ -13,6 +13,7 @@ const Agent = require('../DataFormats/Wrappers/Agent.js');
 const CmdLog = require('./CmdLog.js');
 const CmsClient = require("../IqClients/CmsClient");
 const Agents = require("../Repositories/Agents");
+const sqlNow = require("../Utils/Misc").sqlNow;
 
 let GdsSession = (session) => {
 	let gds = session.context.gds;
@@ -99,7 +100,7 @@ let StatefulSession = ({
 			});
 		},
 		handleFsUsage: () => Db.with(db => db.writeRows('counted_fs_usages', [{
-			agent_id: emcUser.id, dt: new Date().toISOString(),
+			agent_id: emcUser.id, dt: sqlNow(),
 		}])),
 		getSessionData: getSessionData,
 		getLeadId: () => session.context.travelRequestId,
