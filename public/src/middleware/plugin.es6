@@ -297,7 +297,9 @@ export default class TerminalPlugin
 
 	_displayExchangeMask(data)
 	{
-		let formCmp = ExchangeForm({data, onsubmit: (formResult) => {
+		const cancel = () => this._ejectForm(formCmp);
+
+		let formCmp = ExchangeForm({data, onCancel: cancel, onsubmit: (formResult) => {
 			let params = {
 				gds: this.gdsName,
 				fields: formResult.fields,
@@ -335,7 +337,10 @@ export default class TerminalPlugin
 				]),
 				Cmp('div.float-right').attach([
 					Cmp('button[Submit]'),
-					Cmp('button[Cancel]', {type: 'button', onclick: () => formCmp.context.remove()}),
+					Cmp('button[Cancel]', { type: 'button', onclick: () => {
+							formCmp.context.remove();
+							this._ejectForm(formCmp);
+						} }),
 				]),
 			]),
 			Cmp('br', {clear: 'all'}),
