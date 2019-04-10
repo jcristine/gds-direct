@@ -21,6 +21,12 @@ module.exports.migrations = [
 		].join('\n')),
 	},
 	{
+		name: 'GRECT/2019.04.10002-fix-optional-lang-col-2',
+		perform: (db) => db.query([
+			'ALTER TABLE terminalSettings MODIFY COLUMN language tinyint(4) NOT NULL DEFAULT 0;',
+		].join('\n')),
+	},
+	{
 		name: '00.00.03',
 		perform: (db) => db.query([
 			'CREATE TABLE `terminalAreaSettings` (',
