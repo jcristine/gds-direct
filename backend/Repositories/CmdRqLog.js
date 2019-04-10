@@ -26,11 +26,14 @@ exports.storeNew = (rqBody, session) => {
 exports.logOutput = async (rqBody, whenCmdRqId, output) => {
 	let cmdRqId = await whenCmdRqId;
 	let responseTimestamp = Math.floor(new Date().getTime() / 1000);
-	return Db.with(db => db.writeRows(TABLE, [{
-		id: cmdRqId,
-		// no point in measuring it anymore, since there is the terminal_command_log now
-		processedTime: '0.000',
-		output: output,
-		responseTimestamp: responseTimestamp,
-	}]));
+	return Db.with(db => db.update({
+		table: TABLE,
+		where: [['id', '=', cmdRqId]],
+		set: {
+			// no point in measuring it anymore, since there is the terminal_command_log now
+			processedTime: '0.000',
+			output: output,
+			responseTimestamp: responseTimestamp,
+		},
+	}));
 };
