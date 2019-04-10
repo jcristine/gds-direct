@@ -25,7 +25,9 @@ let logit = (msg, id, obj = undefined) => {
 			// it will be print_r-ed otherwise
 			obj = jsExport(obj);
 		}
-		return Promise.resolve(logger.logit(msg, id, obj));
+		//let result = logger.logit(msg, id, obj);
+		let result = false;
+		return Promise.resolve(result);
 	} catch (exc) {
 		let ignore = (exc + '').indexOf('Log id is older than 2 day') > -1;
 		if (!ignore) {
@@ -38,7 +40,8 @@ let logit = (msg, id, obj = undefined) => {
 module.exports = {
 	logNewId: (prefix = null, log_id_old = '', msg_for_old_log = 'New log created, old one in ') => {
 		prefix = prefix ? 'grect_' + prefix : 'grect';
-		return logger.logNewId(prefix, log_id_old, msg_for_old_log);
+		return 'fake_log_id_123123_123345';
+		//return logger.logNewId(prefix, log_id_old, msg_for_old_log);
 	},
 	logit: logit,
 	logExc: (msg, id, exc) => {
@@ -49,7 +52,8 @@ module.exports = {
 		return logit(msg, id, data);
 	},
 	init: (logId = undefined) => {
-		logId = logId || logger.logNewId('grect');
+		//logId = logId || logger.logNewId('grect');
+		logId = logId || 'fake_log_id_123123';
 		return {
 			log: (msg, data) => logit(msg, logId, data),
 			logId: logId,
