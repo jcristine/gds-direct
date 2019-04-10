@@ -4,7 +4,6 @@ const StringUtil = require('../../Lib/Utils/StringUtil.js');
 const Errors = require("./Errors");
 
 let php = require('../../php.js');
-const CmsClient = require("../../../IqClients/CmsClient");
 
 const ApoCmdParser = require('../../Gds/Parsers/Apollo/CommandParser.js');
 const GalCmdParser = require('../../Gds/Parsers/Galileo/CommandParser.js');
