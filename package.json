@@ -8,7 +8,7 @@
     "dynatech-diag-service": "git+ssh://git@gitlab.dyninno.net:1022/node-libraries/diag-service.git#cdcc4eb7ac7768759407c2795376274ccdfefed7",
     "dynatech-client-component-emc": "git+ssh://git@gitlab.dyninno.net:1022/node-libraries/client-component-emc.git#v0.1.2",
     "dynatech-client-component": "git+ssh://git@gitlab.dyninno.net:1022/node-libraries/client-component.git#7ad8d0caa829bf947dadced1834ced94ae90b734",
-    "dynatech-logger": "git+ssh://git@gitlab.dyninno.net:1022/node-libraries/logger#e389eede73ec8e7cf6ac5a2eafc8550c92512420"
+    "dynatech-logger": "git+ssh://git@gitlab.dyninno.net:1022/node-libraries/logger#4cf036549189dbf6e56d11d8178a1af44609ef81"
   },
   "dependencies": {
     "express": "^4.16.4",
