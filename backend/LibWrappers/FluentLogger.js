@@ -1,7 +1,7 @@
 
 let Logger;
 try {
-	Logger = require('dynatech-logger').Logger;
+	Logger = require('dynatech-logger').default;
 } catch (exc) {
 	// no permissions in gitlab-ci
 	Logger = class {
