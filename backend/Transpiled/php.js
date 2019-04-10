@@ -665,6 +665,9 @@ php.array_filter = (obj, func, flags = null) => {
 	}
 	return newObj;
 };
+php.array_reduce = (arr, reducer, initial) => {
+	return Object.values(arr).reduce(reducer, initial);
+};
 
 let isPlainObject = (val) => {
 	if (!val) {
