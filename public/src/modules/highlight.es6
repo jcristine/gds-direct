@@ -55,6 +55,7 @@ const makeRule		= (rule, key, isPattern = '') => {
 const replaceAll = value => new RegExp(value, 'g');
 
 let tips 	= {};
+let popoverClearInterval, popovers = [];
 
 export const seedOutputString = (outputText, appliedRules) => {
 
@@ -110,12 +111,7 @@ export const seedOutputString = (outputText, appliedRules) => {
 	return {tips, outputText};
 };
 
-let popoverClearInterval;
-
 export const replaceInTerminal = ($div, tips) => {
-
-	let popovers = [];
-
 	/**
 	 * a replacement for $().popover() because requiring bootstrap causes
 	 * side effects in the form of main app popovers stopping working
@@ -137,7 +133,6 @@ export const replaceInTerminal = ($div, tips) => {
 				constraints: [{to: 'scrollParent', pin: true}],
 			},
 		});
-		console.log(popover);
 		popovers.push(popover);
 	};
 
