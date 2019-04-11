@@ -152,11 +152,7 @@ let withGdsSession = (sessionAction, canStartNew = false) => (req, res) => {
 		let startMs = Date.now();
 		FluentLogger.logit(msg, session.logId, rqBody);
 		return Promise.resolve()
-			.then(() => withLock({
-				lockKey: keys.GDS_SESSION_ACTION_LOCK + ':' + session.id,
-				action: () => sessionAction({rqBody, session, emcUser}),
-				lockValue: briefing || req.path,
-			}))
+			.then(() => sessionAction({rqBody, session, emcUser}))
 			.then(result => {
 				if (startNewSession) {
 					result.startNewSession = true;
