@@ -106,6 +106,7 @@ class SabrePricingAdapter {
 
 	/** @param $parsedData = SabrePricingParser::parse() */
 	transform($parsedData) {
+		$parsedData = JSON.parse(JSON.stringify($parsedData));
 		let $pricingBlockList, $passengers, $reservationDate, $withPassengers, $passengersLeft, $pqCnt, $i, $fareInfo,
 			$pqInfo, $pricingBlock, $lastDateToPurchase, $fullDate, $time, $paxChunk, $ageGroups, $ptc, $withBagDump,
 			$mods;

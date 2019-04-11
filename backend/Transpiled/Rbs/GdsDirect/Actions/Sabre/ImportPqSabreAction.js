@@ -120,7 +120,7 @@ class ImportPqSabreAction extends AbstractGdsAction {
 		return $result;
 	}
 
-	async parsePricing($dump, reservation, $cmd) {
+	async parsePricing($dump, nameRecords, $cmd) {
 		let $parsed, $wrapped, $result = {}, $ptcPricingBlocks;
 
 		$parsed = SabrePricingParser.parse($dump);
@@ -129,7 +129,7 @@ class ImportPqSabreAction extends AbstractGdsAction {
 		let store = (new SabrePricingAdapter())
 			.setPricingCommand($cmd)
 			.setReservationDate(this.getBaseDate())
-			.setNameRecords(reservation.passengers)
+			.setNameRecords(nameRecords)
 			.transform($parsed);
 		$wrapped = {pricingList: [store]};
 
@@ -161,7 +161,7 @@ class ImportPqSabreAction extends AbstractGdsAction {
 		if (!php.empty($errors)) {
 			$result = {'error': 'Invalid pricing data - ' + php.implode(';', $errors)};
 		} else {
-			$result = await this.parsePricing($output, reservation, $cmd);
+			$result = await this.parsePricing($output, reservation.passengers, $cmd);
 		}
 		$result['pricingPart'] = $result['pricingPart'] || {};
 		$result['pricingPart']['cmd'] = $cmd;
@@ -202,7 +202,7 @@ class ImportPqSabreAction extends AbstractGdsAction {
 
 		$cmd = 'WPNC¥PL';
 		$raw = await this.runOrReuse($cmd);
-		$processed = this.parsePricing($raw, $nameRecords, $cmd);
+		$processed = await this.parsePricing($raw, $nameRecords, $cmd);
 
 		$result['cmd'] = $cmd;
 		$result['raw'] = $raw;

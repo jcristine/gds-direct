@@ -756,8 +756,10 @@ class ImportSabrePnrFormatAdapter {
 			'baggageAllowanceBlocks': [
 				{
 					'ptc': $ptc,
-					'segments': php.array_map('static::transformBagAllowanceSegment',
-						$baggageData['baggageAllowanceBlock']['segments']),
+					'segments': php.array_map(
+						seg => this.transformBagAllowanceSegment(seg),
+						$baggageData['baggageAllowanceBlock']['segments']
+					),
 				},
 			],
 			'carryOnAllowanceBlock': {
