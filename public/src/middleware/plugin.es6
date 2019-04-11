@@ -36,6 +36,8 @@ export default class TerminalPlugin
 
 		this.allowManualPaging = params.gds === 'sabre';
 
+		this.injectedForms = [];
+
 		this.session = new Session({
 			terminalIndex	: params.name,
 			gds				: params.gds,
@@ -49,7 +51,7 @@ export default class TerminalPlugin
 
 		this.pagination 	= new Pagination();
 		this.spinner 		= new Spinner( this.terminal );
-		this.outputLiner 	= new OutputLiner(this.terminal, params);
+		this.outputLiner 	= new OutputLiner(this.terminal, params, this.injectedForms);
 		this.tabCommands	= new TabManager();
 		this.f8Reader		= new F8Reader({
 			terminal	: this.terminal,
@@ -57,7 +59,6 @@ export default class TerminalPlugin
 		});
 
 		this.history 		= new History( params.gds );
-		this.injectedForms = [];
 
 		this.insertKey	= false;
 	}

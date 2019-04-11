@@ -97,7 +97,7 @@ export const RUN_COMMAND_LIST = commands => {
 	}
 };
 
-export const ADD_WHIDE_COLUMN = () => {
+export const ADD_WIDE_COLUMN = () => {
 	const hasWide = !getStore().app.getGds().get('hasWide');
 	const result = {
 		hasWide,

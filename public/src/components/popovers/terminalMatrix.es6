@@ -1,5 +1,5 @@
 import Dom 			 	from '../../helpers/dom.es6';
-import {ADD_WHIDE_COLUMN, CHANGE_MATRIX} from "../../actions/settings";
+import {ADD_WIDE_COLUMN, CHANGE_MATRIX} from "../../actions/settings";
 import {MAX_ROWS} from "../../constants";
 import {getStorageMatrix} from "../../helpers/helpers";
 import {ButtonPopover} from "../../modules/dom/buttonPopover";
@@ -29,7 +29,7 @@ export default class Matrix extends ButtonPopover
 			onclick : (e) => {
 				e.target.classList.toggle(ACTIVE_CLASS);
 				e.target.classList.toggle('bg-white');
-				ADD_WHIDE_COLUMN();
+				ADD_WIDE_COLUMN();
 			}
 		});
 
