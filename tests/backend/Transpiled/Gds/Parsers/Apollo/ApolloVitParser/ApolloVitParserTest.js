@@ -66,7 +66,55 @@ class ApolloVitParserTest extends require('../../../../Lib/TestCase.js') {
 							'flightDuration': '7:10',
 						},
 					],
-					'totalFlightDuration': '16:55',
+					'totalTravelTime': '16:55',
+				},
+			},
+		]);
+
+		$list.push([
+			[
+			    ' AI 191    7MAY  TU',
+			    'DEL          900P',
+			    'BOM   1110P           2:10',
+			    '           8MAY  WE',
+			    'BOM          130A',
+			    'EWR    755A          15:55',
+			    '   ',
+			    '                TET  20:25',
+			    'END OF DISPLAY',
+			    '><',
+			].join('\n'),
+			{
+				'parsedData': {
+					'airline': 'AI',
+					'flightNumber': 191,
+					'segments': [
+						{
+							"segmentNumber": 1,
+							"departureDate": "05-07",
+							"departureDayOfTheWeek": 2,
+							"departureAirport": "DEL",
+							"departureTime": "21:00",
+							"destinationDate": "05-07",
+							"destinationDayOfTheWeek": 2,
+							"destinationAirport": "BOM",
+							'destinationTime': '23:10',
+							"flightDuration": "2:10"
+						},
+						{
+							"segmentNumber": 2,
+							"departureDate": "05-08",
+							"departureDayOfTheWeek": 3,
+							"departureAirport": "BOM",
+							"departureTime": "01:30",
+							"destinationDate": "05-08",
+							"destinationDayOfTheWeek": 3,
+							"destinationAirport": "EWR",
+							"destinationTime": "07:55",
+							"flightDuration": "15:55"
+						}
+					],
+					'totalTravelTime': '20:25',
 				},
 			},
 		]);
@@ -82,15 +130,7 @@ class ApolloVitParserTest extends require('../../../../Lib/TestCase.js') {
 		let $actualResult;
 
 		$actualResult = ApolloVitParser.parse($dump);
-		try {
-			this.assertArrayElementsSubset($expectedResult, $actualResult);
-		} catch (exc) {
-			let args = process.argv.slice(process.execArgv.length + 2);
-			if (args.includes('debug')) {
-				console.log('\n$actualResult\n', JSON.stringify($actualResult));
-			}
-			throw exc;
-		}
+		this.assertArrayElementsSubset($expectedResult, $actualResult);
 	}
 
 	getTestMapping() {

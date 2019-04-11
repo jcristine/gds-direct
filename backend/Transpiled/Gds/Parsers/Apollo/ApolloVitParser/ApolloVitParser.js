@@ -26,8 +26,8 @@ class ApolloVitParser {
 				$dataWriter.flightDateFound($res);
 			} else if ($res = this.parseAirportLine($line)) {
 				$dataWriter.airportFound($res);
-			} else if ($res = this.parseTotalFlightDurationLine($line)) {
-				$dataWriter.totalFlightDurationFound($res);
+			} else if ($res = this.parseTotalTravelTimeLine($line)) {
+				$dataWriter.totalTravelTimeFound($res);
 			} else {
 				$result['skippedLines'].push($line);
 			}
@@ -132,7 +132,7 @@ class ApolloVitParser {
 		};
 	}
 
-	static parseTotalFlightDurationLine($line) {
+	static parseTotalTravelTimeLine($line) {
 		let $splitStr, $names, $result, $e;
 
 		//          '                TET  16:55'

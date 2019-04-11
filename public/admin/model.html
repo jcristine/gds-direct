@@ -5,13 +5,7 @@
     <textarea name="jsonParams" rows="10" cols="100">{
     "whereOr": [
         [
-            ["cmd", "not like", "*MCO%"],
-            ["cmd", "!=", "*MPD"],
-            ["output", "!=", "CK ACTN CODE \n><"],
-            ["output", "!=", "INVLD \n><"],
-            ["output", "not regexp", "^.*FORMAT[\\s\\S]*><$"],
-            ["gds", "=", "apollo"],
-            ["type", "is", null]
+            ["session_id", "=", "10874"]
         ]
     ]
 }</textarea><br/>
@@ -35,7 +29,7 @@
         <option>ticket_designators</option>
     </datalist>
     <label>model:<input name="model" required="required" list="model-names" value="terminal_command_log"/></label>
-    <label>orderBy:<input name="orderBy" value="dt desc, id desc"/></label>
+    <label>orderBy:<input name="orderBy" value="id desc"/></label>
     <label>skip:<input type="number" name="skip" value="0" min="0" max="1000"/></label>
     <label>limit:<input type="number" name="limit" value="100" min="0" max="1000"/></label>
     <button type="submit">Send</button>
