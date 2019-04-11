@@ -12,7 +12,7 @@ let formatExpirationDate = (full) => {
 };
 
 /** @param {IRbsMcoData} data */
-let dataToDom = (data) => {
+let dataToDom = (data, onCancel) => {
 	let values = {};
 	let enableds = {};
 	for (let field of data.fields) {
@@ -125,7 +125,17 @@ let dataToDom = (data) => {
 			]),
 			mkCmp('div.float-right').attach([
 				mkCmp('button[Submit]'),
-				mkCmp('button[Cancel]', {type: 'button', onclick: () => mcoForm.context.remove()}),
+				mkCmp('button[Cancel]', {
+					type: 'button',
+					onclick: () => {
+						mcoForm.context.remove();
+
+						if (onCancel && typeof onCancel === 'function')
+						{
+							onCancel();
+						}
+					}
+				}),
 			]),
 		]),
 		mkCmp('br', {clear: 'all'}),
@@ -155,8 +165,8 @@ let domToData = (mcoForm) => {
 //   ' REMARK2;...................................................... ',
 //   ' VALIDATING CARRIER;..                  ISSUE NOW;.             ',
 /** @param {IRbsMcoData} data */
-export let McoForm = ({data, onsubmit = null}) => {
-	let mcoForm = dataToDom(data);
+export let McoForm = ({data, onsubmit = null, onCancel = null}) => {
+	let mcoForm = dataToDom(data, onCancel);
 	mcoForm.context.onsubmit = () => {
 		if (onsubmit) {
 			onsubmit(domToData(mcoForm)).then(({canClosePopup}) => {

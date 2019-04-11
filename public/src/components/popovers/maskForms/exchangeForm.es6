@@ -5,7 +5,7 @@ let Cmp = (...args) => new Component(...args);
 let lastUniqueId = 0;
 
 /** @param {IExchangeApolloTicketParsedMask} data */
-let dataToDom = (data) => {
+let dataToDom = (data, onCancel) => {
 	let values = {};
 	let enableds = {};
 	for (let field of data.fields) {
@@ -157,7 +157,14 @@ let dataToDom = (data) => {
 			]),
 			Cmp('div.float-right').attach([
 				Cmp('button[Submit]'),
-				Cmp('button[Cancel]', {type: 'button', onclick: () => formCmp.context.remove()}),
+				Cmp('button[Cancel]', { type: 'button', onclick: () => {
+						formCmp.context.remove();
+
+						if (onCancel && typeof onCancel === 'function')
+						{
+							onCancel();
+						}
+					} }),
 			]),
 		]),
 		Cmp('br', {clear: 'all'}),
@@ -203,8 +210,8 @@ let domToData = (mcoForm) => {
 //   'TX1 USD;.......;..   TX2 USD;.......;..   TX3 USD;.......;..    ',
 //   'ORIG ISS;...... ORIG DATE;....... ORIG IATA NBR;.........       ',
 //   'ORIG TKT;..............-;...  ORIG INV NBR;.........            ',
-export let ExchangeForm = ({data, onsubmit = null}) => {
-	let formCmp = dataToDom(data);
+export let ExchangeForm = ({data, onCancel, onsubmit = null}) => {
+	let formCmp = dataToDom(data, onCancel);
 	formCmp.context.onsubmit = () => {
 		if (onsubmit) {
 			let result = domToData(formCmp);
