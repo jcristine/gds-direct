@@ -11,10 +11,10 @@ let closed = false;
 let makeParams = (session, callParams) => {
 	let baseParams = {
 		useSocket		: true,
-		useRbs			: window.GdsDirectPlusState.getUseRbs() ? 1 : 0,
 		terminalIndex	: parseInt(session.settings['terminalIndex']) + 1,
 		gds				: session.settings['gds'],
 		language		: window.GdsDirectPlusState.getLanguage().toLowerCase(),
+		skipErrorPopup	: true,
 	};
 	// callParams twice to make them show first, but override baseParams
 	return Object.assign({}, callParams, baseParams, callParams);
@@ -38,7 +38,7 @@ export default class Session
 			if (!callInProgress && !closed && window.performance.now() - lastUsedAt >= pingInterval) {
 				lastUsedAt = window.performance.now();
 				callInProgress = true;
-				post('/gdsDirect/keepAlive', makeParams(this, {skipErrorPopup: true}))
+				let pinging = post('/gdsDirect/keepAlive', makeParams(this, {}))
 					.catch(exc => {
 						if (params.onExpired) {
 							params.onExpired(exc + '');
@@ -59,7 +59,7 @@ export default class Session
 
 		lastUsedAt = window.performance.now();
 		callInProgress = true;
-		return post('/terminal/command?cmd=' + cmd, makeParams(this, {command: cmd, skipErrorPopup: true}))
+		return post('/terminal/command?cmd=' + cmd, makeParams(this, {command: cmd}))
 			.catch(formatSystemError)
 			.then(result => {
 				closed = false;

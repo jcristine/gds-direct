@@ -15,7 +15,6 @@ let normalizeContext = (reqBody) => {
 		agentId: +reqBody.agentId,
 		gds: reqBody.gds,
 		travelRequestId: +reqBody.travelRequestId,
-		useRbs: +reqBody.useRbs ? true : false,
 	};
 };
 

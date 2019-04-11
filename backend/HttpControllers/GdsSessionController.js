@@ -25,8 +25,6 @@ const Misc = require("../Utils/Misc");
 const allWrap = require("../Utils/Misc").allWrap;
 const {getConfig} = require('../Config.js');
 const ExchangeApolloTicket = require('../Actions/ExchangeApolloTicket.js');
-const StringUtil = require('../Transpiled/Lib/Utils/StringUtil.js');
-const AbstractMaskParser = require("../Transpiled/Gds/Parsers/Apollo/AbstractMaskParser");
 
 let startByGds = async (gds) => {
 	let tuples = [
@@ -53,9 +51,7 @@ let startByGds = async (gds) => {
 };
 
 let startNewSession = async (rqBody) => {
-	let starting = +rqBody.useRbs
-		? RbsClient.startSession(rqBody)
-		: startByGds(rqBody.gds);
+	let starting = startByGds(rqBody.gds);
 	return starting.then(gdsData =>
 		GdsSessions.storeNew(rqBody, gdsData));
 };
@@ -106,11 +102,7 @@ let shouldRestart = (exc, session) => {
 let runInSession = ({session, rqBody, emcUser}) => {
 	let running;
 	let gdsData = session.gdsData;
-	if (+session.context.useRbs) {
-		running = RbsClient(rqBody).runInputCmd(gdsData);
-	} else {
-		running = ProcessTerminalInput({session, rqBody, emcUser});
-	}
+	running = ProcessTerminalInput({session, rqBody, emcUser});
 	GdsSessions.updateAccessTime(session);
 	return running.then(cmsResult => ({...cmsResult, session}));
 };

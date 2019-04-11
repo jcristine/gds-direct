@@ -90,8 +90,7 @@ export class PqParser
 			return reject('Can\'t create PQ - ' + pqErrors.join('; '));
 		}
 
-		let useRbs = GdsDirectPlusState.getUseRbs() ? '1' : '';
-		return blockAllUi(`terminal/getPqItinerary?pqTravelRequestId=${rId}&gds=${gds.get('name')}&useRbs=${useRbs}`)
+		return blockAllUi(`terminal/getPqItinerary?pqTravelRequestId=${rId}&gds=${gds.get('name')}`)
 			.then(rbsData => rbsData.pnrData ? rbsData :
 				Promise.reject('Invalid Response'))
 			.then(rbsData => {
@@ -99,7 +98,7 @@ export class PqParser
 				return {pqTravelRequestId: rId, gds: gds.get('name'), rbsData: rbsData};
 			})
 			.then(pqBtnData => {
-				let importPq = () => this.blockTerminal(`terminal/importPq?pqTravelRequestId=${rId}&gds=${gds.get('name')}&useRbs=${useRbs}`)
+				let importPq = () => this.blockTerminal(`terminal/importPq?pqTravelRequestId=${rId}&gds=${gds.get('name')}`)
 					.then(rbsData => {
 						updateSessionState(rbsData, gds.get('name'));
 						return {rbsData: rbsData};

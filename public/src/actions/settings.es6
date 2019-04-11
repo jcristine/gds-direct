@@ -28,10 +28,6 @@ export const CHANGE_INPUT_LANGUAGE = language => {
 	getStore().setState({language});
 };
 
-export const CHANGE_USE_RBS = useRbs => {
-	getStore().setState({useRbs});
-};
-
 export const CHANGE_SETTINGS = settings => {
 	getters('settings', settings);
 

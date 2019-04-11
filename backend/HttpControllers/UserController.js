@@ -32,7 +32,6 @@ exports.getView = (reqBody, emcResult) => {
 
             for (let gds in settings.gds) {
                 let state = await GdsSessions.getByContext({
-                    useRbs: !isAdmin,
                     agentId: +reqBody.agentId,
                     gds: gds,
                     travelRequestId: +reqBody.travelRequestId,
