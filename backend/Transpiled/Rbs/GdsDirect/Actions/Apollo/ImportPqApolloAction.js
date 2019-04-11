@@ -434,7 +434,7 @@ class ImportPqApolloAction extends AbstractGdsAction {
 			$result['pnrData']['fareRules'] = $fareRuleData['ruleRecords'];
 
 			// it is important that it's at the end because it affects fare rules
-			$publishedPricingRecord = await this.getPublishedPricing($pricing, $nameRecords);
+			$publishedPricingRecord = await this.getPublishedPricing($pricing, $nameRecords).catch(exc => ({error: 'Exc - ' + exc}));
 			if ($result['error'] = $publishedPricingRecord['error'] || null) return $result;
 			$result['pnrData']['publishedPricing'] = $publishedPricingRecord;
 		}
