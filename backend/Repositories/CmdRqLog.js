@@ -1,5 +1,3 @@
-const logit = require("../LibWrappers/FluentLogger").logit;
-const hrtimeToDecimal = require("../Utils/Misc").hrtimeToDecimal;
 const Db = require("../Utils/Db");
 const nonEmpty = require("../Utils/Rej").nonEmpty;
 
