@@ -149,7 +149,17 @@ export default class TerminalPlugin
 		this.terminal.settings().numRows  = numOfRows;
 		this.terminal.resize();
 
-		this.outputLiner.recalculate({numOfRows, numOfChars, charHeight});
+		if (this.injectedForms.length)
+		{
+			this.outputLiner.emptyLines = 0;
+			this.terminal.settings().emptyLines = 0;
+
+			this.outputLiner.recalculate({numOfRows: 0, numOfChars: 0});
+		}
+		else
+		{
+			this.outputLiner.recalculate({numOfRows, numOfChars, charHeight});
+		}
 	}
 
 	init()
