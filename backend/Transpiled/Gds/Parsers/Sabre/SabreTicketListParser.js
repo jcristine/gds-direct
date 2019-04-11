@@ -170,7 +170,7 @@ class SabreTicketListParser
         $ticketingInfo = $ticketingLine
             ? this.parseTicketingLine($ticketingLine)
             : null; // may be absent in truncated dump
-        $tickets = php.array_map(['self', 'parseTicketLine'], $lines);
+        $tickets = php.array_map(l => this.parseTicketLine(l), $lines);
 
         return {
             'ticketingInfo': $ticketingInfo,
