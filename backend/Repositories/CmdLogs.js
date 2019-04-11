@@ -29,11 +29,26 @@ let makeRow = (cmdRec, session, cmdRqId, prevState) => {
 	};
 };
 
-let storeNew = (row) => {
-    return Db.with(db => db.writeRows(TABLE, [row]))
-		.then(inserted => inserted.insertId)
-		.then(nonEmpty('Failed to store cmd to DB and get the id'))
-		.then(id => ({id, ...row}));
+let sessionToLastInsertion = {};
+let queued = (key, action) => {
+	let lastInsertion = sessionToLastInsertion[key] || Promise.resolve();
+	let whenDone = lastInsertion
+		.catch(() => {})
+		.then(() => action())
+		.finally(() => delete sessionToLastInsertion[key]);
+	// it's guaranteed to happen before .finally()
+	// https://stackoverflow.com/a/28750565/2750743
+	sessionToLastInsertion[key] = whenDone;
+	return whenDone;
+};
+
+let storeNew = async (row) => {
+	// to ensure their order, see cmd RQ #12114
+	return queued(row.sessionId, () =>
+		Db.with(db => db.writeRows(TABLE, [row]))
+			.then(inserted => inserted.insertId)
+			.then(nonEmpty('Failed to store cmd to DB and get the id'))
+			.then(id => ({id, ...row})));
 };
 
 exports.makeRow = makeRow;
