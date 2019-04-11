@@ -88,7 +88,7 @@ class SabrePricingAdapter {
 		$nMods = $typeToMods['names'] || [];
 		$coveredPaxes = [];
 		for ($nameRecord of Object.values($nameRecords)) {
-			if (!$nMods || this.constructor.isPaxCoveredByMods($nameRecord['nameNumber'], $nMods)) {
+			if (php.empty($nMods) || this.constructor.isPaxCoveredByMods($nameRecord['nameNumber'], $nMods)) {
 				$coveredPaxes.push($nameRecord);
 			}
 		}

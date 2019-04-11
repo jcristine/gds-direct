@@ -161,19 +161,19 @@ let parsePricingQualifier = ($token) => {
 			'PB': 'premiumFirst',
 		}[$matches[1]]];
 	}
-	return [$name, $data];
+	return {
+		raw: $token,
+		type: $name,
+		parsed: $data,
+	};
 };
 
 let parsePricingQualifiers = ($qualifiers) => {
-	let $parsedQualifiers, $qualifier, $name, $data;
+	let $parsedQualifiers, $qualifier;
 	$parsedQualifiers = [];
 	for ($qualifier of Object.values($qualifiers ? php.explode('¥', $qualifiers) : [])) {
-		[$name, $data] = parsePricingQualifier($qualifier);
-		$parsedQualifiers.push({
-			'raw': $qualifier,
-			'type': $name,
-			'parsed': $data,
-		});
+		let mod = parsePricingQualifier($qualifier);
+		$parsedQualifiers.push(mod);
 	}
 	return $parsedQualifiers;
 };

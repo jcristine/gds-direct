@@ -24,7 +24,7 @@ class BagAllowanceParser
             'carryOnChargesBlock': $sections['carryOnChargesBlock'] ? php.array_map(b => this.parseCarryOnChargesBundle(b),
                 this.splitBundleSections($sections['carryOnChargesBlock'])) : null,
             'disclaimer': $sections['disclaimer'],
-            'additionalInfo': $sections['additionalInfo']
+            'additionalInfo': !php.empty($sections['additionalInfo'])
                 ? this.parseAdditionalInfo($sections['additionalInfo'])
                 : null,
         };
