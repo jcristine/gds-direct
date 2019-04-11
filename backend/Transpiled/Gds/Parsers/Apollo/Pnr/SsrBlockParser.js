@@ -230,7 +230,7 @@ class SsrBlockParser
         php.preg_match(/-(?<paxNum>\d+)(?<paxInf>I\/)?/, $line, $paxNumTokens = []);
         $paxNum = php.array_key_exists('paxNum', $paxNumTokens) ? $paxNumTokens['paxNum'] : '';
         $paxInf = php.array_key_exists('paxInf', $paxNumTokens);
-        [$documentInfo, $paxName] = php.array_pad(php.preg_split(/-\d+(I\/)?/, $line), 2, '');
+        [$documentInfo, $paxName] = php.array_pad($line.split(/-\d+(?:I\/)?/), 2, '');
         [$pre, $addressType, $country, $addressDetails, $city, $province, $postalCode] = php.array_pad(php.explode('/', $documentInfo), 7, '');
         return {
             //'pre' => $pre,
