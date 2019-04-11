@@ -140,6 +140,7 @@ export const get = (url) => {
 		'emcSessionId=' + window.GdsDirectPlusParams.emcSessionId,
 		'travelRequestId=' + (window.GdsDirectPlusParams.travelRequestId || 0),
 		'isForeignProjectEmcId=' + window.GdsDirectPlusParams.isForeignProjectEmcId ? '1' : '',
+		'disableAllRoles=' + window.GdsDirectPlusParams.disableAllRoles ? '1' : '',
 	].join('&');
 	return Ask( url, { credentials: 'include' });
 };
@@ -149,6 +150,7 @@ export const post = (url, postParams = {}) => {
 		emcSessionId: window.GdsDirectPlusParams.emcSessionId || '',
 		travelRequestId: window.GdsDirectPlusParams.travelRequestId || 0,
 		isForeignProjectEmcId: window.GdsDirectPlusParams.isForeignProjectEmcId ? true : false,
+		disableAllRoles: window.GdsDirectPlusParams.disableAllRoles ? true : false,
 	};
 
 	return Ask(url, { ...getPostRequestHeader(postParams) });

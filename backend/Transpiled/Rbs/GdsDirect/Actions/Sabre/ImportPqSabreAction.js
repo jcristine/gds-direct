@@ -10,13 +10,9 @@ const SabrePricingParser = require('../../../../Gds/Parsers/Sabre/Pricing/SabreP
 const SabreReservationParser = require('../../../../Gds/Parsers/Sabre/Pnr/PnrParser.js');
 const ImportSabrePnrFormatAdapter = require('../../../../Rbs/Process/Sabre/ImportPnr/ImportSabrePnrFormatAdapter.js');
 const SabrePricingAdapter = require('../../../FormatAdapters/SabrePricingAdapter.js');
-const RbsUtils = require("../../../../../GdsHelpers/RbsUtils");
-
-var require = require('../../../../translib.js').stubRequire;
-
 const SabreVerifyParser = require('../../../../Gds/Parsers/Sabre/SabreVerifyParser.js');
 const ImportSabreFareRulesActions = require('../../../../Rbs/Process/Apollo/ImportPnr/Actions/ImportSabreFareRulesActions.js');
-const DumpStorage = require('../../../../Rbs/Process/Common/ImportPnr/DumpStorage.js');
+const withCapture = require("../../../../../GdsHelpers/CommonUtils").withCapture;
 
 /**
  * import PNR fields of currently opened PNR
@@ -116,7 +112,6 @@ class ImportPqSabreAction extends AbstractGdsAction {
 		$parsed = SabreVerifyParser.parse($raw);
 		$common = ImportSabrePnrFormatAdapter.transformFlightServiceInfo($parsed, this.getBaseDate());
 		$result = {'raw': $raw};
-		$result['hiddenStopTimeCommands'] = [];
 		if ($result['error'] = $common['error']) {
 			return $result;
 		} else {
@@ -201,11 +196,11 @@ class ImportPqSabreAction extends AbstractGdsAction {
 	async getPublishedPricing($currentStore, $nameRecords) {
 		let $isPrivateFare, $result, $cmd, $raw, $processed, $error;
 
-		$isPrivateFare = php.array_filter(php.array_column($currentStore['pricingBlockList'], 'hasPrivateFaresSelectedMessage')) ? true : false;
+		$isPrivateFare = $currentStore['pricingBlockList'].some(b => b.hasPrivateFaresSelectedMessage);
 		$result = {'isRequired': $isPrivateFare, 'raw': null, 'parsed': null};
 		if (!$isPrivateFare) return $result;
 
-		$cmd = 'WPNC\u00A5PL';
+		$cmd = 'WPNC¥PL';
 		$raw = await this.runOrReuse($cmd);
 		$processed = this.parsePricing($raw, $nameRecords, $cmd);
 
@@ -223,33 +218,33 @@ class ImportPqSabreAction extends AbstractGdsAction {
 	 * @param $pricing = ImportSabrePnrFormatAdapter::transformPricing()
 	 */
 	async getSabreFareRules($sections, $itinerary, $pricing) {
-		let $fareListRecords, $ruleRecords, $i, $ptc, $dumpStorage, $common, $error, $recordBase, $dumpNumber, $raw,
-			$dumpRec, $cmd;
+		let $fareListRecords, $ruleRecords, $i, $ptc, $common, $error, $recordBase, $raw;
 
 		$fareListRecords = [];
 		$ruleRecords = [];
 
-		for ([$i, $ptc] of Object.entries(php.array_column(php.array_column($pricing['pricingBlockList'], 'ptcInfo'), 'ptc'))) {
-			$dumpStorage = new DumpStorage();
-			$common = await (new ImportSabreFareRulesActions()).setLog(this.$log).setDumpStorage($dumpStorage).setSabre(this.getSabre()).execute($pricing, $itinerary, $sections, $ptc);
+		let ptcInfos = php.array_column(php.array_column($pricing['pricingBlockList'], 'ptcInfo'), 'ptc');
+		for ([$i, $ptc] of Object.entries(ptcInfos)) {
+			let capturing = withCapture(this.session);
+			$common = await (new ImportSabreFareRulesActions())
+				.setSession(capturing)
+				.execute($pricing, $itinerary, $sections, $ptc);
 			if ($error = $common['error']) return {'error': $error};
+
 			$recordBase = {
 				'pricingNumber': null,
 				'subPricingNumber': +$i + 1,
 			};
-			$dumpNumber = ($common['dumpNumbers'] || {})[0];
-			$raw = $dumpNumber ? $dumpStorage.get($dumpNumber)['dump'] : null;
-			for ($dumpRec of Object.values($dumpStorage.getAll())) {
-				if ($cmd = $dumpRec['cmd']) {
-					this.$allCommands.push({'cmd': $cmd, 'output': $dumpRec['dump']});
-				}
-			}
+
+			$raw = capturing.getCalledCommands()
+				.map(cmdRec => '>' + cmdRec.cmd + ';\n' + cmdRec.output)
+				.join('\n-----------------------------\n');
+			this.$allCommands.push(...capturing.getCalledCommands());
 			$fareListRecords.push(php.array_merge($recordBase, {
 				'parsed': $common['fareList'],
 				'raw': $raw,
 			}));
 			$ruleRecords = php.array_merge($ruleRecords, Fp.map(($ruleRecord) => {
-
 				return php.array_merge($recordBase, {
 					'fareComponentNumber': $ruleRecord['componentNumber'],
 					'sections': $ruleRecord['sections'],
@@ -262,12 +257,12 @@ class ImportPqSabreAction extends AbstractGdsAction {
 		};
 	}
 
-	getFareRules($pricing, $itinerary) {
+	async getFareRules($pricing, $itinerary) {
 		let $sections, $common, $error, $raw, $sanitized;
 
 		$sections = [16];
 
-		$common = this.getSabreFareRules($sections, $itinerary, $pricing);
+		$common = await this.getSabreFareRules($sections, $itinerary, $pricing);
 		if ($error = $common['error']) {
 			$raw = $common['raw'];
 			$sanitized = $raw ? this.constructor.sanitizeOutput($raw) : null;
@@ -312,14 +307,14 @@ class ImportPqSabreAction extends AbstractGdsAction {
 
 			$currentStore = $pricingRecord['pricingPart']['parsed']['pricingList'][0];
 			$fareRuleData = await this.getFareRules($currentStore,
-				$reservationRecord['parsed']['itinerary']);
+				$reservationRecord['parsed']['itinerary']).catch(exc => ({error: 'Exc - ' + exc}));
 			if ($result['error'] = $fareRuleData['error']) return $result;
 
 			$result['pnrData']['fareComponentListInfo'] = $fareRuleData['fareListRecords'];
 			$result['pnrData']['fareRules'] = $fareRuleData['ruleRecords'];
 
 			// it is important that it's at the end cuz it affects fare rules
-			$publishedPricingRecord = await this.getPublishedPricing($currentStore, $nameRecords);
+			$publishedPricingRecord = await this.getPublishedPricing($currentStore, $nameRecords).catch(exc => ({error: 'Exc - ' + exc}));
 			if ($result['error'] = $publishedPricingRecord['error']) return $result;
 			$result['pnrData']['publishedPricing'] = $publishedPricingRecord;
 		}

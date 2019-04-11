@@ -4,15 +4,13 @@ let GdsSessions = require('./../Repositories/GdsSessions.js');
 let FluentLogger = require('./../LibWrappers/FluentLogger.js');
 let {NoContent, LoginTimeOut} = require('./../Utils/Rej.js');
 
-let workerLogId = FluentLogger.logNewId('keepAlive');
-
-let log = (msg, ...data) => {
-	FluentLogger.logit(msg, workerLogId, ...data);
-};
-
-let logExc = (msg, logId, data) => {
-	FluentLogger.logExc(msg, logId, data);
-};
+// let log = (msg, ...data) => {
+// 	FluentLogger.logit(msg, workerLogId, ...data);
+// };
+//
+// let logExc = (msg, logId, data) => {
+// 	FluentLogger.logExc(msg, logId, data);
+// };
 
 let expired = (session, accessedMs) => {
 	let idleSeconds = (Date.now() - accessedMs) / 1000;
@@ -31,9 +29,10 @@ let shouldClose = (userAccessMs) => {
 	return aliveSeconds > 30 * 60; // 30 minutes
 };
 
-let processSession = async (accessedMs, session) => {
+let processSession = async (accessedMs, session, workerLogId) => {
 	let idleSeconds = ((Date.now() - accessedMs) / 1000).toFixed(3);
-	log('TODO: Processing session: #' + session.id + ' accessed ' + idleSeconds + ' s. ago - ' + ' ' + session.logId, session);
+	let msg = 'TODO: Processing session: #' + session.id + ' accessed ' + idleSeconds + ' s. ago - ' + ' ' + session.logId;
+	FluentLogger.logit(msg, workerLogId, session);
 	FluentLogger.logit('Processing in bg worker as the idlest session: ' + workerLogId, session.logId);
 	let processing;
 	let action = 'doNothing';
@@ -44,17 +43,17 @@ let processSession = async (accessedMs, session) => {
 	} else {
 		processing = GdsSessions.getUserAccessMs(session).then(userAccessMs => {
 			let userIdleSeconds = ((Date.now() - userAccessMs) / 1000).toFixed(3);
-			log('INFO: Last _user_ access was ' + userIdleSeconds + ' s. ago');
+			FluentLogger.logit('INFO: Last _user_ access was ' + userIdleSeconds + ' s. ago', workerLogId);
 			if (shouldClose(userAccessMs)) {
 				action = 'closeLongUnused';
 				return GdsSessionController.closeSession(session).catch(exc => {
-					logExc('ERROR: Failed to close session', session.logId, exc);
+					FluentLogger.logExc('ERROR: Failed to close session', session.logId, exc);
 					return GdsSessions.remove(session);
 				});
 			} else {
 				action = 'keepAlive';
 				return GdsSessionController.keepAliveSession(session).catch(exc => {
-					logExc('ERROR: Failed to keepAlive:', session.logId, exc);
+					FluentLogger.logExc('ERROR: Failed to keepAlive:', session.logId, exc);
 					if (LoginTimeOut.matches(exc.httpStatusCode)) {
 						GdsSessions.remove(session);
 						action = 'closeLongUnused';
@@ -68,14 +67,15 @@ let processSession = async (accessedMs, session) => {
 		});
 	}
 	return processing.then(result => {
-		log('Processed session: #' + session.id + ' - ' + action, result);
+		FluentLogger.logit('Processed session: #' + session.id + ' - ' + action, workerLogId, result);
 		return result;
 	});
 };
 
 exports.expired = expired;
 exports.shouldClose = shouldClose;
-exports.run = () => {
+exports.run = async () => {
+	let workerLogId = await FluentLogger.logNewId('keepAlive');
 	let onIdles = [];
 	let waiting = null;
 	let resolveTerminated = null;
@@ -83,20 +83,20 @@ exports.run = () => {
 		resolveTerminated = resolve;
 		if (waiting) {
 			clearTimeout(waiting);
-			log('Exiting gracefully from waiting state');
+			FluentLogger.logit('Exiting gracefully from waiting state', workerLogId);
 			resolveTerminated();
 		}
 	};
 
 	let processNextSession = () => {
 		if (resolveTerminated) {
-			log('Exiting gracefully after clearing last session');
+			FluentLogger.logit('Exiting gracefully after clearing last session', workerLogId);
 			resolveTerminated();
 		}
 		GdsSessions.takeIdlest()
 			.then(([accessedMs, session]) => {
 				waiting = null;
-				processSession(accessedMs, session)
+				processSession(accessedMs, session, workerLogId)
 					.then(processNextSession);
 			})
 			.catch(exc => {
@@ -111,7 +111,7 @@ exports.run = () => {
 				} else {
 					msg = 'ERROR: Could not take most idle session, waiting for ' + delay + ' ms';
 				}
-				logExc(msg, workerLogId, exc);
+				FluentLogger.logExc(msg, workerLogId, exc);
 				waiting = setTimeout(processNextSession, delay);
 				onIdles.forEach(cb => cb());
 			});

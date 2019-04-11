@@ -72,6 +72,25 @@ let Db = (dbConn) => {
 		return query($sql, $dataToInsert);
 	};
 
+	let update = ({table, set, where}) => {
+		let makeConds = ands => ands.map(([col, operator]) =>
+			'`' + col + '` ' + operator + ' ?').join(' AND ');
+		let sql = [
+			`UPDATE ${table}`,
+			`SET ` + Object.keys(set)
+				.map(col => '`' + col + '` = ?')
+				.join(', '),
+			`WHERE TRUE`,
+			where.length === 0 ? '' :
+				'AND ' + makeConds(where),
+		].join('\n');
+
+		let placedValues = []
+			.concat(Object.values(set))
+			.concat(where.map(([col, op, val]) => val));
+		return query(sql, placedValues);
+	};
+
 	/**
 	 * @param {{
 	 *     table: 'cmd_rq_log',
@@ -127,6 +146,7 @@ let Db = (dbConn) => {
 
 	return {
 		writeRows: writeRows,
+		update: update,
 		fetchAll: fetchAll,
 		fetchOne: params => fetchAll(params)
 			.then(rows => rows.length > 0 ? rows[0] :

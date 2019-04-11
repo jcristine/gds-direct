@@ -1,7 +1,7 @@
 
 let Logger;
 try {
-	Logger = require('dynatech-logger').Logger;
+	Logger = require('dynatech-logger').default;
 } catch (exc) {
 	// no permissions in gitlab-ci
 	Logger = class {
@@ -16,29 +16,36 @@ const {getExcData} = require('./../Utils/Misc.js');
 
 process.env.NODE_ENV = Config.production ? 'production' : 'development'; // accept development | stage | production
 
-const logger = new Logger();
+let withLogger = (action) => {
+	let logger = new Logger();
+	let whenResult = Promise.resolve()
+		.then(() => action(logger));
+	// it is possible that our fluentd servers can't handle persistent socket connection,
+	// so I'll try creating a new connection for each message similar to php
+	setTimeout(() => logger._fluentLogger._disconnect(), 1000);
+	return whenResult;
+};
 
 let logit = (msg, id, obj = undefined) => {
-	try {
-		obj = obj || '';
-		if (typeof obj !== 'string') {
-			// it will be print_r-ed otherwise
-			obj = jsExport(obj);
-		}
-		return Promise.resolve(logger.logit(msg, id, obj));
-	} catch (exc) {
-		let ignore = (exc + '').indexOf('Log id is older than 2 day') > -1;
-		if (!ignore) {
-			Diag.error('Fluent Logger error - ' + exc, getExcData(exc));
-		}
-		return Promise.resolve(true);
+	obj = obj || '';
+	if (typeof obj !== 'string') {
+		// it will be print_r-ed otherwise
+		obj = jsExport(obj);
 	}
+	return withLogger(logger => logger.logit(msg, id, obj))
+		.catch(exc => {
+			let ignore = (exc + '').indexOf('Log id is older than 2 day') > -1;
+			if (!ignore) {
+				Diag.error('Fluent Logger error - ' + exc, getExcData(exc));
+			}
+			return Promise.resolve(true);
+		});
 };
 
 module.exports = {
 	logNewId: (prefix = null, log_id_old = '', msg_for_old_log = 'New log created, old one in ') => {
 		prefix = prefix ? 'grect_' + prefix : 'grect';
-		return logger.logNewId(prefix, log_id_old, msg_for_old_log);
+		return withLogger(logger => logger.logNewId(prefix, log_id_old, msg_for_old_log));
 	},
 	logit: logit,
 	logExc: (msg, id, exc) => {
@@ -47,12 +54,5 @@ module.exports = {
 		}
 		let data = getExcData(exc);
 		return logit(msg, id, data);
-	},
-	init: (logId = undefined) => {
-		logId = logId || logger.logNewId('grect');
-		return {
-			log: (msg, data) => logit(msg, logId, data),
-			logId: logId,
-		};
 	},
 };

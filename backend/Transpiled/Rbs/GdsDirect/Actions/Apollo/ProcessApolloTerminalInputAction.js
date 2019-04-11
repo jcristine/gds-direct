@@ -442,7 +442,7 @@ class ProcessApolloTerminalInputAction {
 	static async shouldAddPsRemark($msg, $cmdLog) {
 		let $sessionData, $commands, $cmdRecord, $parsedCmd, $flatCmds, $flatCmd;
 		$sessionData = $cmdLog.getSessionData();
-		if ($sessionData['is_pnr_stored']) {
+		if ($sessionData['isPnrStored']) {
 			return false;
 		}
 		$commands = await $cmdLog.getCurrentPnrCommands();
@@ -633,7 +633,7 @@ class ProcessApolloTerminalInputAction {
 	}
 
 	async getStoredPnr() {
-		if (this.getSessionData()['is_pnr_stored']) {
+		if (this.getSessionData()['isPnrStored']) {
 			return this.getCurrentPnr();
 		} else {
 			return null;
@@ -934,7 +934,7 @@ class ProcessApolloTerminalInputAction {
 
 	getEmptyAreasFromDbState() {
 		let $isOccupied, $occupiedRows, $occupiedAreas;
-		$isOccupied = ($row) => $row['has_pnr'];
+		$isOccupied = ($row) => $row['hasPnr'];
 		$occupiedRows = Fp.filter($isOccupied, this.stateful.getAreaRows());
 		$occupiedAreas = php.array_column($occupiedRows, 'area');
 		$occupiedAreas.push(this.getSessionData()['area']);
@@ -956,7 +956,7 @@ class ProcessApolloTerminalInputAction {
 		if (php.empty($emptyAreas = this.getEmptyAreas())) {
 			return {'errors': [Errors.getMessage(Errors.NO_FREE_AREAS)]};
 		}
-		if (!this.getSessionData()['is_pnr_stored'] && !$aliasData['keepOriginal'] && $segmentStatus !== 'GK') {
+		if (!this.getSessionData()['isPnrStored'] && !$aliasData['keepOriginal'] && $segmentStatus !== 'GK') {
 			await this.ignoreWithoutWarning(); // ignore the itinerary in initial area
 		}
 		$recoveryPcc = this.getSessionData()['pcc'];
@@ -993,7 +993,7 @@ class ProcessApolloTerminalInputAction {
 	async prepareToSavePnr() {
 		let $writeCommands, $usedCmds, $flatCmds, $usedCmdTypes, $remarkCmd;
 		$writeCommands = [];
-		if (!this.getSessionData()['is_pnr_stored']) {
+		if (!this.getSessionData()['isPnrStored']) {
 			$usedCmds = await this.stateful.getLog().getCurrentPnrCommands();
 			$flatCmds = this.flattenCmds($usedCmds);
 			$usedCmdTypes = php.array_column($flatCmds, 'type');

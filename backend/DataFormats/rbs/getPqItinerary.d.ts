@@ -561,7 +561,6 @@ interface IRbsGetPqItineraryRs {
     "messages": string[],
     "userMessages": string[],
     "sessionInfo": {
-        "isAlive": true,
         "canCreatePq": true,
         "pcc": "2I61",
         "area": "A",

@@ -43,12 +43,8 @@ let blockAllUi = (url) => {
 /** @param {IRbsGetPqItineraryRs} rbsData */
 let updateSessionState = (rbsData, gdsName) => {
 	UPDATE_CUR_GDS({
+		...rbsData.sessionInfo,
 		canCreatePqErrors: rbsData.sessionInfo.canCreatePqErrors,
-		area: rbsData.sessionInfo.area,
-		pcc: rbsData.sessionInfo.pcc,
-		canCreatePq: rbsData.sessionInfo.canCreatePq,
-		hasPnr: rbsData.sessionInfo.hasPnr,
-		recordLocator: rbsData.sessionInfo.recordLocator,
 		startNewSession: false,
 		gdsName: gdsName,
 	});

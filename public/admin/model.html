@@ -35,7 +35,7 @@
         <option>ticket_designators</option>
     </datalist>
     <label>model:<input name="model" required="required" list="model-names" value="terminal_command_log"/></label>
-    <label>orderBy:<input name="orderBy" value="dt desc"/></label>
+    <label>orderBy:<input name="orderBy" value="dt desc, id desc"/></label>
     <label>skip:<input type="number" name="skip" value="0" min="0" max="1000"/></label>
     <label>limit:<input type="number" name="limit" value="100" min="0" max="1000"/></label>
     <button type="submit">Send</button>
@@ -79,7 +79,7 @@
             emcSessionId: document.cookie
                   .split('; ')
                   .map(token => token.split('='))
-                  .filter(([k,v]) => k === 'emcSessionId')
+                  .filter(([k,v]) => k === 'emcSessionId' && v)
                   .map(([k,v]) => v)[0],
             model: document.querySelector('input[name="model"]').value || null,
               orderBy: document.querySelector('input[name="orderBy"]').value || null,
@@ -131,7 +131,7 @@
         overflow-x: auto;
     }
     td > pre {
-        max-height: 36px;
+        max-height: 360px;
     }
 </style>
 

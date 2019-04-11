@@ -24,6 +24,7 @@ const KeepAlive = require("./Maintenance/KeepAlive");
 const {safe} = require('./Utils/Misc.js');
 const PersistentHttpRq = require('./Utils/PersistentHttpRq.js');
 const Misc = require("./Transpiled/Lib/Utils/Misc");
+const LoginTimeOut = require("./Utils/Rej").LoginTimeOut;
 const withGdsSession = require("./HttpControllers/MainController").withGdsSession;
 const toHandleHttp = require("./HttpControllers/MainController").toHandleHttp;
 const withAuth = require("./HttpControllers/MainController").withAuth;
@@ -266,7 +267,11 @@ app.post('/keepAliveEmc', toHandleHttp(async (rqBody) => {
 		return Promise.resolve({message: 'Foreign Project EMC id - success by default'});
 	} else {
 		let emc = await Emc.getClient();
-		return emc.doAuth(rqBody.emcSessionId);
+		return Promise.resolve()
+			.then(() => emc.doAuth(rqBody.emcSessionId))
+			.catch(exc => (exc + '').match(/session key is invalid/)
+				? LoginTimeOut('Session key expired')
+				: Promise.reject(exc));
 	}
 }));
 

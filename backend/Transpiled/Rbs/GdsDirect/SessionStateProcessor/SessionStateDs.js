@@ -1,4 +1,3 @@
-
 // namespace Rbs\GdsDirect\SessionStateProcessor;
 
 /**
@@ -10,8 +9,8 @@
  * session after application of certain commands
  */
 const php = require('../../../php.js');
-class SessionStateDs
-{
+
+class SessionStateDs {
 	constructor() {
 		this.canCreatePq = null;
 		this.pricingCmd = null;
@@ -24,39 +23,21 @@ class SessionStateDs
 		this.gdsData = null; // for GDS-es without native area support
 	}
 
-    static makeFromArray($row)  {
-        let $self;
+	static makeFromArray($row) {
+		let $self;
 
-        $self = new this();
-        $self.canCreatePq = $row['can_create_pq'] || '';
-        $self.pricingCmd = $row['pricing_cmd'] || '';
-        $self.area = $row['area'] || '';
-        $self.recordLocator = $row['record_locator'] || '';
-        $self.pcc = $row['pcc'] || '';
-        $self.hasPnr = $row['has_pnr'] || false;
-        $self.isPnrStored = $row['is_pnr_stored'] || false;
-        $self.cmdType = $row['cmdType'] || false;
-        $self.gdsData = $row['gdsData'] || false;
-        return $self;
-    }
+		$self = new this();
+		Object.assign($self, $row);
+		return $self;
+	}
 
-    toArray()  {
+	toArray() {
+		return Object.assign({}, this);
+	}
 
-        return {
-            'can_create_pq': this.canCreatePq,
-            'pricing_cmd': this.pricingCmd,
-            'area': this.area,
-            'record_locator': this.recordLocator,
-            'pcc': this.pcc,
-            'has_pnr': this.hasPnr,
-            'is_pnr_stored': this.isPnrStored,
-            'cmdType': this.cmdType,
-            'gdsData': this.gdsData,
-        };
-    }
-
-    updateFrom($that)  {
+	updateFrom($that) {
 		Object.assign(this, $that);
-    }
+	}
 }
+
 module.exports = SessionStateDs;

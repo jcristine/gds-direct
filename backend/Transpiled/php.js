@@ -146,13 +146,13 @@ php.strtotime = (dtStr, nowSec) => {
 		return Date.parse(dtStr) / 1000;
 	} else if (dtStr.match(/^\d{2}:\d{2} [AP]M$/)) {
 		return Date.parse('2016-01-01 ' + dtStr + ' Z') / 1000;
-	} else if (matches = dtStr.match(/^\+?([-+]\d+) days?$/)) {
+	} else if (matches = dtStr.match(/^\s*\+?([-+]\d+) days?$/)) {
 		return nowSec + (+matches[1]) * 24 * 60 * 60;
-	} else if (matches = dtStr.match(/^\+?([-+]\d+) hours?$/)) {
+	} else if (matches = dtStr.match(/^\s*\+?([-+]\d+) hours?$/)) {
 		return nowSec + (+matches[1]) * 60 * 60;
-	} else if (matches = dtStr.match(/^\+?([-+]\d+) minutes?$/)) {
+	} else if (matches = dtStr.match(/^\s*\+?([-+]\d+) minutes?$/)) {
 		return nowSec + (+matches[1]) * 60;
-	} else if (matches = dtStr.match(/^\+?([-+]\d+) seconds?$/)) {
+	} else if (matches = dtStr.match(/^\s*\+?([-+]\d+) seconds?$/)) {
 		return nowSec + (+matches[1]);
 	} else {
 		throw new Error('Unsupported date str format - ' + JSON.stringify(dtStr));
@@ -664,6 +664,9 @@ php.array_filter = (obj, func, flags = null) => {
 		}
 	}
 	return newObj;
+};
+php.array_reduce = (arr, reducer, initial) => {
+	return Object.values(arr).reduce(reducer, initial);
 };
 
 let isPlainObject = (val) => {

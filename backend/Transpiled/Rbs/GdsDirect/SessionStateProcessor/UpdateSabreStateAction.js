@@ -37,8 +37,8 @@ class UpdateSabreStateAction
 
     static handleSabreStoreAndCopyPnr($sessionData, $output)  {
         if (TSabreSavePnr.parseSavePnrOutput($output)['success']) {
-            $sessionData['record_locator'] = '';
-            $sessionData['is_pnr_stored'] = false;
+            $sessionData['recordLocator'] = '';
+            $sessionData['isPnrStored'] = false;
         } else {
             // errors presumably
         }
@@ -47,8 +47,8 @@ class UpdateSabreStateAction
 
     static handleSabreIgnoreAndCopyPnr($sessionData, $output)  {
         if (php.trim($output) === 'IGD') {
-            $sessionData['record_locator'] = '';
-            $sessionData['is_pnr_stored'] = false;
+            $sessionData['recordLocator'] = '';
+            $sessionData['isPnrStored'] = false;
         } else {
             // errors presumably
         }
@@ -94,16 +94,16 @@ class UpdateSabreStateAction
         $type = $commandTypeData['type'];
         $data = $commandTypeData['data'];
         if (this.constructor.isValidPricing($cmd, $output)) {
-            $sessionState['can_create_pq'] = true;
-            $sessionState['pricing_cmd'] = $cmd;
+            $sessionState['canCreatePq'] = true;
+            $sessionState['pricingCmd'] = $cmd;
         } else if (!php.in_array($type, SessionStateProcessor.getCanCreatePqSafeTypes())) {
-            $sessionState['can_create_pq'] = false;
-            $sessionState['pricing_cmd'] = null;
+            $sessionState['canCreatePq'] = false;
+            $sessionState['pricingCmd'] = null;
         }
         if (php.preg_match(/^\s*\*\s*$/, $output)) {
             // "*" output is returned by most Sabre writing commands
             // on success - this triggers PNR creation if context was empty
-            $sessionState['has_pnr'] = true;
+            $sessionState['hasPnr'] = true;
         }
         $recordLocator = '';
         $openPnr = false;
@@ -155,27 +155,27 @@ class UpdateSabreStateAction
             $sessionState = {...$areaData};
         } else if ($type === 'sell') {
             if (this.constructor.isSuccessSellOutput($output)) {
-                $sessionState['has_pnr'] = true;
+                $sessionState['hasPnr'] = true;
             }
         } else if ($type === 'sellFromLowFareSearch') {
-            // it would probably make sense to also set "can_create_pq",
+            // it would probably make sense to also set "canCreatePq",
             // but this command triggers pricing only in Sabre
             $parsed = SabrePricingParser.parse($output);
             if (!php.isset($parsed['error'])) {
-                $sessionState['has_pnr'] = true;
+                $sessionState['hasPnr'] = true;
                 if (this.constructor.isValidPricing($cmd, $output)) {
-                    $sessionState['can_create_pq'] = true;
+                    $sessionState['canCreatePq'] = true;
                 }
             }
         }
         if ($openPnr) {
-            $sessionState['record_locator'] = $recordLocator;
-            $sessionState['has_pnr'] = true;
-            $sessionState['is_pnr_stored'] = true;
+            $sessionState['recordLocator'] = $recordLocator;
+            $sessionState['hasPnr'] = true;
+            $sessionState['isPnrStored'] = true;
         } else if ($dropPnr) {
-            $sessionState['record_locator'] = '';
-            $sessionState['has_pnr'] = false;
-            $sessionState['is_pnr_stored'] = false;
+            $sessionState['recordLocator'] = '';
+            $sessionState['hasPnr'] = false;
+            $sessionState['isPnrStored'] = false;
         }
         return $sessionState;
     }

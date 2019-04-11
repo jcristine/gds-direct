@@ -170,7 +170,7 @@ class ProcessSabreTerminalInputAction {
 		let $sessionData, $number, $flatCmd;
 
 		$sessionData = $cmdLog.getSessionData();
-		if ($sessionData['is_pnr_stored']) {
+		if ($sessionData['isPnrStored']) {
 			return null;
 		}
 		if (!($number = await this.getDkNumber($sessionData['pcc']))) {
@@ -378,7 +378,7 @@ class ProcessSabreTerminalInputAction {
 			$errors.push(Errors.getMessage(Errors.CMD_FORBIDDEN, {'cmd': $cmd, 'type': $type}));
 		}
 		if (php.in_array('deletePnrField', php.array_column($flatCmds, 'type'))) {
-			if (this.getSessionData()['is_pnr_stored'] &&
+			if (this.getSessionData()['isPnrStored'] &&
 				!$agent.canEditTicketedPnr()
 			) {
 				$pnr = await this.getCurrentPnr();
@@ -418,7 +418,7 @@ class ProcessSabreTerminalInputAction {
 	getEmptyAreasFromDbState() {
 		let $isOccupied, $occupiedRows, $occupiedAreas;
 
-		$isOccupied = ($row) => $row['has_pnr'];
+		$isOccupied = ($row) => $row['hasPnr'];
 		$occupiedRows = Fp.filter($isOccupied, this.stateful.getAreaRows());
 		$occupiedAreas = php.array_column($occupiedRows, 'area');
 		$occupiedAreas.push(this.getSessionData()['area']);
@@ -468,62 +468,8 @@ class ProcessSabreTerminalInputAction {
 		}
 	}
 
-	async changeAreaImitated($area) {
-		let $calledCommands, $errorData, $sessionData, $sessionId, $areaRows, $isRequested, $row, $stopwatch,
-			$newSession, $sessionToken;
-
-		$calledCommands = [];
-
-		if (!php.in_array($area, this.constructor.AREA_LETTERS)) {
-			$errorData = {'area': $area, 'options': php.implode(', ', this.constructor.AREA_LETTERS)};
-			return {'errors': [Errors.getMessage(Errors.INVALID_AREA_LETTER, $errorData)]};
-		}
-		$sessionData = this.stateful.getSessionData();
-		if ($sessionData['area'] === $area) {
-			return {'errors': [Errors.getMessage(Errors.ALREADY_IN_THIS_AREA, {'area': $area})]};
-		}
-		$sessionId = this.getSessionData()['id'];
-		$areaRows = this.stateful.getAreaRows();
-		$isRequested = ($row) => $row['area'] === $area;
-		$row = ArrayUtil.getFirst(Fp.filter($isRequested, $areaRows));
-
-		if (!$row) {
-			$newSession = this.stateful.startNewGdsSession();
-			$sessionToken = $newSession.getSessionToken();
-			$row = SessionStateHelper.makeNewAreaData({
-				'id': $sessionId,
-				'area': $area,
-				'internal_token': $sessionToken,
-				'pcc': CmsSabreTerminal.START_PCC,
-			});
-		} else if (
-			$sessionData['internal_token'] === $row['internal_token'] &&
-			$sessionData['area'] != $area
-		) {
-			// area signed in same session using real command somehow
-			// will happen when we switch between real and imitated functionality
-			return this.changeAreaInGds($area);
-		}
-		this.stateful.getLog().updateGdsData($row, {
-			'type': 'changeArea',
-			'duration': $stopwatch.stop()['timeDelta'],
-		});
-
-		return {
-			'calledCommands': $calledCommands,
-			'userMessages': ['Successfully changed area to ' + $area],
-		};
-	}
-
 	async changeArea($area) {
-		let $useBuiltInAreas;
-
-		$useBuiltInAreas = this.constructor.USE_BUILT_IN_AREAS;
-		if ($useBuiltInAreas) {
-			return this.changeAreaInGds($area);
-		} else {
-			return this.changeAreaImitated($area);
-		}
+		return this.changeAreaInGds($area);
 	}
 
 	async emulateInFreeArea($pcc, $keepOriginal) {
@@ -535,7 +481,7 @@ class ProcessSabreTerminalInputAction {
 		if (php.empty($emptyAreas = this.getEmptyAreas())) {
 			return {'errors': [Errors.getMessage(Errors.NO_FREE_AREAS)]};
 		}
-		if (!this.getSessionData()['is_pnr_stored'] && !$keepOriginal) {
+		if (!this.getSessionData()['isPnrStored'] && !$keepOriginal) {
 			await this.runCommand('I'); // ignore the itinerary it initial area
 		}
 		$area = $emptyAreas[0];

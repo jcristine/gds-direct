@@ -306,7 +306,7 @@ class ProcessGalileoTerminalInputAction {
 
 		$cmdLog = this.stateful.getLog();
 		$sessionData = $cmdLog.getSessionData();
-		if (!$sessionData['is_pnr_stored']) {
+		if (!$sessionData['isPnrStored']) {
 			$agent = this.stateful.getAgent();
 			let msg = await CommonDataHelper.createCredentialMessage(this.stateful);
 			$remarkCmd = 'NP.' + msg;
@@ -394,7 +394,7 @@ class ProcessGalileoTerminalInputAction {
 	}
 
 	async getStoredPnr() {
-		if (this.getSessionData()['is_pnr_stored']) {
+		if (this.getSessionData()['isPnrStored']) {
 			return this.getCurrentPnr();
 		} else {
 			return null;
@@ -628,7 +628,7 @@ class ProcessGalileoTerminalInputAction {
 	getEmptyAreas() {
 		let $isOccupied, $occupiedRows, $occupiedAreas;
 
-		$isOccupied = ($row) => $row['has_pnr'];
+		$isOccupied = ($row) => $row['hasPnr'];
 		$occupiedRows = Fp.filter($isOccupied, this.stateful.getAreaRows());
 		$occupiedAreas = php.array_column($occupiedRows, 'area');
 		$occupiedAreas.push(this.getSessionData()['area']);
@@ -649,7 +649,7 @@ class ProcessGalileoTerminalInputAction {
 		if (php.empty($emptyAreas = this.getEmptyAreas())) {
 			return {'errors': [Errors.getMessage(Errors.NO_FREE_AREAS)]};
 		}
-		if (!this.getSessionData()['is_pnr_stored'] && !$aliasData['keepOriginal'] && $segmentStatus !== 'AK') {
+		if (!this.getSessionData()['isPnrStored'] && !$aliasData['keepOriginal'] && $segmentStatus !== 'AK') {
 			await this.runCommand('I', false); // ignore the itinerary it initial area
 		}
 		$area = $emptyAreas[0];
@@ -723,7 +723,7 @@ class ProcessGalileoTerminalInputAction {
 			return $cmdRec['type'] === 'addName'
 				&& !StringUtil.startsWith($cmdRec['cmd'], 'N.FAKE/');
 		};
-		$hasNamesInPnr = this.getSessionData()['is_pnr_stored']
+		$hasNamesInPnr = this.getSessionData()['isPnrStored']
 			|| Fp.any($addedRealName, await this.getFlatUsedCmds());
 		$ptcGroups = (($mods['passengers'] || {})['parsed'] || {})['ptcGroups'] || [];
 		$paxNums = Fp.flatten(php.array_column($ptcGroups, 'passengerNumbers'));

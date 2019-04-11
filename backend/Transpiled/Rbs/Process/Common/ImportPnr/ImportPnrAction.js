@@ -3,6 +3,7 @@
 
 let php = require('../../../../php');
 let ArrayUtil = require('../../../../Lib/Utils/ArrayUtil.js');
+let Fp = require('../../../../Lib/Utils/Fp.js');
 
 /**
  * this action unites the Apollo and Sabre PNR import processes
@@ -94,6 +95,46 @@ class ImportPnrAction
             throw new Error('Unsupported GDS - '+$gds);
         }
         return $status;
+    }
+
+    /**
+     * asserts that all itineraries in all pricing
+     * blocks are same and returns the itinerary
+     * @return array|null - "segments" from output of the
+     * @see FareConstructionParser
+     */
+    static getLfSegments($pricingList)  {
+        let $pricingBlockList, $segments, $pricingBlock, $i, $seg1, $seg2, $error;
+
+        $pricingBlockList = Fp.flatten(php.array_column($pricingList, 'pricingBlockList'));
+
+        $segments = null;
+        for ($pricingBlock of Object.values($pricingBlockList)) {
+            let $fcSegments = (($pricingBlock['fareInfo'] || {})['fareConstruction'] || {})['segments'];
+            if (!php.empty($fcSegments)) {
+                if (!php.isset($segments)) {
+                    $segments = $fcSegments;
+                } else {
+                    for ([$i, $seg1] of Object.entries($fcSegments)) {
+                        if ($seg2 = $segments[$i]) {
+                            if ($seg1['airline'] !== $seg2['airline'] ||
+                                $seg1['departure'] !== $seg2['departure'] ||
+                                $seg1['destination'] !== $seg2['destination']
+                            ) {
+                                $error = 'two fare construction segments are incompatible at index ['+$i+']';
+                                return [$error, null];
+                            }
+                        } else {
+                            $error = 'one of fare constructions does not have segment ['+$i+']';
+                            return [$error, null];
+                        }}
+                }
+            } else {
+                $error = 'failed to retrieve linear fare';
+                return [$error, null];
+            }}
+
+        return [null, $segments || []];
     }
 }
 module.exports = ImportPnrAction;

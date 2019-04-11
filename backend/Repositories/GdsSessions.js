@@ -6,6 +6,7 @@ let {NoContent, Conflict, NotFound, nonEmpty} = require('./../Utils/Rej.js');
 let Misc = require('./../Utils/Misc.js');
 let {chunk} = Misc;
 let Db = require('../Utils/Db.js');
+const sqlNow = require("../Utils/Misc").sqlNow;
 
 let TABLE = 'terminal_sessions';
 
@@ -45,11 +46,11 @@ exports.storeNew = async (context, gdsData) => {
 	let normalized = normalizeContext(context);
 	let contextStr = JSON.stringify(normalized);
 	let prefix = context.gds + '_' + context.agentId;
-	let logId = FluentLogger.logNewId(prefix);
+	let logId = await FluentLogger.logNewId(prefix);
 
 	let id = await Db.with(db => db.writeRows(TABLE, [{
 		gds: context.gds,
-		created_dt: new Date().toISOString(),
+		created_dt: sqlNow(),
 		agent_id: context.agentId,
 		lead_id: context.travelRequestId,
 		log_id: logId,
@@ -107,8 +108,8 @@ let makeDefaultAreaState = (gds) => ({
 		sabre: 'L3II',
 		amadeus: 'SFO1S2195',
 	}[gds] || null,
-	record_locator: '',
-	can_create_pq: false,
+	recordLocator: '',
+	canCreatePq: false,
 	scrolledCmd: null,
 	cmdCnt: 0,
 });
@@ -172,9 +173,11 @@ exports.remove = async (session) => {
 		client.hdel(keys.SESSION_TO_RECORD, session.id),
 		client.hdel(keys.SESSION_TO_STATE, session.id),
 		client.zrem(keys.SESSION_ACTIVES, session.id),
-		Db.with(db => db.writeRows(TABLE, [{
-			id: session.id, closed_dt: new Date().toISOString(),
-		}])),
+		Db.with(db => db.update({
+			table: TABLE,
+			where: [['id', '=', session.id]],
+			set: {closed_dt: sqlNow()},
+		})),
 	]);
 };
 

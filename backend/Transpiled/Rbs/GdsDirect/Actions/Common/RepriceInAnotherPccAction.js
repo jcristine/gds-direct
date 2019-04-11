@@ -312,7 +312,7 @@ class RepriceInAnotherPccAction {
 	async execute($pnr, $cmd, $dialect, $targetStr, $currentSession) {
 		let $currentGds, $startDt, $log, $target, $itinerary,
 			$translatorResult, $targetCmd;
-		$currentSession.updateAreaState({can_create_pq: false});
+		$currentSession.updateAreaState({canCreatePq: false});
 		$currentGds = $currentSession.getSessionData()['gds'];
 		$startDt = $currentSession.getStartDt();
 		$log = this.$log;

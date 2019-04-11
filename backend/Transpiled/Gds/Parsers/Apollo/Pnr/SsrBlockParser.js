@@ -189,7 +189,7 @@ class SsrBlockParser
         $line = php.substr($line, php.mb_strlen('GFAX-SSRDOCS'));
         php.preg_match(/-(?<paxNum>\d+)(?<paxInf>I\/)?/, $line, $paxNumTokens = []);
         $paxNum = php.array_key_exists('paxNum', $paxNumTokens) ? $paxNumTokens['paxNum'] : '';
-        $paxInf = php.array_key_exists('paxInf', $paxNumTokens);
+        $paxInf = $paxNumTokens['paxInf'] ? true : false;
         [$documentInfo, $paxName] = php.array_pad($line.split(/-\d+(?:I\/)?/), 2, '');
         [$pre, $travelDocType, $issuingCountry, $travelDocNumber, $nationality, $dob, $gender, $expirationDate, $lastName, $firstName, $middleName, $primaryPassportHolderToken] = php.array_pad(php.explode('/', $documentInfo), 12, '');
         $parsedExpirationDate = CommonParserHelpers.parseApolloFullDate($expirationDate);
@@ -229,8 +229,8 @@ class SsrBlockParser
         $line = php.substr($line, php.mb_strlen('GFAX-SSRDOCA'));
         php.preg_match(/-(?<paxNum>\d+)(?<paxInf>I\/)?/, $line, $paxNumTokens = []);
         $paxNum = php.array_key_exists('paxNum', $paxNumTokens) ? $paxNumTokens['paxNum'] : '';
-        $paxInf = php.array_key_exists('paxInf', $paxNumTokens);
-        [$documentInfo, $paxName] = php.array_pad(php.preg_split(/-\d+(I\/)?/, $line), 2, '');
+        $paxInf = $paxNumTokens['paxInf'] ? true : false;
+        [$documentInfo, $paxName] = php.array_pad($line.split(/-\d+(?:I\/)?/), 2, '');
         [$pre, $addressType, $country, $addressDetails, $city, $province, $postalCode] = php.array_pad(php.explode('/', $documentInfo), 7, '');
         return {
             //'pre' => $pre,
@@ -262,7 +262,7 @@ class SsrBlockParser
         $line = php.substr($line, php.mb_strlen('GFAX-SSRDOCO'));
         php.preg_match(/-(?<paxNum>\d+)(?<paxInf>I\/)?/, $line, $paxNumTokens = []);
         $paxNum = php.array_key_exists('paxNum', $paxNumTokens) ? $paxNumTokens['paxNum'] : '';
-        $paxInf = php.array_key_exists('paxInf', $paxNumTokens);
+        $paxInf = $paxNumTokens['paxInf'] ? true : false;
         [$documentInfo, $paxName] = php.array_pad($line.split(/-\d+(?:I\/)?/), 2, '');
         [$pre, $placeOfBirth, $travelDocType, $travelDocNumber, $issuingCountry, $dateOfBirth, $countryWhereApplies] = php.array_pad(php.explode('/', $documentInfo), 7, '');
         return {
@@ -392,7 +392,8 @@ class SsrBlockParser
                 'content': $extracted ? $extracted['content'] : null,
                 'data': $lineData,
                 'line': $line,
-            });}
+            });
+        }
         return $result;
     }
 }

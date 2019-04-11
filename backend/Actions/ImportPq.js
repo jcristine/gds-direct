@@ -57,7 +57,7 @@ let ImportPq = async ({stateful, leadData, fetchOptionalFields = true}) => {
 	let withRbsPqCopy = async (action) => {
 		let full = stateful.getFullState();
 		let areaState = full.areas[full.area] || {};
-		let pricingCmd = areaState.pricing_cmd;
+		let pricingCmd = areaState.pricingCmd;
 		let pcc = areaState.pcc;
 		let pnr = await getPnr(stateful);
 		let gdsData = await RbsClient.startSession({gds, agentId});
@@ -206,14 +206,14 @@ let ImportPq = async ({stateful, leadData, fetchOptionalFields = true}) => {
 		let importAct;
 		if (gds === 'apollo') {
 			importAct = new ImportPqApolloAction();
-		} else if (gds === 'sabre' && !fetchOptionalFields) {
+		} else if (gds === 'sabre') {
 			importAct = new ImportPqSabreAction();
 		} else if (gds === 'galileo' && !fetchOptionalFields) {
 			importAct = new ImportPqGalileoAction();
 		} else if (gds === 'amadeus' && !fetchOptionalFields) {
 			importAct = new ImportPqAmadeusAction();
 		} else {
-			// TODO: implement rest GDS-es and fetchOptionalFields=true
+			// TODO: implement fetchOptionalFields=true for rest GDS-es
 			// temporary fallback till real importPq implemented for all GDS on our side
 			let onRbsSession = !fetchOptionalFields
 				? ({rbsSessionId}) => RbsClient({gds, agentId})
