@@ -17,7 +17,7 @@ class ApolloVitParserDataStructureWriter
             'airline': null,
             'flightNumber': null,
             'segments': [],
-            'totalFlightDuration': null,
+            'totalTravelTime': null,
         };
     }
 
@@ -38,7 +38,7 @@ class ApolloVitParserDataStructureWriter
             this.$currentSegment['destinationDate'] = this.$currentDate['date'];
             this.$currentSegment['destinationDayOfTheWeek'] = this.$currentDate['dayOfTheWeek'];
             this.$currentSegment['destinationAirport'] = $data['airport'];
-            this.$currentSegment['destinationTime'] = $data['arrivalTime']['parsed'];
+            this.$currentSegment['destinationTime'] = ($data['arrivalTime'] || {})['parsed'];
 
             this.$currentSegment['flightDuration'] = $data['flightDuration'];
 
@@ -68,12 +68,16 @@ class ApolloVitParserDataStructureWriter
     airportFound($data)  {
         this.savePreviousSegment($data);
         if ($data['departureTime']) {
+            // 'BOM          130A',
             this.startNewSegment($data);
+        } else {
+            // 'BOM   1110P           2:10',
+            this.$currentSegment = null;
         }
     }
 
-    totalFlightDurationFound($data)  {
-        this.$result['totalFlightDuration'] = $data['flightDuration'];
+    totalTravelTimeFound($data)  {
+        this.$result['totalTravelTime'] = $data['flightDuration'];
     }
 
     getData()  {

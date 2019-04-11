@@ -32,6 +32,7 @@ let logit = (msg, id, obj = undefined) => {
 		// it will be print_r-ed otherwise
 		obj = jsExport(obj);
 	}
+	obj = obj ? JSON.parse(JSON.stringify(obj)) : undefined;
 	return withLogger(logger => logger.logit(msg, id, obj))
 		.catch(exc => {
 			let ignore = (exc + '').indexOf('Log id is older than 2 day') > -1;

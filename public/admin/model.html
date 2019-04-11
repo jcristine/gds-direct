@@ -5,13 +5,7 @@
     <textarea name="jsonParams" rows="10" cols="100">{
     "whereOr": [
         [
-            ["cmd", "not like", "*MCO%"],
-            ["cmd", "!=", "*MPD"],
-            ["output", "!=", "CK ACTN CODE \n><"],
-            ["output", "!=", "INVLD \n><"],
-            ["output", "not regexp", "^.*FORMAT[\\s\\S]*><$"],
-            ["gds", "=", "apollo"],
-            ["type", "is", null]
+            ["session_id", "=", "10874"]
         ]
     ]
 }</textarea><br/>
@@ -35,79 +29,88 @@
         <option>ticket_designators</option>
     </datalist>
     <label>model:<input name="model" required="required" list="model-names" value="terminal_command_log"/></label>
-    <label>orderBy:<input name="orderBy" value="dt desc, id desc"/></label>
+    <label>orderBy:<input name="orderBy" value="id desc"/></label>
     <label>skip:<input type="number" name="skip" value="0" min="0" max="1000"/></label>
     <label>limit:<input type="number" name="limit" value="100" min="0" max="1000"/></label>
+    <label>reverse:<input type="checkbox" name="reverse" checked="checked"/></label>
     <button type="submit">Send</button>
 </form>
 <br/>
 
 <table>
     <thead>
-        <tr id="column-header">
-            <th>stub</th>
-            <th>column</th>
-            <th>headers</th>
-        </tr>
+    <tr id="column-header">
+        <th>stub</th>
+        <th>column</th>
+        <th>headers</th>
+    </tr>
     </thead>
     <tbody id="value-rows">
-        <tr>
-            <th>stub</th>
-            <th>value</th>
-            <th>3</th>
-        </tr>
-        <tr>
-            <th>stub</th>
-            <th>value</th>
-            <th>2</th>
-        </tr>
-        <tr>
-            <th>stub</th>
-            <th>value</th>
-            <th>1</th>
-        </tr>
+    <tr>
+        <th>stub</th>
+        <th>value</th>
+        <th>3</th>
+    </tr>
+    <tr>
+        <th>stub</th>
+        <th>value</th>
+        <th>2</th>
+    </tr>
+    <tr>
+        <th>stub</th>
+        <th>value</th>
+        <th>1</th>
+    </tr>
     </tbody>
 </table>
 
 <script>
-    let filterForm = document.querySelector('#filter-criteria');
-    let colTr = document.querySelector('#column-header');
-    let rowTbody = document.querySelector('#value-rows');
-    let send = () => {
-        let jsonParamsStr = document.querySelector('textarea[name="jsonParams"]').value || null;
-        let params = {
-            emcSessionId: document.cookie
-                  .split('; ')
-                  .map(token => token.split('='))
-                  .filter(([k,v]) => k === 'emcSessionId' && v)
-                  .map(([k,v]) => v)[0],
-            model: document.querySelector('input[name="model"]').value || null,
-              orderBy: document.querySelector('input[name="orderBy"]').value || null,
-              skip: document.querySelector('input[name="skip"]').value || null,
-              limit: document.querySelector('input[name="limit"]').value || null,
-              ...(!jsonParamsStr ? {} : JSON.parse(jsonParamsStr)),
-          };
-          colTr.innerHTML = '';
-          rowTbody.innerHTML = '';
-        fetch('/admin/getModel', {method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(params)})
-            .then(a => a.json())
-            .then(({records}) => {
-                  console.log('model records', records);
-                if (records.length > 0) {
-                    let cols = Object.keys(records[0]);
-                      for (let col of cols) {
-                          colTr.innerHTML += `<th>${col}</th>`;
-                      }
-                      for (let row of records) {
-                          rowTbody.innerHTML += `<tr>` + cols.map(col => `<td><pre>${row[col]}</pre></td>`).join('') + `</tr>`;
-                      }
-                  }
-            });
-    };
-    send();
-    filterForm.onsubmit = (e) => {
-        e.preventDefault();
-        send();
+	let filterForm = document.querySelector('#filter-criteria');
+	let colTr = document.querySelector('#column-header');
+	let rowTbody = document.querySelector('#value-rows');
+	let reverseFlag = document.querySelector('input[name="reverse"]');
+	let send = () => {
+		let jsonParamsStr = document.querySelector('textarea[name="jsonParams"]').value || null;
+		let params = {
+			emcSessionId: document.cookie
+				.split('; ')
+				.map(token => token.split('='))
+				.filter(([k, v]) => k === 'emcSessionId' && v)
+				.map(([k, v]) => v)[0],
+			model: document.querySelector('input[name="model"]').value || null,
+			orderBy: document.querySelector('input[name="orderBy"]').value || null,
+			skip: document.querySelector('input[name="skip"]').value || null,
+			limit: document.querySelector('input[name="limit"]').value || null,
+			...(!jsonParamsStr ? {} : JSON.parse(jsonParamsStr)),
+		};
+		colTr.innerHTML = '';
+		rowTbody.innerHTML = '';
+		fetch('/admin/getModel', {
+			method: 'POST',
+			headers: {'Content-Type': 'application/json'},
+			body: JSON.stringify(params)
+		})
+			.then(a => a.json())
+			.then(({records}) => {
+				console.log('model records', [...records]);
+				if (records.length > 0) {
+					let cols = Object.keys(records[0]);
+					for (let col of cols) {
+						colTr.innerHTML += `<th>${col}</th>`;
+					}
+					if (reverseFlag.checked) {
+						records = records.reverse();
+					}
+					for (let row of records) {
+						rowTbody.innerHTML += `<tr>` + cols.map(col => `<td><pre>${row[col]}</pre></td>`).join('') + `</tr>`;
+					}
+				}
+			});
+	};
+	send();
+	filterForm.onsubmit = (e) => {
+		e.preventDefault();
+		send();
 		return false;
 	};
 </script>
@@ -116,13 +119,16 @@
     input:invalid {
         border: red solid 2px;
     }
+
     table {
         border-collapse: collapse;
         font-size: 12px;
     }
+
     tr:hover {
         background-color: #dcf2ff;
     }
+
     td, th {
         padding-left: 4px;
         padding-right: 4px;
@@ -130,6 +136,7 @@
         max-width: 500px;
         overflow-x: auto;
     }
+
     td > pre {
         max-height: 360px;
     }
