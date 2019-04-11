@@ -46,6 +46,7 @@ export default class Session
 						closed = true;
 					})
 					.then(result => callInProgress = false);
+				this.waitFor(pinging);
 			}
 		}, pingInterval);
 	}
