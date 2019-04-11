@@ -94,6 +94,20 @@ class Fp {
 		return $result;
 	}
 
+	static groupMap($function, $iterable) {
+		let $result, $value, $factorGroup;
+		$result = new Map();
+		for ($value of Object.values($iterable)) {
+			$factorGroup = $function($value);
+			if ($result.has($factorGroup)) {
+				$result.get($factorGroup).push($value);
+			} else {
+				$result.set($factorGroup, [$value]);
+			}
+		}
+		return $result;
+	}
+
 	/**
 	 * wraps $value into an array if $value is not array
 	 */

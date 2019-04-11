@@ -731,11 +731,11 @@ class ProcessApolloTerminalInputAction {
 
 	/** replace GK segments with $segments */
 	async rebookGkSegments($segments) {
-		let $marriageToSegs, $failedSegNums, $marriage, $segs, $chgClsCmd, $chgClsOutput;
-		$marriageToSegs = Fp.groupBy(($seg) => $seg['marriage'], $segments);
-		$failedSegNums = [];
-		for ([$marriage, $segs] of Object.entries($marriageToSegs)) {
-			$chgClsCmd =
+		let $chgClsCmd, $chgClsOutput;
+		let $marriageToSegs = Fp.groupMap(($seg) => $seg['marriage'], $segments);
+		let $failedSegNums = [];
+		for (let [$marriage, $segs] of $marriageToSegs) {
+			let $chgClsCmd =
 				'X' + php.implode('+', php.array_column($segs, 'segmentNumber')) + '/' +
 				'0' + php.implode('+', $segs.map(($seg) => $seg['segmentNumber'] + $seg['bookingClass']));
 			$chgClsOutput = (await this.runCmd($chgClsCmd, true)).output;
