@@ -85,8 +85,54 @@ class NextToken
         }
     }
 
+    // '  PIC CNN             1P/2O',
+    static _parsePtcRebookEntry(line) {
+        let match = line.match(/^\s*PIC ([A-Z0-9]{2,3})\s*((?:\/?\d+[A-Z])+)\s*$/);
+        if (match) {
+            let [_, ptc, segListStr] = match;
+            return {
+                ptc: ptc,
+                segments: segListStr.split('/').map(token => {
+                    let segmentNumber = token.slice(0, -1);
+                    let bookingClass = token.slice(-1);
+                    return {segmentNumber, bookingClass};
+                }),
+            };
+        } else {
+            return null;
+        }
+    }
+
+    // 'MULTIPLE BOOKING CODES APPLY ',
+    // ' BOOK PNR SEGMENTS ',
+    // '  PIC CNN             1P/2O',
+    static _parsePtcRebookStatement(textLeft) {
+        let match = textLeft.match(/^\s*MULTIPLE BOOKING CODES APPLY\s+BOOK PNR SEGMENTS\s*?\n/);
+        if (match) {
+            textLeft = textLeft.slice(match[0].length);
+            let linesLeft = textLeft.split('\n');
+            let line;
+            let ptcRecords = [];
+            while (line = linesLeft.shift(linesLeft)) {
+                let parsed = this._parsePtcRebookEntry(line);
+                if (parsed) {
+                    ptcRecords.push(parsed);
+                } else {
+                    linesLeft.unshift(line);
+                    break;
+                }
+            }
+            return {
+                ptcRecords: ptcRecords,
+                textLeft: linesLeft.join('\n'),
+            };
+        } else {
+            return null;
+        }
+    }
+
     static matchRebookStatement($text)  {
-        let $matches, $textLeft;
+        let $matches, parsed, $textLeft;
         $matches = [];
         if (php.preg_match(/^NO REBOOK REQUIRED\s*?\n/, $text, $matches = [])) {
             $textLeft = php.mb_substr($text, php.mb_strlen($matches[0]));
@@ -100,6 +146,8 @@ class NextToken
         } else if (php.preg_match(/^(RE)?BOOK PNR SEGMENTS?.*?\n/, $text, $matches = [])) {
             $textLeft = php.mb_substr($text, php.mb_strlen($matches[0]));
             return {'textLeft': $textLeft};
+        } else if (parsed = this._parsePtcRebookStatement($text)) {
+            return parsed;
         } else {
             return false;
         }

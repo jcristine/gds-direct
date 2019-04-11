@@ -100,6 +100,7 @@ class PricingParser
                     $structureWriter.additionalServicesStatementFound($res);
                     $text = $res['textLeft'];
                 } else if ($res = NextToken.matchRebookStatement($text)) {
+                    $structureWriter.rebookStatementFound($res);
                     $text = $res['textLeft'];
                 } else if ($res = NextToken.matchPenaltyAppliesStatement($text)) {
                     $structureWriter.penaltyAppliesStatementFound($res);

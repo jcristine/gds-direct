@@ -199,6 +199,16 @@ class PricingStructureWriter
         this.$baggageInfoLines.push($res['line']);
     }
 
+    rebookStatementFound($res) {
+        let segments = $res.segments || [];
+        for (let ptcRecord of $res.ptcRecords || []) {
+            for (let segment of ptcRecord.segments) {
+                segments.push({...segment, ptc: ptcRecord.ptc});
+            }
+        }
+        this.$dataStructure['wholePricingMarkers']['rebookSegments'] = segments;
+    }
+
     // --------------------------------------------------
 
     getStructure()  {
