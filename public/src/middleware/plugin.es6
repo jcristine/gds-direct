@@ -62,8 +62,14 @@ export default class TerminalPlugin
 
 	_parseKeyBinds( evt, terminal )
 	{
+		if (this.injectedForms.length)
+		{
+			this.outputLiner.emptyLines = 0;
+			this.outputLiner.recalculate({}); // just to re-render / reset settings
+		}
+
 		if (evt.target.tagName.toLowerCase() === 'input') {
-		        return true;
+				return true;
 		}
 
 		const hasNoShortCut = pressedShortcuts( evt, terminal, this );
@@ -153,7 +159,7 @@ export default class TerminalPlugin
 
 			keypress		: (e, terminal) => {
 				if (e.target.tagName.toLowerCase() === 'input') {
-				        return true;
+						return true;
 				}
 				const replacement = getReplacement( e, window.GdsDirectPlusState.isLanguageApollo(), this.gdsName );
 
@@ -262,9 +268,20 @@ export default class TerminalPlugin
 		this.outputLiner.removeEmpty();
 	}
 
+	_ejectForm( form ) {
+		const el = form.context;
+
+		if (this.injectedForms.indexOf( el ) > -1)
+		{
+			this.injectedForms.splice(this.injectedForms.indexOf( el ), 1);
+		}
+	}
+
 	_displayMcoMask(data)
 	{
-		let formCmp = McoForm({data, onsubmit: (data) => {
+		const cancel = () => this._ejectForm(formCmp);
+
+		let formCmp = McoForm({data, onCancel: cancel, onsubmit: (data) => {
 			let params = {
 				gds: this.gdsName,
 				fields: data.fields,
@@ -280,7 +297,9 @@ export default class TerminalPlugin
 
 	_displayExchangeMask(data)
 	{
-		let formCmp = ExchangeForm({data, onsubmit: (formResult) => {
+		const cancel = () => this._ejectForm(formCmp);
+
+		let formCmp = ExchangeForm({data, onCancel: cancel, onsubmit: (formResult) => {
 			let params = {
 				gds: this.gdsName,
 				fields: formResult.fields,
@@ -318,7 +337,10 @@ export default class TerminalPlugin
 				]),
 				Cmp('div.float-right').attach([
 					Cmp('button[Submit]'),
-					Cmp('button[Cancel]', {type: 'button', onclick: () => formCmp.context.remove()}),
+					Cmp('button[Cancel]', { type: 'button', onclick: () => {
+							formCmp.context.remove();
+							this._ejectForm(formCmp);
+						} }),
 				]),
 			]),
 			Cmp('br', {clear: 'all'}),
@@ -362,6 +384,8 @@ export default class TerminalPlugin
 
 		if (output)
 		{
+			let clearLines = false;
+
 			if ( output.trim() === '*')
 			{
 				this.terminal.update( -2 , command + ' *');
@@ -374,7 +398,12 @@ export default class TerminalPlugin
 				output = this.pagination.bindOutput(output, numOfRows - 1, numOfChars).print();
 			}
 
-			output = this.outputLiner.printOutput(output, clearScreen, appliedRules);
+			if (this.injectedForms.length)
+			{
+				clearLines = true;
+			}
+
+			output = this.outputLiner.printOutput(output, clearScreen, appliedRules, clearLines);
 		}
 
 		this.tabCommands.reset( tabCommands, output );

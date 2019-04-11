@@ -31,6 +31,10 @@ export default class Output
 
 	recalculate({numOfRows, numOfChars, charHeight}) //on view terminal change sizes
 	{
+		numOfRows	= numOfRows	 || this.numRows;
+		numOfChars	= numOfChars || this.numOfChars;
+		charHeight 	= charHeight || this.charHeight;
+
 		this.setOptions({numOfRows, numOfChars, charHeight});
 
 		this
@@ -44,7 +48,7 @@ export default class Output
 		return splitIntoLinesArr( this.outputStrings, this.numOfChars ).filter(line => line !== null).length;
 	}
 
-	_countEmpty()
+	_countEmpty(clearEmptyLines)
 	{
 		const outputRows 		= this.outputStrings ? this._getOutputLength() : 1;
 		const rowsRemoveEmpty	= () => this.emptyLines - outputRows;
@@ -52,7 +56,7 @@ export default class Output
 
 		this.emptyLines 		= this.clearScreen ? rowsToLift() : rowsRemoveEmpty();
 
-		if (this.emptyLines < 0)
+		if (clearEmptyLines || this.emptyLines < 0)
 		{
 			this.emptyLines = 0;
 		}
@@ -60,30 +64,30 @@ export default class Output
 		return this;
 	}
 
-    _printOutput(appliedRules = '', output)
-    {
-        if (appliedRules && appliedRules.length)
-        {
-            const {tips, outputText} = seedOutputString(output, appliedRules);
-            this.outputStrings 	= outputText;
+	_printOutput(appliedRules = '', output)
+	{
+		if (appliedRules && appliedRules.length)
+		{
+			const {tips, outputText} = seedOutputString(output, appliedRules);
+			this.outputStrings 	= outputText;
 
-            let cleanupLast = () => {};
+			let cleanupLast = () => {};
 			this.terminal.echo(outputText, {
 				finalize 	: (div) => {
 					cleanupLast();
 					cleanupLast = replaceInTerminal(div, tips);
 				},
 				// raw 		: true
-            });
-        } else
-        {
-            this.terminal.echo(this.outputStrings);
-        }
+			});
+		} else
+		{
+			this.terminal.echo(this.outputStrings);
+		}
 
-        return this;
-    }
+		return this;
+	}
 
-    removeEmpty()
+	removeEmpty()
 	{
 		this.context.innerHTML = '';
 	}
@@ -111,13 +115,13 @@ export default class Output
 		}
 	}
 
-	printOutput(output, isClearScreen = false, appliedRules = '')
+	printOutput(output, isClearScreen = false, appliedRules = '', clearEmptyLines)
 	{
 		this.outputStrings 	= appliedRules ? replaceChar(output, '%') : output;
 		this.clearScreen	= isClearScreen;
 		this.cmdLineOffset 	= this.terminal.cmd()[0].offsetTop; // - this.charHeight; // remember scrollTop height before the command so when clear flag screen is set scroll to this mark
 
-		this._countEmpty()._printOutput(appliedRules, output)._attachEmpty()._scroll();
+		this._countEmpty(clearEmptyLines)._printOutput(appliedRules, output)._attachEmpty()._scroll();
 
 		return this.outputStrings;
 	}

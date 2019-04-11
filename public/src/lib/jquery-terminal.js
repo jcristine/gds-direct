@@ -5676,7 +5676,7 @@
 					$.each(output_buffer, function(i, line) {
 						if (line === NEW_LINE) {
 							// I. Stinkevics CUSTOMIZATION
-							// Why? When Agents need to copy text from Firefox 
+							// Why? When Agents need to copy text from Firefox
 							// to Google Hangouts they need to preserve formating (line-breaks)
 							wrapper = $('<pre></pre>');
 						} else if ($.isFunction(line)) {
