@@ -447,8 +447,8 @@ class ProcessAmadeusTerminalInputAction {
 
 	/** @param $itinerary = MarriageItineraryParser::parse() */
 	async bookItinerary($itinerary) {
-		let $errors, $i, $segment, $bookItinerary, $result, $error, $isActive, $activeSegments, $marriageGroups,
-			$marriage, $group, $segmentNumbers, $calledCommands;
+		let $errors, $i, $segment, $bookItinerary, $result, $error,
+			$segmentNumbers, $calledCommands;
 
 		$errors = [];
 		this.stateful.flushCalledCommands();
@@ -469,11 +469,11 @@ class ProcessAmadeusTerminalInputAction {
 		if ($error = this.constructor.transformBuildError($result)) {
 			$errors.push($error);
 		} else {
-			$isActive = ($seg) => !php.in_array($seg['segmentStatus'], this.constructor.PASSIVE_STATUSES);
-			$activeSegments = Fp.filter($isActive, $itinerary);
-			$marriageGroups = Fp.groupBy(($seg) => $seg['marriage'], $activeSegments);
+			let $isActive = ($seg) => !php.in_array($seg['segmentStatus'], this.constructor.PASSIVE_STATUSES);
+			let $activeSegments = Fp.filter($isActive, $itinerary);
+			let $marriageGroups = Fp.groupMap(($seg) => $seg['marriage'], $activeSegments);
 
-			for ([$marriage, $group] of Object.entries($marriageGroups)) {
+			for (let [$marriage, $group] of $marriageGroups) {
 				if ($marriage > 0) {
 					$segmentNumbers = php.array_column($group, 'lineNumber');
 					if ($error = await this.rebookSegment($group[0]['bookingClass'], $segmentNumbers)) {
