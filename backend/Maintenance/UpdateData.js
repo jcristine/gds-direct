@@ -13,8 +13,8 @@ const Agents = require("../Repositories/Agents");
  * fetch external data like airports, ticket designators, etc... hourly
  * also will manage cleanup of tables like terminal log
  */
-let UpdateData = () => {
-	let workerLogId = FluentLogger.logNewId('updateData');
+let UpdateData = async () => {
+	let workerLogId = await FluentLogger.logNewId('updateData');
 	let logit = (msg, data) => FluentLogger.logit(msg, workerLogId, data);
 	let logExc = (msg, exc) => FluentLogger.logExc(msg, workerLogId, exc);
 

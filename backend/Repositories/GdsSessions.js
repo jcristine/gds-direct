@@ -46,7 +46,7 @@ exports.storeNew = async (context, gdsData) => {
 	let normalized = normalizeContext(context);
 	let contextStr = JSON.stringify(normalized);
 	let prefix = context.gds + '_' + context.agentId;
-	let logId = FluentLogger.logNewId(prefix);
+	let logId = await FluentLogger.logNewId(prefix);
 
 	let id = await Db.with(db => db.writeRows(TABLE, [{
 		gds: context.gds,
