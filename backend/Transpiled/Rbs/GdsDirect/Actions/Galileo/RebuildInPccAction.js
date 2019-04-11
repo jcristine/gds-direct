@@ -43,15 +43,13 @@ class RebuildInPccAction extends AbstractGdsAction {
 
 	/** replace GK segments with $segments */
 	async rebookGkSegments($segments) {
-		let $marriageToSegs, $failedSegNums, $marriage, $marriedSegs, $clsToSegs, $cls, $clsSegs, $cmd, $output;
-
-		$marriageToSegs = Fp.groupBy(($seg) => $seg['marriage'], $segments);
-		$failedSegNums = [];
-		for ([$marriage, $marriedSegs] of Object.entries($marriageToSegs)) {
-			$clsToSegs = Fp.groupBy(($seg) => $seg['bookingClass'], $marriedSegs);
-			for ([$cls, $clsSegs] of Object.entries($clsToSegs)) {
-				$cmd = '@' + php.implode('.', php.array_column($clsSegs, 'segmentNumber')) + '\/' + $cls;
-				$output = (await this.runCmd($cmd)).output;
+		let $marriageToSegs = Fp.groupMap(($seg) => $seg['marriage'], $segments);
+		let $failedSegNums = [];
+		for (let [$marriage, $marriedSegs] of $marriageToSegs) {
+			let $clsToSegs = Fp.groupBy(($seg) => $seg['bookingClass'], $marriedSegs);
+			for (let [$cls, $clsSegs] of Object.entries($clsToSegs)) {
+				let $cmd = '@' + php.implode('.', php.array_column($clsSegs, 'segmentNumber')) + '/' + $cls;
+				let $output = (await this.runCmd($cmd)).output;
 				if (!this.constructor.isSuccessRebookOutput($output)) {
 					$failedSegNums.push(php.array_column($clsSegs, 'segmentNumber'));
 				}
