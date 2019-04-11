@@ -58,6 +58,8 @@ export default class TerminalPlugin
 
 		this.history 		= new History( params.gds );
 		this.injectedForms = [];
+
+		this.insertKey	= false;
 	}
 
 	_parseKeyBinds( evt, terminal )
@@ -80,8 +82,13 @@ export default class TerminalPlugin
 		const isEnter = evt.which === 13;
 		this.f8Reader.replaceEmptyChar(evt);
 
+		if (evt.which === 45)
+		{
+			this.insertKey = !this.insertKey;
+		}
+
 		const ctrlOrMetaKey = evt.ctrlKey || evt.metaKey;
-		const replace = !this.f8Reader.getIsActive() && evt.key.length === 1 && !ctrlOrMetaKey;
+		const replace = !this.f8Reader.getIsActive() && evt.key.length === 1 && !ctrlOrMetaKey && !this.insertKey;
 
 		// if test>>>asd+sa and cursor on + // execute only between last > and + cmd
 		if (isEnter)
