@@ -110,6 +110,8 @@ export const seedOutputString = (outputText, appliedRules) => {
 	return {tips, outputText};
 };
 
+let popoverClearInterval;
+
 export const replaceInTerminal = ($div, tips) => {
 
 	let popovers = [];
@@ -135,6 +137,7 @@ export const replaceInTerminal = ($div, tips) => {
 				constraints: [{to: 'scrollParent', pin: true}],
 			},
 		});
+		console.log(popover);
 		popovers.push(popover);
 	};
 
@@ -188,6 +191,35 @@ export const replaceInTerminal = ($div, tips) => {
 			console.error('Failed to highlight key: ' + key, exc);
 		}
 	});
+
+	function setPopoverClearInterval ()
+	{
+		function clearAllPopovers ()
+		{
+			if (popovers.length)
+			{
+				popovers = popovers.filter( popover => {
+					if (popover && !document.body.contains(popover.target))
+					{
+						popover.destroy();
+						//document.body.removeChild(popover.tether.element);
+						return false;
+					}
+
+					return true;
+				} );
+			}
+		}
+
+		popoverClearInterval = setInterval(clearAllPopovers, 500);
+	}
+
+	if (popoverClearInterval)
+	{
+		clearInterval(popoverClearInterval);
+	}
+
+	setPopoverClearInterval();
 
 	// $().terminal() re-renders content on focus change leaving broken tether
 	// instance visible forever since onmouseout event never fires on target
