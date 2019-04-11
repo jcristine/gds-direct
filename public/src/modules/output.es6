@@ -5,7 +5,7 @@ import {replaceChar} from "../helpers/helpers";
 
 export default class Output
 {
-	constructor( terminal, {numOfChars, numOfRows, charHeight})
+	constructor( terminal, {numOfChars, numOfRows, charHeight}, injectedForms)
 	{
 		this.terminal		= terminal;
 
@@ -17,6 +17,8 @@ export default class Output
 		this.numRows 		= numOfRows;
 		this.numOfChars 	= numOfChars;
 		this.charHeight 	= charHeight;
+
+		this.injectedForms  = injectedForms;
 
 		this.context 		= Dom('div.emptyLinesWrapper');
 		this.terminal.cmd().after( this.context );
@@ -56,7 +58,7 @@ export default class Output
 
 		this.emptyLines 		= this.clearScreen ? rowsToLift() : rowsRemoveEmpty();
 
-		if (clearEmptyLines || this.emptyLines < 0)
+		if (clearEmptyLines || this.emptyLines < 0 || this.injectedForms.length > 0)
 		{
 			this.emptyLines = 0;
 		}
@@ -98,7 +100,7 @@ export default class Output
 
 		if (this.emptyLines > 0 )
 		{
-			this.context.innerHTML = [ ...new Array(  this.emptyLines + 1  ) ].join('<div><span>&nbsp;</span></div>');
+			this.context.innerHTML = [ ...new Array(  this.emptyLines + 1  ) ].join('<div style="user-select: none;"><span>&nbsp;</span></div>');
 		}
 
 		return this;
