@@ -113,11 +113,11 @@ class ImportSabrePnrFormatAdapter {
 
 		$leg = {};
 
-		$leg['departureTerminal'] = php.isset($legData['departureTerminal']['raw']) ? {
+		$leg['departureTerminal'] = ($legData['departureTerminal'] || {})['raw'] ? {
 			'raw': $legData['departureTerminal']['raw'],
 			'parsed': $legData['departureTerminal']['parsed'],
 		} : null;
-		$leg['destinationTerminal'] = php.isset($legData['destinationTerminal']['raw']) ? {
+		$leg['destinationTerminal'] = ($legData['destinationTerminal'] || {})['raw'] ? {
 			'raw': $legData['destinationTerminal']['raw'],
 			'parsed': $legData['destinationTerminal']['parsed'],
 		} : null;
