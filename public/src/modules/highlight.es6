@@ -55,6 +55,7 @@ const makeRule		= (rule, key, isPattern = '') => {
 const replaceAll = value => new RegExp(value, 'g');
 
 let tips 	= {};
+let popoverClearInterval, popovers = [];
 
 export const seedOutputString = (outputText, appliedRules) => {
 
@@ -111,9 +112,6 @@ export const seedOutputString = (outputText, appliedRules) => {
 };
 
 export const replaceInTerminal = ($div, tips) => {
-
-	let popovers = [];
-
 	/**
 	 * a replacement for $().popover() because requiring bootstrap causes
 	 * side effects in the form of main app popovers stopping working
@@ -188,6 +186,35 @@ export const replaceInTerminal = ($div, tips) => {
 			console.error('Failed to highlight key: ' + key, exc);
 		}
 	});
+
+	function setPopoverClearInterval ()
+	{
+		function clearAllPopovers ()
+		{
+			if (popovers.length)
+			{
+				popovers = popovers.filter( popover => {
+					if (popover && !document.body.contains(popover.target))
+					{
+						popover.destroy();
+						//document.body.removeChild(popover.tether.element);
+						return false;
+					}
+
+					return true;
+				} );
+			}
+		}
+
+		popoverClearInterval = setInterval(clearAllPopovers, 500);
+	}
+
+	if (popoverClearInterval)
+	{
+		clearInterval(popoverClearInterval);
+	}
+
+	setPopoverClearInterval();
 
 	// $().terminal() re-renders content on focus change leaving broken tether
 	// instance visible forever since onmouseout event never fires on target
