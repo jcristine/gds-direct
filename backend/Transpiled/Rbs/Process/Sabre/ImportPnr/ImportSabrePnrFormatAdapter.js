@@ -8,11 +8,7 @@ const ImportPnrAction = require('../../../../Rbs/Process/Common/ImportPnr/Import
 const ImportPnrCommonFormatAdapter = require('../../../../Rbs/Process/Common/ImportPnr/ImportPnrCommonFormatAdapter.js');
 const PtcUtil = require('../../../../Rbs/Process/Common/PtcUtil.js');
 const php = require('../../../../php.js');
-
-var require = require('../../../../translib.js').stubRequire;
-
 const FareRuleOrSegmentsParser = require('../../../../Gds/Parsers/Sabre/FareRuleOrSegmentsParser.js');
-const SabreStoredPricingAdapter = require('../../../../Rbs/FormatAdapters/SabreStoredPricingAdapter.js');
 
 /**
  * transforms output of the ImportSabrePnrAction to a common for any GDS structure
@@ -141,7 +137,7 @@ class ImportSabrePnrFormatAdapter {
 			? DateTime.decodeRelativeDateInFuture($legData['departureDate']['parsed'], $baseDate)
 			: null;
 		$fullDestinationDate = $fullDepartureDate
-			? php.date('Y-m-d', php.strtotime($fullDepartureDate + ' +' + $legData['offset'] + ' day'))
+			? php.date('Y-m-d', php.strtotime(' +' + $legData['offset'] + ' day', php.strtotime($fullDepartureDate)))
 			: null;
 
 		$leg['departureDt'] = {
@@ -160,21 +156,6 @@ class ImportSabrePnrFormatAdapter {
 		};
 
 		return $leg;
-	}
-
-	/** @param $parsedData = PqParser::parse() */
-	static transformFareQuoteInfo($parsedData, $paxNameNumsByPq, $reservationDate) {
-		let $common, $result;
-
-		if (!php.isset($parsedData['error'])) {
-			$common = (new SabreStoredPricingAdapter()).setPqToNameNumbers($paxNameNumsByPq).setReservationDate($reservationDate).transform($parsedData);
-			$common['dumpNumbers'] = $parsedData['dumpNumbers'] || [];
-			return $common;
-		} else {
-			$result = {'error': $parsedData['error'], 'errorType': $parsedData['errorType']};
-		}
-
-		return $result;
 	}
 
 	static addRequestedPtc($ptcBlocks, $mods) {
