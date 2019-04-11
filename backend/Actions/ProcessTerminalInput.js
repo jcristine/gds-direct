@@ -156,7 +156,7 @@ let runCmdRq =  async (inputCmd, stateful) => {
 		? [inputCmd] // itinerary, keep intact for rebook
 		: inputCmd.split('\n');
 	if (bulkCmds.length > 10) {
-		return BadRequest('Too many lines (' + bulkCmds + ') in your input for bulk invocation');
+		return BadRequest('Too many lines (' + bulkCmds.length + ') in your input for bulk invocation');
 	}
 	for (let cmd of bulkCmds) {
 		let running = runByGds(cmd.trim(), stateful);
