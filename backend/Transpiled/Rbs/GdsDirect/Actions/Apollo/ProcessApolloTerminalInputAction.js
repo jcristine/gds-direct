@@ -731,14 +731,13 @@ class ProcessApolloTerminalInputAction {
 
 	/** replace GK segments with $segments */
 	async rebookGkSegments($segments) {
-		let $chgClsCmd, $chgClsOutput;
 		let $marriageToSegs = Fp.groupMap(($seg) => $seg['marriage'], $segments);
 		let $failedSegNums = [];
 		for (let [$marriage, $segs] of $marriageToSegs) {
 			let $chgClsCmd =
 				'X' + php.implode('+', php.array_column($segs, 'segmentNumber')) + '/' +
 				'0' + php.implode('+', $segs.map(($seg) => $seg['segmentNumber'] + $seg['bookingClass']));
-			$chgClsOutput = (await this.runCmd($chgClsCmd, true)).output;
+			let $chgClsOutput = (await this.runCmd($chgClsCmd, true)).output;
 			if (!this.constructor.isSuccessRebookOutput($chgClsOutput)) {
 				$failedSegNums = php.array_merge($failedSegNums, php.array_column($segs, 'segmentNumber'));
 			}
@@ -757,7 +756,7 @@ class ProcessApolloTerminalInputAction {
 	/** @param $noMarriage - defines whether all segments should be booked together or with a separate command
 	 *                       each+ When you book them all at once, marriages are added, if separately - not */
 	async bookItinerary($itinerary, $fallbackToGk) {
-		let $errors, $isGkRebookPossible, $newItinerary, $gkSegments, $result, $error, $gkRebook,
+		let $errors, $isGkRebookPossible, $newItinerary, $gkSegments, $result, $error,
 			$failedSegNums, $sortResult;
 		$errors = [];
 		this.stateful.flushCalledCommands();
@@ -784,7 +783,7 @@ class ProcessApolloTerminalInputAction {
 				'errors': [$error],
 			};
 		} else {
-			$gkRebook = await this.rebookGkSegments($gkSegments);
+			let $gkRebook = await this.rebookGkSegments($gkSegments);
 			if (!php.empty($failedSegNums = $gkRebook['failedSegmentNumbers'])) {
 				$errors.push(Errors.getMessage(Errors.REBUILD_FALLBACK_TO_GK, {'segNums': php.implode(',', $failedSegNums)}));
 			}
@@ -794,7 +793,8 @@ class ProcessApolloTerminalInputAction {
 			if (!php.empty($sortResult['errors'])) {
 				return {'calledCommands': this.stateful.flushCalledCommands(), 'errors': $errors};
 			} else {
-				return {'calledCommands': $sortResult['calledCommands'], 'errors': $errors};
+				let cmdRec = await this.runCmd('*R', true);
+				return {'calledCommands': [cmdRec], 'errors': $errors};
 			}
 		}
 	}

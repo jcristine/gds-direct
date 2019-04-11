@@ -4352,6 +4352,145 @@ class ProcessApolloTerminalInputActionTest extends require('../../../../Lib/Test
 			},
 		});
 
+		$list.push({
+			'input': {
+				'title': 'Rebook segments: order is important! Order should be chronological, not by marriage value.',
+				'cmdRequested': [
+					"1 CM 435L 30NOV MCOPTY SS1   723A 1042A *         SA   E  6      3:19  738       ",
+					"2 CM 613L 30NOV PTYMDE SS1  1158A  123P *         SA   E  6      1:25  73G       ",
+					"3 CM 612L 12DEC MDEPTY SS1   417P  542P *         TH   E  4      1:25  73G       ",
+					"4 CM 434L 12DEC PTYMCO SS1   629P  954P *         TH   E  4      3:25  738       ",
+				].join('\n'),
+			},
+			'output': {
+				'status': 'executed',
+				'calledCommands': [
+					{
+					    "cmd": "*R",
+					    "output": [
+					        "NO NAMES",
+					        " 1 CM 435L 30NOV MCOPTY SS1   723A 1042A *         SA   E  1",
+					        " 2 CM 613L 30NOV PTYMDE SS1  1158A  123P *         SA   E  1",
+					        " 3 CM 612L 12DEC MDEPTY SS1   417P  542P *         TH   E  2",
+					        " 4 CM 434L 12DEC PTYMCO SS1   629P  954P *         TH   E  2",
+					        "><"
+					    ].join("\n"),
+					},
+				],
+			},
+			'sessionInfo': {
+				'initialState': php.array_merge(GdsDirectDefaults.makeDefaultApolloState()),
+				'initialCommands': [],
+				'performedCommands': [
+					{
+					    "cmd": "0CM435Y30NOVMCOPTYGK1",
+					    "output": [
+					        " 1 CM  435Y  30NOV MCOPTY GK1   723A 1042A                    ",
+					        "OFFER CAR/HOTEL    >CAL;     >HOA;",
+					        "ADD ADVANCE PASSENGER INFORMATION SSRS DOCA/DOCO/DOCS",
+					        "PERSONAL DATA WHICH IS PROVIDED TO US IN CONNECTION",
+					        "WITH YOUR TRAVEL MAY BE PASSED TO GOVERNMENT AUTHORITIES",
+					        "FOR BORDER CONTROL AND AVIATION SECURITY PURPOSES",
+					        "><"
+					    ].join("\n"),
+					    "state": {"area":"A","pcc":"2F3K","recordLocator":"","canCreatePq":false,"scrolledCmd":"0CM435Y30NOVMCOPTYGK1","cmdCnt":1,"pricingCmd":null,"hasPnr":true,"cmdType":"sell"}
+					},
+					{
+					    "cmd": "0CM613Y30NOVPTYMDEGK1",
+					    "output": [
+					        " 2 CM  613Y  30NOV PTYMDE GK1  1158A  123P                    ",
+					        "OFFER CAR/HOTEL    >CAL;     >HOA;",
+					        "ADD ADVANCE PASSENGER INFORMATION SSRS DOCA/DOCO/DOCS",
+					        "PERSONAL DATA WHICH IS PROVIDED TO US IN CONNECTION",
+					        "WITH YOUR TRAVEL MAY BE PASSED TO GOVERNMENT AUTHORITIES",
+					        "FOR BORDER CONTROL AND AVIATION SECURITY PURPOSES",
+					        "><"
+					    ].join("\n"),
+					},
+					{
+					    "cmd": "0CM612Y12DECMDEPTYGK1",
+					    "output": [
+					        " 3 CM  612Y  12DEC MDEPTY GK1   417P  542P                    ",
+					        "OFFER CAR/HOTEL    >CAL;     >HOA;",
+					        "ADD ADVANCE PASSENGER INFORMATION SSRS DOCA/DOCO/DOCS",
+					        "PERSONAL DATA WHICH IS PROVIDED TO US IN CONNECTION",
+					        "WITH YOUR TRAVEL MAY BE PASSED TO GOVERNMENT AUTHORITIES",
+					        "FOR BORDER CONTROL AND AVIATION SECURITY PURPOSES",
+					        "><"
+					    ].join("\n"),
+					},
+					{
+					    "cmd": "0CM434Y12DECPTYMCOGK1",
+					    "output": [
+					        " 4 CM  434Y  12DEC PTYMCO GK1   629P  954P                    ",
+					        "OFFER CAR/HOTEL    >CAL;     >HOA;",
+					        "ADD ADVANCE PASSENGER INFORMATION SSRS DOCA/DOCO/DOCS",
+					        "PERSONAL DATA WHICH IS PROVIDED TO US IN CONNECTION",
+					        "WITH YOUR TRAVEL MAY BE PASSED TO GOVERNMENT AUTHORITIES",
+					        "FOR BORDER CONTROL AND AVIATION SECURITY PURPOSES",
+					        "><"
+					    ].join("\n"),
+					},
+					{
+					    "cmd": "X1+2/01L+2L",
+					    "output": [
+					        "   CM  435L  30NOV MCOPTY SS1   723A 1042A *      1          E",
+					        "ETKT ELIGIBLE *",
+					        "DUPLICATE LEG-UA7149 *",
+					        "   CM  613L  30NOV PTYMDE SS1  1158A  123P *      1          E",
+					        "ETKT ELIGIBLE *",
+					        "OPERATED BY-P5 AEROREPUBLICA *",
+					        "DUPLICATE LEG-UA7107 *",
+					        "OFFER CAR/HOTEL    >CAL;     >HOA;",
+					        "ADD ADVANCE PASSENGER INFORMATION SSRS DOCA/DOCO/DOCS",
+					        "PERSONAL DATA WHICH IS PROVIDED TO US IN CONNECTION",
+					        "WITH YOUR TRAVEL MAY BE PASSED TO GOVERNMENT AUTHORITIES",
+					        "FOR BORDER CONTROL AND AVIATION SECURITY PURPOSES",
+					        "CANCEL REQUEST COMPLETED",
+					        "><"
+					    ].join("\n"),
+					},
+					{
+					    "cmd": "X3+4/03L+4L",
+					    "output": [
+					        "   CM  612L  12DEC MDEPTY SS1   417P  542P *      2          E",
+					        "ETKT ELIGIBLE *",
+					        "OPERATED BY-P5 AEROREPUBLICA *",
+					        "DUPLICATE LEG-LH5503 UA7141 *",
+					        "   CM  434L  12DEC PTYMCO SS1   629P  954P *      2          E",
+					        "ETKT ELIGIBLE *",
+					        "DUPLICATE LEG-UA7102 *",
+					        "SECURE FLIGHT *",
+					        "OFFER CAR/HOTEL    >CAL;     >HOA;",
+					        "ADD ADVANCE PASSENGER INFORMATION SSRS DOCA/DOCO/DOCS",
+					        "PERSONAL DATA WHICH IS PROVIDED TO US IN CONNECTION",
+					        "WITH YOUR TRAVEL MAY BE PASSED TO GOVERNMENT AUTHORITIES",
+					        "FOR BORDER CONTROL AND AVIATION SECURITY PURPOSES",
+					        ")><"
+					    ].join("\n"),
+					},
+					{
+					    "cmd": "MR",
+					    "output": [
+					        "CANCEL REQUEST COMPLETED",
+					        "><"
+					    ].join("\n"),
+					},
+					{
+					    "cmd": "*R",
+					    "output": [
+					        "NO NAMES",
+					        " 1 CM 435L 30NOV MCOPTY SS1   723A 1042A *         SA   E  1",
+					        " 2 CM 613L 30NOV PTYMDE SS1  1158A  123P *         SA   E  1",
+					        " 3 CM 612L 12DEC MDEPTY SS1   417P  542P *         TH   E  2",
+					        " 4 CM 434L 12DEC PTYMCO SS1   629P  954P *         TH   E  2",
+					        "><"
+					    ].join("\n"),
+					},
+				],
+			},
+		});
+
 		// problematic cases follow
 		/*
 		// STORE alias, same as previous, but this time let's remove
