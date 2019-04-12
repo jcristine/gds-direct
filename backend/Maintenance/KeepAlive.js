@@ -4,14 +4,6 @@ let GdsSessions = require('./../Repositories/GdsSessions.js');
 let FluentLogger = require('./../LibWrappers/FluentLogger.js');
 let {NoContent, LoginTimeOut} = require('./../Utils/Rej.js');
 
-// let log = (msg, ...data) => {
-// 	FluentLogger.logit(msg, workerLogId, ...data);
-// };
-//
-// let logExc = (msg, logId, data) => {
-// 	FluentLogger.logExc(msg, logId, data);
-// };
-
 let expired = (session, accessedMs) => {
 	let idleSeconds = (Date.now() - accessedMs) / 1000;
 	if (session.context.gds === 'sabre') {
@@ -29,53 +21,73 @@ let shouldClose = (userAccessMs) => {
 	return aliveSeconds > 30 * 60; // 30 minutes
 };
 
-let processSession = async (accessedMs, session, workerLogId) => {
-	let idleSeconds = ((Date.now() - accessedMs) / 1000).toFixed(3);
-	let msg = 'TODO: Processing session: #' + session.id + ' accessed ' + idleSeconds + ' s. ago - ' + ' ' + session.logId;
-	FluentLogger.logit(msg, workerLogId, session);
-	FluentLogger.logit('Processing in bg worker as the idlest session: ' + workerLogId, session.logId);
-	let processing;
-	let action = 'doNothing';
-	if (expired(session, accessedMs)) {
-		action = 'removeExpired';
-		FluentLogger.logit('TODO: Removing session, since it expired in GDS', session.logId);
-		processing = GdsSessions.remove(session);
-	} else {
-		processing = GdsSessions.getUserAccessMs(session).then(userAccessMs => {
-			let userIdleSeconds = ((Date.now() - userAccessMs) / 1000).toFixed(3);
-			FluentLogger.logit('INFO: Last _user_ access was ' + userIdleSeconds + ' s. ago', workerLogId);
-			if (shouldClose(userAccessMs)) {
-				action = 'closeLongUnused';
-				return GdsSessionController.closeSession(session).catch(exc => {
-					FluentLogger.logExc('ERROR: Failed to close session', session.logId, exc);
-					return GdsSessions.remove(session);
-				});
-			} else {
-				action = 'keepAlive';
-				return GdsSessionController.keepAliveSession(session).catch(exc => {
-					FluentLogger.logExc('ERROR: Failed to keepAlive:', session.logId, exc);
-					if (LoginTimeOut.matches(exc.httpStatusCode)) {
-						GdsSessions.remove(session);
-						action = 'closeLongUnused';
-					} else {
-						// we will take that it was connection timeout, or a lock,
-						// or something else... and that ping _did_ happen whatsoever
-						return GdsSessions.updateAccessTime(session);
-					}
-				});
-			}
-		});
-	}
-	return processing.then(result => {
-		FluentLogger.logit('Processed session: #' + session.id + ' - ' + action, workerLogId, result);
-		return result;
-	});
-};
-
-exports.expired = expired;
-exports.shouldClose = shouldClose;
-exports.run = async () => {
+let KeepAlive = async () => {
 	let workerLogId = await FluentLogger.logNewId('keepAlive');
+	let logsWritten = 0;
+	let incrementLogsWritten = async () => {
+		++logsWritten;
+		// since KeepAlive process is supposed to run infinitely, should
+		// occasionally renew log id, or we'll have a log with 100k+ entries
+		if (logsWritten > 4000) {
+			let newLogId = await FluentLogger.logNewId('keepAlive_continuation');
+			FluentLogger.logit('Continuation in @' + newLogId, workerLogId);
+			workerLogId = newLogId;
+			logsWritten = 0;
+		}
+	};
+	let log = (msg, ...data) => {
+		FluentLogger.logit(msg, workerLogId, ...data);
+		incrementLogsWritten();
+	};
+	let logExc = (msg, exc) => {
+		FluentLogger.logExc(msg, workerLogId, exc);
+		incrementLogsWritten();
+	};
+
+	let processSession = async (accessedMs, session) => {
+		let idleSeconds = ((Date.now() - accessedMs) / 1000).toFixed(3);
+		let msg = 'TODO: Processing session: #' + session.id +
+			' accessed ' + idleSeconds + ' s. ago - ' + ' ' + session.logId;
+		log(msg, session);
+		FluentLogger.logit('Processing in bg worker as the idlest session: ' + workerLogId, session.logId);
+		let processing;
+		let action = 'doNothing';
+		if (expired(session, accessedMs)) {
+			action = 'removeExpired';
+			log('TODO: Removing session, since it expired in GDS');
+			processing = GdsSessions.remove(session);
+		} else {
+			processing = GdsSessions.getUserAccessMs(session).then(userAccessMs => {
+				let userIdleSeconds = ((Date.now() - userAccessMs) / 1000).toFixed(3);
+				log('INFO: Last _user_ access was ' + userIdleSeconds + ' s. ago');
+				if (shouldClose(userAccessMs)) {
+					action = 'closeLongUnused';
+					return GdsSessionController.closeSession(session).catch(exc => {
+						FluentLogger.logExc('ERROR: Failed to close session', session.logId, exc);
+						return GdsSessions.remove(session);
+					});
+				} else {
+					action = 'keepAlive';
+					return GdsSessionController.keepAliveSession(session).catch(exc => {
+						FluentLogger.logExc('ERROR: Failed to keepAlive:', session.logId, exc);
+						if (LoginTimeOut.matches(exc.httpStatusCode)) {
+							GdsSessions.remove(session);
+							action = 'closeLongUnused';
+						} else {
+							// we will take that it was connection timeout, or a lock,
+							// or something else... and that ping _did_ happen whatsoever
+							return GdsSessions.updateAccessTime(session);
+						}
+					});
+				}
+			});
+		}
+		return processing.then(result => {
+			log('Processed session: #' + session.id + ' - ' + action, result);
+			return result;
+		});
+	};
+
 	let onIdles = [];
 	let waiting = null;
 	let resolveTerminated = null;
@@ -83,14 +95,14 @@ exports.run = async () => {
 		resolveTerminated = resolve;
 		if (waiting) {
 			clearTimeout(waiting);
-			FluentLogger.logit('Exiting gracefully from waiting state', workerLogId);
+			log('Exiting gracefully from waiting state');
 			resolveTerminated();
 		}
 	};
 
 	let processNextSession = () => {
 		if (resolveTerminated) {
-			FluentLogger.logit('Exiting gracefully after clearing last session', workerLogId);
+			log('Exiting gracefully after clearing last session');
 			resolveTerminated();
 		}
 		GdsSessions.takeIdlest()
@@ -111,7 +123,7 @@ exports.run = async () => {
 				} else {
 					msg = 'ERROR: Could not take most idle session, waiting for ' + delay + ' ms';
 				}
-				FluentLogger.logExc(msg, workerLogId, exc);
+				logExc(msg, exc);
 				waiting = setTimeout(processNextSession, delay);
 				onIdles.forEach(cb => cb());
 			});
@@ -127,3 +139,7 @@ exports.run = async () => {
 		},
 	};
 };
+
+exports.expired = expired;
+exports.shouldClose = shouldClose;
+exports.run = () => KeepAlive();
