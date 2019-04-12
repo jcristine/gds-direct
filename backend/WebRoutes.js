@@ -64,11 +64,14 @@ app.use('/public', (rq, rs, next) => {
 });
 app.use('/public', express.static(__dirname + '/../public'));
 
+//============================
+// page initialization routes follow
+//============================
+
 app.get('/gdsDirect/view', withAuth(UserController.getView));
 app.get('/autoComplete', async (req, res) => {
 	res.send(JSON.stringify(await CompletionData.getData(req)));
 });
-
 /**
  * Function separates font color from background color so we can apply
  * two different classes in frontend for highlighting
@@ -86,6 +89,58 @@ let separateBgColors = (nameToStyles) => {
 	}
 	return $colorsParsed;
 };
+app.get('/gdsDirect/themes', toHandleHttp(() =>
+	Db.with(db => db.fetchAll({table: 'terminalThemes'}))
+		.then(rows => ({
+			terminalThemes: rows.map(r => {
+				return ({
+					id: r.id,
+					label: r.label,
+					colors: JSON.parse(r.colors || '{}'),
+					colorsParsed: separateBgColors(JSON.parse(r.colors || '{}')),
+				});
+			}),
+		}))
+));
+app.get('/emcLoginUrl', toHandleHttp(async rqBody => {
+	let returnUrl = rqBody.returnUrl;
+	let config = await getConfig();
+	let emc = await Emc.getClient();
+	let result = await emc.getLoginPage(config.external_service.emc.projectName, returnUrl);
+	return {emcLoginUrl: result.data.data};
+}));
+app.get('/authorizeEmcToken', toHandleHttp(async rqBody => {
+	let token = rqBody.token;
+	let emc = await Emc.getClient();
+	let result = await emc.authorizeToken(token);
+	return {emcSessionId: result.data.sessionKey};
+}));
+app.get('/checkEmcSessionId', toHandleHttp(async rqBody => {
+	let sessionInfo = await Emc.getClient()
+		.then(emc => emc.sessionInfo(rqBody.emcSessionId))
+		.catch(exc => null);
+	return {
+		isValid: (((sessionInfo || {}).data || {}).user || {}).id > 0,
+	};
+}));
+app.post('/keepAliveEmc', toHandleHttp(async (rqBody) => {
+	if (!rqBody.emcSessionId) {
+		return BadReqeust('emcSessionId parameter is mandatory');
+	} else if (rqBody.isForeignProjectEmcId) {
+		return Promise.resolve({message: 'Foreign Project EMC id - success by default'});
+	} else {
+		let emc = await Emc.getClient();
+		return Promise.resolve()
+			.then(() => emc.doAuth(rqBody.emcSessionId))
+			.catch(exc => (exc + '').match(/session key is invalid/)
+				? LoginTimeOut('Session key expired')
+				: Promise.reject(exc));
+	}
+}));
+
+//==========================
+// terminal actions follow
+//==========================
 
 app.get('/terminal/saveSetting/:name/:currentGds/:value', withAuth((reqBody, emcResult, routeParams) => {
 	let {name, currentGds, value} = routeParams;
@@ -105,6 +160,11 @@ app.post('/terminal/exchangeTicket', withGdsSession(GdsSessionController.exchang
 app.post('/terminal/confirmExchangeFareDifference', withGdsSession(GdsSessionController.confirmExchangeFareDifference));
 app.get('/terminal/lastCommands', withAuth(GdsSessionController.getLastCommands));
 app.get('/terminal/clearBuffer', withAuth(GdsSessionController.clearBuffer));
+
+//=====================
+// /admin/* routes follow
+//=====================
+
 //app.use('/admin/updateHighlightRules', express.bodyParser({limit: '10mb'}));
 app.post('/admin/updateHighlightRules', withAuth((reqBody, emcResult) => {
 	if (admins.includes(+emcResult.user.id)) {
@@ -127,106 +187,12 @@ app.post('/admin/terminal/themes/delete', withAuth(rqBody => {
 	let sql = 'DELETE FROM terminalThemes WHERE id = ?';
 	return Db.with(db => db.query(sql, [rqBody.id]));
 }));
-app.get('/gdsDirect/themes', toHandleHttp(() =>
-	Db.with(db => db.fetchAll({table: 'terminalThemes'}))
-		.then(rows => ({
-			terminalThemes: rows.map(r => {
-				return ({
-					id: r.id,
-					label: r.label,
-					colors: JSON.parse(r.colors || '{}'),
-					colorsParsed: separateBgColors(JSON.parse(r.colors || '{}')),
-				});
-			}),
-		}))
-));
 
 app.post('/admin/terminal/sessionsGet', toHandleHttp(async rqBody => {
 	let sessions = await GdsSessions.getHist(rqBody);
 	return {
 		aaData: sessions,
 	};
-}));
-
-app.get('/emcLoginUrl', toHandleHttp(async rqBody => {
-	let returnUrl = rqBody.returnUrl;
-	let config = await getConfig();
-	let emc = await Emc.getClient();
-	let result = await emc.getLoginPage(config.external_service.emc.projectName, returnUrl);
-	return {emcLoginUrl: result.data.data};
-}));
-app.get('/authorizeEmcToken', toHandleHttp(async rqBody => {
-	let token = rqBody.token;
-	let emc = await Emc.getClient();
-	let result = await emc.authorizeToken(token);
-	return {emcSessionId: result.data.sessionKey};
-}));
-app.get('/checkEmcSessionId', toHandleHttp(async rqBody => {
-	let sessionInfo = await Emc.getClient()
-		.then(emc => emc.sessionInfo(rqBody.emcSessionId))
-		.catch(exc => null);
-	return {
-		isValid: (((sessionInfo || {}).data || {}).user || {}).id > 0,
-	};
-}));
-
-app.get('/doSomeHeavyStuff', withAuth((reqBody, emcResult) => {
-	if (emcResult.user.id == 6206) {
-		let hrtimeStart = process.hrtime();
-		let sum = 0;
-		for (let i = 0; i < 1000000000; ++i) {
-			sum += i % 2 ? i : -i;
-		}
-		let hrtimeDiff = process.hrtime(hrtimeStart);
-		return {message: 'Done in ' + hrtimeToDecimal(hrtimeDiff) + ' ' + sum};
-	} else {
-		return Forbidden('Sorry, you must be me in order to use that');
-	}
-}));
-app.get('/runMigrations', withAuth((reqBody, emcResult) => {
-	if (emcResult.user.id == 6206) {
-		return Migration.run();
-	} else {
-		return Forbidden('Sorry, you must be me in order to use that');
-	}
-}));
-app.get('/runKeepAlive', withAuth((reqBody, emcResult) => {
-	if (emcResult.user.id == 6206) {
-		let keepAlive = KeepAlive.run();
-		keepAlive.onIdle = () => keepAlive.terminate();
-		return {workerLogId: keepAlive.workerLogId};
-	} else {
-		return Forbidden('Sorry, you must be me in order to use that');
-	}
-}));
-app.get('/testHttpRq', withAuth((reqBody, emcResult) => {
-	if (emcResult.user.id == 6206) {
-		let rqParams = JSON.parse(reqBody.rqParams);
-		rqParams.dropConnection = true;
-		return PersistentHttpRq(rqParams);
-	} else {
-		return Forbidden('Sorry, you must be me in order to use that');
-	}
-}));
-app.get('/testRedisWrite', withAuth(async (reqBody, emcResult) => {
-	if (emcResult.user.id == 6206) {
-		let redis = await Redis.getClient();
-		return redis.hset(Redis.keys.USER_TO_TMP_SETTINGS + ':' + emcResult.user.id, reqBody.key, reqBody.val)
-			.then(rs => ({rs}));
-	} else {
-		return Forbidden('Sorry, you must be me in order to use that');
-	}
-}));
-app.get('/getAgentList', withAuth(async (reqBody, emcResult) => {
-	if (emcResult.user.id == 6206) {
-		let emc = await Emc.getClient();
-		// keeping useCache false will cause "Not ready yet. Project: 178, Company:" error
-		emc.setMethod('getUsers');
-		let users = await emc.call();
-		return users;
-	} else {
-		return Forbidden('Sorry, you must be me in order to use that');
-	}
 }));
 app.post('/admin/getModel', withAuth(async (reqBody, emcResult) => {
 	if (emcResult.user.id == 6206) {
@@ -260,20 +226,44 @@ app.get('/parser/test', toHandleHttp((rqBody) => {
 	result = FareConstructionParser.parse(rqBody.input);
 	return result;
 }));
-app.post('/keepAliveEmc', toHandleHttp(async (rqBody) => {
-	if (!rqBody.emcSessionId) {
-		return BadReqeust('emcSessionId parameter is mandatory');
-	} else if (rqBody.isForeignProjectEmcId) {
-		return Promise.resolve({message: 'Foreign Project EMC id - success by default'});
+
+//===============================
+// one-time script-triggering routes follow
+//===============================
+
+app.get('/testHttpRq', withAuth((reqBody, emcResult) => {
+	if (emcResult.user.id == 6206) {
+		let rqParams = JSON.parse(reqBody.rqParams);
+		rqParams.dropConnection = true;
+		return PersistentHttpRq(rqParams);
 	} else {
-		let emc = await Emc.getClient();
-		return Promise.resolve()
-			.then(() => emc.doAuth(rqBody.emcSessionId))
-			.catch(exc => (exc + '').match(/session key is invalid/)
-				? LoginTimeOut('Session key expired')
-				: Promise.reject(exc));
+		return Forbidden('Sorry, you must be me in order to use that');
 	}
 }));
+app.get('/testRedisWrite', withAuth(async (reqBody, emcResult) => {
+	if (emcResult.user.id == 6206) {
+		let redis = await Redis.getClient();
+		return redis.hset(Redis.keys.USER_TO_TMP_SETTINGS + ':' + emcResult.user.id, reqBody.key, reqBody.val)
+			.then(rs => ({rs}));
+	} else {
+		return Forbidden('Sorry, you must be me in order to use that');
+	}
+}));
+app.get('/getAgentList', withAuth(async (reqBody, emcResult) => {
+	if (emcResult.user.id == 6206) {
+		let emc = await Emc.getClient();
+		// keeping useCache false will cause "Not ready yet. Project: 178, Company:" error
+		emc.setMethod('getUsers');
+		let users = await emc.call();
+		return users;
+	} else {
+		return Forbidden('Sorry, you must be me in order to use that');
+	}
+}));
+
+//============================
+// socket listener initialization follows
+//============================
 
 getConfig().then(config => {
 	app.listen(+config.HTTP_PORT, config.HOST, function () {
