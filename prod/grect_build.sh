@@ -26,7 +26,7 @@ if [ -z "$nextTag" ]; then
     # # update local tags information
     git fetch --prune origin +refs/tags/*:refs/tags/*
     lastTag=`git tag -l | sort -V | tail -n1`
-    nextTag="`python3 ~/bin/make_next_tag.py $lastTag`"
+    nextTag="`python3 prod/make_next_tag.py $lastTag`"
     echo "${YELLOW}Last tag:${RESTORE} ${lastTag}";
     echo "${GREEN}Next tag:${RESTORE} ${nextTag}";
 
