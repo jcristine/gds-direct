@@ -1,6 +1,4 @@
 import '../src/actions/initAuthPage.js';
-import '../node_modules/jquery/dist/jquery.slim.js';
-import '../node_modules/select2/dist/js/select2.min.js';
 import Component from '../src/modules/component.es6';
 
 let Cmp = (...args) => new Component(...args);
