@@ -369,15 +369,13 @@ module.exports.migrations = [
 		},
 	},
 	{
-		name: 'GRECT/2019.04.12003-create-shortcut-actions-table',
+		name: 'GRECT/2019.04.12003-create-shortcut-actions-table-2',
 		perform: (db) => db.query([
 			"CREATE TABLE shortcut_actions (",
 			"    id INT NOT NULL PRIMARY KEY AUTO_INCREMENT,",
 			"    gds VARCHAR(10) NOT NULL,",
-			"    pcc VARCHAR(9) DEFAULT NULL,",
 			"    name VARCHAR(100) NOT NULL,",
-			"    data TEXT NOT NULL,",
-			"    UNIQUE KEY name_gds_pcc_name (name, gds, pcc)",
+			"    data TEXT NOT NULL",
 			") ENGINE=InnoDB DEFAULT CHARSET=utf8",
 		].join('\n')),
 	},
