@@ -102,7 +102,7 @@ class GalileoPricingAdapter {
 			php.array_column($mods, 'parsed')
 		);
 		$modPtcData = this.getModPtcData($paxNumber);
-		$cmdPtc = $modPtcData['ptc'] || $ptcBlock['ptc'];
+		$cmdPtc = ($modPtcData || {})['ptc'] || $ptcBlock['ptc'];
 		return {
 			'ptcInfo': {
 				'ptc': $ptcBlock['ptc'],
@@ -156,7 +156,7 @@ class GalileoPricingAdapter {
 		for ([$i, $ptcBlock] of Object.entries($linearFare['ptcBlocks'])) {
 			$paxNumber = ArrayUtil.getFirst($ptcBlock['passengerNumbers']);
 			$modPtcData = this.getModPtcData($paxNumber);
-			$fullPtc = !php.empty($modPtcData['ptc']) ? $modPtcData['ptc'] + $modPtcData['ptcDescription'] : 'ADT';
+			$fullPtc = $modPtcData && $modPtcData['ptc'] ? $modPtcData['ptc'] + $modPtcData['ptcDescription'] : 'ADT';
 			$msgs = $fullPtcToMsgs[$fullPtc] || [];
 			$baggageBlock = ($ptcList['bagPtcPricingBlocks'] || {})[$i];
 			$pricingBlockList.push(this.transformPtcBlock($ptcBlock, $msgs, $baggageBlock, $paxNumber));
