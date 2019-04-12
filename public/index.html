@@ -7,44 +7,11 @@
 <body>
 
 <div id="terminalContext" style="height: 100%;"></div>
+
+<script src="src/actions/initAuthPage.js"></script>
 <script src="terminal-bundle.js"></script>
 <script>
-	// TODO: move this authentication code to a module and use it from all admin pages
-	let urlObj = new URL(window.location.href);
-	let rawToken = urlObj.searchParams.get('token');
-	urlObj.searchParams.delete('token');
-	let hashStr = urlObj.hash.substr(1);
-	urlObj.hash = '';
-
-	let hashData = {};
-	let cookieData = {};
-	for (let pair of hashStr.split('&')) {
-		let [key, value] = pair.split('=');
-		hashData[key] = value;
-	}
-	for (let pair of document.cookie.split('; ')) {
-		let [key, value] = pair.split('=');
-		cookieData[key] = value;
-	}
-
-	let emcSessionId = hashData.emcSessionId || cookieData.emcSessionId;
-
-	let redirectToLoginPage = () => {
-		fetch('/emcLoginUrl?returnUrl=' + encodeURIComponent(window.location.href))
-			.then(rs => rs.json())
-			.then(rsBody => {
-				if (rsBody.emcLoginUrl) {
-					window.location.href = rsBody.emcLoginUrl;
-				} else {
-					console.error('Invalid /emcLoginUrl response', rsBody);
-				}
-			});
-	};
-
-	let onEmcSessionId = (emcSessionId) => {
-		document.cookie = 'emcSessionId=' + emcSessionId;
-		window.history.replaceState('', '', urlObj.href); // remove GET params and # params
-
+	window.GdsDirectPlusPage.whenEmcSessionId.then(emcSessionId => {
 		let isDev = !(window.location.hostname + '').endsWith('.asaptickets.com');
 		window.InitGdsDirectPlusApp({
 			htmlRootDom		: document.getElementById('terminalContext'),
@@ -65,60 +32,17 @@
 		}).catch(exc => {
 			// remove expired token
 			document.cookie = 'emcSessionId=';
-			redirectToLoginPage();
+			window.GdsDirectPlusPage.redirectToLoginPage();
 			return Promise.reject(exc);
 		});
-	};
-
-	if (emcSessionId) {
-		onEmcSessionId(emcSessionId);
-	} else {
-		if (rawToken) {
-			fetch('/authorizeEmcToken?token=' + encodeURIComponent(rawToken))
-				.then(rs => rs.json())
-				.then(rsBody => onEmcSessionId(rsBody.emcSessionId));
-		} else {
-			redirectToLoginPage();
-		}
-	}
+	});
 </script>
 
 <div style="display: none">
-	<button onclick="window.testMultiThreading()">Test Multi-threading</button>
 	<button onclick="window.updateHighlightRulesFromProd()">Update Highlight Rules From Prod</button>
 	<div class="multi-threading-test-output" style="background-color: white; color: black; min-height: 200px;"></div>
 </div>
 <script>
-	window.testMultiThreading = () => {
-		let startedAt = window.performance.now();
-		let results = [];
-		let cpuCnt = 4;
-		for (let i = 0; i < cpuCnt; ++i) {
-			fetch('/doSomeHeavyStuff?emcSessionId=' + emcSessionId, {
-				headers: {
-					connection: 'close',
-				},
-			})  .then(resp => resp.text())
-				.then(resp => {
-					let responseTime = ((window.performance.now() - startedAt) / 1000).toFixed(4);
-					document.querySelector('.multi-threading-test-output').innerHTML +=
-						'Response #' + i + ' at ' + responseTime + ' ' + resp + '<br/>';
-					results.push(responseTime);
-					if (results.length === cpuCnt) {
-						let min = Math.min(...results);
-						let diff = (Math.max(...results) - min).toFixed(4);
-						document.querySelector('.multi-threading-test-output').innerHTML +=
-							'Done ' + cpuCnt + ' jobs with results: ' + results + '<br/>';
-						document.querySelector('.multi-threading-test-output').innerHTML += diff < min
-							? '<div style="color: green;">' + 'Diff: ' + diff + ' OK, Requests seem to be processed with multiple threads</div>'
-							: '<div style="color: red;">' + 'Diff: ' + diff + ' ERROR, Requests seem to be processed with a single thread</div>';
-					}
-				});
-		}
-		document.querySelector('.multi-threading-test-output').innerHTML +=
-			   'Started ' + cpuCnt + ' jobs. Please wait...' + '<br/>';
-
-	};
 	window.updateHighlightRulesFromProd = () => {
 		let destinationUrl = '/admin/updateHighlightRules';
 		let promises = [
