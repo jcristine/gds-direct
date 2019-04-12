@@ -40,6 +40,7 @@
     "clearTimeout": false,
     "setInterval": false,
     "clearInterval": false,
+    "alert": false,
 
     "Promise": false,
     "Set": false,
