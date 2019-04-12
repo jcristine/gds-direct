@@ -47,7 +47,7 @@ class GalileoPricingAdapter {
 		$pMod = $modTypeToData['passengers'];
 		return $pMod && $pMod['appliesToAll']
 			? $pMod['ptcGroups'][0]
-			: this.constructor.getFirst($hasPassengerNumber, $pMod['ptcGroups'] || [], null);
+			: this.constructor.getFirst($hasPassengerNumber, ($pMod || {})['ptcGroups'] || [], null);
 	}
 
 	static transformFareInfo($ptcBlock) {
