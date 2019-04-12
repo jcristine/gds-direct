@@ -3,131 +3,23 @@
 <div class="root">
     <div style="display: inline-block">
         <h3>Shortcut Actions Admin Page</h3>
+        <h4 class="please-wait-msg">Please wait...</h4>
         <form name="shortcut-table-form">
             <table>
                 <thead>
                     <tr>
                         <th>ID</th>
-                        <th>Global Shortcut</th>
+                        <th>Action Name</th>
                         <th>GDS</th>
                         <th>PCC</th>
-                        <th>Action Name</th>
                         <th>Commands</th>
+                        <th>Global Shortcut</th>
                     </tr>
                 </thead>
-                <tbody>
-                    <tr>
-                        <td></td>
-                        <td><button type="button" onclick="alert('TODO: implement!')">Set</button></td>
-                        <td><select>
-                            <option selected="selected">apollo</option>
-                            <option>sabre</option>
-                            <option>galileo</option>
-                            <option>amadeus</option>
-                        </select></td>
-                        <td><input type="text" placeholder="Any" size="9"/></td>
-                        <td><input type="text" value="TSA Remark"/></td>
-                        <td>
-                            <div class="command-list">
-                                <div class="command-list-entry">
-                                    <input name="" type="text" value="¤:3SSRDOCSYYHK1/N{{tab_2}}/////{{tab_7}}/{{tab_1}}//{{tab_20}}/{{tab_20}}/"/>
-                                    <button type="button" onclick="alert('TODO: implement!')">Remove</button>
-                                    <button type="button" onclick="alert('TODO: implement!')">Add</button>
-                                </div>
-                            </div>
-                        </td>
-                        <td><button type="button" onclick="alert('TODO: implement!')">Remove</button></td>
-                    </tr>
-                    <tr>
-                        <td></td>
-                        <td><button type="button" onclick="alert('TODO: implement!')">Set</button></td>
-                        <td><select>
-                            <option selected="selected">apollo</option>
-                            <option>sabre</option>
-                            <option>galileo</option>
-                            <option>amadeus</option>
-                        </select></td>
-                        <td><input type="text" placeholder="Any" size="9"/></td>
-                        <td><input type="text" value="Retention Line"/></td>
-                        <td>
-                            <div class="command-list">
-                                <div class="command-list-entry">
-                                    <input name="" type="text" value="0TURZZBK1YYZ{{datePlus320}}-RETENTION LINE"/>
-                                    <button type="button" onclick="alert('TODO: implement!')">Remove</button>
-                                    <button type="button" onclick="alert('TODO: implement!')">Add</button>
-                                </div>
-                            </div>
-                        </td>
-                        <td><button type="button" onclick="alert('TODO: implement!')">Remove</button></td>
-                    </tr>
-                    <tr>
-                        <td></td>
-                        <td><button type="button" onclick="alert('TODO: implement!')">Set</button></td>
-                        <td><select>
-                            <option selected="selected">apollo</option>
-                            <option>sabre</option>
-                            <option>galileo</option>
-                            <option>amadeus</option>
-                        </select></td>
-                        <td><input type="text" placeholder="Any" size="9"/></td>
-                        <td><input type="text" value="Ticketing Remarks"/></td>
-                        <td>
-                            <div class="command-list">
-                                <div class="command-list-entry">
-                                    <input name="" type="text" value="S*ITN"/>
-                                    <button type="button" onclick="alert('TODO: implement!')">Remove</button>
-                                    <button type="button" onclick="alert('TODO: implement!')">Add</button>
-                                </div>
-                                <div class="command-list-entry">
-                                    <input name="" type="text" value="SL*1"/>
-                                    <button type="button" onclick="alert('TODO: implement!')">Remove</button>
-                                    <button type="button" onclick="alert('TODO: implement!')">Add</button>
-                                </div>
-                                <div class="command-list-entry">
-                                    <input name="" type="text" value="MV/+*{{userName}}"/>
-                                    <button type="button" onclick="alert('TODO: implement!')">Remove</button>
-                                    <button type="button" onclick="alert('TODO: implement!')">Add</button>
-                                </div>
-                                <div class="command-list-entry">
-                                    <input name="" type="text" value="R:{{userName}}"/>
-                                    <button type="button" onclick="alert('TODO: implement!')">Remove</button>
-                                    <button type="button" onclick="alert('TODO: implement!')">Add</button>
-                                </div>
-                                <div class="command-list-entry">
-                                    <input name="" type="text" value="ER"/>
-                                    <button type="button" onclick="alert('TODO: implement!')">Remove</button>
-                                    <button type="button" onclick="alert('TODO: implement!')">Add</button>
-                                </div>
-                            </div>
-                        </td>
-                        <td><button type="button" onclick="alert('TODO: implement!')">Remove</button></td>
-                    </tr>
-                    <tr>
-                        <td></td>
-                        <td><button type="button" onclick="alert('TODO: implement!')">Set</button></td>
-                        <td><select>
-                            <option selected="selected">apollo</option>
-                            <option>sabre</option>
-                            <option>galileo</option>
-                            <option>amadeus</option>
-                        </select></td>
-                        <td><input type="text" placeholder="Any" size="9"/></td>
-                        <td><input type="text" value="APIS Remark"/></td>
-                        <td>
-                            <div class="command-list">
-                                <div class="command-list-entry">
-                                    <input name="" type="text" value=""/>
-                                    <button type="button" onclick="alert('TODO: implement!')">Remove</button>
-                                    <button type="button" onclick="alert('TODO: implement!')">Add</button>
-                                </div>
-                            </div>
-                        </td>
-                        <td><button type="button" onclick="alert('TODO: implement!')">Remove</button></td>
-                    </tr>
-                </tbody>
+                <tbody class="shortcut-list"></tbody>
             </table>
             <div class="btn-footer">
-                <button type="button" onclick="alert('TODO: implement!')">Add</button>
+                <button type="button" class="add-shortcut-action" onclick="alert('Pls, wait till data loads')">Add</button>
                 <button type="submit">Save Changes</button>
             </div>
         </form>
@@ -140,21 +32,13 @@
                 <li><code>{{dateNow}}</code> replaced with current date in format "10APR"</li>
                 <li><code>{{datePlus320}}</code> replaced with date 320 days from now in format "24FEB"</li>
             </ul>
+            <i>Currently only the admin page is implemented, completion for settings of agent is on the way</i>
         </div>
     </div>
 </div>
 
-<script>
-(() => {
-    let form = document.querySelector('form[name="shortcut-table-form"]');
-    form.onsubmit = (e) => {
-    	e.preventDefault();
-    	alert('TODO: implement!');
-    	return false;
-    };
-})();
-</script>
-
+<script type="module" src="./shortcutActions.js"></script>
+<link href="../node_modules/select2/dist/css/select2.min.css" rel="stylesheet" />
 <style>
     .root {
         text-align: center;
