@@ -22,9 +22,9 @@ export default class KeySettings extends ButtonPopOver
 
 		this.makeTrigger({
 			onclick : () => {
-                return get('/autoComplete?pccs=1')
-                    .then(pccs => {
-                        this.pccs = pccs;
+                return get('/data/getPccList')
+                    .then(({records}) => {
+                        this.pccs = records;
 
                         this.popContent.innerHTML = '';
                         const c = new Context(this, keyBindings, gdsAreaSettings);

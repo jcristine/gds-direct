@@ -1,6 +1,6 @@
 const Pccs = require("../Repositories/Pccs");
 
-exports.getData = async (req) => {
+exports.getPccList = async () => {
     let pccs = await Pccs.getAll();
     return pccs.map(row => ({
         "id": 0,

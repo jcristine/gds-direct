@@ -5,7 +5,6 @@ let CompletionData = require('./HttpControllers/CompletionData.js');
 let Emc = require('./LibWrappers/Emc.js');
 let GdsSessionController = require('./HttpControllers/GdsSessionController.js');
 let TerminalBaseController = require('./Transpiled/App/Controllers/TerminalBaseController.js');
-let {hrtimeToDecimal} = require('./Utils/Misc.js');
 let {Forbidden, BadReqeust} = require('./Utils/Rej.js');
 let {admins} = require('./Constants.js');
 let UpdateHighlightRulesFromProd = require('./Actions/UpdateHighlightRulesFromProd.js');
@@ -16,11 +15,9 @@ let Redis = require('./LibWrappers/Redis.js');
 let initSocketIo = require('socket.io');
 let {getConfig} = require('./Config.js');
 let GdsSessions = require('./Repositories/GdsSessions.js');
-let Migration = require("./Maintenance/Migration");
 const CommandParser = require("./Transpiled/Gds/Parsers/Apollo/CommandParser");
 const PnrParser = require("./Transpiled/Gds/Parsers/Apollo/Pnr/PnrParser");
 const FareConstructionParser = require("./Transpiled/Gds/Parsers/Common/FareConstruction/FareConstructionParser");
-const KeepAlive = require("./Maintenance/KeepAlive");
 const {safe} = require('./Utils/Misc.js');
 const PersistentHttpRq = require('./Utils/PersistentHttpRq.js');
 const Misc = require("./Transpiled/Lib/Utils/Misc");
@@ -50,7 +47,7 @@ app.get('/', (req, res) => {
 	return res.redirect(newUrl);
 });
 app.use('/public', (rq, rs, next) => {
-	if (rq.path.endsWith('.js')) {
+	if (rq.path.endsWith('.js') || rq.path.endsWith('.es6')) {
 		rs.setHeader('Content-Type', 'application/javascript');
 		// 10 minutes. Should eventually start sending a bg request
 		// to server to invalidate cache if response is not 304
@@ -69,9 +66,10 @@ app.use('/public', express.static(__dirname + '/../public'));
 //============================
 
 app.get('/gdsDirect/view', withAuth(UserController.getView));
-app.get('/autoComplete', async (req, res) => {
-	res.send(JSON.stringify(await CompletionData.getData(req)));
-});
+app.get('/data/getPccList', toHandleHttp(async (rqBody) => {
+	let records = await CompletionData.getPccList();
+	return {records};
+}));
 /**
  * Function separates font color from background color so we can apply
  * two different classes in frontend for highlighting
@@ -210,6 +208,48 @@ app.post('/admin/getModel', withAuth(async (reqBody, emcResult) => {
 		return Forbidden('Sorry, you must be me in order to use that');
 	}
 }));
+app.get('/admin/getShortcutActions', toHandleHttp(async (rqBody) => {
+	let rows = await Db.with(db => db
+		.fetchAll({table: 'shortcut_actions'}));
+	let records = rows
+		.map(row => ({
+			...JSON.parse(row.data),
+			id: row.id,
+			gds: row.gds,
+			name: row.name,
+		}));
+	return {records};
+}));
+app.post('/admin/setShortcutActions', withAuth(async (rqBody, emcResult) => {
+	if (!emcResult.user.roles.includes('NEW_GDS_DIRECT_DEV_ACCESS')) {
+		return Forbidden('You are not allowed to change shortcut actions');
+	}
+	let records = rqBody.records;
+	return Db.with(async db => {
+		let rows = records.map(rec => ({
+			...(rec.id ? {id: rec.id} : {}),
+			gds: rec.gds,
+			name: rec.name,
+			data: JSON.stringify(rec),
+		}));
+		let oldRows = rows.filter(r => r.id);
+		let newRows = rows.filter(r => !r.id);
+
+		if (oldRows.length > 0) {
+			await db.query([
+				'DELETE FROM shortcut_actions WHERE id',
+				'NOT IN (' + oldRows.map(id => '?') + ');',
+			].join('\n'), oldRows.map(r => r.id));
+		} else {
+			await db.query('DELETE FROM shortcut_actions');
+		}
+		return Promise.all([
+			db.writeRows('shortcut_actions', oldRows),
+			db.writeRows('shortcut_actions', newRows),
+		]);
+	});
+}));
+
 app.get('/parser/test', toHandleHttp((rqBody) => {
 	let result;
 	result = CommandParser.parse(rqBody.input);
