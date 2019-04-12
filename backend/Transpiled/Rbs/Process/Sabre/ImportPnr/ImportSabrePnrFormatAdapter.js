@@ -814,7 +814,7 @@ class ImportSabrePnrFormatAdapter {
 	// ======================
 
 	static transformBagAllowanceSegment($segment) {
-
+		let parsedCode = $segment['free']['amount'] || {};
 		return {
 			'segmentDetails': {
 				'airline': $segment['free']['airline'],
@@ -824,15 +824,27 @@ class ImportSabrePnrFormatAdapter {
 					? $segment['free']['amount']['amount'] + $segment['free']['amount']['unitsCode']
 					: null,
 				'bagWithoutFeeNumberParsed': ($segment['free'] || {})['amount'],
-				'isAvailable': php.isset($segment['free']['amount']['unitsCode']),
+				'isAvailable': parsedCode['unitsCode'] ? true : false,
 				'error': null,
 			},
-			'bags': php.array_merge($segment['free']['amount']['units'] === 'pieces'
-				? Fp.map(($i) => {
-
-					return {
+			'bags': php.array_merge(parsedCode['units'] === 'pieces'
+				? Fp.map(($i) => ({
+					'flags': ['noFeeFlag'],
+					'bagNumber': +$i + 1,
+					'bagDescription': ($segment['free'] || {})['sizeInfoRaw'],
+					'weightInLb': (($segment['free'] || {})['sizeInfo'] || {})['weightInLb'],
+					'weightInKg': (($segment['free'] || {})['sizeInfo'] || {})['weightInKg'],
+					'sizeInInches': (($segment['free'] || {})['sizeInfo'] || {})['sizeInInches'],
+					'sizeInCm': (($segment['free'] || {})['sizeInfo'] || {})['sizeInCm'],
+					'feeAmount': null,
+					'feeCurrency': null,
+				}), +parsedCode['amount'] > 0
+					? php.range(0, parsedCode['amount'] - 1)
+					: [])
+				: (parsedCode['units']
+					? [{
 						'flags': ['noFeeFlag'],
-						'bagNumber': $i + 1,
+						'bagNumber': 1,
 						'bagDescription': ($segment['free'] || {})['sizeInfoRaw'],
 						'weightInLb': (($segment['free'] || {})['sizeInfo'] || {})['weightInLb'],
 						'weightInKg': (($segment['free'] || {})['sizeInfo'] || {})['weightInKg'],
@@ -840,37 +852,19 @@ class ImportSabrePnrFormatAdapter {
 						'sizeInCm': (($segment['free'] || {})['sizeInfo'] || {})['sizeInCm'],
 						'feeAmount': null,
 						'feeCurrency': null,
-					};
-				}, +$segment['free']['amount']['amount'] > 0
-					? php.range(0, $segment['free']['amount']['amount'] - 1)
-					: [])
-				: ($segment['free']['amount']['units'] !== null
-						? [{
-							'flags': ['noFeeFlag'],
-							'bagNumber': 1,
-							'bagDescription': ($segment['free'] || {})['sizeInfoRaw'],
-							'weightInLb': (($segment['free'] || {})['sizeInfo'] || {})['weightInLb'],
-							'weightInKg': (($segment['free'] || {})['sizeInfo'] || {})['weightInKg'],
-							'sizeInInches': (($segment['free'] || {})['sizeInfo'] || {})['sizeInInches'],
-							'sizeInCm': (($segment['free'] || {})['sizeInfo'] || {})['sizeInCm'],
-							'feeAmount': null,
-							'feeCurrency': null,
-						}] : []
+					}] : []
 				),
-				Fp.map(($fee) => {
-
-					return {
-						'flags': [],
-						'bagNumber': $fee['feeNumber'],
-						'bagDescription': $fee['sizeInfoRaw'],
-						'weightInLb': ($fee['sizeInfo'] || {})['weightInLb'],
-						'weightInKg': ($fee['sizeInfo'] || {})['weightInKg'],
-						'sizeInInches': ($fee['sizeInfo'] || {})['sizeInInches'],
-						'sizeInCm': ($fee['sizeInfo'] || {})['sizeInCm'],
-						'feeAmount': $fee['amount'],
-						'feeCurrency': $fee['currency'],
-					};
-				}, $segment['fees'])),
+				Fp.map(($fee) => ({
+					'flags': [],
+					'bagNumber': $fee['feeNumber'],
+					'bagDescription': $fee['sizeInfoRaw'],
+					'weightInLb': ($fee['sizeInfo'] || {})['weightInLb'],
+					'weightInKg': ($fee['sizeInfo'] || {})['weightInKg'],
+					'sizeInInches': ($fee['sizeInfo'] || {})['sizeInInches'],
+					'sizeInCm': ($fee['sizeInfo'] || {})['sizeInCm'],
+					'feeAmount': $fee['amount'],
+					'feeCurrency': $fee['currency'],
+				}), $segment['fees'])),
 		};
 	}
 

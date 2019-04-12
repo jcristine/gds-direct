@@ -18,6 +18,7 @@ class ImportPqSabreActionTest extends require('../../../../Lib/TestCase.js') {
 			'input': {
 				'title': 'importPq should not fail when pricing has other PTC-s than ADT/CNN/INF',
 				'baseDate': '2017-11-05',
+				'fetchOptionalFields': true,
 			},
 			'output': {
 				'allCommands': [
@@ -673,6 +674,214 @@ class ImportPqSabreActionTest extends require('../../../../Lib/TestCase.js') {
 			},
 		});
 
+		$list.push({
+			'input': {
+				'title': 'Caused null pointer exception on baggage transformation due to no free baggage amount info',
+				'baseDate': '2019-04-12',
+				'fetchOptionalFields': false,
+			},
+			'output': {
+				'allCommands': [
+					{'cmd': '*R', 'type': 'redisplayPnr'},
+					{'cmd': 'WPNC', 'type': 'priceItinerary'},
+				],
+				'pnrData': {
+					'reservation': {
+						'parsed': {
+							'itinerary': [
+								{segmentNumber: 1, flightNumber: "672", 'destinationAirport': 'FLL'},
+								{segmentNumber: 2, flightNumber: "651", 'destinationAirport': 'AXM'},
+								{segmentNumber: 3, flightNumber: "652", 'destinationAirport': 'FLL'},
+								{segmentNumber: 4, flightNumber: "665", 'destinationAirport': 'MSY'},
+							],
+						},
+					},
+					'currentPricing': {
+						'parsed': {
+							'pricingList': [
+								{
+									'pricingBlockList': [
+										{
+											'ptcInfo': {'ptc': 'ADT', 'quantity': 1, 'ptcRequested': null},
+											'fareInfo': {
+												'totalFare': {'currency': 'USD', 'amount': '380.63'},
+											},
+										},
+									],
+								},
+							],
+						},
+					},
+					'bagPtcPricingBlocks': [
+						{
+							'ptcInfo': {'ptc': 'ADT', 'quantity': 1, 'ptcRequested': null},
+							'parsed': {
+								'baggageAllowanceBlocks': [
+									{
+										'segments': [
+											{
+												'segmentDetails': {
+													'departureAirport': 'MSY',
+													'destinationAirport': 'AXM',
+													"bagWithoutFeeNumberParsed": null,
+													"isAvailable": false
+												},
+												'bags': [
+													{
+														"bagDescription": "UP TO 40 POUNDS/18 KILOGRAMS AND UP TO 62 LINEAR INCHES/158 LINEAR CENTIMETERS",
+														"bagNumber": "1",
+														"weightInLb": "40",
+														"weightInKg": "18",
+														"sizeInInches": "62",
+														"sizeInCm": "158",
+														"feeAmount": "50.00",
+														"feeCurrency": "USD",
+													},
+													{
+														"bagDescription": "UP TO 40 POUNDS/18 KILOGRAMS AND UP TO 62 LINEAR INCHES/158 LINEAR CENTIMETERS",
+														"bagNumber": "2",
+														"weightInLb": "40",
+														"weightInKg": "18",
+														"sizeInInches": "62",
+														"sizeInCm": "158",
+														"feeAmount": "60.00",
+														"feeCurrency": "USD",
+													}
+												],
+											},
+											{
+												'segmentDetails': {
+													'departureAirport': 'AXM',
+													'destinationAirport': 'MSY',
+													"bagWithoutFeeNumberParsed": null,
+													"isAvailable": false
+												},
+												'bags': [
+													{
+														"bagDescription": "UP TO 40 POUNDS/18 KILOGRAMS AND UP TO 62 LINEAR INCHES/158 LINEAR CENTIMETERS",
+														"bagNumber": "1",
+														"weightInLb": "40",
+														"weightInKg": "18",
+														"sizeInInches": "62",
+														"sizeInCm": "158",
+														"feeAmount": "50.00",
+														"feeCurrency": "USD",
+													},
+													{
+														"bagDescription": "UP TO 40 POUNDS/18 KILOGRAMS AND UP TO 62 LINEAR INCHES/158 LINEAR CENTIMETERS",
+														"bagNumber": "2",
+														"weightInLb": "40",
+														"weightInKg": "18",
+														"sizeInInches": "62",
+														"sizeInCm": "158",
+														"feeAmount": "60.00",
+														"feeCurrency": "USD",
+													}
+												],
+											},
+										],
+									},
+								],
+								'carryOnAllowanceBlock': {
+									'segments': [
+										{
+											"segmentDetails": {
+												"destinationAirport": "FLL",
+												"error": "CARRY ON ALLOWANCE UNKNOWN-CONTACT CARRIER"
+											}, "bags": []
+										},
+										{
+											"segmentDetails": {
+												"destinationAirport": "AXM",
+												"error": "CARRY ON ALLOWANCE UNKNOWN-CONTACT CARRIER"
+											}, "bags": []
+										},
+										{
+											"segmentDetails": {
+												"destinationAirport": "FLL",
+												"error": "CARRY ON ALLOWANCE UNKNOWN-CONTACT CARRIER"
+											}, "bags": []
+										},
+										{
+											"segmentDetails": {
+												"destinationAirport": "MSY",
+												"error": "CARRY ON ALLOWANCE UNKNOWN-CONTACT CARRIER"
+											}, "bags": []
+										},
+									],
+								},
+								'misc': {
+									'additionalInfo': null,
+								},
+							},
+						},
+					],
+				},
+			},
+			'sessionInfo': {
+				'initialState': {
+					"area": "A", "pcc": "6IIF", "recordLocator": "", "canCreatePq": true, "scrolledCmd": "WPNC",
+					"cmdCnt": 30, "pricingCmd": "WPNC", "cmdType": "priceItinerary", "hasPnr": true,
+				},
+				'initialCommands': [
+					{
+						"cmd": "WPNC",
+						"output": [
+							"01MAY DEPARTURE DATE-----LAST DAY TO PURCHASE 13APR/0949",
+							"       BASE FARE                 TAXES/FEES/CHARGES    TOTAL",
+							" 1-    USD255.00                    125.63XT       USD380.63ADT",
+							"    XT     37.20US       5.77YC       7.00XY       3.96XA ",
+							"           11.20AY      32.00CO      15.00JS      13.50XF ",
+							"          255.00                    125.63            380.63TTL",
+							"ADT-01  U14XSNR UA14NR UA21NR U14XSNR",
+							" MSY NK FLL Q36.27Q4.65 3.72NK AXM Q38.99Q5.00 49.00NK FLL ",
+							" Q38.99Q5.00 29.00NK MSY Q36.27Q4.65 3.72NUC255.26END ROE1.00 ",
+							" XFMSY4.5FLL4.5FLL4.5",
+							"NONREF/NONTRANS/VALID NK",
+							"VALIDATING CARRIER - NK",
+							"CAT 15 SALES RESTRICTIONS FREE TEXT FOUND - VERIFY RULES",
+							"BAG ALLOWANCE     -MSYAXM-*/NK",
+							"*BAGGAGE ALLOWANCES/FEES UNKNOWN - CONTACT NK",
+							"1STCHECKED BAG FEE-MSYAXM-USD50.00/NK/UP TO 40 POUNDS/18 KILOGR",
+							"AMS AND UP TO 62 LINEAR INCHES/158 LINEAR CENTIMETERS",
+							"2NDCHECKED BAG FEE-MSYAXM-USD60.00/NK/UP TO 40 POUNDS/18 KILOGR",
+							"AMS AND UP TO 62 LINEAR INCHES/158 LINEAR CENTIMETERS",
+							"BAG ALLOWANCE     -AXMMSY-*/NK",
+							"*BAGGAGE ALLOWANCES/FEES UNKNOWN - CONTACT NK",
+							"1STCHECKED BAG FEE-AXMMSY-USD50.00/NK/UP TO 40 POUNDS/18 KILOGR",
+							"AMS AND UP TO 62 LINEAR INCHES/158 LINEAR CENTIMETERS",
+							"2NDCHECKED BAG FEE-AXMMSY-USD60.00/NK/UP TO 40 POUNDS/18 KILOGR",
+							"AMS AND UP TO 62 LINEAR INCHES/158 LINEAR CENTIMETERS",
+							"CARRY ON ALLOWANCE",
+							"MSYFLL FLLAXM AXMFLL FLLMSY-NK-CARRY ON ALLOWANCE UNKNOWN-CONTA",
+							"CT CARRIER",
+							"CARRY ON CHARGES",
+							"MSYFLL FLLAXM AXMFLL FLLMSY-NK",
+							"1ST UP TO 22 POUNDS/10 KILOGRAMS AND UP TO 50 POUNDS/127 LINEAR",
+							"CENTIMETERS-USD55.00",
+							"ADDITIONAL ALLOWANCES AND/OR DISCOUNTS MAY APPLY",
+							"                                                               ",
+							"AIR EXTRAS AVAILABLE - SEE WP*AE",
+							"."
+						].join("\n"),
+					},
+				],
+				'performedCommands': [
+					{
+						"cmd": "*R",
+						"output": [
+							"NO NAMES",
+							" 1 NK 672U 01MAY W MSYFLL SS1   530A  819A /ABRQ /E",
+							" 2 NK 651U 01MAY W FLLAXM SS1  1041A  128P /ABRQ /E",
+							" 3 NK 652U 16MAY Q AXMFLL SS1   216P  700P /ABRQ /E",
+							" 4 NK 665U 16MAY Q FLLMSY SS1  1053P 1153P /ABRQ /E",
+							"6IIF.L3II*AWS 1150/12APR19"
+						].join("\n"),
+					},
+				],
+			},
+		});
+
 		$argumentTuples = [];
 		for ($testCase of Object.values($list)) {
 			$argumentTuples.push([$testCase['input'], $testCase['output'], $testCase['sessionInfo']]);
@@ -686,12 +895,13 @@ class ImportPqSabreActionTest extends require('../../../../Lib/TestCase.js') {
 	 * @dataProvider provideTestCases
 	 */
 	async testAction($input, $output, $sessionInfo) {
-		let $session, $action, $actualOutput, $exc;
+		let $session, $action, $actualOutput;
 
 		$session = GdsDirectDefaults.makeStatefulSession('sabre', $input, $sessionInfo);
 		$action = (new ImportPqSabreAction()).setSession($session);
 
 		$actualOutput = await $action
+			.fetchOptionalFields($input.fetchOptionalFields)
 			.setPreCalledCommandsFromDb(await $session.getLog()
 				.getLastCommandsOfTypes(SessionStateProcessor.getCanCreatePqSafeTypes()))
 			.setBaseDate('2018-03-20')
