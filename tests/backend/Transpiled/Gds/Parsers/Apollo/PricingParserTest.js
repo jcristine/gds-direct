@@ -2610,7 +2610,6 @@ class PricingParserTest extends require('../../../../../../backend/Transpiled/Li
                 '   BAG 2 -  CHGS MAY APPLY IF BAGS EXCEED TTL WT ALLOWANCE',
                 'BAGGAGE DISCOUNTS MAY APPLY BASED ON FREQUENT FLYER STATUS/',
                 'ONLINE CHECKIN/FORM OF PAYMENT/MILITARY/ETC.',
-                '><',
             ]),
             {
                 wholePricingMarkers: {
@@ -2697,6 +2696,91 @@ class PricingParserTest extends require('../../../../../../backend/Transpiled/Li
                                         ],
                                     },
                                 ],
+                            },
+                        },
+                    },
+                ],
+            },
+        ]);
+
+        $list.push([
+            [
+                ">$B-*2F3K",
+                "*FARE GUARANTEED AT TICKET ISSUANCE*",
+                "",
+                "*FARE HAS A PLATING CARRIER RESTRICTION*",
+                "E-TKT REQUIRED",
+                "        **CARRIER MAY OFFER ADDITIONAL SERVICES**SEE >$B/DASO;",
+                "*PENALTY APPLIES*",
+                "TICKETING WITHIN 96 HOURS AFTER RESERVATION",
+                "LAST DATE TO PURCHASE TICKET: 19APR19 / 1110 SFO",
+                "$B-1 C15APR19     ",
+                "SYD FJ NAN 155.36NBULAS FJ LAX 1693.71CBULAURT NUC1849.07END",
+                "ROE1.416016",
+                "FARE AUD 2619.00 EQU USD 1871.00 TAX 18.60US TAX 3.96XA TAX",
+                "7.00XY TAX 5.77YC TAX 42.90AU TAX 22.50WY TAX 4.40EZ TAX 4.40FA",
+                "TOT USD 1980.53  ",
+                "S1 NVB29APR/NVA29APR",
+                "S2 NVB29APR/NVA29APR",
+                "E VALID ON FJ ONLY",
+                "E NON END/NON REF",
+                "E NON END/NON REF",
+                "TICKETING AGENCY 2F3K",
+                "DEFAULT PLATING CARRIER FJ",
+                "RATE USED IN EQU TOTAL IS BSR 1AUD - 0.714495USD",
+                "BAGGAGE ALLOWANCE",
+                "ADT                                                         ",
+                " FJ SYDLAX  3PC                                             ",
+                "   BAG 1 -  NO FEE       UPTO66LB/30KG AND UPTO62LI/158LCM",
+                "   BAG 2 -  NO FEE       UPTO66LB/30KG AND UPTO62LI/158LCM",
+                "   VIEWTRIP.TRAVELPORT.COM/BAGGAGEPOLICY/FJ",
+                "                                                                CARRY ON ALLOWANCE",
+                " FJ SYDNAN  1PC                                             ",
+                "   BAG 1 -  NO FEE       UPTO15LB/7KG AND UPTO45LI/115LCM ",
+                "   BAG 2 -  0.0 AUD      CARRY7KG 15LB UPTO 15LI 118CM    ",
+                "   BAG 3 -  0.0 AUD      CARRY7KG 15LB UPTO 15LI 118CM    ",
+                " FJ NANLAX  2PC                                             ",
+                "   BAG 1 -  NO FEE       CARRYON HAND BAGGAGE ALLOWANCE   ",
+                "   BAG 2 -  NO FEE       UPTO15LB/7KG AND UPTO45LI/115LCM ",
+                "   BAG 3 -  0.0 FJD      UPTO15LB/7KG                     ",
+                "   BAG 4 -  0.0 FJD      UPTO15LB/7KG                     ",
+                "BAGGAGE DISCOUNTS MAY APPLY BASED ON FREQUENT FLYER STATUS/",
+                "ONLINE CHECKIN/FORM OF PAYMENT/MILITARY/ETC.",
+            ].join('\n'),
+            {
+                'pricingBlockList': [
+                    {
+                        'baggageInfo': {
+                            'parsed': {
+                                'baggageAllowanceBlocks': [
+                                    {
+                                        'paxTypeCode': 'ADT',
+                                        'segments': [
+                                            {
+                                                'segmentDetails': {
+                                                    'departureAirport': 'SYD',
+                                                    'destinationAirport': 'LAX',
+                                                },
+                                            },
+                                        ],
+                                    },
+                                ],
+                                'carryOnAllowanceBlock': {
+                                    'segments': [
+                                        {
+                                            'segmentDetails': {
+                                                'departureAirport': 'SYD',
+                                                'destinationAirport': 'NAN',
+                                            },
+                                        },
+                                        {
+                                            'segmentDetails': {
+                                                'departureAirport': 'NAN',
+                                                'destinationAirport': 'LAX',
+                                            },
+                                        },
+                                    ],
+                                },
                             },
                         },
                     },

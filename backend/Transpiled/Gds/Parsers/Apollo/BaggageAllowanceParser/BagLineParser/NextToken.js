@@ -158,19 +158,19 @@ class NextToken
     static matchSizeConstraintsToken($text)  {
         let $tokens, $_, $l, $w, $h, $left;
         $tokens = [];
-        if (php.preg_match(/^\s*(OVER|CARRY|UPTO|MAX)(\d+)(LI|IN)(\/| )(\d+)(LCM|CM|LC)(.*)$/, $text, $tokens = [])) {
+        if (php.preg_match(/^\s*(OVER|CARRY|UPTO|MAX)\s*(\d+)(LI|IN)(\/| )(\d+)(LCM|CM|LC)(.*)$/, $text, $tokens = [])) {
             // 'UPTO62LI/158LCM'
             return {
                 'sizeInInches': $tokens[2],
                 'sizeInCm': $tokens[5],
                 'textLeft': $tokens[7],
             };
-        } else if (php.preg_match(/^\s*(OVER|CARRY|UPTO|MAX)(\d+)(LI|IN)(.*)$/, $text, $tokens = [])) {
+        } else if (php.preg_match(/^\s*(OVER|CARRY|UPTO|MAX)\s*(\d+)(LI|IN)(.*)$/, $text, $tokens = [])) {
             return {
                 'sizeInInches': $tokens[2],
                 'textLeft': $tokens[4],
             };
-        } else if (php.preg_match(/^\s*(OVER|CARRY|UPTO|MAX)(\d+)(LCM|CM|LC)(.*)$/, $text, $tokens = [])) {
+        } else if (php.preg_match(/^\s*(OVER|CARRY|UPTO|MAX)\s*(\d+)(LCM|CM|LC)(.*)$/, $text, $tokens = [])) {
             return {
                 'sizeInCm': $tokens[2],
                 'textLeft': $tokens[4],

@@ -31,7 +31,7 @@ class BaggageAllowanceParser
                     $state = ParserState.BA_BLOCK_START_LINE_FOUND;
                     $text = $res['textLeft'];
                 } else {
-                    throw new BaggageAllowanceParserUnexpectedTokenException($text);
+                    throw new BaggageAllowanceParserUnexpectedTokenException('At ' + $state + ' - ' + $text);
                 }
             } else if ($state == ParserState.BA_BLOCK_START_LINE_FOUND) {
                 if ($res = NextToken.matchPassengerTypeLine($text)) {
@@ -39,7 +39,7 @@ class BaggageAllowanceParser
                     $state = ParserState.PASSENGER_TYPE_LINE_FOUND;
                     $text = $res['textLeft'];
                 } else {
-                    throw new BaggageAllowanceParserUnexpectedTokenException($text);
+                    throw new BaggageAllowanceParserUnexpectedTokenException('At ' + $state + ' - ' + $text);
                 }
             } else if ($state == ParserState.PASSENGER_TYPE_LINE_FOUND) {
                 if ($res = NextToken.matchBaBlockSpecificSegmentLine($text)) {
@@ -47,7 +47,7 @@ class BaggageAllowanceParser
                     $state = ParserState.BA_BLOCK_SPECIFIC_SEGMENT_LINE_FOUND;
                     $text = $res['textLeft'];
                 } else {
-                    throw new BaggageAllowanceParserUnexpectedTokenException($text);
+                    throw new BaggageAllowanceParserUnexpectedTokenException('At ' + $state + ' - ' + $text);
                 }
             } else if ($state == ParserState.BA_BLOCK_SPECIFIC_SEGMENT_LINE_FOUND) {
                 if ($res = NextToken.matchBaBlockBagLine($text)) {
@@ -75,7 +75,7 @@ class BaggageAllowanceParser
                 } else if (!php.trim($text)) {
                     break;
                 } else {
-                    throw new BaggageAllowanceParserUnexpectedTokenException($text);
+                    throw new BaggageAllowanceParserUnexpectedTokenException('At ' + $state + ' - ' + $text);
                 }
             } else if ($state == ParserState.CARRYON_ALLOWANCE_BLOCK_START_LINE_FOUND) {
                 if ($res = NextToken.matchCarryOnBlockSpecificSegmentLine($text)) {
@@ -100,7 +100,7 @@ class BaggageAllowanceParser
                 } else if ($res = NextToken.matchEmptyLine($text)) {
                     $text = $res['textLeft'];
                 } else {
-                    throw new BaggageAllowanceParserUnexpectedTokenException($text);
+                    throw new BaggageAllowanceParserUnexpectedTokenException('At ' + $state + ' - ' + $text);
                 }
             } else if ($state == ParserState.EMBARGO_BLOCK_START_LINE_FOUND) {
                 if ($res = NextToken.matchEmbargoSpecificSegmentUrlLine($text)) {
@@ -115,13 +115,13 @@ class BaggageAllowanceParser
                 } else if (!php.trim($text)) {
                     break;
                 } else {
-                    throw new BaggageAllowanceParserUnexpectedTokenException($text);
+                    throw new BaggageAllowanceParserUnexpectedTokenException('At ' + $state + ' - ' + $text);
                 }
             } else if ($state == ParserState.BAGGAGE_DISCOUNTS_DISCLAIMER_FOUND) {
                 if (!php.trim($text)) {
                     break;
                 } else {
-                    throw new BaggageAllowanceParserUnexpectedTokenException($text);
+                    throw new BaggageAllowanceParserUnexpectedTokenException('At ' + $state + ' - ' + $text);
                 }
             }
         }

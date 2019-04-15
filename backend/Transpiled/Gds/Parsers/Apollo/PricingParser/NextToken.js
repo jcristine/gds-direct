@@ -381,7 +381,6 @@ class NextToken
         let $matches, $passengerTypeCode, $textLeft;
         $matches = [];
         if (php.preg_match(/^(\w{3})\s*?\n/, $text, $matches = [])) {
-            // TODO: check if it actually looks like passenger type code (By now I know about ADT, CNN)
             $passengerTypeCode = $matches[1];
             $textLeft = php.mb_substr($text, php.mb_strlen($matches[0]));
             return {'passengerTypeCode': $passengerTypeCode, 'line': $matches[0], 'textLeft': $textLeft};

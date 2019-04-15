@@ -20,6 +20,7 @@ class BagLineParser
     // '   BAG 1 -  NO FEE       CARRYON HAND BAGGAGE ALLOWANCE   ',
     // '   BAG 1 -  NO FEE       UPTO22LB/10KG AND UPTO45LI/115LCM',
     // '   BAG 1 -  NO FEE       UPTO22LB/10KG AND 55L X 40W X 25H',
+    // "   BAG 2 -  0.0 AUD      CARRY7KG 15LB UPTO 15LI 118CM    ",
     static parse($text, $structureWriter)  {
         let $state, $res;
         $state = ParserState.START;
