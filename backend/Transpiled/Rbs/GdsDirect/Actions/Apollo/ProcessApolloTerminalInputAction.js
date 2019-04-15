@@ -790,7 +790,7 @@ class ProcessApolloTerminalInputAction {
 			this.stateful.flushCalledCommands();
 			$sortResult = await this.processSortItinerary()
 				.catch(exc => ({errors: ['Did not SORT' + exc]}));
-			if (!php.empty($sortResult['errors'])) {
+			if (php.empty($sortResult['errors'])) {
 				return {'calledCommands': this.stateful.flushCalledCommands(), 'errors': $errors};
 			} else {
 				let cmdRec = await this.runCmd('*R', true);
