@@ -791,7 +791,8 @@ class ProcessApolloTerminalInputAction {
 			if (php.empty($sortResult['errors'])) {
 				return {'calledCommands': this.stateful.flushCalledCommands(), 'errors': $errors};
 			} else {
-				let cmdRec = await this.runCmd('*R', true);
+				let pnrDump = (await this.getCurrentPnr()).getDump();
+				let cmdRec = {cmd: '*R', output: pnrDump};
 				return {'calledCommands': [cmdRec], 'errors': $errors};
 			}
 		}

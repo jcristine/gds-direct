@@ -4373,7 +4373,7 @@ class ProcessApolloTerminalInputActionTest extends require('../../../../Lib/Test
 					        " 2 CM 613L 30NOV PTYMDE SS1  1158A  123P *         SA   E  1",
 					        " 3 CM 612L 12DEC MDEPTY SS1   417P  542P *         TH   E  2",
 					        " 4 CM 434L 12DEC PTYMCO SS1   629P  954P *         TH   E  2",
-					        "><"
+					        ""
 					    ].join("\n"),
 					},
 				],
