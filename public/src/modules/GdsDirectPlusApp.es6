@@ -2,7 +2,7 @@
 import {CHANGE_ACTIVE_TERMINAL} from "../actions/settings";
 import {DEV_CMD_STACK_RUN} from "../actions";
 import {CHANGE_GDS, UPDATE_CUR_GDS, UPDATE_ALL_AREA_STATE} from "../actions/gdsActions";
-import {GDS} 			from '../modules/gds';
+import {GdsSwitch} 			from './gdsSwitch';
 import {ContainerMain, normalizeThemeId} from "../containers/main";
 import {PqParser} 		from "../modules/pqParser";
 import {OFFSET_DEFAULT, AREA_LIST} from "../constants";
@@ -44,7 +44,7 @@ export default class GdsDirectPlusApp
 
 		const { keyBindings, gdsAreaSettings }	= this._getGdsDefaultSettings(settings);
 
-		let gdsSwitch = new GDS({
+		let gdsSwitch = new GdsSwitch({
 			gdsListDb 	: settings.gds,
 			activeName 	: settings['common']['currentGds'] || 'apollo',
 			buffer 		: buffer || {},
