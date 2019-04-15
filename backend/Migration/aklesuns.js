@@ -301,6 +301,12 @@ module.exports.migrations = [
 		].join('\n')),
 	},
 	{
+		name: 'GRECT/2019.04.15003-make-rq-cmd-text-instead-of-varchar',
+		perform: (db) => db.query([
+			'ALTER TABLE cmd_rq_log MODIFY command TEXT DEFAULT NULL;',
+		].join('\n')),
+	},
+	{
 		name: 'GRECT/2019.03.08008-create-counted-fs-usages',
 		perform: (db) => db.query([
 			"CREATE TABLE `counted_fs_usages` (",
