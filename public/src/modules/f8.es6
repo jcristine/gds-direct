@@ -38,6 +38,10 @@ const rules = {
 	}
 };
 
+/**
+ * when agent presses F8, a SSR TSA command is inserted and terminal gets into the
+ * "TSA filling" state in which you can press tab to move to next part of the TSA to fill it
+ */
 export default class F8Reader
 {
 	constructor({terminal, gds})
