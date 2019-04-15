@@ -33,6 +33,7 @@ var require = translib.stubRequire;
 
 const FxParser = require('../../../../Gds/Parsers/Amadeus/Pricing/FxParser.js');
 const TicketMaskParser = require('../../../../Gds/Parsers/Amadeus/TicketMaskParser.js');
+const Rej = require("../../../../../Utils/Rej");
 
 class ProcessAmadeusTerminalInputAction {
 	/** @param $statefulSession = require('StatefulSession.js')() */
@@ -70,12 +71,12 @@ class ProcessAmadeusTerminalInputAction {
 		return php.in_array($parsedCmd['type'], ['openPnr', 'searchPnr', 'displayPnrFromList']);
 	}
 
-	static formatGtlPccError($exc) {
-
+	static formatGtlPccError($exc, pcc) {
+		let prefix = 'Failed to start session with PCC ' + pcc + ' - ';
 		if (php.preg_match(/\bSoapFault: *11|\Session\b/, ($exc.message || ''))) {
-			return 'Invalid PCC';
+			return Rej.BadRequest('Invalid PCC');
 		} else {
-			return 'Unexpected GTL error - ' + php.preg_replace(/\s+/, ' ', php.substr($exc.message || '', -100));
+			return UnprocessableEntity(prefix + 'Unexpected GTL error - ' + php.preg_replace(/\s+/, ' ', php.substr($exc.message || '', -100)));
 		}
 	}
 
@@ -678,8 +679,7 @@ class ProcessAmadeusTerminalInputAction {
 		}
 
 		let areaState = await this.startNewAreaSession(this.stateful.getSessionData().area, $pcc)
-			.catch(exc => UnprocessableEntity('Failed to start session with PCC ' +
-				$pcc + ' - ' + this.constructor.formatGtlPccError(exc)));
+			.catch(exc => this.constructor.formatGtlPccError(exc, $pcc));
 
 		// sometimes when you request invalid PCC, Amadeus fallbacks to
 		// SFO1S2195 - should call >JD; and check that PCC is what we requested
