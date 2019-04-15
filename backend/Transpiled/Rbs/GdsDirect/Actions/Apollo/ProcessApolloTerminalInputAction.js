@@ -22,7 +22,6 @@ const PtcUtil = require('../../../../Rbs/Process/Common/PtcUtil.js');
 const {fetchAll, extractPager} = require('../../../../../GdsHelpers/TravelportUtils.js');
 const ApolloPnr = require('../../../../Rbs/TravelDs/ApolloPnr.js');
 const MakeMcoApolloAction = require('../../../../Rbs/GdsDirect/Actions/Apollo/MakeMcoApolloAction.js');
-const translib = require('../../../../translib');
 const RepriceInAnotherPccAction = require('../../../../Rbs/GdsDirect/Actions/Common/RepriceInAnotherPccAction.js');
 const AirAvailabilityParser = require('../../../../Gds/Parsers/Apollo/AirAvailabilityParser.js');
 const ImportPqApolloAction = require("./ImportPqApolloAction");
@@ -36,7 +35,6 @@ const TariffDisplayParser = require('../../../../Gds/Parsers/Apollo/TariffDispla
 const FareDisplayDomesticParser = require('../../../../Gds/Parsers/Apollo/TariffDisplay/FareDisplayDomesticParser.js');
 const FareDisplayInternationalParser = require('../../../../Gds/Parsers/Apollo/TariffDisplay/FareDisplayInternationalParser.js');
 const BadRequest = require("../../../../../Utils/Rej").BadRequest;
-const SessionStateProcessor = require("../../SessionStateProcessor/SessionStateProcessor");
 const RetrieveApolloTicketsAction = require('../../../../Rbs/Process/Apollo/ImportPnr/Actions/RetrieveApolloTicketsAction.js');
 const ParseHbFex = require('../../../../../Parsers/Apollo/ParseHbFex.js');
 

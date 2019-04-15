@@ -95,11 +95,13 @@ class TerminalService
 		let $errors = '';
 		if (!empty($messages['info'])) {
 			for (let $message of $messages['info']) {
-				$errors = PHP_EOL + this.highlightWarning($message);}
+				$errors = PHP_EOL + this.highlightWarning($message);
+			}
 		}
 		if (!empty($messages['error'])) {
 			for (let $message of $messages['error']) {
-				$errors = PHP_EOL + this.highlightError($message);}
+				$errors = PHP_EOL + this.highlightError($message);
+			}
 		}
 		return $output + $errors;
 	}

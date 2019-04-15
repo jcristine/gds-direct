@@ -21,6 +21,7 @@ const ProcessAmadeusTerminalInputAction = require("../Transpiled/Rbs/GdsDirect/A
 const Agents = require("../Repositories/Agents");
 const ProcessGalileoTerminalInputAction = require("../Transpiled/Rbs/GdsDirect/Actions/Galileo/ProcessGalileoTerminalInputAction");
 const GdsDirect = require("../Transpiled/Rbs/GdsDirect/GdsDirect");
+const Rej = require("../Utils/Rej");
 const BadRequest = require("../Utils/Rej").BadRequest;
 const TooManyRequests = require("../Utils/Rej").TooManyRequests;
 const NotImplemented = require("../Utils/Rej").NotImplemented;
@@ -159,7 +160,11 @@ let runCmdRq =  async (inputCmd, stateful) => {
 		return BadRequest('Too many lines (' + bulkCmds.length + ') in your input for bulk invocation');
 	}
 	for (let cmd of bulkCmds) {
-		let running = runByGds(cmd.trim(), stateful);
+		let running = runByGds(cmd.trim(), stateful)
+			.catch(exc => Rej.NoContent.matches(exc.httpStatusCode)
+				? {	userMessages: [exc + ''],
+					status: GdsDirect.STATUS_EXECUTED,
+				} : Promise.reject(exc));
 		if (bulkCmds.length > 1) {
 			running = running.catch(exc => ({
 				status: GdsDirect.STATUS_FORBIDDEN,
@@ -168,8 +173,9 @@ let runCmdRq =  async (inputCmd, stateful) => {
 			}));
 		}
 		let gdsResult = await running;
+		let isSuccess = gdsResult.status === GdsDirect.STATUS_EXECUTED;
 		messages.push(...(gdsResult.userMessages || [])
-			.map(msg => ({type: 'error', text: msg})));
+			.map(msg => ({type: isSuccess ? 'info' : 'error', text: msg})));
 		actions.push(...(gdsResult.actions || []));
 		calledCommands.push(...(gdsResult.calledCommands || []));
 		status = gdsResult.status || '(no status)';
