@@ -68,7 +68,8 @@ export class GDS_UNIT
 				terminals[index] = new Terminal({
 					name 	: index,
 					gds		: this.get('name'),
-					buffer	: this.get('buffer') ? this.get('buffer')['terminals'][index + 1] : ''
+					buffer	: this.get('buffer') ? this.get('buffer')['terminals'][index + 1] : '',
+					getSessionInfo: () => this.props.idxToInfo[this.props.sessionIndex] || {},
 				});
 
 			});
@@ -76,7 +77,8 @@ export class GDS_UNIT
 		terminals['wide'] = terminals['wide'] || new Terminal({
 			name 	: 'wide',
 			gds		: this.get('name'),
-			buffer	: ''
+			buffer	: '',
+			getSessionInfo: () => this.props.idxToInfo[this.props.sessionIndex] || {},
 		});
 
 		this.set('terminals', terminals);

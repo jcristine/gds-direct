@@ -22,6 +22,7 @@ export default class Terminal
 			clear		: () => this.clear(),
 			name 		: this.settings['name'],
 			gds 		: this.settings['gds'],
+			getSessionInfo: this.settings['getSessionInfo'],
 			numOfRows 	: this.numOfRows,
 			numOfChars 	: this.numOfChars,
 			charHeight 	: this.charHeight,

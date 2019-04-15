@@ -2,6 +2,7 @@ import {getDate} 		from './helpers.es6';
 import {PURGE_SCREENS} 	from "../actions";
 import {getStore} 		from "../store";
 import {switchTerminal} from "../modules/switchTerminal";
+import ActionReader from '../modules/actionReader.es6';
 
 const nextCmd = (plugin, terminal) => { //Next performed format, by default returns to the first format and than each one by one.
 	plugin.history.next().then( command => {
@@ -102,22 +103,6 @@ function eventToButtonName(evt) {
 	return btns.join('+');
 }
 
-
-/**
- * Replaces command pre-defined "variables" real values
- * @param command
- * @returns string
- */
-function replaceCommandVariables(command) {
-	let auth = window.GdsDirectPlusParams.auth;
-	return command
-		.replace('{{userName}}', auth ? auth.displayName.toUpperCase() : '')
-		.replace('{{dateNow}}', getDate().now)
-		.replace('{{datePlus320}}', getDate().plus320)
-		.replace('{{dateMinus45}}', getDate().minus45)
-		.replace(/<Transmit>/g, '\n');
-}
-
 /**
  * Checks if user has overwritten some key bindings
  * @param keyName string
@@ -128,14 +113,24 @@ function getUserCustomCommand(keyName) {
 
 	if (keyBindings && keyBindings[keyName]) {
 		const defaultCommand = getBindingForKey(keyName, name);
-		let userReplacedCommand = replaceCommandVariables(keyBindings[keyName].command);
+		let userReplacedCommand = ActionReader.replaceCommandVariables(keyBindings[keyName].command);
 
 		// User can overwrite default command "autorun" so we still need to execute default command
 		if (userReplacedCommand === '') {
 			userReplacedCommand = defaultCommand.command;
 		}
 
-		return { command: userReplacedCommand, autorun: parseInt(keyBindings[keyName].autorun) };
+		let actionName = null;
+		let match = userReplacedCommand.match(/^{{!(.+)}}$/);
+		if (match) {
+			actionName = match[1];
+		}
+
+		return {
+			command: userReplacedCommand,
+			autorun: parseInt(keyBindings[keyName].autorun),
+			actionName: actionName,
+		};
 	}
 	return false;
 }
@@ -152,7 +147,7 @@ export const getBindingForKey = (keyName, gds, replaceVariables = true) => {
 
 	let command = result.command || result || '';
 	if (replaceVariables) {
-		command = replaceCommandVariables(command);
+		command = ActionReader.replaceCommandVariables(command);
 	}
 
 	return Object.assign({}, {
@@ -180,8 +175,14 @@ export const pressedShortcuts = (evt, terminal, plugin) => {
 			plugin.f8Reader.jumpToNextPos();
 		}
 
+		function doShortcutAction(actionName) {
+			plugin.actionReader.initAction(actionName);
+		}
+
 		function insertOrExec(command) {
-			if (command.autorun) {
+			if (command.actionName) {
+				doShortcutAction(command.actionName);
+			} else if (command.autorun) {
 				terminal.exec(command.command);
 			} else {
 				terminal.insert(command.command);
@@ -192,11 +193,7 @@ export const pressedShortcuts = (evt, terminal, plugin) => {
 		const keyName = eventToButtonName(evt);
 		const command = getUserCustomCommand(keyName);
 		if (command !== false) {
-			if (command === '((f8Command))') {
-				doF8();
-			} else {
-				insertOrExec(command);
-			}
+			insertOrExec(command);
 			return true;
 		}
 

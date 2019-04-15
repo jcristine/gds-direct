@@ -11,6 +11,7 @@ import {pressedShortcuts} from "../helpers/keyBinding";
 import OutputLiner	from '../modules/output.es6';
 import TabManager	from '../modules/tabManager.es6';
 import F8Reader		from '../modules/f8.es6';
+import ActionReader	from '../modules/actionReader.es6';
 import History 		from '../modules/history.es6';
 import {getReplacement}		from '../helpers/helpers.es6';
 import {CHANGE_ACTIVE_TERMINAL} from "../actions/settings";
@@ -57,6 +58,11 @@ export default class TerminalPlugin
 			terminal	: this.terminal,
 			gds			: params.gds,
 		});
+		this.actionReader = new ActionReader({
+			terminal: this.terminal,
+			gds: params.gds,
+			getSessionInfo: params.getSessionInfo,
+		});
 
 		this.history 		= new History( params.gds );
 
@@ -82,6 +88,7 @@ export default class TerminalPlugin
 
 		const isEnter = evt.which === 13;
 		this.f8Reader.replaceEmptyChar(evt);
+		this.actionReader.replaceEmptyChar(evt);
 
 		if (evt.which === 45)
 		{
@@ -89,14 +96,15 @@ export default class TerminalPlugin
 		}
 
 		const ctrlOrMetaKey = evt.ctrlKey || evt.metaKey;
-		const replace = !this.f8Reader.getIsActive() && evt.key.length === 1 && !ctrlOrMetaKey && !this.insertKey;
+		const replace = !this.f8Reader.getIsActive() && !this.actionReader.getIsActive()
+			&& evt.key.length === 1 && !ctrlOrMetaKey && !this.insertKey;
 
 		// if test>>>asd+sa and cursor on + // execute only between last > and + cmd
 		if (isEnter)
 		{
 			this.f8Reader.isActive	= false;
 
-			let		cmd					= terminal.before_cursor();
+			let cmd = terminal.before_cursor();
 			const	lastPromptSignPos	= cmd.lastIndexOf('>') + 1;
 
 			if (lastPromptSignPos)
@@ -137,6 +145,9 @@ export default class TerminalPlugin
 	{
 		if ( this.f8Reader.getIsActive() )
 			return this.f8Reader.jumpToNextPos();
+
+		if ( this.actionReader.getIsActive() )
+			return this.actionReader.jumpToNextPos();
 
 		this.tabCommands.move(reverse).run(this.terminal);
 	}
@@ -261,6 +272,8 @@ export default class TerminalPlugin
 						this.print(`[[;;;text-danger;]SERVER ERROR]`);
 				}
 			});
+
+		this.actionReader.handleNewLine();
 
 		return command;
 	}

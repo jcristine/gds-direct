@@ -52,7 +52,7 @@ let updateSessionState = (rbsData, gdsName) => {
 
 export class PqParser
 {
-	/** @param {GDS} gdsSwitch */
+	/** @param {GdsSwitch} gdsSwitch */
 	constructor( modal, gdsSwitch )
 	{
 		this.modal = modal || (() => Promise.reject('Project-specific PQ modal function was not passed by the page'));

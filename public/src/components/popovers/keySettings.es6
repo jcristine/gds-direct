@@ -5,27 +5,12 @@ import {getBindingForKey} 	from '../../helpers/keyBinding';
 import {GDS_LIST} 			from '../../constants';
 import {getStore} 			from './../../store';
 import AreaPccSelect 			from "./areaPccSelect";
-import {get} 				from "../../helpers/requests";
 import "select2";
 import {post} from './../../helpers/requests';
 import $ from 'jquery';
 import {UPDATE_ALL_AREA_STATE, UPDATE_DEFAULT_AREA_PCCS} from "../../actions/gdsActions";
 import {notify} from "../../helpers/debug";
-
-let whenPccList = null;
-let getPccList = () => {
-	if (!whenPccList) {
-		whenPccList = get('/data/getPccList');
-	}
-	return whenPccList;
-};
-let wheShortcutActionList = null;
-let getShortcutActionList = () => {
-	if (!wheShortcutActionList) {
-		wheShortcutActionList = get('/admin/getShortcutActions');
-	}
-	return wheShortcutActionList;
-};
+import {getPccList, getShortcutActionList} from "../../helpers/dataProvider.js";
 
 let shortcutCompletionId = 'shortcut-action-completion-options';
 
@@ -250,19 +235,22 @@ class Context
 		let input = Dom('input.form-control settings-input', { placeholder, value });
 		container.appendChild(input);
 
-		input.setAttribute('list', shortcutCompletionId);
-		let isFirefox = navigator.userAgent.search('Firefox') > -1;
-		let completionHint = 'Click Twice to Show Options';
-		input.addEventListener('click', () => {
-			if (isFirefox) {
-				input.placeholder = input.placeholder || completionHint;
-			}
-		});
-		input.addEventListener('blur', () => {
-			if (input.placeholder === completionHint) {
-				input.placeholder = '';
-			}
-		});
+		let shortcutActionsAllowed = window.GdsDirectPlusState.getIsAdmin();
+		if (shortcutActionsAllowed) {
+			input.setAttribute('list', shortcutCompletionId);
+			let isFirefox = navigator.userAgent.search('Firefox') > -1;
+			let completionHint = 'Click Twice to Show Options';
+			input.addEventListener('click', () => {
+				if (isFirefox) {
+					input.placeholder = input.placeholder || completionHint;
+				}
+			});
+			input.addEventListener('blur', () => {
+				if (input.placeholder === completionHint) {
+					input.placeholder = '';
+				}
+			});
+		}
 
 		return container;
 	}

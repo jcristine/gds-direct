@@ -1,7 +1,7 @@
 import {GDS_UNIT} 	from "./gdsUnit";
 import {GDS_LIST} from "../constants";
 
-export class GDS
+export class GdsSwitch
 {
 	constructor({gdsListDb, buffer = {}, activeName})
 	{
