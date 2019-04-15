@@ -110,7 +110,10 @@ app.get('/emcLoginUrl', toHandleHttp(async rqBody => {
 app.get('/authorizeEmcToken', toHandleHttp(async rqBody => {
 	let token = rqBody.token;
 	let emc = await Emc.getClient();
-	let result = await emc.authorizeToken(token);
+	let result = await emc.authorizeToken(token)
+		.catch(exc => (exc + '').match(/Token not found/)
+			? LoginTimeOut('Session key expired')
+			: Promise.reject(exc));
 	return {emcSessionId: result.data.sessionKey};
 }));
 app.get('/checkEmcSessionId', toHandleHttp(async rqBody => {
