@@ -65,6 +65,8 @@ let addActionRow = (tbody, record = {}) => {
 		Cmp('td').attach([
 			Cmp('input', {
 				name: 'name', value: record.name || '',
+				pattern: /^[^}{]+$/.source,
+				required: true,
 				...(record.name ? {disabled: 'disabled'} : {}),
 			}),
 		]),
