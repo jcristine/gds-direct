@@ -25,6 +25,7 @@ const Misc = require("../Utils/Misc");
 const allWrap = require("../Utils/Misc").allWrap;
 const {getConfig} = require('../Config.js');
 const ExchangeApolloTicket = require('../Actions/ExchangeApolloTicket.js');
+const Rej = require("../Utils/Rej");
 
 let startByGds = async (gds) => {
 	let tuples = [
@@ -296,7 +297,10 @@ let keepAliveSession = async (session) => {
 exports.keepAliveCurrent = async ({session}) => {
 	let userAccessMs = await GdsSessions.getUserAccessMs(session);
 	if (!KeepAlive.shouldClose(userAccessMs)) {
-		return keepAliveSession(session);
+		return keepAliveSession(session)
+			.catch(exc => Rej.Conflict.matches(exc.httpStatusCode)
+				? Promise.resolve({message: 'Another action in progress - session is alive'})
+				: Promise.reject(exc));
 	} else {
 		let msg = 'Session was inactive for too long - ' +
 			((Date.now() - userAccessMs) / 1000).toFixed(3) + ' s.';
