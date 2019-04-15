@@ -64,6 +64,10 @@ class TerminalBaseController {
 			case 'settings':
 				let promises = [];
 				for (let [$gds, $data] of Object.entries($value)) {
+					// initial code did not consider that $_POST may have other fields...
+					if (!['apollo', 'sabre', 'amadeus', 'galileo'].includes($gds)) {
+						continue;
+					}
 					promises.push(agentSettings.setSettings($gds, {
 						'keyBindings': $data['keyBindings'] == '' ? ''
 							: json_encode($data['keyBindings']),
