@@ -23,6 +23,7 @@
     // browser-specific
     "window": false,
     "document": false,
+    "navigator":  false,
     "fetch": false,
     "URL": false,
     "URLSearchParams": false,

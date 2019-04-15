@@ -12,6 +12,23 @@ import $ from 'jquery';
 import {UPDATE_ALL_AREA_STATE, UPDATE_DEFAULT_AREA_PCCS} from "../../actions/gdsActions";
 import {notify} from "../../helpers/debug";
 
+let whenPccList = null;
+let getPccList = () => {
+	if (!whenPccList) {
+		whenPccList = get('/data/getPccList');
+	}
+	return whenPccList;
+};
+let wheShortcutActionList = null;
+let getShortcutActionList = () => {
+	if (!wheShortcutActionList) {
+		wheShortcutActionList = get('/admin/getShortcutActions');
+	}
+	return wheShortcutActionList;
+};
+
+let shortcutCompletionId = 'shortcut-action-completion-options';
+
 export default class KeySettings extends ButtonPopOver
 {
 	constructor({ keyBindings, gdsAreaSettings, ...params })
@@ -22,7 +39,7 @@ export default class KeySettings extends ButtonPopOver
 
 		this.makeTrigger({
 			onclick : () => {
-                return get('/data/getPccList')
+                getPccList()
                     .then(({records}) => {
                         this.pccs = records;
 
@@ -30,6 +47,24 @@ export default class KeySettings extends ButtonPopOver
                         const c = new Context(this, keyBindings, gdsAreaSettings);
                         this.popContent.appendChild(c.context);
                     });
+				getShortcutActionList()
+					.then(({records}) => {
+						let datalist = document.getElementById(shortcutCompletionId);
+						if (!datalist) {
+							datalist = document.createElement('datalist');
+							datalist.setAttribute('id', shortcutCompletionId);
+							document.body.appendChild(datalist);
+						}
+						let occurrences = new Set();
+						datalist.innerHTML = records
+							.filter(rec => {
+								let used = occurrences.has(rec.name);
+								occurrences.add(rec.name);
+								return !used;
+							})
+							.map(rec => `<option>{{!${rec.name}}}</option>`)
+							.join('');
+					});
 			},
 		});
 	}
@@ -97,6 +132,7 @@ class Context
 			const inputFields = this._makeInputFieldList(gds);
 			const labelDiv = Dom(`div.settings-input-container`);
 			labelDiv.appendChild(Dom(`button.btn-primary[Default PCC]`, {
+				title: 'Press to Restart Session',
 				onclick: () => post('/terminal/resetToDefaultPcc', {gds: gds})
 					.then(rsData => {
 						notify({msg: 'Session Areas Reloaded', timeout: 3000, type: 'success'});
@@ -211,7 +247,23 @@ class Context
 	{
 		const container = Dom(`div.settings-input-container`);
 		container.appendChild(Dom(`label[${label}]`));
-		container.appendChild(Dom('input.form-control settings-input', { placeholder, value }));
+		let input = Dom('input.form-control settings-input', { placeholder, value });
+		container.appendChild(input);
+
+		input.setAttribute('list', shortcutCompletionId);
+		let isFirefox = navigator.userAgent.search('Firefox') > -1;
+		let completionHint = 'Click Twice to Show Options';
+		input.addEventListener('click', () => {
+			if (isFirefox) {
+				input.placeholder = input.placeholder || completionHint;
+			}
+		});
+		input.addEventListener('blur', () => {
+			if (input.placeholder === completionHint) {
+				input.placeholder = '';
+			}
+		});
+
 		return container;
 	}
 
