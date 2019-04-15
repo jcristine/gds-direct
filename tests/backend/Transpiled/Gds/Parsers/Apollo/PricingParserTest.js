@@ -2630,6 +2630,80 @@ class PricingParserTest extends require('../../../../../../backend/Transpiled/Li
             },
         ]);
 
+        // 2 letter PTC in BAGGAGE ALLOWANCE
+        $list.push([
+            [
+                ">$BB/*JC/-*2G55",
+                "*FARE HAS A PLATING CARRIER RESTRICTION*",
+                "E-TKT REQUIRED",
+                "NO REBOOK REQUIRED",
+                "",
+                "** PRIVATE FARES SELECTED **  ",
+                "*PENALTY APPLIES*",
+                "BEST FARE FOR PSGR TYPE",
+                "LAST DATE TO PURCHASE TICKET: 30APR19",
+                "$BB-1 P15APR19 - CAT35",
+                "NYC PR MNL 489.25TKWFNY/SPL053ZPZ1 PR NYC",
+                "441.75UKWFNY/SPL053ZPZ1 NUC931.00 ----- MUST PRICE AS B ----",
+                "-END ROE1.0",
+                "FARE USD 931.00 TAX 5.60AY TAX 37.20US TAX 3.96XA TAX 4.50XF",
+                "TAX 7.00XY TAX 5.77YC TAX 10.60LI TAX 140.00YQ TAX 1.00YR TOT",
+                "USD 1146.63  ",
+                "S1 /NVA06OCT",
+                "S2 NVB09JUL/NVA06OCT",
+                "E SPL053ZPZ1-SPLT5",
+                "E PAYMENT/ CK VI CA AX",
+                "E TOUR CODE US19GPRD2",
+                "TOUR CODE: PRRTUSDPH      ",
+                "TICKETING AGENCY 2G55",
+                "DEFAULT PLATING CARRIER PR",
+                "US PFC: XF JFK4.5 ",
+                "BAGGAGE ALLOWANCE",
+                "JC                                                          ",
+                " PR NYCMNL  2PC                                             ",
+                "   BAG 1 -  NO FEE       UPTO50LB/23KG AND UPTO62LI/158LCM",
+                "   BAG 2 -  NO FEE       UPTO50LB/23KG AND UPTO62LI/158LCM",
+                "   VIEWTRIP.TRAVELPORT.COM/BAGGAGEPOLICY/PR",
+                "                                                                 PR MNLNYC  2PC                                             ",
+                "   BAG 1 -  NO FEE       UPTO50LB/23KG AND UPTO62LI/158LCM",
+                "   BAG 2 -  NO FEE       UPTO50LB/23KG AND UPTO62LI/158LCM",
+                "   VIEWTRIP.TRAVELPORT.COM/BAGGAGEPOLICY/PR",
+                "                                                                CARRY ON ALLOWANCE",
+                " PR NYCMNL  07K                                             ",
+                "   BAG 1 -  CHGS MAY APPLY IF BAGS EXCEED TTL WT ALLOWANCE",
+                "                                    BDBF         ",
+                "   BAG 2 -  CHGS MAY APPLY IF BAGS EXCEED TTL WT ALLOWANCE",
+                " PR MNLNYC  07K                                             ",
+                "   BAG 1 -  CHGS MAY APPLY IF BAGS EXCEED TTL WT ALLOWANCE",
+                "   BAG 2 -  CHGS MAY APPLY IF BAGS EXCEED TTL WT ALLOWANCE",
+                "BAGGAGE DISCOUNTS MAY APPLY BASED ON FREQUENT FLYER STATUS/",
+                "ONLINE CHECKIN/FORM OF PAYMENT/MILITARY/ETC.",
+            ].join('\n'),
+            {
+                'pricingBlockList': [
+                    {
+                        'baggageInfo': {
+                            'parsed': {
+                                'baggageAllowanceBlocks': [
+                                    {
+                                        'paxTypeCode': 'JC',
+                                        'segments': [
+                                            {
+                                                'segmentDetails': {
+                                                    'departureAirport': 'NYC',
+                                                    'destinationAirport': 'MNL',
+                                                },
+                                            },
+                                        ],
+                                    },
+                                ],
+                            },
+                        },
+                    },
+                ],
+            },
+        ]);
+
         return $list;
     }
 

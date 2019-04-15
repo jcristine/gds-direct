@@ -26,7 +26,7 @@ class NextToken
         $lines = php.explode(php.PHP_EOL, $text);
         $firstLine = php.array_shift($lines);
         $paxType = php.trim($firstLine);
-        if (php.preg_match(/[A-Z0-9]{3}/, $paxType)) {
+        if (php.preg_match(/^[A-Z][A-Z0-9]{1,2}$/, $paxType)) {
             return {
                 'paxTypeCode': $paxType,
                 'textLeft': php.implode(php.PHP_EOL, $lines),

@@ -74,8 +74,10 @@ class ApolloBaggageAdapter
         for ([$j, $pricingBlock] of Object.entries($storePricing['pricingBlockList'] || [])) {
             if ($baggageInfo = $pricingBlock['baggageInfo'] || null) {
                 $modsHelper = pricingAdapter.makeHelper($storePricing);
+                let parsed = $pricingBlock['baggageInfo']['parsed'];
+                let ptc = !parsed ? null : parsed['baggageAllowanceBlocks'][0]['paxTypeCode'];
                 $ptcInfo = $modsHelper.makeBlockPtcInfo($pricingBlock['passengerNumbers'],
-                    $pricingBlock['baggageInfo']['parsed']['baggageAllowanceBlocks'][0]['paxTypeCode'] || null);
+                    ptc);
                 $nameNumbers = $ptcInfo['nameNumbers'];
                 delete($ptcInfo['nameNumbers']);
                 $records.push({
