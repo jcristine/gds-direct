@@ -18,6 +18,7 @@ const RetrieveFlightServiceInfoAction = require('../../../../Rbs/Process/Apollo/
 const ImportFareComponentsAction = require('../../../../Rbs/Process/Apollo/ImportPnr/Actions/ImportFareComponentsAction.js');
 
 let php = require('../../../../php.js');
+const Rej = require("../../../../../Utils/Rej");
 const withCapture = require("../../../../../GdsHelpers/CommonUtils").withCapture;
 
 /** @see ImportPqAmadeusAction description */
@@ -161,8 +162,7 @@ class ImportPqApolloAction extends AbstractGdsAction {
 			$result['parsed'] = $common;
 		}
 		if (!php.empty($errors = CanCreatePqRules.checkPnrData($common))) {
-			$result['error'] = 'Invalid PNR data - ' + php.implode(';', $errors);
-			return $result;
+			return Rej.BadRequest('Invalid PNR data - ' + php.implode(';', $errors));
 		}
 		return $result;
 	}
