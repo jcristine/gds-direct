@@ -6,7 +6,6 @@ const AreaSettings = require("../../../../Repositories/AreaSettings");
 const GdsSessions = require("../../../../Repositories/GdsSessions");
 
 let TABLE = 'terminalSettings';
-let AREA_TABLE = 'terminalAreaSettings';
 
 let self = {
 	TABLE: TABLE,

@@ -27,6 +27,18 @@ module.exports.migrations = [
 		].join('\n')),
 	},
 	{
+		name: 'GRECT/2019.04.16010-make-setting-lang-col-string',
+		perform: (db) => db.query([
+			'ALTER TABLE terminalSettings MODIFY COLUMN language VARCHAR(10) DEFAULT "";',
+		].join('\n')),
+	},
+	{
+		name: 'GRECT/2019.04.16010-reset-setting-lang-col',
+		perform: (db) => db.query([
+			'UPDATE terminalSettings SET language = "";',
+		].join('\n')),
+	},
+	{
 		name: '00.00.03',
 		perform: (db) => db.query([
 			'CREATE TABLE `terminalAreaSettings` (',

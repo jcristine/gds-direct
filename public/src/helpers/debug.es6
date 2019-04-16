@@ -56,11 +56,12 @@ export const showUserMessages = response => {
 
 	if (response && response['userMessages'] && response['userMessages'].length > 0)
 	{
+		let success = response.success;
 		const userMessages = response['userMessages'];
 
 		notify({
 			msg 	: userMessages.map(msg => '- ' + msg).join('<br/>'),
-			type 	: 'warning',
+			type 	: success ? 'success' : 'warning',
 			timeout	: 12000,
 		});
 	}

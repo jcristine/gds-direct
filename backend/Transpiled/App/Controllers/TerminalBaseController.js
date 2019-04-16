@@ -31,7 +31,7 @@ class TerminalBaseController {
 				saving = agentSettings.setCurrentGds($value);
 				break;
 			case 'language':
-				saving = agentSettings.setSetting($currentGds, 'language', $value);
+				saving = agentSettings.setSetting($currentGds, 'language', $value.toLowerCase());
 				break;
 			case 'terminal':
 				saving = agentSettings.setSetting($currentGds, 'terminalNumber', $value);
@@ -46,10 +46,9 @@ class TerminalBaseController {
 				saving = Promise.reject('Cant save settings. Unknown key - ' + $name);
 				break;
 		}
-		// TODO: should fix - frontend takes userMessages from data.userMessages instead of data.data.userMessages
 		return saving
-			.then(sqlResult => ({success: true, data: {data: {userMessages: ['Ok writing ' + $name]}}}))
-			.catch(exc => ({success: false, data: {userMessages: ['Failure - ' + exc]}}));
+			.then(sqlResult => ({success: true, userMessages: []}))
+			.catch(exc => ({success: false, userMessages: ['Failure - ' + exc]}));
 	}
 
 	/**
