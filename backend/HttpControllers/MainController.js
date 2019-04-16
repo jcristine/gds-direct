@@ -9,7 +9,6 @@ const GdsSessions = require("../Repositories/GdsSessions");
 const GdsSessionsController = require("./GdsSessionController");
 const Config = require('../Config.js');
 const Agents = require("../Repositories/Agents");
-const {keys, withLock} = require("../LibWrappers/Redis");
 const Agent = require('../DataFormats/Wrappers/Agent.js');
 const Misc = require("../Transpiled/Lib/Utils/Misc");
 
@@ -66,7 +65,7 @@ let toHandleHttp = (httpAction) => (req, res) => {
 				stack: exc.stack,
 			});
 			if (isSystemError(exc)) {
-				Diag.error('HTTP request failed', errorData);
+				Diag.logExc('HTTP request failed', errorData);
 			}
 		});
 };
