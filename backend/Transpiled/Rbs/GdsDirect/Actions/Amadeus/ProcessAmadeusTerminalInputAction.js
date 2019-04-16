@@ -28,12 +28,12 @@ const AmadeusClient = require("../../../../../GdsClients/AmadeusClient");
 const makeDefaultAreaState = require("../../../../../Repositories/GdsSessions").makeDefaultAreaState;
 const WorkAreaScreenParser = require("../../../../Gds/Parsers/Amadeus/WorkAreaScreenParser");
 const UnprocessableEntity = require("../../../../../Utils/Rej").UnprocessableEntity;
+const Rej = require("../../../../../Utils/Rej");
+const FxParser = require('../../../../Gds/Parsers/Amadeus/Pricing/FxParser.js');
 
 var require = translib.stubRequire;
 
-const FxParser = require('../../../../Gds/Parsers/Amadeus/Pricing/FxParser.js');
 const TicketMaskParser = require('../../../../Gds/Parsers/Amadeus/TicketMaskParser.js');
-const Rej = require("../../../../../Utils/Rej");
 
 class ProcessAmadeusTerminalInputAction {
 	/** @param $statefulSession = require('StatefulSession.js')() */
