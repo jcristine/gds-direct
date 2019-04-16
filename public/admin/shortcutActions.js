@@ -141,7 +141,10 @@ let initialize = (data) => {
 					records: data.records,
 				}),
 			}).then(rs => rs.json()
-				.then(data => alert('Status ' + rs.status + ' ' + rs.statusText + ' ' + JSON.stringify(data))))
+				.then(data => {
+					alert('Status ' + rs.status + ' ' + rs.statusText + ' ' + JSON.stringify(data));
+					window.location.reload();
+				}))
 				.catch(exc => alert('Failure ' + exc));
 		});
 		return false;
