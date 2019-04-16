@@ -38,7 +38,7 @@ export default class Session
 			if (!callInProgress && !closed && window.performance.now() - lastUsedAt >= pingInterval) {
 				lastUsedAt = window.performance.now();
 				callInProgress = true;
-				let pinging = post('/gdsDirect/keepAlive', makeParams(this, {}))
+				let ping = () => post('/gdsDirect/keepAlive', makeParams(this, {}))
 					.catch(exc => {
 						if (params.onExpired) {
 							params.onExpired(exc + '');
@@ -46,7 +46,7 @@ export default class Session
 						closed = true;
 					})
 					.then(result => callInProgress = false);
-				this.waitFor(pinging);
+				this.enqueue(ping);
 			}
 		}, pingInterval);
 	}
@@ -83,9 +83,10 @@ export default class Session
 	 * do not invoke next command before `promise` is done - for
 	 * importPq and other non-command actions that lock session
 	 */
-	waitFor(promise)
+	enqueue(action)
 	{
 		lastGlobalPromise = lastGlobalPromise
-			.finally(() => promise);
+			.catch(() => {}).then(action);
+		return lastGlobalPromise;
 	}
 }

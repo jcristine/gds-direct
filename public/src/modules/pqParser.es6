@@ -33,9 +33,9 @@ let loaderToggle = (state) => {
 		loadingDots.classList.toggle('loading-hidden', state);
 };
 
-let blockAllUi = (url) => {
+let blockAllUi = (action) => {
 	loaderToggle(false);
-	let whenResult = get(url);
+	let whenResult = action();
 	whenResult.finally(() => loaderToggle(true));
 	return whenResult;
 };
@@ -59,22 +59,23 @@ export class PqParser
 		this.gdsSwitch = gdsSwitch;
 	}
 
-	blockTerminal(url) {
-		let whenResult = get(url);
+	blockTerminal(action, label) {
+		let queueing = null;
 		let gdsUnit = this.gdsSwitch.getCurrent();
 		if (gdsUnit) {
 			let term = gdsUnit.getActiveTerminal();
 			if (term.plugin) {
-				term.plugin.print('PQ IMPORT IN PROGRESS...');
-				term.plugin.spinner.start();
-				term.plugin.session.waitFor(whenResult);
-				whenResult.finally(() => {
+				queueing = term.plugin.session.enqueue(() => {
+					term.plugin.print(label + ' IN PROGRESS...');
+					term.plugin.spinner.start();
+					return action();
+				}).finally(() => {
 					term.plugin.spinner.end();
-					term.plugin.print('PQ IMPORT DONE');
+					term.plugin.print(label + ' DONE');
 				});
 			}
 		}
-		return whenResult;
+		return queueing || action();
 	};
 
 	show(gds, rId)
@@ -90,7 +91,9 @@ export class PqParser
 			return reject('Can\'t create PQ - ' + pqErrors.join('; '));
 		}
 
-		return blockAllUi(`terminal/getPqItinerary?pqTravelRequestId=${rId}&gds=${gds.get('name')}`)
+		let url = `terminal/getPqItinerary?pqTravelRequestId=${rId}&gds=${gds.get('name')}`;
+		let whenPq = this.blockTerminal(() => get(url), 'GET PRICING');
+		return blockAllUi(() => whenPq)
 			.then(rbsData => rbsData.pnrData ? rbsData :
 				Promise.reject('Invalid Response'))
 			.then(rbsData => {
@@ -98,7 +101,8 @@ export class PqParser
 				return {pqTravelRequestId: rId, gds: gds.get('name'), rbsData: rbsData};
 			})
 			.then(pqBtnData => {
-				let importPq = () => this.blockTerminal(`terminal/importPq?pqTravelRequestId=${rId}&gds=${gds.get('name')}`)
+				let url = `terminal/importPq?pqTravelRequestId=${rId}&gds=${gds.get('name')}`;
+				let importPq = () => this.blockTerminal(() => get(url), 'PQ IMPORT')
 					.then(rbsData => {
 						updateSessionState(rbsData, gds.get('name'));
 						return {rbsData: rbsData};
