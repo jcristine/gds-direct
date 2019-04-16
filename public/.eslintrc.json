@@ -25,6 +25,7 @@
     "document": false,
     "navigator":  false,
     "fetch": false,
+    "Event": false,
     "URL": false,
     "URLSearchParams": false,
     "Option": false,

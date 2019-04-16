@@ -59,6 +59,7 @@ export default class TerminalPlugin
 			gds			: params.gds,
 		});
 		this.actionReader = new ActionReader({
+			plugin: this,
 			terminal: this.terminal,
 			gds: params.gds,
 			getSessionInfo: params.getSessionInfo,
@@ -271,9 +272,8 @@ export default class TerminalPlugin
 					else
 						this.print(`[[;;;text-danger;]SERVER ERROR]`);
 				}
+				this.actionReader.handleNewLine();
 			});
-
-		this.actionReader.handleNewLine();
 
 		return command;
 	}

@@ -12,8 +12,9 @@ export default class ActionReader
 	/**
 	 * @param terminal = $().terminal();
 	 */
-	constructor({terminal, gds, getSessionInfo})
+	constructor({plugin, terminal, gds, getSessionInfo})
 	{
+		this.plugin = plugin;
 		this.gds = gds;
 		this.terminal = terminal;
 		this.getSessionInfo = getSessionInfo;
@@ -89,17 +90,37 @@ export default class ActionReader
 		return {cmd, tabStops};
 	}
 
+	_pressKey(keyName) {
+		// press enter
+		let event = new Event('keydown');
+		event.key = keyName;
+		document.documentElement.dispatchEvent(event);
+	}
+
 	_putCaretAtTabStop() {
 		if (this.tabStopsLeft.length > 0) {
 			let [pos, len] = this.tabStopsLeft[0];
 			pos += this.extension;
 			this.terminal.cmd().position(pos);
+			return true;
 		} else {
-			// press enter
-			let event = new Event('keydown');
-			event.key = 'ENTER';
-			document.documentElement.dispatchEvent(event);
+			return false;
 		}
+	}
+
+	_prepareCmd(cmd) {
+		let [_, tabs, restCmd] = cmd.match(/^((?:<Tab>)*)([\s\S]*)$/);
+		let prefix = '';
+		if (tabs) {
+			for (let tab of tabs.match(/<Tab>/g) || []) {
+				this.plugin.tabCommands.move(false).run(this.terminal);
+			}
+			prefix = this.terminal.get_command();
+		}
+		restCmd = this.constructor.replaceCommandVariables(restCmd);
+		let parsed = this._parseTabStops(restCmd);
+		this.terminal.set_command(prefix + parsed.cmd);
+		this.tabStopsLeft = parsed.tabStops;
 	}
 
 	handleNewLine() {
@@ -108,12 +129,11 @@ export default class ActionReader
 		} else {
 			this.isActive = true;
 			let cmd = this.commandsLeft.shift();
-			cmd = this.constructor.replaceCommandVariables(cmd);
-			let parsed = this._parseTabStops(cmd);
-			this.terminal.set_command(parsed.cmd);
-			this.tabStopsLeft = parsed.tabStops;
+			this._prepareCmd(cmd);
 			this.extension = 0;
-			this._putCaretAtTabStop();
+			if (!this._putCaretAtTabStop()) {
+				this._pressKey('ENTER');
+			}
 		}
 	}
 
