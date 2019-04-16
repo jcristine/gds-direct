@@ -19,6 +19,7 @@ export default class Admin extends ButtonPopOver
 				['Sessions'   , '/public/admin/terminalSessions.html'],
 				['Themes'     , '/public/admin/terminalThemes.html'],
 				['Highlight'  , '/public/admin/highlightRules.html'],
+				['Shortcut Actions'  , '/public/admin/shortcutActions.html'],
 			];
 			for (let [label, path] of pages) {
 				let el = Dom('button.btn btn-primary[<i class="fa t-f-size-14">' + label + '</i>]', {
