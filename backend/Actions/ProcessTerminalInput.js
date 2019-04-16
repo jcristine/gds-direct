@@ -259,7 +259,7 @@ let ProcessTerminalInput = async ({session, rqBody, emcUser}) => {
 	if (callsLimit) {
 		let callsUsed = await Agents.getGdsDirectCallsUsed(emcUser.id);
 		if (+callsUsed >= +callsLimit) {
-			return TooManyRequests('You exhausted your GDS Direct usage limit for today');
+			return TooManyRequests('You exhausted your GDS Direct usage limit for today (' + callsUsed + ' >= ' + callsLimit + ')');
 		}
 	}
 
