@@ -28,39 +28,25 @@ class StubLocationGeographyProvider {
 		}
 	}
 
-	getTimezone($locationCode) {
+	async getTimezone($locationCode) {
 		let $row;
 		$row = this.getLocationData($locationCode);
 		return $row['tz'];
 	}
 
-	getRegion($locationCode) {
-		let $data;
-		$data = this.getLocationData($locationCode);
-		return $data['region_name'];
-	}
-
-	getRegionId($locationCode) {
+	async getRegionId($locationCode) {
 		let $data;
 		$data = this.getLocationData($locationCode);
 		return $data['region_id'];
 	}
 
-	areAllLocationsInSameRegion($locationCodes) {
-		let $regions;
-		$regions = Fp.map(($locationCode) => {
-			return this.getRegion($locationCode);
-		}, $locationCodes);
-		return php.count(php.array_unique($regions)) === 1 && require('../../Lib/Utils/ArrayUtil.js').getFirst($regions) !== null;
-	}
-
-	getCityCode($airportCode) {
+	async getCityCode($airportCode) {
 		let $data;
 		$data = this.getLocationData($airportCode);
 		return $data['city_code'];
 	}
 
-	getCountryCode($airportCode) {
+	async getCountryCode($airportCode) {
 		let $data;
 		$data = this.getLocationData($airportCode);
 		return $data['country_code'];
@@ -72,7 +58,7 @@ class StubLocationGeographyProvider {
 		return php.array_filter(php.explode(',', $data['alternatives'] || ''));
 	}
 
-	doesBelongToCity($airportCode, $cityCode) {
+	async doesBelongToCity($airportCode, $cityCode) {
 		let $alternative, $airportToBorderCities, $airportCity, $cities;
 		for ($alternative of Object.values(this.getAlternatives($airportCode))) {
 			if (this.getCityCode($alternative) === $cityCode) {
@@ -86,7 +72,7 @@ class StubLocationGeographyProvider {
 		};
 		if ($airportCode === $cityCode) {
 			return true;
-		} else if ($airportCity = this.getCityCode($airportCode)) {
+		} else if ($airportCity = await this.getCityCode($airportCode)) {
 			if ($airportCity === $cityCode) {
 				return true;
 			} else if ($cities = $airportToBorderCities[$airportCode] || null) {

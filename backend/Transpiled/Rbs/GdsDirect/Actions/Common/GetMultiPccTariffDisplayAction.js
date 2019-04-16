@@ -58,20 +58,30 @@ class GetMultiPccTariffDisplayAction {
 		return Promise.resolve(this.$repriceRules);
 	}
 
-	static matchesLocation($airport, $locationItems, $geo) {
-		return php.empty($locationItems) || Fp.any(($item) => {
-			if ($item['type'] === 'airport') {
-				return $item['value'] === $airport;
-			} else if ($item['type'] === 'city') {
-				return $geo.doesBelongToCity($airport, $item['value']);
-			} else if ($item['type'] === 'country') {
-				return $item['value'] === $geo.getCountryCode($airport);
-			} else if ($item['type'] === 'region') {
-				return $item['value'] == $geo.getRegionId($airport);
-			} else {
-				return false;
+	static async _matchesLocationItem($airport, $item, $geo) {
+		if ($item['type'] === 'airport') {
+			return $item['value'] === $airport;
+		} else if ($item['type'] === 'city') {
+			return $geo.doesBelongToCity($airport, $item['value']);
+		} else if ($item['type'] === 'country') {
+			return $item['value'] === await $geo.getCountryCode($airport);
+		} else if ($item['type'] === 'region') {
+			return $item['value'] == await $geo.getRegionId($airport);
+		} else {
+			return false;
+		}
+	}
+
+	static async matchesLocation($airport, $locationItems, $geo) {
+		if (php.empty($locationItems)) {
+			return true;
+		}
+		for (let $item of $locationItems) {
+			if (await this._matchesLocationItem($airport, $item, $geo)) {
+				return true;
 			}
-		}, $locationItems);
+		}
+		return false;
 	}
 
 	static transformPccRecordFromDb($pccRec) {
@@ -85,12 +95,12 @@ class GetMultiPccTariffDisplayAction {
 	}
 
 	/** @param $rules = [MultiPccTariffRuleJsApiController::normalizeRule()] */
-	getRoutePccs($depAirport, $destAirport, $rules) {
+	async getRoutePccs($depAirport, $destAirport, $rules) {
 		let $rule, $geo;
 		for ($rule of Object.values($rules)) {
 			$geo = this.$geoProvider;
-			if (this.constructor.matchesLocation($depAirport, $rule['departure_items'], $geo) &&
-				this.constructor.matchesLocation($destAirport, $rule['destination_items'], $geo)
+			if (await this.constructor.matchesLocation($depAirport, $rule['departure_items'], $geo) &&
+				await this.constructor.matchesLocation($destAirport, $rule['destination_items'], $geo)
 			) {
 				return php.array_map(a => this.constructor.transformPccRecordFromDb(a), $rule['reprice_pcc_records']);
 			}
@@ -114,8 +124,8 @@ class GetMultiPccTariffDisplayAction {
 			}
 		}
 		let pccsFromRules = php.array_merge(
-			this.getRoutePccs($cmdData['departureAirport'], $cmdData['destinationAirport'], $routeRules),
-			this.getRoutePccs($cmdData['destinationAirport'], $cmdData['departureAirport'], $routeRules),
+			await this.getRoutePccs($cmdData['departureAirport'], $cmdData['destinationAirport'], $routeRules),
+			await this.getRoutePccs($cmdData['destinationAirport'], $cmdData['departureAirport'], $routeRules),
 		);
 		$pccs = pccsFromRules.length > 0 ? pccsFromRules : $fallbackPccs;
 		$isCurrent = ($pccRec) => {
