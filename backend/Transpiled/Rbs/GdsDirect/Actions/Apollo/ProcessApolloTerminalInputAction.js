@@ -1102,7 +1102,8 @@ class ProcessApolloTerminalInputAction {
 		if (!php.empty($errors = CommonDataHelper.checkSeatCount($pnr))) {
 			return {'errors': $errors};
 		}
-		$tripEndDate = ArrayUtil.getLast($pnr.getItinerary())['departureDate']['parsed'] || null;
+		let lastSeg = ArrayUtil.getLast($pnr.getItinerary());
+		$tripEndDate = !lastSeg ? null : lastSeg['departureDate']['parsed'];
 		$tripEndDt = $tripEndDate ? DateTime.decodeRelativeDateInFuture($tripEndDate, this.stateful.getStartDt()) : null;
 		$paxCmdParts = [];
 		for ($pax of Object.values($pnr.getPassengers())) {
