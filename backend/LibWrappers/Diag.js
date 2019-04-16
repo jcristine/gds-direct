@@ -28,11 +28,16 @@ let parseStack = (stack) => {
         let entries = [];
         for (let line of lines) {
             let match = line.match(/^    at (.+) \((.+):(\d+):(\d+)\)\s*$/);
-            if (!match) {
-                return null;
-            } else {
+            if (match = line.match(/^    at (.+) \((.+):(\d+):(\d+)\)\s*$/)) {
+                // "    at process._tickCallback (internal/process/next_tick.js:68:7)"
                 let [_, func, file, line, col] = match;
                 entries.push({func, file, line, col});
+            } else if (match = line.match(/^    at (.+) \(<(anonymous)>\)\s*$/)) {
+                // "    at getFetchedDataOnDemand.next (<anonymous>)",
+                let [_, func, file] = match;
+                entries.push({func, file, line: 0, col: 0});
+            } else {
+                return null;
             }
         }
         return {message, entries};
@@ -40,9 +45,15 @@ let parseStack = (stack) => {
 };
 
 diagService.logExc = (msg, exc) => {
-    let parsedStack = parseStack(exc.stack);
-    let entries = (parsedStack || {}).entries || [];
-    let lastEntry = entries.filter(e => !e.file.endsWith('/Rej.js'))[0];
+    let lastEntry = null;
+    try {
+        let parsedStack = parseStack(exc.stack);
+        let entries = (parsedStack || {}).entries || [];
+        lastEntry = entries.filter(e =>
+            !e.file.endsWith('/Rej.js') &&
+            !e.file.endsWith('/translib.js'))[0];
+    } catch (exc) {}
+
     if (lastEntry) {
         let {func, file, line, col} = lastEntry;
         let type = diagService.DIAG_TYPE_DEFAULT;
