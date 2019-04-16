@@ -196,7 +196,7 @@ class ProcessGalileoTerminalInputAction {
 					}
 				}
 			}
-			return 'AR' + $data['orderBy'] + (($data['departureDate'] || {})['raw'] || '')
+			return 'AR' + ($data['orderBy'] || '') + (($data['departureDate'] || {})['raw'] || '')
 				+ $data['departureAirport'] + $data['destinationAirport']
 				+ php.implode('', $typeToMod);
 		} else {
