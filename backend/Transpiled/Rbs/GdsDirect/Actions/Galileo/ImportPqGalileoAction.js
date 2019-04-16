@@ -226,7 +226,7 @@ class ImportPqGalileoAction extends AbstractGdsAction {
 		let $result, $reservationRecord, $nameRecords, $pricingRecord, $flightServiceRecord, $currentStore,
 			$fareRuleData, $publishedPricingRecord;
 
-		$result = {'pnrData': []};
+		$result = {'pnrData': {}};
 
 		$reservationRecord = await this.getReservation();
 		if ($result['error'] = $reservationRecord['error']) return $result;
