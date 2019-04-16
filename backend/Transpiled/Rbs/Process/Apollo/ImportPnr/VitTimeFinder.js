@@ -81,7 +81,7 @@ class VitTimeFinder {
 		// 2016 - a leap year
 		let baseSec = php.strtotime('2016-' + this.$departureDate);
 		$fullDate = +$dayOffset
-			? php.strtotime('+' + $dayOffset, baseSec)
+			? php.strtotime('+' + $dayOffset + ' days', baseSec)
 			: baseSec;
 		$apolloDate = php.strtoupper(php.date('dM', $fullDate));
 

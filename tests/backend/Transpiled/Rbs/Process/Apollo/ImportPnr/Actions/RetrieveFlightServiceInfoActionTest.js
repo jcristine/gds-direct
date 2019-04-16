@@ -272,6 +272,151 @@ class RetrieveFlightServiceInfoActionTest extends require('../../../../../Lib/Te
 			],
 		});
 
+		testCases.push({
+			input: {
+				title: 'additional VIT for previous day needed example',
+				pnrDump: [
+					"NO NAMES",
+					" 1 IG 841K 29APR LOSMXP SS1   120A 1025A *         MO   E",
+					" 2 IG 969W 29APR MXPMIA SS1  1255P  510P *         MO   E",
+					" 3 IG 970U 19JUL MIAMXP SS1   710P 1105A|*      FR/SA   E",
+					" 4 IG 843N 20JUL MXPLOS SS1   130P  855P *         SA   E",
+					"><",
+				].join('\n'),
+			},
+			output: {
+				flightInfoSegments: [
+					{
+						"segmentNumber": 1,
+						"legs": [
+							{"destinationAirport": "ACC", "destinationTime": "01:25"},
+							{"destinationAirport": "MXP", "destinationTime": "10:25"},
+						],
+					},
+					{
+						"segmentNumber": 2,
+						"legs": [
+							{"destinationAirport": "MIA", "destinationTime": "17:10"},
+						],
+					},
+					{
+						"segmentNumber": 3,
+						"legs": [
+							{"destinationAirport": "MXP", "destinationTime": "11:05"},
+						],
+					},
+					{
+						"segmentNumber": 4,
+						"legs": [
+							{"destinationAirport": "ACC", "destinationTime": "17:50"},
+							{"destinationAirport": "LOS", "destinationTime": "20:55"},
+						],
+					},
+				],
+			},
+			calledCommands: [
+				{
+				    "cmd": "*SVC",
+				    "output": [
+				        " 1 IG  841  K LOSACC  738  DINNER                          1:05",
+				        "                      MOVIE/NON-SMOKING                        ",
+				        "                                                               ",
+				        "              ACCMXP  738  DINNER                          6:00",
+				        "                      MOVIE/NON-SMOKING                        ",
+				        "                                                               ",
+				        "           DEPARTS LOS TERMINAL I  - ARRIVES MXP TERMINAL 1    ",
+				        "                                                               ",
+				        " 2 IG  969  W MXPMIA  332  LUNCH                          10:15",
+				        "                      MOVIE/NON-SMOKING/WI-FI/USB POWER        ",
+				        "                                                               ",
+				        "           DEPARTS MXP TERMINAL 1                              ",
+				        "           TSA SECURED FLIGHT                                  ",
+				        ")><"
+				    ].join("\n"),
+				    "duration": "1.412919489",
+				    "type": "flightServiceInfo",
+				    "scrolledCmd": "*SVC",
+				    "state": {"area":"A","pcc":"2F3K","recordLocator":"","canCreatePq":true,"scrolledCmd":"*SVC","cmdCnt":19,"pricingCmd":"$BB","hasPnr":true,"isPnrStored":false,"cmdType":"flightServiceInfo"}
+				},
+				{
+				    "cmd": "MR",
+				    "output": [
+				        "                                                               ",
+				        " 3 IG  970  U MIAMXP  332  DINNER                          9:55",
+				        "                      MOVIE/NON-SMOKING/WI-FI/USB POWER        ",
+				        "                                                               ",
+				        "                                     ARRIVES MXP TERMINAL 1    ",
+				        "           TSA SECURED FLIGHT                                  ",
+				        "                                                               ",
+				        " 4 IG  843  N MXPACC  7M8  DINNER                          6:20",
+				        "                      MOVIE/NON-SMOKING                        ",
+				        "                                                               ",
+				        "              ACCLOS  7M8  DINNER                          1:05",
+				        "                      MOVIE/NON-SMOKING                        ",
+				        "                                                               ",
+				        ")><"
+				    ].join("\n"),
+				},
+				{
+				    "cmd": "MR",
+				    "output": [
+				        "           DEPARTS MXP TERMINAL 1  - ARRIVES LOS TERMINAL I    ",
+				        "                                                               ",
+				        "CO2 CALCULATED PER PERSON BY CLIMATENEUTRALGROUP.COM/OFFSET-NOW",
+				        "    CO2 LOSACC ECONOMY      68.50 KG PREMIUM      68.50 KG     ",
+				        "    CO2 ACCMXP ECONOMY     439.47 KG PREMIUM     966.83 KG     ",
+				        "    CO2 MXPMIA ECONOMY     767.72 KG PREMIUM    1688.98 KG     ",
+				        "    CO2 MIAMXP ECONOMY     767.72 KG PREMIUM    1688.98 KG     ",
+				        "    CO2 MXPACC ECONOMY     439.47 KG PREMIUM     966.83 KG     ",
+				        "    CO2 ACCLOS ECONOMY      68.50 KG PREMIUM      68.50 KG     ",
+				        "    CO2 TOTAL  ECONOMY    2551.38 KG PREMIUM    5448.63 KG     ",
+				        "><"
+				    ].join("\n"),
+				},
+				{
+				    "cmd": "VITIG841/29APR",
+				    "output": [
+				        " NOT STORED",
+				        "><"
+				    ].join("\n"),
+				},
+				{
+				    "cmd": "VITIG841/28APR",
+				    "output": [
+						' IG 841   28APR  SU',
+						'MXP          710P',
+						'          29APR  MO',
+						'LOS   1220A  120A     6:10',
+						'ACC    125A  225A     1:05',
+						'MXP   1025A           6:00',
+						'   ',
+						'                TET  15:15',
+						'MXP-MXP NO BOARDING THIS CITY',
+						'LOS-ACC NO BOARDING THIS CITY',
+						'END OF DISPLAY',
+				        "><"
+				    ].join("\n"),
+				},
+				{
+				    "cmd": "VITIG843/20JUL",
+				    "output": [
+						' IG 843   20JUL  SA',
+						'MXP          130P',
+						'ACC    550P  650P     6:20',
+						'LOS    855P  955P     1:05',
+						'          21JUL  SU',
+						'MXP    500A           6:05',
+						'   ',
+						'                TET  15:30',
+						'MXP-MXP NO BOARDING THIS CITY',
+						'ACC-LOS NO BOARDING THIS CITY',
+						'END OF DISPLAY',
+				        "><"
+				    ].join("\n"),
+				},
+			],
+		});
+
 		return testCases.map(t => [t]); // arg tuple list
 	}
 

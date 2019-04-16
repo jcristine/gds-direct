@@ -38,7 +38,8 @@ class RetrieveFlightServiceInfoAction extends AbstractGdsAction {
 				$pnrSegment = $pnrSegmentsByNumber[$svcSegment['segmentNumber']];
 				$result['flightInfoSegments'].push(await this.retrieveServiceStopTimes($pnrSegment, $svcSegment));
 			} else {
-				$result['error'] = '*SVC and *R segments [' + $svcSegment['segmentNumber'] + '] are not compatible' + php.PHP_EOL + php.json_encode($rSegment) + php.PHP_EOL + php.json_encode($svcSegment);
+				$result['error'] = '*SVC and *R segments [' + $svcSegment['segmentNumber'] + '] are not compatible' +
+					php.PHP_EOL + php.json_encode($rSegment) + php.PHP_EOL + php.json_encode($svcSegment);
 				break;
 			}
 		}
