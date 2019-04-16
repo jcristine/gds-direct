@@ -54,7 +54,8 @@ export default class Output
 	{
 		const outputRows 		= this.outputStrings ? this._getOutputLength() : 1;
 		const rowsRemoveEmpty	= () => this.emptyLines - outputRows;
-		const rowsToLift 		= () => this.numRows - outputRows - 1; // 1 - cmd line
+		// - 2 - last output cmd line, and the current prompt
+		const rowsToLift 		= () => this.numRows - outputRows - 2;
 
 		this.emptyLines 		= this.clearScreen ? rowsToLift() : rowsRemoveEmpty();
 
