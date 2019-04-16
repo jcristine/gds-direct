@@ -126,9 +126,8 @@ StaticConfig.getConfig = async () => {
 		let defaults = {
 			NODE_ENV: 'development',
 			HOST: '0.0.0.0',
-			HTTP_PORT: '20327',
+			HTTP_PORT: '3012',
 			SOCKET_PORT: '3022',
-			DB_NAME: 'lead_management_chat',
 			REDIS_CLUSTER_NAME: "some-grect-redis",
 			RANDOM_KEY: "12345678901234567890123456789012",
 			CONFIG_LAN: "http://intranet.dyninno.net/~aklesuns/grect_fake_config_lan/",
