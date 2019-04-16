@@ -37,13 +37,14 @@ let PersistentHttpRq = (params) => {
 			res.setEncoding('utf8');
 			res.on('data', (chunk) => responseBody += chunk);
 			res.on('end', () => {
+				let result = {headers: res.headers, body: responseBody};
 				if (res.statusCode != 200) {
 					let msg = 'Http request to external service failed - ' +
 						res.statusCode + ' - ' + parsedUrl.path + ' - ' + responseBody;
-					let exc = BadGateway(msg).exc;
+					let exc = BadGateway(msg, result).exc;
 					reject(exc);
 				} else {
-					resolve({headers: res.headers, body: responseBody});
+					resolve(result);
 				}
 			});
 		});
