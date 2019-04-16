@@ -47,7 +47,10 @@ export default class KeySettings extends ButtonPopOver
 								occurrences.add(rec.name);
 								return !used;
 							})
-							.map(rec => `<option>{{!${rec.name}}}</option>`)
+							.map(rec => {
+								let preview = rec.commands.join(';');
+								return `<option value="{{!${rec.name}}}">{{!${rec.name}}} - ${preview}</option>`;
+							})
 							.join('');
 					});
 			},
