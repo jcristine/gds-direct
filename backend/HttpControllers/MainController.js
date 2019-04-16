@@ -1,6 +1,6 @@
 
 let Emc = require('../LibWrappers/Emc.js');
-let {NoContent, Forbidden, NotAuthorized, BadRequest, NotImplemented, LoginTimeOut, InternalServerError, NotFound} = require('../Utils/Rej.js');
+let {NoContent, Forbidden, NotAuthorized, BadRequest, TooManyRequests, NotImplemented, LoginTimeOut, InternalServerError, NotFound} = require('../Utils/Rej.js');
 let Diag = require('../LibWrappers/Diag.js');
 let FluentLogger = require('../LibWrappers/FluentLogger.js');
 const {getExcData} = require('../Utils/Misc.js');
@@ -16,6 +16,7 @@ const Misc = require("../Transpiled/Lib/Utils/Misc");
 let isSystemError = (exc) =>
 	!NoContent.matches(exc.httpStatusCode) &&
 	!BadRequest.matches(exc.httpStatusCode) &&
+	!TooManyRequests.matches(exc.httpStatusCode) &&
 	!Forbidden.matches(exc.httpStatusCode) &&
 	!LoginTimeOut.matches(exc.httpStatusCode) &&
 	!NotImplemented.matches(exc.httpStatusCode);

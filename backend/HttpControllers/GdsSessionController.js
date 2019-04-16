@@ -6,7 +6,7 @@ let Db = require('../Utils/Db.js');
 let GdsSessions = require('../Repositories/GdsSessions.js');
 let {TRAVELPORT, AMADEUS, SABRE} = require('../Repositories/GdsProfiles.js');
 let {logit, logExc} = require('../LibWrappers/FluentLogger.js');
-let {Forbidden, NotImplemented, LoginTimeOut, NotFound} = require('../Utils/Rej.js');
+let {Forbidden, NotImplemented, LoginTimeOut, NotFound, ServiceUnavailable} = require('../Utils/Rej.js');
 let StatefulSession = require('../GdsHelpers/StatefulSession.js');
 let ProcessTerminalInput = require('../Actions/ProcessTerminalInput.js');
 const MakeMcoApolloAction = require('../Transpiled/Rbs/GdsDirect/Actions/Apollo/MakeMcoApolloAction.js');
@@ -41,7 +41,7 @@ let startByGds = async (gds) => {
 			if (limit !== null && taken >= limit) {
 				// actually, instead of returning error, we could close the most
 				// inactive session of another agent (idle for at least 10 minutes)
-				return TooManyRequests('Too many sessions, ' + taken + ' (>= ' + limit + ') opened for this GDS profile ATM. Wait for few minutes and try again.');
+				return ServiceUnavailable('Too many sessions, ' + taken + ' (>= ' + limit + ') opened for this GDS profile ATM. Wait for few minutes and try again.');
 			} else {
 				return client.startSession({profileName})
 					.then(gdsData => ({...gdsData, limit, taken, profileName}));

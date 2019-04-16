@@ -46,6 +46,7 @@ exports.LoginTimeOut = toReject(440);
 exports.InternalServerError = toReject(500);
 exports.NotImplemented = toReject(501);
 exports.BadGateway = toReject(502);
+exports.ServiceUnavailable = toReject(503);
 
 /** handy when you need to filter a value in Promise chain */
 exports.nonEmpty = (msg = '(no description)', reject = null) => (value) => {
