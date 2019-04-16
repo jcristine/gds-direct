@@ -163,8 +163,8 @@ class ProcessGalileoTerminalInputAction {
 	static parseMultiPriceItineraryAlias($cmd) {
 		let $parts, $mainCmd, $followingCommands, $cmds;
 
-		if (php.preg_match(/^FQ.*(&|\|\|)\S.*$/, $cmd)) {
-			$parts = php.preg_split(/&|\|\|/, $cmd);
+		if (php.preg_match(/^FQ.*(&)\S.*$/, $cmd)) {
+			$parts = php.preg_split(/&/g, $cmd);
 			$mainCmd = php.array_shift($parts);
 			$followingCommands = $parts.map(($cmdPart) => this.extendPricingCmd($mainCmd, $cmdPart));
 			if (!Fp.any(cmd => !cmd, $followingCommands)) {
