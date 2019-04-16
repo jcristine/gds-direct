@@ -265,12 +265,12 @@ class ImportPqApolloAction extends AbstractGdsAction {
 				$cmdRecord['output'] = this.constructor.joinFullOutput($mrs);
 				$calculated = this.constructor.calcPricedSegments($segmentsLeft, $cmdRecord, $cmdRecords);
 				if (!php.empty($calculated['error'])) {
-					return {'error': $calculated['error']};
+					return Rej.BadRequest($calculated['error']);
 				} else {
 					$cmdRecords.push($cmdRecord);
 					$segmentsLeft = $calculated['segmentsLeft'];
 					if (php.empty($segmentsLeft)) {
-						return {'cmdRecords': php.array_reverse($cmdRecords)};
+						return Promise.resolve({'cmdRecords': php.array_reverse($cmdRecords)});
 					}
 				}
 			} else if ($logCmdType !== 'moveRest') {
@@ -279,16 +279,17 @@ class ImportPqApolloAction extends AbstractGdsAction {
 		}
 		return {
 			'error': !php.empty($cmdRecords)
-				? 'Last pricing commands ' + php.implode(' & ', php.array_column($cmdRecords, 'cmd')) +
+				? Rej.BadRequest(
+					'Last pricing commands ' + php.implode(' & ', php.array_column($cmdRecords, 'cmd')) +
 					' do not cover some itinerary segments: ' +
-					php.implode(',', php.array_column($segmentsLeft, 'segmentNumber'))
-				: 'Failed to determine current pricing command',
+					php.implode(',', php.array_column($segmentsLeft, 'segmentNumber')))
+				: Rej.UnprocessableEntity('Failed to determine current pricing command'),
 		};
 	}
 
 	async getPricing($reservation) {
 		let $collected, $cmdRecords, $result, $i, $cmdRecord, $pricingCommand, $errors, $cmd, $raw, $processed;
-		$collected = this.collectPricingCmds($reservation['itinerary']);
+		$collected = await this.collectPricingCmds($reservation['itinerary']);
 		if (!php.empty($collected['error'])) {
 			return {'error': $collected['error']};
 		}
