@@ -15,6 +15,7 @@ let makeGalileo = () => {
 	let section = document.createElement('div');
 	let label = document.createElement('span');
 	let a = document.createElement('a');
+	a.setAttribute('target', '_blank');
 
 	a.textContent = 'formats';
 	a.setAttribute('href', 'http://www.galileoindonesia.com/support/galileo-formats-guide/');
