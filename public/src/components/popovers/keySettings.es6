@@ -11,6 +11,7 @@ import $ from 'jquery';
 import {UPDATE_ALL_AREA_STATE, UPDATE_DEFAULT_AREA_PCCS} from "../../actions/gdsActions";
 import {notify} from "../../helpers/debug";
 import {getPccList, getShortcutActionList} from "../../helpers/dataProvider.js";
+import Session from "../../modules/session.es6";
 
 let shortcutCompletionId = 'shortcut-action-completion-options';
 
@@ -125,6 +126,7 @@ class Context
 					.then(rsData => {
 						notify({msg: 'Session Areas Reloaded', timeout: 3000, type: 'success', progressBar: false});
 						UPDATE_ALL_AREA_STATE(gds, rsData.fullState);
+						Session.resetWaitingQueue();
 						//if (parent.popover) {
 						//	// close since we reloaded UI, and the element
 						//	// drop was bound to does not exist anymore

@@ -92,4 +92,13 @@ export default class Session
 			.catch(() => {}).then(action);
 		return lastGlobalPromise;
 	}
+
+	/**
+	 * to be called when agent restarts session for example,
+	 * no point in waiting 60 s. for availability result
+	 */
+	static resetWaitingQueue()
+	{
+		lastGlobalPromise = Promise.resolve();
+	}
 }
