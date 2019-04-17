@@ -397,4 +397,16 @@ module.exports.migrations = [
 			") ENGINE=InnoDB DEFAULT CHARSET=utf8",
 		].join('\n')),
 	},
+	{
+		name: 'GRECT/2019.04.17005-create-mentioned-pnrs-table',
+		perform: (db) => db.query([
+			'CREATE TABLE mentioned_pnrs (',
+			'    id INT NOT NULL PRIMARY KEY AUTO_INCREMENT,',
+			'    recordLocator CHAR(6) NOT NULL,',
+			'    gds VARCHAR(10) NOT NULL,',
+			'    sessionId INT NOT NULL,',
+			'    UNIQUE KEY (recordLocator, gds, sessionId)',
+			') ENGINE=InnoDB DEFAULT CHARSET=utf8',
+		].join('\n')),
+	},
 ];

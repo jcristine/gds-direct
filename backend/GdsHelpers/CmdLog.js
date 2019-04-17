@@ -1,6 +1,7 @@
 
 const SessionStateProcessor = require('../Transpiled/Rbs/GdsDirect/SessionStateProcessor/SessionStateProcessor.js');
 const CommonDataHelper = require("../Transpiled/Rbs/GdsDirect/CommonDataHelper");
+const Rej = require("../Utils/Rej");
 const NotFound = require("../Utils/Rej").NotFound;
 const makeRow = require("../Repositories/CmdLogs").makeRow;
 const hrtimeToDecimal = require("../Utils/Misc").hrtimeToDecimal;
@@ -9,6 +10,7 @@ let CmdLog = ({
 	session, whenCmdRqId, fullState,
 	CmdLogs = require("../Repositories/CmdLogs"),
 	GdsSessions = require("../Repositories/GdsSessions"),
+	Db = require('../Utils/Db.js'),
 }) => {
 	whenCmdRqId = whenCmdRqId || Promise.resolve(null);
 	let gds = session.context.gds;
@@ -33,6 +35,13 @@ let CmdLog = ({
 			GdsSessions.updateFullState(session, fullState);
 
 			let state = fullState.areas[fullState.area];
+			if (state.recordLocator && state.recordLocator !== prevState.recordLocator) {
+				Db.with(db => db.writeRows('mentioned_pnrs', [{
+					recordLocator: state.recordLocator,
+					sessionId: session.id,
+					gds: gds,
+				}]));
+			}
 			let type = state.cmdType;
 			let hrtimeDiff = process.hrtime(hrtimeStart);
 			let cmdRec = {
@@ -170,6 +179,9 @@ CmdLog.noDb = ({gds, fullState}) => {
 		},
 		GdsSessions: {
 			updateFullState: () => Promise.resolve(),
+		},
+		Db: {
+			with: (action) => Rej.ServiceUnavailable,
 		},
 	});
 };
