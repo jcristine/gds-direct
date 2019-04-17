@@ -44,7 +44,7 @@ let CmdLog = ({
 				state: state,
 			};
 
-			let storing = whenCmdRqId.then(async cmdRqId => {
+			let storing = whenCmdRqId.then(cmdRqId => {
 				let row = makeRow(cmdRec, session, cmdRqId, prevState);
 				return CmdLogs.storeNew(row);
 			});

@@ -34,11 +34,14 @@ let queued = (key, action) => {
 	let lastInsertion = sessionToLastInsertion[key] || Promise.resolve();
 	let whenDone = lastInsertion
 		.catch(() => {})
-		.then(() => action())
-		.finally(() => delete sessionToLastInsertion[key]);
-	// it's guaranteed to happen before .finally()
-	// https://stackoverflow.com/a/28750565/2750743
+		.then(() => action());
 	sessionToLastInsertion[key] = whenDone;
+	whenDone.finally(() => {
+		// if not other action overtook this lock
+		if (whenDone === sessionToLastInsertion[key]) {
+			delete sessionToLastInsertion[key];
+		}
+	});
 	return whenDone;
 };
 
