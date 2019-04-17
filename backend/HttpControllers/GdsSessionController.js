@@ -300,7 +300,7 @@ exports.keepAliveCurrent = async ({session}) => {
 		GdsSessions.getUserAccessMs(session),
 	]);
 	let idleMs = !accessMs ? null : Date.now() - accessMs;
-	if (idleMs !== null && idleMs < 60 * 1000) {
+	if (idleMs !== null && idleMs < 30 * 1000) {
 		return Rej.UnprocessableEntity('Tried to keepAlive too early, session was accessed just ' + idleMs + ' ms ago');
 	} else if (!KeepAlive.shouldClose(userAccessMs)) {
 		return keepAliveSession(session)

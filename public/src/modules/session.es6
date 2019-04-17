@@ -40,10 +40,13 @@ export default class Session
 				callInProgress = true;
 				let ping = () => post('/gdsDirect/keepAlive', makeParams(this, {}))
 					.catch(exc => {
-						if (params.onExpired) {
-							params.onExpired(exc + '');
+						let didExpire = !(exc + '').match(/Tried to keepAlive too early, session was accessed just/);
+						if (didExpire) {
+							if (params.onExpired) {
+								params.onExpired(exc + '');
+							}
+							closed = true;
 						}
-						closed = true;
 					})
 					.then(result => callInProgress = false);
 				this.enqueue(ping);
