@@ -24,7 +24,7 @@ const Misc = require("./Transpiled/Lib/Utils/Misc");
 const LoginTimeOut = require("./Utils/Rej").LoginTimeOut;
 const withGdsSession = require("./HttpControllers/MainController").withGdsSession;
 const toHandleHttp = require("./HttpControllers/MainController").toHandleHttp;
-const withAuth = require("./HttpControllers/MainController").withAuth;
+const {withAuth} = require("./HttpControllers/MainController");
 
 let app = express();
 
@@ -189,7 +189,10 @@ app.post('/admin/terminal/themes/delete', withAuth(rqBody => {
 	return Db.with(db => db.query(sql, [rqBody.id]));
 }));
 
-app.post('/admin/terminal/sessionsGet', toHandleHttp(async rqBody => {
+app.post('/admin/terminal/sessionsGet', withAuth(async (rqBody, emcResult) => {
+	if (!emcResult.user.roles.includes('NEW_GDS_DIRECT_DEV_ACCESS')) {
+		return Forbidden('You do not have dev access role');
+	}
 	let sessions = await GdsSessions.getHist(rqBody);
 	return {
 		aaData: sessions,

@@ -5,6 +5,7 @@ import DataTable from '../abstract/dataTables.js';
 let isDev = !(window.location.hostname + '').endsWith('.asaptickets.com');
 
 let init = () => {
+	require('./../actions/initAuthPage.js');
 	var msgLang = {
 		id          : 'Id',
 		gds         : 'Gds',
@@ -18,15 +19,21 @@ let init = () => {
 		terminate   : 'Terminate',
 	};
 
-	var curPageUrl = {
-		get         : '/admin/terminal/sessionsGet',
-	};
-
 	var selfTableName   = 'terminalSessions';
 
 	var params = {
-		apiUrl: curPageUrl.get,
-		url: curPageUrl.get,
+		ajax: (data, callback) => {
+			$('#filter-form').serializeArray()
+				.map((item) => data[item.name] = item.value);
+			window.GdsDirectPlusPage.whenEmcSessionId
+				.then(emcSessionId => fetch('/admin/terminal/sessionsGet', {
+					method: 'POST',
+					headers: {'Content-Type': 'application/json'},
+					body: JSON.stringify({...data, emcSessionId: emcSessionId}),
+				}))
+				.then(rs => rs.json())
+				.then(rsData => callback(rsData));
+		},
 		method  : 'POST',
 		serverSide: false, // false - for sorting and stuff to happen on client side
 		pageLength: 2000, // if there is ever so much rules sometime in future...
