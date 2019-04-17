@@ -128,6 +128,18 @@ let init = () => {
 				editable    : false,
 				title       : msgLang.logId,
 			},
+			{
+				name        : 'commands',
+				data        : function (obj)
+				{
+					let url = '/public/admin/terminalSessionCommands.html?sessionId=' + obj.id;
+					return '<a class="btn-link" target="_blank" href="' + url + '">link</a>';
+				},
+				searchable  : false,
+				orderable   : false,
+				editable    : false,
+				title       : 'Commands',
+			},
 		],
 	};
 

@@ -21,6 +21,8 @@ const FareConstructionParser = require("./Transpiled/Gds/Parsers/Common/FareCons
 const {safe} = require('./Utils/Misc.js');
 const PersistentHttpRq = require('./Utils/PersistentHttpRq.js');
 const Misc = require("./Transpiled/Lib/Utils/Misc");
+const CmdLogs = require("./Repositories/CmdLogs");
+const Rej = require("./Utils/Rej");
 const LoginTimeOut = require("./Utils/Rej").LoginTimeOut;
 const withGdsSession = require("./HttpControllers/MainController").withGdsSession;
 const toHandleHttp = require("./HttpControllers/MainController").toHandleHttp;
@@ -196,6 +198,34 @@ app.post('/admin/terminal/sessionsGet', withAuth(async (rqBody, emcResult) => {
 	let sessions = await GdsSessions.getHist(rqBody);
 	return {
 		aaData: sessions,
+	};
+}));
+app.get('/api/js/terminal-log/commands', withAuth(async (rqBody, emcResult) => {
+	if (!emcResult.user.roles.includes('NEW_GDS_DIRECT_DEV_ACCESS')) {
+		return Forbidden('You do not have dev access role');
+	}
+	let [sessionRow, cmdRows] = await Promise.all([
+		GdsSessions.getHist({sessionId: rqBody.sessionId})
+			.then(rows => rows[0])
+			.then(Rej.nonEmpty('No such session id DB: #' + rqBody.sessionId)),
+		CmdLogs.getAll(rqBody.sessionId),
+	]);
+	return {
+		sessionData: {
+			agent: "", // login
+			agent_id: sessionRow.agentId,
+			created_dt: sessionRow.startTime,
+			gds: sessionRow.gds,
+			id: sessionRow.id,
+			lead_id: sessionRow.requestId,
+			user_activity_dt: sessionRow.endTime,
+			log_id: sessionRow.logId,
+		},
+		records: cmdRows.reverse().map(row => ({...row,
+			cmd_performed: row.cmd,
+			cmd_type: row.type,
+			cmd_requested: row.cmd_rq_id,
+		})),
 	};
 }));
 app.post('/admin/getModel', withAuth(async (reqBody, emcResult) => {

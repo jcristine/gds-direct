@@ -1,0 +1,225 @@
+
+<!-- based on the code written by Natalija Kuzmenkova -->
+
+<body>
+
+<!-- jQuery -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.4/jquery.min.js"
+        integrity="sha256-BbhdlvQf/xTY9gja0Dq3HiwQF8LaCRTXxZKRutelT44="
+        crossorigin="anonymous"
+></script>
+<!-- Bootstrap -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.6/js/bootstrap.min.js"
+        integrity="sha256-KXn5puMvxCw+dAYznun+drMdG1IFl3agK0p/pqT9KAo="
+        crossorigin="anonymous"
+></script>
+
+<div class="modal fade modal-spinner js-modal-spinner"
+     tabindex="-1"
+     data-backdrop="static">
+    <div class="modal-dialog">
+        <div class="modal-content"></div>
+    </div>
+</div>
+
+<div class="session-info">
+    <div class="alert js-alert"></div>
+
+    <div class="row">
+        <div class="col-xs-12">
+            <div class="x_panel">
+                <div class="x_title">
+                    <h2>GDS Direct session commands
+                        <small> Record count: <i class="js-record-count"></i></small>
+                    </h2>
+                    <div class="clearfix"></div>
+                </div>
+                <div class="x_content js-content hidden">
+                    <table class="table table-bordered table-condensed dataTable">
+                        <thead>
+                            <tr>
+                                <th>Gds</th>
+                                <th>Id</th>
+                                <th>Agent</th>
+                                <th>Lead id</th>
+                                <th>Created dt</th>
+                                <th>Used dt</th>
+                                <th>Duration</th>
+                                <th>Log</th>
+                            </tr>
+                        </thead>
+                        <tbody class="js-tbody-session"></tbody>
+                    </table>
+
+                    <div class="js-commands-content">
+
+                        <ul class="list-unstyled clearfix">
+                            <li class="pull-left">
+                                <button type="button"
+                                        class="btn btn-primary btn-xs js-collapse-all">Show all</button>
+                            </li>
+                            <li class="pull-left">
+                                <button type="button"
+                                        class="btn btn-primary btn-xs js-export-all">var_export</button>
+                            </li>
+                            <li class="pull-left">
+                                <button type="button"
+                                        class="btn btn-primary btn-xs js-btn-copy">Copy</button>
+                            </li>
+                        </ul>
+
+                        <table class="table table-bordered table-condensed dataTable js-table">
+                            <thead>
+                                <tr>
+                                    <th></th>
+                                    <th>Cmd requested</th>
+                                    <th>Cmd performed</th>
+                                    <th>Record locator</th>
+                                    <th>Cmd type</th>
+                                    <th>Dt</th>
+                                    <th>Duration</th>
+                                </tr>
+                            </thead>
+                            <tbody class="js-tbody"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="command-list-panel">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.11/lodash.min.js"
+            integrity="sha256-7/yoZS3548fXSRXqc/xYzjsmuW3sFKzuvOCHd06Pmps="
+            crossorigin="anonymous"
+    ></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment.min.js"
+            integrity="sha256-4iQZ6BVL4qNKlQ27TExEhBN1HFPvAvAMbFavKKosSWQ="
+            crossorigin="anonymous"
+    ></script>
+    <script src="https://unpkg.com/art-template@4.13.2/lib/template-web.js"
+            integrity="sha384-D0k5LKj+w4IqQ8H4ENAGWUZgTmrW4KaWQzyQk2YIxaVldVNuYDdiMt8HaKlObabY"
+            crossorigin="anonymous"
+    ></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/spin.js/2.3.2/spin.min.js"
+            integrity="sha256-PieqE0QdEDMppwXrTzSZQr6tWFX3W5KkyRVyF1zN3eg="
+            crossorigin="anonymous"
+    ></script>
+
+    <div>
+        <script id="tbody_template" type="text/html">
+
+            <tr class="js-collapse-toggle main
+                <% if (isCollapsed) { %> is-collapsed <% } %>
+                <% if (isLogVisited) { %> is-log-visited <% } %>"
+                data-record-id="<%= item.id %>">
+                <td style="text-align: center">
+                    <ul class="list-unstyled js-folding-skip text-wrap">
+
+                        <li>
+                            <span class="fa <%= btnCollapseIcon %> icon-action js-btn-collapse-toggle"></span>
+
+                            <span class="fa fa-clipboard js-copy-output icon-action"></span>
+
+                            <% if (isVisibleWrapBtn) { %>
+                            <span class="fa icon-action js-toggle-wrap <%= iconWrapBtn %>"></span>
+                            <% } %>
+                        </li>
+
+                        <li>
+                            <span class="js-dialect">
+                                <i class="fa <%= iconDialect %>"></i>
+                                <%= item.dialect %>
+                            </span>
+                        </li>
+
+                        <li>
+                            <span class="command-area <%= areaClass %>">
+                                <%= item.area %>
+                            </span>
+                        </li>
+
+                        <% if (iconPnr) { %>
+                        <li>
+                            <i class="fa <%= iconPnr %>"
+                               data-toggle="tooltip"
+                               data-placement="top"
+                               title="has_pnr: <%= item.has_pnr %></br> is_pnr_stored: <%= item.is_pnr_stored %>"></i>
+                        </li>
+                        <% } %>
+
+                        <% if (iconCanCreatePq) { %>
+                        <li>
+                            <i class="fa <%= iconCanCreatePq %>"
+                               data-toggle="tooltip"
+                               data-placement="top"
+                               title="can_create_pq"></i>
+                        </li>
+                        <% } %>
+                    </ul>
+                </td>
+                <td>
+                    <% if (item.cmd_requested) { %>
+                    <span class="js-folding-skip text-wrap"><%= item.cmd_requested %></span>
+                    <% } %>
+                </td>
+                <td>
+                    <% if (item.cmd_performed) { %>
+                    <span class="js-folding-skip text-wrap"><%= item.cmd_performed %></span>
+                    <% } %>
+                </td>
+                <td>
+                    <% if (item.record_locator) { %>
+                    <span class="js-folding-skip"><%= item.record_locator %></span>
+                    <% } %>
+                </td>
+                <td>
+                    <% if (item.cmd_type) { %>
+                    <span class="js-folding-skip"><%= item.cmd_type %></span>
+                    <% } %>
+                </td>
+                <td>
+                    <span><%= item.dt %></span>
+                </td>
+                <td>
+                    <span><%= item.duration %></span>
+                </td>
+            </tr>
+            <tr class="collapse <% if (isCollapsed) { %> in <% } %>"
+                data-record-id="<%= item.id %>">
+                <td colspan="9" class="output">
+                    <div class="js-output" style="<%= outputStyles %>">
+                        <div class="js-output-content output-content"><%- output %></div>
+                    </div>
+                </td>
+            </tr>
+        </script>
+
+        <script id="tbody_session_template" type="text/html">
+            <tr class="<%= trClass %>">
+                <td>
+                    <i class="fa <%= iconGds %> icon-gds" aria-hidden="true"></i>
+                    <%= item.gds %>
+                </td>
+                <td><%= item.id %></td>
+                <td><%= item.agent %> (<%= item.agent_id %>)</td>
+                <td><%= item.lead_id %></td>
+                <td><%= item.created_dt %></td>
+                <td><%= item.user_activity_dt %></td>
+                <td><%= duration %></td>
+                <td><a href="<%= logUrl %>"><%= item.log_id %></a></td>
+            </tr>
+        </script>
+    </div>
+
+    <script type="module" src="./terminalSessionCommands.js"></script>
+
+    <!-- Bootstrap -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.6/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <link href="./terminalSessionCommands.css" rel="stylesheet">
+</div>
+
+</body>
