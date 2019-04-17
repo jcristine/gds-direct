@@ -295,13 +295,10 @@ let keepAliveSession = async (session) => {
 };
 
 exports.keepAliveCurrent = async ({session}) => {
-	let [accessMs, userAccessMs] = await Promise.all([
-		GdsSessions.getAccessMs(session),
-		GdsSessions.getUserAccessMs(session),
-	]);
-	let idleMs = !accessMs ? null : Date.now() - accessMs;
-	if (idleMs !== null && idleMs < 30 * 1000) {
-		return Rej.UnprocessableEntity('Tried to keepAlive too early, session was accessed just ' + idleMs + ' ms ago');
+	let userAccessMs = GdsSessions.getUserAccessMs(session);
+	let userIdleMs = Date.now() - userAccessMs;
+	if (userIdleMs < 30 * 1000) {
+		return Rej.TooEarly('Tried to keepAlive too early, session was accessed just ' + userIdleMs + ' ms ago');
 	} else if (!KeepAlive.shouldClose(userAccessMs)) {
 		return keepAliveSession(session)
 			.catch(exc => Rej.Conflict.matches(exc.httpStatusCode)

@@ -39,6 +39,7 @@ exports.Conflict = toReject(409);
 // unable to process the requested instructions, I'll use it
 // as cannot satisfy in RBS - when GDS returns error and such
 exports.UnprocessableEntity = toReject(422);
+exports.TooEarly = toReject(425);
 exports.TooManyRequests = toReject(429);
 exports.LoginTimeOut = toReject(440);
 
