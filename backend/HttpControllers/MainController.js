@@ -75,8 +75,6 @@ let normalizeRqBody = (rqBody, emcData) => {
 	return {
 		...rqBody,
 		emcUser: emcData.data.user,
-		// should get rid of it eventually, since there is 'emcUser' now
-		agentId: +emcData.data.user.id,
 	};
 };
 

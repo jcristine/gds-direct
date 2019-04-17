@@ -204,10 +204,17 @@ exports.countActive = async (gds, profileName) => {
 };
 
 exports.getHist = async (params) => {
+	let where = []
+		.concat(!params.agentId ? [] : [['agent_id', '=', params.agentId]])
+		.concat(!params.gds ? [] : [['gds', '=', params.gds]])
+		.concat(!params.sessionId ? [] : [['id', '=', params.sessionId]])
+		.concat(!params.requestId ? [] : [['lead_id', '=', params.requestId]])
+		;
 	let rows = await Db.with(db => db.fetchAll({
 		table: TABLE,
 		orderBy: 'id DESC',
 		limit: 2000,
+		where: where,
 	}));
 
 	return rows.map(session => ({

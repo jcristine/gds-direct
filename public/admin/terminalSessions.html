@@ -15,27 +15,32 @@
 
             <div class="text-center pull-right ">
                 <form id="filter-form" class="form-inline">
-                    <i class="fa fa-filter fa-fw" style="cursor: pointer;" id="resetFilter" title="Clear Filter"></i>
-
-                    <input type="hidden" id="isFilter" name="isFilter" value="0" />
-                    <input type="hidden" id="clearFilter" name="clearFilter" value="0" />
+                    <button type="button" id="submit-search-filters">Submit</button>
 
                     <div class="form-group">
-                        <select data-label="gdsId" name="gdsId" id="gdsId" class="form-control input-s-sm" data-name="gdsId" title="Gds">
-                            <option value="0">Select gds</option>
+                        <select name="gds" class="form-control input-s-sm" data-name="gds" title="Gds">
+                            <option value="">Select GDS</option>
+                            <option value="apollo">apollo</option>
+                            <option value="sabre">sabre</option>
+                            <option value="amadeus">amadeus</option>
+                            <option value="galileo">galileo</option>
                         </select>
                     </div>
 
                     <div class="form-group">
-                        <input data-label="AgentId" name="agentId" id="agentId" class="form-control input-s-sm" data-name="agentId" placeHolder="Agent Id">
+                        <input name="agentId" class="form-control input-s-sm" data-name="agentId" placeHolder="Agent Id">
                     </div>
 
                     <div class="form-group">
-                        <input data-label="SessionId" name="sessionId" id="sessionId" class="form-control input-s-sm" data-name="sessionId" placeHolder="Session Id">
+                        <input name="sessionId" class="form-control input-s-sm" data-name="sessionId" placeHolder="Session Id">
                     </div>
 
                     <div class="form-group">
-                        <input data-label="RequestId" name="requestId" id="requestId" class="form-control input-s-sm" data-name="requestId" placeHolder="Request Id">
+                        <input name="requestId" class="form-control input-s-sm" data-name="requestId" placeHolder="Request Id">
+                    </div>
+
+                    <div class="form-group">
+                        <input name="recordLocator" class="form-control input-s-sm" placeHolder="PNR" size="6">
                     </div>
 
                 </form>

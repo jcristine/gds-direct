@@ -131,14 +131,9 @@ let init = () => {
 		],
 	};
 
-	var isFilter 	= document.getElementById('isFilter'),
-		clearFilter = document.getElementById('clearFilter'),
-		tableEl, hasToReInit;
+	var tableEl, hasToReInit;
 
 	$('#filter-form').find('#resetFilter').on('click', function(){
-		clearFilter.value	= 1;
-		isFilter.value 		= 1;
-
 		tableEl.DataTable().draw();
 	});
 
@@ -147,11 +142,13 @@ let init = () => {
 	$('#table_list').on('xhr.dt', function () {
 		if (hasToReInit)
 		{
-			clearFilter.value	= 0;
-			isFilter.value 		= 1;
 			hasToReInit = false;
 			tableEl.DataTable().draw();
 		}
+	});
+
+	$('#submit-search-filters').on('click', () => {
+		tableEl.DataTable().ajax.reload();
 	});
 
 	return Promise.resolve(true);
