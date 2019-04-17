@@ -23,6 +23,76 @@ let getPool = () => {
 };
 
 /**
+ * @param {{
+ *     table: 'cmd_rq_log',
+ *     as: 'crl',
+ *     join?: [{
+ *         table: 'terminal_command_log',
+ *         as: 'tcl',
+ *         on: [['tcl.cmd_rq_id', '=', 'crl.id']],
+ *     }],
+ *     where?: [
+ *         ['gds', '=', 'apollo'],
+ *         ['terminalNumber', '=', '2'],
+ *     ],
+ *     whereOr?: [
+ *         [['rbsSessionId', '=', '12345']],
+ *         [['gdsSessionDataMd5', '=', 'abcvsdadadajwnekjn']],
+ *     ],
+ *     orderBy?: 'id DESC',
+ *     skip?: '0',
+ *     limit?: '100',
+ * }} params
+ * @return {{sql: string, placedValues: []}} like
+ *   SELECT * FROM terminalBuffering
+ *   WHERE gds = 'apollo' AND terminalNumber = '2'
+ *     AND (rbsSessionId = '12345' OR gdsSessionDataMd5 = 'abcvsdadadajwnekjn')
+ *   ORDER BY id DESC
+ *   LIMIT 0, 100
+ */
+let makeSelectQuery = (params) => {
+	let {
+		table, as, join = [], where = [], whereOr = [],
+		orderBy = null, limit = null, skip = null,
+	} = params;
+
+	let makeConds = ands => ands.map(([col, operator]) => {
+		let escCol = col
+			.split('.')
+			.map(p => '`' + p + '`')
+			.join('.');
+		return escCol + ' ' + operator + ' ?';
+	}).join(' AND ');
+
+	let sql = [
+		`SELECT * FROM ${table}` + (as ? ' AS ' + as : ''),
+		join.length === 0 ? '' : join
+			.map(j => 'JOIN ' + j.table
+					+ (j.as ? ' AS ' + j.as : '')
+					+ ' ON ' + j.on.map(([l, op, r]) =>
+							l + ' ' + op + ' ' + r))
+			.join(''),
+		`WHERE TRUE`,
+		where.length === 0 ? '' :
+			'AND ' + makeConds(where),
+		whereOr.length === 0 ? '' :
+			'AND (' + (whereOr.map(or => makeConds(or)).join(' OR ')) + ')',
+		!orderBy ? '' : `ORDER BY ` + orderBy,
+		!limit ? '' : `LIMIT ` + (+skip ? +skip + ', ' : '') + +limit,
+	].join('\n');
+
+	let placedValues = [].concat(
+		where
+			.map(([col, op, val]) => val),
+		whereOr.map(or => or
+			.map(([col, op, val]) => val))
+			.reduce((a,b) => a.concat(b), []),
+	);
+
+	return {sql, placedValues};
+};
+
+/**
  * a wrapper for DB connection
  * provides handy methods to make inserts/selects/etc...
  * @param {PoolConnection} dbConn
@@ -92,55 +162,12 @@ let Db = (dbConn) => {
 	};
 
 	/**
-	 * @param {{
-	 *     table: 'cmd_rq_log',
-	 *     where?: [
-	 *         ['gds', '=', 'apollo'],
-	 *         ['terminalNumber', '=', '2'],
-	 *     ],
-	 *     whereOr?: [
-	 *         [['rbsSessionId', '=', '12345']],
-	 *         [['gdsSessionDataMd5', '=', 'abcvsdadadajwnekjn']],
-	 *     ],
-	 *     orderBy?: 'id DESC',
-	 *     skip?: '0',
-	 *     limit?: '100',
-	 * }} params
-	 * will generate:
-	 *   SELECT * FROM terminalBuffering
-	 *   WHERE gds = 'apollo' AND terminalNumber = '2'
-	 *     AND (rbsSessionId = '12345' OR gdsSessionDataMd5 = 'abcvsdadadajwnekjn')
-	 *   ORDER BY id DESC
-	 *   LIMIT 0, 100
 	 * usage:
 	 * Db(conn).fetchAll(params).then(rows => console.log(rows));
 	 * @return Promise
 	 */
 	let fetchAll = (params) => {
-		let {
-			table, where = [], whereOr = [], orderBy = null,
-			limit = null, skip = null,
-		} = params;
-		let makeConds = ands => ands.map(([col, operator]) =>
-			'`' + col + '` ' + operator + ' ?').join(' AND ');
-		let sql = [
-			`SELECT * FROM ${table}`,
-			`WHERE TRUE`,
-			where.length === 0 ? '' :
-				'AND ' + makeConds(where),
-			whereOr.length === 0 ? '' :
-				'AND (' + (whereOr.map(or => makeConds(or)).join(' OR ')) + ')',
-			!orderBy ? '' : `ORDER BY ` + orderBy,
-			!limit ? '' : `LIMIT ` + (+skip ? +skip + ', ' : '') + +limit,
-		].join('\n');
-
-		let placedValues = [].concat(
-			where
-				.map(([col, op, val]) => val),
-			whereOr.map(or => or
-				.map(([col, op, val]) => val))
-				.reduce((a,b) => a.concat(b), []),
-		);
+		let {sql, placedValues} = makeSelectQuery(params);
 		return query(sql, placedValues);
 	};
 
@@ -184,5 +211,7 @@ Db.getInfo = async () => {
 		connectionQueue: dbPool.pool._connectionQueue.length,
 	};
 };
+
+Db.makeSelectQuery = makeSelectQuery;
 
 module.exports = Db;

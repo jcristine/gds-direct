@@ -212,21 +212,31 @@ exports.countActive = async (gds, profileName) => {
 
 exports.getHist = async (params) => {
 	let where = []
-		.concat(!params.agentId ? [] : [['agent_id', '=', params.agentId]])
-		.concat(!params.gds ? [] : [['gds', '=', params.gds]])
-		.concat(!params.sessionId ? [] : [['id', '=', params.sessionId]])
-		.concat(!params.requestId ? [] : [['lead_id', '=', params.requestId]])
+		.concat(!params.agentId ? [] : [['ts.agent_id', '=', params.agentId]])
+		.concat(!params.gds ? [] : [['ts.gds', '=', params.gds]])
+		.concat(!params.sessionId ? [] : [['ts.id', '=', params.sessionId]])
+		.concat(!params.requestId ? [] : [['ts.lead_id', '=', params.requestId]])
 		;
+	let join = [];
+	if (params.recordLocator) {
+		join.push({
+			table: 'mentioned_pnrs',
+			as: 'mp',
+			on: [['mp.sessionId', '=', 'ts.id']],
+		});
+		where.push(['mp.recordLocator', '=', params.recordLocator]);
+	}
 	let rows = await Db.with(db => db.fetchAll({
 		table: TABLE,
-		orderBy: 'id DESC',
-		limit: 2000,
+		as: 'ts',
+		join: join,
 		where: where,
+		orderBy: 'ts.id DESC',
+		limit: 2000,
 	}));
 
 	return rows.map(session => ({
 		"id": session.id,
-		"externalId": null,
 		"agentId": session.agent_id,
 		"gds": session.gds,
 		"requestId": session.lead_id,

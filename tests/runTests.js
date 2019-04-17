@@ -64,7 +64,7 @@ let perform = async () => {
 				}
 			}
 		} catch (exc) {
-			errors.push('Test Suit #' + i + ' ' + file + ' failed to load - ' + exc);
+			errors.push('Test Suit #' + i + ' ' + file + ' failed to load - ' + exc + '\n' + exc.stack);
 		}
 		++i;
 	}
