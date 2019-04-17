@@ -123,7 +123,7 @@ class Context
 				title: 'Press to Restart Session',
 				onclick: () => post('/terminal/resetToDefaultPcc', {gds: gds})
 					.then(rsData => {
-						notify({msg: 'Session Areas Reloaded', timeout: 3000, type: 'success'});
+						notify({msg: 'Session Areas Reloaded', timeout: 3000, type: 'success', progressBar: false});
 						UPDATE_ALL_AREA_STATE(gds, rsData.fullState);
 						//if (parent.popover) {
 						//	// close since we reloaded UI, and the element
