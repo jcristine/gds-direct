@@ -121,15 +121,17 @@ let withAuth = (userAction) => (req, res) => {
 /** @param {function({rqBody, session, emcUser}): Promise} sessionAction */
 let withGdsSession = (sessionAction, canStartNew = false) => (req, res) => {
 	return withAuth(async (rqBody) => {
+		let emcUser = rqBody.emcUser;
+		let agent = Agent(emcUser);
 		let startNewSession = false;
-		let session = await GdsSessions.getByContext(rqBody)
+		let session = await GdsSessions.getByContext(rqBody, emcUser)
 			.catch(exc => {
 				if (NotFound.matches(exc.httpStatusCode)) {
 					if (canStartNew) {
 						startNewSession = true;
-						return GdsSessionsController.startNewSession(rqBody)
+						return GdsSessionsController.startNewSession(rqBody, emcUser)
 							.then(session => {
-								FluentLogger.logit('INFO: emcUser', session.logId, rqBody.emcUser);
+								FluentLogger.logit('INFO: emcUser', session.logId, emcUser);
 								return session;
 							});
 					} else {
@@ -140,8 +142,6 @@ let withGdsSession = (sessionAction, canStartNew = false) => (req, res) => {
 					return Promise.reject(exc);
 				}
 			});
-		let emcUser = rqBody.emcUser;
-		let agent = Agent(emcUser);
 		delete(rqBody.emcUser);
 		delete(rqBody.emcSessionId);
 

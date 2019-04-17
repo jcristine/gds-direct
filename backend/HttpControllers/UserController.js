@@ -31,11 +31,9 @@ exports.getView = (reqBody, emcResult) => {
             }
 
             for (let gds in settings.gds) {
-                let state = await GdsSessions.getByContext({
-                    agentId: +reqBody.agentId,
-                    gds: gds,
-                    travelRequestId: +reqBody.travelRequestId,
-                }).then(GdsSessions.getFullState)
+                let rqPart = {gds: gds, travelRequestId: +reqBody.travelRequestId};
+                let state = await GdsSessions.getByContext(rqPart, emcResult.user)
+                    .then(GdsSessions.getFullState)
                     .catch(exc => ({}));
 
                 settings.gds[gds].fullState = state;

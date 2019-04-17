@@ -51,10 +51,10 @@ let startByGds = async (gds) => {
 	return NotImplemented('Unsupported GDS ' + gds + ' for session creation');
 };
 
-let startNewSession = async (rqBody) => {
+let startNewSession = async (rqBody, emcUser) => {
 	let starting = startByGds(rqBody.gds);
 	return starting.then(gdsData =>
-		GdsSessions.storeNew(rqBody, gdsData));
+		GdsSessions.storeNew(rqBody, gdsData, emcUser));
 };
 
 let closeByGds = (gds, gdsData) => {
@@ -140,7 +140,7 @@ exports.runInputCmd = ({rqBody, session, emcUser}) => {
 			let duration = ((Date.now() - calledDtObj.getTime()) / 1000).toFixed(3);
 			CmsClient.reportCmdCalled({
 				cmd: rqBody.command,
-				agentId: rqBody.agentId,
+				agentId: emcUser.id,
 				calledDt: calledDtObj.toISOString(),
 				duration: duration,
 			});
@@ -223,7 +223,7 @@ exports.importPq = async ({rqBody, session, emcUser}) => {
 exports.resetToDefaultPcc = async ({rqBody, session, emcUser}) => {
 	let gdsData = await startByGds(rqBody.gds);
 	await closeSession(session);
-	let newSession = await GdsSessions.storeNew(session.context, gdsData);
+	let newSession = await GdsSessions.storeNew(session.context, gdsData, emcUser);
 	FluentLogger.logit('INFO: New session in ' + newSession.logId, session.logId, newSession);
 	FluentLogger.logit('INFO: Old session in ' + session.logId, newSession.logId, session);
 	let fullState = GdsSessions.makeDefaultState(newSession);
@@ -314,8 +314,8 @@ exports.keepAliveSession = keepAliveSession;
 exports.startNewSession = startNewSession;
 exports.closeSession = closeSession;
 
-exports.getLastCommands = (reqBody) => {
-	let agentId = reqBody.agentId;
+exports.getLastCommands = (reqBody, emcResult) => {
+	let agentId = emcResult.user.id;
 	let gds = reqBody.gds;
 	let requestId = reqBody.travelRequestId || 0;
 	return Db.with(db => db.fetchAll({
@@ -342,8 +342,8 @@ exports.getLastCommands = (reqBody) => {
 	});
 };
 
-exports.clearBuffer = (rqBody) => {
-	let agentId = rqBody.agentId;
+exports.clearBuffer = (rqBody, emcResult) => {
+	let agentId = emcResult.user.id;
 	let requestId = rqBody.travelRequestId || 0;
 	return Db.with(db => db.query([
 		'DELETE FROM cmd_rq_log',

@@ -41,7 +41,8 @@ let getById = (id) => {
 };
 
 /** @param context = normalizeContext() */
-exports.storeNew = async (context, gdsData) => {
+exports.storeNew = async (context, gdsData, emcUser) => {
+	context = {...context, agentId: emcUser.id};
 	let normalized = normalizeContext(context);
 	let contextStr = JSON.stringify(normalized);
 	let prefix = context.gds + '_' + context.agentId;
@@ -70,7 +71,8 @@ exports.update = async (session) => {
 	return client.hset(keys.SESSION_TO_RECORD, session.id, JSON.stringify(session));
 };
 
-exports.getByContext = async (context) => {
+exports.getByContext = async (rqBody, emcUser) => {
+	let context = {...rqBody, agentId: emcUser.id};
 	let contextStr = JSON.stringify(normalizeContext(context));
 	let client = await getClient();
 	return client.hget(keys.SESSION_BY_CONTEXT, contextStr)
