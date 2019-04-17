@@ -12,24 +12,17 @@ const AliasParser = require('../../../../Rbs/GdsDirect/AliasParser.js');
 const Errors = require('../../../../Rbs/GdsDirect/Errors.js');
 const GdsDirect = require('../../../../Rbs/GdsDirect/GdsDirect.js');
 const CmsSabreTerminal = require('../../../../Rbs/GdsDirect/GdsInterface/CmsSabreTerminal.js');
-const SessionStateHelper = require('../../../../Rbs/GdsDirect/SessionStateProcessor/SessionStateHelper.js');
 const GenericRemarkParser = require('../../../../Gds/Parsers/Common/GenericRemarkParser.js');
 const CommandParser = require('../../../../Gds/Parsers/Sabre/CommandParser.js');
 const SabrePnr = require('../../../../Rbs/TravelDs/SabrePnr.js');
 const PtcUtil = require('../../../../Rbs/Process/Common/PtcUtil.js');
 const CommonDataHelper = require('../../../../Rbs/GdsDirect/CommonDataHelper.js');
 const php = require('../../../../php.js');
-const translib = require("../../../../translib");
 const SabreTicketListParser = require('../../../../Gds/Parsers/Sabre/SabreTicketListParser.js');
 const SabreReservationParser = require('../../../../Gds/Parsers/Sabre/Pnr/PnrParser.js');
 const Pccs = require("../../../../../Repositories/Pccs");
 const getRbsPqInfo = require("../../../../../GdsHelpers/RbsUtils").getRbsPqInfo;
 const UnprocessableEntity = require("../../../../../Utils/Rej").UnprocessableEntity;
-const NotImplemented = require("../../../../../Utils/Rej").NotImplemented;
-
-/** @debug */
-var require = translib.stubRequire;
-
 const SabreTicketParser = require('../../../../Gds/Parsers/Sabre/SabreTicketParser.js');
 
 class ProcessSabreTerminalInputAction {
