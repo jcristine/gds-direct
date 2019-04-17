@@ -134,6 +134,11 @@ exports.getFullState = async (session) => {
 exports.makeDefaultState = makeDefaultState;
 exports.makeDefaultAreaState = makeDefaultAreaState;
 
+exports.getAccessMs = async (session) => {
+	let client = await getClient();
+	return client.zscore(keys.SESSION_ACTIVES, session.id);
+};
+
 exports.getUserAccessMs = async (session) => {
 	let client = await getClient();
 	return client.hget(keys.SESSION_TO_USER_ACCESS_MS, session.id);
