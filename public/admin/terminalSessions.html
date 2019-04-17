@@ -15,7 +15,7 @@
 
             <div class="text-center pull-right ">
                 <form id="filter-form" class="form-inline">
-                    <button type="button" id="submit-search-filters">Submit</button>
+                    <button type="submit" id="submit-search-filters">Submit</button>
 
                     <div class="form-group">
                         <select name="gds" class="form-control input-s-sm" data-name="gds" title="Gds">
@@ -41,6 +41,14 @@
 
                     <div class="form-group">
                         <input name="recordLocator" class="form-control input-s-sm" placeHolder="PNR" size="6">
+                    </div>
+
+                    <div class="form-group">
+                        <input name="minCreatedDt" class="form-control input-s-sm" placeHolder="2000-01-01 00:00:00" size="19">
+                    </div>
+
+                    <div class="form-group">
+                        <input name="maxCreatedDt" class="form-control input-s-sm" placeHolder="2099-12-31 23:59:59" size="19">
                     </div>
 
                 </form>

@@ -216,6 +216,8 @@ exports.getHist = async (params) => {
 		.concat(!params.gds ? [] : [['ts.gds', '=', params.gds]])
 		.concat(!params.sessionId ? [] : [['ts.id', '=', params.sessionId]])
 		.concat(!params.requestId ? [] : [['ts.lead_id', '=', params.requestId]])
+		.concat(!params.minCreatedDt ? [] : [['ts.created_dt', '>=', params.minCreatedDt]])
+		.concat(!params.maxCreatedDt ? [] : [['ts.created_dt', '<=', params.maxCreatedDt]])
 		;
 	let join = [];
 	if (params.recordLocator) {

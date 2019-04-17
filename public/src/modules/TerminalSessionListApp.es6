@@ -136,6 +136,11 @@ let init = () => {
 	$('#filter-form').find('#resetFilter').on('click', function(){
 		tableEl.DataTable().draw();
 	});
+	$('#filter-form').on('submit', (e) => {
+		e.preventDefault();
+		tableEl.DataTable().ajax.reload();
+		return false;
+	});
 
 	tableEl = DataTable.init('#table_list', params);
 
@@ -145,10 +150,6 @@ let init = () => {
 			hasToReInit = false;
 			tableEl.DataTable().draw();
 		}
-	});
-
-	$('#submit-search-filters').on('click', () => {
-		tableEl.DataTable().ajax.reload();
 	});
 
 	return Promise.resolve(true);
