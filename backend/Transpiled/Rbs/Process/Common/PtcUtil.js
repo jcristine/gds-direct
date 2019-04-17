@@ -59,8 +59,10 @@ class PtcUtil
                 for ([$ageGroup, $groupPtc] of Object.entries($data['groups'])) {
                     if ($groupPtc === $ptc) {
                         return $fareType;
-                    }}
-            }}
+                    }
+                }
+            }
+        }
         return null;
     }
 
