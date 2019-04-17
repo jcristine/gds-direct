@@ -102,7 +102,6 @@ let shouldRestart = (exc, session) => {
 
 let runInSession = ({session, rqBody, emcUser}) => {
 	let running;
-	let gdsData = session.gdsData;
 	running = ProcessTerminalInput({session, rqBody, emcUser});
 	GdsSessions.updateAccessTime(session);
 	return running.then(cmsResult => ({...cmsResult, session}));
