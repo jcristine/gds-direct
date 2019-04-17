@@ -117,7 +117,7 @@ let runInputCmdRestartAllowed = async ({rqBody, session, emcUser}) => {
 			if (shouldRestart(exc, session)) {
 				FluentLogger.logExc('INFO: Session expired', session.logId, exc);
 				await GdsSessions.remove(session).catch(exc => {});
-				let newSession = await startNewSession(rqBody);
+				let newSession = await startNewSession(rqBody, emcUser);
 				FluentLogger.logit('INFO: New session in ' + newSession.logId, session.logId, newSession);
 				FluentLogger.logit('INFO: Old session in ' + session.logId, newSession.logId, session);
 				let runt = await runInSession({session: newSession, rqBody, emcUser});
