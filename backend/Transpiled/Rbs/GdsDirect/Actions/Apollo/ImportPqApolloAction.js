@@ -277,14 +277,12 @@ class ImportPqApolloAction extends AbstractGdsAction {
 				$mrs = [];
 			}
 		}
-		return {
-			'error': !php.empty($cmdRecords)
-				? Rej.BadRequest(
-					'Last pricing commands ' + php.implode(' & ', php.array_column($cmdRecords, 'cmd')) +
-					' do not cover some itinerary segments: ' +
-					php.implode(',', php.array_column($segmentsLeft, 'segmentNumber')))
-				: Rej.UnprocessableEntity('Failed to determine current pricing command'),
-		};
+		return !php.empty($cmdRecords)
+			? Rej.BadRequest(
+				'Last pricing commands ' + php.implode(' & ', php.array_column($cmdRecords, 'cmd')) +
+				' do not cover some itinerary segments: ' +
+				php.implode(',', php.array_column($segmentsLeft, 'segmentNumber')))
+			: Rej.UnprocessableEntity('Failed to determine current pricing command');
 	}
 
 	async getPricing($reservation) {
