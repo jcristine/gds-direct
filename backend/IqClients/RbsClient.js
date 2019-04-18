@@ -39,12 +39,14 @@ let callRbs = async (functionName, params) => {
 			if (resp.result.response_code == 104) {
 				return BadRequest('RBS says passed params are invalid - ' + errorStr);
 			} else {
-				return UnprocessableEntity('RBS returned error - ' + errorStr);
+				let logId = resp.logId || resp.result.logId;
+				return UnprocessableEntity('RBS returned error - ' + errorStr + ' - Log: ' + logId);
 			}
 		} else if (resp.result.response_code == 3) {
 			let rpcErrors = resp.result.errors || [];
 			let messages = (resp.result.result || {}).messages || [];
-			return NotImplemented('RBS cant satisfy - ' + JSON.stringify(messages.concat(rpcErrors)));
+			let logId = resp.logId || resp.result.logId;
+			return NotImplemented('RBS cant satisfy - ' + messages.concat(rpcErrors).join('; ') + ' - Log: ' + logId);
 		} else {
 			return Promise.resolve(resp);
 		}
