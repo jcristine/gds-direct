@@ -22,7 +22,7 @@ export class GDS_UNIT
 			history			: [],
 			terminals		: {},
 			curTerminalId	: undefined,
-			dimensions		: {},
+			dimensions		: null,
 			hasWide			: hasWide === 'true',
 			language		: settings.language || 'apollo',
 			fontSize		: settings.fontSize || 1,

@@ -227,6 +227,22 @@ let syncJsCache = () => {
 		});
 };
 
+/**
+ * code expects that root element is displayed on the moment of first initialization
+ */
+let whenVisible = (htmlRootDom, action) =>
+	new Promise((resolve) => {
+		let checkVisible = () => {
+			let isVisible = htmlRootDom.offsetParent !== null;
+			if (isVisible) {
+				resolve(action());
+			} else {
+				setTimeout(checkVisible, 500);
+			}
+		};
+		checkVisible();
+	});
+
 let onEmcSessionId = (emcSessionId, params) => {
 	// probably better would be to pass it through all these abstractions
 	// to the session.es6 instead of making a global variable...
@@ -243,12 +259,14 @@ let onEmcSessionId = (emcSessionId, params) => {
 
 	return Promise.all([loadView, loadThemes])
 		.then(([viewData, themeData]) => {
+			syncJsCache();
+			initThemeStyles(themeData, params.htmlRootDom);
 			params.htmlRootDom.querySelectorAll('.pls-wait-placeholder')
 				.forEach(ph => ph.remove());
-			initGlobEvents(params.htmlRootDom);
-			initThemeStyles(themeData, params.htmlRootDom);
-			syncJsCache();
-			return new GdsDirectPlusApp(params, viewData, themeData);
+			return whenVisible(params.htmlRootDom, () => {
+				initGlobEvents(params.htmlRootDom);
+				return new GdsDirectPlusApp(params, viewData, themeData);
+			});
 		});
 };
 
