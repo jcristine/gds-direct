@@ -80,38 +80,46 @@ const initGlobEvents = (htmlRootDom) => {
 	window.addEventListener('keyup', (e) => ctrlKeyDown = e.ctrlKey);
 
 	let countErrors = 0;
-	let errorsLog = {};
-	let onerror = (e) => {
-		let {message, filename, lineno, colno, error} = e;
+	/** @param {Error|{message, stack, filename, lineno, colno}} data */
+	let handleGenericError = (data) => {
+		let {message, stack} = data;
 		++countErrors;
 		if (countErrors >= 3) {
 			return false;
 		}
-		let keyIndex = lineno + ':' + colno;
-		if (errorsLog[keyIndex]) {
-			return false;
-		}
-		errorsLog[keyIndex] = 1;
-
 		// taken from CMS
 		let doNotLog = ['NS_ERROR_FAILURE:', 'NS_ERROR_STORAGE_IOERR:', 'Error: Script error for', 'NS_ERROR_FILE_CORRUPTED:', 'Uncaught Error: Script error for', 'ReferenceError: vendor_lib'];
 		if (doNotLog.some(prefix => message.startsWith(prefix))) {
 			return false;
 		}
-		let stack = error.stack;
 		if (!stack || stack.indexOf('terminal-bundle.js') < 0) {
 			return false; // not a GDS Direct+ error
 		}
-
 		post('/system/reportJsError', {
-			message, filename, lineno, colno, stack: stack,
+			...data, message, stack,
 			effectiveVersion: effectiveVersion,
 			codeUpdateInfo: window.GdsDirectPlusParams.codeUpdateInfo,
 		});
 	};
+	let errorsLog = {};
+	/** @param {ErrorEvent} e */
+	let onerror = (e) => {
+		let {message, filename, lineno, colno, error} = e;
+		let stack = error.stack;
+		let keyIndex = lineno + ':' + colno;
+		if (errorsLog[keyIndex]) {
+			return false;
+		}
+		errorsLog[keyIndex] = 1;
+		handleGenericError({message, filename, lineno, colno, stack: stack});
+	};
+	/** @param {PromiseRejectionEvent} e */
+	let onrejection = (e) => {
+		handleGenericError(e.reason);
+	};
 	window.addEventListener('error', onerror);
 	// Most errors will be it. Not supported by firefox ATM sadly...
-	window.addEventListener('unhandledrejection', onerror);
+	window.addEventListener('unhandledrejection', onrejection);
 };
 
 let addCss = (cssText, htmlRootDom) => {
