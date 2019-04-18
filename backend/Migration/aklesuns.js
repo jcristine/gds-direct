@@ -409,4 +409,12 @@ module.exports.migrations = [
 			') ENGINE=InnoDB DEFAULT CHARSET=utf8',
 		].join('\n')),
 	},
+	{
+		name: 'GRECT/2019.04.18005-fix-l3ii-settings-2',
+		perform: (db) => db.query([
+			'UPDATE terminalAreaSettings',
+			'SET defaultPcc = "6IIF"',
+			'WHERE gds = "sabre" AND defaultPcc = "L3II"',
+		].join('\n')),
+	},
 ];
