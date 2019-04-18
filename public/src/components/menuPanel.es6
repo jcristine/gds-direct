@@ -1,5 +1,5 @@
-import PqButton			        from './menu/pqButton.es6';
-import gdsDirectPqButton		from './menu/gdsDirectPqButton.es6';
+import CurrentLeadPqButton			        from './menu/currentLeadPqButton.es6';
+import LeadListPqButton		from './menu/leadListPqButton.es6';
 import {DevButtons}		        from './menu/devButtons.es6';
 import Dom				        from '../helpers/dom.es6';
 import Component		        from '../modules/component';
@@ -50,10 +50,10 @@ export default class MenuPanel extends Component
 		this.observe(
 			new Component('article')
 				.observe(
-					new PqButton()
+					new CurrentLeadPqButton()
 				)
 				.observe(
-					new gdsDirectPqButton()
+					new LeadListPqButton()
 				)
 		);
 

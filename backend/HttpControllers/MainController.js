@@ -105,6 +105,8 @@ let withAuth = (userAction) => (req, res) => {
 				return Promise.reject(error);
 			})
 			.then(async emcData => {
+				rqBody = {...rqBody};
+				delete(rqBody.emcSessionId);
 				if (rqBody.isForeignProjectEmcId) {
 					emcData = await normalizeForeignProjectEmcData(emcData).catch(exc => emcData);
 				} else if (rqBody.disableAllRoles) {

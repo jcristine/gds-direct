@@ -4,7 +4,7 @@ import {GET_LAST_REQUESTS}                  from "../../actions/settings";
 import {PQ_MODAL_SHOW} from "../../actions/priceQuoutes";
 import ButtonPopOver						from "../../modules/buttonPopover";
 
-export default class gdsDirectPqButton extends Component
+export default class LeadListPqButton extends Component
 {
     constructor()
     {
@@ -48,7 +48,7 @@ class PqButtonPopover extends ButtonPopOver {
             onclick		: () => {
                 GET_LAST_REQUESTS()
                     .then(response => {
-                        const c = new PopoverContext(response, this.popover);
+                        const c = new LeadListContext(response, this.popover);
 
                         this.popContent.innerHTML = '';
                         this.popContent.appendChild( c.context );
@@ -61,7 +61,7 @@ class PqButtonPopover extends ButtonPopOver {
 
 }
 
-class PopoverContext
+class LeadListContext
 {
     constructor(response, popover)
     {

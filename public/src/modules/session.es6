@@ -56,6 +56,9 @@ export default class Session
 
 	_run(cmd)
 	{
+		if (cmd === '!DEBUG TRIGGER EXCEPTION') {
+			(undefined).getId();
+		}
 		if (!cmd)
 		{
 			return Promise.resolve('');

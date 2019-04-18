@@ -2,11 +2,28 @@
 import './theme/entry/main.less';
 import {getStore} from "./store";
 import requests from  "./helpers/requests";
+import {post} from  "./helpers/requests";
 import GdsDirectPlusApp from  "./modules/GdsDirectPlusApp";
 import HighlightRulesAdminApp from "./modules/HighlightRulesAdminApp";
 import TerminalThemesAdminApp from "./modules/TerminalThemesAdminApp";
 import TerminalSessionListApp from "./modules/TerminalSessionListApp";
 
+let cookies = {
+	get: (key) => {
+		let cookieData = {};
+		for (let pair of document.cookie.split('; ')) {
+			let [key, value] = pair.split('=');
+			cookieData[key] = value;
+		}
+		return cookieData[key];
+	},
+	set: (key, value) => {
+		document.cookie = key + '=' + value;
+	},
+};
+
+let versionKey = 'GDS_DIRECT_PLUS_VERSION';
+let effectiveVersion = cookies.get(versionKey);
 
 const initGlobEvents = (htmlRootDom) => {
 
@@ -61,6 +78,40 @@ const initGlobEvents = (htmlRootDom) => {
 		}
 	});
 	window.addEventListener('keyup', (e) => ctrlKeyDown = e.ctrlKey);
+
+	let countErrors = 0;
+	let errorsLog = {};
+	let onerror = (e) => {
+		let {message, filename, lineno, colno, error} = e;
+		++countErrors;
+		if (countErrors >= 3) {
+			return false;
+		}
+		let keyIndex = lineno + ':' + colno;
+		if (errorsLog[keyIndex]) {
+			return false;
+		}
+		errorsLog[keyIndex] = 1;
+
+		// taken from CMS
+		let doNotLog = ['NS_ERROR_FAILURE:', 'NS_ERROR_STORAGE_IOERR:', 'Error: Script error for', 'NS_ERROR_FILE_CORRUPTED:', 'Uncaught Error: Script error for', 'ReferenceError: vendor_lib'];
+		if (doNotLog.some(prefix => message.startsWith(prefix))) {
+			return false;
+		}
+		let stack = error.stack;
+		if (!stack || stack.indexOf('terminal-bundle.js') < 0) {
+			return false; // not a GDS Direct+ error
+		}
+
+		post('/system/reportJsError', {
+			message, filename, lineno, colno, stack: stack,
+			effectiveVersion: effectiveVersion,
+			codeUpdateInfo: window.GdsDirectPlusParams.codeUpdateInfo,
+		});
+	};
+	window.addEventListener('error', onerror);
+	// Most errors will be it. Not supported by firefox ATM sadly...
+	window.addEventListener('unhandledrejection', onerror);
 };
 
 let addCss = (cssText, htmlRootDom) => {
@@ -143,27 +194,11 @@ window.GdsDirectPlusParams = window.GdsDirectPlusParams || {
 	disableAllRoles: false,
 };
 
-let cookies = {
-	get: (key) => {
-		let cookieData = {};
-		for (let pair of document.cookie.split('; ')) {
-			let [key, value] = pair.split('=');
-			cookieData[key] = value;
-		}
-		return cookieData[key];
-	},
-	set: (key, value) => {
-		document.cookie = key + '=' + value;
-	},
-};
-
 /**
  * I'm going to set Cache-Control: 3600, but I still
  * want agents to get updated code after refresh
  */
 let syncJsCache = () => {
-	let versionKey = 'GDS_DIRECT_PLUS_VERSION';
-	let effectiveVersion = cookies.get(versionKey);
 	fetch(rootUrl + '/public/CURRENT_PRODUCTION_TAG', {
 		headers: {'Cache-Control': 'no-cache'},
 	})	.then(rs => rs.text())

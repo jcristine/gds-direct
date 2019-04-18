@@ -1,7 +1,7 @@
 import {PQ_MODAL_SHOW} 	from "../../actions/priceQuoutes";
 import Component 		from "../../modules/component";
 
-export default class PqButton extends Component
+export default class CurrentLeadPqButton extends Component
 {
 	constructor()
 	{

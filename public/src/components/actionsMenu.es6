@@ -5,7 +5,7 @@ import {ButtonPopover} from "../modules/dom/buttonPopover";
 import {SettingsButtons} from "./menu/settingsButtons";
 import {LanguageButtons} from "./menu/languageButtons";
 import {Quotes} from "./menu/quotes";
-import PqButton from "./menu/pqButton";
+import CurrentLeadPqButton from "./menu/currentLeadPqButton";
 import {HIDE_MENU} from "../actions/settings";
 import {DevButtons} from "./menu/devButtons";
 
@@ -82,7 +82,7 @@ class Trigger extends ButtonPopover
 			new GdsAreas(),
 			new LanguageButtons(),
 			new Quotes(),
-			new PqButton(),
+			new CurrentLeadPqButton(),
 		]);
 
 		if (this.state.permissions)
