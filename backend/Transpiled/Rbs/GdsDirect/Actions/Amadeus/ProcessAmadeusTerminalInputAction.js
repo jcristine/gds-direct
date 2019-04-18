@@ -87,10 +87,10 @@ class ProcessAmadeusTerminalInputAction {
 		// 'WARNING: CHECK TICKETING DATE',
 		// 'WARNING: PS REQUIRES TICKET ON OR BEFORE 19SEP:1900/S2-3',
 		$regex =
-			'\/^' +
-			'\\s*\\\/\\s*' +
+			'/^' +
+			'\\s*\\/\\s*' +
 			'(\\s*WARNING: .*\\s*)+' +
-			'$\/';
+			'$/';
 		return php.preg_match($regex, $output);
 	}
 
@@ -122,14 +122,14 @@ class ProcessAmadeusTerminalInputAction {
 		let $regex, $matches;
 
 		$regex =
-			'\/^\\+' +
+			'/^\\+' +
 			'(?<seatAmount>\\d+)' +
 			'(S' +
 			'(?<segNumStart>\\d+)' +
 			'(-(?<segNumEnd>\\d+))?' +
 			')?' +
 			'(?<segmentStatus>[A-Z]{2})?' +
-			'$\/';
+			'$/';
 		if (php.preg_match($regex, $cmd, $matches = [])) {
 			return {
 				'seatAmount': $matches['seatAmount'],
@@ -172,7 +172,7 @@ class ProcessAmadeusTerminalInputAction {
 		if (!$sessionData['isPnrStored']) {
 			$performedCmds = php.array_column(await $cmdLog.getCurrentPnrCommands(), 'cmd');
 			$msg = 'CREATED IN GDS DIRECT BY ' + php.strtoupper(this.getAgent().getLogin());
-			$cmd = 'UHP\/' + $msg;
+			$cmd = 'UHP/' + $msg;
 			if (!php.in_array($cmd, $performedCmds)) {
 				return $cmd;
 			}
@@ -621,24 +621,23 @@ class ProcessAmadeusTerminalInputAction {
 			for ($mod of Object.values($modRec['mods'])) {
 				$paxMods.push($mod);
 			}
-			$paxStores.push(php.implode('\/', $paxMods));
+			$paxStores.push(php.implode('/', $paxMods));
 		}
-		return {'cmd': 'FXP\/' + php.implode('\/\/', $paxStores)};
+		return {'cmd': 'FXP/' + php.implode('//', $paxStores)};
 	}
 
 	async storePricing($aliasData) {
 		let $pnr, $errors, $cmdRecord, $output;
 
 		$pnr = await this.getCurrentPnr();
-		if ($errors = CommonDataHelper.checkSeatCount($pnr)) {
+		if (!php.empty($errors = CommonDataHelper.checkSeatCount($pnr))) {
 			return {'errors': $errors};
 		}
 		$cmdRecord = this.makeStorePricingCmd($pnr, $aliasData, false);
-		if ($errors = $cmdRecord['errors'] || []) {
+		if (!php.empty($errors = $cmdRecord['errors'] || [])) {
 			return {'errors': $errors};
 		}
-		$output = (await AmadeusUtil.fetchAllFx((...args) =>
-			this.runCommand(...args), $cmdRecord['cmd'])).output;
+		$output = (await AmadeusUtil.fetchAllFx($cmdRecord['cmd'], this)).output;
 
 		if (await this.needsRp($cmdRecord['cmd'], $output, $pnr)) {
 			// delete TST we just created, and re-price it with 'P'-ublished mod
@@ -790,7 +789,7 @@ class ProcessAmadeusTerminalInputAction {
 
 		$faRecs = (((await this.getCurrentPnr()).getParsedData() || {})['parsed'] || {})['tickets'] || [];
 		for ($faRec of Object.values($faRecs)) {
-			$twdOutput = this.runCommand('TWD\/L' + $faRec['lineNumber']);
+			$twdOutput = this.runCommand('TWD/L' + $faRec['lineNumber']);
 			$twdParsed = TicketMaskParser.parse($twdOutput);
 			$isFlight = ($seg) => {
 				return $seg['type'] !== 'void';
@@ -1035,7 +1034,7 @@ class ProcessAmadeusTerminalInputAction {
 					'signed': ($letter == $sessionData['area']) ? '-IN' : '   ',
 					'status': $status,
 				};
-				$lines.push(StringUtil.format('{letter}{signed}      PRD WS\/SU.EN  24             {status}', $data));
+				$lines.push(StringUtil.format('{letter}{signed}      PRD WS/SU.EN  24             {status}', $data));
 			} else {
 				$lines.push($letter + '                                      NOT SIGNED');
 			}
