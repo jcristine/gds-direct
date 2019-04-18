@@ -2788,6 +2788,137 @@ class PricingParserTest extends require('../../../../../../backend/Transpiled/Li
             },
         ]);
 
+        // session #40130
+        // child fare construction sum differs from NUC by 1 dollar
+        // 25 + 44 + 25 + 44 = 138
+        // USD139.00END
+        $list.push([
+            php.implode(php.PHP_EOL, [
+                '>$B/N1|2*C6/-*2F3K',
+                '*FARE GUARANTEED AT TICKET ISSUANCE*',
+                '',
+                'E-TKT REQUIRED',
+                '        **CARRIER MAY OFFER ADDITIONAL SERVICES**SEE >$B/DASO;',
+                '*PENALTY APPLIES*',
+                'TICKETING WITHIN 24 HOURS AFTER RESERVATION',
+                'LAST DATE TO PURCHASE TICKET: 18APR19 / 1746 SFO',
+                '$B-1 C17APR19     ',
+                'MZL AV X/BOG AV ADZ Q MZLADZ38.00 66.00ZEO00RI4 AV X/BOG AV MZL',
+                'Q ADZMZL38.00 66.00ZEO00RI4 USD208.00END',
+                'FARE USD 208.00 TAX 14.80CO TOT USD 222.80',
+                'S1 NVB29AUG/NVA29AUG',
+                'S2 NVB29AUG/NVA29AUG',
+                'S3 NVB03SEP/NVA03SEP',
+                'S4 NVB04SEP/NVA04SEP',
+                'E REFUND FEE APPLIES',
+                'E CHANGES FOR A FEE AND',
+                'E PLUS FARE DIFF/NO ENDORSE',
+                'TICKETING AGENCY 2F3K',
+                'DEFAULT PLATING CARRIER AV',
+                'BAGGAGE ALLOWANCE',
+                'ADT                                                         ',
+                ' AV MZLADZ  1PC                                             ',
+                '   BAG 1 -  NO FEE       UPTO50LB/23KG AND UPTO62LI/158LCM',
+                '   BAG 2 -  150000 COP   UPTO50LB/23KG AND UPTO62LI/158LCM',
+                '   VIEWTRIP.TRAVELPORT.COM/BAGGAGEPOLICY/AV',
+                '                                                                 AV ADZMZL  1PC                                             ',
+                '   BAG 1 -  NO FEE       UPTO50LB/23KG AND UPTO62LI/158LCM',
+                '   BAG 2 -  150000 COP   UPTO50LB/23KG AND UPTO62LI/158LCM',
+                '   VIEWTRIP.TRAVELPORT.COM/BAGGAGEPOLICY/AV',
+                '                                                                CARRY ON ALLOWANCE',
+                ' AV MZLBOG  10K                                             ',
+                '   BAG 1 -  CHGS MAY APPLY IF BAGS EXCEED TTL WT ALLOWANCE',
+                '                                    BDBF         ',
+                '   BAG 2 -  CHGS MAY APPLY IF BAGS EXCEED TTL WT ALLOWANCE',
+                ' AV BOGADZ  10K                                             ',
+                '   BAG 1 -  CHGS MAY APPLY IF BAGS EXCEED TTL WT ALLOWANCE',
+                '   BAG 2 -  CHGS MAY APPLY IF BAGS EXCEED TTL WT ALLOWANCE',
+                ' AV ADZBOG  10K                                             ',
+                '   BAG 1 -  CHGS MAY APPLY IF BAGS EXCEED TTL WT ALLOWANCE',
+                '   BAG 2 -  CHGS MAY APPLY IF BAGS EXCEED TTL WT ALLOWANCE',
+                ' AV BOGMZL  10K                                             ',
+                '   BAG 1 -  CHGS MAY APPLY IF BAGS EXCEED TTL WT ALLOWANCE',
+                '   BAG 2 -  CHGS MAY APPLY IF BAGS EXCEED TTL WT ALLOWANCE',
+                '        **CARRIER MAY OFFER ADDITIONAL SERVICES**SEE >$B/DASO;',
+                '*PENALTY APPLIES*',
+                'TICKETING WITHIN 24 HOURS AFTER RESERVATION',
+                'LAST DATE TO PURCHASE TICKET: 18APR19 / 1746 SFO',
+                '$B-2 C17APR19     ',
+                'MZL AV X/BOG AV ADZ Q MZLADZ25.00 44.00ZEO00RI4/CH33 AV X/BOG',
+                'AV MZL Q ADZMZL25.00 44.00ZEO00RI4/CH33 USD139.00END',
+                'FARE USD 139.00 TAX 14.80CO TOT USD 153.80',
+                'S1 NVB29AUG/NVA29AUG',
+                'S2 NVB29AUG/NVA29AUG',
+                'S3 NVB03SEP/NVA03SEP',
+                'S4 NVB04SEP/NVA04SEP',
+                'E REFUND FEE APPLIES',
+                'E CHANGES FOR A FEE AND',
+                'E PLUS FARE DIFF/NO ENDORSE',
+                'TICKETING AGENCY 2F3K',
+                'DEFAULT PLATING CARRIER AV',
+                'BAGGAGE ALLOWANCE',
+                'CNN                                                         ',
+                ' AV MZLADZ  1PC                                             ',
+                '   BAG 1 -  NO FEE       UPTO50LB/23KG AND UPTO62LI/158LCM',
+                '   BAG 2 -  150000 COP   UPTO50LB/23KG AND UPTO62LI/158LCM',
+                '   VIEWTRIP.TRAVELPORT.COM/BAGGAGEPOLICY/AV',
+                '                                                                 AV ADZMZL  1PC                                             ',
+                '   BAG 1 -  NO FEE       UPTO50LB/23KG AND UPTO62LI/158LCM',
+                '   BAG 2 -  150000 COP   UPTO50LB/23KG AND UPTO62LI/158LCM',
+                '   VIEWTRIP.TRAVELPORT.COM/BAGGAGEPOLICY/AV',
+                '                                                                CARRY ON ALLOWANCE',
+                ' AV MZLBOG  10K                                             ',
+                '   BAG 1 -  CHGS MAY APPLY IF BAGS EXCEED TTL WT ALLOWANCE',
+                '                                    BDBF         ',
+                '   BAG 2 -  CHGS MAY APPLY IF BAGS EXCEED TTL WT ALLOWANCE',
+                ' AV BOGADZ  10K                                             ',
+                '   BAG 1 -  CHGS MAY APPLY IF BAGS EXCEED TTL WT ALLOWANCE',
+                '   BAG 2 -  CHGS MAY APPLY IF BAGS EXCEED TTL WT ALLOWANCE',
+                ' AV ADZBOG  10K                                             ',
+                '   BAG 1 -  CHGS MAY APPLY IF BAGS EXCEED TTL WT ALLOWANCE',
+                '   BAG 2 -  CHGS MAY APPLY IF BAGS EXCEED TTL WT ALLOWANCE',
+                ' AV BOGMZL  10K                                             ',
+                '   BAG 1 -  CHGS MAY APPLY IF BAGS EXCEED TTL WT ALLOWANCE',
+                '   BAG 2 -  CHGS MAY APPLY IF BAGS EXCEED TTL WT ALLOWANCE',
+                'BAGGAGE DISCOUNTS MAY APPLY BASED ON FREQUENT FLYER STATUS/',
+                'ONLINE CHECKIN/FORM OF PAYMENT/MILITARY/ETC.',
+                '',
+            ]),
+            {
+                "pricingBlockList": [
+                    {
+                        "fareConstruction": {
+                            "segments": [
+                                {"airline":"AV","flags":[{"raw":"X","parsed":"noStopover"}],"destination":"BOG","departure":"MZL"},
+                                {"airline":"AV","flags":[],"destination":"ADZ","fuelSurcharge":"38.00","fuelSurchargeParts":["38.00"],"fare":"66.00","fareBasis":"ZEO00RI4","ticketDesignator":null,"departure":"BOG"},
+                                {"airline":"AV","flags":[{"raw":"X","parsed":"noStopover"}],"destination":"BOG","departure":"ADZ"},
+                                {"airline":"AV","flags":[],"destination":"MZL","fuelSurcharge":"38.00","fuelSurchargeParts":["38.00"],"fare":"66.00","fareBasis":"ZEO00RI4","ticketDesignator":null,"departure":"BOG"}
+                            ],
+                            "currency": "USD",
+                            "fare": "208.00",
+                            "fareAndMarkup": {"currency":"USD","amount":"208.00"},
+                            "amountCharged": {"currency":"USD","amount":"222.80"}
+                        },
+                    },
+                    {
+                        "fareConstruction": {
+                            "segments": [
+                                {"airline":"AV","flags":[{"raw":"X","parsed":"noStopover"}],"destination":"BOG","departure":"MZL"},
+                                {"airline":"AV","flags":[],"destination":"ADZ","fuelSurcharge":"25.00","fuelSurchargeParts":["25.00"],"fare":"44.00","fareBasis":"ZEO00RI4","ticketDesignator":"CH33","departure":"BOG"},
+                                {"airline":"AV","flags":[{"raw":"X","parsed":"noStopover"}],"destination":"BOG","departure":"ADZ"},
+                                {"airline":"AV","flags":[],"destination":"MZL","fuelSurcharge":"25.00","fuelSurchargeParts":["25.00"],"fare":"44.00","fareBasis":"ZEO00RI4","ticketDesignator":"CH33","departure":"BOG"}
+                            ],
+                            "currency": "USD",
+                            "fare": "139.00",
+                            "fareAndMarkup": {"currency":"USD","amount":"139.00"},
+                            "taxes": [{"pseudoCountryCode":"CO","amount":"14.80"}],
+                            "amountCharged": {"currency":"USD","amount":"153.80"}
+                        },
+                    }
+                ],
+            },
+        ]);
+
         return $list;
     }
 

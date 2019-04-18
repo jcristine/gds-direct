@@ -165,7 +165,8 @@ class FareConstructionParser {
 	}
 
 	static isSameAmount($a, $b) {
-		return php.abs($a - $b) < 0.000001;
+		// some airlines put +- 1 cent/dollar in the NUC for rounding
+		return php.abs($a - $b) <= 1.00;
 	}
 
 	static isValidEnding($ending, $segments) {
