@@ -22,6 +22,7 @@ const Agents = require("../Repositories/Agents");
 const ProcessGalileoTerminalInputAction = require("../Transpiled/Rbs/GdsDirect/Actions/Galileo/ProcessGalileoTerminalInputAction");
 const GdsDirect = require("../Transpiled/Rbs/GdsDirect/GdsDirect");
 const Rej = require("../Utils/Rej");
+const TerminalSettings = require("../Transpiled/App/Models/Terminal/TerminalSettings");
 const BadRequest = require("../Utils/Rej").BadRequest;
 const TooManyRequests = require("../Utils/Rej").TooManyRequests;
 const NotImplemented = require("../Utils/Rej").NotImplemented;
@@ -221,10 +222,7 @@ let getDefaultPcc = async (area, stateful) => {
 		.filter(r => r.area === area && r.gds === stateful.gds)
 		.map(r => r.defaultPcc)[0];
 
-	if (gds === 'sabre' && area === 'A' && !configPcc) {
-		// ensure we are emulated in 6IIF on startup
-		configPcc = '6IIF';
-	}
+	configPcc = configPcc || TerminalSettings.getForcedStartPcc(gds, area);
 	return configPcc;
 };
 

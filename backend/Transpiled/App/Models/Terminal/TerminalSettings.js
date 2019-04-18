@@ -59,6 +59,15 @@ class TerminalSettings {
 		return self.$default;
 	}
 
+	static getForcedStartPcc(gds, area) {
+		if (gds === 'sabre' && area === 'A') {
+			// ensure we are emulated in 6IIF on startup
+			return '6IIF';
+		} else {
+			return null;
+		}
+	}
+
 	_transformRowFromDb($row, areaRows) {
 		return {
 			'language': $row['language'],
@@ -69,10 +78,9 @@ class TerminalSettings {
 			'areaSettings': areaRows
 				.filter(areaRow => areaRow.gds === $row['gds'])
 				.map(areaRow => {
-					let defaultPcc = areaRow.defaultPcc;
-					if (!defaultPcc && areaRow.area === 'A') {
-						defaultPcc = GdsSessions.makeDefaultAreaState(areaRow.gds).pcc;
-					}
+					let defaultPcc = areaRow.defaultPcc ||
+						this.constructor.getForcedStartPcc(areaRow.gds, areaRow.area) ||
+						GdsSessions.makeDefaultAreaState(areaRow.gds).pcc;
 					return {...areaRow, defaultPcc};
 				}),
 			'matrix': json_decode($row['matrixConfiguration']),
