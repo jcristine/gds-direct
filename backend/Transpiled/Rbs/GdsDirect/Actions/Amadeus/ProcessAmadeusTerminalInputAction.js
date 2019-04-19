@@ -560,7 +560,7 @@ class ProcessAmadeusTerminalInputAction {
 	async needsRp($cmd, $output, $pnr) {
 		let $parsed = FxParser.parse($output);
 		if (($parsed['type']) === 'ptcList') {
-			$output = (await AmadeusUtil.fetchAllFx((...args) => this.runCommand(...args), 'FQQ1')).output;
+			$output = (await AmadeusUtil.fetchAllFx('FQQ1', this)).output;
 		}
 		if (php.isset($parsed['error'])) {
 			return false;
