@@ -114,8 +114,8 @@ class DisplayHistoryActionHelper {
 			'T': [$segment['segmentStatusWas'], 'right'],
 			'U': [$segment['segmentStatusBecame'], 'right'],
 			'N': [$segment['seatCount'], 'left'],
-			'I': [$segment['departureTime']['raw'], 'right'],
-			'J': [$segment['destinationTime']['raw'], 'right'],
+			'I': [($segment['departureTime'] || '')['raw'], 'right'],
+			'J': [($segment['destinationTime'] || '')['raw'], 'right'],
 			'+': [' ', 'right'], // TODO
 			'*': [$segment['confirmedByAirline'], 'right'],
 		};
