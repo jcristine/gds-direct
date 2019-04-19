@@ -229,6 +229,43 @@ class LinearFareParserTest extends require('../../../../Lib/TestCase.js') {
 			},
 		]);
 
+		// failed to parse fare breakdown... because this dump should be wrapped by 63 chars?
+		// session: 52084
+		$list.push([
+			php.implode(php.PHP_EOL, [
+				"FQ-1 G19APR19      ADT       ",
+				"  TPA AA X/CLT AA LON M85.00OKW8I7B5 AY X/CLT AA TPA",
+				"  M172.00QHX8Z7B5 NUC257.00END ROE1.0  XF 10.50TPA4.5CLT3CLT3  FARE USD 257.00 TAX AY 11.20 TAX US 37.20 TAX XA 3.96 TAX XF",
+				"  10.50 TAX XY 7.00 TAX YC 5.77 TAX GB 101.80 TAX UB 60.80 TAX",
+				"  YR 240.00 TOT USD 735.23",
+			]),
+			{
+				'ptcBlocks': [
+					{
+						'passengerNumbers': [1],
+						'fareTypeCode': 'G',
+						'ptc': 'ADT',
+						'fareConstruction': {
+							'segments': [
+								{'destination': 'CLT'},
+								{'destination': 'LON'},
+								{'destination': 'CLT'},
+								{'destination': 'TPA'},
+							],
+							'fare': '257.00',
+						},
+						'baseFare': {'currency': 'USD', 'amount': '257.00'},
+						'taxes': [
+							{'taxCode': 'AY', 'amount': '11.20'},
+							{'taxCode': 'US', 'amount': '37.20'},
+							// ...
+						],
+						'netPrice': {'currency': 'USD', 'amount': '735.23'},
+					},
+				],
+			},
+		]);
+
 		return $list;
 	}
 

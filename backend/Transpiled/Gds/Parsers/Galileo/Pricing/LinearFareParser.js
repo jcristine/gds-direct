@@ -71,7 +71,7 @@ class LinearFareParser {
 
 		$taxPattern = 'TAX\\s+([A-Z0-9]{2})\\s*(\\d*\\.\\d+|EXEMPT\\s+)\\s+';
 		$regex =
-			'\/^(?<fcText>.*)\\nFARE\\s+' +
+			'/^(?<fcText>.*)\\s+FARE\\s+' +
 			'(?<baseCurrency>[A-Z]{3})\\s+' +
 			'(?<baseAmount>\\d*\\.?\\d+)\\s+' +
 			'(EQU\\s+' +
@@ -81,7 +81,7 @@ class LinearFareParser {
 			'(?<taxList>(?:' + $taxPattern + ')*)TOT\\s+' +
 			'(?<totalCurrency>[A-Z]{3})\\s+' +
 			'(?<totalAmount>\\d*\\.\\d+)' +
-			'\\s*$\/s';
+			'\\s*$/s';
 
 		if (php.preg_match($regex, $line, $matches = [])) {
 			$matches = php.array_filter($matches);
@@ -170,7 +170,6 @@ class LinearFareParser {
 	static parse($dump) {
 		let $linesLeft, $ptcBlocks, $ptcBlock, $left, $getError, $errors, $error;
 
-		$dump = StringUtil.wrapLinesAt($dump, 64);
 		$linesLeft = StringUtil.lines($dump);
 		$ptcBlocks = [];
 		let tuple;
@@ -185,7 +184,7 @@ class LinearFareParser {
 		$getError = ($block) => $block['error'];
 		$errors = php.array_filter(Fp.map($getError, $ptcBlocks));
 		if (!php.empty($errors)) {
-			$error = 'Failed to parse ' + php.implode(', ', php.array_keys($errors)) + '-th FQ block FC - ' + php.implode('; ', $errors);
+			$error = 'Failed to parse ' + php.implode(', ', php.array_keys($errors)) + '-th F*Q block FC - ' + php.implode('; ', $errors);
 			return {'error': $error};
 		} else {
 			return {
