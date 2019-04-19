@@ -23,8 +23,10 @@ class NormalizeTariffCmd
         if (!$cmdData || !php.empty($cmdData['unparsed'])) {
             return null;
         }
-        $typeToData = php.array_combine(php.array_column($cmdData['modifiers'] || [], 'type'),
-            php.array_column($cmdData['modifiers'] || [], 'parsed'));
+        $typeToData = php.array_combine(
+            php.array_column($cmdData['modifiers'] || [], 'type'),
+            php.array_column($cmdData['modifiers'] || [], 'parsed')
+        );
         $cmdData['typeToData'] = $typeToData;
         return $cmdData;
     }
@@ -34,8 +36,10 @@ class NormalizeTariffCmd
         if (!$cmdData || !php.empty($cmdData['unparsed'])) {
             return null;
         }
-        $typeToData = php.array_combine(php.array_column($cmdData['modifiers'] || [], 'type'),
-            php.array_column($cmdData['modifiers'] || [], 'parsed'));
+        $typeToData = php.array_combine(
+            php.array_column($cmdData['modifiers'] || [], 'type'),
+            php.array_column($cmdData['modifiers'] || [], 'parsed')
+        );
         $cmdData['typeToData'] = $typeToData;
         if (!php.empty($cmdData['typeToData']['accountCodes'])) {
             $cmdData['typeToData']['accountCode'] = php.array_shift($cmdData['typeToData']['accountCodes']);
@@ -51,14 +55,17 @@ class NormalizeTariffCmd
         }
         $typeToData = php.array_combine(php.array_column($cmdData['modifiers'], 'type'),
             php.array_column($cmdData['modifiers'], 'parsed'));
-        $typeToData = php.array_merge($typeToData, php.array_combine(php.array_column($typeToData['generic']['rSubModifiers'] || [], 'type'),
-            php.array_column($typeToData['generic']['rSubModifiers'] || [], 'parsed')));
+        $typeToData = php.array_merge($typeToData, php.array_combine(
+            php.array_column(($typeToData['generic'] || {})['rSubModifiers'] || [], 'type'),
+            php.array_column(($typeToData['generic'] || {})['rSubModifiers'] || [], 'parsed')
+        ));
         if (php.array_key_exists(null, $typeToData)) {
             return null; // failed to parse some modifiers
         }
         $cmdData['departureDate'] = $typeToData['travelDates']['departureDate'] || null;
         $cmdData['returnDate'] = $typeToData['travelDates']['returnDate'] || null;
-        delete($typeToData['travelDates'], $typeToData['generic']);
+        delete($typeToData['travelDates']);
+        delete($typeToData['generic']);
         $cmdData['typeToData'] = $typeToData;
         return $cmdData;
     }
@@ -68,8 +75,10 @@ class NormalizeTariffCmd
         if (!$cmdData || !php.empty($cmdData['unparsed'])) {
             return null;
         }
-        $typeToData = php.array_combine(php.array_column($cmdData['modifiers'] || [], 'type'),
-            php.array_column($cmdData['modifiers'] || [], 'parsed'));
+        $typeToData = php.array_combine(
+            php.array_column($cmdData['modifiers'] || [], 'type'),
+            php.array_column($cmdData['modifiers'] || [], 'parsed')
+        );
         if ($ticketingDate = $cmdData['ticketingDate'] || null) {
             $typeToData['ticketingDate'] = $ticketingDate;
         }

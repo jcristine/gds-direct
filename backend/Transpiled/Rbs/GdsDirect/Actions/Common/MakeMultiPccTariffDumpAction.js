@@ -16,7 +16,7 @@ class MakeMultiPccTariffDumpAction {
 		$header = (($pccToJobResult[$currentPcc] || {})['result'] || {})['header'];
 		$infoLines = [];
 		if ($header) {
-			$fareSelection = $header['fareSelection'];
+			$fareSelection = $header['fareSelection'] || '';
 			if ($lastUpdatedDate = $header['lastUpdatedDate'] || null) {
 				$infoLines.push('FARES LAST UPDATED ' + $lastUpdatedDate['raw'] +
 					(php.empty($header['lastUpdatedTime']) ? '' : ' ' + $header['lastUpdatedTime']['raw']));
