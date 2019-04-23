@@ -2248,7 +2248,7 @@ class ProcessAmadeusTerminalInputActionTest extends require('../../../../Lib/Tes
 		$actualOutput['sessionData'] = $session.getSessionData();
 
 		this.assertArrayElementsSubset($output, $actualOutput, php.implode('; ', $actualOutput['userMessages'] || ['no errors']));
-		this.assertEquals([], $session.getGdsSession().getUnusedCommands(), 'not all session commands were used');
+		this.assertEquals([], $session.getGdsSession().getCommandsLeft(), 'not all session commands were used');
 	}
 
 	getTestMapping() {

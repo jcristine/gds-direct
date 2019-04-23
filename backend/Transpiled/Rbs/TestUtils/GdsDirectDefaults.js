@@ -171,6 +171,9 @@ class GdsDirectDefaults {
 				gds: gds,
 				travelRequestId: initialState.lead_id || 1,
 			},
+			gdsData: {
+				someGdsSpecificField: 'fake12345',
+			},
 		};
 		let fullState = {
 			area: 'A',

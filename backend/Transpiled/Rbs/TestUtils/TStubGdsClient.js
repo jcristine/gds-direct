@@ -49,11 +49,7 @@ class TStubGdsClient
     }
 
     wereAllCommandsUsed()  {
-        return php.count(this.getUnusedCommands()) === 0;
-    }
-
-    getUnusedCommands()  {
-        return this.$commandsLeft;
+        return php.count(this.getCommandsLeft()) === 0;
     }
 
     getCommandsLeft()  {

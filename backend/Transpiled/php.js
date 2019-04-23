@@ -48,8 +48,6 @@ let equals = (a, b, strict) => {
 		if (strict && a === b) {
 			return true;
 		} else if (!strict && a == b) {
-			// there are probably some discrepancies
-			// between js == and php == - should check one day
 			return true;
 		} else if (occurrences.has(a) || occurrences.has(b)) {
 			// circular reference, it probably could happen in js

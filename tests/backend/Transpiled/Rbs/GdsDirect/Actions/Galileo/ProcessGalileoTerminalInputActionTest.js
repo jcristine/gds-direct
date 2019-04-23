@@ -2118,7 +2118,7 @@ class ProcessGalileoTerminalInputActionTest extends require('../../../../Lib/Tes
 			.execute($input['cmdRequested']);
 		$actualOutput['sessionData'] = $session.getSessionData();
 
-		let unusedCommands = $session.getGdsSession().getUnusedCommands();
+		let unusedCommands = $session.getGdsSession().getCommandsLeft();
 		this.assertEquals([], unusedCommands, 'not all session commands were used');
 		this.assertArrayElementsSubset($output, $actualOutput);
 	}
