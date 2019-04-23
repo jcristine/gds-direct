@@ -1,4 +1,4 @@
-const Db = require("../Utils/Db");
+const Db = require("../Utils/Db.js");
 const nonEmpty = require("../Utils/Rej").nonEmpty;
 
 let TABLE = 'cmd_rq_log';
@@ -33,5 +33,12 @@ exports.logOutput = async (rqBody, whenCmdRqId, output) => {
 			output: output,
 			responseTimestamp: responseTimestamp,
 		},
+	}));
+};
+
+exports.getById = (id) => {
+	return Db.with(db => db.fetchOne({
+		table: TABLE,
+		where: [['id', '=', id]],
 	}));
 };
