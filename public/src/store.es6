@@ -25,12 +25,16 @@ class Store
 
 	setState(state)
 	{
-		setState(state)
+		setState(state);
 	}
 
 	updateView(props)
 	{
-		store.app.calculateMatrix(props);
+		store.app.calculateMatrix();
+		this.setState({
+			...props,
+			curGds  : store.app.Gds.getCurrent(),
+		});
 	}
 }
 
