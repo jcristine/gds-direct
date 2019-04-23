@@ -22,15 +22,6 @@ class GdsDirectDefaults {
 			'hasPnr': false,
 			'isPnrStored': false,
 			'canCreatePq': false,
-
-			'id': 1,
-			'activity_dt': '2018-01-01 00:00:00',
-			'user_activity_dt': '2018-01-01 00:00:00',
-			'is_active': true,
-			'internal_token': 'fake123',
-			'agent_id': 6206322,
-			'lead_creator_id': 6206,
-			'lead_id': 1,
 		};
 	}
 

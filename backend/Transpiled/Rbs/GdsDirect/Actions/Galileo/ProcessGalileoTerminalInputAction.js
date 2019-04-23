@@ -26,10 +26,7 @@ const PtcUtil = require('../../../../Rbs/Process/Common/PtcUtil.js');
 const GalileoPnr = require('../../../../Rbs/TravelDs/GalileoPnr.js');
 const RebuildInPccAction = require('./RebuildInPccAction.js');
 const php = require('../../../../php.js');
-
-var require = require('../../../../translib.js').stubRequire;
-
-const GalileoRetrieveTicketsAction = require('../../../../Rbs/GdsAction/GalileoRetrieveTicketsAction.js');
+const GalileoRetrieveTicketsAction = require('../../../../Rbs/Process/Apollo/ImportPnr/Actions/RetrieveApolloTicketsAction.js');
 
 
 class ProcessGalileoTerminalInputAction {
@@ -723,8 +720,10 @@ class ProcessGalileoTerminalInputAction {
 			return $cmdRec['type'] === 'addName'
 				&& !StringUtil.startsWith($cmdRec['cmd'], 'N.FAKE/');
 		};
+		let flatUsedCmds = await this.getFlatUsedCmds();
 		$hasNamesInPnr = this.getSessionData()['isPnrStored']
-			|| Fp.any($addedRealName, await this.getFlatUsedCmds());
+			|| Fp.any($addedRealName, flatUsedCmds);
+
 		$ptcGroups = (($mods['passengers'] || {})['parsed'] || {})['ptcGroups'] || [];
 		$paxNums = Fp.flatten(php.array_column($ptcGroups, 'passengerNumbers'));
 		if (!php.empty($paxNums) && !$hasNamesInPnr) {

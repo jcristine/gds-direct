@@ -118,7 +118,7 @@ class TestCase
 	}
 
 	assertEquals(expected, actual, msg) {
-		if (expected == actual) {
+		if (php.equals(expected, actual)) {
 			return this._ok();
 		} else {
 			let fullMsg = describeMismatch(expected, 'equals', actual, msg);

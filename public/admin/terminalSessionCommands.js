@@ -233,7 +233,7 @@ window.GdsDirectPlusPage.whenEmcSessionId.then(function(emcSessionId){
 
                     areaClass: 'command-area-' + _.toLower(item.area),
 
-                    iconCanCreatePq: (parseInt(item.can_create_pq)) ? iconsMap.canCreatePq : '',
+                    iconCanCreatePq: (parseInt(item.canCreatePq)) ? iconsMap.canCreatePq : '',
 
                     isCollapsed: self.isCollapsed,
 

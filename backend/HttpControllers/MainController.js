@@ -106,12 +106,17 @@ let withAuth = (userAction) => (req, res) => {
 			})
 			.then(async emcData => {
 				rqBody = {...rqBody};
+				emcData = {...emcData};
 				delete(rqBody.emcSessionId);
 				if (rqBody.isForeignProjectEmcId) {
 					emcData = await normalizeForeignProjectEmcData(emcData).catch(exc => emcData);
-				} else if (rqBody.disableAllRoles) {
-					// for debug - to test app behaviour for simple agents
-					emcData.data.user.roles = [];
+				}
+				for (let role of rqBody.disabledRoles || []) {
+					// for debug
+					let i = emcData.data.user.roles.indexOf(role);
+					if (i > -1) {
+						emcData.data.user.roles.splice(i, 1);
+					}
 				}
 				rqBody = normalizeRqBody(rqBody, emcData);
 				return Promise.resolve()

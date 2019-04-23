@@ -35,6 +35,7 @@ let perform = async () => {
 	//config.HOST = null;
 
 	let i = 0;
+	// TODO: sort them by update time - newest tests should be first since they are most likely to fail
 	for await (let file of getFiles(__dirname + '/backend/')) {
 		if (file === __dirname + '/backend/Transpiled/Lib/TestCase.js' ||
 			file === __dirname + '/backend/Transpiled/Rbs/TestUtils/AnyGdsStubSession.js' ||
