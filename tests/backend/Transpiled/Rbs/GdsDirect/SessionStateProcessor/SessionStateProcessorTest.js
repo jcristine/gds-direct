@@ -3838,6 +3838,26 @@ class SessionStateProcessorTest extends require('../../../../../../backend/Trans
             ],
         });
         $sessionRecords.push({
+            'title': 'canCreatePq does not get set true with /++-AB/ for some reason',
+            'initialState': php.array_merge(GdsDirectDefaults.makeDefaultGalileoState(), {
+                'hasPnr': true, 'canCreatePq': false,
+            }),
+            'calledCommands': [
+                {
+                    "cmd": "FQBB||-AB",
+                    "output": [
+                        ">FQBB||-AB",
+                        "                   *** BEST BUY QUOTATION ***",
+                        "             LOWEST FARE AVAILABLE FOR CABIN BOOKED",
+                        "                   *** NO REBOOK REQUIRED ***",
+                        "   PSGR   QUOTE BASIS         FARE    TAXES      TOTAL PSG DES  FQG 1       NLOWFNY   USD  1313.00    99.70    1412.70 ADT          GUARANTEED                                                  GRAND TOTAL INCLUDING TAXES ****     USD      1412.70                        **ADDITIONAL FEES MAY APPLY**SEE >FO;                     **CARRIER MAY OFFER ADDITIONAL SERVICES**SEE >FQBB/DASO;     ADT      LAST DATE TO PURCHASE TICKET: 10MAY19                  ADT      TICKETING AGENCY 711M                                  ADT      DEFAULT PLATING CARRIER PR                         )><"
+                    ].join("\n"),
+                    "type": "priceItinerary",
+                    "state": {"canCreatePq":true}
+                }
+            ],
+        });
+        $sessionRecords.push({
             'initialState': php.array_merge(GdsDirectDefaults.makeDefaultApolloState(), [
             ]),
             'calledCommands': [

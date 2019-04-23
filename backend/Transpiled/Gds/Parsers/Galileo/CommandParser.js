@@ -272,7 +272,6 @@ class CommandParser
     }
 
     static parsePriceItinerary($cmd)  {
-
         return FqCmdParser.parse($cmd);
     }
 
@@ -492,7 +491,10 @@ class CommandParser
     static parse($cmd)  {
         let $flatCmds, $parsed;
 
-        $flatCmds = php.array_map((...args) => this.parseSingleCommand(...args), php.explode('|', $cmd));
+        // 'T.TAU/19APR|R.KINGSLEY|ER' -> ['T.TAU/19APR', 'R.KINGSLEY', 'ER']
+        // 'FQBB||-AB' -> ['FQBB||-AB']
+        let subCmds = $cmd.split(/(?<!\|)\|(?!\|)/g);
+        $flatCmds = php.array_map(subCmd => this.parseSingleCommand(subCmd), subCmds);
         $parsed = php.array_shift($flatCmds);
         $parsed['followingCommands'] = $flatCmds;
         return $parsed;

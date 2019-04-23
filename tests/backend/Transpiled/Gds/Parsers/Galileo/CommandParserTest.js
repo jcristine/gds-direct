@@ -805,6 +805,16 @@ class CommandParserTest extends require('../../../Lib/TestCase.js')
 			],
 		}}]);
 
+		// pricing command with cabin class modifier: "||" should not be parsed as command separator
+		// I wonder if it is safe to split bulk commands in Galileo by _non-repeating_ "|",
+		// similar to how we do not split slashes in //@C modifier in Apollo
+		$list.push(['FQBB||-AB', {'type': 'priceItinerary', 'data': {
+			'baseCmd': 'FQBB',
+			'pricingModifiers': [
+				{'raw': '||-AB', 'type': 'cabinClass', 'parsed': 'AB'},
+			]
+		}}]);
+
 		return $list;
 	}
 

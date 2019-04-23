@@ -149,7 +149,7 @@ class FqCmdParser
             [$raw, $type, $parsed] = [$matches[0], 'ticketingDate', {'raw': $matches[1]}];
         } else if (php.preg_match(/^:([A-Z])(?![A-Z0-9])/, $gluedModsPart, $matches = [])) {
             [$raw, $type, $parsed] = [$matches[0], 'fareType', this.decodeFareType($matches[1])];
-        } else if (php.preg_match(/^\+\+-([A-Z]+)(?![A-Z0-9])/, $gluedModsPart, $matches = [])) {
+        } else if (php.preg_match(/^[|+][|+]-([A-Z]+)(?![A-Z0-9])/, $gluedModsPart, $matches = [])) {
             [$raw, $type, $parsed] = [$matches[0], 'cabinClass', $matches[1]];
         } else if (php.preg_match(/^\.([A-Z])(?![A-Z0-9])/, $gluedModsPart, $matches = [])) {
             [$raw, $type, $parsed] = [$matches[0], 'bookingClass', $matches[1]];
