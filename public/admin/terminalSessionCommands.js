@@ -219,7 +219,7 @@ window.GdsDirectPlusPage.whenEmcSessionId.then(function(emcSessionId){
 
             var rowList = _.reduce(self.records, function (acc, item) {
 
-                var iconPnr = (!parseInt(item.hasPnr)) ? '' :
+                var iconPnr = (!parseInt(item.has_pnr)) ? '' :
                     (!parseInt(item.is_pnr_stored)) ? iconsMap.hasPnr :
                         iconsMap.isStoredPnr;
 
@@ -233,7 +233,7 @@ window.GdsDirectPlusPage.whenEmcSessionId.then(function(emcSessionId){
 
                     areaClass: 'command-area-' + _.toLower(item.area),
 
-                    iconCanCreatePq: (parseInt(item.canCreatePq)) ? iconsMap.canCreatePq : '',
+                    iconCanCreatePq: (parseInt(item.can_create_pq)) ? iconsMap.canCreatePq : '',
 
                     isCollapsed: self.isCollapsed,
 
