@@ -3015,6 +3015,47 @@ class SessionStateProcessorTest extends require('../../../../../../backend/Trans
                 },
             ],
         });
+        // should not throw exception on attempt to get 'recordLocator' from unset 'pnrInfo'
+        $sessionRecords.push({
+            'initialState': php.array_merge(GdsDirectDefaults.makeDefaultSabreState(), {
+                "area":"A","pcc":"6IIF","recordLocator":"","canCreatePq":false,
+                "cmdType":"searchPnr","hasPnr":false,"isPnrStored":false,
+            }),
+            'calledCommands': [
+                {
+                    "cmd": "*-XXXX-ABBASOVA/ZUKHRA SHARIPOVNA",
+                    "output": [
+                        "  1 ABBASOVA/Z 6IIF 19MAY-30MAY   2 ABBASOVA/Z 6IIFX     -30MAY",
+                        "  3 ABBASOVA/Z 6IIFX     -30MAY   4 ABBASOVA/Z 6IIFX     -26NOV",
+                        "*0 FOR MORE NAMES                                              "
+                    ].join("\n"),
+                    "duration": "1.276961623",
+                    "type": "searchPnr",
+                    "state": {
+                        "area":"A","pcc":"6IIF","recordLocator":"","canCreatePq":false,
+                        "cmdType":"searchPnr","hasPnr":false,"isPnrStored":false,
+                    }
+                },
+                {
+                    "cmd": "*0",
+                    "output": [
+                        " SECURED PNR              ",
+                        "",
+                        "",
+                        "",
+                        "",
+                        ""
+                    ].join("\n"),
+                    "duration": "0.693150440",
+                    "type": "displayPnrFromList",
+                    "scrolledCmd": "*0",
+                    "state": {
+                        "area":"A","pcc":"6IIF","recordLocator":"","canCreatePq":false,
+                        "cmdType":"displayPnrFromList","hasPnr":true,"isPnrStored":true,
+                    }
+                },
+            ],
+        });
         $sessionRecords.push({
             'initialState': php.array_merge(GdsDirectDefaults.makeDefaultApolloState()),
             'calledCommands': [

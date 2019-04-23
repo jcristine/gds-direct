@@ -138,7 +138,7 @@ class UpdateSabreStateAction
         } else if ($type == 'searchPnr') {
             if (this.constructor.wasSinglePnrOpenedFromSearch($output)) {
                 $parsed = SabreReservationParser.parse($output);
-                $recordLocator = $parsed['parsedData']['pnrInfo']['recordLocator'] || '';
+                $recordLocator = ($parsed['parsedData']['pnrInfo'] || {})['recordLocator'] || '';
                 $openPnr = true;
             } else if (this.constructor.isPnrListOutput($output)) {
                 $dropPnr = true;
@@ -146,7 +146,7 @@ class UpdateSabreStateAction
         } else if ($type == 'displayPnrFromList') {
             if (this.constructor.wasPnrOpenedFromList($output)) {
                 $parsed = SabreReservationParser.parse($output);
-                $recordLocator = $parsed['parsedData']['pnrInfo']['recordLocator'] || '';
+                $recordLocator = ($parsed['parsedData']['pnrInfo'] || {})['recordLocator'] || '';
                 $openPnr = true;
             }
         } else if ($type == 'changeArea' && $gdsInterface.isSuccessChangeAreaOutput($output)) {
