@@ -81,6 +81,7 @@ php.is_numeric = str => {
 	return (+str + '').replace(/^0*/, '') === str.replace(/^0*/, '');
 };
 php.floor = (num) => Math.floor(num);
+php.round = (num) => Math.round(num);
 php.max = (...args) => {
 	if (args.length === 1 && Array.isArray(args[0])) {
 		return Math.max(...args[0]);
