@@ -4003,6 +4003,28 @@ class SessionStateProcessorTest extends require('../../../../../../backend/Trans
                 },
             ],
         });
+        $sessionRecords.push({
+            "title": "3-line error responses in Apollo should not result in canCreatePq=true",
+            "initialState": {
+                "gds": "apollo", "area":"D","cmdType":"priceItinerary",
+                "canCreatePq":true,"pricingCmd":"$BB/SOBAKALOPATA","pcc":"2G2H","hasPnr":true,
+            },
+            "calledCommands": [
+                {
+                    "cmd": "$BB/SOBAKALOPATA",
+                    "output": [
+                        "ERROR 3844 - STOPOVER FORMAT ERROR",
+                        "$BB/SOBAKALOPATA",
+                        "><"
+                    ].join("\n"),
+                    "type": "priceItinerary",
+                    "state": {
+                        "area":"D","cmdType":"priceItinerary",
+                        "canCreatePq":false,"pricingCmd":null,"pcc":"2G2H","hasPnr":true,
+                    }
+                },
+            ],
+        });
         $argumentTuples = [];
         for ($sessionRecord of $sessionRecords) {
             $argumentTuples.push([$sessionRecord]);}
