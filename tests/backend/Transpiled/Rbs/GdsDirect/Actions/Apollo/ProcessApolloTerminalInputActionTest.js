@@ -2,10 +2,6 @@
 
 const ProcessApolloTerminalInputAction = require('../../../../../../../backend/Transpiled/Rbs/GdsDirect/Actions/Apollo/ProcessApolloTerminalInputAction.js');
 const GdsDirectDefaults = require('../../../../../../../backend/Transpiled/Rbs/TestUtils/GdsDirectDefaults.js');
-const AnyGdsStubSession = require('../../../../../../../backend/Transpiled/Rbs/TestUtils/AnyGdsStubSession.js');
-const StatefulSession = require('../../../../../../../backend/GdsHelpers/StatefulSession.js');
-const CmdLog = require('../../../../../../../backend/GdsHelpers/CmdLog.js');
-const {NotFound} = require('../../../../../../../backend/Utils/Rej.js');
 const Agent = require('../../../../../../../backend/DataFormats/Wrappers/Agent.js');
 
 const php = require('../../../../php.js');
@@ -1285,6 +1281,7 @@ class ProcessApolloTerminalInputActionTest extends require('../../../../Lib/Test
 			},
 		});
 
+		// #20
 		// XI should remove only seats taken in current area
 		$list.push({
 			'input': {'cmdRequested': 'XI', 'baseDate': '2017-11-05'},
@@ -1924,9 +1921,9 @@ class ProcessApolloTerminalInputActionTest extends require('../../../../Lib/Test
 			},
 		});
 
-		// 2F9T RE/ example - should fallback to 2G55 to avoid PCC state artifacts
 		$list.push({
 			'input': {
+				'title': '2F9T RE/ example - should fallback to 2G55 to avoid PCC state artifacts',
 				'cmdRequested': 'RE/2F9T/SS1',
 				'baseDate': '2018-02-28',
 				'ticketDesignators': [],
@@ -4491,6 +4488,238 @@ class ProcessApolloTerminalInputActionTest extends require('../../../../Lib/Test
 			},
 		});
 
+		$list.push({
+			'input': {
+				'title': 'tariff with fake modifier "*DF20" which decreases fare amount in output by 20 dollars',
+				'cmdRequested': '$D20SEPKIVRIX|PS*DF20',
+				'baseDate': '2018-02-28',
+				'ticketDesignators': [],
+			},
+			'output': {
+				'status': 'executed',
+				'calledCommands': [
+					{
+						'cmd': '$D20SEPKIVRIX|PS',
+						'output': php.implode(php.PHP_EOL, [
+							'FARES LAST UPDATED 15MAY  7:15 AM                              ',
+							'>$D20SEPKIVRIX|PS                                               KIV-RIX THU-20SEP18 PS                                         ',
+							'MPM 936 EH                                                     ',
+							'TAXES/FEES NOT INCLUDED                                        ',
+							'PUBLIC FARES                                                   ',
+							'     CX    FARE   FARE     C  AP  MIN/    SEASONS...... MR GI DT           EUR    BASIS             MAX                        ',
+							'  1  PS    71.00R N2ZEP4   N        /3M                 R  EH   ',
+							'  2  PS    91.00R N2LEP4   N        /3M                 R  EH   ',
+							'  3  PS   126.01R Q2LEP4   Q        /3M                 R  EH   ',
+							'  4  PS   166.00R M2LEP4   M        /3M                 R  EH   ',
+							'  5  PS    92.00  M1LEP4   M                            R  EH   ',
+							')><',
+						]),
+					},
+				],
+			},
+			'sessionInfo': {
+				'initialState': php.array_merge(GdsDirectDefaults.makeDefaultApolloState(), {
+					'hasPnr': true, 'agent_id': '1588',
+				}),
+				'initialCommands': [],
+				'performedCommands': [
+					{
+						'cmd': '$D20SEPKIVRIX|PS',
+						'output': php.implode(php.PHP_EOL, [
+							'FARES LAST UPDATED 15MAY  7:15 AM                              ',
+							'>$D20SEPKIVRIX|PS                                               KIV-RIX THU-20SEP18 PS                                         ',
+							'MPM 936 EH                                                     ',
+							'TAXES/FEES NOT INCLUDED                                        ',
+							'PUBLIC FARES                                                   ',
+							'     CX    FARE   FARE     C  AP  MIN/    SEASONS...... MR GI DT           EUR    BASIS             MAX                        ',
+							'  1  PS    91.00R N2ZEP4   N        /3M                 R  EH  ',
+							'  2  PS   111.00R N2LEP4   N        /3M                 R  EH  ',
+							'  3  PS   146.01R Q2LEP4   Q        /3M                 R  EH  ',
+							'  4  PS   186.00R M2LEP4   M        /3M                 R  EH  ',
+							'  5  PS   112.00  M1LEP4   M                            R  EH  ',
+							')><',
+						]),
+					},
+				],
+			},
+		});
+
+		$list.push({
+			'input': {
+				'title': '$D DF with MDA3 - should decrease on all pages, not just first',
+				'cmdRequested': '$D20SEPKIVRIX|PS*DF20/MDA3',
+				'baseDate': '2018-02-28',
+				'ticketDesignators': [],
+			},
+			'output': {
+				'status': 'executed',
+				'calledCommands': [
+					{
+						'cmd': '$D20SEPKIVRIX|PS',
+						'output': php.implode(php.PHP_EOL, [
+							"FARES LAST UPDATED 23APR  6:11 AM                              ",
+							">$D20SEPKIVRIX|PS                                               KIV-RIX FRI-20SEP19 PS                                         ",
+							"MPM 936 EH                                                     ",
+							"TAXES/FEES NOT INCLUDED                                        ",
+							"PUBLIC/PRIVATE FARES FOR 2F3K                                  ",
+							"     CX    FARE   FARE     C  AP  MIN/    SEASONS...... MR GI DT           EUR    BASIS             MAX                        ",
+							"  1  PS   101.00R X002LLE4 X        /3M                 R  EH   ",
+							"  2  PS   116.00R N002LLE4 N        /3M                 R  EH   ",
+							"  3  PS   131.00R Q002LLE4 Q        /3M                 R  EH   ",
+							"  4  PS   131.00R X002SSE4 X        /3M                 R  EH   ",
+							"  5  PS   146.00R N002SSE4 N        /3M                 R  EH   ",
+							"  6 -PS   151.00R M002LLE4 M        /3M                 R  EH   ",
+							"  7  PS   151.00R M002LLE4 M        /3M                 R  EH   ",
+							"  8  PS   161.00R Q002SSE4 Q        /3M                 R  EH   ",
+							"  9 -PS   171.00R V002LLE4 V        /3M                 R  EH   ",
+							" 10  PS   171.00R V002LLE4 V        /3M                 R  EH   ",
+							" 11  PS    78.00  M001LLE4 M        /3M                 R  EH   ",
+							" 12 -PS   181.00R M002SSE4 M        /3M                 R  EH   ",
+							" 13  PS   181.00R M002SSE4 M        /3M                 R  EH   ",
+							" 14 -PS   196.00R L002LLE4 L        /6M                 R  EH   ",
+							" 15  PS   196.00R L002LLE4 L        /6M                 R  EH   ",
+							" 16  PS    90.00  V001LLE4 V        /3M                 R  EH   ",
+							" 17 -PS   201.00R V002SSE4 V        /3M                 R  EH   ",
+							" 18  PS   201.00R V002SSE4 V        /3M                 R  EH   ",
+							" 19  PS    98.00  M001SSE4 M        /3M                 R  EH   ",
+							" 20 -PS   226.00R L002SSE4 L        /6M                 R  EH   ",
+							" 21  PS   226.00R L002SSE4 L        /6M                 R  EH   ",
+							" 22 -PS   226.00R O002LLE4 O        /6M                 R  EH   ",
+							" 23  PS   226.00R O002LLE4 O        /6M                 R  EH   ",
+							" 24  PS   105.00  L001LLE4 L        /6M                 R  EH   ",
+							" 25  PS   110.00  V001SSE4 V        /3M                 R  EH   ",
+							" 26 -PS   256.00R H002LLE4 H        /6M                 R  EH   ",
+							" 27  PS   256.00R H002LLE4 H        /6M                 R  EH   ",
+							" 28 -PS   256.00R O002SSE4 O        /6M                 R  EH   ",
+							" 29  PS   256.00R O002SSE4 O        /6M                 R  EH   ",
+							" 30  PS   123.00  O001LLE4 O        /6M                 R  EH   ",
+							" 31  PS   125.00  L001SSE4 L        /6M                 R  EH   ",
+							')><',
+						]),
+					},
+				],
+			},
+			'sessionInfo': {
+				'initialState': php.array_merge(GdsDirectDefaults.makeDefaultApolloState(), {
+					'hasPnr': true, 'agent_id': '1588',
+				}),
+				'initialCommands': [],
+				'performedCommands': [
+					{
+						"cmd": "$D20SEPKIVRIX|PS",
+						"output": [
+							"FARES LAST UPDATED 23APR  6:11 AM                              ",
+							">$D20SEPKIVRIX|PS                                               KIV-RIX FRI-20SEP19 PS                                         ",
+							"MPM 936 EH                                                     ",
+							"TAXES/FEES NOT INCLUDED                                        ",
+							"PUBLIC/PRIVATE FARES FOR 2F3K                                  ",
+							"     CX    FARE   FARE     C  AP  MIN/    SEASONS...... MR GI DT           EUR    BASIS             MAX                        ",
+							"  1  PS   121.00R X002LLE4 X        /3M                 R  EH  ",
+							"  2  PS   136.00R N002LLE4 N        /3M                 R  EH  ",
+							"  3  PS   151.00R Q002LLE4 Q        /3M                 R  EH  ",
+							"  4  PS   151.00R X002SSE4 X        /3M                 R  EH  ",
+							"  5  PS   166.00R N002SSE4 N        /3M                 R  EH  ",
+							")><"
+						].join("\n"),
+					},
+					{
+						"cmd": "MR",
+						"output": [
+							"  6 -PS   171.00R M002LLE4 M        /3M                 R  EH  ",
+							"  7  PS   171.00R M002LLE4 M        /3M                 R  EH  ",
+							"  8  PS   181.00R Q002SSE4 Q        /3M                 R  EH  ",
+							"  9 -PS   191.00R V002LLE4 V        /3M                 R  EH  ",
+							" 10  PS   191.00R V002LLE4 V        /3M                 R  EH  ",
+							" 11  PS    98.00  M001LLE4 M        /3M                 R  EH  ",
+							" 12 -PS   201.00R M002SSE4 M        /3M                 R  EH  ",
+							" 13  PS   201.00R M002SSE4 M        /3M                 R  EH  ",
+							" 14 -PS   216.00R L002LLE4 L        /6M                 R  EH  ",
+							" 15  PS   216.00R L002LLE4 L        /6M                 R  EH  ",
+							" 16  PS   110.00  V001LLE4 V        /3M                 R  EH  ",
+							" 17 -PS   221.00R V002SSE4 V        /3M                 R  EH  ",
+							" 18  PS   221.00R V002SSE4 V        /3M                 R  EH  ",
+							")><"
+						].join("\n"),
+					},
+					{
+						"cmd": "MR",
+						"output": [
+							" 19  PS   118.00  M001SSE4 M        /3M                 R  EH  ",
+							" 20 -PS   246.00R L002SSE4 L        /6M                 R  EH  ",
+							" 21  PS   246.00R L002SSE4 L        /6M                 R  EH  ",
+							" 22 -PS   246.00R O002LLE4 O        /6M                 R  EH  ",
+							" 23  PS   246.00R O002LLE4 O        /6M                 R  EH  ",
+							" 24  PS   125.00  L001LLE4 L        /6M                 R  EH  ",
+							" 25  PS   130.00  V001SSE4 V        /3M                 R  EH  ",
+							" 26 -PS   276.00R H002LLE4 H        /6M                 R  EH  ",
+							" 27  PS   276.00R H002LLE4 H        /6M                 R  EH  ",
+							" 28 -PS   276.00R O002SSE4 O        /6M                 R  EH  ",
+							" 29  PS   276.00R O002SSE4 O        /6M                 R  EH  ",
+							" 30  PS   143.00  O001LLE4 O        /6M                 R  EH  ",
+							" 31  PS   145.00  L001SSE4 L        /6M                 R  EH  ",
+							")><"
+						].join("\n"),
+					},
+				],
+			},
+		});
+
+		// tariff with fake modifier "*DP5" which decreases fare amount in output by 5 percents
+		$list.push({
+			'input': {
+				'cmdRequested': '$D20SEPKIVRIX|PS*DP5',
+				'baseDate': '2018-02-28',
+				'ticketDesignators': [],
+			},
+			'output': {
+				'status': 'executed',
+				'calledCommands': [
+					{
+						'cmd': '$D20SEPKIVRIX|PS',
+						'output': php.implode(php.PHP_EOL, [
+							'FARES LAST UPDATED 15MAY  7:15 AM                              ',
+							'>$D20SEPKIVRIX|PS                                               KIV-RIX THU-20SEP18 PS                                         ',
+							'MPM 936 EH                                                     ',
+							'TAXES/FEES NOT INCLUDED                                        ',
+							'PUBLIC FARES                                                   ',
+							'     CX    FARE   FARE     C  AP  MIN/    SEASONS...... MR GI DT           EUR    BASIS             MAX                        ',
+							'  1  PS    86.00R N2ZEP4   N        /3M                 R  EH   ',
+							'  2  PS   105.00R N2LEP4   N        /3M                 R  EH   ',
+							'  3  PS   139.00R Q2LEP4   Q        /3M                 R  EH   ',
+							'  4  PS   177.00R M2LEP4   M        /3M                 R  EH   ',
+							'  5  PS   106.00  M1LEP4   M                            R  EH   ',
+							')><',
+						]),
+					},
+				],
+			},
+			'sessionInfo': {
+				'initialState': php.array_merge(GdsDirectDefaults.makeDefaultApolloState(), {
+					'hasPnr': true, 'agent_id': '1588',
+				}),
+				'initialCommands': [],
+				'performedCommands': [
+					{
+						'cmd': '$D20SEPKIVRIX|PS',
+						'output': php.implode(php.PHP_EOL, [
+							'FARES LAST UPDATED 15MAY  7:15 AM                              ',
+							'>$D20SEPKIVRIX|PS                                               KIV-RIX THU-20SEP18 PS                                         ',
+							'MPM 936 EH                                                     ',
+							'TAXES/FEES NOT INCLUDED                                        ',
+							'PUBLIC FARES                                                   ',
+							'     CX    FARE   FARE     C  AP  MIN/    SEASONS...... MR GI DT           EUR    BASIS             MAX                        ',
+							'  1  PS    91.00R N2ZEP4   N        /3M                 R  EH  ',
+							'  2  PS   111.00R N2LEP4   N        /3M                 R  EH  ',
+							'  3  PS   146.00R Q2LEP4   Q        /3M                 R  EH  ',
+							'  4  PS   186.00R M2LEP4   M        /3M                 R  EH  ',
+							'  5  PS   112.00  M1LEP4   M                            R  EH  ',
+							')><',
+						]),
+					},
+				],
+			},
+		});
+
 		// problematic cases follow
 		/*
 		// STORE alias, same as previous, but this time let's remove
@@ -4758,119 +4987,6 @@ class ProcessApolloTerminalInputActionTest extends require('../../../../Lib/Test
 							'FARE USD 233.00 TAX 5.60AY TAX 18.30US TAX 9.00XF TAX 15.00JS',
 							'TOT USD 280.90 ',
 							'S1 NVB11SEP/NVA11SEP',
-							')><',
-						]),
-					},
-				],
-			},
-		});
-
-		// tariff with fake modifier "*DF20" which decreases fare amount in output by 20 dollars
-		// not implemented in new GDS Direct, don't think anyone will miss that
-		$list.push({
-			'input': {
-				'cmdRequested': '$D20SEPKIVRIX|PS*DF20',
-				'baseDate': '2018-02-28',
-				'ticketDesignators': [],
-			},
-			'output': {
-				'status': 'executed',
-				'calledCommands': [
-					{
-						'cmd': '$D20SEPKIVRIX|PS',
-						'output': php.implode(php.PHP_EOL, [
-							'FARES LAST UPDATED 15MAY  7:15 AM                              ',
-							'>$D20SEPKIVRIX|PS                                               KIV-RIX THU-20SEP18 PS                                         ',
-							'MPM 936 EH                                                     ',
-							'TAXES/FEES NOT INCLUDED                                        ',
-							'PUBLIC FARES                                                   ',
-							'     CX    FARE   FARE     C  AP  MIN/    SEASONS...... MR GI DT           EUR    BASIS             MAX                        ',
-							'  1  PS    71.00R N2ZEP4   N        /3M                 R  EH   ',
-							'  2  PS    91.00R N2LEP4   N        /3M                 R  EH   ',
-							'  3  PS   126.01R Q2LEP4   Q        /3M                 R  EH   ',
-							'  4  PS   166.00R M2LEP4   M        /3M                 R  EH   ',
-							'  5  PS    92.00  M1LEP4   M                            R  EH   ',
-							')><',
-						]),
-					},
-				],
-			},
-			'sessionInfo': {
-				'initialState': php.array_merge(GdsDirectDefaults.makeDefaultApolloState(), {
-					'hasPnr': true, 'agent_id': '1588',
-				}),
-				'initialCommands': [],
-				'performedCommands': [
-					{
-						'cmd': '$D20SEPKIVRIX|PS',
-						'output': php.implode(php.PHP_EOL, [
-							'FARES LAST UPDATED 15MAY  7:15 AM                              ',
-							'>$D20SEPKIVRIX|PS                                               KIV-RIX THU-20SEP18 PS                                         ',
-							'MPM 936 EH                                                     ',
-							'TAXES/FEES NOT INCLUDED                                        ',
-							'PUBLIC FARES                                                   ',
-							'     CX    FARE   FARE     C  AP  MIN/    SEASONS...... MR GI DT           EUR    BASIS             MAX                        ',
-							'  1  PS    91.00R N2ZEP4   N        /3M                 R  EH  ',
-							'  2  PS   111.00R N2LEP4   N        /3M                 R  EH  ',
-							'  3  PS   146.01R Q2LEP4   Q        /3M                 R  EH  ',
-							'  4  PS   186.00R M2LEP4   M        /3M                 R  EH  ',
-							'  5  PS   112.00  M1LEP4   M                            R  EH  ',
-							')><',
-						]),
-					},
-				],
-			},
-		});
-
-		// tariff with fake modifier "*DP5" which decreases fare amount in output by 5 percents
-		$list.push({
-			'input': {
-				'cmdRequested': '$D20SEPKIVRIX|PS*DP5',
-				'baseDate': '2018-02-28',
-				'ticketDesignators': [],
-			},
-			'output': {
-				'status': 'executed',
-				'calledCommands': [
-					{
-						'cmd': '$D20SEPKIVRIX|PS',
-						'output': php.implode(php.PHP_EOL, [
-							'FARES LAST UPDATED 15MAY  7:15 AM                              ',
-							'>$D20SEPKIVRIX|PS                                               KIV-RIX THU-20SEP18 PS                                         ',
-							'MPM 936 EH                                                     ',
-							'TAXES/FEES NOT INCLUDED                                        ',
-							'PUBLIC FARES                                                   ',
-							'     CX    FARE   FARE     C  AP  MIN/    SEASONS...... MR GI DT           EUR    BASIS             MAX                        ',
-							'  1  PS    86.00R N2ZEP4   N        /3M                 R  EH   ',
-							'  2  PS   105.00R N2LEP4   N        /3M                 R  EH   ',
-							'  3  PS   139.00R Q2LEP4   Q        /3M                 R  EH   ',
-							'  4  PS   177.00R M2LEP4   M        /3M                 R  EH   ',
-							'  5  PS   106.00  M1LEP4   M                            R  EH   ',
-							')><',
-						]),
-					},
-				],
-			},
-			'sessionInfo': {
-				'initialState': php.array_merge(GdsDirectDefaults.makeDefaultApolloState(), {
-					'hasPnr': true, 'agent_id': '1588',
-				}),
-				'initialCommands': [],
-				'performedCommands': [
-					{
-						'cmd': '$D20SEPKIVRIX|PS',
-						'output': php.implode(php.PHP_EOL, [
-							'FARES LAST UPDATED 15MAY  7:15 AM                              ',
-							'>$D20SEPKIVRIX|PS                                               KIV-RIX THU-20SEP18 PS                                         ',
-							'MPM 936 EH                                                     ',
-							'TAXES/FEES NOT INCLUDED                                        ',
-							'PUBLIC FARES                                                   ',
-							'     CX    FARE   FARE     C  AP  MIN/    SEASONS...... MR GI DT           EUR    BASIS             MAX                        ',
-							'  1  PS    91.00R N2ZEP4   N        /3M                 R  EH  ',
-							'  2  PS   111.00R N2LEP4   N        /3M                 R  EH  ',
-							'  3  PS   146.00R Q2LEP4   Q        /3M                 R  EH  ',
-							'  4  PS   186.00R M2LEP4   M        /3M                 R  EH  ',
-							'  5  PS   112.00  M1LEP4   M                            R  EH  ',
 							')><',
 						]),
 					},
@@ -5800,8 +5916,11 @@ class ProcessApolloTerminalInputActionTest extends require('../../../../Lib/Test
 	async testCase($input, $output, $sessionInfo) {
 		let stateful = await GdsDirectDefaults.makeStatefulSession('apollo', $input, $sessionInfo);
 
-		let $actualOutput = await (new ProcessApolloTerminalInputAction(stateful))
-			.execute($input['cmdRequested']);
+		let cmdRq = $input['cmdRequested'];
+		let $actualOutput = await ProcessApolloTerminalInputAction({
+			...($input.dependencyParams || {}),
+			stateful, cmdRq,
+		});
 		$actualOutput['sessionData'] = stateful.getSessionData();
 
 		this.assertArrayElementsSubset($output, $actualOutput, php.implode('; ', $actualOutput['userMessages'] || []) + php.PHP_EOL);

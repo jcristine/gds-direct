@@ -5,14 +5,11 @@ const AreaSettings = require("../Repositories/AreaSettings");
 const ProcessApolloTerminalInputAction = require("../Transpiled/Rbs/GdsDirect/Actions/Apollo/ProcessApolloTerminalInputAction");
 const ApoCommandParser = require("../Transpiled/Gds/Parsers/Apollo/CommandParser");
 const SabCommandParser = require("../Transpiled/Gds/Parsers/Sabre/CommandParser");
-const AmaCommandParser = require("../Transpiled/Gds/Parsers/Amadeus/CommandParser");
 const GalCommandParser = require("../Transpiled/Gds/Parsers/Galileo/CommandParser");
-const Misc = require("../Transpiled/Lib/Utils/Misc");
 const CommonDataHelper = require("../Transpiled/Rbs/GdsDirect/CommonDataHelper");
 const CmsSabreTerminal = require("../Transpiled/Rbs/GdsDirect/GdsInterface/CmsSabreTerminal");
 const CmsApolloTerminal = require("../Transpiled/Rbs/GdsDirect/GdsInterface/CmsApolloTerminal");
 const matchAll = require("../Utils/Str").matchAll;
-const nonEmpty = require("../Utils/Rej").nonEmpty;
 const GdsDialectTranslator = require('../Transpiled/Rbs/GdsDirect/DialectTranslator/GdsDialectTranslator.js');
 const ProcessSabreTerminalInputAction = require("../Transpiled/Rbs/GdsDirect/Actions/Sabre/ProcessSabreTerminalInputAction");
 const TerminalService = require('../Transpiled/App/Services/TerminalService.js');
@@ -139,7 +136,7 @@ let transformCalledCommand = (rec, stateful) => {
 let runByGds = async (inputCmd, stateful) => {
 	let gdsResult;
 	if (stateful.gds === 'apollo') {
-		gdsResult = await (new ProcessApolloTerminalInputAction(stateful).execute(inputCmd));
+		gdsResult = await ProcessApolloTerminalInputAction({stateful, cmdRq: inputCmd});
 	} else if (stateful.gds === 'sabre') {
 		gdsResult = await (new ProcessSabreTerminalInputAction(stateful).execute(inputCmd));
 	} else if (stateful.gds === 'amadeus') {

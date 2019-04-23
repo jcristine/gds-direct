@@ -321,6 +321,7 @@ exports.getLastCommands = (reqBody, emcResult) => {
 	let gds = reqBody.gds;
 	let requestId = reqBody.travelRequestId || 0;
 	return Db.with(db => db.fetchAll({
+		// TODO: move to CmdRqLog.js
 		table: 'cmd_rq_log',
 		where: [
 			['gds', '=', gds],
@@ -348,6 +349,7 @@ exports.clearBuffer = (rqBody, emcResult) => {
 	let agentId = emcResult.user.id;
 	let requestId = rqBody.travelRequestId || 0;
 	return Db.with(db => db.query([
+		// TODO: move to CmdRqLog.js
 		'DELETE FROM cmd_rq_log',
 		'WHERE agentId = ?',
 		'  AND requestId = ?',

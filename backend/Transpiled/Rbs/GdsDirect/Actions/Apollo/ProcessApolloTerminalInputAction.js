@@ -37,12 +37,20 @@ const FareDisplayInternationalParser = require('../../../../Gds/Parsers/Apollo/T
 const BadRequest = require("../../../../../Utils/Rej").BadRequest;
 const RetrieveApolloTicketsAction = require('../../../../Rbs/Process/Apollo/ImportPnr/Actions/RetrieveApolloTicketsAction.js');
 const ParseHbFex = require('../../../../../Parsers/Apollo/ParseHbFex.js');
+const Rej = require('../../../../../Utils/Rej.js');
 
 let php = require('../../../../php.js');
 const McoListParser = require("../../../../Gds/Parsers/Apollo/Mco/McoListParser");
 const McoMaskParser = require("../../../../Gds/Parsers/Apollo/Mco/McoMaskParser");
 const Pccs = require("../../../../../Repositories/Pccs");
 
+/** @param stateful = await require('StatefulSession.js')() */
+let execute = ({
+	stateful, cmdRq,
+	CmdRqLog = require('../../../../../Repositories/CmdRqLog.js')
+}) => {
+
+// would be nice to indent it I guess... or even better - get rid of the class
 class ProcessApolloTerminalInputAction {
 	useXml($flag) {
 		this.stateful = null;
@@ -51,9 +59,8 @@ class ProcessApolloTerminalInputAction {
 		return this;
 	}
 
-	/** @param $statefulSession = await require('StatefulSession.js')() */
-	constructor($statefulSession) {
-		this.stateful = $statefulSession;
+	constructor() {
+		this.stateful = stateful;
 		this.$log = ($msg, $data) => {};
 		this.$useXml = false; // TODO: implement and set to true
 	}
@@ -309,9 +316,9 @@ class ProcessApolloTerminalInputAction {
 	static modifyFare($fare, $decrease) {
 		if ($decrease['units'] === 'percent') {
 			$fare = php.round($fare - $fare * $decrease['value'] / 100);
-			return php.number_format($fare, 2, '.', '');
+			return (+$fare).toFixed(2);
 		} else if ($decrease['units'] === 'amount') {
-			return php.number_format($fare - $decrease['value'], 2, '.', '');
+			return ($fare - $decrease['value']).toFixed(2);
 		} else {
 			return 'ERROR';
 		}
@@ -392,7 +399,7 @@ class ProcessApolloTerminalInputAction {
 
 	async modifyOutput($calledCommand) {
 		$calledCommand = {...$calledCommand};
-		let $scrolledCmdRow, $scrolledCmd, $cmdParsed, $type, $output, $lines, $isSafe, $alias, $decrease, $clean, $pcc,
+		let $scrolledCmd, $cmdParsed, $type, $output, $lines, $isSafe, $clean, $pcc,
 			$isOk;
 		$scrolledCmd = await this.getScrolledCmd() || $calledCommand['cmd'];
 		$cmdParsed = CommandParser.parse($scrolledCmd);
@@ -405,11 +412,24 @@ class ProcessApolloTerminalInputAction {
 			$isSafe = ($line) => !StringUtil.contains($line, 'WEINSTEIN\/ALEX');
 			$calledCommand['output'] = php.implode(php.PHP_EOL, Fp.filter($isSafe, $lines));
 		}
-		// TODO: there is no cmd_requested anymore
-		$alias = this.constructor.parseAlias(($scrolledCmdRow || {})['cmd_requested'] || '');
-		if ($alias['type'] === 'fareSearchWithDecrease') {
-			$decrease = $alias['data'] || null;
-			$calledCommand['output'] = this.constructor.modifyTariffDisplay($calledCommand['output'], $decrease, $scrolledCmdRow);
+		if ((this.getSessionData().scrolledCmd || '').startsWith('$D')) {
+			let alias;
+			let scrolledCmdRow = (await this.stateful.getLog().getScrolledCmdMrs())[0];
+			if (cmdRq.startsWith('$D')) {
+				// initial $D display command
+				alias = this.constructor.parseAlias(cmdRq);
+			} else {
+				// MD on $D display
+				let cmdRqId = !scrolledCmdRow ? null : scrolledCmdRow.cmd_rq_id;
+				let cmdRqRow = !cmdRqId ? null : await CmdRqLog.getById(cmdRqId);
+				alias = !cmdRqRow ? null : this.constructor.parseAlias(cmdRqRow.command || '');
+			}
+			if (alias && alias['type'] === 'fareSearchWithDecrease') {
+				let decrease = alias['data'] || null;
+				$calledCommand['output'] = this.constructor.modifyTariffDisplay(
+					$calledCommand['output'], decrease, scrolledCmdRow
+				);
+			}
 		}
 		if ($type === 'airAvailability' && this.constructor.doesAvailJourneyTimeApply($calledCommand['output'])) {
 			$clean = php.preg_replace(/><$/, '', $calledCommand['output']);
@@ -867,18 +887,13 @@ class ProcessApolloTerminalInputAction {
 		$recoveryPcc = $recoveryPcc || this.getSessionData()['pcc'];
 		$cmd = 'SEM/' + $pcc + '/AG';
 		$result = await this.processRealCommand($cmd, false);
-		if (php.empty($result['errors']) && !php.empty($result['calledCommands']) && !php.empty($recoveryPcc)) {
-			$answer = ArrayUtil.getFirst(($result['calledCommands']))['output'];
-
+		if (!php.empty($recoveryPcc)) {
+			// maybe it would be more idiomatic to put this in
+			// callImplicitCommandsAfter() like we did for *R after ER?
+			$answer = $result.cmdRec.output;
 			if (php.trim(extractPager($answer)[0]) === 'ERR: INVALID - NOT 2HJ9 - APOLLO') {
-
 				$cmd = 'SEM/' + $recoveryPcc + '/AG';
-
-				$recoveryResult = await this.processRealCommand($cmd, false);
-
-				if (!php.empty($recoveryResult['errors'])) {
-					return $recoveryResult;
-				}
+				await this.runCmd($cmd, false);
 			}
 		}
 		return $result;
@@ -967,12 +982,11 @@ class ProcessApolloTerminalInputAction {
 			});
 			return {'errors': [$error]};
 		}
-		let emulated = await this.emulatePcc($pcc, $recoveryPcc);
-		$output = ArrayUtil.getFirst(emulated['calledCommands'] || [])['output'] || null;
+		let {cmdRec} = await this.emulatePcc($pcc, $recoveryPcc);
 		if (this.getSessionData()['pcc'] !== $pcc) {
-			$error = $output.startsWith('ERR: INVALID - NOT ' + $pcc + ' - APOLLO')
+			$error = cmdRec.output.startsWith('ERR: INVALID - NOT ' + $pcc + ' - APOLLO')
 				? Errors.getMessage(Errors.PCC_NOT_ALLOWED_BY_GDS, {'pcc': $pcc, 'gds': 'apollo'})
-				: Errors.getMessage(Errors.PCC_GDS_ERROR, {'pcc': $pcc, 'response': php.trim($output)});
+				: Errors.getMessage(Errors.PCC_GDS_ERROR, {'pcc': $pcc, 'response': cmdRec.output});
 			return {'errors': [$error]};
 		}
 		for ([$key, $segment] of Object.entries($itinerary)) {
@@ -1186,18 +1200,19 @@ class ProcessApolloTerminalInputAction {
 
 	/** @param int|null $pageLimit - null means _all_ */
 	async moveDownAll($pageLimit, calledCommands) {
-		let $calledCommands, $lastCommandArray, $output, $iteration, $nextPage, $sanitized, $cmd;
+		let $calledCommands, $lastCommandArray, $output, $iteration, $nextPage, $cmd;
 		$pageLimit = $pageLimit || 100;
 		$calledCommands = [];
 		$lastCommandArray = calledCommands;
 		if (!php.empty($lastCommandArray)) {
 			$output = '';
 			for ($iteration = 0; $iteration < $pageLimit; $iteration++) {
-				$nextPage = php.isset($lastCommandArray[$iteration])
-					? $lastCommandArray[$iteration]['output']
-					: await this.runCommand('MR', false);
-				$sanitized = await this.modifyOutput({'cmd': 'MR', 'output': $nextPage});
-				$nextPage = $sanitized['output'];
+				if ($lastCommandArray[$iteration]) {
+					$nextPage = $lastCommandArray[$iteration]['output'];
+				} else {
+					let {cmdRec} = await this.processRealCommand('MR');
+					$nextPage = cmdRec['output'];
+				}
 
 				$output = ($output ? extractPager($output)[0] : '') + $nextPage;
 				if (!this.constructor.isScrollingAvailable($nextPage)) {
@@ -1214,8 +1229,7 @@ class ProcessApolloTerminalInputAction {
 	}
 
 	async callImplicitCommandsBefore($cmd) {
-		let $calledCommands, $batchCmds, $leadData, $msg;
-		$calledCommands = [];
+		let $batchCmds, $msg;
 		if (this.constructor.doesStorePnr($cmd)) {
 			$batchCmds = await this.prepareToSavePnr();
 			if (!php.empty($batchCmds)) {
@@ -1226,11 +1240,10 @@ class ProcessApolloTerminalInputAction {
 			$msg = await CommonDataHelper.createCredentialMessage(this.stateful);
 			await this.runCommand('@:5' + $msg);
 		}
-		return $calledCommands;
 	}
 
-	async callImplicitCommandsAfter($cmdRecord, $calledCommands, $userMessages) {
-		let $parsedCmd, $flatCmds, $pricesItinerary, $fetchAll, $parsedData, $output, $clean, $parsed, $isAlex;
+	async callImplicitCommandsAfter($cmdRecord, $userMessages) {
+		let $parsedCmd, $flatCmds, $pricesItinerary, $fetchAll, $parsedData, $clean, $parsed, $isAlex;
 		$parsedCmd = CommandParser.parse($cmdRecord['cmd']);
 		$flatCmds = php.array_merge([$parsedCmd], $parsedCmd['followingCommands']);
 		$pricesItinerary = $parsedCmd['type'] === 'priceItinerary' ||
@@ -1242,14 +1255,13 @@ class ProcessApolloTerminalInputAction {
 			$fetchAll = this.constructor.shouldFetchAll($cmdRecord['cmd']);
 			$cmdRecord['output'] = await this.runCommand($cmdRecord['cmd'], $fetchAll);
 		}
-		$calledCommands.push(await this.modifyOutput($cmdRecord));
+		$cmdRecord = await this.modifyOutput($cmdRecord);
 		if (this.constructor.doesStorePnr($cmdRecord['cmd'])) {
 			$parsedData = TApolloSavePnr.parseSavePnrOutput($cmdRecord['output']);
 			if ($parsedData['success']) {
 				this.handlePnrSave($parsedData['recordLocator']);
 				if (php.in_array('storeKeepPnr', php.array_column($flatCmds, 'type'))) {
-					$output = await this.runCommand('*R');
-					$calledCommands.push({'cmd': '*R', 'output': $output});
+					$cmdRecord = await this.runCmd('*R');
 				}
 			}
 		} else if (this.constructor.doesOpenPnr($cmdRecord['cmd'])) {
@@ -1266,20 +1278,19 @@ class ProcessApolloTerminalInputAction {
 				return {'errors': ['Restricted PNR']};
 			}
 		}
-		return {'calledCommands': $calledCommands, 'userMessages': $userMessages};
+		return {cmdRec: $cmdRecord, userMessages: $userMessages};
 	}
 
 	async processRealCommand($cmd, $fetchAll) {
-		let $calledCommands, $errors, $userMessages, $cmdRecord;
-		$calledCommands = [];
+		let $errors, $userMessages, $cmdRecord;
 		$cmd = await this.preprocessCommand($cmd);
 		if (!php.empty($errors = await this.checkIsForbidden($cmd))) {
-			return {'errors': $errors};
+			return Rej.Forbidden($errors.join('; '));
 		}
-		$calledCommands = php.array_merge($calledCommands, await this.callImplicitCommandsBefore($cmd));
+		await this.callImplicitCommandsBefore($cmd);
 		$cmdRecord = await this.runCmd($cmd, $fetchAll);
 		$userMessages = await this.makeCmdMessages($cmd, $cmdRecord.output);
-		return this.callImplicitCommandsAfter($cmdRecord, $calledCommands, $userMessages);
+		return this.callImplicitCommandsAfter($cmdRecord, $userMessages);
 	}
 
 	/** show availability for first successful city option */
@@ -1468,11 +1479,11 @@ class ProcessApolloTerminalInputAction {
 		if ($mdaData = $alias['moveDownAll'] || null) {
 			$limit = $mdaData['limit'] || null;
 			if ($cmdReal = $alias['realCmd']) {
-				$result = await this.processRealCommand($cmdReal, false);
-				$result['calledCommands'] = await this.moveDownAll($limit, $result.calledCommands || []);
-				return $result;
+				let {cmdRec} = await this.processRealCommand($cmdReal, false);
+				return {calledCommands: await this.moveDownAll($limit, [cmdRec])};
 			} else {
 				let mdCmdRows = await this.stateful.getLog().getScrolledCmdMrs();
+				mdCmdRows = await Promise.all(mdCmdRows.map(cmdRec => this.modifyOutput(cmdRec)));
 				let calledCommands = await this.moveDownAll($limit, mdCmdRows);
 				return {calledCommands};
 			}
@@ -1513,18 +1524,28 @@ class ProcessApolloTerminalInputAction {
 			[$availability, $cityRow, $airlines] = $matches;
 			return this.makeMultipleCityAvailabilitySearch($availability, $cityRow, $airlines);
 		} else if (php.preg_match(/^SEM\/([\w\d]{3,4})\/AG$/, $cmd, $matches = [])) {
-			return this.emulatePcc($matches[1]);
+			let {cmdRec} = await this.emulatePcc($matches[1]);
+			return {calledCommands: [cmdRec]};
 		} else if (!php.empty($itinerary = await AliasParser.parseCmdAsItinerary($cmd, this.stateful))) {
 			return this.bookItinerary($itinerary, true);
 		} else {
 			$cmd = $alias['realCmd'];
-			return this.processRealCommand($cmd, this.constructor.shouldFetchAll($cmd));
+			let fetchAll = this.constructor.shouldFetchAll($cmd);
+			let {cmdRec, userMessages} = await this.processRealCommand($cmd, fetchAll);
+			return {calledCommands: [cmdRec], userMessages};
 		}
 	}
 
-	async execute($cmdRequested) {
+	async execute() {
 		let $callResult, $errors, $status, $calledCommands, $userMessages, $actions;
-		$callResult = await this.processRequestedCommand($cmdRequested);
+		let $cmdRequested = cmdRq;
+		$callResult = await this.processRequestedCommand($cmdRequested)
+			.catch(exc =>
+				Rej.BadRequest.matches(exc.httpStatusCode) ||
+				Rej.Forbidden.matches(exc.httpStatusCode)
+					? ({errors: [exc + '']})
+					: Promise.reject(exc));
+
 		if (!php.empty($errors = $callResult['errors'] || [])) {
 			$status = GdsDirect.STATUS_FORBIDDEN;
 			$calledCommands = $callResult['calledCommands'] || [];
@@ -1545,4 +1566,8 @@ class ProcessApolloTerminalInputAction {
 	}
 }
 
-module.exports = ProcessApolloTerminalInputAction;
+return new ProcessApolloTerminalInputAction().execute();
+
+};
+
+module.exports = execute;
