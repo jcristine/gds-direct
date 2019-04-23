@@ -118,6 +118,9 @@ let transformCalledCommand = (rec, stateful) => {
 	} else if (gds === 'amadeus') {
 		// they are using past century macs apparently - with just \r as a line break...
 		output = output.replace(/\r\n|\r/g, '\n');
+		if (rec.hasMore) { // in case of /MDA with limit scrolling indicator gets removed
+			output = output.replace('\s*$') + '\n└─>';
+		}
 	}
 	if (!agent.canSeeContactInfo()) {
 		output = CommonDataHelper.maskSsrContactInfo(output);

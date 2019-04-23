@@ -400,7 +400,7 @@ class ImportPqSabreActionTest extends require('../../../../Lib/TestCase.js') {
 			},
 			'sessionInfo': {
 				'initialState': php.array_merge(GdsDirectDefaults.makeDefaultSabreState(), {
-					'has_pnr': true, 'pcc': '37AF',
+					'hasPnr': true, 'pcc': '37AF',
 				}),
 				'initialCommands': [
 					{

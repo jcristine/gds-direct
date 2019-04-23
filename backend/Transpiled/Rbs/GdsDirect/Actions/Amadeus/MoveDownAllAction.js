@@ -44,17 +44,14 @@ class MoveDownAllAction extends AbstractGdsAction {
 				|| (await this.runCmd($format['moveRestCmd'])).output;
 			$pager = $format['parsePager']($page);
 			$hasMore = $pager['hasMore'];
+			$cleanPages.push($pager['content']);
 			done = !$hasMore || $i++ >= $limit;
-			if (done) {
-				$cleanPages.push($page); // to keep pager
-			} else {
-				$cleanPages.push($pager['content']);
-			}
 		}
 
 		$fullCalledCommand = {
 			'cmd': $originalCmdRow['cmd'],
 			'output': php.implode(php.PHP_EOL, $cleanPages),
+			'hasMore': $hasMore,
 		};
 
 		return {'calledCommands': [$fullCalledCommand]};

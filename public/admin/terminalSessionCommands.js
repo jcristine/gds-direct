@@ -219,7 +219,7 @@ window.GdsDirectPlusPage.whenEmcSessionId.then(function(emcSessionId){
 
             var rowList = _.reduce(self.records, function (acc, item) {
 
-                var iconPnr = (!parseInt(item.has_pnr)) ? '' :
+                var iconPnr = (!parseInt(item.hasPnr)) ? '' :
                     (!parseInt(item.is_pnr_stored)) ? iconsMap.hasPnr :
                         iconsMap.isStoredPnr;
 

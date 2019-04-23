@@ -59,15 +59,5 @@ class TStubGdsClient
     getCommandsLeft()  {
         return this.$commandsLeft;
     }
-
-    __destruct()  {
-        if (this.$commandsLeft) {
-            // interrupts phpunit sadly
-            //$cmds = Fp::map(function($rec){return $rec['cmd'] ?? $rec['method'] ?? 'unknown';}, $this->commandsLeft);
-            //$msg = throw new \Exception('Tried to destruct stub session when there are still '.count($this->commandsLeft).' commands left: '.implode(', ', $cmds));
-        }
-    }
-
-
 }
 module.exports = TStubGdsClient;

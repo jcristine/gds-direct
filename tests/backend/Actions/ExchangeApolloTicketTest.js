@@ -266,7 +266,7 @@ class ExchangeApolloTicketTest extends require('../Transpiled/Lib/TestCase.js')
 				        " FQ-USD 901.40/USD 67.60US/USD 14.30XT/USD 983.30 - 2APR YAA0AFEY",
 				        ")><"
 				    ].join("\n"),
-				    "state": {"area":"A","pcc":"2F3K","record_locator":"PZWSV5","canCreatePq":false,"has_pnr":true,"is_pnr_stored":true,"cmdType":"redisplayPnr","scrolledCmd":"*R","pricing_cmd":null}
+				    "state": {"area":"A","pcc":"2F3K","recordLocator":"PZWSV5","canCreatePq":false,"hasPnr":true,"is_pnr_stored":true,"cmdType":"redisplayPnr","scrolledCmd":"*R","pricing_cmd":null}
 				},
 				{
 				    "cmd": "MR",
@@ -429,7 +429,7 @@ class ExchangeApolloTicketTest extends require('../Transpiled/Lib/TestCase.js')
 				        "PENALTY USD;............  COMM ON PENALTY;...........",
 				        "><"
 				    ].join("\n"),
-				    "state": {"area":"A","pcc":"1O3K","record_locator":"NZK0K8","canCreatePq":false,"scrolledCmd":"HB:FEX","cmdCnt":32,"pricing_cmd":null,"has_pnr":true,"is_pnr_stored":true,"cmdType":"issueTickets"}
+				    "state": {"area":"A","pcc":"1O3K","recordLocator":"NZK0K8","canCreatePq":false,"scrolledCmd":"HB:FEX","cmdCnt":32,"pricing_cmd":null,"hasPnr":true,"is_pnr_stored":true,"cmdType":"issueTickets"}
 				},
 				{
 				    "cmd": "*MPD",
@@ -511,7 +511,7 @@ class ExchangeApolloTicketTest extends require('../Transpiled/Lib/TestCase.js')
 	async test_inputHbFexMask(testCase) {
 		let stateful = await GdsDirectDefaults.makeStatefulSession('apollo', testCase.input, {
 			initialState: {
-				"area":"A","pcc":"2F3K","record_locator":"PZWSV5","canCreatePq":false,"has_pnr":true,
+				"area":"A","pcc":"2F3K","recordLocator":"PZWSV5","canCreatePq":false,"hasPnr":true,
 				"is_pnr_stored":true,"cmdType":"redisplayPnr","scrolledCmd":"*R","pricing_cmd":null,
 			},
 			initialCommands: testCase.initialCommands,

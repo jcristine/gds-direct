@@ -155,7 +155,7 @@ class ProcessGalileoTerminalInputActionTest extends require('../../../../Lib/Tes
 			},
 			'sessionInfo': {
 				'initialState': php.array_merge(GdsDirectDefaults.makeDefaultGalileoState(), {
-					'agent_id': 1588, 'has_pnr': true,
+					'agent_id': 1588, 'hasPnr': true,
 				}),
 				'initialCommands': [],
 				'performedCommands': [
@@ -260,7 +260,7 @@ class ProcessGalileoTerminalInputActionTest extends require('../../../../Lib/Tes
 			},
 			'sessionInfo': {
 				'initialState': php.array_merge(GdsDirectDefaults.makeDefaultGalileoState(), {
-					'agent_id': 1588, 'has_pnr': true,
+					'agent_id': 1588, 'hasPnr': true,
 				}),
 				'initialCommands': [],
 				'performedCommands': [
@@ -372,7 +372,7 @@ class ProcessGalileoTerminalInputActionTest extends require('../../../../Lib/Tes
 			},
 			'sessionInfo': {
 				'initialState': php.array_merge(GdsDirectDefaults.makeDefaultGalileoState(), {
-					'agent_id': 1588, 'has_pnr': true,
+					'agent_id': 1588, 'hasPnr': true,
 				}),
 				'initialCommands': [],
 				'performedCommands': [
@@ -460,7 +460,7 @@ class ProcessGalileoTerminalInputActionTest extends require('../../../../Lib/Tes
 			},
 			'sessionInfo': {
 				'initialState': php.array_merge(GdsDirectDefaults.makeDefaultGalileoState(), {
-					'agent_id': 1588, 'has_pnr': true,
+					'agent_id': 1588, 'hasPnr': true,
 				}),
 				'initialCommands': [],
 				'performedCommands': [
@@ -507,7 +507,7 @@ class ProcessGalileoTerminalInputActionTest extends require('../../../../Lib/Tes
 			},
 			'sessionInfo': {
 				'initialState': php.array_merge(GdsDirectDefaults.makeDefaultGalileoState(), {
-					'agent_id': 1588, 'has_pnr': true,
+					'agent_id': 1588, 'hasPnr': true,
 				}),
 				'initialCommands': [
 					{
@@ -554,7 +554,7 @@ class ProcessGalileoTerminalInputActionTest extends require('../../../../Lib/Tes
 			},
 			'sessionInfo': {
 				'initialState': php.array_merge(GdsDirectDefaults.makeDefaultGalileoState(), {
-					'agent_id': 1588, 'has_pnr': true,
+					'agent_id': 1588, 'hasPnr': true,
 				}),
 				'initialCommands': [
 					{
@@ -592,7 +592,7 @@ class ProcessGalileoTerminalInputActionTest extends require('../../../../Lib/Tes
 			},
 			'sessionInfo': {
 				'initialState': php.array_merge(GdsDirectDefaults.makeDefaultGalileoState(), {
-					'agent_id': 1588, 'has_pnr': true,
+					'agent_id': 1588, 'hasPnr': true,
 				}),
 				'initialCommands': [
 					{
@@ -639,7 +639,7 @@ class ProcessGalileoTerminalInputActionTest extends require('../../../../Lib/Tes
 			'output': {'status': 'executed'},
 			'sessionInfo': {
 				'initialState': php.array_merge(GdsDirectDefaults.makeDefaultGalileoState(), {
-					'agent_id': 1588, 'has_pnr': true,
+					'agent_id': 1588, 'hasPnr': true,
 				}),
 				'initialCommands': [
 					{
@@ -760,7 +760,7 @@ class ProcessGalileoTerminalInputActionTest extends require('../../../../Lib/Tes
 			},
 			'sessionInfo': {
 				'initialState': php.array_merge(GdsDirectDefaults.makeDefaultGalileoState(), {
-					'agent_id': 1588, 'has_pnr': true,
+					'agent_id': 1588, 'hasPnr': true,
 				}),
 				'initialCommands': [
 					{
@@ -1020,7 +1020,7 @@ class ProcessGalileoTerminalInputActionTest extends require('../../../../Lib/Tes
 			},
 			'sessionInfo': {
 				'initialState': php.array_merge(GdsDirectDefaults.makeDefaultGalileoState(), {
-					'agent_id': 1588, 'has_pnr': true,
+					'agent_id': 1588, 'hasPnr': true,
 				}),
 				'initialCommands': [],
 				'performedCommands': [
@@ -1073,7 +1073,7 @@ class ProcessGalileoTerminalInputActionTest extends require('../../../../Lib/Tes
 			},
 			'sessionInfo': {
 				'initialState': php.array_merge(GdsDirectDefaults.makeDefaultGalileoState(), {
-					'agent_id': 1588, 'has_pnr': true,
+					'agent_id': 1588, 'hasPnr': true,
 				}),
 				'initialCommands': [],
 				'performedCommands': [
@@ -1113,7 +1113,7 @@ class ProcessGalileoTerminalInputActionTest extends require('../../../../Lib/Tes
 			},
 			'sessionInfo': {
 				'initialState': php.array_merge(GdsDirectDefaults.makeDefaultGalileoState(), {
-					'agent_id': 1588, 'has_pnr': true, 'canCreatePq': false,
+					'agent_id': 1588, 'hasPnr': true, 'canCreatePq': false,
 				}),
 				'initialCommands': [],
 				'performedCommands': [
@@ -1166,7 +1166,7 @@ class ProcessGalileoTerminalInputActionTest extends require('../../../../Lib/Tes
 			},
 			'sessionInfo': {
 				'initialState': php.array_merge(GdsDirectDefaults.makeDefaultGalileoState(), {
-					'agent_id': 1588, 'has_pnr': true, 'canCreatePq': false,
+					'agent_id': 1588, 'hasPnr': true, 'canCreatePq': false,
 				}),
 				'initialCommands': [],
 				'performedCommands': [
@@ -1352,7 +1352,7 @@ class ProcessGalileoTerminalInputActionTest extends require('../../../../Lib/Tes
 			},
 			'sessionInfo': {
 				'initialState': php.array_merge(GdsDirectDefaults.makeDefaultGalileoState(), {
-					'agent_id': 1588, 'pcc': 'K9P', 'has_pnr': true,
+					'agent_id': 1588, 'pcc': 'K9P', 'hasPnr': true,
 				}),
 				'initialCommands': [],
 				'performedCommands': [
@@ -1384,7 +1384,7 @@ class ProcessGalileoTerminalInputActionTest extends require('../../../../Lib/Tes
 			},
 			'sessionInfo': {
 				'initialState': php.array_merge(GdsDirectDefaults.makeDefaultGalileoState(), {
-					'agent_id': 1588, 'pcc': 'K9P', 'has_pnr': true,
+					'agent_id': 1588, 'pcc': 'K9P', 'hasPnr': true,
 				}),
 				'initialCommands': [],
 				'performedCommands': [

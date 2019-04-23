@@ -7,17 +7,14 @@ const php = require('../../php.js');
 
 class AmadeusBuildItineraryAction extends AbstractGdsAction {
 	static isOutputValid($output) {
-
 		return AmadeusReservationParser.parse($output)['success'];
 	}
 
 	static isAvailabilityOutput($output) {
-
 		return php.preg_match(/\*\* AMADEUS AVAILABILITY/, $output);
 	}
 
 	static formatGdsDate($dt) {
-
 		return php.strtoupper(php.date('dM', php.strtotime($dt)));
 	}
 

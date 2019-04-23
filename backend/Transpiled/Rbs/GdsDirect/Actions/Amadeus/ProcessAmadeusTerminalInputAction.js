@@ -19,7 +19,6 @@ const CmsAmadeusTerminal = require('../../../../Rbs/GdsDirect/GdsInterface/CmsAm
 const AmadeusUtil = require("../../../../../GdsHelpers/AmadeusUtils");
 const GdsProfiles = require("../../../../../Repositories/GdsProfiles");
 const getRbsPqInfo = require("../../../../../GdsHelpers/RbsUtils").getRbsPqInfo;
-const translib = require('../../../../translib.js');
 const MoveDownAllAction = require('./MoveDownAllAction.js');
 const AmadeusPnr = require('../../../../Rbs/TravelDs/AmadeusPnr.js');
 const AmadeusBuildItineraryAction = require('../../../../Rbs/GdsAction/AmadeusBuildItineraryAction.js');
@@ -30,9 +29,6 @@ const WorkAreaScreenParser = require("../../../../Gds/Parsers/Amadeus/WorkAreaSc
 const UnprocessableEntity = require("../../../../../Utils/Rej").UnprocessableEntity;
 const Rej = require("../../../../../Utils/Rej");
 const FxParser = require('../../../../Gds/Parsers/Amadeus/Pricing/FxParser.js');
-
-var require = translib.stubRequire;
-
 const TicketMaskParser = require('../../../../Gds/Parsers/Amadeus/TicketMaskParser.js');
 
 class ProcessAmadeusTerminalInputAction {
@@ -217,8 +213,10 @@ class ProcessAmadeusTerminalInputAction {
 			if (php.empty($moved['errors'])) {
 				$result['calledCommands'] = $moved['calledCommands'];
 			}
-			$result['userMessages'] = php.array_merge($result['userMessages'] || [],
-				$moved['userMessages'] || []);
+			$result['userMessages'] = php.array_merge(
+				$result['userMessages'] || [],
+				$moved['userMessages'] || []
+			);
 			$result['errors'] = $moved['errors'] || [];
 		}
 		return $result;
@@ -388,7 +386,7 @@ class ProcessAmadeusTerminalInputAction {
 			$matchedSegments[$i]['seatCount'] = $params['seatAmount'];
 			$matchedSegments[$i]['segmentStatus'] = $params['segmentStatus'];
 		}
-		return this.bookItinerary($matchedSegments);
+		return this.bookItinerary($matchedSegments, false);
 	}
 
 	async processCloneItinerary($aliasData) {
@@ -429,7 +427,7 @@ class ProcessAmadeusTerminalInputAction {
 			$itinerary[$key]['lineNumber'] = $key + 1;
 		}
 
-		return this.bookItinerary($itinerary);
+		return this.bookItinerary($itinerary, true);
 	}
 
 	static transformBuildError($result) {
@@ -447,16 +445,18 @@ class ProcessAmadeusTerminalInputAction {
 	}
 
 	/** @param $itinerary = MarriageItineraryParser::parse() */
-	async bookItinerary($itinerary) {
+	async bookItinerary($itinerary, isNewPnr) {
 		let $errors, $i, $segment, $bookItinerary, $result, $error,
 			$segmentNumbers, $calledCommands;
 
 		$errors = [];
 		this.stateful.flushCalledCommands();
 
-		for ([$i, $segment] of Object.entries($itinerary)) {
-			// in most cases there are no paxes in destination PNR, so first segment number will be 1
-			$segment['lineNumber'] = +$i + 1; // $segment['lineNumber'] || $i + 1;
+		if (isNewPnr) {
+			for ([$i, $segment] of Object.entries($itinerary)) {
+				// in most cases there are no paxes in destination PNR, so first segment number will be 1
+				$segment['lineNumber'] = +$i + 1; // $segment['lineNumber'] || $i + 1;
+			}
 		}
 		$bookItinerary = $itinerary.map(($segment) => {
 			let cls = !php.in_array($segment['segmentStatus'], this.constructor.PASSIVE_STATUSES)
@@ -755,14 +755,15 @@ class ProcessAmadeusTerminalInputAction {
 		return $userMessages;
 	}
 
-	/** @return Promise<string> - the command we are currently scrolling
+	/** @return string - the command we are currently scrolling
 	 * (last command that was not one of MD, MU, MT, MB */
-	async getScrolledCmd() {
+	getScrolledCmd() {
 		return this.stateful.getSessionData().scrolledCmd;
 	}
 
 	modifyOutput($calledCommand) {
 		let $scrolledCmd, $type, $lines, $isSafe;
+		$calledCommand = {...$calledCommand};
 
 		$scrolledCmd = this.getScrolledCmd() || $calledCommand['cmd'];
 		$type = (CommandParser.parse($scrolledCmd) || {})['type'];
@@ -789,14 +790,10 @@ class ProcessAmadeusTerminalInputAction {
 
 		$faRecs = (((await this.getCurrentPnr()).getParsedData() || {})['parsed'] || {})['tickets'] || [];
 		for ($faRec of Object.values($faRecs)) {
-			$twdOutput = this.runCommand('TWD/L' + $faRec['lineNumber']);
+			$twdOutput = await this.runCommand('TWD/L' + $faRec['lineNumber']);
 			$twdParsed = TicketMaskParser.parse($twdOutput);
-			$isFlight = ($seg) => {
-				return $seg['type'] !== 'void';
-			};
-			$isVoid = ($seg) => {
-				return StringUtil.startsWith($seg['couponStatus'], 'V');
-			};
+			$isFlight = ($seg) => $seg['type'] !== 'void';
+			$isVoid = ($seg) => StringUtil.startsWith($seg['couponStatus'], 'V');
 			$coupons = Fp.filter($isFlight, $twdParsed['segments']);
 			if (!php.empty($twdParsed['error']) ||
 				!Fp.all($isVoid, $coupons)
@@ -988,7 +985,7 @@ class ProcessAmadeusTerminalInputAction {
 		} else if (php.preg_match(/^(FQD.*)\/MIX$/, $cmd, $matches = [])) {
 			return this.getMultiPccTariffDisplay($matches[1]);
 		} else if (!php.empty($itinerary = await AliasParser.parseCmdAsItinerary($cmd, this.stateful))) {
-			return this.bookItinerary($itinerary);
+			return this.bookItinerary($itinerary, true);
 		} else if ($result = RepriceInAnotherPccAction.parseAlias($cmd)) {
 			return this.priceInAnotherPcc($result['cmd'], $result['target'], $result['dialect']);
 		} else {
