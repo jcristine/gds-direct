@@ -62,7 +62,7 @@ let runCmd = (cmd, gdsData) => {
 			let error = 'Another command is still in progress - no action taken.\n' +
 				'To restart session use _⚙ (Gear) -> Default PCC_.\n' +
 				'Note, reloading page does not reduce waiting time on hanging availability (60 s.).';
-			return Conflict(error);
+			return Conflict(error, {isOk: true});
 		} else {
 			let obj = typeof exc === 'string' ? new Error(exc) : exc;
 			// for debug, be careful not to include credentials here

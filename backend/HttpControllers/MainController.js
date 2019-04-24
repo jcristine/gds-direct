@@ -13,6 +13,7 @@ const Agent = require('../DataFormats/Wrappers/Agent.js');
 const Misc = require("../Transpiled/Lib/Utils/Misc");
 
 let isSystemError = (exc) =>
+	!exc.isOk &&
 	!NoContent.matches(exc.httpStatusCode) &&
 	!BadRequest.matches(exc.httpStatusCode) &&
 	!TooManyRequests.matches(exc.httpStatusCode) &&

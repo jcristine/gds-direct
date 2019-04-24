@@ -4,9 +4,10 @@
 // errors to distinct them programmatically
 // (to decide whether or not to write it to Diag, for example)
 
-let toReject = (httpStatusCode, isOk = false) => {
+let toReject = (httpStatusCode, isAlwaysOk = false) => {
 	let makeRejection = (msg, data = undefined) => {
 		let exc;
+		let isOk = isAlwaysOk || (data || {}).isOk;
 		if (!isOk) {
 			exc = new Error(msg);
 		} else {
@@ -15,6 +16,7 @@ let toReject = (httpStatusCode, isOk = false) => {
 			exc = {message: msg, toString: () => msg};
 		}
 		exc.httpStatusCode = httpStatusCode;
+		exc.isOk = isOk;
 		exc.data = data;
 		let rejection = Promise.reject(exc);
 		rejection.exc = exc;
