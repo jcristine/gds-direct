@@ -4783,6 +4783,54 @@ class ProcessApolloTerminalInputActionTest extends require('../../../../Lib/Test
 			},
 		});
 
+		$list.push({
+			'input': {
+				'title': 'caused Cannot read property "cmd" of undefined',
+				'cmdRequested': '*QP800F',
+			},
+			'output': {
+				'status': 'forbidden',
+				'userMessages': ['Restricted PNR'],
+			},
+			'sessionInfo': {
+				'initialState': php.array_merge(GdsDirectDefaults.makeDefaultApolloState(), {
+					"pcc":"1O3K",
+				}),
+				'initialCommands': [],
+				'performedCommands': [
+					{
+					    "cmd": "*QP800F",
+					    "output": [
+					        "2G2H - TRAVEL SHOP              SFO",
+					        "QP800F/3E QSBSB DYB3E   AG 23854526 24APR",
+					        " 1.1WEINSTEIN/ALEX ",
+					        " 1 SU2101Z 25APR RIXSVO HK1   225P  410P *         TH   E",
+					        " 2 SU2682N 06MAY SVORIX HK1   915A 1055A *         MO   E",
+					        "FONE-SFOAS/DONNIE*1800 677-2943 EXT:22793",
+					        "TKTG-TAU/24APR",
+					        "*** LINEAR FARE DATA EXISTS *** >*LF; ",
+					        "ATFQ-OK/$B/N1-1*ADT/:N/Z0/ET/TA2G2H/CSU",
+					        " FQ-EUR 418.00/USD 3.90LV/USD 196.50XT/USD 670.40 - 24APR *ADT-ZCL.NCL",
+					        "GFAX-SSRDOCSSUHK1/////24FEB75/M//WEINSTEIN/ALEX-1WEINSTEIN/ALEX",
+					        "ACKN-SU FPSGVA   24APR 1217",
+					        "><"
+					    ].join("\n"),
+					    "duration": "0.057814040",
+					    "type": "openPnr",
+					},
+					{
+					    "cmd": "I",
+					    "output": [
+					        "IGND ",
+					        "><"
+					    ].join("\n"),
+					    "duration": "0.051822774",
+					    "type": "ignore",
+					},
+				],
+			},
+		});
+
 		// problematic cases follow
 		/*
 		// STORE alias, same as previous, but this time let's remove

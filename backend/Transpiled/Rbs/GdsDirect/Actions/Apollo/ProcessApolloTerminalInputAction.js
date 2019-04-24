@@ -1277,7 +1277,7 @@ class ProcessApolloTerminalInputAction {
 				!this.stateful.getAgent().canOpenPrivatePnr()
 			) {
 				await this.runCommand('I');
-				return {'errors': ['Restricted PNR']};
+				return Rej.Forbidden('Restricted PNR');
 			}
 		}
 		return {cmdRec: $cmdRecord, userMessages: $userMessages};
