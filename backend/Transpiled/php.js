@@ -135,6 +135,7 @@ php.json_decode = (str) => str ? JSON.parse(str) : null;
 // --------------------------------------
 
 php.strtotime = (dtStr, nowSec) => {
+	nowSec = +nowSec;
 	let matches;
 	nowSec = nowSec || Math.floor(Date.now() / 1000);
 	if (dtStr === 'now') {
@@ -144,6 +145,7 @@ php.strtotime = (dtStr, nowSec) => {
 	} else if (dtStr.match(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(\.\d*|)Z$/)) {
 		return Date.parse(dtStr) / 1000;
 	} else if (dtStr.match(/^\d{2}:\d{2} [AP]M$/)) {
+		// ???
 		return Date.parse('2016-01-01 ' + dtStr + ' Z') / 1000;
 	} else if (matches = dtStr.match(/^\s*\+?([-+]\d+) days?$/)) {
 		return nowSec + (+matches[1]) * 24 * 60 * 60;
