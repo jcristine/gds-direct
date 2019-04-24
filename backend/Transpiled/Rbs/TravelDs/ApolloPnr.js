@@ -36,8 +36,8 @@ class ApolloPnr {
 
 	getCreatorFpInitials() {
 		let $agentToken, $fpInitials;
-		$agentToken = this.$parsed['headerData']['reservationInfo']['agentToken'];
-		$fpInitials = this.$parsed['headerData']['reservationInfo']['focalPointInitials'];
+		$agentToken = (this.$parsed['headerData']['reservationInfo'] || {})['agentToken'];
+		$fpInitials = (this.$parsed['headerData']['reservationInfo'] || {})['focalPointInitials'];
 		if (!$agentToken) {
 			return $fpInitials;
 		} else if (php.preg_match(/^0\d{2}$/, $agentToken)) {
@@ -54,7 +54,7 @@ class ApolloPnr {
 	wasCreatedInGdsDirect() {
 		let $initials, $homePcc;
 		$initials = this.getAgentInitials();
-		$homePcc = this.$parsed['headerData']['reservationInfo']['agencyToken'] || null;
+		$homePcc = (this.$parsed['headerData']['reservationInfo'] || {})['agencyToken'] || null;
 		return $homePcc === 'DPB' && php.in_array($initials, ['WS', 'VWS']);
 	}
 
@@ -72,7 +72,7 @@ class ApolloPnr {
 	 */
 	getRsprTeam() {
 		if (php.mb_strlen(this.$parsed['headerData']['reservationInfo']['agentToken']) == 3) {
-			return this.$parsed['headerData']['reservationInfo']['focalPointInitials'];
+			return (this.$parsed['headerData']['reservationInfo'] || {})['focalPointInitials'];
 		} else {
 			return null;
 		}
@@ -170,7 +170,7 @@ class ApolloPnr {
 
 	belongsToItn() {
 		let $homePcc;
-		$homePcc = this.$parsed['headerData']['reservationInfo']['agencyToken'] || null;
+		$homePcc = (this.$parsed['headerData']['reservationInfo'] || {})['agencyToken'];
 		return php.in_array($homePcc, ['DYB', 'DPB']);
 	}
 
@@ -191,11 +191,11 @@ class ApolloPnr {
 	}
 
 	isRestricted() {
-		return this.prototype.checkDumpIsRestricted(this.getDump());
+		return this.constructor.checkDumpIsRestricted(this.getDump());
 	}
 
 	isNotExisting() {
-		return this.prototype.checkDumpIsNotExisting(this.getDump());
+		return this.constructor.checkDumpIsNotExisting(this.getDump());
 	}
 
 	isAccessible() {

@@ -516,8 +516,10 @@ class ProcessApolloTerminalInputAction {
 		let $pnrCmds, $typeToOutput, $dnOutput, $pnrDump, $pnr;
 		if ($cmd === 'F') {
 			$pnrCmds = await this.stateful.getLog().getCurrentPnrCommands();
-			$typeToOutput = php.array_combine(php.array_column($pnrCmds, 'type'),
-				php.array_column($pnrCmds, 'output'));
+			$typeToOutput = php.array_combine(
+				php.array_column($pnrCmds, 'type'),
+				php.array_column($pnrCmds, 'output')
+			);
 			if ($dnOutput = $typeToOutput['divideBooking'] || null) {
 				$pnrDump = extractPager($dnOutput)[0];
 				$pnr = ApolloPnr.makeFromDump($pnrDump);

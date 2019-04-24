@@ -4720,6 +4720,69 @@ class ProcessApolloTerminalInputActionTest extends require('../../../../Lib/Test
 			},
 		});
 
+		$list.push({
+			'input': {
+				'title': 'error >DN1; response should not result in null-pointer exception on >F;',
+				'cmdRequested': 'F',
+			},
+			'output': {
+				'status': 'executed',
+				'calledCommands': [
+					{
+					    "cmd": "F",
+					    "output": [
+					        "INVLD ",
+					        "><"
+					    ].join("\n"),
+					    "type": "fileDividedBooking",
+					},
+				],
+			},
+			'sessionInfo': {
+				'initialState': php.array_merge(GdsDirectDefaults.makeDefaultApolloState(), {
+					'hasPnr': true, 'agent_id': '1588',
+				}),
+				'initialCommands': [
+					{
+					    "cmd": "DN1",
+					    "output": [
+					        "INVLD  PREV NOT FILE REC",
+					        "><"
+					    ].join("\n"),
+					    "type": "divideBooking",
+					    "state": {"area":"A","pcc":"2G52","recordLocator":"NNBQDJ","canCreatePq":false,"scrolledCmd":"DN1","cmdCnt":31,"pricingCmd":null,"cmdType":"divideBooking","hasPnr":true,"isPnrStored":true}
+					},
+					{
+					    "cmd": "R:JMY",
+					    "output": [
+					        " *",
+					        "><"
+					    ].join("\n"),
+					    "type": "addReceivedFrom",
+					},
+				],
+				'performedCommands': [
+					{
+					    "cmd": "@:5GD-PRINCE/1588/FOR /6206/LEAD-1 IN 2G55",
+					    "output": [
+					        " *",
+					        "><"
+					    ].join("\n"),
+					    "type": "addRemark",
+					},
+					{
+					    "cmd": "F",
+					    "output": [
+					        "INVLD ",
+					        "><"
+					    ].join("\n"),
+					    "type": "fileDividedBooking",
+					    "state": {"area":"A","pcc":"2F3K","recordLocator":"","canCreatePq":false,"scrolledCmd":"F","cmdCnt":3,"hasPnr":false,"isPnrStored":false,"cmdType":"fileDividedBooking","pricingCmd":null}
+					},
+				],
+			},
+		});
+
 		// problematic cases follow
 		/*
 		// STORE alias, same as previous, but this time let's remove
