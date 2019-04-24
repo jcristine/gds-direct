@@ -92,7 +92,9 @@ const initGlobEvents = (htmlRootDom) => {
 		if (doNotLog.some(prefix => message.startsWith(prefix))) {
 			return false;
 		}
-		if (!stack || stack.indexOf('terminal-bundle.js') < 0) {
+		if (!stack || stack.indexOf('terminal-bundle.js') < 0 ||
+			stack.indexOf('/sabre/public/terminal-bundle.js') >= 0 // old code in CMS
+		) {
 			return false; // not a GDS Direct+ error
 		}
 		post('/system/reportJsError', {
