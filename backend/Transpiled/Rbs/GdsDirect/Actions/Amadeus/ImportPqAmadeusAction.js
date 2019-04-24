@@ -457,7 +457,7 @@ class ImportPqAmadeusAction extends AbstractGdsAction {
 		let $result, $reservationRecord, $nameRecords, $fullPricing, $pricingRecord, $flightServiceRecord,
 			$fareRuleData, $publishedPricingRecord;
 
-		$result = {'pnrData': []};
+		$result = {'pnrData': {}};
 
 		$reservationRecord = await this.getReservation();
 		if ($result['error'] = $reservationRecord['error']) return $result;

@@ -46,7 +46,7 @@ let callRbs = async (functionName, params) => {
 			let rpcErrors = resp.result.errors || [];
 			let messages = (resp.result.result || {}).messages || [];
 			let logId = resp.logId || resp.result.logId;
-			return NotImplemented('RBS cant satisfy - ' + messages.concat(rpcErrors).join('; ') + ' - Log: ' + logId);
+			return NotImplemented('RBS cant satisfy - ' + JSON.stringify(messages.concat(rpcErrors)) + ' - Log: ' + logId);
 		} else {
 			return Promise.resolve(resp);
 		}
