@@ -208,7 +208,7 @@ let ImportPq = async ({stateful, leadData, fetchOptionalFields = true}) => {
 			importAct = new ImportPqApolloAction();
 		} else if (gds === 'sabre') {
 			importAct = new ImportPqSabreAction();
-		} else if (gds === 'galileo' && !fetchOptionalFields) {
+		} else if (gds === 'galileo') {
 			importAct = new ImportPqGalileoAction();
 		} else if (gds === 'amadeus' && !fetchOptionalFields) {
 			importAct = new ImportPqAmadeusAction();

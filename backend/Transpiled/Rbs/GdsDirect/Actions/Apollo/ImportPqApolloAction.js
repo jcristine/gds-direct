@@ -429,7 +429,6 @@ class ImportPqApolloAction extends AbstractGdsAction {
 				$reservationRecord['parsed']['itinerary']).catch(exc => ({error: 'Exc - ' + exc}));
 			if ($result['error'] = $fareRuleData['error'] || null) return $result;
 
-			$result['pnrData']['fareComponentListInfo'] = $fareRuleData['fareListRecords'];
 			$result['pnrData']['fareRules'] = $fareRuleData['ruleRecords'];
 
 			// it is important that it's at the end because it affects fare rules

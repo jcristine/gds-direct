@@ -13,6 +13,9 @@ const FqParser = require("../../../../Gds/Parsers/Galileo/Pricing/FqParser");
 const LinearFareParser = require("../../../../Gds/Parsers/Galileo/Pricing/LinearFareParser");
 const {fetchAll} = require('../../../../../GdsHelpers/TravelportUtils.js');
 const GalileoPricingAdapter = require('../../../FormatAdapters/GalileoPricingAdapter.js');
+const GalileoGetFlightServiceInfoAction = require('../../../GdsAction/GalileoGetFlightServiceInfoAction.js');
+const ImportFareComponentsAction = require('../../../Process/Apollo/ImportPnr/Actions/ImportFareComponentsAction.js');
+const Fp = require('../../../../Lib/Utils/Fp.js');
 
 class ImportPqGalileoAction extends AbstractGdsAction {
 	constructor() {
@@ -139,7 +142,6 @@ class ImportPqGalileoAction extends AbstractGdsAction {
 	}
 
 	static transformBagPtcBlock($ptcBlock, $i) {
-
 		return {
 			'subPricingNumber': +$i + 1,
 			'passengerNameNumbers': $ptcBlock['passengerNameNumbers'],
@@ -149,7 +151,7 @@ class ImportPqGalileoAction extends AbstractGdsAction {
 		};
 	}
 
-	async getPricingFcData($raw, $cmd) {
+	async fetchPricingFcData($raw, $cmd) {
 		let $ptcList, $error, $linearFareDump, $linearFare, $common, $bagPtcPricingBlocks, $i, $ptcBlock, $wrapped,
 			$currentPricing;
 
@@ -157,7 +159,9 @@ class ImportPqGalileoAction extends AbstractGdsAction {
 		if ($error = $ptcList['error']) {
 			return {'error': 'Failed to parse pricing PTC list - ' + $error};
 		}
-		$linearFareDump = await this.runOrReuse('F*Q');
+		let linearRec = await fetchAll('F*Q', this);
+		this.$allCommands.push(linearRec);
+		$linearFareDump = linearRec.output;
 		$linearFare = LinearFareParser.parse($linearFareDump);
 		if ($error = $linearFare['error']) {
 			return {'error': 'Failed to parse pricing Linear Fare - ' + $error};
@@ -205,7 +209,71 @@ class ImportPqGalileoAction extends AbstractGdsAction {
 			$raw = $cmdRecord['output'];
 			this.$allCommands.push($cmdRecord);
 		}
-		return this.getPricingFcData($raw, $cmdRecord['cmd']);
+		return this.fetchPricingFcData($raw, $cmdRecord['cmd']);
+	}
+
+	async getFlightService($itinerary) {
+		let $action, $common, $commands, $raw, $cmdRec, $result;
+
+		$action = (new GalileoGetFlightServiceInfoAction())
+			.setSession(this.session)
+			.setCmdToFullDump(this.$cmdToFullOutput);
+		$common = await $action.execute($itinerary);
+		$commands = $action.getCalledCommands();
+
+		$raw = null;
+		for ($cmdRec of Object.values($commands)) {
+			this.$allCommands.push($cmdRec);
+			if ($cmdRec['cmd'] === '*SVC') {
+				$raw = $cmdRec['output'];
+			}
+		}
+
+		$result = {'raw': $raw, 'parsed': $common};
+		if ($result['error'] = $common['error']) {
+			return $result;
+		} else {
+			$result['parsed'] = $common;
+		}
+		return $result;
+	}
+
+	async getFareRules($itinerary) {
+		let $result, $error;
+
+		$result = await (new ImportFareComponentsAction())
+			.setSession(this.session).execute([16], 1);
+		if ($error = $result['error']) return {'error': $error};
+
+		this.$allCommands.push($result.cmdRec);
+		for (let $fareData of Object.values($result['fareList'])) {
+			this.$allCommands.push($fareData.cmdRec);
+		}
+		return {
+			// could parse them, but nah for now
+			'fareListRecords': [],
+			'ruleRecords': [],
+		};
+	}
+
+	async getPublishedPricing($currentStore, $nameRecords) {
+		let $isPrivateFare, $result, $cmd, $raw, $processed, $error;
+
+		$isPrivateFare = $currentStore['pricingBlockList']
+			.some(ptcBlock => ptcBlock.hasPrivateFaresSelectedMessage);
+		$result = {'isRequired': $isPrivateFare, 'raw': null, 'parsed': null};
+		if (!$isPrivateFare) return $result;
+
+		$cmd = 'FQ/:N';
+		$raw = await this.runOrReuse($cmd);
+		$processed = await this.fetchPricingFcData($raw, $cmd);
+		$result['cmd'] = $cmd;
+		$result['raw'] = $raw;
+		if ($error = $processed['error']) {
+			return {'error': 'Failed to fetch published pricing - ' + $error};
+		}
+		$result['parsed'] = $processed['currentPricing']['parsed'];
+		return $result;
 	}
 
 	static transformCmdType($parsedCmdType) {
@@ -249,7 +317,6 @@ class ImportPqGalileoAction extends AbstractGdsAction {
 			$fareRuleData = await this.getFareRules($reservationRecord['parsed']['itinerary']);
 			if ($result['error'] = $fareRuleData['error']) return $result;
 
-			$result['pnrData']['fareComponentListInfo'] = $fareRuleData['fareListRecords'];
 			$result['pnrData']['fareRules'] = $fareRuleData['ruleRecords'];
 
 			// it is important that it's at the end because it affects fare rules
