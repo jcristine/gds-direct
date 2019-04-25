@@ -142,7 +142,11 @@ app.post('/keepAliveEmc', toHandleHttp(async (rqBody) => {
 }));
 app.post('/system/reportJsError', withAuth((rqBody, emcResult) => {
 	delete(rqBody.emcUser);
-	let user = {id: emcResult.user.id, login: emcResult.user.login};
+	let user = {
+		id: emcResult.user.id,
+		login: emcResult.user.login,
+		displayName: emcResult.user.displayName,
+	};
 	return Diag.warning('Uncaught JS exception reported', {rqBody, user});
 }));
 
