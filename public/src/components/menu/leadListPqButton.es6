@@ -123,7 +123,7 @@ class LeadListContext
             return '-';
         }
 
-        let epochMs = Date.parse(destination.departureDateMin + ' Z');
+        let epochMs = Date.parse(destination.departureDateMin + 'Z');
         let dtObj = new Date(epochMs);
         let months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
