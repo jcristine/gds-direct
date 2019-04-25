@@ -595,7 +595,7 @@ php.array_splice = (arr, start, length = undefined) => {
 		throw new Error('Tried to splice a non-array - ' + arr);
 	}
 	length = length === undefined ? arr.length : length;
-	return arr.splice(start, start + length);
+	return arr.splice(start, length);
 };
 php.array_slice = (arr, start, length = undefined) => {
 	arr = Object.values(arr);
