@@ -1,7 +1,7 @@
 // namespace Rbs\DataProviders;
 
-const ArrayUtil = require('../../Lib/Utils/ArrayUtil.js');
 const Airports = require("../../../Repositories/Airports");
+const php = require('../../php.js');
 
 /**
  * provides info like city/country/timezone/etc for the specified airport
