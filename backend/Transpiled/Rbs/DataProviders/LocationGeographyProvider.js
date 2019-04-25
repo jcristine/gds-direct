@@ -47,12 +47,6 @@ class LocationGeographyProvider {
 		return $data ? $data['region_id'] : null;
 	}
 
-	async areAllLocationsInSameRegion($locationCodes) {
-		let $regions;
-		$regions = await Promise.all($locationCodes.map(($locationCode) => this.getRegion($locationCode)));
-		return php.count(php.array_unique($regions)) === 1 && ArrayUtil.getFirst($regions) !== null;
-	}
-
 	async getCityCode($airportCode) {
 		let $data;
 		$data = await this.constructor.getLocationData($airportCode);

@@ -31,31 +31,31 @@ class StubLocationGeographyProvider {
 	async getTimezone($locationCode) {
 		let $row;
 		$row = this.getLocationData($locationCode);
-		return $row['tz'];
+		return !$row ? null : $row['tz'];
 	}
 
 	async getRegionId($locationCode) {
 		let $data;
 		$data = this.getLocationData($locationCode);
-		return $data['region_id'];
+		return !$data ? null : $data['region_id'];
 	}
 
 	async getCityCode($airportCode) {
 		let $data;
 		$data = this.getLocationData($airportCode);
-		return $data['city_code'];
+		return !$data ? null : $data['city_code'];
 	}
 
 	async getCountryCode($airportCode) {
 		let $data;
 		$data = this.getLocationData($airportCode);
-		return $data['country_code'];
+		return !$data ? null : $data['country_code'];
 	}
 
 	getAlternatives($airportCode) {
 		let $data;
 		$data = this.getLocationData($airportCode);
-		return php.array_filter(php.explode(',', $data['alternatives'] || ''));
+		return php.array_filter(php.explode(',', ($data || {})['alternatives'] || ''));
 	}
 
 	async doesBelongToCity($airportCode, $cityCode) {

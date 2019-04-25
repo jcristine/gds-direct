@@ -166,7 +166,7 @@ class FareRuleParser
     static parseRulesHeader($linesLeft)  {
         let $result, $line, $fcl, $ptc;
 
-        $result = [];
+        $result = {};
         while ($line = php.array_shift($linesLeft)) {
             if ($fcl = this.parseFclLine($line)) {
                 $result = php.array_merge($result, $fcl);
@@ -177,6 +177,7 @@ class FareRuleParser
                 php.array_unshift($linesLeft, $line);
                 break;
             } else {
+                $result['unparsedLines'] = $result['unparsedLines'] || [];
                 $result['unparsedLines'].push($line);
             }
         }

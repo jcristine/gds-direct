@@ -733,8 +733,8 @@ class FareRuleParserTest extends require('../../../../Lib/TestCase.js') {
 				'paxNumbers': [1, 6],
 				'ptc': 'ADT',
 				'data': [
-					{'componentNumber': '1', 'fareBasis': 'YFO'},
-					{'componentNumber': '2', 'fareBasis': 'Y1RED'},
+					{'componentNumber': '1', 'departureCity': 'KIV', 'destinationCity': 'RIX', 'fareBasis': 'YFO'},
+					{'componentNumber': '2', 'departureCity': 'RIX', 'destinationCity': 'TYO', 'fareBasis': 'Y1RED'},
 				],
 			},
 		]);
