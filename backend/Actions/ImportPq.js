@@ -1,16 +1,10 @@
 const SessionStateProcessor = require('../Transpiled/Rbs/GdsDirect/SessionStateProcessor/SessionStateProcessor.js');
 const php = require('../Transpiled/php.js');
 const ImportPqApolloAction = require("../Transpiled/Rbs/GdsDirect/Actions/Apollo/ImportPqApolloAction");
+const Rej = require('../Utils/Rej.js');
 const {UnprocessableEntity, NotImplemented} = require("../Utils/Rej");
 const RbsClient = require('../IqClients/RbsClient.js');
 const DateTime = require('../Transpiled/Lib/Utils/DateTime.js');
-let ApoPnrParser = require("../Transpiled/Gds/Parsers/Apollo/Pnr/PnrParser.js");
-let SabPnrParser = require("../Transpiled/Gds/Parsers/Sabre/Pnr/PnrParser.js");
-let AmaPnrParser = require("../Transpiled/Gds/Parsers/Amadeus/Pnr/PnrParser.js");
-let GalPnrParser = require("../Transpiled/Gds/Parsers/Galileo/Pnr/PnrParser.js");
-const BadRequest = require("../Utils/Rej").BadRequest;
-let {fetchAll} = require('../GdsHelpers/TravelportUtils.js');
-let {fetchAllRt} = require('../GdsHelpers/AmadeusUtils.js');
 const ImportPnrAction = require('../Transpiled/Rbs/Process/Common/ImportPnr/ImportPnrAction.js');
 const SessionStateHelper = require("../Transpiled/Rbs/GdsDirect/SessionStateProcessor/SessionStateHelper");
 const ImportPqSabreAction = require('../Transpiled/Rbs/GdsDirect/Actions/Sabre/ImportPqSabreAction.js');
@@ -20,77 +14,10 @@ const TicketDesignators = require('../Repositories/TicketDesignators.js');
 const LocationGeographyProvider = require('../Transpiled/Rbs/DataProviders/LocationGeographyProvider.js');
 const GdsDirect = require("../Transpiled/Rbs/GdsDirect/GdsDirect");
 const ImportPqGalileoAction = require('../Transpiled/Rbs/GdsDirect/Actions/Galileo/ImportPqGalileoAction.js');
-const ApolloPnr = require("../Transpiled/Rbs/TravelDs/ApolloPnr");
-const SabrePnr = require("../Transpiled/Rbs/TravelDs/SabrePnr");
-const AmadeusPnr = require("../Transpiled/Rbs/TravelDs/AmadeusPnr");
-const GalileoPnr = require("../Transpiled/Rbs/TravelDs/GalileoPnr");
 
 let ImportPq = async ({stateful, leadData, fetchOptionalFields = true}) => {
 	let gds = stateful.gds;
-	let agentId = stateful.getAgent().getId();
 	let geo = new LocationGeographyProvider();
-
-	let getPnr = async () => {
-		if (gds === 'apollo') {
-			let pnrDump = (await fetchAll('*R', stateful)).output;
-			return ApolloPnr.makeFromDump(pnrDump);
-		} else if (gds === 'sabre') {
-			let pnrDump = (await stateful.runCmd('*R')).output;
-			return SabrePnr.makeFromDump(pnrDump);
-		} else if (gds === 'amadeus') {
-			let pnrDump = (await fetchAllRt('RT', stateful)).output;
-			return AmadeusPnr.makeFromDump(pnrDump);
-		} else if (gds === 'galileo') {
-			let pnrDump = (await fetchAll('*R', stateful)).output;
-			return GalileoPnr.makeFromDump(pnrDump);
-		} else {
-			return NotImplemented('Unsupported GDS ' + gds + ' for getItinerary()');
-		}
-	};
-
-	/**
-	 * creates an RBS session, copies current itinerary there, performs
-	 * the requested action (getPqItinerary/importPq) and close RBS session
-	 *
-	 * slow, so it's just a temporary solution till I re-implement importPq here
-	 */
-	let withRbsPqCopy = async (action) => {
-		let full = stateful.getFullState();
-		let areaState = full.areas[full.area] || {};
-		let pricingCmd = areaState.pricingCmd;
-		let pcc = areaState.pcc;
-		let pnr = await getPnr(stateful);
-		let gdsData = await RbsClient.startSession({gds, agentId});
-		let rbsSessionId = gdsData.rbsSessionId;
-		return Promise.resolve()
-			.then(() => pnr.getRecordLocator()
-				? RbsClient({
-					gds, language: 'apollo',
-					command: '*' + pnr.getRecordLocator(),
-				}).runInputCmd({rbsSessionId})
-				: RbsClient({gds}).rebuildItinerary({
-					sessionId: rbsSessionId,
-					pcc: pcc,
-					itinerary: pnr.getItinerary().map(seg => ({
-						...seg,
-						segmentStatus:
-							gds === 'galileo' ? 'AK' :
-								gds === 'sabre' && seg.airline === 'AA' ? 'NN' :
-									'GK',
-						departureDate: DateTime.decodeRelativeDateInFuture(
-							seg.departureDate.parsed, new Date().toISOString()
-						),
-					})),
-			}))
-			.then(rebuilt => RbsClient({gds, command: pricingCmd}).runInputCmd({rbsSessionId}))
-			.then(priced => {
-				let pqErrors = priced.sessionInfo.canCreatePqErrors;
-				return pqErrors.length === 0 ? priced :
-					UnprocessableEntity('Could not reprice in RBS - ' + pqErrors.join('; '));
-			})
-			.then(priced => action({rbsSessionId}))
-			.finally(() => RbsClient.closeSession({context: {gds}, gdsData: gdsData}));
-	};
 
 	let getCurrentStateCommands = async () => {
 		let $cmdTypes, $mixed, $priorPricingCommands, $lastStateSafeCommands, $isPricingMd, $cmdRow, $belongsToPricing;
@@ -210,17 +137,10 @@ let ImportPq = async ({stateful, leadData, fetchOptionalFields = true}) => {
 			importAct = new ImportPqSabreAction();
 		} else if (gds === 'galileo') {
 			importAct = new ImportPqGalileoAction();
-		} else if (gds === 'amadeus' && !fetchOptionalFields) {
+		} else if (gds === 'amadeus') {
 			importAct = new ImportPqAmadeusAction();
 		} else {
-			// TODO: implement fetchOptionalFields=true for rest GDS-es
-			// temporary fallback till real importPq implemented for all GDS on our side
-			let onRbsSession = !fetchOptionalFields
-				? ({rbsSessionId}) => RbsClient({gds, agentId})
-					.getPqItinerary({rbsSessionId, leadId: leadData.leadId})
-				: ({rbsSessionId}) => RbsClient({gds, agentId})
-					.importPq({rbsSessionId, leadId: leadData.leadId});
-			return withRbsPqCopy(onRbsSession);
+			return Rej.NotImplemented('Unsupported GDS for importPq - ' + gds);
 		}
 		let stateErrors = await SessionStateHelper.checkCanCreatePq(stateful.getLog(), leadData);
 		if (stateErrors.length > 0) {

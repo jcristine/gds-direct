@@ -20,12 +20,8 @@ const AmadeusGetPricingPtcBlocksAction = require('./AmadeusGetPricingPtcBlocksAc
 const php = require('../../../../php.js');
 const AmadeusUtil = require("../../../../../GdsHelpers/AmadeusUtils");
 const withCapture = require("../../../../../GdsHelpers/CommonUtils").withCapture;
-
-var require = require('../../../../translib.js').stubRequire;
-
 const AmadeusFlightInfoAdapter = require('../../../../Rbs/FormatAdapters/AmadeusFlightInfoAdapter.js');
 const AmadeusGetFareRulesAction = require('../../../../Rbs/GdsAction/AmadeusGetFareRulesAction.js');
-const AmadeusGetStatelessRulesAction = require('../../../../Rbs/GdsAction/AmadeusGetStatelessRulesAction.js');
 
 /**
  * import PNR fields of currently opened PNR
@@ -35,7 +31,7 @@ const AmadeusGetStatelessRulesAction = require('../../../../Rbs/GdsAction/Amadeu
 class ImportPqAmadeusAction extends AbstractGdsAction {
 	constructor() {
 		super();
-		this.$useStatelessRules = true;
+		this.$useStatelessRules = false;
 		this.$fetchOptionalFields = true;
 		this.$geoProvider = null;
 		this.$baseDate = null;
@@ -98,11 +94,6 @@ class ImportPqAmadeusAction extends AbstractGdsAction {
 			'fareRules': 'fareRules',
 			'statelessFareRules': 'fareRules',
 		} || {})[$parsedCmdType];
-	}
-
-	static transformCmdFromDumpRec($dumpRec) {
-
-		return {'cmd': $dumpRec['cmd'], 'output': $dumpRec['dump']};
 	}
 
 	static transformCmdForCms($calledCommand) {
@@ -311,7 +302,7 @@ class ImportPqAmadeusAction extends AbstractGdsAction {
 	}
 
 	async amadeusFx($cmd) {
-		return (await AmadeusUtil.fetchAllFx($cmd, this.stateful)).output;
+		return (await AmadeusUtil.fetchAllFx($cmd, this.session)).output;
 	}
 
 	/** @param $pricingRec = ImportPqAmadeusAction::getPricing()['currentPricing'] */
@@ -327,7 +318,7 @@ class ImportPqAmadeusAction extends AbstractGdsAction {
 		$raw = await this.amadeusFx($cmd);
 		this.$allCommands.push({'cmd': $cmd, 'output': $raw});
 		$fullData = await (new AmadeusGetPricingPtcBlocksAction())
-			.setLog(this.$log).setSession(this.session)
+			.setSession(this.session)
 			.execute($cmd, $raw, $nameRecords);
 		$result['cmd'] = $cmd;
 		$result['raw'] = $raw;
@@ -343,9 +334,9 @@ class ImportPqAmadeusAction extends AbstractGdsAction {
 	 * does not include sections over 19-th page - Amadeus simply
 	 * says "NO MORE PAGE AVAILABLE" in the middle of text
 	 */
-	getStatefulFareRules($pricing, $itinerary) {
-		let $sections, $fareListRecords, $ruleRecords, $i, $ptcBlock, $fxPaxNum, $dumpStorage, $common, $mainDump,
-			$cmds, $error, $ptcNum, $rules, $byNumber;
+	async getStatefulFareRules($pricing, $itinerary) {
+		let $sections, $fareListRecords, $ruleRecords, $i, $ptcBlock, $fxPaxNum, $common, $mainDump,
+			$error, $ptcNum, $rules, $byNumber;
 
 		$sections = [16];
 		$fareListRecords = [];
@@ -353,15 +344,13 @@ class ImportPqAmadeusAction extends AbstractGdsAction {
 
 		for ([$i, $ptcBlock] of Object.entries($pricing['pricingBlockList'])) {
 			$fxPaxNum = $ptcBlock['ptcInfo']['pricingPaxNums'][0];
-			$dumpStorage = new DumpStorage();
+			let capturing = withCapture(this.session);
 			$common = await (new AmadeusGetFareRulesAction())
 				.setTzProvider(this.getGeoProvider())
-				.setLog(this.$log).setSession(this.session)
-				.setDumpStorage($dumpStorage)
+				.setSession(capturing)
 				.execute($fxPaxNum, $sections, $itinerary);
-			$mainDump = ($dumpStorage.get(1) || {})['dump'];
-			$cmds = php.array_map((...args) => this.constructor.transformCmdFromDumpRec(...args), $dumpStorage.getAll());
-			this.$allCommands = php.array_merge(this.$allCommands, $cmds);
+
+			this.$allCommands.push(...capturing.getCalledCommands());
 			if ($error = $common['error']) {
 				return {'error': $error};
 			} else {
@@ -401,10 +390,7 @@ class ImportPqAmadeusAction extends AbstractGdsAction {
 			$fareList, $cmd, $dump;
 
 		$ruleRecords = [];
-		$dumpStorage = new DumpStorage();
 		$result = await (new AmadeusGetStatelessRulesAction())
-			.setDumpStorage($dumpStorage)
-			.setLog(this.$log)
 			.setSession(this.session)
 			.execute($stores, $itinerary);
 		if ($error = $result['error']) {
@@ -476,10 +462,10 @@ class ImportPqAmadeusAction extends AbstractGdsAction {
 			if ($result['error'] = $flightServiceRecord['error']) return $result;
 			$result['pnrData']['flightServiceInfo'] = $flightServiceRecord;
 
-			$fareRuleData = await this.$useStatelessRules
-				? this.getStatelessFareRules($pricingRecord['parsed']['pricingList'],
+			$fareRuleData = this.$useStatelessRules
+				? await this.getStatelessFareRules($pricingRecord['parsed']['pricingList'],
 					$reservationRecord['parsed']['itinerary'])
-				: this.getStatefulFareRules($pricingRecord['parsed']['pricingList'][0],
+				: await this.getStatefulFareRules($pricingRecord['parsed']['pricingList'][0],
 					$reservationRecord['parsed']['itinerary']);
 			if ($result['error'] = $fareRuleData['error']) return $result;
 
