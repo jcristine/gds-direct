@@ -92,8 +92,8 @@ class VariableTranslator
                 },
                 'galileo': {
                     'regex': '\\/{al}',
-                    'start': '\/',
-                    'between': '\/',
+                    'start': '/',
+                    'between': '/',
                 },
                 'sabre': {
                     'regex': '(:?¥)?{al}',
@@ -136,8 +136,8 @@ class VariableTranslator
                 },
                 'galileo': {
                     'regex': '\\/{al}-?',
-                    'start': '\/',
-                    'between': '-\/',
+                    'start': '/',
+                    'between': '-/',
                 },
                 'sabre': {
                     'regex': '(:?¥\\*)?{al}',
@@ -806,11 +806,9 @@ class VariableTranslator
     }
 
     static combineListVariable($variableArray, $varName, $dialect)  {
-        let $listDataType, $start, $between;
-
-        $listDataType = this.getListDataType($dialect, $varName);
-        $start = $listDataType['start'];
-        $between = $listDataType['between'];
+        let $listDataType = this.getListDataType($dialect, $varName);
+        let $start = !$listDataType ? '' : $listDataType['start'];
+        let $between = !$listDataType ? '' : $listDataType['between'];
 
         return $start+php.implode($between, $variableArray);
     }
