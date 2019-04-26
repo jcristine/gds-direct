@@ -44,21 +44,22 @@ class FormatAdapter
         $baseDate = $baseDate
             ? php.date('Y-m-d', php.strtotime('-2 day', php.strtotime($baseDate)))
             : null;
+        let pnrInfo = $parse['parsedData']['pnrInfo'];
         $common = {
             'passengers': ($parse['parsedData']['passengers']['parsedData'] || {})['passengerList'] || [],
             'itinerary': this.adaptSabreItineraryParseForClient($parse['parsedData']['itinerary'] || [], $baseDate),
             'remarks': this.transformSabreRemarks($parse['parsedData']['remarks'] || []),
-            'pnrInfo': !$parse['parsedData']['pnrInfo'] ? null : {
-                'pcc': $parse['parsedData']['pnrInfo']['pcc'],
-                'homePcc': $parse['parsedData']['pnrInfo']['homePcc'],
-                'agentInitials': $parse['parsedData']['pnrInfo']['agentInitials'],
+            'pnrInfo': !pnrInfo ? null : {
+                'pcc': pnrInfo['pcc'],
+                'homePcc': pnrInfo['homePcc'],
+                'agentInitials': pnrInfo['agentInitials'],
                 'reservationDt': {
-                    'full': $parse['parsedData']['pnrInfo']['date']['parsed']
-                        ? $parse['parsedData']['pnrInfo']['date']['parsed']
-                            +' '+$parse['parsedData']['pnrInfo']['time']['parsed']
+                    'full': (pnrInfo['date'] || {})['parsed']
+                        ? pnrInfo['date']['parsed']
+                            +' '+pnrInfo['time']['parsed']
                         : null,
                 },
-                'recordLocator': $parse['parsedData']['pnrInfo']['recordLocator'],
+                'recordLocator': pnrInfo['recordLocator'],
             },
         };
         $common = ImportPnrCommonFormatAdapter.addContextDataToPaxes($common);

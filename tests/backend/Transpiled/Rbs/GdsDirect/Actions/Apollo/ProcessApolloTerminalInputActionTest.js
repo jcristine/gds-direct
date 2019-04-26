@@ -4831,6 +4831,81 @@ class ProcessApolloTerminalInputActionTest extends require('../../../../Lib/Test
 			},
 		});
 
+		$list.push({
+			'input': {
+				'title': 'caused Cannot read property "parsed" of null',
+				'cmdRequested': [
+					"1 WS 703X 30APR T YYZYVR SS1   900A 1103A /DCWS /E",
+					" 2 WS 716T 03MAY F YVRYYZ SS1   300P 1030P /DCWS /E",
+					"719.30TTL"
+				].join('\n'),
+			},
+			'output': {
+				'status': 'executed',
+				'calledCommands': [
+					{
+					    "cmd": "*R",
+					    "output": [
+					        "NO NAMES",
+					        " 1 WS 703X 30APR YYZYVR SS1   900A 1103A *         TU   E",
+					        " 2 WS 716T 03MAY YVRYYZ SS1   300P 1030P *         FR   E",
+					        ""
+					    ].join("\n"),
+					},
+
+				],
+			},
+			'sessionInfo': {
+				'initialState': php.array_merge(GdsDirectDefaults.makeDefaultApolloState()),
+				'initialCommands': [],
+				'performedCommands': [
+					{
+					    "cmd": "0WS703Y30APRYYZYVRGK1",
+					    "output": [
+					        " 1 WS  703Y  30APR YYZYVR GK1   900A 1103A                    ",
+					        "OFFER CAR/HOTEL    >CAL;     >HOA;",
+					        "DEPARTS YYZ TERMINAL 3  - ARRIVES YVR TERMINAL M ",
+					        "><"
+					    ].join("\n"),
+					},
+					{
+					    "cmd": "0WS716Y03MAYYVRYYZGK1",
+					    "output": [
+					        " 2 WS  716Y   3MAY YVRYYZ GK1   300P 1030P                    ",
+					        "OFFER CAR/HOTEL    >CAL;     >HOA;",
+					        "DEPARTS YVR TERMINAL M  - ARRIVES YYZ TERMINAL 3 ",
+					        "><"
+					    ].join("\n"),
+					},
+					{
+					    "cmd": "X1+2/01X+2T",
+					    "output": [
+					        "   WS  703X  30APR YYZYVR SS1   900A 1103A *                 E",
+					        "010 CX 7045 /CZ 7543 /KE 6525 /MU 8002 *",
+					        "503 3/18/22/27/99 *",
+					        "DEPARTS YYZ TERMINAL 3  - ARRIVES YVR TERMINAL M ",
+					        "   WS  716T   3MAY YVRYYZ SS1   300P 1030P *                 E",
+					        "010 CX 7040 /CZ 7544 /HX 3616 /JL 5806 /KE 6524 *",
+					        "503 3/18/22/27/99 *",
+					        "OFFER CAR/HOTEL    >CAL;     >HOA;",
+					        "DEPARTS YVR TERMINAL M  - ARRIVES YYZ TERMINAL 3 ",
+					        "CANCEL REQUEST COMPLETED",
+					        "><"
+					    ].join("\n"),
+					},
+					{
+					    "cmd": "*R",
+					    "output": [
+					        "NO NAMES",
+					        " 1 WS 703X 30APR YYZYVR SS1   900A 1103A *         TU   E",
+					        " 2 WS 716T 03MAY YVRYYZ SS1   300P 1030P *         FR   E",
+					        "><"
+					    ].join("\n"),
+					},
+				],
+			},
+		});
+
 		// problematic cases follow
 		/*
 		// STORE alias, same as previous, but this time let's remove
