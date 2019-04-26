@@ -350,6 +350,8 @@ exports.clearBuffer = (rqBody, emcResult) => {
 	let requestId = rqBody.travelRequestId || 0;
 	return Db.with(db => db.query([
 		// TODO: move to CmdRqLog.js
+		// TODO: deleting is actually bad. Firstly, we rely on presence of cmd_rq
+		//  in $D, and secondly we need this _original entered_ command for logs
 		'DELETE FROM cmd_rq_log',
 		'WHERE agentId = ?',
 		'  AND requestId = ?',
