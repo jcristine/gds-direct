@@ -154,12 +154,16 @@ let runCmdRq =  async (inputCmd, stateful) => {
 	let messages = [];
 	let actions = [];
 	let calledCommands = [];
+
+	// for when you copy itinerary from logs
+	inputCmd = inputCmd.replace(/(^|\n)\s*"(.+?)",/g, '$1$2');
 	let bulkCmds = inputCmd.match(/^\s*[1-9]/)
 		? [inputCmd] // itinerary, keep intact for rebook
 		: inputCmd.split('\n');
 	if (bulkCmds.length > 10) {
 		return BadRequest('Too many lines (' + bulkCmds.length + ') in your input for bulk invocation');
 	}
+
 	for (let cmd of bulkCmds) {
 		let running = runByGds(cmd.trim(), stateful)
 			.catch(exc => Rej.NoContent.matches(exc.httpStatusCode)

@@ -59,7 +59,7 @@ let StatefulSession = ({
 			let running = gdsSession.runCmd(cmd);
 			let cmdRec = await cmdLog.logCommand(cmd, running);
 			calledCommands.push(cmdRec);
-			logit('GDS result: ' + cmd, jsExport(cmdRec, null, 256));
+			logit('GDS result: ' + cmd, jsExport(cmdRec, null, 256) + ",");
 			return cmdRec;
 		}
 	};
