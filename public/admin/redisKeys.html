@@ -1,0 +1,50 @@
+<body>
+
+<div>
+    <textarea rows="20" cols="100" id="all-key-list">Please, Wait...</textarea>
+    <br/>
+    <input type="text" id="redis-operation"/>
+    <input type="text" id="operated-key"/>
+    <button id="perform-operation">Submit</button>
+    <br/>
+    <textarea rows="20" cols="100" id="operation-output"></textarea>
+</div>
+
+<script>
+    let allKeyList = document.querySelector('#all-key-list');
+    let keyInp = document.querySelector('#operated-key');
+    let operationInp = document.querySelector('#redis-operation');
+    let performBtn = document.querySelector('#perform-operation');
+    let outputHolder = document.querySelector('#operation-output');
+    let getEmcSessionId = () => document.cookie
+        .split('; ')
+        .map(token => token.split('='))
+        .filter(([k, v]) => k === 'emcSessionId' && v)
+        .map(([k, v]) => v)[0];
+    fetch('/admin/getAllRedisKeys', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({emcSessionId: getEmcSessionId()})
+    })  .then(a => a.json())
+        .then(({keys}) => {
+        	console.log('model records', [...keys]);
+        	allKeyList.value = JSON.stringify(keys, null, 4);
+        });
+    performBtn.onclick = () => {
+        fetch('/admin/operateRedisKey', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({
+                emcSessionId: getEmcSessionId(),
+                key: keyInp.value,
+                operation: operationInp.value,
+            }),
+        })  .then(rs => rs.json())
+            .then(({redisData}) => {
+				return outputHolder.value = typeof redisData === 'string' ? redisData :
+                    JSON.stringify(redisData, null, 4);
+			});
+    };
+</script>
+
+</body>

@@ -253,6 +253,25 @@ app.post('/admin/getModel', withAuth(async (reqBody, emcResult) => {
 		return Forbidden('Sorry, you must be me in order to use that');
 	}
 }));
+app.post('/admin/getAllRedisKeys', withAuth(async (reqBody, emcResult) => {
+	if (emcResult.user.id == 6206) {
+		let redis = await Redis.getClient();
+		let keys = await redis.keys('*');
+		return {keys};
+	} else {
+		return Forbidden('Sorry, you must be me in order to use that');
+	}
+}));
+app.post('/admin/operateRedisKey', withAuth(async (reqBody, emcResult) => {
+	if (emcResult.user.id == 6206) {
+		let {key, operation} = reqBody;
+		let redis = await Redis.getClient();
+		let redisData = await redis[operation.toLowerCase()](key);
+		return {redisData};
+	} else {
+		return Forbidden('Sorry, you must be me in order to use that');
+	}
+}));
 app.get('/admin/getShortcutActions', toHandleHttp(async (rqBody) => {
 	let rows = await Db.with(db => db
 		.fetchAll({table: 'shortcut_actions'}));
