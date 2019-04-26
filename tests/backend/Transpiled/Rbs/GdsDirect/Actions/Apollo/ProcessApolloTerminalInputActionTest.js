@@ -4906,6 +4906,82 @@ class ProcessApolloTerminalInputActionTest extends require('../../../../Lib/Test
 			},
 		});
 
+		$list.push({
+			'input': {
+				'title': 'caused Unsupported date str format - "+NaN day" because + was converted to |',
+				'cmdRequested': [
+					" 1  AC 084 P 21JUL 7 YYZTLV HK1        1   430P1000A|1 789 E0 B",
+					"     B787 DREAMLINER OFFER PREMIUM ECONOMY,BKG CLASS-N,E,O",
+					"     SEE RTSVC",
+					"  2  AC 085 P 29JUL 1 TLVYYZ HK1        3  1145A 430P   789 E0 L",
+					"     AC YYZ HUB-CONX TO MORE THAN 100 DEST IN NORTH AMERICA",
+					"     SEE RTSVC"
+				].join('\n'),
+			},
+			'output': {
+				'status': 'forbidden',
+				'userMessages': ['SOME FLIGHTS DID NOT HAVE ENOUGH SEATS AVAILABLE IN REQUESTED BOOKING CODE - 1,2'],
+				'calledCommands': [
+					{
+					  "cmd": "*R",
+					  "output": "NO NAMES\n 1 WS 703X 30APR YYZYVR SS1   900A 1103A *         TU   E\n 2 WS 716T 03MAY YVRYYZ SS1   300P 1030P *         FR   E\n 3 AC  84Y 21JUL YYZTLV GK1   430P 1000A+       SU/MO\n 4 AC  85Y 29JUL TLVYYZ GK1  1145A  430P           MO\n",
+					},
+				],
+			},
+			'sessionInfo': {
+				'initialState': php.array_merge(GdsDirectDefaults.makeDefaultApolloState()),
+				'initialCommands': [],
+				'performedCommands': [
+					{
+					    "cmd": "0AC084Y21JULYYZTLVGK1",
+					    "output": [
+					        " 3 AC   84Y  21JUL YYZTLV GK1   430P 1000A|                   ",
+					        "OFFER CAR/HOTEL    >CAL;     >HOA;",
+					        "DEPARTS YYZ TERMINAL 1  - ARRIVES TLV TERMINAL 3 ",
+					        "ADD ADVANCE PASSENGER INFORMATION SSRS DOCA/DOCO/DOCS",
+					        "PERSONAL DATA WHICH IS PROVIDED TO US IN CONNECTION",
+					        "WITH YOUR TRAVEL MAY BE PASSED TO GOVERNMENT AUTHORITIES",
+					        "FOR BORDER CONTROL AND AVIATION SECURITY PURPOSES",
+					        "THIS AIRLINE SUPPORTS CLAIM PNR - AC ",
+					        "TO REQUEST CLAIM PNR PLEASE IGNORE AND ENTER THE",
+					        "AIRLINES INFORMATION IN ONE OF THE FOLLOWING FORMATS -",
+					        "L@AC/*(RECORD LOCATOR)  OR  L@AC/*AC84/21JUL-(NAME)  ",
+					        "><"
+					    ].join("\n"),
+					},
+					{
+					    "cmd": "0AC085Y29JULTLVYYZGK1",
+					    "output": [
+					        " 4 AC   85Y  29JUL TLVYYZ GK1  1145A  430P                    ",
+					        "OFFER CAR/HOTEL    >CAL;     >HOA;",
+					        "DEPARTS TLV TERMINAL 3  - ARRIVES YYZ TERMINAL 1 ",
+					        "ADD ADVANCE PASSENGER INFORMATION SSRS DOCA/DOCO/DOCS",
+					        "PERSONAL DATA WHICH IS PROVIDED TO US IN CONNECTION",
+					        "WITH YOUR TRAVEL MAY BE PASSED TO GOVERNMENT AUTHORITIES",
+					        "FOR BORDER CONTROL AND AVIATION SECURITY PURPOSES",
+					        "THIS AIRLINE SUPPORTS CLAIM PNR - AC ",
+					        "TO REQUEST CLAIM PNR PLEASE IGNORE AND ENTER THE",
+					        "AIRLINES INFORMATION IN ONE OF THE FOLLOWING FORMATS -",
+					        "L@AC/*(RECORD LOCATOR)  OR  L@AC/*AC85/29JUL-(NAME)  ",
+					        "><"
+					    ].join("\n"),
+					},
+					{
+					    "cmd": "X1+2/01P+2P",
+					    "output": [
+					        "0 AVAIL/WL CLOSED WS703 YYZYVR *",
+					        "UNABLE TO CANCEL",
+					        "><"
+					    ].join("\n"),
+					},
+					{
+					  "cmd": "*R",
+					  "output": "NO NAMES\n 1 WS 703X 30APR YYZYVR SS1   900A 1103A *         TU   E\n 2 WS 716T 03MAY YVRYYZ SS1   300P 1030P *         FR   E\n 3 AC  84Y 21JUL YYZTLV GK1   430P 1000A+       SU/MO\n 4 AC  85Y 29JUL TLVYYZ GK1  1145A  430P           MO\n",
+					},
+				],
+			},
+		});
+
 		// problematic cases follow
 		/*
 		// STORE alias, same as previous, but this time let's remove

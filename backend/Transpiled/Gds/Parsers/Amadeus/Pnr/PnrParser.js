@@ -431,7 +431,8 @@ class AmadeusReservationParser
             'terminal': $split['G'],
             'departureTime': this.parseTime($split['t']),
             'destinationTime': this.parseTime($split['T']),
-            'dayOffset': php.intval($split['O'] || '0'),
+            // may get '|' if pasted Amadeus itinerary in Apollo session
+            'dayOffset': php.intval(($split['O'] || '0').replace('|', '+')),
             // should get some more dumps to parse following
             'eticket': null,
             'confirmationAirline': null,
