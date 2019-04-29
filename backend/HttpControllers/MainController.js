@@ -29,9 +29,6 @@ let toHandleHttp = (httpAction) => (req, res) => {
 		let queryStr = req.url.split('?')[1] || '';
 		rqBody = querystring.parse(queryStr);
 	}
-	let maskedBody = Object.assign({}, rqBody, {
-		emcSessionId: '******' + (rqBody.emcSessionId || '').slice(-4),
-	});
 	return Promise.resolve()
 		.then(() => httpAction(rqBody, req.params))
 		.catch(exc => {
@@ -58,6 +55,9 @@ let toHandleHttp = (httpAction) => (req, res) => {
 			res.status(exc.httpStatusCode || 500);
 			res.setHeader('Content-Type', 'application/json');
 			res.send(php.json_encode({error: (exc.message || exc + '').replace(/^Error: /, '')}));
+			let maskedBody = Object.assign({}, rqBody, {
+				emcSessionId: '******' + (rqBody.emcSessionId || '').slice(-4),
+			});
 			let errorData = getExcData(exc, {
 				message: exc.message || '' + exc,
 				httpStatusCode: exc.httpStatusCode,
