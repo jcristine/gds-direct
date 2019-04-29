@@ -70,14 +70,14 @@ exports.getAll = async (sessionId) => {
 		orderBy: 'id DESC',
 	}));
 	return rows.map(r => {
-        /** @var typed = at('CmdLog.js').row */
+        /** @var typed = makeRow() */
         let typed = r;
 		return typed;
 	});
 };
 
 exports.getLast = async (sessionId) => {
-    /** @var r = at('CmdLog.js').row */
+    /** @var r = makeRow() */
 	let r = await Db.with(db => db.fetchOne({
 		table: TABLE,
 		where: [['session_id', '=', sessionId]],
