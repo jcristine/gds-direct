@@ -15,6 +15,7 @@ const PnrInfoBlockParser = require("./PnrInfoBlockParser");
 const RemarksParser = require("./RemarksParser");
 const AccountingDataParser = require("./AccountingDataParser");
 const PhonesBlockParser = require("./PhonesBlockParser");
+const PricingCmdParser = require("../Commands/PricingCmdParser");
 class SabreReservationParser
 {
     static markLines($lines)  {
@@ -49,17 +50,19 @@ class SabreReservationParser
                 $section = 'generalFacts';
             } else if ($cleanedLine == 'FREQUENT TRAVELER') {
                 $section = 'frequentTraveler';  // ?? Seems rare
-            } else if ($cleanedLine == 'SEATS\/BOARDING PASS') {
+            } else if ($cleanedLine == 'SEATS/BOARDING PASS') {
                 $section = 'seatData';
             } else if ($cleanedLine == 'REMARKS') {
                 $section = 'remarks';
+            } else if ($cleanedLine == 'TKT INSTRUCTIONS') {
+                $section = 'tktInstructions';
             } else if ($cleanedLine == 'ADDRESS') {
                 $section = 'address';
             } else if ($cleanedLine == 'ACCOUNTING DATA') {
                 $section = 'accountingData';
             } else if ($cleanedLine == 'GENERAL FACTS') {
                 $section = 'generalFacts';
-            } else if ($cleanedLine == 'SEATS\/BOARDING PASS') {
+            } else if ($cleanedLine == 'SEATS/BOARDING PASS') {
                 $section = 'seats';
             } else if (StringUtil.startsWith($line, 'RECEIVED FROM') || php.preg_match(/^[A-Z0-9]{3,4}\.[A-Z0-9]{3,4}/, $cleanedLine)) {
                 $section = 'pnrInfo';
@@ -134,13 +137,9 @@ return $line['line'];}, $sectionLines));}
         let $lines, $isPqExistsLine;
 
         $lines = StringUtil.lines($dump);
-        $lines = Fp.map(($line) => {
+        $lines = Fp.map(($line) => php.trim($line), $lines);
 
-            return php.trim($line);
-        }, $lines);
-
-        $isPqExistsLine = ($line) => {
-return StringUtil.startsWith($line, 'PRICE QUOTE RECORD EXISTS');};
+        $isPqExistsLine = ($line) => StringUtil.startsWith($line, 'PRICE QUOTE RECORD EXISTS');
         return {
             'isInvoiced': php.in_array('INVOICED', $lines),
             'ffDataExists': php.in_array('FREQUENT TRAVELER DATA EXISTS *FF TO DISPLAY ALL', $lines),
@@ -148,56 +147,69 @@ return StringUtil.startsWith($line, 'PRICE QUOTE RECORD EXISTS');};
             'passengerEmailDataExists': php.in_array('PASSENGER EMAIL DATA EXISTS  *PE TO DISPLAY ALL', $lines),
             'pctcDataExists': php.in_array('PCTC DATA EXISTS - PLEASE USE *P3 TO VIEW', $lines),
             'pctcDataExistsAa': php.in_array('PCTC DATA EXISTS - PLEASE USE *P4 TO VIEW', $lines),
-            'pqfDataExists': php.in_array('CHANGE FEE\/ADD COLLECT EXISTS - *PQF', $lines),
+            'pqfDataExists': php.in_array('CHANGE FEE/ADD COLLECT EXISTS - *PQF', $lines),
             'priceQuoteRecordExists': Fp.any($isPqExistsLine, $lines),
             'securityInfoExists': php.in_array('SECURITY INFO EXISTS *P3D OR *P4D TO DISPLAY', $lines),
         };
     }
 
+	// "  1.W¥PQ1¥AUA¥K0.00",
+	// "  2.W¥PQ2¥AUA¥K0.00",
+	static parseTktInstruction(line) {
+		let match = line.match(/^\s*(\d+)\.(.*?)\s*$/);
+		if (match) {
+			let [_, lineNumber, modsStr] = match;
+			let rawMods = !modsStr ? [] : modsStr.split('¥');
+			let pricingModifiers = rawMods
+				.map(PricingCmdParser.parseModifier);
+			return {lineNumber, pricingModifiers};
+		} else {
+			return {raw: line};
+		}
+	}
+
     static parse($dump)  {
         let $result, $sections;
 
         $dump = this.cleanupHandPastedDump($dump);
-        $result = {
-            'parsedData': {
-                'passengers': [],
-                'itinerary': [],
-                'tktgData': null,
-                'phones': null,
-                'frequentTraveler': null,
-                'aaFacts': null,
-                'generalFacts': null,
-                //'frequentTraveler' => null,
-                'remarks': null,
-                //'address' => null,
-                'accountingData': null,
-                //'generalFacts' => null,
-                //'seats' => null,
-                'pnrInfo': null,
-                'misc': null,
-            },
-            //'misc' => null,
-        };
         $sections = this.splitToSections($dump);
 
-        $result['parsedData']['passengers'] = $sections['passengers'] ? GdsPassengerBlockParser.parse($sections['passengers']) : [];
-        $result['parsedData']['itinerary'] = $sections['itinerary'] ? ItineraryParser.parse($sections['itinerary']) : [];
-        $result['parsedData']['tktgData'] = $sections['tktgData'] ? SabreTicketListParser.parse($sections['tktgData']) : null;
-        $result['parsedData']['phones'] = $sections['phones'] ? PhonesBlockParser.parse($sections['phones']) : null;
-        $result['parsedData']['frequentTraveler'] = $sections['frequentTraveler'] ? FrequentFlyerParser.parse($sections['frequentTraveler']) : null;
-        $result['parsedData']['seatData'] = $sections['seatData'] ? SeatsParser.parse($sections['seatData']) : null;
-        $result['parsedData']['aaFacts'] = $sections['aaFacts'] ? FactsBlockParser.parse($sections['aaFacts'])['ssrList'] : null;
-        $result['parsedData']['generalFacts'] = $sections['generalFacts'] ? FactsBlockParser.parse($sections['generalFacts'])['ssrList'] : null;
-        $result['parsedData']['remarks'] = $sections['remarks'] ? RemarksParser.parse($sections['remarks']) : [];
-        $result['parsedData']['accountingData'] = $sections['accountingData'] ? AccountingDataParser.parse($sections['accountingData']) : null;
-        $result['parsedData']['pnrInfo'] = $sections['pnrInfo'] ? PnrInfoBlockParser.parse($sections['pnrInfo']) : null;
-        $result['parsedData']['misc'] = this.parseDataExistsLines($sections['misc'] || '');
-        $result['parsedData']['misc']['ffDataExists'] =
-            $result['parsedData']['misc']['ffDataExists'] ||
-            php.count((($result['parsedData'] || {})['frequentTraveler'] || {})['mileagePrograms'] || []) > 0;
-        //$result['misc'] = $sections['misc'];
+		let frequentTraveler = !$sections['frequentTraveler'] ? null :
+			FrequentFlyerParser.parse($sections['frequentTraveler']);
+		let misc = this.parseDataExistsLines($sections['misc'] || '');
+		misc.ffDataExists = misc['ffDataExists'] ||
+			php.count((frequentTraveler || {})['mileagePrograms'] || []) > 0;
 
-        return $result;
+		let parsedData = {
+			passengers: !$sections['passengers'] ? [] :
+				GdsPassengerBlockParser.parse($sections['passengers']),
+			itinerary: !$sections['itinerary'] ? [] :
+				ItineraryParser.parse($sections['itinerary']),
+			tktgData: !$sections['tktgData'] ? null :
+				SabreTicketListParser.parse($sections['tktgData']),
+			phones: !$sections['phones'] ? null :
+				PhonesBlockParser.parse($sections['phones']),
+			frequentTraveler: frequentTraveler,
+			seatData: !$sections['seatData'] ? null :
+				SeatsParser.parse($sections['seatData']),
+			// maybe it would be better to use [] instead of null?
+			aaFacts: !$sections['aaFacts'] ? null :
+				FactsBlockParser.parse($sections['aaFacts'])['ssrList'],
+			generalFacts: !$sections['generalFacts'] ? null :
+				FactsBlockParser.parse($sections['generalFacts'])['ssrList'],
+			remarks: !$sections['remarks'] ? [] :
+				RemarksParser.parse($sections['remarks']),
+			tktInstructions: !$sections['tktInstructions'] ? [] :
+				$sections['tktInstructions'].split('\n').slice(1)
+					.map(l => this.parseTktInstruction(l)),
+			accountingData: !$sections['accountingData'] ? null :
+				AccountingDataParser.parse($sections['accountingData']),
+			pnrInfo: !$sections['pnrInfo'] ? null :
+				PnrInfoBlockParser.parse($sections['pnrInfo']),
+			misc: misc,
+		};
+
+		return {parsedData};
     }
 }
 module.exports = SabreReservationParser;

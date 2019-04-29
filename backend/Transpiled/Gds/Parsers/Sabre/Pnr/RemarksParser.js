@@ -26,9 +26,9 @@ class RemarksParser {
 			} else {
 				$lineParse = this.parseLine($line);
 				$remarks.push({
-					'lineNumber': $lineParse['lineNumber'],
-					'remarkType': $lineParse['remarkType'],
-					'data': $lineParse['data'],
+					'lineNumber': !$lineParse ? null : $lineParse['lineNumber'],
+					'remarkType': !$lineParse ? null : $lineParse['remarkType'],
+					'data': !$lineParse ? null : $lineParse['data'],
 					'line': $line,
 				});
 			}
