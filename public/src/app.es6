@@ -263,7 +263,7 @@ let onEmcSessionId = (emcSessionId, params) => {
 		.then(([viewData, themeData]) => {
 			syncJsCache();
 			initThemeStyles(themeData, params.htmlRootDom);
-			params.htmlRootDom.querySelectorAll('.pls-wait-placeholder')
+			[...params.htmlRootDom.querySelectorAll('.pls-wait-placeholder')]
 				.forEach(ph => ph.remove());
 			return whenVisible(params.htmlRootDom, () => {
 				initGlobEvents(params.htmlRootDom);
