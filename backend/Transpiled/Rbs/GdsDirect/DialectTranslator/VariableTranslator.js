@@ -752,7 +752,12 @@ class VariableTranslator
 
         $variable = $variableMatches[0] || '';
         $key = this.cleanNumberInVariableName($keyName);
-        $typeFilter = this.specialVariableData($fromGds, $key)['get_types'];
+        let varData = this.specialVariableData($fromGds, $key);
+        if (!varData) {
+            // no such format
+            return {'variable': $variable, 'status': 'OK'};
+        }
+        $typeFilter = varData['get_types'];
         php.preg_match_all('#'+$typeFilter+'#', $variable, $matches = []);
 
         if (StringUtil.endsWith($key, '_lib')) {
