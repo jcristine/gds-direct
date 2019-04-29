@@ -48,7 +48,10 @@ let PersistentHttpRq = (params) => {
 				}
 			});
 		});
-		req.on('error', (e) => BadGateway('Failed to make request - ' + e));
+		req.on('error', (e) => {
+			let exc = BadGateway('Failed to make request - ' + e).exc;
+			reject(exc);
+		});
 		req.end(params.body);
 	});
 };
