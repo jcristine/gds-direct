@@ -18,9 +18,11 @@ let sendRequest = async (soapEnvXml, format) => {
 	}).then(rs => rs.body).then(rsXml => {
 		let dom = parseXml(rsXml);
 		return wrapExc(() => format(dom)).catch(exc => {
-			exc.httpStatusCode = Rej.BadGateway.httpStatusCode;
-			exc.message = 'Invalid Sabre session response format - ' + exc.message;
-			exc.rsXml = rsXml;
+			if (!exc.httpStatusCode) {
+				exc.httpStatusCode = Rej.BadGateway.httpStatusCode;
+				exc.message = 'Invalid Sabre session response format - ' + exc.message;
+				exc.rsXml = rsXml;
+			}
 			return Promise.reject(exc);
 		});
 	});
@@ -134,7 +136,6 @@ let parseInSessionExc = (exc) => {
 	if ((exc + '').indexOf('Invalid or Expired binary security token') > -1) {
 		return LoginTimeOut('Session token expired');
 	} else {
-		exc.debug123 = exc + '';
 		return Promise.reject(exc);
 	}
 };
@@ -152,8 +153,17 @@ let runCmd = async (rqBody, gdsData) => {
 	let soapEnvXml = await makeContinueSoapEnvXml({gdsData, payloadXml, action: 'SabreCommandLLSRQ'});
 
 	return sendRequest(soapEnvXml, dom => {
-		let output = dom.querySelector('SabreCommandLLSRS > Response').textContent;
-		return {output: decodeBinaryChars(output)};
+		let output = (dom.querySelector('SabreCommandLLSRS > Response') || {}).textContent || '';
+		let error = (dom.querySelector('SabreCommandLLSRS > ErrorRS Message') || {}).textContent || '';
+		if (output) {
+			return {output: decodeBinaryChars(output)};
+		} else if (error === 'Invalid Value') {
+			return Rej.BadRequest('Invalid characters in your Sabre command - ' + cmd);
+		} else if (error) {
+			return Rej.ServiceUnavailable('Sabre returned error - ' + error);
+		} else {
+			return Rej.BadGateway('Unexpected Sabre cmd rs format - ' + soapEnvXml);
+		}
 	}).catch(parseInSessionExc);
 };
 

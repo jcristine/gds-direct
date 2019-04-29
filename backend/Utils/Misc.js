@@ -100,13 +100,7 @@ exports.safe = getter => {
 	}
 };
 
-exports.wrapExc = getter => {
-	try {
-		return Promise.resolve(getter());
-	} catch (exc) {
-		return Promise.reject(exc);
-	}
-};
+exports.wrapExc = async getter => getter();
 
 /**
  * @param {Promise[]} promises
