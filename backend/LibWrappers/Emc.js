@@ -1,8 +1,8 @@
 let Redis = require("./Redis.js");
 let Config = require('../Config.js');
 
-// 7 days, because it expires in EMC, and I have no idea how to keep it alive
-let SESSION_EXPIRE = 7 * 24 * 60 * 60;
+// 3 days, because it expires in EMC, and I have no idea how to keep it alive
+let SESSION_EXPIRE = 3 * 24 * 60 * 60;
 
 let makeClient = cfg => {
 	let {Emc} = require('dynatech-client-component-emc');
