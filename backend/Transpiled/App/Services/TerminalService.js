@@ -166,6 +166,8 @@ class TerminalService
 				let cmdTimes = rbsResp.calledCommands.map(rec => rec.duration).filter(a => a);
 				return {
 					cmdType: rbsResp.calledCommands.length > 0 ? rbsResp.calledCommands[0].type : null,
+					translationTime: rbsResp.translationTime || null,
+
 					output: $output || rbsResp.status,
 					appliedRules: appliedRules,
 					prompt: '', // unused I believe

@@ -20,17 +20,6 @@ const TranslateAddFrequentFlyerNumber = require("./TranslateAddFrequentFlyerNumb
 const TranslateChangeFrequentFlyerNumber = require("./TranslateChangeFrequentFlyerNumber");
 const CommonDataHelper = require("../CommonDataHelper");
 
-/**
- * I hope this will save us at least few of these 10
- * ms spent on each cmd in the following monstrous logic
- * Upd.: 1-2 ms with this vs 10-20 ms without it
- */
-let prefixMatches = (pattern, cmd) => {
-    let patterns = Array.isArray(pattern) ? pattern : [pattern];
-    let prefixes = patterns.map(p => p.replace(/{.*/, ''));
-    return prefixes.some(p => cmd.startsWith(p));
-};
-
 class GdsDialectTranslator
 {
 	constructor() {
@@ -1236,7 +1225,7 @@ class GdsDialectTranslator
         for ($patternData of Object.values(this.getPatternList())) {
             if (php.empty($patternData[$fromGds]) ||
                 php.empty($patternData[$toGds]) ||
-                !prefixMatches($patternData[$fromGds], $userInput)
+                !PatternTranslator.prefixMatches($patternData[$fromGds], $userInput)
             ) {
                 continue;
             }
@@ -1251,7 +1240,8 @@ class GdsDialectTranslator
                         'messages': $messages,
                     };
                 }
-            }}
+            }
+        }
 
         if ($notTranslatedPattern) {
             $messages.push(php.strtoupper('Command is not available in '+$toGds));

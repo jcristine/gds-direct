@@ -20,6 +20,8 @@ const ProcessGalileoTerminalInputAction = require("../Transpiled/Rbs/GdsDirect/A
 const GdsDirect = require("../Transpiled/Rbs/GdsDirect/GdsDirect");
 const Rej = require("../Utils/Rej");
 const TerminalSettings = require("../Transpiled/App/Models/Terminal/TerminalSettings");
+const CommandCorrector = require("../Transpiled/Rbs/GdsDirect/DialectTranslator/CommandCorrector");
+const Misc = require("../Utils/Misc");
 const BadRequest = require("../Utils/Rej").BadRequest;
 const TooManyRequests = require("../Utils/Rej").TooManyRequests;
 const NotImplemented = require("../Utils/Rej").NotImplemented;
@@ -198,11 +200,25 @@ let runCmdRq =  async (inputCmd, stateful) => {
 };
 
 let translateCmd = (fromGds, toGds, inputCmd) => {
+	let errors = [];
+	let messages = [];
+	let startHr = process.hrtime();
 	let forTranslation = decodeCmsInput(inputCmd, fromGds);
+
+	let corrected = CommandCorrector.correct(forTranslation, fromGds);
+	errors.push(...(corrected.errors || []));
+	messages.push(...(corrected.messages || []));
+	if (corrected.output &&
+		corrected.output !== forTranslation &&
+		corrected.errors.length === 0
+	) {
+		forTranslation = corrected.output;
+	}
+
 	let translated = (new GdsDialectTranslator())
 		.translate(fromGds, toGds, forTranslation);
-	let errors = translated.errors || [];
-	let messages = translated.messages || [];
+	errors.push(...(translated.errors || []));
+	messages.push(...(translated.messages || []));
 	let resultCmd;
 	if (translated.output) {
 		resultCmd = translated.output;
@@ -215,6 +231,7 @@ let translateCmd = (fromGds, toGds, inputCmd) => {
 		messages: []
 			.concat(errors.map(e => ({type: 'console_error', text: e})))
 			.concat(messages.map(e => ({type: 'pop_up', text: e}))),
+		translationTime: Misc.hrtimeToDecimal(process.hrtime(startHr)),
 	};
 };
 
@@ -280,6 +297,7 @@ let ProcessTerminalInput = async ({session, rqBody, emcUser}) => {
 			.concat(prePccResult.messages || [])
 			.concat(rbsResult.messages)
 			.concat(postPccResult.messages),
+		translationTime: translated.translationTime,
 	};
 
 	let termSvc = new TerminalService(gds);

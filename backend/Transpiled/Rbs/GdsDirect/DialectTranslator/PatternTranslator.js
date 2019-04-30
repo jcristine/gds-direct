@@ -217,6 +217,17 @@ class PatternTranslator {
 		return $pattern;
 	}
 
+	/**
+	 * I hope this will save us at least few of these 10
+	 * ms spent on each cmd in the following monstrous logic
+	 * Upd.: 1-2 ms with this vs 10-20 ms without it
+	 */
+	static prefixMatches(pattern, cmd) {
+		let patterns = Array.isArray(pattern) ? pattern : [pattern];
+		let prefixes = patterns.map(p => p.replace(/{.*/, ''));
+		return prefixes.some(p => cmd.startsWith(p));
+	}
+
 	static returnDeactivatedSymbols($pattern) {
 
 		$pattern = php.str_replace('\\.', '.', $pattern);
