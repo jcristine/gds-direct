@@ -106,6 +106,10 @@ const initGlobEvents = (htmlRootDom) => {
 	let errorsLog = {};
 	/** @param {ErrorEvent} e */
 	let onerror = (e) => {
+		if (!e) {
+			// if you reject() without an argument, no info, no point logging it
+			return false;
+		}
 		let {message, filename, lineno, colno, error} = e;
 		let stack = error.stack;
 		let keyIndex = lineno + ':' + colno;
