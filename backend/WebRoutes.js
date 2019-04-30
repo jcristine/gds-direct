@@ -23,6 +23,7 @@ const PersistentHttpRq = require('./Utils/PersistentHttpRq.js');
 const Misc = require("./Transpiled/Lib/Utils/Misc");
 const CmdLogs = require("./Repositories/CmdLogs");
 const Rej = require("./Utils/Rej");
+const Agents = require("./Repositories/Agents");
 const LoginTimeOut = require("./Utils/Rej").LoginTimeOut;
 const withGdsSession = require("./HttpControllers/MainController").withGdsSession;
 const toHandleHttp = require("./HttpControllers/MainController").toHandleHttp;
@@ -70,6 +71,22 @@ app.use('/public', express.static(__dirname + '/../public'));
 app.get('/gdsDirect/view', withAuth(UserController.getView));
 app.get('/data/getPccList', toHandleHttp(async (rqBody) => {
 	let records = await CompletionData.getPccList();
+	return {records};
+}));
+app.get('/data/getAgentList', toHandleHttp(async (rqBody) => {
+	let rows = await Agents.getAll();
+	// since we are not checking roles for this API, it's
+	// better to not include agent's real name and emails
+	let records = rows.map(row => ({
+		id: row.id,
+		displayName: row.login, // RBS legacy
+		isActive: row.is_active,
+		gdsSigns: [
+			{gds: 'apollo', initials: row.fp_initials},
+			{gds: 'sabre', initials: row.sabre_initials},
+		].filter(s => s.initials),
+		teamId: row.team_id,
+	}));
 	return {records};
 }));
 /**

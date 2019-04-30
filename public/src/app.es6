@@ -6,7 +6,6 @@ import {post} from  "./helpers/requests";
 import GdsDirectPlusApp from  "./modules/GdsDirectPlusApp";
 import HighlightRulesAdminApp from "./modules/HighlightRulesAdminApp";
 import TerminalThemesAdminApp from "./modules/TerminalThemesAdminApp";
-import TerminalSessionListApp from "./modules/TerminalSessionListApp";
 
 let cookies = {
 	get: (key) => {
@@ -333,7 +332,6 @@ window.InitGdsDirectPlusApp.AdminApps = () => {
 	return {
 		HighlightRulesAdminApp: HighlightRulesAdminApp,
 		TerminalThemesAdminApp: TerminalThemesAdminApp,
-		TerminalSessionListApp: TerminalSessionListApp,
 	};
 };
 

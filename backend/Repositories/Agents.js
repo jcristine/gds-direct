@@ -109,3 +109,15 @@ exports.getById = async (id) => {
 	}));
 	return row;
 };
+
+exports.getAll = async () => {
+	let rows = await Db.with(db => db.fetchAll({
+		table: TABLE,
+		orderBy: 'id ASC',
+	}));
+	return rows.map(r => {
+        /** @var typed = normalizeRow() */
+        let typed = r;
+		return typed;
+	});
+};

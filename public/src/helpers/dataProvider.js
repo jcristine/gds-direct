@@ -1,5 +1,6 @@
 
-import {get} 				from "../helpers/requests";
+//import {get} from "../helpers/requests.es6";
+let get = url => fetch(url).then(rs => rs.json());
 
 let whenPccList = null;
 let getPccList = () => {
@@ -8,12 +9,19 @@ let getPccList = () => {
 	}
 	return whenPccList;
 };
-let wheShortcutActionList = null;
+let whenShortcutActionList = null;
 let getShortcutActionList = () => {
-	if (!wheShortcutActionList) {
-		wheShortcutActionList = get('/admin/getShortcutActions');
+	if (!whenShortcutActionList) {
+		whenShortcutActionList = get('/admin/getShortcutActions');
 	}
-	return wheShortcutActionList;
+	return whenShortcutActionList;
+};
+let whenAgentList = null;
+let getAgentList = () => {
+	if (!whenAgentList) {
+		whenAgentList = get('/data/getAgentList');
+	}
+	return whenAgentList;
 };
 
 /**
@@ -23,4 +31,5 @@ let getShortcutActionList = () => {
 export {
 	getPccList,
 	getShortcutActionList,
+	getAgentList,
 };
