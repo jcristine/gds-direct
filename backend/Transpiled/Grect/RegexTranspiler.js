@@ -454,7 +454,7 @@ let generated = {
 	"^(PUBLIC\\/PRIVATE FARES FOR \\S{4}\\s)(?P<value1>.*)": /^(PUBLIC\/PRIVATE FARES FOR \S{4}\s)(?<value1>.*)/,
 	"^ATFQ.*\\/TA(?P<value>\\w{4})\\/": /^ATFQ.*\/TA(?<value>\w{4})\//,
 	"^ {9}(?P<value>OPERATED BY .*)": /^ {9}(?<value>OPERATED BY .*)/,
-	"^\\$B\\¤.*|T\\:\\$B\\¤.*": /^\$B¤.*|T:\$B¤.*/,
+	"^\\$B\\¤.*|T\\:\\$B\\¤.*": /^.*\$B.*¤/,
 	"^ {9}(?P<value>THE FOLLOWING RULES FAILED FOR .*)": /^ {9}(?<value>THE FOLLOWING RULES FAILED FOR .*)/,
 	"^ {9}(?P<value>RULES VALIDATION MET .*)": /^ {9}(?<value>RULES VALIDATION MET .*)/,
 	"^\\$D((29OCT|30OCT|31OCT)|(\\d{2}(NOV|DEC|JAN|FEB|MAR|APR|MAY)))(([A-Z]{3}(NBO|JNB|CPT|LOS|ACC|ADD|ROB|EBB|KGL|JRO|DAR|SEZ|BJM|ZNZ|LUN))|((NBO|JNB|CPT|LOS|ACC|ADD|ROB|EBB|KGL|JRO|DAR|SEZ|BJM|ZNZ|LUN)[A-Z]{3})).*": /^\$D((29OCT|30OCT|31OCT)|(\d{2}(NOV|DEC|JAN|FEB|MAR|APR|MAY)))(([A-Z]{3}(NBO|JNB|CPT|LOS|ACC|ADD|ROB|EBB|KGL|JRO|DAR|SEZ|BJM|ZNZ|LUN))|((NBO|JNB|CPT|LOS|ACC|ADD|ROB|EBB|KGL|JRO|DAR|SEZ|BJM|ZNZ|LUN)[A-Z]{3})).*/,
