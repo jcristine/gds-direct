@@ -214,7 +214,7 @@ class ImportPqApolloAction extends AbstractGdsAction {
 		let $errors, $result;
 		$errors = CanCreatePqRules.checkPricingOutput('apollo', $output, this.$leadData);
 		if (!php.empty($errors)) {
-			$result = {'error': 'Invalid pricing data - ' + php.implode(';', $errors)};
+			$result = {'error': 'Invalid pricing data on >' + $cmd + '; - ' + php.implode(';', $errors)};
 		} else {
 			$result = this.constructor.parsePricing($output, $nameRecords, $cmd);
 		}
