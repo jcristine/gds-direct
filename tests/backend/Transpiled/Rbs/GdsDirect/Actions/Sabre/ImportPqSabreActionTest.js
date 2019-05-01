@@ -986,6 +986,69 @@ class ImportPqSabreActionTest extends require('../../../../Lib/TestCase.js') {
 			},
 		});
 
+		$list.push({
+			'input': {
+				'title': 'example attempt to create multi-ticket PQ with',
+				'baseDate': '2019-05-01',
+				'fetchOptionalFields': false,
+			},
+			'output': {
+				'error': 'Error: Last pricing command WPS1 does not cover some itinerary segments: 2',
+			},
+			'sessionInfo': {
+				'initialState': {
+					"area": "A", "pcc": "6IIF", "recordLocator": "", "canCreatePq": false, "hasPnr": true,
+				},
+				'initialCommands': [
+					{
+					    "cmd": "WPS1",
+					    "output": [
+					        "20SEP DEPARTURE DATE-----LAST DAY TO PURCHASE 02MAY/2359",
+					        "       BASE FARE                 TAXES/FEES/CHARGES    TOTAL",
+					        " 1-    USD450.00                     48.05XT       USD498.05ADT",
+					        "    XT     33.75US       4.20ZP       5.60AY       4.50XF ",
+					        "          450.00                     48.05            498.05TTL",
+					        "ADT-01  UAA3AFEN",
+					        " WAS UA YTO450.00NUC450.00END ROE1.00 ZPIAD XFIAD4.5",
+					        "NONREF/0VALUAFTDPT/CHGFEE",
+					        "VALIDATING CARRIER - UA",
+					        "CAT 15 SALES RESTRICTIONS FREE TEXT FOUND - VERIFY RULES",
+					        "BAG ALLOWANCE     -IADYYZ-NIL/UA",
+					        "1STCHECKED BAG FEE-IADYYZ-USD30.00/UA/UP TO 50 POUNDS/23 KILOGR",
+					        "AMS AND UP TO 62 LINEAR INCHES/158 LINEAR CENTIMETERS",
+					        "2NDCHECKED BAG FEE-IADYYZ-USD50.00/UA/UP TO 50 POUNDS/23 KILOGR",
+					        "AMS AND UP TO 62 LINEAR INCHES/158 LINEAR CENTIMETERS",
+					        "CARRY ON ALLOWANCE",
+					        "IADYYZ-01P/UA",
+					        "01/CARRY ON HAND BAGGAGE",
+					        "01/UP TO 45 LINEAR INCHES/115 LINEAR CENTIMETERS",
+					        "CARRY ON CHARGES",
+					        "IADYYZ-UA-CARRY ON FEES UNKNOWN-CONTACT CARRIER",
+					        "ADDITIONAL ALLOWANCES AND/OR DISCOUNTS MAY APPLY",
+					        "."
+					    ].join("\n"),
+					    "duration": "1.041178270",
+					    "type": "priceItinerary",
+					    "scrolledCmd": "WPS1",
+					    "state": {"area":"A","pcc":"6IIF","recordLocator":"","canCreatePq":true,"scrolledCmd":"WPS1","cmdCnt":29,"pricingCmd":"WPS1","cmdType":"priceItinerary","hasPnr":true}
+					},
+				],
+				'performedCommands': [
+					{
+					    "cmd": "*R",
+					    "output": [
+					        "NO NAMES",
+					        " 1 SA 210Y 10SEP T IADACC SS1   540P  810A  11SEP W /DCSA /E",
+					        " 2 H16240Y 20SEP F ROBACC SS1   230P  430P /DCH1 /E",
+					        "OPERATED BY AFRICA WORLD AIRLINES",
+					        "AFRICA WORLD AIRLINES   ",
+					        "6IIF.L3II*AWS 1106/01MAY19"
+					    ].join("\n"),
+					},
+				],
+			},
+		});
+
 		$argumentTuples = [];
 		for ($testCase of Object.values($list)) {
 			$argumentTuples.push([$testCase['input'], $testCase['output'], $testCase['sessionInfo']]);
@@ -1008,7 +1071,8 @@ class ImportPqSabreActionTest extends require('../../../../Lib/TestCase.js') {
 			.fetchOptionalFields($input.fetchOptionalFields)
 			.setPreCalledCommandsFromDb($sessionInfo.initialCommands || [])
 			.setBaseDate('2018-03-20')
-			.execute();
+			.execute()
+			.catch(exc => ({error: exc + ''}));
 
 		this.assertArrayElementsSubset($output, $actualOutput, ($actualOutput || {}).error || '');
 		this.assertSame(true, $session.getGdsSession().wereAllCommandsUsed(), 'not all session commands were used');
