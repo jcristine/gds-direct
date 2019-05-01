@@ -13,6 +13,7 @@ const SabrePricingAdapter = require('../../../FormatAdapters/SabrePricingAdapter
 const SabreVerifyParser = require('../../../../Gds/Parsers/Sabre/SabreVerifyParser.js');
 const ImportSabreFareRulesActions = require('../../../../Rbs/Process/Apollo/ImportPnr/Actions/ImportSabreFareRulesActions.js');
 const withCapture = require("../../../../../GdsHelpers/CommonUtils").withCapture;
+const Rej = require('../../../../../Utils/Rej.js');
 
 /**
  * import PNR fields of currently opened PNR
@@ -46,7 +47,7 @@ class ImportPqSabreAction extends AbstractGdsAction {
 		return this;
 	}
 
-	/** @param $commands = Db::fetchAll('SELECT * FROM terminal_command_log') */
+	/** @param $commands = [at('CmdLog.js').makeRow()] */
 	setPreCalledCommandsFromDb($commands) {
 		this.$preCalledCommands = $commands;
 		this.$cmdToOutput = php.array_combine(
@@ -120,7 +121,7 @@ class ImportPqSabreAction extends AbstractGdsAction {
 		return $result;
 	}
 
-	async parsePricing($dump, nameRecords, $cmd) {
+	parsePricing($dump, nameRecords, $cmd) {
 		let $parsed, $wrapped, $result = {}, $ptcPricingBlocks;
 
 		$parsed = SabrePricingParser.parse($dump);
@@ -154,14 +155,14 @@ class ImportPqSabreAction extends AbstractGdsAction {
 		};
 	}
 
-	async processPricingOutput($output, $cmd, reservation) {
+	processPricingOutput($output, $cmd, reservation) {
 		let $errors, $result;
 
 		$errors = GetPqItineraryAction.checkPricingOutput('sabre', $output, this.$leadData);
 		if (!php.empty($errors)) {
 			$result = {'error': 'Invalid pricing data - ' + php.implode(';', $errors)};
 		} else {
-			$result = await this.parsePricing($output, reservation.passengers, $cmd);
+			$result = this.parsePricing($output, reservation.passengers, $cmd);
 		}
 		$result['pricingPart'] = $result['pricingPart'] || {};
 		$result['pricingPart']['cmd'] = $cmd;
@@ -170,39 +171,119 @@ class ImportPqSabreAction extends AbstractGdsAction {
 		return $result;
 	}
 
+	/** @param parsedCmd = {data: require('PricingCmdParser.js').parse()} */
+	static calcPricedSegments(segmentsLeft, parsedCmd, followingCommands) {
+		let numToSeg = php.array_combine(
+			segmentsLeft.map(s => s.segmentNumber),
+			segmentsLeft
+		);
+		let modItems = parsedCmd.data.pricingModifiers;
+		let modDict = php.array_combine(
+			modItems.map(i => i.type),
+			modItems.map(i => i.parsed),
+		);
+		let segNums = (modDict.segments || {}).segmentNumbers || [];
+		if (segNums.length === 0) {
+			// applies to all segments
+			if (followingCommands.length > 0) {
+				let error = 'Last pricing command ' + followingCommands.map(r => r.cmd).join(' & ') +
+					' does not cover some itinerary segments: ' +
+					segmentsLeft.map(s => s.segmentNumber).join(',');
+				return {error};
+			} else {
+				return {segmentsLeft: []};
+			}
+		} else {
+			for (let segNum of segNums) {
+				if (!numToSeg[segNum]) {
+					let error = 'Repeating segment number ' + segNum + ' covered by >' + parsedCmd.cmd + ';';
+					return {error};
+				} else {
+					delete numToSeg[segNum];
+				}
+			}
+			return {'segmentsLeft': Object.values(numToSeg)};
+		}
+	}
+
+	collectPricingCmds(segmentsLeft) {
+		let cmdRecords = [];
+		for (let cmdRec of [...this.$preCalledCommands].reverse()) {
+			let parsed = CommandParser.parse(cmdRec.cmd);
+			if (parsed.type === 'priceItinerary') {
+				let calculated = this.constructor.calcPricedSegments(segmentsLeft, parsed, cmdRecords);
+				if (calculated.error) {
+					return Rej.BadRequest(calculated.error);
+				} else {
+					cmdRecords.push(cmdRec);
+					segmentsLeft = calculated.segmentsLeft;
+					if (segmentsLeft.length === 0) {
+						return Promise.resolve({
+							cmdRecords: cmdRecords.reverse(),
+						});
+					}
+				}
+			}
+		}
+		return cmdRecords.length > 0
+			? Rej.BadRequest(
+				'Last pricing command ' + cmdRecords.map(r => r.cmd).join(' & ') +
+				' does not cover some itinerary segments: ' +
+				segmentsLeft.map(s => s.segmentNumber).join(','))
+			: Rej.UnprocessableEntity('Failed to determine current pricing command');
+	}
+
 	async getPricing(reservation) {
-		let $cmdRecord, $pricingCommand, $result, $errors, $raw;
+		let collected = await this.collectPricingCmds(reservation['itinerary']);
+		let cmdRecords = collected.cmdRecords;
+		let result = {
+			pricingPart: {
+				cmd: cmdRecords.map(r => r.cmd).join('&'),
+				raw: cmdRecords.map(r => r.output).join('\n&\n'),
+				parsed: {pricingList: []},
+			},
+			bagPtcPricingBlocks: [],
+		};
+		for (let [i, cmdRec] of Object.entries(cmdRecords)) {
+			let cmd = cmdRec.cmd;
+			this.$allCommands.push(cmdRec);
 
-		if (!($cmdRecord = this.findLastCommand('priceItinerary'))) {
-			return {'error': 'Failed to determine current pricing command'};
+			let errors = GetPqItineraryAction.checkPricingCommand('sabre', cmd, this.$leadData);
+			if (errors.length > 0) {
+				result.error = 'Invalid pricing command - ' + cmd + ' - ' + php.implode(';', errors);
+				return result;
+			}
+			let processed = this.processPricingOutput(cmdRec.output, cmd, reservation);
+			if (processed.error) {
+				result.error = processed.error;
+				return result;
+			}
+			let store = processed.pricingPart.parsed.pricingList[0];
+			store.pricingNumber = +i + 1;
+			let bagBocks = processed.bagPtcPricingBlocks
+				.map(bagBlock => ({...bagBlock, pricingNumber: +i+1}));
+			result.pricingPart.parsed.pricingList.push(store);
+			result.bagPtcPricingBlocks.push(...bagBocks);
 		}
-		$pricingCommand = $cmdRecord['cmd'];
-		$result = {'cmd': $pricingCommand};
-		$errors = GetPqItineraryAction.checkPricingCommand('sabre', $pricingCommand, this.$leadData);
-		if (!php.empty($errors)) {
-			$result['error'] = 'Invalid pricing command - ' + $pricingCommand + ' - ' + php.implode(';', $errors);
-			return $result;
-		}
-		this.$allCommands.push($cmdRecord);
-		$raw = $cmdRecord['output'];
-
-		return this.processPricingOutput($raw, $pricingCommand, reservation);
+		return result;
 	}
 
 	/**
 	 * @param $currentStore = AmadeusGetPricingPtcBlocksAction::execute()['pricingList'][0]
 	 * fetches published pricing if current pricing fare is private
 	 */
-	async getPublishedPricing($currentStore, $nameRecords) {
+	async getPublishedPricing(pricingList, $nameRecords) {
 		let $isPrivateFare, $result, $cmd, $raw, $processed, $error;
 
-		$isPrivateFare = $currentStore['pricingBlockList'].some(b => b.hasPrivateFaresSelectedMessage);
+		$isPrivateFare = pricingList
+			.some(store => store['pricingBlockList']
+				.some(b => b.hasPrivateFaresSelectedMessage));
 		$result = {'isRequired': $isPrivateFare, 'raw': null, 'parsed': null};
 		if (!$isPrivateFare) return $result;
 
 		$cmd = 'WPNC¥PL';
 		$raw = await this.runOrReuse($cmd);
-		$processed = await this.parsePricing($raw, $nameRecords, $cmd);
+		$processed = this.parsePricing($raw, $nameRecords, $cmd);
 
 		$result['cmd'] = $cmd;
 		$result['raw'] = $raw;
@@ -217,8 +298,12 @@ class ImportPqSabreAction extends AbstractGdsAction {
 	/**
 	 * @param $pricing = ImportSabrePnrFormatAdapter::transformPricing()
 	 */
-	async getSabreFareRules($sections, $itinerary, $pricing) {
+	async getSabreFareRules($sections, $itinerary, pricingList) {
 		let $fareListRecords, $ruleRecords, $i, $ptc, $common, $error, $recordBase, $raw;
+		if (php.count(pricingList) > 1) {
+			return {'error': 'Fare rules are not supported in multi-pricing PQ'};
+		}
+		let $pricing = pricingList[0];
 
 		$fareListRecords = [];
 		$ruleRecords = [];
@@ -257,12 +342,12 @@ class ImportPqSabreAction extends AbstractGdsAction {
 		};
 	}
 
-	async getFareRules($pricing, $itinerary) {
+	async getFareRules(pricingList, $itinerary) {
 		let $sections, $common, $error, $raw, $sanitized;
 
 		$sections = [16];
 
-		$common = await this.getSabreFareRules($sections, $itinerary, $pricing);
+		$common = await this.getSabreFareRules($sections, $itinerary, pricingList);
 		if ($error = $common['error']) {
 			$raw = $common['raw'];
 			$sanitized = $raw ? this.constructor.sanitizeOutput($raw) : null;
@@ -285,7 +370,7 @@ class ImportPqSabreAction extends AbstractGdsAction {
 	}
 
 	async collectPnrData() {
-		let $result, $reservationRecord, $nameRecords, $pricingRecord, $flightServiceRecord, $currentStore,
+		let $result, $reservationRecord, $nameRecords, $pricingRecord, $flightServiceRecord,
 			$fareRuleData, $publishedPricingRecord;
 
 		$result = {'pnrData': {}};
@@ -305,8 +390,8 @@ class ImportPqSabreAction extends AbstractGdsAction {
 			if ($result['error'] = $flightServiceRecord['error']) return $result;
 			$result['pnrData']['flightServiceInfo'] = $flightServiceRecord;
 
-			$currentStore = $pricingRecord['pricingPart']['parsed']['pricingList'][0];
-			$fareRuleData = await this.getFareRules($currentStore,
+			let pricingList = $pricingRecord['pricingPart']['parsed']['pricingList'];
+			$fareRuleData = await this.getFareRules(pricingList,
 				$reservationRecord['parsed']['itinerary']).catch(exc => ({error: 'Exc - ' + exc}));
 			if ($result['error'] = $fareRuleData['error']) return $result;
 
@@ -314,7 +399,7 @@ class ImportPqSabreAction extends AbstractGdsAction {
 			$result['pnrData']['fareRules'] = $fareRuleData['ruleRecords'];
 
 			// it is important that it's at the end cuz it affects fare rules
-			$publishedPricingRecord = await this.getPublishedPricing($currentStore, $nameRecords).catch(exc => ({error: 'Exc - ' + exc}));
+			$publishedPricingRecord = await this.getPublishedPricing(pricingList, $nameRecords).catch(exc => ({error: 'Exc - ' + exc}));
 			if ($result['error'] = $publishedPricingRecord['error']) return $result;
 			$result['pnrData']['publishedPricing'] = $publishedPricingRecord;
 		}

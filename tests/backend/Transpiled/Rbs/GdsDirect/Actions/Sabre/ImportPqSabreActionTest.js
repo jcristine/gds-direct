@@ -882,6 +882,110 @@ class ImportPqSabreActionTest extends require('../../../../Lib/TestCase.js') {
 			},
 		});
 
+		$list.push({
+			'input': {
+				'title': 'multi-ticket pricing example',
+				'baseDate': '2019-05-01',
+				'fetchOptionalFields': false,
+			},
+			'output': {
+				'allCommands': [
+					{'cmd': '*R', 'type': 'redisplayPnr'},
+					{'cmd': 'WPS1', 'type': 'priceItinerary'},
+					{'cmd': 'WPS2', 'type': 'priceItinerary'},
+				],
+				'pnrData': {
+					'currentPricing': {
+						'parsed': {
+							'pricingList': [
+								{
+									'pricingBlockList': [
+										{
+											'ptcInfo': {'ptc': 'ADT', 'quantity': 1, 'ptcRequested': null},
+											'fareInfo': {
+												'totalFare': {'currency': 'USD', 'amount': '2553.70'},
+											},
+										},
+									],
+								},
+								{
+									'pricingBlockList': [
+										{
+											'ptcInfo': {'ptc': 'ADT', 'quantity': 1, 'ptcRequested': null},
+											'fareInfo': {
+												'totalFare': {'currency': 'USD', 'amount': '694.00'},
+											},
+										},
+									],
+								},
+							],
+						},
+					},
+				},
+			},
+			'sessionInfo': {
+				'initialState': {
+					"area": "A", "pcc": "6IIF", "recordLocator": "", "canCreatePq": false, "hasPnr": true,
+				},
+				'initialCommands': [
+					{
+					    "cmd": "WPS1",
+					    "output": [
+					        "       BASE FARE                 TAXES/FEES/CHARGES    TOTAL",
+					        " 1-   USD2321.00                    232.70XT      USD2553.70ADT",
+					        "    XT    194.00YR      18.60US       5.60AY      10.00G5 ",
+					        "            4.50XF ",
+					        "         2321.00                    232.70           2553.70TTL",
+					        "ADT-01  YOW2US",
+					        " WAS SA ACC2321.00NUC2321.00END ROE1.00 XFIAD4.5",
+					        "VALIDATING CARRIER - SA",
+					        "CAT 15 SALES RESTRICTIONS FREE TEXT FOUND - VERIFY RULES",
+					        "BAG ALLOWANCE     -IADACC-02P/SA/EACH PIECE UP TO 50 POUNDS/23 ",
+					        "KILOGRAMS AND UP TO 62 LINEAR INCHES/158 LINEAR CENTIMETERS",
+					        "CARRY ON ALLOWANCE",
+					        "IADACC-01P/SA",
+					        "CARRY ON CHARGES",
+					        "IADACC-SA-CARRY ON FEES UNKNOWN-CONTACT CARRIER",
+					        "ADDITIONAL ALLOWANCES AND/OR DISCOUNTS MAY APPLY",
+					        "                                                               ",
+					        "AIR EXTRAS AVAILABLE - SEE WP*AE",
+					        "."
+					    ].join("\n"),
+					},
+					{
+					    "cmd": "WPS2",
+					    "output": [
+					        "20SEP DEPARTURE DATE-----LAST DAY TO PURCHASE 04MAY/0906",
+					        "       BASE FARE                 TAXES/FEES/CHARGES    TOTAL",
+					        " 1-    USD539.00                    155.00XT       USD694.00ADT",
+					        "    XT     30.00YQ      85.00EM      30.00HX      10.00G5 ",
+					        "          539.00                    155.00            694.00TTL",
+					        "ADT-01  YOWAW1",
+					        " MLW H1 ACC539.00NUC539.00END ROE1.00",
+					        "OPERATED BY AFRICA WORLD/AIRLINES/1PC 20KG/PLATE ON 169",
+					        "VALIDATING CARRIER - HR PER GSA AGREEMENT WITH H1",
+					        "CAT 15 SALES RESTRICTIONS FREE TEXT FOUND - VERIFY RULES",
+					        "BAGGAGE INFO AVAILABLE - SEE WP*BAG",
+					        "."
+					    ].join("\n"),
+					},
+				],
+				'performedCommands': [
+					{
+					    "cmd": "*R",
+					    "output": [
+					        "NO NAMES",
+					        " 1 SA 210Y 10SEP T IADACC SS1   540P  810A  11SEP W /DCSA /E",
+					        " 2 H16240Y 20SEP F ROBACC SS1   230P  430P /DCH1 /E",
+					        "OPERATED BY AFRICA WORLD AIRLINES",
+					        "AFRICA WORLD AIRLINES   ",
+					        "6IIF.L3II*AWS 1106/01MAY19"
+					    ].join("\n"),
+					},
+				],
+			},
+		});
+
 		$argumentTuples = [];
 		for ($testCase of Object.values($list)) {
 			$argumentTuples.push([$testCase['input'], $testCase['output'], $testCase['sessionInfo']]);
@@ -902,8 +1006,7 @@ class ImportPqSabreActionTest extends require('../../../../Lib/TestCase.js') {
 
 		$actualOutput = await $action
 			.fetchOptionalFields($input.fetchOptionalFields)
-			.setPreCalledCommandsFromDb(await $session.getLog()
-				.getLastCommandsOfTypes(SessionStateProcessor.getCanCreatePqSafeTypes()))
+			.setPreCalledCommandsFromDb($sessionInfo.initialCommands || [])
 			.setBaseDate('2018-03-20')
 			.execute();
 
