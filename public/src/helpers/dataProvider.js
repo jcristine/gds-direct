@@ -1,6 +1,5 @@
 
-//import {get} from "../helpers/requests.es6";
-let get = url => fetch(url).then(rs => rs.json());
+import {get} from "../helpers/requests.es6";
 
 let whenPccList = null;
 let getPccList = () => {
