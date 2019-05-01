@@ -28,7 +28,7 @@
                     </div>
 
                     <div class="form-group">
-                        <input name="agentId" class="form-control input-s-sm" data-name="agentId" placeholder="Select Agent"/>
+                        <input name="agentId" class="input-s-sm" data-name="agentId" placeholder="Select Agent"/>
                     </div>
 
                     <div class="form-group">
@@ -75,6 +75,8 @@
     </div>
 </section>
 
+<link href="./../src/theme/entry/standalone.css" rel="stylesheet" />
+
 <script
   src="https://code.jquery.com/jquery-3.4.0.js"
   integrity="sha256-DYZMCC8HTC+QDr5QNaIcfR7VSPtcISykd+6eSmBW5qo="
@@ -83,21 +85,9 @@
 
 <!-- do not update to v4 pls, it does not include 'page' in 'query' function -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/3.5.4/select2.min.js" integrity="sha256-7A2MDY2eGSSUvgfbuH1IdzYk8qkEd3uzwiXADqPDdtY=" crossorigin="anonymous"></script>
-
-<script type="module" src="../src/modules/TerminalSessionListApp.js"></script>
-
-<!--<script src="../terminal-bundle.js"></script>-->
-<!--<script>-->
-<!--	window.InitGdsDirectPlusApp.AdminApps().TerminalSessionListApp({-->
-<!--		htmlRootDom		: [...document.getElementsByClassName('container-fluid')][0],-->
-<!--	}).then(app => {-->
-<!--		console.log(app);-->
-<!--	});-->
-<!--</script>-->
-
-<link href="./../src/theme/entry/standalone.css" rel="stylesheet" />
 <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/3.5.4/select2.min.css" rel="stylesheet" />
 
+<script type="module" src="../src/modules/TerminalSessionListApp.js"></script>
 
 </body>
 </html>
