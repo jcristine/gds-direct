@@ -6,16 +6,34 @@ const nonEmpty = require("../Utils/Rej").nonEmpty;
 
 let TABLE = 'terminal_command_log';
 
+let isInvalidFormat = (cmdRec, gds) => {
+	if (gds === 'apollo') {
+		let matches = cmdRec.output.match(/^INVLD\s*><$/)
+			|| cmdRec.output.match(/^CK ACTN CODE\s*><$/)
+			|| cmdRec.output.match(/^CHECK FORMAT - .+\s*><$/)
+			|| cmdRec.output.match(/^CK FRMT\s*><$/)
+			|| cmdRec.output.match(/^VERIFY - FORMAT\s*><$/)
+			|| cmdRec.output.match(/^RESTRICTED\s*><$/)
+			|| cmdRec.output.match(/^ERROR.*INVALID FORMAT.*\n.*\s*><$/);
+		return matches ? true : false;
+	} else {
+		return false;
+	}
+};
+
 let makeRow = (cmdRec, session, cmdRqId, prevState) => {
 	let gds = session.context.gds;
 	let scrolledCmd = (cmdRec.state || {}).scrolledCmd;
 	let scrolledType = !scrolledCmd ? null :
 		CommonDataHelper.parseCmdByGds(gds, scrolledCmd).type;
-
+	let type = scrolledType || cmdRec.type;
+	if (!type && isInvalidFormat(cmdRec, gds)) {
+		type = '!invalidFormat';
+	}
 	return {
 		session_id: session.id,
 		gds: gds,
-		type: scrolledType || cmdRec.type,
+		type: type,
 		is_mr: scrolledType && scrolledType !== cmdRec.type,
 		dt: sqlNow(),
 		cmd: cmdRec.cmd,
@@ -86,3 +104,5 @@ exports.getLast = async (sessionId) => {
 	}));
 	return r;
 };
+
+exports.isInvalidFormat = isInvalidFormat;

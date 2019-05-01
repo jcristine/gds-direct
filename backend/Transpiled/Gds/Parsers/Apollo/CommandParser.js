@@ -120,6 +120,7 @@ class CommandParser {
 			[/^FN\d+\/S$/]: 'fareRulesSummary', // navigate through them with summary
 			[/^FN\d+(\/\d+(\-\d+)?|\/[A-Z]{3})+/]: 'fareRules', // get k-th fare rule section of i-th fare
 			[/^\$V(\/\d+(\-\d+)?|\/[A-Z]{3})+/]: 'fareRulesFromMenu',
+			[/^\$V\d+(\/\d+(\-\d+)?|\/[A-Z]{3})+/]: 'fareRulesFromTariff',
 			[/^T:V\d*$/]: 'restorePricing',
 			[/^\*R(\||$)/]: 'redisplayPnr', // ENTIRE RECORD
 			[/^\*I(\||$)/]: 'itinerary', // ITINERARY

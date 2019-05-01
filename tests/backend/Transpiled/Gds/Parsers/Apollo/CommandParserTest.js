@@ -854,6 +854,7 @@ class CommandParserTest extends require('../../../../../../backend/Transpiled/Li
         $list.push(["$MR       TOTAL ADD COLLECT   USD    15.00                      /F;CK............................................", {
             type: 'confirmExchangeFareDifferenceMask',
         }]);
+        $list.push(['$V2/16', {type: 'fareRulesFromTariff'}]);
         return $list;
     }
 
