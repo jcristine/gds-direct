@@ -231,8 +231,8 @@ class ImportPqApolloAction extends AbstractGdsAction {
 			// applies to all segments
 			if (!php.empty($followingCommands)) {
 				// have more recent commands with segment select
-				$error = 'Last pricing commands ' + php.implode(' & ', php.array_column($followingCommands, 'cmd')) +
-					' do not cover some itinerary segments: ' +
+				$error = 'Last pricing command ' +  php.implode(' & ', php.array_column($followingCommands, 'cmd')) +
+					' does not cover some itinerary segments: ' +
 					php.implode(',', php.array_column($segmentsLeft, 'segmentNumber'));
 				return {'error': $error};
 			} else {
@@ -262,7 +262,7 @@ class ImportPqApolloAction extends AbstractGdsAction {
 			$parsed = CommandParser.parse($cmdRecord['cmd']);
 			$logCmdType = $parsed['type'];
 			if ($logCmdType === 'priceItinerary') {
-				$cmdRecord['output'] = this.constructor.joinFullOutput($mrs);
+				$cmdRecord = {...$cmdRecord, output: this.constructor.joinFullOutput($mrs)};
 				$calculated = this.constructor.calcPricedSegments($segmentsLeft, $cmdRecord, $cmdRecords);
 				if (!php.empty($calculated['error'])) {
 					return Rej.BadRequest($calculated['error']);
@@ -279,8 +279,8 @@ class ImportPqApolloAction extends AbstractGdsAction {
 		}
 		return !php.empty($cmdRecords)
 			? Rej.BadRequest(
-				'Last pricing commands ' + php.implode(' & ', php.array_column($cmdRecords, 'cmd')) +
-				' do not cover some itinerary segments: ' +
+				'Last pricing command ' + php.implode(' & ', php.array_column($cmdRecords, 'cmd')) +
+				' does not cover some itinerary segments: ' +
 				php.implode(',', php.array_column($segmentsLeft, 'segmentNumber')))
 			: Rej.UnprocessableEntity('Failed to determine current pricing command');
 	}
@@ -288,9 +288,6 @@ class ImportPqApolloAction extends AbstractGdsAction {
 	async getPricing($reservation) {
 		let $collected, $cmdRecords, $result, $i, $cmdRecord, $pricingCommand, $errors, $cmd, $raw, $processed;
 		$collected = await this.collectPricingCmds($reservation['itinerary']);
-		if (!php.empty($collected['error'])) {
-			return {'error': $collected['error']};
-		}
 		$cmdRecords = $collected['cmdRecords'];
 		$result = {
 			'pricingPart': {
