@@ -48,6 +48,7 @@ export const CHANGE_SETTINGS = settings => {
 			notify({
 				type: 'success',
 				msg: 'Saved Successfully',
+				timeout: 4000,
 			});
 		});
 	}
