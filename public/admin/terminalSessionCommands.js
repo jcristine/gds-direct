@@ -1,5 +1,6 @@
 
 import './../src/actions/initAuthPage.js';
+import GrectApi from './../src/helpers/GrectApi.js';
 
 /**
  * based on the code written by Natalija Kuzmenkova
@@ -74,8 +75,20 @@ let {moment, $, jQuery, _, template, Spinner} = window;
     window.customSpinner = new window.ModalSpinner();
 })();
 
-window.GdsDirectPlusPage.whenEmcSessionId.then(function(emcSessionId){
+let whenEmcSessionId = window.GdsDirectPlusPage.whenEmcSessionId;
+let grectApi = GrectApi({whenEmcSessionId});
+
+whenEmcSessionId.then(function(emcSessionId){
 	let sessionId = new URLSearchParams(window.location.search).get('sessionId');
+    let whenCmdRqById = grectApi.getCmdRqList({sessionId})
+        .then(({records}) => {
+            let cmdRqById = {};
+            for (let record of records) {
+                cmdRqById[record.id] = record;
+            }
+            return cmdRqById;
+        });
+
     var iconsMap = {
             apollo: 'fa-rocket',
             galileo: 'fa-balance-scale',
@@ -151,13 +164,8 @@ window.GdsDirectPlusPage.whenEmcSessionId.then(function(emcSessionId){
 
             modalSpinner.show();
 
-            $.ajax({
-                url: '/api/js/terminal-log/commands',
-                data: {
-                    sessionId: sessionId,
-					emcSessionId: emcSessionId,
-                },
-                success: function (res) {
+            grectApi.getCmdList({sessionId})
+                .then((res) => {
                     $('.js-content').removeClass('hidden');
 
                     self.records = res.records || [];
@@ -178,8 +186,7 @@ window.GdsDirectPlusPage.whenEmcSessionId.then(function(emcSessionId){
                     $table
                         .find('.js-output')
                         .width(self.width);
-                }
-            });
+                });
         };
 
         self.setDialectStyles = function () {
@@ -217,6 +224,7 @@ window.GdsDirectPlusPage.whenEmcSessionId.then(function(emcSessionId){
 
             $tBody.empty();
 
+            let lastCmdRqId = null;
             var rowList = _.reduce(self.records, function (acc, item) {
 
                 var iconPnr = (!parseInt(item.has_pnr)) ? '' :
@@ -250,6 +258,27 @@ window.GdsDirectPlusPage.whenEmcSessionId.then(function(emcSessionId){
                         '<pre>' + item.output + '</pre>'
                 });
 
+                let $tr = $(html);
+                let cmdRqId = item.cmd_requested;
+                let isContinuation = lastCmdRqId == cmdRqId;
+                whenCmdRqById.then(cmdRqById => {
+                    let cmdRqCell = $tr[0].querySelector('.value-holder[data-name="cmd_requested"]');
+                    let cmdRq = cmdRqById[cmdRqId];
+                    if (cmdRqCell) {
+                        if (isContinuation) {
+                            cmdRqCell.style['color'] = 'lightgrey';
+                            cmdRqCell.textContent = '(continue)';
+                        } else if (cmdRq) {
+                            cmdRqCell.textContent = cmdRq.command;
+                        } else if (!cmdRqId) {
+                            cmdRqCell.style['color'] = 'orange';
+                            cmdRqCell.textContent = '(no input data)';
+                        }
+                        cmdRqCell.title = cmdRqId;
+                    }
+                });
+                lastCmdRqId = cmdRqId;
+
                 if (options && options.isOnInit) {
 
                     self.copyAll.push(
@@ -265,7 +294,7 @@ window.GdsDirectPlusPage.whenEmcSessionId.then(function(emcSessionId){
                     );
                 }
 
-                acc.push(html);
+                acc.push($tr);
 
                 if (acc.length > 1000) {
 

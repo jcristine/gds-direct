@@ -214,7 +214,9 @@
                 </td>
                 <td>
                     <% if (item.cmd_requested) { %>
-                    <span class="js-folding-skip text-wrap"><%= item.cmd_requested %></span>
+                    <span class="js-folding-skip text-wrap value-holder" data-name="cmd_requested"><%= item.cmd_requested %></span>
+                    <% } else { %>
+                    <span style="color: #dac79e">(no input data)</span>
                     <% } %>
                 </td>
                 <td>
@@ -286,5 +288,9 @@
     /* I don't have enough knowledge sadly to understand why does it not work without the * */
     body * {
         font-size: 13px;
+    }
+    .value-holder[data-name="cmd_requested"] {
+        white-space: pre;
+        font-family: monospace;
     }
 </style>
