@@ -41,16 +41,15 @@ let PersistentHttpRq = (params) => {
 				if (res.statusCode != 200) {
 					let msg = 'Http request to external service failed - ' +
 						res.statusCode + ' - ' + parsedUrl.path + ' - ' + responseBody;
-					let exc = BadGateway(msg, result).exc;
-					reject(exc);
+					reject(BadGateway.makeExc(msg, result));
 				} else {
 					resolve(result);
 				}
 			});
 		});
 		req.on('error', (e) => {
-			let exc = BadGateway('Failed to make request - ' + e).exc;
-			reject(exc);
+			let msg = 'Failed to make request - ' + e;
+			reject(BadGateway.makeExc(msg));
 		});
 		req.end(params.body);
 	});
