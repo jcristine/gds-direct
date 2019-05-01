@@ -36,8 +36,8 @@ app.use(express.urlencoded({extended: true}));
 
 app.use((req, res, next) => {
 	res.setHeader('Access-Control-Allow-Origin', req.headers.origin || '*');
-	res.setHeader('Access-Control-Allow-Methods', 'GET, POST');
-	res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With,content-type,cache-control');
+	res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
+	res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With,content-type,cache-control,Cache-Control');
 	res.setHeader('Access-Control-Allow-Credentials', true);
 	next();
 });
@@ -464,3 +464,8 @@ app.get('/ping', toHandleHttp((rqBody) => {
 		return {status: 'OK', result: data};
 	});
 }));
+
+//The 404 Route (ALWAYS Keep this as the last route)
+app.get('*', function(req, res){
+  res.status(404).send('GRECT Route ' + req.path + ' not found');
+});
