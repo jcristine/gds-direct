@@ -1402,10 +1402,70 @@ class ProcessSabreTerminalInputActionTest extends require('../../../../Lib/TestC
 			},
 		});
 
+		$list.push({
+			'input': {
+				'title': 'enabling multi-ticket PQ creation in Sabre - should allow pricing by segment',
+				'cmdRequested': 'WPS2',
+			},
+			'output': {
+				'sessionData': {
+					'canCreatePq': true,
+				},
+				'status': 'executed',
+				'calledCommands': [
+					{
+					    "cmd": "WPS2",
+					    "output": [
+							"20SEP DEPARTURE DATE-----LAST DAY TO PURCHASE 04MAY/0858",
+							"       BASE FARE                 TAXES/FEES/CHARGES    TOTAL",
+							" 1-    USD539.00                    155.00XT       USD694.00ADT",
+							"    XT     30.00YQ      85.00EM      30.00HX      10.00G5 ",
+							"          539.00                    155.00            694.00TTL",
+							"ADT-01  YOWAW1",
+							" MLW H1 ACC539.00NUC539.00END ROE1.00",
+							"OPERATED BY AFRICA WORLD/AIRLINES/1PC 20KG/PLATE ON 169",
+							"VALIDATING CARRIER - HR PER GSA AGREEMENT WITH H1",
+							"CAT 15 SALES RESTRICTIONS FREE TEXT FOUND - VERIFY RULES",
+							"BAGGAGE INFO AVAILABLE - SEE WP*BAG",
+							"."
+					    ].join("\n"),
+					},
+				],
+			},
+			'sessionInfo': {
+				'initialState': {
+					"area":"A","pcc":"6IIF","recordLocator":"","canCreatePq":false,"hasPnr":true,
+				},
+				'initialCommands': [],
+				'performedCommands': [
+					{
+					    "cmd": "WPS2",
+					    "output": [
+					        "20SEP DEPARTURE DATE-----LAST DAY TO PURCHASE 04MAY/0858",
+					        "       BASE FARE                 TAXES/FEES/CHARGES    TOTAL",
+					        " 1-    USD539.00                    155.00XT       USD694.00ADT",
+					        "    XT     30.00YQ      85.00EM      30.00HX      10.00G5 ",
+					        "          539.00                    155.00            694.00TTL",
+					        "ADT-01  YOWAW1",
+					        " MLW H1 ACC539.00NUC539.00END ROE1.00",
+					        "OPERATED BY AFRICA WORLD/AIRLINES/1PC 20KG/PLATE ON 169",
+					        "VALIDATING CARRIER - HR PER GSA AGREEMENT WITH H1",
+					        "CAT 15 SALES RESTRICTIONS FREE TEXT FOUND - VERIFY RULES",
+					        "BAGGAGE INFO AVAILABLE - SEE WP*BAG",
+					        "."
+					    ].join("\n"),
+					    "duration": "0.604916325",
+					    "type": "priceItinerary",
+					    "scrolledCmd": "WPS2",
+					    "state": {"area":"A","pcc":"6IIF","recordLocator":"","canCreatePq":false,"scrolledCmd":"WPS2","cmdCnt":11,"pricingCmd":null,"cmdType":"priceItinerary","hasPnr":true}
+					},
+				],
+			},
+		});
+
 		//=====================
 		// problematic test cases follow
 		//===========================
-
 
 		// // would need to stub RBS response to test that
 		// $list.push({

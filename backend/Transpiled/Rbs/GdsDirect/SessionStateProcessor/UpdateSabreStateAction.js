@@ -13,7 +13,6 @@ const ItineraryParser = require('../../../Gds/Parsers/Sabre/Pnr/ItineraryParser.
 const SabreReservationParser = require('../../../Gds/Parsers/Sabre/Pnr/PnrParser.js');
 const ImportPnrAction = require('../../../Rbs/Process/Common/ImportPnr/ImportPnrAction.js');
 const SabrePnr = require('../../../Rbs/TravelDs/SabrePnr.js');
-const SessionStateHelper = require("./SessionStateHelper");
 const SessionStateProcessor = require("./SessionStateProcessor");
 
 const php = require('../../../php.js');
@@ -23,15 +22,15 @@ class UpdateSabreStateAction
         this.$getAreaData = $getAreaData;
     }
 
-    static isValidPricing($cmd, $output)  {
-        let $type, $tooShortToBeValid, $errors;
+    static isValidPricing($cmd, $output, data)  {
+        let $type, $tooShortToBeValid;
         $type = CommandParser.parse($cmd)['type'];
         $tooShortToBeValid = !php.preg_match(/\n.*\n/, $output);
         if ($type !== 'priceItinerary' || $tooShortToBeValid) {
             return false;
         } else {
-            $errors = GetPqItineraryAction.checkPricingCommandObviousRules('sabre', $cmd);
-            return php.count($errors) === 0;
+            let errors = CmsSabreTerminal.checkPricingCmdObviousPqRules(data);
+            return php.count(errors) === 0;
         }
     }
 
@@ -93,7 +92,7 @@ class UpdateSabreStateAction
         $commandTypeData = CommandParser.parse($cmd);
         $type = $commandTypeData['type'];
         $data = $commandTypeData['data'];
-        if (this.constructor.isValidPricing($cmd, $output)) {
+        if (this.constructor.isValidPricing($cmd, $output, $data)) {
             $sessionState['canCreatePq'] = true;
             $sessionState['pricingCmd'] = $cmd;
         } else if (!php.in_array($type, SessionStateProcessor.getCanCreatePqSafeTypes())) {
@@ -163,7 +162,7 @@ class UpdateSabreStateAction
             $parsed = SabrePricingParser.parse($output);
             if (!php.isset($parsed['error'])) {
                 $sessionState['hasPnr'] = true;
-                if (this.constructor.isValidPricing($cmd, $output)) {
+                if (this.constructor.isValidPricing($cmd, $output, $data)) {
                     $sessionState['canCreatePq'] = true;
                 }
             }

@@ -77,7 +77,7 @@ class CmsSabreTerminal
 
     /** @param $cmdData = ['pricingModifiers' => PqParser::parsePricingQualifiers()] */
     static checkPricingCmdObviousPqRules($cmdData)  {
-        let $errors, $mods, $typeToMod, $ncsMod, $qMod, $sMod;
+        let $errors, $mods, $typeToMod, $ncsMod, $qMod;
 
         $errors = [];
         $mods = $cmdData['pricingModifiers'];
@@ -90,10 +90,6 @@ class CmsSabreTerminal
         // >WPQVK4S9EU;
         if ($qMod = $typeToMod['fareBasis']) {
             $errors.push(Errors.getMessage(Errors.BAD_MOD_BASIS_OVERRIDE, {'modifier': '/'+$qMod['raw']+'/'}));
-        }
-        // >WPS1;
-        if ($sMod = $typeToMod['segments']) {
-            $errors.push(Errors.getMessage(Errors.BAD_MOD_SEGMENT, {'modifier': '/'+$sMod['raw']+'/'}));
         }
         return $errors;
     }
