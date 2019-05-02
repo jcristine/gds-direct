@@ -855,6 +855,8 @@ class CommandParserTest extends require('../../../../../../backend/Transpiled/Li
             type: 'confirmExchangeFareDifferenceMask',
         }]);
         $list.push(['$V2/16', {type: 'fareRulesFromTariff'}]);
+        $list.push(['.2HK', {type: 'changeSegmentStatus'}]);
+        $list.push(['$V1/', {type: 'fareRulesMenuFromTariff'}]);
         return $list;
     }
 

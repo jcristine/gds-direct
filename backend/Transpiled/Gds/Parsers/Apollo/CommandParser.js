@@ -96,6 +96,7 @@ class CommandParser {
 			'*$D': 'redisplayFareSearch',
 			'S*': 'encodeOrDecode', // HELP ENCODE OR DECODE
 			'A': 'airAvailability', // HELP AVAILABILITY-STANDARD
+			'.': 'changeSegmentStatus', // HELP PNR-CHANGE SEGMENT STATUS
 			'CAL': 'carAvailability', // HELP CAR-AVAILABILITY
 			'FZ': 'convertCurrency', // HELP FZS (currency conversion)
 			'S': 'changeWorkArea',
@@ -116,7 +117,7 @@ class CommandParser {
 			[/^VIT[A-Z0-9]{2}\d+\/\d{1,2}[A-Z]{3}$/]: 'flightRoutingAndTimes', // flight routing and times
 			[/^FQN\d*$/]: 'fareList', // Fare Components For i-th ptc group in pricing
 			[/^FN\d+$/]: 'fareRulesMenu', // show available sections of i-th fare
-			[/^\$V\d+$/]: 'fareRulesMenuFromTariff', // show available sections of i-th fare
+			[/^\$V\d*\/?$/]: 'fareRulesMenuFromTariff', // show available sections of i-th fare
 			[/^FN\d+\/S$/]: 'fareRulesSummary', // navigate through them with summary
 			[/^FN\d+(\/\d+(\-\d+)?|\/[A-Z]{3})+/]: 'fareRules', // get k-th fare rule section of i-th fare
 			[/^\$V(\/\d+(\-\d+)?|\/[A-Z]{3})+/]: 'fareRulesFromMenu',

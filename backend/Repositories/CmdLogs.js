@@ -9,10 +9,18 @@ let TABLE = 'terminal_command_log';
 let isInvalidFormat = (cmdRec, gds) => {
 	if (gds === 'apollo') {
 		let matches = cmdRec.output.match(/^INVLD\s*><$/)
-			|| cmdRec.output.match(/^CK ACTN CODE\s*><$/)
+			|| cmdRec.output.match(/^INVLD ACT\/NOT ENT\/CCCCCCCCCCCCCC\s*><$/)
+			|| cmdRec.output.match(/^\s*INVALID FORMAT\s*><$/)
+			|| cmdRec.output.match(/^INVALID ACTION\s*><$/)
+			|| cmdRec.output.match(/^INVALID SEGMENT RANGE OR PAIR SPECIFIED\s*><$/)
 			|| cmdRec.output.match(/^CHECK FORMAT - .+\s*><$/)
+			|| cmdRec.output.match(/^CK ACTN CODE\s*><$/)
 			|| cmdRec.output.match(/^CK FRMT\s*><$/)
+			|| cmdRec.output.match(/^CK STATUS\s*><$/)
+			|| cmdRec.output.match(/^CK FLT NBR\s*><$/)
+			|| cmdRec.output.match(/^CK SGMT NBR\s*><$/)
 			|| cmdRec.output.match(/^VERIFY - FORMAT\s*><$/)
+			|| cmdRec.output.match(/^ILLEGAL ENTRY\s*><$/)
 			|| cmdRec.output.match(/^RESTRICTED\s*><$/)
 			|| cmdRec.output.match(/^ERROR.*INVALID FORMAT.*\n.*\s*><$/);
 		return matches ? true : false;
