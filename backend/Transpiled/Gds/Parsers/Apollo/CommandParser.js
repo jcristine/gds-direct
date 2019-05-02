@@ -56,6 +56,7 @@ class CommandParser {
 			'M*': 'determineMileage',
 			'HELP': 'help',
 			'*H': 'history',
+			'DC*': 'directConnectionList',
 			'$V:': 'mostRestrictiveSegmentRules',
 			'$V/CMB': 'ruleCombinations',
 			'$EX NAME': 'exchangeTicketMask',

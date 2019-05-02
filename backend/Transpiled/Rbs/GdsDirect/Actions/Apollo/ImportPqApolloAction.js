@@ -220,9 +220,9 @@ class ImportPqApolloAction extends AbstractGdsAction {
 		}
 		if (!$result.error && $cmd === '$BBQ01') {
 			for (let mod of $result.store.pricingModifiers) {
-				if (!mod.type) {
-					$result.error = 'Could not parse $BBQ01 mod /' + mod.raw + '/, please run clean $B';
-				} else if (mod.type === 'segments') {
+				// note that $BBQ01 command copy has "*" characters cut out, so some
+				// modifiers, like /*JCB/ or /-*2CV4/ would not be parsed correctly...
+				if (mod.type === 'segments') {
 					for (let bundle of mod.parsed.bundles) {
 						if (!php.empty(bundle.segmentNumbers)) {
 							$result.error = 'Can not create PQ from $BBQ01 with segment select - /' + mod.raw + '/, please run clean $B';
