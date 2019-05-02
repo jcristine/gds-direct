@@ -346,6 +346,16 @@ class CmdLogsTest extends require('../Transpiled/Lib/TestCase.js')
 		   ],
 		   [
 			   {
+				   "cmdRec": {
+					   "cmd": "T:L$B",
+					   "output": "RESTRICTED/NOT ENT/T:L$\n><"
+				   },
+				   "gds": "apollo"
+			   },
+			   true
+		   ],
+		   [
+			   {
 				   "cmdRec": {"cmd":"RM","output":" INVALID FORMAT\n><"},
 				   "gds": "apollo"
 			   },

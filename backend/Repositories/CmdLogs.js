@@ -22,6 +22,7 @@ let isInvalidFormat = (cmdRec, gds) => {
 			|| cmdRec.output.match(/^VERIFY - FORMAT\s*><$/)
 			|| cmdRec.output.match(/^ILLEGAL ENTRY\s*><$/)
 			|| cmdRec.output.match(/^RESTRICTED\s*><$/)
+			|| cmdRec.output.match(/^RESTRICTED\/NOT ENT\/.*\s*><$/)
 			|| cmdRec.output.match(/^ERROR.*INVALID FORMAT.*\n.*\s*><$/);
 		return matches ? true : false;
 	} else {

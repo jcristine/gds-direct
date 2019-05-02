@@ -857,6 +857,8 @@ class CommandParserTest extends require('../../../../../../backend/Transpiled/Li
         $list.push(['$V2/16', {type: 'fareRulesFromTariff'}]);
         $list.push(['.2HK', {type: 'changeSegmentStatus'}]);
         $list.push(['$V1/', {type: 'fareRulesMenuFromTariff'}]);
+        $list.push(['* MNMGHS', {type: 'openPnr'}]);
+        $list.push(['M*MIAPBI', {type: 'determineMileage'}]);
         return $list;
     }
 
