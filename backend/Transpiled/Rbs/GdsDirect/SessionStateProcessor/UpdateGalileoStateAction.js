@@ -41,15 +41,18 @@ class UpdateGalileoSessionStateAction
         this.$state.recordLocator = '';
     }
 
-    /** @param $data = CommandParser::parsePriceItinerary() */
-    static isPricingValidForPq($data, $output)  {
-        let $wrapped, $isErrorOutput, $errors, $pricedCorrectly;
-
+    static isErrorPricingRs(output) {
         // '>FQ',
         // 'NO ITINERARY EXISTS FOR FARE QUOTATION',
         // '><',
-        $wrapped = StringUtil.wrapLinesAt($output, 64);
-        $isErrorOutput = php.count(StringUtil.lines(php.trim($wrapped))) < 4;
+        let wrapped = StringUtil.wrapLinesAt(output, 64);
+        return php.count(StringUtil.lines(php.trim(wrapped))) < 4;
+    }
+
+    /** @param $data = CommandParser::parsePriceItinerary() */
+    static isPricingValidForPq($data, $output)  {
+        let $isErrorOutput, $errors, $pricedCorrectly;
+        $isErrorOutput = this.isErrorPricingRs($output);
         $errors = CmsGalileoTerminal.checkPricingCmdObviousPqRules($data);
         $pricedCorrectly = php.empty($errors);
         return !$isErrorOutput && $pricedCorrectly;

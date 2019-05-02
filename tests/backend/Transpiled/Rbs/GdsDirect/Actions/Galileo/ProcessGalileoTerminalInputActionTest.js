@@ -1103,8 +1103,12 @@ class ProcessGalileoTerminalInputActionTest extends require('../../../../Lib/Tes
 						'output': php.implode(php.PHP_EOL, [
 							'>FQ',
 							'   PSGR                  FARE     TAXES         TOTAL PSG DES   FQG 1         USD       64.00     529.81       593.81 ADT           GUARANTEED AT TIME OF TICKETING                             FQG 2         USD       48.00     424.11       472.11 C05           GUARANTEED AT TIME OF TICKETING                             FQG 3         USD        6.00     119.61       125.61 INF           GUARANTEED AT TIME OF TICKETING                             GRAND TOTAL INCLUDING TAXES ****     USD      1191.53                        **ADDITIONAL FEES MAY APPLY**SEE >FO; ',
-							'    ADT      SUM IDENTIFIED AS UB IS A PASSENGER SERVICE CHARGE     ADT      LAST DATE TO PURCHASE TICKET: 18MAY18                  ADT      TICKETING AGENCY 711M                              )><',
+							'    ADT      SUM IDENTIFIED AS UB IS A PASSENGER SERVICE CHARGE     ADT      LAST DATE TO PURCHASE TICKET: 18MAY18                  ADT      TICKETING AGENCY 711M                              ',
 						]),
+					},
+					{
+						'cmd': 'F*Q',
+						'output': 'fake output to keep test',
 					},
 				],
 				'sessionData': {
@@ -1122,8 +1126,12 @@ class ProcessGalileoTerminalInputActionTest extends require('../../../../Lib/Tes
 						'output': php.implode(php.PHP_EOL, [
 							'>FQ',
 							'   PSGR                  FARE     TAXES         TOTAL PSG DES   FQG 1         USD       64.00     529.81       593.81 ADT           GUARANTEED AT TIME OF TICKETING                             FQG 2         USD       48.00     424.11       472.11 C05           GUARANTEED AT TIME OF TICKETING                             FQG 3         USD        6.00     119.61       125.61 INF           GUARANTEED AT TIME OF TICKETING                             GRAND TOTAL INCLUDING TAXES ****     USD      1191.53                        **ADDITIONAL FEES MAY APPLY**SEE >FO; ',
-							'    ADT      SUM IDENTIFIED AS UB IS A PASSENGER SERVICE CHARGE     ADT      LAST DATE TO PURCHASE TICKET: 18MAY18                  ADT      TICKETING AGENCY 711M                              )><',
+							'    ADT      SUM IDENTIFIED AS UB IS A PASSENGER SERVICE CHARGE     ADT      LAST DATE TO PURCHASE TICKET: 18MAY18                  ADT      TICKETING AGENCY 711M                              ><', // fake truncated
 						]),
+					},
+					{
+						'cmd': 'F*Q',
+						'output': 'fake output to keep test><',
 					},
 				],
 			},
@@ -1348,6 +1356,7 @@ class ProcessGalileoTerminalInputActionTest extends require('../../../../Lib/Tes
 				'status': 'executed',
 				'calledCommands': [
 					{'cmd': 'FQBB/*ITX/-TPACK/TA0GF/:P'},
+					{'cmd': 'F*Q'},
 				],
 			},
 			'sessionInfo': {
@@ -1363,14 +1372,19 @@ class ProcessGalileoTerminalInputActionTest extends require('../../../../Lib/Tes
 							'                   *** BEST BUY QUOTATION ***',
 							'            LOWEST FARE AVAILABLE FOR THIS ITINERARY',
 							'                 *** REBOOK BF SEGMENTS 3Q ***',
-							'   PSGR   QUOTE BASIS         FARE    TAXES      TOTAL PSG DES  FQZ 1-2    QLN2Z8M4   GBP   161.00   285.51     893.02 ITX      GRAND TOTAL INCLUDING TAXES ****     GBP       893.02                        **ADDITIONAL FEES MAY APPLY**SEE >FO;                  ITX      PRIVATE FARE SELECTED                                  ITX      CAT35                                                  ITX      SUM IDENTIFIED AS UB IS A PASSENGER SERVICE CHARGE     ITX      TOUR CODE: GBTO                                        ITX      FARE HAS FORM OF PAYMENT RESTRICTION               )><',
+							'   PSGR   QUOTE BASIS         FARE    TAXES      TOTAL PSG DES  FQZ 1-2    QLN2Z8M4   GBP   161.00   285.51     893.02 ITX      GRAND TOTAL INCLUDING TAXES ****     GBP       893.02                        **ADDITIONAL FEES MAY APPLY**SEE >FO;                  ITX      PRIVATE FARE SELECTED                                  ITX      CAT35                                                  ITX      SUM IDENTIFIED AS UB IS A PASSENGER SERVICE CHARGE     ITX      TOUR CODE: GBTO                                        ITX      FARE HAS FORM OF PAYMENT RESTRICTION               ><', // fake truncated
 						]),
+					},
+					{
+						'cmd': 'F*Q',
+						'output': 'fake output to keep test><',
 					},
 				],
 			},
 		});
 
 		// /-T/ with child and following :USD mod. Should add /ACCITX/
+		// also, since its FQBA, should not fetch all
 		$list.push({
 			'input': {
 				'cmdRequested': 'FQBA*I06-T:USD',
@@ -1413,6 +1427,7 @@ class ProcessGalileoTerminalInputActionTest extends require('../../../../Lib/Tes
 				'status': 'executed',
 				'calledCommands': [
 					{'cmd': 'FQP1*ITX.2-4*INF'},
+					{'cmd': 'F*Q'},
 				],
 			},
 			'sessionInfo': {
@@ -1431,8 +1446,12 @@ class ProcessGalileoTerminalInputActionTest extends require('../../../../Lib/Tes
 							'>FQP1*ITX.2-4*INF',
 							'   PSGR                  FARE     TAXES         TOTAL PSG DES   FQA 1         USD      728.00     251.71       979.71 ADT           GUARANTEED                                                  FQA 2-4       USD      728.00      52.71      2342.13 ADT           GUARANTEED                                                  GRAND TOTAL INCLUDING TAXES ****     USD      3321.84                        **ADDITIONAL FEES MAY APPLY**SEE >FO; ',
 							'       **CARRIER MAY OFFER ADDITIONAL SERVICES**SEE >FQ/DASO;',
-							'    ITX      PRIVATE FARE SELECTED/BEST FARE FOR THIS PASSENGER     ITX      SUM IDENTIFIED AS UB IS A PASSENGER SERVICE CHARGE     ITX      RATE USED IN EQU TOTAL IS BSR 1GBP - 1.275525USD       ITX      TOUR CODE: BT15DY05                                )><',
+							'    ITX      PRIVATE FARE SELECTED/BEST FARE FOR THIS PASSENGER     ITX      SUM IDENTIFIED AS UB IS A PASSENGER SERVICE CHARGE     ITX      RATE USED IN EQU TOTAL IS BSR 1GBP - 1.275525USD       ITX      TOUR CODE: BT15DY05                                ><', // fake truncated
 						]),
+					},
+					{
+						'cmd': 'F*Q',
+						'output': 'fake output to keep test><',
 					},
 					{'cmd': 'N.P1-4@', 'output': php.implode(php.PHP_EOL, [' *', '><'])},
 				],
@@ -1735,6 +1754,7 @@ class ProcessGalileoTerminalInputActionTest extends require('../../../../Lib/Tes
 				'status': 'executed',
 				'calledCommands': [
 					{'cmd': 'FQP1*ITX-TPACK/TA0GF:P/FXD'},
+					{'cmd': 'F*Q'},
 				],
 			},
 			'sessionInfo': {
@@ -1767,8 +1787,12 @@ class ProcessGalileoTerminalInputActionTest extends require('../../../../Lib/Tes
 							'>FQP1*ITX-TPACK/TA0GF:P/FXD',
 							'*** NET TICKET DATA EXISTS ***',
 							'   PSGR                  FARE     TAXES         TOTAL PSG DES   FQP 1         GBP      195.00     261.81       456.81 ITX       GRAND TOTAL INCLUDING TAXES ****     GBP       456.81                        **ADDITIONAL FEES MAY APPLY**SEE >FO; ',
-							'    ITX      PRIVATE FARE SELECTED                                  ITX      CAT35                                                  ITX      SUM IDENTIFIED AS UB IS A PASSENGER SERVICE CHARGE     ITX      TOUR CODE: IT402GBT                                    ITX      FARE HAS FORM OF PAYMENT RESTRICTION                   ITX      LAST DATE TO PURCHASE TICKET: 23NOV18                  ITX      TICKETING AGENCY 0GF                               )><',
+							'    ITX      PRIVATE FARE SELECTED                                  ITX      CAT35                                                  ITX      SUM IDENTIFIED AS UB IS A PASSENGER SERVICE CHARGE     ITX      TOUR CODE: IT402GBT                                    ITX      FARE HAS FORM OF PAYMENT RESTRICTION                   ITX      LAST DATE TO PURCHASE TICKET: 23NOV18                  ITX      TICKETING AGENCY 0GF                               ><', // fake truncated
 						]),
+					},
+					{
+						'cmd': 'F*Q',
+						'output': 'fake output to keep test><',
 					},
 				],
 			},

@@ -498,7 +498,7 @@ class ProcessGalileoTerminalInputAction {
 		return {'calledCommands': $calledCommands, 'userMessages': $userMessages};
 	}
 
-	async processRealCommand($cmd) {
+	async processRealCommand($cmd, shouldFetchAll = false) {
 		let $calledCommands, $errors, $userMessages;
 
 		$calledCommands = [];
@@ -507,7 +507,7 @@ class ProcessGalileoTerminalInputAction {
 			return {'errors': $errors};
 		}
 		$calledCommands = php.array_merge($calledCommands, await this.callImplicitCommandsBefore($cmd));
-		let cmdRec = await this.runCmd($cmd, false);
+		let cmdRec = await this.runCmd($cmd, shouldFetchAll);
 		$userMessages = await this.makeCmdMessages(cmdRec.cmd, cmdRec.output);
 		return this.callImplicitCommandsAfter(cmdRec, $calledCommands, $userMessages);
 	}
@@ -710,6 +710,19 @@ class ProcessGalileoTerminalInputAction {
 			.setLog(this.$log).execute($realCmd, this.stateful);
 	}
 
+	async _fetchPricing(cmd) {
+		let shouldFetchAll = !cmd.startsWith('FQBA');
+		let result = await this.processRealCommand(cmd, shouldFetchAll);
+		if (shouldFetchAll && !php.empty(result.calledCommands)) {
+			let fqOutput = result.calledCommands[0].output;
+			if (!UpdateGalileoSessionStateAction.isErrorPricingRs(fqOutput)) {
+				let linearCmdRec = await this.runCmd('F*Q', true);
+				result.calledCommands.push(linearCmdRec);
+			}
+		}
+		return result;
+	}
+
 	async priceItinerary($cmd, $cmdData) {
 		let $mods, $addedRealName, $hasNamesInPnr, $ptcGroups, $paxNums, $names, $addCmd, $result, $removeCmd;
 
@@ -733,11 +746,11 @@ class ProcessGalileoTerminalInputAction {
 			$names = php.array_slice($names, 0, php.count($paxNums));
 			$addCmd = php.implode('|', $names.map(($name) => 'N.FAKE/' + $name));
 			await this.runCommand($addCmd, false); // add fake names
-			$result = await this.processRealCommand($cmd);
+			$result = await this._fetchPricing($cmd);
 			$removeCmd = php.count($paxNums) > 1 ? 'N.P1-' + php.count($names) + '@' : 'N.P1@';
 			await this.runCommand($removeCmd, false); // remove fake names
 		} else {
-			$result = await this.processRealCommand($cmd);
+			$result = await this._fetchPricing($cmd);
 		}
 		return $result;
 	}
