@@ -752,6 +752,138 @@ class ImportPqApolloActionTest extends require('../../../../Lib/TestCase.js') {
 			],
 		});
 
+		$list.push({
+			'input': {
+				'title': '$BBQ01 after partial segment pricing should not be allowed for PQ creation',
+				'previousCommands': [
+					{
+					    "cmd": "$BB/S1|2",
+					    "output": [
+					        ">$BB/S1-*2F3K|2-*2F3K",
+					        "*FARE HAS A PLATING CARRIER RESTRICTION*",
+					        "E-TKT REQUIRED",
+					        "REBOOK PNR SEGMENTS   1W/2W",
+					        ">$BBQ01;",
+					        "                           ",
+					        "** PRIVATE FARES SELECTED **  ",
+					        "*PENALTY APPLIES*",
+					        "TICKETING WITHIN 72 HOURS AFTER RESERVATION",
+					        "LAST DATE TO PURCHASE TICKET: 05MAY19 / 0408 SFO",
+					        "$BB-1 A02MAY19     ",
+					        "CHI LH X/FRA LH ZAG 799.50WK387LGT/CNOW NUC799.50END ROE1.0",
+					        "FARE USD 800.00 TAX 5.60AY TAX 18.60US TAX 4.50XF TAX 10.60DE",
+					        ")><"
+					    ].join("\n"),
+					},
+					{
+					    "cmd": "MR",
+					    "output": [
+					        "TAX 23.90RA TAX 175.00YQ TAX 17.50YR TOT USD 1055.70 ",
+					        "S1 NVB20SEP/NVA20SEP",
+					        "S2 NVB21SEP/NVA21SEP",
+					        "E NONREF/NOCHNG",
+					        "TOUR CODE: BT294UA        ",
+					        "TICKETING AGENCY 2F3K",
+					        "DEFAULT PLATING CARRIER LH",
+					        "US PFC: XF ORD4.5 ",
+					        "BAGGAGE ALLOWANCE",
+					        "ADT                                                         ",
+					        " LH CHIZAG  0PC                                             ",
+					        "   BAG 1 -  60.00 USD    UPTO50LB/23KG AND UPTO62LI/158LCM",
+					        "   BAG 2 -  100.00 USD   UPTO50LB/23KG AND UPTO62LI/158LCM",
+					        ")><"
+					    ].join("\n"),
+					},
+					{
+					    "cmd": "MR",
+					    "output": [
+					        "   VIEWTRIP.TRAVELPORT.COM/BAGGAGEPOLICY/LH",
+					        "                                                                CARRY ON ALLOWANCE",
+					        " LH CHIFRA  1PC                                             ",
+					        "   BAG 1 -  NO FEE       UPTO18LB/8KG AND UPTO46LI/118LCM ",
+					        " LH FRAZAG  1PC                                             ",
+					        "   BAG 1 -  NO FEE       UPTO18LB/8KG AND UPTO46LI/118LCM ",
+					        "BAGGAGE DISCOUNTS MAY APPLY BASED ON FREQUENT FLYER STATUS/",
+					        "ONLINE CHECKIN/FORM OF PAYMENT/MILITARY/ETC.",
+					        "><"
+					    ].join("\n"),
+					    "duration": "0.181083242",
+					    "type": "moveRest",
+					    "scrolledCmd": "$BB/S1|2",
+					    "state": {"area":"A","pcc":"2F3K","recordLocator":"","canCreatePq":true,"scrolledCmd":"$BB/S1|2","cmdCnt":44,"pricingCmd":"$BB/S1|2","hasPnr":true,"cmdType":"moveRest"}
+					},
+					{
+					    "cmd": "$BBQ01",
+					    "output": [
+					        ">$BB/S1-2F3K|2-2F3K",
+					        "*FARE HAS A PLATING CARRIER RESTRICTION*",
+					        "E-TKT REQUIRED",
+					        "REBOOK SUCCESSFULLY COMPLETED",
+					        "",
+					        "** PRIVATE FARES SELECTED **  ",
+					        "*PENALTY APPLIES*",
+					        "TICKETING WITHIN 72 HOURS AFTER RESERVATION",
+					        "LAST DATE TO PURCHASE TICKET: 05MAY19 / 0408 SFO",
+					        "$BB-1 A02MAY19     ",
+					        "CHI LH X/FRA LH ZAG 799.50WK387LGT/CNOW NUC799.50END ROE1.0",
+					        "FARE USD 800.00 TAX 5.60AY TAX 18.60US TAX 4.50XF TAX 10.60DE",
+					        "TAX 23.90RA TAX 175.00YQ TAX 17.50YR TOT USD 1055.70 ",
+					        ")><"
+					    ].join("\n"),
+					},
+					{
+					    "cmd": "MR",
+					    "output": [
+					        "S1 NVB20SEP/NVA20SEP",
+					        "S2 NVB21SEP/NVA21SEP",
+					        "E NONREF/NOCHNG",
+					        "TOUR CODE: BT294UA        ",
+					        "TICKETING AGENCY 2F3K",
+					        "DEFAULT PLATING CARRIER LH",
+					        "US PFC: XF ORD4.5 ",
+					        "BAGGAGE ALLOWANCE",
+					        "ADT                                                         ",
+					        " LH CHIZAG  0PC                                             ",
+					        "   BAG 1 -  60.00 USD    UPTO50LB/23KG AND UPTO62LI/158LCM",
+					        "   BAG 2 -  100.00 USD   UPTO50LB/23KG AND UPTO62LI/158LCM",
+					        "                                                                )><"
+					    ].join("\n"),
+					},
+					{
+					    "cmd": "MR",
+					    "output": [
+					        "CARRY ON ALLOWANCE",
+					        " LH CHIFRA  1PC                                             ",
+					        "   BAG 1 -  NO FEE       UPTO18LB/8KG AND UPTO46LI/118LCM ",
+					        " LH FRAZAG  1PC                                             ",
+					        "   BAG 1 -  NO FEE       UPTO18LB/8KG AND UPTO46LI/118LCM ",
+					        "BAGGAGE DISCOUNTS MAY APPLY BASED ON FREQUENT FLYER STATUS/",
+					        "ONLINE CHECKIN/FORM OF PAYMENT/MILITARY/ETC.",
+					        "><"
+					    ].join("\n"),
+					},
+				],
+			},
+			'output': {
+				'error': 'Can not create PQ from $BBQ01 with segment select - /S1-2F3K|2-2F3K/, please run clean $B',
+			},
+			'calledCommands': [
+				{
+					"cmd": "*R",
+					"output": [
+						"NO NAMES",
+						" 1 LH 433W 20SEP ORDFRA SS1  1045P  200P|*      FR/SA   E  5",
+						" 2 LH1404W 21SEP FRAZAG SS1   955P 1120P *         SA   E  5",
+						"         OPERATED BY AIR NOSTRUM LAM SA",
+						" 3 AC1969L 25SEP ZAGYYZ SS1  1015A  145P *         WE   E  4",
+						"         OPERATED BY AIR CANADA ROUGE",
+						" 4 AC 511L 25SEP YYZORD SS1   440P  529P *         WE   E  4",
+						"><"
+					].join("\n"),
+				},
+			],
+		});
+
 		$argumentTuples = [];
 		for ($testCase of Object.values($list)) {
 			$argumentTuples.push([$testCase['input'], $testCase['output'], $testCase['calledCommands']]);

@@ -65,11 +65,11 @@ class CmsGalileoTerminal {
 		}
 		if ($sMod = $typeToMod['segments']) {
 			$bundles = $sMod['parsed']['bundles'];
-			if ($bundles[0]['segmentNumbers'] !== []) {
+			if (!php.empty($bundles[0]['segmentNumbers'])) {
 				$errors.push(Errors.getMessage(Errors.BAD_MOD_SEGMENT, {'modifier': '/' + $sMod['raw'] + '/'}));
 			}
 			$fareBases = php.array_filter(php.array_column($bundles, 'fareBasis'));
-			if ($fareBases) {
+			if (!php.empty($fareBases)) {
 				$errors.push(Errors.getMessage(Errors.BAD_MOD_BASIS_OVERRIDE, {'modifier': '/@' + php.implode('@', $fareBases) + '/'}));
 			}
 		}
