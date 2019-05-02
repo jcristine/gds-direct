@@ -31,6 +31,8 @@ let ImportPq = async ({stateful, leadData, fetchOptionalFields = true}) => {
 		$isPricingMd = false;
 		for ($cmdRow of Object.values($mixed)) {
 			$belongsToPricing = $cmdRow['type'] === 'priceItinerary'
+				|| $cmdRow['type'] === 'pricingLinearFare'
+				|| $cmdRow['type'] === 'ptcPricingBlock'
 				|| $isPricingMd && $cmdRow.is_mr;
 			if ($belongsToPricing) {
 				$isPricingMd = true;

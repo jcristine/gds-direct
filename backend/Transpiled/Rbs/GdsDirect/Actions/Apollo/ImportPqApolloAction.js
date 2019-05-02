@@ -87,6 +87,7 @@ class ImportPqApolloAction extends AbstractGdsAction {
 	}
 
 	static joinFullOutput($pagesLeft) {
+		$pagesLeft = [...$pagesLeft];
 		let $fullDump, $dumpPage, $hasMorePages, $isLast;
 		$fullDump = '';
 		while ($dumpPage = php.array_shift($pagesLeft)) {
@@ -274,8 +275,12 @@ class ImportPqApolloAction extends AbstractGdsAction {
 			php.array_unshift($mrs, $cmdRecord['output']);
 			$parsed = CommandParser.parse($cmdRecord['cmd']);
 			$logCmdType = $parsed['type'];
+			let output = this.constructor.joinFullOutput($mrs);
+			if ($logCmdType !== 'moveRest') {
+				$mrs = [];
+			}
 			if ($logCmdType === 'priceItinerary') {
-				$cmdRecord = {...$cmdRecord, output: this.constructor.joinFullOutput($mrs)};
+				$cmdRecord = {...$cmdRecord, output: output};
 				$calculated = this.constructor.calcPricedSegments($segmentsLeft, $cmdRecord, $cmdRecords);
 				if (!php.empty($calculated['error'])) {
 					return Rej.BadRequest($calculated['error']);
@@ -286,8 +291,6 @@ class ImportPqApolloAction extends AbstractGdsAction {
 						return Promise.resolve({'cmdRecords': php.array_reverse($cmdRecords)});
 					}
 				}
-			} else if ($logCmdType !== 'moveRest') {
-				$mrs = [];
 			}
 		}
 		return !php.empty($cmdRecords)
