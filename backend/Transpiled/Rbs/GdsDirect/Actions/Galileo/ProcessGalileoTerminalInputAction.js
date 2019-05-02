@@ -902,7 +902,11 @@ class ProcessGalileoTerminalInputAction {
 		} else if (!php.empty($itinerary = await AliasParser.parseCmdAsItinerary($cmd, this.stateful))) {
 			$result = await (new RebuildInPccAction()).setSession(this.stateful)
 				.fallbackToAk(true).bookItinerary($itinerary);
-			$result['calledCommands'] = this.stateful.flushCalledCommands();
+			let cmdRecs = this.stateful.flushCalledCommands();
+			if (php.empty($result.errors)) {
+				cmdRecs = cmdRecs.slice(-1); // keep just the ending *R
+			}
+			$result['calledCommands'] = cmdRecs;
 			return $result;
 		} else {
 			return this.processRealCommand($cmd);

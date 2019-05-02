@@ -86,22 +86,6 @@ class CmsGalileoTerminal {
 		}
 	}
 
-	canAffectPnr($cmd, $output) {
-
-		// TODO: implement!
-		return true;
-	}
-
-	decodeCmsInput($cmd) {
-
-		return $cmd;
-	}
-
-	sanitizeCommand($cmd) {
-
-		return php.trim(php.strtoupper($cmd));
-	}
-
 	static trimScrollingIndicator($resp) {
 		if (php.substr($resp, -6) == '>TIPN<') {
 			return php.substr($resp, 0, -6);
