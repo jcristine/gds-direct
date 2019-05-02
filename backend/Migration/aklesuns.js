@@ -267,6 +267,7 @@ module.exports.migrations = [
 			"  `session_id` int(11) DEFAULT NULL,",
 			"  `gds` varchar(10) DEFAULT NULL,",
 			"  `type` varchar(50) DEFAULT NULL,",
+			// TODO: NOT NULL DEFAULT FALSE when historical records are moved
 			"  `is_mr` BOOLEAN DEFAULT NULL,",
 			"  `dt` datetime NOT NULL,",
 			"  `cmd` varchar(255) NOT NULL,",

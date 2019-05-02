@@ -9,8 +9,9 @@ let TABLE = 'terminal_command_log';
 let isInvalidFormat = (cmdRec, gds) => {
 	if (gds === 'apollo') {
 		let matches = cmdRec.output.match(/^INVLD\s*><$/)
-			|| cmdRec.output.match(/^INVLD ACT\/NOT ENT\/CCCCCCCCCCCCCC\s*><$/)
+			|| cmdRec.output.match(/^INVLD ACT\/NOT ENT\/.*\s*><$/)
 			|| cmdRec.output.match(/^\s*INVALID FORMAT\s*><$/)
+			|| cmdRec.output.match(/^\s*INVALID INPUT\s*><$/)
 			|| cmdRec.output.match(/^INVALID ACTION\s*><$/)
 			|| cmdRec.output.match(/^INVALID SEGMENT RANGE OR PAIR SPECIFIED\s*><$/)
 			|| cmdRec.output.match(/^CHECK FORMAT - .+\s*><$/)
@@ -23,7 +24,9 @@ let isInvalidFormat = (cmdRec, gds) => {
 			|| cmdRec.output.match(/^ILLEGAL ENTRY\s*><$/)
 			|| cmdRec.output.match(/^RESTRICTED\s*><$/)
 			|| cmdRec.output.match(/^RESTRICTED\/NOT ENT\/.*\s*><$/)
-			|| cmdRec.output.match(/^ERROR.*INVALID FORMAT.*\n.*\s*><$/);
+			|| cmdRec.output.match(/^ERROR.*INVALID FORMAT.*\n.*\s*><$/)
+			|| cmdRec.output.match(/^ERROR.*CK ACTION CODE.*\n.*\s*><$/)
+			;
 		return matches ? true : false;
 	} else {
 		return false;

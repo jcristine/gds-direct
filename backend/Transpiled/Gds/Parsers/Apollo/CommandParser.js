@@ -22,7 +22,7 @@ class CommandParser {
 			'9D': 'requestedSeats',
 			'*MP': 'frequentFlyerData',
 			'*MPD': 'mcoList',
-			'$V:\/S': 'fareRuleSummary',
+			'$V:/S': 'fareRuleSummary',
 			'*HTE': 'ticketList',
 			'@MT': 'verifyConnectionTimes',
 			'T:R': 'restoreTicketedPricing',
@@ -44,7 +44,7 @@ class CommandParser {
 			'*H$': 'pricingHistory', // HISTORY - ATFQ (STORED PRICING FARE FIELD) CHANGE
 			'*PA': 'profileAssociation',
 			'*DV': 'dividedBookings',
-			'OP\/W*': 'workAreas',
+			'OP/W*': 'workAreas',
 			'F': 'fileDividedBooking',
 			'HHMCO': 'requestMcoMask',
 		};
@@ -87,6 +87,7 @@ class CommandParser {
 			'Q': 'openQueue',
 			'XX': 'calculator',
 			'F-': 'addFormOfPayment',
+			'F:': 'operationalInfo',
 			'9V': 'seatMap',
 			'HMPR': 'soldTicketsDailyReport',
 			'TI-': 'visaAndHealthInfo',
@@ -94,10 +95,13 @@ class CommandParser {
 			'MV/': 'fillFromProfile',
 			'MVT/': 'addAgencyInfo', // add agency info
 			'$D': 'fareSearch', // HELP TARIFF DISPLAY-BASIC OR VALIDATED
+			'FD': 'fareDetailsFromTariff',
+			'$LR': 'routingFromTariff',
 			'*$D': 'redisplayFareSearch',
 			'S*': 'encodeOrDecode', // HELP ENCODE OR DECODE
 			'A': 'airAvailability', // HELP AVAILABILITY-STANDARD
 			'.': 'changeSegmentStatus', // HELP PNR-CHANGE SEGMENT STATUS
+			'C:PS': 'changePsRemark',
 			'CAL': 'carAvailability', // HELP CAR-AVAILABILITY
 			'FZ': 'convertCurrency', // HELP FZS (currency conversion)
 			'S': 'changeWorkArea',
@@ -108,9 +112,7 @@ class CommandParser {
 			// usually >RESALL;
 			'RE': 'storeAndCopyPnr',
 			'DN': 'divideBooking',
-			'F:': 'operationalInfo',
 			'$LB': 'showBookingClassOfFare',
-			'$LR': 'routingFromTariff',
 			'L@': 'availabilityThroughLink',
 			'DCT': 'minConnectionTimeTable',
 		};

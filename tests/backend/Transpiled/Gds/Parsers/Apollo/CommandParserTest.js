@@ -859,6 +859,9 @@ class CommandParserTest extends require('../../../../../../backend/Transpiled/Li
         $list.push(['$V1/', {type: 'fareRulesMenuFromTariff'}]);
         $list.push(['* MNMGHS', {type: 'openPnr'}]);
         $list.push(['M*MIAPBI', {type: 'determineMileage'}]);
+        $list.push(['C:PS-RICO', {type: 'changePsRemark'}]);
+        $list.push(['C:PS-RICO@VR CC', {type: 'changePsRemark'}]);
+        $list.push(['FD1/NET', {type: 'fareDetailsFromTariff'}]);
         return $list;
     }
 
