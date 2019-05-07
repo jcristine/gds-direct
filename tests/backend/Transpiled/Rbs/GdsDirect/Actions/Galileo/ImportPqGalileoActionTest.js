@@ -943,6 +943,106 @@ class ImportPqGalileoActionTest extends require('../../../../../../../backend/Tr
 			],
 		});
 
+		$list.push({
+			'input': {
+				'title': 'multi-pricing insufficient segments error example',
+				'fetchOptionalFields': false,
+				'previousCommands': [
+					{
+					    "cmd": "FQS3.4",
+					    "output": [
+					        ">FQS3.4",
+					        "   PSGR                  FARE     TAXES         TOTAL PSG DES   FQG 1         USD     1299.00     230.52      1529.52 ADT           GUARANTEED AT TIME OF TICKETING                             GRAND TOTAL INCLUDING TAXES ****     USD      1529.52                        **ADDITIONAL FEES MAY APPLY**SEE >FO; ",
+					        "       **CARRIER MAY OFFER ADDITIONAL SERVICES**SEE >FQ/DASO;",
+					        "    ADT      RATE USED IN EQU TOTAL IS BSR 1EUR - 1.120441USD       ADT      LAST DATE TO PURCHASE TICKET: 15SEP19                  ADT      TICKETING AGENCY 711M                                  ADT      DEFAULT PLATING CARRIER AC                             ADT      E-TKT REQUIRED                                                  US PASSENGER FACILITY CHARGE NOT APPLICABLE",
+					        ")><"
+					    ].join("\n"),
+					    "duration": "0.963446497",
+					    "type": "priceItinerary",
+					    "scrolledCmd": "FQS3.4",
+					    "state": {"canCreatePq":true,"pricingCmd":"FQS3.4","area":"A","recordLocator":"","pcc":"711M","hasPnr":true,"isPnrStored":false,"cmdType":"priceItinerary","gdsData":null,"scrolledCmd":"FQS3.4","cmdCnt":40}
+					},
+					{
+					    "cmd": "MR",
+					    "output": [
+					        "BAGGAGE ALLOWANCE",
+					        "ADT",
+					        " AC ZAGCHI  1PC  ",
+					        "   BAG 1 -  NO FEE       UPTO50LB/23KG AND UPTO62LI/158LCM ",
+					        "   BAG 2 -  509.00 HRK   UPTO50LB/23KG AND UPTO62LI/158LCM ",
+					        "   VIEWTRIP.TRAVELPORT.COM/BAGGAGEPOLICY/AC            ",
+					        "                                                               ",
+					        "CARRY ON ALLOWANCE",
+					        " AC ZAGYTO  2PC   ",
+					        "   BAG 1 -  NO FEE       CARRYON HAND BAGGAGE ALLOWANCE    ",
+					        "   BAG 2 -  NO FEE       CARRY ON HAND BAGGAGE             ",
+					        " AC YTOCHI  2PC   ",
+					        "   BAG 1 -  NO FEE       CARRYON HAND BAGGAGE ALLOWANCE    ",
+					        ")><"
+					    ].join("\n"),
+					    "duration": "0.163412109",
+					    "type": "moveRest",
+					    "scrolledCmd": "FQS3.4",
+					    "state": {"canCreatePq":true,"pricingCmd":"FQS3.4","area":"A","recordLocator":"","pcc":"711M","hasPnr":true,"isPnrStored":false,"cmdType":"moveRest","gdsData":null,"scrolledCmd":"FQS3.4","cmdCnt":41}
+					},
+					{
+					    "cmd": "MR",
+					    "output": [
+					        "   BAG 2 -  NO FEE       CARRY ON HAND BAGGAGE             ",
+					        "                                                               ",
+					        "BAGGAGE DISCOUNTS MAY APPLY BASED ON FREQUENT FLYER STATUS/",
+					        "ONLINE CHECKIN/FORM OF PAYMENT/MILITARY/ETC.",
+					        "><"
+					    ].join("\n"),
+					    "duration": "0.172518146",
+					    "type": "moveRest",
+					    "scrolledCmd": "FQS3.4",
+					    "state": {"canCreatePq":true,"pricingCmd":"FQS3.4","area":"A","recordLocator":"","pcc":"711M","hasPnr":true,"isPnrStored":false,"cmdType":"moveRest","gdsData":null,"scrolledCmd":"FQS3.4","cmdCnt":42}
+					},
+					{
+					    "cmd": "F*Q",
+					    "output": [
+					        "FQ-1 G07MAY19      ADT       ",
+					        "  ZAG AC X/YTO AC CHI 1302.39BFFHROWW NUC1302.39END ROE0.8899",
+					        "  FARE EUR 1159.00 EQU USD 1299.00 TAX US 18.60 TAX XA 3.96 TAX",
+					        "  XY 7.00 TAX YC 5.77 TAX HR 32.30 TAX MI 1.50 TAX SQ 3.00 TAX",
+					        "  RC 0.39 TAX YQ 158.00 TOT USD 1529.52",
+					        "><"
+					    ].join("\n"),
+					    "duration": "0.174063016",
+					    "type": "pricingLinearFare",
+					    "scrolledCmd": "F*Q",
+					    "state": {"canCreatePq":true,"pricingCmd":"FQS3.4","area":"A","recordLocator":"","pcc":"711M","hasPnr":true,"isPnrStored":false,"cmdType":"pricingLinearFare","gdsData":null,"scrolledCmd":"F*Q","cmdCnt":43}
+					},
+				],
+			},
+			'output': {
+				'error': 'Error: Last pricing command FQS3.4 does not cover some itinerary segments: 1,2',
+			},
+			'calledCommands': [
+				{
+				    "cmd": "*R",
+				    "output": [
+				        "  1.1LIB/MAR",
+				        " 1. LH  433 W  20SEP ORDFRA HS1  1045P # 200P O        E FR  1",
+				        " 2. LH 1404 W  21SEP FRAZAG HS1   955P  1120P O        E SA  1",
+				        "         OPERATED BY AIR NOSTRUM LAM SA",
+				        " 3. AC 1969 B  25SEP ZAGYYZ HS1  1015A   145P O        E WE  2",
+				        "         OPERATED BY AIR CANADA ROUGE",
+				        " 4. AC  511 B  25SEP YYZORD HS1   440P   529P O        E WE  2",
+				        "** FILED FARE DATA EXISTS **           >*FF;",
+				        "NOTE-",
+				        "  1. TEST WS 07MAY 1320Z",
+				        "><"
+				    ].join("\n"),
+				    "duration": "0.165211079",
+				    "type": "redisplayPnr",
+				    "scrolledCmd": "*R",
+				    "state": {"canCreatePq":true,"pricingCmd":"FQS3.4","area":"A","recordLocator":"","pcc":"711M","hasPnr":true,"isPnrStored":false,"cmdType":"redisplayPnr","gdsData":null,"scrolledCmd":"*R","cmdCnt":44}
+				},
+			],
+		});
+
 		$argumentTuples = [];
 		for ($testCase of Object.values($list)) {
 			$argumentTuples.push([$testCase['input'], $testCase['output'], $testCase['calledCommands']]);
@@ -963,7 +1063,8 @@ class ImportPqGalileoActionTest extends require('../../../../../../../backend/Tr
 			.setSession((new AnyGdsStubSession($calledCommands)).setGds('galileo'))
 			.setPreCalledCommandsFromDb($input['previousCommands'])
 			.setBaseDate('2018-03-21')
-			.execute();
+			.execute()
+			.catch(exc => ({error: exc + ''}));
 
 		this.assertArrayElementsSubset($expectedOutput, $actual);
 	}
