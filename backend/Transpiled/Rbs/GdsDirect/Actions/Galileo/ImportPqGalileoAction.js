@@ -249,7 +249,7 @@ class ImportPqGalileoAction extends AbstractGdsAction {
 				}
 			}
 		}
-		return cmdRecords.length === 0
+		return cmdRecords.length > 0
 			? Rej.BadRequest(
 				'Last pricing command ' + cmdRecords.map(r => r.cmd).join(' & ') +
 				' does not cover some itinerary segments: ' +
