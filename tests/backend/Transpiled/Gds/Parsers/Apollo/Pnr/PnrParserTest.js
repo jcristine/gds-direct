@@ -1552,6 +1552,35 @@ class ApolloReservationParserTest extends require('../../../../../../../backend/
 				],
 			},
 		]);
+		// apparently Apollo allows creating an infant with just first (or is it last?) name
+		// possibly, that would imply that it has same last name as previous
+		// pax same as in Amadeus, but maybe it's just a bug in Apollo...
+		// see session #162040
+		$list.push([
+			[
+				" 1.1MAALA/GEMMA LUMINARIO ",
+				" 2.I/1MAALAMEGANGIFT LUMINARIO*21JAN19 ",
+				" 1 PR 117O 16OCT YVRMNL SS1  1100P  330A2*      WE/FR   E",
+				" 2 PR 116O 07NOV MNLYVR SS1   700P  420P *         TH   E",
+				"><"
+			].join("\n"),
+			{
+				'passengers': {
+					'passengerList': [
+						{
+							'success': true,
+							'nameNumber': {'raw': '1.1'},
+							'lastName': 'MAALA',
+							'firstName': 'GEMMA LUMINARIO',
+						},
+						{
+							'success': false,
+						},
+					],
+				},
+
+			},
+		]);
 		return $list;
 	}
 
