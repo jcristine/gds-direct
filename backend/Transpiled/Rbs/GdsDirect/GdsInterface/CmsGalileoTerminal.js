@@ -27,17 +27,6 @@ class CmsGalileoTerminal {
 		}
 	}
 
-	isInvalidCommandOutput($cmd, $output) {
-
-		// TODO: implement or refactor State Processor!
-		return false;
-	}
-
-	parseCommand($cmd) {
-
-		return CommandParser.parse($cmd);
-	}
-
 	getPricedPtcs($cmd) {
 		let $parsed, $pMod, $ptcs;
 
@@ -62,6 +51,8 @@ class CmsGalileoTerminal {
 
 		if ($cmdData['baseCmd'] === 'FQBA') {
 			$errors.push(Errors.getMessage(Errors.BAD_MOD_IGNORE_AVAILABILITY, {'modifier': '/' + $cmdData['baseCmd'] + '/'}));
+		} else if ($cmdData.baseCmd === 'FQBBK') {
+			$errors.push('PQ from >FQBBK; not allowed, please run clean >FQ;');
 		}
 		if ($sMod = $typeToMod['segments']) {
 			$bundles = $sMod['parsed']['bundles'];

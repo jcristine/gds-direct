@@ -1043,6 +1043,70 @@ class ImportPqGalileoActionTest extends require('../../../../../../../backend/Tr
 			],
 		});
 
+		$list.push({
+			'input': {
+				'title': 'multi-pricing FQBBK example - should not treat it as whole itinerary coverage just because there is no segment select modifier',
+				'fetchOptionalFields': false,
+				'previousCommands': [
+					{
+					    "cmd": "FQBBK",
+					    "output": [
+					        ">FQBBK",
+					        "                   ***  BEST BUY REBOOK  ***",
+					        "                  ***  REBOOK SUCCESSFUL  ***",
+					        "                    REBOOKED SEGMENTS 1W/2W",
+					        "    PSGR                      FARE     TAXES     TOTAL PSG DES  FQA 1                USD    800.00    255.70   1055.70 ADT          GUARANTEED AT TIME OF TICKETING",
+					        "GRAND TOTAL INCLUDING TAXES  ****      USD     1055.70                       **ADDITIONAL FEES MAY APPLY**SEE >FO;              ><"
+					    ].join("\n"),
+					    "duration": "1.340292753",
+					    "type": "priceItinerary",
+					    "scrolledCmd": "FQBBK",
+					    "state": {"canCreatePq":true,"pricingCmd":"FQBBK","area":"A","recordLocator":"","pcc":"711M","hasPnr":true,"isPnrStored":false,"cmdType":"priceItinerary","gdsData":null,"scrolledCmd":"FQBBK","cmdCnt":58}
+					},
+					{
+					    "cmd": "F*Q",
+					    "output": [
+					        "FQ-1 A07MAY19      ADT       ",
+					        "  CHI LH X/FRA LH ZAG 799.50WK387LGT/CNOW NUC799.50END ROE1.0 ",
+					        "  XF 4.50ORD4.5",
+					        "  FARE USD 800.00 TAX AY 5.60 TAX US 18.60 TAX XF 4.50 TAX DE",
+					        "  10.60 TAX RA 23.90 TAX YQ 175.00 TAX YR 17.50 TOT USD 1055.70",
+					        "><"
+					    ].join("\n"),
+					    "duration": "0.169180064",
+					    "type": "pricingLinearFare",
+					    "scrolledCmd": "F*Q",
+					    "state": {"canCreatePq":true,"pricingCmd":"FQBBK","area":"A","recordLocator":"","pcc":"711M","hasPnr":true,"isPnrStored":false,"cmdType":"pricingLinearFare","gdsData":null,"scrolledCmd":"F*Q","cmdCnt":59}
+					},
+				],
+			},
+			'output': {
+				'error': 'Invalid pricing command - FQBBK - PQ from >FQBBK; not allowed, please run clean >FQ;',
+			},
+			'calledCommands': [
+				{
+				    "cmd": "*R",
+				    "output": [
+				        "  1.1LIB/MAR",
+				        " 1. LH  433 W  20SEP ORDFRA HS1  1045P # 200P O        E FR  4",
+				        " 2. LH 1404 W  21SEP FRAZAG HS1   955P  1120P O        E SA  4",
+				        "         OPERATED BY AIR NOSTRUM LAM SA",
+				        " 3. AC 1969 B  25SEP ZAGYYZ HS1  1015A   145P O        E WE  2",
+				        "         OPERATED BY AIR CANADA ROUGE",
+				        " 4. AC  511 B  25SEP YYZORD HS1   440P   529P O        E WE  2",
+				        "** FILED FARE DATA EXISTS **           >*FF;",
+				        "NOTE-",
+				        "  1. TEST WS 07MAY 1320Z",
+				        "><"
+				    ].join("\n"),
+				    "duration": "0.208691895",
+				    "type": "redisplayPnr",
+				    "scrolledCmd": "*R",
+				    "state": {"canCreatePq":true,"pricingCmd":"FQBBK","area":"A","recordLocator":"","pcc":"711M","hasPnr":true,"isPnrStored":false,"cmdType":"redisplayPnr","gdsData":null,"scrolledCmd":"*R","cmdCnt":61}
+				},
+			],
+		});
+
 		$argumentTuples = [];
 		for ($testCase of Object.values($list)) {
 			$argumentTuples.push([$testCase['input'], $testCase['output'], $testCase['calledCommands']]);

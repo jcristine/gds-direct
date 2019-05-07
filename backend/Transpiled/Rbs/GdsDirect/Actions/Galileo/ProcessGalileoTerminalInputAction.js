@@ -711,7 +711,7 @@ class ProcessGalileoTerminalInputAction {
 	}
 
 	async _fetchPricing(cmd) {
-		let shouldFetchAll = !cmd.startsWith('FQBA');
+		let shouldFetchAll = !cmd.startsWith('FQBA') && !cmd.startsWith('FQBBK');
 		let result = await this.processRealCommand(cmd, shouldFetchAll);
 		if (shouldFetchAll && !php.empty(result.calledCommands)) {
 			let fqOutput = result.calledCommands[0].output;
