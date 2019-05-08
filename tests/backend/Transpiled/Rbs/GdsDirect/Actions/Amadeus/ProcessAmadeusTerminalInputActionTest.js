@@ -95,7 +95,7 @@ class ProcessAmadeusTerminalInputActionTest extends require('../../../../Lib/Tes
 	}
 
 	provideExecuteTestCases() {
-		let $list, $agentBaseDate, $argumentTuples, $testCase;
+		let $list, $agentBaseData, $argumentTuples, $testCase;
 
 		$list = [];
 
@@ -1666,7 +1666,7 @@ class ProcessAmadeusTerminalInputActionTest extends require('../../../../Lib/Tes
 		});
 
 		// GDS_DIRECT_EDIT_VOID_TICKETED_PNR logic example - forbidden
-		$agentBaseDate = GdsDirectDefaults.makeAgentBaseData();
+		$agentBaseData = GdsDirectDefaults.makeAgentBaseData();
 		$list.push({
 			'input': {
 				'cmdRequested': 'XI',
@@ -1674,7 +1674,7 @@ class ProcessAmadeusTerminalInputActionTest extends require('../../../../Lib/Tes
 				'ticketDesignators': [],
 				'stubAgents': [
 					Agent.makeStub(php.array_merge(GdsDirectDefaults.makeAgentBaseData(), {
-						'row': php.array_merge($agentBaseDate['row'], {
+						'row': php.array_merge($agentBaseData['row'], {
 							'id': '346',
 							'login': 'lepin',
 							'name': 'Lepin Lepin',
@@ -1817,7 +1817,7 @@ class ProcessAmadeusTerminalInputActionTest extends require('../../../../Lib/Tes
 		});
 
 		// GDS_DIRECT_EDIT_VOID_TICKETED_PNR logic example - allowed
-		$agentBaseDate = GdsDirectDefaults.makeAgentBaseData();
+		$agentBaseData = GdsDirectDefaults.makeAgentBaseData();
 		$list.push({
 			'input': {
 				'cmdRequested': 'XI',
@@ -1825,7 +1825,7 @@ class ProcessAmadeusTerminalInputActionTest extends require('../../../../Lib/Tes
 				'ticketDesignators': [],
 				'stubAgents': [
 					Agent.makeStub(php.array_merge(GdsDirectDefaults.makeAgentBaseData(), {
-						'row': php.array_merge($agentBaseDate['row'], {
+						'row': php.array_merge($agentBaseData['row'], {
 							'id': '346',
 							'login': 'lepin',
 							'name': 'Lepin Lepin',
@@ -1976,6 +1976,167 @@ class ProcessAmadeusTerminalInputActionTest extends require('../../../../Lib/Tes
 							'ITINERARY CANCELLED',
 							' ',
 						]),
+					},
+				],
+			},
+		});
+
+		$list.push({
+			'input': {
+				'title': 'void ticketed PNR role example - SECURED ETKT RECORD(S), session #182694',
+				'cmdRequested': 'XE10-12',
+				'baseDate': '2019-05-07 19:16:52',
+				'ticketDesignators': [],
+				'stubAgents': [
+					Agent.makeStub(php.array_merge(GdsDirectDefaults.makeAgentBaseData(), {
+						'row': php.array_merge($agentBaseData['row'], {
+							'id': '346', // '4235',
+							'login': 'lepin', // 'Andy',
+							'name': 'Lepin Lepin',
+							'team_id': '1',
+						}),
+						'roleRows': [
+							{'company': 'ITN', 'role': 'NEW_GDS_DIRECT_EDIT_VOID_TICKETED_PNR'},
+						],
+					})),
+				],
+			},
+			'output': {
+				'status': 'forbidden',
+				'userMessages': ['Forbidden command, cant delete fields in ticketed PNR'],
+			},
+			'sessionInfo': {
+				'initialState': php.array_merge(GdsDirectDefaults.makeDefaultAmadeusState(), {
+					'agent_id': 346, 'isPnrStored': true,
+				}),
+				'initialCommands': [
+					{
+					    "cmd": "RTWVCGJW",
+					    "output": [
+					        "/$--- TST RLR SFP ---",
+					        "RP/LAXGO3106/LAXGO3106            WS/SU   7MAY19/1814Z   WVCGJW",
+					        "------- PRIORITY",
+					        "M  STEPAN",
+					        "-------",
+					        "LAXGO3106/9998WS/25APR19",
+					        "  1.STITT/MICHAEL ANDREW",
+					        "  2  QF 094 D 08MAY 3 LAXMEL HK1  1040P 730A 10MAY  E  QF/WVCGJW",
+					        "  3  QF 093 D 18MAY 6 MELLAX HK1   900A 625A 18MAY  E  QF/WVCGJW",
+					        "  4  QF3397 T 18MAY 6 LAXYVR HK1   755P1042P 18MAY  E  QF/WVCGJW",
+					        "  5 AP LAX 310 410-3995 - GLOBAL NETWORK N GOWAY TRAVEL - A",
+					        "  6 AP 1 312-927-5544-M",
+					        "  7 AP 1 312-927-5544-M",
+					        "  8 APE MIKE.STITT@GMAIL.COM",
+					        "  9 TK OK27APR/LAXGO3100//ETQF",
+					        " 10 SSR RQST QF HK1 LAXMEL/21EN,P1/S2   SEE RTSTR",
+					        " 11 SSR RQST QF HK1 MELLAX/18EN,P1/S3   SEE RTSTR",
+					        " 12 SSR OTHS QF HN1 SEAT 21E/S2",
+					        " 13 SSR OTHS QF HN1 SEAT 21E/S2",
+					        " 14 SSR DOCS QF HK1 ////05NOV79/M//STITT/MICHAEL ANDREW/",
+					        " 15 RM GD-GINA STEVENS/2185/FOR MELINDA GATES/22502/LEAD-1137097",
+					        "       8 IN LAXGO3106",
+					        ") "
+					    ].join("\n"),
+					    "duration": "0.364907276",
+					    "type": "openPnr",
+					    "scrolledCmd": "RTWVCGJW",
+					    "state": {"canCreatePq":false,"pricingCmd":null,"area":"A","recordLocator":"WVCGJW","pcc":"SFO1S2195","hasPnr":true,"isPnrStored":true,"cmdType":"openPnr","gdsData":null,"scrolledCmd":"RTWVCGJW","cmdCnt":7}
+					},
+				],
+				'performedCommands': [
+					{
+					    "cmd": "RT",
+					    "output": [
+					        "/$--- TST RLR SFP ---",
+					        "RP/LAXGO3106/LAXGO3106            WS/SU   7MAY19/1814Z   WVCGJW",
+					        "------- PRIORITY",
+					        "M  STEPAN",
+					        "-------",
+					        "LAXGO3106/9998WS/25APR19",
+					        "  1.STITT/MICHAEL ANDREW",
+					        "  2  QF 094 D 08MAY 3 LAXMEL HK1  1040P 730A 10MAY  E  QF/WVCGJW",
+					        "  3  QF 093 D 18MAY 6 MELLAX HK1   900A 625A 18MAY  E  QF/WVCGJW",
+					        "  4  QF3397 T 18MAY 6 LAXYVR HK1   755P1042P 18MAY  E  QF/WVCGJW",
+					        "  5 AP LAX 310 410-3995 - GLOBAL NETWORK N GOWAY TRAVEL - A",
+					        "  6 AP 1 312-927-5544-M",
+					        "  7 AP 1 312-927-5544-M",
+					        "  8 APE MIKE.STITT@GMAIL.COM",
+					        "  9 TK OK27APR/LAXGO3100//ETQF",
+					        " 10 SSR RQST QF HK1 LAXMEL/21EN,P1/S2   SEE RTSTR",
+					        " 11 SSR RQST QF HK1 MELLAX/18EN,P1/S3   SEE RTSTR",
+					        " 12 SSR OTHS QF HN1 SEAT 21E/S2",
+					        " 13 SSR OTHS QF HN1 SEAT 21E/S2",
+					        " 14 SSR DOCS QF HK1 ////05NOV79/M//STITT/MICHAEL ANDREW/",
+					        " 15 RM GD-GINA STEVENS/2185/FOR MELINDA GATES/22502/LEAD-1137097",
+					        "       8 IN LAXGO3106",
+					        ") "
+					    ].join("\n"),
+					    "duration": "0.509869062",
+					    "type": "redisplayPnr",
+					    "scrolledCmd": "RT",
+					    "state": {"canCreatePq":false,"pricingCmd":null,"area":"A","recordLocator":"WVCGJW","pcc":"SFO1S2195","hasPnr":true,"isPnrStored":true,"cmdType":"redisplayPnr","gdsData":null,"scrolledCmd":"RT","cmdCnt":8}
+					},
+					{
+					    "cmd": "MDR",
+					    "output": [
+					        "/$ 16 RM NOTIFY PASSENGER PRIOR TO TICKET PURCHASE & CHECK-IN:",
+					        "       FEDERAL LAWS FORBID THE CARRIAGE OF HAZARDOUS MATERIALS -",
+					        "       GGAMAUSHAZ/S2-4",
+					        " 17 RM TICKET NBR MUST BE ADVISED TO QF",
+					        " 18 RM NO LATER THAN 02MAY TO AVOID CANCELLATION",
+					        " 19 RM WHERE SPECIAL SVC RQSTD-EMD NBR MUST BE ADVD TO QF",
+					        " 20 RM AT TIME OF TKT ISSUE OR RISK CANCELLATION OF SVC",
+					        " 21 RM FQTV AA-0WVCGJW/QF-FAILED/VERIFY CARD NUMBER",
+					        " 22 RM FQTV AA-0DKKGAX/QF-FAILED/VERIFY CARD NUMBER",
+					        " 23 RM FQTV AA-0J38M12/QF-FAILED/VERIFY CARD NUMBER",
+					        " 24 RM PNR MODIFIED BY THE END USER (TUESDAY-7-MAY-2019)",
+					        " 25 RM * 5H-FQ-USD8698.82TOTAL/25.00SUPP COMM/393.00AGENCY COMM",
+					        " 26 RM *CN/ITN",
+					        " 27 RM *BR/4",
+					        " 28 RM *BR/4",
+					        " 29 RM *TA/408",
+					        " 30 RM *BA/OTP",
+					        " 31 RM *SF/8125.00",
+					        " 32 RX RESTRICTED",
+					        " 33 RX RESTRICTED",
+					        " 34 FA PAX 081-7318750793/ETQF/27APR19/LAXGO3100/05669893/S2-4",
+					        " 35 FB PAX 0000000000 TTP/INV/ET/RT OK ETICKET OFFER ITR*ADVISE",
+					        ") "
+					    ].join("\n"),
+					    "duration": "0.127277902",
+					    "type": "moveRest",
+					    "scrolledCmd": "RT",
+					    "state": {"canCreatePq":false,"pricingCmd":null,"area":"A","recordLocator":"WVCGJW","pcc":"SFO1S2195","hasPnr":true,"isPnrStored":true,"cmdType":"moveRest","gdsData":null,"scrolledCmd":"RT","cmdCnt":9}
+					},
+					{
+					    "cmd": "MDR",
+					    "output": [
+					        "/$       PHOTO ID REQUIRED/S2-4",
+					        " 36 FE PAX NONEND/RERTE/NONREF W/O REF TO ISSUING OFFCE -BG:QF",
+					        "       /S2-4",
+					        " 37 FI PAX 0000000000 INV 0810535475/S2-4",
+					        " 38 FM *M*393.00A",
+					        " 39 FP PAX CCAXXXXXXXXXXXX2007/0224/A162622/S2-4",
+					        " 40 FS 82",
+					        " 41 FT *1104030",
+					        " 42 FV PAX QF/S2-4",
+					        " "
+					    ].join("\n"),
+					    "duration": "0.130019081",
+					    "type": "moveRest",
+					    "scrolledCmd": "RT",
+					    "state": {"canCreatePq":false,"pricingCmd":null,"area":"A","recordLocator":"WVCGJW","pcc":"SFO1S2195","hasPnr":true,"isPnrStored":true,"cmdType":"moveRest","gdsData":null,"scrolledCmd":"RT","cmdCnt":10}
+					},
+					{
+					    "cmd": "TWD/L34",
+					    "output": [
+					        "SECURED ETKT RECORD(S)",
+					        " "
+					    ].join("\n"),
+					    "duration": "0.459972817",
+					    "type": "ticketMask",
+					    "scrolledCmd": "TWD/L34",
+					    "state": {"canCreatePq":false,"pricingCmd":null,"area":"A","recordLocator":"WVCGJW","pcc":"SFO1S2195","hasPnr":true,"isPnrStored":true,"cmdType":"ticketMask","gdsData":null,"scrolledCmd":"TWD/L34","cmdCnt":11}
 					},
 				],
 			},

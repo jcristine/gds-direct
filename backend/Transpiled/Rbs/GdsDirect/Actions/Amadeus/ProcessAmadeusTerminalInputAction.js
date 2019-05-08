@@ -796,10 +796,11 @@ class ProcessAmadeusTerminalInputAction {
 			$twdParsed = TicketMaskParser.parse($twdOutput);
 			$isFlight = ($seg) => $seg['type'] !== 'void';
 			$isVoid = ($seg) => StringUtil.startsWith($seg['couponStatus'], 'V');
+			if ($twdParsed.error) {
+				return false;
+			}
 			$coupons = Fp.filter($isFlight, $twdParsed['segments']);
-			if (!php.empty($twdParsed['error']) ||
-				!Fp.all($isVoid, $coupons)
-			) {
+			if (!Fp.all($isVoid, $coupons)) {
 				return false;
 			}
 		}

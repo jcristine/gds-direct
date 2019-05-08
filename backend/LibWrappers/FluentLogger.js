@@ -5,7 +5,7 @@ try {
 } catch (exc) {
 	// no permissions in gitlab-ci
 	Logger = class {
-		logit(msg, logId, data) {};
+		logIt(msg, logId, data) {};
 		logNewId(prefix, log_id_old, msg_for_old_log) {};
 	};
 }
