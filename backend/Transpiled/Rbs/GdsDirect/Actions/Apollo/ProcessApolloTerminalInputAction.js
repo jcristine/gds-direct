@@ -1424,16 +1424,41 @@ class ProcessApolloTerminalInputAction {
 			.catch(exc => matchingPartial);
 	}
 
-	async prepareHbFexMask(storeNumber = '', ticketNumber = '') {
+	async _checkPnrForExchange(storeNum) {
 		let agent = this.stateful.getAgent();
 		if (!agent.canIssueTickets()) {
-			return {'errors': ['You have no ticketing rights']};
+			return Rej.Forbidden('You have no ticketing rights');
 		}
 		let pnr = await this.getCurrentPnr();
 		if (!pnr.getRecordLocator()) {
-			return {'errors': ['Must be in a PNR']};
+			return Rej.BadRequest('Must be in a PNR');
 		}
-		let cmd = 'HB' + storeNumber + ':FEX' + (ticketNumber || '');
+		let store = pnr.getStoredPricingList()[storeNum - 1];
+		if (!store) {
+			return Rej.BadRequest('There is no ATFQ #' + storeNum + ' in PNR');
+		}
+		if (pnr.getPassengers().length > 1) {
+			let nData = store.pricingModifiers
+				.filter(mod => mod.type === 'passengers')
+				.map(mod => mod.parsed)[0];
+
+			let paxCnt = !nData || !nData.passengersSpecified
+				? pnr.getPassengers().length
+				: nData.passengerProperties.length;
+			// Rico says there is a risk of losing a ticket if issuing multiple paxes
+			// at once with HB:FEX, so ticketing agents are not allowed to do so
+			if (paxCnt > 1) {
+				let error = 'Multiple passengers (' + paxCnt +
+					') in ATFQ #' + storeNum + ' not allowed for HB:FEX';
+				return Rej.BadRequest(error);
+			}
+		}
+		return Promise.resolve(pnr);
+	}
+
+	async prepareHbFexMask(cmdStoreNumber = '', ticketNumber = '') {
+		let pnr = await this._checkPnrForExchange(cmdStoreNumber || 1);
+		let cmd = 'HB' + cmdStoreNumber + ':FEX' + (ticketNumber || '');
 		let output = (await this.runCmd(cmd)).output;
 		let parsed = ParseHbFex(output);
 		if (!parsed) {
@@ -1468,9 +1493,6 @@ class ProcessApolloTerminalInputAction {
 				},
 			}],
 		};
-		if (!agent.canSeeCcNumbers()) {
-			result = Misc.maskCcNumbers(result);
-		}
 		return result;
 	}
 

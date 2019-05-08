@@ -107,7 +107,7 @@ class ApolloPnr {
 	}
 
 	getStoredPricingList() {
-		return this.$parsed['atfqData'] || [];
+		return this.$parsed.atfqData || [];
 	}
 
 	getRemarks() {

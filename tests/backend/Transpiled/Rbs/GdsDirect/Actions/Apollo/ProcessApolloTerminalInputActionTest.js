@@ -4351,6 +4351,85 @@ class ProcessApolloTerminalInputActionTest extends require('../../../../Lib/Test
 
 		$list.push({
 			'input': {
+				'title': 'should check that ATFQ only has 1 passenger before calling HB:FEX',
+				'cmdRequested': 'HB:FEX',
+			},
+			'output': {
+				'status': 'forbidden',
+				'userMessages': ['Error: Multiple passengers (2) in ATFQ #1 not allowed for HB:FEX'],
+			},
+			'sessionInfo': {
+				'initialState': php.array_merge(GdsDirectDefaults.makeDefaultApolloState(), {
+					'agent_id': 8050,
+					'hasPnr': true,
+					'isPnrStored': true,
+					'pcc': '1O3K',
+					'recordLocator': 'PVNNMP',
+				}),
+				'initialCommands': [],
+				'performedCommands': [
+					{
+					    "cmd": "*R",
+					    "output": [
+					        "PANDAREN",
+					        "2F3K - INTERNATIONAL TRAVEL NET SFO",
+					        "PVNNMP/WS QSBYC DPBVWS  AG 05578602 07MAY",
+					        " 1.1MCHARO/LAILA MGHOI  2.1SAMB/MAMADOU ASSANE ",
+					        " 1 KQ   3Q 03JUL JFKNBO HK2  1255P 1025A|*      WE/TH   E",
+					        " 2 KQ8604Q 04JUL NBOMBA HK2  1225P  130P *         TH   E",
+					        "         OPERATED BY JAMBOJET",
+					        " 3 KQ 611Q 19JUL MBANBO HK2   640P  740P *         FR   E  1",
+					        " 4 KQ   2Q 19JUL NBOJFK HK2  1055P  655A|*      FR/SA   E  1",
+					        "FONE-SFOAS/800-750-2238 ASAP CUSTOMER SUPPORT",
+					        "FOP:-VIXXXXXXXXXXXX8932/D0122/*02273C",
+					        "TKTG-T/QSB 07MAY1801Z WS AG *",
+					        "*** TIN REMARKS EXIST *** >*T; ",
+					        ")><"
+					    ].join("\n"),
+					    "duration": "0.044879298",
+					    "type": "redisplayPnr",
+					    "scrolledCmd": "*R",
+					    "state": {"area":"A","pcc":"1O3K","recordLocator":"PVNNMP","canCreatePq":false,"scrolledCmd":"*R","cmdCnt":361,"pricingCmd":null,"cmdType":"redisplayPnr","hasPnr":true,"isPnrStored":true}
+					},
+					{
+					    "cmd": "MR",
+					    "output": [
+					        "*** MISCELLANEOUS DOCUMENT DATA EXISTS *** >*MPD; ",
+					        "*** LINEAR FARE DATA EXISTS *** >*LF; ",
+					        "ATFQ-OK/$B/:N/ITKQCON001/Z3/ET/TA1O3K/CKQ",
+					        " FQ-USD 1710.00/USD 74.40US/USD 1213.66XT/USD 2998.06 - 7MAY QH3RUSW3.QH3RUSW3.QH3RUSW3.QH3RUSW3/QH3RUSW3.QH3RUSW3.QH3RUSW3.QH3RUSW3",
+					        "GFAX-SSRADTK1VTOKQ BY 10MAY19/2300Z OTHERWISE WILL BE XXLD",
+					        "   2 SSRCTCEKQHK1/KANUINKE//YAHOO.COM-1MCHARO/LAILA MGHOI",
+					        "   3 SSRCTCMKQHK1/3472847139-1MCHARO/LAILA MGHOI",
+					        "   4 SSRCTCMKQHK1/3475410721-1SAMB/MAMADOU ASSANE",
+					        "   5 SSRDOCSKQHK1/////21JUN77/F//MCHARO/LAILA/MGHOI-1MCHARO/LAILA MGHOI",
+					        "   6 SSRDOCSKQHK1/////05FEB69/M//SAMB/MAMADOU/ASSANE-1SAMB/MAMAD)><"
+					    ].join("\n"),
+					    "duration": "0.048289005",
+					    "type": "moveRest",
+					    "scrolledCmd": "*R",
+					    "state": {"area":"A","pcc":"1O3K","recordLocator":"PVNNMP","canCreatePq":false,"scrolledCmd":"*R","cmdCnt":362,"pricingCmd":null,"cmdType":"moveRest","hasPnr":true,"isPnrStored":true}
+					},
+					{
+					    "cmd": "MR",
+					    "output": [
+					        "OU ASSANE",
+					        "RMKS-GD-RANGER/102053/FOR RANGER/102053/LEAD-11395374 IN 2F3K",
+					        "ACKN-1A QZGQML   07MAY 1640",
+					        "   2 1A QZGQML   07MAY 1640",
+					        "><"
+					    ].join("\n"),
+					    "duration": "0.045607794",
+					    "type": "moveRest",
+					    "scrolledCmd": "*R",
+					    "state": {"area":"A","pcc":"1O3K","recordLocator":"PVNNMP","canCreatePq":false,"scrolledCmd":"*R","cmdCnt":363,"pricingCmd":null,"cmdType":"moveRest","hasPnr":true,"isPnrStored":true}
+					},
+				],
+			},
+		});
+
+		$list.push({
+			'input': {
 				'title': 'Rebook segments: order is important! Order should be chronological, not by marriage value.',
 				'cmdRequested': [
 					"1 CM 435L 30NOV MCOPTY SS1   723A 1042A *         SA   E  6      3:19  738       ",
