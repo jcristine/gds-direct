@@ -70,6 +70,7 @@ export default class TerminalPlugin
 		this.insertKey	= false;
 	}
 
+	/** @param {KeyboardEvent} evt */
 	_parseKeyBinds( evt, terminal )
 	{
 		if (this.injectedForms.length)
@@ -82,6 +83,12 @@ export default class TerminalPlugin
 				return true;
 		}
 
+		if (evt.ctrlKey && evt.key === 'Tab') {
+			// firefox v45.0.2 on Ubuntu v 14.04 behaves crazy if you return false in Ctrl+Tab event handler when there are no tabs - it slowly
+			// scrolls page down, then up, then triggers 2 more Ctrl+Tab events and jquery terminal gets focused in multiple cells at once
+			// chrome/xubuntu won't even trigger an event on Ctrl+Tab, so let's ignore it in firefox as well to stay consistent
+			return true;
+		}
 		const hasNoShortCut = pressedShortcuts( evt, terminal, this );
 
 		if ( !hasNoShortCut )
