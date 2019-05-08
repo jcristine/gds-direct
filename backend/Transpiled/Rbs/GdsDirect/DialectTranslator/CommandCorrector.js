@@ -205,6 +205,14 @@ class CommandCorrector {
 					'mistake': '**R',
 					'correct': '*R',
 				},
+				{
+					'mistake': 'UI',
+					'correct': 'I',
+				},
+				{
+					'mistake': 'U',
+					'correct': 'I',
+				},
 			],
 
 			'sabre': [

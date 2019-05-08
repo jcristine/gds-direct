@@ -142,6 +142,10 @@ class CommandCorrectorTest extends require('../../../Lib/TestCase.js') {
 			['galileo', 'RE/K9P/AG', 'RE/K9P/AK'],
 			['amadeus', 'RE/SFO123456/AG', 'RE/SFO123456/GK'],
 			['sabre', 'RE/6IIF/AG', 'RE/6IIF/GK'],
+			// undocumented >U; has something to do with "messages", possibly the queue messages
+			// the deal is, it is really close to the "I" button and agents accidentally hit it VERY often
+			['apollo', 'UI', 'I'],
+			['apollo', 'U', 'I'],
 
 			/**/
 		];

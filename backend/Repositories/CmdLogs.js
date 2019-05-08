@@ -16,6 +16,7 @@ let isInvalidFormat = (cmdRec, gds) => {
 			|| cmdRec.output.match(/^\s*INVALID INPUT\s*><$/)
 			|| cmdRec.output.match(/^INVALID ACTION\s*><$/)
 			|| cmdRec.output.match(/^INVALID ACTION CODE - .*\s*><$/)
+			|| cmdRec.output.match(/^INVALID FORMAT - .*\s*><$/)
 			|| cmdRec.output.match(/^INVALID SEGMENT RANGE OR PAIR SPECIFIED\s*><$/)
 			|| cmdRec.output.match(/^CHECK FORMAT - .+\s*><$/)
 			|| cmdRec.output.match(/^CK ACTN CODE\s*><$/)
@@ -24,7 +25,9 @@ let isInvalidFormat = (cmdRec, gds) => {
 			|| cmdRec.output.match(/^CK STATUS\s*><$/)
 			|| cmdRec.output.match(/^CK FLT NBR\s*><$/)
 			|| cmdRec.output.match(/^CK SGMT NBR\s*><$/)
+			|| cmdRec.output.match(/^CK NBR IN PTY\s*><$/)
 			|| cmdRec.output.match(/^\s*CK CARRIER CODE\s*><$/)
+			|| cmdRec.output.match(/^\s*CK FORMAT\s*><$/)
 			|| cmdRec.output.match(/^VERIFY - FORMAT\s*><$/)
 			|| cmdRec.output.match(/^ILLEGAL ENTRY\s*><$/)
 			|| cmdRec.output.match(/^RESTRICTED\s*><$/)
@@ -38,14 +41,32 @@ let isInvalidFormat = (cmdRec, gds) => {
 	}
 };
 
+let isContextError = (cmdRec, gds) => {
+	if (gds === 'apollo') {
+		// when you try to open another PNR when there are unsaved changes in current one
+		let matches = cmdRec.output.match(/^FIN OR IGN\s*><$/)
+			|| cmdRec.output.match(/^NO TRANS AAA\s*><$/) // no PNR
+			// not emulated to a PCC in this area
+			|| cmdRec.output.match(/^AG - DUTY CODE NOT AUTH FOR CRT - APOLLO\s*><$/)
+			;
+		return matches ? true : false;
+	} else {
+		return false;
+	}
+};
+
 let makeRow = (cmdRec, session, cmdRqId, prevState) => {
 	let gds = session.context.gds;
 	let scrolledCmd = (cmdRec.state || {}).scrolledCmd;
 	let scrolledType = !scrolledCmd ? null :
 		CommonDataHelper.parseCmdByGds(gds, scrolledCmd).type;
 	let type = scrolledType || cmdRec.type;
-	if (!type && isInvalidFormat(cmdRec, gds)) {
-		type = '!invalidFormat';
+	if (!type) {
+		if (isInvalidFormat(cmdRec, gds)) {
+			type = '!invalidFormat';
+		} else if (isContextError(cmdRec, gds)) {
+			type = '!contextError';
+		}
 	}
 	return {
 		session_id: session.id,
