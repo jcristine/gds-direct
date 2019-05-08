@@ -865,7 +865,7 @@ class ImportPqApolloActionTest extends require('../../../../Lib/TestCase.js') {
 				],
 			},
 			'output': {
-				'error': 'Can not create PQ from $BBQ01 with segment select - /S1-2F3K|2-2F3K/, please run clean $B',
+				'error': 'Error: Can not create PQ from $BBQ01 with segment select - /S1-2F3K|2-2F3K/, please run clean $B',
 			},
 			'calledCommands': [
 				{
@@ -1014,7 +1014,8 @@ class ImportPqApolloActionTest extends require('../../../../Lib/TestCase.js') {
 			.setSession((new AnyGdsStubSession($calledCommands)).setGds('apollo'))
 			.setPreCalledCommandsFromDb($input['previousCommands'])
 			.setBaseDate('2018-03-20')
-			.execute();
+			.execute()
+			.catch(exc => ({error: exc + ''}));
 
 		this.assertArrayElementsSubset($expectedOutput, $actual);
 	}

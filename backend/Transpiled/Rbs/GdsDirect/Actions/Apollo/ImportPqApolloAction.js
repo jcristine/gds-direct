@@ -317,16 +317,17 @@ class ImportPqApolloAction extends AbstractGdsAction {
 			$pricingCommand = $cmdRecord['cmd'];
 			$errors = CanCreatePqRules.checkPricingCommand('apollo', $pricingCommand, this.$leadData);
 			if (!php.empty($errors)) {
-				$result['error'] = 'Invalid pricing command - ' + $pricingCommand + ' - ' + php.implode(';', $errors);
-				return $result;
+				let error = 'Invalid pricing command - ' +
+					$pricingCommand + ' - ' + php.implode(';', $errors);
+				return Rej.BadRequest(error);
 			}
 			if (this.constructor.isScrollingAvailable($cmdRecord['output'])) {
 				if ($i == php.count($cmdRecords) - 1) { // last (current) pricing command
 					$cmd = StringUtil.startsWith($pricingCommand, '$BB') ? '*$BB' : '*$B';
 					$raw = await this.runOrReuse($cmd);
 				} else {
-					$result['error'] = 'Some unscrolled output left in the >' + $cmdRecord['cmd'] + ';';
-					return $result;
+					let error = 'Some unscrolled output left in the >' + $cmdRecord['cmd'] + ';';
+					return Rej.InternalServerError(error); // should not happen, PQ button would be disabled
 				}
 			} else {
 				$raw = $cmdRecord['output'];
@@ -334,8 +335,7 @@ class ImportPqApolloAction extends AbstractGdsAction {
 			}
 			$processed = this.processPricingOutput($raw, $pricingCommand, $reservation['passengers']);
 			if (!php.empty($processed['error'])) {
-				$result['error'] = $processed['error'];
-				return $result;
+				return Rej.BadRequest($processed['error']);
 			}
 			$processed['store']['pricingNumber'] = $i + 1;
 			let $bagBlocks = $processed['bagPtcPricingBlocks']
@@ -343,7 +343,7 @@ class ImportPqApolloAction extends AbstractGdsAction {
 			$result['pricingPart']['parsed']['pricingList'].push($processed['store']);
 			$result['bagPtcPricingBlocks'] = php.array_merge($result['bagPtcPricingBlocks'], $bagBlocks);
 		}
-		return $result;
+		return Promise.resolve($result);
 	}
 
 	/**
