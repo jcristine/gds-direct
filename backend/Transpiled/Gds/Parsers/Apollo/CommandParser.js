@@ -83,7 +83,6 @@ class CommandParser {
 			'RRVE': 'exchangeTicket',
 			'HBRF': 'refundTicket',
 			'HB': 'issueTickets',
-			'HHPR': 'priceItineraryManually',
 			'QMDR': 'qmdr',
 			'Q': 'openQueue',
 			'XX': 'calculator',
@@ -694,6 +693,18 @@ class CommandParser {
 		}
 	}
 
+	static parsePriceItineraryManually($cmd) {
+		let matches;
+		if (php.preg_match(/^HHPR(.*?)\s*$/, $cmd, matches = [])) {
+			let mods = AtfqParser.parsePricingModifiers(matches[1]);
+			return {
+				pricingModifiers: mods,
+			};
+		} else {
+			return null;
+		}
+	}
+
 	static parseStorePricing($cmd) {
 		let $pricingCmd;
 		if (StringUtil.startsWith($cmd, 'T:$B')) {
@@ -780,6 +791,8 @@ class CommandParser {
 			$type = 'changePcc';
 		} else if ($data = this.parsePriceItinerary($cmd)) {
 			$type = 'priceItinerary';
+		} else if ($data = this.parsePriceItineraryManually($cmd)) {
+			$type = 'priceItineraryManually';
 		} else if ($data = this.parseStorePricing($cmd)) {
 			$type = 'storePricing';
 		} else if ($data = this.parseSell($cmd)) {

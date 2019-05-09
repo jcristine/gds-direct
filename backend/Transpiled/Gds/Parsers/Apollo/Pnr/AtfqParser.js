@@ -273,19 +273,15 @@ class AtfqParser {
 	// '-*H0Q@YX2', '-*2G2H', '@CCLL', 'Y1N0C9M0-NYC09*2CV4'
 	static parseSegmentBundleMods($modStr) {
 		let $getTuple, $getFirst, $lexer, $lexed, $typeToData;
-		$getTuple = ($matches) => {
-			return php.array_slice($matches, 1);
-		};
-		$getFirst = ($matches) => {
-			return $matches[1];
-		};
+		$getTuple = ($matches) => php.array_slice($matches, 1);
+		$getFirst = ($matches) => $matches[1];
 		$lexer = new Lexer([
 			(new Lexeme('fareBasis', /^@([A-Z][A-Z0-9]*)/)).preprocessData($getFirst),
 			(new Lexeme('privateFare', /^-([0-9A-Z]*)(?:\*([A-Z0-9]{0,4})|)/)).preprocessData($getTuple),
 			(new Lexeme('mysteriousLetter', /^\.[A-Z]/)).preprocessData($getTuple),
 		]);
 		$lexed = $lexer.lex($modStr);
-		if ($lexed['text']) {
+		if ($lexed['text'] || $lexed.lexemes.length === 0) {
 			return null;
 		} else {
 			$typeToData = php.array_combine(php.array_column($lexed['lexemes'], 'lexeme'),

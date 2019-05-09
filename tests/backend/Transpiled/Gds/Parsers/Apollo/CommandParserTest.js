@@ -863,6 +863,23 @@ class CommandParserTest extends require('../../../../../../backend/Transpiled/Li
         $list.push(['C:PS-RICO', {type: 'changePsRemark'}]);
         $list.push(['C:PS-RICO@VR CC', {type: 'changePsRemark'}]);
         $list.push(['FD1/NET', {type: 'fareDetailsFromTariff'}]);
+        $list.push(['HHPRN1/Z0/ET/GBG0PC|EBNONREF-0VALUAFTDPT-CHGFE/', {
+            type: 'priceItineraryManually',
+            data: {
+                pricingModifiers: [
+                    {raw: 'N1', type: 'passengers'},
+                    {raw: 'Z0', type: 'commission'},
+                    {raw: 'ET', type: 'areElectronicTickets'},
+                    {raw: 'GBG0PC|EBNONREF-0VALUAFTDPT-CHGFE', type: 'generic', parsed: {
+                        subModifiers: [
+                            {raw: 'BG0PC', type: 'freeBaggageAmount'},
+                            {raw: 'EBNONREF-0VALUAFTDPT-CHGFE', type: 'endorsementLine'},
+                        ],
+                    }},
+                    {raw: '', type: null},
+                ],
+            },
+        }]);
         return $list;
     }
 
