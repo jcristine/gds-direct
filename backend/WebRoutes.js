@@ -261,7 +261,7 @@ app.post('/admin/getModel', withAuth(async (reqBody, emcResult) => {
 			table: reqBody.model,
 			where: reqBody.where || [],
 			whereOr: reqBody.whereOr || [],
-			orderBy: reqBody.orderBy || 'id DESC',
+			orderBy: reqBody.orderBy || null,
 			skip: reqBody.skip,
 			limit: reqBody.limit || 100,
 		}));
