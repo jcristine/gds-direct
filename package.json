@@ -5,7 +5,7 @@
   "author": "klesun",
   "license": "proprietary",
   "optionalDependencies": {
-    "dynatech-diag-service": "git+ssh://git@gitlab.dyninno.net:1022/node-libraries/diag-service.git#cdcc4eb7ac7768759407c2795376274ccdfefed7",
+    "dynatech-diag-service": "git+ssh://git@gitlab.dyninno.net:1022/node-libraries/diag-service.git#v0.1.3",
     "dynatech-client-component-emc": "git+ssh://git@gitlab.dyninno.net:1022/node-libraries/client-component-emc.git#v0.1.2",
     "dynatech-client-component": "git+ssh://git@gitlab.dyninno.net:1022/node-libraries/client-component.git#7ad8d0caa829bf947dadced1834ced94ae90b734",
     "dynatech-logger": "git+ssh://git@gitlab.dyninno.net:1022/node-libraries/logger#v0.0.12"
