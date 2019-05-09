@@ -3363,32 +3363,32 @@ class ProcessApolloTerminalInputActionTest extends require('../../../../Lib/Test
 								exchangedTicketCurrency: 'USD',
 							},
 							"fields": [
-								{"enabled": true , "key": "exchangedTicketNumber", "value": ""},
-								{"enabled": true , "key": "exchangedTicketExtension", "value": ""},
-								{"enabled": true , "key": "ticketNumber1", "value": ""},
-								{"enabled": true , "key": "couponNumber1", "value": ""},
-								{"enabled": true , "key": "ticketNumber2", "value": ""},
-								{"enabled": true , "key": "couponNumber2", "value": ""},
-								{"enabled": true , "key": "commission", "value": ""},
-								{"enabled": true , "key": "originalFormOfPayment", "value": ""},
-								{"enabled": true , "key": "evenIndicator", "value": ""},
-								{"enabled": true , "key": "exchangedTicketTotalValue", "value": ""},
+								{"enabled": true, "key": "exchangedTicketNumber", "value": ""},
+								{"enabled": true, "key": "exchangedTicketExtension", "value": ""},
+								{"enabled": true, "key": "ticketNumber1", "value": ""},
+								{"enabled": true, "key": "couponNumber1", "value": ""},
+								{"enabled": true, "key": "ticketNumber2", "value": ""},
+								{"enabled": true, "key": "couponNumber2", "value": ""},
+								{"enabled": true, "key": "commission", "value": ""},
+								{"enabled": true, "key": "originalFormOfPayment", "value": ""},
+								{"enabled": true, "key": "evenIndicator", "value": ""},
+								{"enabled": true, "key": "exchangedTicketTotalValue", "value": ""},
 								{"enabled": false, "key": "originalBoardPoint", "value": ""},
 								{"enabled": false, "key": "originalOffPoint", "value": ""},
-								{"enabled": true , "key": "taxAmount1", "value": ""},
-								{"enabled": true , "key": "taxCode1", "value": ""},
-								{"enabled": true , "key": "taxAmount2", "value": ""},
-								{"enabled": true , "key": "taxCode2", "value": ""},
-								{"enabled": true , "key": "taxAmount3", "value": ""},
-								{"enabled": true , "key": "taxCode3", "value": ""},
-								{"enabled": true , "key": "originalIssuePoint", "value": ""},
-								{"enabled": true , "key": "originalIssueDate", "value": ""},
+								{"enabled": true, "key": "taxAmount1", "value": ""},
+								{"enabled": true, "key": "taxCode1", "value": ""},
+								{"enabled": true, "key": "taxAmount2", "value": ""},
+								{"enabled": true, "key": "taxCode2", "value": ""},
+								{"enabled": true, "key": "taxAmount3", "value": ""},
+								{"enabled": true, "key": "taxCode3", "value": ""},
+								{"enabled": true, "key": "originalIssuePoint", "value": ""},
+								{"enabled": true, "key": "originalIssueDate", "value": ""},
 								{"enabled": false, "key": "originalAgencyIata", "value": ""},
-								{"enabled": true , "key": "originalTicketStar", "value": ""},
+								{"enabled": true, "key": "originalTicketStar", "value": ""},
 								{"enabled": false, "key": "originalTicketStarExtension", "value": ""},
 								{"enabled": false, "key": "originalInvoiceNumber", "value": ""},
-								{"enabled": true , "key": "penaltyAmount", "value": ""},
-								{"enabled": true , "key": "commOnPenaltyAmount", "value": ""}
+								{"enabled": true, "key": "penaltyAmount", "value": ""},
+								{"enabled": true, "key": "commOnPenaltyAmount", "value": ""}
 							],
 							"maskOutput": [
 								">$EX NAME UZUMAKI/NARUTO                     PSGR  1/ 1",
@@ -3421,36 +3421,36 @@ class ProcessApolloTerminalInputActionTest extends require('../../../../Lib/Test
 				'initialCommands': [],
 				'performedCommands': [
 					{
-					    "cmd": "*R",
-					    "output": [
-					        "CREATED IN GDS DIRECT BY AKLESUNS",
-					        "PZWSV5/WS QSBYC DPBVWS  AG 05578602 01APR",
-					        " 1.1UZUMAKI/NARUTO ",
-					        " 1 UA 613Y 25JUN SFOLAX HK1   630A  816A *         TU   E",
-					        " 2 TUR ZZ BK1  YYZ 15FEB-RETENTION LINE",
-					        " 3 TUR ZZ BK1  YYZ 15FEB-RETENTION LINE",
-					        "FONE-SFOAS/800-750-2238 ASAP CUSTOMER SUPPORT",
-					        "FOP:-VIXXXXXXXXXXXX1111/D1221/*ABC123",
-					        "TKTG-TAU/01APR",
-					        "*** LINEAR FARE DATA EXISTS *** >*LF; ",
-					        "ATFQ-TKTE/$B-*2F3K/FEX/ET/TA2F3K/CUA",
-					        " FQ-USD 901.40/USD 67.60US/USD 14.30XT/USD 983.30 - 1APR YAA0AFEY",
-					        ")><"
-					    ].join("\n"),
+						"cmd": "*R",
+						"output": [
+							"CREATED IN GDS DIRECT BY AKLESUNS",
+							"PZWSV5/WS QSBYC DPBVWS  AG 05578602 01APR",
+							" 1.1UZUMAKI/NARUTO ",
+							" 1 UA 613Y 25JUN SFOLAX HK1   630A  816A *         TU   E",
+							" 2 TUR ZZ BK1  YYZ 15FEB-RETENTION LINE",
+							" 3 TUR ZZ BK1  YYZ 15FEB-RETENTION LINE",
+							"FONE-SFOAS/800-750-2238 ASAP CUSTOMER SUPPORT",
+							"FOP:-VIXXXXXXXXXXXX1111/D1221/*ABC123",
+							"TKTG-TAU/01APR",
+							"*** LINEAR FARE DATA EXISTS *** >*LF; ",
+							"ATFQ-TKTE/$B-*2F3K/FEX/ET/TA2F3K/CUA",
+							" FQ-USD 901.40/USD 67.60US/USD 14.30XT/USD 983.30 - 1APR YAA0AFEY",
+							")><"
+						].join("\n"),
 					},
 					{
-					    "cmd": "MR",
-					    "output": [
-					        "GFAX-SSRDOCSUAHK1/////10MAY90/M//UZUMMAKI/NARUTO-1UZUMAKI/NARUTO",
-					        "   2 SSRADTK1VKK1.TKT UA SEGS BY 22JUN19 TO AVOID AUTO CXL /EARLIER",
-					        "   3 SSRADTK1VKK1.TICKETING MAY BE REQUIRED BY FARE RULE",
-					        "RMKS-GD-AKLESUNS/6206/LEAD-8013096 IN 2F3K",
-					        "ACKN-UA JSMMZL   01APR 1029                       ",
-					        "><"
-					    ].join("\n"),
+						"cmd": "MR",
+						"output": [
+							"GFAX-SSRDOCSUAHK1/////10MAY90/M//UZUMMAKI/NARUTO-1UZUMAKI/NARUTO",
+							"   2 SSRADTK1VKK1.TKT UA SEGS BY 22JUN19 TO AVOID AUTO CXL /EARLIER",
+							"   3 SSRADTK1VKK1.TICKETING MAY BE REQUIRED BY FARE RULE",
+							"RMKS-GD-AKLESUNS/6206/LEAD-8013096 IN 2F3K",
+							"ACKN-UA JSMMZL   01APR 1029                       ",
+							"><"
+						].join("\n"),
 					},
 					{
-					    "cmd": "HB:FEX",
+						"cmd": "HB:FEX",
 						"output": [
 							">$EX NAME UZUMAKI/NARUTO                     PSGR  1/ 1",
 							"FARE USD   901.40  TOTAL USD   983.30",
@@ -3515,32 +3515,32 @@ class ProcessApolloTerminalInputActionTest extends require('../../../../Lib/Test
 								exchangedTicketCurrency: 'USD',
 							},
 							"fields": [
-								{"enabled": true , "key": "exchangedTicketNumber"      , "value": ""},
-								{"enabled": true , "key": "exchangedTicketExtension"   , "value": ""},
-								{"enabled": false, "key": "ticketNumber1"              , "value": "01672936001844"},
-								{"enabled": false, "key": "couponNumber1"              , "value": "1"},
-								{"enabled": true , "key": "ticketNumber2"              , "value": ""},
-								{"enabled": true , "key": "couponNumber2"              , "value": ""},
-								{"enabled": true , "key": "commission"                 , "value": ""},
-								{"enabled": true , "key": "originalFormOfPayment"      , "value": ""},
-								{"enabled": true , "key": "evenIndicator"              , "value": ""},
-								{"enabled": false, "key": "exchangedTicketTotalValue"  , "value": "983.30"},
-								{"enabled": false, "key": "originalBoardPoint"         , "value": "SFO"},
-								{"enabled": false, "key": "originalOffPoint"           , "value": "LAX"},
-								{"enabled": false, "key": "taxAmount1"			      , "value": "67.60"},
-								{"enabled": false, "key": "taxCode1"  			      , "value": "US"},
-								{"enabled": false, "key": "taxAmount2"			      , "value": "14.30"},
-								{"enabled": false, "key": "taxCode2"  			      , "value": "XT"},
-								{"enabled": true , "key": "taxAmount3"			      , "value": ""},
-								{"enabled": true , "key": "taxCode3"  			      , "value": ""},
-								{"enabled": false, "key": "originalIssuePoint"         , "value": "SFO"},
-								{"enabled": false, "key": "originalIssueDate"          , "value": "25MAR19"},
-								{"enabled": false, "key": "originalAgencyIata"         , "value": "05578602"},
-								{"enabled": false, "key": "originalTicketStar"         , "value": "*"},
+								{"enabled": true, "key": "exchangedTicketNumber", "value": ""},
+								{"enabled": true, "key": "exchangedTicketExtension", "value": ""},
+								{"enabled": false, "key": "ticketNumber1", "value": "01672936001844"},
+								{"enabled": false, "key": "couponNumber1", "value": "1"},
+								{"enabled": true, "key": "ticketNumber2", "value": ""},
+								{"enabled": true, "key": "couponNumber2", "value": ""},
+								{"enabled": true, "key": "commission", "value": ""},
+								{"enabled": true, "key": "originalFormOfPayment", "value": ""},
+								{"enabled": true, "key": "evenIndicator", "value": ""},
+								{"enabled": false, "key": "exchangedTicketTotalValue", "value": "983.30"},
+								{"enabled": false, "key": "originalBoardPoint", "value": "SFO"},
+								{"enabled": false, "key": "originalOffPoint", "value": "LAX"},
+								{"enabled": false, "key": "taxAmount1", "value": "67.60"},
+								{"enabled": false, "key": "taxCode1", "value": "US"},
+								{"enabled": false, "key": "taxAmount2", "value": "14.30"},
+								{"enabled": false, "key": "taxCode2", "value": "XT"},
+								{"enabled": true, "key": "taxAmount3", "value": ""},
+								{"enabled": true, "key": "taxCode3", "value": ""},
+								{"enabled": false, "key": "originalIssuePoint", "value": "SFO"},
+								{"enabled": false, "key": "originalIssueDate", "value": "25MAR19"},
+								{"enabled": false, "key": "originalAgencyIata", "value": "05578602"},
+								{"enabled": false, "key": "originalTicketStar", "value": "*"},
 								{"enabled": false, "key": "originalTicketStarExtension", "value": ""},
-								{"enabled": false, "key": "originalInvoiceNumber"      , "value": ""},
-								{"enabled": true , "key": "penaltyAmount"              , "value": ""},
-								{"enabled": true , "key": "commOnPenaltyAmount"        , "value": ""},
+								{"enabled": false, "key": "originalInvoiceNumber", "value": ""},
+								{"enabled": true, "key": "penaltyAmount", "value": ""},
+								{"enabled": true, "key": "commOnPenaltyAmount", "value": ""},
 							],
 							"maskOutput": [
 								">$EX NAME RICO/SRICO                         PSGR  1/ 1",
@@ -3573,36 +3573,36 @@ class ProcessApolloTerminalInputActionTest extends require('../../../../Lib/Test
 				'initialCommands': [],
 				'performedCommands': [
 					{
-					    "cmd": "*R",
-					    "output": [
-					        "CREATED IN GDS DIRECT BY AKLESUNS",
-					        "PZWSV5/WS QSBYC DPBVWS  AG 05578602 01APR",
-					        " 1.1UZUMAKI/NARUTO ",
-					        " 1 UA 613Y 25JUN SFOLAX HK1   630A  816A *         TU   E",
-					        " 2 TUR ZZ BK1  YYZ 15FEB-RETENTION LINE",
-					        " 3 TUR ZZ BK1  YYZ 15FEB-RETENTION LINE",
-					        "FONE-SFOAS/800-750-2238 ASAP CUSTOMER SUPPORT",
-					        "FOP:-VIXXXXXXXXXXXX1111/D1221/*ABC123",
-					        "TKTG-TAU/01APR",
-					        "*** LINEAR FARE DATA EXISTS *** >*LF; ",
-					        "ATFQ-TKTE/$B-*2F3K/FEX/ET/TA2F3K/CUA",
-					        " FQ-USD 901.40/USD 67.60US/USD 14.30XT/USD 983.30 - 1APR YAA0AFEY",
-					        ")><"
-					    ].join("\n"),
+						"cmd": "*R",
+						"output": [
+							"CREATED IN GDS DIRECT BY AKLESUNS",
+							"PZWSV5/WS QSBYC DPBVWS  AG 05578602 01APR",
+							" 1.1UZUMAKI/NARUTO ",
+							" 1 UA 613Y 25JUN SFOLAX HK1   630A  816A *         TU   E",
+							" 2 TUR ZZ BK1  YYZ 15FEB-RETENTION LINE",
+							" 3 TUR ZZ BK1  YYZ 15FEB-RETENTION LINE",
+							"FONE-SFOAS/800-750-2238 ASAP CUSTOMER SUPPORT",
+							"FOP:-VIXXXXXXXXXXXX1111/D1221/*ABC123",
+							"TKTG-TAU/01APR",
+							"*** LINEAR FARE DATA EXISTS *** >*LF; ",
+							"ATFQ-TKTE/$B-*2F3K/FEX/ET/TA2F3K/CUA",
+							" FQ-USD 901.40/USD 67.60US/USD 14.30XT/USD 983.30 - 1APR YAA0AFEY",
+							")><"
+						].join("\n"),
 					},
 					{
-					    "cmd": "MR",
-					    "output": [
-					        "GFAX-SSRDOCSUAHK1/////10MAY90/M//UZUMMAKI/NARUTO-1UZUMAKI/NARUTO",
-					        "   2 SSRADTK1VKK1.TKT UA SEGS BY 22JUN19 TO AVOID AUTO CXL /EARLIER",
-					        "   3 SSRADTK1VKK1.TICKETING MAY BE REQUIRED BY FARE RULE",
-					        "RMKS-GD-AKLESUNS/6206/LEAD-8013096 IN 2F3K",
-					        "ACKN-UA JSMMZL   01APR 1029                       ",
-					        "><"
-					    ].join("\n"),
+						"cmd": "MR",
+						"output": [
+							"GFAX-SSRDOCSUAHK1/////10MAY90/M//UZUMMAKI/NARUTO-1UZUMAKI/NARUTO",
+							"   2 SSRADTK1VKK1.TKT UA SEGS BY 22JUN19 TO AVOID AUTO CXL /EARLIER",
+							"   3 SSRADTK1VKK1.TICKETING MAY BE REQUIRED BY FARE RULE",
+							"RMKS-GD-AKLESUNS/6206/LEAD-8013096 IN 2F3K",
+							"ACKN-UA JSMMZL   01APR 1029                       ",
+							"><"
+						].join("\n"),
 					},
 					{
-					    "cmd": "HB:FEX016 7293 600184",
+						"cmd": "HB:FEX016 7293 600184",
 						"output": [
 							">$EX NAME RICO/SRICO                         PSGR  1/ 1",
 							"FARE USD   901.40  TOTAL USD   983.30",
@@ -3633,8 +3633,8 @@ class ProcessApolloTerminalInputActionTest extends require('../../../../Lib/Test
 				'status': 'executed',
 				'calledCommands': [
 					{
-					    "cmd": "HB:FEX016 7289 106161",
-					    "output": 'SEE MASK FORM BELOW',
+						"cmd": "HB:FEX016 7289 106161",
+						"output": 'SEE MASK FORM BELOW',
 					},
 				],
 				"actions": [
@@ -3667,15 +3667,15 @@ class ProcessApolloTerminalInputActionTest extends require('../../../../Lib/Test
 								exchangedTicketCurrency: 'USD',
 							},
 							"fields": [
-								{"enabled": true , "key": "exchangedTicketNumber", "value": ""},
-								{"enabled": true , "key": "exchangedTicketExtension", "value": ""},
+								{"enabled": true, "key": "exchangedTicketNumber", "value": ""},
+								{"enabled": true, "key": "exchangedTicketExtension", "value": ""},
 								{"enabled": false, "key": "ticketNumber1", "value": "01672891061612"},
 								{"enabled": false, "key": "couponNumber1", "value": "1"},
-								{"enabled": true , "key": "ticketNumber2", "value": ""},
-								{"enabled": true , "key": "couponNumber2", "value": ""},
-								{"enabled": true , "key": "commission", "value": ""},
+								{"enabled": true, "key": "ticketNumber2", "value": ""},
+								{"enabled": true, "key": "couponNumber2", "value": ""},
+								{"enabled": true, "key": "commission", "value": ""},
 								{"enabled": false, "key": "originalFormOfPayment", "value": "CK"},
-								{"enabled": true , "key": "evenIndicator", "value": ""},
+								{"enabled": true, "key": "evenIndicator", "value": ""},
 								{"enabled": false, "key": "exchangedTicketTotalValue", "value": "983.30"},
 								{"enabled": false, "key": "originalBoardPoint", "value": "SFO"},
 								{"enabled": false, "key": "originalOffPoint", "value": "LAX"},
@@ -3683,16 +3683,16 @@ class ProcessApolloTerminalInputActionTest extends require('../../../../Lib/Test
 								{"enabled": false, "key": "taxCode1", "value": "US"},
 								{"enabled": false, "key": "taxAmount2", "value": "14.30"},
 								{"enabled": false, "key": "taxCode2", "value": "XT"},
-								{"enabled": true , "key": "taxAmount3", "value": ""},
-								{"enabled": true , "key": "taxCode3", "value": ""},
+								{"enabled": true, "key": "taxAmount3", "value": ""},
+								{"enabled": true, "key": "taxCode3", "value": ""},
 								{"enabled": false, "key": "originalIssuePoint", "value": "SFO"},
 								{"enabled": false, "key": "originalIssueDate", "value": "02APR19"},
 								{"enabled": false, "key": "originalAgencyIata", "value": "00000000 "},
 								{"enabled": false, "key": "originalTicketStar", "value": "0161111111111"},
 								{"enabled": false, "key": "originalTicketStarExtension", "value": ""},
 								{"enabled": false, "key": "originalInvoiceNumber", "value": ""},
-								{"enabled": true , "key": "penaltyAmount", "value": ""},
-								{"enabled": true , "key": "commOnPenaltyAmount", "value": ""}
+								{"enabled": true, "key": "penaltyAmount", "value": ""},
+								{"enabled": true, "key": "commOnPenaltyAmount", "value": ""}
 							],
 							"maskOutput": [
 								">$EX NAME UZUMAKI/NARUTO                     PSGR  1/ 1",
@@ -3743,23 +3743,23 @@ class ProcessApolloTerminalInputActionTest extends require('../../../../Lib/Test
 				],
 				'performedCommands': [
 					{
-					    "cmd": "HB:FEX016 7289 106161",
-					    "output": [
-					        ">$EX NAME UZUMAKI/NARUTO                     PSGR  1/ 1",
-					        "FARE USD   901.40  TOTAL USD   983.30",
-					        "TX1 USD   67.60 US   TX2 USD   14.30 XT   TX3               ",
-					        "",
-					        "EXCHANGE TKTS ;..............-;...  CPN ALL",
-					        "TKT1;01672891061612 CPN;1... TKT2;.............. CPN;....",
-					        "COMM;.........  ORIG FOP;CK................. EVEN;.",
-					        "",
-					        "TTL VALUE OF EX TKTS USD;983.30.........ORIG BRD/OFF;SFO;LAX",
-					        "TX1 USD;67.60..;US   TX2 USD;14.30..;XT   TX3 USD;.......;..",
-					        "ORIG ISS;SFO....ORIG DATE;02APR19 ORIG IATA NBR;00000000 ",
-					        "ORIG TKT;0161111111111.-;...  ORIG INV NBR;.........",
-					        "PENALTY USD;............  COMM ON PENALTY;...........",
-					        "><"
-					    ].join("\n"),
+						"cmd": "HB:FEX016 7289 106161",
+						"output": [
+							">$EX NAME UZUMAKI/NARUTO                     PSGR  1/ 1",
+							"FARE USD   901.40  TOTAL USD   983.30",
+							"TX1 USD   67.60 US   TX2 USD   14.30 XT   TX3               ",
+							"",
+							"EXCHANGE TKTS ;..............-;...  CPN ALL",
+							"TKT1;01672891061612 CPN;1... TKT2;.............. CPN;....",
+							"COMM;.........  ORIG FOP;CK................. EVEN;.",
+							"",
+							"TTL VALUE OF EX TKTS USD;983.30.........ORIG BRD/OFF;SFO;LAX",
+							"TX1 USD;67.60..;US   TX2 USD;14.30..;XT   TX3 USD;.......;..",
+							"ORIG ISS;SFO....ORIG DATE;02APR19 ORIG IATA NBR;00000000 ",
+							"ORIG TKT;0161111111111.-;...  ORIG INV NBR;.........",
+							"PENALTY USD;............  COMM ON PENALTY;...........",
+							"><"
+						].join("\n"),
 					},
 				],
 			},
@@ -3774,8 +3774,8 @@ class ProcessApolloTerminalInputActionTest extends require('../../../../Lib/Test
 				'status': 'executed',
 				'calledCommands': [
 					{
-					    "cmd": "HB2:FEX",
-					    "output": 'SEE MASK FORM BELOW',
+						"cmd": "HB2:FEX",
+						"output": 'SEE MASK FORM BELOW',
 					},
 				],
 				"actions": [
@@ -3875,70 +3875,80 @@ class ProcessApolloTerminalInputActionTest extends require('../../../../Lib/Test
 				'initialCommands': [],
 				'performedCommands': [
 					{
-					    "cmd": "*R",
-					    "output": [
-					        "RICO@TEST",
-					        "Q5FHPH/WS QSBYC DPBVWS  AG 05578602 03APR",
-					        " 1.1BITCA/IURI  2.1ARTUS/KLESUN ",
-					        " 1 DL 585Y 25SEP SFOLAX HK2   615A  747A *         WE   E",
-					        "FONE-SFO1",
-					        "FOP:-AXXXXXXXXXXXX1052/D0223/*124259",
-					        "TKTG-T/QSB 03APR1437Z WS AG *",
-					        "*** TIN REMARKS EXIST *** >*T; ",
-					        "*** MISCELLANEOUS DOCUMENT DATA EXISTS *** >*MPD; ",
-					        "*** LINEAR FARE DATA EXISTS *** >*LF; ",
-					        "1/ATFQ-UTCC/$BN1/:N/Z0/FEX/ET/TA2F3K/CDL",
-					        " FQ-USD 617.68/USD 46.32US/USD 14.30XT/USD 678.30 - 3APR Y0",
-					        "2/ATFQ-UTCC/$BN2/:N/Z0/FEX/ET/TA2F3K/CDL",
-					        ")><"
-					    ].join("\n"),
+						"cmd": "*R",
+						"output": [
+							"RICO@TEST",
+							"Q5FHPH/WS QSBYC DPBVWS  AG 05578602 03APR",
+							" 1.1BITCA/IURI  2.1ARTUS/KLESUN ",
+							" 1 DL 585Y 25SEP SFOLAX HK2   615A  747A *         WE   E",
+							"FONE-SFO1",
+							"FOP:-AXXXXXXXXXXXX1052/D0223/*124259",
+							"TKTG-T/QSB 03APR1437Z WS AG *",
+							"*** TIN REMARKS EXIST *** >*T; ",
+							"*** MISCELLANEOUS DOCUMENT DATA EXISTS *** >*MPD; ",
+							"*** LINEAR FARE DATA EXISTS *** >*LF; ",
+							"1/ATFQ-UTCC/$BN1/:N/Z0/FEX/ET/TA2F3K/CDL",
+							" FQ-USD 617.68/USD 46.32US/USD 14.30XT/USD 678.30 - 3APR Y0",
+							"2/ATFQ-UTCC/$BN2/:N/Z0/FEX/ET/TA2F3K/CDL",
+							")><"
+						].join("\n"),
 					},
 					{
-					    "cmd": "MR",
-					    "output": [
-					        " FQ-USD 617.68/USD 46.32US/USD 14.30XT/USD 678.30 - 3APR Y0",
-					        "GFAX-SSRDOCSDLHK1/////10MAY90/M//RICO/SRICO-1BITCA/IURI",
-					        "   2 SSRDOCSDLHK1/////10MAY90/M//RICO/SRICO-1ARTUS/KLESUN",
-					        "   3 SSRADTK1VTODL BY 26AUG 2359 SFO OTHERWISE MAY BE XLD",
-					        "   4 SSRADTK1VTODL BY 26AUG FARE MAY NEED EARLIER TKT DTE",
-					        "RMKS-GD-RICO/5820 IN 2F3K",
-					        "ACKN-DL JLYTZO   03APR 1427",
-					        "><"
-					    ].join("\n"),
+						"cmd": "MR",
+						"output": [
+							" FQ-USD 617.68/USD 46.32US/USD 14.30XT/USD 678.30 - 3APR Y0",
+							"GFAX-SSRDOCSDLHK1/////10MAY90/M//RICO/SRICO-1BITCA/IURI",
+							"   2 SSRDOCSDLHK1/////10MAY90/M//RICO/SRICO-1ARTUS/KLESUN",
+							"   3 SSRADTK1VTODL BY 26AUG 2359 SFO OTHERWISE MAY BE XLD",
+							"   4 SSRADTK1VTODL BY 26AUG FARE MAY NEED EARLIER TKT DTE",
+							"RMKS-GD-RICO/5820 IN 2F3K",
+							"ACKN-DL JLYTZO   03APR 1427",
+							"><"
+						].join("\n"),
 					},
 					{
-					    "cmd": "HB2:FEX",
-					    "output": [
-					        ">$EX NAME ARTUS/KLESUN                       PSGR  1/ 1",
-					        "FARE USD   617.68  TOTAL USD   678.30",
-					        "TX1 USD   46.32 US   TX2 USD   14.30 XT   TX3               ",
-					        "",
-					        "EXCHANGE TKTS ;..............-;...  CPN ALL",
-					        "TKT1;.............. CPN;.... TKT2;.............. CPN;....",
-					        "COMM;.........  ORIG FOP;................... EVEN;.",
-					        "",
-					        "TTL VALUE OF EX TKTS USD;.............  ORIG BRD/OFF;...;...",
-					        "TX1 USD;.......;..   TX2 USD;.......;..   TX3 USD;.......;..",
-					        "ORIG ISS;...... ORIG DATE;....... ORIG IATA NBR;.........",
-					        "ORIG TKT;..............-;...  ORIG INV NBR;.........",
-					        "PENALTY USD;............  COMM ON PENALTY;...........",
-					        "><"
-					    ].join("\n"),
-					    "duration": "1.634242412",
-					    "type": "issueTickets",
-					    "scrolledCmd": "HB2:FEX",
-					    "state": {"area":"A","pcc":"2F3K","recordLocator":"Q5FHPH","canCreatePq":false,"pricingCmd":null,"hasPnr":true,"isPnrStored":true,"cmdType":"issueTickets","scrolledCmd":"HB2:FEX"}
+						"cmd": "HB2:FEX",
+						"output": [
+							">$EX NAME ARTUS/KLESUN                       PSGR  1/ 1",
+							"FARE USD   617.68  TOTAL USD   678.30",
+							"TX1 USD   46.32 US   TX2 USD   14.30 XT   TX3               ",
+							"",
+							"EXCHANGE TKTS ;..............-;...  CPN ALL",
+							"TKT1;.............. CPN;.... TKT2;.............. CPN;....",
+							"COMM;.........  ORIG FOP;................... EVEN;.",
+							"",
+							"TTL VALUE OF EX TKTS USD;.............  ORIG BRD/OFF;...;...",
+							"TX1 USD;.......;..   TX2 USD;.......;..   TX3 USD;.......;..",
+							"ORIG ISS;...... ORIG DATE;....... ORIG IATA NBR;.........",
+							"ORIG TKT;..............-;...  ORIG INV NBR;.........",
+							"PENALTY USD;............  COMM ON PENALTY;...........",
+							"><"
+						].join("\n"),
+						"duration": "1.634242412",
+						"type": "issueTickets",
+						"scrolledCmd": "HB2:FEX",
+						"state": {
+							"area": "A",
+							"pcc": "2F3K",
+							"recordLocator": "Q5FHPH",
+							"canCreatePq": false,
+							"pricingCmd": null,
+							"hasPnr": true,
+							"isPnrStored": true,
+							"cmdType": "issueTickets",
+							"scrolledCmd": "HB2:FEX"
+						}
 					},
 					{
-					    "cmd": "*MPD",
-					    "output": [
-					        "*MPD             MISCELLANEOUS DOCUMENT LIST",
-					        "          NAME         DOCUMENT NBR   ISSUED       AMOUNT",
-					        ">*MCO1;   BITCA/IU    0065056180983   03APR19          100.00 ",
-					        ">*MCO2;   ARTUS/KL    0065056180984   03APR19          100.00 ",
-					        "END OF DISPLAY",
-					        "><"
-					    ].join("\n"),
+						"cmd": "*MPD",
+						"output": [
+							"*MPD             MISCELLANEOUS DOCUMENT LIST",
+							"          NAME         DOCUMENT NBR   ISSUED       AMOUNT",
+							">*MCO1;   BITCA/IU    0065056180983   03APR19          100.00 ",
+							">*MCO2;   ARTUS/KL    0065056180984   03APR19          100.00 ",
+							"END OF DISPLAY",
+							"><"
+						].join("\n"),
 					},
 				],
 			},
@@ -3953,8 +3963,8 @@ class ProcessApolloTerminalInputActionTest extends require('../../../../Lib/Test
 				'status': 'executed',
 				'calledCommands': [
 					{
-					    "cmd": "HB2:FEX",
-					    "output": 'SEE MASK FORM BELOW',
+						"cmd": "HB2:FEX",
+						"output": 'SEE MASK FORM BELOW',
 					},
 				],
 				"actions": [
@@ -4077,104 +4087,104 @@ class ProcessApolloTerminalInputActionTest extends require('../../../../Lib/Test
 				'initialCommands': [],
 				'performedCommands': [
 					{
-					    "cmd": "*R",
-					    "output": [
-					        "CREATED IN GDS DIRECT BY RICO",
-					        "TM6S7O/WS QSBYC DPBVWS  AG 05578602 04APR",
-					        " 1.1ARTURS/KLESUNS  2.1BITCA/IURI ",
-					        " 1 DL2754Y 25OCT LAXSFO HK2  1000A 1146A *         FR   E",
-					        "FONE-SFO1",
-					        "FOP:-AXXXXXXXXXXXX1052/D0223/*109678",
-					        "TKTG-T/QSB 04APR1214Z WS AG *",
-					        "*** TIN REMARKS EXIST *** >*T; ",
-					        "*** MISCELLANEOUS DOCUMENT DATA EXISTS *** >*MPD; ",
-					        "*** LINEAR FARE DATA EXISTS *** >*LF; ",
-					        "1/ATFQ-UT/$BN1/-*2F3K/TA2F3K/CDL/ET",
-					        " FQ-USD 617.68/USD 46.32US/USD 14.30XT/USD 678.30 - 4APR Y0",
-					        "2/ATFQ-UT/$BN2/-*2F3K/TA2F3K/CDL/ET",
-					        ")><"
-					    ].join("\n"),
+						"cmd": "*R",
+						"output": [
+							"CREATED IN GDS DIRECT BY RICO",
+							"TM6S7O/WS QSBYC DPBVWS  AG 05578602 04APR",
+							" 1.1ARTURS/KLESUNS  2.1BITCA/IURI ",
+							" 1 DL2754Y 25OCT LAXSFO HK2  1000A 1146A *         FR   E",
+							"FONE-SFO1",
+							"FOP:-AXXXXXXXXXXXX1052/D0223/*109678",
+							"TKTG-T/QSB 04APR1214Z WS AG *",
+							"*** TIN REMARKS EXIST *** >*T; ",
+							"*** MISCELLANEOUS DOCUMENT DATA EXISTS *** >*MPD; ",
+							"*** LINEAR FARE DATA EXISTS *** >*LF; ",
+							"1/ATFQ-UT/$BN1/-*2F3K/TA2F3K/CDL/ET",
+							" FQ-USD 617.68/USD 46.32US/USD 14.30XT/USD 678.30 - 4APR Y0",
+							"2/ATFQ-UT/$BN2/-*2F3K/TA2F3K/CDL/ET",
+							")><"
+						].join("\n"),
 					},
 					{
-					    "cmd": "MR",
-					    "output": [
-					        " FQ-USD 617.68/USD 46.32US/USD 14.30XT/USD 678.30 - 4APR Y0",
-					        "GFAX-SSRDOCSDLHK1/////10MAY90/M//RICO/SRICO-1BITCA/IURI",
-					        "   2 SSRDOCSDLHK1/////10MAY90/M//RICO/SRICO-1BITCA/IURI",
-					        "   3 SSRDOCSDLHK1/////10MAY90/M//RICO/SRICO-1ARTURS/KLESUNS",
-					        "   4 SSRADTK1VTODL BY 25SEP 2359 SFO OTHERWISE MAY BE XLD",
-					        "   5 SSRADTK1VTODL BY 25SEP FARE MAY NEED EARLIER TKT DTE",
-					        "RMKS-GD-RICO/5820 IN 2F3K",
-					        "ACKN-DL GP87OI   04APR 1157",
-					        "><"
-					    ].join("\n"),
+						"cmd": "MR",
+						"output": [
+							" FQ-USD 617.68/USD 46.32US/USD 14.30XT/USD 678.30 - 4APR Y0",
+							"GFAX-SSRDOCSDLHK1/////10MAY90/M//RICO/SRICO-1BITCA/IURI",
+							"   2 SSRDOCSDLHK1/////10MAY90/M//RICO/SRICO-1BITCA/IURI",
+							"   3 SSRDOCSDLHK1/////10MAY90/M//RICO/SRICO-1ARTURS/KLESUNS",
+							"   4 SSRADTK1VTODL BY 25SEP 2359 SFO OTHERWISE MAY BE XLD",
+							"   5 SSRADTK1VTODL BY 25SEP FARE MAY NEED EARLIER TKT DTE",
+							"RMKS-GD-RICO/5820 IN 2F3K",
+							"ACKN-DL GP87OI   04APR 1157",
+							"><"
+						].join("\n"),
 					},
 					{
-					    "cmd": "HB2:FEX",
-					    "output": [
-					        ">$EX NAME BITCA/IURI                         PSGR  1/ 1",
-					        "FARE USD   617.68  TOTAL USD   678.30",
-					        "TX1 USD   46.32 US   TX2 USD   14.30 XT   TX3               ",
-					        "",
-					        "EXCHANGE TKTS ;..............-;...  CPN ALL",
-					        "TKT1;.............. CPN;.... TKT2;.............. CPN;....",
-					        "COMM;.........  ORIG FOP;................... EVEN;.",
-					        "",
-					        "TTL VALUE OF EX TKTS USD;.............  ORIG BRD/OFF;...;...",
-					        "TX1 USD;.......;..   TX2 USD;.......;..   TX3 USD;.......;..",
-					        "ORIG ISS;...... ORIG DATE;....... ORIG IATA NBR;.........",
-					        "ORIG TKT;..............-;...  ORIG INV NBR;.........",
-					        "PENALTY USD;............  COMM ON PENALTY;...........",
-					        "><"
-					    ].join("\n"),
+						"cmd": "HB2:FEX",
+						"output": [
+							">$EX NAME BITCA/IURI                         PSGR  1/ 1",
+							"FARE USD   617.68  TOTAL USD   678.30",
+							"TX1 USD   46.32 US   TX2 USD   14.30 XT   TX3               ",
+							"",
+							"EXCHANGE TKTS ;..............-;...  CPN ALL",
+							"TKT1;.............. CPN;.... TKT2;.............. CPN;....",
+							"COMM;.........  ORIG FOP;................... EVEN;.",
+							"",
+							"TTL VALUE OF EX TKTS USD;.............  ORIG BRD/OFF;...;...",
+							"TX1 USD;.......;..   TX2 USD;.......;..   TX3 USD;.......;..",
+							"ORIG ISS;...... ORIG DATE;....... ORIG IATA NBR;.........",
+							"ORIG TKT;..............-;...  ORIG INV NBR;.........",
+							"PENALTY USD;............  COMM ON PENALTY;...........",
+							"><"
+						].join("\n"),
 					},
 					{
-					    "cmd": "*MPD",
-					    "output": [
-					        "*MPD             MISCELLANEOUS DOCUMENT LIST",
-					        "          NAME         DOCUMENT NBR   ISSUED       AMOUNT",
-					        ">*MCO1;   BITCA/IU    0065056180985   04APR19          100.00 ",
-					        ">*MCO2;   BITCA/IU    0065056180986   04APR19          100.00 ",
-					        ">*MCO3;   LONGLONG    0065056180987   04APR19          100.00 ",
-					        "END OF DISPLAY",
-					        "><"
-					    ].join("\n"),
+						"cmd": "*MPD",
+						"output": [
+							"*MPD             MISCELLANEOUS DOCUMENT LIST",
+							"          NAME         DOCUMENT NBR   ISSUED       AMOUNT",
+							">*MCO1;   BITCA/IU    0065056180985   04APR19          100.00 ",
+							">*MCO2;   BITCA/IU    0065056180986   04APR19          100.00 ",
+							">*MCO3;   LONGLONG    0065056180987   04APR19          100.00 ",
+							"END OF DISPLAY",
+							"><"
+						].join("\n"),
 					},
 					{
-					    "cmd": "*MCO1",
-					    "output": [
-					        ">HHMCU1           *** MISC CHARGE ORDER ***",
-					        " PASSENGER NAME;BITCA/IUBELY............................",
-					        " TO;DL...................................... AT;ATL............",
-					        " VALID FOR;SPLIT...............................................",
-					        " TOUR CODE;............... RELATED TKT NBR;.............",
-					        " FOP;AXXXXXXXXXXXX1052/OK......................................",
-					        " EXP DATE;0223 APVL CODE;109678 COMM;0.00/... TAX;........-;..",
-					        " AMOUNT;100.00..-;USD EQUIV ;........-;... BSR;..........",
-					        " END BOX;......................................................",
-					        " REMARK1;..............................................",
-					        " REMARK2;......................................................",
-					        " VALIDATING CARRIER;DL                  ISSUE NOW;.",
-					        "><"
-					    ].join("\n"),
+						"cmd": "*MCO1",
+						"output": [
+							">HHMCU1           *** MISC CHARGE ORDER ***",
+							" PASSENGER NAME;BITCA/IUBELY............................",
+							" TO;DL...................................... AT;ATL............",
+							" VALID FOR;SPLIT...............................................",
+							" TOUR CODE;............... RELATED TKT NBR;.............",
+							" FOP;AXXXXXXXXXXXX1052/OK......................................",
+							" EXP DATE;0223 APVL CODE;109678 COMM;0.00/... TAX;........-;..",
+							" AMOUNT;100.00..-;USD EQUIV ;........-;... BSR;..........",
+							" END BOX;......................................................",
+							" REMARK1;..............................................",
+							" REMARK2;......................................................",
+							" VALIDATING CARRIER;DL                  ISSUE NOW;.",
+							"><"
+						].join("\n"),
 					},
 					{
-					    "cmd": "*MCO2",
-					    "output": [
-					        ">HHMCU2           *** MISC CHARGE ORDER ***",
-					        " PASSENGER NAME;BITCA/IURI..............................",
-					        " TO;DL...................................... AT;ATL............",
-					        " VALID FOR;SPLIT...............................................",
-					        " TOUR CODE;............... RELATED TKT NBR;.............",
-					        " FOP;AXXXXXXXXXXXX1052/OK......................................",
-					        " EXP DATE;0223 APVL CODE;109678 COMM;0.00/... TAX;........-;..",
-					        " AMOUNT;100.00..-;USD EQUIV ;........-;... BSR;..........",
-					        " END BOX;......................................................",
-					        " REMARK1;..............................................",
-					        " REMARK2;......................................................",
-					        " VALIDATING CARRIER;DL                  ISSUE NOW;.",
-					        "><"
-					    ].join("\n"),
+						"cmd": "*MCO2",
+						"output": [
+							">HHMCU2           *** MISC CHARGE ORDER ***",
+							" PASSENGER NAME;BITCA/IURI..............................",
+							" TO;DL...................................... AT;ATL............",
+							" VALID FOR;SPLIT...............................................",
+							" TOUR CODE;............... RELATED TKT NBR;.............",
+							" FOP;AXXXXXXXXXXXX1052/OK......................................",
+							" EXP DATE;0223 APVL CODE;109678 COMM;0.00/... TAX;........-;..",
+							" AMOUNT;100.00..-;USD EQUIV ;........-;... BSR;..........",
+							" END BOX;......................................................",
+							" REMARK1;..............................................",
+							" REMARK2;......................................................",
+							" VALIDATING CARRIER;DL                  ISSUE NOW;.",
+							"><"
+						].join("\n"),
 					},
 				],
 			},
@@ -4191,8 +4201,8 @@ class ProcessApolloTerminalInputActionTest extends require('../../../../Lib/Test
 				'status': 'executed',
 				'calledCommands': [
 					{
-					    "cmd": "HB:FEX",
-					    "output": 'SEE MASK FORM BELOW',
+						"cmd": "HB:FEX",
+						"output": 'SEE MASK FORM BELOW',
 					},
 				],
 				"actions": [
@@ -4213,36 +4223,36 @@ class ProcessApolloTerminalInputActionTest extends require('../../../../Lib/Test
 								"firstName": "ANTONIOJR INAY",
 							},
 							"fields": [
-								{"key":"exchangedTicketNumber","value":"","enabled":true},
-								{"key":"exchangedTicketExtension","value":"","enabled":true},
-								{"key":"ticketNumber1","value":"","enabled":true},
-								{"key":"couponNumber1","value":"","enabled":true},
-								{"key":"ticketNumber2","value":"","enabled":true},
-								{"key":"couponNumber2","value":"","enabled":true},
-								{"key":"commission","value":"","enabled":true},
-								{"key":"originalFormOfPayment","value":"","enabled":true},
-								{"key":"evenIndicator","value":"","enabled":true},
-								{"key":"exchangedTicketTotalValue","value":"","enabled":true},
-								{"key":"originalBoardPoint","value":"","enabled":false},
-								{"key":"originalOffPoint","value":"","enabled":false},
-								{"key":"taxAmount1","value":"","enabled":true},
-								{"key":"taxCode1","value":"","enabled":true},
-								{"key":"taxAmount2","value":"","enabled":true},
-								{"key":"taxCode2","value":"","enabled":true},
-								{"key":"taxAmount3","value":"","enabled":true},
-								{"key":"taxCode3","value":"","enabled":true},
-								{"key":"originalIssuePoint","value":"","enabled":true},
-								{"key":"originalIssueDate","value":"","enabled":true},
-								{"key":"originalAgencyIata","value":"","enabled":false},
-								{"key":"originalTicketStar","value":"","enabled":true},
+								{"key": "exchangedTicketNumber", "value": "", "enabled": true},
+								{"key": "exchangedTicketExtension", "value": "", "enabled": true},
+								{"key": "ticketNumber1", "value": "", "enabled": true},
+								{"key": "couponNumber1", "value": "", "enabled": true},
+								{"key": "ticketNumber2", "value": "", "enabled": true},
+								{"key": "couponNumber2", "value": "", "enabled": true},
+								{"key": "commission", "value": "", "enabled": true},
+								{"key": "originalFormOfPayment", "value": "", "enabled": true},
+								{"key": "evenIndicator", "value": "", "enabled": true},
+								{"key": "exchangedTicketTotalValue", "value": "", "enabled": true},
+								{"key": "originalBoardPoint", "value": "", "enabled": false},
+								{"key": "originalOffPoint", "value": "", "enabled": false},
+								{"key": "taxAmount1", "value": "", "enabled": true},
+								{"key": "taxCode1", "value": "", "enabled": true},
+								{"key": "taxAmount2", "value": "", "enabled": true},
+								{"key": "taxCode2", "value": "", "enabled": true},
+								{"key": "taxAmount3", "value": "", "enabled": true},
+								{"key": "taxCode3", "value": "", "enabled": true},
+								{"key": "originalIssuePoint", "value": "", "enabled": true},
+								{"key": "originalIssueDate", "value": "", "enabled": true},
+								{"key": "originalAgencyIata", "value": "", "enabled": false},
+								{"key": "originalTicketStar", "value": "", "enabled": true},
 								{
 									"key": "originalTicketStarExtension",
 									"value": "",
 									"enabled": false
 								},
-								{"key":"originalInvoiceNumber","value":"","enabled":false},
-								{"key":"penaltyAmount","value":"","enabled":true},
-								{"key":"commOnPenaltyAmount","value":"","enabled":true}
+								{"key": "originalInvoiceNumber", "value": "", "enabled": false},
+								{"key": "penaltyAmount", "value": "", "enabled": true},
+								{"key": "commOnPenaltyAmount", "value": "", "enabled": true}
 							],
 							"maskOutput": [
 								">$EX NAME MACABENTA/ANTONIOJR INAY           PSGR  1/ 1",
@@ -4275,75 +4285,75 @@ class ProcessApolloTerminalInputActionTest extends require('../../../../Lib/Test
 				'initialCommands': [],
 				'performedCommands': [
 					{
-					    "cmd": "*R",
-					    "output": [
-					        "RICO",
-					        "2G55 - INTERNATIONAL TVL NETWOR SFO",
-					        "WT0BQY/WS QSBYC DPBVWS  AG 05578602 04APR",
-					        " 1.1MACABENTA/ANTONIOJR INAY ",
-					        " 1 OZ 201W 01DEC LAXICN HK1  1100A  530P|*      SU/MO   E",
-					        " 2 OZ 703W 02DEC ICNMNL HK1   750P 1100P *         MO   E",
-					        " 3 OZ 702V 29DEC MNLICN HK1  1205P  440P *         SU   E",
-					        " 4 OZ 204W 29DEC ICNLAX HK1   840P  250P *         SU   E",
-					        "FONE-SFOAS/800-750-2238 ASAP CUSTOMER SUPPORT",
-					        "FOP:-VIXXXXXXXXXXXX6018/D0423/*04711C",
-					        "TKTG-T/QSB 04APR1818Z WS AG *",
-					        "*** TIN REMARKS EXIST *** >*T; ",
-					        "*** MISCELLANEOUS DOCUMENT DATA EXISTS *** >*MPD; ",
-					        ")><"
-					    ].join("\n"),
+						"cmd": "*R",
+						"output": [
+							"RICO",
+							"2G55 - INTERNATIONAL TVL NETWOR SFO",
+							"WT0BQY/WS QSBYC DPBVWS  AG 05578602 04APR",
+							" 1.1MACABENTA/ANTONIOJR INAY ",
+							" 1 OZ 201W 01DEC LAXICN HK1  1100A  530P|*      SU/MO   E",
+							" 2 OZ 703W 02DEC ICNMNL HK1   750P 1100P *         MO   E",
+							" 3 OZ 702V 29DEC MNLICN HK1  1205P  440P *         SU   E",
+							" 4 OZ 204W 29DEC ICNLAX HK1   840P  250P *         SU   E",
+							"FONE-SFOAS/800-750-2238 ASAP CUSTOMER SUPPORT",
+							"FOP:-VIXXXXXXXXXXXX6018/D0423/*04711C",
+							"TKTG-T/QSB 04APR1818Z WS AG *",
+							"*** TIN REMARKS EXIST *** >*T; ",
+							"*** MISCELLANEOUS DOCUMENT DATA EXISTS *** >*MPD; ",
+							")><"
+						].join("\n"),
 					},
 					{
-					    "cmd": "MR",
-					    "output": [
-					        "*** LINEAR FARE DATA EXISTS *** >*LF; ",
-					        "ATFQ-OK/$B/:N/IT9ULDD1WB/Z5/ET/TA1O3K/COZ",
-					        " FQ-USD 440.00/USD 37.20US/USD 178.53XT/USD 655.73 - 4APR WLXAUS14.WLXAUS14.WLXAUS14.WLXAUS14",
-					        "GFAX-SSROTHS1V OZ RSVN IS 0428-9848",
-					        "   2 SSRADTK1VTOOZ BY 07APR 1100 OTHERWISE WILL BE XLD",
-					        "   3 SSRCTCEOZHK1/MACABENTA..JUN//YAHOO.COM-1MACABENTA/ANTONIOJR INAY",
-					        "   4 SSRCTCMOZHK1/2133217785-1MACABENTA/ANTONIOJR INAY",
-					        "   5 SSRDOCSOZHK1/////18NOV59/M//MACABENTA/ANTONIOJR/INAY-1MACABENTA/ANTONIOJR INAY",
-					        "RMKS-GD-GINGER/101193/FOR GINGER/101193/LEAD-11092490 IN 2G55",
-					        "ACKN-1A OY4PP9   04APR 1712",
-					        ")><"
-					    ].join("\n"),
+						"cmd": "MR",
+						"output": [
+							"*** LINEAR FARE DATA EXISTS *** >*LF; ",
+							"ATFQ-OK/$B/:N/IT9ULDD1WB/Z5/ET/TA1O3K/COZ",
+							" FQ-USD 440.00/USD 37.20US/USD 178.53XT/USD 655.73 - 4APR WLXAUS14.WLXAUS14.WLXAUS14.WLXAUS14",
+							"GFAX-SSROTHS1V OZ RSVN IS 0428-9848",
+							"   2 SSRADTK1VTOOZ BY 07APR 1100 OTHERWISE WILL BE XLD",
+							"   3 SSRCTCEOZHK1/MACABENTA..JUN//YAHOO.COM-1MACABENTA/ANTONIOJR INAY",
+							"   4 SSRCTCMOZHK1/2133217785-1MACABENTA/ANTONIOJR INAY",
+							"   5 SSRDOCSOZHK1/////18NOV59/M//MACABENTA/ANTONIOJR/INAY-1MACABENTA/ANTONIOJR INAY",
+							"RMKS-GD-GINGER/101193/FOR GINGER/101193/LEAD-11092490 IN 2G55",
+							"ACKN-1A OY4PP9   04APR 1712",
+							")><"
+						].join("\n"),
 					},
 					{
-					    "cmd": "MR",
-					    "output": [
-					        "   2 1A OY4PP9   04APR 1712",
-					        "><"
-					    ].join("\n"),
+						"cmd": "MR",
+						"output": [
+							"   2 1A OY4PP9   04APR 1712",
+							"><"
+						].join("\n"),
 					},
 					{
-					    "cmd": "HB:FEX",
-					    "output": [
-					        ">$EX NAME MACABENTA/ANTONIOJR INAY           PSGR  1/ 1",
-					        "FARE USD   440.00  TOTAL USD   655.73",
-					        "TX1 USD   37.20 US   TX2 USD  178.53 XT   TX3               ",
-					        "",
-					        "EXCHANGE TKTS ;..............-;...  CPN ALL",
-					        "TKT1;.............. CPN;.... TKT2;.............. CPN;....",
-					        "COMM;.........  ORIG FOP;................... EVEN;.",
-					        "",
-					        "TTL VALUE OF EX TKTS USD;.............  ORIG BRD/OFF;...;...",
-					        "TX1 USD;.......;..   TX2 USD;.......;..   TX3 USD;.......;..",
-					        "ORIG ISS;...... ORIG DATE;....... ORIG IATA NBR;.........",
-					        "ORIG TKT;..............-;...  ORIG INV NBR;.........",
-					        "PENALTY USD;............  COMM ON PENALTY;...........",
-					        "><"
-					    ].join("\n"),
+						"cmd": "HB:FEX",
+						"output": [
+							">$EX NAME MACABENTA/ANTONIOJR INAY           PSGR  1/ 1",
+							"FARE USD   440.00  TOTAL USD   655.73",
+							"TX1 USD   37.20 US   TX2 USD  178.53 XT   TX3               ",
+							"",
+							"EXCHANGE TKTS ;..............-;...  CPN ALL",
+							"TKT1;.............. CPN;.... TKT2;.............. CPN;....",
+							"COMM;.........  ORIG FOP;................... EVEN;.",
+							"",
+							"TTL VALUE OF EX TKTS USD;.............  ORIG BRD/OFF;...;...",
+							"TX1 USD;.......;..   TX2 USD;.......;..   TX3 USD;.......;..",
+							"ORIG ISS;...... ORIG DATE;....... ORIG IATA NBR;.........",
+							"ORIG TKT;..............-;...  ORIG INV NBR;.........",
+							"PENALTY USD;............  COMM ON PENALTY;...........",
+							"><"
+						].join("\n"),
 					},
 					{
-					    "cmd": "*MPD",
-					    "output": [
-					        "*MPD             MISCELLANEOUS DOCUMENT LIST",
-					        "          NAME         DOCUMENT NBR   ISSUED       AMOUNT",
-					        ">*MCO1;   MACABENT    9885056203638   04APR19          640.73 ",
-					        "END OF DISPLAY",
-					        "><"
-					    ].join("\n"),
+						"cmd": "*MPD",
+						"output": [
+							"*MPD             MISCELLANEOUS DOCUMENT LIST",
+							"          NAME         DOCUMENT NBR   ISSUED       AMOUNT",
+							">*MCO1;   MACABENT    9885056203638   04APR19          640.73 ",
+							"END OF DISPLAY",
+							"><"
+						].join("\n"),
 					},
 				],
 			},
@@ -4369,60 +4379,93 @@ class ProcessApolloTerminalInputActionTest extends require('../../../../Lib/Test
 				'initialCommands': [],
 				'performedCommands': [
 					{
-					    "cmd": "*R",
-					    "output": [
-					        "PANDAREN",
-					        "2F3K - INTERNATIONAL TRAVEL NET SFO",
-					        "PVNNMP/WS QSBYC DPBVWS  AG 05578602 07MAY",
-					        " 1.1MCHARO/LAILA MGHOI  2.1SAMB/MAMADOU ASSANE ",
-					        " 1 KQ   3Q 03JUL JFKNBO HK2  1255P 1025A|*      WE/TH   E",
-					        " 2 KQ8604Q 04JUL NBOMBA HK2  1225P  130P *         TH   E",
-					        "         OPERATED BY JAMBOJET",
-					        " 3 KQ 611Q 19JUL MBANBO HK2   640P  740P *         FR   E  1",
-					        " 4 KQ   2Q 19JUL NBOJFK HK2  1055P  655A|*      FR/SA   E  1",
-					        "FONE-SFOAS/800-750-2238 ASAP CUSTOMER SUPPORT",
-					        "FOP:-VIXXXXXXXXXXXX8932/D0122/*02273C",
-					        "TKTG-T/QSB 07MAY1801Z WS AG *",
-					        "*** TIN REMARKS EXIST *** >*T; ",
-					        ")><"
-					    ].join("\n"),
-					    "duration": "0.044879298",
-					    "type": "redisplayPnr",
-					    "scrolledCmd": "*R",
-					    "state": {"area":"A","pcc":"1O3K","recordLocator":"PVNNMP","canCreatePq":false,"scrolledCmd":"*R","cmdCnt":361,"pricingCmd":null,"cmdType":"redisplayPnr","hasPnr":true,"isPnrStored":true}
+						"cmd": "*R",
+						"output": [
+							"PANDAREN",
+							"2F3K - INTERNATIONAL TRAVEL NET SFO",
+							"PVNNMP/WS QSBYC DPBVWS  AG 05578602 07MAY",
+							" 1.1MCHARO/LAILA MGHOI  2.1SAMB/MAMADOU ASSANE ",
+							" 1 KQ   3Q 03JUL JFKNBO HK2  1255P 1025A|*      WE/TH   E",
+							" 2 KQ8604Q 04JUL NBOMBA HK2  1225P  130P *         TH   E",
+							"         OPERATED BY JAMBOJET",
+							" 3 KQ 611Q 19JUL MBANBO HK2   640P  740P *         FR   E  1",
+							" 4 KQ   2Q 19JUL NBOJFK HK2  1055P  655A|*      FR/SA   E  1",
+							"FONE-SFOAS/800-750-2238 ASAP CUSTOMER SUPPORT",
+							"FOP:-VIXXXXXXXXXXXX8932/D0122/*02273C",
+							"TKTG-T/QSB 07MAY1801Z WS AG *",
+							"*** TIN REMARKS EXIST *** >*T; ",
+							")><"
+						].join("\n"),
+						"duration": "0.044879298",
+						"type": "redisplayPnr",
+						"scrolledCmd": "*R",
+						"state": {
+							"area": "A",
+							"pcc": "1O3K",
+							"recordLocator": "PVNNMP",
+							"canCreatePq": false,
+							"scrolledCmd": "*R",
+							"cmdCnt": 361,
+							"pricingCmd": null,
+							"cmdType": "redisplayPnr",
+							"hasPnr": true,
+							"isPnrStored": true
+						}
 					},
 					{
-					    "cmd": "MR",
-					    "output": [
-					        "*** MISCELLANEOUS DOCUMENT DATA EXISTS *** >*MPD; ",
-					        "*** LINEAR FARE DATA EXISTS *** >*LF; ",
-					        "ATFQ-OK/$B/:N/ITKQCON001/Z3/ET/TA1O3K/CKQ",
-					        " FQ-USD 1710.00/USD 74.40US/USD 1213.66XT/USD 2998.06 - 7MAY QH3RUSW3.QH3RUSW3.QH3RUSW3.QH3RUSW3/QH3RUSW3.QH3RUSW3.QH3RUSW3.QH3RUSW3",
-					        "GFAX-SSRADTK1VTOKQ BY 10MAY19/2300Z OTHERWISE WILL BE XXLD",
-					        "   2 SSRCTCEKQHK1/KANUINKE//YAHOO.COM-1MCHARO/LAILA MGHOI",
-					        "   3 SSRCTCMKQHK1/3472847139-1MCHARO/LAILA MGHOI",
-					        "   4 SSRCTCMKQHK1/3475410721-1SAMB/MAMADOU ASSANE",
-					        "   5 SSRDOCSKQHK1/////21JUN77/F//MCHARO/LAILA/MGHOI-1MCHARO/LAILA MGHOI",
-					        "   6 SSRDOCSKQHK1/////05FEB69/M//SAMB/MAMADOU/ASSANE-1SAMB/MAMAD)><"
-					    ].join("\n"),
-					    "duration": "0.048289005",
-					    "type": "moveRest",
-					    "scrolledCmd": "*R",
-					    "state": {"area":"A","pcc":"1O3K","recordLocator":"PVNNMP","canCreatePq":false,"scrolledCmd":"*R","cmdCnt":362,"pricingCmd":null,"cmdType":"moveRest","hasPnr":true,"isPnrStored":true}
+						"cmd": "MR",
+						"output": [
+							"*** MISCELLANEOUS DOCUMENT DATA EXISTS *** >*MPD; ",
+							"*** LINEAR FARE DATA EXISTS *** >*LF; ",
+							"ATFQ-OK/$B/:N/ITKQCON001/Z3/ET/TA1O3K/CKQ",
+							" FQ-USD 1710.00/USD 74.40US/USD 1213.66XT/USD 2998.06 - 7MAY QH3RUSW3.QH3RUSW3.QH3RUSW3.QH3RUSW3/QH3RUSW3.QH3RUSW3.QH3RUSW3.QH3RUSW3",
+							"GFAX-SSRADTK1VTOKQ BY 10MAY19/2300Z OTHERWISE WILL BE XXLD",
+							"   2 SSRCTCEKQHK1/KANUINKE//YAHOO.COM-1MCHARO/LAILA MGHOI",
+							"   3 SSRCTCMKQHK1/3472847139-1MCHARO/LAILA MGHOI",
+							"   4 SSRCTCMKQHK1/3475410721-1SAMB/MAMADOU ASSANE",
+							"   5 SSRDOCSKQHK1/////21JUN77/F//MCHARO/LAILA/MGHOI-1MCHARO/LAILA MGHOI",
+							"   6 SSRDOCSKQHK1/////05FEB69/M//SAMB/MAMADOU/ASSANE-1SAMB/MAMAD)><"
+						].join("\n"),
+						"duration": "0.048289005",
+						"type": "moveRest",
+						"scrolledCmd": "*R",
+						"state": {
+							"area": "A",
+							"pcc": "1O3K",
+							"recordLocator": "PVNNMP",
+							"canCreatePq": false,
+							"scrolledCmd": "*R",
+							"cmdCnt": 362,
+							"pricingCmd": null,
+							"cmdType": "moveRest",
+							"hasPnr": true,
+							"isPnrStored": true
+						}
 					},
 					{
-					    "cmd": "MR",
-					    "output": [
-					        "OU ASSANE",
-					        "RMKS-GD-RANGER/102053/FOR RANGER/102053/LEAD-11395374 IN 2F3K",
-					        "ACKN-1A QZGQML   07MAY 1640",
-					        "   2 1A QZGQML   07MAY 1640",
-					        "><"
-					    ].join("\n"),
-					    "duration": "0.045607794",
-					    "type": "moveRest",
-					    "scrolledCmd": "*R",
-					    "state": {"area":"A","pcc":"1O3K","recordLocator":"PVNNMP","canCreatePq":false,"scrolledCmd":"*R","cmdCnt":363,"pricingCmd":null,"cmdType":"moveRest","hasPnr":true,"isPnrStored":true}
+						"cmd": "MR",
+						"output": [
+							"OU ASSANE",
+							"RMKS-GD-RANGER/102053/FOR RANGER/102053/LEAD-11395374 IN 2F3K",
+							"ACKN-1A QZGQML   07MAY 1640",
+							"   2 1A QZGQML   07MAY 1640",
+							"><"
+						].join("\n"),
+						"duration": "0.045607794",
+						"type": "moveRest",
+						"scrolledCmd": "*R",
+						"state": {
+							"area": "A",
+							"pcc": "1O3K",
+							"recordLocator": "PVNNMP",
+							"canCreatePq": false,
+							"scrolledCmd": "*R",
+							"cmdCnt": 363,
+							"pricingCmd": null,
+							"cmdType": "moveRest",
+							"hasPnr": true,
+							"isPnrStored": true
+						}
 					},
 				],
 			},
@@ -4442,15 +4485,15 @@ class ProcessApolloTerminalInputActionTest extends require('../../../../Lib/Test
 				'status': 'executed',
 				'calledCommands': [
 					{
-					    "cmd": "*R",
-					    "output": [
-					        "NO NAMES",
-					        " 1 CM 435L 30NOV MCOPTY SS1   723A 1042A *         SA   E  1",
-					        " 2 CM 613L 30NOV PTYMDE SS1  1158A  123P *         SA   E  1",
-					        " 3 CM 612L 12DEC MDEPTY SS1   417P  542P *         TH   E  2",
-					        " 4 CM 434L 12DEC PTYMCO SS1   629P  954P *         TH   E  2",
-					        ""
-					    ].join("\n"),
+						"cmd": "*R",
+						"output": [
+							"NO NAMES",
+							" 1 CM 435L 30NOV MCOPTY SS1   723A 1042A *         SA   E  1",
+							" 2 CM 613L 30NOV PTYMDE SS1  1158A  123P *         SA   E  1",
+							" 3 CM 612L 12DEC MDEPTY SS1   417P  542P *         TH   E  2",
+							" 4 CM 434L 12DEC PTYMCO SS1   629P  954P *         TH   E  2",
+							""
+						].join("\n"),
 					},
 				],
 			},
@@ -4459,109 +4502,119 @@ class ProcessApolloTerminalInputActionTest extends require('../../../../Lib/Test
 				'initialCommands': [],
 				'performedCommands': [
 					{
-					    "cmd": "0CM435Y30NOVMCOPTYGK1",
-					    "output": [
-					        " 1 CM  435Y  30NOV MCOPTY GK1   723A 1042A                    ",
-					        "OFFER CAR/HOTEL    >CAL;     >HOA;",
-					        "ADD ADVANCE PASSENGER INFORMATION SSRS DOCA/DOCO/DOCS",
-					        "PERSONAL DATA WHICH IS PROVIDED TO US IN CONNECTION",
-					        "WITH YOUR TRAVEL MAY BE PASSED TO GOVERNMENT AUTHORITIES",
-					        "FOR BORDER CONTROL AND AVIATION SECURITY PURPOSES",
-					        "><"
-					    ].join("\n"),
-					    "state": {"area":"A","pcc":"2F3K","recordLocator":"","canCreatePq":false,"scrolledCmd":"0CM435Y30NOVMCOPTYGK1","cmdCnt":1,"pricingCmd":null,"hasPnr":true,"cmdType":"sell"}
+						"cmd": "0CM435Y30NOVMCOPTYGK1",
+						"output": [
+							" 1 CM  435Y  30NOV MCOPTY GK1   723A 1042A                    ",
+							"OFFER CAR/HOTEL    >CAL;     >HOA;",
+							"ADD ADVANCE PASSENGER INFORMATION SSRS DOCA/DOCO/DOCS",
+							"PERSONAL DATA WHICH IS PROVIDED TO US IN CONNECTION",
+							"WITH YOUR TRAVEL MAY BE PASSED TO GOVERNMENT AUTHORITIES",
+							"FOR BORDER CONTROL AND AVIATION SECURITY PURPOSES",
+							"><"
+						].join("\n"),
+						"state": {
+							"area": "A",
+							"pcc": "2F3K",
+							"recordLocator": "",
+							"canCreatePq": false,
+							"scrolledCmd": "0CM435Y30NOVMCOPTYGK1",
+							"cmdCnt": 1,
+							"pricingCmd": null,
+							"hasPnr": true,
+							"cmdType": "sell"
+						}
 					},
 					{
-					    "cmd": "0CM613Y30NOVPTYMDEGK1",
-					    "output": [
-					        " 2 CM  613Y  30NOV PTYMDE GK1  1158A  123P                    ",
-					        "OFFER CAR/HOTEL    >CAL;     >HOA;",
-					        "ADD ADVANCE PASSENGER INFORMATION SSRS DOCA/DOCO/DOCS",
-					        "PERSONAL DATA WHICH IS PROVIDED TO US IN CONNECTION",
-					        "WITH YOUR TRAVEL MAY BE PASSED TO GOVERNMENT AUTHORITIES",
-					        "FOR BORDER CONTROL AND AVIATION SECURITY PURPOSES",
-					        "><"
-					    ].join("\n"),
+						"cmd": "0CM613Y30NOVPTYMDEGK1",
+						"output": [
+							" 2 CM  613Y  30NOV PTYMDE GK1  1158A  123P                    ",
+							"OFFER CAR/HOTEL    >CAL;     >HOA;",
+							"ADD ADVANCE PASSENGER INFORMATION SSRS DOCA/DOCO/DOCS",
+							"PERSONAL DATA WHICH IS PROVIDED TO US IN CONNECTION",
+							"WITH YOUR TRAVEL MAY BE PASSED TO GOVERNMENT AUTHORITIES",
+							"FOR BORDER CONTROL AND AVIATION SECURITY PURPOSES",
+							"><"
+						].join("\n"),
 					},
 					{
-					    "cmd": "0CM612Y12DECMDEPTYGK1",
-					    "output": [
-					        " 3 CM  612Y  12DEC MDEPTY GK1   417P  542P                    ",
-					        "OFFER CAR/HOTEL    >CAL;     >HOA;",
-					        "ADD ADVANCE PASSENGER INFORMATION SSRS DOCA/DOCO/DOCS",
-					        "PERSONAL DATA WHICH IS PROVIDED TO US IN CONNECTION",
-					        "WITH YOUR TRAVEL MAY BE PASSED TO GOVERNMENT AUTHORITIES",
-					        "FOR BORDER CONTROL AND AVIATION SECURITY PURPOSES",
-					        "><"
-					    ].join("\n"),
+						"cmd": "0CM612Y12DECMDEPTYGK1",
+						"output": [
+							" 3 CM  612Y  12DEC MDEPTY GK1   417P  542P                    ",
+							"OFFER CAR/HOTEL    >CAL;     >HOA;",
+							"ADD ADVANCE PASSENGER INFORMATION SSRS DOCA/DOCO/DOCS",
+							"PERSONAL DATA WHICH IS PROVIDED TO US IN CONNECTION",
+							"WITH YOUR TRAVEL MAY BE PASSED TO GOVERNMENT AUTHORITIES",
+							"FOR BORDER CONTROL AND AVIATION SECURITY PURPOSES",
+							"><"
+						].join("\n"),
 					},
 					{
-					    "cmd": "0CM434Y12DECPTYMCOGK1",
-					    "output": [
-					        " 4 CM  434Y  12DEC PTYMCO GK1   629P  954P                    ",
-					        "OFFER CAR/HOTEL    >CAL;     >HOA;",
-					        "ADD ADVANCE PASSENGER INFORMATION SSRS DOCA/DOCO/DOCS",
-					        "PERSONAL DATA WHICH IS PROVIDED TO US IN CONNECTION",
-					        "WITH YOUR TRAVEL MAY BE PASSED TO GOVERNMENT AUTHORITIES",
-					        "FOR BORDER CONTROL AND AVIATION SECURITY PURPOSES",
-					        "><"
-					    ].join("\n"),
+						"cmd": "0CM434Y12DECPTYMCOGK1",
+						"output": [
+							" 4 CM  434Y  12DEC PTYMCO GK1   629P  954P                    ",
+							"OFFER CAR/HOTEL    >CAL;     >HOA;",
+							"ADD ADVANCE PASSENGER INFORMATION SSRS DOCA/DOCO/DOCS",
+							"PERSONAL DATA WHICH IS PROVIDED TO US IN CONNECTION",
+							"WITH YOUR TRAVEL MAY BE PASSED TO GOVERNMENT AUTHORITIES",
+							"FOR BORDER CONTROL AND AVIATION SECURITY PURPOSES",
+							"><"
+						].join("\n"),
 					},
 					{
-					    "cmd": "X1+2/01L+2L",
-					    "output": [
-					        "   CM  435L  30NOV MCOPTY SS1   723A 1042A *      1          E",
-					        "ETKT ELIGIBLE *",
-					        "DUPLICATE LEG-UA7149 *",
-					        "   CM  613L  30NOV PTYMDE SS1  1158A  123P *      1          E",
-					        "ETKT ELIGIBLE *",
-					        "OPERATED BY-P5 AEROREPUBLICA *",
-					        "DUPLICATE LEG-UA7107 *",
-					        "OFFER CAR/HOTEL    >CAL;     >HOA;",
-					        "ADD ADVANCE PASSENGER INFORMATION SSRS DOCA/DOCO/DOCS",
-					        "PERSONAL DATA WHICH IS PROVIDED TO US IN CONNECTION",
-					        "WITH YOUR TRAVEL MAY BE PASSED TO GOVERNMENT AUTHORITIES",
-					        "FOR BORDER CONTROL AND AVIATION SECURITY PURPOSES",
-					        "CANCEL REQUEST COMPLETED",
-					        "><"
-					    ].join("\n"),
+						"cmd": "X1+2/01L+2L",
+						"output": [
+							"   CM  435L  30NOV MCOPTY SS1   723A 1042A *      1          E",
+							"ETKT ELIGIBLE *",
+							"DUPLICATE LEG-UA7149 *",
+							"   CM  613L  30NOV PTYMDE SS1  1158A  123P *      1          E",
+							"ETKT ELIGIBLE *",
+							"OPERATED BY-P5 AEROREPUBLICA *",
+							"DUPLICATE LEG-UA7107 *",
+							"OFFER CAR/HOTEL    >CAL;     >HOA;",
+							"ADD ADVANCE PASSENGER INFORMATION SSRS DOCA/DOCO/DOCS",
+							"PERSONAL DATA WHICH IS PROVIDED TO US IN CONNECTION",
+							"WITH YOUR TRAVEL MAY BE PASSED TO GOVERNMENT AUTHORITIES",
+							"FOR BORDER CONTROL AND AVIATION SECURITY PURPOSES",
+							"CANCEL REQUEST COMPLETED",
+							"><"
+						].join("\n"),
 					},
 					{
-					    "cmd": "X3+4/03L+4L",
-					    "output": [
-					        "   CM  612L  12DEC MDEPTY SS1   417P  542P *      2          E",
-					        "ETKT ELIGIBLE *",
-					        "OPERATED BY-P5 AEROREPUBLICA *",
-					        "DUPLICATE LEG-LH5503 UA7141 *",
-					        "   CM  434L  12DEC PTYMCO SS1   629P  954P *      2          E",
-					        "ETKT ELIGIBLE *",
-					        "DUPLICATE LEG-UA7102 *",
-					        "SECURE FLIGHT *",
-					        "OFFER CAR/HOTEL    >CAL;     >HOA;",
-					        "ADD ADVANCE PASSENGER INFORMATION SSRS DOCA/DOCO/DOCS",
-					        "PERSONAL DATA WHICH IS PROVIDED TO US IN CONNECTION",
-					        "WITH YOUR TRAVEL MAY BE PASSED TO GOVERNMENT AUTHORITIES",
-					        "FOR BORDER CONTROL AND AVIATION SECURITY PURPOSES",
-					        ")><"
-					    ].join("\n"),
+						"cmd": "X3+4/03L+4L",
+						"output": [
+							"   CM  612L  12DEC MDEPTY SS1   417P  542P *      2          E",
+							"ETKT ELIGIBLE *",
+							"OPERATED BY-P5 AEROREPUBLICA *",
+							"DUPLICATE LEG-LH5503 UA7141 *",
+							"   CM  434L  12DEC PTYMCO SS1   629P  954P *      2          E",
+							"ETKT ELIGIBLE *",
+							"DUPLICATE LEG-UA7102 *",
+							"SECURE FLIGHT *",
+							"OFFER CAR/HOTEL    >CAL;     >HOA;",
+							"ADD ADVANCE PASSENGER INFORMATION SSRS DOCA/DOCO/DOCS",
+							"PERSONAL DATA WHICH IS PROVIDED TO US IN CONNECTION",
+							"WITH YOUR TRAVEL MAY BE PASSED TO GOVERNMENT AUTHORITIES",
+							"FOR BORDER CONTROL AND AVIATION SECURITY PURPOSES",
+							")><"
+						].join("\n"),
 					},
 					{
-					    "cmd": "MR",
-					    "output": [
-					        "CANCEL REQUEST COMPLETED",
-					        "><"
-					    ].join("\n"),
+						"cmd": "MR",
+						"output": [
+							"CANCEL REQUEST COMPLETED",
+							"><"
+						].join("\n"),
 					},
 					{
-					    "cmd": "*R",
-					    "output": [
-					        "NO NAMES",
-					        " 1 CM 435L 30NOV MCOPTY SS1   723A 1042A *         SA   E  1",
-					        " 2 CM 613L 30NOV PTYMDE SS1  1158A  123P *         SA   E  1",
-					        " 3 CM 612L 12DEC MDEPTY SS1   417P  542P *         TH   E  2",
-					        " 4 CM 434L 12DEC PTYMCO SS1   629P  954P *         TH   E  2",
-					        "><"
-					    ].join("\n"),
+						"cmd": "*R",
+						"output": [
+							"NO NAMES",
+							" 1 CM 435L 30NOV MCOPTY SS1   723A 1042A *         SA   E  1",
+							" 2 CM 613L 30NOV PTYMDE SS1  1158A  123P *         SA   E  1",
+							" 3 CM 612L 12DEC MDEPTY SS1   417P  542P *         TH   E  2",
+							" 4 CM 434L 12DEC PTYMCO SS1   629P  954P *         TH   E  2",
+							"><"
+						].join("\n"),
 					},
 				],
 			},
@@ -4808,12 +4861,12 @@ class ProcessApolloTerminalInputActionTest extends require('../../../../Lib/Test
 				'status': 'executed',
 				'calledCommands': [
 					{
-					    "cmd": "F",
-					    "output": [
-					        "INVLD ",
-					        "><"
-					    ].join("\n"),
-					    "type": "fileDividedBooking",
+						"cmd": "F",
+						"output": [
+							"INVLD ",
+							"><"
+						].join("\n"),
+						"type": "fileDividedBooking",
 					},
 				],
 			},
@@ -4823,40 +4876,62 @@ class ProcessApolloTerminalInputActionTest extends require('../../../../Lib/Test
 				}),
 				'initialCommands': [
 					{
-					    "cmd": "DN1",
-					    "output": [
-					        "INVLD  PREV NOT FILE REC",
-					        "><"
-					    ].join("\n"),
-					    "type": "divideBooking",
-					    "state": {"area":"A","pcc":"2G52","recordLocator":"NNBQDJ","canCreatePq":false,"scrolledCmd":"DN1","cmdCnt":31,"pricingCmd":null,"cmdType":"divideBooking","hasPnr":true,"isPnrStored":true}
+						"cmd": "DN1",
+						"output": [
+							"INVLD  PREV NOT FILE REC",
+							"><"
+						].join("\n"),
+						"type": "divideBooking",
+						"state": {
+							"area": "A",
+							"pcc": "2G52",
+							"recordLocator": "NNBQDJ",
+							"canCreatePq": false,
+							"scrolledCmd": "DN1",
+							"cmdCnt": 31,
+							"pricingCmd": null,
+							"cmdType": "divideBooking",
+							"hasPnr": true,
+							"isPnrStored": true
+						}
 					},
 					{
-					    "cmd": "R:JMY",
-					    "output": [
-					        " *",
-					        "><"
-					    ].join("\n"),
-					    "type": "addReceivedFrom",
+						"cmd": "R:JMY",
+						"output": [
+							" *",
+							"><"
+						].join("\n"),
+						"type": "addReceivedFrom",
 					},
 				],
 				'performedCommands': [
 					{
-					    "cmd": "@:5GD-PRINCE/1588/FOR /6206/LEAD-1 IN 2G55",
-					    "output": [
-					        " *",
-					        "><"
-					    ].join("\n"),
-					    "type": "addRemark",
+						"cmd": "@:5GD-PRINCE/1588/FOR /6206/LEAD-1 IN 2G55",
+						"output": [
+							" *",
+							"><"
+						].join("\n"),
+						"type": "addRemark",
 					},
 					{
-					    "cmd": "F",
-					    "output": [
-					        "INVLD ",
-					        "><"
-					    ].join("\n"),
-					    "type": "fileDividedBooking",
-					    "state": {"area":"A","pcc":"2F3K","recordLocator":"","canCreatePq":false,"scrolledCmd":"F","cmdCnt":3,"hasPnr":false,"isPnrStored":false,"cmdType":"fileDividedBooking","pricingCmd":null}
+						"cmd": "F",
+						"output": [
+							"INVLD ",
+							"><"
+						].join("\n"),
+						"type": "fileDividedBooking",
+						"state": {
+							"area": "A",
+							"pcc": "2F3K",
+							"recordLocator": "",
+							"canCreatePq": false,
+							"scrolledCmd": "F",
+							"cmdCnt": 3,
+							"hasPnr": false,
+							"isPnrStored": false,
+							"cmdType": "fileDividedBooking",
+							"pricingCmd": null
+						}
 					},
 				],
 			},
@@ -4873,38 +4948,38 @@ class ProcessApolloTerminalInputActionTest extends require('../../../../Lib/Test
 			},
 			'sessionInfo': {
 				'initialState': php.array_merge(GdsDirectDefaults.makeDefaultApolloState(), {
-					"pcc":"1O3K",
+					"pcc": "1O3K",
 				}),
 				'initialCommands': [],
 				'performedCommands': [
 					{
-					    "cmd": "*QP800F",
-					    "output": [
-					        "2G2H - TRAVEL SHOP              SFO",
-					        "QP800F/3E QSBSB DYB3E   AG 23854526 24APR",
-					        " 1.1WEINSTEIN/ALEX ",
-					        " 1 SU2101Z 25APR RIXSVO HK1   225P  410P *         TH   E",
-					        " 2 SU2682N 06MAY SVORIX HK1   915A 1055A *         MO   E",
-					        "FONE-SFOAS/DONNIE*1800 677-2943 EXT:22793",
-					        "TKTG-TAU/24APR",
-					        "*** LINEAR FARE DATA EXISTS *** >*LF; ",
-					        "ATFQ-OK/$B/N1-1*ADT/:N/Z0/ET/TA2G2H/CSU",
-					        " FQ-EUR 418.00/USD 3.90LV/USD 196.50XT/USD 670.40 - 24APR *ADT-ZCL.NCL",
-					        "GFAX-SSRDOCSSUHK1/////24FEB75/M//WEINSTEIN/ALEX-1WEINSTEIN/ALEX",
-					        "ACKN-SU FPSGVA   24APR 1217",
-					        "><"
-					    ].join("\n"),
-					    "duration": "0.057814040",
-					    "type": "openPnr",
+						"cmd": "*QP800F",
+						"output": [
+							"2G2H - TRAVEL SHOP              SFO",
+							"QP800F/3E QSBSB DYB3E   AG 23854526 24APR",
+							" 1.1WEINSTEIN/ALEX ",
+							" 1 SU2101Z 25APR RIXSVO HK1   225P  410P *         TH   E",
+							" 2 SU2682N 06MAY SVORIX HK1   915A 1055A *         MO   E",
+							"FONE-SFOAS/DONNIE*1800 677-2943 EXT:22793",
+							"TKTG-TAU/24APR",
+							"*** LINEAR FARE DATA EXISTS *** >*LF; ",
+							"ATFQ-OK/$B/N1-1*ADT/:N/Z0/ET/TA2G2H/CSU",
+							" FQ-EUR 418.00/USD 3.90LV/USD 196.50XT/USD 670.40 - 24APR *ADT-ZCL.NCL",
+							"GFAX-SSRDOCSSUHK1/////24FEB75/M//WEINSTEIN/ALEX-1WEINSTEIN/ALEX",
+							"ACKN-SU FPSGVA   24APR 1217",
+							"><"
+						].join("\n"),
+						"duration": "0.057814040",
+						"type": "openPnr",
 					},
 					{
-					    "cmd": "I",
-					    "output": [
-					        "IGND ",
-					        "><"
-					    ].join("\n"),
-					    "duration": "0.051822774",
-					    "type": "ignore",
+						"cmd": "I",
+						"output": [
+							"IGND ",
+							"><"
+						].join("\n"),
+						"duration": "0.051822774",
+						"type": "ignore",
 					},
 				],
 			},
@@ -4923,13 +4998,13 @@ class ProcessApolloTerminalInputActionTest extends require('../../../../Lib/Test
 				'status': 'executed',
 				'calledCommands': [
 					{
-					    "cmd": "*R",
-					    "output": [
-					        "NO NAMES",
-					        " 1 WS 703X 30APR YYZYVR SS1   900A 1103A *         TU   E",
-					        " 2 WS 716T 03MAY YVRYYZ SS1   300P 1030P *         FR   E",
-					        ""
-					    ].join("\n"),
+						"cmd": "*R",
+						"output": [
+							"NO NAMES",
+							" 1 WS 703X 30APR YYZYVR SS1   900A 1103A *         TU   E",
+							" 2 WS 716T 03MAY YVRYYZ SS1   300P 1030P *         FR   E",
+							""
+						].join("\n"),
 					},
 
 				],
@@ -4939,47 +5014,47 @@ class ProcessApolloTerminalInputActionTest extends require('../../../../Lib/Test
 				'initialCommands': [],
 				'performedCommands': [
 					{
-					    "cmd": "0WS703Y30APRYYZYVRGK1",
-					    "output": [
-					        " 1 WS  703Y  30APR YYZYVR GK1   900A 1103A                    ",
-					        "OFFER CAR/HOTEL    >CAL;     >HOA;",
-					        "DEPARTS YYZ TERMINAL 3  - ARRIVES YVR TERMINAL M ",
-					        "><"
-					    ].join("\n"),
+						"cmd": "0WS703Y30APRYYZYVRGK1",
+						"output": [
+							" 1 WS  703Y  30APR YYZYVR GK1   900A 1103A                    ",
+							"OFFER CAR/HOTEL    >CAL;     >HOA;",
+							"DEPARTS YYZ TERMINAL 3  - ARRIVES YVR TERMINAL M ",
+							"><"
+						].join("\n"),
 					},
 					{
-					    "cmd": "0WS716Y03MAYYVRYYZGK1",
-					    "output": [
-					        " 2 WS  716Y   3MAY YVRYYZ GK1   300P 1030P                    ",
-					        "OFFER CAR/HOTEL    >CAL;     >HOA;",
-					        "DEPARTS YVR TERMINAL M  - ARRIVES YYZ TERMINAL 3 ",
-					        "><"
-					    ].join("\n"),
+						"cmd": "0WS716Y03MAYYVRYYZGK1",
+						"output": [
+							" 2 WS  716Y   3MAY YVRYYZ GK1   300P 1030P                    ",
+							"OFFER CAR/HOTEL    >CAL;     >HOA;",
+							"DEPARTS YVR TERMINAL M  - ARRIVES YYZ TERMINAL 3 ",
+							"><"
+						].join("\n"),
 					},
 					{
-					    "cmd": "X1+2/01X+2T",
-					    "output": [
-					        "   WS  703X  30APR YYZYVR SS1   900A 1103A *                 E",
-					        "010 CX 7045 /CZ 7543 /KE 6525 /MU 8002 *",
-					        "503 3/18/22/27/99 *",
-					        "DEPARTS YYZ TERMINAL 3  - ARRIVES YVR TERMINAL M ",
-					        "   WS  716T   3MAY YVRYYZ SS1   300P 1030P *                 E",
-					        "010 CX 7040 /CZ 7544 /HX 3616 /JL 5806 /KE 6524 *",
-					        "503 3/18/22/27/99 *",
-					        "OFFER CAR/HOTEL    >CAL;     >HOA;",
-					        "DEPARTS YVR TERMINAL M  - ARRIVES YYZ TERMINAL 3 ",
-					        "CANCEL REQUEST COMPLETED",
-					        "><"
-					    ].join("\n"),
+						"cmd": "X1+2/01X+2T",
+						"output": [
+							"   WS  703X  30APR YYZYVR SS1   900A 1103A *                 E",
+							"010 CX 7045 /CZ 7543 /KE 6525 /MU 8002 *",
+							"503 3/18/22/27/99 *",
+							"DEPARTS YYZ TERMINAL 3  - ARRIVES YVR TERMINAL M ",
+							"   WS  716T   3MAY YVRYYZ SS1   300P 1030P *                 E",
+							"010 CX 7040 /CZ 7544 /HX 3616 /JL 5806 /KE 6524 *",
+							"503 3/18/22/27/99 *",
+							"OFFER CAR/HOTEL    >CAL;     >HOA;",
+							"DEPARTS YVR TERMINAL M  - ARRIVES YYZ TERMINAL 3 ",
+							"CANCEL REQUEST COMPLETED",
+							"><"
+						].join("\n"),
 					},
 					{
-					    "cmd": "*R",
-					    "output": [
-					        "NO NAMES",
-					        " 1 WS 703X 30APR YYZYVR SS1   900A 1103A *         TU   E",
-					        " 2 WS 716T 03MAY YVRYYZ SS1   300P 1030P *         FR   E",
-					        "><"
-					    ].join("\n"),
+						"cmd": "*R",
+						"output": [
+							"NO NAMES",
+							" 1 WS 703X 30APR YYZYVR SS1   900A 1103A *         TU   E",
+							" 2 WS 716T 03MAY YVRYYZ SS1   300P 1030P *         FR   E",
+							"><"
+						].join("\n"),
 					},
 				],
 			},
@@ -5002,8 +5077,8 @@ class ProcessApolloTerminalInputActionTest extends require('../../../../Lib/Test
 				'userMessages': ['SOME FLIGHTS DID NOT HAVE ENOUGH SEATS AVAILABLE IN REQUESTED BOOKING CODE - 1,2'],
 				'calledCommands': [
 					{
-					  "cmd": "*R",
-					  "output": "NO NAMES\n 1 WS 703X 30APR YYZYVR SS1   900A 1103A *         TU   E\n 2 WS 716T 03MAY YVRYYZ SS1   300P 1030P *         FR   E\n 3 AC  84Y 21JUL YYZTLV GK1   430P 1000A+       SU/MO\n 4 AC  85Y 29JUL TLVYYZ GK1  1145A  430P           MO\n",
+						"cmd": "*R",
+						"output": "NO NAMES\n 1 WS 703X 30APR YYZYVR SS1   900A 1103A *         TU   E\n 2 WS 716T 03MAY YVRYYZ SS1   300P 1030P *         FR   E\n 3 AC  84Y 21JUL YYZTLV GK1   430P 1000A+       SU/MO\n 4 AC  85Y 29JUL TLVYYZ GK1  1145A  430P           MO\n",
 					},
 				],
 			},
@@ -5012,50 +5087,216 @@ class ProcessApolloTerminalInputActionTest extends require('../../../../Lib/Test
 				'initialCommands': [],
 				'performedCommands': [
 					{
-					    "cmd": "0AC084Y21JULYYZTLVGK1",
-					    "output": [
-					        " 3 AC   84Y  21JUL YYZTLV GK1   430P 1000A|                   ",
-					        "OFFER CAR/HOTEL    >CAL;     >HOA;",
-					        "DEPARTS YYZ TERMINAL 1  - ARRIVES TLV TERMINAL 3 ",
-					        "ADD ADVANCE PASSENGER INFORMATION SSRS DOCA/DOCO/DOCS",
-					        "PERSONAL DATA WHICH IS PROVIDED TO US IN CONNECTION",
-					        "WITH YOUR TRAVEL MAY BE PASSED TO GOVERNMENT AUTHORITIES",
-					        "FOR BORDER CONTROL AND AVIATION SECURITY PURPOSES",
-					        "THIS AIRLINE SUPPORTS CLAIM PNR - AC ",
-					        "TO REQUEST CLAIM PNR PLEASE IGNORE AND ENTER THE",
-					        "AIRLINES INFORMATION IN ONE OF THE FOLLOWING FORMATS -",
-					        "L@AC/*(RECORD LOCATOR)  OR  L@AC/*AC84/21JUL-(NAME)  ",
-					        "><"
-					    ].join("\n"),
+						"cmd": "0AC084Y21JULYYZTLVGK1",
+						"output": [
+							" 3 AC   84Y  21JUL YYZTLV GK1   430P 1000A|                   ",
+							"OFFER CAR/HOTEL    >CAL;     >HOA;",
+							"DEPARTS YYZ TERMINAL 1  - ARRIVES TLV TERMINAL 3 ",
+							"ADD ADVANCE PASSENGER INFORMATION SSRS DOCA/DOCO/DOCS",
+							"PERSONAL DATA WHICH IS PROVIDED TO US IN CONNECTION",
+							"WITH YOUR TRAVEL MAY BE PASSED TO GOVERNMENT AUTHORITIES",
+							"FOR BORDER CONTROL AND AVIATION SECURITY PURPOSES",
+							"THIS AIRLINE SUPPORTS CLAIM PNR - AC ",
+							"TO REQUEST CLAIM PNR PLEASE IGNORE AND ENTER THE",
+							"AIRLINES INFORMATION IN ONE OF THE FOLLOWING FORMATS -",
+							"L@AC/*(RECORD LOCATOR)  OR  L@AC/*AC84/21JUL-(NAME)  ",
+							"><"
+						].join("\n"),
 					},
 					{
-					    "cmd": "0AC085Y29JULTLVYYZGK1",
-					    "output": [
-					        " 4 AC   85Y  29JUL TLVYYZ GK1  1145A  430P                    ",
-					        "OFFER CAR/HOTEL    >CAL;     >HOA;",
-					        "DEPARTS TLV TERMINAL 3  - ARRIVES YYZ TERMINAL 1 ",
-					        "ADD ADVANCE PASSENGER INFORMATION SSRS DOCA/DOCO/DOCS",
-					        "PERSONAL DATA WHICH IS PROVIDED TO US IN CONNECTION",
-					        "WITH YOUR TRAVEL MAY BE PASSED TO GOVERNMENT AUTHORITIES",
-					        "FOR BORDER CONTROL AND AVIATION SECURITY PURPOSES",
-					        "THIS AIRLINE SUPPORTS CLAIM PNR - AC ",
-					        "TO REQUEST CLAIM PNR PLEASE IGNORE AND ENTER THE",
-					        "AIRLINES INFORMATION IN ONE OF THE FOLLOWING FORMATS -",
-					        "L@AC/*(RECORD LOCATOR)  OR  L@AC/*AC85/29JUL-(NAME)  ",
-					        "><"
-					    ].join("\n"),
+						"cmd": "0AC085Y29JULTLVYYZGK1",
+						"output": [
+							" 4 AC   85Y  29JUL TLVYYZ GK1  1145A  430P                    ",
+							"OFFER CAR/HOTEL    >CAL;     >HOA;",
+							"DEPARTS TLV TERMINAL 3  - ARRIVES YYZ TERMINAL 1 ",
+							"ADD ADVANCE PASSENGER INFORMATION SSRS DOCA/DOCO/DOCS",
+							"PERSONAL DATA WHICH IS PROVIDED TO US IN CONNECTION",
+							"WITH YOUR TRAVEL MAY BE PASSED TO GOVERNMENT AUTHORITIES",
+							"FOR BORDER CONTROL AND AVIATION SECURITY PURPOSES",
+							"THIS AIRLINE SUPPORTS CLAIM PNR - AC ",
+							"TO REQUEST CLAIM PNR PLEASE IGNORE AND ENTER THE",
+							"AIRLINES INFORMATION IN ONE OF THE FOLLOWING FORMATS -",
+							"L@AC/*(RECORD LOCATOR)  OR  L@AC/*AC85/29JUL-(NAME)  ",
+							"><"
+						].join("\n"),
 					},
 					{
-					    "cmd": "X1+2/01P+2P",
-					    "output": [
-					        "0 AVAIL/WL CLOSED WS703 YYZYVR *",
-					        "UNABLE TO CANCEL",
-					        "><"
-					    ].join("\n"),
+						"cmd": "X1+2/01P+2P",
+						"output": [
+							"0 AVAIL/WL CLOSED WS703 YYZYVR *",
+							"UNABLE TO CANCEL",
+							"><"
+						].join("\n"),
 					},
 					{
-					  "cmd": "*R",
-					  "output": "NO NAMES\n 1 WS 703X 30APR YYZYVR SS1   900A 1103A *         TU   E\n 2 WS 716T 03MAY YVRYYZ SS1   300P 1030P *         FR   E\n 3 AC  84Y 21JUL YYZTLV GK1   430P 1000A+       SU/MO\n 4 AC  85Y 29JUL TLVYYZ GK1  1145A  430P           MO\n",
+						"cmd": "*R",
+						"output": "NO NAMES\n 1 WS 703X 30APR YYZYVR SS1   900A 1103A *         TU   E\n 2 WS 716T 03MAY YVRYYZ SS1   300P 1030P *         FR   E\n 3 AC  84Y 21JUL YYZTLV GK1   430P 1000A+       SU/MO\n 4 AC  85Y 29JUL TLVYYZ GK1  1145A  430P           MO\n",
+					},
+				],
+			},
+		});
+
+		$list.push({
+			'input': {
+				'title': 'HHPR example',
+				'cmdRequested': 'HHPR',
+			},
+			'output': {
+				'status': 'executed',
+				'actions': [
+					{
+						"type": "displayHhprMask",
+						"data": {
+							"fields": [
+								{"key": "seg1_stopoverMark", "value": "", "enabled": true},
+								{"key": "seg1_departureAirport", "value": "JFK", "enabled": false},
+								{"key": "seg1_airline", "value": "PR", "enabled": false},
+								{"key": "seg1_flightNumber", "value": "127", "enabled": false},
+								{"key": "seg1_bookingClass", "value": "N", "enabled": false},
+								{"key": "seg1_departureDate", "value": "20SEP", "enabled": false},
+								{"key": "seg1_departureTime", "value": "145A", "enabled": false},
+								{"key": "seg1_status", "value": "OK", "enabled": false},
+								{"key": "seg1_fareBasis", "value": "", "enabled": true},
+								{"key": "seg1_fare", "value": "", "enabled": true},
+								{"key": "seg1_notValidBefore", "value": "", "enabled": true},
+								{"key": "seg1_notValidAfter", "value": "", "enabled": true},
+								{"key": "seg2_stopoverMark", "value": "", "enabled": true},
+								{"key": "seg2_departureAirport", "value": "MNL", "enabled": false},
+								{"key": "seg2_airline", "value": "", "enabled": true},
+								{"key": "seg2_flightNumber", "value": "", "enabled": true},
+								{"key": "seg2_bookingClass", "value": "", "enabled": true},
+								{"key": "seg2_departureDate", "value": "VOID", "enabled": false},
+								{"key": "seg2_departureTime", "value": "", "enabled": true},
+								{"key": "seg2_status", "value": "", "enabled": true},
+								{"key": "seg2_fareBasis", "value": "", "enabled": true},
+								{"key": "seg2_fare", "value": "", "enabled": true},
+								{"key": "seg2_notValidBefore", "value": "", "enabled": true},
+								{"key": "seg2_notValidAfter", "value": "", "enabled": true},
+								{"key": "seg3_stopoverMark", "value": "", "enabled": true},
+								{"key": "seg3_departureAirport", "value": "", "enabled": true},
+								{"key": "seg3_airline", "value": "", "enabled": true},
+								{"key": "seg3_flightNumber", "value": "", "enabled": true},
+								{"key": "seg3_bookingClass", "value": "", "enabled": true},
+								{"key": "seg3_departureDate", "value": "VOID", "enabled": false},
+								{"key": "seg3_departureTime", "value": "", "enabled": true},
+								{"key": "seg3_status", "value": "", "enabled": true},
+								{"key": "seg3_fareBasis", "value": "", "enabled": true},
+								{"key": "seg3_fare", "value": "", "enabled": true},
+								{"key": "seg3_notValidBefore", "value": "", "enabled": true},
+								{"key": "seg3_notValidAfter", "value": "", "enabled": true},
+								{"key": "seg4_stopoverMark", "value": "", "enabled": true},
+								{"key": "seg4_departureAirport", "value": "", "enabled": true},
+								{"key": "seg4_airline", "value": "", "enabled": true},
+								{"key": "seg4_flightNumber", "value": "", "enabled": true},
+								{"key": "seg4_bookingClass", "value": "", "enabled": true},
+								{"key": "seg4_departureDate", "value": "VOID", "enabled": false},
+								{"key": "seg4_departureTime", "value": "", "enabled": true},
+								{"key": "seg4_status", "value": "", "enabled": true},
+								{"key": "seg4_fareBasis", "value": "", "enabled": true},
+								{"key": "seg4_fare", "value": "", "enabled": true},
+								{"key": "seg4_notValidBefore", "value": "", "enabled": true},
+								{"key": "seg4_notValidAfter", "value": "", "enabled": true},
+								{"key": "seg5_stopoverMark", "value": "", "enabled": true},
+								{"key": "seg5_departureAirport", "value": "", "enabled": true},
+								{"key": "baseFareCurrency", "value": "", "enabled": true},
+								{"key": "baseFareAmount", "value": "", "enabled": true},
+								{"key": "doTaxesApply", "value": ";", "enabled": false},
+								{"key": "constantIndicator", "value": "", "enabled": true},
+								{"key": "fareEquivalentCurrency", "value": "", "enabled": true},
+								{"key": "fareEquivalentAmount", "value": "", "enabled": true},
+								{"key": "seg1_ticketDesignator", "value": "", "enabled": true},
+								{"key": "seg2_ticketDesignator", "value": "", "enabled": true},
+								{"key": "seg3_ticketDesignator", "value": "", "enabled": true},
+								{"key": "seg4_ticketDesignator", "value": "", "enabled": true}
+							],
+							"maskOutput": [
+								">$NME LIB/MAR                                                 ",
+								" X CTY CR FLT/CLS DATE  TIME  ST F/B      VALUE   NVB   NVA ",
+								" . JFK PR  127 N  20SEP  145A OK;........;.......;.....;..... ",
+								" . MNL .. .... ..  VOID ..... .. ........ ....... ..... ..... ",
+								" . ... .. .... ..  VOID ..... .. ........ ....... ..... ..... ",
+								" . ... .. .... ..  VOID ..... .. ........ ....... ..... ..... ",
+								" . ...  FARE;...;........  DO TAXES APPLY?;.                  ",
+								"  EQUIV FARE;...;........             COMM;....... F CONST;..",
+								" TD 1/;...... 2/;...... 3/;...... 4/;......  INT X  MREC 01/01",
+								"                                                   ;PSGR 01/01",
+								"                                                   ;BOOK 01/01",
+								"DO YC/XY TAXES APPLY?",
+								"><"
+							].join("\n")
+						}
+					}
+				],
+			},
+			'sessionInfo': {
+				'initialState': {
+					...GdsDirectDefaults.makeDefaultApolloState(),
+					isPnrStored: true,
+					recordLocator: 'MZ2KVP'
+				},
+				'initialCommands': [
+					{
+						"cmd": "*R",
+						"output": [
+							"CREATED IN GDS DIRECT BY AKLESUNS",
+							"MZ2KVP/WS QSBYC DPBVWS  AG 05578602 09MAY",
+							" 1.1LIB/MAR ",
+							" 1 PR 127N 20SEP JFKMNL GK1   145A  615A|       FR/SA",
+							"FONE-SFOAS/800-750-2238 ASAP CUSTOMER SUPPORT",
+							"TKTG-TAU/09MAY",
+							"RMKS-GD-AKLESUNS/6206 IN 2F3K",
+							"><"
+						].join("\n"),
+						"duration": "0.181254743",
+						"type": "redisplayPnr",
+						"scrolledCmd": "*R",
+						"state": {
+							"area": "A",
+							"pcc": "2F3K",
+							"recordLocator": "MZ2KVP",
+							"canCreatePq": false,
+							"scrolledCmd": "*R",
+							"cmdCnt": 12,
+							"hasPnr": true,
+							"isPnrStored": true,
+							"cmdType": "redisplayPnr",
+							"pricingCmd": null
+						}
+					},
+				],
+				'performedCommands': [
+					{
+						"cmd": "HHPR",
+						"output": [
+							">$NME LIB/MAR                                                 ",
+							" X CTY CR FLT/CLS DATE  TIME  ST F/B      VALUE   NVB   NVA ",
+							" . JFK PR  127 N  20SEP  145A OK;........;.......;.....;..... ",
+							" . MNL .. .... ..  VOID ..... .. ........ ....... ..... ..... ",
+							" . ... .. .... ..  VOID ..... .. ........ ....... ..... ..... ",
+							" . ... .. .... ..  VOID ..... .. ........ ....... ..... ..... ",
+							" . ...  FARE;...;........  DO TAXES APPLY?;.                  ",
+							"  EQUIV FARE;...;........             COMM;....... F CONST;..",
+							" TD 1/;...... 2/;...... 3/;...... 4/;......  INT X  MREC 01/01",
+							"                                                   ;PSGR 01/01",
+							"                                                   ;BOOK 01/01",
+							"DO YC/XY TAXES APPLY?",
+							"><"
+						].join("\n"),
+						"duration": "0.226702311",
+						"type": "priceItineraryManually",
+						"scrolledCmd": "HHPR",
+						"state": {
+							"area": "A",
+							"pcc": "2F3K",
+							"recordLocator": "",
+							"canCreatePq": false,
+							"scrolledCmd": "HHPR",
+							"cmdCnt": 13,
+							"hasPnr": false,
+							"isPnrStored": false,
+							"cmdType": "priceItineraryManually",
+							"pricingCmd": null,
+						}
 					},
 				],
 			},

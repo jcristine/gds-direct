@@ -2,6 +2,7 @@
 // namespace Gds\Parsers\Apollo;
 
 const Fp = require('../../../Lib/Utils/Fp.js');
+const Rej = require('../../../../Utils/Rej.js');
 
 let php = require('../../../php.js');
 const StringUtil = require('../../../Lib/Utils/StringUtil.js');
@@ -156,6 +157,30 @@ class AbstractMaskParser
     static makeCmdFromEmptyMask({emptyMask, destinationMask, fields, values}) {
         let positions = this._getPositionsFromGenericMask(emptyMask);
         return this.makeCmd({positions, destinationMask, fields, values});
+    }
+
+    // async to return errors
+    static async getPositionValues({mask, positions, fields}) {
+        if (positions.length !== fields.length) {
+            let error = 'Number of passed positions ' + positions.length +
+                ' does not match number of fields ' + fields.length;
+            return Rej.InternalServerError(error);
+        }
+        mask = this.normalizeMask(mask);
+        let tuples = Fp.zip([fields, positions]);
+        let items = [];
+        for (let [key, [start, length]] of tuples) {
+            if (start >= mask.length) {
+                let error = mask + ' - mask output is too short, field ' +
+                    key +' at ' + start + ' is outside bounds';
+                return Rej.UnprocessableEntity(error);
+            }
+            let value = mask.slice(start, start + length)
+                .replace(/^[.\s]*/, '')
+                .replace(/[.\s]*$/, '');
+            items.push({key, value});
+        }
+        return Promise.resolve(items);
     }
 }
 module.exports = AbstractMaskParser;

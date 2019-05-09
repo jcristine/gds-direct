@@ -4,7 +4,7 @@ const ProcessTerminalInput = require("./ProcessTerminalInput");
 const {fetchAll} = require('../GdsHelpers/TravelportUtils.js');
 const StringUtil = require('../Transpiled/Lib/Utils/StringUtil.js');
 
-let positions = AbstractMaskParser.getPositionsBy('_', [
+let POSITIONS = AbstractMaskParser.getPositionsBy('_', [
 	"$NME LIB/MAR                                                   ",
 	" X CTY CR FLT/CLS DATE  TIME  ST F/B      VALUE   NVB   NVA     ",
 	" _ ___ __ ____ __ _____ _____ __·________·_______·_____·_____   ",
@@ -19,7 +19,7 @@ let positions = AbstractMaskParser.getPositionsBy('_', [
 	"DO YC/XY TAXES APPLY?"
 ].join(''));
 
-let fields = [
+let FIELDS = [
 	'seg1_stopoverMark', 'seg1_departureAirport', 'seg1_airline', 'seg1_flightNumber',
 	'seg1_bookingClass', 'seg1_departureDate', 'seg1_departureTime', 'seg1_status',
 	'seg1_fareBasis', 'seg1_fare', 'seg1_notValidBefore', 'seg1_notValidAfter',
@@ -46,14 +46,15 @@ let fields = [
 ];
 
 /**
+ * TODO: test how it will behave when there are 5+ segments in itinerary
  * submits HHPR mask
  */
 let PriceItineraryManually = async ({maskOutput, values, gdsSession}) => {
 	let destinationMask = AbstractMaskParser.normalizeMask(maskOutput);
 	let cmd = await AbstractMaskParser.makeCmd({
-		positions,
+		positions: POSITIONS,
 		destinationMask: destinationMask,
-		fields, values
+		fields: FIELDS, values
 	});
 	let cmdRec = await fetchAll(cmd, gdsSession);
 	return cmdRec;
@@ -67,7 +68,7 @@ let makeMaskRs = (calledCommands, actions = []) => new TerminalService('apollo')
 		actions: actions,
 	});
 
-PriceItineraryManually.inputHbFexMask = async ({rqBody, gdsSession}) => {
+PriceItineraryManually.inputHhprMask = async ({rqBody, gdsSession}) => {
 	let maskOutput = rqBody.maskOutput;
 	let values = {};
 	for (let {key, value} of rqBody.fields) {
@@ -82,5 +83,8 @@ PriceItineraryManually.inputHbFexMask = async ({rqBody, gdsSession}) => {
 		{cmd: '$NME...', output: result.output},
 	]);
 };
+
+PriceItineraryManually.POSITIONS = POSITIONS;
+PriceItineraryManually.FIELDS = FIELDS;
 
 module.exports = PriceItineraryManually;

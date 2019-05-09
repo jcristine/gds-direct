@@ -43,6 +43,8 @@ let php = require('../../../../php.js');
 const McoListParser = require("../../../../Gds/Parsers/Apollo/Mco/McoListParser");
 const McoMaskParser = require("../../../../Gds/Parsers/Apollo/Mco/McoMaskParser");
 const Pccs = require("../../../../../Repositories/Pccs");
+const PriceItineraryManually = require('../../../../../Actions/PriceItineraryManually.js');
+const AbstractMaskParser = require("../../../../Gds/Parsers/Apollo/AbstractMaskParser");
 
 /** @param stateful = await require('StatefulSession.js')() */
 let execute = ({
@@ -1496,10 +1498,39 @@ class ProcessApolloTerminalInputAction {
 		return result;
 	}
 
+	async prepareHhprMask(cmdData) {
+		let mods = cmdData.pricingModifiers;
+		let cmd = 'HHPR' + mods.map(m => m.raw).join('/');
+		let output = (await this.runCmd(cmd)).output;
+		let items = await AbstractMaskParser.getPositionValues({
+			mask: output,
+			positions: PriceItineraryManually.POSITIONS,
+			fields: PriceItineraryManually.FIELDS,
+		});
+		return {
+			calledCommands: [{
+				cmd: cmd,
+				output: 'SEE MASK FORM BELOW',
+			}],
+			actions: [{
+				type: 'displayHhprMask',
+				data: {
+					fields: items.map(i => ({
+						key: i.key,
+						value: i.value,
+						enabled: !i.value,
+					})),
+					maskOutput: output,
+				},
+			}],
+		};
+	}
+
 	async processRequestedCommand($cmd) {
-		let $alias, $mdaData, $limit, $cmdReal, $result, $matches, $_, $plus, $seatAmount,
+		let $alias, $mdaData, $limit, $cmdReal, $matches, $_, $plus, $seatAmount,
 			$segmentNumbers, $segmentStatus, $availability, $cityRow, $airlines, $itinerary;
 		$alias = this.constructor.parseAlias($cmd);
+		let parsed = CommandParser.parse($cmd);
 		if ($mdaData = $alias['moveDownAll'] || null) {
 			$limit = $mdaData['limit'] || null;
 			if ($cmdReal = $alias['realCmd']) {
@@ -1518,6 +1549,8 @@ class ProcessApolloTerminalInputAction {
 		} else if (php.preg_match(/^HB(\d*):FEX\s*([\d\s]{13,}|)$/, $cmd, $matches = [])) {
 			let [_, storeNumber, ticketNumber] = $matches;
 			return this.prepareHbFexMask(storeNumber, ticketNumber || '');
+		} else if (parsed.type === 'priceItineraryManually') {
+			return this.prepareHhprMask(parsed.data);
 		} else if (php.preg_match(/^SORT$/, $cmd, $matches = [])) {
 			return this.processSortItinerary();
 		} else if ($alias['type'] === 'rebookInPcc') {
