@@ -78,8 +78,12 @@ class AbstractMaskParser
     // Following related to dump generation
     //==================================
 
-    /** @return {[int, int][]} - start/length tuples */
-    static getPositions($cmd)  {
+    /**
+     * determines value positions from ;. or .., but not applicable
+     * in commands that do not have ; before each value (like HHPR)
+     * @return {[int, int][]} - start/length tuples
+     */
+    static _getPositionsFromGenericMask($cmd)  {
         let $positions, $makeStartAndLength;
         $positions = this.getMaskTokenPositions($cmd);
         $makeStartAndLength = ($tuple) => {
@@ -88,6 +92,32 @@ class AbstractMaskParser
             return [$start, $end - $start + 1];
         };
         return Fp.map($makeStartAndLength, $positions);
+    }
+
+    /**
+     * get positions from a dump, with manually placed special character
+     * in places where text should be entered (normally filled with dots)
+     * you can use '_' as the special character for example
+     */
+    static getPositionsBy(specialChar, mask) {
+        let positions = [];
+        let startPos = -1;
+        // +1 to cover last '_' char if any
+        for (let i = 0; i < mask.length + 1; ++i) {
+            let ch = mask[i];
+            if (ch === specialChar) {
+                if (startPos === -1) {
+                    startPos = i;
+                }
+            } else {
+                if (startPos > -1) {
+                    let length = i - startPos;
+                    positions.push([startPos, length]);
+                    startPos = -1;
+                }
+            }
+        }
+        return positions;
     }
 
     static overwriteStr($str, $needle, $position)  {
@@ -100,18 +130,11 @@ class AbstractMaskParser
         }
     }
 
-    /**
-     * @param {string} emptyMask - a mask without any values entered used to calculate positions. Supposedly hardcoded.
-     * @param {string} destinationMask - the mask to which values are added. Note that
-     * some masks include non-static data, so you can't always use the emptyMask as destination.
-     * @param {Object} values - value mapping with field names as keys
-     */
-    static makeCmd({emptyMask, destinationMask, fields, values}) {
+    static makeCmd({positions, destinationMask, fields, values}) {
         let missingFields = php.array_keys(php.array_diff_key(php.array_flip(fields), values));
         if (!php.empty(missingFields)) {
             return BadRequest('Missing necessary params for the mask: ['+php.implode(', ', missingFields)+']');
         }
-        let positions = this.getPositions(emptyMask);
         let cmd = destinationMask;
         let tuples = Fp.zip([fields, positions]);
         for (let [field, [start, length]] of tuples) {
@@ -122,6 +145,17 @@ class AbstractMaskParser
             cmd = this.overwriteStr(cmd, token, start);
         }
         return cmd;
+    }
+
+    /**
+     * @param {string} emptyMask - a mask without any values entered used to calculate positions. Supposedly hardcoded.
+     * @param {string} destinationMask - the mask to which values are added. Note that
+     * some masks include non-static data, so you can't always use the emptyMask as destination.
+     * @param {Object} values - value mapping with field names as keys
+     */
+    static makeCmdFromEmptyMask({emptyMask, destinationMask, fields, values}) {
+        let positions = this._getPositionsFromGenericMask(emptyMask);
+        return this.makeCmd({positions, destinationMask, fields, values});
     }
 }
 module.exports = AbstractMaskParser;

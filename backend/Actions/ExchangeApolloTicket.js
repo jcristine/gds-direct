@@ -43,7 +43,7 @@ let parseOutput = (output) => {
 let ExchangeApolloTicket = async ({emptyMask, maskOutput, values, gdsSession, maskFields = null}) => {
 	let destinationMask = AbstractMaskParser.normalizeMask(maskOutput);
 	let fields = maskFields || ParseHbFex.FIELDS;
-	let cmd = await AbstractMaskParser.makeCmd({
+	let cmd = await AbstractMaskParser.makeCmdFromEmptyMask({
 		emptyMask: emptyMask,
 		destinationMask: destinationMask,
 		fields, values

@@ -67,7 +67,7 @@ class ApolloMakeMcoAction extends AbstractGdsAction
     static async makeCmd($params)  {
         $params = php.array_merge(this.getDefaultParams(), $params);
         $params['expirationDate'] = php.date('my', php.strtotime($params['expirationDate']));
-        return AbstractMaskParser.makeCmd({
+        return AbstractMaskParser.makeCmdFromEmptyMask({
             emptyMask: this.getMask(),
             destinationMask: this.getMask(),
             fields: this.getFields(),
