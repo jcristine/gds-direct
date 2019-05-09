@@ -3,7 +3,7 @@ const {jsExport} = require('../Utils/Misc.js');
 
 let DiagService;
 try {
-    DiagService = require('dynatech-diag-service').DiagService;
+    DiagService = require('dynatech-diag-service').default;
 } catch (exc) {
     DiagService = class {
         setProjectId() {};
