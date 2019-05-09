@@ -1,4 +1,6 @@
 
+const {jsExport} = require('../Utils/Misc.js');
+
 let DiagService;
 try {
     DiagService = require('dynatech-diag-service').DiagService;
@@ -54,13 +56,14 @@ diagService.logExc = (msg, exc) => {
             !e.file.endsWith('/translib.js'))[0];
     } catch (exc) {}
 
+    let formatted = jsExport(exc);
     if (lastEntry) {
         let {func, file, line, col} = lastEntry;
         let type = diagService.DIAG_TYPE_DEFAULT;
         let severity = diagService.DIAG_SEVERITY_ERROR;
-        return diagService.logDiag([msg, exc], line, false, 0, type, severity, file, func, null, null, null);
+        return diagService.logDiag([msg, formatted], line, false, 0, type, severity, file, func, null, null, null);
     } else {
-        return diagService.error(msg, exc);
+        return diagService.error(msg, formatted);
     }
 };
 
