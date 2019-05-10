@@ -11,6 +11,9 @@ const Conflict = require("../Utils/Rej").Conflict;
  * it is said in their docs, though, that it is possible to setup a separate endpoint for a company:
  * @see https://support.travelport.com/webhelp/GWS/Content/Overview/Getting_Started/Connecting_to_GWS.htm
  * due to geo-latency, requests from Europe to USA are taking at least 100 ms overhead on dev
+ *
+ * Upd.: the travelport business guys said that they decide regional stuff depending on
+ * the url, something like showing european fares on europe url more often, and such stuff...
  */
 let endpoint = 'https://americas.webservices.travelport.com/B2BGateway/service/XMLSelect';
 //let endpoint = 'https://emea.webservices.travelport.com/B2BGateway/service/XMLSelect';
@@ -112,6 +115,48 @@ TravelportClient.withSession = (params, action) => {
 				TravelportClient.closeSession(gdsData);
 			});
 	});
+};
+
+TravelportClient.getFares = (params) => {
+	let soapEnv = [
+		'<SOAP-ENV:Envelope xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ns1="http://webservices.galileo.com">',
+		'  <SOAP-ENV:Body>',
+		'    <ns1:SubmitXml>',
+		'      <ns1:Profile>DynApolloProd_2G8P</ns1:Profile>',
+		'      <ns1:Request>',
+	    '        <FareQuoteMultiDisplay_27>',
+	    '          <FareDisplayMods>',
+	    '            <QueryHeader>',
+	    '              <Action>02</Action>',
+	    '              <SmartParsed>N</SmartParsed>',
+	    '              <PFPWInd>Y</PFPWInd>',
+	    '              <TariffQual>',
+	    '                <PRIInd>Y</PRIInd>',
+	    '              </TariffQual>',
+	    '            </QueryHeader>',
+	    '            <TravConstraints>',
+	    '              <StartPt>MIA</StartPt>',
+	    '              <EndPt>LON</EndPt>',
+	    '              <StartDt>20190519</StartDt>',
+	    '              <EndDt>20190530</EndDt>',
+	    '              <ValidatingDispInd>Y</ValidatingDispInd>',
+	    '              <AirV1>AA</AirV1>',
+	    '              <AirlinePvtFare>Y</AirlinePvtFare>',
+	    '            </TravConstraints>',
+	    '            <PFMods>',
+	    '              <PCC>2G8P</PCC>',
+	    '            </PFMods>',
+	    '         </FareDisplayMods>',
+	    '        </FareQuoteMultiDisplay_27>',
+		'      </ns1:Request>',
+		'      <ns1:Filter>',
+		'        <_/>',
+		'      </ns1:Filter>',
+		'    </ns1:SubmitXml>',
+		'  </SOAP-ENV:Body>',
+		'</SOAP-ENV:Envelope>',
+	].join('\n');
+	return sendRequest(soapEnv, 'DynApolloProd_2F3K');
 };
 
 module.exports = TravelportClient;
