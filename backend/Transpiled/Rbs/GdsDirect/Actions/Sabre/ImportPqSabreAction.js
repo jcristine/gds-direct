@@ -130,8 +130,11 @@ class ImportPqSabreAction extends AbstractGdsAction {
 		let store = (new SabrePricingAdapter())
 			.setPricingCommand($cmd)
 			.setReservationDate(this.getBaseDate())
-			.setNameRecords(nameRecords)
+			// should return after implementation supports 2 paxes priced on same PTC
+			//.setNameRecords(nameRecords)
 			.transform($parsed);
+		if (store.error) return {error: store.error};
+
 		$wrapped = {pricingList: [store]};
 
 		$ptcPricingBlocks = $wrapped['pricingList'][0]['pricingBlockList'];

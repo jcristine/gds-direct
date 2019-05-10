@@ -97,10 +97,10 @@ class ImportPqSabreActionTest extends require('../../../../Lib/TestCase.js') {
 									],
 									'pricingBlockList': [
 										{
-											'passengerNameNumbers': [
-												{'absolute': 1, 'fieldNumber': '1', 'firstNameNumber': 1},
-												{'absolute': 2, 'fieldNumber': '2', 'firstNameNumber': 1},
-											],
+											// 'passengerNameNumbers': [
+											// 	{'absolute': 1, 'fieldNumber': '1', 'firstNameNumber': 1},
+											// 	{'absolute': 2, 'fieldNumber': '2', 'firstNameNumber': 1},
+											// ],
 											'ptcInfo': {'ptc': 'JCB', 'quantity': 2, 'ptcRequested': 'JCB'},
 											'validatingCarrier': 'UA',
 											'fareInfo': {
@@ -121,9 +121,9 @@ class ImportPqSabreActionTest extends require('../../../../Lib/TestCase.js') {
 											},
 										},
 										{
-											'passengerNameNumbers': [
-												{'absolute': 3, 'fieldNumber': '3', 'firstNameNumber': 1},
-											],
+											// 'passengerNameNumbers': [
+											// 	{'absolute': 3, 'fieldNumber': '3', 'firstNameNumber': 1},
+											// ],
 											'ptcInfo': {'ptc': 'J03', 'quantity': 1, 'ptcRequested': 'J03'},
 											'validatingCarrier': 'UA',
 											'fareInfo': {
@@ -152,10 +152,10 @@ class ImportPqSabreActionTest extends require('../../../../Lib/TestCase.js') {
 					'bagPtcPricingBlocks': [
 						{
 							'subPricingNumber': 1,
-							'passengerNameNumbers': [
-								{'absolute': 1, 'fieldNumber': '1', 'firstNameNumber': 1},
-								{'absolute': 2, 'fieldNumber': '2', 'firstNameNumber': 1},
-							],
+							// 'passengerNameNumbers': [
+							// 	{'absolute': 1, 'fieldNumber': '1', 'firstNameNumber': 1},
+							// 	{'absolute': 2, 'fieldNumber': '2', 'firstNameNumber': 1},
+							// ],
 							'ptcInfo': {'ptc': 'JCB', 'quantity': 2, 'ptcRequested': 'JCB'},
 							'parsed': {
 								'baggageAllowanceBlocks': [
@@ -231,14 +231,14 @@ class ImportPqSabreActionTest extends require('../../../../Lib/TestCase.js') {
 						},
 						{
 							'subPricingNumber': 2,
-							'passengerNameNumbers': [
-								{
-									'raw': '3.1',
-									'absolute': 3,
-									'fieldNumber': '3',
-									'firstNameNumber': 1,
-								},
-							],
+							// 'passengerNameNumbers': [
+							// 	{
+							// 		'raw': '3.1',
+							// 		'absolute': 3,
+							// 		'fieldNumber': '3',
+							// 		'firstNameNumber': 1,
+							// 	},
+							// ],
 							'ptcInfo': {
 								'ptc': 'J03',
 								'ageGroup': 'child',
@@ -379,11 +379,11 @@ class ImportPqSabreActionTest extends require('../../../../Lib/TestCase.js') {
 									],
 									'pricingBlockList': [
 										{
-											'passengerNameNumbers': [
-												{'absolute': 1, 'fieldNumber': '1', 'firstNameNumber': 1},
-												{'absolute': 2, 'fieldNumber': '2', 'firstNameNumber': 1},
-												{'absolute': 3, 'fieldNumber': '3', 'firstNameNumber': 1},
-											],
+											// 'passengerNameNumbers': [
+											// 	{'absolute': 1, 'fieldNumber': '1', 'firstNameNumber': 1},
+											// 	{'absolute': 2, 'fieldNumber': '2', 'firstNameNumber': 1},
+											// 	{'absolute': 3, 'fieldNumber': '3', 'firstNameNumber': 1},
+											// ],
 											'ptcInfo': {'ptc': 'ADT', 'quantity': 3, 'ptcRequested': null},
 											'validatingCarrier': 'UA',
 											'fareInfo': {
@@ -1044,6 +1044,130 @@ class ImportPqSabreActionTest extends require('../../../../Lib/TestCase.js') {
 					        "AFRICA WORLD AIRLINES   ",
 					        "6IIF.L3II*AWS 1106/01MAY19"
 					    ].join("\n"),
+					},
+				],
+			},
+		});
+
+		$list.push({
+			'input': {
+				'title': 'present name-to-ptc matcher does not support when some PTC covers multiple paxes... actually matching *P-C05 with J09 by Sabre seems weird too, can it be that it allows covering 5 year old child with J09 as long as priced age is greater, not lower?',
+				'baseDate': '2019-05-09 22:55:47',
+				'fetchOptionalFields': false,
+			},
+			'output': {
+				pnrData: {
+					currentPricing: {
+						parsed: {
+							pricingList: [{
+								pricingBlockList: [
+									{
+										ptcInfo: {ptcRequested: 'JCB', ptc: 'JCB'},
+										fareInfo: {
+											totalFare: {amount: '689.50'},
+										},
+									},
+									{
+										ptcInfo: {ptcRequested: 'J09', ptc: 'J09'},
+										fareInfo: {
+											totalFare: {amount: '622.50'},
+										},
+									},
+								],
+							}],
+						},
+					},
+				},
+			},
+			'sessionInfo': {
+				"initialState": {
+					"pcc":"U2E5","area":"B","canCreatePq":true,"pricingCmd":"WPP1JCB/2J09","cmdType":"priceItinerary",
+					"scrolledCmd":"WPP1JCB/2J09","cmdCnt":22,"recordLocator":"NBYIKR","hasPnr":true,"isPnrStored":true,
+				},
+				'initialCommands': [
+					{
+					    "cmd": "WPP1JCB/2J09",
+					    "output": [
+					        "       BASE FARE                 TAXES/FEES/CHARGES    TOTAL",
+					        " 1-    USD307.00                    382.50XT       USD689.50JCB",
+					        "    XT    350.00YQ       3.80YR      18.60US       5.60AY ",
+					        "            4.50XF ",
+					        " 2-    USD240.00                    382.50XT       USD622.50J09",
+					        "    XT    350.00YQ       3.80YR      18.60US       5.60AY ",
+					        "            4.50XF ",
+					        "          787.00                   1147.50           1934.50TTL",
+					        "JCB-01  ULOWIADI/LC",
+					        " WAS AI X/DEL AI HYD Q WASHYD40.00 267.20NUC307.20END ROE1.00 ",
+					        " XFIAD4.5",
+					        "NON-END/CHANGE/CANCELLATION/NO-SHOW/PENALTY MAY APPLY AS ",
+					        "PER/FARE RULES",
+					        "PRIVATE FARE APPLIED - CHECK RULES FOR CORRECT TICKETING",
+					        "PRIVATE ¤",
+					        "VALIDATING CARRIER - AI",
+					        "BAG ALLOWANCE     -IADHYD-02P/AI",
+					        "CARRY ON ALLOWANCE",
+					        "IADDEL DELHYD-01P/08KG/AI",
+					        "CARRY ON CHARGES",
+					        "IADDEL DELHYD-AI-CARRY ON FEES UNKNOWN-CONTACT CARRIER",
+					        "ADDITIONAL ALLOWANCES AND/OR DISCOUNTS MAY APPLY",
+					        "J09-02  ULOWIADICH/LC",
+					        " WAS AI X/DEL AI HYD Q WASHYD40.00 200.40NUC240.40END ROE1.00 ",
+					        " XFIAD4.5",
+					        "NON-END/CHANGE/CANCELLATION/NO-SHOW/PENALTY MAY APPLY AS ",
+					        "PER/FARE RULES",
+					        "EACH J09 REQUIRES ACCOMPANYING SAME CABIN ADT",
+					        "PRIVATE FARE APPLIED - CHECK RULES FOR CORRECT TICKETING",
+					        "PRIVATE ¤",
+					        "VALIDATING CARRIER - AI",
+					        "BAG ALLOWANCE     -IADHYD-02P/AI",
+					        "CARRY ON ALLOWANCE",
+					        "IADDEL DELHYD-01P/08KG/AI",
+					        "CARRY ON CHARGES",
+					        "IADDEL DELHYD-AI-CARRY ON FEES UNKNOWN-CONTACT CARRIER",
+					        "ADDITIONAL ALLOWANCES AND/OR DISCOUNTS MAY APPLY",
+					        "                                                               ",
+					        "AIR EXTRAS AVAILABLE - SEE WP*AE",
+					        "."
+					    ].join("\n"),
+					    "duration": "0.712711480",
+					    "type": "priceItinerary",
+					    "scrolledCmd": "WPP1JCB/2J09",
+					    "state": {"pcc":"U2E5","area":"B","canCreatePq":true,"pricingCmd":"WPP1JCB/2J09","cmdType":"priceItinerary","scrolledCmd":"WPP1JCB/2J09","cmdCnt":22,"recordLocator":"NBYIKR","hasPnr":true,"isPnrStored":true}
+					},
+				],
+				'performedCommands': [
+					{
+					    "cmd": "*R",
+					    "output": [
+					        "NBYIKR",
+					        " 1.1SANGANI/GEETHA  2.1SANGANI/AGASTYA*P-09",
+					        " 3.1SANGANI/ARJUN*P-C05",
+					        " 1 AI 104U 26MAY S IADDEL HK3   550P  650P  27MAY M /DCAI*HG4GW",
+					        "                                                            /E",
+					        " 2 AI 839V 27MAY M DELHYD HK3   910P 1110P /DCAI*HG4GW /E",
+					        "TKT/TIME LIMIT",
+					        "  1.TAW/09MAY",
+					        "PHONES",
+					        "  1.NYC800-750-2238-A",
+					        "CUSTOMER NUMBER - 2811006749",
+					        "PRICE QUOTE RECORD EXISTS - SYSTEM",
+					        "AA FACTS",
+					        "  1.SSR OTHS 1S AUTO XX IF SSR TKNA/E/M/C NOT RCVD BY AI BY 170",
+					        "    9/13MAY/WAS LT",
+					        "  2.SSR ADPI 1S KK1 AI0104  NEED ADPI INFO 72 HBD",
+					        "  3.SSR OTHS 1S.PLS ADD CUSTOMER CONTACT DETAILS",
+					        "  4.SSR OTHS 1S.UPDATE DOCS DETAIL FOR ALL PAX WITH FULL NAME A",
+					        "    S IN PASSPORT",
+					        "REMARKS",
+					        "  1.GD-ROSENBERG/102490/FOR ROSENBERG/102490/LEAD-11596602 IN U",
+					        "    2E5",
+					        "RECEIVED FROM - ROSENBERG",
+					        "U2E5.L3II*AWS 1709/09MAY19 NBYIKR H"
+					    ].join("\n"),
+					    "duration": "0.217882877",
+					    "type": "redisplayPnr",
+					    "scrolledCmd": "*R",
+					    "state": {"pcc":"U2E5","area":"B","canCreatePq":true,"pricingCmd":"WPP1JCB/2J09","cmdType":"redisplayPnr","scrolledCmd":"*R","cmdCnt":23,"recordLocator":"NBYIKR","hasPnr":true,"isPnrStored":true}
 					},
 				],
 			},
