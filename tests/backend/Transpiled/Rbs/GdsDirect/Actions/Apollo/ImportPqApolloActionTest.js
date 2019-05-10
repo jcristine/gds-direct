@@ -884,6 +884,113 @@ class ImportPqApolloActionTest extends require('../../../../Lib/TestCase.js') {
 			],
 		});
 
+		$list.push({
+			'input': {
+				'onlyPricing': true,
+				'title': '$B:N followed by $B/S6|7 resulted in success for some reason',
+				'previousCommands': [
+					{
+					    "cmd": "$B/:N",
+					    "output": [
+					        " NO VALID FARE FOR INPUT CRITERIA",
+					        "><"
+					    ].join("\n"),
+					    "duration": "1.071335613",
+					    "type": "priceItinerary",
+					    "scrolledCmd": "$B/:N",
+					    "state": {"area":"A","pcc":"2F3K","recordLocator":"","canCreatePq":false,"scrolledCmd":"$B/:N","cmdCnt":13,"pricingCmd":null,"hasPnr":true,"cmdType":"priceItinerary"}
+					},
+					{
+					    "cmd": "$B/S6|7",
+					    "output": [
+					        ">$B/S6-*2F3K|7-*2F3K",
+					        "*FARE HAS A PLATING CARRIER RESTRICTION*",
+					        "E-TKT REQUIRED",
+					        "        **CARRIER MAY OFFER ADDITIONAL SERVICES**SEE >$B/DASO;",
+					        "** PRIVATE FARES SELECTED **  ",
+					        "*PENALTY APPLIES*",
+					        "LAST DATE TO PURCHASE TICKET: 13MAY19 SFO",
+					        "$B-1 P10MAY19 - CAT35",
+					        "RIX TK X/IST TK MIA 126.98TN3XPBO/ITN05U4R4U NUC126.98 -----",
+					        "MUST PRICE AS B/N -- ---END ROE0.8899",
+					        "FARE EUR 113.00 EQU USD 127.00 TAX 18.60US TAX 3.96XA TAX",
+					        "7.00XY TAX 5.77YC TAX 3.90LV TAX 7.30XM TAX 5.60TR TAX 225.10YR",
+					        "TOT USD 404.23  ",
+					        ")><"
+					    ].join("\n"),
+					    "duration": "0.963411919",
+					    "type": "priceItinerary",
+					    "scrolledCmd": "$B/S6|7",
+					    "state": {"area":"A","pcc":"2F3K","recordLocator":"","canCreatePq":true,"scrolledCmd":"$B/S6|7","cmdCnt":14,"pricingCmd":"$B/S6|7","hasPnr":true,"cmdType":"priceItinerary"}
+					},
+					{
+					    "cmd": "MR",
+					    "output": [
+					        "S1 NVB04JUL/NVA04JUL",
+					        "S2 NVB05JUL/NVA05JUL",
+					        "E ITN05U4R4U - ITN5",
+					        "E ITN107COWR - ITN10",
+					        "TICKETING AGENCY 2F3K",
+					        "DEFAULT PLATING CARRIER TK",
+					        "RATE USED IN EQU TOTAL IS BSR 1EUR - 1.119912USD",
+					        "BAGGAGE ALLOWANCE",
+					        "ADT                                                         ",
+					        " TK RIXMIA  2PC                                             ",
+					        "   BAG 1 -  NO FEE       UPTO50LB/23KG AND UPTO62LI/158LCM",
+					        "   BAG 2 -  NO FEE       UPTO50LB/23KG AND UPTO62LI/158LCM",
+					        "   VIEWTRIP.TRAVELPORT.COM/BAGGAGEPOLICY/TK",
+					        ")><"
+					    ].join("\n"),
+					    "duration": "0.036213424",
+					    "type": "moveRest",
+					    "scrolledCmd": "$B/S6|7",
+					    "state": {"area":"A","pcc":"2F3K","recordLocator":"","canCreatePq":true,"scrolledCmd":"$B/S6|7","cmdCnt":15,"pricingCmd":"$B/S6|7","hasPnr":true,"cmdType":"moveRest"}
+					},
+					{
+					    "cmd": "MR",
+					    "output": [
+					        "                                                                CARRY ON ALLOWANCE",
+					        " TK RIXIST  1PC                                             ",
+					        "   BAG 1 -  NO FEE       CARRYON HAND BAGGAGE ALLOWANCE   ",
+					        " TK ISTMIA  1PC                                             ",
+					        "   BAG 1 -  NO FEE       CARRYON HAND BAGGAGE ALLOWANCE   ",
+					        "BAGGAGE DISCOUNTS MAY APPLY BASED ON FREQUENT FLYER STATUS/",
+					        "ONLINE CHECKIN/FORM OF PAYMENT/MILITARY/ETC.",
+					        "><"
+					    ].join("\n"),
+					    "duration": "0.037265429",
+					    "type": "moveRest",
+					    "scrolledCmd": "$B/S6|7",
+					    "state": {"area":"A","pcc":"2F3K","recordLocator":"","canCreatePq":true,"scrolledCmd":"$B/S6|7","cmdCnt":16,"pricingCmd":"$B/S6|7","hasPnr":true,"cmdType":"moveRest"}
+					},
+				],
+			},
+			'output': {
+				'error': 'Error: Last pricing command $B/S6|7 does not cover some itinerary segments: 1,2,3,4,5',
+			},
+			'calledCommands': [
+				{
+				    "cmd": "*R",
+				    "output": [
+				        "NO NAMES",
+				        " 1 TP 224U 18JUN MIALIS SS1   415P  520A|*      TU/WE   E  1",
+				        " 2 TP 834U 19JUN LISFCO SS1   625A 1020A *         WE   E  1",
+				        " 3 AZ 590O 22JUN FCOIEV SS1  1035P  220A|*      SA/SU   E",
+				        " 4 LO 756W 30JUN IEVWAW SS1   605A  640A *         SU   E  2",
+				        " 5 LO 783W 30JUN WAWRIX SS1  1105A  125P *         SU   E  2",
+				        "         OPERATED BY REGIONAL JET",
+				        " 6 TK1776T 04JUL RIXIST SS1   725P 1025P *         TH   E  3",
+				        " 7 TK  77T 05JUL ISTMIA SS1   135P  705P *         FR   E  3",
+				        "><"
+				    ].join("\n"),
+				    "duration": "0.097767651",
+				    "type": "redisplayPnr",
+				    "scrolledCmd": "*R",
+				    "state": {"area":"A","pcc":"2F3K","recordLocator":"","canCreatePq":true,"scrolledCmd":"*R","cmdCnt":17,"pricingCmd":"$B/S6|7","hasPnr":true,"cmdType":"redisplayPnr"}
+				},
+			],
+		});
+
 		$argumentTuples = [];
 		for ($testCase of Object.values($list)) {
 			$argumentTuples.push([$testCase['input'], $testCase['output'], $testCase['calledCommands']]);
@@ -1011,6 +1118,7 @@ class ImportPqApolloActionTest extends require('../../../../Lib/TestCase.js') {
 		let $actual;
 
 		$actual = await (new ImportPqApolloAction())
+			.fetchOptionalFields(!$input.onlyPricing)
 			.setSession((new AnyGdsStubSession($calledCommands)).setGds('apollo'))
 			.setPreCalledCommandsFromDb($input['previousCommands'])
 			.setBaseDate('2018-03-20')

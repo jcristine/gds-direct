@@ -281,7 +281,7 @@ class AtfqParser {
 			(new Lexeme('mysteriousLetter', /^\.[A-Z]/)).preprocessData($getTuple),
 		]);
 		$lexed = $lexer.lex($modStr);
-		if ($lexed['text'] || $lexed.lexemes.length === 0) {
+		if ($lexed['text']) {
 			return null;
 		} else {
 			$typeToData = php.array_combine(php.array_column($lexed['lexemes'], 'lexeme'),
@@ -335,7 +335,7 @@ class AtfqParser {
 					return null;
 				}
 			}
-		} else if ($bundle = this.parseSegmentBundleMods($token)) {
+		} else if ($token && ($bundle = this.parseSegmentBundleMods($token))) {
 			$bundles = [$bundle];
 		} else {
 			return null;

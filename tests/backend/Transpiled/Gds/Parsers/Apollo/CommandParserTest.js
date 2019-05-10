@@ -880,6 +880,21 @@ class CommandParserTest extends require('../../../../../../backend/Transpiled/Li
                 ],
             },
         }]);
+        $list.push(['$B/S6|7', {
+            type: 'priceItinerary',
+            data: {
+                pricingModifiers: [{
+                    type: 'segments',
+                    parsed: {
+                        bundles: [
+                            {segmentNumbers: ['6']},
+                            {segmentNumbers: ['7']},
+                        ],
+                    },
+                }],
+            },
+        }]);
+
         return $list;
     }
 

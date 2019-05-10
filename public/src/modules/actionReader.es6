@@ -162,12 +162,6 @@ export default class ActionReader
 						// add more spaces before the "/" when agent continues typing
 						++this.extension;
 						return false;
-					} else {
-						console.log('zhopa', {
-							curPos, pos, len,
-							ext: this.extension,
-							posPlusLen: +pos + len - 1,
-						});
 					}
 				}
 
