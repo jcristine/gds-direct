@@ -89,10 +89,11 @@ export default class TerminalPlugin
 			// chrome/xubuntu won't even trigger an event on Ctrl+Tab, so let's ignore it in firefox as well to stay consistent
 			return true;
 		}
-		const hasNoShortCut = pressedShortcuts( evt, terminal, this );
-
-		if ( !hasNoShortCut )
+		const passFurther = pressedShortcuts( evt, terminal, this );
+		if (!passFurther) {
+			evt.preventDefault();
 			return false;
+		}
 
 		const isEnter = evt.which === 13;
 		this.f8Reader.replaceEmptyChar(evt);

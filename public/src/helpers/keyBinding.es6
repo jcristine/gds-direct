@@ -158,14 +158,13 @@ export const getBindingForKey = (keyName, gds, replaceVariables = true) => {
 
 /**
  * @param terminal = $().terminal()
+ * @return boolean - true if should pass event further
  */
 export const pressedShortcuts = (evt, terminal, plugin) => {
 		const keymap 	= evt.keyCode || evt.which;
 
 		const gds		= plugin.settings.gds;
 		const isApollo	= gds === 'apollo';
-		// const isApollo	= window.GdsDirectPlusState.isGdsApollo();
-		// console.log('key pressed:' ,keymap);
 
 		function doF8() {
 			terminal.set_command(
@@ -194,7 +193,7 @@ export const pressedShortcuts = (evt, terminal, plugin) => {
 		const command = getUserCustomCommand(keyName);
 		if (command !== false) {
 			insertOrExec(command);
-			return true;
+			return false;
 		}
 
 
@@ -353,6 +352,4 @@ export const pressedShortcuts = (evt, terminal, plugin) => {
 
 			default: return true;
 		}
-
-		return false;
 };
