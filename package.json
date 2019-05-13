@@ -6,7 +6,7 @@
   "license": "proprietary",
   "optionalDependencies": {
     "gds-direct-lib": "git+ssh://git@gitlab.dyninno.net:1022/node-libraries/gds-direct-lib.git#7193dfe4e59cf9307d634eb167ac52e7213a1d1b",
-    "dynatech-client-component-rbs": "git+ssh://git@gitlab.dyninno.net:1022/node-libraries/client-component-rbs.git#ae1b760b9940089b6685a41f6cc978b5721034a7",
+    "dynatech-client-component-rbs": "git+ssh://git@gitlab.dyninno.net:1022/node-libraries/client-component-rbs.git#c8870ab8c3e743b86b4fbfe0d45f602f1f5a4d54",
     "dynatech-client-component": "git+ssh://git@gitlab.dyninno.net:1022/node-libraries/client-component.git#7ad8d0caa829bf947dadced1834ced94ae90b734",
     "dynatech-client-component-emc": "git+ssh://git@gitlab.dyninno.net:1022/node-libraries/client-component-emc.git#v0.1.2",
     "dynatech-diag-service": "git+ssh://git@gitlab.dyninno.net:1022/node-libraries/diag-service.git#v0.1.3",
