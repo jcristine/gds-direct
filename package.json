@@ -5,6 +5,8 @@
   "author": "klesun",
   "license": "proprietary",
   "optionalDependencies": {
+    "gds-direct-lib": "git+ssh://git@gitlab.dyninno.net:1022/node-libraries/gds-direct-lib.git#574241a950cd30e802c530fa12058ec7ac9c0cf2",
+    "dynatech-client-component-rbs": "git+ssh://git@gitlab.dyninno.net:1022/node-libraries/client-component-rbs.git#ae1b760b9940089b6685a41f6cc978b5721034a7",
     "dynatech-client-component": "git+ssh://git@gitlab.dyninno.net:1022/node-libraries/client-component.git#7ad8d0caa829bf947dadced1834ced94ae90b734",
     "dynatech-client-component-emc": "git+ssh://git@gitlab.dyninno.net:1022/node-libraries/client-component-emc.git#v0.1.2",
     "dynatech-diag-service": "git+ssh://git@gitlab.dyninno.net:1022/node-libraries/diag-service.git#v0.1.3",
