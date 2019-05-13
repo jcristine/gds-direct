@@ -4,13 +4,13 @@ let {NoContent, Forbidden, NotAuthorized, BadRequest, TooManyRequests, NotImplem
 let Diag = require('../LibWrappers/Diag.js');
 let FluentLogger = require('../LibWrappers/FluentLogger.js');
 const {getExcData} = require('../Utils/Misc.js');
-const php = require('../Transpiled/php.js');
 const GdsSessions = require("../Repositories/GdsSessions");
 const GdsSessionsController = require("./GdsSessionController");
 const Config = require('../Config.js');
 const Agents = require("../Repositories/Agents");
 const Agent = require('../DataFormats/Wrappers/Agent.js');
 const Misc = require("../Transpiled/Lib/Utils/Misc");
+const {HttpUtil} = require('gds-direct-lib');
 
 let isSystemError = (exc) =>
 	!exc.isOk &&
@@ -22,39 +22,9 @@ let isSystemError = (exc) =>
 	!NotImplemented.matches(exc.httpStatusCode);
 
 let toHandleHttp = (httpAction) => (req, res) => {
-	let rqBody = req.body;
-	let rqTakenMs = Date.now();
-	if (Object.keys(rqBody).length === 0) {
-		let querystring = require('querystring');
-		let queryStr = req.url.split('?')[1] || '';
-		rqBody = querystring.parse(queryStr);
-	}
-	return Promise.resolve()
-		.then(() => httpAction(rqBody, req.params))
+	return HttpUtil.toHandleHttp(({rqBody, routeParams}) => httpAction(rqBody, routeParams))(req, res)
 		.catch(exc => {
-			let excData = getExcData(exc);
-			if (typeof excData === 'string') {
-				excData = new Error('HTTP action failed - ' + excData);
-			}
-			excData.httpStatusCode = exc.httpStatusCode || 520;
-			return Promise.reject(excData);
-		})
-		.then(result => {
-			res.setHeader('Content-Type', 'application/json');
-			res.status(200);
-			// not JSON.stringify, because there are a lot of transpiled parsers that
-			// assign keys to an [] and they will be missing in normal JSON.stringify
-			res.send(php.json_encode(Object.assign({
-				rqTakenMs: rqTakenMs,
-				rsSentMs: Date.now(),
-				message: 'GRECT HTTP OK',
-			}, result)));
-		})
-		.catch(exc => {
-			exc = exc || 'Empty error ' + exc;
-			res.status(exc.httpStatusCode || 500);
-			res.setHeader('Content-Type', 'application/json');
-			res.send(php.json_encode({error: (exc.message || exc + '').replace(/^Error: /, '')}));
+			let rqBody = HttpUtil.getRqBody(req);
 			let maskedBody = Object.assign({}, rqBody, {
 				emcSessionId: '******' + (rqBody.emcSessionId || '').slice(-4),
 			});
