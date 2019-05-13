@@ -22,3 +22,21 @@ exports.withCapture = (session) => {
 		getCalledCommands: () => calledCommands,
 	};
 };
+
+/** @return {Document} */
+exports.parseXml = (xml) => {
+	let jsdom = require('jsdom');
+	let jsdomObj = new jsdom.JSDOM(xml, {contentType: 'text/xml'});
+	return jsdomObj.window.document;
+};
+
+exports.escapeXml = (unsafe) =>
+	unsafe.replace(/[<>&'"]/g, (c) => {
+		switch (c) {
+			case '<': return '&lt;';
+			case '>': return '&gt;';
+			case '&': return '&amp;';
+			case '\'': return '&apos;';
+			case '"': return '&quot;';
+		}
+	});

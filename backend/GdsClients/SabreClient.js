@@ -1,10 +1,10 @@
 
 let PersistentHttpRq = require('../Utils/PersistentHttpRq.js');
 let {getSabre} = require('../Repositories/GdsProfiles.js');
-let {parseXml, wrapExc} = require("../Utils/Misc.js");
+let {wrapExc} = require("../Utils/Misc.js");
+let {parseXml, escapeXml} = require('../GdsHelpers/CommonUtils.js');
 let Rej = require("../Utils/Rej.js");
 const GdsProfiles = require("../Repositories/GdsProfiles");
-const escapeXml = require("../Utils/Misc").escapeXml;
 const LoginTimeOut = require("../Utils/Rej").LoginTimeOut;
 
 let sendRequest = async (soapEnvXml, format) => {
