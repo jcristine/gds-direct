@@ -46,8 +46,8 @@ class AmadeusFlightInfoAdapter {
 	static linkComments($legs, $comments) {
 		let $dprtToIdx, $dstnToIdx, $i, $comment, $from, $to;
 
-		$dprtToIdx = [];
-		$dstnToIdx = [];
+		$dprtToIdx = {};
+		$dstnToIdx = {};
 		for ($i = 0; $i < php.count($legs); ++$i) {
 			$dprtToIdx[$legs[$i]['departureAirport']] = $i;
 			$dstnToIdx[$legs[$i]['destinationAirport']] = $i;

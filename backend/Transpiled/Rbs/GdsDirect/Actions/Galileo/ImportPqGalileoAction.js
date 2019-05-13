@@ -20,7 +20,7 @@ const Rej = require('../../../../../Utils/Rej.js');
 class ImportPqGalileoAction extends AbstractGdsAction {
 	constructor() {
 		super();
-		this.$leadData = [];
+		this.$leadData = {};
 		this.$fetchOptionalFields = true;
 		this.$baseDate = null;
 		this.$cmdToFullOutput = {};

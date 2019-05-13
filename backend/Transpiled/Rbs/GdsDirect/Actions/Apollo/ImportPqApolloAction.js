@@ -25,10 +25,10 @@ const withCapture = require("../../../../../GdsHelpers/CommonUtils").withCapture
 class ImportPqApolloAction extends AbstractGdsAction {
 	constructor() {
 		super();
-		this.$leadData = [];
+		this.$leadData = {};
 		this.$fetchOptionalFields = true;
 		this.$baseDate = null;
-		this.$cmdToFullOutput = [];
+		this.$cmdToFullOutput = {};
 		this.$allCommands = [];
 		this.$preCalledCommands = [];
 	}

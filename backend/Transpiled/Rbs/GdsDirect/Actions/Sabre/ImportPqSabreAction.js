@@ -24,10 +24,10 @@ class ImportPqSabreAction extends AbstractGdsAction {
 
 	constructor() {
 		super();
-		this.$leadData = [];
+		this.$leadData = {};
 		this.$fetchOptionalFields = true;
 		this.$baseDate = null;
-		this.$cmdToOutput = [];
+		this.$cmdToOutput = {};
 		this.$allCommands = [];
 		this.$preCalledCommands = [];
 	}

@@ -196,7 +196,7 @@ class ImportApolloPnrFormatAdapter
         $seats = [];
         for ($segment of $parsedData['seatSegments']) {
             for ($seatData of $segment['seats']) {
-                $seat = [];
+                $seat = {};
                 $passengerNumber = $seatData['passengerNumber']
                     ? $seatData['passengerNumber']
                     : $seatData['lineNumber'];
@@ -220,7 +220,7 @@ class ImportApolloPnrFormatAdapter
         $programs = [];
         for ($passengerRecord of $parsedData['paxMpRecords']) {
             for ($codeRecord of $passengerRecord['mileageProgramList']) {
-                $mp = [];
+                $mp = {};
                 $mp['airline'] = $codeRecord['airline'];
                 $mp['code'] = $codeRecord['code'];
                 $mp['passengerNameNumber'] = $flatPassengers[$passengerRecord['passengerInfo']['passengerNumber'] - 1]['nameNumber'] || null;
@@ -450,7 +450,7 @@ class ImportApolloPnrFormatAdapter
     static transformTicket($ticketData, $reservationDate)  {
         let $ticket, $numberTokens;
         if (!php.isset($ticketData['error'])) {
-            $ticket = [];
+            $ticket = {};
 
             $numberTokens = php.explode('/', $ticketData['header']['ticketNumber']);
 
@@ -484,7 +484,7 @@ class ImportApolloPnrFormatAdapter
 
     static transformTicketSegment($segmentData, $reservationDate)  {
         let $segment, $fullDate, $time;
-        $segment = [];
+        $segment = {};
         $fullDate = DateTime.decodeRelativeDateInFuture($segmentData['departureDate']['parsed'], $reservationDate);
         if ($time = $segmentData['departureTime']['parsed'] || null) {
             $fullDate += ' '+$time+':00';

@@ -374,7 +374,7 @@ class TranslateAvailabilityCmdAction {
 			return null;
 		}
 
-		$result = [];
+		$result = {};
 		for ([$key, $value] of Object.entries($data)) {
 			if (php.in_array($key, ['date', 'cityPair'])) {
 				$translated = $value;

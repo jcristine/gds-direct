@@ -1,6 +1,7 @@
 
 const GrectLib = require('gds-direct-lib');
 
+// TODO: refactor code to use it directly from the lib
 exports.hrtimeToDecimal = GrectLib.Misc.hrtimeToDecimal;
 exports.chunk = GrectLib.Misc.chunk;
 exports.jsExport = GrectLib.Misc.jsExport;

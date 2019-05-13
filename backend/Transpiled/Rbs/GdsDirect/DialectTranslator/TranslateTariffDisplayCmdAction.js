@@ -298,7 +298,7 @@ class TranslateTariffDisplayCmdAction
     static translateEachFragment($data, $fromGds, $toGds)  {
         let $result, $key, $value, $translated, $pred;
 
-        $result = [];
+        $result = {};
         if ($toGds == 'amadeus' && (
                 php.array_key_exists('currency', $data)
                 || php.array_key_exists('changeDep', $data)

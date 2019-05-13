@@ -429,7 +429,7 @@ class TranslatePricingCmdAction {
 			php.array_column($modItems, 'parsed'),
 		);
 
-		$result = [];
+		$result = {};
 		for ([$key, $value] of Object.entries($data)) {
 			if (php.in_array($key, ['store', 'pricing', 'booking', 'cabin', 'fareType'])) {
 				$translated = this.constructor.translateCaseVariable($key, $value, $fromGds, $toGds);

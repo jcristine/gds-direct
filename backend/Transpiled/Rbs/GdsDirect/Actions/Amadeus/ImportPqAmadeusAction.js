@@ -38,7 +38,7 @@ class ImportPqAmadeusAction extends AbstractGdsAction {
 
 		this.$allCommands = [];
 		this.$cmdLog = null;
-		this.$leadData = [];
+		this.$leadData = {};
 	}
 
 	setLeadData($leadData) {
@@ -140,7 +140,7 @@ class ImportPqAmadeusAction extends AbstractGdsAction {
 	static makeCmdToFullDump($cmdLog) {
 		let $cmdToFullDump, $cmdRows, $scrolledCmd, $mdrs, $cmdRow, $scrolledFormat, $cmd, $output, $pager, $format;
 
-		$cmdToFullDump = [];
+		$cmdToFullDump = {};
 		$cmdRows = $cmdLog.getLastCommandsOfTypes(SessionStateProcessor.getCanCreatePqSafeTypes());
 		$scrolledCmd = null;
 		$mdrs = [];
@@ -223,7 +223,7 @@ class ImportPqAmadeusAction extends AbstractGdsAction {
 		let $parsedCmd, $result, $pricing, $modParts, $pricingBlock, $singlePtcPricingCmd;
 
 		$parsedCmd = PricingCmdParser.parse($pricingCmd);
-		$result = [];
+		$result = {};
 
 		for ($pricing of Object.values($pricingList)) {
 			$modParts = Fp.map(($mod) => {
@@ -398,8 +398,8 @@ class ImportPqAmadeusAction extends AbstractGdsAction {
 		}
 
 		$numToStore = php.array_combine(php.array_column($stores, 'quoteNumber'), $stores);
-		$storeToPtcNumToFareList = [];
-		$cmdToDump = [];
+		$storeToPtcNumToFareList = {};
+		$cmdToDump = {};
 
 		for ($ruleRecord of Object.values($result['data'])) {
 			$dumpRec = $dumpStorage.get($ruleRecord['dumpNumber']);

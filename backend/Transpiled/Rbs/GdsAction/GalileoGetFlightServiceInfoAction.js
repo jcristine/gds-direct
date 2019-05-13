@@ -14,7 +14,7 @@ const php = require('../../php.js');
 class GalileoGetFlightServiceInfoAction extends AbstractGdsAction {
 	constructor() {
 		super();
-		this.$cmdCmdToFullDump = [];
+		this.$cmdCmdToFullDump = {};
 		this.$allCommands = [];
 	}
 
