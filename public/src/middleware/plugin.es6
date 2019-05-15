@@ -21,6 +21,7 @@ import {loggerOutput} from "../helpers/logger";
 import {post} from "../helpers/requests";
 import {McoForm} from "../components/popovers/maskForms/mcoForm";
 import {ExchangeForm} from "../components/popovers/maskForms/exchangeForm";
+import {ManualPricingForm} from "../components/popovers/maskForms/manualPricingForm.es6";
 
 let Component = require('../modules/component.es6').default;
 let Cmp = (...args) => new Component(...args);
@@ -408,6 +409,29 @@ export default class TerminalPlugin
 		this._injectForm(formCmp);
 	}
 
+	_displayHhprMask(data)
+	{
+		const cancel = () => this._ejectForm(formCmp);
+
+		let formCmp = ManualPricingForm({data, onCancel: cancel, onsubmit: (formResult) => {
+			let params = {
+				gds: this.gdsName,
+				fields: formResult.fields,
+				maskOutput: data.maskOutput,
+			};
+			return this._withSpinner(() => post('terminal/submitHhprMask', params)
+				.then(resp => {
+					this.parseBackEnd(resp, '$NME...');
+					return {canClosePopup: resp && resp.output};
+				}));
+		}});
+		this._injectForm(formCmp);
+		let inp = formCmp.context.querySelector('input[name="seg1_fareBasis"]');
+		if (inp) {
+			inp.focus();
+		}
+	}
+
 	parseBackEnd(data, command)
 	{
 		this.lastCommand = command; // for history
@@ -461,6 +485,8 @@ export default class TerminalPlugin
 				this._displayExchangeMask(action.data);
 			} else if (action.type === 'displayExchangeFareDifferenceMask') {
 				this._displayExchangeFareDifferenceMask(action.data);
+			} else if (action.type === 'displayHhprMask') {
+				this._displayHhprMask(action.data);
 			}
 		}
 	}
