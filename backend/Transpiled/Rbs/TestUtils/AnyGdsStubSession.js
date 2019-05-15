@@ -23,7 +23,7 @@ class AnyGdsStubSession extends require('./TStubGdsClient.js')
         if (!($result = php.array_shift(this.$commandsLeft))) {
             throw new Error('Tried to call '+$i+'-th command >'+$cmd+'; when all stubbed results were already used');
         } else if (this.$cmdMustBeSame && $result['cmd'] !== $cmd) {
-            throw new Error('Unexpected '+$i+'-th command >'+$cmd+'; was called in place of >'+$result['cmd']+';');
+            throw new Error('Unexpected '+$i+'-th command \n>'+$cmd+';\n was called in place of \n>'+$result['cmd']+';\n');
         } else {
             ++this.$commandIndex;
             $output = $result['output'];

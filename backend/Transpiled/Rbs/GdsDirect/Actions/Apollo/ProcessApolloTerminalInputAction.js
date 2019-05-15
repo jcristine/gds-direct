@@ -1518,7 +1518,7 @@ class ProcessApolloTerminalInputAction {
 					fields: items.map(i => ({
 						key: i.key,
 						value: i.value,
-						enabled: !i.value,
+						enabled: !i.value && i.enabled,
 					})),
 					maskOutput: output,
 				},

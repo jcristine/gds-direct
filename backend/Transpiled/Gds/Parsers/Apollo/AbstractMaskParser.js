@@ -121,14 +121,23 @@ class AbstractMaskParser
         return positions;
     }
 
-    static overwriteStr($str, $needle, $position)  {
-        let $replaceLength;
-        $replaceLength = php.mb_strlen($needle);
-        if ($replaceLength) {
-            return php.mb_substr($str, 0, $position)+$needle+php.mb_substr($str, $position + $replaceLength);
-        } else {
-            return $str;
+    static overwriteStr($str, $needle, $position, length)  {
+        $needle = php.strval($needle);
+        let prefix = $str.slice(0, $position);
+        let infix = '';
+        let postfix = $str.slice($position + length);
+        for (let i = 0; i < length; ++i) {
+            if (i < $needle.length) {
+                infix += $needle[i];
+            } else {
+                let ch = $str[$position + i];
+                if (ch !== '.' && ch !== ' ') {
+                    ch = '.';
+                }
+                infix += ch;
+            }
         }
+        return prefix + infix + postfix;
     }
 
     static makeCmd({positions, destinationMask, fields, values}) {
@@ -143,7 +152,7 @@ class AbstractMaskParser
             if (php.mb_strlen(token) > length) {
                 token = php.mb_substr(token, 0, length);
             }
-            cmd = this.overwriteStr(cmd, token, start);
+            cmd = this.overwriteStr(cmd, token, start, length);
         }
         return cmd;
     }
@@ -178,7 +187,8 @@ class AbstractMaskParser
             let value = mask.slice(start, start + length)
                 .replace(/^[.\s]*/, '')
                 .replace(/[.\s]*$/, '');
-            items.push({key, value});
+            let enabled = mask[start - 1] === ';';
+            items.push({key, value, enabled});
         }
         return Promise.resolve(items);
     }
