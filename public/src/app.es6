@@ -88,7 +88,7 @@ const initGlobEvents = (htmlRootDom) => {
 		}
 		// taken from CMS
 		let doNotLog = ['NS_ERROR_FAILURE:', 'NS_ERROR_STORAGE_IOERR:', 'Error: Script error for', 'NS_ERROR_FILE_CORRUPTED:', 'Uncaught Error: Script error for', 'ReferenceError: vendor_lib'];
-		if (doNotLog.some(prefix => message.startsWith(prefix))) {
+		if (doNotLog.some(prefix => (message || '').startsWith(prefix))) {
 			return false;
 		}
 		if (!stack || stack.indexOf('terminal-bundle.js') < 0 ||
