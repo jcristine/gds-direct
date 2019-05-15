@@ -154,7 +154,7 @@ class AbstractMaskParser
         let cmd = destinationMask;
         let tuples = Fp.zip([fields, positions]);
         for (let [field, [start, length]] of tuples) {
-            let token = values[field] || '';
+            let token = php.strval(values[field]);
             let initial = this._getPositionValue(cmd, start, length);
             if (php.mb_strlen(token) > length) {
                 token = php.mb_substr(token, 0, length);

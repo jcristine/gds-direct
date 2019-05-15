@@ -47,6 +47,7 @@ let FIELDS = [
 
 /**
  * TODO: test how it will behave when there are 5+ segments in itinerary
+ * TODO: support when you set "DO TAXES APPLY" to "Y" and $TAX screen appears
  * submits HHPR mask
  */
 let PriceItineraryManually = async ({maskOutput, values, gdsSession}) => {
