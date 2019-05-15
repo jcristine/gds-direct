@@ -140,6 +140,12 @@ class AbstractMaskParser
         return prefix + infix + postfix;
     }
 
+    static _getPositionValue(mask, start, length) {
+        return mask.slice(start, start + length)
+            .replace(/^[.\s]*/, '')
+            .replace(/[.\s]*$/, '');
+    }
+
     static makeCmd({positions, destinationMask, fields, values}) {
         let missingFields = php.array_keys(php.array_diff_key(php.array_flip(fields), values));
         if (!php.empty(missingFields)) {
@@ -149,10 +155,14 @@ class AbstractMaskParser
         let tuples = Fp.zip([fields, positions]);
         for (let [field, [start, length]] of tuples) {
             let token = values[field] || '';
+            let initial = this._getPositionValue(cmd, start, length);
             if (php.mb_strlen(token) > length) {
                 token = php.mb_substr(token, 0, length);
             }
-            cmd = this.overwriteStr(cmd, token, start, length);
+            // the check to make sure read-only value formatting is unchanged
+            if (token.trim() !== initial.trim()) {
+                cmd = this.overwriteStr(cmd, token, start, length);
+            }
         }
         return cmd;
     }
@@ -184,9 +194,7 @@ class AbstractMaskParser
                     key +' at ' + start + ' is outside bounds';
                 return Rej.UnprocessableEntity(error);
             }
-            let value = mask.slice(start, start + length)
-                .replace(/^[.\s]*/, '')
-                .replace(/[.\s]*$/, '');
+            let value = this._getPositionValue(mask, start, length);
             let enabled = mask[start - 1] === ';';
             items.push({key, value, enabled});
         }

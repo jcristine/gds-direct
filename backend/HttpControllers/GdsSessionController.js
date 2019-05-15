@@ -1,6 +1,5 @@
 let AmadeusClient = require("../GdsClients/AmadeusClient.js");
 let SabreClient = require("../GdsClients/SabreClient.js");
-let RbsClient = require('../IqClients/RbsClient.js');
 let TravelportClient = require('../GdsClients/TravelportClient.js');
 let Db = require('../Utils/Db.js');
 let GdsSessions = require('../Repositories/GdsSessions.js');
@@ -13,10 +12,8 @@ const MakeMcoApolloAction = require('../Transpiled/Rbs/GdsDirect/Actions/Apollo/
 const TerminalService = require('../Transpiled/App/Services/TerminalService.js');
 
 let php = require('../Transpiled/php.js');
-const KeepAlive = require("../Maintenance/KeepAlive");
 const CmsClient = require("../IqClients/CmsClient");
 const GdsProfiles = require("../Repositories/GdsProfiles");
-const TooManyRequests = require("../Utils/Rej").TooManyRequests;
 const UnprocessableEntity = require("../Utils/Rej").UnprocessableEntity;
 const ImportPq = require('../Actions/ImportPq.js');
 const FluentLogger = require("../LibWrappers/FluentLogger");
@@ -25,7 +22,9 @@ const Misc = require("../Utils/Misc");
 const allWrap = require("../Utils/Misc").allWrap;
 const {getConfig} = require('../Config.js');
 const ExchangeApolloTicket = require('../Actions/ExchangeApolloTicket.js');
+const PriceItineraryManually = require('../Actions/PriceItineraryManually.js');
 const Rej = require("../Utils/Rej");
+const TravelportUtils = require("../GdsHelpers/TravelportUtils");
 
 let startByGds = async (gds) => {
 	let tuples = [
@@ -232,7 +231,7 @@ exports.resetToDefaultPcc = async ({rqBody, session, emcUser}) => {
 let makeMaskRs = (calledCommands, actions = []) => new TerminalService('apollo')
 	.addHighlighting('', {
 		calledCommands: calledCommands.map(cmdRec => ({
-			...cmdRec, tabCommands: ProcessTerminalInput.extractTpTabCmds(cmdRec.output),
+			...cmdRec, tabCommands: TravelportUtils.extractTpTabCmds(cmdRec.output),
 		})),
 		actions: actions,
 	});
@@ -273,6 +272,15 @@ exports.confirmExchangeFareDifference = async ({rqBody, session, emcUser}) => {
 	}
 };
 
+exports.submitHhprMask = async ({rqBody, session, emcUser}) => {
+	if (session.context.gds !== 'apollo') {
+		return NotImplemented('Unsupported GDS for exchangeTicket - ' + session.context.gds);
+	} else {
+		let gdsSession = await StatefulSession.makeFromDb({session, emcUser});
+		return PriceItineraryManually.inputHhprMask({rqBody, gdsSession});
+	}
+};
+
 let keepAliveByGds = (gds, gdsData) => {
 	if (['galileo', 'apollo'].includes(gds)) {
 		return TravelportClient({command: 'MD0'}).runCmd(gdsData)
@@ -298,7 +306,7 @@ exports.keepAliveCurrent = async ({session}) => {
 	let userIdleMs = Date.now() - userAccessMs;
 	if (userIdleMs < 30 * 1000) {
 		return Rej.TooEarly('Tried to keepAlive too early, session was accessed just ' + userIdleMs + ' ms ago');
-	} else if (!KeepAlive.shouldClose(userAccessMs)) {
+	} else if (!GdsSessions.shouldClose(userAccessMs)) {
 		return keepAliveSession(session)
 			.catch(exc => Rej.Conflict.matches(exc.httpStatusCode)
 				? Promise.resolve({message: 'Another action in progress - session is alive'})

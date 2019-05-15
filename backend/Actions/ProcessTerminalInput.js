@@ -1,5 +1,5 @@
 
-let {fetchAll, wrap} = require('../GdsHelpers/TravelportUtils.js');
+let {fetchAll, wrap, extractTpTabCmds} = require('../GdsHelpers/TravelportUtils.js');
 const StatefulSession = require("../GdsHelpers/StatefulSession.js");
 const AreaSettings = require("../Repositories/AreaSettings");
 const ProcessApolloTerminalInputAction = require("../Transpiled/Rbs/GdsDirect/Actions/Apollo/ProcessApolloTerminalInputAction");
@@ -25,14 +25,6 @@ const Misc = require("../Utils/Misc");
 const BadRequest = require("../Utils/Rej").BadRequest;
 const TooManyRequests = require("../Utils/Rej").TooManyRequests;
 const NotImplemented = require("../Utils/Rej").NotImplemented;
-
-// this is not complete list
-let shouldWrap = (cmd) => {
-	let wrappedCmds = ['FS', 'MORE*', 'QC', '*HTE', 'HOA', 'HOC', 'FQN', 'A', '$D'];
-	let alwaysWrap = false;
-	return alwaysWrap
-		|| wrappedCmds.some(wCmd => cmd.startsWith(wCmd));
-};
 
 /**
  * @param '$BN1|2*INF'
@@ -90,11 +82,6 @@ let encodeCmdForCms = (gds, cmd) => {
 		cmd = encodeTpCmdForCms(cmd);
 	}
 	return cmd;
-};
-
-let extractTpTabCmds = (output) => {
-	let tabCommands = matchAll(/>([^>\n]+?)(?:·|;)/g, output).map(m => m[1]);
-	return [...new Set(tabCommands)];
 };
 
 let transformCalledCommand = (rec, stateful) => {
@@ -306,7 +293,5 @@ let ProcessTerminalInput = async ({session, rqBody, emcUser}) => {
 
 	return cmsResult;
 };
-
-ProcessTerminalInput.extractTpTabCmds = extractTpTabCmds;
 
 module.exports = ProcessTerminalInput;

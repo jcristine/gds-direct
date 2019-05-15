@@ -1,8 +1,8 @@
 const AbstractMaskParser = require("../Transpiled/Gds/Parsers/Apollo/AbstractMaskParser");
 const TerminalService = require("../Transpiled/App/Services/TerminalService");
-const ProcessTerminalInput = require("./ProcessTerminalInput");
 const {fetchAll} = require('../GdsHelpers/TravelportUtils.js');
 const StringUtil = require('../Transpiled/Lib/Utils/StringUtil.js');
+const TravelportUtils = require("../GdsHelpers/TravelportUtils");
 
 let POSITIONS = AbstractMaskParser.getPositionsBy('_', [
 	"$NME LIB/MAR                                                   ",
@@ -11,7 +11,7 @@ let POSITIONS = AbstractMaskParser.getPositionsBy('_', [
 	" _ ___ __ ____ __ _____ _____ __;________;_______;_____;_____   ",
 	" _ ___ __ ____ __ _____ _____ __;________;_______;_____;_____   ",
 	" _ ___ __ ____ __ _____ _____ __;________;_______;_____;_____   ",
-	" _ ___  FARE;___;________  DO TAXES APPLY?_.                    ",
+	" _ ___  FARE;___;________  DO TAXES APPLY?;_                    ",
 	"  EQUIV FARE;___;________             COMM _______ F CONST;__   ",
 	" TD 1/;______ 2/;______ 3/;______ 4/;______  INT X  MREC 01/01  ",
 	"                                                   ;PSGR 01/01  ",
@@ -63,7 +63,7 @@ let PriceItineraryManually = async ({maskOutput, values, gdsSession}) => {
 let makeMaskRs = (calledCommands, actions = []) => new TerminalService('apollo')
 	.addHighlighting('', {
 		calledCommands: calledCommands.map(cmdRec => ({
-			...cmdRec, tabCommands: ProcessTerminalInput.extractTpTabCmds(cmdRec.output),
+			...cmdRec, tabCommands: TravelportUtils.extractTpTabCmds(cmdRec.output),
 		})),
 		actions: actions,
 	});

@@ -1,7 +1,6 @@
 
 let {getClient, keys, withNewConnection} = require('./../LibWrappers/Redis.js');
 let FluentLogger = require('./../LibWrappers/FluentLogger.js');
-const KeepAlive = require("../Maintenance/KeepAlive");
 let {NoContent, Conflict, NotFound, nonEmpty} = require('./../Utils/Rej.js');
 let Misc = require('./../Utils/Misc.js');
 let {chunk} = Misc;
@@ -29,6 +28,23 @@ let makeSessionRecord = ({id, context, gdsData, logId}) => {
 	};
 	FluentLogger.logit('Session created: #' + id, logId, session);
 	return session;
+};
+
+let expired = (session, accessedMs) => {
+	let idleSeconds = (Date.now() - accessedMs) / 1000;
+	if (session.context.gds === 'sabre') {
+		return idleSeconds > 30 * 60; // 30 minutes
+	} else if (session.context.gds === 'amadeus') {
+		return idleSeconds > 15 * 60; // 15 minutes
+	} else {
+		// apollo, galileo, anything else
+		return idleSeconds > 5 * 60; // 5 minutes
+	}
+};
+
+let shouldClose = (userAccessMs) => {
+	let aliveSeconds = (Date.now() - userAccessMs) / 1000;
+	return aliveSeconds > 30 * 60; // 30 minutes
 };
 
 /** @return {Promise} makeSessionRecord() */
@@ -131,6 +147,8 @@ exports.getFullState = async (session) => {
 		.catch(exc => makeDefaultState(session));
 };
 
+exports.shouldClose = shouldClose;
+exports.expired = expired;
 exports.makeDefaultState = makeDefaultState;
 exports.makeDefaultAreaState = makeDefaultAreaState;
 
@@ -204,7 +222,7 @@ exports.countActive = async (gds, profileName) => {
 				let session = JSON.parse(sessionStr);
 				return session.context.gds === gds
 					&& session.gdsData.profileName === profileName
-					&& !KeepAlive.expired(session, accessMs);
+					&& !expired(session, accessMs);
 			}
 		}).length;
 	});

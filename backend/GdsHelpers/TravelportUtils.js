@@ -1,5 +1,6 @@
 const PnrHistoryParser = require("../Transpiled/Gds/Parsers/Apollo/PnrHistoryParser");
 const hrtimeToDecimal = require("../Utils/Misc").hrtimeToDecimal;
+const matchAll = require("../Utils/Str").matchAll;
 
 /**
  * provides useful functions you would need to work
@@ -51,6 +52,11 @@ let shouldKeepFullLine = (line) => {
 		;
 };
 
+let extractTpTabCmds = (output) => {
+	let tabCommands = matchAll(/>([^>\n]+?)(?:·|;)/g, output).map(m => m[1]);
+	return [...new Set(tabCommands)];
+};
+
 exports.extractPager = extractPager;
 
 /** @param {{runCmd: function(string): Promise<{output: string}>}} session */
@@ -71,6 +77,14 @@ exports.fetchAll = async (nextCmd, session) => {
 	fullCmdRec.output = pages.join('');
 	fullCmdRec.duration = hrtimeToDecimal(hrtimeDiff);
 	return fullCmdRec;
+};
+
+// this is not complete list
+let shouldWrap = (cmd) => {
+	let wrappedCmds = ['FS', 'MORE*', 'QC', '*HTE', 'HOA', 'HOC', 'FQN', 'A', '$D'];
+	let alwaysWrap = false;
+	return alwaysWrap
+		|| wrappedCmds.some(wCmd => cmd.startsWith(wCmd));
 };
 
 /**
@@ -94,4 +108,5 @@ exports.wrap = (text, gds) => {
 	return result.join('\n');
 };
 
+exports.extractTpTabCmds = extractTpTabCmds;
 exports.fetchUntil = fetchUntil;

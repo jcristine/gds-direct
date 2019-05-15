@@ -45,6 +45,7 @@ const McoMaskParser = require("../../../../Gds/Parsers/Apollo/Mco/McoMaskParser"
 const Pccs = require("../../../../../Repositories/Pccs");
 const PriceItineraryManually = require('../../../../../Actions/PriceItineraryManually.js');
 const AbstractMaskParser = require("../../../../Gds/Parsers/Apollo/AbstractMaskParser");
+const NmeScreenParser = require("../../../../Gds/Parsers/Apollo/ManualPricing/NmeScreenParser");
 
 /** @param stateful = await require('StatefulSession.js')() */
 let execute = ({
@@ -1502,6 +1503,10 @@ class ProcessApolloTerminalInputAction {
 		let mods = cmdData.pricingModifiers;
 		let cmd = 'HHPR' + mods.map(m => m.raw).join('/');
 		let output = (await this.runCmd(cmd)).output;
+		let parsed = NmeScreenParser.parse(output);
+		if (parsed.error) {
+			return Rej.UnprocessableEntity('Bad HHPR reply - ' + parsed.error);
+		}
 		let items = await AbstractMaskParser.getPositionValues({
 			mask: output,
 			positions: PriceItineraryManually.POSITIONS,
@@ -1515,6 +1520,7 @@ class ProcessApolloTerminalInputAction {
 			actions: [{
 				type: 'displayHhprMask',
 				data: {
+					parsed: parsed,
 					fields: items.map(i => ({
 						key: i.key,
 						value: i.value,

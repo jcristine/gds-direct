@@ -5200,7 +5200,7 @@ class ProcessApolloTerminalInputActionTest extends require('../../../../Lib/Test
 								{"key": "seg5_departureAirport", "value": "", "enabled": false},
 								{"key": "baseFareCurrency", "value": "", "enabled": true},
 								{"key": "baseFareAmount", "value": "", "enabled": true},
-								{"key": "doTaxesApply", "value": ";", "enabled": false},
+								{"key": "doTaxesApply", "value": "", "enabled": false},
 								{"key": "fareEquivalentCurrency", "value": "", "enabled": true},
 								{"key": "fareEquivalentAmount", "value": "", "enabled": true},
 								{"key": "commission", "value": "", "enabled": true},

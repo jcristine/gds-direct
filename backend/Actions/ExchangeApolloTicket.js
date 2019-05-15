@@ -1,6 +1,5 @@
 const AbstractMaskParser = require("../Transpiled/Gds/Parsers/Apollo/AbstractMaskParser");
 const TerminalService = require("../Transpiled/App/Services/TerminalService");
-const ProcessTerminalInput = require("./ProcessTerminalInput");
 const {fetchAll} = require('../GdsHelpers/TravelportUtils.js');
 const StringUtil = require('../Transpiled/Lib/Utils/StringUtil.js');
 const McoListParser = require("../Transpiled/Gds/Parsers/Apollo/Mco/McoListParser");
@@ -9,6 +8,7 @@ const {UnprocessableEntity, BadRequest} = require('../Utils/Rej.js');
 const ParseHbFex = require('../Parsers/Apollo/ParseHbFex.js');
 const SessionStateProcessor = require('../Transpiled/Rbs/GdsDirect/SessionStateProcessor/SessionStateProcessor.js');
 const Rej = require("../Utils/Rej");
+const TravelportUtils = require("../GdsHelpers/TravelportUtils");
 
 let parseOutput = (output) => {
 	let match;
@@ -59,7 +59,7 @@ let ExchangeApolloTicket = async ({emptyMask, maskOutput, values, gdsSession, ma
 let makeMaskRs = (calledCommands, actions = []) => new TerminalService('apollo')
 	.addHighlighting('', {
 		calledCommands: calledCommands.map(cmdRec => ({
-			...cmdRec, tabCommands: ProcessTerminalInput.extractTpTabCmds(cmdRec.output),
+			...cmdRec, tabCommands: TravelportUtils.extractTpTabCmds(cmdRec.output),
 		})),
 		actions: actions,
 	});

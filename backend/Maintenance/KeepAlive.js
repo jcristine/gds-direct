@@ -4,23 +4,6 @@ let GdsSessions = require('./../Repositories/GdsSessions.js');
 let FluentLogger = require('./../LibWrappers/FluentLogger.js');
 let {NoContent, LoginTimeOut} = require('./../Utils/Rej.js');
 
-let expired = (session, accessedMs) => {
-	let idleSeconds = (Date.now() - accessedMs) / 1000;
-	if (session.context.gds === 'sabre') {
-		return idleSeconds > 30 * 60; // 30 minutes
-	} else if (session.context.gds === 'amadeus') {
-		return idleSeconds > 15 * 60; // 15 minutes
-	} else {
-		// apollo, galileo, anything else
-		return idleSeconds > 5 * 60; // 5 minutes
-	}
-};
-
-let shouldClose = (userAccessMs) => {
-	let aliveSeconds = (Date.now() - userAccessMs) / 1000;
-	return aliveSeconds > 30 * 60; // 30 minutes
-};
-
 let KeepAlive = async () => {
 	let workerLogId = await FluentLogger.logNewId('keepAlive');
 	let logsWritten = 0;
@@ -52,7 +35,7 @@ let KeepAlive = async () => {
 		FluentLogger.logit('Processing in bg worker as the idlest session: ' + workerLogId, session.logId);
 		let processing;
 		let action = 'doNothing';
-		if (expired(session, accessedMs)) {
+		if (GdsSessions.expired(session, accessedMs)) {
 			action = 'removeExpired';
 			log('TODO: Removing session, since it expired in GDS');
 			processing = GdsSessions.remove(session);
@@ -60,7 +43,7 @@ let KeepAlive = async () => {
 			processing = GdsSessions.getUserAccessMs(session).then(userAccessMs => {
 				let userIdleSeconds = ((Date.now() - userAccessMs) / 1000).toFixed(3);
 				log('INFO: Last _user_ access was ' + userIdleSeconds + ' s. ago');
-				if (shouldClose(userAccessMs)) {
+				if (GdsSessions.shouldClose(userAccessMs)) {
 					action = 'closeLongUnused';
 					return GdsSessionController.closeSession(session).catch(exc => {
 						FluentLogger.logExc('ERROR: Failed to close session', session.logId, exc);
@@ -140,6 +123,4 @@ let KeepAlive = async () => {
 	};
 };
 
-exports.expired = expired;
-exports.shouldClose = shouldClose;
 exports.run = () => KeepAlive();
