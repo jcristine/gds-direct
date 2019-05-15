@@ -161,6 +161,39 @@ class NmeScreenParserTest extends require('../../../../Lib/TestCase.js') {
 			},
 		]);
 
+		// HHPR output - some fields are not filled yet
+		$list.push([
+			php.implode(php.PHP_EOL, [
+				">$NME LIB/MAR                                                 ",
+				" X CTY CR FLT/CLS DATE  TIME  ST F/B      VALUE   NVB   NVA ",
+				" . JFK PR  127 N  10DEC  145A OK;........;.......;.....;..... ",
+				" . MNL .. .... ..  VOID ..... .. ........ ....... ..... ..... ",
+				" . ... .. .... ..  VOID ..... .. ........ ....... ..... ..... ",
+				" . ... .. .... ..  VOID ..... .. ........ ....... ..... ..... ",
+				" . ...  FARE;...;........  DO TAXES APPLY?;.                  ",
+				"  EQUIV FARE;...;........             COMM;....... F CONST;..",
+				" TD 1/;...... 2/;...... 3/;...... 4/;......  INT X  MREC 01/01",
+				"                                                   ;PSGR 01/01",
+				"                                                   ;BOOK 01/01",
+				"DO YC/XY TAXES APPLY?",
+				"><"
+			]),
+			{
+				'lastName': 'LIB',
+				'segments': [
+					{'departureCity': 'JFK', 'isStopover': true},
+					{'departureCity': 'MNL', 'isStopover': true},
+				],
+				'baseFare': {'currency': null, 'amount': null},
+				'doTaxesApply': false,
+				'record': {
+					'storeNumber': {'current': 1, 'total': 1},
+					'storePtcNumber': {'current': 1, 'total': 1},
+					'page': {'current': 1, 'total': 1},
+				},
+			},
+		]);
+
 		return $list;
 	}
 

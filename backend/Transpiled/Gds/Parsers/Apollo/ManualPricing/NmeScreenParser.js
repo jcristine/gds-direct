@@ -150,8 +150,8 @@ class NmeScreenParser {
 			'(?<departureDate>\\d{1,2}[A-Z]{3})\\s+' +
 			'(?<departureTime>\\d{1,4}[A-Z]?)\\s+' +
 			'(?<status>[A-Z]+)\\s*;\\s*' +
-			'(?<fareBasis>[A-Z0-9]+)\\s*;\\s*' +
-			'(?<fare>\\d*\\.?\\d*);' +
+			'(?<fareBasis>[A-Z0-9]+|[\\s\\.]*)\\s*;\\s*' +
+			'(?<fare>\\d*\\.?\\d*|[\\s\\.]*);' +
 			'(?<notValidBefore>\\d{1,2}[A-Z]{3}|[\\s\\.]*);' +
 			'(?<notValidAfter>\\d{1,2}[A-Z]{3}|[\\s\\.]*)' +
 			'\\s*$/';
