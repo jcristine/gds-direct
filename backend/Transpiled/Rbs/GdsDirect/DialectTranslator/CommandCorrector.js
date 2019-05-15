@@ -477,7 +477,25 @@ class CommandCorrector {
 		return $input;
 	}
 
+	convertFromCyrillic(cmd) {
+		let cyrillicToLatin = {
+			"Ё":"`","Й":
+			"Q","Ц":"W","У":"E","К":"R","Е":"T","Н":"Y","Г":"U","Ш":"I","Щ":"O","З":"P","Х":"[","Ъ":"]",
+			"Ф":"A","Ы":"S","В":"D","А":"F","П":"G","Р":"H","О":"J","Л":"K","Д":"L","Ж":";","Э":"'",
+			"Я":"Z","Ч":"X","С":"C","М":"V","И":"B","Т":"N","Ь":"M","Б":",","Ю":".",
+		};
+		let converted = cmd
+			.split('')
+			.map(ch => cyrillicToLatin[ch] || ch)
+			.join('');
+		if (converted !== cmd) {
+			this.$messages.push('CORRECTED! NO CYRILLIC SYMBOLS');
+		}
+		return converted;
+	}
+
 	correctTyposWithReplace($dialect, $input) {
+		$input = this.convertFromCyrillic($input);
 
 		if ($dialect === 'apollo') {
 			$input = this.replaceAndMessage(/\§/, '', $input);

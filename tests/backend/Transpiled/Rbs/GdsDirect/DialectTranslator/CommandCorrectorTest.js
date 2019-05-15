@@ -147,7 +147,9 @@ class CommandCorrectorTest extends require('../../../Lib/TestCase.js') {
 			['apollo', 'UI', 'I'],
 			['apollo', 'U', 'I'],
 
-			/**/
+			// cyrillic characters (relevant for Moldova and Riga)
+			['apollo', '*К', '*R'],
+			['apollo', 'Ф10ЬФНОАЛЬТД', 'A10MAYJFKMNL'],
 		];
 	}
 
