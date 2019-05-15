@@ -297,6 +297,10 @@
   span {
     white-space: pre;
   }
+  .fill-space {
+    display: flex;
+    justify-content: space-between;
+  }
 }
 .exchange-mask {
   .align-caption > div {
@@ -316,6 +320,31 @@
     span {
       color: white;
     }
+  }
+}
+.manual-pricing-mask {
+  line-height: 1.6;
+  table {
+    width: 100%;
+  }
+  th {
+    font-weight: normal;
+    color: white;
+  }
+  td {
+    border: none;
+  }
+  .static-text {
+    color: white;
+  }
+  input {
+    font-family: inherit;
+    font-size: inherit;
+    padding: 0px;
+    text-align: right;
+  }
+  input[disabled] {
+    background-color: transparent;
   }
 }
 .mco-mask {
