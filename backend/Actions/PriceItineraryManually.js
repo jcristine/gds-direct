@@ -3,6 +3,7 @@ const TerminalService = require("../Transpiled/App/Services/TerminalService");
 const {fetchAll} = require('../GdsHelpers/TravelportUtils.js');
 const StringUtil = require('../Transpiled/Lib/Utils/StringUtil.js');
 const TravelportUtils = require("../GdsHelpers/TravelportUtils");
+const Rej = require('../Utils/Rej.js');
 
 let POSITIONS = AbstractMaskParser.getPositionsBy('_', [
 	"$NME LIB/MAR                                                   ",
@@ -45,6 +46,18 @@ let FIELDS = [
 	'seg3_ticketDesignator', 'seg4_ticketDesignator',
 ];
 
+let parseOutput = (output) => {
+	if (output.trim() === '*') {
+		return {status: 'success'};
+	} else if (!output.trim().match(/\n/)) {
+		// one line error
+		return {status: 'error'};
+	} else {
+		// unknown format
+		return {status: 'error'};
+	}
+};
+
 /**
  * TODO: test how it will behave when there are 5+ segments in itinerary
  * TODO: support when you set "DO TAXES APPLY" to "Y" and $TAX screen appears
@@ -58,7 +71,11 @@ let PriceItineraryManually = async ({maskOutput, values, gdsSession}) => {
 		fields: FIELDS, values
 	});
 	let cmdRec = await fetchAll(cmd, gdsSession);
-	return cmdRec;
+	let result = parseOutput(cmdRec.output);
+	result.cmd = cmdRec.cmd;
+	result.output = cmdRec.output;
+
+	return result;
 };
 
 let makeMaskRs = (calledCommands, actions = []) => new TerminalService('apollo')
@@ -79,10 +96,13 @@ PriceItineraryManually.inputHhprMask = async ({rqBody, gdsSession}) => {
 		maskOutput, values, gdsSession,
 	});
 	let maskCmd = StringUtil.wrapLinesAt('>' + result.cmd, 64);
-	return makeMaskRs([
-		{cmd: 'HHPR', output: maskCmd},
-		{cmd: '$NME...', output: result.output},
-	]);
+	let calledCommands = [{cmd: 'HHPR', output: maskCmd}];
+	if (result.status === 'success') {
+		calledCommands.push({cmd: '$NME...', output: result.output});
+		return makeMaskRs(calledCommands);
+	} else {
+		return Rej.UnprocessableEntity('GDS gave ' + result.status + ' - \n' + result.output);
+	}
 };
 
 PriceItineraryManually.POSITIONS = POSITIONS;
