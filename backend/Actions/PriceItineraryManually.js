@@ -4,6 +4,7 @@ const {fetchAll} = require('../GdsHelpers/TravelportUtils.js');
 const StringUtil = require('../Transpiled/Lib/Utils/StringUtil.js');
 const TravelportUtils = require("../GdsHelpers/TravelportUtils");
 const Rej = require('../Utils/Rej.js');
+const SubmitTaxBreakdownMask = require("./SubmitTaxBreakdownMask");
 
 let POSITIONS = AbstractMaskParser.getPositionsBy('_', [
 	"$NME LIB/MAR                                                   ",
@@ -49,6 +50,9 @@ let FIELDS = [
 let parseOutput = (output) => {
 	if (output.trim() === '*') {
 		return {status: 'success'};
+	} else if (output.match(/^>\$TA\s+TAX BREAKDOWN SCREEN/)) {
+		// one line error
+		return {status: 'taxBreakdown'};
 	} else if (!output.trim().match(/\n/)) {
 		// one line error
 		return {status: 'error'};
@@ -100,6 +104,15 @@ PriceItineraryManually.inputHhprMask = async ({rqBody, gdsSession}) => {
 	if (result.status === 'success') {
 		calledCommands.push({cmd: '$NME...', output: result.output});
 		return makeMaskRs(calledCommands);
+	} else if (result.status === 'taxBreakdown') {
+		return makeMaskRs(calledCommands, [{
+			type: 'displayTaxBreakdownMask',
+			data: {
+				fields: await SubmitTaxBreakdownMask
+					.getPositionValues(result.output),
+				maskOutput: result.output,
+			},
+		}]);
 	} else {
 		return Rej.UnprocessableEntity('GDS gave ' + result.status + ' - \n' + result.output);
 	}
