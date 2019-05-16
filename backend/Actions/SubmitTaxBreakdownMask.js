@@ -1,11 +1,12 @@
 
 const AbstractMaskParser = require("../Transpiled/Gds/Parsers/Apollo/AbstractMaskParser");
 const {fetchAll} = require('../GdsHelpers/TravelportUtils.js');
-const StringUtil = require('../Transpiled/Lib/Utils/StringUtil.js');
 const Rej = require('../Utils/Rej.js');
 const TravelportUtils = require("../GdsHelpers/TravelportUtils");
 const TerminalService = require("../Transpiled/App/Services/TerminalService");
 const TaScreenParser = require("../Transpiled/Gds/Parsers/Apollo/ManualPricing/TaScreenParser");
+const StringUtil = require('../Transpiled/Lib/Utils/StringUtil.js');
+const SubmitZpTaxBreakdownMask = require('./SubmitZpTaxBreakdownMask.js');
 
 let POSITIONS = AbstractMaskParser.getPositionsBy('_', [
 	"$TA                TAX BREAKDOWN SCREEN                        ",
@@ -57,6 +58,8 @@ let parseOutput = (output) => {
 		} else {
 			return {status: 'invalidData', error: message};
 		}
+	} else if (output.startsWith('>$ZP')) {
+		return {status: 'zpTaxBreakdown'};
 	} else {
 		return {status: 'error'};
 	}
@@ -89,8 +92,15 @@ let SubmitTaxBreakdownMask = async ({rqBody, gdsSession}) => {
 	if (result.status === 'success') {
 		let calledCommands = [{cmd: '$TA...', output: cmdRec.output}];
 		return makeMaskRs(calledCommands);
+	} else if (result.status === 'zpTaxBreakdown') {
+		let maskCmd = StringUtil.wrapLinesAt('>' + cmdRec.cmd, 64);
+		let calledCommands = [{cmd: '$TA...', output: maskCmd}];
+		return makeMaskRs(calledCommands, [{
+			type: 'displayZpTaxBreakdownMask',
+			data: await SubmitZpTaxBreakdownMask.parse(cmdRec.output),
+		}]);
 	} else if (result.status === 'invalidData') {
-		return Rej.UnprocessableEntity('GDS rejects your input - ' + result.error);
+		return Rej.UnprocessableEntity('GDS rejects input - ' + result.error);
 	} else {
 		return Rej.UnprocessableEntity('GDS gave ' + result.status + ' - \n' + cmdRec.output);
 	}
