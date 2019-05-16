@@ -7,7 +7,7 @@ This will install `/node_modules` for backend and frontend and compile js with w
 
 To run the server use: (requires node v10+)
 ```
-node server.js
+node dev_server.js
 ```
 This will start the app on `http://localhost:3012`, you can open it in browser.
 

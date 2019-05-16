@@ -1,6 +1,7 @@
 
+const GrectLib = require('gds-direct-lib');
+
 let env = process.env || {};
-let PersistentHttpRq = require('./Utils/PersistentHttpRq.js');
 
 let isProd = env.NODE_ENV === 'production';
 
@@ -11,24 +12,6 @@ let StaticConfig = {
 
 /** will likely be fetched from LAN one day */
 let hardcodedConfig = {
-	// set by fetchDbConfig()
-	DB_HOST: null,
-	DB_USER: null,
-	DB_PASS: null,
-	DB_NAME: null,
-	DB_PORT: null,
-
-	RBS_PASSWORD: env.RBS_PASSWORD,
-
-	// set by fetchRedisConfig()
-	REDIS_HOST: env.REDIS_HOST,
-	REDIS_PORT: env.REDIS_PORT,
-
-	// set by admins in env variable
-	SOCKET_PORT: env.SOCKET_PORT || 3022,
-	HTTP_PORT: env.HTTP_PORT || 3012,
-	HOST: env.HOST || '0.0.0.0',
-
 	// TODO: move to admin page like in CMS
 	external_service: {
 		emc: {
@@ -73,72 +56,12 @@ let hardcodedConfig = {
 	},
 };
 
-let fetchDbConfig = (dbUrl) => PersistentHttpRq({
-	url: dbUrl,
-	method: 'GET',
-	dropConnection: true,
-}).then(rs => JSON.parse(rs.body)).then((body) => {
-	let dbConfig = {};
-	if (body['dbhost'] && body.dbhost.length) {
-		dbConfig.DB_USER = body.dbuser;
-		dbConfig.DB_PASS = body.dbpass;
-		dbConfig.DB_NAME = body.dbname;
-		// should probably support when there are more of them...
-		const host = body.dbhost[0];
-		const h = host.split(":");
-		dbConfig.DB_HOST = h[0];
-		dbConfig.DB_PORT = parseInt(h[1]);
-	}
-	return dbConfig;
-});
-
-let fetchRedisConfig = (redisUrl) => PersistentHttpRq({
-	url: redisUrl,
-	method: 'GET',
-}).then(rs => JSON.parse(rs.body)).then((body) => {
-	let redisConfig = {};
-	if (body && body.length) {
-		const t = body[0].split(':');
-		redisConfig.REDIS_HOST = t[0];
-		redisConfig.REDIS_PORT = parseInt(t[1]);
-	}
-	return redisConfig;
-});
-
-let fetchExternalConfig = () => {
-	const dbUrl = env.CONFIG_LAN + '/db.php?db=' + env.DB_NAME;
-	const redisUrl = env.CONFIG_LAN + '/v0/redis/' + env.REDIS_CLUSTER_NAME;
-	const promises = [];
-
-	promises.push(fetchDbConfig(dbUrl));
-	promises.push(fetchRedisConfig(redisUrl));
-
-	return Promise.all(promises)
-		.then((configs) => Object.assign({}, ...configs));
-};
-
 let fetching = null;
 StaticConfig.getConfig = async () => {
 	if (fetching) {
 		return fetching;
 	}
-	if (!isProd) {
-		let defaults = {
-			NODE_ENV: 'development',
-			HOST: '0.0.0.0',
-			HTTP_PORT: '3012',
-			SOCKET_PORT: '3022',
-			REDIS_CLUSTER_NAME: "some-grect-redis",
-			RANDOM_KEY: "12345678901234567890123456789012",
-			CONFIG_LAN: "http://intranet.dyninno.net/~aklesuns/grect_fake_config_lan/",
-			RBS_PASSWORD: "qwerty",
-		};
-		for (let [k, v] of Object.entries(defaults)) {
-			hardcodedConfig[k] = hardcodedConfig[k] || v;
-			env[k] = env[k] || v;
-		}
-	}
-	fetching = fetchExternalConfig().then((lanConfig) => {
+	fetching = GrectLib.getConfig().then(lanConfig => {
 		return Object.assign({}, StaticConfig, hardcodedConfig, lanConfig);
 	});
 	return fetching;
