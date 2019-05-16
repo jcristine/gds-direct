@@ -5,7 +5,6 @@ let {getClient, keys} = require('../LibWrappers/Redis.js');
 let Diag = require('../LibWrappers/Diag.js');
 const sqlNow = require("../Utils/Misc").sqlNow;
 const InternalServerError = require("../Utils/Rej").InternalServerError;
-let {getConfig} = require('../Config.js');
 
 let TABLE_NAME = 'migrations';
 

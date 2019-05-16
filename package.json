@@ -12,7 +12,7 @@
     "dynatech-logger": "git+ssh://git@gitlab.dyninno.net:1022/node-libraries/logger#v0.0.12"
   },
   "dependencies": {
-    "gds-direct-lib": "git+ssh://git@gitlab.dyninno.net:1022/node-libraries/gds-direct-lib.git#82173bef2f66b6d3f42113dfebcfcf3047ddc3e0",
+    "gds-direct-lib": "git+ssh://git@gitlab.dyninno.net:1022/node-libraries/gds-direct-lib.git#645e1e329ffa206363108884153363e73cf9f4e9",
     "express": "^4.16.4",
     "ioredis": "^4.3.0",
     "jsdom": "^13.0.0",

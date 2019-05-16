@@ -7,5 +7,3 @@ process.env.CONFIG_LAN = "http://intranet.dyninno.net/~aklesuns/grect_fake_confi
 process.env.NODE_ENV = 'development';
 process.env.HOST = '0.0.0.0';
 process.env.RBS_PASSWORD = "qwerty";
-
-require('./server.js');
