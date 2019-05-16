@@ -1,5 +1,4 @@
 const GdsActionTestUtil = require("../../../backend/Transpiled/Rbs/TestUtils/GdsActionTestUtil");
-const ParseHbFex = require('../../../backend/Parsers/Apollo/ParseHbFex.js');
 const PriceItineraryManually = require('../../../backend/Actions/PriceItineraryManually.js');
 
 class PriceItineraryManuallyTest extends require('../Transpiled/Lib/TestCase.js')

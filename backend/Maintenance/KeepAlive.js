@@ -2,7 +2,7 @@
 let GdsSessionController = require('../HttpControllers/GdsSessionController.js');
 let GdsSessions = require('./../Repositories/GdsSessions.js');
 let FluentLogger = require('./../LibWrappers/FluentLogger.js');
-let {NoContent, LoginTimeOut} = require('./../Utils/Rej.js');
+let {NoContent, LoginTimeOut, Conflict} = require('./../Utils/Rej.js');
 
 let KeepAlive = async () => {
 	let workerLogId = await FluentLogger.logNewId('keepAlive');
@@ -96,13 +96,17 @@ let KeepAlive = async () => {
 			})
 			.catch(exc => {
 				// 10..11 seconds
-				let delay = 10 * 1000 + (Math.random() * 1000);
+				let salt = (Math.random() * 1000);
+				let delay = 10 * 1000 + salt;
 				let rsCode = !exc ? 0 : exc.httpStatusCode;
 				let msg;
 				if (waiting) {
 					msg = '...:';
 				} else if (NoContent.matches(rsCode)) {
 					msg = 'No idle sessions left, waiting for ' + delay + ' ms';
+				} else if (Conflict.matches(rsCode)) {
+					delay = salt; // 0..1 seconds
+					msg = 'Another process took the session, waiting for ' + delay + ' ms';
 				} else {
 					msg = 'ERROR: Could not take most idle session, waiting for ' + delay + ' ms';
 				}
