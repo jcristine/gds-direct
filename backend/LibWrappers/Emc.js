@@ -21,13 +21,11 @@ let makeClient = cfg => {
 	return client;
 };
 
-let whenConfig = Config.getConfig();
-
 let whenClient = null;
 /** @return Promise<IEmcClient> */
 let getClient = () => {
 	if (whenClient === null) {
-		whenClient = whenConfig.then(cfg => makeClient(cfg));
+		whenClient = Config.getConfig().then(cfg => makeClient(cfg));
 	}
 	return whenClient;
 };
