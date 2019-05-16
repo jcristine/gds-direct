@@ -5,6 +5,7 @@ const StringUtil = require('../Transpiled/Lib/Utils/StringUtil.js');
 const Rej = require('../Utils/Rej.js');
 const TravelportUtils = require("../GdsHelpers/TravelportUtils");
 const TerminalService = require("../Transpiled/App/Services/TerminalService");
+const TaScreenParser = require("../Transpiled/Gds/Parsers/Apollo/ManualPricing/TaScreenParser");
 
 let POSITIONS = AbstractMaskParser.getPositionsBy('_', [
 	"$TA                TAX BREAKDOWN SCREEN                        ",
@@ -21,7 +22,7 @@ let POSITIONS = AbstractMaskParser.getPositionsBy('_', [
 ].join(''));
 
 let FIELDS = [
-	'totalAmount', 'rateOfExchange',
+	'netPrice', 'rateOfExchange',
 	'tax1_amount', 'tax1_code',
 	'tax2_amount', 'tax2_code',
 	'tax3_amount', 'tax3_code',
@@ -49,8 +50,13 @@ let FIELDS = [
 ];
 
 let parseOutput = (output) => {
-	if (output.trim() === '*') {
-		return {status: 'success'};
+	if (output.startsWith('>$TA')) {
+		let message = output.trim().split('\n').slice(-1)[0] || '';
+		if (message.trim() === '*') {
+			return {status: 'success'};
+		} else {
+			return {status: 'invalidData', error: message};
+		}
 	} else {
 		return {status: 'error'};
 	}
@@ -80,21 +86,31 @@ let SubmitTaxBreakdownMask = async ({rqBody, gdsSession}) => {
 	let cmdRec = await fetchAll(cmd, gdsSession);
 	let result = parseOutput(cmdRec.output);
 
-	let maskCmd = StringUtil.wrapLinesAt('>' + cmdRec.cmd, 64);
-	let calledCommands = [{cmd: '$NME...', output: maskCmd}];
 	if (result.status === 'success') {
-		calledCommands.push({cmd: '$TA...', output: cmdRec.output});
+		let calledCommands = [{cmd: '$TA...', output: cmdRec.output}];
 		return makeMaskRs(calledCommands);
+	} else if (result.status === 'invalidData') {
+		return Rej.UnprocessableEntity('GDS rejects your input - ' + result.error);
 	} else {
 		return Rej.UnprocessableEntity('GDS gave ' + result.status + ' - \n' + cmdRec.output);
 	}
 };
 
-SubmitTaxBreakdownMask.getPositionValues = async (mask) =>
-	AbstractMaskParser.getPositionValues({
+SubmitTaxBreakdownMask.parse = async (mask) => {
+	let fields = await AbstractMaskParser.getPositionValues({
 		mask: mask,
 		positions: POSITIONS,
 		fields: FIELDS,
 	});
+	let parsed = TaScreenParser.parse(mask);
+	if (parsed.error) {
+		return Rej.UnprocessableEntity('Invalid $TA screen - ' + parsed.error + ' - ' + mask);
+	}
+	return {
+		parsed: parsed,
+		fields: fields,
+		maskOutput: mask,
+	};
+};
 
 module.exports = SubmitTaxBreakdownMask;

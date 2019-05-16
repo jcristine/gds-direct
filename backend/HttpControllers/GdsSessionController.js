@@ -25,6 +25,7 @@ const ExchangeApolloTicket = require('../Actions/ExchangeApolloTicket.js');
 const PriceItineraryManually = require('../Actions/PriceItineraryManually.js');
 const Rej = require("../Utils/Rej");
 const TravelportUtils = require("../GdsHelpers/TravelportUtils");
+const SubmitTaxBreakdownMask = require('../Actions/SubmitTaxBreakdownMask.js');
 
 let startByGds = async (gds) => {
 	let tuples = [
@@ -278,6 +279,15 @@ exports.submitHhprMask = async ({rqBody, session, emcUser}) => {
 	} else {
 		let gdsSession = await StatefulSession.makeFromDb({session, emcUser});
 		return PriceItineraryManually.inputHhprMask({rqBody, gdsSession});
+	}
+};
+
+exports.submitTaxBreakdownMask = async ({rqBody, session, emcUser}) => {
+	if (session.context.gds !== 'apollo') {
+		return NotImplemented('Unsupported GDS for exchangeTicket - ' + session.context.gds);
+	} else {
+		let gdsSession = await StatefulSession.makeFromDb({session, emcUser});
+		return SubmitTaxBreakdownMask({rqBody, gdsSession});
 	}
 };
 

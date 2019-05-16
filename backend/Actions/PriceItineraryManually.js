@@ -107,11 +107,7 @@ PriceItineraryManually.inputHhprMask = async ({rqBody, gdsSession}) => {
 	} else if (result.status === 'taxBreakdown') {
 		return makeMaskRs(calledCommands, [{
 			type: 'displayTaxBreakdownMask',
-			data: {
-				fields: await SubmitTaxBreakdownMask
-					.getPositionValues(result.output),
-				maskOutput: result.output,
-			},
+			data: await SubmitTaxBreakdownMask.parse(result.output),
 		}]);
 	} else {
 		return Rej.UnprocessableEntity('GDS gave ' + result.status + ' - \n' + result.output);

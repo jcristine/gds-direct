@@ -22,6 +22,7 @@ import {post} from "../helpers/requests";
 import {McoForm} from "../components/popovers/maskForms/mcoForm";
 import {ExchangeForm} from "../components/popovers/maskForms/exchangeForm";
 import {ManualPricingForm} from "../components/popovers/maskForms/manualPricingForm.es6";
+import {TaxBreakdownForm} from "../components/popovers/maskForms/taxBreakdownForm.es6";
 
 let Component = require('../modules/component.es6').default;
 let Cmp = (...args) => new Component(...args);
@@ -294,8 +295,6 @@ export default class TerminalPlugin
 			.finally(() => this.spinner.end());
 	}
 
-	// this does not work perfectly still - when you click on an empty space, or enter a
-	// command scrollbar jumps to the top, and you have to scroll back down to get to the form
 	_injectForm(formCmp)
 	{
 		this.context.appendChild(formCmp.context);
@@ -426,7 +425,30 @@ export default class TerminalPlugin
 				}));
 		}});
 		this._injectForm(formCmp);
-		let inp = formCmp.context.querySelector('input[name="seg1_fareBasis"]');
+		let inp = formCmp.context.querySelector('input:not(:disabled)');
+		if (inp) {
+			inp.focus();
+		}
+	}
+
+	_displayTaxBreakdownMask(data)
+	{
+		const cancel = () => this._ejectForm(formCmp);
+
+		let formCmp = TaxBreakdownForm({data, onCancel: cancel, onsubmit: (formResult) => {
+			let params = {
+				gds: this.gdsName,
+				fields: formResult.fields,
+				maskOutput: data.maskOutput,
+			};
+			return this._withSpinner(() => post('terminal/submitTaxBreakdownMask', params)
+				.then(resp => {
+					this.parseBackEnd(resp, '$TA...');
+					return {canClosePopup: resp && resp.output};
+				}));
+		}});
+		this._injectForm(formCmp);
+		let inp = formCmp.context.querySelector('input:not(:disabled)');
 		if (inp) {
 			inp.focus();
 		}
@@ -487,6 +509,8 @@ export default class TerminalPlugin
 				this._displayExchangeFareDifferenceMask(action.data);
 			} else if (action.type === 'displayHhprMask') {
 				this._displayHhprMask(action.data);
+			} else if (action.type === 'displayTaxBreakdownMask') {
+				this._displayTaxBreakdownMask(action.data);
 			}
 		}
 	}

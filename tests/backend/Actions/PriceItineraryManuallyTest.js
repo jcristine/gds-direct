@@ -278,7 +278,7 @@ class PriceItineraryManuallyTest extends require('../Transpiled/Lib/TestCase.js'
 						type: 'displayTaxBreakdownMask',
 						data: {
 							fields: [
-								{value: '', enabled: true, key: 'totalAmount'},
+								{value: '', enabled: true, key: 'netPrice'},
 								{value: '', enabled: true, key: 'rateOfExchange'},
 								{value: '', enabled: true, key: 'tax1_amount'},
 								{value: '', enabled: true, key: 'tax1_code'},
