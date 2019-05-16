@@ -1512,6 +1512,14 @@ class ProcessApolloTerminalInputAction {
 			positions: PriceItineraryManually.POSITIONS,
 			fields: PriceItineraryManually.FIELDS,
 		});
+		let defaults = {};
+		for (let i = 0; i < parsed.segments.length; ++i) {
+			let dtRec = parsed.segments[i].departureDate;
+			if (dtRec) {
+				defaults['seg' + (i + 1) + '_notValidBefore'] = dtRec.raw;
+				defaults['seg' + (i + 1) + '_notValidAfter'] = dtRec.raw;
+			}
+		}
 		return {
 			calledCommands: [{
 				cmd: cmd,
@@ -1521,11 +1529,14 @@ class ProcessApolloTerminalInputAction {
 				type: 'displayHhprMask',
 				data: {
 					parsed: parsed,
-					fields: items.map(i => ({
-						key: i.key,
-						value: i.value,
-						enabled: !i.value && i.enabled,
-					})),
+					fields: items.map(i => {
+						let value = i.value || defaults[i.key] || '';
+						return {
+							key: i.key,
+							value: value,
+							enabled: !value && i.enabled,
+						};
+					}),
 					maskOutput: output,
 				},
 			}],
