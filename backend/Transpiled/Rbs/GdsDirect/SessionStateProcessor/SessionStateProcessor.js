@@ -36,7 +36,7 @@ class SessionStateProcessor
         let getArea = letter => fullState.areas[letter] || {};
         let oldState = fullState.areas[fullState.area] || {};
         let newState = this.updateStateSafe(cmd, output, gds, oldState, getArea);
-        let isMr = SessionStateProcessor.mrCmdTypes.includes(newState.cmdType);
+        let isMr = SessionStateHelper.mrCmdTypes.includes(newState.cmdType);
         newState.scrolledCmd = isMr ? oldState.scrolledCmd : cmd;
         fullState.area = newState.area;
         fullState.areas[newState.area] = newState;
@@ -44,10 +44,5 @@ class SessionStateProcessor
         return fullState;
     }
 }
-
-// TODO: use them from SessionStateHelper everywhere and remove from here
-SessionStateProcessor.mrCmdTypes = SessionStateHelper.mrCmdTypes;
-SessionStateProcessor.$nonAffectingTypes = SessionStateHelper.$nonAffectingTypes;
-SessionStateProcessor.$dropPnrContextCommands = SessionStateHelper.$dropPnrContextCommands;
 
 module.exports = SessionStateProcessor;

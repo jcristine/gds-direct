@@ -6,7 +6,7 @@ const McoListParser = require("../Transpiled/Gds/Parsers/Apollo/Mco/McoListParse
 const McoMaskParser = require("../Transpiled/Gds/Parsers/Apollo/Mco/McoMaskParser");
 const {UnprocessableEntity, BadRequest} = require('../Utils/Rej.js');
 const ParseHbFex = require('../Parsers/Apollo/ParseHbFex.js');
-const SessionStateProcessor = require('../Transpiled/Rbs/GdsDirect/SessionStateProcessor/SessionStateProcessor.js');
+const SessionStateHelper = require('../Transpiled/Rbs/GdsDirect/SessionStateProcessor/SessionStateHelper.js');
 const Rej = require("../Utils/Rej");
 const TravelportUtils = require("../GdsHelpers/TravelportUtils");
 
@@ -82,7 +82,7 @@ let getMcoFop = async (documentNumber, gdsSession) => {
 
 /** @param stateful = require('StatefulSession.js')() */
 let getPrefilledFop = async (stateful) => {
-	let contextTypes = SessionStateProcessor.$nonAffectingTypes
+	let contextTypes = SessionStateHelper.$nonAffectingTypes
 		.concat(['exchangeTicketMask', 'mcoList', 'storedMcoMask']);
 	let cmdRecs = await stateful.getLog().getLastCommandsOfTypes(contextTypes);
 	let isHbFex = cmdRec => cmdRec.type === 'issueTickets';

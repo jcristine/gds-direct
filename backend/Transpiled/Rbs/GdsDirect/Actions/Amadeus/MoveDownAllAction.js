@@ -8,14 +8,14 @@ const AmadeusUtils = require('../../../../../GdsHelpers/AmadeusUtils.js');
  * possible, return full output including all MD-s called before
  */
 const php = require('../../../../php.js');
-const SessionStateProcessor = require('../../SessionStateProcessor/SessionStateProcessor.js');
+const SessionStateHelper = require("../../SessionStateProcessor/SessionStateHelper");
 
 class MoveDownAllAction extends AbstractGdsAction {
 	async execute($cmdLog, $limit) {
 		let $usedMdCmds, $mdCmdRows, $originalCmdRow, $format, $wrongMds, $pages, $i, $cleanPages, $hasMore, $page,
 			$pager, $fullCalledCommand;
 
-		$usedMdCmds = SessionStateProcessor.mrCmdTypes;
+		$usedMdCmds = SessionStateHelper.mrCmdTypes;
 		$mdCmdRows = await $cmdLog.getLastCommandsOfTypes($usedMdCmds);
 		if (!($originalCmdRow = php.array_shift($mdCmdRows))) {
 			// if session just started for example
