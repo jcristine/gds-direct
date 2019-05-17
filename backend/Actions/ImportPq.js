@@ -1,4 +1,4 @@
-const SessionStateProcessor = require('../Transpiled/Rbs/GdsDirect/SessionStateProcessor/SessionStateProcessor.js');
+
 const php = require('../Transpiled/php.js');
 const ImportPqApolloAction = require("../Transpiled/Rbs/GdsDirect/Actions/Apollo/ImportPqApolloAction");
 const Rej = require('../Utils/Rej.js');
@@ -21,7 +21,7 @@ let ImportPq = async ({stateful, leadData, fetchOptionalFields = true}) => {
 	let getCurrentStateCommands = async () => {
 		let $cmdTypes, $mixed, $priorPricingCommands, $lastStateSafeCommands, $isPricingMd, $cmdRow, $belongsToPricing;
 
-		$cmdTypes = SessionStateProcessor.getCanCreatePqSafeTypes();
+		$cmdTypes = SessionStateHelper.getCanCreatePqSafeTypes();
 		$cmdTypes.push('priceItinerary');
 		$mixed = await stateful.getLog().getLastCommandsOfTypes($cmdTypes);
 		// remove state safe commands called before last pricing since it changes the state,

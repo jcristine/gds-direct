@@ -1,9 +1,8 @@
 
 // namespace Rbs\GdsDirect\SessionStateProcessor;
 
-const GetPqItineraryAction = require('./CanCreatePqRules.js');
+const CanCreatePqRules = require('./CanCreatePqRules.js');
 const Errors = require('../../../Rbs/GdsDirect/Errors.js');
-const SessionStateProcessor = require('../../../Rbs/GdsDirect/SessionStateProcessor/SessionStateProcessor.js');
 const php = require('../../../php.js');
 const CommonDataHelper = require("../CommonDataHelper");
 
@@ -13,6 +12,12 @@ const CommonDataHelper = require("../CommonDataHelper");
  */
 class SessionStateHelper
 {
+    static getCanCreatePqSafeTypes()  {
+        return php.array_merge(this.$nonAffectingTypes, [
+            'changeName', // needed in Galileo to price multiple PTC-s without real names
+        ]);
+    }
+
     static async makeSessionInfo($cmdLog, $leadData)  {
         let $row;
         $row = $cmdLog.getSessionData();
@@ -25,7 +30,7 @@ class SessionStateHelper
 
     static async getPricingCmdRow($cmdLog)  {
         let $cmdRows, $typeToCmdRow;
-        $cmdRows = await $cmdLog.getLastCommandsOfTypes(SessionStateProcessor.getCanCreatePqSafeTypes());
+        $cmdRows = await $cmdLog.getLastCommandsOfTypes(this.getCanCreatePqSafeTypes());
         $cmdRows = $cmdRows.filter(row => !row.is_mr);
         $typeToCmdRow = php.array_combine(php.array_column($cmdRows, 'type'), $cmdRows);
         return $typeToCmdRow['priceItinerary'] || null;
@@ -37,7 +42,7 @@ class SessionStateHelper
         	let gds = $cmdLog.getSessionData()['gds'];
         	let ifc = CommonDataHelper.makeIfcByGds(gds);
             $priced = ifc.getPricedPtcs($cmdRow['cmd']);
-            return GetPqItineraryAction.ptcsToAgeGroups($priced['ptcs'] || []);
+            return CanCreatePqRules.ptcsToAgeGroups($priced['ptcs'] || []);
         } else {
             return [];
         }
@@ -48,7 +53,7 @@ class SessionStateHelper
         $errors = [];
         $gds = $cmdLog.getSessionData()['gds'];
         $gdsInterface = CommonDataHelper.makeIfcByGds($gds);
-        $cmdList = await $cmdLog.getLastCommandsOfTypes(SessionStateProcessor.getCanCreatePqSafeTypes());
+        $cmdList = await $cmdLog.getLastCommandsOfTypes(this.getCanCreatePqSafeTypes());
         $cmdPricing = await this.getPricingCmdRow($cmdLog);
         $cmdItinerary = null;
         for ($cmdRecord of Object.values($cmdList)) {
@@ -58,16 +63,36 @@ class SessionStateHelper
         if (!$cmdPricing) {
             $errors.push(Errors.getMessage(Errors.NO_RECENT_PRICING));
         } else {
-            $errors = php.array_merge($errors, GetPqItineraryAction.checkPricingOutput($gds, $cmdPricing['output'], $leadData));
-            $errors = php.array_merge($errors, GetPqItineraryAction.checkPricingCommand($gds, $cmdPricing['cmd'], $leadData));
+            $errors = php.array_merge($errors, CanCreatePqRules.checkPricingOutput($gds, $cmdPricing['output'], $leadData));
+            $errors = php.array_merge($errors, CanCreatePqRules.checkPricingCommand($gds, $cmdPricing['cmd'], $leadData));
             // prevent duplicate errors from entered cmd and cmd in pricing output
             $errors = php.array_values(php.array_unique($errors));
         }
         if ($cmdItinerary) {
             let reservation = CommonDataHelper.parsePnrByGds($gds, $cmdItinerary['output']);
-            $errors = php.array_merge($errors, GetPqItineraryAction.checkPnrData(reservation));
+            $errors = php.array_merge($errors, CanCreatePqRules.checkPnrData(reservation));
         }
         return $errors;
     }
 }
+
+
+SessionStateHelper.mrCmdTypes = [
+    'moveRest', 'moveDown', 'moveUp', 'moveTop', 'moveBottom', 'moveDownShort',
+];
+// "not affecting" means they do not change current PNR or pricing
+SessionStateHelper.$nonAffectingTypes = [
+    ...SessionStateHelper.mrCmdTypes,
+    'redisplayPnr', 'itinerary', 'storedPricing', 'storedPricingNameData',
+    'ticketList', 'ticketMask', 'passengerData', 'names', 'ticketing',
+    'flightServiceInfo', 'frequentFlyerData', 'verifyConnectionTimes',
+    'airItinerary', 'history', 'showTime', 'workAreas', 'fareList', 'fareRules', 'flightRoutingAndTimes',
+    'moveDownByAlias', 'moveUpByAlias', 'moveTopByAlias', 'moveBottomByAlias', 'redisplayByAlias',
+    'ptcPricingBlock', 'moveDownShort', 'pricingLinearFare', 'redisplayPriceItinerary',
+];
+SessionStateHelper.$dropPnrContextCommands = [
+    'ignore', 'ignoreAndCopyPnr','storePnr', 'storeAndCopyPnr',
+    'priceItineraryManually', 'ignoreMoveToQueue','movePnrToQueue', 'movePnrToPccQueue',
+];
+
 module.exports = SessionStateHelper;

@@ -9,10 +9,10 @@ const CommonParserHelpers = require('../../../Gds/Parsers/Apollo/CommonParserHel
 const CommandParser = require('../../../Gds/Parsers/Galileo/CommandParser.js');
 const GalileoReservationParser = require('../../../Gds/Parsers/Galileo/Pnr/PnrParser.js');
 const GalileoPnr = require('../../../Rbs/TravelDs/GalileoPnr.js');
-const SessionStateProcessor = require('./SessionStateProcessor.js');
 
 const php = require('../../../php.js');
 const SessionStateDs = require("./SessionStateDs");
+const SessionStateHelper = require("./SessionStateHelper");
 class UpdateGalileoSessionStateAction
 {
     constructor($initialState, $getAreaData)  {
@@ -213,7 +213,7 @@ class UpdateGalileoSessionStateAction
         if ($type === 'priceItinerary' && this.constructor.isPricingValidForPq($data, $output)) {
             this.$state.canCreatePq = true;
 			this.$state.pricingCmd = $cmd;
-        } else if (!php.in_array($type, SessionStateProcessor.getCanCreatePqSafeTypes())) {
+        } else if (!php.in_array($type, SessionStateHelper.getCanCreatePqSafeTypes())) {
             this.$state.canCreatePq = false;
             this.$state.pricingCmd = null;
         }

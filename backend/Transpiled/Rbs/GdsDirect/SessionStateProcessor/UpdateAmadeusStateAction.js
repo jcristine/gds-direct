@@ -7,9 +7,9 @@ const PnrSearchParser = require('../../../Gds/Parsers/Amadeus/PnrSearchParser.js
 const AmadeusReservationParser = require('../../../Gds/Parsers/Amadeus/Pnr/PnrParser.js');
 const SessionStateDs = require('../../../Rbs/GdsDirect/SessionStateProcessor/SessionStateDs.js');
 const CmsAmadeusTerminal = require('../../../Rbs/GdsDirect/GdsInterface/CmsAmadeusTerminal.js');
-const SessionStateProcessor = require('../../../Rbs/GdsDirect/SessionStateProcessor/SessionStateProcessor.js');
 
 const php = require('../../../php.js');
+const SessionStateHelper = require("./SessionStateHelper");
 class UpdateAmadeusStateAction
 {
     constructor($initialState, $getAreaData)  {
@@ -110,7 +110,7 @@ class UpdateAmadeusStateAction
         if ($type === 'priceItinerary' && this.constructor.isPricingValidForPq($data, $output)) {
             this.$state.canCreatePq = true;
             this.$state.pricingCmd = $cmd;
-        } else if (!php.in_array($type, SessionStateProcessor.getCanCreatePqSafeTypes())) {
+        } else if (!php.in_array($type, SessionStateHelper.getCanCreatePqSafeTypes())) {
             this.$state.canCreatePq = false;
 			this.$state.pricingCmd = null;
         }

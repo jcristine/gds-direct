@@ -12,8 +12,8 @@ const CommandParser = require('../../../Gds/Parsers/Apollo/CommandParser.js');
 const ApolloRepeatItineraryAction = require('../../../Rbs/GdsAction/ApolloRepeatItineraryAction.js');
 const ImportPnrAction = require('../../../Rbs/Process/Common/ImportPnr/ImportPnrAction.js');
 const ApolloPnr = require('../../../Rbs/TravelDs/ApolloPnr.js');
-const SessionStateProcessor = require("./SessionStateProcessor");
 const php = require("./../../../../../backend/Transpiled/php");
+const SessionStateHelper = require("./SessionStateHelper");
 
 class UpdateApolloStateAction {
 	constructor($getAreaData) {
@@ -104,7 +104,7 @@ class UpdateApolloStateAction {
 			$sessionState['canCreatePq'] = true;
 			$sessionState['pricingCmd'] = $cmd !== '$BBQ01'
 				? $cmd : $sessionState['pricingCmd'];
-		} else if (!php.in_array($type, SessionStateProcessor.getCanCreatePqSafeTypes())) {
+		} else if (!php.in_array($type, SessionStateHelper.getCanCreatePqSafeTypes())) {
 			$sessionState['canCreatePq'] = false;
 			$sessionState['pricingCmd'] = null;
 		}
@@ -124,7 +124,7 @@ class UpdateApolloStateAction {
 			$dropPnr = php.preg_match(/^\s*NO TRANS AAA\s*(><)?\s*$/, $output);
 		} else if ($type === 'storeAndCopyPnr') {
 			$sessionState = this.constructor.handleApolloCopyPnr($sessionState, $output);
-		} else if (php.in_array($type, SessionStateProcessor.$dropPnrContextCommands)) {
+		} else if (php.in_array($type, SessionStateHelper.$dropPnrContextCommands)) {
 			$dropPnr = true;
 			// Invalid command: returns INVLD ADDRS, breaks PNR state
 		} else if ($cmd === '*R*@*R*') {

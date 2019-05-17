@@ -1,7 +1,7 @@
 
 // namespace Rbs\GdsDirect\SessionStateProcessor;
 
-let php = require('../../../php');
+const SessionStateHelper = require('./SessionStateHelper.js');
 
 /**
  * takes called command, output and previous state,
@@ -10,12 +10,6 @@ let php = require('../../../php');
  */
 class SessionStateProcessor
 {
-    static getCanCreatePqSafeTypes()  {
-        return php.array_merge(this.$nonAffectingTypes, [
-            'changeName', // needed in Galileo to price multiple PTC-s without real names
-        ]);
-    }
-
     /** "safe" means it does not write to DB */
     static updateStateSafe($cmd, $output, gds, $sessionState, $getAreaData)  {
         let $getAreaDataNorm = (letter) => ({...$getAreaData(letter)});
@@ -42,7 +36,7 @@ class SessionStateProcessor
         let getArea = letter => fullState.areas[letter] || {};
         let oldState = fullState.areas[fullState.area] || {};
         let newState = this.updateStateSafe(cmd, output, gds, oldState, getArea);
-        let isMr = this.mrCmdTypes.includes(newState.cmdType);
+        let isMr = SessionStateProcessor.mrCmdTypes.includes(newState.cmdType);
         newState.scrolledCmd = isMr ? oldState.scrolledCmd : cmd;
         fullState.area = newState.area;
         fullState.areas[newState.area] = newState;
@@ -51,25 +45,9 @@ class SessionStateProcessor
     }
 }
 
-SessionStateProcessor.GDS_APOLLO = 'apollo';
-SessionStateProcessor.GDS_SABRE = 'sabre';
-
-SessionStateProcessor.mrCmdTypes = [
-    'moveRest', 'moveDown', 'moveUp', 'moveTop', 'moveBottom', 'moveDownShort',
-];
-// "not affecting" means they do not change current PNR or pricing
-SessionStateProcessor.$nonAffectingTypes = [
-    ...SessionStateProcessor.mrCmdTypes,
-    'redisplayPnr', 'itinerary', 'storedPricing', 'storedPricingNameData',
-    'ticketList', 'ticketMask', 'passengerData', 'names', 'ticketing',
-    'flightServiceInfo', 'frequentFlyerData', 'verifyConnectionTimes',
-    'airItinerary', 'history', 'showTime', 'workAreas', 'fareList', 'fareRules', 'flightRoutingAndTimes',
-    'moveDownByAlias', 'moveUpByAlias', 'moveTopByAlias', 'moveBottomByAlias', 'redisplayByAlias',
-    'ptcPricingBlock', 'moveDownShort', 'pricingLinearFare', 'redisplayPriceItinerary',
-];
-SessionStateProcessor.$dropPnrContextCommands = [
-    'ignore', 'ignoreAndCopyPnr','storePnr', 'storeAndCopyPnr',
-    'priceItineraryManually', 'ignoreMoveToQueue','movePnrToQueue', 'movePnrToPccQueue',
-];
+// TODO: use them from SessionStateHelper everywhere and remove from here
+SessionStateProcessor.mrCmdTypes = SessionStateHelper.mrCmdTypes;
+SessionStateProcessor.$nonAffectingTypes = SessionStateHelper.$nonAffectingTypes;
+SessionStateProcessor.$dropPnrContextCommands = SessionStateHelper.$dropPnrContextCommands;
 
 module.exports = SessionStateProcessor;

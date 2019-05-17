@@ -5,7 +5,6 @@ const Fp = require('../../../../Lib/Utils/Fp.js');
 const LocationGeographyProvider = require('../../../../Rbs/DataProviders/LocationGeographyProvider.js');
 const AmadeusPnrCommonFormatAdapter = require('../../../../Rbs/FormatAdapters/AmadeusPnrCommonFormatAdapter.js');
 const GetPqItineraryAction = require('../../SessionStateProcessor/CanCreatePqRules.js');
-const SessionStateProcessor = require('../../../../Rbs/GdsDirect/SessionStateProcessor/SessionStateProcessor.js');
 const CommandParser = require('../../../../Gds/Parsers/Amadeus/CommandParser.js');
 const PricingCmdParser = require('../../../../Gds/Parsers/Amadeus/Commands/PricingCmdParser.js');
 const FlightInfoParser = require('../../../../Gds/Parsers/Amadeus/FlightInfoParser.js');
@@ -22,6 +21,7 @@ const AmadeusUtil = require("../../../../../GdsHelpers/AmadeusUtils");
 const withCapture = require("../../../../../GdsHelpers/CommonUtils").withCapture;
 const AmadeusFlightInfoAdapter = require('../../../../Rbs/FormatAdapters/AmadeusFlightInfoAdapter.js');
 const AmadeusGetFareRulesAction = require('../../../../Rbs/GdsAction/AmadeusGetFareRulesAction.js');
+const SessionStateHelper = require("../../SessionStateProcessor/SessionStateHelper");
 
 /**
  * import PNR fields of currently opened PNR
@@ -141,7 +141,7 @@ class ImportPqAmadeusAction extends AbstractGdsAction {
 		let $cmdToFullDump, $cmdRows, $scrolledCmd, $mdrs, $cmdRow, $scrolledFormat, $cmd, $output, $pager, $format;
 
 		$cmdToFullDump = {};
-		$cmdRows = $cmdLog.getLastCommandsOfTypes(SessionStateProcessor.getCanCreatePqSafeTypes());
+		$cmdRows = $cmdLog.getLastCommandsOfTypes(SessionStateHelper.getCanCreatePqSafeTypes());
 		$scrolledCmd = null;
 		$mdrs = [];
 		for ($cmdRow of Object.values($cmdRows)) {
@@ -264,7 +264,7 @@ class ImportPqAmadeusAction extends AbstractGdsAction {
 	async getPricing($nameRecords) {
 		let $cmds, $cmdRecord, $error, $cmd, $raw, $result, $errors, $dumpStorage, $fullData, $pqtPricingInfo;
 
-		$cmds = await this.getCmdLog().getLastCommandsOfTypes(SessionStateProcessor.getCanCreatePqSafeTypes());
+		$cmds = await this.getCmdLog().getLastCommandsOfTypes(SessionStateHelper.getCanCreatePqSafeTypes());
 		$cmdRecord = await new GetCurrentPricingDumpAction()
 			.setSession(this.session).execute($cmds);
 		if ($error = $cmdRecord['error']) return {'error': $error};

@@ -5,7 +5,6 @@ const Fp = require('../../../Lib/Utils/Fp.js');
 const StringUtil = require('../../../Lib/Utils/StringUtil.js');
 const SabreBuildItineraryAction = require('../../../Rbs/GdsAction/SabreBuildItineraryAction.js');
 const TSabreSavePnr = require('../../../Rbs/GdsAction/Traits/TSabreSavePnr.js');
-const GetPqItineraryAction = require('./CanCreatePqRules.js');
 const CmsSabreTerminal = require('../../../Rbs/GdsDirect/GdsInterface/CmsSabreTerminal.js');
 const CommandParser = require('../../../Gds/Parsers/Sabre/CommandParser.js');
 const SabrePricingParser = require('../../../Gds/Parsers/Sabre/Pricing/SabrePricingParser.js');
@@ -13,9 +12,9 @@ const ItineraryParser = require('../../../Gds/Parsers/Sabre/Pnr/ItineraryParser.
 const SabreReservationParser = require('../../../Gds/Parsers/Sabre/Pnr/PnrParser.js');
 const ImportPnrAction = require('../../../Rbs/Process/Common/ImportPnr/ImportPnrAction.js');
 const SabrePnr = require('../../../Rbs/TravelDs/SabrePnr.js');
-const SessionStateProcessor = require("./SessionStateProcessor");
 
 const php = require('../../../php.js');
+const SessionStateHelper = require("./SessionStateHelper");
 class UpdateSabreStateAction
 {
     constructor($getAreaData)  {
@@ -95,7 +94,7 @@ class UpdateSabreStateAction
         if (this.constructor.isValidPricing($cmd, $output, $data)) {
             $sessionState['canCreatePq'] = true;
             $sessionState['pricingCmd'] = $cmd;
-        } else if (!php.in_array($type, SessionStateProcessor.getCanCreatePqSafeTypes())) {
+        } else if (!php.in_array($type, SessionStateHelper.getCanCreatePqSafeTypes())) {
             $sessionState['canCreatePq'] = false;
             $sessionState['pricingCmd'] = null;
         }
@@ -118,7 +117,7 @@ class UpdateSabreStateAction
             $sessionState = this.constructor.handleSabreStoreAndCopyPnr($sessionState, $output);
         } else if ($type === 'ignoreAndCopyPnr') {
             $sessionState = this.constructor.handleSabreIgnoreAndCopyPnr($sessionState, $output);
-        } else if (php.in_array($type, SessionStateProcessor.$dropPnrContextCommands)) {
+        } else if (php.in_array($type, SessionStateHelper.$dropPnrContextCommands)) {
             $dropPnr = true;
         } else if ($type == 'changePcc' && CmsSabreTerminal.isSuccessChangePccOutput($output, $data)) {
             $sessionState['pcc'] = $data;
