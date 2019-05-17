@@ -5303,6 +5303,99 @@ class ProcessApolloTerminalInputActionTest extends require('../../../../Lib/Test
 			},
 		});
 
+		$list.push({
+			'input': {
+				'title': 'HBT with >$FC mask response example',
+				'cmdRequested': 'HBT',
+			},
+			'output': {
+				'status': 'executed',
+				'actions': [
+					{
+						"type": "displayFcMask",
+						"data": {
+							"parsed": {
+								formOfPayment: {raw: 'NO FOP'},
+								fareConstruction: {
+									clean: {
+										raw: '10DEC JFK PR MNL 100.00 $100.00',
+									},
+								},
+							},
+							"fields": [
+								{"key": "fcLine1", "value": "", "enabled": true},
+								{"key": "fcLine2", "value": "", "enabled": true},
+								{"key": "fcLine3", "value": "", "enabled": true},
+								{"key": "fcLine4", "value": "", "enabled": true},
+								{"key": "fcLine5", "value": "", "enabled": true},
+							],
+							"maskOutput": [
+								">$FC/ATB FARE CONSTRUCTION ",
+								" FP NO FOP FC;...................................... ",
+								";................................................... ",
+								";................................................... ",
+								";..................................................  ",
+								";...................................................;",
+								"",
+								";10DEC JFK PR MNL 100.00 $100.00     ",
+								"",
+							].join("\n")
+						}
+					}
+				],
+			},
+			'sessionInfo': {
+				'initialState': {
+					...GdsDirectDefaults.makeDefaultApolloState(),
+					isPnrStored: true,
+					recordLocator: 'SL0S6U'
+				},
+				'initialCommands': [
+					{
+					    "cmd": "HHPR",
+					    "output": [
+					        ">$NME LIB/MAR                                                 ",
+					        " X CTY CR FLT/CLS DATE  TIME  ST F/B      VALUE   NVB   NVA ",
+					        " . JFK PR  127 N  10DEC  145A OK;........;.......;.....;..... ",
+					        " . MNL .. .... ..  VOID ..... .. ........ ....... ..... ..... ",
+					        " . ... .. .... ..  VOID ..... .. ........ ....... ..... ..... ",
+					        " . ... .. .... ..  VOID ..... .. ........ ....... ..... ..... ",
+					        " . ...  FARE;...;........  DO TAXES APPLY?;.                  ",
+					        "  EQUIV FARE;...;........             COMM;....... F CONST;..",
+					        " TD 1/;...... 2/;...... 3/;...... 4/;......  INT X  MREC 01/01",
+					        "                                                   ;PSGR 01/01",
+					        "                                                   ;BOOK 01/01",
+					        "DO YC/XY TAXES APPLY?",
+					        "><"
+					    ].join("\n"),
+					},
+					{
+						"cmd": "$NME LIB/MAR                                                    X CTY CR FLT/CLS DATE  TIME  ST F/B      VALUE   NVB   NVA      . JFK PR  127 N  10DEC  145A OK;QWE123..;100.00.;10DEC;10DEC    . MNL .. .... ..  VOID ..... .. ........ ....... ..... .....    . ... .. .... ..  VOID ..... .. ........ ....... ..... .....    . ... .. .... ..  VOID ..... .. ........ ....... ..... .....    . ...  FARE;USD;100.00..  DO TAXES APPLY?;N                      EQUIV FARE;...;........             COMM;0.00/.. F CONST;Y.    TD 1/;...... 2/;...... 3/;...... 4/;......  INT X  MREC 01/01                                                     ;PSGR 01/01                                                     ;BOOK 01/01  DO YC/XY TAXES APPLY?",
+						"output": [
+							" *",
+							"><"
+						].join("\n"),
+					},
+				],
+				'performedCommands': [
+					{
+						"cmd": "HBT",
+						"output": [
+							">$FC/ATB FARE CONSTRUCTION ",
+							" FP NO FOP FC;...................................... ",
+							";................................................... ",
+							";................................................... ",
+							";..................................................  ",
+							";...................................................;",
+							"",
+							";10DEC JFK PR MNL 100.00 $100.00     ",
+							"><"
+						].join("\n"),
+					},
+				],
+			},
+		});
+
 		// problematic cases follow
 		/*
 		// STORE alias, same as previous, but this time let's remove

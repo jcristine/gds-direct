@@ -46,6 +46,7 @@ const Pccs = require("../../../../../Repositories/Pccs");
 const PriceItineraryManually = require('../../../../../Actions/PriceItineraryManually.js');
 const AbstractMaskParser = require("../../../../Gds/Parsers/Apollo/AbstractMaskParser");
 const NmeScreenParser = require("../../../../Gds/Parsers/Apollo/ManualPricing/NmeScreenParser");
+const SubmitFcMask = require("../../../../../Actions/SubmitFcMask");
 
 /** @param stateful = await require('StatefulSession.js')() */
 let execute = ({
@@ -1543,6 +1544,28 @@ class ProcessApolloTerminalInputAction {
 		};
 	}
 
+	async processHbt(cmd) {
+		let cmdRec = await fetchAll(cmd, this);
+		let output = cmdRec.output;
+		if (output.startsWith('>$FC')) {
+			// GDS invited us to enter $FC mask for HHPR if "F CONST" was set to "Y"
+			let record = await SubmitFcMask.parse(output);
+			return {
+				calledCommands: [{
+					cmd: cmd,
+					output: 'SEE MASK FORM BELOW',
+				}],
+				actions: [{
+					type: 'displayFcMask',
+					data: record,
+				}],
+			};
+		} else {
+			// "PRICING RECORD STORED" or some other simple informational response
+			return {calledCommands: [cmdRec]};
+		}
+	}
+
 	async processRequestedCommand($cmd) {
 		let $alias, $mdaData, $limit, $cmdReal, $matches, $_, $plus, $seatAmount,
 			$segmentNumbers, $segmentStatus, $availability, $cityRow, $airlines, $itinerary;
@@ -1568,6 +1591,8 @@ class ProcessApolloTerminalInputAction {
 			return this.prepareHbFexMask(storeNumber, ticketNumber || '');
 		} else if (parsed.type === 'priceItineraryManually') {
 			return this.prepareHhprMask(parsed.data);
+		} else if (['HBT', 'HBTA'].includes($cmd)) {
+			return this.processHbt($cmd);
 		} else if (php.preg_match(/^SORT$/, $cmd, $matches = [])) {
 			return this.processSortItinerary();
 		} else if ($alias['type'] === 'rebookInPcc') {
