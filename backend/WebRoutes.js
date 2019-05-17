@@ -189,6 +189,7 @@ app.post('/terminal/exchangeTicket', withGdsSession(GdsSessionController.exchang
 app.post('/terminal/confirmExchangeFareDifference', withGdsSession(GdsSessionController.confirmExchangeFareDifference));
 app.post('/terminal/submitHhprMask', withGdsSession(GdsSessionController.submitHhprMask));
 app.post('/terminal/submitTaxBreakdownMask', withGdsSession(GdsSessionController.submitTaxBreakdownMask));
+app.post('/terminal/submitFcMask', withGdsSession(GdsSessionController.submitFcMask));
 app.get('/terminal/lastCommands', withAuth(GdsSessionController.getLastCommands));
 app.get('/terminal/getCmdRqList', withAuth(GdsSessionController.getCmdRqList));
 app.get('/terminal/clearBuffer', withAuth(GdsSessionController.clearBuffer));

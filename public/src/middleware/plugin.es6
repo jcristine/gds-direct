@@ -23,6 +23,7 @@ import {McoForm} from "../components/popovers/maskForms/mcoForm";
 import {ExchangeForm} from "../components/popovers/maskForms/exchangeForm";
 import {ManualPricingForm} from "../components/popovers/maskForms/manualPricingForm.es6";
 import {TaxBreakdownForm} from "../components/popovers/maskForms/taxBreakdownForm.es6";
+import {FareCalculationForm} from "../components/popovers/maskForms/fareCalculationForm.es6";
 
 let Component = require('../modules/component.es6').default;
 let Cmp = (...args) => new Component(...args);
@@ -454,6 +455,29 @@ export default class TerminalPlugin
 		}
 	}
 
+	_displayFcMask(data)
+	{
+		const cancel = () => this._ejectForm(formCmp);
+
+		let formCmp = FareCalculationForm({data, onCancel: cancel, onsubmit: (formResult) => {
+			let params = {
+				gds: this.gdsName,
+				fields: formResult.fields,
+				maskOutput: data.maskOutput,
+			};
+			return this._withSpinner(() => post('terminal/submitFcMask', params)
+				.then(resp => {
+					this.parseBackEnd(resp, '$FC...');
+					return {canClosePopup: resp && resp.output};
+				}));
+		}});
+		this._injectForm(formCmp);
+		let inp = formCmp.context.querySelector('input:not(:disabled)');
+		if (inp) {
+			inp.focus();
+		}
+	}
+
 	parseBackEnd(data, command)
 	{
 		this.lastCommand = command; // for history
@@ -511,6 +535,8 @@ export default class TerminalPlugin
 				this._displayHhprMask(action.data);
 			} else if (action.type === 'displayTaxBreakdownMask') {
 				this._displayTaxBreakdownMask(action.data);
+			} else if (action.type === 'displayFcMask') {
+				this._displayFcMask(action.data);
 			}
 		}
 	}

@@ -26,7 +26,11 @@ let FIELDS = [
 ];
 
 let parseOutput = (output) => {
-	return {status: 'error'};
+	if (output.trim() === 'PRICING RECORD ADDED') {
+		return {status: 'success'};
+	} else {
+		return {status: 'error'};
+	}
 };
 
 let makeMaskRs = (calledCommands, actions = []) => new TerminalService('apollo')

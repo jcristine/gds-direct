@@ -37,7 +37,7 @@ let dataToDom = (data, onCancel) => {
 		return fld;
 	};
 
-	let {baseFare, fareEquivalent, netPrice} = data.parsed;
+	let {baseFare, fareEquivalent, netPrice} = parsed;
 	let baseFareStr = data.parsed.fareEquivalent
 		? ` EQUIV ${fareEquivalent.currency} ${('       ' + fareEquivalent.amount).slice(-7)} TTL ${netPrice.currency}`
 		: ` FARE  ${baseFare.currency} ${('       ' + baseFare.amount).slice(-7)} TTL ${netPrice.currency}`;

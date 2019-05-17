@@ -37,7 +37,7 @@ let dataToDom = (data, onCancel) => {
 		return fld;
 	};
 
-	let formCmp = Cmp('form.mask-form manual-pricing-mask').attach([
+	let formCmp = Cmp('form.mask-form manual-pricing-mask monospace-inputs').attach([
 		Cmp('br'),
 		Cmp('div').attach([
 			Cmp('div').attach([
