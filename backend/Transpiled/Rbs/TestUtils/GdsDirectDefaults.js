@@ -5,7 +5,7 @@ const Agent = require("../../../DataFormats/Wrappers/Agent");
 const Fp = require('../../Lib/Utils/Fp.js');
 const AnyGdsStubSession = require('./AnyGdsStubSession.js');
 const CmdLog = require('../../../GdsHelpers/CmdLog.js');
-const NotFound = require('../../../Utils/Rej.js');
+const NotFound = require('gds-direct-lib/src/Utils/Rej.js');
 const StatefulSession = require('../../../GdsHelpers/StatefulSession.js');
 
 /**

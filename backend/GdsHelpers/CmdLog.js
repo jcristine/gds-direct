@@ -1,9 +1,9 @@
 
 const SessionStateProcessor = require('../Transpiled/Rbs/GdsDirect/SessionStateProcessor/SessionStateProcessor.js');
 const CommonDataHelper = require("../Transpiled/Rbs/GdsDirect/CommonDataHelper");
-const Rej = require("../Utils/Rej");
+const Rej = require("gds-direct-lib/src/Utils/Rej");
 const SessionStateHelper = require("../Transpiled/Rbs/GdsDirect/SessionStateProcessor/SessionStateHelper");
-const NotFound = require("../Utils/Rej").NotFound;
+const NotFound = require("gds-direct-lib/src/Utils/Rej").NotFound;
 const makeRow = require("../Repositories/CmdLogs").makeRow;
 const hrtimeToDecimal = require("../Utils/Misc").hrtimeToDecimal;
 

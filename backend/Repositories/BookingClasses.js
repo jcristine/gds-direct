@@ -1,8 +1,8 @@
 
 let {getConfig} = require('../Config.js');
 let Db = require('../Utils/Db.js');
-const BadGateway = require("../Utils/Rej").BadGateway;
-const UnprocessableEntity = require("../Utils/Rej").UnprocessableEntity;
+const BadGateway = require("gds-direct-lib/src/Utils/Rej").BadGateway;
+const UnprocessableEntity = require("gds-direct-lib/src/Utils/Rej").UnprocessableEntity;
 const iqJson = require("../Utils/Misc").iqJson;
 
 let TABLE = 'airline_booking_classes';

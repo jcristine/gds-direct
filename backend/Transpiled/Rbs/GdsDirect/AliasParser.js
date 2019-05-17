@@ -7,7 +7,7 @@ const ParsersController = require('../../Rbs/IqControllers/ParsersController.js'
 
 let php = require('../../php.js');
 const CmsClient = require("../../../IqClients/CmsClient");
-const Rej = require("../../../Utils/Rej");
+const Rej = require("gds-direct-lib/src/Utils/Rej");
 
 /**
  * provides functions to parse our custom formats

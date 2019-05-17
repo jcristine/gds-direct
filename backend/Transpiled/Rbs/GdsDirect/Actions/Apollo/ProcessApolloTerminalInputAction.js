@@ -30,14 +30,14 @@ const PnrHistoryParser = require('../../../../Gds/Parsers/Apollo/PnrHistoryParse
 const DisplayHistoryActionHelper = require('./DisplayHistoryActionHelper.js');
 const GetMultiPccTariffDisplayAction = require('../../../../Rbs/GdsDirect/Actions/Common/GetMultiPccTariffDisplayAction.js');
 const fetchUntil = require("../../../../../GdsHelpers/TravelportUtils").fetchUntil;
-const UnprocessableEntity = require("../../../../../Utils/Rej").UnprocessableEntity;
+const UnprocessableEntity = require("gds-direct-lib/src/Utils/Rej").UnprocessableEntity;
 const TariffDisplayParser = require('../../../../Gds/Parsers/Apollo/TariffDisplay/TariffDisplayParser.js');
 const FareDisplayDomesticParser = require('../../../../Gds/Parsers/Apollo/TariffDisplay/FareDisplayDomesticParser.js');
 const FareDisplayInternationalParser = require('../../../../Gds/Parsers/Apollo/TariffDisplay/FareDisplayInternationalParser.js');
-const BadRequest = require("../../../../../Utils/Rej").BadRequest;
+const BadRequest = require("gds-direct-lib/src/Utils/Rej").BadRequest;
 const RetrieveApolloTicketsAction = require('../../../../Rbs/Process/Apollo/ImportPnr/Actions/RetrieveApolloTicketsAction.js');
 const ParseHbFex = require('../../../../../Parsers/Apollo/ParseHbFex.js');
-const Rej = require('../../../../../Utils/Rej.js');
+const Rej = require('gds-direct-lib/src/Utils/Rej.js');
 
 let php = require('../../../../php.js');
 const McoListParser = require("../../../../Gds/Parsers/Apollo/Mco/McoListParser");

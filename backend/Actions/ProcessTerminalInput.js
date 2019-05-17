@@ -18,13 +18,13 @@ const ProcessAmadeusTerminalInputAction = require("../Transpiled/Rbs/GdsDirect/A
 const Agents = require("../Repositories/Agents");
 const ProcessGalileoTerminalInputAction = require("../Transpiled/Rbs/GdsDirect/Actions/Galileo/ProcessGalileoTerminalInputAction");
 const GdsDirect = require("../Transpiled/Rbs/GdsDirect/GdsDirect");
-const Rej = require("../Utils/Rej");
+const Rej = require("gds-direct-lib/src/Utils/Rej");
 const TerminalSettings = require("../Transpiled/App/Models/Terminal/TerminalSettings");
 const CommandCorrector = require("../Transpiled/Rbs/GdsDirect/DialectTranslator/CommandCorrector");
 const Misc = require("../Utils/Misc");
-const BadRequest = require("../Utils/Rej").BadRequest;
-const TooManyRequests = require("../Utils/Rej").TooManyRequests;
-const NotImplemented = require("../Utils/Rej").NotImplemented;
+const BadRequest = require("gds-direct-lib/src/Utils/Rej").BadRequest;
+const TooManyRequests = require("gds-direct-lib/src/Utils/Rej").TooManyRequests;
+const NotImplemented = require("gds-direct-lib/src/Utils/Rej").NotImplemented;
 
 /**
  * @param '$BN1|2*INF'

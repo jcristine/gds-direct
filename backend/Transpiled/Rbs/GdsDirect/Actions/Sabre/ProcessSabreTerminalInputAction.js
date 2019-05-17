@@ -22,7 +22,7 @@ const SabreTicketListParser = require('../../../../Gds/Parsers/Sabre/SabreTicket
 const SabreReservationParser = require('../../../../Gds/Parsers/Sabre/Pnr/PnrParser.js');
 const Pccs = require("../../../../../Repositories/Pccs");
 const getRbsPqInfo = require("../../../../../GdsHelpers/RbsUtils").getRbsPqInfo;
-const UnprocessableEntity = require("../../../../../Utils/Rej").UnprocessableEntity;
+const UnprocessableEntity = require("gds-direct-lib/src/Utils/Rej").UnprocessableEntity;
 const SabreTicketParser = require('../../../../Gds/Parsers/Sabre/SabreTicketParser.js');
 
 class ProcessSabreTerminalInputAction {

@@ -1,6 +1,6 @@
 
 let Emc = require('../LibWrappers/Emc.js');
-let {NoContent, Forbidden, NotAuthorized, BadRequest, TooManyRequests, NotImplemented, LoginTimeOut, InternalServerError, NotFound} = require('../Utils/Rej.js');
+let {NoContent, Forbidden, NotAuthorized, BadRequest, TooManyRequests, NotImplemented, LoginTimeOut, InternalServerError, NotFound} = require('gds-direct-lib/src/Utils/Rej.js');
 let Diag = require('../LibWrappers/Diag.js');
 let FluentLogger = require('../LibWrappers/FluentLogger.js');
 const {getExcData} = require('../Utils/Misc.js');

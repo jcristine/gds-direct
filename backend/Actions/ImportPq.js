@@ -1,8 +1,8 @@
 
 const php = require('../Transpiled/php.js');
 const ImportPqApolloAction = require("../Transpiled/Rbs/GdsDirect/Actions/Apollo/ImportPqApolloAction");
-const Rej = require('../Utils/Rej.js');
-const {UnprocessableEntity, NotImplemented} = require("../Utils/Rej");
+const Rej = require('gds-direct-lib/src/Utils/Rej.js');
+const {UnprocessableEntity, NotImplemented} = require("gds-direct-lib/src/Utils/Rej");
 const DateTime = require('../Transpiled/Lib/Utils/DateTime.js');
 const ImportPnrAction = require('../Transpiled/Rbs/Process/Common/ImportPnr/ImportPnrAction.js');
 const SessionStateHelper = require("../Transpiled/Rbs/GdsDirect/SessionStateProcessor/SessionStateHelper");

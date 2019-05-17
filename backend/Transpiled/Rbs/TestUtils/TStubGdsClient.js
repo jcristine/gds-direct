@@ -3,7 +3,7 @@
 
 const TestCase = require('../../Lib/TestCase.js');
 const Fp = require('../../Lib/Utils/Fp.js');
-const BadGateway = require("../../../Utils/Rej").BadGateway;
+const BadGateway = require("gds-direct-lib/src/Utils/Rej").BadGateway;
 
 let php = require('../../php.js');
 

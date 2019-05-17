@@ -1,6 +1,6 @@
 let Redis = require("../LibWrappers/Redis.js");
 let {never, StrConsts} = require('../Utils/StrConsts.js');
-let Rej = require('../Utils/Rej.js');
+let Rej = require('gds-direct-lib/src/Utils/Rej.js');
 const RbsClient = require("../IqClients/RbsClient");
 let {mand} = require('../Utils/Misc.js');
 

@@ -11,7 +11,7 @@ const {fetchAll} = require('../../../../../../GdsHelpers/TravelportUtils.js');
 const php = require('../../../../../php.js');
 const Pccs = require("../../../../../../Repositories/Pccs");
 const TravelportClient = require("../../../../../../GdsClients/TravelportClient");
-const Forbidden = require("../../../../../../Utils/Rej").Forbidden;
+const Forbidden = require("gds-direct-lib/src/Utils/Rej").Forbidden;
 
 class RetrieveApolloTicketsAction extends AbstractGdsAction {
 	static async getTicket($ticketRef, gdsSession) {

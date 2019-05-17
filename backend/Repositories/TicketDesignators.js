@@ -3,7 +3,7 @@ const {getConfig} = require('../Config.js');
 
 let Db = require('../Utils/Db.js');
 let php = require('../Transpiled/php.js');
-const NotFound = require("../Utils/Rej").NotFound;
+const NotFound = require("gds-direct-lib/src/Utils/Rej").NotFound;
 
 const TABLE = 'ticket_designators';
 

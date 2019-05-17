@@ -2,11 +2,11 @@
 // namespace Gds\Parsers\Apollo;
 
 const Fp = require('../../../Lib/Utils/Fp.js');
-const Rej = require('../../../../Utils/Rej.js');
+const Rej = require('gds-direct-lib/src/Utils/Rej.js');
 
 let php = require('../../../php.js');
 const StringUtil = require('../../../Lib/Utils/StringUtil.js');
-const BadRequest = require("../../../../Utils/Rej").BadRequest;
+const BadRequest = require("gds-direct-lib/src/Utils/Rej").BadRequest;
 
 class AbstractMaskParser
 {

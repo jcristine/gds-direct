@@ -26,8 +26,8 @@ const MarriageItineraryParser = require('../../../../Gds/Parsers/Amadeus/Marriag
 const AmadeusClient = require("../../../../../GdsClients/AmadeusClient");
 const makeDefaultAreaState = require("../../../../../Repositories/GdsSessions").makeDefaultAreaState;
 const WorkAreaScreenParser = require("../../../../Gds/Parsers/Amadeus/WorkAreaScreenParser");
-const UnprocessableEntity = require("../../../../../Utils/Rej").UnprocessableEntity;
-const Rej = require("../../../../../Utils/Rej");
+const UnprocessableEntity = require("gds-direct-lib/src/Utils/Rej").UnprocessableEntity;
+const Rej = require("gds-direct-lib/src/Utils/Rej");
 const FxParser = require('../../../../Gds/Parsers/Amadeus/Pricing/FxParser.js');
 const TicketMaskParser = require('../../../../Gds/Parsers/Amadeus/TicketMaskParser.js');
 

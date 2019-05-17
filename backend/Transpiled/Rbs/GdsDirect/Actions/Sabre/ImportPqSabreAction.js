@@ -13,7 +13,7 @@ const SabrePricingAdapter = require('../../../FormatAdapters/SabrePricingAdapter
 const SabreVerifyParser = require('../../../../Gds/Parsers/Sabre/SabreVerifyParser.js');
 const ImportSabreFareRulesActions = require('../../../../Rbs/Process/Apollo/ImportPnr/Actions/ImportSabreFareRulesActions.js');
 const withCapture = require("../../../../../GdsHelpers/CommonUtils").withCapture;
-const Rej = require('../../../../../Utils/Rej.js');
+const Rej = require('gds-direct-lib/src/Utils/Rej.js');
 
 /**
  * import PNR fields of currently opened PNR

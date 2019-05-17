@@ -5,9 +5,9 @@ let crypto = require('crypto');
 let util = require('util');
 let {wrapExc} = require("../Utils/Misc.js");
 let {parseXml, escapeXml} = require('../GdsHelpers/CommonUtils.js');
-let Rej = require("../Utils/Rej.js");
+let Rej = require("gds-direct-lib/src/Utils/Rej.js");
 const GdsProfiles = require("../Repositories/GdsProfiles");
-const LoginTimeOut = require("../Utils/Rej").LoginTimeOut;
+const LoginTimeOut = require("gds-direct-lib/src/Utils/Rej").LoginTimeOut;
 
 let chr = (charCode) => String.fromCharCode(charCode);
 

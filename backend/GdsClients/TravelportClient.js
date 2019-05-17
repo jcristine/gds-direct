@@ -1,9 +1,9 @@
 let {getTravelport} = require("../Repositories/GdsProfiles.js");
-let {LoginTimeOut, BadGateway} = require("../Utils/Rej");
+let {LoginTimeOut, BadGateway} = require("gds-direct-lib/src/Utils/Rej");
 let {escapeXml, parseXml} = require("../GdsHelpers/CommonUtils.js");
 let PersistentHttpRq = require('gds-direct-lib/src/Utils/PersistentHttpRq.js');
 const GdsProfiles = require("../Repositories/GdsProfiles");
-const Conflict = require("../Utils/Rej").Conflict;
+const Conflict = require("gds-direct-lib/src/Utils/Rej").Conflict;
 
 /**
  * they are all physically located in USA, Atlanta (in same building)
