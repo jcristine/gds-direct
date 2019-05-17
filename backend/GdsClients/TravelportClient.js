@@ -1,7 +1,7 @@
 let {getTravelport} = require("../Repositories/GdsProfiles.js");
 let {LoginTimeOut, BadGateway} = require("../Utils/Rej");
 let {escapeXml, parseXml} = require("../GdsHelpers/CommonUtils.js");
-let PersistentHttpRq = require('../Utils/PersistentHttpRq.js');
+let PersistentHttpRq = require('gds-direct-lib/src/Utils/PersistentHttpRq.js');
 const GdsProfiles = require("../Repositories/GdsProfiles");
 const Conflict = require("../Utils/Rej").Conflict;
 

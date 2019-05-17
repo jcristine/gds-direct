@@ -1,5 +1,5 @@
 
-let PersistentHttpRq = require('../Utils/PersistentHttpRq.js');
+let PersistentHttpRq = require('gds-direct-lib/src/Utils/PersistentHttpRq.js');
 let {getSabre} = require('../Repositories/GdsProfiles.js');
 let {wrapExc} = require("../Utils/Misc.js");
 let {parseXml, escapeXml} = require('../GdsHelpers/CommonUtils.js');

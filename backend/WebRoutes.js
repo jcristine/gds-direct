@@ -19,7 +19,7 @@ const CommandParser = require("./Transpiled/Gds/Parsers/Apollo/CommandParser");
 const PnrParser = require("./Transpiled/Gds/Parsers/Apollo/Pnr/PnrParser");
 const FareConstructionParser = require("./Transpiled/Gds/Parsers/Common/FareConstruction/FareConstructionParser");
 const {safe} = require('./Utils/Misc.js');
-const PersistentHttpRq = require('./Utils/PersistentHttpRq.js');
+const PersistentHttpRq = require('gds-direct-lib/src/Utils/PersistentHttpRq.js');
 const Misc = require("./Transpiled/Lib/Utils/Misc");
 const CmdLogs = require("./Repositories/CmdLogs");
 const Rej = require("./Utils/Rej");
@@ -442,7 +442,7 @@ app.get('/ping', toHandleHttp((rqBody) => {
 	for (let key in used2) {
 		memory[key] = Math.round(used2[key] / 1024 / 1024 * 100) / 100;
 	}
-	let PersistentHttpRq = require('./Utils/PersistentHttpRq.js');
+	let PersistentHttpRq = require('gds-direct-lib/src/Utils/PersistentHttpRq.js');
 
 	return Redis.getInfo().then(async redisLines => {
 		const data = {
