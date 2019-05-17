@@ -5,6 +5,7 @@ const StringUtil = require('../Transpiled/Lib/Utils/StringUtil.js');
 const TravelportUtils = require("../GdsHelpers/TravelportUtils");
 const Rej = require('../Utils/Rej.js');
 const SubmitTaxBreakdownMask = require("./SubmitTaxBreakdownMask");
+const NmeScreenParser = require("../Transpiled/Gds/Parsers/Apollo/ManualPricing/NmeScreenParser");
 
 let POSITIONS = AbstractMaskParser.getPositionsBy('_', [
 	"$NME LIB/MAR                                                   ",
@@ -116,5 +117,37 @@ PriceItineraryManually.inputHhprMask = async ({rqBody, gdsSession}) => {
 
 PriceItineraryManually.POSITIONS = POSITIONS;
 PriceItineraryManually.FIELDS = FIELDS;
+
+PriceItineraryManually.parse = async (mask) => {
+	let parsed = NmeScreenParser.parse(mask);
+	if (parsed.error) {
+		return Rej.UnprocessableEntity('Bad HHPR reply - ' + parsed.error);
+	}
+	let items = await AbstractMaskParser.getPositionValues({
+		mask: mask,
+		positions: PriceItineraryManually.POSITIONS,
+		fields: PriceItineraryManually.FIELDS,
+	});
+	let defaults = {};
+	for (let i = 0; i < parsed.segments.length; ++i) {
+		let dtRec = parsed.segments[i].departureDate;
+		if (dtRec) {
+			defaults['seg' + (i + 1) + '_notValidBefore'] = dtRec.raw;
+			defaults['seg' + (i + 1) + '_notValidAfter'] = dtRec.raw;
+		}
+	}
+	return {
+		parsed: parsed,
+		fields: items.map(i => {
+			let value = i.value || defaults[i.key] || '';
+			return {
+				key: i.key,
+				value: value,
+				enabled: !value && i.enabled,
+			};
+		}),
+		maskOutput: mask,
+	};
+};
 
 module.exports = PriceItineraryManually;

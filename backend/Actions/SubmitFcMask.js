@@ -5,6 +5,8 @@ const Rej = require('../Utils/Rej.js');
 const TravelportUtils = require("../GdsHelpers/TravelportUtils");
 const TerminalService = require("../Transpiled/App/Services/TerminalService");
 const FcScreenParser = require("../Transpiled/Gds/Parsers/Apollo/ManualPricing/FcScreenParser");
+const StringUtil = require('../Transpiled/Lib/Utils/StringUtil.js');
+const PriceItineraryManually = require("./PriceItineraryManually");
 
 let POSITIONS = AbstractMaskParser.getPositionsBy('_', [
 	"$FC/ATB FARE CONSTRUCTION                                      ",
@@ -28,6 +30,8 @@ let FIELDS = [
 let parseOutput = (output) => {
 	if (output.trim() === 'PRICING RECORD ADDED') {
 		return {status: 'success'};
+	} else if (output.startsWith('>$NME')) {
+		return {status: 'nextHhprPax'};
 	} else {
 		return {status: 'error'};
 	}
@@ -60,6 +64,13 @@ let SubmitFcMask = async ({rqBody, gdsSession}) => {
 	if (result.status === 'success') {
 		let calledCommands = [{cmd: '$FC...', output: cmdRec.output}];
 		return makeMaskRs(calledCommands);
+	} else if (result.status === 'nextHhprPax') {
+		let maskCmd = StringUtil.wrapLinesAt('>' + cmdRec.cmd, 64);
+		let calledCommands = [{cmd: '$FC...', output: maskCmd}];
+		return makeMaskRs(calledCommands, [{
+			type: 'displayHhprMask',
+			data: await PriceItineraryManually.parse(cmdRec.output),
+		}]);
 	} else {
 		return Rej.UnprocessableEntity('GDS gave ' + result.status + ' - \n' + cmdRec.output);
 	}

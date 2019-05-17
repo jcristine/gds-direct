@@ -1504,23 +1504,7 @@ class ProcessApolloTerminalInputAction {
 		let mods = cmdData.pricingModifiers;
 		let cmd = 'HHPR' + mods.map(m => m.raw).join('/');
 		let output = (await this.runCmd(cmd)).output;
-		let parsed = NmeScreenParser.parse(output);
-		if (parsed.error) {
-			return Rej.UnprocessableEntity('Bad HHPR reply - ' + parsed.error);
-		}
-		let items = await AbstractMaskParser.getPositionValues({
-			mask: output,
-			positions: PriceItineraryManually.POSITIONS,
-			fields: PriceItineraryManually.FIELDS,
-		});
-		let defaults = {};
-		for (let i = 0; i < parsed.segments.length; ++i) {
-			let dtRec = parsed.segments[i].departureDate;
-			if (dtRec) {
-				defaults['seg' + (i + 1) + '_notValidBefore'] = dtRec.raw;
-				defaults['seg' + (i + 1) + '_notValidAfter'] = dtRec.raw;
-			}
-		}
+		let data = await PriceItineraryManually.parse(output);
 		return {
 			calledCommands: [{
 				cmd: cmd,
@@ -1528,18 +1512,7 @@ class ProcessApolloTerminalInputAction {
 			}],
 			actions: [{
 				type: 'displayHhprMask',
-				data: {
-					parsed: parsed,
-					fields: items.map(i => {
-						let value = i.value || defaults[i.key] || '';
-						return {
-							key: i.key,
-							value: value,
-							enabled: !value && i.enabled,
-						};
-					}),
-					maskOutput: output,
-				},
+				data: data,
 			}],
 		};
 	}
