@@ -51,6 +51,8 @@ let FIELDS = [
 let parseOutput = (output) => {
 	if (output.trim() === '*') {
 		return {status: 'success'};
+	} else if (output.startsWith('>$NME')) {
+		return {status: 'nextHhprPage'};
 	} else if (output.match(/^>\$TA\s+TAX BREAKDOWN SCREEN/)) {
 		// one line error
 		return {status: 'taxBreakdown'};
@@ -105,6 +107,13 @@ PriceItineraryManually.inputHhprMask = async ({rqBody, gdsSession}) => {
 	if (result.status === 'success') {
 		calledCommands.push({cmd: '$NME...', output: result.output});
 		return makeMaskRs(calledCommands);
+	} else if (result.status === 'nextHhprPage') {
+		let maskCmd = StringUtil.wrapLinesAt('>' + result.cmd, 64);
+		let calledCommands = [{cmd: '$NME...', output: maskCmd}];
+		return makeMaskRs(calledCommands, [{
+			type: 'displayHhprMask',
+			data: await PriceItineraryManually.parse(result.output),
+		}]);
 	} else if (result.status === 'taxBreakdown') {
 		return makeMaskRs(calledCommands, [{
 			type: 'displayTaxBreakdownMask',

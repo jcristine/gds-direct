@@ -44,8 +44,6 @@ const McoListParser = require("../../../../Gds/Parsers/Apollo/Mco/McoListParser"
 const McoMaskParser = require("../../../../Gds/Parsers/Apollo/Mco/McoMaskParser");
 const Pccs = require("../../../../../Repositories/Pccs");
 const PriceItineraryManually = require('../../../../../Actions/PriceItineraryManually.js');
-const AbstractMaskParser = require("../../../../Gds/Parsers/Apollo/AbstractMaskParser");
-const NmeScreenParser = require("../../../../Gds/Parsers/Apollo/ManualPricing/NmeScreenParser");
 const SubmitFcMask = require("../../../../../Actions/SubmitFcMask");
 
 /** @param stateful = await require('StatefulSession.js')() */
@@ -128,11 +126,6 @@ class ProcessApolloTerminalInputAction {
 
 	getAgent() {
 		return this.stateful.getAgent();
-	}
-
-	/** @return Agent|null */
-	getLeadAgent() {
-		return this.stateful.getLeadAgent();
 	}
 
 	async getLastTariffDisplay() {
