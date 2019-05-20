@@ -1522,9 +1522,7 @@ class ProcessApolloTerminalInputAction {
 		return result;
 	}
 
-	async prepareHhprMask(cmdData) {
-		let mods = cmdData.pricingModifiers;
-		let cmd = cmdData.baseCmd + mods.map(m => m.raw).join('/');
+	async prepareHhprMask(cmd) {
 		let output = (await this.runCmd(cmd)).output;
 		let data = await PriceItineraryManually.parse(output);
 		return {
@@ -1585,8 +1583,8 @@ class ProcessApolloTerminalInputAction {
 		} else if (php.preg_match(/^HB(\d*):FEX\s*([\d\s]{13,}|)$/, $cmd, $matches = [])) {
 			let [_, storeNumber, ticketNumber] = $matches;
 			return this.prepareHbFexMask(storeNumber, ticketNumber || '');
-		} else if (parsed.type === 'priceItineraryManually') {
-			return this.prepareHhprMask(parsed.data);
+		} else if (['priceItineraryManually', 'manualStoreItinerary', 'manualStoreMoveDown'].includes(parsed.type)) {
+			return this.prepareHhprMask($cmd);
 		} else if (['HBT', 'HBTA'].includes($cmd)) {
 			return this.processHbt($cmd);
 		} else if (php.preg_match(/^SORT$/, $cmd, $matches = [])) {
