@@ -1,9 +1,9 @@
 
-const AbstractMaskParser = require("../Transpiled/Gds/Parsers/Apollo/AbstractMaskParser");
-const {fetchAll} = require('../GdsHelpers/TravelportUtils.js');
+const AbstractMaskParser = require("../../Transpiled/Gds/Parsers/Apollo/AbstractMaskParser");
+const {fetchAll} = require('../../GdsHelpers/TravelportUtils.js');
 const Rej = require('gds-direct-lib/src/Utils/Rej.js');
-const TravelportUtils = require("../GdsHelpers/TravelportUtils");
-const TerminalService = require("../Transpiled/App/Services/TerminalService");
+const TravelportUtils = require("../../GdsHelpers/TravelportUtils");
+const TerminalService = require("../../Transpiled/App/Services/TerminalService");
 
 let POSITIONS = AbstractMaskParser.getPositionsBy('_', [
 	"$ZP U.S. FLIGHT SEGMENT TAX BREAKDOWN SCREEN                   ",

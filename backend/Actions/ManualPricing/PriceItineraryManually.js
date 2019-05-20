@@ -1,11 +1,11 @@
-const AbstractMaskParser = require("../Transpiled/Gds/Parsers/Apollo/AbstractMaskParser");
-const TerminalService = require("../Transpiled/App/Services/TerminalService");
-const {fetchAll} = require('../GdsHelpers/TravelportUtils.js');
-const StringUtil = require('../Transpiled/Lib/Utils/StringUtil.js');
-const TravelportUtils = require("../GdsHelpers/TravelportUtils");
+const AbstractMaskParser = require("../../Transpiled/Gds/Parsers/Apollo/AbstractMaskParser");
+const TerminalService = require("../../Transpiled/App/Services/TerminalService");
+const {fetchAll} = require('../../GdsHelpers/TravelportUtils.js');
+const StringUtil = require('../../Transpiled/Lib/Utils/StringUtil.js');
+const TravelportUtils = require("../../GdsHelpers/TravelportUtils");
 const Rej = require('gds-direct-lib/src/Utils/Rej.js');
 const SubmitTaxBreakdownMask = require("./SubmitTaxBreakdownMask");
-const NmeScreenParser = require("../Transpiled/Gds/Parsers/Apollo/ManualPricing/NmeScreenParser");
+const NmeScreenParser = require("../../Transpiled/Gds/Parsers/Apollo/ManualPricing/NmeScreenParser");
 
 let POSITIONS = AbstractMaskParser.getPositionsBy('_', [
 	"$NME LIB/MAR                                                   ",

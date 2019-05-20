@@ -22,12 +22,12 @@ const Misc = require("../Utils/Misc");
 const allWrap = require("../Utils/Misc").allWrap;
 const {getConfig} = require('../Config.js');
 const ExchangeApolloTicket = require('../Actions/ExchangeApolloTicket.js');
-const PriceItineraryManually = require('../Actions/PriceItineraryManually.js');
+const PriceItineraryManually = require('../Actions/ManualPricing/PriceItineraryManually.js');
 const Rej = require("gds-direct-lib/src/Utils/Rej");
 const TravelportUtils = require("../GdsHelpers/TravelportUtils");
-const SubmitTaxBreakdownMask = require('../Actions/SubmitTaxBreakdownMask.js');
-const SubmitZpTaxBreakdownMask = require('../Actions/SubmitZpTaxBreakdownMask.js');
-const SubmitFcMask = require('../Actions/SubmitFcMask.js');
+const SubmitTaxBreakdownMask = require('../Actions/ManualPricing/SubmitTaxBreakdownMask.js');
+const SubmitZpTaxBreakdownMask = require('../Actions/ManualPricing/SubmitZpTaxBreakdownMask.js');
+const SubmitFcMask = require('../Actions/ManualPricing/FcMaskSubmit.js');
 
 let startByGds = async (gds) => {
 	let tuples = [

@@ -1,50 +1,56 @@
 // namespace Rbs\GdsDirect\Actions\Apollo;
 
+// utils
+const php = require('../../../../php.js');
 const ArrayUtil = require('../../../../Lib/Utils/ArrayUtil.js');
 const DateTime = require('../../../../Lib/Utils/DateTime.js');
 const Fp = require('../../../../Lib/Utils/Fp.js');
-const Misc = require('../../../../Lib/Utils/Misc.js');
 const StringUtil = require('../../../../Lib/Utils/StringUtil.js');
-const ApolloBuildItineraryAction = require('../../../../Rbs/GdsAction/ApolloBuildItineraryAction.js');
-const ApolloMakeMcoAction = require('../../../../Rbs/GdsAction/ApolloMakeMcoAction.js');
-const TApolloSavePnr = require('../../../../Rbs/GdsAction/Traits/TApolloSavePnr.js');
-const AliasParser = require('../../../../Rbs/GdsDirect/AliasParser.js');
-const CommonDataHelper = require('../../../../Rbs/GdsDirect/CommonDataHelper.js');
+const fetchUntil = require("../../../../../GdsHelpers/TravelportUtils").fetchUntil;
+const {fetchAll, extractPager} = require('../../../../../GdsHelpers/TravelportUtils.js');
+
+const Rej = require('gds-direct-lib/src/Utils/Rej.js');
+const UnprocessableEntity = require("gds-direct-lib/src/Utils/Rej").UnprocessableEntity;
+const BadRequest = require("gds-direct-lib/src/Utils/Rej").BadRequest;
 const Errors = require('../../../../Rbs/GdsDirect/Errors.js');
+
+const CommonDataHelper = require('../../../../Rbs/GdsDirect/CommonDataHelper.js');
 const GdsDirect = require('../../../../Rbs/GdsDirect/GdsDirect.js');
 const CmsApolloTerminal = require('../../../../Rbs/GdsDirect/GdsInterface/CmsApolloTerminal.js');
-const ApolloReservationItineraryParser = require('../../../../Gds/Parsers/Apollo/Pnr/ItineraryParser.js');
-const ApolloReservationParser = require('../../../../Gds/Parsers/Apollo/Pnr/PnrParser.js');
-const CommandParser = require('../../../../Gds/Parsers/Apollo/CommandParser.js');
 const CommonParserHelpers = require('../../../../Gds/Parsers/Apollo/CommonParserHelpers.js');
-const GenericRemarkParser = require('../../../../Gds/Parsers/Common/GenericRemarkParser.js');
 const PtcUtil = require('../../../../Rbs/Process/Common/PtcUtil.js');
-const {fetchAll, extractPager} = require('../../../../../GdsHelpers/TravelportUtils.js');
 const ApolloPnr = require('../../../../Rbs/TravelDs/ApolloPnr.js');
+
+// actions
+const ApolloBuildItineraryAction = require('../../../../Rbs/GdsAction/ApolloBuildItineraryAction.js');
+const ApolloMakeMcoAction = require('../../../../Rbs/GdsAction/ApolloMakeMcoAction.js');
 const MakeMcoApolloAction = require('../../../../Rbs/GdsDirect/Actions/Apollo/MakeMcoApolloAction.js');
 const RepriceInAnotherPccAction = require('../../../../Rbs/GdsDirect/Actions/Common/RepriceInAnotherPccAction.js');
+const EndManualPricing = require('../../../../../Actions/ManualPricing/EndManualPricing.js');
+const GetMultiPccTariffDisplayAction = require('../../../../Rbs/GdsDirect/Actions/Common/GetMultiPccTariffDisplayAction.js');
+const RetrieveApolloTicketsAction = require('../../../../Rbs/Process/Apollo/ImportPnr/Actions/RetrieveApolloTicketsAction.js');
+const PriceItineraryManually = require('../../../../../Actions/ManualPricing/PriceItineraryManually.js');
+const DisplayHistoryActionHelper = require('./DisplayHistoryActionHelper.js');
+
+// parsers
+const ItineraryParser = require('../../../../Gds/Parsers/Apollo/Pnr/ItineraryParser.js');
+const PnrParser = require('../../../../Gds/Parsers/Apollo/Pnr/PnrParser.js');
+const CommandParser = require('../../../../Gds/Parsers/Apollo/CommandParser.js');
+const GenericRemarkParser = require('../../../../Gds/Parsers/Common/GenericRemarkParser.js');
+const TApolloSavePnr = require('../../../../Rbs/GdsAction/Traits/TApolloSavePnr.js');
+const AliasParser = require('../../../../Rbs/GdsDirect/AliasParser.js');
 const AirAvailabilityParser = require('../../../../Gds/Parsers/Apollo/AirAvailabilityParser.js');
 const ImportPqApolloAction = require("./ImportPqApolloAction");
 const getRbsPqInfo = require("../../../../../GdsHelpers/RbsUtils").getRbsPqInfo;
 const PnrHistoryParser = require('../../../../Gds/Parsers/Apollo/PnrHistoryParser.js');
-const DisplayHistoryActionHelper = require('./DisplayHistoryActionHelper.js');
-const GetMultiPccTariffDisplayAction = require('../../../../Rbs/GdsDirect/Actions/Common/GetMultiPccTariffDisplayAction.js');
-const fetchUntil = require("../../../../../GdsHelpers/TravelportUtils").fetchUntil;
-const UnprocessableEntity = require("gds-direct-lib/src/Utils/Rej").UnprocessableEntity;
+const McoListParser = require("../../../../Gds/Parsers/Apollo/Mco/McoListParser");
+const McoMaskParser = require("../../../../Gds/Parsers/Apollo/Mco/McoMaskParser");
 const TariffDisplayParser = require('../../../../Gds/Parsers/Apollo/TariffDisplay/TariffDisplayParser.js');
 const FareDisplayDomesticParser = require('../../../../Gds/Parsers/Apollo/TariffDisplay/FareDisplayDomesticParser.js');
 const FareDisplayInternationalParser = require('../../../../Gds/Parsers/Apollo/TariffDisplay/FareDisplayInternationalParser.js');
-const BadRequest = require("gds-direct-lib/src/Utils/Rej").BadRequest;
-const RetrieveApolloTicketsAction = require('../../../../Rbs/Process/Apollo/ImportPnr/Actions/RetrieveApolloTicketsAction.js');
 const ParseHbFex = require('../../../../../Parsers/Apollo/ParseHbFex.js');
-const Rej = require('gds-direct-lib/src/Utils/Rej.js');
 
-let php = require('../../../../php.js');
-const McoListParser = require("../../../../Gds/Parsers/Apollo/Mco/McoListParser");
-const McoMaskParser = require("../../../../Gds/Parsers/Apollo/Mco/McoMaskParser");
 const Pccs = require("../../../../../Repositories/Pccs");
-const PriceItineraryManually = require('../../../../../Actions/PriceItineraryManually.js');
-const SubmitFcMask = require("../../../../../Actions/SubmitFcMask");
 
 /** @param stateful = await require('StatefulSession.js')() */
 let execute = ({
@@ -742,7 +748,7 @@ class ProcessApolloTerminalInputAction {
 
 	static isSuccessRebookOutput($dump) {
 		let $isSegmentLine;
-		$isSegmentLine = ($line) => ApolloReservationItineraryParser.parseSegmentLine('0 ' + $line);
+		$isSegmentLine = ($line) => ItineraryParser.parseSegmentLine('0 ' + $line);
 		return Fp.any($isSegmentLine, StringUtil.lines($dump));
 	}
 
@@ -1294,7 +1300,7 @@ class ProcessApolloTerminalInputAction {
 			}
 		} else if (this.constructor.doesOpenPnr($cmdRecord['cmd'])) {
 			$clean = extractPager($cmdRecord['output'])[0];
-			$parsed = ApolloReservationParser.parse($clean);
+			$parsed = PnrParser.parse($clean);
 			$isAlex = ($pax) => {
 				return $pax['lastName'] === 'WEINSTEIN'
 					&& $pax['firstName'] === 'ALEX';
@@ -1537,34 +1543,12 @@ class ProcessApolloTerminalInputAction {
 		};
 	}
 
-	async processHbt(cmd) {
-		let cmdRec = await fetchAll(cmd, this);
-		let output = cmdRec.output;
-		if (output.startsWith('>$FC')) {
-			// GDS invited us to enter $FC mask for HHPR if "F CONST" was set to "Y"
-			let record = await SubmitFcMask.parse(output);
-			return {
-				calledCommands: [{
-					cmd: cmd,
-					output: 'SEE MASK FORM BELOW',
-				}],
-				actions: [{
-					type: 'displayFcMask',
-					data: record,
-				}],
-			};
-		} else {
-			// "PRICING RECORD STORED" or some other simple informational response
-			return {calledCommands: [cmdRec]};
-		}
-	}
-
-	async processRequestedCommand($cmd) {
+	async processRequestedCommand(cmd) {
 		let $alias, $mdaData, $limit, $cmdReal, $matches, $_, $plus, $seatAmount,
 			$segmentNumbers, $segmentStatus, $availability, $cityRow, $airlines, $itinerary;
 		let reservation;
-		$alias = this.constructor.parseAlias($cmd);
-		let parsed = CommandParser.parse($cmd);
+		$alias = this.constructor.parseAlias(cmd);
+		let parsed = CommandParser.parse(cmd);
 		if ($mdaData = $alias['moveDownAll'] || null) {
 			$limit = $mdaData['limit'] || null;
 			if ($cmdReal = $alias['realCmd']) {
@@ -1576,18 +1560,18 @@ class ProcessApolloTerminalInputAction {
 				let calledCommands = await this.moveDownAll($limit, mdCmdRows);
 				return {calledCommands};
 			}
-		} else if (php.preg_match(/^PNR$/, $cmd, $matches = [])) {
+		} else if (php.preg_match(/^PNR$/, cmd, $matches = [])) {
 			return this.processSavePnr();
-		} else if (php.preg_match(/^HHMCO$/, $cmd, $matches = [])) {
+		} else if (php.preg_match(/^HHMCO$/, cmd, $matches = [])) {
 			return this.prepareMcoMask();
-		} else if (php.preg_match(/^HB(\d*):FEX\s*([\d\s]{13,}|)$/, $cmd, $matches = [])) {
+		} else if (php.preg_match(/^HB(\d*):FEX\s*([\d\s]{13,}|)$/, cmd, $matches = [])) {
 			let [_, storeNumber, ticketNumber] = $matches;
 			return this.prepareHbFexMask(storeNumber, ticketNumber || '');
 		} else if (['priceItineraryManually', 'manualStoreItinerary', 'manualStoreMoveDown'].includes(parsed.type)) {
-			return this.prepareHhprMask($cmd);
-		} else if (['HBT', 'HBTA'].includes($cmd)) {
-			return this.processHbt($cmd);
-		} else if (php.preg_match(/^SORT$/, $cmd, $matches = [])) {
+			return this.prepareHhprMask(cmd);
+		} else if (['HBT', 'HBTA'].includes(cmd)) {
+			return EndManualPricing({cmd, stateful: this.stateful});
+		} else if (php.preg_match(/^SORT$/, cmd, $matches = [])) {
 			return this.processSortItinerary();
 		} else if ($alias['type'] === 'rebookInPcc') {
 			return this.processCloneItinerary($alias['data']);
@@ -1595,14 +1579,14 @@ class ProcessApolloTerminalInputAction {
 			return this.multiPriceItinerary($alias['data']);
 		} else if ($alias['type'] === 'storePricing') {
 			return this.storePricing($alias['data']);
-		} else if ($cmd === '*HA') {
+		} else if (cmd === '*HA') {
 			return this.displayHistory();
-		} else if ($cmd === '!aliasDoubleIgnore') {
+		} else if (cmd === '!aliasDoubleIgnore') {
 			return this.ignoreWithoutWarning();
-		} else if (php.preg_match(/^(\||\+)(\d{1})$/, $cmd, $matches = [])) {
+		} else if (php.preg_match(/^(\||\+)(\d{1})$/, cmd, $matches = [])) {
 			[$_, $plus, $seatAmount] = $matches;
 			return this.rebookWithNewSeatAmount($seatAmount);
-		} else if (php.preg_match(/^(\||\+)(\d{1})(S[\d\-\|]+)([A-Z]{2}|)$/, $cmd, $matches = [])) {
+		} else if (php.preg_match(/^(\||\+)(\d{1})(S[\d\-\|]+)([A-Z]{2}|)$/, cmd, $matches = [])) {
 			[$_, $plus, $seatAmount, $segmentNumbers, $segmentStatus] = $matches;
 			return this.rebookWithNewSeatAmountSpecificSegments($seatAmount, $segmentNumbers, $segmentStatus);
 		} else if ($alias['type'] === 'rebookAsGk') {
@@ -1613,20 +1597,20 @@ class ProcessApolloTerminalInputAction {
 			return this.getMultiPccTariffDisplay($alias['realCmd']);
 		} else if ($alias['type'] === 'priceInAnotherPcc') {
 			return this.priceInAnotherPcc($alias['realCmd'], $alias['data']['target'], $alias['data']['dialect']);
-		} else if ($matches = this.constructor.matchArtificialAvailabilityCmd($cmd)) {
+		} else if ($matches = this.constructor.matchArtificialAvailabilityCmd(cmd)) {
 			[$availability, $cityRow, $airlines] = $matches;
 			return this.makeMultipleCityAvailabilitySearch($availability, $cityRow, $airlines);
-		} else if (php.preg_match(/^SEM\/([\w\d]{3,4})\/AG$/, $cmd, $matches = [])) {
+		} else if (php.preg_match(/^SEM\/([\w\d]{3,4})\/AG$/, cmd, $matches = [])) {
 			let {cmdRec} = await this.emulatePcc($matches[1]);
 			return {calledCommands: [cmdRec]};
-		} else if (!php.empty(reservation = await AliasParser.parseCmdAsPnr($cmd, this.stateful))) {
+		} else if (!php.empty(reservation = await AliasParser.parseCmdAsPnr(cmd, this.stateful))) {
 			return this.bookPnr(reservation);
-		} else if (!php.empty($itinerary = await AliasParser.parseCmdAsItinerary($cmd, this.stateful))) {
+		} else if (!php.empty($itinerary = await AliasParser.parseCmdAsItinerary(cmd, this.stateful))) {
 			return this.bookItinerary($itinerary, true);
 		} else {
-			$cmd = $alias['realCmd'];
-			let fetchAll = this.constructor.shouldFetchAll($cmd);
-			let {cmdRec, userMessages} = await this.processRealCommand($cmd, fetchAll);
+			cmd = $alias['realCmd'];
+			let fetchAll = this.constructor.shouldFetchAll(cmd);
+			let {cmdRec, userMessages} = await this.processRealCommand(cmd, fetchAll);
 			return {calledCommands: [cmdRec], userMessages};
 		}
 	}

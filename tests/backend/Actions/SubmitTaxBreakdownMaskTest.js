@@ -1,5 +1,5 @@
 const GdsActionTestUtil = require("../../../backend/Transpiled/Rbs/TestUtils/GdsActionTestUtil");
-const SubmitTaxBreakdownMask = require('../../../backend/Actions/SubmitTaxBreakdownMask.js');
+const SubmitTaxBreakdownMask = require('../../../backend/Actions/ManualPricing/SubmitTaxBreakdownMask.js');
 
 class PriceItineraryManuallyTest extends require('../Transpiled/Lib/TestCase.js')
 {

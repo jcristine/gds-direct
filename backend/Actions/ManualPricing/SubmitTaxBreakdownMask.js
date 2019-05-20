@@ -1,12 +1,13 @@
 
-const AbstractMaskParser = require("../Transpiled/Gds/Parsers/Apollo/AbstractMaskParser");
-const {fetchAll} = require('../GdsHelpers/TravelportUtils.js');
+const AbstractMaskParser = require("../../Transpiled/Gds/Parsers/Apollo/AbstractMaskParser");
+const {fetchAll} = require('../../GdsHelpers/TravelportUtils.js');
 const Rej = require('gds-direct-lib/src/Utils/Rej.js');
-const TravelportUtils = require("../GdsHelpers/TravelportUtils");
-const TerminalService = require("../Transpiled/App/Services/TerminalService");
-const TaScreenParser = require("../Transpiled/Gds/Parsers/Apollo/ManualPricing/TaScreenParser");
-const StringUtil = require('../Transpiled/Lib/Utils/StringUtil.js');
+const TravelportUtils = require("../../GdsHelpers/TravelportUtils");
+const TerminalService = require("../../Transpiled/App/Services/TerminalService");
+const TaScreenParser = require("../../Transpiled/Gds/Parsers/Apollo/ManualPricing/TaScreenParser");
+const StringUtil = require('../../Transpiled/Lib/Utils/StringUtil.js');
 const SubmitZpTaxBreakdownMask = require('./SubmitZpTaxBreakdownMask.js');
+const EndManualPricing = require('./EndManualPricing.js');
 
 let POSITIONS = AbstractMaskParser.getPositionsBy('_', [
 	"$TA                TAX BREAKDOWN SCREEN                        ",
@@ -89,21 +90,26 @@ let SubmitTaxBreakdownMask = async ({rqBody, gdsSession}) => {
 	let cmdRec = await fetchAll(cmd, gdsSession);
 	let result = parseOutput(cmdRec.output);
 
+	let calledCommands = [];
+	let actions = [];
 	if (result.status === 'success') {
-		let calledCommands = [{cmd: '$TA...', output: cmdRec.output}];
-		return makeMaskRs(calledCommands);
+		calledCommands.push({cmd: '$TA...', output: cmdRec.output});
+		let ended = await EndManualPricing({stateful: gdsSession});
+		calledCommands.push(...(ended.calledCommands || []));
+		actions.push(...(ended.actions || []));
 	} else if (result.status === 'zpTaxBreakdown') {
 		let maskCmd = StringUtil.wrapLinesAt('>' + cmdRec.cmd, 64);
-		let calledCommands = [{cmd: '$TA...', output: maskCmd}];
-		return makeMaskRs(calledCommands, [{
+		calledCommands.push({cmd: '$TA...', output: maskCmd});
+		actions.push({
 			type: 'displayZpTaxBreakdownMask',
 			data: await SubmitZpTaxBreakdownMask.parse(cmdRec.output),
-		}]);
+		});
 	} else if (result.status === 'invalidData') {
 		return Rej.UnprocessableEntity('GDS rejects input - ' + result.error);
 	} else {
 		return Rej.UnprocessableEntity('GDS gave ' + result.status + ' - \n' + cmdRec.output);
 	}
+	return makeMaskRs(calledCommands, actions);
 };
 
 SubmitTaxBreakdownMask.parse = async (mask) => {

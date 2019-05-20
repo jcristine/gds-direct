@@ -1,5 +1,5 @@
 const GdsActionTestUtil = require("../../../backend/Transpiled/Rbs/TestUtils/GdsActionTestUtil");
-const PriceItineraryManually = require('../../../backend/Actions/PriceItineraryManually.js');
+const PriceItineraryManually = require('../../../backend/Actions/ManualPricing/PriceItineraryManually.js');
 
 class PriceItineraryManuallyTest extends require('../Transpiled/Lib/TestCase.js')
 {
