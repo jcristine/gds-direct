@@ -1,15 +1,51 @@
 
 const FcMaskParser = require("./FcMaskParser.js");
+const NmeMaskParser = require("./NmeMaskParser.js");
 const {fetchAll} = require('../../GdsHelpers/TravelportUtils.js');
+const StringUtil = require('../../Transpiled/Lib/Utils/StringUtil.js');
+const Rej = require('gds-direct-lib/src/Utils/Rej.js');
+
+let parseOutput = (output) => {
+	if (output.trim() === 'PRICING RECORD ADDED') {
+		return {status: 'success'};
+	} else if (output.startsWith('>$NME')) {
+		return {status: 'nextHhprPax'};
+	} else {
+		return {status: 'error'};
+	}
+};
+
+let handleEnd = async (hbtCmdRec, stateful) => {
+	let calledCommands = [];
+	let actions = [];
+	let result = parseOutput(hbtCmdRec.output);
+	if (result.status === 'success') {
+		calledCommands.push({...hbtCmdRec, cmd: 'HBT'});
+		calledCommands.push(await stateful.runCmd('T:OK'));
+		let erCmd = 'R:' + stateful.getAgent().getLogin() + '|ER';
+		calledCommands.push(await stateful.runCmd(erCmd));
+	} else if (result.status === 'nextHhprPax') {
+		let maskCmd = StringUtil.wrapLinesAt('>' + hbtCmdRec.cmd, 64);
+		calledCommands.push({cmd: 'HBT', output: maskCmd});
+		actions.push({
+			type: 'displayHhprMask',
+			data: await NmeMaskParser.parse(hbtCmdRec.output),
+		});
+	} else {
+		return Rej.UnprocessableEntity('GDS gave ' + result.status + ' - \n' + hbtCmdRec.output);
+	}
+	return Promise.resolve({calledCommands, actions});
+};
 
 /**
  * invokes the >HBT; and parses it's response which may either
- * be "PRICE RECORD ADDED" or >$FC... mask to be filled
+ * be "PRICING RECORD ADDED" or >$FC... mask to be filled
  * also will add agent RCVD at some point
+ *
+ * @param stateful = require('StatefulSession.js')()
  */
-let EndManualPricing = async (params) => {
+let EndManualPricing = async ({cmd = 'HBT', stateful}) => {
 	// TODO: HBTA when there are multiple passengers
-	let {cmd = 'HBT', stateful} = params;
 	let cmdRec = await fetchAll(cmd, stateful);
 	let output = cmdRec.output;
 	if (output.startsWith('>$FC')) {
@@ -26,10 +62,10 @@ let EndManualPricing = async (params) => {
 			}],
 		};
 	} else {
-		// TODO: T:OK, R:{agent}, ER
-		// "PRICING RECORD STORED" or some other simple informational response
-		return {calledCommands: [cmdRec]};
+		return handleEnd(cmdRec, stateful);
 	}
 };
+
+EndManualPricing.handleEnd = handleEnd;
 
 module.exports = EndManualPricing;

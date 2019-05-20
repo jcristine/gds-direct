@@ -29,7 +29,6 @@ const RepriceInAnotherPccAction = require('../../../../Rbs/GdsDirect/Actions/Com
 const EndManualPricing = require('../../../../../Actions/ManualPricing/EndManualPricing.js');
 const GetMultiPccTariffDisplayAction = require('../../../../Rbs/GdsDirect/Actions/Common/GetMultiPccTariffDisplayAction.js');
 const RetrieveApolloTicketsAction = require('../../../../Rbs/Process/Apollo/ImportPnr/Actions/RetrieveApolloTicketsAction.js');
-const PriceItineraryManually = require('../../../../../Actions/ManualPricing/PriceItineraryManually.js');
 const DisplayHistoryActionHelper = require('./DisplayHistoryActionHelper.js');
 
 // parsers
@@ -49,6 +48,7 @@ const TariffDisplayParser = require('../../../../Gds/Parsers/Apollo/TariffDispla
 const FareDisplayDomesticParser = require('../../../../Gds/Parsers/Apollo/TariffDisplay/FareDisplayDomesticParser.js');
 const FareDisplayInternationalParser = require('../../../../Gds/Parsers/Apollo/TariffDisplay/FareDisplayInternationalParser.js');
 const ParseHbFex = require('../../../../../Parsers/Apollo/ParseHbFex.js');
+const NmeMaskParser = require("../../../../../Actions/ManualPricing/NmeMaskParser");
 
 const Pccs = require("../../../../../Repositories/Pccs");
 
@@ -1530,7 +1530,7 @@ class ProcessApolloTerminalInputAction {
 
 	async prepareHhprMask(cmd) {
 		let output = (await this.runCmd(cmd)).output;
-		let data = await PriceItineraryManually.parse(output);
+		let data = await NmeMaskParser.parse(output);
 		return {
 			calledCommands: [{
 				cmd: cmd,
