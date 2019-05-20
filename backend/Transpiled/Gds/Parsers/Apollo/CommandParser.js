@@ -695,9 +695,11 @@ class CommandParser {
 
 	static parsePriceItineraryManually($cmd) {
 		let matches;
-		if (php.preg_match(/^HHPR(.*?)\s*$/, $cmd, matches = [])) {
-			let mods = AtfqParser.parsePricingModifiers(matches[1]);
+		if (php.preg_match(/^(HH\$?PR)(.*?)\s*$/, $cmd, matches = [])) {
+			let [_, baseCmd, modsStr] = matches;
+			let mods = AtfqParser.parsePricingModifiers(modsStr);
 			return {
+				baseCmd: baseCmd,
 				pricingModifiers: mods,
 			};
 		} else {
