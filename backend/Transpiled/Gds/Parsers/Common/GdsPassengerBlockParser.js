@@ -89,8 +89,9 @@ class GdsPassengerBlockParser
             $age = null;
             $dob = null;
             $ptc = null;
-            if (php.array_key_exists('childToken', $matches)) {
-                $parsedChildToken = this.parsePaxDetailsToken($matches['childToken']);
+            let remark = $matches['childToken'] || null;
+            if (remark) {
+                $parsedChildToken = this.parsePaxDetailsToken(remark);
                 $age = $parsedChildToken['age'];
                 $dob = $parsedChildToken['dob'];
                 $ptc = $parsedChildToken['ptc'];
@@ -107,6 +108,7 @@ class GdsPassengerBlockParser
                 'dob': $dob,
                 // Enter "PTC" in focal point for reference
                 'ptc': $ptc,
+                'remark': remark,
             };
         } else {
             return {'success': false};
@@ -207,10 +209,9 @@ class GdsPassengerBlockParser
                         : $pax['firstName'],
                     'ageGroup': null, // depends on context
                 });
-                delete(
-                    $flatPax['joinedFirstNames'],
-                    $flatPax['rawNumber'], $flatPax['parsedNumber']
-                );
+                delete($flatPax['joinedFirstNames']);
+                delete($flatPax['rawNumber']);
+                delete($flatPax['parsedNumber']);
                 $result.push($flatPax);
             }}
         return $result;

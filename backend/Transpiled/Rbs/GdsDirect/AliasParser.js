@@ -90,7 +90,7 @@ class AliasParser
         }
     }
 
-    static async parseCmdAsItinerary($cmd, $session)  {
+    static async parseCmdAsPnr($cmd, $session)  {
         let $guess;
         if (!$session.getAgent().canPasteItinerary()) {
             return [];
@@ -103,11 +103,22 @@ class AliasParser
             'dump': $cmd,
             'creationDate': $session.getStartDt(),
         })['result'] || null;
-        if (php.in_array($guess['type'], ['apollo_itinerary', 'sabre_itinerary', 'galileo_itinerary', 'amadeus_itinerary'])) {
-            return $guess['data']['itinerary'] || [];
+
+        let passengers = ($guess.data || {}).passengers || [];
+        let itinerary = ($guess.data || {}).itinerary || [];
+
+        if (ParsersController.PNR_DUMP_TYPES.includes($guess['type']) &&
+            itinerary.length > 0 || passengers.length > 0
+        ) {
+            return $guess['data'];
         } else {
-            return [];
+            return null;
         }
+    }
+
+    static async parseCmdAsItinerary($cmd, $session)  {
+        let asPnr = this.parseCmdAsPnr($cmd, $session);
+        return !asPnr ? [] : asPnr.itinerary;
     }
 }
 module.exports = AliasParser;

@@ -172,6 +172,14 @@ class PtcUtil
         return {'ptc': $pricingPtc};
     }
 
+    static _getFullYearsBetween(tripEndDt, dateOfBirth) {
+        let dobObj = new Date(dateOfBirth);
+        let baseDtObj = new Date(tripEndDt);
+        let ageDifMs = baseDtObj.getTime() - dobObj.getTime();
+        let ageDate = new Date(ageDifMs); // milliseconds from epoch
+        return Math.abs(ageDate.getUTCFullYear() - 1970);
+    }
+
     /** @param $nameRecord = GdsPassengerBlockParser::flattenPassengers()[0] */
     static getPaxAgeGroup($nameRecord, $tripEndDt)  {
         let $age, $dob, $ptc;
@@ -180,7 +188,7 @@ class PtcUtil
         } else if ($age = $nameRecord['age'] || null) {
             return php.intval($age) <= this.CHILD_MAX_AGE ? 'child' : 'adult';
         } else if ($tripEndDt && ($dob = ($nameRecord['dob'] || {})['parsed'])) {
-            $age = (new require('../../../DateTime.js')($tripEndDt)).diff(new require('../../../DateTime.js')($dob)).$y;
+            $age = this._getFullYearsBetween($tripEndDt, $dob);
             return php.intval($age) <= this.CHILD_MAX_AGE ? 'child' : 'adult';
         } else if ($ptc = $nameRecord['ptc'] || null) {
             return this.parsePtc($ptc)['ageGroup'];

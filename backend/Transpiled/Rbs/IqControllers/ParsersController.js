@@ -10,6 +10,17 @@ const GalileoReservationParser = require("../../Gds/Parsers/Galileo/Pnr/PnrParse
 const GalileoPnrCommonFormatAdapter = require("../FormatAdapters/GalileoPnrCommonFormatAdapter");
 const AmadeusPnrCommonFormatAdapter = require("../FormatAdapters/AmadeusPnrCommonFormatAdapter");
 
+let PNR_DUMP_TYPES = [
+	'galileo_pnr',
+	'apollo_pnr',
+	'sabre_pnr',
+	'amadeus_pnr',
+	'apollo_itinerary',
+	'galileo_itinerary',
+	'amadeus_itinerary',
+	'sabre_itinerary',
+];
+
 class ParsersController {
 	tryParseAs($dump, $dumpType, $baseDate) {
 		let $parsed;
@@ -94,17 +105,7 @@ class ParsersController {
 	guessDumpType($params) {
 		let $dump, $types, $type, $result;
 		$dump = php.strtoupper($params['dump']);
-		$types = [
-			'galileo_pnr',
-			'apollo_pnr',
-			'sabre_pnr',
-			'amadeus_pnr',
-			'apollo_itinerary',
-			'galileo_itinerary',
-			'amadeus_itinerary',
-			'sabre_itinerary',
-		];
-		for ($type of Object.values($types)) {
+		for ($type of Object.values(PNR_DUMP_TYPES)) {
 			$result = this.tryParseAs($dump, $type, $params['creationDate'] || null);
 			if ($result['success']) {
 				return {
@@ -127,5 +128,5 @@ class ParsersController {
 		};
 	}
 }
-
+ParsersController.PNR_DUMP_TYPES = PNR_DUMP_TYPES;
 module.exports = ParsersController;

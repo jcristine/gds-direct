@@ -22,6 +22,7 @@ const Rej = require("gds-direct-lib/src/Utils/Rej");
 const TerminalSettings = require("../Transpiled/App/Models/Terminal/TerminalSettings");
 const CommandCorrector = require("../Transpiled/Rbs/GdsDirect/DialectTranslator/CommandCorrector");
 const Misc = require("../Utils/Misc");
+const AliasParser = require("../Transpiled/Rbs/GdsDirect/AliasParser");
 const BadRequest = require("gds-direct-lib/src/Utils/Rej").BadRequest;
 const TooManyRequests = require("gds-direct-lib/src/Utils/Rej").TooManyRequests;
 const NotImplemented = require("gds-direct-lib/src/Utils/Rej").NotImplemented;
@@ -146,7 +147,8 @@ let runCmdRq =  async (inputCmd, stateful) => {
 
 	// for when you copy itinerary from logs
 	inputCmd = inputCmd.replace(/(^|\n)\s*"(.+?)",/g, '$1$2');
-	let bulkCmds = inputCmd.match(/^\s*[1-9]/)
+	let isPnrDump = AliasParser.parseCmdAsPnr(inputCmd, stateful);
+	let bulkCmds = isPnrDump
 		? [inputCmd] // itinerary, keep intact for rebook
 		: inputCmd.split('\n');
 	if (bulkCmds.length > 10) {

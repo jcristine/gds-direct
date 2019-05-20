@@ -5396,6 +5396,225 @@ class ProcessApolloTerminalInputActionTest extends require('../../../../Lib/Test
 			},
 		});
 
+		$list.push({
+			'input': {
+				'title': 'example where you paste whole PNR, not just the itinerary',
+				'cmdRequested': [
+					"CREATED IN GDS DIRECT BY STIFLER",
+					"QKGMNN/WS QSBYC DPBVWS  AG 10741570 17MAY",
+					" 1.1SIACOTOS/MARIA  2.1COLYVAS/PANTELIS STEPHANOS ",
+					" 3.1COLYVAS/HARALAMBOS COLYVAS*02DEC08 ",
+					" 1 UA8020K 02JUL SFOYUL HK3   640A  308P *         TU   E",
+					"         OPERATED BY AIR CANADA",
+					" 2 UA8673K 02JUL YULATH HK3   440P  850A|*      TU/WE   E",
+					"         OPERATED BY AIR CANADA ROUGE",
+					" 3 AC1901L 26JUL ATHYYZ HK3  1255P  455P *         FR   E  1",
+					"         OPERATED BY AIR CANADA ROUGE",
+					" 4 AC 739L 26JUL YYZSFO HK3   655P  920P *         FR   E  1",
+					"FONE-SFOAS/800-750-2238 ASAP CUSTOMER SUPPORT",
+					"TKTG-TAU/18MAY",
+				].join('\n'),
+			},
+			'output': {
+				'status': 'executed',
+				'calledCommands': [
+					{
+						"cmd": "N:SIACOTOS/MARIA|N:COLYVAS/PANTELIS STEPHANOS|N:COLYVAS/HARALAMBOS COLYVAS*02DEC08",
+						"output": [
+							"* ",
+							"><"
+						].join("\n"),
+					},
+					{
+						"cmd": "*R",
+						"output": [
+							" 1.1SIACOTOS/MARIA  2.1COLYVAS/PANTELIS STEPHANOS ",
+							" 3.1COLYVAS/HARALAMBOS COLYVAS*02DEC08 ",
+							" 1 UA8020K 02JUL SFOYUL SS3   640A  308P *         TU   E",
+							"         OPERATED BY AIR CANADA",
+							" 2 UA8673K 02JUL YULATH SS3   440P  850A|*      TU/WE   E",
+							"         OPERATED BY AIR CANADA ROUGE",
+							" 3 AC1901L 26JUL ATHYYZ SS3  1255P  455P *         FR   E  1",
+							"         OPERATED BY AIR CANADA ROUGE",
+							" 4 AC 739L 26JUL YYZSFO SS3   655P  920P *         FR   E  1",
+							""
+						].join("\n"),
+					},
+				],
+			},
+			'sessionInfo': {
+				'initialState': {
+					...GdsDirectDefaults.makeDefaultApolloState(),
+				},
+				'initialCommands': [],
+				'performedCommands': [
+					{
+						"cmd": "N:SIACOTOS/MARIA|N:COLYVAS/PANTELIS STEPHANOS|N:COLYVAS/HARALAMBOS COLYVAS*02DEC08",
+						"output": [
+							"* ",
+							"><"
+						].join("\n"),
+					},
+					{
+					    "cmd": "0UA8020Y02JULSFOYULGK3",
+					    "output": [
+					        " 1 UA 8020Y   2JUL SFOYUL GK3   640A  308P                    ",
+					        "OFFER CAR/HOTEL    >CAL;     >HOA;",
+					        "OPERATED BY AIR CANADA",
+					        "SFO PASSENGER CHECK-IN WITH AIR CANADA                         ",
+					        "DEPARTS SFO TERMINAL I ",
+					        "ADD ADVANCE PASSENGER INFORMATION SSRS DOCA/DOCO/DOCS",
+					        "PERSONAL DATA WHICH IS PROVIDED TO US IN CONNECTION",
+					        "WITH YOUR TRAVEL MAY BE PASSED TO GOVERNMENT AUTHORITIES",
+					        "FOR BORDER CONTROL AND AVIATION SECURITY PURPOSES",
+					        "THIS AIRLINE SUPPORTS CLAIM PNR - UA ",
+					        "TO REQUEST CLAIM PNR PLEASE IGNORE AND ENTER THE",
+					        "AIRLINES INFORMATION IN ONE OF THE FOLLOWING FORMATS -",
+					        "L@UA/*(RECORD LOCATOR)  OR  L@UA/*UA8020/2JUL-(NAME) ",
+					        "><"
+					    ].join("\n"),
+					    "duration": "0.168850149",
+					    "type": "sell",
+					    "scrolledCmd": "0UA8020Y02JULSFOYULGK3",
+					    "state": {"area":"A","pcc":"2F3K","recordLocator":"","canCreatePq":false,"scrolledCmd":"0UA8020Y02JULSFOYULGK3","cmdCnt":16,"pricingCmd":null,"hasPnr":true,"isPnrStored":false,"cmdType":"sell"}
+					},
+					{
+					    "cmd": "0UA8673Y02JULYULATHGK3",
+					    "output": [
+					        " 2 UA 8673Y   2JUL YULATH GK3   440P  850A|                   ",
+					        "VALID FOR ONLINE CONNECTIONS ONLY - UA",
+					        "OFFER CAR/HOTEL    >CAL;     >HOA;",
+					        "OPERATED BY AIR CANADA ROUGE",
+					        "YUL PASSENGER CHECK-IN WITH AIR CANADA                         ",
+					        "ADD ADVANCE PASSENGER INFORMATION SSRS DOCA/DOCO/DOCS",
+					        "PERSONAL DATA WHICH IS PROVIDED TO US IN CONNECTION",
+					        "WITH YOUR TRAVEL MAY BE PASSED TO GOVERNMENT AUTHORITIES",
+					        "FOR BORDER CONTROL AND AVIATION SECURITY PURPOSES",
+					        "THIS AIRLINE SUPPORTS CLAIM PNR - UA ",
+					        "TO REQUEST CLAIM PNR PLEASE IGNORE AND ENTER THE",
+					        "AIRLINES INFORMATION IN ONE OF THE FOLLOWING FORMATS -",
+					        "L@UA/*(RECORD LOCATOR)  OR  L@UA/*UA8673/2JUL-(NAME) ",
+					        "><"
+					    ].join("\n"),
+					    "duration": "0.168293643",
+					},
+					{
+					    "cmd": "0AC1901Y26JULATHYYZGK3",
+					    "output": [
+					        " 3 AC 1901Y  26JUL ATHYYZ GK3  1255P  455P                    ",
+					        "OFFER CAR/HOTEL    >CAL;     >HOA;",
+					        "OPERATED BY AIR CANADA ROUGE",
+					        "                         ARRIVES YYZ TERMINAL 1 ",
+					        "ADD ADVANCE PASSENGER INFORMATION SSRS DOCA/DOCO/DOCS",
+					        "PERSONAL DATA WHICH IS PROVIDED TO US IN CONNECTION",
+					        "WITH YOUR TRAVEL MAY BE PASSED TO GOVERNMENT AUTHORITIES",
+					        "FOR BORDER CONTROL AND AVIATION SECURITY PURPOSES",
+					        "THIS AIRLINE SUPPORTS CLAIM PNR - AC ",
+					        "TO REQUEST CLAIM PNR PLEASE IGNORE AND ENTER THE",
+					        "AIRLINES INFORMATION IN ONE OF THE FOLLOWING FORMATS -",
+					        "L@AC/*(RECORD LOCATOR)  OR  L@AC/*AC1901/26JUL-(NAME)",
+					        "><"
+					    ].join("\n"),
+					    "duration": "0.173780938",
+					},
+					{
+					    "cmd": "0AC739Y26JULYYZSFOGK3",
+					    "output": [
+					        " 4 AC  739Y  26JUL YYZSFO GK3   655P  920P                    ",
+					        "OFFER CAR/HOTEL    >CAL;     >HOA;",
+					        "DEPARTS YYZ TERMINAL 1  - ARRIVES SFO TERMINAL I ",
+					        "ADD ADVANCE PASSENGER INFORMATION SSRS DOCA/DOCO/DOCS",
+					        "PERSONAL DATA WHICH IS PROVIDED TO US IN CONNECTION",
+					        "WITH YOUR TRAVEL MAY BE PASSED TO GOVERNMENT AUTHORITIES",
+					        "FOR BORDER CONTROL AND AVIATION SECURITY PURPOSES",
+					        "THIS AIRLINE SUPPORTS CLAIM PNR - AC ",
+					        "TO REQUEST CLAIM PNR PLEASE IGNORE AND ENTER THE",
+					        "AIRLINES INFORMATION IN ONE OF THE FOLLOWING FORMATS -",
+					        "L@AC/*(RECORD LOCATOR)  OR  L@AC/*AC739/26JUL-(NAME) ",
+					        "><"
+					    ].join("\n"),
+					    "duration": "0.174955025",
+					},
+					{
+					    "cmd": "X1+2/01K+2K",
+					    "output": [
+					        "   UA 8020K   2JUL SFOYUL SS3   640A  308P *                 E",
+					        "OPERATED BY AIR CANADA",
+					        "SFO PASSENGER CHECK-IN WITH AIR CANADA                         ",
+					        "DEPARTS SFO TERMINAL I ",
+					        "   UA 8673K   2JUL YULATH SS3   440P  850A|*                 E",
+					        "VALID FOR ONLINE CONNECTIONS ONLY - UA",
+					        "OFFER CAR/HOTEL    >CAL;     >HOA;",
+					        "OPERATED BY AIR CANADA ROUGE",
+					        "YUL PASSENGER CHECK-IN WITH AIR CANADA                         ",
+					        "ADD ADVANCE PASSENGER INFORMATION SSRS DOCA/DOCO/DOCS",
+					        "PERSONAL DATA WHICH IS PROVIDED TO US IN CONNECTION",
+					        "WITH YOUR TRAVEL MAY BE PASSED TO GOVERNMENT AUTHORITIES",
+					        "FOR BORDER CONTROL AND AVIATION SECURITY PURPOSES",
+					        ")><"
+					    ].join("\n"),
+					    "duration": "0.431180541",
+					},
+					{
+					    "cmd": "MR",
+					    "output": [
+					        "CANCEL REQUEST COMPLETED",
+					        "><"
+					    ].join("\n"),
+					    "duration": "0.173532689",
+					},
+					{
+					    "cmd": "X3+4/03L+4L",
+					    "output": [
+					        "   AC 1901L  26JUL ATHYYZ SS3  1255P  455P *      1          E",
+					        "PREMIUM ROUGE N,E,O CLASS. DOWNLOAD AC APP FOR FREE IFE *",
+					        "OPERATED BY AIR CANADA ROUGE",
+					        "                         ARRIVES YYZ TERMINAL 1 ",
+					        "   AC  739L  26JUL YYZSFO SS3   655P  920P *      1          E",
+					        "PET RESTRICTIONS D ANIMAUX CRJ BAE AIRBUS CIC 70/13 *",
+					        "J CABIN-OFFER LIE FLAT SEATS ON 787,777,330,MAINLINE 767 *",
+					        "PLS ADV PSGR MOBILE AND/OR EMAIL AS SSR CTCM/CTCE *",
+					        "OFFER CAR/HOTEL    >CAL;     >HOA;",
+					        "DEPARTS YYZ TERMINAL 1  - ARRIVES SFO TERMINAL I ",
+					        "ADD ADVANCE PASSENGER INFORMATION SSRS DOCA/DOCO/DOCS",
+					        "PERSONAL DATA WHICH IS PROVIDED TO US IN CONNECTION",
+					        "WITH YOUR TRAVEL MAY BE PASSED TO GOVERNMENT AUTHORITIES",
+					        ")><"
+					    ].join("\n"),
+					    "duration": "0.438913995",
+					},
+					{
+					    "cmd": "MR",
+					    "output": [
+					        "FOR BORDER CONTROL AND AVIATION SECURITY PURPOSES",
+					        "CANCEL REQUEST COMPLETED",
+					        "><"
+					    ].join("\n"),
+					    "duration": "0.190420122",
+					},
+					{
+					    "cmd": "*R",
+					    "output": [
+					        " 1.1SIACOTOS/MARIA  2.1COLYVAS/PANTELIS STEPHANOS ",
+					        " 3.1COLYVAS/HARALAMBOS COLYVAS*02DEC08 ",
+					        " 1 UA8020K 02JUL SFOYUL SS3   640A  308P *         TU   E",
+					        "         OPERATED BY AIR CANADA",
+					        " 2 UA8673K 02JUL YULATH SS3   440P  850A|*      TU/WE   E",
+					        "         OPERATED BY AIR CANADA ROUGE",
+					        " 3 AC1901L 26JUL ATHYYZ SS3  1255P  455P *         FR   E  1",
+					        "         OPERATED BY AIR CANADA ROUGE",
+					        " 4 AC 739L 26JUL YYZSFO SS3   655P  920P *         FR   E  1",
+					        "><"
+					    ].join("\n"),
+					    "duration": "0.175637379",
+					    "type": "redisplayPnr",
+					    "scrolledCmd": "*R",
+					    "state": {"area":"A","pcc":"2F3K","recordLocator":"","canCreatePq":false,"scrolledCmd":"*R","cmdCnt":10,"pricingCmd":null,"hasPnr":true,"cmdType":"redisplayPnr"}
+					},
+				],
+			},
+		});
+
 		// problematic cases follow
 		/*
 		// STORE alias, same as previous, but this time let's remove

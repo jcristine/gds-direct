@@ -824,6 +824,35 @@ class ProcessApolloTerminalInputAction {
 		}
 	}
 
+	async bookPassengers(passengers) {
+		// note that Amadeus has different format instead of this 'remark', so a
+		// better approach would be to generate command for pure parsed dob/ptc
+		let cmd = passengers
+			.map(pax => 'N:' + pax.lastName + '/' + pax.firstName +
+				(!pax.remark ? '' : '*' + pax.remark))
+			.join('|');
+		let cmdRec = await this.runCmd(cmd);
+		return {calledCommands: [cmdRec]};
+	}
+
+	async bookPnr(reservation) {
+		let passengers = reservation.passengers || [];
+		let itinerary = reservation.itinerary || [];
+		let errors = [];
+		let calledCommands = [];
+		if (passengers.length > 0) {
+			let booked = await this.bookPassengers(passengers);
+			errors.push(...(booked.errors || []));
+			calledCommands.push(...(booked.calledCommands || []));
+		}
+		if (itinerary.length > 0) {
+			let booked = await this.bookItinerary(itinerary, true);
+			errors.push(...(booked.errors || []));
+			calledCommands.push(...(booked.calledCommands || []));
+		}
+		return {errors, calledCommands};
+	}
+
 	async rebookWithNewSeatAmount($seatNumber) {
 		let $itinerary, $i;
 		if (php.empty($itinerary = (await this.getCurrentPnr()).getItinerary())) {
@@ -1542,6 +1571,7 @@ class ProcessApolloTerminalInputAction {
 	async processRequestedCommand($cmd) {
 		let $alias, $mdaData, $limit, $cmdReal, $matches, $_, $plus, $seatAmount,
 			$segmentNumbers, $segmentStatus, $availability, $cityRow, $airlines, $itinerary;
+		let reservation;
 		$alias = this.constructor.parseAlias($cmd);
 		let parsed = CommandParser.parse($cmd);
 		if ($mdaData = $alias['moveDownAll'] || null) {
@@ -1598,6 +1628,8 @@ class ProcessApolloTerminalInputAction {
 		} else if (php.preg_match(/^SEM\/([\w\d]{3,4})\/AG$/, $cmd, $matches = [])) {
 			let {cmdRec} = await this.emulatePcc($matches[1]);
 			return {calledCommands: [cmdRec]};
+		} else if (!php.empty(reservation = await AliasParser.parseCmdAsPnr($cmd, this.stateful))) {
+			return this.bookPnr(reservation);
 		} else if (!php.empty($itinerary = await AliasParser.parseCmdAsItinerary($cmd, this.stateful))) {
 			return this.bookItinerary($itinerary, true);
 		} else {
