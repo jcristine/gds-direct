@@ -23,6 +23,7 @@ import {McoForm} from "../components/popovers/maskForms/mcoForm";
 import {ExchangeForm} from "../components/popovers/maskForms/exchangeForm";
 import {ManualPricingForm} from "../components/popovers/maskForms/manualPricingForm.es6";
 import {TaxBreakdownForm} from "../components/popovers/maskForms/taxBreakdownForm.es6";
+import {ZpTaxBreakdownForm} from "../components/popovers/maskForms/zpTaxBreakdownForm.es6";
 import {FareCalculationForm} from "../components/popovers/maskForms/fareCalculationForm.es6";
 
 let Component = require('../modules/component.es6').default;
@@ -455,6 +456,29 @@ export default class TerminalPlugin
 		}
 	}
 
+	_displayZpTaxBreakdownMask(data)
+	{
+		const cancel = () => this._ejectForm(formCmp);
+
+		let formCmp = ZpTaxBreakdownForm({data, onCancel: cancel, onsubmit: (formResult) => {
+			let params = {
+				gds: this.gdsName,
+				fields: formResult.fields,
+				maskOutput: data.maskOutput,
+			};
+			return this._withSpinner(() => post('terminal/submitZpTaxBreakdownMask', params)
+				.then(resp => {
+					this.parseBackEnd(resp, '$ZP...');
+					return {canClosePopup: resp && resp.output};
+				}));
+		}});
+		this._injectForm(formCmp);
+		let inp = formCmp.context.querySelector('input:not(:disabled)');
+		if (inp) {
+			inp.focus();
+		}
+	}
+
 	_displayFcMask(data)
 	{
 		const cancel = () => this._ejectForm(formCmp);
@@ -535,8 +559,13 @@ export default class TerminalPlugin
 				this._displayHhprMask(action.data);
 			} else if (action.type === 'displayTaxBreakdownMask') {
 				this._displayTaxBreakdownMask(action.data);
+			} else if (action.type === 'displayZpTaxBreakdownMask') {
+				this._displayZpTaxBreakdownMask(action.data);
 			} else if (action.type === 'displayFcMask') {
 				this._displayFcMask(action.data);
+			} else {
+				let msg = '[[;;;error]Unsupported action - ' + action.type + ']';
+				this.outputLiner.printOutput(msg, false, []);
 			}
 		}
 	}

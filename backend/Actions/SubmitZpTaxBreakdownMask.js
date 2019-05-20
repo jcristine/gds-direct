@@ -43,7 +43,16 @@ let FIELDS = [
 ];
 
 let parseOutput = (output) => {
-	return {status: 'error'};
+	if (output.startsWith('>$ZP')) {
+		let message = output.trim().split('\n').slice(-1)[0] || '';
+		if (message.trim() === '*') {
+			return {status: 'success'};
+		} else {
+			return {status: 'invalidData', error: message};
+		}
+	} else {
+		return {status: 'error'};
+	}
 };
 
 let makeMaskRs = (calledCommands, actions = []) => new TerminalService('apollo')
@@ -73,6 +82,8 @@ let SubmitTaxBreakdownMask = async ({rqBody, gdsSession}) => {
 	if (result.status === 'success') {
 		let calledCommands = [{cmd: '$ZP...', output: cmdRec.output}];
 		return makeMaskRs(calledCommands);
+	} else if (result.status === 'invalidData') {
+		return Rej.UnprocessableEntity('GDS rejects input - ' + result.error);
 	} else {
 		return Rej.UnprocessableEntity('GDS gave ' + result.status + ' - \n' + cmdRec.output);
 	}

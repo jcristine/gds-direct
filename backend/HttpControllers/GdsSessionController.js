@@ -26,6 +26,7 @@ const PriceItineraryManually = require('../Actions/PriceItineraryManually.js');
 const Rej = require("gds-direct-lib/src/Utils/Rej");
 const TravelportUtils = require("../GdsHelpers/TravelportUtils");
 const SubmitTaxBreakdownMask = require('../Actions/SubmitTaxBreakdownMask.js');
+const SubmitZpTaxBreakdownMask = require('../Actions/SubmitZpTaxBreakdownMask.js');
 const SubmitFcMask = require('../Actions/SubmitFcMask.js');
 
 let startByGds = async (gds) => {
@@ -267,7 +268,7 @@ exports.exchangeTicket = async ({rqBody, session, emcUser}) => {
 
 exports.confirmExchangeFareDifference = async ({rqBody, session, emcUser}) => {
 	if (session.context.gds !== 'apollo') {
-		return NotImplemented('Unsupported GDS for exchangeTicket - ' + session.context.gds);
+		return NotImplemented('Unsupported GDS for confirmExchangeFareDifference - ' + session.context.gds);
 	} else {
 		let gdsSession = await StatefulSession.makeFromDb({session, emcUser});
 		return ExchangeApolloTicket.confirmFareDifference({rqBody, gdsSession});
@@ -276,7 +277,7 @@ exports.confirmExchangeFareDifference = async ({rqBody, session, emcUser}) => {
 
 exports.submitHhprMask = async ({rqBody, session, emcUser}) => {
 	if (session.context.gds !== 'apollo') {
-		return NotImplemented('Unsupported GDS for exchangeTicket - ' + session.context.gds);
+		return NotImplemented('Unsupported GDS for submitHhprMask - ' + session.context.gds);
 	} else {
 		let gdsSession = await StatefulSession.makeFromDb({session, emcUser});
 		return PriceItineraryManually.inputHhprMask({rqBody, gdsSession});
@@ -285,10 +286,19 @@ exports.submitHhprMask = async ({rqBody, session, emcUser}) => {
 
 exports.submitTaxBreakdownMask = async ({rqBody, session, emcUser}) => {
 	if (session.context.gds !== 'apollo') {
-		return NotImplemented('Unsupported GDS for exchangeTicket - ' + session.context.gds);
+		return NotImplemented('Unsupported GDS for submitTaxBreakdownMask - ' + session.context.gds);
 	} else {
 		let gdsSession = await StatefulSession.makeFromDb({session, emcUser});
 		return SubmitTaxBreakdownMask({rqBody, gdsSession});
+	}
+};
+
+exports.submitZpTaxBreakdownMask = async ({rqBody, session, emcUser}) => {
+	if (session.context.gds !== 'apollo') {
+		return NotImplemented('Unsupported GDS for submitZpTaxBreakdownMask - ' + session.context.gds);
+	} else {
+		let gdsSession = await StatefulSession.makeFromDb({session, emcUser});
+		return SubmitZpTaxBreakdownMask({rqBody, gdsSession});
 	}
 };
 
