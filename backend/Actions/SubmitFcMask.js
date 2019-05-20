@@ -88,7 +88,7 @@ SubmitFcMask.parse = async (mask) => {
 	}
 	return {
 		parsed: parsed,
-		fields: fields,
+		fields: fields.map(f => ({...f, enabled: f.enabled && !f.value})),
 		maskOutput: mask,
 	};
 };
