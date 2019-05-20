@@ -117,7 +117,7 @@ class AliasParser
     }
 
     static async parseCmdAsItinerary($cmd, $session)  {
-        let asPnr = this.parseCmdAsPnr($cmd, $session);
+        let asPnr = await this.parseCmdAsPnr($cmd, $session);
         return !asPnr ? [] : asPnr.itinerary;
     }
 }
