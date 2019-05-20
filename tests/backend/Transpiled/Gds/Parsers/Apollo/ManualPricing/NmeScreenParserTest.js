@@ -194,6 +194,44 @@ class NmeScreenParserTest extends require('../../../../Lib/TestCase.js') {
 			},
 		]);
 
+		// >HH$PR; output with some data pre-entered from current pricing (trailing dots in values)
+		$list.push([
+			php.implode(php.PHP_EOL, [
+				">$NME LIB/MAR                                                 ",
+				" X CTY CR FLT/CLS DATE  TIME  ST F/B      VALUE   NVB   NVA ",
+				" . JFK KL  644 M  20SEP 1000P OK;MN1H30M1;.......;20SEP;20SEP ",
+				";O AMS KL  807 E  21SEP  855P OK;ELLRNL..;291.60.;21SEP;21SEP ",
+				";O MNL KL  808 K  25SEP  805P OK;KLLRNL..;654.00.;25SEP;25SEP ",
+				";O AMS KL 3091 Y  26SEP 1020A OK;MN1H30M1;1970.22;26SEP;26SEP ",
+				";O RIX  FARE;USD;7224.00.  DO TAXES APPLY?;Y                  ",
+				"  EQUIV FARE;...;........             COMM;....... F CONST;..",
+				" TD 1/;...... 2/;...... 3/;...... 4/;......  INT .  MREC 01/01",
+				"                                                   ;PSGR 01/02",
+				"                                                   ;BOOK 01/02",
+				"><"
+			]),
+			{
+				"lastName": "LIB",
+				"firstName": "MAR",
+				"segments": [
+					{"type":"flight","isStopover":true,"departureCity":"JFK","airline":"KL","flightNumber":"644","bookingClass":"M","departureDate":{"raw":"20SEP","parsed":"09-20"},"departureTime":{"raw":"1000P","parsed":"22:00"},"status":"OK","fareBasis":"MN1H30M1","fare":".","notValidBefore":{"raw":"20SEP","parsed":"09-20"},"notValidAfter":{"raw":"20SEP","parsed":"09-20"}},
+					{"type":"flight","isStopover":true,"departureCity":"AMS","airline":"KL","flightNumber":"807","bookingClass":"E","departureDate":{"raw":"21SEP","parsed":"09-21"},"departureTime":{"raw":"855P","parsed":"20:55"},"status":"OK","fareBasis":"ELLRNL","fare":"291.60","notValidBefore":{"raw":"21SEP","parsed":"09-21"},"notValidAfter":{"raw":"21SEP","parsed":"09-21"}},
+					{"type":"flight","isStopover":true,"departureCity":"MNL","airline":"KL","flightNumber":"808","bookingClass":"K","departureDate":{"raw":"25SEP","parsed":"09-25"},"departureTime":{"raw":"805P","parsed":"20:05"},"status":"OK","fareBasis":"KLLRNL","fare":"654.00","notValidBefore":{"raw":"25SEP","parsed":"09-25"},"notValidAfter":{"raw":"25SEP","parsed":"09-25"}},
+					{"type":"flight","isStopover":true,"departureCity":"AMS","airline":"KL","flightNumber":"3091","bookingClass":"Y","departureDate":{"raw":"26SEP","parsed":"09-26"},"departureTime":{"raw":"1020A","parsed":"10:20"},"status":"OK","fareBasis":"MN1H30M1","fare":"1970.22","notValidBefore":{"raw":"26SEP","parsed":"09-26"},"notValidAfter":{"raw":"26SEP","parsed":"09-26"}},
+					{"isStopover":true,"departureCity":"RIX","type":"void"}
+				],
+				"baseFare": {"currency":"USD","amount":"7224.00"},
+				"doTaxesApply": true,
+				"fareEquivalent": null,
+				"commission": null,
+				"record": {
+					"storeNumber":{"current":1,"total":1},
+					"storePtcNumber":{"current":1,"total":2},
+					"page":{"current":1,"total":2},
+				},
+			},
+		]);
+
 		return $list;
 	}
 

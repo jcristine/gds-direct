@@ -12,13 +12,10 @@ const php = require('../../../../php.js');
 
 class NmeScreenParser {
 	static cleanMaskValue($value) {
-
 		$value = php.trim($value);
-		if (php.preg_match(/^\.+$/, $value)) {
-			return null;
-		} else {
-			return $value;
-		}
+		return $value
+			.replace(/^\.+/, '')
+			.replace(/\.+$/, '') || null;
 	}
 
 	// '1/;LN19'
@@ -150,8 +147,8 @@ class NmeScreenParser {
 			'(?<departureDate>\\d{1,2}[A-Z]{3})\\s+' +
 			'(?<departureTime>\\d{1,4}[A-Z]?)\\s+' +
 			'(?<status>[A-Z]+)\\s*;\\s*' +
-			'(?<fareBasis>[A-Z0-9]+|[\\s\\.]*)\\s*;\\s*' +
-			'(?<fare>\\d*\\.?\\d*|[\\s\\.]*);' +
+			'(?<fareBasis>[A-Z0-9]+|)[\\s\\.]*;\\s*' +
+			'(?<fare>\\d*\\.?\\d*|)[\\s\\.]*;' +
 			'(?<notValidBefore>\\d{1,2}[A-Z]{3}|[\\s\\.]*);' +
 			'(?<notValidAfter>\\d{1,2}[A-Z]{3}|[\\s\\.]*)' +
 			'\\s*$/';

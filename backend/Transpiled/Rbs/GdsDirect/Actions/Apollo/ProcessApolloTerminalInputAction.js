@@ -1524,7 +1524,7 @@ class ProcessApolloTerminalInputAction {
 
 	async prepareHhprMask(cmdData) {
 		let mods = cmdData.pricingModifiers;
-		let cmd = 'HHPR' + mods.map(m => m.raw).join('/');
+		let cmd = cmdData.baseCmd + mods.map(m => m.raw).join('/');
 		let output = (await this.runCmd(cmd)).output;
 		let data = await PriceItineraryManually.parse(output);
 		return {
