@@ -144,3 +144,7 @@ exports.getLast = async (sessionId) => {
 };
 
 exports.isInvalidFormat = isInvalidFormat;
+
+exports.ramDebug = {
+	getInsertionKeys: () => Object.keys(sessionToLastInsertion),
+};

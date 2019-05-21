@@ -335,6 +335,15 @@ app.post('/admin/setShortcutActions', withAuth(async (rqBody, emcResult) => {
 		]);
 	});
 }));
+app.get('/admin/status', withAuth(async (reqBody, emcResult) => {
+	if (emcResult.user.id == 6206) {
+		return {
+			cmdLogsInsertionKeys: CmdLogs.ramDebug.getInsertionKeys(),
+		};
+	} else {
+		return Forbidden('Sorry, you must be me in order to use that');
+	}
+}));
 
 app.get('/parser/test', toHandleHttp((rqBody) => {
 	let result;
