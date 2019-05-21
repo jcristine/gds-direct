@@ -1568,7 +1568,10 @@ class ProcessApolloTerminalInputAction {
 			return this.prepareHbFexMask(storeNumber, ticketNumber || '');
 		} else if (['priceItineraryManually', 'manualStoreItinerary', 'manualStoreMoveDown'].includes(parsed.type)) {
 			return this.prepareHhprMask(cmd);
-		} else if (['HBT', 'HBTA'].includes(cmd)) {
+		} else if (
+			['HBT', 'HBTA'].includes(cmd) ||
+			parsed.type === 'manualStoreFareCalculation'
+		) {
 			return EndManualPricing({cmd, stateful: this.stateful});
 		} else if (php.preg_match(/^SORT$/, cmd, $matches = [])) {
 			return this.processSortItinerary();
