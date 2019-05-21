@@ -20,13 +20,13 @@ let handleEnd = async (hbtCmdRec, stateful) => {
 	let actions = [];
 	let result = parseOutput(hbtCmdRec.output);
 	if (result.status === 'success') {
-		calledCommands.push({...hbtCmdRec, cmd: 'HBT'});
+		calledCommands.push({...hbtCmdRec, cmd: 'HBTA'});
 		calledCommands.push(await stateful.runCmd('T:OK'));
 		let erCmd = 'R:' + stateful.getAgent().getLogin() + '|ER';
 		calledCommands.push(await stateful.runCmd(erCmd));
 	} else if (result.status === 'nextHhprPax') {
 		let maskCmd = StringUtil.wrapLinesAt('>' + hbtCmdRec.cmd, 64);
-		calledCommands.push({cmd: 'HBT', output: maskCmd});
+		calledCommands.push({cmd: 'HBTA', output: maskCmd});
 		actions.push({
 			type: 'displayHhprMask',
 			data: await NmeMaskParser.parse(hbtCmdRec.output),
@@ -44,8 +44,7 @@ let handleEnd = async (hbtCmdRec, stateful) => {
  *
  * @param stateful = require('StatefulSession.js')()
  */
-let EndManualPricing = async ({cmd = 'HBT', stateful}) => {
-	// TODO: HBTA when there are multiple passengers
+let EndManualPricing = async ({cmd = 'HBTA', stateful}) => {
 	let cmdRec = await fetchAll(cmd, stateful);
 	let output = cmdRec.output;
 	if (output.startsWith('>$FC')) {
