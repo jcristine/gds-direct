@@ -103,7 +103,7 @@ let queued = (key, action) => {
 
 let storeNew = async (row) => {
 	// to ensure their order, see cmd RQ #12114
-	return queued(row.sessionId, () =>
+	return queued(row.session_id, () =>
 		Db.with(db => db.writeRows(TABLE, [row]))
 			.then(inserted => inserted.insertId)
 			.then(nonEmpty('Failed to store cmd to DB and get the id'))
