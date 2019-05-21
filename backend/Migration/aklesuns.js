@@ -1,5 +1,6 @@
 
 let Emc = require('../LibWrappers/Emc.js');
+const Redis = require("../LibWrappers/Redis");
 
 module.exports.migrations = [
 	{
@@ -417,5 +418,16 @@ module.exports.migrations = [
 			'SET defaultPcc = "6IIF"',
 			'WHERE gds = "sabre" AND defaultPcc = "L3II"',
 		].join('\n')),
+	},
+	{
+		name: 'GRECT/2019.05.21003-remove-unused-redis-keys',
+		perform: async (db) => {
+			let redis = await Redis.getClient();
+			return Promise.all([
+				redis.del('GRECT_CMD_RQ_LAST_INSERT_ID'),
+				redis.del('GRECT_SESSION_LAST_INSERT_ID'),
+				redis.del('GRECT_SESSION_TO_USER_ACCESS_MS'),
+			]);
+		},
 	},
 ];

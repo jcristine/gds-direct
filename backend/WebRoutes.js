@@ -436,7 +436,6 @@ getConfig().then(config => {
 	}
 });
 
-
 app.get('/ping', toHandleHttp((rqBody) => {
 	let memory = {};
 	const used2 = process.memoryUsage();

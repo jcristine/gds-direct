@@ -196,6 +196,7 @@ exports.remove = async (session) => {
 		client.hdel(keys.SESSION_BY_CONTEXT, contextStr),
 		client.hdel(keys.SESSION_TO_RECORD, session.id),
 		client.hdel(keys.SESSION_TO_STATE, session.id),
+		client.hdel(keys.SESSION_TO_USER_ACCESS_MS, session.id),
 		client.zrem(keys.SESSION_ACTIVES, session.id),
 		Db.with(db => db.update({
 			table: TABLE,
