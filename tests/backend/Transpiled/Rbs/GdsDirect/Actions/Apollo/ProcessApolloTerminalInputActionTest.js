@@ -5615,6 +5615,214 @@ class ProcessApolloTerminalInputActionTest extends require('../../../../Lib/Test
 			},
 		});
 
+		$list.push({
+			'input': {
+				'title': 'STORE example with children and infants - should add /ACC even though not all paxes are clean "child"',
+				'cmdRequested': 'STORE',
+			},
+			'output': {
+				'status': 'executed',
+				'calledCommands': [
+					{"cmd": "T:$BN1-1*C02|2-1*INF/Z0/ACC"},
+				],
+			},
+			'sessionInfo': {
+				'initialState': {
+					...GdsDirectDefaults.makeDefaultApolloState(),
+					"area":"A","pcc":"2F3K","recordLocator":"N9JQ3Z",
+					"isPnrStored":true,"cmdType":"redisplayPnr"
+				},
+				'initialCommands': [],
+				'performedCommands': [
+					{
+					    "cmd": "*R",
+					    "output": [
+					        "** THIS PNR IS CURRENTLY IN USE **",
+					        "CREATED IN GDS DIRECT BY JOHANDRE",
+					        "2G2H - TRAVEL SHOP              SFO",
+					        "N9JQ3Z/WS QSBYC DPBVWS  AG 23854526 20MAY",
+					        " 1.1ZAVALETASANCHEZ/KHALESSI MASSIEL*P-C02 ",
+					        " 2.I/1ZAVALETASANCHEZ/VHANIA CATALINA*10FEB18 ",
+					        " 1 AV 583L 30MAY IADSAL HK1   425P  655P *         TH   E  1",
+					        "         OPERATED BY TACA INTERNATIONAL AIRLINES - TACA",
+					        " 2 AV 931L 30MAY SALLIM HK1   820P  140A|*      TH/FR   E  1",
+					        "         OPERATED BY AVIANCA PERU S.A.",
+					        " 3 AV 928W 24JUN LIMSAL HK1  1015A  139P *         MO   E  2",
+					        "         OPERATED BY AVIANCA PERU S.A.",
+					        " 4 AV 580W 24JUN SALIAD HK1   300P  915P *         MO   E  2",
+					        ")><"
+					    ].join("\n"),
+					},
+					{
+					    "cmd": "MR",
+					    "output": [
+					        "         OPERATED BY TACA INTERNATIONAL AIRLINES - TACA",
+					        "FONE-SFOAS/800-750-2238 ASAP CUSTOMER SUPPORT",
+					        "TKTG-TAU/20MAY",
+					        "GFAX-SSRINFTAVKK01 IADSAL 0583L 30MAY-1ZAVALETASANCHEZ/KHALESSI MASSIEL.ZAVALETASANCHEZ/VHANIA CATALINA 10FEB18",
+					        "   2 SSRINFTAVKK01 SALLIM 0931L 30MAY-1ZAVALETASANCHEZ/KHALESSI MASSIEL.ZAVALETASANCHEZ/VHANIA CATALINA 10FEB18",
+					        "   3 SSRINFTAVKK01 LIMSAL 0928W 24JUN-1ZAVALETASANCHEZ/KHALESSI MASSIEL.ZAVALETASANCHEZ/VHANIA CATALINA 10FEB18",
+					        "   4 SSRINFTAVKK01 SALIAD 0580W 24JUN-1ZAVALETASANCHEZ/KHALESSI MASSIEL.ZAVALETASANCHEZ/VHANIA CATALINA 10FEB18",
+					        "   5 SSRADTK1VTOTA BY 23MAY 2300 ZZZ TIME ZONE OTHERWISE WILL BE XLD",
+					        ")><"
+					    ].join("\n"),
+					},
+					{
+					    "cmd": "MR",
+					    "output": [
+					        "   6 SSRCTCEAVHK1/TEFISANCHEZ26//GMAIL.COM-1ZAVALETASANCHEZ/KHALESSI MASSIEL",
+					        "   7 SSRCTCEAVHK1/TEFISANCHEZ26//GMAIL.COM-1I/ZAVALETASANCHEZ/VHANIA CATALINA",
+					        "   8 SSRCTCMAVHK1/5712456941-1ZAVALETASANCHEZ/KHALESSI MASSIEL",
+					        "   9 SSRCTCMAVHK1/5712456941-1I/ZAVALETASANCHEZ/VHANIA CATALINA",
+					        "  10 SSRDOCSAVHK1/////08OCT16/F//ZAVALETASANCHEZ/KHALESSI/MASSIEL-1ZAVALETASANCHEZ/KHALESSI MASSIEL",
+					        "RMKS-GD-JOHANDRE/23772/FOR JOHANDRE/23772/LEAD-11697928 IN 2G2H",
+					        "ACKN-1A P6FFRC   20MAY 2205",
+					        "   2 1A P6FFRC   20MAY 2205",
+					        "   3 1A P6FFRC   20MAY 2235",
+					        "><"
+					    ].join("\n"),
+					},
+					{
+					    "cmd": "T:$BN1-1*C02|2-1*INF/Z0/ACC",
+					    "output": [
+					        ">$BN1-1*C02|2-1*INF/-*2F3K/Z0/ACC",
+					        "E-TKT REQUIRED",
+					        "** PRIVATE FARES SELECTED **  ",
+					        "*PENALTY APPLIES*",
+					        "TICKETING WITHIN 72 HOURS AFTER RESERVATION",
+					        "LAST DATE TO PURCHASE TICKET: 23MAY19 / 1504 SFO",
+					        "$B-1 P21MAY19 - CAT35",
+					        "WAS AV X/SAL AV LIM Q WASLIM135.00 130.50LEA00RISCH/SPL08SQHV0",
+					        "AV X/SAL AV WAS Q LIMWAS135.00 68.00WZO00TISCH/SPL08SQHV0",
+					        "NUC468.50 ----- MUST PRICE AS B/C -- ---END ROE1.0",
+					        "FARE USD 469.00 TAX 5.60AY TAX 37.20US TAX 3.96XA TAX 4.50XF",
+					        "TAX 7.00XY TAX 5.77YC TAX 15.00DY TAX 30.43HW TOT USD 578.46 ",
+					        "S1 NVB30MAY/NVA30MAY",
+					        ")><"
+					    ].join("\n"),
+					},
+					{
+					    "cmd": "MR",
+					    "output": [
+					        "S2 NVB30MAY/NVA30MAY",
+					        "S3 NVB24JUN/NVA24JUN",
+					        "S4 NVB24JUN/NVA24JUN",
+					        "E SPL08SQHV0 - SPLT8USD50/25",
+					        "TICKETING AGENCY 2F3K",
+					        "DEFAULT PLATING CARRIER AV",
+					        "US PFC: XF IAD4.5 ",
+					        "BAGGAGE ALLOWANCE",
+					        "CNN                                                         ",
+					        " AV WASLIM  1PC                                             ",
+					        "   BAG 1 -  NO FEE       UPTO50LB/23KG AND UPTO62LI/158LCM",
+					        "   BAG 2 -  60.00 USD    UPTO50LB/23KG AND UPTO62LI/158LCM",
+					        "   VIEWTRIP.TRAVELPORT.COM/BAGGAGEPOLICY/AV",
+					        ")><"
+					    ].join("\n"),
+					},
+					{
+					    "cmd": "MR",
+					    "output": [
+					        "                                                                 AV LIMWAS  1PC                                             ",
+					        "   BAG 1 -  NO FEE       UPTO50LB/23KG AND UPTO62LI/158LCM",
+					        "   BAG 2 -  60.00 USD    UPTO50LB/23KG AND UPTO62LI/158LCM",
+					        "   VIEWTRIP.TRAVELPORT.COM/BAGGAGEPOLICY/AV",
+					        "                                                                CARRY ON ALLOWANCE",
+					        " AV WASSAL  10K                                             ",
+					        "   BAG 1 -  CHGS MAY APPLY IF BAGS EXCEED TTL WT ALLOWANCE",
+					        "                                    BDBF         ",
+					        "   BAG 2 -  CHGS MAY APPLY IF BAGS EXCEED TTL WT ALLOWANCE",
+					        " AV SALLIM  10K                                             ",
+					        "   BAG 1 -  CHGS MAY APPLY IF BAGS EXCEED TTL WT ALLOWANCE",
+					        ")><"
+					    ].join("\n"),
+					},
+					{
+					    "cmd": "MR",
+					    "output": [
+					        "   BAG 2 -  CHGS MAY APPLY IF BAGS EXCEED TTL WT ALLOWANCE",
+					        " AV LIMSAL  10K                                             ",
+					        "   BAG 1 -  CHGS MAY APPLY IF BAGS EXCEED TTL WT ALLOWANCE",
+					        "   BAG 2 -  CHGS MAY APPLY IF BAGS EXCEED TTL WT ALLOWANCE",
+					        " AV SALWAS  10K                                             ",
+					        "   BAG 1 -  CHGS MAY APPLY IF BAGS EXCEED TTL WT ALLOWANCE",
+					        "   BAG 2 -  CHGS MAY APPLY IF BAGS EXCEED TTL WT ALLOWANCE",
+					        "** BEST FARE FOR PRIVATE FARES REQUEST **",
+					        "*PENALTY APPLIES*",
+					        "TICKETING WITHIN 72 HOURS AFTER RESERVATION",
+					        "LAST DATE TO PURCHASE TICKET: 23MAY19 / 1504 SFO",
+					        "$B-2 C21MAY19     ",
+					        "WAS AV X/SAL AV LIM 22.50LEA00RIS/IN90 AV X/SAL AV WAS",
+					        ")><"
+					    ].join("\n"),
+					},
+					{
+					    "cmd": "MR",
+					    "output": [
+					        "13.50WZO00TIS/IN90 NUC36.00END ROE1.0",
+					        "FARE USD 36.00 TAX 5.60AY TAX 37.20US TAX 3.96XA TAX 7.00XY TAX",
+					        "5.77YC TAX 15.00DY TAX 30.43HW TOT USD 140.96 ",
+					        "S1 NVB30MAY/NVA30MAY",
+					        "S2 NVB30MAY/NVA30MAY",
+					        "S3 NVB24JUN/NVA24JUN",
+					        "S4 NVB24JUN/NVA24JUN",
+					        "E REFUND FEE APPLIES/",
+					        "E CHANGE FEE APPLIES",
+					        "E AND PLUS FARE DIFF/NON END",
+					        "E NON REFUNDABLE/",
+					        "TICKETING AGENCY 2F3K",
+					        "DEFAULT PLATING CARRIER AV",
+					        ")><"
+					    ].join("\n"),
+					},
+					{
+					    "cmd": "MR",
+					    "output": [
+					        "BAGGAGE ALLOWANCE",
+					        "INF                                                         ",
+					        " AV WASLIM  10K                                             ",
+					        "   BAG 1 -  CHGS MAY APPLY IF BAGS EXCEED TTL WT ALLOWANCE",
+					        "   BAG 2 -  CHGS MAY APPLY IF BAGS EXCEED TTL WT ALLOWANCE",
+					        "   VIEWTRIP.TRAVELPORT.COM/BAGGAGEPOLICY/AV",
+					        "                                                                 AV LIMWAS  10K                                             ",
+					        "   BAG 1 -  CHGS MAY APPLY IF BAGS EXCEED TTL WT ALLOWANCE",
+					        "   BAG 2 -  CHGS MAY APPLY IF BAGS EXCEED TTL WT ALLOWANCE",
+					        "   VIEWTRIP.TRAVELPORT.COM/BAGGAGEPOLICY/AV",
+					        "                                                                CARRY ON ALLOWANCE",
+					        ")><"
+					    ].join("\n"),
+					},
+					{
+					    "cmd": "MR",
+					    "output": [
+					        " AV WASSAL  10K                                             ",
+					        "   BAG 1 -  CHGS MAY APPLY IF BAGS EXCEED TTL WT ALLOWANCE",
+					        "                                    BDBF         ",
+					        "   BAG 2 -  CHGS MAY APPLY IF BAGS EXCEED TTL WT ALLOWANCE",
+					        " AV SALLIM  10K                                             ",
+					        "   BAG 1 -  CHGS MAY APPLY IF BAGS EXCEED TTL WT ALLOWANCE",
+					        "   BAG 2 -  CHGS MAY APPLY IF BAGS EXCEED TTL WT ALLOWANCE",
+					        " AV LIMSAL  10K                                             ",
+					        "   BAG 1 -  CHGS MAY APPLY IF BAGS EXCEED TTL WT ALLOWANCE",
+					        "   BAG 2 -  CHGS MAY APPLY IF BAGS EXCEED TTL WT ALLOWANCE",
+					        " AV SALWAS  10K                                             ",
+					        "   BAG 1 -  CHGS MAY APPLY IF BAGS EXCEED TTL WT ALLOWANCE",
+					        "   BAG 2 -  CHGS MAY APPLY IF BAGS EXCEED TTL WT ALLOWANCE",
+					        ")><"
+					    ].join("\n"),
+					},
+					{
+					    "cmd": "MR",
+					    "output": [
+					        "BAGGAGE DISCOUNTS MAY APPLY BASED ON FREQUENT FLYER STATUS/",
+					        "ONLINE CHECKIN/FORM OF PAYMENT/MILITARY/ETC.",
+					        "><"
+					    ].join("\n"),
+					},
+				],
+			},
+		});
+
 		// problematic cases follow
 		/*
 		// STORE alias, same as previous, but this time let's remove

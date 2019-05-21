@@ -1168,8 +1168,7 @@ class ProcessApolloTerminalInputAction {
 		$needsAccompanying = ($pax) => {
 			let $ageGroup;
 			$ageGroup = PtcUtil.getPaxAgeGroup($pax, $tripEndDt);
-			return $ageGroup === 'child'
-				|| $pax['ptc'] === 'INS';
+			return ['child', 'infant'].includes($ageGroup);
 		};
 		$cmd += '/Z0';
 		if (Fp.all($needsAccompanying, $pnr.getPassengers())) {
