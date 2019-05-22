@@ -68,31 +68,33 @@ class PnrParser {
 	}
 
 	static splitToSections($dump) {
-		let $sections, $currentSectionName, $line, $sectionName, $sectionLines;
+		let $sections, $currentSectionName, $line, $sectionName;
 
-		$sections = {'HEAD': []};
+		let dataExistsLines = [];
+		$sections = {'HEAD': ''};
 
 		$currentSectionName = 'HEAD';
 		for ($line of Object.values(StringUtil.lines($dump))) {
-			if ($sectionName = this.detectSectionHeader($line)) {
-				$currentSectionName = $sectionName;
-				$sections[$currentSectionName] = $sections[$currentSectionName] || [];
-				$sections[$currentSectionName].push($line);
-			} else if (php.preg_match(/^\s*\*{2,}\s+.+\s+\*{2,}\s*>.*;\s*$/, $line)) {
-				$sections['dataExistsLines'] = $sections['dataExistsLines'] || [];
-				$sections['dataExistsLines'].push($line);
-			} else {
-				$sections[$currentSectionName].push($line);
+			if (php.preg_match(/^\s*\*{2,}\s+.+\s+\*{2,}\s*>.*;\s*$/, $line)) {
+				dataExistsLines.push($line);
+				continue;
+			}
+			if ($sections[$currentSectionName]) {
+				$sections[$currentSectionName] += '\n';
+			}
+			let wrappedParts = $line.match(/.{1,64}/g) || [''];
+			for (let wrappedLine of wrappedParts) {
+				if ($sectionName = this.detectSectionHeader(wrappedLine)) {
+					$currentSectionName = $sectionName;
+					$sections[$currentSectionName] = $sections[$currentSectionName] || '';
+					$sections[$currentSectionName] += wrappedLine;
+				} else {
+					$sections[$currentSectionName] += wrappedLine;
+				}
 			}
 		}
 
-		for ([$sectionName, $sectionLines] of Object.entries($sections)) {
-			if ($sectionName != 'dataExistsLines') {
-				$sections[$sectionName] = php.implode(php.PHP_EOL, $sectionLines);
-			}
-		}
-
-		return $sections;
+		return {...$sections, dataExistsLines};
 	}
 
 	static getGalileoFormatMarker($str) {

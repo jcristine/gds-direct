@@ -1381,6 +1381,108 @@ class PnrParserTest extends require('../../../../Lib/TestCase.js') {
 			},
 		]);
 
+		// >*R.SI.VL; - "** SPECIAL SERVICE REQUIREMENT **" got glued to the NOTE text,
+		// possibly because it is exactly 64 characters, should wrap by 64 when determining
+		// section, but not wrap all text, since VENDOR REMARKS have no indentation
+		$list.push([
+			php.implode(php.PHP_EOL, [
+				"** THIS BF IS CURRENTLY IN USE **",
+				"HBJZLE/WS QSBIV VTL9WS  AG 05578602 21MAY",
+				"  1.1FROMMEYER/ALICIAMICHELLE",
+				" 1. DY 7060 V  12JUN MCOCDG HK1   830P #1110A O*       E WE",
+				" 2. TUR ZZ BK1  YYZ 22MAR-PRESERVEPNR",
+				"** FILED FARE DATA EXISTS **           >*FF;",
+				"** VENDOR LOCATOR DATA EXISTS **       >*VL;",
+				"** SERVICE INFORMATION EXISTS **       >*SI;",
+				"** TINS REMARKS EXIST **               >*HTI;",
+				"** ELECTRONIC DATA EXISTS **           >*HTE;",
+				"FONE-SFOT:800-750-2238 ASAP CUSTOMER SUPPORT",
+				"FOP -CAXXXXXXXXXXXX0007/D0423",
+				"TKTG-T*QSB 22MAY1108Z WS AG",
+							"NOTE-",
+				"  1. GD-MAX/426/FOR MAX/426/LEAD-11534008 IN 711M WS 21MAY 2009Z** SPECIAL SERVICE REQUIREMENT **",
+				"SEGMENT/PASSENGER RELATED",
+				"S 1. DY  7060 V  12JUN MCOCDG",
+				"    P 1. FROMMEYER/ALICI| SPML KK 1  STANDARD",
+				"                          TKNE HK 1  3287307939100C1",
+				"NO OSI EXISTS",
+				"** MANUAL SSR DATA **",
+				"  1. SSRCTCEDY HK  1 /REBECCA.SIMPSON//KRATOSDEFENSE.COM-1FROMM-                     EYER/ALICIAMICHELLE",
+				"  2. SSRCTCMDY HK  1 /14076818511-1FROMMEYER/ALICIAMICHELLE",
+				"  3. SSRDOCSDY HK  1 /////06NOV81/M//FROMMEYER/ALICIA/MICHELLE--                     1FROMMEYER/ALICIAMICHELLE",
+				"VLOC-1A*RWXN8E/21MAY 2009",
+			]),
+			{
+				'remarks': [
+					{
+						'lineNumber': '1',
+						'remarkType': 'CMS_LEAD_REMARK',
+						'data': {
+							'agentLogin': 'MAX',
+							'agentId': '426',
+							'leadOwnerLogin': 'MAX',
+							'leadOwnerId': '426',
+							'leadId': '11534008',
+							'pcc': '711M',
+						},
+					},
+				],
+				'ssrSegments': [
+					{segmentNumber: '1', airline: 'DY', flightNumber: '7060'},
+				],
+			},
+		]);
+
+		// >*R.VL.SI; - same, but this time it is VLOC section glued to the NOTE
+		$list.push([
+			php.implode(php.PHP_EOL, [
+				"** THIS BF IS CURRENTLY IN USE **",
+				"HBJZLE/WS QSBIV VTL9WS  AG 05578602 21MAY",
+				"  1.1FROMMEYER/ALICIAMICHELLE",
+				" 1. DY 7060 V  12JUN MCOCDG HK1   830P #1110A O*       E WE",
+				" 2. TUR ZZ BK1  YYZ 22MAR-PRESERVEPNR",
+				"** FILED FARE DATA EXISTS **           >*FF;",
+				"** VENDOR LOCATOR DATA EXISTS **       >*VL;",
+				"** SERVICE INFORMATION EXISTS **       >*SI;",
+				"** TINS REMARKS EXIST **               >*HTI;",
+				"** ELECTRONIC DATA EXISTS **           >*HTE;",
+				"FONE-SFOT:800-750-2238 ASAP CUSTOMER SUPPORT",
+				"FOP -CAXXXXXXXXXXXX0007/D0423",
+				"TKTG-T*QSB 22MAY1108Z WS AG",
+				"NOTE-",
+				"  1. GD-MAX/426/FOR MAX/426/LEAD-11534008 IN 711M WS 21MAY 2009ZVLOC-1A*RWXN8E/21MAY 2009",
+				"** SPECIAL SERVICE REQUIREMENT **",
+				"SEGMENT/PASSENGER RELATED",
+				"S 1. DY  7060 V  12JUN MCOCDG",
+				"    P 1. FROMMEYER/ALICI| SPML KK 1  STANDARD",
+				"                          TKNE HK 1  3287307939100C1",
+				"NO OSI EXISTS",
+				"** MANUAL SSR DATA **",
+				"  1. SSRCTCEDY HK  1 /REBECCA.SIMPSON//KRATOSDEFENSE.COM-1FROMM-                     EYER/ALICIAMICHELLE",
+				"  2. SSRCTCMDY HK  1 /14076818511-1FROMMEYER/ALICIAMICHELLE",
+				"  3. SSRDOCSDY HK  1 /////06NOV81/M//FROMMEYER/ALICIA/MICHELLE--                     1FROMMEYER/ALICIAMICHELLE",
+			]),
+			{
+				'remarks': [
+					{
+						'lineNumber': '1',
+						'remarkType': 'CMS_LEAD_REMARK',
+						'data': {
+							'agentLogin': 'MAX',
+							'agentId': '426',
+							'leadOwnerLogin': 'MAX',
+							'leadOwnerId': '426',
+							'leadId': '11534008',
+							'pcc': '711M',
+						},
+					},
+				],
+				'vlocData': [
+					{recordLocator: 'RWXN8E'},
+				],
+			},
+		]);
+
 		return $list;
 	}
 
