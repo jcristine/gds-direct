@@ -35,9 +35,10 @@ let withDisposableLogger = (action) => {
 };
 
 let withLogger = (action) => {
-	//return withDisposableLogger(action);
-	return getGlobalLogger()
-		.then(logger => action(logger));
+	return withDisposableLogger(action);
+	// not sure, but this possibly caused fluentd servers to lay down just now
+	// return getGlobalLogger()
+	// 	.then(logger => action(logger));
 };
 
 let logit = (msg, id, obj = undefined) => {
