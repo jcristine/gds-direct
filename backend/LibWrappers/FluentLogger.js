@@ -16,7 +16,15 @@ const {getExcData} = require('./../Utils/Misc.js');
 
 process.env.NODE_ENV = Config.production ? 'production' : 'development'; // accept development | stage | production
 
-let withLogger = (action) => {
+let whenGlobalLogger = null;
+let getGlobalLogger = () => {
+	if (whenGlobalLogger === null) {
+		whenGlobalLogger = Promise.resolve(new Logger());
+	}
+	return whenGlobalLogger;
+};
+
+let withDisposableLogger = (action) => {
 	let logger = new Logger();
 	let whenResult = Promise.resolve()
 		.then(() => action(logger));
@@ -24,6 +32,12 @@ let withLogger = (action) => {
 	// so I'll try creating a new connection for each message similar to php
 	setTimeout(() => logger._fluentLogger._disconnect(), 1000);
 	return whenResult;
+};
+
+let withLogger = (action) => {
+	//return withDisposableLogger(action);
+	return getGlobalLogger()
+		.then(logger => action(logger));
 };
 
 let logit = (msg, id, obj = undefined) => {

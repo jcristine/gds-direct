@@ -1,32 +1,7 @@
 
-const Db = require("../../../Utils/Db.js");
 const {sprintf, preg_match, preg_replace, preg_replace_callback, rtrim, str_replace, strcasecmp, boolval, empty, intval, isset, strtoupper, trim, PHP_EOL, json_encode} = require('../../php.js');
 
 let TerminalHighlightService = require('./TerminalHighlightService.js');
-
-let self = {
-	ERROR_NO_PARAMS                 : 'Error: No Params',
-	ERROR_UNKNOWN_FUNCTION          : 'Error: Unknown Function',
-	ERROR_UNKNOWN_COMMAND           : 'Error: Unknown Command',
-	ERROR_SESSION_TERMINATED        : 'Error: Session Terminated',
-	ERROR_SESSION_CANT_RESTART      : 'Error: Can\'t restart session',
-	ERROR_CANT_EXECUTE_COMMAND      : 'Error: Can\'t execute command',
-	ERROR_CANT_REBUILD_ITINERARY    : 'Error: Can\'t execute rebuild itinerary',
-	ERROR_PASSENGERS                : 'Error: Undefined passengers types',
-	ERROR_GDS_NOT_FOUND             : 'Error: Undefined gds "%s"',
-	ERROR_GDS_NOT_DEFINED           : 'Error: Gds not defined',
-	ERROR_GDS_CLASS_NOT_EXIST       : 'Error: Gds "%s" class not exist',
-	ERROR_SEMAPHORE_ACQUIRE         : 'Error: Another process running!',
-	ERROR_PASSENGERS_TYPES_MISMATCH : 'Error: Passengers types mismatch!',
-	SESSION_RESTART       : '/SESSION RESTART',
-	SESSION_START         : '/START SESSION',
-	SESSION_CLEAR_REQUEST : '/CLEAR SESSION REQUEST DATA',
-	LOGGER_PREFIX : 'cmsTerminal_', // to disable logger set prefix to false
-	MAX_RESTART_ATTEMPTS : 2,
-	SEMAPHORE_ACQUIRE_SECONDS : 10,
-	ALLOW_CANT_CREATE_PQ_ERRORS : false,
-	MD_PATTERNS : /^(MD.*|MU.*|MR.*)/i,
-};
 
 let makeBriefSessionInfo = (fullState) => {
 	let areaState = fullState.areas[fullState.area] || {};
