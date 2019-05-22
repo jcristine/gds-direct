@@ -361,7 +361,8 @@ class TranslateTariffDisplayCmdAction {
 
 		$parsed = require('../../../Gds/Parsers/Galileo/CommandParser.js').parse($cmd);
 		if ($parsed['type'] !== 'fareSearch' ||
-			!php.empty($parsed['data']['unparsed'])
+			!php.empty($parsed.data.unparsed) ||
+			!php.empty($parsed.followingCommands)
 		) {
 			return []; // failed to parse cmd
 		}

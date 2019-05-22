@@ -36,6 +36,14 @@ class Lexer {
 		return null;
 	}
 
+	/** @return {{
+	 *     text: string,
+	 *     lexemes: {
+	 *         lexeme: string,
+	 *         data: any,
+	 *         raw: string,
+	 *     }[],
+	 * }} */
 	lex($text) {
 		let $lexeme, $removeTextLeft;
 		this.$context = {

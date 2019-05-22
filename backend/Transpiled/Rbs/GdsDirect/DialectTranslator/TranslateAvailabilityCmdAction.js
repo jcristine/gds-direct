@@ -142,7 +142,7 @@ class TranslateAvailabilityCmdAction {
 				'filterType': $filterType,
 				'airlines': $filters.map(trimStar)
 					.map(str => php.str_split(str, 2))
-					.reduce((a,b) => a.concat(b), []),
+					.reduce((a, b) => a.concat(b), []),
 			};
 		} else if ($gds === 'amadeus') {
 			// '/AUA,AA,DL', '/A-9U,BT,SU'
@@ -413,9 +413,47 @@ class TranslateAvailabilityCmdAction {
 		return $result;
 	}
 
+	static normalizeGalileoParts($cmd) {
+		let parsed = require('../../../Gds/Parsers/Galileo/CommandParser.js').parse($cmd);
+		if (parsed['type'] !== 'airAvailability' ||
+			!php.empty(parsed.data.unparsed) ||
+			!php.empty(parsed.followingCommands)
+		) {
+			return []; // failed to parse cmd
+		}
+		let data = parsed.data;
+		let parts = php.array_filter({
+			availability: 'A' + (data.orderBy || ''),
+			date: ((data.departureDate || {}).raw || ''),
+			cityPair: (data.departureAirport || '')
+					+ (data.destinationAirport || ''),
+		});
+		let modPartNames = {
+			connection: 'connection',
+			airlines: 'airlines',
+			numberOfStops: 'flightType',
+			directLink: 'directLink',
+			bookingClass: 'class',
+			allianceCode: 'allianceCode',
+		};
+		for (let mod of data.modifiers || []) {
+			let partName = modPartNames[mod.type];
+			if (partName) {
+				parts[partName] = mod['raw'];
+			} else {
+				return []; // unsupported mod
+			}
+		}
+		return parts;
+	}
+
 	static separateCommandToData($input, $fromGds) {
 		let $parts;
 
+		if ($fromGds === 'galileo') {
+			// reuse existing parser
+			return this.normalizeGalileoParts($input);
+		}
 		let toBeFirst = (lexeme) => lexeme.hasConstraint(ctx => ctx && ctx.lexemes.length === 0);
 		$parts = {
 			'apollo': {
@@ -428,16 +466,6 @@ class TranslateAvailabilityCmdAction {
 				'flightType': '/DO|/SO|/D',
 				'airlines': '[\\+\\|-]\\*?([A-Z\\d]{2}\\.?)+',
 				'allianceCode': '[\\+\\|]/\\*[A-Z]',
-			},
-			'galileo': {
-				'availability': ['AJ?', toBeFirst],
-				'dateCityPair': '(?<date>\\d{1,2}[A-Z]{3})?(?<cityPair>[A-Z]{6})',
-				'connection': '\\.?\\d{1,4}[APNM]?(\\.[A-Z]{3}-?)?(\\.[A-Z]{3}-?)?',
-				'airlines': '(\\/[A-Z0-9]{2}[-\\#]?)+',
-				'flightType': '\\.D\\d',
-				'directLink': '\\*[A-Z0-9]{2}',
-				'class': '@\\d*[A-Z]',
-				'allianceCode': '//\\*[A-Z]',
 			},
 			'sabre': {
 				'dateCityPair': ['(?<date>\\d{1,2}[A-Z]{3})?(?<cityPair>[A-Z]{6})', lex => lex.hasPreviousLexemeConstraint(['availability'])],
