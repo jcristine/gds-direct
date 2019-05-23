@@ -430,4 +430,15 @@ module.exports.migrations = [
 			]);
 		},
 	},
+	{
+		name: 'GRECT/2019.05.23001-create-generic-db-log',
+		perform: (db) => db.query([
+			'CREATE TABLE generic_log (',
+			'    id INT NOT NULL PRIMARY KEY AUTO_INCREMENT,',
+			'    dt DATETIME NOT NULL,',
+			'    msg TEXT,',
+			'    KEY dt (dt)',
+			') ENGINE=InnoDB DEFAULT CHARSET=utf8',
+		].join('\n')),
+	},
 ];
