@@ -16,13 +16,9 @@ let CmdLog = ({
 	whenCmdRqId = whenCmdRqId || Promise.resolve(null);
 	let gds = session.context.gds;
 	let getSessionData = () => ({...fullState.areas[fullState.area] || {}, gds: gds});
-	let whenRowsFromDb = null;
 	let getRowsFromDb = () => {
-		if (!whenRowsFromDb) {
-			whenRowsFromDb = CmdLogs.getAll(session.id)
-				.then(desc => [...desc].reverse());
-		}
-		return whenRowsFromDb;
+		return CmdLogs.getAll(session.id)
+			.then(desc => [...desc].reverse());
 	};
 	let calledPromises = [];
 
