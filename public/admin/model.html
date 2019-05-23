@@ -34,6 +34,7 @@
     <label>skip:<input type="number" name="skip" value="0" min="0" max="1000"/></label>
     <label>limit:<input type="number" name="limit" value="100" min="0" max="1000"/></label>
     <label>reverse:<input type="checkbox" name="reverse"/></label>
+    <label>no html:<input type="checkbox" name="noHtml"/></label>
     <button type="submit">Send</button>
 </form>
 <br/>
@@ -70,6 +71,7 @@
 	let colTr = document.querySelector('#column-header');
 	let rowTbody = document.querySelector('#value-rows');
 	let reverseFlag = document.querySelector('input[name="reverse"]');
+	let noHtmlFlag = document.querySelector('input[name="noHtml"]');
 	let send = () => {
 		let jsonParamsStr = document.querySelector('textarea[name="jsonParams"]').value || null;
 		let params = {
@@ -94,7 +96,7 @@
 			.then(a => a.json())
 			.then(({records}) => {
 				console.log('model records', [...records]);
-				if (records.length > 0) {
+				if (records.length > 0 && !noHtmlFlag.checked) {
 					let cols = Object.keys(records[0]);
 					for (let col of cols) {
 						colTr.innerHTML += `<th>${col}</th>`;
