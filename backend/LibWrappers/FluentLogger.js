@@ -21,10 +21,6 @@ process.env.NODE_ENV = Config.production ? 'production' : 'development'; // acce
 let whenGlobalLogger = null;
 let getGlobalLogger = () => {
 	if (whenGlobalLogger === null) {
-		Db.with(db => db.writeRows('generic_log', [{
-			dt: Misc.sqlNow(),
-			msg: 'Instantiating Fluent Logger at process #' + process.pid,
-		}])).catch(exc => {});
 		whenGlobalLogger = Promise.resolve(new Logger());
 	}
 	return whenGlobalLogger;
@@ -54,20 +50,10 @@ let logit = (msg, id, obj = undefined) => {
 		obj = jsExport(obj);
 	}
 	obj = obj ? JSON.parse(JSON.stringify(obj)) : undefined;
-	Db.with(db => db.writeRows('generic_log', [{
-		dt: Misc.sqlNow(),
-		msg: 'Attempt to write to logger at process #' + process.pid +
-			' - ' + msg + ' - ' + JSON.stringify(obj),
-	}])).catch(exc => {});
 	return withLogger(logger => logger.logIt(msg, id, obj))
 		.catch(exc => {
 			let ignore = (exc + '').indexOf('Log id is older than 2 day') > -1;
 			if (!ignore) {
-				Db.with(db => db.writeRows('generic_log', [{
-					dt: Misc.sqlNow(),
-					msg: 'Reporting Fluent Logger error at process #' + process.pid +
-						' - ' + exc + ' - ' + JSON.stringify(getExcData(exc)),
-				}])).catch(exc => {});
 				Diag.error('Fluent Logger error - ' + exc, getExcData(exc));
 			}
 			return Promise.resolve(true);
