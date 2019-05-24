@@ -29,3 +29,23 @@ exports.safe = getter => {
 };
 
 exports.wrapExc = async getter => getter();
+
+/**
+ * @template T
+ * @param {T} defaultValue
+ * @param {{httpStatusCode}[]} allowedKinds - Rej.* http status codes
+ * @return Promise<T> - resolve if exc was created with Rej.* and it's
+ *           status is in allowedStatuses, otherwise reject with original exc
+ * supposed to be used with promise.catch(ignoreExc(null, [Rej.NotFound])) to catch particular kinds of exceptions
+ */
+exports.ignoreExc = (defaultValue, allowedKinds) => {
+	return (exc) => {
+		let allowedCodes = allowedKinds.map(r => r.httpStatusCode);
+		if (exc && allowedCodes.includes(exc.httpStatusCode)) {
+			console.debug('\nignoring caught exception ' + exc, exc.httpStatusCode);
+			return Promise.resolve(defaultValue);
+		} else {
+			return Promise.reject(exc);
+		}
+	};
+};
