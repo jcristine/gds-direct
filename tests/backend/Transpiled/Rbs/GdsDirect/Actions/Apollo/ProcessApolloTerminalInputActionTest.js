@@ -3950,6 +3950,20 @@ class ProcessApolloTerminalInputActionTest extends require('../../../../Lib/Test
 							"><"
 						].join("\n"),
 					},
+					{
+						"cmd": "*MCO2",
+						"output": [
+							"ERROR: FAKE OUTPUT FOR OLD TESTS COMPATIBILITY, MCO MASK NOT AVAILABLE",
+							"><"
+						].join("\n"),
+					},
+					{
+						"cmd": "*HT",
+						"output": [
+							"ERROR: FAKE OUTPUT FOR OLD TESTS COMPATIBILITY",
+							"><"
+						].join("\n"),
+					},
 				],
 			},
 		});
@@ -4186,6 +4200,13 @@ class ProcessApolloTerminalInputActionTest extends require('../../../../Lib/Test
 							"><"
 						].join("\n"),
 					},
+					{
+						"cmd": "*HT",
+						"output": [
+							"ERROR: FAKE OUTPUT FOR OLD TESTS COMPATIBILITY",
+							"><"
+						].join("\n"),
+					},
 				],
 			},
 		});
@@ -4355,6 +4376,20 @@ class ProcessApolloTerminalInputActionTest extends require('../../../../Lib/Test
 							"><"
 						].join("\n"),
 					},
+					{
+						"cmd": "*MCO1",
+						"output": [
+							"ERROR: FAKE OUTPUT FOR OLD TESTS COMPATIBILITY, MCO MASK NOT AVAILABLE",
+							"><"
+						].join("\n"),
+					},
+					{
+						"cmd": "*HT",
+						"output": [
+							"ERROR: FAKE OUTPUT FOR OLD TESTS COMPATIBILITY",
+							"><"
+						].join("\n"),
+					},
 				],
 			},
 		});
@@ -4396,21 +4431,6 @@ class ProcessApolloTerminalInputActionTest extends require('../../../../Lib/Test
 							"*** TIN REMARKS EXIST *** >*T; ",
 							")><"
 						].join("\n"),
-						"duration": "0.044879298",
-						"type": "redisplayPnr",
-						"scrolledCmd": "*R",
-						"state": {
-							"area": "A",
-							"pcc": "1O3K",
-							"recordLocator": "PVNNMP",
-							"canCreatePq": false,
-							"scrolledCmd": "*R",
-							"cmdCnt": 361,
-							"pricingCmd": null,
-							"cmdType": "redisplayPnr",
-							"hasPnr": true,
-							"isPnrStored": true
-						}
 					},
 					{
 						"cmd": "MR",
@@ -4426,21 +4446,6 @@ class ProcessApolloTerminalInputActionTest extends require('../../../../Lib/Test
 							"   5 SSRDOCSKQHK1/////21JUN77/F//MCHARO/LAILA/MGHOI-1MCHARO/LAILA MGHOI",
 							"   6 SSRDOCSKQHK1/////05FEB69/M//SAMB/MAMADOU/ASSANE-1SAMB/MAMAD)><"
 						].join("\n"),
-						"duration": "0.048289005",
-						"type": "moveRest",
-						"scrolledCmd": "*R",
-						"state": {
-							"area": "A",
-							"pcc": "1O3K",
-							"recordLocator": "PVNNMP",
-							"canCreatePq": false,
-							"scrolledCmd": "*R",
-							"cmdCnt": 362,
-							"pricingCmd": null,
-							"cmdType": "moveRest",
-							"hasPnr": true,
-							"isPnrStored": true
-						}
 					},
 					{
 						"cmd": "MR",
@@ -4451,21 +4456,216 @@ class ProcessApolloTerminalInputActionTest extends require('../../../../Lib/Test
 							"   2 1A QZGQML   07MAY 1640",
 							"><"
 						].join("\n"),
-						"duration": "0.045607794",
-						"type": "moveRest",
-						"scrolledCmd": "*R",
-						"state": {
-							"area": "A",
-							"pcc": "1O3K",
-							"recordLocator": "PVNNMP",
-							"canCreatePq": false,
-							"scrolledCmd": "*R",
-							"cmdCnt": 363,
-							"pricingCmd": null,
-							"cmdType": "moveRest",
-							"hasPnr": true,
-							"isPnrStored": true
-						}
+					},
+				],
+			},
+		});
+
+		$list.push({
+			input: {
+				'title': 'example of original issue in UTC is not same as in PCC timezone',
+				'cmdRequested': 'HB:FEX',
+			},
+			output: {
+				status: 'executed',
+				actions: [{
+					type: 'displayExchangeMask',
+					data: {
+						"currentPos": "ATL",
+						"mcoRows": [
+							{
+								"command": "*MCO1",
+								"passengerName": "EGBUHO/S",
+								"documentNumber": "0065056248761",
+								"issueDate": {"raw":"24MAY19","parsed":"2019-05-24"},
+								"amount": "1385.30",
+							}
+						],
+						"htRows": [
+							{isActive: true, ticketNumber: '0067401158461', transactionDt: {parsed: '05-24 05:31'}},
+							{isActive: false, ticketNumber: '0065056248761', transactionDt: {parsed: '05-24 04:45'}},
+						],
+					},
+				}],
+			},
+			sessionInfo: {
+				'initialState': php.array_merge(GdsDirectDefaults.makeDefaultApolloState(), {
+					'agent_id': 8050,
+					'hasPnr': true,
+					'isPnrStored': true,
+					'pcc': '2G8P',
+					'recordLocator': 'PBS98E',
+				}),
+				'initialCommands': [
+					{
+					    "cmd": "*R",
+					    "output": [
+					        "** THIS PNR IS CURRENTLY IN USE **",
+					        "JUMER",
+					        "PBS98E/WS QSBYC DPBVWS  AG 23854526 23MAY",
+					        " 1.1EGBUHO/SOLOMONDAVID OGADINMA ",
+					        " 1 DL 118X 14JUL LAXCDG HK1  1200N  755A|*      SU/MO   E",
+					        " 2 AF 104R 15JUL CDGLOS HK1   215P  735P *         MO   E",
+					        " 3 KL 588N 23JUL LOSAMS HK1   945P  545A|*      TU/WE   E  1",
+					        " 4 KL6035N 24JUL AMSDTW HK1   920A 1137A *         WE   E  1",
+					        "         OPERATED BY DELTA AIR LINES",
+					        " 5 DL1659T 24JUL DTWLAX HK1   212P  355P *         WE   E",
+					        "*** PROFILE ASSOCIATIONS EXIST *** >*PA; ",
+					        "FONE-SFOAS/800-750-2238 ASAP CUSTOMER SUPPORT",
+					        "   2 ATLAS/212-481-5516-JUMER",
+					        ")><"
+					    ].join("\n"),
+					    "duration": "0.056994002",
+					    "type": "redisplayPnr",
+					    "scrolledCmd": "*R",
+					    "state": {"area":"B","cmdType":"redisplayPnr","scrolledCmd":"*R","canCreatePq":false,"pricingCmd":null,"pcc":"2G8P","cmdCnt":5,"recordLocator":"PBS98E","hasPnr":true,"isPnrStored":true}
+					},
+					{
+					    "cmd": "MR",
+					    "output": [
+					        "   3 SFOR/800-750-2238-ITN",
+					        "ADRS-INTERNATIONAL TRAVEL NETWORK@100 PINE STREET@SUITE 1925@SAN FRANCISCO CA Z/94111",
+					        "FOP:-CAXXXXXXXXXXXX6695/D1222/*25767B",
+					        "TKTG-T/QSB 24MAY0445Z WS AG *",
+					        "*** TIN REMARKS EXIST *** >*T; ",
+					        "*** MISCELLANEOUS DOCUMENT DATA EXISTS *** >*MPD; ",
+					        "*** LINEAR FARE DATA EXISTS *** >*LF; ",
+					        "ATFQ-OK/$B/:N/Z8/ET/TA2G8P/CDL",
+					        " FQ-USD 788.00/USD 37.20US/USD 576.13XT/USD 1401.33 - 23MAY XH5L06M6.XH5L06M6.NH5L06M6.NH5L06M6.NH5L06M6",
+					        "GFAX-SSRADTK1VTOAF BY 26MAY 1700 OTHERWISE WILL BE XLD",
+					        "   2 SSRADTK1VTOKL BY 27MAY19/0600Z OTHERWISE WILL BE XXLD",
+					        ")><"
+					    ].join("\n"),
+					    "duration": "0.036795834",
+					    "type": "moveRest",
+					    "scrolledCmd": "*R",
+					    "state": {"area":"B","cmdType":"moveRest","scrolledCmd":"*R","canCreatePq":false,"pricingCmd":null,"pcc":"2G8P","cmdCnt":6,"recordLocator":"PBS98E","hasPnr":true,"isPnrStored":true}
+					},
+					{
+					    "cmd": "MR",
+					    "output": [
+					        "   3 SSRCTCEDLHK1/SEGBUHO//YAHOO.COM-1EGBUHO/SOLOMONDAVID OGADINMA",
+					        "   4 SSRCTCEAFHK1/SEGBUHO//YAHOO.COM-1EGBUHO/SOLOMONDAVID OGADINMA",
+					        "   5 SSRCTCEKLHK1/SEGBUHO//YAHOO.COM-1EGBUHO/SOLOMONDAVID OGADINMA",
+					        "   6 SSRCTCMDLHK1/15622858528-1EGBUHO/SOLOMONDAVID OGADINMA",
+					        "   7 SSRCTCMAFHK1/15622858528-1EGBUHO/SOLOMONDAVID OGADINMA",
+					        "   8 SSRCTCMKLHK1/15622858528-1EGBUHO/SOLOMONDAVID OGADINMA",
+					        "   9 SSRDOCSDLHK1/////06JAN53/M//EGBUHO/SOLOMONDAVID/OGADINMA-1EGBUHO/SOLOMONDAVID OGADINMA",
+					        "  10 SSRDOCSAFHK1/////06JAN53/M//EGBUHO/SOLOMONDAVID/OGADINMA-1EGBUHO/SOLOMONDAVID OGADINMA",
+					        ")><"
+					    ].join("\n"),
+					    "duration": "0.031649119",
+					    "type": "moveRest",
+					    "scrolledCmd": "*R",
+					    "state": {"area":"B","cmdType":"moveRest","scrolledCmd":"*R","canCreatePq":false,"pricingCmd":null,"pcc":"2G8P","cmdCnt":7,"recordLocator":"PBS98E","hasPnr":true,"isPnrStored":true}
+					},
+					{
+					    "cmd": "MR",
+					    "output": [
+					        "  11 SSRDOCSKLHK1/////06JAN53/M//EGBUHO/SOLOMONDAVID/OGADINMA-1EGBUHO/SOLOMONDAVID OGADINMA",
+					        "  12 SSRADTK1VTODL BY 26JUN 2359 SFO OTHERWISE MAY BE XLD",
+					        "  13 SSRADTK1VTODL BY 26JUN FARE MAY NEED EARLIER TKT DTE",
+					        "RMKS-GD-SUSAN/22728/FOR SUSAN/22728/LEAD-11786354 IN 2G2H",
+					        "TRMK-AN8007502041",
+					        "   2 DI-BR2",
+					        "   3 DI-UD35",
+					        "   4 CA ACCT-8007502041",
+					        "   5 UD8 0",
+					        "   6 UD1 P",
+					        "ACKN-DL G5GHKW   23MAY 2342",
+					        "   2 1A KGJAON   23MAY 2342",
+					        ")><"
+					    ].join("\n"),
+					    "duration": "0.082554439",
+					    "type": "moveRest",
+					    "scrolledCmd": "*R",
+					    "state": {"area":"B","cmdType":"moveRest","scrolledCmd":"*R","canCreatePq":false,"pricingCmd":null,"pcc":"2G8P","cmdCnt":8,"recordLocator":"PBS98E","hasPnr":true,"isPnrStored":true}
+					},
+					{
+					    "cmd": "MR",
+					    "output": [
+					        "   3 1A KGJAON   23MAY 2342",
+					        "><"
+					    ].join("\n"),
+					    "duration": "0.057189507",
+					    "type": "moveRest",
+					    "scrolledCmd": "*R",
+					    "state": {"area":"B","cmdType":"moveRest","scrolledCmd":"*R","canCreatePq":false,"pricingCmd":null,"pcc":"2G8P","cmdCnt":9,"recordLocator":"PBS98E","hasPnr":true,"isPnrStored":true}
+					},
+				],
+				'performedCommands': [
+					{
+					    "cmd": "HB:FEX",
+					    "output": [
+					        ">$EX NAME EGBUHO/SOLOMONDAVID OGADINMA       PSGR  1/ 1",
+					        "FARE USD   788.00  TOTAL USD  1401.33",
+					        "TX1 USD   37.20 US   TX2 USD  576.13 XT   TX3               ",
+					        "",
+					        "EXCHANGE TKTS ;..............-;...  CPN ALL",
+					        "TKT1;.............. CPN;.... TKT2;.............. CPN;....",
+					        "COMM;.........  ORIG FOP;................... EVEN;.",
+					        "",
+					        "TTL VALUE OF EX TKTS USD;.............  ORIG BRD/OFF;...;...",
+					        "TX1 USD;.......;..   TX2 USD;.......;..   TX3 USD;.......;..",
+					        "ORIG ISS;...... ORIG DATE;....... ORIG IATA NBR;.........",
+					        "ORIG TKT;..............-;...  ORIG INV NBR;.........",
+					        "PENALTY USD;............  COMM ON PENALTY;...........",
+					        "><"
+					    ].join("\n"),
+					    "duration": "3.222072719",
+					    "type": "issueTickets",
+					    "scrolledCmd": "HB:FEX",
+					    "state": {"area":"B","cmdType":"issueTickets","scrolledCmd":"HB:FEX","canCreatePq":false,"pricingCmd":null,"pcc":"2G8P","cmdCnt":10,"recordLocator":"PBS98E","hasPnr":true,"isPnrStored":true}
+					},
+					{
+					    "cmd": "*MPD",
+					    "output": [
+					        "*MPD             MISCELLANEOUS DOCUMENT LIST",
+					        "          NAME         DOCUMENT NBR   ISSUED       AMOUNT",
+					        ">*MCO1;   EGBUHO/S    0065056248761   24MAY19         1385.30 ",
+					        "END OF DISPLAY",
+					        "><"
+					    ].join("\n"),
+					    "duration": "0.042588507",
+					    "type": "mcoList",
+					    "scrolledCmd": "*MPD",
+					    "state": {"area":"B","cmdType":"mcoList","scrolledCmd":"*MPD","canCreatePq":false,"pricingCmd":null,"pcc":"2G8P","cmdCnt":11,"recordLocator":"PBS98E","hasPnr":true,"isPnrStored":true}
+					},
+					{
+					    "cmd": "*MCO1",
+					    "output": [
+					        ">HHMCU1           *** MISC CHARGE ORDER ***",
+					        " PASSENGER NAME;EGBUHO/SOLOMONDAVID OGADINMA............",
+					        " TO;DL...................................... AT;ATL............",
+					        " VALID FOR;SPLIT...............................................",
+					        " TOUR CODE;............... RELATED TKT NBR;.............",
+					        " FOP;CAXXXXXXXXXXXX6695/OK.....................................",
+					        " EXP DATE;1222 APVL CODE;25767B COMM;0.00/... TAX;........-;..",
+					        " AMOUNT;1385.30.-;USD EQUIV ;........-;... BSR;..........",
+					        " END BOX;......................................................",
+					        " REMARK1;..............................................",
+					        " REMARK2;......................................................",
+					        " VALIDATING CARRIER;DL                  ISSUE NOW;.",
+					        "><"
+					    ].join("\n"),
+					    "duration": "0.078383694",
+					    "type": "storedMcoMask",
+					    "scrolledCmd": "*MCO1",
+					    "state": {"area":"B","cmdType":"storedMcoMask","scrolledCmd":"*MCO1","canCreatePq":false,"pricingCmd":null,"pcc":"2G8P","cmdCnt":12,"recordLocator":"PBS98E","hasPnr":true,"isPnrStored":true}
+					},
+					{
+					    "cmd": "*HT",
+					    "output": [
+					        "** CURRENT TIN DATA **",
+					        "EGBUHO/SOLOMON-00000000-01/0067401158461-462/EZ0002371-USD/1401.33/TE/24MAY0531Z",
+					        "** HISTORY TIN DATA **",
+					        "XK EGBUHO/SOLOMON-00011736-37/0065056248761/EZ0002367-USD/1385.30/24MAY0445Z",
+					        "><"
+					    ].join("\n"),
+					    "duration": "0.050226535",
+					    "type": "history",
+					    "scrolledCmd": "*HT",
+					    "state": {"area":"A","pcc":"2F3K","recordLocator":"PBS98E","canCreatePq":false,"scrolledCmd":"*HT","cmdCnt":6,"pricingCmd":null,"hasPnr":true,"isPnrStored":true,"cmdType":"history"}
 					},
 				],
 			},

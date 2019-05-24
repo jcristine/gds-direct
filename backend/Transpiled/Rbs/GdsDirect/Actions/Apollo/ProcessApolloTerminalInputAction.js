@@ -10,6 +10,7 @@ const fetchUntil = require("../../../../../GdsHelpers/TravelportUtils").fetchUnt
 const {fetchAll, extractPager} = require('../../../../../GdsHelpers/TravelportUtils.js');
 
 const Rej = require('gds-direct-lib/src/Utils/Rej.js');
+const {ignoreExc} = require('../../../../../Utils/Misc.js');
 const UnprocessableEntity = require("gds-direct-lib/src/Utils/Rej").UnprocessableEntity;
 const BadRequest = require("gds-direct-lib/src/Utils/Rej").BadRequest;
 const Errors = require('../../../../Rbs/GdsDirect/Errors.js');
@@ -51,6 +52,7 @@ const ParseHbFex = require('../../../../../Parsers/Apollo/ParseHbFex.js');
 const NmeMaskParser = require("../../../../../Actions/ManualPricing/NmeMaskParser");
 
 const Pccs = require("../../../../../Repositories/Pccs");
+const TicketHistoryParser = require("../../../../Gds/Parsers/Apollo/TicketHistoryParser");
 
 /** @param stateful = await require('StatefulSession.js')() */
 let execute = ({
@@ -1452,7 +1454,24 @@ class ProcessApolloTerminalInputAction {
 			return this.matchesMcoName(mcoRow.passengerName, headerData);
 		});
 		return this.filterMcoRowsByMask(matchingPartial, headerData)
-			.catch(exc => matchingPartial);
+			.catch(ignoreExc(matchingPartial, [UnprocessableEntity]));
+	}
+
+	/** @param {ApolloPnr} pnr */
+	async getHtRows(pnr) {
+		if (!pnr.hasEtickets()) {
+			return [];
+		}
+		let cmdRec = await fetchAll('*HT', this.stateful);
+		let parsed = TicketHistoryParser.parse(cmdRec.output);
+		let tickets = []
+			.concat(parsed.currentTickets.map(r => ({...r, isActive: true})))
+			.concat(parsed.deletedTickets.map(r => ({...r, isActive: false})));
+		if (tickets.length === 0) {
+			return UnprocessableEntity('Bad *HT reply - ' + cmdRec.output);
+		} else {
+			return tickets;
+		}
 	}
 
 	async _checkPnrForExchange(storeNum) {
@@ -1513,7 +1532,10 @@ class ProcessApolloTerminalInputAction {
 					currentPos: !pccRow ? null : pccRow.point_of_sale_city,
 					mcoRows: ticketNumber ? [] : await
 						this.getMcoRows(pnr, parsed.headerData)
-							.catch(exc => []),
+							.catch(ignoreExc([], [UnprocessableEntity])),
+					htRows: ticketNumber ? [] : await
+						this.getHtRows(pnr)
+							.catch(ignoreExc([], [UnprocessableEntity])),
 					headerData: parsed.headerData,
 					fields: parsed.fields.map(f => ({
 						key: f.key,
