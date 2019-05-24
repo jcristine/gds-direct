@@ -3,7 +3,7 @@ let {getConfig} = require('../Config.js');
 let Db = require('../Utils/Db.js');
 const sqlNow = require("../Utils/Misc").sqlNow;
 const iqJson = require("../Utils/Misc").iqJson;
-let {strval, implode, array_column} = require('../Transpiled/php.js');
+let {strval, implode, array_column, array_combine} = require('../Transpiled/php.js');
 
 let TABLE = 'airports';
 
@@ -65,7 +65,7 @@ exports.findByCity = (code) =>
 exports.getRegionNames = () => {
 	let sql = 'SELECT DISTINCT region_id, region_name FROM airports';
 	return Db.with(db => db.query(sql))
-		.then($rows => php.array_combine(
+		.then($rows => array_combine(
 			$rows.map(r => r.region_id),
 			$rows.map(r => r.region_name),
 		));
@@ -74,7 +74,7 @@ exports.getRegionNames = () => {
 exports.getCountryNames = () => {
 	let sql = 'SELECT DISTINCT country_code, country_name FROM airports';
 	return Db.with(db => db.query(sql))
-		.then($rows => php.array_combine(
+		.then($rows => array_combine(
 			$rows.map(r => r.country_code),
 			$rows.map(r => r.country_name),
 		));

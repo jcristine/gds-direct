@@ -28,6 +28,7 @@ const LoginTimeOut = require("gds-direct-lib/src/Utils/Rej").LoginTimeOut;
 const withGdsSession = require("./HttpControllers/MainController").withGdsSession;
 const toHandleHttp = require("./HttpControllers/MainController").toHandleHttp;
 const {withAuth} = require("./HttpControllers/MainController");
+const GdsdLib = require('gds-direct-lib');
 
 let app = express();
 
@@ -391,6 +392,24 @@ app.get('/getAgentList', withAuth(async (reqBody, emcResult) => {
 		emc.setMethod('getUsers');
 		let users = await emc.call();
 		return users;
+	} else {
+		return Forbidden('Sorry, you must be me in order to use that');
+	}
+}));
+app.get('/getAsapLocations', withAuth(async (reqBody, emcResult) => {
+	if (emcResult.user.id == 6206) {
+		let config = await getConfig();
+		/** @type IGetAirportsRs */
+		return GdsdLib.Misc.iqJson({
+			url: config.external_service.infocenter.host,
+			credentials: {
+				login: config.external_service.infocenter.login,
+				passwd: config.external_service.infocenter.password,
+			},
+			functionName: 'getAllWithRegions',
+			serviceName: 'infocenter',
+			params: {folder: 'asap'},
+		});
 	} else {
 		return Forbidden('Sorry, you must be me in order to use that');
 	}

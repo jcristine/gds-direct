@@ -13,12 +13,18 @@ const Config = require('../Config.js');
 const Diag = require('./Diag.js');
 const jsExport = require("../Utils/Misc").jsExport;
 const {getExcData} = require('./../Utils/Misc.js');
-const Db = require('../Utils/Db.js');
-const Misc = require('gds-direct-lib/src/Utils/Misc.js');
 
 process.env.NODE_ENV = Config.production ? 'production' : 'development'; // accept development | stage | production
 
 let whenGlobalLogger = null;
+/**
+ * DO NOT USE THAT, our fluentd servers die if you keep the connection, my
+ * guess is that it conflicts with the pm2-diag-sender.sh which probably
+ * uses same port and hangs indefinitely waiting till the port is free
+ * Upd.: this is the ITA-10457, my another guess is that 'fluent-logger' lib
+ * Upd.: the lib sends chunks as multiple lines, whereas our servers
+ *       read just one line, J.Ozolins is working on the fix ATM
+ */
 let getGlobalLogger = () => {
 	if (whenGlobalLogger === null) {
 		whenGlobalLogger = Promise.resolve(new Logger());
