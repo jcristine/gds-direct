@@ -22,7 +22,6 @@ class TicketHistoryParser
                 ($time = CommonParserHelpers.decodeApolloTime($time))
             ) {
                 $parsed = $date+' '+$time;
-
             }
             $tz = $tz === 'Z' ? 'UTC' : null;
         }
@@ -46,7 +45,7 @@ class TicketHistoryParser
             '(?<stockNumber>\\d*(-\\d+)?)\/'+
             '(?<ticketNumber>\\d{13})'+
             '(-(?<ticketExtension>\\d+))?\/'+
-            '(?<invoiceNumber>\\d*)-'+
+            '(?<invoiceNumber>[A-Z0-9]*)-'+
             '(?<currency>[A-Z]{3})\/'+
             '(?<amount>\\d*\\.?\\d+)\/'+
             '((?<transactionIndicator>[A-Z]{2})\\\/)?'+

@@ -147,6 +147,43 @@ class TicketHistoryParserTest extends require('../../../Lib/TestCase.js') {
 			},
 		]);
 
+		// invoice number with letters (thanks, Bill)
+		// >*PBS98E; session #402632
+		$list.push([
+			php.implode(php.PHP_EOL, [
+				"** CURRENT TIN DATA **",
+				"EGBUHO/SOLOMON-00000000-01/0067401158461-462/EZ0002371-USD/1401.33/TE/24MAY0531Z",
+				"** HISTORY TIN DATA **",
+				"XK EGBUHO/SOLOMON-00011736-37/0065056248761/EZ0002367-USD/1385.30/24MAY0445Z",
+			]),
+			{
+				currentTickets: [
+					{
+						lastName: 'EGBUHO',
+						firstName: 'SOLOMON',
+						stockNumber: '00000000-01',
+						ticketNumber: '0067401158461',
+						invoiceNumber: 'EZ0002371',
+						currency: 'USD',
+						amount: '1401.33',
+						transactionDt: {'parsed': '05-24 05:31'},
+					},
+				],
+				deletedTickets: [
+					{
+						lastName: 'EGBUHO',
+						firstName: 'SOLOMON',
+						stockNumber: '00011736-37',
+						ticketNumber: '0065056248761',
+						invoiceNumber: 'EZ0002367',
+						currency: 'USD',
+						amount: '1385.30',
+						transactionDt: {'parsed': '05-24 04:45'},
+					},
+				],
+			},
+		]);
+
 		return $list;
 	}
 
