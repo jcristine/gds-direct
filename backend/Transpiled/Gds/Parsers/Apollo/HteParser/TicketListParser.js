@@ -1,4 +1,3 @@
-
 // namespace Gds\Parsers\Apollo\HteParser;
 
 const StringUtil = require('../../../../Lib/Utils/StringUtil.js');
@@ -16,61 +15,63 @@ const StringUtil = require('../../../../Lib/Utils/StringUtil.js');
  * 'END OF LIST                                                     '
  */
 const php = require('../../../../php.js');
-class TicketListParser
-{
-    static parse($dump)  {
-        let $lines, $firstLine, $secondLine, $lastLine, $bodyLines, $result, $i, $line, $parsedLine;
 
-        $dump = StringUtil.wrapLinesAt($dump, 64);
-        $lines = php.array_filter(StringUtil.lines($dump));
+class TicketListParser {
+	static parse($dump) {
+		let $lines, $firstLine, $secondLine, $lastLine, $bodyLines, $result, $i, $line, $parsedLine;
 
-        $firstLine = php.rtrim(php.array_shift($lines));
-        $secondLine = php.rtrim(php.array_shift($lines));
-        $lastLine = php.rtrim(php.array_pop($lines));
-        $bodyLines = $lines;
+		$dump = StringUtil.wrapLinesAt($dump, 64);
+		$lines = php.array_filter(StringUtil.lines($dump));
 
-        if (!($firstLine == 'ELECTRONIC TICKET LIST BY *HTE'
-                && $secondLine == '          NAME             TICKET NUMBER'
-                && $lastLine == 'END OF LIST')) {
-            return {'error': 'Cannot parse ticket list - '+$firstLine};
-        }
+		$firstLine = php.rtrim(php.array_shift($lines));
+		$secondLine = php.rtrim(php.array_shift($lines));
+		$lastLine = php.rtrim(php.array_pop($lines));
+		$bodyLines = $lines;
 
-        $result = [];
-        for ([$i, $line] of Object.entries($bodyLines)) {
-            $parsedLine = this.parseTicketLine($line);
-            if ($parsedLine) {
-                $result.push($parsedLine);
-            } else {
-                return {'error': 'Cannot parse '+$i+'-th ticket line - '+$line};
-            }}
-        return {'tickets': $result};
-    }
+		if (!($firstLine == 'ELECTRONIC TICKET LIST BY *HTE'
+			&& $secondLine == '          NAME             TICKET NUMBER'
+			&& $lastLine == 'END OF LIST')) {
+			return {'error': 'Cannot parse ticket list - ' + $firstLine};
+		}
 
-    static parseTicketLine($line)  {
-        let $pattern, $names, $result;
+		$result = [];
+		for ([$i, $line] of Object.entries($bodyLines)) {
+			$parsedLine = this.parseTicketLine($line);
+			if ($parsedLine) {
+				$result.push($parsedLine);
+			} else {
+				return {'error': 'Cannot parse ' + $i + '-th ticket line - ' + $line};
+			}
+		}
+		return {'tickets': $result};
+	}
 
-        //         '>*TE001;  GARCIA/ALEXAND   0017729613240                        ' // apollo
-        //         '>*TE001;  NORTON/REGINALDH 0162667160537                        ' // galileo
-        $pattern = 'TTTTCCCT  NNNNNNNNNNNNNNNN DDDDDDDDDDDDD';
-        $names = {
-            'T': 'commandPattern',
-            'C': 'teCommandNumber',
-            'N': 'passengerName',
-            'D': 'ticketNumber',
-            ' ': 'whitespace',
-        };
-        $result = StringUtil.splitByPosition($line, $pattern, $names, true);
+	static parseTicketLine($line) {
+		let $pattern, $names, $result;
 
-        if (!($result['commandPattern'] == '>*TE;'
-                && $result['whitespace'] == '')) {
-            return null;
-        }
+		//         '>*TE001;  GARCIA/ALEXAND   0017729613240                        ' // apollo
+		//         '>*TE001;  NORTON/REGINALDH 0162667160537                        ' // galileo
+		$pattern = 'TTTTCCCT  NNNNNNNNNNNNNNNN DDDDDDDDDDDDD';
+		$names = {
+			'T': 'commandPattern',
+			'C': 'teCommandNumber',
+			'N': 'passengerName',
+			'D': 'ticketNumber',
+			' ': 'whitespace',
+		};
+		$result = StringUtil.splitByPosition($line, $pattern, $names, true);
 
-        return {
-            'teCommandNumber': $result['teCommandNumber'],
-            'passengerName': $result['passengerName'],
-            'ticketNumber': $result['ticketNumber'],
-        };
-    }
+		if (!($result['commandPattern'] == '>*TE;'
+			&& $result['whitespace'] == '')) {
+			return null;
+		}
+
+		return {
+			'teCommandNumber': $result['teCommandNumber'],
+			'passengerName': $result['passengerName'],
+			'ticketNumber': $result['ticketNumber'],
+		};
+	}
 }
+
 module.exports = TicketListParser;
