@@ -385,6 +385,24 @@ app.get('/testRedisWrite', withAuth(async (reqBody, emcResult) => {
 		return Forbidden('Sorry, you must be me in order to use that');
 	}
 }));
+app.get('/testMemoryLimit', withAuth(async (rqBody, emcResult) => {
+	if (emcResult.user.id == 6206) {
+		// 1200000 ~ 350 MiB
+		let dummyDataLength = rqBody.dummyDataLength || 100;
+		let arr = [];
+		for (let i = 0; i < dummyDataLength; ++i) {
+			arr.push(i + '-' + i + '-' + Math.random());
+		}
+		let index = Math.floor(Math.random() * dummyDataLength);
+		return {
+			index: index,
+			dummyDataLength: dummyDataLength,
+			value: arr[index],
+		};
+	} else {
+		return Forbidden('Sorry, you must be me in order to use that');
+	}
+}));
 app.get('/getAgentList', withAuth(async (reqBody, emcResult) => {
 	if (emcResult.user.id == 6206) {
 		let emc = await Emc.getClient();
