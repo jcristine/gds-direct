@@ -52,9 +52,19 @@ class TicketHistoryParser
             '(?<transactionDt>.*?)'+
             '\\s*$/';
         if (php.preg_match($regex, $line, $matches = [])) {
-            $matches['transactionDt'] = this.parseDt($matches['transactionDt']);
-            $numKeys = Fp.filter('is_numeric', php.array_keys($matches));
-            return php.array_diff_key($matches, php.array_flip($numKeys));
+            return {
+                historyActionCode: $matches.historyActionCode,
+                lastName: $matches.lastName,
+                firstName: $matches.firstName,
+                stockNumber: $matches.stockNumber,
+                ticketNumber: $matches.ticketNumber,
+                ticketExtension: $matches.ticketExtension,
+                invoiceNumber: $matches.invoiceNumber,
+                currency: $matches.currency,
+                amount: $matches.amount,
+                transactionIndicator: $matches.transactionIndicator,
+                transactionDt: this.parseDt($matches.transactionDt),
+            };
         } else {
             return null;
         }

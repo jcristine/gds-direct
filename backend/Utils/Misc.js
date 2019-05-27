@@ -42,7 +42,6 @@ exports.ignoreExc = (defaultValue, allowedKinds) => {
 	return (exc) => {
 		let allowedCodes = allowedKinds.map(r => r.httpStatusCode);
 		if (exc && allowedCodes.includes(exc.httpStatusCode)) {
-			console.debug('\nignoring caught exception ' + exc, exc.httpStatusCode);
 			return Promise.resolve(defaultValue);
 		} else {
 			return Promise.reject(exc);

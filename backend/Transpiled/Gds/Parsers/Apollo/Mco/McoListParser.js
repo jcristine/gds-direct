@@ -34,7 +34,7 @@ class McoListParser
             'command': $cmd,
             'passengerName': $split['N'],
             'documentNumber': $split['D'],
-            /** UTC date apparently, do not confuse with PCC timezone date */
+            /** seems to be in PCC timezone */
             'issueDate': CommonParserHelpers.parseCurrentCenturyFullDate($split['I']),
             'amount': $split['A'],
         };
