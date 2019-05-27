@@ -16,24 +16,33 @@ const {getExcData} = require('./../Utils/Misc.js');
 
 process.env.NODE_ENV = Config.production ? 'production' : 'development'; // accept development | stage | production
 
+let createClient = () => new Logger(null, {
+	internalLogger: {
+		info: (...args) => {},
+		error: (msg, ...args) => {
+			Diag.error('Fluent Logger internal error - ' + msg, ...args);
+		},
+	},
+});
+
 let whenGlobalLogger = null;
 /**
  * DO NOT USE THAT, our fluentd servers die if you keep the connection, my
  * guess is that it conflicts with the pm2-diag-sender.sh which probably
  * uses same port and hangs indefinitely waiting till the port is free
- * Upd.: this is the ITA-10457, my another guess is that 'fluent-logger' lib
+ * Upd.: this is the ITA-10457
  * Upd.: the lib sends chunks as multiple lines, whereas our servers
  *       read just one line, J.Ozolins is working on the fix ATM
  */
 let getGlobalLogger = () => {
 	if (whenGlobalLogger === null) {
-		whenGlobalLogger = Promise.resolve(new Logger());
+		whenGlobalLogger = Promise.resolve(createClient());
 	}
 	return whenGlobalLogger;
 };
 
 let withDisposableLogger = (action) => {
-	let logger = new Logger();
+	let logger = createClient();
 	let whenResult = Promise.resolve()
 		.then(() => action(logger));
 	// it is possible that our fluentd servers can't handle persistent socket connection,
