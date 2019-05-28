@@ -30,6 +30,8 @@ const UnprocessableEntity = require("gds-direct-lib/src/Utils/Rej").Unprocessabl
 const Rej = require("gds-direct-lib/src/Utils/Rej");
 const FxParser = require('../../../../Gds/Parsers/Amadeus/Pricing/FxParser.js');
 const TicketMaskParser = require('../../../../Gds/Parsers/Amadeus/TicketMaskParser.js');
+const {withCapture} = require("../../../../../GdsHelpers/CommonUtils");
+const AmadeusGetPricingPtcBlocks = require('./AmadeusGetPricingPtcBlocksAction.js');
 
 class ProcessAmadeusTerminalInputAction {
 	/** @param $statefulSession = require('StatefulSession.js')() */
@@ -653,6 +655,22 @@ class ProcessAmadeusTerminalInputAction {
 		return {'calledCommands': [$cmdRecord]};
 	}
 
+	async _fetchPricing(cmd, cmdData) {
+		let shouldFetchAll = cmdData.baseCmd !== 'FXL'; // FXL = ignore availability
+		let result = await this.processRealCommand(cmd, shouldFetchAll);
+		if (shouldFetchAll && !php.empty(result.calledCommands)) {
+			let fxOutput = result.calledCommands[0].output;
+			let capturing = withCapture(this.stateful);
+			let pricing = await (new AmadeusGetPricingPtcBlocks())
+				.setSession(capturing)
+				.execute(cmd, fxOutput);
+			let cmdRecs = capturing.getCalledCommands();
+			cmdRecs = AmadeusUtil.collectFullCmdRecs(cmdRecs);
+			result.calledCommands.push(...cmdRecs);
+		}
+		return result;
+	}
+
 	getEmptyAreasFromDbState() {
 		let $isOccupied, $occupiedRows, $occupiedAreas;
 
@@ -958,6 +976,8 @@ class ProcessAmadeusTerminalInputAction {
 	async processRequestedCommand($cmd) {
 		let $matches, $area, $pcc, $mdaData, $limit, $cmdReal, $reData, $aliasData, $params, $itinerary, $result;
 
+		let parsed = CommandParser.parse($cmd);
+
 		if (php.preg_match(/^JM *([A-Z])$/, $cmd, $matches = [])) {
 			$area = $matches[1];
 			return this.changeArea($area);
@@ -991,6 +1011,8 @@ class ProcessAmadeusTerminalInputAction {
 			return this.bookItinerary($itinerary, true);
 		} else if ($result = RepriceInAnotherPccAction.parseAlias($cmd)) {
 			return this.priceInAnotherPcc($result['cmd'], $result['target'], $result['dialect']);
+		} else if (parsed.type === 'priceItinerary') {
+			return this._fetchPricing($cmd, parsed.data);
 		} else {
 			return this.processRealCommand($cmd);
 		}

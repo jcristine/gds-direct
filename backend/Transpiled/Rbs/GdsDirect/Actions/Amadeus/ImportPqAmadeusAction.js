@@ -138,32 +138,13 @@ class ImportPqAmadeusAction extends AbstractGdsAction {
 	}
 
 	static makeCmdToFullDump($cmdLog) {
-		let $cmdToFullDump, $cmdRows, $scrolledCmd, $mdrs, $cmdRow, $scrolledFormat, $cmd, $output, $pager, $format;
+		let $cmdToFullDump, $cmdRows;
 
 		$cmdToFullDump = {};
 		$cmdRows = $cmdLog.getLastCommandsOfTypes(SessionStateHelper.getCanCreatePqSafeTypes());
-		$scrolledCmd = null;
-		$mdrs = [];
-		for ($cmdRow of Object.values($cmdRows)) {
-			$scrolledFormat = $scrolledCmd ? PagingHelper.guessFormatFromCmd($scrolledCmd) : null;
-			$cmd = $cmdRow['cmd_performed'];
-			$output = $cmdRow['output'];
-			if ($scrolledFormat && $scrolledFormat['moveRestCmd'] === $cmd) {
-				$pager = $scrolledFormat['parsePager']($output);
-				$mdrs.push($pager['content']);
-			} else {
-				$scrolledCmd = $cmd;
-				$mdrs = [];
-				if ($format = PagingHelper.guessFormatFromCmd($cmd)) {
-					$pager = $format['parsePager']($output);
-					$mdrs = [$pager['content']];
-				} else {
-					$pager = null;
-				}
-			}
-			if ($pager && !$pager['hasMore']) {
-				$cmdToFullDump[$scrolledCmd] = php.implode(php.PHP_EOL, $mdrs);
-			}
+		let fullCmdRecs = PagingHelper.collectFullCmdRecs($cmdRows);
+		for (let {cmd, output} of fullCmdRecs) {
+			$cmdToFullDump[cmd] = output;
 		}
 		return $cmdToFullDump;
 	}
@@ -261,7 +242,7 @@ class ImportPqAmadeusAction extends AbstractGdsAction {
 		return $result;
 	}
 
-	async getPricing($nameRecords) {
+	async getPricing(reservation) {
 		let $cmds, $cmdRecord, $error, $cmd, $raw, $result, $errors, $dumpStorage, $fullData, $pqtPricingInfo;
 
 		$cmds = await this.getCmdLog().getLastCommandsOfTypes(SessionStateHelper.getCanCreatePqSafeTypes());
@@ -286,7 +267,7 @@ class ImportPqAmadeusAction extends AbstractGdsAction {
 		$fullData = await (new AmadeusGetPricingPtcBlocksAction())
 			.setSession(capturing)
 			.setCmdToFullDump(this.constructor.makeCmdToFullDump(this.getCmdLog()))
-			.execute($cmd, $raw, $nameRecords);
+			.execute($cmd, $raw, reservation.passengers);
 
 		$pqtPricingInfo = this.constructor.makePricingInfoForPqt($raw, $cmd, $fullData['pricingList'], $dumpStorage);
 
@@ -450,7 +431,7 @@ class ImportPqAmadeusAction extends AbstractGdsAction {
 		$result['pnrData']['reservation'] = $reservationRecord;
 
 		$nameRecords = $reservationRecord['parsed']['passengers'];
-		$fullPricing = await this.getPricing($nameRecords);
+		$fullPricing = await this.getPricing($reservationRecord['parsed']);
 		if ($result['error'] = $fullPricing['error']) return $result;
 		$pricingRecord = $fullPricing['currentPricing'];
 		$result['pnrData']['currentPricing'] = $pricingRecord;

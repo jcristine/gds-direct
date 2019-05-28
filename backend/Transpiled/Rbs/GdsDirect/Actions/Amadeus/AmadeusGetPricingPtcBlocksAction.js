@@ -60,8 +60,8 @@ class AmadeusGetPricingPtcBlocksAction extends AbstractGdsAction
         return {
             'ptc': $discount,
             'ptcRequested': (($mods['generic'] || {})['ptcs'] || {})[0],
-            'quantity': $nameRecords ? php.count($nameRecords) : 1,
-            'pricingPaxNums': $nameRecords ? php.range(1, php.count($nameRecords)) : [1],
+            'quantity': !php.empty($nameRecords) ? php.count($nameRecords) : 1,
+            'pricingPaxNums': !php.empty($nameRecords) ? php.range(1, php.count($nameRecords)) : [1],
             'ageGroup': $ageGroup,
             'ageGroupRequested': $ageGroup,
             'nameNumbers': php.array_column($nameRecords, 'nameNumber'),
@@ -88,7 +88,7 @@ class AmadeusGetPricingPtcBlocksAction extends AbstractGdsAction
     }
 
     /** @param string $pricingDump - full clean pricing dump */
-    async execute($cmd, $pricingDump, $nameRecords)  {
+    async execute($cmd, $pricingDump, $nameRecords = [])  {
         let $pager, $parsed, $cmdStores, $pricingList, $bagPtcBlocks, $error, $mods, $ptcInfo, $ptcBlock, $ptcGroups, $i, $storeNum;
 
         $pager = PagingHelper.parseFxPager($pricingDump);

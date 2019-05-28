@@ -122,7 +122,7 @@ class CmsAmadeusTerminal {
 
 	/** @param $cmdData = CommandParser::parsePriceItinerary() */
 	static checkPricingCommandObviousPqRules($cmdData) {
-		let $errors, $mods, $sMod;
+		let $errors, $mods;
 
 		$errors = [];
 		for ($mods of Object.values($cmdData['pricingStores'])) {
@@ -130,24 +130,11 @@ class CmsAmadeusTerminal {
 			if ((($mods['fareBasis'] || {})['parsed'] || {})['override'] || false) {
 				$errors.push(Errors.getMessage(Errors.BAD_MOD_BASIS_OVERRIDE, {'modifier': '/' + $mods['fareBasis']['raw']}));
 			}
-			if ($sMod = $mods['segments']) {
-				$errors.push(Errors.getMessage(Errors.BAD_MOD_SEGMENT, {'modifier': '/' + $sMod['raw'] + '/'}));
-			}
 			if ($cmdData['baseCmd'] === 'FXL') {
 				$errors.push(Errors.getMessage(Errors.BAD_MOD_IGNORE_AVAILABILITY, {'modifier': 'FXL'}));
 			}
 		}
 		return $errors;
-	}
-
-	decodeCmsInput($cmd) {
-
-		return $cmd;
-	}
-
-	sanitizeCommand($cmd) {
-
-		return php.trim(php.strtoupper($cmd));
 	}
 
 	sanitizeOutput($output) {

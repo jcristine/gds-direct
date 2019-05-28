@@ -189,6 +189,40 @@ class AmadeusUtils {
 			return $runCmd($cmd);
 		}
 	}
+
+	/** @param {{cmd: string, output: string}[]} $cmdRows */
+	static collectFullCmdRecs($cmdRows) {
+		let $scrolledCmd = null;
+		let $mdrs = [];
+		let fullCmdRecs = [];
+		for (let $cmdRow of Object.values($cmdRows)) {
+			let $scrolledFormat = $scrolledCmd ? this.guessFormatFromCmd($scrolledCmd) : null;
+			let $cmd = $cmdRow['cmd'];
+			let $output = $cmdRow['output'];
+			let $pager;
+			if ($scrolledFormat && $scrolledFormat['moveRestCmd'] === $cmd) {
+				$pager = $scrolledFormat['parsePager']($output);
+				$mdrs.push($pager['content']);
+			} else {
+				$scrolledCmd = $cmd;
+				$mdrs = [];
+				let $format = this.guessFormatFromCmd($cmd);
+				if ($format) {
+					$pager = $format['parsePager']($output);
+					$mdrs = [$pager['content']];
+				} else {
+					$pager = null;
+				}
+			}
+			if ($pager && !$pager['hasMore']) {
+				fullCmdRecs.push({
+					cmd: $scrolledCmd,
+					output: php.implode(php.PHP_EOL, $mdrs),
+				});
+			}
+		}
+		return fullCmdRecs;
+	}
 }
 
 module.exports = AmadeusUtils;
