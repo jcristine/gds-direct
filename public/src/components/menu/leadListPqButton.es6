@@ -86,6 +86,11 @@ class LeadListContext
     _makeBody(response, popover)
 	{
 		let leadRecords = response.records || [];
+		let submitLead = (leadId) => {
+			PQ_MODAL_SHOW(leadId);
+			popover.close();
+
+		};
 		leadRecords.forEach( record => {
 			let pqTravelRequestId = record.id;
 			let leadWrapper = Dom('div');
@@ -95,8 +100,7 @@ class LeadListContext
 					// App.get('lead')
 					window.apiData = window.apiData || {};
 					window.apiData.lead = record;
-					PQ_MODAL_SHOW(pqTravelRequestId);
-					popover.close();
+					submitLead(pqTravelRequestId);
 				}
 			});
 
@@ -112,6 +116,17 @@ class LeadListContext
 
 			this.context.appendChild( leadWrapper );
 		});
+		let customIdInp = Dom('input', {
+			type: 'text',
+			style: 'color: black',
+		});
+		let customIdBtn = Dom('button', {
+			textContent: 'Custom Lead ID',
+			style: 'color: black',
+			onclick: () => submitLead(customIdInp.value),
+		});
+		this.context.appendChild(customIdInp);
+		this.context.appendChild(customIdBtn);
 	}
 
 	/** '2019-03-17 00:00:00' -> '17-Mar-19' */
