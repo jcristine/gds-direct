@@ -11,8 +11,8 @@ const {fetchAll, extractPager} = require('../../../../../GdsHelpers/TravelportUt
 
 const Rej = require('klesun-node-tools/src/Utils/Rej.js');
 const {ignoreExc} = require('../../../../../Utils/Misc.js');
-const UnprocessableEntity = require("gds-direct-lib/src/Utils/Rej").UnprocessableEntity;
-const BadRequest = require("gds-direct-lib/src/Utils/Rej").BadRequest;
+const UnprocessableEntity = require("klesun-node-tools/src/Utils/Rej").UnprocessableEntity;
+const BadRequest = require("klesun-node-tools/src/Utils/Rej").BadRequest;
 const Errors = require('../../../../Rbs/GdsDirect/Errors.js');
 
 const CommonDataHelper = require('../../../../Rbs/GdsDirect/CommonDataHelper.js');

@@ -18,7 +18,7 @@ const RetrieveFlightServiceInfoAction = require('../../../../Rbs/Process/Apollo/
 const ImportFareComponentsAction = require('../../../../Rbs/Process/Apollo/ImportPnr/Actions/ImportFareComponentsAction.js');
 
 let php = require('../../../../php.js');
-const Rej = require("gds-direct-lib/src/Utils/Rej");
+const Rej = require("klesun-node-tools/src/Utils/Rej");
 const withCapture = require("../../../../../GdsHelpers/CommonUtils").withCapture;
 
 /** @see ImportPqAmadeusAction description */

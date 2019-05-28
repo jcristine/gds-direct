@@ -6,7 +6,7 @@ const Rej = require('klesun-node-tools/src/Utils/Rej.js');
 
 let php = require('../../../php.js');
 const StringUtil = require('../../../Lib/Utils/StringUtil.js');
-const BadRequest = require("gds-direct-lib/src/Utils/Rej").BadRequest;
+const BadRequest = require("klesun-node-tools/src/Utils/Rej").BadRequest;
 
 class AbstractMaskParser
 {

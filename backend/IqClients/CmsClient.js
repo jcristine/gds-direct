@@ -1,4 +1,4 @@
-const UnprocessableEntity = require("gds-direct-lib/src/Utils/Rej").UnprocessableEntity;
+const UnprocessableEntity = require("klesun-node-tools/src/Utils/Rej").UnprocessableEntity;
 const iqJson = require("../Utils/Misc").iqJson;
 const {getConfig} = require('../Config.js');
 

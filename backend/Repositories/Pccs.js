@@ -4,8 +4,8 @@ const {getConfig} = require('../Config.js');
 let Db = require('../Utils/Db.js');
 let php = require('../Transpiled/php.js');
 const sqlNow = require("../Utils/Misc").sqlNow;
-const Conflict = require("gds-direct-lib/src/Utils/Rej").Conflict;
-const NotFound = require("gds-direct-lib/src/Utils/Rej").NotFound;
+const Conflict = require("klesun-node-tools/src/Utils/Rej").Conflict;
+const NotFound = require("klesun-node-tools/src/Utils/Rej").NotFound;
 
 const TABLE = 'pccs';
 

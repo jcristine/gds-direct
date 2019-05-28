@@ -1,9 +1,9 @@
 
 let ioredis = require("ioredis");
 let Config = require('../Config.js');
-const Conflict = require("gds-direct-lib/src/Utils/Rej").Conflict;
+const Conflict = require("klesun-node-tools/src/Utils/Rej").Conflict;
 let {never, StrConsts} = require('../Utils/StrConsts.js');
-const nonEmpty = require("gds-direct-lib/src/Utils/Rej").nonEmpty;
+const nonEmpty = require("klesun-node-tools/src/Utils/Rej").nonEmpty;
 
 exports.keys = StrConsts({
 	get SESSION_ACTIVES() { never(); },
