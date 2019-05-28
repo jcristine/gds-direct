@@ -15,7 +15,7 @@ const {fetchAll} = require('../../../../../GdsHelpers/TravelportUtils.js');
 const GalileoPricingAdapter = require('../../../FormatAdapters/GalileoPricingAdapter.js');
 const GalileoGetFlightServiceInfoAction = require('../../../GdsAction/GalileoGetFlightServiceInfoAction.js');
 const ImportFareComponentsAction = require('../../../Process/Apollo/ImportPnr/Actions/ImportFareComponentsAction.js');
-const Rej = require('gds-direct-lib/src/Utils/Rej.js');
+const Rej = require('klesun-node-tools/src/Utils/Rej.js');
 
 class ImportPqGalileoAction extends AbstractGdsAction {
 	constructor() {

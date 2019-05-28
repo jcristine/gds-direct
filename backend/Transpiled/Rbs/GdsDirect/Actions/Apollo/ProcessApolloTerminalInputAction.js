@@ -9,7 +9,7 @@ const StringUtil = require('../../../../Lib/Utils/StringUtil.js');
 const fetchUntil = require("../../../../../GdsHelpers/TravelportUtils").fetchUntil;
 const {fetchAll, extractPager} = require('../../../../../GdsHelpers/TravelportUtils.js');
 
-const Rej = require('gds-direct-lib/src/Utils/Rej.js');
+const Rej = require('klesun-node-tools/src/Utils/Rej.js');
 const {ignoreExc} = require('../../../../../Utils/Misc.js');
 const UnprocessableEntity = require("gds-direct-lib/src/Utils/Rej").UnprocessableEntity;
 const BadRequest = require("gds-direct-lib/src/Utils/Rej").BadRequest;

@@ -3,7 +3,7 @@ const TerminalService = require("../../Transpiled/App/Services/TerminalService")
 const {fetchAll} = require('../../GdsHelpers/TravelportUtils.js');
 const StringUtil = require('../../Transpiled/Lib/Utils/StringUtil.js');
 const TravelportUtils = require("../../GdsHelpers/TravelportUtils");
-const Rej = require('gds-direct-lib/src/Utils/Rej.js');
+const Rej = require('klesun-node-tools/src/Utils/Rej.js');
 const SubmitTaxBreakdownMask = require("./SubmitTaxBreakdownMask");
 const {parse, POSITIONS, FIELDS} = require('./NmeMaskParser.js');
 

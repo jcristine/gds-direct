@@ -1,6 +1,6 @@
 
 let Emc = require('../LibWrappers/Emc.js');
-let {NoContent, Forbidden, NotAuthorized, BadRequest, TooManyRequests, NotImplemented, LoginTimeOut, InternalServerError, NotFound} = require('gds-direct-lib/src/Utils/Rej.js');
+let {NoContent, Forbidden, NotAuthorized, BadRequest, TooManyRequests, NotImplemented, LoginTimeOut, InternalServerError, NotFound} = require('klesun-node-tools/src/Utils/Rej.js');
 let Diag = require('../LibWrappers/Diag.js');
 let FluentLogger = require('../LibWrappers/FluentLogger.js');
 const {getExcData} = require('../Utils/Misc.js');
@@ -10,7 +10,7 @@ const Config = require('../Config.js');
 const Agents = require("../Repositories/Agents");
 const Agent = require('../DataFormats/Wrappers/Agent.js');
 const Misc = require("../Transpiled/Lib/Utils/Misc");
-const {HttpUtil} = require('gds-direct-lib');
+const {HttpUtil} = require('klesun-node-tools');
 
 let isSystemError = (exc) =>
 	!exc.isOk &&

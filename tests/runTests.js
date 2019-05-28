@@ -1,7 +1,7 @@
 
 require('../dev/env.js');
 
-const RunTests = require('gds-direct-lib/src/Transpiled/RunTests.js');
+const RunTests = require('klesun-node-tools/src/Transpiled/RunTests.js');
 
 console.log('Starting unit tests');
 RunTests({

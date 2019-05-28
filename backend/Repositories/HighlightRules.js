@@ -3,7 +3,7 @@ let Db = require("../Utils/Db.js");
 let Redis = require('../LibWrappers/Redis.js');
 let MultiLevelMap = require('../Utils/MultiLevelMap.js');
 let {admins} = require('../Constants.js');
-let {Forbidden} = require('gds-direct-lib/src/Utils/Rej.js');
+let {Forbidden} = require('klesun-node-tools/src/Utils/Rej.js');
 
 const TABLE = 'highlightRules';
 const TABLE_CMD = 'highlightCmdPatterns';

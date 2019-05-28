@@ -2,7 +2,7 @@
 let GdsSessionController = require('../HttpControllers/GdsSessionController.js');
 let GdsSessions = require('./../Repositories/GdsSessions.js');
 let FluentLogger = require('./../LibWrappers/FluentLogger.js');
-let {NoContent, LoginTimeOut, Conflict} = require('gds-direct-lib/src/Utils/Rej.js');
+let {NoContent, LoginTimeOut, Conflict} = require('klesun-node-tools/src/Utils/Rej.js');
 
 let KeepAlive = async () => {
 	let workerLogId = await FluentLogger.logNewId('keepAlive');

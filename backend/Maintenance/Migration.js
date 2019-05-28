@@ -1,5 +1,5 @@
 
-let LibMigration = require('gds-direct-lib/src/Maintenance/Migration.js');
+let LibMigration = require('klesun-node-tools/src/Maintenance/Migration.js');
 
 let aklesuns = require('../Migration/aklesuns.js');
 let Db = require('../Utils/Db.js');

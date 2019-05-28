@@ -1,6 +1,6 @@
 
 // TODO: refactor code to use it directly from the lib
-module.exports = require('gds-direct-lib/src/Transpiled/php.js');
+module.exports = require('klesun-node-tools/src/Transpiled/php.js');
 
 /**
  * this file provides implementations for built-in

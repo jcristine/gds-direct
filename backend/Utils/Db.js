@@ -3,7 +3,7 @@ let mysql = require('promise-mysql');
 let {getConfig} = require('../Config.js');
 const NotFound = require("gds-direct-lib/src/Utils/Rej").NotFound;
 const Diag = require('../LibWrappers/Diag.js');
-const {SqlUtil} = require('gds-direct-lib');
+const {SqlUtil} = require('klesun-node-tools');
 
 let whenPool = null;
 let getPool = () => {

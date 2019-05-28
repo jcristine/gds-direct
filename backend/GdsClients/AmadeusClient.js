@@ -1,6 +1,6 @@
 
 let {getAmadeus} = require("../Repositories/GdsProfiles.js");
-let PersistentHttpRq = require('gds-direct-lib/src/Utils/PersistentHttpRq.js');
+let PersistentHttpRq = require('klesun-node-tools/src/Utils/PersistentHttpRq.js');
 let crypto = require('crypto');
 let util = require('util');
 let {wrapExc} = require("../Utils/Misc.js");

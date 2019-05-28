@@ -1,5 +1,5 @@
 
-const GrectLib = require('gds-direct-lib');
+const GrectLib = require('klesun-node-tools');
 
 // TODO: refactor code to use it directly from the lib
 exports.hrtimeToDecimal = GrectLib.Misc.hrtimeToDecimal;

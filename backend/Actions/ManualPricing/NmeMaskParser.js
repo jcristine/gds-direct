@@ -1,5 +1,5 @@
 const AbstractMaskParser = require("../../Transpiled/Gds/Parsers/Apollo/AbstractMaskParser");
-const Rej = require('gds-direct-lib/src/Utils/Rej.js');
+const Rej = require('klesun-node-tools/src/Utils/Rej.js');
 const NmeScreenParser = require("../../Transpiled/Gds/Parsers/Apollo/ManualPricing/NmeScreenParser");
 
 let POSITIONS = AbstractMaskParser.getPositionsBy('_', [

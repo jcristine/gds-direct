@@ -3,7 +3,7 @@ const FcMaskParser = require("./FcMaskParser.js");
 const NmeMaskParser = require("./NmeMaskParser.js");
 const {fetchAll} = require('../../GdsHelpers/TravelportUtils.js');
 const StringUtil = require('../../Transpiled/Lib/Utils/StringUtil.js');
-const Rej = require('gds-direct-lib/src/Utils/Rej.js');
+const Rej = require('klesun-node-tools/src/Utils/Rej.js');
 
 let parseOutput = (output) => {
 	if (output.trim() === 'PRICING RECORD ADDED') {

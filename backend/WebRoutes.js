@@ -5,7 +5,7 @@ let CompletionData = require('./HttpControllers/CompletionData.js');
 let Emc = require('./LibWrappers/Emc.js');
 let GdsSessionController = require('./HttpControllers/GdsSessionController.js');
 let TerminalBaseController = require('./Transpiled/App/Controllers/TerminalBaseController.js');
-let {Forbidden, BadReqeust} = require('gds-direct-lib/src/Utils/Rej.js');
+let {Forbidden, BadReqeust} = require('klesun-node-tools/src/Utils/Rej.js');
 let {admins} = require('./Constants.js');
 let UpdateHighlightRulesFromProd = require('./Actions/UpdateHighlightRulesFromProd.js');
 let Db = require('./Utils/Db.js');
@@ -19,7 +19,7 @@ const CommandParser = require("./Transpiled/Gds/Parsers/Apollo/CommandParser");
 const PnrParser = require("./Transpiled/Gds/Parsers/Apollo/Pnr/PnrParser");
 const FareConstructionParser = require("./Transpiled/Gds/Parsers/Common/FareConstruction/FareConstructionParser");
 const {safe} = require('./Utils/Misc.js');
-const PersistentHttpRq = require('gds-direct-lib/src/Utils/PersistentHttpRq.js');
+const PersistentHttpRq = require('klesun-node-tools/src/Utils/PersistentHttpRq.js');
 const Misc = require("./Transpiled/Lib/Utils/Misc");
 const CmdLogs = require("./Repositories/CmdLogs");
 const Rej = require("gds-direct-lib/src/Utils/Rej");
@@ -28,7 +28,7 @@ const LoginTimeOut = require("gds-direct-lib/src/Utils/Rej").LoginTimeOut;
 const withGdsSession = require("./HttpControllers/MainController").withGdsSession;
 const toHandleHttp = require("./HttpControllers/MainController").toHandleHttp;
 const {withAuth} = require("./HttpControllers/MainController");
-const GdsdLib = require('gds-direct-lib');
+const GdsdLib = require('klesun-node-tools');
 
 let app = express();
 
@@ -488,7 +488,7 @@ app.get('/ping', toHandleHttp((rqBody) => {
 	for (let key in used2) {
 		memory[key] = Math.round(used2[key] / 1024 / 1024 * 100) / 100;
 	}
-	let PersistentHttpRq = require('gds-direct-lib/src/Utils/PersistentHttpRq.js');
+	let PersistentHttpRq = require('klesun-node-tools/src/Utils/PersistentHttpRq.js');
 
 	return Redis.getInfo().then(async redisLines => {
 		const data = {

@@ -1,5 +1,5 @@
 
-const GrectLib = require('gds-direct-lib');
+const GrectLib = require('klesun-node-tools');
 
 let env = process.env || {};
 
