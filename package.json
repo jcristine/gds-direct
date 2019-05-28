@@ -12,7 +12,7 @@
     "dynatech-logger": "git+ssh://git@gitlab.dyninno.net:1022/node-libraries/logger#52317e58aafc7c8df980dbe796a49b5612ab57b6"
   },
   "dependencies": {
-    "klesun-node-tools": "git+ssh://github.com/klesun-misc/klesun-node-tools.git#7ef3aaadab5b6ce5c27846686421244714369af1",
+    "klesun-node-tools": "git+ssh://github.com/klesun-misc/klesun-node-tools.git#65dd103f130379256dc8fc9b76e342b25612bcb1",
     "express": "^4.16.4",
     "ioredis": "^4.3.0",
     "jsdom": "^13.0.0",
