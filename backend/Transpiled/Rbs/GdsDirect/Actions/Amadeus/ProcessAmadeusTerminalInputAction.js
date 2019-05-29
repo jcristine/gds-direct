@@ -97,7 +97,7 @@ class ProcessAmadeusTerminalInputAction {
 
 		$parsedPnr = AmadeusReservationParser.parse($output);
 		return $parsedPnr['success']
-			|| php.preg_match(/^\s*\/\s*ITINERARY CANCELLED\s*$/, $output);
+			|| php.preg_match(/^(WARNING: .*\n)*\s*\/\s*ITINERARY CANCELLED\s*$/, $output);
 	}
 
 	static isOkFxdOutput($output) {
