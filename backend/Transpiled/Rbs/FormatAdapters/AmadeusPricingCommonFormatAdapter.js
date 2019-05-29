@@ -85,7 +85,7 @@ class AmadeusPricingCommonFormatAdapter {
 			);
 			$paxNums = !php.empty($mods['names']) ? $mods['names'] : php.array_keys($paxNumToNameRec);
 			for ($paxNum of Object.values($paxNums)) {
-				$matched = $paxNumToNameRec[$paxNum];
+				$matched = $paxNumToNameRec[$paxNum] || [];
 				for ($paxRec of Object.values($matched)) {
 					$ownSeat = !$paxRec['nameNumber']['isInfant'];
 					if (php.isset($mods['ownSeat']) && $mods['ownSeat'] !== $ownSeat) {
@@ -176,7 +176,7 @@ class AmadeusPricingCommonFormatAdapter {
 
 			if ($paxRow['hasName']) {
 				$nameNumber = this.findNameNumber($paxRow, $nameRecords, $pricingStores);
-				$storeNumber = this.findStoreNumber($nameNumber, $pricingStores);
+				$storeNumber = !$nameNumber ? null : this.findStoreNumber($nameNumber, $pricingStores);
 				$storePtcNum = 1; // NO MULTIPLE DISCOUNT TYPES PER PASSENGER
 			} else {
 				$nameNumber = null;

@@ -196,11 +196,10 @@ return {
             $paxNums = php.empty($matches['paxNums']) ? [] :
                 this.parseRange($matches['paxNums']);
             return {
-                'paxRanges': Fp.map(($num) => {
-return {
+                'paxRanges': Fp.map(($num) => ({
                     'from': $num, 'fromMinor': null,
                     'to': $num, 'toMinor': null,
-                };}, $paxNums),
+                }), $paxNums),
                 'segNums': php.empty($matches['segNums']) ? [] :
                     this.parseRange($matches['segNums']),
                 'location': null,

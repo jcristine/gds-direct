@@ -2142,6 +2142,120 @@ class ProcessAmadeusTerminalInputActionTest extends require('../../../../Lib/Tes
 			},
 		});
 
+		$list.push({
+			'input': {
+				'title': 'pricing referencing particular paxes in PNR should not result in format adapter error',
+				'cmdRequested': 'FXX/P1/RC05/S3//P2/RADT',
+				'baseDate': '2019-05-29 14:29:06',
+			},
+			'output': {
+				'status': 'executed',
+				'calledCommands': [
+					{cmd: 'FXX/P1/RC05/S3//P2/RADT'},
+					{cmd: 'FQQ1'},
+					{cmd: 'FQQ2'},
+				],
+			},
+			'sessionInfo': {
+				'initialState': GdsDirectDefaults.makeDefaultAmadeusState(),
+				'initialCommands': [],
+				'performedCommands': [
+					{
+					    "cmd": "FXX/P1/RC05/S3//P2/RADT",
+					    "output": [
+					        "FXX/P1/RC05/S3//P2/RADT",
+					        "",
+					        "",
+					        "   PASSENGER         PTC    NP  FARE USD  TAX/FEE   PER PSGR",
+					        "01 LIB/LEP           CNN     1     936.00   99.70    1035.70",
+					        "02 LIB/MAR           ADT     1    1248.00   99.70    1347.70",
+					        "",
+					        "                   TOTALS    2    2184.00  199.40    2383.40",
+					        "",
+					        "1-2 LAST TKT DTE 10MAY20 - DATE OF ORIGIN",
+					        "1-2 250.00 USD PENALTY APPLIES",
+					        "                                                  PAGE  2/ 2",
+					        " "
+					    ].join("\n"),
+					},
+					{
+					    "cmd": "FQQ1",
+					    "output": [
+					        "FQQ1",
+					        "",
+					        "01 LIB/LEP",
+					        "",
+					        "LAST TKT DTE 10MAY20 - DATE OF ORIGIN",
+					        "------------------------------------------------------------",
+					        "     AL FLGT  BK   DATE  TIME  FARE BASIS      NVB  NVA   BG",
+					        " JFK",
+					        " MNL PR   127 N    10MAY 0145  NLOXFNY/CH25               2P",
+					        "",
+					        "USD   936.00      10MAY20JFK PR MNL936.00NLOXFNY/CH25 NUC",
+					        "                  936.00END ROE1.000000",
+					        "USD    70.00-YQ   XT USD 18.60-US USD 5.60-AY USD 4.50-XF",
+					        "USD     1.00-YR   JFK4.50",
+					        "USD    28.70-XT",
+					        "USD  1035.70",
+					        "BAG/SEAT/SERVICES AT A CHARGE MAY BE AVAILABLE-ENTER FXK",
+					        "TICKET STOCK RESTRICTION",
+					        "BG CXR: PR",
+					        "PRICED VC PR - OTHER VC AVAILABLE GP HR",
+					        "250.00 USD PENALTY APPLIES",
+					        "                                                  PAGE  3/ 4",
+					        " "
+					    ].join("\n"),
+					},
+					{
+					    "cmd": "MD",
+					    "output": [
+					        "ENDOS PREMIUM ECONOMY FARE RULES APPLY -BG:PR",
+					        "29MAY19 PER GAF REQUIREMENTS FARE NOT VALID UNTIL TICKETED",
+					        "                                                  PAGE  4/ 4",
+					        " "
+					    ].join("\n"),
+					},
+					{
+					    "cmd": "FQQ2",
+					    "output": [
+					        "FQQ2",
+					        "",
+					        "02 LIB/MAR",
+					        "",
+					        "LAST TKT DTE 10MAY20 - DATE OF ORIGIN",
+					        "------------------------------------------------------------",
+					        "     AL FLGT  BK   DATE  TIME  FARE BASIS      NVB  NVA   BG",
+					        " JFK",
+					        " MNL PR   127 N    10MAY 0145  NLOXFNY                    2P",
+					        "",
+					        "USD  1248.00      10MAY20JFK PR MNL1248.00NLOXFNY NUC1248.00",
+					        "                  END ROE1.000000",
+					        "USD    70.00-YQ   XT USD 18.60-US USD 5.60-AY USD 4.50-XF",
+					        "USD     1.00-YR   JFK4.50",
+					        "USD    28.70-XT",
+					        "USD  1347.70",
+					        "BAG/SEAT/SERVICES AT A CHARGE MAY BE AVAILABLE-ENTER FXK",
+					        "TICKET STOCK RESTRICTION",
+					        "BG CXR: PR",
+					        "PRICED VC PR - OTHER VC AVAILABLE GP HR",
+					        "250.00 USD PENALTY APPLIES",
+					        "                                                  PAGE  3/ 4",
+					        " "
+					    ].join("\n"),
+					},
+					{
+					    "cmd": "MD",
+					    "output": [
+					        "ENDOS PREMIUM ECONOMY FARE RULES APPLY -BG:PR",
+					        "29MAY19 PER GAF REQUIREMENTS FARE NOT VALID UNTIL TICKETED",
+					        "                                                  PAGE  4/ 4",
+					        " "
+					    ].join("\n"),
+					},
+				],
+			},
+		});
+
 		//============================
 		// problematic cases follow
 		//============================
