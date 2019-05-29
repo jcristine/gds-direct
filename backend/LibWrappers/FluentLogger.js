@@ -20,7 +20,9 @@ let createClient = () => new Logger(null, {
 	internalLogger: {
 		info: (...args) => {},
 		error: (msg, ...args) => {
-			Diag.error('Fluent Logger internal error - ' + msg, ...args);
+			// this is not the end of life if logger connection
+			// was interrupted, no need to spam diag with it
+			//Diag.error('Fluent Logger internal error - ' + msg, ...args);
 		},
 	},
 });
