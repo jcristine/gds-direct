@@ -5,14 +5,14 @@
   "author": "klesun",
   "license": "proprietary",
   "optionalDependencies": {
-    "dynatech-client-component-rbs": "git+ssh://git@gitlab.dyninno.net:1022/node-libraries/client-component-rbs.git#47b299d19a503629c48cf2b59789c0da5556c4e7",
+    "dynatech-client-component-rbs": "git+ssh://git@gitlab.dyninno.net:1022/node-libraries/client-component-rbs.git#f48cf222a679a1918c90f20974ba064e1eb1a2c3",
     "dynatech-client-component": "git+ssh://git@gitlab.dyninno.net:1022/node-libraries/client-component.git#7ad8d0caa829bf947dadced1834ced94ae90b734",
     "dynatech-client-component-emc": "git+ssh://git@gitlab.dyninno.net:1022/node-libraries/client-component-emc.git#v0.1.2",
     "dynatech-diag-service": "git+ssh://git@gitlab.dyninno.net:1022/node-libraries/diag-service.git#v0.1.3",
     "dynatech-logger": "git+ssh://git@gitlab.dyninno.net:1022/node-libraries/logger#52317e58aafc7c8df980dbe796a49b5612ab57b6"
   },
   "dependencies": {
-    "klesun-node-tools": "git+ssh://github.com/klesun-misc/klesun-node-tools.git#65dd103f130379256dc8fc9b76e342b25612bcb1",
+    "klesun-node-tools": "https://github.com/klesun-misc/klesun-node-tools.git#65dd103f130379256dc8fc9b76e342b25612bcb1",
     "express": "^4.16.4",
     "ioredis": "^4.3.0",
     "jsdom": "^13.0.0",
