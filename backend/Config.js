@@ -8,6 +8,7 @@ let isProd = env.NODE_ENV === 'production';
 let StaticConfig = {
 	mantisId: 677,
 	production: isProd,
+	RBS_PASSWORD: env.RBS_PASSWORD,
 };
 
 /** will likely be fetched from LAN one day */
