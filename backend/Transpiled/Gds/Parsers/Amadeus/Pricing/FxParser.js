@@ -365,12 +365,13 @@ class FxParser {
 		//         '02 LONGLONGL*/LONGL* CNN     1     359.00   66.77     425.77',
 		//         '01 1,3-4             ADT     3     742.00   82.73     824.73',
 		//         '03 3 INF             INF     1      15.00    0.00      15.00',
+		//         "03 WALTERS/PATRI*    IN      1       3086    8974      12060",
 		//         '                   TOTALS    5    2239.00  268.44    2507.44','
 		$pattern = 'NN FFFFFFFFFFFFFFFFF.PPP.   QQ BBBBBBBBBB TTTTTTT CCCCCCCCCC';
 		$split = this.splitByPositionLetters($line, $pattern);
 
-		$lname = php.explode('\/', $split['F'])[0];
-		$fname = (php.explode('\/', $split['F']) || {})[1];
+		$lname = php.explode('/', $split['F'])[0];
+		$fname = (php.explode('/', $split['F']) || {})[1];
 		$cmdPaxNumsRaw = php.explode(' ', $split['F'])[0];
 		$infMark = (php.explode(' ', $split['F']) || {})[1];
 		$result = {
@@ -393,7 +394,7 @@ class FxParser {
 			$result['firstNameTruncated'] = php.rtrim($fname, '*') !== $fname;
 		}
 		if (php.trim($split[' ']) === '' &&
-			php.preg_match(/^[A-Z0-9]{3}$/, $result['ptc']) &&
+			php.preg_match(/^[A-Z0-9]{2,3}$/, $result['ptc']) &&
 			php.preg_match(/^\d*\.?\d+$/, $result['baseFare']) &&
 			php.preg_match(/^\d*\.?\d+$/, $result['netPrice'])
 		) {
@@ -411,6 +412,9 @@ class FxParser {
 		[$passengers, $lines] = this.parseSequence($lines, (...args) => this.parsePassengerLine(...args));
 		[$emptyLines, $lines] = this.parseSequence($lines, (...args) => this.isEmptyLine(...args));
 		$totals = this.parsePassengerLine(php.array_shift($lines));
+		if (!$totals) {
+			throw new Error('Failed to parse FXX TOTALS line - ' + $lines[0]);
+		}
 		[$emptyLines, $lines] = this.parseSequence($lines, (...args) => this.isEmptyLine(...args));
 		return {
 			'passengers': $passengers,

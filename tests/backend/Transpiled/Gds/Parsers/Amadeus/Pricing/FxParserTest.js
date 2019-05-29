@@ -1478,6 +1478,35 @@ class FxParserTest extends require('../../../../Lib/TestCase.js')
             }
         ]);
 
+        // new Philippines PCC, no dot in amount, also 2 letter PTC
+        $list.push([
+            php.implode(php.PHP_EOL, [
+                "FXP",
+                "",
+                "",
+                "   PASSENGER         PTC    NP  FARE PHP  TAX/FEE   PER PSGR",
+                "01 WALTERS/JESSI*    ADT     1      30596   11380      41976",
+                "02 WALTERS/PETER*    CH      1      22960   10570      33530",
+                "03 WALTERS/PATRI*    IN      1       3086    8974      12060",
+                "",
+                "                   TOTALS    3      56642   30924      87566",
+                "",
+                "1-3 LAST TKT DTE 02SEP19 - DATE OF ORIGIN",
+                "1-3 FARE VALID FOR E TICKET ONLY",
+                "1-3 10460 PHP PENALTY APPLIES",
+            ]),
+            {
+                'commandCopy': 'FXP',
+                'data': {
+                    'passengers': [
+                        {'lineNumber': '01', 'ptc': 'ADT'},
+                        {'lineNumber': '02', 'ptc': 'CH'},
+                        {'lineNumber': '03', 'ptc': 'IN'},
+                    ],
+                },
+            }
+        ]);
+
         return $list;
     }
 
