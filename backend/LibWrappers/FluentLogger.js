@@ -35,6 +35,7 @@ let whenGlobalLogger = null;
  * Upd.: this is the ITA-10457
  * Upd.: the lib sends chunks as multiple lines, whereas our servers
  *       read just one line, J.Ozolins is working on the fix ATM
+ * Upd.: supposedly fixed in v0.1.6
  */
 let getGlobalLogger = () => {
 	if (whenGlobalLogger === null) {
