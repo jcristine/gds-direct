@@ -103,6 +103,37 @@ let fetchAllWith = async ($runCmd, $cmd, $mrCmd, $parsePager) => {
 	return php.implode(php.PHP_EOL, $cleanPages);
 };
 
+let guessFormatFromCmd = ($cmd) => {
+	let $formats, $format, $prefix;
+
+	// some frequent commands off the top of my head
+	$formats = [
+		{
+			'moveRestCmd': 'MDR',
+			'parsePager': (...args) => parseRtPager(...args),
+			'prefixes': ['RT', 'DO', 'TQT', 'DAN', 'DAC', 'QV\/', 'SM', 'RH', 'FRN'],
+		},
+		{
+			'moveRestCmd': 'MD',
+			'parsePager': (...args) => parseFxPager(...args),
+			'prefixes': ['FX', 'FQ'],
+		},
+		{
+			'moveRestCmd': 'MD',
+			'parsePager': (...args) => parseHePager(...args),
+			'prefixes': ['HE', 'GP', 'MS'],
+		},
+	];
+	for ($format of Object.values($formats)) {
+		for ($prefix of Object.values($format['prefixes'])) {
+			if (StringUtil.startsWith(php.ltrim($cmd), $prefix)) {
+				return $format;
+			}
+		}
+	}
+	return null;
+};
+
 class AmadeusUtils {
 	static parseRtPager(page) {
 		return parseRtPager(page);
@@ -148,34 +179,7 @@ class AmadeusUtils {
 
 	/** @return array|null */
 	static guessFormatFromCmd($cmd) {
-		let $formats, $format, $prefix;
-
-		// some frequent commands off the top of my head
-		$formats = [
-			{
-				'moveRestCmd': 'MDR',
-				'parsePager': (...args) => parseRtPager(...args),
-				'prefixes': ['RT', 'DO', 'TQT', 'DAN', 'DAC', 'QV\/', 'SM', 'RH', 'FRN'],
-			},
-			{
-				'moveRestCmd': 'MD',
-				'parsePager': (...args) => parseFxPager(...args),
-				'prefixes': ['FX', 'FQ'],
-			},
-			{
-				'moveRestCmd': 'MD',
-				'parsePager': (...args) => parseHePager(...args),
-				'prefixes': ['HE', 'GP', 'MS'],
-			},
-		];
-		for ($format of Object.values($formats)) {
-			for ($prefix of Object.values($format['prefixes'])) {
-				if (StringUtil.startsWith(php.ltrim($cmd), $prefix)) {
-					return $format;
-				}
-			}
-		}
-		return null;
+		return guessFormatFromCmd($cmd);
 	}
 
 	/** guessing scrolling type from command */
@@ -196,7 +200,7 @@ class AmadeusUtils {
 		let $mdrs = [];
 		let fullCmdRecs = [];
 		for (let $cmdRow of Object.values($cmdRows)) {
-			let $scrolledFormat = $scrolledCmd ? this.guessFormatFromCmd($scrolledCmd) : null;
+			let $scrolledFormat = $scrolledCmd ? guessFormatFromCmd($scrolledCmd) : null;
 			let $cmd = $cmdRow['cmd'];
 			let $output = $cmdRow['output'];
 			let $pager;
@@ -206,7 +210,7 @@ class AmadeusUtils {
 			} else {
 				$scrolledCmd = $cmd;
 				$mdrs = [];
-				let $format = this.guessFormatFromCmd($cmd);
+				let $format = guessFormatFromCmd($cmd);
 				if ($format) {
 					$pager = $format['parsePager']($output);
 					$mdrs = [$pager['content']];

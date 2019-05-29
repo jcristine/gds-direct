@@ -14,14 +14,16 @@ const CmsAmadeusTerminal = require('../../../../Rbs/GdsDirect/GdsInterface/CmsAm
 const PtcUtil = require('../../../../Rbs/Process/Common/PtcUtil.js');
 const CmdLog = require('../../../../../GdsHelpers/CmdLog.js');
 const AbstractGdsAction = require('../../../GdsAction/AbstractGdsAction.js');
-const GetCurrentPricingDumpAction = require('./GetCurrentPricingDumpAction.js');
 const AmadeusGetPricingPtcBlocksAction = require('./AmadeusGetPricingPtcBlocksAction.js');
 const php = require('../../../../php.js');
 const AmadeusUtil = require("../../../../../GdsHelpers/AmadeusUtils");
+const {parseFxPager, collectFullCmdRecs} = AmadeusUtil;
 const withCapture = require("../../../../../GdsHelpers/CommonUtils").withCapture;
 const AmadeusFlightInfoAdapter = require('../../../../Rbs/FormatAdapters/AmadeusFlightInfoAdapter.js');
 const AmadeusGetFareRulesAction = require('../../../../Rbs/GdsAction/AmadeusGetFareRulesAction.js');
 const SessionStateHelper = require("../../SessionStateProcessor/SessionStateHelper");
+const Rej = require('klesun-node-tools/src/Utils/Rej.js');
+const AnyGdsStubSession = require('../../../TestUtils/AnyGdsStubSession.js');
 
 /**
  * import PNR fields of currently opened PNR
@@ -242,44 +244,124 @@ class ImportPqAmadeusAction extends AbstractGdsAction {
 		return $result;
 	}
 
-	async getPricing(reservation) {
-		let $cmds, $cmdRecord, $error, $cmd, $raw, $result, $errors, $dumpStorage, $fullData, $pqtPricingInfo;
-
-		$cmds = await this.getCmdLog().getLastCommandsOfTypes(SessionStateHelper.getCanCreatePqSafeTypes());
-		$cmdRecord = await new GetCurrentPricingDumpAction()
-			.setSession(this.session).execute($cmds);
-		if ($error = $cmdRecord['error']) return {'error': $error};
-		this.$allCommands.push($cmdRecord);
-
-		$cmd = $cmdRecord['cmd'];
-		$raw = $cmdRecord['output'];
-		$result = {'cmd': $cmd, 'raw': $raw};
-		$errors = php.array_merge(
-			GetPqItineraryAction.checkPricingCommand('amadeus', $cmd, this.$leadData),
-			GetPqItineraryAction.checkPricingOutput('amadeus', $raw, this.$leadData)
+	/**
+	 * @param parsedCmd = {data: require('PricingCmdParser.js').parse()}
+	 * @return Promise
+	 */
+	static subtractPricedSegments(segmentsLeft, parsedCmd, followingCommands) {
+		let numToSeg = php.array_combine(
+			segmentsLeft.map(s => s.segmentNumber),
+			segmentsLeft,
 		);
-		if (!php.empty($errors)) {
-			$result['error'] = 'Invalid pricing - ' + $cmd + ' - ' + php.implode(';', $errors);
-			return $result;
+		// /S/ modifier is unique for whole command, even if there are more //P/ stores
+		let segNums = [];
+		for (let store of parsedCmd.data.pricingStores) {
+			for (let mod of store) {
+				if (mod.type === 'segments') {
+					segNums = mod.parsed;
+				}
+			}
+		}
+		if (segNums.length === 0) {
+			// applies to all segments
+			if (followingCommands.length > 0) {
+				let error = 'Last pricing command ' + followingCommands.map(r => r.cmd).join(' & ') +
+					' does not cover some itinerary segments: ' +
+					segmentsLeft.map(s => s.segmentNumber).join(',');
+				return Rej.BadRequest(error);
+			} else {
+				return Promise.resolve([]);
+			}
+		} else {
+			for (let segNum of segNums) {
+				if (!numToSeg[segNum]) {
+					return Rej.BadRequest('Repeating segment number ' + segNum + ' covered by >' + parsedCmd.cmd + ';');
+				} else {
+					delete numToSeg[segNum];
+				}
+			}
+			return Promise.resolve(Object.values(numToSeg));
+		}
+	}
+
+	async collectPricingCmds(segmentsLeft) {
+		let cmdRecords = [];
+		let fqqCmdRecs = [];
+		let mrPages = [];
+		let allCmds = await this.getCmdLog().getAllCommands();
+		for (let cmdRec of [...allCmds].reverse()) {
+			let pager = parseFxPager(cmdRec.output);
+			if (!pager.hasMore || mrPages.length > 0) {
+				mrPages.unshift({...pager, ...cmdRec});
+			}
+			let parsed = CommandParser.parse(cmdRec.cmd);
+			if (parsed.type === 'priceItinerary') {
+				segmentsLeft = await this.constructor.subtractPricedSegments(segmentsLeft, parsed, cmdRecords);
+				cmdRecords.push({
+					cmd: cmdRec.cmd,
+					output: mrPages.map(p => p.content).join('\n'),
+					fqqCmdRecs: fqqCmdRecs,
+				});
+				fqqCmdRecs = [];
+				if (segmentsLeft.length === 0) {
+					return Promise.resolve(cmdRecords.reverse());
+				}
+				mrPages = [];
+			} else if (parsed.type === 'ptcPricingBlock') {
+				fqqCmdRecs.unshift(...mrPages);
+				mrPages = [];
+			} else if (parsed.type !== 'moveDown') {
+				mrPages = [];
+			}
 		}
 
-		let capturing = withCapture(this.session);
-		$fullData = await (new AmadeusGetPricingPtcBlocksAction())
-			.setSession(capturing)
-			.setCmdToFullDump(this.constructor.makeCmdToFullDump(this.getCmdLog()))
-			.execute($cmd, $raw, reservation.passengers);
+		return cmdRecords.length > 0
+			? Rej.BadRequest(
+				'Last pricing command ' + cmdRecords.map(r => r.cmd).join(' & ') +
+				' does not cover some itinerary segments: ' +
+				segmentsLeft.map(s => s.segmentNumber).join(','))
+			: Rej.UnprocessableEntity('Failed to determine current pricing command');
+	}
 
-		$pqtPricingInfo = this.constructor.makePricingInfoForPqt($raw, $cmd, $fullData['pricingList'], $dumpStorage);
-
-		this.$allCommands.push(...capturing.getCalledCommands());
-		if ($result['error'] = $fullData['error']) return $result;
-
-		$result['parsed'] = {'pricingList': $fullData['pricingList']};
-		return {
-			'currentPricing': $result,
-			'pqtPricingInfo': $pqtPricingInfo,
-			'bagPtcPricingBlocks': $fullData['bagPtcPricingBlocks'],
+	async getPricing(reservation) {
+		let cmdRecords = await this.collectPricingCmds(reservation.itinerary);
+		let result = {
+			currentPricing: {
+				cmd: cmdRecords.map(r => r.cmd).join('&'),
+				raw: cmdRecords.map(r => r.output).join('\n&\n'),
+				parsed: {pricingList: []},
+			},
+			bagPtcPricingBlocks: [],
+			// would be good to think of a way to pass _all_
+			// pricing FQQn to PQT, not just the last one...
+			pqtPricingInfo: null,
 		};
+		for (let [i, cmdRec] of Object.entries(cmdRecords)) {
+			let {cmd, output, fqqCmdRecs} = cmdRec;
+			this.$allCommands.push({cmd, output});
+			let errors = php.array_merge(
+				GetPqItineraryAction.checkPricingCommand('amadeus', cmd, this.$leadData),
+				GetPqItineraryAction.checkPricingOutput('amadeus', output, this.$leadData)
+			);
+			if (!php.empty(errors)) {
+				result['error'] = 'Invalid pricing - ' + cmd + ' - ' + php.implode(';', errors);
+				return result;
+			}
+			let stub = new AnyGdsStubSession(fqqCmdRecs);
+			let capturing = withCapture(stub);
+			let fullData = await (new AmadeusGetPricingPtcBlocksAction())
+				.setSession(capturing)
+				.execute(cmd, output, reservation.passengers);
+			this.$allCommands.push(...capturing.getCalledCommands());
+
+			let pqtPricingInfo = this.constructor.makePricingInfoForPqt(output, cmd, fullData.pricingList);
+			if (result['error'] = fullData['error']) return result;
+
+			result.currentPricing.parsed.pricingList.push(...fullData.pricingList);
+			result.bagPtcPricingBlocks.push(...fullData.bagPtcPricingBlocks);
+			result.pqtPricingInfo = pqtPricingInfo;
+		}
+		return result;
 	}
 
 	async amadeusFx($cmd) {
@@ -466,7 +548,8 @@ class ImportPqAmadeusAction extends AbstractGdsAction {
 		let $result;
 
 		$result = await this.collectPnrData();
-		$result['allCommands'] = php.array_map((...args) => this.constructor.transformCmdForCms(...args), this.$allCommands);
+		$result['allCommands'] = collectFullCmdRecs(this.$allCommands)
+			.map((cmdRec) => this.constructor.transformCmdForCms(cmdRec));
 		return $result;
 	}
 }
