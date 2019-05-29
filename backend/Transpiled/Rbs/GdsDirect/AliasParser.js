@@ -92,12 +92,15 @@ class AliasParser
 
     static async parseCmdAsPnr($cmd, $session)  {
         let $guess;
-        if (!$session.getAgent().canPasteItinerary()) {
-            return [];
-        }
         let fromCms = await this.parseCmsRebuild($cmd);
         if (fromCms) {
-            return fromCms.segments;
+            return {
+                passengers: [],
+                itinerary: fromCms.segments,
+            };
+        }
+        if (!$session.getAgent().canPasteItinerary()) {
+            return null;
         }
         $guess = (new ParsersController()).guessDumpType({
             'dump': $cmd,
