@@ -6,11 +6,6 @@ before_script:
 
 # takes 1 minute and 9 seconds
 run-tests-dev:
-  before_script:
-    # Set up git
-    - . /home/pkirpitsov/scripts/ci_secret_ssh.sh
-    - git config --global user.name "Gitlab CI"
-    - git config --global user.email "gitlab@dyninno.net"
   tags:
     - dev-w13
   except:
