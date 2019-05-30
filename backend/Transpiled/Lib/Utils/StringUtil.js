@@ -12,8 +12,12 @@ class StringUtil
      * @param $str -- string we want to split
      * @param $pattern -- marker string to define split positions
      */
-    static splitByPosition($str, $pattern, $names, $trim)  {
+    static splitByPosition($str, $pattern, $names = null, $trim = false)  {
         let $letters, $position, $markerChar, $result, $name;
+        if (!$names) {
+            let symbols = php.str_split($pattern, 1);
+            $names = php.array_combine(symbols, symbols);
+        }
         $letters = [];
         $position = 0;
         for ($markerChar of php.str_split($pattern)) {

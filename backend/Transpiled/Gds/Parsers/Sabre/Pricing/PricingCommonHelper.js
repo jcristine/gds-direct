@@ -201,12 +201,13 @@ class PricingCommonHelper {
 				$result['alternateValidatingCarriers'].push(php.rtrim($matches[1]));
 			} else if (php.preg_match(/^PRIVATE FARE APPLIED/, $line, $matches = [])) {
 				$result['privateFareApplied'] = true;
+			} else if ($line.startsWith('RATE USED')) {
+				$result.unparsedLines.push($line);
 			} else {
 				if ($endorsementBeforeCarrier != $validatingCarrierFound) {
 					$result['endorsementBoxLines'] = $result['endorsementBoxLines'] || [];
 					$result['endorsementBoxLines'].push(php.trim($line));
 				} else {
-					$result['unparsedLines'] = $result['unparsedLines'] || [];
 					$result['unparsedLines'].push($line);
 				}
 			}

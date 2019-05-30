@@ -287,6 +287,7 @@ class SabrePricingParser {
 			$mainSection['additionalInfo'] = $sections;
 			$mainSection['dataExistsInfo'] = $dataExistsInfo;
 			$mainSection['wasPqRetained'] = $wasPqRetained;
+			$mainSection['displayType'] = 'regularPricing';
 
 			return $mainSection;
 		}
