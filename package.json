@@ -9,7 +9,7 @@
     "dynatech-client-component": "git+ssh://git@gitlab.dyninno.net:1022/node-libraries/client-component.git#7ad8d0caa829bf947dadced1834ced94ae90b734",
     "dynatech-client-component-emc": "git+ssh://git@gitlab.dyninno.net:1022/node-libraries/client-component-emc.git#v0.1.2",
     "dynatech-diag-service": "git+ssh://git@gitlab.dyninno.net:1022/node-libraries/diag-service.git#60a8255fc4860237c17cee33ef03ffe452d5bb81",
-    "dynatech-logger": "git+ssh://git@gitlab.dyninno.net:1022/node-libraries/logger#fe78d0890e70c579cd3eabe77f8bffaac07c65e5"
+    "dynatech-logger": "git+ssh://git@gitlab.dyninno.net:1022/node-libraries/logger#v0.1.9"
   },
   "dependencies": {
     "klesun-node-tools": "https://github.com/klesun-misc/klesun-node-tools.git#65dd103f130379256dc8fc9b76e342b25612bcb1",
