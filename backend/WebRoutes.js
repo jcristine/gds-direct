@@ -439,7 +439,9 @@ app.get('/getAsapLocations', withAuth(async (reqBody, emcResult) => {
 
 getConfig().then(config => {
 	app.listen(+config.HTTP_PORT, config.HOST, function () {
-		//console.log('listening on *:' + config.HTTP_PORT + ' - for standard http request handling');
+		if (!config.production) {
+			console.log('listening on *:' + config.HTTP_PORT + ' - for standard http request handling');
+		}
 	});
 });
 
