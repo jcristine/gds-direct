@@ -1,7 +1,5 @@
 
-// for Date class to interpret '2019-01-15 00:00:00' as
-// UTC and to return UTC days of week, hours, etc...
-process.env.TZ = 'UTC';
+require('./backend/Utils/Polyfills.js');
 
 let Diag = require('./backend/LibWrappers/Diag.js');
 let Migration = require('./backend/Maintenance/Migration.js');

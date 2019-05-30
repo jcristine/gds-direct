@@ -1,4 +1,5 @@
 
+require('../backend/Utils/Polyfills.js');
 require('../dev/env.js');
 
 const RunTests = require('klesun-node-tools/src/Transpiled/RunTests.js');
