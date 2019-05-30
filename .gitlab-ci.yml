@@ -12,11 +12,15 @@ run-tests-dev:
     - tags
     - production
   script:
-    echo "disabled till I figure out how to install our private npm modules in gitlab environment"
-#    - bash build.sh
-#    # dev-w13 has node 9.8 sadly, it has limited regex support
-#    - npm install node@10.13.0
-#    - node_modules/node/bin/node tests/runTests.js
+    # Set up git
+    - . /home/pkirpitsov/scripts/ci_secret_ssh.sh
+    - git config --global user.name "Gitlab CI"
+    - git config --global user.email "gitlab@dyninno.net"
+
+    - bash build.sh
+    # dev-w13 has node 9.8 sadly, it has limited regex support
+    - npm install node@10.13.0
+    - node_modules/node/bin/node tests/runTests.js
 
 # takes 16 seconds, could be even faster if it did not install node 10 each time...
 run-tests-prod:
