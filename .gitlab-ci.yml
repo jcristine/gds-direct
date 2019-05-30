@@ -1,12 +1,10 @@
 stages:
 - test
 
-before_script:
-  - node --version
-
 # takes 1 minute and 9 seconds
 run-tests-dev:
   before_script:
+    - node --version
     - . /home/pkirpitsov/scripts/ci_secret_ssh.sh
   tags:
     - dev-w13
@@ -14,7 +12,7 @@ run-tests-dev:
     - tags
     - production
   script:
-    - bash build.sh
+    - npm ci
     # dev-w13 has node 9.8 sadly, it has limited regex support
     - npm install node@10.13.0
     - node_modules/node/bin/node tests/runTests.js
