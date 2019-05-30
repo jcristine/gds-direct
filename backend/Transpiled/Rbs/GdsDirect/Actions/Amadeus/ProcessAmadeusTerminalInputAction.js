@@ -657,18 +657,19 @@ class ProcessAmadeusTerminalInputAction {
 
 	async _fetchPricing(cmd, cmdData) {
 		let shouldFetchAll = cmdData.baseCmd !== 'FXL'; // FXL = ignore availability
-		let result = await this.processRealCommand(cmd, shouldFetchAll);
-		if (shouldFetchAll && !php.empty(result.calledCommands)) {
-			let fxOutput = result.calledCommands[0].output;
+		if (!shouldFetchAll) {
+			return this.processRealCommand(cmd);
+		} else if (shouldFetchAll) {
+			let fxCmdRec = await AmadeusUtil.fetchAllFx(cmd, this);
+			let fxOutput = fxCmdRec.output;
 			let capturing = withCapture(this.stateful);
 			let pricing = await (new AmadeusGetPricingPtcBlocks())
 				.setSession(capturing)
 				.execute(cmd, fxOutput);
 			let cmdRecs = capturing.getCalledCommands();
 			cmdRecs = AmadeusUtil.collectFullCmdRecs(cmdRecs);
-			result.calledCommands.push(...cmdRecs);
+			return {calledCommands: [fxCmdRec].concat(cmdRecs)};
 		}
-		return result;
 	}
 
 	getEmptyAreasFromDbState() {
