@@ -12,6 +12,10 @@ run-tests-dev:
     - tags
     - production
   script:
+    - echo "setting npm gitlab key ${GITLAB_KEY:0:3}"
+    - npm config set gitlab-domains gitlab.dyninno.net
+    - npm config set gitlab-token.gitlab.dyninno.net $GITLAB_KEY
+    - echo "done setting npm config gitlab key"
     - bash build.sh
     # dev-w13 has node 9.8 sadly, it has limited regex support
     - npm install node@10.13.0
