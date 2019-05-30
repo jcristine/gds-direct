@@ -4,7 +4,7 @@
 # lessc public/_style/less/main.less > public/_style/css/parsed.css
 
 # downloads /node_modules/ if needed
-npm install --from-lock-file --no-progress
+npm ci --no-progress
 
 startpath=$(pwd)
 cd public
