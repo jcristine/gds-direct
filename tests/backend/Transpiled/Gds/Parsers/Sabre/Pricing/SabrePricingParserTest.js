@@ -1532,7 +1532,7 @@ class SabrePricingParserTest extends require('../../../../Lib/TestCase.js') {
 			        }
 			    ],
 				"dataExistsInfo": [{"name":"AIR EXTRAS","command":"WP*AE"}],
-			    "additionalInfo": [],
+			    "additionalInfo": null,
 			    "wasPqRetained": false
 			},
 		]);

@@ -11,6 +11,7 @@ const Fp = require('../../Transpiled/Lib/Utils/Fp.js');
 
 let parseSegmentLine = (line) => {
 	//            'XTPE BR  V   02SEP VLXU            02SEP 02SEP 02P',
+	//            " BOM LH  G   11DEC G1                    10DEC 02P",
 	let pattern = 'XAAA CC  L   WWWWW IIIIIIIIIIIIIIIIOOOOO EEEEEBBBBB';
 	let split = StringUtil.splitByPosition(line, pattern, null, true);
 
@@ -29,7 +30,7 @@ let parseSegmentLine = (line) => {
 		fareBasis: fareBasis,
 		ticketDesignator: ticketDesignator, // not sure it can happen
 		notValidBefore: nvbDate ? {raw: split['O'], parsed: nvbDate} : null,
-		notValidAfter: nvbDate ? {raw: split['E'], parsed: nvaDate} : null,
+		notValidAfter: nvaDate ? {raw: split['E'], parsed: nvaDate} : null,
 		bagAllowanceCode: BagAllowanceParser.parseAmountCode(split['B']),
 	};
 	if (date && split[' '].trim() === '' &&
@@ -44,8 +45,6 @@ let parseSegmentLine = (line) => {
 
 let parseSingleBlock = (linesLeft) => {
 	let line, match;
-
-	[, linesLeft] = parseSequence(linesLeft, l => l.trim() === '');
 
 	line = linesLeft.shift() || '';
 	match = line.match(/^PSGR TYPE\s+([A-Z0-9]{2,3})\s*-\s*(\d+)/);
@@ -179,7 +178,10 @@ let parseTotalsLine = (totalsLine) => {
 let parseFooter = (linesLeft) => {
 	linesLeft = [...linesLeft];
 
-	let totalsLine = linesLeft.shift();
+	let totalsLine = linesLeft.shift() || '';
+	if (totalsLine.startsWith('PSGR TYPE')) {
+		return null;
+	}
 	let faresSum = parseTotalsLine(totalsLine);
 	if (!faresSum) {
 		// present only in multi-PTC pricing
@@ -187,24 +189,25 @@ let parseFooter = (linesLeft) => {
 	}
 	[, linesLeft] = parseSequence(linesLeft, l => l.trim() === '');
 
-	let attnLines;
-	[attnLines, linesLeft] = parseSequence(linesLeft, (l) => {
-		let match = l.match(/^ATTN\*(.*)$/);
-		return match ? match[1] : null;
-	});
+	let attnLines = [];
+	let unparsedLines = [];
+	for (let line of linesLeft) {
+		let attnMatch = line.match(/^ATTN\*(.*)$/);
+		if (attnMatch) {
+			attnLines.push(attnMatch[1]);
+		} else if (!['', '.'].includes(line)) {
+			unparsedLines.push(line);
+		}
+	}
 
 	let dataExistsInfo;
 	[attnLines, dataExistsInfo] = PricingCommonHelper.parseDataExists(attnLines);
 
-	if (linesLeft.join('\n').trim() === '.') {
-		return {
-			faresSum: faresSum,
-			dataExistsInfo: dataExistsInfo,
-			messages: attnLines,
-		};
-	} else {
-		return null;
-	}
+	return {
+		faresSum: faresSum,
+		dataExistsInfo: dataExistsInfo,
+		additionalInfo: unparsedLines.concat(attnLines),
+	};
 };
 
 /**
@@ -245,6 +248,7 @@ exports.parse = (output) => {
 		}
 		[ptcBlock, linesLeft] = tuple;
 		pqList.push(ptcBlock);
+		[, linesLeft] = parseSequence(linesLeft, l => l.trim() === '');
 		footer = parseFooter(linesLeft);
 	} while (!footer);
 	return {

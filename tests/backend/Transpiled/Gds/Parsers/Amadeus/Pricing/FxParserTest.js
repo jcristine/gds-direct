@@ -1336,7 +1336,7 @@ class FxParserTest extends require('../../../../Lib/TestCase.js')
                             'fareBasis': 'LJXWPUS1',
                             'ticketDesignator': null,
                             'notValidBefore': null,
-                            'notValidAfter': null,
+                            'notValidAfter': {'raw': '11JUN', 'parsed': '06-11'},
                             'freeBaggageAmount': {'units': 'pieces', 'amount': '2', 'unitsCode': 'P', 'raw': '2P'},
                         },
                         {
@@ -1352,7 +1352,7 @@ class FxParserTest extends require('../../../../Lib/TestCase.js')
                             'fareBasis': 'LJXWPUS1',
                             'ticketDesignator': null,
                             'notValidBefore': null,
-                            'notValidAfter': null,
+                            'notValidAfter': {'raw': '11JUN', 'parsed': '06-11'},
                             'freeBaggageAmount': {'units': 'pieces', 'amount': '2', 'unitsCode': 'P', 'raw': '2P'},
                         },
                         {
@@ -1368,7 +1368,7 @@ class FxParserTest extends require('../../../../Lib/TestCase.js')
                             'fareBasis': 'EKXEFUS1',
                             'ticketDesignator': null,
                             'notValidBefore': null,
-                            'notValidAfter': null,
+                            'notValidAfter': {'raw': '11JUN', 'parsed': '06-11'},
                             'freeBaggageAmount': {'units': 'pieces', 'amount': '2', 'unitsCode': 'P', 'raw': '2P'},
                         },
                         {

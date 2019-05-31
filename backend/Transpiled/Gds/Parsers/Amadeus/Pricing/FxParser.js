@@ -89,7 +89,7 @@ class FxParser {
 			'fareBasis': $fareBasis,
 			'ticketDesignator': $ticketDesignator,
 			'notValidBefore': $nvbDate ? {'raw': $split['O'], 'parsed': $nvbDate} : null,
-			'notValidAfter': $nvbDate ? {'raw': $split['E'], 'parsed': $nvaDate} : null,
+			'notValidAfter': $nvaDate ? {'raw': $split['E'], 'parsed': $nvaDate} : null,
 			'freeBaggageAmount': BagAllowanceParser.parseAmountCode($split['B']),
 		};
 		if ($date && $time && php.trim($split[' ']) === '' &&

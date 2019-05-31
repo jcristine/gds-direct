@@ -56,7 +56,7 @@ window.GdsDirectPlusPage.whenEmcSessionId.then(emcSessionId => {
         addSettingBtn.onclick = () => {
         	let name = prompt('Setting Name:');
         	if (name) {
-				addSettingRow(listDom, {name})
+				addSettingRow(listDom, {name});
 			}
 		};
 	};
