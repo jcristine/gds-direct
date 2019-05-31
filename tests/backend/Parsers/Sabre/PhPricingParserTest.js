@@ -380,6 +380,44 @@ let provide_parse = () => {
 		},
 	});
 
+	list.push({
+		title: 'no valid fare for input criteria example',
+		input: [
+			"PSGR TYPE  ADT",
+			"ATTN*VERIFY BOOKING CLASS",
+			"   FARE BASIS BOOK CODE           FARE TAX/FEES/CHGS  TOTAL",
+			"01 U9XTPHD    U/U       USD     829.00   186.53     1015.53 ADT",
+			"02 U9XTPHD-U* U/U       USD     877.00   186.53     1063.53 ADT",
+			"03 T9XTPHD-U* T/U       USD     904.00   186.53     1090.53 ADT",
+			"04 TLXTUS-U9* T/U       USD     917.00   186.53     1103.53 ADT",
+			"05 ULXTUS     U/U       USD     925.00   186.53     1111.53 ADT",
+			"06 T9XTPHD-U* T/U       USD     952.00   186.53     1138.53 ADT",
+			"07 ULXTUS-TL* U/T       USD     965.00   186.53     1151.53 ADT",
+			"08 T9XTPHD    T/T       USD     979.00   186.53     1165.53 ADT",
+			"09 TLXTUS-T9* T/T       USD     992.00   186.53     1178.53 ADT",
+			"10 ELXTUS-UL* E/U       USD    1000.00   186.53     1186.53 ADT",
+			"11 TLXTUS     T/T       USD    1005.00   186.53     1191.53 ADT",
+			"12 ELXTUS-T9* E/T       USD    1027.00   186.53     1213.53 ADT",
+			"13 TLXTUS-EL* T/E       USD    1040.00   186.53     1226.53 ADT",
+			"14 ULXTUS-KL* U/K       USD    1075.00   186.53     1261.53 ADT",
+			"15 U9XTPHD-X* U/X       USD    1102.00   186.53     1288.53 ADT",
+			"16 TLXTUS-KL* T/K       USD    1115.00   186.53     1301.53 ADT",
+			"17 ELXTUS-KL* E/K       USD    1150.00   186.53     1336.53 ADT",
+			"18 T9XTPHD-X* T/X       USD    1177.00   186.53     1363.53 ADT",
+			"19 TLXTUS-XL* T/X       USD    1190.00   186.53     1376.53 ADT",
+			"20 ULXTUS-BL* U/B       USD    1225.00   186.53     1411.53 ADT",
+			"21 U9XTPHD-V* U/V       USD    1252.00   186.53     1438.53 ADT",
+			"22 TLXTUS-BL* T/B       USD    1265.00   186.53     1451.53 ADT",
+			"23 XLXTUS-KL* X/K       USD    1300.00   186.53     1486.53 ADT",
+			"24 T9XTPHD-V* T/V       USD    1327.00   186.53     1513.53 ADT",
+			"ATTN*REBOOK OPTION OF CHOICE BEFORE STORING FARE",
+			"."
+		].join('\n'),
+		output: {
+			error: 'Failed to parse PTC block - ATTN*VERIFY BOOKING CLASS',
+		},
+	});
+
 	return list.map(a => [a]);
 };
 
