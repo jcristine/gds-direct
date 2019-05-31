@@ -200,6 +200,14 @@ app.get('/terminal/clearBuffer', withAuth(GdsSessionController.clearBuffer));
 // /admin/* routes follow
 //=====================
 
+let withOwnerAuth = (ownerAction) => withAuth((rqBody, emcResult) => {
+	if (emcResult.user.id == 6206) {
+		return ownerAction(rqBody, emcResult);
+	} else {
+		return Forbidden('Sorry, you must be me in order to use that');
+	}
+});
+
 //app.use('/admin/updateHighlightRules', express.bodyParser({limit: '10mb'}));
 app.post('/admin/updateHighlightRules', withAuth((reqBody, emcResult) => {
 	if (admins.includes(+emcResult.user.id)) {
@@ -260,40 +268,28 @@ app.get('/api/js/terminal-log/commands', withAuth(async (rqBody, emcResult) => {
 		})),
 	};
 }));
-app.post('/admin/getModel', withAuth(async (reqBody, emcResult) => {
-	if (emcResult.user.id == 6206) {
-		let rows = await Db.with(db => db.fetchAll({
-			table: reqBody.model,
-			where: reqBody.where || [],
-			whereOr: reqBody.whereOr || [],
-			orderBy: reqBody.orderBy || null,
-			skip: reqBody.skip,
-			limit: reqBody.limit || 100,
-		}));
-		rows = Misc.maskCcNumbers(rows);
-		return {records: rows};
-	} else {
-		return Forbidden('Sorry, you must be me in order to use that');
-	}
+app.post('/admin/getModel', withOwnerAuth(async (reqBody, emcResult) => {
+	let rows = await Db.with(db => db.fetchAll({
+		table: reqBody.model,
+		where: reqBody.where || [],
+		whereOr: reqBody.whereOr || [],
+		orderBy: reqBody.orderBy || null,
+		skip: reqBody.skip,
+		limit: reqBody.limit || 100,
+	}));
+	rows = Misc.maskCcNumbers(rows);
+	return {records: rows};
 }));
-app.post('/admin/getAllRedisKeys', withAuth(async (reqBody, emcResult) => {
-	if (emcResult.user.id == 6206) {
-		let redis = await Redis.getClient();
-		let keys = await redis.keys('*');
-		return {keys};
-	} else {
-		return Forbidden('Sorry, you must be me in order to use that');
-	}
+app.post('/admin/getAllRedisKeys', withOwnerAuth(async (reqBody, emcResult) => {
+	let redis = await Redis.getClient();
+	let keys = await redis.keys('*');
+	return {keys};
 }));
-app.post('/admin/operateRedisKey', withAuth(async (reqBody, emcResult) => {
-	if (emcResult.user.id == 6206) {
-		let {key, operation} = reqBody;
-		let redis = await Redis.getClient();
-		let redisData = await redis[operation.toLowerCase()](key);
-		return {redisData};
-	} else {
-		return Forbidden('Sorry, you must be me in order to use that');
-	}
+app.post('/admin/operateRedisKey', withOwnerAuth(async (reqBody, emcResult) => {
+	let {key, operation} = reqBody;
+	let redis = await Redis.getClient();
+	let redisData = await redis[operation.toLowerCase()](key);
+	return {redisData};
 }));
 app.get('/admin/getShortcutActions', toHandleHttp(async (rqBody) => {
 	let rows = await Db.with(db => db
@@ -336,14 +332,22 @@ app.post('/admin/setShortcutActions', withAuth(async (rqBody, emcResult) => {
 		]);
 	});
 }));
-app.get('/admin/status', withAuth(async (reqBody, emcResult) => {
-	if (emcResult.user.id == 6206) {
-		return {
-			cmdLogsInsertionKeys: CmdLogs.ramDebug.getInsertionKeys(),
-		};
-	} else {
-		return Forbidden('Sorry, you must be me in order to use that');
-	}
+app.get('/admin/getSettings', withOwnerAuth(async (rqBody, emcResult) => {
+	return Db.with(db => db.fetchAll({table: 'admin_settings'}))
+		.then(records => ({records}));
+}));
+app.post('/admin/setSetting', withOwnerAuth(async (rqBody, emcResult) => {
+	let {name, value} = rqBody;
+	return Db.with(db => db.writeRows('admin_settings', [{name, value}]));
+}));
+app.post('/admin/deleteSetting', withOwnerAuth(async (rqBody, emcResult) => {
+	let sql = 'DELETE FROM admin_settings WHERE name = ?';
+	return Db.with(db => db.query(sql, [rqBody.name]));
+}));
+app.get('/admin/status', withOwnerAuth(async (reqBody, emcResult) => {
+	return {
+		cmdLogsInsertionKeys: CmdLogs.ramDebug.getInsertionKeys(),
+	};
 }));
 
 app.get('/parser/test', toHandleHttp((rqBody) => {
@@ -367,70 +371,50 @@ app.get('/parser/test', toHandleHttp((rqBody) => {
 // one-time script-triggering routes follow
 //===============================
 
-app.get('/testHttpRq', withAuth((reqBody, emcResult) => {
-	if (emcResult.user.id == 6206) {
-		let rqParams = JSON.parse(reqBody.rqParams);
-		rqParams.dropConnection = true;
-		return PersistentHttpRq(rqParams);
-	} else {
-		return Forbidden('Sorry, you must be me in order to use that');
-	}
+app.get('/testHttpRq', withOwnerAuth((reqBody, emcResult) => {
+	let rqParams = JSON.parse(reqBody.rqParams);
+	rqParams.dropConnection = true;
+	return PersistentHttpRq(rqParams);
 }));
-app.get('/testRedisWrite', withAuth(async (reqBody, emcResult) => {
-	if (emcResult.user.id == 6206) {
-		let redis = await Redis.getClient();
-		return redis.hset(Redis.keys.USER_TO_TMP_SETTINGS + ':' + emcResult.user.id, reqBody.key, reqBody.val)
-			.then(rs => ({rs}));
-	} else {
-		return Forbidden('Sorry, you must be me in order to use that');
-	}
+app.get('/testRedisWrite', withOwnerAuth(async (reqBody, emcResult) => {
+	let redis = await Redis.getClient();
+	return redis.hset(Redis.keys.USER_TO_TMP_SETTINGS + ':' + emcResult.user.id, reqBody.key, reqBody.val)
+		.then(rs => ({rs}));
 }));
-app.get('/testMemoryLimit', withAuth(async (rqBody, emcResult) => {
-	if (emcResult.user.id == 6206) {
-		// 1200000 ~ 350 MiB
-		let dummyDataLength = rqBody.dummyDataLength || 100;
-		let arr = [];
-		for (let i = 0; i < dummyDataLength; ++i) {
-			arr.push(i + '-' + i + '-' + Math.random());
-		}
-		let index = Math.floor(Math.random() * dummyDataLength);
-		return {
-			index: index,
-			dummyDataLength: dummyDataLength,
-			value: arr[index],
-		};
-	} else {
-		return Forbidden('Sorry, you must be me in order to use that');
+app.get('/testMemoryLimit', withOwnerAuth(async (rqBody, emcResult) => {
+	// 1200000 ~ 350 MiB
+	let dummyDataLength = rqBody.dummyDataLength || 100;
+	let arr = [];
+	for (let i = 0; i < dummyDataLength; ++i) {
+		arr.push(i + '-' + i + '-' + Math.random());
 	}
+	let index = Math.floor(Math.random() * dummyDataLength);
+	return {
+		index: index,
+		dummyDataLength: dummyDataLength,
+		value: arr[index],
+	};
 }));
-app.get('/getAgentList', withAuth(async (reqBody, emcResult) => {
-	if (emcResult.user.id == 6206) {
-		let emc = await Emc.getClient();
-		// keeping useCache false will cause "Not ready yet. Project: 178, Company:" error
-		emc.setMethod('getUsers');
-		let users = await emc.call();
-		return users;
-	} else {
-		return Forbidden('Sorry, you must be me in order to use that');
-	}
+app.get('/getAgentList', withOwnerAuth(async (reqBody, emcResult) => {
+	let emc = await Emc.getClient();
+	// keeping useCache false will cause "Not ready yet. Project: 178, Company:" error
+	emc.setMethod('getUsers');
+	let users = await emc.call();
+	return users;
 }));
-app.get('/getAsapLocations', withAuth(async (reqBody, emcResult) => {
-	if (emcResult.user.id == 6206) {
-		let config = await getConfig();
-		/** @type IGetAirportsRs */
-		return GdsdLib.Misc.iqJson({
-			url: config.external_service.infocenter.host,
-			credentials: {
-				login: config.external_service.infocenter.login,
-				passwd: config.external_service.infocenter.password,
-			},
-			functionName: 'getAllWithRegions',
-			serviceName: 'infocenter',
-			params: {folder: 'asap'},
-		});
-	} else {
-		return Forbidden('Sorry, you must be me in order to use that');
-	}
+app.get('/getAsapLocations', withOwnerAuth(async (reqBody, emcResult) => {
+	let config = await getConfig();
+	/** @type IGetAirportsRs */
+	return GdsdLib.Misc.iqJson({
+		url: config.external_service.infocenter.host,
+		credentials: {
+			login: config.external_service.infocenter.login,
+			passwd: config.external_service.infocenter.password,
+		},
+		functionName: 'getAllWithRegions',
+		serviceName: 'infocenter',
+		params: {folder: 'asap'},
+	});
 }));
 
 //============================

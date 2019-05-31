@@ -441,4 +441,15 @@ module.exports.migrations = [
 			') ENGINE=InnoDB DEFAULT CHARSET=utf8',
 		].join('\n')),
 	},
+	{
+		name: 'GRECT/2019.05.31003-create-admin-settings',
+		perform: (db) => db.query([
+			'CREATE TABLE admin_settings (',
+			'    id INT NOT NULL PRIMARY KEY AUTO_INCREMENT,',
+			'    name VARCHAR(50),',
+			'    value TEXT,',
+			'    UNIQUE KEY name (name)',
+			') ENGINE=InnoDB DEFAULT CHARSET=utf8',
+		].join('\n')),
+	},
 ];
