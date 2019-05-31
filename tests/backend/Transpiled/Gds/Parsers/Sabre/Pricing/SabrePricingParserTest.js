@@ -1251,6 +1251,292 @@ class SabrePricingParserTest extends require('../../../../Lib/TestCase.js') {
 			}
 		]);
 
+		// PH PCC C5VD has unique pricing format
+		$list.push([
+			php.implode(php.PHP_EOL, [
+				'PSGR TYPE  ADT - 01',
+				'     CXR RES DATE  FARE BASIS      NVB   NVA    BG',
+				' NYC',
+				' MNL PR  N   10DEC NKOXFNY               10DEC 02P',
+				'FARE  USD   1378.00 EQUIV PHP     72166',
+				'TAX   PHP       974US PHP       294AY PHP      3955XT',
+				'TOTAL PHP     77389',
+				'ADT-01  NKOXFNY',
+				' NYC PR MNL1378.00NUC1378.00END ROE1.00',
+				'XT PHP53YR PHP3666YQ PHP236XFJFK4.5',
+				'ENDOS*SEG1*PREMIUM ECONOMY/FARE RULES APPLY',
+				'RATE USED 1USD-52.37PHP',
+				'ATTN*VALIDATING CARRIER - PR',
+				'ATTN*BAG ALLOWANCE     -JFKMNL-02P/PR/EACH PIECE UP TO 55 POUND',
+				'ATTN*S/25 KILOGRAMS',
+				'ATTN*CARRY ON ALLOWANCE',
+				'ATTN*JFKMNL-01P/07KG/PR',
+				'ATTN*CARRY ON CHARGES',
+				'ATTN*JFKMNL-PR-CARRY ON FEES UNKNOWN-CONTACT CARRIER',
+				'ATTN*ADDITIONAL ALLOWANCES AND/OR DISCOUNTS MAY APPLY',
+				'  ',
+				'PSGR TYPE  C05 - 02',
+				'     CXR RES DATE  FARE BASIS      NVB   NVA    BG',
+				' NYC',
+				' MNL PR  N   10DEC NKOXFNY/CH25          10DEC 02P',
+				'FARE  USD   1034.00 EQUIV PHP     54151',
+				'TAX   PHP       974US PHP       294AY PHP      3955XT',
+				'TOTAL PHP     59374',
+				'C05-01  NKOXFNY/CH25',
+				' NYC PR MNL1033.50NUC1033.50END ROE1.00',
+				'XT PHP53YR PHP3666YQ PHP236XFJFK4.5',
+				'ENDOS*SEG1*PREMIUM ECONOMY/FARE RULES APPLY',
+				'RATE USED 1USD-52.37PHP',
+				'ATTN*VALIDATING CARRIER - PR',
+				'ATTN*BAG ALLOWANCE     -JFKMNL-02P/PR/EACH PIECE UP TO 55 POUND',
+				'ATTN*S/25 KILOGRAMS',
+				'ATTN*CARRY ON ALLOWANCE',
+				'ATTN*JFKMNL-01P/07KG/PR',
+				'ATTN*CARRY ON CHARGES',
+				'ATTN*JFKMNL-PR-CARRY ON FEES UNKNOWN-CONTACT CARRIER',
+				'ATTN*ADDITIONAL ALLOWANCES AND/OR DISCOUNTS MAY APPLY',
+				'         2412.00         126317      10446            136763TTL',
+				'                                                               ',
+				'ATTN*AIR EXTRAS AVAILABLE - SEE WP*AE',
+				'.',
+			]),
+			{
+			    "displayType": "philippinesPricing",
+			    "dates": null,
+			    "fares": [
+			        {
+			            "totals": {
+			                "baseFare": {"currency":"USD","amount":"1378.00"},
+			                "inDefaultCurrency": {"currency":"PHP","amount":"72166"},
+			                "tax": null,
+			                "total": {"currency":"PHP","amount":"77389","ptc":"ADT"}
+			            },
+			            "taxList": [
+			                {"taxCode":"US","currency":"PHP","amount":"974"},
+			                {"taxCode":"AY","currency":"PHP","amount":"294"},
+			                {"taxCode":"YR","currency":"PHP","amount":"53"},
+			                {"taxCode":"YQ","currency":"PHP","amount":"3666"},
+			                {
+			                    "taxCode": "XF",
+			                    "currency": "PHP",
+			                    "amount": "236",
+			                    "facilityCharges": [{"airport":"JFK","amount":"4.5"}]
+			                }
+			            ]
+			        },
+			        {
+			            "totals": {
+			                "baseFare": {"currency":"USD","amount":"1034.00"},
+			                "inDefaultCurrency": {"currency":"PHP","amount":"54151"},
+			                "tax": null,
+			                "total": {"currency":"PHP","amount":"59374","ptc":"C05"}
+			            },
+			            "taxList": [
+			                {"taxCode":"US","currency":"PHP","amount":"974"},
+			                {"taxCode":"AY","currency":"PHP","amount":"294"},
+			                {"taxCode":"YR","currency":"PHP","amount":"53"},
+			                {"taxCode":"YQ","currency":"PHP","amount":"3666"},
+			                {
+			                    "taxCode": "XF",
+			                    "currency": "PHP",
+			                    "amount": "236",
+			                    "facilityCharges": [{"airport":"JFK","amount":"4.5"}]
+			                }
+			            ]
+			        }
+			    ],
+			    "faresSum": {
+			        "baseFare": "2412.00",
+			        "inDefaultCurrency": "126317",
+			        "tax": "10446",
+			        "total": "136763"
+			    },
+			    "pqList": [
+			        {
+			            "fareBasisInfo": {
+			                "ptc": "ADT",
+			                "quantity": "01",
+			                "records": [{"fareBasis":"NKOXFNY"}]
+			            },
+			            "fareConstruction": {
+			                "parsed": {
+			                    "segments": [
+			                        {
+			                            "airline": "PR",
+			                            "flags": [],
+			                            "destination": "MNL",
+			                            "fare": "1378.00",
+			                            "departure": "NYC"
+			                        }
+			                    ],
+			                    "markup": null,
+			                    "currency": "NUC",
+			                    "fareAndMarkupInNuc": "1378.00",
+			                    "fare": "1378.00",
+			                    "hasEndMark": true,
+			                    "infoMessage": null,
+			                    "rateOfExchange": "1.00",
+			                    "facilityCharges": [],
+			                    "hasHiddenFares": false
+			                },
+			                "textLeft": "",
+			                "raw": "NYC PR MNL1378.00NUC1378.00END ROE1.00"
+			            },
+			            "fareConstructionInfo": {
+			                "unparsedLines": ["RATE USED 1USD-52.37PHP"],
+			                "endorsementBoxLines": ["ENDOS*SEG1*PREMIUM ECONOMY/FARE RULES APPLY"],
+			                "validatingCarrier": "PR"
+			            },
+			            "baggageInfo": {
+			                "baggageAllowanceBlock": {
+			                    "segments": [
+			                        {
+			                            "free": {
+			                                "departureStopover": "JFK",
+			                                "destinationStopover": "MNL",
+			                                "amount": {"units":"pieces","amount":"02","unitsCode":"P","raw":"02P"},
+			                                "airline": "PR",
+			                                "sizeInfoRaw": "EACH PIECE UP TO 55 POUNDS/25 KILOGRAMS",
+			                                "sizeInfo": {"weightInLb":"55","weightInKg":"25"},
+			                                "remarks": []
+			                            },
+			                            "fees": []
+			                        }
+			                    ],
+			                    "generalRemarks": []
+			                },
+			                "carryOnAllowanceBlock": [
+			                    {
+			                        "bundle": {
+			                            "cityPairs": [{"departureAirport":"JFK","destinationAirport":"MNL"}],
+			                            "amount": {"units":"pieces","amount":"01","unitsCode":"P","raw":"01P"},
+			                            "airline": "PR",
+			                            "error": null,
+			                            "isAvailable": true
+			                        },
+			                        "pieces": []
+			                    }
+			                ],
+			                "carryOnChargesBlock": [
+			                    {
+			                        "bundle": {
+			                            "cityPairs": [{"departureAirport":"JFK","destinationAirport":"MNL"}],
+			                            "amount": null,
+			                            "airline": "PR",
+			                            "error": "CARRY ON FEES UNKNOWN-CONTACT CARRIER",
+			                            "isAvailable": false
+			                        }
+			                    }
+			                ],
+			                "disclaimer": ["ADDITIONAL ALLOWANCES AND/OR DISCOUNTS MAY APPLY"],
+			                "additionalInfo": null
+			            },
+			            "baggageInfoDump": [
+			                "BAG ALLOWANCE     -JFKMNL-02P/PR/EACH PIECE UP TO 55 POUND",
+			                "S/25 KILOGRAMS",
+			                "CARRY ON ALLOWANCE",
+			                "JFKMNL-01P/07KG/PR",
+			                "CARRY ON CHARGES",
+			                "JFKMNL-PR-CARRY ON FEES UNKNOWN-CONTACT CARRIER",
+			                "ADDITIONAL ALLOWANCES AND/OR DISCOUNTS MAY APPLY"
+			            ].join("\n")
+			        },
+			        {
+			            "fareBasisInfo": {
+			                "ptc": "C05",
+			                "quantity": "01",
+			                "records": [{"fareBasis":"NKOXFNY","ticketDesignator":"CH25"}]
+			            },
+			            "fareConstruction": {
+			                "parsed": {
+			                    "segments": [
+			                        {
+			                            "airline": "PR",
+			                            "flags": [],
+			                            "destination": "MNL",
+			                            "fare": "1033.50",
+			                            "departure": "NYC"
+			                        }
+			                    ],
+			                    "markup": null,
+			                    "currency": "NUC",
+			                    "fareAndMarkupInNuc": "1033.50",
+			                    "fare": "1033.50",
+			                    "hasEndMark": true,
+			                    "infoMessage": null,
+			                    "rateOfExchange": "1.00",
+			                    "facilityCharges": [],
+			                    "hasHiddenFares": false
+			                },
+			                "textLeft": "",
+			                "raw": "NYC PR MNL1033.50NUC1033.50END ROE1.00"
+			            },
+			            "fareConstructionInfo": {
+			                "unparsedLines": ["RATE USED 1USD-52.37PHP"],
+			                "endorsementBoxLines": ["ENDOS*SEG1*PREMIUM ECONOMY/FARE RULES APPLY"],
+			                "validatingCarrier": "PR"
+			            },
+			            "baggageInfo": {
+			                "baggageAllowanceBlock": {
+			                    "segments": [
+			                        {
+			                            "free": {
+			                                "departureStopover": "JFK",
+			                                "destinationStopover": "MNL",
+			                                "amount": {"units":"pieces","amount":"02","unitsCode":"P","raw":"02P"},
+			                                "airline": "PR",
+			                                "sizeInfoRaw": "EACH PIECE UP TO 55 POUNDS/25 KILOGRAMS",
+			                                "sizeInfo": {"weightInLb":"55","weightInKg":"25"},
+			                                "remarks": []
+			                            },
+			                            "fees": []
+			                        }
+			                    ],
+			                    "generalRemarks": []
+			                },
+			                "carryOnAllowanceBlock": [
+			                    {
+			                        "bundle": {
+			                            "cityPairs": [{"departureAirport":"JFK","destinationAirport":"MNL"}],
+			                            "amount": {"units":"pieces","amount":"01","unitsCode":"P","raw":"01P"},
+			                            "airline": "PR",
+			                            "error": null,
+			                            "isAvailable": true
+			                        },
+			                        "pieces": []
+			                    }
+			                ],
+			                "carryOnChargesBlock": [
+			                    {
+			                        "bundle": {
+			                            "cityPairs": [{"departureAirport":"JFK","destinationAirport":"MNL"}],
+			                            "amount": null,
+			                            "airline": "PR",
+			                            "error": "CARRY ON FEES UNKNOWN-CONTACT CARRIER",
+			                            "isAvailable": false
+			                        }
+			                    }
+			                ],
+			                "disclaimer": ["ADDITIONAL ALLOWANCES AND/OR DISCOUNTS MAY APPLY"],
+			                "additionalInfo": null
+			            },
+			            "baggageInfoDump": [
+			                "BAG ALLOWANCE     -JFKMNL-02P/PR/EACH PIECE UP TO 55 POUND",
+			                "S/25 KILOGRAMS",
+			                "CARRY ON ALLOWANCE",
+			                "JFKMNL-01P/07KG/PR",
+			                "CARRY ON CHARGES",
+			                "JFKMNL-PR-CARRY ON FEES UNKNOWN-CONTACT CARRIER",
+			                "ADDITIONAL ALLOWANCES AND/OR DISCOUNTS MAY APPLY"
+			            ].join("\n")
+			        }
+			    ],
+				"dataExistsInfo": [{"name":"AIR EXTRAS","command":"WP*AE"}],
+			    "additionalInfo": [],
+			    "wasPqRetained": false
+			},
+		]);
+
 		return $list;
 	}
 

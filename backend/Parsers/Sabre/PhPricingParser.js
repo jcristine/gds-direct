@@ -42,7 +42,6 @@ let parseSegmentLine = (line) => {
 	}
 };
 
-/** @return {Promise} */
 let parseSingleBlock = (linesLeft) => {
 	let line, match;
 
@@ -51,7 +50,7 @@ let parseSingleBlock = (linesLeft) => {
 	line = linesLeft.shift() || '';
 	match = line.match(/^PSGR TYPE\s+([A-Z0-9]{2,3})\s*-\s*(\d+)/);
 	if (!match) {
-		return Rej.NoContent('Invalid PQ PTC block header - ' + line);
+		return null;
 	}
 	let [, ptc, ptcNumber] = match;
 	linesLeft.shift(); // '     CXR RES DATE  FARE BASIS      NVB   NVA    BG'
@@ -82,7 +81,7 @@ let parseSingleBlock = (linesLeft) => {
 	let fbLine = linesLeft.shift() || '';
 	let fareBasisInfo = PricingCommonHelper.parseFareBasisSummary(fbLine);
 	if (!fareBasisInfo) {
-		return Rej.UnprocessableEntity('Invalid fare basis line - ' + fbLine);
+		return null;
 	}
 
 	let fcLines;
@@ -136,45 +135,53 @@ let parseSingleBlock = (linesLeft) => {
 		}
 	}
 
-	return Promise.resolve([{
-		ptc: ptc,
+	return [{
 		ptcNumber: ptcNumber,
+		totals: {
+			baseFare: {currency: baseCurrency, amount: baseAmount},
+			inDefaultCurrency: fareEquivalent,
+			tax: null,
+			total: {
+				currency: totalCurrency,
+				amount: totalAmount,
+				ptc: ptc,
+			},
+		},
+		taxList: mainTaxes
+			.filter(tax => tax.taxCode !== 'XT')
+			.concat(xtTaxes),
 		segments: [{airport: firstAirport, type: 'void'}].concat(segments),
-		baseFare: {currency: baseCurrency, amount: baseAmount},
-		fareEquivalent: fareEquivalent,
-		mainTaxes: mainTaxes,
-		netPrice: {currency: totalCurrency, amount: totalAmount},
 		fareBasisInfo: fareBasisInfo,
 		fareConstruction: fcRecord,
-		xtTaxes: xtTaxes,
 		fareConstructionInfo: PricingCommonHelper.parseFareConstructionInfo(infoLines, true),
 		baggageInfo: bagLines.length === 0 ? null : BagAllowanceParser.parse(bagLines),
-	}, linesLeft]);
+		baggageInfoDump: bagLines.join('\n'),
+	}, linesLeft];
 };
 
+/** see also SabrePricingParser.parseTotalFareLine */
 let parseTotalsLine = (totalsLine) => {
 	//            "           10232         196.00      52.80            248.80TTL",
 	let pattern = 'BBBBBBBBBBBBBBBB EEEEEEEEEEEEEE TTTTTTTTTT NNNNNNNNNNNNNNNNNLLL';
 	let split = StringUtil.splitByPosition(totalsLine, pattern, null, true);
 	if (split['L'] === 'TTL') {
-		return Promise.resolve({
-			baseAmount: split['B'],
-			equivalentAmount: split['E'],
-			taxAmount: split['T'],
-			netAmount: split['N'],
-		});
+		return {
+			baseFare: split['B'],
+			inDefaultCurrency: split['E'],
+			tax: split['T'],
+			total: split['N'],
+		};
 	} else {
-		return Rej.UnprocessableEntity('Invalid TTL line - ' + totalsLine);
+		return null;
 	}
 };
 
-/** @return {Promise} */
-let parseFooter = async (linesLeft) => {
+let parseFooter = (linesLeft) => {
 	linesLeft = [...linesLeft];
 
 	let totalsLine = linesLeft.shift();
-	let totals = await parseTotalsLine(totalsLine).catch(exc => null);
-	if (!totals) {
+	let faresSum = parseTotalsLine(totalsLine);
+	if (!faresSum) {
 		// present only in multi-PTC pricing
 		linesLeft.unshift(totalsLine);
 	}
@@ -186,13 +193,17 @@ let parseFooter = async (linesLeft) => {
 		return match ? match[1] : null;
 	});
 
+	let dataExistsInfo;
+	[attnLines, dataExistsInfo] = PricingCommonHelper.parseDataExists(attnLines);
+
 	if (linesLeft.join('\n').trim() === '.') {
-		return Promise.resolve({
-			totals: totals,
+		return {
+			faresSum: faresSum,
+			dataExistsInfo: dataExistsInfo,
 			messages: attnLines,
-		});
+		};
 	} else {
-		return Rej.NoContent('Could not parse lines left as footer - ' + linesLeft[0]);
+		return null;
 	}
 };
 
@@ -222,19 +233,23 @@ let parseFooter = async (linesLeft) => {
  *     '.',
  * ].join("\n")
  */
-exports.parse = async (output) => {
+exports.parse = (output) => {
 	let linesLeft = output.split('\n');
 	let pqList = [];
 	let footer = null;
 	do {
 		let ptcBlock;
-		[ptcBlock, linesLeft] = await parseSingleBlock(linesLeft);
+		let tuple = parseSingleBlock(linesLeft);
+		if (!tuple) {
+			return {error: 'Failed to parse PTC block - ' + linesLeft[0]};
+		}
+		[ptcBlock, linesLeft] = tuple;
 		pqList.push(ptcBlock);
-		footer = await parseFooter(linesLeft).catch(exc => null);
+		footer = parseFooter(linesLeft);
 	} while (!footer);
 	return {
 		displayType: 'philippinesPricing',
 		pqList: pqList,
-		footer: footer,
+		...footer,
 	};
 };

@@ -242,6 +242,27 @@ class PricingCommonHelper {
 		}
 		return $result;
 	}
+
+	static parseDataExists($lines) {
+		let $dataExistsRecords, $line, $matches, $_, $dataName, $command;
+
+		$dataExistsRecords = [];
+
+		while ($line = php.array_pop($lines)) {
+			if (php.preg_match(/^(.*) AVAILABLE - SEE (.*)$/, $line, $matches = [])) {
+				[$_, $dataName, $command] = $matches;
+				$dataExistsRecords.push({
+					'name': $dataName,
+					'command': $command,
+				});
+			} else {
+				$lines.push($line);
+				break;
+			}
+		}
+
+		return [$lines, php.array_reverse($dataExistsRecords)];
+	}
 }
 
 module.exports = PricingCommonHelper;

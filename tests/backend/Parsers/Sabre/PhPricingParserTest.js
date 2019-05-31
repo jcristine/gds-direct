@@ -1,5 +1,5 @@
 
-const PhilippinePricingParser = require('../../../../backend/Parsers/Sabre/PhilippinePricingParser.js');
+const PhPricingParser = require('../../../../backend/Parsers/Sabre/PhPricingParser.js');
 
 let provide_parse = () => {
 	let list = [];
@@ -119,7 +119,6 @@ let provide_parse = () => {
 		output: {
 			pqList: [
 				{
-					ptc: 'ADT',
 					ptcNumber: '01',
 					segments: [
 						{airport: 'CHI'},
@@ -128,14 +127,24 @@ let provide_parse = () => {
 						{airport: 'TPE', fareBasis: 'VLWU'},
 						{airport: 'CHI', fareBasis: 'VLWU'},
 					],
-					baseFare: {currency: 'USD', amount: '585.00'},
-					fareEquivalent: {currency: 'PHP', amount: '30555'},
-					mainTaxes: [
+					totals: {
+						baseFare: {currency: 'USD', amount: '585.00'},
+						inDefaultCurrency: {currency: 'PHP', amount: '30555'},
+						total: {currency: 'PHP', amount: '41922', ptc: 'ADT'},
+					},
+					taxList: [
 						{taxCode: 'US', currency: 'PHP', amount: '1944'},
 						{taxCode: 'YC', currency: 'PHP', amount: '302'},
-						{taxCode: 'XT', currency: 'PHP', amount: '9121'},
+						{taxCode: 'XY', currency: 'PHP', amount: '366'},
+						{taxCode: 'XA', currency: 'PHP', amount: '207'},
+						{taxCode: 'AY', currency: 'PHP', amount: '293'},
+						{taxCode: 'PH', currency: 'PHP', amount: '1620'},
+						{taxCode: 'LI', currency: 'PHP', amount: '550'},
+						{taxCode: 'YQ', currency: 'PHP', amount: '5850'},
+						{taxCode: 'XF', currency: 'PHP', amount: '235', facilityCharges: [
+							{airport: 'ORD', amount: '4.5'},
+						]},
 					],
-					netPrice: {currency: 'PHP', amount: '41922'},
 					fareBasisInfo: {
 						ptc: 'ADT',
 						quantity: '01',
@@ -150,17 +159,6 @@ let provide_parse = () => {
 			    			'END ROE1.00',
 						].join('\n'),
 					},
-					xtTaxes: [
-						{taxCode: 'XY', currency: 'PHP', amount: '366'},
-						{taxCode: 'XA', currency: 'PHP', amount: '207'},
-						{taxCode: 'AY', currency: 'PHP', amount: '293'},
-						{taxCode: 'PH', currency: 'PHP', amount: '1620'},
-						{taxCode: 'LI', currency: 'PHP', amount: '550'},
-						{taxCode: 'YQ', currency: 'PHP', amount: '5850'},
-						{taxCode: 'XF', currency: 'PHP', amount: '235', facilityCharges: [
-							{airport: 'ORD', amount: '4.5'},
-						]},
-					],
 					fareConstructionInfo: {
 						validatingCarrier: 'BR',
 						endorsementBoxLines: ['ENDOS*SEG1/2/3/4*NONEND/NO STPVR'],
@@ -199,8 +197,8 @@ let provide_parse = () => {
 						],
 					},
 				},
-				{ptc: 'C05', ptcNumber: '02'},
-				{ptc: 'INF', ptcNumber: '03'},
+				{ptcNumber: '02', totals: {total: {amount: '33486', ptc: 'C05'}}},
+				{ptcNumber: '03', totals: {total: {amount: '12044', ptc: 'INF'}}},
 			],
 		},
 	});
@@ -249,7 +247,6 @@ let provide_parse = () => {
 		output: {
 			pqList: [
 				{
-					ptc: 'ADT',
 					ptcNumber: '01',
 					segments: [
 						{airport: 'MNL'},
@@ -257,9 +254,11 @@ let provide_parse = () => {
 						{airport: 'SEA', fareBasis: 'UHX00HYK'},
 						{airport: 'LAS', fareBasis: 'UHX00HYK'},
 					],
-					baseFare: {currency: 'USD', amount: '690.00'},
-					fareEquivalent: {currency: 'PHP', amount: '35998'},
-					netPrice: {currency: 'PHP', amount: '43086'},
+					totals: {
+						baseFare: {currency: 'USD', amount: '690.00'},
+						inDefaultCurrency: {currency: 'PHP', amount: '35998'},
+						total: {currency: 'PHP', amount: '43086', ptc: 'ADT'},
+					},
 				},
 			],
 		},
@@ -268,10 +267,10 @@ let provide_parse = () => {
 	return list.map(a => [a]);
 };
 
-class PhilippinePricingParserTest extends require('../../Transpiled/Lib/TestCase.js')
+class PhPricingParserTest extends require('../../Transpiled/Lib/TestCase.js')
 {
 	async test_parse({input, output}) {
-		let actual = await PhilippinePricingParser.parse(input);
+		let actual = await PhPricingParser.parse(input);
 		this.assertArrayElementsSubset(output, actual);
 	}
 
@@ -282,4 +281,4 @@ class PhilippinePricingParserTest extends require('../../Transpiled/Lib/TestCase
 	}
 }
 
-module.exports = PhilippinePricingParserTest;
+module.exports = PhPricingParserTest;

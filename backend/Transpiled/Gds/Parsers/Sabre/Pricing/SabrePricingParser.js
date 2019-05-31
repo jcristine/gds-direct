@@ -4,12 +4,14 @@ const Fp = require('../../../../Lib/Utils/Fp.js');
 const StringUtil = require('../../../../Lib/Utils/StringUtil.js');
 const CommonParserHelpers = require('../../../../Gds/Parsers/Apollo/CommonParserHelpers.js');
 const BagAllowanceParser = require('../../../../Gds/Parsers/Sabre/BagAllowanceParser.js');
+const PhToNormalPricing = require('../../../../../FormatAdapters/PhToNormalPricing.js');
 
 /**
  * parses >WP
  */
 const php = require('../../../../php.js');
 const PricingCommonHelper = require("./PricingCommonHelper");
+const PhilippinePricingParser = require("../../../../../Parsers/Sabre/PhPricingParser");
 
 class SabrePricingParser {
 	static detectErrorResponse($dump) {
@@ -58,32 +60,6 @@ class SabrePricingParser {
 		}
 
 		return php.array_values(php.array_reverse($result));
-	}
-
-	static parseDataExists($lines) {
-		let $dataExistsRecords, $line, $matches, $_, $dataName, $command;
-
-		$dataExistsRecords = [];
-
-		if (php.trim($line = php.array_pop($lines)) !== '.') {
-			$lines.push($line);
-			return [$lines, null];
-		}
-
-		while ($line = php.array_pop($lines)) {
-			if (php.preg_match(/^(.*) AVAILABLE - SEE (.*)$/, $line, $matches = [])) {
-				[$_, $dataName, $command] = $matches;
-				$dataExistsRecords.push({
-					'name': $dataName,
-					'command': $command,
-				});
-			} else {
-				$lines.push($line);
-				break;
-			}
-		}
-
-		return [$lines, php.array_reverse($dataExistsRecords)];
 	}
 
 	static parseFareConstruction($lines) {
@@ -257,12 +233,22 @@ class SabrePricingParser {
 	static parse($dump) {
 		let $error, $lines, $dataExistsInfo, $sections, $firstSection, $wasPqRetained, $continuation, $mainSection;
 
+		let asPh = PhilippinePricingParser.parse($dump);
+		if (!asPh.error) {
+			return PhToNormalPricing(asPh);
+		}
+
 		if ($error = this.detectErrorResponse($dump)) {
 			return {'error': $error, 'dump': $dump};
 		}
 		$lines = StringUtil.lines($dump);
 
-		[$lines, $dataExistsInfo] = this.parseDataExists($lines); // note - parses from the end
+		let $line;
+		if (php.trim($line = php.array_pop($lines)) !== '.') {
+			$lines.push($line);
+		}
+
+		[$lines, $dataExistsInfo] = PricingCommonHelper.parseDataExists($lines); // note - parses from the end
 
 		$sections = php.array_filter(this.splitLinesByPattern($lines, '^\\s*$'));
 
