@@ -4,7 +4,6 @@ stages:
 # takes 1 minute and 9 seconds
 run-tests-dev:
   before_script:
-    - node --version
     - . /home/pkirpitsov/scripts/ci_secret_ssh.sh
   tags:
     - dev-w13
@@ -19,6 +18,8 @@ run-tests-dev:
 
 # takes 16 seconds, could be even faster if it did not install node 10 each time...
 run-tests-prod:
+  before_script:
+    - . /home/pkirpitsov/scripts/ci_secret_ssh.sh
   tags:
     - dev-w13
   only:
