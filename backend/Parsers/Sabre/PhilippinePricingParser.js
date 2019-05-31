@@ -152,25 +152,47 @@ let parseSingleBlock = (linesLeft) => {
 	}, linesLeft]);
 };
 
-/** @return {Promise} */
-let parseFooter = (linesLeft) => {
-	linesLeft = [...linesLeft];
-	let totalsLine = linesLeft.shift();
+let parseTotalsLine = (totalsLine) => {
 	//            "           10232         196.00      52.80            248.80TTL",
 	let pattern = 'BBBBBBBBBBBBBBBB EEEEEEEEEEEEEE TTTTTTTTTT NNNNNNNNNNNNNNNNNLLL';
 	let split = StringUtil.splitByPosition(totalsLine, pattern, null, true);
-	if (split['L'] !== 'TTL') {
-		return Rej.NoContent('Footer must start with TTL line');
-	} else {
+	if (split['L'] === 'TTL') {
 		return Promise.resolve({
-			totals: {
-				baseAmount: split['B'],
-				equivalentAmount: split['E'],
-				taxAmount: split['T'],
-				netAmount: split['N'],
-			},
-			linesLeft: linesLeft,
+			baseAmount: split['B'],
+			equivalentAmount: split['E'],
+			taxAmount: split['T'],
+			netAmount: split['N'],
 		});
+	} else {
+		return Rej.UnprocessableEntity('Invalid TTL line - ' + totalsLine);
+	}
+};
+
+/** @return {Promise} */
+let parseFooter = async (linesLeft) => {
+	linesLeft = [...linesLeft];
+
+	let totalsLine = linesLeft.shift();
+	let totals = await parseTotalsLine(totalsLine).catch(exc => null);
+	if (!totals) {
+		// present only in multi-PTC pricing
+		linesLeft.unshift(totalsLine);
+	}
+	[, linesLeft] = parseSequence(linesLeft, l => l.trim() === '');
+
+	let attnLines;
+	[attnLines, linesLeft] = parseSequence(linesLeft, (l) => {
+		let match = l.match(/^ATTN\*(.*)$/);
+		return match ? match[1] : null;
+	});
+
+	if (linesLeft.join('\n').trim() === '.') {
+		return Promise.resolve({
+			totals: totals,
+			messages: attnLines,
+		});
+	} else {
+		return Rej.NoContent('Could not parse lines left as footer - ' + linesLeft[0]);
 	}
 };
 
@@ -180,27 +202,24 @@ let parseFooter = (linesLeft) => {
  * this format differs from normal WP output considerably...
  *
  * @param {string} output = [
- *     "PSGR TYPE  ADT - 01",
- *     "     CXR RES DATE  FARE BASIS      NVB   NVA    BG",
- *     " MNL",
- *     " DVO PR  U   13AUG UAP30PH               29MAY NIL",
- *     " MNL PR  U   26AUG UAP30PH               29MAY NIL",
- *     "FARE  PHP      5116 EQUIV USD     98.00",
- *     "TAX   USD      0.30PD USD      7.60LI USD     18.50XT",
- *     "TOTAL USD    124.40",
- *     "ADT-02  UAP30PH",
- *     " MNL PR DVO2558PR MNL2558PHP5116END",
- *     "XT USD12.50PV USD6.00YQ",
- *     "ENDOS*SEG1/2*ECO SUPERSAVER/NONREF/FARE RULES APPLY",
- *     "RATE USED 1PHP-0.01917487USD",
- *     "ATTN*PRIVATE FARE APPLIED - CHECK RULES FOR CORRECT TICKETING",
- *     "ATTN*PRIVATE ¤",
- *     "ATTN*VALIDATING CARRIER - PR",
- *     "           10232         196.00      52.80            248.80TTL",
- *     "                                                               ",
- *     "ATTN*AIR EXTRAS AVAILABLE - SEE WP*AE",
- *     "ATTN*BAGGAGE INFO AVAILABLE - SEE WP*BAG",
- *     "."
+ *     'PSGR TYPE  ADT - 01',
+ *     '     CXR RES DATE  FARE BASIS      NVB   NVA    BG',
+ *     ' MNL',
+ *     ' SIN PR  E   16DEC EOTSG           16DEC 16DEC 25K',
+ *     'FARE  USD    180.00 EQUIV PHP      9414',
+ *     'TAX   PHP      1620PH PHP       550LI PHP       367XT',
+ *     'TOTAL PHP     11951',
+ *     'ADT-01  EOTSG',
+ *     ' MNL PR SIN180.00NUC180.00END ROE1.00',
+ *     'XT PHP53YR PHP314YQ',
+ *     'ENDOS*SEG1*ECONOMY SAVER/FARE RULES APPLY',
+ *     'RATE USED 1USD-52.3PHP',
+ *     'ATTN*VALIDATING CARRIER - PR',
+ *     'ATTN*CHANGE BOOKING CLASS -   1E',
+ *     '                                                               ',
+ *     'ATTN*AIR EXTRAS AVAILABLE - SEE WP*AE',
+ *     'ATTN*BAGGAGE INFO AVAILABLE - SEE WP*BAG',
+ *     '.',
  * ].join("\n")
  */
 exports.parse = async (output) => {
