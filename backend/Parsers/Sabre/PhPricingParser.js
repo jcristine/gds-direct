@@ -43,29 +43,23 @@ let parseSegmentLine = (line) => {
 	}
 };
 
-let parseSingleBlock = (linesLeft) => {
-	let line, match;
-
-	line = linesLeft.shift() || '';
-	match = line.match(/^PSGR TYPE\s+([A-Z0-9]{2,3})\s*-\s*(\d+)/);
-	if (!match) {
-		return null;
-	}
-	let [, ptc, ptcNumber] = match;
-	linesLeft.shift(); // '     CXR RES DATE  FARE BASIS      NVB   NVA    BG'
-
-	let firstAirport = linesLeft.shift().trim();
-	let segments;
-	[segments, linesLeft] = parseSequence(linesLeft, parseSegmentLine);
-
-	let [, baseCurrency, baseAmount, eqStr] = linesLeft.shift()
+// "FARE  USD   4570.00 EQUIV PHP    239331",
+let parseFareLine = (line) => {
+	let [, baseCurrency, baseAmount, eqStr] = line
 		.match(/^FARE\s+([A-Z]{3})\s*(\d*\.?\d+)\s*(.*)/);
 	let fareEquivalent = null;
 	if (eqStr) {
 		let [, currency, amount] = eqStr.match(/^EQUIV\s+([A-Z]{3})\s*(\d*\.?\d+)/);
 		fareEquivalent = {currency, amount};
 	}
+	return {
+		baseFare: {currency: baseCurrency, amount: baseAmount},
+		inDefaultCurrency: fareEquivalent,
+	};
+};
 
+// "TAX   PHP       974US PHP       294AY PHP     17094XT",
+let parseMainTaxes = (linesLeft) => {
 	let mainTaxLine = linesLeft.shift().replace(/^TAX/, '');
 	let mainTaxes = matchAll(/\s*([A-Z]{3})\s*(\d*\.?\d+)([A-Z0-9]{2})/, mainTaxLine)
 		.map(([, currency, amount, taxCode]) => ({taxCode, currency, amount}));
@@ -73,16 +67,11 @@ let parseSingleBlock = (linesLeft) => {
 		// no taxes line, possible for infant
 		linesLeft.unshift(mainTaxLine);
 	}
+	return [mainTaxes, linesLeft];
+};
 
-	let [, totalCurrency, totalAmount] = linesLeft.shift()
-		.match(/^TOTAL\s+([A-Z]{3})\s*(\d*\.?\d+)\s*(.*)/);
-
-	let fbLine = linesLeft.shift() || '';
-	let fareBasisInfo = PricingCommonHelper.parseFareBasisSummary(fbLine);
-	if (!fareBasisInfo) {
-		return null;
-	}
-
+// " LAX LH X/FRA LH BOM M4570.00NUC4570.00END ROE1.00",
+let parseFc = (linesLeft) => {
 	let fcLines;
 	[fcLines, linesLeft] = parseSequence(linesLeft, (l) => {
 		let match = l.match(/^ (.*)$/);
@@ -91,7 +80,11 @@ let parseSingleBlock = (linesLeft) => {
 	let fcLine = fcLines.join('\n');
 	let fcRecord = FareConstructionParser.parse(fcLine);
 	fcRecord.raw = fcLine;
+	return [fcRecord, linesLeft];
+};
 
+// "XT PHP555DE PHP1246RA PHP917YR PHP14140YQ PHP236XFLAX4.5",
+let parseXtTaxes = (linesLeft) => {
 	let xtLines;
 	[xtLines, linesLeft] = parseSequence(linesLeft, (l) => {
 		let match = l.match(/^XT\s+(.*)$/);
@@ -109,11 +102,19 @@ let parseSingleBlock = (linesLeft) => {
 				return record;
 			});
 		});
+	return [xtTaxes, linesLeft];
+};
 
+// "ENDOS*SEG1/2*REFUNDABLE",
+// "RATE USED 1USD-52.37PHP",
+// "ATTN*VALIDATING CARRIER - LH",
+// "ATTN*BAG ALLOWANCE     -LAXBOM-02P/LH/EACH PIECE UP TO 50 POUND",
+let parseAttn = (linesLeft) => {
 	let attnBlockStarted = false;
 	let bagBlockStarted = false;
 	let infoLines = [];
 	let bagLines = [];
+	let line;
 	while ((line = linesLeft.shift()) !== undefined) {
 		if (!line.startsWith('ATTN*')) {
 			if (attnBlockStarted) {
@@ -133,12 +134,54 @@ let parseSingleBlock = (linesLeft) => {
 			}
 		}
 	}
+	return [{
+		fareConstructionInfo: PricingCommonHelper.parseFareConstructionInfo(infoLines, true),
+		baggageInfo: bagLines.length === 0 ? null : BagAllowanceParser.parse(bagLines),
+		baggageInfoDump: bagLines.join('\n'),
+	}, linesLeft];
+};
+
+// "PSGR TYPE  ADT - 01",
+// ...
+let parseSingleBlock = (linesLeft) => {
+	let line, match;
+
+	line = linesLeft.shift() || '';
+	match = line.match(/^PSGR TYPE\s+([A-Z0-9]{2,3})\s*-\s*(\d+)/);
+	if (!match) {
+		return null;
+	}
+	let [, ptc, ptcNumber] = match;
+	linesLeft.shift(); // '     CXR RES DATE  FARE BASIS      NVB   NVA    BG'
+
+	let firstAirport = linesLeft.shift().trim();
+	let segments;
+	[segments, linesLeft] = parseSequence(linesLeft, parseSegmentLine);
+
+	let {baseFare, inDefaultCurrency} = parseFareLine(linesLeft.shift());
+	let mainTaxes;
+	[mainTaxes, linesLeft] = parseMainTaxes(linesLeft);
+
+	let [, totalCurrency, totalAmount] = linesLeft.shift()
+		.match(/^TOTAL\s+([A-Z]{3})\s*(\d*\.?\d+)\s*(.*)/);
+
+	let fbLine = linesLeft.shift() || '';
+	let fareBasisInfo = PricingCommonHelper.parseFareBasisSummary(fbLine);
+	if (!fareBasisInfo) {
+		return null;
+	}
+	let fareConstruction;
+	[fareConstruction, linesLeft] = parseFc(linesLeft);
+	let xtTaxes;
+	[xtTaxes, linesLeft] = parseXtTaxes(linesLeft);
+	let attnRec;
+	[attnRec, linesLeft] = parseAttn(linesLeft);
 
 	return [{
 		ptcNumber: ptcNumber,
 		totals: {
-			baseFare: {currency: baseCurrency, amount: baseAmount},
-			inDefaultCurrency: fareEquivalent,
+			baseFare: baseFare,
+			inDefaultCurrency: inDefaultCurrency,
 			tax: null,
 			total: {
 				currency: totalCurrency,
@@ -151,10 +194,10 @@ let parseSingleBlock = (linesLeft) => {
 			.concat(xtTaxes),
 		segments: [{airport: firstAirport, type: 'void'}].concat(segments),
 		fareBasisInfo: fareBasisInfo,
-		fareConstruction: fcRecord,
-		fareConstructionInfo: PricingCommonHelper.parseFareConstructionInfo(infoLines, true),
-		baggageInfo: bagLines.length === 0 ? null : BagAllowanceParser.parse(bagLines),
-		baggageInfoDump: bagLines.join('\n'),
+		fareConstruction: fareConstruction,
+		fareConstructionInfo: attnRec.fareConstructionInfo,
+		baggageInfo: attnRec.baggageInfo,
+		baggageInfoDump: attnRec.baggageInfoDump,
 	}, linesLeft];
 };
 
