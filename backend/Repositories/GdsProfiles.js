@@ -33,9 +33,6 @@ const AMADEUS = StrConsts({
 
 /** @return Promise<IGdsProfileMap> */
 let getAll = async () => {
-	//let redisKey = Redis.keys.USER_TO_TMP_SETTINGS + ':6206';
-	//let redis = await Redis.getClient();
-	//let dataStr = await redis.hget(redisKey, 'gdsProfiles');
 	let dataStr = await Settings.get({name: 'gdsProfiles'});
 	if (dataStr) {
 		return JSON.parse(dataStr);
