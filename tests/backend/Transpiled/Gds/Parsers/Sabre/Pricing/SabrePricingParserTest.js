@@ -1359,7 +1359,7 @@ class SabrePricingParserTest extends require('../../../../Lib/TestCase.js') {
 			                "records": [{"fareBasis":"NKOXFNY"}]
 			            },
 			            "fareConstruction": {
-			                "parsed": {
+			                "data": {
 			                    "segments": [
 			                        {
 			                            "airline": "PR",
@@ -1380,7 +1380,7 @@ class SabrePricingParserTest extends require('../../../../Lib/TestCase.js') {
 			                    "hasHiddenFares": false
 			                },
 			                "textLeft": "",
-			                "raw": "NYC PR MNL1378.00NUC1378.00END ROE1.00"
+			                "line": "NYC PR MNL1378.00NUC1378.00END ROE1.00"
 			            },
 			            "fareConstructionInfo": {
 			                "unparsedLines": ["RATE USED 1USD-52.37PHP"],
@@ -1448,7 +1448,7 @@ class SabrePricingParserTest extends require('../../../../Lib/TestCase.js') {
 			                "records": [{"fareBasis":"NKOXFNY","ticketDesignator":"CH25"}]
 			            },
 			            "fareConstruction": {
-			                "parsed": {
+			                "data": {
 			                    "segments": [
 			                        {
 			                            "airline": "PR",
@@ -1469,7 +1469,7 @@ class SabrePricingParserTest extends require('../../../../Lib/TestCase.js') {
 			                    "hasHiddenFares": false
 			                },
 			                "textLeft": "",
-			                "raw": "NYC PR MNL1033.50NUC1033.50END ROE1.00"
+			                "line": "NYC PR MNL1033.50NUC1033.50END ROE1.00"
 			            },
 			            "fareConstructionInfo": {
 			                "unparsedLines": ["RATE USED 1USD-52.37PHP"],

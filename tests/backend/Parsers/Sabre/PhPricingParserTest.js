@@ -155,7 +155,7 @@ let provide_parse = () => {
 						],
 					},
 					fareConstruction: {
-						raw: [
+						line: [
 							'CHI BR X/TPE BR MNL272.50BR X/TPE BR CHI312.50NUC585.00',
 							'END ROE1.00',
 						].join('\n'),
@@ -368,7 +368,7 @@ let provide_parse = () => {
 					],
 					"fareBasisInfo": {"ptc": "ADT", "quantity": "01", "records": [{"fareBasis": "G1"}]},
 					"fareConstruction": {
-						"raw": "LAX LH X/FRA LH BOM M4570.00NUC4570.00END ROE1.00"
+						"line": "LAX LH X/FRA LH BOM M4570.00NUC4570.00END ROE1.00"
 					},
 					"fareConstructionInfo": {
 						"unparsedLines": ["RATE USED 1USD-52.37PHP"],

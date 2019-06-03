@@ -29,6 +29,7 @@ const withGdsSession = require("./HttpControllers/MainController").withGdsSessio
 const toHandleHttp = require("./HttpControllers/MainController").toHandleHttp;
 const {withAuth} = require("./HttpControllers/MainController");
 const GdsdLib = require('klesun-node-tools');
+const SabrePricingParser = require("./Transpiled/Gds/Parsers/Sabre/Pricing/SabrePricingParser");
 
 let app = express();
 
@@ -354,6 +355,10 @@ app.get('/parser/test', toHandleHttp((rqBody) => {
 	let result;
 	result = CommandParser.parse(rqBody.input);
 	if (result && result.type && result.data) {
+		return result;
+	}
+	result = SabrePricingParser.parse(rqBody.input);
+	if (!result.error) {
 		return result;
 	}
 	result = PnrParser.parse(rqBody.input);

@@ -79,8 +79,14 @@ let parseFc = (linesLeft) => {
 	});
 	let fcLine = fcLines.join('\n');
 	let fcRecord = FareConstructionParser.parse(fcLine);
-	fcRecord.raw = fcLine;
-	return [fcRecord, linesLeft];
+	let sabreFcRecord = {
+		line: fcLine,
+		error: fcRecord.error,
+		data: fcRecord.parsed,
+		textLeft: fcRecord.textLeft,
+		tokens: fcRecord.tokens,
+	};
+	return [sabreFcRecord, linesLeft];
 };
 
 // "XT PHP555DE PHP1246RA PHP917YR PHP14140YQ PHP236XFLAX4.5",
