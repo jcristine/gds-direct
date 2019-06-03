@@ -50,7 +50,9 @@ export default class GdsDirectPlusApp
 			buffer 		: buffer || {},
 		});
 		this.Gds = gdsSwitch;
-		this.pqParser = new PqParser(PqPriceModal, gdsSwitch);
+		if (PqPriceModal) {
+			this.pqParser = new PqParser(PqPriceModal, gdsSwitch);
+		}
 
 		connect(this);
 

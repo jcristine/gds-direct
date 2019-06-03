@@ -123,7 +123,14 @@ class LeadListContext
 		let customIdBtn = Dom('button', {
 			textContent: 'Custom Lead ID',
 			style: 'color: black',
-			onclick: () => submitLead(customIdInp.value),
+			onclick: () => {
+				let leadId = customIdInp.value;
+				if (leadId.match(/^\d{7,}$/)) {
+					submitLead(leadId);
+				} else {
+					alert('Invalid lead ID #' + leadId);
+				}
+			},
 		});
 		this.context.appendChild(customIdInp);
 		this.context.appendChild(customIdBtn);

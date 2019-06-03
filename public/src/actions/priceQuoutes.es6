@@ -31,5 +31,6 @@ const openPq = (app, pqTravelRequestId) => {
 		});
 };
 
+export const PQ_MODAL_PROVIDED = () => getStore().app.pqParser ? true : false;
 export const PQ_MODAL_SHOW 	= (pqTravelRequestId) => openPq(getStore().app, pqTravelRequestId);
 export const CLOSE_PQ_WINDOW = () => showPq({menuHidden : false});

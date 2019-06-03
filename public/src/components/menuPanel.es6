@@ -9,6 +9,7 @@ import {LanguageButtons} 	    from "./menu/languageButtons";
 import {LogButton} 			    from "./popovers/logButton";
 import {Quotes}                 from "./menu/quotes";
 import {MenuHideButton}         from "./menu/hideMenu";
+import {PQ_MODAL_PROVIDED}         from "./../actions/priceQuoutes.es6";
 let Help = require('./popovers/help.es6').default;
 
 export default class MenuPanel extends Component
@@ -47,15 +48,17 @@ export default class MenuPanel extends Component
 			new LanguageButtons()
 		);
 
-		this.observe(
-			new Component('article')
-				.observe(
-					new CurrentLeadPqButton()
-				)
-				.observe(
-					new LeadListPqButton()
-				)
-		);
+		if (PQ_MODAL_PROVIDED()) {
+			this.observe(
+				new Component('article')
+					.observe(
+						new CurrentLeadPqButton()
+					)
+					.observe(
+						new LeadListPqButton()
+					)
+			);
+		}
 
 		this.observe(
 			new Component('article')
