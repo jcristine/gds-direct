@@ -30,6 +30,7 @@ const toHandleHttp = require("./HttpControllers/MainController").toHandleHttp;
 const {withAuth} = require("./HttpControllers/MainController");
 const GdsdLib = require('klesun-node-tools');
 const SabrePricingParser = require("./Transpiled/Gds/Parsers/Sabre/Pricing/SabrePricingParser");
+const Settings = require("./Repositories/Settings");
 
 let app = express();
 
@@ -334,17 +335,11 @@ app.post('/admin/setShortcutActions', withAuth(async (rqBody, emcResult) => {
 	});
 }));
 app.get('/admin/getSettings', withOwnerAuth(async (rqBody, emcResult) => {
-	return Db.with(db => db.fetchAll({table: 'admin_settings'}))
+	return Settings.getAll()
 		.then(records => ({records}));
 }));
-app.post('/admin/setSetting', withOwnerAuth(async (rqBody, emcResult) => {
-	let {name, value} = rqBody;
-	return Db.with(db => db.writeRows('admin_settings', [{name, value}]));
-}));
-app.post('/admin/deleteSetting', withOwnerAuth(async (rqBody, emcResult) => {
-	let sql = 'DELETE FROM admin_settings WHERE name = ?';
-	return Db.with(db => db.query(sql, [rqBody.name]));
-}));
+app.post('/admin/setSetting', withOwnerAuth(Settings.set));
+app.post('/admin/deleteSetting', withOwnerAuth(Settings.delete));
 app.get('/admin/status', withOwnerAuth(async (reqBody, emcResult) => {
 	return {
 		cmdLogsInsertionKeys: CmdLogs.ramDebug.getInsertionKeys(),
