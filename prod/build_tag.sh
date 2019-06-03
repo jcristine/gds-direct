@@ -1,5 +1,4 @@
 #!/bin/bash
-
 #########################################
 
 DIR="${BASH_SOURCE%/*}"
@@ -96,14 +95,3 @@ if [ $? -ne 0 ]; then
     echo "Tag push failed. Please fix the occurred problems and run the script again.";
     exit 1;
 fi;
-
-echo " == Getting back to develop. == \n\n";
-
-#git checkout develop
-
-
-firefox "https://production.dyninno.net/deployments/add/${nextTag}" & 
-git checkout public/package-lock.json # stupid npm
-git checkout master
-git pull
-wait

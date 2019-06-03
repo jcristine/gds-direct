@@ -11,9 +11,9 @@ node dev/server.js
 ```
 This will start the app on `http://localhost:3012`, you can open it in browser.
 
-To deploy the production use:
+To deploy the production, push your changes to the master, then use: (from clean working copy!)
 ```
-./prod/grect_build.sh
+./prod/deploy.sh
 ```
 
 This will create and push the new tag to gitlab. 
