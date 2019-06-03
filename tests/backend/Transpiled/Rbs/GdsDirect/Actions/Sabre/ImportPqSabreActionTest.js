@@ -1173,6 +1173,89 @@ class ImportPqSabreActionTest extends require('../../../../Lib/TestCase.js') {
 			},
 		});
 
+		$list.push({
+			'input': {
+				'title': 'C5VD PCC has unique pricing dump format',
+				'baseDate': '2019-05-09 22:55:47',
+				'fetchOptionalFields': false,
+			},
+			'output': {
+				pnrData: {
+					currentPricing: {
+						parsed: {
+							pricingList: [{
+								pricingBlockList: [
+									{
+										ptcInfo: {ptcRequested: null, ptc: 'ADT'},
+										fareInfo: {
+											totalFare: {amount: '896.33'},
+										},
+									},
+								],
+							}],
+						},
+					},
+				},
+			},
+			'sessionInfo': {
+				"initialState": {
+					"area": "A",
+					"pcc": "C5VD",
+					"recordLocator": "",
+					"canCreatePq": false,
+					"scrolledCmd": "WPNC¥MUSD",
+					"hasPnr": true,
+					"isPnrStored": false
+				},
+				'initialCommands': [
+					{
+					    "cmd": "WPNC¥MUSD",
+					    "output": [
+					        "PSGR TYPE  ADT - 01",
+					        "     CXR RES DATE  FARE BASIS      NVB   NVA    BG",
+					        " TAG",
+					        "XMNL PR  E   22SEP ELOXTUS               22SEP 02P",
+					        " LAX PR  E   22SEP ELOXTUS               22SEP 02P",
+					        "FARE  USD    774.00  ",
+					        "TAX   USD     31.10PH USD     12.40LI USD     78.83XT",
+					        "TOTAL USD    896.33",
+					        "ADT-01  ELOXTUS",
+					        " TAG PR X/MNL PR LAX774.00NUC774.00END ROE1.00",
+					        "XT USD18.60US USD5.77YC USD7.00XY USD3.96XA USD1.00YR",
+					        "XT USD42.50YQ",
+					        "ENDOS*SEG1/2*ECONOMY SAVER/FARE RULES APPLY",
+					        "TKT/TL30JUN19/2359",
+					        "ATTN*VALIDATING CARRIER - PR",
+					        "ATTN*BAG ALLOWANCE     -TAGLAX-02P/PR/EACH PIECE UP TO 50 POUND",
+					        "ATTN*S/23 KILOGRAMS AND UP TO 62 LINEAR INCHES/158 LINEAR CENTI",
+					        "ATTN*METERS",
+					        "ATTN*CARRY ON ALLOWANCE",
+					        "ATTN*TAGMNL MNLLAX-01P/07KG/PR",
+					        "ATTN*CARRY ON CHARGES",
+					        "ATTN*TAGMNL MNLLAX-PR-CARRY ON FEES UNKNOWN-CONTACT CARRIER",
+					        "ATTN*ADDITIONAL ALLOWANCES AND/OR DISCOUNTS MAY APPLY",
+					        "                                                               ",
+					        "ATTN*AIR EXTRAS AVAILABLE - SEE WP*AE",
+					        "."
+					    ].join("\n"),
+					},
+				],
+				'performedCommands': [
+					{
+					    "cmd": "*R",
+					    "output": [
+					        "NO NAMES",
+					        " 1 PR2778E 22SEP S TAGMNL*SS1   415P  535P /DCPR /E",
+					        "OPERATED BY PAL EXPRESS",
+					        "OPERATED BY 2P",
+					        " 2 PR 102E 22SEP S MNLLAX*SS1   905P  730P /DCPR /E",
+					        "C5VD.L3II*AWS 1739/31MAY19"
+					    ].join("\n"),
+					},
+				],
+			},
+		});
+
 		$argumentTuples = [];
 		for ($testCase of Object.values($list)) {
 			$argumentTuples.push([$testCase['input'], $testCase['output'], $testCase['sessionInfo']]);

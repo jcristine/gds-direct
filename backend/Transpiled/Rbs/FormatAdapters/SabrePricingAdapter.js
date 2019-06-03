@@ -121,10 +121,8 @@ class SabrePricingAdapter {
 		$i = 0;
 		while (($fareInfo = php.array_shift($parsedData['fares']))
 			&& ($pqInfo = php.array_shift($parsedData['pqList']))
-			) {
-			if ($fareInfo['totals']['total']['ptc'] === $pqInfo['fareBasisInfo']['ptc'] &&
-				+$fareInfo['totals']['quantity'] === +$pqInfo['fareBasisInfo']['quantity']
-			) {
+		) {
+			if ($fareInfo['totals']['total']['ptc'] === $pqInfo['fareBasisInfo']['ptc']) {
 				$pricingBlock = {};
 
 				if ($lastDateToPurchase = $parsedData['dates']) {
