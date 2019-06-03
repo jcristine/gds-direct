@@ -457,7 +457,7 @@ class ProcessSabreTerminalInputAction {
 			let cmdRecs = [{...cmdRec, cmd: areaCmd, output: 'Successfully changed area to ' + $area}];
 			return {'calledCommands': cmdRecs};
 		} else {
-			return UnprocessableEntity('Could not change are to ' + $area + ' - ' + cmdRec.output.trim());
+			return UnprocessableEntity('Could not change area to ' + $area + ' - ' + cmdRec.output.trim());
 		}
 	}
 
