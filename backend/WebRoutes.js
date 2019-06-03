@@ -376,11 +376,6 @@ app.get('/testHttpRq', withOwnerAuth((reqBody, emcResult) => {
 	rqParams.dropConnection = true;
 	return PersistentHttpRq(rqParams);
 }));
-app.get('/testRedisWrite', withOwnerAuth(async (reqBody, emcResult) => {
-	let redis = await Redis.getClient();
-	return redis.hset(Redis.keys.USER_TO_TMP_SETTINGS + ':' + emcResult.user.id, reqBody.key, reqBody.val)
-		.then(rs => ({rs}));
-}));
 app.get('/testMemoryLimit', withOwnerAuth(async (rqBody, emcResult) => {
 	// 1200000 ~ 350 MiB
 	let dummyDataLength = rqBody.dummyDataLength || 100;
