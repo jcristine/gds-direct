@@ -3,7 +3,7 @@ let {never, StrConsts} = require('../Utils/StrConsts.js');
 let Rej = require('klesun-node-tools/src/Utils/Rej.js');
 const RbsClient = require("../IqClients/RbsClient");
 let {mand} = require('../Utils/Misc.js');
-
+const Settings = require('./Settings.js');
 
 const TRAVELPORT = StrConsts({
 	// apollo
@@ -33,9 +33,10 @@ const AMADEUS = StrConsts({
 
 /** @return Promise<IGdsProfileMap> */
 let getAll = async () => {
-	let redisKey = Redis.keys.USER_TO_TMP_SETTINGS + ':6206';
-	let redis = await Redis.getClient();
-	let dataStr = await redis.hget(redisKey, 'gdsProfiles');
+	//let redisKey = Redis.keys.USER_TO_TMP_SETTINGS + ':6206';
+	//let redis = await Redis.getClient();
+	//let dataStr = await redis.hget(redisKey, 'gdsProfiles');
+	let dataStr = await Settings.get({name: 'gdsProfiles'});
 	if (dataStr) {
 		return JSON.parse(dataStr);
 	} else {

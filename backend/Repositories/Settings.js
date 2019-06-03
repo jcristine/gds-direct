@@ -20,3 +20,8 @@ exports.delete = ({name}) => {
 };
 
 exports.getAll = () => Db.with(db => db.fetchAll({table: TABLE}));
+
+/** @return {Promise<String>} */
+exports.get = ({name}) => Db.with(db => db.fetchOne({
+	table: TABLE, where: [['name', '=', name]],
+})).then(row => row.value);
