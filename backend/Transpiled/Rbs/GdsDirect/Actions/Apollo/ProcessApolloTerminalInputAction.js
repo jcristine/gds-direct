@@ -733,10 +733,6 @@ class ProcessApolloTerminalInputAction {
 					$currentPcc = this.stateful.getSessionData()['pcc'];
 					$errors = php.array_merge($errors, this.constructor.checkSavePcc($pnrCreationPcc, $currentPcc));
 				}
-			} else if (php.empty(this.stateful.getLeadId())) {
-				if (!$agent.canSavePnrWithoutLead()) {
-					$errors.push(Errors.getMessage(Errors.LEAD_ID_IS_REQUIRED));
-				}
 			}
 		}
 		if ($type === 'changePcc') {
@@ -1068,11 +1064,6 @@ class ProcessApolloTerminalInputAction {
 	async processSavePnr() {
 		let $pnr, $pnrDump, $errors, $usedCmds, $flatCmds, $usedCmdTypes, $login, $writeCommands, $cmd, $output,
 			$saveResult, $cmdRecord;
-		if (php.empty(this.stateful.getLeadId())) {
-			if (!this.getAgent().canSavePnrWithoutLead()) {
-				return {'errors': [Errors.getMessage(Errors.LEAD_ID_IS_REQUIRED)]};
-			}
-		}
 		$pnr = await this.getCurrentPnr();
 		$pnrDump = $pnr.getDump();
 		if (!CommonDataHelper.isValidPnr($pnr)) {

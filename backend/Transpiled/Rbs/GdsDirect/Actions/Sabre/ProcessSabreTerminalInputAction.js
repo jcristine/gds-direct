@@ -390,11 +390,6 @@ class ProcessSabreTerminalInputAction {
 			if (!this.canSavePnrInThisPcc()) {
 				$errors.push('Unfortunately, PNR\\\'s in this PCC cannot be created. Please use a special Sabre login in SabreRed.');
 			}
-			if (php.empty(this.stateful.getLeadId())) {
-				if (!$agent.canSavePnrWithoutLead()) {
-					$errors.push(Errors.getMessage(Errors.LEAD_ID_IS_REQUIRED));
-				}
-			}
 		}
 		for ($flatCmd of Object.values($flatCmds)) {
 			if ($flatCmd['type'] === 'changePnrRemarks') {
@@ -673,19 +668,11 @@ class ProcessSabreTerminalInputAction {
 				'errors': ['Unfortunately, PNR\'s in this PCC cannot be created. Please use a special Sabre login in SabreRed.'],
 			};
 		}
-		if (php.empty(this.stateful.getLeadId())) {
-			if (!this.getAgent().canSavePnrWithoutLead()) {
-				return {'errors': [Errors.getMessage(Errors.LEAD_ID_IS_REQUIRED)]};
-			}
-		}
 		$pnr = await this.getCurrentPnr();
 		if (!CommonDataHelper.isValidPnr($pnr)) {
 			return {'errors': [Errors.getMessage(Errors.INVALID_PNR, {'response': php.trim($pnr.getDump())})]};
 		} else if (!php.empty($errors = CommonDataHelper.checkSeatCount($pnr))) {
 			return {'errors': $errors};
-		}
-		if (php.empty(this.stateful.getLeadId())) {
-			$errors.push(Errors.getMessage(Errors.LEAD_ID_IS_REQUIRED));
 		}
 
 		$login = this.getAgent().getLogin();
