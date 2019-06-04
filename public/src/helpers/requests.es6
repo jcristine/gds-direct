@@ -1,6 +1,6 @@
 import io from 'socket.io-client';
 
-import {showUserMessages, debugRequest} from "./debug";
+import {showUserMessages, debugRequest, notify} from "./debug";
 
 let httpSocket = undefined;
 
@@ -35,8 +35,17 @@ let initSocket = (host) => new Promise((resolve, reject) => {
 	const socket = io(host);
 	let rejects = new Set();
 	socket.on('message', (data, reply) => {
-		console.log('socket message from GRECT server', data);
-		reply('I confirm this message');
+		if (data.messageType === 'promptForLeadId') {
+			let leadId = prompt('Enter Lead ID:');
+			if (leadId !== null && !leadId.match(/^\d{6,}[02468]$/)) {
+				notify({msg: 'Invalid lead id - ' + leadId});
+				leadId = null;
+			}
+			reply({leadId: leadId});
+		} else {
+			console.log('socket message from GRECT server', data);
+			reply('I confirm this message');
+		}
 	});
 	socket.on('connect', () => {
 		console.log('Connected to GRECT Web Socket');
@@ -60,10 +69,10 @@ let initSocket = (host) => new Promise((resolve, reject) => {
 			}),
 		});
 	});
-	socket.on('disconnect', (...args) => {
-		[...rejects].forEach(rej => rej('Socket Disconnected (prod restart)'));
+	socket.on('disconnect', (reason) => {
+		[...rejects].forEach(rej => rej('Socket Disconnected (prod restart) - ' + reason));
 		rejects.clear();
-		console.error('socket disconnected', args);
+		console.error('socket disconnected', reason);
 	});
 });
 

@@ -19,14 +19,14 @@ export default class LeadListPqButton extends Component
             canCreatePq : state.curGds.get('canCreatePq'),
             canCreatePqErrors : state.curGds.get('canCreatePqErrors') || [],
             requestId 	: requestId
-        })
+        });
     }
 
     mount ()
     {
         this.context.appendChild(
             this.pqButton
-        )
+        );
     }
 
     _renderer()
@@ -125,7 +125,7 @@ class LeadListContext
 			style: 'color: black',
 			onclick: () => {
 				let leadId = customIdInp.value;
-				if (leadId.match(/^\d{7,}$/)) {
+				if (leadId.match(/^\d{6,}[02468]$/)) {
 					submitLead(leadId);
 				} else {
 					alert('Invalid lead ID #' + leadId);
