@@ -93,25 +93,22 @@ class CommonDataHelper {
 			($agent.canSavePnrWithoutLead() ? '' : /FOR {leadAgent}/ + ($leadData['leadOwnerId'] || '')) +
 			'/LEAD-' + $leadData['leadId']
 		);
-		if ($agent.getLogin()) {
-			// if you make changes here, please also update
-			// Common\GenericRemarkParser::parseCmsLeadRemark()
-			$pattern = php.implode('', [
-				'GD-',
-				'{pnrAgent}',
-				'/' + $agent.getId(),
-				$leadPart,
-				' IN ' + stateful.getSessionData().pcc,
-			]);
-			$minLen = php.mb_strlen(StringUtil.format($pattern, {
-				'pnrAgent': '', 'leadAgent': '',
-			}));
-			return php.strtoupper(StringUtil.format($pattern, {
-				'pnrAgent': php.mb_substr($agent.getLogin(), 0, php.floor(($maxLen - $minLen) / 2)),
-				'leadAgent': php.mb_substr(!$leadData ? '' : $leadData.leadOwnerLogin, 0, php.floor(($maxLen - $minLen) / 2)),
-			}));
-		}
-		throw new Error('Not found agent');
+		// if you make changes here, please also update
+		// Common\GenericRemarkParser::parseCmsLeadRemark()
+		$pattern = php.implode('', [
+			'GD-',
+			'{pnrAgent}',
+			'/' + $agent.getId(),
+			$leadPart,
+			' IN ' + stateful.getSessionData().pcc,
+		]);
+		$minLen = php.mb_strlen(StringUtil.format($pattern, {
+			'pnrAgent': '', 'leadAgent': '',
+		}));
+		return php.strtoupper(StringUtil.format($pattern, {
+			'pnrAgent': php.mb_substr($agent.getLogin(), 0, php.floor(($maxLen - $minLen) / 2)),
+			'leadAgent': php.mb_substr(!$leadData ? '' : $leadData.leadOwnerLogin, 0, php.floor(($maxLen - $minLen) / 2)),
+		}));
 	}
 
 	static checkSeatCount($pnr) {

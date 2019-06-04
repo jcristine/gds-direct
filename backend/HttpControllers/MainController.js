@@ -97,8 +97,9 @@ let withAuth = (userAction) => (req, res) => {
 };
 
 /** @param {function({rqBody, session, emcUser}): Promise} sessionAction */
-let withGdsSession = (sessionAction, canStartNew = false) => (req, res) => {
+let withGdsSession = (sessionAction, canStartNew = false) => (req, res, protocolSpecific = {}) => {
 	return withAuth(async (rqBody) => {
+		let askClient = protocolSpecific.askClient || null;
 		let emcUser = rqBody.emcUser;
 		let agent = Agent(emcUser);
 		let startNewSession = false;
@@ -128,7 +129,7 @@ let withGdsSession = (sessionAction, canStartNew = false) => (req, res) => {
 		let startMs = Date.now();
 		FluentLogger.logit(msg, session.logId, rqBody);
 		return Promise.resolve()
-			.then(() => sessionAction({rqBody, session, emcUser}))
+			.then(() => sessionAction({rqBody, session, emcUser, askClient}))
 			.then(result => {
 				if (startNewSession) {
 					result.startNewSession = true;

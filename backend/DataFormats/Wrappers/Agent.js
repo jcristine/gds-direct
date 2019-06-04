@@ -15,7 +15,6 @@ let Agent = (emcUser) => {
 		getFsCallsUsedRec: () => Agents.getFsCallsUsed(emcUser.id),
 		getFsLimit: () => (emcUser.settings || {}).gds_direct_fs_limit || null,
 
-		canUseGdsDirect                : () => hasRole('NEW_GDS_DIRECT_ACCESS'),
 		canIssueTickets                : () => hasRole('NEW_GDS_DIRECT_TICKETING'),
 		canProcessQueues               : () => hasRole('NEW_GDS_DIRECT_QUEUE_PROCESSING'),
 		canSearchPnr                   : () => hasRole('NEW_GDS_DIRECT_PNR_SEARCH'),
