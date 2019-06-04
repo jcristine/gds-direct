@@ -426,6 +426,7 @@ getConfig().then(config => {
 
 let socketIo = initSocketIo();
 socketIo.on('connection', /** @param {Socket} socket */ socket => {
+	let rejects = new Set();
 	socket.on('message', (data, reply) => {
 		let fallbackBody = JSON.stringify({error: 'Your request was not handled'});
 		let rsData = {body: fallbackBody, status: 501, headers: {}};
@@ -441,14 +442,36 @@ socketIo.on('connection', /** @param {Socket} socket */ socket => {
 				reply(rsData);
 			},
 		};
+
+		let protocolSpecific = {
+			askClient: (msgData, {timeoutMs = 2 * 60 * 1000} = {}) => new Promise((resolve, reject) => {
+				rejects.add(reject);
+
+				let timeout = setTimeout(() => {
+					reject('Timed out while waiting for client response after ' + timeoutMs + ' ms');
+					rejects.delete(reject);
+				}, timeoutMs);
+
+				socket.send(msgData, response => {
+					resolve(response);
+					rejects.delete(reject);
+					clearTimeout(timeout);
+				});
+			}),
+		};
+
 		if (rq.path === '/terminal/command') {
-			withGdsSession(GdsSessionController.runInputCmd, true)(rq, rs);
+			withGdsSession(GdsSessionController.runInputCmd, true)(rq, rs, protocolSpecific);
 		} else if (rq.path === '/gdsDirect/keepAlive') {
-			withGdsSession(GdsSessionController.keepAliveCurrent)(rq, rs);
+			withGdsSession(GdsSessionController.keepAliveCurrent)(rq, rs, protocolSpecific);
 		} else {
 			rs.status(501);
 			rs.send('Unsupported path - ' + rq.path);
 		}
+	});
+	socket.on('disconnect', (reason) => {
+		[...rejects].forEach(rej => rej('Socket Disconnected, client did not answer - ' + reason));
+		rejects.clear();
 	});
 	socket.send({testMessage: 'hello, how are you?'}, (response) => {
 		//console.log('delivered testMessage to client', response);
