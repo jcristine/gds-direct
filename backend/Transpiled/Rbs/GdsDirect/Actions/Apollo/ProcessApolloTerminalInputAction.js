@@ -486,9 +486,11 @@ class ProcessApolloTerminalInputAction {
 	async makeCmsRemarkCmdIfNeeded() {
 		let $cmdLog, $msg;
 		$cmdLog = this.stateful.getLog();
-		$msg = await CommonDataHelper.createCredentialMessage(this.stateful);
-		if (await CommonDataHelper.shouldAddCreationRemark($msg, $cmdLog)) {
-			return '@:5' + $msg;
+		if (!this.stateful.getSessionData().isPnrStored) {
+			$msg = await CommonDataHelper.createCredentialMessage(this.stateful);
+			if (await CommonDataHelper.shouldAddCreationRemark($msg, $cmdLog)) {
+				return '@:5' + $msg;
+			}
 		}
 		return null;
 	}

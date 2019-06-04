@@ -142,13 +142,13 @@ class ProcessSabreTerminalInputAction {
 	}
 
 	async makeCmsRemarkCmdIfNeeded() {
-		let $cmdLog, $msg, $cmd;
-
-		$cmdLog = this.stateful.getLog();
-		$msg = await CommonDataHelper.createCredentialMessage(this.stateful);
-		$cmd = '5' + $msg;
-		if (await CommonDataHelper.shouldAddCreationRemark($msg, $cmdLog)) {
-			return $cmd;
+		let cmdLog = this.stateful.getLog();
+		if (!this.stateful.getSessionData().isPnrStored) {
+			let msg = await CommonDataHelper.createCredentialMessage(this.stateful);
+			let cmd = '5' + msg;
+			if (await CommonDataHelper.shouldAddCreationRemark(msg, cmdLog)) {
+				return cmd;
+			}
 		}
 		return null;
 	}
