@@ -112,6 +112,9 @@ class Errors
                 'pattern': 'Changes to this PNR allowed only if you are in {allowedPccs} PCC',
                 'sampleData': {'pcc': '1O3K', 'allowedPccs': '2E8R or 2G56'},
             },
+            [this.LEAD_ID_IS_REQUIRED]: {
+                'pattern': 'PLEASE CHOOSE THE REQUEST YOU ARE WORKING WITH',
+            },
             [this.PCC_GDS_ERROR]: {
                 'pattern': 'Failed to emulate PCC {pcc} - {response}',
                 'sampleData': {'pcc': '1O4K', 'response': 'RESTRICTED ON RAINY DAYS'},
@@ -175,6 +178,7 @@ Errors.CMD_FORBIDDEN = 'CMD_FORBIDDEN';
 Errors.CANT_CHANGE_TICKETED_PNR = 'CANT_CHANGE_TICKETED_PNR';
 Errors.CANT_CHANGE_IN_THIS_PCC = 'CANT_CHANGE_IN_THIS_PCC';
 Errors.CANT_CHANGE_GDSD_REMARK = 'CANT_CHANGE_GDSD_REMARK';
+Errors.LEAD_ID_IS_REQUIRED = 'LEAD_ID_IS_REQUIRED';
 Errors.NO_RECENT_PRICING = 'NO_RECENT_PRICING';
 Errors.ITINERARY_IS_EMPTY = 'ITINERARY_IS_EMPTY';
 Errors.BAD_MOD_BASIS_OVERRIDE = 'BAD_MOD_BASIS_OVERRIDE';

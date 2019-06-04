@@ -560,6 +560,11 @@ class ProcessGalileoTerminalInputAction {
 		let $pcc, $pnr, $pnrDump, $errors, $flatCmds, $usedCmdTypes, $performedCmds, $login, $writeCommands, $remarkCmd,
 			$cmd, $output, $savedPnr, $rloc, $cmdRecord;
 
+		if (php.empty(this.stateful.getLeadId())) {
+			if (!this.stateful.getAgent().canSavePnrWithoutLead()) {
+				return {'errors': [Errors.getMessage(Errors.LEAD_ID_IS_REQUIRED)]};
+			}
+		}
 		$pcc = this.getSessionData()['pcc'];
 		$pnr = await this.getCurrentPnr();
 		$pnrDump = $pnr.getDump();

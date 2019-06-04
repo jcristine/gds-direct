@@ -254,10 +254,9 @@ let ensureConfigPcc = async (stateful) => {
  * @param session = at('GdsSessions.js').makeSessionRecord()
  * @param {{command: '*R'}} rqBody = at('MainController.js').normalizeRqBody()
  */
-let ProcessTerminalInput = async (params) => {
-	let {session, rqBody, emcUser} = params;
+let ProcessTerminalInput = async ({session, rqBody, emcUser}) => {
 	let whenCmdRqId = TerminalBuffering.storeNew(rqBody, session);
-	let stateful = await StatefulSession.makeFromDb({...params, whenCmdRqId});
+	let stateful = await StatefulSession.makeFromDb({session, whenCmdRqId, emcUser});
 	let cmdRq = rqBody.command;
 	let gds = session.context.gds;
 	let dialect = rqBody.language || gds;

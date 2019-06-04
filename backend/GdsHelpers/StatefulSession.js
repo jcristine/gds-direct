@@ -2,7 +2,7 @@ let AmadeusClient = require("../GdsClients/AmadeusClient.js");
 let SabreClient = require("../GdsClients/SabreClient.js");
 let TravelportClient = require('../GdsClients/TravelportClient.js');
 const GdsSessions = require("../Repositories/GdsSessions.js");
-const {NotImplemented, BadRequest, ServiceUnavailable, nonEmpty} = require("klesun-node-tools/src/Utils/Rej.js");
+const {NotImplemented, BadRequest} = require("klesun-node-tools/src/Utils/Rej.js");
 const FluentLogger = require("../LibWrappers/FluentLogger.js");
 const LocationGeographyProvider = require('../Transpiled/Rbs/DataProviders/LocationGeographyProvider.js');
 const Pccs = require("../Repositories/Pccs");
@@ -40,14 +40,12 @@ let GdsSession = (session) => {
  *
  * @param session = at('GdsSessions.js').makeSessionRecord()
  * @param {IEmcUser} emcUser
- * @param {function(*): Promise} askClient
  */
 let StatefulSession = ({
 	session, emcUser, gdsSession, cmdLog, logit = () => {},
 	Db = require('../Utils/Db.js'),
 	RbsClient = require("../IqClients/RbsClient"),
-	leadIdToData = {},
-	askClient = (msgData) => ServiceUnavailable('Client Socket not stored in GRECT session'),
+	leadData = null,
 	startDt = new Date().toISOString(),
 }) => {
 	let gds = session.context.gds;
@@ -68,11 +66,6 @@ let StatefulSession = ({
 	};
 
 	let getAgent = () => Agent(emcUser);
-
-	/** @return Promise<number> */
-	let promptForLeadId = async () => askClient({messageType: 'promptForLeadId'})
-		.then(rsData => rsData.leadId)
-		.then(nonEmpty('User not supplied valid lead ID'));
 
 	return {
 		runCmd: runCmd,
@@ -114,17 +107,10 @@ let StatefulSession = ({
 		getLeadId: () => session.context.travelRequestId,
 		getGdRemarkData: async () => {
 			let leadId = session.context.travelRequestId;
-			if (!leadId && !getAgent().canSavePnrWithoutLead()) {
-				leadId = await promptForLeadId();
-			}
 			// TODO: separate parameter!
 			let isScheduleChangeId = leadId && leadId < 1000000;
-			let leadData = leadIdToData[leadId];
 			if (!leadData && leadId && !isScheduleChangeId) {
 				leadData = await CmsClient.getLeadData(leadId);
-				if (leadData.error) {
-					return BadRequest('Bad lead #' + leadId + ' - ' + leadData.error);
-				}
 				if (leadData.leadOwnerId == emcUser.id) {
 					leadData.leadOwnerLogin = emcUser.displayName;
 				} else if (leadData.leadOwnerId) {
@@ -132,7 +118,6 @@ let StatefulSession = ({
 						.then(row => row.login)
 						.catch(exc => null);
 				}
-				leadIdToData[leadId] = leadData;
 			}
 			return leadData;
 		},
@@ -145,7 +130,7 @@ let StatefulSession = ({
 	};
 };
 
-StatefulSession.makeFromDb = async ({session, whenCmdRqId, emcUser, askClient = null}) => {
+StatefulSession.makeFromDb = async ({session, whenCmdRqId, emcUser}) => {
 	whenCmdRqId = whenCmdRqId || Promise.resolve(null);
 	let fullState = await GdsSessions.getFullState(session);
 	let cmdLog = await CmdLog({session, fullState, whenCmdRqId});
@@ -160,7 +145,7 @@ StatefulSession.makeFromDb = async ({session, whenCmdRqId, emcUser, askClient = 
 	};
 	return StatefulSession({
 		session, emcUser, logit,
-		gdsSession, cmdLog, askClient,
+		gdsSession, cmdLog,
 	});
 };
 

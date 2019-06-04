@@ -2,6 +2,8 @@ import {getStore} from "../store";
 import {OFFSET_QUOTES} from "../constants";
 import {getters} from "../state";
 
+const isHidden = false;
+
 const showPq = (newState = {}, offset = 100) => {
 	getStore().app.setOffset(offset);
 	getStore().updateView(newState);

@@ -102,20 +102,18 @@ let shouldRestart = (exc, session) => {
 		|| lifetimeMs > 60 * 60 * 1000;
 };
 
-let runInSession = (params) => {
-	let {session, rqBody, emcUser} = params;
+let runInSession = ({session, rqBody, emcUser}) => {
 	let running;
-	running = ProcessTerminalInput(params);
+	running = ProcessTerminalInput({session, rqBody, emcUser});
 	GdsSessions.updateAccessTime(session);
 	return running.then(cmsResult => ({...cmsResult, session}));
 };
 
 /** @param rqBody = at('WebRoutes.js').normalizeRqBody() */
-let runInputCmdRestartAllowed = async (params) => {
-	let {rqBody, session, emcUser} = params;
+let runInputCmdRestartAllowed = async ({rqBody, session, emcUser}) => {
 	rqBody.command = rqBody.command.trim();
 	return Promise.resolve()
-		.then(() => runInSession(params))
+		.then(() => runInSession({session, rqBody, emcUser}))
 		.catch(async exc => {
 			if (shouldRestart(exc, session)) {
 				FluentLogger.logExc('INFO: Session expired', session.logId, exc);
@@ -133,10 +131,9 @@ let runInputCmdRestartAllowed = async (params) => {
 		});
 };
 
-exports.runInputCmd = (params) => {
-	let {rqBody, session, emcUser} = params;
+exports.runInputCmd = ({rqBody, session, emcUser}) => {
 	let calledDtObj = new Date();
-	let running = runInputCmdRestartAllowed(params)
+	let running = runInputCmdRestartAllowed({rqBody, session, emcUser})
 		.then(async (cmsResult) => {
 			GdsSessions.updateUserAccessTime(session);
 

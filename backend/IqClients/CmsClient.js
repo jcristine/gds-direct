@@ -60,7 +60,6 @@ let getLeadData = async (travelRequestId) =>
 				};
 			})
 			.catch(exc => ({
-				error: 'CMS error - ' + exc,
 				leadId: travelRequestId,
 				leadUrl: 'https://cms.asaptickets.com/leadInfo?id=' + travelRequestId,
 				debug: exc + '',
