@@ -9,8 +9,9 @@ const GdsDialectTranslator = require('../../../../Rbs/GdsDirect/DialectTranslato
 const Pccs = require("../../../../../Repositories/Pccs");
 const SabreClient = require("../../../../../GdsClients/SabreClient");
 const CmsSabreTerminal = require("../../GdsInterface/CmsSabreTerminal");
-const {BadRequest, NotImplemented, Forbidden, UnprocessableEntity} = require("klesun-node-tools/src/Utils/Rej");
-const Misc = require("../../../../Lib/Utils/Misc");
+const {BadRequest, NotImplemented, Forbidden, UnprocessableEntity, NotFound} = require("klesun-node-tools/src/Utils/Rej");
+const Misc = require("../../../../Lib/Utils/MaskUtil");
+const {ignoreExc} = require('../../../../../Utils/Misc.js');
 const TravelportClient = require("../../../../../GdsClients/TravelportClient");
 const UpdateGalileoStateAction = require("../../SessionStateProcessor/UpdateGalileoStateAction");
 const CmsApolloTerminal = require("../../GdsInterface/CmsApolloTerminal");
@@ -317,9 +318,10 @@ class RepriceInAnotherPccAction {
 		$startDt = $currentSession.getStartDt();
 		$log = this.$log;
 
-		$target = await this.constructor.getTargetGdsAndPcc($targetStr);
+		$target = await this.constructor.getTargetGdsAndPcc($targetStr)
+			.catch(ignoreExc(null, [NotFound]));
 		if (!$target) {
-			return {'errors': 'Unknown GDS/PCC target [' + $targetStr + ']'};
+			return {'errors': ['Unknown GDS/PCC target - ' + $targetStr]};
 		}
 		$itinerary = $pnr.getItinerary();
 		if (php.empty($itinerary)) {

@@ -9,7 +9,7 @@ const GdsSessionsController = require("./GdsSessionController");
 const Config = require('../Config.js');
 const Agents = require("../Repositories/Agents");
 const Agent = require('../DataFormats/Wrappers/Agent.js');
-const Misc = require("../Transpiled/Lib/Utils/Misc");
+const Misc = require("../Transpiled/Lib/Utils/MaskUtil");
 const {HttpUtil} = require('klesun-node-tools');
 
 let isSystemError = (exc) =>

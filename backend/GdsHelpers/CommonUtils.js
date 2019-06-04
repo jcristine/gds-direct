@@ -1,4 +1,4 @@
-const Misc = require("../Transpiled/Lib/Utils/Misc");
+const Misc = require("../Transpiled/Lib/Utils/MaskUtil");
 
 exports.withLog = (session, log) => {
 	return {

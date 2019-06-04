@@ -5,19 +5,7 @@
 const Fp = require('../../Lib/Utils/Fp.js');
 const php = require('../../php.js');
 
-class Misc {
-	static makeUrl($url, $params) {
-		let $paramStrings, $key, $value;
-		if ($params) {
-			$paramStrings = [];
-			for ([$key, $value] of Object.entries($params)) {
-				$paramStrings.push($key + '=' + $value);
-			}
-			$url += '?' + php.implode('&', $paramStrings);
-		}
-		return $url;
-	}
-
+class MaskUtil {
 	static maskCcNumbers($data, $showDigits = 4) {
 		let internal = ($data) => {
 			if (php.is_array($data)) {
@@ -57,4 +45,4 @@ class Misc {
 	}
 }
 
-module.exports = Misc;
+module.exports = MaskUtil;

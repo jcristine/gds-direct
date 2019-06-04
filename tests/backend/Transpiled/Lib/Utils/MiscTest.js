@@ -1,4 +1,4 @@
-const Misc = require("../../../../../backend/Transpiled/Lib/Utils/Misc.js");
+const Misc = require("../../../../../backend/Transpiled/Lib/Utils/MaskUtil.js");
 
 const TestCase = require('../TestCase.js');
 
