@@ -12,7 +12,6 @@ let Db = require('./Utils/Db.js');
 let Diag = require('./LibWrappers/Diag.js');
 let HighlightRulesRepository = require('./Repositories/HighlightRules.js');
 let Redis = require('./LibWrappers/Redis.js');
-let initSocketIo = require('socket.io');
 let {getConfig} = require('./Config.js');
 let GdsSessions = require('./Repositories/GdsSessions.js');
 const CommandParser = require("./Transpiled/Gds/Parsers/Apollo/CommandParser");
@@ -31,6 +30,7 @@ const {withAuth} = require("./HttpControllers/MainController");
 const GdsdLib = require('klesun-node-tools');
 const SabrePricingParser = require("./Transpiled/Gds/Parsers/Sabre/Pricing/SabrePricingParser");
 const Settings = require("./Repositories/Settings");
+const SocketIo = require('./LibWrappers/SocketIo.js');
 
 let app = express();
 
@@ -183,8 +183,6 @@ app.post('/terminal/saveSetting/:name/:currentGds', withAuth((reqBody, emcResult
 	return new TerminalBaseController(emcResult).postSaveSettingAction(reqBody, name, currentGds);
 }));
 app.post('/terminal/resetToDefaultPcc', withGdsSession(GdsSessionController.resetToDefaultPcc));
-app.post('/terminal/command', withGdsSession(GdsSessionController.runInputCmd, true));
-app.post('/gdsDirect/keepAlive', withGdsSession(GdsSessionController.keepAliveCurrent));
 app.get('/terminal/getPqItinerary', withGdsSession(GdsSessionController.getPqItinerary));
 app.get('/terminal/importPq', withGdsSession(GdsSessionController.importPq));
 app.post('/terminal/makeMco', withGdsSession(GdsSessionController.makeMco));
@@ -424,67 +422,16 @@ getConfig().then(config => {
 	});
 });
 
-let socketIo = initSocketIo();
-socketIo.on('connection', /** @param {Socket} socket */ socket => {
-	let rejects = new Set();
-	socket.on('message', (data, reply) => {
-		let fallbackBody = JSON.stringify({error: 'Your request was not handled'});
-		let rsData = {body: fallbackBody, status: 501, headers: {}};
-		let rq = {url: data.url, path: data.url.split('?')[0], body: data.body, params: {}};
-		let rs = {
-			status: (code) => rsData.status = code,
-			setHeader: (name, value) => rsData.headers[name] = value,
-			send: (body) => {
-				try {
-					body = JSON.parse(body);
-				} catch (exc) {}
-				rsData.body = body;
-				reply(rsData);
-			},
-		};
+let routes = {
+	'/terminal/command': withGdsSession(GdsSessionController.runInputCmd, true),
+	'/gdsDirect/keepAlive': withGdsSession(GdsSessionController.keepAliveCurrent),
+};
 
-		let protocolSpecific = {
-			askClient: (msgData, {timeoutMs = 2 * 60 * 1000} = {}) => new Promise((resolve, reject) => {
-				rejects.add(reject);
-
-				let timeout = setTimeout(() => {
-					reject('Timed out while waiting for client response after ' + timeoutMs + ' ms');
-					rejects.delete(reject);
-				}, timeoutMs);
-
-				socket.send(msgData, response => {
-					resolve(response);
-					rejects.delete(reject);
-					clearTimeout(timeout);
-				});
-			}),
-		};
-
-		if (rq.path === '/terminal/command') {
-			withGdsSession(GdsSessionController.runInputCmd, true)(rq, rs, protocolSpecific);
-		} else if (rq.path === '/gdsDirect/keepAlive') {
-			withGdsSession(GdsSessionController.keepAliveCurrent)(rq, rs, protocolSpecific);
-		} else {
-			rs.status(501);
-			rs.send('Unsupported path - ' + rq.path);
-		}
-	});
-	socket.on('disconnect', (reason) => {
-		[...rejects].forEach(rej => rej('Socket Disconnected, client did not answer - ' + reason));
-		rejects.clear();
-	});
-	socket.send({testMessage: 'hello, how are you?'}, (response) => {
-		//console.log('delivered testMessage to client', response);
-	});
-});
-getConfig().then(config => {
-	try {
-		socketIo.listen(config.SOCKET_PORT);
-	} catch (exc) {
-		// TypeError: Cannot read property 'listeners' of undefined if SOCKET_PORT is not defined
-		Diag.error('Failed to listen to socket port (' + config.SOCKET_PORT + ') - ' + exc);
-	}
-});
+let socketIo = SocketIo.init(routes);
+for (let [route, expressAction] of Object.entries(routes)) {
+	app.get(route, expressAction);
+	app.post(route, expressAction);
+}
 
 app.get('/ping', toHandleHttp((rqBody) => {
 	let memory = {};
