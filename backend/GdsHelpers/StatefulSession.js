@@ -144,7 +144,7 @@ let StatefulSession = ({
 	};
 };
 
-StatefulSession.makeFromDb = async ({session, whenCmdRqId, emcUser, askClient = null}) => {
+StatefulSession.makeFromDb = async ({session, whenCmdRqId, emcUser, askClient = undefined}) => {
 	whenCmdRqId = whenCmdRqId || Promise.resolve(null);
 	let fullState = await GdsSessions.getFullState(session);
 	let cmdLog = await CmdLog({session, fullState, whenCmdRqId});
