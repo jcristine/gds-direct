@@ -65,7 +65,7 @@ let logit = (msg, id, obj = undefined) => {
 	obj = obj || '';
 	if (typeof obj !== 'string') {
 		// it will be print_r-ed otherwise
-		//obj = jsExport(obj);
+		obj = jsExport(obj);
 	}
 	obj = obj ? JSON.parse(JSON.stringify(obj)) : undefined;
 	return withLogger(logger => logger.logIt(msg, id, obj))
