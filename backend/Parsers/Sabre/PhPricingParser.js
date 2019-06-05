@@ -9,7 +9,7 @@ const FareConstructionParser = require("../../Transpiled/Gds/Parsers/Common/Fare
 const StringUtil = require('../../Transpiled/Lib/Utils/StringUtil.js');
 const Fp = require('../../Transpiled/Lib/Utils/Fp.js');
 
-let parseSegmentLine = (line) => {
+let parseFlightSegmentLine = (line) => {
 	//            'XTPE BR  V   02SEP VLXU            02SEP 02SEP 02P',
 	//            " BOM LH  G   11DEC G1                    10DEC 02P",
 	let pattern = 'XAAA CC  L   WWWWW IIIIIIIIIIIIIIIIOOOOO EEEEEBBBBB';
@@ -40,6 +40,20 @@ let parseSegmentLine = (line) => {
 		return result;
 	} else {
 		return null;
+	}
+};
+
+let parseSegmentLine = (line) => {
+	let voidMatch = line.trim().match(/^\s*([OX]|)([A-Z]{3})\s*(S U R F A C E|)\s*$/);
+	if (voidMatch) {
+		let [, stopoverIndicator, airport, surfaceLabel] = voidMatch;
+		return {
+			type: 'void',
+			stopoverIndicator: stopoverIndicator || null,
+			airport: airport,
+		};
+	} else {
+		return parseFlightSegmentLine(line);
 	}
 };
 
@@ -160,7 +174,6 @@ let parseSingleBlock = (linesLeft) => {
 	let [, ptc, ptcNumber] = match;
 	linesLeft.shift(); // '     CXR RES DATE  FARE BASIS      NVB   NVA    BG'
 
-	let firstAirport = linesLeft.shift().trim();
 	let segments;
 	[segments, linesLeft] = parseSequence(linesLeft, parseSegmentLine);
 
@@ -198,7 +211,7 @@ let parseSingleBlock = (linesLeft) => {
 		taxList: mainTaxes
 			.filter(tax => tax.taxCode !== 'XT')
 			.concat(xtTaxes),
-		segments: [{airport: firstAirport, type: 'void'}].concat(segments),
+		segments: segments,
 		fareBasisInfo: fareBasisInfo,
 		fareConstruction: fareConstruction,
 		fareConstructionInfo: attnRec.fareConstructionInfo,

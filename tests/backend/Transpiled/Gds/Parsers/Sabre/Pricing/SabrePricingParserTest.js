@@ -1241,6 +1241,7 @@ class SabrePricingParserTest extends require('../../../../Lib/TestCase.js') {
 								'NON-REF/NON-END/701633',
 								'RESTRICTIONS MAY APPLY',
 								'CARRIER RESTRICTION APPLY/PENALTY APPLIES',
+								// not endorsement actually...
 								'PRIVATE ¤',
 							],
 							'privateFareApplied': true,

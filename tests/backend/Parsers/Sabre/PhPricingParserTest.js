@@ -357,7 +357,8 @@ let provide_parse = () => {
 					"segments": [
 						{"airport": "LAX", "type": "void"},
 						{"airport": "FRA"},
-						{"airport": "BOM",
+						{
+							"airport": "BOM",
 							"airline": "LH",
 							"bookingClass": "G",
 							"departureDate": {"raw": "11DEC", "parsed": "12-11"},
@@ -415,6 +416,77 @@ let provide_parse = () => {
 		].join('\n'),
 		output: {
 			error: 'Failed to parse PTC block - ATTN*VERIFY BOOKING CLASS',
+		},
+	});
+
+	list.push({
+		title: 'S U R F A C E example, also private fare',
+		input: [
+			"PSGR TYPE  ADT - 01",
+			"     CXR RES DATE  FARE BASIS      NVB   NVA    BG",
+			" MNL",
+			" OZC PR  O   22NOV O9PHDAY               30NOV NIL",
+			" BCD     S U R F A C E",
+			" MNL PR  O   24NOV O9PHDAY               30NOV NIL",
+			"FARE  PHP      3398 EQUIV USD     66.00",
+			"TAX   USD      0.30PD USD      7.80LI USD     12.80XT",
+			"TOTAL USD     86.90",
+			"ADT-01  O9PHDAY",
+			" MNL PR OZC Q100 1799/-BCD PR MNL Q100 1399PHP3398END",
+			"XT USD8.40PV USD4.40YQ",
+			"ENDOS*SEG1/2*FARE RULES APPLY/NONREF/NONEND",
+			"TKT/TL09JUN19/2359",
+			"RATE USED 1PHP-0.01929474USD",
+			"ATTN*PRIVATE FARE APPLIED - CHECK RULES FOR CORRECT TICKETING",
+			"ATTN*PRIVATE ¤",
+			"ATTN*VALIDATING CARRIER - PR",
+			"                                                               ",
+			"ATTN*AIR EXTRAS AVAILABLE - SEE WP*AE",
+			"ATTN*BAGGAGE INFO AVAILABLE - SEE WP*BAG",
+			"."
+		].join('\n'),
+		output: {
+			pqList: [
+				{
+					"totals": {
+						"baseFare": {"currency": "PHP", "amount": "3398"},
+						"inDefaultCurrency": {"currency": "USD", "amount": "66.00"},
+						"tax": null,
+						"total": {"currency": "USD", "amount": "86.90", "ptc": "ADT"}
+					},
+					"taxList": [
+						{"taxCode": "PD", "currency": "USD", "amount": "0.30"},
+						{"taxCode": "LI", "currency": "USD", "amount": "7.80"},
+						{"taxCode": "PV", "currency": "USD", "amount": "8.40"},
+						{"taxCode": "YQ", "currency": "USD", "amount": "4.40"}
+					],
+					"segments": [
+						{"airport": "MNL", "type": "void"},
+						{"airport": "OZC", "type": "flight"},
+						{"airport": "BCD", "type": "void"},
+						{"airport": "MNL", "type": "flight"},
+					],
+					"fareBasisInfo": {
+						"ptc": "ADT",
+						"quantity": "01",
+						"records": [{"fareBasis": "O9PHDAY"}]
+					},
+					"fareConstruction": {
+						"line": "MNL PR OZC Q100 1799/-BCD PR MNL Q100 1399PHP3398END",
+					},
+					"fareConstructionInfo": {
+						"unparsedLines": ["RATE USED 1PHP-0.01929474USD"],
+						"endorsementBoxLines": [
+							"ENDOS*SEG1/2*FARE RULES APPLY/NONREF/NONEND",
+							// not endorsement actually...
+							"TKT/TL09JUN19/2359",
+							"PRIVATE ¤"
+						],
+						"privateFareApplied": true,
+						"validatingCarrier": "PR"
+					},
+				},
+			],
 		},
 	});
 
