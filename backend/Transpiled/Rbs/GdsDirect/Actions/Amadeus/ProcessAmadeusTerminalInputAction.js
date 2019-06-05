@@ -229,11 +229,6 @@ class ProcessAmadeusTerminalInputAction {
 
 		$calledCommands = [];
 
-		if (php.empty(this.stateful.getLeadId())) {
-			if (!this.getAgent().canSavePnrWithoutLead()) {
-				return {'errors': [Errors.getMessage(Errors.LEAD_ID_IS_REQUIRED)]};
-			}
-		}
 		$pnr = await this.getCurrentPnr();
 		if (!CommonDataHelper.isValidPnr($pnr)) {
 			return {'errors': [Errors.getMessage(Errors.INVALID_PNR, {'response': php.trim($pnr.getDump())})]};
@@ -882,13 +877,6 @@ class ProcessAmadeusTerminalInputAction {
 					&& await this.areAllCouponsVoided();
 				if (!$canChange) {
 					$errors.push(Errors.getMessage(Errors.CANT_CHANGE_TICKETED_PNR));
-				}
-			}
-		}
-		if (this.constructor.doesStorePnr($cmd)) {
-			if (php.empty(this.stateful.getLeadId())) {
-				if (!$agent.canSavePnrWithoutLead()) {
-					$errors.push(Errors.getMessage(Errors.LEAD_ID_IS_REQUIRED));
 				}
 			}
 		}

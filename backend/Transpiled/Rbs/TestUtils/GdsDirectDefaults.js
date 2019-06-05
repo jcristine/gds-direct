@@ -206,10 +206,12 @@ class GdsDirectDefaults {
 			RbsClient: {
 				reportCreatedPnr: () => Promise.resolve(),
 			},
-			leadData: {
-				leadId: session.context.travelRequestId,
-				leadOwnerId: leadOwnerId,
-				leadOwnerLogin: leadOwner ? leadOwner.getLogin() : null,
+			leadIdToData: {
+				[session.context.travelRequestId]: {
+					leadId: session.context.travelRequestId,
+					leadOwnerId: leadOwnerId,
+					leadOwnerLogin: leadOwner ? leadOwner.getLogin() : null,
+				},
 			},
 		});
 	}

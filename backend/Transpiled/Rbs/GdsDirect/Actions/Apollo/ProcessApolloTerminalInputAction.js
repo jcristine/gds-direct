@@ -486,9 +486,11 @@ class ProcessApolloTerminalInputAction {
 	async makeCmsRemarkCmdIfNeeded() {
 		let $cmdLog, $msg;
 		$cmdLog = this.stateful.getLog();
-		$msg = await CommonDataHelper.createCredentialMessage(this.stateful);
-		if (await CommonDataHelper.shouldAddCreationRemark($msg, $cmdLog)) {
-			return '@:5' + $msg;
+		if (!this.stateful.getSessionData().isPnrStored) {
+			$msg = await CommonDataHelper.createCredentialMessage(this.stateful);
+			if (await CommonDataHelper.shouldAddCreationRemark($msg, $cmdLog)) {
+				return '@:5' + $msg;
+			}
 		}
 		return null;
 	}
@@ -730,10 +732,6 @@ class ProcessApolloTerminalInputAction {
 					if (!($pnrCreationPcc = $remark['data']['pcc'] || null)) continue;
 					$currentPcc = this.stateful.getSessionData()['pcc'];
 					$errors = php.array_merge($errors, this.constructor.checkSavePcc($pnrCreationPcc, $currentPcc));
-				}
-			} else if (php.empty(this.stateful.getLeadId())) {
-				if (!$agent.canSavePnrWithoutLead()) {
-					$errors.push(Errors.getMessage(Errors.LEAD_ID_IS_REQUIRED));
 				}
 			}
 		}
@@ -1066,11 +1064,6 @@ class ProcessApolloTerminalInputAction {
 	async processSavePnr() {
 		let $pnr, $pnrDump, $errors, $usedCmds, $flatCmds, $usedCmdTypes, $login, $writeCommands, $cmd, $output,
 			$saveResult, $cmdRecord;
-		if (php.empty(this.stateful.getLeadId())) {
-			if (!this.getAgent().canSavePnrWithoutLead()) {
-				return {'errors': [Errors.getMessage(Errors.LEAD_ID_IS_REQUIRED)]};
-			}
-		}
 		$pnr = await this.getCurrentPnr();
 		$pnrDump = $pnr.getDump();
 		if (!CommonDataHelper.isValidPnr($pnr)) {
