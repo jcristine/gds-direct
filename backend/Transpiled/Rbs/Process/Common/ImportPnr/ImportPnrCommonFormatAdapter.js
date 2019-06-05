@@ -11,26 +11,6 @@ const php = require('../../../../php.js');
  */
 class ImportPnrCommonFormatAdapter
 {
-    /**
-     * @param $pricingInfo = ['pricingList' => [ApolloPricingAdapter::transform()]]
-     * makes it a whole pricing error if some FC-s were not parsed
-     */
-    static markFcErrorsAsPricingErrors($pricingInfo)  {
-        let $fcErrors, $i, $store, $j, $ptcBlock, $fcRec, $error;
-        $fcErrors = [];
-        for ([$i, $store] of Object.entries($pricingInfo['pricingList'] || [])) {
-            for ([$j, $ptcBlock] of Object.entries($store['pricingBlockList'])) {
-                $fcRec = $ptcBlock['fareInfo']['fareConstruction']
-                    || {'error': 'FC not available'};
-                if ($error = $fcRec['error'] || null) {
-                    $fcErrors.push(($i + 1)+'-'+($j + 1)+' '+$error);
-                }}}
-        $pricingInfo['error'] = $fcErrors
-            ? 'Failed to parse FC - '+php.implode('; ', $fcErrors)
-            : ($pricingInfo['error'] || null);
-        return $pricingInfo;
-    }
-
     /** @param $reservation = IGdsPnrFieldsProvider::getReservation() */
     static addContextDataToPaxes($reservation)  {
         let $tripEndDt;

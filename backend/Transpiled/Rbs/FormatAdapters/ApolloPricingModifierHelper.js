@@ -111,7 +111,7 @@ class ApolloPricingModifierHelper {
 		$nameNumbers = php.array_column($selected, 'nameNumber');
 		$nameNumbers = php.array_values(php.array_filter($nameNumbers));
 		$ptc = $effectivePtc || $cmdPtc;
-		$paxLinkError = this.$nameRecords && $atfqPaxNumbers && php.max($atfqPaxNumbers) > php.count(this.$nameRecords)
+		$paxLinkError = !php.empty(this.$nameRecords) && !php.empty($atfqPaxNumbers) && php.max($atfqPaxNumbers) > php.count(this.$nameRecords)
 			? 'Pricing covers pax #' + php.max($atfqPaxNumbers) + ' which is absent in PNR. This usually happens in an improper divided booking. >T:V; should be made.'
 			: null;
 		return {
