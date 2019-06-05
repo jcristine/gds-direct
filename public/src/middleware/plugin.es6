@@ -519,12 +519,6 @@ export default class TerminalPlugin
 		{
 			let clearLines = false;
 
-			if ( output.trim() === '*')
-			{
-				this.terminal.update( -2 , command + ' *');
-				return false;
-			}
-
 			if ( this.allowManualPaging ) // sabre
 			{
 				const {numOfRows, numOfChars} 	= this.settings;
