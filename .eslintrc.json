@@ -11,7 +11,6 @@
     "for-direction": "error",
     "semi": ["error", "always"],
     "valid-typeof": "error",
-    "no-invalid-this": "error",
     "no-octal": "error",
     "no-return-await": "error",
     "no-unmodified-loop-condition": "error",

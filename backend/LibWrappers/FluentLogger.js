@@ -47,10 +47,12 @@ let getGlobalLogger = () => {
 let withDisposableLogger = (action) => {
 	let logger = createClient();
 	let whenResult = Promise.resolve()
-		.then(() => action(logger));
-	// it is possible that our fluentd servers can't handle persistent socket connection,
-	// so I'll try creating a new connection for each message similar to php
-	setTimeout(() => logger._fluentLogger._disconnect(), 1000);
+		.then(() => action(logger))
+		.finally(() => {
+			// it is possible that our fluentd servers can't handle persistent socket connection,
+			// so I'll try creating a new connection for each message similar to php
+			logger._fluentLogger._disconnect();
+		});
 	return whenResult;
 };
 
