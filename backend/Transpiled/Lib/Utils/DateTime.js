@@ -64,9 +64,7 @@ class DateTime {
 				// some country will decide to drop daylight-saving for example
 				return null;
 			} else {
-				/** @type {'2019-10-16T02:13:00.000+00:00'} */
-				let inMomentFormat = momented.utc() + '';
-				return inMomentFormat.slice(0, '2019-10-16T02:13:00.000'.length) + 'Z';
+				return momented.utc().toISOString();
 			}
 		} else {
 			return null;
