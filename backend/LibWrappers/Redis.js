@@ -1,6 +1,6 @@
 
 let ioredis = require("ioredis");
-let Config = require('../Config.js');
+let {getRedisConfig} = require('klesun-node-tools/src/Config.js');
 const Conflict = require("klesun-node-tools/src/Utils/Rej").Conflict;
 let {never, StrConsts} = require('../Utils/StrConsts.js');
 const nonEmpty = require("klesun-node-tools/src/Utils/Rej").nonEmpty;
@@ -20,13 +20,11 @@ exports.keys = StrConsts({
 	get HIGHLIGHT_RULES_UPDATE_MS() { never(); },
 }, 'GRECT_');
 
-let whenConfig = Config.getConfig();
-
 let whenClient = null;
 /** @return Promise<IIoRedisClient> */
 let getClient = () => {
 	if (whenClient === null) {
-		whenClient = whenConfig.then(cfg => {
+		whenClient = getRedisConfig().then(cfg => {
 			return new ioredis(cfg.REDIS_PORT, cfg.REDIS_HOST);
 		});
 	}
@@ -41,7 +39,7 @@ exports.getClient = getClient;
  * @return Promise<T>
  */
 exports.withNewConnection = async (process) => {
-	let cfg = await whenConfig;
+	let cfg = await getRedisConfig();
 	let client = new ioredis(cfg.REDIS_PORT, cfg.REDIS_HOST);
 	return process(client).then(result => {
 		client.quit();

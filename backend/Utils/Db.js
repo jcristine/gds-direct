@@ -1,6 +1,6 @@
 
 let mysql = require('promise-mysql');
-let {getConfig} = require('../Config.js');
+let {getDbConfig} = require('klesun-node-tools/src/Config.js');
 const NotFound = require("klesun-node-tools/src/Utils/Rej").NotFound;
 const Diag = require('../LibWrappers/Diag.js');
 const {SqlUtil} = require('klesun-node-tools');
@@ -8,7 +8,7 @@ const {SqlUtil} = require('klesun-node-tools');
 let whenPool = null;
 let getPool = () => {
 	if (whenPool === null) {
-		whenPool = getConfig().then(cfg => mysql.createPool({
+		whenPool = getDbConfig().then(cfg => mysql.createPool({
 			host: cfg.DB_HOST,
 			user: cfg.DB_USER,
 			password: cfg.DB_PASS,
