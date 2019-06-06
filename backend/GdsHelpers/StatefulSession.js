@@ -47,9 +47,10 @@ let StatefulSession = ({
 	Db = require('../Utils/Db.js'),
 	RbsClient = require("../IqClients/RbsClient"),
 	leadIdToData = {},
-	askClient = (msgData) => ServiceUnavailable('Client Socket not stored in GRECT session'),
+	askClient = null,
 	startDt = new Date().toISOString(),
 }) => {
+	askClient = askClient || ((msgData) => ServiceUnavailable('Client Socket not stored in GRECT session'));
 	let gds = session.context.gds;
 	let calledCommands = [];
 	let getSessionData = () => cmdLog.getSessionData();
@@ -144,7 +145,7 @@ let StatefulSession = ({
 	};
 };
 
-StatefulSession.makeFromDb = async ({session, whenCmdRqId, emcUser, askClient = undefined}) => {
+StatefulSession.makeFromDb = async ({session, whenCmdRqId, emcUser, askClient}) => {
 	whenCmdRqId = whenCmdRqId || Promise.resolve(null);
 	let fullState = await GdsSessions.getFullState(session);
 	let cmdLog = await CmdLog({session, fullState, whenCmdRqId});
