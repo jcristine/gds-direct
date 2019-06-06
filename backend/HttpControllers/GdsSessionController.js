@@ -123,7 +123,7 @@ let runInputCmdRestartAllowed = async (params) => {
 				let newSession = await startNewSession(rqBody, emcUser);
 				FluentLogger.logit('INFO: New session in ' + newSession.logId, session.logId, newSession);
 				FluentLogger.logit('INFO: Old session in ' + session.logId, newSession.logId, session);
-				let runt = await runInSession({session: newSession, rqBody, emcUser});
+				let runt = await runInSession({...params, session: newSession});
 				runt.startNewSession = true;
 				runt.userMessages = ['New session started, reason: ' + (exc + '').slice(0, 800) + '...\n'];
 				return runt;
