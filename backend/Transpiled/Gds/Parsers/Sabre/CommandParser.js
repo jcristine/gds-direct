@@ -215,7 +215,7 @@ class CommandParser {
 
 	static parseArea($cmd) {
 		let $filter, $matches;
-		$filter = /^(?:\¤|\[)([A-Z])$/;
+		$filter = /^(?:\¤|\[)([A-F])$/;
 		if (php.preg_match($filter, $cmd, $matches = [])) {
 			return $matches[1];
 		} else {
