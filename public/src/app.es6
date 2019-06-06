@@ -190,8 +190,8 @@ let initThemeStyles = (responseData, htmlRootDom) => {
 	addCss(cssLines.join('\n'), htmlRootDom);
 };
 
-let isDev = !(window.location.hostname + '').endsWith('.asaptickets.com');
 let rootUrl = new URL(document.currentScript.src).origin;
+let isDev = !rootUrl.endsWith('.asaptickets.com');
 window.GdsDirectPlusParams = window.GdsDirectPlusParams || {
 	rootUrl: rootUrl,
 	socketHost: isDev
