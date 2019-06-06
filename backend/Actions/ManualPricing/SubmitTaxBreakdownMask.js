@@ -54,7 +54,7 @@ let FIELDS = [
 let parseOutput = (output) => {
 	if (output.startsWith('>$TA')) {
 		let message = output.trim().split('\n').slice(-1)[0] || '';
-		if (message.trim() === '*') {
+		if (message.trim() === '*' || message.trim() === '* BULK TICKET') {
 			return {status: 'success'};
 		} else {
 			return {status: 'invalidData', error: message};
