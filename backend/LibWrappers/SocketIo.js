@@ -47,7 +47,7 @@ let toHandleMessage = (routes, askClient) => {
 				reply(rsData);
 			},
 		};
-		let protocolSpecific = {askClient};
+		let protocolSpecific = {askClient, protocol: 'socket.io'};
 
 		let expressAction = routes[rq.path];
 		if (expressAction) {

@@ -127,7 +127,7 @@ let withGdsSession = (sessionAction, canStartNew = false) => (req, res, protocol
 		let briefing = req.path === '/terminal/command' ? ' >' + rqBody.command + ';' : '';
 		let msg = 'TODO: Processing HTTP RQ ' + req.path + briefing;
 		let startMs = Date.now();
-		FluentLogger.logit(msg, session.logId, rqBody);
+		FluentLogger.logit(msg, session.logId, {rqBody, protocol: protocolSpecific.protocol || 'http'});
 		return Promise.resolve()
 			.then(() => sessionAction({rqBody, session, emcUser, askClient}))
 			.then(result => {
