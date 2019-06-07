@@ -1,6 +1,5 @@
 
 import io from 'socket.io-client';
-import {notify} from "./debug";
 
 /**
  * encapsulates the logic of how normally http requests can be
@@ -35,23 +34,19 @@ let makeBriefRsStr = (response, startMs) => {
 	}
 };
 
+let messageFromServerHandler = (data, reply) => {
+	// stub handler that just logs to console
+	console.log('socket message from GRECT server', data);
+	reply('I confirm this message');
+};
+
+let setMessageFromServerHandler = (h) => messageFromServerHandler = h;
+
 let initSocket = (host) => new Promise((resolve, reject) => {
 	/** @type {Socket} */
 	const socket = io(host);
 	let rejects = new Set();
-	socket.on('message', (data, reply) => {
-		if (data.messageType === 'promptForLeadId') {
-			let leadId = prompt('Enter Lead ID:');
-			if (leadId !== null && !leadId.match(/^\d{6,}[02468]$/)) {
-				notify({msg: 'Invalid lead id - ' + leadId});
-				leadId = null;
-			}
-			reply({leadId: leadId});
-		} else {
-			console.log('socket message from GRECT server', data);
-			reply('I confirm this message');
-		}
-	});
+	socket.on('message', (data, reply) => messageFromServerHandler(data, reply));
 	socket.on('connect', () => {
 		console.log('Connected to GRECT Web Socket');
 		resolve({
@@ -94,4 +89,5 @@ let getHttpSocket = () => {
 export {
 	getHttpSocket,
 	makeBriefRsStr,
+	setMessageFromServerHandler,
 };

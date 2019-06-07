@@ -10,13 +10,50 @@ import {connect, getStore} from "../store";
 import $ from 'jquery';
 let {post} = require('../helpers/requests.es6');
 import {CHANGE_INPUT_LANGUAGE} from "../actions/settings";
+import {setMessageFromServerHandler} from './../helpers/socketIoWrapper.js';
+import {notify} from './../helpers/debug.es6';
+import {LeadList} from '../components/reusable/LeadList.js';
 
 const BORDER_SIZE = 2;
+
+let chooseLeadFromList = (plugin) => new Promise((resolve, reject) => {
+	let {remove} = plugin.injectDom({
+		dom: new LeadList(leadId => {
+			remove();
+			resolve(leadId);
+		}).context,
+		onCancel: reject,
+	});
+});
+
+let toHandleMessageFromServer = (gdsSwitch) => {
+	return (data, reply) => {
+		// maybe should move to separate module and add list suggestions for lead id
+		if (data.messageType === 'promptForLeadId') {
+			let plugin = gdsSwitch.getActivePlugin();
+			if (plugin) {
+				chooseLeadFromList(plugin)
+					.then(leadId => reply({leadId}))
+					.catch(exc => reply({leadId: null, error: exc + ''}));
+			} else {
+				let leadId = prompt('Enter Lead ID:');
+				if (leadId !== null && !leadId.match(/^\d{6,}[02468]$/)) {
+					notify({msg: 'Invalid lead id - ' + leadId});
+					leadId = null;
+				}
+				reply({leadId: leadId});
+			}
+		} else {
+			console.error('could not interpret message triggered by server', data);
+			reply({status: 'unknownMessageType', error: 'I do not confirm your message'});
+		}
+	};
+};
 
 /**
  * hierarchy goes as follows:
  * GdsDirectPlusApp.es6 (exposes the API to app user)
- *   GDS in gds.es6 (represents a GDS list)
+ *   GdsSwitch in gds.es6 (represents a GDS list)
  *     GDS_UNIT in gdsUnit.es6 (represents a single GDS)
  *       Terminal in terminal.es6 (represents a single window in the matrix, visual part)
  *         TerminalPlugin in plugin.es6 (wrapper around jquery terminal with keybinds and stuff)
@@ -54,6 +91,8 @@ export default class GdsDirectPlusApp
 			this.pqParser = new PqParser(PqPriceModal, gdsSwitch);
 		}
 
+		let handleMessageFromServer = toHandleMessageFromServer(gdsSwitch);
+		setMessageFromServerHandler(handleMessageFromServer);
 		connect(this);
 
 		const curGds 		= settings['gds'][settings['common']['currentGds'] || 'apollo'];

@@ -61,19 +61,16 @@ export class PqParser
 
 	blockTerminal(action, label) {
 		let queueing = null;
-		let gdsUnit = this.gdsSwitch.getCurrent();
-		if (gdsUnit) {
-			let term = gdsUnit.getActiveTerminal();
-			if (term.plugin) {
-				queueing = term.plugin.session.enqueue(() => {
-					term.plugin.print(label + ' IN PROGRESS...');
-					term.plugin.spinner.start();
-					return action();
-				}).finally(() => {
-					term.plugin.spinner.end();
-					term.plugin.print(label + ' DONE');
-				});
-			}
+		let plugin = this.gdsSwitch.getActivePlugin();
+		if (plugin) {
+			queueing = plugin.session.enqueue(() => {
+				plugin.print(label + ' IN PROGRESS...');
+				plugin.spinner.start();
+				return action();
+			}).finally(() => {
+				plugin.spinner.end();
+				plugin.print(label + ' DONE');
+			});
 		}
 		return queueing || action();
 	};

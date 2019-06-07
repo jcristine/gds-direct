@@ -1,8 +1,8 @@
+
 import Component 		                    from "../../modules/component";
-import Dom                                  from "../../helpers/dom";
-import {GET_LAST_REQUESTS}                  from "../../actions/settings";
-import {PQ_MODAL_SHOW} from "../../actions/priceQuoutes";
 import ButtonPopOver						from "../../modules/buttonPopover";
+import {LeadList} from '../reusable/LeadList.js';
+import {PQ_MODAL_SHOW} from "../../actions/priceQuoutes";
 
 export default class LeadListPqButton extends Component
 {
@@ -46,148 +46,15 @@ class PqButtonPopover extends ButtonPopOver {
         this.makeTrigger({
             className	: 'btn btn-sm btn-mozilla font-bold',
             onclick		: () => {
-                GET_LAST_REQUESTS()
-                    .then(response => {
-                        const c = new LeadListContext(response, this.popover);
+                let c = new LeadList(leadId => {
+                    PQ_MODAL_SHOW(leadId);
+                    this.popover.close();
+                });
+                this.popContent.innerHTML = '';
+                this.popContent.appendChild( c.context );
 
-                        this.popContent.innerHTML = '';
-                        this.popContent.appendChild( c.context );
-
-                        c.finalize( this.popContent );
-                    });
+                c.finalize( this.popContent );
             }
         });
-    }
-
-}
-
-class LeadListContext
-{
-    constructor(response, popover)
-    {
-        this.context = Dom('div');
-
-        this._makeHeader();
-
-        this._makeBody(response, popover);
-    }
-
-    _makeHeader ()
-    {
-        const header = Dom('div', {style: 'text-align: center'});
-
-        header.appendChild(
-            Dom(`h4[Last 10 requests]`, {style: 'font-weight: bold'})
-        );
-
-        this.context.appendChild( header );
-    }
-
-    _makeBody(response, popover)
-	{
-		let leadRecords = response.records || [];
-		let submitLead = (leadId) => {
-			PQ_MODAL_SHOW(leadId);
-			popover.close();
-
-		};
-		leadRecords.forEach( record => {
-			let pqTravelRequestId = record.id;
-			let leadWrapper = Dom('div');
-
-			let el = Dom(`a.t-pointer[${pqTravelRequestId}]`, {
-				onclick : () => {
-					// App.get('lead')
-					window.apiData = window.apiData || {};
-					window.apiData.lead = record;
-					submitLead(pqTravelRequestId);
-				}
-			});
-
-			leadWrapper.appendChild( el );
-			let dateWrapper = Dom('div', { style: 'display: inline-block; width: 55px; margin-right: 5px;' });
-			dateWrapper.appendChild(
-				Dom(`span[${this._getDate(record)}]`)
-			);
-			leadWrapper.appendChild( dateWrapper );
-			leadWrapper.appendChild(
-				Dom(`span[${this._getItinerary(record)}]`)
-			);
-
-			this.context.appendChild( leadWrapper );
-		});
-		let customIdInp = Dom('input', {
-			type: 'text',
-			style: 'color: black',
-		});
-		let customIdBtn = Dom('button', {
-			textContent: 'Custom Lead ID',
-			style: 'color: black',
-			onclick: () => {
-				let leadId = customIdInp.value;
-				if (leadId.match(/^\d{6,}[02468]$/)) {
-					submitLead(leadId);
-				} else {
-					alert('Invalid lead ID #' + leadId);
-				}
-			},
-		});
-		this.context.appendChild(customIdInp);
-		this.context.appendChild(customIdBtn);
-	}
-
-	/** '2019-03-17 00:00:00' -> '17-Mar-19' */
-    _getDate (record) {
-        const destination = record.destinations[Object.keys(record.destinations)[0]][1];
-
-        if (!destination.departureDateMin || destination.departureDateMin === "" || destination.departureDateMin === "0000-00-00 00:00:00")
-        {
-            return '-';
-        }
-
-        let epochMs = Date.parse(destination.departureDateMin + 'Z');
-        let dtObj = new Date(epochMs);
-        let months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-
-        return [
-            ('00' + dtObj.getUTCDate()).slice(-2),
-            months[dtObj.getUTCMonth()],
-            (dtObj.getUTCFullYear() + '').slice(-2),
-        ].join('-');
-    }
-
-    _getItinerary (record) {
-        let codes = [], destination, departure;
-
-        const destinations = Object.keys(record.destinations).map( key => record.destinations[key][1]);
-
-        destinations.forEach( function( firstRoute ) {
-
-            departure	= firstRoute['departureCityCode'] || firstRoute['departureAirportCode'];
-
-            if (destination && ( departure !== destination ) )
-            {
-                codes.push( destination, '||' );
-            }
-
-            if (departure)
-            {
-                codes.push( departure, '-' );
-            }
-
-            destination = firstRoute['destinationCityCode'] || firstRoute['destinationAirportCode'];
-        });
-
-        if ( destination )
-        {
-            codes.push(destination);
-        }
-
-        return codes.join('') || '';
-    }
-
-    finalize(popContent)
-    {
-        this.context.scrollTop  = popContent.scrollHeight;
     }
 }

@@ -309,6 +309,39 @@ export default class TerminalPlugin
 		this.outputLiner.removeEmpty();
 	}
 
+	/**
+	 * show ok/cancel dialog inside the terminal window
+	 */
+	injectDom({dom, onCancel})
+	{
+		let formCmp;
+		let remove = () => {
+			formCmp.context.remove();
+			this._ejectForm(formCmp);
+		};
+		formCmp = Cmp('div.injected-in-terminal').attach([
+			Cmp('br'),
+			Cmp('div').attach([
+				Cmp('div.injected-dom-holder').attach([
+					Cmp({context: dom}),
+				]),
+				Cmp('div.float-right').attach([
+					Cmp('button[Cancel]', {type: 'button', onclick: () => {
+						onCancel();
+						remove();
+					}}),
+				]),
+			]),
+			Cmp('br', {clear: 'all'}),
+		]);
+		this._injectForm(formCmp);
+		let inp = formCmp.context.querySelector('input:not(:disabled)');
+		if (inp) {
+			inp.focus();
+		}
+		return {remove};
+	}
+
 	_ejectForm( form ) {
 		const el = form.context;
 

@@ -1,6 +1,9 @@
 import {GDS_UNIT} 	from "./gdsUnit";
 import {GDS_LIST} from "../constants";
 
+/**
+ * the container of all GDS-es, each holding it's own set of terminal windows
+ */
 export class GdsSwitch
 {
 	constructor({gdsListDb, buffer = {}, activeName})
@@ -30,6 +33,15 @@ export class GdsSwitch
 	getCurrent()
 	{
 		return this.gdsSet.filter( gds => this.name === gds.get('name') )[0] || this.gdsSet[0];
+	}
+
+	/** @return {TerminalPlugin|null} */
+	getActivePlugin()
+	{
+		let gdsUnit = this.getCurrent();
+		let term = !gdsUnit ? null : gdsUnit.getActiveTerminal();
+		let plugin = !term ? null : term.plugin;
+		return plugin;
 	}
 
 	getCurrentName()
