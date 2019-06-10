@@ -1591,7 +1591,7 @@ class ProcessApolloTerminalInputAction {
 		} else if (php.preg_match(/^HB(\d*):FEX\s*([\d\s]{13,}|)$/, cmd, $matches = [])) {
 			let [_, storeNumber, ticketNumber] = $matches;
 			return this.prepareHbFexMask(storeNumber, ticketNumber || '');
-		} else if (['priceItineraryManually', 'manualStoreItinerary', 'manualStoreMoveDown'].includes(parsed.type)) {
+		} else if (['priceItineraryManually', 'manualStoreItinerary'].includes(parsed.type)) {
 			return this.prepareHhprMask(cmd);
 		} else if (
 			['HBT', 'HBTA'].includes(cmd) ||
