@@ -230,7 +230,7 @@ class ImportPqAmadeusAction extends AbstractGdsAction {
 					$singlePtcPricingCmd = $parsedCmd['baseCmd'];
 
 					if (php.count($modParts) > 0) {
-						$singlePtcPricingCmd += '\/' + php.implode('\/', $modParts);
+						$singlePtcPricingCmd += '/' + php.implode('/', $modParts);
 					}
 
 					$result['pricingCmd'] = $singlePtcPricingCmd;
