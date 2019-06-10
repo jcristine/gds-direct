@@ -603,6 +603,54 @@ class ProcessGalileoTerminalInputAction {
 		return {'calledCommands': [$cmdRecord]};
 	}
 
+	async bookPassengers(passengers) {
+		// note that Amadeus has different format instead of this 'remark', so a
+		// better approach would be to generate command for pure parsed dob/ptc
+		let cmd = passengers
+			.map(pax => 'N.' + pax.lastName + '/' + pax.firstName +
+				(!pax.remark ? '' : '*' + pax.remark))
+			.join('|');
+		let cmdRec = await this.runCmd(cmd);
+		return {calledCommands: [cmdRec]};
+	}
+
+	async bookPnr(reservation) {
+		let pcc = reservation.pcc || null;
+		let passengers = reservation.passengers || [];
+		let itinerary = reservation.itinerary || [];
+		let errors = [];
+		let allUserMessages = [];
+		let calledCommands = [];
+
+		if (reservation.pcc && pcc !== this.getSessionData().pcc) {
+			// probably it would make more sense to pass the PCC to the RebuildInPccAction...
+			let cmd = 'SEM/' + pcc + '/AG';
+			let {calledCommands, userMessages} = await this.processRealCommand(cmd);
+			allUserMessages.push(...userMessages);
+			calledCommands.push(...calledCommands);
+		}
+		if (passengers.length > 0) {
+			let booked = await this.bookPassengers(passengers);
+			errors.push(...(booked.errors || []));
+			calledCommands.push(...(booked.calledCommands || []));
+		}
+		if (itinerary.length > 0) {
+			// would be better to use number returned by ApolloBuildItineraryAction
+			// as it may be not in same order in case of marriages...
+			itinerary = itinerary.map((s, i) => ({...s, segmentNumber: +i + 1}));
+			let result = await (new RebuildInPccAction()).setSession(this.stateful)
+				.fallbackToAk(true).bookItinerary(itinerary);
+			let cmdRecs = this.stateful.flushCalledCommands();
+			if (php.empty(result.errors)) {
+				cmdRecs = cmdRecs.slice(-1); // keep just the ending *R
+			}
+			errors.push(...(result.errors || []));
+			calledCommands.push(...cmdRecs);
+
+		}
+		return {errors, userMessages: allUserMessages, calledCommands};
+	}
+
 	async processSortItinerary() {
 		let $pnr, $pnrDump,
 			$calledCommands, $cmd;
@@ -866,7 +914,8 @@ class ProcessGalileoTerminalInputAction {
 	}
 
 	async processRequestedCommand($cmd) {
-		let $parsed, $mdaData, $limit, $cmdReal, $matches, $reData, $aliasData, $result, $itinerary;
+		let $parsed, $mdaData, $limit, $cmdReal, $matches,
+			$reData, $aliasData, $result, $itinerary, reservation;
 
 		$parsed = CommandParser.parse($cmd);
 		if ($mdaData = AliasParser.parseMda($cmd)) {
@@ -894,15 +943,8 @@ class ProcessGalileoTerminalInputAction {
 			return this.priceInAnotherPcc($result['cmd'], $result['target'], $result['dialect']);
 		} else if ($parsed['type'] === 'priceItinerary') {
 			return this.priceItinerary($cmd, $parsed['data']);
-		} else if (!php.empty($itinerary = await AliasParser.parseCmdAsItinerary($cmd, this.stateful))) {
-			$result = await (new RebuildInPccAction()).setSession(this.stateful)
-				.fallbackToAk(true).bookItinerary($itinerary);
-			let cmdRecs = this.stateful.flushCalledCommands();
-			if (php.empty($result.errors)) {
-				cmdRecs = cmdRecs.slice(-1); // keep just the ending *R
-			}
-			$result['calledCommands'] = cmdRecs;
-			return $result;
+		} else if (!php.empty(reservation = await AliasParser.parseCmdAsPnr($cmd, this.stateful))) {
+			return this.bookPnr(reservation);
 		} else {
 			return this.processRealCommand($cmd);
 		}
