@@ -32,6 +32,25 @@ let getRequestBriefData = ({requestId}) => {
 	});
 };
 
+/**
+ * @return {Promise<{
+ *     result: {
+ *         data: {
+ *             pcc: '2F3K',
+ *             segments: [{
+ *                 airline: 'AA',
+ *                 flightNumber: '1234',
+ *                 bookingClass: 'S',
+ *                 departureDate: '2019-05-13',
+ *                 departureAirport: 'JFK',
+ *                 destinationAirport: 'MNL',
+ *                 segmentStatus: 'NN',
+ *                 seatCount: '1',
+ *             }],
+ *         },
+ *     },
+ * }>}
+ */
 let getItineraryData = ({itineraryId}) => {
 	return callCms({
 		functionName: 'getItineraryData',

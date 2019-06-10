@@ -838,7 +838,14 @@ class ProcessApolloTerminalInputAction {
 		let passengers = reservation.passengers || [];
 		let itinerary = reservation.itinerary || [];
 		let errors = [];
+		let allUserMessages = [];
 		let calledCommands = [];
+		if (reservation.pcc && reservation.pcc !== this.getSessionData().pcc) {
+			let cmd = 'SEM/' + reservation.pcc + '/AG';
+			let {cmdRec, userMessages} = await this.processRealCommand(cmd);
+			allUserMessages.push(...userMessages);
+			calledCommands.push(cmdRec);
+		}
 		if (passengers.length > 0) {
 			let booked = await this.bookPassengers(passengers);
 			errors.push(...(booked.errors || []));
@@ -849,7 +856,7 @@ class ProcessApolloTerminalInputAction {
 			errors.push(...(booked.errors || []));
 			calledCommands.push(...(booked.calledCommands || []));
 		}
-		return {errors, calledCommands};
+		return {errors, userMessages: allUserMessages, calledCommands};
 	}
 
 	async rebookWithNewSeatAmount($seatNumber) {
@@ -1622,8 +1629,6 @@ class ProcessApolloTerminalInputAction {
 			return {calledCommands: [cmdRec]};
 		} else if (!php.empty(reservation = await AliasParser.parseCmdAsPnr(cmd, this.stateful))) {
 			return this.bookPnr(reservation);
-		} else if (!php.empty($itinerary = await AliasParser.parseCmdAsItinerary(cmd, this.stateful))) {
-			return this.bookItinerary($itinerary, true);
 		} else {
 			cmd = $alias['realCmd'];
 			let fetchAll = this.constructor.shouldFetchAll(cmd);

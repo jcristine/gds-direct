@@ -47,6 +47,7 @@ class AliasParser
         if (asRebuild) {
             let [_, itineraryId, segmentStatus, seatCount] = asRebuild;
             let cmsData = await CmsClient.getItineraryData({itineraryId});
+            let pcc = cmsData.result.data.pcc;
             let segments = cmsData.result.data.segments.map(s => {
                 let gdsDate = php.strtoupper(php.date('dM', php.strtotime(s.departureDate)));
                 return ({
@@ -54,7 +55,7 @@ class AliasParser
                     departureDate: {raw: gdsDate, full: s.departureDate},
                 });
             });
-            return {segments};
+            return {pcc, segments};
         } else {
             return null;
         }
@@ -95,6 +96,7 @@ class AliasParser
         let fromCms = await this.parseCmsRebuild($cmd);
         if (fromCms) {
             return {
+                pcc: fromCms.pcc,
                 passengers: [],
                 itinerary: fromCms.segments,
             };
