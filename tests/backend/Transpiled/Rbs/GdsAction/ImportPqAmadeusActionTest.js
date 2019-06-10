@@ -2814,6 +2814,73 @@ class ImportPqAmadeusActionTest extends require('../../Lib/TestCase.js') {
 			],
 		});
 
+		$list.push({
+			input: {
+				title: 'FXL gets reported as GDS error, empty on top of that, should report meanigful error',
+				fetchOptionalFields: false,
+				previousCommands: [
+					{
+					    "cmd": "FXL",
+					    "output": [
+					        "FXL",
+					        "",
+					        "01 P1",
+					        "LOWEST PRICE IS AVAILABLE",
+					        "LAST TKT DTE 11JUN19/16:57 LT in POS - SEE ADV PURCHASE",
+					        "------------------------------------------------------------",
+					        "     AL FLGT  BK   DATE  TIME  FARE BASIS      NVB  NVA   BG",
+					        " LON",
+					        " NYC DL  4370 E *  20JUN 0900  TLUR7SBN        20JUN20JUN 0P",
+					        " LON DL  4371 E *  12AUG 0815  THUR7SBX        12AUG12AUG 0P",
+					        "",
+					        "GBP   504.00      20JUN19LON DL NYC120.98TLUR7SBN DL LON Q",
+					        "USD   640.00      32.69 506.15THUR7SBX NUC659.82END ROE",
+					        "USD   114.28-YR   0.764586",
+					        "USD     3.96-XA   XT USD 7.00-XY USD 5.77-YC USD 18.60-US",
+					        "USD   218.30-XT   USD 18.60-US USD 5.60-AY USD 99.04-GB USD",
+					        "USD   976.54      59.19-UB USD 4.50-XF JFK4.50",
+					        "RATE USED 1GBP=1.269682USD",
+					        "NO BAG INCLUDED FOR AT LEAST ONE FLIGHT",
+					        "FARE FAMILIES:    (ENTER FQFn FOR DETAILS, FXY FOR UPSELL)",
+					        "FARE FAMILY:FC1:1:BASICECON",
+					        "                                                  PAGE  2/ 3",
+					        " "
+					    ].join("\n"),
+					    "duration": "0.788610099",
+					    "type": "priceItinerary",
+					    "scrolledCmd": "FXL",
+					    "state": {"canCreatePq":true,"pricingCmd":"FXL","area":"A","recordLocator":"","pcc":"SFO1S2195","hasPnr":true,"isPnrStored":null,"cmdType":"priceItinerary","gdsData":null,"scrolledCmd":"FXL","cmdCnt":8}
+					},
+				],
+			},
+			output: {
+				error: 'Error: Pricing >FXL; was not fetched completely',
+			},
+			'calledCommands': [
+				{
+				    "cmd": "RT",
+				    "output": [
+				        "/$--- SFP ---",
+				        "RP/SFO1S2195/",
+				        "  1  DL4370 V 20JUN 4 LHRJFK GK1   900A1155A 20JUN  A",
+				        "     OPERATED BY VIRGIN ATLANTIC",
+				        "     SEE RTSVC - TRAFFIC RESTRICTION EXISTS",
+				        "  2  DL4371 V 12AUG 1 JFKLHR GK1   815A 810P 12AUG  A",
+				        "     OPERATED BY VIRGIN ATLANTIC",
+				        "     SEE RTSVC - TRAFFIC RESTRICTION EXISTS",
+				        "  3 RM NOTIFY PASSENGER PRIOR TO TICKET PURCHASE & CHECK-IN:",
+				        "       FEDERAL LAWS FORBID THE CARRIAGE OF HAZARDOUS MATERIALS -",
+				        "       GGAMAUSHAZ/S1-2",
+				        " "
+				    ].join("\n"),
+				    "duration": "0.153076236",
+				    "type": "redisplayPnr",
+				    "scrolledCmd": "RT",
+				    "state": {"canCreatePq":false,"pricingCmd":null,"area":"A","recordLocator":"","pcc":"SFO1S2195","hasPnr":true,"isPnrStored":null,"cmdType":"redisplayPnr","gdsData":null,"scrolledCmd":"RT","cmdCnt":7}
+				},
+			],
+		});
+
 		$argumentTuples = [];
 		for ($testCase of Object.values($list)) {
 			$argumentTuples.push([$testCase['input'], $testCase['output'], $testCase['calledCommands']]);
@@ -2843,7 +2910,8 @@ class ImportPqAmadeusActionTest extends require('../../Lib/TestCase.js') {
 				GdsDirectDefaults.makeDefaultAmadeusState())
 			.setBaseDate('2018-03-20')
 			.fetchOptionalFields(full)
-			.execute();
+			.execute()
+			.catch(exc => ({error: exc + ''}));
 
 		this.assertArrayElementsSubset($expectedOutput, $actual);
 	}

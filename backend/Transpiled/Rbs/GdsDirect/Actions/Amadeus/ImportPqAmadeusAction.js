@@ -296,6 +296,9 @@ class ImportPqAmadeusAction extends AbstractGdsAction {
 			}
 			let parsed = CommandParser.parse(cmdRec.cmd);
 			if (parsed.type === 'priceItinerary') {
+				if (mrPages.length === 0) {
+					return Rej.BadRequest('Pricing >' + cmdRec.cmd + '; was not fetched completely');
+				}
 				segmentsLeft = await this.constructor.subtractPricedSegments(segmentsLeft, parsed, cmdRecords);
 				cmdRecords.push({
 					cmd: cmdRec.cmd,

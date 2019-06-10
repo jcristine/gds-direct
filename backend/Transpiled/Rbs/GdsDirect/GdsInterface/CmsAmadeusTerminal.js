@@ -130,9 +130,9 @@ class CmsAmadeusTerminal {
 			if ((($mods['fareBasis'] || {})['parsed'] || {})['override'] || false) {
 				$errors.push(Errors.getMessage(Errors.BAD_MOD_BASIS_OVERRIDE, {'modifier': '/' + $mods['fareBasis']['raw']}));
 			}
-			if ($cmdData['baseCmd'] === 'FXL') {
-				$errors.push(Errors.getMessage(Errors.BAD_MOD_IGNORE_AVAILABILITY, {'modifier': 'FXL'}));
-			}
+		}
+		if ($cmdData['baseCmd'] === 'FXL') {
+			$errors.push(Errors.getMessage(Errors.BAD_MOD_IGNORE_AVAILABILITY, {'modifier': 'FXL'}));
 		}
 		return $errors;
 	}
