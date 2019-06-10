@@ -623,10 +623,9 @@ class ImportSabrePnrFormatAdapter {
 		$ruleRecords = [];
 		if ($wprdRecord['type'] === FareRuleOrSegmentsParser.SINGLE_RULE) {
 			$fareRules = $wprdRecord['data'];
-			$wprdSegments = Fp.map(($rSeg) => {
-
+			$wprdSegments = $rSegments.map(($rSeg) => {
 				return php.array_merge($rSeg, $fareRules['fareComponent'], $fareRules['header']);
-			}, $rSegments);
+			});
 			$ruleRecords.push({
 				'componentNumber': 1,
 				'dumpNumber': $wprdRecord['dumpNumber'],

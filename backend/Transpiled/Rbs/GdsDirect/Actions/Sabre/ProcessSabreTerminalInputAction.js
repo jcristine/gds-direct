@@ -582,6 +582,45 @@ class ProcessSabreTerminalInputAction {
 		return this.bookItinerary($desiredSegments, $fallbackToGk);
 	}
 
+	async bookPassengers(passengers) {
+		// note that Amadeus has different format instead of this 'remark', so a
+		// better approach would be to generate command for pure parsed dob/ptc
+		let cmd = passengers
+			.map(pax => '-' + pax.lastName + '/' + pax.firstName +
+				(!pax.remark ? '' : '*' + pax.remark))
+			.join('§');
+		let cmdRec = await this.runCmd(cmd);
+		return {calledCommands: [cmdRec]};
+	}
+
+	async bookPnr(reservation) {
+		let passengers = reservation.passengers || [];
+		let itinerary = reservation.itinerary || [];
+		let errors = [];
+		let allUserMessages = [];
+		let calledCommands = [];
+		if (reservation.pcc && reservation.pcc !== this.getSessionData().pcc) {
+			let cmd = 'AAA' + reservation.pcc;
+			let {calledCommands, userMessages} = await this.processRealCommand(cmd);
+			allUserMessages.push(...userMessages);
+			calledCommands.push(...calledCommands);
+		}
+		if (passengers.length > 0) {
+			let booked = await this.bookPassengers(passengers);
+			errors.push(...(booked.errors || []));
+			calledCommands.push(...(booked.calledCommands || []));
+		}
+		if (itinerary.length > 0) {
+			// would be better to use number returned by SabreBuildItineraryAction
+			// as it may be not in same order in case of marriages...
+			itinerary = itinerary.map((s, i) => ({...s, segmentNumber: +i + 1}));
+			let booked = await this.bookItinerary(itinerary, true);
+			errors.push(...(booked.errors || []));
+			calledCommands.push(...(booked.calledCommands || []));
+		}
+		return {errors, userMessages: allUserMessages, calledCommands};
+	}
+
 	async bookItinerary($desiredSegments, $fallbackToGk) {
 		let $newSegments, $result, $error, $cmd, $sortResult;
 
@@ -677,7 +716,7 @@ class ProcessSabreTerminalInputAction {
 
 		$login = this.getAgent().getLogin();
 		$writeCommands = [
-			'7TAW\/' + php.strtoupper(php.date('dM', php.strtotime(this.stateful.getStartDt()))),
+			'7TAW/' + php.strtoupper(php.date('dM', php.strtotime(this.stateful.getStartDt()))),
 			'6' + php.strtoupper($login),
 			'ER',
 		];
@@ -922,8 +961,8 @@ class ProcessSabreTerminalInputAction {
 			return this.rebookAsSs();
 		} else if (php.preg_match(/^(FQ.*)\/MIX$/, $cmd, $matches = [])) {
 			return this.getMultiPccTariffDisplay($matches[1]);
-		} else if (!php.empty($itinerary = await AliasParser.parseCmdAsItinerary($cmd, this.stateful))) {
-			return this.bookItinerary($itinerary, true);
+		} else if (!php.empty($itinerary = await AliasParser.parseCmdAsPnr($cmd, this.stateful))) {
+			return this.bookPnr($itinerary, true);
 		} else if ($result = RepriceInAnotherPccAction.parseAlias($cmd)) {
 			return this.priceInAnotherPcc($result['cmd'], $result['target'], $result['dialect']);
 		} else {
