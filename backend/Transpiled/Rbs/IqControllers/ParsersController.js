@@ -79,8 +79,9 @@ class ParsersController {
 			}
 		} else if ($dumpType === 'amadeus_pnr') {
 			$parsed = AmadeusReservationParser.parse($dump);
-			if (!php.empty($parsed['parsed']['pnrInfo']['recordLocator']) &&
-				!php.empty($parsed['parsed']['passengers'])
+			if (!php.empty($parsed.parsed.pnrInfo.recordLocator) ||
+				!php.empty($parsed.parsed.passengers) &&
+				!php.empty($parsed.parsed.itinerary)
 			) {
 				let $common = AmadeusPnrCommonFormatAdapter.transform($parsed, $baseDate);
 				return {'success': true, 'result': $common};

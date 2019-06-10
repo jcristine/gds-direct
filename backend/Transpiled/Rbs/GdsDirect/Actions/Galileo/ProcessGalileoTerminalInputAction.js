@@ -635,7 +635,7 @@ class ProcessGalileoTerminalInputAction {
 			calledCommands.push(...(booked.calledCommands || []));
 		}
 		if (itinerary.length > 0) {
-			// would be better to use number returned by ApolloBuildItineraryAction
+			// would be better to use number returned by GalileoBuildItineraryAction
 			// as it may be not in same order in case of marriages...
 			itinerary = itinerary.map((s, i) => ({...s, segmentNumber: +i + 1}));
 			let result = await (new RebuildInPccAction()).setSession(this.stateful)
@@ -646,7 +646,6 @@ class ProcessGalileoTerminalInputAction {
 			}
 			errors.push(...(result.errors || []));
 			calledCommands.push(...cmdRecs);
-
 		}
 		return {errors, userMessages: allUserMessages, calledCommands};
 	}

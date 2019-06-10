@@ -2506,6 +2506,35 @@ class PnrParserTest extends require('../../../../Lib/TestCase.js') {
 			},
 		]);
 
+		// PTC specified for infant's parent
+		$list.push([
+			php.implode(php.PHP_EOL, [
+				'RP/SFO1S2195/',
+				'  1.LIBERMANE/MARINA(ADT)(INF/LEPIN/25JAN18)',
+				'  2.WELCHTHORSON/CAMERONE ANN',
+				'  3  KL 602 Z 23SEP 1 LAXAMS DK2   150P 910A 24SEP  E  0 772 M',
+				'     SEE RTSVC',
+				'  4  KL1641 Z 02OCT 3 AMSFLR DK2   935A1130A 02OCT  E  0 E90 M',
+				'     OPERATED BY KLM CITYHOPPER',
+				'     OPERATED BY SUBSIDIARY/FRANCHISE',
+				'     SEE RTSVC',
+				'  5  AF1367 Z 15OCT 2*FLRCDG DK2  1225P 215P 15OCT  E  0 318 M',
+				'     SEE RTSVC',
+				'  6  AF 066 Z 16OCT 3*CDGLAX DK2  1000A1230P 16OCT  E  0 388 MS',
+				'     APIS DEST PAX DATA REQUIRED SSR DOCS',
+				'     SEE RTSVC',
+			]),
+			{
+				'parsed': {
+					"passengers": [
+						{"firstName": "MARINA", "lastName": "LIBERMANE", "ptc": "ADT", "nameNumber": {"fieldNumber": "1", "isInfant": false, "absolute": 1}},
+						{"firstName": "LEPIN", "lastName": "LIBERMANE", "dob": {"raw":"25JAN18","parsed":"2018-01-25"}, "ptc": "INF", "nameNumber": {"fieldNumber": "1", "isInfant": true, "absolute": 2}},
+						{"firstName": "CAMERONE ANN", "lastName": "WELCHTHORSON", "ptc": null, "nameNumber": {"fieldNumber": "2", "isInfant": false, "absolute": 3}},
+					],
+				},
+			},
+		]);
+
 		return $list;
 	}
 

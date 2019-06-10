@@ -496,6 +496,60 @@ class ProcessAmadeusTerminalInputAction {
 		};
 	}
 
+	async bookPassengers(passengers) {
+		let paxCmds = [];
+		for (let pax of passengers) {
+			let {lastName, nameNumber, firstName, ptc, dob} = pax;
+			let fullName = lastName + '/' + firstName;
+			let dobSuffix = (!dob ? '' : '/' + dob.raw);
+			if (paxCmds.length > 0 && nameNumber.isInfant) {
+				// NM1LIB/MAR(ADT)(INF/KATJA OLOLO)
+				paxCmds[paxCmds.length - 1] += '(INF' + fullName + dobSuffix + ')';
+			} else {
+				// NM1LIB/ZIM(CNN/25JAN15)
+				let cmd = 'NM1' + fullName;
+				if (ptc) {
+					cmd += '(' + ptc + dobSuffix + ')';
+				}
+				paxCmds.push(cmd);
+			}
+		}
+		let cmd = paxCmds.join(';');
+		let cmdRec = await this.runCmd(cmd);
+		return {calledCommands: [cmdRec], lastPaxNum: paxCmds.length};
+	}
+
+	async bookPnr(reservation) {
+		let lastPaxNum = 0;
+		let pcc = reservation.pcc || null;
+		let passengers = reservation.passengers || [];
+		let itinerary = reservation.itinerary || [];
+		let errors = [];
+		let userMessages = [];
+		let calledCommands = [];
+
+		if (reservation.pcc && pcc !== this.getSessionData().pcc) {
+			let pccResult = await this.changePcc(pcc);
+			errors.push(...(pccResult.errors || []));
+			userMessages.push(...(pccResult.userMessages || []));
+			calledCommands.push(...(pccResult.calledCommands || []));
+		}
+		if (passengers.length > 0) {
+			itinerary = itinerary.map((s, i) => ({...s, segmentNumber: +lastPaxNum + +i + 1}));
+			let booked = await this.bookPassengers(passengers);
+			lastPaxNum = booked.lastPaxNum || 0;
+			errors.push(...(booked.errors || []));
+			calledCommands.push(...(booked.calledCommands || []));
+		}
+		if (itinerary.length > 0) {
+			itinerary = itinerary.map((s, i) => ({...s, lineNumber: +lastPaxNum + +i + 1}));
+			let booked = await this.bookItinerary(itinerary, false);
+			errors.push(...(booked.errors || []));
+			calledCommands.push(...(booked.calledCommands || []));
+		}
+		return {errors: errors, userMessages: userMessages, calledCommands};
+	}
+
 	async rebookSegment($class, $lineNumbers) {
 		let $numberStr, $output, $parsed;
 
@@ -963,7 +1017,8 @@ class ProcessAmadeusTerminalInputAction {
 	}
 
 	async processRequestedCommand($cmd) {
-		let $matches, $area, $pcc, $mdaData, $limit, $cmdReal, $reData, $aliasData, $params, $itinerary, $result;
+		let $matches, $area, $pcc, $mdaData, $limit, $cmdReal, $reData,
+			$aliasData, $params, $itinerary, $result, reservation;
 
 		let parsed = CommandParser.parse($cmd);
 
@@ -996,6 +1051,8 @@ class ProcessAmadeusTerminalInputAction {
 			return this.rebookAsSs();
 		} else if (php.preg_match(/^(FQD.*)\/MIX$/, $cmd, $matches = [])) {
 			return this.getMultiPccTariffDisplay($matches[1]);
+		} else if (!php.empty(reservation = await AliasParser.parseCmdAsPnr($cmd, this.stateful))) {
+			return this.bookPnr(reservation);
 		} else if (!php.empty($itinerary = await AliasParser.parseCmdAsItinerary($cmd, this.stateful))) {
 			return this.bookItinerary($itinerary, true);
 		} else if ($result = RepriceInAnotherPccAction.parseAlias($cmd)) {
