@@ -208,8 +208,8 @@ class ProcessApolloTerminalInputAction {
 		let $regex, $matches, $_, $availability, $cityRow, $airlines;
 		$regex =
 			'/^' +
-			'(A\\\/[A-Z]\\*?\\d?\\*?\\\/\\d{1,2}[A-Z]{6})' +
-			'([A-Z]{3}(?:\\\/[A-Z]{3})+)' +
+			'(A\\/[A-Z]\\*?\\d?\\*?\\/\\d{1,2}[A-Z]{6})' +
+			'([A-Z]{3}(?:\\/[A-Z]{3})+)' +
 			'(\\|[A-Z\\d]{2}(?:\\.[A-Z\\d]{2})*)' +
 			'$/';
 		if (php.preg_match($regex, $cmd, $matches = [])) {
@@ -414,7 +414,7 @@ class ProcessApolloTerminalInputAction {
 		) {
 			$output = StringUtil.wrapLinesAt($calledCommand['output'], 64);
 			$lines = StringUtil.lines($output);
-			$isSafe = ($line) => !StringUtil.contains($line, 'WEINSTEIN\/ALEX');
+			$isSafe = ($line) => !StringUtil.contains($line, 'WEINSTEIN/ALEX');
 			$calledCommand['output'] = php.implode(php.PHP_EOL, Fp.filter($isSafe, $lines));
 		}
 		if ((this.getSessionData().scrolledCmd || '').startsWith('$D')) {
@@ -852,6 +852,9 @@ class ProcessApolloTerminalInputAction {
 			calledCommands.push(...(booked.calledCommands || []));
 		}
 		if (itinerary.length > 0) {
+			// would be better to use number returned by ApolloBuildItineraryAction
+			// as it may be not in same order in case of marriages...
+			itinerary = itinerary.map((s, i) => ({...s, segmentNumber: +i + 1}));
 			let booked = await this.bookItinerary(itinerary, true);
 			errors.push(...(booked.errors || []));
 			calledCommands.push(...(booked.calledCommands || []));
@@ -1092,7 +1095,7 @@ class ProcessApolloTerminalInputAction {
 			php.array_unshift($writeCommands, 'T:TAU/' + php.strtoupper(php.date('dM', php.strtotime(this.stateful.getStartDt()))));
 		}
 		if (!php.in_array('addAgencyPhone', $usedCmdTypes)) {
-			php.array_unshift($writeCommands, 'P:SFOAS\/800-750-2238 ASAP CUSTOMER SUPPORT');
+			php.array_unshift($writeCommands, 'P:SFOAS/800-750-2238 ASAP CUSTOMER SUPPORT');
 		}
 		// Add accounting line ("customer account" in apollo docs): smth like DK number in Sabre
 		if (php.in_array(this.getSessionData()['pcc'], ['2E8R', '1RZ2', '2G8P'])
