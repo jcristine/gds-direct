@@ -391,13 +391,13 @@ class FareRuleParser {
 		// "    V FARE BASIS     BK    FARE   TRAVEL-TICKET AP  MINMAX  RTG"
 		if (!php.preg_match(/^ +V +FARE +BASIS +BK +FARE +TRAVEL-TICKET +AP +MINMAX +RTG *$/,
 			$line = php.array_shift($lines))) {
-			return $result + {'error': 'unexpectedStartOfDump - ' + $line};
+			return {...$result, error: 'unexpectedStartOfDump - ' + $line};
 		}
 
 		[$result['fareComponent'], $lines] = this.parseFareComponent($lines);
 		[$result['header'], $lines] = this.parseHeader($lines);
 		if (php.isset($result['header']['error'])) {
-			return $result + {'error': 'failed to parse header'};
+			return {...$result, error: 'failed to parse header'};
 		}
 		php.array_shift($lines); // empty line
 		[$result['sections'], $lines] = this.parseSections($lines);
