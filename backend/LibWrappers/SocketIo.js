@@ -1,20 +1,22 @@
 
 const {getConfig} = require('../Config.js');
-const {toHandleHttp} = require('../HttpControllers/MainController.js');
 const initSocketIo = require('socket.io');
 const Diag = require('./Diag.js');
+const Rej = require('klesun-node-tools/src/Utils/Rej.js');
 
 let toAskClient = (socket) => {
 	let rejects = new Set();
 	socket.on('disconnect', (reason) => {
-		[...rejects].forEach(rej => rej('Socket Disconnected, client did not answer - ' + reason));
+		let error = 'Socket Disconnected, client did not answer - ' + reason;
+		[...rejects].forEach(rej => rej(Rej.Gone.makeExc(error)));
 		rejects.clear();
 	});
 	return (msgData, {timeoutMs = 2 * 60 * 1000} = {}) => new Promise((resolve, reject) => {
 		rejects.add(reject);
 
 		let timeout = setTimeout(() => {
-			reject('Timed out while waiting for client response after ' + timeoutMs + ' ms');
+			let error = 'Timed out while waiting for client response after ' + timeoutMs + ' ms';
+			reject(Rej.RequestTimeout.makeExc(error));
 			rejects.delete(reject);
 		}, timeoutMs);
 
