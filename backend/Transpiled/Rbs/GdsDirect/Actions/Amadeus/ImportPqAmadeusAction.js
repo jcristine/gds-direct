@@ -179,8 +179,7 @@ class ImportPqAmadeusAction extends AbstractGdsAction {
 		$common = AmadeusPnrCommonFormatAdapter.transform($parsed, this.getBaseDate());
 		$result['parsed'] = $common;
 		if (!php.empty($errors = GetPqItineraryAction.checkPnrData($common))) {
-			$result['error'] = 'Invalid PNR data - ' + php.implode(';', $errors);
-			return $result;
+			return Rej.BadRequest('Invalid PNR data - ' + php.implode(';', $errors));
 		}
 		return $result;
 	}
