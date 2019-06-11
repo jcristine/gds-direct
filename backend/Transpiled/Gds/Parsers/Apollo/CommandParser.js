@@ -7,6 +7,7 @@ const Lexer = require('../../../Lib/Lexer/Lexer.js');
 const AtfqParser = require('../../../Gds/Parsers/Apollo/Pnr/AtfqParser.js');
 const php = require("../../../php");
 const CommonParserHelpers = require("./CommonParserHelpers");
+const {mkReg} = require('klesun-node-tools/src/Utils/Misc.js');
 
 /**
  * takes terminal command typed by a user and returns it's type
@@ -99,6 +100,7 @@ class CommandParser {
 			'$LR': 'routingFromTariff',
 			'*$D': 'redisplayFareSearch',
 			'S*': 'encodeOrDecode', // HELP ENCODE OR DECODE
+			'A*': 'moreAirAvailability',
 			'A': 'airAvailability', // HELP AVAILABILITY-STANDARD
 			'.': 'changeSegmentStatus', // HELP PNR-CHANGE SEGMENT STATUS
 			'C:PS': 'changePsRemark',
@@ -717,6 +719,34 @@ class CommandParser {
 		}
 	}
 
+	static parse_airAvailability(cmd) {
+		let match = cmd.match(mkReg([
+			/^A/,
+			/(?:\/(?<sameCabin>\*)?(?<bookingClass>[A-Z])(?<seatCount>\d+)?\/)?/,
+			/(?<departureDate>\d{1,2}[A-Z]{3})/,
+			/(?<departureAirport>[A-Z]{3})/,
+			/(?<destinationAirport>[A-Z]{3})/,
+			/(?<unparsed>.*)/
+		]));
+		if (match) {
+			let groups = match.groups;
+			return {
+				similarClass: groups.sameCabin === '*',
+				bookingClass: groups.bookingClass,
+				seatCount: groups.seatCount,
+				departureDate: {
+					raw: groups.departureDate,
+					parsed: CommonParserHelpers.parsePartialDate(groups.departureDate),
+				},
+				departureAirport: groups.departureAirport,
+				destinationAirport: groups.destinationAirport,
+				unparsed: groups.unparsed,
+			};
+		} else {
+			return null;
+		}
+	}
+
 	static parseShowPnrFieldsCmd($cmd) {
 		let $availableCommands, $parts, $substr, $subCommand, $data, $checkCmd;
 		if (StringUtil.startsWith($cmd, '*')) {
@@ -816,6 +846,8 @@ class CommandParser {
 				'storePnrSendEmail': $data['sendEmail'],
 				'storeKeepPnr': $data['keepPnr'],
 			}))[0] || 'storePnr';
+		} else if ($data = this.parse_airAvailability($cmd)) {
+			$type = 'airAvailability';
 		} else if ($parsed = this.parseChainableCmd($cmd)) {
 			return $parsed;
 		} else if ($type = this.detectCommandType($cmd)) {

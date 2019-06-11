@@ -984,6 +984,40 @@ class CommandParserTest extends require('../../../../../../backend/Transpiled/Li
 			},
 		}]);
 
+		$list.push(['A*|1', {type: 'moreAirAvailability'}]);
+		$list.push(['A*C2', {type: 'moreAirAvailability'}]);
+		$list.push(['A*28JUN', {type: 'moreAirAvailability'}]);
+
+		$list.push(['A22AUGDENPMO|LH', {
+			type: 'airAvailability',
+			data: {
+				departureDate: {raw: '22AUG'},
+				departureAirport: 'DEN',
+				destinationAirport: 'PMO',
+			},
+		}]);
+		$list.push(['A/T/21NOVSEAMNL0ALAX|KE', {
+			type: 'airAvailability',
+			data: {
+				bookingClass: 'T',
+				departureDate: {raw: '21NOV'},
+				departureAirport: 'SEA',
+				destinationAirport: 'MNL',
+				unparsed: '0ALAX|KE',
+			},
+		}]);
+		$list.push(['A/T4/1JANCUNATL/D|DL', {
+			type: 'airAvailability',
+			data: {
+				bookingClass: 'T',
+				seatCount: '4',
+				departureDate: {raw: '1JAN'},
+				departureAirport: 'CUN',
+				destinationAirport: 'ATL',
+				unparsed: '/D|DL',
+			},
+		}]);
+
 		return $list;
 	}
 
