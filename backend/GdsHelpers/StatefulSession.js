@@ -148,7 +148,7 @@ let StatefulSession = ({
 StatefulSession.makeFromDb = async ({session, whenCmdRqId, emcUser, askClient}) => {
 	whenCmdRqId = whenCmdRqId || Promise.resolve(null);
 	let fullState = await GdsSessions.getFullState(session);
-	let cmdLog = await CmdLog({session, fullState, whenCmdRqId});
+	let cmdLog = CmdLog({session, fullState, whenCmdRqId});
 	let gdsSession = GdsSession(session);
 	let logit = async (msg, data) => {
 		let config = await getConfig();
