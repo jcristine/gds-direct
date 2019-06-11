@@ -72,6 +72,7 @@ class CommandParser {
 			'W\/*': 'decodeOrEncode', // decode airline or city
 			'W\/-': 'decodeOrEncode', // encode airline or city
 			'2': 'operationalInfo',
+			'1*': 'moreAirAvailability',
 			'1': 'airAvailability',
 			'0': 'sell', // sell from availability
 			'-': 'addName', // add passenger name

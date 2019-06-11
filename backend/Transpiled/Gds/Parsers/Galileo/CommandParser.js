@@ -6,9 +6,7 @@ const Fp = require('../../../Lib/Utils/Fp.js');
 const StringUtil = require('../../../Lib/Utils/StringUtil.js');
 const Lexeme = require('../../../Lib/Lexer/Lexeme.js');
 const Lexer = require('../../../Lib/Lexer/Lexer.js');
-const AtfqParser = require('../../../Gds/Parsers/Apollo/Pnr/AtfqParser.js');
 const CommonParserHelpers = require('../../../Gds/Parsers/Apollo/CommonParserHelpers.js');
-const ApoCmdParser = require('../../../Gds/Parsers/Apollo/CommandParser.js');
 const FqCmdParser = require('../../../Gds/Parsers/Galileo/Commands/FqCmdParser.js');
 
 const php = require('../../../php.js');
@@ -21,7 +19,7 @@ class CommandParser
         $cmd = php.strtoupper($cmd);
 
         $is = {
-            'OP\/W*': 'workAreas',
+            'OP/W*': 'workAreas',
             'MT': 'moveTop',
             'MB': 'moveBottom',
             'MR': 'moveRest',
