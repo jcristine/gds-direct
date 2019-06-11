@@ -31,6 +31,7 @@ const GdsdLib = require('klesun-node-tools');
 const SabrePricingParser = require("./Transpiled/Gds/Parsers/Sabre/Pricing/SabrePricingParser");
 const Settings = require("./Repositories/Settings");
 const SocketIo = require('./LibWrappers/SocketIo.js');
+const LibConfig = require('klesun-node-tools/src/Config.js');
 
 let app = express();
 
@@ -414,7 +415,7 @@ app.get('/getAsapLocations', withOwnerAuth(async (reqBody, emcResult) => {
 // socket listener initialization follows
 //============================
 
-getConfig().then(config => {
+LibConfig.getEnvConfig().then(config => {
 	app.listen(+config.HTTP_PORT, config.HOST, function () {
 		if (!config.production) {
 			console.log('listening on *:' + config.HTTP_PORT + ' - for standard http request handling');
