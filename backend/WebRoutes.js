@@ -415,12 +415,11 @@ app.get('/getAsapLocations', withOwnerAuth(async (reqBody, emcResult) => {
 // socket listener initialization follows
 //============================
 
-LibConfig.getEnvConfig().then(config => {
-	app.listen(+config.HTTP_PORT, config.HOST, function () {
-		if (!config.production) {
-			console.log('listening on *:' + config.HTTP_PORT + ' - for standard http request handling');
-		}
-	});
+let envConfig = LibConfig.getEnvConfig();
+app.listen(+envConfig.HTTP_PORT, envConfig.HOST, function () {
+	if (!envConfig.NODE_ENV === 'production') {
+		console.log('listening on *:' + envConfig.HTTP_PORT + ' - for standard http request handling');
+	}
 });
 
 let routes = {
