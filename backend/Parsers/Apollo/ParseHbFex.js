@@ -1,4 +1,6 @@
+
 const AbstractMaskParser = require("../../Transpiled/Gds/Parsers/Apollo/AbstractMaskParser");
+const {mkReg} = require('klesun-node-tools/src/Utils/Misc.js');
 
 const EMPTY_MASK_EXAMPLE = [
 	"$EX NAME ARTURS/KLESUNS                     PSGR  1/ 1         ",
@@ -30,13 +32,10 @@ const FIELDS = [
 
 /** @return {IExchangeApolloTicketParsedMask} */
 let ParseHbFex = (output) => {
-	let mkReg = (parts) => parts
-		.map(r => typeof r === 'string' ? r : r.source)
-		.join('');
 	//"$EX NAME ARTURS/KLESUNS                     PSGR  1/ 1         ",
 	//"FARE USD   903.40  TOTAL USD   983.30                           ",
 	//"TX1 USD   69.60 US   TX2 USD   14.30 XT   TX3                   ",
-	let regex = new RegExp(mkReg([
+	let regex = mkReg([
 		/^>\$EX NAME\s+/,
 		/(?<lastName>[A-Z][^\/]*)\//,
 		/(?<firstName>[A-Z].*?)\s+/,
@@ -51,27 +50,27 @@ let ParseHbFex = (output) => {
 		/(?<netPriceAmount>\d*\.?\d+)\s*/,
 		/(?<equivalentPart>.*?)\s*\n/,
 		/TX1\s+/,
-		'(' + mkReg([
+		'(', mkReg([
 			/(?<taxCurrency1>[A-Z]{3})\s*/,
 			/(?<taxAmount1>\d*\.?\d+)\s*/,
 			/(?<taxCode1>[A-Z0-9]{2})/,
-		]) + ')?\\s+',
+		]), ')?\\s+',
 		/TX2\s+/,
-		'(' + mkReg([
+		'(', mkReg([
 			/(?<taxCurrency2>[A-Z]{3})\s*/,
 			/(?<taxAmount2>\d*\.?\d+)\s*/,
 			/(?<taxCode2>[A-Z0-9]{2})/,
-		]) + ')?\\s+',
+		]), ')?\\s+',
 		/TX3\s+/,
-		'(' + mkReg([
+		'(', mkReg([
 			/(?<taxCurrency3>[A-Z]{3})\s*/,
 			/(?<taxAmount3>\d*\.?\d+)\s*/,
 			/(?<taxCode3>[A-Z0-9]{2})/,
-		]) + ')?\\s*',
+		]), ')?\\s*',
 		/[\s\S]+/,
 		/TTL VALUE OF EX TKTS\s+/,
 		/(?<exchangedTicketCurrency>[A-Z]{3})/,
-	]));
+	]);
 	let match = output.match(regex);
 	if (!match) {
 		return null;
