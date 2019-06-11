@@ -597,13 +597,14 @@ class ProcessSabreTerminalInputAction {
 		let passengers = reservation.passengers || [];
 		let itinerary = reservation.itinerary || [];
 		let errors = [];
-		let allUserMessages = [];
+		let userMessages = [];
 		let calledCommands = [];
 		if (reservation.pcc && reservation.pcc !== this.getSessionData().pcc) {
 			let cmd = 'AAA' + reservation.pcc;
-			let {calledCommands, userMessages} = await this.processRealCommand(cmd);
-			allUserMessages.push(...userMessages);
-			calledCommands.push(...calledCommands);
+			let pccResult = await this.processRealCommand(cmd);
+			errors.push(...(pccResult.errors || []));
+			userMessages.push(...(pccResult.userMessages || []));
+			calledCommands.push(...(pccResult.calledCommands || []));
 		}
 		if (passengers.length > 0) {
 			let booked = await this.bookPassengers(passengers);
@@ -618,7 +619,7 @@ class ProcessSabreTerminalInputAction {
 			errors.push(...(booked.errors || []));
 			calledCommands.push(...(booked.calledCommands || []));
 		}
-		return {errors, userMessages: allUserMessages, calledCommands};
+		return {errors, userMessages, calledCommands};
 	}
 
 	async bookItinerary($desiredSegments, $fallbackToGk) {
