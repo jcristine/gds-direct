@@ -6023,6 +6023,81 @@ class ProcessApolloTerminalInputActionTest extends require('../../../../Lib/Test
 			},
 		});
 
+		$list.push({
+			'input': {
+				'title': 'return availability without month - should add it automatically, like in Sabre',
+				'cmdRequested': 'A*O15',
+			},
+			'output': {
+				'status': 'executed',
+				'calledCommands': [
+					{"cmd": "A*O15JUL"},
+				],
+			},
+			'sessionInfo': {
+				'initialState': GdsDirectDefaults.makeDefaultApolloState(),
+				'initialCommands': [
+					{
+					    "cmd": "A10JULJFKMNL|PR",
+					    "output": [
+					        "|PR       DISPLAY* WE 10JUL NYCMNL|12:00 HR                     1| PR 127 J9 C9 D9 I9 Z9 W9 N3 Y9 S9 L9|JFKMNL 145A  615A|350  0NO MORE LATER FLIGHTS 10JUL",
+					        "MEALS>A*M;  CLASSES>A*C;..  ><"
+					    ].join("\n"),
+					},
+				],
+				'performedCommands': [
+					{
+					    "cmd": "A*O15JUL",
+					    "output": [
+					        "|PR       DISPLAY* MO 15JUL MNLNYC-12:00 HR                     1| PR 126 J9 C9 D9 I8 Z8 W9 N2 Y9 S9 L9|MNLJFK 740P 1115P 350  0NO MORE LATER FLIGHTS 15JUL",
+					        "MEALS>A*M;  CLASSES>A*C;..  ><"
+					    ].join("\n"),
+					},
+				],
+			},
+		});
+
+		$list.push({
+			'input': {
+				'title': 'same, but with one other return availability in between - should still add the month',
+				'cmdRequested': 'A*O25',
+			},
+			'output': {
+				'status': 'executed',
+				'calledCommands': [
+					{"cmd": "A*O25JUL"},
+				],
+			},
+			'sessionInfo': {
+				'initialState': GdsDirectDefaults.makeDefaultApolloState(),
+				'initialCommands': [
+					{
+					    "cmd": "A10JULJFKMNL|PR",
+					    "output": [
+					        "|PR       DISPLAY* WE 10JUL NYCMNL|12:00 HR                     1| PR 127 J9 C9 D9 I9 Z9 W9 N3 Y9 S9 L9|JFKMNL 145A  615A|350  0NO MORE LATER FLIGHTS 10JUL",
+					        "MEALS>A*M;  CLASSES>A*C;..  ><"
+					    ].join("\n"),
+					},
+					{
+					    "cmd": "A*O15JUL",
+					    "output": [
+					        "|PR       DISPLAY* MO 15JUL MNLNYC-12:00 HR                     1| PR 126 J9 C9 D9 I8 Z8 W9 N2 Y9 S9 L9|MNLJFK 740P 1115P 350  0NO MORE LATER FLIGHTS 15JUL",
+					        "MEALS>A*M;  CLASSES>A*C;..  ><"
+					    ].join("\n"),
+					},
+				],
+				'performedCommands': [
+					{
+					    "cmd": "A*O25JUL",
+					    "output": [
+					        "|PR       DISPLAY* TH 25JUL NYCMNL|12:00 HR                     1| PR 127 J9 C9 D9 I9 Z1 W9 N9 Y9 S9 L9|JFKMNL 145A  615A|350  0NO MORE LATER FLIGHTS 25JUL",
+					        "MEALS>A*M;  CLASSES>A*C;..  ><"
+					    ].join("\n"),
+					},
+				],
+			},
+		});
+
 		// problematic cases follow
 		/*
 		// STORE alias, same as previous, but this time let's remove
