@@ -142,7 +142,17 @@ class GdsDialectTranslator
                 'galileo': 'AR{date}',
                 'sabre': '1R{date}',
                 'amadeus': 'ACR{date}',
-            },//Air availability by city
+            },
+            // Return availability to different day of same month
+            {
+                'sabre': '1R{int_num}',
+                // following do not actually exist in the
+                // GDS, they are aliases processed by us
+                'apollo': 'A*O{int_num}',
+                'galileo': 'AR{int_num}',
+                'amadeus': 'A*O{int_num}',
+            },
+            //Air availability by city
             {
                 'apollo': 'A*X{city}',
                 'galileo': 'A.{city}',

@@ -3114,6 +3114,11 @@ class GdsDialectTranslatorTest extends require('../../../Lib/TestCase.js')
             ['galileo', 'apollo', 'A*R',  'A*C'], // #96896
             // #352088, should not remove airline when converting
             ['galileo', 'apollo', 'A1JANACCYTO|ET',  null],
+
+            ['apollo', 'galileo', 'A*O15', 'AR15', true],
+            ['apollo', 'sabre', 'A*O15', '1R15', true],
+            // same as in Apollo, since it would conflict with existing ACR15 format otherwise
+            ['sabre', 'amadeus', '1R15', 'A*O15', true],
         ];
 
         return $tests;
