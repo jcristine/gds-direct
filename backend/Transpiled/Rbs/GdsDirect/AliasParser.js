@@ -91,6 +91,15 @@ class AliasParser
         }
     }
 
+    static parseSameMonthReturnAvail(cmd) {
+        let matches = cmd.match(/^A\*O(\d+)$/);
+        if (matches) {
+            return {days: matches[1]};
+        } else {
+            return null;
+        }
+    }
+
     static async parseCmdAsPnr($cmd, $session)  {
         let $guess;
         let fromCms = await this.parseCmsRebuild($cmd);

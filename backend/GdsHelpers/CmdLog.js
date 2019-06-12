@@ -159,6 +159,8 @@ let CmdLog = ({
 		/** @param {makeSelectQuery_rq} params */
 		getLikeSql: async (params) => {
 			// TODO: from DB
+			// params.table = 'terminal_command_log';
+			// params.where.push(['session_id', '=', session.id]);
 			return selectFromArray(params, await getAll());
 		},
 		getAllCommands: () => {

@@ -773,8 +773,36 @@ class ProcessAmadeusTerminalInputAction {
 		};
 	}
 
+	async _preprocessSameMonthReturnAvailability(day) {
+		let lastAvail = (await this.stateful.getLog().getLikeSql({
+			where: [
+				['area', '=', this.getSessionData().area],
+				['type', '=', 'airAvailability'],
+				['is_mr', '=', false],
+			],
+			orderBy: [['id', 'DESC']],
+			limit: 1,
+		}))[0];
+		if (!lastAvail) {
+			return Rej.BadRequest('No recent availability to request return date from');
+		}
+		let {type, data} = CommandParser.parse(lastAvail.cmd);
+		if (type !== 'airAvailability' || !data) {
+			return Rej.NotImplemented('Could not parse availability cmd >' + lastAvail.cmd + ';');
+		}
+		let flightDetails = data.modifiers
+			.filter(m => m.type === 'flightDetails')
+			.map(m => m.parsed)[0];
+		if (!flightDetails) {
+			return Rej.BadRequest('Original availability request has no date specified >' + lastAvail.cmd + ';');
+		} else {
+			let month = flightDetails.departureDate.raw.slice(-3);
+			return 'ACR' + day + month;
+		}
+	}
+
 	async preprocessCommand($cmd) {
-		let $lastCmdRec, $wasRtFormatPage, $pnr;
+		let $lastCmdRec, $wasRtFormatPage, $pnr, aliasData;
 
 		if ($cmd === 'MD') {
 			if ($lastCmdRec = await this.stateful.getLog().getLastCalledCommand()) {
@@ -790,6 +818,8 @@ class ProcessAmadeusTerminalInputAction {
 			// with XE2,3,4 to delete only segment lines
 			$pnr = await this.getCurrentPnr();
 			$cmd = 'XE' + php.implode(',', php.array_column($pnr.getItinerary(), 'lineNumber'));
+		} else if (aliasData = AliasParser.parseSameMonthReturnAvail($cmd)) {
+			$cmd = await this._preprocessSameMonthReturnAvailability(aliasData.days);
 		}
 		return $cmd;
 	}

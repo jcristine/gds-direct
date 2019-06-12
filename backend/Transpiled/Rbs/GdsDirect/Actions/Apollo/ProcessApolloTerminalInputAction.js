@@ -369,7 +369,7 @@ class ProcessApolloTerminalInputAction {
 	}
 
 	async preprocessCommand($cmd) {
-		let matches;
+		let aliasData;
 		let $parsed = CommandParser.parse($cmd);
 		if ($cmd === 'MD') {
 			let scrolledCmd = await this.getScrolledCmd();
@@ -385,8 +385,8 @@ class ProcessApolloTerminalInputAction {
 			}
 		} else if ($parsed['type'] === 'priceItinerary') {
 			$cmd = await this.preprocessPricingCommand($parsed['data']) || $cmd;
-		} else if (matches = $cmd.match(/^A\*O(\d+)$/)) {
-			$cmd = await this.preprocessSameMonthReturnAvailability(matches[1]);
+		} else if (aliasData = AliasParser.parseSameMonthReturnAvail($cmd)) {
+			$cmd = await this._preprocessSameMonthReturnAvailability(aliasData.days);
 		}
 		return $cmd;
 	}
@@ -1355,7 +1355,7 @@ class ProcessApolloTerminalInputAction {
 	/**
 	 * imitation of Sabre >1R20; which shows return availability for 20 day of same month
 	 */
-	async preprocessSameMonthReturnAvailability(day) {
+	async _preprocessSameMonthReturnAvailability(day) {
 		let lastAvail = (await this.stateful.getLog().getLikeSql({
 			where: [
 				['area', '=', this.getSessionData().area],
