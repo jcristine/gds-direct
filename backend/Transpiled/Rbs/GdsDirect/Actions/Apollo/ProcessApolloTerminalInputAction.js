@@ -1371,7 +1371,7 @@ class ProcessApolloTerminalInputAction {
 		if (type !== 'airAvailability' || !data) {
 			return Rej.NotImplemented('Could not parse availability cmd >' + lastAvail.cmd + ';');
 		} else if (!data.departureDate) {
-			return Rej.NotImplemented('Original availability request has no date specified >' + lastAvail.cmd + ';');
+			return Rej.BadRequest('Original availability request has no date specified >' + lastAvail.cmd + ';');
 		} else {
 			let month = data.departureDate.raw.slice(-3);
 			return 'A*O' + day + month;

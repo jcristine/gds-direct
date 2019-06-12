@@ -168,6 +168,7 @@ let CmdLog = ({
 };
 
 CmdLog.noDb = ({gds, fullState}) => {
+	let lastId = 0;
 	return CmdLog({
 		session: {
 			context: {
@@ -177,7 +178,7 @@ CmdLog.noDb = ({gds, fullState}) => {
 		fullState,
 		CmdLogs: {
 			getAll: () => Promise.resolve([]),
-			storeNew: (row) => Promise.resolve(row),
+			storeNew: (row) => Promise.resolve({id: ++lastId, ...row}),
 			getLast: () => NotFound('No records: non-storing storage'),
 		},
 		GdsSessions: {

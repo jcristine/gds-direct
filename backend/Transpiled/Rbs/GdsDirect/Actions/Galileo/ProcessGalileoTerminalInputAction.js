@@ -26,6 +26,7 @@ const GalileoPnr = require('../../../../Rbs/TravelDs/GalileoPnr.js');
 const RebuildInPccAction = require('./RebuildInPccAction.js');
 const php = require('../../../../php.js');
 const GalileoRetrieveTicketsAction = require('../../../../Rbs/Process/Apollo/ImportPnr/Actions/RetrieveApolloTicketsAction.js');
+const Rej = require('klesun-node-tools/src/Utils/Rej.js');
 
 
 class ProcessGalileoTerminalInputAction {
@@ -33,12 +34,6 @@ class ProcessGalileoTerminalInputAction {
 		this.stateful = $statefulSession;
 		this.$log = ($msg, $data) => {
 		};
-	}
-
-	setLog($log) {
-
-		this.$log = $log;
-		return this;
 	}
 
 	log($msg, $data) {
@@ -171,30 +166,69 @@ class ProcessGalileoTerminalInputAction {
 		return null;
 	}
 
-	/** @return string|null - null means "not changed" */
-	async preprocessAvailCmd($data) {
-		let $typeToMod, $cmdRows, $cmdRow, $oldParsed, $oldTypeToMod;
+	async _getLastAvail() {
+		return this.stateful.getLog().getLikeSql({
+			where: [
+				['area', '=', this.getSessionData().area],
+				['type', '=', 'airAvailability'],
+			],
+			orderBy: [['id', 'DESC']],
+			limit: 1,
+		}).then(rows => rows[0])
+			.then(Rej.nonEmpty('No recent availability'))
+			.then(row => {
+				let parsed = CommandParser.parse(row.cmd);
+				if (parsed.type === 'airAvailability' && parsed.data) {
+					return {row, data: parsed.data};
+				} else {
+					return Rej.NotImplemented('Could not parse availability cmd >' + row.cmd + ';');
+				}
+			});
+	}
 
-		if ($data['isReturn']) {
+	/** @return string|null - null means "not changed" */
+	async preprocessAvailCmd(parsed) {
+		let {cmd, type, data} = parsed;
+		let match;
+
+		if (type === 'airAvailability' && data && data['isReturn']) {
 			// add mods from original availability request
-			$typeToMod = php.array_combine(php.array_column($data['modifiers'] || [], 'type'),
-				php.array_column($data['modifiers'] || [], 'raw'));
-			$cmdRows = await this.stateful.getLog().getAllCommands();
-			for ($cmdRow of Object.values(php.array_reverse($cmdRows))) {
-				if ($cmdRow['type'] === 'airAvailability' && !$cmdRow['is_mr']) {
-					$oldParsed = CommandParser.parse($cmdRow['cmd']);
-					$oldTypeToMod = php.array_combine(php.array_column(($oldParsed['data'] || {})['modifiers'] || [], 'type'),
-						php.array_column(($oldParsed['data'] || {})['modifiers'] || [], 'raw'));
-					$typeToMod = php.array_merge($oldTypeToMod, $typeToMod);
-					if ($oldParsed['data']['destinationAirport']) {
-						// the start of current availability
-						break;
-					}
+			let typeToMod = php.array_combine(
+				php.array_column(data['modifiers'] || [], 'type'),
+				php.array_column(data['modifiers'] || [], 'raw')
+			);
+			let cmdRows = await this.stateful.getLog().getLikeSql({
+				where: [
+					['type', '=', 'airAvailability'],
+					['area', '=', this.getSessionData().area],
+				],
+				orderBy: [['id', 'DESC']],
+				limit: 20,
+			});
+			for (let cmdRow of cmdRows) {
+				let oldParsed = CommandParser.parse(cmdRow['cmd']);
+				let oldTypeToMod = php.array_combine(
+					php.array_column((oldParsed['data'] || {})['modifiers'] || [], 'type'),
+					php.array_column((oldParsed['data'] || {})['modifiers'] || [], 'raw')
+				);
+				typeToMod = php.array_merge(oldTypeToMod, typeToMod);
+				if (oldParsed['data']['destinationAirport']) {
+					// the start of current availability
+					break;
 				}
 			}
-			return 'AR' + ($data['orderBy'] || '') + (($data['departureDate'] || {})['raw'] || '')
-				+ $data['departureAirport'] + $data['destinationAirport']
-				+ php.implode('', $typeToMod);
+			return 'AR' + (data['orderBy'] || '') + ((data['departureDate'] || {})['raw'] || '')
+				+ data['departureAirport'] + data['destinationAirport']
+				+ php.implode('', typeToMod);
+		} else if (match = cmd.match(/^AR(\d+)$/)) {
+			let day = match[1];
+			let {row, data} = await this._getLastAvail();
+			if (!data.departureDate) {
+				return Rej.BadRequest('Original availability request has no date specified >' + row.cmd + ';');
+			} else {
+				let month = data.departureDate.raw.slice(-3);
+				return 'AR' + day + month;
+			}
 		} else {
 			return null;
 		}
@@ -233,8 +267,8 @@ class ProcessGalileoTerminalInputAction {
 		$parsed = CommandParser.parse($cmd);
 		if ($cmd === 'MD') {
 			$cmd = 'MR';
-		} else if ($parsed['type'] === 'airAvailability') {
-			$cmd = await this.preprocessAvailCmd($parsed['data']) || $cmd;
+		} else if ($cmd.startsWith('A')) {
+			$cmd = await this.preprocessAvailCmd($parsed) || $cmd;
 		} else if ($parsed['type'] === 'priceItinerary') {
 			$cmd = await this.preprocessPricingCmd($parsed['data']) || $cmd;
 		}

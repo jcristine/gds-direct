@@ -2215,6 +2215,39 @@ class ProcessGalileoTerminalInputActionTest extends require('../../../../Lib/Tes
 			},
 		});
 
+		$list.push({
+			'input': {
+				'title': 'return availability without month example',
+				'cmdRequested': 'AR20',
+				'baseDate': '2019-05-20',
+			},
+			'output': {
+				'status': 'executed',
+				'calledCommands': [
+					{cmd: 'AR20JUL'},
+				],
+			},
+			'sessionInfo': {
+				'initialState': GdsDirectDefaults.makeDefaultGalileoState(),
+				'initialCommands': [
+					{
+					    "cmd": "AJ10JULJFKMNL/PR#",
+					    "output": "NEUTRAL DISPLAY*   WE 10JUL NYC/MNL                             1 JFK MNL 0145#0615  PR 127 J9 C9 D9 I9 Z9 W9 N3 Y9#1630 350C*E NO MORE LATER FLIGHTS 10JUL                                     ><",
+					},
+					{
+					    "cmd": "AR15JUL",
+					    "output": "NEUTRAL DISPLAY*   MO 15JUL MNL/NYC                             1 MNL JFK 1940 2315  PR 126 J9 C9 D9 I8 Z8 W9 N2 Y9#1535 350C*E 2 MNL NRT 0930 1505 @PR1402 J2 C2 D2 YL SL LL ML HL#---- 788C*E 3     JFK 1640 1635 @UA7927 J9 C9 D9 Z9 P9 O9 A9 R0#1905 77WC*E 4 MNL NRT 0930 1505  NH 820 J9 C9 D9 Z9 P9 Y9 B9 M9#---- 788C*E 5     JFK 1640 1635  NH  10 F6 A5 J9 C9 D9 Z9 P9 G9#1905 77WC*E 6 MNL HKG 1235 1510  CX 930 J9 C9 D9 I9 W9 R8 E5 Y9#---- 77WC*E 7     JFK 1605 2015  CX 840 F2 A2 J9 C9 D9 I9 W9 R8#1940 77WC*E ><",
+					},
+				],
+				'performedCommands': [
+					{
+					    "cmd": "AR20JUL",
+					    "output": "NEUTRAL DISPLAY*   SA 20JUL NYC/MNL                             1 JFK MNL 20/0145#0615  PR 127 J9 C9 D9 I9 Z6 W9 N4#1630 350C*E 2 JFK ICN 20/1400#1720  KE  82 P9 FC AL J9 C9 D9 I9#---- 388C*E 3     MNL 21/1845 2155  KE 623 J9 C9 D9 I9 R9 Z5 Y9#1955 773C*E 4 JFK NRT 20/1200#1500 @UA7998 J9 C9 D9 Z5 P0 O9 A2#---- 77WC*E 5     MNL 21/1600 1955  DL 181 J4 C3 D2 I2 Z0 W8 Y9#1955 76WC*E 6 JFK NRT 20/1200#1500  NH   9 F6 A5 J9 C9 D8 Z5 PL#---- 77WC*E 7     MNL 21/1600 1955  DL 181 J4 C3 D2 I2 Z0 W8 Y9#1955 76WC*E ><",
+					},
+				],
+			},
+		});
+
 		$argumentTuples = [];
 		for ($testCase of Object.values($list)) {
 			$argumentTuples.push([$testCase['input'], $testCase['output'], $testCase['sessionInfo']]);
