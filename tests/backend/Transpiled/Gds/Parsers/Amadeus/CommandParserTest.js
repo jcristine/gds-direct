@@ -660,7 +660,45 @@ class CommandParserTest extends require('../../../Lib/TestCase.js') {
 				],
 			}
 		}]);
-
+		$list.push(['AD/2JULLASADD/AB6,QR/CN', {
+			type: 'airAvailability', data: {
+				modifiers: [
+					{raw: '2JULLASADD', type: 'flightDetails', parsed: {
+						departureDate: {raw: '2JUL'},
+						departureAirport: 'LAS',
+						destinationAirport: 'ADD',
+					}},
+					{raw: 'AB6,QR'/*, type: 'airlines'*/},
+					{raw: 'CN'/*, type: 'bookingClass'*/},
+				],
+			},
+		}]);
+		$list.push(['AD26SEPATLSYD/AVA', {
+			type: 'airAvailability', data: {
+				modifiers: [
+					{raw: '26SEPATLSYD', type: 'flightDetails', parsed: {
+						departureDate: {raw: '26SEP'},
+						departureAirport: 'ATL',
+						destinationAirport: 'SYD',
+					}},
+					{raw: 'AVA'/*, type: 'airlines'*/},
+				],
+			},
+		}]);
+		$list.push(['AD21AUGACCJFK12A/XABJ/AHF', {
+			type: 'airAvailability', data: {
+				modifiers: [
+					{raw: '21AUGACCJFK12A', type: 'flightDetails', parsed: {
+						departureDate: {raw: '21AUG'},
+						departureAirport: 'ACC',
+						destinationAirport: 'JFK',
+						departureTime: {raw: '12A'},
+					}},
+					{raw: 'XABJ'/*, type: 'connection'*/},
+					{raw: 'AHF'/*, type: 'airlines'*/},
+				],
+			},
+		}]);
 
 		return $list;
 	}

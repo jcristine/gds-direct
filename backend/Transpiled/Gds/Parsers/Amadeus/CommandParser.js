@@ -7,6 +7,7 @@ const PricingCmdParser = require('../../../Gds/Parsers/Amadeus/Commands/PricingC
 const TariffCmdParser = require('../../../Gds/Parsers/Amadeus/Commands/TariffCmdParser.js');
 
 const php = require('../../../php.js');
+const CommonParsersHelper = require("../Apollo/CommonParserHelpers");
 class CommandParser
 {
     static parseChangePcc($cmd)  {
@@ -213,8 +214,35 @@ return {
 
     // 'FXX/P1/RYTH//P2/RMIL'
     static parsePriceItinerary($cmd)  {
-
         return PricingCmdParser.parse($cmd);
+    }
+
+    static parse_ariAvailability(cmd) {
+        let match = cmd.match(/^AD\/?(.*)/);
+        if (match) {
+            let rawMods = match[1] ? match[1].split('/') : [];
+            return {
+                modifiers: rawMods.map(raw => {
+                    let match, type = null, parsed = null;
+                    if (match = raw.match(/^(\d{1,2}[A-Z]{3})([A-Z]{3})([A-Z]{3})(\d{1,4}[APNM]|)$/)) {
+                        let [, date, from, to, time] = match;
+                        type = 'flightDetails';
+                        parsed = {
+                            departureDate: {
+                                raw: date,
+                                parsed: CommonParsersHelper.parsePartialDate(date),
+                            },
+                            departureAirport: from,
+                            destinationAirport: to,
+                            departureTime: !time ? null : {raw: time},
+                        };
+                    }
+                    return {raw, type, parsed};
+                }),
+            };
+        } else {
+            return null;
+        }
     }
 
     static detectCommandType($cmd)  {
@@ -328,6 +356,8 @@ return {
             $type = 'changePnrField';
         } else if (!php.is_null($data = TariffCmdParser.parse($cmd))) {
             $type = 'fareSearch';
+        } else if (!php.is_null($data = this.parse_ariAvailability($cmd))) {
+            $type = 'airAvailability';
         } else if (php.preg_match(/^\s*FXD(.*)$/, $cmd)) {
             $type = 'lowFareSearch';
         } else if (php.preg_match(/^\s*FXS(.*)$/, $cmd)) {
