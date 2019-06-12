@@ -247,7 +247,7 @@ class CommonDataHelper {
 			let utc = await this._getSegUtc(seg, geo);
 			return utc
 				? Promise.resolve({utc, seg})
-				: NotImplemented('No tz for seg ' + seg.segmentNumber + ' ' + seg.departureAirport);
+				: NotImplemented('No tz for seg ' + seg.segmentNumber + ' ' + seg.departureAirport, {isOk: true});
 		});
 		let utcRecords = await Promise.all(promises);
 		let $sorted = Fp.sortBy(r => r.utc, utcRecords).map(r => r.seg);

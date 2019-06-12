@@ -3,6 +3,7 @@ const SessionStateProcessor = require('../Transpiled/Rbs/GdsDirect/SessionStateP
 const CommonDataHelper = require("../Transpiled/Rbs/GdsDirect/CommonDataHelper");
 const Rej = require("klesun-node-tools/src/Utils/Rej");
 const SessionStateHelper = require("../Transpiled/Rbs/GdsDirect/SessionStateProcessor/SessionStateHelper");
+const selectFromArray = require("klesun-node-tools/src/Utils/SqlUtil").selectFromArray;
 const NotFound = require("klesun-node-tools/src/Utils/Rej").NotFound;
 const makeRow = require("../Repositories/CmdLogs").makeRow;
 const hrtimeToDecimal = require("../Utils/Misc").hrtimeToDecimal;
@@ -154,6 +155,11 @@ let CmdLog = ({
 			return calledPromises.length > 0
 				? calledPromises.slice(-1)[0]
 				: CmdLogs.getLast(session.id);
+		},
+		/** @param {makeSelectQuery_rq} params */
+		getLikeSql: async (params) => {
+			// TODO: from DB
+			return selectFromArray(params, await getAll());
 		},
 		getAllCommands: () => {
 			return getAll();

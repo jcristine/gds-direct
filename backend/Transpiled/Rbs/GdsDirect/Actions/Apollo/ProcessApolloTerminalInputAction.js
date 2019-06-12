@@ -1350,6 +1350,33 @@ class ProcessApolloTerminalInputAction {
 		};
 	}
 
+	/**
+	 * imitation of Sabre >1R20; which shows return availability for 20 day of same month
+	 */
+	async displaySameMonthReturnAvailability(day) {
+		let lastAvail = (await this.stateful.getLog().getLikeSql({
+			where: [
+				['area', '=', this.getSessionData().area],
+				['type', '=', 'airAvailability'],
+			],
+			orderBy: [['id', 'DESC']],
+			limit: 1,
+		}))[0];
+		if (!lastAvail) {
+			return Rej.BadRequest('No recent availability to request return date from');
+		}
+		let {type, data} = CommandParser.parse(lastAvail.cmd);
+		if (type !== 'airAvailability' || !data) {
+			return Rej.NotImplemented('Could not parse availability cmd >' + lastAvail.cmd + ';');
+		} else if (!data.departureDate) {
+			return Rej.NotImplemented('Original availability request has no date specified >' + lastAvail.cmd + ';');
+		} else {
+			let month = data.departureDate.raw.slice(-3);
+			let {cmdRec, userMessages} = await this.processRealCommand('A*O' + day + month);
+			return {calledCommands: [cmdRec], userMessages};
+		}
+	}
+
 	async prepareMcoMask() {
 		let $getPaxName, $pcc, $pccPointOfSaleCountry, $agent, $pnr, $passengerNames, $mcoMask, $pnrParams,
 			$hasPredefinedPax, $predefinedPax, $mcoParams, $key, $value, $calledCommands, $userMessages, $result;
@@ -1627,6 +1654,8 @@ class ProcessApolloTerminalInputAction {
 		} else if ($matches = this.constructor.matchArtificialAvailabilityCmd(cmd)) {
 			[$availability, $cityRow, $airlines] = $matches;
 			return this.makeMultipleCityAvailabilitySearch($availability, $cityRow, $airlines);
+		} else if ($matches = cmd.match(/^A\*O(\d+)$/)) {
+			return this.displaySameMonthReturnAvailability($matches[1]);
 		} else if (php.preg_match(/^SEM\/([\w\d]{3,4})\/AG$/, cmd, $matches = [])) {
 			let {cmdRec} = await this.emulatePcc($matches[1]);
 			return {calledCommands: [cmdRec]};

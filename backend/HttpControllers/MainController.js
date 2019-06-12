@@ -1,6 +1,6 @@
 
 let Emc = require('../LibWrappers/Emc.js');
-let {NoContent, Forbidden, NotAuthorized, BadRequest, TooManyRequests, NotImplemented, LoginTimeOut, InternalServerError, NotFound} = require('klesun-node-tools/src/Utils/Rej.js');
+let {NoContent, Forbidden, NotAuthorized, BadRequest, TooManyRequests, LoginTimeOut, InternalServerError, NotFound} = require('klesun-node-tools/src/Utils/Rej.js');
 let Diag = require('../LibWrappers/Diag.js');
 let FluentLogger = require('../LibWrappers/FluentLogger.js');
 const {getExcData} = require('../Utils/Misc.js');
@@ -18,8 +18,7 @@ let isSystemError = (exc) =>
 	!BadRequest.matches(exc.httpStatusCode) &&
 	!TooManyRequests.matches(exc.httpStatusCode) &&
 	!Forbidden.matches(exc.httpStatusCode) &&
-	!LoginTimeOut.matches(exc.httpStatusCode) &&
-	!NotImplemented.matches(exc.httpStatusCode);
+	!LoginTimeOut.matches(exc.httpStatusCode);
 
 let toHandleHttp = (httpAction) => (req, res) => {
 	return HttpUtil.toHandleHttp(({rqBody, routeParams}) => httpAction(rqBody, routeParams))(req, res)
