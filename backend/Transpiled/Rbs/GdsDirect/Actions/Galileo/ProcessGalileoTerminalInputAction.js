@@ -188,8 +188,19 @@ class ProcessGalileoTerminalInputAction {
 
 	/** @return string|null - null means "not changed" */
 	async preprocessAvailCmd(parsed) {
-		let {cmd, type, data} = parsed;
 		let match;
+		if (match = parsed.cmd.match(/^AR(\d+)$/)) {
+			let day = match[1];
+			let {row, data} = await this._getLastAvail();
+			if (!data.departureDate) {
+				return Rej.BadRequest('Original availability request has no date specified >' + row.cmd + ';');
+			} else {
+				let month = data.departureDate.raw.slice(-3);
+				let cmd = 'AR' + day + month;
+				parsed = CommandParser.parse(cmd);
+			}
+		}
+		let {type, data} = parsed;
 
 		if (type === 'airAvailability' && data && data['isReturn']) {
 			// add mods from original availability request
@@ -220,15 +231,6 @@ class ProcessGalileoTerminalInputAction {
 			return 'AR' + (data['orderBy'] || '') + ((data['departureDate'] || {})['raw'] || '')
 				+ data['departureAirport'] + data['destinationAirport']
 				+ php.implode('', typeToMod);
-		} else if (match = cmd.match(/^AR(\d+)$/)) {
-			let day = match[1];
-			let {row, data} = await this._getLastAvail();
-			if (!data.departureDate) {
-				return Rej.BadRequest('Original availability request has no date specified >' + row.cmd + ';');
-			} else {
-				let month = data.departureDate.raw.slice(-3);
-				return 'AR' + day + month;
-			}
 		} else {
 			return null;
 		}
