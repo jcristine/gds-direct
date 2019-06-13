@@ -16,7 +16,7 @@ class MoveDownAllAction extends AbstractGdsAction {
 			$pager, $fullCalledCommand;
 
 		$usedMdCmds = SessionStateHelper.mrCmdTypes;
-		$mdCmdRows = await $cmdLog.getLastCommandsOfTypes($usedMdCmds);
+		$mdCmdRows = await $cmdLog.getScrolledCmdMrs();
 		if (!($originalCmdRow = php.array_shift($mdCmdRows))) {
 			// if session just started for example
 			return {'userMessages': ['There is nothing to scroll']};

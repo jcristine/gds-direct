@@ -169,22 +169,32 @@ let CmdLog = ({
 			}
 			return matched;
 		},
-		/** get all commands starting from last not in the provided type list inclusive */
+		/** get all commands starting from last not in the provided type list including it */
 		getLastCommandsOfTypes: async (types) => {
-			// TODO: filter them in SQL to make sure 5K logs won't affect response time
-			let allCmdsDesc = (await getAll()).reverse();
-			let matched = [];
-			for (let cmdRec of allCmdsDesc) {
-				if (cmdRec.area === fullState.area) {
-					matched.unshift(cmdRec);
-					let type = !cmdRec.is_mr ? cmdRec.type :
-						CommonDataHelper.parseCmdByGds(gds, cmdRec.cmd)['type'];
+			let stateStarter = await selectLastCmdOf({
+				where: [
+					['area', '=', fullState.area],
+					['type', 'NOT IN', types],
+					['is_mr', '=', false],
+				],
+			}).catch(exc => null);
+
+			let matched = await getCommandsStartingFrom(stateStarter, {
+				where: [['area', '=', fullState.area]],
+			});
+			let startPos = 0;
+			for (let i = 0; i < matched.length; ++i) {
+				// additional filtering with command parsing is needed for
+				// MR commands as we don't store their actual type in DB
+				let cmdRec = matched[i];
+				if (cmdRec.is_mr) {
+					let type = CommonDataHelper.parseCmdByGds(gds, cmdRec.cmd).type;
 					if (!types.includes(type)) {
-						break;
+						startPos = i;
 					}
 				}
 			}
-			return matched;
+			return matched.slice(startPos);
 		},
 		/**
 		 * unlike getLastCommandsOfTypes() this one will include the area change
