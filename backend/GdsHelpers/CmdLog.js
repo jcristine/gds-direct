@@ -224,9 +224,9 @@ let CmdLog = ({
 			});
 		},
 		getLastCalledCommand: () => {
-			return calledPromises.length > 0
-				? calledPromises.slice(-1)[0]
-				: CmdLogs.getLast(session.id);
+			return getLikeSql({limit: 1})
+				.then(rows => rows[0])
+				.then(Rej.nonEmpty('No commands entered'));
 		},
 		getLikeSql: getLikeSql,
 		getAllCommands: () => {
