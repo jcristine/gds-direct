@@ -22,10 +22,6 @@ let CmdLog = ({
 		params.where.push(['session_id', '=', session.id]);
 		return CmdLogs.getBy(params);
 	};
-	let getRowsFromDb = () => {
-		return CmdLogs.getAll(session.id)
-			.then(desc => [...desc].reverse());
-	};
 	let calledPromises = [];
 
 	let logCommand = (cmd, running) => {
@@ -64,16 +60,6 @@ let CmdLog = ({
 
 			return cmdRec;
 		});
-	};
-
-	let getAll = async () => {
-		let fromDb = await getRowsFromDb();
-		let called = await Promise.all(calledPromises);
-		let startId = called.length > 0 ? called[0].id : null;
-		let joined = fromDb
-			.filter(row => !startId || row.id < startId)
-			.concat(called);
-		return joined;
 	};
 
 	let selectLastCmdOf = async (params) => {
@@ -140,6 +126,17 @@ let CmdLog = ({
 			let joined = filtered.concat(fromDbExclusively);
 			return joined;
 		}
+	};
+
+	let getAllCommands = async () => {
+		let fromDb = await CmdLogs.getAll(session.id)
+			.then(desc => [...desc].reverse());
+		let called = await Promise.all(calledPromises);
+		let startId = called.length > 0 ? called[0].id : null;
+		let joined = fromDb
+			.filter(row => !startId || row.id < startId)
+			.concat(called);
+		return joined;
 	};
 
 	return {
@@ -229,9 +226,7 @@ let CmdLog = ({
 				.then(Rej.nonEmpty('No commands entered'));
 		},
 		getLikeSql: getLikeSql,
-		getAllCommands: () => {
-			return getAll();
-		},
+		getAllCommands: getAllCommands,
 	};
 };
 
