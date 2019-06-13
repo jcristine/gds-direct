@@ -6,7 +6,6 @@ let Emc = require('./LibWrappers/Emc.js');
 let GdsSessionController = require('./HttpControllers/GdsSessionController.js');
 let TerminalBaseController = require('./Transpiled/App/Controllers/TerminalBaseController.js');
 let {Forbidden, BadReqeust} = require('klesun-node-tools/src/Utils/Rej.js');
-let {admins} = require('./Constants.js');
 let UpdateHighlightRulesFromProd = require('./Actions/UpdateHighlightRulesFromProd.js');
 let Db = require('./Utils/Db.js');
 let Diag = require('./LibWrappers/Diag.js');
@@ -209,17 +208,21 @@ let withOwnerAuth = (ownerAction) => withAuth((rqBody, emcResult) => {
 	}
 });
 
-//app.use('/admin/updateHighlightRules', express.bodyParser({limit: '10mb'}));
-app.post('/admin/updateHighlightRules', withAuth((reqBody, emcResult) => {
-	if (admins.includes(+emcResult.user.id)) {
-		return UpdateHighlightRulesFromProd(reqBody);
+let withDevAuth = (devAction) => withAuth((rqBody, emcResult) => {
+	if (emcResult.user.roles.includes('NEW_GDS_DIRECT_DEV_ACCESS')) {
+		return devAction(rqBody, emcResult);
 	} else {
-		return Forbidden('Sorry, only users with admin rights can use that. Your id ' + emcResult.user.id + ' is not in ' + admins.join(','));
+		return Forbidden('You do not have dev access role');
 	}
+});
+
+//app.use('/admin/updateHighlightRules', express.bodyParser({limit: '10mb'}));
+app.post('/admin/updateHighlightRules', withDevAuth((reqBody, emcResult) => {
+	return UpdateHighlightRulesFromProd(reqBody);
 }));
 
 app.post('/admin/terminal/highlight', toHandleHttp(HighlightRulesRepository.getFullDataForAdminPage));
-app.post('/admin/terminal/highlight/save', withAuth(HighlightRulesRepository.saveRule));
+app.post('/admin/terminal/highlight/save', withDevAuth(HighlightRulesRepository.saveRule));
 app.post('/admin/terminal/themes/save', withAuth(rqBody => {
 	return Db.with(db => db.writeRows('terminalThemes', [{
 		id: rqBody.id || undefined,
@@ -232,19 +235,13 @@ app.post('/admin/terminal/themes/delete', withAuth(rqBody => {
 	return Db.with(db => db.query(sql, [rqBody.id]));
 }));
 
-app.post('/admin/terminal/sessionsGet', withAuth(async (rqBody, emcResult) => {
-	if (!emcResult.user.roles.includes('NEW_GDS_DIRECT_DEV_ACCESS')) {
-		return Forbidden('You do not have dev access role');
-	}
+app.post('/admin/terminal/sessionsGet', withDevAuth(async (rqBody, emcResult) => {
 	let sessions = await GdsSessions.getHist(rqBody);
 	return {
 		aaData: sessions,
 	};
 }));
-app.get('/api/js/terminal-log/commands', withAuth(async (rqBody, emcResult) => {
-	if (!emcResult.user.roles.includes('NEW_GDS_DIRECT_DEV_ACCESS')) {
-		return Forbidden('You do not have dev access role');
-	}
+app.get('/api/js/terminal-log/commands', withDevAuth(async (rqBody, emcResult) => {
 	let [sessionRow, cmdRows] = await Promise.all([
 		GdsSessions.getHist({sessionId: rqBody.sessionId})
 			.then(rows => rows[0])
@@ -304,10 +301,7 @@ app.get('/admin/getShortcutActions', toHandleHttp(async (rqBody) => {
 		}));
 	return {records};
 }));
-app.post('/admin/setShortcutActions', withAuth(async (rqBody, emcResult) => {
-	if (!emcResult.user.roles.includes('NEW_GDS_DIRECT_DEV_ACCESS')) {
-		return Forbidden('You are not allowed to change shortcut actions');
-	}
+app.post('/admin/setShortcutActions', withDevAuth(async (rqBody, emcResult) => {
 	let records = rqBody.records;
 	return Db.with(async db => {
 		let rows = records.map(rec => ({

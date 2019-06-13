@@ -2,8 +2,6 @@
 let Db = require("../Utils/Db.js");
 let Redis = require('../LibWrappers/Redis.js');
 let MultiLevelMap = require('../Utils/MultiLevelMap.js');
-let {admins} = require('../Constants.js');
-let {Forbidden} = require('klesun-node-tools/src/Utils/Rej.js');
 
 const TABLE = 'highlightRules';
 const TABLE_CMD = 'highlightCmdPatterns';
@@ -84,6 +82,7 @@ let fetchFullDataForService = async () => {
 	return mapping;
 };
 
+/** RAM caching */
 let lastUpdateMs = null;
 let whenRuleMapping = null;
 
@@ -116,9 +115,6 @@ let invalidateCache = async () => {
  * @param {IEmcResult} emcResult
  */
 let saveRule = (rqBody, emcResult) => Db.with(db => {
-	if (!admins.includes(+emcResult.user.id)) {
-		return Forbidden('You (' + emcResult.user.displayName + ') are not listed as an admin of this project, so you can not change rules');
-	}
 	let decoration = [];
 	for (let [key, value] of Object.entries(rqBody.decorationFlags || {})) {
 		if (+value) {

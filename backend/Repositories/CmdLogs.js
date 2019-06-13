@@ -85,6 +85,7 @@ let makeRow = (cmdRec, session, cmdRqId, prevState) => {
 	};
 };
 
+/** RAM caching */
 let sessionToLastInsertion = {};
 let queued = (key, action) => {
 	let lastInsertion = sessionToLastInsertion[key] || Promise.resolve();

@@ -1,5 +1,4 @@
 const Db = require('./../../../../Utils/Db.js');
-const Constants = require('./../../../../Constants.js');
 const {array_map, array_flip, array_intersect_key, empty, json_decode, str_split, intval, isset} = require("../../../php.js");
 const RedisData = require("../../../../LibWrappers/RedisData.js");
 const AreaSettings = require("../../../../Repositories/AreaSettings");
@@ -98,7 +97,7 @@ class TerminalSettings {
 			common: {currentGds: await this.getCurrentGds()},
 			gds: {},
 		};
-		for (let $gds of Constants.supportedGdses) {
+		for (let $gds of ['apollo', 'sabre', 'galileo', 'amadeus']) {
 			$settings['gds'][$gds] = this.getDefault();
 		}
 		return Db.with(

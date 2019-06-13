@@ -2,7 +2,6 @@ let MultiLevelMap = require('../Utils/MultiLevelMap.js');
 let Db = require('../Utils/Db.js');
 let TerminalSettings = require('../Transpiled/App/Models/Terminal/TerminalSettings.js');
 const GdsSessions = require("../Repositories/GdsSessions");
-let {admins} = require('../Constants.js');
 
 let getCommandBufferRows = (reqBody, emcResult) =>
     Db.with(db => db.fetchAll({
@@ -20,7 +19,7 @@ exports.getView = (reqBody, emcResult) => {
         new TerminalSettings(emcResult).getSettings().then(async settings => {
             let bufferMap = MultiLevelMap();
             rows = rows.reverse();
-            let isAdmin = admins.includes(+emcResult.user.id);
+            let isAdmin = emcResult.user.roles.includes('NEW_GDS_DIRECT_DEV_ACCESS');
             for (let row of rows) {
                 bufferMap.push(['gds', row.gds, 'terminals', row.terminalNumber, 'buffering'], {
                     area: row.area,

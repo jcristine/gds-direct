@@ -48,3 +48,20 @@ exports.ignoreExc = (defaultValue, allowedKinds) => {
 		}
 	};
 };
+
+exports.addPerformanceDebug = (label) => {
+	let startMs = Date.now();
+	let startMem = process.memoryUsage();
+	return (result) => {
+		if (typeof result === 'object' && result !== null) {
+			result.performanceDebug = result.performanceDebug || [];
+			result.performanceDebug.push({
+				label: label,
+				timeMs: Date.now() - startMs,
+				startMem: startMem,
+				endMem: process.memoryUsage(),
+			});
+		}
+		return result;
+	};
+};

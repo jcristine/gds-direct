@@ -41,7 +41,10 @@ let getAll = async () => {
 	}
 };
 
-/** @type IGdsProfileMap */
+/**
+ * RAM caching
+ * @type IGdsProfileMap
+ */
 let gdsProfileCache = {
 	travelport: {},
 	sabre: {},
