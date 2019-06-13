@@ -132,6 +132,11 @@ exports.getAll = async (sessionId) => {
 	});
 };
 
+exports.getBy = (params) => {
+	params.table = TABLE;
+	return Db.with(db => db.fetchAll(params));
+};
+
 exports.getLast = async (sessionId) => {
     /** @var r = makeRow() */
 	let r = await Db.with(db => db.fetchOne({

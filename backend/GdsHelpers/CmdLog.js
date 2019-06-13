@@ -17,6 +17,11 @@ let CmdLog = ({
 	whenCmdRqId = whenCmdRqId || Promise.resolve(null);
 	let gds = session.context.gds;
 	let getSessionData = () => ({...fullState.areas[fullState.area] || {}, gds: gds});
+	let selectRowsFromDb = (params) => {
+		params.where = params.where || [];
+		params.where.push(['session_id', '=', session.id]);
+		return CmdLogs.getBy(params);
+	};
 	let getRowsFromDb = () => {
 		return CmdLogs.getAll(session.id)
 			.then(desc => [...desc].reverse());
@@ -69,6 +74,45 @@ let CmdLog = ({
 			.filter(row => !startId || row.id < startId)
 			.concat(called);
 		return joined;
+	};
+
+	let selectLastCmdOf = async (params) => {
+		params.orderBy = [['id', 'DESC']];
+		params.limit = 1;
+		let called = await Promise.all(calledPromises);
+		let row = selectFromArray(params, called)[0];
+		if (row) {
+			// found in commands called in this process
+			return row;
+		} else {
+			// need to look in DB
+			let fromDb = await selectRowsFromDb(params);
+			if (fromDb.length > 0) {
+				return fromDb[0];
+			} else {
+				return Rej.NoContent('No commands matched ' + JSON.stringify(params.where));
+			}
+		}
+	};
+
+	let getCommandsAfter = async (id, params) => {
+		params.where = params.where || [];
+		if (id) {
+			params.where.push(['id', '>', id]);
+		}
+		params.orderBy = [['id', 'ASC']];
+		let called = await Promise.all(calledPromises);
+		let earliestCalledId = called.length > 0 ? called[0].id : 0;
+		let filtered = selectFromArray(params, called);
+		if (id && earliestCalledId && earliestCalledId <= id) {
+			return filtered;
+		} else {
+			let fromDb = await selectRowsFromDb(params);
+			let joined = fromDb
+				.filter(row => !earliestCalledId || row.id < earliestCalledId)
+				.concat(filtered);
+			return joined;
+		}
 	};
 
 	return {
@@ -137,17 +181,20 @@ let CmdLog = ({
 		 * will be returned:              >01y2; >*I; >*SVC;
 		 */
 		getLastStateSafeCommands: async () => {
-			let allCmdsDesc = (await getAll()).reverse();
-			let matched = [];
-			for (let cmdRec of allCmdsDesc) {
-				if (cmdRec.area === fullState.area) {
-					matched.unshift(cmdRec);
-					let types = SessionStateHelper.$nonAffectingTypes;
-					let matches = types.includes(cmdRec.type) || cmdRec.is_mr;
-					if (!matches) {
-						break;
-					}
-				}
+			let stateStarter = await selectLastCmdOf({
+				where: [
+					['area', '=', fullState.area],
+					['type', 'NOT IN', SessionStateHelper.$nonAffectingTypes],
+					['is_mr', '=', false],
+				],
+			}).catch(exc => null);
+
+			let startId = !stateStarter ? 0 : stateStarter.id;
+			let matched = await getCommandsAfter(startId, {
+				where: [['area', '=', fullState.area]],
+			});
+			if (stateStarter) {
+				matched.unshift(stateStarter);
 			}
 			return matched;
 		},
@@ -169,7 +216,7 @@ let CmdLog = ({
 	};
 };
 
-CmdLog.noDb = ({gds, fullState}) => {
+CmdLog.noDb = ({gds, fullState, dbCmdRecs = []}) => {
 	let lastId = 0;
 	return CmdLog({
 		session: {
@@ -179,6 +226,7 @@ CmdLog.noDb = ({gds, fullState}) => {
 		},
 		fullState,
 		CmdLogs: {
+			getBy: (params) => Promise.resolve(selectFromArray(params, dbCmdRecs)),
 			getAll: () => Promise.resolve([]),
 			storeNew: (row) => Promise.resolve({id: ++lastId, ...row}),
 			getLast: () => NotFound('No records: non-storing storage'),
