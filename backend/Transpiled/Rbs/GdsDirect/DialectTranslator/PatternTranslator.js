@@ -127,8 +127,7 @@ class PatternTranslator {
 	}
 
 	static makePatternList($rawData) {
-
-		return !php.is_array($rawData) ? [$rawData] : $rawData;
+		return !php.is_array($rawData) ? [$rawData] : [...$rawData];
 	}
 
 	// F:{al} -> 2:{al}/LF{al}

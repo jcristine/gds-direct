@@ -20,21 +20,8 @@ const TranslateAddFrequentFlyerNumber = require("./TranslateAddFrequentFlyerNumb
 const TranslateChangeFrequentFlyerNumber = require("./TranslateChangeFrequentFlyerNumber");
 const CommonDataHelper = require("../CommonDataHelper");
 
-class GdsDialectTranslator
-{
-	constructor() {
-		this.$baseDate = null;
-	}
-
-    setBaseDate($baseDate)  {
-
-        this.$baseDate = $baseDate;
-        return this;
-    }
-
-    static getPatternList()  {
-
-        return [
+/** RAM cache */
+const patternList = [
             // Area change
             {
                 'apollo': 'S{single_char}',
@@ -1195,7 +1182,22 @@ class GdsDialectTranslator
                 'amadeus': 'NON-TRANSLATABLE',
                 'galileo': '*MM',
             },
-        ];
+];
+
+class GdsDialectTranslator
+{
+	constructor() {
+		this.$baseDate = null;
+	}
+
+    setBaseDate($baseDate)  {
+
+        this.$baseDate = $baseDate;
+        return this;
+    }
+
+    static getPatternList()  {
+		return patternList;
     }
 
     translateThroughSeparateFunctions($fromGds, $toGds, $userInput)  {
