@@ -780,7 +780,6 @@ class ProcessAmadeusTerminalInputAction {
 				['type', '=', 'airAvailability'],
 				['is_mr', '=', false],
 			],
-			orderBy: [['id', 'DESC']],
 			limit: 1,
 		}))[0];
 		if (!lastAvail) {

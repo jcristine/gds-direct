@@ -172,7 +172,6 @@ class ProcessGalileoTerminalInputAction {
 				['area', '=', this.getSessionData().area],
 				['type', '=', 'airAvailability'],
 			],
-			orderBy: [['id', 'DESC']],
 			limit: 1,
 		}).then(rows => rows[0])
 			.then(Rej.nonEmpty('No recent availability'))
@@ -213,7 +212,6 @@ class ProcessGalileoTerminalInputAction {
 					['type', '=', 'airAvailability'],
 					['area', '=', this.getSessionData().area],
 				],
-				orderBy: [['id', 'DESC']],
 				limit: 20,
 			});
 			for (let cmdRow of cmdRows) {

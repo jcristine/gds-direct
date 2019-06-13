@@ -205,10 +205,20 @@ let CmdLog = ({
 		},
 		/** @param {makeSelectQuery_rq} params */
 		getLikeSql: async (params) => {
-			// TODO: from DB
-			// params.table = 'terminal_command_log';
-			// params.where.push(['session_id', '=', session.id]);
-			return selectFromArray(params, await getAll());
+			params.orderBy = [['id', 'DESC']];
+			let called = await Promise.all(calledPromises);
+			let earliestCalledId = called.map(row => row.id).slice(-1)[0];
+			let filtered = selectFromArray(params, called);
+			if (params.limit && filtered.length == params.limit) {
+				return filtered;
+			} else {
+				let fromDb = await selectRowsFromDb(params);
+				let fromDbExclusively = fromDb
+					.filter(row => !earliestCalledId || row.id < earliestCalledId)
+					.concat(filtered);
+				let joined = filtered.concat(fromDbExclusively);
+				return joined;
+			}
 		},
 		getAllCommands: () => {
 			return getAll();

@@ -1361,7 +1361,6 @@ class ProcessApolloTerminalInputAction {
 				['area', '=', this.getSessionData().area],
 				['type', '=', 'airAvailability'],
 			],
-			orderBy: [['id', 'DESC']],
 			limit: 1,
 		}))[0];
 		if (!lastAvail) {
