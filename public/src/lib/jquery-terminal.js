@@ -34,19 +34,6 @@
  * Date: Tue, 12 Sep 2017 07:04:06 +0000
  */
 
-/* TODO:
- *
- * Debug interpreters names in LocalStorage
- * onPositionChange event add to terminal ???
- * different command line history for each login users (add login if present to
- * localStorage key)
- *
- * TEST: login + promises/exec
- *       json-rpc/object + promises
- *
- * NOTE: json-rpc don't need promises and delegate resume/pause because only
- *       exec can call it and exec call interpreter that work with resume/pause
- */
 /* global location, jQuery, setTimeout, window, global, localStorage, sprintf,
          setImmediate, IntersectionObserver, MutationObserver, wcwidth,
          module, require, define */
@@ -3057,106 +3044,6 @@
 		return get.toString().match(/\[native code\]/);
 	}
 	// -----------------------------------------------------------------------
-	function warn(msg) {
-		msg = '[jQuery Terminal] ' + msg;
-		if (console && console.warn) {
-			console.warn(msg);
-		} else {
-			// prevent catching in outer try..catch
-			setTimeout(function() {
-				throw new Error('WARN: ' + msg);
-			}, 0);
-		}
-	}
-	// -----------------------------------------------------------------------
-	// JSON-RPC CALL
-	// -----------------------------------------------------------------------
-	var ids = {}; // list of url based ids of JSON-RPC
-	$.jrpc = function(url, method, params, success, error) {
-		var options;
-		if ($.isPlainObject(url)) {
-			options = url;
-		} else {
-			options = {
-				url: url,
-				method: method,
-				params: params,
-				success: success,
-				error: error
-			};
-		}
-		function validJSONRPC(response) {
-			return $.isNumeric(response.id) &&
-				(typeof response.result !== 'undefined' ||
-					typeof response.error !== 'undefined');
-		}
-		ids[options.url] = ids[options.url] || 0;
-		var request = {
-			'jsonrpc': '2.0',
-			'method': options.method,
-			'params': options.params,
-			'id': ++ids[options.url]
-		};
-		return $.ajax({
-			url: options.url,
-			beforeSend: function beforeSend(jxhr, settings) {
-				if ($.isFunction(options.request)) {
-					options.request(jxhr, request);
-				}
-				settings.data = JSON.stringify(request);
-			},
-			success: function success(response, status, jqXHR) {
-				var content_type = jqXHR.getResponseHeader('Content-Type');
-				if (!content_type.match(/(application|text)\/json/)) {
-					warn('Response Content-Type is neither application/json' +
-						' nor text/json');
-				}
-				var json;
-				try {
-					json = JSON.parse(response);
-				} catch (e) {
-					if (options.error) {
-						options.error(jqXHR, 'Invalid JSON', e);
-					} else {
-						throw new Error('Invalid JSON');
-					}
-					return;
-				}
-				if ($.isFunction(options.response)) {
-					options.response(jqXHR, json);
-				}
-				if (validJSONRPC(json) || options.method === 'system.describe') {
-					// don't catch errors in success callback
-					options.success(json, status, jqXHR);
-				} else if (options.error) {
-					options.error(jqXHR, 'Invalid JSON-RPC');
-				} else {
-					throw new Error('Invalid JSON-RPC');
-				}
-			},
-			error: options.error,
-			contentType: 'application/json',
-			dataType: 'text',
-			async: true,
-			cache: false,
-			// timeout: 1,
-			type: 'POST'
-		});
-	};
-
-	// -----------------------------------------------------------------------
-	/*
-    function is_scrolled_into_view(elem) {
-        var docViewTop = $(window).scrollTop();
-        var docViewBottom = docViewTop + $(window).height();
-
-        var elemTop = $(elem).offset().top;
-        var elemBottom = elemTop + $(elem).height();
-
-        return ((elemBottom >= docViewTop) && (elemTop <= docViewBottom));
-    }
-    */
-	// -----------------------------------------------------------------------
 	// :: Create fake terminal to calcualte the dimention of one character
 	// :: this will make terminal work if terminal div is not added to the
 	// :: DOM at init like with:
@@ -3348,18 +3235,9 @@
 			' have two arguments',
 			wrongPasswordTryAgain: 'Wrong password try again!',
 			wrongPassword: 'Wrong password!',
-			ajaxAbortError: 'Error while aborting ajax call!',
 			wrongArity: "Wrong number of arguments. Function '%s' expects %s got" +
 			' %s!',
 			commandNotFound: "Command '%s' Not Found!",
-			oneRPCWithIgnore: 'You can use only one rpc with describe == false ' +
-			'or rpc without system.describe',
-			oneInterpreterFunction: "You can't use more than one function (rpc " +
-			'without system.describe or with option describe == false count' +
-			's as one)',
-			loginFunctionMissing: "You didn't specify a login function",
-			noTokenError: 'Access denied (no token)',
-			serverResponse: 'Server responded',
 			wrongGreetings: 'Wrong value of greetings parameter',
 			notWhileLogin: "You can't call `%s' function while in login",
 			loginIsNotAFunction: 'Authenticate must be a function',
@@ -3379,7 +3257,6 @@
 	// -------------------------------------------------------------------------
 	// :: All terminal globals
 	// -------------------------------------------------------------------------
-	var requests = []; // for canceling on CTRL+D
 	var terminals = new Cycle(); // list of terminals global in this scope
 	// state for all terminals, terminals can't have own array fo state because
 	// there is only one popstate event
@@ -3471,93 +3348,6 @@
 			}
 		}
 		// ---------------------------------------------------------------------
-		// :: Helper function
-		// ---------------------------------------------------------------------
-		function display_json_rpc_error(error) {
-			if ($.isFunction(settings.onRPCError)) {
-				settings.onRPCError.call(self, error);
-			} else {
-				self.error('&#91;RPC&#93; ' + error.message);
-				if (error.error && error.error.message) {
-					error = error.error;
-					// more detailed error message
-					var msg = '\t' + error.message;
-					if (error.file) {
-						msg += ' in file "' + error.file.replace(/.*\//, '') + '"';
-					}
-					if (error.at) {
-						msg += ' at line ' + error.at;
-					}
-					self.error(msg);
-				}
-			}
-		}
-		// ---------------------------------------------------------------------
-		// :: Create interpreter function from url string
-		// ---------------------------------------------------------------------
-		function make_basic_json_rpc(url, auth) {
-			var interpreter = function(method, params) {
-				self.pause(settings.softPause);
-				$.jrpc({
-					url: url,
-					method: method,
-					params: params,
-					request: function(jxhr, request) {
-						try {
-							settings.request.apply(self, jxhr, request, self);
-						} catch (e) {
-							display_exception(e, 'USER');
-						}
-					},
-					response: function(jxhr, response) {
-						try {
-							settings.response.apply(self, jxhr, response, self);
-						} catch (e) {
-							display_exception(e, 'USER');
-						}
-					},
-					success: function success(json) {
-						if (json.error) {
-							display_json_rpc_error(json.error);
-						} else if ($.isFunction(settings.processRPCResponse)) {
-							settings.processRPCResponse.call(self, json.result, self);
-						} else {
-							display_object(json.result);
-						}
-						self.resume();
-					},
-					error: ajax_error
-				});
-			};
-			// this is the interpreter function
-			return function(command, terminal) {
-				if (command === '') {
-					return;
-				}
-				try {
-					command = get_processed_command(command);
-				} catch (e) {
-					// exception can be thrown on invalid regex
-					display_exception(e, 'TERMINAL (get_processed_command)');
-					return;
-					// throw e; // this will show stack in other try..catch
-				}
-				if (!auth || command.name === 'help') {
-					// allows to call help without a token
-					interpreter(command.name, command.args);
-				} else {
-					var token = terminal.token();
-					if (token) {
-						interpreter(command.name, [token].concat(command.args));
-					} else {
-						// should never happen
-						terminal.error('&#91;AUTH&#93; ' +
-							strings().noTokenError);
-					}
-				}
-			};
-		}
-		// ---------------------------------------------------------------------
 		// :: Create interpreter function from Object. If the value is object
 		// :: it will create nested interpreters
 		// ---------------------------------------------------------------------
@@ -3582,16 +3372,6 @@
 					return;
 					// throw e; // this will show stack in other try..catch
 				}
-				/*
-                if (login) {
-                    var token = self.token(true);
-                    if (token) {
-                        command.args = [token].concat(command.args);
-                    } else {
-                        terminal.error('&#91;AUTH&#93; ' + strings.noTokenError);
-                        return;
-                    }
-                }*/
 				var val = object[command.name];
 				var type = $.type(val);
 				if (type === 'function') {
@@ -3627,230 +3407,10 @@
 			};
 		}
 		// ---------------------------------------------------------------------
-		function ajax_error(xhr, status, error) {
-			self.resume(); // onAjaxError can use pause/resume call it first
-			if ($.isFunction(settings.onAjaxError)) {
-				settings.onAjaxError.call(self, xhr, status, error);
-			} else if (status !== 'abort') {
-				self.error('&#91;AJAX&#93; ' + status + ' - ' +
-					strings().serverResponse + ':\n' +
-					$.terminal.escape_brackets(xhr.responseText));
-			}
-		}
-		// ---------------------------------------------------------------------
-		function make_json_rpc_object(url, auth, success) {
-			function jrpc_success(json) {
-				if (json.error) {
-					display_json_rpc_error(json.error);
-				} else if ($.isFunction(settings.processRPCResponse)) {
-					settings.processRPCResponse.call(self, json.result, self);
-				} else {
-					display_object(json.result);
-				}
-				self.resume();
-			}
-			function jrpc_request(jxhr, request) {
-				try {
-					settings.request.call(self, jxhr, request, self);
-				} catch (e) {
-					display_exception(e, 'USER');
-				}
-			}
-			function jrpc_response(jxhr, response) {
-				try {
-					settings.response.call(self, jxhr, response, self);
-				} catch (e) {
-					display_exception(e, 'USER');
-				}
-			}
-			function response(response) {
-				var procs = response;
-				// we check if it's false before we call this function but
-				// it don't hurt to be explicit here
-				if (settings.describe !== '') {
-					settings.describe.split('.').forEach(function(field) {
-						procs = procs[field];
-					});
-				}
-				if (procs && procs.length) {
-					var interpreter_object = {};
-					$.each(procs, function(_, proc) {
-						interpreter_object[proc.name] = function() {
-							var append = auth && proc.name !== 'help';
-							var args = Array.prototype.slice.call(arguments);
-							var args_len = args.length + (append ? 1 : 0);
-							if (settings.checkArity && proc.params &&
-								proc.params.length !== args_len) {
-								self.error('&#91;Arity&#93; ' +
-									sprintf(strings().wrongArity,
-										proc.name,
-										proc.params.length,
-										args_len));
-							} else {
-								self.pause(settings.softPause);
-								if (append) {
-									var token = self.token(true);
-									if (token) {
-										args = [token].concat(args);
-									} else {
-										self.error('&#91;AUTH&#93; ' +
-											strings().noTokenError);
-									}
-								}
-								$.jrpc({
-									url: url,
-									method: proc.name,
-									params: args,
-									request: jrpc_request,
-									response: jrpc_response,
-									success: jrpc_success,
-									error: ajax_error
-								});
-							}
-						};
-					});
-					interpreter_object.help = interpreter_object.help || function(fn) {
-						if (typeof fn === 'undefined') {
-							var names = response.procs.map(function(proc) {
-								return proc.name;
-							}).join(', ') + ', help';
-							self.echo('Available commands: ' + names);
-						} else {
-							var found = false;
-							$.each(procs, function(_, proc) {
-								if (proc.name === fn) {
-									found = true;
-									var msg = '';
-									msg += '[[bu;#fff;]' + proc.name + ']';
-									if (proc.params) {
-										msg += ' ' + proc.params.join(' ');
-									}
-									if (proc.help) {
-										msg += '\n' + proc.help;
-									}
-									self.echo(msg);
-									return false;
-								}
-							});
-							if (!found) {
-								if (fn === 'help') {
-									self.echo('[[bu;#fff;]help] [method]\ndisplay help ' +
-										'for the method or list of methods if not' +
-										' specified');
-								} else {
-									var msg = 'Method `' + fn + "' not found ";
-									self.error(msg);
-								}
-							}
-						}
-					};
-					success(interpreter_object);
-				} else {
-					success(null);
-				}
-			}
-			return $.jrpc({
-				url: url,
-				method: 'system.describe',
-				params: [],
-				success: response,
-				request: jrpc_request,
-				response: jrpc_response,
-				error: function error() {
-					success(null);
-				}
-			});
-		}
-		// ---------------------------------------------------------------------
 		function make_interpreter(user_intrp, login, finalize) {
 			finalize = finalize || $.noop;
 			var type = $.type(user_intrp);
-			var object;
-			var result = {};
-			var rpc_count = 0; // only one rpc can be use for array
-			var fn_interpreter;
-			if (type === 'array') {
-				object = {};
-				// recur will be called when previous acync call is finished
-				(function recur(interpreters, success) {
-					if (interpreters.length) {
-						var first = interpreters[0];
-						var rest = interpreters.slice(1);
-						var type = $.type(first);
-						if (type === 'string') {
-							self.pause(settings.softPause);
-							if (settings.describe === false) {
-								if (++rpc_count === 1) {
-									fn_interpreter = make_basic_json_rpc(first, login);
-								} else {
-									self.error(strings().oneRPCWithIgnore);
-								}
-								recur(rest, success);
-							} else {
-								make_json_rpc_object(first, login, function(new_obj) {
-									if (new_obj) {
-										$.extend(object, new_obj);
-									} else if (++rpc_count === 1) {
-										fn_interpreter = make_basic_json_rpc(
-											first,
-											login
-										);
-									} else {
-										self.error(strings().oneRPCWithIgnore);
-									}
-									self.resume();
-									recur(rest, success);
-								});
-							}
-						} else if (type === 'function') {
-							if (fn_interpreter) {
-								self.error(strings().oneInterpreterFunction);
-							} else {
-								fn_interpreter = first;
-							}
-							recur(rest, success);
-						} else if (type === 'object') {
-							$.extend(object, first);
-							recur(rest, success);
-						}
-					} else {
-						success();
-					}
-				})(user_intrp, function() {
-					finalize({
-						interpreter: make_object_interpreter(object,
-							false,
-							login,
-							fn_interpreter.bind(self)),
-						completion: Object.keys(object)
-					});
-				});
-			} else if (type === 'string') {
-				if (settings.ignoreSystemDescribe) {
-					object = {
-						interpreter: make_basic_json_rpc(user_intrp, login)
-					};
-					if ($.isArray(settings.completion)) {
-						object.completion = settings.completion;
-					}
-					finalize(object);
-				} else {
-					self.pause(settings.softPause);
-					make_json_rpc_object(user_intrp, login, function(object) {
-						if (object) {
-							result.interpreter = make_object_interpreter(object,
-								false,
-								login);
-							result.completion = Object.keys(object);
-						} else {
-							// no procs in system.describe
-							result.interpreter = make_basic_json_rpc(user_intrp, login);
-						}
-						finalize(result);
-						self.resume();
-					});
-				}
-			} else if (type === 'object') {
+			if (type === 'object') {
 				finalize({
 					interpreter: make_object_interpreter(user_intrp,
 						settings.checkArity),
@@ -3869,45 +3429,6 @@
 					completion: settings.completion
 				});
 			}
-		}
-		// ---------------------------------------------------------------------
-		// :: Create JSON-RPC authentication function
-		// ---------------------------------------------------------------------
-		function make_json_rpc_login(url, login) {
-			var method = $.type(login) === 'boolean' ? 'login' : login;
-			return function(user, passwd, callback) {
-				self.pause(settings.softPause);
-				$.jrpc({
-					url: url,
-					method: method,
-					params: [user, passwd],
-					request: function(jxhr, request) {
-						try {
-							settings.request.call(self, jxhr, request, self);
-						} catch (e) {
-							display_exception(e, 'USER');
-						}
-					},
-					response: function(jxhr, response) {
-						try {
-							settings.response.call(self, jxhr, response, self);
-						} catch (e) {
-							display_exception(e, 'USER');
-						}
-					},
-					success: function success(response) {
-						if (!response.error && response.result) {
-							callback(response.result);
-						} else {
-							// null will trigger message that login fail
-							callback(null);
-						}
-						self.resume();
-					},
-					error: ajax_error
-				});
-			};
-			// default name is login so you can pass true
 		}
 		// ---------------------------------------------------------------------
 		// :: Return exception message as string
@@ -4657,25 +4178,6 @@
 								return result;
 							}
 						}
-						if (requests.length) {
-							for (i = requests.length; i--;) {
-								var r = requests[i];
-								if (r.readyState !== 4) {
-									try {
-										r.abort();
-									} catch (error) {
-										if ($.isFunction(settings.exceptionHandler)) {
-											settings.exceptionHandler.call(self,
-												e,
-												'AJAX ABORT');
-										} else {
-											self.error(strings().ajaxAbortError);
-										}
-									}
-								}
-							}
-							requests = [];
-						}
 						self.resume();
 					}
 					return false;
@@ -5145,28 +4647,6 @@
 			// -------------------------------------------------------------
 			commands: function() {
 				return interpreters.top().interpreter;
-			},
-			// -------------------------------------------------------------
-			// :: Low Level method that overwrites interpreter
-			// -------------------------------------------------------------
-			set_interpreter: function(user_intrp, login) {
-				function overwrite_interpreter() {
-					self.pause(settings.softPause);
-					make_interpreter(user_intrp, !!login, function(result) {
-						self.resume();
-						var top = interpreters.top();
-						$.extend(top, result);
-						prepare_top_interpreter(true);
-					});
-				}
-				if ($.type(user_intrp) === 'string' && login) {
-					self.login(make_json_rpc_login(user_intrp, login),
-						true,
-						overwrite_interpreter);
-				} else {
-					overwrite_interpreter();
-				}
-				return self;
 			},
 			// -------------------------------------------------------------
 			// :: Show user greetings or terminal signature
@@ -5988,27 +5468,7 @@
 								interpreters.top().completion = false;
 							}
 						}
-						if (push_settings.login) {
-							var error;
-							var type = $.type(push_settings.login);
-							if (type === 'function') {
-								error = push_settings.infiniteLogin ? $.noop : self.pop;
-								self.login(push_settings.login,
-									push_settings.infiniteLogin,
-									init,
-									error);
-							} else if ($.type(interpreter) === 'string' &&
-								type === 'string' || type === 'boolean') {
-								error = push_settings.infiniteLogin ? $.noop : self.pop;
-								self.login(make_json_rpc_login(interpreter,
-									push_settings.login),
-									push_settings.infiniteLogin,
-									init,
-									error);
-							}
-						} else {
-							init();
-						}
+						init();
 						if (!was_paused && self.enabled()) {
 							self.resume();
 						}
@@ -6217,10 +5677,6 @@
 			self.height(settings.height);
 		}
 		scroll_object = self.scroll_element();
-		// register ajaxSend for cancel requests on CTRL+D
-		$(document).bind('ajaxSend.terminal_' + self.id(), function(e, xhr) {
-			requests.push(xhr);
-		});
 		var wrapper = $('<div class="terminal-wrapper"/>').appendTo(self);
 		$('<div class="terminal-fill"/>').appendTo(self);
 		output = $('<div>').addClass('terminal-output').attr('role', 'log')
@@ -6238,24 +5694,6 @@
 					throw e;
 				}
 			}
-		}
-		// create json-rpc authentication function
-		var base_interpreter;
-		if (typeof init_interpreter === 'string') {
-			base_interpreter = init_interpreter;
-		} else if (init_interpreter instanceof Array) {
-			// first JSON-RPC
-			for (var i = 0, len = init_interpreter.length; i < len; ++i) {
-				if (typeof init_interpreter[i] === 'string') {
-					base_interpreter = init_interpreter[i];
-					break;
-				}
-			}
-		}
-		if (base_interpreter &&
-			(typeof settings.login === 'string' || settings.login === true)) {
-			settings.login = make_json_rpc_login(base_interpreter,
-				settings.login);
 		}
 		terminals.append(self);
 		self.on('focus.terminal', 'textarea', function(e) {
