@@ -115,6 +115,33 @@ let CmdLog = ({
 		}
 	};
 
+	let getCommandsStartingFrom = async (startCmdRec, params = {}) => {
+		let startId = !startCmdRec ? 0 : startCmdRec.id;
+		let matched = await getCommandsAfter(startId, params);
+		if (startCmdRec) {
+			matched.unshift(startCmdRec);
+		}
+		return matched;
+	};
+
+	/** @param {makeSelectQuery_rq} params */
+	let getLikeSql = async (params) => {
+		params.orderBy = [['id', 'DESC']];
+		let called = await Promise.all(calledPromises);
+		let earliestCalledId = called.map(row => row.id).slice(-1)[0];
+		let filtered = selectFromArray(params, called);
+		if (params.limit && filtered.length == params.limit) {
+			return filtered;
+		} else {
+			let fromDb = await selectRowsFromDb(params);
+			let fromDbExclusively = fromDb
+				.filter(row => !earliestCalledId || row.id < earliestCalledId)
+				.concat(filtered);
+			let joined = filtered.concat(fromDbExclusively);
+			return joined;
+		}
+	};
+
 	return {
 		logCommand: logCommand,
 		getFullState: () => fullState,
@@ -164,15 +191,11 @@ let CmdLog = ({
 		 * command when it is the last entered command (it displays PNR if any)
 		 */
 		getScrolledCmdMrs: async () => {
-			let allCmdsDesc = (await getAll()).reverse();
-			let matched = [];
-			for (let cmdRec of allCmdsDesc) {
-				matched.unshift(cmdRec);
-				if (!cmdRec.is_mr) {
-					break;
-				}
-			}
-			return matched;
+			let mrStarter = await selectLastCmdOf({
+				where: [['is_mr', '=', false]],
+			}).catch(exc => null);
+
+			return getCommandsStartingFrom(mrStarter);
 		},
 		/**
 		 * get last commands that for sure did not affect PNR
@@ -189,37 +212,16 @@ let CmdLog = ({
 				],
 			}).catch(exc => null);
 
-			let startId = !stateStarter ? 0 : stateStarter.id;
-			let matched = await getCommandsAfter(startId, {
+			return getCommandsStartingFrom(stateStarter, {
 				where: [['area', '=', fullState.area]],
 			});
-			if (stateStarter) {
-				matched.unshift(stateStarter);
-			}
-			return matched;
 		},
 		getLastCalledCommand: () => {
 			return calledPromises.length > 0
 				? calledPromises.slice(-1)[0]
 				: CmdLogs.getLast(session.id);
 		},
-		/** @param {makeSelectQuery_rq} params */
-		getLikeSql: async (params) => {
-			params.orderBy = [['id', 'DESC']];
-			let called = await Promise.all(calledPromises);
-			let earliestCalledId = called.map(row => row.id).slice(-1)[0];
-			let filtered = selectFromArray(params, called);
-			if (params.limit && filtered.length == params.limit) {
-				return filtered;
-			} else {
-				let fromDb = await selectRowsFromDb(params);
-				let fromDbExclusively = fromDb
-					.filter(row => !earliestCalledId || row.id < earliestCalledId)
-					.concat(filtered);
-				let joined = filtered.concat(fromDbExclusively);
-				return joined;
-			}
-		},
+		getLikeSql: getLikeSql,
 		getAllCommands: () => {
 			return getAll();
 		},
