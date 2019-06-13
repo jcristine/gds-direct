@@ -154,20 +154,17 @@ let CmdLog = ({
 			if (!getSessionData().hasPnr) {
 				return [];
 			}
-			// TODO: filter them in SQL to make sure 5K logs won't affect response time
-			let allCmdsDesc = (await getAll()).reverse();
-			let matched = [];
-			for (let cmdRec of allCmdsDesc) {
-				if (cmdRec.area === fullState.area) {
-					matched.unshift(cmdRec);
-					let samePnr = !cmdRec.record_locator
-						|| cmdRec.record_locator === getSessionData().recordLocator;
-					if (!cmdRec.has_pnr || !samePnr) {
-						break;
-					}
-				}
-			}
-			return matched;
+			let pnrStarter = await selectLastCmdOf({
+				where: [['area', '=', fullState.area]],
+				whereOr: [
+					[['has_pnr', '=', false]],
+					[['record_locator', '!=', getSessionData().recordLocator]],
+				],
+			}).catch(exc => null);
+
+			return getCommandsStartingFrom(pnrStarter, {
+				where: [['area', '=', fullState.area]],
+			});
 		},
 		/** get all commands starting from last not in the provided type list including it */
 		getLastCommandsOfTypes: async (types) => {
