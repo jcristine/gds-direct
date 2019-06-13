@@ -656,26 +656,6 @@
 				//textarea
 				return target.selectionStart;
 			}
-			//IE<9
-			if (document.selection) {
-				target.focus();
-				//contenteditable
-				if (isContentEditable) {
-					var range1 = document.selection.createRange(),
-						range2 = document.body.createTextRange();
-					range2.moveToElementText(target);
-					range2.setEndPoint('EndToEnd', range1);
-					return range2.text.length;
-				}
-				//textarea
-				var pos = 0,
-					range = target.createTextRange(),
-					range2 = document.selection.createRange().duplicate(),
-					bookmark = range2.getBookmark();
-				range.moveToBookmark(bookmark);
-				while (range.moveStart('character', -1) !== 0) pos++;
-				return pos;
-			}
 			//not supported
 			return 0;
 		}
@@ -692,14 +672,6 @@
 			//textarea
 			else
 				target.setSelectionRange(pos, pos);
-		}
-		//IE<9
-		else if (document.body.createTextRange) {
-			var range = document.body.createTextRange();
-			range.moveToElementText(target);
-			range.moveStart('character', pos);
-			range.collapse(true);
-			range.select();
 		}
 		if (!isContentEditable)
 			target.focus();
@@ -2177,9 +2149,6 @@
 				}
 				if (!key || no_key) {
 					key = String.fromCharCode(e.which);
-				}
-				if (key.toUpperCase() === 'SPACEBAR') { // fix IE issue
-					key = ' ';
 				}
 				if ($.inArray(e.which, [13, 0, 8]) > -1) {
 					if (e.keyCode === 123) { // for F12 which === 0
@@ -6538,10 +6507,6 @@
 				if (self.is(':visible')) {
 					var width = self.width();
 					var height = self.height();
-					// prevent too many calculations in IE
-					if (old_height !== height || old_width !== width) {
-						self.resize();
-					}
 					old_height = height;
 					old_width = width;
 				}
@@ -6707,11 +6672,6 @@
 				var event;
 				if ("onwheel" in document.createElement("div")) {
 					event = "wheel"; // Modern browsers support "wheel"
-				} else if (document.onmousewheel !== undefined) {
-					event = "mousewheel"; // Webkit and IE support at least "mousewheel"
-				} else {
-					// let's assume that remaining browsers are older Firefox
-					event = "DOMMouseScroll";
 				}
 				self.on(event, function(e) {
 					var delta;
