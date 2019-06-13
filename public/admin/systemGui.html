@@ -1,0 +1,25 @@
+
+<body>
+
+<p>On this page you can see info about system like detailed memory usage, DB/Redis connections, etc... </p>
+<p>I will probably also add few buttons here to cleanup caches and stuff later...</p>
+<p>The main aim is to debug RAM and CPU leaks</p>
+
+<textarea rows="30" cols="100" class="status-data-holder"></textarea>
+
+<script src="../src/actions/initAuthPage.js"></script>
+<script>
+window.GdsDirectPlusPage.whenEmcSessionId.then(emcSessionId => {
+	let initialize = (statusData) => {
+		let statusHolder = document.querySelector('.status-data-holder');
+        statusHolder.value = JSON.stringify(statusData, null, 4);
+    };
+
+	fetch('/admin/status?emcSessionId=' + emcSessionId)
+        .then(rs => rs.json())
+        .then(initialize)
+        .catch(exc => alert('Failed to fetch status - ' + exc))
+});
+</script>
+
+</body>

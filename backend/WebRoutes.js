@@ -333,9 +333,15 @@ app.get('/admin/getSettings', withOwnerAuth(async (rqBody, emcResult) => {
 }));
 app.post('/admin/setSetting', withOwnerAuth(Settings.set));
 app.post('/admin/deleteSetting', withOwnerAuth(Settings.delete));
-app.get('/admin/status', withOwnerAuth(async (reqBody, emcResult) => {
+app.get('/admin/status', withDevAuth(async (reqBody, emcResult) => {
+	let v8 = require('v8');
+	let PersistentHttpRq = require('klesun-node-tools/src/Utils/PersistentHttpRq.js');
 	return {
+		pid: process.pid,
+		persistentHttpRqInfo: PersistentHttpRq.getInfo(),
 		cmdLogsInsertionKeys: CmdLogs.ramDebug.getInsertionKeys(),
+		heapSpaceStatistics: v8.getHeapSpaceStatistics(),
+		heapStatistics: v8.getHeapStatistics(),
 	};
 }));
 
@@ -433,7 +439,6 @@ app.get('/ping', toHandleHttp((rqBody) => {
 	for (let key in used2) {
 		memory[key] = Math.round(used2[key] / 1024 / 1024 * 100) / 100;
 	}
-	let PersistentHttpRq = require('klesun-node-tools/src/Utils/PersistentHttpRq.js');
 
 	return Redis.getInfo().then(async redisLines => {
 		const data = {
@@ -453,7 +458,6 @@ app.get('/ping', toHandleHttp((rqBody) => {
 			system: {
 				memory: memory,
 			},
-			persistentHttpRqInfo: PersistentHttpRq.getInfo(),
 		};
 		data['msg'] = 'pong';
 		return {status: 'OK', result: data};
