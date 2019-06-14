@@ -2816,7 +2816,7 @@ class ImportPqAmadeusActionTest extends require('../../Lib/TestCase.js') {
 
 		$list.push({
 			input: {
-				title: 'FXL gets reported as GDS error, empty on top of that, should report meanigful error',
+				title: 'FXL gets reported as GDS error, empty on top of that, should report meaningful error',
 				fetchOptionalFields: false,
 				previousCommands: [
 					{

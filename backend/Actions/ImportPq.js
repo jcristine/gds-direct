@@ -124,14 +124,30 @@ let ImportPq = async ({stateful, leadData, fetchOptionalFields = true}) => {
 		return $pnrData;
 	};
 
-	let hasConflictingCurrencies = ($pnrData) => {
+	let checkCurrency = ($pnrData) => {
 		let $currencies = [];
 		for (let $store of Object.values($pnrData['currentPricing']['parsed']['pricingList'])) {
 			for (let $ptcBlock of Object.values($store['pricingBlockList'])) {
 				$currencies.push($ptcBlock['fareInfo']['totalFare']['currency']);
 			}
 		}
-		return php.count(php.array_unique($currencies)) > 1;
+		let unique = php.array_unique($currencies);
+		if (php.count(unique) > 1) {
+			return Rej.BadRequest('Pricing has conflicting currencies - ' + $currencies.join(', '));
+		}
+		for (let store of $pnrData.currentPricing.parsed.pricingList) {
+			let pcc = store.pricingPcc;
+			let isDv2Travel =
+				gds === 'sabre' && pcc === 'C5VD' ||
+				gds === 'amadeus' && pcc === 'MNLPH28FP';
+			for (let ptcBlock of store.pricingBlockList) {
+				let currency = ptcBlock.fareInfo.totalFare.currency;
+				if (isDv2Travel && currency === 'PHP') {
+					return Rej.BadRequest('PHP currency is not allowed, please price in /:USD/ or /:CAD/');
+				}
+			}
+		}
+		return Promise.resolve('Currency is OK');
 	};
 
 	let execute = async () => {
@@ -168,15 +184,13 @@ let ImportPq = async ({stateful, leadData, fetchOptionalFields = true}) => {
 			} else {
 				status = GdsDirect.STATUS_EXECUTED;
 			}
-		} else if (hasConflictingCurrencies(imported.pnrData)) {
-			userMessages.push('Pricing has conflicting currencies');
-			status = GdsDirect.STATUS_FORBIDDEN;
 		}
 		imported.status = status;
 		imported.userMessages = userMessages;
 		imported.sessionInfo = await SessionStateHelper.makeSessionInfo(stateful.getLog(), leadData);
 		if (status === GdsDirect.STATUS_EXECUTED) {
 			imported.pnrData = await postprocessPnrData(imported.pnrData);
+			await checkCurrency(imported.pnrData);
 			return imported;
 		} else {
 			return UnprocessableEntity('PQ not imported - ' + userMessages.join('; '));
