@@ -5,7 +5,7 @@ const RbsClient = require("../IqClients/RbsClient");
 const Pccs = require("../Repositories/Pccs");
 const PtcUtil = require("../Transpiled/Rbs/Process/Common/PtcUtil");
 const TicketDesignators = require("../Repositories/TicketDesignators");
-const allWrap = require("../Utils/Misc").allWrap;
+const allWrap = require("../Utils/TmpLib").allWrap;
 const UnprocessableEntity = require("klesun-node-tools/src/Utils/Rej").UnprocessableEntity;
 
 let isPublishedAirTd = td => !td || td.match(/^(CH|IN)(\d{0,2}|100)$/);

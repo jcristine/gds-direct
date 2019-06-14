@@ -13,7 +13,7 @@ module.exports = require('klesun-node-tools/src/Transpiled/php.js');
  */
 
 let util = require('util');
-let {safe, chunk} = require('../Utils/Misc.js');
+let {safe, chunk} = require('../Utils/TmpLib.js');
 
 let php = {};
 

@@ -3,14 +3,15 @@ let Emc = require('../LibWrappers/Emc.js');
 let {NoContent, Forbidden, NotAuthorized, BadRequest, TooManyRequests, LoginTimeOut, InternalServerError, NotFound} = require('klesun-node-tools/src/Utils/Rej.js');
 let Diag = require('../LibWrappers/Diag.js');
 let FluentLogger = require('../LibWrappers/FluentLogger.js');
-const {getExcData} = require('../Utils/Misc.js');
+const {getExcData} = require('../Utils/TmpLib.js');
 const GdsSessions = require("../Repositories/GdsSessions");
 const GdsSessionsController = require("./GdsSessionController");
 const Config = require('../Config.js');
 const Agents = require("../Repositories/Agents");
 const Agent = require('../DataFormats/Wrappers/Agent.js');
-const Misc = require("../Transpiled/Lib/Utils/MaskUtil");
+const MaskUtil = require("../Transpiled/Lib/Utils/MaskUtil");
 const {HttpUtil} = require('klesun-node-tools');
+const TmpLib = require('../Utils/TmpLib.js');
 
 let isSystemError = (exc) =>
 	!exc.isOk &&
@@ -66,6 +67,7 @@ let withAuth = (userAction) => (req, res) => {
 			return InternalServerError('Action is not a function - ' + userAction);
 		}
 		return Emc.getCachedSessionInfo(rqBody.emcSessionId)
+			.then(TmpLib.addPerformanceDebug('EMC session info'))
 			.catch(exc => {
 				let error = new Error('EMC auth error - ' + exc);
 				error.httpStatusCode = (exc + '').match(/Session not found/)
@@ -90,7 +92,8 @@ let withAuth = (userAction) => (req, res) => {
 				}
 				rqBody = normalizeRqBody(rqBody, emcData);
 				return Promise.resolve()
-					.then(() => userAction(rqBody, emcData.data, routeParams));
+					.then(() => userAction(rqBody, emcData.data, routeParams))
+					.then(TmpLib.addPerformanceDebug('Route action', emcData));
 			});
 	})(req, res);
 };
@@ -119,7 +122,8 @@ let withGdsSession = (sessionAction, canStartNew = false) => (req, res, protocol
 				} else {
 					return Promise.reject(exc);
 				}
-			});
+			})
+			.then(TmpLib.addPerformanceDebug('GDS Session'));
 		delete(rqBody.emcUser);
 		delete(rqBody.emcSessionId);
 
@@ -129,12 +133,13 @@ let withGdsSession = (sessionAction, canStartNew = false) => (req, res, protocol
 		FluentLogger.logit(msg, session.logId, {rqBody, protocol: protocolSpecific.protocol || 'http'});
 		return Promise.resolve()
 			.then(() => sessionAction({rqBody, session, emcUser, askClient}))
+			.then(TmpLib.addPerformanceDebug('Session action', session))
 			.then(result => {
 				if (startNewSession) {
 					result.startNewSession = true;
 				}
 				if (!agent.canSeeCcNumbers()) {
-					result = Misc.maskCcNumbers(result);
+					result = MaskUtil.maskCcNumbers(result);
 				}
 				//                 'TODO: Processing HTTP RQ'
 				FluentLogger.logit('................ HTTP RS (in ' + ((Date.now() - startMs) / 1000).toFixed(3) + ' s.)', session.logId, result);

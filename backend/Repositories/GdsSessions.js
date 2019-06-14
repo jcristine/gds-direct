@@ -2,10 +2,10 @@
 let {getClient, keys, withNewConnection} = require('./../LibWrappers/Redis.js');
 let FluentLogger = require('./../LibWrappers/FluentLogger.js');
 let {NoContent, Conflict, NotFound, nonEmpty} = require('klesun-node-tools/src/Utils/Rej.js');
-let Misc = require('./../Utils/Misc.js');
+let Misc = require('../Utils/TmpLib.js');
 let {chunk} = Misc;
 let Db = require('../Utils/Db.js');
-const sqlNow = require("../Utils/Misc").sqlNow;
+const sqlNow = require("../Utils/TmpLib").sqlNow;
 
 let TABLE = 'terminal_sessions';
 

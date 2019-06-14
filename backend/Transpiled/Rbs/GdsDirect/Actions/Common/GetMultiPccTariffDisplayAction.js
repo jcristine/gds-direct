@@ -8,7 +8,7 @@ const NormalizeTariffCmd = require('./NormalizeTariffCmd.js');
 const MakeMultiPccTariffDumpAction = require('./MakeMultiPccTariffDumpAction.js');
 
 let php = require('../../../../php.js');
-const {allWrap, timeout} = require("../../../../../Utils/Misc");
+const {allWrap, timeout} = require("../../../../../Utils/TmpLib");
 
 /**
  * schedule multiple async jobs that fetch tariff displays in different PCC-s

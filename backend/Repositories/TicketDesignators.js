@@ -1,4 +1,4 @@
-const iqJson = require("../Utils/Misc").iqJson;
+const iqJson = require("../Utils/TmpLib").iqJson;
 const {getConfig} = require('../Config.js');
 
 let Db = require('../Utils/Db.js');

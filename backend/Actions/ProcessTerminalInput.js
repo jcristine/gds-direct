@@ -21,8 +21,9 @@ const GdsDirect = require("../Transpiled/Rbs/GdsDirect/GdsDirect");
 const Rej = require("klesun-node-tools/src/Utils/Rej");
 const TerminalSettings = require("../Transpiled/App/Models/Terminal/TerminalSettings");
 const CommandCorrector = require("../Transpiled/Rbs/GdsDirect/DialectTranslator/CommandCorrector");
-const Misc = require("../Utils/Misc");
+const Misc = require("../Utils/TmpLib");
 const AliasParser = require("../Transpiled/Rbs/GdsDirect/AliasParser");
+const TmpLib = require("../Utils/TmpLib");
 const BadRequest = require("klesun-node-tools/src/Utils/Rej").BadRequest;
 const TooManyRequests = require("klesun-node-tools/src/Utils/Rej").TooManyRequests;
 const NotImplemented = require("klesun-node-tools/src/Utils/Rej").NotImplemented;
@@ -155,6 +156,7 @@ let runCmdRq =  async (inputCmd, stateful) => {
 		return BadRequest('Too many lines (' + bulkCmds.length + ') in your input for bulk invocation');
 	}
 
+	let performanceDebug = [];
 	for (let cmd of bulkCmds) {
 		let running = runByGds(cmd.trim(), stateful)
 			.catch(exc => Rej.NoContent.matches(exc.httpStatusCode)
@@ -168,7 +170,8 @@ let runCmdRq =  async (inputCmd, stateful) => {
 				calledCommands: stateful.flushCalledCommands(),
 			}));
 		}
-		let gdsResult = await running;
+		let gdsResult = await running.then(TmpLib.addPerformanceDebug('GDS Result >' + cmd + ';'));
+		performanceDebug.push(...(gdsResult.performanceDebug || []));
 		let isSuccess = gdsResult.status === GdsDirect.STATUS_EXECUTED;
 		messages.push(...(gdsResult.userMessages || [])
 			.map(msg => ({type: isSuccess ? 'info' : 'error', text: msg})));
@@ -185,6 +188,7 @@ let runCmdRq =  async (inputCmd, stateful) => {
 		messages: messages,
 		actions: actions,
 		calledCommands: calledCommands,
+		performanceDebug: performanceDebug,
 	};
 };
 
@@ -257,7 +261,8 @@ let ensureConfigPcc = async (stateful) => {
 let ProcessTerminalInput = async (params) => {
 	let {session, rqBody, emcUser} = params;
 	let whenCmdRqId = TerminalBuffering.storeNew(rqBody, session);
-	let stateful = await StatefulSession.makeFromDb({...params, whenCmdRqId});
+	let stateful = await StatefulSession.makeFromDb({...params, whenCmdRqId})
+		.then(TmpLib.addPerformanceDebug('StatefulSession.makeFromDb()'));
 	let cmdRq = rqBody.command;
 	let gds = session.context.gds;
 	let dialect = rqBody.language || gds;
@@ -272,9 +277,12 @@ let ProcessTerminalInput = async (params) => {
 		}
 	}
 
-	let prePccResult = await ensureConfigPcc(stateful);
-	let rbsResult = await runCmdRq(cmdRq, stateful);
-	let postPccResult = await ensureConfigPcc(stateful); // if this command changed area
+	let prePccResult = await ensureConfigPcc(stateful)
+		.then(TmpLib.addPerformanceDebug('ensureConfigPcc() before cmd', stateful));
+	let rbsResult = await runCmdRq(cmdRq, stateful)
+		.then(TmpLib.addPerformanceDebug('runCmdRq()', prePccResult));
+	let postPccResult = await ensureConfigPcc(stateful) // if this command changed area
+		.then(TmpLib.addPerformanceDebug('ensureConfigPcc() after cmd', rbsResult));
 
 	rbsResult = {...rbsResult,
 		calledCommands: []
@@ -291,7 +299,8 @@ let ProcessTerminalInput = async (params) => {
 	};
 
 	let termSvc = new TerminalService(gds);
-	let cmsResult = await termSvc.addHighlighting(rqBody.command, rbsResult, stateful.getFullState());
+	let cmsResult = await termSvc.addHighlighting(rqBody.command, rbsResult, stateful.getFullState())
+		.then(TmpLib.addPerformanceDebug('Syntax Highlighting', postPccResult));
 	TerminalBuffering.logOutput(rqBody, whenCmdRqId, cmsResult.output);
 
 	return cmsResult;

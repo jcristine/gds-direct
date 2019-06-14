@@ -1,5 +1,5 @@
 
-const {jsExport} = require('../Utils/Misc.js');
+const {jsExport} = require('../Utils/TmpLib.js');
 
 let DiagService;
 try {

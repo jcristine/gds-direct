@@ -1,7 +1,7 @@
 
 let PersistentHttpRq = require('klesun-node-tools/src/Utils/PersistentHttpRq.js');
 let {getSabre} = require('../Repositories/GdsProfiles.js');
-let {wrapExc} = require("../Utils/Misc.js");
+let {wrapExc} = require("../Utils/TmpLib.js");
 let {parseXml, escapeXml} = require('../GdsHelpers/CommonUtils.js');
 let Rej = require("klesun-node-tools/src/Utils/Rej.js");
 const GdsProfiles = require("../Repositories/GdsProfiles");

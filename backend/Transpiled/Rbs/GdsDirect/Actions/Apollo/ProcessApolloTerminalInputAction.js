@@ -10,7 +10,7 @@ const fetchUntil = require("../../../../../GdsHelpers/TravelportUtils").fetchUnt
 const {fetchAll, extractPager} = require('../../../../../GdsHelpers/TravelportUtils.js');
 
 const Rej = require('klesun-node-tools/src/Utils/Rej.js');
-const {ignoreExc} = require('../../../../../Utils/Misc.js');
+const {ignoreExc} = require('../../../../../Utils/TmpLib.js');
 const UnprocessableEntity = require("klesun-node-tools/src/Utils/Rej").UnprocessableEntity;
 const BadRequest = require("klesun-node-tools/src/Utils/Rej").BadRequest;
 const Errors = require('../../../../Rbs/GdsDirect/Errors.js');
@@ -53,6 +53,7 @@ const NmeMaskParser = require("../../../../../Actions/ManualPricing/NmeMaskParse
 
 const Pccs = require("../../../../../Repositories/Pccs");
 const TicketHistoryParser = require("../../../../Gds/Parsers/Apollo/TicketHistoryParser");
+const TmpLib = require("../../../../../Utils/TmpLib");
 
 /** @param stateful = await require('StatefulSession.js')() */
 let execute = ({
@@ -1327,10 +1328,12 @@ class ProcessApolloTerminalInputAction {
 		if (!php.empty($errors = await this.checkIsForbidden($cmd))) {
 			return Rej.Forbidden($errors.join('; '));
 		}
-		await this.callImplicitCommandsBefore($cmd);
-		$cmdRecord = await this.runCmd($cmd, $fetchAll);
+		let beforeResult = await this.callImplicitCommandsBefore($cmd);
+		$cmdRecord = await this.runCmd($cmd, $fetchAll)
+			.then(TmpLib.addPerformanceDebug('runCmd()', beforeResult));
 		$userMessages = await this.makeCmdMessages($cmd, $cmdRecord.output);
-		return this.callImplicitCommandsAfter($cmdRecord, $userMessages);
+		return this.callImplicitCommandsAfter($cmdRecord, $userMessages)
+			.then(TmpLib.addPerformanceDebug('callImplicitCommandsAfter()', $cmdRecord));
 	}
 
 	/** show availability for first successful city option */
@@ -1662,8 +1665,9 @@ class ProcessApolloTerminalInputAction {
 		} else {
 			cmd = $alias['realCmd'];
 			let fetchAll = this.constructor.shouldFetchAll(cmd);
-			let {cmdRec, userMessages} = await this.processRealCommand(cmd, fetchAll);
-			return {calledCommands: [cmdRec], userMessages};
+			let {cmdRec, userMessages, performanceDebug} = await this.processRealCommand(cmd, fetchAll)
+				.then(TmpLib.addPerformanceDebug('processRealCommand()'));
+			return {calledCommands: [cmdRec], userMessages, performanceDebug};
 		}
 	}
 
@@ -1671,6 +1675,7 @@ class ProcessApolloTerminalInputAction {
 		let $callResult, $errors, $status, $calledCommands, $userMessages, $actions;
 		let $cmdRequested = cmdRq;
 		$callResult = await this.processRequestedCommand($cmdRequested)
+			.then(TmpLib.addPerformanceDebug('Apollo processRequestedCommand()'))
 			.catch(exc =>
 				Rej.BadRequest.matches(exc.httpStatusCode) ||
 				Rej.Forbidden.matches(exc.httpStatusCode)
@@ -1693,6 +1698,7 @@ class ProcessApolloTerminalInputAction {
 			'calledCommands': $calledCommands.map(a => a),
 			'userMessages': $userMessages,
 			'actions': $actions,
+			'performanceDebug': $callResult.performanceDebug,
 		};
 	}
 }

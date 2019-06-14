@@ -8,12 +8,12 @@ const LocationGeographyProvider = require('../Transpiled/Rbs/DataProviders/Locat
 const Pccs = require("../Repositories/Pccs");
 const Misc = require("../Transpiled/Lib/Utils/MaskUtil");
 const {getConfig} = require('../Config.js');
-const {jsExport} = require('../Utils/Misc.js');
+const {jsExport} = require('../Utils/TmpLib.js');
 const Agent = require('../DataFormats/Wrappers/Agent.js');
 const CmdLog = require('./CmdLog.js');
 const CmsClient = require("../IqClients/CmsClient");
 const Agents = require("../Repositories/Agents");
-const sqlNow = require("../Utils/Misc").sqlNow;
+const sqlNow = require("../Utils/TmpLib").sqlNow;
 
 let GdsSession = (session) => {
 	let gds = session.context.gds;

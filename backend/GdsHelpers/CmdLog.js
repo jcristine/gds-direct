@@ -6,7 +6,7 @@ const SessionStateHelper = require("../Transpiled/Rbs/GdsDirect/SessionStateProc
 const selectFromArray = require("klesun-node-tools/src/Utils/SqlUtil").selectFromArray;
 const NotFound = require("klesun-node-tools/src/Utils/Rej").NotFound;
 const makeRow = require("../Repositories/CmdLogs").makeRow;
-const hrtimeToDecimal = require("../Utils/Misc").hrtimeToDecimal;
+const hrtimeToDecimal = require("../Utils/TmpLib").hrtimeToDecimal;
 
 let CmdLog = ({
 	session, whenCmdRqId, fullState,

@@ -14,7 +14,6 @@ let makeBriefRsStr = (response, startMs) => {
 	let duration = ((endMs - startMs) / 1000).toFixed(3);
 
 	let gdsTime = (response.body || {}).gdsTime;
-	let cmdType = (response.body || {}).cmdType;
 	let rqTakenMs = (response.body || {}).rqTakenMs;
 	let rsSentMs = (response.body || {}).rsSentMs;
 
@@ -25,9 +24,6 @@ let makeBriefRsStr = (response, startMs) => {
 		let backendTime = duration - gdsTime - rqRouteTime - rsRouteTime;
 		result += ' (GDS: ' + (+gdsTime).toFixed(3) + ', backend: ' + backendTime.toFixed(3) +
 			', browser->node: ' + rqRouteTime.toFixed(3) + ', node->browser ' + rsRouteTime.toFixed(3) + ')';
-		if (cmdType) {
-			result += ' ' + cmdType;
-		}
 		return result;
 	} else {
 		return null;

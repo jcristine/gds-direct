@@ -1,8 +1,8 @@
 
 let {getConfig} = require('../Config.js');
 let Db = require('../Utils/Db.js');
-const sqlNow = require("../Utils/Misc").sqlNow;
-const iqJson = require("../Utils/Misc").iqJson;
+const sqlNow = require("../Utils/TmpLib").sqlNow;
+const iqJson = require("../Utils/TmpLib").iqJson;
 let {strval, implode, array_column, array_combine} = require('../Transpiled/php.js');
 
 let TABLE = 'airports';

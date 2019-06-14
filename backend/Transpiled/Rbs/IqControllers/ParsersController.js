@@ -19,6 +19,7 @@ let PNR_DUMP_TYPES = [
 	'galileo_itinerary',
 	'amadeus_itinerary',
 	'sabre_itinerary',
+	'two_digit_name_block',
 ];
 
 class ParsersController {
@@ -63,7 +64,10 @@ class ParsersController {
 			}
 		} else if ($dumpType === 'apollo_pnr') {
 			$parsed = ApolloReservationParser.parse($dump);
-			if ((($parsed['headerData'] || {})['reservationInfo'] || {})['recordLocator'] || false) {
+			if (!php.empty((($parsed['headerData'] || {})['reservationInfo'] || {})['recordLocator']) ||
+				!php.empty($parsed.passengers.passengerList) &&
+				!php.empty($parsed.itineraryData)
+			) {
 				return {
 					'success': true,
 					'result': FormatAdapter.adaptApolloPnrParseForClient($parsed, $baseDate),

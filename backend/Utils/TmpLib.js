@@ -11,6 +11,11 @@ exports.timeout = GrectLib.Misc.timeout;
 exports.iqJson = GrectLib.Misc.iqJson;
 exports.sqlNow = GrectLib.Misc.sqlNow;
 
+/**
+ * this module holds reusable functions that are too
+ * useless/arguable/new to move them outside this project
+ */
+
 exports.mand = (val) => {
 	if (!val) {
 		throw new Error('Mandatory GDS Profile field absent');
@@ -49,18 +54,23 @@ exports.ignoreExc = (defaultValue, allowedKinds) => {
 	};
 };
 
-exports.addPerformanceDebug = (label) => {
+exports.addPerformanceDebug = (label, prevResult = null) => {
 	let startMs = Date.now();
 	let startMem = process.memoryUsage();
+	let prevDebug = !prevResult ? [] : prevResult.performanceDebug || [];
 	return (result) => {
 		if (typeof result === 'object' && result !== null) {
+			let endMs = Date.now();
 			result.performanceDebug = result.performanceDebug || [];
-			result.performanceDebug.push({
+			result.performanceDebug = prevDebug.concat([{
 				label: label,
-				timeMs: Date.now() - startMs,
+				timeMs: endMs - startMs,
 				startMem: startMem,
 				endMem: process.memoryUsage(),
-			});
+				children: result.performanceDebug || [],
+				startMs: startMs,
+				endMs: endMs,
+			}]);
 		}
 		return result;
 	};

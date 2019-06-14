@@ -11,8 +11,8 @@ try {
 }
 const Config = require('../Config.js');
 const Diag = require('./Diag.js');
-const jsExport = require("../Utils/Misc").jsExport;
-const {getExcData} = require('./../Utils/Misc.js');
+const jsExport = require("../Utils/TmpLib").jsExport;
+const {getExcData} = require('../Utils/TmpLib.js');
 
 process.env.NODE_ENV = Config.production ? 'production' : 'development'; // accept development | stage | production
 

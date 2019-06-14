@@ -1,7 +1,7 @@
 
 let Db = require('../Utils/Db.js');
 const CommonDataHelper = require("../Transpiled/Rbs/GdsDirect/CommonDataHelper");
-const sqlNow = require("../Utils/Misc").sqlNow;
+const sqlNow = require("../Utils/TmpLib").sqlNow;
 const nonEmpty = require("klesun-node-tools/src/Utils/Rej").nonEmpty;
 
 let TABLE = 'terminal_command_log';

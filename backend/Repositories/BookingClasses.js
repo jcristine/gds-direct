@@ -3,7 +3,7 @@ let {getConfig} = require('../Config.js');
 let Db = require('../Utils/Db.js');
 const BadGateway = require("klesun-node-tools/src/Utils/Rej").BadGateway;
 const UnprocessableEntity = require("klesun-node-tools/src/Utils/Rej").UnprocessableEntity;
-const iqJson = require("../Utils/Misc").iqJson;
+const iqJson = require("../Utils/TmpLib").iqJson;
 
 let TABLE = 'airline_booking_classes';
 

@@ -1,5 +1,5 @@
 const PnrHistoryParser = require("../Transpiled/Gds/Parsers/Apollo/PnrHistoryParser");
-const hrtimeToDecimal = require("../Utils/Misc").hrtimeToDecimal;
+const hrtimeToDecimal = require("../Utils/TmpLib").hrtimeToDecimal;
 const matchAll = require("../Utils/Str").matchAll;
 
 /**
