@@ -398,22 +398,10 @@ class AmadeusReservationParser
         }
     }
 
-    /**
-     * this way segments look in PCC-s like NYC1S2186 where
-     * "EAS EXTENDED AIR SEG DISP" flag is configured as "NO"
-     */
-    static parseDayOffsetSegmentLine($line)  {
-        let $pattern, $letters, $names, $split, $result, $ending;
+    static parseDayOffsetSegmentLineByPattern($line, $pattern) {
+        let $split, $result, $ending;
 
-        //         '  2  AY 099 Y 10APR 2 HELHKG HK1  1050P 2  1150P 230P+1 359 E0 H',
-        //         '  1  AY1074 Y 10APR 2 RIXHEL HK1   135P     220P 330P   AT7 E0 G',
-        //         '  1  SU1845 Y 10DEC 7 KIVSVO HK1            140A 535A   32A E0 S'
-        //         '  6  VA 165 I 22FEB 4 AKLMEL GK1        I   630A 840A   A',
-        //         '  4  SU2682 Y 10DEC 7 SVORIX HK2        D   925A1005A   *1A/E*',
-        $pattern = '#### AAFFFF B DDDDD W RRRNNN SSQQ UUUUU GG tttttTTTTTOO MMMMMMMMMMMMMMMM ';
-        $letters = php.array_unique(php.str_split($pattern, 1));
-        $names = php.array_combine($letters, $letters);
-        $split = StringUtil.splitByPosition($line, $pattern, $names, true);
+        $split = StringUtil.splitByPosition($line, $pattern, null, true);
         $result = {
             'lineNumber': $split['#'],
             'segmentType': this.ITINERARY_SEGMENT,
@@ -450,6 +438,31 @@ class AmadeusReservationParser
         } else {
             return null;
         }
+    }
+
+    /**
+     * this way segments look in PCC-s like NYC1S2186 where
+     * "EAS EXTENDED AIR SEG DISP" flag is configured as "NO"
+     */
+    static parseDayOffsetSegmentLine($line)  {
+        let patterns = [
+        //  '  2  AY 099 Y 10APR 2 HELHKG HK1  1050P 2  1150P 230P+1 359 E0 H',
+        //  '  1  AY1074 Y 10APR 2 RIXHEL HK1   135P     220P 330P   AT7 E0 G',
+        //  '  1  SU1845 Y 10DEC 7 KIVSVO HK1            140A 535A   32A E0 S'
+        //  '  6  VA 165 I 22FEB 4 AKLMEL GK1        I   630A 840A   A',
+        //  '  4  SU2682 Y 10DEC 7 SVORIX HK2        D   925A1005A   *1A/E*',
+            '#### AAFFFF B DDDDD W RRRNNN SSQQ UUUUU GG tttttTTTTTOO MMMMMMMMMMMMMMMM ', // NYC1S2186
+        //  "  1  BR 031 C 10DEC 2 JFKTPE HK1       1  0020 0540+1 77W E 0 M",
+        //  "  2  BR 271 C 11DEC 3 TPEMNL HK1       2  0910 1145   77W E 0 M",
+            '#### AAFFFF B DDDDD W RRRNNN SSQQ UUUU GG tttt TTTTOO MMMMMMMMMMMMMMMM ', // MNLPH28FP
+        ];
+        for (let pattern of patterns) {
+            let parsed = this.parseDayOffsetSegmentLineByPattern($line, pattern);
+            if (parsed) {
+                return parsed;
+            }
+        }
+        return null;
     }
 
     static parseExtendedDisplaySegmentLine($line)  {
@@ -521,7 +534,8 @@ class AmadeusReservationParser
 
     static parseSegmentLine($line)  {
 
-        return this.parseExtendedDisplaySegmentLine($line) || this.parseDayOffsetSegmentLine($line);
+        return this.parseExtendedDisplaySegmentLine($line)
+            || this.parseDayOffsetSegmentLine($line);
     }
 
     static parseMisSegmentLine($line)  {

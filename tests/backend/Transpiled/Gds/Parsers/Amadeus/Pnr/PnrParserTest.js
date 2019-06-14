@@ -2535,6 +2535,30 @@ class PnrParserTest extends require('../../../../Lib/TestCase.js') {
 			},
 		]);
 
+		// Philipines consolidator PCC - day offset instead of arrival date
+		$list.push([
+			php.implode(php.PHP_EOL, [
+				"/$--- MSC SFP ---",
+				"RP/MNLPH28FP/",
+				"  1  BR 031 C 10DEC 2 JFKTPE HK1       1  0020 0540+1 77W E 0 M",
+				"     SEE RTSVC",
+				"  2  BR 271 C 11DEC 3 TPEMNL HK1       2  0910 1145   77W E 0 M",
+				"     SEE RTSVC",
+				"  3 RM NOTIFY PASSENGER PRIOR TO TICKET PURCHASE & CHECK-IN:",
+				"       FEDERAL LAWS FORBID THE CARRIAGE OF HAZARDOUS MATERIALS -",
+				"       GGAMAUSHAZ/S1",
+				" "
+			]),
+			{
+				parsed: {
+					itinerary: [
+						{departureAirport: 'JFK', destinationAirport: 'TPE', destinationTime: {parsed: '05:40'}, dayOffset: 1},
+						{departureAirport: 'TPE', destinationAirport: 'MNL', destinationTime: {parsed: '11:45'}},
+					],
+				},
+			},
+		]);
+
 		return $list;
 	}
 
