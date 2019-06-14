@@ -8,17 +8,19 @@ const php = require('../../../php.js');
 class GdsPassengerBlockParser
 {
     static parse($dump)  {
-        let $parsedData, $lines, $line, $result;
-        $parsedData = {
+        let $parsedData = {
             'passengerList': [],
         };
-        $lines = require('../../../Lib/Utils/StringUtil.js').lines($dump);
-        while ($lines) {
-            $line = php.array_shift($lines);
-            $result = this.parsePassengerLine($line);
+        let $lines = require('../../../Lib/Utils/StringUtil.js').lines($dump);
+        while ($lines.length > 0) {
+            let $line = php.array_shift($lines);
+            let $result = this.parsePassengerLine($line);
 
             if ($result['success']) {
-                $parsedData['passengerList'] = php.array_merge($parsedData['passengerList'], $result['passengerList']);
+                $parsedData['passengerList'] = php.array_merge(
+                    $parsedData['passengerList'],
+                    $result['passengerList']
+                );
             } else {
                 php.array_unshift($lines, $line);
                 break;
@@ -39,12 +41,16 @@ class GdsPassengerBlockParser
 
             $tokens = php.array_filter(Fp.map('trim', $line.split(/(?=\b\d+\.(?:I\/\d+|\d+))/)));
             for ($token of Object.values($tokens)) {
-                $passengerList.push(this.parsePassengerToken($token));}
-
-            return {
-                'passengerList': $passengerList,
-                'success': true
-            };
+                $passengerList.push(this.parsePassengerToken($token));
+            }
+            if ($passengerList.every(p => p.success)) {
+                return {
+                    'passengerList': $passengerList,
+                    'success': true
+                };
+            } else {
+                return {success: false};
+            }
         } else if (php.preg_match(/^(\d+)\.C\/([A-Z0-9]+.*?)\s*$/, $line, $matches = [])) {
             // ' 1.C/00PITDFWGRP ',
             // ' 1.C/01CREW ',

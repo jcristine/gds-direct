@@ -1573,9 +1573,6 @@ class ApolloReservationParserTest extends require('../../../../../../../backend/
 							'lastName': 'MAALA',
 							'firstName': 'GEMMA LUMINARIO',
 						},
-						{
-							'success': false,
-						},
 					],
 				},
 
