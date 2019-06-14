@@ -5,6 +5,7 @@ const StringUtil = require('../../../../Lib/Utils/StringUtil.js');
 const CommonParserHelpers = require('../../../../Gds/Parsers/Apollo/CommonParserHelpers.js');
 const ItineraryParser = require("./ItineraryParser");
 const php = require("./../../../../php");
+const GdsPassengerBlockParser = require("../../Common/GdsPassengerBlockParser");
 
 class HeaderParser
 {
@@ -156,7 +157,7 @@ class HeaderParser
     }
 
     static looksLikePassengerLine($line)  {
-        return php.preg_match(/^\s\d{1}\./, $line)
+        return GdsPassengerBlockParser.parsePassengerLine($line).success
             || php.trim($line) === 'NO NAMES';
     }
 
