@@ -991,6 +991,233 @@ class ImportPqApolloActionTest extends require('../../../../Lib/TestCase.js') {
 			],
 		});
 
+		$list.push({
+			'input': {
+				'onlyPricing': true,
+				'title': 'incomplete dumps in command log - should not allow creating PQ from them',
+				'previousCommands': [
+					{
+					    "cmd": "T:$BS1",
+					    "output": [
+					        ">$BS1-*2F3K",
+					        "*FARE GUARANTEED AT TICKET ISSUANCE*",
+					        "",
+					        "E-TKT REQUIRED",
+					        "*PENALTY APPLIES*",
+					        "LAST DATE TO PURCHASE TICKET: 15JUN19 SFO",
+					        "$B-1-2 C14JUN19     ",
+					        "NYC AS LAX 146.05RH2OAVMN USD146.05END ZP JFK",
+					        "FARE USD 146.05 TAX 5.60AY TAX 10.95US TAX 4.50XF TAX 4.20ZP",
+					        "TOT USD 171.30 ",
+					        "S1 NVB20SEP/NVA20SEP",
+					        "E VALID AS/",
+					        "E NONREF/SVCCHGPLUSFAREDIF/",
+					        ")><"
+					    ].join("\n"),
+					},
+					{
+					    "cmd": "T:$BS2*3/Z0",
+					    "output": [
+					        ">$BS2*3-*2F3K/Z0",
+					        "*FARE HAS A PLATING CARRIER RESTRICTION*",
+					        "E-TKT REQUIRED",
+					        "** PRIVATE FARES SELECTED **  ",
+					        "*PENALTY APPLIES*",
+					        "LAST DATE TO PURCHASE TICKET: 21SEP19",
+					        "$B-1-2 P14JUN19 - CAT35",
+					        "LAX HX X/HKG HX MNL 266.03TWVW4US/SPL11D2608 NUC266.03 -----",
+					        "MUST PRICE AS B/C -- ---END ROE1.0",
+					        "FARE USD 266.00 TAX 5.60AY TAX 18.60US TAX 4.50XF TAX 8.90G3",
+					        "TAX 6.40I5 TAX 57.40YR TOT USD 367.40 ",
+					        "S1 NVB21SEP/NVA21SEP",
+					        "S2 NVB22SEP/NVA22SEP",
+					        ")><"
+					    ].join("\n"),
+					},
+				],
+			},
+			'output': {
+				'error': 'Error: Some unscrolled output left in the >T:$BS1;',
+			},
+			'calledCommands': [
+				{
+				    "cmd": "*R",
+				    "output": [
+				        " 1.1LIB/MAR  2.1LIB/ZIM*C05 ",
+				        " 1 AS 229R 20SEP JFKLAX SS2   805P 1120P *         FR   E",
+				        " 2 HX  69T 21SEP LAXHKG SS2  1150A  620P|*      SA/SU   E",
+				        " 3 HX 781T 22SEP HKGMNL SS2   910P 1100P *         SU   E",
+				        "*** LINEAR FARE DATA EXISTS *** >*LF; ",
+				        "1/ATFQ-OK/$BS1-*2F3K/TA2F3K/CAS/ET",
+				        " FQ-USD 292.10/USD 21.90US/USD 28.60XT/USD 342.60 - 14JUN RH2OAVMN/RH2OAVMN",
+				        "2/ATFQ-OK/$BS2*3-*2F3K/Z0/TA2F3K/CHX/ET",
+				        " FQ-USD 532.00/USD 37.20US/USD 165.60XT/USD 734.80 - 14JUN TWVW.TWVW/TWVW.TWVW",
+				        "><"
+				    ].join("\n"),
+				},
+			],
+		});
+
+		$list.push({
+			'input': {
+				'onlyPricing': true,
+				'title': 'T:$B per segment pricing',
+				'previousCommands': [
+					{
+					    "cmd": "T:$BS1",
+					    "output": [
+					        ">$BS1-*2F3K",
+					        "*FARE GUARANTEED AT TICKET ISSUANCE*",
+					        "",
+					        "E-TKT REQUIRED",
+					        "*PENALTY APPLIES*",
+					        "LAST DATE TO PURCHASE TICKET: 15JUN19 SFO",
+					        "$B-1-2 C14JUN19     ",
+					        "NYC AS LAX 146.05RH2OAVMN USD146.05END ZP JFK",
+					        "FARE USD 146.05 TAX 5.60AY TAX 10.95US TAX 4.50XF TAX 4.20ZP",
+					        "TOT USD 171.30 ",
+					        "S1 NVB20SEP/NVA20SEP",
+					        "E VALID AS/",
+					        "E NONREF/SVCCHGPLUSFAREDIF/",
+					        ")><"
+					    ].join("\n"),
+					},
+					{
+					    "cmd": "MR",
+					    "output": [
+					        "E CXL BY FLT TIME OR NOVALUE",
+					        "TICKETING AGENCY 2F3K",
+					        "DEFAULT PLATING CARRIER AS",
+					        "US PFC: XF JFK4.5 ",
+					        "BAGGAGE ALLOWANCE",
+					        "ADT                                                         ",
+					        " AS NYCLAX  0PC                                             ",
+					        "   BAG 1 -  30.00 USD    UPTO50LB/23KG AND UPTO62LI/158LCM",
+					        "   BAG 2 -  40.00 USD    UPTO50LB/23KG AND UPTO62LI/158LCM",
+					        "   VIEWTRIP.TRAVELPORT.COM/BAGGAGEPOLICY/AS",
+					        "                                                                CARRY ON ALLOWANCE",
+					        " AS NYCLAX  1PC                                             ",
+					        ")><"
+					    ].join("\n"),
+					},
+					{
+					    "cmd": "MR",
+					    "output": [
+					        "   BAG 1 -  NO FEE       CARRY ON PERSONAL ITEM           ",
+					        "BAGGAGE DISCOUNTS MAY APPLY BASED ON FREQUENT FLYER STATUS/",
+					        "ONLINE CHECKIN/FORM OF PAYMENT/MILITARY/ETC.",
+					        "><"
+					    ].join("\n"),
+					},
+					{
+					    "cmd": "T:$BS2*3/Z0",
+					    "output": [
+					        ">$BS2*3-*2F3K/Z0",
+					        "*FARE HAS A PLATING CARRIER RESTRICTION*",
+					        "E-TKT REQUIRED",
+					        "** PRIVATE FARES SELECTED **  ",
+					        "*PENALTY APPLIES*",
+					        "LAST DATE TO PURCHASE TICKET: 21SEP19",
+					        "$B-1-2 P14JUN19 - CAT35",
+					        "LAX HX X/HKG HX MNL 266.03TWVW4US/SPL11D2608 NUC266.03 -----",
+					        "MUST PRICE AS B/C -- ---END ROE1.0",
+					        "FARE USD 266.00 TAX 5.60AY TAX 18.60US TAX 4.50XF TAX 8.90G3",
+					        "TAX 6.40I5 TAX 57.40YR TOT USD 367.40 ",
+					        "S1 NVB21SEP/NVA21SEP",
+					        "S2 NVB22SEP/NVA22SEP",
+					        ")><"
+					    ].join("\n"),
+					},
+					{
+					    "cmd": "MR",
+					    "output": [
+					        "E TOUR CODE-N/A",
+					        "E SPL11D2608-SPLT11USD50/25",
+					        "E USA19032 INSERT IN",
+					        "E ENDORSMENT BOX MANUALLY",
+					        "TOUR CODE: PROMOHXDROP11  ",
+					        "TICKETING AGENCY 2F3K",
+					        "DEFAULT PLATING CARRIER HX",
+					        "US PFC: XF LAX4.5 ",
+					        "BAGGAGE ALLOWANCE",
+					        "ADT                                                         ",
+					        " HX LAXMNL  2PC                                             ",
+					        "   BAG 1 -  NO FEE       UPTO50LB/23KG AND UPTO62LI/158LCM",
+					        "   BAG 2 -  NO FEE       UPTO50LB/23KG AND UPTO62LI/158LCM",
+					        ")><"
+					    ].join("\n"),
+					},
+					{
+					    "cmd": "MR",
+					    "output": [
+					        "   VIEWTRIP.TRAVELPORT.COM/BAGGAGEPOLICY/HX",
+					        "                                                                CARRY ON ALLOWANCE",
+					        " HX LAXHKG  1PC                                             ",
+					        "   BAG 1 -  NO FEE       UPTO15LB/7KG AND UPTO45LI/115LCM ",
+					        " HX HKGMNL  1PC                                             ",
+					        "   BAG 1 -  NO FEE       UPTO15LB/7KG AND UPTO45LI/115LCM ",
+					        "BAGGAGE DISCOUNTS MAY APPLY BASED ON FREQUENT FLYER STATUS/",
+					        "ONLINE CHECKIN/FORM OF PAYMENT/MILITARY/ETC.",
+					        "><"
+					    ].join("\n"),
+					},
+				],
+			},
+			'output': {
+				'pnrData': {
+					'reservation': {
+						'parsed': {
+							'itinerary': [
+								{'destinationAirport': 'LAX'},
+								{'destinationAirport': 'HKG'},
+								{'destinationAirport': 'MNL'},
+							],
+						},
+					},
+					'currentPricing': {
+						'cmd': 'T:$BS1&T:$BS2*3/Z0',
+						'parsed': {
+							'pricingList': [
+								{
+									'pricingBlockList': [
+										{
+											'validatingCarrier': 'AS',
+											'fareInfo': {'totalFare': {'currency': 'USD', 'amount': '171.30'}},
+										},
+									],
+								},
+								{
+									'pricingBlockList': [
+										{
+											'validatingCarrier': 'HX',
+											'fareInfo': {'totalFare': {'currency': 'USD', 'amount': '367.40'}},
+										},
+									],
+								},
+							],
+						},
+					},
+				},
+			},
+			'calledCommands': [
+				{
+				    "cmd": "*R",
+				    "output": [
+				        " 1.1LIB/MAR  2.1LIB/ZIM*C05 ",
+				        " 1 AS 229R 20SEP JFKLAX SS2   805P 1120P *         FR   E",
+				        " 2 HX  69T 21SEP LAXHKG SS2  1150A  620P|*      SA/SU   E",
+				        " 3 HX 781T 22SEP HKGMNL SS2   910P 1100P *         SU   E",
+				        "*** LINEAR FARE DATA EXISTS *** >*LF; ",
+				        "1/ATFQ-OK/$BS1-*2F3K/TA2F3K/CAS/ET",
+				        " FQ-USD 292.10/USD 21.90US/USD 28.60XT/USD 342.60 - 14JUN RH2OAVMN/RH2OAVMN",
+				        "2/ATFQ-OK/$BS2*3-*2F3K/Z0/TA2F3K/CHX/ET",
+				        " FQ-USD 532.00/USD 37.20US/USD 165.60XT/USD 734.80 - 14JUN TWVW.TWVW/TWVW.TWVW",
+				        "><"
+				    ].join("\n"),
+				},
+			],
+		});
+
 		$argumentTuples = [];
 		for ($testCase of Object.values($list)) {
 			$argumentTuples.push([$testCase['input'], $testCase['output'], $testCase['calledCommands']]);

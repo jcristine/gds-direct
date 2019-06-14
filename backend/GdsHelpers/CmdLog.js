@@ -140,6 +140,7 @@ let CmdLog = ({
 	};
 
 	return {
+		gds: gds,
 		logCommand: logCommand,
 		getFullState: () => fullState,
 		updateFullState: (newFullState) => {

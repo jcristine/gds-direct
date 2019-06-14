@@ -29,7 +29,7 @@ class UpdateApolloStateAction {
 	static isValidPricing($cmd, $output) {
 		let $type, $errors;
 		$type = CommandParser.parse($cmd)['type'];
-		if ($type !== 'priceItinerary' ||
+		if (!['priceItinerary', 'storePricing'].includes($type) ||
 			!this.isValidPricingOutput($output)
 		) {
 			return false;

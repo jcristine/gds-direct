@@ -510,7 +510,7 @@ class ProcessApolloTerminalInputAction {
 	static shouldFetchAll($cmd) {
 		let $type, $isConsidered, $errorRecords, $consideredErrors;
 		$type = CommandParser.parse($cmd)['type'];
-		if (StringUtil.startsWith($cmd, '$B')) {
+		if (StringUtil.startsWith($cmd, '$B') || $type === 'storePricing') {
 			$isConsidered = ($errRec) => $errRec['type'] === Errors.BAD_MOD_IGNORE_AVAILABILITY;
 			$errorRecords = CmsApolloTerminal.checkPricingCmdObviousPqRuleRecords($cmd);
 			$consideredErrors = Fp.filter($isConsidered, $errorRecords);

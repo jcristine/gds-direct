@@ -23,6 +23,9 @@ let ImportPq = async ({stateful, leadData, fetchOptionalFields = true}) => {
 
 		$cmdTypes = SessionStateHelper.getCanCreatePqSafeTypes();
 		$cmdTypes.push('priceItinerary');
+		if (stateful.gds === 'apollo') {
+			$cmdTypes.push('storePricing');
+		}
 		$mixed = await stateful.getLog().getLastCommandsOfTypes($cmdTypes);
 		// remove state safe commands called before last pricing since it changes the state,
 		// but keep all pricing commands, since we need them for multi-pricing PQ creation
@@ -33,6 +36,7 @@ let ImportPq = async ({stateful, leadData, fetchOptionalFields = true}) => {
 			$belongsToPricing = $cmdRow['type'] === 'priceItinerary'
 				|| $cmdRow['type'] === 'pricingLinearFare'
 				|| $cmdRow['type'] === 'ptcPricingBlock'
+				|| $cmdRow.type === 'storePricing'
 				|| $isPricingMd && $cmdRow.is_mr;
 			if ($belongsToPricing) {
 				$isPricingMd = true;
@@ -147,7 +151,7 @@ let ImportPq = async ({stateful, leadData, fetchOptionalFields = true}) => {
 		if (stateErrors.length > 0) {
 			return {userMessages: ['Invalid PQ state'].concat(stateErrors)};
 		}
-		let cmdRecs = await getCurrentStateCommands(stateful);
+		let cmdRecs = await getCurrentStateCommands();
 		let imported = await importAct
 			.setPreCalledCommandsFromDb(cmdRecs, stateful.getSessionData())
 			.setLeadData(leadData)

@@ -33,7 +33,11 @@ class SessionStateHelper
         $cmdRows = await $cmdLog.getLastCommandsOfTypes(this.getCanCreatePqSafeTypes());
         $cmdRows = $cmdRows.filter(row => !row.is_mr);
         $typeToCmdRow = php.array_combine(php.array_column($cmdRows, 'type'), $cmdRows);
-        return $typeToCmdRow['priceItinerary'] || null;
+        let cmdRec = $typeToCmdRow['priceItinerary'] || null;
+        if (!cmdRec && $cmdLog.gds === 'apollo') {
+            cmdRec = $typeToCmdRow['storePricing'] || null;
+        }
+        return cmdRec;
     }
 
     static async getPricedAgeGroups($cmdLog)  {

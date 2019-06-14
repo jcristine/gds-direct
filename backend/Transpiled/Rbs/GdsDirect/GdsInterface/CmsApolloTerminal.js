@@ -76,7 +76,7 @@ class CmsApolloTerminal
     getPricedPtcs($cmd)  {
         let $parsed, $nameMod, $ptcs;
         $parsed = CommandParser.parse($cmd);
-        if ($parsed && $parsed['type'] === 'priceItinerary') {
+        if ($parsed && $parsed.data && ['priceItinerary', 'storePricing'].includes($parsed['type'])) {
             $nameMod = php.array_combine(
                 php.array_column($parsed['data']['pricingModifiers'], 'type'),
                 php.array_column($parsed['data']['pricingModifiers'], 'parsed')

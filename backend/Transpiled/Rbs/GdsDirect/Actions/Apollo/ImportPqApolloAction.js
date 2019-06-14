@@ -238,7 +238,7 @@ class ImportPqApolloAction extends AbstractGdsAction {
 	static calcPricedSegments($segmentsLeft, $cmdRecord, $followingCommands) {
 		let $numToSeg, $mods, $bundles, $error, $bundle, $segNum;
 		$numToSeg = php.array_combine(php.array_column($segmentsLeft, 'segmentNumber'), $segmentsLeft);
-		$mods = AtfqParser.parsePricingCommand($cmdRecord['cmd'])['pricingModifiers'] || [];
+		$mods = (CommandParser.parse($cmdRecord['cmd']).data || {}).pricingModifiers || [];
 		$mods = php.array_combine(php.array_column($mods, 'type'), php.array_column($mods, 'parsed'));
 		$bundles = ($mods['segments'] || {})['bundles'] || [];
 		if (php.empty($bundles) || $bundles[0]['segmentNumbers'].length === 0) {
@@ -279,7 +279,7 @@ class ImportPqApolloAction extends AbstractGdsAction {
 			if ($logCmdType !== 'moveRest') {
 				$mrs = [];
 			}
-			if ($logCmdType === 'priceItinerary') {
+			if (['priceItinerary', 'storePricing'].includes($logCmdType)) {
 				$cmdRecord = {...$cmdRecord, output: output};
 				$calculated = this.constructor.calcPricedSegments($segmentsLeft, $cmdRecord, $cmdRecords);
 				if (!php.empty($calculated['error'])) {
@@ -457,6 +457,7 @@ class ImportPqApolloAction extends AbstractGdsAction {
 			'redisplayPnr': 'redisplayPnr',
 			'priceItinerary': 'priceItinerary',
 			'redisplayPriceItinerary': 'priceItinerary',
+			'storePricing': 'priceItinerary',
 			'flightServiceInfo': 'flightServiceInfo',
 			'flightRoutingAndTimes': 'flightRoutingAndTimes',
 			'fareList': 'fareList',
