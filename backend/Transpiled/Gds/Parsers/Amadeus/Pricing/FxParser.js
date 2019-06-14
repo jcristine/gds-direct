@@ -66,7 +66,8 @@ class FxParser {
 		//         'XDTT DL   462 B *  23OCT 0910  BNE0WRMD                   2P',
 		//         ' ADD ET   501 H *  20NOV 1030  HLOWUS                     2P',
 		//         ' RIX SU  2682 Y    10DEC 0925  YVO             10DEC10DEC 1P',
-		$pattern = 'XAAA CC  FFFF L *  WWWWW TTTT  IIIIIIIIIIIIIIIIOOOOOEEEEEBBB';
+		//         "XTPE BR    31 C  C 10DEC 0020  COU             10DEC10DEC 2P",
+		$pattern = 'XAAA CC  FFFF L *_ WWWWW TTTT  IIIIIIIIIIIIIIIIOOOOOEEEEEBBB';
 		$split = this.splitByPositionLetters($line, $pattern);
 
 		$date = CommonParserHelpers.parsePartialDate($split['W']);
@@ -75,7 +76,7 @@ class FxParser {
 		$nvaDate = CommonParserHelpers.parsePartialDate($split['E']);
 
 		$isEmptyString = ($val) => $val === '';
-		[$fareBasis, $ticketDesignator] = php.array_pad(php.explode('\/', $split['I']), 2, null);
+		[$fareBasis, $ticketDesignator] = php.array_pad(php.explode('/', $split['I']), 2, null);
 		$result = {
 			'type': 'flight',
 			'isStopover': $split['X'] !== 'X',
@@ -305,6 +306,9 @@ class FxParser {
 
 		$departureCity = php.trim(php.array_shift($lines));
 		[$segments, $lines] = this.parseSequence($lines, (...args) => this.parseSegmentLine(...args));
+		if ($segments.length === 0) {
+			return {error: 'Failed to parse FX segment line - ' + $lines[0]};
+		}
 		[$emptyLines, $lines] = this.parseSequence($lines, (...args) => this.isEmptyLine(...args));
 
 		[$fcSplit, $lines] = this.parseSequence($lines, (...args) => this.splitValueAndFcLine(...args));
@@ -461,9 +465,10 @@ class FxParser {
 				'wholeMessages': this.parseWholeMessages($wholeMessages),
 				'type': $type,
 				'data': $data,
+				'error': $data.error || undefined,
 			};
 		} else {
-			return {'error': 'Failed to parse PTC list\/pricing'};
+			return {'error': 'Failed to parse PTC list/pricing'};
 		}
 	}
 }

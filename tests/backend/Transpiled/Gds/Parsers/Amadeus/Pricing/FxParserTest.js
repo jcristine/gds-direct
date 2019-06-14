@@ -1507,6 +1507,101 @@ class FxParserTest extends require('../../../../Lib/TestCase.js')
             }
         ]);
 
+        // new Philippines PCC, with "T" column in segment list
+        $list.push([
+            php.implode(php.PHP_EOL, [
+                "FXX",
+                "",
+                "01 P1",
+                "",
+                "LAST TKT DTE 10DEC19 - DATE OF ORIGIN",
+                "------------------------------------------------------------",
+                "     AL FLGT  BK T DATE  TIME  FARE BASIS      NVB  NVA   BG",
+                " NYC",
+                "XTPE BR    31 C  C 10DEC 0020  COU             10DEC10DEC 2P",
+                " MNL BR   271 C  C 11DEC 0910  COU             11DEC11DEC 2P",
+                "",
+                "USD  7539.00      10DEC19NYC BR X/TPE BR MNL M7539.00NUC",
+                "PHP   391727      7539.00END ROE1.000000",
+                "PHP     2911-YQ   XT PHP 291-AY PHP 234-XF JFK4.50",
+                "PHP      967-US",
+                "PHP      525-XT",
+                "PHP   396130",
+                "RATE USED 1USD=51.96000PHP",
+                "ANCILLARY SERVICES AT A CHARGE MAY BE AVAILABLE-ENTER FXK",
+                "BG CXR: BR",
+                "PRICED VC BR - OTHER VC AVAILABLE HR",
+                "2598 PHP PENALTY APPLIES",
+                "ENDOS BG:BR"
+            ]),
+            {
+                "commandCopy": "FXX",
+                "wholeMessages": {
+                    "lastDateToPurchase": {"raw": "10DEC19", "parsed": "2019-12-10"},
+                },
+                "type": "ptcPricing",
+                "data": {
+                    "departureCity": "NYC",
+                    "segments": [
+                        {
+                            "type": "flight",
+                            "isStopover": false,
+                            "destinationCity": "TPE",
+                            "airline": "BR",
+                            "flightNumber": "31",
+                            "bookingClass": "C",
+                            "rebookRequired": false,
+                            "destinationDate": {"raw":"10DEC","parsed":"12-10"},
+                            "destinationTime": {"raw":"0020","parsed":"00:20"},
+                            "fareBasis": "COU",
+                            "ticketDesignator": null,
+                            "notValidBefore": {"raw":"10DEC","parsed":"12-10"},
+                            "notValidAfter": {"raw":"10DEC","parsed":"12-10"},
+                            "freeBaggageAmount": {"units":"pieces","amount":"2","unitsCode":"P","raw":"2P"}
+                        },
+                        {
+                            "type": "flight",
+                            "isStopover": true,
+                            "destinationCity": "MNL",
+                            "airline": "BR",
+                            "flightNumber": "271",
+                            "bookingClass": "C",
+                            "rebookRequired": false,
+                            "destinationDate": {"raw":"11DEC","parsed":"12-11"},
+                            "destinationTime": {"raw":"0910","parsed":"09:10"},
+                            "fareBasis": "COU",
+                            "ticketDesignator": null,
+                            "notValidBefore": {"raw":"11DEC","parsed":"12-11"},
+                            "notValidAfter": {"raw":"11DEC","parsed":"12-11"},
+                            "freeBaggageAmount": {"units":"pieces","amount":"2","unitsCode":"P","raw":"2P"}
+                        }
+                    ],
+                    "baseFare": {"currency":"USD","amount":"7539.00","taxCode":null},
+                    "fareEquivalent": {"currency":"PHP","amount":"391727","taxCode":null},
+                    "fareConstruction": {
+                        "parsed": {
+                            "segments": [
+                                {"airline": "BR", "destination": "TPE"},
+                                {"airline": "BR", "destination": "MNL", "fare": "7539.00"}
+                            ],
+                            "fare": "7539.00",
+                        },
+                    },
+                    "mainTaxes": [
+                        {"currency":"PHP","amount":"2911","taxCode":"YQ"},
+                        {"currency":"PHP","amount":"967","taxCode":"US"},
+                        {"currency":"PHP","amount":"525","taxCode":"XT"}
+                    ],
+                    "xtTaxes": [
+                        {"currency":"PHP","amount":"291","taxCode":"AY"},
+                        {"currency":"PHP","amount":"234","taxCode":"XF"}
+                    ],
+                    "facilityCharges": [{"airport":"JFK","amount":"4.50"}],
+                    "netPrice": {"currency":"PHP","amount":"396130","taxCode":null},
+                }
+            },
+        ]);
+
         return $list;
     }
 
