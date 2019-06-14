@@ -16,7 +16,10 @@ class FareConstructionTokenizer {
 	}
 
 	static getItineraryEndLexemes() {
-		return ['apolloMarkup', 'apolloDiscount', 'sabreMarkup', 'totalFare', 'end', 'rateOfExchange', 'domesticTax', 'facilityCharge'];
+		return [
+			'apolloMarkup', 'apolloDiscount', 'sabreMarkup', 'totalFare',
+			'end', 'rateOfExchange', 'domesticTax', 'facilityCharge',
+		];
 	}
 
 	/** @see >HELP PRICING-LINEAR FCONST SYMBOLS; */
@@ -76,7 +79,7 @@ class FareConstructionTokenizer {
 			)).preprocessDataRemoveNumericKeys(),
 
 			(new Lexeme('fuelSurcharge', /^Q\s*(\s[A-Z]{3}[A-Z]{3}|)(\d*\.?\d+)/)).preprocessData($getTuple),
-			(new Lexeme('stopoverFee', /^(\d|)S(\d*\.?\d+)/)).preprocessData($getTuple),
+			(new Lexeme('stopoverFee', /^(E\/|)(\d|)S(\d*\.?\d+)/)).preprocessData($getTuple),
 
 			(new Lexeme('fare', '/^' +
 				'(?:' +

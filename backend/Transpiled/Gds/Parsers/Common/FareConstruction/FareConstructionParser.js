@@ -117,9 +117,11 @@ class FareConstructionParser {
 				$segment['fuelSurchargeParts'] = $segment['fuelSurchargeParts'] || [];
 				$segment['fuelSurchargeParts'].push($amount);
 			} else if ($lexeme === 'stopoverFee') {
-				[$number, $amount] = $data;
+				let excessMark;
+				[excessMark, $number, $amount] = $data;
 				$segment['stopoverFees'] = $segment['stopoverFees'] || [];
 				$segment['stopoverFees'].push({
+					'excessMark': excessMark || undefined,
 					'stopoverNumber': $number,
 					'amount': $amount,
 				});

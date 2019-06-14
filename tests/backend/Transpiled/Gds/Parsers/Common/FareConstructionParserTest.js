@@ -1683,6 +1683,50 @@ class FareConstructionParserTest extends require('../../../Lib/TestCase.js') {
 			}
 		]);
 
+		// With "E/" before stopover. Did not find explanation in ticketing cookbook, but word
+		// "excess" figured much around the stopover token there, so it must be it I guess
+		// session #558446
+		$list.push([
+			php.implode(php.PHP_EOL, [
+				'DFW DL X/ATL E/S10.00 DL ROM//VCE AF PAR Q',
+				'DFWPAR2.15M254.00VH7B1RC2/LN19 DL X/ATL DL DFW',
+				'M239.00XH7B1RM3/LN19 1S100.00 NUC605.15END ROE1.0',
+			]),
+			{
+				parsed: {
+					segments: [
+						{airline: 'DL', destination: 'ATL', stopoverFees: [{amount: '10.00'}]},
+						{airline: 'DL', destination: 'ROM'},
+						{airline: 'AF', destination: 'PAR', fare: '254.00', fareBasis: 'VH7B1RC2', ticketDesignator: 'LN19'},
+						{airline: 'DL', destination: 'ATL'},
+						{airline: 'DL', destination: 'DFW', fare: '239.00', stopoverFees: [{stopoverNumber:'1',amount:'100.00'}]},
+					],
+					fare: '605.15',
+				},
+			}
+		]);
+
+		// another "E/" example, session #833810
+		$list.push([
+			php.implode(php.PHP_EOL, [
+				"MSY DL X/ATL E/S10.00 DL ROM DL AMS Q",
+				"MSYAMS2.15M380.50XH7B1RC3/LN19 DL X/DTT S11.19 DL MSY",
+				"M305.50VH7B1RC3/LN19 NUC709.34END ROE1.0",
+			]),
+			{
+				parsed: {
+					segments: [
+						{airline: 'DL', destination: 'ATL', stopoverFees: [{amount: '10.00'}]},
+						{airline: 'DL', destination: 'ROM'},
+						{airline: 'DL', destination: 'AMS', fare: '380.50', fareBasis: 'XH7B1RC3', ticketDesignator: 'LN19'},
+						{airline: 'DL', destination: 'DTT', stopoverFees: [{amount: '11.19'}]},
+						{airline: 'DL', destination: 'MSY', fare: '305.50'},
+					],
+					fare: '709.34',
+				},
+			}
+		]);
+
 		// ////================================================================
 		// /// following are some sabre FC formats not supported by Parser yet
 		// ////================================================================
