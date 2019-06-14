@@ -11,126 +11,65 @@ const GalileoPnrCommonFormatAdapter = require("../FormatAdapters/GalileoPnrCommo
 const AmadeusPnrCommonFormatAdapter = require("../FormatAdapters/AmadeusPnrCommonFormatAdapter");
 
 let PNR_DUMP_TYPES = [
-	'galileo_pnr',
 	'apollo_pnr',
+	'galileo_pnr',
 	'sabre_pnr',
 	'amadeus_pnr',
-	'apollo_itinerary',
-	'galileo_itinerary',
-	'amadeus_itinerary',
-	'sabre_itinerary',
-	'two_digit_name_block',
 ];
 
 class ParsersController {
-	tryParseAs($dump, $dumpType, $baseDate) {
-		let $parsed;
-		if ($dumpType === 'apollo_itinerary') {
-			$parsed = ApolloReservationParser.parse($dump);
-			if (php.empty(($parsed['passengers'] || {})['passengerList']) && !php.empty($parsed['itineraryData'])) {
-				return {
-					'success': true,
-					'result': FormatAdapter.adaptApolloPnrParseForClient($parsed, $baseDate),
-				};
-			}
-		} else if ($dumpType === 'galileo_itinerary') {
-			$parsed = GalileoReservationParser.parse($dump);
-			if (php.empty($parsed['passengers']['passengerList']) && !php.empty($parsed['itineraryData'])) {
-				return {
-					'success': true,
-					'result': GalileoPnrCommonFormatAdapter.transform($parsed, $baseDate),
-				};
-			}
-		} else if ($dumpType === 'amadeus_itinerary') {
-			// make sure first line trimmed space is restored,
-			// since Amadeus parser is strict about indentation
-			let itinDump = $dump.replace(/^\s*/, '  ');
-			$parsed = AmadeusReservationParser.parse(itinDump);
-			if (php.empty($parsed['parsed']['passengers']) &&
-				!php.empty($parsed['parsed']['itinerary'])
-			) {
-				let $common = AmadeusPnrCommonFormatAdapter.transform($parsed, $baseDate);
-				return {'success': true, 'result': $common};
-			}
-		} else if ($dumpType === 'sabre_itinerary') {
-			$parsed = SabreReservationParser.parse($dump);
-			if (php.empty(($parsed['parsedData']['passengers']['parsedData'] || {})['passengerList']) &&
-				!php.empty($parsed['parsedData']['itinerary'])
-			) {
-				return {
-					'success': true,
-					'result': FormatAdapter.adaptSabrePnrParseForClient($parsed, $baseDate),
-				};
-			}
-		} else if ($dumpType === 'apollo_pnr') {
-			$parsed = ApolloReservationParser.parse($dump);
-			if (!php.empty((($parsed['headerData'] || {})['reservationInfo'] || {})['recordLocator']) ||
-				!php.empty($parsed.passengers.passengerList) &&
-				!php.empty($parsed.itineraryData)
-			) {
-				return {
-					'success': true,
-					'result': FormatAdapter.adaptApolloPnrParseForClient($parsed, $baseDate),
-				};
-			}
-		} else if ($dumpType === 'sabre_pnr') {
-			$parsed = SabreReservationParser.parse($dump);
-			if ((($parsed['parsedData'] || {})['pnrInfo'] || {})['pcc'] || false) {
-				return {
-					'success': true,
-					'result': FormatAdapter.adaptSabrePnrParseForClient($parsed, $baseDate),
-				};
-			}
-		} else if ($dumpType === 'amadeus_pnr') {
-			$parsed = AmadeusReservationParser.parse($dump);
-			if (!php.empty($parsed.parsed.pnrInfo.recordLocator) ||
-				!php.empty($parsed.parsed.passengers) &&
-				!php.empty($parsed.parsed.itinerary)
-			) {
-				let $common = AmadeusPnrCommonFormatAdapter.transform($parsed, $baseDate);
-				return {'success': true, 'result': $common};
-			}
-		} else if ($dumpType === 'galileo_pnr') {
-			$parsed = GalileoReservationParser.parse($dump);
-			if (!php.empty((($parsed['headerData'] || {})['reservationInfo'] || {})['recordLocator']) &&
-				!php.empty($parsed['itineraryData'])
-			) {
-				return {
-					'success': true,
-					'result': GalileoPnrCommonFormatAdapter.transform($parsed, $baseDate),
-				};
-			}
+	tryParseAs($dump, $baseDate) {
+		let asApollo = ApolloReservationParser.parse($dump);
+		let asGalileo = GalileoReservationParser.parse($dump);
+		let asSabre = SabreReservationParser.parse($dump);
+		let asAmadeus = AmadeusReservationParser.parse($dump);
+		// make sure first line trimmed space is restored,
+		// since Amadeus parser is strict about indentation
+		let normAma = $dump.replace(/^\s*/, '  ');
+		let asAmaItin = AmadeusReservationParser.parse(normAma);
+
+		if (asApollo.itineraryData.length > 0) {
+			let data = FormatAdapter.adaptApolloPnrParseForClient(asApollo, $baseDate);
+			return {type: 'apollo_pnr', data: data};
+		} else if (
+			asGalileo.itineraryData.length > 0 ||
+			asGalileo.passengers.passengerList.length > 0
+		) {
+			let data = GalileoPnrCommonFormatAdapter.transform(asGalileo, $baseDate);
+			return {type: 'galileo_pnr', data: data};
+		} else if (
+			asAmadeus.parsed.itinerary.length > 0 &&
+			asAmadeus.parsed.itinerary.length >= asAmaItin.parsed.itinerary.length ||
+			asAmadeus.parsed.passengers.length > 0 ||
+			asAmadeus.parsed.pnrInfo.recordLocator
+		) {
+			let data = AmadeusPnrCommonFormatAdapter.transform(asAmadeus, $baseDate);
+			return {type: 'amadeus_pnr', data: data};
+		} else if (asAmaItin.parsed.itinerary.length > 0) {
+			let data = AmadeusPnrCommonFormatAdapter.transform(asAmaItin, $baseDate);
+			return {type: 'amadeus_pnr', data: data};
+		} else if (
+			asSabre.parsedData.itinerary.length > 0 ||
+			(asSabre.parsedData.pnrInfo || {}).pcc
+		) {
+			let data = FormatAdapter.adaptSabrePnrParseForClient(asSabre, $baseDate);
+			return {type: 'sabre_pnr', data: data};
+		// no itinerary (ambiguous) dumps follow, usually pax list - treat as apollo
+		} else if (asApollo.passengers.passengerList.length > 0) {
+			let data = FormatAdapter.adaptApolloPnrParseForClient(asApollo, $baseDate);
+			return {type: 'apollo_pnr', data: data};
+		} else {
+			return null;
 		}
-		return {
-			'success': false,
-			'result': null,
-		};
 	}
 
 	guessDumpType($params) {
-		let $dump, $types, $type, $result;
+		let $dump, $result;
 		$dump = php.strtoupper($params['dump']);
-		for ($type of Object.values(PNR_DUMP_TYPES)) {
-			$result = this.tryParseAs($dump, $type, $params['creationDate'] || null);
-			if ($result['success']) {
-				return {
-					'response_code': 1,
-					'result': {
-						'type': $type,
-						'data': $result['result'],
-					},
-					'errors': [],
-				};
-			}
-		}
-		return {
-			'response_code': 3,
-			'result': {
-				'type': 'unknown',
-				'data': null,
-			},
-			'errors': [],
-		};
+		$result = this.tryParseAs($dump, $params['creationDate'] || null);
+		return $result
+			? {'response_code': 1, 'result': $result, 'errors': []}
+			: {'response_code': 3, 'result': {'type': 'unknown', 'data': null}, 'errors': []};
 	}
 }
 ParsersController.PNR_DUMP_TYPES = PNR_DUMP_TYPES;

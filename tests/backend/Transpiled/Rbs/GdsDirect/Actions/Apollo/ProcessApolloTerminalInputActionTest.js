@@ -6098,6 +6098,156 @@ class ProcessApolloTerminalInputActionTest extends require('../../../../Lib/Test
 			},
 		});
 
+		$list.push({
+			'input': {
+				'title': 'PNR without record locator entered as command - should add both paxes and segments',
+				'cmdRequested': [
+					"1.1EBRAHIM/TAJUDIN AHMED  2.1ABDI/GENET",
+					" 1 UA 258S 14JUN SFOAUS SS1   800A  134P *         FR   E",
+					" 2 LH 469S 14JUN AUSFRA SS1   405P  910A|*      FR/SA   E  1",
+					" 3 LH 598S 15JUN FRAADD SS1   115P  910P *         SA   E  1",
+					"         OPERATED BY LUFTHANSA CITYLINE GMBH",
+					" 4 LH 599S 22JUL ADDFRA SS1  1110P  525A|*      MO/TU   E",
+					"         OPERATED BY LUFTHANSA CITYLINE GMBH",
+					" 5 UA  59S 23JUL FRASFO SS1   155P  430P *         TU   E",
+					""
+				].join("\n"),
+			},
+			'output': {
+				'status': 'forbidden',
+				'userMessages': ['SOME FLIGHTS DID NOT HAVE ENOUGH SEATS AVAILABLE IN REQUESTED BOOKING CODE - 1,4,5'],
+				'calledCommands': [
+					{"cmd": "N:EBRAHIM/TAJUDIN AHMED|N:ABDI/GENET"},
+					{"cmd": "*R"},
+				],
+			},
+			'sessionInfo': {
+				'initialState': GdsDirectDefaults.makeDefaultApolloState(),
+				'initialCommands': [],
+				'performedCommands': [
+					{
+					    "cmd": "N:EBRAHIM/TAJUDIN AHMED|N:ABDI/GENET",
+					    "output": [
+					        " *",
+					        "><"
+					    ].join("\n"),
+					},
+					{
+					    "cmd": "0UA258Y14JUNSFOAUSGK1",
+					    "output": [
+					        " 1 UA  258Y  14JUN SFOAUS GK1   800A  134P                    ",
+					        "OFFER CAR/HOTEL    >CAL;     >HOA;",
+					        "DEPARTS SFO TERMINAL 3 ",
+					        "THIS AIRLINE SUPPORTS CLAIM PNR - UA ",
+					        "TO REQUEST CLAIM PNR PLEASE IGNORE AND ENTER THE",
+					        "AIRLINES INFORMATION IN ONE OF THE FOLLOWING FORMATS -",
+					        "L@UA/*(RECORD LOCATOR)  OR  L@UA/*UA258/14JUN-(NAME) ",
+					        "><"
+					    ].join("\n"),
+					},
+					{
+					    "cmd": "0LH469Y14JUNAUSFRAGK1",
+					    "output": [
+					        " 2 LH  469Y  14JUN AUSFRA GK1   405P  910A|                   ",
+					        "OFFER CAR/HOTEL    >CAL;     >HOA;",
+					        "                         ARRIVES FRA TERMINAL 1 ",
+					        "ADD ADVANCE PASSENGER INFORMATION SSRS DOCA/DOCO/DOCS",
+					        "PERSONAL DATA WHICH IS PROVIDED TO US IN CONNECTION",
+					        "WITH YOUR TRAVEL MAY BE PASSED TO GOVERNMENT AUTHORITIES",
+					        "FOR BORDER CONTROL AND AVIATION SECURITY PURPOSES",
+					        "><"
+					    ].join("\n"),
+					},
+					{
+					    "cmd": "0LH598Y15JUNFRAADDGK1",
+					    "output": [
+					        " 3 LH  598Y  15JUN FRAADD GK1   115P  910P                    ",
+					        "OFFER CAR/HOTEL    >CAL;     >HOA;",
+					        "OPERATED BY LUFTHANSA CITYLINE GMBH",
+					        "DEPARTS FRA TERMINAL 1  - ARRIVES ADD TERMINAL 2 ",
+					        "ADD ADVANCE PASSENGER INFORMATION SSRS DOCA/DOCO/DOCS",
+					        "PERSONAL DATA WHICH IS PROVIDED TO US IN CONNECTION",
+					        "WITH YOUR TRAVEL MAY BE PASSED TO GOVERNMENT AUTHORITIES",
+					        "FOR BORDER CONTROL AND AVIATION SECURITY PURPOSES",
+					        "><"
+					    ].join("\n"),
+					},
+					{
+					    "cmd": "0LH599Y22JULADDFRAGK1",
+					    "output": [
+					        " 4 LH  599Y  22JUL ADDFRA GK1  1110P  525A|                   ",
+					        "OFFER CAR/HOTEL    >CAL;     >HOA;",
+					        "OPERATED BY LUFTHANSA CITYLINE GMBH",
+					        "DEPARTS ADD TERMINAL 2  - ARRIVES FRA TERMINAL 1 ",
+					        "ADD ADVANCE PASSENGER INFORMATION SSRS DOCA/DOCO/DOCS",
+					        "PERSONAL DATA WHICH IS PROVIDED TO US IN CONNECTION",
+					        "WITH YOUR TRAVEL MAY BE PASSED TO GOVERNMENT AUTHORITIES",
+					        "FOR BORDER CONTROL AND AVIATION SECURITY PURPOSES",
+					        "><"
+					    ].join("\n"),
+					},
+					{
+					    "cmd": "0UA59Y23JULFRASFOGK1",
+					    "output": [
+					        " 5 UA   59Y  23JUL FRASFO GK1   155P  430P                    ",
+					        "OFFER CAR/HOTEL    >CAL;     >HOA;",
+					        "DEPARTS FRA TERMINAL 1  - ARRIVES SFO TERMINAL I ",
+					        "ADD ADVANCE PASSENGER INFORMATION SSRS DOCA/DOCO/DOCS",
+					        "PERSONAL DATA WHICH IS PROVIDED TO US IN CONNECTION",
+					        "WITH YOUR TRAVEL MAY BE PASSED TO GOVERNMENT AUTHORITIES",
+					        "FOR BORDER CONTROL AND AVIATION SECURITY PURPOSES",
+					        "THIS AIRLINE SUPPORTS CLAIM PNR - UA ",
+					        "TO REQUEST CLAIM PNR PLEASE IGNORE AND ENTER THE",
+					        "AIRLINES INFORMATION IN ONE OF THE FOLLOWING FORMATS -",
+					        "L@UA/*(RECORD LOCATOR)  OR  L@UA/*UA59/23JUL-(NAME)  ",
+					        "><"
+					    ].join("\n"),
+					},
+					{
+					    "cmd": "X1+4+5/01S+4S+5S",
+					    "output": [
+					        "0 AVAIL/WL CLOSED UA258 SFOAUS *",
+					        "UNABLE TO CANCEL",
+					        "><"
+					    ].join("\n"),
+					},
+					{
+					    "cmd": "X2+3/02S+3S",
+					    "output": [
+					        "   LH  469S  14JUN AUSFRA SS1   405P  910A|*      1          E",
+					        "SEC FLT PSGR DATA REQUIRED 72 HBD SSR DOCS *",
+					        "US LAW SEE GGAIRLH PNR ACCESS OR NEWS KEYWORDS *",
+					        "ESTA REQUIRED FOR VISA WAIVER NATIONALS *",
+					        "FULLY FLAT BED IN BUSINESS CLASS. SEE WWW.LH.COM *",
+					        "                         ARRIVES FRA TERMINAL 1 ",
+					        "   LH  598S  15JUN FRAADD SS1   115P  910P *      1          E",
+					        "OPERATED BY CL *",
+					        "FULLY FLAT BED IN BUSINESS CLASS. SEE WWW.LH.COM *",
+					        "PLS INSERT PSGR CTC ALSO FOR RETURN FLIGHT *",
+					        "OFFER CAR/HOTEL    >CAL;     >HOA;",
+					        "OPERATED BY LUFTHANSA CITYLINE GMBH",
+					        "DEPARTS FRA TERMINAL 1  - ARRIVES ADD TERMINAL 2 ",
+					        "><"
+					    ].join("\n"),
+					},
+					{
+					    "cmd": "*R",
+					    "output": [
+					        " 1.1EBRAHIM/TAJUDIN AHMED  2.1ABDI/GENET ",
+					        " 1 UA 258Y 14JUN SFOAUS GK1   800A  134P           FR",
+					        " 2 LH 469S 14JUN AUSFRA SS1   405P  910A|*      FR/SA   E  1",
+					        " 3 LH 598S 15JUN FRAADD SS1   115P  910P *         SA   E  1",
+					        "         OPERATED BY LUFTHANSA CITYLINE GMBH",
+					        " 4 LH 599Y 22JUL ADDFRA GK1  1110P  525A|       MO/TU",
+					        "         OPERATED BY LUFTHANSA CITYLINE GMBH",
+					        " 5 UA  59Y 23JUL FRASFO GK1   155P  430P           TU",
+					        "><"
+					    ].join("\n"),
+					},
+				],
+			},
+		});
+
 		// problematic cases follow
 		/*
 		// STORE alias, same as previous, but this time let's remove
