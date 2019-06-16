@@ -38,6 +38,7 @@ let GdsSession = (session) => {
  * on each called command it analyzes the output and updates the
  * state based on that - both in the instance and in the storage
  *
+ * @param cmdLog = require('CmdLog.js')()
  * @param session = at('GdsSessions.js').makeSessionRecord()
  * @param {IEmcUser} emcUser
  * @param {function(*): Promise} askClient
