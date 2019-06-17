@@ -5,7 +5,7 @@ const GdsSessions = require("../Repositories/GdsSessions");
 
 let getCommandBufferRows = (reqBody, emcResult) =>
     Db.with(db => db.fetchAll({
-        table: 'cmd_rq_log',
+        table: 'cmd_rs_log',
         where: [
             ['agentId', '=', emcResult.user.id],
             ['requestId', '=', reqBody.travelRequestId || 0],

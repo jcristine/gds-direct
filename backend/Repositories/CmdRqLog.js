@@ -21,19 +21,21 @@ exports.storeNew = (rqBody, session) => {
 };
 
 /** @param running = require('TerminalService.js').addHighlighting() */
-exports.logOutput = async (rqBody, whenCmdRqId, output) => {
+exports.logOutput = async (rqBody, session, whenCmdRqId, output) => {
 	let cmdRqId = await whenCmdRqId;
 	let responseTimestamp = Math.floor(new Date().getTime() / 1000);
-	return Db.with(db => db.update({
-		table: TABLE,
-		where: [['id', '=', cmdRqId]],
-		set: {
-			// no point in measuring it anymore, since there is the terminal_command_log now
-			processedTime: '0.000',
-			output: output,
-			responseTimestamp: responseTimestamp,
-		},
-	}));
+	return Db.with(db => db.writeRows('cmd_rs_log', [{
+		cmdRqId: cmdRqId,
+		agentId: session.context.agentId,
+		requestId: session.context.travelRequestId,
+		gds: session.context.gds,
+		dialect: rqBody.language,
+		sessionId: session.id,
+		output: output,
+		responseTimestamp: responseTimestamp,
+		terminalNumber: rqBody.terminalIndex || 0,
+		command: rqBody.command,
+	}]));
 };
 
 exports.getById = (id) => {

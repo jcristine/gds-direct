@@ -363,7 +363,7 @@ exports.getLastCommands = (reqBody, emcResult) => {
 	let requestId = reqBody.travelRequestId || 0;
 	return Db.with(db => db.fetchAll({
 		// TODO: move to CmdRqLog.js
-		table: 'cmd_rq_log',
+		table: 'cmd_rs_log',
 		where: [
 			['gds', '=', gds],
 			['agentId', '=', agentId],
@@ -394,7 +394,7 @@ exports.getCmdRqList = (reqBody, emcResult) => {
 	let sessionId = reqBody.sessionId;
 	return Db.with(db => db.fetchAll({
 		// TODO: move to CmdRqLog.js
-		table: 'cmd_rq_log',
+		table: 'cmd_rs_log',
 		where: [['sessionId', '=', sessionId]],
 		orderBy: 'id ASC',
 	})).then(rows => {
@@ -414,9 +414,7 @@ exports.clearBuffer = (rqBody, emcResult) => {
 	let requestId = rqBody.travelRequestId || 0;
 	return Db.with(db => db.query([
 		// TODO: move to CmdRqLog.js
-		// TODO: deleting is actually bad. Firstly, we rely on presence of cmd_rq
-		//  in $D, and secondly we need this _original entered_ command for logs
-		'DELETE FROM cmd_rq_log',
+		'DELETE FROM cmd_rs_log',
 		'WHERE agentId = ?',
 		'  AND requestId = ?',
 	].join('\n'), [agentId, requestId]));

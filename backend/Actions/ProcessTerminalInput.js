@@ -301,7 +301,7 @@ let ProcessTerminalInput = async (params) => {
 	let termSvc = new TerminalService(gds);
 	let cmsResult = await termSvc.addHighlighting(rqBody.command, rbsResult, stateful.getFullState())
 		.then(TmpLib.addPerformanceDebug('Syntax Highlighting', postPccResult));
-	TerminalBuffering.logOutput(rqBody, whenCmdRqId, cmsResult.output);
+	TerminalBuffering.logOutput(rqBody, session, whenCmdRqId, cmsResult.output);
 
 	return cmsResult;
 };

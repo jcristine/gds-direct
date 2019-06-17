@@ -321,6 +321,26 @@ module.exports.migrations = [
 		].join('\n')),
 	},
 	{
+		name: 'GRECT/2019.06.17001-create-cmd-rs-log-2',
+		perform: (db) => db.query([
+			'CREATE TABLE `cmd_rs_log` (',
+			'  `id` bigint(20) unsigned PRIMARY KEY AUTO_INCREMENT,',
+			'  `cmdRqId` INTEGER NOT NULL,',
+			'  `agentId` int(10) unsigned NOT NULL,',
+			'  `requestId` int(10) unsigned NOT NULL DEFAULT 0,',
+			'  `gds` VARCHAR(15),',
+			'  `dialect` VARCHAR(15),',
+			'  `sessionId` INTEGER NOT NULL,',
+			'  `terminalNumber` tinyint(3) unsigned NOT NULL,',
+			'  `command` TEXT DEFAULT NULL,',
+			'  `output` text,',
+			'  `responseTimestamp` int(10) unsigned DEFAULT NULL,',
+			'  KEY `agentId_requestId` (`agentId`, `requestId`),',
+			'  KEY `sessionId` (`sessionId`)',
+			') ENGINE=InnoDB CHARSET=utf8',
+		].join('\n')),
+	},
+	{
 		name: 'GRECT/2019.03.08008-create-counted-fs-usages',
 		perform: (db) => db.query([
 			"CREATE TABLE `counted_fs_usages` (",
