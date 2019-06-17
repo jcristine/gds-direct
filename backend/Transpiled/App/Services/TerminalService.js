@@ -18,24 +18,11 @@ class TerminalService
 		this.gds = gds;
 	}
 
-	/**
-	 * Parse output
-	 *
-	 * @param string $output
-	 * @return string
-	 */
 	clearOutput($output) {
 		$output = rtrim(preg_replace(/(\)><|><)$/, '', $output));
 		return $output;
 	}
 
-	/**
-	 * Format output
-	 *
-	 * @param string $enteredCommand
-	 * @param string $language
-	 * @return string
-	 */
 	async formatOutput($enteredCommand, calledCommands) {
 		let $output = '';
 		let appliedRules = [];
@@ -52,20 +39,14 @@ class TerminalService
 				}
 			}
 			let scrolledCmd = $row.scrolledCmd || $row.cmd;
-			let highlighted = await this.highlightOutput(svc, scrolledCmd, this.clearOutput($row['output']));
+			let highlighted = await svc.replace(scrolledCmd, this.gds, this.clearOutput($row['output']));
 			$output += $command + highlighted;
 			appliedRules.push(...svc.getAppliedRules());
 		}
 		return {$output, appliedRules};
 	}
 
-	/**
-	 * Append output by custom strings
-	 *
-	 * @param string $output
-	 * @param $messages
-	 * @return string
-	 */
+	/** Append output by custom strings */
 	appendOutput($output, $messages) {
 		let $errors = '';
 		if (!empty($messages['info'])) {
@@ -81,52 +62,19 @@ class TerminalService
 		return $output + $errors;
 	}
 
-	/**
-	 * Highlight
-	 *
-	 * @param string $enteredCommand
-	 * @param string $language
-	 * @param string $output
-	 * @return {Promise}
-	 */
-	async highlightOutput(svc, cmd, output) {
-		return svc.replace(cmd, this.gds, output);
-	}
-
-	/**Highlight Errors
-	 *
-	 * @param $output
-	 */
 	highlightError($output) {
 		return this.color($output, 'errorMessage');
 	}
 
-	/**Highlight Errors
-	 *
-	 * @param $output
-	 */
 	highlightWarning($output) {
 		return this.color($output, 'warningMessage');
 	}
 
-	/**
-	 * Set string color
-	 *
-	 * @param string $string
-	 * @param string $class
-	 * @return string
-	 */
 	color($string, $class) {
 		$string = sprintf('[[;%s;%s;%s]%s]', '', '', $class, trim(str_replace(']', '\\]', $string)));
 		return $string;
 	}
 
-	/**
-	 * Execute terminal command
-	 *
-	 * @param string $command
-	 * @param {IRbsRunCommandResult} rbsResp
-	 */
 	addHighlighting($command, rbsResp, fullState = null) {
 		let {calledCommands, messages = []} = rbsResp;
 		let typeToMsgs = {};
