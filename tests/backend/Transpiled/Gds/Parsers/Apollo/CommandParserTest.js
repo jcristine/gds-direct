@@ -1017,6 +1017,10 @@ class CommandParserTest extends require('../../../../../../backend/Transpiled/Li
 				unparsed: '/D|DL',
 			},
 		}]);
+		// not a valid format, but still gets recognized as RESALL - that's correct
+		$list.push(['RE/13NM+AG', {
+			type: 'storeAndCopyPnr',
+		}]);
 
 		return $list;
 	}

@@ -39,7 +39,7 @@ exports.wrapExc = async getter => getter();
  * @template T
  * @param {T} defaultValue
  * @param {{httpStatusCode}[]} allowedKinds - Rej.* http status codes
- * @return Promise<T> - resolve if exc was created with Rej.* and it's
+ * @return {function(Error): Promise<T>} - resolve if exc was created with Rej.* and it's
  *           status is in allowedStatuses, otherwise reject with original exc
  * supposed to be used with promise.catch(ignoreExc(null, [Rej.NotFound])) to catch particular kinds of exceptions
  */

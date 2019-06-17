@@ -7,6 +7,7 @@ const selectFromArray = require("klesun-node-tools/src/Utils/SqlUtil").selectFro
 const NotFound = require("klesun-node-tools/src/Utils/Rej").NotFound;
 const makeRow = require("../Repositories/CmdLogs").makeRow;
 const hrtimeToDecimal = require("../Utils/TmpLib").hrtimeToDecimal;
+const {ignoreExc} = require('../Utils/TmpLib.js');
 
 let CmdLog = ({
 	session, whenCmdRqId, fullState,
@@ -158,7 +159,7 @@ let CmdLog = ({
 					[['has_pnr', '=', false]],
 					[['record_locator', '!=', getSessionData().recordLocator]],
 				],
-			}).catch(exc => null);
+			}).catch(ignoreExc(null, [Rej.NoContent]));
 
 			return getCommandsStartingFrom(pnrStarter, {
 				where: [['area', '=', fullState.area]],
@@ -172,7 +173,7 @@ let CmdLog = ({
 					['type', 'NOT IN', types],
 					['is_mr', '=', false],
 				],
-			}).catch(exc => null);
+			}).catch(ignoreExc(null, [Rej.NoContent]));
 
 			let matched = await getCommandsStartingFrom(stateStarter, {
 				where: [['area', '=', fullState.area]],
@@ -198,7 +199,7 @@ let CmdLog = ({
 		getScrolledCmdMrs: async () => {
 			let mrStarter = await selectLastCmdOf({
 				where: [['is_mr', '=', false]],
-			}).catch(exc => null);
+			}).catch(ignoreExc(null, [Rej.NoContent]));
 
 			return getCommandsStartingFrom(mrStarter);
 		},
@@ -215,7 +216,7 @@ let CmdLog = ({
 					['type', 'NOT IN', SessionStateHelper.$nonAffectingTypes],
 					['is_mr', '=', false],
 				],
-			}).catch(exc => null);
+			}).catch(ignoreExc(null, [Rej.NoContent]));
 
 			return getCommandsStartingFrom(stateStarter, {
 				where: [['area', '=', fullState.area]],
