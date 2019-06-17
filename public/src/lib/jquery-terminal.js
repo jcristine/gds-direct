@@ -4707,6 +4707,7 @@
 			// :: the events will be not fired. Used on init
 			// -------------------------------------------------------------
 			focus: function(toggle, silent) {
+				let tmpScrollTop = self[0].scrollTop;
 				cmd_ready(function ready() {
 					if (terminals.length() === 1) {
 						if (toggle === false) {
@@ -4739,6 +4740,9 @@
 					}
 					self.enable(silent);
 				});
+				// a workaround to preserve scroll position on focus, which
+				// got scrolled to bottom somewhere deep inside the lib
+				self[0].scrollTop = tmpScrollTop;
 				return self;
 			},
 			// -------------------------------------------------------------

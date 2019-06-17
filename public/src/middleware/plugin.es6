@@ -72,15 +72,6 @@ export default class TerminalPlugin
 		this.history 		= new History( params.gds );
 
 		this.insertKey	= false;
-		this.context.addEventListener('scroll', (e) => {
-			if (!this.terminal.enabled()) {
-				let tmpScrollTop = this.context.scrollTop;
-				this.terminal.focus();
-				// a workaround to preserve scroll position on focus, which
-				// got scrolled to bottom somewhere deep inside the lib
-				this.context.scrollTop = tmpScrollTop;
-			}
-		});
 	}
 
 	/** @param {KeyboardEvent} evt */
