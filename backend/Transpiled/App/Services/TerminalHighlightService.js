@@ -86,13 +86,6 @@ class TerminalHighlightService {
 		this.$shift = 0;
 	}
 
-	/**
-	 * Get all applied to command rules
-	 *
-	 * @param string $language
-	 * @param string $enteredCommand
-	 * @return Promise
-	 */
 	getMatchingCmdPatterns($language, $enteredCommand) {
 		return getCmdPatterns().then(rows => rows
 			.filter(row => row.dialect === $language)
@@ -112,11 +105,6 @@ class TerminalHighlightService {
 		);
 	}
 
-	/**
-	 * @param array $ids
-	 * @param string $language
-	 * @param string $gds
-	 */
 	getRules(cmdPatterns) {
 		return getFullDataForService()
 			.then(ruleMapping => {
@@ -132,10 +120,6 @@ class TerminalHighlightService {
 			.then(rules => rules.sort((a, b) => a.priority - b.priority));
 	}
 
-	/**
-	 * @throws \Psr\SimpleCache\InvalidArgumentException
-	 * @throws \Exception
-	 */
 	removeCrossMatches(matches) {
 		let $response = [];
 		let $lastPosition = -1;
@@ -150,27 +134,27 @@ class TerminalHighlightService {
 		return $response;
 	}
 
-	async match($language, $enteredCommand, $gds, $output) {
-		let cmdPatterns = await this.getMatchingCmdPatterns($language, $enteredCommand);
-		let $rules = await this.getRules(cmdPatterns);
-		for (let $rule of Object.values($rules)) {
-			$rule['patterns']
-				.filter(row => row.gds === $gds && !empty(row.pattern))
+	async match(cmd, gds, output) {
+		let cmdPatterns = await this.getMatchingCmdPatterns(gds, cmd);
+		let rules = await this.getRules(cmdPatterns);
+		for (let rule of rules) {
+			rule.patterns
+				.filter(row => row.gds === gds && !empty(row.pattern))
 				.forEach(gdsRow => {
 					let matches = [];
-					let regex = makeRegex(gdsRow['pattern'], 'm');
+					let regex = makeRegex(gdsRow.pattern, 'm');
 					try {
-						matches = Str.matchAll(regex, $output);
+						matches = Str.matchAll(regex, output);
 					} catch ($e) {
 						matches = [];
-						setOutputRegexError(gdsRow['id']);
+						setOutputRegexError(gdsRow.id);
 					}
 					for (let match of matches) {
 						let whole = match.shift();
 						let index = match.index;
-						switch ($rule['highlightType']) {
+						switch (rule.highlightType) {
 							case 'patternOnly':
-								this.matchPattern(whole, index, $rule);
+								this.matchPattern(whole, index, rule);
 								break;
 							case 'customValue':
 								let captures = [];
@@ -184,12 +168,12 @@ class TerminalHighlightService {
 									// this is a stupid hack, but we'll have to use it till I find a lib
 									let relIndex = whole.indexOf(captured);
 									if (relIndex > -1) {
-										this.matchPattern(captured, index + relIndex, $rule);
+										this.matchPattern(captured, index + relIndex, rule);
 									}
 								}
 								break;
 						}
-						if ($rule['isOnlyFirstFound']) {
+						if (rule.isOnlyFirstFound) {
 							break;
 						}
 					}
@@ -202,21 +186,21 @@ class TerminalHighlightService {
 	matchPattern(matchedText, index, $rule) {
 		if (!empty(matchedText)) {
 
-			$rule['value'] = sprintf('%%%s%%', matchedText);
+			$rule.value = sprintf('%%%s%%', matchedText);
 
-			if (isset(this.$appliedRules[$rule['value']]) && this.$appliedRules[$rule['value']]['id'] != $rule['id']) {
+			if (isset(this.$appliedRules[$rule.value]) && this.$appliedRules[$rule.value].id != $rule.id) {
 				return;
 			}
 
 			this.$matches.push({
 				0: matchedText,
 				1: index,
-				rule: $rule['id'],
+				rule: $rule.id,
 			});
-			this.$appliedRules[$rule['value']] = {...$rule};
-			let $offsets = this.$appliedRules[$rule['value']]['offsets'] || [];
+			this.$appliedRules[$rule.value] = {...$rule};
+			let $offsets = this.$appliedRules[$rule.value].offsets || [];
 			$offsets.push({'index': index, 'end': index + strlen(matchedText)});
-			this.$appliedRules[$rule['value']]['offsets'] = $offsets;
+			this.$appliedRules[$rule.value].offsets = $offsets;
 		}
 	}
 
@@ -226,9 +210,6 @@ class TerminalHighlightService {
 		return $output;
 	}
 
-	/**
-	 * @return mixed
-	 */
 	getAppliedRules() {
 		for (let [k,v] of Object.entries(this.$appliedRules)) {
 			this.$appliedRules[k] = normalizeRuleForFrontend(v);
@@ -237,21 +218,20 @@ class TerminalHighlightService {
 	}
 
 	/**
-	 * @param string $language - deprecated, should be same as $gds
 	 * @param string $enteredCommand - should be the actual command called
 	 *                 in GDS, not the command agent entered (untranslated)
 	 * @param string $gds
 	 * @param string $output
 	 * @return {Promise}
 	 */
-	async replace($language, $enteredCommand, $gds, $output) {
-        let matches = await this.match($language, $enteredCommand, $gds, $output);
+	async replace(cmd, gds, output) {
+        let matches = await this.match(cmd, gds, output);
         matches = matches.sort((a,b) => a[1] - b[1]);
 		matches = this.removeCrossMatches(matches);
 		for (let $match of matches) {
-			$output = this.doReplace($match, $output);
+			output = this.doReplace($match, output);
 		}
-		return $output;
+		return output;
 	}
 }
 

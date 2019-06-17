@@ -52,7 +52,7 @@ class TerminalService
 				}
 			}
 			let scrolledCmd = $row.scrolledCmd || $row.cmd;
-			let highlighted = await this.highlightOutput(svc, scrolledCmd, this.gds, this.clearOutput($row['output']));
+			let highlighted = await this.highlightOutput(svc, scrolledCmd, this.clearOutput($row['output']));
 			$output += $command + highlighted;
 			appliedRules.push(...svc.getAppliedRules());
 		}
@@ -89,8 +89,8 @@ class TerminalService
 	 * @param string $output
 	 * @return {Promise}
 	 */
-	async highlightOutput(svc, $enteredCommand, $language, $output) {
-		return svc.replace($language, $enteredCommand, this.gds, $output);
+	async highlightOutput(svc, cmd, output) {
+		return svc.replace(cmd, this.gds, output);
 	}
 
 	/**Highlight Errors

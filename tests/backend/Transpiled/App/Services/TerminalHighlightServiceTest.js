@@ -1,6 +1,5 @@
 let TerminalHighlightService = require('../../../../../backend/Transpiled/App/Services/TerminalHighlightService');
 let HighlightRules = require('../../../../../backend/Repositories/HighlightRules.js');
-const RegexTranspiler = require("../../../../../backend/Transpiled/Grect/RegexTranspiler");
 
 class TerminalHighlightServiceTest extends require('../../../../../backend/Transpiled/Lib/TestCase.js') {
 	async provideMakeRegexValid() {
