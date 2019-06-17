@@ -1602,6 +1602,77 @@ class FxParserTest extends require('../../../../Lib/TestCase.js')
             },
         ]);
 
+        // (PA) pacific flight mark in Fare Calculation
+        $list.push([
+            php.implode(php.PHP_EOL, [
+                "FQQ1",
+                "",
+                "01 LIU/JINYA*",
+                "",
+                "LAST TKT DTE 30JUN19 - SEE SALES RSTNS",
+                "------------------------ NEGO ------------------------------",
+                "     AL FLGT  BK   DATE  TIME  FARE BASIS      NVB  NVA   BG",
+                " NYC",
+                " FOC MU   588 S    18JUL 1625  SKX0Z6RN/MUPB        18JAN 2P",
+                " NYC MU   587 S    18OCT 0755  SKW0Z6RN/MUPB        18JAN 2P",
+                "",
+                "USD   492.00      18JUL19NYC MU(PA)FOC234.60SKX0Z6RN/MUPB MU",
+                "                  (PA)NYC257.60SKW0Z6RN/MUPB NUC492.20END",
+                "USD   200.00-YQ   ROE1.000000",
+                "USD     8.00-YQ   XT USD 3.96-XA USD 7.00-XY USD 5.77-YC USD",
+                "USD    77.04-XT   18.60-US USD 18.60-US USD 5.60-AY USD",
+                "USD   777.04      13.01-CN USD 4.50-XF JFK4.50",
+                "TOUR/CAR-VC:NAB901",
+                "NO CHARGEABLE ANCILLARY SERVICE",
+                "CAT35 NEGOTIATED FARES",
+                "TICKET STOCK RESTRICTION",
+                "BG CXR: MU",
+                "PRICED WITH VALIDATING CARRIER MU - REPRICE IF DIFFERENT VC",
+                "100.00 USD PENALTY APPLIES",
+                "ENDOS Q/NON-END. PENALTY APPLY. -BG:MU",
+                "15JUN19 PER GAF REQUIREMENTS FARE NOT VALID UNTIL TICKETED",
+            ]),
+            {
+                "type": "ptcPricing",
+                "data": {
+                    "departureCity": "NYC",
+                    "segments": [
+                        {"destinationCity": "FOC"},
+                        {"destinationCity": "NYC"}
+                    ],
+                    "baseFare": {"currency":"USD","amount":"492.00","taxCode":null},
+                    "fareConstruction": {
+                        parsed: {
+                            segments: [
+                                {airline: 'MU', destination: 'FOC'},
+                                {airline: 'MU', destination: 'NYC'},
+                            ],
+                            fare: '492.20',
+                        },
+                        raw: "18JUL19NYC MU(PA)FOC234.60SKX0Z6RN/MUPB MU (PA)NYC257.60SKW0Z6RN/MUPB NUC492.20END ROE1.000000"
+                    },
+                    "mainTaxes": [
+                        {"currency":"USD","amount":"200.00","taxCode":"YQ"},
+                        {"currency":"USD","amount":"8.00","taxCode":"YQ"},
+                        {"currency":"USD","amount":"77.04","taxCode":"XT"}
+                    ],
+                    "xtTaxes": [
+                        {"currency":"USD","amount":"3.96","taxCode":"XA"},
+                        {"currency":"USD","amount":"7.00","taxCode":"XY"},
+                        {"currency":"USD","amount":"5.77","taxCode":"YC"},
+                        {"currency":"USD","amount":"18.60","taxCode":"US"},
+                        {"currency":"USD","amount":"18.60","taxCode":"US"},
+                        {"currency":"USD","amount":"5.60","taxCode":"AY"},
+                        {"currency":"USD","amount":"13.01","taxCode":"CN"},
+                        {"currency":"USD","amount":"4.50","taxCode":"XF"}
+                    ],
+                    "facilityCharges": [{"airport":"JFK","amount":"4.50"}],
+                    "netPrice": {"currency":"USD","amount":"777.04","taxCode":null},
+                    "privateFareHeader": " NEGO "
+                }
+            },
+        ]);
+
         return $list;
     }
 

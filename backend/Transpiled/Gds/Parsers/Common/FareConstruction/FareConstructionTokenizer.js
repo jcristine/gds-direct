@@ -73,7 +73,7 @@ class FareConstructionTokenizer {
 
 			(new Lexeme('segment', '/^' +
 				'(?<airline>[A-Z0-9]{2})' +
-				'(\\s+|[\\(\\*](?<oceanicFlight>[A-Z]{2})[\\)\\*]\\s*|(?<starMark>\\*))' +
+				'(\\s+|\\s*[\\(\\*](?<oceanicFlight>[A-Z]{2})[\\)\\*]\\s*|(?<starMark>\\*))' +
 				'(?<flags>(?:[A-Z]\\\/)*)' +
 				'(?<destination>[A-Z]{3})(?![A-Z])/'
 			)).preprocessDataRemoveNumericKeys(),

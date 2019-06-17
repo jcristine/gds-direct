@@ -183,10 +183,12 @@ class FxParser {
 			[$_, $dateRaw, $fcRaw] = $matches;
 			$fcRecord = FareConstructionParser.parse($fcRaw);
 			$fcRecord['raw'] = $raw;
-			$fcRecord['parsed']['date'] = {
-				'raw': $dateRaw,
-				'parsed': '20' + CommonParserHelpers.parseApolloFullDate($dateRaw),
-			};
+			if ($fcRecord['parsed']) {
+				$fcRecord['parsed']['date'] = {
+					'raw': $dateRaw,
+					'parsed': '20' + CommonParserHelpers.parseApolloFullDate($dateRaw),
+				};
+			}
 			return $fcRecord;
 		} else {
 			return {'error': 'Failed to match FC start - ' + php.substr($raw, 0, 7)};
