@@ -1000,7 +1000,7 @@ class FareConstructionParserTest extends require('../../../Lib/TestCase.js') {
 					],
 					'currency': 'NUC',
 					'fare': '655.02',
-					'infoMessage': 'DISCOUNTED FARES SELECTED ',
+					'infoMessage': 'DISCOUNTED FARES SELECTED',
 					'rateOfExchange': '1.0',
 				},
 			},

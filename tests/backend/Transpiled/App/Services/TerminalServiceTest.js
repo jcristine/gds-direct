@@ -51,9 +51,9 @@ class TerminalServiceTest extends require('../../../../../backend/Transpiled/Lib
 						"onClickMessage": "",
 						"onClickCommand": "S*AIR/{pattern}/MDA",
 						"color": "specialHighlight",
-						"backgroundColor": "",
+						"backgroundColor": null,
 						"isInSameWindow": 0,
-						"decoration": ["large"],
+						"decoration": ["bold"],
 						"offsets": [{"index": 68, "end": 70}],
 					},
 					{
@@ -63,9 +63,9 @@ class TerminalServiceTest extends require('../../../../../backend/Transpiled/Lib
 						"onClickMessage": "",
 						"onClickCommand": "S*AIR/{pattern}/MDA",
 						"color": "specialHighlight",
-						"backgroundColor": "",
+						"backgroundColor": null,
 						"isInSameWindow": 0,
-						"decoration": ["large"],
+						"decoration": ["bold"],
 						"offsets": [{"index": 198, "end": 200}],
 					},
 					{
@@ -75,9 +75,9 @@ class TerminalServiceTest extends require('../../../../../backend/Transpiled/Lib
 						"onClickMessage": "",
 						"onClickCommand": "S*AIR/{pattern}/MDA",
 						"color": "specialHighlight",
-						"backgroundColor": "",
+						"backgroundColor": null,
 						"isInSameWindow": 0,
-						"decoration": ["large"],
+						"decoration": ["bold"],
 						"offsets": [{"index": 263, "end": 265}],
 					},
 					{
@@ -87,9 +87,9 @@ class TerminalServiceTest extends require('../../../../../backend/Transpiled/Lib
 						"onClickMessage": "",
 						"onClickCommand": "S*AIR/{pattern}/MDA",
 						"color": "specialHighlight",
-						"backgroundColor": "",
+						"backgroundColor": null,
 						"isInSameWindow": 0,
-						"decoration": ["large"],
+						"decoration": ["bold"],
 						"offsets": [{"index": 458, "end": 460}],
 					},
 					{
@@ -99,9 +99,9 @@ class TerminalServiceTest extends require('../../../../../backend/Transpiled/Lib
 						"onClickMessage": "",
 						"onClickCommand": "S*AIR/{pattern}/MDA",
 						"color": "specialHighlight",
-						"backgroundColor": "",
+						"backgroundColor": null,
 						"isInSameWindow": 0,
-						"decoration": ["large"],
+						"decoration": ["bold"],
 						"offsets": [{"index": 393, "end": 395}],
 					},
 					{
@@ -488,11 +488,11 @@ class TerminalServiceTest extends require('../../../../../backend/Transpiled/Lib
 		// /...\K.../ example - should highlight "1412.70TTL"
 		list.push([{
 			input: {
-				$enteredCommand: 'WP',
+				$enteredCommand: 'WP*BAG',
 				$language: 'sabre',
 				calledCommands: [
 					{
-						"cmd": "WP",
+						"cmd": "WP*BAG",
 						"type": "priceItinerary",
 						"output": [
 							"       BASE FARE                 TAXES/FEES/CHARGES    TOTAL",
@@ -561,7 +561,7 @@ class TerminalServiceTest extends require('../../../../../backend/Transpiled/Lib
 	}
 
 	async testFormatOutput({input, expected}) {
-		let {$enteredCommand, $language, calledCommands} = input;
+		let {$enteredCommand, calledCommands} = input;
 		let actual = await (new TerminalService(input.$language))
 			.formatOutput($enteredCommand, calledCommands);
 		try {
