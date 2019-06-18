@@ -130,6 +130,8 @@ let matchApolloPricingRules = (output) => {
 				if (data.flags && data.flags.includes('X/')) {
 					addRecord(data.flags + data.destination, 'xInFareConstruction');
 				}
+			} else if (lexeme === 'nextDeparture') {
+				addRecord(raw, 'xXXInFareConstruction');
 			} else if (lexeme === 'end') {
 				let infoMsg = (data.infoMessage || '').trim();
 				if (infoMsg.match(/^M\s*U\s*S\s*T\s*P\s*R\s*I\s*C\s*E\s*A\s*S\s*B$/)) {
