@@ -238,17 +238,20 @@ params.columns.push(
 );
 
 let validateRegexSyntax = (input) => {
-	input.value = input.value.replace(/\(\?P</g, '(?<');
-	try {
-		let regex = new RegExp(input.value);
-		'some random text'.match(regex);
-		input.setCustomValidity(''); // valid
-		input.title = '';
-	} catch (exc) {
-		let error = exc + '';
-		input.setCustomValidity(error); // invalid
-		input.title = error;
-	}
+	let normReg = value => value.replace(/\(\?P</g, '(?<');
+	input.oninput = (e) => {
+		try {
+			let regex = new RegExp(normReg(input.value));
+			'some random text'.match(regex);
+			input.setCustomValidity(''); // valid
+			input.title = '';
+		} catch (exc) {
+			let error = exc + '';
+			input.setCustomValidity(error); // invalid
+			input.title = error;
+		}
+	};
+	input.onblur = () => input.value = normReg(input.value);
 };
 
 gdses.forEach( lang => {
@@ -263,7 +266,7 @@ gdses.forEach( lang => {
 
 			let html = `<input class="regex-syntax form-control input-sm ${isError}" name="languages[${lang}][cmdPattern]" value="${val}" autocomplete="off">`;
 			let input = HtmlEl(html);
-			input.oninput = (e) => validateRegexSyntax(input, e);
+			validateRegexSyntax(input);
 			return input;
 		},
 	});
@@ -300,7 +303,7 @@ gdses.forEach( gds => {
 
 			let html = `<input class="regex-syntax form-control input-sm ${isError}" name="gds[${gds}][pattern]" value="${val}" autocomplete="off">`;
 			let input = HtmlEl(html);
-			input.oninput = (e) => validateRegexSyntax(input, e);
+			validateRegexSyntax(input);
 			return input;
 		},
 	});
