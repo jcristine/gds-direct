@@ -3,7 +3,7 @@ const Str = require("../../../Utils/Str.js");
 const Db = require("../../../Utils/Db.js");
 const RegexTranspiler = require("../../Grect/RegexTranspiler");
 const {getFullDataForService, getByName} = require('../../../Repositories/HighlightRules.js');
-const {ucfirst, array_key_exists, array_merge, substr_replace, array_flip, array_intersect_key, array_values, sprintf, strlen, implode, preg_match, preg_replace, preg_replace_callback, rtrim, str_replace, strcasecmp, boolval, empty, intval, isset, strtoupper, trim, PHP_EOL, json_encode} = require('../../php.js');
+const {substr_replace, array_values, sprintf, strlen, preg_match, empty, isset} = require('../../php.js');
 const ApoCmdParser = require('../../Gds/Parsers/Apollo/CommandParser.js');
 const FareConstructionParser = require('../../Gds/Parsers/Common/FareConstruction/FareConstructionParser.js');
 
@@ -93,7 +93,7 @@ let normalizeRuleForFrontend = (rule) => {
 // 224	0	Pricing Screen	Exceeding maximum permitted Mileage on Pricing screen
 let matchApolloPricingRules = (output) => {
 	let records = [];
-	let fcMatches = Str.matchAll(/(?<=\n\$B-\d+.*\n)([\s\S]+)\nFARE/g, output);
+	let fcMatches = Str.matchAll(/(?<=\n\$B[A-Z]*-\d+.*\n)([\s\S]+)\nFARE/g, output);
 	for (let fcMatch of fcMatches) {
 		let offset = fcMatch.index;
 		let fcText = fcMatch[1];
@@ -301,6 +301,7 @@ class TerminalHighlightService {
 					index: index,
 					end: end,
 				}],
+				source: 'coded',
 			},
 		};
 	}
