@@ -37,33 +37,17 @@
 	</div>
 </section>
 
+<script src="../src/actions/initAuthPage.js"></script>
 <script src="../terminal-bundle.js"></script>
 <script>
-	let hashData = {};
-	let cookieData = {};
-	let hashStr = window.location.hash.substr(1);
-	for (let pair of hashStr.split('&')) {
-		let [key, value] = pair.split('=');
-		hashData[key] = value;
-	}
-	for (let pair of document.cookie.split('; ')) {
-		let [key, value] = pair.split('=');
-		cookieData[key] = value;
-	}
-
-	let emcSessionId = hashData.emcSessionId || cookieData.emcSessionId;
-	if (emcSessionId) {
-		document.cookie = 'emcSessionId=' + emcSessionId;
-		window.location.hash = '';
-	}
-
-	window.onhashchange = () => window.location.reload();
+window.GdsDirectPlusPage.whenEmcSessionId.then(emcSessionId => {
 	window.InitGdsDirectPlusApp.AdminApps().HighlightRulesAdminApp({
 		htmlRootDom		: [...document.getElementsByClassName('container-fluid')][0],
 		emcSessionId    : emcSessionId,
 	}).then(app => {
 		console.log(app);
 	});
+});
 </script>
 
 <style>

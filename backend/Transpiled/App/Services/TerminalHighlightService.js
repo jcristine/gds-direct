@@ -87,6 +87,7 @@ let normalizeRuleForFrontend = (rule) => {
 // 20	0	Pricing Screen	Loaded TD's for Private Fares in Pricing
 // 46	0	Pricing Screen	Fare Construction
 // 48	0	Pricing Screen	X/ in Fare Construction
+// 58	0	Others	/-XXX in Fare Construction
 // 152	0	Pricing Screen	----- MUST PRICE AS B/A -----
 // 154	0	Pricing Screen	--- MUST PRICE AS B ---
 // 168	9	Pricing Screen	Fare Amount in Fare Construction

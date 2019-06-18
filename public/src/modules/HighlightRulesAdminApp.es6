@@ -1,6 +1,5 @@
 'use strict';
 
-
 const $ = require('jquery');
 import {notify} from '../helpers/debug.es6';
 //import Notify 		from 'abstract/notifications';
