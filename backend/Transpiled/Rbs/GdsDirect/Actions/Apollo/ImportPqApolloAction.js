@@ -195,8 +195,8 @@ class ImportPqApolloAction extends AbstractGdsAction {
 			if (($exc + '').match(/TypeError/)) {
 				throw $exc;
 			}
-			$result['error'] = 'Failed to parse pricing - ' + php.get_class($exc) + ' ' + $exc.message + ' - ' + $dump;
-			return $result;
+			let msg = 'Failed to parse pricing - ' + php.get_class($exc) + ' ' + $exc.message + ' - ' + $dump;
+			throw Rej.NotImplemented.makeExc(msg);
 		}
 		if (!$parsed) return {'error': 'Gds returned error - ' + php.trim($dump)};
 		let pricingAdapter = (new ApolloPricingAdapter())
