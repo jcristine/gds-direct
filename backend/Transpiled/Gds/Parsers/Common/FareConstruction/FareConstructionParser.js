@@ -41,9 +41,14 @@ class FareConstructionParser {
 	static collectEnding($tokens) {
 		let $data, $lexemeToPos, $currency, $totalAmount, $markup, $fare, $discount, $facilityCharges, $xfTotal,
 			$airports, $matches, $_, $airport, $amount;
-		$data = php.array_combine(php.array_column($tokens, 'lexeme'),
-			php.array_column($tokens, 'data'));
-		$lexemeToPos = php.array_combine(php.array_column($tokens, 'lexeme'), php.array_keys($tokens));
+		$data = php.array_combine(
+			php.array_column($tokens, 'lexeme'),
+			php.array_column($tokens, 'data')
+		);
+		$lexemeToPos = php.array_combine(
+			php.array_column($tokens, 'lexeme'),
+			php.array_keys($tokens)
+		);
 		if (php.count($data) < php.count($tokens)) {
 			// got repeating ending tokens - something went wrong
 			return null;
@@ -213,9 +218,7 @@ class FareConstructionParser {
 			if (this.endsSegments($tokens[$i])) {
 				$result = this.collectEnding(php.array_slice($tokens, $i));
 				if ($result) {
-					$isFareHidden = ($seg) => {
-						return $seg['isFareHidden'] || null;
-					};
+					$isFareHidden = ($seg) => $seg['isFareHidden'] || null;
 					$result['hasHiddenFares'] = Fp.any($isFareHidden, $segments);
 					if (this.isValidEnding($result, $segments)) {
 						return php.array_merge({'segments': $segments}, $result);
@@ -233,9 +236,7 @@ class FareConstructionParser {
 	static parse($dump) {
 		let $isNotWhitespace, $combinationLimit, $result, $errorTokens, $errorTextLeft, $i, $split, $lexed, $tokens,
 			$textLeft, $maybeParsed;
-		$isNotWhitespace = ($lexeme) => {
-			return $lexeme['lexeme'] !== 'whitespace';
-		};
+		$isNotWhitespace = ($lexeme) => $lexeme['lexeme'] !== 'whitespace';
 		$combinationLimit = 10;
 		$result = {
 			'parsed': null,
@@ -247,12 +248,14 @@ class FareConstructionParser {
 		$i = 0;
 		$split = new FareConstructionTokenizer();
 		for ($lexed of $split.tryTokenCombinations($dump)) {
-			$tokens = php.array_values(Fp.filter($isNotWhitespace, $lexed['lexemes']));
+			$tokens = $lexed['lexemes'];
+			let filtered = php.array_values(Fp.filter($isNotWhitespace, $lexed['lexemes']));
 			$textLeft = $lexed['text'];
-			$maybeParsed = this.collectStructure($tokens);
+			$maybeParsed = this.collectStructure(filtered);
 			if ($maybeParsed && php.strlen($textLeft) < php.strlen($result['textLeft'])) {
 				$result = {
 					'parsed': $maybeParsed,
+					'tokens': $tokens,
 					'textLeft': $textLeft,
 				};
 			} else if (php.strlen($textLeft) < php.strlen($errorTextLeft)) {

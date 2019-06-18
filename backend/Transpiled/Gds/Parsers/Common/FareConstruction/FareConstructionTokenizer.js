@@ -68,13 +68,13 @@ class FareConstructionTokenizer {
 			(new Lexeme('sabreMarkup', /^(?:PLUS(\d*\.?\d+))/)).preprocessData($getFirst),
 			(new Lexeme('apolloMarkup', /^(?:PC(\d*\.?\d+))/)).preprocessData($getFirst),
 			(new Lexeme('apolloDiscount', /^(?:LC(\d*\.?\d+))/)).preprocessData($getFirst),
-			(new Lexeme('end', /^(?:-{1,3}\s{0,1}(?<infoMessage>[^-]*)-*\s*)*END(?![A-Z])/)).preprocessDataRemoveNumericKeys(),
+			(new Lexeme('end', /^(?:-{1,3}\s{0,1})+(?<infoMessage>[^-]*)(?:-*\s*)+END(?![A-Z])/)).preprocessDataRemoveNumericKeys(),
 			(new Lexeme('rateOfExchange', /^(?:ROE(\d+\.?\d*))/)).preprocessData($getFirst),
 
 			(new Lexeme('segment', '/^' +
 				'(?<airline>[A-Z0-9]{2})' +
 				'(\\s+|\\s*[\\(\\*](?<oceanicFlight>[A-Z]{2})[\\)\\*]\\s*|(?<starMark>\\*))' +
-				'(?<flags>(?:[A-Z]\\\/)*)' +
+				'(?<flags>(?:[A-Z]\\/)*)' +
 				'(?<destination>[A-Z]{3})(?![A-Z])/'
 			)).preprocessDataRemoveNumericKeys(),
 

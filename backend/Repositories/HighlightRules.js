@@ -2,6 +2,7 @@
 let Db = require("../Utils/Db.js");
 let Redis = require('../LibWrappers/Redis.js');
 let MultiLevelMap = require('../Utils/MultiLevelMap.js');
+let Rej = require('klesun-node-tools/src/Utils/Rej.js');
 
 const TABLE = 'highlightRules';
 const TABLE_CMD = 'highlightCmdPatterns';
@@ -63,23 +64,27 @@ let getFullDataForAdminPage = () => fetchFromDb().then(({
 // TODO: merge with getFullDataForAdminPage() somehow if possible
 let fetchFullDataForService = async () => {
 	let record = await fetchFromDb();
-	let mapping = {};
+	let byId = {};
 	for (let rule of record.highlightRules) {
-		mapping[rule.id] = rule;
+		byId[rule.id] = rule;
 	}
 	for (let cmdPattern of record.highlightCmdPatterns) {
-		if (mapping[cmdPattern.ruleId]) {
-			mapping[cmdPattern.ruleId].cmdPatterns = mapping[cmdPattern.ruleId].cmdPatterns || [];
-			mapping[cmdPattern.ruleId].cmdPatterns.push(cmdPattern);
+		if (byId[cmdPattern.ruleId]) {
+			byId[cmdPattern.ruleId].cmdPatterns = byId[cmdPattern.ruleId].cmdPatterns || [];
+			byId[cmdPattern.ruleId].cmdPatterns.push(cmdPattern);
 		}
 	}
 	for (let pattern of record.highlightOutputPatterns) {
-		if (mapping[pattern.ruleId]) {
-			mapping[pattern.ruleId].patterns = mapping[pattern.ruleId].patterns || [];
-			mapping[pattern.ruleId].patterns.push(pattern);
+		if (byId[pattern.ruleId]) {
+			byId[pattern.ruleId].patterns = byId[pattern.ruleId].patterns || [];
+			byId[pattern.ruleId].patterns.push(pattern);
 		}
 	}
-	return mapping;
+	let byName = {};
+	for (let rule of Object.values(byId)) {
+		byName[rule.name] = rule;
+	}
+	return {byId, byName};
 };
 
 /** RAM caching */
@@ -127,7 +132,7 @@ let saveRule = (rqBody, emcResult) => Db.with(db => {
 		color: rqBody.color,
 		backgroundColor: rqBody.backgroundColor,
 		highlightType: rqBody.highlightType,
-		priority: rqBody.priority,
+		priority: rqBody.priority || 0,
 		// not sure we actually need this field...
 		name: toCamelCase(rqBody.label),
 		label: rqBody.label,
@@ -170,10 +175,19 @@ let saveRule = (rqBody, emcResult) => Db.with(db => {
 
 exports.getFullDataForAdminPage = getFullDataForAdminPage;
 exports.saveRule = saveRule;
-exports.getFullDataForService = async () => {
+
+let getFullDataForServiceMulti = async () => {
 	if (await didCacheExpire(lastUpdateMs)) {
 		whenRuleMapping = fetchFullDataForService();
 		lastUpdateMs = Date.now();
 	}
 	return whenRuleMapping;
+};
+
+exports.getFullDataForService = () => getFullDataForServiceMulti().then(({byId}) => byId);
+exports.getByName = async (ruleName) => {
+	// TODO: keep the mapping instead of iterating over all rules
+	return getFullDataForServiceMulti()
+		.then(({byName}) => byName[ruleName])
+		.then(Rej.nonEmpty('No such rule - ' + ruleName));
 };
