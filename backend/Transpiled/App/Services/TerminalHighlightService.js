@@ -93,7 +93,7 @@ let normalizeRuleForFrontend = (rule) => {
 // 224	0	Pricing Screen	Exceeding maximum permitted Mileage on Pricing screen
 let matchApolloPricingRules = (output) => {
 	let records = [];
-	let fcMatches = Str.matchAll(/(?<=\n\$B[A-Z]*-\d+.*\n)([\s\S]+)\nFARE/g, output);
+	let fcMatches = Str.matchAll(/(?<=\n(?:\$B[A-Z]*|TKT \d+)-\d+.*\n)([\s\S]+)\nFARE/g, output);
 	for (let fcMatch of fcMatches) {
 		let offset = fcMatch.index;
 		let fcText = fcMatch[1];
@@ -149,7 +149,7 @@ let matchApolloPricingRules = (output) => {
 let matchCodedRules = (cmd, gds, output) => {
 	if (gds === 'apollo') {
 		let parsed = ApoCmdParser.parse(cmd);
-		if (['priceItinerary', 'storePricing'].includes(parsed.type)) {
+		if (['priceItinerary', 'storePricing', 'storedPricing'].includes(parsed.type)) {
 			return matchApolloPricingRules(output);
 		}
 	}
