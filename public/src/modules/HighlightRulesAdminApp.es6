@@ -165,6 +165,11 @@ const params = {
 			return false;
 		}
 	},
+	onSaveSuccess: (resp) => {
+		setTimeout(() => {
+			window.location.reload();
+		}, 1000);
+	},
 	columns: [],
 };
 

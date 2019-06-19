@@ -288,6 +288,9 @@ export default (function() {
 					disabledSelects.prop('disabled', 1);
 					if (a.status === 200) {
 						notify({msg: resp.message || 'Saved successfully', type: 'success', timeout: 3000});
+						if (settings.onSaveSuccess) {
+							settings.onSaveSuccess(resp);
+						}
 					} else {
 						notify({msg: resp.message || 'Bad response ' + a.status + ' ' + a.statusText, type: 'warning', timeout: 3000});
 					}
