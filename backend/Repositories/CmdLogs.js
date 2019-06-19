@@ -72,7 +72,7 @@ let makeRow = (cmdRec, session, cmdRqId, prevState) => {
 		session_id: session.id,
 		gds: gds,
 		type: type,
-		is_mr: scrolledType && scrolledType !== cmdRec.type,
+		is_mr: scrolledCmd !== cmdRec.cmd,
 		dt: sqlNow(),
 		cmd: cmdRec.cmd,
 		duration: cmdRec.duration,
