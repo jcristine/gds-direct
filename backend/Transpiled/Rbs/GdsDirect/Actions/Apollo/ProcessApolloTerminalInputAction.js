@@ -10,7 +10,7 @@ const fetchUntil = require("../../../../../GdsHelpers/TravelportUtils").fetchUnt
 const {fetchAll, extractPager} = require('../../../../../GdsHelpers/TravelportUtils.js');
 
 const Rej = require('klesun-node-tools/src/Utils/Rej.js');
-const {ignoreExc} = require('../../../../../Utils/TmpLib.js');
+const {coverExc} = require('../../../../../Utils/TmpLib.js');
 const UnprocessableEntity = require("klesun-node-tools/src/Utils/Rej").UnprocessableEntity;
 const BadRequest = require("klesun-node-tools/src/Utils/Rej").BadRequest;
 const Errors = require('../../../../Rbs/GdsDirect/Errors.js');
@@ -1487,7 +1487,7 @@ class ProcessApolloTerminalInputAction {
 			return this.matchesMcoName(mcoRow.passengerName, headerData);
 		});
 		return this.filterMcoRowsByMask(matchingPartial, headerData)
-			.catch(ignoreExc(matchingPartial, [UnprocessableEntity]));
+			.catch(coverExc(matchingPartial, [UnprocessableEntity]));
 	}
 
 	/** @param {ApolloPnr} pnr */
@@ -1565,10 +1565,10 @@ class ProcessApolloTerminalInputAction {
 					currentPos: !pccRow ? null : pccRow.point_of_sale_city,
 					mcoRows: ticketNumber ? [] : await
 						this.getMcoRows(pnr, parsed.headerData)
-							.catch(ignoreExc([], [UnprocessableEntity])),
+							.catch(coverExc([], [UnprocessableEntity])),
 					htRows: ticketNumber ? [] : await
 						this.getHtRows(pnr)
-							.catch(ignoreExc([], [UnprocessableEntity])),
+							.catch(coverExc([], [UnprocessableEntity])),
 					headerData: parsed.headerData,
 					fields: parsed.fields.map(f => ({
 						key: f.key,
