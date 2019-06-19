@@ -205,7 +205,7 @@ class NextToken
     static matchTicketingWithinHoursLine($text)  {
         let $matches, $textLeft;
         $matches = [];
-        if (php.preg_match(/^TICKETING WITHIN (\d{1,3}) HOURS AFTER RESERVATION\s*?\n/, $text, $matches = [])) {
+        if (php.preg_match(/^TICKETING WITHIN \d+ (HOURS|MINUTES) AFTER RESERVATION\s*?\n/, $text, $matches = [])) {
             $textLeft = php.mb_substr($text, php.mb_strlen($matches[0]));
 
             return {'ticketingTimeLimit': {
