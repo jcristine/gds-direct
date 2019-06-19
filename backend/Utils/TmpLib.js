@@ -37,7 +37,7 @@ exports.safe = getter => {
 exports.wrapExc = async getter => getter();
 
 /** @deprecated - use from Lang.js module from the lib instead */
-exports.coverExc = Lang.coverExc;
+exports.ignoreExc = (defaultValue, allowedKinds) => Lang.coverExc(allowedKinds, () => defaultValue);
 
 exports.addPerformanceDebug = (label, prevResult = null) => {
 	let startMs = Date.now();

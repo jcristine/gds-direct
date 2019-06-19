@@ -11,7 +11,7 @@ const SabreClient = require("../../../../../GdsClients/SabreClient");
 const CmsSabreTerminal = require("../../GdsInterface/CmsSabreTerminal");
 const {BadRequest, NotImplemented, Forbidden, UnprocessableEntity, NotFound} = require("klesun-node-tools/src/Utils/Rej");
 const Misc = require("../../../../Lib/Utils/MaskUtil");
-const {coverExc} = require('../../../../../Utils/TmpLib.js');
+const {ignoreExc} = require('../../../../../Utils/TmpLib.js');
 const TravelportClient = require("../../../../../GdsClients/TravelportClient");
 const UpdateGalileoStateAction = require("../../SessionStateProcessor/UpdateGalileoStateAction");
 const CmsApolloTerminal = require("../../GdsInterface/CmsApolloTerminal");
@@ -319,7 +319,7 @@ class RepriceInAnotherPccAction {
 		$log = this.$log;
 
 		$target = await this.constructor.getTargetGdsAndPcc($targetStr)
-			.catch(coverExc(null, [NotFound]));
+			.catch(ignoreExc(null, [NotFound]));
 		if (!$target) {
 			return {'errors': ['Unknown GDS/PCC target - ' + $targetStr]};
 		}

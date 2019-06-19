@@ -14,7 +14,7 @@
     "express": "^4.16.4",
     "ioredis": "^4.3.0",
     "jsdom": "^13.0.0",
-    "klesun-node-tools": "git+https://github.com/klesun-misc/klesun-node-tools.git#561227db4137c1c334645f95644262dd347419c5",
+    "klesun-node-tools": "git+https://github.com/klesun-misc/klesun-node-tools.git#9c1418be805903b767a7ff71639a52fdf8477774",
     "moment-timezone": "^0.5.23",
     "node-schedule": "^1.3.2",
     "promise-mysql": "^3.1.1",
