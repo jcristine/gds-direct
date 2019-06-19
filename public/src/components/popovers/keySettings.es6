@@ -6,12 +6,10 @@ import {GDS_LIST} 			from '../../constants';
 import {getStore} 			from './../../store';
 import AreaPccSelect 			from "./areaPccSelect";
 import "select2";
-import {post} from './../../helpers/requests';
 import $ from 'jquery';
+import {RESET_SESSION} from "../../actions.es6";
 import {UPDATE_ALL_AREA_STATE, UPDATE_DEFAULT_AREA_PCCS} from "../../actions/gdsActions";
-import {notify} from "../../helpers/debug";
 import {getPccList, getShortcutActionList} from "../../helpers/dataProvider.js";
-import Session from "../../modules/session.es6";
 
 let shortcutCompletionId = 'shortcut-action-completion-options';
 
@@ -122,17 +120,12 @@ class Context
 			const labelDiv = Dom(`div.settings-input-container`);
 			labelDiv.appendChild(Dom(`button.btn-primary[Default PCC]`, {
 				title: 'Press to Restart Session',
-				onclick: () => post('/terminal/resetToDefaultPcc', {gds: gds})
-					.then(rsData => {
-						notify({msg: 'Session Areas Reloaded', timeout: 3000, type: 'success', progressBar: false});
-						UPDATE_ALL_AREA_STATE(gds, rsData.fullState);
-						Session.resetWaitingQueue();
-						//if (parent.popover) {
-						//	// close since we reloaded UI, and the element
-						//	// drop was bound to does not exist anymore
-						//	parent.popover.close();
-						//}
-					}),
+				onclick: () => RESET_SESSION({gds}),
+				//if (parent.popover) {
+				//	// close since we reloaded UI, and the element
+				//	// drop was bound to does not exist anymore
+				//	parent.popover.close();
+				//}
 			}));
 			tabContent.appendChild(labelDiv);
 			tabContent.appendChild(inputFields.areaGrid);

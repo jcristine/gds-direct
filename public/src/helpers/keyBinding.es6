@@ -1,8 +1,9 @@
-import {getDate} 		from './helpers.es6';
-import {PURGE_SCREENS} 	from "../actions";
+
+import {PURGE_SCREENS, RESET_SESSION} from "../actions";
 import {getStore} 		from "../store";
 import {switchTerminal} from "../modules/switchTerminal";
 import ActionReader from '../modules/actionReader.es6';
+import Session from "../modules/session.es6";
 
 const nextCmd = (plugin, terminal) => { //Next performed format, by default returns to the first format and than each one by one.
 	plugin.history.next().then( command => {
@@ -156,8 +157,22 @@ export const getBindingForKey = (keyName, gds, replaceVariables = true) => {
 	});
 };
 
+/** @param {TerminalPlugin} plugin */
+let handleByName = (evt, terminal, plugin) => {
+	let passFurther = true;
+	if (evt.key === 'Escape') {
+		if (Session.isBusy()) {
+			RESET_SESSION({gds: plugin.gdsName});
+		}
+	}
+
+	return passFurther;
+};
+
 /**
- * @param terminal = $().terminal()
+ * @param {KeyboardEvent} evt
+ * @param {JQueryTerminal} terminal = $().terminal()
+ * @param {TerminalPlugin} plugin
  * @return boolean - true if should pass event further
  */
 export const pressedShortcuts = (evt, terminal, plugin) => {
@@ -350,6 +365,6 @@ export const pressedShortcuts = (evt, terminal, plugin) => {
 				insertOrExec(command);
 			break;
 
-			default: return true;
+			default: return handleByName(evt, terminal, plugin);
 		}
 };

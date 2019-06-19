@@ -275,17 +275,19 @@ export default class TerminalPlugin
 
 		this.session
 			.perform( before )
+			.finally(() => this.spinner.end())
 			.then( response => {
-				this.spinner.end();
-
 				if (command)
 				{
 					if (response && response.output)
 						this.parseBackEnd( response, command );
 					else
-						this.print(`[[;;;text-danger;]SERVER ERROR]`);
+						this.print(`[[;;;errorMessage;]EMPTY SERVER RESPONSE]`);
 				}
 				this.actionReader.handleNewLine();
+			})
+			.catch(exc => {
+				this.print(`[[;;;errorMessage;]` + exc + `]`);
 			});
 
 		return command;

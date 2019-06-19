@@ -7,6 +7,8 @@ let lastGlobalPromise = Promise.resolve();
 let lastUsedAt = window.performance.now();
 let callInProgress = false;
 let closed = false;
+let rejectPending = (exc) => {};
+let chainLength = 0;
 
 let makeParams = (session, callParams) => {
 	let baseParams = {
@@ -26,6 +28,16 @@ let formatSystemError = (exc) => {
 		.slice(0, 300);
 	let output = '[[;;;errorMessage]' + msg + ']';
 	return {output: output};
+};
+
+let interruptable = (action) => {
+	return () => new Promise((resolve, reject) => {
+		rejectPending = reject;
+		return Promise.resolve()
+			.then(action)
+			.then(resolve)
+			.catch(reject);
+	});
 };
 
 export default class Session
@@ -78,12 +90,9 @@ export default class Session
 
 	perform( beforeFn )
 	{
-		// make sure just one command is active at a time
-		lastGlobalPromise = lastGlobalPromise
-			.catch(exc => null)
+		return this.enqueue(() => Promise.resolve()
 			.then(() => beforeFn())
-			.then(cmd => this._run(cmd));
-		return lastGlobalPromise;
+			.then(cmd => this._run(cmd)));
 	}
 
 	/**
@@ -92,8 +101,11 @@ export default class Session
 	 */
 	enqueue(action)
 	{
+		++chainLength;
+		action = interruptable(action);
 		lastGlobalPromise = lastGlobalPromise
-			.catch(() => {}).then(action);
+			.catch(() => {}).then(action)
+			.finally(() => --chainLength);
 		return lastGlobalPromise;
 	}
 
@@ -104,5 +116,11 @@ export default class Session
 	static resetWaitingQueue()
 	{
 		lastGlobalPromise = Promise.resolve();
+		rejectPending(new Error('Session Manual Reset'));
+	}
+
+	static isBusy()
+	{
+		return chainLength > 0;
 	}
 }
