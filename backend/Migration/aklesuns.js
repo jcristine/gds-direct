@@ -321,6 +321,21 @@ module.exports.migrations = [
 		].join('\n')),
 	},
 	{
+		name: 'GRECT/2019.06.17002-drop-cmd-rq-log-legacy-fields',
+		perform: (db) => db.query([
+			'ALTER TABLE cmd_rq_log',
+			'DROP INDEX agentId_requestId,',
+			'DROP COLUMN output,',
+			'DROP COLUMN agentId,',
+			'DROP COLUMN requestId,',
+			'DROP COLUMN gds,',
+			'DROP COLUMN terminalNumber,',
+			'DROP COLUMN area,',
+			'DROP COLUMN processedTime,',
+			'DROP COLUMN responseTimestamp;',
+		].join('\n')),
+	},
+	{
 		name: 'GRECT/2019.06.17001-create-cmd-rs-log-2',
 		perform: (db) => db.query([
 			'CREATE TABLE `cmd_rs_log` (',
