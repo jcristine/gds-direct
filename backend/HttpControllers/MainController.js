@@ -155,8 +155,6 @@ let withGdsSession = (sessionAction, canStartNew = false) => (req, res, protocol
 };
 
 // UnhandledPromiseRejectionWarning
-// it's actually pretty weird that we ever get here, probably
-// something is wrong with the Promise chain in toHandleHttp()
 process.on('unhandledRejection', (exc, promise) => {
 	exc = exc || 'Empty error ' + exc;
 	let data = typeof exc === 'string' ? exc : {
@@ -165,12 +163,6 @@ process.on('unhandledRejection', (exc, promise) => {
 		promise: promise,
 		...exc,
 	};
-	// ignoring for now because this event appears to fire even if you _did_ catch
-	// rejection, dunno if it's v8 bug or my misunderstanding of how it should work
-	// for example: calling runInSession() at GdsSessionController.js results in rejection
-	// if token is outdated - you can see me catching it in runInputCmdRestartAllowed() and
-	// client does receive response generated in this catch, but 'unhandledRejection' fires
-	// nevertheless, with almost empty stack trace (just the PersistentHttpRq.js)
 	if (isSystemError(exc)) {
 		if (!Config.production) {
 			console.error('Unhandled Promise Rejection', data);
