@@ -1,14 +1,5 @@
 
-let Logger;
-try {
-	Logger = require('dynatech-logger').default;
-} catch (exc) {
-	// no permissions in gitlab-ci
-	Logger = class {
-		logIt(msg, logId, data) {};
-		logNewId(prefix, log_id_old, msg_for_old_log) {};
-	};
-}
+const Logger = require('dynatech-logger').default;
 const Config = require('../Config.js');
 const Diag = require('./Diag.js');
 const jsExport = require("../Utils/TmpLib").jsExport;
@@ -36,6 +27,7 @@ let whenGlobalLogger = null;
  * Upd.: the lib sends chunks as multiple lines, whereas our servers
  *       read just one line, J.Ozolins is working on the fix ATM
  * Upd.: supposedly fixed in v0.1.6
+ * Upd.: not fixed at all
  */
 let getGlobalLogger = () => {
 	if (whenGlobalLogger === null) {
