@@ -66,7 +66,7 @@ let logit = (msg, id, obj = undefined) => {
 		.catch(exc => {
 			let ignore = (exc + '').indexOf('Log id is older than 2 day') > -1;
 			if (!ignore) {
-				Diag.error('Fluent Logger error - ' + exc, getExcData(exc));
+				Diag.error('Fluent Logger error - ' + id + ' - ' + exc, {...getExcData(exc), msg: (msg + '').slice(0, 100)});
 			}
 			return Promise.resolve(true);
 		});
