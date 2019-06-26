@@ -1218,6 +1218,167 @@ class ImportPqApolloActionTest extends require('../../../../Lib/TestCase.js') {
 			],
 		});
 
+		$list.push({
+			'input': {
+				'onlyPricing': true,
+				'title': 'incomplete dumps in command log - should not allow creating PQ from them',
+				'previousCommands': [
+					{
+					    "cmd": "T:$BS1",
+					    "output": [
+					        ">$BS1-*2F3K",
+					        "*FARE GUARANTEED AT TICKET ISSUANCE*",
+					        "",
+					        "E-TKT REQUIRED",
+					        "*PENALTY APPLIES*",
+					        "LAST DATE TO PURCHASE TICKET: 15JUN19 SFO",
+					        "$B-1-2 C14JUN19     ",
+					        "NYC AS LAX 146.05RH2OAVMN USD146.05END ZP JFK",
+					        "FARE USD 146.05 TAX 5.60AY TAX 10.95US TAX 4.50XF TAX 4.20ZP",
+					        "TOT USD 171.30 ",
+					        "S1 NVB20SEP/NVA20SEP",
+					        "E VALID AS/",
+					        "E NONREF/SVCCHGPLUSFAREDIF/",
+					        ")><"
+					    ].join("\n"),
+					},
+					{
+					    "cmd": "T:$BS2*3/Z0",
+					    "output": [
+					        ">$BS2*3-*2F3K/Z0",
+					        "*FARE HAS A PLATING CARRIER RESTRICTION*",
+					        "E-TKT REQUIRED",
+					        "** PRIVATE FARES SELECTED **  ",
+					        "*PENALTY APPLIES*",
+					        "LAST DATE TO PURCHASE TICKET: 21SEP19",
+					        "$B-1-2 P14JUN19 - CAT35",
+					        "LAX HX X/HKG HX MNL 266.03TWVW4US/SPL11D2608 NUC266.03 -----",
+					        "MUST PRICE AS B/C -- ---END ROE1.0",
+					        "FARE USD 266.00 TAX 5.60AY TAX 18.60US TAX 4.50XF TAX 8.90G3",
+					        "TAX 6.40I5 TAX 57.40YR TOT USD 367.40 ",
+					        "S1 NVB21SEP/NVA21SEP",
+					        "S2 NVB22SEP/NVA22SEP",
+					        ")><"
+					    ].join("\n"),
+					},
+				],
+			},
+			'output': {
+				'error': 'Error: Some unscrolled output left in the >T:$BS1;',
+			},
+			'calledCommands': [
+				{
+				    "cmd": "*R",
+				    "output": [
+				        " 1.1LIB/MAR  2.1LIB/ZIM*C05 ",
+				        " 1 AS 229R 20SEP JFKLAX SS2   805P 1120P *         FR   E",
+				        " 2 HX  69T 21SEP LAXHKG SS2  1150A  620P|*      SA/SU   E",
+				        " 3 HX 781T 22SEP HKGMNL SS2   910P 1100P *         SU   E",
+				        "*** LINEAR FARE DATA EXISTS *** >*LF; ",
+				        "1/ATFQ-OK/$BS1-*2F3K/TA2F3K/CAS/ET",
+				        " FQ-USD 292.10/USD 21.90US/USD 28.60XT/USD 342.60 - 14JUN RH2OAVMN/RH2OAVMN",
+				        "2/ATFQ-OK/$BS2*3-*2F3K/Z0/TA2F3K/CHX/ET",
+				        " FQ-USD 532.00/USD 37.20US/USD 165.60XT/USD 734.80 - 14JUN TWVW.TWVW/TWVW.TWVW",
+				        "><"
+				    ].join("\n"),
+				},
+			],
+		});
+
+		$list.push({
+			input: {
+				'onlyPricing': true,
+				'title': 'should not pass as /.K/ forced class modifier should be forbidden',
+				'previousCommands': [
+					{
+					    "cmd": "$B/S1.K|2.K",
+					    "output": [
+					        ">$B/S1-*2F3K.K|2-*2F3K.K",
+					        "*FARE HAS A PLATING CARRIER RESTRICTION*",
+					        "E-TKT REQUIRED",
+					        "** PRIVATE FARES SELECTED **  ",
+					        "*PENALTY APPLIES*",
+					        "LAST DATE TO PURCHASE TICKET: 27JUN19",
+					        "$B-1 A26JUN19     ",
+					        "EWR UA LON 8.10KLX0ZLGT/CN10 UA EWR 8.10KLX0ZLGT/CN10",
+					        "NUC16.20END ROE1.0",
+					        "FARE USD 16.00 TAX 5.60AY TAX 37.20US TAX 3.96XA TAX 4.50XF TAX",
+					        "7.00XY TAX 5.77YC TAX 99.40GB TAX 59.40UB TAX 130.00YQ TOT USD",
+					        "368.83  ",
+					        "S1 NVB10MAR/NVA10MAR",
+					        ")><"
+					    ].join("\n"),
+					    "duration": "2.575632788",
+					    "type": "priceItinerary",
+					    "scrolledCmd": "$B/S1.K|2.K",
+					    "state": {"area":"A","pcc":"2F3K","recordLocator":"","canCreatePq":true,"scrolledCmd":"$B/S1.K|2.K","cmdCnt":15,"pricingCmd":"$B/S1.K|2.K","cmdType":"priceItinerary","hasPnr":true}
+					},
+					{
+					    "cmd": "MR",
+					    "output": [
+					        "S2 NVB20MAR/NVA20MAR",
+					        "E NONREF/NOCHNG",
+					        "SUM IDENTIFIED AS UB IS A PASSENGER SERVICE CHARGE",
+					        "TOUR CODE: BT294UA        ",
+					        "TICKETING AGENCY 2F3K",
+					        "DEFAULT PLATING CARRIER UA",
+					        "US PFC: XF EWR4.5 ",
+					        "BAGGAGE ALLOWANCE",
+					        "ADT                                                         ",
+					        " UA NYCLON  0PC                                             ",
+					        "   BAG 1 -  60.00 USD    UPTO50LB/23KG AND UPTO62LI/158LCM",
+					        "   BAG 2 -  100.00 USD   UPTO50LB/23KG AND UPTO62LI/158LCM",
+					        "   VIEWTRIP.TRAVELPORT.COM/BAGGAGEPOLICY/UA",
+					        ")><"
+					    ].join("\n"),
+					    "duration": "0.293789884",
+					    "type": "moveRest",
+					    "scrolledCmd": "$B/S1.K|2.K",
+					    "state": {"area":"A","pcc":"2F3K","recordLocator":"","canCreatePq":true,"scrolledCmd":"$B/S1.K|2.K","cmdCnt":16,"pricingCmd":"$B/S1.K|2.K","cmdType":"moveRest","hasPnr":true}
+					},
+					{
+					    "cmd": "MR",
+					    "output": [
+					        "                                                                 UA LONNYC  0PC                                             ",
+					        "   BAG 1 -  60.00 USD    UPTO50LB/23KG AND UPTO62LI/158LCM",
+					        "   BAG 2 -  100.00 USD   UPTO50LB/23KG AND UPTO62LI/158LCM",
+					        "   VIEWTRIP.TRAVELPORT.COM/BAGGAGEPOLICY/UA",
+					        "                                                                CARRY ON ALLOWANCE",
+					        " UA NYCLON  1PC                                             ",
+					        "   BAG 1 -  NO FEE       CARRY ON HAND BAGGAGE            ",
+					        " UA LONNYC  1PC                                             ",
+					        "   BAG 1 -  NO FEE       CARRY ON HAND BAGGAGE            ",
+					        "BAGGAGE DISCOUNTS MAY APPLY BASED ON FREQUENT FLYER STATUS/",
+					        "ONLINE CHECKIN/FORM OF PAYMENT/MILITARY/ETC.",
+					        "><"
+					    ].join("\n"),
+					    "duration": "0.164847706",
+					    "type": "moveRest",
+					    "scrolledCmd": "$B/S1.K|2.K",
+					    "state": {"area":"A","pcc":"2F3K","recordLocator":"","canCreatePq":true,"scrolledCmd":"$B/S1.K|2.K","cmdCnt":17,"pricingCmd":"$B/S1.K|2.K","cmdType":"moveRest","hasPnr":true}
+					},
+				],
+			},
+			output: {
+				error: 'Error: Invalid pricing command - $B/S1.K|2.K - Pricing command should not force booking class - /.K.K/ is forbidden',
+			},
+			calledCommands: [
+				{
+				    "cmd": "*R",
+				    "output": [
+				        "NO NAMES",
+				        " 1 UA 934J 10MAR EWRLHR SS1   930A  835P *         TU   E",
+				        " 2 UA 883J 20MAR LHREWR SS1   800A 1220P *         FR   E",
+				        "><"
+				    ].join("\n"),
+				    "duration": "0.161172043",
+				    "type": "redisplayPnr",
+				    "scrolledCmd": "*R",
+				    "state": {"area":"A","pcc":"2F3K","recordLocator":"","canCreatePq":true,"scrolledCmd":"*R","cmdCnt":18,"pricingCmd":"$B/S1.K|2.K","cmdType":"redisplayPnr","hasPnr":true}
+				},
+			],
+		});
+
 		$argumentTuples = [];
 		for ($testCase of Object.values($list)) {
 			$argumentTuples.push([$testCase['input'], $testCase['output'], $testCase['calledCommands']]);

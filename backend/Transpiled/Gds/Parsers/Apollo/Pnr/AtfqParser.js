@@ -278,7 +278,7 @@ class AtfqParser {
 		$lexer = new Lexer([
 			(new Lexeme('fareBasis', /^@([A-Z][A-Z0-9]*)/)).preprocessData($getFirst),
 			(new Lexeme('privateFare', /^-([0-9A-Z]*)(?:\*([A-Z0-9]{0,4})|)/)).preprocessData($getTuple),
-			(new Lexeme('mysteriousLetter', /^\.[A-Z]/)).preprocessData($getTuple),
+			(new Lexeme('bookingClass', /^\.([A-Z])/)).preprocessData($getFirst),
 		]);
 		$lexed = $lexer.lex($modStr);
 		if ($lexed['text']) {
@@ -291,6 +291,7 @@ class AtfqParser {
 				'fareBasis': $typeToData['fareBasis'] || null,
 				'accountCode': ($typeToData['privateFare'] || {})[0] || null,
 				'pcc': ($typeToData['privateFare'] || {})[1] || null,
+				'bookingClass': $typeToData['bookingClass'] || null,
 			};
 		}
 	}

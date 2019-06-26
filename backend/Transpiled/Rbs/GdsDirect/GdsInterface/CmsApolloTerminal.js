@@ -101,8 +101,12 @@ class CmsApolloTerminal
         if ($sMod = $mods['segments'] || null) {
             $bundles = $sMod['parsed']['bundles'];
             $fareBases = php.array_filter(php.array_column($bundles, 'fareBasis'));
+            let bookingClasses = php.array_filter(php.array_column($bundles, 'bookingClass'));
             if ($fareBases.length > 0) {
                 $errorRecords.push({'type': Errors.BAD_MOD_BASIS_OVERRIDE, 'data': {'modifier': '/@'+php.implode('@', $fareBases)+'/'}});
+            }
+            if (bookingClasses.length > 0) {
+                $errorRecords.push({type: Errors.BAD_MOD_BOKING_CLASS_OVERRIDE, data: {modifier: '/.' + bookingClasses.join('.') + '/'}});
             }
         }
         if ($cmdData['baseCmd'] === '$BBA') {

@@ -983,6 +983,20 @@ class CommandParserTest extends require('../../../../../../backend/Transpiled/Li
 				}],
 			},
 		}]);
+		$list.push(['$B/S1.K|2.K', {
+			type: 'priceItinerary',
+			data: {
+				pricingModifiers: [{
+					type: 'segments',
+					parsed: {
+						bundles: [
+							{segmentNumbers: ['1'], bookingClass: 'K'},
+							{segmentNumbers: ['2'], bookingClass: 'K'},
+						],
+					},
+				}],
+			},
+		}]);
 
 		$list.push(['A*|1', {type: 'moreAirAvailability'}]);
 		$list.push(['A*C2', {type: 'moreAirAvailability'}]);

@@ -37,6 +37,10 @@ class Errors
                 'pattern': 'Pricing command should not force fare - {modifier} is forbidden',
                 'sampleData': {'modifier': /¤Y/},
             },
+            [this.BAD_MOD_BOKING_CLASS_OVERRIDE]: {
+                'pattern': 'Pricing command should not force booking class - {modifier} is forbidden',
+                'sampleData': {'modifier': /.K/},
+            },
             [this.BAD_MOD_SEGMENT]: {
                 'pattern': 'Pricing command should not have segment select - {modifier} is forbidden',
                 'sampleData': {'modifier': /S3+5/},
@@ -178,6 +182,7 @@ Errors.CANT_CHANGE_GDSD_REMARK = 'CANT_CHANGE_GDSD_REMARK';
 Errors.NO_RECENT_PRICING = 'NO_RECENT_PRICING';
 Errors.ITINERARY_IS_EMPTY = 'ITINERARY_IS_EMPTY';
 Errors.BAD_MOD_BASIS_OVERRIDE = 'BAD_MOD_BASIS_OVERRIDE';
+Errors.BAD_MOD_BOKING_CLASS_OVERRIDE = 'BAD_MOD_BOKING_CLASS_OVERRIDE';
 Errors.BAD_MOD_SEGMENT = 'BAD_MOD_SEGMENT';
 Errors.BAD_MOD_IGNORE_AVAILABILITY = 'BAD_MOD_IGNORE_AVAILABILITY';
 Errors.BAD_MOD_LOW_FARE_CHILD = 'BAD_MOD_LOW_FARE_CHILD';
