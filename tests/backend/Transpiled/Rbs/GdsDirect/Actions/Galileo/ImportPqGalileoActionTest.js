@@ -1107,6 +1107,102 @@ class ImportPqGalileoActionTest extends require('../../../../../../../backend/Tr
 			],
 		});
 
+		$list.push({
+			input: {
+				title: 'should not allow /.K/ booking class override pricing modifier',
+				fetchOptionalFields: false,
+				previousCommands: [
+					{
+					    "cmd": "FQS1-*711M.K.2.K-*711M:USD",
+					    "output": [
+					        ">FQS1-*711M.K.2.K-*711M:USD",
+					        "   PSGR                  FARE     TAXES         TOTAL PSG DES   FQM 1         USD       16.00     352.83       368.83 ADT       GRAND TOTAL INCLUDING TAXES ****     USD       368.83                        **ADDITIONAL FEES MAY APPLY**SEE >FO; ",
+					        "    ADT      PRIVATE FARE SELECTED                                  ADT      SUM IDENTIFIED AS UB IS A PASSENGER SERVICE CHARGE     ADT      TOUR CODE: BT294UA                                     ADT      LAST DATE TO PURCHASE TICKET: 27JUN19                  ADT      TICKETING AGENCY 711M                                  ADT      DEFAULT PLATING CARRIER UA                             ADT      FARE HAS A PLATING CARRIER RESTRICTION                 ADT      E-TKT REQUIRED                                     )><"
+					    ].join("\n"),
+					    "duration": "2.001357523",
+					    "type": "priceItinerary",
+					    "scrolledCmd": "FQS1-*711M.K.2.K-*711M:USD",
+					    "state": {"canCreatePq":true,"pricingCmd":"FQS1-*711M.K.2.K-*711M:USD","area":"A","recordLocator":"","pcc":"711M","hasPnr":true,"isPnrStored":null,"cmdType":"priceItinerary","gdsData":null,"scrolledCmd":"FQS1-*711M.K.2.K-*711M:USD","cmdCnt":9}
+					},
+					{
+					    "cmd": "MR",
+					    "output": [
+					        "UNABLE TO FILE - NEED NAMES",
+					        "UNABLE TO FILE - BOOKING CLASS OVERRIDE",
+					        "BAGGAGE ALLOWANCE",
+					        "ADT",
+					        " UA NYCLON  0PC  ",
+					        "   BAG 1 -  60.00 USD    UPTO50LB/23KG AND UPTO62LI/158LCM ",
+					        "   BAG 2 -  100.00 USD   UPTO50LB/23KG AND UPTO62LI/158LCM ",
+					        "   VIEWTRIP.TRAVELPORT.COM/BAGGAGEPOLICY/UA            ",
+					        "                                                               ",
+					        " UA LONNYC  0PC  ",
+					        "   BAG 1 -  60.00 USD    UPTO50LB/23KG AND UPTO62LI/158LCM ",
+					        "   BAG 2 -  100.00 USD   UPTO50LB/23KG AND UPTO62LI/158LCM ",
+					        "   VIEWTRIP.TRAVELPORT.COM/BAGGAGEPOLICY/UA            ",
+					        ")><"
+					    ].join("\n"),
+					    "duration": "0.167492404",
+					    "type": "moveRest",
+					    "scrolledCmd": "FQS1-*711M.K.2.K-*711M:USD",
+					    "state": {"canCreatePq":true,"pricingCmd":"FQS1-*711M.K.2.K-*711M:USD","area":"A","recordLocator":"","pcc":"711M","hasPnr":true,"isPnrStored":null,"cmdType":"moveRest","gdsData":null,"scrolledCmd":"FQS1-*711M.K.2.K-*711M:USD","cmdCnt":10}
+					},
+					{
+					    "cmd": "MR",
+					    "output": [
+					        "                                                               ",
+					        "CARRY ON ALLOWANCE",
+					        " UA NYCLON  1PC   ",
+					        "   BAG 1 -  NO FEE       CARRY ON HAND BAGGAGE             ",
+					        " UA LONNYC  1PC   ",
+					        "   BAG 1 -  NO FEE       CARRY ON HAND BAGGAGE             ",
+					        "                                                               ",
+					        "BAGGAGE DISCOUNTS MAY APPLY BASED ON FREQUENT FLYER STATUS/",
+					        "ONLINE CHECKIN/FORM OF PAYMENT/MILITARY/ETC.",
+					        "><"
+					    ].join("\n"),
+					    "duration": "0.189211669",
+					    "type": "moveRest",
+					    "scrolledCmd": "FQS1-*711M.K.2.K-*711M:USD",
+					    "state": {"canCreatePq":true,"pricingCmd":"FQS1-*711M.K.2.K-*711M:USD","area":"A","recordLocator":"","pcc":"711M","hasPnr":true,"isPnrStored":null,"cmdType":"moveRest","gdsData":null,"scrolledCmd":"FQS1-*711M.K.2.K-*711M:USD","cmdCnt":11}
+					},
+					{
+					    "cmd": "F*Q",
+					    "output": [
+					        "FQ-1 M26JUN19      ADT       ",
+					        "  EWR UA LON 8.10KLX0ZLGT/CN10 UA EWR 8.10KLX0ZLGT/CN10",
+					        "  NUC16.20END ROE1.0  XF 4.50EWR4.5",
+					        "  FARE USD 16.00 TAX AY 5.60 TAX US 37.20 TAX XA 3.96 TAX XF",
+					        "  4.50 TAX XY 7.00 TAX YC 5.77 TAX GB 99.40 TAX UB 59.40 TAX YQ",
+					        "  130.00 TOT USD 368.83",
+					        "><"
+					    ].join("\n"),
+					    "duration": "0.174724360",
+					    "type": "pricingLinearFare",
+					    "scrolledCmd": "F*Q",
+					    "state": {"canCreatePq":true,"pricingCmd":"FQS1-*711M.K.2.K-*711M:USD","area":"A","recordLocator":"","pcc":"711M","hasPnr":true,"isPnrStored":null,"cmdType":"pricingLinearFare","gdsData":null,"scrolledCmd":"F*Q","cmdCnt":12}
+					},
+				],
+			},
+			output: {
+				error: 'Invalid pricing command - FQS1-*711M.K.2.K-*711M:USD - Pricing command should not force booking class - /.K.K/ is forbidden',
+			},
+			calledCommands: [
+				{
+				    "cmd": "*R",
+				    "output": [
+				        " 1. UA  934 J  10MAR EWRLHR HS1   930A   835P O        E TU",
+				        " 2. UA  883 J  20MAR LHREWR HS1   800A  1220P O        E FR",
+				        "><"
+				    ].join("\n"),
+				    "duration": "0.182740787",
+				    "type": "redisplayPnr",
+				    "scrolledCmd": "*R",
+				    "state": {"canCreatePq":true,"pricingCmd":"FQS1-*711M.K.2.K-*711M:USD","area":"A","recordLocator":"","pcc":"711M","hasPnr":true,"isPnrStored":null,"cmdType":"redisplayPnr","gdsData":null,"scrolledCmd":"*R","cmdCnt":13}
+				},
+			],
+		});
+
 		$argumentTuples = [];
 		for ($testCase of Object.values($list)) {
 			$argumentTuples.push([$testCase['input'], $testCase['output'], $testCase['calledCommands']]);

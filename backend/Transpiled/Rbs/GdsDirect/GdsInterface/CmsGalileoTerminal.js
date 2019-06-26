@@ -41,9 +41,9 @@ class CmsGalileoTerminal {
 		}
 	}
 
-	/** @param $cmdData = CommandParser::parsePriceItinerary() */
+	/** @param $cmdData = require('CommandParser.js').parsePriceItinerary() */
 	static checkPricingCmdObviousPqRules($cmdData) {
-		let $errors, $mods, $typeToMod, $sMod, $bundles, $fareBases;
+		let $errors, $mods, $typeToMod;
 
 		$errors = [];
 		$mods = $cmdData['pricingModifiers'];
@@ -54,12 +54,25 @@ class CmsGalileoTerminal {
 		} else if ($cmdData.baseCmd === 'FQBBK') {
 			$errors.push('PQ from >FQBBK; not allowed, please run clean >FQ;');
 		}
-		if ($sMod = $typeToMod['segments']) {
-			$bundles = $sMod['parsed']['bundles'];
-			$fareBases = php.array_filter(php.array_column($bundles, 'fareBasis'));
-			if (!php.empty($fareBases)) {
-				$errors.push(Errors.getMessage(Errors.BAD_MOD_BASIS_OVERRIDE, {'modifier': '/@' + php.implode('@', $fareBases) + '/'}));
+		let fareBases = [];
+		let bookingClasses = [];
+		for (let mod of $cmdData['pricingModifiers']) {
+			if (mod.type === 'segments') {
+				for (let bundle of mod['parsed']['bundles']) {
+					if (bundle.bookingClass) {
+						bookingClasses.push(bundle.bookingClass);
+					}
+					if (bundle.fareBasis) {
+						fareBases.push(bundle.bookingClass);
+					}
+				}
 			}
+		}
+		if (!php.empty(fareBases)) {
+			$errors.push(Errors.getMessage(Errors.BAD_MOD_BASIS_OVERRIDE, {'modifier': '/@' + fareBases.join('@') + '/'}));
+		}
+		if (!php.empty(bookingClasses)) {
+			$errors.push(Errors.getMessage(Errors.BAD_MOD_BOKING_CLASS_OVERRIDE, {'modifier': '/.' + bookingClasses.join('.') + '/'}));
 		}
 		return $errors;
 	}
