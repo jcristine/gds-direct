@@ -31,6 +31,7 @@ const SabrePricingParser = require("./Transpiled/Gds/Parsers/Sabre/Pricing/Sabre
 const Settings = require("./Repositories/Settings");
 const SocketIo = require('./LibWrappers/SocketIo.js');
 const LibConfig = require('klesun-node-tools/src/Config.js');
+const ParsersController = require("./HttpControllers/ParsersController");
 
 let app = express();
 
@@ -345,26 +346,7 @@ app.get('/admin/status', withDevAuth(async (reqBody, emcResult) => {
 	};
 }));
 
-app.get('/parser/test', toHandleHttp((rqBody) => {
-	let result;
-	result = CommandParser.parse(rqBody.input);
-	if (result && result.type && result.data) {
-		return result;
-	}
-	result = SabrePricingParser.parse(rqBody.input);
-	if (!result.error) {
-		return result;
-	}
-	result = PnrParser.parse(rqBody.input);
-	if (safe(() => result.headerData.reservationInfo.recordLocator) ||
-		safe(() => result.itineraryData.length > 0) ||
-		safe(() => result.passengers.length > 0)
-	) {
-		return result;
-	}
-	result = FareConstructionParser.parse(rqBody.input);
-	return result;
-}));
+app.get('/parser/test', toHandleHttp(ParsersController.parseAnything));
 
 //===============================
 // one-time script-triggering routes follow
