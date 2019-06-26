@@ -2,6 +2,7 @@
 // namespace Gds\Parsers\Galileo\Pricing;
 
 const StringUtil = require('../../../../Lib/Utils/StringUtil.js');
+const Rej = require('klesun-node-tools/src/Utils/Rej.js');
 
 /**
  * parses Galileo pricing command like:
@@ -70,50 +71,72 @@ class FqCmdParser
         };
     }
 
-    // 'S1.3', 'S2-4.6-8', 'S1@LHXAN.2@LHWAN'
-    // similar to Apollo, only with "." and "-" instead of "|" and "*"
-    // and I don't think -*{pcc} can occur here
-    static parseSegmentModifier($token)  {
-        let $matches, $raw, $bundles, $segmentGroupRegex, $segmentGroup;
+    // '@LHXAN', '.K', '-*711M.K', '-*711M'
+    static parseSegmentSubMods(textLeft) {
+        let subMods = [];
+        while (textLeft) {
+            let match;
+            if (match = textLeft.match(/^@([A-Z][A-Z0-9]*)/)) {
+                subMods.push({type: 'fareBasis', data: match[1]});
+            } else if (match = textLeft.match(/^\.([A-Z])(?![A-Z0-9])/)) {
+                subMods.push({type: 'bookingClass', data: match[1]});
+            } else if (match = textLeft.match(/^-\*([A-Z0-9]{3,4})(?![A-Z0-9])/)) {
+                subMods.push({type: 'pcc', data: match[1]});
+            } else {
+                break;
+            }
+            textLeft = textLeft.slice(match[0].length);
+        }
+        return {subMods, textLeft};
+    }
 
-        if (php.preg_match(/^S(.+)$/, $token, $matches = [])) {
-            $token = $matches[1];
-        } else if (php.preg_match(/^@[A-Z][A-Z0-9]*/, $token, $matches = [])) {
-            $raw = $matches[0];
+    static makeSegmentBundle(segNums, subMods) {
+        return {
+            segmentNumbers: segNums,
+            bookingClass: subMods.filter(m => m.type === 'bookingClass').map(m => m.data)[0],
+            fareBasis: subMods.filter(m => m.type === 'fareBasis').map(m => m.data)[0],
+            pcc: subMods.filter(m => m.type === 'pcc').map(m => m.data)[0],
+        };
+    }
+
+    // 'S1.3', 'S2-4.6-8', 'S1@LHXAN.2@LHWAN', 'S1.K.2.K', S1-*711M.K.2.K-*711M
+    // similar to Apollo, only with "." and "-" instead of "|" and "*"
+    static parseSegmentModifier(textLeft)  {
+        let startText = textLeft;
+        let asGlobal = this.parseSegmentSubMods(textLeft);
+        if (asGlobal.subMods.length > 0) {
+            let bundle = this.makeSegmentBundle([], asGlobal.subMods);
             return {
-                'type': 'segments',
-                'raw': $raw,
-                'parsed': {'bundles': [{'segmentNumbers': [], 'fareBasis': php.ltrim($raw, '@')}]},
+                type: 'segments',
+                raw: !asGlobal.textLeft ? startText :
+                    textLeft.slice(0, -asGlobal.textLeft.length),
+                parsed: {bundles: [bundle]},
+            };
+        } else if (!textLeft.startsWith('S')) {
+            return null;
+        }
+        let bundles = [];
+        let match;
+        while (match = textLeft.match(/^[S.](\d+)(-\d+|)/)) {
+            let from = match[1];
+            let to = !match[2] ? null : match[2].slice('-'.length);
+            textLeft = textLeft.slice(match[0].length);
+            let segNums = !to ? [from] : php.range(from, to);
+            let subRec = this.parseSegmentSubMods(textLeft);
+            textLeft = subRec.textLeft;
+            let bundle = this.makeSegmentBundle(segNums, subRec.subMods);
+            bundles.push(bundle);
+        }
+        if (bundles.length > 0) {
+            return {
+                raw: !textLeft ? startText :
+                    startText.slice(0, -textLeft.length),
+                type: 'segments',
+                parsed: {bundles},
             };
         } else {
             return null;
         }
-
-        $bundles = [];
-
-        // like "2*3-*H0Q@BHWAPO"
-        $segmentGroupRegex =
-            '(?<fromSegment>\\d+)'+
-            '(-(?<toSegment>\\d+)|)'+
-            '(?<fareBasis>(@[A-Z0-9]+)*)';
-
-        for ($segmentGroup of Object.values(php.explode('.', $token))) {
-            if (php.preg_match('/^'+$segmentGroupRegex+'/', $segmentGroup, $matches = [])) {
-                $bundles.push({
-                    'segmentNumbers': $matches['toSegment']
-                        ? php.range($matches['fromSegment'], $matches['toSegment'])
-                        : [$matches['fromSegment']],
-                    'fareBasis': $matches['fareBasis'],
-                    'raw': $matches[0],
-                });
-            } else {
-                break;
-            }}
-        return {
-            'raw': 'S'+php.implode('.', php.array_column($bundles, 'raw')),
-            'type': 'segments',
-            'parsed': {'bundles': $bundles},
-        };
     }
 
     static decodeFareType($letter)  {
@@ -207,7 +230,8 @@ class FqCmdParser
                         $mods.push({'raw': $gluedModsPart, 'type': null, 'data': null});
                         break;
                     }
-                }}
+                }
+            }
             return {
                 'baseCmd': $baseCmd,
                 'pricingModifiers': $mods,

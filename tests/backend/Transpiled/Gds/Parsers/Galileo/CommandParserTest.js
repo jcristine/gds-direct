@@ -184,6 +184,68 @@ class CommandParserTest extends require('../../../Lib/TestCase.js')
 				],
 			},
 		}]);
+		// segment select: force K booking class in first segment
+		$list.push(['FQS1.K/S2', {
+			type: 'priceItinerary',
+			data: {
+				baseCmd: 'FQ',
+				pricingModifiers: [
+					{raw: 'S1.K', type: 'segments', parsed: {
+						bundles: [{
+							segmentNumbers: ['1'],
+							bookingClass: 'K',
+						}],
+					}},
+					{raw: 'S2', type: 'segments'},
+				],
+			},
+		}]);
+		// yes, this is valid format too
+		$list.push(['FQS1.K.2.K', {
+			type: 'priceItinerary',
+			data: {
+				baseCmd: 'FQ',
+				pricingModifiers: [
+					{raw: 'S1.K.2.K', type: 'segments', parsed: {
+						bundles: [
+							{segmentNumbers: ['1'], bookingClass: 'K'},
+							{segmentNumbers: ['2'], bookingClass: 'K'},
+						],
+					}},
+				],
+			},
+		}]);
+		// and this
+		$list.push(['FQS1-*711M.K.2-*711M', {
+			type: 'priceItinerary',
+			data: {
+				baseCmd: 'FQ',
+				pricingModifiers: [
+					{raw: 'S1-*711M.K.2-*711M', type: 'segments', parsed: {
+						bundles: [
+							{segmentNumbers: ['1'], bookingClass: 'K'},
+							{segmentNumbers: ['2'], bookingClass: null},
+						],
+					}},
+				],
+			},
+		}]);
+		// and this
+		$list.push(['FQS1-*711M.K.2.K-*711M:USD', {
+			type: 'priceItinerary',
+			data: {
+				baseCmd: 'FQ',
+				pricingModifiers: [
+					{raw: 'S1-*711M.K.2.K-*711M', type: 'segments', parsed: {
+						bundles: [
+							{segmentNumbers: ['1'], pcc: '711M', bookingClass: 'K'},
+							{segmentNumbers: ['2'], bookingClass: 'K', pcc: '711M'},
+						],
+					}},
+					{raw: ':USD', type: 'currency'},
+				],
+			},
+		}]);
 
 		// best buy regardless of availability
 		$list.push(['FQBA', {
