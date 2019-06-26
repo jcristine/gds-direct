@@ -111,7 +111,7 @@ let runInSession = (params) => {
 };
 
 /** @param rqBody = at('WebRoutes.js').normalizeRqBody() */
-let runInputCmdRestartAllowed = async (params) => {
+exports.runInputCmd = async (params) => {
 	let {rqBody, session, emcUser} = params;
 	rqBody.command = rqBody.command.trim();
 	return Promise.resolve()
@@ -131,27 +131,6 @@ let runInputCmdRestartAllowed = async (params) => {
 				return Promise.reject(exc);
 			}
 		});
-};
-
-exports.runInputCmd = (params) => {
-	let {rqBody, session, emcUser} = params;
-	let calledDtObj = new Date();
-	let running = runInputCmdRestartAllowed(params)
-		.then(async (cmsResult) => {
-			GdsSessions.updateUserAccessTime(session);
-
-			// TODO: do not count same commands in a row except ['MD', 'MU', 'A*', '1*']
-			let duration = ((Date.now() - calledDtObj.getTime()) / 1000).toFixed(3);
-			CmsClient.reportCmdCalled({
-				cmd: rqBody.command,
-				agentId: emcUser.id,
-				calledDt: calledDtObj.toISOString(),
-				duration: duration,
-			});
-
-			return cmsResult;
-		});
-	return running;
 };
 
 let sendPqToPqt = async ({stateful, leadData, imported}) => {

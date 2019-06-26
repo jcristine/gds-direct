@@ -24,9 +24,12 @@ const CommandCorrector = require("../Transpiled/Rbs/GdsDirect/DialectTranslator/
 const Misc = require("../Utils/TmpLib");
 const AliasParser = require("../Transpiled/Rbs/GdsDirect/AliasParser");
 const TmpLib = require("../Utils/TmpLib");
+const GdsSessions = require("../Repositories/GdsSessions");
+const CmsClient = require("../IqClients/CmsClient");
 const BadRequest = require("klesun-node-tools/src/Utils/Rej").BadRequest;
 const TooManyRequests = require("klesun-node-tools/src/Utils/Rej").TooManyRequests;
 const NotImplemented = require("klesun-node-tools/src/Utils/Rej").NotImplemented;
+const Db = require('../Utils/Db.js');
 
 /**
  * @param '$BN1|2*INF'
@@ -252,6 +255,69 @@ let ensureConfigPcc = async (stateful) => {
 	return {calledCommands: [], messages: []};
 };
 
+let countsAsActivity = (prevRqCmd, rqCmd) => {
+	let repeatAllowed = ['MD', 'MU', 'A*', '1*'];
+	if (!prevRqCmd || repeatAllowed.includes(rqCmd)) {
+		return true;
+	} else {
+		// calling *R *R *R *R ... for hours should not count as activity
+		return prevRqCmd !== rqCmd;
+	}
+};
+
+let logRqCmd = async ({params, whenCmdRqId, whenCmsResult}) => {
+	let {session, rqBody, emcUser} = params;
+	let calledDtObj = new Date();
+	let cmsResult = await whenCmsResult;
+	TerminalBuffering.logOutput(rqBody, session, whenCmdRqId, cmsResult.output);
+	GdsSessions.updateUserAccessTime(session);
+	let duration = ((Date.now() - calledDtObj.getTime()) / 1000).toFixed(3);
+	return whenCmdRqId.then(async cmdRqId => {
+		let prevCmdRqRow = await Db.with(db => db.fetchOne({
+			table: 'cmd_rq_log',
+			where: [
+				['id', '<', cmdRqId],
+				['sessionId', '=', session.id],
+			],
+			orderBy: [['id', 'DESC']],
+		})).catch(exc => null);
+
+		if (prevCmdRqRow && countsAsActivity(prevCmdRqRow.command, rqBody.command)) {
+			return CmsClient.reportCmdCalled({
+				cmd: rqBody.command,
+				agentId: emcUser.id,
+				calledDt: calledDtObj.toISOString(),
+				duration: duration,
+			});
+		}
+	});
+};
+
+let processNormalized = async ({stateful, cmdRq}) => {
+	let prePccResult = await ensureConfigPcc(stateful)
+		.then(TmpLib.addPerformanceDebug('ensureConfigPcc() before cmd', stateful));
+	let rbsResult = await runCmdRq(cmdRq, stateful)
+		.then(TmpLib.addPerformanceDebug('runCmdRq()', prePccResult));
+	let postPccResult = await ensureConfigPcc(stateful) // if this command changed area
+		.then(TmpLib.addPerformanceDebug('ensureConfigPcc() after cmd', rbsResult));
+
+	rbsResult = {...rbsResult,
+		calledCommands: []
+			.concat(prePccResult.calledCommands || [])
+			.concat(rbsResult.calledCommands)
+			.concat(postPccResult.calledCommands)
+			.map(r => transformCalledCommand(r, stateful)),
+		messages: []
+			.concat(prePccResult.messages || [])
+			.concat(rbsResult.messages)
+			.concat(postPccResult.messages),
+	};
+
+	let termSvc = new TerminalService(stateful.gds);
+	return termSvc.addHighlighting(cmdRq, rbsResult, stateful.getFullState())
+		.then(TmpLib.addPerformanceDebug('Syntax Highlighting', postPccResult));
+};
+
 /**
  * auto-correct typos in the command, convert it between
  * GDS dialects, run _alias_ chain of commands, etc...
@@ -276,34 +342,15 @@ let ProcessTerminalInput = async (params) => {
 			return TooManyRequests('You exhausted your GDS Direct usage limit for today (' + callsUsed + ' >= ' + callsLimit + ')');
 		}
 	}
+	let whenCmsResult = processNormalized({
+		stateful, cmdRq, messages: translated.messages,
+	}).then(cmsResult => ({...cmsResult,
+		messages: (translated.messages || [])
+			.concat(cmsResult.messages || []),
+	}));
+	logRqCmd({params, whenCmdRqId, whenCmsResult});
 
-	let prePccResult = await ensureConfigPcc(stateful)
-		.then(TmpLib.addPerformanceDebug('ensureConfigPcc() before cmd', stateful));
-	let rbsResult = await runCmdRq(cmdRq, stateful)
-		.then(TmpLib.addPerformanceDebug('runCmdRq()', prePccResult));
-	let postPccResult = await ensureConfigPcc(stateful) // if this command changed area
-		.then(TmpLib.addPerformanceDebug('ensureConfigPcc() after cmd', rbsResult));
-
-	rbsResult = {...rbsResult,
-		calledCommands: []
-			.concat(prePccResult.calledCommands || [])
-			.concat(rbsResult.calledCommands)
-			.concat(postPccResult.calledCommands)
-			.map(r => transformCalledCommand(r, stateful)),
-		messages: []
-			.concat(translated.messages)
-			.concat(prePccResult.messages || [])
-			.concat(rbsResult.messages)
-			.concat(postPccResult.messages),
-		translationTime: translated.translationTime,
-	};
-
-	let termSvc = new TerminalService(gds);
-	let cmsResult = await termSvc.addHighlighting(rqBody.command, rbsResult, stateful.getFullState())
-		.then(TmpLib.addPerformanceDebug('Syntax Highlighting', postPccResult));
-	TerminalBuffering.logOutput(rqBody, session, whenCmdRqId, cmsResult.output);
-
-	return cmsResult;
+	return whenCmsResult;
 };
 
 module.exports = ProcessTerminalInput;

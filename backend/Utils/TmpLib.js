@@ -44,6 +44,8 @@ exports.addPerformanceDebug = (label, prevResult = null) => {
 	let startMem = process.memoryUsage();
 	let prevDebug = !prevResult ? [] : prevResult.performanceDebug || [];
 	return (result) => {
+		return result;
+		// remove performance logging for now
 		if (typeof result === 'object' && result !== null) {
 			let endMs = Date.now();
 			result.performanceDebug = result.performanceDebug || [];
