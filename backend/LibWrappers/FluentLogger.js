@@ -5,8 +5,6 @@ const Diag = require('./Diag.js');
 const jsExport = require("../Utils/TmpLib").jsExport;
 const {getExcData} = require('../Utils/TmpLib.js');
 
-process.env.NODE_ENV = Config.production ? 'production' : 'development'; // accept development | stage | production
-
 let createClient = () => new Logger(null, {
 	internalLogger: {
 		info: (...args) => {},
