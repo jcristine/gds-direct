@@ -86,17 +86,17 @@ let makeRow = (cmdRec, session, cmdRqId, prevState) => {
 };
 
 /** RAM caching */
-let sessionToLastInsertion = {};
+let sessionToLastInsertion = new Map();
 let queued = (key, action) => {
-	let lastInsertion = sessionToLastInsertion[key] || Promise.resolve();
+	let lastInsertion = sessionToLastInsertion.get(key) || Promise.resolve();
 	let whenDone = lastInsertion
 		.catch(() => {})
 		.then(() => action());
-	sessionToLastInsertion[key] = whenDone;
+	sessionToLastInsertion.set(key, whenDone);
 	whenDone.finally(() => {
 		// if not other action overtook this lock
-		if (whenDone === sessionToLastInsertion[key]) {
-			delete sessionToLastInsertion[key];
+		if (whenDone === sessionToLastInsertion.get(key)) {
+			sessionToLastInsertion.delete(key);
 		}
 	});
 	return whenDone;
@@ -152,5 +152,5 @@ exports.getLast = async (sessionId) => {
 exports.isInvalidFormat = isInvalidFormat;
 
 exports.ramDebug = {
-	getInsertionKeys: () => Object.keys(sessionToLastInsertion),
+	getInsertionKeys: () => [...sessionToLastInsertion.keys()],
 };
