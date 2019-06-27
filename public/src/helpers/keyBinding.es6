@@ -157,13 +157,29 @@ export const getBindingForKey = (keyName, gds, replaceVariables = true) => {
 	});
 };
 
-/** @param {TerminalPlugin} plugin */
+/**
+ * @param {KeyboardEvent} evt
+ * @param {JQueryTerminal} terminal
+ * @param {TerminalPlugin} plugin
+ */
 let handleByName = (evt, terminal, plugin) => {
 	let passFurther = true;
 	if (evt.key === 'Escape') {
 		if (Session.isBusy()) {
 			RESET_SESSION({gds: plugin.gdsName});
 		}
+	} else if (evt.key === 'Enter' && evt.shiftKey) {
+		// re-enter last command if any, useful for A*, FSMORE, etc...
+		plugin.history.last().then(cmd => {
+			if (cmd) {
+				terminal.exec(cmd);
+				terminal.set_command(''); // it adds a blank line on shift+enter by default
+			}
+		});
+	} else if (evt.key === 'ArrowUp') {
+		prevCmd(plugin, terminal);
+	} else if (evt.key === 'ArrowDown') {
+		nextCmd(plugin, terminal);
 	}
 
 	return passFurther;
@@ -211,6 +227,10 @@ export const pressedShortcuts = (evt, terminal, plugin) => {
 			return false;
 		}
 
+		let passFurther = handleByName(evt, terminal, plugin);
+		if (!passFurther) {
+			return false;
+		}
 
 		if ( evt.ctrlKey || evt.metaKey )
 		{
@@ -234,14 +254,6 @@ export const pressedShortcuts = (evt, terminal, plugin) => {
 					// Template for Sabre: 5S(paxOrder) (sellPrice) N1 (netPrice) F1 (fareAmount)
 					// Example for Sabre: 5S1 985.00 N1 720.00 F1 500.00
 					// evt.preventDefault();
-				break;
-
-				case 38 : // Up arrow
-					prevCmd(plugin, terminal);
-				break;
-
-				case 40 : // down arrow
-					nextCmd(plugin, terminal);
 				break;
 
 				case 112 :	// F1
@@ -316,14 +328,6 @@ export const pressedShortcuts = (evt, terminal, plugin) => {
 					plugin.purge();
 				break;
 
-				case 38 : // Up arrow
-					prevCmd(plugin, terminal);
-				break;
-
-				case 40 : // down arrow
-					nextCmd(plugin, terminal);
-				break;
-
 				default : return true;
 			}
 
@@ -346,14 +350,6 @@ export const pressedShortcuts = (evt, terminal, plugin) => {
 				terminal.exec(keymap === 33 ? 'MU' : 'MD');
 			break;
 
-			case 38 : //UP
-				prevCmd(plugin,terminal);
-			break;
-
-			case 40 : //DOWN
-				nextCmd(plugin, terminal);
-			break;
-
 			case 119 : //F8
 				doF8();
 			break;
@@ -365,6 +361,6 @@ export const pressedShortcuts = (evt, terminal, plugin) => {
 				insertOrExec(command);
 			break;
 
-			default: return handleByName(evt, terminal, plugin);
+			default: return true;
 		}
 };

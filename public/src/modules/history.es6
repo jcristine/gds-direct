@@ -78,6 +78,11 @@ export default function History( gds = 'apollo' )
 
 				return commands[gds][pos];
 			});
-		}
-	}
+		},
+
+		/** @return Promise<string|null> */
+		last: () => getData().then(() => {
+			return (commands[gds] || []).slice(-1)[0];
+		}),
+	};
 }
