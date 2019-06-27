@@ -294,14 +294,11 @@ let logRqCmd = async ({params, whenCmdRqId, whenCmsResult}) => {
 };
 
 let processNormalized = async ({stateful, cmdRq}) => {
-	let prePccResult = await ensureConfigPcc(stateful)
-		.then(TmpLib.addPerformanceDebug('ensureConfigPcc() before cmd', stateful));
-	let rbsResult = await runCmdRq(cmdRq, stateful)
-		.then(TmpLib.addPerformanceDebug('runCmdRq()', prePccResult));
-	let postPccResult = await ensureConfigPcc(stateful) // if this command changed area
-		.then(TmpLib.addPerformanceDebug('ensureConfigPcc() after cmd', rbsResult));
+	let prePccResult = await ensureConfigPcc(stateful);
+	let rbsResult = await runCmdRq(cmdRq, stateful);
+	let postPccResult = await ensureConfigPcc(stateful); // if this command changed area
 
-	rbsResult = {...rbsResult,
+	return {...rbsResult,
 		calledCommands: []
 			.concat(prePccResult.calledCommands || [])
 			.concat(rbsResult.calledCommands)
@@ -312,10 +309,6 @@ let processNormalized = async ({stateful, cmdRq}) => {
 			.concat(rbsResult.messages)
 			.concat(postPccResult.messages),
 	};
-
-	let termSvc = new TerminalService(stateful.gds);
-	return termSvc.addHighlighting(cmdRq, rbsResult, stateful.getFullState())
-		.then(TmpLib.addPerformanceDebug('Syntax Highlighting', postPccResult));
 };
 
 /**
@@ -333,7 +326,7 @@ let ProcessTerminalInput = async (params) => {
 	let gds = session.context.gds;
 	let dialect = rqBody.language || gds;
 	let translated = translateCmd(dialect, gds, cmdRq);
-	cmdRq = translated.cmd;
+	let cmdRqNorm = translated.cmd;
 
 	let callsLimit = (emcUser.settings || {}).gds_direct_usage_limit || null;
 	if (callsLimit) {
@@ -343,7 +336,11 @@ let ProcessTerminalInput = async (params) => {
 		}
 	}
 	let whenCmsResult = processNormalized({
-		stateful, cmdRq, messages: translated.messages,
+		stateful, cmdRq: cmdRqNorm,
+		messages: translated.messages,
+	}).then((rbsResult) => {
+		let termSvc = new TerminalService(stateful.gds);
+		return termSvc.addHighlighting(cmdRq, rbsResult, stateful.getFullState());
 	}).then(cmsResult => ({...cmsResult,
 		messages: (translated.messages || [])
 			.concat(cmsResult.messages || []),
