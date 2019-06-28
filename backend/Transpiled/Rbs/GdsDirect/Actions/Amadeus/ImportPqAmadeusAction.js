@@ -346,8 +346,7 @@ class ImportPqAmadeusAction extends AbstractGdsAction {
 				GetPqItineraryAction.checkPricingOutput('amadeus', output, this.$leadData)
 			);
 			if (!php.empty(errors)) {
-				result['error'] = 'Invalid pricing - ' + cmd + ' - ' + php.implode(';', errors);
-				return result;
+				return Rej.BadRequest('Invalid pricing - ' + cmd + ' - ' + php.implode(';', errors));
 			}
 			let stub = new AnyGdsStubSession(fqqCmdRecs);
 			let capturing = withCapture(stub);
