@@ -356,6 +356,12 @@ module.exports.migrations = [
 		].join('\n')),
 	},
 	{
+		name: 'GRECT/2019.06.18004-add-ts-index-in-cmd-rs-log',
+		perform: (db) => db.query([
+			'ALTER TABLE `cmd_rs_log` ADD INDEX responseTimestamp (responseTimestamp)',
+		].join('\n')),
+	},
+	{
 		name: 'GRECT/2019.03.08008-create-counted-fs-usages',
 		perform: (db) => db.query([
 			"CREATE TABLE `counted_fs_usages` (",

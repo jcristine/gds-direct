@@ -52,6 +52,11 @@ let Db = (dbConn) => {
 		return query(sql, placedValues);
 	};
 
+	let deleteVar = ({table, where}) => {
+		let {sql, placedValues} = SqlUtil.makeDeleteQuery({table, where});
+		return query(sql, placedValues);
+	};
+
 	/**
 	 * usage:
 	 * Db(conn).fetchAll(params).then(rows => console.log(rows));
@@ -65,6 +70,7 @@ let Db = (dbConn) => {
 	return {
 		writeRows: writeRows,
 		update: update,
+		delete: deleteVar,
 		fetchAll: fetchAll,
 		fetchOne: params => fetchAll(params)
 			.then(rows => rows.length > 0 ? rows[0] :

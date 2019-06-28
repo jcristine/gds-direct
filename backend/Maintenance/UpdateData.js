@@ -8,6 +8,7 @@ const Airports = require("../Repositories/Airports");
 const FluentLogger = require("../LibWrappers/FluentLogger");
 const Redis = require("../LibWrappers/Redis");
 const Agents = require("../Repositories/Agents");
+const CmdRsLog = require("../Repositories/CmdRsLog.js");
 
 /**
  * fetch external data like airports, ticket designators, etc... hourly
@@ -27,6 +28,7 @@ let UpdateData = async () => {
 		Airlines.updateFromService,
 		Pccs.updateFromService,
 		Airports.updateFromService,
+		CmdRsLog.cleanupOutdated,
 	];
 
 	let withLock = async (job, i) => {
