@@ -208,13 +208,13 @@ class ImportPqAmadeusAction extends AbstractGdsAction {
 		$result = {};
 
 		for ($pricing of Object.values($pricingList)) {
+			let modifiedModifiers = JSON.parse(JSON.stringify($pricing['pricingModifiers']));
 			$modParts = Fp.map(($mod) => {
 				if ($mod['type'] !== 'generic') {
 					return $mod['raw'];
 				} else {
-					$mod['parsed']['ptcs'] = Fp.filter(($ptc) => {
-						return PtcUtil.parsePtc($ptc)['ageGroup'] === 'adult';
-					}, $mod['parsed']['ptcs']);
+					$mod['parsed']['ptcs'] = $mod['parsed']['ptcs']
+						.filter(($ptc) => PtcUtil.parsePtc($ptc)['ageGroup'] === 'adult');
 
 					$mod['raw'] = 'R' + ((($mod['parsed'] || {})['ptcs'] || {})[0] || '');
 
@@ -224,7 +224,7 @@ class ImportPqAmadeusAction extends AbstractGdsAction {
 
 					return $mod['raw'];
 				}
-			}, $pricing['pricingModifiers']);
+			}, modifiedModifiers);
 			for ($pricingBlock of Object.values($pricing['pricingBlockList'])) {
 				if (PtcUtil.parsePtc($pricingBlock['ptcInfo']['ptc'])['ageGroup'] === 'adult') {
 					$singlePtcPricingCmd = $parsedCmd['baseCmd'];
@@ -374,7 +374,7 @@ class ImportPqAmadeusAction extends AbstractGdsAction {
 		let $ptcBlocks, $isPrivateFare, $result, $cmd, $raw, $fullData, $error;
 
 		$ptcBlocks = Fp.flatten(php.array_column($pricingRec['parsed']['pricingList'], 'pricingBlockList'));
-		$isPrivateFare = php.array_filter(php.array_column($ptcBlocks, 'hasPrivateFaresSelectedMessage')) ? true : false;
+		$isPrivateFare = php.array_filter(php.array_column($ptcBlocks, 'hasPrivateFaresSelectedMessage')).length > 0;
 		$result = {'isRequired': $isPrivateFare, 'raw': null, 'parsed': null};
 		if (!$isPrivateFare) return $result;
 
@@ -418,7 +418,7 @@ class ImportPqAmadeusAction extends AbstractGdsAction {
 			if ($error = $common['error']) {
 				return {'error': $error};
 			} else {
-				$ptcNum = $i + 1;
+				$ptcNum = +$i + 1;
 				for ($i = 0; $i < php.count($common['fareList']); ++$i) {
 					$rules = $common['fareList'][$i]['ruleRecords'];
 					$byNumber = php.array_combine(php.array_column($rules, 'sectionNumber'), $rules);

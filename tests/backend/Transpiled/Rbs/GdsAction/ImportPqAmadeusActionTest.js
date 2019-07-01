@@ -176,15 +176,15 @@ class ImportPqAmadeusActionTest extends require('../../Lib/TestCase.js') {
 					{'cmd': 'FQQ2', 'type': 'priceItinerary'},
 					{'cmd': 'FQQ3', 'type': 'priceItinerary'},
 					{'cmd': 'DO1-4', 'type': 'flightServiceInfo'},
-					{'cmd': 'FQN1*16', 'type': 'fareList'},
-					{'cmd': 'FQN1-1*16', 'type': 'fareList'},
-					{'cmd': 'FQN1-2*16', 'type': 'fareList'},
-					{'cmd': 'FQN2*16', 'type': 'fareList'},
-					{'cmd': 'FQN2-1*16', 'type': 'fareList'},
-					{'cmd': 'FQN2-2*16', 'type': 'fareList'},
-					{'cmd': 'FQN3*16', 'type': 'fareList'},
-					{'cmd': 'FQN3-1*16', 'type': 'fareList'},
-					{'cmd': 'FQN3-2*16', 'type': 'fareList'},
+					{'cmd': 'FQN01*16', 'type': 'fareList'},
+					{'cmd': 'FQN01-1*16', 'type': 'fareList'},
+					{'cmd': 'FQN01-2*16', 'type': 'fareList'},
+					{'cmd': 'FQN02*16', 'type': 'fareList'},
+					{'cmd': 'FQN02-1*16', 'type': 'fareList'},
+					{'cmd': 'FQN02-2*16', 'type': 'fareList'},
+					{'cmd': 'FQN03*16', 'type': 'fareList'},
+					{'cmd': 'FQN03-1*16', 'type': 'fareList'},
+					{'cmd': 'FQN03-2*16', 'type': 'fareList'},
 				],
 				'pnrData': {
 					'reservation': {
@@ -450,9 +450,7 @@ class ImportPqAmadeusActionTest extends require('../../Lib/TestCase.js') {
 							'sections': {
 								'exchange': {
 									'doesApply': true,
-									'parsed': [
-										{'conditions': ['FOR ECONOMY UNRESTRICTED FARES']},
-									],
+									'parsed': null,
 								},
 							},
 						},
@@ -462,37 +460,7 @@ class ImportPqAmadeusActionTest extends require('../../Lib/TestCase.js') {
 							'sections': {
 								'exchange': {
 									'doesApply': true,
-									'parsed': [
-										{
-											'conditions': [],
-											'penalties': [
-												{
-													'actionName': 'cancellations',
-													'when': 'beforeDeparture',
-													'prices': [
-														{'violations': ['any'], 'isPermitted': true},
-													],
-												},
-												{
-													'actionName': 'cancellations',
-													'when': 'afterDeparture',
-													'prices': [
-														{'violations': ['any'], 'isPermitted': true},
-													],
-												},
-												{
-													'actionName': 'changes',
-													'when': 'afterDeparture',
-													'prices': [
-														{
-															'violations': ['reissue', 'revalidation'],
-															'isPermitted': true
-														},
-													],
-												},
-											],
-										},
-									],
+									'parsed': null,
 								},
 							},
 						},
@@ -502,9 +470,7 @@ class ImportPqAmadeusActionTest extends require('../../Lib/TestCase.js') {
 							'sections': {
 								'exchange': {
 									'doesApply': true,
-									'parsed': [
-										{'conditions': ['FOR ECONOMY UNRESTRICTED FARES']},
-									],
+									'parsed': null,
 								},
 							},
 						},
@@ -514,37 +480,7 @@ class ImportPqAmadeusActionTest extends require('../../Lib/TestCase.js') {
 							'sections': {
 								'exchange': {
 									'doesApply': true,
-									'parsed': [
-										{
-											'conditions': [],
-											'penalties': [
-												{
-													'actionName': 'cancellations',
-													'when': 'beforeDeparture',
-													'prices': [
-														{'violations': ['any'], 'isPermitted': true},
-													],
-												},
-												{
-													'actionName': 'cancellations',
-													'when': 'afterDeparture',
-													'prices': [
-														{'violations': ['any'], 'isPermitted': true},
-													],
-												},
-												{
-													'actionName': 'changes',
-													'when': 'afterDeparture',
-													'prices': [
-														{
-															'violations': ['reissue', 'revalidation'],
-															'isPermitted': true
-														},
-													],
-												},
-											],
-										},
-									],
+									'parsed': null,
 								},
 							},
 						},
@@ -554,9 +490,7 @@ class ImportPqAmadeusActionTest extends require('../../Lib/TestCase.js') {
 							'sections': {
 								'exchange': {
 									'doesApply': true,
-									'parsed': [
-										{'conditions': ['FOR ECONOMY UNRESTRICTED FARES']},
-									],
+									'parsed': null,
 								},
 							},
 						},
@@ -566,37 +500,7 @@ class ImportPqAmadeusActionTest extends require('../../Lib/TestCase.js') {
 							'sections': {
 								'exchange': {
 									'doesApply': true,
-									'parsed': [
-										{
-											'conditions': [],
-											'penalties': [
-												{
-													'actionName': 'cancellations',
-													'when': 'beforeDeparture',
-													'prices': [
-														{'violations': ['any'], 'isPermitted': true},
-													],
-												},
-												{
-													'actionName': 'cancellations',
-													'when': 'afterDeparture',
-													'prices': [
-														{'violations': ['any'], 'isPermitted': true},
-													],
-												},
-												{
-													'actionName': 'changes',
-													'when': 'afterDeparture',
-													'prices': [
-														{
-															'violations': ['reissue', 'revalidation'],
-															'isPermitted': true
-														},
-													],
-												},
-											],
-										},
-									],
+									'parsed': null,
 								},
 							},
 						},
@@ -701,7 +605,7 @@ class ImportPqAmadeusActionTest extends require('../../Lib/TestCase.js') {
 					]),
 				},
 				{
-					'cmd': 'FQN1*16',
+					'cmd': 'FQN01*16',
 					'output': php.implode(php.PHP_EOL, [
 						'FQN1*16',
 						'',
@@ -713,7 +617,7 @@ class ImportPqAmadeusActionTest extends require('../../Lib/TestCase.js') {
 					]),
 				},
 				{
-					'cmd': 'FQN1-1*16',
+					'cmd': 'FQN01-1*16',
 					'output': php.implode(php.PHP_EOL, [
 						'FQN1-1*16',
 						'',
@@ -819,7 +723,7 @@ class ImportPqAmadeusActionTest extends require('../../Lib/TestCase.js') {
 					]),
 				},
 				{
-					'cmd': 'FQN1-2*16',
+					'cmd': 'FQN01-2*16',
 					'output': php.implode(php.PHP_EOL, [
 						'FQN1-2*16',
 						'',
@@ -896,7 +800,7 @@ class ImportPqAmadeusActionTest extends require('../../Lib/TestCase.js') {
 					]),
 				},
 				{
-					'cmd': 'FQN2*16',
+					'cmd': 'FQN02*16',
 					'output': php.implode(php.PHP_EOL, [
 						'FQN2*16',
 						'',
@@ -908,7 +812,7 @@ class ImportPqAmadeusActionTest extends require('../../Lib/TestCase.js') {
 					]),
 				},
 				{
-					'cmd': 'FQN2-1*16',
+					'cmd': 'FQN02-1*16',
 					'output': php.implode(php.PHP_EOL, [
 						'FQN2-1*16',
 						'',
@@ -1014,7 +918,7 @@ class ImportPqAmadeusActionTest extends require('../../Lib/TestCase.js') {
 					]),
 				},
 				{
-					'cmd': 'FQN2-2*16',
+					'cmd': 'FQN02-2*16',
 					'output': php.implode(php.PHP_EOL, [
 						'FQN2-2*16',
 						'',
@@ -1091,7 +995,7 @@ class ImportPqAmadeusActionTest extends require('../../Lib/TestCase.js') {
 					]),
 				},
 				{
-					'cmd': 'FQN3*16',
+					'cmd': 'FQN03*16',
 					'output': php.implode(php.PHP_EOL, [
 						'FQN3*16',
 						'',
@@ -1103,7 +1007,7 @@ class ImportPqAmadeusActionTest extends require('../../Lib/TestCase.js') {
 					]),
 				},
 				{
-					'cmd': 'FQN3-1*16',
+					'cmd': 'FQN03-1*16',
 					'output': php.implode(php.PHP_EOL, [
 						'FQN3-1*16',
 						'',
@@ -1209,7 +1113,7 @@ class ImportPqAmadeusActionTest extends require('../../Lib/TestCase.js') {
 					]),
 				},
 				{
-					'cmd': 'FQN3-2*16',
+					'cmd': 'FQN03-2*16',
 					'output': php.implode(php.PHP_EOL, [
 						'FQN3-2*16',
 						'',
@@ -1323,6 +1227,20 @@ class ImportPqAmadeusActionTest extends require('../../Lib/TestCase.js') {
 							' ',
 						]),
 					},
+					{
+						'cmd': 'MD',
+						'output': php.implode(php.PHP_EOL, [
+							'BG CXR: BR',
+							'PRICED WITH VALIDATING CARRIER BR - REPRICE IF DIFFERENT VC',
+							'FARE VALID FOR E TICKET ONLY',
+							'100.00 USD PENALTY APPLIES',
+							'ENDOS /C1-4 NON END/RRT/NO STPVR /BR/B7 EWA APLY /FLT RESTR',
+							'      APLY -BG:BR',
+							'04SEP17 PER GAF REQUIREMENTS FARE NOT VALID UNTIL TICKETED',
+							'                                                  PAGE  3/ 3',
+							' ',
+						]),
+					},
 				],
 			},
 			'output': {
@@ -1415,70 +1333,7 @@ class ImportPqAmadeusActionTest extends require('../../Lib/TestCase.js') {
 							'fareComponentNumber': '1',
 							'sections': {
 								'exchange': {
-									'parsed': [
-										{
-											'conditions': [],
-											'penalties': [
-												{
-													'actionName': 'cancellations',
-													'prices': [
-														{
-															'violations': ['cancel', 'refund'],
-															'fareCurrency': 'USD',
-															'fareAmount': '100.00',
-														},
-													],
-												},
-											],
-										},
-										{
-											'conditions': ['OUTBOUND -'],
-											'penalties': [
-												{
-													'actionName': 'changes',
-													'prices': [
-														{
-															'violations': ['reissue'],
-															'fareCurrency': 'USD',
-															'fareAmount': '50.00',
-														},
-													],
-												},
-											],
-										},
-										{
-											'conditions': ['INBOUND -'],
-											'penalties': [
-												{
-													'actionName': 'changes',
-													'prices': [
-														{
-															'violations': ['reissue', 'revalidation'],
-															'isPermitted': true,
-														},
-													],
-												},
-											],
-										},
-										{
-											'conditions': [
-												'*** GENERAL RULE FOLLOWS ***',
-												'FROM/TO THE UNITED STATES',
-											],
-											'penalties': [
-												{
-													'actionName': 'cancellations',
-													'prices': [
-														{
-															'violations': ['lostTicket'],
-															'fareCurrency': 'USD',
-															'fareAmount': '50.00',
-														},
-													],
-												},
-											],
-										},
-									],
+									'parsed': null,
 								},
 							},
 						},
@@ -1511,20 +1366,6 @@ class ImportPqAmadeusActionTest extends require('../../Lib/TestCase.js') {
 						'  5 RM NOTIFY PASSENGER PRIOR TO TICKET PURCHASE & CHECK-IN:',
 						'       FEDERAL LAWS FORBID THE CARRIAGE OF HAZARDOUS MATERIALS -',
 						'       GGAMAUSHAZ/S1,4',
-						' ',
-					]),
-				},
-				{
-					'cmd': 'MBFXB',
-					'output': php.implode(php.PHP_EOL, [
-						'BG CXR: BR',
-						'PRICED WITH VALIDATING CARRIER BR - REPRICE IF DIFFERENT VC',
-						'FARE VALID FOR E TICKET ONLY',
-						'100.00 USD PENALTY APPLIES',
-						'ENDOS /C1-4 NON END/RRT/NO STPVR /BR/B7 EWA APLY /FLT RESTR',
-						'      APLY -BG:BR',
-						'04SEP17 PER GAF REQUIREMENTS FARE NOT VALID UNTIL TICKETED',
-						'                                                  PAGE  3/ 3',
 						' ',
 					]),
 				},
@@ -1809,7 +1650,7 @@ class ImportPqAmadeusActionTest extends require('../../Lib/TestCase.js') {
 				{
 					'cmd': 'FQN1-2*16',
 					'output': php.implode(php.PHP_EOL, [
-						'FQN1-2*16',
+						'FQN01-2*16',
 						'',
 						' 1 - PSGR P1 ADT                                   RULES DISPLAY',
 						'FARE COMPONENT  2    ADT MNLSEA BR  WLW6R',
@@ -2021,246 +1862,10 @@ class ImportPqAmadeusActionTest extends require('../../Lib/TestCase.js') {
 					},
 				],
 			},
-			'output': {
-				'pnrData': {
-					'reservation': {
-						'parsed': {
-							'itinerary': [
-								{'airline': 'LH', 'flightNumber': '7485'},
-								{'airline': 'LH', 'flightNumber': '9051'},
-								{'airline': 'UA', 'flightNumber': '8717'},
-							],
-						},
-					},
-					'flightServiceInfo': {
-						'parsed': {
-							'segments': [
-								{
-									'legs': [
-										{
-											'departureAirport': 'SEA',
-											'destinationAirport': 'IAD',
-											'aircraft': '739',
-											'flightDuration': '4:56',
-										},
-									],
-								},
-							],
-						},
-					},
-				},
+			output: {
+				error: 'Error: Pricing >FXX; was not fetched completely',
 			},
-			'calledCommands': [
-				{
-					'cmd': 'DO2-4',
-					'output': php.implode(php.PHP_EOL, [
-						'/$DO2-4',
-						'*1A PLANNED FLIGHT INFO*              LH7485   44 TH 15MAR18    ',
-						'APT ARR   DY DEP   DY CLASS/MEAL          EQP  GRND  EFT   TTL  ',
-						'SEA          0815  TH FAJCDZPYBMU/R       739         4:56      ',
-						'                      HQVWSTLK/R                                ',
-						'IAD 1611  TH                                                4:56',
-						'',
-						'COMMENTS-',
-						' 1.SEA IAD   - COMMERCIAL DUPLICATE - OPERATED BY              ',
-						'               UNITED AIRLINES',
-						' 2.SEA IAD   - AIRCRAFT OWNER UNITED AIRLINES                   ',
-						' 3.ENTIRE FLT- G/ QUALIFIED ONLINE CONNECTING TRAFFIC ONLY      ',
-						' 4.SEA IAD   - OPERATIONAL LEG UA 0419                          ',
-						' 5.SEA IAD   - MCT FLIGHT TRACKING D/D                          ',
-						' 6.SEA IAD   - SECURED FLIGHT                                   ',
-						' 7.SEA IAD   -  ET/ ELECTRONIC TKT CANDIDATE                    ',
-						' 8.SEA IAD   - SEC FLT PSGR DATA REQUIRED 72 HBD SSR DOCS       ',
-						' 9.SEA IAD   - US LAW SEE GGAIRLH PNR ACCESS OR NEWS KEYWORDS   ',
-						'10.SEA IAD   - F20Y159                                          ',
-						'11.SEA IAD   -  CO2/PAX* 277.72 KG ECO, 555.43 KG PRE           ',
-						' (*):SOURCE:ICAO CARBON EMISSIONS CALCULATOR                    ',
-						'',
-						'CONFIGURATION-',
-						') ',
-					]),
-				},
-				{
-					'cmd': 'MDR',
-					'output': php.implode(php.PHP_EOL, [
-						'/$               739  F 999   C 999   M 999                       ',
-						'*1A PLANNED FLIGHT INFO*              LH9051   44 TH 15MAR18    ',
-						'APT ARR   DY DEP   DY CLASS/MEAL          EQP  GRND  EFT   TTL  ',
-						'IAD          1825  TH FAJCDZPYBMU/M       777         7:45      ',
-						'                      HQVWSTLK/M                                ',
-						'FRA 0710  FR                                                7:45',
-						'',
-						'COMMENTS-',
-						' 1.IAD FRA   - COMMERCIAL DUPLICATE - OPERATED BY              ',
-						'               UNITED AIRLINES',
-						' 2.IAD FRA   - AIRCRAFT OWNER UNITED AIRLINES                   ',
-						' 3.IAD FRA   - OPERATIONAL LEG UA 0989                          ',
-						' 4.IAD FRA   - ARRIVES TERMINAL 1                               ',
-						' 5.IAD FRA   - MCT FLIGHT TRACKING I/I                          ',
-						' 6.IAD FRA   - SECURED FLIGHT                                   ',
-						' 7.IAD FRA   -  ET/ ELECTRONIC TKT CANDIDATE                    ',
-						' 8.IAD FRA   - SEC FLT PSGR DATA REQUIRED 72 HBD SSR DOCS       ',
-						' 9.IAD FRA   - US LAW SEE GGAIRLH PNR ACCESS OR NEWS KEYWORDS   ',
-						'10.IAD FRA   - F8C40Y221                                        ',
-						'11.IAD FRA   -  CO2/PAX* 409.16 KG ECO, 818.32 KG PRE           ',
-						' (*):SOURCE:ICAO CARBON EMISSIONS CALCULATOR                    ',
-						'',
-						'CONFIGURATION-',
-						') ',
-					]),
-				},
-				{
-					'cmd': 'MDR',
-					'output': php.implode(php.PHP_EOL, [
-						'/$               777  F   8   C  40   M 221                       ',
-						'*1A PLANNED FLIGHT INFO*              UA8717   56 TU 27MAR18    ',
-						'APT ARR   DY DEP   DY CLASS/MEAL          EQP  GRND  EFT   TTL  ',
-						'FRA          1045  TU JCDZPYBMUHQ/M       744        10:10      ',
-						'                      VWSTLK/M                                  ',
-						'SEA 1155  TU                                               10:10',
-						'',
-						'COMMENTS-',
-						' 1.FRA SEA   - COMMERCIAL DUPLICATE - OPERATED BY              ',
-						'               LUFTHANSA',
-						' 2.FRA SEA   - AIRCRAFT OWNER LUFTHANSA                         ',
-						' 3.FRA SEA   - OPERATIONAL LEG LH 0490                          ',
-						' 4.FRA SEA   - DEPARTS TERMINAL 1                               ',
-						' 5.FRA SEA   - MCT FLIGHT TRACKING I/I                          ',
-						' 6.FRA SEA   - CHECK-IN /LUFTHANSA                              ',
-						' 7.FRA SEA   - SECURED FLIGHT                                   ',
-						' 8.FRA SEA   -  ET/ ELECTRONIC TKT CANDIDATE                    ',
-						' 9.FRA SEA   -  CO2/PAX* 511.40 KG ECO, 1,022.80 KG PRE         ',
-						' (*):SOURCE:ICAO CARBON EMISSIONS CALCULATOR                    ',
-						'',
-						'CONFIGURATION-',
-						'               744  NO CONFIGURATION SET                        ',
-						' ',
-					]),
-				},
-				{
-					'cmd': 'FQN1*16',
-					'output': php.implode(php.PHP_EOL, [
-						'FQN1*16',
-						'',
-						'1 - PSGR P1 ADT',
-						' FQN 1-1    ADT SEAFRA LH  KLNC34N',
-						' FQN 1-2    ADT FRASEA UA  LLNC14N',
-						'                                                  PAGE  1/ 1',
-						' ',
-					]),
-				},
-				{
-					'cmd': 'FQN1-1*16',
-					'output': php.implode(php.PHP_EOL, [
-						'FQN1-1*16',
-						'',
-						' 1 - PSGR P1 ADT                                   RULES DISPLAY',
-						'FARE COMPONENT  1    ADT SEAFRA LH  KLNC34N',
-						'FCL: KLNC34N   TRF:   1 RULE: E601 BK:  K',
-						'PTC: ADT-ADULT              FTC: XAN-NON REFUNDABLE APEX',
-						'PE.PENALTIES',
-						'',
-						'  CANCELLATIONS',
-						'',
-						'    ANY TIME',
-						'      TICKET IS NON-REFUNDABLE.',
-						'      WAIVED FOR DEATH OF PASSENGER OR FAMILY MEMBER.',
-						'         NOTE -',
-						'          WAIVERS MUST BE EVIDENCED BY DEATH CERTIFICATE.',
-						'          REFUND PERMITTED BEFORE DEPARTURE IN CASE OF',
-						'          REJECTION OF VISA. EMBASSY STATEMENT REQUIRED.',
-						'          ----',
-						'          REFUND RULES APPLY PER PRICING UNIT.',
-						'          ----',
-						'          WHEN COMBINING NON-REFUNDABLE FARES WITH',
-						'                                                  PAGE  1/ 2',
-						' ',
-					]),
-				},
-				{
-					'cmd': 'MD',
-					'output': php.implode(php.PHP_EOL, [
-						'          REFUNDABLE FARES',
-						'          1. THE MOST RESTRICTIVE CANCELLATION CONDITION',
-						'          APPLIES TO THE ENTIRE PRICING UNIT.',
-						'          2. THE HIGHEST CANCELLATION PENALTY WITHIN THE',
-						'          PRICING UNIT WILL BE CHARGED.',
-						'          ----',
-						'          REFUND OF UNUSED TAXES PAID TO THIRD PARTIES',
-						'          PERMITTED.',
-						'          EXCEPT FOR PASSENGER FACILITY CHARGES APPLICABLE',
-						'          TO US AIRPORTS WITH TAX CODES- US/ZP/XF AND FOR',
-						'          OTHER TAXES WHICH LEGALLY ARE NON-REFUNDABLE.',
-						'          REFUND OF UNUSED YQ NOT PERMITTED.',
-						'          REFUND OF UNUSED YR NOT PERMITTED.',
-						'          THIS ALSO INCLUDES LH/LX/OS/SN DCC - DISTRIBUTION',
-						'          COST CHARGE- SHOWN AS YR ON THE TICKET.',
-						'          ----',
-						'          THE OPTIONAL PAYMENT CHARGE IS NON-REFUNDABLE.',
-						'          ----',
-						'          SHOULD THE FARE FOR THE ACTUAL FLOWN TRAVEL BE',
-						'          HIGHER THAN THE ORIGINAL PAID FARE AMOUNT THE',
-						'          FARE DIFFERENCE MUST BE COLLECTED.',
-						'                                                  PAGE  2/ 2',
-						' ',
-					]),
-				},
-				{
-					'cmd': 'FQN1-2*16',
-					'output': php.implode(php.PHP_EOL, [
-						'FQN1-2*16',
-						'',
-						' 1 - PSGR P1 ADT                                   RULES DISPLAY',
-						'FARE COMPONENT  2    ADT FRASEA UA  LLNC14N',
-						'FCL: LLNC14N   TRF:   1 RULE: E601 BK:  L',
-						'PTC: ADT-ADULT              FTC: XAN-NON REFUNDABLE APEX',
-						'PE.PENALTIES',
-						'FOR ROUND TRIP LLNC14N TYPE FARES',
-						'',
-						'',
-						'         NOTE -',
-						'          --',
-						'            HALF ROUNDTRIP FARE COMBINATION OF',
-						'            NON-REFUNDABLE / REFUNDABLE WITH A CANCELLATION',
-						'            PENALTY / FULLY REFUNDABLE',
-						'            - THE MOST RESTRICTIVE CANCELLATION PENALTY',
-						'            RULE APPLIES TO THE ENTIRE PRICING UNIT FOR',
-						'            WHOLLY UNUSED TICKET -',
-						'          --',
-						'',
-						'         NOTE -',
-						'                                                  PAGE  1/ 2',
-						' ',
-					]),
-				},
-				{
-					'cmd': 'MD',
-					'output': php.implode(php.PHP_EOL, [
-						'          --',
-						'               NON-REFUNDABLE APPLIES TO ADT/CHD/INF',
-						'          --',
-						'               YR / YQ  INTERNATIONAL SURCHARGE',
-						'                     WILL NOT BE REFUNDED',
-						'          --',
-						'                 TAX/CHARGE -  US / ZP / XF',
-						'                     WILL NOT BE REFUNDED',
-						'            NON-REFUNDABLE ON NON-REFUNDABLE FARE TICKETS',
-						'          --',
-						'',
-						'  CANCELLATIONS',
-						'',
-						'    ANY TIME',
-						'      TICKET IS NON-REFUNDABLE IN CASE OF CANCEL/NO-SHOW/',
-						'        REFUND.',
-						'      WAIVED FOR SCHEDULE CHANGE.',
-						'         NOTE -',
-						'          --',
-						'          A.  EXCHANGE - WHOLLY UNUSED TICKET / CHANGE',
-						'                 TO 1ST TICKETED FLIGHT COUPON',
-						'                                                  PAGE  2/ 2',
-						' ',
-					]),
-				},
+			calledCommands: [
 			],
 		});
 
@@ -2478,7 +2083,7 @@ class ImportPqAmadeusActionTest extends require('../../Lib/TestCase.js') {
 					]),
 				},
 				{
-					'cmd': 'FQN1*16',
+					'cmd': 'FQN01*16',
 					'output': php.implode(php.PHP_EOL, [
 						'FQN1*16',
 						'',
@@ -2534,7 +2139,7 @@ class ImportPqAmadeusActionTest extends require('../../Lib/TestCase.js') {
 					]),
 				},
 				{
-					'cmd': 'FQN2*16',
+					'cmd': 'FQN02*16',
 					'output': php.implode(php.PHP_EOL, [
 						'FQN2*16',
 						'',
@@ -2898,14 +2503,12 @@ class ImportPqAmadeusActionTest extends require('../../Lib/TestCase.js') {
 
 		let full = $input['fetchOptionalFields'];
 		full = full === undefined || full === true;
-		if (full) {
-			// TODO: remove once there is support for Amadeus importPq
-			return;
-		}
+
+		let session = new AnyGdsStubSession($calledCommands);
 		$actual = await (new ImportPqAmadeusAction())
 			.setGeoProvider(new StubLocationGeographyProvider([]))
 			.useStatefulRules($input['useStatefulRules'])
-			.setSession(new AnyGdsStubSession($calledCommands))
+			.setSession(session)
 			.setPreCalledCommandsFromDb($input['previousCommands'],
 				GdsDirectDefaults.makeDefaultAmadeusState())
 			.setBaseDate('2018-03-20')
@@ -2914,6 +2517,7 @@ class ImportPqAmadeusActionTest extends require('../../Lib/TestCase.js') {
 			.catch(exc => ({error: exc + ''}));
 
 		this.assertArrayElementsSubset($expectedOutput, $actual);
+		this.assertEquals([], session.getCommandsLeft());
 	}
 
 	getTestMapping() {

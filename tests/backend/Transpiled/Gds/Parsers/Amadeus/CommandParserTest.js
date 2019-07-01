@@ -236,6 +236,27 @@ class CommandParserTest extends require('../../../Lib/TestCase.js') {
 		]);
 
 		$list.push([
+			'FXX/RC05*ADT*C05*INF',
+			{
+				type: 'priceItinerary',
+				data: {
+					baseCmd: 'FXX',
+					pricingStores: [
+						[
+							{
+								raw: 'RC05*ADT*C05*INF',
+								type: 'generic',
+								parsed: {
+									ptcs: ['C05', 'ADT', 'C05', 'INF'],
+								},
+							},
+						],
+					],
+				},
+			},
+		]);
+
+		$list.push([
 			'FRNDMENRT/D-15SEP17/A-S7/FB-JFLOWCS/TD-IN90/DD-10JAN18',
 			{'type': 'statelessFareRules'},
 		]);
