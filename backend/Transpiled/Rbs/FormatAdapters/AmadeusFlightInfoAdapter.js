@@ -99,6 +99,7 @@ class AmadeusFlightInfoAdapter {
 		return $rSeg
 			&& $rSeg['airline'] === $doSeg['airline']
 			&& php.intval($rSeg['flightNumber']) === php.intval($doSeg['flightNumber'])
+			&& $rSeg.departureDate.raw === $doSeg.departureDate.raw.slice(0, '25JAN'.length)
 			&& $rSeg['departureAirport'] === ArrayUtil.getFirst($doSeg['legs'])['departureAirport']
 			&& $rSeg['destinationAirport'] === ArrayUtil.getLast($doSeg['legs'])['destinationAirport'];
 	}
@@ -124,10 +125,11 @@ class AmadeusFlightInfoAdapter {
 		return $svcSeg;
 	}
 
-	/** @param array $parsed = FlightInfoParser::parse()
-	 * @param $itinerary = AmadeusPnrCommonFormatAdapter::transformItinerary() */
+	/**
+	 * @param $parsed = require('FlightInfoParser.js').parse()
+	 * @param $itinerary = require('AmadeusPnrCommonFormatAdapter.js').transformItinerary()
+	 */
 	static transform($parsed, $itinerary) {
-
 		return {
 			'segments': $parsed['segments'].map(($doSeg) =>
 				this.transformFlightInfoSegment($doSeg, $itinerary)),
