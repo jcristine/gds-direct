@@ -362,6 +362,10 @@ module.exports.migrations = [
 		].join('\n')),
 	},
 	{
+		name: 'GRECT/2019.06.27003-optimize-truncated-rs-log-table',
+		perform: (db) => db.query('OPTIMIZE TABLE cmd_rs_log'),
+	},
+	{
 		name: 'GRECT/2019.03.08008-create-counted-fs-usages',
 		perform: (db) => db.query([
 			"CREATE TABLE `counted_fs_usages` (",
