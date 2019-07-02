@@ -148,6 +148,7 @@ let domToData = (mcoForm) => {
 // "                                                   ;PSGR 01/01",
 // "                                                   ;BOOK 01/01",
 // "DO YC/XY TAXES APPLY?",
+/** @return {IMaskForm} */
 export let ManualPricingForm = ({data}) => {
 	let formCmp = dataToDom(data);
 	return {
