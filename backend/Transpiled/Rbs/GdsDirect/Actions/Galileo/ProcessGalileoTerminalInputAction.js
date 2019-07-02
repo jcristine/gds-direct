@@ -221,7 +221,7 @@ class ProcessGalileoTerminalInputAction {
 					php.array_column((oldParsed['data'] || {})['modifiers'] || [], 'raw')
 				);
 				typeToMod = php.array_merge(oldTypeToMod, typeToMod);
-				if (oldParsed['data']['destinationAirport']) {
+				if ((oldParsed['data'] || {})['destinationAirport']) {
 					// the start of current availability
 					break;
 				}
