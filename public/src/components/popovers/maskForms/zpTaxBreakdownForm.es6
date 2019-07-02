@@ -1,9 +1,11 @@
 
+import {post} from "../../../helpers/requests";
+
 let Component = require('../../../modules/component.es6').default;
 let Cmp = (...args) => new Component(...args);
 
 /** @param data = await require('SubmitZpTaxBreakdownMask.js').parse() */
-let dataToDom = (data, onCancel) => {
+let dataToDom = (data) => {
 	let values = {};
 	let enableds = {};
 	for (let field of data.fields) {
@@ -36,9 +38,7 @@ let dataToDom = (data, onCancel) => {
 		return fld;
 	};
 
-	let formCmp = Cmp('form.mask-form').attach([
-		Cmp('br'),
-		Cmp('div').attach([
+	let formCmp = Cmp('div').attach([
 			Cmp('div').attach([
 				Cmp('span.static-text', {textContent: '>$ZP U.S. FLIGHT SEGMENT TAX BREAKDOWN SCREEN'}),
 			]),
@@ -65,20 +65,7 @@ let dataToDom = (data, onCancel) => {
 						]);
 					})),
 			]),
-			Cmp('div.float-right').attach([
-				Cmp('button[Submit]'),
-				Cmp('button[Cancel]', { type: 'button', onclick: () => {
-						formCmp.context.remove();
-
-						if (onCancel && typeof onCancel === 'function')
-						{
-							onCancel();
-						}
-					} }),
-			]),
-		]),
-		Cmp('br', {clear: 'all'}),
-	]);
+		]);
 
 	return formCmp;
 };
@@ -103,18 +90,18 @@ let domToData = (mcoForm) => {
 // "  ARPT13;...;.....  ARPT14;...;.....  ARPT15;...;.....         ",
 // "  ARPT16;...;.....  ARPT17;...;.....  ARPT18;...;.....         ",
 // "  ARPT19;...;.....  ARPT20;...;.....                           ",
-export let ZpTaxBreakdownForm = ({data, onCancel, onsubmit = null}) => {
-	let formCmp = dataToDom(data, onCancel);
-	formCmp.context.onsubmit = () => {
-		if (onsubmit) {
+/** @return {IMaskForm} */
+export let ZpTaxBreakdownForm = ({data}) => {
+	let formCmp = dataToDom(data);
+	return {
+		dom: formCmp.context,
+		submit: () => {
 			let result = domToData(formCmp);
-			onsubmit(result).then(({canClosePopup}) => {
-				if (canClosePopup) {
-					formCmp.context.remove();
-				}
+			return post('terminal/submitZpTaxBreakdownMask', {
+				gds: 'apollo',
+				fields: result.fields,
+				maskOutput: data.maskOutput,
 			});
-		}
-		return false;
+		},
 	};
-	return formCmp;
 };

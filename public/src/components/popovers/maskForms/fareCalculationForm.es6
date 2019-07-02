@@ -1,8 +1,10 @@
 
+import {post} from "../../../helpers/requests";
+
 let Component = require('../../../modules/component.es6').default;
 let Cmp = (...args) => new Component(...args);
 
-let dataToDom = (data, onCancel) => {
+let dataToDom = (data) => {
 	let values = {};
 	let enableds = {};
 	for (let field of data.fields) {
@@ -37,9 +39,7 @@ let dataToDom = (data, onCancel) => {
 		return fld;
 	};
 
-	let formCmp = Cmp('form.mask-form monospace-inputs fare-calculation-mask').attach([
-		Cmp('br'),
-		Cmp('div').attach([
+	let formCmp = Cmp('div.monospace-inputs fare-calculation-mask').attach([
 			Cmp('div').attach([
 				Cmp('span.static-text', {textContent: '>$FC/ATB FARE CONSTRUCTION'}),
 			]),
@@ -67,19 +67,6 @@ let dataToDom = (data, onCancel) => {
 			Cmp('div').attach([
 				Cmp('span.static-text', {textContent: ';' + parsed.fareConstruction.clean.raw}),
 			]),
-			Cmp('div.float-right').attach([
-				Cmp('button[Submit]'),
-				Cmp('button[Cancel]', { type: 'button', onclick: () => {
-						formCmp.context.remove();
-
-						if (onCancel && typeof onCancel === 'function')
-						{
-							onCancel();
-						}
-					} }),
-			]),
-		]),
-		Cmp('br', {clear: 'all'}),
 	]);
 
 	return formCmp;
@@ -102,18 +89,18 @@ let domToData = (mcoForm) => {
 // ";...................................................;",
 // "",
 // ";10DEC JFK PR MNL 100.00 $100.00     ",
-export let FareCalculationForm = ({data, onCancel, onsubmit = null}) => {
-	let formCmp = dataToDom(data, onCancel);
-	formCmp.context.onsubmit = () => {
-		if (onsubmit) {
+/** @return {IMaskForm} */
+export let FareCalculationForm = ({data}) => {
+	let formCmp = dataToDom(data);
+	return {
+		dom: formCmp.context,
+		submit: () => {
 			let result = domToData(formCmp);
-			onsubmit(result).then(({canClosePopup}) => {
-				if (canClosePopup) {
-					formCmp.context.remove();
-				}
+			return post('terminal/submitFcMask', {
+				gds: 'apollo',
+				fields: result.fields,
+				maskOutput: data.maskOutput,
 			});
-		}
-		return false;
+		},
 	};
-	return formCmp;
 };

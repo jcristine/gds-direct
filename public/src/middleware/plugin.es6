@@ -354,18 +354,20 @@ export default class TerminalPlugin
 		}
 	}
 
+	/** @param {IMaskForm} formInst */
 	_displayGenericForm(formInst)
 	{
+		let close = () => {
+			finalForm.context.remove();
+			this._ejectForm(finalForm);
+		};
 		let submitCmp = Cmp('button[Submit]');
 		let finalForm = Cmp('form.mask-form monospace-inputs').attach([
 			Cmp('br'),
 			Cmp({context: formInst.dom}),
 			Cmp('div.float-right').attach([
 				submitCmp,
-				Cmp('button[Cancel]', { type: 'button', onclick: () => {
-					finalForm.context.remove();
-					this._ejectForm(finalForm);
-				}}),
+				Cmp('button[Cancel]', { type: 'button', onclick: close}),
 			]),
 			Cmp('br', {clear: 'all'}),
 		]);
@@ -382,8 +384,7 @@ export default class TerminalPlugin
 					this.parseBackEnd(resp, 'MASK FORM');
 					let canClosePopup = resp && resp.output;
 					if (canClosePopup) {
-						this._ejectForm(finalForm);
-						finalForm.context.remove();
+						close();
 					}
 				});
 			return false;
@@ -496,48 +497,14 @@ export default class TerminalPlugin
 
 	_displayZpTaxBreakdownMask(data)
 	{
-		const cancel = () => this._ejectForm(formCmp);
-
-		let formCmp = ZpTaxBreakdownForm({data, onCancel: cancel, onsubmit: (formResult) => {
-			let params = {
-				gds: this.gdsName,
-				fields: formResult.fields,
-				maskOutput: data.maskOutput,
-			};
-			return this._withSpinner(() => post('terminal/submitZpTaxBreakdownMask', params)
-				.then(resp => {
-					this.parseBackEnd(resp, '$ZP...');
-					return {canClosePopup: resp && resp.output};
-				}));
-		}});
-		this._injectForm(formCmp);
-		let inp = formCmp.context.querySelector('input:not(:disabled)');
-		if (inp) {
-			inp.focus();
-		}
+		let formInst = ZpTaxBreakdownForm({data});
+		this._displayGenericForm(formInst);
 	}
 
 	_displayFcMask(data)
 	{
-		const cancel = () => this._ejectForm(formCmp);
-
-		let formCmp = FareCalculationForm({data, onCancel: cancel, onsubmit: (formResult) => {
-			let params = {
-				gds: this.gdsName,
-				fields: formResult.fields,
-				maskOutput: data.maskOutput,
-			};
-			return this._withSpinner(() => post('terminal/submitFcMask', params)
-				.then(resp => {
-					this.parseBackEnd(resp, '$FC...');
-					return {canClosePopup: resp && resp.output};
-				}));
-		}});
-		this._injectForm(formCmp);
-		let inp = formCmp.context.querySelector('input:not(:disabled)');
-		if (inp) {
-			inp.focus();
-		}
+		let formInst = FareCalculationForm({data});
+		this._displayGenericForm(formInst);
 	}
 
 	parseBackEnd(data, command)
