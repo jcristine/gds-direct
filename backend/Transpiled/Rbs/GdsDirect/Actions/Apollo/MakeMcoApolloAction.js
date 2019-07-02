@@ -9,6 +9,7 @@ const AbstractGdsAction = require('../../../GdsAction/AbstractGdsAction.js');
 const fetchAll = require("../../../../../GdsHelpers/TravelportUtils").fetchAll;
 const McoListParser = require('../../../../Gds/Parsers/Apollo/Mco/McoListParser.js');
 const McoMaskParser = require('../../../../Gds/Parsers/Apollo/Mco/McoMaskParser.js');
+const Rej = require('klesun-node-tools/src/Utils/Rej.js');
 
 let php = require('../../../../php.js');
 
@@ -109,9 +110,12 @@ class MakeMcoApolloAction extends AbstractGdsAction
                 }],
             };
         } else {
-            return {
-                'errors': ['Failed to issue MCO: '+$mcoResult['response'].trimEnd().replace(/[\s\S]*\n/, '')],
-            };
+            let msg = 'Failed to issue MCO: '+$mcoResult['response'].trimEnd().replace(/[\s\S]*\n/, '');
+            if ($mcoResult['response'].trim().startsWith('MISSING - ')) {
+                return Rej.BadRequest(msg);
+            } else {
+                return {errors: [msg]};
+            }
         }
     }
 }
