@@ -164,7 +164,6 @@ let domToData = (mcoForm) => {
 //   ' REMARK1;..............................................         ',
 //   ' REMARK2;...................................................... ',
 //   ' VALIDATING CARRIER;..                  ISSUE NOW;.             ',
-/** @param {IRbsMcoData} data */
 export let McoForm = ({data, onsubmit = null, onCancel = null}) => {
 	let mcoForm = dataToDom(data, onCancel);
 	mcoForm.context.onsubmit = () => {

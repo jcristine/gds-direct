@@ -354,6 +354,42 @@ export default class TerminalPlugin
 		}
 	}
 
+	_displayGenericForm(formInst)
+	{
+		let submitCmp = Cmp('button[Submit]');
+		let finalForm = Cmp('form.mask-form monospace-inputs').attach([
+			Cmp('br'),
+			Cmp({context: formInst.dom}),
+			Cmp('div.float-right').attach([
+				submitCmp,
+				Cmp('button[Cancel]', { type: 'button', onclick: () => {
+					finalForm.context.remove();
+					this._ejectForm(finalForm);
+				}}),
+			]),
+			Cmp('br', {clear: 'all'}),
+		]);
+		let lock = action => {
+			submitCmp.context.setAttribute('disabled', 'disabled');
+			return this._withSpinner(action)
+				.finally(() => submitCmp.context.removeAttribute('disabled', 'disabled'));
+		};
+		this._injectForm(finalForm);
+		finalForm.context.onsubmit = (e) => {
+			submitCmp.context.setAttribute('disabled', 'disabled');
+			lock(() => formInst.submit())
+				.then(resp => {
+					this.parseBackEnd(resp, 'MASK FORM');
+					let canClosePopup = resp && resp.output;
+					if (canClosePopup) {
+						this._ejectForm(finalForm);
+						finalForm.context.remove();
+					}
+				});
+			return false;
+		};
+	}
+
 	_displayMcoMask(data)
 	{
 		const cancel = () => this._ejectForm(formCmp);
@@ -448,25 +484,8 @@ export default class TerminalPlugin
 
 	_displayHhprMask(data)
 	{
-		const cancel = () => this._ejectForm(formCmp);
-
-		let formCmp = ManualPricingForm({data, onCancel: cancel, onsubmit: (formResult) => {
-			let params = {
-				gds: this.gdsName,
-				fields: formResult.fields,
-				maskOutput: data.maskOutput,
-			};
-			return this._withSpinner(() => post('terminal/submitHhprMask', params)
-				.then(resp => {
-					this.parseBackEnd(resp, '$NME...');
-					return {canClosePopup: resp && resp.output};
-				}));
-		}});
-		this._injectForm(formCmp);
-		let inp = formCmp.context.querySelector('input:not(:disabled)');
-		if (inp) {
-			inp.focus();
-		}
+		let formInst = ManualPricingForm({data});
+		this._displayGenericForm(formInst);
 	}
 
 	_displayTaxBreakdownMask(data)

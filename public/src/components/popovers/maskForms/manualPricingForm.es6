@@ -1,4 +1,6 @@
 
+import {post} from "../../../helpers/requests";
+
 let Component = require('../../../modules/component.es6').default;
 let Cmp = (...args) => new Component(...args);
 
@@ -37,9 +39,7 @@ let dataToDom = (data, onCancel) => {
 		return fld;
 	};
 
-	let formCmp = Cmp('form.mask-form manual-pricing-mask monospace-inputs').attach([
-		Cmp('br'),
-		Cmp('div').attach([
+	let formCmp = Cmp('div.manual-pricing-mask').attach([
 			Cmp('div').attach([
 				Cmp('span.static-text', {textContent: '>$NME ' + parsed.lastName + '/' + parsed.firstName}),
 			]),
@@ -122,19 +122,6 @@ let dataToDom = (data, onCancel) => {
 			Cmp('div').attach([
 				Cmp('span.static-text', {textContent: 'DO YC/XY TAXES APPLY?'}),
 			]),
-			Cmp('div.float-right').attach([
-				Cmp('button[Submit]'),
-				Cmp('button[Cancel]', { type: 'button', onclick: () => {
-						formCmp.context.remove();
-
-						if (onCancel && typeof onCancel === 'function')
-						{
-							onCancel();
-						}
-					} }),
-			]),
-		]),
-		Cmp('br', {clear: 'all'}),
 	]);
 
 	return formCmp;
@@ -174,5 +161,15 @@ export let ManualPricingForm = ({data, onCancel, onsubmit = null}) => {
 		}
 		return false;
 	};
-	return formCmp;
+	return {
+		dom: formCmp.context,
+		submit: () => {
+			let result = domToData(formCmp);
+			return post('terminal/submitHhprMask', {
+				gds: 'apollo',
+				fields: result.fields,
+				maskOutput: data.maskOutput,
+			});
+		},
+	};
 };
