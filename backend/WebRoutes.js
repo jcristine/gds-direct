@@ -158,6 +158,8 @@ app.post('/keepAliveEmc', toHandleHttp(async (rqBody) => {
 			.then(() => emc.doAuth(rqBody.emcSessionId))
 			.catch(exc => (exc + '').match(/session key is invalid/)
 				? LoginTimeOut('Session key expired')
+				: (exc + '').match(/ESOCKETTIMEDOUT/)
+				? Rej.RequestTimeout('EMC keep alive HTTP request timed out', {isOk: true})
 				: Promise.reject(exc));
 	}
 }));
