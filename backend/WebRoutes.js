@@ -159,7 +159,10 @@ app.post('/keepAliveEmc', toHandleHttp(async (rqBody) => {
 			.catch(exc => (exc + '').match(/session key is invalid/)
 				? LoginTimeOut('Session key expired')
 				: (exc + '').match(/ESOCKETTIMEDOUT/)
-				? Rej.RequestTimeout('EMC keep alive HTTP request timed out', {isOk: true})
+				? Rej.ServiceUnavailable('EMC server is unreachable ATM', {isOk: true})
+				: (exc + '').match(/405 Not Allowed/)
+				// when they do production restart I think, or when they are overloaded
+				? Rej.ServiceUnavailable('EMC service is inaccessible ATM', {isOk: true})
 				: Promise.reject(exc));
 	}
 }));
