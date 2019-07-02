@@ -4,7 +4,7 @@ import {post} from "../../../helpers/requests";
 let Component = require('../../../modules/component.es6').default;
 let Cmp = (...args) => new Component(...args);
 
-let dataToDom = (data, onCancel) => {
+let dataToDom = (data) => {
 	let values = {};
 	let enableds = {};
 	for (let field of data.fields) {
@@ -148,19 +148,8 @@ let domToData = (mcoForm) => {
 // "                                                   ;PSGR 01/01",
 // "                                                   ;BOOK 01/01",
 // "DO YC/XY TAXES APPLY?",
-export let ManualPricingForm = ({data, onCancel, onsubmit = null}) => {
-	let formCmp = dataToDom(data, onCancel);
-	formCmp.context.onsubmit = () => {
-		if (onsubmit) {
-			let result = domToData(formCmp);
-			onsubmit(result).then(({canClosePopup}) => {
-				if (canClosePopup) {
-					formCmp.context.remove();
-				}
-			});
-		}
-		return false;
-	};
+export let ManualPricingForm = ({data}) => {
+	let formCmp = dataToDom(data);
 	return {
 		dom: formCmp.context,
 		submit: () => {

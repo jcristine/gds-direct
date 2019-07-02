@@ -490,25 +490,8 @@ export default class TerminalPlugin
 
 	_displayTaxBreakdownMask(data)
 	{
-		const cancel = () => this._ejectForm(formCmp);
-
-		let formCmp = TaxBreakdownForm({data, onCancel: cancel, onsubmit: (formResult) => {
-			let params = {
-				gds: this.gdsName,
-				fields: formResult.fields,
-				maskOutput: data.maskOutput,
-			};
-			return this._withSpinner(() => post('terminal/submitTaxBreakdownMask', params)
-				.then(resp => {
-					this.parseBackEnd(resp, '$TA...');
-					return {canClosePopup: resp && resp.output};
-				}));
-		}});
-		this._injectForm(formCmp);
-		let inp = formCmp.context.querySelector('input:not(:disabled)');
-		if (inp) {
-			inp.focus();
-		}
+		let formInst = TaxBreakdownForm({data});
+		this._displayGenericForm(formInst);
 	}
 
 	_displayZpTaxBreakdownMask(data)

@@ -1,8 +1,10 @@
 
+import {post} from "../../../helpers/requests";
+
 let Component = require('../../../modules/component.es6').default;
 let Cmp = (...args) => new Component(...args);
 
-let dataToDom = (data, onCancel) => {
+let dataToDom = (data) => {
 	let values = {};
 	let enableds = {};
 	for (let field of data.fields) {
@@ -41,9 +43,7 @@ let dataToDom = (data, onCancel) => {
 	let baseFareStr = data.parsed.fareEquivalent
 		? ` EQUIV ${fareEquivalent.currency} ${('       ' + fareEquivalent.amount).slice(-7)} TTL ${netPrice.currency}`
 		: ` FARE  ${baseFare.currency} ${('       ' + baseFare.amount).slice(-7)} TTL ${netPrice.currency}`;
-	let formCmp = Cmp('form.mask-form manual-pricing-mask').attach([
-		Cmp('br'),
-		Cmp('div').attach([
+	let formCmp = Cmp('div.manual-pricing-mask').attach([
 			Cmp('div').attach([
 				Cmp('span.static-text', {textContent: '>$TA                TAX BREAKDOWN SCREEN'}),
 			]),
@@ -75,20 +75,7 @@ let dataToDom = (data, onCancel) => {
 						Fld('AMT', 'facilityCharge' + num + '_amount', 5),
 					]);
 				})),
-			Cmp('div.float-right').attach([
-				Cmp('button[Submit]'),
-				Cmp('button[Cancel]', { type: 'button', onclick: () => {
-						formCmp.context.remove();
-
-						if (onCancel && typeof onCancel === 'function')
-						{
-							onCancel();
-						}
-					} }),
-			]),
-		]),
-		Cmp('br', {clear: 'all'}),
-	]);
+		]);
 
 	return formCmp;
 };
@@ -113,18 +100,17 @@ let domToData = (mcoForm) => {
 // " U.S. PSGR FACILITY CHARGES                                    ",
 // " AIRPORT 1 ;...  AMT ;.....   AIRPORT 2 ;...  AMT ;.....       ",
 // " AIRPORT 3 ;...  AMT ;.....   AIRPORT 4 ;...  AMT ;.....       ",
-export let TaxBreakdownForm = ({data, onCancel, onsubmit = null}) => {
-	let formCmp = dataToDom(data, onCancel);
-	formCmp.context.onsubmit = () => {
-		if (onsubmit) {
+export let TaxBreakdownForm = ({data}) => {
+	let formCmp = dataToDom(data);
+	return {
+		dom: formCmp.context,
+		submit: () => {
 			let result = domToData(formCmp);
-			onsubmit(result).then(({canClosePopup}) => {
-				if (canClosePopup) {
-					formCmp.context.remove();
-				}
+			return post('terminal/submitTaxBreakdownMask', {
+				gds: 'apollo',
+				fields: result.fields,
+				maskOutput: data.maskOutput,
 			});
-		}
-		return false;
+		},
 	};
-	return formCmp;
 };
