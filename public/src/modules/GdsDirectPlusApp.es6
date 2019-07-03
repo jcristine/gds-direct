@@ -354,6 +354,23 @@ export default class GdsDirectPlusApp
 		}
 	}
 
+	/**
+	 * could be used for example if you wish to show some text
+	 * to agent in one of the cells, like PNR dump to an expert
+	 * @param terminalId - 0 is the top-left window, 4 is the
+	 *          most left window on the second row, and so on...
+	 */
+	preEnterCommand({cmd, terminalId = 0}) {
+		let prevTermId = getStore().app.Gds.getCurrent().props.curTerminalId;
+		if (!getStore().app.Gds.getCurrent().props.matrix.list.includes(terminalId)) {
+			// TODO: extend cells if terminalId is out of bounds
+			terminalId = 0;
+		}
+		getStore().app.Gds.changeActive(terminalId);
+		getStore().app.Gds.getActivePlugin().terminal.set_command(cmd);
+		getStore().app.Gds.changeActive(prevTermId);
+	}
+
 	/** @param {URLSearchParams} queryObj */
 	initFromQuery(queryObj) {
 		let gds = queryObj.get('gds');

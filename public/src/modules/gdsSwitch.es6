@@ -30,6 +30,7 @@ export class GdsSwitch
 		this.index 	= GDS_LIST.indexOf(name);
 	}
 
+	/** @return {GDS_UNIT} */
 	getCurrent()
 	{
 		return this.gdsSet.filter( gds => this.name === gds.get('name') )[0] || this.gdsSet[0];
