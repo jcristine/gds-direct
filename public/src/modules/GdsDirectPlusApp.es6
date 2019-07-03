@@ -360,7 +360,13 @@ export default class GdsDirectPlusApp
 	 * @param terminalId - 0 is the top-left window, 4 is the
 	 *          most left window on the second row, and so on...
 	 */
-	preEnterCommand({cmd, terminalId = 0}) {
+	preEnterCommand({cmd, terminalId = 0, gds = null, pcc = null}) {
+		if (gds) {
+			CHANGE_GDS(gds);
+			CHANGE_ACTIVE_TERMINAL({curTerminalId : 0});
+		}
+		this._changePcc(gds, pcc);
+
 		let prevTermId = getStore().app.Gds.getCurrent().props.curTerminalId;
 		if (!getStore().app.Gds.getCurrent().props.matrix.list.includes(terminalId)) {
 			// TODO: extend cells if terminalId is out of bounds
