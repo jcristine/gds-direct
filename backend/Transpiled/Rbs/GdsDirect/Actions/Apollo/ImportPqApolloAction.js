@@ -48,7 +48,7 @@ class ImportPqApolloAction extends AbstractGdsAction {
 		return this;
 	}
 
-	/** @param $sessionState = Db::fetchOne('SELECT * FROM terminal_sessions') */
+	/** @param $commands = await require('CmdLog.js')().getLastStateSafeCommands() */
 	setPreCalledCommandsFromDb($commands) {
 		this.$preCalledCommands = $commands;
 		this.$cmdToFullOutput = this.constructor.collectCmdToFullOutput($commands);
