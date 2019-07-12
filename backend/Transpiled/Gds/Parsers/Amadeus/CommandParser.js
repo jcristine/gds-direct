@@ -385,10 +385,9 @@ return {
     }
 
     static parse($cmd)  {
-        let $flatCmds, $result;
-
-        $flatCmds = php.array_map(c => this.parseSingleCommand(c), php.explode(';', $cmd));
-        $result = php.array_shift($flatCmds);
+        let $flatCmds = $cmd.split(';')
+            .map(c => this.parseSingleCommand(c));
+        let $result = $flatCmds.shift();
         $result['followingCommands'] = $flatCmds;
         return $result;
     }
