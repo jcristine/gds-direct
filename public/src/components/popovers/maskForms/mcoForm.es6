@@ -1,4 +1,6 @@
 
+import {post} from "../../../helpers/requests";
+
 let Component = require('../../../modules/component.es6').default;
 
 /** '2020-07-01' -> '07/20' */
@@ -12,7 +14,7 @@ let formatExpirationDate = (full) => {
 };
 
 /** @param {IRbsMcoData} data */
-let dataToDom = (data, onCancel) => {
+let dataToDom = (data) => {
 	let values = {};
 	let enableds = {};
 	for (let field of data.fields) {
@@ -64,9 +66,7 @@ let dataToDom = (data, onCancel) => {
 	let small = 6;
 	let tiny = 3;
 	// I would be glad to move this to an html file...
-	let mcoForm = mkCmp('form.mask-form mco-mask').attach([
-		mkCmp('br'),
-		mkCmp('div').attach([
+	let mcoForm = mkCmp('div.mco-mask').attach([
 			mkCmp('div.align-caption').attach([
 				mkCmp('div.cmd-line').attach([ // 'HHMCU..         *** MISC CHARGE ORDER ***                       ',
 					mkCmp('span').attach([mkCmp('label[HHMCU' + (values.mcoNumber || '') + ']')]),
@@ -123,22 +123,6 @@ let dataToDom = (data, onCancel) => {
 				mkFld('VALIDATING CARRIER', 'validatingCarrier', normal),
 				mkFld('ISSUE NOW', 'issueNow', small),
 			]),
-			mkCmp('div.float-right').attach([
-				mkCmp('button[Submit]'),
-				mkCmp('button[Cancel]', {
-					type: 'button',
-					onclick: () => {
-						mcoForm.context.remove();
-
-						if (onCancel && typeof onCancel === 'function')
-						{
-							onCancel();
-						}
-					}
-				}),
-			]),
-		]),
-		mkCmp('br', {clear: 'all'}),
 	]);
 	return mcoForm;
 };
@@ -164,17 +148,16 @@ let domToData = (mcoForm) => {
 //   ' REMARK1;..............................................         ',
 //   ' REMARK2;...................................................... ',
 //   ' VALIDATING CARRIER;..                  ISSUE NOW;.             ',
-export let McoForm = ({data, onsubmit = null, onCancel = null}) => {
-	let mcoForm = dataToDom(data, onCancel);
-	mcoForm.context.onsubmit = () => {
-		if (onsubmit) {
-			onsubmit(domToData(mcoForm)).then(({canClosePopup}) => {
-				if (canClosePopup) {
-					mcoForm.context.remove();
-				}
+export let McoForm = ({data}) => {
+	let mcoForm = dataToDom(data);
+	return {
+		dom: mcoForm.context,
+		submit: () => {
+			let result = domToData(mcoForm);
+			return post('terminal/makeMco', {
+				gds: 'apollo',
+				fields: result.fields,
 			});
-		}
-		return false;
+		},
 	};
-	return mcoForm;
 };

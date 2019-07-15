@@ -393,20 +393,8 @@ export default class TerminalPlugin
 
 	_displayMcoMask(data)
 	{
-		const cancel = () => this._ejectForm(formCmp);
-
-		let formCmp = McoForm({data, onCancel: cancel, onsubmit: (data) => {
-			let params = {
-				gds: this.gdsName,
-				fields: data.fields,
-			};
-			return this._withSpinner(() => post('terminal/makeMco', params)
-				.then(resp => {
-					this.parseBackEnd(resp, 'HHMCU');
-					return {canClosePopup: resp && resp.output};
-				}));
-		}});
-		this._injectForm(formCmp);
+		let formInst = McoForm({data});
+		this._displayGenericForm(formInst);
 	}
 
 	_displayExchangeMask(data)
