@@ -5,6 +5,7 @@ const php = require('../../../php.js');
 const VariableTranslator = require("./VariableTranslator");
 const SimplePatternTranslator = require("./SimplePatternTranslator");
 const PatternTranslator = require("./PatternTranslator");
+const AvailCmdParser = require("../../../Gds/Parsers/Sabre/Commands/AvailCmdParser");
 
 /**
  * CommandCorrector::correct('BB', 'apollo');
@@ -215,7 +216,7 @@ class CommandCorrector {
 				},
 			],
 
-			'sabre': [
+			sabre: [
 				{
 					// Error
 					'mistake': '1{date}{city}{not_city}{free_text}',
@@ -237,9 +238,14 @@ class CommandCorrector {
 					'message': 'ERROR! AIRLINE NAME IS TOO SHORT!',
 				},
 				{
-					'mistake': 'A{date}{city_pair}{free_text}',
-					'correct': '1{date}{city_pair}{free_text}',
-					'message': 'CORRECTED! USE 1 INSTEAD OF A IN SABRE',
+					mistake: 'A{date}{city_pair}{free_text}',
+					correct: '1{date}{city_pair}{free_text}',
+					message: 'CORRECTED! USE 1 INSTEAD OF A IN SABRE',
+					condition: ({output}) => {
+						let norm = output.replace('‡', '¥');
+						let parsed = AvailCmdParser.parse(norm);
+						return parsed && !parsed.unparsed;
+					},
 				},
 				{
 					// Error
@@ -526,11 +532,12 @@ class CommandCorrector {
 			) {
 				continue;
 			}
+			let condition = $patternData.condition || (() => true);
 			$mistake = $patternData['mistake'];
 			$correct = $patternData['correct'] || '';
-			$result = SimplePatternTranslator.translatePattern($output, $mistake, $correct, $legend);
-			if ($result['translated']) {
-				$output = this.constructor.cleanPatternPlaceholders($result['output']);
+			let {translated, output} = SimplePatternTranslator.translatePattern($output, $mistake, $correct, $legend);
+			if (translated && condition({output})) {
+				$output = this.constructor.cleanPatternPlaceholders(output);
 				if (php.isset($patternData['correct'])) {
 					$addNoteCorrected = true;
 					if (!php.empty($patternData['message'])) {

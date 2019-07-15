@@ -1,6 +1,7 @@
 
 const ApoCmdParser = require('../Transpiled/Gds/Parsers/Apollo/CommandParser.js');
 const GalCmdParser = require('../Transpiled/Gds/Parsers/Galileo/CommandParser.js');
+const SabCmdParser = require('../Transpiled/Gds/Parsers/Sabre/CommandParser.js');
 
 const ApoPnrParser = require('../Transpiled/Gds/Parsers/Apollo/Pnr/PnrParser.js');
 
@@ -16,6 +17,10 @@ exports.parseAnything = (rqBody) => {
 		return result;
 	}
 	result = GalCmdParser.parse(rqBody.input);
+	if (result && result.type && result.data) {
+		return result;
+	}
+	result = SabCmdParser.parse(rqBody.input);
 	if (result && result.type && result.data) {
 		return result;
 	}

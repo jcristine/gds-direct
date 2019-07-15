@@ -150,6 +150,8 @@ class CommandCorrectorTest extends require('../../../Lib/TestCase.js') {
 			// cyrillic characters (relevant for Moldova and Riga)
 			['apollo', '*К', '*R'],
 			['apollo', 'Ф10ЬФНОАЛЬТД', 'A10MAYJFKMNL'],
+			// should not replace A with 1, since doing so would result in invalid sabre command
+			['sabre', 'A29JULJFKJED+AA.BA', 'A29JULJFKJED+AA.BA'],
 		];
 	}
 
