@@ -248,6 +248,7 @@ exports.getHist = async (params) => {
 		where.push(['mp.recordLocator', '=', params.recordLocator]);
 	}
 	let rows = await Db.with(db => db.fetchAll({
+		fields: ['ts.*'],
 		table: TABLE,
 		as: 'ts',
 		join: join,
