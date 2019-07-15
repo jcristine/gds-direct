@@ -72,7 +72,7 @@ let getLeadData = async (travelRequestId) =>
 					leadId: travelRequestId,
 					leadOwnerId: cmsData.leadOwnerId,
 					projectName: cmsData.projectName,
-					leadUrl: 'https://cms.asaptickets.com/leadInfo?id=' + travelRequestId,
+					leadUrl: 'https://cms.asaptickets.com/leadInfo?rId=' + travelRequestId,
 					paxNumAdults: ageGroupToCnt['adult'] || 0,
 					paxNumChildren: ageGroupToCnt['child'] || 0,
 					paxNumInfants: ageGroupToCnt['infant'] || 0,
@@ -81,7 +81,7 @@ let getLeadData = async (travelRequestId) =>
 			.catch(exc => ({
 				error: 'CMS error - ' + exc,
 				leadId: travelRequestId,
-				leadUrl: 'https://cms.asaptickets.com/leadInfo?id=' + travelRequestId,
+				leadUrl: 'https://cms.asaptickets.com/leadInfo?rId=' + travelRequestId,
 				debug: exc + '',
 			}));
 
