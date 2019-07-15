@@ -399,22 +399,10 @@ export default class TerminalPlugin
 
 	_displayExchangeMask(data)
 	{
-		const cancel = () => this._ejectForm(formCmp);
+		let formInst = ExchangeForm({data});
+		this._displayGenericForm(formInst);
 
-		let formCmp = ExchangeForm({data, onCancel: cancel, onsubmit: (formResult) => {
-			let params = {
-				gds: this.gdsName,
-				fields: formResult.fields,
-				maskOutput: data.maskOutput,
-			};
-			return this._withSpinner(() => post('terminal/exchangeTicket', params)
-				.then(resp => {
-					this.parseBackEnd(resp, '$EX...');
-					return {canClosePopup: resp && resp.output};
-				}));
-		}});
-		this._injectForm(formCmp);
-		let inp = formCmp.context.querySelector('input[name="ticketNumber1"]');
+		let inp = formInst.dom.querySelector('input[name="ticketNumber1"]');
 		if (inp) {
 			inp.focus();
 		}

@@ -1,11 +1,13 @@
 
+import {post} from "../../../helpers/requests";
+
 let Component = require('../../../modules/component.es6').default;
 let Cmp = (...args) => new Component(...args);
 
 let lastUniqueId = 0;
 
 /** @param {IExchangeApolloTicketParsedMask} data */
-let dataToDom = (data, onCancel) => {
+let dataToDom = (data) => {
 	let values = {};
 	let enableds = {};
 	for (let field of data.fields) {
@@ -66,9 +68,7 @@ let dataToDom = (data, onCancel) => {
 		]);
 	};
 
-	let formCmp = Cmp('form.mask-form exchange-mask').attach([
-		Cmp('br'),
-		Cmp('div').attach([
+	let formCmp = Cmp('div.exchange-mask').attach([
 			Cmp('div.align-caption').attach([
 				Cmp('div.new-ticket-info-line').attach([ // "$EX NAME ARTURS/KLESUNS                     PSGR  1/ 1         ",
 					Cmp('span', {textContent: '>$EX NAME ' + head.lastName + '/' + head.firstName}),
@@ -155,19 +155,6 @@ let dataToDom = (data, onCancel) => {
 					Fld('COMM ON PENALTY', 'commOnPenaltyAmount', 11),
 				]),
 			]),
-			Cmp('div.float-right').attach([
-				Cmp('button[Submit]'),
-				Cmp('button[Cancel]', { type: 'button', onclick: () => {
-						formCmp.context.remove();
-
-						if (onCancel && typeof onCancel === 'function')
-						{
-							onCancel();
-						}
-					} }),
-			]),
-		]),
-		Cmp('br', {clear: 'all'}),
 	]);
 
 	onTickNum = (ticketNumber) => data.mcoRows
@@ -210,18 +197,18 @@ let domToData = (mcoForm) => {
 //   'TX1 USD;.......;..   TX2 USD;.......;..   TX3 USD;.......;..    ',
 //   'ORIG ISS;...... ORIG DATE;....... ORIG IATA NBR;.........       ',
 //   'ORIG TKT;..............-;...  ORIG INV NBR;.........            ',
-export let ExchangeForm = ({data, onCancel, onsubmit = null}) => {
-	let formCmp = dataToDom(data, onCancel);
-	formCmp.context.onsubmit = () => {
-		if (onsubmit) {
+export let ExchangeForm = ({data}) => {
+	let formCmp = dataToDom(data);
+	return {
+		dom: formCmp.context,
+		submit: () => {
 			let result = domToData(formCmp);
-			onsubmit(result).then(({canClosePopup}) => {
-				if (canClosePopup) {
-					formCmp.context.remove();
-				}
+			return post('terminal/exchangeTicket', {
+				gds: 'apollo',
+				fields: result.fields,
+				maskOutput: data.maskOutput,
 			});
-		}
-		return false;
+
+		},
 	};
-	return formCmp;
 };
