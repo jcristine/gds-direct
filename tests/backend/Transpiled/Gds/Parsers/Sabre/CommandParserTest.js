@@ -868,6 +868,74 @@ class CommandParserTest extends require('../../../Lib/TestCase.js') {
 		$list.push(['SO', {
 			'type': 'signOut',
 		}]);
+		$list.push(['1*C', {type: 'moreAirAvailability'}]);
+		$list.push(['110AUGCDGORD12JFK¥AYAA¥*UA¥', {
+			type: 'airAvailability',
+			data: {
+				departureDate: {raw: '10AUG'},
+				departureAirport: 'CDG',
+				destinationAirport: 'ORD',
+				departureTimeRange: {raw: '12'},
+				connections: [
+					{airport: 'JFK'},
+				],
+				modifiers: [
+					{type: 'legs', parsed: [
+						{exclude: false, airlines: ['AY', 'AA']},
+						{exclude: true, airlines: ['UA']},
+						{},
+					]},
+				],
+			},
+		}]);
+
+		$list.push(['112NOVHNLLON8ALAX/JFK', {
+			type: 'airAvailability',
+			data: {
+				departureDate: {raw: '12NOV'},
+				departureAirport: 'HNL',
+				destinationAirport: 'LON',
+				departureTimeRange: {raw: '8A'},
+				connections: [
+					{airport: 'LAX'},
+					{airport: 'JFK'},
+				],
+			},
+		}]);
+
+		$list.push(['121APRLAXLHR1201A-1159PDFW000-960/NYC000-960', {
+			type: 'airAvailability',
+			data: {
+				departureDate: {raw: '21APR'},
+				departureAirport: 'LAX',
+				destinationAirport: 'LHR',
+				departureTimeRange: {raw: '1201A-1159P'},
+				connections: [
+					{
+						airport: 'DFW',
+						minConnectionTimeRange: {raw: '000-960'},
+					},
+					{
+						airport: 'NYC',
+						minConnectionTimeRange: {raw: '000-960'},
+					},
+				],
+			},
+		}]);
+
+		$list.push(['1S22JULJFKLGW¥DI-P', {
+			type: 'airAvailability',
+			data: {
+				scan: true,
+				departureDate: {raw: '22JUL'},
+				departureAirport: 'JFK',
+				destinationAirport: 'LGW',
+				modifiers: [
+					{type: 'legs', parsed: [{airlines: ['DI']}]},
+					{type: 'bookingClass', parsed: {bookingClass: 'P'}},
+				],
+			},
+		}]);
 
 		return $list;
 	}

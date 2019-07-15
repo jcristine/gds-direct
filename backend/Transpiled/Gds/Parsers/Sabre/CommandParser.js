@@ -1,3 +1,4 @@
+const AvailCmdParser = require('./Commands/AvailCmdParser.js');
 // namespace Gds\Parsers\Sabre;
 
 const Fp = require('../../../Lib/Utils/Fp.js');
@@ -114,7 +115,10 @@ class CommandParser {
 				return $type;
 			}
 		}
-		for ([$pattern, $type] of Object.entries($startsWith)) {
+		let startTuples = Object.entries($startsWith)
+			// put longest start patterns first
+			.sort((a,b) => b[0].length - a[0].length);
+		for ([$pattern, $type] of startTuples) {
 			if (StringUtil.startsWith($cmd, $pattern)) {
 				return $type;
 			}
@@ -461,6 +465,7 @@ class CommandParser {
 		return $firstCmd;
 	}
 
+	/** @param {String} $cmd */
 	static parse($cmd) {
 		return this.parseBulkCommand($cmd);
 	}
@@ -479,6 +484,8 @@ class CommandParser {
 			$type = 'fareList';
 		} else if ($data = TariffCmdParser.parse($cmd)) {
 			$type = 'fareSearch';
+		} else if ($data = AvailCmdParser.parse($cmd)) {
+			$type = 'airAvailability';
 		} else if ($parsed = this.parseRemarkCmd($cmd)) {
 			$type = $parsed['type'];
 			$data = $parsed['data'];
