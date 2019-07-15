@@ -8,40 +8,39 @@ class PtcUtil
 {
     static getFareTypeMapping()  {
         return {
-            'regular': {
-                'childLetter': 'C',
-                'groups': {
-                    'adult': 'ADT', 'infant': 'INF',
-                    'child': 'CNN', 'infantWithSeat': 'INS',
+            regular: {
+                childLetter: 'C',
+                groups: {
+                    adult: 'ADT', infant: 'INF',
+                    child: 'CNN', infantWithSeat: 'INS',
                 },
             },
-            'inclusiveTour': {
-                'childLetter': 'I',
-                'groups': {
-                    'adult': 'ITX', 'infant': 'ITF',
-                    'child': 'INN', 'infantWithSeat': 'ITS',
-
+            inclusiveTour: {
+                childLetter: 'I',
+                groups: {
+                    adult: 'ITX', infant: 'ITF',
+                    child: 'INN', infantWithSeat: 'ITS',
                 },
             },
-            'contractBulk': {
-                'childLetter': 'J',
-                'groups': {
-                    'adult': 'JCB', 'infant': 'JNF',
-                    'child': 'JNN', 'infantWithSeat': 'JNS',
+            contractBulk: {
+                childLetter: 'J',
+                groups: {
+                    adult: 'JCB', infant: 'JNF',
+                    child: 'JNN', infantWithSeat: 'JNS',
                 },
             },
-            'missionary': {
-                'childLetter': null,
-                'groups': {
-                    'adult': 'MIS', 'infant': 'MIF',
-                    'child': 'MIC', 'infantWithSeat': 'MSS',
+            missionary: {
+                childLetter: null,
+                groups: {
+                    adult: 'MIS', infant: 'MIF',
+                    child: 'MIC', infantWithSeat: 'MSS',
                 },
             },
-            'blended': {
-                'childLetter': null,
-                'groups': {
-                    'adult': 'JWZ', 'infant': 'INF',
-                    'child': 'JWB', 'infantWithSeat': 'INS',
+            blended: {
+                childLetter: null,
+                groups: {
+                    adult: 'JWZ', infant: 'INF',
+                    child: 'JWB', infantWithSeat: 'INS',
                 },
             },
         };
