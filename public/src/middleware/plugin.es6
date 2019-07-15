@@ -413,9 +413,7 @@ export default class TerminalPlugin
 		// ">$MR       TOTAL ADD COLLECT   USD   783.30",
 		// " /F;..............................................",
 		let fopInputCmp = Cmp('input', {type: 'text', name: 'formOfPayment'});
-		let formCmp = Cmp('form.mask-form').attach([
-			Cmp('br'),
-			Cmp('div').attach([
+		let formCmp = Cmp('div').attach([
 				Cmp('div').attach([
 					Cmp('span', {innerHTML: '>$MR       TOTAL ADD COLLECT   '}),
 					Cmp('span', {innerHTML: data.currency}),
@@ -425,38 +423,22 @@ export default class TerminalPlugin
 					Cmp('span', {innerHTML: ' /F'}),
 					fopInputCmp,
 				]),
-				Cmp('div.float-right').attach([
-					Cmp('button[Submit]'),
-					Cmp('button[Cancel]', { type: 'button', onclick: () => {
-							formCmp.context.remove();
-							this._ejectForm(formCmp);
-						} }),
-				]),
-			]),
-			Cmp('br', {clear: 'all'}),
 		]);
 		for (let field of data.fields) {
 			[...formCmp.context.querySelectorAll('input[name="' + field.key + '"]')]
 				.forEach(inp => inp.value = field.value);
 		}
-		formCmp.context.onsubmit = () => {
-			let result = {
+
+		this._displayGenericForm({
+			dom: formCmp.context,
+			submit: () => post('terminal/confirmExchangeFareDifference', {
 				gds: this.gdsName,
 				fields: [{
 					key: 'formOfPayment', value: fopInputCmp.context.value,
 				}],
 				maskOutput: data.maskOutput,
-			};
-			this._withSpinner(() => post('terminal/confirmExchangeFareDifference', result)
-				.then(resp => {
-					this.parseBackEnd(resp, '$MR...');
-					if (resp && resp.output) {
-						formCmp.context.remove();
-					}
-				}));
-			return false;
-		};
-		this._injectForm(formCmp);
+			}),
+		});
 	}
 
 	_displayHhprMask(data)
