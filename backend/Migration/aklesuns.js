@@ -497,4 +497,13 @@ module.exports.migrations = [
 			') ENGINE=InnoDB DEFAULT CHARSET=utf8',
 		].join('\n')),
 	},
+	{
+		name: 'GRECT/2019.04.02006-create-role-VIEW_GDS_SESSION_LOG',
+		perform: async (db) => {
+			let emc = await Emc.getClient();
+			return emc.addRole([
+				{"name": "VIEW_GDS_SESSION_LOG", "project": "GDSD", "description": "Allows seeing list of active and historical sessions as well as opening the page listing commands and their outputs"},
+			]);
+		},
+	},
 ];
