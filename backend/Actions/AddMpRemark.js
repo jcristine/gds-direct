@@ -9,9 +9,9 @@ const {safe} = require('../Utils/TmpLib.js');
 
 const isSimultaneousChangesRs = (gds, output) => {
 	let pred = {
-		apollo: rs => rs.match(/^\s*SIMULT CHGS TO PNR\s*\)><$/),
+		apollo: rs => rs.match(/^\s*SIMULT CHGS TO PNR\s*><$/),
 		sabre: rs => rs.trim() === 'SIMULTANEOUS CHANGES TO PNR - USE IR TO IGNORE AND RETRIEVE PNR',
-		galileo: rs => rs.match(/^\s*SIMULTANEOUS CHANGES TO BOOKING FILE - IGNORE TRANSACTION\s*\)><$/),
+		galileo: rs => rs.match(/^\s*SIMULTANEOUS CHANGES TO BOOKING FILE - IGNORE TRANSACTION\s*><$/),
 		amadeus: rs => rs.match(/^\s*\/\s*SIMULTANEOUS CHANGES TO PNR - USE WRA\/RT TO PRINT OR IGNORE\s*$/),
 	}[gds];
 
