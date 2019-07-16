@@ -1,10 +1,12 @@
-const Misc = require("../Transpiled/Lib/Utils/MaskUtil");
+const Misc = require('klesun-node-tools/src/Utils/Misc.js');
+const MaskUtil = require("../Transpiled/Lib/Utils/MaskUtil");
+const Rej = require('klesun-node-tools/src/Rej.js');
 
 exports.withLog = (session, log) => {
 	return {
 		...session, runCmd: async (cmd) => {
 			let cmdRec = await session.runCmd(cmd);
-			let masked = Misc.maskCcNumbers(cmdRec);
+			let masked = MaskUtil.maskCcNumbers(cmdRec);
 			log('GDS result: ' + cmd, masked);
 			return cmdRec;
 		},
@@ -26,17 +28,12 @@ exports.withCapture = (session) => {
 /** @return {Document} */
 exports.parseXml = (xml) => {
 	let jsdom = require('jsdom');
-	let jsdomObj = new jsdom.JSDOM(xml, {contentType: 'text/xml'});
-	return jsdomObj.window.document;
+	try {
+		let jsdomObj = new jsdom.JSDOM(xml, {contentType: 'text/xml'});
+		return jsdomObj.window.document;
+	} catch (exc) {
+		return Rej.UnprocessableEntity.makeExc('Failed to parse XML - ' + exc + ' - ' + xml);
+	}
 };
 
-exports.escapeXml = (unsafe) =>
-	unsafe.replace(/[<>&'"]/g, (c) => {
-		switch (c) {
-			case '<': return '&lt;';
-			case '>': return '&gt;';
-			case '&': return '&amp;';
-			case '\'': return '&apos;';
-			case '"': return '&quot;';
-		}
-	});
+exports.escapeXml = Misc.escapeXml;
