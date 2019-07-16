@@ -1,3 +1,4 @@
+const AddMpRemark = require('../Actions/AddMpRemark.js');
 let AmadeusClient = require("../GdsClients/AmadeusClient.js");
 let SabreClient = require("../GdsClients/SabreClient.js");
 let TravelportClient = require('../GdsClients/TravelportClient.js');
@@ -5,16 +6,15 @@ let Db = require('../Utils/Db.js');
 let GdsSessions = require('../Repositories/GdsSessions.js');
 let {TRAVELPORT, AMADEUS, SABRE} = require('../Repositories/GdsProfiles.js');
 let {logit, logExc} = require('../LibWrappers/FluentLogger.js');
-let {Forbidden, NotImplemented, LoginTimeOut, NotFound, ServiceUnavailable} = require('klesun-node-tools/src/Utils/Rej.js');
+let {Forbidden, NotImplemented, LoginTimeOut, NotFound, ServiceUnavailable} = require('klesun-node-tools/src/Rej.js');
 let StatefulSession = require('../GdsHelpers/StatefulSession.js');
 let ProcessTerminalInput = require('../Actions/ProcessTerminalInput.js');
 const MakeMcoApolloAction = require('../Transpiled/Rbs/GdsDirect/Actions/Apollo/MakeMcoApolloAction.js');
-const TerminalService = require('../Transpiled/App/Services/TerminalService.js');
+const TerminalService = require('../Transpiled/App/Services/CmdResultAdapter.js');
 
 let php = require('../Transpiled/phpDeprecated.js');
 const CmsClient = require("../IqClients/CmsClient");
 const GdsProfiles = require("../Repositories/GdsProfiles");
-const UnprocessableEntity = require('klesun-node-tools/src/Utils/Rej').UnprocessableEntity;
 const ImportPq = require('../Actions/ImportPq.js');
 const FluentLogger = require("../LibWrappers/FluentLogger");
 const GdsDirect = require("../Transpiled/Rbs/GdsDirect/GdsDirect");
@@ -23,7 +23,7 @@ const allWrap = require("../Utils/TmpLib").allWrap;
 const {getConfig} = require('../Config.js');
 const ExchangeApolloTicket = require('../Actions/ExchangeApolloTicket.js');
 const PriceItineraryManually = require('../Actions/ManualPricing/NmeMaskSubmit.js');
-const Rej = require("klesun-node-tools/src/Utils/Rej");
+const Rej = require("klesun-node-tools/src/Rej");
 const TravelportUtils = require("../GdsHelpers/TravelportUtils");
 const SubmitTaxBreakdownMask = require('../Actions/ManualPricing/SubmitTaxBreakdownMask.js');
 const SubmitZpTaxBreakdownMask = require('../Actions/ManualPricing/SubmitZpTaxBreakdownMask.js');
@@ -197,6 +197,11 @@ exports.importPq = async ({rqBody, session, emcUser}) => {
 	let leadData = await CmsClient.getLeadData(rqBody.pqTravelRequestId);
 	let stateful = await StatefulSession.makeFromDb({session, emcUser});
 	return ImportPq({stateful, leadData, fetchOptionalFields: true});
+};
+
+exports.addMpRemark = async ({rqBody, session, emcUser}) => {
+	let stateful = await StatefulSession.makeFromDb({session, emcUser});
+	return AddMpRemark({stateful});
 };
 
 /**
