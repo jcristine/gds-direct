@@ -22,7 +22,7 @@ const withCapture = require("../../../../../GdsHelpers/CommonUtils").withCapture
 const AmadeusFlightInfoAdapter = require('../../../../Rbs/FormatAdapters/AmadeusFlightInfoAdapter.js');
 const AmadeusGetFareRulesAction = require('../../../../Rbs/GdsAction/AmadeusGetFareRulesAction.js');
 const SessionStateHelper = require("../../SessionStateProcessor/SessionStateHelper");
-const Rej = require('klesun-node-tools/src/Utils/Rej.js');
+const Rej = require('klesun-node-tools/src/Rej.js');
 const AnyGdsStubSession = require('../../../TestUtils/AnyGdsStubSession.js');
 
 /**
@@ -353,6 +353,9 @@ class ImportPqAmadeusAction extends AbstractGdsAction {
 			let fullData = await (new AmadeusGetPricingPtcBlocksAction())
 				.setSession(capturing)
 				.execute(cmd, output, reservation.passengers);
+			if (fullData.error) {
+				return Rej.UnprocessableEntity('Failed to fetch full pricing - ' + fullData.error);
+			}
 			this.$allCommands.push(...capturing.getCalledCommands());
 
 			let pqtPricingInfo = this.constructor.makePricingInfoForPqt(output, cmd, fullData.pricingList);
