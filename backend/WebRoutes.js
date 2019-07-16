@@ -5,7 +5,7 @@ let CompletionData = require('./HttpControllers/CompletionData.js');
 let Emc = require('./LibWrappers/Emc.js');
 let GdsSessionController = require('./HttpControllers/GdsSessionController.js');
 let TerminalBaseController = require('./Transpiled/App/Controllers/TerminalBaseController.js');
-let {Forbidden, BadReqeust} = require('klesun-node-tools/src/Utils/Rej.js');
+let {Forbidden, BadReqeust, LoginTimeOut} = require('klesun-node-tools/src/Rej.js');
 let UpdateHighlightRulesFromProd = require('./Actions/UpdateHighlightRulesFromProd.js');
 let Db = require('./Utils/Db.js');
 let Diag = require('./LibWrappers/Diag.js');
@@ -13,21 +13,15 @@ let HighlightRulesRepository = require('./Repositories/HighlightRules.js');
 let Redis = require('./LibWrappers/Redis.js');
 let {getConfig} = require('./Config.js');
 let GdsSessions = require('./Repositories/GdsSessions.js');
-const CommandParser = require("./Transpiled/Gds/Parsers/Apollo/CommandParser");
-const PnrParser = require("./Transpiled/Gds/Parsers/Apollo/Pnr/PnrParser");
-const FareConstructionParser = require("./Transpiled/Gds/Parsers/Common/FareConstruction/FareConstructionParser");
-const {safe} = require('./Utils/TmpLib.js');
 const PersistentHttpRq = require('klesun-node-tools/src/Utils/PersistentHttpRq.js');
 const Misc = require("./Transpiled/Lib/Utils/MaskUtil");
 const CmdLogs = require("./Repositories/CmdLogs");
-const Rej = require("klesun-node-tools/src/Utils/Rej");
+const Rej = require("klesun-node-tools/src/Rej");
 const Agents = require("./Repositories/Agents");
-const LoginTimeOut = require("klesun-node-tools/src/Utils/Rej").LoginTimeOut;
 const withGdsSession = require("./HttpControllers/MainController").withGdsSession;
 const toHandleHttp = require("./HttpControllers/MainController").toHandleHttp;
 const {withAuth} = require("./HttpControllers/MainController");
 const GdsdLib = require('klesun-node-tools');
-const SabrePricingParser = require("./Transpiled/Gds/Parsers/Sabre/Pricing/SabrePricingParser");
 const Settings = require("./Repositories/Settings");
 const SocketIo = require('./LibWrappers/SocketIo.js');
 const LibConfig = require('klesun-node-tools/src/Config.js');
@@ -199,7 +193,6 @@ app.post('/terminal/submitTaxBreakdownMask', withGdsSession(GdsSessionController
 app.post('/terminal/submitZpTaxBreakdownMask', withGdsSession(GdsSessionController.submitZpTaxBreakdownMask));
 app.post('/terminal/submitFcMask', withGdsSession(GdsSessionController.submitFcMask));
 app.get('/terminal/lastCommands', withAuth(GdsSessionController.getLastCommands));
-app.get('/terminal/getCmdRqList', withAuth(GdsSessionController.getCmdRqList));
 app.get('/terminal/clearBuffer', withAuth(GdsSessionController.clearBuffer));
 
 //=====================
@@ -214,13 +207,17 @@ let withOwnerAuth = (ownerAction) => withAuth((rqBody, emcResult) => {
 	}
 });
 
-let withDevAuth = (devAction) => withAuth((rqBody, emcResult) => {
-	if (emcResult.user.roles.includes('NEW_GDS_DIRECT_DEV_ACCESS')) {
-		return devAction(rqBody, emcResult);
+let withRoleAuth = (roles, roleAction) => withAuth((rqBody, emcResult) => {
+	let userRoles = emcResult.user.roles;
+	let matchingRoles = userRoles.filter(r => roles.includes(r));
+	if (matchingRoles.length > 0) {
+		return roleAction(rqBody, emcResult);
 	} else {
-		return Forbidden('You do not have dev access role');
+		return Forbidden('You do not have ' + roles.join(' or ') + ' role');
 	}
 });
+
+let withDevAuth = (devAction) => withRoleAuth(['NEW_GDS_DIRECT_DEV_ACCESS'], devAction);
 
 //app.use('/admin/updateHighlightRules', express.bodyParser({limit: '10mb'}));
 app.post('/admin/updateHighlightRules', withDevAuth((reqBody, emcResult) => {
@@ -241,13 +238,21 @@ app.post('/admin/terminal/themes/delete', withAuth(rqBody => {
 	return Db.with(db => db.query(sql, [rqBody.id]));
 }));
 
-app.post('/admin/terminal/sessionsGet', withDevAuth(async (rqBody, emcResult) => {
+app.post('/admin/terminal/sessionsGet', withRoleAuth([
+	'NEW_GDS_DIRECT_DEV_ACCESS', 'VIEW_GDS_SESSION_LOG',
+], async (rqBody, emcResult) => {
 	let sessions = await GdsSessions.getHist(rqBody);
 	return {
 		aaData: sessions,
 	};
 }));
-app.get('/api/js/terminal-log/commands', withDevAuth(async (rqBody, emcResult) => {
+app.get('/terminal/getCmdRqList', withRoleAuth([
+	'NEW_GDS_DIRECT_DEV_ACCESS', 'VIEW_GDS_SESSION_LOG',
+], GdsSessionController.getCmdRqList));
+
+app.get('/api/js/terminal-log/commands', withRoleAuth([
+	'NEW_GDS_DIRECT_DEV_ACCESS', 'VIEW_GDS_SESSION_LOG',
+], async (rqBody, emcResult) => {
 	let [sessionRow, cmdRows] = await Promise.all([
 		GdsSessions.getHist({sessionId: rqBody.sessionId})
 			.then(rows => rows[0])
