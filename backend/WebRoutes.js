@@ -347,7 +347,10 @@ app.post('/admin/deleteSetting', withOwnerAuth(Settings.delete));
 app.get('/admin/status', withDevAuth(async (reqBody, emcResult) => {
 	let v8 = require('v8');
 	let PersistentHttpRq = require('klesun-node-tools/src/Utils/PersistentHttpRq.js');
+	let {readFile} = require('fs').promises;
+	let tag = await readFile(__dirname + '/../public/CURRENT_PRODUCTION_TAG', 'utf8').catch(exc => 'FS error - ' + exc);
 	return {
+		tag: tag,
 		pid: process.pid,
 		persistentHttpRqInfo: PersistentHttpRq.getInfo(),
 		cmdLogsInsertionKeys: CmdLogs.ramDebug.getInsertionKeys(),
