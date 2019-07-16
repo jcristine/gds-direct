@@ -75,6 +75,14 @@ export default class TerminalPlugin
 	}
 
 	/** @param {KeyboardEvent} evt */
+	_shouldIgnoreKeyPress(evt)
+	{
+		// to not let terminal intercept chars entered in a form input
+		return evt.target.tagName.toLowerCase() === 'input'
+			|| evt.target.tagName.toLowerCase() === 'button';
+	}
+
+	/** @param {KeyboardEvent} evt */
 	_parseKeyBinds( evt, terminal )
 	{
 		if (this.injectedForms.length)
@@ -83,7 +91,7 @@ export default class TerminalPlugin
 			this.outputLiner.recalculate({}); // just to re-render / reset settings
 		}
 
-		if (evt.target.tagName.toLowerCase() === 'input') {
+		if (this._shouldIgnoreKeyPress(evt)) {
 				return true;
 		}
 
@@ -201,7 +209,7 @@ export default class TerminalPlugin
 			memory			: true, // do not add to localStorage
 
 			keypress		: (e, terminal) => {
-				if (e.target.tagName.toLowerCase() === 'input') {
+				if (this._shouldIgnoreKeyPress(e)) {
 						return true;
 				}
 				const replacement = getReplacement( e, window.GdsDirectPlusState.isLanguageApollo(), this.gdsName );
@@ -293,29 +301,24 @@ export default class TerminalPlugin
 		return command;
 	}
 
+	/**
+	 * @template T
+	 * @param {function(): T} action
+	 * @return Promise<T>
+	 */
 	_withSpinner(action) {
-		this.spinner.start();
-		return Promise.resolve()
-			.then(() => action())
-			.finally(() => this.spinner.end());
-	}
-
-	_injectForm(formCmp)
-	{
-		this.context.appendChild(formCmp.context);
-		this.injectedForms.push(formCmp.context);
-		let inp = formCmp.context.querySelector('input:not([disabled]):not([type="hidden"])');
-		if (inp) {
-			inp.focus();
-		}
-		this.terminal.scroll_to_bottom();
-		this.outputLiner.removeEmpty();
+		return this.session.enqueue(() => {
+			this.spinner.start();
+			return action();
+		}).finally(() => {
+			this.spinner.end();
+		});
 	}
 
 	/**
-	 * show ok/cancel dialog inside the terminal window
+	 * show cancelable dialog inside the terminal window
 	 */
-	injectDom({dom, onCancel})
+	injectDom({dom, onCancel = null})
 	{
 		let formCmp;
 		let remove = () => {
@@ -328,12 +331,12 @@ export default class TerminalPlugin
 				Cmp('div.injected-dom-holder').attach([
 					Cmp({context: dom}),
 				]),
-				Cmp('div.float-right').attach([
+				...(!onCancel ? [] : [Cmp('div.float-right').attach([
 					Cmp('button[Cancel]', {type: 'button', onclick: () => {
 						onCancel();
 						remove();
 					}}),
-				]),
+				])]),
 			]),
 			Cmp('br', {clear: 'all'}),
 		]);
@@ -343,6 +346,40 @@ export default class TerminalPlugin
 			inp.focus();
 		}
 		return {remove};
+	}
+
+	_displayMpRemarkDialog(data)
+	{
+		let remove = () => {};
+		let yesBtnCmp = Cmp('button[Yes]', {onclick: () => {
+			remove();
+			post('terminal/addMpRemark', {gds: this.gdsName})
+				.then(resp => this.parseBackEnd(resp, 'MP REMARK'));
+		}});
+
+		remove = this.injectDom({
+			dom: Cmp('div.mp-remark-dialog').attach([
+				Cmp('h2[Was the PNR MPed?]'),
+				Cmp('div.button-cont').attach([
+					yesBtnCmp,
+					Cmp('button[No]', {onclick: () => remove()}),
+				]),
+			]).context,
+		}).remove;
+
+		yesBtnCmp.context.focus();
+	}
+
+	_injectForm(formCmp)
+	{
+		this.context.appendChild(formCmp.context);
+		this.injectedForms.push(formCmp.context);
+		let inp = formCmp.context.querySelector('input:not([disabled]):not([type="hidden"])');
+		if (inp) {
+			inp.focus();
+		}
+		this.terminal.scroll_to_bottom();
+		this.outputLiner.removeEmpty();
 	}
 
 	_ejectForm( form ) {
@@ -520,6 +557,8 @@ export default class TerminalPlugin
 				this._displayZpTaxBreakdownMask(action.data);
 			} else if (action.type === 'displayFcMask') {
 				this._displayFcMask(action.data);
+			} else if (action.type === 'displayMpRemarkDialog') {
+				this._displayMpRemarkDialog(action.data);
 			} else {
 				let msg = '[[;;;error]Unsupported action - ' + action.type + ']';
 				this.outputLiner.printOutput(msg, false, []);

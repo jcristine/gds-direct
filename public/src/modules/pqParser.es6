@@ -60,19 +60,17 @@ export class PqParser
 	}
 
 	blockTerminal(action, label) {
-		let queueing = null;
 		let plugin = this.gdsSwitch.getActivePlugin();
 		if (plugin) {
-			queueing = plugin.session.enqueue(() => {
+			return plugin._withSpinner(() => {
 				plugin.print(label + ' IN PROGRESS...');
-				plugin.spinner.start();
 				return action();
 			}).finally(() => {
-				plugin.spinner.end();
 				plugin.print(label + ' DONE');
 			});
+		} else {
+			return action();
 		}
-		return queueing || action();
 	};
 
 	show(gds, rId)
