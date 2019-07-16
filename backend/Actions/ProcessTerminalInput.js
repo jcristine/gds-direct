@@ -1,3 +1,4 @@
+const RbsClient = require('../IqClients/RbsClient.js');
 
 let {fetchAll, wrap, extractTpTabCmds} = require('../GdsHelpers/TravelportUtils.js');
 const StatefulSession = require("../GdsHelpers/StatefulSession.js");
@@ -311,6 +312,37 @@ let processNormalized = async ({stateful, cmdRq}) => {
 	};
 };
 
+let extendActions = async ({whenCmsResult, stateful}) => {
+	let agent = stateful.getAgent();
+	let didSavePnr = false;
+	let prevState = stateful.getSessionData();
+	stateful.addPnrSaveHandler(() => didSavePnr = true);
+	let result = await whenCmsResult;
+	let state = stateful.getSessionData();
+	let isExpert = agent.hasGroup('Experts');
+	let isNewPnr =
+		!prevState.isPnrStored ||
+		prevState.recordLocator &&
+		prevState.recordLocator !== state.recordLocator;
+
+	if (didSavePnr && isNewPnr && isExpert) {
+		result.actions.push({type: 'displayMpRemarkDialog'});
+	}
+
+	return result;
+};
+
+let initStateful = async (params) => {
+	let stateful = await StatefulSession.makeFromDb(params);
+	stateful.addPnrSaveHandler(recordLocator => RbsClient.reportCreatedPnr({
+		recordLocator: recordLocator,
+		gds: params.session.context.gds,
+		pcc: stateful.getSessionData().pcc,
+		agentId: params.session.context.agentId,
+	}));
+	return stateful;
+};
+
 /**
  * auto-correct typos in the command, convert it between
  * GDS dialects, run _alias_ chain of commands, etc...
@@ -318,19 +350,18 @@ let processNormalized = async ({stateful, cmdRq}) => {
  * @param {{command: '*R'}} rqBody = at('MainController.js').normalizeRqBody()
  */
 let ProcessTerminalInput = async (params) => {
-	let {session, rqBody, emcUser} = params;
+	let {session, rqBody} = params;
 	let whenCmdRqId = TerminalBuffering.storeNew(rqBody, session);
-	let stateful = await StatefulSession.makeFromDb({...params, whenCmdRqId})
-		.then(TmpLib.addPerformanceDebug('StatefulSession.makeFromDb()'));
+	let stateful = await initStateful({...params, whenCmdRqId});
 	let cmdRq = rqBody.command;
 	let gds = session.context.gds;
 	let dialect = rqBody.language || gds;
 	let translated = translateCmd(dialect, gds, cmdRq);
 	let cmdRqNorm = translated.cmd;
 
-	let callsLimit = (emcUser.settings || {}).gds_direct_usage_limit || null;
+	let callsLimit = stateful.getAgent().getUsageLimit();
 	if (callsLimit) {
-		let callsUsed = await Agents.getGdsDirectCallsUsed(emcUser.id);
+		let callsUsed = await Agents.getGdsDirectCallsUsed(stateful.getAgent().getId());
 		if (+callsUsed >= +callsLimit) {
 			return TooManyRequests('You exhausted your GDS Direct usage limit for today (' + callsUsed + ' >= ' + callsLimit + ')');
 		}
@@ -345,6 +376,7 @@ let ProcessTerminalInput = async (params) => {
 		messages: (translated.messages || [])
 			.concat(cmsResult.messages || []),
 	}));
+	whenCmsResult = extendActions({whenCmsResult, stateful});
 	logRqCmd({params, whenCmdRqId, whenCmsResult});
 
 	return whenCmsResult;

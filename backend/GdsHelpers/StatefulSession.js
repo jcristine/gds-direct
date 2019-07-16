@@ -54,6 +54,7 @@ let StatefulSession = ({
 	askClient = askClient || ((msgData) => ServiceUnavailable('Client Socket not stored in GRECT session'));
 	let gds = session.context.gds;
 	let calledCommands = [];
+	let pnrSaveHandlers = [];
 	let getSessionData = () => cmdLog.getSessionData();
 
 	let runCmd = async (cmd) => {
@@ -100,14 +101,8 @@ let StatefulSession = ({
 		getStartDt: () => startDt,
 		getAreaRows: () => cmdLog.getFullState().areas,
 		flushCalledCommands: () => calledCommands.splice(0),
-		handlePnrSave: (recordLocator) => {
-			RbsClient.reportCreatedPnr({
-				recordLocator: recordLocator,
-				gds: gds,
-				pcc: getSessionData().pcc,
-				agentId: session.context.agentId,
-			});
-		},
+		addPnrSaveHandler: (action) => pnrSaveHandlers.push(action),
+		handlePnrSave: (recordLocator) => pnrSaveHandlers.forEach(h => h(recordLocator)),
 		handleFsUsage: () => Db.with(db => db.writeRows('counted_fs_usages', [{
 			agent_id: emcUser.id, dt: sqlNow(),
 		}])),

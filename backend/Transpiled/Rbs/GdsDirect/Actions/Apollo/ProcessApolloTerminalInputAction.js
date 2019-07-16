@@ -1,7 +1,7 @@
 // namespace Rbs\GdsDirect\Actions\Apollo;
 
 // utils
-const php = require('../../../../phpDeprecated.js');
+const php = require('klesun-node-tools/src/Transpiled/php.js');
 const ArrayUtil = require('../../../../Lib/Utils/ArrayUtil.js');
 const DateTime = require('../../../../Lib/Utils/DateTime.js');
 const Fp = require('../../../../Lib/Utils/Fp.js');
@@ -9,10 +9,10 @@ const StringUtil = require('../../../../Lib/Utils/StringUtil.js');
 const fetchUntil = require("../../../../../GdsHelpers/TravelportUtils").fetchUntil;
 const {fetchAll, extractPager} = require('../../../../../GdsHelpers/TravelportUtils.js');
 
-const Rej = require('klesun-node-tools/src/Utils/Rej.js');
+const Rej = require('klesun-node-tools/src/Rej.js');
 const {ignoreExc} = require('../../../../../Utils/TmpLib.js');
-const UnprocessableEntity = require("klesun-node-tools/src/Utils/Rej").UnprocessableEntity;
-const BadRequest = require("klesun-node-tools/src/Utils/Rej").BadRequest;
+const UnprocessableEntity = require("klesun-node-tools/src/Rej").UnprocessableEntity;
+const BadRequest = require("klesun-node-tools/src/Rej").BadRequest;
 const Errors = require('../../../../Rbs/GdsDirect/Errors.js');
 
 const CommonDataHelper = require('../../../../Rbs/GdsDirect/CommonDataHelper.js');
@@ -1682,6 +1682,13 @@ class ProcessApolloTerminalInputAction {
 					? ({errors: [exc + '']})
 					: Promise.reject(exc));
 
+		if ($callResult.then) {
+			// way too often I accidentally pass Promise here...
+			let unwrapped = await $callResult.catch(exc => ({error: exc + ''}));
+			let msg = 'Code mistake, call result was a promise inside another promise';
+			return Rej.InternalServerError(msg, unwrapped);
+		}
+
 		if (!php.empty($errors = $callResult['errors'] || [])) {
 			$status = GdsDirect.STATUS_FORBIDDEN;
 			$calledCommands = $callResult['calledCommands'] || [];
@@ -1689,7 +1696,7 @@ class ProcessApolloTerminalInputAction {
 			$actions = $callResult['actions'] || [];
 		} else {
 			$status = GdsDirect.STATUS_EXECUTED;
-			$calledCommands = $callResult['calledCommands'];
+			$calledCommands = $callResult['calledCommands'] || [];
 			$userMessages = $callResult['userMessages'] || [];
 			$actions = $callResult['actions'] || [];
 		}

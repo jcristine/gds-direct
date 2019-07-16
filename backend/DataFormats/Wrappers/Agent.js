@@ -14,6 +14,7 @@ let Agent = (emcUser) => {
 		getFsCallsUsed: () => Agents.getFsCallsUsed(emcUser.id).then(rec => rec.cnt),
 		getFsCallsUsedRec: () => Agents.getFsCallsUsed(emcUser.id),
 		getFsLimit: () => (emcUser.settings || {}).gds_direct_fs_limit || null,
+		getUsageLimit: () => (emcUser.settings || {}).gds_direct_usage_limit || null,
 
 		canIssueTickets                : () => hasRole('NEW_GDS_DIRECT_TICKETING'),
 		canProcessQueues               : () => hasRole('NEW_GDS_DIRECT_QUEUE_PROCESSING'),
@@ -32,6 +33,10 @@ let Agent = (emcUser) => {
 		canUseMco                      : () => hasRole('NEW_GDS_DIRECT_HHMCO'),
 
 		getRoles: () => roles,
+		hasGroup: (groupName) => {
+			let groups = (emcUser.groups || []);
+			return groups.some(g => g.name === groupName);
+		},
 	};
 };
 

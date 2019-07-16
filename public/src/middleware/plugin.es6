@@ -324,6 +324,8 @@ export default class TerminalPlugin
 		let remove = () => {
 			formCmp.context.remove();
 			this._ejectForm(formCmp);
+			// love jquery terminal - needed to return focus
+			setTimeout(() => this.terminal.enable(), 4);
 		};
 		formCmp = Cmp('div.injected-in-terminal').attach([
 			Cmp('br'),
@@ -351,11 +353,7 @@ export default class TerminalPlugin
 	_displayMpRemarkDialog(data)
 	{
 		let remove = () => {};
-		let close = () => {
-			remove();
-			// love jquery terminal
-			setTimeout(() => this.terminal.enable(), 4);
-		};
+		let close = () => remove();
 		let onYes = () => {
 			close();
 			this._withSpinner(() => post('terminal/addMpRemark', {gds: this.gdsName}))
