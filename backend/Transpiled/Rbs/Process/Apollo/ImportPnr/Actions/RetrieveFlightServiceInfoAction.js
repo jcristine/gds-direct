@@ -3,7 +3,7 @@
 const AbstractGdsAction = require('../../../../../Rbs/GdsAction/AbstractGdsAction.js');
 const ApolloSvcParser = require('../../../../../Gds/Parsers/Apollo/ApolloSvcParser/ApolloSvcParser.js');
 const VitTimeFinder = require('../../../../../Rbs/Process/Apollo/ImportPnr/VitTimeFinder.js');
-const php = require('../../../../../php.js');
+const php = require('../../../../../phpDeprecated.js');
 const {fetchAll} = require('../../../../../../GdsHelpers/TravelportUtils.js');
 
 /**

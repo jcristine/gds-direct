@@ -2,7 +2,7 @@
 
 const CommandParser = require('../../../../Gds/Parsers/Galileo/CommandParser.js');
 
-const php = require('../../../../php.js');
+const php = require('../../../../phpDeprecated.js');
 const CmsGalileoTerminal = require("../../GdsInterface/CmsGalileoTerminal");
 const AbstractGdsAction = require('../../../GdsAction/AbstractGdsAction.js');
 const GalileoReservationParser = require("../../../../Gds/Parsers/Galileo/Pnr/PnrParser");

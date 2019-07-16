@@ -7,7 +7,7 @@ const StringUtil = require('../../../Lib/Utils/StringUtil.js');
  * takes Fare Rules section number and content and
  * parses it using appropriate section parser
  */
-const php = require('../../../php.js');
+const php = require('../../../phpDeprecated.js');
 class FareRuleSectionParser
 {
     static doesRuleApply($ruleText)  {

@@ -1,5 +1,5 @@
 
-const {boolval, empty, intval, isset, strtoupper, trim, PHP_EOL, json_encode} = require('../../php.js');
+const {boolval, empty, intval, isset, strtoupper, trim, PHP_EOL, json_encode} = require('../../phpDeprecated.js');
 const TerminalSettings = require('../../App/Models/Terminal/TerminalSettings.js');
 
 class TerminalBaseController {

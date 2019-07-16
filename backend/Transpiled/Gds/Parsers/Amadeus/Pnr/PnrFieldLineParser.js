@@ -17,7 +17,7 @@ const CommonParserHelpers = require('../../../../Gds/Parsers/Apollo/CommonParser
  * ' 21 FE PAX VALID ON A3 FLIGHTS/ DATES SHOWN ONLY NON-REFUNDABLE',
  * '/S2-3',
  */
-const php = require('../../../../php.js');
+const php = require('../../../../phpDeprecated.js');
 const FopLineParser = require("./FopLineParser");
 class PnrFieldLineParser
 {

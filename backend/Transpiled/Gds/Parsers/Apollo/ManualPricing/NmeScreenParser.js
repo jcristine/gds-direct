@@ -8,7 +8,7 @@ const CommonParserHelpers = require('../../../../Gds/Parsers/Apollo/CommonParser
  * parses output of >$NME{ptcNumber}/{storeNumber}
  * it is summed fare and segment list with fare bases
  */
-const php = require('../../../../php.js');
+const php = require('../../../../phpDeprecated.js');
 
 class NmeScreenParser {
 	static cleanMaskValue($value) {

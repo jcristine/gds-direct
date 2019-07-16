@@ -1,7 +1,7 @@
 
 // namespace Gds\Parsers\Apollo\BaggageAllowanceParser\BagLineParser;
 
-let php = require('../../../../../php');
+let php = require('../../../../../phpDeprecated');
 
 class NextToken
 {

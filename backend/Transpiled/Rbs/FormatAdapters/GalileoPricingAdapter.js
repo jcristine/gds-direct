@@ -8,7 +8,7 @@ const PtcUtil = require('../../Rbs/Process/Common/PtcUtil.js');
 /**
  * transforms output of FqParser::parse() to a common format
  */
-const php = require('../../php.js');
+const php = require('../../phpDeprecated.js');
 
 class GalileoPricingAdapter {
 	constructor() {

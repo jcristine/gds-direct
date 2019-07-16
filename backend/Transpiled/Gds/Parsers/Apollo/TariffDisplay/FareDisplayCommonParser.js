@@ -1,7 +1,7 @@
 
 // namespace Gds\Parsers\Apollo;
 
-const php = require('../../../../php.js');
+const php = require('../../../../phpDeprecated.js');
 const StringUtil = require('../../../../Lib/Utils/StringUtil.js');
 const Fp = require('../../../../Lib/Utils/Fp.js');
 

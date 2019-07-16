@@ -9,7 +9,7 @@ const StringUtil = require('../../../Lib/Utils/StringUtil.js');
  *        'translated' => true,
  *     ];
  */
-const php = require('../../../php.js');
+const php = require('../../../phpDeprecated.js');
 const PatternTranslator = require("./PatternTranslator");
 
 class SimplePatternTranslator {

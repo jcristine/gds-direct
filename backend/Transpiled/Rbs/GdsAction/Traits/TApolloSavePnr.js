@@ -2,7 +2,7 @@
 // namespace Rbs\GdsAction\Traits;
 
 const SavePnrAction = require('../../../Rbs/MultiGdsAction/SavePnrAction.js');
-const php = require('../../../php');
+const php = require('../../../phpDeprecated');
 
 class TApolloSavePnr
 {

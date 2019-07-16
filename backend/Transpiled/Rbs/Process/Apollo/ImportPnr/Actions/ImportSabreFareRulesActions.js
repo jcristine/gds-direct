@@ -5,7 +5,7 @@ const FareRuleParser = require('../../../../../Gds/Parsers/Sabre/FareRuleParser.
 const ImportSabrePnrFormatAdapter = require('../../../../../Rbs/Process/Sabre/ImportPnr/ImportSabrePnrFormatAdapter.js');
 const AbstractGdsAction = require('../../../../GdsAction/AbstractGdsAction.js');
 
-const php = require('../../../../../php.js');
+const php = require('../../../../../phpDeprecated.js');
 
 class ImportSabreFareRulesActions extends AbstractGdsAction {
 	static makeCmd($sections, $ptc, $segmentNumber) {

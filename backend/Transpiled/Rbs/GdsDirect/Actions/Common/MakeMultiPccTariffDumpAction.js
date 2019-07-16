@@ -5,7 +5,7 @@ const Fp = require('../../../../Lib/Utils/Fp.js');
 const StringUtil = require('../../../../Lib/Utils/StringUtil.js');
 const LocationGeographyProvider = require('../../../../Rbs/DataProviders/LocationGeographyProvider.js');
 
-let php = require('../../../../php.js');
+let php = require('../../../../phpDeprecated.js');
 
 class MakeMultiPccTariffDumpAction {
 	static makeHeaderDump($finishedJobs, $currentPcc) {

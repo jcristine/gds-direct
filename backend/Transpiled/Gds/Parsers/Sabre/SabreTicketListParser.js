@@ -6,7 +6,7 @@ const CommonParserHelpers = require('../../../Gds/Parsers/Apollo/CommonParserHel
 /**
  * parses the output of the *T
  */
-const php = require('../../../php.js');
+const php = require('../../../phpDeprecated.js');
 class SabreTicketListParser
 {
     // "  1.TAW14SEP/"

@@ -4,7 +4,7 @@
 const AtfqParser = require('../../../../../Gds/Parsers/Apollo/Pnr/AtfqParser.js');
 const BaggageAllowanceParser = require('../../../../../Gds/Parsers/Apollo/BaggageAllowanceParser/BaggageAllowanceParser.js');
 const BaggageAllowanceParserDataStructureWriter = require('../../../../../Gds/Parsers/Apollo/BaggageAllowanceParser/BaggageAllowanceParserDataStructureWriter.js');
-const php = require('../../../../../php');
+const php = require('../../../../../phpDeprecated');
 
 class PricingStructureWriter
 {

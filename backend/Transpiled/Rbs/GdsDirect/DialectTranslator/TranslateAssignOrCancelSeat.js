@@ -1,7 +1,7 @@
 // namespace Rbs\GdsDirect\DialectTranslator;
 
 const Fp = require('../../../Lib/Utils/Fp.js');
-const php = require('../../../php.js');
+const php = require('../../../phpDeprecated.js');
 
 class TranslateAssignOrCancelSeat {
 	static flattenPaxNums($paxRanges) {

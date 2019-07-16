@@ -3,7 +3,7 @@
 const Fp = require('../../../Lib/Utils/Fp.js');
 const StringUtil = require('../../../Lib/Utils/StringUtil.js');
 const CommonParserHelpers = require("./CommonParserHelpers");
-const php = require('../../../php');
+const php = require('../../../phpDeprecated');
 
 /**
  * parses output of *HT

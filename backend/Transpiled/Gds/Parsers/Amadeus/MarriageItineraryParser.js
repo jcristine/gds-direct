@@ -7,7 +7,7 @@ const AmadeusReservationParser = require('../../../Gds/Parsers/Amadeus/Pnr/PnrPa
 /**
  * >HELP MARRIED SEGMENTS;
  */
-const php = require('../../../php.js');
+const php = require('../../../phpDeprecated.js');
 class MarriageItineraryParser
 {
     static parsePartialDate($token)  {

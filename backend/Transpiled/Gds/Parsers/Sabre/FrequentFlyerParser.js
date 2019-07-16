@@ -7,7 +7,7 @@ const CommonParserHelpers = require('../../../Gds/Parsers/Apollo/CommonParserHel
 /**
  * parses output of >*FF
  */
-const php = require('../../../php.js');
+const php = require('../../../phpDeprecated.js');
 class FrequentFlyerParser
 {
     static removeIndexKeys($dict)  {

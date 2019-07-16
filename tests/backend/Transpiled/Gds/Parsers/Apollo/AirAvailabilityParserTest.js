@@ -2,7 +2,7 @@
 // namespace Gds\Parsers\Apollo;
 
 const AirAvailabilityParser = require('../../../../../../backend/Transpiled/Gds/Parsers/Apollo/AirAvailabilityParser.js');
-const php = require('../../../../../../backend/Transpiled/php');
+const php = require('../../../../../../backend/Transpiled/phpDeprecated');
 
 class AirAvailabilityParserTest extends require('../../../../../../backend/Transpiled/Lib/TestCase.js')
 {

@@ -1,6 +1,6 @@
 
 let Db = require('./../Utils/Db.js');
-let php = require('../Transpiled/php.js');
+let php = require('../Transpiled/phpDeprecated.js');
 const Emc = require("../LibWrappers/Emc");
 let {getClient, keys} = require('../LibWrappers/Redis.js');
 

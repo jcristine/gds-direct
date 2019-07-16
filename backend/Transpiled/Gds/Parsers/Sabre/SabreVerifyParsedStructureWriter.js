@@ -1,7 +1,7 @@
 
 // namespace Gds\Parsers\Sabre;
 
-const php = require('../../../php.js');
+const php = require('../../../phpDeprecated.js');
 class SabreVerifyParsedStructureWriter
 {
     constructor()  {

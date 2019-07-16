@@ -20,7 +20,7 @@ const FareConstructionParser = require('../../../../Gds/Parsers/Common/FareConst
  * 'NONEND/RES RSTR/RBK FOC                                       '
  * 'LAST DATE TO PURCHASE TICKET: 10MAY18                         '
  */
-const php = require('../../../../php.js');
+const php = require('../../../../phpDeprecated.js');
 class StoredPtcPricingBlockParser
 {
     /** format is not same as in >F*Q; tax code and amount changed places */

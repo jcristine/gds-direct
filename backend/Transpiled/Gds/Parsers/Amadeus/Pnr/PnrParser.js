@@ -7,7 +7,7 @@ const CommonParserHelpers = require('../../../../Gds/Parsers/Apollo/CommonParser
 const GenericRemarkParser = require('../../../../Gds/Parsers/Common/GenericRemarkParser.js');
 const Fp = require('../../../../Lib/Utils/Fp.js');
 
-const php = require('../../../../php.js');
+const php = require('../../../../phpDeprecated.js');
 const AmadeusReservationPassengerBlockParser = require("./AmadeusReservationPassengerBlockParser");
 const PnrFieldLineParser = require("./PnrFieldLineParser");
 const FopLineParser = require("./FopLineParser");

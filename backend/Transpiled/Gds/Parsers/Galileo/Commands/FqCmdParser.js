@@ -8,7 +8,7 @@ const Rej = require('klesun-node-tools/src/Utils/Rej.js');
  * parses Galileo pricing command like:
  * 'FQBBP1.2*C05.3*INF++-BUSNS'
  */
-const php = require('../../../../php.js');
+const php = require('../../../../phpDeprecated.js');
 class FqCmdParser
 {
 

@@ -1,7 +1,7 @@
 
 // namespace Rbs\GdsAction;
 
-const php = require("../../php");
+const php = require("../../phpDeprecated");
 
 /**
  * add OTH segment to preserve flown PNR from being purged

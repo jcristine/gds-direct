@@ -2,7 +2,7 @@
 
 const Fp = require('../../Lib/Utils/Fp.js');
 
-let php = require('../../php.js');
+let php = require('../../phpDeprecated.js');
 
 /**
  * provides info like city/country/timezone/etc for the specified airport

@@ -4,7 +4,7 @@ let moment = require('moment-timezone');
 let Diag = require('../../../LibWrappers/Diag.js');
 
 const StringUtil = require('../../Lib/Utils/StringUtil.js');
-let php = require('../../php.js');
+let php = require('../../phpDeprecated.js');
 
 class DateTime {
 	// $date is relative date in format 'm-d', which we'd like to make absolute

@@ -5,7 +5,7 @@ const SabreReservationParser = require('../../Gds/Parsers/Sabre/Pnr/PnrParser.js
 const AmadeusReservationParser = require('../../Gds/Parsers/Amadeus/Pnr/PnrParser.js');
 const FormatAdapter = require("./FormatAdapter");
 
-let php = require('../../php.js');
+let php = require('../../phpDeprecated.js');
 const GalileoReservationParser = require("../../Gds/Parsers/Galileo/Pnr/PnrParser");
 const GalileoPnrCommonFormatAdapter = require("../FormatAdapters/GalileoPnrCommonFormatAdapter");
 const AmadeusPnrCommonFormatAdapter = require("../FormatAdapters/AmadeusPnrCommonFormatAdapter");

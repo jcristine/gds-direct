@@ -2,7 +2,7 @@
 // namespace Gds\Parsers\Apollo\ApolloReservationParser;
 
 const StringUtil = require('../../../../Lib/Utils/StringUtil.js');
-const php = require('../../../../php');
+const php = require('../../../../phpDeprecated');
 
 class FopParser
 {

@@ -4,7 +4,7 @@
 const TSabreSavePnr = require('../../../Rbs/GdsAction/Traits/TSabreSavePnr.js');
 const Errors = require('../../../Rbs/GdsDirect/Errors.js');
 const CommandParser = require('../../../Gds/Parsers/Sabre/CommandParser.js');
-const php = require('../../../php.js');
+const php = require('../../../phpDeprecated.js');
 
 var require = require('../../../translib.js').stubRequire;
 

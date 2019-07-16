@@ -1,7 +1,7 @@
 
 // namespace Rbs\Process\Common;
 
-let php = require('../../../php.js');
+let php = require('../../../phpDeprecated.js');
 
 /** provides functions to parse/make/modify PTC */
 class PtcUtil

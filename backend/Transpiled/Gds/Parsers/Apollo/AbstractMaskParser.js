@@ -4,7 +4,7 @@
 const Fp = require('../../../Lib/Utils/Fp.js');
 const Rej = require('klesun-node-tools/src/Utils/Rej.js');
 
-let php = require('../../../php.js');
+let php = require('../../../phpDeprecated.js');
 const StringUtil = require('../../../Lib/Utils/StringUtil.js');
 const BadRequest = require("klesun-node-tools/src/Utils/Rej").BadRequest;
 

@@ -5,7 +5,7 @@ const AtfqParser = require('../../Gds/Parsers/Apollo/Pnr/AtfqParser.js');
 const Fp = require('../../Lib/Utils/Fp.js');
 const ParsersController = require('../../Rbs/IqControllers/ParsersController.js');
 
-let php = require('../../php.js');
+let php = require('../../phpDeprecated.js');
 const CmsClient = require("../../../IqClients/CmsClient");
 const Rej = require("klesun-node-tools/src/Utils/Rej");
 

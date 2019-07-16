@@ -3,7 +3,7 @@
 const StringUtil = require('../../../../Lib/Utils/StringUtil.js');
 const GdsConstants = require('../../../../Gds/Parsers/Common/GdsConstants.js');
 
-const php = require('../../../../php.js');
+const php = require('../../../../phpDeprecated.js');
 const ApolloSvcParserDataWriter = require("./ApolloSvcParserDataWriter");
 
 class ApolloSvcParser {

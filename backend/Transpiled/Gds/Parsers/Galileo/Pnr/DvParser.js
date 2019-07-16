@@ -13,7 +13,7 @@ const StringUtil = require('../../../../Lib/Utils/StringUtil.js');
  * 'LIBERMANE/LEPIN    >*7NDC84;',
  * '><',
  */
-const php = require('../../../../php.js');
+const php = require('../../../../phpDeprecated.js');
 class DvParser
 {
     static parseBookingLine($line)  {

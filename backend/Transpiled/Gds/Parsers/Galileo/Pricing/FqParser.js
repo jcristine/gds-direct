@@ -41,7 +41,7 @@ const CommonParserHelpers = require('../../../../Gds/Parsers/Apollo/CommonParser
  * 'BAGGAGE DISCOUNTS MAY APPLY BASED ON FREQUENT FLYER STATUS/',
  * 'ONLINE CHECKIN/FORM OF PAYMENT/MILITARY/ETC.',
  */
-const php = require('../../../../php.js');
+const php = require('../../../../phpDeprecated.js');
 
 class FqParser {
 	// '                   *** BEST BUY QUOTATION ***'

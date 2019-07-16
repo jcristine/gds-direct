@@ -1,7 +1,7 @@
 // namespace Rbs\GdsDirect\Actions\Apollo;
 
 // utils
-const php = require('../../../../php.js');
+const php = require('../../../../phpDeprecated.js');
 const ArrayUtil = require('../../../../Lib/Utils/ArrayUtil.js');
 const DateTime = require('../../../../Lib/Utils/DateTime.js');
 const Fp = require('../../../../Lib/Utils/Fp.js');

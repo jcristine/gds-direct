@@ -4,7 +4,7 @@ const ArrayUtil = require('../../Lib/Utils/ArrayUtil.js');
 const LocationGeographyProvider = require('../../Rbs/DataProviders/LocationGeographyProvider.js');
 const FareRuleParser = require('../../Gds/Parsers/Amadeus/Pricing/FareRuleParser.js');
 const AbstractGdsAction = require('./AbstractGdsAction.js');
-const php = require('../../php.js');
+const php = require('../../phpDeprecated.js');
 const AmadeusUtil = require("../../../GdsHelpers/AmadeusUtils");
 
 /** from current pricing */

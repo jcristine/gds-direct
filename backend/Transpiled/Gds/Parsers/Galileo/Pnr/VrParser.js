@@ -16,7 +16,7 @@ const CommonParserHelpers = require('../../../../Gds/Parsers/Apollo/CommonParser
  * '  6+ VI/AUA *ADTK1GKK1 +TICKETING MAY BE REQUIRED BY FARE RULE 1407Z 08MAR',
  * '><',
  */
-const php = require('../../../../php.js');
+const php = require('../../../../phpDeprecated.js');
 class VrParser
 {
     static parseSequence($linesLeft, $parse)  {

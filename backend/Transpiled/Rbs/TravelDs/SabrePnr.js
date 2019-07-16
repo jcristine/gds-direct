@@ -7,7 +7,7 @@ const SabreReservationParser = require('../../Gds/Parsers/Sabre/Pnr/PnrParser.js
 /**
  * Sabre pnr parse access implementation
  */
-const php = require('../../php.js');
+const php = require('../../phpDeprecated.js');
 
 class SabrePnr {
 	constructor() {

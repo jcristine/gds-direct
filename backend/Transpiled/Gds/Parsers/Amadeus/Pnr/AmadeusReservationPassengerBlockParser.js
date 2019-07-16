@@ -10,7 +10,7 @@ const CommonParserHelpers = require('../../../../Gds/Parsers/Apollo/CommonParser
  * moment of writing, so if you have significant testing material it'd better
  * be rewritten completely
  */
-const php = require('../../../../php.js');
+const php = require('../../../../phpDeprecated.js');
 class AmadeusReservationPassengerBlockParser
 {
     static parseLine($line)  {

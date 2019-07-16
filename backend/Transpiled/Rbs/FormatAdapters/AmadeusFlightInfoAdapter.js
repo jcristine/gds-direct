@@ -2,7 +2,7 @@
 
 const ArrayUtil = require('../../Lib/Utils/ArrayUtil.js');
 const Fp = require('../../Lib/Utils/Fp.js');
-const php = require('../../php.js');
+const php = require('../../phpDeprecated.js');
 
 /**
  * adds full dates to legs, joins service info

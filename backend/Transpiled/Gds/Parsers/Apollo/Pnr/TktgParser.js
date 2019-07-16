@@ -2,7 +2,7 @@
 // namespace Gds\Parsers\Apollo\ApolloReservationParser;
 
 const CommonParserHelpers = require('../../../../Gds/Parsers/Apollo/CommonParserHelpers.js');
-const php = require('../../../../php');
+const php = require('../../../../phpDeprecated');
 
 class TktgParser
 {

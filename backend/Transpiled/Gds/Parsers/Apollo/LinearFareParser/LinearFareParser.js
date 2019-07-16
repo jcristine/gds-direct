@@ -4,7 +4,7 @@
 const Fp = require('../../../../Lib/Utils/Fp.js');
 const StringUtil = require('../../../../Lib/Utils/StringUtil.js');
 const FareConstructionParser = require('../../../../Gds/Parsers/Common/FareConstruction/FareConstructionParser.js');
-const php = require('../../../../php');
+const php = require('../../../../phpDeprecated');
 
 class LinearFareParser
 {

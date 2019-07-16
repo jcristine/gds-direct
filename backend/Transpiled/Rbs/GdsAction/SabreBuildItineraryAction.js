@@ -4,7 +4,7 @@ const DateTime = require('../../Lib/Utils/DateTime.js');
 const Fp = require('../../Lib/Utils/Fp.js');
 const StringUtil = require('../../Lib/Utils/StringUtil.js');
 const AbstractGdsAction = require('./AbstractGdsAction.js');
-const php = require('../../php.js');
+const php = require('../../phpDeprecated.js');
 const AirAvailabilityParser = require('../../Gds/Parsers/Sabre/AirAvailabilityParser.js');
 const matchAll = require("../../../Utils/Str").matchAll;
 

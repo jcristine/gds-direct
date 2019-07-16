@@ -3,7 +3,7 @@
 const StringUtil = require('../../../../Lib/Utils/StringUtil.js');
 const CommonParserHelpers = require('../../../../Gds/Parsers/Apollo/CommonParserHelpers.js');
 
-let php = require('../../../../php.js');
+let php = require('../../../../phpDeprecated.js');
 
 class ItineraryParser {
 	static preprocessDump($dump) {

@@ -5,7 +5,7 @@ const FareConstructionParser = require('../../../../Gds/Parsers/Common/FareConst
 /**
  * this class contains logic for parsing common sections in both >WP and *PQ
  */
-const php = require('../../../../php.js');
+const php = require('../../../../phpDeprecated.js');
 
 class PricingCommonHelper {
 	//'       INR41855       USD639.00      591.70XT     USD1230.70ADT',

@@ -2,7 +2,7 @@
 
 const Fp = require('../../../../Lib/Utils/Fp.js');
 const FareConstructionTokenizer = require("./FareConstructionTokenizer");
-const php = require('../../../../php');
+const php = require('../../../../phpDeprecated');
 
 /**
  * parse Linear Fare Construction, aka Fare Calculation line

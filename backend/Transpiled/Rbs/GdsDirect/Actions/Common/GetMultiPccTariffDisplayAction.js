@@ -7,7 +7,7 @@ const RbsClient = require("../../../../../IqClients/RbsClient");
 const NormalizeTariffCmd = require('./NormalizeTariffCmd.js');
 const MakeMultiPccTariffDumpAction = require('./MakeMultiPccTariffDumpAction.js');
 
-let php = require('../../../../php.js');
+let php = require('../../../../phpDeprecated.js');
 const {allWrap, timeout} = require("../../../../../Utils/TmpLib");
 
 /**

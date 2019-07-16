@@ -11,7 +11,7 @@ const FareRuleSectionParser = require('../../../../Gds/Parsers/Common/FareRuleSe
  * it is a screen with flight fare component line in
  * the header followed by it's Fare Rule sections
  */
-const php = require('../../../../php.js');
+const php = require('../../../../phpDeprecated.js');
 const HeaderParser = require("./HeaderParser");
 class FnParser
 {

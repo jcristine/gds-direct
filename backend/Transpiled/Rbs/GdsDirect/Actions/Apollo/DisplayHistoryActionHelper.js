@@ -2,7 +2,7 @@
 
 const StringUtil = require('../../../../Lib/Utils/StringUtil.js');
 
-let php = require('../../../../php.js');
+let php = require('../../../../phpDeprecated.js');
 
 class DisplayHistoryActionHelper {
 	static getStatusLabel($status) {

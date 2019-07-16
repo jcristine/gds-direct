@@ -10,7 +10,7 @@ const AbstractGdsAction = require('./AbstractGdsAction.js');
  * performing a direct sell command of each segment
  * >0AC 215V 24MAR YYCYVR NN1;
  */
-const php = require('../../php.js');
+const php = require('../../phpDeprecated.js');
 const fetchAll = require("../../../GdsHelpers/TravelportUtils").fetchAll;
 
 class GalileoBuildItineraryAction extends AbstractGdsAction {

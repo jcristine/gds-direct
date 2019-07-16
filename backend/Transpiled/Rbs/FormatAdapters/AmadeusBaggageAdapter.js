@@ -3,7 +3,7 @@
 
 const Fp = require('../../Lib/Utils/Fp.js');
 
-const php = require('../../php.js');
+const php = require('../../phpDeprecated.js');
 class AmadeusBaggageAdapter
 {
     /** @param $bagCode = FxParser::parseSegmentLine()['freeBaggageAmount'] */

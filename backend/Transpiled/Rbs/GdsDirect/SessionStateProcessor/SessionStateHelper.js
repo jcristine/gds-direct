@@ -3,7 +3,7 @@
 
 const CanCreatePqRules = require('./CanCreatePqRules.js');
 const Errors = require('../../../Rbs/GdsDirect/Errors.js');
-const php = require('../../../php.js');
+const php = require('../../../phpDeprecated.js');
 const CommonDataHelper = require("../CommonDataHelper");
 
 /**

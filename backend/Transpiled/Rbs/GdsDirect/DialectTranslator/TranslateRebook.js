@@ -9,7 +9,7 @@ let normalizeCmdData = (parsedCmd, fromGds) => {
 		if (data.applyToAllAir) {
 			segments = [{bookingClass}];
 		}
-		if (!php.empty(data.segmentNumbers)) {
+		if (!phpDeprecated.empty(data.segmentNumbers)) {
 
 		}
 	}

@@ -4,7 +4,7 @@
 const Fp = require('../../../../Lib/Utils/Fp.js');
 const CommonParserHelpers = require('../../../../Gds/Parsers/Apollo/CommonParserHelpers.js');
 const LinearFareParser = require('../../../../Gds/Parsers/Apollo/LinearFareParser/LinearFareParser.js');
-const php = require('../../../../php');
+const php = require('../../../../phpDeprecated');
 
 class NextToken
 {

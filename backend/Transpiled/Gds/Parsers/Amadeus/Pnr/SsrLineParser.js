@@ -5,7 +5,7 @@ const SsrBlockParser = require('../../../../Gds/Parsers/Apollo/Pnr/SsrBlockParse
 const CommonParserHelpers = require('../../../../Gds/Parsers/Apollo/CommonParserHelpers.js');
 const Fp = require('../../../../Lib/Utils/Fp.js');
 
-const php = require('../../../../php.js');
+const php = require('../../../../phpDeprecated.js');
 class SsrLineParser
 {
     // Example: 'P/LBN/2390602/LBN/19JAN64/M/05NOV17/BEAINI/HADI/S2',

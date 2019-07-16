@@ -7,7 +7,7 @@ const CommonParserHelpers = require('../../../../Gds/Parsers/Apollo/CommonParser
  * since it is common for a group of output formats
  * I thought it would be good to move it out
  */
-const php = require('../../../../php.js');
+const php = require('../../../../phpDeprecated.js');
 class HeaderParser
 {
     static detectErrorResponse($lines)  {

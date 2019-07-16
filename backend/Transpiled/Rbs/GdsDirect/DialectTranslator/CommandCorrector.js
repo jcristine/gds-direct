@@ -1,7 +1,7 @@
 // namespace Rbs\GdsDirect\DialectTranslator;
 
 const StringUtil = require('../../../Lib/Utils/StringUtil.js');
-const php = require('../../../php.js');
+const php = require('../../../phpDeprecated.js');
 const VariableTranslator = require("./VariableTranslator");
 const SimplePatternTranslator = require("./SimplePatternTranslator");
 const PatternTranslator = require("./PatternTranslator");

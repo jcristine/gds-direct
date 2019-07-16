@@ -24,7 +24,7 @@ const CommonParserHelpers = require('../../../Gds/Parsers/Apollo/CommonParserHel
  * 'TRC  TEXT',
  * 'A    ABVPHC NO BOARDING THIS CITY                               ><',
  */
-const php = require('../../../php.js');
+const php = require('../../../phpDeprecated.js');
 
 class TtParser {
 	static parseHeaderLine($line) {

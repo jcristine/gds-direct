@@ -1,5 +1,5 @@
 
-const php = require('../Transpiled/php.js');
+const php = require('../Transpiled/phpDeprecated.js');
 const ImportPqApolloAction = require("../Transpiled/Rbs/GdsDirect/Actions/Apollo/ImportPqApolloAction");
 const Rej = require('klesun-node-tools/src/Utils/Rej.js');
 const {UnprocessableEntity} = require("klesun-node-tools/src/Utils/Rej");

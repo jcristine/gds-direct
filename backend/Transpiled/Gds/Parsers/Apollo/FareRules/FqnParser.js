@@ -5,7 +5,7 @@ const StringUtil = require('../../../../Lib/Utils/StringUtil.js');
 /**
  * parses >FQN (fare component list)
  */
-const php = require('../../../../php.js');
+const php = require('../../../../phpDeprecated.js');
 class FqnParser
 {
     static parse($dump)  {

@@ -1,7 +1,7 @@
 // namespace Gds\Parsers\Apollo\ApolloReservationParser;
 
 const PnrParser = require("../../../../../../../backend/Transpiled/Gds/Parsers/Apollo/Pnr/PnrParser");
-const php = require('../../../../../../../backend/Transpiled/php.js');
+const php = require('../../../../../../../backend/Transpiled/phpDeprecated.js');
 
 class ApolloReservationParserTest extends require('../../../../../../../backend/Transpiled/Lib/TestCase.js') {
 	provideTreeTestCases() {

@@ -8,7 +8,7 @@ const FareRuleSectionParser = require('../../../Gds/Parsers/Common/FareRuleSecti
 /**
  * parses WPRD*1,2,3 etc
  */
-const php = require('../../../php.js');
+const php = require('../../../phpDeprecated.js');
 
 class FareRuleParser {
 	static removeIndexKeys($dict) {

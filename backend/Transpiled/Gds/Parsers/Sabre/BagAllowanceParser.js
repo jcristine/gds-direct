@@ -6,7 +6,7 @@ const StringUtil = require('../../../Lib/Utils/StringUtil.js');
 /**
  * parses the section in *PQ
  */
-const php = require('../../../php.js');
+const php = require('../../../phpDeprecated.js');
 class BagAllowanceParser
 {
     /**

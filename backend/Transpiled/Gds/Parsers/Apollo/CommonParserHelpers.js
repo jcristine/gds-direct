@@ -8,7 +8,7 @@ let {
 	strtotime,
 	strval,
 	substr
-} = require("../../../php.js");
+} = require("../../../phpDeprecated.js");
 
 class CommonParserHelpers
 {

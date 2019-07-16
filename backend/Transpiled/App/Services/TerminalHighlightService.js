@@ -3,7 +3,7 @@ const Str = require("../../../Utils/Str.js");
 const Db = require("../../../Utils/Db.js");
 const RegexTranspiler = require("../../Grect/RegexTranspiler");
 const {getFullDataForService, getByName} = require('../../../Repositories/HighlightRules.js');
-const {substr_replace, array_values, sprintf, strlen, preg_match, empty, isset} = require('../../php.js');
+const {substr_replace, array_values, sprintf, strlen, preg_match, empty, isset} = require('../../phpDeprecated.js');
 const ApoCmdParser = require('../../Gds/Parsers/Apollo/CommandParser.js');
 const FareConstructionParser = require('../../Gds/Parsers/Common/FareConstruction/FareConstructionParser.js');
 

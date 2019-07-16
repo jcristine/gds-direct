@@ -1,7 +1,7 @@
 // namespace Rbs\DataProviders;
 
 const Airports = require("../../../Repositories/Airports");
-const php = require('../../php.js');
+const php = require('../../phpDeprecated.js');
 
 /**
  * provides info like city/country/timezone/etc for the specified airport

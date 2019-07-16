@@ -7,7 +7,7 @@ const ApolloBaggageAdapter = require('../../../../Rbs/FormatAdapters/ApolloBagga
 const ApolloPricingAdapter = require('../../../../Rbs/FormatAdapters/ApolloPricingAdapter.js');
 const FormatAdapter = require('../../../../Rbs/IqControllers/FormatAdapter.js');
 const ImportPnrCommonFormatAdapter = require('../../../../Rbs/Process/Common/ImportPnr/ImportPnrCommonFormatAdapter.js');
-const php = require('../../../../php.js');
+const php = require('../../../../phpDeprecated.js');
 
 /**
  * transforms output of the ImportApolloPnrAction to a common for any GDS structure

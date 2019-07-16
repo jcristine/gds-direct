@@ -5,7 +5,7 @@ const Fp = require('../../../Lib/Utils/Fp.js');
 const StringUtil = require('../../../Lib/Utils/StringUtil.js');
 const CommonParserHelpers = require('./CommonParserHelpers.js');
 
-let php = require('../../../php.js');
+let php = require('../../../phpDeprecated.js');
 
 /**
  * parse >*H command and all it's derivatives: *HA, *H$, *HQ, ...

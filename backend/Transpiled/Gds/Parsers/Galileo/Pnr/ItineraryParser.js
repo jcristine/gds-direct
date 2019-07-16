@@ -4,7 +4,7 @@ const ApolloReservationItineraryParser = require('../../../../Gds/Parsers/Apollo
 const CommonParserHelpers = require('../../../../Gds/Parsers/Apollo/CommonParserHelpers.js');
 const StringUtil = require('../../../../Lib/Utils/StringUtil.js');
 
-const php = require('../../../../php.js');
+const php = require('../../../../phpDeprecated.js');
 
 class ItineraryParser {
 	static decodeDaysOfWeek($str) {

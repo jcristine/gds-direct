@@ -10,7 +10,7 @@ let {
 	preg_match, rtrim, str_split,
 	explode, in_array,
 	trim
-} = require("../../../../php.js");
+} = require("../../../../phpDeprecated.js");
 
 const CommonParserHelpers = require('./../CommonParserHelpers.js');
 

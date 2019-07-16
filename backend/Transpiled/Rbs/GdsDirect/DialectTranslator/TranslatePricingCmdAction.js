@@ -5,7 +5,7 @@ const Fp = require('../../../Lib/Utils/Fp.js');
 const StringUtil = require('../../../Lib/Utils/StringUtil.js');
 const GalCmdParser = require('../../../Gds/Parsers/Galileo/CommandParser.js');
 
-const php = require('../../../php.js');
+const php = require('../../../phpDeprecated.js');
 const separateWithLex = require("./Helper").separateWithLex;
 
 class TranslatePricingCmdAction {

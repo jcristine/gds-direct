@@ -3,7 +3,7 @@
 const StringUtil = require('../../../Lib/Utils/StringUtil.js');
 const Errors = require('../../../Rbs/GdsDirect/Errors.js');
 const CommandParser = require('../../../Gds/Parsers/Galileo/CommandParser.js');
-const php = require('../../../php.js');
+const php = require('../../../phpDeprecated.js');
 
 var require = require('../../../translib.js').stubRequire;
 

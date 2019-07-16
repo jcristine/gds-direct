@@ -4,7 +4,7 @@ const Fp = require('../../Lib/Utils/Fp.js');
 const AmadeusReservationParser = require('../../Gds/Parsers/Amadeus/Pnr/PnrParser.js');
 const GenericRemarkParser = require('../../Gds/Parsers/Common/GenericRemarkParser.js');
 
-const php = require('../../php.js');
+const php = require('../../phpDeprecated.js');
 
 class AmadeusPnr {
 	static makeFromDump($dump) {

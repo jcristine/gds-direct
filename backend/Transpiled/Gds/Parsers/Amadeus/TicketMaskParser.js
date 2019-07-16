@@ -7,7 +7,7 @@ const CommonParserHelpers = require('../../../Gds/Parsers/Apollo/CommonParserHel
 const FareConstructionParser = require('../../../Gds/Parsers/Common/FareConstruction/FareConstructionParser.js');
 const BagAllowanceParser = require('../../../Gds/Parsers/Sabre/BagAllowanceParser.js');
 
-const php = require('../../../php.js');
+const php = require('../../../phpDeprecated.js');
 
 class TicketMaskParser {
 	/**

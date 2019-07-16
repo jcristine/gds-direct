@@ -5,7 +5,7 @@ const TestCase = require('../../Lib/TestCase.js');
 const Fp = require('../../Lib/Utils/Fp.js');
 const BadGateway = require("klesun-node-tools/src/Utils/Rej").BadGateway;
 
-let php = require('../../php.js');
+let php = require('../../phpDeprecated.js');
 
 /**
  * provides getters/setters for a stub GDS session/stateless terminal

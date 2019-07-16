@@ -11,7 +11,7 @@ const Variables = require('../../../Rbs/GdsDirect/DialectTranslator/VariableTran
  *        'translated' => true,
  *     ];
  */
-const php = require('../../../php.js');
+const php = require('../../../phpDeprecated.js');
 
 class PatternTranslator {
 	static makeRegexFromPattern($pattern, $dialect) {

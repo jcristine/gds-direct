@@ -4,7 +4,7 @@
 const StringUtil = require('../../../Lib/Utils/StringUtil.js');
 const Errors = require('../../../Rbs/GdsDirect/Errors.js');
 const CommandParser = require('../../../Gds/Parsers/Apollo/CommandParser.js');
-const php = require('../../../php');
+const php = require('../../../phpDeprecated');
 
 class CmsApolloTerminal
 {

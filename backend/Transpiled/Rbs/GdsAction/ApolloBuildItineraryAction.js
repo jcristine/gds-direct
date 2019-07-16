@@ -7,7 +7,7 @@ const AirAvailabilityParser = require("../../Gds/Parsers/Apollo/AirAvailabilityP
 const {fetchAll} = require("../../../GdsHelpers/TravelportUtils.js");
 const {REBUILD_NO_AVAIL, REBUILD_GDS_ERROR} = require('../GdsDirect/Errors.js');
 
-let php = require('../../php.js');
+let php = require('../../phpDeprecated.js');
 
 class ApolloBuildItineraryAction extends AbstractGdsAction {
 

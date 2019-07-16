@@ -3,7 +3,7 @@
 
 const ArrayUtil = require('../../../../Lib/Utils/ArrayUtil.js');
 const StringUtil = require('../../../../Lib/Utils/StringUtil.js');
-const php = require('../../../../php.js');
+const php = require('../../../../phpDeprecated.js');
 const TicketListParser = require("./TicketListParser");
 const TicketParser = require("./TicketParser");
 

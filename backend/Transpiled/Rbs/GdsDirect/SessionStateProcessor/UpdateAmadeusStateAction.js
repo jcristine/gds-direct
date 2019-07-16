@@ -8,7 +8,7 @@ const AmadeusReservationParser = require('../../../Gds/Parsers/Amadeus/Pnr/PnrPa
 const SessionStateDs = require('../../../Rbs/GdsDirect/SessionStateProcessor/SessionStateDs.js');
 const CmsAmadeusTerminal = require('../../../Rbs/GdsDirect/GdsInterface/CmsAmadeusTerminal.js');
 
-const php = require('../../../php.js');
+const php = require('../../../phpDeprecated.js');
 const SessionStateHelper = require("./SessionStateHelper");
 class UpdateAmadeusStateAction
 {

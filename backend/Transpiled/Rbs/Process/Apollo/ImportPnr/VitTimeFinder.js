@@ -12,7 +12,7 @@ const {fetchAll} = require('../../../../../GdsHelpers/TravelportUtils.js');
  * first time we use it for first leg destination,
  * and second - for second leg departure
  */
-const php = require('../../../../php.js');
+const php = require('../../../../phpDeprecated.js');
 
 class VitTimeFinder {
 	constructor($session, $airline, $flightNumber, $departureDate) {

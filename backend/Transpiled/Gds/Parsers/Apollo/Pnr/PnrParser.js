@@ -11,7 +11,7 @@ const GdsPassengerBlockParser = require("../../Common/GdsPassengerBlockParser");
 const FopParser = require("./FopParser");
 const TktgParser = require("./TktgParser");
 const SsrBlockParser = require("./SsrBlockParser");
-const php = require("./../../../../php");
+const php = require("../../../../phpDeprecated");
 const TicketHistoryParser = require("../TicketHistoryParser");
 
 class PnrParser {

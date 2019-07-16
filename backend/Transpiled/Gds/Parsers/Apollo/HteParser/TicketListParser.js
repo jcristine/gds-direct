@@ -14,7 +14,7 @@ const StringUtil = require('../../../../Lib/Utils/StringUtil.js');
  * '>*TE005;  GARCIAFERNANDE   0017729613238                        '
  * 'END OF LIST                                                     '
  */
-const php = require('../../../../php.js');
+const php = require('../../../../phpDeprecated.js');
 
 class TicketListParser {
 	static parse($dump) {

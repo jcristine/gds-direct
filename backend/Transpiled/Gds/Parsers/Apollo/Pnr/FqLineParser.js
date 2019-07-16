@@ -1,7 +1,7 @@
 
 // namespace Gds\Parsers\Apollo\ApolloReservationParser\AtfqParser;
 
-const php = require("../../../../php");
+const php = require("../../../../phpDeprecated");
 
 class FqLineParser
 {

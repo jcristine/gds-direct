@@ -4,7 +4,7 @@
 const PnrHistoryParser = require('../../../../../../../backend/Transpiled/Gds/Parsers/Apollo/PnrHistoryParser.js');
 const DisplayHistoryActionHelper = require("../../../../../../../backend/Transpiled/Rbs/GdsDirect/Actions/Apollo/DisplayHistoryActionHelper");
 
-let php = require('../../../../../../../backend/Transpiled/php.js');
+let php = require('../../../../../../../backend/Transpiled/phpDeprecated.js');
 
 class DisplayHistoryActionHelperTest extends require('../../../../../../../backend/Transpiled/Lib/TestCase.js')
 {

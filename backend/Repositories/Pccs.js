@@ -2,7 +2,7 @@ const iqJson = require("../Utils/TmpLib").iqJson;
 const {getConfig} = require('../Config.js');
 
 let Db = require('../Utils/Db.js');
-let php = require('../Transpiled/php.js');
+let php = require('../Transpiled/phpDeprecated.js');
 const sqlNow = require("../Utils/TmpLib").sqlNow;
 const Conflict = require("klesun-node-tools/src/Utils/Rej").Conflict;
 const NotFound = require("klesun-node-tools/src/Utils/Rej").NotFound;

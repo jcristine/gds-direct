@@ -8,7 +8,7 @@ const {fetchAll} = require('../../../../../../GdsHelpers/TravelportUtils.js');
 /**
  * calls >*HTE and >*TE001, >*TE002, ...
  */
-const php = require('../../../../../php.js');
+const php = require('../../../../../phpDeprecated.js');
 const Pccs = require("../../../../../../Repositories/Pccs");
 const TravelportClient = require("../../../../../../GdsClients/TravelportClient");
 const Forbidden = require("klesun-node-tools/src/Utils/Rej").Forbidden;

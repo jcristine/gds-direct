@@ -4,7 +4,7 @@
 const AbstractMaskParser = require('../../../../Gds/Parsers/Apollo/AbstractMaskParser.js');
 const StringUtil = require('../../../../Lib/Utils/StringUtil.js');
 
-let php = require('../../../../php.js');
+let php = require('../../../../phpDeprecated.js');
 
 /**
  * parses output of >*MCO{lineNumber};

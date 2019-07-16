@@ -9,7 +9,7 @@ const CommonParserHelpers = require('../../../../Gds/Parsers/Apollo/CommonParser
  * >FQDMCOSCL/15JUL18/R,06JUL18,P/ALA/IR/CL;
  * cmd type 'fareSearch'
  */
-const php = require('../../../../php.js');
+const php = require('../../../../phpDeprecated.js');
 class TariffCmdParser
 {
     static parseDate($raw)  {

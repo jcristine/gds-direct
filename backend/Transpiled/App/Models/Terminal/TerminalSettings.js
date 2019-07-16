@@ -1,5 +1,5 @@
 const Db = require('./../../../../Utils/Db.js');
-const {array_map, array_flip, array_intersect_key, empty, json_decode, str_split, intval, isset} = require("../../../php.js");
+const {array_map, array_flip, array_intersect_key, empty, json_decode, str_split, intval, isset} = require("../../../phpDeprecated.js");
 const RedisData = require("../../../../LibWrappers/RedisData.js");
 const AreaSettings = require("../../../../Repositories/AreaSettings");
 const GdsSessions = require("../../../../Repositories/GdsSessions");

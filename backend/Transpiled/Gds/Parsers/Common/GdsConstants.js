@@ -5,7 +5,7 @@
  * this class provides constants that are common for all GDS-es:
  * meal types/ssr codes/segment types/history codes/etc/etc...
  */
-const php = require('../../../php.js');
+const php = require('../../../phpDeprecated.js');
 class GdsConstants
 {
 }

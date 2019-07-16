@@ -1,7 +1,7 @@
 // namespace Lib\Utils;
 
 // I guess it really should be replaced by Func library and custom functions
-const php = require("../../php");
+const php = require("../../phpDeprecated");
 
 class Fp {
 	static map($function, $arr) {

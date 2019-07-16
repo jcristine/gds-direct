@@ -4,7 +4,7 @@
 const StringUtil = require('../../../../Lib/Utils/StringUtil.js');
 const BagLineParser = require('../../../../Gds/Parsers/Apollo/BaggageAllowanceParser/BagLineParser/BagLineParser.js');
 const BagLineStructureWriter = require('../../../../Gds/Parsers/Apollo/BaggageAllowanceParser/BagLineParser/BagLineStructureWriter.js');
-const php = require('../../../../php');
+const php = require('../../../../phpDeprecated');
 
 class NextToken
 {

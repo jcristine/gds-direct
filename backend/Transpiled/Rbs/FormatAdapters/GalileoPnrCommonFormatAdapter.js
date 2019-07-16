@@ -10,7 +10,7 @@ const ImportPnrCommonFormatAdapter = require('../../Rbs/Process/Common/ImportPnr
  * Transforms PNR to format compatible with any GDS, so
  * called "importPnr" format+ Removes Galileo-specific fields
  */
-const php = require('../../php.js');
+const php = require('../../phpDeprecated.js');
 class GalileoPnrCommonFormatAdapter
 {
     static transformPnrInfo($headerData, $fetchedDt)  {

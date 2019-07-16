@@ -9,7 +9,7 @@ const PhToNormalPricing = require('../../../../../FormatAdapters/PhToNormalPrici
 /**
  * parses >WP
  */
-const php = require('../../../../php.js');
+const php = require('../../../../phpDeprecated.js');
 const PricingCommonHelper = require("./PricingCommonHelper");
 const PhilippinePricingParser = require("../../../../../Parsers/Sabre/PhPricingParser");
 

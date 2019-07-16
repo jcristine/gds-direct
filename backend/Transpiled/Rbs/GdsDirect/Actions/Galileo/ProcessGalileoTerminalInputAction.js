@@ -24,7 +24,7 @@ const PnrParser = require('../../../../Gds/Parsers/Galileo/Pnr/PnrParser.js');
 const PtcUtil = require('../../../../Rbs/Process/Common/PtcUtil.js');
 const GalileoPnr = require('../../../../Rbs/TravelDs/GalileoPnr.js');
 const RebuildInPccAction = require('./RebuildInPccAction.js');
-const php = require('../../../../php.js');
+const php = require('../../../../phpDeprecated.js');
 const GalileoRetrieveTicketsAction = require('../../../../Rbs/Process/Apollo/ImportPnr/Actions/RetrieveApolloTicketsAction.js');
 const Rej = require('klesun-node-tools/src/Utils/Rej.js');
 

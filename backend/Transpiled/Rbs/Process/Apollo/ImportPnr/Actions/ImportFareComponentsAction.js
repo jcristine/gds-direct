@@ -12,7 +12,7 @@ const {fetchAll} = require('../../../../../../GdsHelpers/TravelportUtils.js');
  *
  * expects session be in a Pricing context
  */
-const php = require('../../../../../php.js');
+const php = require('../../../../../phpDeprecated.js');
 
 class ImportFareComponentsAction extends AbstractGdsAction {
 

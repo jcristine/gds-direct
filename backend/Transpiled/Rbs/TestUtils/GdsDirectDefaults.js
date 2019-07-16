@@ -1,6 +1,6 @@
 // namespace Rbs\TestUtils;
 
-let php = require('../../php');
+let php = require('../../phpDeprecated');
 const Agent = require("../../../DataFormats/Wrappers/Agent");
 const Fp = require('../../Lib/Utils/Fp.js');
 const AnyGdsStubSession = require('./AnyGdsStubSession.js');

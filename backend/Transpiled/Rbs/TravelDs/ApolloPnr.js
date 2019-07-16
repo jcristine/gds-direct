@@ -2,7 +2,7 @@
 
 const Fp = require('../../Lib/Utils/Fp.js');
 const ApolloReservationParser = require('../../Gds/Parsers/Apollo/Pnr/PnrParser.js');
-const php = require('../../php');
+const php = require('../../phpDeprecated');
 
 class ApolloPnr {
 	static makeFromDump($dump) {

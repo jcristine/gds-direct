@@ -12,7 +12,7 @@ const CommonParserHelpers = require('../../../../Gds/Parsers/Apollo/CommonParser
  * '  2+ 1A*SV2AMX/08MAR 1352',
  * '><',
  */
-const php = require('../../../../php.js');
+const php = require('../../../../phpDeprecated.js');
 class VlParser
 {
     static parseCodeToken($str)  {

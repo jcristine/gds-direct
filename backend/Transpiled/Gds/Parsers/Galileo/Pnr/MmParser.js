@@ -13,7 +13,7 @@ const StringUtil = require('../../../../Lib/Utils/StringUtil.js');
  * 'P  4+ LIBERMANE/STAS    BA  123456',
  * '                        SN  1234',
  */
-const php = require('../../../../php.js');
+const php = require('../../../../phpDeprecated.js');
 class MmParser
 {
     static parseRpogramLine($line)  {

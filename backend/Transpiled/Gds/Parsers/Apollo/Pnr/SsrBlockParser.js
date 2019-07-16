@@ -3,7 +3,7 @@
 
 const StringUtil = require('../../../../Lib/Utils/StringUtil.js');
 const CommonParserHelpers = require('../../../../Gds/Parsers/Apollo/CommonParserHelpers.js');
-const php = require('../../../../php');
+const php = require('../../../../phpDeprecated');
 
 /**
  * SSR block is *R GFAX- line and several lines after that

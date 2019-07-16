@@ -7,7 +7,7 @@ const Fp = require('../../../Lib/Utils/Fp.js');
  * Amadeus: NON-TRANSLATABLE
  * Galileo: M+P1*DL/P2*AA@
  */
-const php = require('../../../php.js');
+const php = require('../../../phpDeprecated.js');
 
 class TranslateChangeFrequentFlyerNumber {
 	static normalizeData($parsedData, $gds) {

@@ -4,7 +4,7 @@
 const ApolloCmdParser = require('../../../../Gds/Parsers/Apollo/CommandParser.js');
 const DateTime = require('../../../../Lib/Utils/DateTime.js');
 
-let php = require('../../../../php.js');
+let php = require('../../../../phpDeprecated.js');
 
 /** takes gds and tariff cmd like $D10DECKIVRIX and parses it into a structure common to all GDS-es */
 class NormalizeTariffCmd

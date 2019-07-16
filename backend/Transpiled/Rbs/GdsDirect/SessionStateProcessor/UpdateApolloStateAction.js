@@ -12,7 +12,7 @@ const CommandParser = require('../../../Gds/Parsers/Apollo/CommandParser.js');
 const ApolloRepeatItineraryAction = require('../../../Rbs/GdsAction/ApolloRepeatItineraryAction.js');
 const ImportPnrAction = require('../../../Rbs/Process/Common/ImportPnr/ImportPnrAction.js');
 const ApolloPnr = require('../../../Rbs/TravelDs/ApolloPnr.js');
-const php = require("./../../../../../backend/Transpiled/php");
+const php = require("../../../phpDeprecated");
 const SessionStateHelper = require("./SessionStateHelper");
 
 class UpdateApolloStateAction {

@@ -7,7 +7,7 @@ const SsrBlockParser = require('../../Gds/Parsers/Apollo/Pnr/SsrBlockParser.js')
 const ImportPnrCommonFormatAdapter = require('../../Rbs/Process/Common/ImportPnr/ImportPnrCommonFormatAdapter.js');
 const ItineraryParser = require('../../Gds/Parsers/Sabre/Pnr/ItineraryParser.js');
 
-let php = require('../../php.js');
+let php = require('../../phpDeprecated.js');
 
 /**
  * converts data from our internal structure

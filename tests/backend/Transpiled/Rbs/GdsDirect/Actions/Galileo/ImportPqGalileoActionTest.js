@@ -3,7 +3,7 @@
 const AnyGdsStubSession = require('../../../../../../../backend/Transpiled/Rbs/TestUtils/AnyGdsStubSession.js');
 const ImportPqGalileoAction = require('../../../../../../../backend/Transpiled/Rbs/GdsDirect/Actions/Galileo/ImportPqGalileoAction.js');
 
-const php = require('../../../../../../../backend/Transpiled/php.js');
+const php = require('../../../../../../../backend/Transpiled/phpDeprecated.js');
 
 class ImportPqGalileoActionTest extends require('../../../../../../../backend/Transpiled/Lib/TestCase.js') {
 	provideTestCases() {

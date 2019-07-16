@@ -4,7 +4,7 @@
 const StringUtil = require('../../../../Lib/Utils/StringUtil.js');
 const CommonParserHelpers = require('../../../../Gds/Parsers/Apollo/CommonParserHelpers.js');
 const ItineraryParser = require("./ItineraryParser");
-const php = require("./../../../../php");
+const php = require("../../../../phpDeprecated");
 const GdsPassengerBlockParser = require("../../Common/GdsPassengerBlockParser");
 
 class HeaderParser

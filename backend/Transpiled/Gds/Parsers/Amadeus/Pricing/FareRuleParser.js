@@ -5,7 +5,7 @@ const ArrayUtil = require('../../../../Lib/Utils/ArrayUtil.js');
 const Fp = require('../../../../Lib/Utils/Fp.js');
 const StringUtil = require('../../../../Lib/Utils/StringUtil.js');
 const FareRuleSectionParser = require('../../../../Gds/Parsers/Common/FareRuleSectionParser.js');
-const php = require('../../../../php.js');
+const php = require('../../../../phpDeprecated.js');
 
 /**
  * parses output of >FQN...; which displays Fare Rules or component list

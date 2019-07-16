@@ -1,6 +1,6 @@
 const Lexer = require('../../../Lib/Lexer/Lexer.js');
 const Lexeme = require('../../../Lib/Lexer/Lexeme.js');
-const php = require('../../../php.js');
+const php = require('../../../phpDeprecated.js');
 const ApoCmdParser = require('../../../Gds/Parsers/Apollo/CommandParser.js');
 const GalCmdParser = require('../../../Gds/Parsers/Galileo/CommandParser.js');
 const SabCmdParser = require('../../../Gds/Parsers/Sabre/CommandParser.js');

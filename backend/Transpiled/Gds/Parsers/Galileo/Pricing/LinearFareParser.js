@@ -22,7 +22,7 @@ const FareConstructionParser = require('../../../../Gds/Parsers/Common/FareConst
  * '  KIV PS X/IEV PS RIX 603.79D1EP4 NUC603.79END ROE0.844659'
  * '  FARE EUR 510.00 EQU USD 628.00 TOT USD 628.00'
  */
-const php = require('../../../../php.js');
+const php = require('../../../../phpDeprecated.js');
 
 class LinearFareParser {
 	/** @param $query = '1-3' || '1.3' || '1-3.5-6.8' */

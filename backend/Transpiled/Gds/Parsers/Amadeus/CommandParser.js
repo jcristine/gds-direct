@@ -6,7 +6,7 @@ const StringUtil = require('../../../Lib/Utils/StringUtil.js');
 const PricingCmdParser = require('../../../Gds/Parsers/Amadeus/Commands/PricingCmdParser.js');
 const TariffCmdParser = require('../../../Gds/Parsers/Amadeus/Commands/TariffCmdParser.js');
 
-const php = require('../../../php.js');
+const php = require('../../../phpDeprecated.js');
 const CommonParsersHelper = require("../Apollo/CommonParserHelpers");
 class CommandParser
 {

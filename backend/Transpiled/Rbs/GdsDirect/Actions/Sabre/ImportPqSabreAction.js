@@ -2,7 +2,7 @@
 
 const Fp = require('../../../../Lib/Utils/Fp.js');
 const AbstractGdsAction = require('../../../../Rbs/GdsAction/AbstractGdsAction.js');
-const php = require('../../../../php.js');
+const php = require('../../../../phpDeprecated.js');
 const GetPqItineraryAction = require('../../SessionStateProcessor/CanCreatePqRules.js');
 const CmsSabreTerminal = require('../../../../Rbs/GdsDirect/GdsInterface/CmsSabreTerminal.js');
 const CommandParser = require('../../../../Gds/Parsers/Sabre/CommandParser.js');

@@ -7,7 +7,7 @@ const StringUtil = require('../../../Lib/Utils/StringUtil.js');
 /**
  * parse output of RT{parameters} that results in PNR list
  */
-const php = require('../../../php.js');
+const php = require('../../../phpDeprecated.js');
 class PnrSearchParser
 {
     static parseSequence($linesLeft, $parse)  {

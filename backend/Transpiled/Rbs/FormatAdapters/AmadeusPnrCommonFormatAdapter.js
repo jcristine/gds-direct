@@ -9,7 +9,7 @@ const ImportPnrCommonFormatAdapter = require('../../Rbs/Process/Common/ImportPnr
  * transforms PNR to format compatible with any GDS
  * removes Amadeus-specific fields
  */
-const php = require('../../php.js');
+const php = require('../../phpDeprecated.js');
 class AmadeusPnrCommonFormatAdapter
 {
     /** @param string|null $baseDate = '2017-05-12 23:13:14'  */

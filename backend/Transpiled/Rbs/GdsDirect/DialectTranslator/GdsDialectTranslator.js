@@ -10,7 +10,7 @@
  *        'errors' => [],
  *     ];
  */
-const php = require('../../../php.js');
+const php = require('../../../phpDeprecated.js');
 const PatternTranslator = require("./PatternTranslator");
 const TranslateAvailabilityCmdAction = require("./TranslateAvailabilityCmdAction");
 const TranslateTariffDisplayCmdAction = require("./TranslateTariffDisplayCmdAction");

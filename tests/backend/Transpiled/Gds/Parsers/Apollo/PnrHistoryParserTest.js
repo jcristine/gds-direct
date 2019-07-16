@@ -3,7 +3,7 @@
 
 const PnrHistoryParser = require("../../../../../../backend/Transpiled/Gds/Parsers/Apollo/PnrHistoryParser");
 
-let php = require('../../../../../../backend/Transpiled/php.js');
+let php = require('../../../../../../backend/Transpiled/phpDeprecated.js');
 
 class PnrHistoryParserTest extends require('../../../../../../backend/Transpiled/Lib/TestCase.js') {
 	provideDumps() {

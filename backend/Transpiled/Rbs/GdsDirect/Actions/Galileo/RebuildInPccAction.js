@@ -11,7 +11,7 @@ const {fetchAll} = require('../../../../../GdsHelpers/TravelportUtils.js');
  * emulate into specified PCC in specified area and rebuild the itinerary
  * fallbacks to passive (AK) segments if there is no availability
  */
-const php = require('../../../../php.js');
+const php = require('../../../../phpDeprecated.js');
 
 class RebuildInPccAction extends AbstractGdsAction {
 	constructor() {

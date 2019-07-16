@@ -5,7 +5,7 @@ const StringUtil = require('../../../Lib/Utils/StringUtil.js');
 const GdsConstants = require('../../../Gds/Parsers/Common/GdsConstants.js');
 const SabreVerifyParsedStructureWriter = require('./SabreVerifyParsedStructureWriter.js');
 
-const php = require('../../../php.js');
+const php = require('../../../phpDeprecated.js');
 class SabreVerifyParser
 {
     static isValidHeader($firstLine)  {

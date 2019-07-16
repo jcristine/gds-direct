@@ -7,7 +7,7 @@ const StringUtil = require('../../Lib/Utils/StringUtil.js');
 const GalileoReservationParser = require('../../Gds/Parsers/Galileo/Pnr/PnrParser.js');
 const ItineraryParser = require('../../Gds/Parsers/Galileo/Pnr/ItineraryParser.js');
 
-const php = require('../../php.js');
+const php = require('../../phpDeprecated.js');
 class GalileoPnr
 {
     static makeFromDump($dump)  {

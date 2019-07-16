@@ -5,7 +5,7 @@ const StringUtil = require('../../../Lib/Utils/StringUtil.js');
 const Lexeme = require('../../../Lib/Lexer/Lexeme.js');
 const Lexer = require('../../../Lib/Lexer/Lexer.js');
 const AtfqParser = require('../../../Gds/Parsers/Apollo/Pnr/AtfqParser.js');
-const php = require("../../../php");
+const php = require("../../../phpDeprecated");
 const CommonParserHelpers = require("./CommonParserHelpers");
 const {mkReg} = require('klesun-node-tools/src/Utils/Misc.js');
 

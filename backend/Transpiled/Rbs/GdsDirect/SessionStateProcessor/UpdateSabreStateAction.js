@@ -13,7 +13,7 @@ const SabreReservationParser = require('../../../Gds/Parsers/Sabre/Pnr/PnrParser
 const ImportPnrAction = require('../../../Rbs/Process/Common/ImportPnr/ImportPnrAction.js');
 const SabrePnr = require('../../../Rbs/TravelDs/SabrePnr.js');
 
-const php = require('../../../php.js');
+const php = require('../../../phpDeprecated.js');
 const SessionStateHelper = require("./SessionStateHelper");
 class UpdateSabreStateAction
 {

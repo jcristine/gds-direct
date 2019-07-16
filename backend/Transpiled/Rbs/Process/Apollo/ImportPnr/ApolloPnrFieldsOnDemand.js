@@ -1,7 +1,7 @@
 
 // namespace Rbs\Process\Apollo\ImportPnr;
 
-const php = require('../../../../php.js');
+const php = require('../../../../phpDeprecated.js');
 
 class ApolloPnrFieldsOnDemand
 {

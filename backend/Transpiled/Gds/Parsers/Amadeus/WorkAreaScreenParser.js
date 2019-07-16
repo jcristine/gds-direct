@@ -7,7 +7,7 @@ const StringUtil = require('../../../Lib/Utils/StringUtil.js');
  * parses >OP/W*;
  * it is screen that displays work areas' state - PCC, PNR, etc...
  */
-const php = require('../../../php.js');
+const php = require('../../../phpDeprecated.js');
 class WorkAreaScreenParser
 {
     static parseAreaLine($line)  {

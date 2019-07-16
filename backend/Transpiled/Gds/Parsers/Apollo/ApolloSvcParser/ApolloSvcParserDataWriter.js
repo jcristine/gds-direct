@@ -1,6 +1,6 @@
 // namespace Gds\Parsers\Apollo\ApolloSvcParser;
 
-const php = require('../../../../php.js');
+const php = require('../../../../phpDeprecated.js');
 
 class ApolloSvcParserDataWriter {
 	static make() {

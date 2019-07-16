@@ -3,7 +3,7 @@
 
 const SessionStateProcessor = require('../../../../../../backend/Transpiled/Rbs/GdsDirect/SessionStateProcessor/SessionStateProcessor.js');
 const GdsDirectDefaults = require('../../../../../../backend/Transpiled/Rbs/TestUtils/GdsDirectDefaults.js');
-let php = require('../../../../../../backend/Transpiled/php');
+let php = require('../../../../../../backend/Transpiled/phpDeprecated');
 
 class SessionStateProcessorTest extends require('../../../../../../backend/Transpiled/Lib/TestCase.js')
 {

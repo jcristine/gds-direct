@@ -3,7 +3,7 @@
 const StringUtil = require('../../Lib/Utils/StringUtil.js');
 const Errors = require("./Errors");
 
-let php = require('../../php.js');
+let php = require('../../phpDeprecated.js');
 
 const ApoCmdParser = require('../../Gds/Parsers/Apollo/CommandParser.js');
 const GalCmdParser = require('../../Gds/Parsers/Galileo/CommandParser.js');

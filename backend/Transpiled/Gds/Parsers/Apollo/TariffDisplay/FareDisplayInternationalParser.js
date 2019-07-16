@@ -3,7 +3,7 @@
 
 const StringUtil = require('../../../../Lib/Utils/StringUtil.js');
 const FareDisplayCommonParser = require("./FareDisplayCommonParser");
-const php = require('../../../../php.js');
+const php = require('../../../../phpDeprecated.js');
 
 class FareDisplayInternationalParser extends FareDisplayCommonParser
 {

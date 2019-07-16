@@ -1,7 +1,7 @@
 
 // namespace Rbs\GdsAction;
 
-let php = require('../../php');
+let php = require('../../phpDeprecated');
 
 /**
  * initializes new PNR with data from the existing PNR in session

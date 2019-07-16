@@ -3,7 +3,7 @@
 
 const NextToken = require("./NextToken");
 const ParserState = require("./ParserState");
-const php = require('../../../../../php');
+const php = require('../../../../../phpDeprecated');
 
 class BaggageAllowanceParserBagLineException extends Error
 {

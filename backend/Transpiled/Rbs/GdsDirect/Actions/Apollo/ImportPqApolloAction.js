@@ -17,7 +17,7 @@ const ApolloBaggageAdapter = require('../../../FormatAdapters/ApolloBaggageAdapt
 const RetrieveFlightServiceInfoAction = require('../../../../Rbs/Process/Apollo/ImportPnr/Actions/RetrieveFlightServiceInfoAction.js');
 const ImportFareComponentsAction = require('../../../../Rbs/Process/Apollo/ImportPnr/Actions/ImportFareComponentsAction.js');
 
-let php = require('../../../../php.js');
+let php = require('../../../../phpDeprecated.js');
 const Rej = require("klesun-node-tools/src/Utils/Rej");
 const withCapture = require("../../../../../GdsHelpers/CommonUtils").withCapture;
 

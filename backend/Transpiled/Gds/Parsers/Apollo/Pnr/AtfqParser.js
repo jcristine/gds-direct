@@ -3,7 +3,7 @@
 const StringUtil = require('../../../../Lib/Utils/StringUtil.js');
 const Lexeme = require('../../../../Lib/Lexer/Lexeme.js');
 const Lexer = require('../../../../Lib/Lexer/Lexer.js');
-const php = require("../../../../php");
+const php = require("../../../../phpDeprecated");
 const FqLineParser = require("./FqLineParser.js");
 
 const BagAllowanceParser = {

@@ -3,7 +3,7 @@
 const Fp = require('../../../../Lib/Utils/Fp.js');
 const StringUtil = require('../../../../Lib/Utils/StringUtil.js');
 
-const php = require('../../../../php.js');
+const php = require('../../../../phpDeprecated.js');
 
 class AccountingDataParser {
 	static toRemoveIndent($size) {

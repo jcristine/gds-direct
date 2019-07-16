@@ -2,7 +2,7 @@
 // namespace Rbs\GdsDirect;
 
 const StringUtil = require('../../Lib/Utils/StringUtil.js');
-const php = require('../../php');
+const php = require('../../phpDeprecated');
 
 /**
  * lists error messages common for all GDS-es

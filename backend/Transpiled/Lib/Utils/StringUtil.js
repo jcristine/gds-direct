@@ -1,5 +1,5 @@
 
-const php = require("../../php");
+const php = require("../../phpDeprecated");
 
 
 // namespace Lib\Utils;

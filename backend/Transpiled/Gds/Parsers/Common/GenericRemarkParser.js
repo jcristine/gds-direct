@@ -1,7 +1,7 @@
 
 // namespace Gds\Parsers\Common;
 
-let php = require('./../../../php');
+let php = require('../../../phpDeprecated');
 
 /**
  * parses remarks in our format, that we leave in all GDS-es

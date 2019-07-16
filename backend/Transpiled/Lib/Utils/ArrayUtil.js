@@ -1,6 +1,6 @@
 // namespace Lib\Utils;
 
-let php = require('../../php.js');
+let php = require('../../phpDeprecated.js');
 
 class ArrayUtil {
 	static overwrite($originalArray, $newArray) {

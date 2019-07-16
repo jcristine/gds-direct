@@ -11,7 +11,7 @@ let ProcessTerminalInput = require('../Actions/ProcessTerminalInput.js');
 const MakeMcoApolloAction = require('../Transpiled/Rbs/GdsDirect/Actions/Apollo/MakeMcoApolloAction.js');
 const TerminalService = require('../Transpiled/App/Services/TerminalService.js');
 
-let php = require('../Transpiled/php.js');
+let php = require('../Transpiled/phpDeprecated.js');
 const CmsClient = require("../IqClients/CmsClient");
 const GdsProfiles = require("../Repositories/GdsProfiles");
 const UnprocessableEntity = require('klesun-node-tools/src/Utils/Rej').UnprocessableEntity;

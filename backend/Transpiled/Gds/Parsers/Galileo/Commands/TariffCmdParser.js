@@ -3,7 +3,7 @@ const ApoCmdParser = require("../../Apollo/CommandParser");
 const CommonParserHelpers = require('../../Apollo/CommonParserHelpers.js');
 const Lexeme = require('../../../../Lib/Lexer/Lexeme.js');
 const Lexer = require('../../../../Lib/Lexer/Lexer.js');
-const php = require('../../../../php.js');
+const php = require('../../../../phpDeprecated.js');
 const Fp = require('../../../../Lib/Utils/Fp.js');
 
 let parseDate = ($raw) => {
