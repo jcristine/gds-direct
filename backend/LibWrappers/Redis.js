@@ -60,6 +60,25 @@ exports.withLock = async ({lockKey, action, lockSeconds = 15, lockValue = 'locke
 	}
 };
 
+/**
+ * @template T
+ * @param {String} cacheKey
+ * @param {function(): T} action
+ * @param {Number} expireSeconds
+ * @return Promise<T>
+ */
+exports.withCache = async ({cacheKey, expireSeconds, action}) => {
+	let redis = await getClient();
+	let jsonFromCache = await redis.get(cacheKey).catch(exc => null);
+	if (jsonFromCache) {
+		return JSON.parse(jsonFromCache);
+	} else {
+		let result = await action();
+		redis.set(cacheKey, JSON.stringify(result), 'EX', expireSeconds);
+		return result;
+	}
+};
+
 exports.getInfo = async () => {
 	let client = await getClient();
 	return client.info().then(text => {
