@@ -35,10 +35,12 @@ const UpdateData = require("./backend/Maintenance/UpdateData");
 	Diag.log('Started updateData process with log id: ' + updateData.workerLogId);
 
 	let terminate = async (signal) => {
-		Diag.log('Server is gracefully shutting down due to signal: ' + signal, {
-			memoryUsage: process.memoryUsage(),
-		});
-		await keepAlive.terminate();
+		await Promise.all([
+			Diag.log('Server is gracefully shutting down due to signal: ' + signal, {
+				memoryUsage: process.memoryUsage(),
+			}).catch(exc => null),
+			keepAlive.terminate().catch(exc => null),
+		]);
 		process.exit(0);
 	};
 	process.on('SIGINT', terminate);
