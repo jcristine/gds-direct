@@ -13,7 +13,7 @@ const SabrePricingAdapter = require('../../../FormatAdapters/SabrePricingAdapter
 const SabreVerifyParser = require('../../../../Gds/Parsers/Sabre/SabreVerifyParser.js');
 const ImportSabreFareRulesActions = require('../../../../Rbs/Process/Apollo/ImportPnr/Actions/ImportSabreFareRulesActions.js');
 const withCapture = require("../../../../../GdsHelpers/CommonUtils").withCapture;
-const Rej = require('klesun-node-tools/src/Utils/Rej.js');
+const Rej = require('klesun-node-tools/src/Rej.js');
 
 /**
  * import PNR fields of currently opened PNR
@@ -99,8 +99,7 @@ class ImportPqSabreAction extends AbstractGdsAction {
 			$result['parsed'] = $common;
 		}
 		if (!php.empty($errors = GetPqItineraryAction.checkPnrData($common))) {
-			$result['error'] = 'Invalid PNR data - ' + php.implode(';', $errors);
-			return $result;
+			return Rej.BadRequest('Invalid PNR data - ' + php.implode(';', $errors));
 		}
 		return $result;
 	}
