@@ -1,9 +1,10 @@
 
 let ioredis = require("ioredis");
 let {getRedisConfig} = require('klesun-node-tools/src/Config.js');
-const Conflict = require("klesun-node-tools/src/Utils/Rej").Conflict;
+const Conflict = require("klesun-node-tools/src/Rej").Conflict;
 let {never, StrConsts} = require('../Utils/StrConsts.js');
-const nonEmpty = require("klesun-node-tools/src/Utils/Rej").nonEmpty;
+const nonEmpty = require("klesun-node-tools/src/Rej").nonEmpty;
+const {onDemand} = require("klesun-node-tools/src/Lang.js");
 
 exports.keys = StrConsts({
 	get SESSION_ACTIVES() { never(); },
@@ -17,16 +18,23 @@ exports.keys = StrConsts({
 	get HIGHLIGHT_RULES_UPDATE_MS() { never(); },
 }, 'GRECT_');
 
-let whenClient = null;
+exports.events = StrConsts({
+	get RESTART_SERVER() { never(); },
+}, 'GRECT_EVENT_');
+
 /** @return Promise<IIoRedisClient> */
-let getClient = () => {
-	if (whenClient === null) {
-		whenClient = getRedisConfig().then(cfg => {
-			return new ioredis(cfg.REDIS_PORT, cfg.REDIS_HOST);
-		});
-	}
-	return whenClient;
-};
+let getClient = onDemand(async () => {
+	let cfg = await getRedisConfig();
+	return new ioredis(cfg.REDIS_PORT, cfg.REDIS_HOST);
+});
+/**
+ * because "Error: Connection in subscriber mode, only subscriber commands may be used"
+ * @return Promise<IIoRedisClient>
+ */
+exports.getSubscriber = onDemand(async () => {
+	let cfg = await getRedisConfig();
+	return new ioredis(cfg.REDIS_PORT, cfg.REDIS_HOST);
+});
 
 exports.getClient = getClient;
 

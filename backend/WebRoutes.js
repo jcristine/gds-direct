@@ -26,8 +26,12 @@ const Settings = require("./Repositories/Settings");
 const SocketIo = require('./LibWrappers/SocketIo.js');
 const LibConfig = require('klesun-node-tools/src/Config.js');
 const ParsersController = require("./HttpControllers/ParsersController");
+const {readFile} = require('fs').promises;
 
 let app = express();
+
+let fetchTagFromFs = () => readFile(__dirname + '/../public/CURRENT_PRODUCTION_TAG', 'utf8');
+let whenStartupTag = fetchTagFromFs();
 
 app.use(express.json({limit: '1mb'}));
 app.use(express.urlencoded({extended: true}));
@@ -347,7 +351,6 @@ app.post('/admin/deleteSetting', withOwnerAuth(Settings.delete));
 app.get('/admin/status', withDevAuth(async (reqBody, emcResult) => {
 	let v8 = require('v8');
 	let PersistentHttpRq = require('klesun-node-tools/src/Utils/PersistentHttpRq.js');
-	let {readFile} = require('fs').promises;
 	let tag = await readFile(__dirname + '/../public/CURRENT_PRODUCTION_TAG', 'utf8').catch(exc => 'FS error - ' + exc);
 	return {
 		tag: tag,
@@ -428,6 +431,38 @@ for (let [route, expressAction] of Object.entries(routes)) {
 	app.post(route, expressAction);
 }
 
+Redis.getSubscriber().then(async sub => {
+	sub.subscribe(Redis.events.RESTART_SERVER);
+	sub.on('message', async (channel, message) => {
+		if (channel === Redis.events.RESTART_SERVER) {
+			let msg = 'Server is gracefully shutting down due to Redis RESTART_SERVER event';
+			await Diag.log(msg, message).catch(exc => null);
+			process.exit(0);
+		}
+	});
+});
+app.get('/server/restartIfNeeded', toHandleHttp(async (rqBody) => {
+	// not so important as long as we check whether tag in fs changed
+	let password = rqBody.password;
+	if (password !== '28145f8f7e54a60d2c3905edcce2dabb') {
+		return Rej.Forbidden('GRECT Access Denied');
+	}
+	let startupTag = await whenStartupTag.catch(exc => null);
+	let currentTag = await fetchTagFromFs().catch(exc => null);
+
+	if (!currentTag) {
+		return Rej.NotImplemented('CURRENT_PRODUCTION_TAG is absent in FS, please supply it before requesting server restart');
+	}
+	if (startupTag && startupTag === currentTag) {
+		return Rej.TooEarly('CURRENT_PRODUCTION_TAG ' + currentTag + ' did not change since last startup');
+	} else {
+		let redis = await Redis.getClient();
+		return redis.publish(Redis.events.RESTART_SERVER, JSON.stringify({
+			reason: 'HTTP new tag restart request',
+			message: rqBody.message || null,
+		}));
+	}
+}));
 app.get('/ping', toHandleHttp((rqBody) => {
 	let memory = {};
 	const used2 = process.memoryUsage();
