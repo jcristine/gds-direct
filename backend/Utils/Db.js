@@ -1,9 +1,10 @@
 
 let mysql = require('promise-mysql');
 let {getDbConfig} = require('klesun-node-tools/src/Config.js');
-const NotFound = require("klesun-node-tools/src/Utils/Rej").NotFound;
+const NotFound = require("klesun-node-tools/src/Rej").NotFound;
 const Diag = require('../LibWrappers/Diag.js');
 const {SqlUtil} = require('klesun-node-tools');
+const {jsExport} = require('klesun-node-tools/src/Utils/Misc.js');
 
 let whenPool = null;
 let getPool = () => {
@@ -88,11 +89,11 @@ Db.with = async (process) => {
 		.then(() => process(Db(dbConn)))
 		.catch(exc => {
 			if (exc.httpStatusCode !== NotFound.httpStatusCode) {
-				Diag.error('SQL query failed ' + exc, {
+				Diag.error('SQL query failed ' + exc, jsExport({
 					message: exc.message,
 					stack: exc.stack,
 					exc: exc,
-				});
+				}));
 			}
 			return Promise.reject(exc);
 		})

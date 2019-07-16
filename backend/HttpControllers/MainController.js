@@ -164,6 +164,8 @@ process.on('unhandledRejection', (exc, promise) => {
 		...exc,
 	};
 	if (isSystemError(exc)) {
+		// TODO: report to diag, the reason it was disabled
+		//  was caused by code mistake as it appears
 		if (!Config.production) {
 			console.error('Unhandled Promise Rejection', data);
 		}
