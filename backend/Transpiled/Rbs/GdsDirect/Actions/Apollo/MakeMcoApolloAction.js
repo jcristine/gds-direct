@@ -9,7 +9,7 @@ const AbstractGdsAction = require('../../../GdsAction/AbstractGdsAction.js');
 const fetchAll = require("../../../../../GdsHelpers/TravelportUtils").fetchAll;
 const McoListParser = require('../../../../Gds/Parsers/Apollo/Mco/McoListParser.js');
 const McoMaskParser = require('../../../../Gds/Parsers/Apollo/Mco/McoMaskParser.js');
-const Rej = require('klesun-node-tools/src/Utils/Rej.js');
+const Rej = require('klesun-node-tools/src/Rej.js');
 
 let php = require('../../../../php.js');
 
@@ -25,18 +25,18 @@ class MakeMcoApolloAction extends AbstractGdsAction
         $hub = await Airlines.findByCode($validatingCarrier)
             .then(r => r.hub).catch(() => null);
         if (!$validatingCarrier) {
-            return {'errors': ['Validating carrier must be present in ATFQ']};
+            return Rej.BadRequest('Validating carrier must be present in ATFQ');
         }
         let $storedParams = McoMaskParser.parse($mcoMask);
         if ($storedParams.error) {
-            return {'errors': ['Failed to parse MCO mask - ' + $storedParams.error]};
+            return Rej.UnprocessableEntity('Failed to parse MCO mask - ' + $storedParams.error);
         }
         $fop = $storedParams['formOfPayment']['raw'];
         $expirationDate = ($storedParams['expirationYear'] && $storedParams['expirationMonth'])
             ? '20'+$storedParams['expirationYear']+'-'+$storedParams['expirationMonth']+'-01'
             : null;
         if (!$fop || !$expirationDate || !$storedParams['approvalCode']) {
-            return {'errors': ['Approved FOP must be present']};
+            return Rej.BadRequest('Approved FOP must be present');
         }
         if (!StringUtil.endsWith($fop, '/OK')) {
             $fop += '/OK';
@@ -55,7 +55,7 @@ class MakeMcoApolloAction extends AbstractGdsAction
         let pnrDump = (await fetchAll('*R', this)).output;
         $pnr = ApolloPnr.makeFromDump(pnrDump);
         if (!$pnr.getRecordLocator()) {
-            return {'errors': ['Must be in a PNR']};
+            return Rej.BadRequest('Must be in a PNR');
         }
         $mcoMask = (await fetchAll('HHMCO', this)).output;
         return this.constructor.getMcoParams($pnr, $mcoMask);
@@ -96,9 +96,6 @@ class MakeMcoApolloAction extends AbstractGdsAction
     async execute($userParams)  {
         let $params, $mcoResult;
         $params = await this.prepareParams($userParams);
-        if ($params['errors'] || null) {
-            return {'errors': $params['errors']};
-        }
         $mcoResult = await new ApolloMakeMcoAction()
             .setSession(this.session)
             .execute($params);
@@ -116,7 +113,7 @@ class MakeMcoApolloAction extends AbstractGdsAction
             ) {
                 return Rej.BadRequest(msg);
             } else {
-                return {errors: [msg]};
+                return Rej.UnprocessableEntity(msg);
             }
         }
     }

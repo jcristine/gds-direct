@@ -232,11 +232,8 @@ exports.makeMco = async ({rqBody, session, emcUser}) => {
 	let stateful = await StatefulSession.makeFromDb({session, emcUser});
 	let mcoResult = await (new MakeMcoApolloAction())
 		.setSession(stateful).execute(mcoData);
-	if (!php.empty(mcoResult.errors)) {
-		return UnprocessableEntity('Failed to MCO - ' + mcoResult.errors.join('; '));
-	} else {
-		return makeMaskRs(mcoResult.calledCommands);
-	}
+
+	return makeMaskRs(mcoResult.calledCommands);
 };
 
 exports.exchangeTicket = async ({rqBody, session, emcUser}) => {
