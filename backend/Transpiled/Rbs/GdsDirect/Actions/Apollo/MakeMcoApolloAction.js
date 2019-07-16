@@ -107,9 +107,10 @@ class MakeMcoApolloAction extends AbstractGdsAction
                 }],
             };
         } else {
-            let msg = 'Failed to issue MCO: '+$mcoResult['response'].trimEnd().replace(/[\s\S]*\n/, '');
-            if ($mcoResult['response'].trim().startsWith('MISSING - ') ||
-                $mcoResult['response'].trim().startsWith('INVALID FORMAT -')
+            let lastLine = $mcoResult['response'].trimEnd().replace(/[\s\S]*\n/, '');
+            let msg = 'Failed to issue MCO: ' + lastLine;
+            if (lastLine.trim().startsWith('MISSING - ') ||
+                lastLine.trim().startsWith('INVALID FORMAT -')
             ) {
                 return Rej.BadRequest(msg);
             } else {
