@@ -12,7 +12,11 @@ let makeBriefSessionInfo = (fullState) => {
 	});
 };
 
-class TerminalService
+/**
+ * takes terminal command result in generic any-GDS
+ * format and transforms it to the format frontend expects
+ */
+class CmdResultAdapter
 {
 	constructor(gds) {
 		this.gds = gds;
@@ -75,6 +79,15 @@ class TerminalService
 		return $string;
 	}
 
+	/**
+	 * @param {String} $command - the command entered by agent; if it matches
+	 *  the actually called command, the latter won't be included in final output
+	 * @param {{
+	 *     calledCommands: [{cmd: '$BB0/*JCB/CUA', output: 'NO VALID FARE FOR INPUT CRITERIA\\n><'}],
+	 *     actions?: [{type: 'displayMcoMask' | string, data: *}],
+	 *     messages?: [{type: 'info' | 'error' | 'pop_up', text: string}],
+	 * }} rbsResp
+	 */
 	addHighlighting($command, rbsResp, fullState = null) {
 		let {calledCommands, messages = []} = rbsResp;
 		let typeToMsgs = {};
@@ -109,4 +122,4 @@ class TerminalService
 	}
 }
 
-module.exports = TerminalService;
+module.exports = CmdResultAdapter;

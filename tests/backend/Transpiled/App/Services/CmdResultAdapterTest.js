@@ -1,6 +1,6 @@
-let TerminalService = require('../../../../../backend/Transpiled/App/Services/TerminalService');
+let CmdResultAdapter = require('../../../../../backend/Transpiled/App/Services/CmdResultAdapter');
 
-class TerminalServiceTest extends require('../../../../../backend/Transpiled/Lib/TestCase.js') {
+class CmdResultAdapterTest extends require('../../../../../backend/Transpiled/Lib/TestCase.js') {
 	provideFormatOutput() {
 		let list = [];
 
@@ -562,7 +562,7 @@ class TerminalServiceTest extends require('../../../../../backend/Transpiled/Lib
 
 	async testFormatOutput({input, expected}) {
 		let {$enteredCommand, calledCommands} = input;
-		let actual = await (new TerminalService(input.$language))
+		let actual = await (new CmdResultAdapter(input.$language))
 			.formatOutput($enteredCommand, calledCommands);
 		try {
 			this.assertArrayElementsSubset(expected, actual);
@@ -582,4 +582,4 @@ class TerminalServiceTest extends require('../../../../../backend/Transpiled/Lib
 	}
 }
 
-module.exports = TerminalServiceTest;
+module.exports = CmdResultAdapterTest;

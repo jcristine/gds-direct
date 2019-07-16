@@ -1,5 +1,5 @@
 const AbstractMaskParser = require("../Transpiled/Gds/Parsers/Apollo/AbstractMaskParser");
-const TerminalService = require("../Transpiled/App/Services/TerminalService");
+const TerminalService = require("../Transpiled/App/Services/CmdResultAdapter");
 const {fetchAll} = require('../GdsHelpers/TravelportUtils.js');
 const StringUtil = require('../Transpiled/Lib/Utils/StringUtil.js');
 const McoListParser = require("../Transpiled/Gds/Parsers/Apollo/Mco/McoListParser");
