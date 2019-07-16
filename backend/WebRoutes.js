@@ -500,6 +500,9 @@ app.get('/ping', toHandleHttp((rqBody) => {
 		return {status: 'OK', result: data};
 	});
 }));
+app.get('/CURRENT_PRODUCTION_TAG', toHandleHttp(() =>
+	readFile(__dirname + '/../CURRENT_PRODUCTION_TAG', 'utf8')
+));
 
 //The 404 Route (ALWAYS Keep this as the last route)
 app.get('*', function(req, res){
