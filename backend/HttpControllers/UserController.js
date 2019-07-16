@@ -19,7 +19,6 @@ exports.getView = (reqBody, emcResult) => {
         new TerminalSettings(emcResult).getSettings().then(async settings => {
             let bufferMap = MultiLevelMap();
             rows = rows.reverse();
-            let isAdmin = emcResult.user.roles.includes('NEW_GDS_DIRECT_DEV_ACCESS');
             for (let row of rows) {
                 bufferMap.push(['gds', row.gds, 'terminals', row.terminalNumber, 'buffering'], {
                     area: row.area,
@@ -43,7 +42,6 @@ exports.getView = (reqBody, emcResult) => {
                 disableReason: '',
                 settings: settings,
                 buffer: bufferMap.root,
-                isAdmin: isAdmin,
                 auth: emcResult.user,
             };
         })

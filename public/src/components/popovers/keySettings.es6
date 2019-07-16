@@ -233,7 +233,7 @@ class Context
 		let input = Dom('input.form-control settings-input', { placeholder, value });
 		container.appendChild(input);
 
-		let shortcutActionsAllowed = true; // window.GdsDirectPlusState.getIsAdmin();
+		let shortcutActionsAllowed = true;
 		if (shortcutActionsAllowed) {
 			input.setAttribute('list', shortcutCompletionId);
 			let isFirefox = navigator.userAgent.search('Firefox') > -1;

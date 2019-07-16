@@ -2,7 +2,7 @@ import {get, post} from "./helpers/requests";
 
 // initialised in GdsDirectPlusApp.es6
 let State =  {
-	isAdmin		: false,
+	roles		: [],
 	language	: 'APOLLO',
 	fontSize	: 1,
 	// hideMenu	: false,
@@ -18,7 +18,7 @@ window.GdsDirectPlusState = {
 	isLanguageApollo 	: () => State.language.toLowerCase() === 'apollo',
 	getLanguage 		: () => State.language,
 	hasPermissions 		: () => State.permissions,
-	getIsAdmin			: () => State.isAdmin,
+	getRoles			: () => State.roles,
 	getGdsAreaSettings	: () => State.gdsAreaSettings || {},
 };
 

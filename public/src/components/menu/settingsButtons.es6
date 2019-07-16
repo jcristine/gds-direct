@@ -43,12 +43,10 @@ export class SettingsButtons extends Component
 
 		let buttons = [themeBtn, textSize, history, keySettings];
 
-		if (window.GdsDirectPlusState.getIsAdmin()) {
-			let admin = new Admin({
-				icon: '<i class="fa t-f-size-14">admin</i>',
-			}).getTrigger();
-			buttons.push(admin);
-		}
+		let admin = new Admin({
+			icon: '<i class="fa t-f-size-14">admin</i>',
+		}).getTrigger();
+		buttons.push(admin);
 
 		return buttons;
 	}

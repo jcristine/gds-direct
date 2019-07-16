@@ -104,7 +104,7 @@ export default class GdsDirectPlusApp
 
 		getStore().updateView({
 			requestId		: travelRequestId,
-			isAdmin			: viewData.isAdmin,
+			roles			: viewData.auth.roles,
 			terminalThemes	: terminalThemes,
 			fontSize		: fontSize,
 			language		: language,
