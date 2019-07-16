@@ -441,6 +441,13 @@ Redis.getSubscriber().then(async sub => {
 		}
 	});
 });
+app.get('/server/forceRestart', withOwnerAuth(async (rqBody, emcResult) => {
+	let redis = await Redis.getClient();
+	return redis.publish(Redis.events.RESTART_SERVER, JSON.stringify({
+		reason: 'HTTP dev owner force restart',
+		message: rqBody.message || null,
+	}));
+}));
 app.get('/server/restartIfNeeded', toHandleHttp(async (rqBody) => {
 	// not so important as long as we check whether tag in fs changed
 	let password = rqBody.password;
