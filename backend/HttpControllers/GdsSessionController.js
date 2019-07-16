@@ -370,7 +370,7 @@ exports.getCmdRqList = (reqBody, emcResult) => {
 	let sessionId = reqBody.sessionId;
 	return Db.with(db => db.fetchAll({
 		// TODO: move to CmdRqLog.js
-		table: 'cmd_rs_log',
+		table: 'cmd_rq_log',
 		where: [['sessionId', '=', sessionId]],
 		orderBy: 'id ASC',
 	})).then(rows => {
