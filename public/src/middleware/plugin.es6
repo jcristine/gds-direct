@@ -351,23 +351,38 @@ export default class TerminalPlugin
 	_displayMpRemarkDialog(data)
 	{
 		let remove = () => {};
-		let yesBtnCmp = Cmp('button[Yes]', {onclick: () => {
+		let close = () => {
 			remove();
-			post('terminal/addMpRemark', {gds: this.gdsName})
+			// love jquery terminal
+			setTimeout(() => this.terminal.enable(), 4);
+		};
+		let onYes = () => {
+			close();
+			this._withSpinner(() => post('terminal/addMpRemark', {gds: this.gdsName}))
 				.then(resp => this.parseBackEnd(resp, 'MP REMARK'));
-		}});
+		};
+		let yesBtnCmp = Cmp('button[Yes]', {
+			onclick: onYes,
+			onkeydown: (evt) => {
+				if (evt.key === 'Escape') {
+					close();
+				} else if (evt.key === 'Enter') {
+					onYes();
+				}
+			},
+		});
 
 		remove = this.injectDom({
 			dom: Cmp('div.mp-remark-dialog').attach([
 				Cmp('h2[Was the PNR MPed?]'),
 				Cmp('div.button-cont').attach([
 					yesBtnCmp,
-					Cmp('button[No]', {onclick: () => remove()}),
+					Cmp('button[No]', {onclick: close}),
 				]),
 			]).context,
 		}).remove;
 
-		yesBtnCmp.context.focus();
+		setTimeout(() => yesBtnCmp.context.focus(), 4);
 	}
 
 	_injectForm(formCmp)
