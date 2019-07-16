@@ -7,7 +7,7 @@ const ParsersController = require('../../Rbs/IqControllers/ParsersController.js'
 
 let php = require('../../phpDeprecated.js');
 const CmsClient = require("../../../IqClients/CmsClient");
-const Rej = require("klesun-node-tools/src/Utils/Rej");
+const Rej = require("klesun-node-tools/src/Rej");
 
 /**
  * provides functions to parse our custom formats

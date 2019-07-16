@@ -1,4 +1,4 @@
-const UnprocessableEntity = require("klesun-node-tools/src/Utils/Rej").UnprocessableEntity;
+const UnprocessableEntity = require("klesun-node-tools/src/Rej").UnprocessableEntity;
 const iqJson = require("../Utils/TmpLib").iqJson;
 const {getConfig} = require('../Config.js');
 

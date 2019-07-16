@@ -1,9 +1,9 @@
 let {getTravelport} = require("../Repositories/GdsProfiles.js");
-let {LoginTimeOut, BadGateway} = require("klesun-node-tools/src/Utils/Rej");
+let {LoginTimeOut, BadGateway} = require("klesun-node-tools/src/Rej");
 let {escapeXml, parseXml} = require("../GdsHelpers/CommonUtils.js");
 let PersistentHttpRq = require('klesun-node-tools/src/Utils/PersistentHttpRq.js');
 const GdsProfiles = require("../Repositories/GdsProfiles");
-const Conflict = require("klesun-node-tools/src/Utils/Rej").Conflict;
+const Conflict = require("klesun-node-tools/src/Rej").Conflict;
 
 /**
  * they are all physically located in USA, Atlanta (in same building)

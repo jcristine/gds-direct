@@ -26,7 +26,7 @@ const GalileoPnr = require('../../../../Rbs/TravelDs/GalileoPnr.js');
 const RebuildInPccAction = require('./RebuildInPccAction.js');
 const php = require('../../../../phpDeprecated.js');
 const GalileoRetrieveTicketsAction = require('../../../../Rbs/Process/Apollo/ImportPnr/Actions/RetrieveApolloTicketsAction.js');
-const Rej = require('klesun-node-tools/src/Utils/Rej.js');
+const Rej = require('klesun-node-tools/src/Rej.js');
 
 
 class ProcessGalileoTerminalInputAction {

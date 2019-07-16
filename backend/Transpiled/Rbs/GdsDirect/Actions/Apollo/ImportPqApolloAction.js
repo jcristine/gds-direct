@@ -18,7 +18,7 @@ const RetrieveFlightServiceInfoAction = require('../../../../Rbs/Process/Apollo/
 const ImportFareComponentsAction = require('../../../../Rbs/Process/Apollo/ImportPnr/Actions/ImportFareComponentsAction.js');
 
 let php = require('../../../../phpDeprecated.js');
-const Rej = require("klesun-node-tools/src/Utils/Rej");
+const Rej = require("klesun-node-tools/src/Rej");
 const withCapture = require("../../../../../GdsHelpers/CommonUtils").withCapture;
 
 /** @see ImportPqAmadeusAction description */

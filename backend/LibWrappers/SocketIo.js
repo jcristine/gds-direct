@@ -2,7 +2,7 @@
 const {getConfig} = require('../Config.js');
 const initSocketIo = require('socket.io');
 const Diag = require('./Diag.js');
-const Rej = require('klesun-node-tools/src/Utils/Rej.js');
+const Rej = require('klesun-node-tools/src/Rej.js');
 
 let toAskClient = (socket) => {
 	let rejects = new Set();

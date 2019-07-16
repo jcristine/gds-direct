@@ -1,5 +1,5 @@
 
-const Rej = require('klesun-node-tools/src/Utils/Rej.js');
+const Rej = require('klesun-node-tools/src/Rej.js');
 const BagAllowanceParser = require("../../Transpiled/Gds/Parsers/Sabre/BagAllowanceParser");
 const {parseSequence} = require('../ParserUtil.js');
 const CommonParserHelpers = require('../../Transpiled/Gds/Parsers/Apollo/CommonParserHelpers.js');

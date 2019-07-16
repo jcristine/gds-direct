@@ -1,6 +1,6 @@
 let Redis = require("../LibWrappers/Redis.js");
 let {never, StrConsts} = require('../Utils/StrConsts.js');
-let Rej = require('klesun-node-tools/src/Utils/Rej.js');
+let Rej = require('klesun-node-tools/src/Rej.js');
 const RbsClient = require("../IqClients/RbsClient");
 let {mand} = require('../Utils/TmpLib.js');
 const Settings = require('./Settings.js');

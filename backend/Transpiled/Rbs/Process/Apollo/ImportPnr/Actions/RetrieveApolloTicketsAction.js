@@ -11,7 +11,7 @@ const {fetchAll} = require('../../../../../../GdsHelpers/TravelportUtils.js');
 const php = require('../../../../../phpDeprecated.js');
 const Pccs = require("../../../../../../Repositories/Pccs");
 const TravelportClient = require("../../../../../../GdsClients/TravelportClient");
-const Forbidden = require("klesun-node-tools/src/Utils/Rej").Forbidden;
+const Forbidden = require("klesun-node-tools/src/Rej").Forbidden;
 
 class RetrieveApolloTicketsAction extends AbstractGdsAction {
 	static async getTicket($ticketRef, gdsSession) {

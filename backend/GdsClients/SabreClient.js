@@ -3,9 +3,9 @@ let PersistentHttpRq = require('klesun-node-tools/src/Utils/PersistentHttpRq.js'
 let {getSabre} = require('../Repositories/GdsProfiles.js');
 let {wrapExc} = require("../Utils/TmpLib.js");
 let {parseXml, escapeXml} = require('../GdsHelpers/CommonUtils.js');
-let Rej = require("klesun-node-tools/src/Utils/Rej.js");
+let Rej = require("klesun-node-tools/src/Rej.js");
 const GdsProfiles = require("../Repositories/GdsProfiles");
-const LoginTimeOut = require("klesun-node-tools/src/Utils/Rej").LoginTimeOut;
+const LoginTimeOut = require("klesun-node-tools/src/Rej").LoginTimeOut;
 
 let sendRequest = async (soapEnvXml, format) => {
 	return PersistentHttpRq({

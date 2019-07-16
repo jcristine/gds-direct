@@ -2,7 +2,7 @@
 let Db = require("../Utils/Db.js");
 let Redis = require('../LibWrappers/Redis.js');
 let MultiLevelMap = require('../Utils/MultiLevelMap.js');
-let Rej = require('klesun-node-tools/src/Utils/Rej.js');
+let Rej = require('klesun-node-tools/src/Rej.js');
 
 const TABLE = 'highlightRules';
 const TABLE_CMD = 'highlightCmdPatterns';

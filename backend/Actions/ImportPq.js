@@ -1,8 +1,8 @@
 
 const php = require('../Transpiled/phpDeprecated.js');
 const ImportPqApolloAction = require("../Transpiled/Rbs/GdsDirect/Actions/Apollo/ImportPqApolloAction");
-const Rej = require('klesun-node-tools/src/Utils/Rej.js');
-const {UnprocessableEntity} = require("klesun-node-tools/src/Utils/Rej");
+const Rej = require('klesun-node-tools/src/Rej.js');
+const {UnprocessableEntity} = require("klesun-node-tools/src/Rej");
 const DateTime = require('../Transpiled/Lib/Utils/DateTime.js');
 const ImportPnrAction = require('../Transpiled/Rbs/Process/Common/ImportPnr/ImportPnrAction.js');
 const SessionStateHelper = require("../Transpiled/Rbs/GdsDirect/SessionStateProcessor/SessionStateHelper");

@@ -18,7 +18,7 @@ const ProcessAmadeusTerminalInputAction = require("../Transpiled/Rbs/GdsDirect/A
 const Agents = require("../Repositories/Agents");
 const ProcessGalileoTerminalInputAction = require("../Transpiled/Rbs/GdsDirect/Actions/Galileo/ProcessGalileoTerminalInputAction");
 const GdsDirect = require("../Transpiled/Rbs/GdsDirect/GdsDirect");
-const Rej = require("klesun-node-tools/src/Utils/Rej");
+const Rej = require("klesun-node-tools/src/Rej");
 const TerminalSettings = require("../Transpiled/App/Models/Terminal/TerminalSettings");
 const CommandCorrector = require("../Transpiled/Rbs/GdsDirect/DialectTranslator/CommandCorrector");
 const Misc = require("../Utils/TmpLib");
@@ -26,9 +26,9 @@ const AliasParser = require("../Transpiled/Rbs/GdsDirect/AliasParser");
 const TmpLib = require("../Utils/TmpLib");
 const GdsSessions = require("../Repositories/GdsSessions");
 const CmsClient = require("../IqClients/CmsClient");
-const BadRequest = require("klesun-node-tools/src/Utils/Rej").BadRequest;
-const TooManyRequests = require("klesun-node-tools/src/Utils/Rej").TooManyRequests;
-const NotImplemented = require("klesun-node-tools/src/Utils/Rej").NotImplemented;
+const BadRequest = require("klesun-node-tools/src/Rej").BadRequest;
+const TooManyRequests = require("klesun-node-tools/src/Rej").TooManyRequests;
+const NotImplemented = require("klesun-node-tools/src/Rej").NotImplemented;
 const Db = require('../Utils/Db.js');
 
 /**

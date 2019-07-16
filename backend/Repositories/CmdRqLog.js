@@ -1,5 +1,5 @@
 const Db = require("../Utils/Db.js");
-const nonEmpty = require("klesun-node-tools/src/Utils/Rej").nonEmpty;
+const nonEmpty = require("klesun-node-tools/src/Rej").nonEmpty;
 
 let TABLE = 'cmd_rq_log';
 

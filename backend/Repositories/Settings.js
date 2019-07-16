@@ -1,6 +1,6 @@
 
 const Db = require('../Utils/Db.js');
-const Rej = require('klesun-node-tools/src/Utils/Rej.js');
+const Rej = require('klesun-node-tools/src/Rej.js');
 
 const TABLE = 'admin_settings';
 

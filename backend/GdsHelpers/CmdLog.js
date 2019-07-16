@@ -1,10 +1,10 @@
 
 const SessionStateProcessor = require('../Transpiled/Rbs/GdsDirect/SessionStateProcessor/SessionStateProcessor.js');
 const CommonDataHelper = require("../Transpiled/Rbs/GdsDirect/CommonDataHelper");
-const Rej = require("klesun-node-tools/src/Utils/Rej");
+const Rej = require("klesun-node-tools/src/Rej");
 const SessionStateHelper = require("../Transpiled/Rbs/GdsDirect/SessionStateProcessor/SessionStateHelper");
 const selectFromArray = require("klesun-node-tools/src/Utils/SqlUtil").selectFromArray;
-const NotFound = require("klesun-node-tools/src/Utils/Rej").NotFound;
+const NotFound = require("klesun-node-tools/src/Rej").NotFound;
 const makeRow = require("../Repositories/CmdLogs").makeRow;
 const hrtimeToDecimal = require("../Utils/TmpLib").hrtimeToDecimal;
 const {ignoreExc} = require('../Utils/TmpLib.js');

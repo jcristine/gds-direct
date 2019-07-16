@@ -2,7 +2,7 @@
 // namespace Gds\Parsers\Galileo\Pricing;
 
 const StringUtil = require('../../../../Lib/Utils/StringUtil.js');
-const Rej = require('klesun-node-tools/src/Utils/Rej.js');
+const Rej = require('klesun-node-tools/src/Rej.js');
 
 /**
  * parses Galileo pricing command like:

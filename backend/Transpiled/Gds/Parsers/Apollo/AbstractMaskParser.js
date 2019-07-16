@@ -2,11 +2,11 @@
 // namespace Gds\Parsers\Apollo;
 
 const Fp = require('../../../Lib/Utils/Fp.js');
-const Rej = require('klesun-node-tools/src/Utils/Rej.js');
+const Rej = require('klesun-node-tools/src/Rej.js');
 
 let php = require('../../../phpDeprecated.js');
 const StringUtil = require('../../../Lib/Utils/StringUtil.js');
-const BadRequest = require("klesun-node-tools/src/Utils/Rej").BadRequest;
+const BadRequest = require("klesun-node-tools/src/Rej").BadRequest;
 
 class AbstractMaskParser
 {

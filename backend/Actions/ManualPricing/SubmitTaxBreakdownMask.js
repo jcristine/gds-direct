@@ -1,7 +1,7 @@
 
 const AbstractMaskParser = require("../../Transpiled/Gds/Parsers/Apollo/AbstractMaskParser");
 const {fetchAll} = require('../../GdsHelpers/TravelportUtils.js');
-const Rej = require('klesun-node-tools/src/Utils/Rej.js');
+const Rej = require('klesun-node-tools/src/Rej.js');
 const TravelportUtils = require("../../GdsHelpers/TravelportUtils");
 const TerminalService = require("../../Transpiled/App/Services/TerminalService");
 const TaScreenParser = require("../../Transpiled/Gds/Parsers/Apollo/ManualPricing/TaScreenParser");
