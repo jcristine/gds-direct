@@ -141,7 +141,7 @@ class ItineraryParser {
 			'\\s*' + '(?<confirmedByAirline3>\\*)?' +
 			'\\s*' + '(?<days>[A-Z]{2}(\\\/[A-Z]{2})*)?' +
 			'(?<eticket>\\s+E)?' +
-			'(?<marriage>\\s+[0-9]+(\\s+|$))?' +
+			'(?<marriage>\\s+[0-9]{1,2}(\\s+|$))?' +
 			'(?<unexpectedText>.*)?' +
 			'$';
 		let $matches;
