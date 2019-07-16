@@ -1,19 +1,7 @@
 
 const {jsExport} = require('../Utils/TmpLib.js');
 
-let DiagService;
-try {
-    DiagService = require('dynatech-diag-service').default;
-} catch (exc) {
-    DiagService = class {
-        setProjectId() {};
-        setIsProduction() {};
-        setHostname() {};
-        log() {};
-        notice() {};
-        error() {};
-    };
-}
+let DiagService = require('dynatech-diag-service').default;
 const Config = require('../Config.js');
 
 const diagService = new DiagService(null, {
