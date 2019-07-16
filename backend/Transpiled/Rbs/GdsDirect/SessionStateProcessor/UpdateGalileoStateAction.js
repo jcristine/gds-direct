@@ -10,7 +10,7 @@ const CommandParser = require('../../../Gds/Parsers/Galileo/CommandParser.js');
 const GalileoReservationParser = require('../../../Gds/Parsers/Galileo/Pnr/PnrParser.js');
 const GalileoPnr = require('../../../Rbs/TravelDs/GalileoPnr.js');
 
-const php = require('../../../phpDeprecated.js');
+const php = require('klesun-node-tools/src/Transpiled/php.js');
 const SessionStateDs = require("./SessionStateDs");
 const SessionStateHelper = require("./SessionStateHelper");
 class UpdateGalileoSessionStateAction
