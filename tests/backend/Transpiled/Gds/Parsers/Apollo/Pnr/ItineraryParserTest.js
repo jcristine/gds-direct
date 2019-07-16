@@ -2,7 +2,7 @@
 // add this to generated require() - '../../backend/Transpiled/'
 
 const ItineraryParser = require('../../../../../../../backend/Transpiled/Gds/Parsers/Apollo/Pnr/ItineraryParser.js');
-const php                              = require('../../../../../../../backend/Transpiled/phpDeprecated.js');
+const php                              = require('klesun-node-tools/src/Transpiled/php.js');
 
 class ItineraryParserTest extends require('../../../../../../../backend/Transpiled/Lib/TestCase.js')
 {
@@ -138,6 +138,7 @@ class ItineraryParserTest extends require('../../../../../../../backend/Transpil
                 'textLeft': php.implode(php.PHP_EOL, ['*** PROFILE ASSOCIATIONS EXIST *** >*PA; ','FONE-SFOAS\/800-750-2238 ASAP CUSTOMER SUPPORT']),
             }
         ]);
+
         $list.push([
             php.implode(php.PHP_EOL, [
                 ' 1 UA1966S 19JAN AUSIAH HK1   530A  625A *         TU   E',
@@ -223,6 +224,7 @@ class ItineraryParserTest extends require('../../../../../../../backend/Transpil
                 'textLeft': '',
             }
         ]);
+
         $list.push([
             php.implode(php.PHP_EOL, [
                 '1 ET 915T 6DEC DLAADD SS1   225P  855P *         FR   E  2     4:30  788',
@@ -255,6 +257,8 @@ class ItineraryParserTest extends require('../../../../../../../backend/Transpil
                 'textLeft': '',
             }
         ]);
+
+        // Spaces around cabin class, no day of week
         $list.push([
             php.implode(php.PHP_EOL, [
                 ' 1 BA  64 Q28JUN NBOLHR HK1  1120P  615A |*  ',
@@ -307,6 +311,8 @@ class ItineraryParserTest extends require('../../../../../../../backend/Transpil
                 ],
             }
         ]);
+
+        // No cabin class, question marks after DOW
         $list.push([
             php.implode(php.PHP_EOL, [
                 ' 1 AA 242 17APR SFOORD GK1   700A  119P           SU?',
@@ -367,6 +373,8 @@ class ItineraryParserTest extends require('../../../../../../../backend/Transpil
                 ],
             }
         ]);
+
+        // *RTZ2TA - with "ARNK" segment
         $list.push([
             php.implode(php.PHP_EOL, [
                 ' 2 MU 211B 28OCT PVGMNL UN1  1230A  340A *         FR   E',
@@ -384,6 +392,8 @@ class ItineraryParserTest extends require('../../../../../../../backend/Transpil
                 },
             }
         ]);
+
+        // with car segments
         $list.push([
             php.implode(php.PHP_EOL, [
                 ' 1 CCR ZE KK1 QRL 23FEB-25FEB MCMR\/RG-EUR39.42DY-UNL 39.42XH\/BS-05578602\/PUP-QRLC60\/ARR-1337\/RC-AEXXMC\/DT-0800\/NM-PUGACOVS GENADIJS\/CF-H1282505939 OSI ',
@@ -440,6 +450,8 @@ class ItineraryParserTest extends require('../../../../../../../backend/Transpil
                 'textLeft': '',
             }
         ]);
+
+        // segments without flight number
         $list.push([
             php.implode(php.PHP_EOL, [
                 ' 1 DL1234Y 15DEC EWRLHR GK1                        TH',
@@ -504,6 +516,8 @@ class ItineraryParserTest extends require('../../../../../../../backend/Transpil
                 ],
             }
         ]);
+
+        // >*WPDH1E; - with multiple OPERATED BY in one segment due to hidden stop
         $list.push([
             php.implode(php.PHP_EOL, [
                 ' 1 DL4508X 10JAN BOISEA HK1  1038A 1120A *         TU   E  1',
@@ -534,6 +548,8 @@ class ItineraryParserTest extends require('../../../../../../../backend/Transpil
                 },
             }
         ]);
+
+        // >*N0FT3X; directly from apollo, without wrapping
         $list.push([
             php.implode(php.PHP_EOL, [
                 ' 1 UA1158K 29MAY LAXHNL HK4   845A 1140A *         MO   E',
@@ -555,6 +571,8 @@ class ItineraryParserTest extends require('../../../../../../../backend/Transpil
                 },
             }
         ]);
+
+        // >*MQ4FZG; with hotel segment
         $list.push([
             php.implode(php.PHP_EOL, [
                 ' 1 DL2050V 31MAY PHXSLC HK1  1047A  125P *         WE   E  1',
@@ -583,6 +601,8 @@ class ItineraryParserTest extends require('../../../../../../../backend/Transpil
                 },
             }
         ]);
+
+        // another hotel example
         $list.push([
             php.implode(php.PHP_EOL, [
                 ' 1 PS9401Y 10JUN KBPRIX SS1   940A 1135A *         SA   E',
@@ -606,6 +626,8 @@ class ItineraryParserTest extends require('../../../../../../../backend/Transpil
                 ],
             }
         ]);
+
+        // Car segment example
         $list.push([
             php.implode(php.PHP_EOL, [
                 ' 1 CCR ZD HK1 REK 18JUN-19JUN MDMN\/RG-USD109.00DY-UNL FM\/BS-05578602\/PUP-REKC03\/ARR-1200\/RC-YEI\/DT-1200\/NM-NANAN JELENA\/CF-06232332US1 *',
@@ -630,6 +652,8 @@ class ItineraryParserTest extends require('../../../../../../../backend/Transpil
                 'textLeft': '',
             }
         ]);
+
+        // Car segment from *I (preprocessed); has approximate total
         $list.push([
             php.implode(php.PHP_EOL, [
                 ' 1 CCR ZD SS1 REK 18JUN-21JUN MDMN\/RG-USD79.00DY-UNL FM\/BS-05578602\/PUP-REKC03\/ARR-1200\/RC-YEI\/DT-1200\/NM-NANAN JELENA\/CF-06239599US2 *\/APPROXIMATE TOTAL RATE-USD237.00-UNL FM 03DY 00HR .00MC',
@@ -654,6 +678,7 @@ class ItineraryParserTest extends require('../../../../../../../backend/Transpil
                 ],
             }
         ]);
+
         $list.push([
             php.implode(php.PHP_EOL, [
                 ' 1 QR5297Y 30OCT MSPLHR SS1   404P 1135A|*      MO\/TU   E  3',
@@ -703,6 +728,8 @@ class ItineraryParserTest extends require('../../../../../../../backend/Transpil
                 'textLeft': '',
             },
         ]);
+
+        // artificial dump that would cause infinite loop
         $list.push([
             php.implode(php.PHP_EOL, [
                 ' 1 QR5297Y 30OCT MSPLHR SS1   404P 1135A|*      MO\/TU   E  3',
@@ -714,6 +741,27 @@ class ItineraryParserTest extends require('../../../../../../../backend/Transpil
                 ],
             },
         ]);
+
+        // CMS flight duration artifacts should not get parsed as marriage number
+        $list.push([
+            php.implode(php.PHP_EOL, [
+                '1 UA1158K 09DEC LAXHNL SS1   830A 1223P *         MO   E  1      5:53  777       ',
+                '2 UA 201K 09DEC HNLGUM SS1   315P  705P+*      MO/TU   E  1      7:50  777       ',
+                '3 UA 183K 10DEC GUMMNL SS1   750P  940P *         TU   E  1      3:50  738       ',
+                '4 NH 820K 03FEB MNLNRT SS1   945A  300P *         MO   E         4:15  788       ',
+                '5 UA7928K 03FEB NRTLAX SS1   400P  840A *         MO   E         9:40  77W',
+            ]),
+            {
+                segments: [
+                    {destinationAirport: 'HNL', marriage: 1},
+                    {destinationAirport: 'GUM', marriage: 1},
+                    {destinationAirport: 'MNL', marriage: 1},
+                    {destinationAirport: 'NRT', marriage: 0},
+                    {destinationAirport: 'LAX', marriage: 0},
+                ],
+            },
+        ]);
+
         return $list;
     }
 
