@@ -1,3 +1,4 @@
+const Rej = require('../../node_modules/klesun-node-tools/src/Rej.js');
 let AmadeusClient = require("../GdsClients/AmadeusClient.js");
 let SabreClient = require("../GdsClients/SabreClient.js");
 let TravelportClient = require('../GdsClients/TravelportClient.js');
@@ -46,7 +47,6 @@ let GdsSession = (session) => {
 let StatefulSession = ({
 	session, emcUser, gdsSession, cmdLog, logit = () => {},
 	Db = require('../Utils/Db.js'),
-	RbsClient = require("../IqClients/RbsClient"),
 	leadIdToData = {},
 	askClient = null,
 	startDt = new Date().toISOString(),
@@ -132,6 +132,17 @@ let StatefulSession = ({
 			}
 			return leadData;
 		},
+		askClient: ({messageType, ...params}) => askClient({
+			messageType: messageType, ...params,
+		}).then(rs => {
+			if (rs.error) {
+				return Rej.FailedDependency('Client returned error - ' + rs.error, rs);
+			} else if (!rs.value) {
+				return Rej.FailedDependency('Client failed to provide value', rs);
+			} else {
+				return Promise.resolve(rs.value);
+			}
+		}),
 		getGeoProvider: () => new LocationGeographyProvider(),
 		getPccDataProvider: () => (gds, pcc) => Pccs.findByCode(gds, pcc),
 		getLeadAgent: () => null,
