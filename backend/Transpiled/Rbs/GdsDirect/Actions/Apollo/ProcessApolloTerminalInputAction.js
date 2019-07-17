@@ -1712,6 +1712,8 @@ class ProcessApolloTerminalInputAction {
 			return {calledCommands: [cmdRec]};
 		} else if (!php.empty(reservation = await AliasParser.parseCmdAsPnr(cmd, this.stateful))) {
 			return this.bookPnr(reservation);
+		} else if (cmd === 'DEBUG-TRIGGER-MP-REMARK-DIALOG') {
+			return {actions: [{type: 'displayMpRemarkDialog'}]};
 		} else {
 			cmd = $alias['realCmd'];
 			let fetchAll = this.constructor.shouldFetchAll(cmd);

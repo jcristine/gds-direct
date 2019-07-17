@@ -367,7 +367,7 @@ export default class TerminalPlugin
 					remove();
 				} else if (evt.key === 'Enter') {
 					onYes();
-				} else if (evt.key === 'ArrowLeft' || evt.key === 'ArrowRight') {
+				} else if (evt.key === 'ArrowRight') {
 					noBtnCmp.context.focus();
 				}
 			},
@@ -375,7 +375,7 @@ export default class TerminalPlugin
 		noBtnCmp = Cmp('button[No]', {
 			onclick: () => remove(),
 			onkeydown: (evt) => {
-				if (evt.key === 'ArrowLeft' || evt.key === 'ArrowRight') {
+				if (evt.key === 'ArrowLeft') {
 					yesBtnCmp.context.focus();
 				}
 			},
