@@ -37,7 +37,7 @@ const UpdateData = require("./backend/Maintenance/UpdateData");
 
 	let terminate = async (signal) => {
 		await Promise.all([
-			Diag.log('Server is gracefully shutting down due to signal: ' + signal, {
+			Diag.log('Instance #' + process.pid + ' is gracefully shutting down due to signal: ' + signal, {
 				memoryUsage: process.memoryUsage(),
 			}).catch(exc => null),
 			keepAlive.terminate().catch(exc => null),
