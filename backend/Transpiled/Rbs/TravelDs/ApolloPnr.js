@@ -4,6 +4,7 @@ const Fp = require('../../Lib/Utils/Fp.js');
 const ApolloReservationParser = require('../../Gds/Parsers/Apollo/Pnr/PnrParser.js');
 const php = require('../../phpDeprecated');
 
+/** @implements {IPnr} */
 class ApolloPnr {
 	static makeFromDump($dump) {
 		let $obj;

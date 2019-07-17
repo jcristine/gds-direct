@@ -8,6 +8,8 @@ const GalileoReservationParser = require('../../Gds/Parsers/Galileo/Pnr/PnrParse
 const ItineraryParser = require('../../Gds/Parsers/Galileo/Pnr/ItineraryParser.js');
 
 const php = require('../../phpDeprecated.js');
+
+/** @implements {IPnr} */
 class GalileoPnr
 {
     static makeFromDump($dump)  {

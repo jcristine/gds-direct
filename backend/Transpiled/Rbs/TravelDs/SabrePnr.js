@@ -9,6 +9,7 @@ const SabreReservationParser = require('../../Gds/Parsers/Sabre/Pnr/PnrParser.js
  */
 const php = require('../../phpDeprecated.js');
 
+/** @implements {IPnr} */
 class SabrePnr {
 	constructor() {
 		this.$parsed = null;

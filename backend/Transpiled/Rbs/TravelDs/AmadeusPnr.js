@@ -6,6 +6,7 @@ const GenericRemarkParser = require('../../Gds/Parsers/Common/GenericRemarkParse
 
 const php = require('../../phpDeprecated.js');
 
+/** @implements {IPnr} */
 class AmadeusPnr {
 	static makeFromDump($dump) {
 		let $parse, $self;
