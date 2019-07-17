@@ -15,10 +15,7 @@ const UpdateData = require("./backend/Maintenance/UpdateData");
 		Diag.log('pid ' + process.pid + ': done waiting - starting server now');
 	}
 	require('./backend/WebRoutes.js');
-	Migration.run()
-		.then(result => {
-			Diag.notice(new Date().toISOString() + ': Migration was successful', result);
-		})
+	let migrationResult = await Migration.run()
 		.catch(exc => {
 			let msg = new Date().toISOString() + ': Migration failed';
 			let data = {
@@ -27,12 +24,16 @@ const UpdateData = require("./backend/Maintenance/UpdateData");
 				stack: exc.stack,
 			};
 			console.error(msg, data);
-			return Diag.error(msg, data);
+			Diag.critical(msg, data);
+			return data;
 		});
 	let keepAlive = await KeepAlive.run();
-	Diag.log('Started keepAlive process with log id: ' + keepAlive.workerLogId);
 	let updateData = await UpdateData.run();
-	Diag.log('Started updateData process with log id: ' + updateData.workerLogId);
+	Diag.log('Script startup maintenance jobs', {
+		keepAliveLogId: keepAlive.workerLogId,
+		updateDataLogId: updateData.workerLogId,
+		migrationResult: migrationResult,
+	});
 
 	let terminate = async (signal) => {
 		await Promise.all([

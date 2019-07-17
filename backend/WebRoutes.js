@@ -436,7 +436,7 @@ Redis.getSubscriber().then(async sub => {
 	sub.subscribe(Redis.events.RESTART_SERVER);
 	sub.on('message', async (channel, message) => {
 		if (channel === Redis.events.RESTART_SERVER) {
-			let msg = 'Server is gracefully shutting down due to Redis RESTART_SERVER event';
+			let msg = 'Instance #' + process.pid + ' is gracefully shutting down due to Redis RESTART_SERVER event';
 			await Diag.log(msg, message).catch(exc => null);
 			process.exit(0);
 		}
