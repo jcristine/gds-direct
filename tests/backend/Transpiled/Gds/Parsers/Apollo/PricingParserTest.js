@@ -9,6 +9,8 @@ class PricingParserTest extends require('../../../../../../backend/Transpiled/Li
     provideDumps()  {
         let $list;
         $list = [];
+
+        // #0
         $list.push([
             php.implode(php.PHP_EOL, [
                 '>$B/:N',
@@ -125,6 +127,8 @@ class PricingParserTest extends require('../../../../../../backend/Transpiled/Li
                 ],
             },
         ]);
+
+        // #1
         $list.push([
             php.implode(php.PHP_EOL, [
                 '>$B/:N',
@@ -173,6 +177,8 @@ class PricingParserTest extends require('../../../../../../backend/Transpiled/Li
             {
             },
         ]);
+
+        // #2
         $list.push([
             php.implode(php.PHP_EOL, [
                 '>$B/:N',
@@ -222,6 +228,8 @@ class PricingParserTest extends require('../../../../../../backend/Transpiled/Li
             {
             },
         ]);
+
+        // #3
         $list.push([
             php.implode(php.PHP_EOL, [
                 '>$B/:N',
@@ -268,6 +276,8 @@ class PricingParserTest extends require('../../../../../../backend/Transpiled/Li
                 },
             },
         ]);
+
+        // #4 - ZM8LBK T:V dump
         $list.push([
             php.implode(php.PHP_EOL, [
                 '>$B-*1O3K/Z0/ET',
@@ -381,6 +391,8 @@ class PricingParserTest extends require('../../../../../../backend/Transpiled/Li
             {
             },
         ]);
+
+        // #5 - X2BBK2 T:V dump with wrapping enabled
         $list.push([
             php.implode(php.PHP_EOL, [
                 '>$B-ITN01*1O3K/:A/Z0/GB/ET',
@@ -421,6 +433,8 @@ class PricingParserTest extends require('../../../../../../backend/Transpiled/Li
             {
             },
         ]);
+
+        // #6
         $list.push([
             php.implode(php.PHP_EOL, [
                 '>$B/:N',
@@ -484,6 +498,8 @@ class PricingParserTest extends require('../../../../../../backend/Transpiled/Li
             {
             },
         ]);
+
+        // #7
         $list.push([
             php.implode(php.PHP_EOL, [
                 '>$B-*2CV4/:G/ET',
@@ -547,6 +563,8 @@ class PricingParserTest extends require('../../../../../../backend/Transpiled/Li
             {
             },
         ]);
+
+        // #8 - with "FARE HAS FORM OF PAYMENT RESTRICTION" line
         $list.push([
             php.implode(php.PHP_EOL, [
                 '>$B*IF37/-*115Q/:A/Z$37.00/ET/NOGR',
@@ -664,6 +682,8 @@ class PricingParserTest extends require('../../../../../../backend/Transpiled/Li
             {
             },
         ]);
+
+        // *SJ4ZB0 - parser fails currently due to "FARE HIGHER"
         $list.push([
             php.implode(php.PHP_EOL, [
                 '>$B*IF82/-*15JE/:A/Z$82.00/ET/NOGR',
@@ -725,6 +745,8 @@ class PricingParserTest extends require('../../../../../../backend/Transpiled/Li
                 'wholePricingMarkers': {'fareHasPlatingCarrierRestriction': true},
             },
         ]);
+
+        // *L98G16 - pricing command is wrapped because it is too large
         $list.push([
             php.implode(php.PHP_EOL, [
                 '>$B-*1O3K/:A/ITLOS16001/Z0/GB|EBNON@END|EBVALID@ON@ET@AND@INTERL',
@@ -760,6 +782,8 @@ class PricingParserTest extends require('../../../../../../backend/Transpiled/Li
                 'wholePricingMarkers': {'eTicketRequired': true},
             },
         ]);
+
+        // *V7PQQ4 - with "BEST FARE FOR PSGR TYPE"
         $list.push([
             php.implode(php.PHP_EOL, [
                 '>$BN1*JCB|2*JCB|3*J04|4*JNF/-*1O3K/:A/ITIND16001/Z0/GEBNON@END|E',
@@ -848,6 +872,8 @@ class PricingParserTest extends require('../../../../../../backend/Transpiled/Li
                 ],
             },
         ]);
+
+        // >*NJK2GI - with "---NET PRICE MUST BE PRIVATE---" comment in fare construction
         $list.push([
             php.implode(php.PHP_EOL, [
                 '>$B-*2CV4/ET',
@@ -904,6 +930,8 @@ class PricingParserTest extends require('../../../../../../backend/Transpiled/Li
                 ],
             },
         ]);
+
+        // >*PMZWPY - "---NET PRICE MUST BE PRIVA TE" without closing "---"
         $list.push([
             php.implode(php.PHP_EOL, [
                 '>$B-*1O3K/ET',
@@ -954,6 +982,8 @@ class PricingParserTest extends require('../../../../../../backend/Transpiled/Li
                 ],
             },
         ]);
+
+        // >*PZX35I - "---NET PRICE MUST BE PRIVA TE---" is it free form text?
         $list.push([
             php.implode(php.PHP_EOL, [
                 '>$B-*2CV4/ET',
@@ -1014,6 +1044,76 @@ class PricingParserTest extends require('../../../../../../backend/Transpiled/Li
                 ],
             },
         ]);
+
+        // >*MTBSKT; with "THE FOLLOWING RULES FAILED FOR JRT7"
+        // probably should just ignore unknown lines in this section
+        $list.push([
+            php.implode(php.PHP_EOL, [
+                '>$B-*1O3K@JRT7/ET',
+                '          **AGENT SELECTED FARE USED**',
+                '',
+                'E-TKT REQUIRED',
+                'LAST DATE TO PURCHASE TICKET: 02APR17',
+                '$B-1-7 M23JAN17     ',
+                'HKG CX OSA Q5.80 1618.57JRT7 CX HKG 1618.57JRT7 NUC3242.94END',
+                'ROE7.75684',
+                'FARE HKD 25160  EQU USD 3244.00 TAX 20.60G3 TAX 15.50HK TAX',
+                '2.70OI TAX 23.80SW TOT USD 3306.60 ',
+                'E T1',
+                'TICKETING AGENCY 1O3K',
+                'DEFAULT PLATING CARRIER CX',
+                '         THE FOLLOWING RULES FAILED FOR JRT7    ',
+                '              BOOKING CLASS',
+                '         THE FOLLOWING RULES FAILED FOR JRT7    ',
+                '              BOOKING CLASS',
+                'RATE USED IN EQU TOTAL IS BSR 1HKD - 0.12892USD',
+                'BAGGAGE ALLOWANCE',
+                'ADT                                                         ',
+                ' CX HKGOSA  40K                                             ',
+                '   BAG 1 -  CHGS MAY APPLY IF BAGS EXCEED TTL WT ALLOWANCE',
+                '   BAG 2 -  CHGS MAY APPLY IF BAGS EXCEED TTL WT ALLOWANCE',
+                '   MYTRIPANDMORE.COM/BAGGAGEDETAILSCX.BAGG',
+                '                                                                ',
+                ' CX OSAHKG  40K                                             ',
+                '   BAG 1 -  CHGS MAY APPLY IF BAGS EXCEED TTL WT ALLOWANCE',
+                '   BAG 2 -  CHGS MAY APPLY IF BAGS EXCEED TTL WT ALLOWANCE',
+                '   MYTRIPANDMORE.COM/BAGGAGEDETAILSCX.BAGG',
+                '                                                                ',
+                'CARRY ON ALLOWANCE',
+                ' CX HKGOSA  1PC                                             ',
+                '   BAG 1 -  NO FEE       UPTO22LB/10KG AND UPTO45LI/115LCM',
+                ' CX OSAHKG  1PC                                             ',
+                '   BAG 1 -  NO FEE       UPTO22LB/10KG AND UPTO45LI/115LCM',
+                'BAGGAGE DISCOUNTS MAY APPLY BASED ON FREQUENT FLYER STATUS/',
+                'ONLINE CHECKIN/FORM OF PAYMENT/MILITARY/ETC.',
+                '',
+            ]),
+            {
+                'pricingBlockList': [
+                    {
+                        'defaultPlatingCarrier': 'CX',
+                        'unparsedInfoLines': [
+                            '         THE FOLLOWING RULES FAILED FOR JRT7    ',
+                            '              BOOKING CLASS',
+                            '         THE FOLLOWING RULES FAILED FOR JRT7    ',
+                            '              BOOKING CLASS',
+                        ],
+                        'baggageInfo': {
+                            'parsed': {
+                                'baggageAllowanceBlocks': [
+                                    {
+                                        'paxTypeCode': 'ADT',
+                                        'segments': [{'segmentDetails': {'departureAirport': 'HKG','destinationAirport': 'OSA'}}],
+                                    },
+                                ],
+                            },
+                        },
+                    },
+                ],
+            },
+        ]);
+
+        // >*V1VSDQ; fare with airports - WASADD304.50
         $list.push([
             php.implode(php.PHP_EOL, [
                 '>$B/:N',
@@ -1118,6 +1218,8 @@ class PricingParserTest extends require('../../../../../../backend/Transpiled/Li
                 ],
             },
         ]);
+
+        // >*PMW5XY; with "PAPER TICKET REQUIRED"
         $list.push([
             php.implode(php.PHP_EOL, [
                 '>$B/:N',
@@ -1178,6 +1280,8 @@ class PricingParserTest extends require('../../../../../../backend/Transpiled/Li
                 ],
             },
         ]);
+
+        // >*M2D4MS; failed on "CARRIER MAY OFFER..." after baggage block
         $list.push([
             php.implode(php.PHP_EOL, [
                 '>$BN1-1|2-1|3-1/:N',
@@ -1299,6 +1403,8 @@ class PricingParserTest extends require('../../../../../../backend/Transpiled/Li
                 ],
             },
         ]);
+
+        // >$BB0; outputs "$BB0-1" instead of $B-1
         $list.push([
             php.implode(php.PHP_EOL, [
                 '>$BB0',
@@ -1347,6 +1453,8 @@ class PricingParserTest extends require('../../../../../../backend/Transpiled/Li
                 ],
             },
         ]);
+
+        // >$BBA; outputs "$BBA-1" instead of $B-1
         $list.push([
             php.implode(php.PHP_EOL, [
                 '>$BBA-*1O3K',
@@ -1395,6 +1503,8 @@ class PricingParserTest extends require('../../../../../../backend/Transpiled/Li
                 ],
             },
         ]);
+
+        // '>$BBQ01;' should not be glued to pricing command
         $list.push([
             php.implode(php.PHP_EOL, [
                 '>$BB-*1O3K',
@@ -1440,6 +1550,8 @@ class PricingParserTest extends require('../../../../../../backend/Transpiled/Li
                 },
             },
         ]);
+
+        // non-sequential ATFQ pax numbers in ptc blocks are separated through "/"
         $list.push([
             php.implode(php.PHP_EOL, [
                 '>$BN1|2|3|4*CNN|5|6|7*CNN|8/-*1O3K',
@@ -1559,6 +1671,11 @@ class PricingParserTest extends require('../../../../../../backend/Transpiled/Li
                 },
             },
         ]);
+
+        // output of >$BBQ01; (rebook to lowest fare) for some reason has no "*"
+        // in the "-*{pcc}", this makes command in the top part of pricing invalid,
+        // but we want to parse it nevertheless since it contains the pricing pcc
+        // oh, and also the error in diag annoys me a lot
         $list.push([
             php.implode(php.PHP_EOL, [
                 '>$BBS2-2G2H|3-2G2H',
@@ -1613,6 +1730,8 @@ class PricingParserTest extends require('../../../../../../backend/Transpiled/Li
                 },
             },
         ]);
+
+        // with /OCUA/ modifier - no DEFAULT PLATING CARRIER line
         $list.push([
             php.implode(php.PHP_EOL, [
                 '>$BB-*2CV4/OCUA',
@@ -1681,6 +1800,10 @@ class PricingParserTest extends require('../../../../../../backend/Transpiled/Li
                 },
             },
         ]);
+
+        // PQT PQ id - 7563368, two-letter fare basis
+        // old parser would parse NUC as destination and END as fare basis - should check that
+        // parsed FC has the total price and fallback to new parser manually if it does not
         $list.push([
             php.implode(php.PHP_EOL, [
                 '>$BB-2G55',
@@ -1756,6 +1879,9 @@ class PricingParserTest extends require('../../../../../../backend/Transpiled/Li
                 ],
             },
         ]);
+
+        // two letter fare basis again
+        // PQT #7171614
         $list.push([
             php.implode(php.PHP_EOL, [
                 '>$B-*2G52',
@@ -1836,6 +1962,9 @@ class PricingParserTest extends require('../../../../../../backend/Transpiled/Li
                 ],
             },
         ]);
+
+        // "Q14N4" fare basis was treated as "Q14" fuel surcharge and "N4" airline
+        // PQT #7153870
         $list.push([
             php.implode(php.PHP_EOL, [
                 '>$BB-2G55',
@@ -1915,6 +2044,9 @@ class PricingParserTest extends require('../../../../../../backend/Transpiled/Li
                 ],
             },
         ]);
+
+        // session 3205700
+        // typo (or truncated?) in baggage size units: "LC" instead of "LCM"
         $list.push([
             php.implode(php.PHP_EOL, [
                 '>$BB-2G2H',
@@ -2054,6 +2186,8 @@ class PricingParserTest extends require('../../../../../../backend/Transpiled/Li
                 ],
             },
         ]);
+
+        // another "LC" example
         $list.push([
             php.implode(php.PHP_EOL, [
                 '>$BBJCB/-2CV4',
@@ -2163,6 +2297,13 @@ class PricingParserTest extends require('../../../../../../backend/Transpiled/Li
                 ],
             },
         ]);
+
+        // '   BAG 1 -  NO FEE       UPTO22LB/10KG AND 55L X 40W X 25H',
+        // when you price this:
+        // 0 SU 101T 19DEC JFKSVO SS1
+        // 0 SU 520T 20DEC SVODXB SS1
+        // 0 SU 525Q 03JAN DXBSVO SS1
+        // 0 SU 100Q 03JAN SVOJFK SS1
         $list.push([
             php.implode(php.PHP_EOL, [
                 '>$BB0',
@@ -2282,6 +2423,8 @@ class PricingParserTest extends require('../../../../../../backend/Transpiled/Li
                 ],
             },
         ]);
+
+        // command copy wrapped part starts with asterisk - should unwrap correctly nevertheless
         $list.push([
             php.implode(php.PHP_EOL, [
                 '>$B/N1-1*ADT*IF50|2-1*ADT*IF50|6-1*ADT*IF50|7-1*ADT*IF50|8-1*ADT',
@@ -2333,6 +2476,8 @@ class PricingParserTest extends require('../../../../../../backend/Transpiled/Li
                 'pricingCommandCopy': '>$B/N1-1*ADT*IF50|2-1*ADT*IF50|6-1*ADT*IF50|7-1*ADT*IF50|8-1*ADT*IF50|9-1*ADT*IF50/-*1O3K/IT8SDANINUCW/Z$50.00/ET',
             },
         ]);
+
+        // Airports before fare: ADDENU387.00VKESUS; FcRecursiveParser also fails for some reason
         $list.push([
             php.implode(php.PHP_EOL, [
                 '>$BN1-1|2-1/:N',
@@ -2485,6 +2630,59 @@ class PricingParserTest extends require('../../../../../../backend/Transpiled/Li
                         },
                     },
                 ],
+            },
+        ]);
+
+        // LAST DATE TO PURCHASE TICKET w/ TZ and time (only date is verified in the test!)
+        $list.push([
+            php.implode(php.PHP_EOL, [
+                '>$BN1-1/:N',
+                '*FARE GUARANTEED AT TICKET ISSUANCE*',
+                '',
+                '*FARE HAS A PLATING CARRIER RESTRICTION*',
+                'E-TKT REQUIRED',
+                '*PENALTY APPLIES*',
+                'LAST DATE TO PURCHASE TICKET: 27MAR19 / 1055 YTO',
+                '$B-1 C02JUL18     ',
+                'WAS ET ADD ET ENU ADDENU387.00VKESUS ET X/ADD ET WAS',
+                '504.50KKEEUS NUC891.50END ROE1.0',
+                'FARE USD 892.00 TAX 5.60AY TAX 36.60US TAX 3.96XA TAX 4.50XF',
+                'TAX 7.00XY TAX 5.65YC TAX 2.50IH TAX 1.00L3 TAX 50.00QT TAX',
+                '20.00TE TAX 8.62YQ TAX 524.00YR TOT USD 1561.43  ',
+                'S1 NVB25DEC/NVA25DEC',
+                'S2 NVB27DEC/NVA27DEC',
+                'S3 NVB17JAN/NVA17JAN',
+                'S4 NVB17JAN/NVA17JAN',
+                'TICKETING AGENCY 1O3K',
+                'DEFAULT PLATING CARRIER ET',
+                'US PFC: XF IAD4.5 ',
+                'BAGGAGE ALLOWANCE',
+                'ADT                                                         ',
+                ' ET WASADD  2PC                                             ',
+                '   BAG 1 -  NO FEE       UPTO50LB/23KG                    ',
+                '   BAG 2 -  NO FEE       UPTO50LB/23KG                    ',
+                '   VIEWTRIP.TRAVELPORT.COM/BAGGAGEPOLICY/ET',
+                '                                                                 ET ADDENU  2PC                                             ',
+                '   BAG 1 -  NO FEE       UPTO50LB/23KG                    ',
+                '   BAG 2 -  NO FEE       UPTO50LB/23KG                    ',
+                '   VIEWTRIP.TRAVELPORT.COM/BAGGAGEPOLICY/ET',
+                '                                                                 ET ENUWAS  2PC                                             ',
+                '   BAG 1 -  NO FEE       UPTO50LB/23KG                    ',
+                '   BAG 2 -  NO FEE       UPTO50LB/23KG                    ',
+                '   VIEWTRIP.TRAVELPORT.COM/BAGGAGEPOLICY/ET',
+                '                                                                CARRY ON ALLOWANCE',
+                ' ET WASADD  1PC                                             ',
+                '   BAG 1 -  NO FEE       UPTO15LB/7KG AND UPTO45LI/115LCM ',
+                ' ET ADDENU  1PC                                             ',
+                '   BAG 1 -  NO FEE       UPTO15LB/7KG AND UPTO45LI/115LCM ',
+                ' ET ENUADD  1PC                                             ',
+                '   BAG 1 -  NO FEE       UPTO15LB/7KG AND UPTO45LI/115LCM ',
+                ' ET ADDWAS  1PC                                             ',
+                '   BAG 1 -  NO FEE       UPTO15LB/7KG AND UPTO45LI/115LCM ',
+                '*PENALT APPLIES*',
+            ]),
+            {
+                'pricingBlockList': [{ 'lastDateToPurchaseTicket': {'parsed': '2019-03-27'}}],
             },
         ]);
 
