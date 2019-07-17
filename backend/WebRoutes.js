@@ -468,6 +468,8 @@ app.get('/server/restartIfNeeded', toHandleHttp(async (rqBody) => {
 		return redis.publish(Redis.events.RESTART_SERVER, JSON.stringify({
 			reason: 'HTTP new tag restart request',
 			message: rqBody.message || null,
+		})).then(() => ({
+			message: 'Redis RESTART event published',
 		}));
 	}
 }));
