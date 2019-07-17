@@ -79,5 +79,16 @@ exports.init = (routes) => {
 			Diag.error('Failed to listen to socket port (' + config.SOCKET_PORT + ') - ' + exc);
 		}
 	});
+	const {getRedisConfig} = require('klesun-node-tools/src/Config.js');
+	getRedisConfig().then(cfg => {
+		socketIo.adapter(redisAdapter({
+			host: cfg.REDIS_HOST,
+			port: cfg.REDIS_PORT,
+			retry_strategy: (options) => {
+				// copied from chat, don't know how it works
+				return Math.min(options.attempt * 100, 1000 * 60);
+			},
+		}));
+	});
 	return socketIo;
 };
