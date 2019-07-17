@@ -285,6 +285,7 @@ app.get('/api/js/terminal-log/commands', withRoleAuth([
 app.post('/admin/getModel', withOwnerAuth(async (reqBody, emcResult) => {
 	let rows = await Db.with(db => db.fetchAll({
 		table: reqBody.model,
+		fields: reqBody.fields || [],
 		where: reqBody.where || [],
 		whereOr: reqBody.whereOr || [],
 		orderBy: reqBody.orderBy || [],

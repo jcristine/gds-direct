@@ -1,6 +1,7 @@
 
 const {getConfig} = require('../Config.js');
 const initSocketIo = require('socket.io');
+const redisAdapter = require('socket.io-redis');
 const Diag = require('./Diag.js');
 const Rej = require('klesun-node-tools/src/Rej.js');
 
