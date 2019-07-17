@@ -12,6 +12,7 @@ const Agent = require('../DataFormats/Wrappers/Agent.js');
 const MaskUtil = require("../Transpiled/Lib/Utils/MaskUtil");
 const {HttpUtil} = require('klesun-node-tools');
 const TmpLib = require('../Utils/TmpLib.js');
+const {jsExport} = require('klesun-node-tools/src/Utils/Misc.js');
 
 let isSystemError = (exc) =>
 	!exc.isOk &&
@@ -169,6 +170,7 @@ process.on('unhandledRejection', (exc, promise) => {
 		if (!Config.production) {
 			console.error('Unhandled Promise Rejection', data);
 		}
+		Diag.logExc('Unhandled Promise Rejection', jsExport(data));
 	}
 });
 

@@ -1,3 +1,4 @@
+const Rej = require('../../node_modules/klesun-node-tools/src/Rej.js');
 
 let mysql = require('promise-mysql');
 let {getDbConfig} = require('klesun-node-tools/src/Config.js');
@@ -29,7 +30,17 @@ let getPool = () => {
  * @param {PoolConnection} dbConn
  */
 let Db = (dbConn) => {
-	let query = (...args) => dbConn.query(...args);
+	let query = (sql, ...restArgs) => Promise.resolve()
+		.then(() => dbConn.query(sql, ...restArgs))
+		.catch(exc => {
+			exc = exc || new Error('empty mysqljs error');
+			exc = typeof exc === 'string' ? new Error(exc) : exc;
+			exc.httpStatusCode = Rej.ServiceUnavailable.httpStatusCode;
+			exc.message = 'SQL query failed - ' + exc.message;
+			exc.sql = sql;
+			exc.restArgs = restArgs;
+			return Promise.reject(exc);
+		});
 
 	/**
 	 * @return {Promise<IPromiseMysqlQueryResult>}

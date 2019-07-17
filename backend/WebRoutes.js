@@ -462,7 +462,7 @@ app.get('/server/restartIfNeeded', toHandleHttp(async (rqBody) => {
 		return Rej.NotImplemented('CURRENT_PRODUCTION_TAG is absent in FS, please supply it before requesting server restart');
 	}
 	if (startupTag && startupTag === currentTag) {
-		return Rej.TooEarly('CURRENT_PRODUCTION_TAG ' + currentTag + ' did not change since last startup');
+		return Rej.TooEarly('CURRENT_PRODUCTION_TAG ' + currentTag + ' did not change since last startup', {isOk: true});
 	} else {
 		let redis = await Redis.getClient();
 		return redis.publish(Redis.events.RESTART_SERVER, JSON.stringify({
