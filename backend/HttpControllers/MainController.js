@@ -158,19 +158,17 @@ let withGdsSession = (sessionAction, canStartNew = false) => (req, res, protocol
 // UnhandledPromiseRejectionWarning
 process.on('unhandledRejection', (exc, promise) => {
 	exc = exc || 'Empty error ' + exc;
-	let data = typeof exc === 'string' ? exc : {
+	let dataStr = typeof exc === 'string' ? exc : jsExport({
 		message: exc + ' ' + promise,
 		stack: exc.stack,
 		promise: promise,
 		...exc,
-	};
+	});
 	if (isSystemError(exc)) {
-		// TODO: report to diag, the reason it was disabled
-		//  was caused by code mistake as it appears
 		if (!Config.production) {
-			console.error('Unhandled Promise Rejection', data);
+			console.error('Unhandled Promise Rejection', dataStr);
 		}
-		Diag.logExc('Unhandled Promise Rejection', jsExport(data));
+		Diag.logExc('Unhandled Promise Rejection', dataStr);
 	}
 });
 
