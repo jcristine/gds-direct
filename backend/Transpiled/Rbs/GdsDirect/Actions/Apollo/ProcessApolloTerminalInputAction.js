@@ -1228,7 +1228,6 @@ class ProcessApolloTerminalInputAction {
 		if (!adultPtc || adultPtc === 'ALL') {
 			adultPtc = 'ADT';
 		}
-		let rawMods = (aliasData.pricingModifiers || []).map(m => m.raw);
 		let leadData = null;
 		if (stateful.getLeadId()) {
 			leadData = await stateful.getGdRemarkData();
@@ -1253,11 +1252,13 @@ class ProcessApolloTerminalInputAction {
 				paxCmdParts.push(paxNum++ + '*' + determined.ptc);
 			}
 		}
+		let rawMods = [];
 		rawMods.push('N' + paxCmdParts.join('|'));
 		rawMods.push('/@AB');
 		if (requestedAgeGroups.every(g => ['child', 'infant'].includes(g.ageGroup))) {
 			rawMods.push('/ACC');
 		}
+		rawMods.push(...(aliasData.pricingModifiers || []).map(m => m.raw));
 		let cmd = '$BB' + rawMods.map(m => '/' + m).join('');
 		return Promise.resolve(cmd);
 	}
