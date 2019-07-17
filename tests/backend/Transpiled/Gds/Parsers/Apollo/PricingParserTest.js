@@ -2,7 +2,7 @@
 // namespace Gds\Parsers\Apollo;
 
 const PricingParser = require('../../../../../../backend/Transpiled/Gds/Parsers/Apollo/PricingParser/PricingParser.js');
-const php = require('../../../../../../backend/Transpiled/phpDeprecated');
+const php = require('klesun-node-tools/src/Transpiled/php.js');
 
 class PricingParserTest extends require('../../../../../../backend/Transpiled/Lib/TestCase.js')
 {
@@ -3114,6 +3114,63 @@ class PricingParserTest extends require('../../../../../../backend/Transpiled/Li
                         },
                     }
                 ],
+            },
+        ]);
+
+        // tax amount without decimal part in MXN currency, session #1658250
+        $list.push([
+            php.implode(php.PHP_EOL, [
+                ">$BB/-*2F3K/:CUA",
+                "*FARE HAS A PLATING CARRIER RESTRICTION*",
+                "E-TKT REQUIRED",
+                "NO REBOOK REQUIRED",
+                "",
+                "** PRIVATE FARES SELECTED **  ",
+                "*PENALTY APPLIES*",
+                "LAST DATE TO PURCHASE TICKET: 20JUL19 CUA",
+                "$BB-1 P17JUL19 - CAT35",
+                "ORF UA X/HOU UA RIO Q120.00 497.60WLX8F9EN/SPL20PUKQ2 UA X/HOU",
+                "Q120.00 UA ORF 456.00SLX6F9EN/SPL20PUKQ2 NUC1193.60 ----- MUST",
+                "PRICE AS B ---- -END ROE1.0",
+                "FARE USD 1194.00 EQU MXN 22663  TAX 214AY TAX 706US TAX 76XA",
+                "TAX 86XF TAX 133XY TAX 110YC TAX 620BR TOT MXN 24608  ",
+                "S1 NVB20FEB/NVA20FEB",
+                "S2 NVB20FEB/NVA20FEB",
+                "S3 NVB26FEB/NVA26FEB",
+                "S4 NVB27FEB/NVA27FEB",
+                "E SPL103TCFJ - SPLT10",
+                "E SPL1187ZOU - SPLT11",
+                "E SPL15H1A7G - SPLT15",
+                "E SPL20PUKQ2 - SPLT20",
+                "E MUST BE ISSUED IN 2G8P",
+                "TICKETING AGENCY 2F3K",
+                "DEFAULT PLATING CARRIER UA",
+                "RATE USED IN EQU TOTAL IS BSR 1USD - 18.9803MXN",
+                "US PFC: XF IAH4.5 ",
+                "BAGGAGE ALLOWANCE",
+                "ADT                                                         ",
+                " UA ORFRIO  2PC                                             ",
+                "   BAG 1 -  NO FEE       UPTO50LB/23KG AND UPTO62LI/158LCM",
+                "   BAG 2 -  NO FEE       UPTO50LB/23KG AND UPTO62LI/158LCM",
+                "   VIEWTRIP.TRAVELPORT.COM/BAGGAGEPOLICY/UA",
+                "                                                                 UA RIOORF  2PC                                             ",
+                "   BAG 1 -  NO FEE       UPTO50LB/23KG AND UPTO62LI/158LCM",
+                "   BAG 2 -  NO FEE       UPTO50LB/23KG AND UPTO62LI/158LCM",
+                "   VIEWTRIP.TRAVELPORT.COM/BAGGAGEPOLICY/UA",
+                "                                                                CARRY ON ALLOWANCE",
+                " UA ORFHOU  1PC                                             ",
+                "   BAG 1 -  NO FEE       CARRY ON HAND BAGGAGE            ",
+                " UA HOURIO  1PC                                             ",
+                "   BAG 1 -  NO FEE       CARRY ON HAND BAGGAGE            ",
+                " UA RIOHOU  1PC                                             ",
+                "   BAG 1 -  NO FEE       CARRY ON HAND BAGGAGE            ",
+                " UA HOUORF  1PC                                             ",
+                "   BAG 1 -  NO FEE       CARRY ON HAND BAGGAGE            ",
+                "BAGGAGE DISCOUNTS MAY APPLY BASED ON FREQUENT FLYER STATUS/",
+                "ONLINE CHECKIN/FORM OF PAYMENT/MILITARY/ETC.",
+                "",
+            ]),
+            {
             },
         ]);
 

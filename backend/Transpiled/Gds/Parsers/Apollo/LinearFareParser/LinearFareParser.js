@@ -4,7 +4,7 @@
 const Fp = require('../../../../Lib/Utils/Fp.js');
 const StringUtil = require('../../../../Lib/Utils/StringUtil.js');
 const FareConstructionParser = require('../../../../Gds/Parsers/Common/FareConstruction/FareConstructionParser.js');
-const php = require('../../../../phpDeprecated');
+const php = require('klesun-node-tools/src/Transpiled/php.js');
 
 class LinearFareParser
 {
@@ -12,7 +12,7 @@ class LinearFareParser
     // 'FARE EUR 145.00 EQU USD 193.00 TAX 4.50LV TAX 8.70XM TAX 4.00UA TAX 2.00UD TAX 8.50YK TAX 1.40ZR TAX 113.70YQ TOT USD 335.80 '
     static parseFareBreakdown($line)  {
         let $taxPattern, $regex, $matches, $taxMatches;
-        $taxPattern = 'TAX\\s+(\\d*\\.\\d+|EXEMPT\\s+)([A-Z0-9]{2})\\s+';
+        $taxPattern = 'TAX\\s+(\\d*\\.?\\d+|EXEMPT\\s+)([A-Z0-9]{2})\\s+';
         $regex =
             '/^FARE\\s+'+
             '(?<baseCurrency>[A-Z]{3})\\s+'+
@@ -23,7 +23,7 @@ class LinearFareParser
             ')?'+
             '(?<taxList>(?:'+$taxPattern+')*)TOT\\s+'+
             '(?<totalCurrency>[A-Z]{3})\\s+'+
-            '(?<totalAmount>\\d*\\.\\d+)'+
+            '(?<totalAmount>\\d*\\.?\\d+)'+
             '(?<textLeft>.*)'+
             '/s';
         if (php.preg_match($regex, $line, $matches = [])) {
