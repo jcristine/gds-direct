@@ -34,6 +34,7 @@ let parseOutput = (output) => {
 	} else {
 		let rejection = Rej.UnprocessableEntity;
 		if (output.trim() === 'TAX CODE ERROR' ||
+			output.trim() === 'COMM ERR' ||
 			output.match(/^\s*TX\d+ ERROR\s*$/)
 		) {
 			// if agent accidentally entered amount
