@@ -279,6 +279,25 @@
       }
     }
   }
+  .injected-dom-holder .choose-str-from-list {
+    background-color: #a51c1c;
+    color: white;
+    text-align: center;
+    select {
+      width: 100px;
+      text-align: center;
+      font-size: 14px;
+      /* does not work in firefox v59 for some reason */
+      overflow-y: auto;
+    }
+    select option {
+      background-color: #a51c1c;
+      color: white;
+    }
+    select option:focus {
+      background-color: blue;
+    }
+  }
 }
 
 .mask-form {

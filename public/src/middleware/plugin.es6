@@ -79,6 +79,8 @@ export default class TerminalPlugin
 	{
 		// to not let terminal intercept chars entered in a form input
 		return evt.target.tagName.toLowerCase() === 'input'
+			|| evt.target.tagName.toLowerCase() === 'select'
+			|| evt.target.tagName.toLowerCase() === 'option'
 			|| evt.target.tagName.toLowerCase() === 'button';
 	}
 
@@ -355,8 +357,9 @@ export default class TerminalPlugin
 		let remove = () => {};
 		let onYes = () => {
 			remove();
-			this._withSpinner(() => post('terminal/addMpRemark', {gds: this.gdsName}))
-				.then(resp => this.parseBackEnd(resp, 'MP REMARK'));
+			this._withSpinner(() => post('terminal/addMpRemark', {
+				gds: this.gdsName, useSocket: true,
+			})).then(resp => this.parseBackEnd(resp, 'MP REMARK'));
 		};
 		let yesBtnCmp;
 		let noBtnCmp;

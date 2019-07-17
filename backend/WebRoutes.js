@@ -189,7 +189,6 @@ app.post('/terminal/saveSetting/:name/:currentGds', withAuth((reqBody, emcResult
 app.post('/terminal/resetToDefaultPcc', withGdsSession(GdsSessionController.resetToDefaultPcc));
 app.get('/terminal/getPqItinerary', withGdsSession(GdsSessionController.getPqItinerary));
 app.get('/terminal/importPq', withGdsSession(GdsSessionController.importPq));
-app.post('/terminal/addMpRemark', withGdsSession(GdsSessionController.addMpRemark));
 app.post('/terminal/makeMco', withGdsSession(GdsSessionController.makeMco));
 app.post('/terminal/exchangeTicket', withGdsSession(GdsSessionController.exchangeTicket));
 app.post('/terminal/confirmExchangeFareDifference', withGdsSession(GdsSessionController.confirmExchangeFareDifference));
@@ -425,6 +424,7 @@ app.listen(+envConfig.HTTP_PORT, envConfig.HOST, function () {
 let routes = {
 	'/terminal/command': withGdsSession(GdsSessionController.runInputCmd, true),
 	'/gdsDirect/keepAlive': withGdsSession(GdsSessionController.keepAliveCurrent),
+	'/terminal/addMpRemark': withGdsSession(GdsSessionController.addMpRemark),
 };
 
 let socketIo = SocketIo.init(routes);

@@ -199,8 +199,8 @@ exports.importPq = async ({rqBody, session, emcUser}) => {
 	return ImportPq({stateful, leadData, fetchOptionalFields: true});
 };
 
-exports.addMpRemark = async ({rqBody, session, emcUser}) => {
-	let stateful = await StatefulSession.makeFromDb({session, emcUser});
+exports.addMpRemark = async ({rqBody, ...params}) => {
+	let stateful = await StatefulSession.makeFromDb(params);
 	return AddMpRemark({stateful});
 };
 

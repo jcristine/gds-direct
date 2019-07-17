@@ -14,6 +14,9 @@ import {setMessageFromServerHandler} from './../helpers/socketIoWrapper.js';
 import {notify} from './../helpers/debug.es6';
 import {LeadList} from '../components/reusable/LeadList.js';
 
+let Component = require('../modules/component.es6').default;
+let Cmp = (...args) => new Component(...args);
+
 const BORDER_SIZE = 2;
 
 let chooseLeadFromList = (plugin) => new Promise((resolve, reject) => {
@@ -25,6 +28,42 @@ let chooseLeadFromList = (plugin) => new Promise((resolve, reject) => {
 		onCancel: reject,
 	});
 });
+
+let chooseStrFromList = (plugin, options, caption = 'Choose One Of The Following Values') =>
+	new Promise((resolve, reject) => {
+		if (options.length === 0) {
+			reject(new Error('Can not choose from 0 options'));
+		} else if (options.length === 1) {
+			resolve(options[0]);
+		} else {
+			let remove = () => {};
+			let selectCmp = Cmp('select', {
+				size: '5',
+				onkeydown: (evt) => {
+					if (evt.key === 'Enter') {
+						resolve(evt.target.value);
+						remove();
+					}
+				},
+			}).attach(
+				options.map(o => Cmp('option', {
+					value: o, textContent: o,
+					onclick: () => {
+						resolve(o);
+						remove();
+					},
+				}))
+			);
+			remove = plugin.injectDom({
+				dom: Cmp('form.choose-str-from-list').attach([
+					Cmp('h3', {textContent: caption}),
+					selectCmp,
+				]).context,
+			}).remove;
+			selectCmp.context.focus();
+			selectCmp.context.querySelector('option').setAttribute('selected', 'selected');
+		}
+	});
 
 let toHandleMessageFromServer = (gdsSwitch) => {
 	return (data, reply) => {
@@ -43,6 +82,13 @@ let toHandleMessageFromServer = (gdsSwitch) => {
 				}
 				reply({leadId: leadId});
 			}
+		} else if (data.messageType === 'selectMpAirline') {
+			let plugin = gdsSwitch.getActivePlugin();
+			let options = data.options;
+			let caption = 'Specify MP airline';
+			chooseStrFromList(plugin, options, caption)
+				.then(option => reply({value: option}))
+				.catch(exc => reply({error: exc + '', stack: (exc || {}).stack}));
 		} else {
 			console.error('could not interpret message triggered by server', data);
 			reply({status: 'unknownMessageType', error: 'I do not confirm your message'});

@@ -1,3 +1,8 @@
+const AmadeusPnr = require('../Transpiled/Rbs/TravelDs/AmadeusPnr.js');
+const AmadeusUtils = require('../GdsHelpers/AmadeusUtils.js');
+const ApolloPnr = require('../Transpiled/Rbs/TravelDs/ApolloPnr.js');
+const GalileoPnr = require('../Transpiled/Rbs/TravelDs/GalileoPnr.js');
+const TravelportUtils = require('../GdsHelpers/TravelportUtils.js');
 const CmdResultAdapter = require('../Transpiled/App/Services/CmdResultAdapter.js');
 const SabrePnr = require('../Transpiled/Rbs/TravelDs/SabrePnr.js');
 const TApolloSavePnr = require('../Transpiled/Rbs/GdsAction/Traits/TApolloSavePnr.js');
@@ -51,9 +56,44 @@ const runAndSave = async ({gds, gdsSession, cmds}) => {
 	}
 };
 
+/** @return {IPnr} */
+const getCurrentPnr = async (stateful) => {
+	let gds = stateful.gds;
+	// TODO: reuse *R from command log one day...
+	if (gds === 'apollo') {
+		let cmdRec = await TravelportUtils.fetchAll('*R', stateful);
+		return ApolloPnr.makeFromDump(cmdRec.output);
+	} else if (gds === 'sabre') {
+		let cmdRec = await stateful.runCmd('*R');
+		return SabrePnr.makeFromDump(cmdRec.output);
+	} else if (gds === 'galileo') {
+		let cmdRec = await TravelportUtils.fetchAll('*R', stateful);
+		return GalileoPnr.makeFromDump(cmdRec.output);
+	} else if (gds === 'amadeus') {
+		let cmdRec = await AmadeusUtils.fetchAllRt('RT', stateful);
+		return AmadeusPnr.makeFromDump(cmdRec.output);
+	} else {
+		return Rej.NotImplemented('Unsupported GDS for current PNR retrieval - ' + gds);
+	}
+};
+
 /** @param stateful = require('StatefulSession.js')() */
 module.exports = async ({stateful}) => {
-	let remark = '-EXPERTS REMARK-MP-' + stateful.getSessionData().pcc;
+	let pnr = await getCurrentPnr(stateful);
+	let airlines = [...new Set(pnr.getItinerary().map(s => s.airline))];
+	let mpAirline;
+	if (airlines.length === 0) {
+		return Rej.BadRequest('Itinerary is empty');
+	} else if (airlines.length === 1) {
+		mpAirline = airlines[0];
+	} else {
+		mpAirline = await stateful.askClient({
+			messageType: 'selectMpAirline',
+			options: airlines
+		});
+	}
+
+	let remark = '-EXPERTS REMARK-MP-' + mpAirline + '-' + stateful.getSessionData().pcc;
 	let gds = stateful.gds;
 	let cmd = {
 		apollo: '@:5' + remark,
