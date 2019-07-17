@@ -14,7 +14,7 @@ wait
 
 # I have a user script that closes firefox when rsync is done, but you
 # probably will have to open this url manually to restart the server
-firefox "https://gds-direct-plus.asaptickets.com/server/restartIfNeeded?password=28145f8f7e54a60d2c3905edcce2dabb&message=restart-rq-from-deploy-script-after-rsync" &
+# firefox "https://gds-direct-plus.asaptickets.com/server/restartIfNeeded?password=28145f8f7e54a60d2c3905edcce2dabb&message=restart-rq-from-deploy-script-after-rsync" &
 
 git checkout public/package-lock.json # stupid npm
 git checkout master
