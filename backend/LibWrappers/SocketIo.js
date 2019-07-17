@@ -1,5 +1,5 @@
 
-const {getConfig} = require('../Config.js');
+const {getRedisConfig, getEnvConfig} = require('klesun-node-tools/src/Config.js');
 const initSocketIo = require('socket.io');
 const redisAdapter = require('socket.io-redis');
 const Diag = require('./Diag.js');
@@ -71,15 +71,13 @@ exports.init = (routes) => {
 			//console.log('delivered testMessage to client', response);
 		});
 	});
-	getConfig().then(config => {
-		try {
-			socketIo.listen(config.SOCKET_PORT);
-		} catch (exc) {
-			// TypeError: Cannot read property 'listeners' of undefined if SOCKET_PORT is not defined
-			Diag.error('Failed to listen to socket port (' + config.SOCKET_PORT + ') - ' + exc);
-		}
-	});
-	const {getRedisConfig} = require('klesun-node-tools/src/Config.js');
+	let envConfig = getEnvConfig();
+	try {
+		socketIo.listen(envConfig.SOCKET_PORT);
+	} catch (exc) {
+		// TypeError: Cannot read property 'listeners' of undefined if SOCKET_PORT is not defined
+		Diag.error('Failed to listen to socket port (' + envConfig.SOCKET_PORT + ') - ' + exc);
+	}
 	getRedisConfig().then(cfg => {
 		socketIo.adapter(redisAdapter({
 			host: cfg.REDIS_HOST,
