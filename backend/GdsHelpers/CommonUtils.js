@@ -32,7 +32,8 @@ exports.parseXml = (xml) => {
 		let jsdomObj = new jsdom.JSDOM(xml, {contentType: 'text/xml'});
 		return jsdomObj.window.document;
 	} catch (exc) {
-		return Rej.UnprocessableEntity.makeExc('Failed to parse XML - ' + exc + ' - ' + xml);
+		let msg = 'Failed to parse XML - ' + exc + ' - ' + xml;
+		throw Rej.UnprocessableEntity.makeExc(msg);
 	}
 };
 
