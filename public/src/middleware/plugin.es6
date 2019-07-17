@@ -353,19 +353,30 @@ export default class TerminalPlugin
 	_displayMpRemarkDialog(data)
 	{
 		let remove = () => {};
-		let close = () => remove();
 		let onYes = () => {
-			close();
+			remove();
 			this._withSpinner(() => post('terminal/addMpRemark', {gds: this.gdsName}))
 				.then(resp => this.parseBackEnd(resp, 'MP REMARK'));
 		};
-		let yesBtnCmp = Cmp('button[Yes]', {
+		let yesBtnCmp;
+		let noBtnCmp;
+		yesBtnCmp = Cmp('button[Yes]', {
 			onclick: onYes,
 			onkeydown: (evt) => {
 				if (evt.key === 'Escape') {
-					close();
+					remove();
 				} else if (evt.key === 'Enter') {
 					onYes();
+				} else if (evt.key === 'ArrowLeft' || evt.key === 'ArrowRight') {
+					noBtnCmp.context.focus();
+				}
+			},
+		});
+		noBtnCmp = Cmp('button[No]', {
+			onclick: () => remove(),
+			onkeydown: (evt) => {
+				if (evt.key === 'ArrowLeft' || evt.key === 'ArrowRight') {
+					yesBtnCmp.context.focus();
 				}
 			},
 		});
@@ -375,7 +386,7 @@ export default class TerminalPlugin
 				Cmp('h2[Was the PNR MPed?]'),
 				Cmp('div.button-cont').attach([
 					yesBtnCmp,
-					Cmp('button[No]', {onclick: close}),
+					noBtnCmp,
 				]),
 			]).context,
 		}).remove;
