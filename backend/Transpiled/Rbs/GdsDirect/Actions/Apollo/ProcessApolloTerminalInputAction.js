@@ -285,6 +285,8 @@ class ProcessApolloTerminalInputAction {
 			}
 		} else if ($data = AliasParser.parseStore($realCmd)) {
 			$type = 'storePricing';
+		} else if ($data = AliasParser.parsePrice($realCmd)) {
+			$type = 'priceAll';
 		} else if ($data = AliasParser.parseRe($cmdRequested)) {
 			$type = 'rebookInPcc';
 		} else if (php.preg_match(/^X(\d+[\|\-\d]*)\/0(\d{1,2}[A-Z]{3}|)\/?([A-Z]|)GK$/, $realCmd, $matches = [])) {
@@ -1221,6 +1223,51 @@ class ProcessApolloTerminalInputAction {
 		return {'calledCommands': [$cmdRecord]};
 	}
 
+	async makePriceAllCmd(aliasData) {
+		let adultPtc = aliasData.ptc;
+		if (!adultPtc || adultPtc === 'ALL') {
+			adultPtc = 'ADT';
+		}
+		let rawMods = (aliasData.pricingModifiers || []).map(m => m.raw);
+		let leadData = null;
+		if (stateful.getLeadId()) {
+			leadData = await stateful.getGdRemarkData();
+		}
+		let requestedAgeGroups = (leadData || {}).requestedAgeGroups || [];
+		if (requestedAgeGroups.length === 0) {
+			requestedAgeGroups = [
+				{ageGroup: 'adult', quantity: 1},
+				{ageGroup: 'child', quantity: 1},
+				{ageGroup: 'infant', quantity: 1},
+			];
+		}
+		let paxCmdParts = [];
+		let paxNum = 1;
+		for (let group of requestedAgeGroups) {
+			let determined = PtcUtil.convertPtcByAgeGroup(adultPtc, group.ageGroup, 7);
+			if (determined.error) {
+				let msg = 'Could not convert PTC - ' + determined.error;
+				return Rej.NotImplemented(msg);
+			}
+			for (let i = 0; i < (group.quantity || 1); ++i) {
+				paxCmdParts.push(paxNum++ + '*' + determined.ptc);
+			}
+		}
+		rawMods.push('N' + paxCmdParts.join('|'));
+		rawMods.push('/@AB');
+		if (requestedAgeGroups.every(g => ['child', 'infant'].includes(g.ageGroup))) {
+			rawMods.push('/ACC');
+		}
+		let cmd = '$BB' + rawMods.map(m => '/' + m).join('');
+		return Promise.resolve(cmd);
+	}
+
+	async priceAll(aliasData) {
+		let cmd = await this.makePriceAllCmd(aliasData);
+		let {cmdRec, userMessages} = await this.processRealCommand(cmd, true);
+		return {calledCommands: [cmdRec], userMessages};
+	}
+
 	async ignoreWithoutWarning() {
 		let $output, $cmdRecord;
 		$output = await this.runCommand('I');
@@ -1636,6 +1683,8 @@ class ProcessApolloTerminalInputAction {
 			return this.multiPriceItinerary($alias['data']);
 		} else if ($alias['type'] === 'storePricing') {
 			return this.storePricing($alias['data']);
+		} else if ($alias['type'] === 'priceAll') {
+			return this.priceAll($alias['data']);
 		} else if (cmd === '*HA') {
 			return this.displayHistory();
 		} else if (cmd === '!aliasDoubleIgnore') {

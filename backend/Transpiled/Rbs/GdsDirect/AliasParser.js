@@ -2,12 +2,10 @@
 // namespace Rbs\GdsDirect;
 
 const AtfqParser = require('../../Gds/Parsers/Apollo/Pnr/AtfqParser.js');
-const Fp = require('../../Lib/Utils/Fp.js');
 const ParsersController = require('../../Rbs/IqControllers/ParsersController.js');
 
-let php = require('../../phpDeprecated.js');
+let php = require('klesun-node-tools/src/Transpiled/php.js');
 const CmsClient = require("../../../IqClients/CmsClient");
-const Rej = require("klesun-node-tools/src/Rej");
 
 /**
  * provides functions to parse our custom formats
@@ -83,8 +81,21 @@ class AliasParser
         if (php.preg_match(/^STORE([A-Z0-9]{3}|)\/?(.*)$/, $cmd, $matches = [])) {
             [$_, $ptc, $modsPart] = $matches;
             return {
-                'ptc': $ptc,
-                'pricingModifiers': AtfqParser.parsePricingModifiers($modsPart),
+                ptc: $ptc,
+                pricingModifiers: AtfqParser.parsePricingModifiers($modsPart),
+            };
+        } else {
+            return null;
+        }
+    }
+
+    static parsePrice($cmd)  {
+        let $matches, $_, $ptc, $modsPart;
+        if (php.preg_match(/^PRICE([A-Z0-9]{3}|)\/?(.*)$/, $cmd, $matches = [])) {
+            [$_, $ptc, $modsPart] = $matches;
+            return {
+                ptc: $ptc,
+                pricingModifiers: AtfqParser.parsePricingModifiers($modsPart),
             };
         } else {
             return null;

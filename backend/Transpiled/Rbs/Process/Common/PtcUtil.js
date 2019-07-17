@@ -1,7 +1,7 @@
 
 // namespace Rbs\Process\Common;
 
-let php = require('../../../phpDeprecated.js');
+let php = require('klesun-node-tools/src/Transpiled/php.js');
 
 /** provides functions to parse/make/modify PTC */
 class PtcUtil
@@ -129,8 +129,8 @@ class PtcUtil
      * ...
      * @param $nameRecord = GdsPassengerBlockParser::flattenPassengers()[0]
      */
-    static convertPtcAgeGroup($adultPtc, $nameRecord, $tripEndDt)  {
-        let $ageGroup, $age, $seatedInfantPtcs, $pricingPtc, $ageLetters, $letter, $infantPtcs;
+    static convertPtcAgeGroup($adultPtc, $nameRecord, $tripEndDt = null)  {
+        let $ageGroup, $age, $seatedInfantPtcs, $pricingPtc;
         $ageGroup = PtcUtil.getPaxAgeGroup($nameRecord, $tripEndDt);
         $age = !php.empty($nameRecord['age'])
             ? php.str_pad($nameRecord['age'], 2, '0', php.STR_PAD_LEFT)
@@ -146,12 +146,23 @@ class PtcUtil
             }
         } else if ($nameRecord['ptc'] === 'YTH') {
             $pricingPtc = $adultPtc === 'ADT' ? 'YTH' : $adultPtc;
-        } else if ($ageGroup === 'adult') {
+        } else {
+            return this.convertPtcByAgeGroup($adultPtc, $ageGroup, $age);
+        }
+        return {'ptc': $pricingPtc};
+    }
+
+    static convertPtcByAgeGroup($adultPtc, $ageGroup, $age = null) {
+        let $pricingPtc, $ageLetters, $letter, $infantPtcs;
+
+        // I guess getFareTypeMapping() should be reused here eventually...
+        if ($ageGroup === 'adult') {
             $pricingPtc = $adultPtc;
         } else if ($ageGroup === 'child') {
             $ageLetters = {'ADT': 'C', 'JCB': 'J', 'ITX': 'I'};
             if ($letter = $ageLetters[$adultPtc] || null) {
-                $pricingPtc = $letter+($age || 'NN');
+                let age = !$age ? 'NN' : ('0' + $age).slice(-2);
+                $pricingPtc = $letter + age;
             } else if ($adultPtc === 'MIS') {
                 $pricingPtc = 'MIC';
             } else {
@@ -180,7 +191,7 @@ class PtcUtil
     }
 
     /** @param $nameRecord = GdsPassengerBlockParser::flattenPassengers()[0] */
-    static getPaxAgeGroup($nameRecord, $tripEndDt)  {
+    static getPaxAgeGroup($nameRecord, $tripEndDt = null)  {
         let $age, $dob, $ptc;
         if ($nameRecord['nameNumber']['isInfant']) {
             return 'infant';

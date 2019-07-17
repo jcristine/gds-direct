@@ -76,6 +76,7 @@ let getLeadData = async (travelRequestId) =>
 					paxNumAdults: ageGroupToCnt['adult'] || 0,
 					paxNumChildren: ageGroupToCnt['child'] || 0,
 					paxNumInfants: ageGroupToCnt['infant'] || 0,
+					requestedAgeGroups: cmsData.requestedAgeGroups || [],
 				};
 			})
 			.catch(exc => ({
@@ -83,6 +84,7 @@ let getLeadData = async (travelRequestId) =>
 				leadId: travelRequestId,
 				leadUrl: 'https://cms.asaptickets.com/leadInfo?rId=' + travelRequestId,
 				debug: exc + '',
+				requestedAgeGroups: [],
 			}));
 
 exports.getRequestBriefData = getRequestBriefData;
