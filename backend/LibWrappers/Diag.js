@@ -44,7 +44,7 @@ diagService.logExc = (msg, exc) => {
             !e.file.endsWith('/translib.js'))[0];
     } catch (exc) {}
 
-    let formatted = jsExport(exc);
+    let formatted = typeof exc === 'string' ? exc : jsExport(exc);
     if (lastEntry) {
         let {func, file, line, col} = lastEntry;
         let type = diagService.DIAG_TYPE_DEFAULT;
