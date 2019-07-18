@@ -1,8 +1,11 @@
+const Diag = require('../LibWrappers/Diag.js');
+const Rej = require('../../node_modules/klesun-node-tools/src/Rej.js');
 
 let Db = require('../Utils/Db.js');
 const CommonDataHelper = require("../Transpiled/Rbs/GdsDirect/CommonDataHelper");
 const sqlNow = require("../Utils/TmpLib").sqlNow;
 const nonEmpty = require("klesun-node-tools/src/Rej").nonEmpty;
+const {coverExc} = require('klesun-node-tools/src/Lang.js');
 
 let TABLE = 'terminal_command_log';
 
@@ -102,13 +105,70 @@ let queued = (key, action) => {
 	return whenDone;
 };
 
+let areValuesSame = (rowFromDb, rowForDb) => {
+	return rowFromDb.session_id == rowForDb.session_id
+		&& rowFromDb.gds === rowForDb.gds
+		&& rowFromDb.type === rowForDb.type
+		&& +rowFromDb.is_mr == +rowForDb.is_mr
+		&& rowFromDb.dt === rowForDb.dt
+		&& rowFromDb.cmd === rowForDb.cmd
+		&& rowFromDb.duration == rowForDb.duration
+		&& rowFromDb.cmd_rq_id == rowForDb.cmd_rq_id
+		&& rowFromDb.output === rowForDb.output
+		;
+};
+
+let tryInsert = row => Db.with(db => db.writeRows(TABLE, [row]));
+
+/**
+ * commands in the log are extremely important
+ * for logic - so we should retry at least once
+ * I get "Connection lost: The server closed the
+ * connection" with our DB few dozens times per night
+ *
+ * possibly there is some "ensureDelivered" option in
+ * mysqljs, if so, should use it instead of this
+ */
+let retryInsert = async (row) => {
+	let dtRows = await Db.with(db => db.fetchAll({
+		table: TABLE,
+		where: [
+			['session_id', '=', row.session_id],
+			['dt', '=', row.dt],
+		],
+	}));
+	let alreadyInserted = dtRows
+		.filter(dtRow => areValuesSame(dtRow, row))
+		.slice(-1)[0];
+	if (alreadyInserted) {
+		return Promise.resolve({
+			insertId: alreadyInserted.id,
+			retryType: 'alreadyInserted',
+		});
+	} else {
+		return tryInsert(row).then(inserted => {
+			inserted.retryType = 'reinsert';
+			return inserted;
+		});
+	}
+};
+
 let storeNew = async (row) => {
 	// to ensure their order, see cmd RQ #12114
-	return queued(row.session_id, () =>
-		Db.with(db => db.writeRows(TABLE, [row]))
+	return queued(row.session_id, () => {
+		let writing = tryInsert(row)
+			.catch(coverExc([Rej.ServiceUnavailable], async exc => {
+				let inserted = await retryInsert(row);
+				exc.retryResult = inserted;
+				// just to check for starters that everything works as expected
+				Diag.logExc('terminalCommandLog insert failed an retried', exc);
+				return inserted;
+			}));
+		return writing
 			.then(inserted => inserted.insertId)
 			.then(nonEmpty('Failed to store cmd to DB and get the id'))
-			.then(id => ({id, ...row})));
+			.then(id => ({id, ...row}));
+	});
 };
 
 exports.makeRow = makeRow;
