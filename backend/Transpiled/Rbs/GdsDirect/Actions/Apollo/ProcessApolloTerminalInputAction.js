@@ -383,6 +383,8 @@ class ProcessApolloTerminalInputAction {
 			} else if (scrolledCmd && StringUtil.startsWith(scrolledCmd, 'TI')) {
 				// timatic screen uses TIPN instead of MD
 				$cmd = 'TIPN';
+			} else if (scrolledCmd.startsWith('A')) {
+				$cmd = 'A*';
 			} else {
 				$cmd = 'MR';
 			}
