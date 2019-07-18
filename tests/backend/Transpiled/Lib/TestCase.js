@@ -1,1 +1,1 @@
-module.exports = require('../../../../backend/Transpiled/Lib/TestCase.js');
+module.exports = require('klesun-node-tools/src/Transpiled/Lib/TestCase.js');

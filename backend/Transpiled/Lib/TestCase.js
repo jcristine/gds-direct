@@ -1,3 +1,3 @@
 
-// TODO: refactor code to use it directly from the lib
+/** @deprecated - should refactor code to use it directly from the lib */
 module.exports = require('klesun-node-tools/src/Transpiled/Lib/TestCase.js');

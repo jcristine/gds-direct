@@ -77,9 +77,7 @@ let Db = (dbConn) => {
 	 */
 	let fetchAll = (params) => {
 		let {sql, placedValues} = SqlUtil.makeSelectQuery(params);
-		let tryQuery = () => query(sql, placedValues);
-		// retry once, as DB connection pretty often gets closed by server
-		return tryQuery().catch(coverExc([Rej.ServiceUnavailable], tryQuery));
+		return query(sql, placedValues);
 	};
 
 	return {
@@ -123,6 +121,16 @@ Db.getInfo = async () => {
 		connectionQueue: dbPool.pool._connectionQueue.length,
 	};
 };
+
+const withRetry = (dbAction) => {
+	// retry once, as DB connection pretty often gets closed by server
+	let perform = () => Db.with(db => dbAction(db));
+	return perform()
+		.catch(coverExc([Rej.ServiceUnavailable], perform));
+};
+
+Db.fetchAll = (params) => withRetry(db => db.fetchAll(params));
+Db.fetchOne = (params) => withRetry(db => db.fetchOne(params));
 
 Db.makeSelectQuery = SqlUtil.makeSelectQuery;
 
