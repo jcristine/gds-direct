@@ -63,6 +63,8 @@ class CommandCorrector {
 				{mistake: '*:LF', correct: '*LF'},
 				{mistake: '*L:F', correct: '*LF'},
 				{mistake: '*L::F', correct: '*LF'},
+				{mistake: '$LF', correct: '*LF'},
+				{mistake: '$LT{free_text}', correct: '@LT{free_text}'},
 				{mistake: '"MT', correct: '@MT'},
 				{mistake: 'AS', correct: 'SA'},
 				{mistake: 'ASA', correct: 'SA'},
@@ -76,6 +78,7 @@ class CommandCorrector {
 				{mistake: 'U', correct: 'I'},
 				{mistake: 'UI', correct: 'I'},
 				{mistake: 'UII', correct: 'II'},
+				{mistake: 'UU', correct: 'II'},
 				{mistake: 'OR', correct: 'IR'},
 				// could be a >E; command probably...
 				//{mistake: 'ES', correct: 'SE'},
@@ -238,9 +241,13 @@ class CommandCorrector {
 					'mistake': 'U',
 					'correct': 'I',
 				},
+				{mistake: 'H', correct: '*H'},
+				{mistake: 'HA', correct: '*HA'},
 				{mistake: 'HT', correct: '*HT'},
 				{mistake: 'HTE', correct: '*HTE'},
 				{mistake: '§D', correct: 'MD'},
+				{mistake: 'MMD', correct: 'MD'},
+				{mistake: 'MMDA', correct: 'MDA'},
 			],
 
 			sabre: [
