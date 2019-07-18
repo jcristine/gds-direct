@@ -246,7 +246,7 @@ class CommandParser {
 			[/^R:(.*?)(\||$)/]: 'addReceivedFrom',
 			[/^N:(.*?)(\||$)/]: 'addName',
 			[/^T:TAU\/(.*?)(\||$)/]: 'addTicketingDateLimit',
-			[/^T-CA(.*?)(\||$)/]: 'addAccountingLine',
+			[/^T-(.*?)(\||$)/]: 'addAccountingLine',
 			[/^\*\s*([A-Z0-9]{6})(\||$)/]: 'openPnr',
 			[/^C:(\d+)@:3(\||$)/]: 'cancelSsr',
 			[/^\*(\d{1,3})(\||$)/]: 'displayPnrFromList',

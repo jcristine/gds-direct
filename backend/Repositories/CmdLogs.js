@@ -35,6 +35,7 @@ let isInvalidFormat = (cmdRec, gds) => {
 			|| cmdRec.output.match(/^ILLEGAL ENTRY\s*><$/)
 			|| cmdRec.output.match(/^RESTRICTED\s*><$/)
 			|| cmdRec.output.match(/^RESTRICTED\/NOT ENT\/.*\s*><$/)
+			|| cmdRec.output.match(/^ERROR.*RESTRICTED\n.*\s*><$/)
 			|| cmdRec.output.match(/^ERROR.*INVALID FORMAT.*\n.*\s*><$/)
 			|| cmdRec.output.match(/^ERROR.*CK ACTION CODE.*\n.*\s*><$/)
 			;
@@ -49,6 +50,8 @@ let isContextError = (cmdRec, gds) => {
 		// when you try to open another PNR when there are unsaved changes in current one
 		let matches = cmdRec.output.match(/^FIN OR IGN\s*><$/)
 			|| cmdRec.output.match(/^NO TRANS AAA\s*><$/) // no PNR
+			|| cmdRec.output.match(/^RETRIEVE PNR\s*><$/)
+			|| cmdRec.output.match(/^NO MSG\s*><$/) // when agent accidentally types >UI; instead of >I;
 			// not emulated to a PCC in this area
 			|| cmdRec.output.match(/^AG - DUTY CODE NOT AUTH FOR CRT - APOLLO\s*><$/)
 			;

@@ -152,6 +152,14 @@ class CommandCorrectorTest extends require('../../../Lib/TestCase.js') {
 			['apollo', 'Ф10ЬФНОАЛЬТД', 'A10MAYJFKMNL'],
 			// should not replace A with 1, since doing so would result in invalid sabre command
 			['sabre', 'A29JULJFKJED+AA.BA', 'A29JULJFKJED+AA.BA'],
+			// agents often accidentally hit ":" and apollo seems to ignore
+			// it, but let's correct it to not trash log with untyped commands
+			['apollo', '*:LF', '*LF'],
+			['apollo', '*L:F', '*LF'],
+			['apollo', 'HTE', '*HTE'],
+			['apollo', '§D', 'MD'],
+			['apollo', 'RA*O10JAN', 'A*O10JAN'],
+			['apollo', 'RA10JUNDATMCO|KL', 'A10JUNDATMCO|KL'],
 		];
 	}
 

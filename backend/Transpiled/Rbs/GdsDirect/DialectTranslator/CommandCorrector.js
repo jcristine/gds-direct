@@ -1,7 +1,7 @@
 // namespace Rbs\GdsDirect\DialectTranslator;
 
 const StringUtil = require('../../../Lib/Utils/StringUtil.js');
-const php = require('../../../phpDeprecated.js');
+const php = require('klesun-node-tools/src/Transpiled/php.js');
 const VariableTranslator = require("./VariableTranslator");
 const SimplePatternTranslator = require("./SimplePatternTranslator");
 const PatternTranslator = require("./PatternTranslator");
@@ -60,6 +60,25 @@ class CommandCorrector {
 					'mistake': '$BB*JC',
 					'correct': '$BB*JCB',
 				},
+				{mistake: '*:LF', correct: '*LF'},
+				{mistake: '*L:F', correct: '*LF'},
+				{mistake: '*L::F', correct: '*LF'},
+				{mistake: '"MT', correct: '@MT'},
+				{mistake: 'AS', correct: 'SA'},
+				{mistake: 'ASA', correct: 'SA'},
+				{mistake: 'BS', correct: 'SB'},
+				{mistake: 'BSB', correct: 'SB'},
+				{mistake: 'CS', correct: 'SC'},
+				{mistake: 'CSC', correct: 'SC'},
+				{mistake: 'DS', correct: 'SD'},
+				{mistake: 'DSD', correct: 'SD'},
+				{mistake: 'ORT', correct: 'SORT'},
+				{mistake: 'U', correct: 'I'},
+				{mistake: 'UI', correct: 'I'},
+				{mistake: 'UII', correct: 'II'},
+				{mistake: 'OR', correct: 'IR'},
+				// could be a >E; command probably...
+				//{mistake: 'ES', correct: 'SE'},
 				{
 					'mistake': 'A{date}',
 					'correct': 'A*{date}',
@@ -74,6 +93,11 @@ class CommandCorrector {
 					// Error
 					'mistake': 'A{date}{city}{not_city}{free_text}',
 					'message': 'ERROR! PLEASE CHECK AVAILABILITY PARAMS!',
+				},
+				{
+					// they often try to type >*R; >A*O10JAN;, but type >*; >RA*O10JAN;
+					mistake: 'RA{free_text}',
+					correct: 'A{free_text}',
 				},
 				{
 					'mistake': 'A.{class}.{free_text}',
@@ -214,6 +238,9 @@ class CommandCorrector {
 					'mistake': 'U',
 					'correct': 'I',
 				},
+				{mistake: 'HT', correct: '*HT'},
+				{mistake: 'HTE', correct: '*HTE'},
+				{mistake: '§D', correct: 'MD'},
 			],
 
 			sabre: [
@@ -504,6 +531,7 @@ class CommandCorrector {
 		$input = this.convertFromCyrillic($input);
 
 		if ($dialect === 'apollo') {
+			$input = this.replaceAndMessage(/^§D$/, 'MD', $input, 'CORRECTED TYPO! §D -> MD');
 			$input = this.replaceAndMessage(/\§/, '', $input);
 			$input = this.replaceAndMessage(/‡/, '+', $input, 'CORRECTED! USE + SIGN INSTEAD OF \u2021 NEXT TIME');
 			$input = this.replaceAndMessage(/¥/, '+', $input, 'CORRECTED! USE + SIGN INSTEAD OF \u00A5 NEXT TIME');
