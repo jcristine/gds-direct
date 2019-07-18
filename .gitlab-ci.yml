@@ -13,7 +13,7 @@ run-tests-dev:
   script:
     - npm ci
     # dev-w13 has node 9.8 sadly, it has limited regex support
-    - npm install node@10.13.0
+    - npm install node@10.14.1
     - node_modules/node/bin/node tests/runTests.js
 
 # takes 16 seconds, could be even faster if it did not install node 10 each time...
@@ -27,5 +27,5 @@ run-tests-prod:
     - production
   script:
     # dev-w13 has node 9.8 sadly, it has limited regex support
-    - npm install node@10.13.0
+    - npm install node@10.14.1
     - node_modules/node/bin/node tests/runTests.js
