@@ -7,8 +7,9 @@ const RbsClient = require("../../../../../IqClients/RbsClient");
 const NormalizeTariffCmd = require('./NormalizeTariffCmd.js');
 const MakeMultiPccTariffDumpAction = require('./MakeMultiPccTariffDumpAction.js');
 
-let php = require('../../../../phpDeprecated.js');
-const {allWrap, timeout} = require("../../../../../Utils/TmpLib");
+let php = require('klesun-node-tools/src/Transpiled/php.js');
+const {allWrap} = require('klesun-node-tools/src/Lang.js');
+const {timeout} = require("../../../../../Utils/TmpLib");
 
 /**
  * schedule multiple async jobs that fetch tariff displays in different PCC-s

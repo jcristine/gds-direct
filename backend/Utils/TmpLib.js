@@ -2,12 +2,14 @@
 const GrectLib = require('klesun-node-tools');
 const Lang = require("klesun-node-tools/src/Lang");
 
-// TODO: refactor code to use it directly from the lib
+/**
+ * @deprecated - should refactor code to use it directly from the lib
+ */
+module.exports;
 exports.hrtimeToDecimal = GrectLib.Misc.hrtimeToDecimal;
 exports.chunk = GrectLib.Misc.chunk;
 exports.jsExport = GrectLib.Misc.jsExport;
 exports.getExcData = GrectLib.Misc.getExcData;
-exports.allWrap = GrectLib.Misc.allWrap;
 exports.timeout = GrectLib.Misc.timeout;
 exports.iqJson = GrectLib.Misc.iqJson;
 exports.sqlNow = GrectLib.Misc.sqlNow;
