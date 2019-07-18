@@ -10,7 +10,6 @@ const GalCommandParser = require("../Transpiled/Gds/Parsers/Galileo/CommandParse
 const CommonDataHelper = require("../Transpiled/Rbs/GdsDirect/CommonDataHelper");
 const CmsSabreTerminal = require("../Transpiled/Rbs/GdsDirect/GdsInterface/CmsSabreTerminal");
 const CmsApolloTerminal = require("../Transpiled/Rbs/GdsDirect/GdsInterface/CmsApolloTerminal");
-const matchAll = require("../Utils/Str").matchAll;
 const GdsDialectTranslator = require('../Transpiled/Rbs/GdsDirect/DialectTranslator/GdsDialectTranslator.js');
 const ProcessSabreTerminalInputAction = require("../Transpiled/Rbs/GdsDirect/Actions/Sabre/ProcessSabreTerminalInputAction");
 const TerminalService = require('../Transpiled/App/Services/CmdResultAdapter.js');
@@ -24,13 +23,13 @@ const TerminalSettings = require("../Transpiled/App/Models/Terminal/TerminalSett
 const CommandCorrector = require("../Transpiled/Rbs/GdsDirect/DialectTranslator/CommandCorrector");
 const Misc = require("../Utils/TmpLib");
 const AliasParser = require("../Transpiled/Rbs/GdsDirect/AliasParser");
-const TmpLib = require("../Utils/TmpLib");
 const GdsSessions = require("../Repositories/GdsSessions");
 const CmsClient = require("../IqClients/CmsClient");
 const BadRequest = require("klesun-node-tools/src/Rej").BadRequest;
 const TooManyRequests = require("klesun-node-tools/src/Rej").TooManyRequests;
 const NotImplemented = require("klesun-node-tools/src/Rej").NotImplemented;
 const Db = require('../Utils/Db.js');
+const {coverExc} = require('klesun-node-tools/src/Lang.js');
 
 /**
  * @param '$BN1|2*INF'
@@ -174,8 +173,7 @@ let runCmdRq =  async (inputCmd, stateful) => {
 				calledCommands: stateful.flushCalledCommands(),
 			}));
 		}
-		let gdsResult = await running.then(TmpLib.addPerformanceDebug('GDS Result >' + cmd + ';'));
-		performanceDebug.push(...(gdsResult.performanceDebug || []));
+		let gdsResult = await running;
 		let isSuccess = gdsResult.status === GdsDirect.STATUS_EXECUTED;
 		messages.push(...(gdsResult.userMessages || [])
 			.map(msg => ({type: isSuccess ? 'info' : 'error', text: msg})));
@@ -269,7 +267,8 @@ let countsAsActivity = (prevRqCmd, rqCmd) => {
 let logRqCmd = async ({params, whenCmdRqId, whenCmsResult}) => {
 	let {session, rqBody, emcUser} = params;
 	let calledDtObj = new Date();
-	let cmsResult = await whenCmsResult;
+	let cmsResult = await whenCmsResult
+		.catch(coverExc(Rej.list, exc => Rej.NoContent('Cmd Failed', exc)));
 	TerminalBuffering.logOutput(rqBody, session, whenCmdRqId, cmsResult.output);
 	GdsSessions.updateUserAccessTime(session);
 	let duration = ((Date.now() - calledDtObj.getTime()) / 1000).toFixed(3);

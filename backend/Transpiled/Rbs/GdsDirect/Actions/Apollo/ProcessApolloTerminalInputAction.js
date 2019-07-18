@@ -1719,8 +1719,7 @@ class ProcessApolloTerminalInputAction {
 		} else {
 			cmd = $alias['realCmd'];
 			let fetchAll = this.constructor.shouldFetchAll(cmd);
-			let {cmdRec, userMessages, performanceDebug} = await this.processRealCommand(cmd, fetchAll)
-				.then(TmpLib.addPerformanceDebug('processRealCommand()'));
+			let {cmdRec, userMessages, performanceDebug} = await this.processRealCommand(cmd, fetchAll);
 			return {calledCommands: [cmdRec], userMessages, performanceDebug};
 		}
 	}
@@ -1729,7 +1728,6 @@ class ProcessApolloTerminalInputAction {
 		let $callResult, $errors, $status, $calledCommands, $userMessages, $actions;
 		let $cmdRequested = cmdRq;
 		$callResult = await this.processRequestedCommand($cmdRequested)
-			.then(TmpLib.addPerformanceDebug('Apollo processRequestedCommand()'))
 			.catch(exc =>
 				Rej.BadRequest.matches(exc.httpStatusCode) ||
 				Rej.Forbidden.matches(exc.httpStatusCode)
