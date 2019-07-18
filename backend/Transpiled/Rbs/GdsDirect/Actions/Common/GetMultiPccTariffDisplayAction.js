@@ -291,7 +291,7 @@ class GetMultiPccTariffDisplayAction {
 					jobResult: serviceRs.result,
 				}));
 
-			whenTariff.then(result => $session.logit('Got a /MIX job result', {$pccParams, result}));
+			whenTariff.then(result => $session.logit('Got a /MIX job result', {$pccParams, result})).catch(() => {});
 			whenTariff = timeout(this.constructor.TIMEOUT, whenTariff)
 				.catch(exc => {
 					$session.logExc('WARNING: /MIX job failed for PCC ' + $rpcParams.pcc, exc);
