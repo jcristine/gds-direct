@@ -6,6 +6,7 @@ const NotFound = require("klesun-node-tools/src/Rej").NotFound;
 const Diag = require('../LibWrappers/Diag.js');
 const {SqlUtil} = require('klesun-node-tools');
 const {jsExport} = require('klesun-node-tools/src/Utils/Misc.js');
+const {coverExc} = require('klesun-node-tools/src/Lang.js');
 
 let whenPool = null;
 let getPool = () => {
@@ -76,7 +77,9 @@ let Db = (dbConn) => {
 	 */
 	let fetchAll = (params) => {
 		let {sql, placedValues} = SqlUtil.makeSelectQuery(params);
-		return query(sql, placedValues);
+		let tryQuery = () => query(sql, placedValues);
+		// retry once, as DB connection pretty often gets closed by server
+		return tryQuery().catch(coverExc([Rej.ServiceUnavailable], tryQuery));
 	};
 
 	return {
