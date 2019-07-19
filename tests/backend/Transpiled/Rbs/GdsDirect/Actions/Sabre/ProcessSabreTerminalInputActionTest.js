@@ -2,7 +2,7 @@
 
 const Agent = require('../../../../../../../backend/DataFormats/Wrappers/Agent.js');
 const GdsDirectDefaults = require('../../../../Rbs/TestUtils/GdsDirectDefaults.js');
-const ProcessSabreTerminalInputAction = require('../../../../../../../backend/Transpiled/Rbs/GdsDirect/Actions/Sabre/ProcessSabreTerminalInputAction.js');
+const ProcessSabreTerminalInputAction = require('../../../../../../../backend/Transpiled/Rbs/GdsDirect/Actions/Sabre/RunCmdRq.js');
 
 const php = require('../../../../php.js');
 

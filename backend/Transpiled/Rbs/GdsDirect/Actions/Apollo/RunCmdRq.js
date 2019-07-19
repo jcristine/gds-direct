@@ -63,7 +63,7 @@ let execute = ({
 }) => {
 
 // would be nice to indent it I guess... or even better - get rid of the class
-class ProcessApolloTerminalInputAction {
+class RunCmdRq {
 	useXml($flag) {
 		this.stateful = null;
 		this.$log = null;
@@ -1752,7 +1752,7 @@ class ProcessApolloTerminalInputAction {
 	}
 }
 
-return new ProcessApolloTerminalInputAction().execute();
+return new RunCmdRq().execute();
 
 };
 

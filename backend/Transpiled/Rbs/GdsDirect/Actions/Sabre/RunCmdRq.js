@@ -26,7 +26,7 @@ const getRbsPqInfo = require("../../../../../GdsHelpers/RbsUtils").getRbsPqInfo;
 const UnprocessableEntity = require("klesun-node-tools/src/Rej").UnprocessableEntity;
 const SabreTicketParser = require('../../../../Gds/Parsers/Sabre/SabreTicketParser.js');
 
-class ProcessSabreTerminalInputAction {
+class RunCmdRq {
 	useXml($flag) {
 		this.$useXml = $flag;
 		return this;
@@ -1008,6 +1008,6 @@ class ProcessSabreTerminalInputAction {
 	}
 }
 
-ProcessSabreTerminalInputAction.USE_BUILT_IN_AREAS = true; // TODO: implement fake areas
-ProcessSabreTerminalInputAction.AREA_LETTERS = ['A', 'B', 'C', 'D', 'E', 'F'];
-module.exports = ProcessSabreTerminalInputAction;
+RunCmdRq.USE_BUILT_IN_AREAS = true; // TODO: implement fake areas
+RunCmdRq.AREA_LETTERS = ['A', 'B', 'C', 'D', 'E', 'F'];
+module.exports = RunCmdRq;

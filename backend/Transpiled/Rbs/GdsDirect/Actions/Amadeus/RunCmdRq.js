@@ -33,7 +33,7 @@ const TicketMaskParser = require('../../../../Gds/Parsers/Amadeus/TicketMaskPars
 const {withCapture} = require("../../../../../GdsHelpers/CommonUtils");
 const AmadeusGetPricingPtcBlocks = require('./AmadeusGetPricingPtcBlocksAction.js');
 
-class ProcessAmadeusTerminalInputAction {
+class RunCmdRq {
 	/** @param $statefulSession = require('StatefulSession.js')() */
 	constructor($statefulSession) {
 		this.stateful = $statefulSession;
@@ -1162,7 +1162,7 @@ class ProcessAmadeusTerminalInputAction {
 	}
 }
 
-ProcessAmadeusTerminalInputAction.PASSIVE_STATUSES = ['GK', 'PE'];
+RunCmdRq.PASSIVE_STATUSES = ['GK', 'PE'];
 // defines how much areas can agent open in single session
-ProcessAmadeusTerminalInputAction.AREA_LETTERS = ['A', 'B', 'C', 'D'];
-module.exports = ProcessAmadeusTerminalInputAction;
+RunCmdRq.AREA_LETTERS = ['A', 'B', 'C', 'D'];
+module.exports = RunCmdRq;

@@ -1,6 +1,6 @@
 // namespace Rbs\GdsDirect;
 
-const ProcessApolloTerminalInputAction = require('../../../../../../../backend/Transpiled/Rbs/GdsDirect/Actions/Apollo/ProcessApolloTerminalInputAction.js');
+const ProcessApolloTerminalInputAction = require('../../../../../../../backend/Transpiled/Rbs/GdsDirect/Actions/Apollo/RunCmdRq.js');
 const GdsDirectDefaults = require('../../../../../../../backend/Transpiled/Rbs/TestUtils/GdsDirectDefaults.js');
 const Agent = require('../../../../../../../backend/DataFormats/Wrappers/Agent.js');
 

@@ -29,7 +29,7 @@ const GalileoRetrieveTicketsAction = require('../../../../Rbs/Process/Apollo/Imp
 const Rej = require('klesun-node-tools/src/Rej.js');
 
 
-class ProcessGalileoTerminalInputAction {
+class RunCmdRq {
 	constructor($statefulSession) {
 		this.stateful = $statefulSession;
 		this.$log = ($msg, $data) => {
@@ -1005,4 +1005,4 @@ class ProcessGalileoTerminalInputAction {
 	}
 }
 
-module.exports = ProcessGalileoTerminalInputAction;
+module.exports = RunCmdRq;

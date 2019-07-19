@@ -1,7 +1,7 @@
 // namespace Rbs\GdsDirect\Actions\Amadeus;
 
 const Agent = require('../../../../../../../backend/DataFormats/Wrappers/Agent.js');
-const ProcessAmadeusTerminalInputAction = require('../../../../../../../backend/Transpiled/Rbs/GdsDirect/Actions/Amadeus/ProcessAmadeusTerminalInputAction.js');
+const ProcessAmadeusTerminalInputAction = require('../../../../../../../backend/Transpiled/Rbs/GdsDirect/Actions/Amadeus/RunCmdRq.js');
 const GdsDirectDefaults = require('../../../../Rbs/TestUtils/GdsDirectDefaults.js');
 const php = require('../../../../php.js');
 

@@ -1,7 +1,7 @@
 // namespace Rbs\GdsDirect\Actions\Galileo;
 
 const GdsDirectDefaults = require('../../../../Rbs/TestUtils/GdsDirectDefaults.js');
-const ProcessGalileoTerminalInputAction = require('../../../../../../../backend/Transpiled/Rbs/GdsDirect/Actions/Galileo/ProcessGalileoTerminalInputAction.js');
+const ProcessGalileoTerminalInputAction = require('../../../../../../../backend/Transpiled/Rbs/GdsDirect/Actions/Galileo/RunCmdRq.js');
 
 const php = require('../../../../php.js');
 const Agent = require("../../../../../../../backend/DataFormats/Wrappers/Agent");
