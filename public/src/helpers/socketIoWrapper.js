@@ -1,5 +1,5 @@
 
-import io from 'socket.io-client';
+import * as socketIoModule from 'socket.io-client';
 
 /**
  * encapsulates the logic of how normally http requests can be
@@ -40,7 +40,7 @@ let setMessageFromServerHandler = (h) => messageFromServerHandler = h;
 
 let initSocket = (host) => new Promise((resolve, reject) => {
 	/** @type {Socket} */
-	const socket = io(host);
+	const socket = new socketIoModule(host, {transports: ['websocket']});
 	let rejects = new Set();
 	socket.on('message', (data, reply) => messageFromServerHandler(data, reply));
 	socket.on('connect', () => {

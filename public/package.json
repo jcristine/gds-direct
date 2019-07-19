@@ -32,7 +32,7 @@
     "keyboardevent-key-polyfill": "^1.0.2",
     "noty": "^3.0.1",
     "select2": "^4.0.6-rc.1",
-    "socket.io-client": "^2.2.0",
+    "socket.io": "^2.1.1",
     "tether-drop": "^1.4.2",
     "validator": "^10.11.0"
   }
