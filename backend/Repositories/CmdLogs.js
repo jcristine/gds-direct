@@ -115,7 +115,8 @@ let areValuesSame = (rowFromDb, rowForDb) => {
 		&& +rowFromDb.is_mr == +rowForDb.is_mr
 		&& rowFromDb.dt === rowForDb.dt
 		&& rowFromDb.cmd === rowForDb.cmd
-		&& rowFromDb.duration == rowForDb.duration
+		// '0.162360551' vs '0.162'
+		&& rowFromDb.duration.slice(0, rowForDb.duration.length) == rowForDb.duration
 		&& rowFromDb.cmd_rq_id == rowForDb.cmd_rq_id
 		&& rowFromDb.output === rowForDb.output
 		;
@@ -133,11 +134,13 @@ let tryInsert = row => Db.with(db => db.writeRows(TABLE, [row]));
  * mysqljs, if so, should use it instead of this
  */
 let retryInsert = async (row) => {
+	// '2019-07-19 02:00:33.320' -> '2019-07-19 02:00:33'
+	let normDt = row.dt.slice(0, '2019-07-19 02:00:33'.length);
 	let dtRows = await Db.with(db => db.fetchAll({
 		table: TABLE,
 		where: [
 			['session_id', '=', row.session_id],
-			['dt', '=', row.dt],
+			['dt', '=', normDt],
 		],
 	}));
 	let alreadyInserted = dtRows
@@ -164,7 +167,7 @@ let storeNew = async (row) => {
 				let inserted = await retryInsert(row);
 				exc.retryResult = inserted;
 				// just to check for starters that everything works as expected
-				Diag.logExc('terminalCommandLog insert failed an retried', exc);
+				Diag.logExc('terminalCommandLog insert failed and retried', exc);
 				return inserted;
 			}));
 		return writing
