@@ -1,9 +1,9 @@
+const GetCurrentPnr = require('../../../../../Actions/GetCurrentPnr.js');
 // namespace Rbs\GdsDirect\Actions\Galileo;
 
 const CmsGalileoTerminal = require("../../GdsInterface/CmsApolloTerminal");
 
 const ArrayUtil = require('../../../../Lib/Utils/ArrayUtil.js');
-const ImportPqGalileoAction = require("./ImportPqGalileoAction");
 const getRbsPqInfo = require("../../../../../GdsHelpers/RbsUtils").getRbsPqInfo;
 const fetchAll = require("../../../../../GdsHelpers/TravelportUtils").fetchAll;
 const DateTime = require('../../../../Lib/Utils/DateTime.js');
@@ -24,7 +24,7 @@ const PnrParser = require('../../../../Gds/Parsers/Galileo/Pnr/PnrParser.js');
 const PtcUtil = require('../../../../Rbs/Process/Common/PtcUtil.js');
 const GalileoPnr = require('../../../../Rbs/TravelDs/GalileoPnr.js');
 const RebuildInPccAction = require('./RebuildInPccAction.js');
-const php = require('../../../../phpDeprecated.js');
+const php = require('klesun-node-tools/src/Transpiled/php.js');
 const GalileoRetrieveTicketsAction = require('../../../../Rbs/Process/Apollo/ImportPnr/Actions/RetrieveApolloTicketsAction.js');
 const Rej = require('klesun-node-tools/src/Rej.js');
 
@@ -383,23 +383,7 @@ class RunCmdRq {
 	}
 
 	async getCurrentPnr() {
-		let $cmdRows, $cmds, $cmdToFullOutput, $cmd, $output, $showsFullPnr, $pnrDump;
-
-		$cmdRows = await this.stateful.getLog().getLastStateSafeCommands();
-		$cmds = Fp.map(($row) => ({
-			'cmd': $row['cmd'],
-			'output': $row['output'],
-		}), $cmdRows);
-		$cmdToFullOutput = ImportPqGalileoAction.collectCmdToFullOutput($cmds);
-		for ([$cmd, $output] of php.array_reverse(Object.entries($cmdToFullOutput))) {
-			$showsFullPnr = $cmd === '*R' || $cmd === 'IR'
-				|| php.preg_match(/^\*[A-Z]{6}$/, $cmd);
-			if ($showsFullPnr) {
-				return GalileoPnr.makeFromDump($output);
-			}
-		}
-		$pnrDump = await this.runCommand('*R', true);
-		return GalileoPnr.makeFromDump($pnrDump);
+		return GetCurrentPnr.inGalileo(this.stateful);
 	}
 
 	async areAllCouponsVoided() {

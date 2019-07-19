@@ -1,3 +1,4 @@
+const ImportPqGalileoAction = require('../Transpiled/Rbs/GdsDirect/Actions/Galileo/ImportPqGalileoAction.js');
 const ImportPqApolloAction = require('../Transpiled/Rbs/GdsDirect/Actions/Apollo/ImportPqApolloAction.js');
 const AmadeusUtils = require('../GdsHelpers/AmadeusUtils.js');
 const AmadeusPnr = require('../Transpiled/Rbs/TravelDs/AmadeusPnr.js');
@@ -33,6 +34,20 @@ const inSabre = async (stateful) => {
 	return SabrePnr.makeFromDump(cmdRec.output);
 };
 
+const inGalileo = async (stateful) => {
+	let cmds = await stateful.getLog().getLastStateSafeCommands();
+	let cmdToFullOutput = ImportPqGalileoAction.collectCmdToFullOutput(cmds);
+	for (let [cmd, output] of Object.entries(cmdToFullOutput).reverse()) {
+		let showsFullPnr = cmd === '*R' || cmd === 'IR'
+			|| cmd.match(/^\*[A-Z]{6}$/);
+		if (showsFullPnr) {
+			return GalileoPnr.makeFromDump(output);
+		}
+	}
+	let cmdRec = await TravelportUtils.fetchAll('*R', stateful);
+	return GalileoPnr.makeFromDump(cmdRec.output);
+};
+
 /**
  * @param stateful = require('StatefulSession.js')()
  * @return {IPnr}
@@ -43,10 +58,9 @@ const GetCurrentPnr = async (stateful) => {
 		return inApollo(stateful);
 	} else if (gds === 'sabre') {
 		return inSabre(stateful);
-	// TODO: reuse *R from command log one day...
 	} else if (gds === 'galileo') {
-		let cmdRec = await TravelportUtils.fetchAll('*R', stateful);
-		return GalileoPnr.makeFromDump(cmdRec.output);
+		return inGalileo(stateful);
+	// TODO: reuse *R from command log one day...
 	} else if (gds === 'amadeus') {
 		let cmdRec = await AmadeusUtils.fetchAllRt('RT', stateful);
 		return AmadeusPnr.makeFromDump(cmdRec.output);
@@ -57,5 +71,6 @@ const GetCurrentPnr = async (stateful) => {
 
 GetCurrentPnr.inApollo = inApollo;
 GetCurrentPnr.inSabre = inSabre;
+GetCurrentPnr.inGalileo = inGalileo;
 
 module.exports = GetCurrentPnr;
