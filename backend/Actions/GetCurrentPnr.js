@@ -8,7 +8,7 @@ const TravelportUtils = require('../GdsHelpers/TravelportUtils.js');
 const Rej = require('klesun-node-tools/src/Rej.js');
 
 const inApollo = async (stateful) => {
-	let cmdRows = await this.stateful.getLog().getLastStateSafeCommands();
+	let cmdRows = await stateful.getLog().getLastStateSafeCommands();
 	let cmdToFullOutput = ImportPqApolloAction.collectCmdToFullOutput(cmdRows);
 	for (let [cmd, output] of Object.entries(cmdToFullOutput).reverse()) {
 		let showsFullPnr = cmd === '*R' || cmd === 'IR'
