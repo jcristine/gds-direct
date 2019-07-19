@@ -1,3 +1,4 @@
+const GetCurrentPnr = require('./GetCurrentPnr.js');
 const AmadeusPnr = require('../Transpiled/Rbs/TravelDs/AmadeusPnr.js');
 const AmadeusUtils = require('../GdsHelpers/AmadeusUtils.js');
 const ApolloPnr = require('../Transpiled/Rbs/TravelDs/ApolloPnr.js');
@@ -56,30 +57,9 @@ const runAndSave = async ({gds, gdsSession, cmds}) => {
 	}
 };
 
-/** @return {IPnr} */
-const getCurrentPnr = async (stateful) => {
-	let gds = stateful.gds;
-	// TODO: reuse *R from command log one day...
-	if (gds === 'apollo') {
-		let cmdRec = await TravelportUtils.fetchAll('*R', stateful);
-		return ApolloPnr.makeFromDump(cmdRec.output);
-	} else if (gds === 'sabre') {
-		let cmdRec = await stateful.runCmd('*R');
-		return SabrePnr.makeFromDump(cmdRec.output);
-	} else if (gds === 'galileo') {
-		let cmdRec = await TravelportUtils.fetchAll('*R', stateful);
-		return GalileoPnr.makeFromDump(cmdRec.output);
-	} else if (gds === 'amadeus') {
-		let cmdRec = await AmadeusUtils.fetchAllRt('RT', stateful);
-		return AmadeusPnr.makeFromDump(cmdRec.output);
-	} else {
-		return Rej.NotImplemented('Unsupported GDS for current PNR retrieval - ' + gds);
-	}
-};
-
 /** @param stateful = require('StatefulSession.js')() */
 module.exports = async ({stateful}) => {
-	let pnr = await getCurrentPnr(stateful);
+	let pnr = await GetCurrentPnr(stateful);
 	let airlines = [...new Set(pnr.getItinerary().map(s => s.airline))];
 	let mpAirline;
 	if (airlines.length === 0) {

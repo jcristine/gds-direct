@@ -1,3 +1,4 @@
+const GetCurrentPnr = require('../../../../../Actions/GetCurrentPnr.js');
 // namespace Rbs\GdsDirect\Actions\Apollo;
 
 // utils
@@ -634,18 +635,7 @@ class ProcessApolloTerminalInputAction {
 	}
 
 	async getCurrentPnr() {
-		let $cmdRows, $cmdToFullOutput, $cmd, $output, $showsFullPnr, $pnrDump;
-		$cmdRows = await this.stateful.getLog().getLastStateSafeCommands();
-		$cmdToFullOutput = ImportPqApolloAction.collectCmdToFullOutput($cmdRows);
-		for ([$cmd, $output] of php.array_reverse(Object.entries($cmdToFullOutput))) {
-			$showsFullPnr = $cmd === '*R' || $cmd === 'IR'
-				|| php.preg_match(/^\*[A-Z]{6}$/, $cmd);
-			if ($showsFullPnr) {
-				return ApolloPnr.makeFromDump($output);
-			}
-		}
-		$pnrDump = await this.runCommand('*R', true);
-		return ApolloPnr.makeFromDump($pnrDump);
+		return GetCurrentPnr.inApollo(stateful);
 	}
 
 	async areAllCouponsVoided() {

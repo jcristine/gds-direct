@@ -21,7 +21,6 @@ const GdsDirect = require("../Transpiled/Rbs/GdsDirect/GdsDirect");
 const Rej = require("klesun-node-tools/src/Rej");
 const TerminalSettings = require("../Transpiled/App/Models/Terminal/TerminalSettings");
 const CommandCorrector = require("../Transpiled/Rbs/GdsDirect/DialectTranslator/CommandCorrector");
-const Misc = require("../Utils/TmpLib");
 const AliasParser = require("../Transpiled/Rbs/GdsDirect/AliasParser");
 const GdsSessions = require("../Repositories/GdsSessions");
 const CmsClient = require("../IqClients/CmsClient");
@@ -30,6 +29,7 @@ const TooManyRequests = require("klesun-node-tools/src/Rej").TooManyRequests;
 const NotImplemented = require("klesun-node-tools/src/Rej").NotImplemented;
 const Db = require('../Utils/Db.js');
 const {coverExc} = require('klesun-node-tools/src/Lang.js');
+const {hrtimeToDecimal} = require('klesun-node-tools/src/Utils/Misc.js');
 
 /**
  * @param '$BN1|2*INF'
@@ -226,7 +226,7 @@ let translateCmd = (fromGds, toGds, inputCmd) => {
 		messages: []
 			.concat(errors.map(e => ({type: 'console_error', text: e})))
 			.concat(messages.map(e => ({type: 'pop_up', text: e}))),
-		translationTime: Misc.hrtimeToDecimal(process.hrtime(startHr)),
+		translationTime: hrtimeToDecimal(process.hrtime(startHr)),
 	};
 };
 
@@ -324,7 +324,7 @@ let extendActions = async ({whenCmsResult, stateful}) => {
 		prevState.recordLocator &&
 		prevState.recordLocator !== state.recordLocator;
 
-	if (didSavePnr && isNewPnr && isExpert) {
+	if (didSavePnr && state.isPnrStored && isNewPnr && isExpert) {
 		result.actions.push({type: 'displayMpRemarkDialog'});
 	}
 
