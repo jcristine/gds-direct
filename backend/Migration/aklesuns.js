@@ -498,6 +498,18 @@ module.exports.migrations = [
 		].join('\n')),
 	},
 	{
+		comment: 'to quickly store complex tree structures, like PCC mapping from ACT',
+		name: 'GRECT/2019.07.17009-create-table-custom-data',
+		perform: (db) => db.query([
+			'CREATE TABLE custom_data (',
+			'    id INT NOT NULL PRIMARY KEY AUTO_INCREMENT,',
+			'    name VARCHAR(50),',
+			'    value MEDIUMTEXT,',
+			'    UNIQUE KEY name (name)',
+			') ENGINE=InnoDB DEFAULT CHARSET=utf8',
+		].join('\n')),
+	},
+	{
 		name: 'GRECT/2019.04.02006-create-role-VIEW_GDS_SESSION_LOG',
 		perform: async (db) => {
 			let emc = await Emc.getClient();

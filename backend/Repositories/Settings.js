@@ -11,7 +11,7 @@ exports.set = ({name, value}) => {
 			return Rej.BadRequest('value is not valid json');
 		}
 	}
-	return Db.with(db => db.writeRows('admin_settings', [{name, value}]));
+	return Db.with(db => db.writeRows(TABLE, [{name, value}]));
 };
 
 exports.delete = ({name}) => {
