@@ -3,13 +3,16 @@
 
 const SessionStateProcessor = require('../../../../../../backend/Transpiled/Rbs/GdsDirect/SessionStateProcessor/SessionStateProcessor.js');
 const GdsDirectDefaults = require('../../../../../../backend/Transpiled/Rbs/TestUtils/GdsDirectDefaults.js');
-let php = require('../../../../../../backend/Transpiled/phpDeprecated');
+let php = require('klesun-node-tools/src/Transpiled/php.js');
 
 class SessionStateProcessorTest extends require('../../../../../../backend/Transpiled/Lib/TestCase.js')
 {
     provideCalledCommands()  {
         let $sessionRecords, $argumentTuples, $sessionRecord;
         $sessionRecords = [];
+
+        // GDS Direct remark was not added because we
+        // did not handle Work Areas properly back then
         $sessionRecords.push({
             'initialState': GdsDirectDefaults.makeDefaultApolloState(),
             'calledCommands': [
@@ -823,6 +826,9 @@ class SessionStateProcessorTest extends require('../../../../../../backend/Trans
                 },
             ],
         });
+
+        // CMS remark was not added because `isPnrStored` was mistakenly set to
+        // true due to mistyped command '**R' being parsed as "searchPnr" command
         $sessionRecords.push({
             'initialState': GdsDirectDefaults.makeDefaultApolloState(),
             'calledCommands': [
@@ -1011,6 +1017,8 @@ class SessionStateProcessorTest extends require('../../../../../../backend/Trans
                 },
             ],
         });
+
+        // opened PNR ignore example
         $sessionRecords.push({
             'initialState': GdsDirectDefaults.makeDefaultApolloState(),
             'calledCommands': [
@@ -1044,6 +1052,8 @@ class SessionStateProcessorTest extends require('../../../../../../backend/Trans
                 },
             ],
         });
+
+        // open PNR, unsuccessful rebook, show availability and ignore
         $sessionRecords.push({
             'initialState': php.array_merge(GdsDirectDefaults.makeDefaultApolloState(), {'pcc': '2BQ6'}),
             'calledCommands': [
@@ -1093,6 +1103,8 @@ class SessionStateProcessorTest extends require('../../../../../../backend/Trans
                 },
             ],
         });
+
+        // availability navigation and sell
         $sessionRecords.push({
             'initialState': php.array_merge(GdsDirectDefaults.makeDefaultApolloState(), {'pcc': '2BQ6'}),
             'calledCommands': [
@@ -1138,6 +1150,8 @@ class SessionStateProcessorTest extends require('../../../../../../backend/Trans
                 },
             ],
         });
+
+        // store PNR, then store pricing and ignore
         $sessionRecords.push({
             'initialState': {
                 'gds': 'apollo',
@@ -1225,6 +1239,10 @@ class SessionStateProcessorTest extends require('../../../../../../backend/Trans
                 },
             ],
         });
+
+        // did not add remark because "**-BECK" was called in the middle
+        // of PNR creation causing us to set "isPnrStored" flag to true
+        // since the fix looks at output of "**-" command before setting the flag
         $sessionRecords.push({
             'initialState': {
                 'gds': 'apollo',
@@ -1419,6 +1437,8 @@ class SessionStateProcessorTest extends require('../../../../../../backend/Trans
                 },
             ],
         });
+
+        // Apollo example of PNR search command that is currently handled incorrectly
         $sessionRecords.push({
             'initialState': GdsDirectDefaults.makeDefaultApolloState(),
             'calledCommands': [
@@ -1485,6 +1505,8 @@ class SessionStateProcessorTest extends require('../../../../../../backend/Trans
                 },
             ],
         });
+
+        // Sabre example of PNR search command that is currently handled incorrectly
         $sessionRecords.push({
             'initialState': GdsDirectDefaults.makeDefaultSabreState(),
             'calledCommands': [
@@ -1558,6 +1580,8 @@ class SessionStateProcessorTest extends require('../../../../../../backend/Trans
                 },
             ],
         });
+
+        // when >I; prompts for another >I;, PNR context should not be dropped
         $sessionRecords.push({
             'initialState': GdsDirectDefaults.makeDefaultApolloState(),
             'calledCommands': [
@@ -1632,6 +1656,8 @@ class SessionStateProcessorTest extends require('../../../../../../backend/Trans
                 },
             ],
         });
+
+        // Amadeus `canCreatePq` after basic pricing
         $sessionRecords.push({
             'initialState': GdsDirectDefaults.makeDefaultAmadeusState(),
             'calledCommands': [
@@ -1722,6 +1748,8 @@ class SessionStateProcessorTest extends require('../../../../../../backend/Trans
                 },
             ],
         });
+
+        // Amadeus `isPnrStored` basic test - search and ET
         $sessionRecords.push({
             'initialState': GdsDirectDefaults.makeDefaultAmadeusState(),
             'calledCommands': [
@@ -1827,6 +1855,8 @@ class SessionStateProcessorTest extends require('../../../../../../backend/Trans
                 },
             ],
         });
+
+        // Amadeus `isPnrStored` open by record locator and ignore
         $sessionRecords.push({
             'initialState': GdsDirectDefaults.makeDefaultAmadeusState(),
             'calledCommands': [
@@ -1902,6 +1932,8 @@ class SessionStateProcessorTest extends require('../../../../../../backend/Trans
                 },
             ],
         });
+
+        // Amadeus `isPnrStored` search and open from list
         $sessionRecords.push({
             'initialState': GdsDirectDefaults.makeDefaultAmadeusState(),
             'calledCommands': [
@@ -1968,6 +2000,8 @@ class SessionStateProcessorTest extends require('../../../../../../backend/Trans
                 },
             ],
         });
+
+        // Amadeus PNR created using a joined command
         $sessionRecords.push({
             'initialState': GdsDirectDefaults.makeDefaultAmadeusState(),
             'calledCommands': [
@@ -2049,6 +2083,8 @@ class SessionStateProcessorTest extends require('../../../../../../backend/Trans
                 },
             ],
         });
+
+        // Apollo - ignore incomplete PNR with IR
         $sessionRecords.push({
             'initialState': GdsDirectDefaults.makeDefaultApolloState(),
             'calledCommands': [
@@ -2092,6 +2128,8 @@ class SessionStateProcessorTest extends require('../../../../../../backend/Trans
                 },
             ],
         });
+
+        // Sabre - ignore incomplete PNR with IR
         $sessionRecords.push({
             'initialState': GdsDirectDefaults.makeDefaultSabreState(),
             'calledCommands': [
@@ -2126,6 +2164,7 @@ class SessionStateProcessorTest extends require('../../../../../../backend/Trans
                 },
             ],
         });
+
         $sessionRecords.push({
             'initialState': GdsDirectDefaults.makeDefaultApolloState(),
             'calledCommands': [
@@ -2156,6 +2195,7 @@ class SessionStateProcessorTest extends require('../../../../../../backend/Trans
                 },
             ],
         });
+
         $sessionRecords.push({
             'initialState': GdsDirectDefaults.makeDefaultApolloState(),
             'calledCommands': [
@@ -2186,6 +2226,8 @@ class SessionStateProcessorTest extends require('../../../../../../backend/Trans
                 },
             ],
         });
+
+        // if there are changes, PNR context won't be dropped
         $sessionRecords.push({
             'initialState': GdsDirectDefaults.makeDefaultApolloState(),
             'calledCommands': [
@@ -2223,6 +2265,7 @@ class SessionStateProcessorTest extends require('../../../../../../backend/Trans
                 },
             ],
         });
+
         $sessionRecords.push({
             'initialState': GdsDirectDefaults.makeDefaultApolloState(),
             'calledCommands': [
@@ -2244,6 +2287,9 @@ class SessionStateProcessorTest extends require('../../../../../../backend/Trans
                 },
             ],
         });
+
+        // Sabre PNR context dropped after attempt to open other
+        // PNR even if it failed with "¥RESTRICTED¥ *NOT AA PNR*"
         $sessionRecords.push({
             'initialState': GdsDirectDefaults.makeDefaultSabreState(),
             'calledCommands': [
@@ -2274,6 +2320,8 @@ class SessionStateProcessorTest extends require('../../../../../../backend/Trans
                 {'cmd': '*R', 'output': 'NO DATA'},
             ],
         });
+
+        // Same for "¥ADDR¥" response
         $sessionRecords.push({
             'initialState': GdsDirectDefaults.makeDefaultSabreState(),
             'calledCommands': [
@@ -2305,6 +2353,8 @@ class SessionStateProcessorTest extends require('../../../../../../backend/Trans
                 {'cmd': '*R', 'output': 'NO DATA'},
             ],
         });
+
+        // Same for "SECURED PNR" response
         $sessionRecords.push({
             'initialState': GdsDirectDefaults.makeDefaultSabreState(),
             'calledCommands': [
@@ -2335,6 +2385,8 @@ class SessionStateProcessorTest extends require('../../../../../../backend/Trans
                 {'cmd': '*R', 'output': 'NO DATA'},
             ],
         });
+
+        // But not for "¥FIN OR IG¥" response
         $sessionRecords.push({
             'initialState': GdsDirectDefaults.makeDefaultSabreState(),
             'calledCommands': [
@@ -2361,6 +2413,8 @@ class SessionStateProcessorTest extends require('../../../../../../backend/Trans
                 },
             ],
         });
+
+        // Same in Amadeus
         $sessionRecords.push({
             'initialState': GdsDirectDefaults.makeDefaultAmadeusState(),
             'calledCommands': [
@@ -2388,6 +2442,7 @@ class SessionStateProcessorTest extends require('../../../../../../backend/Trans
                 {'cmd': 'RT', 'output': php.implode(php.PHP_EOL, ['/$INVALID', ' '])},
             ],
         });
+
         $sessionRecords.push({
             'initialState': GdsDirectDefaults.makeDefaultAmadeusState(),
             'calledCommands': [
@@ -2411,6 +2466,7 @@ class SessionStateProcessorTest extends require('../../../../../../backend/Trans
                 {'cmd': 'RT', 'output': php.implode(php.PHP_EOL, ['/$RP/SFO1S2195/', '  1.LIBERMANE/MARINA', ' '])},
             ],
         });
+
         $sessionRecords.push({
             'initialState': GdsDirectDefaults.makeDefaultAmadeusState(),
             'calledCommands': [
@@ -2445,6 +2501,8 @@ class SessionStateProcessorTest extends require('../../../../../../backend/Trans
                 },
             ],
         });
+
+        // RESALL example
         $sessionRecords.push({
             'initialState': {
                 'gds': 'apollo',
@@ -2477,6 +2535,8 @@ class SessionStateProcessorTest extends require('../../../../../../backend/Trans
                 },
             ],
         });
+
+        // more RESALL examples
         $sessionRecords.push({
             'initialState': GdsDirectDefaults.makeDefaultApolloState(),
             'calledCommands': [
@@ -2555,6 +2615,8 @@ class SessionStateProcessorTest extends require('../../../../../../backend/Trans
                 },
             ],
         });
+
+        // typo in RESALL
         $sessionRecords.push({
             'initialState': GdsDirectDefaults.makeDefaultApolloState(),
             'calledCommands': [
@@ -2597,6 +2659,8 @@ class SessionStateProcessorTest extends require('../../../../../../backend/Trans
                 },
             ],
         });
+
+        // Sabre >EC; - "end and clone itinerary"
         $sessionRecords.push({
             'initialState': GdsDirectDefaults.makeDefaultSabreState(),
             'calledCommands': [
@@ -2643,6 +2707,8 @@ class SessionStateProcessorTest extends require('../../../../../../backend/Trans
                 },
             ],
         });
+
+        // Sabre >IC; - "ignore and clone itinerary"
         $sessionRecords.push({
             'initialState': GdsDirectDefaults.makeDefaultSabreState(),
             'calledCommands': [
@@ -2680,6 +2746,8 @@ class SessionStateProcessorTest extends require('../../../../../../backend/Trans
                 },
             ],
         });
+
+        // Sabre >IA; - apparently some alias that works like `I` (ignore)
         $sessionRecords.push({
             'initialState': GdsDirectDefaults.makeDefaultSabreState(),
             'calledCommands': [
@@ -2709,6 +2777,8 @@ class SessionStateProcessorTest extends require('../../../../../../backend/Trans
                 },
             ],
         });
+
+        // Apollo '*R*@*R*' -- invalid command that breaks PNR state
         $sessionRecords.push({
             'initialState': GdsDirectDefaults.makeDefaultApolloState(),
             'calledCommands': [
@@ -2735,6 +2805,8 @@ class SessionStateProcessorTest extends require('../../../../../../backend/Trans
                 },
             ],
         });
+
+        // Apollo PNR search drops current PNR when list is displayed
         $sessionRecords.push({
             'initialState': GdsDirectDefaults.makeDefaultApolloState(),
             'calledCommands': [
@@ -2776,6 +2848,8 @@ class SessionStateProcessorTest extends require('../../../../../../backend/Trans
                 },
             ],
         });
+
+        // Apollo PNR search drops current PNR when search found no PNR-s
         $sessionRecords.push({
             'initialState': php.array_merge(GdsDirectDefaults.makeDefaultApolloState(), {'pcc': '115Q'}),
             'calledCommands': [
@@ -2806,6 +2880,8 @@ class SessionStateProcessorTest extends require('../../../../../../backend/Trans
                 {'cmd': '*R', 'output': php.implode(php.PHP_EOL, ['INVLD ', '><'])},
             ],
         });
+
+        // Sabre PNR search drops current PNR when list is displayed
         $sessionRecords.push({
             'initialState': GdsDirectDefaults.makeDefaultSabreState(),
             'calledCommands': [
@@ -2853,6 +2929,8 @@ class SessionStateProcessorTest extends require('../../../../../../backend/Trans
                 {'cmd': '*R', 'output': 'NO DATA'},
             ],
         });
+
+        // Amadeus PNR search drops current PNR when list is displayed
         $sessionRecords.push({
             'initialState': GdsDirectDefaults.makeDefaultAmadeusState(),
             'calledCommands': [
@@ -2876,6 +2954,10 @@ class SessionStateProcessorTest extends require('../../../../../../backend/Trans
                 {'cmd': 'RT', 'output': php.implode(php.PHP_EOL, ['/$INVALID', ' '])},
             ],
         });
+
+        // Sabre PNR was ignored, but WPNI (low fare search) was
+        // still active, so Eldar succeeded rebooking it afterwards
+        // should know that hasPnr = true in such cases
         $sessionRecords.push({
             'initialState': php.array_merge(GdsDirectDefaults.makeDefaultSabreState(), {
                 'hasPnr': true,
@@ -3015,6 +3097,7 @@ class SessionStateProcessorTest extends require('../../../../../../backend/Trans
                 },
             ],
         });
+
         // should not throw exception on attempt to get 'recordLocator' from unset 'pnrInfo'
         $sessionRecords.push({
             'initialState': php.array_merge(GdsDirectDefaults.makeDefaultSabreState(), {
@@ -3056,6 +3139,8 @@ class SessionStateProcessorTest extends require('../../../../../../backend/Trans
                 },
             ],
         });
+
+        // Apollo segments sold from Low Fare Search
         $sessionRecords.push({
             'initialState': php.array_merge(GdsDirectDefaults.makeDefaultApolloState()),
             'calledCommands': [
@@ -3107,6 +3192,8 @@ class SessionStateProcessorTest extends require('../../../../../../backend/Trans
                 },
             ],
         });
+
+        // failed sell from FS should not result in hasPnr
         $sessionRecords.push({
             'initialState': php.array_merge(GdsDirectDefaults.makeDefaultApolloState()),
             'calledCommands': [
@@ -3137,6 +3224,8 @@ class SessionStateProcessorTest extends require('../../../../../../backend/Trans
                 },
             ],
         });
+
+        // amadeus state processor did not detect that hasPnr for some reason
         $sessionRecords.push({
             'initialState': php.array_merge(GdsDirectDefaults.makeDefaultAmadeusState()),
             'calledCommands': [
@@ -3152,6 +3241,8 @@ class SessionStateProcessorTest extends require('../../../../../../backend/Trans
                 },
             ],
         });
+
+        // failed sell from FS should not result in hasPnr
         $sessionRecords.push({
             'initialState': php.array_merge(GdsDirectDefaults.makeDefaultApolloState()),
             'calledCommands': [
@@ -3162,6 +3253,8 @@ class SessionStateProcessorTest extends require('../../../../../../backend/Trans
                 },
             ],
         });
+
+        // should reset recordLocator too, not just the isPnrStored
         $sessionRecords.push({
             'initialState': php.array_merge(GdsDirectDefaults.makeDefaultApolloState(), {
                 'recordLocator': 'X7JDCC', 'isPnrStored': true, 'hasPnr': true,
@@ -3179,6 +3272,8 @@ class SessionStateProcessorTest extends require('../../../../../../backend/Trans
                 },
             ],
         });
+
+        // One more INVLD command that breaks PNR state
         $sessionRecords.push({
             'initialState': php.array_merge(GdsDirectDefaults.makeDefaultApolloState(), {
                 'recordLocator': 'X7JDCC', 'isPnrStored': true, 'hasPnr': true,
@@ -3194,6 +3289,8 @@ class SessionStateProcessorTest extends require('../../../../../../backend/Trans
                 },
             ],
         });
+
+        // Amadeus canCreatePq after "NO FARE FOR BOOKING CODE" error check
         $sessionRecords.push({
             'initialState': php.array_merge(GdsDirectDefaults.makeDefaultAmadeusState(), {'hasPnr': true, 'canCreatePq': false}),
             'calledCommands': [
@@ -3209,6 +3306,8 @@ class SessionStateProcessorTest extends require('../../../../../../backend/Trans
                 },
             ],
         });
+
+        // Apollo open PNR from list ending with ATFQ line - should not cause parser exceptions
         $sessionRecords.push({
             'initialState': GdsDirectDefaults.makeDefaultApolloState(),
             'calledCommands': [
@@ -3250,6 +3349,8 @@ class SessionStateProcessorTest extends require('../../../../../../backend/Trans
                 },
             ],
         });
+
+        // Galileo area/pcc/sell examples
         $sessionRecords.push({
             'initialState': GdsDirectDefaults.makeDefaultGalileoState(),
             'calledCommands': [
@@ -3316,6 +3417,8 @@ class SessionStateProcessorTest extends require('../../../../../../backend/Trans
                 },
             ],
         });
+
+        // Galileo open PNR examples
         $sessionRecords.push({
             'initialState': GdsDirectDefaults.makeDefaultGalileoState(),
             'calledCommands': [
@@ -3393,6 +3496,8 @@ class SessionStateProcessorTest extends require('../../../../../../backend/Trans
                 },
             ],
         });
+
+        // Galileo PNR search example
         $sessionRecords.push({
             'initialState': GdsDirectDefaults.makeDefaultGalileoState(),
             'calledCommands': [
@@ -3498,6 +3603,7 @@ class SessionStateProcessorTest extends require('../../../../../../backend/Trans
                 },
             ],
         });
+
         $sessionRecords.push({
             'title': 'Galileo availability sell hasPnr',
             'initialState': GdsDirectDefaults.makeDefaultGalileoState(),
@@ -3528,6 +3634,7 @@ class SessionStateProcessorTest extends require('../../../../../../backend/Trans
                 },
             ],
         });
+
         $sessionRecords.push({
             'title': 'Galileo ignore PNR',
             'initialState': GdsDirectDefaults.makeDefaultGalileoState(),
@@ -3579,6 +3686,8 @@ class SessionStateProcessorTest extends require('../../../../../../backend/Trans
                 },
             ],
         });
+
+        // Galileo instantly opens PNR if there was just one name match
         $sessionRecords.push({
             'initialState': GdsDirectDefaults.makeDefaultGalileoState(),
             'calledCommands': [
@@ -3608,6 +3717,8 @@ class SessionStateProcessorTest extends require('../../../../../../backend/Trans
                 },
             ],
         });
+
+        // Galileo open PNR from search without showing record locator
         $sessionRecords.push({
             'initialState': GdsDirectDefaults.makeDefaultGalileoState(),
             'calledCommands': [
@@ -3631,6 +3742,8 @@ class SessionStateProcessorTest extends require('../../../../../../backend/Trans
                 },
             ],
         });
+
+        // Galileo RESALL - unsuccessful
         $sessionRecords.push({
             'initialState': GdsDirectDefaults.makeDefaultGalileoState(),
             'calledCommands': [
@@ -3692,6 +3805,8 @@ class SessionStateProcessorTest extends require('../../../../../../backend/Trans
                 },
             ],
         });
+
+        // Galileo RESALL - successful
         $sessionRecords.push({
             'initialState': GdsDirectDefaults.makeDefaultGalileoState(),
             'calledCommands': [
@@ -3781,6 +3896,8 @@ class SessionStateProcessorTest extends require('../../../../../../backend/Trans
                 },
             ],
         });
+
+        // Galileo book from FS
         $sessionRecords.push({
             'initialState': GdsDirectDefaults.makeDefaultGalileoState(),
             'calledCommands': [
@@ -3805,6 +3922,8 @@ class SessionStateProcessorTest extends require('../../../../../../backend/Trans
                 },
             ],
         });
+
+        // >*1; with response "LIST NUMBER DOES NOT EXIST" does not drop PNR context
         $sessionRecords.push({
             'initialState': php.array_merge(GdsDirectDefaults.makeDefaultGalileoState(), {
                 'hasPnr': true, 'isPnrStored': true, 'recordLocator': 'RLHFDY',
@@ -3857,6 +3976,8 @@ class SessionStateProcessorTest extends require('../../../../../../backend/Trans
                 }
             ],
         });
+
+        // >*1; same deal with Apollo
         $sessionRecords.push({
             'initialState': php.array_merge(GdsDirectDefaults.makeDefaultApolloState(), [
             ]),
@@ -3909,6 +4030,8 @@ class SessionStateProcessorTest extends require('../../../../../../backend/Trans
                 },
             ],
         });
+
+        // but if there is an active >**-LIBER; in the session, then >*55; actually drops PNR
         $sessionRecords.push({
             'initialState': php.array_merge(GdsDirectDefaults.makeDefaultApolloState(), [
             ]),
@@ -3971,6 +4094,8 @@ class SessionStateProcessorTest extends require('../../../../../../backend/Trans
                 },
             ],
         });
+
+        // Apollo TUR segment successful sell example - should result in hasPnr = true
         $sessionRecords.push({
             'initialState': php.array_merge(GdsDirectDefaults.makeDefaultApolloState(), []),
             'calledCommands': [
@@ -4025,6 +4150,7 @@ class SessionStateProcessorTest extends require('../../../../../../backend/Trans
                 },
             ],
         });
+
         $argumentTuples = [];
         for ($sessionRecord of $sessionRecords) {
             $argumentTuples.push([$sessionRecord]);}
