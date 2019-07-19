@@ -13,7 +13,7 @@ const SabreReservationParser = require('../../../Gds/Parsers/Sabre/Pnr/PnrParser
 const ImportPnrAction = require('../../../Rbs/Process/Common/ImportPnr/ImportPnrAction.js');
 const SabrePnr = require('../../../Rbs/TravelDs/SabrePnr.js');
 
-const php = require('../../../phpDeprecated.js');
+const php = require('klesun-node-tools/src/Transpiled/php.js');
 const SessionStateHelper = require("./SessionStateHelper");
 class UpdateSabreStateAction
 {
@@ -25,7 +25,9 @@ class UpdateSabreStateAction
         let $type, $tooShortToBeValid;
         $type = CommandParser.parse($cmd)['type'];
         $tooShortToBeValid = !php.preg_match(/\n.*\n/, $output);
-        if ($type !== 'priceItinerary' || $tooShortToBeValid) {
+        let isError = $tooShortToBeValid ||
+            $output.match(/^PSGR TYPE  ADT.*\nATTN\*VERIFY BOOKING CLASS/);
+        if ($type !== 'priceItinerary' || isError) {
             return false;
         } else {
             let errors = CmsSabreTerminal.checkPricingCmdObviousPqRules(data);

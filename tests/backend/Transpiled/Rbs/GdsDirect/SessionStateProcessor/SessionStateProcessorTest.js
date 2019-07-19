@@ -4151,6 +4151,56 @@ class SessionStateProcessorTest extends require('../../../../../../backend/Trans
             ],
         });
 
+        $sessionRecords.push({
+            "title": "this pricing output should not result in canCreatePq=true, it is an error response even though it consists of many lines",
+            "initialState": {
+                "gds": 'sabre',
+                "area":"A","pcc":"C5VD","recordLocator":"","canCreatePq":true,"scrolledCmd":"WPNC¥MUSD",
+                "cmdCnt":6,"pricingCmd":"WPNC¥MUSD","cmdType":"priceItinerary","hasPnr":true,
+            },
+            "calledCommands": [
+                {
+                    "cmd": "WPMUSD",
+                    "output": [
+                        "PSGR TYPE  ADT",
+                        "ATTN*VERIFY BOOKING CLASS",
+                        "   FARE BASIS BOOK CODE           FARE TAX/FEES/CHGS  TOTAL",
+                        "01¤UAP7PH     U         USD      23.00    11.10       34.10 ADT",
+                        "02¤UAP7TPH    U         USD      24.00    11.20       35.20 ADT",
+                        "03¤UAP3PH     U         USD      29.00    11.80       40.80 ADT",
+                        "04¤UAP3TPH    U         USD      30.00    11.90       41.90 ADT",
+                        "05¤UPH        U         USD      37.00    12.80       49.80 ADT",
+                        "06¤UTPH       U         USD      37.00    12.80       49.80 ADT",
+                        "07¤TPH        T         USD      47.00    14.00       61.00 ADT",
+                        "08¤TTPH       T         USD      47.00    14.00       61.00 ADT",
+                        "09¤EPH        E         USD      54.00    14.80       68.80 ADT",
+                        "10¤ETPH       E         USD      55.00    14.90       69.90 ADT",
+                        "11¤KPH        K         USD      66.00    16.20       82.20 ADT",
+                        "12¤KTPH       K         USD      66.00    16.20       82.20 ADT",
+                        "13¤XTPH       X         USD      71.00    16.80       87.80 ADT",
+                        "14¤XPH        X         USD      71.00    16.80       87.80 ADT",
+                        "15¤BPH        B         USD      76.00    17.40       93.40 ADT",
+                        "16¤BTPH       B         USD      76.00    17.40       93.40 ADT",
+                        "17 TIPH       T         USD      79.00    17.80       96.80 ADT",
+                        "18¤VPH        V         USD      81.00    18.00       99.00 ADT",
+                        "19¤VTPH       V         USD      81.00    18.00       99.00 ADT",
+                        "20¤QPH        Q         USD      86.00    18.60      104.60 ADT",
+                        "21¤QTPH       Q         USD      87.00    18.80      105.80 ADT",
+                        "22 EIPH       E         USD      88.00    18.90      106.90 ADT",
+                        "23¤HPH        H         USD      91.00    19.20      110.20 ADT",
+                        "24¤HTPH       H         USD      92.00    19.40      111.40 ADT",
+                        "ATTN*REBOOK OPTION OF CHOICE BEFORE STORING FARE",
+                        "."
+                    ].join("\n"),
+                    "type": "priceItinerary",
+                    "state": {
+                        "area":"A","pcc":"C5VD","recordLocator":"","canCreatePq":false,
+                        "cmdType":"priceItinerary","hasPnr":true,
+                    }
+                },
+            ],
+        });
+
         $argumentTuples = [];
         for ($sessionRecord of $sessionRecords) {
             $argumentTuples.push([$sessionRecord]);}
