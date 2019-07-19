@@ -4,7 +4,7 @@ const Fp = require('../../../../Lib/Utils/Fp.js');
 const AbstractGdsAction = require('../../../../Rbs/GdsAction/AbstractGdsAction.js');
 const GalileoBuildItineraryAction = require('../../../../Rbs/GdsAction/GalileoBuildItineraryAction.js');
 const Errors = require('../../../../Rbs/GdsDirect/Errors.js');
-const UpdateGalileoSessionStateAction = require('../../../../Rbs/GdsDirect/SessionStateProcessor/UpdateGalileoStateAction.js');
+const UpdateGalileoSessionStateAction = require('../../SessionStateProcessor/UpdateGalileoState.js');
 const {fetchAll} = require('../../../../../GdsHelpers/TravelportUtils.js');
 
 /**

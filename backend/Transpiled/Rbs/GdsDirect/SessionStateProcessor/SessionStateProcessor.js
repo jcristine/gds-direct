@@ -14,16 +14,16 @@ class SessionStateProcessor
     static updateStateSafe($cmd, $output, gds, $sessionState, $getAreaData)  {
         let $getAreaDataNorm = (letter) => ({...$getAreaData(letter)});
         if (gds === 'apollo') {
-            let UpdateApolloSessionStateAction = require('./UpdateApolloStateAction.js');
+            let UpdateApolloSessionStateAction = require('./UpdateApolloState.js');
             return UpdateApolloSessionStateAction.execute($cmd, $output, $sessionState, $getAreaDataNorm);
         } else if (gds === 'sabre') {
-            let UpdateSabreSessionStateAction = require('./UpdateSabreStateAction.js');
+            let UpdateSabreSessionStateAction = require('./UpdateSabreState.js');
             return UpdateSabreSessionStateAction.execute($cmd, $output, $sessionState, $getAreaDataNorm);
         } else if (gds === 'amadeus') {
-            let UpdateAmadeusSessionStateAction = require('./UpdateAmadeusStateAction.js');
+            let UpdateAmadeusSessionStateAction = require('./UpdateAmadeusState.js');
             return UpdateAmadeusSessionStateAction.execute($cmd, $output, $sessionState, $getAreaDataNorm).toArray();
         } else if (gds === 'galileo') {
-            let UpdateGalileoSessionStateAction = require('./UpdateGalileoStateAction.js');
+            let UpdateGalileoSessionStateAction = require('./UpdateGalileoState.js');
             return UpdateGalileoSessionStateAction.execute($cmd, $output, $sessionState, $getAreaDataNorm).toArray();
         } else {
             throw new Error('Session State Processor is not implemented for '+$sessionState['gds']+' GDS yet');

@@ -15,7 +15,7 @@ const SabrePnr = require('../../../Rbs/TravelDs/SabrePnr.js');
 
 const php = require('klesun-node-tools/src/Transpiled/php.js');
 const SessionStateHelper = require("./SessionStateHelper");
-class UpdateSabreStateAction
+class UpdateSabreState
 {
     constructor($getAreaData)  {
         this.$getAreaData = $getAreaData;
@@ -194,4 +194,4 @@ class UpdateSabreStateAction
         return $sessionData;
     }
 }
-module.exports = UpdateSabreStateAction;
+module.exports = UpdateSabreState;

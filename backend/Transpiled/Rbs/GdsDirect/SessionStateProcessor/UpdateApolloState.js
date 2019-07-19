@@ -15,7 +15,7 @@ const ApolloPnr = require('../../../Rbs/TravelDs/ApolloPnr.js');
 const php = require("../../../phpDeprecated");
 const SessionStateHelper = require("./SessionStateHelper");
 
-class UpdateApolloStateAction {
+class UpdateApolloState {
 	constructor($getAreaData) {
 		this.$getAreaData = $getAreaData;
 	}
@@ -206,4 +206,4 @@ class UpdateApolloStateAction {
 	}
 }
 
-module.exports = UpdateApolloStateAction;
+module.exports = UpdateApolloState;
