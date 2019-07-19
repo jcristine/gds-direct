@@ -21,6 +21,18 @@ const inApollo = async (stateful) => {
 	return ApolloPnr.makeFromDump(cmdRec.output);
 };
 
+const inSabre = async (stateful) => {
+	let showsFullPnr = ($cmdRow) => {
+		return $cmdRow['cmd'] === '*R'
+			|| $cmdRow['cmd'] === 'IR'
+			|| $cmdRow['cmd'].match(/^\*[A-Z]{6}$/);
+	};
+	let lastCmds = await stateful.getLog().getLastStateSafeCommands();
+	let cmdRec = lastCmds.filter(showsFullPnr).slice(-1)[0]
+		|| await stateful.runCmd('*R');
+	return SabrePnr.makeFromDump(cmdRec.output);
+};
+
 /**
  * @param stateful = require('StatefulSession.js')()
  * @return {IPnr}
@@ -29,10 +41,9 @@ const GetCurrentPnr = async (stateful) => {
 	let gds = stateful.gds;
 	if (gds === 'apollo') {
 		return inApollo(stateful);
-	// TODO: reuse *R from command log one day...
 	} else if (gds === 'sabre') {
-		let cmdRec = await stateful.runCmd('*R');
-		return SabrePnr.makeFromDump(cmdRec.output);
+		return inSabre(stateful);
+	// TODO: reuse *R from command log one day...
 	} else if (gds === 'galileo') {
 		let cmdRec = await TravelportUtils.fetchAll('*R', stateful);
 		return GalileoPnr.makeFromDump(cmdRec.output);
@@ -45,5 +56,6 @@ const GetCurrentPnr = async (stateful) => {
 };
 
 GetCurrentPnr.inApollo = inApollo;
+GetCurrentPnr.inSabre = inSabre;
 
 module.exports = GetCurrentPnr;

@@ -10,6 +10,7 @@
   "rules": {
     "for-direction": "error",
     "semi": ["error", "always"],
+    "no-invalid-this": "warn",
     "valid-typeof": "error",
     "no-octal": "error",
     "no-return-await": "error",

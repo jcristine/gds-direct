@@ -1,3 +1,4 @@
+const GetCurrentPnr = require('../../../../../Actions/GetCurrentPnr.js');
 // namespace Rbs\GdsDirect\Actions\Sabre;
 
 const ArrayUtil = require('../../../../Lib/Utils/ArrayUtil.js');
@@ -283,16 +284,7 @@ class ProcessSabreTerminalInputAction {
 	}
 
 	async getCurrentPnr() {
-		let $showsFullPnr, $lastCmds, $pnrDump;
-
-		$showsFullPnr = ($cmdRow) => {
-			return $cmdRow['cmd'] === '*R'
-				|| $cmdRow['cmd'] === 'IR'
-				|| php.preg_match(/^\*[A-Z]{6}$/, $cmdRow['cmd']);
-		};
-		$lastCmds = await this.stateful.getLog().getLastStateSafeCommands();
-		$pnrDump = (ArrayUtil.getLast(Fp.filter($showsFullPnr, $lastCmds)) || {})['output'] || await this.runCommand('*R');
-		return SabrePnr.makeFromDump($pnrDump);
+		return GetCurrentPnr.inSabre(this.stateful);
 	}
 
 	async areAllCouponsVoided() {
