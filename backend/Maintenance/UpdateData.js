@@ -9,6 +9,7 @@ const FluentLogger = require("../LibWrappers/FluentLogger");
 const Redis = require("../LibWrappers/Redis");
 const Agents = require("../Repositories/Agents");
 const CmdRsLog = require("../Repositories/CmdRsLog.js");
+const PtcFareTypes = require('../Repositories/PtcFareTypes.js');
 
 /**
  * fetch external data like airports, ticket designators, etc... hourly
@@ -27,6 +28,7 @@ let UpdateData = async () => {
 		BookingClasses.updateFromService,
 		Airlines.updateFromService,
 		Pccs.updateFromService,
+		PtcFareTypes.updateFromService,
 		Airports.updateFromService,
 		CmdRsLog.cleanupOutdated,
 	];
@@ -48,9 +50,7 @@ let UpdateData = async () => {
 		}
 	};
 
-	// run every hour at :41 minute
-	let timeMask = '41 * * * *';
-	schedule.scheduleJob(timeMask, async () => {
+	let runHourlyWorker = async () => {
 		for (let i = 0; i < hourlyJobs.length; ++i) {
 			let job = hourlyJobs[i];
 			await withLock(job, i)
@@ -63,12 +63,18 @@ let UpdateData = async () => {
 				})
 				.catch(exc => logExc('ERROR: Job #' + i + ' ' + job.name + ' failed', exc));
 		}
-	});
+	};
+
+	// run every hour at :41 minute
+	let timeMask = '41 * * * *';
+	schedule.scheduleJob(timeMask, runHourlyWorker);
 
 	logit('Scheduled ' + hourlyJobs.length + ' to be executed at ' + timeMask);
 
 	return {
 		workerLogId: workerLogId,
+		/** to launch all update crons manually (on dev for example) */
+		runHourlyWorker: runHourlyWorker,
 	};
 };
 

@@ -11,10 +11,8 @@ let StaticConfig = {
 	RBS_PASSWORD: env.RBS_PASSWORD,
 };
 
-/** will likely be fetched from LAN one day */
-let hardcodedConfig = {
-	// TODO: move to admin page like in CMS
-	external_service: {
+let getExternalServices = () => ({
+		// TODO: move to admin page like in CMS
 		emc: {
 			projectName: 'GDSD',
 			login: 'gdsd',
@@ -53,8 +51,11 @@ let hardcodedConfig = {
 				: 'http://st-pqt.sjager.php7.dyninno.net/rpc/iq-json',
 			login: isProd ? 'GDSD' : 'CMS',
 			password: isProd ? 'dp6FcHKqATUsGqQxU&4f' : 'qwerty',
-		},
-	},
+},
+});
+
+let hardcodedConfig = {
+	external_service: getExternalServices(),
 };
 
 let fetching = null;
@@ -67,5 +68,6 @@ StaticConfig.getConfig = async () => {
 	});
 	return fetching;
 };
+StaticConfig.getExternalServices = getExternalServices;
 
 module.exports = StaticConfig;
