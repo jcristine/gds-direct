@@ -680,6 +680,8 @@ class RunCmdRq {
 			rSubMods.map(s => ',' + s).join('');
 		rawMods.push(rMod);
 		rawMods.push(...mods);
+		// proper way would be to use >FXA; (analog of $BB), not >FXX; (analog
+		// of $B), but the former does not allow pricing multiple passengers
 		return 'FXX' + rawMods.map(m => '/' + m).join('');
 	}
 

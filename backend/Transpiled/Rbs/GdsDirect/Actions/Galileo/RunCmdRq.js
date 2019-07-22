@@ -1,3 +1,4 @@
+const FqCmdParser = require('../../../../Gds/Parsers/Galileo/Commands/FqCmdParser.js');
 const GetCurrentPnr = require('../../../../../Actions/GetCurrentPnr.js');
 // namespace Rbs\GdsDirect\Actions\Galileo;
 
@@ -832,9 +833,21 @@ class RunCmdRq {
 		}
 	}
 
+	async translateMods(pricingModifiers) {
+		let galileoRawMods = [];
+		for (let apolloMod of pricingModifiers) {
+			let translated = this.constructor.translateApolloPricingModifier(apolloMod);
+			if (translated) {
+				galileoRawMods.push(translated);
+			} else {
+				return Rej.NotImplemented('Unsupported modifier - ' + apolloMod.raw);
+			}
+		}
+		return galileoRawMods;
+	}
+
 	async makeStorePricingCmd($pnr, $aliasData, $needsColonN) {
-		let $adultPtc, $errors, $tripEndDate, $tripEndDt, $paxCmdParts, $i, $pax, $determined, $error, $cmd, $apolloMod,
-			$translated;
+		let $adultPtc, $errors, $tripEndDate, $tripEndDt, $paxCmdParts, $i, $pax, $cmd;
 
 		$adultPtc = $aliasData['ptc'] || 'ADT';
 		if ($needsColonN && $adultPtc === 'ITX') {
@@ -857,16 +870,26 @@ class RunCmdRq {
 		if ($needsColonN) {
 			$cmd += '/:N';
 		}
-		for ($apolloMod of Object.values($aliasData['pricingModifiers'])) {
-			$translated = this.constructor.translateApolloPricingModifier($apolloMod);
-			if ($translated) {
-				$cmd += '/' + $translated;
-			} else {
-				return Rej.NotImplemented('Unsupported modifier - ' + $apolloMod.raw);
-			}
-		}
+		let customMods = await this.translateMods($aliasData.pricingModifiers);
+		$cmd += customMods.map(m => '/' + m).join('');
 
 		return {'cmd': $cmd, 'paxCmdParts': $paxCmdParts};
+	}
+
+	async makePriceAllCmd(aliasData) {
+		let {requestedAgeGroups, ptcs, pricingModifiers = []} = aliasData;
+		let rawMods = [];
+		rawMods.push('P' + ptcs
+			.map((ptc,i) => (i + 1) + '*' + ptc)
+			.join('.'));
+		rawMods.push('++-AB');
+		if (requestedAgeGroups.every(g => ['child', 'infant'].includes(g.ageGroup))) {
+			rawMods.push('/ACC');
+		}
+		let customMods = await this.translateMods(pricingModifiers);
+		rawMods.push(...customMods);
+		let cmd = 'FQBB' + rawMods.map(m => '/' + m).join('');
+		return Promise.resolve(cmd);
 	}
 
 	async storePricing($aliasData) {
@@ -897,6 +920,12 @@ class RunCmdRq {
 		}
 
 		return {'calledCommands': $calledCommands, 'errors': $errors};
+	}
+
+	async priceAll(aliasData) {
+		let cmd = await this.makePriceAllCmd(aliasData);
+		let cmdData = FqCmdParser.parse(cmd);
+		return this.priceItinerary(cmd, cmdData);
 	}
 
 	async multiPriceItinerary($aliasData) {
@@ -938,6 +967,8 @@ class RunCmdRq {
 			return this.multiPriceItinerary($aliasData);
 		} else if ($aliasData = AliasParser.parseStore($cmd)) {
 			return this.storePricing($aliasData);
+		} else if ($aliasData = await AliasParser.parsePrice($cmd, this.stateful)) {
+			return this.priceAll($aliasData);
 		} else if ($cmd === '/SS') {
 			return this.rebookAsSs();
 		} else if (php.preg_match(/^(FD.*)\/MIX$/, $cmd, $matches = [])) {
