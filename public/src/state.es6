@@ -78,12 +78,12 @@ export const getters = (action, props) => {
 		break;
 
 		case 'showExistingPq' :
-			return fetch(cmsUrl + `/terminal/priceQuotes?rId=${State.requestId}`, {credentials: 'include'})
+			return fetch(cmsUrl + `/gdsDirectPlus/priceQuotes?rId=${State.requestId}`, {credentials: 'include'})
 				.then(resp => resp.json());
 		break;
 
 		case 'lastRequests' :
-			return fetch(cmsUrl + `/gdsDirect/lastViewedRequests`, {credentials: 'include'})
+			return fetch(cmsUrl + `/gdsDirectPlus/lastViewedRequests`, {credentials: 'include'})
 				.then(resp => resp.json());
 		break;
 	}
