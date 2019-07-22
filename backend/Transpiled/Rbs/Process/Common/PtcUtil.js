@@ -1,3 +1,4 @@
+const PtcFareTypes = require('../../../../Repositories/PtcFareFamilies.js');
 
 // namespace Rbs\Process\Common;
 
@@ -6,71 +7,6 @@ let php = require('klesun-node-tools/src/Transpiled/php.js');
 /** provides functions to parse/make/modify PTC */
 class PtcUtil
 {
-    static getFareTypeMapping()  {
-        return {
-            regular: {
-                childLetter: 'C',
-                groups: {
-                    adult: 'ADT', infant: 'INF',
-                    child: 'CNN', infantWithSeat: 'INS',
-                },
-            },
-            inclusiveTour: {
-                childLetter: 'I',
-                groups: {
-                    adult: 'ITX', infant: 'ITF',
-                    child: 'INN', infantWithSeat: 'ITS',
-                },
-            },
-            contractBulk: {
-                childLetter: 'J',
-                groups: {
-                    adult: 'JCB', infant: 'JNF',
-                    child: 'JNN', infantWithSeat: 'JNS',
-                },
-            },
-            missionary: {
-                childLetter: null,
-                groups: {
-                    adult: 'MIS', infant: 'MIF',
-                    child: 'MIC', infantWithSeat: 'MSS',
-                },
-            },
-            blended: {
-                childLetter: null,
-                groups: {
-                    adult: 'JWZ', infant: 'INF',
-                    child: 'JWB', infantWithSeat: 'INS',
-                },
-            },
-        };
-    }
-
-    static getFareType($ptc)  {
-        let $fareType, $data, $matches, $_, $letter, $age, $ageGroup, $groupPtc;
-        for ([$fareType, $data] of Object.entries(this.getFareTypeMapping())) {
-            if (php.preg_match(/^([A-Z])(\d{2})$/, $ptc, $matches = [])) {
-                [$_, $letter, $age] = $matches;
-                if ($letter === $data['childLetter']) {
-                    return $fareType;
-                }
-            } else {
-                for ([$ageGroup, $groupPtc] of Object.entries($data['groups'])) {
-                    if ($groupPtc === $ptc) {
-                        return $fareType;
-                    }
-                }
-            }
-        }
-        return null;
-    }
-
-    static getAdultFarePtc($fareType)  {
-        let $mapping;
-        $mapping = this.getFareTypeMapping();
-        return $mapping[$fareType]['groups']['adult'] || null;
-    }
-
     /**
      * @see PTYP+TXT in https://developer.travelport.com/euf/assets/developer-network/downloads/ReferenceData.zip
      * this function decodes PTC-s very approximately+ Age group for

@@ -9,7 +9,7 @@ const FluentLogger = require("../LibWrappers/FluentLogger");
 const Redis = require("../LibWrappers/Redis");
 const Agents = require("../Repositories/Agents");
 const CmdRsLog = require("../Repositories/CmdRsLog.js");
-const PtcFareTypes = require('../Repositories/PtcFareTypes.js');
+const PtcFareTypes = require('../Repositories/PtcFareFamilies.js');
 
 /**
  * fetch external data like airports, ticket designators, etc... hourly
