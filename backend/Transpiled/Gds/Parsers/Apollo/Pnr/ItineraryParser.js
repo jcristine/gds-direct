@@ -193,7 +193,7 @@ class ItineraryParser {
 	}
 
 	decodeDayOffset($token) {
-		if (!$token) {
+		if (!$token || $token === '0') {
 			return 0;
 		} else if($token == '|' || $token == '+') {
 			return 1;
