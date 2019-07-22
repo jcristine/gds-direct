@@ -1,3 +1,4 @@
+const PtcUtil = require('../Process/Common/PtcUtil.js');
 
 // namespace Rbs\GdsDirect;
 
@@ -89,17 +90,40 @@ class AliasParser
         }
     }
 
-    static parsePrice($cmd)  {
-        let $matches, $_, $ptc, $modsPart;
-        if (php.preg_match(/^PRICE([A-Z0-9]{3}|)\/?(.*)$/, $cmd, $matches = [])) {
-            [$_, $ptc, $modsPart] = $matches;
-            return {
-                ptc: $ptc,
-                pricingModifiers: AtfqParser.parsePricingModifiers($modsPart),
-            };
-        } else {
-            return null;
+    static async parsePrice($cmd, stateful)  {
+        let $matches;
+        if (!php.preg_match(/^PRICE([A-Z0-9]{3}|)\/?(.*)$/, $cmd, $matches = [])) {
+            return Promise.resolve(null);
         }
+        let [$_, $ptc, $modsPart] = $matches;
+        let leadData = null;
+        if (stateful.getLeadId()) {
+            leadData = await stateful.getGdRemarkData();
+        }
+        let requestedAgeGroups = (leadData || {}).requestedAgeGroups || [];
+        if (requestedAgeGroups.length === 0) {
+            requestedAgeGroups = [
+                {ageGroup: 'adult', quantity: 1},
+                {ageGroup: 'child', quantity: 1},
+                {ageGroup: 'infant', quantity: 1},
+            ];
+        }
+        if (!$ptc || $ptc === 'ALL') {
+            $ptc = 'ADT';
+        }
+        let ptcs = [];
+        for (let group of requestedAgeGroups) {
+            let ptc = await PtcUtil.convertPtcByAgeGroup($ptc, group.ageGroup, 7);
+            for (let i = 0; i < (group.quantity || 1); ++i) {
+                ptcs.push(ptc);
+            }
+        }
+        return {
+            ptc: $ptc,
+            requestedAgeGroups: requestedAgeGroups,
+            ptcs: ptcs,
+            pricingModifiers: AtfqParser.parsePricingModifiers($modsPart),
+        };
     }
 
     static parseSameMonthReturnAvail(cmd) {

@@ -252,7 +252,7 @@ class RunCmdRq {
 		return $newParsed['data']['baseCmd'] + ($rawMods.length ? '/' + php.implode('/', $rawMods) : '');
 	}
 
-	static parseAlias($cmdRequested) {
+	static async parseAlias($cmdRequested) {
 		let $realCmd, $data, $type, $moveDownAll, $matches, $_, $units, $value, $parts, $mainCmd, $followingCommands,
 			$cmds, $segNumStr, $date, $cls, $result;
 		$realCmd = $cmdRequested;
@@ -286,7 +286,7 @@ class RunCmdRq {
 			}
 		} else if ($data = AliasParser.parseStore($realCmd)) {
 			$type = 'storePricing';
-		} else if ($data = AliasParser.parsePrice($realCmd)) {
+		} else if ($data = await AliasParser.parsePrice($realCmd, stateful)) {
 			$type = 'priceAll';
 		} else if ($data = AliasParser.parseRe($cmdRequested)) {
 			$type = 'rebookInPcc';
@@ -430,12 +430,12 @@ class RunCmdRq {
 			let scrolledCmdRow = (await this.stateful.getLog().getScrolledCmdMrs())[0];
 			if (cmdRq.startsWith('$D')) {
 				// initial $D display command
-				alias = this.constructor.parseAlias(cmdRq);
+				alias = await this.constructor.parseAlias(cmdRq);
 			} else {
 				// MD on $D display
 				let cmdRqId = !scrolledCmdRow ? null : scrolledCmdRow.cmd_rq_id;
 				let cmdRqRow = !cmdRqId ? null : await CmdRqLog.getById(cmdRqId);
-				alias = !cmdRqRow ? null : this.constructor.parseAlias(cmdRqRow.command || '');
+				alias = !cmdRqRow ? null : (await this.constructor.parseAlias(cmdRqRow.command || ''));
 			}
 			if (alias && alias['type'] === 'fareSearchWithDecrease') {
 				let decrease = alias['data'] || null;
@@ -1181,6 +1181,21 @@ class RunCmdRq {
 		return $cmd;
 	}
 
+	async makePriceAllCmd(aliasData) {
+		let {requestedAgeGroups, ptcs, pricingModifiers = []} = aliasData;
+		let rawMods = [];
+		rawMods.push('N' + ptcs
+			.map((ptc,i) => (i + 1) + '*' + ptc)
+			.join('|'));
+		rawMods.push('/@AB');
+		if (requestedAgeGroups.every(g => ['child', 'infant'].includes(g.ageGroup))) {
+			rawMods.push('/ACC');
+		}
+		rawMods.push(...pricingModifiers.map(m => m.raw));
+		let cmd = '$BB' + rawMods.map(m => '/' + m).join('');
+		return Promise.resolve(cmd);
+	}
+
 	async storePricing($aliasData) {
 		let $pnr, $prevAtfqNum, $newAtfqNum;
 		$pnr = await this.getCurrentPnr();
@@ -1200,42 +1215,6 @@ class RunCmdRq {
 			}
 		}
 		return {calledCommands: [{cmd, output}]};
-	}
-
-	async makePriceAllCmd(aliasData) {
-		let adultPtc = aliasData.ptc;
-		if (!adultPtc || adultPtc === 'ALL') {
-			adultPtc = 'ADT';
-		}
-		let leadData = null;
-		if (stateful.getLeadId()) {
-			leadData = await stateful.getGdRemarkData();
-		}
-		let requestedAgeGroups = (leadData || {}).requestedAgeGroups || [];
-		if (requestedAgeGroups.length === 0) {
-			requestedAgeGroups = [
-				{ageGroup: 'adult', quantity: 1},
-				{ageGroup: 'child', quantity: 1},
-				{ageGroup: 'infant', quantity: 1},
-			];
-		}
-		let paxCmdParts = [];
-		let paxNum = 1;
-		for (let group of requestedAgeGroups) {
-			let ptc = await PtcUtil.convertPtcByAgeGroup(adultPtc, group.ageGroup, 7);
-			for (let i = 0; i < (group.quantity || 1); ++i) {
-				paxCmdParts.push(paxNum++ + '*' + ptc);
-			}
-		}
-		let rawMods = [];
-		rawMods.push('N' + paxCmdParts.join('|'));
-		rawMods.push('/@AB');
-		if (requestedAgeGroups.every(g => ['child', 'infant'].includes(g.ageGroup))) {
-			rawMods.push('/ACC');
-		}
-		rawMods.push(...(aliasData.pricingModifiers || []).map(m => m.raw));
-		let cmd = '$BB' + rawMods.map(m => '/' + m).join('');
-		return Promise.resolve(cmd);
 	}
 
 	async priceAll(aliasData) {
@@ -1624,7 +1603,7 @@ class RunCmdRq {
 		let $alias, $mdaData, $limit, $cmdReal, $matches, $_, $plus, $seatAmount,
 			$segmentNumbers, $segmentStatus, $availability, $cityRow, $airlines, $itinerary;
 		let reservation;
-		$alias = this.constructor.parseAlias(cmd);
+		$alias = await this.constructor.parseAlias(cmd);
 		let parsed = CommandParser.parse(cmd);
 		if ($mdaData = $alias['moveDownAll'] || null) {
 			$limit = $mdaData['limit'] || null;

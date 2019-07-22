@@ -777,9 +777,21 @@ class RunCmdRq {
 		}
 	}
 
+	async translateMods(pricingModifiers) {
+		let sabreRawMods = [];
+		for (let apolloMod of pricingModifiers) {
+			let translated = this.constructor.translateApolloPricingModifier(apolloMod);
+			if (translated) {
+				sabreRawMods.push(translated);
+			} else {
+				return Rej.NotImplemented('Unsupported modifier - ' + apolloMod['raw']);
+			}
+		}
+		return Promise.resolve(sabreRawMods);
+	}
+
 	async makeStorePricingCmd($pnr, $aliasData, $needsPl) {
-		let $adultPtc, $errors, $tripEndDate, $tripEndDt, $paxCmdParts, $pax, $cmd, $apolloMod,
-			$translated;
+		let $adultPtc, $errors, $tripEndDate, $tripEndDt, $paxCmdParts, $pax, $cmd;
 
 		$adultPtc = $aliasData['ptc'] || 'ADT';
 		if ($needsPl && $adultPtc === 'ITX') {
@@ -798,21 +810,27 @@ class RunCmdRq {
 			$paxCmdParts.push('1' + ptc);
 		}
 		// KP0 - specify commission, needed by some airlines
-		$cmd = 'WPP' + php.implode('\/', $paxCmdParts) + '¥KP0¥RQ';
+		$cmd = 'WPP' + php.implode('/', $paxCmdParts) + '¥KP0¥RQ';
 
 		if ($needsPl) {
 			$cmd += '¥PL';
 		}
-		for ($apolloMod of Object.values($aliasData['pricingModifiers'])) {
-			$translated = this.constructor.translateApolloPricingModifier($apolloMod);
-			if ($translated) {
-				$cmd += '¥' + $translated;
-			} else {
-				return Rej.NotImplemented('Unsupported modifier - ' + $apolloMod['raw']);
-			}
-		}
+		let customMods = await this.translateMods($aliasData.pricingModifiers);
+		$cmd += customMods.map(m => '¥' + m).join('');
 
 		return $cmd;
+	}
+
+	async makePriceAllCmd(aliasData) {
+		let {ptcs, pricingModifiers = []} = aliasData;
+		let rawMods = [];
+		rawMods.push('P' + ptcs
+			.map(ptc => '0' + ptc)
+			.join('/'));
+		let customMods = await this.translateMods(pricingModifiers);
+		rawMods.push(...customMods);
+		let cmd = 'WPNC' + rawMods.map(m => '¥' + m).join('');
+		return Promise.resolve(cmd);
 	}
 
 	async storePricing(aliasData) {
@@ -827,6 +845,11 @@ class RunCmdRq {
 			output = await this.runCommand(cmd);
 		}
 		return {calledCommands: [{cmd, output}]};
+	}
+
+	async priceAll(aliasData) {
+		let cmd = await this.makePriceAllCmd(aliasData);
+		return this.processRealCommand(cmd);
 	}
 
 	async callImplicitCommandsBefore($cmd) {
@@ -934,6 +957,8 @@ class RunCmdRq {
 			return this.processCloneItinerary($reData);
 		} else if ($aliasData = AliasParser.parseStore($cmd)) {
 			return this.storePricing($aliasData);
+		} else if ($aliasData = await AliasParser.parsePrice($cmd, this.stateful)) {
+			return this.priceAll($aliasData);
 		} else if ($aliasData = this.constructor.parseMultiPriceItineraryAlias($cmd)) {
 			return this.multiPriceItinerary($aliasData);
 		} else if ($cmd === '/SS') {

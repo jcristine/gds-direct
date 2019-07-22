@@ -95,5 +95,5 @@ exports.getByAdultPtc = async (adultPtc) => {
 			return Promise.resolve(family);
 		}
 	}
-	return Rej.NotFound('No known Fare Families matched adult PTC ' + adultPtc);
+	return Rej.NotFound('No known Fare Families matched adult PTC - ' + adultPtc);
 };
