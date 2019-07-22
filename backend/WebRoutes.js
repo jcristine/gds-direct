@@ -483,6 +483,7 @@ app.get('/ping', toHandleHttp((rqBody) => {
 
 	return Redis.getInfo().then(async redisLines => {
 		const data = {
+			message: 'last_connection is working ok I hope',
 			pid: process.pid,
 			'dbPool': await Db.getInfo(),
 			sockets: {
