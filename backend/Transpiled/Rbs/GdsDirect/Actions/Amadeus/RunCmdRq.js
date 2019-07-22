@@ -32,6 +32,7 @@ const FxParser = require('../../../../Gds/Parsers/Amadeus/Pricing/FxParser.js');
 const TicketMaskParser = require('../../../../Gds/Parsers/Amadeus/TicketMaskParser.js');
 const {withCapture} = require("../../../../../GdsHelpers/CommonUtils");
 const AmadeusGetPricingPtcBlocks = require('./AmadeusGetPricingPtcBlocksAction.js');
+const PricingCmdParser = require('../../../../../Transpiled/Gds/Parsers/Amadeus/Commands/PricingCmdParser.js');
 
 class RunCmdRq {
 	/** @param $statefulSession = require('StatefulSession.js')() */
@@ -620,7 +621,7 @@ class RunCmdRq {
 		return rbsInfo.isPrivateFare && rbsInfo.isBrokenFare;
 	}
 
-	static translateApolloPricingModifiers($apolloMods) {
+	static async translateApolloPricingModifiers($apolloMods) {
 		let $mods, $rSubMods, $apolloMod;
 
 		$mods = [];
@@ -629,7 +630,7 @@ class RunCmdRq {
 			if ($apolloMod['type'] === 'validatingCarrier') {
 				$rSubMods.push('VC-' + $apolloMod['parsed']);
 			} else {
-				return {'errors': ['Unsupported modifier - ' + $apolloMod['raw']]};
+				return Rej.NotImplemented('Unsupported modifier - ' + $apolloMod.raw);
 			}
 		}
 		return {'mods': $mods, 'rSubMods': $rSubMods};
@@ -643,10 +644,7 @@ class RunCmdRq {
 		if ($needsRp && $adultPtc === 'ITX') {
 			$adultPtc = 'ADT';
 		}
-		$modRec = this.constructor.translateApolloPricingModifiers($aliasData['pricingModifiers']);
-		if (!php.empty($modRec['errors'])) {
-			return Rej.NotImplemented('Could not translate Apollo mods - ' + $modRec['errors'].join('; '));
-		}
+		$modRec = await this.constructor.translateApolloPricingModifiers($aliasData['pricingModifiers']);
 
 		$tripEndDate = ((ArrayUtil.getLast($pnr.getItinerary()) || {})['departureDate'] || {})['parsed'];
 		$tripEndDt = $tripEndDate ? DateTime.decodeRelativeDateInFuture($tripEndDate, this.stateful.getStartDt()) : null;
@@ -673,6 +671,18 @@ class RunCmdRq {
 		return 'FXP/' + $paxStores.join('//');
 	}
 
+	async makePriceAllCmd(aliasData) {
+		let {ptcs, pricingModifiers = []} = aliasData;
+		let {mods, rSubMods} = await this.constructor
+			.translateApolloPricingModifiers(pricingModifiers);
+		let rawMods = [];
+		let rMod = 'R' + ptcs.join('*') +
+			rSubMods.map(s => ',' + s).join('');
+		rawMods.push(rMod);
+		rawMods.push(...mods);
+		return 'FXX' + rawMods.map(m => '/' + m).join('');
+	}
+
 	async storePricing($aliasData) {
 		let $pnr, $errors;
 
@@ -690,6 +700,12 @@ class RunCmdRq {
 			output = await this.runCommand(cmd);
 		}
 		return {calledCommands: [{cmd, output}]};
+	}
+
+	async priceAll(aliasData) {
+		let cmd = await this.makePriceAllCmd(aliasData);
+		let cmdData = PricingCmdParser.parse(cmd);
+		return this._fetchPricing(cmd, cmdData);
 	}
 
 	async _fetchPricing(cmd, cmdData) {
@@ -1062,6 +1078,8 @@ class RunCmdRq {
 			return this.processCloneItinerary($reData);
 		} else if ($aliasData = AliasParser.parseStore($cmd)) {
 			return this.storePricing($aliasData);
+		} else if ($aliasData = await AliasParser.parsePrice($cmd, this.stateful)) {
+			return this.priceAll($aliasData);
 		} else if ($params = this.constructor.parseSeatIncreasePseudoCmd($cmd)) {
 			return this.processSeatIncrease($params);
 		} else if ($cmd === '/SS') {
