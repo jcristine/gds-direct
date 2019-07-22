@@ -6,6 +6,14 @@ const {onDemand} = require('klesun-node-tools/src/Lang.js');
 
 const DATA_NAME = 'PtcFareFamilies';
 
+const normalizeRow = (actFamily) => ({
+	id: actFamily.id,
+	name: actFamily.code,
+	title: actFamily.title,
+	childLetter: actFamily.child_letter,
+	groups: actFamily.ptc,
+});
+
 const updateFromService = async () => {
 	let act = getExternalServices().act;
 	/** @type {IGetPccsAllRs} */
@@ -19,12 +27,10 @@ const updateFromService = async () => {
 		serviceName: 'rbs',
 	});
 
-	let rows = Object.values(serviceResult.result.content)
-		.map(actFamily => ({
-			name: actFamily.code,
-			childLetter: actFamily.child_letter,
-			groups: actFamily.ptc,
-		}));
+	let rows = Object
+		.values(serviceResult.result.content)
+		.map(normalizeRow);
+
 	if (rows.length === 0) {
 		throw Rej.BadGateway.makeExc('ACT did not return any PTC fare types', serviceResult);
 	}
@@ -35,41 +41,58 @@ const updateFromService = async () => {
 	};
 };
 
-/**
- * @return {Promise<{
- *     "id": 2,
- *     "code": "inclusiveTour",
- *     "title": "Inclusive tour",
- *     "child_letter": "I",
- *     "gds": [],
- *     "ptc": {
- *         "adult": "ITX",
- *         "infant": "ITF",
- *         "child": "INN",
- *         "infant_with_seat": "ITS"
- *     }
- * }[]>}
- */
-const getAll = () => CustomData.get(DATA_NAME);
+/** @deprecated - should stop using when there are records in DB */
+const fallbackMapping = {
+	regular: {
+		childLetter: 'C',
+		groups: {
+			adult: 'ADT', infant: 'INF',
+			child: 'CNN', infantWithSeat: 'INS',
+		},
+	},
+	inclusiveTour: {
+		childLetter: 'I',
+		groups: {
+			adult: 'ITX', infant: 'ITF',
+			child: 'INN', infantWithSeat: 'ITS',
+		},
+	},
+	contractBulk: {
+		childLetter: 'J',
+		groups: {
+			adult: 'JCB', infant: 'JNF',
+			child: 'JNN', infantWithSeat: 'JNS',
+		},
+	},
+	missionary: {
+		childLetter: null,
+		groups: {
+			adult: 'MIS', infant: 'MIF',
+			child: 'MIC', infantWithSeat: 'MSS',
+		},
+	},
+	blended: {
+		childLetter: null,
+		groups: {
+			adult: 'JWZ', infant: 'INF',
+			child: 'JWB', infantWithSeat: 'INS',
+		},
+	},
+};
 
 /** RAM caching */
-const getMapping = onDemand(async () => {
-	let fareTypeMapping = {};
-	let families = await getAll();
-	for (let family of families) {
-		fareTypeMapping[family.code] = family;
-	}
-	return fareTypeMapping;
-});
+const getAllFromDb = onDemand(() => CustomData.get(DATA_NAME));
+const getAll = () => getAllFromDb()
+	.catch(exc => Object.entries(fallbackMapping)
+		.map(([name, family]) => ({name, ...family})));
 
 exports.getAll = getAll;
 exports.updateFromService = updateFromService;
-exports.getMapping = getMapping;
 exports.getByAdultPtc = async (adultPtc) => {
 	let families = await getAll();
 	for (let family of families) {
 		if (family.groups.adult === adultPtc) {
-			return Promise.reject(family);
+			return Promise.resolve(family);
 		}
 	}
 	return Rej.NotFound('No known Fare Families matched adult PTC ' + adultPtc);

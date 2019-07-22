@@ -7,6 +7,8 @@ const PtcUtil = require("../Transpiled/Rbs/Process/Common/PtcUtil");
 const TicketDesignators = require("../Repositories/TicketDesignators");
 const {allWrap} = require('klesun-node-tools/src/Lang.js');
 const UnprocessableEntity = require("klesun-node-tools/src/Rej").UnprocessableEntity;
+const {coverExc} = require('klesun-node-tools/src/Lang.js');
+const Rej = require('klesun-node-tools/src/Rej.js');
 
 let isPublishedAirTd = td => !td || td.match(/^(CH|IN)(\d{0,2}|100)$/);
 
@@ -125,8 +127,10 @@ let isPrivateFareTour = async (gds, store) => {
 		gds === 'sabre' && ['0BWH', '0EKH'].includes(pricingPcc) ||
 		gds === 'apollo' && ['2E1I'].includes(pricingPcc)
 	) {
-		let isItx = ptcBlock => PtcUtil.getFareType(ptcBlock.ptcInfo.ptc) === 'inclusiveTour';
-		return store.pricingBlockList.some(isItx);
+		let ptcFareTypes = await Promise.all(store.pricingBlockList
+			.map(ptcBlock => PtcUtil.getFareType(ptcBlock.ptcInfo.ptc)
+				.catch(coverExc(Rej.list, () => null))));
+		return ptcFareTypes.includes('inclusiveTour');
 	} else {
 		return isTourPcc(gds, pricingPcc);
 	}

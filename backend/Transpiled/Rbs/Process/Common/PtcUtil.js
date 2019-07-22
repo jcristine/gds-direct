@@ -1,4 +1,5 @@
-const PtcFareTypes = require('../../../../Repositories/PtcFareFamilies.js');
+const PtcFareFamilies = require('../../../../Repositories/PtcFareFamilies.js');
+const Rej = require('klesun-node-tools/src/Rej.js');
 
 // namespace Rbs\Process\Common;
 
@@ -7,6 +8,26 @@ let php = require('klesun-node-tools/src/Transpiled/php.js');
 /** provides functions to parse/make/modify PTC */
 class PtcUtil
 {
+    static async getFareType(ptc)  {
+        let families = await PtcFareFamilies.getAll();
+        for (let family of families) {
+            let matches;
+            if (php.preg_match(/^([A-Z])(\d{2})$/, ptc, matches = [])) {
+                let [$_, $letter, $age] = matches;
+                if ($letter === family.childLetter) {
+                    return family.name;
+                }
+            } else {
+                for (let [ageGroup, groupPtc] of Object.entries(family.groups)) {
+                    if (groupPtc === ptc) {
+                        return family.name;
+                    }
+                }
+            }
+        }
+        return null;
+    }
+
     /**
      * @see PTYP+TXT in https://developer.travelport.com/euf/assets/developer-network/downloads/ReferenceData.zip
      * this function decodes PTC-s very approximately+ Age group for
@@ -65,57 +86,49 @@ class PtcUtil
      * ...
      * @param $nameRecord = GdsPassengerBlockParser::flattenPassengers()[0]
      */
-    static convertPtcAgeGroup($adultPtc, $nameRecord, $tripEndDt = null)  {
-        let $ageGroup, $age, $seatedInfantPtcs, $pricingPtc;
-        $ageGroup = PtcUtil.getPaxAgeGroup($nameRecord, $tripEndDt);
-        $age = !php.empty($nameRecord['age'])
+    static async convertPtcAgeGroup($adultPtc, $nameRecord, $tripEndDt = null)  {
+        let ageGroup = PtcUtil.getPaxAgeGroup($nameRecord, $tripEndDt);
+        let age = !php.empty($nameRecord['age'])
             ? php.str_pad($nameRecord['age'], 2, '0', php.STR_PAD_LEFT)
             : null;
-        if ($nameRecord['ptc'] === 'INS') {
-            // infant with a seat
-            $seatedInfantPtcs = {
-                'ADT': 'INS', 'JCB': 'JNS',
-                'ITX': 'ITS', 'MIS': 'MSS',
-            };
-            if (!($pricingPtc = $seatedInfantPtcs[$adultPtc] || null)) {
-                return {'error': 'No infant with a seat PTC matching '+$adultPtc};
-            }
-        } else if ($nameRecord['ptc'] === 'YTH') {
-            $pricingPtc = $adultPtc === 'ADT' ? 'YTH' : $adultPtc;
-        } else {
-            return this.convertPtcByAgeGroup($adultPtc, $ageGroup, $age);
+        if ($nameRecord['ptc'] === 'YTH') {
+            return $adultPtc === 'ADT' ? 'YTH' : $adultPtc;
+        } else if (ageGroup === 'adult') {
+            return $adultPtc;
         }
-        return {'ptc': $pricingPtc};
+        let fareFamily = await PtcFareFamilies.getByAdultPtc($adultPtc);
+        if ($nameRecord['ptc'] === 'INS') {
+            let ptc = fareFamily.groups.infantWithSeat;
+            return ptc ? ptc : Rej.NotImplemented(
+                'No infant with a seat PTC matching ' + $adultPtc);
+        } else {
+            return this.convertPtcByAgeGroup($adultPtc, ageGroup, age);
+        }
     }
 
-    static convertPtcByAgeGroup($adultPtc, $ageGroup, $age = null) {
-        let $pricingPtc, $ageLetters, $letter, $infantPtcs;
-
-        // I guess getFareTypeMapping() should be reused here eventually...
+    static async convertPtcByAgeGroup($adultPtc, $ageGroup, $age = null) {
+        let $pricingPtc, $letter;
         if ($ageGroup === 'adult') {
-            $pricingPtc = $adultPtc;
-        } else if ($ageGroup === 'child') {
-            $ageLetters = {'ADT': 'C', 'JCB': 'J', 'ITX': 'I'};
-            if ($letter = $ageLetters[$adultPtc] || null) {
+            return $adultPtc;
+        }
+        let fareFamily = await PtcFareFamilies.getByAdultPtc($adultPtc);
+        if ($ageGroup === 'child') {
+            if ($letter = fareFamily.childLetter) {
                 let age = !$age ? 'NN' : ('0' + $age).slice(-2);
                 $pricingPtc = $letter + age;
-            } else if ($adultPtc === 'MIS') {
-                $pricingPtc = 'MIC';
+            } else if (fareFamily.groups.child) {
+                $pricingPtc = fareFamily.groups.child;
             } else {
-                return {'error': 'No child PTC matching '+$adultPtc};
+                return Rej.NotImplemented('No child PTC matching ' + $adultPtc);
             }
         } else if ($ageGroup === 'infant') {
-            $infantPtcs = {
-                'ADT': 'INF', 'JCB': 'JNF',
-                'ITX': 'ITF', 'MIS': 'MIF',
-            };
-            if (!($pricingPtc = $infantPtcs[$adultPtc] || null)) {
-                return {'error': 'No infant PTC matching '+$adultPtc};
+            if (!($pricingPtc = fareFamily.groups.infant)) {
+                return Rej.NotImplemented('No infant PTC matching ' + $adultPtc);
             }
         } else {
-            return {'error': 'Unsupported age group - '+$ageGroup};
+            return Rej.NotImplemented('Unsupported age group - ' + $ageGroup);
         }
-        return {'ptc': $pricingPtc};
+        return $pricingPtc;
     }
 
     static _getFullYearsBetween(tripEndDt, dateOfBirth) {

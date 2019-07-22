@@ -1141,16 +1141,16 @@ class RunCmdRq {
 		return rbsInfo.isPrivateFare && rbsInfo.isBrokenFare;
 	}
 
-	makeStorePricingCmd($pnr, $aliasData, $needsColonN) {
+	async makeStorePricingCmd($pnr, $aliasData, $needsColonN) {
 		let $adultPtc, $mods, $errors, $tripEndDate, $tripEndDt, $paxCmdParts, $pax, $nameNumFormat, $determined,
-			$error, $cmd, $needsAccompanying, $mod;
+			$cmd, $needsAccompanying, $mod;
 		$adultPtc = $aliasData['ptc'] || 'ADT';
 		$mods = $aliasData['pricingModifiers'];
 		if ($needsColonN && $adultPtc === 'ITX') {
 			$adultPtc = 'ADT';
 		}
 		if (!php.empty($errors = CommonDataHelper.checkSeatCount($pnr))) {
-			return {'errors': $errors};
+			return Rej.BadRequest('Invalid PNR - ' + $errors.join('; '));
 		}
 		let lastSeg = ArrayUtil.getLast($pnr.getItinerary());
 		$tripEndDate = !lastSeg ? null : lastSeg['departureDate']['parsed'];
@@ -1159,12 +1159,8 @@ class RunCmdRq {
 		for ($pax of Object.values($pnr.getPassengers())) {
 			$nameNumFormat = $pax['nameNumber']['fieldNumber'] +
 				'-' + $pax['nameNumber']['firstNameNumber'];
-			$determined = PtcUtil.convertPtcAgeGroup($adultPtc, $pax, $tripEndDt);
-			if ($error = $determined['error'] || null) {
-				return {'errors': ['Unknown PTC for passenger #' + $nameNumFormat + ': ' + $error]};
-			} else {
-				$paxCmdParts.push($nameNumFormat + '*' + $determined['ptc']);
-			}
+			let ptc = await PtcUtil.convertPtcAgeGroup($adultPtc, $pax, $tripEndDt);
+			$paxCmdParts.push($nameNumFormat + '*' + ptc);
 		}
 		$cmd = 'T:$BN' + php.implode('|', $paxCmdParts);
 		$needsAccompanying = ($pax) => {
@@ -1182,37 +1178,28 @@ class RunCmdRq {
 		for ($mod of Object.values($mods)) {
 			$cmd += '/' + $mod['raw'];
 		}
-		return {'cmd': $cmd};
+		return $cmd;
 	}
 
 	async storePricing($aliasData) {
-		let $pnr, $prevAtfqNum, $storeCmdRec, $errors, $output, $newAtfqNum, $cmdRecord;
+		let $pnr, $prevAtfqNum, $newAtfqNum;
 		$pnr = await this.getCurrentPnr();
 		let lastStore = ArrayUtil.getLast($pnr.getStoredPricingList());
 		$prevAtfqNum = lastStore ? lastStore['lineNumber'] : 0;
-		$storeCmdRec = this.makeStorePricingCmd($pnr, $aliasData, false);
-		if (!php.empty($errors = $storeCmdRec['errors'] || [])) {
-			return $storeCmdRec;
-		}
-		let cmdRec = await this.runCmd($storeCmdRec['cmd']);
-		$output = cmdRec.output;
-		if (StringUtil.contains($output, '** PRIVATE FARES SELECTED **')) {
-			$output = (await this.moveDownAll(null, [cmdRec]))[0]['output'] || $output;
-			if (await this.needsColonN($output, $pnr)) {
+		let cmd = await this.makeStorePricingCmd($pnr, $aliasData, false);
+		let cmdRec = await this.runCmd(cmd);
+		let output = cmdRec.output;
+		if (StringUtil.contains(output, '** PRIVATE FARES SELECTED **')) {
+			output = (await this.moveDownAll(null, [cmdRec]))[0]['output'] || output;
+			if (await this.needsColonN(output, $pnr)) {
 				$newAtfqNum = $prevAtfqNum + 1;
 				// delete ATFQ we just created and store a correct one, with /:N/ mod
 				await this.runCommand('XT' + $newAtfqNum, false);
-				$storeCmdRec = this.makeStorePricingCmd($pnr, $aliasData, true);
-
-				if (!php.empty($errors = $storeCmdRec['errors'] || [])) {
-					return $storeCmdRec;
-				}
-
-				$output = await this.runCommand($storeCmdRec['cmd'], false);
+				cmd = await this.makeStorePricingCmd($pnr, $aliasData, true);
+				output = await this.runCommand(cmd, false);
 			}
 		}
-		$cmdRecord = {'cmd': $storeCmdRec['cmd'], 'output': $output};
-		return {'calledCommands': [$cmdRecord]};
+		return {calledCommands: [{cmd, output}]};
 	}
 
 	async makePriceAllCmd(aliasData) {
@@ -1235,13 +1222,9 @@ class RunCmdRq {
 		let paxCmdParts = [];
 		let paxNum = 1;
 		for (let group of requestedAgeGroups) {
-			let determined = PtcUtil.convertPtcByAgeGroup(adultPtc, group.ageGroup, 7);
-			if (determined.error) {
-				let msg = 'Could not convert PTC - ' + determined.error;
-				return Rej.NotImplemented(msg);
-			}
+			let ptc = await PtcUtil.convertPtcByAgeGroup(adultPtc, group.ageGroup, 7);
 			for (let i = 0; i < (group.quantity || 1); ++i) {
-				paxCmdParts.push(paxNum++ + '*' + determined.ptc);
+				paxCmdParts.push(paxNum++ + '*' + ptc);
 			}
 		}
 		let rawMods = [];

@@ -1448,12 +1448,13 @@ class ProcessApolloTerminalInputActionTest extends require('../../../../Lib/Test
 			},
 		});
 
-		// STORE{ptc} alias error example - if you pass some unsupported PTC
 		$list.push({
-			'input': {'cmdRequested': 'STOREMIL'},
-			'output': {
-				'status': 'forbidden',
-				'userMessages': ['Unknown PTC for passenger #2-1: No child PTC matching MIL'],
+			'input': {
+				'title': 'STORE{ptc} alias error example - if you pass some unsupported PTC',
+				'cmdRequested': 'STOREMIL',
+			},
+			output: {
+				error: 'Error: No known Fare Families matched adult PTC MIL',
 			},
 			'sessionInfo': {
 				'initialState': php.array_merge(GdsDirectDefaults.makeDefaultApolloState(), {
@@ -7448,7 +7449,7 @@ class ProcessApolloTerminalInputActionTest extends require('../../../../Lib/Test
 		let $actualOutput = await ProcessApolloTerminalInputAction({
 			...($input.dependencyParams || {}),
 			stateful, cmdRq,
-		});
+		}).catch(exc => ({error: exc + ''}));
 		$actualOutput['sessionData'] = stateful.getSessionData();
 
 		this.assertArrayElementsSubset($output, $actualOutput, php.implode('; ', $actualOutput['userMessages'] || []) + php.PHP_EOL);

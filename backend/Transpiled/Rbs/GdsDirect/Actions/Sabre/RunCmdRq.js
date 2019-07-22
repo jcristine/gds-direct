@@ -25,6 +25,7 @@ const Pccs = require("../../../../../Repositories/Pccs");
 const getRbsPqInfo = require("../../../../../GdsHelpers/RbsUtils").getRbsPqInfo;
 const UnprocessableEntity = require("klesun-node-tools/src/Rej").UnprocessableEntity;
 const SabreTicketParser = require('../../../../Gds/Parsers/Sabre/SabreTicketParser.js');
+const Rej = require('klesun-node-tools/src/Rej.js');
 
 class RunCmdRq {
 	useXml($flag) {
@@ -776,8 +777,8 @@ class RunCmdRq {
 		}
 	}
 
-	makeStorePricingCmd($pnr, $aliasData, $needsPl) {
-		let $adultPtc, $errors, $tripEndDate, $tripEndDt, $paxCmdParts, $pax, $determined, $error, $cmd, $apolloMod,
+	async makeStorePricingCmd($pnr, $aliasData, $needsPl) {
+		let $adultPtc, $errors, $tripEndDate, $tripEndDt, $paxCmdParts, $pax, $cmd, $apolloMod,
 			$translated;
 
 		$adultPtc = $aliasData['ptc'] || 'ADT';
@@ -786,19 +787,15 @@ class RunCmdRq {
 		}
 
 		if (!php.empty($errors = CommonDataHelper.checkSeatCount($pnr))) {
-			return {'errors': $errors};
+			return Rej.BadRequest('Invalid PNR - ' + $errors.join('; '));
 		}
 		$tripEndDate = ((ArrayUtil.getLast($pnr.getItinerary()) || {})['departureDate'] || {})['parsed'];
 		$tripEndDt = $tripEndDate ? DateTime.decodeRelativeDateInFuture($tripEndDate, this.stateful.getStartDt()) : null;
 
 		$paxCmdParts = [];
 		for ($pax of Object.values($pnr.getPassengers())) {
-			$determined = PtcUtil.convertPtcAgeGroup($adultPtc, $pax, $tripEndDt);
-			if ($error = $determined['error']) {
-				return {'errors': ['Unknown PTC for passenger #' + $pax['nameNumber']['raw'] + ': ' + $error]};
-			} else {
-				$paxCmdParts.push('1' + $determined['ptc']);
-			}
+			let ptc = await PtcUtil.convertPtcAgeGroup($adultPtc, $pax, $tripEndDt);
+			$paxCmdParts.push('1' + ptc);
 		}
 		// KP0 - specify commission, needed by some airlines
 		$cmd = 'WPP' + php.implode('\/', $paxCmdParts) + '¥KP0¥RQ';
@@ -811,36 +808,25 @@ class RunCmdRq {
 			if ($translated) {
 				$cmd += '¥' + $translated;
 			} else {
-				return {'errors': ['Unsupported modifier - ' + $apolloMod['raw']]};
+				return Rej.NotImplemented('Unsupported modifier - ' + $apolloMod['raw']);
 			}
 		}
 
-		return {'cmd': $cmd};
+		return $cmd;
 	}
 
-	async storePricing($aliasData) {
-		let $pnr, $cmd, $errors, $output, $cmdRecord;
+	async storePricing(aliasData) {
+		let pnr = await this.getCurrentPnr();
+		let cmd = await this.makeStorePricingCmd(pnr, aliasData, false);
+		let output = await this.runCommand(cmd);
 
-		$pnr = await this.getCurrentPnr();
-
-		$cmd = this.makeStorePricingCmd($pnr, $aliasData, false);
-
-		if (!php.empty($errors = $cmd['errors'] || [])) {
-			return {'errors': $errors};
-		}
-
-		$output = await this.runCommand($cmd['cmd']);
-		if (await this.needsPl($cmd['cmd'], $output, $pnr)) {
+		if (await this.needsPl(cmd, output, pnr)) {
 			// delete PQ we just created and store a correct one, with /PL/ mod
 			await this.runCommand('PQD-ALL');
-			$cmd = this.makeStorePricingCmd($pnr, $aliasData, true);
-			if (!php.empty($errors = $cmd['errors'] || [])) {
-				return {'errors': $errors};
-			}
-			$output = await this.runCommand($cmd['cmd']);
+			cmd = await this.makeStorePricingCmd(pnr, aliasData, true);
+			output = await this.runCommand(cmd);
 		}
-		$cmdRecord = {'cmd': $cmd['cmd'], 'output': $output};
-		return {'calledCommands': [$cmdRecord]};
+		return {calledCommands: [{cmd, output}]};
 	}
 
 	async callImplicitCommandsBefore($cmd) {

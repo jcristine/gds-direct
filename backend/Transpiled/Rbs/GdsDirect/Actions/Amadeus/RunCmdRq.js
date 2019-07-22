@@ -1,6 +1,6 @@
 // namespace Rbs\GdsDirect\Actions\Amadeus;
 
-const php = require('../../../../phpDeprecated.js');
+const php = require('klesun-node-tools/src/Transpiled/php.js');
 const ArrayUtil = require('../../../../Lib/Utils/ArrayUtil.js');
 const DateTime = require('../../../../Lib/Utils/DateTime.js');
 const Fp = require('../../../../Lib/Utils/Fp.js');
@@ -635,8 +635,8 @@ class RunCmdRq {
 		return {'mods': $mods, 'rSubMods': $rSubMods};
 	}
 
-	makeStorePricingCmd($pnr, $aliasData, $needsRp) {
-		let $adultPtc, $modRec, $tripEndDate, $tripEndDt, $paxStores, $pax, $paxMods, $determined, $error, $rMod,
+	async makeStorePricingCmd($pnr, $aliasData, $needsRp) {
+		let $adultPtc, $modRec, $tripEndDate, $tripEndDt, $paxStores, $pax, $paxMods, $error, $rMod,
 			$rSubMod, $mod;
 
 		$adultPtc = $aliasData['ptc'] || 'ADT';
@@ -645,7 +645,7 @@ class RunCmdRq {
 		}
 		$modRec = this.constructor.translateApolloPricingModifiers($aliasData['pricingModifiers']);
 		if (!php.empty($modRec['errors'])) {
-			return {'errors': $modRec['errors']};
+			return Rej.NotImplemented('Could not translate Apollo mods - ' + $modRec['errors'].join('; '));
 		}
 
 		$tripEndDate = ((ArrayUtil.getLast($pnr.getItinerary()) || {})['departureDate'] || {})['parsed'];
@@ -656,52 +656,40 @@ class RunCmdRq {
 			$paxMods = [];
 			$paxMods.push('P' + $pax['nameNumber']['fieldNumber']);
 			$paxMods.push($pax['nameNumber']['isInfant'] ? 'INF' : 'PAX');
-			$determined = PtcUtil.convertPtcAgeGroup($adultPtc, $pax, $tripEndDt);
-			if ($error = $determined['error']) {
-				return {'errors': ['Unknown PTC for passenger #' + $pax['nameNumber']['raw'] + ': ' + $error]};
-			} else {
-				$rMod = 'R' + $determined['ptc'];
-				if ($needsRp) {
-					$rMod += ',P';
-				}
-				for ($rSubMod of Object.values($modRec['rSubMods'])) {
-					$rMod += ',' + $rSubMod;
-				}
-				$paxMods.push($rMod);
+			let ptc = await PtcUtil.convertPtcAgeGroup($adultPtc, $pax, $tripEndDt);
+			$rMod = 'R' + ptc;
+			if ($needsRp) {
+				$rMod += ',P';
 			}
+			for ($rSubMod of Object.values($modRec['rSubMods'])) {
+				$rMod += ',' + $rSubMod;
+			}
+			$paxMods.push($rMod);
 			for ($mod of Object.values($modRec['mods'])) {
 				$paxMods.push($mod);
 			}
 			$paxStores.push(php.implode('/', $paxMods));
 		}
-		return {'cmd': 'FXP/' + php.implode('//', $paxStores)};
+		return 'FXP/' + $paxStores.join('//');
 	}
 
 	async storePricing($aliasData) {
-		let $pnr, $errors, $cmdRecord, $output;
+		let $pnr, $errors;
 
 		$pnr = await this.getCurrentPnr();
 		if (!php.empty($errors = CommonDataHelper.checkSeatCount($pnr))) {
-			return {'errors': $errors};
+			return Rej.BadRequest('Invalid PNR - ' + $errors.join('; '));
 		}
-		$cmdRecord = this.makeStorePricingCmd($pnr, $aliasData, false);
-		if (!php.empty($errors = $cmdRecord['errors'] || [])) {
-			return {'errors': $errors};
-		}
-		$output = (await AmadeusUtil.fetchAllFx($cmdRecord['cmd'], this)).output;
+		let cmd = await this.makeStorePricingCmd($pnr, $aliasData, false);
+		let output = (await AmadeusUtil.fetchAllFx(cmd, this)).output;
 
-		if (await this.needsRp($cmdRecord['cmd'], $output, $pnr)) {
+		if (await this.needsRp(cmd, output, $pnr)) {
 			// delete TST we just created, and re-price it with 'P'-ublished mod
 			await this.runCommand('TTE/ALL');
-			$cmdRecord = this.makeStorePricingCmd($pnr, $aliasData, true);
-			if (!php.empty($errors = $cmdRecord['errors'] || [])) {
-				return {'errors': $errors};
-			}
-
-			$output = await this.runCommand($cmdRecord['cmd']);
+			cmd = await this.makeStorePricingCmd($pnr, $aliasData, true);
+			output = await this.runCommand(cmd);
 		}
-		$cmdRecord['output'] = $output;
-		return {'calledCommands': [$cmdRecord]};
+		return {calledCommands: [{cmd, output}]};
 	}
 
 	async _fetchPricing(cmd, cmdData) {

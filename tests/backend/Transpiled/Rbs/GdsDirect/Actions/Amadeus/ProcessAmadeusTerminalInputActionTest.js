@@ -553,9 +553,9 @@ class ProcessAmadeusTerminalInputActionTest extends require('../../../../Lib/Tes
 			},
 		});
 
-		// STORE{ptc} alias example
 		$list.push({
 			'input': {
+				'title': 'STORE{ptc} alias example',
 				'cmdRequested': 'STOREJCB',
 			},
 			'output': {
@@ -879,17 +879,14 @@ class ProcessAmadeusTerminalInputActionTest extends require('../../../../Lib/Tes
 			},
 		});
 
-		// STORE attempt with unsupported PTC - error
 		$list.push({
 			'input': {
+				'title': 'STORE attempt with unsupported PTC - error',
 				'cmdRequested': 'STOREMIL',
 				'baseDate': '2018-02-22',
 			},
-			'output': {
-				'status': 'forbidden',
-				'userMessages': [
-					'Unknown PTC for passenger #1.: No child PTC matching MIL'
-				],
+			output: {
+				error: 'Error: No known Fare Families matched adult PTC MIL',
 			},
 			'sessionInfo': {
 				'initialState': php.array_merge(GdsDirectDefaults.makeDefaultAmadeusState(), {
@@ -2519,7 +2516,7 @@ class ProcessAmadeusTerminalInputActionTest extends require('../../../../Lib/Tes
 
 		$session = GdsDirectDefaults.makeStatefulSession('amadeus', $input, $sessionInfo);
 		$actualOutput = await (new ProcessAmadeusTerminalInputAction($session))
-			.execute($input['cmdRequested']);
+			.execute($input['cmdRequested']).catch(exc => ({error: exc + ''}));
 		$actualOutput['sessionData'] = $session.getSessionData();
 
 		this.assertArrayElementsSubset($output, $actualOutput, php.implode('; ', $actualOutput['userMessages'] || ['no errors']));

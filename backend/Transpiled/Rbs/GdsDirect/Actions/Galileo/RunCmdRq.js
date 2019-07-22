@@ -832,7 +832,7 @@ class RunCmdRq {
 		}
 	}
 
-	makeStorePricingCmd($pnr, $aliasData, $needsColonN) {
+	async makeStorePricingCmd($pnr, $aliasData, $needsColonN) {
 		let $adultPtc, $errors, $tripEndDate, $tripEndDt, $paxCmdParts, $i, $pax, $determined, $error, $cmd, $apolloMod,
 			$translated;
 
@@ -842,19 +842,15 @@ class RunCmdRq {
 		}
 
 		if (!php.empty($errors = CommonDataHelper.checkSeatCount($pnr))) {
-			return {'errors': $errors};
+			return Rej.BadRequest('Invalid PNR - ' + $errors.join('; '));
 		}
 		$tripEndDate = ((ArrayUtil.getLast($pnr.getItinerary()) || {})['departureDate'] || {})['parsed'];
 		$tripEndDt = $tripEndDate ? DateTime.decodeRelativeDateInFuture($tripEndDate, this.stateful.getStartDt()) : null;
 
 		$paxCmdParts = [];
 		for ([$i, $pax] of Object.entries($pnr.getPassengers())) {
-			$determined = PtcUtil.convertPtcAgeGroup($adultPtc, $pax, $tripEndDt);
-			if ($error = $determined['error']) {
-				return {'errors': ['Unknown PTC for ' + $i + '-th passenger: ' + $error]};
-			} else {
-				$paxCmdParts.push($pax['nameNumber']['absolute'] + '*' + $determined['ptc']);
-			}
+			let ptc = await PtcUtil.convertPtcAgeGroup($adultPtc, $pax, $tripEndDt);
+			$paxCmdParts.push($pax['nameNumber']['absolute'] + '*' + ptc);
 		}
 
 		$cmd = 'FQP' + php.implode('.', $paxCmdParts);
@@ -866,7 +862,7 @@ class RunCmdRq {
 			if ($translated) {
 				$cmd += '/' + $translated;
 			} else {
-				return {'errors': ['Unsupported modifier - ' + $apolloMod['raw']]};
+				return Rej.NotImplemented('Unsupported modifier - ' + $apolloMod.raw);
 			}
 		}
 
@@ -877,22 +873,13 @@ class RunCmdRq {
 		let $pnr, $cmd, $errors, $output, $calledCommands, $paxCmdPart;
 
 		$pnr = await this.getCurrentPnr();
-		$cmd = this.makeStorePricingCmd($pnr, $aliasData, false);
-
-		if (!php.empty($errors = $cmd['errors'] || [])) {
-			return {'errors': $errors};
-		}
+		$cmd = await this.makeStorePricingCmd($pnr, $aliasData, false);
 
 		$output = await this.runCommand($cmd['cmd'], true);
 		$calledCommands = [];
 		if (StringUtil.contains($output, 'PRIVATE FARE SELECTED')) {
 			if (await this.needsColonN($output, $pnr)) {
-				$cmd = this.makeStorePricingCmd($pnr, $aliasData, true);
-
-				if (!php.empty($errors = $cmd['errors'] || [])) {
-					return {'errors': $errors};
-				}
-
+				$cmd = await this.makeStorePricingCmd($pnr, $aliasData, true);
 				$output = await this.runCommand($cmd['cmd'], false);
 				$calledCommands.push({'cmd': $cmd['cmd'], 'output': $output});
 			} else if (php.count($cmd['paxCmdParts']) > 1) {
