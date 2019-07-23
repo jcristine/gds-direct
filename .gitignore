@@ -5,3 +5,4 @@ node_modules
 /public/terminal-bundle.js.map
 /unv/
 /public/CURRENT_PRODUCTION_TAG
+/CURRENT_PRODUCTION_TAG
