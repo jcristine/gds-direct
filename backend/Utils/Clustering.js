@@ -7,6 +7,8 @@ const {readFile} = fs.promises;
 const Rej = require('klesun-node-tools/src/Rej.js');
 const {descrProc} = require('klesun-node-tools/src/Dyn/DynUtils.js');
 const {getEnvConfig} = require('klesun-node-tools/src/Dyn/Config.js');
+// fs.watch() does not track file anymore if it gets renamed, then renamed back
+const chokidar = require('chokidar');
 
 /**
  * @module - provides useful functions to work with multiple
@@ -64,13 +66,19 @@ const shutdownGracefully = async ({
 	process.exit(0);
 };
 
+let shuttingDown = false;
+
 /**
  * @param {net.Server} httpServer
  * @param {SocketIO.Server} socketIoInst
  */
-const restartInst = async ({
+const enqueueShutdown = async ({
 	httpServer, socketIoInst, reason, message = null,
 }) => {
+	if (shuttingDown) {
+		return Rej.Conflict('Tried to shut down instance that is already shutting down...', {reason, message});
+	}
+	shuttingDown = true;
 	let redis = await Redis.getClient();
 	let lockKey = Redis.keys.RESTART_INSTANCE_LOCK;
 	let lockValue = descrProc();
@@ -91,7 +99,6 @@ const restartInst = async ({
 			await timeout(lockSeconds + 1, whenOtherRestarted).catch(() => {});
 		}
 	}
-	// if we get here, that means we could not shutdown gracefully - just exit
 	Diag.error('Could not shutdown gracefully after ' + totalInstances + ' attempts - force exit');
 	process.exit(1);
 };
@@ -162,7 +169,7 @@ exports.initListeners = async ({
 			[Redis.events.RESTART_SERVER]: (msgData) => {
 				let reason = msgData.reason + ':redis_restart_event';
 				let message = msgData.message;
-				restartInst({httpServer, socketIoInst, reason, message});
+				enqueueShutdown({httpServer, socketIoInst, reason, message});
 			},
 			[Redis.events.CLUSTER_INSTANCE_INITIALIZED]: (msgData) => {
 				onNextInstanceStartup.forEach(h => h(msgData));
@@ -181,15 +188,20 @@ exports.initListeners = async ({
 		process.exit(1);
 	});
 
-	fs.watch(CURRENT_PRODUCTION_TAG_PATH, (eventType, filename) => {
+	chokidar.watch(CURRENT_PRODUCTION_TAG_PATH).on('change', async path => {
 		// if this file was changed, that means
 		// production took place and rsync is done by now
-		console.debug('CURRENT_PRODUCTION_TAG_PATH changed - ' + eventType + ' - ' + filename);
+		let oldTag = await whenStartupTag;
+		let newTag = await fetchTagFromFs();
+		if (newTag !== oldTag) {
+			let reason = 'tag_fs_change:' + oldTag + '->' + newTag;
+			enqueueShutdown({httpServer, socketIoInst, reason});
+		}
 	});
 
 	let signalShutdown = (signal) => {
 		let reason = 'os_signal_received:' + signal;
-		restartInst({httpServer, socketIoInst, reason});
+		enqueueShutdown({httpServer, socketIoInst, reason});
 	};
 	process.on('SIGINT', signalShutdown);
 	process.on('SIGTERM', signalShutdown);
