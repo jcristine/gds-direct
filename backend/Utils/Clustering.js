@@ -1,10 +1,9 @@
 const Diag = require('../LibWrappers/Diag.js');
 const Redis = require('../LibWrappers/Redis.js');
 
-const os = require('os');
 const {readFile} = require('fs').promises;
-const {getEnvConfig} = require('klesun-node-tools/src/Config.js');
 const Rej = require('klesun-node-tools/src/Rej.js');
+const {descrProc} = require('klesun-node-tools/src/Dyn/DynUtils.js');
 
 /**
  * @module - provides useful functions to work with multiple
@@ -30,21 +29,6 @@ const fetchTagFromFs = () => readFile(CURRENT_PRODUCTION_TAG_PATH, 'utf8');
 
 /** RAM caching */
 const whenStartupTag = fetchTagFromFs();
-
-/** describe current process instance */
-const descrProc = () => {
-	let pid = process.pid;
-	let pmId = process.env.pm_id;
-	let hostname = os.hostname();
-	let shortHostName = hostname.replace(/^(ap\d+prtr)\.dyninno\.net$/, '$1');
-	let httpPort = getEnvConfig().HTTP_PORT;
-	let socketPort = getEnvConfig().SOCKET_PORT;
-	return shortHostName +
-		':' + httpPort +
-		':' + socketPort +
-		'_' + pmId +
-		'_' + pid;
-};
 
 /** restart all instances, normally after a production rsync */
 const restart = async ({reason, message = null}) => {
