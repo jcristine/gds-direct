@@ -170,7 +170,9 @@ class RunCmdRq {
 		await fetchUntil('*$D', this.stateful, ({output}) => {
 			pages.push(output);
 			let parsed = TariffDisplayParser.parse(pages.join('\n'));
-			if (parsed.error) {
+			if (parsed.errorType === 'needTariffDisplay') {
+				return BadRequest('Need Tariff Display');
+			} else if (parsed.error) {
 				return UnprocessableEntity('Failed to parse tariff display - ' + parsed.error + ' - ' + output);
 			}
 			let fares = parsed.result || [];

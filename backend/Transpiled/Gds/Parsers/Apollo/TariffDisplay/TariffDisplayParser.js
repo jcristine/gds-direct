@@ -136,6 +136,9 @@ class TariffDisplayParser
             return {
                 'success': false,
                 'error': 'Table format is not supported',
+                'errorType': $dump.match(/^\s*NEED TARIFF DISPLAY\s*(><|)$/)
+                    ? 'needTariffDisplay'
+                    : null,
             };
         }
     }
