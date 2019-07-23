@@ -353,9 +353,11 @@ app.post('/admin/deleteSetting', withOwnerAuth(Settings.delete));
 app.get('/admin/status', withDevAuth(async (reqBody, emcResult) => {
 	let v8 = require('v8');
 	let PersistentHttpRq = require('klesun-node-tools/src/Utils/PersistentHttpRq.js');
-	let tag = await readFile(__dirname + '/../public/CURRENT_PRODUCTION_TAG', 'utf8').catch(exc => 'FS error - ' + exc);
+	let startupTag = await whenStartupTag;
+	let fsTag = await readFile(__dirname + '/../public/CURRENT_PRODUCTION_TAG', 'utf8').catch(exc => 'FS error - ' + exc);
 	return {
-		tag: tag,
+		startupTag: startupTag,
+		fsTag: fsTag,
 		process: Clustering.descrProc(),
 		persistentHttpRqInfo: PersistentHttpRq.getInfo(),
 		cmdLogsInsertionKeys: CmdLogs.ramDebug.getInsertionKeys(),
@@ -435,7 +437,7 @@ for (let [route, expressAction] of Object.entries(routes)) {
 }
 
 Redis.getSubscriber().then(async sub => {
-	sub.subscribe(Redis.events.RESTART_SERVER);
+	await sub.subscribe(Redis.events.RESTART_SERVER);
 	sub.on('message', async (channel, message) => {
 		if (channel === Redis.events.RESTART_SERVER) {
 			let msg = 'Instance #' + Clustering.descrProc() + ' is gracefully shutting down due to Redis RESTART_SERVER event';
@@ -443,6 +445,9 @@ Redis.getSubscriber().then(async sub => {
 			process.exit(0);
 		}
 	});
+}).catch(async exc => {
+	await Diag.logExc('Could not get REDIS subscriber, exiting app', exc);
+	process.exit(1);
 });
 app.get('/server/forceRestart', withOwnerAuth(async (rqBody, emcResult) => {
 	let redis = await Redis.getClient();
@@ -484,7 +489,6 @@ app.get('/ping', toHandleHttp((rqBody) => {
 
 	return Redis.getInfo().then(async redisLines => {
 		const data = {
-			message: 'last_connection is working ok I hope',
 			process: Clustering.descrProc(),
 			'dbPool': await Db.getInfo(),
 			sockets: {
