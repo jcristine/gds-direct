@@ -11,6 +11,8 @@ const Agents = require("../Repositories/Agents");
 const CmdRsLog = require("../Repositories/CmdRsLog.js");
 const PtcFareTypes = require('../Repositories/PtcFareFamilies.js');
 const {descrProc} = require('../Utils/Clustering.js');
+const {coverExc} = require('klesun-node-tools/src/Lang.js');
+const Rej = require('klesun-node-tools/src/Rej.js');
 
 /**
  * fetch external data like airports, ticket designators, etc... hourly
@@ -37,18 +39,17 @@ let UpdateData = async () => {
 	let withLock = async (job, i) => {
 		let lockSeconds = 5 * 60; // 5 minutes - make sure it's lower than cron interval
 		let lockKey = Redis.keys.UPDATE_DATA_LOCK + ':' + i;
-		let redis = await Redis.getClient();
-		let updateDataLock = await redis.set(lockKey, descrProc(), 'NX', 'EX', lockSeconds);
-		if (!updateDataLock) {
-			let lastValue = await redis.get(lockKey);
-			return Promise.resolve({status: 'alreadyHandled', lastValue: lastValue});
-		} else {
+		let lockValue = descrProc();
+		let action = async () => {
 			logit('Processing job #' + i + ' ' + job.name);
+			let redis = await Redis.getClient();
 			return Promise.resolve()
 				.then(() => job())
 				.then(result => ({...result, status: 'executed'}))
 				.finally(() => redis.del(lockKey));
-		}
+		};
+		return Redis.withLock({lockKey, lockSeconds, lockValue, action})
+			.catch(coverExc([Rej.Conflict], exc => ({status: 'alreadyHandled', exc: exc})));
 	};
 
 	let runHourlyWorker = async () => {
@@ -59,7 +60,7 @@ let UpdateData = async () => {
 					if (result.status === 'executed') {
 						logit('TODO: Processed job #' + i + ' ' + job.name + ' successfully', result);
 					} else if (result.status === 'alreadyHandled') {
-						logit('INFO: Skipping job #' + i + ' ' + job.name + ' as it is already being handled by other process', + result);
+						logit('INFO: Skipping job #' + i + ' ' + job.name + ' as it is already being handled by other process', result);
 					}
 				})
 				.catch(exc => logExc('ERROR: Job #' + i + ' ' + job.name + ' failed', exc));
