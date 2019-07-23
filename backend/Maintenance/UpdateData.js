@@ -10,6 +10,7 @@ const Redis = require("../LibWrappers/Redis");
 const Agents = require("../Repositories/Agents");
 const CmdRsLog = require("../Repositories/CmdRsLog.js");
 const PtcFareTypes = require('../Repositories/PtcFareFamilies.js');
+const {descrProc} = require('../Utils/Clustering.js');
 
 /**
  * fetch external data like airports, ticket designators, etc... hourly
@@ -37,7 +38,7 @@ let UpdateData = async () => {
 		let lockSeconds = 5 * 60; // 5 minutes - make sure it's lower than cron interval
 		let lockKey = Redis.keys.UPDATE_DATA_LOCK + ':' + i;
 		let redis = await Redis.getClient();
-		let updateDataLock = await redis.set(lockKey, process.pid, 'NX', 'EX', lockSeconds);
+		let updateDataLock = await redis.set(lockKey, descrProc(), 'NX', 'EX', lockSeconds);
 		if (!updateDataLock) {
 			let lastValue = await redis.get(lockKey);
 			return Promise.resolve({status: 'alreadyHandled', lastValue: lastValue});

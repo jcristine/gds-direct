@@ -1,3 +1,4 @@
+const Clustering = require('./Utils/Clustering.js');
 
 let express = require('express');
 let UserController = require('./HttpControllers/UserController.js');
@@ -355,7 +356,7 @@ app.get('/admin/status', withDevAuth(async (reqBody, emcResult) => {
 	let tag = await readFile(__dirname + '/../public/CURRENT_PRODUCTION_TAG', 'utf8').catch(exc => 'FS error - ' + exc);
 	return {
 		tag: tag,
-		pid: process.pid,
+		process: Clustering.descrProc(),
 		persistentHttpRqInfo: PersistentHttpRq.getInfo(),
 		cmdLogsInsertionKeys: CmdLogs.ramDebug.getInsertionKeys(),
 		heapSpaceStatistics: v8.getHeapSpaceStatistics(),
@@ -437,7 +438,7 @@ Redis.getSubscriber().then(async sub => {
 	sub.subscribe(Redis.events.RESTART_SERVER);
 	sub.on('message', async (channel, message) => {
 		if (channel === Redis.events.RESTART_SERVER) {
-			let msg = 'Instance #' + process.pid + ' is gracefully shutting down due to Redis RESTART_SERVER event';
+			let msg = 'Instance #' + Clustering.descrProc() + ' is gracefully shutting down due to Redis RESTART_SERVER event';
 			await Diag.log(msg, message).catch(exc => null);
 			process.exit(0);
 		}
@@ -484,7 +485,7 @@ app.get('/ping', toHandleHttp((rqBody) => {
 	return Redis.getInfo().then(async redisLines => {
 		const data = {
 			message: 'last_connection is working ok I hope',
-			pid: process.pid,
+			process: Clustering.descrProc(),
 			'dbPool': await Db.getInfo(),
 			sockets: {
 				'totalConnection': socketIo.engine.clientsCount,
