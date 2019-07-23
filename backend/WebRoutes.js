@@ -473,10 +473,10 @@ app.get('/server/restartIfNeeded', toHandleHttp(async (rqBody) => {
 	} else {
 		let redis = await Redis.getClient();
 		return redis.publish(Redis.events.RESTART_SERVER, JSON.stringify({
-			reason: 'HTTP new tag restart request',
+			reason: 'HTTP new tag restart request by ' + Clustering.descrProc(),
 			message: rqBody.message || null,
 		})).then(() => ({
-			message: 'Redis RESTART event published',
+			message: 'Redis RESTART event published by ' + Clustering.descrProc(),
 		}));
 	}
 }));
