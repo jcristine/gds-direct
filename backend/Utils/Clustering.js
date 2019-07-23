@@ -18,7 +18,12 @@ exports.descrProc = () => {
 	let pid = process.pid;
 	let pmId = process.env.pm_id;
 	let hostname = os.hostname();
+	let shortHostName = hostname.replace(/^(ap\d+prtr)\.dyninno\.net$/, '$1');
 	let httpPort = getEnvConfig().HTTP_PORT;
 	let socketPort = getEnvConfig().SOCKET_PORT;
-	return hostname + ':' + httpPort + ':' + socketPort + '_' + pmId + '_' + pid;
+	return shortHostName +
+		':' + httpPort +
+		':' + socketPort +
+		'_' + pmId +
+		'_' + pid;
 };
