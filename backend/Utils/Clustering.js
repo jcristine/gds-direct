@@ -176,7 +176,7 @@ exports.initListeners = async ({
 				onNextInstanceStartup = [];
 			},
 		};
-		await sub.subscribe(...Object.values(subscribes));
+		await sub.subscribe(...Object.keys(subscribes));
 		sub.on('message', async (channel, message) => {
 			let handler = subscribes[channel];
 			if (handler) {
