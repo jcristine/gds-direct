@@ -1,4 +1,6 @@
+
 const Clustering = require('./Utils/Clustering.js');
+const {descrProc} = Clustering;
 
 let express = require('express');
 let UserController = require('./HttpControllers/UserController.js');
@@ -30,9 +32,6 @@ const ParsersController = require("./HttpControllers/ParsersController");
 const {readFile} = require('fs').promises;
 
 let app = express();
-
-let fetchTagFromFs = () => readFile(__dirname + '/../public/CURRENT_PRODUCTION_TAG', 'utf8');
-let whenStartupTag = fetchTagFromFs();
 
 app.use(express.json({limit: '1mb'}));
 app.use(express.urlencoded({extended: true}));
@@ -353,12 +352,12 @@ app.post('/admin/deleteSetting', withOwnerAuth(Settings.delete));
 app.get('/admin/status', withDevAuth(async (reqBody, emcResult) => {
 	let v8 = require('v8');
 	let PersistentHttpRq = require('klesun-node-tools/src/Utils/PersistentHttpRq.js');
-	let startupTag = await whenStartupTag;
+	let startupTag = Clustering.whenStartupTag;
 	let fsTag = await readFile(__dirname + '/../public/CURRENT_PRODUCTION_TAG', 'utf8').catch(exc => 'FS error - ' + exc);
 	return {
 		startupTag: startupTag,
 		fsTag: fsTag,
-		process: Clustering.descrProc(),
+		process: descrProc(),
 		persistentHttpRqInfo: PersistentHttpRq.getInfo(),
 		cmdLogsInsertionKeys: CmdLogs.ramDebug.getInsertionKeys(),
 		heapSpaceStatistics: v8.getHeapSpaceStatistics(),
@@ -436,50 +435,13 @@ for (let [route, expressAction] of Object.entries(routes)) {
 	app.post(route, expressAction);
 }
 
-Redis.getSubscriber().then(async sub => {
-	await sub.subscribe(Redis.events.RESTART_SERVER);
-	sub.on('message', async (channel, message) => {
-		if (channel === Redis.events.RESTART_SERVER) {
-			let msg = 'Instance #' + Clustering.descrProc() + ' is gracefully shutting down due to Redis RESTART_SERVER event';
-			await Diag.log(msg, message).catch(exc => null);
-			process.exit(0);
-		}
-	});
-}).catch(async exc => {
-	await Diag.logExc('Could not get REDIS subscriber, exiting app', exc);
-	process.exit(1);
-});
-app.get('/server/forceRestart', withOwnerAuth(async (rqBody, emcResult) => {
-	let redis = await Redis.getClient();
-	return redis.publish(Redis.events.RESTART_SERVER, JSON.stringify({
-		reason: 'HTTP dev owner force restart',
-		message: rqBody.message || null,
-	}));
-}));
-app.get('/server/restartIfNeeded', toHandleHttp(async (rqBody) => {
-	// not so important as long as we check whether tag in fs changed
-	let password = rqBody.password;
-	if (password !== '28145f8f7e54a60d2c3905edcce2dabb') {
-		return Rej.Forbidden('GRECT Access Denied');
-	}
-	let startupTag = await whenStartupTag.catch(exc => null);
-	let currentTag = await fetchTagFromFs().catch(exc => null);
+Clustering.initListeners();
 
-	if (!currentTag) {
-		return Rej.NotImplemented('CURRENT_PRODUCTION_TAG is absent in FS, please supply it before requesting server restart');
-	}
-	if (startupTag && startupTag === currentTag) {
-		return Rej.TooEarly('CURRENT_PRODUCTION_TAG ' + currentTag + ' did not change since last startup', {isOk: true});
-	} else {
-		let redis = await Redis.getClient();
-		return redis.publish(Redis.events.RESTART_SERVER, JSON.stringify({
-			reason: 'HTTP new tag restart request by ' + Clustering.descrProc(),
-			message: rqBody.message || null,
-		})).then(() => ({
-			message: 'Redis RESTART event published by ' + Clustering.descrProc(),
-		}));
-	}
-}));
+app.get('/server/forceRestart', withOwnerAuth((rqBody) => Clustering.restart({
+	reason: 'HTTP dev owner force restart',
+	message: rqBody.message || null,
+})));
+app.get('/server/restartIfNeeded', toHandleHttp(Clustering.restartIfNeeded));
 app.get('/ping', toHandleHttp((rqBody) => {
 	let memory = {};
 	const used2 = process.memoryUsage();
@@ -489,7 +451,7 @@ app.get('/ping', toHandleHttp((rqBody) => {
 
 	return Redis.getInfo().then(async redisLines => {
 		const data = {
-			process: Clustering.descrProc(),
+			process: descrProc(),
 			'dbPool': await Db.getInfo(),
 			sockets: {
 				'totalConnection': socketIo.engine.clientsCount,
@@ -510,9 +472,24 @@ app.get('/ping', toHandleHttp((rqBody) => {
 		return {status: 'OK', result: data};
 	});
 }));
-app.get('/CURRENT_PRODUCTION_TAG', toHandleHttp(() =>
-	readFile(__dirname + '/../CURRENT_PRODUCTION_TAG', 'utf8')
-));
+app.get('/CURRENT_PRODUCTION_TAG', async (rq, rs) => {
+	Clustering.fetchTagFromFs()
+		.then(tag => {
+			rs.status(200);
+			rs.setHeader('Content-Type', 'text/plain');
+			rs.send(tag);
+		})
+		.catch(exc => {
+			exc = exc || new Error('(empty error)');
+			rs.status((exc || {}).httpStatusCode || 500);
+			rs.setHeader('Content-Type', 'application/json');
+			rs.send(JSON.stringify({
+				message: exc.message || exc + '',
+				stack: exc.stack,
+				...exc,
+			}));
+		});
+});
 
 //The 404 Route (ALWAYS Keep this as the last route)
 app.get('*', function(req, res){
