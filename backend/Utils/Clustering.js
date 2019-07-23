@@ -207,5 +207,5 @@ exports.initListeners = async ({
 	process.on('SIGTERM', signalShutdown);
 	process.on('SIGHUP', signalShutdown);
 
-	redis.publish(Redis.events.CLUSTER_INSTANCE_INITIALIZED, {instance: descrProc()});
+	redis.publish(Redis.events.CLUSTER_INSTANCE_INITIALIZED, JSON.stringify({instance: descrProc()}));
 };
