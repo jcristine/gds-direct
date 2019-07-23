@@ -171,7 +171,9 @@ exports.initListeners = async ({
 				let message = msgData.message;
 				enqueueShutdown({httpServer, socketIoInst, reason, message});
 			},
-			[Redis.events.CLUSTER_INSTANCE_INITIALIZED]: (msgData) => {
+			[Redis.events.CLUSTER_INSTANCE_INITIALIZED]: async (msgData) => {
+				let redis = await Redis.getClient();
+				redis.del(Redis.keys.RESTART_INSTANCE_LOCK);
 				onNextInstanceStartup.forEach(h => h(msgData));
 				onNextInstanceStartup = [];
 			},
