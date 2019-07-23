@@ -15,7 +15,7 @@ const {descrProc} = require('./backend/Utils/Clustering.js');
 		await new Promise(resolve => setTimeout(resolve, 1000));
 		Diag.log('pid ' + descrProc() + ': done waiting - starting server now');
 	}
-	require('./backend/WebRoutes.js');
+	let webRoutes = require('./backend/WebRoutes.js');
 	let migrationResult = await Migration.run()
 		.catch(exc => {
 			let msg = new Date().toISOString() + ': Migration failed';
@@ -49,4 +49,6 @@ const {descrProc} = require('./backend/Utils/Clustering.js');
 	process.on('SIGINT', terminate);
 	process.on('SIGTERM', terminate);
 	process.on('SIGHUP', terminate);
+
+	webRoutes.initListeners();
 })();
