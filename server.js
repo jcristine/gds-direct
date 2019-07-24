@@ -37,18 +37,5 @@ const {descrProc} = require('./backend/Utils/Clustering.js');
 		migrationResult: migrationResult,
 	});
 
-	let terminate = async (signal) => {
-		await Promise.all([
-			Diag.log('Instance #' + descrProc() + ' is gracefully shutting down due to signal: ' + signal, {
-				memoryUsage: process.memoryUsage(),
-			}).catch(exc => null),
-			keepAlive.terminate().catch(exc => null),
-		]);
-		process.exit(0);
-	};
-	process.on('SIGINT', terminate);
-	process.on('SIGTERM', terminate);
-	process.on('SIGHUP', terminate);
-
 	webRoutes.initListeners();
 })();
