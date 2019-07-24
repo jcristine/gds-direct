@@ -66,7 +66,7 @@ const shutdownGracefully = async ({
 	process.exit(0);
 };
 
-let shuttingDown = false;
+let shuttingDown = null;
 
 /**
  * @param {net.Server} httpServer
@@ -75,10 +75,12 @@ let shuttingDown = false;
 const enqueueShutdown = async ({
 	httpServer, socketIoInst, reason, message = null,
 }) => {
+	let params = {process: descrProc(), reason, message, shuttingDown};
 	if (shuttingDown) {
-		return Rej.Conflict('Tried to shut down instance that is already shutting down...', {reason, message});
+		let msg = 'Tried to shut down instance that is already shutting down...';
+		return Rej.Conflict(msg, {params, shuttingDown});
 	}
-	shuttingDown = true;
+	shuttingDown = params;
 	let startMs = Date.now();
 	let redis = await Redis.getClient();
 	let lockKey = Redis.keys.RESTART_INSTANCE_LOCK;
@@ -212,5 +214,10 @@ exports.initListeners = async ({
 	process.on('SIGTERM', signalShutdown);
 	process.on('SIGHUP', signalShutdown);
 
-	redis.publish(Redis.events.CLUSTER_INSTANCE_INITIALIZED, JSON.stringify({instance: descrProc()}));
+	// should probably make an HTTP request to itself to http://ap01prtr.dyninno.net:3012
+	// to find out when instance is fully up and running instead of setTimeout
+	let nginxInitMs = 20 * 1000;
+	setTimeout(() => {
+		redis.publish(Redis.events.CLUSTER_INSTANCE_INITIALIZED, JSON.stringify({instance: descrProc()}));
+	}, nginxInitMs);
 };

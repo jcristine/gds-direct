@@ -355,6 +355,7 @@ app.get('/admin/status', withDevAuth(async (reqBody, emcResult) => {
 	let startupTag = await Clustering.whenStartupTag;
 	let fsTag = await readFile(__dirname + '/../public/CURRENT_PRODUCTION_TAG', 'utf8').catch(exc => 'FS error - ' + exc);
 	return {
+		dt: new Date().toISOString(),
 		message: 'testing no-downtime production restarts now take 3',
 		startupTag: startupTag,
 		fsTag: fsTag,
