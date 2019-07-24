@@ -79,6 +79,7 @@ const enqueueShutdown = async ({
 		return Rej.Conflict('Tried to shut down instance that is already shutting down...', {reason, message});
 	}
 	shuttingDown = true;
+	let startMs = Date.now();
 	let redis = await Redis.getClient();
 	let lockKey = Redis.keys.RESTART_INSTANCE_LOCK;
 	let lockValue = descrProc();
@@ -91,6 +92,8 @@ const enqueueShutdown = async ({
 		// others still could handle requests - 0 downtime 4 life
 		let didAcquire = await redis.set(lockKey, lockValue, 'NX', 'EX', lockSeconds).catch(exc => {});
 		if (didAcquire) {
+			let waitMs = Date.now() - startMs;
+			reason += ':queue:' + i + ':wait-ms:' + waitMs;
 			await shutdownGracefully({httpServer, socketIoInst, reason, message}).catch(exc => {});
 		} else {
 			let whenOtherRestarted = new Promise(resolve => {
