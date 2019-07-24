@@ -80,7 +80,7 @@ const enqueueShutdown = async ({
 	let params = {process: descrProc(), reason, message, shuttingDown};
 	if (shuttingDown) {
 		let msg = 'Tried to shut down instance that is already shutting down...';
-		return Rej.Conflict(msg, {params, shuttingDown});
+		return Rej.Conflict(msg, params);
 	}
 	shuttingDown = params;
 	let startMs = Date.now();
@@ -216,7 +216,8 @@ exports.initListeners = async ({
 	process.on('SIGTERM', signalShutdown);
 	process.on('SIGHUP', signalShutdown);
 
-	let nginxInitMs = 10 * 1000;
+	let startMs = Date.now();
+	let nginxInitMs = 15 * 1000;
 	let tagUrl = 'http://' + os.hostname() + ':' +
 		envConfig.HTTP_PORT + '/CURRENT_PRODUCTION_TAG';
 	let whenHttpTag = PersistentHttpRq({url: tagUrl});
@@ -228,9 +229,9 @@ exports.initListeners = async ({
 	}).then(async httpTag => {
 		let startupTag = await whenStartupTag;
 		let channel = Redis.events.CLUSTER_INSTANCE_INITIALIZED;
-		redis.publish(channel, JSON.stringify({
-			instance: descrProc(),
-			startupTag, httpTag,
-		}));
+		let selfPingMs = Date.now() - startMs;
+		let msgData = {instance: descrProc(), startupTag, httpTag, selfPingMs};
+		Diag.log('Self-ping result', msgData);
+		redis.publish(channel, JSON.stringify(msgData));
 	});
 };
