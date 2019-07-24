@@ -216,23 +216,10 @@ exports.initListeners = async ({
 	process.on('SIGTERM', signalShutdown);
 	process.on('SIGHUP', signalShutdown);
 
-	let startMs = Date.now();
 	let nginxInitMs = 15 * 1000;
-	let tagUrl = 'http://' + os.hostname() + ':' +
-		envConfig.HTTP_PORT + '/CURRENT_PRODUCTION_TAG';
-	// takes 18 ms usually...
-	let whenHttpTag = PersistentHttpRq({url: tagUrl, method: 'GET'});
-	timeout(nginxInitMs, whenHttpTag).catch(exc => {
-		exc = exc || new Error('empty error');
-		exc.instance = descrProc();
-		Diag.logExc('Instance could not reach itself via HTTP', exc);
-		return null;
-	}).then(async httpTag => {
-		let startupTag = await whenStartupTag;
+	setTimeout(async httpTag => {
 		let channel = Redis.events.CLUSTER_INSTANCE_INITIALIZED;
-		let selfPingMs = Date.now() - startMs;
-		let msgData = {instance: descrProc(), startupTag, httpTag, selfPingMs};
-		Diag.log('Self-ping result', msgData);
+		let msgData = {instance: descrProc(), httpTag};
 		redis.publish(channel, JSON.stringify(msgData));
-	});
+	}, nginxInitMs);
 };
