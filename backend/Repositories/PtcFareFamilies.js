@@ -11,7 +11,12 @@ const normalizeRow = (actFamily) => ({
 	name: actFamily.code,
 	title: actFamily.title,
 	childLetter: actFamily.child_letter,
-	groups: actFamily.ptc,
+	groups: {
+		adult: actFamily.ptc.adult || null,
+		child: actFamily.ptc.child || null,
+		infant: actFamily.ptc.infant || null,
+		infantWithSeat: actFamily.ptc.infant_with_seat || null,
+	},
 });
 
 const updateFromService = async () => {
