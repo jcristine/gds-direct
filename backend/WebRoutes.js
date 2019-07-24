@@ -355,7 +355,6 @@ app.get('/admin/status', withDevAuth(async (reqBody, emcResult) => {
 	let startupTag = Clustering.whenStartupTag;
 	let fsTag = await readFile(__dirname + '/../public/CURRENT_PRODUCTION_TAG', 'utf8').catch(exc => 'FS error - ' + exc);
 	return {
-		message: 'please remove darn watch:true from my config!',
 		startupTag: startupTag,
 		fsTag: fsTag,
 		process: descrProc(),
