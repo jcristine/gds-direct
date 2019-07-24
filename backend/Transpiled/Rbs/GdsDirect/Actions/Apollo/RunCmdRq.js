@@ -391,6 +391,11 @@ class RunCmdRq {
 			} else {
 				$cmd = 'MR';
 			}
+		} else if ($cmd === 'MU') {
+			let scrolledCmd = await this.getScrolledCmd();
+			if (scrolledCmd && scrolledCmd.startsWith('A')) {
+				$cmd = 'A-';
+			}
 		} else if ($parsed['type'] === 'priceItinerary') {
 			$cmd = await this.preprocessPricingCommand($parsed['data']) || $cmd;
 		} else if (aliasData = AliasParser.parseSameMonthReturnAvail($cmd)) {

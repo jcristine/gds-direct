@@ -101,6 +101,7 @@ class CommandParser {
 			'*$D': 'redisplayFareSearch',
 			'S*': 'encodeOrDecode', // HELP ENCODE OR DECODE
 			'A*': 'moreAirAvailability',
+			'A-': 'lessAirAvailability',
 			'A': 'airAvailability', // HELP AVAILABILITY-STANDARD
 			'.': 'changeSegmentStatus', // HELP PNR-CHANGE SEGMENT STATUS
 			'C:PS': 'changePsRemark',
