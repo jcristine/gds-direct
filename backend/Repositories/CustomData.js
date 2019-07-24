@@ -11,6 +11,6 @@ exports.set = (name, value) => {
 exports.getAll = () => Db.with(db => db.fetchAll({table: TABLE}));
 
 /** @return {Promise<String>} */
-exports.get = ({name}) => Db.fetchOne({
+exports.get = (name) => Db.fetchOne({
 	table: TABLE, where: [['name', '=', name]],
 }).then(row => JSON.parse(row.value));
