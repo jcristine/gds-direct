@@ -212,7 +212,7 @@ window.GdsDirectPlusParams = window.GdsDirectPlusParams || {
  * want agents to get updated code after refresh
  */
 let syncJsCache = () => {
-	fetch(rootUrl + '/public/CURRENT_PRODUCTION_TAG', {
+	fetch(rootUrl + '/CURRENT_PRODUCTION_TAG', {
 		headers: {'Cache-Control': 'no-cache'},
 	})	.then(rs => rs.text())
 		.then(latestVersion => {

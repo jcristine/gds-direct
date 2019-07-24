@@ -352,7 +352,7 @@ app.post('/admin/deleteSetting', withOwnerAuth(Settings.delete));
 app.get('/admin/status', withDevAuth(async (reqBody, emcResult) => {
 	let v8 = require('v8');
 	let PersistentHttpRq = require('klesun-node-tools/src/Utils/PersistentHttpRq.js');
-	let startupTag = Clustering.whenStartupTag;
+	let startupTag = await Clustering.whenStartupTag;
 	let fsTag = await readFile(__dirname + '/../public/CURRENT_PRODUCTION_TAG', 'utf8').catch(exc => 'FS error - ' + exc);
 	return {
 		startupTag: startupTag,
@@ -416,13 +416,6 @@ app.get('/getAsapLocations', withOwnerAuth(async (reqBody, emcResult) => {
 // socket listener initialization follows
 //============================
 
-let envConfig = LibConfig.getEnvConfig();
-app.listen(+envConfig.HTTP_PORT, envConfig.HOST, function () {
-	if (!envConfig.NODE_ENV === 'production') {
-		console.log('listening on *:' + envConfig.HTTP_PORT + ' - for standard http request handling');
-	}
-});
-
 let routes = {
 	'/terminal/command': withGdsSession(GdsSessionController.runInputCmd, true),
 	'/gdsDirect/keepAlive': withGdsSession(GdsSessionController.keepAliveCurrent),
@@ -435,13 +428,11 @@ for (let [route, expressAction] of Object.entries(routes)) {
 	app.post(route, expressAction);
 }
 
-Clustering.initListeners();
-
-app.get('/server/forceRestart', withOwnerAuth((rqBody) => Clustering.restart({
+app.get('/server/forceRestart', withOwnerAuth((rqBody) => Clustering.restartAll({
 	reason: 'HTTP dev owner force restart',
 	message: rqBody.message || null,
 })));
-app.get('/server/restartIfNeeded', toHandleHttp(Clustering.restartIfNeeded));
+app.get('/server/restartIfNeeded', toHandleHttp(Clustering.restartAllIfNeeded));
 app.get('/ping', toHandleHttp((rqBody) => {
 	let memory = {};
 	const used2 = process.memoryUsage();
@@ -495,3 +486,10 @@ app.get('/CURRENT_PRODUCTION_TAG', async (rq, rs) => {
 app.get('*', function(req, res){
   res.status(404).send('GRECT Route ' + req.path + ' not found');
 });
+
+exports.initListeners = () => {
+	Clustering.initListeners({
+		expressInst: app,
+		socketIoInst: socketIo,
+	});
+};

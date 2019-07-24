@@ -14,22 +14,24 @@ exports.keys = StrConsts({
 	get SESSION_TO_STATE() { never(); },
 	get EMC_TOKEN_TO_USER() { never(); },
 	get UPDATE_DATA_LOCK() { never(); },
+	get RESTART_INSTANCE_LOCK() { never(); },
 	get AGENT_CMD_COUNTER() { never(); },
 	get HIGHLIGHT_RULES_UPDATE_MS() { never(); },
 }, 'GRECT_');
 
 exports.events = StrConsts({
 	get RESTART_SERVER() { never(); },
+	get CLUSTER_INSTANCE_INITIALIZED() { never(); },
 }, 'GRECT_EVENT_');
 
-/** @return Promise<IIoRedisClient> */
+/** @type {function(): Promise<IORedis.Redis>} */
 let getClient = onDemand(async () => {
 	let cfg = await getRedisConfig();
 	return new ioredis(cfg.REDIS_PORT, cfg.REDIS_HOST);
 });
 /**
  * because "Error: Connection in subscriber mode, only subscriber commands may be used"
- * @return Promise<IIoRedisClient>
+ * @type {function(): Promise<IORedis.Redis>}
  */
 exports.getSubscriber = onDemand(async () => {
 	let cfg = await getRedisConfig();
@@ -40,7 +42,8 @@ exports.getClient = getClient;
 
 /**
  * for WATCH/MULTI/EXEC transactions
- * @param {{(client: IIoRedisClient): Promise<T>}} process
+ * @template T
+ * @param {{(client: IORedis.Redis): Promise<T>}} process
  * @return Promise<T>
  */
 exports.withNewConnection = async (process) => {

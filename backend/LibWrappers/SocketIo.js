@@ -62,6 +62,7 @@ let toHandleMessage = (routes, askClient) => {
 	};
 };
 
+/** does not start listening */
 exports.init = (routes) => {
 	let socketIo = initSocketIo();
 	socketIo.on('connection', /** @param {Socket} socket */ socket => {
@@ -71,13 +72,6 @@ exports.init = (routes) => {
 			//console.log('delivered testMessage to client', response);
 		});
 	});
-	let envConfig = getEnvConfig();
-	try {
-		socketIo.listen(envConfig.SOCKET_PORT);
-	} catch (exc) {
-		// TypeError: Cannot read property 'listeners' of undefined if SOCKET_PORT is not defined
-		Diag.error('Failed to listen to socket port (' + envConfig.SOCKET_PORT + ') - ' + exc);
-	}
 	getRedisConfig().then(cfg => {
 		socketIo.adapter(redisAdapter({
 			host: cfg.REDIS_HOST,
