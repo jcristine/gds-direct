@@ -16,7 +16,6 @@ const normalizeRow = (actFamily) => ({
 
 const updateFromService = async () => {
 	let act = getExternalServices().act;
-	/** @type {IGetPccsAllRs} */
 	let serviceResult = await iqJson({
 		url: act.host,
 		credentials: {
@@ -41,50 +40,9 @@ const updateFromService = async () => {
 	};
 };
 
-/** @deprecated - should stop using when there are records in DB */
-const fallbackMapping = {
-	regular: {
-		childLetter: 'C',
-		groups: {
-			adult: 'ADT', infant: 'INF',
-			child: 'CNN', infantWithSeat: 'INS',
-		},
-	},
-	inclusiveTour: {
-		childLetter: 'I',
-		groups: {
-			adult: 'ITX', infant: 'ITF',
-			child: 'INN', infantWithSeat: 'ITS',
-		},
-	},
-	contractBulk: {
-		childLetter: 'J',
-		groups: {
-			adult: 'JCB', infant: 'JNF',
-			child: 'JNN', infantWithSeat: 'JNS',
-		},
-	},
-	missionary: {
-		childLetter: null,
-		groups: {
-			adult: 'MIS', infant: 'MIF',
-			child: 'MIC', infantWithSeat: 'MSS',
-		},
-	},
-	blended: {
-		childLetter: null,
-		groups: {
-			adult: 'JWZ', infant: 'INF',
-			child: 'JWB', infantWithSeat: 'INS',
-		},
-	},
-};
-
 /** RAM caching */
 const getAllFromDb = onDemand(() => CustomData.get(DATA_NAME));
-const getAll = () => getAllFromDb()
-	.catch(exc => Object.entries(fallbackMapping)
-		.map(([name, family]) => ({name, ...family})));
+const getAll = () => getAllFromDb();
 
 exports.getAll = getAll;
 exports.updateFromService = updateFromService;
