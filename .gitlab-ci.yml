@@ -6,7 +6,8 @@ run-tests-dev:
   before_script:
     - . /home/pkirpitsov/scripts/ci_secret_ssh.sh
   tags:
-    - dev-w13
+    #- dev-w13
+  - sales-team-runner
   except:
     - tags
     - production
