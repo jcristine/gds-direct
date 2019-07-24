@@ -1,6 +1,8 @@
 const {timeout} = require('klesun-node-tools/src/Utils/Misc.js');
 const Diag = require('../LibWrappers/Diag.js');
 const Redis = require('../LibWrappers/Redis.js');
+const PersistentHttpRq = require('klesun-node-tools/src/Utils/PersistentHttpRq.js');
+const os = require('os');
 
 const fs = require('fs');
 const {readFile} = fs.promises;
@@ -59,7 +61,7 @@ const shutdownGracefully = async ({
 			resolve();
 		}));
 
-	await timeout(2.000, Promise.all([
+	await timeout(4.000, Promise.all([
 		writingToDiag, closingHttp, closingSocketIo,
 	])).catch(exc => {});
 
@@ -214,10 +216,21 @@ exports.initListeners = async ({
 	process.on('SIGTERM', signalShutdown);
 	process.on('SIGHUP', signalShutdown);
 
-	// should probably make an HTTP request to itself to http://ap01prtr.dyninno.net:3012
-	// to find out when instance is fully up and running instead of setTimeout
-	let nginxInitMs = 20 * 1000;
-	setTimeout(() => {
-		redis.publish(Redis.events.CLUSTER_INSTANCE_INITIALIZED, JSON.stringify({instance: descrProc()}));
-	}, nginxInitMs);
+	let nginxInitMs = 10 * 1000;
+	let tagUrl = 'http://' + os.hostname() + ':' +
+		envConfig.HTTP_PORT + '/CURRENT_PRODUCTION_TAG';
+	let whenHttpTag = PersistentHttpRq({url: tagUrl});
+	timeout(nginxInitMs, whenHttpTag).catch(exc => {
+		exc = exc || new Error('empty error');
+		exc.instance = descrProc();
+		Diag.logExc('Instance could not reach itself via HTTP', exc);
+		return null;
+	}).then(async httpTag => {
+		let startupTag = await whenStartupTag;
+		let channel = Redis.events.CLUSTER_INSTANCE_INITIALIZED;
+		redis.publish(channel, JSON.stringify({
+			instance: descrProc(),
+			startupTag, httpTag,
+		}));
+	});
 };
