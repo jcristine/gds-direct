@@ -220,7 +220,8 @@ exports.initListeners = async ({
 	let nginxInitMs = 15 * 1000;
 	let tagUrl = 'http://' + os.hostname() + ':' +
 		envConfig.HTTP_PORT + '/CURRENT_PRODUCTION_TAG';
-	let whenHttpTag = PersistentHttpRq({url: tagUrl});
+	// takes 18 ms usually...
+	let whenHttpTag = PersistentHttpRq({url: tagUrl, method: 'GET'});
 	timeout(nginxInitMs, whenHttpTag).catch(exc => {
 		exc = exc || new Error('empty error');
 		exc.instance = descrProc();
