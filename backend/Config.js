@@ -51,7 +51,7 @@ let getExternalServices = () => ({
 				: 'http://st-pqt.sjager.php7.dyninno.net/rpc/iq-json',
 			login: isProd ? 'GDSD' : 'CMS',
 			password: isProd ? 'dp6FcHKqATUsGqQxU&4f' : 'qwerty',
-},
+		},
 });
 
 let hardcodedConfig = {
