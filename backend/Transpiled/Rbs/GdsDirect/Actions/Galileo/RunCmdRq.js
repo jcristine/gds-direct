@@ -882,13 +882,12 @@ class RunCmdRq {
 		rawMods.push('P' + ptcs
 			.map((ptc,i) => (i + 1) + '*' + ptc)
 			.join('.'));
-		rawMods.push('++-AB');
 		if (requestedAgeGroups.every(g => ['child', 'infant'].includes(g.ageGroup))) {
 			rawMods.push('/ACC');
 		}
 		let customMods = await this.translateMods(pricingModifiers);
 		rawMods.push(...customMods);
-		let cmd = 'FQBB' + rawMods.map(m => '/' + m).join('');
+		let cmd = 'FQ' + rawMods.map(m => '/' + m).join('');
 		return Promise.resolve(cmd);
 	}
 

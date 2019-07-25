@@ -829,7 +829,7 @@ class RunCmdRq {
 			.join('/'));
 		let customMods = await this.translateMods(pricingModifiers);
 		rawMods.push(...customMods);
-		let cmd = 'WPNC' + rawMods.map(m => '¥' + m).join('');
+		let cmd = 'WP' + rawMods.map(m => '¥' + m).join('');
 		return Promise.resolve(cmd);
 	}
 

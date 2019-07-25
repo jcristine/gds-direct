@@ -68,7 +68,12 @@ fi;
 ./build.sh
 echo "$nextTag" > public/CURRENT_PRODUCTION_TAG
 
-node tests/run.js || exit 1;
+if [[ "$*" == *--skip-tests* ]]
+then
+    echo "Skipping tests..."
+else
+    node tests/run.js || exit 1;
+fi
 
 # add node_modules and webpack changes
 git add --force node_modules

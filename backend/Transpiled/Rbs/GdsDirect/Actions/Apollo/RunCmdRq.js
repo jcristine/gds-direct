@@ -1194,12 +1194,11 @@ class RunCmdRq {
 		rawMods.push('N' + ptcs
 			.map((ptc,i) => (i + 1) + '*' + ptc)
 			.join('|'));
-		rawMods.push('/@AB');
 		if (requestedAgeGroups.every(g => ['child', 'infant'].includes(g.ageGroup))) {
 			rawMods.push('/ACC');
 		}
 		rawMods.push(...pricingModifiers.map(m => m.raw));
-		let cmd = '$BB' + rawMods.map(m => '/' + m).join('');
+		let cmd = '$B' + rawMods.map(m => '/' + m).join('');
 		return Promise.resolve(cmd);
 	}
 
