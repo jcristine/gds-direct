@@ -75,14 +75,13 @@ module.exports = async ({stateful}) => {
 
 	let remark = 'EXPERTS REMARK-MP-' + mpAirline + '-' + stateful.getSessionData().pcc;
 	let gds = stateful.gds;
-	let cmd = {
-		apollo: '@:5' + remark,
-		sabre: '5' + remark, // note that remarks starting with "-" are treated as FOP by Sabre
-		galileo: 'NP.' + remark,
-		amadeus: 'RM' + remark,
+	let cmds = {
+		apollo: ['@:5' + remark],
+		sabre: ['5' + remark], // note that remarks starting with "-" are treated as FOP by Sabre
+		galileo: ['NP.' + remark, 'R.GRECT'],
+		amadeus: ['RM' + remark],
 	}[gds];
 
-	let cmds = [cmd];
 	let gdsSession = CommonUtils.withCapture(stateful);
 	return runAndSave({gds, gdsSession, cmds})
 		.catch(exc => ({messages: [{type: 'error', text: exc + ''}]}))
