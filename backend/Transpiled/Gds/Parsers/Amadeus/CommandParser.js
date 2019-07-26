@@ -278,6 +278,7 @@ return {
             'AP': 'addPhone',
             'TKTL': 'addTicketingDateLimit',
             'RF': 'addReceivedFrom',
+            'RM': 'addRemark',
             'QT': 'queueCount',
             'QV/': 'queueRecordLocators',
             'Q': 'queueOperation',
