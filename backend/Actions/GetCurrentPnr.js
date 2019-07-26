@@ -1,3 +1,4 @@
+const CmsAmadeusTerminal = require('../Transpiled/Rbs/GdsDirect/GdsInterface/CmsAmadeusTerminal.js');
 const ImportPqGalileoAction = require('../Transpiled/Rbs/GdsDirect/Actions/Galileo/ImportPqGalileoAction.js');
 const ImportPqApolloAction = require('../Transpiled/Rbs/GdsDirect/Actions/Apollo/ImportPqApolloAction.js');
 const AmadeusUtils = require('../GdsHelpers/AmadeusUtils.js');
@@ -48,6 +49,15 @@ const inGalileo = async (stateful) => {
 	return GalileoPnr.makeFromDump(cmdRec.output);
 };
 
+const inAmadeus = async (stateful) => {
+	let pnrDump = await (new CmsAmadeusTerminal())
+		.getFullPnrDump(stateful.getLog());
+	if (!pnrDump) {
+		pnrDump = (await AmadeusUtils.fetchAllRt('RT', stateful)).output;
+	}
+	return AmadeusPnr.makeFromDump(pnrDump);
+};
+
 /**
  * @param stateful = require('StatefulSession.js')()
  * @return {IPnr}
@@ -60,10 +70,8 @@ const GetCurrentPnr = async (stateful) => {
 		return inSabre(stateful);
 	} else if (gds === 'galileo') {
 		return inGalileo(stateful);
-	// TODO: reuse *R from command log one day...
 	} else if (gds === 'amadeus') {
-		let cmdRec = await AmadeusUtils.fetchAllRt('RT', stateful);
-		return AmadeusPnr.makeFromDump(cmdRec.output);
+		return inAmadeus(stateful);
 	} else {
 		return Rej.NotImplemented('Unsupported GDS for current PNR retrieval - ' + gds);
 	}
@@ -72,5 +80,6 @@ const GetCurrentPnr = async (stateful) => {
 GetCurrentPnr.inApollo = inApollo;
 GetCurrentPnr.inSabre = inSabre;
 GetCurrentPnr.inGalileo = inGalileo;
+GetCurrentPnr.inAmadeus = inAmadeus;
 
 module.exports = GetCurrentPnr;

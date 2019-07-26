@@ -1,3 +1,4 @@
+const GetCurrentPnr = require('../../../../../Actions/GetCurrentPnr.js');
 // namespace Rbs\GdsDirect\Actions\Amadeus;
 
 const php = require('klesun-node-tools/src/Transpiled/php.js');
@@ -883,11 +884,7 @@ class RunCmdRq {
 	}
 
 	async getCurrentPnr() {
-		let $reservationDump;
-
-		$reservationDump = await (new CmsAmadeusTerminal())
-			.getFullPnrDump(this.stateful.getLog()) || await this.amadeusRt('RT');
-		return AmadeusPnr.makeFromDump($reservationDump);
+		return GetCurrentPnr.inAmadeus(this.stateful);
 	}
 
 	async areAllCouponsVoided() {
