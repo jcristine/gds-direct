@@ -1,5 +1,6 @@
 const GdsDirectDefaults = require('../Transpiled/Rbs/TestUtils/GdsDirectDefaults.js');
 const AddMpRemark = require('../../../backend/Actions/AddMpRemark.js');
+const Rej = require('klesun-node-tools/src/Rej.js');
 
 const provide_call = () => {
 	let list = [];
@@ -34,7 +35,7 @@ const provide_call = () => {
 						"       FEDERAL LAWS FORBID THE CARRIAGE OF HAZARDOUS MATERIALS -",
 						"       GGAMAUSHAZ/S2",
 						"  6 RM GD-SHIVA/7780/FOR KIRA/785/LEAD-8304417 IN SFO1S2195",
-						""
+						"",
 					].join("\n"),
 				},
 			],
@@ -44,7 +45,7 @@ const provide_call = () => {
 					"output": [
 						"/",
 						"WARNING: SECURE FLT PASSENGER DATA REQUIRED FOR TICKETING PAX 1",
-						" "
+						" ",
 					].join("\n"),
 				},
 				{
@@ -65,7 +66,7 @@ const provide_call = () => {
 						"       GGAMAUSHAZ/S2",
 						"  6 RM GD-SHIVA/7780/FOR KIRA/785/LEAD-8304417 IN SFO1S2195",
 						"  7 RM EXPERTS REMARK-MP-UA-SFO1S2195",
-						" "
+						" ",
 					].join("\n"),
 				},
 			],
@@ -99,14 +100,14 @@ const provide_call = () => {
 						"REMARKS",
 						"  1.GD-SHIVA/7780/FOR KIRA/785/LEAD-8304417 IN 6IIF",
 						"RECEIVED FROM - SHIVA",
-						"6IIF.L3II*AWS 0553/26JUL19 MZHVAX H"
-					].join("\n")
+						"6IIF.L3II*AWS 0553/26JUL19 MZHVAX H",
+					].join("\n"),
 				},
 			],
 			performedCommands: [
 				{
 					"cmd": "5EXPERTS REMARK-MP-UA-6IIF§ER",
-					"output": "SIMULTANEOUS CHANGES TO PNR - USE IR TO IGNORE AND RETRIEVE PNR"
+					"output": "SIMULTANEOUS CHANGES TO PNR - USE IR TO IGNORE AND RETRIEVE PNR",
 				},
 				{
 					"cmd": "IR",
@@ -122,8 +123,8 @@ const provide_call = () => {
 						"REMARKS",
 						"  1.GD-SHIVA/7780/FOR KIRA/785/LEAD-8304417 IN 6IIF",
 						"RECEIVED FROM - SHIVA",
-						"6IIF.L3II*AWS 0553/26JUL19 MZHVAX H"
-					].join("\n")
+						"6IIF.L3II*AWS 0553/26JUL19 MZHVAX H",
+					].join("\n"),
 				},
 				{
 					"cmd": "5EXPERTS REMARK-MP-UA-6IIF§ER",
@@ -141,10 +142,51 @@ const provide_call = () => {
 						"  2.EXPERTS REMARK-MP-UA-6IIF",
 						"RECEIVED FROM - SHIVA",
 						"6IIF.L3II*AWS 0553/26JUL19 MZHVAX H",
-						""
-					].join("\n")
-				}
+						"",
+					].join("\n"),
+				},
 			],
+		},
+	});
+
+	list.push({
+		title: 'Apollo example with user being prompted to choose airline',
+		input: {},
+		output: {
+			calledCommands: [
+				{cmd: '@:5EXPERTS REMARK-MP-AY-2CV4|ER'},
+			],
+		},
+		sessionInfo: {
+			gds: 'apollo',
+			initialState: {...GdsDirectDefaults.makeDefaultApolloState(), pcc: '2CV4'},
+			initialCommands: [
+				{
+					"cmd": "*R",
+					"output": [
+						"CREATED IN GDS DIRECT BY SHIVA",
+						"MH6L31/WS QSBYC DPBVWS  AG 23854526 26JUL",
+						" 1.1LIB/MAR ",
+						" 1 CZ4362B 20MAY RIXHEL GK1   220P  330P           WE",
+						"         OPERATED BY FINNAIR",
+						" 2 AY  11B 20MAY HELSFO GK1   420P  520P           WE",
+						"FONE-SFOAS/800-750-2238 ASAP CUSTOMER SUPPORT",
+						"TKTG-TAU/26JUL",
+						"RMKS-GD-SHIVA/7780/FOR KIRA/785/LEAD-8304417 IN 2CV4",
+						"><",
+						"",
+					].join("\n"),
+				},
+			],
+			performedCommands: [
+				{
+					"cmd": "@:5EXPERTS REMARK-MP-AY-2CV4|ER",
+					"output": "OK - MH6L31-TRAVEL SHOP              SFO\n><",
+				},
+			],
+			ctorArgs: {
+				askClient: ({messageType}) => Promise.resolve({value: 'AY'}),
+			},
 		},
 	});
 

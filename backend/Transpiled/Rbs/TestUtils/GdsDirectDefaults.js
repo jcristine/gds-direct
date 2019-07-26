@@ -213,6 +213,7 @@ class GdsDirectDefaults {
 					leadOwnerLogin: leadOwner ? leadOwner.getLogin() : null,
 				},
 			},
+			...($sessionInfo.ctorArgs || {}),
 		});
 	}
 }
