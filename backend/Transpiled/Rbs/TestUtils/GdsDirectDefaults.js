@@ -164,7 +164,7 @@ class GdsDirectDefaults {
 	}
 
 	static makeStatefulSession(gds, $input, $sessionInfo) {
-		let {initialState, initialCommands, performedCommands} = $sessionInfo;
+		let {initialState, initialCommands = [], performedCommands} = $sessionInfo;
 		let gdsSession = (new AnyGdsStubSession(performedCommands)).setGds(gds);
 		let session = {
 			context: {
