@@ -72,11 +72,86 @@ const provide_call = () => {
 		},
 	});
 
+	list.push({
+		title: 'Sabre SIMULTANEOUS CHANGES example',
+		input: {},
+		output: {
+			calledCommands: [
+				{cmd: '5EXPERTS REMARK-MP-UA-6IIF§ER'},
+				{cmd: 'IR'},
+				{cmd: '5EXPERTS REMARK-MP-UA-6IIF§ER'},
+			],
+		},
+		sessionInfo: {
+			gds: 'sabre',
+			initialState: GdsDirectDefaults.makeDefaultSabreState(),
+			initialCommands: [
+				{
+					"cmd": "*R",
+					"output": [
+						"MZHVAX",
+						" 1.1LIB/MAR",
+						" 1 UA 132Y 28JUL S HNLGUM HK1   725A  453P  29JUL M /DCUA /E",
+						"TKT/TIME LIMIT",
+						"  1.TAW/26JUL",
+						"PHONES",
+						"  1.SFO800-750-2238-A",
+						"REMARKS",
+						"  1.GD-SHIVA/7780/FOR KIRA/785/LEAD-8304417 IN 6IIF",
+						"RECEIVED FROM - SHIVA",
+						"6IIF.L3II*AWS 0553/26JUL19 MZHVAX H"
+					].join("\n")
+				},
+			],
+			performedCommands: [
+				{
+					"cmd": "5EXPERTS REMARK-MP-UA-6IIF§ER",
+					"output": "SIMULTANEOUS CHANGES TO PNR - USE IR TO IGNORE AND RETRIEVE PNR"
+				},
+				{
+					"cmd": "IR",
+					"output": [
+						"MZHVAX",
+						" 1.1LIB/MAR",
+						" 1 UA 132Y 28JUL S HNLGUM HK1   725A  453P  29JUL M",
+						"                                               /DCUA*CXLRNC /E",
+						"TKT/TIME LIMIT",
+						"  1.TAW/26JUL",
+						"PHONES",
+						"  1.SFO800-750-2238-A",
+						"REMARKS",
+						"  1.GD-SHIVA/7780/FOR KIRA/785/LEAD-8304417 IN 6IIF",
+						"RECEIVED FROM - SHIVA",
+						"6IIF.L3II*AWS 0553/26JUL19 MZHVAX H"
+					].join("\n")
+				},
+				{
+					"cmd": "5EXPERTS REMARK-MP-UA-6IIF§ER",
+					"output": [
+						"MZHVAX",
+						" 1.1LIB/MAR",
+						" 1 UA 132Y 28JUL S HNLGUM HK1   725A  453P  29JUL M",
+						"                                               /DCUA*CXLRNC /E",
+						"TKT/TIME LIMIT",
+						"  1.TAW/26JUL",
+						"PHONES",
+						"  1.SFO800-750-2238-A",
+						"REMARKS",
+						"  1.GD-SHIVA/7780/FOR KIRA/785/LEAD-8304417 IN 6IIF",
+						"  2.EXPERTS REMARK-MP-UA-6IIF",
+						"RECEIVED FROM - SHIVA",
+						"6IIF.L3II*AWS 0553/26JUL19 MZHVAX H",
+						""
+					].join("\n")
+				}
+			],
+		},
+	});
+
 	return list.map(a => [a]);
 };
 
-class AddMpRemarkTest extends require('../../../backend/Transpiled/Lib/TestCase.js')
-{
+class AddMpRemarkTest extends require('../../../backend/Transpiled/Lib/TestCase.js') {
 	async test_call({input, output, sessionInfo}) {
 		let stateful = GdsDirectDefaults.makeStatefulSession(sessionInfo.gds, input, sessionInfo);
 		let actual = await AddMpRemark({stateful});
