@@ -2,7 +2,7 @@
 let Db = require("../Utils/Db.js");
 let Redis = require('../LibWrappers/Redis.js');
 let MultiLevelMap = require('../Utils/MultiLevelMap.js');
-let Rej = require('klesun-node-tools/src/Rej.js');
+let Rej = require('klesun-node-tools/src/Lang.js');
 
 const TABLE = 'highlightRules';
 const TABLE_CMD = 'highlightCmdPatterns';
@@ -186,7 +186,6 @@ let getFullDataForServiceMulti = async () => {
 
 exports.getFullDataForService = () => getFullDataForServiceMulti().then(({byId}) => byId);
 exports.getByName = async (ruleName) => {
-	// TODO: keep the mapping instead of iterating over all rules
 	return getFullDataForServiceMulti()
 		.then(({byName}) => byName[ruleName])
 		.then(Rej.nonEmpty('No such rule - ' + ruleName));

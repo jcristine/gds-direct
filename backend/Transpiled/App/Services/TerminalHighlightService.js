@@ -2,36 +2,40 @@
 const Str = require("../../../Utils/Str.js");
 const Db = require("../../../Utils/Db.js");
 const RegexTranspiler = require("../../Grect/RegexTranspiler");
-const {getFullDataForService, getByName} = require('../../../Repositories/HighlightRules.js');
-const {substr_replace, array_values, sprintf, strlen, preg_match, empty, isset} = require('../../phpDeprecated.js');
+//const {getFullDataForService, getByName} = require('../../../Repositories/HighlightRules.js');
+const {substr_replace, array_values, sprintf, strlen, preg_match, empty, isset} = require('klesun-node-tools/src/Transpiled/php.js');
 const ApoCmdParser = require('../../Gds/Parsers/Apollo/CommandParser.js');
 const FareConstructionParser = require('../../Gds/Parsers/Common/FareConstruction/FareConstructionParser.js');
 const {coverExc} = require('klesun-node-tools/src/Lang.js');
 const Rej = require('klesun-node-tools/src/Rej.js');
 
-let getCmdPatterns = () => getFullDataForService().then((rules) => {
-	let cmdPatterns = [];
-	for (let rule of Object.values(rules)) {
-		cmdPatterns.push(...rule.cmdPatterns);
-	}
-	return cmdPatterns;
-// DB not available in tests
-}).catch(coverExc([Rej.BadRequest], exc => []));
-
-let getRules = (cmdPatterns) => getFullDataForService()
-	.then(ruleMapping => {
-		let result = [];
-		for (let cmdPattern of cmdPatterns) {
-			let rule = ruleMapping[cmdPattern.ruleId];
-			if (rule) {
-				result.push({...rule, cmdPattern});
+let getCmdPatterns = (HighlightRules) =>
+	HighlightRules.getFullDataForService()
+		.then((rules) => {
+			let cmdPatterns = [];
+			for (let rule of Object.values(rules)) {
+				cmdPatterns.push(...rule.cmdPatterns);
 			}
-		}
-		return result;
-	})
-	.then(rules => rules.sort((a, b) => a.priority - b.priority))
-	// DB not available in tests
-	.catch(coverExc([Rej.BadRequest], exc => []));
+			return cmdPatterns;
+		})
+		// DB not available in tests
+		.catch(coverExc([Rej.BadRequest], exc => []));
+
+let getRules = (HighlightRules, cmdPatterns) =>
+	HighlightRules.getFullDataForService()
+		.then(ruleMapping => {
+			let result = [];
+			for (let cmdPattern of cmdPatterns) {
+				let rule = ruleMapping[cmdPattern.ruleId];
+				if (rule) {
+					result.push({...rule, cmdPattern});
+				}
+			}
+			return result;
+		})
+		.then(rules => rules.sort((a, b) => a.priority - b.priority))
+		// DB not available in tests
+		.catch(coverExc([Rej.BadRequest], exc => []));
 
 let setCmdRegexError = (ruleId, cmdPattern, dialect) =>
 	Db.with(db => db.writeRows('highlightCmdPatterns', [{
@@ -175,14 +179,15 @@ let matchCodedRules = (cmd, gds, output) => {
  * ]
  */
 class TerminalHighlightService {
-	constructor() {
+	constructor({HighlightRules}) {
+		this.HighlightRules = HighlightRules;
 		this.appliedRules = {};
 		this.matches = [];
 		this.shift = 0;
 	}
 
 	getMatchingCmdPatterns($language, $enteredCommand) {
-		return getCmdPatterns().then(rows => rows
+		return getCmdPatterns(this.HighlightRules).then(rows => rows
 			.filter(row => row.dialect === $language)
 			.filter(row => {
 				if (row.regexError || !row.cmdPattern) {
@@ -216,7 +221,7 @@ class TerminalHighlightService {
 
 	async match(cmd, gds, output) {
 		let cmdPatterns = await this.getMatchingCmdPatterns(gds, cmd);
-		let rules = await getRules(cmdPatterns);
+		let rules = await getRules(this.HighlightRules, cmdPatterns);
 		for (let rule of rules) {
 			rule.patterns
 				.filter(row => row.gds === gds && !empty(row.pattern))
@@ -294,7 +299,7 @@ class TerminalHighlightService {
 		let {ruleName, index, end} = record;
 		index += this.shift;
 		let matchedText = output.slice(index, end);
-		let rule = await getByName(ruleName);
+		let rule = await this.HighlightRules.getByName(ruleName);
 		return {
 			match: {
 				matchedText: matchedText,

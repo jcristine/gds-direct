@@ -27,27 +27,30 @@ class CmdResultAdapter
 		return $output;
 	}
 
-	async formatOutput($enteredCommand, calledCommands) {
-		let $output = '';
+	async formatOutput({
+		cmdRq, calledCommands,
+		HighlightRules = require('../../../Repositories/HighlightRules.js'),
+	}) {
+		let output = '';
 		let appliedRules = [];
 		for (let [$index, $row] of Object.entries(calledCommands)) {
-			let svc = new TerminalHighlightService();
+			let svc = new TerminalHighlightService({HighlightRules});
 			let $command;
 			if ($index > 0) {
 				let $separator = strcasecmp('*', trim($row['output'])) ? PHP_EOL : "&nbsp;";
 				$command = PHP_EOL + this.color("&gt;" + $row['cmd'], 'usedCommand') + $separator;
 			} else {
 				$command = '';
-				if ($enteredCommand.toUpperCase() !== $row['cmd'].toUpperCase()) {
+				if (cmdRq.toUpperCase() !== $row['cmd'].toUpperCase()) {
 					$command += PHP_EOL + this.color("&gt;" + $row['cmd'], 'usedCommand') + PHP_EOL;
 				}
 			}
 			let scrolledCmd = $row.scrolledCmd || $row.cmd;
 			let highlighted = await svc.replace(scrolledCmd, this.gds, this.clearOutput($row['output']));
-			$output += $command + highlighted;
+			output += $command + highlighted;
 			appliedRules.push(...svc.getAppliedRules());
 		}
-		return {$output, appliedRules};
+		return {output, appliedRules};
 	}
 
 	/** Append output by custom strings */
@@ -80,7 +83,7 @@ class CmdResultAdapter
 	}
 
 	/**
-	 * @param {String} $command - the command entered by agent; if it matches
+	 * @param {String} cmdRq - the command entered by agent; if it matches
 	 *  the actually called command, the latter won't be included in final output
 	 * @param {{
 	 *     calledCommands: [{cmd: '$BB0/*JCB/CUA', output: 'NO VALID FARE FOR INPUT CRITERIA\\n><'}],
@@ -88,7 +91,7 @@ class CmdResultAdapter
 	 *     messages?: [{type: 'info' | 'error' | 'pop_up', text: string}],
 	 * }} rbsResp
 	 */
-	addHighlighting($command, rbsResp, fullState = null) {
+	addHighlighting(cmdRq, rbsResp, fullState = null) {
 		let {calledCommands, messages = []} = rbsResp;
 		let typeToMsgs = {};
 		for (let msgRec of messages) {
@@ -96,12 +99,12 @@ class CmdResultAdapter
 			typeToMsgs[msgRec.type].push(msgRec.text);
 		}
 		let sessionInfo = !fullState ? {} : makeBriefSessionInfo(fullState);
-		return this.formatOutput($command, calledCommands)
-			.then(({$output, appliedRules}) => {
-				$output = this.appendOutput($output, typeToMsgs);
+		return this.formatOutput({cmdRq, calledCommands})
+			.then(({output, appliedRules}) => {
+				output = this.appendOutput(output, typeToMsgs);
 				let cmdTimes = rbsResp.calledCommands.map(rec => rec.duration).filter(a => a);
 				return {
-					output: $output || rbsResp.status,
+					output: output || rbsResp.status,
 					appliedRules: appliedRules,
 					tabCommands: calledCommands
 						.map(call => call.tabCommands || [])

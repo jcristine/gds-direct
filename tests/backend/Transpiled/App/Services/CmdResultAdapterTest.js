@@ -1,4 +1,6 @@
-let CmdResultAdapter = require('../../../../../backend/Transpiled/App/Services/CmdResultAdapter');
+const Lang = require('../../../../../node_modules/klesun-node-tools/src/Lang.js');
+const CmdResultAdapter = require('../../../../../backend/Transpiled/App/Services/CmdResultAdapter');
+const data_stubHighlightRules = require('./data_stubHighlightRules.js');
 
 class CmdResultAdapterTest extends require('../../../../../backend/Transpiled/Lib/TestCase.js') {
 	provideFormatOutput() {
@@ -7,8 +9,8 @@ class CmdResultAdapterTest extends require('../../../../../backend/Transpiled/Li
 		// availability display example - should not result in % artifacts
 		list.push([{
 			input: {
-				$enteredCommand: 'A10MAYJFKMNL',
-				$language: 'apollo',
+				cmdRq: 'A10MAYJFKMNL',
+				gds: 'apollo',
 				calledCommands: [
 					{
 						"cmd": "A10MAYJFKMNL",
@@ -30,7 +32,7 @@ class CmdResultAdapterTest extends require('../../../../../backend/Transpiled/Li
 				],
 			},
 			expected: {
-				$output: [
+				output: [
 					"NEUTRAL DISPLAY*   %FR 10MAY% NYCMNL+12:00 HR                     ",
 					"1%+% %PR% 127 %J7% %C7% %D7% %I7% %Z2% %W7% %N7% %Y7% %S7% %L7%+%JFK%MNL 145A  615A+350  0",
 					"2%+% %KE%  82 %P9% A0 %J9% %C9% %D9% %I9% %R9% %Z9% %Y9% %B9%+%JFK%ICN 200P  520P+388  0",
@@ -422,8 +424,8 @@ class CmdResultAdapterTest extends require('../../../../../backend/Transpiled/Li
 		// there was a bug - it suggested *FF (galileo format) instead of *LF (apollo format)
 		list.push([{
 			input: {
-				$enteredCommand: '*R',
-				$language: 'apollo',
+				cmdRq: '*R',
+				gds: 'apollo',
 				calledCommands: [
 					{
 						"cmd": "*R",
@@ -440,7 +442,7 @@ class CmdResultAdapterTest extends require('../../../../../backend/Transpiled/Li
 				],
 			},
 			expected: {
-				$output: [
+				output: [
 					" 1.1%LIB/MAR% ",
 					" 1 %PR% 127%N% 10MAY %JFKMNL% %SS1%   145A  615A+*      FR/SA   E",
 					"*** LINEAR FARE DATA EXISTS *** >%*LF·% ",
@@ -488,8 +490,8 @@ class CmdResultAdapterTest extends require('../../../../../backend/Transpiled/Li
 		// /...\K.../ example - should highlight "1412.70TTL"
 		list.push([{
 			input: {
-				$enteredCommand: 'WP*BAG',
-				$language: 'sabre',
+				cmdRq: 'WP*BAG',
+				gds: 'sabre',
 				calledCommands: [
 					{
 						"cmd": "WP*BAG",
@@ -522,7 +524,7 @@ class CmdResultAdapterTest extends require('../../../../../backend/Transpiled/Li
 				],
 			},
 			expected: {
-				$output: [
+				output: [
 					"       BASE FARE                 TAXES/FEES/CHARGES    TOTAL",
 					" 1-   USD1313.00                     99.70XT      USD1412.70ADT",
 					"    XT     70.00YQ       1.00YR      18.60US       5.60AY ",
@@ -561,18 +563,17 @@ class CmdResultAdapterTest extends require('../../../../../backend/Transpiled/Li
 	}
 
 	async testFormatOutput({input, expected}) {
-		let {$enteredCommand, calledCommands} = input;
-		let actual = await (new CmdResultAdapter(input.$language))
-			.formatOutput($enteredCommand, calledCommands);
-		try {
-			this.assertArrayElementsSubset(expected, actual);
-		} catch (exc) {
-			let args = process.argv.slice(process.execArgv.length + 2);
-			if (args.includes('debug')) {
-				console.log('\nactual\n', JSON.stringify(actual));
-			}
-			throw exc;
-		}
+		let {cmdRq, calledCommands, gds} = input;
+		let HighlightRules = {
+			getFullDataForService: () => Promise.resolve(data_stubHighlightRules),
+			getByName: (ruleName) => Promise.resolve()
+				.then(() => Object.values(data_stubHighlightRules)
+					.filter(r => r.name === ruleName)[0])
+				.catch(Lang.nonEmpty('Rule #' + ruleName + ' not available in stub data')),
+		};
+		let actual = await (new CmdResultAdapter(gds))
+			.formatOutput({cmdRq, calledCommands, HighlightRules});
+		this.assertArrayElementsSubset(expected, actual);
 	}
 
 	getTestMapping() {
