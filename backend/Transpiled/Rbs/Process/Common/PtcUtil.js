@@ -89,7 +89,7 @@ const PtcUtil = ({
      * @param $nameRecord = GdsPassengerBlockParser::flattenPassengers()[0]
      */
     const convertPtcAgeGroup = async ($adultPtc, $nameRecord, $tripEndDt = null) => {
-        let ageGroup = PtcUtil.getPaxAgeGroup($nameRecord, $tripEndDt);
+        let ageGroup = getPaxAgeGroup($nameRecord, $tripEndDt);
         let age = !php.empty($nameRecord['age'])
             ? php.str_pad($nameRecord['age'], 2, '0', php.STR_PAD_LEFT)
             : null;
@@ -155,7 +155,7 @@ const PtcUtil = ({
         } else {
             return 'adult';
         }
-    } ;
+    };
 
     return {
         getFareType,
