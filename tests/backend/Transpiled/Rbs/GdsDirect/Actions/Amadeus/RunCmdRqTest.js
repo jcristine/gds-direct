@@ -1,7 +1,7 @@
 // namespace Rbs\GdsDirect\Actions\Amadeus;
 
 const Agent = require('../../../../../../../backend/DataFormats/Wrappers/Agent.js');
-const ProcessAmadeusTerminalInputAction = require('../../../../../../../backend/Transpiled/Rbs/GdsDirect/Actions/Amadeus/RunCmdRq.js');
+const RunCmdRq = require('../../../../../../../backend/Transpiled/Rbs/GdsDirect/Actions/Amadeus/RunCmdRq.js');
 const GdsDirectDefaults = require('../../../../Rbs/TestUtils/GdsDirectDefaults.js');
 const php = require('../../../../php.js');
 
@@ -400,7 +400,6 @@ class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
 				],
 			},
 		});
-
 
 		$list.push({
 			'input': {
@@ -2253,6 +2252,81 @@ class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
 			},
 		});
 
+		// // would need to stub session creation here
+		// $list.push({
+		// 	'input': {
+		// 		'title': 'RE/ example',
+		// 		'cmdRequested': 'RE/NYC1S2186/SS',
+		// 		'baseDate': '2018-02-22',
+		// 	},
+		// 	'output': {
+		// 		'status': 'executed',
+		// 		'sessionData': {
+		// 			'area': 'B',
+		// 			'pcc': 'NYC1S2186',
+		// 			'hasPnr': true,
+		// 		},
+		// 		'calledCommands': [
+		// 			{'cmd': 'RT'},
+		// 		],
+		// 	},
+		// 	'sessionInfo': {
+		// 		'initialState': php.array_merge(GdsDirectDefaults.makeDefaultAmadeusState(), {
+		// 			'agent_id': 1588, 'lead_creator_id': 2838,
+		// 		}),
+		// 		'initialCommands': [],
+		// 		'performedCommands': [
+		// 			{
+		// 				'cmd': 'RTAM',
+		// 				'output': php.implode(php.PHP_EOL, [
+		// 					'/$RP/SFO1S2195/',
+		// 					'  1  SU1845 D 10MAY 4 KIVSVO HK1           1250A 345A   *1A/E*',
+		// 					'                                                      A01',
+		// 					'  2  SU2682 D 10MAY 4 SVORIX HK1        D   915A1050A   *1A/E*',
+		// 					'                                                      A01',
+		// 					' ',
+		// 				]),
+		// 			},
+		// 			{'cmd': 'IG', 'output': php.implode(php.PHP_EOL, ['/', 'IGNORED', ' '])},
+		// 			// ... pcc change here ...
+		// 			{
+		// 				'cmd': 'SSSU1845Y10MAYKIVSVO1',
+		// 				'output': php.implode(php.PHP_EOL, [
+		// 					'/$RP/NYC1S2186/',
+		// 					'  1  SU1845 Y 10MAY 4 KIVSVO DK1  1250A 345A 10MAY  E  0 32A S',
+		// 					'     SEE RTSVC',
+		// 					' ',
+		// 				]),
+		// 			},
+		// 			{
+		// 				'cmd': 'SSSU2682Y10MAYSVORIX1',
+		// 				'output': php.implode(php.PHP_EOL, [
+		// 					'/$--- MSC ---',
+		// 					'RP/NYC1S2186/',
+		// 					'  1  SU1845 Y 10MAY 4*KIVSVO DK1  1250A 345A 10MAY  E  0 32A S',
+		// 					'     SEE RTSVC',
+		// 					'  2  SU2682 Y 10MAY 4*SVORIX DK1   915A1050A 10MAY  E  0 73H S',
+		// 					'     010 BT 7425',
+		// 					'     SEE RTSVC',
+		// 					' ',
+		// 				]),
+		// 			},
+		// 			{
+		// 				'cmd': 'SBD1,2',
+		// 				'output': php.implode(php.PHP_EOL, [
+		// 					'/$--- MSC ---',
+		// 					'RP/NYC1S2186/',
+		// 					'  1  SU1845 D 10MAY 4*KIVSVO DK1  1250A 345A 10MAY  E  0 32A D',
+		// 					'     SEE RTSVC',
+		// 					'  2  SU2682 D 10MAY 4*SVORIX DK1   915A1050A 10MAY  E  0 73H S',
+		// 					'     SEE RTSVC',
+		// 					' ',
+		// 				]),
+		// 			},
+		// 		],
+		// 	},
+		// });
+
 		//============================
 		// problematic cases follow
 		//============================
@@ -2381,113 +2455,6 @@ class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
 		//     },
 		// });
 
-		// // would need to stub session creation here
-		// $list.push({
-		// 	'input': {
-		// 		'title': 'RE/ example',
-		// 		'cmdRequested': 'RE/NYC1S2186/SS',
-		// 		'baseDate': '2018-02-22',
-		// 	},
-		// 	'output': {
-		// 		'status': 'executed',
-		// 		'sessionData': {
-		// 			'area': 'B',
-		// 			'pcc': 'NYC1S2186',
-		// 			'hasPnr': true,
-		// 		},
-		// 		'calledCommands': [
-		// 			{'cmd': 'RT'},
-		// 		],
-		// 	},
-		// 	'sessionInfo': {
-		// 		'initialState': php.array_merge(GdsDirectDefaults.makeDefaultAmadeusState(), {
-		// 			'agent_id': 1588, 'lead_creator_id': 2838,
-		// 		}),
-		// 		'initialCommands': [],
-		// 		'performedCommands': [
-		// 			{
-		// 				'cmd': 'RTAM',
-		// 				'output': php.implode(php.PHP_EOL, [
-		// 					'/$RP/SFO1S2195/',
-		// 					'  1  SU1845 D 10MAY 4 KIVSVO HK1           1250A 345A   *1A/E*',
-		// 					'                                                      A01',
-		// 					'  2  SU2682 D 10MAY 4 SVORIX HK1        D   915A1050A   *1A/E*',
-		// 					'                                                      A01',
-		// 					' ',
-		// 				]),
-		// 			},
-		// 			{'cmd': 'IG', 'output': php.implode(php.PHP_EOL, ['/', 'IGNORED', ' '])},
-		// 			{
-		// 				'cmd': 'JD',
-		// 				'output': php.implode(php.PHP_EOL, [
-		// 					'/$',
-		// 					'00000000         SFO1S2195                                     ',
-		// 					'',
-		// 					'AREA  TM  MOD SG/DT.LG TIME      ACT.Q   STATUS     NAME ',
-		// 					'A-IN      PRD WS/SU.EN  24             SIGNED       ',
-		// 					'B                                      NOT SIGNED   ',
-		// 					'C                                      NOT SIGNED   ',
-		// 					'D                                      NOT SIGNED   ',
-		// 					'E                                      NOT SIGNED   ',
-		// 					'F                                      NOT SIGNED   ',
-		// 					' ',
-		// 				]),
-		// 			},
-		// 			// ... pcc change here ...
-		// 			{
-		// 				'cmd': 'JD',
-		// 				'output': php.implode(php.PHP_EOL, [
-		// 					'/$',
-		// 					'00000000         NYC1S2186                                     ',
-		// 					'',
-		// 					'AREA  TM  MOD SG/DT.LG TIME      ACT.Q   STATUS     NAME ',
-		// 					'A-IN      PRD WS/SU.EN  24             SIGNED       ',
-		// 					'B                                      NOT SIGNED   ',
-		// 					'C                                      NOT SIGNED   ',
-		// 					'D                                      NOT SIGNED   ',
-		// 					'E                                      NOT SIGNED   ',
-		// 					'F                                      NOT SIGNED   ',
-		// 					' ',
-		// 				]),
-		// 			},
-		// 			{
-		// 				'cmd': 'SSSU1845Y10MAYKIVSVO1',
-		// 				'output': php.implode(php.PHP_EOL, [
-		// 					'/$RP/NYC1S2186/',
-		// 					'  1  SU1845 Y 10MAY 4 KIVSVO DK1  1250A 345A 10MAY  E  0 32A S',
-		// 					'     SEE RTSVC',
-		// 					' ',
-		// 				]),
-		// 			},
-		// 			{
-		// 				'cmd': 'SSSU2682Y10MAYSVORIX1',
-		// 				'output': php.implode(php.PHP_EOL, [
-		// 					'/$--- MSC ---',
-		// 					'RP/NYC1S2186/',
-		// 					'  1  SU1845 Y 10MAY 4*KIVSVO DK1  1250A 345A 10MAY  E  0 32A S',
-		// 					'     SEE RTSVC',
-		// 					'  2  SU2682 Y 10MAY 4*SVORIX DK1   915A1050A 10MAY  E  0 73H S',
-		// 					'     010 BT 7425',
-		// 					'     SEE RTSVC',
-		// 					' ',
-		// 				]),
-		// 			},
-		// 			{
-		// 				'cmd': 'SBD1,2',
-		// 				'output': php.implode(php.PHP_EOL, [
-		// 					'/$--- MSC ---',
-		// 					'RP/NYC1S2186/',
-		// 					'  1  SU1845 D 10MAY 4*KIVSVO DK1  1250A 345A 10MAY  E  0 32A D',
-		// 					'     SEE RTSVC',
-		// 					'  2  SU2682 D 10MAY 4*SVORIX DK1   915A1050A 10MAY  E  0 73H S',
-		// 					'     SEE RTSVC',
-		// 					' ',
-		// 				]),
-		// 			},
-		// 		],
-		// 	},
-		// });
-
 		$argumentTuples = [];
 		for ($testCase of Object.values($list)) {
 			$argumentTuples.push([$testCase['input'], $testCase['output'], $testCase['sessionInfo']]);
@@ -2503,7 +2470,7 @@ class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
 	testForgeViewAreasDump($sessionData, $areas, $expected) {
 		let $actual;
 
-		$actual = ProcessAmadeusTerminalInputAction.forgeViewAreasDump($sessionData, $areas);
+		$actual = RunCmdRq.forgeViewAreasDump($sessionData, $areas);
 		this.assertEquals($expected, $actual);
 	}
 
@@ -2515,8 +2482,8 @@ class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
 		let $session, $actualOutput;
 
 		$session = GdsDirectDefaults.makeStatefulSession('amadeus', $input, $sessionInfo);
-		$actualOutput = await (new ProcessAmadeusTerminalInputAction($session))
-			.execute($input['cmdRequested']).catch(exc => ({error: exc + ''}));
+		$actualOutput = await (new RunCmdRq($session))
+			.execute($input['cmdRequested']).catch(exc => ({error: exc + '', stack: (exc || {}).stack}));
 		$actualOutput['sessionData'] = $session.getSessionData();
 
 		this.assertArrayElementsSubset($output, $actualOutput, php.implode('; ', $actualOutput['userMessages'] || ['no errors']));
