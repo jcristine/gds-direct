@@ -1,6 +1,6 @@
 const Lang = require('../../../../../node_modules/klesun-node-tools/src/Lang.js');
 const CmdResultAdapter = require('../../../../../backend/Transpiled/App/Services/CmdResultAdapter');
-const data_stubHighlightRules = require('./data_stubHighlightRules.js');
+const stubHighlightRules = require('../../../../data/stubHighlightRules.js');
 
 class CmdResultAdapterTest extends require('../../../../../backend/Transpiled/Lib/TestCase.js') {
 	provideFormatOutput() {
@@ -565,9 +565,9 @@ class CmdResultAdapterTest extends require('../../../../../backend/Transpiled/Li
 	async testFormatOutput({input, expected}) {
 		let {cmdRq, calledCommands, gds} = input;
 		let HighlightRules = {
-			getFullDataForService: () => Promise.resolve(data_stubHighlightRules),
+			getFullDataForService: () => Promise.resolve(stubHighlightRules),
 			getByName: (ruleName) => Promise.resolve()
-				.then(() => Object.values(data_stubHighlightRules)
+				.then(() => Object.values(stubHighlightRules)
 					.filter(r => r.name === ruleName)[0])
 				.catch(Lang.nonEmpty('Rule #' + ruleName + ' not available in stub data')),
 		};
