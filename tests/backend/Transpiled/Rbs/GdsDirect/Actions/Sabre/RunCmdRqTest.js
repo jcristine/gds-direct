@@ -1888,9 +1888,10 @@ class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
 		let $session, $actual;
 
 		$session = GdsDirectDefaults.makeStatefulSession('sabre', $input, $sessionInfo);
-		$actual = await (new RunCmdRq($session))
-			.useXml($input['useXml'] || false)
-			.execute($input['cmdRequested']);
+		$actual = await RunCmdRq({
+			stateful: $session,
+			cmdRq: $input['cmdRequested'],
+		});
 		$actual['sessionData'] = $session.getSessionData();
 
 		this.assertArrayElementsSubset($expected, $actual, php.implode('; ', $actual['userMessages'] || []) || '(no errors)');

@@ -132,7 +132,7 @@ let runByGds = async (inputCmd, stateful) => {
 	if (stateful.gds === 'apollo') {
 		gdsResult = await ApoRunCmdRq({stateful, cmdRq: inputCmd});
 	} else if (stateful.gds === 'sabre') {
-		gdsResult = await (new SabRunCmdRq(stateful).execute(inputCmd));
+		gdsResult = await SabRunCmdRq({stateful, cmdRq: inputCmd});
 	} else if (stateful.gds === 'amadeus') {
 		gdsResult = await AmaRunCmdRq({stateful, cmdRq: inputCmd});
 	} else if (stateful.gds === 'galileo') {

@@ -27,6 +27,10 @@ const UnprocessableEntity = require("klesun-node-tools/src/Rej").UnprocessableEn
 const SabreTicketParser = require('../../../../Gds/Parsers/Sabre/SabreTicketParser.js');
 const Rej = require('klesun-node-tools/src/Rej.js');
 
+const execute = ({
+	stateful, cmdRq,
+}) => {
+
 class RunCmdRq {
 	useXml($flag) {
 		this.$useXml = $flag;
@@ -34,8 +38,7 @@ class RunCmdRq {
 	}
 
 	/** @param $statefulSession = await require('StatefulSession.js')() */
-	constructor($statefulSession) {
-		this.stateful = $statefulSession;
+	constructor() {
 		this.$log = ($msg, $data) => {};
 		this.$useXml = false;
 	}
@@ -120,7 +123,7 @@ class RunCmdRq {
 
 	getSessionData() {
 
-		return this.stateful.getSessionData();
+		return stateful.getSessionData();
 	}
 
 	static hideSeaPassengers($gdsOutput) {
@@ -144,9 +147,9 @@ class RunCmdRq {
 	}
 
 	async makeCmsRemarkCmdIfNeeded() {
-		let cmdLog = this.stateful.getLog();
-		if (!this.stateful.getSessionData().isPnrStored) {
-			let msg = await CommonDataHelper.createCredentialMessage(this.stateful);
+		let cmdLog = stateful.getLog();
+		if (!stateful.getSessionData().isPnrStored) {
+			let msg = await CommonDataHelper.createCredentialMessage(stateful);
 			let cmd = '5' + msg;
 			if (await CommonDataHelper.shouldAddCreationRemark(msg, cmdLog)) {
 				return cmd;
@@ -182,13 +185,13 @@ class RunCmdRq {
 
 	getAgent() {
 
-		return this.stateful.getAgent();
+		return stateful.getAgent();
 	}
 
 	/** @return Agent|null */
 	getLeadAgent() {
 
-		return this.stateful.getLeadAgent();
+		return stateful.getLeadAgent();
 	}
 
 	async runCmd($cmd) {
@@ -197,10 +200,10 @@ class RunCmdRq {
 		$cmdStartsWith = ($str) => StringUtil.startsWith($cmd, $str);
 
 		$prevState = this.getSessionData();
-		let cmdRec = await this.stateful.runCmd($cmd);
+		let cmdRec = await stateful.runCmd($cmd);
 
 		if (this.constructor.isSuccessfulFsCommand($cmd, cmdRec.output)) {
-			this.stateful.handleFsUsage();
+			stateful.handleFsUsage();
 		}
 		if (Fp.any($cmdStartsWith, ['FQ', 'PQ', '*PQ'])) {
 			cmdRec = {...cmdRec, output: this.constructor.hideSeaPassengers(cmdRec.output)};
@@ -259,7 +262,7 @@ class RunCmdRq {
 		$type = $cmdParsed['type'];
 		if (php.in_array($type, ['searchPnr', 'displayPnrFromList']) &&
 			!SabrePnr.makeFromDump($calledCommand['output']).getRecordLocator() &&
-			!this.stateful.getAgent().canOpenPrivatePnr()
+			!stateful.getAgent().canOpenPrivatePnr()
 		) {
 			// '  3   WEINSTEIN/EL X     -17JUL   4   WEINSTEIN/AL  05MAY-20NOV'
 			$lines = StringUtil.lines($calledCommand['output']);
@@ -285,7 +288,7 @@ class RunCmdRq {
 	}
 
 	async getCurrentPnr() {
-		return GetCurrentPnr.inSabre(this.stateful);
+		return GetCurrentPnr.inSabre(stateful);
 	}
 
 	async areAllCouponsVoided() {
@@ -400,14 +403,14 @@ class RunCmdRq {
 		let $isOccupied, $occupiedRows, $occupiedAreas;
 
 		$isOccupied = ($row) => $row['hasPnr'];
-		$occupiedRows = Fp.filter($isOccupied, this.stateful.getAreaRows());
+		$occupiedRows = Fp.filter($isOccupied, stateful.getAreaRows());
 		$occupiedAreas = php.array_column($occupiedRows, 'area');
 		$occupiedAreas.push(this.getSessionData()['area']);
 		return php.array_values(php.array_diff(['A', 'B', 'C', 'D', 'E', 'F'], $occupiedAreas));
 	}
 
 	async ensureSignedInAllAreas() {
-		let fullState = this.stateful.getFullState();
+		let fullState = stateful.getFullState();
 		if (Object.values(fullState.areas).length === 1 ||
 			Object.values(fullState.areas).some(a => !a.pcc)
 		) {
@@ -421,7 +424,7 @@ class RunCmdRq {
 					fullState.areas[a] = fullState.areas[a] || {};
 					fullState.areas[a].pcc = emulatedPcc;
 				});
-				this.stateful.updateFullState(fullState);
+				stateful.updateFullState(fullState);
 			} else {
 				return UnprocessableEntity('Failed to login into all areas - ' + siOutput.trim());
 			}
@@ -439,9 +442,9 @@ class RunCmdRq {
 		let athMatch = cmdRec.output.match(/^ATH:(.*)!.*/);
 		if (athMatch) {
 			let newToken = athMatch[1];
-			let gdsData = this.stateful.getGdsData();
+			let gdsData = stateful.getGdsData();
 			gdsData.binarySecurityToken = newToken;
-			this.stateful.updateGdsData(gdsData);
+			stateful.updateGdsData(gdsData);
 			let cmdRecs = [{...cmdRec, cmd: areaCmd, output: 'Successfully changed area to ' + $area}];
 			return {'calledCommands': cmdRecs};
 		} else {
@@ -483,7 +486,7 @@ class RunCmdRq {
 				: Errors.getMessage(Errors.PCC_GDS_ERROR, {'pcc': $pcc, 'response': php.trim($output)});
 			return {'errors': [$error]};
 		} else {
-			return {'calledCommands': this.stateful.flushCalledCommands()};
+			return {'calledCommands': stateful.flushCalledCommands()};
 		}
 	}
 
@@ -628,14 +631,14 @@ class RunCmdRq {
 			return $seg;
 		});
 
-		this.stateful.flushCalledCommands();
+		stateful.flushCalledCommands();
 		$result = await (new SabreBuildItineraryAction())
-			.setSession(this.stateful)
+			.setSession(stateful)
 			.execute($newSegments, true);
 
 		if ($error = this.constructor.transformBuildError($result)) {
 			return {
-				'calledCommands': this.stateful.flushCalledCommands(),
+				'calledCommands': stateful.flushCalledCommands(),
 				'errors': [$error],
 			};
 		} else {
@@ -657,7 +660,7 @@ class RunCmdRq {
 	async rebookAsSs() {
 		let $gkSegments, $cmd, $output;
 
-		this.stateful.flushCalledCommands();
+		stateful.flushCalledCommands();
 		$gkSegments = (await this.getCurrentPnr()).getItinerary()
 			.filter(($seg) => $seg['segmentStatus'] === 'GK');
 		if (!$gkSegments) {
@@ -670,7 +673,7 @@ class RunCmdRq {
 
 	getMultiPccTariffDisplay($realCmd) {
 
-		return (new GetMultiPccTariffDisplayAction()).setLog(this.$log).execute($realCmd, this.stateful);
+		return (new GetMultiPccTariffDisplayAction()).setLog(this.$log).execute($realCmd, stateful);
 	}
 
 	/** @param $cmdRecs = TerminalCommandLog::getCurrentPnrCommands() */
@@ -688,7 +691,7 @@ class RunCmdRq {
 
 	handlePnrSave($recordLocator) {
 
-		this.stateful.handlePnrSave($recordLocator);
+		stateful.handlePnrSave($recordLocator);
 	}
 
 	async processSavePnr() {
@@ -710,11 +713,11 @@ class RunCmdRq {
 
 		$login = this.getAgent().getLogin();
 		$writeCommands = [
-			'7TAW/' + php.strtoupper(php.date('dM', php.strtotime(this.stateful.getStartDt()))),
+			'7TAW/' + php.strtoupper(php.date('dM', php.strtotime(stateful.getStartDt()))),
 			'6' + php.strtoupper($login),
 			'ER',
 		];
-		$usedCmds = await this.stateful.getLog().getCurrentPnrCommands();
+		$usedCmds = await stateful.getLog().getCurrentPnrCommands();
 		$flatCmds = this.flattenCmds($usedCmds);
 		$usedCmdTypes = php.array_column($flatCmds, 'type');
 		$performedCmds = php.array_column($flatCmds, 'cmd');
@@ -728,7 +731,7 @@ class RunCmdRq {
 		if ($remarkCmd = await this.makeCmsRemarkCmdIfNeeded()) {
 			php.array_unshift($writeCommands, $remarkCmd);
 		}
-		if ($dkNumberCmd = await this.constructor.makeAddDkNumberCmdIfNeeded(this.stateful.getLog())) {
+		if ($dkNumberCmd = await this.constructor.makeAddDkNumberCmdIfNeeded(stateful.getLog())) {
 			php.array_unshift($writeCommands, $dkNumberCmd);
 		}
 
@@ -754,7 +757,7 @@ class RunCmdRq {
 
 		$pnr = await this.getCurrentPnr();
 		$pnrDump = $pnr.getDump();
-		let {itinerary} = await CommonDataHelper.sortSegmentsByUtc($pnr, this.stateful.getGeoProvider());
+		let {itinerary} = await CommonDataHelper.sortSegmentsByUtc($pnr, stateful.getGeoProvider());
 
 		$calledCommands = [];
 		$cmd = /0/ + itinerary.map(s => s.segmentNumber).join(',');
@@ -802,7 +805,7 @@ class RunCmdRq {
 			return Rej.BadRequest('Invalid PNR - ' + $errors.join('; '));
 		}
 		$tripEndDate = ((ArrayUtil.getLast($pnr.getItinerary()) || {})['departureDate'] || {})['parsed'];
-		$tripEndDt = $tripEndDate ? DateTime.decodeRelativeDateInFuture($tripEndDate, this.stateful.getStartDt()) : null;
+		$tripEndDt = $tripEndDate ? DateTime.decodeRelativeDateInFuture($tripEndDate, stateful.getStartDt()) : null;
 
 		$paxCmdParts = [];
 		for ($pax of Object.values($pnr.getPassengers())) {
@@ -861,7 +864,7 @@ class RunCmdRq {
 				// we don't show it - no adding to $calledCommands
 				await this.runCommand($remarkCmd);
 			}
-			if ($dkNumberCmd = await this.constructor.makeAddDkNumberCmdIfNeeded(this.stateful.getLog())) {
+			if ($dkNumberCmd = await this.constructor.makeAddDkNumberCmdIfNeeded(stateful.getLog())) {
 				await this.runCommand($dkNumberCmd);
 			}
 		}
@@ -894,7 +897,7 @@ class RunCmdRq {
 					&& $pax['firstName'] === 'ALEX';
 			};
 			if (Fp.any($isAlex, ((($parsed['parsedData'] || {})['passengers'] || {})['parsedData'] || {})['passengerList'] || []) &&
-				!this.stateful.getAgent().canOpenPrivatePnr()
+				!stateful.getAgent().canOpenPrivatePnr()
 			) {
 				await this.runCommand('I');
 				return {'errors': ['Restricted PNR']};
@@ -930,8 +933,8 @@ class RunCmdRq {
 	async priceInAnotherPcc($cmd, $target, $dialect) {
 		let $pnr = await this.getCurrentPnr();
 		return (new RepriceInAnotherPccAction())
-			.setLog((msg, data) => this.stateful.logit(msg, data))
-			.execute($pnr, $cmd, $dialect, $target, this.stateful);
+			.setLog((msg, data) => stateful.logit(msg, data))
+			.execute($pnr, $cmd, $dialect, $target, stateful);
 	}
 
 	async processRequestedCommand($cmd) {
@@ -957,7 +960,7 @@ class RunCmdRq {
 			return this.processCloneItinerary($reData);
 		} else if ($aliasData = AliasParser.parseStore($cmd)) {
 			return this.storePricing($aliasData);
-		} else if ($aliasData = await AliasParser.parsePrice($cmd, this.stateful)) {
+		} else if ($aliasData = await AliasParser.parsePrice($cmd, stateful)) {
 			return this.priceAll($aliasData);
 		} else if ($aliasData = this.constructor.parseMultiPriceItineraryAlias($cmd)) {
 			return this.multiPriceItinerary($aliasData);
@@ -965,7 +968,7 @@ class RunCmdRq {
 			return this.rebookAsSs();
 		} else if (php.preg_match(/^(FQ.*)\/MIX$/, $cmd, $matches = [])) {
 			return this.getMultiPccTariffDisplay($matches[1]);
-		} else if (!php.empty($itinerary = await AliasParser.parseCmdAsPnr($cmd, this.stateful))) {
+		} else if (!php.empty($itinerary = await AliasParser.parseCmdAsPnr($cmd, stateful))) {
 			return this.bookPnr($itinerary, true);
 		} else if ($result = RepriceInAnotherPccAction.parseAlias($cmd)) {
 			return this.priceInAnotherPcc($result['cmd'], $result['target'], $result['dialect']);
@@ -1019,4 +1022,8 @@ class RunCmdRq {
 	}
 }
 
-module.exports = RunCmdRq;
+return new RunCmdRq().execute(cmdRq);
+
+};
+
+module.exports = execute;
