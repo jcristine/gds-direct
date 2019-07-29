@@ -2,7 +2,7 @@
 
 const Agent = require('../../../../../../../backend/DataFormats/Wrappers/Agent.js');
 const GdsDirectDefaults = require('../../../../Rbs/TestUtils/GdsDirectDefaults.js');
-const ProcessSabreTerminalInputAction = require('../../../../../../../backend/Transpiled/Rbs/GdsDirect/Actions/Sabre/RunCmdRq.js');
+const RunCmdRq = require('../../../../../../../backend/Transpiled/Rbs/GdsDirect/Actions/Sabre/RunCmdRq.js');
 
 const php = require('../../../../php.js');
 
@@ -1890,7 +1890,7 @@ class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
 		let $session, $actual;
 
 		$session = GdsDirectDefaults.makeStatefulSession('sabre', $input, $sessionInfo);
-		$actual = await (new ProcessSabreTerminalInputAction($session))
+		$actual = await (new RunCmdRq($session))
 			.useXml($input['useXml'] || false)
 			.execute($input['cmdRequested']);
 		$actual['sessionData'] = $session.getSessionData();

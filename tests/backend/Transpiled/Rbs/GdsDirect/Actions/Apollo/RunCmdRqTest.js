@@ -1,6 +1,6 @@
 // namespace Rbs\GdsDirect;
 
-const ProcessApolloTerminalInputAction = require('../../../../../../../backend/Transpiled/Rbs/GdsDirect/Actions/Apollo/RunCmdRq.js');
+const RunCmdRq = require('../../../../../../../backend/Transpiled/Rbs/GdsDirect/Actions/Apollo/RunCmdRq.js');
 const GdsDirectDefaults = require('../../../../../../../backend/Transpiled/Rbs/TestUtils/GdsDirectDefaults.js');
 const Agent = require('../../../../../../../backend/DataFormats/Wrappers/Agent.js');
 
@@ -7446,7 +7446,7 @@ class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
 		let stateful = await GdsDirectDefaults.makeStatefulSession('apollo', $input, $sessionInfo);
 
 		let cmdRq = $input['cmdRequested'];
-		let $actualOutput = await ProcessApolloTerminalInputAction({
+		let $actualOutput = await RunCmdRq({
 			...($input.dependencyParams || {}),
 			stateful, cmdRq,
 		}).catch(exc => ({error: exc + ''}));

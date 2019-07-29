@@ -1,7 +1,7 @@
 // namespace Rbs\GdsDirect\Actions\Galileo;
 
 const GdsDirectDefaults = require('../../../../Rbs/TestUtils/GdsDirectDefaults.js');
-const ProcessGalileoTerminalInputAction = require('../../../../../../../backend/Transpiled/Rbs/GdsDirect/Actions/Galileo/RunCmdRq.js');
+const RunCmdRq = require('../../../../../../../backend/Transpiled/Rbs/GdsDirect/Actions/Galileo/RunCmdRq.js');
 
 const php = require('../../../../php.js');
 const Agent = require("../../../../../../../backend/DataFormats/Wrappers/Agent");
@@ -2263,7 +2263,7 @@ class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
 	async testCase($input, $output, $sessionInfo) {
 		let $session = GdsDirectDefaults.makeStatefulSession('galileo', $input, $sessionInfo);
 
-		let $actualOutput = await (new ProcessGalileoTerminalInputAction($session))
+		let $actualOutput = await (new RunCmdRq($session))
 			.execute($input['cmdRequested']);
 		$actualOutput['sessionData'] = $session.getSessionData();
 
