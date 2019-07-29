@@ -52,15 +52,17 @@ exports.updateFromService = async () => {
 	};
 };
 
+exports.findByCodeParams = (gds, pcc) => ({
+	table: TABLE,
+	where: [
+		['gds', '=', gds],
+		['pcc', '=', pcc],
+	],
+});
 exports.findByCode = async (gds, pcc) => {
 	/** @var row = normalizeRow() */
-	let row = await Db.with(db => db.fetchOne({
-		table: TABLE,
-		where: [
-			['gds', '=', gds],
-			['pcc', '=', pcc],
-		],
-	}));
+	let params = exports.findByCodeParams(gds, pcc);
+	let row = await Db.with(db => db.fetchOne(params));
 	return row;
 };
 

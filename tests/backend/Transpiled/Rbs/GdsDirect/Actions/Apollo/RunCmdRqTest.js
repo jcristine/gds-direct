@@ -1,3 +1,6 @@
+const stubPccs = require('../../../../../../data/stubPccs.js');
+const SqlUtil = require('klesun-node-tools/src/Utils/SqlUtil.js');
+const Pccs = require('../../../../../../../backend/Repositories/Pccs.js');
 const PtcUtil = require('../../../../../../../backend/Transpiled/Rbs/Process/Common/PtcUtil.js');
 const stubPtcFareFamilies = require('../../../../../../data/stubPtcFareFamilies.js');
 const PtcFareFamilies = require('../../../../../../../backend/Repositories/PtcFareFamilies.js');
@@ -7441,6 +7444,12 @@ class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
 		let $actualOutput = await RunCmdRq({
 			...($input.dependencyParams || {}),
 			stateful, cmdRq,
+			Pccs: {
+				findByCode: (gds, pcc) => {
+					let params = Pccs.findByCodeParams(gds, pcc);
+					return SqlUtil.selectFromArray(params, stubPccs);
+				},
+			},
 			PtcUtil: PtcUtil.makeCustom({
 				PtcFareFamilies: {
 					getAll: () => Promise.resolve(stubPtcFareFamilies),

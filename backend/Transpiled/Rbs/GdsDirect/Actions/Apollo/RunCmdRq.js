@@ -51,7 +51,6 @@ const FareDisplayInternationalParser = require('../../../../Gds/Parsers/Apollo/T
 const ParseHbFex = require('../../../../../Parsers/Apollo/ParseHbFex.js');
 const NmeMaskParser = require("../../../../../Actions/ManualPricing/NmeMaskParser");
 
-const Pccs = require("../../../../../Repositories/Pccs");
 const TicketHistoryParser = require("../../../../Gds/Parsers/Apollo/TicketHistoryParser");
 const TmpLib = require("../../../../../Utils/TmpLib");
 
@@ -60,6 +59,7 @@ let execute = ({
 	stateful, cmdRq,
 	CmdRqLog = require('../../../../../Repositories/CmdRqLog.js'),
 	PtcUtil = require('../../../../Rbs/Process/Common/PtcUtil.js'),
+	Pccs = require("../../../../../Repositories/Pccs.js"),
 }) => {
 
 // would be nice to indent it I guess... or even better - get rid of the class
