@@ -1,3 +1,4 @@
+const stubHighlightRules = require('../../../../data/stubHighlightRules.js');
 let TerminalHighlightService = require('../../../../../backend/Transpiled/App/Services/TerminalHighlightService');
 let HighlightRules = require('../../../../../backend/Repositories/HighlightRules.js');
 
@@ -5,7 +6,7 @@ class TerminalHighlightServiceTest extends require('../../../../../backend/Trans
 	async provideMakeRegexValid() {
 		let list = [];
 
-		let rules = await HighlightRules.getFullDataForService();
+		let rules = stubHighlightRules;
 		for (let rule of Object.values(rules)) {
 			for (let cmdPattern of rule.cmdPatterns) {
 				if (cmdPattern.cmdPattern) {
