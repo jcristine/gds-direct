@@ -1,14 +1,16 @@
-const PtcFareFamilies = require('../../../../Repositories/PtcFareFamilies.js');
 const Rej = require('klesun-node-tools/src/Rej.js');
 
 // namespace Rbs\Process\Common;
 
 let php = require('klesun-node-tools/src/Transpiled/php.js');
 
+const CHILD_MAX_AGE = 11;
+
 /** provides functions to parse/make/modify PTC */
-class PtcUtil
-{
-    static async getFareType(ptc)  {
+const PtcUtil = ({
+    PtcFareFamilies = require('../../../../Repositories/PtcFareFamilies.js'),
+}) => {
+    const getFareType = async (ptc) => {
         let families = await PtcFareFamilies.getAll();
         for (let family of families) {
             let matches;
@@ -26,14 +28,14 @@ class PtcUtil
             }
         }
         return null;
-    }
+    };
 
     /**
      * @see PTYP+TXT in https://developer.travelport.com/euf/assets/developer-network/downloads/ReferenceData.zip
      * this function decodes PTC-s very approximately+ Age group for
      * ambiguous PTC-s like seniors, patients, students etc..+ will be 'adult'
      */
-    static parsePtc($ptc)  {
+    const parsePtc = ($ptc) => {
         let $infantPtcs, $childPtcs, $adultPtcs, $ageGroup, $matches, $age;
         if (!$ptc) {
             return {'ageGroup': null};
@@ -63,7 +65,7 @@ class PtcUtil
             $ageGroup = 'child';
         } else if (php.preg_match(/^[A-Z](\d{1,2})$/, $ptc, $matches = [])) {
             $age = $matches[1];
-            if (php.intval($age) <= this.CHILD_MAX_AGE) {
+            if (php.intval($age) <= CHILD_MAX_AGE) {
                 $ageGroup = 'child';
             } else {
                 $ageGroup = 'adult';
@@ -77,7 +79,7 @@ class PtcUtil
         return {
             'ageGroup': $ageGroup,
         };
-    }
+    };
 
     /**
      * converts $adultPtc to the age group of $nameRecord
@@ -86,7 +88,7 @@ class PtcUtil
      * ...
      * @param $nameRecord = GdsPassengerBlockParser::flattenPassengers()[0]
      */
-    static async convertPtcAgeGroup($adultPtc, $nameRecord, $tripEndDt = null)  {
+    const convertPtcAgeGroup = async ($adultPtc, $nameRecord, $tripEndDt = null) => {
         let ageGroup = PtcUtil.getPaxAgeGroup($nameRecord, $tripEndDt);
         let age = !php.empty($nameRecord['age'])
             ? php.str_pad($nameRecord['age'], 2, '0', php.STR_PAD_LEFT)
@@ -102,11 +104,11 @@ class PtcUtil
             return ptc ? ptc : Rej.NotImplemented(
                 'No infant with a seat PTC matching ' + $adultPtc);
         } else {
-            return this.convertPtcByAgeGroup($adultPtc, ageGroup, age);
+            return convertPtcByAgeGroup($adultPtc, ageGroup, age);
         }
-    }
+    };
 
-    static async convertPtcByAgeGroup($adultPtc, $ageGroup, $age = null) {
+    const convertPtcByAgeGroup = async ($adultPtc, $ageGroup, $age = null) => {
         let $pricingPtc, $letter;
         if ($ageGroup === 'adult') {
             return $adultPtc;
@@ -129,34 +131,43 @@ class PtcUtil
             return Rej.NotImplemented('Unsupported age group - ' + $ageGroup);
         }
         return $pricingPtc;
-    }
+    };
 
-    static _getFullYearsBetween(tripEndDt, dateOfBirth) {
+    const _getFullYearsBetween = (tripEndDt, dateOfBirth) => {
         let dobObj = new Date(dateOfBirth);
         let baseDtObj = new Date(tripEndDt);
         let ageDifMs = baseDtObj.getTime() - dobObj.getTime();
         let ageDate = new Date(ageDifMs); // milliseconds from epoch
         return Math.abs(ageDate.getUTCFullYear() - 1970);
-    }
+    };
 
-    /** @param $nameRecord = GdsPassengerBlockParser::flattenPassengers()[0] */
-    static getPaxAgeGroup($nameRecord, $tripEndDt = null)  {
+    const getPaxAgeGroup = ($nameRecord, $tripEndDt = null) => {
         let $age, $dob, $ptc;
         if ($nameRecord['nameNumber']['isInfant']) {
             return 'infant';
         } else if ($age = $nameRecord['age'] || null) {
-            return php.intval($age) <= this.CHILD_MAX_AGE ? 'child' : 'adult';
+            return php.intval($age) <= CHILD_MAX_AGE ? 'child' : 'adult';
         } else if ($tripEndDt && ($dob = ($nameRecord['dob'] || {})['parsed'])) {
-            $age = this._getFullYearsBetween($tripEndDt, $dob);
-            return php.intval($age) <= this.CHILD_MAX_AGE ? 'child' : 'adult';
+            $age = _getFullYearsBetween($tripEndDt, $dob);
+            return php.intval($age) <= CHILD_MAX_AGE ? 'child' : 'adult';
         } else if ($ptc = $nameRecord['ptc'] || null) {
-            return this.parsePtc($ptc)['ageGroup'];
+            return parsePtc($ptc)['ageGroup'];
         } else {
             return 'adult';
         }
-    }
-}
+    } ;
 
-PtcUtil.CHILD_MAX_AGE = 11;
+    return {
+        getFareType,
+        parsePtc,
+        convertPtcAgeGroup,
+        convertPtcByAgeGroup,
+        getPaxAgeGroup,
+    };
+};
 
-module.exports = PtcUtil;
+const defaultInst = PtcUtil({});
+
+defaultInst.makeCustom = params => PtcUtil(params);
+
+module.exports = defaultInst;
