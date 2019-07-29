@@ -569,7 +569,7 @@ class CmdResultAdapterTest extends require('../../../../../backend/Transpiled/Li
 			getByName: (ruleName) => Promise.resolve()
 				.then(() => Object.values(stubHighlightRules)
 					.filter(r => r.name === ruleName)[0])
-				.catch(Lang.nonEmpty('Rule #' + ruleName + ' not available in stub data')),
+				.then(Lang.nonEmpty('Rule #' + ruleName + ' not available in stub data')),
 		};
 		let actual = await (new CmdResultAdapter(gds))
 			.formatOutput({cmdRq, calledCommands, HighlightRules});

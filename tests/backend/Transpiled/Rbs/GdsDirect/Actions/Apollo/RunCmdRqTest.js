@@ -12,6 +12,7 @@ const Agent = require('../../../../../../../backend/DataFormats/Wrappers/Agent.j
 const Rej = require('klesun-node-tools/src/Rej.js');
 const {coverExc} = require('klesun-node-tools/src/Lang.js');
 const php = require('../../../../php.js');
+const {nonEmpty} = require('klesun-node-tools/src/Lang.js');
 
 class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
 	static makeTableRows($keys, $valuesPerRow) {
@@ -7445,10 +7446,10 @@ class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
 			...($input.dependencyParams || {}),
 			stateful, cmdRq,
 			Pccs: {
-				findByCode: (gds, pcc) => {
-					let params = Pccs.findByCodeParams(gds, pcc);
-					return SqlUtil.selectFromArray(params, stubPccs);
-				},
+				findByCode: (gds, pcc) => Promise.resolve()
+					.then(() => Pccs.findByCodeParams(gds, pcc))
+					.then(params => SqlUtil.selectFromArray(params, stubPccs)[0])
+					.then(nonEmpty('No stubbed PCC matching ' + gds + ':' + pcc)),
 			},
 			PtcUtil: PtcUtil.makeCustom({
 				PtcFareFamilies: {
