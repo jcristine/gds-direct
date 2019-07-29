@@ -6,7 +6,7 @@ const ProcessGalileoTerminalInputAction = require('../../../../../../../backend/
 const php = require('../../../../php.js');
 const Agent = require("../../../../../../../backend/DataFormats/Wrappers/Agent");
 
-class ProcessGalileoTerminalInputActionTest extends require('../../../../Lib/TestCase.js') {
+class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
 	static makeTableRows($keys, $valuesPerRow) {
 		let $rows, $values;
 
@@ -2279,5 +2279,5 @@ class ProcessGalileoTerminalInputActionTest extends require('../../../../Lib/Tes
 	}
 }
 
-ProcessGalileoTerminalInputActionTest.count = 0;
-module.exports = ProcessGalileoTerminalInputActionTest;
+RunCmdRqTest.count = 0;
+module.exports = RunCmdRqTest;

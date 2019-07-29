@@ -6,7 +6,7 @@ const ProcessSabreTerminalInputAction = require('../../../../../../../backend/Tr
 
 const php = require('../../../../php.js');
 
-class ProcessSabreTerminalInputActionTest extends require('../../../../Lib/TestCase.js') {
+class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
 	provideActionTestCases() {
 		let $list, $agentBaseDate, $argumentTuples, $testCase;
 
@@ -1906,5 +1906,5 @@ class ProcessSabreTerminalInputActionTest extends require('../../../../Lib/TestC
 	}
 }
 
-ProcessSabreTerminalInputActionTest.count = 0;
-module.exports = ProcessSabreTerminalInputActionTest;
+RunCmdRqTest.count = 0;
+module.exports = RunCmdRqTest;

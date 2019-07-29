@@ -5,7 +5,7 @@ const ProcessAmadeusTerminalInputAction = require('../../../../../../../backend/
 const GdsDirectDefaults = require('../../../../Rbs/TestUtils/GdsDirectDefaults.js');
 const php = require('../../../../php.js');
 
-class ProcessAmadeusTerminalInputActionTest extends require('../../../../Lib/TestCase.js') {
+class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
 	provideTestForgeAreasDumpCases() {
 		let $list;
 
@@ -2531,5 +2531,5 @@ class ProcessAmadeusTerminalInputActionTest extends require('../../../../Lib/Tes
 	}
 }
 
-ProcessAmadeusTerminalInputActionTest.count = 0;
-module.exports = ProcessAmadeusTerminalInputActionTest;
+RunCmdRqTest.count = 0;
+module.exports = RunCmdRqTest;

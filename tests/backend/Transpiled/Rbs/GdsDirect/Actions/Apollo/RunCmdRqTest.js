@@ -6,7 +6,7 @@ const Agent = require('../../../../../../../backend/DataFormats/Wrappers/Agent.j
 
 const php = require('../../../../php.js');
 
-class ProcessApolloTerminalInputActionTest extends require('../../../../Lib/TestCase.js') {
+class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
 	static makeTableRows($keys, $valuesPerRow) {
 		let $rows, $values;
 
@@ -7463,4 +7463,4 @@ class ProcessApolloTerminalInputActionTest extends require('../../../../Lib/Test
 	}
 }
 
-module.exports = ProcessApolloTerminalInputActionTest;
+module.exports = RunCmdRqTest;
