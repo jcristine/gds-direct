@@ -1,5 +1,4 @@
 
-// namespace Gds\Parsers\Apollo\PricingParser\DataStructureWriters;
 
 const AtfqParser = require('../../../../../Gds/Parsers/Apollo/Pnr/AtfqParser.js');
 const BaggageAllowanceParser = require('../../../../../Gds/Parsers/Apollo/BaggageAllowanceParser/BaggageAllowanceParser.js');

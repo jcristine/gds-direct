@@ -1,4 +1,3 @@
-// namespace Lib\Utils;
 
 // I guess it really should be replaced by Func library and custom functions
 const php = require("../../phpDeprecated");

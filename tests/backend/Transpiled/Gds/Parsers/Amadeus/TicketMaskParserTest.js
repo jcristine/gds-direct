@@ -1,4 +1,3 @@
-// namespace Gds\Parsers\Amadeus;
 
 const php = require('../../../php.js');
 const TicketMaskParser = require("../../../../../../backend/Transpiled/Gds/Parsers/Amadeus/TicketMaskParser");

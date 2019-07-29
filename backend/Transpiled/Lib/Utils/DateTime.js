@@ -1,4 +1,3 @@
-// namespace Lib\Utils;
 
 let moment = require('moment-timezone');
 let Diag = require('../../../LibWrappers/Diag.js');

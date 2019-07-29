@@ -1,4 +1,3 @@
-// namespace Gds\Parsers\Amadeus;
 
 const CommandParser = require('../../../../../../backend/Transpiled/Gds/Parsers/Amadeus/CommandParser.js');
 

@@ -1,4 +1,3 @@
-// namespace Gds\Parsers\Galileo\Pricing;
 
 
 const php = require('../../../../php.js');

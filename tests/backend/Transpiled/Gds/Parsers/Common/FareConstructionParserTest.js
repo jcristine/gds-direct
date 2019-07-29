@@ -1,4 +1,3 @@
-// namespace Gds\Parsers\Common\FareConstruction;
 
 const php = require('../../../php.js');
 const FareConstructionParser = require('../../../../../../backend/Transpiled/Gds/Parsers/Common/FareConstruction/FareConstructionParser.js');

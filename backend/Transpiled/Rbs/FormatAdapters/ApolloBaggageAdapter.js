@@ -1,5 +1,4 @@
 
-// namespace Rbs\FormatAdapters;
 
 const Fp = require('../../Lib/Utils/Fp.js');
 const php = require('../../phpDeprecated.js');

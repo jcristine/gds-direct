@@ -1,5 +1,4 @@
 
-// namespace Rbs\GdsDirect\SessionStateProcessor;
 
 const StringUtil = require('../../../Lib/Utils/StringUtil.js');
 const CommandParser = require('../../../Gds/Parsers/Amadeus/CommandParser.js');

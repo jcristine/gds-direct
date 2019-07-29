@@ -1,4 +1,3 @@
-// namespace Rbs\Process\Amadeus\Terminal;
 
 const GetCurrentPricingDumpAction = require('../../../../../../../backend/Transpiled/Rbs/GdsDirect/Actions/Amadeus/GetCurrentPricingDumpAction.js');
 const AnyGdsStubSession = require('../../../../../../../backend/Transpiled/Rbs/TestUtils/AnyGdsStubSession.js');

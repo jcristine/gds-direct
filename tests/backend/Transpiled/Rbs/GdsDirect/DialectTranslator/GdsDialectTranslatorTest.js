@@ -1,5 +1,4 @@
 
-// namespace Rbs\GdsDirect\DialectTranslator;
 
 const GdsDialectTranslator = require('../../../../../../backend/Transpiled/Rbs/GdsDirect/DialectTranslator/GdsDialectTranslator.js');
 

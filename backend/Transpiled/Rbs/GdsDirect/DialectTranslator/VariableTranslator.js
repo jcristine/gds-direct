@@ -1,5 +1,4 @@
 
-// namespace Rbs\GdsDirect\DialectTranslator;
 
 const StringUtil = require('../../../Lib/Utils/StringUtil.js');
 const SabCmdParser = require('../../../Gds/Parsers/Sabre/CommandParser.js');

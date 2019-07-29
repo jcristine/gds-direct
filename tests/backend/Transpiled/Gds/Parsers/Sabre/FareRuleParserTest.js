@@ -1,5 +1,4 @@
 
-// namespace Gds\Parsers\Sabre;
 
 
 const FareRuleParser = require('../../../../../../backend/Transpiled/Gds/Parsers/Sabre/FareRuleParser.js');

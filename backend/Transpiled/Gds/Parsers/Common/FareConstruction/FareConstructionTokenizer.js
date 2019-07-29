@@ -1,4 +1,3 @@
-// namespace Gds\Parsers\Common\FareConstruction;
 
 const Lexeme = require('../../../../Lib/Lexer/Lexeme.js');
 

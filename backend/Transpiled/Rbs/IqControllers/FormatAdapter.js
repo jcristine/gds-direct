@@ -1,5 +1,4 @@
 
-// namespace Rbs\IqControllers;
 const DateTime = require('../../Lib/Utils/DateTime.js');
 const Fp = require('../../Lib/Utils/Fp.js');
 const ApolloReservationItineraryParser = require('../../Gds/Parsers/Apollo/Pnr/ItineraryParser.js');

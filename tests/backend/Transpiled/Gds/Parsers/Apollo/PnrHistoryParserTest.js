@@ -1,4 +1,3 @@
-// namespace Gds\Parsers\Apollo;
 
 
 const PnrHistoryParser = require("../../../../../../backend/Transpiled/Gds/Parsers/Apollo/PnrHistoryParser");

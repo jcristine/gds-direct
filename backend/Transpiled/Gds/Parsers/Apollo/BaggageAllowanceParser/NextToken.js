@@ -1,5 +1,4 @@
 
-// namespace Gds\Parsers\Apollo\BaggageAllowanceParser;
 
 const StringUtil = require('../../../../Lib/Utils/StringUtil.js');
 const BagLineParser = require('../../../../Gds/Parsers/Apollo/BaggageAllowanceParser/BagLineParser/BagLineParser.js');

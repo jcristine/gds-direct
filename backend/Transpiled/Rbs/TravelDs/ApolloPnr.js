@@ -1,4 +1,3 @@
-// namespace Rbs\TravelDs;
 
 const Fp = require('../../Lib/Utils/Fp.js');
 const ApolloReservationParser = require('../../Gds/Parsers/Apollo/Pnr/PnrParser.js');

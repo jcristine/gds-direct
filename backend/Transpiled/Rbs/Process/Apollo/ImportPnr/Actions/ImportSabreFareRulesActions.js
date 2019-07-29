@@ -1,4 +1,3 @@
-// namespace Rbs\Process\Apollo\ImportPnr\Actions;
 
 const FareRuleOrSegmentsParser = require('../../../../../Gds/Parsers/Sabre/FareRuleOrSegmentsParser.js');
 const FareRuleParser = require('../../../../../Gds/Parsers/Sabre/FareRuleParser.js');

@@ -1,5 +1,4 @@
 
-// namespace Gds\Parsers\Apollo\FareRules;
 const StringUtil = require('../../../../Lib/Utils/StringUtil.js');
 
 /**

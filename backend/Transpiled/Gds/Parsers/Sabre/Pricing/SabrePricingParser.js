@@ -1,4 +1,3 @@
-// namespace Gds\Parsers\Sabre\Pricing;
 const ArrayUtil = require('../../../../Lib/Utils/ArrayUtil.js');
 const Fp = require('../../../../Lib/Utils/Fp.js');
 const StringUtil = require('../../../../Lib/Utils/StringUtil.js');

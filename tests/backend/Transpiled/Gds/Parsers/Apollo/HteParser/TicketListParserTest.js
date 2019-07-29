@@ -1,5 +1,4 @@
 
-// namespace Gds\Parsers\Apollo\HteParser;
 
 const TicketListParser = require('../../../../../../../backend/Transpiled/Gds/Parsers/Apollo/HteParser/TicketListParser.js');
 

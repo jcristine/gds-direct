@@ -1,4 +1,3 @@
-// namespace Rbs\GdsDirect\DialectTranslator;
 
 const php = require('../../../php.js');
 const CommandCorrector = require("../../../../../../backend/Transpiled/Rbs/GdsDirect/DialectTranslator/CommandCorrector");

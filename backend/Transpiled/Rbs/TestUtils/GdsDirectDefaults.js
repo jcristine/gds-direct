@@ -1,4 +1,3 @@
-// namespace Rbs\TestUtils;
 
 let php = require('../../phpDeprecated');
 const Agent = require("../../../DataFormats/Wrappers/Agent");

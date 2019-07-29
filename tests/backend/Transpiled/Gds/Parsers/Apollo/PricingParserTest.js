@@ -1,5 +1,4 @@
 
-// namespace Gds\Parsers\Apollo;
 
 const PricingParser = require('../../../../../../backend/Transpiled/Gds/Parsers/Apollo/PricingParser/PricingParser.js');
 const php = require('klesun-node-tools/src/Transpiled/php.js');

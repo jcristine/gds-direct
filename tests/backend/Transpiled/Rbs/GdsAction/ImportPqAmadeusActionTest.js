@@ -1,4 +1,3 @@
-// namespace Rbs\GdsDirect;
 
 const StubLocationGeographyProvider = require('../../../../../backend/Transpiled/Rbs/DataProviders/StubLocationGeographyProvider.js');
 const ImportPqAmadeusAction = require('../../../../../backend/Transpiled/Rbs/GdsDirect/Actions/Amadeus/ImportPqAmadeusAction.js');

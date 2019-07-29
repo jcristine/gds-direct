@@ -1,5 +1,4 @@
 
-// namespace Gds\Parsers\Amadeus\ReservationParser;
 
 const StringUtil = require('../../../../Lib/Utils/StringUtil.js');
 

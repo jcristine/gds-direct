@@ -1,4 +1,3 @@
-// namespace Rbs\GdsAction;
 
 const ArrayUtil = require('../../Lib/Utils/ArrayUtil.js');
 const LocationGeographyProvider = require('../../Rbs/DataProviders/LocationGeographyProvider.js');

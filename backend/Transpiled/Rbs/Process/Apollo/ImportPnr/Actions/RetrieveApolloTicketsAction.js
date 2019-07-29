@@ -1,4 +1,3 @@
-// namespace Rbs\Process\Apollo\ImportPnr\Actions;
 
 const HteParser = require('../../../../../Gds/Parsers/Apollo/HteParser/HteParser.js');
 const TicketParser = require('../../../../../Gds/Parsers/Apollo/HteParser/TicketParser.js');

@@ -1,6 +1,3 @@
-
-// namespace Gds\Parsers\Galileo\ReservationParser;
-
 const StringUtil = require('../../../../Lib/Utils/StringUtil.js');
 
 /**

@@ -1,4 +1,3 @@
-// namespace Rbs\Process\Apollo\ImportPnr\Actions;
 
 const Fp = require('../../../../../Lib/Utils/Fp.js');
 const AbstractGdsAction = require('../../../../../Rbs/GdsAction/AbstractGdsAction.js');

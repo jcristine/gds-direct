@@ -1,4 +1,3 @@
-// namespace Rbs\FormatAdapters;
 const DateTime = require('../../Lib/Utils/DateTime.js');
 const Fp = require('../../Lib/Utils/Fp.js');
 const PtcUtil = require('../../Rbs/Process/Common/PtcUtil.js');

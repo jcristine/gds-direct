@@ -1,5 +1,4 @@
 
-// namespace Gds\Parsers\Apollo\BaggageAllowanceParser;
 
 const BaggageAllowanceParserDataStructureWriter = require("./BaggageAllowanceParserDataStructureWriter");
 const NextToken = require("./NextToken");

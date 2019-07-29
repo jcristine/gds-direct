@@ -1,5 +1,4 @@
 
-// namespace Gds\Parsers\Galileo;
 
 const CommandParser = require('../../../../../../backend/Transpiled/Gds/Parsers/Galileo/CommandParser.js');
 const php = require('../../../php.js');

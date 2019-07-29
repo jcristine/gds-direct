@@ -2,7 +2,6 @@
 const php = require("../../phpDeprecated");
 
 
-// namespace Lib\Utils;
 
 class StringUtil
 {

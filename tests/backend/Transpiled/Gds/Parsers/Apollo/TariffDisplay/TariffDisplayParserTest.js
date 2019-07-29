@@ -1,4 +1,3 @@
-// namespace Gds\Parsers\Apollo;
 
 const TariffDisplayParser = require('../../../../../../../backend/Transpiled/Gds/Parsers/Apollo/TariffDisplay/TariffDisplayParser.js');
 const php = require('../../../../php.js');

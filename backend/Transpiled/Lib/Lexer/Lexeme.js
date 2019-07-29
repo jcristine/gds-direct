@@ -1,4 +1,3 @@
-// namespace LocalLib\Lexer;
 
 let normReg = (pattern) => {
 	if (typeof pattern === 'string') {

@@ -1,4 +1,3 @@
-// namespace Rbs\GdsDirect\DialectTranslator;
 
 const StringUtil = require('../../../Lib/Utils/StringUtil.js');
 const php = require('klesun-node-tools/src/Transpiled/php.js');

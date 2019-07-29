@@ -1,5 +1,4 @@
 
-// namespace Gds\Parsers\Sabre;
 
 const php = require('../../../php.js');
 const AirAvailabilityParser = require("../../../../../../backend/Transpiled/Gds/Parsers/Sabre/AirAvailabilityParser");

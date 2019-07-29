@@ -1,5 +1,4 @@
 
-// namespace Rbs\FormatAdapters;
 
 const DateTime = require('../../Lib/Utils/DateTime.js');
 const AmadeusReservationParser = require('../../Gds/Parsers/Amadeus/Pnr/PnrParser.js');

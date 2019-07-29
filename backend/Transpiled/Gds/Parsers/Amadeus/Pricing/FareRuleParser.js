@@ -1,5 +1,4 @@
 
-// namespace Gds\Parsers\Amadeus\Pricing;
 
 const ArrayUtil = require('../../../../Lib/Utils/ArrayUtil.js');
 const Fp = require('../../../../Lib/Utils/Fp.js');

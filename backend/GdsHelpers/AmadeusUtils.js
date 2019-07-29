@@ -1,4 +1,3 @@
-// namespace Rbs\Process\Amadeus;
 const StringUtil = require('../Transpiled/Lib/Utils/StringUtil.js');
 
 /**

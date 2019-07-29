@@ -1,4 +1,3 @@
-// namespace Gds\Parsers\Sabre;
 
 
 const SabreTicketParser = require('../../../../../../backend/Transpiled/Gds/Parsers/Sabre/SabreTicketParser.js');

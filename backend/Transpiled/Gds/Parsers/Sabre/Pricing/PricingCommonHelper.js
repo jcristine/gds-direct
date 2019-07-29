@@ -1,4 +1,3 @@
-// namespace Gds\Parsers\Sabre\Pricing;
 const Fp = require('../../../../Lib/Utils/Fp.js');
 const FareConstructionParser = require('../../../../Gds/Parsers/Common/FareConstruction/FareConstructionParser.js');
 

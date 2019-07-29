@@ -1,4 +1,3 @@
-// namespace Rbs\GdsAction;
 
 const ApolloSvcParser = require('../../Gds/Parsers/Apollo/ApolloSvcParser/ApolloSvcParser.js');
 const TtParser = require('../../Gds/Parsers/Galileo/TtParser.js');

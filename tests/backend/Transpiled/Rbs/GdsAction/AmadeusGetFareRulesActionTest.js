@@ -1,4 +1,3 @@
-// namespace Rbs\GdsAction;
 
 const StubLocationGeographyProvider = require('../../../../../backend/Transpiled/Rbs/DataProviders/StubLocationGeographyProvider.js');
 const AnyGdsStubSession = require('../../Rbs/TestUtils/AnyGdsStubSession.js');

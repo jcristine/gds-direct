@@ -1,5 +1,4 @@
 
-// namespace Rbs\GdsDirect\Actions\Apollo;
 
 const StringUtil = require('../../../../Lib/Utils/StringUtil.js');
 const ApolloMakeMcoAction = require('../../../../Rbs/GdsAction/ApolloMakeMcoAction.js');

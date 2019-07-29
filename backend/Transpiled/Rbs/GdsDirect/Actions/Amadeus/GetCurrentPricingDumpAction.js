@@ -1,5 +1,4 @@
 
-// namespace Rbs\GdsDirect\Actions\Amadeus;
 
 const ArrayUtil = require('../../../../Lib/Utils/ArrayUtil.js');
 const AbstractGdsAction = require('../../../GdsAction/AbstractGdsAction.js');

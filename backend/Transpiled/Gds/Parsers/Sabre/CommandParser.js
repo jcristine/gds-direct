@@ -1,5 +1,4 @@
 const AvailCmdParser = require('./Commands/AvailCmdParser.js');
-// namespace Gds\Parsers\Sabre;
 
 const Fp = require('../../../Lib/Utils/Fp.js');
 const StringUtil = require('../../../Lib/Utils/StringUtil.js');

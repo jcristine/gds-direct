@@ -1,5 +1,4 @@
 
-// namespace Gds\Parsers\Amadeus\Commands;
 
 const Fp = require('../../../../Lib/Utils/Fp.js');
 const StringUtil = require('../../../../Lib/Utils/StringUtil.js');

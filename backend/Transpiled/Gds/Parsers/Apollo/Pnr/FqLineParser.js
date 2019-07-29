@@ -1,5 +1,4 @@
 
-// namespace Gds\Parsers\Apollo\ApolloReservationParser\AtfqParser;
 
 const php = require("../../../../phpDeprecated");
 

@@ -1,5 +1,4 @@
 
-// namespace Gds\Parsers\Apollo;
 
 const Fp = require('../../../Lib/Utils/Fp.js');
 const Rej = require('klesun-node-tools/src/Rej.js');

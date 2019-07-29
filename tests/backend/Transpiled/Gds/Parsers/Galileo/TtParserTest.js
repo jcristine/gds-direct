@@ -1,6 +1,5 @@
 
 
-// namespace Gds\Parsers\Galileo;
 
 const TtParser = require('../../../../../../backend/Transpiled/Gds/Parsers/Galileo/TtParser.js');
 

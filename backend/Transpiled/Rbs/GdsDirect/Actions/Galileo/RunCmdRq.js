@@ -1,6 +1,5 @@
 const FqCmdParser = require('../../../../Gds/Parsers/Galileo/Commands/FqCmdParser.js');
 const GetCurrentPnr = require('../../../../../Actions/GetCurrentPnr.js');
-// namespace Rbs\GdsDirect\Actions\Galileo;
 
 const CmsGalileoTerminal = require("../../GdsInterface/CmsApolloTerminal");
 

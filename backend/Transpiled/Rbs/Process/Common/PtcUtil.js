@@ -1,6 +1,5 @@
 const Rej = require('klesun-node-tools/src/Rej.js');
 
-// namespace Rbs\Process\Common;
 
 let php = require('klesun-node-tools/src/Transpiled/php.js');
 

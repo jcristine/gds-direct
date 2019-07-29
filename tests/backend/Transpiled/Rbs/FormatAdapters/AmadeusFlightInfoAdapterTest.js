@@ -1,5 +1,4 @@
 
-// namespace Rbs\FormatAdapters;
 
 const FlightInfoParser = require('../../../../../backend/Transpiled/Gds/Parsers/Amadeus/FlightInfoParser.js');
 const php = require('../../php.js');

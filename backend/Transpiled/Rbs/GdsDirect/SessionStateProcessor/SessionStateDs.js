@@ -1,4 +1,3 @@
-// namespace Rbs\GdsDirect\SessionStateProcessor;
 
 /**
  * this class represents the session state structure i believe

@@ -1,5 +1,4 @@
 
-// namespace Rbs\TestUtils;
 
 const AnyGdsStubSession = require('./AnyGdsStubSession.js');
 

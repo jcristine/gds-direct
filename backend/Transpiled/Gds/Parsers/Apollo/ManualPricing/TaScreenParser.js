@@ -1,4 +1,3 @@
-// namespace Gds\Parsers\Apollo\ManualPricing;
 
 const StringUtil = require('../../../../Lib/Utils/StringUtil.js');
 

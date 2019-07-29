@@ -1,6 +1,5 @@
 
 
-// namespace Rbs\GdsAction;
 
 const GalileoGetFlightServiceInfoAction = require('../../../../../backend/Transpiled/Rbs/GdsAction/GalileoGetFlightServiceInfoAction.js');
 const FormatAdapter = require('../../../../../backend/Transpiled/Rbs/IqControllers/FormatAdapter.js');

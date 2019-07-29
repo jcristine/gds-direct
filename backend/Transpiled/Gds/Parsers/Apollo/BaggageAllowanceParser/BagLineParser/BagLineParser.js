@@ -1,5 +1,4 @@
 
-// namespace Gds\Parsers\Apollo\BaggageAllowanceParser\BagLineParser;
 
 const NextToken = require("./NextToken");
 const ParserState = require("./ParserState");

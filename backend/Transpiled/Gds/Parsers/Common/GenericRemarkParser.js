@@ -1,5 +1,4 @@
 
-// namespace Gds\Parsers\Common;
 
 let php = require('../../../phpDeprecated');
 

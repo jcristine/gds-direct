@@ -1,5 +1,4 @@
 
-// namespace Rbs\GdsDirect\Actions\Common;
 
 const ApolloCmdParser = require('../../../../Gds/Parsers/Apollo/CommandParser.js');
 const DateTime = require('../../../../Lib/Utils/DateTime.js');

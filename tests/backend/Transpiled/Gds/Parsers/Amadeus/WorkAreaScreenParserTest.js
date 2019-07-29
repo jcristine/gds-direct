@@ -1,5 +1,4 @@
 
-// namespace Gds\Parsers\Amadeus;
 
 const php = require('../../../php.js');
 const WorkAreaScreenParser = require("../../../../../../backend/Transpiled/Gds/Parsers/Amadeus/WorkAreaScreenParser");

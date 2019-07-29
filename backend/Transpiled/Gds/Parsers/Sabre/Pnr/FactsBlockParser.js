@@ -1,5 +1,4 @@
 
-// namespace Gds\Parsers\Sabre\SabreReservationParser;
 
 const StringUtil = require('../../../../Lib/Utils/StringUtil.js');
 const SsrBlockParser = require('../../../../Gds/Parsers/Apollo/Pnr/SsrBlockParser.js');

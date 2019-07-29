@@ -1,4 +1,3 @@
-// namespace Rbs\FormatAdapters;
 
 const Fp = require('../../Lib/Utils/Fp.js');
 const ArrayUtil = require('../../Lib/Utils/ArrayUtil.js');

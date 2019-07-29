@@ -1,5 +1,4 @@
 
-// namespace Rbs\Process\Common\ImportPnr;
 const Fp = require('../../../../Lib/Utils/Fp.js');
 const SsrBlockParser = require('../../../../Gds/Parsers/Apollo/Pnr/SsrBlockParser.js');
 const PtcUtil = require('../../../../Rbs/Process/Common/PtcUtil.js');

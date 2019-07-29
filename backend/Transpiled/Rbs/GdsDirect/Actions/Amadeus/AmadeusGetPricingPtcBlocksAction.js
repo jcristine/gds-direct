@@ -1,5 +1,4 @@
 
-// namespace Rbs\GdsAction;
 
 const AmadeusPricingCommonFormatAdapter = require('../../../../Rbs/FormatAdapters/AmadeusPricingCommonFormatAdapter.js');
 const CommandParser = require('../../../../Gds/Parsers/Amadeus/CommandParser.js');

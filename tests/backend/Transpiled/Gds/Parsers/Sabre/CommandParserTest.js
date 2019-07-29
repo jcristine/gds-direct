@@ -1,4 +1,3 @@
-// namespace Gds\Parsers\Sabre;
 
 const CommandParser = require('../../../../../../backend/Transpiled/Gds/Parsers/Sabre/CommandParser.js');
 

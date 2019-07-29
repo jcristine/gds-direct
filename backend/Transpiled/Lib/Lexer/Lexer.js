@@ -1,4 +1,3 @@
-// namespace LocalLib\Lexer;
 
 const Fp = require('../../Lib/Utils/Fp.js');
 

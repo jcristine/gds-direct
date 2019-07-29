@@ -1,4 +1,3 @@
-// namespace Rbs\GdsAction;
 
 const AmadeusReservationParser = require('../../../../../backend/Transpiled/Gds/Parsers/Amadeus/Pnr/PnrParser.js');
 const AnyGdsStubSession = require('../../../../../backend/Transpiled/Rbs/TestUtils/AnyGdsStubSession.js');

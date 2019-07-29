@@ -1,4 +1,3 @@
-// namespace Gds\Parsers\Amadeus\Pricing;
 
 const php = require('../../../../php.js');
 const FareRuleParser = require("../../../../../../../backend/Transpiled/Gds/Parsers/Amadeus/Pricing/FareRuleParser");

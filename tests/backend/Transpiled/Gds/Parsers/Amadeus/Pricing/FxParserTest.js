@@ -1,5 +1,4 @@
 
-// namespace Gds\Parsers\Amadeus\Pricing;
 
 const php = require('../../../../php.js');
 const FxParser = require("../../../../../../../backend/Transpiled/Gds/Parsers/Amadeus/Pricing/FxParser");

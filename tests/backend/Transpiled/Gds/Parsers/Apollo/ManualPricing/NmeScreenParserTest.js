@@ -1,4 +1,3 @@
-// namespace Gds\Parsers\Apollo\ManualPricing;
 
 const php = require('../../../../php.js');
 const NmeScreenParser = require("../../../../../../../backend/Transpiled/Gds/Parsers/Apollo/ManualPricing/NmeScreenParser");

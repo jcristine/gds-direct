@@ -1,5 +1,4 @@
 const GetCurrentPnr = require('../../../../../Actions/GetCurrentPnr.js');
-// namespace Rbs\GdsDirect\Actions\Apollo;
 
 // utils
 const php = require('klesun-node-tools/src/Transpiled/php.js');

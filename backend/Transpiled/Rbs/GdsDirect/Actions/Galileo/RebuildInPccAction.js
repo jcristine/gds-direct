@@ -1,4 +1,3 @@
-// namespace Rbs\GdsDirect\Actions\Galileo;
 
 const Fp = require('../../../../Lib/Utils/Fp.js');
 const AbstractGdsAction = require('../../../../Rbs/GdsAction/AbstractGdsAction.js');

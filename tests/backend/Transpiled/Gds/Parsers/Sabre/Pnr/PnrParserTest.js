@@ -1,6 +1,3 @@
-// namespace Gds\Parsers\Sabre\SabreReservationParser;
-
-
 const php = require('../../../../php.js');
 const PnrParser = require("../../../../../../../backend/Transpiled/Gds/Parsers/Sabre/Pnr/PnrParser");
 

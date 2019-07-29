@@ -1,4 +1,3 @@
-// namespace Gds\Parsers\Amadeus\ReservationParser;
 
 
 const php = require('../../../../php.js');

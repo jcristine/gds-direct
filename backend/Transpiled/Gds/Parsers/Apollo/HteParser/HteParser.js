@@ -1,5 +1,4 @@
 
-// namespace Gds\Parsers\Apollo\HteParser;
 
 const ArrayUtil = require('../../../../Lib/Utils/ArrayUtil.js');
 const StringUtil = require('../../../../Lib/Utils/StringUtil.js');

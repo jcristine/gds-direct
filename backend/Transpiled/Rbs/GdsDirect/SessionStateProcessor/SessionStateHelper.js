@@ -1,5 +1,4 @@
 
-// namespace Rbs\GdsDirect\SessionStateProcessor;
 
 const CanCreatePqRules = require('./CanCreatePqRules.js');
 const Errors = require('../../../Rbs/GdsDirect/Errors.js');

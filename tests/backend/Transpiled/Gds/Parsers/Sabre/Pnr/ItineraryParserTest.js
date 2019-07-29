@@ -1,6 +1,4 @@
 
-// namespace Gds\Parsers\Sabre\SabreReservationParser;
-
 const ItineraryParser = require("../../../../../../../backend/Transpiled/Gds/Parsers/Sabre/Pnr/ItineraryParser");
 
 let php = require('../../../../../../../backend/Transpiled/phpDeprecated.js');

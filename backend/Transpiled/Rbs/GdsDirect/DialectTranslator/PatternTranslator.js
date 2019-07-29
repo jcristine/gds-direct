@@ -1,4 +1,3 @@
-// namespace Rbs\GdsDirect\DialectTranslator;
 
 const StringUtil = require('../../../Lib/Utils/StringUtil.js');
 const Variables = require('../../../Rbs/GdsDirect/DialectTranslator/VariableTranslator.js');

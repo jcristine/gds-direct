@@ -1,4 +1,3 @@
-// namespace Gds\Parsers\Apollo;
 
 const ArrayUtil = require('../../../Lib/Utils/ArrayUtil.js');
 const Fp = require('../../../Lib/Utils/Fp.js');

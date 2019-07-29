@@ -1,4 +1,3 @@
-// namespace Rbs\Process\Sabre\ImportPnr;
 const ArrayUtil = require('../../../../Lib/Utils/ArrayUtil.js');
 const DateTime = require('../../../../Lib/Utils/DateTime.js');
 const Fp = require('../../../../Lib/Utils/Fp.js');

@@ -1,4 +1,3 @@
-// namespace Rbs\Process\Apollo\ImportPnr;
 const Fp = require('../../../../Lib/Utils/Fp.js');
 const ApolloVitParser = require('../../../../Gds/Parsers/Apollo/ApolloVitParser/ApolloVitParser.js');
 const {fetchAll} = require('../../../../../GdsHelpers/TravelportUtils.js');

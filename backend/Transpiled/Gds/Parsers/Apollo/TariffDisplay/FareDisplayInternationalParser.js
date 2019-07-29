@@ -1,5 +1,4 @@
 
-// namespace Gds\Parsers\Apollo;
 
 const StringUtil = require('../../../../Lib/Utils/StringUtil.js');
 const FareDisplayCommonParser = require("./FareDisplayCommonParser");

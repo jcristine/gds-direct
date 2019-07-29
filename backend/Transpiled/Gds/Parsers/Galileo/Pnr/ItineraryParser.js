@@ -1,4 +1,3 @@
-// namespace Gds\Parsers\Galileo\ReservationParser;
 
 const ApolloReservationItineraryParser = require('../../../../Gds/Parsers/Apollo/Pnr/ItineraryParser.js');
 const CommonParserHelpers = require('../../../../Gds/Parsers/Apollo/CommonParserHelpers.js');

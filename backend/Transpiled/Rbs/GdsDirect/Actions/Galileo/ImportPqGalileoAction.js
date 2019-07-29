@@ -1,4 +1,3 @@
-// namespace Rbs\GdsDirect\Actions\Galileo;
 
 const CommandParser = require('../../../../Gds/Parsers/Galileo/CommandParser.js');
 

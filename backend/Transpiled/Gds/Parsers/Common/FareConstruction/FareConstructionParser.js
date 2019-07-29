@@ -1,4 +1,3 @@
-// namespace Gds\Parsers\Common\FareConstruction;
 
 const Fp = require('../../../../Lib/Utils/Fp.js');
 const FareConstructionTokenizer = require("./FareConstructionTokenizer");

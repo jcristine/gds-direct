@@ -1,4 +1,3 @@
-// namespace Gds\Parsers\Sabre\Pricing;
 
 const php = require('../../../../php.js');
 const SabrePricingParser = require("../../../../../../../backend/Transpiled/Gds/Parsers/Sabre/Pricing/SabrePricingParser");

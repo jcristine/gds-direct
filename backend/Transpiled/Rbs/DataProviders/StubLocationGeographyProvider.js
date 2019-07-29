@@ -1,4 +1,3 @@
-// namespace Rbs\DataProviders;
 
 const Fp = require('../../Lib/Utils/Fp.js');
 

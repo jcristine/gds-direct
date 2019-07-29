@@ -1,5 +1,4 @@
 
-// namespace Rbs\Process\Common\ImportPnr;
 
 let php = require('../../../../phpDeprecated');
 let ArrayUtil = require('../../../../Lib/Utils/ArrayUtil.js');

@@ -1,5 +1,4 @@
 
-// namespace Gds\Parsers\Amadeus;
 
 const StringUtil = require('../../../Lib/Utils/StringUtil.js');
 

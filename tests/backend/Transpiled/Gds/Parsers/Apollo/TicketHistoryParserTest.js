@@ -1,4 +1,3 @@
-// namespace Gds\Parsers\Apollo;
 
 const php = require('../../../php.js');
 const TicketHistoryParser = require("../../../../../../backend/Transpiled/Gds/Parsers/Apollo/TicketHistoryParser");

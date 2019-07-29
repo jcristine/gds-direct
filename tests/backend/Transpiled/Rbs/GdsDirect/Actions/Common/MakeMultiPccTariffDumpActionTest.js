@@ -1,6 +1,5 @@
 
 
-// namespace Rbs\GdsDirect\Actions\Common;
 
 
 const Fp = require('../../../../../../../backend/Transpiled/Lib/Utils/Fp.js');

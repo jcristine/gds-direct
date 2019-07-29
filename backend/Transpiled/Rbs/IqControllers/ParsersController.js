@@ -1,4 +1,3 @@
-// namespace Rbs\IqControllers;
 
 const ApolloReservationParser = require('../../Gds/Parsers/Apollo/Pnr/PnrParser.js');
 const SabreReservationParser = require('../../Gds/Parsers/Sabre/Pnr/PnrParser.js');

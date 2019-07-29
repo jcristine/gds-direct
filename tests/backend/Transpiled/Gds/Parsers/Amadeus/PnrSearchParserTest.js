@@ -1,5 +1,4 @@
 
-// namespace Gds\Parsers\Amadeus;
 
 const php = require('../../../php.js');
 const PnrSearchParser = require("../../../../../../backend/Transpiled/Gds/Parsers/Amadeus/PnrSearchParser");

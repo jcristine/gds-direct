@@ -1,5 +1,4 @@
 
-// namespace Rbs\GdsAction\Traits;
 
 const SavePnrAction = require('../../../Rbs/MultiGdsAction/SavePnrAction.js');
 const php = require('../../../phpDeprecated');

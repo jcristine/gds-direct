@@ -1,5 +1,4 @@
 
-// namespace Rbs\GdsDirect\SessionStateProcessor;
 
 const SessionStateProcessor = require('../../../../../../backend/Transpiled/Rbs/GdsDirect/SessionStateProcessor/SessionStateProcessor.js');
 const GdsDirectDefaults = require('../../../../../../backend/Transpiled/Rbs/TestUtils/GdsDirectDefaults.js');

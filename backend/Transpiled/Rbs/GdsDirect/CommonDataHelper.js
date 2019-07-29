@@ -1,4 +1,3 @@
-// namespace Rbs\GdsDirect;
 
 const StringUtil = require('../../Lib/Utils/StringUtil.js');
 const Errors = require("./Errors");

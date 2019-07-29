@@ -1,4 +1,3 @@
-// namespace Gds\Parsers\Apollo\ApolloReservationParser\AtfqParser;
 
 const StringUtil = require('../../../../Lib/Utils/StringUtil.js');
 const Lexeme = require('../../../../Lib/Lexer/Lexeme.js');

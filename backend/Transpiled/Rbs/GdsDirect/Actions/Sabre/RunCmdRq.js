@@ -1,5 +1,4 @@
 const GetCurrentPnr = require('../../../../../Actions/GetCurrentPnr.js');
-// namespace Rbs\GdsDirect\Actions\Sabre;
 
 const ArrayUtil = require('../../../../Lib/Utils/ArrayUtil.js');
 const DateTime = require('../../../../Lib/Utils/DateTime.js');

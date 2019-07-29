@@ -1,5 +1,4 @@
 
-// namespace Rbs\FormatAdapters;
 
 const StringUtil = require('../../../../../backend/Transpiled/Lib/Utils/StringUtil.js');
 const CommandParser = require('../../../../../backend/Transpiled/Gds/Parsers/Amadeus/CommandParser.js');

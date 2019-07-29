@@ -1,5 +1,4 @@
 
-// namespace Gds\Parsers\Sabre;
 
 const StringUtil = require('../../../Lib/Utils/StringUtil.js');
 const GdsConstants = require('../../../Gds/Parsers/Common/GdsConstants.js');

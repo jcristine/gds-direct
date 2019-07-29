@@ -1,4 +1,3 @@
-// namespace Gds\Parsers\Galileo\ReservationParser;
 
 
 const php = require('../../../../php.js');

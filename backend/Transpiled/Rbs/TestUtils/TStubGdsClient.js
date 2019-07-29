@@ -1,5 +1,4 @@
 
-// namespace Rbs\TestUtils;
 
 const TestCase = require('../../Lib/TestCase.js');
 const Fp = require('../../Lib/Utils/Fp.js');

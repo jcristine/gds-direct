@@ -1,7 +1,6 @@
 const PtcFareFamilies = require('../../../../../../../backend/Repositories/PtcFareFamilies.js');
 const stubPtcFareFamilies = require('../../../../../../data/stubPtcFareFamilies.js');
 const PtcUtil = require('../../../../../../../backend/Transpiled/Rbs/Process/Common/PtcUtil.js');
-// namespace Rbs\GdsDirect\Actions\Galileo;
 
 const GdsDirectDefaults = require('../../../../Rbs/TestUtils/GdsDirectDefaults.js');
 const RunCmdRq = require('../../../../../../../backend/Transpiled/Rbs/GdsDirect/Actions/Galileo/RunCmdRq.js');

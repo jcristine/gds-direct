@@ -1,6 +1,5 @@
 
 
-// namespace Gds\Parsers\Galileo\Pricing;
 
 const FqParser = require('../../../../../../../backend/Transpiled/Gds/Parsers/Galileo/Pricing/FqParser.js');
 

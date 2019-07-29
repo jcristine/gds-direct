@@ -1,6 +1,5 @@
 'use strict';
 
-// namespace Lib\Utils;
 
 const Fp = require('../../Lib/Utils/Fp.js');
 const php = require('../../phpDeprecated.js');

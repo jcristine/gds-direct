@@ -1,4 +1,3 @@
-// namespace Gds\Parsers\Sabre\Commands;
 const Fp = require('../../../../Lib/Utils/Fp.js');
 const Lexeme = require('../../../../Lib/Lexer/Lexeme.js');
 const Lexer = require('../../../../Lib/Lexer/Lexer.js');

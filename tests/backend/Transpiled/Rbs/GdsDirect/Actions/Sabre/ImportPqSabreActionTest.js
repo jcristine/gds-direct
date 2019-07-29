@@ -1,4 +1,3 @@
-// namespace Rbs\GdsDirect;
 
 const ImportPqSabreAction = require('../../../../../../../backend/Transpiled/Rbs/GdsDirect/Actions/Sabre/ImportPqSabreAction.js');
 const SessionStateProcessor = require('../../../../../../../backend/Transpiled/Rbs/GdsDirect/SessionStateProcessor/SessionStateProcessor.js');

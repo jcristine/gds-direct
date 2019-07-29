@@ -1,4 +1,3 @@
-// namespace Gds\Parsers\Sabre\SabreReservationParser;
 
 const Fp = require('../../../../Lib/Utils/Fp.js');
 const StringUtil = require('../../../../Lib/Utils/StringUtil.js');

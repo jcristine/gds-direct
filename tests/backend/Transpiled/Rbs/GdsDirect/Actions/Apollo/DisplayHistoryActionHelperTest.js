@@ -1,5 +1,4 @@
 
-// namespace Rbs\GdsDirect\Actions\Apollo;
 
 const PnrHistoryParser = require('../../../../../../../backend/Transpiled/Gds/Parsers/Apollo/PnrHistoryParser.js');
 const DisplayHistoryActionHelper = require("../../../../../../../backend/Transpiled/Rbs/GdsDirect/Actions/Apollo/DisplayHistoryActionHelper");

@@ -1,4 +1,3 @@
-// namespace Rbs\GdsDirect\Actions\Apollo;
 
 const ImportPqApolloAction = require('../../../../../../../backend/Transpiled/Rbs/GdsDirect/Actions/Apollo/ImportPqApolloAction.js');
 const AnyGdsStubSession = require('../../../../../../../backend/Transpiled/Rbs/TestUtils/AnyGdsStubSession.js');

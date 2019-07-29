@@ -1,5 +1,4 @@
 
-// namespace Gds\Parsers\Apollo\Mco;
 
 const AbstractMaskParser = require('../../../../Gds/Parsers/Apollo/AbstractMaskParser.js');
 const StringUtil = require('../../../../Lib/Utils/StringUtil.js');

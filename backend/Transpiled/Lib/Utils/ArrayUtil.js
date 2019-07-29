@@ -1,4 +1,3 @@
-// namespace Lib\Utils;
 
 let php = require('../../phpDeprecated.js');
 

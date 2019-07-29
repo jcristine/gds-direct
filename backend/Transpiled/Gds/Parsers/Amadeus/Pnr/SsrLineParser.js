@@ -1,5 +1,4 @@
 
-// namespace Gds\Parsers\Amadeus\ReservationParser;
 
 const SsrBlockParser = require('../../../../Gds/Parsers/Apollo/Pnr/SsrBlockParser.js');
 const CommonParserHelpers = require('../../../../Gds/Parsers/Apollo/CommonParserHelpers.js');

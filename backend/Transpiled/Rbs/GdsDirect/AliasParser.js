@@ -1,6 +1,5 @@
 const PtcUtil = require('../Process/Common/PtcUtil.js');
 
-// namespace Rbs\GdsDirect;
 
 const AtfqParser = require('../../Gds/Parsers/Apollo/Pnr/AtfqParser.js');
 const ParsersController = require('../../Rbs/IqControllers/ParsersController.js');

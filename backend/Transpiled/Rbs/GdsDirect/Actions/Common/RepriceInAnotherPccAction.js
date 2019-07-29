@@ -1,4 +1,3 @@
-// namespace Rbs\GdsDirect\Actions\Common;
 
 const SabPricingCmdParser = require("../../../../Gds/Parsers/Sabre/Commands/PricingCmdParser");
 const Fp = require('../../../../Lib/Utils/Fp.js');

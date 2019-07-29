@@ -1,4 +1,3 @@
-// namespace Gds\Parsers\Galileo\Pricing;
 
 const Fp = require('../../../../Lib/Utils/Fp.js');
 const StringUtil = require('../../../../Lib/Utils/StringUtil.js');

@@ -1,5 +1,4 @@
 
-// namespace Rbs\TestUtils;
 
 const fetchAll = require("../../../GdsHelpers/TravelportUtils").fetchAll;
 

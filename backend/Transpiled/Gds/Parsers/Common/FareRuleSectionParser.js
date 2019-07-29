@@ -1,5 +1,4 @@
 
-// namespace Gds\Parsers\Common;
 
 const StringUtil = require('../../../Lib/Utils/StringUtil.js');
 

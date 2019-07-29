@@ -1,4 +1,3 @@
-// namespace Gds\Parsers\Apollo\ApolloSvcParser;
 
 const StringUtil = require('../../../../Lib/Utils/StringUtil.js');
 const GdsConstants = require('../../../../Gds/Parsers/Common/GdsConstants.js');

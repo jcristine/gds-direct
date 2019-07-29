@@ -1,5 +1,4 @@
 
-// namespace Rbs\Process\Apollo\ImportPnr;
 
 const php = require('../../../../phpDeprecated.js');
 

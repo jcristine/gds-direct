@@ -1,5 +1,4 @@
 
-// namespace Gds\Parsers\Apollo\ApolloReservationParser;
 
 const StringUtil = require('../../../../Lib/Utils/StringUtil.js');
 const php = require('../../../../phpDeprecated');

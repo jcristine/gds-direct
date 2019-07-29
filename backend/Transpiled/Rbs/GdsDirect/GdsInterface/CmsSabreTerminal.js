@@ -1,5 +1,4 @@
 
-// namespace Rbs\GdsDirect\GdsInterface;
 
 const TSabreSavePnr = require('../../../Rbs/GdsAction/Traits/TSabreSavePnr.js');
 const Errors = require('../../../Rbs/GdsDirect/Errors.js');

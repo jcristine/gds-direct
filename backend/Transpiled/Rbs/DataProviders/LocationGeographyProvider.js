@@ -1,4 +1,3 @@
-// namespace Rbs\DataProviders;
 
 const Airports = require("../../../Repositories/Airports");
 const php = require('../../phpDeprecated.js');

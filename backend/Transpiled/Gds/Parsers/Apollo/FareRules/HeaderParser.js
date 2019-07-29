@@ -1,5 +1,4 @@
 
-// namespace Gds\Parsers\Apollo\FareRules;
 const Fp = require('../../../../Lib/Utils/Fp.js');
 const CommonParserHelpers = require('../../../../Gds/Parsers/Apollo/CommonParserHelpers.js');
 

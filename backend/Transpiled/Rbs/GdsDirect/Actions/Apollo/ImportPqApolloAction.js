@@ -1,4 +1,3 @@
-// namespace Rbs\GdsDirect\Actions\Apollo;
 
 const AtfqParser = require('../../../../Gds/Parsers/Apollo/Pnr/AtfqParser.js');
 const Fp = require('../../../../Lib/Utils/Fp.js');

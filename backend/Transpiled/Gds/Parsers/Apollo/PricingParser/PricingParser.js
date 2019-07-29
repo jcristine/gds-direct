@@ -24,7 +24,6 @@
  * probably less efficient than those specific parsers mentioned above for
  * their purpose+ Hence, I leave them be and write new parser+
  */
-// namespace Gds\Parsers\Apollo\PricingParser;
 
 const StringUtil = require('../../../../Lib/Utils/StringUtil.js');
 const PricingStructureWriter = require('../../../../Gds/Parsers/Apollo/PricingParser/DataStructureWriters/PricingStructureWriter.js');

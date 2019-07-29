@@ -1,4 +1,3 @@
-// namespace Gds\Parsers\Amadeus;
 
 const php = require('../../../php.js');
 const FlightInfoParser = require("../../../../../../backend/Transpiled/Gds/Parsers/Amadeus/FlightInfoParser");

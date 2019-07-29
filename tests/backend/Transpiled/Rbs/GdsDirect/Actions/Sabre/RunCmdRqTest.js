@@ -1,7 +1,6 @@
 const PtcUtil = require('../../../../../../../backend/Transpiled/Rbs/Process/Common/PtcUtil.js');
 const stubPtcFareFamilies = require('../../../../../../data/stubPtcFareFamilies.js');
 const PtcFareFamilies = require('../../../../../../../backend/Repositories/PtcFareFamilies.js');
-// namespace Rbs\GdsDirect\Actions\Sabre;
 
 const Agent = require('../../../../../../../backend/DataFormats/Wrappers/Agent.js');
 const GdsDirectDefaults = require('../../../../Rbs/TestUtils/GdsDirectDefaults.js');

@@ -1,4 +1,3 @@
-// namespace Rbs\GdsDirect;
 
 /**
  * this class provides implementation for

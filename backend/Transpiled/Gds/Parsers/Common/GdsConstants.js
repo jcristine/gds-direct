@@ -1,5 +1,4 @@
 
-// namespace Gds\Parsers\Common;
 
 /**
  * this class provides constants that are common for all GDS-es:

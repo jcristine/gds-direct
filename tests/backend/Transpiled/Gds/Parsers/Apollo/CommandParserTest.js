@@ -1,4 +1,3 @@
-// namespace Gds\Parsers\Apollo;
 
 // add this to generated require() - '../../backend/Transpiled/'
 

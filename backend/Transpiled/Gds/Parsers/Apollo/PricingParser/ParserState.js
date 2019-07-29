@@ -1,5 +1,4 @@
 
-// namespace Gds\Parsers\Apollo\PricingParser;
 
 class ParserState
 {

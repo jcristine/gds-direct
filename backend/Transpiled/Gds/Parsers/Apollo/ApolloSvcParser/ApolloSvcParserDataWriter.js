@@ -1,4 +1,3 @@
-// namespace Gds\Parsers\Apollo\ApolloSvcParser;
 
 const php = require('../../../../phpDeprecated.js');
 

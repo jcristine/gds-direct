@@ -1,5 +1,4 @@
 
-// namespace Rbs\GdsDirect\SessionStateProcessor;
 
 const SessionStateHelper = require('./SessionStateHelper.js');
 

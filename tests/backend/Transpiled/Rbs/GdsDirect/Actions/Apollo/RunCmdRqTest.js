@@ -4,7 +4,6 @@ const Pccs = require('../../../../../../../backend/Repositories/Pccs.js');
 const PtcUtil = require('../../../../../../../backend/Transpiled/Rbs/Process/Common/PtcUtil.js');
 const stubPtcFareFamilies = require('../../../../../../data/stubPtcFareFamilies.js');
 const PtcFareFamilies = require('../../../../../../../backend/Repositories/PtcFareFamilies.js');
-// namespace Rbs\GdsDirect;
 
 const RunCmdRq = require('../../../../../../../backend/Transpiled/Rbs/GdsDirect/Actions/Apollo/RunCmdRq.js');
 const GdsDirectDefaults = require('../../../../../../../backend/Transpiled/Rbs/TestUtils/GdsDirectDefaults.js');

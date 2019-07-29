@@ -1,5 +1,4 @@
 
-// namespace Rbs\GdsAction;
 
 const ApolloMakeMcoAction = require("../../../../../backend/Transpiled/Rbs/GdsAction/ApolloMakeMcoAction");
 

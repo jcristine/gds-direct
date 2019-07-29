@@ -1,5 +1,4 @@
 
-// namespace Rbs\GdsDirect\Actions\Common;
 
 const ArrayUtil = require('../../../../../../../backend/Transpiled/Lib/Utils/ArrayUtil.js');
 const Fp = require('../../../../../../../backend/Transpiled/Lib/Utils/Fp.js');

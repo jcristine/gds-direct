@@ -1,4 +1,3 @@
-// namespace Gds\Parsers\Apollo;
 
 const ApolloVitParser = require('../../../../../../../backend/Transpiled/Gds/Parsers/Apollo/ApolloVitParser/ApolloVitParser.js');
 

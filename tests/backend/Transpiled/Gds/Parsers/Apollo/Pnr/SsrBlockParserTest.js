@@ -1,5 +1,4 @@
 
-// namespace Gds\Parsers\Apollo\ApolloReservationParser;
 
 const SsrBlockParser = require('../../../../../../../backend/Transpiled/Gds/Parsers/Apollo/Pnr/SsrBlockParser.js');
 

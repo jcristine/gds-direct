@@ -1,5 +1,4 @@
 
-// namespace Rbs\Process\Common\ImportPnr;
 
 /**
  * provides functions that are needed by every GDS

@@ -1,6 +1,3 @@
-
-// namespace Gds\Parsers\Galileo\ReservationParser;
-
 const StringUtil = require('../../../../Lib/Utils/StringUtil.js');
 const CommonParserHelpers = require('../../../../Gds/Parsers/Apollo/CommonParserHelpers.js');
 const GdsPassengerBlockParser = require('../../../../Gds/Parsers/Common/GdsPassengerBlockParser.js');

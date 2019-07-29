@@ -1,4 +1,3 @@
-// namespace Rbs\GdsDirect\Actions;
 
 const SabCmdParser = require("../../../Gds/Parsers/Sabre/CommandParser.js");
 

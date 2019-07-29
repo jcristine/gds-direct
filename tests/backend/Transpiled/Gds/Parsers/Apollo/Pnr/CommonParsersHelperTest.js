@@ -1,5 +1,4 @@
 
-// namespace Gds\Parsers\Apollo;
 
 const CommonParserHelpers = require('../../../../../../../backend/Transpiled/Gds/Parsers/Apollo/CommonParserHelpers.js');
 

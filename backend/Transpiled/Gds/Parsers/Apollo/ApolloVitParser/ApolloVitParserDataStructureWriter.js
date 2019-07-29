@@ -1,5 +1,4 @@
 
-// namespace Gds\Parsers\Apollo\ApolloVitParser;
 
 const php = require('../../../../phpDeprecated.js');
 class ApolloVitParserDataStructureWriter

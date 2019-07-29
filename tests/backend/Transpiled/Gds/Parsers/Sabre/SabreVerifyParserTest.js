@@ -1,5 +1,4 @@
 
-// namespace Gds\Parsers\Sabre;
 
 const SabreVerifyParser = require('../../../../../../backend/Transpiled/Gds/Parsers/Sabre/SabreVerifyParser.js');
 

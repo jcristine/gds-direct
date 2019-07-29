@@ -1,4 +1,3 @@
-// namespace Rbs\GdsAction;
 
 const StringUtil = require('../../Lib/Utils/StringUtil.js');
 const ItineraryParser = require('../../Gds/Parsers/Apollo/Pnr/ItineraryParser.js');

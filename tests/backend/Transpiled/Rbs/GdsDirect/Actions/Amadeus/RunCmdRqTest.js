@@ -1,7 +1,6 @@
 const stubPtcFareFamilies = require('../../../../../../data/stubPtcFareFamilies.js');
 const PtcFareFamilies = require('../../../../../../../backend/Repositories/PtcFareFamilies.js');
 const PtcUtil = require('../../../../../../../backend/Transpiled/Rbs/Process/Common/PtcUtil.js');
-// namespace Rbs\GdsDirect\Actions\Amadeus;
 
 const Agent = require('../../../../../../../backend/DataFormats/Wrappers/Agent.js');
 const RunCmdRq = require('../../../../../../../backend/Transpiled/Rbs/GdsDirect/Actions/Amadeus/RunCmdRq.js');

@@ -1,5 +1,4 @@
 
-// namespace Rbs\GdsAction;
 
 let php = require('../../phpDeprecated');
 

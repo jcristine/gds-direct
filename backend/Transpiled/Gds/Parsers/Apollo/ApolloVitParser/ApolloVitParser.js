@@ -1,4 +1,3 @@
-// namespace Gds\Parsers\Apollo\ApolloVitParser;
 
 const StringUtil = require('../../../../Lib/Utils/StringUtil.js');
 const CommonParserHelpers = require('../../../../Gds/Parsers/Apollo/CommonParserHelpers.js');

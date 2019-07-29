@@ -1,5 +1,4 @@
 
-// namespace Rbs\GdsDirect\DialectTranslator;
 
 /**
  * GdsDialectTranslator::translate('apollo', 'sabre', 'A01MARRIXLAX');

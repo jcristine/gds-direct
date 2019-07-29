@@ -1,4 +1,3 @@
-// namespace Rbs\GdsDirect\GdsInterface;
 
 const Fp = require('../../../Lib/Utils/Fp.js');
 const CommandParser = require('../../../Gds/Parsers/Amadeus/CommandParser.js');

@@ -1,5 +1,4 @@
 
-// namespace Gds\Parsers\Apollo\ApolloReservationParser;
 
 const CommonParserHelpers = require('../../../../Gds/Parsers/Apollo/CommonParserHelpers.js');
 const php = require('../../../../phpDeprecated');
