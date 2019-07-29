@@ -6,24 +6,24 @@ const NotFound = require("klesun-node-tools/src/Rej").NotFound;
 const Diag = require('../LibWrappers/Diag.js');
 const {SqlUtil} = require('klesun-node-tools');
 const {jsExport} = require('klesun-node-tools/src/Utils/Misc.js');
-const {coverExc} = require('klesun-node-tools/src/Lang.js');
+const {coverExc, onDemand} = require('klesun-node-tools/src/Lang.js');
 
-let whenPool = null;
-let getPool = () => {
-	if (whenPool === null) {
-		whenPool = getDbConfig().then(cfg => mysql.createPool({
-			host: cfg.DB_HOST,
-			user: cfg.DB_USER,
-			password: cfg.DB_PASS,
-			database: cfg.DB_NAME,
-			port: cfg.DB_PORT || 3306,
-			connectionLimit: 20,
-			// return datetime as string, not Date object
-			dateStrings: true,
-		}));
+let getPool = onDemand(async () => {
+	let cfg = await getDbConfig();
+	if (!cfg || !cfg.DB_HOST) {
+		return Rej.BadRequest('DB credentials not supplied');
 	}
-	return whenPool;
-};
+	return mysql.createPool({
+		host: cfg.DB_HOST,
+		user: cfg.DB_USER,
+		password: cfg.DB_PASS,
+		database: cfg.DB_NAME,
+		port: cfg.DB_PORT || 3306,
+		connectionLimit: 20,
+		// return datetime as string, not Date object
+		dateStrings: true,
+	});
+});
 
 /**
  * a wrapper for DB connection
