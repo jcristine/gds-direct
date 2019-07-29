@@ -51,12 +51,15 @@ const getAll = () => getAllFromDb();
 
 exports.getAll = getAll;
 exports.updateFromService = updateFromService;
-exports.getByAdultPtc = async (adultPtc) => {
-	let families = await getAll();
+exports.getByAdultPtcFrom = (adultPtc, families) => {
 	for (let family of families) {
 		if (family.groups.adult === adultPtc) {
 			return Promise.resolve(family);
 		}
 	}
 	return Rej.NotFound('No known Fare Families matched adult PTC ' + adultPtc);
+};
+exports.getByAdultPtc = async (adultPtc) => {
+	let families = await getAll();
+	return exports.getByAdultPtcFrom(adultPtc, families);
 };

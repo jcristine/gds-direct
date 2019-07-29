@@ -1,3 +1,5 @@
+const PtcFareFamilies = require('../../../../../../../backend/Repositories/PtcFareFamilies.js');
+const PtcUtil = require('../../../../../../../backend/Transpiled/Rbs/Process/Common/PtcUtil.js');
 // namespace Rbs\GdsDirect\Actions\Amadeus;
 
 const Agent = require('../../../../../../../backend/DataFormats/Wrappers/Agent.js');
@@ -2474,14 +2476,31 @@ class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
 		this.assertEquals($expected, $actual);
 	}
 
+	getStubPtcFareFamilies() {
+		return [
+			{"id":9,"name":"blended","title":"Blended","childLetter":null,"groups":{"adult":"JWZ","child":"JWB","infant":"INF","infantWithSeat":"INS"}},
+			{"id":7,"name":"missionary","title":"Missionary","childLetter":null,"groups":{"adult":"MIS","child":"MIC","infant":"MIF","infantWithSeat":"MSS"}},
+			{"id":5,"name":"contractBulk","title":"Contract bulk","childLetter":"J","groups":{"adult":"JCB","child":"JNN","infant":"JNF","infantWithSeat":"JNS"}},
+			{"id":3,"name":"inclusiveTour","title":"Inclusive tour","childLetter":"I","groups":{"adult":"ITX","child":"INN","infant":"ITF","infantWithSeat":"ITS"}},
+			{"id":1,"name":"regular","title":"Regular fare","childLetter":"C","groups":{"adult":"ADT","child":"CNN","infant":"INF","infantWithSeat":"INS"}}
+		];
+	}
+
 	/**
 	 * @test
 	 * @dataProvider provideExecuteTestCases
 	 */
 	async testExecute($input, $output, $sessionInfo) {
 		let stateful = GdsDirectDefaults.makeStatefulSession('amadeus', $input, $sessionInfo);
-		let actualOutput = await RunCmdRq({stateful, cmdRq: $input['cmdRequested']})
-			.catch(exc => ({error: exc + '', stack: (exc || {}).stack}));
+		let actualOutput = await RunCmdRq({
+			stateful, cmdRq: $input['cmdRequested'],
+			PtcUtil: PtcUtil.makeCustom({
+				PtcFareFamilies: {
+					getAll: () => Promise.resolve(this.getStubPtcFareFamilies()),
+					getByAdultPtc: (adultPtc) => PtcFareFamilies.getByAdultPtcFrom(adultPtc, this.getStubPtcFareFamilies()),
+				},
+			}),
+		}).catch(exc => ({error: exc + '', stack: (exc || {}).stack}));
 		actualOutput['sessionData'] = stateful.getSessionData();
 
 		this.assertArrayElementsSubset($output, actualOutput, php.implode('; ', actualOutput['userMessages'] || ['no errors']));
