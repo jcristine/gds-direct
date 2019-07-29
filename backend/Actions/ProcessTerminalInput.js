@@ -3,7 +3,10 @@ const RbsClient = require('../IqClients/RbsClient.js');
 let {fetchAll, wrap, extractTpTabCmds} = require('../GdsHelpers/TravelportUtils.js');
 const StatefulSession = require("../GdsHelpers/StatefulSession.js");
 const AreaSettings = require("../Repositories/AreaSettings");
-const ProcessApolloTerminalInputAction = require("../Transpiled/Rbs/GdsDirect/Actions/Apollo/RunCmdRq");
+const ApoRunCmdRq = require("../Transpiled/Rbs/GdsDirect/Actions/Apollo/RunCmdRq.js");
+const SabRunCmdRq = require("../Transpiled/Rbs/GdsDirect/Actions/Sabre/RunCmdRq.js");
+const GalRunCmdRq = require("../Transpiled/Rbs/GdsDirect/Actions/Galileo/RunCmdRq.js");
+const AmaRunCmdRq = require("../Transpiled/Rbs/GdsDirect/Actions/Amadeus/RunCmdRq.js");
 const ApoCommandParser = require("../Transpiled/Gds/Parsers/Apollo/CommandParser");
 const SabCommandParser = require("../Transpiled/Gds/Parsers/Sabre/CommandParser");
 const GalCommandParser = require("../Transpiled/Gds/Parsers/Galileo/CommandParser");
@@ -11,12 +14,9 @@ const CommonDataHelper = require("../Transpiled/Rbs/GdsDirect/CommonDataHelper")
 const CmsSabreTerminal = require("../Transpiled/Rbs/GdsDirect/GdsInterface/CmsSabreTerminal");
 const CmsApolloTerminal = require("../Transpiled/Rbs/GdsDirect/GdsInterface/CmsApolloTerminal");
 const GdsDialectTranslator = require('../Transpiled/Rbs/GdsDirect/DialectTranslator/GdsDialectTranslator.js');
-const ProcessSabreTerminalInputAction = require("../Transpiled/Rbs/GdsDirect/Actions/Sabre/RunCmdRq");
 const TerminalService = require('../Transpiled/App/Services/CmdResultAdapter.js');
 const TerminalBuffering = require("../Repositories/CmdRqLog");
-const ProcessAmadeusTerminalInputAction = require("../Transpiled/Rbs/GdsDirect/Actions/Amadeus/RunCmdRq");
 const Agents = require("../Repositories/Agents");
-const ProcessGalileoTerminalInputAction = require("../Transpiled/Rbs/GdsDirect/Actions/Galileo/RunCmdRq");
 const GdsDirect = require("../Transpiled/Rbs/GdsDirect/GdsDirect");
 const Rej = require("klesun-node-tools/src/Rej");
 const TerminalSettings = require("../Transpiled/App/Models/Terminal/TerminalSettings");
@@ -130,13 +130,13 @@ let transformCalledCommand = (rec, stateful) => {
 let runByGds = async (inputCmd, stateful) => {
 	let gdsResult;
 	if (stateful.gds === 'apollo') {
-		gdsResult = await ProcessApolloTerminalInputAction({stateful, cmdRq: inputCmd});
+		gdsResult = await ApoRunCmdRq({stateful, cmdRq: inputCmd});
 	} else if (stateful.gds === 'sabre') {
-		gdsResult = await (new ProcessSabreTerminalInputAction(stateful).execute(inputCmd));
+		gdsResult = await (new SabRunCmdRq(stateful).execute(inputCmd));
 	} else if (stateful.gds === 'amadeus') {
-		gdsResult = await (new ProcessAmadeusTerminalInputAction(stateful).execute(inputCmd));
+		gdsResult = await AmaRunCmdRq({stateful, cmdRq: inputCmd});
 	} else if (stateful.gds === 'galileo') {
-		gdsResult = await (new ProcessGalileoTerminalInputAction(stateful).execute(inputCmd));
+		gdsResult = await (new GalRunCmdRq(stateful).execute(inputCmd));
 	} else {
 		return NotImplemented('Unsupported GDS for runCmdRq() - ' + stateful.gds);
 	}

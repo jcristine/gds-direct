@@ -2479,15 +2479,13 @@ class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
 	 * @dataProvider provideExecuteTestCases
 	 */
 	async testExecute($input, $output, $sessionInfo) {
-		let $session, $actualOutput;
+		let stateful = GdsDirectDefaults.makeStatefulSession('amadeus', $input, $sessionInfo);
+		let actualOutput = await RunCmdRq({stateful, cmdRq: $input['cmdRequested']})
+			.catch(exc => ({error: exc + '', stack: (exc || {}).stack}));
+		actualOutput['sessionData'] = stateful.getSessionData();
 
-		$session = GdsDirectDefaults.makeStatefulSession('amadeus', $input, $sessionInfo);
-		$actualOutput = await (new RunCmdRq($session))
-			.execute($input['cmdRequested']).catch(exc => ({error: exc + '', stack: (exc || {}).stack}));
-		$actualOutput['sessionData'] = $session.getSessionData();
-
-		this.assertArrayElementsSubset($output, $actualOutput, php.implode('; ', $actualOutput['userMessages'] || ['no errors']));
-		this.assertEquals([], $session.getGdsSession().getCommandsLeft(), 'not all session commands were used');
+		this.assertArrayElementsSubset($output, actualOutput, php.implode('; ', actualOutput['userMessages'] || ['no errors']));
+		this.assertEquals([], stateful.getGdsSession().getCommandsLeft(), 'not all session commands were used');
 	}
 
 	getTestMapping() {
