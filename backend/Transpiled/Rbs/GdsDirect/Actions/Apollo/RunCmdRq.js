@@ -20,7 +20,6 @@ const CommonDataHelper = require('../../../../Rbs/GdsDirect/CommonDataHelper.js'
 const GdsDirect = require('../../../../Rbs/GdsDirect/GdsDirect.js');
 const CmsApolloTerminal = require('../../../../Rbs/GdsDirect/GdsInterface/CmsApolloTerminal.js');
 const CommonParserHelpers = require('../../../../Gds/Parsers/Apollo/CommonParserHelpers.js');
-const PtcUtil = require('../../../../Rbs/Process/Common/PtcUtil.js');
 const ApolloPnr = require('../../../../Rbs/TravelDs/ApolloPnr.js');
 
 // actions
@@ -59,7 +58,8 @@ const TmpLib = require("../../../../../Utils/TmpLib");
 /** @param stateful = await require('StatefulSession.js')() */
 let execute = ({
 	stateful, cmdRq,
-	CmdRqLog = require('../../../../../Repositories/CmdRqLog.js')
+	CmdRqLog = require('../../../../../Repositories/CmdRqLog.js'),
+	PtcUtil = require('../../../../Rbs/Process/Common/PtcUtil.js'),
 }) => {
 
 // would be nice to indent it I guess... or even better - get rid of the class

@@ -1,9 +1,13 @@
+const PtcUtil = require('../../../../../../../backend/Transpiled/Rbs/Process/Common/PtcUtil.js');
+const stubPtcFareFamilies = require('../../../../../../data/stubPtcFareFamilies.js');
+const PtcFareFamilies = require('../../../../../../../backend/Repositories/PtcFareFamilies.js');
 // namespace Rbs\GdsDirect;
 
 const RunCmdRq = require('../../../../../../../backend/Transpiled/Rbs/GdsDirect/Actions/Apollo/RunCmdRq.js');
 const GdsDirectDefaults = require('../../../../../../../backend/Transpiled/Rbs/TestUtils/GdsDirectDefaults.js');
 const Agent = require('../../../../../../../backend/DataFormats/Wrappers/Agent.js');
-
+const Rej = require('klesun-node-tools/src/Rej.js');
+const {coverExc} = require('klesun-node-tools/src/Lang.js');
 const php = require('../../../../php.js');
 
 class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
@@ -22,9 +26,9 @@ class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
 
 		$list = [];
 
-		// XI should be forbidden in a ticketed PNR for regular agents
 		$list.push({
 			'input': {
+				'title': '#0 - XI should be forbidden in a ticketed PNR for regular agents',
 				'cmdRequested': 'XI',
 				'baseDate': '2017-11-05',
 			},
@@ -106,9 +110,9 @@ class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
 			},
 		});
 
-		// PCC emulation example - allowed
 		$list.push({
 			'input': {
+				'title': '#1 - PCC emulation example - allowed',
 				'cmdRequested': 'SEM/2CV4/AG',
 				'baseDate': '2017-11-05',
 			},
@@ -134,9 +138,9 @@ class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
 			},
 		});
 
-		// PCC emulation example - forbidden with "Please use..." suggestion
 		$list.push({
 			'input': {
+				'title': '#2 - PCC emulation example - forbidden with "Please use..." suggestion',
 				'cmdRequested': 'SEM/2CX8/AG',
 				'baseDate': '2017-11-05',
 			},
@@ -156,9 +160,9 @@ class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
 			},
 		});
 
-		// PCC emulation example - forbidden without "Please use..." suggestion
 		$list.push({
 			'input': {
+				'title': 'PCC emulation example - forbidden without "Please use..." suggestion',
 				'cmdRequested': 'SEM/2F9H/AG',
 				'baseDate': '2017-11-05',
 			},
@@ -178,9 +182,9 @@ class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
 			},
 		});
 
-		// $B implicit fetch all output
 		$list.push({
 			'input': {
+				'title': '$B implicit fetch all output',
 				'cmdRequested': '$B',
 				'baseDate': '2017-11-05',
 			},
@@ -252,9 +256,9 @@ class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
 			},
 		});
 
-		// $BBA should not implicitly fetch all output
 		$list.push({
 			'input': {
+				'title': '$BBA should not implicitly fetch all output',
 				'cmdRequested': '$BBA',
 				'baseDate': '2017-11-05',
 			},
@@ -313,9 +317,9 @@ class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
 			},
 		});
 
-		// $B@TVO should implicitly fetch all output even though canCreatePq=false
 		$list.push({
 			'input': {
+				'title': '$B@TVO should implicitly fetch all output even though canCreatePq=false',
 				'cmdRequested': '$B@TVO',
 				'baseDate': '2017-11-05',
 			},
@@ -401,9 +405,9 @@ class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
 			},
 		});
 
-		// MDA test
 		$list.push({
 			'input': {
+				'title': 'MDA test',
 				'cmdRequested': 'MDA',
 				'baseDate': '2017-11-05',
 			},
@@ -573,10 +577,9 @@ class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
 			},
 		});
 
-		// >PNR; should not fail with "SNGL ITEM FLD/NOT ENT"
-		// when >R:...; (received from) was already set
 		$list.push({
 			'input': {
+				'title': '>PNR; should not fail with "SNGL ITEM FLD/NOT ENT" when >R:...; (received from) was already set',
 				'cmdRequested': 'PNR',
 				'baseDate': '2017-11-05',
 			},
@@ -641,9 +644,9 @@ class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
 			},
 		});
 
-		// PNR without prior >R:...; - should call it implicitly
 		$list.push({
 			'input': {
+				'title': 'PNR without prior >R:...; - should call it implicitly',
 				'cmdRequested': 'PNR',
 				'baseDate': '2017-11-05',
 			},
@@ -707,9 +710,9 @@ class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
 			},
 		});
 
-		// divided booking created from Focal Point PNR - should implicitly add a CREATED FOR remark
 		$list.push({
 			'input': {
+				'title': 'divided booking created from Focal Point PNR - should implicitly add a CREATED FOR remark',
 				'cmdRequested': 'F',
 				'baseDate': '2017-11-05',
 			},
@@ -796,9 +799,9 @@ class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
 			},
 		});
 
-		// another divided booking example, made by me this time
 		$list.push({
 			'input': {
+				'title': 'another divided booking example, made by me this time',
 				'cmdRequested': 'F',
 				'baseDate': '2017-11-05',
 			},
@@ -881,9 +884,9 @@ class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
 			},
 		});
 
-		// new CMS lead remark format generation
 		$list.push({
 			'input': {
+				'title': 'new CMS lead remark format generation',
 				'cmdRequested': 'ER',
 				'baseDate': '2017-11-05',
 			},
@@ -907,9 +910,9 @@ class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
 			},
 		});
 
-		// new CMS lead remark format - everything should work same
 		$list.push({
 			'input': {
+				'title': 'new CMS lead remark format - everything should work same',
 				'cmdRequested': 'C:1@:5',
 				'baseDate': '2017-11-05',
 			},
@@ -950,11 +953,9 @@ class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
 			},
 		});
 
-		// if first call to >PNR; returned an open jaw warning, next call
-		// should not include >P:...; and other fields that would result
-		// in "SNGL ITEM FLD/NOT ENT/T:TAU/14NOV+R:AKLESUNS+ER" error
 		$list.push({
 			'input': {
+				'title': 'if first call to >PNR; returned an open jaw warning, next call should not include >P:...; and other fields that would result in "SNGL ITEM FLD/NOT ENT/T:TAU/14NOV+R:AKLESUNS+ER" error',
 				'cmdRequested': 'PNR',
 				'baseDate': '2017-11-05',
 			},
@@ -1027,9 +1028,8 @@ class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
 			},
 		});
 
-		// simple seats_taken test
 		$list.push({
-			'input': {'cmdRequested': '*R', 'baseDate': '2017-11-05'},
+			'input': {'cmdRequested': '*R', 'baseDate': '2017-11-05', 'title': 'simple seats_taken test'},
 			'output': {'status': 'executed'},
 			'sessionInfo': {
 				'initialState': php.array_merge(GdsDirectDefaults.makeDefaultApolloState(), {
@@ -1055,10 +1055,8 @@ class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
 			},
 		});
 
-		// *R show same itinerary but with additional segment
-		// which is same as other but in different booking class
 		$list.push({
-			'input': {'cmdRequested': '*R', 'baseDate': '2017-11-05'},
+			'input': {'cmdRequested': '*R', 'baseDate': '2017-11-05', 'title': '*R show same itinerary but with additional segment which is same as other but in different booking class'},
 			'output': {'status': 'executed'},
 			'sessionInfo': {
 				'initialState': php.array_merge(GdsDirectDefaults.makeDefaultApolloState(), {
@@ -1116,9 +1114,8 @@ class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
 			},
 		});
 
-		// should replace >MD; with >MR; since it better suits for reuse of called commands in GDS Direct
 		$list.push({
-			'input': {'cmdRequested': 'MD'},
+			'input': {'cmdRequested': 'MD', 'title': 'should replace >MD; with >MR; since it better suits for reuse of called commands in GDS Direct'},
 			'output': {'status': 'executed'},
 			'sessionInfo': {
 				'initialState': php.array_merge(GdsDirectDefaults.makeDefaultApolloState(), {'hasPnr': true}),
@@ -1181,9 +1178,8 @@ class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
 			},
 		});
 
-		// should not replace >MD; with >MR; since >MR; does not work on >F:...; screen
 		$list.push({
-			'input': {'cmdRequested': 'MD'},
+			'input': {'cmdRequested': 'MD', 'title': 'should not replace >MD; with >MR; since >MR; does not work on >F:...; screen'},
 			'output': {'status': 'executed'},
 			'sessionInfo': {
 				'initialState': php.array_merge(GdsDirectDefaults.makeDefaultApolloState(), {'hasPnr': false}),
@@ -1209,9 +1205,8 @@ class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
 			},
 		});
 
-		// should replace MD with TIPN on timatic screen
 		$list.push({
-			'input': {'cmdRequested': 'MD'},
+			'input': {'cmdRequested': 'MD', 'title': 'should replace MD with TIPN on timatic screen'},
 			'output': {'status': 'executed'},
 			'sessionInfo': {
 				'initialState': php.array_merge(GdsDirectDefaults.makeDefaultApolloState(), {'hasPnr': false}),
@@ -1281,10 +1276,8 @@ class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
 			},
 		});
 
-		// #20
-		// XI should remove only seats taken in current area
 		$list.push({
-			'input': {'cmdRequested': 'XI', 'baseDate': '2017-11-05'},
+			'input': {'cmdRequested': 'XI', 'baseDate': '2017-11-05', 'title': '#20 - XI should remove only seats taken in current area'},
 			'output': {'status': 'executed'},
 			'sessionInfo': {
 				'initialState': php.array_merge(GdsDirectDefaults.makeDefaultApolloState(), {
@@ -1355,9 +1348,8 @@ class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
 			},
 		});
 
-		// STORE alias example
 		$list.push({
-			'input': {'cmdRequested': 'STORE'},
+			'input': {'cmdRequested': 'STORE', 'title': 'STORE alias example'},
 			'output': {
 				'status': 'executed',
 				'calledCommands': [{'cmd': 'T:$BN1-1*ADT|2-1*C08|3-1*INF/Z0'}],
@@ -7449,7 +7441,13 @@ class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
 		let $actualOutput = await RunCmdRq({
 			...($input.dependencyParams || {}),
 			stateful, cmdRq,
-		}).catch(exc => ({error: exc + ''}));
+			PtcUtil: PtcUtil.makeCustom({
+				PtcFareFamilies: {
+					getAll: () => Promise.resolve(stubPtcFareFamilies),
+					getByAdultPtc: (adultPtc) => PtcFareFamilies.getByAdultPtcFrom(adultPtc, stubPtcFareFamilies),
+				},
+			}),
+		}).catch(coverExc(Rej.list, exc => ({error: exc + ''})));
 		$actualOutput['sessionData'] = stateful.getSessionData();
 
 		this.assertArrayElementsSubset($output, $actualOutput, php.implode('; ', $actualOutput['userMessages'] || []) + php.PHP_EOL);
