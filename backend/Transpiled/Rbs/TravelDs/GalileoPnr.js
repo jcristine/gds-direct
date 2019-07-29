@@ -3,7 +3,7 @@
 const DateTime = require('../../Lib/Utils/DateTime.js');
 const Fp = require('../../Lib/Utils/Fp.js');
 const StringUtil = require('../../Lib/Utils/StringUtil.js');
-const GalileoReservationParser = require('../../Gds/Parsers/Galileo/Pnr/PnrParser.js');
+const PnrParser = require('../../Gds/Parsers/Galileo/Pnr/PnrParser.js');
 const ItineraryParser = require('../../Gds/Parsers/Galileo/Pnr/ItineraryParser.js');
 
 const php = require('../../phpDeprecated.js');
@@ -16,7 +16,7 @@ class GalileoPnr
 
         $obj = new this();
         $obj.$dump = $dump;
-        $obj.$parsed = GalileoReservationParser.parse($dump);
+        $obj.$parsed = PnrParser.parse($dump);
         return $obj;
     }
 

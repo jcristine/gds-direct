@@ -8,7 +8,7 @@ const CmsSabreTerminal = require('../../../Rbs/GdsDirect/GdsInterface/CmsSabreTe
 const CommandParser = require('../../../Gds/Parsers/Sabre/CommandParser.js');
 const SabrePricingParser = require('../../../Gds/Parsers/Sabre/Pricing/SabrePricingParser.js');
 const ItineraryParser = require('../../../Gds/Parsers/Sabre/Pnr/ItineraryParser.js');
-const SabreReservationParser = require('../../../Gds/Parsers/Sabre/Pnr/PnrParser.js');
+const PnrParser = require('../../../Gds/Parsers/Sabre/Pnr/PnrParser.js');
 const ImportPnrAction = require('../../../Rbs/Process/Common/ImportPnr/ImportPnrAction.js');
 const SabrePnr = require('../../../Rbs/TravelDs/SabrePnr.js');
 
@@ -136,7 +136,7 @@ class UpdateSabreState
             }
         } else if ($type == 'searchPnr') {
             if (this.constructor.wasSinglePnrOpenedFromSearch($output)) {
-                $parsed = SabreReservationParser.parse($output);
+                $parsed = PnrParser.parse($output);
                 $recordLocator = ($parsed['parsedData']['pnrInfo'] || {})['recordLocator'] || '';
                 $openPnr = true;
             } else if (this.constructor.isPnrListOutput($output)) {
@@ -144,7 +144,7 @@ class UpdateSabreState
             }
         } else if ($type == 'displayPnrFromList') {
             if (this.constructor.wasPnrOpenedFromList($output)) {
-                $parsed = SabreReservationParser.parse($output);
+                $parsed = PnrParser.parse($output);
                 $recordLocator = ($parsed['parsedData']['pnrInfo'] || {})['recordLocator'] || '';
                 $openPnr = true;
             }

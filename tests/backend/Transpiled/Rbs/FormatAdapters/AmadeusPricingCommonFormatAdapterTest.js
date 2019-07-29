@@ -3,7 +3,7 @@
 const StringUtil = require('../../../../../backend/Transpiled/Lib/Utils/StringUtil.js');
 const CommandParser = require('../../../../../backend/Transpiled/Gds/Parsers/Amadeus/CommandParser.js');
 const FxParser = require('../../../../../backend/Transpiled/Gds/Parsers/Amadeus/Pricing/FxParser.js');
-const AmadeusReservationParser = require('../../../../../backend/Transpiled/Gds/Parsers/Amadeus/Pnr/PnrParser.js');
+const PnrParser = require('../../../../../backend/Transpiled/Gds/Parsers/Amadeus/Pnr/PnrParser.js');
 
 const php = require('../../php.js');
 const AmadeusPricingCommonFormatAdapter = require("../../../../../backend/Transpiled/Rbs/FormatAdapters/AmadeusPricingCommonFormatAdapter");
@@ -88,7 +88,7 @@ class AmadeusPricingCommonFormatAdapterTest extends require('../../Lib/TestCase.
                     '                                                  PAGE  2/ 2',
                     ' ',
                 ]),
-                'nameRecords': ((AmadeusReservationParser.parse('  1.LIBERMANE/MARINA(INF/LEPIN) 2.LIBERMANE/ZIMICH') || {})['parsed'] || {})['passengers'] || [],
+                'nameRecords': ((PnrParser.parse('  1.LIBERMANE/MARINA(INF/LEPIN) 2.LIBERMANE/ZIMICH') || {})['parsed'] || {})['passengers'] || [],
             },
             [
                 {
@@ -140,7 +140,7 @@ class AmadeusPricingCommonFormatAdapterTest extends require('../../Lib/TestCase.
                     '                                                  PAGE  2/ 2',
                     ' ',
                 ]),
-                'nameRecords': ((AmadeusReservationParser.parse(php.implode(php.PHP_EOL, [
+                'nameRecords': ((PnrParser.parse(php.implode(php.PHP_EOL, [
                     '  1.WALTERS/ADAM J(INFWALTERS/PATRICIA MARIA/17MAY17)',
                     '  2.WALTERS/ALAN M(C09)   3.WALTERS/JESSICA   4.WALTERS/PATRICK',
                 ])) || {})['parsed'] || {})['passengers'] || [],
@@ -195,7 +195,7 @@ class AmadeusPricingCommonFormatAdapterTest extends require('../../Lib/TestCase.
                     '                                                  PAGE  2/ 2',
                     ' ',
                 ]),
-                'nameRecords': ((AmadeusReservationParser.parse(php.implode(php.PHP_EOL, [
+                'nameRecords': ((PnrParser.parse(php.implode(php.PHP_EOL, [
                     '  1.WALTERS/ADAM J(INFWALTERS/PATRICIA MARIA/17MAY17)',
                     '  2.WALTERS/ALAN M(C09)   3.WALTERS/JESSICA   4.WALTERS/PATRICK',
                 ])) || {})['parsed'] || {})['passengers'] || [],
@@ -249,7 +249,7 @@ class AmadeusPricingCommonFormatAdapterTest extends require('../../Lib/TestCase.
                     '1-5 LAST TKT DTE 07AUG17 - SEE SALES RSTNS',
                     '1-5 60 PERCENT PENALTY APPLIES',
                 ]),
-                'nameRecords': ((AmadeusReservationParser.parse(php.implode(php.PHP_EOL, [
+                'nameRecords': ((PnrParser.parse(php.implode(php.PHP_EOL, [
                     '  1.LIBERMANE/LEPIN(CHD/05APR10)',
                     '  2.LIBERMANE/MARINA(ADT)(INF/KATJA/20JAN17)   3.LIBERMANE/STAS',
                     '  4.LIBERMANE/ZIMICH(CHD/04APR10)',

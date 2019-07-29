@@ -2,7 +2,7 @@
 const PnrParser = require("../../../../../../../backend/Transpiled/Gds/Parsers/Apollo/Pnr/PnrParser");
 const php = require('../../../../../../../backend/Transpiled/phpDeprecated.js');
 
-class ApolloReservationParserTest extends require('../../../../../../../backend/Transpiled/Lib/TestCase.js') {
+class PnrParserTest extends require('../../../../../../../backend/Transpiled/Lib/TestCase.js') {
 	provideTreeTestCases() {
 		let $list;
 		$list = [];
@@ -1597,4 +1597,4 @@ class ApolloReservationParserTest extends require('../../../../../../../backend/
 	}
 }
 
-module.exports = ApolloReservationParserTest;
+module.exports = PnrParserTest;

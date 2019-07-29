@@ -3,7 +3,7 @@
 const StringUtil = require('../../../Lib/Utils/StringUtil.js');
 const CommandParser = require('../../../Gds/Parsers/Amadeus/CommandParser.js');
 const PnrSearchParser = require('../../../Gds/Parsers/Amadeus/PnrSearchParser.js');
-const AmadeusReservationParser = require('../../../Gds/Parsers/Amadeus/Pnr/PnrParser.js');
+const PnrParser = require('../../../Gds/Parsers/Amadeus/Pnr/PnrParser.js');
 const SessionStateDs = require('../../../Rbs/GdsDirect/SessionStateProcessor/SessionStateDs.js');
 const CmsAmadeusTerminal = require('../../../Rbs/GdsDirect/GdsInterface/CmsAmadeusTerminal.js');
 
@@ -63,7 +63,7 @@ class UpdateAmadeusState
         } else if (php.preg_match(/^(\/\$)?FINISH OR IGNORE\s*$/, $output)) {
             return 'finishOrIgnore';
         } else {
-            $parsedPnr = AmadeusReservationParser.parse($output);
+            $parsedPnr = PnrParser.parse($output);
             if ($parsedPnr['success']) {
                 return 'available';
             } else {
@@ -113,7 +113,7 @@ class UpdateAmadeusState
             this.$state.canCreatePq = false;
 			this.$state.pricingCmd = null;
         }
-        $parsedPnr = AmadeusReservationParser.parse($output);
+        $parsedPnr = PnrParser.parse($output);
         if ($parsedPnr['success']) {
             // Amadeus redisplays resulting PNR after each writing command, and even if it is
             // not a writing command, if it outputs PNR, that means there is a PNR right?

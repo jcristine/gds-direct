@@ -10,7 +10,7 @@ const GetMultiPccTariffDisplayAction = require('../../../../Rbs/GdsDirect/Action
 const AliasParser = require('../../../../Rbs/GdsDirect/AliasParser.js');
 const Errors = require('../../../../Rbs/GdsDirect/Errors.js');
 const GdsDirect = require('../../../../Rbs/GdsDirect/GdsDirect.js');
-const AmadeusReservationParser = require('../../../../Gds/Parsers/Amadeus/Pnr/PnrParser.js');
+const PnrParser = require('../../../../Gds/Parsers/Amadeus/Pnr/PnrParser.js');
 const GenericRemarkParser = require('../../../../Gds/Parsers/Common/GenericRemarkParser.js');
 const CommonDataHelper = require('../../../../Rbs/GdsDirect/CommonDataHelper.js');
 const CommandParser = require('../../../../Gds/Parsers/Amadeus/CommandParser.js');
@@ -136,7 +136,7 @@ class RunCmdRq {
 	static isOkXeOutput($output) {
 		let $parsedPnr;
 
-		$parsedPnr = AmadeusReservationParser.parse($output);
+		$parsedPnr = PnrParser.parse($output);
 		return $parsedPnr['success']
 			|| php.preg_match(/^(WARNING: .*\n)*\s*\/\s*ITINERARY CANCELLED\s*$/, $output);
 	}
@@ -301,7 +301,7 @@ class RunCmdRq {
 			$calledCommands.push({'cmd': 'ER', 'output': $output});
 			$output = await this.amadeusRt('ER');
 		}
-		$parsedStoredPnr = AmadeusReservationParser.parse($output);
+		$parsedStoredPnr = PnrParser.parse($output);
 		if ($rloc = (($parsedStoredPnr['parsed'] || {})['pnrInfo'] || {})['recordLocator']) {
 			this.handlePnrSave($rloc);
 		}
@@ -441,7 +441,7 @@ class RunCmdRq {
 		if(php.empty($itinerary)) {
 			$pnrDump = (await AmadeusUtil.fetchAllRt('RT', stateful)).output;
 
-			$itinerary = AmadeusReservationParser.parse($pnrDump).parsed.itinerary;
+			$itinerary = PnrParser.parse($pnrDump).parsed.itinerary;
 		}
 
 		if (php.empty($itinerary)) {
@@ -605,7 +605,7 @@ class RunCmdRq {
 
 		$numberStr = php.implode(',', $lineNumbers);
 		$output = await this.runCommand('SB' + $class + $numberStr);
-		$parsed = AmadeusReservationParser.parse($output);
+		$parsed = PnrParser.parse($output);
 		if (!$parsed['success']) {
 			if (AmadeusBuildItineraryAction.isAvailabilityOutput($output)) {
 				return Errors.getMessage(Errors.CUSTOM, {
@@ -1058,7 +1058,7 @@ class RunCmdRq {
 				this.handlePnrSave($recordLocator);
 			}
 		} else if (this.constructor.doesOpenPnr($cmdRecord['cmd'])) {
-			$parsed = AmadeusReservationParser.parse($cmdRecord['output']);
+			$parsed = PnrParser.parse($cmdRecord['output']);
 			$isAlex = ($pax) => {
 				return $pax['lastName'] === 'WEINSTEIN'
 					&& $pax['firstName'] === 'ALEX';

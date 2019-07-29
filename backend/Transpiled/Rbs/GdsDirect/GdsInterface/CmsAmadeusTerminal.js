@@ -3,7 +3,7 @@ const Fp = require('../../../Lib/Utils/Fp.js');
 const CommandParser = require('../../../Gds/Parsers/Amadeus/CommandParser.js');
 const php = require('../../../phpDeprecated.js');
 const Errors = require('../../../Rbs/GdsDirect/Errors.js');
-const AmadeusReservationParser = require('../../../Gds/Parsers/Amadeus/Pnr/PnrParser.js');
+const PnrParser = require('../../../Gds/Parsers/Amadeus/Pnr/PnrParser.js');
 const PagingHelper = require('../../../../GdsHelpers/AmadeusUtils.js');
 
 var require = require('../../../translib.js').stubRequire;
@@ -63,7 +63,7 @@ class CmsAmadeusTerminal {
 		let $parsed, $recordLocator, $matches;
 
 		if ($keptInSession) {
-			$parsed = AmadeusReservationParser.parse($dump);
+			$parsed = PnrParser.parse($dump);
 			$recordLocator = (($parsed['parsed'] || {})['pnrInfo'] || {})['recordLocator'];
 		} else {
 			// '/',

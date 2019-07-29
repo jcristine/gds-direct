@@ -12,7 +12,7 @@ const DateTime = require('../../Lib/Utils/DateTime.js');
 const BadRequest = require("klesun-node-tools/src/Rej").BadRequest;
 const NotImplemented = require("klesun-node-tools/src/Rej").NotImplemented;
 const Fp = require('../../Lib/Utils/Fp.js');
-const GalileoReservationParser = require("../../Gds/Parsers/Galileo/Pnr/PnrParser");
+const GalPnrParser = require("../../Gds/Parsers/Galileo/Pnr/PnrParser");
 const GalileoPnrCommonFormatAdapter = require("../FormatAdapters/GalileoPnrCommonFormatAdapter");
 const ApolloPnr = require("../TravelDs/ApolloPnr");
 const ImportApolloPnrFormatAdapter = require("../Process/Apollo/ImportPnr/ImportApolloPnrFormatAdapter");
@@ -196,7 +196,7 @@ class CommonDataHelper {
 			let $pnr = ApolloPnr.makeFromDump($pnrDump);
 			return ImportApolloPnrFormatAdapter.transformReservation($pnr.getParsedData(), baseDt);
 		} else if ($gds === 'galileo') {
-			let $parsed = GalileoReservationParser.parse($pnrDump);
+			let $parsed = GalPnrParser.parse($pnrDump);
 			return GalileoPnrCommonFormatAdapter.transform($parsed, baseDt);
 		} else if ($gds === 'sabre') {
 			let $pnr = SabrePnr.makeFromDump($pnrDump);

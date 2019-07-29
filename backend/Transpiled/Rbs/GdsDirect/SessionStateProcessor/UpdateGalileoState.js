@@ -6,7 +6,7 @@ const GalileoBuildItineraryAction = require('../../../Rbs/GdsAction/GalileoBuild
 const CmsGalileoTerminal = require('../../../Rbs/GdsDirect/GdsInterface/CmsGalileoTerminal.js');
 const CommonParserHelpers = require('../../../Gds/Parsers/Apollo/CommonParserHelpers.js');
 const CommandParser = require('../../../Gds/Parsers/Galileo/CommandParser.js');
-const GalileoReservationParser = require('../../../Gds/Parsers/Galileo/Pnr/PnrParser.js');
+const PnrParser = require('../../../Gds/Parsers/Galileo/Pnr/PnrParser.js');
 const GalileoPnr = require('../../../Rbs/TravelDs/GalileoPnr.js');
 
 const php = require('klesun-node-tools/src/Transpiled/php.js');
@@ -149,8 +149,8 @@ class UpdateGalileoSessionStateAction
     handleCopyPnr($clean)  {
         let $parsed, $sections, $isEmpty, $isValidPnrOutput;
 
-        $parsed = GalileoReservationParser.parse($clean);
-        $sections = GalileoReservationParser.splitToSections($clean);
+        $parsed = PnrParser.parse($clean);
+        $sections = PnrParser.splitToSections($clean);
         delete($sections['HEAD']);
 
         $isEmpty = ($var) => php.empty($var);
@@ -189,7 +189,7 @@ class UpdateGalileoSessionStateAction
         } else if (this.isFinOrIgn($output)) {
             return 'finishOrIgnore';
         } else {
-            $parsedPnr = GalileoReservationParser.parse($output);
+            $parsedPnr = PnrParser.parse($output);
             if (($parsedPnr['headerData']['reservationInfo'] || {})['recordLocator'] ||
                 !php.empty($parsedPnr['itineraryData']) ||
 				!php.empty($parsedPnr['passengers']['passengerList'])
@@ -235,7 +235,7 @@ class UpdateGalileoSessionStateAction
                 this.dropPnr();
             }
         } else if ($type === 'storeKeepPnr') {
-            $parsed = GalileoReservationParser.parse($clean);
+            $parsed = PnrParser.parse($clean);
             if ($rloc = (($parsed['headerData'] || {})['reservationInfo'] || {})['recordLocator']) {
                 this.openPnr($rloc);
             }
@@ -252,7 +252,7 @@ class UpdateGalileoSessionStateAction
             if (this.constructor.isPnrListOutput($clean)) {
                 this.dropPnr();
             } else if (this.constructor.wasSinglePnrOpenedFromSearch($clean)) {
-                $parsed = GalileoReservationParser.parse($clean);
+                $parsed = PnrParser.parse($clean);
                 this.openPnr((($parsed['headerData'] || {})['reservationInfo'] || {})['recordLocator'] || '');
             }
         } else if ($type == 'displayPnrFromList') {
@@ -262,7 +262,7 @@ class UpdateGalileoSessionStateAction
                 // Better to mistakenly think that PNR is opened than not
                 //$this->dropPnr();
             } else if (this.constructor.wasPnrOpenedFromList($clean)) {
-                $parsed = GalileoReservationParser.parse($clean);
+                $parsed = PnrParser.parse($clean);
                 this.openPnr((($parsed['headerData'] || {})['reservationInfo'] || {})['recordLocator'] || '');
             }
         } else if ($type === 'changePcc') {

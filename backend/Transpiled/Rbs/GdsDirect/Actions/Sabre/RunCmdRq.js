@@ -18,7 +18,7 @@ const SabrePnr = require('../../../../Rbs/TravelDs/SabrePnr.js');
 const CommonDataHelper = require('../../../../Rbs/GdsDirect/CommonDataHelper.js');
 const php = require('klesun-node-tools/src/Transpiled/php.js');
 const SabreTicketListParser = require('../../../../Gds/Parsers/Sabre/SabreTicketListParser.js');
-const SabreReservationParser = require('../../../../Gds/Parsers/Sabre/Pnr/PnrParser.js');
+const PnrParser = require('../../../../Gds/Parsers/Sabre/Pnr/PnrParser.js');
 const Pccs = require("../../../../../Repositories/Pccs");
 const getRbsPqInfo = require("../../../../../GdsHelpers/RbsUtils").getRbsPqInfo;
 const UnprocessableEntity = require("klesun-node-tools/src/Rej").UnprocessableEntity;
@@ -741,7 +741,7 @@ class RunCmdRq {
 			$cmd = php.implode('\u00A7', ['W- 100 PINE STREET', '5\/ITN', 'ER']);
 			$output = await this.runCommand($cmd);
 		}
-		$parsedStoredPnr = SabreReservationParser.parse($output);
+		$parsedStoredPnr = PnrParser.parse($output);
 		if ($rloc = (($parsedStoredPnr['parsedData'] || {})['pnrInfo'] || {})['recordLocator']) {
 			this.handlePnrSave($rloc);
 		}
@@ -885,12 +885,12 @@ class RunCmdRq {
 				$output = await this.runCommand($cmd);
 				$calledCommands.push({'cmd': $cmd, 'output': $output});
 			}
-			$recordLocator = (TSabreSavePnr.parseSavePnrOutput($cmdRecord['output']) || {})['recordLocator'] || (((SabreReservationParser.parse($cmdRecord['output']) || {})['parsedData'] || {})['pnrInfo'] || {})['recordLocator'];
+			$recordLocator = (TSabreSavePnr.parseSavePnrOutput($cmdRecord['output']) || {})['recordLocator'] || (((PnrParser.parse($cmdRecord['output']) || {})['parsedData'] || {})['pnrInfo'] || {})['recordLocator'];
 			if ($recordLocator) {
 				this.handlePnrSave($recordLocator);
 			}
 		} else if (this.constructor.doesOpenPnr($cmdRecord['cmd'])) {
-			$parsed = SabreReservationParser.parse($cmdRecord['output']);
+			$parsed = PnrParser.parse($cmdRecord['output']);
 			$isAlex = ($pax) => {
 				return $pax['lastName'] === 'WEINSTEIN'
 					&& $pax['firstName'] === 'ALEX';

@@ -15,7 +15,7 @@ const RemarksParser = require("./RemarksParser");
 const AccountingDataParser = require("./AccountingDataParser");
 const PhonesBlockParser = require("./PhonesBlockParser");
 const PricingCmdParser = require("../Commands/PricingCmdParser");
-class SabreReservationParser
+class PnrParser
 {
     static markLines($lines)  {
         let $section, $result, $line, $cleanedLine;
@@ -211,4 +211,4 @@ return $line['line'];}, $sectionLines));}
 		return {parsedData};
     }
 }
-module.exports = SabreReservationParser;
+module.exports = PnrParser;

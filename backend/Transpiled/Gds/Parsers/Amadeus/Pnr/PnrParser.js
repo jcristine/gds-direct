@@ -13,7 +13,7 @@ const FopLineParser = require("./FopLineParser");
 const SsrLineParser = require("./SsrLineParser");
 const HotelLineParser = require("./HotelLineParser");
 const CarLineParser = require("./CarLineParser");
-class AmadeusReservationParser
+class PnrParser
 {
     static parse($dump)  {
         let $success, $linesLeft, $result, $unparsedLines, $itinerarySegmentFound, $line, $wasUnparsed, $wrappedParts, $res, $lastSegment, $ticket, $remark, $mco, $nestedLines, $ssrLine, $data, $genericField, $getType, $typeToFields;
@@ -694,7 +694,7 @@ class AmadeusReservationParser
 
     /**
      * adds absolute numbers (needs all lines) and removes legacy keys
-     * @param $passengers = AmadeusReservationParser::parsePassengerLine()['passengerList']
+     * @param $passengers = require('PnrParser.js').parsePassengerLine().passengerList
      */
     static transformPassengers($passengers)  {
         let $result, $i, $passenger;
@@ -767,11 +767,11 @@ class AmadeusReservationParser
         }
     }
 }
-AmadeusReservationParser.ITINERARY_SEGMENT = 'ITINERARY_SEGMENT';
-AmadeusReservationParser.FORMAT_DAY_OFFSET = 'DAY_OFFSET';
-AmadeusReservationParser.FLWN_SEGMENT = 'FLWN_SEGMENT';
-AmadeusReservationParser.FORMAT_EXTENDED = 'EXTENDED';
+PnrParser.ITINERARY_SEGMENT = 'ITINERARY_SEGMENT';
+PnrParser.FORMAT_DAY_OFFSET = 'DAY_OFFSET';
+PnrParser.FLWN_SEGMENT = 'FLWN_SEGMENT';
+PnrParser.FORMAT_EXTENDED = 'EXTENDED';
 // It is called MIS in Amadeus, but since we have OTH segment in Apollo
 // & Sabre w/ essentially the same meaning, lets call it OTH
-AmadeusReservationParser.SEGMENT_TYPE_OTH = 'OTH';
-module.exports = AmadeusReservationParser;
+PnrParser.SEGMENT_TYPE_OTH = 'OTH';
+module.exports = PnrParser;

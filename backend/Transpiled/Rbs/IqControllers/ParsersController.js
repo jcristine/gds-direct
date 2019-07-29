@@ -1,11 +1,11 @@
 
-const ApolloReservationParser = require('../../Gds/Parsers/Apollo/Pnr/PnrParser.js');
-const SabreReservationParser = require('../../Gds/Parsers/Sabre/Pnr/PnrParser.js');
-const AmadeusReservationParser = require('../../Gds/Parsers/Amadeus/Pnr/PnrParser.js');
+const ApoPnrParser = require('../../Gds/Parsers/Apollo/Pnr/PnrParser.js');
+const SabPnrParser = require('../../Gds/Parsers/Sabre/Pnr/PnrParser.js');
+const GalPnrParser = require("../../Gds/Parsers/Galileo/Pnr/PnrParser");
+const AmaPnrParser = require('../../Gds/Parsers/Amadeus/Pnr/PnrParser.js');
 const FormatAdapter = require("./FormatAdapter");
 
 let php = require('../../phpDeprecated.js');
-const GalileoReservationParser = require("../../Gds/Parsers/Galileo/Pnr/PnrParser");
 const GalileoPnrCommonFormatAdapter = require("../FormatAdapters/GalileoPnrCommonFormatAdapter");
 const AmadeusPnrCommonFormatAdapter = require("../FormatAdapters/AmadeusPnrCommonFormatAdapter");
 
@@ -18,14 +18,14 @@ let PNR_DUMP_TYPES = [
 
 class ParsersController {
 	tryParseAs($dump, $baseDate) {
-		let asApollo = ApolloReservationParser.parse($dump);
-		let asGalileo = GalileoReservationParser.parse($dump);
-		let asSabre = SabreReservationParser.parse($dump);
-		let asAmadeus = AmadeusReservationParser.parse($dump);
+		let asApollo = ApoPnrParser.parse($dump);
+		let asGalileo = GalPnrParser.parse($dump);
+		let asSabre = SabPnrParser.parse($dump);
+		let asAmadeus = AmaPnrParser.parse($dump);
 		// make sure first line trimmed space is restored,
 		// since Amadeus parser is strict about indentation
 		let normAma = $dump.replace(/^\s*/, '  ');
-		let asAmaItin = AmadeusReservationParser.parse(normAma);
+		let asAmaItin = AmaPnrParser.parse(normAma);
 
 		if (asApollo.itineraryData.length > 0) {
 			let data = FormatAdapter.adaptApolloPnrParseForClient(asApollo, $baseDate);

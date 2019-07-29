@@ -7,7 +7,7 @@ const GetPqItineraryAction = require('../../SessionStateProcessor/CanCreatePqRul
 const CommandParser = require('../../../../Gds/Parsers/Amadeus/CommandParser.js');
 const PricingCmdParser = require('../../../../Gds/Parsers/Amadeus/Commands/PricingCmdParser.js');
 const FlightInfoParser = require('../../../../Gds/Parsers/Amadeus/FlightInfoParser.js');
-const AmadeusReservationParser = require('../../../../Gds/Parsers/Amadeus/Pnr/PnrParser.js');
+const PnrParser = require('../../../../Gds/Parsers/Amadeus/Pnr/PnrParser.js');
 const PagingHelper = require('../../../../../GdsHelpers/AmadeusUtils.js');
 const CmsAmadeusTerminal = require('../../../../Rbs/GdsDirect/GdsInterface/CmsAmadeusTerminal.js');
 const PtcUtil = require('../../../../Rbs/Process/Common/PtcUtil.js');
@@ -170,7 +170,7 @@ class ImportPqAmadeusAction extends AbstractGdsAction {
 		let $raw, $parsed, $result, $common, $errors;
 
 		$raw = await this.runOrReuseRt('RT');
-		$parsed = AmadeusReservationParser.parse($raw);
+		$parsed = PnrParser.parse($raw);
 		$result = {'raw': $raw};
 		if ($result['error'] = $parsed['error']) {
 			return $result;

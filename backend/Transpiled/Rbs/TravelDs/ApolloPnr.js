@@ -1,6 +1,6 @@
 
 const Fp = require('../../Lib/Utils/Fp.js');
-const ApolloReservationParser = require('../../Gds/Parsers/Apollo/Pnr/PnrParser.js');
+const PnrParser = require('../../Gds/Parsers/Apollo/Pnr/PnrParser.js');
 const php = require('../../phpDeprecated');
 
 /** @implements {IPnr} */
@@ -9,7 +9,7 @@ class ApolloPnr {
 		let $obj;
 		$obj = new this();
 		$obj.$dump = $dump;
-		$obj.$parsed = ApolloReservationParser.parse($dump);
+		$obj.$parsed = PnrParser.parse($dump);
 		return $obj;
 	}
 

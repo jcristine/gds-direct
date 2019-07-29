@@ -1,5 +1,5 @@
 
-const AmadeusReservationParser = require('../../../../../backend/Transpiled/Gds/Parsers/Amadeus/Pnr/PnrParser.js');
+const PnrParser = require('../../../../../backend/Transpiled/Gds/Parsers/Amadeus/Pnr/PnrParser.js');
 const AnyGdsStubSession = require('../../../../../backend/Transpiled/Rbs/TestUtils/AnyGdsStubSession.js');
 const AmadeusGetPricingPtcBlocksAction = require('../../../../../backend/Transpiled/Rbs/GdsDirect/Actions/Amadeus/AmadeusGetPricingPtcBlocksAction.js');
 
@@ -30,7 +30,7 @@ class AmadeusGetPricingPtcBlocksActionTest extends require('../../Lib/TestCase.j
 					'1-5 LAST TKT DTE 07AUG17 - SEE SALES RSTNS',
 					'1-5 60 PERCENT PENALTY APPLIES',
 				]),
-				'nameRecords': ((AmadeusReservationParser.parse(php.implode(php.PHP_EOL, [
+				'nameRecords': ((PnrParser.parse(php.implode(php.PHP_EOL, [
 					'  1.LIBERMANE/LEPIN(CHD/05APR10)',
 					'  2.LIBERMANE/MARINA(ADT)(INF/KATJA/20JAN17)   3.LIBERMANE/STAS',
 					'  4.LIBERMANE/ZIMICH(CHD/04APR10)',
@@ -417,7 +417,7 @@ class AmadeusGetPricingPtcBlocksActionTest extends require('../../Lib/TestCase.j
 					'                                                  PAGE  2/ 2',
 					' ',
 				]),
-				'nameRecords': ((AmadeusReservationParser.parse('  1.LIBERMANE/MARINA(INF/LEPIN) 2.LIBERMANE/ZIMICH') || {})['parsed'] || {})['passengers'] || [],
+				'nameRecords': ((PnrParser.parse('  1.LIBERMANE/MARINA(INF/LEPIN) 2.LIBERMANE/ZIMICH') || {})['parsed'] || {})['passengers'] || [],
 			},
 			'output': {
 				'pricingList': [

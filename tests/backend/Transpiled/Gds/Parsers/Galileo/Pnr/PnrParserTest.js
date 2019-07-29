@@ -1,7 +1,7 @@
 
 
 const php = require('../../../../php.js');
-const GalileoReservationParser = require("../../../../../../../backend/Transpiled/Gds/Parsers/Galileo/Pnr/PnrParser");
+const PnrParser = require("../../../../../../../backend/Transpiled/Gds/Parsers/Galileo/Pnr/PnrParser");
 
 class PnrParserTest extends require('../../../../Lib/TestCase.js') {
 	provideTestCases() {
@@ -1492,7 +1492,7 @@ class PnrParserTest extends require('../../../../Lib/TestCase.js') {
 	testParser($input, $expected) {
 		let $actual;
 
-		$actual = GalileoReservationParser.parse($input);
+		$actual = PnrParser.parse($input);
 		try {
 			this.assertArrayElementsSubset($expected, $actual, '', true);
 		} catch (exc) {

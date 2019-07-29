@@ -1,7 +1,7 @@
 
 
 const DateTime = require('../../Lib/Utils/DateTime.js');
-const AmadeusReservationParser = require('../../Gds/Parsers/Amadeus/Pnr/PnrParser.js');
+const PnrParser = require('../../Gds/Parsers/Amadeus/Pnr/PnrParser.js');
 const ImportPnrCommonFormatAdapter = require('../../Rbs/Process/Common/ImportPnr/ImportPnrCommonFormatAdapter.js');
 
 /**
@@ -33,7 +33,7 @@ class AmadeusPnrCommonFormatAdapter
         for ([$i, $segment] of Object.entries($itinerary)) {
             if ($segment['segmentType'] === 'ITINERARY_SEGMENT') {
                 $departureDt = this.transformDt($baseDate, $segment['departureDate'], $segment['departureTime']);
-                if ($segment['displayFormat'] === AmadeusReservationParser.FORMAT_DAY_OFFSET) {
+                if ($segment['displayFormat'] === PnrParser.FORMAT_DAY_OFFSET) {
                     $dayOffset = $segment['dayOffset'];
                     $destinationDt = {
                         'parsed': $dayOffset,

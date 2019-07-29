@@ -6,7 +6,7 @@ const ApolloBuildItineraryAction = require('../../../Rbs/GdsAction/ApolloBuildIt
 const TApolloSavePnr = require('../../../Rbs/GdsAction/Traits/TApolloSavePnr.js');
 const GetPqItineraryAction = require('./CanCreatePqRules.js');
 const CmsApolloTerminal = require('../../../Rbs/GdsDirect/GdsInterface/CmsApolloTerminal.js');
-const ApolloReservationParser = require('../../../Gds/Parsers/Apollo/Pnr/PnrParser.js');
+const PnrParser = require('../../../Gds/Parsers/Apollo/Pnr/PnrParser.js');
 const CommandParser = require('../../../Gds/Parsers/Apollo/CommandParser.js');
 const ApolloRepeatItineraryAction = require('../../../Rbs/GdsAction/ApolloRepeatItineraryAction.js');
 const ImportPnrAction = require('../../../Rbs/Process/Common/ImportPnr/ImportPnrAction.js');
@@ -41,8 +41,8 @@ class UpdateApolloState {
 	static handleApolloCopyPnr($sessionData, $output) {
 		let $parsed, $sections, $isEmpty, $isValidPnrOutput;
 		$output = php.preg_replace(/\)?><$/, '', $output);
-		$parsed = ApolloReservationParser.parse($output);
-		$sections = ApolloReservationParser.splitToSections($output);
+		$parsed = PnrParser.parse($output);
+		$sections = PnrParser.splitToSections($output);
 		delete ($sections['HEAD']);
 		$isEmpty = ($var) => {
 			return php.empty($var);

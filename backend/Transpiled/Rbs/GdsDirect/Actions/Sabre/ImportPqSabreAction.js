@@ -6,7 +6,7 @@ const GetPqItineraryAction = require('../../SessionStateProcessor/CanCreatePqRul
 const CmsSabreTerminal = require('../../../../Rbs/GdsDirect/GdsInterface/CmsSabreTerminal.js');
 const CommandParser = require('../../../../Gds/Parsers/Sabre/CommandParser.js');
 const SabrePricingParser = require('../../../../Gds/Parsers/Sabre/Pricing/SabrePricingParser.js');
-const SabreReservationParser = require('../../../../Gds/Parsers/Sabre/Pnr/PnrParser.js');
+const PnrParser = require('../../../../Gds/Parsers/Sabre/Pnr/PnrParser.js');
 const ImportSabrePnrFormatAdapter = require('../../../../Rbs/Process/Sabre/ImportPnr/ImportSabrePnrFormatAdapter.js');
 const SabrePricingAdapter = require('../../../FormatAdapters/SabrePricingAdapter.js');
 const SabreVerifyParser = require('../../../../Gds/Parsers/Sabre/SabreVerifyParser.js');
@@ -89,7 +89,7 @@ class ImportPqSabreAction extends AbstractGdsAction {
 
 		$raw = await this.runOrReuse('*R');
 
-		$parsed = SabreReservationParser.parse($raw);
+		$parsed = PnrParser.parse($raw);
 		$common = ImportSabrePnrFormatAdapter.transformReservation($parsed, this.getBaseDate());
 		$result = {'raw': $raw};
 		if ($result['error'] = $common['error']) {

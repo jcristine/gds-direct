@@ -4,7 +4,7 @@ const CommandParser = require('../../../../Gds/Parsers/Galileo/CommandParser.js'
 const php = require('../../../../phpDeprecated.js');
 const CmsGalileoTerminal = require("../../GdsInterface/CmsGalileoTerminal");
 const AbstractGdsAction = require('../../../GdsAction/AbstractGdsAction.js');
-const GalileoReservationParser = require("../../../../Gds/Parsers/Galileo/Pnr/PnrParser");
+const PnrParser = require("../../../../Gds/Parsers/Galileo/Pnr/PnrParser");
 const GalileoPnrCommonFormatAdapter = require("../../../FormatAdapters/GalileoPnrCommonFormatAdapter");
 const GetPqItineraryAction = require("../../SessionStateProcessor/CanCreatePqRules");
 const GalileoStatelessTerminal = require("../../GdsInterface/CmsGalileoTerminal");
@@ -108,7 +108,7 @@ class ImportPqGalileoAction extends AbstractGdsAction {
 		let $raw, $parsed, $common, $result, $errors;
 
 		$raw = await this.runOrReuse('*R');
-		$parsed = GalileoReservationParser.parse($raw);
+		$parsed = PnrParser.parse($raw);
 		$common = GalileoPnrCommonFormatAdapter.transform($parsed, this.getBaseDate());
 		$result = {'raw': $raw};
 		if ($result['error'] = $common['error']) {

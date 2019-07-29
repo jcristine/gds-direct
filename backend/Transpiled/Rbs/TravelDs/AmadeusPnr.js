@@ -1,6 +1,6 @@
 
 const Fp = require('../../Lib/Utils/Fp.js');
-const AmadeusReservationParser = require('../../Gds/Parsers/Amadeus/Pnr/PnrParser.js');
+const PnrParser = require('../../Gds/Parsers/Amadeus/Pnr/PnrParser.js');
 const GenericRemarkParser = require('../../Gds/Parsers/Common/GenericRemarkParser.js');
 
 const php = require('../../phpDeprecated.js');
@@ -10,7 +10,7 @@ class AmadeusPnr {
 	static makeFromDump($dump) {
 		let $parse, $self;
 
-		$parse = AmadeusReservationParser.parse($dump);
+		$parse = PnrParser.parse($dump);
 		$self = new this();
 		$self.$dump = $dump;
 		$self.$parsed = $parse;
@@ -49,7 +49,7 @@ class AmadeusPnr {
 
 	getItinerary() {
 
-		return this.getSegmentsWithType([AmadeusReservationParser.ITINERARY_SEGMENT]);
+		return this.getSegmentsWithType([PnrParser.ITINERARY_SEGMENT]);
 	}
 
 	getSegmentsWithType($types) {

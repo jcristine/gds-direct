@@ -1,11 +1,10 @@
 
-const AtfqParser = require('../../../../Gds/Parsers/Apollo/Pnr/AtfqParser.js');
 const Fp = require('../../../../Lib/Utils/Fp.js');
 const StringUtil = require('../../../../Lib/Utils/StringUtil.js');
 const ApolloPricingAdapter = require('../../../../Rbs/FormatAdapters/ApolloPricingAdapter.js');
 const CanCreatePqRules = require('../../../../Rbs/GdsDirect/SessionStateProcessor/CanCreatePqRules.js');
 const CmsApolloTerminal = require('../../../../Rbs/GdsDirect/GdsInterface/CmsApolloTerminal.js');
-const ApolloReservationParser = require('../../../../Gds/Parsers/Apollo/Pnr/PnrParser.js');
+const PnrParser = require('../../../../Gds/Parsers/Apollo/Pnr/PnrParser.js');
 const CommandParser = require('../../../../Gds/Parsers/Apollo/CommandParser.js');
 const PricingParser = require('../../../../Gds/Parsers/Apollo/PricingParser/PricingParser.js');
 const ApolloPnrFieldsOnDemand = require('../../../../Rbs/Process/Apollo/ImportPnr/ApolloPnrFieldsOnDemand.js');
@@ -153,7 +152,7 @@ class ImportPqApolloAction extends AbstractGdsAction {
 	async getReservation() {
 		let $raw, $parsed, $common, $result, $errors;
 		$raw = await this.runOrReuse('*R');
-		$parsed = ApolloReservationParser.parse($raw);
+		$parsed = PnrParser.parse($raw);
 		$common = ImportApolloPnrFormatAdapter.transformReservation($parsed, this.getBaseDate());
 		$result = {'raw': $raw};
 		if ($result['error'] = $common['error'] || null) {

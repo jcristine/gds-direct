@@ -1,7 +1,7 @@
 
 const DateTime = require('../../Lib/Utils/DateTime.js');
 const Fp = require('../../Lib/Utils/Fp.js');
-const SabreReservationParser = require('../../Gds/Parsers/Sabre/Pnr/PnrParser.js');
+const PnrParser = require('../../Gds/Parsers/Sabre/Pnr/PnrParser.js');
 
 /**
  * Sabre pnr parse access implementation
@@ -23,7 +23,7 @@ class SabrePnr {
 
 		$obj = new this();
 		$obj.$dump = $dump;
-		$obj.$parsed = SabreReservationParser.parse($dump);
+		$obj.$parsed = PnrParser.parse($dump);
 		return $obj;
 	}
 
@@ -49,7 +49,7 @@ class SabrePnr {
 
 	getDump($unwrap) {
 
-		return $unwrap ? SabreReservationParser.cleanupHandPastedDump(this.$dump) : this.$dump;
+		return $unwrap ? PnrParser.cleanupHandPastedDump(this.$dump) : this.$dump;
 	}
 
 	getParsedData() {
