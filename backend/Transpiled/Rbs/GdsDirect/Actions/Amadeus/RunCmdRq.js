@@ -397,9 +397,18 @@ class RunCmdRq {
 
 		$pnrDump = (await AmadeusUtil.fetchAllRt('RTAM', this.stateful)).output;
 
-		if (php.empty($itinerary = MarriageItineraryParser.parse($pnrDump))) {
+		$itinerary = MarriageItineraryParser.parse($pnrDump);
+
+		if(php.empty($itinerary)) {
+			$pnrDump = (await AmadeusUtil.fetchAllRt('RT', this.stateful)).output;
+
+			$itinerary = AmadeusReservationParser.parse($pnrDump).parsed.itinerary;
+		}
+
+		if (php.empty($itinerary)) {
 			return {'errors': [Errors.getMessage(Errors.ITINERARY_IS_EMPTY)]};
 		}
+
 		if (php.empty($emptyAreas = this.getEmptyAreasFromDbState())) {
 			return {'errors': [Errors.getMessage(Errors.NO_FREE_AREAS)]};
 		}
