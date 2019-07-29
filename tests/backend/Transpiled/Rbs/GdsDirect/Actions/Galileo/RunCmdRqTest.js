@@ -1,3 +1,6 @@
+const PtcFareFamilies = require('../../../../../../../backend/Repositories/PtcFareFamilies.js');
+const stubPtcFareFamilies = require('../../../../../../data/stubPtcFareFamilies.js');
+const PtcUtil = require('../../../../../../../backend/Transpiled/Rbs/Process/Common/PtcUtil.js');
 // namespace Rbs\GdsDirect\Actions\Galileo;
 
 const GdsDirectDefaults = require('../../../../Rbs/TestUtils/GdsDirectDefaults.js');
@@ -2262,8 +2265,16 @@ class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
 	async testCase($input, $output, $sessionInfo) {
 		let $session = GdsDirectDefaults.makeStatefulSession('galileo', $input, $sessionInfo);
 
-		let $actualOutput = await (new RunCmdRq($session))
-			.execute($input['cmdRequested']);
+		let $actualOutput = await RunCmdRq({
+			stateful: $session,
+			cmdRq: $input['cmdRequested'],
+			PtcUtil: PtcUtil.makeCustom({
+				PtcFareFamilies: {
+					getAll: () => Promise.resolve(stubPtcFareFamilies),
+					getByAdultPtc: (adultPtc) => PtcFareFamilies.getByAdultPtcFrom(adultPtc, stubPtcFareFamilies),
+				},
+			}),
+		});
 		$actualOutput['sessionData'] = $session.getSessionData();
 
 		let unusedCommands = $session.getGdsSession().getCommandsLeft();

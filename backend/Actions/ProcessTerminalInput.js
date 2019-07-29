@@ -136,7 +136,7 @@ let runByGds = async (inputCmd, stateful) => {
 	} else if (stateful.gds === 'amadeus') {
 		gdsResult = await AmaRunCmdRq({stateful, cmdRq: inputCmd});
 	} else if (stateful.gds === 'galileo') {
-		gdsResult = await (new GalRunCmdRq(stateful).execute(inputCmd));
+		gdsResult = await GalRunCmdRq({stateful, cmdRq: inputCmd});
 	} else {
 		return NotImplemented('Unsupported GDS for runCmdRq() - ' + stateful.gds);
 	}
