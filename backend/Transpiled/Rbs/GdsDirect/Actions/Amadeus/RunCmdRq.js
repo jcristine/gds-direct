@@ -35,6 +35,10 @@ const {withCapture} = require("../../../../../GdsHelpers/CommonUtils");
 const AmadeusGetPricingPtcBlocks = require('./AmadeusGetPricingPtcBlocksAction.js');
 const PricingCmdParser = require('../../../../../Transpiled/Gds/Parsers/Amadeus/Commands/PricingCmdParser.js');
 
+const PASSIVE_STATUSES = ['GK', 'PE'];
+// defines how much areas can agent open in single session
+const AREA_LETTERS = ['A', 'B', 'C', 'D'];
+
 class RunCmdRq {
 	/** @param $statefulSession = require('StatefulSession.js')() */
 	constructor($statefulSession) {
@@ -312,8 +316,8 @@ class RunCmdRq {
 	async changeArea($area) {
 		let $errorData, $areaRows, $isRequested, $row;
 
-		if (!php.in_array($area, this.constructor.AREA_LETTERS)) {
-			$errorData = {'area': $area, 'options': php.implode(', ', this.constructor.AREA_LETTERS)};
+		if (!php.in_array($area, AREA_LETTERS)) {
+			$errorData = {'area': $area, 'options': php.implode(', ', AREA_LETTERS)};
 			return {'errors': [Errors.getMessage(Errors.INVALID_AREA_LETTER, $errorData)]};
 		}
 		if (this.stateful.getSessionData()['area'] === $area) {
@@ -467,7 +471,7 @@ class RunCmdRq {
 			}
 		}
 		$bookItinerary = $itinerary.map(($segment) => {
-			let cls = !php.in_array($segment['segmentStatus'], this.constructor.PASSIVE_STATUSES)
+			let cls = !php.in_array($segment['segmentStatus'], PASSIVE_STATUSES)
 				? 'Y' : $segment['bookingClass'];
 			return {...$segment, bookingClass: cls};
 		});
@@ -478,7 +482,7 @@ class RunCmdRq {
 		if ($error = this.constructor.transformBuildError($result)) {
 			$errors.push($error);
 		} else {
-			let $isActive = ($seg) => !php.in_array($seg['segmentStatus'], this.constructor.PASSIVE_STATUSES);
+			let $isActive = ($seg) => !php.in_array($seg['segmentStatus'], PASSIVE_STATUSES);
 			let $activeSegments = Fp.filter($isActive, $itinerary);
 			let $marriageGroups = Fp.groupMap(($seg) => $seg['marriage'], $activeSegments);
 
@@ -744,7 +748,7 @@ class RunCmdRq {
 		$occupiedRows = Fp.filter($isOccupied, this.stateful.getAreaRows());
 		$occupiedAreas = php.array_column($occupiedRows, 'area');
 		$occupiedAreas.push(this.getSessionData()['area']);
-		return php.array_values(php.array_diff(this.constructor.AREA_LETTERS, $occupiedAreas));
+		return php.array_values(php.array_diff(AREA_LETTERS, $occupiedAreas));
 	}
 
 	async changePcc($pcc) {
@@ -1131,7 +1135,7 @@ class RunCmdRq {
 			'',
 			'AREA  TM  MOD SG/DT.LG TIME      ACT.Q   STATUS     NAME',
 		];
-		for ($letter of Object.values(this.AREA_LETTERS)) {
+		for ($letter of Object.values(AREA_LETTERS)) {
 			if (php.isset($areas[$letter])) {
 				if ($areas[$letter]['isPnrStored']) {
 					$status = 'PNR MODIFY';
@@ -1176,7 +1180,4 @@ class RunCmdRq {
 	}
 }
 
-RunCmdRq.PASSIVE_STATUSES = ['GK', 'PE'];
-// defines how much areas can agent open in single session
-RunCmdRq.AREA_LETTERS = ['A', 'B', 'C', 'D'];
 module.exports = RunCmdRq;

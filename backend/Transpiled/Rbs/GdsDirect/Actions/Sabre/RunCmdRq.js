@@ -1019,6 +1019,4 @@ class RunCmdRq {
 	}
 }
 
-RunCmdRq.USE_BUILT_IN_AREAS = true; // TODO: implement fake areas
-RunCmdRq.AREA_LETTERS = ['A', 'B', 'C', 'D', 'E', 'F'];
 module.exports = RunCmdRq;
