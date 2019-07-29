@@ -1,3 +1,6 @@
+const PtcUtil = require('../../../../../../../backend/Transpiled/Rbs/Process/Common/PtcUtil.js');
+const stubPtcFareFamilies = require('../../../../../../data/stubPtcFareFamilies.js');
+const PtcFareFamilies = require('../../../../../../../backend/Repositories/PtcFareFamilies.js');
 // namespace Rbs\GdsDirect\Actions\Sabre;
 
 const Agent = require('../../../../../../../backend/DataFormats/Wrappers/Agent.js');
@@ -1891,6 +1894,12 @@ class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
 		$actual = await RunCmdRq({
 			stateful: $session,
 			cmdRq: $input['cmdRequested'],
+			PtcUtil: PtcUtil.makeCustom({
+				PtcFareFamilies: {
+					getAll: () => Promise.resolve(stubPtcFareFamilies),
+					getByAdultPtc: (adultPtc) => PtcFareFamilies.getByAdultPtcFrom(adultPtc, stubPtcFareFamilies),
+				},
+			}),
 		});
 		$actual['sessionData'] = $session.getSessionData();
 

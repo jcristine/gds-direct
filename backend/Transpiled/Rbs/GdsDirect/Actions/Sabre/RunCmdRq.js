@@ -16,7 +16,6 @@ const CmsSabreTerminal = require('../../../../Rbs/GdsDirect/GdsInterface/CmsSabr
 const GenericRemarkParser = require('../../../../Gds/Parsers/Common/GenericRemarkParser.js');
 const CommandParser = require('../../../../Gds/Parsers/Sabre/CommandParser.js');
 const SabrePnr = require('../../../../Rbs/TravelDs/SabrePnr.js');
-const PtcUtil = require('../../../../Rbs/Process/Common/PtcUtil.js');
 const CommonDataHelper = require('../../../../Rbs/GdsDirect/CommonDataHelper.js');
 const php = require('klesun-node-tools/src/Transpiled/php.js');
 const SabreTicketListParser = require('../../../../Gds/Parsers/Sabre/SabreTicketListParser.js');
@@ -29,6 +28,7 @@ const Rej = require('klesun-node-tools/src/Rej.js');
 
 const execute = ({
 	stateful, cmdRq,
+	PtcUtil = require('../../../../Rbs/Process/Common/PtcUtil.js'),
 }) => {
 
 class RunCmdRq {
