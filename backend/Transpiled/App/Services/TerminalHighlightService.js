@@ -6,15 +6,17 @@ const {getFullDataForService, getByName} = require('../../../Repositories/Highli
 const {substr_replace, array_values, sprintf, strlen, preg_match, empty, isset} = require('../../phpDeprecated.js');
 const ApoCmdParser = require('../../Gds/Parsers/Apollo/CommandParser.js');
 const FareConstructionParser = require('../../Gds/Parsers/Common/FareConstruction/FareConstructionParser.js');
+const {coverExc} = require('klesun-node-tools/src/Lang.js');
+const Rej = require('klesun-node-tools/src/Rej.js');
 
-let getCmdPatterns = async () => {
-	let rules = await getFullDataForService();
+let getCmdPatterns = () => getFullDataForService().then((rules) => {
 	let cmdPatterns = [];
 	for (let rule of Object.values(rules)) {
 		cmdPatterns.push(...rule.cmdPatterns);
 	}
 	return cmdPatterns;
-};
+// DB not available in tests
+}).catch(coverExc([Rej.BadRequest], exc => []));
 
 let getRules = (cmdPatterns) => getFullDataForService()
 	.then(ruleMapping => {
@@ -27,7 +29,9 @@ let getRules = (cmdPatterns) => getFullDataForService()
 		}
 		return result;
 	})
-	.then(rules => rules.sort((a, b) => a.priority - b.priority));
+	.then(rules => rules.sort((a, b) => a.priority - b.priority))
+	// DB not available in tests
+	.catch(coverExc([Rej.BadRequest], exc => []));
 
 let setCmdRegexError = (ruleId, cmdPattern, dialect) =>
 	Db.with(db => db.writeRows('highlightCmdPatterns', [{

@@ -121,7 +121,7 @@ module.exports = async ({stateful}) => {
 	} else {
 		mpAirline = await stateful.askClient({
 			messageType: 'selectMpAirline',
-			options: airlines
+			options: airlines,
 		});
 	}
 
