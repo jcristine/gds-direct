@@ -39,6 +39,40 @@ const PASSIVE_STATUSES = ['GK', 'PE'];
 // defines how much areas can agent open in single session
 const AREA_LETTERS = ['A', 'B', 'C', 'D'];
 
+const forgeViewAreasDump = ($sessionData, $areasFromDb) => {
+	let $areas, $area, $lines, $letter, $status, $data;
+
+	$areas = [];
+	for ($area of Object.values($areasFromDb)) {
+		$areas[$area['area']] = $area;
+	}
+	$lines = [
+		'00000000         ' + $sessionData['pcc'],
+		'',
+		'AREA  TM  MOD SG/DT.LG TIME      ACT.Q   STATUS     NAME',
+	];
+	for ($letter of Object.values(AREA_LETTERS)) {
+		if (php.isset($areas[$letter])) {
+			if ($areas[$letter]['isPnrStored']) {
+				$status = 'PNR MODIFY';
+			} else if ($areas[$letter]['hasPnr']) {
+				$status = 'PNR CREATE';
+			} else {
+				$status = 'SIGNED';
+			}
+			$data = {
+				'letter': $letter,
+				'signed': ($letter == $sessionData['area']) ? '-IN' : '   ',
+				'status': $status,
+			};
+			$lines.push(StringUtil.format('{letter}{signed}      PRD WS/SU.EN  24             {status}', $data));
+		} else {
+			$lines.push($letter + '                                      NOT SIGNED');
+		}
+	}
+	return php.implode(php.PHP_EOL, $lines);
+};
+
 /** @param stateful = await require('StatefulSession.js')() */
 let execute = ({
 	stateful, cmdRq,
@@ -1121,42 +1155,8 @@ class RunCmdRq {
 
 		return {
 			'cmd': 'JD',
-			'output': this.constructor.forgeViewAreasDump($sessionData, $areasFromDb),
+			'output': forgeViewAreasDump($sessionData, $areasFromDb),
 		};
-	}
-
-	static forgeViewAreasDump($sessionData, $areasFromDb) {
-		let $areas, $area, $lines, $letter, $status, $data;
-
-		$areas = [];
-		for ($area of Object.values($areasFromDb)) {
-			$areas[$area['area']] = $area;
-		}
-		$lines = [
-			'00000000         ' + $sessionData['pcc'],
-			'',
-			'AREA  TM  MOD SG/DT.LG TIME      ACT.Q   STATUS     NAME',
-		];
-		for ($letter of Object.values(AREA_LETTERS)) {
-			if (php.isset($areas[$letter])) {
-				if ($areas[$letter]['isPnrStored']) {
-					$status = 'PNR MODIFY';
-				} else if ($areas[$letter]['hasPnr']) {
-					$status = 'PNR CREATE';
-				} else {
-					$status = 'SIGNED';
-				}
-				$data = {
-					'letter': $letter,
-					'signed': ($letter == $sessionData['area']) ? '-IN' : '   ',
-					'status': $status,
-				};
-				$lines.push(StringUtil.format('{letter}{signed}      PRD WS/SU.EN  24             {status}', $data));
-			} else {
-				$lines.push($letter + '                                      NOT SIGNED');
-			}
-		}
-		return php.implode(php.PHP_EOL, $lines);
 	}
 
 	async execute($cmdRequested) {
@@ -1185,5 +1185,8 @@ class RunCmdRq {
 return new RunCmdRq().execute(cmdRq);
 
 };
+
+/** exposing for unit tests */
+execute.forgeViewAreasDump = forgeViewAreasDump;
 
 module.exports = execute;
