@@ -12,9 +12,9 @@ class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
 
 		$list = [];
 
-		// RE/ example
 		$list.push({
 			'input': {
+				'title': 'RE/ example',
 				'cmdRequested': 'RE/37AF/SS',
 				'baseDate': '2018-02-14', // romantic test case
 			},
@@ -119,9 +119,9 @@ class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
 			},
 		});
 
-		// RE/ example without explicit segment status - should result in GK
 		$list.push({
 			'input': {
+				'title': 'RE/ example without explicit segment status - should result in GK',
 				'cmdRequested': 'RE/5E9H',
 				'baseDate': '2018-02-14',
 			},
@@ -370,9 +370,9 @@ class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
 			},
 		});
 
-		// mix of normal and American Airlines segments RE/... without status example
 		$list.push({
 			'input': {
+				'title': 'mix of normal and American Airlines segments RE/... without status example',
 				'cmdRequested': 'RE/W8K7',
 				'baseDate': '2018-02-14',
 			},
@@ -477,9 +477,9 @@ class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
 			},
 		});
 
-		// PNR search with Alex - regular agents should not see Alex name
 		$list.push({
 			'input': {
+				'title': 'PNR search with Alex - regular agents should not see Alex name',
 				'cmdRequested': '*-WEINSTEIN',
 				'baseDate': '2018-02-28',
 				'ticketDesignators': [],
@@ -525,7 +525,6 @@ class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
 			},
 		});
 
-		// code that removes Alex from PNR search results should not mess up PNR-s opened with same command
 		// 'OEATKP                           1.1LI/BRIDGET YVONKA  2.1CHAU/B',
 		// 'ILL THE*C10                      1 4O 830M 29DEC J CUNSFO HK2   ',
 		// '645P 1005P /DC4O*W9DFQM /E       2  OTH YY 10MAR S GK1  XXX/PRES',
@@ -534,6 +533,7 @@ class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
 		// '  1.SFO800-750-2238-A           FORM OF PAYMENT DATA EXISTS *FOP',
 		$list.push({
 			'input': {
+				'title': 'code that removes Alex from PNR search results should not mess up PNR-s opened with same command',
 				'cmdRequested': '*1',
 				'baseDate': '2018-02-28',
 				'ticketDesignators': [],
@@ -649,9 +649,9 @@ class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
 			},
 		});
 
-		// STORE/CUA example - with validating carrier override
 		$list.push({
 			'input': {
+				'title': 'STORE/CUA example - with validating carrier override',
 				'cmdRequested': 'STORE/CHR',
 				'baseDate': '2018-06-04',
 				'ticketDesignators': [],
@@ -697,9 +697,9 @@ class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
 			},
 		});
 
-		// multi-pricing alias example
 		$list.push({
 			'input': {
+				'title': 'multi-pricing alias example',
 				'cmdRequested': 'WPS1-2¥AHR&S3/4¥AAY',
 				'baseDate': '2018-06-04',
 				'ticketDesignators': [],
@@ -764,9 +764,9 @@ class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
 			},
 		});
 
-		// IG should result in dropping PNR context same as most other letters after "I"
 		$list.push({
 			'input': {
+				'title': 'IG should result in dropping PNR context same as most other letters after "I"',
 				'cmdRequested': 'IG',
 				'baseDate': '2018-06-04',
 				'ticketDesignators': [],
@@ -792,11 +792,10 @@ class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
 			},
 		});
 
-		// GDS_DIRECT_EDIT_VOID_TICKETED_PNR logic example - success
-		// all tickets are void, so should be allowed to change PNR
 		$agentBaseDate = GdsDirectDefaults.makeAgentBaseData();
 		$list.push({
 			'input': {
+				'title': 'GDS_DIRECT_EDIT_VOID_TICKETED_PNR logic example - success, all tickets are void, so should be allowed to change PNR',
 				'cmdRequested': 'XI',
 				'baseDate': '2018-06-04',
 				'ticketDesignators': [],
@@ -939,11 +938,10 @@ class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
 			},
 		});
 
-		// GDS_DIRECT_EDIT_VOID_TICKETED_PNR logic example - forbidden
-		// some tickets are not void, so should not be allowed to change PNR
 		$agentBaseDate = GdsDirectDefaults.makeAgentBaseData();
 		$list.push({
 			'input': {
+				'title': 'GDS_DIRECT_EDIT_VOID_TICKETED_PNR logic example - forbidden, some tickets are not void, so should not be allowed to change PNR',
 				'cmdRequested': 'XI',
 				'baseDate': '2018-06-04',
 				'ticketDesignators': [],
@@ -1125,9 +1123,9 @@ class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
 			},
 		});
 
-		// should forbid to _replace_ GD- remarks, not just _delete_
 		$list.push({
 			'input': {
+				'title': 'should forbid to _replace_ GD- remarks, not just _delete_',
 				'cmdRequested': '5\u00A4123',
 				'baseDate': '2018-06-04',
 			},

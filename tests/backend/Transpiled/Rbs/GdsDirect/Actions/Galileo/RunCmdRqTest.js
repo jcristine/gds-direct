@@ -22,9 +22,9 @@ class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
 
 		$list = [];
 
-		// EM - "store and send email" should be forbidden for everyone
 		$list.push({
 			'input': {
+				'title': 'EM - "store and send email" should be forbidden for everyone',
 				'cmdRequested': 'EM',
 				'baseDate': '2017-11-05',
 			},
@@ -41,9 +41,9 @@ class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
 			},
 		});
 
-		// SOF - "sign off" should be forbidden for everyone
 		$list.push({
 			'input': {
+				'title': 'SOF - "sign off" should be forbidden for everyone',
 				'cmdRequested': 'SOF',
 				'baseDate': '2017-11-05',
 			},
@@ -60,9 +60,9 @@ class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
 			},
 		});
 
-		// TKP1P2 - "issue tickets" should be forbidden for simple agents like Prince
 		$list.push({
 			'input': {
+				'title': 'TKP1P2 - "issue tickets" should be forbidden for simple agents like Prince',
 				'cmdRequested': 'TKP1P2',
 				'baseDate': '2017-11-05',
 			},
@@ -79,9 +79,9 @@ class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
 			},
 		});
 
-		// Q... - queue commands should be forbidden for simple agents
 		$list.push({
 			'input': {
+				'title': 'Q... - queue commands should be forbidden for simple agents',
 				'cmdRequested': 'QCA',
 				'baseDate': '2017-11-05',
 			},
@@ -98,10 +98,10 @@ class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
 			},
 		});
 
-		// *-... - PNR search should be forbidden for agents without a corresponding role
 		$agentBaseDate = GdsDirectDefaults.makeAgentBaseData();
 		$list.push({
 			'input': {
+				'title': '*-... - PNR search should be forbidden for agents without a corresponding role',
 				'cmdRequested': '*-',
 				'baseDate': '2017-11-05',
 				'stubAgents': [
@@ -131,9 +131,9 @@ class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
 			},
 		});
 
-		// RE/ example: BK -> HS and seat count change
 		$list.push({
 			'input': {
+				'title': 'RE/ example: BK -> HS and seat count change',
 				'cmdRequested': 'RE/711M/SS2',
 				'baseDate': '2017-11-05',
 			},
@@ -236,9 +236,9 @@ class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
 			},
 		});
 
-		// RE/ example: HS -> AK -> HS
 		$list.push({
 			'input': {
+				'title': 'RE/ example: HS -> AK -> HS',
 				'cmdRequested': 'RE/69KS/SS',
 				'baseDate': '2017-11-05',
 			},
@@ -348,10 +348,9 @@ class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
 			},
 		});
 
-		// no marriage, different booking classes
-		// also "*0 AVAIL/WL CLOSED*"
 		$list.push({
 			'input': {
+				'title': 'no marriage, different booking classes, also "*0 AVAIL/WL CLOSED*"',
 				'cmdRequested': 'RE/69KS/SS',
 				'baseDate': '2017-11-05',
 			},
@@ -446,9 +445,9 @@ class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
 			},
 		});
 
-		// attempt to cancel GD- remark should be forbidden
 		$list.push({
 			'input': {
+				'title': 'attempt to cancel GD- remark should be forbidden',
 				'cmdRequested': 'NP.1@',
 				'baseDate': '2017-11-05',
 			},
@@ -493,9 +492,9 @@ class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
 			},
 		});
 
-		// but normal remark deletion should be allowed
 		$list.push({
 			'input': {
+				'title': 'but normal remark deletion should be allowed',
 				'cmdRequested': 'NP.2@',
 				'baseDate': '2017-11-05',
 			},
@@ -542,9 +541,9 @@ class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
 			},
 		});
 
-		// protection against crafty agents
 		$list.push({
 			'input': {
+				'title': 'protection against crafty agents',
 				'cmdRequested': 'NP./0ASD|NP.3@ASD',
 				'baseDate': '2017-11-05',
 			},
@@ -580,9 +579,9 @@ class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
 			},
 		});
 
-		// attempt to cancel GD- remark with a range select in a complex command - should be forbidden
 		$list.push({
 			'input': {
+				'title': '#11 - attempt to cancel GD- remark with a range select in a complex command - should be forbidden',
 				'cmdRequested': 'NP.OLOLO|NP.1.3-5.7@|ER',
 				'baseDate': '2017-11-05',
 			},
@@ -630,9 +629,9 @@ class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
 			},
 		});
 
-		// STOREJCB example
 		$list.push({
 			'input': {
+				'title': '#12 - STOREJCB example',
 				'cmdRequested': 'STOREJCB',
 				'baseDate': '2017-11-05',
 			},
