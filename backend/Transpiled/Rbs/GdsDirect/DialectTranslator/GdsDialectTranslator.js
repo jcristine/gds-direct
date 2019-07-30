@@ -1052,7 +1052,8 @@ const patternList = [
             {
                 'apollo': 'HELP {text}',
                 'galileo': 'HELP {text}',
-                'sabre': '{text}HELP',
+                // no in Sabre
+                'sabre': null,
                 'amadeus': 'HE {text}',
             },
             // What PCC i'm in?

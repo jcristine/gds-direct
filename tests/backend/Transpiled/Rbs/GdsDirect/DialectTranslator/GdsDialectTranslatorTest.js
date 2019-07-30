@@ -1541,7 +1541,6 @@ class GdsDialectTranslatorTest extends require('../../../Lib/TestCase.js')
             ['apollo', 'sabre', '*LF', '*PQ'],
             ['apollo', 'sabre', 'XT3', 'PQD3'],
             ['apollo', 'sabre', '*LF2', '*PQ2'],
-            ['apollo', 'sabre', 'HELP AVAILABILITY', 'AVAILABILITYHELP'],
             ['apollo', 'sabre', '$D', 'FQ*'],
 
             ['sabre', 'apollo', 'FQ*', '$D'],
@@ -1563,7 +1562,6 @@ class GdsDialectTranslatorTest extends require('../../../Lib/TestCase.js')
             ['sabre', 'apollo', '*PQ', '*LF'],
             ['sabre', 'apollo', 'PQD3', 'XT3'],
             ['sabre', 'apollo', '*PQ2', '*LF2'],
-            ['sabre', 'apollo', 'AVAILABILITYHELP', 'HELP AVAILABILITY'],
             ['sabre', 'apollo', 'FQ*', '$D'],
 
             ['apollo', 'amadeus', 'A20SEPKIVRIX6P', 'AD20SEPKIVRIX6P'],
@@ -1728,7 +1726,6 @@ class GdsDialectTranslatorTest extends require('../../../Lib/TestCase.js')
             ['sabre', 'amadeus', 'WPP1ITX/1I06/1ITF¥RQ', 'FXP/RITX*I06*ITF'],
             ['sabre', 'amadeus', 'PQD-ALL', 'TTE/ALL'],
             ['sabre', 'amadeus', '*PQ', 'TQT'],
-            ['sabre', 'amadeus', 'AVAILABILITYHELP', 'HE AVAILABILITY'],
             ['sabre', 'amadeus', 'FQPITMIL10SEP¥PJCB', 'FQDPITMIL/10SEP/R,-JCB'],
             ['sabre', 'amadeus', 'FQKIVRIX20SEP-PS-TK-LO¥PJCB', 'FQDKIVRIX/20SEP/R,-JCB/APS,TK,LO'],
             ['sabre', 'amadeus', 'FQKIVRIX20SEP¥R05JUL¥PJCB', 'FQDKIVRIX/20SEP*05JUL/R,-JCB'],
@@ -3118,6 +3115,8 @@ class GdsDialectTranslatorTest extends require('../../../Lib/TestCase.js')
             ['apollo', 'sabre', 'A*O15', '1R15', true],
             // same as in Apollo, since it would conflict with existing ACR15 format otherwise
             ['sabre', 'amadeus', '1R15', 'A*O15', true],
+            // should not convert to >PRICEHELP; since "PRICE" is a special alias
+            ['apollo', 'sabre', 'HELP PRICE', null],
         ];
 
         return $tests;
