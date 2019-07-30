@@ -1,9 +1,10 @@
+const Debug = require('klesun-node-tools/src/Debug.js');
+const LocalDiag = require('../Repositories/LocalDiag.js');
 
 let Emc = require('../LibWrappers/Emc.js');
 let {NoContent, Forbidden, NotAuthorized, BadRequest, TooManyRequests, LoginTimeOut, InternalServerError, NotFound} = require('klesun-node-tools/src/Rej.js');
 let Diag = require('../LibWrappers/Diag.js');
 let FluentLogger = require('../LibWrappers/FluentLogger.js');
-const {getExcData} = require('../Utils/TmpLib.js');
 const GdsSessions = require("../Repositories/GdsSessions");
 const GdsSessionsController = require("./GdsSessionController");
 const Config = require('../Config.js');
@@ -29,7 +30,7 @@ let toHandleHttp = (httpAction) => (req, res) => {
 			let maskedBody = Object.assign({}, rqBody, {
 				emcSessionId: '******' + (rqBody.emcSessionId || '').slice(-4),
 			});
-			let errorData = getExcData(exc, {
+			let errorData = Debug.getExcData(exc, {
 				message: exc.message || '' + exc,
 				httpStatusCode: exc.httpStatusCode,
 				requestPath: req.path,
@@ -37,7 +38,14 @@ let toHandleHttp = (httpAction) => (req, res) => {
 				stack: exc.stack,
 			});
 			if (isSystemError(exc)) {
-				Diag.logExc('HTTP request failed', errorData);
+				if ((exc + '').match(/42\|Transport\|Temporary network error:unable to reach targeted application/)) {
+					LocalDiag({
+						type: LocalDiag.types.AMA_TMP_NETWORK_ERROR_UNABLE_TO_REACH,
+						data: errorData,
+					});
+				} else {
+					Diag.logExc('HTTP request failed', errorData);
+				}
 			}
 		});
 };

@@ -1,5 +1,5 @@
 
-const {jsExport} = require('../Utils/TmpLib.js');
+const {jsExport} = require('klesun-node-tools/src/Debug.js');
 
 let DiagService = require('dynatech-diag-service').default;
 const Config = require('../Config.js');
