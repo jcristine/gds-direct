@@ -247,6 +247,7 @@ class CommandCorrector {
 				{mistake: '§D', correct: 'MD'},
 				{mistake: 'MMD', correct: 'MD'},
 				{mistake: 'MMDA', correct: 'MDA'},
+				{mistake: 'PRICELAL', correct: 'PRICEALL'},
 			],
 
 			sabre: [
