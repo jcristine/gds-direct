@@ -1044,16 +1044,20 @@ const patternList = [
             // Help Availability
             {
                 'apollo': 'HELP $D',
-                'galileo': 'HELP AVAILABILITY',
+                'galileo': 'HELP FD',
                 'sabre': 'FQHELP',
                 'amadeus': 'HE FQD',
+            },
+            // Help that should not be translated, since PRICE is an alias
+            {
+                'apollo': 'HELP PRICE',
+                'sabre': 'HELP PRICE',
             },
             // Help
             {
                 'apollo': 'HELP {text}',
                 'galileo': 'HELP {text}',
-                // no in Sabre
-                'sabre': null,
+                'sabre': '{text}HELP',
                 'amadeus': 'HE {text}',
             },
             // What PCC i'm in?

@@ -2710,7 +2710,7 @@ class GdsDialectTranslatorTest extends require('../../../Lib/TestCase.js')
             // XX{digit}{function}{digit} -> XX{digit}{function}{digit}
             ['apollo', 'galileo', 'XX100.20+50', 'XX100.20+50', true],
             // HELP {question} -> HELP {question}
-            ['apollo', 'galileo', 'HELP $D', 'HELP AVAILABILITY', true],
+            ['apollo', 'galileo', 'HELP $D', 'HELP FD', true],
 
             // segment reordering commands follow
 
@@ -3116,7 +3116,9 @@ class GdsDialectTranslatorTest extends require('../../../Lib/TestCase.js')
             // same as in Apollo, since it would conflict with existing ACR15 format otherwise
             ['sabre', 'amadeus', '1R15', 'A*O15', true],
             // should not convert to >PRICEHELP; since "PRICE" is a special alias
-            ['apollo', 'sabre', 'HELP PRICE', null],
+            ['apollo', 'sabre', 'HELP PRICE', 'HELP PRICE'],
+            ['apollo', 'sabre', 'HELP RB', 'RBHELP'],
+            ['apollo', 'sabre', 'HELP RD', 'RDHELP'],
         ];
 
         return $tests;
