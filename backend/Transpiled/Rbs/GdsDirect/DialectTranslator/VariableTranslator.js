@@ -446,6 +446,9 @@ class VariableTranslator
         } else if ($fromGds === 'amadeus') {
             php.preg_match_all(/(?<classes>[A-Z])(?<segments>\d+)\/?/, $base, $matchesRebook = []);
         }
+        if (Object.keys($matchesRebook).length === 0) {
+            return {variable: '', status: 'fail'};
+        }
 
         if ($fromGds === 'apollo') {
             $numbers = this.stringSegmentNumbersToArray(($matches['number_list'] || {})[0] || '');
