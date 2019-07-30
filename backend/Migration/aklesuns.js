@@ -518,4 +518,16 @@ module.exports.migrations = [
 			]);
 		},
 	},
+	{
+		name: 'GRECT/2019.07.30001-create-local-diag-table-2',
+		perform: async (db) => db.query([
+			'CREATE TABLE local_diag (',
+			'    id INT PRIMARY KEY AUTO_INCREMENT,',
+			'    type VARCHAR(50) NOT NULL,',
+			'    dt DATETIME NOT NULL,',
+			'    data TEXT DEFAULT NULL,',
+			'    KEY dt_type (dt, type)',
+			') ENGINE=InnoDB DEFAULT CHARSET=utf8',
+		].join('\n')),
+	},
 ];

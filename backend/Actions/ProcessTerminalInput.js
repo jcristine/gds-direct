@@ -1,3 +1,5 @@
+const Misc = require('klesun-node-tools/src/Utils/Misc.js');
+const LocalDiag = require('../Repositories/LocalDiag.js');
 const RbsClient = require('../IqClients/RbsClient.js');
 
 let {fetchAll, wrap, extractTpTabCmds} = require('../GdsHelpers/TravelportUtils.js');
@@ -288,7 +290,16 @@ let logRqCmd = async ({params, whenCmdRqId, whenCmsResult}) => {
 				agentId: emcUser.id,
 				calledDt: calledDtObj.toISOString(),
 				duration: duration,
-			});
+			}).catch(coverExc([Rej.BadGateway], exc => {
+				if ((exc + '').match(/504 Gateway Time-out/)) {
+					return LocalDiag({
+						type: LocalDiag.types.REPORT_CMD_CALLED_RQ_TIMEOUT,
+						data: Misc.getExcData(exc),
+					});
+				} else {
+					return Promise.reject(exc);
+				}
+			}));
 		}
 	});
 };
