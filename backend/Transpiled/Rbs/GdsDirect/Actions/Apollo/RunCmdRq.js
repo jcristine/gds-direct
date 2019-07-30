@@ -1593,7 +1593,7 @@ class RunCmdRq {
 
 	async processRequestedCommand(cmd) {
 		let $alias, $mdaData, $limit, $cmdReal, $matches, $_, $plus, $seatAmount,
-			$segmentNumbers, $segmentStatus, $availability, $cityRow, $airlines, $itinerary;
+			$segmentNumbers, $segmentStatus, $availability, $cityRow, $airlines;
 		let reservation;
 		$alias = await this.constructor.parseAlias(cmd);
 		let parsed = CommandParser.parse(cmd);

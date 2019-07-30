@@ -1397,9 +1397,9 @@ class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
 			},
 		});
 
-		// STORE{ptc} alias example
+		//
 		$list.push({
-			'input': {'cmdRequested': 'STOREJCB'},
+			'input': {'cmdRequested': 'STOREJCB', 'title': 'STORE{ptc} alias example'},
 			'output': {
 				'status': 'executed',
 				'calledCommands': [{'cmd': 'T:$BN1-1*JCB|2-1*J08|3-1*JNF/Z0'}],
@@ -1475,9 +1475,8 @@ class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
 			},
 		});
 
-		// STORE alias, no adults - should add /ACC/ mod to mark than child has a company
 		$list.push({
-			'input': {'cmdRequested': 'STORE'},
+			'input': {'cmdRequested': 'STORE', 'title': 'STORE alias, no adults - should add /ACC/ mod to mark than child has a company'},
 			'output': {
 				'status': 'executed',
 				'calledCommands': [
@@ -1588,11 +1587,9 @@ class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
 			},
 		});
 
-		// STORE alias, PRIVATE FARES SELECTED on output, should fetch whole pricing
-		// to check if it is actually private, or has it published ticket designators
-		// in this particular case it should stop at that, since SPL08PI0M7 is published td
 		$list.push({
 			'input': {
+				'title': 'STORE alias, PRIVATE FARES SELECTED on output, should fetch whole pricing to check if it is actually private, or has it published ticket designators in this particular case it should stop at that, since SPL08PI0M7 is published td',
 				'cmdRequested': 'STORE',
 				'baseDate': '2018-02-28',
 				'ticketDesignators': this.constructor.makeTableRows(['code', 'ticketing_correct_pricing_command', 'is_published', 'ticketing_gds', 'ticketing_pcc'], [
@@ -1697,12 +1694,10 @@ class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
 			},
 		});
 
-		// STORE alias, again PRIVATE FARES SELECTED on output, but this time
-		// it is not our new TD, but since it is not broken
-		// fare, there still should not be /:N/ re-pricing
 		$list.push({
 			'input': {
 				'cmdRequested': 'STORE',
+				'title': 'STORE alias, again PRIVATE FARES SELECTED on output, but this time it is not our new TD, but since it is not broken fare, there still should not be /:N/ re-pricing',
 				'baseDate': '2018-02-28',
 				'ticketDesignators': [],
 			},
@@ -1797,117 +1792,6 @@ class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
 							' PS IEVKIV  07K                                             ',
 							'   BAG 1 -  CHGS MAY APPLY IF BAGS EXCEED TTL WT ALLOWANCE',
 							'   BAG 2 -  CHGS MAY APPLY IF BAGS EXCEED TTL WT ALLOWANCE',
-							'BAGGAGE DISCOUNTS MAY APPLY BASED ON FREQUENT FLYER STATUS/',
-							'ONLINE CHECKIN/FORM OF PAYMENT/MILITARY/ETC.',
-							'><',
-						]),
-					},
-				],
-			},
-		});
-
-		// STORE alias, private broken fare, but should not reprice
-		// with /:N/ since it has our ticket designator SPL06VY4O3
-		$list.push({
-			'input': {
-				'cmdRequested': 'STORE',
-				'baseDate': '2018-02-28',
-				'ticketDesignators': this.constructor.makeTableRows(['code', 'ticketing_correct_pricing_command', 'is_published', 'ticketing_gds', 'ticketing_pcc'], [
-					['SPL06VY4O3', '$B/:N', true, 'apollo', '1O3K'],
-				]),
-			},
-			'output': {
-				'status': 'executed',
-				'calledCommands': [
-					{'cmd': 'T:$BN1-1*ADT/Z0'},
-				],
-			},
-			'sessionInfo': {
-				'initialState': php.array_merge(GdsDirectDefaults.makeDefaultApolloState(), {
-					'hasPnr': true, 'area': 'A',
-				}),
-				'initialCommands': [
-					{
-						'cmd': '*R',
-						'output': php.implode(php.PHP_EOL, [
-							' 1.1LIBERMANE/MARINA ',
-							' 1 ET  51H 15MAR NBOLLW HK1   615A  730A           TH',
-							'         OPERATED BY MALAWIAN AIRLINES',
-							' 2 ET  20T 15MAR LLWBLZ HK1   820A  900A           TH',
-							'         OPERATED BY MALAWIAN AIRLINES',
-							' 3 ET  20H 19MAR BLZJNB HK1   945A 1200N           MO',
-							'         OPERATED BY MALAWIAN AIRLINES',
-							' 4 ET 808E 19MAR JNBADD HK1   210P  825P           MO',
-							' 5 ET 308E 19MAR ADDNBO HK1  1115P  120A|       MO/TU',
-							'><',
-						]),
-					},
-				],
-				'performedCommands': [
-					{
-						'cmd': 'T:$BN1-1*ADT/Z0',
-						'output': php.implode(php.PHP_EOL, [
-							'>$BN1-1*ADT/-*2G2H/Z0',
-							'*FARE HAS A PLATING CARRIER RESTRICTION*',
-							'E-TKT REQUIRED',
-							'** PRIVATE FARES SELECTED **  ',
-							'*PENALTY APPLIES*',
-							'LAST DATE TO PURCHASE TICKET: 15MAR18',
-							'$B-1 P01MAR18 - CAT35',
-							'NBO ET LLW 67.68HES1YMWQ/SPL06VY4O3 ET BLZ 20.48TES1YMWQ ET JNB',
-							'60.16HES1YMWQ/SPL06VY4O3 ET X/ADD ET NBO 36.66EPRKE/SPL06VY4O3',
-							'Q NBONBO9.47NUC194.45 ----- MUST PRICE AS B ---- -END ROE1.0',
-							'FARE USD 194.00 TAX 50.00TU TAX 35.00LD TAX 7.00YZ TAX 1.90EV',
-							'TAX 2.00UM TAX 19.20ZA TAX 180.00YR TOT USD 489.10 ',
-							'S1 /NVA15APR',
-							')><',
-						]),
-					},
-					{
-						'cmd': 'MR',
-						'output': php.implode(php.PHP_EOL, [
-							'S2 /NVA15APR',
-							'S3 /NVA15APR',
-							'S4 NVB19MAR/NVA19MAR',
-							'S5 NVB19MAR/NVA19MAR',
-							'E TOUR CODE -  N/A',
-							'E SPL06VY4O3 - SPLT6',
-							'TOUR CODE: COM6           ',
-							'TICKETING AGENCY 2G2H',
-							'DEFAULT PLATING CARRIER ET',
-							'BAGGAGE ALLOWANCE',
-							'ADT                                                         ',
-							' ET NBOBLZ  2PC                                             ',
-							'   BAG 1 -  NO FEE       UPTO50LB/23KG                    ',
-							')><',
-						]),
-					},
-					{
-						'cmd': 'MR',
-						'output': php.implode(php.PHP_EOL, [
-							'   BAG 2 -  NO FEE       UPTO50LB/23KG                    ',
-							'   MYTRIPANDMORE.COM/BAGGAGEDETAILSET.BAGG',
-							'                                                                 ET BLZNBO  2PC                                             ',
-							'   BAG 1 -  NO FEE       UPTO50LB/23KG                    ',
-							'   BAG 2 -  NO FEE       UPTO50LB/23KG                    ',
-							'   MYTRIPANDMORE.COM/BAGGAGEDETAILSET.BAGG',
-							'                                                                CARRY ON ALLOWANCE',
-							' ET NBOLLW  1PC                                             ',
-							'   BAG 1 -  NO FEE       UPTO15LB/7KG AND UPTO45LI/115LCM ',
-							' ET LLWBLZ  1PC                                             ',
-							'   BAG 1 -  NO FEE       UPTO15LB/7KG AND UPTO45LI/115LCM ',
-							')><',
-						]),
-					},
-					{
-						'cmd': 'MR',
-						'output': php.implode(php.PHP_EOL, [
-							' ET BLZJNB  1PC                                             ',
-							'   BAG 1 -  NO FEE       UPTO15LB/7KG AND UPTO45LI/115LCM ',
-							' ET JNBADD  1PC                                             ',
-							'   BAG 1 -  NO FEE       UPTO15LB/7KG AND UPTO45LI/115LCM ',
-							' ET ADDNBO  1PC                                             ',
-							'   BAG 1 -  NO FEE       UPTO15LB/7KG AND UPTO45LI/115LCM ',
 							'BAGGAGE DISCOUNTS MAY APPLY BASED ON FREQUENT FLYER STATUS/',
 							'ONLINE CHECKIN/FORM OF PAYMENT/MILITARY/ETC.',
 							'><',
@@ -2612,10 +2496,10 @@ class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
 			},
 		});
 
-		// STORE/CUA example - with validating carrier override
 		$list.push({
 			'input': {
 				'cmdRequested': 'STORE/CUA',
+				'title': 'STORE/CUA example - with validating carrier override',
 				'baseDate': '2018-06-04',
 				'ticketDesignators': [],
 			},
@@ -6383,6 +6267,119 @@ class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
 				],
 			},
 		});
+
+		// would need to fake RBS response for that
+		$list.push({
+			'input': {
+				'cmdRequested': 'STORE',
+				'title': 'STORE alias, private broken fare, but should not reprice with /:N/ since it has our ticket designator SPL06VY4O3',
+				'baseDate': '2018-02-28',
+				'ticketDesignators': this.constructor.makeTableRows(
+					['code'      , 'ticketing_correct_pricing_command', 'is_published', 'ticketing_gds', 'ticketing_pcc'], [
+					['SPL06VY4O3', '$B/:N'                            , true          , 'apollo'       , '1O3K'],
+				]),
+			},
+			'output': {
+				'status': 'executed',
+				'calledCommands': [
+					{'cmd': 'T:$BN1-1*ADT/Z0'},
+				],
+			},
+			'sessionInfo': {
+				'initialState': php.array_merge(GdsDirectDefaults.makeDefaultApolloState(), {
+					'hasPnr': true, 'area': 'A',
+				}),
+				'initialCommands': [
+					{
+						'cmd': '*R',
+						'output': php.implode(php.PHP_EOL, [
+							' 1.1LIBERMANE/MARINA ',
+							' 1 ET  51H 15MAR NBOLLW HK1   615A  730A           TH',
+							'         OPERATED BY MALAWIAN AIRLINES',
+							' 2 ET  20T 15MAR LLWBLZ HK1   820A  900A           TH',
+							'         OPERATED BY MALAWIAN AIRLINES',
+							' 3 ET  20H 19MAR BLZJNB HK1   945A 1200N           MO',
+							'         OPERATED BY MALAWIAN AIRLINES',
+							' 4 ET 808E 19MAR JNBADD HK1   210P  825P           MO',
+							' 5 ET 308E 19MAR ADDNBO HK1  1115P  120A|       MO/TU',
+							'><',
+						]),
+					},
+				],
+				'performedCommands': [
+					{
+						'cmd': 'T:$BN1-1*ADT/Z0',
+						'output': php.implode(php.PHP_EOL, [
+							'>$BN1-1*ADT/-*2G2H/Z0',
+							'*FARE HAS A PLATING CARRIER RESTRICTION*',
+							'E-TKT REQUIRED',
+							'** PRIVATE FARES SELECTED **  ',
+							'*PENALTY APPLIES*',
+							'LAST DATE TO PURCHASE TICKET: 15MAR18',
+							'$B-1 P01MAR18 - CAT35',
+							'NBO ET LLW 67.68HES1YMWQ/SPL06VY4O3 ET BLZ 20.48TES1YMWQ ET JNB',
+							'60.16HES1YMWQ/SPL06VY4O3 ET X/ADD ET NBO 36.66EPRKE/SPL06VY4O3',
+							'Q NBONBO9.47NUC194.45 ----- MUST PRICE AS B ---- -END ROE1.0',
+							'FARE USD 194.00 TAX 50.00TU TAX 35.00LD TAX 7.00YZ TAX 1.90EV',
+							'TAX 2.00UM TAX 19.20ZA TAX 180.00YR TOT USD 489.10 ',
+							'S1 /NVA15APR',
+							')><',
+						]),
+					},
+					{
+						'cmd': 'MR',
+						'output': php.implode(php.PHP_EOL, [
+							'S2 /NVA15APR',
+							'S3 /NVA15APR',
+							'S4 NVB19MAR/NVA19MAR',
+							'S5 NVB19MAR/NVA19MAR',
+							'E TOUR CODE -  N/A',
+							'E SPL06VY4O3 - SPLT6',
+							'TOUR CODE: COM6           ',
+							'TICKETING AGENCY 2G2H',
+							'DEFAULT PLATING CARRIER ET',
+							'BAGGAGE ALLOWANCE',
+							'ADT                                                         ',
+							' ET NBOBLZ  2PC                                             ',
+							'   BAG 1 -  NO FEE       UPTO50LB/23KG                    ',
+							')><',
+						]),
+					},
+					{
+						'cmd': 'MR',
+						'output': php.implode(php.PHP_EOL, [
+							'   BAG 2 -  NO FEE       UPTO50LB/23KG                    ',
+							'   MYTRIPANDMORE.COM/BAGGAGEDETAILSET.BAGG',
+							'                                                                 ET BLZNBO  2PC                                             ',
+							'   BAG 1 -  NO FEE       UPTO50LB/23KG                    ',
+							'   BAG 2 -  NO FEE       UPTO50LB/23KG                    ',
+							'   MYTRIPANDMORE.COM/BAGGAGEDETAILSET.BAGG',
+							'                                                                CARRY ON ALLOWANCE',
+							' ET NBOLLW  1PC                                             ',
+							'   BAG 1 -  NO FEE       UPTO15LB/7KG AND UPTO45LI/115LCM ',
+							' ET LLWBLZ  1PC                                             ',
+							'   BAG 1 -  NO FEE       UPTO15LB/7KG AND UPTO45LI/115LCM ',
+							')><',
+						]),
+					},
+					{
+						'cmd': 'MR',
+						'output': php.implode(php.PHP_EOL, [
+							' ET BLZJNB  1PC                                             ',
+							'   BAG 1 -  NO FEE       UPTO15LB/7KG AND UPTO45LI/115LCM ',
+							' ET JNBADD  1PC                                             ',
+							'   BAG 1 -  NO FEE       UPTO15LB/7KG AND UPTO45LI/115LCM ',
+							' ET ADDNBO  1PC                                             ',
+							'   BAG 1 -  NO FEE       UPTO15LB/7KG AND UPTO45LI/115LCM ',
+							'BAGGAGE DISCOUNTS MAY APPLY BASED ON FREQUENT FLYER STATUS/',
+							'ONLINE CHECKIN/FORM OF PAYMENT/MILITARY/ETC.',
+							'><',
+						]),
+					},
+				],
+			},
+		});
+
 		// RSBS-1197 change PTC to default in case :N is needed
 		$list.push({
 			'input': {
