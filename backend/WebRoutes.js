@@ -294,6 +294,12 @@ app.post('/admin/getModel', withOwnerAuth(async (reqBody, emcResult) => {
 	rows = Misc.maskCcNumbers(rows);
 	return {records: rows};
 }));
+
+app.get('/admin/showTables', withOwnerAuth(async (rqBody) => {
+    let rows = await Db.with(async db => db.query('SHOW TABLES'));
+    let records = rows.map(row => ({name: Object.values(row)[0]}));
+    return {records};
+}));
 app.post('/admin/getAllRedisKeys', withOwnerAuth(async (reqBody, emcResult) => {
 	let redis = await Redis.getClient();
 	let keys = await redis.keys('*');

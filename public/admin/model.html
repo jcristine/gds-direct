@@ -10,26 +10,7 @@
         ]
     ]
 }</textarea><br/>
-    <datalist id="model-names">
-        <option>agents</option>
-        <option>airline_booking_classes</option>
-        <option>airlines</option>
-        <option>airports</option>
-        <option>cmd_rq_log</option>
-        <option>cmd_rs_log</option>
-        <option>counted_fs_usages</option>
-        <option>highlightCmdPatterns</option>
-        <option>highlightOutputPatterns</option>
-        <option>highlightRules</option>
-        <option>migrations</option>
-        <option>pccs</option>
-        <option>terminalAreaSettings</option>
-        <option>terminalSettings</option>
-        <option>terminalThemes</option>
-        <option>terminal_command_log</option>
-        <option>terminal_sessions</option>
-        <option>ticket_designators</option>
-    </datalist>
+    <datalist id="model-names"></datalist>
     <label>model:<input name="model" required="required" list="model-names" value="terminal_command_log"/></label>
     <label>orderBy:<input name="orderBy" value="id DESC"/></label>
     <label>skip:<input type="number" name="skip" value="0" min="0" max="10000"/></label>
@@ -67,7 +48,10 @@
     </tbody>
 </table>
 
+<script src="../src/actions/initAuthPage.js"></script>
+
 <script>
+window.GdsDirectPlusPage.whenEmcSessionId.then(emcSessionId => {
 	let filterForm = document.querySelector('#filter-criteria');
 	let colTr = document.querySelector('#column-header');
 	let rowTbody = document.querySelector('#value-rows');
@@ -76,11 +60,7 @@
 	let send = () => {
 		let jsonParamsStr = document.querySelector('textarea[name="jsonParams"]').value || null;
 		let params = {
-			emcSessionId: document.cookie
-				.split('; ')
-				.map(token => token.split('='))
-				.filter(([k, v]) => k === 'emcSessionId' && v)
-				.map(([k, v]) => v)[0],
+			emcSessionId: emcSessionId,
 			model: document.querySelector('input[name="model"]').value || null,
 			orderBy: document.querySelector('input[name="orderBy"]').value || null,
 			skip: document.querySelector('input[name="skip"]').value || null,
@@ -93,8 +73,7 @@
 			method: 'POST',
 			headers: {'Content-Type': 'application/json'},
 			body: JSON.stringify(params)
-		})
-			.then(a => a.json())
+		})  .then(a => a.json())
 			.then(({records}) => {
 				console.log('model records', [...records]);
 				if (records.length > 0 && !noHtmlFlag.checked) {
@@ -117,6 +96,17 @@
 		send();
 		return false;
 	};
+	fetch('/admin/showTables?emcSessionId=' + emcSessionId)
+		.then(a => a.json())
+		.then(({records}) => {
+			let datalist = document.querySelector("#model-names");
+			for (let record of records) {
+				let option = document.createElement('option');
+				option.textContent = record.name;
+				datalist.appendChild(option);
+			}
+		});
+});
 </script>
 
 <style>
