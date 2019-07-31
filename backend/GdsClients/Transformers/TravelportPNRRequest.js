@@ -6,7 +6,7 @@ const _ = require("lodash");
 const moment = require("moment");
 
 // Builds xml body of a PNR soap request
-module.exports.buildPnrXmlDataObject = (params) => js2xml([
+module.exports.buildPnrXmlDataObject = params => js2xml([
 	{SessionMods: [
 		{AreaInfoReq: null},
 	]},
@@ -19,7 +19,7 @@ module.exports.buildPnrXmlDataObject = (params) => js2xml([
 ]);
 
 // parses travelport soap request response body and build corresponding object
-module.exports.parsePnrXmlResponse = async (response) => {
+module.exports.parsePnrXmlResponse = async response => {
 	const dom = parseXml(response);
 
 	const respElement = dom.querySelector("PNRBFManagement_51");
@@ -43,7 +43,7 @@ module.exports.parsePnrXmlResponse = async (response) => {
 };
 
 // In soap response it is yyyymmdd without any delimiters
-const transformDateFromSoap = (date) => {
+const transformDateFromSoap = date => {
 	if(!/^\d{8}$/.test(date)) {
 		return null;
 	}
@@ -59,7 +59,7 @@ const transformDateFromSoap = (date) => {
 };
 
 // In soap response it is as (h)hmm(ss) without any delimiters
-const transformTimeFromSoap = (time) => {
+const transformTimeFromSoap = time => {
 	if(!time) {
 		return null;
 	}
@@ -90,7 +90,7 @@ const getValueOrNullFromDomElement = (element, tag) => {
 	return valueElement.textContent;
 };
 
-const transformAirSegmentFromSoap = (element) => ({
+const transformAirSegmentFromSoap = element => ({
 	segmentNumber: getValueOrNullFromDomElement(element, 'SegNum'),
 	segmentStatus: getValueOrNullFromDomElement(element, 'Status'),
 	departureDate: transformDateFromSoap(getValueOrNullFromDomElement(element, 'Dt')),
@@ -110,7 +110,7 @@ const transformAirSegmentFromSoap = (element) => ({
 	scheduleValidationIndicator: getValueOrNullFromDomElement(element, 'ScheduleValidationInd'),
 });
 
-const transformAirSellFromSoap = (element) => ({
+const transformAirSellFromSoap = element => ({
 	success: getValueOrNullFromDomElement(element, 'SuccessInd') === 'Y',
 	displaySequenceNumber: getValueOrNullFromDomElement(element, 'DisplaySequenceNumber'),
 	airline: getValueOrNullFromDomElement(element, 'Vnd'),
@@ -132,7 +132,7 @@ const transformAirSellFromSoap = (element) => ({
 	messages: [],
 });
 
-const transformAirSellSegFromSoap = (element) => {
+const transformAirSellSegFromSoap = element => {
 	const result = {
 		error: null,
 		sell: [],
@@ -142,7 +142,7 @@ const transformAirSellSegFromSoap = (element) => {
 		return result;
 	}
 
-	_.forEach(element.children, (childEl) => {
+	_.forEach(element.children, childEl => {
 		if(childEl.tagName === "AirSell") {
 			result.sell.push(transformAirSellFromSoap(childEl));
 			return;
@@ -168,7 +168,7 @@ const transformAirSellSegFromSoap = (element) => {
 };
 
 // single entry in newAirSegments
-const transformAirSegmentForSoap = (segment) => {
+const transformAirSegmentForSoap = segment => {
 	const dateRegex = /\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}/;
 	const hasBothDateTimes = dateRegex.test(segment.departureDt) && dateRegex.test(segment.destinationDt);
 
@@ -209,7 +209,7 @@ const collectErrors = (dom, sellSegments) => {
 	}
 
 	sellSegments.sell
-		.filter((sell) => sell.error)
+		.filter(sell => sell.error)
 		.forEach(sell => errors.push('Failed to sell 0'
 			+ sell.airline
 			+ sell.flightNumber

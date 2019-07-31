@@ -8,6 +8,8 @@
     "ecmaVersion": 2019
   },
   "rules": {
+    "no-extra-parens": ["error", "all"],
+    "arrow-parens": ["error", "as-needed"],
     "indent": ["error", "tab"],
     "for-direction": "error",
     "semi": ["error", "always"],
