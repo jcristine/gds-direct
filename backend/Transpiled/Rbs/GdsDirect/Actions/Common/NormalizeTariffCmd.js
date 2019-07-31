@@ -3,7 +3,7 @@
 const ApolloCmdParser = require('../../../../Gds/Parsers/Apollo/CommandParser.js');
 const DateTime = require('../../../../Lib/Utils/DateTime.js');
 
-let php = require('../../../../phpDeprecated.js');
+let php = require('klesun-node-tools/src/Transpiled/php.js');
 
 /** takes gds and tariff cmd like $D10DECKIVRIX and parses it into a structure common to all GDS-es */
 class NormalizeTariffCmd
@@ -125,7 +125,7 @@ class NormalizeTariffCmd
         $cmdData['returnDate'] = this.normalizeDate($cmdData['returnDate'] || null);
         if (php.empty($cmdData['departureAirport']) ||
             php.empty($cmdData['destinationAirport']) ||
-            php.empty($cmdData['departureDate']['full'])
+            php.empty(($cmdData['departureDate'] || {})['full'])
         ) {
             return null;
         }
