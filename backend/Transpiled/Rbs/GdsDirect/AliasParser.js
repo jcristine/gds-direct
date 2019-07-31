@@ -11,162 +11,162 @@ const CmsClient = require("../../../IqClients/CmsClient");
  * provides functions to parse our custom formats
  * like MDA or RE/ generic for all GDS-es
  */
-class AliasParser
-{
-    static parseRe($cmd)  {
-        let $regex, $matches;
-        $regex =
-            '/^RE\/'+
-            '(?<pcc>[A-Z0-9]{3,9})'+
-            '(\/'+
-                '(?<status>[A-Z]{2}|)'+
-                '(?<seatCount>\\d*)'+
-            ')?'+
-            '(?<keepOriginalMark>\\+|\\||)'+
-            '$/';
-        if (php.preg_match($regex, $cmd, $matches = [])) {
-            return {
-                'pcc': $matches['pcc'],
-                'segmentStatus': $matches['status'] || '',
-                'seatCount': $matches['seatCount'] || '',
-                'keepOriginal': !php.empty($matches['keepOriginalMark']),
-            };
-        } else {
-            return null;
-        }
-    }
+class AliasParser {
+	static parseRe($cmd) {
+		let $regex, $matches;
+		$regex =
+			'/^RE\/' +
+			'(?<pcc>[A-Z0-9]{3,9})' +
+			'(\/' +
+			'(?<status>[A-Z]{2}|)' +
+			'(?<seatCount>\\d*)' +
+			')?' +
+			'(?<keepOriginalMark>\\+|\\||)' +
+			'$/';
+		if (php.preg_match($regex, $cmd, $matches = [])) {
+			return {
+				'pcc': $matches['pcc'],
+				'segmentStatus': $matches['status'] || '',
+				'seatCount': $matches['seatCount'] || '',
+				'keepOriginal': !php.empty($matches['keepOriginalMark']),
+			};
+		} else {
+			return null;
+		}
+	}
 
-    /**
-     * @return {Promise<null|{...}>} - rejection if it _is_ REBUILD command, but failed
-     *                                 to retrieve data, null if it is not REBUILD command
-     */
-    static async parseCmsRebuild(cmd) {
-        let asRebuild = cmd.match(/^REBUILD\/(\d+)\/([A-Z]{2})\/(\d+)$/);
-        if (asRebuild) {
-            let [_, itineraryId, segmentStatus, seatCount] = asRebuild;
-            let cmsData = await CmsClient.getItineraryData({itineraryId});
-            let pcc = cmsData.result.data.pcc;
-            let segments = cmsData.result.data.segments.map(s => {
-                let gdsDate = php.strtoupper(php.date('dM', php.strtotime(s.departureDate)));
-                return ({
-                    ...s, segmentStatus, seatCount,
-                    departureDate: {raw: gdsDate, full: s.departureDate},
-                });
-            });
-            return {pcc, segments};
-        } else {
-            return null;
-        }
-    }
+	/**
+	 * @return {Promise<null|{...}>} - rejection if it _is_ REBUILD command, but failed
+	 *                                 to retrieve data, null if it is not REBUILD command
+	 */
+	static async parseCmsRebuild(cmd) {
+		let asRebuild = cmd.match(/^REBUILD\/(\d+)\/([A-Z]{2})\/(\d+)$/);
+		if (asRebuild) {
+			let [_, itineraryId, segmentStatus, seatCount] = asRebuild;
+			let cmsData = await CmsClient.getItineraryData({itineraryId});
+			let pcc = cmsData.result.data.pcc;
+			let segments = cmsData.result.data.segments.map(s => {
+				let gdsDate = php.strtoupper(php.date('dM', php.strtotime(s.departureDate)));
+				return ({
+					...s, segmentStatus, seatCount,
+					departureDate: {raw: gdsDate, full: s.departureDate},
+				});
+			});
+			return {pcc, segments};
+		} else {
+			return null;
+		}
+	}
 
-    static parseMda($cmd)  {
-        let $matches, $realCmd, $limit;
-        if (php.preg_match(/^(.*)\/MDA(\d*)$/, $cmd, $matches = [])) {
-            $realCmd = $matches[1];
-            $limit = $matches[2];
-        } else if (php.preg_match(/^MDA(\d*)$/, $cmd, $matches = [])) {
-            $realCmd = '';
-            $limit = $matches[1];
-        } else {
-            return null;
-        }
-        return {
-            'realCmd': $realCmd,
-            'limit': $limit,
-        };
-    }
+	static parseMda($cmd) {
+		let $matches, $realCmd, $limit;
+		if (php.preg_match(/^(.*)\/MDA(\d*)$/, $cmd, $matches = [])) {
+			$realCmd = $matches[1];
+			$limit = $matches[2];
+		} else if (php.preg_match(/^MDA(\d*)$/, $cmd, $matches = [])) {
+			$realCmd = '';
+			$limit = $matches[1];
+		} else {
+			return null;
+		}
+		return {
+			'realCmd': $realCmd,
+			'limit': $limit,
+		};
+	}
 
-    static parseStore($cmd)  {
-        let $matches, $_, $ptc, $modsPart;
-        if (php.preg_match(/^STORE([A-Z0-9]{3}|)\/?(.*)$/, $cmd, $matches = [])) {
-            [$_, $ptc, $modsPart] = $matches;
-            return {
-                ptc: $ptc,
-                pricingModifiers: AtfqParser.parsePricingModifiers($modsPart),
-            };
-        } else {
-            return null;
-        }
-    }
+	static parseStore($cmd) {
+		let $matches, $_, $ptc, $modsPart;
+		if (php.preg_match(/^STORE([A-Z0-9]{3}|)\/?(.*)$/, $cmd, $matches = [])) {
+			[$_, $ptc, $modsPart] = $matches;
+			return {
+				ptc: $ptc,
+				pricingModifiers: AtfqParser.parsePricingModifiers($modsPart),
+			};
+		} else {
+			return null;
+		}
+	}
 
-    static async parsePrice($cmd, stateful)  {
-        let $matches;
-        if (!php.preg_match(/^PRICE([A-Z0-9]{3}|)\/?(.*)$/, $cmd, $matches = [])) {
-            return Promise.resolve(null);
-        }
-        let [$_, $ptc, $modsPart] = $matches;
-        let leadData = null;
-        if (stateful.getLeadId()) {
-            leadData = await stateful.getGdRemarkData();
-        }
-        let requestedAgeGroups = (leadData || {}).requestedAgeGroups || [];
-        if (requestedAgeGroups.length === 0) {
-            requestedAgeGroups = [
-                {ageGroup: 'adult', quantity: 1},
-                {ageGroup: 'child', quantity: 1},
-                {ageGroup: 'infant', quantity: 1},
-            ];
-        }
-        if (!$ptc || $ptc === 'ALL') {
-            $ptc = 'ADT';
-        }
-        let ptcs = [];
-        for (let group of requestedAgeGroups) {
-            let ptc = await PtcUtil.convertPtcByAgeGroup($ptc, group.ageGroup, 7);
-            for (let i = 0; i < (group.quantity || 1); ++i) {
-                ptcs.push(ptc);
-            }
-        }
-        return {
-            ptc: $ptc,
-            requestedAgeGroups: requestedAgeGroups,
-            ptcs: ptcs,
-            pricingModifiers: AtfqParser.parsePricingModifiers($modsPart),
-        };
-    }
+	static async parsePrice($cmd, stateful) {
+		let $matches;
+		if (!php.preg_match(/^PRICE([A-Z0-9]{3}|)\/?(.*)$/, $cmd, $matches = [])) {
+			return Promise.resolve(null);
+		}
+		let [$_, $ptc, $modsPart] = $matches;
+		let leadData = null;
+		if (stateful.getLeadId()) {
+			leadData = await stateful.getGdRemarkData();
+		}
+		let requestedAgeGroups = (leadData || {}).requestedAgeGroups || [];
+		if (requestedAgeGroups.length === 0) {
+			requestedAgeGroups = [
+				{ageGroup: 'adult', quantity: 1},
+				{ageGroup: 'child', quantity: 1},
+				{ageGroup: 'infant', quantity: 1},
+			];
+		}
+		if (!$ptc || $ptc === 'ALL') {
+			$ptc = 'ADT';
+		}
+		let ptcs = [];
+		for (let group of requestedAgeGroups) {
+			let ptc = await PtcUtil.convertPtcByAgeGroup($ptc, group.ageGroup, 7);
+			for (let i = 0; i < (group.quantity || 1); ++i) {
+				ptcs.push(ptc);
+			}
+		}
+		return {
+			ptc: $ptc,
+			requestedAgeGroups: requestedAgeGroups,
+			ptcs: ptcs,
+			pricingModifiers: AtfqParser.parsePricingModifiers($modsPart),
+		};
+	}
 
-    static parseSameMonthReturnAvail(cmd) {
-        let matches = cmd.match(/^A\*O(\d+)$/);
-        if (matches) {
-            return {days: matches[1]};
-        } else {
-            return null;
-        }
-    }
+	static parseSameMonthReturnAvail(cmd) {
+		let matches = cmd.match(/^A\*O(\d+)$/);
+		if (matches) {
+			return {days: matches[1]};
+		} else {
+			return null;
+		}
+	}
 
-    static async parseCmdAsPnr($cmd, $session)  {
-        let $guess;
-        let fromCms = await this.parseCmsRebuild($cmd);
-        if (fromCms) {
-            return {
-                pcc: fromCms.pcc,
-                passengers: [],
-                itinerary: fromCms.segments,
-            };
-        }
-        if (!$session.getAgent().canPasteItinerary()) {
-            return null;
-        }
-        $guess = (new ParsersController()).guessDumpType({
-            'dump': $cmd,
-            'creationDate': $session.getStartDt(),
-        })['result'] || null;
+	static async parseCmdAsPnr($cmd, $session) {
+		let $guess;
+		let fromCms = await this.parseCmsRebuild($cmd);
+		if (fromCms) {
+			return {
+				pcc: fromCms.pcc,
+				passengers: [],
+				itinerary: fromCms.segments,
+			};
+		}
+		if (!$session.getAgent().canPasteItinerary()) {
+			return null;
+		}
+		$guess = (new ParsersController()).guessDumpType({
+			'dump': $cmd,
+			'creationDate': $session.getStartDt(),
+		})['result'] || null;
 
-        let passengers = ($guess.data || {}).passengers || [];
-        let itinerary = ($guess.data || {}).itinerary || [];
+		let passengers = ($guess.data || {}).passengers || [];
+		let itinerary = ($guess.data || {}).itinerary || [];
 
-        if (ParsersController.PNR_DUMP_TYPES.includes($guess['type']) &&
-            itinerary.length > 0 || passengers.length > 0
-        ) {
-            return $guess['data'];
-        } else {
-            return null;
-        }
-    }
+		if (ParsersController.PNR_DUMP_TYPES.includes($guess['type']) &&
+			itinerary.length > 0 || passengers.length > 0
+		) {
+			return $guess['data'];
+		} else {
+			return null;
+		}
+	}
 
-    static async parseCmdAsItinerary($cmd, $session)  {
-        let asPnr = await this.parseCmdAsPnr($cmd, $session);
-        return !asPnr ? [] : asPnr.itinerary;
-    }
+	static async parseCmdAsItinerary($cmd, $session) {
+		let asPnr = await this.parseCmdAsPnr($cmd, $session);
+		return !asPnr ? [] : asPnr.itinerary;
+	}
 }
+
 module.exports = AliasParser;
