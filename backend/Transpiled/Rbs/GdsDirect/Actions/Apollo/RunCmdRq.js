@@ -38,6 +38,7 @@ const CommandParser = require('../../../../Gds/Parsers/Apollo/CommandParser.js')
 const GenericRemarkParser = require('../../../../Gds/Parsers/Common/GenericRemarkParser.js');
 const TApolloSavePnr = require('../../../../Rbs/GdsAction/Traits/TApolloSavePnr.js');
 const AliasParser = require('../../../../Rbs/GdsDirect/AliasParser.js');
+const ApoAliasParser = require('../../../../../Parsers/Apollo/AliasParser.js');
 const AirAvailabilityParser = require('../../../../Gds/Parsers/Apollo/AirAvailabilityParser.js');
 const ImportPqApolloAction = require("./ImportPqApolloAction");
 const getRbsPqInfo = require("../../../../../GdsHelpers/RbsUtils").getRbsPqInfo;
@@ -104,123 +105,6 @@ const isInRanges = ($num, $ranges) => {
 		}
 	}
 	return false;
-};
-
-//parse: A/T/20SEPNYCSFO/CHI/ATL/CLT/SEA/MSP+DL
-const matchArtificialAvailabilityCmd = ($cmd) => {
-	let $regex, $matches, $_, $availability, $cityRow, $airlines;
-	$regex =
-		'/^' +
-		'(A\\/[A-Z]\\*?\\d?\\*?\\/\\d{1,2}[A-Z]{6})' +
-		'([A-Z]{3}(?:\\/[A-Z]{3})+)' +
-		'(\\|[A-Z\\d]{2}(?:\\.[A-Z\\d]{2})*)' +
-		'$/';
-	if (php.preg_match($regex, $cmd, $matches = [])) {
-		[$_, $availability, $cityRow, $airlines] = $matches;
-		return [$availability, $cityRow, $airlines];
-	} else {
-		return null;
-	}
-};
-
-const extendPricingCmd = ($mainCmd, $newPart) => {
-	let $mainParsed, $isFullCmd, $newParsed, $mainMods, $newMods, $rawMods;
-	$mainParsed = CommandParser.parse($mainCmd);
-	if ($mainParsed['type'] !== 'priceItinerary' || !$mainParsed['data']) {
-		return null;
-	}
-	if (php.preg_match(/^\d/, $newPart)) {
-		$newPart = 'S' + $newPart;
-	}
-	if (!StringUtil.startsWith($newPart, '$B')) {
-		$isFullCmd = false;
-		$newPart = $mainParsed['data']['baseCmd'] + '/' + $newPart;
-	} else {
-		$isFullCmd = true;
-	}
-	$newParsed = CommandParser.parse($newPart);
-	if ($newParsed['type'] !== 'priceItinerary' || !$newParsed['data']) {
-		return null;
-	}
-	$mainMods = php.array_combine(php.array_column($mainParsed['data']['pricingModifiers'], 'type'),
-		$mainParsed['data']['pricingModifiers']);
-	$newMods = php.array_combine(php.array_column($newParsed['data']['pricingModifiers'], 'type'),
-		$newParsed['data']['pricingModifiers']);
-	if (!$isFullCmd) {
-		$newMods = php.array_merge($mainMods, $newMods);
-	}
-	$rawMods = php.array_column($newMods, 'raw');
-	return $newParsed['data']['baseCmd'] + ($rawMods.length ? '/' + php.implode('/', $rawMods) : '');
-};
-
-const parseAlias = async ($cmdRequested, stateful) => {
-	let $realCmd, $data, $type, $moveDownAll, $matches, $_, $units, $value, $parts, $mainCmd, $followingCommands,
-		$cmds, $segNumStr, $date, $cls, $result;
-	$realCmd = $cmdRequested;
-	$data = null;
-	$type = null;
-	if ($moveDownAll = AliasParser.parseMda($cmdRequested)) {
-		$realCmd = $moveDownAll['realCmd'];
-	}
-	if (php.preg_match(/^(\$D.*)\*D([PF])(\d*\.?\d+)$/, $realCmd, $matches = [])) {
-		[$_, $realCmd, $units, $value] = $matches;
-		$type = 'fareSearchWithDecrease';
-		$data = {
-			'units': {
-				'F': 'amount',
-				'P': 'percent',
-			}[$units],
-			'value': $value,
-		};
-	} else if (php.preg_match(/^(\$D.*)\/MIX$/, $realCmd, $matches = [])) {
-		$type = 'fareSearchMultiPcc';
-		$realCmd = $matches[1];
-	} else if (php.preg_match(/^\$B.*(&|\|\|)\S.*/, $realCmd)) {
-		$parts = php.preg_split(/&|\|\|/, $realCmd);
-		$mainCmd = php.array_shift($parts);
-		$followingCommands = $parts.map(($cmdPart) =>
-			extendPricingCmd($mainCmd, $cmdPart));
-		if (!Fp.any('is_null', $followingCommands)) {
-			$type = 'multiPriceItinerary';
-			$cmds = php.array_merge([$mainCmd], $followingCommands);
-			$data = {'pricingCommands': $cmds};
-		}
-	} else if ($data = AliasParser.parseStore($realCmd)) {
-		$type = 'storePricing';
-	} else if ($data = await AliasParser.parsePrice($realCmd, stateful)) {
-		$type = 'priceAll';
-	} else if ($data = AliasParser.parseRe($cmdRequested)) {
-		$type = 'rebookInPcc';
-	} else if (php.preg_match(/^X(\d+[\|\-\d]*)\/0(\d{1,2}[A-Z]{3}|)\/?([A-Z]|)GK$/, $realCmd, $matches = [])) {
-		$type = 'rebookAsGk';
-		[$_, $segNumStr, $date, $cls] = $matches;
-		$data = {
-			'segmentNumbers': CommandParser.parseRange($segNumStr, '|', '-'),
-			'departureDate': !$date ? null : {
-				'raw': $date,
-				'parsed': CommonParserHelpers.parsePartialDate($date),
-			},
-			'bookingClass': $cls || null,
-		};
-	} else if (php.preg_match(/^\/SS(E?)$/, $realCmd, $matches = [])) {
-		$type = 'rebookAsSs';
-		$data = {
-			'allowCutting': $matches[1] === 'E',
-		};
-	} else if ($result = RepriceInAnotherPccAction.parseAlias($realCmd)) {
-		$type = 'priceInAnotherPcc';
-		$realCmd = $result['cmd'];
-		$data = {
-			'target': $result['target'],
-			'dialect': $result['dialect'],
-		};
-	}
-	return {
-		'realCmd': $realCmd,
-		'moveDownAll': $moveDownAll,
-		'data': $data,
-		'type': $type,
-	};
 };
 
 const checkSavePcc = ($pnrCreationPcc, $currentPcc) => {
@@ -490,12 +374,12 @@ let execute = ({
 			let scrolledCmdRow = (await stateful.getLog().getScrolledCmdMrs())[0];
 			if (cmdRq.startsWith('$D')) {
 				// initial $D display command
-				alias = await parseAlias(cmdRq, stateful);
+				alias = await ApoAliasParser.parse(cmdRq, stateful);
 			} else {
 				// MD on $D display
 				let cmdRqId = !scrolledCmdRow ? null : scrolledCmdRow.cmd_rq_id;
 				let cmdRqRow = !cmdRqId ? null : await CmdRqLog.getById(cmdRqId);
-				alias = !cmdRqRow ? null : (await parseAlias(cmdRqRow.command || '', stateful));
+				alias = !cmdRqRow ? null : (await ApoAliasParser.parse(cmdRqRow.command || '', stateful));
 			}
 			if (alias && alias['type'] === 'fareSearchWithDecrease') {
 				let decrease = alias['data'] || null;
@@ -1329,12 +1213,13 @@ let execute = ({
 	};
 
 	/** show availability for first successful city option */
-	const makeMultipleCityAvailabilitySearch = async ($availability, $citiesRaw, $airlines) => {
+	const makeMultipleCityAvailabilitySearch = async (aliasData) => {
+		let {availability, citiesRaw, airlines} = aliasData;
 		let $calledCommands, $cities, $city, $cmd, $output, $matches;
 		$calledCommands = [];
-		$cities = php.explode('/', php.trim($citiesRaw, '/'));
+		$cities = php.explode('/', php.trim(citiesRaw, '/'));
 		for ($city of Object.values($cities)) {
-			$cmd = $availability + $city + $airlines;
+			$cmd = availability + $city + airlines;
 			$output = (await stateful.runCmd($cmd)).output;
 			if (php.preg_match('/^FIRAV/', $output, $matches = [])) {
 				// FIRAV means OK, got availability for a city - job's done
@@ -1593,7 +1478,7 @@ let execute = ({
 		let $alias, $mdaData, $limit, $cmdReal, $matches, $_, $plus, $seatAmount,
 			$segmentNumbers, $segmentStatus, $availability, $cityRow, $airlines;
 		let reservation;
-		$alias = await parseAlias(cmd, stateful);
+		$alias = await ApoAliasParser.parse(cmd, stateful);
 		let parsed = CommandParser.parse(cmd);
 		if ($mdaData = $alias['moveDownAll'] || null) {
 			$limit = $mdaData['limit'] || null;
@@ -1648,9 +1533,8 @@ let execute = ({
 			return getMultiPccTariffDisplay($alias['realCmd']);
 		} else if ($alias['type'] === 'priceInAnotherPcc') {
 			return priceInAnotherPcc($alias['realCmd'], $alias['data']['target'], $alias['data']['dialect']);
-		} else if ($matches = matchArtificialAvailabilityCmd(cmd)) {
-			[$availability, $cityRow, $airlines] = $matches;
-			return makeMultipleCityAvailabilitySearch($availability, $cityRow, $airlines);
+		} else if ($alias['type'] === 'multiDstAvail') {
+			return makeMultipleCityAvailabilitySearch($alias['data']);
 		} else if (php.preg_match(/^SEM\/([\w\d]{3,4})\/AG$/, cmd, $matches = [])) {
 			let {cmdRec} = await emulatePcc($matches[1]);
 			return {calledCommands: [cmdRec]};
