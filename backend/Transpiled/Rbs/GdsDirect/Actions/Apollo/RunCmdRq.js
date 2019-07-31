@@ -53,295 +53,294 @@ const NmeMaskParser = require("../../../../../Actions/ManualPricing/NmeMaskParse
 const TicketHistoryParser = require("../../../../Gds/Parsers/Apollo/TicketHistoryParser");
 const TmpLib = require("../../../../../Utils/TmpLib");
 
-	const doesStorePnr = ($cmd) => {
-		let $parsedCmd, $flatCmds, $cmdTypes;
-		$parsedCmd = CommandParser.parse($cmd);
-		$flatCmds = php.array_merge([$parsedCmd], $parsedCmd['followingCommands'] || []);
-		$cmdTypes = php.array_column($flatCmds, 'type');
-		return php.array_intersect($cmdTypes, ['storePnr', 'storeKeepPnr', 'storePnrSendEmail', 'storeAndCopyPnr']).length;
-	};
+const doesStorePnr = ($cmd) => {
+	let $parsedCmd, $flatCmds, $cmdTypes;
+	$parsedCmd = CommandParser.parse($cmd);
+	$flatCmds = php.array_merge([$parsedCmd], $parsedCmd['followingCommands'] || []);
+	$cmdTypes = php.array_column($flatCmds, 'type');
+	return php.array_intersect($cmdTypes, ['storePnr', 'storeKeepPnr', 'storePnrSendEmail', 'storeAndCopyPnr']).length;
+};
 
-	const doesOpenPnr = ($cmd) => {
-		let $parsedCmd;
-		$parsedCmd = CommandParser.parse($cmd);
-		return php.in_array($parsedCmd['type'], ['openPnr', 'searchPnr', 'displayPnrFromList']);
-	};
+const doesOpenPnr = ($cmd) => {
+	let $parsedCmd;
+	$parsedCmd = CommandParser.parse($cmd);
+	return php.in_array($parsedCmd['type'], ['openPnr', 'searchPnr', 'displayPnrFromList']);
+};
 
-	// 'SEGMENTS CANCELLED - NEXT REPLACES  1'
-	// 'CNLD FROM  1'
-	const isSuccessXiOutput = ($output) => {
-		return php.preg_match(/^\s*SEGMENTS CANCELLED - NEXT REPLACES\s*\d+\s*(><)?$/, $output)
-			|| php.preg_match(/^\s*CNLD FROM\s*\d+\s*(><)?$/, $output);
-	};
+// 'SEGMENTS CANCELLED - NEXT REPLACES  1'
+// 'CNLD FROM  1'
+const isSuccessXiOutput = ($output) => {
+	return php.preg_match(/^\s*SEGMENTS CANCELLED - NEXT REPLACES\s*\d+\s*(><)?$/, $output)
+		|| php.preg_match(/^\s*CNLD FROM\s*\d+\s*(><)?$/, $output);
+};
 
-	const isScrollingAvailable = ($dumpPage) => {
-		let $exc;
-		try {
-			return extractPager($dumpPage)[1] === ')><';
-		} catch ($exc) {
-			return false;
-		}
-	};
-
-	/**
-	 * @param $ranges = [
-	 *     ['from' => 3, 'to' => 7],
-	 *     ['from' => 15],
-	 *     ['from' => 17, 'to' => 17],
-	 * ]
-	 */
-	const isInRanges = ($num, $ranges) => {
-		let $range;
-		for ($range of Object.values($ranges)) {
-			if (php.array_key_exists('to', $range)) {
-				if ($num >= $range['from'] && $num <= $range['to']) {
-					return true;
-				}
-			} else {
-				if ($num >= $range['from']) {
-					return true;
-				}
-			}
-		}
+const isScrollingAvailable = ($dumpPage) => {
+	let $exc;
+	try {
+		return extractPager($dumpPage)[1] === ')><';
+	} catch ($exc) {
 		return false;
-	};
+	}
+};
 
-	//parse: A/T/20SEPNYCSFO/CHI/ATL/CLT/SEA/MSP+DL
-	const matchArtificialAvailabilityCmd = ($cmd) => {
-		let $regex, $matches, $_, $availability, $cityRow, $airlines;
-		$regex =
-			'/^' +
-			'(A\\/[A-Z]\\*?\\d?\\*?\\/\\d{1,2}[A-Z]{6})' +
-			'([A-Z]{3}(?:\\/[A-Z]{3})+)' +
-			'(\\|[A-Z\\d]{2}(?:\\.[A-Z\\d]{2})*)' +
-			'$/';
-		if (php.preg_match($regex, $cmd, $matches = [])) {
-			[$_, $availability, $cityRow, $airlines] = $matches;
-			return [$availability, $cityRow, $airlines];
-		} else {
-			return null;
-		}
-	};
-
-	const extendPricingCmd = ($mainCmd, $newPart) => {
-		let $mainParsed, $isFullCmd, $newParsed, $mainMods, $newMods, $rawMods;
-		$mainParsed = CommandParser.parse($mainCmd);
-		if ($mainParsed['type'] !== 'priceItinerary' || !$mainParsed['data']) {
-			return null;
-		}
-		if (php.preg_match(/^\d/, $newPart)) {
-			$newPart = 'S' + $newPart;
-		}
-		if (!StringUtil.startsWith($newPart, '$B')) {
-			$isFullCmd = false;
-			$newPart = $mainParsed['data']['baseCmd'] + '/' + $newPart;
-		} else {
-			$isFullCmd = true;
-		}
-		$newParsed = CommandParser.parse($newPart);
-		if ($newParsed['type'] !== 'priceItinerary' || !$newParsed['data']) {
-			return null;
-		}
-		$mainMods = php.array_combine(php.array_column($mainParsed['data']['pricingModifiers'], 'type'),
-			$mainParsed['data']['pricingModifiers']);
-		$newMods = php.array_combine(php.array_column($newParsed['data']['pricingModifiers'], 'type'),
-			$newParsed['data']['pricingModifiers']);
-		if (!$isFullCmd) {
-			$newMods = php.array_merge($mainMods, $newMods);
-		}
-		$rawMods = php.array_column($newMods, 'raw');
-		return $newParsed['data']['baseCmd'] + ($rawMods.length ? '/' + php.implode('/', $rawMods) : '');
-	};
-
-	const parseAlias = async ($cmdRequested, stateful) => {
-		let $realCmd, $data, $type, $moveDownAll, $matches, $_, $units, $value, $parts, $mainCmd, $followingCommands,
-			$cmds, $segNumStr, $date, $cls, $result;
-		$realCmd = $cmdRequested;
-		$data = null;
-		$type = null;
-		if ($moveDownAll = AliasParser.parseMda($cmdRequested)) {
-			$realCmd = $moveDownAll['realCmd'];
-		}
-		if (php.preg_match(/^(\$D.*)\*D([PF])(\d*\.?\d+)$/, $realCmd, $matches = [])) {
-			[$_, $realCmd, $units, $value] = $matches;
-			$type = 'fareSearchWithDecrease';
-			$data = {
-				'units': {
-					'F': 'amount',
-					'P': 'percent',
-				}[$units],
-				'value': $value,
-			};
-		} else if (php.preg_match(/^(\$D.*)\/MIX$/, $realCmd, $matches = [])) {
-			$type = 'fareSearchMultiPcc';
-			$realCmd = $matches[1];
-		} else if (php.preg_match(/^\$B.*(&|\|\|)\S.*/, $realCmd)) {
-			$parts = php.preg_split(/&|\|\|/, $realCmd);
-			$mainCmd = php.array_shift($parts);
-			$followingCommands = $parts.map(($cmdPart) =>
-				extendPricingCmd($mainCmd, $cmdPart));
-			if (!Fp.any('is_null', $followingCommands)) {
-				$type = 'multiPriceItinerary';
-				$cmds = php.array_merge([$mainCmd], $followingCommands);
-				$data = {'pricingCommands': $cmds};
+/**
+ * @param $ranges = [
+ *     ['from' => 3, 'to' => 7],
+ *     ['from' => 15],
+ *     ['from' => 17, 'to' => 17],
+ * ]
+ */
+const isInRanges = ($num, $ranges) => {
+	let $range;
+	for ($range of Object.values($ranges)) {
+		if (php.array_key_exists('to', $range)) {
+			if ($num >= $range['from'] && $num <= $range['to']) {
+				return true;
 			}
-		} else if ($data = AliasParser.parseStore($realCmd)) {
-			$type = 'storePricing';
-		} else if ($data = await AliasParser.parsePrice($realCmd, stateful)) {
-			$type = 'priceAll';
-		} else if ($data = AliasParser.parseRe($cmdRequested)) {
-			$type = 'rebookInPcc';
-		} else if (php.preg_match(/^X(\d+[\|\-\d]*)\/0(\d{1,2}[A-Z]{3}|)\/?([A-Z]|)GK$/, $realCmd, $matches = [])) {
-			$type = 'rebookAsGk';
-			[$_, $segNumStr, $date, $cls] = $matches;
-			$data = {
-				'segmentNumbers': CommandParser.parseRange($segNumStr, '|', '-'),
-				'departureDate': !$date ? null : {
-					'raw': $date,
-					'parsed': CommonParserHelpers.parsePartialDate($date),
-				},
-				'bookingClass': $cls || null,
-			};
-		} else if (php.preg_match(/^\/SS(E?)$/, $realCmd, $matches = [])) {
-			$type = 'rebookAsSs';
-			$data = {
-				'allowCutting': $matches[1] === 'E',
-			};
-		} else if ($result = RepriceInAnotherPccAction.parseAlias($realCmd)) {
-			$type = 'priceInAnotherPcc';
-			$realCmd = $result['cmd'];
-			$data = {
-				'target': $result['target'],
-				'dialect': $result['dialect'],
-			};
+		} else {
+			if ($num >= $range['from']) {
+				return true;
+			}
 		}
-		return {
-			'realCmd': $realCmd,
-			'moveDownAll': $moveDownAll,
-			'data': $data,
-			'type': $type,
+	}
+	return false;
+};
+
+//parse: A/T/20SEPNYCSFO/CHI/ATL/CLT/SEA/MSP+DL
+const matchArtificialAvailabilityCmd = ($cmd) => {
+	let $regex, $matches, $_, $availability, $cityRow, $airlines;
+	$regex =
+		'/^' +
+		'(A\\/[A-Z]\\*?\\d?\\*?\\/\\d{1,2}[A-Z]{6})' +
+		'([A-Z]{3}(?:\\/[A-Z]{3})+)' +
+		'(\\|[A-Z\\d]{2}(?:\\.[A-Z\\d]{2})*)' +
+		'$/';
+	if (php.preg_match($regex, $cmd, $matches = [])) {
+		[$_, $availability, $cityRow, $airlines] = $matches;
+		return [$availability, $cityRow, $airlines];
+	} else {
+		return null;
+	}
+};
+
+const extendPricingCmd = ($mainCmd, $newPart) => {
+	let $mainParsed, $isFullCmd, $newParsed, $mainMods, $newMods, $rawMods;
+	$mainParsed = CommandParser.parse($mainCmd);
+	if ($mainParsed['type'] !== 'priceItinerary' || !$mainParsed['data']) {
+		return null;
+	}
+	if (php.preg_match(/^\d/, $newPart)) {
+		$newPart = 'S' + $newPart;
+	}
+	if (!StringUtil.startsWith($newPart, '$B')) {
+		$isFullCmd = false;
+		$newPart = $mainParsed['data']['baseCmd'] + '/' + $newPart;
+	} else {
+		$isFullCmd = true;
+	}
+	$newParsed = CommandParser.parse($newPart);
+	if ($newParsed['type'] !== 'priceItinerary' || !$newParsed['data']) {
+		return null;
+	}
+	$mainMods = php.array_combine(php.array_column($mainParsed['data']['pricingModifiers'], 'type'),
+		$mainParsed['data']['pricingModifiers']);
+	$newMods = php.array_combine(php.array_column($newParsed['data']['pricingModifiers'], 'type'),
+		$newParsed['data']['pricingModifiers']);
+	if (!$isFullCmd) {
+		$newMods = php.array_merge($mainMods, $newMods);
+	}
+	$rawMods = php.array_column($newMods, 'raw');
+	return $newParsed['data']['baseCmd'] + ($rawMods.length ? '/' + php.implode('/', $rawMods) : '');
+};
+
+const parseAlias = async ($cmdRequested, stateful) => {
+	let $realCmd, $data, $type, $moveDownAll, $matches, $_, $units, $value, $parts, $mainCmd, $followingCommands,
+		$cmds, $segNumStr, $date, $cls, $result;
+	$realCmd = $cmdRequested;
+	$data = null;
+	$type = null;
+	if ($moveDownAll = AliasParser.parseMda($cmdRequested)) {
+		$realCmd = $moveDownAll['realCmd'];
+	}
+	if (php.preg_match(/^(\$D.*)\*D([PF])(\d*\.?\d+)$/, $realCmd, $matches = [])) {
+		[$_, $realCmd, $units, $value] = $matches;
+		$type = 'fareSearchWithDecrease';
+		$data = {
+			'units': {
+				'F': 'amount',
+				'P': 'percent',
+			}[$units],
+			'value': $value,
 		};
-	};
-
-	const checkSavePcc = ($pnrCreationPcc, $currentPcc) => {
-		let $errors, $pccLimitations, $allowedPccs, $errorData;
-		$errors = [];
-		$pccLimitations = {
-			'2F9B': ['2F9B'],
-			'2G52': ['2G52'],
-			'2E8R': ['2E8R', '2G56'],
+	} else if (php.preg_match(/^(\$D.*)\/MIX$/, $realCmd, $matches = [])) {
+		$type = 'fareSearchMultiPcc';
+		$realCmd = $matches[1];
+	} else if (php.preg_match(/^\$B.*(&|\|\|)\S.*/, $realCmd)) {
+		$parts = php.preg_split(/&|\|\|/, $realCmd);
+		$mainCmd = php.array_shift($parts);
+		$followingCommands = $parts.map(($cmdPart) =>
+			extendPricingCmd($mainCmd, $cmdPart));
+		if (!Fp.any('is_null', $followingCommands)) {
+			$type = 'multiPriceItinerary';
+			$cmds = php.array_merge([$mainCmd], $followingCommands);
+			$data = {'pricingCommands': $cmds};
+		}
+	} else if ($data = AliasParser.parseStore($realCmd)) {
+		$type = 'storePricing';
+	} else if ($data = await AliasParser.parsePrice($realCmd, stateful)) {
+		$type = 'priceAll';
+	} else if ($data = AliasParser.parseRe($cmdRequested)) {
+		$type = 'rebookInPcc';
+	} else if (php.preg_match(/^X(\d+[\|\-\d]*)\/0(\d{1,2}[A-Z]{3}|)\/?([A-Z]|)GK$/, $realCmd, $matches = [])) {
+		$type = 'rebookAsGk';
+		[$_, $segNumStr, $date, $cls] = $matches;
+		$data = {
+			'segmentNumbers': CommandParser.parseRange($segNumStr, '|', '-'),
+			'departureDate': !$date ? null : {
+				'raw': $date,
+				'parsed': CommonParserHelpers.parsePartialDate($date),
+			},
+			'bookingClass': $cls || null,
 		};
-		if (php.array_key_exists($pnrCreationPcc, $pccLimitations)) {
-			$allowedPccs = $pccLimitations[$pnrCreationPcc];
-			if (!php.in_array($currentPcc, $allowedPccs)) {
-				$errorData = {'allowedPccs': php.implode(' or ', $allowedPccs)};
-				$errors.push(Errors.getMessage(Errors.CANT_CHANGE_IN_THIS_PCC, $errorData));
-			}
-		}
-		return $errors;
+	} else if (php.preg_match(/^\/SS(E?)$/, $realCmd, $matches = [])) {
+		$type = 'rebookAsSs';
+		$data = {
+			'allowCutting': $matches[1] === 'E',
+		};
+	} else if ($result = RepriceInAnotherPccAction.parseAlias($realCmd)) {
+		$type = 'priceInAnotherPcc';
+		$realCmd = $result['cmd'];
+		$data = {
+			'target': $result['target'],
+			'dialect': $result['dialect'],
+		};
+	}
+	return {
+		'realCmd': $realCmd,
+		'moveDownAll': $moveDownAll,
+		'data': $data,
+		'type': $type,
 	};
+};
 
-	const modifyFare = ($fare, $decrease) => {
-		if ($decrease['units'] === 'percent') {
-			$fare = php.round($fare - $fare * $decrease['value'] / 100);
-			return (+$fare).toFixed(2);
-		} else if ($decrease['units'] === 'amount') {
-			return ($fare - $decrease['value']).toFixed(2);
+const checkSavePcc = ($pnrCreationPcc, $currentPcc) => {
+	let $errors, $pccLimitations, $allowedPccs, $errorData;
+	$errors = [];
+	$pccLimitations = {
+		'2F9B': ['2F9B'],
+		'2G52': ['2G52'],
+		'2E8R': ['2E8R', '2G56'],
+	};
+	if (php.array_key_exists($pnrCreationPcc, $pccLimitations)) {
+		$allowedPccs = $pccLimitations[$pnrCreationPcc];
+		if (!php.in_array($currentPcc, $allowedPccs)) {
+			$errorData = {'allowedPccs': php.implode(' or ', $allowedPccs)};
+			$errors.push(Errors.getMessage(Errors.CANT_CHANGE_IN_THIS_PCC, $errorData));
+		}
+	}
+	return $errors;
+};
+
+const modifyFare = ($fare, $decrease) => {
+	if ($decrease['units'] === 'percent') {
+		$fare = php.round($fare - $fare * $decrease['value'] / 100);
+		return (+$fare).toFixed(2);
+	} else if ($decrease['units'] === 'amount') {
+		return ($fare - $decrease['value']).toFixed(2);
+	} else {
+		return 'ERROR';
+	}
+};
+
+/** decrease fare amounts by the value agent specified in the alias */
+const modifyTariffDisplay = ($output, $decrease, $firstCmdRow) => {
+	let $parsedHead, $error, $pattern, $isFareLine, $modified, $line, $split, $data;
+	$parsedHead = TariffDisplayParser.parse($firstCmdRow['output']);
+	if ($error = $parsedHead['error'] || null) {
+		// failed to parse the first page with column headers
+		return $output;
+	}
+	if ($parsedHead['dumpType'] === 'DOMESTIC') {
+		//         '  3-B6  338.00R SH2QBEN5 21| --/--  ||     -/15JUNC     -/-    ',
+		$pattern = '<<<<<<FFFFFFFF>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>';
+		$isFareLine = l => FareDisplayDomesticParser.parseFareLine(l);
+	} else if ($parsedHead['dumpType'] === 'INTERNATIONAL') {
+		//         '  4 -SQ   324.00R QSQV     Q    |   /12M  01JAN -31DEC  R  PA D',
+		$pattern = '<<<<<<<FFFFFFFFF>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>';
+		$isFareLine = l => FareDisplayInternationalParser.parseFareLine(l);
+	} else {
+		// unsupported column format
+		return $output;
+	}
+	$modified = [];
+	for ($line of Object.values(StringUtil.lines($output))) {
+		if ($isFareLine($line)) {
+			$split = StringUtil.splitByPosition($line, $pattern, {
+				'<': 'prefix', 'F': 'fare', '>': 'postfix',
+			}, false);
+			$data = {
+				'<': [$split['prefix'], 'left'],
+				'F': [modifyFare($split['fare'], $decrease), 'right'],
+				'>': [$split['postfix'], 'left'],
+			};
+			$modified.push(StringUtil.formatLine($pattern, $data));
 		} else {
-			return 'ERROR';
+			$modified.push($line);
 		}
-	};
+	}
+	return php.implode(php.PHP_EOL, $modified);
+};
 
-	/** decrease fare amounts by the value agent specified in the alias */
-	const modifyTariffDisplay = ($output, $decrease, $firstCmdRow) => {
-		let $parsedHead, $error, $pattern, $isFareLine, $modified, $line, $split, $data;
-		$parsedHead = TariffDisplayParser.parse($firstCmdRow['output']);
-		if ($error = $parsedHead['error'] || null) {
-			// failed to parse the first page with column headers
-			return $output;
-		}
-		if ($parsedHead['dumpType'] === 'DOMESTIC') {
-			//         '  3-B6  338.00R SH2QBEN5 21| --/--  ||     -/15JUNC     -/-    ',
-			$pattern = '<<<<<<FFFFFFFF>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>';
-			$isFareLine = l => FareDisplayDomesticParser.parseFareLine(l);
-		} else if ($parsedHead['dumpType'] === 'INTERNATIONAL') {
-			//         '  4 -SQ   324.00R QSQV     Q    |   /12M  01JAN -31DEC  R  PA D',
-			$pattern = '<<<<<<<FFFFFFFFF>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>';
-			$isFareLine = l => FareDisplayInternationalParser.parseFareLine(l);
-		} else {
-			// unsupported column format
-			return $output;
-		}
-		$modified = [];
-		for ($line of Object.values(StringUtil.lines($output))) {
-			if ($isFareLine($line)) {
-				$split = StringUtil.splitByPosition($line, $pattern, {
-					'<': 'prefix', 'F': 'fare', '>': 'postfix',
-				}, false);
-				$data = {
-					'<': [$split['prefix'], 'left'],
-					'F': [modifyFare($split['fare'], $decrease), 'right'],
-					'>': [$split['postfix'], 'left'],
-				};
-				$modified.push(StringUtil.formatLine($pattern, $data));
-			} else {
-				$modified.push($line);
+const shouldAddPsRemark = async ($msg, $cmdLog) => {
+	let $sessionData, $commands, $cmdRecord, $parsedCmd, $flatCmds, $flatCmd;
+	$sessionData = $cmdLog.getSessionData();
+	if ($sessionData['isPnrStored']) {
+		return false;
+	}
+	$commands = await $cmdLog.getCurrentPnrCommands();
+	for ($cmdRecord of Object.values($commands)) {
+		$parsedCmd = CommandParser.parse($cmdRecord['cmd']);
+		$flatCmds = php.array_merge([$parsedCmd], $parsedCmd['followingCommands']);
+		for ($flatCmd of Object.values($flatCmds)) {
+			if ($flatCmd['type'] === 'psRemark') {
+				// already got one PS- remark. Apollo would
+				// return error if you tried to add another one
+				return false;
 			}
 		}
-		return php.implode(php.PHP_EOL, $modified);
-	};
+	}
+	return true;
+};
 
+const isSuccessRebookOutput = ($dump) => {
+	let $isSegmentLine;
+	$isSegmentLine = ($line) => ItineraryParser.parseSegmentLine('0 ' + $line);
+	return Fp.any($isSegmentLine, StringUtil.lines($dump));
+};
 
-	const shouldAddPsRemark = async ($msg, $cmdLog) => {
-		let $sessionData, $commands, $cmdRecord, $parsedCmd, $flatCmds, $flatCmd;
-		$sessionData = $cmdLog.getSessionData();
-		if ($sessionData['isPnrStored']) {
-			return false;
-		}
-		$commands = await $cmdLog.getCurrentPnrCommands();
-		for ($cmdRecord of Object.values($commands)) {
-			$parsedCmd = CommandParser.parse($cmdRecord['cmd']);
-			$flatCmds = php.array_merge([$parsedCmd], $parsedCmd['followingCommands']);
-			for ($flatCmd of Object.values($flatCmds)) {
-				if ($flatCmd['type'] === 'psRemark') {
-					// already got one PS- remark. Apollo would
-					// return error if you tried to add another one
-					return false;
-				}
+const transformBuildError = ($result) => {
+	if (!$result['success']) {
+		return Errors.getMessage($result['errorType'], $result['errorData']);
+	} else {
+		return null;
+	}
+};
+
+// Parse strings like '1,2,4-7,9'
+const parseStringNumbersList = ($numberString) => {
+	let $list, $key, $number, $diapason, $i;
+	$list = php.explode('|', $numberString).map(a => +a);
+	for ([$key, $number] of Object.entries($list)) {
+		$diapason = php.explode('-', $number);
+		if (php.isset($diapason[1])) {
+			$list[$key] = $diapason[0];
+			for ($i = $diapason[0]; $i < $diapason[1]; $i++) {
+				php.array_push($list, $i + 1);
 			}
 		}
-		return true;
-	};
-
-	const isSuccessRebookOutput = ($dump) => {
-		let $isSegmentLine;
-		$isSegmentLine = ($line) => ItineraryParser.parseSegmentLine('0 ' + $line);
-		return Fp.any($isSegmentLine, StringUtil.lines($dump));
-	};
-
-	const transformBuildError = ($result) => {
-		if (!$result['success']) {
-			return Errors.getMessage($result['errorType'], $result['errorData']);
-		} else {
-			return null;
-		}
-	};
-
-	// Parse strings like '1,2,4-7,9'
-	const parseStringNumbersList = ($numberString) => {
-		let $list, $key, $number, $diapason, $i;
-		$list = php.explode('|', $numberString).map(a => +a);
-		for ([$key, $number] of Object.entries($list)) {
-			$diapason = php.explode('-', $number);
-			if (php.isset($diapason[1])) {
-				$list[$key] = $diapason[0];
-				for ($i = $diapason[0]; $i < $diapason[1]; $i++) {
-					php.array_push($list, $i + 1);
-				}
-			}
-		}
-		return php.array_values(php.array_unique($list.sort()));
-	};
+	}
+	return php.array_values(php.array_unique($list.sort()));
+};
 
 /** @param stateful = await require('StatefulSession.js')() */
 let execute = ({
