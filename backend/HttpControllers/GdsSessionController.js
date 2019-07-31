@@ -10,7 +10,7 @@ let {Forbidden, NotImplemented, LoginTimeOut, NotFound, ServiceUnavailable} = re
 let StatefulSession = require('../GdsHelpers/StatefulSession.js');
 let ProcessTerminalInput = require('../Actions/ProcessTerminalInput.js');
 const MakeMcoApolloAction = require('../Transpiled/Rbs/GdsDirect/Actions/Apollo/MakeMcoApolloAction.js');
-const TerminalService = require('../Transpiled/App/Services/CmdResultAdapter.js');
+const CmdResultAdapter = require('../Transpiled/App/Services/CmdResultAdapter.js');
 
 let php = require('../Transpiled/phpDeprecated.js');
 const CmsClient = require("../IqClients/CmsClient");
@@ -200,9 +200,11 @@ exports.importPq = async ({rqBody, session, emcUser}) => {
 };
 
 exports.addMpRemark = async ({rqBody, ...params}) => {
-	let {airline} = rqBody;
+	let {airline, gds} = rqBody;
 	let stateful = await StatefulSession.makeFromDb(params);
-	return AddMpRemark({stateful, airline});
+	return AddMpRemark({stateful, airline})
+		.then(result => new CmdResultAdapter(gds)
+			.addHighlighting('MP', result));
 };
 
 /**
@@ -219,7 +221,7 @@ exports.resetToDefaultPcc = async ({rqBody, session, emcUser}) => {
 	return {fullState};
 };
 
-let makeMaskRs = (calledCommands, actions = []) => new TerminalService('apollo')
+let makeMaskRs = (calledCommands, actions = []) => new CmdResultAdapter('apollo')
 	.addHighlighting('', {
 		calledCommands: calledCommands.map(cmdRec => ({
 			...cmdRec, tabCommands: TravelportUtils.extractTpTabCmds(cmdRec.output),

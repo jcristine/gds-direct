@@ -172,7 +172,7 @@ class AliasParser {
 		// for when you copy itinerary from logs
 		cmdRq = cmdRq.replace(/(^|\n)\s*"(.+?)",/g, '$1$2');
 		let bulkCmds = cmdRq.split('\n');
-		let type, data;
+		let type, data, matches;
 		if (data = await AliasParser.parseCmdAsPnr(cmdRq, stateful)) {
 			type = 'pnrDump';
 		} else if (bulkCmds.length > 20) {
@@ -182,6 +182,9 @@ class AliasParser {
 			data = {bulkCmdRecs: bulkCmds.map(cmdRq => ({
 				cmdRq, type: 'regularCmd',
 			}))};
+		} else if (matches = cmdRq.match(/^MP([A-Z0-9]{2})$/)) {
+			type = 'addMpRemark';
+			data = {airline: matches[1]};
 		} else {
 			type = 'regularCmd';
 			data = null;

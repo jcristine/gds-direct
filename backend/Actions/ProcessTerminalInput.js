@@ -1,3 +1,4 @@
+const AddMpRemark = require('./AddMpRemark.js');
 const GetCurrentPnr = require('./GetCurrentPnr.js');
 const Misc = require('klesun-node-tools/src/Utils/Misc.js');
 const LocalDiag = require('../Repositories/LocalDiag.js');
@@ -155,6 +156,10 @@ let runCmdRq =  async (cmdRq, stateful) => {
 	let calledCommands = [];
 
 	let parsedAlias = await AliasParser.parse(cmdRq, stateful);
+	if (parsedAlias.type === 'addMpRemark') {
+		return AddMpRemark({stateful, airline: parsedAlias.data.airline});
+	}
+
 	let bulkCmdRecs = parsedAlias.type !== 'bulkCmds'
 		? [parsedAlias] : parsedAlias.data.bulkCmdRecs;
 
@@ -308,13 +313,13 @@ let processNormalized = async ({stateful, cmdRq}) => {
 	return {...rbsResult,
 		calledCommands: []
 			.concat(prePccResult.calledCommands || [])
-			.concat(rbsResult.calledCommands)
-			.concat(postPccResult.calledCommands)
+			.concat(rbsResult.calledCommands || [])
+			.concat(postPccResult.calledCommands || [])
 			.map(r => transformCalledCommand(r, stateful)),
 		messages: []
 			.concat(prePccResult.messages || [])
-			.concat(rbsResult.messages)
-			.concat(postPccResult.messages),
+			.concat(rbsResult.messages || [])
+			.concat(postPccResult.messages || []),
 	};
 };
 
@@ -381,7 +386,6 @@ let ProcessTerminalInput = async (params) => {
 	}
 	let whenCmsResult = processNormalized({
 		stateful, cmdRq: cmdRqNorm,
-		messages: translated.messages,
 	}).then((rbsResult) => {
 		let termSvc = new TerminalService(stateful.gds);
 		return termSvc.addHighlighting(cmdRq, rbsResult, stateful.getFullState());

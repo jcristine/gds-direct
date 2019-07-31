@@ -120,6 +120,5 @@ module.exports = async ({stateful, airline}) => {
 		.catch(exc => ({messages: [{type: 'error', text: exc + ''}]}))
 		.then(result => ({...result,
 			calledCommands: gdsSession.getCalledCommands(),
-		}))
-		.then(result => new CmdResultAdapter(gds).addHighlighting('MP', result));
+		}));
 };
