@@ -9,8 +9,8 @@ const matchAll = require("../Utils/Str").matchAll;
 
 let extractPager = (text) => {
 	let [_, clean, pager] =
-		text.match(/([\s\S]*)(\)\>\<)$/) ||
-		text.match(/([\s\S]*)(\>\<)$/) ||
+		text.match(/([\s\S]*)(\)><)$/) ||
+		text.match(/([\s\S]*)(><)$/) ||
 		[null, text, null];
 	return [clean, pager];
 };

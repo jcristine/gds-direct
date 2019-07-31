@@ -56,7 +56,7 @@ let ExchangeApolloTicket = async ({emptyMask, maskOutput, values, gdsSession, ma
 	let cmd = await AbstractMaskParser.makeCmdFromEmptyMask({
 		emptyMask: emptyMask,
 		destinationMask: destinationMask,
-		fields, values
+		fields, values,
 	});
 	let cmdRec = await fetchAll(cmd, gdsSession);
 	let result = parseOutput(cmdRec.output);
