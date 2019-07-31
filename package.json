@@ -8,6 +8,7 @@
     "@types/express": "^4.16.1",
     "@types/http-server": "^0.10.0",
     "@types/ioredis": "^4.0.13",
+    "@types/lodash": "^4.14.136",
     "@types/socket.io": "^2.1.2",
     "chokidar": "^3.0.2",
     "dynatech-client-component": "git+ssh://git@gitlab.dyninno.net:1022/node-libraries/client-component.git#7ad8d0caa829bf947dadced1834ced94ae90b734",
