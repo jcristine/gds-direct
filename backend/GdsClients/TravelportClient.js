@@ -4,7 +4,7 @@ let {escapeXml, parseXml} = require("../GdsHelpers/CommonUtils.js");
 let PersistentHttpRq = require('klesun-node-tools/src/Utils/PersistentHttpRq.js');
 const GdsProfiles = require("../Repositories/GdsProfiles");
 const Conflict = require("klesun-node-tools/src/Rej").Conflict;
-const TravelportPNRRequestTransformer = require('./Transformers/TravelportPNRRequest');
+const TravelportPNRRequestTransformer = require('./Transformers/TravelportPnrRequest');
 /**
  * they are all physically located in USA, Atlanta (in same building)
  * I guess different urls are kept just for compatibility now

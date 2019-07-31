@@ -1,4 +1,4 @@
-const TravelportClient = require('../../../../backend/GdsClients/Transformers/TravelportPNRRequest');
+const TravelportClient = require('../../../../backend/GdsClients/Transformers/TravelportPnrRequest');
 
 const provide_buildXml = () => {
 	const list = [];
