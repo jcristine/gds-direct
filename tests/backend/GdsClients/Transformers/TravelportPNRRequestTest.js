@@ -416,11 +416,11 @@ const provide_parseXml = () => {
 
 class TravelportClientTest extends require('../../Transpiled/Lib/TestCase') {
 	async test_buildXml({input, output}) {
-		this.assertSame(output, TravelportClient.buildPnrXMLDataObject(input));
+		this.assertSame(output, TravelportClient.buildPnrXmlDataObject(input));
 	}
 
 	async test_parseXml({input, output}) {
-		this.assertArrayElementsSubset(output, await TravelportClient.parsePnrXMLResponse(input));
+		this.assertArrayElementsSubset(output, await TravelportClient.parsePnrXmlResponse(input));
 	}
 
 	getTestMapping() {
