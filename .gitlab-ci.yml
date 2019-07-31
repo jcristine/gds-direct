@@ -24,7 +24,7 @@ run-tests-prod:
     #- . /home/pkirpitsov/scripts/ci_secret_ssh.sh
   tags:
     #- dev-w13
-  - sales-team-runner
+    - sales-team-runner
   only:
     #- tags
     - production
