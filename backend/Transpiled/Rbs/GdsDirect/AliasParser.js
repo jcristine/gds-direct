@@ -1,6 +1,5 @@
+const Rej = require('klesun-node-tools/src/Rej.js');
 const PtcUtil = require('../Process/Common/PtcUtil.js');
-
-
 const AtfqParser = require('../../Gds/Parsers/Apollo/Pnr/AtfqParser.js');
 const ParsersController = require('../../Rbs/IqControllers/ParsersController.js');
 
@@ -166,6 +165,28 @@ class AliasParser {
 	static async parseCmdAsItinerary($cmd, $session) {
 		let asPnr = await this.parseCmdAsPnr($cmd, $session);
 		return !asPnr ? [] : asPnr.itinerary;
+	}
+
+	static async parse(cmdRq, stateful) {
+		cmdRq = cmdRq.replace(/\s+$/, '');
+		// for when you copy itinerary from logs
+		cmdRq = cmdRq.replace(/(^|\n)\s*"(.+?)",/g, '$1$2');
+		let bulkCmds = cmdRq.split('\n');
+		let type, data;
+		if (data = await AliasParser.parseCmdAsPnr(cmdRq, stateful)) {
+			type = 'pnrDump';
+		} else if (bulkCmds.length > 20) {
+			return Rej.BadRequest('Too many lines (' + bulkCmds.length + ') in your input for bulk invocation');
+		} else if (bulkCmds.length > 1) {
+			type = 'bulkCmds';
+			data = {bulkCmdRecs: bulkCmds.map(cmdRq => ({
+				cmdRq, type: 'regularCmd',
+			}))};
+		} else {
+			type = 'regularCmd';
+			data = null;
+		}
+		return Promise.resolve({cmdRq, type, data});
 	}
 }
 

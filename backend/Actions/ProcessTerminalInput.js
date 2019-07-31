@@ -131,46 +131,41 @@ let transformCalledCommand = (rec, stateful) => {
 	};
 };
 
-let runByGds = async (inputCmd, stateful) => {
+let runByGds = async (cmdRqData) => {
 	let gdsResult;
-	if (stateful.gds === 'apollo') {
-		gdsResult = await ApoRunCmdRq({stateful, cmdRq: inputCmd});
-	} else if (stateful.gds === 'sabre') {
-		gdsResult = await SabRunCmdRq({stateful, cmdRq: inputCmd});
-	} else if (stateful.gds === 'amadeus') {
-		gdsResult = await AmaRunCmdRq({stateful, cmdRq: inputCmd});
-	} else if (stateful.gds === 'galileo') {
-		gdsResult = await GalRunCmdRq({stateful, cmdRq: inputCmd});
+	let gds = cmdRqData.stateful.gds;
+	if (gds === 'apollo') {
+		gdsResult = await ApoRunCmdRq(cmdRqData);
+	} else if (gds === 'sabre') {
+		gdsResult = await SabRunCmdRq(cmdRqData);
+	} else if (gds === 'amadeus') {
+		gdsResult = await AmaRunCmdRq(cmdRqData);
+	} else if (gds === 'galileo') {
+		gdsResult = await GalRunCmdRq(cmdRqData);
 	} else {
-		return NotImplemented('Unsupported GDS for runCmdRq() - ' + stateful.gds);
+		return NotImplemented('Unsupported GDS for runCmdRq() - ' + gds);
 	}
 	return gdsResult;
 };
 
-let runCmdRq =  async (inputCmd, stateful) => {
+let runCmdRq =  async (cmdRq, stateful) => {
 	let status = 'success';
 	let messages = [];
 	let actions = [];
 	let calledCommands = [];
 
-	// for when you copy itinerary from logs
-	inputCmd = inputCmd.replace(/(^|\n)\s*"(.+?)",/g, '$1$2');
-	let isPnrDump = AliasParser.parseCmdAsPnr(inputCmd, stateful);
-	let bulkCmds = isPnrDump
-		? [inputCmd] // itinerary, keep intact for rebook
-		: inputCmd.split('\n');
-	if (bulkCmds.length > 10) {
-		return BadRequest('Too many lines (' + bulkCmds.length + ') in your input for bulk invocation');
-	}
+	let parsedAlias = await AliasParser.parse(cmdRq, stateful);
+	let bulkCmdRecs = parsedAlias.type !== 'bulkCmds'
+		? [parsedAlias] : parsedAlias.data.bulkCmdRecs;
 
-	let performanceDebug = [];
-	for (let cmd of bulkCmds) {
-		let running = runByGds(cmd.trim(), stateful)
+	for (let cmdRec of bulkCmdRecs) {
+		cmdRec.cmdRq = cmdRec.cmdRq.trim();
+		let running = runByGds({stateful, ...cmdRec})
 			.catch(exc => Rej.NoContent.matches(exc.httpStatusCode)
 				? {	userMessages: [exc + ''],
 					status: GdsDirect.STATUS_EXECUTED,
 				} : Promise.reject(exc));
-		if (bulkCmds.length > 1) {
+		if (bulkCmdRecs.length > 1) {
 			running = running.catch(exc => ({
 				status: GdsDirect.STATUS_FORBIDDEN,
 				userMessages: ['' + exc],
@@ -194,7 +189,6 @@ let runCmdRq =  async (inputCmd, stateful) => {
 		messages: messages,
 		actions: actions,
 		calledCommands: calledCommands,
-		performanceDebug: performanceDebug,
 	};
 };
 
