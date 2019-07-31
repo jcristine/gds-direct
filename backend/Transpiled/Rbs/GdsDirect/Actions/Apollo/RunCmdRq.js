@@ -1,3 +1,6 @@
+const RunCmdHelper = require('./RunCmdRq/RunCmdHelper.js');
+const ModifyCmdOutput = require('./RunCmdRq/ModifyCmdOutput.js');
+const RunRealCmd = require('./RunCmdRq/RunRealCmd.js');
 const GetCurrentPnr = require('../../../../../Actions/GetCurrentPnr.js');
 
 // utils
@@ -18,7 +21,6 @@ const Errors = require('../../../../Rbs/GdsDirect/Errors.js');
 const CommonDataHelper = require('../../../../Rbs/GdsDirect/CommonDataHelper.js');
 const GdsDirect = require('../../../../Rbs/GdsDirect/GdsDirect.js');
 const CmsApolloTerminal = require('../../../../Rbs/GdsDirect/GdsInterface/CmsApolloTerminal.js');
-const CommonParserHelpers = require('../../../../Gds/Parsers/Apollo/CommonParserHelpers.js');
 const ApolloPnr = require('../../../../Rbs/TravelDs/ApolloPnr.js');
 
 // actions
@@ -28,45 +30,24 @@ const MakeMcoApolloAction = require('../../../../Rbs/GdsDirect/Actions/Apollo/Ma
 const RepriceInAnotherPccAction = require('../../../../Rbs/GdsDirect/Actions/Common/RepriceInAnotherPccAction.js');
 const EndManualPricing = require('../../../../../Actions/ManualPricing/EndManualPricing.js');
 const GetMultiPccTariffDisplayAction = require('../../../../Rbs/GdsDirect/Actions/Common/GetMultiPccTariffDisplayAction.js');
-const RetrieveApolloTicketsAction = require('../../../../Rbs/Process/Apollo/ImportPnr/Actions/RetrieveApolloTicketsAction.js');
 const DisplayHistoryActionHelper = require('./DisplayHistoryActionHelper.js');
 
 // parsers
 const ItineraryParser = require('../../../../Gds/Parsers/Apollo/Pnr/ItineraryParser.js');
-const PnrParser = require('../../../../Gds/Parsers/Apollo/Pnr/PnrParser.js');
 const CommandParser = require('../../../../Gds/Parsers/Apollo/CommandParser.js');
-const GenericRemarkParser = require('../../../../Gds/Parsers/Common/GenericRemarkParser.js');
 const TApolloSavePnr = require('../../../../Rbs/GdsAction/Traits/TApolloSavePnr.js');
 const AliasParser = require('../../../../Rbs/GdsDirect/AliasParser.js');
 const ApoAliasParser = require('../../../../../Parsers/Apollo/AliasParser.js');
-const AirAvailabilityParser = require('../../../../Gds/Parsers/Apollo/AirAvailabilityParser.js');
 const ImportPqApolloAction = require("./ImportPqApolloAction");
 const getRbsPqInfo = require("../../../../../GdsHelpers/RbsUtils").getRbsPqInfo;
 const PnrHistoryParser = require('../../../../Gds/Parsers/Apollo/PnrHistoryParser.js');
 const McoListParser = require("../../../../Gds/Parsers/Apollo/Mco/McoListParser");
 const McoMaskParser = require("../../../../Gds/Parsers/Apollo/Mco/McoMaskParser");
 const TariffDisplayParser = require('../../../../Gds/Parsers/Apollo/TariffDisplay/TariffDisplayParser.js');
-const FareDisplayDomesticParser = require('../../../../Gds/Parsers/Apollo/TariffDisplay/FareDisplayDomesticParser.js');
-const FareDisplayInternationalParser = require('../../../../Gds/Parsers/Apollo/TariffDisplay/FareDisplayInternationalParser.js');
 const ParseHbFex = require('../../../../../Parsers/Apollo/ParseHbFex.js');
 const NmeMaskParser = require("../../../../../Actions/ManualPricing/NmeMaskParser");
 
 const TicketHistoryParser = require("../../../../Gds/Parsers/Apollo/TicketHistoryParser");
-const TmpLib = require("../../../../../Utils/TmpLib");
-
-const doesStorePnr = ($cmd) => {
-	let $parsedCmd, $flatCmds, $cmdTypes;
-	$parsedCmd = CommandParser.parse($cmd);
-	$flatCmds = php.array_merge([$parsedCmd], $parsedCmd['followingCommands'] || []);
-	$cmdTypes = php.array_column($flatCmds, 'type');
-	return php.array_intersect($cmdTypes, ['storePnr', 'storeKeepPnr', 'storePnrSendEmail', 'storeAndCopyPnr']).length;
-};
-
-const doesOpenPnr = ($cmd) => {
-	let $parsedCmd;
-	$parsedCmd = CommandParser.parse($cmd);
-	return php.in_array($parsedCmd['type'], ['openPnr', 'searchPnr', 'displayPnrFromList']);
-};
 
 // 'SEGMENTS CANCELLED - NEXT REPLACES  1'
 // 'CNLD FROM  1'
@@ -82,118 +63,6 @@ const isScrollingAvailable = ($dumpPage) => {
 	} catch ($exc) {
 		return false;
 	}
-};
-
-/**
- * @param $ranges = [
- *     ['from' => 3, 'to' => 7],
- *     ['from' => 15],
- *     ['from' => 17, 'to' => 17],
- * ]
- */
-const isInRanges = ($num, $ranges) => {
-	let $range;
-	for ($range of Object.values($ranges)) {
-		if (php.array_key_exists('to', $range)) {
-			if ($num >= $range['from'] && $num <= $range['to']) {
-				return true;
-			}
-		} else {
-			if ($num >= $range['from']) {
-				return true;
-			}
-		}
-	}
-	return false;
-};
-
-const checkSavePcc = ($pnrCreationPcc, $currentPcc) => {
-	let $errors, $pccLimitations, $allowedPccs, $errorData;
-	$errors = [];
-	$pccLimitations = {
-		'2F9B': ['2F9B'],
-		'2G52': ['2G52'],
-		'2E8R': ['2E8R', '2G56'],
-	};
-	if (php.array_key_exists($pnrCreationPcc, $pccLimitations)) {
-		$allowedPccs = $pccLimitations[$pnrCreationPcc];
-		if (!php.in_array($currentPcc, $allowedPccs)) {
-			$errorData = {'allowedPccs': php.implode(' or ', $allowedPccs)};
-			$errors.push(Errors.getMessage(Errors.CANT_CHANGE_IN_THIS_PCC, $errorData));
-		}
-	}
-	return $errors;
-};
-
-const modifyFare = ($fare, $decrease) => {
-	if ($decrease['units'] === 'percent') {
-		$fare = php.round($fare - $fare * $decrease['value'] / 100);
-		return (+$fare).toFixed(2);
-	} else if ($decrease['units'] === 'amount') {
-		return ($fare - $decrease['value']).toFixed(2);
-	} else {
-		return 'ERROR';
-	}
-};
-
-/** decrease fare amounts by the value agent specified in the alias */
-const modifyTariffDisplay = ($output, $decrease, $firstCmdRow) => {
-	let $parsedHead, $error, $pattern, $isFareLine, $modified, $line, $split, $data;
-	$parsedHead = TariffDisplayParser.parse($firstCmdRow['output']);
-	if ($error = $parsedHead['error'] || null) {
-		// failed to parse the first page with column headers
-		return $output;
-	}
-	if ($parsedHead['dumpType'] === 'DOMESTIC') {
-		//         '  3-B6  338.00R SH2QBEN5 21| --/--  ||     -/15JUNC     -/-    ',
-		$pattern = '<<<<<<FFFFFFFF>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>';
-		$isFareLine = l => FareDisplayDomesticParser.parseFareLine(l);
-	} else if ($parsedHead['dumpType'] === 'INTERNATIONAL') {
-		//         '  4 -SQ   324.00R QSQV     Q    |   /12M  01JAN -31DEC  R  PA D',
-		$pattern = '<<<<<<<FFFFFFFFF>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>';
-		$isFareLine = l => FareDisplayInternationalParser.parseFareLine(l);
-	} else {
-		// unsupported column format
-		return $output;
-	}
-	$modified = [];
-	for ($line of Object.values(StringUtil.lines($output))) {
-		if ($isFareLine($line)) {
-			$split = StringUtil.splitByPosition($line, $pattern, {
-				'<': 'prefix', 'F': 'fare', '>': 'postfix',
-			}, false);
-			$data = {
-				'<': [$split['prefix'], 'left'],
-				'F': [modifyFare($split['fare'], $decrease), 'right'],
-				'>': [$split['postfix'], 'left'],
-			};
-			$modified.push(StringUtil.formatLine($pattern, $data));
-		} else {
-			$modified.push($line);
-		}
-	}
-	return php.implode(php.PHP_EOL, $modified);
-};
-
-const shouldAddPsRemark = async ($msg, $cmdLog) => {
-	let $sessionData, $commands, $cmdRecord, $parsedCmd, $flatCmds, $flatCmd;
-	$sessionData = $cmdLog.getSessionData();
-	if ($sessionData['isPnrStored']) {
-		return false;
-	}
-	$commands = await $cmdLog.getCurrentPnrCommands();
-	for ($cmdRecord of Object.values($commands)) {
-		$parsedCmd = CommandParser.parse($cmdRecord['cmd']);
-		$flatCmds = php.array_merge([$parsedCmd], $parsedCmd['followingCommands']);
-		for ($flatCmd of Object.values($flatCmds)) {
-			if ($flatCmd['type'] === 'psRemark') {
-				// already got one PS- remark. Apollo would
-				// return error if you tried to add another one
-				return false;
-			}
-		}
-	}
-	return true;
 };
 
 const isSuccessRebookOutput = ($dump) => {
@@ -227,12 +96,20 @@ const parseStringNumbersList = ($numberString) => {
 };
 
 /** @param stateful = await require('StatefulSession.js')() */
-let execute = ({
+let RunCmdRq = ({
 	stateful, cmdRq,
 	CmdRqLog = require('../../../../../Repositories/CmdRqLog.js'),
 	PtcUtil = require('../../../../Rbs/Process/Common/PtcUtil.js'),
 	Pccs = require("../../../../../Repositories/Pccs.js"),
 }) => {
+
+	const {
+		flattenCmds,
+		prepareToSavePnr,
+		checkEmulatedPcc,
+		runCmd,
+		runCommand,
+	} = RunCmdHelper({stateful});
 
 	const getSessionData = () => {
 		return stateful.getSessionData();
@@ -311,6 +188,7 @@ let execute = ({
 		return $data['baseCmd'] + ($rawMods.length ? '/' + php.implode('/', $rawMods) : '');
 	};
 
+	/** maybe should move this to ApoAliasParser ? */
 	const preprocessCommand = async ($cmd) => {
 		let aliasData;
 		let $parsed = CommandParser.parse($cmd);
@@ -341,98 +219,10 @@ let execute = ({
 		return $cmd;
 	};
 
-	const makeCmdMessages = async ($cmd, $output) => {
-		let $userMessages, $type, $agent, $left, $fsLeftMsg;
-		$userMessages = [];
-		$type = CommandParser.parse($cmd)['type'];
-		if (php.in_array($type, CommonDataHelper.getCountedFsCommands())) {
-			$agent = getAgent();
-			$left = $agent.getFsLimit() - await $agent.getFsCallsUsed();
-			$fsLeftMsg = $left + ' FS COMMANDS REMAINED';
-			$userMessages.push($fsLeftMsg);
-		}
-		return $userMessages;
-	};
-
-	const modifyOutput = async ($calledCommand) => {
-		$calledCommand = {...$calledCommand};
-		let $scrolledCmd, $cmdParsed, $type, $output, $lines, $isSafe, $clean, $pcc,
-			$isOk;
-		$scrolledCmd = await getScrolledCmd() || $calledCommand['cmd'];
-		$cmdParsed = CommandParser.parse($scrolledCmd);
-		$type = $cmdParsed['type'] || null;
-		if (php.in_array($type, ['searchPnr', 'displayPnrFromList']) &&
-			!stateful.getAgent().canOpenPrivatePnr()
-		) {
-			$output = StringUtil.wrapLinesAt($calledCommand['output'], 64);
-			$lines = StringUtil.lines($output);
-			$isSafe = ($line) => !StringUtil.contains($line, 'WEINSTEIN/ALEX');
-			$calledCommand['output'] = php.implode(php.PHP_EOL, Fp.filter($isSafe, $lines));
-		}
-		if ((getSessionData().scrolledCmd || '').startsWith('$D')) {
-			let alias;
-			let scrolledCmdRow = (await stateful.getLog().getScrolledCmdMrs())[0];
-			if (cmdRq.startsWith('$D')) {
-				// initial $D display command
-				alias = await ApoAliasParser.parse(cmdRq, stateful);
-			} else {
-				// MD on $D display
-				let cmdRqId = !scrolledCmdRow ? null : scrolledCmdRow.cmd_rq_id;
-				let cmdRqRow = !cmdRqId ? null : await CmdRqLog.getById(cmdRqId);
-				alias = !cmdRqRow ? null : (await ApoAliasParser.parse(cmdRqRow.command || '', stateful));
-			}
-			if (alias && alias['type'] === 'fareSearchWithDecrease') {
-				let decrease = alias['data'] || null;
-				$calledCommand['output'] = modifyTariffDisplay(
-					$calledCommand['output'], decrease, scrolledCmdRow
-				);
-			}
-		}
-		if ($type === 'airAvailability' && doesAvailJourneyTimeApply($calledCommand['output'])) {
-			$clean = php.preg_replace(/><$/, '', $calledCommand['output']);
-			$calledCommand['output'] = php.rtrim($clean) + '  ' + 'JOURNEY TIME >A*J;  ><';
-		}
-		if ($type === 'changePcc' && $cmdParsed['data']) {
-			$pcc = $cmdParsed['data'];
-			$isOk = CmsApolloTerminal.isSuccessChangePccOutput($calledCommand['output'], $cmdParsed['data']);
-			if ($isOk) {
-				$calledCommand['output'] = 'YOU HAVE SUCCESSFULLY EMULATED TO ' + $pcc;
-			}
-		}
-		return $calledCommand;
-	};
-
-	/** @param $cmdRecs = TerminalCommandLog::getCurrentPnrCommands() */
-	const flattenCmds = ($cmdRecs) => {
-		let $allFlatCmds, $cmdRecord, $parsedCmd, $flatCmds;
-		$allFlatCmds = [];
-		for ($cmdRecord of Object.values($cmdRecs)) {
-			$parsedCmd = CommandParser.parse($cmdRecord['cmd']);
-			$flatCmds = php.array_merge([$parsedCmd], $parsedCmd['followingCommands']);
-			$allFlatCmds = php.array_merge($allFlatCmds, $flatCmds);
-		}
-		return $allFlatCmds;
-	};
-
-	const makeCmsRemarkCmdIfNeeded = async () => {
-		let $cmdLog, $msg;
-		$cmdLog = stateful.getLog();
-		if (!stateful.getSessionData().isPnrStored) {
-			$msg = await CommonDataHelper.createCredentialMessage(stateful);
-			if (await CommonDataHelper.shouldAddCreationRemark($msg, $cmdLog)) {
-				return '@:5' + $msg;
-			}
-		}
-		return null;
-	};
-
-	const makePsRemarkCmdIfNeeded = async () => {
-		let $msg;
-		$msg = 'CREATED IN GDS DIRECT BY ' + php.strtoupper(getAgent().getLogin());
-		if (await shouldAddPsRemark($msg, stateful.getLog())) {
-			return 'PS-' + $msg;
-		}
-		return null;
+	const modifyOutput = async (calledCommand) => {
+		return ModifyCmdOutput({
+			cmdRq, calledCommand, stateful, CmdRqLog,
+		});
 	};
 
 	const shouldFetchAll = ($cmd) => {
@@ -450,89 +240,6 @@ let execute = ({
 		}
 	};
 
-	const doesDivideFpBooking = async ($cmd) => {
-		let $pnrCmds, $typeToOutput, $dnOutput, $pnrDump, $pnr;
-		if ($cmd === 'F') {
-			$pnrCmds = await stateful.getLog().getCurrentPnrCommands();
-			$typeToOutput = php.array_combine(
-				php.array_column($pnrCmds, 'type'),
-				php.array_column($pnrCmds, 'output')
-			);
-			if ($dnOutput = $typeToOutput['divideBooking'] || null) {
-				$pnrDump = extractPager($dnOutput)[0];
-				$pnr = ApolloPnr.makeFromDump($pnrDump);
-				return !$pnr.wasCreatedInGdsDirect();
-			}
-		}
-		return false;
-	};
-
-	const runCmd = async ($cmd, $fetchAll) => {
-		let $cmdRec = $fetchAll
-			? await fetchAll($cmd, stateful)
-			: await stateful.runCmd($cmd);
-		if (isSuccessfulFsCommand($cmdRec.cmd, $cmdRec.output)) {
-			stateful.handleFsUsage();
-		}
-		return $cmdRec;
-	};
-
-	// TODO: use runCmd everywhere instead (to include duration and stuff)
-	const runCommand = async ($cmd, $fetchAll = true) => {
-		return runCmd($cmd, $fetchAll).then(rec => rec.output);
-	};
-
-	const isSuccessfulFsCommand = ($cmd, $dump) => {
-		let $keywords, $type, $isFsCmd, $isFsSuccessful;
-		$keywords = [
-			'ITINERARY OPTIONS RETURNED',
-			'PRICING OPTION',
-		];
-		$type = CommandParser.parse($cmd)['type'] || '';
-		$isFsCmd = php.in_array($type, CommonDataHelper.getCountedFsCommands());
-		$isFsSuccessful = Fp.any(($keyword) => {
-			return StringUtil.contains($dump, $keyword);
-		}, $keywords);
-		return $isFsCmd && $isFsSuccessful;
-	};
-
-	/** @return bool - true if not error response, false otherwise */
-	const doesAvailJourneyTimeApply = ($output) => {
-		let $hasAvail, $isRbd;
-		$hasAvail = AirAvailabilityParser.parse($output)['flights'].length > 0;
-		$isRbd = StringUtil.startsWith($output, 'FIRAV');
-		return $hasAvail && !$isRbd;
-	};
-
-	/** @param $data = CommandParser::parseChangePnrRemarks()['data'] */
-	const checkChangeRemarks = async ($data) => {
-		let $errors, $remark, $lineNum;
-		$errors = [];
-		for ($remark of Object.values((await getCurrentPnr()).getRemarks())) {
-			if ($remark['remarkType'] !== GenericRemarkParser.CMS_LEAD_REMARK) continue;
-			$lineNum = $remark['lineNumber'];
-			if (isInRanges($lineNum, $data['ranges'])) {
-				$errors.push(Errors.getMessage(Errors.CANT_CHANGE_GDSD_REMARK, {'lineNum': $lineNum}));
-			}
-		}
-		return $errors;
-	};
-
-	const checkEmulatedPcc = ($pcc) => {
-		let $errors;
-		$errors = [];
-		if (getAgent().canSwitchToAnyPcc()) {
-			return [];
-		}
-		if ($pcc === '2CX8') {
-			$errors.push('This PCC is restricted. Please use 2G2H instead.');
-		}
-		if (php.in_array($pcc, ['2F9H', '2E8U'])) {
-			$errors.push(Errors.getMessage(Errors.PCC_NOT_ALLOWED_BY_US, {'pcc': $pcc}));
-		}
-		return $errors;
-	};
-
 	/** @return Promise<string> - the command we are currently scrolling
 	 * (last command that was not one of MD, MU, MT, MB */
 	const getScrolledCmd = () => {
@@ -541,111 +248,6 @@ let execute = ({
 
 	const getCurrentPnr = async () => {
 		return GetCurrentPnr.inApollo(stateful);
-	};
-
-	const areAllCouponsVoided = async () => {
-		let $ticketData, $ticket, $isVoid;
-		$ticketData = await (new RetrieveApolloTicketsAction())
-			.setSession(stateful).execute();
-		if (!php.empty($ticketData['error'])) {
-			return false;
-		}
-		for ($ticket of Object.values($ticketData['tickets'])) {
-			$isVoid = ($seg) => $seg['couponStatus'] === 'VOID';
-			if (!php.empty($ticket['error']) ||
-				!Fp.all($isVoid, $ticket['segments'])
-			) {
-				return false;
-			}
-		}
-		return true;
-	};
-
-	const getStoredPnr = async () => {
-		if (getSessionData()['isPnrStored']) {
-			return getCurrentPnr();
-		} else {
-			return null;
-		}
-	};
-
-	const isForbiddenBaAvailability = ($cmd) => {
-		let $isBritishAirways;
-		$isBritishAirways = StringUtil.endsWith($cmd, '|BA');
-		return $isBritishAirways
-			&& php.in_array(getSessionData()['pcc'], ['1O3K', '2G55'])
-			&& !getAgent().canPerformAnyPccAvailability();
-	};
-
-	const checkIsForbidden = async ($cmd) => {
-		let $errors, $parsedCmd, $flatCmds, $type, $agent, $isQueueCmd, $pnr, $canChange, $remark,
-			$pnrCreationPcc, $currentPcc, $flatCmd;
-		$errors = [];
-		$parsedCmd = CommandParser.parse($cmd);
-		$flatCmds = php.array_merge([$parsedCmd], $parsedCmd['followingCommands'] || []);
-		$type = $parsedCmd['type'];
-		$agent = getAgent();
-		$isQueueCmd =
-			php.in_array($type, CommonDataHelper.getQueueCommands()) ||
-			StringUtil.startsWith($cmd, 'Q');
-		if (php.in_array($type, CommonDataHelper.getTicketingCommands())) {
-			if (!$agent.canIssueTickets()) {
-				$errors.push(Errors.getMessage(Errors.CMD_FORBIDDEN, {'cmd': $cmd, 'type': $type}));
-			}
-		} else if (php.in_array($type, CommonDataHelper.getCountedFsCommands())) {
-			let totalAllowed = $agent.getFsLimit();
-			if (!totalAllowed) {
-				$errors.push(Errors.getMessage(Errors.CMD_FORBIDDEN, {'cmd': $cmd, 'type': $type}));
-			} else {
-				let {cnt, minDt} = await $agent.getFsCallsUsedRec();
-				if (cnt >= totalAllowed) {
-					$errors.push(Errors.getMessage(Errors.FS_LIMIT_EXHAUSTED, {totalAllowed, callsUsed: cnt, minDt}));
-				}
-			}
-		} else if ($isQueueCmd && !php.in_array($type, ['movePnrToQueue', 'qmdr'])) {
-			if (!$agent.canProcessQueues()) {
-				$errors.push(Errors.getMessage(Errors.CMD_FORBIDDEN, {'cmd': $cmd, 'type': $type || 'queueOperation'}));
-			}
-		} else if ($type === 'searchPnr') {
-			if (!$agent.canSearchPnr()) {
-				$errors.push(Errors.getMessage(Errors.CMD_FORBIDDEN, {'cmd': $cmd, 'type': $type}));
-			}
-		} else if (php.in_array($type, CommonDataHelper.getTotallyForbiddenCommands())) {
-			$errors.push(Errors.getMessage(Errors.CMD_FORBIDDEN, {'cmd': $cmd, 'type': $type}));
-		} else if ($type === 'airAvailability' && isForbiddenBaAvailability($cmd)) {
-			$errors.push('NO BA AVAILABILITY IN THIS PCC. PLEASE CHECK IN 2G2H');
-		}
-		if (php.in_array('deletePnrField', php.array_column($flatCmds, 'type'))) {
-			if (!$agent.canEditTicketedPnr()) {
-				if ($pnr = await getStoredPnr()) {
-					$canChange = !$pnr.hasEtickets()
-						|| $agent.canEditVoidTicketedPnr()
-						&& await areAllCouponsVoided();
-					if (!$canChange) {
-						$errors.push(Errors.getMessage(Errors.CANT_CHANGE_TICKETED_PNR));
-					}
-				}
-			}
-		}
-		if (doesStorePnr($cmd)) {
-			if ($pnr = await getStoredPnr()) {
-				for ($remark of Object.values($pnr.getRemarks())) {
-					if ($remark['remarkType'] !== GenericRemarkParser.CMS_LEAD_REMARK) continue;
-					if (!($pnrCreationPcc = $remark['data']['pcc'] || null)) continue;
-					$currentPcc = stateful.getSessionData()['pcc'];
-					$errors = php.array_merge($errors, checkSavePcc($pnrCreationPcc, $currentPcc));
-				}
-			}
-		}
-		if ($type === 'changePcc') {
-			$errors = php.array_merge($errors, checkEmulatedPcc($parsedCmd['data']));
-		}
-		for ($flatCmd of Object.values($flatCmds)) {
-			if ($flatCmd['type'] === 'changePnrRemarks') {
-				$errors = php.array_merge($errors, await checkChangeRemarks($flatCmd['data']));
-			}
-		}
-		return $errors;
 	};
 
 	/** replace GK segments with $segments */
@@ -919,30 +521,6 @@ let execute = ({
 		stateful.handlePnrSave($recordLocator);
 	};
 
-	const prepareToSavePnr = async () => {
-		let $writeCommands, $usedCmds, $flatCmds, $usedCmdTypes, $remarkCmd;
-		$writeCommands = [];
-		if (!getSessionData()['isPnrStored']) {
-			$usedCmds = await stateful.getLog().getCurrentPnrCommands();
-			$flatCmds = flattenCmds($usedCmds);
-			$usedCmdTypes = php.array_column($flatCmds, 'type');
-			if ($remarkCmd = await makeCmsRemarkCmdIfNeeded()) {
-				php.array_unshift($writeCommands, $remarkCmd);
-			}
-			if ($remarkCmd = await makePsRemarkCmdIfNeeded()) {
-				php.array_unshift($writeCommands, $remarkCmd);
-			}
-			if (php.in_array(getSessionData()['pcc'], ['2F9B']) &&
-				!php.in_array('fillFromProfile', $usedCmdTypes)
-			) {
-				await runCommand('S*ITN', false);
-				await runCommand('SL*1', false);
-				await runCommand('MV/|*' + getAgent().getLogin(), false);
-			}
-		}
-		return $writeCommands;
-	};
-
 	const processSavePnr = async () => {
 		let $pnr, $pnrDump, $errors, $usedCmds, $flatCmds, $usedCmdTypes, $login, $writeCommands, $cmd, $output,
 			$saveResult, $cmdRecord;
@@ -1017,7 +595,7 @@ let execute = ({
 	};
 
 	const makeStorePricingCmd = async ($pnr, $aliasData, $needsColonN) => {
-		let $adultPtc, $mods, $errors, $tripEndDate, $tripEndDt, $paxCmdParts, $pax, $nameNumFormat, $determined,
+		let $adultPtc, $mods, $errors, $tripEndDate, $tripEndDt, $paxCmdParts, $pax, $nameNumFormat,
 			$cmd, $needsAccompanying, $mod;
 		$adultPtc = $aliasData['ptc'] || 'ADT';
 		$mods = $aliasData['pricingModifiers'];
@@ -1145,71 +723,8 @@ let execute = ({
 		return $calledCommands;
 	};
 
-	const callImplicitCommandsBefore = async ($cmd) => {
-		let $batchCmds, $msg;
-		if (doesStorePnr($cmd)) {
-			$batchCmds = await prepareToSavePnr();
-			if (!php.empty($batchCmds)) {
-				await runCommand(php.implode('|', $batchCmds));
-			}
-		} else if (await doesDivideFpBooking($cmd)) {
-			// all commands between >DN...; and >F; affect only the new PNR
-			$msg = await CommonDataHelper.createCredentialMessage(stateful);
-			await runCommand('@:5' + $msg);
-		}
-	};
-
-	const callImplicitCommandsAfter = async ($cmdRecord, $userMessages) => {
-		let $parsedCmd, $flatCmds, $pricesItinerary, $fetchAll, $parsedData, $clean, $parsed, $isAlex;
-		$parsedCmd = CommandParser.parse($cmdRecord['cmd']);
-		$flatCmds = php.array_merge([$parsedCmd], $parsedCmd['followingCommands']);
-		$pricesItinerary = $parsedCmd['type'] === 'priceItinerary' ||
-			StringUtil.startsWith($cmdRecord['cmd'], 'FS');
-		if ($pricesItinerary && php.preg_match(/^\s*UNA\s+PROC\s+SEGMENT\s*(><)?$/, $cmdRecord['output'])) {
-			// a workaround for a bug in Apollo that would cause a "UNA PROC  SEGMENT"
-			// on the next pricing after $BBQ01 or $BB0 unless you do a *R
-			await runCommand('*R', false);
-			$fetchAll = shouldFetchAll($cmdRecord['cmd']);
-			$cmdRecord['output'] = await runCommand($cmdRecord['cmd'], $fetchAll);
-		}
-		$cmdRecord = await modifyOutput($cmdRecord);
-		if (doesStorePnr($cmdRecord['cmd'])) {
-			$parsedData = TApolloSavePnr.parseSavePnrOutput($cmdRecord['output']);
-			if ($parsedData['success']) {
-				handlePnrSave($parsedData['recordLocator']);
-				if (php.in_array('storeKeepPnr', php.array_column($flatCmds, 'type'))) {
-					$cmdRecord = await runCmd('*R');
-				}
-			}
-		} else if (doesOpenPnr($cmdRecord['cmd'])) {
-			$clean = extractPager($cmdRecord['output'])[0];
-			$parsed = PnrParser.parse($clean);
-			$isAlex = ($pax) => {
-				return $pax['lastName'] === 'WEINSTEIN'
-					&& $pax['firstName'] === 'ALEX';
-			};
-			if (Fp.any($isAlex, $parsed['passengers']['passengerList'] || []) &&
-				!stateful.getAgent().canOpenPrivatePnr()
-			) {
-				await runCommand('I');
-				return Rej.Forbidden('Restricted PNR');
-			}
-		}
-		return {cmdRec: $cmdRecord, userMessages: $userMessages};
-	};
-
-	const processRealCommand = async ($cmd, $fetchAll) => {
-		let $errors, $userMessages, $cmdRecord;
-		$cmd = await preprocessCommand($cmd);
-		if (!php.empty($errors = await checkIsForbidden($cmd))) {
-			return Rej.Forbidden($errors.join('; '));
-		}
-		let beforeResult = await callImplicitCommandsBefore($cmd);
-		$cmdRecord = await runCmd($cmd, $fetchAll)
-			.then(TmpLib.addPerformanceDebug('runCmd()', beforeResult));
-		$userMessages = await makeCmdMessages($cmd, $cmdRecord.output);
-		return callImplicitCommandsAfter($cmdRecord, $userMessages)
-			.then(TmpLib.addPerformanceDebug('callImplicitCommandsAfter()', $cmdRecord));
+	const processRealCommand = async (cmd, fetchAll = false) => {
+		return RunRealCmd({stateful, cmd, fetchAll, cmdRq, CmdRqLog});
 	};
 
 	/** show availability for first successful city option */
@@ -1476,7 +991,7 @@ let execute = ({
 
 	const processRequestedCommand = async (cmd) => {
 		let $alias, $mdaData, $limit, $cmdReal, $matches, $_, $plus, $seatAmount,
-			$segmentNumbers, $segmentStatus, $availability, $cityRow, $airlines;
+			$segmentNumbers, $segmentStatus;
 		let reservation;
 		$alias = await ApoAliasParser.parse(cmd, stateful);
 		let parsed = CommandParser.parse(cmd);
@@ -1545,6 +1060,7 @@ let execute = ({
 		} else {
 			cmd = $alias['realCmd'];
 			let fetchAll = shouldFetchAll(cmd);
+			cmd = await preprocessCommand(cmd);
 			let {cmdRec, userMessages, performanceDebug} = await processRealCommand(cmd, fetchAll);
 			return {calledCommands: [cmdRec], userMessages, performanceDebug};
 		}
@@ -1590,4 +1106,4 @@ let execute = ({
 	return execute();
 };
 
-module.exports = execute;
+module.exports = RunCmdRq;
