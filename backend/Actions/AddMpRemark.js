@@ -1,9 +1,4 @@
 const GetCurrentPnr = require('./GetCurrentPnr.js');
-const AmadeusPnr = require('../Transpiled/Rbs/TravelDs/AmadeusPnr.js');
-const AmadeusUtils = require('../GdsHelpers/AmadeusUtils.js');
-const ApolloPnr = require('../Transpiled/Rbs/TravelDs/ApolloPnr.js');
-const GalileoPnr = require('../Transpiled/Rbs/TravelDs/GalileoPnr.js');
-const TravelportUtils = require('../GdsHelpers/TravelportUtils.js');
 const CmdResultAdapter = require('../Transpiled/App/Services/CmdResultAdapter.js');
 const SabrePnr = require('../Transpiled/Rbs/TravelDs/SabrePnr.js');
 const TApolloSavePnr = require('../Transpiled/Rbs/GdsAction/Traits/TApolloSavePnr.js');
@@ -110,22 +105,8 @@ const runAndSave = async ({gds, gdsSession, cmds}) => {
 };
 
 /** @param stateful = require('StatefulSession.js')() */
-module.exports = async ({stateful}) => {
-	let pnr = await GetCurrentPnr(stateful);
-	let airlines = [...new Set(pnr.getItinerary().map(s => s.airline))];
-	let mpAirline;
-	if (airlines.length === 0) {
-		return Rej.BadRequest('Itinerary is empty');
-	} else if (airlines.length === 1) {
-		mpAirline = airlines[0];
-	} else {
-		mpAirline = await stateful.askClient({
-			messageType: 'selectMpAirline',
-			options: airlines,
-		});
-	}
-
-	let remark = 'EXPERTS REMARK-MP-' + mpAirline + '-' + stateful.getSessionData().pcc;
+module.exports = async ({stateful, airline}) => {
+	let remark = 'EXPERTS REMARK-MP-' + airline + '-' + stateful.getSessionData().pcc;
 	let gds = stateful.gds;
 	let cmds = {
 		apollo: ['@:5' + remark],

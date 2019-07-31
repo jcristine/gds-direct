@@ -2,7 +2,6 @@ const $		= require('jquery');
 
 // require('jquery.terminal/js/jquery.terminal');
 require('../lib/jquery-terminal');
-require('keyboardevent-key-polyfill').polyfill();
 
 import Pagination 	from '../modules/pagination.es6';
 import Session 		from '../modules/session.es6';
@@ -28,6 +27,42 @@ import {FareCalculationForm} from "../components/popovers/maskForms/fareCalculat
 
 let Component = require('../modules/component.es6').default;
 let Cmp = (...args) => new Component(...args);
+
+let chooseStrFromList = (plugin, options, caption = 'Choose One Of The Following Values') =>
+	new Promise((resolve, reject) => {
+		if (options.length === 0) {
+			reject(new Error('Can not choose from 0 options'));
+		} else if (options.length === 1) {
+			resolve(options[0]);
+		} else {
+			let remove = () => {};
+			let selectCmp = Cmp('select', {
+				size: '5',
+				onkeydown: (evt) => {
+					if (evt.key === 'Enter') {
+						resolve(evt.target.value);
+						remove();
+					}
+				},
+			}).attach(
+				options.map(o => Cmp('option', {
+					value: o, textContent: o,
+					onclick: () => {
+						resolve(o);
+						remove();
+					},
+				}))
+			);
+			remove = plugin.injectDom({
+				dom: Cmp('form.choose-str-from-list').attach([
+					Cmp('h3', {textContent: caption}),
+					selectCmp,
+				]).context,
+			}).remove;
+			selectCmp.context.focus();
+			selectCmp.context.querySelector('option').setAttribute('selected', 'selected');
+		}
+	});
 
 export default class TerminalPlugin
 {
@@ -355,11 +390,15 @@ export default class TerminalPlugin
 	_displayMpRemarkDialog(data)
 	{
 		let remove = () => {};
+		let addMpRemark = (airline) => this._withSpinner(() =>
+			post('terminal/addMpRemark', {
+				gds: this.gdsName, useSocket: true, airline,
+			})).then(resp => this.parseBackEnd(resp, 'MP REMARK'));
 		let onYes = () => {
 			remove();
-			this._withSpinner(() => post('terminal/addMpRemark', {
-				gds: this.gdsName, useSocket: true,
-			})).then(resp => this.parseBackEnd(resp, 'MP REMARK'));
+			let caption = 'Specify MP airline';
+			chooseStrFromList(this, data.airlines, caption)
+				.then(option => addMpRemark(option));
 		};
 		let yesBtnCmp;
 		let noBtnCmp;

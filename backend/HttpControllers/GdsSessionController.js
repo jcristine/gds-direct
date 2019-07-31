@@ -200,8 +200,9 @@ exports.importPq = async ({rqBody, session, emcUser}) => {
 };
 
 exports.addMpRemark = async ({rqBody, ...params}) => {
+	let {airline} = rqBody;
 	let stateful = await StatefulSession.makeFromDb(params);
-	return AddMpRemark({stateful});
+	return AddMpRemark({stateful, airline});
 };
 
 /**

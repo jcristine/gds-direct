@@ -60,7 +60,7 @@ const inAmadeus = async (stateful) => {
 
 /**
  * @param stateful = require('StatefulSession.js')()
- * @return {IPnr}
+ * @return {Promise<IPnr>}
  */
 const GetCurrentPnr = async (stateful) => {
 	let gds = stateful.gds;

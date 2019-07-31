@@ -1,3 +1,4 @@
+const GetCurrentPnr = require('./GetCurrentPnr.js');
 const Misc = require('klesun-node-tools/src/Utils/Misc.js');
 const LocalDiag = require('../Repositories/LocalDiag.js');
 const RbsClient = require('../IqClients/RbsClient.js');
@@ -32,6 +33,7 @@ const NotImplemented = require("klesun-node-tools/src/Rej").NotImplemented;
 const Db = require('../Utils/Db.js');
 const {coverExc} = require('klesun-node-tools/src/Lang.js');
 const {hrtimeToDecimal} = require('klesun-node-tools/src/Utils/Misc.js');
+const _ = require('lodash');
 
 /**
  * @param '$BN1|2*INF'
@@ -336,7 +338,14 @@ let extendActions = async ({whenCmsResult, stateful}) => {
 		prevState.recordLocator !== state.recordLocator;
 
 	if (didSavePnr && state.isPnrStored && isNewPnr && isExpert) {
-		result.actions.push({type: 'displayMpRemarkDialog'});
+		let pnr = await GetCurrentPnr(stateful);
+		let airlines = [...new Set(pnr.getItinerary().map(s => s.airline))];
+		// there are some actions expert has to quickly perform right after PNR was created on
+		// these airlines, that's why we were asked to disable the popup - to not slow them down
+		let noPopupAirlines = _.intersection(airlines, ['MU', 'CA', 'SQ']);
+		if (noPopupAirlines.length === 0 && airlines.length > 0) {
+			result.actions.push({type: 'displayMpRemarkDialog', data: {airlines: airlines}});
+		}
 	}
 
 	return result;
