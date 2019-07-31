@@ -6,7 +6,7 @@ const _ = require("lodash");
 const moment = require("moment");
 
 // Builds xml body of a PNR soap request
-module.exports.buildPnrXMLDataObject = (params) => js2xml([
+module.exports.buildPnrXmlDataObject = (params) => js2xml([
 	{SessionMods: [
 		{AreaInfoReq: null},
 	]},
@@ -19,7 +19,7 @@ module.exports.buildPnrXMLDataObject = (params) => js2xml([
 ]);
 
 // parses travelport soap request response body and build corresponding object
-module.exports.parsePnrXMLResponse = async (response) => {
+module.exports.parsePnrXmlResponse = async (response) => {
 	const dom = parseXml(response);
 
 	const respElement = dom.querySelector("PNRBFManagement_51");

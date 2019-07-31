@@ -99,7 +99,7 @@ TravelportClient.closeSession = (gdsData) => {
 };
 
 TravelportClient.processPnr = async (gdsData, params) => {
-	const reqXml = TravelportPNRRequestTransformer.buildPnrXMLDataObject(params);
+	const reqXml = TravelportPNRRequestTransformer.buildPnrXmlDataObject(params);
 
 	const reqBody = `<?xml version="1.0" encoding="UTF-8"?>
 		<SOAP-ENV:Envelope xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ns1="http://webservices.galileo.com">
@@ -120,7 +120,7 @@ TravelportClient.processPnr = async (gdsData, params) => {
 
 	const result = await sendRequest(reqBody, gdsData.profileName);
 
-	return TravelportPNRRequestTransformer.parsePnrXMLResponse(result);
+	return TravelportPNRRequestTransformer.parsePnrXmlResponse(result);
 };
 
 let makeSession = (gdsData) => ({
