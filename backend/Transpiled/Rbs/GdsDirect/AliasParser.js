@@ -48,7 +48,7 @@ class AliasParser {
 				let gdsDate = php.strtoupper(php.date('dM', php.strtotime(s.departureDate)));
 				return ({
 					...s, segmentStatus, seatCount,
-					departureDate: {raw: gdsDate, full: s.departureDate},
+					departureDate: {raw: gdsDate, parsed: s.departureDate.slice('2019-'.length), full: s.departureDate},
 				});
 			});
 			return {pcc, segments};
