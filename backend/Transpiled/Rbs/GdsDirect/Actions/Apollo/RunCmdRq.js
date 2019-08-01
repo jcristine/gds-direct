@@ -295,6 +295,7 @@ let RunCmdRq = ({
 		}, $itinerary);
 		$gkSegments = Fp.filter($isGkRebookPossible, $itinerary);
 		$result = await (new ApolloBuildItineraryAction())
+			.setBaseDate(stateful.getStartDt())
 			.setSession(stateful)
 			.useXml(useXml)
 			.execute($newItinerary, true);

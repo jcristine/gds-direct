@@ -15,6 +15,12 @@ class ApolloBuildItineraryAction extends AbstractGdsAction {
 	constructor() {
 		super();
 		this.usesXml = true;
+		this.baseDate = moment().format("YYYY-MM-DD");
+	}
+
+	setBaseDate(baseDate) {
+		this.baseDate = baseDate;
+		return this;
 	}
 
 	useXml(flag) {
@@ -63,7 +69,7 @@ class ApolloBuildItineraryAction extends AbstractGdsAction {
 		let soldCount = 0;
 
 		const byStatus = _.groupBy(itinerary, e => e.segmentStatus);
-		const startDate = this.session.getStartDt() || moment().format("YYYY-MM-DD");
+		const startDate = this.baseDate;
 
 		// Travelport returns SYSTEM ERROR if you book GK and SS segments at same time
 		for(const segment of Object.values(byStatus)) {

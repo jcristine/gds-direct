@@ -1,3 +1,4 @@
+const PersistentHttpRq = require('klesun-node-tools/src/Utils/PersistentHttpRq.js');
 const Rej = require('../../node_modules/klesun-node-tools/src/Rej.js');
 let AmadeusClient = require("../GdsClients/AmadeusClient.js");
 let SabreClient = require("../GdsClients/SabreClient.js");
@@ -9,12 +10,12 @@ const LocationGeographyProvider = require('../Transpiled/Rbs/DataProviders/Locat
 const Pccs = require("../Repositories/Pccs");
 const Misc = require("../Transpiled/Lib/Utils/MaskUtil");
 const {getConfig} = require('../Config.js');
-const {jsExport} = require('../Utils/TmpLib.js');
+const {jsExport} = require('klesun-node-tools/src/Debug.js');
 const Agent = require('../DataFormats/Wrappers/Agent.js');
 const CmdLog = require('./CmdLog.js');
 const CmsClient = require("../IqClients/CmsClient");
 const Agents = require("../Repositories/Agents");
-const sqlNow = require("../Utils/TmpLib").sqlNow;
+const sqlNow = require("klesun-node-tools/src/Utils/Misc.js").sqlNow;
 
 let GdsSession = (session) => {
 	let gds = session.context.gds;

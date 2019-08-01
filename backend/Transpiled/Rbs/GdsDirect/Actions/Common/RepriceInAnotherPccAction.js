@@ -197,7 +197,7 @@ class RepriceInAnotherPccAction {
 		}
 	}
 
-	async repriceInApollo(pcc, itinerary, pricingCmd) {
+	async repriceInApollo(pcc, itinerary, pricingCmd, $startDt) {
 		itinerary = itinerary.map(seg => ({...seg, segmentStatus: 'GK'}));
 		let profileName = GdsProfiles.TRAVELPORT.DynApolloProd_2F3K;
 		return TravelportClient.withSession({profileName}, async session => {
@@ -208,6 +208,7 @@ class RepriceInAnotherPccAction {
 					+ pcc + ' - ' + semRs.output.trim());
 			}
 			let built = await new ApolloBuildItineraryAction()
+				.setBaseDate($startDt)
 				.setSession(session).execute(itinerary, true);
 			if (built.errorType) {
 				return UnprocessableEntity('Could not rebuild PNR in Apollo - '
@@ -291,9 +292,9 @@ class RepriceInAnotherPccAction {
 		});
 	}
 
-	async repriceIn(gds, pcc, itinerary, pricingCmd) {
+	async repriceIn(gds, pcc, itinerary, pricingCmd, $startDt) {
 		if (gds === 'apollo') {
-			return this.repriceInApollo(pcc, itinerary, pricingCmd);
+			return this.repriceInApollo(pcc, itinerary, pricingCmd, $startDt);
 		} else if (gds === 'sabre') {
 			return this.repriceInSabre(pcc, itinerary, pricingCmd);
 		} else if (gds === 'amadeus') {
@@ -332,7 +333,7 @@ class RepriceInAnotherPccAction {
 			.translate($dialect, $target['gds'], $cmd);
 		$targetCmd = $translatorResult['output'] || $cmd;
 
-		let result = await this.repriceIn($target.gds, $target.pcc, $itinerary, $targetCmd);
+		let result = await this.repriceIn($target.gds, $target.pcc, $itinerary, $targetCmd, $startDt);
 		return {'calledCommands': result.calledCommands};
 	}
 }
