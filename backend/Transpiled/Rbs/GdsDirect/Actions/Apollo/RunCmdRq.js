@@ -102,7 +102,7 @@ let RunCmdRq = ({
 	PtcUtil = require('../../../../Rbs/Process/Common/PtcUtil.js'),
 	Pccs = require("../../../../../Repositories/Pccs.js"),
 	TravelportClient = require('../../../../../GdsClients/TravelportClient.js'),
-	useXml = false,
+	useXml = true,
 }) => {
 	const {
 		flattenCmds,
