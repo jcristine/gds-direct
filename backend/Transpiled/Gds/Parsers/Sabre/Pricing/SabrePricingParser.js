@@ -3,7 +3,7 @@ const Fp = require('../../../../Lib/Utils/Fp.js');
 const StringUtil = require('../../../../Lib/Utils/StringUtil.js');
 const CommonParserHelpers = require('../../../../Gds/Parsers/Apollo/CommonParserHelpers.js');
 const BagAllowanceParser = require('../../../../Gds/Parsers/Sabre/BagAllowanceParser.js');
-const PhToNormalPricing = require('../../../../../FormatAdapters/PhToNormalPricing.js');
+const PhToNormalPricing = require('../../../../../GdsClients/Transformers/PhToNormalPricing.js');
 
 /**
  * parses >WP

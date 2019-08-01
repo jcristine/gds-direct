@@ -1,6 +1,6 @@
 let PnrParser = require("../../../../../../../../backend/Transpiled/Gds/Parsers/Apollo/Pnr/PnrParser");
 
-const GdsActionTestUtil = require("../../../../../../../../backend/Transpiled/Rbs/TestUtils/GdsActionTestUtil");
+const GdsActionTestUtil = require("../../../../../../../../backend/Utils/Testing/GdsActionTestUtil");
 const RetrieveFlightServiceInfo = require('../../../../../../../../backend/Transpiled/Rbs/Process/Apollo/ImportPnr/Actions/RetrieveFlightServiceInfoAction.js');
 
 class RetrieveFlightServiceInfoActionTest extends require('../../../../../Lib/TestCase.js') {

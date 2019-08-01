@@ -6,7 +6,7 @@ const stubPtcFareFamilies = require('../../../../../../data/stubPtcFareFamilies.
 const PtcFareFamilies = require('../../../../../../../backend/Repositories/PtcFareFamilies.js');
 
 const RunCmdRq = require('../../../../../../../backend/Transpiled/Rbs/GdsDirect/Actions/Apollo/RunCmdRq.js');
-const GdsDirectDefaults = require('../../../../../../../backend/Transpiled/Rbs/TestUtils/GdsDirectDefaults.js');
+const GdsDirectDefaults = require('../../../../../../../backend/Utils/Testing/GdsDirectDefaults.js');
 const Agent = require('../../../../../../../backend/DataFormats/Wrappers/Agent.js');
 const Rej = require('klesun-node-tools/src/Rej.js');
 const {coverExc} = require('klesun-node-tools/src/Lang.js');

@@ -1,7 +1,7 @@
 
 
 const SessionStateProcessor = require('../../../../../../backend/Transpiled/Rbs/GdsDirect/SessionStateProcessor/SessionStateProcessor.js');
-const GdsDirectDefaults = require('../../../../../../backend/Transpiled/Rbs/TestUtils/GdsDirectDefaults.js');
+const GdsDirectDefaults = require('../../../../../../backend/Utils/Testing/GdsDirectDefaults.js');
 let php = require('klesun-node-tools/src/Transpiled/php.js');
 
 class SessionStateProcessorTest extends require('../../../../../../backend/Transpiled/Lib/TestCase.js')

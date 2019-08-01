@@ -2,7 +2,7 @@ const PersistentHttpRqStub = require('../../../../../../../backend/Utils/Testing
 const TravelportClient = require('../../../../../../../backend/GdsClients/TravelportClient.js');
 
 const RunCmdRq = require('../../../../../../../backend/Transpiled/Rbs/GdsDirect/Actions/Apollo/RunCmdRq.js');
-const GdsDirectDefaults = require('../../../../../../../backend/Transpiled/Rbs/TestUtils/GdsDirectDefaults.js');
+const GdsDirectDefaults = require('../../../../../../../backend/Utils/Testing/GdsDirectDefaults.js');
 const Rej = require('klesun-node-tools/src/Rej.js');
 const {coverExc} = require('klesun-node-tools/src/Lang.js');
 const php = require('../../../../php.js');

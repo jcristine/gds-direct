@@ -3,7 +3,7 @@
 const ApolloMakeMcoAction = require("../../../../../backend/Transpiled/Rbs/GdsAction/ApolloMakeMcoAction");
 
 let php = require('../../../../../backend/Transpiled/phpDeprecated.js');
-const GdsActionTestUtil = require("../../../../../backend/Transpiled/Rbs/TestUtils/GdsActionTestUtil");
+const GdsActionTestUtil = require("../../../../../backend/Utils/Testing/GdsActionTestUtil");
 
 class ApolloMakeMcoActionTest extends require('../../../../../backend/Transpiled/Lib/TestCase.js')
 {

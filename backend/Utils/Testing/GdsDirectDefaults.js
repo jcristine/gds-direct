@@ -1,11 +1,11 @@
 
-let php = require('../../phpDeprecated');
-const Agent = require("../../../DataFormats/Wrappers/Agent");
-const Fp = require('../../Lib/Utils/Fp.js');
+let php = require('../../Transpiled/phpDeprecated');
+const Agent = require("../../DataFormats/Wrappers/Agent");
+const Fp = require('../../Transpiled/Lib/Utils/Fp.js');
 const AnyGdsStubSession = require('./AnyGdsStubSession.js');
-const CmdLog = require('../../../GdsHelpers/CmdLog.js');
+const CmdLog = require('../../GdsHelpers/CmdLog.js');
 const NotFound = require('klesun-node-tools/src/Rej.js');
-const StatefulSession = require('../../../GdsHelpers/StatefulSession.js');
+const StatefulSession = require('../../GdsHelpers/StatefulSession.js');
 
 /**
  * provides default session data/agent data/etc...

@@ -1,1 +1,1 @@
-module.exports = require('../../../../../backend/Transpiled/Rbs/TestUtils/GdsDirectDefaults.js');
+module.exports = require('../../../../../backend/Utils/Testing/GdsDirectDefaults.js');

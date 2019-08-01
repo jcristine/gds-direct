@@ -1,4 +1,4 @@
-const GdsActionTestUtil = require("../../../backend/Transpiled/Rbs/TestUtils/GdsActionTestUtil");
+const GdsActionTestUtil = require("../../../backend/Utils/Testing/GdsActionTestUtil");
 const TravelportUtils = require("../../../backend/GdsHelpers/TravelportUtils");
 
 class TravelportUtilsTest extends require('../Transpiled/Lib/TestCase.js') {

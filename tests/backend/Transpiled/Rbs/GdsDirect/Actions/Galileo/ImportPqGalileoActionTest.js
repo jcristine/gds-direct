@@ -1,5 +1,5 @@
 
-const AnyGdsStubSession = require('../../../../../../../backend/Transpiled/Rbs/TestUtils/AnyGdsStubSession.js');
+const AnyGdsStubSession = require('../../../../../../../backend/Utils/Testing/AnyGdsStubSession.js');
 const ImportPqGalileoAction = require('../../../../../../../backend/Transpiled/Rbs/GdsDirect/Actions/Galileo/ImportPqGalileoAction.js');
 
 const php = require('../../../../../../../backend/Transpiled/phpDeprecated.js');

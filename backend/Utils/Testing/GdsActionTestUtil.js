@@ -2,7 +2,7 @@
 
 const AnyGdsStubSession = require('./AnyGdsStubSession.js');
 
-let php = require('../../phpDeprecated.js');
+let php = require('../../Transpiled/phpDeprecated.js');
 
 /** provides handy functions to not repeat testAction() implementation in each test */
 class GdsActionTestUtil

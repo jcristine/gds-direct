@@ -1,6 +1,6 @@
 
 const PnrParser = require('../../../../../backend/Transpiled/Gds/Parsers/Amadeus/Pnr/PnrParser.js');
-const AnyGdsStubSession = require('../../../../../backend/Transpiled/Rbs/TestUtils/AnyGdsStubSession.js');
+const AnyGdsStubSession = require('../../../../../backend/Utils/Testing/AnyGdsStubSession.js');
 const AmadeusGetPricingPtcBlocksAction = require('../../../../../backend/Transpiled/Rbs/GdsDirect/Actions/Amadeus/AmadeusGetPricingPtcBlocksAction.js');
 
 const php = require('../../php.js');
