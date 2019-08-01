@@ -1,8 +1,6 @@
-let {getTravelport} = require("../Repositories/GdsProfiles.js");
+
 let {LoginTimeOut, BadGateway} = require("klesun-node-tools/src/Rej");
 let {escapeXml, parseXml} = require("../GdsHelpers/CommonUtils.js");
-let PersistentHttpRq = require('klesun-node-tools/src/Utils/PersistentHttpRq.js');
-const GdsProfiles = require("../Repositories/GdsProfiles");
 const Conflict = require("klesun-node-tools/src/Rej").Conflict;
 const TravelportPNRRequestTransformer = require('./Transformers/TravelportPnrRequest');
 /**
@@ -18,6 +16,15 @@ const TravelportPNRRequestTransformer = require('./Transformers/TravelportPnrReq
 let endpoint = 'https://americas.webservices.travelport.com/B2BGateway/service/XMLSelect';
 //let endpoint = 'https://emea.webservices.travelport.com/B2BGateway/service/XMLSelect';
 //let endpoint = 'https://apac.webservices.travelport.com/B2BGateway/service/XMLSelect';
+
+const TravelportClient = ({
+	PersistentHttpRq = require('klesun-node-tools/src/Utils/PersistentHttpRq.js'),
+	GdsProfiles = require("../Repositories/GdsProfiles"),
+}) => {
+
+// TODO: indent in separate commit
+
+let {getTravelport} = GdsProfiles;
 
 let sendRequest = async (requestBody, profileName) => {
 	let profileData = await getTravelport(profileName);
@@ -75,28 +82,20 @@ let runCmd = (cmd, gdsData) => {
 	});
 };
 
-let TravelportClient = {};
-
-/** @param {{command: '*R'}} reqBody */
-TravelportClient.runCmd = (reqBody, gdsData) => runCmd(reqBody.command, gdsData);
-
-TravelportClient.startSession = startSession;
-
-/** @param session = at('GdsSessions.js').makeSessionRecord() */
-TravelportClient.closeSession = (gdsData) => {
+const closeSession = (gdsData) => {
 	let body = [
-	    '<SOAP-ENV:Envelope xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ns1="http://webservices.galileo.com">',
-	    '  <SOAP-ENV:Body>',
-	    '    <ns1:EndSession>',
-	    '      <ns1:Token>' + gdsData.sessionToken + '</ns1:Token>',
-	    '    </ns1:EndSession>',
-	    '  </SOAP-ENV:Body>',
-	    '</SOAP-ENV:Envelope>',
+		'<SOAP-ENV:Envelope xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ns1="http://webservices.galileo.com">',
+		'  <SOAP-ENV:Body>',
+		'    <ns1:EndSession>',
+		'      <ns1:Token>' + gdsData.sessionToken + '</ns1:Token>',
+		'    </ns1:EndSession>',
+		'  </SOAP-ENV:Body>',
+		'</SOAP-ENV:Envelope>',
 	].join('\n');
 	return sendRequest(body, gdsData.profileName);
 };
 
-TravelportClient.processPnr = async (gdsData, params) => {
+const processPnr = async (gdsData, params) => {
 	const reqXml = TravelportPNRRequestTransformer.buildPnrXmlDataObject(params);
 
 	const reqBody = `<?xml version="1.0" encoding="UTF-8"?>
@@ -127,7 +126,7 @@ let makeSession = (gdsData) => ({
 		.then(result => ({cmd, ...result})),
 });
 
-TravelportClient.withSession = (params, action) => {
+const withSession = (params, action) => {
 	let profileName = params.profileName
 		|| GdsProfiles.TRAVELPORT.DynApolloProd_2F3K;
 	return startSession({profileName}).then(gdsData => {
@@ -135,12 +134,12 @@ TravelportClient.withSession = (params, action) => {
 		return Promise.resolve()
 			.then(() => action(session))
 			.finally(() => {
-				TravelportClient.closeSession(gdsData);
+				closeSession(gdsData);
 			});
 	});
 };
 
-TravelportClient.getFares = (params) => {
+const getFares = (params) => {
 	let soapEnv = [
 		'<SOAP-ENV:Envelope xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ns1="http://webservices.galileo.com">',
 		'  <SOAP-ENV:Body>',
@@ -182,4 +181,19 @@ TravelportClient.getFares = (params) => {
 	return sendRequest(soapEnv, 'DynApolloProd_2F3K');
 };
 
-module.exports = TravelportClient;
+	return {
+		/** @param {{command: '*R'}} reqBody */
+		runCmd: (reqBody, gdsData) => runCmd(reqBody.command, gdsData),
+		startSession,
+		closeSession,
+		processPnr,
+		withSession,
+		getFares,
+	};
+};
+
+const defaultInst = TravelportClient({});
+
+defaultInst.makeCustom = params => TravelportClient(params);
+
+module.exports = defaultInst;
