@@ -4,7 +4,9 @@ let {escapeXml, parseXml} = require("../GdsHelpers/CommonUtils.js");
 let PersistentHttpRq = require('klesun-node-tools/src/Utils/PersistentHttpRq.js');
 const GdsProfiles = require("../Repositories/GdsProfiles");
 const Conflict = require("klesun-node-tools/src/Rej").Conflict;
-const TravelportPNRRequestTransformer = require('./Transformers/TravelportPnrRequest');
+const TravelportPnrRequestTransformer = require('./Transformers/TravelportPnrRequest');
+const TravelportFareRuleTransformer = require('./Transformers/TravelportFareRules');
+
 /**
  * they are all physically located in USA, Atlanta (in same building)
  * I guess different urls are kept just for compatibility now
@@ -99,29 +101,42 @@ TravelportClient.closeSession = (gdsData) => {
 };
 
 TravelportClient.processPnr = async (gdsData, params) => {
-	const reqXml = TravelportPNRRequestTransformer.buildPnrXmlDataObject(params);
+	const reqXml = TravelportPnrRequestTransformer.buildPnrXmlDataObject(params);
 
-	const reqBody = `<?xml version="1.0" encoding="UTF-8"?>
-		<SOAP-ENV:Envelope xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ns1="http://webservices.galileo.com">
-			<SOAP-ENV:Body>
-				<ns1:SubmitXmlOnSession>
-					<ns1:Token>${gdsData.sessionToken}</ns1:Token>
-					<ns1:Request>
-						<PNRBFManagement_51>
-							${reqXml}
-						</PNRBFManagement_51>
-					</ns1:Request>
-					<ns1:Filter>
-						<_/>
-					</ns1:Filter>
-				</ns1:SubmitXmlOnSession>
-			</SOAP-ENV:Body>
-	</SOAP-ENV:Envelope>`;
+	const reqBody = buildSoapBody(gdsData, 'PNRBFManagement_51', reqXml);
 
 	const result = await sendRequest(reqBody, gdsData.profileName);
 
-	return TravelportPNRRequestTransformer.parsePnrXmlResponse(result);
+	return TravelportPnrRequestTransformer.parsePnrXmlResponse(result);
 };
+
+TravelportClient.getFareRules = async (gdsData, params) => {
+	const reqXml = TravelportFareRuleTransformer.buildFareRuleXml(params);
+
+	const reqBody = buildSoapBody(gdsData, 'FareQuoteMultiDisplay_23', reqXml);
+
+	const result = await sendRequest(reqBody, gdsData.profileName);
+
+	return TravelportFareRuleTransformer.parseFareRuleXmlResponse(result);
+}
+
+const buildSoapBody = (gdsData, requestType, reqXml) => (
+	`<?xml version="1.0" encoding="UTF-8"?>
+	<SOAP-ENV:Envelope xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ns1="http://webservices.galileo.com">
+		<SOAP-ENV:Body>
+			<ns1:SubmitXmlOnSession>
+				<ns1:Token>${gdsData.sessionToken}</ns1:Token>
+				<ns1:Request>
+					<${requestType}>
+						${reqXml}
+					</${requestType}>
+				</ns1:Request>
+				<ns1:Filter>
+					<_/>
+				</ns1:Filter>
+			</ns1:SubmitXmlOnSession>
+		</SOAP-ENV:Body>
+	</SOAP-ENV:Envelope>`);
 
 let makeSession = (gdsData) => ({
 	gdsData: gdsData,
