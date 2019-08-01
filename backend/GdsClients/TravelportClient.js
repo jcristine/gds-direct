@@ -75,12 +75,10 @@ let runCmd = (cmd, gdsData) => {
 	});
 };
 
-/** @param {{command: '*R', gds: 'apollo', language: 'sabre', agentId: '6206'}} reqBody */
-let TravelportClient = (reqBody) => {
-	return {
-		runCmd: (gdsData) => runCmd(reqBody.command, gdsData),
-	};
-};
+let TravelportClient = {};
+
+/** @param {{command: '*R'}} reqBody */
+TravelportClient.runCmd = (reqBody, gdsData) => runCmd(reqBody.command, gdsData);
 
 TravelportClient.startSession = startSession;
 
