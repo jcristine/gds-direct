@@ -8,33 +8,33 @@
  */
 class PnrFieldsCommonHelper
 {
-    constructor($gds)  {
+	constructor($gds)  {
 		this.$dataAccess = null;
-        this.$gds = $gds;
-    }
+		this.$gds = $gds;
+	}
 
-    setDataAccess($dataAccess)  {
+	setDataAccess($dataAccess)  {
     	this.$dataAccess = $dataAccess;
-        return this;
-    }
+		return this;
+	}
 
-    /** @param $pricingStoreInfo = ApolloStoredPricingAdapter::transform()
+	/** @param $pricingStoreInfo = ApolloStoredPricingAdapter::transform()
      * @param $reservation = IGdsPnrFieldsProvider::getReservation() */
-    transformContractInfo($pricingStoreInfo, $reservation)  {
+	transformContractInfo($pricingStoreInfo, $reservation)  {
     	return {error: 'Should be provided by RBS'};
-    }
+	}
 
-    /**
+	/**
      * calculate additional data like fare type
      * @param $pricingInfo = IGdsPnrFieldsProvider::getFareQuoteInfo()
      */
-    extendPricingInfo($pricingInfo)  {
+	extendPricingInfo($pricingInfo)  {
     	// fareType should be calculated by RBS, not by us
-        return $pricingInfo;
-    }
+		return $pricingInfo;
+	}
 
-    getDataAccess()  {
-        return this.$dataAccess;
-    }
+	getDataAccess()  {
+		return this.$dataAccess;
+	}
 }
 module.exports = PnrFieldsCommonHelper;

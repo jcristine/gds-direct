@@ -130,7 +130,7 @@ class SabreBuildItineraryAction extends AbstractGdsAction {
 			'(?<destinationTime>\\d{2,4}[A-Z])',
 			'.+',
 			'SEG\\s*(?<lastSegmentNumber>\\d+)',
-			'/'
+			'/',
 		];
 		if (php.preg_match(php.implode('', $filter), $output)) {
 			return true;

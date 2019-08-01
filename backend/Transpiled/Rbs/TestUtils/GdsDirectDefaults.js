@@ -26,25 +26,25 @@ class GdsDirectDefaults {
 
 	static makeDefaultApolloState() {
 		return php.array_merge(this.makeDefaultStateBase(), {
-			'gds': 'apollo', 'pcc': '2G55'
+			'gds': 'apollo', 'pcc': '2G55',
 		});
 	}
 
 	static makeDefaultGalileoState() {
 		return php.array_merge(this.makeDefaultStateBase(), {
-			'gds': 'galileo', 'pcc': '711M'
+			'gds': 'galileo', 'pcc': '711M',
 		});
 	}
 
 	static makeDefaultSabreState() {
 		return php.array_merge(this.makeDefaultStateBase(), {
-			'gds': 'sabre', 'pcc': '6IIF'
+			'gds': 'sabre', 'pcc': '6IIF',
 		});
 	}
 
 	static makeDefaultAmadeusState() {
 		return php.array_merge(this.makeDefaultStateBase(), {
-			'gds': 'amadeus', 'pcc': 'SFO1S2195'
+			'gds': 'amadeus', 'pcc': 'SFO1S2195',
 		});
 	}
 

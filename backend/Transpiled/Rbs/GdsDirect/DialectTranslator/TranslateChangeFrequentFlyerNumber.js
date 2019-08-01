@@ -20,7 +20,7 @@ class TranslateChangeFrequentFlyerNumber {
 
 					$pax['airline'] = (($pax['mileagePrograms'] || {})[0] || {})['airline'];
 					return $pax;
-				}, $parsedData['passengers'])
+				}, $parsedData['passengers']),
 			};
 		} else if ($gds === 'sabre') {
 			if (php.empty($parsedData['lineNums'])) { // ALL

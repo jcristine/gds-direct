@@ -12,44 +12,44 @@ const ImportPnrCommonFormatAdapter = require('../../Rbs/Process/Common/ImportPnr
 const php = require('../../phpDeprecated.js');
 class GalileoPnrCommonFormatAdapter
 {
-    static transformPnrInfo($headerData, $fetchedDt)  {
-        let $parsedData, $pnrInfo;
+	static transformPnrInfo($headerData, $fetchedDt)  {
+		let $parsedData, $pnrInfo;
 
-        $parsedData = $headerData['reservationInfo'];
-        $pnrInfo = {};
+		$parsedData = $headerData['reservationInfo'];
+		$pnrInfo = {};
 
-        $pnrInfo['recordLocator'] = $parsedData['recordLocator'];
-        $pnrInfo['agentInitials'] = $parsedData['focalPointInitials'];
-        $pnrInfo['receivedFrom'] = null;
-        $pnrInfo['reservationDate'] = php.isset($parsedData['reservationDate']) ? {
-            'raw': $parsedData['reservationDate']['raw'],
-            'parsed': $parsedData['reservationDate']['parsed'],
-            'full': !$fetchedDt ? null : DateTime.decodeRelativeDateInPast($parsedData['reservationDate']['parsed'], $fetchedDt),
-        } : null;
-        $pnrInfo['agencyInfo'] = {
-            'agencyId': $parsedData['agencyId'],
-            'arcNumber': $parsedData['arcNumber'],
-        };
+		$pnrInfo['recordLocator'] = $parsedData['recordLocator'];
+		$pnrInfo['agentInitials'] = $parsedData['focalPointInitials'];
+		$pnrInfo['receivedFrom'] = null;
+		$pnrInfo['reservationDate'] = php.isset($parsedData['reservationDate']) ? {
+			'raw': $parsedData['reservationDate']['raw'],
+			'parsed': $parsedData['reservationDate']['parsed'],
+			'full': !$fetchedDt ? null : DateTime.decodeRelativeDateInPast($parsedData['reservationDate']['parsed'], $fetchedDt),
+		} : null;
+		$pnrInfo['agencyInfo'] = {
+			'agencyId': $parsedData['agencyId'],
+			'arcNumber': $parsedData['arcNumber'],
+		};
 
-        return $pnrInfo;
-    }
+		return $pnrInfo;
+	}
 
-    /** @param $parsed = GalileoReservationParser::parse() */
-    static transform($parsed, $baseDate)  {
-        let $recentPast, $nearFuture, $pnrInfo, $itinerary, $common;
+	/** @param $parsed = GalileoReservationParser::parse() */
+	static transform($parsed, $baseDate)  {
+		let $recentPast, $nearFuture, $pnrInfo, $itinerary, $common;
 
-        // Galileo allows booking segments up to (365 - 4) days from now
-        $recentPast = !$baseDate ? null : php.date('Y-m-d', php.strtotime('-2 days', php.strtotime($baseDate))); // -2 for timezone error
-        $nearFuture = !$baseDate ? null : php.date('Y-m-d', php.strtotime('+2 days', php.strtotime($baseDate))); // +2 for timezone error
-        $pnrInfo = !php.empty($parsed['headerData']['reservationInfo'])
-            ? this.transformPnrInfo($parsed['headerData'], $nearFuture)
-            : null;
-        $itinerary = FormatAdapter.adaptApolloItineraryParseForClient($parsed['itineraryData'] || [], $recentPast);
-        $common = {
-            'pnrInfo': $pnrInfo,
-            'passengers': $parsed['passengers']['passengerList'],
-            'itinerary': $itinerary,
-            'confirmationNumbers': Fp.map(($rec) => ({
+		// Galileo allows booking segments up to (365 - 4) days from now
+		$recentPast = !$baseDate ? null : php.date('Y-m-d', php.strtotime('-2 days', php.strtotime($baseDate))); // -2 for timezone error
+		$nearFuture = !$baseDate ? null : php.date('Y-m-d', php.strtotime('+2 days', php.strtotime($baseDate))); // +2 for timezone error
+		$pnrInfo = !php.empty($parsed['headerData']['reservationInfo'])
+			? this.transformPnrInfo($parsed['headerData'], $nearFuture)
+			: null;
+		$itinerary = FormatAdapter.adaptApolloItineraryParseForClient($parsed['itineraryData'] || [], $recentPast);
+		$common = {
+			'pnrInfo': $pnrInfo,
+			'passengers': $parsed['passengers']['passengerList'],
+			'itinerary': $itinerary,
+			'confirmationNumbers': Fp.map(($rec) => ({
 				'airline': $rec['airline'],
 				'confirmationNumber': $rec['recordLocator'],
 				'segmentNumber': null,
@@ -60,16 +60,16 @@ class GalileoPnrCommonFormatAdapter
 						$pnrInfo['reservationDate']['full']) : null,
 				},
 			}), php.array_filter($parsed['vlocData'] || [])),
-            'dataExistsInfo': {
-                'dividedBookingExists': $parsed['dataExistsInfo']['dividedBookingExists'],
-                'mileageProgramsExist': $parsed['dataExistsInfo']['membershipDataExists'],
-                'fareQuoteExists': ($parsed['dataExistsInfo'] || {})['filedFareDataExists'] || false,
-                'seatDataExists': $parsed['dataExistsInfo']['seatDataExists'],
-                // rest is Galileo-specific
-            },
-        };
-        $common = ImportPnrCommonFormatAdapter.addContextDataToPaxes($common);
-        return $common;
-    }
+			'dataExistsInfo': {
+				'dividedBookingExists': $parsed['dataExistsInfo']['dividedBookingExists'],
+				'mileageProgramsExist': $parsed['dataExistsInfo']['membershipDataExists'],
+				'fareQuoteExists': ($parsed['dataExistsInfo'] || {})['filedFareDataExists'] || false,
+				'seatDataExists': $parsed['dataExistsInfo']['seatDataExists'],
+				// rest is Galileo-specific
+			},
+		};
+		$common = ImportPnrCommonFormatAdapter.addContextDataToPaxes($common);
+		return $common;
+	}
 }
 module.exports = GalileoPnrCommonFormatAdapter;

@@ -46,7 +46,7 @@ class PatternTranslator {
 		} else {
 			return {
 				'pattern': $pattern,
-				'filter': StringUtil.format($pattern, $params)
+				'filter': StringUtil.format($pattern, $params),
 			};
 		}
 	}

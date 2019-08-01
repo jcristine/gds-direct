@@ -7,11 +7,11 @@ const php = require('../../../../phpDeprecated.js');
 const Fp = require('../../../../Lib/Utils/Fp.js');
 
 let parseDate = ($raw) => {
-    return !$raw ? null : {
-        'raw': $raw,
-        'partial': CommonParserHelpers.parsePartialDate($raw),
-        'full': CommonParserHelpers.parseCurrentCenturyFullDate($raw)['parsed'],
-    };
+	return !$raw ? null : {
+		'raw': $raw,
+		'partial': CommonParserHelpers.parsePartialDate($raw),
+		'full': CommonParserHelpers.parseCurrentCenturyFullDate($raw)['parsed'],
+	};
 };
 
 let $getFirst = ($matches) => $matches[1];

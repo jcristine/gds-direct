@@ -35,7 +35,7 @@ class AmadeusFlightInfoAdapter {
 		}
 		delete (
 			$leg['destinationTime'], $leg['destinationDayOfWeek'], $leg['travelDuration'],
-				$leg['departureTime'], $leg['departureDayOfWeek'], $leg['groundDuration'], $leg['comments']
+			$leg['departureTime'], $leg['departureDayOfWeek'], $leg['groundDuration'], $leg['comments']
 		);
 		return $leg;
 	}

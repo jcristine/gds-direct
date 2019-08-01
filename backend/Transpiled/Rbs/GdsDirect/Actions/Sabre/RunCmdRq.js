@@ -70,7 +70,7 @@ class RunCmdRq {
 		if (this.getAgent().canSwitchToAnyPcc()) {
 			return [];
 		} else if (!this.getAgent().canEmulateToRestrictedSabrePccs() &&
-			php.in_array($pcc, this.getRestrictedPccs())) {
+		php.in_array($pcc, this.getRestrictedPccs())) {
 			return ['This PCC is restricted.'];
 		} else {
 			return [];
@@ -98,8 +98,8 @@ class RunCmdRq {
 	static isSuccessXiOutput($output) {
 
 		return php.trim($output) === '¥NO ITIN¥'
-			|| php.trim($output) === 'NO ITIN'
-			|| php.preg_match(/^\s*CNLD FROM\s*\d+\s*$/, $output);
+		|| php.trim($output) === 'NO ITIN'
+		|| php.preg_match(/^\s*CNLD FROM\s*\d+\s*$/, $output);
 	}
 
 	/** @param $ranges = [['from' => 3, 'to' => 7], ['from' => 15]] */
@@ -175,7 +175,7 @@ class RunCmdRq {
 		}
 		for ($flatCmd of Object.values(this.getPerformedCommands($cmdLog))) {
 			if ($flatCmd['type'] === 'addDkNumber' && $flatCmd['data'] == $number) {
-				// already added DK number
+			// already added DK number
 				return null;
 			}
 		}
@@ -218,7 +218,7 @@ class RunCmdRq {
 		let $keywords, $type, $isFsCmd, $isFsSuccessful;
 
 		$keywords = [
-			// on >WPNI; screen
+		// on >WPNI; screen
 			'BARGAIN FINDER PLUS ITINERARY OPTIONS',
 			'NO LOWER FARE DETERMINED',
 			'CURRENT ITINERARY',
@@ -260,10 +260,10 @@ class RunCmdRq {
 		$cmdParsed = CommandParser.parse($calledCommand['cmd']);
 		$type = $cmdParsed['type'];
 		if (php.in_array($type, ['searchPnr', 'displayPnrFromList']) &&
-			!SabrePnr.makeFromDump($calledCommand['output']).getRecordLocator() &&
-			!stateful.getAgent().canOpenPrivatePnr()
+		!SabrePnr.makeFromDump($calledCommand['output']).getRecordLocator() &&
+		!stateful.getAgent().canOpenPrivatePnr()
 		) {
-			// '  3   WEINSTEIN/EL X     -17JUL   4   WEINSTEIN/AL  05MAY-20NOV'
+		// '  3   WEINSTEIN/EL X     -17JUL   4   WEINSTEIN/AL  05MAY-20NOV'
 			$lines = StringUtil.lines($calledCommand['output']);
 			$split = ($line) => php.str_split($line, 32);
 			$blocks = Fp.flatten(Fp.map($split, $lines));
@@ -304,7 +304,7 @@ class RunCmdRq {
 				$wetrParsed = SabreTicketParser.parse($wetrOutput);
 				$isVoid = ($seg) => $seg['couponStatus'] === 'VOID';
 				if (!php.empty($wetrParsed['error']) ||
-					!Fp.all($isVoid, $wetrParsed['segments'])
+				!Fp.all($isVoid, $wetrParsed['segments'])
 				) {
 					return false;
 				}
@@ -337,8 +337,8 @@ class RunCmdRq {
 		$type = $parsedCmd['type'];
 		$agent = this.getAgent();
 		$isQueueCmd =
-			php.in_array($type, CommonDataHelper.getQueueCommands()) ||
-			StringUtil.startsWith($cmd, 'Q'); // to be extra sure
+		php.in_array($type, CommonDataHelper.getQueueCommands()) ||
+		StringUtil.startsWith($cmd, 'Q'); // to be extra sure
 
 		if (php.in_array($type, CommonDataHelper.getTicketingCommands())) {
 			if (!$agent.canIssueTickets()) {
@@ -352,7 +352,7 @@ class RunCmdRq {
 				$errors.push(Errors.getMessage(Errors.FS_LIMIT_EXHAUSTED, {'totalAllowed': $totalAllowed}));
 			}
 		} else if (php.in_array($type, CommonDataHelper.getCountedFsCommands())) {
-			// not allowed in Sabre yet
+		// not allowed in Sabre yet
 			$errors.push(Errors.getMessage(Errors.CMD_FORBIDDEN, {'cmd': $cmd, 'type': $type}));
 		} else if ($isQueueCmd && $type !== 'movePnrToQueue') {
 			if (!$agent.canProcessQueues()) {
@@ -367,12 +367,12 @@ class RunCmdRq {
 		}
 		if (php.in_array('deletePnrField', php.array_column($flatCmds, 'type'))) {
 			if (this.getSessionData()['isPnrStored'] &&
-				!$agent.canEditTicketedPnr()
+			!$agent.canEditTicketedPnr()
 			) {
 				$pnr = await this.getCurrentPnr();
 				$canChange = !$pnr.hasEtickets()
-					|| $agent.canEditVoidTicketedPnr()
-					&& await this.areAllCouponsVoided();
+				|| $agent.canEditVoidTicketedPnr()
+				&& await this.areAllCouponsVoided();
 				if (!$canChange) {
 					$errors.push(Errors.getMessage(Errors.CANT_CHANGE_TICKETED_PNR));
 				}
@@ -411,10 +411,10 @@ class RunCmdRq {
 	async ensureSignedInAllAreas() {
 		let fullState = stateful.getFullState();
 		if (Object.values(fullState.areas).length === 1 ||
-			Object.values(fullState.areas).some(a => !a.pcc)
+		Object.values(fullState.areas).some(a => !a.pcc)
 		) {
-			// Sabre requires "logging" into all areas before
-			// switching between them, or our OIATH trick will fail
+		// Sabre requires "logging" into all areas before
+		// switching between them, or our OIATH trick will fail
 			let siOutput = await this.runCommand('SI*');
 			let siMatch = siOutput.match(/^([A-Z0-9]{3,4})\.([A-Z0-9]{3,4})\*AWS((?:\.[A-Z])+)/);
 			if (siMatch) {
@@ -563,7 +563,7 @@ class RunCmdRq {
 		}
 		$isAa = ($seg) => $seg['airline'] === 'AA';
 		$keepOriginal = $aliasData['keepOriginal'] ||
-			$newStatus === 'GK' && !Fp.any($isAa, $oldSegments);
+		$newStatus === 'GK' && !Fp.any($isAa, $oldSegments);
 		$pccResult = await this.emulateInFreeArea($pcc, $keepOriginal);
 		if (!php.empty($errors = $pccResult['errors'] || [])) {
 			return {'errors': $errors};
@@ -578,11 +578,11 @@ class RunCmdRq {
 	}
 
 	async bookPassengers(passengers) {
-		// note that Amadeus has different format instead of this 'remark', so a
-		// better approach would be to generate command for pure parsed dob/ptc
+	// note that Amadeus has different format instead of this 'remark', so a
+	// better approach would be to generate command for pure parsed dob/ptc
 		let cmd = passengers
 			.map(pax => '-' + pax.lastName + '/' + pax.firstName +
-				(!pax.remark ? '' : '*' + pax.remark))
+			(!pax.remark ? '' : '*' + pax.remark))
 			.join('§');
 		let cmdRec = await this.runCmd(cmd);
 		return {calledCommands: [cmdRec]};
@@ -607,8 +607,8 @@ class RunCmdRq {
 			calledCommands.push(...(booked.calledCommands || []));
 		}
 		if (itinerary.length > 0) {
-			// would be better to use number returned by SabreBuildItineraryAction
-			// as it may be not in same order in case of marriages...
+		// would be better to use number returned by SabreBuildItineraryAction
+		// as it may be not in same order in case of marriages...
 			itinerary = itinerary.map((s, i) => ({...s, segmentNumber: +i + 1}));
 			let booked = await this.bookItinerary(itinerary, true);
 			errors.push(...(booked.errors || []));
@@ -841,7 +841,7 @@ class RunCmdRq {
 		let output = await this.runCommand(cmd);
 
 		if (await this.needsPl(cmd, output, pnr)) {
-			// delete PQ we just created and store a correct one, with /PL/ mod
+		// delete PQ we just created and store a correct one, with /PL/ mod
 			await this.runCommand('PQD-ALL');
 			cmd = await this.makeStorePricingCmd(pnr, aliasData, true);
 			output = await this.runCommand(cmd);
@@ -860,7 +860,7 @@ class RunCmdRq {
 		$calledCommands = [];
 		if (this.constructor.doesStorePnr($cmd)) {
 			if ($remarkCmd = await this.makeCmsRemarkCmdIfNeeded()) {
-				// we don't show it - no adding to $calledCommands
+			// we don't show it - no adding to $calledCommands
 				await this.runCommand($remarkCmd);
 			}
 			if ($dkNumberCmd = await this.constructor.makeAddDkNumberCmdIfNeeded(stateful.getLog())) {
@@ -880,7 +880,7 @@ class RunCmdRq {
 		$calledCommands.push(this.modifyOutput($cmdRecord));
 		if (this.constructor.doesStorePnr($cmdRecord['cmd'])) {
 			if (php.trim($cmdRecord['output']) === 'NEED ADDRESS - USE W-') {
-				// add address and call E/ER again
+			// add address and call E/ER again
 				$cmd = php.implode('\u00A7', ['W- 100 PINE STREET', '5\/ITN', $cmdRecord['cmd']]);
 				$output = await this.runCommand($cmd);
 				$calledCommands.push({'cmd': $cmd, 'output': $output});
@@ -893,10 +893,10 @@ class RunCmdRq {
 			$parsed = PnrParser.parse($cmdRecord['output']);
 			$isAlex = ($pax) => {
 				return $pax['lastName'] === 'WEINSTEIN'
-					&& $pax['firstName'] === 'ALEX';
+				&& $pax['firstName'] === 'ALEX';
 			};
 			if (Fp.any($isAlex, ((($parsed['parsedData'] || {})['passengers'] || {})['parsedData'] || {})['passengerList'] || []) &&
-				!stateful.getAgent().canOpenPrivatePnr()
+			!stateful.getAgent().canOpenPrivatePnr()
 			) {
 				await this.runCommand('I');
 				return {'errors': ['Restricted PNR']};
@@ -972,15 +972,15 @@ class RunCmdRq {
 		} else if ($result = RepriceInAnotherPccAction.parseAlias($cmd)) {
 			return this.priceInAnotherPcc($result['cmd'], $result['target'], $result['dialect']);
 		} else {
-			// not an alias
+		// not an alias
 			return this.processRealCommand($cmd);
 		}
 	}
 
 	/**
-	 * since we use our own _fake_ areas, _real_ letter in AAA{pcc} output would
-	 * always be "A", that's confusing - so we change the area letter in the dump
-	 */
+ * since we use our own _fake_ areas, _real_ letter in AAA{pcc} output would
+ * always be "A", that's confusing - so we change the area letter in the dump
+ */
 	static makeCalledCommandsPccOutputCorrect($calledCommands, $area) {
 
 		return Fp.map(($calledCommand) => {
@@ -997,7 +997,7 @@ class RunCmdRq {
 		let calledCommands = [];
 
 		if ($cmdRequested.match(/^.+\/MDA$/)) {
-			// no /MDA in sabre
+		// no /MDA in sabre
 			$cmdRequested = $cmdRequested.slice(0, -'/MDA'.length);
 		}
 

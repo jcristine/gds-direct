@@ -130,7 +130,7 @@ class ImportPqAmadeusAction extends AbstractGdsAction {
 							recordLocator: null,
 							hasPnr: false,
 							isPnrStored: false,
-						}
+						},
 					},
 				},
 			});

@@ -12,25 +12,25 @@ const TicketParser = require("./TicketParser");
  */
 class HteParser
 {
-    static parse($dump)  {
-        let $lines, $firstLine, $type, $result;
+	static parse($dump)  {
+		let $lines, $firstLine, $type, $result;
 
-        $dump = StringUtil.wrapLinesAt($dump, 64);
-        $lines = StringUtil.lines($dump);
-        $firstLine = ArrayUtil.getFirst($lines);
-        if (php.trim($firstLine) == 'ELECTRONIC TICKET LIST BY *HTE') {
-            $type = this.TICKET_LIST;
-            $result = TicketListParser.parse($dump);
-        } else {
-            $type = this.SINGLE_TICKET;
-            $result = TicketParser.parse($dump);
-        }
-        if (php.empty($result['error'])) {
-            return {'type': $type, 'result': $result};
-        } else {
-            return {'error': $result['error'], 'errorType': $result['errorType']};
-        }
-    }
+		$dump = StringUtil.wrapLinesAt($dump, 64);
+		$lines = StringUtil.lines($dump);
+		$firstLine = ArrayUtil.getFirst($lines);
+		if (php.trim($firstLine) == 'ELECTRONIC TICKET LIST BY *HTE') {
+			$type = this.TICKET_LIST;
+			$result = TicketListParser.parse($dump);
+		} else {
+			$type = this.SINGLE_TICKET;
+			$result = TicketParser.parse($dump);
+		}
+		if (php.empty($result['error'])) {
+			return {'type': $type, 'result': $result};
+		} else {
+			return {'error': $result['error'], 'errorType': $result['errorType']};
+		}
+	}
 }
 HteParser.SINGLE_TICKET = 'SINGLE_TICKET';
 HteParser.TICKET_LIST = 'TICKET_LIST';

@@ -141,7 +141,7 @@ class RemarksParser {
 									'passengerNumber': $price['passengerNumber'],
 									'amount': $price['amount'],
 								};
-							}, $restTokens)
+							}, $restTokens),
 						};
 					}
 				}

@@ -165,19 +165,19 @@ let manual = {
 	// apollo *HTE field values
 	"TKT\\:\\s\\K[0-9 -]{13,19}|NAME\\:\\s\\K[A-Z \\/]{20,50}|CC\\:\\s\\K[A-Z0-9]{15,20}|ISSUED\\:\\s\\K.{7}|FOP\\:\\K.{23,26}|PSEUDO\\:\\s.{4}|IATA\\:\\s\\K\\d{8}|TOTAL\\s(USD|CAD|GBP)\\s{1,2}\\d{1,4}\\.\\d{2}":
 	/(?<=TKT:\s)[0-9 -]{13,19}|(?<=NAME:\s)[A-Z \/]{20,50}|(?<=CC:\s)[A-Z0-9]{15,20}|(?<=ISSUED:\s).{7}|(?<=FOP:).{23,26}|PSEUDO:\s.{4}|(?<=IATA:\s)\d{8}|TOTAL\s(USD|CAD|GBP)\s{1,2}\d{1,4}\.\d{2}/
-    //'TKT: 016 7293 159285-286 NAME: IHEKE/EMENIKEHENRY               ',
+	//'TKT: 016 7293 159285-286 NAME: IHEKE/EMENIKEHENRY               ',
 	//      ^^^^^^^^^^^^^^^^^^^       ^^^^^^^^^^^^^^^^^^
-    //' ',
-    //'ISSUED: 14MAR19          FOP:CHECK                              ',
+	//' ',
+	//'ISSUED: 14MAR19          FOP:CHECK                              ',
 	//         ^^^^^^^              ^^^^^
-    //'PSEUDO: 1O3K  PLATING CARRIER: UA  ISO: US  IATA: 05578602   ',
+	//'PSEUDO: 1O3K  PLATING CARRIER: UA  ISO: US  IATA: 05578602   ',
 	//                                                   ^^^^^^^^
-    //'   USE  CR FLT  CLS  DATE BRDOFF TIME  ST F/B        FARE   CPN',
-    //'   OPEN UA 1666  L  30MAR EWRBOS 0246P OK LLLNC1NS/C100      1',
-    //'                                          NVB30MAR NVA30MAR',
-    //'   ARPT LH  423  L  30MAR BOSFRA 0520P OK LLLNC1NS/C100      2',
-    //'                                          NVB30MAR NVA30MAR',
-    //'   ARPT LH  568  L  31MAR FRALOS 1115A OK LLLNC1NS/C100      3',
+	//'   USE  CR FLT  CLS  DATE BRDOFF TIME  ST F/B        FARE   CPN',
+	//'   OPEN UA 1666  L  30MAR EWRBOS 0246P OK LLLNC1NS/C100      1',
+	//'                                          NVB30MAR NVA30MAR',
+	//'   ARPT LH  423  L  30MAR BOSFRA 0520P OK LLLNC1NS/C100      2',
+	//'                                          NVB30MAR NVA30MAR',
+	//'   ARPT LH  568  L  31MAR FRALOS 1115A OK LLLNC1NS/C100      3',
 	,
 	"TKT\\:\\K\\d{13,16}|ISSUED\\:\\K.{7}|PCC\\:\\K.{4}|IATA\\:\\K\\d{8}|NAME\\:\\K[A-Z \\/]{20,30}|FOP\\:\\s\\K.{23,24}|TOTAL\\s{3}\\K(USD|CAD|GBP)\\d{1,4}\\.\\d{2}":
 	/(?<=TKT:)\d{13,16}|(?<=ISSUED:).{7}|(?<=PCC:).{4}|(?<=IATA:)\d{8}|(?<=NAME:)[A-Z \/]{20,30}|(?<=FOP:\s).{23,24}|(?<=TOTAL\s{3})(USD|CAD|GBP)\d{1,4}\.\d{2}/

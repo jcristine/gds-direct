@@ -361,7 +361,7 @@ class ItineraryParser {
 					|| this.parseHotelLineHhl($block)
 					|| this.parseHotelLineHtl($block)
 					|| this.parseCarSegmentBlock($block)
-					;
+			;
 			if ($segment) {
 				$segment['raw'] = $block;
 				$parsedData.push($segment);

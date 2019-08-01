@@ -394,7 +394,7 @@ class ImportPqSabreAction extends AbstractGdsAction {
 			let pricingList = $pricingRecord['pricingPart']['parsed']['pricingList'];
 			$fareRuleData = await this.getFareRules(pricingList, $reservationRecord['parsed']['itinerary'])
 				.catch(exc => ({error: 'Fare Rules error - ' + exc}))
-				;
+			;
 			if ($result['error'] = $fareRuleData['error']) return $result;
 
 			$result['pnrData']['fareComponentListInfo'] = $fareRuleData['fareListRecords'];
@@ -403,7 +403,7 @@ class ImportPqSabreAction extends AbstractGdsAction {
 			// it is important that it's at the end cuz it affects fare rules
 			$publishedPricingRecord = await this.getPublishedPricing(pricingList, $nameRecords)
 				.catch(exc => ({error: 'Published Pricing error - ' + exc}))
-				;
+			;
 			if ($result['error'] = $publishedPricingRecord['error']) return $result;
 			$result['pnrData']['publishedPricing'] = $publishedPricingRecord;
 		}

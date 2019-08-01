@@ -22,12 +22,12 @@ const CommonParserHelpers = require('../../../Gds/Parsers/Apollo/CommonParserHel
 const php = require('../../../phpDeprecated.js');
 class AirAvailabilityParser
 {
-    /** @param $line = ' 18JUL  WED   MAD/Z¥2     SFO/PDT-9'
+	/** @param $line = ' 18JUL  WED   MAD/Z¥2     SFO/PDT-9'
      *              || ' 28JUL  SAT   MAR/AST     BOS/EDT¥0' */
-    static parseHeaderLine($line)  {
-        let $regex, $matches;
+	static parseHeaderLine($line)  {
+		let $regex, $matches;
 
-        $regex =
+		$regex =
             '\/^\\s*'+
             '(?<date>\\d{1,2}[A-Z]{3}\\d*)\\s+'+
             '(?<dayOfWeek>[A-Z]{3})\\s+'+
@@ -38,72 +38,72 @@ class AirAvailabilityParser
             '(?<destinationTz>[A-Z]*)'+
             '(?<destinationTzOffset>(-|¥)\\d*\\.?\\d+|)'+
             '\/';
-        if (php.preg_match($regex, $line, $matches = [])) {
-            return {
-                'date': {
-                    'raw': $matches['date'],
-                    'parsed': CommonParserHelpers.parsePartialDate($matches['date']),
-                },
-                'dayOfWeek': {'raw': $matches['dayOfWeek']},
-                'departureCity': $matches['departureCity'],
-                'departureTz': {
-                    'raw': $matches['departureTz'],
-                    'offset': php.str_replace('¥', '+', $matches['departureTzOffset']),
-                },
-                'destinationCity': $matches['destinationCity'],
-                'destinationTz': {
-                    'raw': $matches['destinationTz'],
-                    'offset': php.str_replace('¥', '+', $matches['destinationTzOffset']),
-                },
-            };
-        } else {
-            return null;
-        }
-    }
+		if (php.preg_match($regex, $line, $matches = [])) {
+			return {
+				'date': {
+					'raw': $matches['date'],
+					'parsed': CommonParserHelpers.parsePartialDate($matches['date']),
+				},
+				'dayOfWeek': {'raw': $matches['dayOfWeek']},
+				'departureCity': $matches['departureCity'],
+				'departureTz': {
+					'raw': $matches['departureTz'],
+					'offset': php.str_replace('¥', '+', $matches['departureTzOffset']),
+				},
+				'destinationCity': $matches['destinationCity'],
+				'destinationTz': {
+					'raw': $matches['destinationTz'],
+					'offset': php.str_replace('¥', '+', $matches['destinationTzOffset']),
+				},
+			};
+		} else {
+			return null;
+		}
+	}
 
-    /** @param $raw = '-' || '¥' || '-1' || '¥1' || '¥2' */
-    static parseDayOffset($expr)  {
+	/** @param $raw = '-' || '¥' || '-1' || '¥1' || '¥2' */
+	static parseDayOffset($expr)  {
 
-        $expr = php.str_replace('¥', '+', php.trim($expr));
-        $expr = ({
-            '+': '+1',
-            '-': '-1',
-            '': '0',
-        } || {})[$expr] || $expr;
-        return php.intval($expr);
-    }
+		$expr = php.str_replace('¥', '+', php.trim($expr));
+		$expr = ({
+			'+': '+1',
+			'-': '-1',
+			'': '0',
+		} || {})[$expr] || $expr;
+		return php.intval($expr);
+	}
 
-    /** @param $line = '   A5 Y3 C4 D0 FR U- U  B3  ' */
-    static parseAvailability($line)  {
-        let $tokens, $availability, $token, $matches, $_, $cls, $seats;
+	/** @param $line = '   A5 Y3 C4 D0 FR U- U  B3  ' */
+	static parseAvailability($line)  {
+		let $tokens, $availability, $token, $matches, $_, $cls, $seats;
 
-        $line = php.trim($line);
-        $tokens = $line ? php.str_split($line, 3) : [];
-        $availability = {};
-        for ($token of Object.values($tokens)) {
-            if (php.preg_match(/^([A-Z])(.?)\s?$/, $token, $matches = [])) {
-                [$_, $cls, $seats] = $matches;
-                $availability[$cls] = php.trim($seats);
-            } else {
-                return {};
-            }
-        }
-        return $availability;
-    }
+		$line = php.trim($line);
+		$tokens = $line ? php.str_split($line, 3) : [];
+		$availability = {};
+		for ($token of Object.values($tokens)) {
+			if (php.preg_match(/^([A-Z])(.?)\s?$/, $token, $matches = [])) {
+				[$_, $cls, $seats] = $matches;
+				$availability[$cls] = php.trim($seats);
+			} else {
+				return {};
+			}
+		}
+		return $availability;
+	}
 
-    /** since strrev() does not work with unicode characters */
-    static reverseStr($str)  {
-        let $reversed, $len, $i;
+	/** since strrev() does not work with unicode characters */
+	static reverseStr($str)  {
+		let $reversed, $len, $i;
 
-        $reversed = '';
-        $len = php.mb_strlen($str);
-        for ($i = 1; $i <= $len; ++$i) {
-            $reversed += php.mb_substr($str, $len - $i, 1);
-        }
-        return $reversed;
-    }
+		$reversed = '';
+		$len = php.mb_strlen($str);
+		for ($i = 1; $i <= $len; ++$i) {
+			$reversed += php.mb_substr($str, $len - $i, 1);
+		}
+		return $reversed;
+	}
 
-    /** @param $line = '1BA/IB 4259 J9 C9 D9 R9 MADSFO 1230P  415P 332 M 0 MWF DCA /E'
+	/** @param $line = '1BA/IB 4259 J9 C9 D9 R9 MADSFO 1230P  415P 332 M 0 MWF DCA /E'
      *              || '5BA/AA 5723 J7 C7 D7 R7    SFO  430P  620P 757 0 DCA /E'
      *              || '3UA  874 C4 D4 Z4 P2*NRTGUM      905P  150A¥1 738 D 0 XF DCA /E'
      *              || '4UA  200 J4 C4 D4 Z4*   HNL      645A  550P-1 777 B 0 DCA /E'
@@ -111,10 +111,10 @@ class AirAvailabilityParser
      *              || '2UA  300 F4 C4 A4 D4*   HNL 9    115P  339P   777 L 0 DCA /E'
      *              || '6EK  338 L9       CEB 1¥ 255A  420P   77W M 0 DCA /E.',
      */
-    static parseFlightLine($line)  {
-        let $regex, $matches;
+	static parseFlightLine($line)  {
+		let $regex, $matches;
 
-        $regex =
+		$regex =
             '\/^\\s*'+
             '(?<lineNumber>\\d+|\\s{1,2}|X\\s?)'+
             '(?<airline>[A-Z0-9]{2})'+
@@ -136,99 +136,99 @@ class AirAvailabilityParser
             ')?'+
             '(?<unparsed>.*?)'+
             '\\s*$\/';
-        if (php.preg_match($regex, $line, $matches = [])) {
-            return {
-                'lineNumber': php.trim($matches['lineNumber']),
-                'airline': $matches['airline'],
-                'operatingAirline': $matches['operatingAirline'] || '',
-                'flightNumber': $matches['flightNumber'],
-                'availability': this.parseAvailability($matches['availability']),
-                'moreClassesExist': $matches['moreClassesExist'] === '*',
-                'departureAirport': $matches['departureAirport'],
-                'destinationAirport': $matches['destinationAirport'],
-                'ontimeMarker': php.trim($matches['ontimeMarker']),
-                'departureDayOffset': this.parseDayOffset(this.reverseStr($matches['departureDayOffset'])),
-                'departureTime': {
-                    'raw': $matches['departureTime'],
-                    'parsed': CommonParserHelpers.decodeApolloTime($matches['departureTime']),
-                },
-                'destinationTime': {
-                    'raw': $matches['destinationTime'],
-                    'parsed': CommonParserHelpers.decodeApolloTime($matches['destinationTime']),
-                },
-                'destinationDayOffset': this.parseDayOffset($matches['destinationDayOffset']),
-                'aircraft': php.trim($matches['aircraft'] || ''),
-                'meals': !php.empty($matches['meals']) ? {'raw': php.trim($matches['meals'])} : null,
-                'hiddenStops': php.trim($matches['hiddenStops'] || ''),
-                'dcaMark': $matches['dcaMark'] || '',
-                'unparsed': $matches['unparsed'],
-            };
-        } else {
-            return null;
-        }
-    }
+		if (php.preg_match($regex, $line, $matches = [])) {
+			return {
+				'lineNumber': php.trim($matches['lineNumber']),
+				'airline': $matches['airline'],
+				'operatingAirline': $matches['operatingAirline'] || '',
+				'flightNumber': $matches['flightNumber'],
+				'availability': this.parseAvailability($matches['availability']),
+				'moreClassesExist': $matches['moreClassesExist'] === '*',
+				'departureAirport': $matches['departureAirport'],
+				'destinationAirport': $matches['destinationAirport'],
+				'ontimeMarker': php.trim($matches['ontimeMarker']),
+				'departureDayOffset': this.parseDayOffset(this.reverseStr($matches['departureDayOffset'])),
+				'departureTime': {
+					'raw': $matches['departureTime'],
+					'parsed': CommonParserHelpers.decodeApolloTime($matches['departureTime']),
+				},
+				'destinationTime': {
+					'raw': $matches['destinationTime'],
+					'parsed': CommonParserHelpers.decodeApolloTime($matches['destinationTime']),
+				},
+				'destinationDayOffset': this.parseDayOffset($matches['destinationDayOffset']),
+				'aircraft': php.trim($matches['aircraft'] || ''),
+				'meals': !php.empty($matches['meals']) ? {'raw': php.trim($matches['meals'])} : null,
+				'hiddenStops': php.trim($matches['hiddenStops'] || ''),
+				'dcaMark': $matches['dcaMark'] || '',
+				'unparsed': $matches['unparsed'],
+			};
+		} else {
+			return null;
+		}
+	}
 
-    /** @param $line = 'NO MORE - 1* FOR 3SEG CONX'
+	/** @param $line = 'NO MORE - 1* FOR 3SEG CONX'
      *              || 'NO MORE IB'
      *              || 'NO MORE' */
-    static parseMoreLine($line)  {
-        let $matches;
+	static parseMoreLine($line)  {
+		let $matches;
 
-        if (php.preg_match(/^\s*NO MORE(.*)$/, $line, $matches = [])) {
-            if (php.preg_match(/1\* FOR .* CONX/, $matches[1])) {
-                return 'noMoreSimpleConnections';
-            } else {
-                return 'noMore';
-            }
-        } else {
-            return null;
-        }
-    }
+		if (php.preg_match(/^\s*NO MORE(.*)$/, $line, $matches = [])) {
+			if (php.preg_match(/1\* FOR .* CONX/, $matches[1])) {
+				return 'noMoreSimpleConnections';
+			} else {
+				return 'noMore';
+			}
+		} else {
+			return null;
+		}
+	}
 
-    static parse($dump)  {
-        let $lines, $unparsedLines, $header, $moreMark, $line, $flights, $flight, $availability, $parsed;
+	static parse($dump)  {
+		let $lines, $unparsedLines, $header, $moreMark, $line, $flights, $flight, $availability, $parsed;
 
-        // dump consists of just one line
-        if (php.preg_match(/^\s*.+\s*$/, $dump)) {
-            return {'error': 'GDS returned error - '+php.trim($dump)};
-        }
+		// dump consists of just one line
+		if (php.preg_match(/^\s*.+\s*$/, $dump)) {
+			return {'error': 'GDS returned error - '+php.trim($dump)};
+		}
 
-        $dump = php.rtrim($dump);
-        $dump = php.rtrim($dump, '.');
-        $lines = StringUtil.lines($dump);
-        $unparsedLines = [];
-        $header = null;
-        $moreMark = null;
+		$dump = php.rtrim($dump);
+		$dump = php.rtrim($dump, '.');
+		$lines = StringUtil.lines($dump);
+		$unparsedLines = [];
+		$header = null;
+		$moreMark = null;
 
-        while ($line = php.array_shift($lines)) {
-            if ($header = this.parseHeaderLine($line)) {
-                break;
-            } else {
-                $unparsedLines.push($line);
-            }
-        }
-        if (!$header) {
-            return {'error': 'Unexpected start of dump - '+php.trim($unparsedLines[0])};
-        }
+		while ($line = php.array_shift($lines)) {
+			if ($header = this.parseHeaderLine($line)) {
+				break;
+			} else {
+				$unparsedLines.push($line);
+			}
+		}
+		if (!$header) {
+			return {'error': 'Unexpected start of dump - '+php.trim($unparsedLines[0])};
+		}
 
-        $flights = [];
-        for ($line of Object.values($lines)) {
-            if ($flight = this.parseFlightLine($line)) {
-                $flights.push($flight);
-            } else if (!php.empty($flights) && !php.empty($availability = this.parseAvailability($line))) {
-                Object.assign($flights[php.count($flights) - 1]['availability'], $availability);
-            } else if ($parsed = this.parseMoreLine($line)) {
-                $moreMark = $parsed;
-            } else {
-                $unparsedLines.push($line);
-            }}
+		$flights = [];
+		for ($line of Object.values($lines)) {
+			if ($flight = this.parseFlightLine($line)) {
+				$flights.push($flight);
+			} else if (!php.empty($flights) && !php.empty($availability = this.parseAvailability($line))) {
+				Object.assign($flights[php.count($flights) - 1]['availability'], $availability);
+			} else if ($parsed = this.parseMoreLine($line)) {
+				$moreMark = $parsed;
+			} else {
+				$unparsedLines.push($line);
+			}}
 
-        return {
-            'header': $header,
-            'flights': $flights,
-            'moreMark': $moreMark,
-            'unparsedLines': $unparsedLines,
-        };
-    }
+		return {
+			'header': $header,
+			'flights': $flights,
+			'moreMark': $moreMark,
+			'unparsedLines': $unparsedLines,
+		};
+	}
 }
 module.exports = AirAvailabilityParser;

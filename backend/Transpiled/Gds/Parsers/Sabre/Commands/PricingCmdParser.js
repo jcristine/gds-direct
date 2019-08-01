@@ -68,7 +68,7 @@ let parseSegmentQualifier = ($token) => {
 	} else {
 		return null;
 	}
-}
+};
 
 // 'PADT', 'PINF'
 // 'PADT/CMP' // companion

@@ -236,7 +236,7 @@ class AtfqParser {
 				'passengerNumber': null,
 				'firstNameNumber': null,
 				'ptc': null,
-				'markup': null
+				'markup': null,
 			};
 			for ($propertyToken of php.explode('*', $passengerToken)) {
 				$passengerProperties = php.array_merge($passengerProperties, this.parsePicModifier($propertyToken));
@@ -245,7 +245,7 @@ class AtfqParser {
 		}
 		return {
 			'passengersSpecified': $passengersSpecified,
-			'passengerProperties': $pricingInfo
+			'passengerProperties': $pricingInfo,
 		};
 	}
 

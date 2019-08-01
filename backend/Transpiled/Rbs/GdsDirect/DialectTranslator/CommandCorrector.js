@@ -28,7 +28,7 @@ class CommandCorrector {
 			'wrong_date': '\\d{3}[A-Z]{3}',
 			'wrong_month': '\\d{2}[A-Z]{2}',
 			'nc_modificator': 'NC[SC]?',
-			'char_or_num': '[A-Z0-9]'
+			'char_or_num': '[A-Z0-9]',
 		};
 	}
 
@@ -129,17 +129,17 @@ class CommandCorrector {
 				{
 					'mistake': 'SEM\/{pcc}\/{not_ag}{free_text}',
 					'correct': 'SEM\/{pcc}\/AG{free_text}',
-					'message': 'CORRECTED! SEM COMMAND ENDS WITH \/AG'
+					'message': 'CORRECTED! SEM COMMAND ENDS WITH \/AG',
 				},
 				{
 					'mistake': 'SEM\/{pcc}',
 					'correct': 'SEM\/{pcc}\/AG',
-					'message': 'CORRECTED! DON\\\'T FORGET \/AG NEXT TIME'
+					'message': 'CORRECTED! DON\\\'T FORGET \/AG NEXT TIME',
 				},
 				{
 					'mistake': 'RE\/{pcc}\/AG',
 					'correct': 'RE\/{pcc}\/GK',
-					'message': 'CORRECTED! GK WAS USED INSTEAD OF WRONG STATUS AG'
+					'message': 'CORRECTED! GK WAS USED INSTEAD OF WRONG STATUS AG',
 				},
 				{
 					'mistake': 'A-C{free_text}',
@@ -481,21 +481,21 @@ class CommandCorrector {
 				{
 					'mistake': 'RE\/{pcc}\/AG',
 					'correct': 'RE\/{pcc}\/GK',
-					'message': 'CORRECTED! GK WAS USED INSTEAD OF WRONG STATUS AG'
+					'message': 'CORRECTED! GK WAS USED INSTEAD OF WRONG STATUS AG',
 				},
 			],
 			'galileo': [
 				{
 					'mistake': 'RE\/{pcc}\/AG',
 					'correct': 'RE\/{pcc}\/AK',
-					'message': 'CORRECTED! AK WAS USED INSTEAD OF WRONG STATUS AG'
+					'message': 'CORRECTED! AK WAS USED INSTEAD OF WRONG STATUS AG',
 				},
 			],
 			'amadeus': [
 				{
 					'mistake': 'RE\/{pcc}\/AG',
 					'correct': 'RE\/{pcc}\/GK',
-					'message': 'CORRECTED! GK WAS USED INSTEAD OF WRONG STATUS AG'
+					'message': 'CORRECTED! GK WAS USED INSTEAD OF WRONG STATUS AG',
 				},
 			],
 		};

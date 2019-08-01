@@ -36,17 +36,17 @@ class ImportSabrePnrFormatAdapter {
 
 		// commenting til we really need these fields
 
-//        $reservation['phones'] = Fp::map(function($phone) {
-//            return [
-//                'lineNumber' => $phone['lineNumber'],
-//                'raw' => $phone['raw'],
-//                'parsed' => isset($phone['parsed']) ? [
-//                    'city' => $phone['parsed']['city'],
-//                    'phoneNumber' => $phone['parsed']['phoneNumber'],
-//                    'phoneTypeToken' => $phone['parsed']['phoneTypeToken'] ?? null,
-//                ] : null,
-//            ];
-//        }, $parsedData['parsedData']['phones'] ?? []);
+		//        $reservation['phones'] = Fp::map(function($phone) {
+		//            return [
+		//                'lineNumber' => $phone['lineNumber'],
+		//                'raw' => $phone['raw'],
+		//                'parsed' => isset($phone['parsed']) ? [
+		//                    'city' => $phone['parsed']['city'],
+		//                    'phoneNumber' => $phone['parsed']['phoneNumber'],
+		//                    'phoneTypeToken' => $phone['parsed']['phoneTypeToken'] ?? null,
+		//                ] : null,
+		//            ];
+		//        }, $parsedData['parsedData']['phones'] ?? []);
 
 		$reservation['remarks'] = FormatAdapter.transformSabreRemarks(($parsedData['parsedData'] || {})['remarks'] || []);
 		$reservation['confirmationNumbers'] = ImportPnrCommonFormatAdapter.collectConfirmationNumbers(($parsedData['parsedData'] || {})['itinerary'] || []);
@@ -140,14 +140,14 @@ class ImportSabrePnrFormatAdapter {
 			: null;
 
 		$leg['departureDt'] = {
-//            'raw' => $legData['departureDate']['raw'].' '.$legData['departureTime']['raw'],
+			//            'raw' => $legData['departureDate']['raw'].' '.$legData['departureTime']['raw'],
 			'parsed': $legData['departureDate']['parsed'] + ' ' + $legData['departureTime']['parsed'],
 			'full': $fullDepartureDate
 				? $fullDepartureDate + ' ' + $legData['departureTime']['parsed'] + ':00'
 				: null,
 		};
 		$leg['destinationDt'] = {
-//            'raw' => $legData['departureDate']['raw'].' '.'+ '.$legData['offset'].' '.$legData['destinationTime']['raw'],
+			//            'raw' => $legData['departureDate']['raw'].' '.'+ '.$legData['offset'].' '.$legData['destinationTime']['raw'],
 			'parsed': php.date('m-d', php.strtotime($fullDestinationDate)) + ' ' + $legData['destinationTime']['parsed'],
 			'full': $fullDestinationDate
 				? $fullDestinationDate + ' ' + $legData['destinationTime']['parsed'] + ':00'
@@ -799,7 +799,7 @@ class ImportSabrePnrFormatAdapter {
 					}
 
 					return $segments;
-				}, $baggageData['carryOnAllowanceBlock']))
+				}, $baggageData['carryOnAllowanceBlock'])),
 			},
 			'misc': {
 				'additionalInfo': $baggageData['additionalInfo'],
@@ -852,17 +852,17 @@ class ImportSabrePnrFormatAdapter {
 						'feeCurrency': null,
 					}] : []
 				),
-				Fp.map(($fee) => ({
-					'flags': [],
-					'bagNumber': $fee['feeNumber'],
-					'bagDescription': $fee['sizeInfoRaw'],
-					'weightInLb': ($fee['sizeInfo'] || {})['weightInLb'],
-					'weightInKg': ($fee['sizeInfo'] || {})['weightInKg'],
-					'sizeInInches': ($fee['sizeInfo'] || {})['sizeInInches'],
-					'sizeInCm': ($fee['sizeInfo'] || {})['sizeInCm'],
-					'feeAmount': $fee['amount'],
-					'feeCurrency': $fee['currency'],
-				}), $segment['fees'])),
+			Fp.map(($fee) => ({
+				'flags': [],
+				'bagNumber': $fee['feeNumber'],
+				'bagDescription': $fee['sizeInfoRaw'],
+				'weightInLb': ($fee['sizeInfo'] || {})['weightInLb'],
+				'weightInKg': ($fee['sizeInfo'] || {})['weightInKg'],
+				'sizeInInches': ($fee['sizeInfo'] || {})['sizeInInches'],
+				'sizeInCm': ($fee['sizeInfo'] || {})['sizeInCm'],
+				'feeAmount': $fee['amount'],
+				'feeCurrency': $fee['currency'],
+			}), $segment['fees'])),
 		};
 	}
 
