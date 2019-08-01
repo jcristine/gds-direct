@@ -207,6 +207,8 @@ let closeSession = async (gdsData) => {
 
 let makeSession = (gdsData) => ({
 	gdsData: gdsData,
+	// TODO: refactor and leave just getGdsData()
+	getGdsData: () => gdsData,
 	runCmd: (cmd) => runCmd({command: cmd}, gdsData)
 		.then(result => ({cmd, ...result})),
 });

@@ -134,6 +134,8 @@ const TravelportClient = ({
 
 	const makeSession = (gdsData) => ({
 		gdsData: gdsData,
+		// TODO: refactor and leave just getGdsData()
+		getGdsData: () => gdsData,
 		runCmd: (cmd) => runCmd(cmd, gdsData)
 			.then(result => ({cmd, ...result})),
 	});

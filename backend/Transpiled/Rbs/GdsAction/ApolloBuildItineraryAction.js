@@ -9,7 +9,7 @@ const TravelportClient = require("../../../GdsClients/TravelportClient");
 const _ = require("lodash");
 const moment = require("moment");
 
-let php = require('../../phpDeprecated.js');
+let php = require('klesun-node-tools/src/Transpiled/php.js');
 
 class ApolloBuildItineraryAction extends AbstractGdsAction {
 	constructor() {
