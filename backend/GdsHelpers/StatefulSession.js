@@ -20,7 +20,7 @@ let GdsSession = (session) => {
 	let gds = session.context.gds;
 	let runByGds = (cmd) => {
 		if (['apollo', 'galileo'].includes(gds)) {
-			return TravelportClient({command: cmd}).runCmd(session.gdsData);
+			return TravelportClient.runCmd({command: cmd}, session.gdsData);
 		} else if (gds === 'amadeus') {
 			return AmadeusClient.runCmd({command: cmd}, session.gdsData);
 		} else if (gds === 'sabre') {

@@ -48,6 +48,15 @@ class GdsDirectDefaults {
 		});
 	}
 
+	static makeDefaultStateFor(gds) {
+		return {
+			apollo: () => this.makeDefaultApolloState(),
+			sabre: () => this.makeDefaultSabreState(),
+			amadeus: () => this.makeDefaultAmadeusState(),
+			galileo: () => this.makeDefaultGalileoState(),
+		}[gds]();
+	}
+
 	static makeAgentBaseData() {
 
 		return {
@@ -162,6 +171,33 @@ class GdsDirectDefaults {
 		return ($idToAgents[$id] || {})[0];
 	}
 
+	static makeStatefulSessionCustom(params) {
+		let {session, fullState, startDt, emcUser, leadIdToData, ...ctorArgs} = params;
+		let gds = session.context.gds;
+		fullState = fullState || {
+			area: 'A',
+			areas: {'A': this.makeDefaultStateFor(gds)},
+		};
+		let cmdLog = CmdLog.noDb({gds, fullState});
+		return StatefulSession({
+			cmdLog, session, fullState,
+			startDt: startDt || '2019-03-29 23:43:05',
+			emcUser: emcUser || {
+				id: 1234,
+				displayName: 'grectUnitTest',
+				roles: [],
+			},
+			Db: {
+				writeRows: () => Promise.resolve(),
+			},
+			RbsClient: {
+				reportCreatedPnr: () => Promise.resolve(),
+			},
+			leadIdToData: leadIdToData || {},
+			...ctorArgs,
+		});
+	}
+
 	static makeStatefulSession(gds, $input, $sessionInfo) {
 		let {initialState, initialCommands = [], performedCommands} = $sessionInfo;
 		let gdsSession = (new AnyGdsStubSession(performedCommands)).setGds(gds);
@@ -178,10 +214,6 @@ class GdsDirectDefaults {
 			area: 'A',
 			areas: {'A': initialState},
 		};
-		let cmdLog = CmdLog.noDb({gds, fullState});
-		for (let cmdRec of initialCommands) {
-			cmdLog.logCommand(cmdRec.cmd, Promise.resolve(cmdRec));
-		}
 		let makeAgent = (id) => {
 			return ($input.stubAgents || []).filter(a => a.getId() == id)[0]
 				|| GdsDirectDefaults.makeStubAgentById(id);
@@ -191,19 +223,13 @@ class GdsDirectDefaults {
 		let agent = makeAgent(agentId);
 		let leadOwnerId = initialState.lead_creator_id || 6206;
 		let leadOwner = makeAgent(leadOwnerId);
-		return StatefulSession({
-			gdsSession, cmdLog, session, fullState,
+		let stateful = this.makeStatefulSessionCustom({
+			gdsSession, session, fullState,
 			startDt: $input.baseDate || '2019-03-29 23:43:05',
 			emcUser: {
 				id: agentId,
 				displayName: agent ? agent.getLogin() : null,
 				roles: agent.getRoles(),
-			},
-			Db: {
-				writeRows: () => Promise.resolve(),
-			},
-			RbsClient: {
-				reportCreatedPnr: () => Promise.resolve(),
 			},
 			leadIdToData: {
 				[session.context.travelRequestId]: {
@@ -214,6 +240,10 @@ class GdsDirectDefaults {
 			},
 			...($sessionInfo.ctorArgs || {}),
 		});
+		for (let cmdRec of initialCommands) {
+			stateful.getLog().logCommand(cmdRec.cmd, Promise.resolve(cmdRec));
+		}
+		return stateful;
 	}
 }
 
