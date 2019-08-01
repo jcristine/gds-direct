@@ -109,7 +109,7 @@ class ApolloBuildItineraryAction extends AbstractGdsAction {
 			}
 		}
 
-		this.session.logit("All PNRs added", {itinerary, soldCount});
+		this.session.logit('All segments added', {itinerary, soldCount});
 
 		return {success: true, segmentsSold: soldCount};
 	}
