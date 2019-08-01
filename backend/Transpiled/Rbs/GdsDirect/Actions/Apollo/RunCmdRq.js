@@ -24,7 +24,7 @@ const CmsApolloTerminal = require('../../../../Rbs/GdsDirect/GdsInterface/CmsApo
 const ApolloPnr = require('../../../../Rbs/TravelDs/ApolloPnr.js');
 
 // actions
-const ApolloBuildItineraryAction = require('../../../../Rbs/GdsAction/ApolloBuildItineraryAction.js');
+const ApolloBuildItineraryAction = require('../../../GdsAction/ApolloBuildItinerary.js');
 const ApolloMakeMcoAction = require('../../../../Rbs/GdsAction/ApolloMakeMcoAction.js');
 const MakeMcoApolloAction = require('../../../../Rbs/GdsDirect/Actions/Apollo/MakeMcoApolloAction.js');
 const RepriceInAnotherPccAction = require('../../../../Rbs/GdsDirect/Actions/Common/RepriceInAnotherPccAction.js');

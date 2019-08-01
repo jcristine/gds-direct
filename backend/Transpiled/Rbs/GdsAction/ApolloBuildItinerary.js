@@ -11,7 +11,7 @@ const moment = require("moment");
 
 let php = require('klesun-node-tools/src/Transpiled/php.js');
 
-class ApolloBuildItineraryAction extends AbstractGdsAction {
+class ApolloBuildItinerary extends AbstractGdsAction {
 	constructor() {
 		super();
 		this.usesXml = true;
@@ -99,7 +99,7 @@ class ApolloBuildItineraryAction extends AbstractGdsAction {
 					return {
 						success: false,
 						segmentsSold: soldCount,
-						errorType: ApolloBuildItineraryAction.ERROR_MULTISEGMENT,
+						errorType: ApolloBuildItinerary.ERROR_MULTISEGMENT,
 						errorData: error.message,
 					};
 				}
@@ -154,8 +154,8 @@ class ApolloBuildItineraryAction extends AbstractGdsAction {
 	}
 }
 
-ApolloBuildItineraryAction.ERROR_NO_AVAIL = 'ERROR_NO_AVAIL';
-ApolloBuildItineraryAction.ERROR_GDS_ERROR = 'ERROR_GDS_ERROR';
-ApolloBuildItineraryAction.ERROR_MULTISEGMENT = 'ERROR_MULTISEGMENT';
+ApolloBuildItinerary.ERROR_NO_AVAIL = 'ERROR_NO_AVAIL';
+ApolloBuildItinerary.ERROR_GDS_ERROR = 'ERROR_GDS_ERROR';
+ApolloBuildItinerary.ERROR_MULTISEGMENT = 'ERROR_MULTISEGMENT';
 
-module.exports = ApolloBuildItineraryAction;
+module.exports = ApolloBuildItinerary;
