@@ -1,6 +1,6 @@
 const StringUtil = require('../../../../Lib/Utils/StringUtil.js');
 const CommonParserHelpers = require('../../../../Gds/Parsers/Apollo/CommonParserHelpers.js');
-const php = require('../../../../phpDeprecated');
+const php = require('klesun-node-tools/src/Transpiled/php.js');
 
 /**
  * SSR block is *R GFAX- line and several lines after that
