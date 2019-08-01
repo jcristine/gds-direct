@@ -102,7 +102,6 @@ let RunCmdRq = ({
 	PtcUtil = require('../../../../Rbs/Process/Common/PtcUtil.js'),
 	Pccs = require("../../../../../Repositories/Pccs.js"),
 }) => {
-
 	const {
 		flattenCmds,
 		prepareToSavePnr,
@@ -203,6 +202,13 @@ let RunCmdRq = ({
 				$cmd = 'TIPN';
 			} else if (scrolledCmd && scrolledCmd.startsWith('A')) {
 				$cmd = 'A*';
+			} else if (scrolledCmd && scrolledCmd.startsWith('FS')) {
+				let lastCmdRec = await stateful.getLog().getLastCalledCommand();
+				if (extractPager(lastCmdRec.output)[1] === '><') {
+					$cmd = 'FSMORE';
+				} else {
+					$cmd = 'MR';
+				}
 			} else {
 				$cmd = 'MR';
 			}
