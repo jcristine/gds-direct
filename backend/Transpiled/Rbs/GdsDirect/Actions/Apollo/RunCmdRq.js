@@ -101,6 +101,7 @@ let RunCmdRq = ({
 	CmdRqLog = require('../../../../../Repositories/CmdRqLog.js'),
 	PtcUtil = require('../../../../Rbs/Process/Common/PtcUtil.js'),
 	Pccs = require("../../../../../Repositories/Pccs.js"),
+	useXml = true,
 }) => {
 	const {
 		flattenCmds,
@@ -295,6 +296,7 @@ let RunCmdRq = ({
 		$gkSegments = Fp.filter($isGkRebookPossible, $itinerary);
 		$result = await (new ApolloBuildItineraryAction())
 			.setSession(stateful)
+			.useXml(useXml)
 			.execute($newItinerary, true);
 		if ($error = transformBuildError($result)) {
 			return {
