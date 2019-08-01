@@ -294,11 +294,13 @@ let RunCmdRq = ({
 			return $seg;
 		}, $itinerary);
 		$gkSegments = Fp.filter($isGkRebookPossible, $itinerary);
-		$result = await (new ApolloBuildItineraryAction())
-			.setBaseDate(stateful.getStartDt())
-			.setSession(stateful)
-			.useXml(useXml)
-			.execute($newItinerary, true);
+		$result = await ApolloBuildItineraryAction({
+			itinerary: $newItinerary,
+			isParserFormat: true,
+			baseDate: stateful.getStartDt(),
+			useXml: useXml,
+			session: stateful,
+		});
 		if ($error = transformBuildError($result)) {
 			return {
 				'calledCommands': stateful.flushCalledCommands(),

@@ -1,6 +1,5 @@
 
 const SabPricingCmdParser = require("../../../../Gds/Parsers/Sabre/Commands/PricingCmdParser");
-const Fp = require('../../../../Lib/Utils/Fp.js');
 const ApolloBuildItineraryAction = require('../../../GdsAction/ApolloBuildItinerary.js');
 const GalileoBuildItineraryAction = require('../../../../Rbs/GdsAction/GalileoBuildItineraryAction.js');
 const SabreBuildItineraryAction = require('../../../../Rbs/GdsAction/SabreBuildItineraryAction.js');
@@ -207,9 +206,11 @@ class RepriceInAnotherPccAction {
 				return Forbidden('Could not emulate '
 					+ pcc + ' - ' + semRs.output.trim());
 			}
-			let built = await new ApolloBuildItineraryAction()
-				.setBaseDate($startDt)
-				.setSession(session).execute(itinerary, true);
+			let built = await ApolloBuildItineraryAction({
+				baseDate: $startDt,
+				session, itinerary,
+				isParserFormat: true,
+			});
 			if (built.errorType) {
 				return UnprocessableEntity('Could not rebuild PNR in Apollo - '
 					+ built.errorType + ' ' + JSON.stringify(built.errorData));
