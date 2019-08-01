@@ -4,6 +4,7 @@ const AbstractGdsAction = require('../../../../../Rbs/GdsAction/AbstractGdsActio
 const FqnParser = require('../../../../../Gds/Parsers/Apollo/FareRules/FqnParser.js');
 const FnParser = require('../../../../../Gds/Parsers/Apollo/FareRules/FnParser.js');
 const {fetchAll} = require('../../../../../../GdsHelpers/TravelportUtils.js');
+const TravelportClient = require("../../../../../../GdsClients/TravelportClient");
 
 /**
  * retrieves Fare Rules text per section of
@@ -14,6 +15,15 @@ const {fetchAll} = require('../../../../../../GdsHelpers/TravelportUtils.js');
 const php = require('../../../../../phpDeprecated.js');
 
 class ImportFareComponentsAction extends AbstractGdsAction {
+	constructor() {
+		super();
+		this.usesXml = true;
+	}
+
+	useXml(flag) {
+		this.usesXml = flag;
+		return this;
+	}
 
 	async getRulesViaCli({fareComponentNumber, paragraphs}) {
 		paragraphs = paragraphs || [];
@@ -36,14 +46,20 @@ class ImportFareComponentsAction extends AbstractGdsAction {
 			'fareComponentNumber': $fareNumber,
 			'paragraphs': $paragraphs,
 		};
-		// TODO: use XML, it's like dozens times faster
-		//$cmdRecord = this.getApollo().getCurrentFareRules(params);
-		$cmdRecord = await this.getRulesViaCli(params);
+
+		if(this.usesXml) {
+			this.session.logit("Will make request for fare rules", params);
+			$cmdRecord = await TravelportClient.getFareRules(this.session.getGdsData(), params);
+			this.session.logit("Fare rules fetched", $cmdRecord);
+		} else {
+			$cmdRecord = await this.getRulesViaCli(params);
+		}
+
 		$dump = $cmdRecord['output'];
 
 		$sectionsRecord = FnParser.parse($dump);
 
-		if ($error = $sectionsRecord['error']) {
+		if ($error = ($sectionsRecord['error'])) {
 			$byNumber = {};
 		} else {
 			$byNumber = php.array_combine(php.array_column($sectionsRecord['sections'], 'sectionNumber'), $sectionsRecord['sections']);
@@ -57,6 +73,7 @@ class ImportFareComponentsAction extends AbstractGdsAction {
 				$sections[$paragraph] = $sectionRecord;
 			}
 		}
+
 		return {
 			'sections': $sections,
 			'cmdRec': $cmdRecord,

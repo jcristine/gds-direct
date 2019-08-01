@@ -328,6 +328,7 @@ class ImportPqGalileoAction extends AbstractGdsAction {
 		}
 
 		$result = await (new ImportFareComponentsAction())
+			.useXml(false)
 			.setSession(this.session).execute([16], 1);
 		if ($error = $result['error']) return {'error': $error};
 

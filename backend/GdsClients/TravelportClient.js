@@ -202,6 +202,7 @@ const TravelportClient = ({
 		processPnr,
 		withSession,
 		getFares,
+		getFareRules,
 	};
 };
 

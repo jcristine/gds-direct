@@ -29,18 +29,18 @@ module.exports.buildFareRuleXml = params => {
 module.exports.parseFareRuleXmlResponse = response => {
 	const dom = parseXml(response);
 	const result = {
-		errors: null,
-		dump: null,
+		error: null,
+		output: '',
 	};
 
 	const elements = dom.querySelectorAll('FareInfo > OutputMsg');
 
 	if(!elements || elements.length === 0) {
-		result.errors = ['Service returned error response', response];
+		result.error = 'Service returned error response - ' + response;
 	} else {
-		result.dump = _.map(elements, msgElement =>
+		result.output = _.map(elements, msgElement =>
 			_.map(msgElement.querySelectorAll('Text'), t => t.textContent).join('')
-		).join('');
+		).join('\n');
 	}
 
 	return result;
