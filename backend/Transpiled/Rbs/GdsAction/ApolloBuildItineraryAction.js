@@ -93,18 +93,9 @@ class ApolloBuildItineraryAction extends AbstractGdsAction {
 				};
 
 				try {
-					this.session.logit("Will add pnr", {chunk, params});
-
 					const result = await TravelportClient.processPnr(this.session.getGdsData(), params);
-
-					this.session.logit("PNR added", result);
-
 					soldCount += result.newAirSegments.filter(seg => seg.success).length;
 				} catch(error) {
-					this.session.logit("Failed to add pnr", {
-						params, error,
-					});
-
 					return {
 						success: false,
 						segmentsSold: soldCount,
@@ -114,8 +105,6 @@ class ApolloBuildItineraryAction extends AbstractGdsAction {
 				}
 			}
 		}
-
-		this.session.logit('All segments added', {itinerary, soldCount});
 
 		return {success: true, segmentsSold: soldCount};
 	}
