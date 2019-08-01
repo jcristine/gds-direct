@@ -300,7 +300,7 @@ exports.submitFcMask = async ({rqBody, session, emcUser}) => {
 
 let keepAliveByGds = (gds, gdsData) => {
 	if (['galileo', 'apollo'].includes(gds)) {
-		return TravelportClient({command: 'MD0'}).runCmd(gdsData)
+		return TravelportClient.runCmd({command: 'MD0'}, gdsData)
 			.then(result => ({message: 'Success - ' + result.output}));
 	} else {
 		// no keepAlive is needed in other GDS, since their
