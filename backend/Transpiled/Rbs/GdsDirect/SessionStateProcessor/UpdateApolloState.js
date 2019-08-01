@@ -76,7 +76,7 @@ class UpdateApolloState {
 		return !this.isPnrListOutput($output)
 			&& php.trim($output) !== 'FIN OR IGN'
 			&& php.trim($output) !== 'AG - DUTY CODE NOT AUTH FOR CRT - APOLLO'
-			;
+		;
 	}
 
 	static wasPnrOpenedFromList($output) {

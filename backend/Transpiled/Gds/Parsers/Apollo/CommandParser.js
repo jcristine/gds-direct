@@ -726,7 +726,7 @@ class CommandParser {
 			/(?<departureDate>\d{1,2}[A-Z]{3})/,
 			/(?<departureAirport>[A-Z]{3})/,
 			/(?<destinationAirport>[A-Z]{3})/,
-			/(?<unparsed>.*)/
+			/(?<unparsed>.*)/,
 		]));
 		if (match) {
 			let groups = match.groups;

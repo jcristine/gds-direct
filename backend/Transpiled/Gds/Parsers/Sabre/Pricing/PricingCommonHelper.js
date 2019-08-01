@@ -139,12 +139,12 @@ class PricingCommonHelper {
 				'ptc': $ptc,
 				'quantity': $number,
 				'records': Fp.map(($fb) => {
-						return {
-							'fareBasis': php.explode('/', $fb)[0],
-							'ticketDesignator': (php.explode('/', $fb) || {})[1],
-						};
-					},
-					php.array_filter($fareBasisList.split(/ +/))),
+					return {
+						'fareBasis': php.explode('/', $fb)[0],
+						'ticketDesignator': (php.explode('/', $fb) || {})[1],
+					};
+				},
+				php.array_filter($fareBasisList.split(/ +/))),
 			};
 		} else {
 			return null;

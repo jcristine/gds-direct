@@ -78,9 +78,9 @@ class RebuildInPccAction extends AbstractGdsAction {
 			...s,
 			segmentStatus:
 				s.segmentStatus === 'GK' ? 'AK' :
-				s.segmentStatus === 'HK' ? 'NN' :
-				s.segmentStatus === 'SS' ? 'NN' :
-				s.segmentStatus,
+					s.segmentStatus === 'HK' ? 'NN' :
+						s.segmentStatus === 'SS' ? 'NN' :
+							s.segmentStatus,
 		}));
 
 		$errors = [];

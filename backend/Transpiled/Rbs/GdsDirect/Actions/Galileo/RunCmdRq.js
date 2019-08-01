@@ -112,7 +112,7 @@ class RunCmdRq {
 	}
 
 	/** @return Promise<string> - the command we are currently scrolling
-	 * (last command that was not one of MD, MU, MT, MB */
+ * (last command that was not one of MD, MU, MT, MB */
 	getScrolledCmd() {
 		return stateful.getSessionData().scrolledCmd;
 	}
@@ -204,7 +204,7 @@ class RunCmdRq {
 		let {type, data} = parsed;
 
 		if (type === 'airAvailability' && data && data['isReturn']) {
-			// add mods from original availability request
+		// add mods from original availability request
 			let typeToMod = php.array_combine(
 				php.array_column(data['modifiers'] || [], 'type'),
 				php.array_column(data['modifiers'] || [], 'raw')
@@ -224,13 +224,13 @@ class RunCmdRq {
 				);
 				typeToMod = php.array_merge(oldTypeToMod, typeToMod);
 				if ((oldParsed['data'] || {})['destinationAirport']) {
-					// the start of current availability
+				// the start of current availability
 					break;
 				}
 			}
 			return 'AR' + (data['orderBy'] || '') + ((data['departureDate'] || {})['raw'] || '')
-				+ data['departureAirport'] + data['destinationAirport']
-				+ php.implode('', typeToMod);
+			+ data['departureAirport'] + data['destinationAirport']
+			+ php.implode('', typeToMod);
 		} else {
 			return null;
 		}
@@ -246,7 +246,7 @@ class RunCmdRq {
 		$needsAccompanying = ($ptc) => php.in_array(PtcUtil.parsePtc($ptc)['ageGroup'], ['infant', 'child']);
 		$typeToMods = Fp.groupBy(($mod) => $mod['type'], $mods);
 		if (!php.empty($typeToMods['accountCode']) && $typeToMods['accountCode'][0]['raw'] === '-T') {
-			// not real account code, just an alias
+		// not real account code, just an alias
 			delete ($typeToMods['accountCode']);
 			$mods = Fp.flatten($typeToMods);
 			$rawMods = php.array_column($mods, 'raw');
@@ -299,12 +299,12 @@ class RunCmdRq {
 		$cmdParsed = CommandParser.parse($scrolledCmd);
 		$type = $cmdParsed['type'];
 		if (php.in_array($type, ['searchPnr', 'displayPnrFromList']) &&
-			!GalileoPnr.makeFromDump($calledCommand['output']).getRecordLocator() &&
-			!stateful.getAgent().canOpenPrivatePnr()
+		!GalileoPnr.makeFromDump($calledCommand['output']).getRecordLocator() &&
+		!stateful.getAgent().canOpenPrivatePnr()
 		) {
-			// '   711M-S*                        ',
-			// '001 01SMITH/JOHN         20SEP  002 01SMITH/MARGARETH    20SEP',
-			// '003 01SMITH/MICHALE      20SEP  004 01SMITH/CALEB        23SEP',
+		// '   711M-S*                        ',
+		// '001 01SMITH/JOHN         20SEP  002 01SMITH/MARGARETH    20SEP',
+		// '003 01SMITH/MICHALE      20SEP  004 01SMITH/CALEB        23SEP',
 
 			$output = StringUtil.wrapLinesAt($calledCommand['output'], 64);
 			$lines = StringUtil.lines($output);
@@ -401,7 +401,7 @@ class RunCmdRq {
 		for ($ticket of Object.values($ticketInfo['tickets'])) {
 			$isVoid = ($seg) => $seg['couponStatus'] === 'VOID';
 			if (!php.empty($ticket['error']) ||
-				!Fp.all($isVoid, $ticket['segments'])
+			!Fp.all($isVoid, $ticket['segments'])
 			) {
 				return false;
 			}
@@ -427,8 +427,8 @@ class RunCmdRq {
 		$type = $parsedCmd['type'];
 		$agent = stateful.getAgent();
 		$isQueueCmd =
-			php.in_array($type, CommonDataHelper.getQueueCommands()) ||
-			StringUtil.startsWith($cmd, 'Q'); // to be extra sure
+		php.in_array($type, CommonDataHelper.getQueueCommands()) ||
+		StringUtil.startsWith($cmd, 'Q'); // to be extra sure
 
 		if (php.in_array($type, CommonDataHelper.getTicketingCommands())) {
 			if (!$agent.canIssueTickets()) {
@@ -456,8 +456,8 @@ class RunCmdRq {
 			if (!$agent.canEditTicketedPnr()) {
 				if ($pnr = await this.getStoredPnr()) {
 					$canChange = !$pnr.hasEtickets()
-						|| $agent.canEditVoidTicketedPnr()
-						&& await this.areAllCouponsVoided();
+					|| $agent.canEditVoidTicketedPnr()
+					&& await this.areAllCouponsVoided();
 					if (!$canChange) {
 						$errors.push(Errors.getMessage(Errors.CANT_CHANGE_TICKETED_PNR));
 					}
@@ -468,8 +468,8 @@ class RunCmdRq {
 		for ($flatCmd of Object.values($flatCmds)) {
 			if ($flatCmd['type'] === 'changePnrRemarks') {
 				if ($remarkOrderChanged) {
-					// it's hard to predict which exactly remark will be removed,
-					// so better forbid to make sure it is not GD- remark
+				// it's hard to predict which exactly remark will be removed,
+				// so better forbid to make sure it is not GD- remark
 					$errors.push('Forbidden command, do not use >NP./...; and >' + $flatCmd['cmd'] + '; at the same time');
 				} else {
 					$errors = php.array_merge($errors, await this.checkChangeRemarks($flatCmd['data']));
@@ -485,7 +485,7 @@ class RunCmdRq {
 		$calledCommands = [];
 		if (this.constructor.doesStorePnr($cmd)) {
 			if ($remarkCmd = await this.makeCreatedForCmdIfNeeded()) {
-				// we don't show it - no adding to $calledCommands
+			// we don't show it - no adding to $calledCommands
 				await this.runCommand($remarkCmd, false);
 			}
 		}
@@ -505,10 +505,10 @@ class RunCmdRq {
 			$parsed = PnrParser.parse($cmdRecord['output']);
 			$isAlex = ($pax) => {
 				return $pax['lastName'] === 'WEINSTEIN'
-					&& $pax['firstName'] === 'ALEX';
+				&& $pax['firstName'] === 'ALEX';
 			};
 			if (Fp.any($isAlex, ($parsed['passengers'] || {})['passengerList'] || []) &&
-				!stateful.getAgent().canOpenPrivatePnr()
+			!stateful.getAgent().canOpenPrivatePnr()
 			) {
 				await this.runCommand('I', false);
 				return {'errors': ['Restricted PNR']};
@@ -623,11 +623,11 @@ class RunCmdRq {
 	}
 
 	async bookPassengers(passengers) {
-		// note that Amadeus has different format instead of this 'remark', so a
-		// better approach would be to generate command for pure parsed dob/ptc
+	// note that Amadeus has different format instead of this 'remark', so a
+	// better approach would be to generate command for pure parsed dob/ptc
 		let cmd = passengers
 			.map(pax => 'N.' + pax.lastName + '/' + pax.firstName +
-				(!pax.remark ? '' : '*' + pax.remark))
+			(!pax.remark ? '' : '*' + pax.remark))
 			.join('|');
 		let cmdRec = await this.runCmd(cmd);
 		return {calledCommands: [cmdRec]};
@@ -642,7 +642,7 @@ class RunCmdRq {
 		let calledCommands = [];
 
 		if (reservation.pcc && pcc !== this.getSessionData().pcc) {
-			// probably it would make more sense to pass the PCC to the RebuildInPccAction...
+		// probably it would make more sense to pass the PCC to the RebuildInPccAction...
 			let cmd = 'SEM/' + pcc + '/AG';
 			let {calledCommands, userMessages} = await this.processRealCommand(cmd);
 			allUserMessages.push(...userMessages);
@@ -654,8 +654,8 @@ class RunCmdRq {
 			calledCommands.push(...(booked.calledCommands || []));
 		}
 		if (itinerary.length > 0) {
-			// would be better to use number returned by GalileoBuildItineraryAction
-			// as it may be not in same order in case of marriages...
+		// would be better to use number returned by GalileoBuildItineraryAction
+		// as it may be not in same order in case of marriages...
 			itinerary = itinerary.map((s, i) => ({...s, segmentNumber: +i + 1}));
 			let result = await (new RebuildInPccAction()).setSession(stateful)
 				.fallbackToAk(true).bookItinerary(itinerary);
@@ -717,7 +717,7 @@ class RunCmdRq {
 				$itinerary[$key]['seatCount'] = $seatNumber;
 			}
 			$itinerary[$key]['segmentStatus'] = ({
-				// you have to sell in NN to get HS status in Galileo
+			// you have to sell in NN to get HS status in Galileo
 				'SS': 'NN',
 				'HS': 'NN',
 				'GK': 'AK',
@@ -728,7 +728,7 @@ class RunCmdRq {
 			.fallbackToAk($isSellStatus).execute($area, $pcc, $itinerary);
 		$calledCommands = stateful.flushCalledCommands();
 		if (php.empty($result['errors'])) {
-			// if no error - show only the result
+		// if no error - show only the result
 			$calledCommands = php.array_slice($calledCommands, -1);
 		}
 		$result['calledCommands'] = $calledCommands;
@@ -792,17 +792,17 @@ class RunCmdRq {
 
 		$addedRealName = ($cmdRec) => {
 			return $cmdRec['type'] === 'addName'
-				&& !StringUtil.startsWith($cmdRec['cmd'], 'N.FAKE/');
+			&& !StringUtil.startsWith($cmdRec['cmd'], 'N.FAKE/');
 		};
 		let flatUsedCmds = await this.getFlatUsedCmds();
 		$hasNamesInPnr = this.getSessionData()['isPnrStored']
-			|| Fp.any($addedRealName, flatUsedCmds);
+		|| Fp.any($addedRealName, flatUsedCmds);
 
 		$ptcGroups = (($mods['passengers'] || {})['parsed'] || {})['ptcGroups'] || [];
 		$paxNums = Fp.flatten(php.array_column($ptcGroups, 'passengerNumbers'));
 		if (!php.empty($paxNums) && !$hasNamesInPnr) {
-			// Galileo does not allow pricing multiple PTC-s
-			// at same time when there are no names in PNR. Fix.
+		// Galileo does not allow pricing multiple PTC-s
+		// at same time when there are no names in PNR. Fix.
 			$names = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P'];
 			$names = php.array_slice($names, 0, php.count($paxNums));
 			$addCmd = php.implode('|', $names.map(($name) => 'N.FAKE/' + $name));
@@ -906,7 +906,7 @@ class RunCmdRq {
 				$output = await this.runCommand($cmd['cmd'], false);
 				$calledCommands.push({'cmd': $cmd['cmd'], 'output': $output});
 			} else if (php.count($cmd['paxCmdParts']) > 1) {
-				// private fare can only be stored with a separate cmd per PTC
+			// private fare can only be stored with a separate cmd per PTC
 				for ($paxCmdPart of Object.values($cmd['paxCmdParts'])) {
 					$cmd = 'FQP' + $paxCmdPart;
 					$output = await this.runCommand($cmd, false);

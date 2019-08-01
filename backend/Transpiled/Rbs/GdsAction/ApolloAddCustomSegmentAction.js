@@ -7,11 +7,11 @@ const php = require("../../phpDeprecated");
  */
 class ApolloAddCustomSegmentAction
 {
-    // ' 1 TUR ZZ BK1  YYZ 08JUL - RETENTION LINE'
-    // ' 6 OTH ZO GK1  XXX 25MAY - PRESERVEPNR'
-    static parseAddSegmentOutput($dump)  {
-        let $regex, $matches;
-        $regex =
+	// ' 1 TUR ZZ BK1  YYZ 08JUL - RETENTION LINE'
+	// ' 6 OTH ZO GK1  XXX 25MAY - PRESERVEPNR'
+	static parseAddSegmentOutput($dump)  {
+		let $regex, $matches;
+		$regex =
             '/^\\s*'+
             '(?<segmentNumber>\\d+)\\s*'+
             '(?<segmentType>OTH|TUR)\\s*'+
@@ -22,11 +22,11 @@ class ApolloAddCustomSegmentAction
             '(?<date>\\d+[A-Z]{3})\\s*'+
             '(-\\s*(?<remark>.*?))?'+
             '\\s*$/';
-        if (php.preg_match($regex, $dump, $matches = [])) {
-            return $matches;
-        } else {
-            return null;
-        }
-    }
+		if (php.preg_match($regex, $dump, $matches = [])) {
+			return $matches;
+		} else {
+			return null;
+		}
+	}
 }
 module.exports = ApolloAddCustomSegmentAction;

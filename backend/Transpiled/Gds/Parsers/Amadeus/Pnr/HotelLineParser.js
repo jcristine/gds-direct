@@ -5,10 +5,10 @@ const CommonParserHelpers = require('../../../../Gds/Parsers/Apollo/CommonParser
 const php = require('../../../../phpDeprecated.js');
 class HotelLineParser
 {
-    static isHhlLine($line)  {
-        let $filter;
+	static isHhlLine($line)  {
+		let $filter;
 
-        $filter = '/^'+
+		$filter = '/^'+
             '\\s{0,2}'+
             '(?<lineNumber>\\d{1,2})\\s'+
             '[\\\/\\*]?(?<type>HHL)\\s+'+
@@ -16,37 +16,37 @@ class HotelLineParser
             '(?:(?<status>[A-Z]{2})(?<statusNumber>\\d{0,2}))?\\s*'+
             '(?<content>.+)'+
             '/s';
-        if (php.preg_match($filter, $line)) {
-            return true;
-        }
-        return null;
-    }
+		if (php.preg_match($filter, $line)) {
+			return true;
+		}
+		return null;
+	}
 
-    static parseDate($date)  {
+	static parseDate($date)  {
 
-        return {
-            'raw': $date,
-            'parsed': CommonParserHelpers.parsePartialDate($date),
-        };
-    }
+		return {
+			'raw': $date,
+			'parsed': CommonParserHelpers.parsePartialDate($date),
+		};
+	}
 
-    static parseContext($context)  {
-        let $data;
+	static parseContext($context)  {
+		let $data;
 
-        $data = php.explode('/', $context);
-        return {
-            'hotelName': php.array_shift($data),
-            'unparsedCodes': $data,
-        };
-    }
+		$data = php.explode('/', $context);
+		return {
+			'hotelName': php.array_shift($data),
+			'unparsedCodes': $data,
+		};
+	}
 
-    static parse($line)  {
-        let $filter, $matches, $result, $key, $value, $msg;
+	static parse($line)  {
+		let $filter, $matches, $result, $key, $value, $msg;
 
-        $line = php.str_replace('    ', ' ', php.trim($line));
-        $line = php.preg_replace('/\\s?\\\/\\s?/', '/', $line);
+		$line = php.str_replace('    ', ' ', php.trim($line));
+		$line = php.preg_replace('/\\s?\\\/\\s?/', '/', $line);
 
-        $filter = '/^'+
+		$filter = '/^'+
             '(?<lineNumber>\\d{1,2})\\s'+
             '[\\\/\\*]?(?<type>HHL)\\s+'+
             '(?<vendorCode>[A-Z\\d]{2})?\\s*'+
@@ -63,27 +63,27 @@ class HotelLineParser
             '(?<seeInfo>\\s*\\**SEE\\s[A-Z\\d]+.+)?'+
             '$/s';
 
-        if (php.preg_match($filter, $line, $matches = {})) {
-            $result = {};
-            for ([$key, $value] of Object.entries($matches)) {
-                if (!php.is_numeric($key)) {
-                    if ($key === 'startDate' || $key === 'endDate') {
-                        $result[$key] = this.parseDate($value);
-                    } else if ($key === 'context') {
-                        $result = php.array_merge($result, this.parseContext($value));
-                    } else {
-                        $result[$key] = $value;
-                    }
-                }}
-        }
+		if (php.preg_match($filter, $line, $matches = {})) {
+			$result = {};
+			for ([$key, $value] of Object.entries($matches)) {
+				if (!php.is_numeric($key)) {
+					if ($key === 'startDate' || $key === 'endDate') {
+						$result[$key] = this.parseDate($value);
+					} else if ($key === 'context') {
+						$result = php.array_merge($result, this.parseContext($value));
+					} else {
+						$result[$key] = $value;
+					}
+				}}
+		}
 
-        if (php.empty($result)) {
-            $msg = 'ERROR: Exist unparsed hhl(hotel) lines';
-            return {'error': $msg};
-        }
-        return $result;
+		if (php.empty($result)) {
+			$msg = 'ERROR: Exist unparsed hhl(hotel) lines';
+			return {'error': $msg};
+		}
+		return $result;
 
 
-    }
+	}
 }
 module.exports = HotelLineParser;

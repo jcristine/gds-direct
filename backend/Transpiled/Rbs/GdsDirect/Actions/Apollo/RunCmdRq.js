@@ -964,11 +964,11 @@ let RunCmdRq = ({
 				data: {
 					currentPos: !pccRow ? null : pccRow.point_of_sale_city,
 					mcoRows: ticketNumber ? [] : await
-						getMcoRows(pnr, parsed.headerData)
-							.catch(ignoreExc([], [UnprocessableEntity])),
+					getMcoRows(pnr, parsed.headerData)
+						.catch(ignoreExc([], [UnprocessableEntity])),
 					htRows: ticketNumber ? [] : await
-						getHtRows(pnr)
-							.catch(ignoreExc([], [UnprocessableEntity])),
+					getHtRows(pnr)
+						.catch(ignoreExc([], [UnprocessableEntity])),
 					headerData: parsed.headerData,
 					fields: parsed.fields.map(f => ({
 						key: f.key,

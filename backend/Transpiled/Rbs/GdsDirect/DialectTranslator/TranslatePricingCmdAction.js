@@ -166,10 +166,10 @@ class TranslatePricingCmdAction {
 		let $replace;
 
 		$replace = {
-			'apollo': ['*', '|', '+',],
-			'galileo': ['-', '.', '.',],
-			'sabre': ['-', '/', '/',],
-			'amadeus': ['-', ',', ',',],
+			'apollo': ['*', '|', '+'],
+			'galileo': ['-', '.', '.'],
+			'sabre': ['-', '/', '/'],
+			'amadeus': ['-', ',', ','],
 		};
 		$value = php.preg_replace('#\\' + $replace[$fromGds][0] + '#', $replace[$toGds][0], $value);
 		$value = php.preg_replace('#\\' + $replace[$fromGds][1] + '#', $replace[$toGds][1], $value);
@@ -365,7 +365,7 @@ class TranslatePricingCmdAction {
 				'apollo': [null, ':N', ':A'],
 				'galileo': [null, ':N', ':A'],
 				'sabre': [null, 'PL', 'PV'],
-				'amadeus': [null, ',P', ',U']
+				'amadeus': [null, ',P', ',U'],
 			},
 			'validating': {
 				'apollo': [null, 'C', 'OC'],
@@ -374,27 +374,27 @@ class TranslatePricingCmdAction {
 				'amadeus': [null, ',VC-', ',OCC-'],
 			},
 			'specClass': {
-				'apollo': [null, '.',],
-				'galileo': [null, '.',],
-				'sabre': [null, 'OC-B',],
+				'apollo': [null, '.'],
+				'galileo': [null, '.'],
+				'sabre': [null, 'OC-B'],
 				'amadeus': [null],
 			},
 			'currency': {
-				'apollo': [null, ':',],
-				'galileo': [null, ':',],
-				'sabre': [null, 'M',],
+				'apollo': [null, ':'],
+				'galileo': [null, ':'],
+				'sabre': [null, 'M'],
 				'amadeus': [null, ',FC-'],
 			},
 			'ticketDate': {
-				'apollo': [null, ':',],
-				'galileo': [null, '.T',],
-				'sabre': [null, 'B',],
+				'apollo': [null, ':'],
+				'galileo': [null, '.T'],
+				'sabre': [null, 'B'],
 				'amadeus': [null, ','],
 			},
 			'fareBase': {
-				'apollo': [null, '@',],
-				'galileo': [null, '@',],
-				'sabre': [null, 'Q',],
+				'apollo': [null, '@'],
+				'galileo': [null, '@'],
+				'sabre': [null, 'Q'],
 				'amadeus': [null, 'L-'],
 			},
 			'commission': {

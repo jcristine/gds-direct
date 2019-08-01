@@ -238,25 +238,25 @@ class TerminalHighlightService {
 						let whole = match.shift();
 						let index = match.index;
 						switch (rule.highlightType) {
-							case 'patternOnly':
-								this.matchPattern(whole, index, rule);
-								break;
-							case 'customValue':
-								let captures = [];
-								if (match.groups) {
-									captures.push(...Object.values(match.groups));
-								} else {
-									captures.push(...match);
+						case 'patternOnly':
+							this.matchPattern(whole, index, rule);
+							break;
+						case 'customValue':
+							let captures = [];
+							if (match.groups) {
+								captures.push(...Object.values(match.groups));
+							} else {
+								captures.push(...match);
+							}
+							for (let captured of captures) {
+								// javascript does not seem to return capture indexes unlike php...
+								// this is a stupid hack, but we'll have to use it till I find a lib
+								let relIndex = whole.indexOf(captured);
+								if (relIndex > -1) {
+									this.matchPattern(captured, index + relIndex, rule);
 								}
-								for (let captured of captures) {
-									// javascript does not seem to return capture indexes unlike php...
-									// this is a stupid hack, but we'll have to use it till I find a lib
-									let relIndex = whole.indexOf(captured);
-									if (relIndex > -1) {
-										this.matchPattern(captured, index + relIndex, rule);
-									}
-								}
-								break;
+							}
+							break;
 						}
 						if (rule.isOnlyFirstFound) {
 							break;
@@ -345,7 +345,7 @@ class TerminalHighlightService {
 			}
 		}
 		matches.push(...(await this.match(cmd, gds, output)));
-        matches = matches.sort((a,b) => a.index - b.index);
+		matches = matches.sort((a,b) => a.index - b.index);
 		matches = this.removeCrossMatches(matches);
 		for (let $match of matches) {
 			output = this.doReplace($match, output);

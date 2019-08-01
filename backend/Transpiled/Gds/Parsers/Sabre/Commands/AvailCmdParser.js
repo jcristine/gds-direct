@@ -18,12 +18,12 @@ const baseRegex = mkReg([
 	/(?<departureAirport>[A-Z]{3})/,
 	/(?<destinationAirport>[A-Z]{3})/,
 	'(',
-		// dunno how leading slash affects the meaning, but it surely does...
-		/(?<slashConnectionMark>\/?)/,
-		/(?<departureTimeRange>(\d+[APMN]?)(-\d+[APMN]?|))/,
-		'(?<connectionPart>(', connReg, ')*|)',
+	// dunno how leading slash affects the meaning, but it surely does...
+	/(?<slashConnectionMark>\/?)/,
+	/(?<departureTimeRange>(\d+[APMN]?)(-\d+[APMN]?|))/,
+	'(?<connectionPart>(', connReg, ')*|)',
 	'|)',
-	/(?<modsPart>.*)/
+	/(?<modsPart>.*)/,
 ]);
 
 const makeLexer = () => {

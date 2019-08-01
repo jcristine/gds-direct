@@ -133,7 +133,7 @@ class FareRuleParser {
 			'D-?(?<discontinueDateForOutboundTravel>INFINITY|\\d{1,2}[A-Z]{3}\\d{2})\\s+' +
 			'FC-(?<fareConstructionBasis>[^\\s]+)\\s*' +
 			'FN-(?<fareNumber>[A-Z0-9]*)\\s*', // guessing
-				'$'],
+			'$'],
 			// "SYSTEM DATES - CREATED 12SEP16/0720  EXPIRES INFINITY"
 			[false, '^' +
 			'SYSTEM DATES - ' +
@@ -241,7 +241,7 @@ class FareRuleParser {
 		} else if (!php.preg_match(/^-+$/, $token)) {
 			$result.push({
 				'raw': $token,
-				'error': 'failed to parse'
+				'error': 'failed to parse',
 			});
 		}
 

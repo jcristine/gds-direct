@@ -9,7 +9,7 @@ let {
 	PHP_EOL,
 	preg_match, rtrim, str_split,
 	explode, in_array,
-	trim
+	trim,
 } = require("../../../../phpDeprecated.js");
 
 const CommonParserHelpers = require('./../CommonParserHelpers.js');
@@ -55,7 +55,7 @@ class ItineraryParser {
 				if ($lastParsedSegment) {
 					$parsedData.push($lastParsedSegment);
 				}
-				$lastParsedSegment = {'segmentType': SEGMENT_TYPE_ARNK, 'segmentNumber': $result['segmentNumber'],};
+				$lastParsedSegment = {'segmentType': SEGMENT_TYPE_ARNK, 'segmentNumber': $result['segmentNumber']};
 			} else if($result = this.parseCarSegmentLine($line)) {
 				if ($lastParsedSegment) {
 					$parsedData.push($lastParsedSegment);
@@ -115,7 +115,7 @@ class ItineraryParser {
 		if ($lastParsedSegment) {
 			$parsedData.push($lastParsedSegment);
 		}
-		return {'segments': $parsedData, 'textLeft': implode(PHP_EOL, $lines),};
+		return {'segments': $parsedData, 'textLeft': implode(PHP_EOL, $lines)};
 	}
 
 	// ' 1 UA1704S 19DEC LASEWR HK1   605A  157P *         SA   E  1'
@@ -210,7 +210,7 @@ class ItineraryParser {
 		let $regex = /^(?<segmentNumber>[\s\d]{2}) OTH (?<text>.+)$/;
 		let $matches;
 		if ($matches = preg_match($regex, $line, $matches)) {
-			return {'success': true, 'segmentNumber': trim($matches['segmentNumber']), 'text': trim($matches['text']),};
+			return {'success': true, 'segmentNumber': trim($matches['segmentNumber']), 'text': trim($matches['text'])};
 		} else {
 			return false;
 		}
@@ -245,7 +245,7 @@ class ItineraryParser {
 		let $matches;
 		if ($matches = preg_match(/^\s*PLANE CHANGE\s+([A-Z]{3})-([A-Z]{3})\s+([A-Z0-9]{3})\s*$/, $line)) {
 			let [$_, $from, $to, $aircraft] = $matches;
-			return {'from': $from, 'to': $to, 'aircraft': $aircraft,};
+			return {'from': $from, 'to': $to, 'aircraft': $aircraft};
 		} else {
 			return null;
 		}
@@ -255,7 +255,7 @@ class ItineraryParser {
 		let $regex = /^(?<segmentNumber>[\s\d]{2})\s{3}ARNK\s*$/;
 		let $matches;
 		if ($matches = preg_match($regex, $line, $matches)) {
-			return {'success': true, 'segmentNumber': trim($matches['segmentNumber']),};
+			return {'success': true, 'segmentNumber': trim($matches['segmentNumber'])};
 		} else {
 			return false;
 		}
@@ -268,7 +268,7 @@ class ItineraryParser {
 		$line = trim(array_shift($wrappedLines));
 		let $matches = [];
 		if ($matches = preg_match(/^OPERATED BY(?<operator>.*?)( [A-Z]{3}-[A-Z]{3})?$/, trim($line), $matches)) {
-			return {'success': true, 'operator': trim($matches['operator']), 'followingLines': $wrappedLines,};
+			return {'success': true, 'operator': trim($matches['operator']), 'followingLines': $wrappedLines};
 		} else {
 			return false;
 		}
@@ -347,13 +347,13 @@ class ItineraryParser {
 				// 'USD109.00DY-UNL FM'
 				let $match;
 				if ($match = preg_match(/^(?<currency>[A-Z]{3})(?<amount>\d*\.\d{2})/, $data, $match)) {
-					$result['rateGuarantee'] = {'currency': $match['currency'], 'amount': $match['amount'],};
+					$result['rateGuarantee'] = {'currency': $match['currency'], 'amount': $match['amount']};
 				}
 			} else if ($code === 'APPROXIMATE TOTAL RATE') {
 				// 'APPROXIMATE TOTAL RATE-USD237.00-UNL FM 03DY 00HR .00MC'
 				let $match;
 				if ($match = preg_match(/^(?<currency>[A-Z]{3})(?<amount>\d*\.\d{2})/, $data, $match)) {
-					$result['approxTotal'] = {'currency': $match['currency'], 'amount': $match['amount'],};
+					$result['approxTotal'] = {'currency': $match['currency'], 'amount': $match['amount']};
 				}
 			} else if ($code === 'AT') { // TODO: Unknown
 			}
@@ -370,7 +370,7 @@ class ItineraryParser {
 		let $matches;
 		if ($matches = preg_match(/^(.*?)-(.*)$/, $fieldStr, $matches)) {
 			let [$_, $code, $content] = $matches;
-			return {'code': $code, 'content': $content,};
+			return {'code': $code, 'content': $content};
 		} else {
 			return null;
 		}

@@ -379,7 +379,7 @@ class SsrBlockParser {
 				// because there's no real need in that
 			} else {
 				$lineData = null
-					//?? static::parseSsrAdmdLine($line)
+				//?? static::parseSsrAdmdLine($line)
 				;
 			}
 			if ($lineData && $extracted && $extracted['paxName']) {

@@ -20,84 +20,84 @@ const php = require('../../../../phpDeprecated.js');
 const FopLineParser = require("./FopLineParser");
 class PnrFieldLineParser
 {
-    static parseRange($query)  {
-        let $parseRange;
+	static parseRange($query)  {
+		let $parseRange;
 
-        if (!$query) {
-            return [];
-        }
-        $parseRange = ($text) => {
-            let $pair;
+		if (!$query) {
+			return [];
+		}
+		$parseRange = ($text) => {
+			let $pair;
 
-            $pair = php.explode('-', $text);
-            return php.range($pair[0], $pair[1] || $pair[0]);
-        };
-        return Fp.flatten(Fp.map($parseRange, php.explode(',', php.trim($query))));
-    }
+			$pair = php.explode('-', $text);
+			return php.range($pair[0], $pair[1] || $pair[0]);
+		};
+		return Fp.flatten(Fp.map($parseRange, php.explode(',', php.trim($query))));
+	}
 
-    // 'PAX SOME TEXT SOME TEXT/S1-3/P4-5'
-    // 'INF SOME TEXT SOME TEXT/P1,3-5'
-    // 'PAX OK28FEB/SFO1S2195//ETLH/S3-4,6-8/P2',
-    static parseSegPaxPostifx($content)  {
-        let $regex, $matches;
+	// 'PAX SOME TEXT SOME TEXT/S1-3/P4-5'
+	// 'INF SOME TEXT SOME TEXT/P1,3-5'
+	// 'PAX OK28FEB/SFO1S2195//ETLH/S3-4,6-8/P2',
+	static parseSegPaxPostifx($content)  {
+		let $regex, $matches;
 
-        $regex =
+		$regex =
             '/^\\s*'+
             '((?<infMark>INF|PAX)\\s+|)'+
             '(?<content>.*?)\\s*'+
             '(\\\/S(?<segNums>\\d+[,\\-\\d]*)|)\\s*'+
             '(\\\/P(?<paxNums>\\d+[,\\-\\d]*)|)\\s*'+
             '$\/s';
-        if (php.preg_match($regex, $content, $matches = [])) {
-            return {
-                'infMark': $matches['infMark'] || '',
-                'content': $matches['content'],
-                'segNums': this.parseRange($matches['segNums'] || ''),
-                'paxNums': this.parseRange($matches['paxNums'] || ''),
-            };
-        } else {
-            return null;
-        }
-    }
+		if (php.preg_match($regex, $content, $matches = [])) {
+			return {
+				'infMark': $matches['infMark'] || '',
+				'content': $matches['content'],
+				'segNums': this.parseRange($matches['segNums'] || ''),
+				'paxNums': this.parseRange($matches['paxNums'] || ''),
+			};
+		} else {
+			return null;
+		}
+	}
 
-    // 'NONEND FEE APLY FOR RBK OB OR REFUND/RERTE/REISSUE -BG CI'
-    // 'BG G3'
-    // 'NONENDS. REBKG CHRG APPLY-JPY15000. RISS CHRG APPLY-JPY15000. RFND PNTY APPLY-JPY30000. NO MILE UG. -BG KE'
-    // 'BG:G3'
-    // 'PAX NO REFUND FEES/FARE DIFF APPLY FEE APPLIES FOR NAME
-    //  CHNG -BG:EI'
-    static parseEndorsement($content)  {
-        let $matches, $_, $text, $airline;
+	// 'NONEND FEE APLY FOR RBK OB OR REFUND/RERTE/REISSUE -BG CI'
+	// 'BG G3'
+	// 'NONENDS. REBKG CHRG APPLY-JPY15000. RISS CHRG APPLY-JPY15000. RFND PNTY APPLY-JPY30000. NO MILE UG. -BG KE'
+	// 'BG:G3'
+	// 'PAX NO REFUND FEES/FARE DIFF APPLY FEE APPLIES FOR NAME
+	//  CHNG -BG:EI'
+	static parseEndorsement($content)  {
+		let $matches, $_, $text, $airline;
 
-        if (php.preg_match(/^(.*?)\s*-?BG[^A-Z]([A-Z0-9]{2})$/s, $content, $matches = [])) {
-            [$_, $text, $airline] = $matches;
-        } else {
-            $text = $content;
-            $airline = null;
-        }
-        return {'text': $text, 'airline': $airline};
-    }
+		if (php.preg_match(/^(.*?)\s*-?BG[^A-Z]([A-Z0-9]{2})$/s, $content, $matches = [])) {
+			[$_, $text, $airline] = $matches;
+		} else {
+			$text = $content;
+			$airline = null;
+		}
+		return {'text': $text, 'airline': $airline};
+	}
 
-    // '*M*16.50A', '*M*0', '*M*14'
-    static parseCommission($content)  {
-        let $matches, $_, $value, $amountMark;
+	// '*M*16.50A', '*M*0', '*M*14'
+	static parseCommission($content)  {
+		let $matches, $_, $value, $amountMark;
 
-        if (php.preg_match(/^\s*\*M\*(\d*\.?\d+)(A|)$/, $content, $matches = [])) {
-            [$_, $value, $amountMark] = $matches;
-            return {
-                'value': $value,
-                'units': $amountMark ? 'amount' : 'percent',
-            };
-        } else {
-            return null;
-        }
-    }
+		if (php.preg_match(/^\s*\*M\*(\d*\.?\d+)(A|)$/, $content, $matches = [])) {
+			[$_, $value, $amountMark] = $matches;
+			return {
+				'value': $value,
+				'units': $amountMark ? 'amount' : 'percent',
+			};
+		} else {
+			return null;
+		}
+	}
 
-    /** @param $line = '235-5050366427SFO27JAN17/05578602/235-5050366427' */
-    static parseOriginalIssue($line)  {
-        let $regex, $matches;
+	/** @param $line = '235-5050366427SFO27JAN17/05578602/235-5050366427' */
+	static parseOriginalIssue($line)  {
+		let $regex, $matches;
 
-        $regex =
+		$regex =
             '/^\\s*'+
             '(?<airlineNumber>\\d{3})-'+
             '(?<documentNumber>\\d{10})'+
@@ -107,24 +107,24 @@ class PnrFieldLineParser
             '(?<exchangedForAirlineNumber>\\d{3})-'+
             '(?<exchangedForDocumentNumber>\\d{10})'+
             '\\s*$/';
-        if (php.preg_match($regex, $line, $matches = [])) {
-            return {
-                'airlineNumber': $matches['airlineNumber'],
-                'documentNumber': $matches['documentNumber'],
-                'location': $matches['location'],
-                'date': CommonParserHelpers.parseCurrentCenturyFullDate($matches['date']),
-                'iata': $matches['iata'],
-                'exchangedFor': {
-                    'airlineNumber': $matches['exchangedForAirlineNumber'],
-                    'documentNumber': $matches['exchangedForDocumentNumber'],
-                },
-            };
-        } else {
-            return null;
-        }
-    }
+		if (php.preg_match($regex, $line, $matches = [])) {
+			return {
+				'airlineNumber': $matches['airlineNumber'],
+				'documentNumber': $matches['documentNumber'],
+				'location': $matches['location'],
+				'date': CommonParserHelpers.parseCurrentCenturyFullDate($matches['date']),
+				'iata': $matches['iata'],
+				'exchangedFor': {
+					'airlineNumber': $matches['exchangedForAirlineNumber'],
+					'documentNumber': $matches['exchangedForDocumentNumber'],
+				},
+			};
+		} else {
+			return null;
+		}
+	}
 
-    /**
+	/**
      * would be good probably to refactor FA, FP and rest so
      * that they were parsed through this function since they
      * are not RT-specific unlike itinerary and passengers
@@ -135,61 +135,61 @@ class PnrFieldLineParser
      *                ?: 'TK                                                                      '
      *                ?: 'PAX VALID ON A3 FLIGHTS/ DATES SHOWN ONLY NON-REFUNDABLE'.PHP_EOL.'/S2-3'
      */
-    static parse($code, $content)  {
-        let $paxSegData, $type, $data, $pair, $seq, $inv;
+	static parse($code, $content)  {
+		let $paxSegData, $type, $data, $pair, $seq, $inv;
 
-        if ($paxSegData = this.parseSegPaxPostifx($content)) {
-            $content = $paxSegData['content'];
-        }
-        if ($code === 'FV') {
-            $type = 'validatingCarrier';
-            $data = $content;
-        } else if ($code === 'FE') {
-            $type = 'endorsement';
-            $data = this.parseEndorsement($content);
-        } else if ($code === 'AP') {
-            $type = 'phone';
-            $data = null; // free-form
-        } else if ($code === 'TK') {
-            $type = 'ticketingTimeLimit';
-            $data = null; // not parsed for now
-        } else if ($code === 'FP') {
-            $type = 'formOfPayment';
-            $data = FopLineParser.parseDataStr($content) || null;
-        } else if ($code === 'FM') {
-            $type = 'commission';
-            $data = this.parseCommission($content);
-        } else if ($code === 'FT') {
-            $type = 'tourCode';
-            $data = {
-                'tourCode': php.ltrim($content, '*'),
-                'isStarred': StringUtil.startsWith($content, '*'),
-            };
-        } else if ($code === 'FI') {
-            $type = 'invoice';
-            $pair = $content.split(/\s*INV\s*/);
-            if (php.count($pair) === 2) {
-                [$seq, $inv] = $pair;
-                $data = {'sequenceNumber': $seq, 'invoiceNumber': $inv};
-            } else {
-                $data = null;
-            }
-        } else if ($code === 'FO') {
-            $type = 'originalIssue';
-            $data = this.parseOriginalIssue($content);
-        } else {
-            // unsupported code
-            $type = null;
-            $data = null;
-        }
-        return {
-            'type': $type,
-            'data': $data,
-            'content': $content,
-            'segNums': $paxSegData['segNums'] || [],
-            'paxNums': $paxSegData['paxNums'] || [],
-            'infMark': $paxSegData['infMark'] || '',
-        };
-    }
+		if ($paxSegData = this.parseSegPaxPostifx($content)) {
+			$content = $paxSegData['content'];
+		}
+		if ($code === 'FV') {
+			$type = 'validatingCarrier';
+			$data = $content;
+		} else if ($code === 'FE') {
+			$type = 'endorsement';
+			$data = this.parseEndorsement($content);
+		} else if ($code === 'AP') {
+			$type = 'phone';
+			$data = null; // free-form
+		} else if ($code === 'TK') {
+			$type = 'ticketingTimeLimit';
+			$data = null; // not parsed for now
+		} else if ($code === 'FP') {
+			$type = 'formOfPayment';
+			$data = FopLineParser.parseDataStr($content) || null;
+		} else if ($code === 'FM') {
+			$type = 'commission';
+			$data = this.parseCommission($content);
+		} else if ($code === 'FT') {
+			$type = 'tourCode';
+			$data = {
+				'tourCode': php.ltrim($content, '*'),
+				'isStarred': StringUtil.startsWith($content, '*'),
+			};
+		} else if ($code === 'FI') {
+			$type = 'invoice';
+			$pair = $content.split(/\s*INV\s*/);
+			if (php.count($pair) === 2) {
+				[$seq, $inv] = $pair;
+				$data = {'sequenceNumber': $seq, 'invoiceNumber': $inv};
+			} else {
+				$data = null;
+			}
+		} else if ($code === 'FO') {
+			$type = 'originalIssue';
+			$data = this.parseOriginalIssue($content);
+		} else {
+			// unsupported code
+			$type = null;
+			$data = null;
+		}
+		return {
+			'type': $type,
+			'data': $data,
+			'content': $content,
+			'segNums': $paxSegData['segNums'] || [],
+			'paxNums': $paxSegData['paxNums'] || [],
+			'infMark': $paxSegData['infMark'] || '',
+		};
+	}
 }
 module.exports = PnrFieldLineParser;

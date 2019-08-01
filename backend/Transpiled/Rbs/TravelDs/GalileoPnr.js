@@ -11,156 +11,156 @@ const php = require('../../phpDeprecated.js');
 /** @implements {IPnr} */
 class GalileoPnr
 {
-    static makeFromDump($dump)  {
-        let $obj;
+	static makeFromDump($dump)  {
+		let $obj;
 
-        $obj = new this();
-        $obj.$dump = $dump;
-        $obj.$parsed = PnrParser.parse($dump);
-        return $obj;
-    }
+		$obj = new this();
+		$obj.$dump = $dump;
+		$obj.$parsed = PnrParser.parse($dump);
+		return $obj;
+	}
 
-    constructor()  {
+	constructor()  {
 
-    }
+	}
 
-    getDump()  {
+	getDump()  {
 
-        return this.$dump;
-    }
+		return this.$dump;
+	}
 
-    getParsedData()  {
+	getParsedData()  {
 
-        return this.$parsed;
-    }
+		return this.$parsed;
+	}
 
-    getRecordLocator()  {
+	getRecordLocator()  {
 
-        return (((this.$parsed || {})['headerData'] || {})['reservationInfo'] || {})['recordLocator'];
-    }
+		return (((this.$parsed || {})['headerData'] || {})['reservationInfo'] || {})['recordLocator'];
+	}
 
-    getGdsName()  {
+	getGdsName()  {
 
-        return 'galileo';
-    }
+		return 'galileo';
+	}
 
-    getAgentInitials()  {
+	getAgentInitials()  {
 
-        return this.$parsed['headerData']['reservationInfo']['focalPointInitials'];
-    }
+		return this.$parsed['headerData']['reservationInfo']['focalPointInitials'];
+	}
 
-    wasCreatedInGdsDirect()  {
-        let $agentSign;
+	wasCreatedInGdsDirect()  {
+		let $agentSign;
 
-        $agentSign = (((this.$parsed || {})['headerData'] || {})['reservationInfo'] || {})['pnrCreatorToken'];
-        return $agentSign === 'VTL9WS';
-    }
+		$agentSign = (((this.$parsed || {})['headerData'] || {})['reservationInfo'] || {})['pnrCreatorToken'];
+		return $agentSign === 'VTL9WS';
+	}
 
-    getRsprTeam()  {
+	getRsprTeam()  {
 
-        return null;
-    }
+		return null;
+	}
 
-    getPassengers()  {
+	getPassengers()  {
 
-        return this.$parsed['passengers']['passengerList'];
-    }
+		return this.$parsed['passengers']['passengerList'];
+	}
 
-    getItinerary()  {
+	getItinerary()  {
 
-        return php.array_values(php.array_filter(this.$parsed['itineraryData'], ($seg) => {
+		return php.array_values(php.array_filter(this.$parsed['itineraryData'], ($seg) => {
 
-            return $seg['segmentType'] === ItineraryParser.SEGMENT_TYPE_ITINERARY_SEGMENT;
-        }));
-    }
+			return $seg['segmentType'] === ItineraryParser.SEGMENT_TYPE_ITINERARY_SEGMENT;
+		}));
+	}
 
-    getRemarks()  {
+	getRemarks()  {
 
-        return (this.$parsed || {})['remarks'] || [];
-    }
+		return (this.$parsed || {})['remarks'] || [];
+	}
 
-    hasItinerary()  {
+	hasItinerary()  {
 
-        return !php.empty(this.getItinerary());
-    }
+		return !php.empty(this.getItinerary());
+	}
 
-    getSegmentsWithStatus($status)  {
+	getSegmentsWithStatus($status)  {
 
-        return Fp.filter(($seg) => {
-return $seg['segmentStatus'] == $status;}, this.getItinerary());
-    }
+		return Fp.filter(($seg) => {
+			return $seg['segmentStatus'] == $status;}, this.getItinerary());
+	}
 
-    hasSegmentsWithStatus($status)  {
+	hasSegmentsWithStatus($status)  {
 
-        return Fp.any(($seg) => {
-return $seg['segmentStatus'] == $status;}, this.getItinerary());
-    }
+		return Fp.any(($seg) => {
+			return $seg['segmentStatus'] == $status;}, this.getItinerary());
+	}
 
-    hasOnlySegmentsWithStatus($status)  {
+	hasOnlySegmentsWithStatus($status)  {
 
-        return Fp.all(($seg) => {
-return $seg['segmentStatus'] == $status;}, this.getItinerary());
-    }
+		return Fp.all(($seg) => {
+			return $seg['segmentStatus'] == $status;}, this.getItinerary());
+	}
 
-    hasEtickets()  {
+	hasEtickets()  {
 
-        return this.$parsed['dataExistsInfo']['eTicketDataExists']
+		return this.$parsed['dataExistsInfo']['eTicketDataExists']
             || this.$parsed['dataExistsInfo']['tinRemarksExist'];
-    }
+	}
 
-    hasLinearFare()  {
+	hasLinearFare()  {
 
-        return this.$parsed['dataExistsInfo']['filedFareDataExists'] ? true : false;
-    }
+		return this.$parsed['dataExistsInfo']['filedFareDataExists'] ? true : false;
+	}
 
-    hasFrequentFlyerInfo()  {
+	hasFrequentFlyerInfo()  {
 
-        return this.$parsed['dataExistsInfo']['membershipDataExists'] ? true : false;
-    }
+		return this.$parsed['dataExistsInfo']['membershipDataExists'] ? true : false;
+	}
 
-    hasSeatInfo()  {
+	hasSeatInfo()  {
 
-        return this.$parsed['dataExistsInfo']['seatDataExists'] ? true : false;
-    }
+		return this.$parsed['dataExistsInfo']['seatDataExists'] ? true : false;
+	}
 
-    belongsToItn()  {
-        let $agentSign;
+	belongsToItn()  {
+		let $agentSign;
 
-        $agentSign = this.$parsed['headerData']['reservationInfo']['pnrCreatorToken'];
-        // I wonder whether this 9 is end of home PCC or start of initials...
-        return StringUtil.startsWith($agentSign, 'VTL9');
-    }
+		$agentSign = this.$parsed['headerData']['reservationInfo']['pnrCreatorToken'];
+		// I wonder whether this 9 is end of home PCC or start of initials...
+		return StringUtil.startsWith($agentSign, 'VTL9');
+	}
 
-    static checkDumpIsRestricted($dump)  {
+	static checkDumpIsRestricted($dump)  {
 
-        // we usually remove "><" beforehand, but i'd not rely on that
-        $dump = php.preg_replace(/\s*(><)?\s*$/, '', $dump);
-        // checking for same "restricted" error messages as in Apollo
-        // nobody saw them in Galileo, so we don't know how they actually look...
-        return php.preg_match(/^RESTRICTED PNR\s*-\s*CALL HELP DESK$/, php.trim($dump))
+		// we usually remove "><" beforehand, but i'd not rely on that
+		$dump = php.preg_replace(/\s*(><)?\s*$/, '', $dump);
+		// checking for same "restricted" error messages as in Apollo
+		// nobody saw them in Galileo, so we don't know how they actually look...
+		return php.preg_match(/^RESTRICTED PNR\s*-\s*CALL HELP DESK$/, php.trim($dump))
             || php.preg_match(/^RESTRICTED PNR$/, php.trim($dump))
             || php.preg_match(/^AG - DUTY CODE NOT AUTH FOR CRT - .*$/, php.trim($dump))
             || php.preg_match(/^NO AGREEMENT EXISTS FOR PSEUDO CITY.*$/, php.trim($dump))
             || php.preg_match(/^PROVIDER PSEUDO CITY DOES NOT HAVE AGREEMENT WITH.*$/, php.trim($dump));
-    }
+	}
 
-    static checkDumpIsNotExisting($dump)  {
+	static checkDumpIsNotExisting($dump)  {
 
-        // we usually remove "><" beforehand, but i'd not rely on that
-        $dump = php.preg_replace(/\s*(><)?\s*$/, '', $dump);
-        return php.trim($dump) === 'UNABLE TO RETRIEVE - CHECK RECORD LOCATOR'
+		// we usually remove "><" beforehand, but i'd not rely on that
+		$dump = php.preg_replace(/\s*(><)?\s*$/, '', $dump);
+		return php.trim($dump) === 'UNABLE TO RETRIEVE - CHECK RECORD LOCATOR'
             || php.trim($dump) === 'UNABLE TO RETRIEVE - CALL HELP DESK'
             || php.trim($dump) === 'INVALID';
-    }
+	}
 
-    getReservationDt($fetchedDt)  {
-        let $date;
+	getReservationDt($fetchedDt)  {
+		let $date;
 
-        $date = ((((this.$parsed || {})['headerData'] || {})['reservationInfo'] || {})['reservationDate'] || {})['parsed'];
+		$date = ((((this.$parsed || {})['headerData'] || {})['reservationInfo'] || {})['reservationDate'] || {})['parsed'];
 
-        return $date !== null
-            ? DateTime.decodeRelativeDateInPast($date, $fetchedDt)
-            : null;
-    }
+		return $date !== null
+			? DateTime.decodeRelativeDateInPast($date, $fetchedDt)
+			: null;
+	}
 }
 module.exports = GalileoPnr;
