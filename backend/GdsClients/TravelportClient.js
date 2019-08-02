@@ -98,7 +98,7 @@ const TravelportClient = ({
 
 		const result = await sendRequest(reqBody, gdsData.profileName);
 
-		return TravelportFareRuleTransformer.parseFareRuleXmlResponse(result);
+		return TravelportFareRuleTransformer.parseFareRuleXmlResponse(result, params);
 	};
 
 	const buildSoapBody = (gdsData, requestType, reqXml) => (

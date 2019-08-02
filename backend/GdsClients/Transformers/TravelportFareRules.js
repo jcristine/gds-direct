@@ -26,10 +26,10 @@ module.exports.buildFareRuleXml = params => {
 	}]);
 };
 
-module.exports.parseFareRuleXmlResponse = response => {
+module.exports.parseFareRuleXmlResponse = (response, params) => {
 	const dom = parseXml(response);
 	const result = {
-		cmd: 'SOAP>FARE_RULES', // dummy value to ensure that import pq action is satisfied
+		cmd: `FN${params.fareComponentNumber}/${params.paragraphs.join('/')}`, // same command that would have been executed from terminal
 		error: null,
 		output: '',
 	};
