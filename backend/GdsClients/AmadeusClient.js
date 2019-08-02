@@ -116,6 +116,11 @@ let parseCmdRs = (dom, profileName) => ({
 	output: dom.querySelector('Command_CrypticReply > longTextString > textStringDetails').textContent.replace(/\r/g, '\n'),
 });
 
+let AmadeusClient = ({
+	PersistentHttpRq = require('klesun-node-tools/src/Utils/PersistentHttpRq.js'),
+	GdsProfiles = require("../Repositories/GdsProfiles"),
+}) => {
+
 let startSession = async (params) => {
 	let profileName = params.profileName;
 	let profileData = await getAmadeus(profileName);
@@ -213,10 +218,7 @@ let makeSession = (gdsData) => ({
 		.then(result => ({cmd, ...result})),
 });
 
-exports.startSession = startSession;
-exports.runCmd = runCmd;
-exports.closeSession = closeSession;
-exports.withSession = async (params, action) => {
+let withSession = async (params, action) => {
 	let pcc = params.pcc || null;
 	let profileName = params.profileName
 		|| GdsProfiles.AMADEUS.AMADEUS_PROD_1ASIWTUTICO;
@@ -229,3 +231,17 @@ exports.withSession = async (params, action) => {
 			});
 	});
 };
+
+	return {
+		startSession,
+		runCmd,
+		closeSession,
+		withSession,
+	};
+};
+
+const defaultInst = AmadeusClient({});
+
+defaultInst.makeCustom = params => AmadeusClient(params);
+
+module.exports = defaultInst;
