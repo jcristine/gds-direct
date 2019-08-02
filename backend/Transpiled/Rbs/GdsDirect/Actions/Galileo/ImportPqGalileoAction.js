@@ -17,7 +17,7 @@ const ImportFareComponentsAction = require('../../../Process/Apollo/ImportPnr/Ac
 const Rej = require('klesun-node-tools/src/Rej.js');
 
 class ImportPqGalileoAction extends AbstractGdsAction {
-	constructor() {
+	constructor(useXml = true) {
 		super();
 		this.$leadData = {};
 		this.$fetchOptionalFields = true;
@@ -25,6 +25,7 @@ class ImportPqGalileoAction extends AbstractGdsAction {
 		this.$cmdToFullOutput = {};
 		this.$allCommands = [];
 		this.$preCalledCommands = [];
+		this.useXml = useXml;
 	}
 
 	setLeadData($leadData) {
@@ -328,7 +329,7 @@ class ImportPqGalileoAction extends AbstractGdsAction {
 		}
 
 		$result = await (new ImportFareComponentsAction())
-			.useXml(false)
+			.useXml(this.useXml)
 			.setSession(this.session).execute([16], 1);
 		if ($error = $result['error']) return {'error': $error};
 

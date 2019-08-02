@@ -29,6 +29,7 @@ module.exports.buildFareRuleXml = params => {
 module.exports.parseFareRuleXmlResponse = response => {
 	const dom = parseXml(response);
 	const result = {
+		cmd: 'SOAP>FARE_RULES', // dummy value to ensure that import pq action is satisfied
 		error: null,
 		output: '',
 	};
