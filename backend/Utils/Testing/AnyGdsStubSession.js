@@ -1,8 +1,8 @@
 
 
-const fetchAll = require("../../../GdsHelpers/TravelportUtils").fetchAll;
+const fetchAll = require("../../GdsHelpers/TravelportUtils").fetchAll;
 
-let php = require('../../phpDeprecated.js');
+let php = require('../../Transpiled/phpDeprecated.js');
 
 /**
  * this is a helper class for tests

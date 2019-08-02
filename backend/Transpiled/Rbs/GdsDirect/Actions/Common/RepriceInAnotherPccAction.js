@@ -1,7 +1,6 @@
 
 const SabPricingCmdParser = require("../../../../Gds/Parsers/Sabre/Commands/PricingCmdParser");
-const Fp = require('../../../../Lib/Utils/Fp.js');
-const ApolloBuildItineraryAction = require('../../../../Rbs/GdsAction/ApolloBuildItineraryAction.js');
+const ApolloBuildItineraryAction = require('../../../GdsAction/ApolloBuildItinerary.js');
 const GalileoBuildItineraryAction = require('../../../../Rbs/GdsAction/GalileoBuildItineraryAction.js');
 const SabreBuildItineraryAction = require('../../../../Rbs/GdsAction/SabreBuildItineraryAction.js');
 const GdsDialectTranslator = require('../../../../Rbs/GdsDirect/DialectTranslator/GdsDialectTranslator.js');
@@ -197,7 +196,7 @@ class RepriceInAnotherPccAction {
 		}
 	}
 
-	async repriceInApollo(pcc, itinerary, pricingCmd) {
+	async repriceInApollo(pcc, itinerary, pricingCmd, $startDt) {
 		itinerary = itinerary.map(seg => ({...seg, segmentStatus: 'GK'}));
 		let profileName = GdsProfiles.TRAVELPORT.DynApolloProd_2F3K;
 		return TravelportClient.withSession({profileName}, async session => {
@@ -207,8 +206,11 @@ class RepriceInAnotherPccAction {
 				return Forbidden('Could not emulate '
 					+ pcc + ' - ' + semRs.output.trim());
 			}
-			let built = await new ApolloBuildItineraryAction()
-				.setSession(session).execute(itinerary, true);
+			let built = await ApolloBuildItineraryAction({
+				baseDate: $startDt,
+				session, itinerary,
+				isParserFormat: true,
+			});
 			if (built.errorType) {
 				return UnprocessableEntity('Could not rebuild PNR in Apollo - '
 					+ built.errorType + ' ' + JSON.stringify(built.errorData));
@@ -291,9 +293,9 @@ class RepriceInAnotherPccAction {
 		});
 	}
 
-	async repriceIn(gds, pcc, itinerary, pricingCmd) {
+	async repriceIn(gds, pcc, itinerary, pricingCmd, $startDt) {
 		if (gds === 'apollo') {
-			return this.repriceInApollo(pcc, itinerary, pricingCmd);
+			return this.repriceInApollo(pcc, itinerary, pricingCmd, $startDt);
 		} else if (gds === 'sabre') {
 			return this.repriceInSabre(pcc, itinerary, pricingCmd);
 		} else if (gds === 'amadeus') {
@@ -332,7 +334,7 @@ class RepriceInAnotherPccAction {
 			.translate($dialect, $target['gds'], $cmd);
 		$targetCmd = $translatorResult['output'] || $cmd;
 
-		let result = await this.repriceIn($target.gds, $target.pcc, $itinerary, $targetCmd);
+		let result = await this.repriceIn($target.gds, $target.pcc, $itinerary, $targetCmd, $startDt);
 		return {'calledCommands': result.calledCommands};
 	}
 }

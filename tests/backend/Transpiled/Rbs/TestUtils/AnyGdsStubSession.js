@@ -1,1 +1,1 @@
-module.exports = require('../../../../../backend/Transpiled/Rbs/TestUtils/AnyGdsStubSession.js');
+module.exports = require('../../../../../backend/Utils/Testing/AnyGdsStubSession.js');

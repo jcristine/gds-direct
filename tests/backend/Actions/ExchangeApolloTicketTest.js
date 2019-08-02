@@ -1,7 +1,7 @@
-const GdsActionTestUtil = require("../../../backend/Transpiled/Rbs/TestUtils/GdsActionTestUtil");
+const GdsActionTestUtil = require("../../../backend/Utils/Testing/GdsActionTestUtil");
 const ExchangeApolloTicket = require('../../../backend/Actions/ExchangeApolloTicket.js');
 const ParseHbFex = require('../../../backend/Parsers/Apollo/ParseHbFex.js');
-const GdsDirectDefaults = require("../../../backend/Transpiled/Rbs/TestUtils/GdsDirectDefaults");
+const GdsDirectDefaults = require("../../../backend/Utils/Testing/GdsDirectDefaults");
 
 class ExchangeApolloTicketTest extends require('../Transpiled/Lib/TestCase.js')
 {

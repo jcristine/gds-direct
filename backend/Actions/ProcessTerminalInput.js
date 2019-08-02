@@ -1,3 +1,5 @@
+const TravelportClient = require('../GdsClients/TravelportClient.js');
+const GdsSession = require('../GdsHelpers/GdsSession.js');
 const AddMpRemark = require('./AddMpRemark.js');
 const GetCurrentPnr = require('./GetCurrentPnr.js');
 const Misc = require('klesun-node-tools/src/Utils/Misc.js');
@@ -134,9 +136,11 @@ let transformCalledCommand = (rec, stateful) => {
 
 let runByGds = async (cmdRqData) => {
 	let gdsResult;
+	let httpRq = GdsSession.initHttpRq(cmdRqData.stateful.getSessionRecord());
+	let travelport = TravelportClient.makeCustom({PersistentHttpRq: httpRq});
 	let gds = cmdRqData.stateful.gds;
 	if (gds === 'apollo') {
-		gdsResult = await ApoRunCmdRq(cmdRqData);
+		gdsResult = await ApoRunCmdRq({...cmdRqData, TravelportClient: travelport});
 	} else if (gds === 'sabre') {
 		gdsResult = await SabRunCmdRq(cmdRqData);
 	} else if (gds === 'amadeus') {

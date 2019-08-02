@@ -24,7 +24,7 @@ const CmsApolloTerminal = require('../../../../Rbs/GdsDirect/GdsInterface/CmsApo
 const ApolloPnr = require('../../../../Rbs/TravelDs/ApolloPnr.js');
 
 // actions
-const ApolloBuildItineraryAction = require('../../../../Rbs/GdsAction/ApolloBuildItineraryAction.js');
+const ApolloBuildItineraryAction = require('../../../GdsAction/ApolloBuildItinerary.js');
 const ApolloMakeMcoAction = require('../../../../Rbs/GdsAction/ApolloMakeMcoAction.js');
 const MakeMcoApolloAction = require('../../../../Rbs/GdsDirect/Actions/Apollo/MakeMcoApolloAction.js');
 const RepriceInAnotherPccAction = require('../../../../Rbs/GdsDirect/Actions/Common/RepriceInAnotherPccAction.js');
@@ -101,6 +101,7 @@ let RunCmdRq = ({
 	CmdRqLog = require('../../../../../Repositories/CmdRqLog.js'),
 	PtcUtil = require('../../../../Rbs/Process/Common/PtcUtil.js'),
 	Pccs = require("../../../../../Repositories/Pccs.js"),
+	TravelportClient = require('../../../../../GdsClients/TravelportClient.js'),
 	useXml = true,
 }) => {
 	const {
@@ -294,10 +295,13 @@ let RunCmdRq = ({
 			return $seg;
 		}, $itinerary);
 		$gkSegments = Fp.filter($isGkRebookPossible, $itinerary);
-		$result = await (new ApolloBuildItineraryAction())
-			.setSession(stateful)
-			.useXml(useXml)
-			.execute($newItinerary, true);
+		$result = await ApolloBuildItineraryAction({
+			TravelportClient,
+			itinerary: $newItinerary,
+			baseDate: stateful.getStartDt(),
+			useXml: useXml,
+			session: stateful,
+		});
 		if ($error = transformBuildError($result)) {
 			return {
 				'calledCommands': stateful.flushCalledCommands(),

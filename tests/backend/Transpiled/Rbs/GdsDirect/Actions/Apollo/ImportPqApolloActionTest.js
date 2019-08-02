@@ -1,10 +1,10 @@
 
 const ImportPqApolloAction = require('../../../../../../../backend/Transpiled/Rbs/GdsDirect/Actions/Apollo/ImportPqApolloAction.js');
-const AnyGdsStubSession = require('../../../../../../../backend/Transpiled/Rbs/TestUtils/AnyGdsStubSession.js');
+const AnyGdsStubSession = require('../../../../../../../backend/Utils/Testing/AnyGdsStubSession.js');
 const ItineraryParser = require('../../../../../../../backend/Transpiled/Gds/Parsers/Apollo/Pnr/ItineraryParser.js');
 
 const php = require('../../../../php.js');
-const GdsActionTestUtil = require("../../../../../../../backend/Transpiled/Rbs/TestUtils/GdsActionTestUtil");
+const GdsActionTestUtil = require("../../../../../../../backend/Utils/Testing/GdsActionTestUtil");
 
 class ImportPqApolloActionTest extends require('../../../../Lib/TestCase.js') {
 	provideTestCases() {

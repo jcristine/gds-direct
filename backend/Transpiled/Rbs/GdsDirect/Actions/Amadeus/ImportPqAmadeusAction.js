@@ -22,7 +22,7 @@ const AmadeusFlightInfoAdapter = require('../../../../Rbs/FormatAdapters/Amadeus
 const AmadeusGetFareRulesAction = require('../../../../Rbs/GdsAction/AmadeusGetFareRulesAction.js');
 const SessionStateHelper = require("../../SessionStateProcessor/SessionStateHelper");
 const Rej = require('klesun-node-tools/src/Rej.js');
-const AnyGdsStubSession = require('../../../TestUtils/AnyGdsStubSession.js');
+const AnyGdsStubSession = require('../../../../../Utils/Testing/AnyGdsStubSession.js');
 
 /**
  * import PNR fields of currently opened PNR

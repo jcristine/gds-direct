@@ -1,4 +1,4 @@
-const GdsActionTestUtil = require("../../../backend/Transpiled/Rbs/TestUtils/GdsActionTestUtil");
+const GdsActionTestUtil = require("../../../backend/Utils/Testing/GdsActionTestUtil");
 const PriceItineraryManually = require('../../../backend/Actions/ManualPricing/NmeMaskSubmit.js');
 
 class NmeMaskSubmitTest extends require('../Transpiled/Lib/TestCase.js')

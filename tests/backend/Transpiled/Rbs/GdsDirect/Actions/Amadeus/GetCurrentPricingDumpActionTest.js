@@ -1,6 +1,6 @@
 
 const GetCurrentPricingDumpAction = require('../../../../../../../backend/Transpiled/Rbs/GdsDirect/Actions/Amadeus/GetCurrentPricingDumpAction.js');
-const AnyGdsStubSession = require('../../../../../../../backend/Transpiled/Rbs/TestUtils/AnyGdsStubSession.js');
+const AnyGdsStubSession = require('../../../../../../../backend/Utils/Testing/AnyGdsStubSession.js');
 
 const php = require('../../../../php.js');
 

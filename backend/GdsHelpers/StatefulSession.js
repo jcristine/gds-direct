@@ -1,7 +1,5 @@
+const GdsSession = require('./GdsSession.js');
 const Rej = require('../../node_modules/klesun-node-tools/src/Rej.js');
-let AmadeusClient = require("../GdsClients/AmadeusClient.js");
-let SabreClient = require("../GdsClients/SabreClient.js");
-let TravelportClient = require('../GdsClients/TravelportClient.js');
 const GdsSessions = require("../Repositories/GdsSessions.js");
 const {NotImplemented, BadRequest, ServiceUnavailable, nonEmpty} = require("klesun-node-tools/src/Rej.js");
 const FluentLogger = require("../LibWrappers/FluentLogger.js");
@@ -9,30 +7,12 @@ const LocationGeographyProvider = require('../Transpiled/Rbs/DataProviders/Locat
 const Pccs = require("../Repositories/Pccs");
 const Misc = require("../Transpiled/Lib/Utils/MaskUtil");
 const {getConfig} = require('../Config.js');
-const {jsExport} = require('../Utils/TmpLib.js');
+const {jsExport} = require('klesun-node-tools/src/Debug.js');
 const Agent = require('../DataFormats/Wrappers/Agent.js');
 const CmdLog = require('./CmdLog.js');
 const CmsClient = require("../IqClients/CmsClient");
 const Agents = require("../Repositories/Agents");
-const sqlNow = require("../Utils/TmpLib").sqlNow;
-
-let GdsSession = (session) => {
-	let gds = session.context.gds;
-	let runByGds = (cmd) => {
-		if (['apollo', 'galileo'].includes(gds)) {
-			return TravelportClient.runCmd({command: cmd}, session.gdsData);
-		} else if (gds === 'amadeus') {
-			return AmadeusClient.runCmd({command: cmd}, session.gdsData);
-		} else if (gds === 'sabre') {
-			return SabreClient.runCmd({command: cmd}, session.gdsData);
-		} else {
-			return NotImplemented('Unsupported stateful GDS - ' + gds);
-		}
-	};
-	return {
-		runCmd: runByGds,
-	};
-};
+const sqlNow = require("klesun-node-tools/src/Utils/Misc.js").sqlNow;
 
 /**
  * a generic session that can be either apollo, sabre, galileo, amadeus, etc...
@@ -64,7 +44,10 @@ let StatefulSession = ({
 			let running = gdsSession.runCmd(cmd);
 			let cmdRec = await cmdLog.logCommand(cmd, running);
 			calledCommands.push(cmdRec);
-			logit('GDS result: ' + cmd, jsExport(cmdRec, null, 256) + ",");
+			// TODO: disable for the rest GDS-es once they all have XML logged
+			if (!['apollo', 'galileo'].includes(gds)) {
+				logit('GDS result: ' + cmd, jsExport(cmdRec, null, 256) + ",");
+			}
 			return cmdRec;
 		}
 	};
@@ -149,14 +132,17 @@ let StatefulSession = ({
 		getAgent: getAgent,
 
 		getGdsSession: () => gdsSession,
+		getSessionRecord: () => session,
 	};
 };
 
-StatefulSession.makeFromDb = async ({session, whenCmdRqId, emcUser, askClient}) => {
+StatefulSession.makeFromDb = async ({
+	session, whenCmdRqId, emcUser, askClient,
+	gdsSession = GdsSession({session}),
+}) => {
 	whenCmdRqId = whenCmdRqId || Promise.resolve(null);
 	let fullState = await GdsSessions.getFullState(session);
 	let cmdLog = CmdLog({session, fullState, whenCmdRqId});
-	let gdsSession = GdsSession(session);
 	let logit = async (msg, data) => {
 		let config = await getConfig();
 		if (!config.production) {
