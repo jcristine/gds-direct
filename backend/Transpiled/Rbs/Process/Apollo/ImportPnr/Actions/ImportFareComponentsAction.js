@@ -18,10 +18,16 @@ class ImportFareComponentsAction extends AbstractGdsAction {
 	constructor() {
 		super();
 		this.usesXml = true;
+		this.TravelportClient = TravelportClient;
 	}
 
 	useXml(flag) {
 		this.usesXml = flag;
+		return this;
+	}
+
+	setTravelportClient(client) {
+		this.TravelportClient = client;
 		return this;
 	}
 
@@ -48,9 +54,7 @@ class ImportFareComponentsAction extends AbstractGdsAction {
 		};
 
 		if(this.usesXml) {
-			this.session.logit("Will make request for fare rules", params);
-			$cmdRecord = await TravelportClient.getFareRules(this.session.getGdsData(), params);
-			this.session.logit("Fare rules fetched", $cmdRecord);
+			$cmdRecord = await this.TravelportClient.getFareRules(this.session.getGdsData(), params);
 		} else {
 			$cmdRecord = await this.getRulesViaCli(params);
 		}

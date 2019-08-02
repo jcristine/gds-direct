@@ -15,9 +15,10 @@ const GalileoPricingAdapter = require('../../../FormatAdapters/GalileoPricingAda
 const GalileoGetFlightServiceInfoAction = require('../../../GdsAction/GalileoGetFlightServiceInfoAction.js');
 const ImportFareComponentsAction = require('../../../Process/Apollo/ImportPnr/Actions/ImportFareComponentsAction.js');
 const Rej = require('klesun-node-tools/src/Rej.js');
+const TravelportClient = require("../../../../../GdsClients/TravelportClient");
 
 class ImportPqGalileoAction extends AbstractGdsAction {
-	constructor(useXml = true) {
+	constructor(useXml = true, tpClient = TravelportClient) {
 		super();
 		this.$leadData = {};
 		this.$fetchOptionalFields = true;
@@ -26,6 +27,7 @@ class ImportPqGalileoAction extends AbstractGdsAction {
 		this.$allCommands = [];
 		this.$preCalledCommands = [];
 		this.useXml = useXml;
+		this.TravelportClient = tpClient;
 	}
 
 	setLeadData($leadData) {
@@ -330,6 +332,7 @@ class ImportPqGalileoAction extends AbstractGdsAction {
 
 		$result = await (new ImportFareComponentsAction())
 			.useXml(this.useXml)
+			.setTravelportClient(this.TravelportClient)
 			.setSession(this.session).execute([16], 1);
 		if ($error = $result['error']) return {'error': $error};
 
