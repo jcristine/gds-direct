@@ -1504,7 +1504,7 @@ class ImportPqApolloActionTest extends require('../../../../Lib/TestCase.js') {
 	async testAction($input, $expectedOutput, $calledCommands) {
 		let $actual;
 
-		$actual = await (new ImportPqApolloAction(false))
+		$actual = await (new ImportPqApolloAction({useXml: false}))
 			.fetchOptionalFields(!$input.onlyPricing)
 			.setSession((new AnyGdsStubSession($calledCommands)).setGds('apollo'))
 			.setPreCalledCommandsFromDb($input['previousCommands'])

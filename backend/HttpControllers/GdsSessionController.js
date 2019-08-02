@@ -1,3 +1,4 @@
+const GdsSession = require('../GdsHelpers/GdsSession.js');
 const AddMpRemark = require('../Actions/AddMpRemark.js');
 let AmadeusClient = require("../GdsClients/AmadeusClient.js");
 let SabreClient = require("../GdsClients/SabreClient.js");
@@ -185,7 +186,8 @@ exports.getPqItinerary = async ({rqBody, session, emcUser}) => {
 	// could Promise.all to save some time...
 	let leadData = await CmsClient.getLeadData(rqBody.pqTravelRequestId);
 	let stateful = await StatefulSession.makeFromDb({session, emcUser});
-	let imported = await ImportPq({stateful, leadData, fetchOptionalFields: false});
+	let PersistentHttpRq = GdsSession.initHttpRq(session);
+	let imported = await ImportPq({stateful, leadData, fetchOptionalFields: false, PersistentHttpRq});
 	if (imported.status === GdsDirect.STATUS_EXECUTED) {
 		sendPqToPqt({stateful, leadData, imported});
 	}
@@ -196,7 +198,8 @@ exports.importPq = async ({rqBody, session, emcUser}) => {
 	// could Promise.all to save some time...
 	let leadData = await CmsClient.getLeadData(rqBody.pqTravelRequestId);
 	let stateful = await StatefulSession.makeFromDb({session, emcUser});
-	return ImportPq({stateful, leadData, fetchOptionalFields: true});
+	let PersistentHttpRq = GdsSession.initHttpRq(session);
+	return ImportPq({stateful, leadData, fetchOptionalFields: true, PersistentHttpRq});
 };
 
 exports.addMpRemark = async ({rqBody, ...params}) => {

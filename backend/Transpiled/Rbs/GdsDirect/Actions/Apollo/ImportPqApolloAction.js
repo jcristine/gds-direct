@@ -14,7 +14,6 @@ const {fetchAll} = require('../../../../../GdsHelpers/TravelportUtils.js');
 const ApolloBaggageAdapter = require('../../../FormatAdapters/ApolloBaggageAdapter.js');
 const RetrieveFlightServiceInfoAction = require('../../../../Rbs/Process/Apollo/ImportPnr/Actions/RetrieveFlightServiceInfoAction.js');
 const ImportFareComponentsAction = require('../../../../Rbs/Process/Apollo/ImportPnr/Actions/ImportFareComponentsAction.js');
-const TravelportClient = require('../../../../../GdsClients/TravelportClient');
 
 let php = require('../../../../phpDeprecated.js');
 const Rej = require("klesun-node-tools/src/Rej");
@@ -22,7 +21,10 @@ const withCapture = require("../../../../../GdsHelpers/CommonUtils").withCapture
 
 /** @see ImportPqAmadeusAction description */
 class ImportPqApolloAction extends AbstractGdsAction {
-	constructor(useXml = true, tpClient = TravelportClient) {
+	constructor({
+		useXml = true,
+		TravelportClient = require('../../../../../GdsClients/TravelportClient'),
+	}) {
 		super();
 		this.$leadData = {};
 		this.$fetchOptionalFields = true;
@@ -31,7 +33,7 @@ class ImportPqApolloAction extends AbstractGdsAction {
 		this.$allCommands = [];
 		this.$preCalledCommands = [];
 		this.useXml = useXml;
-		this.TravelportClient = tpClient;
+		this.TravelportClient = TravelportClient;
 	}
 
 	setLeadData($leadData) {

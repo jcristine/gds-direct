@@ -420,7 +420,7 @@ class ImportPqApolloActionXmlTest extends require('../../../../Lib/TestCase.js')
 			},
 		});
 
-		const actual = await (new ImportPqApolloAction(true, travelport))
+		const actual = await (new ImportPqApolloAction({useXml: true, TravelportClient: travelport}))
 			.fetchOptionalFields(true)
 			.setSession(stateful)
 			.setPreCalledCommandsFromDb(input['previousCommands'])
