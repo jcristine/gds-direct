@@ -2,9 +2,11 @@ const {parseXml} = require('../../GdsHelpers/CommonUtils.js');
 const js2xml = require('xml');
 const _ = require('lodash');
 
+// lodash range is [min, max)
+const generateParagraphs = paragraphs => paragraphs || _.range(0, 32)
+
 module.exports.buildFareRuleXml = params => {
-	// lodash range is [min, max)
-	const paragraphs = params.paragraphs || _.range(0, 32);
+	const paragraphs = generateParagraphs(params.paragraphs);
 
 	return js2xml([{
 		FareDisplayMods: [{
@@ -26,21 +28,23 @@ module.exports.buildFareRuleXml = params => {
 	}]);
 };
 
-module.exports.parseFareRuleXmlResponse = response => {
+module.exports.parseFareRuleXmlResponse = (response, params) => {
 	const dom = parseXml(response);
 	const result = {
-		errors: null,
-		dump: null,
+		// same command that would have been executed from terminal
+		cmd: `FN${params.fareComponentNumber}/${generateParagraphs(params.paragraphs).join('/')}`,
+		error: null,
+		output: '',
 	};
 
 	const elements = dom.querySelectorAll('FareInfo > OutputMsg');
 
 	if(!elements || elements.length === 0) {
-		result.errors = ['Service returned error response', response];
+		result.error = 'Service returned error response - ' + response;
 	} else {
-		result.dump = _.map(elements, msgElement =>
+		result.output = _.map(elements, msgElement =>
 			_.map(msgElement.querySelectorAll('Text'), t => t.textContent).join('')
-		).join('');
+		).join('\n');
 	}
 
 	return result;

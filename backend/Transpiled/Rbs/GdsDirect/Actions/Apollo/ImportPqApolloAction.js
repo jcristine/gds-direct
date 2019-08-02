@@ -21,7 +21,10 @@ const withCapture = require("../../../../../GdsHelpers/CommonUtils").withCapture
 
 /** @see ImportPqAmadeusAction description */
 class ImportPqApolloAction extends AbstractGdsAction {
-	constructor() {
+	constructor({
+		useXml = true,
+		TravelportClient = require('../../../../../GdsClients/TravelportClient'),
+	}) {
 		super();
 		this.$leadData = {};
 		this.$fetchOptionalFields = true;
@@ -29,6 +32,8 @@ class ImportPqApolloAction extends AbstractGdsAction {
 		this.$cmdToFullOutput = {};
 		this.$allCommands = [];
 		this.$preCalledCommands = [];
+		this.useXml = useXml;
+		this.TravelportClient = TravelportClient;
 	}
 
 	setLeadData($leadData) {
@@ -375,6 +380,8 @@ class ImportPqApolloAction extends AbstractGdsAction {
 	async getApolloFareRules($sections, $itinerary) {
 		let $result, $error;
 		$result = await (new ImportFareComponentsAction())
+			.useXml(this.useXml)
+			.setTravelportClient(this.TravelportClient)
 			.setSession(this.session).execute($sections, 1);
 		if ($error = $result['error'] || null) return {'error': $error};
 

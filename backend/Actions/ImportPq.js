@@ -1,3 +1,4 @@
+const TravelportClient = require('../GdsClients/TravelportClient.js');
 
 const php = require('../Transpiled/phpDeprecated.js');
 const ImportPqApolloAction = require("../Transpiled/Rbs/GdsDirect/Actions/Apollo/ImportPqApolloAction");
@@ -14,7 +15,10 @@ const LocationGeographyProvider = require('../Transpiled/Rbs/DataProviders/Locat
 const GdsDirect = require("../Transpiled/Rbs/GdsDirect/GdsDirect");
 const ImportPqGalileoAction = require('../Transpiled/Rbs/GdsDirect/Actions/Galileo/ImportPqGalileoAction.js');
 
-let ImportPq = async ({stateful, leadData, fetchOptionalFields = true}) => {
+let ImportPq = async ({
+	stateful, leadData, fetchOptionalFields = true,
+	PersistentHttpRq = require('klesun-node-tools/src/Utils/PersistentHttpRq.js'),
+}) => {
 	let gds = stateful.gds;
 	let geo = new LocationGeographyProvider();
 
@@ -152,12 +156,13 @@ let ImportPq = async ({stateful, leadData, fetchOptionalFields = true}) => {
 
 	let execute = async () => {
 		let importAct;
+		let travelport = TravelportClient.makeCustom({PersistentHttpRq});
 		if (gds === 'apollo') {
-			importAct = new ImportPqApolloAction();
+			importAct = new ImportPqApolloAction({TravelportClient: travelport});
 		} else if (gds === 'sabre') {
 			importAct = new ImportPqSabreAction();
 		} else if (gds === 'galileo') {
-			importAct = new ImportPqGalileoAction();
+			importAct = new ImportPqGalileoAction({TravelportClient: travelport});
 		} else if (gds === 'amadeus') {
 			importAct = new ImportPqAmadeusAction();
 		} else {

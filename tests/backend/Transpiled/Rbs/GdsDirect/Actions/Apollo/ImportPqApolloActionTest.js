@@ -1504,7 +1504,7 @@ class ImportPqApolloActionTest extends require('../../../../Lib/TestCase.js') {
 	async testAction($input, $expectedOutput, $calledCommands) {
 		let $actual;
 
-		$actual = await (new ImportPqApolloAction())
+		$actual = await (new ImportPqApolloAction({useXml: false}))
 			.fetchOptionalFields(!$input.onlyPricing)
 			.setSession((new AnyGdsStubSession($calledCommands)).setGds('apollo'))
 			.setPreCalledCommandsFromDb($input['previousCommands'])
@@ -1517,7 +1517,7 @@ class ImportPqApolloActionTest extends require('../../../../Lib/TestCase.js') {
 
 	async test_getFlightService(testCase) {
 		await GdsActionTestUtil.testGdsAction(this, testCase, (gdsSession, input) => {
-			return (new ImportPqApolloAction())
+			return (new ImportPqApolloAction(false))
 				.setSession(gdsSession)
 				.setBaseDate('2019-04-08 15:28:42')
 				.getFlightService(input.itinerary);

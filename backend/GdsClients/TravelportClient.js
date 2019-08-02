@@ -81,19 +81,6 @@ const TravelportClient = ({
 		});
 	};
 
-	const closeSession = (gdsData) => {
-		let body = [
-			'<SOAP-ENV:Envelope xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ns1="http://webservices.galileo.com">',
-			'  <SOAP-ENV:Body>',
-			'    <ns1:EndSession>',
-			'      <ns1:Token>' + gdsData.sessionToken + '</ns1:Token>',
-			'    </ns1:EndSession>',
-			'  </SOAP-ENV:Body>',
-			'</SOAP-ENV:Envelope>',
-		].join('\n');
-		return sendRequest(body, gdsData.profileName);
-	};
-
 	const processPnr = async (gdsData, params) => {
 		const reqXml = TravelportPnrRequestTransformer.buildPnrXmlDataObject(params);
 
@@ -111,7 +98,7 @@ const TravelportClient = ({
 
 		const result = await sendRequest(reqBody, gdsData.profileName);
 
-		return TravelportFareRuleTransformer.parseFareRuleXmlResponse(result);
+		return TravelportFareRuleTransformer.parseFareRuleXmlResponse(result, params);
 	};
 
 	const buildSoapBody = (gdsData, requestType, reqXml) => (
@@ -131,6 +118,19 @@ const TravelportClient = ({
 				</ns1:SubmitXmlOnSession>
 			</SOAP-ENV:Body>
 		</SOAP-ENV:Envelope>`);
+
+	const closeSession = (gdsData) => {
+		let body = [
+			'<SOAP-ENV:Envelope xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ns1="http://webservices.galileo.com">',
+			'  <SOAP-ENV:Body>',
+			'    <ns1:EndSession>',
+			'      <ns1:Token>' + gdsData.sessionToken + '</ns1:Token>',
+			'    </ns1:EndSession>',
+			'  </SOAP-ENV:Body>',
+			'</SOAP-ENV:Envelope>',
+		].join('\n');
+		return sendRequest(body, gdsData.profileName);
+	};
 
 	const makeSession = (gdsData) => ({
 		gdsData: gdsData,
@@ -201,9 +201,9 @@ const TravelportClient = ({
 		startSession,
 		closeSession,
 		processPnr,
-		getFareRules,
 		withSession,
 		getFares,
+		getFareRules,
 	};
 };
 
