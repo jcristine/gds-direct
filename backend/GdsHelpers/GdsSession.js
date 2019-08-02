@@ -10,11 +10,15 @@ const {coverExc} = require('klesun-node-tools/src/Lang.js');
 const {jsExport} = require('klesun-node-tools/src/Debug.js');
 
 const makeHttpRqBriefing = (rqBody, gds) => {
+	let match;
 	if (['apollo', 'galileo'].includes(gds)) {
-		let match;
 		if (match = rqBody.match(/:Request>\s*<(\w+?)>/)) {
 			return '<' + match[1] + '/>';
 		} else if (match = rqBody.match(/:Request>\s*(.+?)\s*<\//)) {
+			return '>' + match[1] + ';';
+		}
+	} else if (gds === 'amadeus') {
+		if (match = rqBody.match(/:textStringDetails>\s*(.+?)\s*<\//)) {
 			return '>' + match[1] + ';';
 		}
 	}
@@ -57,7 +61,8 @@ const GdsSession = ({session}) => {
 			let travelport = TravelportClient.makeCustom({PersistentHttpRq: httpRq});
 			return travelport.runCmd({command: cmd}, session.gdsData);
 		} else if (gds === 'amadeus') {
-			return AmadeusClient.runCmd({command: cmd}, session.gdsData);
+			let amadeus = AmadeusClient.makeCustom({PersistentHttpRq: httpRq});
+			return amadeus.runCmd({command: cmd}, session.gdsData);
 		} else if (gds === 'sabre') {
 			return SabreClient.runCmd({command: cmd}, session.gdsData);
 		} else {

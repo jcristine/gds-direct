@@ -45,7 +45,7 @@ let StatefulSession = ({
 			let cmdRec = await cmdLog.logCommand(cmd, running);
 			calledCommands.push(cmdRec);
 			// TODO: disable for the rest GDS-es once they all have XML logged
-			if (!['apollo', 'galileo'].includes(gds)) {
+			if (!['apollo', 'galileo', 'amadeus'].includes(gds)) {
 				logit('GDS result: ' + cmd, jsExport(cmdRec, null, 256) + ",");
 			}
 			return cmdRec;
