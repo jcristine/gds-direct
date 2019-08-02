@@ -120,117 +120,116 @@ let AmadeusClient = ({
 	PersistentHttpRq = require('klesun-node-tools/src/Utils/PersistentHttpRq.js'),
 	GdsProfiles = require("../Repositories/GdsProfiles"),
 }) => {
+	let startSession = async (params) => {
+		let profileName = params.profileName;
+		let profileData = await getAmadeus(profileName);
+		let pcc = params.pcc || profileData.default_pcc;
+		profileData = {...profileData, pcc};
 
-let startSession = async (params) => {
-	let profileName = params.profileName;
-	let profileData = await getAmadeus(profileName);
-	let pcc = params.pcc || profileData.default_pcc;
-	profileData = {...profileData, pcc};
+		let payloadXml = makeCmdPayloadXml('MD0');
+		let soapEnvXml = makeStartSoapEnvXml({profileData, payloadXml});
 
-	let payloadXml = makeCmdPayloadXml('MD0');
-	let soapEnvXml = makeStartSoapEnvXml({profileData, payloadXml});
-
-	return PersistentHttpRq({
-		// it's probably worth looking in the docs if they have region-specific urls, since this endpoint is
-		// located in Germany and we waste a lot of time making requests from our Virginia Amazon server
-		// (making requests directly from RIX takes 50-100 ms on dev, but from RIX through prod server - 270 ms)
-		url: profileData.endpoint,
-		headers: {
-			'SOAPAction': 'http://webservices.amadeus.com/HSFREQ_07_3_1A',
-			'Content-Type': 'text/xml; charset=utf-8',
-		},
-		body: soapEnvXml,
-	}).then(rs => rs.body).then(rsXml => {
-		let dom = parseXml(rsXml);
-		return wrapExc(() => parseCmdRs(dom, profileName)).catch(exc => {
-			exc.httpStatusCode = Rej.BadGateway.httpStatusCode;
-			exc.message = 'Invalid Amadeus cmd response - ' + exc.message;
-			return Promise.reject(exc);
-		});
-	}).then(cmdRs => cmdRs.gdsData);
-};
-
-/** @param gdsData = parseCmdRs().gdsData */
-let runCmd = async (rqBody, gdsData) => {
-	let cmd = rqBody.command;
-	let profileName = gdsData.profileName;
-	let profileData = await getAmadeus(profileName);
-
-	let soapEnvXml = makeContinueSoapEnvXml({
-		gdsData, profileData, payloadXml: makeCmdPayloadXml(cmd),
-		status: 'InSeries', action: 'HSFREQ_07_3_1A',
-	});
-
-	return PersistentHttpRq({
-		url: profileData.endpoint,
-		headers: {
-			'SOAPAction': 'http://webservices.amadeus.com/HSFREQ_07_3_1A',
-			'Content-Type': 'text/xml; charset=utf-8',
-		},
-		body: soapEnvXml,
-	}).then(rs => rs.body).then(rsXml => {
-		let dom = parseXml(rsXml);
-		return wrapExc(() => parseCmdRs(dom, profileName)).catch(exc => {
-			exc.httpStatusCode = Rej.BadGateway.httpStatusCode;
-			exc.message = 'Invalid Amadeus cmd response - ' + exc.message;
-			return Promise.reject(exc);
-		});
-	}).catch(exc => {
-		if ((exc + '').indexOf('95|Session|Inactive conversation') > -1) {
-			return LoginTimeOut('Session token expired');
-		} else {
-			return Promise.reject(exc);
-		}
-	});
-};
-
-let closeSession = async (gdsData) => {
-	let profileName = gdsData.profileName;
-	let profileData = await getAmadeus(profileName);
-
-	let payloadXml = '<ns1:Security_SignOut xmlns:ns1="http://xml.amadeus.com/VLSSOQ_04_1_1A"/>';
-	let soapEnvXml = makeContinueSoapEnvXml({
-		gdsData, profileData, payloadXml,
-		status: 'InSeries',
-		action: 'VLSSOQ_04_1_1A',
-	});
-
-	return PersistentHttpRq({
-		url: profileData.endpoint,
-		headers: {
-			'SOAPAction': 'http://webservices.amadeus.com/VLSSOQ_04_1_1A',
-			'Content-Type': 'text/xml; charset=utf-8',
-		},
-		body: soapEnvXml,
-	}).then(rs => rs.body).then(rsXml => {
-		let dom = parseXml(rsXml);
-		return {
-			status: dom.querySelector('Security_SignOutReply > processStatus > statusCode').textContent,
-		};
-	});
-};
-
-let makeSession = (gdsData) => ({
-	gdsData: gdsData,
-	// TODO: refactor and leave just getGdsData()
-	getGdsData: () => gdsData,
-	runCmd: (cmd) => runCmd({command: cmd}, gdsData)
-		.then(result => ({cmd, ...result})),
-});
-
-let withSession = async (params, action) => {
-	let pcc = params.pcc || null;
-	let profileName = params.profileName
-		|| GdsProfiles.AMADEUS.AMADEUS_PROD_1ASIWTUTICO;
-	return startSession({profileName, pcc}).then(gdsData => {
-		let session = makeSession(gdsData);
-		return Promise.resolve()
-			.then(() => action(session))
-			.finally(() => {
-				closeSession(gdsData);
+		return PersistentHttpRq({
+			// it's probably worth looking in the docs if they have region-specific urls, since this endpoint is
+			// located in Germany and we waste a lot of time making requests from our Virginia Amazon server
+			// (making requests directly from RIX takes 50-100 ms on dev, but from RIX through prod server - 270 ms)
+			url: profileData.endpoint,
+			headers: {
+				'SOAPAction': 'http://webservices.amadeus.com/HSFREQ_07_3_1A',
+				'Content-Type': 'text/xml; charset=utf-8',
+			},
+			body: soapEnvXml,
+		}).then(rs => rs.body).then(rsXml => {
+			let dom = parseXml(rsXml);
+			return wrapExc(() => parseCmdRs(dom, profileName)).catch(exc => {
+				exc.httpStatusCode = Rej.BadGateway.httpStatusCode;
+				exc.message = 'Invalid Amadeus cmd response - ' + exc.message;
+				return Promise.reject(exc);
 			});
+		}).then(cmdRs => cmdRs.gdsData);
+	};
+
+	/** @param gdsData = parseCmdRs().gdsData */
+	let runCmd = async (rqBody, gdsData) => {
+		let cmd = rqBody.command;
+		let profileName = gdsData.profileName;
+		let profileData = await getAmadeus(profileName);
+
+		let soapEnvXml = makeContinueSoapEnvXml({
+			gdsData, profileData, payloadXml: makeCmdPayloadXml(cmd),
+			status: 'InSeries', action: 'HSFREQ_07_3_1A',
+		});
+
+		return PersistentHttpRq({
+			url: profileData.endpoint,
+			headers: {
+				'SOAPAction': 'http://webservices.amadeus.com/HSFREQ_07_3_1A',
+				'Content-Type': 'text/xml; charset=utf-8',
+			},
+			body: soapEnvXml,
+		}).then(rs => rs.body).then(rsXml => {
+			let dom = parseXml(rsXml);
+			return wrapExc(() => parseCmdRs(dom, profileName)).catch(exc => {
+				exc.httpStatusCode = Rej.BadGateway.httpStatusCode;
+				exc.message = 'Invalid Amadeus cmd response - ' + exc.message;
+				return Promise.reject(exc);
+			});
+		}).catch(exc => {
+			if ((exc + '').indexOf('95|Session|Inactive conversation') > -1) {
+				return LoginTimeOut('Session token expired');
+			} else {
+				return Promise.reject(exc);
+			}
+		});
+	};
+
+	let closeSession = async (gdsData) => {
+		let profileName = gdsData.profileName;
+		let profileData = await getAmadeus(profileName);
+
+		let payloadXml = '<ns1:Security_SignOut xmlns:ns1="http://xml.amadeus.com/VLSSOQ_04_1_1A"/>';
+		let soapEnvXml = makeContinueSoapEnvXml({
+			gdsData, profileData, payloadXml,
+			status: 'InSeries',
+			action: 'VLSSOQ_04_1_1A',
+		});
+
+		return PersistentHttpRq({
+			url: profileData.endpoint,
+			headers: {
+				'SOAPAction': 'http://webservices.amadeus.com/VLSSOQ_04_1_1A',
+				'Content-Type': 'text/xml; charset=utf-8',
+			},
+			body: soapEnvXml,
+		}).then(rs => rs.body).then(rsXml => {
+			let dom = parseXml(rsXml);
+			return {
+				status: dom.querySelector('Security_SignOutReply > processStatus > statusCode').textContent,
+			};
+		});
+	};
+
+	let makeSession = (gdsData) => ({
+		gdsData: gdsData,
+		// TODO: refactor and leave just getGdsData()
+		getGdsData: () => gdsData,
+		runCmd: (cmd) => runCmd({command: cmd}, gdsData)
+			.then(result => ({cmd, ...result})),
 	});
-};
+
+	let withSession = async (params, action) => {
+		let pcc = params.pcc || null;
+		let profileName = params.profileName
+			|| GdsProfiles.AMADEUS.AMADEUS_PROD_1ASIWTUTICO;
+		return startSession({profileName, pcc}).then(gdsData => {
+			let session = makeSession(gdsData);
+			return Promise.resolve()
+				.then(() => action(session))
+				.finally(() => {
+					closeSession(gdsData);
+				});
+		});
+	};
 
 	return {
 		startSession,
