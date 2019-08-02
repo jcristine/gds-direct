@@ -1,6 +1,10 @@
 let Redis = require("./Redis.js");
 let Config = require('../Config.js');
 
+/**
+ * @see https://auth.asaptickets.com/help/api
+ */
+
 // 1 day, because it expired in EMC in past, and I'm not sure our 'doAuth' requests keep it alive for good
 let SESSION_EXPIRE = 1 * 3 * 60 * 60;
 
