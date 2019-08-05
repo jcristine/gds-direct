@@ -14,8 +14,6 @@ import {setMessageFromServerHandler} from './../helpers/socketIoWrapper.js';
 import {notify} from './../helpers/debug.es6';
 import {LeadList} from '../components/reusable/LeadList.js';
 
-let Component = require('../modules/component.es6').default;
-
 const BORDER_SIZE = 2;
 
 let chooseLeadFromList = (plugin) => new Promise((resolve, reject) => {
@@ -100,6 +98,8 @@ export default class GdsDirectPlusApp
 		const curGds 		= settings['gds'][settings['common']['currentGds'] || 'apollo'];
 		const fontSize		= curGds['fontSize'] || 1;
 		const language		= curGds['language'] || 'APOLLO';
+		let agentCustomSettings = settings.agentCustomSettings || {};
+		this.container.setDisableTextWrap(agentCustomSettings.disableTextWrap || false);
 		this.container.changeFontClass(fontSize);
 
 		this.themeId		= this._getStyle(settings.gds, terminalThemes);
@@ -109,6 +109,7 @@ export default class GdsDirectPlusApp
 			roles			: viewData.auth.roles,
 			terminalThemes	: terminalThemes,
 			fontSize		: fontSize,
+			disableTextWrap : agentCustomSettings.disableTextWrap || false,
 			language		: language,
 			theme			: this.themeId,
 			gdsObjName		: this.Gds.getCurrentName(),
@@ -165,7 +166,7 @@ export default class GdsDirectPlusApp
 			gdsAreaSettings: {},
 		};
 
-        settings.gdsAreaSettings = {};
+		settings.gdsAreaSettings = {};
 		$.each(allSettings.gds, (gds, gdsSettings) => {
 			const parsedKeyBindings = {};
 
@@ -194,6 +195,7 @@ export default class GdsDirectPlusApp
 		return settings;
 	}
 
+	/** @return {ContainerMain} */
 	getContainer()
 	{
 		return this.container;

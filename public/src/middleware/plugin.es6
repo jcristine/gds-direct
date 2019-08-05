@@ -129,7 +129,7 @@ export default class TerminalPlugin
 		}
 
 		if (this._shouldIgnoreKeyPress(evt)) {
-				return true;
+			return true;
 		}
 
 		if (evt.ctrlKey && evt.key === 'Tab') {
@@ -237,6 +237,7 @@ export default class TerminalPlugin
 	{
 		//caveats terminal.rows() - every time appends div with cursor span - not too smooth for performance
 		return $(this.context).terminal( () => {}, {
+			wrap			: !window.GdsDirectPlusState.disableTextWrap(),
 			echoCommand		: false,
 			greetings		: '',
 			name			: this.name,

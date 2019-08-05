@@ -1,3 +1,4 @@
+const AgentCustomSettings = require('./Repositories/AgentCustomSettings.js');
 
 const Clustering = require('./Utils/Clustering.js');
 const {descrProc} = Clustering;
@@ -185,6 +186,11 @@ app.get('/terminal/saveSetting/:name/:currentGds/:value', withAuth((reqBody, emc
 app.post('/terminal/saveSetting/:name/:currentGds', withAuth((reqBody, emcResult, routeParams) => {
 	let {name, currentGds} = routeParams;
 	return new TerminalBaseController(emcResult).postSaveSettingAction(reqBody, name, currentGds);
+}));
+app.post('/terminal/saveSetting/:name', withAuth((reqBody, emcResult, routeParams) => {
+	let agentId = emcResult.user.id;
+	let value = reqBody.value;
+	return AgentCustomSettings.set(agentId, routeParams.name, value);
 }));
 app.post('/terminal/resetToDefaultPcc', withGdsSession(GdsSessionController.resetToDefaultPcc));
 app.get('/terminal/getPqItinerary', withGdsSession(GdsSessionController.getPqItinerary));

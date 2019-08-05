@@ -43,7 +43,19 @@ export class ContainerMain extends Component
 
 	changeFontClass(fontSize)
 	{
-		this.context.className = 'terminal-wrap-custom term-f-size-' + fontSize;
+		this.context.classList.toggle('terminal-wrap-custom', true);
+		let prefix = 'term-f-size-';
+		for (let cls of this.context.className.split(' ')) {
+			if (cls.startsWith(prefix)) {
+				this.context.classList.toggle(cls, false);
+			}
+		}
+		this.context.classList.toggle(prefix + fontSize, true);
+	}
+
+	setDisableTextWrap(flag)
+	{
+		this.context.classList.toggle('disable-text-wrap', flag);
 	}
 
 	getTempTerminal()

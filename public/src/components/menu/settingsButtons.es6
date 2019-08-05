@@ -23,12 +23,12 @@ export class SettingsButtons extends Component
 		const themeBtn 	= new Theme({
 			icon	: '<i class="fa fa-paint-brush t-f-size-14"></i>',
 			themes	: terminalThemes,
-			theme
+			theme,
 		}).getTrigger();
 
 		const textSize 	= new TextSize({
 			icon	: '<i class="fa fa-text-height t-f-size-14"></i>',
-			fontSize
+			fontSize,
 		}).getTrigger();
 
 		const history	= new History({

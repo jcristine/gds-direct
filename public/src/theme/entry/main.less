@@ -842,6 +842,14 @@
 		white-space: pre-wrap;
 		overflow: hidden;
 	}
+	&.disable-text-wrap .terminal-output {
+		overflow-x: auto;
+		overflow-y: hidden;
+	}
+	&.disable-text-wrap .terminal-output pre {
+		white-space: pre;
+		overflow: visible;
+	}
 
     // buffer scroll fix
 	div.terminal-wrapper {

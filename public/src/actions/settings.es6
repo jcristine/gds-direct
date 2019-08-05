@@ -23,6 +23,11 @@ export const CHANGE_FONT_SIZE = ({fontSize}) => {
 	getStore().updateView({fontSize});
 };
 
+export const SET_DISABLE_TEXT_WRAP = (disableTextWrap) => {
+	getters('disableTextWrap', disableTextWrap);
+	getStore().app.getContainer().setDisableTextWrap(disableTextWrap);
+};
+
 export const CHANGE_INPUT_LANGUAGE = language => {
 	getters('language', language);
 	getStore().setState({language});

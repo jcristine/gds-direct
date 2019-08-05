@@ -40,6 +40,18 @@ module.exports.migrations = [
 		].join('\n')),
 	},
 	{
+		name: 'GRECT/2019.07.25002-add-custom-data-to-terminal-settings-2',
+		perform: db => db.query([
+			'CREATE TABLE agent_custom_settings (',
+			'    id INT PRIMARY KEY AUTO_INCREMENT,',
+			'    agentId INT NOT NULL,',
+			'    name VARCHAR(50) NOT NULL,',
+			'    data TEXT NOT NULL,',
+			'    UNIQUE KEY agentId_name (agentId, name)',
+			') ENGINE=InnoDB DEFAULT CHARSET=utf8;',
+		].join('\n')),
+	},
+	{
 		name: '00.00.03',
 		perform: (db) => db.query([
 			'CREATE TABLE `terminalAreaSettings` (',

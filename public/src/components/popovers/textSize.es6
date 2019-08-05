@@ -1,6 +1,6 @@
 import Dom 			 from '../../helpers/dom.es6';
 import ButtonPopOver from '../../modules/buttonPopover.es6';
-import {CHANGE_FONT_SIZE} from "../../actions/settings";
+import {CHANGE_FONT_SIZE, SET_DISABLE_TEXT_WRAP} from "../../actions/settings";
 
 class TextSize extends ButtonPopOver
 {
@@ -31,11 +31,27 @@ class TextSize extends ButtonPopOver
 
 			if (this.curFont === value )
 			{
-				this.toggle(button)
+				this.toggle(button);
 			}
 
 			return button;
 		});
+
+		let noWrapFlag = Dom('input', {
+			type: 'checkbox',
+			checked: window.GdsDirectPlusState.disableTextWrap(),
+			onchange: () => {
+				this.disableTextWrap = noWrapFlag.checked;
+				SET_DISABLE_TEXT_WRAP(noWrapFlag.checked);
+			},
+		});
+		let noWrapLabel = Dom('label[Disable Text Wrap: ]', {
+			title: 'May speed up PQ popup opening',
+			style: 'float: right; white-space: nowrap',
+		});
+		noWrapLabel.appendChild(noWrapFlag);
+		this.popContent.appendChild(noWrapLabel);
+		this.popContent.appendChild(Dom('br', {clear: 'all'}));
 	}
 
 	click(value)

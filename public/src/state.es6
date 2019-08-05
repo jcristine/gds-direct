@@ -5,6 +5,7 @@ let State =  {
 	roles		: [],
 	language	: 'APOLLO',
 	fontSize	: 1,
+	disableTextWrap: false,
 	// hideMenu	: false,
 	requestId	: null,
 	gdsList		: [],
@@ -17,6 +18,7 @@ let State =  {
 window.GdsDirectPlusState = {
 	isLanguageApollo 	: () => State.language.toLowerCase() === 'apollo',
 	getLanguage 		: () => State.language,
+	disableTextWrap		: () => State.disableTextWrap ? true : false,
 	hasPermissions 		: () => State.permissions,
 	getRoles			: () => State.roles,
 	getGdsAreaSettings	: () => State.gdsAreaSettings || {},
@@ -85,6 +87,10 @@ export const getters = (action, props) => {
 		case 'lastRequests' :
 			return fetch(cmsUrl + `/gdsDirectPlus/lastViewedRequests`, {credentials: 'include'})
 				.then(resp => resp.json());
+		break;
+
+		case 'disableTextWrap' :
+			return post(`terminal/saveSetting/${action}`, {value: props});
 		break;
 	}
 };

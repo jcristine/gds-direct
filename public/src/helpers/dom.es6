@@ -10,6 +10,7 @@ const applyProperties = (node, list) => {
 	});
 };
 
+/** @return {HTMLElement} */
 export default function Dom(str, props = {}) {
 
 	let innerHTML;

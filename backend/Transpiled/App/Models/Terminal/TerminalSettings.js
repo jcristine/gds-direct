@@ -1,3 +1,4 @@
+const AgentCustomSettings = require('../../../../Repositories/AgentCustomSettings.js');
 const Db = require('./../../../../Utils/Db.js');
 const {array_map, array_flip, array_intersect_key, empty, json_decode, str_split, intval, isset} = require("../../../phpDeprecated.js");
 const RedisData = require("../../../../LibWrappers/RedisData.js");
@@ -93,7 +94,10 @@ class TerminalSettings {
 	 */
 	async getSettings() {
 		let $agentId = this.agentId;
+		let agentCustomSettings = await AgentCustomSettings
+			.getMapping($agentId).catch(exc => ({}));
 		let $settings = {
+			agentCustomSettings: agentCustomSettings,
 			common: {currentGds: await this.getCurrentGds()},
 			gds: {},
 		};

@@ -39,7 +39,7 @@ export default class ButtonPopOver
 		this.popover = new Drop({
 			target		: this.getTrigger(),
 			content		: this.getPopContent(),
-			classes		: CLASS_NAME,
+			classes		: CLASS_NAME + ' terminal-popover-root',
 			position	: 'left top',
 			openOn		: 'click',
 			remove		: true,
