@@ -636,6 +636,7 @@
 }
 
 .gds-direct-plus-root {
+	position: relative;
 	display: flex;
 	flex-direction: column;
 }
@@ -656,7 +657,12 @@
 	@import "../pqQuotes.less";
 	@import "../helpers.less";
 
-    position: relative;
+    //position: relative;
+	/**
+	 * need absolute positioning to not affect parent's size as terminal-wrap-custom
+	 * _depends_ on parent size, causing it to scale up ok in firefox, but not scale down
+	 */
+	position: absolute;
 	width : 100%;
 	height: 100%;
 
