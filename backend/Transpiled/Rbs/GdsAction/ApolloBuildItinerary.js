@@ -64,7 +64,7 @@ const ApolloBuildItinerary = ({
 					$errorType = REBUILD_GDS_ERROR;
 				}
 				$tplData = {
-					'segmentNumber': $i + 1,
+					'segmentNumber': +$i + 1,
 					'from': $segment['departureAirport'],
 					'to': $segment['destinationAirport'],
 					'response': php.trim($output),
