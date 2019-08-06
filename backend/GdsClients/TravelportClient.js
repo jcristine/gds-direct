@@ -18,6 +18,63 @@ let endpoint = 'https://americas.webservices.travelport.com/B2BGateway/service/X
 //let endpoint = 'https://emea.webservices.travelport.com/B2BGateway/service/XMLSelect';
 //let endpoint = 'https://apac.webservices.travelport.com/B2BGateway/service/XMLSelect';
 
+const buildSoapBody = (gdsData, requestType, reqXml) => (
+		`<?xml version="1.0" encoding="UTF-8"?>
+		<SOAP-ENV:Envelope xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ns1="http://webservices.galileo.com">
+			<SOAP-ENV:Body>
+				<ns1:SubmitXmlOnSession>
+					<ns1:Token>${gdsData.sessionToken}</ns1:Token>
+					<ns1:Request>
+						<${requestType}>
+							${reqXml}
+						</${requestType}>
+					</ns1:Request>
+					<ns1:Filter>
+						<_/>
+					</ns1:Filter>
+				</ns1:SubmitXmlOnSession>
+			</SOAP-ENV:Body>
+		</SOAP-ENV:Envelope>`);
+
+const buildFaresSoapEnv = () => [
+	'<SOAP-ENV:Envelope xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ns1="http://webservices.galileo.com">',
+	'  <SOAP-ENV:Body>',
+	'    <ns1:SubmitXml>',
+	'      <ns1:Profile>DynApolloProd_2G8P</ns1:Profile>',
+	'      <ns1:Request>',
+	'        <FareQuoteMultiDisplay_27>',
+	'          <FareDisplayMods>',
+	'            <QueryHeader>',
+	'              <Action>02</Action>',
+	'              <SmartParsed>N</SmartParsed>',
+	'              <PFPWInd>Y</PFPWInd>',
+	'              <TariffQual>',
+	'                <PRIInd>Y</PRIInd>',
+	'              </TariffQual>',
+	'            </QueryHeader>',
+	'            <TravConstraints>',
+	'              <StartPt>MIA</StartPt>',
+	'              <EndPt>LON</EndPt>',
+	'              <StartDt>20190519</StartDt>',
+	'              <EndDt>20190530</EndDt>',
+	'              <ValidatingDispInd>Y</ValidatingDispInd>',
+	'              <AirV1>AA</AirV1>',
+	'              <AirlinePvtFare>Y</AirlinePvtFare>',
+	'            </TravConstraints>',
+	'            <PFMods>',
+	'              <PCC>2G8P</PCC>',
+	'            </PFMods>',
+	'         </FareDisplayMods>',
+	'        </FareQuoteMultiDisplay_27>',
+	'      </ns1:Request>',
+	'      <ns1:Filter>',
+	'        <_/>',
+	'      </ns1:Filter>',
+	'    </ns1:SubmitXml>',
+	'  </SOAP-ENV:Body>',
+	'</SOAP-ENV:Envelope>',
+].join('\n');
+
 const TravelportClient = ({
 	PersistentHttpRq = require('klesun-node-tools/src/Utils/PersistentHttpRq.js'),
 	GdsProfiles = require("../Repositories/GdsProfiles"),
@@ -52,6 +109,22 @@ const TravelportClient = ({
 		});
 	};
 
+	const normActionExc = (exc, body) => {
+		if ((exc + '').indexOf('Could not locate Session Token Information') > -1) {
+			return LoginTimeOut('Session token expired');
+		} else if ((exc + '').indexOf('Transaction already in progress') > -1) {
+			let error = 'Another command is still in progress - no action taken.\n' +
+				'To restart session use _⚙ (Gear) -> Default PCC_.\n' +
+				'Note, reloading page does not reduce waiting time on hanging availability (60 s.).';
+			return Conflict(error, {isOk: true});
+		} else {
+			let obj = typeof exc === 'string' ? new Error(exc) : exc;
+			// for debug, be careful not to include credentials here
+			obj.rqBody = body;
+			return Promise.reject(obj);
+		}
+	};
+
 	const runCmd = (cmd, gdsData) => {
 		let token = gdsData.sessionToken;
 		let profileName = gdsData.profileName;
@@ -64,21 +137,7 @@ const TravelportClient = ({
 			} else {
 				return BadGateway('Unexpected Travelport response format - ' + resp);
 			}
-		}).catch(exc => {
-			if ((exc + '').indexOf('Could not locate Session Token Information') > -1) {
-				return LoginTimeOut('Session token expired');
-			} else if ((exc + '').indexOf('Transaction already in progress') > -1) {
-				let error = 'Another command is still in progress - no action taken.\n' +
-					'To restart session use _⚙ (Gear) -> Default PCC_.\n' +
-					'Note, reloading page does not reduce waiting time on hanging availability (60 s.).';
-				return Conflict(error, {isOk: true});
-			} else {
-				let obj = typeof exc === 'string' ? new Error(exc) : exc;
-				// for debug, be careful not to include credentials here
-				obj.rqBody = body;
-				return Promise.reject(obj);
-			}
-		});
+		}).catch(exc => normActionExc(exc, body));
 	};
 
 	const processPnr = async (gdsData, params) => {
@@ -86,9 +145,9 @@ const TravelportClient = ({
 
 		const reqBody = buildSoapBody(gdsData, 'PNRBFManagement_51', reqXml);
 
-		const result = await sendRequest(reqBody, gdsData.profileName);
-
-		return TravelportPnrRequestTransformer.parsePnrXmlResponse(result);
+		return sendRequest(reqBody, gdsData.profileName)
+			.then(TravelportPnrRequestTransformer.parsePnrXmlResponse)
+			.catch(exc => normActionExc(exc, reqBody));
 	};
 
 	const getFareRules = async (gdsData, params) => {
@@ -96,28 +155,10 @@ const TravelportClient = ({
 
 		const reqBody = buildSoapBody(gdsData, 'FareQuoteMultiDisplay_23', reqXml);
 
-		const result = await sendRequest(reqBody, gdsData.profileName);
-
-		return TravelportFareRuleTransformer.parseFareRuleXmlResponse(result, params);
+		return sendRequest(reqBody, gdsData.profileName)
+			.then(result => TravelportFareRuleTransformer.parseFareRuleXmlResponse(result, params))
+			.catch(exc => normActionExc(exc, reqBody));
 	};
-
-	const buildSoapBody = (gdsData, requestType, reqXml) => (
-		`<?xml version="1.0" encoding="UTF-8"?>
-		<SOAP-ENV:Envelope xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ns1="http://webservices.galileo.com">
-			<SOAP-ENV:Body>
-				<ns1:SubmitXmlOnSession>
-					<ns1:Token>${gdsData.sessionToken}</ns1:Token>
-					<ns1:Request>
-						<${requestType}>
-							${reqXml}
-						</${requestType}>
-					</ns1:Request>
-					<ns1:Filter>
-						<_/>
-					</ns1:Filter>
-				</ns1:SubmitXmlOnSession>
-			</SOAP-ENV:Body>
-		</SOAP-ENV:Envelope>`);
 
 	const closeSession = (gdsData) => {
 		let body = [
@@ -154,44 +195,7 @@ const TravelportClient = ({
 	};
 
 	const getFares = (params) => {
-		let soapEnv = [
-			'<SOAP-ENV:Envelope xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ns1="http://webservices.galileo.com">',
-			'  <SOAP-ENV:Body>',
-			'    <ns1:SubmitXml>',
-			'      <ns1:Profile>DynApolloProd_2G8P</ns1:Profile>',
-			'      <ns1:Request>',
-			'        <FareQuoteMultiDisplay_27>',
-			'          <FareDisplayMods>',
-			'            <QueryHeader>',
-			'              <Action>02</Action>',
-			'              <SmartParsed>N</SmartParsed>',
-			'              <PFPWInd>Y</PFPWInd>',
-			'              <TariffQual>',
-			'                <PRIInd>Y</PRIInd>',
-			'              </TariffQual>',
-			'            </QueryHeader>',
-			'            <TravConstraints>',
-			'              <StartPt>MIA</StartPt>',
-			'              <EndPt>LON</EndPt>',
-			'              <StartDt>20190519</StartDt>',
-			'              <EndDt>20190530</EndDt>',
-			'              <ValidatingDispInd>Y</ValidatingDispInd>',
-			'              <AirV1>AA</AirV1>',
-			'              <AirlinePvtFare>Y</AirlinePvtFare>',
-			'            </TravConstraints>',
-			'            <PFMods>',
-			'              <PCC>2G8P</PCC>',
-			'            </PFMods>',
-			'         </FareDisplayMods>',
-			'        </FareQuoteMultiDisplay_27>',
-			'      </ns1:Request>',
-			'      <ns1:Filter>',
-			'        <_/>',
-			'      </ns1:Filter>',
-			'    </ns1:SubmitXml>',
-			'  </SOAP-ENV:Body>',
-			'</SOAP-ENV:Envelope>',
-		].join('\n');
+		let soapEnv = buildFaresSoapEnv();
 		return sendRequest(soapEnv, 'DynApolloProd_2F3K');
 	};
 
