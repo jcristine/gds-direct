@@ -101,7 +101,7 @@ let RunCmdRq = ({
 	CmdRqLog = require('../../../../../Repositories/CmdRqLog.js'),
 	PtcUtil = require('../../../../Rbs/Process/Common/PtcUtil.js'),
 	Pccs = require("../../../../../Repositories/Pccs.js"),
-	TravelportClient = require('../../../../../GdsClients/TravelportClient.js')(),
+	travelport = require('../../../../../GdsClients/TravelportClient.js')(),
 	useXml = true,
 }) => {
 	const {
@@ -296,7 +296,7 @@ let RunCmdRq = ({
 		}, $itinerary);
 		$gkSegments = Fp.filter($isGkRebookPossible, $itinerary);
 		$result = await ApolloBuildItineraryAction({
-			TravelportClient,
+			TravelportClient: travelport,
 			itinerary: $newItinerary,
 			baseDate: stateful.getStartDt(),
 			useXml: useXml,

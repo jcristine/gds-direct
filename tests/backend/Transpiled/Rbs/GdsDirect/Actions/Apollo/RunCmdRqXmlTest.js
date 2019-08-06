@@ -138,7 +138,7 @@ class RunCmdRqXmlTest extends require('../../../../Lib/TestCase.js')
 			gdsSession: {runCmd: cmd => travelport.runCmd({command: cmd}, gdsData)},
 		});
 
-		let actual = await RunCmdRq({...input, stateful, TravelportClient: travelport, useXml: true})
+		let actual = await RunCmdRq({...input, stateful, travelport, useXml: true})
 			.catch(coverExc(Rej.list, exc => ({error: exc + ''})));
 
 		this.assertArrayElementsSubset(output, actual, php.implode('; ', actual['userMessages'] || []) + php.PHP_EOL);

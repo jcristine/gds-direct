@@ -140,7 +140,7 @@ let runByGds = async (cmdRqData) => {
 	let travelport = TravelportClient({PersistentHttpRq: httpRq});
 	let gds = cmdRqData.stateful.gds;
 	if (gds === 'apollo') {
-		gdsResult = await ApoRunCmdRq({...cmdRqData, TravelportClient: travelport});
+		gdsResult = await ApoRunCmdRq({...cmdRqData, travelport});
 	} else if (gds === 'sabre') {
 		gdsResult = await SabRunCmdRq(cmdRqData);
 	} else if (gds === 'amadeus') {
