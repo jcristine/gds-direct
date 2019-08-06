@@ -2,7 +2,6 @@
 const {getRedisConfig, getEnvConfig} = require('klesun-node-tools/src/Config.js');
 const initSocketIo = require('socket.io');
 const redisAdapter = require('socket.io-redis');
-const Diag = require('./Diag.js');
 const Rej = require('klesun-node-tools/src/Rej.js');
 
 let toAskClient = (socket) => {
@@ -12,7 +11,7 @@ let toAskClient = (socket) => {
 		[...rejects].forEach(rej => rej(Rej.Gone.makeExc(error)));
 		rejects.clear();
 	});
-	return (msgData, {timeoutMs = 2 * 60 * 1000} = {}) => new Promise((resolve, reject) => {
+	return (msgData, {timeoutMs = 4 * 60 * 1000} = {}) => new Promise((resolve, reject) => {
 		rejects.add(reject);
 
 		let timeout = setTimeout(() => {
