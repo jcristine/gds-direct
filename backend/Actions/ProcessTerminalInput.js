@@ -137,7 +137,7 @@ let transformCalledCommand = (rec, stateful) => {
 let runByGds = async (cmdRqData) => {
 	let gdsResult;
 	let httpRq = GdsSession.initHttpRq(cmdRqData.stateful.getSessionRecord());
-	let travelport = TravelportClient.makeCustom({PersistentHttpRq: httpRq});
+	let travelport = TravelportClient({PersistentHttpRq: httpRq});
 	let gds = cmdRqData.stateful.gds;
 	if (gds === 'apollo') {
 		gdsResult = await ApoRunCmdRq({...cmdRqData, TravelportClient: travelport});

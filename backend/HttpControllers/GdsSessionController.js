@@ -32,10 +32,10 @@ const SubmitFcMask = require('../Actions/ManualPricing/FcMaskSubmit.js');
 
 let startByGds = async (gds) => {
 	let tuples = [
-		['apollo' , TravelportClient, TRAVELPORT.DynApolloProd_2F3K],
-		['galileo', TravelportClient, TRAVELPORT.DynGalileoProd_711M],
-		['amadeus', AmadeusClient   , AMADEUS.AMADEUS_PROD_1ASIWTUTICO],
-		['sabre'  , SabreClient     , SABRE.SABRE_PROD_L3II],
+		['apollo' , TravelportClient()        , TRAVELPORT.DynApolloProd_2F3K],
+		['galileo', TravelportClient()        , TRAVELPORT.DynGalileoProd_711M],
+		['amadeus', AmadeusClient.makeCustom(), AMADEUS.AMADEUS_PROD_1ASIWTUTICO],
+		['sabre'  , SabreClient.makeCustom()  , SABRE.SABRE_PROD_L3II],
 	];
 	for (let [clientGds, client, profileName] of tuples) {
 		if (gds === clientGds) {

@@ -65,7 +65,7 @@ const GdsSession = ({session}) => {
 	let httpRq = GdsSession.initHttpRq(session);
 	let runByGds = (cmd) => {
 		if (['apollo', 'galileo'].includes(gds)) {
-			let travelport = TravelportClient.makeCustom({PersistentHttpRq: httpRq});
+			let travelport = TravelportClient({PersistentHttpRq: httpRq});
 			return travelport.runCmd({command: cmd}, session.gdsData);
 		} else if (gds === 'amadeus') {
 			let amadeus = AmadeusClient.makeCustom({PersistentHttpRq: httpRq});

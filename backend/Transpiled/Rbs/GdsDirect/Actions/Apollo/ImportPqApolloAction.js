@@ -23,7 +23,7 @@ const withCapture = require("../../../../../GdsHelpers/CommonUtils").withCapture
 class ImportPqApolloAction extends AbstractGdsAction {
 	constructor({
 		useXml = true,
-		TravelportClient = require('../../../../../GdsClients/TravelportClient'),
+		TravelportClient = require('../../../../../GdsClients/TravelportClient')(),
 	}) {
 		super();
 		this.$leadData = {};

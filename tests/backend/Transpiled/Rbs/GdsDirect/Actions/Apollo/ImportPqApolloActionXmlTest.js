@@ -389,7 +389,7 @@ class ImportPqApolloActionXmlTest extends require('../../../../Lib/TestCase.js')
 	async testAction({input, output, calledCommands, httpRequests}) {
 		const PersistentHttpRq = PersistentHttpRqStub(httpRequests);
 
-		const travelport = TravelportClient.makeCustom({
+		const travelport = TravelportClient({
 			PersistentHttpRq,
 			GdsProfiles: {
 				getTravelport: () => Promise.resolve({

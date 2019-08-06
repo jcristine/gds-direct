@@ -117,7 +117,7 @@ let parseCmdRs = (dom, profileName) => ({
 let AmadeusClient = ({
 	PersistentHttpRq = require('klesun-node-tools/src/Utils/PersistentHttpRq.js'),
 	GdsProfiles = require("../Repositories/GdsProfiles"),
-}) => {
+} = {}) => {
 	let startSession = async (params) => {
 		let profileName = params.profileName;
 		let profileData = await getAmadeus(profileName);

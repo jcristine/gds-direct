@@ -97,7 +97,7 @@ const makeContinueSoapEnvXml = ({gdsData, payloadXml, profileData, action}) => {
 const SabreClient = ({
 	PersistentHttpRq = require('klesun-node-tools/src/Utils/PersistentHttpRq.js'),
 	GdsProfiles = require("../Repositories/GdsProfiles"),
-}) => {
+} = {}) => {
 	let {getSabre} = GdsProfiles;
 
 	let sendRequest = async (soapEnvXml, format) => {

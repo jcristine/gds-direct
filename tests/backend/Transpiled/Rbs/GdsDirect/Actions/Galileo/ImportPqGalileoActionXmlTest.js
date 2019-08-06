@@ -398,7 +398,7 @@ class ImportPqGalileoActionTest extends require('../../../../../../../backend/Tr
 	async testAction({input, output, calledCommands, httpRequests}) {
 		const PersistentHttpRq = PersistentHttpRqStub(httpRequests);
 
-		const travelport = TravelportClient.makeCustom({
+		const travelport = TravelportClient({
 			PersistentHttpRq,
 			GdsProfiles: {
 				getTravelport: () => Promise.resolve({

@@ -7,7 +7,6 @@ const AbstractGdsAction = require('../../../GdsAction/AbstractGdsAction.js');
 const PnrParser = require("../../../../Gds/Parsers/Galileo/Pnr/PnrParser");
 const GalileoPnrCommonFormatAdapter = require("../../../FormatAdapters/GalileoPnrCommonFormatAdapter");
 const GetPqItineraryAction = require("../../SessionStateProcessor/CanCreatePqRules");
-const GalileoStatelessTerminal = require("../../GdsInterface/CmsGalileoTerminal");
 const FqParser = require("../../../../Gds/Parsers/Galileo/Pricing/FqParser");
 const LinearFareParser = require("../../../../Gds/Parsers/Galileo/Pricing/LinearFareParser");
 const {fetchAll} = require('../../../../../GdsHelpers/TravelportUtils.js');
@@ -18,7 +17,7 @@ const Rej = require('klesun-node-tools/src/Rej.js');
 const TravelportClient = require("../../../../../GdsClients/TravelportClient");
 
 class ImportPqGalileoAction extends AbstractGdsAction {
-	constructor(useXml = true, tpClient = TravelportClient) {
+	constructor(useXml = true, tpClient = TravelportClient()) {
 		super();
 		this.$leadData = {};
 		this.$fetchOptionalFields = true;

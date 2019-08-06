@@ -27,7 +27,7 @@ class RetrieveApolloTicketsAction extends AbstractGdsAction {
 	}
 
 	withPccSession($pcc, $recordLocator, pccAction) {
-		return TravelportClient.withSession({}, async (tmSession) => {
+		return TravelportClient().withSession({}, async (tmSession) => {
 			await tmSession.runCmd('*' + $recordLocator, false);
 			await tmSession.runCmd('*HTE', false);
 			return pccAction();

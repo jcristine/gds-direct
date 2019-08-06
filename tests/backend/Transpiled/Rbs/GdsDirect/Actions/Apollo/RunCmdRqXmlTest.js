@@ -118,7 +118,7 @@ class RunCmdRqXmlTest extends require('../../../../Lib/TestCase.js')
 {
 	async test_call({input, output, httpRequests}) {
 		let PersistentHttpRq = PersistentHttpRqStub(httpRequests);
-		let travelport = TravelportClient.makeCustom({
+		let travelport = TravelportClient({
 			PersistentHttpRq,
 			GdsProfiles: {
 				getTravelport: (profileName) => Promise.resolve({

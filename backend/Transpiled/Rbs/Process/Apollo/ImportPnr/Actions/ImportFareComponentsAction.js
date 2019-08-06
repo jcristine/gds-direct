@@ -18,7 +18,7 @@ class ImportFareComponentsAction extends AbstractGdsAction {
 	constructor() {
 		super();
 		this.usesXml = true;
-		this.TravelportClient = TravelportClient;
+		this.TravelportClient = TravelportClient();
 	}
 
 	useXml(flag) {

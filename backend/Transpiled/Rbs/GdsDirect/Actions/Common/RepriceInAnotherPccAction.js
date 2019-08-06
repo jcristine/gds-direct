@@ -8,7 +8,6 @@ const Pccs = require("../../../../../Repositories/Pccs");
 const SabreClient = require("../../../../../GdsClients/SabreClient");
 const CmsSabreTerminal = require("../../GdsInterface/CmsSabreTerminal");
 const {BadRequest, NotImplemented, Forbidden, UnprocessableEntity, NotFound} = require("klesun-node-tools/src/Rej");
-const Misc = require("../../../../Lib/Utils/MaskUtil");
 const {ignoreExc} = require('../../../../../Utils/TmpLib.js');
 const TravelportClient = require("../../../../../GdsClients/TravelportClient");
 const UpdateGalileoStateAction = require("../../SessionStateProcessor/UpdateGalileoState");
@@ -199,7 +198,7 @@ class RepriceInAnotherPccAction {
 	async repriceInApollo(pcc, itinerary, pricingCmd, $startDt) {
 		itinerary = itinerary.map(seg => ({...seg, segmentStatus: 'GK'}));
 		let profileName = GdsProfiles.TRAVELPORT.DynApolloProd_2F3K;
-		return TravelportClient.withSession({profileName}, async session => {
+		return TravelportClient().withSession({profileName}, async session => {
 			session = withLog(session, this.$log);
 			let semRs = await session.runCmd('SEM/' + pcc + '/AG');
 			if (!CmsApolloTerminal.isSuccessChangePccOutput(semRs.output)) {
@@ -274,7 +273,7 @@ class RepriceInAnotherPccAction {
 	async repriceInGalileo(pcc, itinerary, pricingCmd) {
 		itinerary = itinerary.map(seg => ({...seg, segmentStatus: 'AK'}));
 		let profileName = GdsProfiles.TRAVELPORT.DynGalileoProd_711M;
-		return TravelportClient.withSession({profileName}, async session => {
+		return TravelportClient().withSession({profileName}, async session => {
 			session = withLog(session, this.$log);
 			let semRs = await session.runCmd('SEM/' + pcc + '/AG');
 			if (!UpdateGalileoStateAction.wasPccChangedOk(semRs.output)) {

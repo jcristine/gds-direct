@@ -21,7 +21,7 @@ let endpoint = 'https://americas.webservices.travelport.com/B2BGateway/service/X
 const TravelportClient = ({
 	PersistentHttpRq = require('klesun-node-tools/src/Utils/PersistentHttpRq.js'),
 	GdsProfiles = require("../Repositories/GdsProfiles"),
-}) => {
+} = {}) => {
 
 	let {getTravelport} = GdsProfiles;
 
@@ -207,8 +207,4 @@ const TravelportClient = ({
 	};
 };
 
-const defaultInst = TravelportClient({});
-
-defaultInst.makeCustom = params => TravelportClient(params);
-
-module.exports = defaultInst;
+module.exports = TravelportClient;

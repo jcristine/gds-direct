@@ -41,7 +41,7 @@ const makeDirectSellCmd = ($segment) => {
 const ApolloBuildItinerary = ({
 	session, itinerary,
 	baseDate = moment().format("YYYY-MM-DD"),
-	TravelportClient = require("../../../GdsClients/TravelportClient"),
+	TravelportClient = require("../../../GdsClients/TravelportClient")(),
 	useXml = false,
 }) => {
 	const executeViaTerminal = async ($itinerary) => {
