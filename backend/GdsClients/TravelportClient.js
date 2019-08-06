@@ -196,7 +196,7 @@ const TravelportClient = ({
 	};
 
 	return {
-		/** @param {{command: '*R'}} reqBody */
+		/** @param {{command: '*R' | string}} reqBody */
 		runCmd: (reqBody, gdsData) => runCmd(reqBody.command, gdsData),
 		startSession,
 		closeSession,

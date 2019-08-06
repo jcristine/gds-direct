@@ -62,7 +62,7 @@ let startNewSession = async (rqBody, emcUser) => {
 
 let closeByGds = (gds, gdsData) => {
 	if (['apollo', 'galileo'].includes(gds)) {
-		return TravelportClient.closeSession(gdsData);
+		return TravelportClient().closeSession(gdsData);
 	} else if ('sabre' === gds) {
 		return SabreClient.closeSession(gdsData);
 	} else if ('amadeus' === gds) {
@@ -303,7 +303,7 @@ exports.submitFcMask = async ({rqBody, session, emcUser}) => {
 
 let keepAliveByGds = (gds, gdsData) => {
 	if (['galileo', 'apollo'].includes(gds)) {
-		return TravelportClient.runCmd({command: 'MD0'}, gdsData)
+		return TravelportClient().runCmd({command: 'MD0'}, gdsData)
 			.then(result => ({message: 'Success - ' + result.output}));
 	} else {
 		// no keepAlive is needed in other GDS, since their
