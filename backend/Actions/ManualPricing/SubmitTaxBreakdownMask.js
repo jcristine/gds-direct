@@ -85,7 +85,7 @@ let SubmitTaxBreakdownMask = async ({rqBody, gdsSession}) => {
 	let cmd = await AbstractMaskParser.makeCmd({
 		positions: POSITIONS,
 		destinationMask: destinationMask,
-		fields: FIELDS, values
+		fields: FIELDS, values,
 	});
 	let cmdRec = await fetchAll(cmd, gdsSession);
 	let result = parseOutput(cmdRec.output);

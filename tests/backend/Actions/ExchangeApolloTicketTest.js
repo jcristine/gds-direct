@@ -505,7 +505,7 @@ class ExchangeApolloTicketTest extends require('../Transpiled/Lib/TestCase.js')
 
 	async testAction(testCase) {
 		await GdsActionTestUtil.testGdsAction(this, testCase, (gdsSession, input) =>
-			ExchangeApolloTicket({...input, gdsSession}));
+			ExchangeApolloTicket.submitMask({...input, gdsSession}));
 	}
 
 	async test_inputHbFexMask(testCase) {

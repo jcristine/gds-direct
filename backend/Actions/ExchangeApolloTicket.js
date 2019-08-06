@@ -50,7 +50,7 @@ let parseOutput = (output) => {
  * performs HB:FEX mask action which issues a new ticket from existing ticket or MCO
  * used to partially or fully pay for a new ticket with the old one
  */
-let ExchangeApolloTicket = async ({emptyMask, maskOutput, values, gdsSession, maskFields = null}) => {
+let submitMask = async ({emptyMask, maskOutput, values, gdsSession, maskFields = null}) => {
 	let destinationMask = AbstractMaskParser.normalizeMask(maskOutput);
 	let fields = maskFields || ParseHbFex.FIELDS;
 	let cmd = await AbstractMaskParser.makeCmdFromEmptyMask({
@@ -114,7 +114,7 @@ let getPrefilledFop = async (stateful) => {
 	}
 };
 
-ExchangeApolloTicket.inputHbFexMask = async ({rqBody, gdsSession}) => {
+const inputHbFexMask = async ({rqBody, gdsSession}) => {
 	let maskOutput = rqBody.maskOutput;
 	let values = {};
 	for (let {key, value} of rqBody.fields) {
@@ -125,7 +125,7 @@ ExchangeApolloTicket.inputHbFexMask = async ({rqBody, gdsSession}) => {
 			.catch(exc => getMcoFop(values.ticketNumber1, gdsSession))
 			.catch(exc => values.originalFormOfPayment);
 	}
-	let result = await ExchangeApolloTicket({
+	let result = await submitMask({
 		emptyMask: ParseHbFex.EMPTY_MASK_EXAMPLE,
 		maskOutput, values, gdsSession,
 	});
@@ -156,13 +156,13 @@ ExchangeApolloTicket.inputHbFexMask = async ({rqBody, gdsSession}) => {
 	}
 };
 
-ExchangeApolloTicket.confirmFareDifference = async ({rqBody, gdsSession}) => {
+const confirmFareDifference = async ({rqBody, gdsSession}) => {
 	let maskOutput = rqBody.maskOutput;
 	let values = {};
 	for (let {key, value} of rqBody.fields) {
 		values[key] = value.toUpperCase();
 	}
-	let result = await ExchangeApolloTicket({
+	let result = await submitMask({
 		emptyMask: AbstractMaskParser.normalizeMask(maskOutput),
 		maskOutput, values, gdsSession,
 		maskFields: rqBody.fields.map(f => f.key),
@@ -179,4 +179,9 @@ ExchangeApolloTicket.confirmFareDifference = async ({rqBody, gdsSession}) => {
 	}
 };
 
-module.exports = ExchangeApolloTicket;
+module.exports = {
+	inputHbFexMask,
+	confirmFareDifference,
+	/** exposing only for tests */
+	submitMask,
+};
