@@ -770,10 +770,12 @@ class RunCmdRq {
 		return rbsInfo.isPrivateFare && rbsInfo.isBrokenFare;
 	}
 
-	static translateApolloPricingModifier($mod) {
+	static translateApolloPricingModifier(mod) {
 
-		if ($mod['type'] === 'validatingCarrier') {
-			return 'A' + $mod['parsed'];
+		if (mod.type === 'validatingCarrier') {
+			return 'A' + mod.parsed;
+		} else if (mod.type === 'currency') {
+			return 'M' + mod.parsed;
 		} else {
 			return null;
 		}
@@ -786,7 +788,10 @@ class RunCmdRq {
 			if (translated) {
 				sabreRawMods.push(translated);
 			} else {
-				return Rej.NotImplemented('Unsupported modifier - ' + apolloMod['raw']);
+				let msg = apolloMod.type
+					? 'Unsupported Apollo modifier - ' + apolloMod.type + ' - ' + apolloMod.raw
+					: 'Unsupported modifier - ' + apolloMod.raw;
+				return Rej.NotImplemented(msg);
 			}
 		}
 		return Promise.resolve(sabreRawMods);
