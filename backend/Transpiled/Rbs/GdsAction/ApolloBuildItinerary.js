@@ -7,6 +7,7 @@ const {REBUILD_NO_AVAIL, REBUILD_GDS_ERROR} = require('../GdsDirect/Errors.js');
 const _ = require("lodash");
 const moment = require("moment");
 const php = require('klesun-node-tools/src/Transpiled/php.js');
+const TravelportClient = require("../../../GdsClients/TravelportClient");
 
 const isOutputValid = ($output) => {
 	let $line;
@@ -41,7 +42,7 @@ const makeDirectSellCmd = ($segment) => {
 const ApolloBuildItinerary = ({
 	session, itinerary,
 	baseDate = moment().format("YYYY-MM-DD"),
-	TravelportClient = require("../../../GdsClients/TravelportClient")(),
+	travelport = TravelportClient(),
 	useXml = false,
 }) => {
 	const executeViaTerminal = async ($itinerary) => {
@@ -108,7 +109,7 @@ const ApolloBuildItinerary = ({
 				};
 
 				try {
-					const result = await TravelportClient.processPnr(session.getGdsData(), params);
+					const result = await travelport.processPnr(session.getGdsData(), params);
 					soldCount += result.newAirSegments.filter(seg => seg.success).length;
 				} catch(error) {
 					return {

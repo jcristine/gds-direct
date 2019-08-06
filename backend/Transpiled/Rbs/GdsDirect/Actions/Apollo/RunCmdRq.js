@@ -296,7 +296,7 @@ let RunCmdRq = ({
 		}, $itinerary);
 		$gkSegments = Fp.filter($isGkRebookPossible, $itinerary);
 		$result = await ApolloBuildItineraryAction({
-			TravelportClient: travelport,
+			travelport: travelport,
 			itinerary: $newItinerary,
 			baseDate: stateful.getStartDt(),
 			useXml: useXml,
