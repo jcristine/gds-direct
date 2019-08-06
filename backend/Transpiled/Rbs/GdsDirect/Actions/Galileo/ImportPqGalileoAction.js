@@ -1,7 +1,7 @@
 
 const CommandParser = require('../../../../Gds/Parsers/Galileo/CommandParser.js');
 
-const php = require('../../../../phpDeprecated.js');
+const php = require('klesun-node-tools/src/Transpiled/php.js');
 const CmsGalileoTerminal = require("../../GdsInterface/CmsGalileoTerminal");
 const AbstractGdsAction = require('../../../GdsAction/AbstractGdsAction.js');
 const PnrParser = require("../../../../Gds/Parsers/Galileo/Pnr/PnrParser");
@@ -14,7 +14,7 @@ const GalileoPricingAdapter = require('../../../FormatAdapters/GalileoPricingAda
 const GalileoGetFlightServiceInfoAction = require('../../../GdsAction/GalileoGetFlightServiceInfoAction.js');
 const ImportFareComponentsAction = require('../../../Process/Apollo/ImportPnr/Actions/ImportFareComponentsAction.js');
 const Rej = require('klesun-node-tools/src/Rej.js');
-const TravelportClient = require("../../../../../GdsClients/TravelportClient");
+const TravelportClient = require("../../../../../GdsClients/TravelportClient.js");
 
 class ImportPqGalileoAction extends AbstractGdsAction {
 	constructor(useXml = true, tpClient = TravelportClient()) {

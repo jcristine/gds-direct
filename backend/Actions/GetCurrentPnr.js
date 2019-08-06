@@ -1,6 +1,5 @@
 const CmsAmadeusTerminal = require('../Transpiled/Rbs/GdsDirect/GdsInterface/CmsAmadeusTerminal.js');
 const ImportPqGalileoAction = require('../Transpiled/Rbs/GdsDirect/Actions/Galileo/ImportPqGalileoAction.js');
-const ImportPqApolloAction = require('../Transpiled/Rbs/GdsDirect/Actions/Apollo/ImportPqApolloAction.js');
 const AmadeusUtils = require('../GdsHelpers/AmadeusUtils.js');
 const AmadeusPnr = require('../Transpiled/Rbs/TravelDs/AmadeusPnr.js');
 const GalileoPnr = require('../Transpiled/Rbs/TravelDs/GalileoPnr.js');
@@ -11,7 +10,7 @@ const Rej = require('klesun-node-tools/src/Rej.js');
 
 const inApollo = async (stateful) => {
 	let cmdRows = await stateful.getLog().getLastStateSafeCommands();
-	let cmdToFullOutput = ImportPqApolloAction.collectCmdToFullOutput(cmdRows);
+	let cmdToFullOutput = TravelportUtils.collectCmdToFullOutput(cmdRows);
 	for (let [cmd, output] of Object.entries(cmdToFullOutput).reverse()) {
 		let showsFullPnr = cmd === '*R' || cmd === 'IR'
 			|| cmd.match(/^\*[A-Z]{6}$/);

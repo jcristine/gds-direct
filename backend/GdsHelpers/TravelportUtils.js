@@ -1,7 +1,7 @@
 const php = require('klesun-node-tools/src/Transpiled/php.js');
 const CmsApolloTerminal = require('../Transpiled/Rbs/GdsDirect/GdsInterface/CmsApolloTerminal.js');
 const PnrHistoryParser = require("../Transpiled/Gds/Parsers/Apollo/PnrHistoryParser");
-const hrtimeToDecimal = require("../Utils/TmpLib").hrtimeToDecimal;
+const hrtimeToDecimal = require("klesun-node-tools/src/Utils/Misc.js").hrtimeToDecimal;
 const matchAll = require("../Utils/Str").matchAll;
 
 /**
@@ -50,8 +50,7 @@ let shouldKeepFullLine = (line) => {
 		|| line.match(/^XG\s+SSR/)
 		// pricing lines may be glued in history
 		|| line.match(/^A\$\s+/) && !Object.keys(PnrHistoryParser.HISTORY_EVENT_CODES)
-			.some(code => line.slice(64).startsWith(code + ' '))
-		;
+			.some(code => line.slice(64).startsWith(code + ' '));
 };
 
 let extractTpTabCmds = (output) => {
@@ -59,10 +58,8 @@ let extractTpTabCmds = (output) => {
 	return [...new Set(tabCommands)];
 };
 
-exports.extractPager = extractPager;
-
 /** @param {{runCmd: function(string): Promise<{output: string}>}} session */
-exports.fetchAll = async (nextCmd, session) => {
+const fetchAll = async (nextCmd, session) => {
 	let pages = [];
 	let fullCmdRec = null;
 	let hrtimeStart = process.hrtime();
@@ -93,7 +90,7 @@ let shouldWrap = (cmd) => {
  * this wrapping is for display, not for processing, since it has pretty
  * loos rules that do not take type of command into account for example
  */
-exports.wrap = (text, gds) => {
+const wrap = (text, gds) => {
 	let result = [];
 	for (let line of text.split('\n')) {
 		if (gds === 'apollo' && shouldKeepFullLine(line)) {
@@ -110,7 +107,7 @@ exports.wrap = (text, gds) => {
 	return result.join('\n');
 };
 
-exports.joinFullOutput = ($pagesLeft) => {
+const joinFullOutput = ($pagesLeft) => {
 	$pagesLeft = [...$pagesLeft];
 	let $fullDump, $dumpPage, $hasMorePages, $isLast;
 	$fullDump = '';
@@ -131,5 +128,40 @@ exports.joinFullOutput = ($pagesLeft) => {
 	return $fullDump;
 };
 
-exports.extractTpTabCmds = extractTpTabCmds;
-exports.fetchUntil = fetchUntil;
+const collectFullCmdRecs = ($calledCommands) => {
+	let $cachedCommands, $mrs, $cmdRecord;
+	$cachedCommands = [];
+	$mrs = [];
+	let fullCmdRecs = [];
+	for ($cmdRecord of php.array_reverse($calledCommands)) {
+		php.array_unshift($mrs, $cmdRecord['output']);
+		if ($cmdRecord.cmd !== 'MR') {
+			$cmdRecord = {...$cmdRecord, output: joinFullOutput($mrs)};
+			if (!CmsApolloTerminal.isScrollingAvailable($cmdRecord['output'])) {
+				fullCmdRecs.unshift($cmdRecord);
+			}
+			$mrs = [];
+		}
+	}
+	return fullCmdRecs;
+};
+
+const collectCmdToFullOutput = ($calledCommands) => {
+	let fullCmdRecs = collectFullCmdRecs($calledCommands);
+	let $cachedCommands = {};
+	for (let {cmd, output} of fullCmdRecs) {
+		$cachedCommands[cmd] = output;
+	}
+	return $cachedCommands;
+};
+
+module.exports = {
+	fetchAll,
+	wrap,
+	collectFullCmdRecs,
+	collectCmdToFullOutput,
+	joinFullOutput,
+	extractTpTabCmds,
+	fetchUntil,
+	extractPager,
+};

@@ -10,7 +10,7 @@ const PricingParser = require('../../../../Gds/Parsers/Apollo/PricingParser/Pric
 const ApolloPnrFieldsOnDemand = require('../../../../Rbs/Process/Apollo/ImportPnr/ApolloPnrFieldsOnDemand.js');
 const ImportApolloPnrFormatAdapter = require('../../../../Rbs/Process/Apollo/ImportPnr/ImportApolloPnrFormatAdapter.js');
 const AbstractGdsAction = require('../../../GdsAction/AbstractGdsAction.js');
-const {fetchAll, joinFullOutput} = require('../../../../../GdsHelpers/TravelportUtils.js');
+const {fetchAll, joinFullOutput, collectFullCmdRecs, collectCmdToFullOutput} = require('../../../../../GdsHelpers/TravelportUtils.js');
 const ApolloBaggageAdapter = require('../../../FormatAdapters/ApolloBaggageAdapter.js');
 const RetrieveFlightServiceInfoAction = require('../../../../Rbs/Process/Apollo/ImportPnr/Actions/RetrieveFlightServiceInfoAction.js');
 const ImportFareComponentsAction = require('../../../../Rbs/Process/Apollo/ImportPnr/Actions/ImportFareComponentsAction.js');
@@ -55,7 +55,7 @@ class ImportPqApolloAction extends AbstractGdsAction {
 	/** @param $commands = await require('CmdLog.js')().getLastStateSafeCommands() */
 	setPreCalledCommandsFromDb($commands) {
 		this.$preCalledCommands = $commands;
-		this.$cmdToFullOutput = this.constructor.collectCmdToFullOutput($commands);
+		this.$cmdToFullOutput = collectCmdToFullOutput($commands);
 		return this;
 	}
 
@@ -70,53 +70,6 @@ class ImportPqApolloAction extends AbstractGdsAction {
 		this.$cmdToFullOutput[$cmd] = $output;
 		this.$allCommands.push({'cmd': $cmd, 'output': $output});
 		return $output;
-	}
-
-	static isScrollingAvailable($dump) {
-		let $exc;
-		try {
-			return CmsApolloTerminal.isScrollingAvailable($dump);
-		} catch ($exc) {
-			return false;
-		}
-	}
-
-	static trimScrollingIndicator($dump) {
-		let $exc;
-		try {
-			return CmsApolloTerminal.trimScrollingIndicator($dump);
-		} catch ($exc) {
-			return $dump;
-		}
-	}
-
-	static collectFullCmdRecs($calledCommands) {
-		let $cachedCommands, $mrs, $cmdRecord, $logCmdType;
-		$cachedCommands = [];
-		$mrs = [];
-		let fullCmdRecs = [];
-		for ($cmdRecord of php.array_reverse($calledCommands)) {
-			php.array_unshift($mrs, $cmdRecord['output']);
-			$logCmdType = CommandParser.parse($cmdRecord['cmd'])['type'];
-			if ($logCmdType !== 'moveRest') {
-				$cmdRecord = {...$cmdRecord, output: joinFullOutput($mrs)};
-				if (!this.isScrollingAvailable($cmdRecord['output'])) {
-					fullCmdRecs.unshift($cmdRecord);
-				}
-				$mrs = [];
-			}
-		}
-		return fullCmdRecs;
-	}
-
-	/** @deprecated - should move to TravelportUtils.js */
-	static collectCmdToFullOutput($calledCommands) {
-		let fullCmdRecs = this.collectFullCmdRecs($calledCommands);
-		let $cachedCommands = {};
-		for (let {cmd, output} of fullCmdRecs) {
-			$cachedCommands[cmd] = output;
-		}
-		return $cachedCommands;
 	}
 
 	async getReservation() {
@@ -289,7 +242,7 @@ class ImportPqApolloAction extends AbstractGdsAction {
 					$pricingCommand + ' - ' + php.implode(';', $errors);
 				return Rej.BadRequest(error);
 			}
-			if (this.constructor.isScrollingAvailable($cmdRecord['output'])) {
+			if (CmsApolloTerminal.isScrollingAvailable($cmdRecord['output'])) {
 				if ($i == php.count($cmdRecords) - 1) { // last (current) pricing command
 					$cmd = StringUtil.startsWith($pricingCommand, '$BB') ? '*$BB' : '*$B';
 					$raw = await this.runOrReuse($cmd);
@@ -446,7 +399,7 @@ class ImportPqApolloAction extends AbstractGdsAction {
 	async execute() {
 		let $result;
 		$result = await this.collectPnrData();
-		$result['allCommands'] = this.constructor.collectFullCmdRecs(this.$allCommands)
+		$result['allCommands'] = collectFullCmdRecs(this.$allCommands)
 			.map(c => this.constructor.transformCmdForCms(c));
 		return $result;
 	}
