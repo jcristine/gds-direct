@@ -2,7 +2,7 @@ const TravelportClient = require('../GdsClients/TravelportClient.js');
 const GdsSession = require('../GdsHelpers/GdsSession.js');
 const AddMpRemark = require('./AddMpRemark.js');
 const GetCurrentPnr = require('./GetCurrentPnr.js');
-const Misc = require('klesun-node-tools/src/Utils/Misc.js');
+const Debug = require('klesun-node-tools/src/Debug.js');
 const LocalDiag = require('../Repositories/LocalDiag.js');
 const RbsClient = require('../IqClients/RbsClient.js');
 
@@ -296,11 +296,16 @@ let logRqCmd = async ({params, whenCmdRqId, whenCmsResult}) => {
 				calledDt: calledDtObj.toISOString(),
 				duration: duration,
 			}).catch(coverExc([Rej.BadGateway], exc => {
-				if ((exc + '').match(/504 Gateway Time-out/)) {
-					return LocalDiag({
-						type: LocalDiag.types.REPORT_CMD_CALLED_RQ_TIMEOUT,
-						data: Misc.getExcData(exc),
-					});
+				let type = null;
+				let data = Debug.getExcData(exc);
+				let excStr = (exc + '').slice(0, 2000);
+				if (excStr.match(/504 Gateway Time-out/)) {
+					type = LocalDiag.types.REPORT_CMD_CALLED_RQ_TIMEOUT;
+				} else if (excStr.match(/405 Not Allowed/)) {
+					type = LocalDiag.types.REPORT_CMD_CALLED_RQ_NOT_ALLOWED;
+				}
+				if (type) {
+					return LocalDiag({type, data});
 				} else {
 					return Promise.reject(exc);
 				}
