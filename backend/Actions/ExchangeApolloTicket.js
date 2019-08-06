@@ -152,7 +152,8 @@ const inputHbFexMask = async ({rqBody, gdsSession}) => {
 			},
 		}]);
 	} else {
-		return UnprocessableEntity('GDS gave ' + result.status + ' - \n' + result.output);
+		let rejection = result.rejection || UnprocessableEntity;
+		return rejection('GDS gave ' + result.status + ' - \n' + result.output);
 	}
 };
 
