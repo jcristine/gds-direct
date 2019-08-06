@@ -212,7 +212,7 @@ class ImportPnrCommonFormatAdapter
 					'ticketDesignator': $fcSeg['ticketDesignator'] || null,
 				});
 				$dprt = null;
-				$dprtCty = $fcSeg['nextDeparture']['city'] || null;
+				$dprtCty = ($fcSeg['nextDeparture'] && $fcSeg['nextDeparture']['city']) || null;
 			}
 		}
 		return {'fares': $fares};

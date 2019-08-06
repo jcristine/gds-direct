@@ -6,6 +6,7 @@ let {wrapExc} = require("../Utils/TmpLib.js");
 let {parseXml, escapeXml} = require('../GdsHelpers/CommonUtils.js');
 let Rej = require("klesun-node-tools/src/Rej.js");
 const LoginTimeOut = require("klesun-node-tools/src/Rej").LoginTimeOut;
+const AmadeusFareRules = require('./Transformers/AmadeusFareRules');
 
 let chr = (charCode) => String.fromCharCode(charCode);
 
@@ -29,6 +30,39 @@ let makePasswordHash = (nonce, timestamp, password) => {
 	let passwordSha1 = sha1(password).digest();
 	let resultSrc = Buffer.concat([Buffer.from(nonce + timestamp), passwordSha1]);
 	return sha1(resultSrc).digest('base64');
+};
+
+const makeSoapEnvForActionWithLogin = ({profileData, payloadXml, action}) => {
+	let nonceBytes = crypto.randomBytes(16);
+	let nonce = nonceBytes.toString('base64');
+	let timestamp = new Date().toISOString(); // '2019-02-21T19:37:28.361Z'
+	let password = makePasswordHash(nonce, timestamp, profileData.password); // 'LjWB9HZPLHIuWPa9FyzIl8n1NzU=';
+
+	return `<?xml version="1.0" encoding="UTF-8"?>
+		<SOAP-ENV:Envelope
+		    xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/"
+		    xmlns:ns1="http://xml.amadeus.com/${action}"
+		    xmlns:ns2="http://www.w3.org/2005/08/addressing"
+		    xmlns:ns3="http://wsdl.amadeus.com/2010/06/ws/Link_v1">
+		  <SOAP-ENV:Header>
+		    <ns2:MessageID>${uuidv4()}</ns2:MessageID>
+		    <ns2:Action>http://webservices.amadeus.com/${action}</ns2:Action>
+		    <ns2:To>${profileData.endpoint}</ns2:To>
+		    <ns3:TransactionFlowLink/>
+		    <oas:Security xmlns:oas="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd">
+		      <oas:UsernameToken xmlns:oas1="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd" oas1:Id="UsernameToken-1">
+		        <oas:Username>${profileData.username}</oas:Username>
+		        <oas:Nonce EncodingType="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-soap-message-security-1.0#Base64Binary">${Buffer.from(nonce).toString('base64')}</oas:Nonce>
+		        <oas:Password Type="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-username-token-profile-1.0#PasswordDigest">${password}</oas:Password>
+		        <oas1:Created>${timestamp}</oas1:Created>
+		      </oas:UsernameToken>
+		    </oas:Security>
+		    <AMA_SecurityHostedUser xmlns="http://xml.amadeus.com/2010/06/Security_v1">
+		      <UserID AgentDutyCode="SU" RequestorType="U" PseudoCityCode="${profileData.pcc}" POS_Type="1"/>
+		    </AMA_SecurityHostedUser>
+		  </SOAP-ENV:Header>
+		  <SOAP-ENV:Body>${payloadXml}</SOAP-ENV:Body>
+		</SOAP-ENV:Envelope>`;
 };
 
 let makeStartSoapEnvXml = ({profileData, payloadXml}) => {
@@ -229,11 +263,36 @@ let AmadeusClient = ({
 		});
 	};
 
+	const getFareRules = async (gdsData, params) => {
+		const profileName = gdsData.profileName;
+		let profileData = await getAmadeus(profileName);
+		const pcc = params.pcc || profileData.default_pcc;
+		profileData = {...profileData, pcc};
+
+		const soapEnvXml = makeSoapEnvForActionWithLogin({
+			profileData,
+			action: 'FARRNQ_10_1_1A',
+			payloadXml: AmadeusFareRules.buildFareRuleXml(params),
+		});
+
+		const result = await PersistentHttpRq({
+			url: profileData.endpoint,
+			headers: {
+				'SOAPAction': 'http://webservices.amadeus.com/FARRNQ_10_1_1A',
+				'Content-Type': 'text/xml; charset=utf-8',
+			},
+			body: soapEnvXml,
+		});
+
+		return AmadeusFareRules.parseFareRuleXmlResponse(result.body);
+	};
+
 	return {
 		startSession,
 		runCmd,
 		closeSession,
 		withSession,
+		getFareRules,
 	};
 };
 

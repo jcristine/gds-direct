@@ -23,6 +23,7 @@ const AmadeusGetFareRulesAction = require('../../../../Rbs/GdsAction/AmadeusGetF
 const SessionStateHelper = require("../../SessionStateProcessor/SessionStateHelper");
 const Rej = require('klesun-node-tools/src/Rej.js');
 const AnyGdsStubSession = require('../../../../../Utils/Testing/AnyGdsStubSession.js');
+const AmadeusGetStatelessRulesAction = require('../../../GdsAction/AmadeusGetStatelessRulesAction');
 
 /**
  * import PNR fields of currently opened PNR
@@ -32,7 +33,7 @@ const AnyGdsStubSession = require('../../../../../Utils/Testing/AnyGdsStubSessio
 class ImportPqAmadeusAction extends AbstractGdsAction {
 	constructor() {
 		super();
-		this.$useStatelessRules = false;
+		this.$useStatelessRules = true;
 		this.$fetchOptionalFields = true;
 		this.$geoProvider = null;
 		this.$baseDate = null;
@@ -451,16 +452,16 @@ class ImportPqAmadeusAction extends AbstractGdsAction {
 	 * fetches all rule sections, no matter how long they are
 	 */
 	async getStatelessFareRules($stores, $itinerary) {
-		let $ruleRecords, $dumpStorage, $result, $error, $numToStore, $storeToPtcNumToFareList, $cmdToDump, $ruleRecord,
-			$dumpRec, $numToSec, $storeNum, $ptcNum, $compNum, $rawFareList, $fareListRecords, $ptcNumToFareList,
+		let $ruleRecords, $result, $numToStore, $storeToPtcNumToFareList, $cmdToDump, $ruleRecord,
+			$numToSec, $storeNum, $ptcNum, $compNum, $rawFareList, $fareListRecords, $ptcNumToFareList,
 			$fareList, $cmd, $dump;
 
 		$ruleRecords = [];
 		$result = await (new AmadeusGetStatelessRulesAction())
 			.setSession(this.session)
 			.execute($stores, $itinerary);
-		if ($error = $result['error']) {
-			return {'error': 'Failed to fetch rules via XML - ' + $error};
+		if ($result['error']) {
+			return {'error': 'Failed to fetch rules via XML - ' + $result['error']};
 		}
 
 		$numToStore = php.array_combine(php.array_column($stores, 'quoteNumber'), $stores);
@@ -468,10 +469,9 @@ class ImportPqAmadeusAction extends AbstractGdsAction {
 		$cmdToDump = {};
 
 		for ($ruleRecord of Object.values($result['data'])) {
-			$dumpRec = $dumpStorage.get($ruleRecord['dumpNumber']);
 			$numToSec = php.array_combine(php.array_column($ruleRecord['sections'], 'sectionNumber'),
 				$ruleRecord['sections']);
-			$cmdToDump[$dumpRec['cmd']] = $dumpRec['dump'] + php.PHP_EOL + php.PHP_EOL +
+			$cmdToDump[$ruleRecord.cmd] = $ruleRecord.dumpCmd + php.PHP_EOL + php.PHP_EOL +
 				(($numToSec[16] || {})['raw'] || 'NO PENALTY SECTION');
 			$storeNum = $ruleRecord['pricingNumber'];
 			$ptcNum = $ruleRecord['subPricingNumber'];
@@ -485,6 +485,11 @@ class ImportPqAmadeusAction extends AbstractGdsAction {
 				},
 			});
 			$rawFareList = (((($numToStore[$storeNum] || {})['pricingBlockList'] || {})[$ptcNum - 1] || {})['fareInfo'] || {})['fareConstructionRaw'] || 'FROM FARE CALCULATION';
+
+			$storeToPtcNumToFareList[$storeNum] = $storeToPtcNumToFareList[$storeNum] || {};
+			$storeToPtcNumToFareList[$storeNum][$ptcNum] = $storeToPtcNumToFareList[$storeNum][$ptcNum] || {};
+			$storeToPtcNumToFareList[$storeNum][$ptcNum]['parsed'] = $storeToPtcNumToFareList[$storeNum][$ptcNum]['parsed'] || {};
+
 			$storeToPtcNumToFareList[$storeNum][$ptcNum]['raw'] = $rawFareList;
 			$storeToPtcNumToFareList[$storeNum][$ptcNum]['parsed'][$compNum - 1] = $ruleRecord['fareComponent'];
 		}
@@ -527,7 +532,6 @@ class ImportPqAmadeusAction extends AbstractGdsAction {
 			$flightServiceRecord = await this.getFlightService($reservationRecord['parsed']['itinerary']);
 			if ($result['error'] = $flightServiceRecord['error']) return $result;
 			$result['pnrData']['flightServiceInfo'] = $flightServiceRecord;
-
 			$fareRuleData = this.$useStatelessRules
 				? await this.getStatelessFareRules($pricingRecord['parsed']['pricingList'],
 					$reservationRecord['parsed']['itinerary'])
