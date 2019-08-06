@@ -1,11 +1,14 @@
 
-let PersistentHttpRq = require('klesun-node-tools/src/Utils/PersistentHttpRq.js');
 let {getSabre} = require('../Repositories/GdsProfiles.js');
 let {wrapExc} = require("../Utils/TmpLib.js");
 let {parseXml, escapeXml} = require('../GdsHelpers/CommonUtils.js');
 let Rej = require("klesun-node-tools/src/Rej.js");
-const GdsProfiles = require("../Repositories/GdsProfiles");
 const LoginTimeOut = require("klesun-node-tools/src/Rej").LoginTimeOut;
+
+const SabreClient = ({
+	PersistentHttpRq = require('klesun-node-tools/src/Utils/PersistentHttpRq.js'),
+	GdsProfiles = require("../Repositories/GdsProfiles"),
+}) => {
 
 let sendRequest = async (soapEnvXml, format) => {
 	return PersistentHttpRq({
@@ -197,14 +200,10 @@ let makeSession = (gdsData) => ({
 		.then(result => ({cmd, ...result})),
 });
 
-exports.startSession = startSession;
-exports.runCmd = runCmd;
-exports.closeSession = closeSession;
-
-/**
- * starts a session, executes the action, closes the session
- */
-exports.withSession = (params, action) => {
+	/**
+	 * starts a session, executes the action, closes the session
+	 */
+let withSession = (params, action) => {
 	let profileName = params.profileName
 		|| GdsProfiles.SABRE.SABRE_PROD_L3II;
 	return startSession({profileName}).then(gdsData => {
@@ -216,3 +215,17 @@ exports.withSession = (params, action) => {
 			});
 	});
 };
+
+	return {
+		startSession,
+		runCmd,
+		closeSession,
+		withSession,
+	};
+};
+
+const defaultInst = SabreClient({});
+
+defaultInst.makeCustom = params => SabreClient(params);
+
+module.exports = defaultInst;

@@ -1,12 +1,10 @@
 
 let {getAmadeus} = require("../Repositories/GdsProfiles.js");
-let PersistentHttpRq = require('klesun-node-tools/src/Utils/PersistentHttpRq.js');
 let crypto = require('crypto');
 let util = require('util');
 let {wrapExc} = require("../Utils/TmpLib.js");
 let {parseXml, escapeXml} = require('../GdsHelpers/CommonUtils.js');
 let Rej = require("klesun-node-tools/src/Rej.js");
-const GdsProfiles = require("../Repositories/GdsProfiles");
 const LoginTimeOut = require("klesun-node-tools/src/Rej").LoginTimeOut;
 
 let chr = (charCode) => String.fromCharCode(charCode);
