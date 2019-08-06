@@ -1,5 +1,4 @@
 const CmsAmadeusTerminal = require('../Transpiled/Rbs/GdsDirect/GdsInterface/CmsAmadeusTerminal.js');
-const ImportPqGalileoAction = require('../Transpiled/Rbs/GdsDirect/Actions/Galileo/ImportPqGalileoAction.js');
 const AmadeusUtils = require('../GdsHelpers/AmadeusUtils.js');
 const AmadeusPnr = require('../Transpiled/Rbs/TravelDs/AmadeusPnr.js');
 const GalileoPnr = require('../Transpiled/Rbs/TravelDs/GalileoPnr.js');
@@ -36,7 +35,7 @@ const inSabre = async (stateful) => {
 
 const inGalileo = async (stateful) => {
 	let cmds = await stateful.getLog().getLastStateSafeCommands();
-	let cmdToFullOutput = ImportPqGalileoAction.collectCmdToFullOutput(cmds);
+	let cmdToFullOutput = TravelportUtils.collectCmdToFullOutput(cmds);
 	for (let [cmd, output] of Object.entries(cmdToFullOutput).reverse()) {
 		let showsFullPnr = cmd === '*R' || cmd === 'IR'
 			|| cmd.match(/^\*[A-Z]{6}$/);
