@@ -13,7 +13,7 @@ class SessionStateHelper
 {
 	static getCanCreatePqSafeTypes()  {
 		return php.array_merge(this.$nonAffectingTypes, [
-			'changeName', // needed in Galileo to price multiple PTC-s without real names
+			'addName', 'changeName', // needed in Galileo to price multiple PTC-s without real names
 		]);
 	}
 

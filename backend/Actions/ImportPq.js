@@ -41,6 +41,10 @@ let ImportPq = async ({
 				|| $cmdRow['type'] === 'pricingLinearFare'
 				|| $cmdRow['type'] === 'ptcPricingBlock'
 				|| $cmdRow.type === 'storePricing'
+				|| gds === 'galileo' && (
+					$cmdRow.type === 'addName' ||
+					$cmdRow.type === 'changeName'
+				)
 				|| $isPricingMd && $cmdRow.is_mr;
 			if ($belongsToPricing) {
 				$isPricingMd = true;
