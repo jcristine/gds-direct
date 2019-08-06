@@ -9,7 +9,7 @@ const GalileoPnrCommonFormatAdapter = require("../../../FormatAdapters/GalileoPn
 const GetPqItineraryAction = require("../../SessionStateProcessor/CanCreatePqRules");
 const FqParser = require("../../../../Gds/Parsers/Galileo/Pricing/FqParser");
 const LinearFareParser = require("../../../../Gds/Parsers/Galileo/Pricing/LinearFareParser");
-const {fetchAll} = require('../../../../../GdsHelpers/TravelportUtils.js');
+const {fetchAll, joinFullOutput} = require('../../../../../GdsHelpers/TravelportUtils.js');
 const GalileoPricingAdapter = require('../../../FormatAdapters/GalileoPricingAdapter.js');
 const GalileoGetFlightServiceInfoAction = require('../../../GdsAction/GalileoGetFlightServiceInfoAction.js');
 const ImportFareComponentsAction = require('../../../Process/Apollo/ImportPnr/Actions/ImportFareComponentsAction.js');
@@ -65,28 +65,7 @@ class ImportPqGalileoAction extends AbstractGdsAction {
 		return $output;
 	}
 
-	static joinFullOutput($pagesLeft) {
-		$pagesLeft = [...$pagesLeft];
-		let $fullDump, $dumpPage, $hasMorePages, $isLast;
-
-		$fullDump = '';
-		while ($dumpPage = php.array_shift($pagesLeft)) {
-			$fullDump += $dumpPage;
-			$hasMorePages = CmsGalileoTerminal.isScrollingAvailable($fullDump);
-			$isLast = !$hasMorePages || php.empty($pagesLeft);
-			if (!$isLast) {
-				$fullDump = CmsGalileoTerminal.trimScrollingIndicator($fullDump);
-			} else {
-				// remove "><", but preserve ")><" to determine that no more output
-				if (!$hasMorePages) {
-					$fullDump = CmsGalileoTerminal.trimScrollingIndicator($fullDump);
-				}
-				break;
-			}
-		}
-		return $fullDump;
-	}
-
+	/** @deprecated - should move to TravelportUtils.js */
 	static collectCmdToFullOutput($calledCommands) {
 		let $cachedCommands, $mrs, $cmdRecord, $logCmdType;
 
@@ -96,7 +75,7 @@ class ImportPqGalileoAction extends AbstractGdsAction {
 			php.array_unshift($mrs, $cmdRecord['output']);
 			$logCmdType = CommandParser.parse($cmdRecord['cmd'])['type'];
 			if ($logCmdType !== 'moveRest') {
-				$cmdRecord = {...$cmdRecord, output: this.joinFullOutput($mrs)};
+				$cmdRecord = {...$cmdRecord, output: joinFullOutput($mrs)};
 				if (!CmsGalileoTerminal.isScrollingAvailable($cmdRecord['output'])) {
 					$cachedCommands[$cmdRecord['cmd']] = $cmdRecord['output'];
 				}
@@ -224,7 +203,7 @@ class ImportPqGalileoAction extends AbstractGdsAction {
 		for (let cmdRec of [...this.$preCalledCommands].reverse()) {
 			mrs.unshift(cmdRec.output);
 			let parsed = CommandParser.parse(cmdRec.cmd);
-			let output = this.constructor.joinFullOutput(mrs);
+			let output = joinFullOutput(mrs);
 			if (parsed.type !== 'moveRest') {
 				mrs = [];
 			}

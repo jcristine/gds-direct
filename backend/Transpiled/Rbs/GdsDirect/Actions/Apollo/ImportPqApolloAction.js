@@ -16,7 +16,7 @@ const RetrieveFlightServiceInfoAction = require('../../../../Rbs/Process/Apollo/
 const ImportFareComponentsAction = require('../../../../Rbs/Process/Apollo/ImportPnr/Actions/ImportFareComponentsAction.js');
 const TravelportClient = require('../../../../../GdsClients/TravelportClient');
 
-let php = require('../../../../phpDeprecated.js');
+let php = require('klesun-node-tools/src/Transpiled/php.js');
 const Rej = require("klesun-node-tools/src/Rej");
 const withCapture = require("../../../../../GdsHelpers/CommonUtils").withCapture;
 
