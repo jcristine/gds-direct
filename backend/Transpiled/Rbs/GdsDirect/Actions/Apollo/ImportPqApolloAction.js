@@ -10,7 +10,7 @@ const PricingParser = require('../../../../Gds/Parsers/Apollo/PricingParser/Pric
 const ApolloPnrFieldsOnDemand = require('../../../../Rbs/Process/Apollo/ImportPnr/ApolloPnrFieldsOnDemand.js');
 const ImportApolloPnrFormatAdapter = require('../../../../Rbs/Process/Apollo/ImportPnr/ImportApolloPnrFormatAdapter.js');
 const AbstractGdsAction = require('../../../GdsAction/AbstractGdsAction.js');
-const {fetchAll} = require('../../../../../GdsHelpers/TravelportUtils.js');
+const {fetchAll, joinFullOutput} = require('../../../../../GdsHelpers/TravelportUtils.js');
 const ApolloBaggageAdapter = require('../../../FormatAdapters/ApolloBaggageAdapter.js');
 const RetrieveFlightServiceInfoAction = require('../../../../Rbs/Process/Apollo/ImportPnr/Actions/RetrieveFlightServiceInfoAction.js');
 const ImportFareComponentsAction = require('../../../../Rbs/Process/Apollo/ImportPnr/Actions/ImportFareComponentsAction.js');
@@ -90,27 +90,6 @@ class ImportPqApolloAction extends AbstractGdsAction {
 		}
 	}
 
-	static joinFullOutput($pagesLeft) {
-		$pagesLeft = [...$pagesLeft];
-		let $fullDump, $dumpPage, $hasMorePages, $isLast;
-		$fullDump = '';
-		while ($dumpPage = php.array_shift($pagesLeft)) {
-			$fullDump += $dumpPage;
-			$hasMorePages = this.isScrollingAvailable($fullDump);
-			$isLast = !$hasMorePages || php.empty($pagesLeft);
-			if (!$isLast) {
-				$fullDump = CmsApolloTerminal.trimScrollingIndicator($fullDump);
-			} else {
-				// remove "><", but preserve ")><" to determine that no more output
-				if (!$hasMorePages) {
-					$fullDump = this.trimScrollingIndicator($fullDump);
-				}
-				break;
-			}
-		}
-		return $fullDump;
-	}
-
 	static collectFullCmdRecs($calledCommands) {
 		let $cachedCommands, $mrs, $cmdRecord, $logCmdType;
 		$cachedCommands = [];
@@ -120,7 +99,7 @@ class ImportPqApolloAction extends AbstractGdsAction {
 			php.array_unshift($mrs, $cmdRecord['output']);
 			$logCmdType = CommandParser.parse($cmdRecord['cmd'])['type'];
 			if ($logCmdType !== 'moveRest') {
-				$cmdRecord = {...$cmdRecord, output: this.joinFullOutput($mrs)};
+				$cmdRecord = {...$cmdRecord, output: joinFullOutput($mrs)};
 				if (!this.isScrollingAvailable($cmdRecord['output'])) {
 					fullCmdRecs.unshift($cmdRecord);
 				}
@@ -138,23 +117,6 @@ class ImportPqApolloAction extends AbstractGdsAction {
 			$cachedCommands[cmd] = output;
 		}
 		return $cachedCommands;
-	}
-
-	/** @deprecated - should move to TravelportUtils.js */
-	static findLastCommandIn($cmdTypes, $calledCommands) {
-		let $mrs, $cmdRecord, $logCmdType;
-		$mrs = [];
-		for ($cmdRecord of php.array_reverse($calledCommands)) {
-			php.array_unshift($mrs, $cmdRecord['output']);
-			$logCmdType = CommandParser.parse($cmdRecord['cmd'])['type'];
-			if (php.in_array($logCmdType, $cmdTypes)) {
-				$cmdRecord['output'] = this.joinFullOutput($mrs);
-				return $cmdRecord;
-			} else if ($logCmdType !== 'moveRest') {
-				$mrs = [];
-			}
-		}
-		return null;
 	}
 
 	async getReservation() {
@@ -281,7 +243,7 @@ class ImportPqApolloAction extends AbstractGdsAction {
 			php.array_unshift($mrs, $cmdRecord['output']);
 			$parsed = CommandParser.parse($cmdRecord['cmd']);
 			$logCmdType = $parsed['type'];
-			let output = this.constructor.joinFullOutput($mrs);
+			let output = joinFullOutput($mrs);
 			if ($logCmdType !== 'moveRest') {
 				$mrs = [];
 			}

@@ -1,3 +1,5 @@
+const php = require('klesun-node-tools/src/Transpiled/php.js');
+const CmsApolloTerminal = require('../Transpiled/Rbs/GdsDirect/GdsInterface/CmsApolloTerminal.js');
 const PnrHistoryParser = require("../Transpiled/Gds/Parsers/Apollo/PnrHistoryParser");
 const hrtimeToDecimal = require("../Utils/TmpLib").hrtimeToDecimal;
 const matchAll = require("../Utils/Str").matchAll;
@@ -106,6 +108,27 @@ exports.wrap = (text, gds) => {
 		result.push('');
 	}
 	return result.join('\n');
+};
+
+exports.joinFullOutput = ($pagesLeft) => {
+	$pagesLeft = [...$pagesLeft];
+	let $fullDump, $dumpPage, $hasMorePages, $isLast;
+	$fullDump = '';
+	while ($dumpPage = php.array_shift($pagesLeft)) {
+		$fullDump += $dumpPage;
+		$hasMorePages = CmsApolloTerminal.isScrollingAvailable($fullDump);
+		$isLast = !$hasMorePages || php.empty($pagesLeft);
+		if (!$isLast) {
+			$fullDump = CmsApolloTerminal.trimScrollingIndicator($fullDump);
+		} else {
+			// remove "><", but preserve ")><" to determine that no more output
+			if (!$hasMorePages) {
+				$fullDump = CmsApolloTerminal.trimScrollingIndicator($fullDump);
+			}
+			break;
+		}
+	}
+	return $fullDump;
 };
 
 exports.extractTpTabCmds = extractTpTabCmds;

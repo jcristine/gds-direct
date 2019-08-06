@@ -9,8 +9,8 @@ const ArrayUtil = require('../../../../Lib/Utils/ArrayUtil.js');
 const DateTime = require('../../../../Lib/Utils/DateTime.js');
 const Fp = require('../../../../Lib/Utils/Fp.js');
 const StringUtil = require('../../../../Lib/Utils/StringUtil.js');
-const fetchUntil = require("../../../../../GdsHelpers/TravelportUtils").fetchUntil;
-const {fetchAll, extractPager} = require('../../../../../GdsHelpers/TravelportUtils.js');
+const TravelportUtils = require("../../../../../GdsHelpers/TravelportUtils.js");
+const {fetchUntil, fetchAll, extractPager} = TravelportUtils;
 
 const Rej = require('klesun-node-tools/src/Rej.js');
 const {ignoreExc} = require('../../../../../Utils/TmpLib.js');
@@ -38,7 +38,6 @@ const CommandParser = require('../../../../Gds/Parsers/Apollo/CommandParser.js')
 const TApolloSavePnr = require('../../../../Rbs/GdsAction/Traits/TApolloSavePnr.js');
 const AliasParser = require('../../../../Rbs/GdsDirect/AliasParser.js');
 const ApoAliasParser = require('../../../../../Parsers/Apollo/AliasParser.js');
-const ImportPqApolloAction = require("./ImportPqApolloAction");
 const getRbsPqInfo = require("../../../../../GdsHelpers/RbsUtils").getRbsPqInfo;
 const PnrHistoryParser = require('../../../../Gds/Parsers/Apollo/PnrHistoryParser.js');
 const McoListParser = require("../../../../Gds/Parsers/Apollo/Mco/McoListParser");
@@ -95,6 +94,22 @@ const parseStringNumbersList = ($numberString) => {
 	return php.array_values(php.array_unique($list.sort()));
 };
 
+const findLastCommandIn = ($cmdTypes, $calledCommands) => {
+	let $mrs, $cmdRecord, $logCmdType;
+	$mrs = [];
+	for ($cmdRecord of php.array_reverse($calledCommands)) {
+		php.array_unshift($mrs, $cmdRecord['output']);
+		$logCmdType = CommandParser.parse($cmdRecord['cmd'])['type'];
+		if (php.in_array($logCmdType, $cmdTypes)) {
+			$cmdRecord['output'] = TravelportUtils.joinFullOutput($mrs);
+			return $cmdRecord;
+		} else if ($logCmdType !== 'moveRest') {
+			$mrs = [];
+		}
+	}
+	return null;
+};
+
 /** @param stateful = await require('StatefulSession.js')() */
 let RunCmdRq = ({
 	stateful, cmdRq,
@@ -123,7 +138,7 @@ let RunCmdRq = ({
 	const getLastTariffDisplay = async () => {
 		let $cmds = await stateful.getLog().getAllCommands();
 		let $tariffTypes = ['fareSearch', 'redisplayFareSearch'];
-		let $cmdRecord = ImportPqApolloAction.findLastCommandIn($tariffTypes, $cmds);
+		let $cmdRecord = findLastCommandIn($tariffTypes, $cmds);
 		if (!$cmdRecord) {
 			return Promise.reject('No recent $D');
 		} else {
