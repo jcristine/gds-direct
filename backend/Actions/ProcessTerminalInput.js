@@ -395,13 +395,13 @@ let ProcessTerminalInput = async (params) => {
 	}
 	let whenCmsResult = processNormalized({
 		stateful, cmdRq: cmdRqNorm,
-	}).then((rbsResult) => {
-		let termSvc = new TerminalService(stateful.gds);
-		return termSvc.addHighlighting(cmdRq, rbsResult, stateful.getFullState());
 	}).then(cmsResult => ({...cmsResult,
 		messages: (translated.messages || [])
 			.concat(cmsResult.messages || []),
-	}));
+	})).then((rbsResult) => {
+		let termSvc = new TerminalService(stateful.gds);
+		return termSvc.addHighlighting(cmdRq, rbsResult, stateful.getFullState());
+	});
 	whenCmsResult = extendActions({whenCmsResult, stateful});
 	logRqCmd({params, whenCmdRqId, whenCmsResult});
 

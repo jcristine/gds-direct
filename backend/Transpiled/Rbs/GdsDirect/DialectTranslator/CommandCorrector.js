@@ -248,6 +248,11 @@ class CommandCorrector {
 				{mistake: 'MMD', correct: 'MD'},
 				{mistake: 'MMDA', correct: 'MDA'},
 				{mistake: 'PRICELAL', correct: 'PRICEALL'},
+				{mistake: 'PRICEALL*JCB', correct: 'PRICEJCB'},
+				{mistake: 'PRICEALL*JC', correct: 'PRICEJCB'},
+				{mistake: 'PRICECJB', correct: 'PRICEJCB'},
+				{mistake: 'PRICEBJC', correct: 'PRICEJCB'},
+				{mistake: 'STOREALL', correct: 'STORE'},
 			],
 
 			sabre: [
@@ -588,7 +593,7 @@ class CommandCorrector {
 		}
 
 		if ($addNoteCorrected && php.empty(this.$messages)) {
-			this.$messages.push('CORRECTED!');
+			this.$messages.push('CORRECTED >' + $output);
 		}
 		return $output;
 	}
