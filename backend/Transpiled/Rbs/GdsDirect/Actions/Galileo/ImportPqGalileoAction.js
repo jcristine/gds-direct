@@ -9,7 +9,7 @@ const GalileoPnrCommonFormatAdapter = require("../../../FormatAdapters/GalileoPn
 const GetPqItineraryAction = require("../../SessionStateProcessor/CanCreatePqRules");
 const FqParser = require("../../../../Gds/Parsers/Galileo/Pricing/FqParser");
 const LinearFareParser = require("../../../../Gds/Parsers/Galileo/Pricing/LinearFareParser");
-const {fetchAll, joinFullOutput} = require('../../../../../GdsHelpers/TravelportUtils.js');
+const {fetchAll, joinFullOutput, collectCmdToFullOutput} = require('../../../../../GdsHelpers/TravelportUtils.js');
 const GalileoPricingAdapter = require('../../../FormatAdapters/GalileoPricingAdapter.js');
 const GalileoGetFlightServiceInfoAction = require('../../../GdsAction/GalileoGetFlightServiceInfoAction.js');
 const ImportFareComponentsAction = require('../../../Process/Apollo/ImportPnr/Actions/ImportFareComponentsAction.js');
@@ -47,7 +47,7 @@ class ImportPqGalileoAction extends AbstractGdsAction {
 	/** @param $commands = [at('CmdLog.js').makeRow()] */
 	setPreCalledCommandsFromDb($commands) {
 		this.$preCalledCommands = $commands;
-		this.$cmdToFullOutput = this.constructor.collectCmdToFullOutput($commands);
+		this.$cmdToFullOutput = collectCmdToFullOutput($commands);
 		return this;
 	}
 
@@ -63,26 +63,6 @@ class ImportPqGalileoAction extends AbstractGdsAction {
 		this.$cmdToFullOutput[$cmd] = $output;
 		this.$allCommands.push({'cmd': $cmd, 'output': $output});
 		return $output;
-	}
-
-	/** @deprecated - should move to TravelportUtils.js */
-	static collectCmdToFullOutput($calledCommands) {
-		let $cachedCommands, $mrs, $cmdRecord, $logCmdType;
-
-		$cachedCommands = [];
-		$mrs = [];
-		for ($cmdRecord of Object.values(php.array_reverse($calledCommands))) {
-			php.array_unshift($mrs, $cmdRecord['output']);
-			$logCmdType = CommandParser.parse($cmdRecord['cmd'])['type'];
-			if ($logCmdType !== 'moveRest') {
-				$cmdRecord = {...$cmdRecord, output: joinFullOutput($mrs)};
-				if (!CmsGalileoTerminal.isScrollingAvailable($cmdRecord['output'])) {
-					$cachedCommands[$cmdRecord['cmd']] = $cmdRecord['output'];
-				}
-				$mrs = [];
-			}
-		}
-		return $cachedCommands;
 	}
 
 	async getReservation() {
