@@ -19,7 +19,7 @@ const reject = err => {
 	};
 
 	notify({msg : pqErrMsg.msg});
-	return Promise.reject();
+	return Promise.reject('PQ creation rejected - ' + JSON.stringify(err));
 };
 
 let loaderToggle = (state) => {
