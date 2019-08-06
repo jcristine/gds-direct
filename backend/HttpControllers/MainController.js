@@ -31,9 +31,9 @@ let toHandleHttp = (httpAction) => (req, res) => {
 				emcSessionId: '******' + (rqBody.emcSessionId || '').slice(-4),
 			});
 			let errorData = Debug.getExcData(exc, {
+				requestPath: req.path,
 				message: exc.message || '' + exc,
 				httpStatusCode: exc.httpStatusCode,
-				requestPath: req.path,
 				requestBody: maskedBody,
 				stack: exc.stack,
 			});
