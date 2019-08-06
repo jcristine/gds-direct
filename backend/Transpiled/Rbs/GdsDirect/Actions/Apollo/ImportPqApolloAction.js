@@ -14,6 +14,7 @@ const {fetchAll} = require('../../../../../GdsHelpers/TravelportUtils.js');
 const ApolloBaggageAdapter = require('../../../FormatAdapters/ApolloBaggageAdapter.js');
 const RetrieveFlightServiceInfoAction = require('../../../../Rbs/Process/Apollo/ImportPnr/Actions/RetrieveFlightServiceInfoAction.js');
 const ImportFareComponentsAction = require('../../../../Rbs/Process/Apollo/ImportPnr/Actions/ImportFareComponentsAction.js');
+const TravelportClient = require('../../../../../GdsClients/TravelportClient');
 
 let php = require('../../../../phpDeprecated.js');
 const Rej = require("klesun-node-tools/src/Rej");
@@ -23,7 +24,7 @@ const withCapture = require("../../../../../GdsHelpers/CommonUtils").withCapture
 class ImportPqApolloAction extends AbstractGdsAction {
 	constructor({
 		useXml = true,
-		TravelportClient = require('../../../../../GdsClients/TravelportClient')(),
+		travelport = TravelportClient(),
 	}) {
 		super();
 		this.$leadData = {};
@@ -33,7 +34,7 @@ class ImportPqApolloAction extends AbstractGdsAction {
 		this.$allCommands = [];
 		this.$preCalledCommands = [];
 		this.useXml = useXml;
-		this.TravelportClient = TravelportClient;
+		this.travelport = travelport;
 	}
 
 	setLeadData($leadData) {
@@ -129,6 +130,7 @@ class ImportPqApolloAction extends AbstractGdsAction {
 		return fullCmdRecs;
 	}
 
+	/** @deprecated - should move to TravelportUtils.js */
 	static collectCmdToFullOutput($calledCommands) {
 		let fullCmdRecs = this.collectFullCmdRecs($calledCommands);
 		let $cachedCommands = {};
@@ -138,6 +140,7 @@ class ImportPqApolloAction extends AbstractGdsAction {
 		return $cachedCommands;
 	}
 
+	/** @deprecated - should move to TravelportUtils.js */
 	static findLastCommandIn($cmdTypes, $calledCommands) {
 		let $mrs, $cmdRecord, $logCmdType;
 		$mrs = [];
@@ -381,7 +384,7 @@ class ImportPqApolloAction extends AbstractGdsAction {
 		let $result, $error;
 		$result = await (new ImportFareComponentsAction())
 			.useXml(this.useXml)
-			.setTravelportClient(this.TravelportClient)
+			.setTravelportClient(this.travelport)
 			.setSession(this.session).execute($sections, 1);
 		if ($error = $result['error'] || null) return {'error': $error};
 

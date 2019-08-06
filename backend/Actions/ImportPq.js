@@ -158,7 +158,7 @@ let ImportPq = async ({
 		let importAct;
 		let travelport = TravelportClient({PersistentHttpRq});
 		if (gds === 'apollo') {
-			importAct = new ImportPqApolloAction({TravelportClient: travelport});
+			importAct = new ImportPqApolloAction({travelport});
 		} else if (gds === 'sabre') {
 			importAct = new ImportPqSabreAction();
 		} else if (gds === 'galileo') {
