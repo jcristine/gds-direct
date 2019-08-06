@@ -21,6 +21,10 @@ const makeHttpRqBriefing = (rqBody, gds) => {
 		if (match = rqBody.match(/:textStringDetails>\s*(.+?)\s*<\//)) {
 			return '>' + match[1] + ';';
 		}
+	} else if (gds === 'sabre') {
+		if (match = rqBody.match(/:HostCommand>\s*(.+?)\s*<\//)) {
+			return '>' + match[1] + ';';
+		}
 	}
 	return '';
 };
@@ -51,6 +55,9 @@ const initHttpRq = (session) => (params) => {
  * the entity which StatefulSession.js uses to invoke the commands - be careful not
  * to use it where some more GDS-specific session or StatefulSession is needed
  *
+ * also note that this entity represents an _existing_
+ * session - it does not implicitly start/restart/close it
+ *
  * @param session = at('GdsSessions.js').makeSessionRecord()
  */
 const GdsSession = ({session}) => {
@@ -64,7 +71,8 @@ const GdsSession = ({session}) => {
 			let amadeus = AmadeusClient.makeCustom({PersistentHttpRq: httpRq});
 			return amadeus.runCmd({command: cmd}, session.gdsData);
 		} else if (gds === 'sabre') {
-			return SabreClient.runCmd({command: cmd}, session.gdsData);
+			let sabre = SabreClient.makeCustom({PersistentHttpRq: httpRq});
+			return sabre.runCmd({command: cmd}, session.gdsData);
 		} else {
 			return Rej.NotImplemented('Unsupported stateful GDS - ' + gds);
 		}
