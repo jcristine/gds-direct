@@ -1,6 +1,6 @@
 #!/bin/sh
 
-npm ci || exit 1;
+npm ci --only=prod || exit 1;
 
 startpath=$(pwd)
 cd public
