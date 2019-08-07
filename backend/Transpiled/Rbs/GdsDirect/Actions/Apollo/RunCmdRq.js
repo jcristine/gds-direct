@@ -289,6 +289,23 @@ let RunCmdRq = ({
 		return {'failedSegmentNumbers': $failedSegNums};
 	};
 
+	const buildItinerary = async ({itinerary}) => {
+		let built = await ApolloBuildItineraryAction({
+			travelport: travelport,
+			itinerary: itinerary,
+			baseDate: stateful.getStartDt(),
+			useXml: useXml,
+			session: stateful,
+		});
+		if (built.segmentsSold > 0) {
+			stateful.updateAreaState({
+				hasPnr: true,
+				canCreatePq: false,
+			});
+		}
+		return built;
+	};
+
 	/** @param $noMarriage - defines whether all segments should be booked together or with a separate command
 	 *                       each+ When you book them all at once, marriages are added, if separately - not */
 	const bookItinerary = async ($itinerary, $fallbackToGk) => {
@@ -310,13 +327,7 @@ let RunCmdRq = ({
 			return $seg;
 		}, $itinerary);
 		$gkSegments = Fp.filter($isGkRebookPossible, $itinerary);
-		$result = await ApolloBuildItineraryAction({
-			travelport: travelport,
-			itinerary: $newItinerary,
-			baseDate: stateful.getStartDt(),
-			useXml: useXml,
-			session: stateful,
-		});
+		$result = await buildItinerary({itinerary: $newItinerary});
 		if ($error = transformBuildError($result)) {
 			return {
 				'calledCommands': stateful.flushCalledCommands(),
