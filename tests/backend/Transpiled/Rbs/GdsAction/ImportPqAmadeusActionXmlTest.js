@@ -1856,11 +1856,12 @@ class ImportPqAmadeusActionXmlTest extends require('../../Lib/TestCase.js') {
 			},
 		});
 
-		sinon.stub(AmaduesClient, 'getFareRules')
+		let amadeus = AmaduesClient.makeCustom();
+		sinon.stub(amadeus, 'getFareRules')
 			.returns(Promise.resolve(fareRuleStub));
 
 		try {
-			const actual = await (new ImportPqAmadeusAction())
+			const actual = await (new ImportPqAmadeusAction({amadeus}))
 				.setGeoProvider(new StubLocationGeographyProvider([]))
 				.setSession(stateful)
 				.setPreCalledCommandsFromDb(input['previousCommands'],
