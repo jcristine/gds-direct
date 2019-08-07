@@ -271,6 +271,24 @@ let countsAsActivity = (prevRqCmd, rqCmd) => {
 	}
 };
 
+let handleCmsExc = (exc) => {
+	let type = null;
+	let data = Debug.getExcData(exc);
+	let excStr = (exc + '').slice(0, 2000);
+	if (excStr.match(/504 Gateway Time-out/)) {
+		type = LocalDiag.types.REPORT_CMD_CALLED_RQ_TIMEOUT;
+	} else if (excStr.match(/405 Not Allowed/)) {
+		type = LocalDiag.types.REPORT_CMD_CALLED_RQ_NOT_ALLOWED;
+	} else if (excStr.match(/Internal service error/)) {
+		type = LocalDiag.types.REPORT_CMD_CALLED_RQ_INTERNAL_SERVICE_ERROR;
+	}
+	if (type) {
+		return LocalDiag({type, data});
+	} else {
+		return Promise.reject(exc);
+	}
+};
+
 let logRqCmd = async ({params, whenCmdRqId, whenCmsResult}) => {
 	let {session, rqBody, emcUser} = params;
 	let calledDtObj = new Date();
@@ -295,21 +313,7 @@ let logRqCmd = async ({params, whenCmdRqId, whenCmsResult}) => {
 				agentId: emcUser.id,
 				calledDt: calledDtObj.toISOString(),
 				duration: duration,
-			}).catch(coverExc([Rej.BadGateway], exc => {
-				let type = null;
-				let data = Debug.getExcData(exc);
-				let excStr = (exc + '').slice(0, 2000);
-				if (excStr.match(/504 Gateway Time-out/)) {
-					type = LocalDiag.types.REPORT_CMD_CALLED_RQ_TIMEOUT;
-				} else if (excStr.match(/405 Not Allowed/)) {
-					type = LocalDiag.types.REPORT_CMD_CALLED_RQ_NOT_ALLOWED;
-				}
-				if (type) {
-					return LocalDiag({type, data});
-				} else {
-					return Promise.reject(exc);
-				}
-			}));
+			}).catch(coverExc([Rej.BadGateway], handleCmsExc));
 		}
 	});
 };

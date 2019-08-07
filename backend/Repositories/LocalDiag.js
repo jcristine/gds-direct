@@ -20,6 +20,7 @@ const LocalDiag  = ({type, data}) => {
 LocalDiag.types = StrConsts({
 	get REPORT_CMD_CALLED_RQ_TIMEOUT() { never(); },
 	get REPORT_CMD_CALLED_RQ_NOT_ALLOWED() { never(); },
+	get REPORT_CMD_CALLED_RQ_INTERNAL_SERVICE_ERROR() { never(); },
 	get AMA_TMP_NETWORK_ERROR_UNABLE_TO_REACH() { never(); },
 });
 
