@@ -31,18 +31,19 @@ let makePasswordHash = (nonce, timestamp, password) => {
 	return sha1(resultSrc).digest('base64');
 };
 
-const makeSoapEnvForActionWithLogin = ({profileData, payloadXml, action}) => {
+const makeSoapEnvForActionWithLogin = ({profileData, payloadXml, action, transactionCode = null}) => {
 	let nonceBytes = crypto.randomBytes(16);
 	let nonce = nonceBytes.toString('base64');
 	let timestamp = new Date().toISOString(); // '2019-02-21T19:37:28.361Z'
 	let password = makePasswordHash(nonce, timestamp, profileData.password); // 'LjWB9HZPLHIuWPa9FyzIl8n1NzU=';
+	let sessionEl = !transactionCode ? `` : `\n<awsse:Session xmlns:awsse="http://xml.amadeus.com/2010/06/Session_v3" TransactionStatusCode="${transactionCode}"/>`;
 
 	return `<?xml version="1.0" encoding="UTF-8"?>
 		<SOAP-ENV:Envelope
 		    xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/"
 		    xmlns:ns2="http://www.w3.org/2005/08/addressing"
 		    xmlns:ns3="http://wsdl.amadeus.com/2010/06/ws/Link_v1">
-		  <SOAP-ENV:Header>
+		  <SOAP-ENV:Header>${sessionEl}
 		    <ns2:MessageID>${uuidv4()}</ns2:MessageID>
 		    <ns2:Action>http://webservices.amadeus.com/${action}</ns2:Action>
 		    <ns2:To>${profileData.endpoint}</ns2:To>
@@ -64,37 +65,9 @@ const makeSoapEnvForActionWithLogin = ({profileData, payloadXml, action}) => {
 };
 
 let makeStartSoapEnvXml = ({profileData, payloadXml}) => {
-	let nonceBytes = crypto.randomBytes(16);
-	let nonce = nonceBytes.toString('base64');
-	let timestamp = new Date().toISOString(); // '2019-02-21T19:37:28.361Z'
-	let password = makePasswordHash(nonce, timestamp, profileData.password); // 'LjWB9HZPLHIuWPa9FyzIl8n1NzU=';
-	return [
-		'<?xml version="1.0" encoding="UTF-8"?>',
-		'<SOAP-ENV:Envelope ',
-		'    xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/" ',
-		'    xmlns:ns2="http://www.w3.org/2005/08/addressing" ',
-		'    xmlns:ns3="http://wsdl.amadeus.com/2010/06/ws/Link_v1">',
-		'  <SOAP-ENV:Header>',
-		'    <awsse:Session xmlns:awsse="http://xml.amadeus.com/2010/06/Session_v3" TransactionStatusCode="Start"/>',
-		'    <ns2:MessageID>' + uuidv4() + '</ns2:MessageID>',
-		'    <ns2:Action>http://webservices.amadeus.com/HSFREQ_07_3_1A</ns2:Action>',
-		'    <ns2:To>' + profileData.endpoint + '</ns2:To>',
-		'    <ns3:TransactionFlowLink/>',
-		'    <oas:Security xmlns:oas="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd">',
-		'      <oas:UsernameToken xmlns:oas1="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd" oas1:Id="UsernameToken-1">',
-		'        <oas:Username>' + profileData.username + '</oas:Username>',
-		'        <oas:Nonce EncodingType="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-soap-message-security-1.0#Base64Binary">' + Buffer.from(nonce).toString('base64') + '</oas:Nonce>',
-		'        <oas:Password Type="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-username-token-profile-1.0#PasswordDigest">' + password + '</oas:Password>',
-		'        <oas1:Created>' + timestamp + '</oas1:Created>',
-		'      </oas:UsernameToken>',
-		'    </oas:Security>',
-		'    <AMA_SecurityHostedUser xmlns="http://xml.amadeus.com/2010/06/Security_v1">',
-		'      <UserID AgentDutyCode="SU" RequestorType="U" PseudoCityCode="' + profileData.pcc + '" POS_Type="1"/>',
-		'    </AMA_SecurityHostedUser>',
-		'  </SOAP-ENV:Header>',
-		'  <SOAP-ENV:Body>' + payloadXml + '</SOAP-ENV:Body>',
-		'</SOAP-ENV:Envelope>',
-	].join('\n');
+	let action = 'HSFREQ_07_3_1A';
+	let transactionCode = 'Start';
+	return makeSoapEnvForActionWithLogin({profileData, payloadXml, action, transactionCode});
 };
 
 /** @param gdsData = parseCmdRs().gdsData */
