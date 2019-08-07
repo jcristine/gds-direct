@@ -265,7 +265,7 @@ let AmadeusClient = ({
 
 	const getFareRules = async (gdsData, params) => {
 		const profileName = gdsData.profileName;
-		let profileData = await getAmadeus(profileName);
+		let profileData = await GdsProfiles.getAmadeus(profileName);
 		const pcc = params.pcc || profileData.default_pcc;
 		profileData = {...profileData, pcc};
 
