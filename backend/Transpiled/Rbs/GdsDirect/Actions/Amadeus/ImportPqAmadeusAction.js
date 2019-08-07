@@ -461,7 +461,10 @@ class ImportPqAmadeusAction extends AbstractGdsAction {
 			.setSession(this.session)
 			.execute($stores, $itinerary);
 		if ($result['error']) {
-			return {'error': 'Failed to fetch rules via XML - ' + $result['error']};
+			// Fall back, currently stateless fetch will occasionally fail with error if
+			// GTL service error - NO CURRENT FARE IN SYSTEM on some return fares but
+			// terminal commands still succeed for such itinerary
+			return this.getStatefulFareRules($stores[0], $itinerary);
 		}
 
 		$numToStore = php.array_combine(php.array_column($stores, 'quoteNumber'), $stores);
