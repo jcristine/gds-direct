@@ -1,5 +1,4 @@
 
-let {getAmadeus} = require("../Repositories/GdsProfiles.js");
 let crypto = require('crypto');
 let util = require('util');
 let {wrapExc} = require("../Utils/TmpLib.js");
@@ -41,7 +40,6 @@ const makeSoapEnvForActionWithLogin = ({profileData, payloadXml, action}) => {
 	return `<?xml version="1.0" encoding="UTF-8"?>
 		<SOAP-ENV:Envelope
 		    xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/"
-		    xmlns:ns1="http://xml.amadeus.com/${action}"
 		    xmlns:ns2="http://www.w3.org/2005/08/addressing"
 		    xmlns:ns3="http://wsdl.amadeus.com/2010/06/ws/Link_v1">
 		  <SOAP-ENV:Header>
@@ -74,18 +72,14 @@ let makeStartSoapEnvXml = ({profileData, payloadXml}) => {
 		'<?xml version="1.0" encoding="UTF-8"?>',
 		'<SOAP-ENV:Envelope ',
 		'    xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/" ',
-		'    xmlns:ns1="http://xml.amadeus.com/HSFREQ_07_3_1A" ',
-		'    xmlns:ns2="http://xml.amadeus.com/2010/06/Session_v3" ',
-		'    xmlns:ns3="http://www.w3.org/2005/08/addressing" ',
-		'    xmlns:ns4="http://wsdl.amadeus.com/2010/06/ws/Link_v1" ',
-		'    xmlns:ns5="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wsswssecurity-secext-1.0.xsd" ',
-		'    xmlns:ns6="http://xml.amadeus.com/2010/06/Security_v1">',
+		'    xmlns:ns2="http://www.w3.org/2005/08/addressing" ',
+		'    xmlns:ns3="http://wsdl.amadeus.com/2010/06/ws/Link_v1">',
 		'  <SOAP-ENV:Header>',
 		'    <awsse:Session xmlns:awsse="http://xml.amadeus.com/2010/06/Session_v3" TransactionStatusCode="Start"/>',
-		'    <ns3:MessageID>' + uuidv4() + '</ns3:MessageID>',
-		'    <ns3:Action>http://webservices.amadeus.com/HSFREQ_07_3_1A</ns3:Action>',
-		'    <ns3:To>' + profileData.endpoint + '</ns3:To>',
-		'    <ns4:TransactionFlowLink/>',
+		'    <ns2:MessageID>' + uuidv4() + '</ns2:MessageID>',
+		'    <ns2:Action>http://webservices.amadeus.com/HSFREQ_07_3_1A</ns2:Action>',
+		'    <ns2:To>' + profileData.endpoint + '</ns2:To>',
+		'    <ns3:TransactionFlowLink/>',
 		'    <oas:Security xmlns:oas="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd">',
 		'      <oas:UsernameToken xmlns:oas1="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd" oas1:Id="UsernameToken-1">',
 		'        <oas:Username>' + profileData.username + '</oas:Username>',
@@ -152,6 +146,8 @@ let AmadeusClient = ({
 	PersistentHttpRq = require('klesun-node-tools/src/Utils/PersistentHttpRq.js'),
 	GdsProfiles = require("../Repositories/GdsProfiles"),
 } = {}) => {
+	let {getAmadeus} = GdsProfiles;
+
 	let startSession = async (params) => {
 		let profileName = params.profileName;
 		let profileData = await getAmadeus(profileName);
