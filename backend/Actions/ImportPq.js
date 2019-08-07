@@ -1,3 +1,4 @@
+const AmadeusClient = require('../GdsClients/AmadeusClient.js');
 const TravelportClient = require('../GdsClients/TravelportClient.js');
 
 const php = require('../Transpiled/phpDeprecated.js');
@@ -168,7 +169,8 @@ let ImportPq = async ({
 		} else if (gds === 'galileo') {
 			importAct = new ImportPqGalileoAction({TravelportClient: travelport});
 		} else if (gds === 'amadeus') {
-			importAct = new ImportPqAmadeusAction();
+			let amadeus = AmadeusClient.makeCustom({PersistentHttpRq});
+			importAct = new ImportPqAmadeusAction({amadeus});
 		} else {
 			return Rej.NotImplemented('Unsupported GDS for importPq - ' + gds);
 		}

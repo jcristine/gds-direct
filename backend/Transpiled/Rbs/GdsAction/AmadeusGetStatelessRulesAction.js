@@ -11,14 +11,17 @@ const FareRuleSectionParser = require('../../Gds/Parsers/Common/FareRuleSectionP
  */
 class AmadeusGetStatelessRulesAction extends AbstractGdsAction {
 
-	constructor() {
+	constructor({
+		amadeus = AmadeusClient.makeCustom(),
+	} = {}) {
 		super();
 		this.cmdToParsedRules = [];
+		this.amadeus = amadeus;
 	}
 
 	async getRulesUsingSoap(params) {
 		try {
-			const result = await AmadeusClient.getFareRules(this.session.getGdsData(), params);
+			const result = await this.amadeus.getFareRules(this.session.getGdsData(), params);
 
 			if(result.error) {
 				return result;

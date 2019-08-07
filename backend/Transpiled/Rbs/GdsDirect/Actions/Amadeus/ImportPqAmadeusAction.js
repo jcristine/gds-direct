@@ -1,3 +1,4 @@
+const AmadeusClient = require('../../../../../GdsClients/AmadeusClient.js');
 
 const ArrayUtil = require('../../../../Lib/Utils/ArrayUtil.js');
 const Fp = require('../../../../Lib/Utils/Fp.js');
@@ -8,19 +9,17 @@ const CommandParser = require('../../../../Gds/Parsers/Amadeus/CommandParser.js'
 const PricingCmdParser = require('../../../../Gds/Parsers/Amadeus/Commands/PricingCmdParser.js');
 const FlightInfoParser = require('../../../../Gds/Parsers/Amadeus/FlightInfoParser.js');
 const PnrParser = require('../../../../Gds/Parsers/Amadeus/Pnr/PnrParser.js');
-const PagingHelper = require('../../../../../GdsHelpers/AmadeusUtils.js');
 const CmsAmadeusTerminal = require('../../../../Rbs/GdsDirect/GdsInterface/CmsAmadeusTerminal.js');
 const PtcUtil = require('../../../../Rbs/Process/Common/PtcUtil.js');
 const CmdLog = require('../../../../../GdsHelpers/CmdLog.js');
 const AbstractGdsAction = require('../../../GdsAction/AbstractGdsAction.js');
 const AmadeusGetPricingPtcBlocksAction = require('./AmadeusGetPricingPtcBlocksAction.js');
-const php = require('../../../../phpDeprecated.js');
+const php = require('klesun-node-tools/src/Transpiled/php.js');
 const AmadeusUtil = require("../../../../../GdsHelpers/AmadeusUtils");
 const {parseFxPager, collectFullCmdRecs} = AmadeusUtil;
 const withCapture = require("../../../../../GdsHelpers/CommonUtils").withCapture;
 const AmadeusFlightInfoAdapter = require('../../../../Rbs/FormatAdapters/AmadeusFlightInfoAdapter.js');
 const AmadeusGetFareRulesAction = require('../../../../Rbs/GdsAction/AmadeusGetFareRulesAction.js');
-const SessionStateHelper = require("../../SessionStateProcessor/SessionStateHelper");
 const Rej = require('klesun-node-tools/src/Rej.js');
 const AnyGdsStubSession = require('../../../../../Utils/Testing/AnyGdsStubSession.js');
 const AmadeusGetStatelessRulesAction = require('../../../GdsAction/AmadeusGetStatelessRulesAction');
@@ -31,7 +30,9 @@ const AmadeusGetStatelessRulesAction = require('../../../GdsAction/AmadeusGetSta
  * data from session, not from stored ATFQ-s
  */
 class ImportPqAmadeusAction extends AbstractGdsAction {
-	constructor() {
+	constructor({
+		amadeus = AmadeusClient.makeCustom(),
+	} = {}) {
 		super();
 		this.$useStatelessRules = true;
 		this.$fetchOptionalFields = true;
@@ -41,6 +42,7 @@ class ImportPqAmadeusAction extends AbstractGdsAction {
 		this.$allCommands = [];
 		this.$cmdLog = null;
 		this.$leadData = {};
+		this.amadeus = amadeus;
 	}
 
 	setLeadData($leadData) {
@@ -137,18 +139,6 @@ class ImportPqAmadeusAction extends AbstractGdsAction {
 			});
 		}
 		return this.$cmdLog;
-	}
-
-	static makeCmdToFullDump($cmdLog) {
-		let $cmdToFullDump, $cmdRows;
-
-		$cmdToFullDump = {};
-		$cmdRows = $cmdLog.getLastCommandsOfTypes(SessionStateHelper.getCanCreatePqSafeTypes());
-		let fullCmdRecs = PagingHelper.collectFullCmdRecs($cmdRows);
-		for (let {cmd, output} of fullCmdRecs) {
-			$cmdToFullDump[cmd] = output;
-		}
-		return $cmdToFullDump;
 	}
 
 	async amadeusRt($cmd) {
@@ -457,8 +447,9 @@ class ImportPqAmadeusAction extends AbstractGdsAction {
 			$fareList, $cmd, $dump;
 
 		$ruleRecords = [];
-		$result = await (new AmadeusGetStatelessRulesAction())
-			.setSession(this.session)
+		$result = await new AmadeusGetStatelessRulesAction({
+			amadeus: this.amadeus,
+		})  .setSession(this.session)
 			.execute($stores, $itinerary);
 		if ($result['error']) {
 			// Fall back, currently stateless fetch will occasionally fail with error if
