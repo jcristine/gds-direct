@@ -56,7 +56,6 @@ const provideTestCases = () => {
 				'<?xml version="1.0" encoding="UTF-8"?>',
 				'		<SOAP-ENV:Envelope',
 				'		    xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/"',
-				'		    xmlns:ns1="http://xml.amadeus.com/FARRNQ_10_1_1A"',
 				'		    xmlns:ns2="http://www.w3.org/2005/08/addressing"',
 				'		    xmlns:ns3="http://wsdl.amadeus.com/2010/06/ws/Link_v1">',
 				'		  <SOAP-ENV:Header>',
