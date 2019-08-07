@@ -64,16 +64,17 @@ if [ $? -ne 0 ]; then
     exit 1;
 fi;
 
-# update node_modules and build webpack
-./build.sh
-echo "$nextTag" > public/CURRENT_PRODUCTION_TAG
-
 if [[ "$*" == *--skip-tests* ]]
 then
     echo "Skipping tests..."
 else
+    npm ci # install node modules including devDependencies
     node tests/run.js || exit 1;
 fi
+
+# update node_modules and build webpack
+./build.sh
+echo "$nextTag" > public/CURRENT_PRODUCTION_TAG
 
 # add node_modules and webpack changes
 git add --force node_modules
