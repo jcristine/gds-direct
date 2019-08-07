@@ -4,6 +4,7 @@ const UnprocessableEntity = require("klesun-node-tools/src/Rej").UnprocessableEn
 const js2xml = require("xml");
 const _ = require("lodash");
 const moment = require("moment");
+const {getValueOrNullFromDomElement} = require('./Utils');
 
 // Builds xml body of a PNR soap request
 module.exports.buildPnrXmlDataObject = params => js2xml([
@@ -74,20 +75,6 @@ const transformTimeFromSoap = time => {
 		raw: paddedDate,
 		parsed: h + ':' + m + ':' + s,
 	};
-};
-
-const getValueOrNullFromDomElement = (element, tag) => {
-	if(!element) {
-		return null;
-	}
-
-	const valueElement = element.querySelector(tag);
-
-	if(!valueElement) {
-		return null;
-	}
-
-	return valueElement.textContent;
 };
 
 const transformAirSegmentFromSoap = element => ({

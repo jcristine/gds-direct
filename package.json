@@ -27,5 +27,8 @@
     "socket.io": "^2.2.0",
     "socket.io-redis": "^5.2.0",
     "xml": "^1.0.1"
+  },
+  "devDependencies": {
+    "sinon": "^7.4.1"
   }
 }

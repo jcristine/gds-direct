@@ -12,7 +12,7 @@ const {jsExport} = require('klesun-node-tools/src/Debug.js');
 const makeHttpRqBriefing = (rqBody, gds) => {
 	let match;
 	if (['apollo', 'galileo'].includes(gds)) {
-		if (match = rqBody.match(/:Request>\s*<(\w+?)>/)) {
+		if (match = rqBody.match(/:Request>\s*<(\w+)>/)) {
 			return '<' + match[1] + '/>';
 		} else if (match = rqBody.match(/:Request>\s*(.+?)\s*<\//)) {
 			return '>' + match[1] + ';';
@@ -20,6 +20,8 @@ const makeHttpRqBriefing = (rqBody, gds) => {
 	} else if (gds === 'amadeus') {
 		if (match = rqBody.match(/:textStringDetails>\s*(.+?)\s*<\//)) {
 			return '>' + match[1] + ';';
+		} else if (match = rqBody.match(/:Body>\s*<\w+:(\w+)/)) {
+			return '<' + match[1] + '>';
 		}
 	} else if (gds === 'sabre') {
 		if (match = rqBody.match(/:HostCommand>\s*(.+?)\s*<\//)) {
@@ -27,6 +29,14 @@ const makeHttpRqBriefing = (rqBody, gds) => {
 		}
 	}
 	return '';
+};
+
+const maskRqBody = (rqBody, gds) => {
+	if (gds === 'amadeus') {
+		rqBody = rqBody.replace(/(<\w+:Username\b[^>]*>)[^<]+(<\/\w+:Username>)/g, '$1GRECTMASKED$2');
+		rqBody = rqBody.replace(/(<\w+:Password\b[^>]*>)[^<]+(<\/\w+:Password>)/g, '$1GRECTMASKED$2');
+	}
+	return rqBody;
 };
 
 const initHttpRq = (session) => (params) => {
@@ -39,7 +49,8 @@ const initHttpRq = (session) => (params) => {
 		}
 	};
 	let briefing = makeHttpRqBriefing(params.body, session.context.gds);
-	logit('XML RQ: ' + briefing, params.body);
+	let masked = maskRqBody(params.body, session.context.gds);
+	logit('XML RQ: ' + briefing, masked);
 	return whenResult
 		.then(result => {
 			logit('XML RS:', result.body);

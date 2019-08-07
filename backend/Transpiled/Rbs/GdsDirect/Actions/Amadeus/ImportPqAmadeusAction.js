@@ -1,3 +1,4 @@
+const AmadeusClient = require('../../../../../GdsClients/AmadeusClient.js');
 
 const ArrayUtil = require('../../../../Lib/Utils/ArrayUtil.js');
 const Fp = require('../../../../Lib/Utils/Fp.js');
@@ -8,21 +9,20 @@ const CommandParser = require('../../../../Gds/Parsers/Amadeus/CommandParser.js'
 const PricingCmdParser = require('../../../../Gds/Parsers/Amadeus/Commands/PricingCmdParser.js');
 const FlightInfoParser = require('../../../../Gds/Parsers/Amadeus/FlightInfoParser.js');
 const PnrParser = require('../../../../Gds/Parsers/Amadeus/Pnr/PnrParser.js');
-const PagingHelper = require('../../../../../GdsHelpers/AmadeusUtils.js');
 const CmsAmadeusTerminal = require('../../../../Rbs/GdsDirect/GdsInterface/CmsAmadeusTerminal.js');
 const PtcUtil = require('../../../../Rbs/Process/Common/PtcUtil.js');
 const CmdLog = require('../../../../../GdsHelpers/CmdLog.js');
 const AbstractGdsAction = require('../../../GdsAction/AbstractGdsAction.js');
 const AmadeusGetPricingPtcBlocksAction = require('./AmadeusGetPricingPtcBlocksAction.js');
-const php = require('../../../../phpDeprecated.js');
+const php = require('klesun-node-tools/src/Transpiled/php.js');
 const AmadeusUtil = require("../../../../../GdsHelpers/AmadeusUtils");
 const {parseFxPager, collectFullCmdRecs} = AmadeusUtil;
 const withCapture = require("../../../../../GdsHelpers/CommonUtils").withCapture;
 const AmadeusFlightInfoAdapter = require('../../../../Rbs/FormatAdapters/AmadeusFlightInfoAdapter.js');
 const AmadeusGetFareRulesAction = require('../../../../Rbs/GdsAction/AmadeusGetFareRulesAction.js');
-const SessionStateHelper = require("../../SessionStateProcessor/SessionStateHelper");
 const Rej = require('klesun-node-tools/src/Rej.js');
 const AnyGdsStubSession = require('../../../../../Utils/Testing/AnyGdsStubSession.js');
+const AmadeusGetStatelessRulesAction = require('../../../GdsAction/AmadeusGetStatelessRulesAction');
 
 /**
  * import PNR fields of currently opened PNR
@@ -30,9 +30,11 @@ const AnyGdsStubSession = require('../../../../../Utils/Testing/AnyGdsStubSessio
  * data from session, not from stored ATFQ-s
  */
 class ImportPqAmadeusAction extends AbstractGdsAction {
-	constructor() {
+	constructor({
+		amadeus = AmadeusClient.makeCustom(),
+	} = {}) {
 		super();
-		this.$useStatelessRules = false;
+		this.$useStatelessRules = true;
 		this.$fetchOptionalFields = true;
 		this.$geoProvider = null;
 		this.$baseDate = null;
@@ -40,6 +42,7 @@ class ImportPqAmadeusAction extends AbstractGdsAction {
 		this.$allCommands = [];
 		this.$cmdLog = null;
 		this.$leadData = {};
+		this.amadeus = amadeus;
 	}
 
 	setLeadData($leadData) {
@@ -136,18 +139,6 @@ class ImportPqAmadeusAction extends AbstractGdsAction {
 			});
 		}
 		return this.$cmdLog;
-	}
-
-	static makeCmdToFullDump($cmdLog) {
-		let $cmdToFullDump, $cmdRows;
-
-		$cmdToFullDump = {};
-		$cmdRows = $cmdLog.getLastCommandsOfTypes(SessionStateHelper.getCanCreatePqSafeTypes());
-		let fullCmdRecs = PagingHelper.collectFullCmdRecs($cmdRows);
-		for (let {cmd, output} of fullCmdRecs) {
-			$cmdToFullDump[cmd] = output;
-		}
-		return $cmdToFullDump;
 	}
 
 	async amadeusRt($cmd) {
@@ -249,7 +240,7 @@ class ImportPqAmadeusAction extends AbstractGdsAction {
 	static subtractPricedSegments(segmentsLeft, parsedCmd, followingCommands) {
 		let numToSeg = php.array_combine(
 			segmentsLeft.map(s => s.segmentNumber),
-			segmentsLeft,
+			segmentsLeft
 		);
 		// /S/ modifier is unique for whole command, even if there are more //P/ stores
 		let segNums = [];
@@ -451,16 +442,20 @@ class ImportPqAmadeusAction extends AbstractGdsAction {
 	 * fetches all rule sections, no matter how long they are
 	 */
 	async getStatelessFareRules($stores, $itinerary) {
-		let $ruleRecords, $dumpStorage, $result, $error, $numToStore, $storeToPtcNumToFareList, $cmdToDump, $ruleRecord,
-			$dumpRec, $numToSec, $storeNum, $ptcNum, $compNum, $rawFareList, $fareListRecords, $ptcNumToFareList,
+		let $ruleRecords, $result, $numToStore, $storeToPtcNumToFareList, $cmdToDump, $ruleRecord,
+			$numToSec, $storeNum, $ptcNum, $compNum, $rawFareList, $fareListRecords, $ptcNumToFareList,
 			$fareList, $cmd, $dump;
 
 		$ruleRecords = [];
-		$result = await (new AmadeusGetStatelessRulesAction())
-			.setSession(this.session)
+		$result = await new AmadeusGetStatelessRulesAction({
+			amadeus: this.amadeus,
+		})  .setSession(this.session)
 			.execute($stores, $itinerary);
-		if ($error = $result['error']) {
-			return {'error': 'Failed to fetch rules via XML - ' + $error};
+		if ($result['error']) {
+			// Fall back, currently stateless fetch will occasionally fail with error if
+			// GTL service error - NO CURRENT FARE IN SYSTEM on some return fares but
+			// terminal commands still succeed for such itinerary
+			return this.getStatefulFareRules($stores[0], $itinerary);
 		}
 
 		$numToStore = php.array_combine(php.array_column($stores, 'quoteNumber'), $stores);
@@ -468,10 +463,9 @@ class ImportPqAmadeusAction extends AbstractGdsAction {
 		$cmdToDump = {};
 
 		for ($ruleRecord of Object.values($result['data'])) {
-			$dumpRec = $dumpStorage.get($ruleRecord['dumpNumber']);
 			$numToSec = php.array_combine(php.array_column($ruleRecord['sections'], 'sectionNumber'),
 				$ruleRecord['sections']);
-			$cmdToDump[$dumpRec['cmd']] = $dumpRec['dump'] + php.PHP_EOL + php.PHP_EOL +
+			$cmdToDump[$ruleRecord.cmd] = $ruleRecord.dumpCmd + php.PHP_EOL + php.PHP_EOL +
 				(($numToSec[16] || {})['raw'] || 'NO PENALTY SECTION');
 			$storeNum = $ruleRecord['pricingNumber'];
 			$ptcNum = $ruleRecord['subPricingNumber'];
@@ -479,20 +473,26 @@ class ImportPqAmadeusAction extends AbstractGdsAction {
 			$ruleRecords.push({
 				'pricingNumber': $storeNum,
 				'subPricingNumber': $ptcNum,
-				'componentNumber': $ruleRecord['fareComponentNumber'],
+				'fareComponentNumber': $ruleRecord['fareComponentNumber'],
 				'sections': {
 					'exchange': $numToSec[16],
 				},
 			});
 			$rawFareList = (((($numToStore[$storeNum] || {})['pricingBlockList'] || {})[$ptcNum - 1] || {})['fareInfo'] || {})['fareConstructionRaw'] || 'FROM FARE CALCULATION';
+
+			$storeToPtcNumToFareList[$storeNum] = $storeToPtcNumToFareList[$storeNum] || {};
+			$storeToPtcNumToFareList[$storeNum][$ptcNum] = $storeToPtcNumToFareList[$storeNum][$ptcNum] || {};
+			$storeToPtcNumToFareList[$storeNum][$ptcNum]['parsed'] = $storeToPtcNumToFareList[$storeNum][$ptcNum]['parsed'] || {};
+
 			$storeToPtcNumToFareList[$storeNum][$ptcNum]['raw'] = $rawFareList;
 			$storeToPtcNumToFareList[$storeNum][$ptcNum]['parsed'][$compNum - 1] = $ruleRecord['fareComponent'];
 		}
 		$fareListRecords = [];
+
 		for ([$storeNum, $ptcNumToFareList] of Object.entries($storeToPtcNumToFareList)) {
 			for ([$ptcNum, $fareList] of Object.entries($ptcNumToFareList)) {
 				$fareList['pricingNumber'] = $storeNum;
-				$fareList['subPricingNumber'] = $ptcNum;
+				$fareList['subPricingNumber'] = parseInt($ptcNum, 10);
 				$fareListRecords.push($fareList);
 			}
 		}
@@ -527,7 +527,6 @@ class ImportPqAmadeusAction extends AbstractGdsAction {
 			$flightServiceRecord = await this.getFlightService($reservationRecord['parsed']['itinerary']);
 			if ($result['error'] = $flightServiceRecord['error']) return $result;
 			$result['pnrData']['flightServiceInfo'] = $flightServiceRecord;
-
 			$fareRuleData = this.$useStatelessRules
 				? await this.getStatelessFareRules($pricingRecord['parsed']['pricingList'],
 					$reservationRecord['parsed']['itinerary'])
