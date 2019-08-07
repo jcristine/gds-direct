@@ -3,7 +3,7 @@ const DateTime = require('../../../Transpiled/Lib/Utils/DateTime');
 const ItineraryParser = require('../../Gds/Parsers/Apollo/Pnr/ItineraryParser.js');
 const AirAvailabilityParser = require("../../Gds/Parsers/Apollo/AirAvailabilityParser");
 const {fetchAll} = require("../../../GdsHelpers/TravelportUtils.js");
-const {REBUILD_NO_AVAIL, REBUILD_GDS_ERROR} = require('../GdsDirect/Errors.js');
+const {REBUILD_NO_AVAIL, REBUILD_GDS_ERROR, REBUILD_MULTISEGMENT} = require('../GdsDirect/Errors.js');
 const _ = require("lodash");
 const moment = require("moment");
 const php = require('klesun-node-tools/src/Transpiled/php.js');
@@ -108,15 +108,14 @@ const ApolloBuildItinerary = ({
 					addAirSegments: airSegments,
 				};
 
-				try {
-					const result = await travelport.processPnr(session.getGdsData(), params);
-					soldCount += result.newAirSegments.filter(seg => seg.success).length;
-				} catch(error) {
+				const result = await travelport.processPnr(session.getGdsData(), params);
+				soldCount += result.newAirSegments.filter(seg => seg.success).length;
+				if (result.error) {
 					return {
 						success: false,
 						segmentsSold: soldCount,
-						errorType: ApolloBuildItinerary.ERROR_MULTISEGMENT,
-						errorData: error.message,
+						errorType: REBUILD_MULTISEGMENT,
+						errorData: {response: result.error},
 					};
 				}
 			}
@@ -135,10 +134,6 @@ const ApolloBuildItinerary = ({
 
 	return execute();
 };
-
-ApolloBuildItinerary.ERROR_NO_AVAIL = 'ERROR_NO_AVAIL';
-ApolloBuildItinerary.ERROR_GDS_ERROR = 'ERROR_GDS_ERROR';
-ApolloBuildItinerary.ERROR_MULTISEGMENT = 'ERROR_MULTISEGMENT';
 
 ApolloBuildItinerary.isOutputValid = isOutputValid;
 
