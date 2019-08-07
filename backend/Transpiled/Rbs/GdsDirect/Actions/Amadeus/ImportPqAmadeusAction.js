@@ -250,7 +250,7 @@ class ImportPqAmadeusAction extends AbstractGdsAction {
 	static subtractPricedSegments(segmentsLeft, parsedCmd, followingCommands) {
 		let numToSeg = php.array_combine(
 			segmentsLeft.map(s => s.segmentNumber),
-			segmentsLeft,
+			segmentsLeft
 		);
 		// /S/ modifier is unique for whole command, even if there are more //P/ stores
 		let segNums = [];
@@ -479,7 +479,7 @@ class ImportPqAmadeusAction extends AbstractGdsAction {
 			$ruleRecords.push({
 				'pricingNumber': $storeNum,
 				'subPricingNumber': $ptcNum,
-				'componentNumber': $ruleRecord['fareComponentNumber'],
+				'fareComponentNumber': $ruleRecord['fareComponentNumber'],
 				'sections': {
 					'exchange': $numToSec[16],
 				},
@@ -494,10 +494,11 @@ class ImportPqAmadeusAction extends AbstractGdsAction {
 			$storeToPtcNumToFareList[$storeNum][$ptcNum]['parsed'][$compNum - 1] = $ruleRecord['fareComponent'];
 		}
 		$fareListRecords = [];
+
 		for ([$storeNum, $ptcNumToFareList] of Object.entries($storeToPtcNumToFareList)) {
 			for ([$ptcNum, $fareList] of Object.entries($ptcNumToFareList)) {
 				$fareList['pricingNumber'] = $storeNum;
-				$fareList['subPricingNumber'] = $ptcNum;
+				$fareList['subPricingNumber'] = parseInt($ptcNum, 10);
 				$fareListRecords.push($fareList);
 			}
 		}

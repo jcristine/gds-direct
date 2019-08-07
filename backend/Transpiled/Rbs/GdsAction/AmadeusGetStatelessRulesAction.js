@@ -67,8 +67,12 @@ class AmadeusGetStatelessRulesAction extends AbstractGdsAction {
 	/** @param pricingStores = [AmadeusPricingStoreAdapter::transform(), ...] */
 	async execute(pricingStores, itinerary) {
 		const ruleRecs = [];
-		for(const [i, store] of Object.entries(pricingStores)) {
-			for(const [j, ptcBlock] of Object.entries(store.pricingBlockList)) {
+		for(let i = 0; i < pricingStores.length; i++) {
+			const store = pricingStores[i];
+
+			for(let j = 0; j <store.pricingBlockList.length; j++) {
+				const ptcBlock = store.pricingBlockList[j];
+
 				const fc = ptcBlock['fareInfo']['fareConstruction'];
 				const fareListRec = ImportPnrCommonFormatAdapter.collectFcFares(fc, itinerary);
 
@@ -81,7 +85,9 @@ class AmadeusGetStatelessRulesAction extends AbstractGdsAction {
 					return obj;
 				}, {});
 
-				for(const [k, fare] of Object.entries(fareListRec.fares)) {
+				for(let k = 0; k <fareListRec.fares.length; k++) {
+					const fare = fareListRec.fares[k];
+
 					const dprtSeg = numToSeg[_.first(fare['segmentNumbers'])];
 					const dstnSeg = numToSeg[_.last(fare['segmentNumbers'])];
 
@@ -103,8 +109,8 @@ class AmadeusGetStatelessRulesAction extends AbstractGdsAction {
 						fareComponent: fare,
 						pricingNumber: store.quoteNumber,
 						subPricingNumber: j + 1,
-						fareComponentNumber: fare.componentNumber,
-						dumpCmd: parsed.dumpCommand,
+						fareComponentNumber: fare.componentNumber.toString(),
+						dumpCmd: parsed.dumpCmd,
 						cmd: parsed.cmd,
 						sections: parsed.sections,
 					});
