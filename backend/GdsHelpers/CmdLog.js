@@ -6,7 +6,7 @@ const SessionStateHelper = require("../Transpiled/Rbs/GdsDirect/SessionStateProc
 const selectFromArray = require("klesun-node-tools/src/Utils/SqlUtil").selectFromArray;
 const NotFound = require("klesun-node-tools/src/Rej").NotFound;
 const makeRow = require("../Repositories/CmdLogs").makeRow;
-const hrtimeToDecimal = require("../Utils/TmpLib").hrtimeToDecimal;
+const hrtimeToDecimal = require("klesun-node-tools/src/Utils/Misc.js").hrtimeToDecimal;
 const {ignoreExc} = require('../Utils/TmpLib.js');
 
 let CmdLog = ({
@@ -147,6 +147,19 @@ let CmdLog = ({
 		updateFullState: (newFullState) => {
 			fullState = newFullState;
 			return GdsSessions.updateFullState(session, newFullState);
+		},
+		/** for custom state manipulations, like XML function calls */
+		updateAreaState: ({type, state}) => {
+			let prevState = fullState.areas[fullState.area];
+			let cmdRec = {
+				type, cmd: '', output: '', duration: '0.000000000',
+			};
+			whenCmdRqId.then(cmdRqId => {
+				let row = makeRow(cmdRec, session, cmdRqId, prevState);
+				return CmdLogs.storeNew(row);
+			});
+			fullState.areas[fullState.area] = {...fullState.areas[fullState.area], ...state};
+			return GdsSessions.updateFullState(session, fullState);
 		},
 		getSessionData: getSessionData,
 		getCurrentPnrCommands: async () => {

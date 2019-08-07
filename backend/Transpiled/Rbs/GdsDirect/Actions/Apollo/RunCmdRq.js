@@ -299,8 +299,8 @@ let RunCmdRq = ({
 		});
 		if (built.segmentsSold > 0) {
 			stateful.updateAreaState({
-				hasPnr: true,
-				canCreatePq: false,
+				type: '!xml:PNRBFManagement',
+				state: {hasPnr: true, canCreatePq: false},
 			});
 		}
 		return built;

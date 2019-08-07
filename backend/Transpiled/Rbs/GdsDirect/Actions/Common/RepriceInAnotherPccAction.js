@@ -12,7 +12,7 @@ const {ignoreExc} = require('../../../../../Utils/TmpLib.js');
 const TravelportClient = require("../../../../../GdsClients/TravelportClient");
 const UpdateGalileoStateAction = require("../../SessionStateProcessor/UpdateGalileoState");
 const CmsApolloTerminal = require("../../GdsInterface/CmsApolloTerminal");
-let php = require('../../../../phpDeprecated.js');
+let php = require('klesun-node-tools/src/Transpiled/php.js');
 const GdsProfiles = require("../../../../../Repositories/GdsProfiles");
 const AmadeusClient = require("../../../../../GdsClients/AmadeusClient");
 const fetchAll = require("../../../../../GdsHelpers/TravelportUtils").fetchAll;
@@ -313,7 +313,11 @@ class RepriceInAnotherPccAction {
 	async execute($pnr, $cmd, $dialect, $targetStr, $currentSession) {
 		let $currentGds, $startDt, $log, $target, $itinerary,
 			$translatorResult, $targetCmd;
-		await $currentSession.updateAreaState({canCreatePq: false});
+		/** requested by Jayden */
+		await $currentSession.updateAreaState({
+			type: '!priceInAnotherPcc',
+			state: {canCreatePq: false},
+		});
 		$currentGds = $currentSession.getSessionData()['gds'];
 		$startDt = $currentSession.getStartDt();
 		$log = this.$log;
