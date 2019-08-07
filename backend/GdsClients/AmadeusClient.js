@@ -9,17 +9,7 @@ const AmadeusFareRules = require('./Transformers/AmadeusFareRules');
 
 let chr = (charCode) => String.fromCharCode(charCode);
 
-let uuidv4 = () => {
-	let $data = crypto.randomBytes(16);
-
-	$data[6] = chr($data[6] & 0x0f | 0x40); // set version to 0100
-	$data[8] = chr($data[8] & 0x3f | 0x80); // set bits 6-7 to 10
-
-	return util.format('%s%s-%s-%s-%s-%s%s%s', ...$data.toString('hex').match(/.{1,4}/g));
-};
-
 let sha1 = (str) => {
-	let crypto = require('crypto');
 	let shasum = crypto.createHash('sha1');
 	shasum.update(str);
 	return shasum;
@@ -31,12 +21,10 @@ let makePasswordHash = (nonce, timestamp, password) => {
 	return sha1(resultSrc).digest('base64');
 };
 
-const makeSoapEnvForActionWithLogin = ({profileData, payloadXml, action, transactionCode = null}) => {
-	let nonceBytes = crypto.randomBytes(16);
-	let nonce = nonceBytes.toString('base64');
-	let timestamp = new Date().toISOString(); // '2019-02-21T19:37:28.361Z'
-	let password = makePasswordHash(nonce, timestamp, profileData.password); // 'LjWB9HZPLHIuWPa9FyzIl8n1NzU=';
-	let sessionEl = !transactionCode ? `` : `\n<awsse:Session xmlns:awsse="http://xml.amadeus.com/2010/06/Session_v3" TransactionStatusCode="${transactionCode}"/>`;
+const makeSoapEnvForActionWithLogin = ({
+	profileData, payloadXml, action, passwordRec, status = null,
+}) => {
+	let sessionEl = !status ? `` : `\n<awsse:Session xmlns:awsse="http://xml.amadeus.com/2010/06/Session_v3" TransactionStatusCode="${status}"/>`;
 
 	return `<?xml version="1.0" encoding="UTF-8"?>
 		<SOAP-ENV:Envelope
@@ -44,16 +32,16 @@ const makeSoapEnvForActionWithLogin = ({profileData, payloadXml, action, transac
 		    xmlns:ns2="http://www.w3.org/2005/08/addressing"
 		    xmlns:ns3="http://wsdl.amadeus.com/2010/06/ws/Link_v1">
 		  <SOAP-ENV:Header>${sessionEl}
-		    <ns2:MessageID>${uuidv4()}</ns2:MessageID>
+		    <ns2:MessageID>${passwordRec.messageId}</ns2:MessageID>
 		    <ns2:Action>http://webservices.amadeus.com/${action}</ns2:Action>
 		    <ns2:To>${profileData.endpoint}</ns2:To>
 		    <ns3:TransactionFlowLink/>
 		    <oas:Security xmlns:oas="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd">
 		      <oas:UsernameToken xmlns:oas1="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd" oas1:Id="UsernameToken-1">
 		        <oas:Username>${profileData.username}</oas:Username>
-		        <oas:Nonce EncodingType="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-soap-message-security-1.0#Base64Binary">${Buffer.from(nonce).toString('base64')}</oas:Nonce>
-		        <oas:Password Type="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-username-token-profile-1.0#PasswordDigest">${password}</oas:Password>
-		        <oas1:Created>${timestamp}</oas1:Created>
+		        <oas:Nonce EncodingType="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-soap-message-security-1.0#Base64Binary">${passwordRec.nonceB64}</oas:Nonce>
+		        <oas:Password Type="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-username-token-profile-1.0#PasswordDigest">${passwordRec.passwordDigest}</oas:Password>
+		        <oas1:Created>${passwordRec.timestamp}</oas1:Created>
 		      </oas:UsernameToken>
 		    </oas:Security>
 		    <AMA_SecurityHostedUser xmlns="http://xml.amadeus.com/2010/06/Security_v1">
@@ -64,14 +52,8 @@ const makeSoapEnvForActionWithLogin = ({profileData, payloadXml, action, transac
 		</SOAP-ENV:Envelope>`;
 };
 
-let makeStartSoapEnvXml = ({profileData, payloadXml}) => {
-	let action = 'HSFREQ_07_3_1A';
-	let transactionCode = 'Start';
-	return makeSoapEnvForActionWithLogin({profileData, payloadXml, action, transactionCode});
-};
-
 /** @param gdsData = parseCmdRs().gdsData */
-let makeContinueSoapEnvXml = ({gdsData, payloadXml, status, action, profileData}) => [
+let makeContinueSoapEnvXml = ({gdsData, payloadXml, status, action, profileData, messageId}) => [
 	'<?xml version="1.0" encoding="UTF-8"?>',
 	'<SOAP-ENV:Envelope ',
 	'    xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/" ',
@@ -82,7 +64,7 @@ let makeContinueSoapEnvXml = ({gdsData, payloadXml, status, action, profileData}
 	'      <awsse:SequenceNumber>' + gdsData.seqNumber + '</awsse:SequenceNumber>',
 	'      <awsse:SecurityToken>' + gdsData.securityToken + '</awsse:SecurityToken>',
 	'    </awsse:Session>',
-	'    <addr:MessageID>' + uuidv4() + '</addr:MessageID>',
+	'    <addr:MessageID>' + messageId + '</addr:MessageID>',
 	'    <addr:Action>http://webservices.amadeus.com/' + action + '</addr:Action>',
 	'    <addr:To>' + profileData.endpoint + '</addr:To>',
 	'  </SOAP-ENV:Header>',
@@ -118,8 +100,33 @@ let parseCmdRs = (dom, profileName) => ({
 let AmadeusClient = ({
 	PersistentHttpRq = require('klesun-node-tools/src/Utils/PersistentHttpRq.js'),
 	GdsProfiles = require("../Repositories/GdsProfiles"),
+	randomBytes = (size) => crypto.randomBytes(size),
+	now = () => Date.now(),
 } = {}) => {
 	let {getAmadeus} = GdsProfiles;
+
+	let uuidv4 = () => {
+		let $data = randomBytes(16);
+
+		$data[6] = chr($data[6] & 0x0f | 0x40); // set version to 0100
+		$data[8] = chr($data[8] & 0x3f | 0x80); // set bits 6-7 to 10
+
+		return util.format('%s%s-%s-%s-%s-%s%s%s', ...$data.toString('hex').match(/.{1,4}/g));
+	};
+	let makeMessageId = uuidv4;
+
+	let makePasswordRec = (profileData) => {
+		let nonceBytes = randomBytes(16);
+		let nonce = nonceBytes.toString('base64');
+		let timestamp = new Date(now()).toISOString(); // '2019-02-21T19:37:28.361Z'
+		let passwordDigest = makePasswordHash(nonce, timestamp, profileData.password); // 'LjWB9HZPLHIuWPa9FyzIl8n1NzU=';
+		return {
+			timestamp: timestamp,
+			nonceB64: Buffer.from(nonce).toString('base64'),
+			messageId: makeMessageId(),
+			passwordDigest: passwordDigest,
+		};
+	};
 
 	let startSession = async (params) => {
 		let profileName = params.profileName;
@@ -128,7 +135,12 @@ let AmadeusClient = ({
 		profileData = {...profileData, pcc};
 
 		let payloadXml = makeCmdPayloadXml('MD0');
-		let soapEnvXml = makeStartSoapEnvXml({profileData, payloadXml});
+		let soapEnvXml = makeSoapEnvForActionWithLogin({
+			profileData, payloadXml,
+			passwordRec: makePasswordRec(profileData),
+			action: 'HSFREQ_07_3_1A',
+			status: 'Start',
+		});
 
 		return PersistentHttpRq({
 			// it's probably worth looking in the docs if they have region-specific urls, since this endpoint is
@@ -157,6 +169,7 @@ let AmadeusClient = ({
 		let profileData = await getAmadeus(profileName);
 
 		let soapEnvXml = makeContinueSoapEnvXml({
+			messageId: makeMessageId(),
 			gdsData, profileData, payloadXml: makeCmdPayloadXml(cmd),
 			status: 'InSeries', action: 'HSFREQ_07_3_1A',
 		});
@@ -190,6 +203,7 @@ let AmadeusClient = ({
 
 		let payloadXml = '<ns1:Security_SignOut xmlns:ns1="http://xml.amadeus.com/VLSSOQ_04_1_1A"/>';
 		let soapEnvXml = makeContinueSoapEnvXml({
+			messageId: makeMessageId(),
 			gdsData, profileData, payloadXml,
 			status: 'InSeries',
 			action: 'VLSSOQ_04_1_1A',
@@ -240,6 +254,7 @@ let AmadeusClient = ({
 
 		const soapEnvXml = makeSoapEnvForActionWithLogin({
 			profileData,
+			passwordRec: makePasswordRec(profileData),
 			action: 'FARRNQ_10_1_1A',
 			payloadXml: AmadeusFareRules.buildFareRuleXml(params),
 		});
