@@ -1,11 +1,13 @@
 const stubPtcFareFamilies = require('../../../../../../data/stubPtcFareFamilies.js');
 const PtcFareFamilies = require('../../../../../../../backend/Repositories/PtcFareFamilies.js');
 const PtcUtil = require('../../../../../../../backend/Transpiled/Rbs/Process/Common/PtcUtil.js');
-
+const sinon = require('sinon');
 const Agent = require('../../../../../../../backend/DataFormats/Wrappers/Agent.js');
 const RunCmdRq = require('../../../../../../../backend/Transpiled/Rbs/GdsDirect/Actions/Amadeus/RunCmdRq.js');
 const GdsDirectDefaults = require('../../../../Rbs/TestUtils/GdsDirectDefaults.js');
 const php = require('../../../../php.js');
+const AmadeusClient = require('../../../../../../../backend/GdsClients/AmadeusClient');
+const Rej = require('klesun-node-tools/src/Rej');
 
 class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
 	provideTestForgeAreasDumpCases() {
@@ -2465,6 +2467,149 @@ class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
 		return $argumentTuples;
 	}
 
+	testForPccChange() {
+		const list = [];
+
+		list.push({
+			'title': 'pcc change succeeds',
+			'input': {
+				'cmdRequested': 'JUM/O-SOMETHING',
+			},
+			'output': {
+				status: 'executed',
+				silentErrors: [],
+				'calledCommands': [],
+				'userMessages': ['Successfully changed PCC to SOMETHING'],
+			},
+			'sessionInfo': {
+				'initialState': php.array_merge(GdsDirectDefaults.makeDefaultAmadeusState(), {
+					'area': 'B', 'pcc': 'SFO1S2195', 'hasPnr': false,
+				}),
+				'updateFullState': () => Promise.resolve(),
+				'updateGdsData': () => Promise.resolve(),
+				'initialCommands': [],
+				'performedCommands': [],
+			},
+			stubs: {
+				startSession: [
+					() => Promise.resolve({
+						profileName: 'someProfile',
+						securityToken: 'someSecurityToken',
+						seqNumber: '1',
+						sessionId: 'someSessionId',
+					}),
+				],
+				runCmd: [
+					() => Promise.resolve({
+						gdsData: {
+							profileName: 'AMADEUS_PROD_1ASIWTUTICO',
+							securityToken: '3VKUQDV4Y22GM3B5M151YHC8VC',
+							seqNumber: '2',
+							sessionId: '0Q2Q7L4H6A',
+						},
+						output: '/$\n00000000         SOMETHING                                     \n\nAREA  TM  MOD SG/DT.LG TIME      ACT.Q   STATUS     NAME \nA-IN      PRD WS/SU.EN  24             SIGNED       \nB                                      NOT SIGNED   \nC                                      NOT SIGNED   \nD                                      NOT SIGNED   \nE                                      NOT SIGNED   \nF                                      NOT SIGNED   \n '
+					}),
+				],
+				closeSession: [() => Promise.resolve({status: 'executed'})],
+			},
+		});
+
+		list.push({
+			'title': 'Change to non existing pcc should fall back to default pcc',
+			'input': {
+				'cmdRequested': 'JUM/O-SOMETHING',
+			},
+			'output': {
+				status: 'executed',
+				silentErrors: ['Invalid PCC - SOMETHING'],
+				'calledCommands': [],
+				'userMessages': ['Successfully changed PCC to SFO1S2195'],
+			},
+			'sessionInfo': {
+				'initialState': php.array_merge(GdsDirectDefaults.makeDefaultAmadeusState(), {
+					'area': 'B', 'pcc': 'SFO1S2195', 'hasPnr': false,
+				}),
+				'updateFullState': () => Promise.resolve(),
+				'updateGdsData': () => Promise.resolve(),
+				'initialCommands': [],
+				'performedCommands': [],
+			},
+			stubs: {
+				startSession: [
+					() => Rej.BadGateway('Http request to external service failed - 500 - /1ASIWTUTICO - <?xml version="1.0" encoding="UTF-8"?><soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/" xmlns:awsse="http://xml.amadeus.com/2010/06/Session_v3" xmlns:wsa="http://www.w3.org/2005/08/addressing"><soap:Header><wsa:To>http://www.w3.org/2005/08/addressing/anonymous</wsa:To><wsa:From><wsa:Address>https://nodeD1.production.webservices.amadeus.com/1ASIWTUTICO</wsa:Address></wsa:From><wsa:Action>http://webservices.amadeus.com/HSFREQ_07_3_1A</wsa:Action><wsa:MessageID>urn:uuid:something</wsa:MessageID><wsa:RelatesTo RelationshipType="http://www.w3.org/2005/08/addressing/reply">somethingElse</wsa:RelatesTo><awsse:Session TransactionStatusCode="End"><awsse:SessionId>0MP49ABYC3</awsse:SessionId><awsse:SequenceNumber>1</awsse:SequenceNumber><awsse:SecurityToken>someToken</awsse:SecurityToken></awsse:Session></soap:Header><soap:Body><soap:Fault><faultcode>soap:Client</faultcode><faultstring> 11|Session|</faultstring></soap:Fault></soap:Body></soap:Envelope>'),
+					() => Promise.resolve({
+						profileName: 'someProfile',
+						securityToken: 'someSecurityToken',
+						seqNumber: '1',
+						sessionId: 'someSessionId',
+					}),
+				],
+				runCmd: [
+					() => Promise.resolve({
+						gdsData: {
+							profileName: 'AMADEUS_PROD_1ASIWTUTICO',
+							securityToken: '3VKUQDV4Y22GM3B5M151YHC8VC',
+							seqNumber: '2',
+							sessionId: '0Q2Q7L4H6A',
+						},
+						output: '/$\n00000000         SFO1S2195                                     \n\nAREA  TM  MOD SG/DT.LG TIME      ACT.Q   STATUS     NAME \nA-IN      PRD WS/SU.EN  24             SIGNED       \nB                                      NOT SIGNED   \nC                                      NOT SIGNED   \nD                                      NOT SIGNED   \nE                                      NOT SIGNED   \nF                                      NOT SIGNED   \n '
+					}),
+				],
+				closeSession: [() => Promise.resolve({status: 'executed'})],
+			},
+		});
+
+		list.push({
+			'title': 'Change to invalid pcc still fails',
+			'input': {
+				'cmdRequested': 'JUM/O-SOMETHING',
+			},
+			'output': {
+				error: 'Error: Invalid PCC - SOMETHING',
+			},
+			'sessionInfo': {
+				'initialState': php.array_merge(GdsDirectDefaults.makeDefaultAmadeusState(), {
+					'area': 'B', 'pcc': 'SFO1S2195', 'hasPnr': false, cmdCnt: 1,
+				}),
+				'updateFullState': () => Promise.resolve(),
+				'updateGdsData': () => Promise.resolve(),
+				'initialCommands': [],
+				'performedCommands': [],
+			},
+			stubs: {
+				startSession: [
+					() => Rej.BadGateway('Http request to external service failed - 500 - /1ASIWTUTICO - <?xml version="1.0" encoding="UTF-8"?><soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/" xmlns:awsse="http://xml.amadeus.com/2010/06/Session_v3" xmlns:wsa="http://www.w3.org/2005/08/addressing"><soap:Header><wsa:To>http://www.w3.org/2005/08/addressing/anonymous</wsa:To><wsa:From><wsa:Address>https://nodeD1.production.webservices.amadeus.com/1ASIWTUTICO</wsa:Address></wsa:From><wsa:Action>http://webservices.amadeus.com/HSFREQ_07_3_1A</wsa:Action><wsa:MessageID>urn:uuid:something</wsa:MessageID><wsa:RelatesTo RelationshipType="http://www.w3.org/2005/08/addressing/reply">somethingElse</wsa:RelatesTo><awsse:Session TransactionStatusCode="End"><awsse:SessionId>0MP49ABYC3</awsse:SessionId><awsse:SequenceNumber>1</awsse:SequenceNumber><awsse:SecurityToken>someToken</awsse:SecurityToken></awsse:Session></soap:Header><soap:Body><soap:Fault><faultcode>soap:Client</faultcode><faultstring> 11|Session|</faultstring></soap:Fault></soap:Body></soap:Envelope>'),
+				],
+				closeSession: [],
+			},
+		});
+
+		return list.map(c => [c]);
+	}
+
+	async testPccChange({input, output, sessionInfo, stubs}) {
+		const amadues = AmadeusClient.makeCustom();
+
+		const stubInstances = [];
+
+		for(const cmd of Object.keys(stubs)) {
+			stubInstances[cmd] = sinon.stub(amadues, cmd);
+			stubs[cmd].forEach((fn, i) => stubInstances[cmd].onCall(i).callsFake(fn));
+		}
+
+		const stateful = GdsDirectDefaults.makeStatefulSession('amadeus', input, sessionInfo);
+
+		let actualOutput = await RunCmdRq({
+			stateful, cmdRq: input.cmdRequested, amadeusClient: amadues,
+		}).catch(exc => ({error: exc + '', stack: (exc || {}).stack}));
+
+		this.assertArrayElementsSubset(output, actualOutput);
+
+		for(const cmd of Object.keys(stubs)) {
+			this.assertEquals(stubs[cmd].length, stubInstances[cmd].callCount, `${cmd} Call count not matching`);
+		}
+	}
+
 	/**
 	 * @test
 	 * @dataProvider provideTestForgeAreasDumpCases
@@ -2499,6 +2644,7 @@ class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
 
 	getTestMapping() {
 		return [
+			[this.testForPccChange, this.testPccChange],
 			[this.provideExecuteTestCases, this.testExecute],
 			[this.provideTestForgeAreasDumpCases, this.testForgeViewAreasDump],
 		];

@@ -75,6 +75,7 @@ const forgeViewAreasDump = ($sessionData, $areasFromDb) => {
 let execute = ({
 	stateful, cmdRq,
 	PtcUtil = require('../../../../Rbs/Process/Common/PtcUtil.js'),
+	amadeusClient = AmadeusClient,
 }) => {
 
 class RunCmdRq {
@@ -113,7 +114,7 @@ class RunCmdRq {
 	static formatGtlPccError($exc, pcc) {
 		let prefix = 'Failed to start session with PCC ' + pcc + ' - ';
 		if (php.preg_match(/\bSoapFault: *11|\Session\b/, ($exc.message || ''))) {
-			return Rej.BadRequest('Invalid PCC');
+			return Rej.BadRequest('Invalid PCC - ' + pcc);
 		} else {
 			return UnprocessableEntity(prefix + 'Unexpected GTL error - ' + php.preg_replace(/\s+/, ' ', php.substr($exc.message || '', -100)));
 		}
@@ -330,7 +331,7 @@ class RunCmdRq {
 		pcc = pcc || $row.pcc;
 		$row.area = area;
 		$row.pcc = pcc;
-		$row.gdsData = await AmadeusClient.startSession({
+		$row.gdsData = await amadeusClient.startSession({
 			profileName: GdsProfiles.chooseAmaProfile($row.pcc),
 			pcc: pcc,
 		});
@@ -786,45 +787,75 @@ class RunCmdRq {
 		return php.array_values(php.array_diff(AREA_LETTERS, $occupiedAreas));
 	}
 
-	async changePcc($pcc) {
+	async changePcc(pcc) {
 		let $calledCommands, $jdDump, $parsed;
 
 		$calledCommands = [];
 
-		if (stateful.getSessionData()['pcc'] === $pcc) {
-			return {'errors': [Errors.getMessage(Errors.ALREADY_IN_THIS_PCC, {'pcc': $pcc})]};
+		const previousPcc = stateful.getSessionData().pcc;
+
+		if (stateful.getSessionData()['pcc'] === pcc) {
+			return {'errors': [Errors.getMessage(Errors.ALREADY_IN_THIS_PCC, {'pcc': pcc})]};
 		}
 
 		// check that there is no PNR in session to match GDS behaviour
 		if (stateful.getSessionData().hasPnr) {
-			return {'errors': [Errors.getMessage(Errors.LEAVE_PNR_CONTEXT, {'pcc': $pcc})]};
+			return {'errors': [Errors.getMessage(Errors.LEAVE_PNR_CONTEXT, {'pcc': pcc})]};
 		}
 
-		let areaState = await this.startNewAreaSession(stateful.getSessionData().area, $pcc)
-			.catch(exc => this.constructor.formatGtlPccError(exc, $pcc));
+		let areaState;
+		const silentErrors = [];
 
-		areaState.cmdCnt = 1; // to not trigger default area PCC fallback later
+		// Try catch here is is to mitigate problem if default pcc for area isn't valid
+		// Area should be still usable, as remedy for that we make sure that there is
+		// session running in the area with a valid pcc
+		try {
+			areaState = await this.startNewAreaSession(stateful.getSessionData().area, pcc)
+				.catch(exc => this.constructor.formatGtlPccError(exc, pcc));
+
+		} catch(e) {
+			const state = stateful.getSessionData();
+
+			// Bad request error is the one formatGtlPccError will produce in case if
+			// pcc isn't valid, cmdCnt gets set to non zero value on successful change
+			// here having it non zero would mean that this is command from terminal and
+			// not by product of ProcessTerminalInput.ensureConfigPcc
+			if(!Rej.BadRequest.matches(e.httpStatusCode) || state.cmdCnt) {
+				throw e;
+			}
+
+			silentErrors.push(e.message);
+
+			pcc = previousPcc;
+
+			areaState = await this.startNewAreaSession(stateful.getSessionData().area, pcc)
+				.catch(exc => this.constructor.formatGtlPccError(exc, pcc));
+		}
+
+		areaState.cmdCnt = 1;
 
 		// sometimes when you request invalid PCC, Amadeus fallbacks to
 		// SFO1S2195 - should call >JD; and check that PCC is what we requested
-		let jdCmdRec = await AmadeusClient.runCmd({command: 'JD'}, areaState.gdsData);
+		let jdCmdRec = await amadeusClient.runCmd({command: 'JD'}, areaState.gdsData);
 		$jdDump = jdCmdRec.output;
 		$parsed = WorkAreaScreenParser.parse($jdDump);
-		if ($parsed['pcc'] !== $pcc) {
-			AmadeusClient.closeSession(areaState.gdsData);
+		if ($parsed['pcc'] !== pcc) {
+			amadeusClient.closeSession(areaState.gdsData);
 			return {
+				silentErrors,
 				'calledCommands': [{cmd: 'JD', output: $jdDump}],
-				'errors': ['Failed to change PCC - resulting PCC ' + $parsed['pcc'] + ' does not match requested PCC ' + $pcc],
+				'errors': ['Failed to change PCC - resulting PCC ' + $parsed['pcc'] + ' does not match requested PCC ' + pcc],
 			};
 		}
 
 		let oldGdsData = stateful.getGdsData();
 		await this.updateGdsData(areaState);
-		AmadeusClient.closeSession(oldGdsData);
+		amadeusClient.closeSession(oldGdsData);
 
 		return {
+			silentErrors,
 			'calledCommands': $calledCommands,
-			'userMessages': ['Successfully changed PCC to ' + $pcc],
+			'userMessages': ['Successfully changed PCC to ' + pcc],
 		};
 	}
 
@@ -1177,6 +1208,7 @@ class RunCmdRq {
 			'status': $status,
 			'calledCommands': $calledCommands,
 			'userMessages': $userMessages,
+			silentErrors: $callResult.silentErrors || [],
 		};
 	}
 }
