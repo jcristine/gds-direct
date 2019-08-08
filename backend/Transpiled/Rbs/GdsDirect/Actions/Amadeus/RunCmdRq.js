@@ -19,7 +19,6 @@ const AmadeusUtil = require("../../../../../GdsHelpers/AmadeusUtils");
 const GdsProfiles = require("../../../../../Repositories/GdsProfiles");
 const getRbsPqInfo = require("../../../../../GdsHelpers/RbsUtils").getRbsPqInfo;
 const MoveDownAllAction = require('./MoveDownAllAction.js');
-const AmadeusPnr = require('../../../../Rbs/TravelDs/AmadeusPnr.js');
 const AmadeusBuildItineraryAction = require('../../../../Rbs/GdsAction/AmadeusBuildItineraryAction.js');
 const MarriageItineraryParser = require('../../../../Gds/Parsers/Amadeus/MarriageItineraryParser.js');
 const AmadeusClient = require("../../../../../GdsClients/AmadeusClient");
