@@ -31,6 +31,8 @@ const makeHttpRqBriefing = (rqBody, gds) => {
 	} else if (gds === 'sabre') {
 		if (match = rqBody.match(/:HostCommand>\s*(.+?)\s*<\//)) {
 			return '>' + match[1] + ';';
+		} else if (match = rqBody.match(/:SessionCreateRQ>/)) {
+			return '<SessionCreateRQ/>';
 		}
 	}
 	return '';
@@ -40,6 +42,9 @@ const maskRqBody = (rqBody, gds) => {
 	if (gds === 'amadeus') {
 		rqBody = rqBody.replace(/(<\w+:Username\b[^>]*>)[^<]+(<\/\w+:Username>)/g, '$1GRECTMASKED$2');
 		rqBody = rqBody.replace(/(<\w+:Password\b[^>]*>)[^<]+(<\/\w+:Password>)/g, '$1GRECTMASKED$2');
+	} else if (gds === 'sabre') {
+		rqBody = rqBody.replace(/(<\w+:Username>)[^<]+(<\/\w+:Username>)/g, '$1GRECTMASKED$2');
+		rqBody = rqBody.replace(/(<\w+:Password>)[^<]+(<\/\w+:Password>)/g, '$1GRECTMASKED$2');
 	}
 	return rqBody;
 };
@@ -110,8 +115,7 @@ GdsSession.startByGds = async (gds) => {
 	let loggingHttpRq = initHttpRqFor({logId, gds});
 	let amadeus = AmadeusClient.makeCustom({PersistentHttpRq: loggingHttpRq});
 	let travelport = TravelportClient({PersistentHttpRq: loggingHttpRq});
-	// make sure we mask passwords before adding http logging for rest GDS-es
-	let sabre = SabreClient.makeCustom();
+	let sabre = SabreClient.makeCustom({PersistentHttpRq: loggingHttpRq});
 	let tuples = [
 		['apollo' , travelport, TRAVELPORT.DynApolloProd_2F3K],
 		['galileo', travelport, TRAVELPORT.DynGalileoProd_711M],
