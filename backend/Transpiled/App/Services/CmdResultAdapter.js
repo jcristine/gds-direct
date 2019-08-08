@@ -55,18 +55,17 @@ class CmdResultAdapter
 
 	/** Append output by custom strings */
 	appendOutput($output, $messages) {
-		let $errors = '';
-		if (!empty($messages['info'])) {
-			for (let $message of $messages['info']) {
-				$errors = PHP_EOL + this.highlightWarning($message);
+		return $output + ($messages || []).reduce((acc, message) => {
+			if(message.type === 'error') {
+				acc += PHP_EOL + this.highlightError(message.text);
 			}
-		}
-		if (!empty($messages['error'])) {
-			for (let $message of $messages['error']) {
-				$errors = PHP_EOL + this.highlightError($message);
+
+			if(message.type === 'info') {
+				acc += PHP_EOL + this.highlightWarning(message.text);
 			}
-		}
-		return $output + $errors;
+
+			return acc;
+		}, '');
 	}
 
 	highlightError($output) {
@@ -101,7 +100,7 @@ class CmdResultAdapter
 		let sessionInfo = !fullState ? {} : makeBriefSessionInfo(fullState);
 		return this.formatOutput({cmdRq, calledCommands})
 			.then(({output, appliedRules}) => {
-				output = this.appendOutput(output, typeToMsgs);
+				output = this.appendOutput(output, messages);
 				let cmdTimes = rbsResp.calledCommands.map(rec => rec.duration).filter(a => a);
 				return {
 					output: output || rbsResp.status,
