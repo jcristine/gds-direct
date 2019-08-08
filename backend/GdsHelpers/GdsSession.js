@@ -12,6 +12,7 @@ const Rej = require('klesun-node-tools/src/Rej.js');
 const {coverExc} = require('klesun-node-tools/src/Lang.js');
 const {jsExport} = require('klesun-node-tools/src/Debug.js');
 
+/** @param {String} rqBody */
 const makeHttpRqBriefing = (rqBody, gds) => {
 	let match;
 	if (['apollo', 'galileo'].includes(gds)) {
@@ -24,7 +25,13 @@ const makeHttpRqBriefing = (rqBody, gds) => {
 		}
 	} else if (gds === 'amadeus') {
 		if (match = rqBody.match(/:textStringDetails>\s*(.+?)\s*<\//)) {
-			return '>' + match[1] + ';';
+			let briefing = '>' + match[1] + ';';
+			if (rqBody.includes('TransactionStatusCode="Start"')) {
+				if (match = rqBody.match(/ PseudoCityCode="(\w+?)"/)) {
+					briefing += ' start ' + match[1];
+				}
+			}
+			return briefing;
 		} else if (match = rqBody.match(/:Body>\s*<\w+:(\w+)/)) {
 			return '<' + match[1] + '>';
 		}

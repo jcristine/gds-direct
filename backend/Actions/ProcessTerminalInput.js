@@ -1,3 +1,4 @@
+const AmadeusClient = require('../GdsClients/AmadeusClient.js');
 const TravelportClient = require('../GdsClients/TravelportClient.js');
 const GdsSession = require('../GdsHelpers/GdsSession.js');
 const AddMpRemark = require('./AddMpRemark.js');
@@ -138,13 +139,14 @@ let runByGds = async (cmdRqData) => {
 	let gdsResult;
 	let httpRq = GdsSession.initHttpRq(cmdRqData.stateful.getSessionRecord());
 	let travelport = TravelportClient({PersistentHttpRq: httpRq});
+	let amadeus = AmadeusClient.makeCustom({PersistentHttpRq: httpRq});
 	let gds = cmdRqData.stateful.gds;
 	if (gds === 'apollo') {
 		gdsResult = await ApoRunCmdRq({...cmdRqData, travelport});
 	} else if (gds === 'sabre') {
 		gdsResult = await SabRunCmdRq(cmdRqData);
 	} else if (gds === 'amadeus') {
-		gdsResult = await AmaRunCmdRq(cmdRqData);
+		gdsResult = await AmaRunCmdRq({...cmdRqData, amadeusClient: amadeus});
 	} else if (gds === 'galileo') {
 		gdsResult = await GalRunCmdRq(cmdRqData);
 	} else {
