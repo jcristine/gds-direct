@@ -429,7 +429,7 @@ class ImportPqGalileoActionTest extends require('../../../../../../../backend/Tr
 			},
 		});
 
-		const actual = await (new ImportPqGalileoAction(true, travelport))
+		const actual = await (new ImportPqGalileoAction({useXml: true, travelport}))
 			.fetchOptionalFields(input.fetchOptionalFields)
 			.setSession(stateful)
 			.setPreCalledCommandsFromDb(input['previousCommands'])
