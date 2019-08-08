@@ -2588,19 +2588,19 @@ class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
 	}
 
 	async testPccChange({input, output, sessionInfo, stubs}) {
-		const amadues = AmadeusClient.makeCustom();
+		const amadeus = AmadeusClient.makeCustom();
 
 		const stubInstances = [];
 
 		for(const cmd of Object.keys(stubs)) {
-			stubInstances[cmd] = sinon.stub(amadues, cmd);
+			stubInstances[cmd] = sinon.stub(amadeus, cmd);
 			stubs[cmd].forEach((fn, i) => stubInstances[cmd].onCall(i).callsFake(fn));
 		}
 
 		const stateful = GdsDirectDefaults.makeStatefulSession('amadeus', input, sessionInfo);
 
 		let actualOutput = await RunCmdRq({
-			stateful, cmdRq: input.cmdRequested, amadeusClient: amadues,
+			stateful, cmdRq: input.cmdRequested, amadeusClient: amadeus,
 		}).catch(exc => ({error: exc + '', stack: (exc || {}).stack}));
 
 		this.assertArrayElementsSubset(output, actualOutput);
