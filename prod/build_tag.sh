@@ -69,7 +69,7 @@ then
     echo "Skipping tests..."
 else
     npm ci # install node modules including devDependencies
-    node tests/run.js || exit 1;
+    bash tests/run.sh || exit 1;
 fi
 
 # update node_modules and build webpack
