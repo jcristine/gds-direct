@@ -2590,7 +2590,7 @@ class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
 	async testPccChange({input, output, sessionInfo, stubs}) {
 		const amadues = AmadeusClient.makeCustom();
 
-		const stubInstances = [];
+		const stubInstances = {};
 
 		for(const cmd of Object.keys(stubs)) {
 			stubInstances[cmd] = sinon.stub(amadues, cmd);
