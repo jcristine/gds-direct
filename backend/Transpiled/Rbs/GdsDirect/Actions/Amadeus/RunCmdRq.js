@@ -19,7 +19,6 @@ const AmadeusUtil = require("../../../../../GdsHelpers/AmadeusUtils");
 const GdsProfiles = require("../../../../../Repositories/GdsProfiles");
 const getRbsPqInfo = require("../../../../../GdsHelpers/RbsUtils").getRbsPqInfo;
 const MoveDownAllAction = require('./MoveDownAllAction.js');
-const AmadeusPnr = require('../../../../Rbs/TravelDs/AmadeusPnr.js');
 const AmadeusBuildItineraryAction = require('../../../../Rbs/GdsAction/AmadeusBuildItineraryAction.js');
 const MarriageItineraryParser = require('../../../../Gds/Parsers/Amadeus/MarriageItineraryParser.js');
 const AmadeusClient = require("../../../../../GdsClients/AmadeusClient");
@@ -75,6 +74,7 @@ const forgeViewAreasDump = ($sessionData, $areasFromDb) => {
 let execute = ({
 	stateful, cmdRq,
 	PtcUtil = require('../../../../Rbs/Process/Common/PtcUtil.js'),
+	amadeusClient = AmadeusClient,
 }) => {
 
 class RunCmdRq {
@@ -330,7 +330,7 @@ class RunCmdRq {
 		pcc = pcc || $row.pcc;
 		$row.area = area;
 		$row.pcc = pcc;
-		$row.gdsData = await AmadeusClient.startSession({
+		$row.gdsData = await amadeusClient.startSession({
 			profileName: GdsProfiles.chooseAmaProfile($row.pcc),
 			pcc: pcc,
 		});
@@ -807,11 +807,11 @@ class RunCmdRq {
 
 		// sometimes when you request invalid PCC, Amadeus fallbacks to
 		// SFO1S2195 - should call >JD; and check that PCC is what we requested
-		let jdCmdRec = await AmadeusClient.runCmd({command: 'JD'}, areaState.gdsData);
+		let jdCmdRec = await amadeusClient.runCmd({command: 'JD'}, areaState.gdsData);
 		$jdDump = jdCmdRec.output;
 		$parsed = WorkAreaScreenParser.parse($jdDump);
 		if ($parsed['pcc'] !== $pcc) {
-			AmadeusClient.closeSession(areaState.gdsData);
+			amadeusClient.closeSession(areaState.gdsData);
 			return {
 				'calledCommands': [{cmd: 'JD', output: $jdDump}],
 				'errors': ['Failed to change PCC - resulting PCC ' + $parsed['pcc'] + ' does not match requested PCC ' + $pcc],
@@ -820,7 +820,7 @@ class RunCmdRq {
 
 		let oldGdsData = stateful.getGdsData();
 		await this.updateGdsData(areaState);
-		AmadeusClient.closeSession(oldGdsData);
+		amadeusClient.closeSession(oldGdsData);
 
 		return {
 			'calledCommands': $calledCommands,
