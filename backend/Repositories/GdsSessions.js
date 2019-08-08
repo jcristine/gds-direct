@@ -1,11 +1,12 @@
 
 let {getClient, keys, withNewConnection} = require('./../LibWrappers/Redis.js');
 let FluentLogger = require('./../LibWrappers/FluentLogger.js');
-let {NoContent, Conflict, NotFound, nonEmpty} = require('klesun-node-tools/src/Rej.js');
+let {NoContent, Conflict, NotFound} = require('klesun-node-tools/src/Rej.js');
 let Misc = require('../Utils/TmpLib.js');
 let {chunk} = Misc;
 let Db = require('../Utils/Db.js');
-const sqlNow = require("../Utils/TmpLib").sqlNow;
+const {sqlNow} = require("klesun-node-tools/src/Utils/Misc.js");
+const {nonEmpty} = require('klesun-node-tools/src/Lang.js');
 
 let TABLE = 'terminal_sessions';
 
@@ -57,12 +58,14 @@ let getById = (id) => {
 };
 
 /** @param context = normalizeContext() */
-exports.storeNew = async (context, gdsData, emcUser) => {
+exports.storeNew = async ({context, gdsData, emcUser, logId = null}) => {
 	context = {...context, agentId: emcUser.id};
 	let normalized = normalizeContext(context);
 	let contextStr = JSON.stringify(normalized);
 	let prefix = context.gds + '_' + context.agentId;
-	let logId = await FluentLogger.logNewId(prefix);
+	if (!logId) {
+		logId = await FluentLogger.logNewId(prefix);
+	}
 
 	let id = await Db.with(db => db.writeRows(TABLE, [{
 		gds: context.gds,

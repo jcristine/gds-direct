@@ -29,6 +29,7 @@
     "xml": "^1.0.1"
   },
   "devDependencies": {
+    "madge": "^3.4.4",
     "sinon": "^7.4.1"
   }
 }

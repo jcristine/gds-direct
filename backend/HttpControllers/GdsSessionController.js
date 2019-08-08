@@ -5,7 +5,6 @@ let SabreClient = require("../GdsClients/SabreClient.js");
 let TravelportClient = require('../GdsClients/TravelportClient.js');
 let Db = require('../Utils/Db.js');
 let GdsSessions = require('../Repositories/GdsSessions.js');
-let {TRAVELPORT, AMADEUS, SABRE} = require('../Repositories/GdsProfiles.js');
 let {logit, logExc} = require('../LibWrappers/FluentLogger.js');
 let {Forbidden, NotImplemented, LoginTimeOut, NotFound, ServiceUnavailable} = require('klesun-node-tools/src/Rej.js');
 let StatefulSession = require('../GdsHelpers/StatefulSession.js');
@@ -15,7 +14,6 @@ const CmdResultAdapter = require('../Transpiled/App/Services/CmdResultAdapter.js
 
 let php = require('../Transpiled/phpDeprecated.js');
 const CmsClient = require("../IqClients/CmsClient");
-const GdsProfiles = require("../Repositories/GdsProfiles");
 const ImportPq = require('../Actions/ImportPq.js');
 const FluentLogger = require("../LibWrappers/FluentLogger");
 const GdsDirect = require("../Transpiled/Rbs/GdsDirect/GdsDirect");
@@ -29,35 +27,12 @@ const TravelportUtils = require("../GdsHelpers/TravelportUtils");
 const SubmitTaxBreakdownMask = require('../Actions/ManualPricing/SubmitTaxBreakdownMask.js');
 const SubmitZpTaxBreakdownMask = require('../Actions/ManualPricing/SubmitZpTaxBreakdownMask.js');
 const SubmitFcMask = require('../Actions/ManualPricing/FcMaskSubmit.js');
-
-let startByGds = async (gds) => {
-	let tuples = [
-		['apollo' , TravelportClient()        , TRAVELPORT.DynApolloProd_2F3K],
-		['galileo', TravelportClient()        , TRAVELPORT.DynGalileoProd_711M],
-		['amadeus', AmadeusClient.makeCustom(), AMADEUS.AMADEUS_PROD_1ASIWTUTICO],
-		['sabre'  , SabreClient.makeCustom()  , SABRE.SABRE_PROD_L3II],
-	];
-	for (let [clientGds, client, profileName] of tuples) {
-		if (gds === clientGds) {
-			let limit = await GdsProfiles.getLimit(gds, profileName);
-			let taken = await GdsSessions.countActive(gds, profileName);
-			if (limit !== null && taken >= limit) {
-				// actually, instead of returning error, we could close the most
-				// inactive session of another agent (idle for at least 10 minutes)
-				return ServiceUnavailable('Too many sessions, ' + taken + ' (>= ' + limit + ') opened for this GDS profile ATM. Wait for few minutes and try again.');
-			} else {
-				return client.startSession({profileName})
-					.then(gdsData => ({...gdsData, limit, taken, profileName}));
-			}
-		}
-	}
-	return NotImplemented('Unsupported GDS ' + gds + ' for session creation');
-};
+const {startByGds} = require('../GdsHelpers/GdsSession.js');
 
 let startNewSession = async (rqBody, emcUser) => {
 	let starting = startByGds(rqBody.gds);
-	return starting.then(gdsData =>
-		GdsSessions.storeNew(rqBody, gdsData, emcUser));
+	return starting.then(({gdsData, logId}) =>
+		GdsSessions.storeNew({context: rqBody, gdsData, emcUser, logId}));
 };
 
 let closeByGds = (gds, gdsData) => {
@@ -215,9 +190,9 @@ exports.addMpRemark = async ({rqBody, ...params}) => {
  * @param {IEmcUser} emcUser
  */
 exports.resetToDefaultPcc = async ({rqBody, session, emcUser}) => {
-	let gdsData = await startByGds(rqBody.gds);
+	let {gdsData, logId} = await startByGds(rqBody.gds);
 	await closeSession(session);
-	let newSession = await GdsSessions.storeNew(session.context, gdsData, emcUser);
+	let newSession = await GdsSessions.storeNew({context: session.context, gdsData, emcUser, logId});
 	FluentLogger.logit('INFO: New session in ' + newSession.logId, session.logId, newSession);
 	FluentLogger.logit('INFO: Old session in ' + session.logId, newSession.logId, session);
 	let fullState = GdsSessions.makeDefaultState(newSession);
