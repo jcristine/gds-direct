@@ -1,3 +1,6 @@
+const GdsSessions = require('../Repositories/GdsSessions.js');
+const GdsProfiles = require('../Repositories/GdsProfiles.js');
+let {TRAVELPORT, AMADEUS, SABRE} = GdsProfiles;
 const PersistentHttpRq = require('../../node_modules/klesun-node-tools/src/Utils/PersistentHttpRq.js');
 const MaskUtil = require('../Transpiled/Lib/Utils/MaskUtil.js');
 const FluentLogger = require('../LibWrappers/FluentLogger.js');
@@ -39,17 +42,17 @@ const maskRqBody = (rqBody, gds) => {
 	return rqBody;
 };
 
-const initHttpRq = (session) => (params) => {
+const initHttpRqFor = ({logId, gds}) => (params) => {
 	let whenResult = PersistentHttpRq(params);
 	let logit = (msg, data) => {
 		let masked = MaskUtil.maskCcNumbers(data);
-		FluentLogger.logit(msg, session.logId, masked);
+		FluentLogger.logit(msg, logId, masked);
 		if (process.env.NODE_ENV !== 'production') {
-			console.log(msg, typeof masked === 'string' ? masked : jsExport(masked));
+			console.log(logId + ': ' + msg, typeof masked === 'string' ? masked : jsExport(masked));
 		}
 	};
-	let briefing = makeHttpRqBriefing(params.body, session.context.gds);
-	let masked = maskRqBody(params.body, session.context.gds);
+	let briefing = makeHttpRqBriefing(params.body, gds);
+	let masked = maskRqBody(params.body, gds);
 	logit('XML RQ: ' + briefing, masked);
 	return whenResult
 		.then(result => {
@@ -61,6 +64,11 @@ const initHttpRq = (session) => (params) => {
 			return Promise.reject(exc);
 		}));
 };
+
+const initHttpRq = (session) => initHttpRqFor({
+	logId: session.logId,
+	gds: session.context.gds,
+});
 
 /**
  * the entity which StatefulSession.js uses to invoke the commands - be careful not
@@ -94,5 +102,38 @@ const GdsSession = ({session}) => {
 };
 
 GdsSession.initHttpRq = initHttpRq;
+
+GdsSession.startByGds = async (gds) => {
+	let logId = await FluentLogger.logNewId(gds);
+	let loggingHttpRq = initHttpRqFor({logId, gds});
+	let amadeus = AmadeusClient.makeCustom({PersistentHttpRq: loggingHttpRq});
+	// make sure we mask passwords before adding http logging for rest GDS-es
+	let travelport = TravelportClient();
+	let sabre = SabreClient.makeCustom();
+	let tuples = [
+		['apollo' , travelport, TRAVELPORT.DynApolloProd_2F3K],
+		['galileo', travelport, TRAVELPORT.DynGalileoProd_711M],
+		['amadeus', amadeus   , AMADEUS.AMADEUS_PROD_1ASIWTUTICO],
+		['sabre'  , sabre     , SABRE.SABRE_PROD_L3II],
+	];
+	for (let [clientGds, client, profileName] of tuples) {
+		if (gds === clientGds) {
+			let limit = await GdsProfiles.getLimit(gds, profileName);
+			let taken = await GdsSessions.countActive(gds, profileName);
+			if (limit !== null && taken >= limit) {
+				// actually, instead of returning error, we could close the most
+				// inactive session of another agent (idle for at least 10 minutes)
+				let msg = 'Too many sessions, ' + taken + ' (>= ' + limit + ') opened ' +
+					'for this GDS profile ATM. Wait for few minutes and try again.';
+				return Rej.ServiceUnavailable(msg);
+			} else {
+				return client.startSession({profileName})
+					.then(gdsData => ({...gdsData, profileName}))
+					.then(gdsData => ({gdsData, limit, taken, logId}));
+			}
+		}
+	}
+	return Rej.NotImplemented('Unsupported GDS ' + gds + ' for session creation');
+};
 
 module.exports = GdsSession;
