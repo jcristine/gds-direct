@@ -17,6 +17,8 @@ const makeHttpRqBriefing = (rqBody, gds) => {
 	if (['apollo', 'galileo'].includes(gds)) {
 		if (match = rqBody.match(/:Request>\s*<(\w+)>/)) {
 			return '<' + match[1] + '/>';
+		} else if (match = rqBody.match(/:BeginSession>/)) {
+			return '<BeginSession/>';
 		} else if (match = rqBody.match(/:Request>\s*(.+?)\s*<\//)) {
 			return '>' + match[1] + ';';
 		}
@@ -107,8 +109,8 @@ GdsSession.startByGds = async (gds) => {
 	let logId = await FluentLogger.logNewId(gds);
 	let loggingHttpRq = initHttpRqFor({logId, gds});
 	let amadeus = AmadeusClient.makeCustom({PersistentHttpRq: loggingHttpRq});
+	let travelport = TravelportClient({PersistentHttpRq: loggingHttpRq});
 	// make sure we mask passwords before adding http logging for rest GDS-es
-	let travelport = TravelportClient();
 	let sabre = SabreClient.makeCustom();
 	let tuples = [
 		['apollo' , travelport, TRAVELPORT.DynApolloProd_2F3K],
