@@ -296,7 +296,13 @@ app.post('/admin/getModel', withOwnerAuth(async (reqBody, emcResult) => {
 		orderBy: reqBody.orderBy || [],
 		skip: reqBody.skip,
 		limit: reqBody.limit || 100,
-	}));
+	})).catch(exc => {
+		if (exc) {
+			exc.message = 'Invalid params - ' + exc.httpStatusCode + ' - ' + exc.message;
+			exc.httpStatusCode = Rej.BadRequest.httpStatusCode;
+		}
+		return Promise.reject(exc);
+	});
 	rows = Misc.maskCcNumbers(rows);
 	return {records: rows};
 }));
