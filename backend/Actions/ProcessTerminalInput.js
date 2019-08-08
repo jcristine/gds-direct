@@ -183,6 +183,10 @@ let runCmdRq =  async (cmdRq, stateful) => {
 		}
 		let gdsResult = await running;
 		let isSuccess = gdsResult.status === GdsDirect.STATUS_EXECUTED;
+		// errors that were handled in background but we would still like
+		// to inform user that something erroneous had happened
+		messages.push(...(gdsResult.silentErrors || [])
+			.map(msg => ({type: 'error', text: msg})));
 		messages.push(...(gdsResult.userMessages || [])
 			.map(msg => ({type: isSuccess ? 'info' : 'error', text: msg})));
 		actions.push(...(gdsResult.actions || []));
