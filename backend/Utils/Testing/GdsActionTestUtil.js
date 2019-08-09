@@ -1,3 +1,4 @@
+const GdsSession = require('../../GdsHelpers/GdsSession.js');
 const GdsDirectDefaults = require('./GdsDirectDefaults.js');
 const TravelportClient = require('../../GdsClients/TravelportClient.js');
 const PersistentHttpRqStub = require('./PersistentHttpRqStub.js');
@@ -28,25 +29,23 @@ exports.testGdsAction = async (unit, $testCase, $getActual) => {
 exports.testHttpGdsAction = async ({unit, testCase, getActual}) => {
 	let {input, fullState, output, httpRequests} = testCase;
 	let PersistentHttpRq = PersistentHttpRqStub(httpRequests);
-	let travelport = TravelportClient({
-		PersistentHttpRq,
-		GdsProfiles: {
-			getTravelport: (profileName) => Promise.resolve({
-				username: 'grectUnitTest',
-				password: 'qwerty123',
-			}),
-		},
-	});
-	let gdsData = {
-		sessionToken: 'soap-unit-test-blabla-123',
+	let GdsProfiles = {
+		getTravelport: (profileName) => Promise.resolve({
+			username: 'grectUnitTest',
+			password: 'qwerty123',
+		}),
 	};
-	let stateful = GdsDirectDefaults.makeStatefulSessionCustom({
-		fullState,
-		session: {
-			context: {gds: fullState.gds, travelRequestId: null},
-			gdsData: gdsData,
+	let session = {
+		context: {gds: fullState.gds, travelRequestId: null},
+		gdsData: {
+			sessionToken: 'soap-unit-test-blabla-123',
 		},
-		gdsSession: {runCmd: cmd => travelport.runCmd({command: cmd}, gdsData)},
+	};
+	let gdsSession = GdsSession({
+		session, PersistentHttpRq, GdsProfiles,
+	});
+	let stateful = GdsDirectDefaults.makeStatefulSessionCustom({
+		fullState, session, gdsSession,
 	});
 
 	let actual = await getActual({stateful, input});
