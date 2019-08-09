@@ -5,7 +5,6 @@ const AddMpRemark = require('./AddMpRemark.js');
 const GetCurrentPnr = require('./GetCurrentPnr.js');
 
 let {fetchAll, wrap, extractTpTabCmds} = require('../GdsHelpers/TravelportUtils.js');
-const AreaSettings = require("../Repositories/AreaSettings");
 const ApoRunCmdRq = require("../Transpiled/Rbs/GdsDirect/Actions/Apollo/RunCmdRq.js");
 const SabRunCmdRq = require("../Transpiled/Rbs/GdsDirect/Actions/Sabre/RunCmdRq.js");
 const GalRunCmdRq = require("../Transpiled/Rbs/GdsDirect/Actions/Galileo/RunCmdRq.js");
@@ -229,48 +228,6 @@ let translateCmd = (fromGds, toGds, inputCmd) => {
 	};
 };
 
-let getDefaultPcc = async (area, stateful) => {
-	let gds = stateful.gds;
-	let agentId = stateful.getAgent().getId();
-	let areaSettings = await AreaSettings.getByAgent(agentId);
-	let configPcc = areaSettings
-		.filter(r => r.area === area && r.gds === stateful.gds)
-		.map(r => r.defaultPcc)[0];
-
-	configPcc = configPcc || TerminalSettings.getForcedStartPcc(gds, area);
-	return configPcc;
-};
-
-let ensureConfigPcc = async (stateful) => {
-	let areaState = stateful.getSessionData();
-	if (!areaState.cmdCnt || !areaState.pcc) {
-		let defaultPcc = await getDefaultPcc(areaState.area, stateful);
-		if (defaultPcc && defaultPcc !== areaState.pcc) {
-			let cmd = translateCmd('apollo', stateful.gds, 'SEM/' + defaultPcc + '/AG').cmd;
-			return runCmdRq(cmd, stateful);
-		}
-	}
-	return {calledCommands: [], messages: []};
-};
-
-let processNormalized = async ({stateful, cmdRq}) => {
-	let prePccResult = await ensureConfigPcc(stateful);
-	let rbsResult = await runCmdRq(cmdRq, stateful);
-	let postPccResult = await ensureConfigPcc(stateful); // if this command changed area
-
-	return {...rbsResult,
-		calledCommands: []
-			.concat(prePccResult.calledCommands || [])
-			.concat(rbsResult.calledCommands || [])
-			.concat(postPccResult.calledCommands || [])
-			.map(r => transformCalledCommand(r, stateful)),
-		messages: []
-			.concat(prePccResult.messages || [])
-			.concat(rbsResult.messages || [])
-			.concat(postPccResult.messages || []),
-	};
-};
-
 let extendActions = async ({whenCmsResult, stateful}) => {
 	let agent = stateful.getAgent();
 	let didSavePnr = false;
@@ -306,31 +263,78 @@ let extendActions = async ({whenCmsResult, stateful}) => {
  */
 let ProcessTerminalInput = async ({
 	stateful, cmdRq, dialect = null,
+	AreaSettings = require("../Repositories/AreaSettings.js"),
 }) => {
-	let gds = stateful.gds;
-	let translated = translateCmd(dialect || gds, gds, cmdRq);
-	let cmdRqNorm = translated.cmd;
+	let getDefaultPcc = async (area, stateful) => {
+		let gds = stateful.gds;
+		let agentId = stateful.getAgent().getId();
+		let areaSettings = await AreaSettings.getByAgent(agentId);
+		let configPcc = areaSettings
+			.filter(r => r.area === area && r.gds === stateful.gds)
+			.map(r => r.defaultPcc)[0];
 
-	let callsLimit = stateful.getAgent().getUsageLimit();
-	if (callsLimit) {
-		let callsUsed = await Agents.getGdsDirectCallsUsed(stateful.getAgent().getId());
-		if (+callsUsed >= +callsLimit) {
-			return TooManyRequests('You exhausted your GDS Direct usage limit for today (' + callsUsed + ' >= ' + callsLimit + ')');
+		configPcc = configPcc || TerminalSettings.getForcedStartPcc(gds, area);
+		return configPcc;
+	};
+
+	let ensureConfigPcc = async (stateful) => {
+		let areaState = stateful.getSessionData();
+		if (!areaState.cmdCnt || !areaState.pcc) {
+			let defaultPcc = await getDefaultPcc(areaState.area, stateful);
+			if (defaultPcc && defaultPcc !== areaState.pcc) {
+				let cmd = translateCmd('apollo', stateful.gds, 'SEM/' + defaultPcc + '/AG').cmd;
+				return runCmdRq(cmd, stateful);
+			}
 		}
-	}
-	let whenCmsResult = processNormalized({
-		stateful, cmdRq: cmdRqNorm,
-	}).then(cmsResult => ({...cmsResult,
-		messages: (translated.messages || [])
-			.concat(cmsResult.messages || []),
-	})).then((rbsResult) => CmdResultAdapter({
-		cmdRq, gds: stateful.gds,
-		rbsResp: rbsResult,
-		fullState: stateful.getFullState(),
-	}));
-	whenCmsResult = extendActions({whenCmsResult, stateful});
+		return {calledCommands: [], messages: []};
+	};
 
-	return whenCmsResult;
+	let processNormalized = async ({stateful, cmdRq}) => {
+		let prePccResult = await ensureConfigPcc(stateful);
+		let rbsResult = await runCmdRq(cmdRq, stateful);
+		let postPccResult = await ensureConfigPcc(stateful); // if this command changed area
+
+		return {...rbsResult,
+			calledCommands: []
+				.concat(prePccResult.calledCommands || [])
+				.concat(rbsResult.calledCommands || [])
+				.concat(postPccResult.calledCommands || [])
+				.map(r => transformCalledCommand(r, stateful)),
+			messages: []
+				.concat(prePccResult.messages || [])
+				.concat(rbsResult.messages || [])
+				.concat(postPccResult.messages || []),
+		};
+	};
+
+	const execute = async () => {
+		let gds = stateful.gds;
+		let translated = translateCmd(dialect || gds, gds, cmdRq);
+		let cmdRqNorm = translated.cmd;
+
+		let callsLimit = stateful.getAgent().getUsageLimit();
+		if (callsLimit) {
+			let callsUsed = await Agents.getGdsDirectCallsUsed(stateful.getAgent().getId());
+			if (+callsUsed >= +callsLimit) {
+				return TooManyRequests('You exhausted your GDS Direct usage limit for today (' + callsUsed + ' >= ' + callsLimit + ')');
+			}
+		}
+		let whenCmsResult = processNormalized({
+			stateful, cmdRq: cmdRqNorm,
+		}).then(cmsResult => ({...cmsResult,
+			messages: (translated.messages || [])
+				.concat(cmsResult.messages || []),
+		})).then((rbsResult) => CmdResultAdapter({
+			cmdRq, gds: stateful.gds,
+			rbsResp: rbsResult,
+			fullState: stateful.getFullState(),
+		}));
+		whenCmsResult = extendActions({whenCmsResult, stateful});
+
+		return whenCmsResult;
+	};
+
+	return execute();
 };
 
 module.exports = ProcessTerminalInput;
