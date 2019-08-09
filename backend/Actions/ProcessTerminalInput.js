@@ -324,10 +324,6 @@ let ProcessTerminalInput = async ({
 		}).then(cmsResult => ({...cmsResult,
 			messages: (translated.messages || [])
 				.concat(cmsResult.messages || []),
-		})).then((rbsResult) => CmdResultAdapter({
-			cmdRq, gds: stateful.gds,
-			rbsResp: rbsResult,
-			fullState: stateful.getFullState(),
 		}));
 		whenCmsResult = extendActions({whenCmsResult, stateful});
 

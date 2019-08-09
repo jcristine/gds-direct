@@ -95,9 +95,14 @@ let runInSession = async (params) => {
 	let {session, rqBody} = params;
 	let whenCmdRqId = CmdRqLog.storeNew(rqBody, session);
 	let stateful = await initStateful({...params, whenCmdRqId});
+	let cmdRq = rqBody.command;
 	let whenCmsResult = ProcessTerminalInput({
-		stateful, cmdRq: rqBody.command, dialect: rqBody.language,
-	});
+		stateful, cmdRq, dialect: rqBody.language,
+	}).then((rbsResult) => CmdResultAdapter({
+		cmdRq, gds: stateful.gds,
+		rbsResp: rbsResult,
+		fullState: stateful.getFullState(),
+	}));
 	CmdRqLog.logProcess({params, whenCmdRqId, whenCmsResult});
 	return whenCmsResult.then(cmsResult => ({...cmsResult, session}));
 };
