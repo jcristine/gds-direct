@@ -2537,12 +2537,6 @@ class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
 			stubs: {
 				startSession: [
 					() => Rej.BadGateway('Http request to external service failed - 500 - /1ASIWTUTICO - <?xml version="1.0" encoding="UTF-8"?><soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/" xmlns:awsse="http://xml.amadeus.com/2010/06/Session_v3" xmlns:wsa="http://www.w3.org/2005/08/addressing"><soap:Header><wsa:To>http://www.w3.org/2005/08/addressing/anonymous</wsa:To><wsa:From><wsa:Address>https://nodeD1.production.webservices.amadeus.com/1ASIWTUTICO</wsa:Address></wsa:From><wsa:Action>http://webservices.amadeus.com/HSFREQ_07_3_1A</wsa:Action><wsa:MessageID>urn:uuid:something</wsa:MessageID><wsa:RelatesTo RelationshipType="http://www.w3.org/2005/08/addressing/reply">somethingElse</wsa:RelatesTo><awsse:Session TransactionStatusCode="End"><awsse:SessionId>0MP49ABYC3</awsse:SessionId><awsse:SequenceNumber>1</awsse:SequenceNumber><awsse:SecurityToken>someToken</awsse:SecurityToken></awsse:Session></soap:Header><soap:Body><soap:Fault><faultcode>soap:Client</faultcode><faultstring> 11|Session|</faultstring></soap:Fault></soap:Body></soap:Envelope>'),
-					() => Promise.resolve({
-						profileName: 'someProfile',
-						securityToken: 'someSecurityToken',
-						seqNumber: '1',
-						sessionId: 'someSessionId',
-					}),
 				],
 				runCmd: [
 					() => Promise.resolve({
@@ -2602,6 +2596,8 @@ class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
 		let actualOutput = await RunCmdRq({
 			stateful, cmdRq: input.cmdRequested, amadeusClient: amadeus,
 		}).catch(exc => ({error: exc + '', stack: (exc || {}).stack}));
+
+		this.assertEquals(1, stateful.getSessionData().cmdCnt);
 
 		this.assertArrayElementsSubset(output, actualOutput);
 

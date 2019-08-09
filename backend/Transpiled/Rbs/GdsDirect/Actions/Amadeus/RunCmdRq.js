@@ -826,9 +826,10 @@ class RunCmdRq {
 			silentErrors.push(e.message);
 
 			pcc = previousPcc;
-
-			areaState = await this.startNewAreaSession(stateful.getSessionData().area, pcc)
-				.catch(exc => this.constructor.formatGtlPccError(exc, pcc));
+			// This will force it to still keep using previously created session, all it
+			// all it needs for ensureConfigPcc to stop keep on calling change pcc is to
+			// set cmdCnt
+			areaState = state;
 		}
 
 		areaState.cmdCnt = 1;
