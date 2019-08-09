@@ -197,8 +197,10 @@ exports.addMpRemark = async ({rqBody, ...params}) => {
 	let {airline, gds} = rqBody;
 	let stateful = await StatefulSession.makeFromDb(params);
 	return AddMpRemark({stateful, airline})
-		.then(result => new CmdResultAdapter(gds)
-			.addHighlighting('MP', result));
+		.then(result => CmdResultAdapter({
+			cmdRq: 'MP', gds,
+			rbsResp: result,
+		}));
 };
 
 /**

@@ -1,5 +1,5 @@
 const AbstractMaskParser = require("../Transpiled/Gds/Parsers/Apollo/AbstractMaskParser");
-const TerminalService = require("../Transpiled/App/Services/CmdResultAdapter");
+const CmdResultAdapter = require("../Transpiled/App/Services/CmdResultAdapter.js");
 const {fetchAll} = require('../GdsHelpers/TravelportUtils.js');
 const StringUtil = require('../Transpiled/Lib/Utils/StringUtil.js');
 const McoListParser = require("../Transpiled/Gds/Parsers/Apollo/Mco/McoListParser");
@@ -66,13 +66,15 @@ let submitMask = async ({emptyMask, maskOutput, values, gdsSession, maskFields =
 	return result;
 };
 
-let makeMaskRs = (calledCommands, actions = []) => new TerminalService('apollo')
-	.addHighlighting('', {
+let makeMaskRs = (calledCommands, actions = []) => CmdResultAdapter({
+	cmdRq: '', gds: 'apollo',
+	rbsResp: {
 		calledCommands: calledCommands.map(cmdRec => ({
 			...cmdRec, tabCommands: TravelportUtils.extractTpTabCmds(cmdRec.output),
 		})),
 		actions: actions,
-	});
+	},
+});
 
 let getMcoFop = async (documentNumber, gdsSession) => {
 	let cmdRec = await fetchAll('*MPD', gdsSession);

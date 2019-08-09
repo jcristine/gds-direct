@@ -1,5 +1,5 @@
 const AbstractMaskParser = require("../../Transpiled/Gds/Parsers/Apollo/AbstractMaskParser");
-const TerminalService = require("../../Transpiled/App/Services/CmdResultAdapter");
+const CmdResultAdapter = require("../../Transpiled/App/Services/CmdResultAdapter.js");
 const {fetchAll} = require('../../GdsHelpers/TravelportUtils.js');
 const StringUtil = require('../../Transpiled/Lib/Utils/StringUtil.js');
 const TravelportUtils = require("../../GdsHelpers/TravelportUtils");
@@ -42,13 +42,15 @@ let NmeMaskSubmit = async ({maskOutput, values, gdsSession}) => {
 	return result;
 };
 
-let makeMaskRs = (calledCommands, actions = []) => new TerminalService('apollo')
-	.addHighlighting('', {
+let makeMaskRs = (calledCommands, actions = []) => CmdResultAdapter({
+	cmdRq: '', gds: 'apollo',
+	rbsResp: {
 		calledCommands: calledCommands.map(cmdRec => ({
 			...cmdRec, tabCommands: TravelportUtils.extractTpTabCmds(cmdRec.output),
 		})),
 		actions: actions,
-	});
+	},
+});
 
 NmeMaskSubmit.inputHhprMask = async ({rqBody, gdsSession}) => {
 	let maskOutput = rqBody.maskOutput;

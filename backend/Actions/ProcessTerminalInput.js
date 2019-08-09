@@ -17,7 +17,7 @@ const CommonDataHelper = require("../Transpiled/Rbs/GdsDirect/CommonDataHelper")
 const CmsSabreTerminal = require("../Transpiled/Rbs/GdsDirect/GdsInterface/CmsSabreTerminal");
 const CmsApolloTerminal = require("../Transpiled/Rbs/GdsDirect/GdsInterface/CmsApolloTerminal");
 const GdsDialectTranslator = require('../Transpiled/Rbs/GdsDirect/DialectTranslator/GdsDialectTranslator.js');
-const TerminalService = require('../Transpiled/App/Services/CmdResultAdapter.js');
+const CmdResultAdapter = require('../Transpiled/App/Services/CmdResultAdapter.js');
 const Agents = require("../Repositories/Agents");
 const GdsDirect = require("../Transpiled/Rbs/GdsDirect/GdsDirect");
 const Rej = require("klesun-node-tools/src/Rej");
@@ -323,10 +323,11 @@ let ProcessTerminalInput = async ({
 	}).then(cmsResult => ({...cmsResult,
 		messages: (translated.messages || [])
 			.concat(cmsResult.messages || []),
-	})).then((rbsResult) => {
-		let termSvc = new TerminalService(stateful.gds);
-		return termSvc.addHighlighting(cmdRq, rbsResult, stateful.getFullState());
-	});
+	})).then((rbsResult) => CmdResultAdapter({
+		cmdRq, gds: stateful.gds,
+		rbsResp: rbsResult,
+		fullState: stateful.getFullState(),
+	}));
 	whenCmsResult = extendActions({whenCmsResult, stateful});
 
 	return whenCmsResult;

@@ -3,7 +3,7 @@ const AbstractMaskParser = require("../../Transpiled/Gds/Parsers/Apollo/Abstract
 const {fetchAll} = require('../../GdsHelpers/TravelportUtils.js');
 const Rej = require('klesun-node-tools/src/Rej.js');
 const TravelportUtils = require("../../GdsHelpers/TravelportUtils");
-const TerminalService = require("../../Transpiled/App/Services/CmdResultAdapter");
+const CmdResultAdapter = require("../../Transpiled/App/Services/CmdResultAdapter.js");
 const TaScreenParser = require("../../Transpiled/Gds/Parsers/Apollo/ManualPricing/TaScreenParser");
 const StringUtil = require('../../Transpiled/Lib/Utils/StringUtil.js');
 const SubmitZpTaxBreakdownMask = require('./SubmitZpTaxBreakdownMask.js');
@@ -66,13 +66,15 @@ let parseOutput = (output) => {
 	}
 };
 
-let makeMaskRs = (calledCommands, actions = []) => new TerminalService('apollo')
-	.addHighlighting('', {
+let makeMaskRs = (calledCommands, actions = []) => CmdResultAdapter({
+	cmdRq: '', gds: 'apollo',
+	rbsResp: {
 		calledCommands: calledCommands.map(cmdRec => ({
 			...cmdRec, tabCommands: TravelportUtils.extractTpTabCmds(cmdRec.output),
 		})),
 		actions: actions,
-	});
+	},
+});
 
 let SubmitTaxBreakdownMask = async ({rqBody, gdsSession}) => {
 	let maskOutput = rqBody.maskOutput;
