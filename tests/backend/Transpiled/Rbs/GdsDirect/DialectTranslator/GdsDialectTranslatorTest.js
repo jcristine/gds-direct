@@ -614,8 +614,7 @@ class GdsDialectTranslatorTest extends require('../../../Lib/TestCase.js')
             ['sabre', 'apollo', '1S20SEPKIVMIA12AIST-960¥TK9U-V', 'A/V/20SEPKIVMIA12AIST960|TK.9U'],
             ['sabre', 'apollo', '1S20JUNSFOACC12ANYC-960¥/*S-V', 'A/V/20JUNSFOACC12ANYC960|/*S'],
             ['sabre', 'apollo', '1S14AUGKIVMOW/N¥9USU-V', 'A/V/14AUGKIVMOW/D|9U.SU'],
-            ['sabre', 'apollo', '1S20JUNLAXMNL12ASFO/SEA¥DL-8T', 'A/T8/20JUNLAXMNL12ASFO.SEA|DL'],
-            ['sabre', 'apollo', '1S20JUNLAXMNL12ASFO/SEA¥DL-8T/N¥', 'A/T8/20JUNLAXMNL12ASFO.SEA/D|DL'],
+            ['sabre', 'apollo', '1S20JUNLAXMNL12ASFO/SEA¥DL-8T'   , 'A/T8/20JUNLAXMNL12ASFO.SEA|DL'],
 
             ['apollo', 'sabre', 'X1|3|4/01Y|3J|4M', 'WC1Y/3J/4M'],
             ['apollo', 'sabre', 'X1|3|5', 'X1/3/5'],
@@ -3121,6 +3120,8 @@ class GdsDialectTranslatorTest extends require('../../../Lib/TestCase.js')
             ['apollo', 'sabre', 'HELP RD', 'RDHELP'],
             // should not cause null pointer exception
             ['apollo', 'sabre', 'X-12/0Y', null],
+            // should not translate pricing commands with unknown modifiers to FQ
+            ['apollo', 'galileo', '$B/+2CV4', null],
         ];
 
         return $tests;
