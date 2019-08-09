@@ -1,6 +1,5 @@
 const GdsSession = require('./GdsSession.js');
 const Rej = require('../../node_modules/klesun-node-tools/src/Rej.js');
-const GdsSessions = require("../Repositories/GdsSessions.js");
 const {NotImplemented, BadRequest, ServiceUnavailable, nonEmpty} = require("klesun-node-tools/src/Rej.js");
 const FluentLogger = require("../LibWrappers/FluentLogger.js");
 const LocationGeographyProvider = require('../Transpiled/Rbs/DataProviders/LocationGeographyProvider.js');
@@ -27,6 +26,7 @@ const sqlNow = require("klesun-node-tools/src/Utils/Misc.js").sqlNow;
 let StatefulSession = ({
 	session, emcUser, gdsSession, cmdLog, logit = () => {},
 	Db = require('../Utils/Db.js'),
+	GdsSessions = require("../Repositories/GdsSessions.js"),
 	leadIdToData = {},
 	askClient = null,
 	startDt = new Date().toISOString(),
@@ -131,6 +131,7 @@ let StatefulSession = ({
 StatefulSession.makeFromDb = async ({
 	session, whenCmdRqId, emcUser, askClient,
 	gdsSession = GdsSession({session}),
+	GdsSessions = require("../Repositories/GdsSessions.js"),
 }) => {
 	whenCmdRqId = whenCmdRqId || Promise.resolve(null);
 	let fullState = await GdsSessions.getFullState(session);
@@ -146,6 +147,7 @@ StatefulSession.makeFromDb = async ({
 	return StatefulSession({
 		session, emcUser, logit,
 		gdsSession, cmdLog, askClient,
+		GdsSessions,
 	});
 };
 
