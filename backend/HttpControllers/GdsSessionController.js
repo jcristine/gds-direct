@@ -217,13 +217,15 @@ exports.resetToDefaultPcc = async ({rqBody, session, emcUser}) => {
 	return {fullState};
 };
 
-let makeMaskRs = (calledCommands, actions = []) => new CmdResultAdapter('apollo')
-	.addHighlighting('', {
+let makeMaskRs = (calledCommands, actions = []) => CmdResultAdapter({
+	cmdRq: '', gds: 'apollo',
+	rbsResp: {
 		calledCommands: calledCommands.map(cmdRec => ({
 			...cmdRec, tabCommands: TravelportUtils.extractTpTabCmds(cmdRec.output),
 		})),
 		actions: actions,
-	});
+	},
+});
 
 exports.makeMco = async ({rqBody, session, emcUser}) => {
 	let mcoData = {};
