@@ -95,7 +95,9 @@ let runInSession = async (params) => {
 	let {session, rqBody} = params;
 	let whenCmdRqId = CmdRqLog.storeNew(rqBody, session);
 	let stateful = await initStateful({...params, whenCmdRqId});
-	let whenCmsResult = ProcessTerminalInput({stateful, session, rqBody});
+	let whenCmsResult = ProcessTerminalInput({
+		stateful, cmdRq: rqBody.command, dialect: rqBody.language,
+	});
 	CmdRqLog.logProcess({params, whenCmdRqId, whenCmsResult});
 	return whenCmsResult.then(cmsResult => ({...cmsResult, session}));
 };

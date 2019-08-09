@@ -3,12 +3,8 @@ const TravelportClient = require('../GdsClients/TravelportClient.js');
 const GdsSession = require('../GdsHelpers/GdsSession.js');
 const AddMpRemark = require('./AddMpRemark.js');
 const GetCurrentPnr = require('./GetCurrentPnr.js');
-const Debug = require('klesun-node-tools/src/Debug.js');
-const LocalDiag = require('../Repositories/LocalDiag.js');
-const RbsClient = require('../IqClients/RbsClient.js');
 
 let {fetchAll, wrap, extractTpTabCmds} = require('../GdsHelpers/TravelportUtils.js');
-const StatefulSession = require("../GdsHelpers/StatefulSession.js");
 const AreaSettings = require("../Repositories/AreaSettings");
 const ApoRunCmdRq = require("../Transpiled/Rbs/GdsDirect/Actions/Apollo/RunCmdRq.js");
 const SabRunCmdRq = require("../Transpiled/Rbs/GdsDirect/Actions/Sabre/RunCmdRq.js");
@@ -22,20 +18,14 @@ const CmsSabreTerminal = require("../Transpiled/Rbs/GdsDirect/GdsInterface/CmsSa
 const CmsApolloTerminal = require("../Transpiled/Rbs/GdsDirect/GdsInterface/CmsApolloTerminal");
 const GdsDialectTranslator = require('../Transpiled/Rbs/GdsDirect/DialectTranslator/GdsDialectTranslator.js');
 const TerminalService = require('../Transpiled/App/Services/CmdResultAdapter.js');
-const TerminalBuffering = require("../Repositories/CmdRqLog");
 const Agents = require("../Repositories/Agents");
 const GdsDirect = require("../Transpiled/Rbs/GdsDirect/GdsDirect");
 const Rej = require("klesun-node-tools/src/Rej");
 const TerminalSettings = require("../Transpiled/App/Models/Terminal/TerminalSettings");
 const CommandCorrector = require("../Transpiled/Rbs/GdsDirect/DialectTranslator/CommandCorrector");
 const AliasParser = require("../Transpiled/Rbs/GdsDirect/AliasParser");
-const GdsSessions = require("../Repositories/GdsSessions");
-const CmsClient = require("../IqClients/CmsClient");
-const BadRequest = require("klesun-node-tools/src/Rej").BadRequest;
 const TooManyRequests = require("klesun-node-tools/src/Rej").TooManyRequests;
 const NotImplemented = require("klesun-node-tools/src/Rej").NotImplemented;
-const Db = require('../Utils/Db.js');
-const {coverExc} = require('klesun-node-tools/src/Lang.js');
 const {hrtimeToDecimal} = require('klesun-node-tools/src/Utils/Misc.js');
 const _ = require('lodash');
 
@@ -314,12 +304,11 @@ let extendActions = async ({whenCmsResult, stateful}) => {
  * @param session = at('GdsSessions.js').makeSessionRecord()
  * @param {{command: '*R'}} rqBody = at('MainController.js').normalizeRqBody()
  */
-let ProcessTerminalInput = async (params) => {
-	let {stateful, session, rqBody} = params;
-	let cmdRq = rqBody.command;
-	let gds = session.context.gds;
-	let dialect = rqBody.language || gds;
-	let translated = translateCmd(dialect, gds, cmdRq);
+let ProcessTerminalInput = async ({
+	stateful, cmdRq, dialect = null,
+}) => {
+	let gds = stateful.gds;
+	let translated = translateCmd(dialect || gds, gds, cmdRq);
 	let cmdRqNorm = translated.cmd;
 
 	let callsLimit = stateful.getAgent().getUsageLimit();
