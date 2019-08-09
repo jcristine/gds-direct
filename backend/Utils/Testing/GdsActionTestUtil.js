@@ -26,7 +26,7 @@ exports.testGdsAction = async (unit, $testCase, $getActual) => {
 };
 
 exports.testHttpGdsAction = async ({unit, testCase, getActual}) => {
-	let {input, sessionInfo, output, httpRequests} = testCase;
+	let {input, fullState, output, httpRequests} = testCase;
 	let PersistentHttpRq = PersistentHttpRqStub(httpRequests);
 	let travelport = TravelportClient({
 		PersistentHttpRq,
@@ -41,8 +41,9 @@ exports.testHttpGdsAction = async ({unit, testCase, getActual}) => {
 		sessionToken: 'soap-unit-test-blabla-123',
 	};
 	let stateful = GdsDirectDefaults.makeStatefulSessionCustom({
+		fullState,
 		session: {
-			context: {gds: sessionInfo.gds, travelRequestId: null},
+			context: {gds: fullState.gds, travelRequestId: null},
 			gdsData: gdsData,
 		},
 		gdsSession: {runCmd: cmd => travelport.runCmd({command: cmd}, gdsData)},
