@@ -76,6 +76,9 @@ const formatOutput = async ({
  * takes terminal command result in generic any-GDS
  * format and transforms it to the format frontend expects
  *
+ * would be nice to move this format transformation
+ * and highlighting to frontend at some point...
+ *
  * @param {String} cmdRq - the command entered by agent; if it matches
  *  the actually called command, the latter won't be included in final output
  * @param {{
