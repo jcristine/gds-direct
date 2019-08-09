@@ -248,6 +248,7 @@ class CommandCorrector {
 				{mistake: 'MMD', correct: 'MD'},
 				{mistake: 'MMDA', correct: 'MDA'},
 				{mistake: 'PRICELAL', correct: 'PRICEALL'},
+				{mistake: 'PRICEALLJCB', correct: 'PRICEJCB'},
 				{mistake: 'PRICEALL*JCB', correct: 'PRICEJCB'},
 				{mistake: 'PRICEALL*JC', correct: 'PRICEJCB'},
 				{mistake: 'PRICECJB', correct: 'PRICEJCB'},
