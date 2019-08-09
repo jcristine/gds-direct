@@ -1044,7 +1044,7 @@ const patternList = [
 	// Get distance between cities
 	{
 		'apollo': 'M*{city}{city}',
-		'sabre': 'W/-AT{city}¥{city}',
+		'sabre': 'W/-AT{city}¥AT{city}',
 	},
 	// Help Availability
 	{

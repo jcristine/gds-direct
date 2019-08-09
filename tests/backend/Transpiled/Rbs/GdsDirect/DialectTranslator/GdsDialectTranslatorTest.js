@@ -3121,7 +3121,7 @@ class GdsDialectTranslatorTest extends require('../../../Lib/TestCase.js')
             ['apollo', 'sabre', 'HELP RD', 'RDHELP'],
             // should not cause null pointer exception
             ['apollo', 'sabre', 'X-12/0Y', null],
-            ['apollo', 'sabre', 'M*FWYESB', 'W/-ATFWY¥ESB'],
+            ['apollo', 'sabre', 'M*FWYESB', 'W/-ATFWY¥ATESB'],
         ];
 
         return $tests;
