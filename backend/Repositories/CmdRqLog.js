@@ -100,3 +100,11 @@ exports.getById = (id) => {
 		where: [['id', '=', id]],
 	}));
 };
+
+exports.getBySession = (sessionId) => {
+	return Db.with(db => db.fetchAll({
+		table: 'cmd_rq_log',
+		where: [['sessionId', '=', sessionId]],
+		orderBy: 'id ASC',
+	}));
+};

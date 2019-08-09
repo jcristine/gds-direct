@@ -366,27 +366,8 @@ exports.getLastCommands = (reqBody, emcResult) => {
 	});
 };
 
-/** @param {IEmcResult} emcResult */
 exports.getCmdRqList = (reqBody, emcResult) => {
-	if (!emcResult.user.roles.includes('NEW_GDS_DIRECT_DEV_ACCESS')) {
-		return Forbidden('You do not have dev access role');
-	}
-	let sessionId = reqBody.sessionId;
-	return Db.with(db => db.fetchAll({
-		// TODO: move to CmdRqLog.js
-		table: 'cmd_rq_log',
-		where: [['sessionId', '=', sessionId]],
-		orderBy: 'id ASC',
-	})).then(rows => {
-		let records = rows.map(row => ({
-			id: row.id,
-			dialect: row.dialect,
-			processedTime: row.processedTime,
-			command: row.command,
-			requestTimestamp: row.requestTimestamp,
-		}));
-		return {records};
-	});
+	return CmdRqLog.getBySession(reqBody.sessionId);
 };
 
 exports.clearBuffer = (rqBody, emcResult) => {
