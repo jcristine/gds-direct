@@ -263,63 +263,6 @@ let ensureConfigPcc = async (stateful) => {
 	return {calledCommands: [], messages: []};
 };
 
-let countsAsActivity = (prevRqCmd, rqCmd) => {
-	let repeatAllowed = ['MD', 'MU', 'A*', '1*'];
-	if (!prevRqCmd || repeatAllowed.includes(rqCmd)) {
-		return true;
-	} else {
-		// calling *R *R *R *R ... for hours should not count as activity
-		return prevRqCmd !== rqCmd;
-	}
-};
-
-let handleCmsExc = (exc) => {
-	let type = null;
-	let data = Debug.getExcData(exc);
-	let excStr = (exc + '').slice(0, 2000);
-	if (excStr.match(/504 Gateway Time-out/)) {
-		type = LocalDiag.types.REPORT_CMD_CALLED_RQ_TIMEOUT;
-	} else if (excStr.match(/405 Not Allowed/)) {
-		type = LocalDiag.types.REPORT_CMD_CALLED_RQ_NOT_ALLOWED;
-	} else if (excStr.match(/Internal service error/)) {
-		type = LocalDiag.types.REPORT_CMD_CALLED_RQ_INTERNAL_SERVICE_ERROR;
-	}
-	if (type) {
-		return LocalDiag({type, data});
-	} else {
-		return Promise.reject(exc);
-	}
-};
-
-let logRqCmd = async ({params, whenCmdRqId, whenCmsResult}) => {
-	let {session, rqBody, emcUser} = params;
-	let calledDtObj = new Date();
-	let cmsResult = await whenCmsResult
-		.catch(coverExc(Rej.list, exc => Rej.NoContent('Cmd Failed', exc)));
-	TerminalBuffering.logOutput(rqBody, session, whenCmdRqId, cmsResult.output);
-	GdsSessions.updateUserAccessTime(session);
-	let duration = ((Date.now() - calledDtObj.getTime()) / 1000).toFixed(3);
-	return whenCmdRqId.then(async cmdRqId => {
-		let prevCmdRqRow = await Db.with(db => db.fetchOne({
-			table: 'cmd_rq_log',
-			where: [
-				['id', '<', cmdRqId],
-				['sessionId', '=', session.id],
-			],
-			orderBy: [['id', 'DESC']],
-		})).catch(exc => null);
-
-		if (prevCmdRqRow && countsAsActivity(prevCmdRqRow.command, rqBody.command)) {
-			return CmsClient.reportCmdCalled({
-				cmd: rqBody.command,
-				agentId: emcUser.id,
-				calledDt: calledDtObj.toISOString(),
-				duration: duration,
-			}).catch(coverExc([Rej.BadGateway], handleCmsExc));
-		}
-	});
-};
-
 let processNormalized = async ({stateful, cmdRq}) => {
 	let prePccResult = await ensureConfigPcc(stateful);
 	let rbsResult = await runCmdRq(cmdRq, stateful);
@@ -365,17 +308,6 @@ let extendActions = async ({whenCmsResult, stateful}) => {
 	return result;
 };
 
-let initStateful = async (params) => {
-	let stateful = await StatefulSession.makeFromDb(params);
-	stateful.addPnrSaveHandler(recordLocator => RbsClient.reportCreatedPnr({
-		recordLocator: recordLocator,
-		gds: params.session.context.gds,
-		pcc: stateful.getSessionData().pcc,
-		agentId: params.session.context.agentId,
-	}));
-	return stateful;
-};
-
 /**
  * auto-correct typos in the command, convert it between
  * GDS dialects, run _alias_ chain of commands, etc...
@@ -383,9 +315,7 @@ let initStateful = async (params) => {
  * @param {{command: '*R'}} rqBody = at('MainController.js').normalizeRqBody()
  */
 let ProcessTerminalInput = async (params) => {
-	let {session, rqBody} = params;
-	let whenCmdRqId = TerminalBuffering.storeNew(rqBody, session);
-	let stateful = await initStateful({...params, whenCmdRqId});
+	let {stateful, session, rqBody} = params;
 	let cmdRq = rqBody.command;
 	let gds = session.context.gds;
 	let dialect = rqBody.language || gds;
@@ -409,7 +339,6 @@ let ProcessTerminalInput = async (params) => {
 		return termSvc.addHighlighting(cmdRq, rbsResult, stateful.getFullState());
 	});
 	whenCmsResult = extendActions({whenCmsResult, stateful});
-	logRqCmd({params, whenCmdRqId, whenCmsResult});
 
 	return whenCmsResult;
 };

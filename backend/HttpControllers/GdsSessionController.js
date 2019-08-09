@@ -1,3 +1,5 @@
+const CmdRqLog = require('../Repositories/CmdRqLog.js');
+const RbsClient = require('../IqClients/RbsClient.js');
 const GdsSession = require('../GdsHelpers/GdsSession.js');
 const AddMpRemark = require('../Actions/AddMpRemark.js');
 let AmadeusClient = require("../GdsClients/AmadeusClient.js");
@@ -78,12 +80,24 @@ let shouldRestart = (exc, session) => {
 		|| lifetimeMs > 60 * 60 * 1000;
 };
 
-let runInSession = (params) => {
-	let {session, rqBody, emcUser} = params;
-	let running;
-	running = ProcessTerminalInput(params);
-	GdsSessions.updateAccessTime(session);
-	return running.then(cmsResult => ({...cmsResult, session}));
+let initStateful = async (params) => {
+	let stateful = await StatefulSession.makeFromDb(params);
+	stateful.addPnrSaveHandler(recordLocator => RbsClient.reportCreatedPnr({
+		recordLocator: recordLocator,
+		gds: params.session.context.gds,
+		pcc: stateful.getSessionData().pcc,
+		agentId: params.session.context.agentId,
+	}));
+	return stateful;
+};
+
+let runInSession = async (params) => {
+	let {session, rqBody} = params;
+	let whenCmdRqId = CmdRqLog.storeNew(rqBody, session);
+	let stateful = await initStateful({...params, whenCmdRqId});
+	let whenCmsResult = ProcessTerminalInput({stateful, session, rqBody});
+	CmdRqLog.logProcess({params, whenCmdRqId, whenCmsResult});
+	return whenCmsResult.then(cmsResult => ({...cmsResult, session}));
 };
 
 /** @param rqBody = at('WebRoutes.js').normalizeRqBody() */
