@@ -19,7 +19,7 @@ exports.storeNew = (rqBody, session) => {
 		.then(nonEmpty('Failed to get insert id of cmd RQ from DB'));
 };
 
-/** @param running = require('TerminalService.js').addHighlighting() */
+/** @param running = require('CmdResultAdapter.js')() */
 const logOutput = async (rqBody, session, whenCmdRqId, output) => {
 	let cmdRqId = await whenCmdRqId;
 	let responseTimestamp = Math.floor(new Date().getTime() / 1000);

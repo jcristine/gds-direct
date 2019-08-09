@@ -27,7 +27,6 @@ const sqlNow = require("klesun-node-tools/src/Utils/Misc.js").sqlNow;
 let StatefulSession = ({
 	session, emcUser, gdsSession, cmdLog, logit = () => {},
 	Db = require('../Utils/Db.js'),
-	CmdLogs = require('../Repositories/CmdLogs.js'),
 	leadIdToData = {},
 	askClient = null,
 	startDt = new Date().toISOString(),
