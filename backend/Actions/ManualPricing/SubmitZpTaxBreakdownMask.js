@@ -2,8 +2,7 @@
 const AbstractMaskParser = require("../../Transpiled/Gds/Parsers/Apollo/AbstractMaskParser");
 const {fetchAll} = require('../../GdsHelpers/TravelportUtils.js');
 const Rej = require('klesun-node-tools/src/Rej.js');
-const TravelportUtils = require("../../GdsHelpers/TravelportUtils");
-const CmdResultAdapter = require("../../Transpiled/App/Services/CmdResultAdapter.js");
+const {makeMaskRs} = require('./TpMaskUtils.js');
 
 let POSITIONS = AbstractMaskParser.getPositionsBy('_', [
 	"$ZP U.S. FLIGHT SEGMENT TAX BREAKDOWN SCREEN                   ",
@@ -55,16 +54,6 @@ let parseOutput = (output) => {
 	}
 };
 
-let makeMaskRs = (calledCommands, actions = []) => CmdResultAdapter({
-	cmdRq: '', gds: 'apollo',
-	rbsResp: {
-		calledCommands: calledCommands.map(cmdRec => ({
-			...cmdRec, tabCommands: TravelportUtils.extractTpTabCmds(cmdRec.output),
-		})),
-		actions: actions,
-	},
-});
-
 let SubmitTaxBreakdownMask = async ({rqBody, gdsSession}) => {
 	let maskOutput = rqBody.maskOutput;
 	let values = {};
@@ -76,7 +65,7 @@ let SubmitTaxBreakdownMask = async ({rqBody, gdsSession}) => {
 	let cmd = await AbstractMaskParser.makeCmd({
 		positions: POSITIONS,
 		destinationMask: destinationMask,
-		fields: FIELDS, values
+		fields: FIELDS, values,
 	});
 	let cmdRec = await fetchAll(cmd, gdsSession);
 	let result = parseOutput(cmdRec.output);

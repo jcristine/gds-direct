@@ -1,5 +1,4 @@
 const AbstractMaskParser = require("../Transpiled/Gds/Parsers/Apollo/AbstractMaskParser");
-const CmdResultAdapter = require("../Transpiled/App/Services/CmdResultAdapter.js");
 const {fetchAll} = require('../GdsHelpers/TravelportUtils.js');
 const StringUtil = require('../Transpiled/Lib/Utils/StringUtil.js');
 const McoListParser = require("../Transpiled/Gds/Parsers/Apollo/Mco/McoListParser");
@@ -8,7 +7,7 @@ const {UnprocessableEntity, BadRequest} = require('klesun-node-tools/src/Rej.js'
 const ParseHbFex = require('../Parsers/Apollo/ParseHbFex.js');
 const SessionStateHelper = require('../Transpiled/Rbs/GdsDirect/SessionStateProcessor/SessionStateHelper.js');
 const Rej = require("klesun-node-tools/src/Rej");
-const TravelportUtils = require("../GdsHelpers/TravelportUtils");
+const {makeMaskRs} = require('./ManualPricing/TpMaskUtils.js');
 
 let parseOutput = (output) => {
 	let match;
@@ -65,16 +64,6 @@ let submitMask = async ({emptyMask, maskOutput, values, gdsSession, maskFields =
 
 	return result;
 };
-
-let makeMaskRs = (calledCommands, actions = []) => CmdResultAdapter({
-	cmdRq: '', gds: 'apollo',
-	rbsResp: {
-		calledCommands: calledCommands.map(cmdRec => ({
-			...cmdRec, tabCommands: TravelportUtils.extractTpTabCmds(cmdRec.output),
-		})),
-		actions: actions,
-	},
-});
 
 let getMcoFop = async (documentNumber, gdsSession) => {
 	let cmdRec = await fetchAll('*MPD', gdsSession);

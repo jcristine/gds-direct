@@ -1,3 +1,4 @@
+const MaskFormUtils = require('../Actions/ManualPricing/TpMaskUtils.js');
 const CmdRqLog = require('../Repositories/CmdRqLog.js');
 const RbsClient = require('../IqClients/RbsClient.js');
 const GdsSession = require('../GdsHelpers/GdsSession.js');
@@ -25,7 +26,6 @@ const {getConfig} = require('../Config.js');
 const ExchangeApolloTicket = require('../Actions/ExchangeApolloTicket.js');
 const PriceItineraryManually = require('../Actions/ManualPricing/NmeMaskSubmit.js');
 const Rej = require("klesun-node-tools/src/Rej");
-const TravelportUtils = require("../GdsHelpers/TravelportUtils");
 const SubmitTaxBreakdownMask = require('../Actions/ManualPricing/SubmitTaxBreakdownMask.js');
 const SubmitZpTaxBreakdownMask = require('../Actions/ManualPricing/SubmitZpTaxBreakdownMask.js');
 const SubmitFcMask = require('../Actions/ManualPricing/FcMaskSubmit.js');
@@ -217,16 +217,6 @@ exports.resetToDefaultPcc = async ({rqBody, session, emcUser}) => {
 	return {fullState};
 };
 
-let makeMaskRs = (calledCommands, actions = []) => CmdResultAdapter({
-	cmdRq: '', gds: 'apollo',
-	rbsResp: {
-		calledCommands: calledCommands.map(cmdRec => ({
-			...cmdRec, tabCommands: TravelportUtils.extractTpTabCmds(cmdRec.output),
-		})),
-		actions: actions,
-	},
-});
-
 exports.makeMco = async ({rqBody, session, emcUser}) => {
 	let mcoData = {};
 	for (let {key, value} of rqBody.fields) {
@@ -239,7 +229,7 @@ exports.makeMco = async ({rqBody, session, emcUser}) => {
 	let mcoResult = await (new MakeMcoApolloAction())
 		.setSession(stateful).execute(mcoData);
 
-	return makeMaskRs(mcoResult.calledCommands);
+	return MaskFormUtils.makeMaskRs(mcoResult.calledCommands);
 };
 
 exports.exchangeTicket = async ({rqBody, session, emcUser}) => {

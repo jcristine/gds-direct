@@ -2,12 +2,11 @@
 const AbstractMaskParser = require("../../Transpiled/Gds/Parsers/Apollo/AbstractMaskParser");
 const {fetchAll} = require('../../GdsHelpers/TravelportUtils.js');
 const Rej = require('klesun-node-tools/src/Rej.js');
-const TravelportUtils = require("../../GdsHelpers/TravelportUtils");
-const CmdResultAdapter = require("../../Transpiled/App/Services/CmdResultAdapter.js");
 const TaScreenParser = require("../../Transpiled/Gds/Parsers/Apollo/ManualPricing/TaScreenParser");
 const StringUtil = require('../../Transpiled/Lib/Utils/StringUtil.js');
 const SubmitZpTaxBreakdownMask = require('./SubmitZpTaxBreakdownMask.js');
 const EndManualPricing = require('./EndManualPricing.js');
+const {makeMaskRs} = require('./TpMaskUtils.js');
 
 let POSITIONS = AbstractMaskParser.getPositionsBy('_', [
 	"$TA                TAX BREAKDOWN SCREEN                        ",
@@ -65,16 +64,6 @@ let parseOutput = (output) => {
 		return {status: 'error'};
 	}
 };
-
-let makeMaskRs = (calledCommands, actions = []) => CmdResultAdapter({
-	cmdRq: '', gds: 'apollo',
-	rbsResp: {
-		calledCommands: calledCommands.map(cmdRec => ({
-			...cmdRec, tabCommands: TravelportUtils.extractTpTabCmds(cmdRec.output),
-		})),
-		actions: actions,
-	},
-});
 
 let SubmitTaxBreakdownMask = async ({rqBody, gdsSession}) => {
 	let maskOutput = rqBody.maskOutput;

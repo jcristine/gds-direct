@@ -1,11 +1,10 @@
 const AbstractMaskParser = require("../../Transpiled/Gds/Parsers/Apollo/AbstractMaskParser");
-const CmdResultAdapter = require("../../Transpiled/App/Services/CmdResultAdapter.js");
 const {fetchAll} = require('../../GdsHelpers/TravelportUtils.js');
 const StringUtil = require('../../Transpiled/Lib/Utils/StringUtil.js');
-const TravelportUtils = require("../../GdsHelpers/TravelportUtils");
 const Rej = require('klesun-node-tools/src/Rej.js');
 const SubmitTaxBreakdownMask = require("./SubmitTaxBreakdownMask");
 const {parse, POSITIONS, FIELDS} = require('./NmeMaskParser.js');
+const {makeMaskRs} = require('./TpMaskUtils.js');
 
 let parseOutput = (output) => {
 	if (output.trim() === '*') {
@@ -41,16 +40,6 @@ let NmeMaskSubmit = async ({maskOutput, values, gdsSession}) => {
 
 	return result;
 };
-
-let makeMaskRs = (calledCommands, actions = []) => CmdResultAdapter({
-	cmdRq: '', gds: 'apollo',
-	rbsResp: {
-		calledCommands: calledCommands.map(cmdRec => ({
-			...cmdRec, tabCommands: TravelportUtils.extractTpTabCmds(cmdRec.output),
-		})),
-		actions: actions,
-	},
-});
 
 NmeMaskSubmit.inputHhprMask = async ({rqBody, gdsSession}) => {
 	let maskOutput = rqBody.maskOutput;
