@@ -1,7 +1,6 @@
 const GdsSessions = require('../Repositories/GdsSessions.js');
 const GdsProfiles = require('../Repositories/GdsProfiles.js');
 let {TRAVELPORT, AMADEUS, SABRE} = GdsProfiles;
-const PersistentHttpRq = require('../../node_modules/klesun-node-tools/src/Utils/PersistentHttpRq.js');
 const MaskUtil = require('../Transpiled/Lib/Utils/MaskUtil.js');
 const FluentLogger = require('../LibWrappers/FluentLogger.js');
 
@@ -56,7 +55,10 @@ const maskRqBody = (rqBody, gds) => {
 	return rqBody;
 };
 
-const initHttpRqFor = ({logId, gds}) => (params) => {
+const initHttpRqFor = ({
+	logId, gds,
+	PersistentHttpRq = require('klesun-node-tools/src/Utils/PersistentHttpRq.js'),
+}) => (params) => {
 	let whenResult = PersistentHttpRq(params);
 	let logit = (msg, data) => {
 		let masked = MaskUtil.maskCcNumbers(data);
@@ -93,18 +95,22 @@ const initHttpRq = (session) => initHttpRqFor({
  *
  * @param session = at('GdsSessions.js').makeSessionRecord()
  */
-const GdsSession = ({session}) => {
+const GdsSession = ({
+	session,
+	PersistentHttpRq = require('klesun-node-tools/src/Utils/PersistentHttpRq.js'),
+	GdsProfiles = require('../Repositories/GdsProfiles.js'),
+}) => {
 	let gds = session.context.gds;
-	let httpRq = GdsSession.initHttpRq(session);
+	let httpRq = initHttpRqFor({gds, logId: session.logId, PersistentHttpRq});
 	let runByGds = (cmd) => {
 		if (['apollo', 'galileo'].includes(gds)) {
-			let travelport = TravelportClient({PersistentHttpRq: httpRq});
+			let travelport = TravelportClient({PersistentHttpRq: httpRq, GdsProfiles});
 			return travelport.runCmd({command: cmd}, session.gdsData);
 		} else if (gds === 'amadeus') {
-			let amadeus = AmadeusClient.makeCustom({PersistentHttpRq: httpRq});
+			let amadeus = AmadeusClient.makeCustom({PersistentHttpRq: httpRq, GdsProfiles});
 			return amadeus.runCmd({command: cmd}, session.gdsData);
 		} else if (gds === 'sabre') {
-			let sabre = SabreClient.makeCustom({PersistentHttpRq: httpRq});
+			let sabre = SabreClient.makeCustom({PersistentHttpRq: httpRq, GdsProfiles});
 			return sabre.runCmd({command: cmd}, session.gdsData);
 		} else {
 			return Rej.NotImplemented('Unsupported stateful GDS - ' + gds);
