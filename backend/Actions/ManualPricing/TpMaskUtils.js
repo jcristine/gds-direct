@@ -3,7 +3,8 @@ const TravelportUtils = require('../../GdsHelpers/TravelportUtils.js');
 const CmdResultAdapter = require('../../Transpiled/App/Services/CmdResultAdapter.js');
 
 /**
- * @module - could eventually move stuff from AbstractMaskParser.js here...
+ * @module - "TP" stands for "Travelport"
+ * could eventually move stuff from AbstractMaskParser.js here...
  */
 
 exports.makeMaskRs = (calledCommands, actions = []) => CmdResultAdapter({
