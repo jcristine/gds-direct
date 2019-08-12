@@ -25,24 +25,24 @@ const color =  ($string, $class) => {
 	return $string;
 };
 
+const clearOutput =  ($output) => {
+	$output = rtrim(preg_replace(/(\)><|><)$/, '', $output));
+	return $output;
+};
+
 /** Append output by custom strings */
 const appendOutput = ($output, $messages) => {
 	return $output + ($messages || []).reduce((acc, message) => {
 		if(message.type === 'error') {
-			acc += PHP_EOL + this.highlightError(message.text);
+			acc += PHP_EOL + highlightError(message.text);
 		}
 
 		if(message.type === 'info') {
-			acc += PHP_EOL + this.highlightWarning(message.text);
+			acc += PHP_EOL + highlightWarning(message.text);
 		}
 
 		return acc;
 	}, '');
-};
-
-const clearOutput =  ($output) => {
-	$output = rtrim(preg_replace(/(\)><|><)$/, '', $output));
-	return $output;
 };
 
 const formatOutput = async ({
