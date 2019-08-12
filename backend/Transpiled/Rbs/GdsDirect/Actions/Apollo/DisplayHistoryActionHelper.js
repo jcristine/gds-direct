@@ -1,7 +1,7 @@
 
 const StringUtil = require('../../../../Lib/Utils/StringUtil.js');
 
-let php = require('../../../../phpDeprecated.js');
+let php = require('klesun-node-tools/src/Transpiled/php.js');
 
 class DisplayHistoryActionHelper {
 	static getStatusLabel($status) {
@@ -79,7 +79,7 @@ class DisplayHistoryActionHelper {
 
 	static displayHistoricalSegment($number, $segment) {
 		let $pattern, $data;
-		$pattern = '## AAFFFFB DDDDD PPPSSS TT\/UUN  IIIII JJJJJ+* MM';
+		$pattern = '## AAFFFFB DDDDD PPPSSS TT/UUN  IIIII JJJJJ+* MM';
 		$data = {
 			'#': [$number, 'right'],
 			'A': [$segment['airline'], 'right'],
@@ -91,8 +91,8 @@ class DisplayHistoryActionHelper {
 			'T': [$segment['segmentStatusWas'], 'right'],
 			'U': [$segment['segmentStatusBecame'], 'right'],
 			'N': [$segment['seatCount'], 'left'],
-			'I': [$segment['departureTime']['raw'], 'right'],
-			'J': [$segment['destinationTime']['raw'], 'right'],
+			'I': [($segment['departureTime'] || {})['raw'] || '', 'right'],
+			'J': [($segment['destinationTime'] || {})['raw'] || '', 'right'],
 			'+': [' ', 'right'], // TODO
 			'*': [$segment['confirmedByAirline'], 'right'],
 			'M': [$segment['marriage'], 'right'],
@@ -102,7 +102,7 @@ class DisplayHistoryActionHelper {
 
 	static displaySegment($number, $segment, $action) {
 		let $pattern, $data;
-		$pattern = '   AAFFFFB DDDDD PPPSSS TT\/UUN IIIII JJJJJ+* ';
+		$pattern = '   AAFFFFB DDDDD PPPSSS TT/UUN IIIII JJJJJ+* ';
 		$data = {
 			'A': [$segment['airline'], 'right'],
 			'F': [$segment['flightNumber'], 'right'],
@@ -113,8 +113,8 @@ class DisplayHistoryActionHelper {
 			'T': [$segment['segmentStatusWas'], 'right'],
 			'U': [$segment['segmentStatusBecame'], 'right'],
 			'N': [$segment['seatCount'], 'left'],
-			'I': [($segment['departureTime'] || '')['raw'], 'right'],
-			'J': [($segment['destinationTime'] || '')['raw'], 'right'],
+			'I': [($segment['departureTime'] || {})['raw'] || '', 'right'],
+			'J': [($segment['destinationTime'] || {})['raw'] || '', 'right'],
 			'+': [' ', 'right'], // TODO
 			'*': [$segment['confirmedByAirline'], 'right'],
 		};

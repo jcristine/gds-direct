@@ -111,6 +111,56 @@ const provide_call = () => {
 		],
 	});
 
+	testCases.push({
+		title: '*HA unsupported format - should not cause null-pointer exception',
+		input: {
+			cmdRq: '*HA',
+		},
+		output: {
+			status: 'executed',
+			calledCommands: [{
+				cmd: '*HA',
+				output: [
+				    "     *****  AIR  HISTORY  *****",
+				    " ",
+				    " ",
+				    "29MAY / 22:17 UTC. BY: RASMUS. PCC: 1O3K. HISTORICAL SEGMENTS",
+				    "",
+				    " 1 HX   2Y 01SEP ACUMNA GK/GK1               ",
+				    " ",
+				    "**********************************************************",
+				    " ",
+				    "29MAY / 22:19 UTC. BY: RASMUS. PCC: 1O3K. ",
+				    "",
+				    "   HX   2Y 01SEP ACUMNA GK/GK1              - CANCELLED SEGMENT",
+				    " ",
+				    "**********************************************************",
+				    " ",
+				].join("\n"),
+			}],
+		},
+		httpRequests: [
+			{
+			   "cmd": "*HA",
+			   "rq": [
+				   "<?xml version=\"1.0\" encoding=\"UTF-8\"?>",
+				   "\t<SOAP-ENV:Envelope xmlns:SOAP-ENV=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:ns1=\"http://webservices.galileo.com\"><SOAP-ENV:Body><ns1:SubmitTerminalTransaction><ns1:Token>soap-unit-test-blabla-123</ns1:Token><ns1:Request>*HA</ns1:Request><ns1:IntermediateResponse></ns1:IntermediateResponse></ns1:SubmitTerminalTransaction></SOAP-ENV:Body></SOAP-ENV:Envelope>",
+			   ].join("\n"),
+			   "rs": [
+				   "<?xml version=\"1.0\" encoding=\"UTF-8\"?>",
+				   "<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">",
+				   " <soapenv:Body><SubmitTerminalTransactionResponse xmlns=\"http://webservices.galileo.com\"><SubmitTerminalTransactionResult USM=\"false\">     *****  AIR  HISTORY  *****",
+				   "XS HX   2 Y01SEP ACUMNA GK/GK1  ",
+				   "RCVD-RASMUS/ZDPBVWS -CR- QSB/1O3K/1V AG WS 29MAY2219Z",
+				   "HS HX   2 Y01SEP ACUMNA GK/GK1  ",
+				   "RCVD-RASMUS/ZDPBVWS -CR- QSB/1O3K/1V AG WS 29MAY2217Z",
+				   "&gt;&lt;</SubmitTerminalTransactionResult></SubmitTerminalTransactionResponse> </soapenv:Body>",
+				   "</soapenv:Envelope>",
+			   ].join("\n"),
+		   },
+		],
+	});
+
 	return testCases.map(c => [c]);
 };
 
