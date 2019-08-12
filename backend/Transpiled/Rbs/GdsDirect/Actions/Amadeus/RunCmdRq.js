@@ -70,6 +70,122 @@ const forgeViewAreasDump = ($sessionData, $areasFromDb) => {
 	return php.implode(php.PHP_EOL, $lines);
 };
 
+const doesStorePnr = ($cmd) => {
+	let $parsedCmd, $flatCmds, $cmdTypes;
+
+	$parsedCmd = CommandParser.parse($cmd);
+	$flatCmds = php.array_merge([$parsedCmd], $parsedCmd['followingCommands'] || []);
+	$cmdTypes = php.array_column($flatCmds, 'type');
+	return !php.empty(php.array_intersect($cmdTypes, ['storePnr', 'storeKeepPnr']));
+};
+
+const doesOpenPnr = ($cmd) => {
+	let $parsedCmd;
+
+	$parsedCmd = CommandParser.parse($cmd);
+	return php.in_array($parsedCmd['type'], ['openPnr', 'searchPnr', 'displayPnrFromList']);
+};
+
+const formatGtlPccError = ($exc, pcc) => {
+	let prefix = 'Failed to start session with PCC ' + pcc + ' - ';
+	if (php.preg_match(/\bSoapFault: *11|\Session\b/, ($exc.message || ''))) {
+		return Rej.BadRequest('Invalid PCC');
+	} else {
+		return UnprocessableEntity(prefix + 'Unexpected GTL error - ' + php.preg_replace(/\s+/, ' ', php.substr($exc.message || '', -100)));
+	}
+};
+
+const isSaveConfirmationRequired = ($output) => {
+	let $regex;
+
+	// '/',
+	// 'WARNING: CHECK TICKETING DATE',
+	// 'WARNING: PS REQUIRES TICKET ON OR BEFORE 19SEP:1900/S2-3',
+	$regex =
+		'/^' +
+		'\\s*\\/\\s*' +
+		'(\\s*WARNING: .*\\s*)+' +
+		'$/';
+	return php.preg_match($regex, $output);
+};
+
+const isOkXeOutput = ($output) => {
+	let $parsedPnr;
+
+	$parsedPnr = PnrParser.parse($output);
+	return $parsedPnr['success']
+		|| php.preg_match(/^(WARNING: .*\n)*\s*\/\s*ITINERARY CANCELLED\s*$/, $output);
+};
+
+const isOkFxdOutput = ($output) => {
+	let $pager;
+
+	$pager = AmadeusUtil.parseRtPager($output);
+	return $pager['hasPageMark']; // error responses don't have it
+};
+
+const countsAsFxd = ($cmd, $output) => {
+	let $cmdType;
+
+	$cmdType = CommandParser.parse($cmd)['type'];
+	return php.in_array($cmdType, CommonDataHelper.getCountedFsCommands())
+		&& isOkFxdOutput($output);
+};
+
+// '+4', '+4S3', '+4S1-3GK'
+const parseSeatIncreasePseudoCmd = ($cmd) => {
+	let $regex, $matches;
+
+	$regex =
+		'/^\\+' +
+		'(?<seatAmount>\\d+)' +
+		'(S' +
+		'(?<segNumStart>\\d+)' +
+		'(-(?<segNumEnd>\\d+))?' +
+		')?' +
+		'(?<segmentStatus>[A-Z]{2})?' +
+		'$/';
+	if (php.preg_match($regex, $cmd, $matches = [])) {
+		return {
+			'seatAmount': $matches['seatAmount'],
+			'segNumStart': $matches['segNumStart'] || '' || null,
+			'segNumEnd': $matches['segNumEnd'] || '' || null,
+			'segmentStatus': $matches['segmentStatus'] || '' || null,
+		};
+	} else {
+		return null;
+	}
+};
+
+const transformBuildError = ($result) => {
+	let $cmsMessageType;
+
+	if (!$result['success']) {
+		$cmsMessageType = ({
+			[AmadeusBuildItineraryAction.ERROR_GDS_ERROR]: Errors.REBUILD_GDS_ERROR,
+			[AmadeusBuildItineraryAction.ERROR_NO_AVAIL]: Errors.REBUILD_NO_AVAIL,
+		} || {})[$result['errorType']] || $result['errorType'];
+		return Errors.getMessage($cmsMessageType, $result['errorData']);
+	} else {
+		return null;
+	}
+};
+
+const translateApolloPricingModifiers = ($apolloMods) => {
+	let $mods, $rSubMods, $apolloMod;
+
+	$mods = [];
+	$rSubMods = [];
+	for ($apolloMod of Object.values($apolloMods)) {
+		if ($apolloMod['type'] === 'validatingCarrier') {
+			$rSubMods.push('VC-' + $apolloMod['parsed']);
+		} else {
+			return Rej.NotImplemented('Unsupported modifier - ' + $apolloMod.raw);
+		}
+	}
+	return {'mods': $mods, 'rSubMods': $rSubMods};
+};
+
 /** @param stateful = await require('StatefulSession.js')() */
 let execute = ({
 	stateful, cmdRq,
@@ -92,93 +208,6 @@ class RunCmdRq {
 
 		$log = this.$log;
 		$log($msg, $data);
-	}
-
-	static doesStorePnr($cmd) {
-		let $parsedCmd, $flatCmds, $cmdTypes;
-
-		$parsedCmd = CommandParser.parse($cmd);
-		$flatCmds = php.array_merge([$parsedCmd], $parsedCmd['followingCommands'] || []);
-		$cmdTypes = php.array_column($flatCmds, 'type');
-		return !php.empty(php.array_intersect($cmdTypes, ['storePnr', 'storeKeepPnr']));
-	}
-
-	static doesOpenPnr($cmd) {
-		let $parsedCmd;
-
-		$parsedCmd = CommandParser.parse($cmd);
-		return php.in_array($parsedCmd['type'], ['openPnr', 'searchPnr', 'displayPnrFromList']);
-	}
-
-	static formatGtlPccError($exc, pcc) {
-		let prefix = 'Failed to start session with PCC ' + pcc + ' - ';
-		if (php.preg_match(/\bSoapFault: *11|\Session\b/, ($exc.message || ''))) {
-			return Rej.BadRequest('Invalid PCC');
-		} else {
-			return UnprocessableEntity(prefix + 'Unexpected GTL error - ' + php.preg_replace(/\s+/, ' ', php.substr($exc.message || '', -100)));
-		}
-	}
-
-	static isSaveConfirmationRequired($output) {
-		let $regex;
-
-		// '/',
-		// 'WARNING: CHECK TICKETING DATE',
-		// 'WARNING: PS REQUIRES TICKET ON OR BEFORE 19SEP:1900/S2-3',
-		$regex =
-			'/^' +
-			'\\s*\\/\\s*' +
-			'(\\s*WARNING: .*\\s*)+' +
-			'$/';
-		return php.preg_match($regex, $output);
-	}
-
-	static isOkXeOutput($output) {
-		let $parsedPnr;
-
-		$parsedPnr = PnrParser.parse($output);
-		return $parsedPnr['success']
-			|| php.preg_match(/^(WARNING: .*\n)*\s*\/\s*ITINERARY CANCELLED\s*$/, $output);
-	}
-
-	static isOkFxdOutput($output) {
-		let $pager;
-
-		$pager = AmadeusUtil.parseRtPager($output);
-		return $pager['hasPageMark']; // error responses don't have it
-	}
-
-	static countsAsFxd($cmd, $output) {
-		let $cmdType;
-
-		$cmdType = CommandParser.parse($cmd)['type'];
-		return php.in_array($cmdType, CommonDataHelper.getCountedFsCommands())
-			&& this.isOkFxdOutput($output);
-	}
-
-	// '+4', '+4S3', '+4S1-3GK'
-	static parseSeatIncreasePseudoCmd($cmd) {
-		let $regex, $matches;
-
-		$regex =
-			'/^\\+' +
-			'(?<seatAmount>\\d+)' +
-			'(S' +
-			'(?<segNumStart>\\d+)' +
-			'(-(?<segNumEnd>\\d+))?' +
-			')?' +
-			'(?<segmentStatus>[A-Z]{2})?' +
-			'$/';
-		if (php.preg_match($regex, $cmd, $matches = [])) {
-			return {
-				'seatAmount': $matches['seatAmount'],
-				'segNumStart': $matches['segNumStart'] || '' || null,
-				'segNumEnd': $matches['segNumEnd'] || '' || null,
-				'segmentStatus': $matches['segmentStatus'] || '' || null,
-			};
-		} else {
-			return null;
-		}
 	}
 
 	async makeCreatedForCmdIfNeeded() {
@@ -297,7 +326,7 @@ class RunCmdRq {
 		$cmd = php.implode(';', $writeCommands);
 		$output = await this.amadeusRt($cmd);
 
-		if (this.constructor.isSaveConfirmationRequired($output)) {
+		if (isSaveConfirmationRequired($output)) {
 			$calledCommands.push({'cmd': 'ER', 'output': $output});
 			$output = await this.amadeusRt('ER');
 		}
@@ -400,7 +429,7 @@ class RunCmdRq {
 			$matchedSegments = $itinerary;
 		}
 		$xeOutput = await this.runCommand($xeCmd);
-		if (!this.constructor.isOkXeOutput($xeOutput)) {
+		if (!isOkXeOutput($xeOutput)) {
 			return {
 				'errors': ['Failed to delete segments - ' + $xeOutput],
 				'calledCommands': stateful.flushCalledCommands(),
@@ -477,20 +506,6 @@ class RunCmdRq {
 		return this.bookItinerary($itinerary, true);
 	}
 
-	static transformBuildError($result) {
-		let $cmsMessageType;
-
-		if (!$result['success']) {
-			$cmsMessageType = ({
-				[AmadeusBuildItineraryAction.ERROR_GDS_ERROR]: Errors.REBUILD_GDS_ERROR,
-				[AmadeusBuildItineraryAction.ERROR_NO_AVAIL]: Errors.REBUILD_NO_AVAIL,
-			} || {})[$result['errorType']] || $result['errorType'];
-			return Errors.getMessage($cmsMessageType, $result['errorData']);
-		} else {
-			return null;
-		}
-	}
-
 	/** @param $itinerary = MarriageItineraryParser::parse() */
 	async bookItinerary($itinerary, isNewPnr) {
 		let $errors, $i, $segment, $bookItinerary, $result, $error,
@@ -514,7 +529,7 @@ class RunCmdRq {
 		$result = await (new AmadeusBuildItineraryAction())
 			.setSession(stateful).execute($bookItinerary, true);
 
-		if ($error = this.constructor.transformBuildError($result)) {
+		if ($error = transformBuildError($result)) {
 			$errors.push($error);
 		} else {
 			let $isActive = ($seg) => !php.in_array($seg['segmentStatus'], PASSIVE_STATUSES);
@@ -639,7 +654,7 @@ class RunCmdRq {
 			.setSession(stateful).execute($newSegments, true);
 
 		$calledCommands = stateful.flushCalledCommands();
-		if ($error = this.constructor.transformBuildError($result)) {
+		if ($error = transformBuildError($result)) {
 			return {
 				'calledCommands': $calledCommands,
 				'errors': [$error],
@@ -670,21 +685,6 @@ class RunCmdRq {
 		return rbsInfo.isPrivateFare && rbsInfo.isBrokenFare;
 	}
 
-	static async translateApolloPricingModifiers($apolloMods) {
-		let $mods, $rSubMods, $apolloMod;
-
-		$mods = [];
-		$rSubMods = [];
-		for ($apolloMod of Object.values($apolloMods)) {
-			if ($apolloMod['type'] === 'validatingCarrier') {
-				$rSubMods.push('VC-' + $apolloMod['parsed']);
-			} else {
-				return Rej.NotImplemented('Unsupported modifier - ' + $apolloMod.raw);
-			}
-		}
-		return {'mods': $mods, 'rSubMods': $rSubMods};
-	}
-
 	async makeStorePricingCmd($pnr, $aliasData, $needsRp) {
 		let $adultPtc, $modRec, $tripEndDate, $tripEndDt, $paxStores, $pax, $paxMods, $error, $rMod,
 			$rSubMod, $mod;
@@ -693,7 +693,7 @@ class RunCmdRq {
 		if ($needsRp && $adultPtc === 'ITX') {
 			$adultPtc = 'ADT';
 		}
-		$modRec = await this.constructor.translateApolloPricingModifiers($aliasData['pricingModifiers']);
+		$modRec = await translateApolloPricingModifiers($aliasData['pricingModifiers']);
 
 		$tripEndDate = ((ArrayUtil.getLast($pnr.getItinerary()) || {})['departureDate'] || {})['parsed'];
 		$tripEndDt = $tripEndDate ? DateTime.decodeRelativeDateInFuture($tripEndDate, stateful.getStartDt()) : null;
@@ -722,8 +722,7 @@ class RunCmdRq {
 
 	async makePriceAllCmd(aliasData) {
 		let {ptcs, pricingModifiers = []} = aliasData;
-		let {mods, rSubMods} = await this.constructor
-			.translateApolloPricingModifiers(pricingModifiers);
+		let {mods, rSubMods} = await translateApolloPricingModifiers(pricingModifiers);
 		let rawMods = [];
 		let rMod = 'R' + ptcs.join('*') +
 			rSubMods.map(s => ',' + s).join('');
@@ -801,7 +800,7 @@ class RunCmdRq {
 		}
 
 		let areaState = await this.startNewAreaSession(stateful.getSessionData().area, $pcc)
-			.catch(exc => this.constructor.formatGtlPccError(exc, $pcc));
+			.catch(exc => formatGtlPccError(exc, $pcc));
 
 		areaState.cmdCnt = 1; // to not trigger default area PCC fallback later
 
@@ -880,7 +879,7 @@ class RunCmdRq {
 
 	async runCmd(cmd) {
 		let cmdRec = await stateful.runCmd(cmd);
-		if (this.constructor.countsAsFxd(cmd, cmdRec.output)) {
+		if (countsAsFxd(cmd, cmdRec.output)) {
 			stateful.handleFsUsage();
 		}
 		return cmdRec;
@@ -1036,7 +1035,7 @@ class RunCmdRq {
 		let $calledCommands;
 
 		$calledCommands = [];
-		if (this.constructor.doesStorePnr($cmd)) {
+		if (doesStorePnr($cmd)) {
 			if ($cmd = await this.makeCreatedForCmdIfNeeded()) {
 				await this.runCommand($cmd);
 			}
@@ -1051,13 +1050,13 @@ class RunCmdRq {
 		let $recordLocator, $parsed, $isAlex;
 
 		$calledCommands.push(await this.modifyOutput($cmdRecord));
-		if (this.constructor.doesStorePnr($cmdRecord['cmd'])) {
+		if (doesStorePnr($cmdRecord['cmd'])) {
 			$recordLocator = ((new CmsAmadeusTerminal()).parseSavePnr($cmdRecord['output'], true) || {})['recordLocator']
 							|| (new CmsAmadeusTerminal()).parseSavePnr($cmdRecord['output'], false)['recordLocator'];
 			if ($recordLocator) {
 				this.handlePnrSave($recordLocator);
 			}
-		} else if (this.constructor.doesOpenPnr($cmdRecord['cmd'])) {
+		} else if (doesOpenPnr($cmdRecord['cmd'])) {
 			$parsed = PnrParser.parse($cmdRecord['output']);
 			$isAlex = ($pax) => {
 				return $pax['lastName'] === 'WEINSTEIN'
@@ -1127,7 +1126,7 @@ class RunCmdRq {
 			return this.storePricing($aliasData);
 		} else if ($aliasData = await AliasParser.parsePrice($cmd, stateful)) {
 			return this.priceAll($aliasData);
-		} else if ($params = this.constructor.parseSeatIncreasePseudoCmd($cmd)) {
+		} else if ($params = parseSeatIncreasePseudoCmd($cmd)) {
 			return this.processSeatIncrease($params);
 		} else if ($cmd === '/SS') {
 			return this.rebookAsSs();
