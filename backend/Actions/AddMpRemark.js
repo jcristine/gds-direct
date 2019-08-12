@@ -1,5 +1,4 @@
-const GetCurrentPnr = require('./GetCurrentPnr.js');
-const CmdResultAdapter = require('../Transpiled/App/Services/CmdResultAdapter.js');
+
 const SabrePnr = require('../Transpiled/Rbs/TravelDs/SabrePnr.js');
 const TApolloSavePnr = require('../Transpiled/Rbs/GdsAction/Traits/TApolloSavePnr.js');
 const CommonUtils = require('../GdsHelpers/CommonUtils.js');

@@ -1,11 +1,6 @@
 
 require('../backend/Utils/Polyfills.js');
-
-// TODO: get rid of config lan in tests altogether
-process.env.DB_NAME = "gds_direct_plus";
-process.env.REDIS_CLUSTER_NAME = "stage-travel-shared1";
-process.env.CONFIG_LAN = "https://config-lan.sandbox.dyninno.net";
-process.env.NODE_ENV = 'development';
+require('./disableSideEffects.js');
 
 const Config = require('../backend/Config.js');
 const RunTests = require('klesun-node-tools/src/Transpiled/RunTests.js');

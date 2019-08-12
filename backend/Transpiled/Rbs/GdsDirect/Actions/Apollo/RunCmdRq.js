@@ -428,8 +428,12 @@ let RunCmdRq = ({
 		$segNums = $data['segmentNumbers'];
 		$bookingClass = $data['bookingClass'] || null;
 		$departureDate = $data['departureDate'] || null;
+		let pnr = await getCurrentPnr();
+		let itinerary = pnr.getItinerary();
+		$segNums = $segNums.length > 0 ? $segNums :
+			itinerary.map(s => s.segmentNumber);
 		$newSegments = [];
-		for ($seg of Object.values((await getCurrentPnr()).getItinerary())) {
+		for ($seg of itinerary) {
 			if (php.in_array($seg['segmentNumber'], $segNums)) {
 				if ($bookingClass) {
 					$seg['bookingClass'] = $bookingClass;

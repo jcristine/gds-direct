@@ -1,3 +1,6 @@
+const MaskFormUtils = require('../Actions/ManualPricing/TpMaskUtils.js');
+const CmdRqLog = require('../Repositories/CmdRqLog.js');
+const RbsClient = require('../IqClients/RbsClient.js');
 const GdsSession = require('../GdsHelpers/GdsSession.js');
 const AddMpRemark = require('../Actions/AddMpRemark.js');
 let AmadeusClient = require("../GdsClients/AmadeusClient.js");
@@ -23,7 +26,6 @@ const {getConfig} = require('../Config.js');
 const ExchangeApolloTicket = require('../Actions/ExchangeApolloTicket.js');
 const PriceItineraryManually = require('../Actions/ManualPricing/NmeMaskSubmit.js');
 const Rej = require("klesun-node-tools/src/Rej");
-const TravelportUtils = require("../GdsHelpers/TravelportUtils");
 const SubmitTaxBreakdownMask = require('../Actions/ManualPricing/SubmitTaxBreakdownMask.js');
 const SubmitZpTaxBreakdownMask = require('../Actions/ManualPricing/SubmitZpTaxBreakdownMask.js');
 const SubmitFcMask = require('../Actions/ManualPricing/FcMaskSubmit.js');
@@ -78,12 +80,31 @@ let shouldRestart = (exc, session) => {
 		|| lifetimeMs > 60 * 60 * 1000;
 };
 
-let runInSession = (params) => {
-	let {session, rqBody, emcUser} = params;
-	let running;
-	running = ProcessTerminalInput(params);
-	GdsSessions.updateAccessTime(session);
-	return running.then(cmsResult => ({...cmsResult, session}));
+let initStateful = async (params) => {
+	let stateful = await StatefulSession.makeFromDb(params);
+	stateful.addPnrSaveHandler(recordLocator => RbsClient.reportCreatedPnr({
+		recordLocator: recordLocator,
+		gds: params.session.context.gds,
+		pcc: stateful.getSessionData().pcc,
+		agentId: params.session.context.agentId,
+	}));
+	return stateful;
+};
+
+let runInSession = async (params) => {
+	let {session, rqBody} = params;
+	let whenCmdRqId = CmdRqLog.storeNew(rqBody, session);
+	let stateful = await initStateful({...params, whenCmdRqId});
+	let cmdRq = rqBody.command;
+	let whenCmsResult = ProcessTerminalInput({
+		stateful, cmdRq, dialect: rqBody.language,
+	}).then((rbsResult) => CmdResultAdapter({
+		cmdRq, gds: stateful.gds,
+		rbsResp: rbsResult,
+		fullState: stateful.getFullState(),
+	}));
+	CmdRqLog.logProcess({params, whenCmdRqId, whenCmsResult});
+	return whenCmsResult.then(cmsResult => ({...cmsResult, session}));
 };
 
 /** @param rqBody = at('WebRoutes.js').normalizeRqBody() */
@@ -181,8 +202,10 @@ exports.addMpRemark = async ({rqBody, ...params}) => {
 	let {airline, gds} = rqBody;
 	let stateful = await StatefulSession.makeFromDb(params);
 	return AddMpRemark({stateful, airline})
-		.then(result => new CmdResultAdapter(gds)
-			.addHighlighting('MP', result));
+		.then(result => CmdResultAdapter({
+			cmdRq: 'MP', gds,
+			rbsResp: result,
+		}));
 };
 
 /**
@@ -199,14 +222,6 @@ exports.resetToDefaultPcc = async ({rqBody, session, emcUser}) => {
 	return {fullState};
 };
 
-let makeMaskRs = (calledCommands, actions = []) => new CmdResultAdapter('apollo')
-	.addHighlighting('', {
-		calledCommands: calledCommands.map(cmdRec => ({
-			...cmdRec, tabCommands: TravelportUtils.extractTpTabCmds(cmdRec.output),
-		})),
-		actions: actions,
-	});
-
 exports.makeMco = async ({rqBody, session, emcUser}) => {
 	let mcoData = {};
 	for (let {key, value} of rqBody.fields) {
@@ -219,7 +234,7 @@ exports.makeMco = async ({rqBody, session, emcUser}) => {
 	let mcoResult = await (new MakeMcoApolloAction())
 		.setSession(stateful).execute(mcoData);
 
-	return makeMaskRs(mcoResult.calledCommands);
+	return MaskFormUtils.makeMaskRs(mcoResult.calledCommands);
 };
 
 exports.exchangeTicket = async ({rqBody, session, emcUser}) => {
@@ -348,27 +363,8 @@ exports.getLastCommands = (reqBody, emcResult) => {
 	});
 };
 
-/** @param {IEmcResult} emcResult */
 exports.getCmdRqList = (reqBody, emcResult) => {
-	if (!emcResult.user.roles.includes('NEW_GDS_DIRECT_DEV_ACCESS')) {
-		return Forbidden('You do not have dev access role');
-	}
-	let sessionId = reqBody.sessionId;
-	return Db.with(db => db.fetchAll({
-		// TODO: move to CmdRqLog.js
-		table: 'cmd_rq_log',
-		where: [['sessionId', '=', sessionId]],
-		orderBy: 'id ASC',
-	})).then(rows => {
-		let records = rows.map(row => ({
-			id: row.id,
-			dialect: row.dialect,
-			processedTime: row.processedTime,
-			command: row.command,
-			requestTimestamp: row.requestTimestamp,
-		}));
-		return {records};
-	});
+	return CmdRqLog.getBySession(reqBody.sessionId);
 };
 
 exports.clearBuffer = (rqBody, emcResult) => {

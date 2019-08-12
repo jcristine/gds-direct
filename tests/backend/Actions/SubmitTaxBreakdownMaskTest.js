@@ -1,7 +1,7 @@
 const GdsActionTestUtil = require("../../../backend/Utils/Testing/GdsActionTestUtil");
 const SubmitTaxBreakdownMask = require('../../../backend/Actions/ManualPricing/SubmitTaxBreakdownMask.js');
 
-class PriceItineraryManuallyTest extends require('../Transpiled/Lib/TestCase.js')
+class SubmitTaxBreakdownMaskTest extends require('../Transpiled/Lib/TestCase.js')
 {
 	provideTestCases() {
 		let testCases = [];
@@ -122,4 +122,4 @@ class PriceItineraryManuallyTest extends require('../Transpiled/Lib/TestCase.js'
 	}
 }
 
-module.exports = PriceItineraryManuallyTest;
+module.exports = SubmitTaxBreakdownMaskTest;

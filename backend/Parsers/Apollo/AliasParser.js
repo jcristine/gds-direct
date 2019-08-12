@@ -103,6 +103,13 @@ exports.parse = async ($cmdRequested, stateful) => {
 			},
 			'bookingClass': $cls || null,
 		};
+	} else if (php.preg_match(/^\/GK$/, $realCmd, $matches = [])) {
+		$type = 'rebookAsGk';
+		$data = {
+			segmentNumbers: [],
+			departureDate: null,
+			bookingClass: null,
+		};
 	} else if (php.preg_match(/^\/SS(E?)$/, $realCmd, $matches = [])) {
 		$type = 'rebookAsSs';
 		$data = {

@@ -190,6 +190,9 @@ class GdsDirectDefaults {
 			Db: {
 				writeRows: () => Promise.resolve(),
 			},
+			GdsSessions: {
+				update: () => Promise.resolve(),
+			},
 			RbsClient: {
 				reportCreatedPnr: () => Promise.resolve(),
 			},
