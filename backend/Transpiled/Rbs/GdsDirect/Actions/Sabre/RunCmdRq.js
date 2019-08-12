@@ -25,6 +25,200 @@ const UnprocessableEntity = require("klesun-node-tools/src/Rej").UnprocessableEn
 const SabreTicketParser = require('../../../../Gds/Parsers/Sabre/SabreTicketParser.js');
 const Rej = require('klesun-node-tools/src/Rej.js');
 
+
+const doesStorePnr = ($cmd) => {
+	let $parsedCmd, $flatCmds, $cmdTypes;
+
+	$parsedCmd = CommandParser.parse($cmd);
+	$flatCmds = php.array_merge([$parsedCmd], $parsedCmd['followingCommands'] || []);
+	$cmdTypes = php.array_column($flatCmds, 'type');
+	let intersection = php.array_intersect($cmdTypes, ['storePnr', 'storeKeepPnr', 'storePnrSendEmail', 'storeAndCopyPnr']);
+	return !php.empty(intersection);
+};
+
+const doesOpenPnr = ($cmd) => {
+	let $parsedCmd;
+
+	$parsedCmd = CommandParser.parse($cmd);
+	return php.in_array($parsedCmd['type'], ['openPnr', 'searchPnr', 'displayPnrFromList']);
+};
+
+/** @param $ranges = [['from' => 3, 'to' => 7], ['from' => 15]] */
+const isInRanges = ($num, $ranges) => {
+	let $range;
+
+	for ($range of Object.values($ranges)) {
+		if (php.array_key_exists('to', $range)) {
+			if ($num >= $range['from'] && $num <= $range['to']) {
+				return true;
+			}
+		} else {
+			if ($num >= $range['from']) {
+				return true;
+			}
+		}
+	}
+	return false;
+};
+
+const hideSeaPassengers = ($gdsOutput) => {
+	return php.str_replace('SEAMAN', 'ITSPE', $gdsOutput);
+};
+
+const getPerformedCommands = async ($cmdLog) => {
+	let $commands, $cmdRecord, $parsed, $flatCmds;
+
+	let result = [];
+	$commands = await $cmdLog.getCurrentPnrCommands();
+	for ($cmdRecord of Object.values($commands)) {
+		$parsed = CommandParser.parse($cmdRecord['cmd']);
+		$flatCmds = php.array_merge([$parsed], $parsed['followingCommands']);
+		for (let flatCmd of Object.values($flatCmds)) {
+			result.push(flatCmd);
+		}
+	}
+	return result;
+};
+
+const getDkNumber = async ($pcc) => {
+	return Pccs.findByCode('sabre', $pcc)
+		.then(row => row.dk_number)
+		.catch(exc => null);
+};
+
+const makeAddDkNumberCmdIfNeeded = async ($cmdLog) => {
+	let $sessionData, $number, $flatCmd;
+
+	$sessionData = $cmdLog.getSessionData();
+	if ($sessionData['isPnrStored']) {
+		return null;
+	}
+	if (!($number = await getDkNumber($sessionData['pcc']))) {
+		return null;
+	}
+	for ($flatCmd of Object.values(getPerformedCommands($cmdLog))) {
+		if ($flatCmd['type'] === 'addDkNumber' && $flatCmd['data'] == $number) {
+		// already added DK number
+			return null;
+		}
+	}
+	return 'DK' + $number;
+};
+
+const isSuccessfulFsCommand = ($cmd, $dump) => {
+	let $keywords, $type, $isFsCmd, $isFsSuccessful;
+
+	$keywords = [
+	// on >WPNI; screen
+		'BARGAIN FINDER PLUS ITINERARY OPTIONS',
+		'NO LOWER FARE DETERMINED',
+		'CURRENT ITINERARY',
+		'ALREADY BOOKED AT LOWEST',
+		'NO COMBINABLE FARES FOR CLASS',
+		'* USE WC¥OPTION NUMBER TO SELL NEW ITINERARY *.',
+
+		// on >JR.{params}; screen
+		'¥NO FLIGHT SCHEDULES FOR QUALIFIERS USED',
+		'¥NO FLIGHTS FOUND FOR',
+		'¥NO COMBINABLE SCHEDULES RETURNED',
+		'* ENTER JR0 WITH OPTION NUMBER *.',
+	];
+
+	$type = (CommandParser.parse($cmd) || {})['type'] || '';
+	$isFsCmd = php.in_array($type, CommonDataHelper.getCountedFsCommands());
+	$isFsSuccessful = $keywords.some(($keyword) => StringUtil.contains($dump, $keyword));
+
+	return $isFsCmd && $isFsSuccessful;
+};
+
+const extendPricingCmd = ($mainCmd, $newPart) => {
+	let $mainParsed, $isFullCmd, $newParsed, $mainMods, $newMods, $rawMods;
+
+	$mainParsed = CommandParser.parse($mainCmd);
+	if ($mainParsed['type'] !== 'priceItinerary' || !$mainParsed['data']) {
+		return null;
+	}
+	if (php.preg_match(/^\d/, $newPart)) {
+		$newPart = 'S' + $newPart;
+	}
+	if (!StringUtil.startsWith($newPart, 'WP')) {
+		$isFullCmd = false;
+		$newPart = $mainParsed['data']['baseCmd'] + $newPart;
+	} else {
+		$isFullCmd = true;
+	}
+	$newParsed = CommandParser.parse($newPart);
+	if ($newParsed['type'] !== 'priceItinerary' || !$newParsed['data']) {
+		return null;
+	}
+	$mainMods = php.array_combine(php.array_column($mainParsed['data']['pricingModifiers'], 'type'),
+		$mainParsed['data']['pricingModifiers']);
+	$newMods = php.array_combine(php.array_column($newParsed['data']['pricingModifiers'], 'type'),
+		$newParsed['data']['pricingModifiers']);
+	if (!$isFullCmd) {
+		$newMods = php.array_merge($mainMods, $newMods);
+	}
+	$rawMods = php.array_column($newMods, 'raw');
+	return $newParsed['data']['baseCmd'] + php.implode('¥', $rawMods);
+};
+
+const parseMultiPriceItineraryAlias = ($cmd) => {
+	let $parts, $mainCmd, $followingCommands, $cmds;
+
+	if (php.preg_match(/^WP.*(&|\|\|)\S.*$/, $cmd)) {
+		$parts = php.preg_split(/&|\|\|/, $cmd);
+		$mainCmd = php.array_shift($parts);
+		$followingCommands = $parts.map(($cmdPart) =>
+			extendPricingCmd($mainCmd, $cmdPart));
+		if (!Fp.any('is_null', $followingCommands)) {
+			$cmds = php.array_merge([$mainCmd], $followingCommands);
+			return {'pricingCommands': $cmds};
+		}
+	}
+	return null;
+};
+
+const transformBuildError = ($result) => {
+	let $cmsMessageType;
+
+	if (!$result['success']) {
+		$cmsMessageType = ({
+			[SabreBuildItineraryAction.ERROR_GDS_ERROR]: Errors.REBUILD_GDS_ERROR,
+			[SabreBuildItineraryAction.ERROR_NO_AVAIL]: Errors.REBUILD_NO_AVAIL,
+			[SabreBuildItineraryAction.ERROR_MULTISEGMENT]: Errors.REBUILD_MULTISEGMENT,
+		} || {})[$result['errorType']] || $result['errorType'];
+		return Errors.getMessage($cmsMessageType, $result['errorData']);
+	} else {
+		return null;
+	}
+};
+
+const translateApolloPricingModifier = (mod) => {
+
+	if (mod.type === 'validatingCarrier') {
+		return 'A' + mod.parsed;
+	} else if (mod.type === 'currency') {
+		return 'M' + mod.parsed;
+	} else {
+		return null;
+	}
+};
+
+/**
+* since we use our own _fake_ areas, _real_ letter in AAA{pcc} output would
+* always be "A", that's confusing - so we change the area letter in the dump
+*/
+const makeCalledCommandsPccOutputCorrect = ($calledCommands, $area) => {
+
+	return Fp.map(($calledCommand) => {
+		if (CommandParser.parse($calledCommand['cmd'])['type'] == 'changePcc' && !php.empty($area)) {
+			$calledCommand['output'] = php.preg_replace('#(?<=^[A-Z\\d]{4}\\.L3II\\*AWS\\.)[A-Z]#', $area, $calledCommand['output']);
+			$calledCommand['output'] = php.preg_replace('#(?<=^[A-Z\\d]{3}\\.L3II\\*AWS\\.)[A-Z]#', $area, $calledCommand['output']);
+		}
+		return $calledCommand;
+	}, $calledCommands);
+};
+
 const execute = ({
 	stateful, cmdRq,
 	PtcUtil = require('../../../../Rbs/Process/Common/PtcUtil.js'),
@@ -62,62 +256,8 @@ class RunCmdRq {
 		}
 	}
 
-	static doesStorePnr($cmd) {
-		let $parsedCmd, $flatCmds, $cmdTypes;
-
-		$parsedCmd = CommandParser.parse($cmd);
-		$flatCmds = php.array_merge([$parsedCmd], $parsedCmd['followingCommands'] || []);
-		$cmdTypes = php.array_column($flatCmds, 'type');
-		let intersection = php.array_intersect($cmdTypes, ['storePnr', 'storeKeepPnr', 'storePnrSendEmail', 'storeAndCopyPnr']);
-		return !php.empty(intersection);
-	}
-
-	static doesOpenPnr($cmd) {
-		let $parsedCmd;
-
-		$parsedCmd = CommandParser.parse($cmd);
-		return php.in_array($parsedCmd['type'], ['openPnr', 'searchPnr', 'displayPnrFromList']);
-	}
-
-	/** @param $ranges = [['from' => 3, 'to' => 7], ['from' => 15]] */
-	static isInRanges($num, $ranges) {
-		let $range;
-
-		for ($range of Object.values($ranges)) {
-			if (php.array_key_exists('to', $range)) {
-				if ($num >= $range['from'] && $num <= $range['to']) {
-					return true;
-				}
-			} else {
-				if ($num >= $range['from']) {
-					return true;
-				}
-			}
-		}
-		return false;
-	}
-
 	getSessionData() {
 		return stateful.getSessionData();
-	}
-
-	static hideSeaPassengers($gdsOutput) {
-		return php.str_replace('SEAMAN', 'ITSPE', $gdsOutput);
-	}
-
-	static async getPerformedCommands($cmdLog) {
-		let $commands, $cmdRecord, $parsed, $flatCmds;
-
-		let result = [];
-		$commands = await $cmdLog.getCurrentPnrCommands();
-		for ($cmdRecord of Object.values($commands)) {
-			$parsed = CommandParser.parse($cmdRecord['cmd']);
-			$flatCmds = php.array_merge([$parsed], $parsed['followingCommands']);
-			for (let flatCmd of Object.values($flatCmds)) {
-				result.push(flatCmd);
-			}
-		}
-		return result;
 	}
 
 	async makeCmsRemarkCmdIfNeeded() {
@@ -130,31 +270,6 @@ class RunCmdRq {
 			}
 		}
 		return null;
-	}
-
-	static async getDkNumber($pcc) {
-		return Pccs.findByCode('sabre', $pcc)
-			.then(row => row.dk_number)
-			.catch(exc => null);
-	}
-
-	static async makeAddDkNumberCmdIfNeeded($cmdLog) {
-		let $sessionData, $number, $flatCmd;
-
-		$sessionData = $cmdLog.getSessionData();
-		if ($sessionData['isPnrStored']) {
-			return null;
-		}
-		if (!($number = await this.getDkNumber($sessionData['pcc']))) {
-			return null;
-		}
-		for ($flatCmd of Object.values(this.getPerformedCommands($cmdLog))) {
-			if ($flatCmd['type'] === 'addDkNumber' && $flatCmd['data'] == $number) {
-			// already added DK number
-				return null;
-			}
-		}
-		return 'DK' + $number;
 	}
 
 	getAgent() {
@@ -176,43 +291,17 @@ class RunCmdRq {
 		$prevState = this.getSessionData();
 		let cmdRec = await stateful.runCmd($cmd);
 
-		if (this.constructor.isSuccessfulFsCommand($cmd, cmdRec.output)) {
+		if (isSuccessfulFsCommand($cmd, cmdRec.output)) {
 			stateful.handleFsUsage();
 		}
 		if (Fp.any($cmdStartsWith, ['FQ', 'PQ', '*PQ'])) {
-			cmdRec = {...cmdRec, output: this.constructor.hideSeaPassengers(cmdRec.output)};
+			cmdRec = {...cmdRec, output: hideSeaPassengers(cmdRec.output)};
 		}
 		return cmdRec;
 	}
 
 	async runCommand($cmd) {
 		return (await this.runCmd($cmd)).output;
-	}
-
-	static isSuccessfulFsCommand($cmd, $dump) {
-		let $keywords, $type, $isFsCmd, $isFsSuccessful;
-
-		$keywords = [
-		// on >WPNI; screen
-			'BARGAIN FINDER PLUS ITINERARY OPTIONS',
-			'NO LOWER FARE DETERMINED',
-			'CURRENT ITINERARY',
-			'ALREADY BOOKED AT LOWEST',
-			'NO COMBINABLE FARES FOR CLASS',
-			'* USE WC¥OPTION NUMBER TO SELL NEW ITINERARY *.',
-
-			// on >JR.{params}; screen
-			'¥NO FLIGHT SCHEDULES FOR QUALIFIERS USED',
-			'¥NO FLIGHTS FOUND FOR',
-			'¥NO COMBINABLE SCHEDULES RETURNED',
-			'* ENTER JR0 WITH OPTION NUMBER *.',
-		];
-
-		$type = (CommandParser.parse($cmd) || {})['type'] || '';
-		$isFsCmd = php.in_array($type, CommonDataHelper.getCountedFsCommands());
-		$isFsSuccessful = $keywords.some(($keyword) => StringUtil.contains($dump, $keyword));
-
-		return $isFsCmd && $isFsSuccessful;
 	}
 
 	async makeCmdMessages($cmd, $output) {
@@ -296,7 +385,7 @@ class RunCmdRq {
 		for ($remark of Object.values((await this.getCurrentPnr()).getRemarks())) {
 			if ($remark['remarkType'] !== GenericRemarkParser.CMS_LEAD_REMARK) continue;
 			$lineNum = $remark['lineNumber'];
-			if (this.constructor.isInRanges($lineNum, $data['ranges'])) {
+			if (isInRanges($lineNum, $data['ranges'])) {
 				$errors.push(Errors.getMessage(Errors.CANT_CHANGE_GDSD_REMARK, {'lineNum': $lineNum}));
 			}
 		}
@@ -356,7 +445,7 @@ class RunCmdRq {
 		if ($type === 'changePcc') {
 			$errors = php.array_merge($errors, this.checkEmulatedPcc($parsedCmd['data']));
 		}
-		if (this.constructor.doesStorePnr($cmd)) {
+		if (doesStorePnr($cmd)) {
 			if (!this.canSavePnrInThisPcc()) {
 				$errors.push('Unfortunately, PNR\\\'s in this PCC cannot be created. Please use a special Sabre login in SabreRed.');
 			}
@@ -464,68 +553,6 @@ class RunCmdRq {
 		}
 	}
 
-	static extendPricingCmd($mainCmd, $newPart) {
-		let $mainParsed, $isFullCmd, $newParsed, $mainMods, $newMods, $rawMods;
-
-		$mainParsed = CommandParser.parse($mainCmd);
-		if ($mainParsed['type'] !== 'priceItinerary' || !$mainParsed['data']) {
-			return null;
-		}
-		if (php.preg_match(/^\d/, $newPart)) {
-			$newPart = 'S' + $newPart;
-		}
-		if (!StringUtil.startsWith($newPart, 'WP')) {
-			$isFullCmd = false;
-			$newPart = $mainParsed['data']['baseCmd'] + $newPart;
-		} else {
-			$isFullCmd = true;
-		}
-		$newParsed = CommandParser.parse($newPart);
-		if ($newParsed['type'] !== 'priceItinerary' || !$newParsed['data']) {
-			return null;
-		}
-		$mainMods = php.array_combine(php.array_column($mainParsed['data']['pricingModifiers'], 'type'),
-			$mainParsed['data']['pricingModifiers']);
-		$newMods = php.array_combine(php.array_column($newParsed['data']['pricingModifiers'], 'type'),
-			$newParsed['data']['pricingModifiers']);
-		if (!$isFullCmd) {
-			$newMods = php.array_merge($mainMods, $newMods);
-		}
-		$rawMods = php.array_column($newMods, 'raw');
-		return $newParsed['data']['baseCmd'] + php.implode('¥', $rawMods);
-	}
-
-	static parseMultiPriceItineraryAlias($cmd) {
-		let $parts, $mainCmd, $followingCommands, $cmds;
-
-		if (php.preg_match(/^WP.*(&|\|\|)\S.*$/, $cmd)) {
-			$parts = php.preg_split(/&|\|\|/, $cmd);
-			$mainCmd = php.array_shift($parts);
-			$followingCommands = $parts.map(($cmdPart) =>
-				this.extendPricingCmd($mainCmd, $cmdPart));
-			if (!Fp.any('is_null', $followingCommands)) {
-				$cmds = php.array_merge([$mainCmd], $followingCommands);
-				return {'pricingCommands': $cmds};
-			}
-		}
-		return null;
-	}
-
-	static transformBuildError($result) {
-		let $cmsMessageType;
-
-		if (!$result['success']) {
-			$cmsMessageType = ({
-				[SabreBuildItineraryAction.ERROR_GDS_ERROR]: Errors.REBUILD_GDS_ERROR,
-				[SabreBuildItineraryAction.ERROR_NO_AVAIL]: Errors.REBUILD_NO_AVAIL,
-				[SabreBuildItineraryAction.ERROR_MULTISEGMENT]: Errors.REBUILD_MULTISEGMENT,
-			} || {})[$result['errorType']] || $result['errorType'];
-			return Errors.getMessage($cmsMessageType, $result['errorData']);
-		} else {
-			return null;
-		}
-	}
-
 	async processCloneItinerary($aliasData) {
 		let $pcc, $newStatus, $seatNumber, $oldSegments, $isAa, $keepOriginal, $pccResult, $errors, $desiredSegments,
 			$fallbackToGk;
@@ -618,7 +645,7 @@ class RunCmdRq {
 			});
 		}
 
-		if ($error = this.constructor.transformBuildError(result)) {
+		if ($error = transformBuildError(result)) {
 			return {
 				'calledCommands': stateful.flushCalledCommands(),
 				'errors': [$error],
@@ -718,7 +745,7 @@ class RunCmdRq {
 		if ($remarkCmd = await this.makeCmsRemarkCmdIfNeeded()) {
 			php.array_unshift($writeCommands, $remarkCmd);
 		}
-		if ($dkNumberCmd = await this.constructor.makeAddDkNumberCmdIfNeeded(stateful.getLog())) {
+		if ($dkNumberCmd = await makeAddDkNumberCmdIfNeeded(stateful.getLog())) {
 			php.array_unshift($writeCommands, $dkNumberCmd);
 		}
 
@@ -758,21 +785,10 @@ class RunCmdRq {
 		return rbsInfo.isPrivateFare && rbsInfo.isBrokenFare;
 	}
 
-	static translateApolloPricingModifier(mod) {
-
-		if (mod.type === 'validatingCarrier') {
-			return 'A' + mod.parsed;
-		} else if (mod.type === 'currency') {
-			return 'M' + mod.parsed;
-		} else {
-			return null;
-		}
-	}
-
 	async translateMods(pricingModifiers) {
 		let sabreRawMods = [];
 		for (let apolloMod of pricingModifiers) {
-			let translated = this.constructor.translateApolloPricingModifier(apolloMod);
+			let translated = translateApolloPricingModifier(apolloMod);
 			if (translated) {
 				sabreRawMods.push(translated);
 			} else {
@@ -851,12 +867,12 @@ class RunCmdRq {
 		let $calledCommands, $remarkCmd, $dkNumberCmd;
 
 		$calledCommands = [];
-		if (this.constructor.doesStorePnr($cmd)) {
+		if (doesStorePnr($cmd)) {
 			if ($remarkCmd = await this.makeCmsRemarkCmdIfNeeded()) {
 			// we don't show it - no adding to $calledCommands
 				await this.runCommand($remarkCmd);
 			}
-			if ($dkNumberCmd = await this.constructor.makeAddDkNumberCmdIfNeeded(stateful.getLog())) {
+			if ($dkNumberCmd = await makeAddDkNumberCmdIfNeeded(stateful.getLog())) {
 				await this.runCommand($dkNumberCmd);
 			}
 		}
@@ -871,7 +887,7 @@ class RunCmdRq {
 		let $cmd, $output, $recordLocator, $parsed, $isAlex;
 
 		$calledCommands.push(this.modifyOutput($cmdRecord));
-		if (this.constructor.doesStorePnr($cmdRecord['cmd'])) {
+		if (doesStorePnr($cmdRecord['cmd'])) {
 			if (php.trim($cmdRecord['output']) === 'NEED ADDRESS - USE W-') {
 			// add address and call E/ER again
 				$cmd = php.implode('\u00A7', ['W- 100 PINE STREET', '5\/ITN', $cmdRecord['cmd']]);
@@ -882,7 +898,7 @@ class RunCmdRq {
 			if ($recordLocator) {
 				this.handlePnrSave($recordLocator);
 			}
-		} else if (this.constructor.doesOpenPnr($cmdRecord['cmd'])) {
+		} else if (doesOpenPnr($cmdRecord['cmd'])) {
 			$parsed = PnrParser.parse($cmdRecord['output']);
 			$isAlex = ($pax) => {
 				return $pax['lastName'] === 'WEINSTEIN'
@@ -943,7 +959,7 @@ class RunCmdRq {
 			if (php.array_key_exists('errors', $result)) {
 				return $result;
 			} else {
-				$result['calledCommands'] = this.constructor.makeCalledCommandsPccOutputCorrect($result['calledCommands'], this.getSessionData()['area']);
+				$result['calledCommands'] = makeCalledCommandsPccOutputCorrect($result['calledCommands'], this.getSessionData()['area']);
 				return $result;
 			}
 		} else if ($parsed['type'] === 'changeArea') {
@@ -954,7 +970,7 @@ class RunCmdRq {
 			return this.storePricing($aliasData);
 		} else if ($aliasData = await AliasParser.parsePrice($cmd, stateful)) {
 			return this.priceAll($aliasData);
-		} else if ($aliasData = this.constructor.parseMultiPriceItineraryAlias($cmd)) {
+		} else if ($aliasData = parseMultiPriceItineraryAlias($cmd)) {
 			return this.multiPriceItinerary($aliasData);
 		} else if ($cmd === '/SS') {
 			return this.rebookAsSs();
@@ -968,21 +984,6 @@ class RunCmdRq {
 		// not an alias
 			return this.processRealCommand($cmd);
 		}
-	}
-
-	/**
- * since we use our own _fake_ areas, _real_ letter in AAA{pcc} output would
- * always be "A", that's confusing - so we change the area letter in the dump
- */
-	static makeCalledCommandsPccOutputCorrect($calledCommands, $area) {
-
-		return Fp.map(($calledCommand) => {
-			if (CommandParser.parse($calledCommand['cmd'])['type'] == 'changePcc' && !php.empty($area)) {
-				$calledCommand['output'] = php.preg_replace('#(?<=^[A-Z\\d]{4}\\.L3II\\*AWS\\.)[A-Z]#', $area, $calledCommand['output']);
-				$calledCommand['output'] = php.preg_replace('#(?<=^[A-Z\\d]{3}\\.L3II\\*AWS\\.)[A-Z]#', $area, $calledCommand['output']);
-			}
-			return $calledCommand;
-		}, $calledCommands);
 	}
 
 	async execute($cmdRequested) {
