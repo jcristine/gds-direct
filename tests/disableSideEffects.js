@@ -4,7 +4,7 @@
 process.env.DB_NAME = "gds_direct_plus";
 process.env.REDIS_CLUSTER_NAME = "stage-travel-shared1";
 process.env.CONFIG_LAN = "https://config-lan.sandbox.dyninno.net";
-process.env.NODE_ENV = 'development';
+process.env.NODE_ENV = 'unitTest';
 
 const Redis = require('../backend/LibWrappers/Redis.js');
 const Db = require('../backend/Utils/Db.js');

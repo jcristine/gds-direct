@@ -66,7 +66,7 @@ const initHttpRqFor = ({
 	let logit = (msg, data) => {
 		let masked = MaskUtil.maskCcNumbers(data);
 		FluentLogger.logit(msg, logId, masked);
-		if (process.env.NODE_ENV !== 'production') {
+		if (process.env.NODE_ENV === 'development') {
 			console.log(logId + ': ' + msg, typeof masked === 'string' ? masked : jsExport(masked));
 		}
 	};
