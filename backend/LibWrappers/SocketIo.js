@@ -8,7 +8,7 @@ let toAskClient = (socket) => {
 	let rejects = new Set();
 	socket.on('disconnect', (reason) => {
 		let error = 'Socket Disconnected, client did not answer - ' + reason;
-		[...rejects].forEach(rej => rej(Rej.Gone.makeExc(error)));
+		[...rejects].forEach(rej => rej(Rej.Gone.makeExc(error, {isOk: true})));
 		rejects.clear();
 	});
 	return (msgData, {timeoutMs = 4 * 60 * 1000} = {}) => new Promise((resolve, reject) => {
