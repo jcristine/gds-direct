@@ -1,6 +1,6 @@
+const GdsProfiles = require('../../Repositories/GdsProfiles.js');
 const GdsSession = require('../../GdsHelpers/GdsSession.js');
 const GdsDirectDefaults = require('./GdsDirectDefaults.js');
-const TravelportClient = require('../../GdsClients/TravelportClient.js');
 const PersistentHttpRqStub = require('./PersistentHttpRqStub.js');
 
 
@@ -29,11 +29,18 @@ exports.testGdsAction = async (unit, $testCase, $getActual) => {
 exports.testHttpGdsAction = async ({unit, testCase, getActual}) => {
 	let {input, fullState, output, httpRequests} = testCase;
 	let PersistentHttpRq = PersistentHttpRqStub(httpRequests);
-	let GdsProfiles = {
+	let stubGdsProfiles = {
 		getTravelport: (profileName) => Promise.resolve({
 			username: 'grectUnitTest',
 			password: 'qwerty123',
 		}),
+		getAmadeus: (profileName) => Promise.resolve({
+			endpoint: 'https://nodeD1.production.webservices.amadeus.com/1ASIWTUTICO',
+			username: 'grectUnitTest',
+			password: 'qwerty123',
+			default_pcc: 'SFO1S2195',
+		}),
+		chooseAmaProfile: GdsProfiles.chooseAmaProfile,
 	};
 	let session = {
 		context: {gds: fullState.gds, travelRequestId: null},
@@ -41,14 +48,18 @@ exports.testHttpGdsAction = async ({unit, testCase, getActual}) => {
 			sessionToken: 'soap-unit-test-blabla-123',
 		},
 	};
-	let gdsSession = GdsSession({
-		session, PersistentHttpRq, GdsProfiles,
+	let gdsClients = GdsSession.makeGdsClients({
+		PersistentHttpRq,
+		GdsProfiles: stubGdsProfiles,
+		randomBytes: (size) => Buffer.from('01234567890abcdef01234567890abcd', 'hex'),
+		now: () => 1565598730736,
 	});
+	let gdsSession = GdsSession({session, gdsClients});
 	let stateful = GdsDirectDefaults.makeStatefulSessionCustom({
 		fullState, session, gdsSession,
 	});
 
-	let actual = await getActual({stateful, input});
+	let actual = await getActual({stateful, input, gdsClients});
 	unit.assertArrayElementsSubset(output, actual);
 	unit.assertEquals([], PersistentHttpRq.getHttpRequestsLeft(), 'not all HTTP requests were used');
 };

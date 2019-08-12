@@ -1,6 +1,5 @@
 const Rej = require('../../../node_modules/klesun-node-tools/src/Rej.js');
 const GdsSessions = require('../../../backend/Repositories/GdsSessions.js');
-const GdsDirectDefaults = require('../Transpiled/Rbs/TestUtils/GdsDirectDefaults.js');
 const GdsActionTestUtil = require('../../../backend/Utils/Testing/GdsActionTestUtil.js');
 const ProcessTerminalInput = require('../../../backend/Actions/ProcessTerminalInput.js');
 
@@ -12,32 +11,17 @@ const provide_call = () => {
 		fullState: {
 			gds: 'apollo',
 			area: 'A',
-			areas: {A: GdsSessions.makeDefaultAreaState('apollo')},
+			areas: {A: {...GdsSessions.makeDefaultAreaState('apollo'), area: 'A'}},
 		},
 		input: {
 			cmdRq: 'SC',
 			AreaSettings: {
 				getByAgent: () => Promise.resolve([
-					{"id":"12","gds":"amadeus","area":"A","agentId":"6206","defaultPcc":"SFO1S2195"},
-					{"id":"13","gds":"amadeus","area":"B","agentId":"6206","defaultPcc":"SFO1S2106"},
-					{"id":"14","gds":"amadeus","area":"C","agentId":"6206","defaultPcc":"LAXGO3106"},
-					{"id":"15","gds":"amadeus","area":"D","agentId":"6206","defaultPcc":"YTOGO3100"},
 					{"id":"1","gds":"apollo","area":"A","agentId":"6206","defaultPcc":"2F3K"},
 					{"id":"2","gds":"apollo","area":"B","agentId":"6206","defaultPcc":"2G2H"},
 					{"id":"3","gds":"apollo","area":"C","agentId":"6206","defaultPcc":"2G52"},
 					{"id":"4","gds":"apollo","area":"D","agentId":"6206","defaultPcc":"2BQ6"},
 					{"id":"5","gds":"apollo","area":"E","agentId":"6206","defaultPcc":"GTTDD"},
-					{"id":"16","gds":"galileo","area":"A","agentId":"6206","defaultPcc":"711M"},
-					{"id":"17","gds":"galileo","area":"B","agentId":"6206","defaultPcc":"K9P"},
-					{"id":"18","gds":"galileo","area":"C","agentId":"6206","defaultPcc":"711M"},
-					{"id":"19","gds":"galileo","area":"D","agentId":"6206","defaultPcc":"711M"},
-					{"id":"20","gds":"galileo","area":"E","agentId":"6206","defaultPcc":"54F2"},
-					{"id":"6","gds":"sabre","area":"A","agentId":"6206","defaultPcc":"6IIF"},
-					{"id":"7","gds":"sabre","area":"B","agentId":"6206","defaultPcc":"6IIF"},
-					{"id":"8","gds":"sabre","area":"C","agentId":"6206","defaultPcc":"6IIF"},
-					{"id":"9","gds":"sabre","area":"D","agentId":"6206","defaultPcc":"6IIF"},
-					{"id":"10","gds":"sabre","area":"E","agentId":"6206","defaultPcc":"6IIF"},
-					{"id":"11","gds":"sabre","area":"F","agentId":"6206","defaultPcc":"6IIF"},
 				]),
 			},
 			HighlightRules: {
@@ -93,8 +77,8 @@ class ProcessTerminalInputTest extends require('../../../backend/Transpiled/Lib/
 		let unit = this;
 		let gds = testCase.gds;
 		/** @param stateful = require('StatefulSession.js')() */
-		let getActual = async ({stateful, input}) => {
-			let actual = await ProcessTerminalInput({stateful, ...input});
+		let getActual = async ({stateful, input, gdsClients}) => {
+			let actual = await ProcessTerminalInput({stateful, ...input, gdsClients, dialect: 'apollo'});
 			actual.fullState = stateful.getFullState();
 			return actual;
 		};
