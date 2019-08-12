@@ -1,8 +1,8 @@
+const LocationGeographyProvider = require('../Transpiled/Rbs/DataProviders/LocationGeographyProvider.js');
 const GdsSession = require('./GdsSession.js');
 const Rej = require('../../node_modules/klesun-node-tools/src/Rej.js');
 const {NotImplemented, BadRequest, ServiceUnavailable, nonEmpty} = require("klesun-node-tools/src/Rej.js");
 const FluentLogger = require("../LibWrappers/FluentLogger.js");
-const LocationGeographyProvider = require('../Transpiled/Rbs/DataProviders/LocationGeographyProvider.js');
 const Pccs = require("../Repositories/Pccs");
 const Misc = require("../Transpiled/Lib/Utils/MaskUtil");
 const {getConfig} = require('../Config.js');
@@ -30,6 +30,7 @@ let StatefulSession = ({
 	leadIdToData = {},
 	askClient = null,
 	startDt = new Date().toISOString(),
+	Airports = require('../Repositories/Airports.js'),
 }) => {
 	askClient = askClient || ((msgData) => ServiceUnavailable('Client Socket not stored in GRECT session'));
 	let gds = session.context.gds;
@@ -118,7 +119,7 @@ let StatefulSession = ({
 				return Promise.resolve(rs.value);
 			}
 		}),
-		getGeoProvider: () => new LocationGeographyProvider(),
+		getGeoProvider: () => new LocationGeographyProvider({Airports}),
 		getPccDataProvider: () => (gds, pcc) => Pccs.findByCode(gds, pcc),
 		getLeadAgent: () => null,
 		getAgent: getAgent,
