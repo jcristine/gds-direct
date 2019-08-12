@@ -87,6 +87,7 @@ const ApolloBuildItinerary = ({
 
 		const byStatus = _.groupBy(itinerary, e => e.segmentStatus);
 		const startDate = baseDate;
+		let reservation = null;
 
 		// Travelport returns SYSTEM ERROR if you book GK and SS segments at same time
 		for(const segment of Object.values(byStatus)) {
@@ -117,11 +118,13 @@ const ApolloBuildItinerary = ({
 						errorType: REBUILD_MULTISEGMENT,
 						errorData: {response: result.error},
 					};
+				} else {
+					reservation = result.reservation;
 				}
 			}
 		}
 
-		return {success: true, segmentsSold: soldCount};
+		return {success: true, segmentsSold: soldCount, reservation};
 	};
 
 	const execute = () => {
