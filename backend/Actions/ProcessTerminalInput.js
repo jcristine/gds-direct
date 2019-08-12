@@ -207,7 +207,7 @@ let ProcessTerminalInput = async ({
 		if (gds === 'apollo') {
 			gdsResult = await ApoRunCmdRq({...cmdRqData, travelport});
 		} else if (gds === 'sabre') {
-			gdsResult = await SabRunCmdRq(cmdRqData);
+			gdsResult = await SabRunCmdRq({...cmdRqData, sabreClient: sabre});
 		} else if (gds === 'amadeus') {
 			gdsResult = await AmaRunCmdRq({...cmdRqData, amadeusClient: amadeus});
 		} else if (gds === 'galileo') {
