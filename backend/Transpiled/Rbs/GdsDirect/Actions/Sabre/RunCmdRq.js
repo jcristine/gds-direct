@@ -28,6 +28,8 @@ const Rej = require('klesun-node-tools/src/Rej.js');
 const execute = ({
 	stateful, cmdRq,
 	PtcUtil = require('../../../../Rbs/Process/Common/PtcUtil.js'),
+	useXml = true,
+	sabreClient = require('../../../../../GdsClients/SabreClient'),
 }) => {
 
 class RunCmdRq {
@@ -39,7 +41,7 @@ class RunCmdRq {
 	/** @param $statefulSession = await require('StatefulSession.js')() */
 	constructor() {
 		this.$log = ($msg, $data) => {};
-		this.$useXml = false;
+		this.$useXml = true;
 	}
 
 	setLog($log) {
@@ -618,41 +620,50 @@ class RunCmdRq {
 	}
 
 	async bookItinerary($desiredSegments, $fallbackToGk) {
-		let $newSegments, $result, $error, $cmd, $sortResult;
+		let $newSegments, result, $error, $cmd, $sortResult;
 
-		$newSegments = $desiredSegments.map(($seg) => {
+		$newSegments = $desiredSegments.map($seg => {
 			let $newStatus = $seg['segmentStatus'];
 			// Sabre needs NN status in cmd to sell SS
 			// American airline doesn't allow direct sell with GK statuses
 			$seg['segmentStatus'] = php.in_array($newStatus, ['GK', 'SS'])
-				? ($seg['airline'] != 'AA' ? 'GK' : 'NN')
+				? $seg['airline'] != 'AA' ? 'GK' : 'NN'
 				: $newStatus;
 			return $seg;
 		});
 
 		stateful.flushCalledCommands();
-		$result = await (new SabreBuildItineraryAction())
+		result = await (new SabreBuildItineraryAction({sabreClient}))
 			.setSession(stateful)
+			.useXml(this.$useXml)
 			.execute($newSegments, true);
 
-		if ($error = this.constructor.transformBuildError($result)) {
+		if(this.$useXml && result.airSegmentCount > 0) {
+			stateful.updateAreaState({
+				type: '!xml:EnhancedAirBookRQ',
+				state: {hasPnr: true, canCreatePq: false},
+			});
+		}
+
+		if ($error = this.constructor.transformBuildError(result)) {
 			return {
 				'calledCommands': stateful.flushCalledCommands(),
 				'errors': [$error],
 			};
+		}
+
+		let cmdRec = result.pnrCmdRec;
+		if ($fallbackToGk) {
+			$cmd = 'WC' + php.implode('/', $newSegments.map($seg => $seg['segmentNumber'] + $seg['bookingClass']));
+			cmdRec = await this.runCmd($cmd);
+		}
+		$sortResult = await this.processSortItinerary()
+			.catch(exc => ({errors: ['Did not SORT' + exc]}));
+
+		if (!php.empty($sortResult['errors'])) {
+			return {'calledCommands': cmdRec ? [cmdRec] : []};
 		} else {
-			let cmdRec = $result.pnrCmdRec;
-			if ($fallbackToGk) {
-				$cmd = 'WC' + php.implode('/', $newSegments.map(($seg) => $seg['segmentNumber'] + $seg['bookingClass']));
-				cmdRec = await this.runCmd($cmd);
-			}
-			$sortResult = await this.processSortItinerary()
-				.catch(exc => ({errors: ['Did not SORT' + exc]}));
-			if (!php.empty($sortResult['errors'])) {
-				return {'calledCommands': [cmdRec]};
-			} else {
-				return {'calledCommands': $sortResult['calledCommands']};
-			}
+			return {'calledCommands': $sortResult['calledCommands']};
 		}
 	}
 
@@ -1026,7 +1037,9 @@ class RunCmdRq {
 	}
 }
 
-return new RunCmdRq().execute(cmdRq);
+return new RunCmdRq()
+	.useXml(useXml)
+	.execute(cmdRq);
 
 };
 
