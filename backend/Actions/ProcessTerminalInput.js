@@ -1,5 +1,3 @@
-const AmadeusClient = require('../GdsClients/AmadeusClient.js');
-const TravelportClient = require('../GdsClients/TravelportClient.js');
 const GdsSession = require('../GdsHelpers/GdsSession.js');
 const AddMpRemark = require('./AddMpRemark.js');
 const GetCurrentPnr = require('./GetCurrentPnr.js');
@@ -26,6 +24,7 @@ const TooManyRequests = require("klesun-node-tools/src/Rej").TooManyRequests;
 const NotImplemented = require("klesun-node-tools/src/Rej").NotImplemented;
 const {hrtimeToDecimal} = require('klesun-node-tools/src/Utils/Misc.js');
 const _ = require('lodash');
+const {coverExc} = require('klesun-node-tools/src/Lang.js');
 
 /**
  * @param '$BN1|2*INF'
@@ -279,22 +278,30 @@ let ProcessTerminalInput = async ({
 		return configPcc;
 	};
 
-	let ensureConfigPcc = async (stateful) => {
+	/**
+	 * if no PCC is currently active - emulate into the
+	 * one specified in user config for this work area
+	 */
+	let ensureFittingPcc = async (stateful) => {
 		let areaState = stateful.getSessionData();
 		if (!areaState.cmdCnt || !areaState.pcc) {
 			let defaultPcc = await getDefaultPcc(areaState.area, stateful);
 			if (defaultPcc && defaultPcc !== areaState.pcc) {
 				let cmdRq = translateCmd('apollo', stateful.gds, 'SEM/' + defaultPcc + '/AG').cmd;
-				return runCmdRq({cmdRq});
+				return runCmdRq({cmdRq}).catch(coverExc(Rej.list, exc => ({
+					// show the PCC emulation error, but still continue
+					// with normal flow to not hang in "Invalid PCC" state
+					messages: [{type: 'error', text: 'PCC ' + defaultPcc + ' not emulated - ' + exc}],
+				})));
 			}
 		}
 		return {calledCommands: [], messages: []};
 	};
 
 	let processNormalized = async ({stateful, cmdRq}) => {
-		let prePccResult = await ensureConfigPcc(stateful);
+		let prePccResult = await ensureFittingPcc(stateful);
 		let rbsResult = await runCmdRq({cmdRq, stateful});
-		let postPccResult = await ensureConfigPcc(stateful); // if this command changed area
+		let postPccResult = await ensureFittingPcc(stateful); // if this command changed area
 
 		return {...rbsResult,
 			calledCommands: []
