@@ -11,12 +11,15 @@ module.exports.buildPnrXmlDataObject = params => js2xml([
 	{SessionMods: [
 		{AreaInfoReq: null},
 	]},
-	{PNRBFRetrieveMods: [params.recordLocator ?
-		{PNRAddr: [{RecLoc: params.recordLocator}]} : {CurrentPNR: null},
-	]},
 	{AirSegSellMods: (params.addAirSegments || [])
 		.map(transformAirSegmentForSoap)
 		.map(v => ({AirSegSell: v}))},
+	// note, position of <PNRBFRetrieveMods/> element is important: if it were placed before
+	// <AirSegSellMods/>, it would not include the newly added segments with their numbers
+	// the code outside is expecting them to be included, so let's make sure this element is always in the end
+	{PNRBFRetrieveMods: [params.recordLocator ?
+		{PNRAddr: [{RecLoc: params.recordLocator}]} : {CurrentPNR: null},
+	]},
 ]);
 
 // parses travelport soap request response body and build corresponding object
