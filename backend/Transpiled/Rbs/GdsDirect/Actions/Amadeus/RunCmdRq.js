@@ -786,35 +786,35 @@ class RunCmdRq {
 		return php.array_values(php.array_diff(AREA_LETTERS, $occupiedAreas));
 	}
 
-	async changePcc($pcc) {
+	async changePcc(pcc) {
 		let $calledCommands, $jdDump, $parsed;
 
 		$calledCommands = [];
 
-		if (stateful.getSessionData()['pcc'] === $pcc) {
-			return {'errors': [Errors.getMessage(Errors.ALREADY_IN_THIS_PCC, {'pcc': $pcc})]};
+		if (stateful.getSessionData()['pcc'] === pcc) {
+			return {'errors': [Errors.getMessage(Errors.ALREADY_IN_THIS_PCC, {'pcc': pcc})]};
 		}
 
 		// check that there is no PNR in session to match GDS behaviour
 		if (stateful.getSessionData().hasPnr) {
-			return {'errors': [Errors.getMessage(Errors.LEAVE_PNR_CONTEXT, {'pcc': $pcc})]};
+			return {'errors': [Errors.getMessage(Errors.LEAVE_PNR_CONTEXT, {'pcc': pcc})]};
 		}
 
-		let areaState = await this.startNewAreaSession(stateful.getSessionData().area, $pcc)
-			.catch(exc => this.constructor.formatGtlPccError(exc, $pcc));
+		let areaState = await this.startNewAreaSession(stateful.getSessionData().area, pcc)
+			.catch(exc => this.constructor.formatGtlPccError(exc, pcc));
 
-		areaState.cmdCnt = 1; // to not trigger default area PCC fallback later
+		areaState.cmdCnt = 1;
 
 		// sometimes when you request invalid PCC, Amadeus fallbacks to
 		// SFO1S2195 - should call >JD; and check that PCC is what we requested
 		let jdCmdRec = await amadeusClient.runCmd({command: 'JD'}, areaState.gdsData);
 		$jdDump = jdCmdRec.output;
 		$parsed = WorkAreaScreenParser.parse($jdDump);
-		if ($parsed['pcc'] !== $pcc) {
+		if ($parsed['pcc'] !== pcc) {
 			amadeusClient.closeSession(areaState.gdsData);
 			return {
 				'calledCommands': [{cmd: 'JD', output: $jdDump}],
-				'errors': ['Failed to change PCC - resulting PCC ' + $parsed['pcc'] + ' does not match requested PCC ' + $pcc],
+				'errors': ['Failed to change PCC - resulting PCC ' + $parsed['pcc'] + ' does not match requested PCC ' + pcc],
 			};
 		}
 
@@ -824,7 +824,7 @@ class RunCmdRq {
 
 		return {
 			'calledCommands': $calledCommands,
-			'userMessages': ['Successfully changed PCC to ' + $pcc],
+			'userMessages': ['Successfully changed PCC to ' + pcc],
 		};
 	}
 

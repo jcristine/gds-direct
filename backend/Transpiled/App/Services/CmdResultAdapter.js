@@ -31,19 +31,18 @@ const clearOutput =  ($output) => {
 };
 
 /** Append output by custom strings */
-const appendOutput =  ($output, $messages) => {
-	let $errors = '';
-	if (!empty($messages['info'])) {
-		for (let $message of $messages['info']) {
-			$errors = PHP_EOL + highlightWarning($message);
+const appendOutput = ($output, $messages) => {
+	return $output + ($messages || []).reduce((acc, message) => {
+		if(message.type === 'error') {
+			acc += PHP_EOL + highlightError(message.text);
 		}
-	}
-	if (!empty($messages['error'])) {
-		for (let $message of $messages['error']) {
-			$errors = PHP_EOL + highlightError($message);
+
+		if(message.type === 'info') {
+			acc += PHP_EOL + highlightWarning(message.text);
 		}
-	}
-	return $output + $errors;
+
+		return acc;
+	}, '');
 };
 
 const formatOutput = async ({
@@ -102,7 +101,7 @@ const CmdResultAdapter = ({
 		let whenFormatted = formatOutput({gds, cmdRq, calledCommands, HighlightRules});
 		return whenFormatted
 			.then(({output, appliedRules}) => {
-				output = appendOutput(output, typeToMsgs);
+				output = appendOutput(output, messages);
 				let cmdTimes = rbsResp.calledCommands.map(rec => rec.duration).filter(a => a);
 				return {
 					output: output || rbsResp.status,
