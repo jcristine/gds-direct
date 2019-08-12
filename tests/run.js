@@ -4,6 +4,7 @@ require('./disableSideEffects.js');
 
 const Config = require('../backend/Config.js');
 const RunTests = require('klesun-node-tools/src/Transpiled/RunTests.js');
+const {timeout} = require('klesun-node-tools/src/Lang.js');
 
 const main = async () => {
 	let services = Config.getExternalServices();
@@ -13,7 +14,7 @@ const main = async () => {
 	(await Config.getConfig().catch(exc => ({}))).external_service = {};
 
 	console.log('Starting unit tests');
-	RunTests({
+	return RunTests({
 		rootPath: __dirname + '/backend/',
 		ignoredPaths: [
 			__dirname + '/backend/Transpiled/Lib/TestCase.js',
@@ -24,4 +25,7 @@ const main = async () => {
 	});
 };
 
-main();
+timeout(120, main()).finally(exc => {
+	console.error('Tests script timed out', exc);
+	process.exit(124);
+});

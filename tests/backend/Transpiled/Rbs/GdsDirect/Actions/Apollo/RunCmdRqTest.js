@@ -1397,7 +1397,6 @@ class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
 			},
 		});
 
-		//
 		$list.push({
 			'input': {'cmdRequested': 'STOREJCB', 'title': 'STORE{ptc} alias example'},
 			'output': {
