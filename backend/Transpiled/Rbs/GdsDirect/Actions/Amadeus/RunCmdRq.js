@@ -113,7 +113,7 @@ class RunCmdRq {
 	static formatGtlPccError($exc, pcc) {
 		let prefix = 'Failed to start session with PCC ' + pcc + ' - ';
 		if (php.preg_match(/\bSoapFault: *11|\Session\b/, ($exc.message || ''))) {
-			return Rej.BadRequest('Invalid PCC - ' + pcc);
+			return Rej.BadRequest('Invalid PCC');
 		} else {
 			return UnprocessableEntity(prefix + 'Unexpected GTL error - ' + php.preg_replace(/\s+/, ' ', php.substr($exc.message || '', -100)));
 		}
@@ -791,8 +791,6 @@ class RunCmdRq {
 
 		$calledCommands = [];
 
-		const previousPcc = stateful.getSessionData().pcc;
-
 		if (stateful.getSessionData()['pcc'] === pcc) {
 			return {'errors': [Errors.getMessage(Errors.ALREADY_IN_THIS_PCC, {'pcc': pcc})]};
 		}
@@ -802,35 +800,8 @@ class RunCmdRq {
 			return {'errors': [Errors.getMessage(Errors.LEAVE_PNR_CONTEXT, {'pcc': pcc})]};
 		}
 
-		let areaState;
-		const silentErrors = [];
-
-		// Try catch here is is to mitigate problem if default pcc for area isn't valid
-		// Area should be still usable, as remedy for that we make sure that there is
-		// session running in the area with a valid pcc
-		try {
-			areaState = await this.startNewAreaSession(stateful.getSessionData().area, pcc)
-				.catch(exc => this.constructor.formatGtlPccError(exc, pcc));
-
-		} catch(e) {
-			const state = stateful.getSessionData();
-
-			// Bad request error is the one formatGtlPccError will produce in case if
-			// pcc isn't valid, cmdCnt gets set to non zero value on successful change
-			// here having it non zero would mean that this is command from terminal and
-			// not by product of ProcessTerminalInput.ensureConfigPcc
-			if(!Rej.BadRequest.matches(e.httpStatusCode) || state.cmdCnt) {
-				throw e;
-			}
-
-			silentErrors.push(e.message);
-
-			pcc = previousPcc;
-			// This will force it to still keep using previously created session, all it
-			// all it needs for ensureConfigPcc to stop keep on calling change pcc is to
-			// set cmdCnt
-			areaState = state;
-		}
+		let areaState = await this.startNewAreaSession(stateful.getSessionData().area, pcc)
+			.catch(exc => this.constructor.formatGtlPccError(exc, pcc));
 
 		areaState.cmdCnt = 1;
 
@@ -842,7 +813,6 @@ class RunCmdRq {
 		if ($parsed['pcc'] !== pcc) {
 			amadeusClient.closeSession(areaState.gdsData);
 			return {
-				silentErrors,
 				'calledCommands': [{cmd: 'JD', output: $jdDump}],
 				'errors': ['Failed to change PCC - resulting PCC ' + $parsed['pcc'] + ' does not match requested PCC ' + pcc],
 			};
@@ -853,7 +823,6 @@ class RunCmdRq {
 		amadeusClient.closeSession(oldGdsData);
 
 		return {
-			silentErrors,
 			'calledCommands': $calledCommands,
 			'userMessages': ['Successfully changed PCC to ' + pcc],
 		};
@@ -1208,7 +1177,6 @@ class RunCmdRq {
 			'status': $status,
 			'calledCommands': $calledCommands,
 			'userMessages': $userMessages,
-			silentErrors: $callResult.silentErrors || [],
 		};
 	}
 }
