@@ -3,8 +3,8 @@ let ioredis = require("ioredis");
 let {getRedisConfig} = require('klesun-node-tools/src/Config.js');
 const Conflict = require("klesun-node-tools/src/Rej").Conflict;
 let {never, StrConsts} = require('../Utils/StrConsts.js');
-const nonEmpty = require("klesun-node-tools/src/Rej").nonEmpty;
-const {onDemand} = require("klesun-node-tools/src/Lang.js");
+const {nonEmpty, onDemand} = require("klesun-node-tools/src/Lang.js");
+const Rej = require("klesun-node-tools/src/Rej.js");
 
 exports.keys = StrConsts({
 	get SESSION_ACTIVES() { never(); },
@@ -27,6 +27,9 @@ exports.events = StrConsts({
 /** @type {function(): Promise<IORedis.Redis>} */
 let getClient = onDemand(async () => {
 	let cfg = await getRedisConfig();
+	if (!cfg || !cfg.REDIS_HOST) {
+		return Rej.BadRequest('Redis address not supplied');
+	}
 	return new ioredis(cfg.REDIS_PORT, cfg.REDIS_HOST);
 });
 /**
@@ -35,6 +38,9 @@ let getClient = onDemand(async () => {
  */
 exports.getSubscriber = onDemand(async () => {
 	let cfg = await getRedisConfig();
+	if (!cfg || !cfg.REDIS_HOST) {
+		return Rej.BadRequest('Redis address not supplied');
+	}
 	return new ioredis(cfg.REDIS_PORT, cfg.REDIS_HOST);
 });
 

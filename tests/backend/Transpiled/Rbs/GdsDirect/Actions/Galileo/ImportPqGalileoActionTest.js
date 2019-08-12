@@ -1217,7 +1217,7 @@ class ImportPqGalileoActionTest extends require('../../../../../../../backend/Tr
 	async testAction($input, $expectedOutput, $calledCommands) {
 		let $actual;
 
-		$actual = await (new ImportPqGalileoAction(false))
+		$actual = await new ImportPqGalileoAction({useXml: false})
 			.fetchOptionalFields($input.fetchOptionalFields)
 			.setSession((new AnyGdsStubSession($calledCommands)).setGds('galileo'))
 			.setPreCalledCommandsFromDb($input['previousCommands'])

@@ -3,13 +3,8 @@ const TravelportClient = require('../GdsClients/TravelportClient.js');
 const GdsSession = require('../GdsHelpers/GdsSession.js');
 const AddMpRemark = require('./AddMpRemark.js');
 const GetCurrentPnr = require('./GetCurrentPnr.js');
-const Debug = require('klesun-node-tools/src/Debug.js');
-const LocalDiag = require('../Repositories/LocalDiag.js');
-const RbsClient = require('../IqClients/RbsClient.js');
 
 let {fetchAll, wrap, extractTpTabCmds} = require('../GdsHelpers/TravelportUtils.js');
-const StatefulSession = require("../GdsHelpers/StatefulSession.js");
-const AreaSettings = require("../Repositories/AreaSettings");
 const ApoRunCmdRq = require("../Transpiled/Rbs/GdsDirect/Actions/Apollo/RunCmdRq.js");
 const SabRunCmdRq = require("../Transpiled/Rbs/GdsDirect/Actions/Sabre/RunCmdRq.js");
 const GalRunCmdRq = require("../Transpiled/Rbs/GdsDirect/Actions/Galileo/RunCmdRq.js");
@@ -21,21 +16,15 @@ const CommonDataHelper = require("../Transpiled/Rbs/GdsDirect/CommonDataHelper")
 const CmsSabreTerminal = require("../Transpiled/Rbs/GdsDirect/GdsInterface/CmsSabreTerminal");
 const CmsApolloTerminal = require("../Transpiled/Rbs/GdsDirect/GdsInterface/CmsApolloTerminal");
 const GdsDialectTranslator = require('../Transpiled/Rbs/GdsDirect/DialectTranslator/GdsDialectTranslator.js');
-const TerminalService = require('../Transpiled/App/Services/CmdResultAdapter.js');
-const TerminalBuffering = require("../Repositories/CmdRqLog");
+const CmdResultAdapter = require('../Transpiled/App/Services/CmdResultAdapter.js');
 const Agents = require("../Repositories/Agents");
 const GdsDirect = require("../Transpiled/Rbs/GdsDirect/GdsDirect");
 const Rej = require("klesun-node-tools/src/Rej");
 const TerminalSettings = require("../Transpiled/App/Models/Terminal/TerminalSettings");
 const CommandCorrector = require("../Transpiled/Rbs/GdsDirect/DialectTranslator/CommandCorrector");
 const AliasParser = require("../Transpiled/Rbs/GdsDirect/AliasParser");
-const GdsSessions = require("../Repositories/GdsSessions");
-const CmsClient = require("../IqClients/CmsClient");
-const BadRequest = require("klesun-node-tools/src/Rej").BadRequest;
 const TooManyRequests = require("klesun-node-tools/src/Rej").TooManyRequests;
 const NotImplemented = require("klesun-node-tools/src/Rej").NotImplemented;
-const Db = require('../Utils/Db.js');
-const {coverExc} = require('klesun-node-tools/src/Lang.js');
 const {hrtimeToDecimal} = require('klesun-node-tools/src/Utils/Misc.js');
 const _ = require('lodash');
 
@@ -243,105 +232,6 @@ let translateCmd = (fromGds, toGds, inputCmd) => {
 	};
 };
 
-let getDefaultPcc = async (area, stateful) => {
-	let gds = stateful.gds;
-	let agentId = stateful.getAgent().getId();
-	let areaSettings = await AreaSettings.getByAgent(agentId);
-	let configPcc = areaSettings
-		.filter(r => r.area === area && r.gds === stateful.gds)
-		.map(r => r.defaultPcc)[0];
-
-	configPcc = configPcc || TerminalSettings.getForcedStartPcc(gds, area);
-	return configPcc;
-};
-
-let ensureConfigPcc = async (stateful) => {
-	let areaState = stateful.getSessionData();
-	if (!areaState.cmdCnt || !areaState.pcc) {
-		let defaultPcc = await getDefaultPcc(areaState.area, stateful);
-		if (defaultPcc && defaultPcc !== areaState.pcc) {
-			let cmd = translateCmd('apollo', stateful.gds, 'SEM/' + defaultPcc + '/AG').cmd;
-			return runCmdRq(cmd, stateful);
-		}
-	}
-	return {calledCommands: [], messages: []};
-};
-
-let countsAsActivity = (prevRqCmd, rqCmd) => {
-	let repeatAllowed = ['MD', 'MU', 'A*', '1*'];
-	if (!prevRqCmd || repeatAllowed.includes(rqCmd)) {
-		return true;
-	} else {
-		// calling *R *R *R *R ... for hours should not count as activity
-		return prevRqCmd !== rqCmd;
-	}
-};
-
-let handleCmsExc = (exc) => {
-	let type = null;
-	let data = Debug.getExcData(exc);
-	let excStr = (exc + '').slice(0, 2000);
-	if (excStr.match(/504 Gateway Time-out/)) {
-		type = LocalDiag.types.REPORT_CMD_CALLED_RQ_TIMEOUT;
-	} else if (excStr.match(/405 Not Allowed/)) {
-		type = LocalDiag.types.REPORT_CMD_CALLED_RQ_NOT_ALLOWED;
-	} else if (excStr.match(/Internal service error/)) {
-		type = LocalDiag.types.REPORT_CMD_CALLED_RQ_INTERNAL_SERVICE_ERROR;
-	}
-	if (type) {
-		return LocalDiag({type, data});
-	} else {
-		return Promise.reject(exc);
-	}
-};
-
-let logRqCmd = async ({params, whenCmdRqId, whenCmsResult}) => {
-	let {session, rqBody, emcUser} = params;
-	let calledDtObj = new Date();
-	let cmsResult = await whenCmsResult
-		.catch(coverExc(Rej.list, exc => Rej.NoContent('Cmd Failed', exc)));
-	TerminalBuffering.logOutput(rqBody, session, whenCmdRqId, cmsResult.output);
-	GdsSessions.updateUserAccessTime(session);
-	let duration = ((Date.now() - calledDtObj.getTime()) / 1000).toFixed(3);
-	return whenCmdRqId.then(async cmdRqId => {
-		let prevCmdRqRow = await Db.with(db => db.fetchOne({
-			table: 'cmd_rq_log',
-			where: [
-				['id', '<', cmdRqId],
-				['sessionId', '=', session.id],
-			],
-			orderBy: [['id', 'DESC']],
-		})).catch(exc => null);
-
-		if (prevCmdRqRow && countsAsActivity(prevCmdRqRow.command, rqBody.command)) {
-			return CmsClient.reportCmdCalled({
-				cmd: rqBody.command,
-				agentId: emcUser.id,
-				calledDt: calledDtObj.toISOString(),
-				duration: duration,
-			}).catch(coverExc([Rej.BadGateway], handleCmsExc));
-		}
-	});
-};
-
-let processNormalized = async ({stateful, cmdRq}) => {
-	let prePccResult = await ensureConfigPcc(stateful);
-	let rbsResult = await runCmdRq(cmdRq, stateful);
-	let postPccResult = await ensureConfigPcc(stateful); // if this command changed area
-
-	return {...rbsResult,
-		calledCommands: []
-			.concat(prePccResult.calledCommands || [])
-			.concat(rbsResult.calledCommands || [])
-			.concat(postPccResult.calledCommands || [])
-			.map(r => transformCalledCommand(r, stateful)),
-		messages: []
-			.concat(prePccResult.messages || [])
-			.concat(rbsResult.messages || [])
-			.concat(postPccResult.messages || []),
-	};
-};
-
 let extendActions = async ({whenCmsResult, stateful}) => {
 	let agent = stateful.getAgent();
 	let didSavePnr = false;
@@ -369,53 +259,82 @@ let extendActions = async ({whenCmsResult, stateful}) => {
 	return result;
 };
 
-let initStateful = async (params) => {
-	let stateful = await StatefulSession.makeFromDb(params);
-	stateful.addPnrSaveHandler(recordLocator => RbsClient.reportCreatedPnr({
-		recordLocator: recordLocator,
-		gds: params.session.context.gds,
-		pcc: stateful.getSessionData().pcc,
-		agentId: params.session.context.agentId,
-	}));
-	return stateful;
-};
-
 /**
  * auto-correct typos in the command, convert it between
  * GDS dialects, run _alias_ chain of commands, etc...
  * @param session = at('GdsSessions.js').makeSessionRecord()
  * @param {{command: '*R'}} rqBody = at('MainController.js').normalizeRqBody()
  */
-let ProcessTerminalInput = async (params) => {
-	let {session, rqBody} = params;
-	let whenCmdRqId = TerminalBuffering.storeNew(rqBody, session);
-	let stateful = await initStateful({...params, whenCmdRqId});
-	let cmdRq = rqBody.command;
-	let gds = session.context.gds;
-	let dialect = rqBody.language || gds;
-	let translated = translateCmd(dialect, gds, cmdRq);
-	let cmdRqNorm = translated.cmd;
+let ProcessTerminalInput = async ({
+	stateful, cmdRq, dialect = null,
+	AreaSettings = require("../Repositories/AreaSettings.js"),
+}) => {
+	let getDefaultPcc = async (area, stateful) => {
+		let gds = stateful.gds;
+		let agentId = stateful.getAgent().getId();
+		let areaSettings = await AreaSettings.getByAgent(agentId);
+		let configPcc = areaSettings
+			.filter(r => r.area === area && r.gds === stateful.gds)
+			.map(r => r.defaultPcc)[0];
 
-	let callsLimit = stateful.getAgent().getUsageLimit();
-	if (callsLimit) {
-		let callsUsed = await Agents.getGdsDirectCallsUsed(stateful.getAgent().getId());
-		if (+callsUsed >= +callsLimit) {
-			return TooManyRequests('You exhausted your GDS Direct usage limit for today (' + callsUsed + ' >= ' + callsLimit + ')');
+		configPcc = configPcc || TerminalSettings.getForcedStartPcc(gds, area);
+		return configPcc;
+	};
+
+	let ensureConfigPcc = async (stateful) => {
+		let areaState = stateful.getSessionData();
+		if (!areaState.cmdCnt || !areaState.pcc) {
+			let defaultPcc = await getDefaultPcc(areaState.area, stateful);
+			if (defaultPcc && defaultPcc !== areaState.pcc) {
+				let cmd = translateCmd('apollo', stateful.gds, 'SEM/' + defaultPcc + '/AG').cmd;
+				return runCmdRq(cmd, stateful);
+			}
 		}
-	}
-	let whenCmsResult = processNormalized({
-		stateful, cmdRq: cmdRqNorm,
-	}).then(cmsResult => ({...cmsResult,
-		messages: (translated.messages || [])
-			.concat(cmsResult.messages || []),
-	})).then((rbsResult) => {
-		let termSvc = new TerminalService(stateful.gds);
-		return termSvc.addHighlighting(cmdRq, rbsResult, stateful.getFullState());
-	});
-	whenCmsResult = extendActions({whenCmsResult, stateful});
-	logRqCmd({params, whenCmdRqId, whenCmsResult});
+		return {calledCommands: [], messages: []};
+	};
 
-	return whenCmsResult;
+	let processNormalized = async ({stateful, cmdRq}) => {
+		let prePccResult = await ensureConfigPcc(stateful);
+		let rbsResult = await runCmdRq(cmdRq, stateful);
+		let postPccResult = await ensureConfigPcc(stateful); // if this command changed area
+
+		return {...rbsResult,
+			calledCommands: []
+				.concat(prePccResult.calledCommands || [])
+				.concat(rbsResult.calledCommands || [])
+				.concat(postPccResult.calledCommands || [])
+				.map(r => transformCalledCommand(r, stateful)),
+			messages: []
+				.concat(prePccResult.messages || [])
+				.concat(rbsResult.messages || [])
+				.concat(postPccResult.messages || []),
+		};
+	};
+
+	const execute = async () => {
+		let gds = stateful.gds;
+		let translated = translateCmd(dialect || gds, gds, cmdRq);
+		let cmdRqNorm = translated.cmd;
+
+		let callsLimit = stateful.getAgent().getUsageLimit();
+		if (callsLimit) {
+			let callsUsed = await Agents.getGdsDirectCallsUsed(stateful.getAgent().getId());
+			if (+callsUsed >= +callsLimit) {
+				return TooManyRequests('You exhausted your GDS Direct usage limit for today (' + callsUsed + ' >= ' + callsLimit + ')');
+			}
+		}
+		let whenCmsResult = processNormalized({
+			stateful, cmdRq: cmdRqNorm,
+		}).then(cmsResult => ({...cmsResult,
+			messages: (translated.messages || [])
+				.concat(cmsResult.messages || []),
+		}));
+		whenCmsResult = extendActions({whenCmsResult, stateful});
+
+		return whenCmsResult;
+	};
+
+	return execute();
 };
 
 module.exports = ProcessTerminalInput;

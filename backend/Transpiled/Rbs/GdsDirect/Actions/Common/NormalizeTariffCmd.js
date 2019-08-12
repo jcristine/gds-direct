@@ -113,7 +113,7 @@ class NormalizeTariffCmd
 			$cmdData = require('../../../../Gds/Parsers/Amadeus/Commands/TariffCmdParser.js').parse($cmd);
 			$cmdData = this.constructor.normalizeAmadeusCmd($cmdData);
 		} else if ($gds === 'galileo') {
-			$cmdData = require('../../../../Gds/Parsers/Sabre/Commands/TariffCmdParser.js').parse($cmd);
+			$cmdData = require('../../../../Gds/Parsers/Galileo/Commands/TariffCmdParser.js').parse($cmd);
 			$cmdData = this.constructor.normalizeGalileoCmd($cmdData);
 		} else {
 			return null;

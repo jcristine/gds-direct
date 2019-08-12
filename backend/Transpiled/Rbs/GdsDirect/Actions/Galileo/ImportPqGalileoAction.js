@@ -17,7 +17,7 @@ const Rej = require('klesun-node-tools/src/Rej.js');
 const TravelportClient = require("../../../../../GdsClients/TravelportClient.js");
 
 class ImportPqGalileoAction extends AbstractGdsAction {
-	constructor(useXml = true, tpClient = TravelportClient()) {
+	constructor({useXml = true, travelport = TravelportClient()}) {
 		super();
 		this.$leadData = {};
 		this.$fetchOptionalFields = true;
@@ -26,7 +26,7 @@ class ImportPqGalileoAction extends AbstractGdsAction {
 		this.$allCommands = [];
 		this.$preCalledCommands = [];
 		this.useXml = useXml;
-		this.TravelportClient = tpClient;
+		this.travelport = travelport;
 	}
 
 	setLeadData($leadData) {
@@ -290,7 +290,7 @@ class ImportPqGalileoAction extends AbstractGdsAction {
 
 		$result = await (new ImportFareComponentsAction())
 			.useXml(this.useXml)
-			.setTravelportClient(this.TravelportClient)
+			.setTravelportClient(this.travelport)
 			.setSession(this.session).execute([16], 1);
 		if ($error = $result['error']) return {'error': $error};
 

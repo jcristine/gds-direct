@@ -167,7 +167,7 @@ let ImportPq = async ({
 		} else if (gds === 'sabre') {
 			importAct = new ImportPqSabreAction();
 		} else if (gds === 'galileo') {
-			importAct = new ImportPqGalileoAction({TravelportClient: travelport});
+			importAct = new ImportPqGalileoAction({travelport});
 		} else if (gds === 'amadeus') {
 			let amadeus = AmadeusClient.makeCustom({PersistentHttpRq});
 			importAct = new ImportPqAmadeusAction({amadeus});

@@ -43,6 +43,11 @@ let toHandleHttp = (httpAction) => (req, res) => {
 						type: LocalDiag.types.AMA_TMP_NETWORK_ERROR_UNABLE_TO_REACH,
 						data: errorData,
 					});
+				} else if ((exc + '').match(/Illogical conversation/)) {
+					LocalDiag({
+						type: LocalDiag.types.AMA_ILLOGICAL_CONVERSATION,
+						data: errorData,
+					});
 				} else {
 					Diag.logExc('HTTP request failed', errorData);
 				}
