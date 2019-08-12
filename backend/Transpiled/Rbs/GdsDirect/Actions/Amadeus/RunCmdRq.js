@@ -785,7 +785,7 @@ let execute = ({
 		let areaState = await startNewAreaSession(stateful.getSessionData().area, pcc)
 			.catch(exc => formatGtlPccError(exc, pcc));
 
-		areaState.cmdCnt = 1;
+		areaState.cmdCnt = 1; // to not trigger default area PCC fallback later
 
 		// sometimes when you request invalid PCC, Amadeus fallbacks to
 		// SFO1S2195 - should call >JD; and check that PCC is what we requested
