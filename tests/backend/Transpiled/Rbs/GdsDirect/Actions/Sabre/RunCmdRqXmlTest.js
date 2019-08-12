@@ -78,8 +78,8 @@ class RunCmdRqXmlTest extends require('../../../../Lib/TestCase.js') {
 	 */
 	async testAction(input, expected, sessionInfo) {
 		let session, actual;
-		const sabreClient = SabreClient.makeCustom();
-		sinon.stub(sabreClient, 'processPnr')
+		const sabre = SabreClient.makeCustom();
+		sinon.stub(sabre, 'processPnr')
 			// .withArgs()
 			.returns(Promise.resolve({
 				error: null,
@@ -110,7 +110,7 @@ class RunCmdRqXmlTest extends require('../../../../Lib/TestCase.js') {
 			}));
 		session = GdsDirectDefaults.makeStatefulSession('sabre', input, sessionInfo);
 		actual = await RunCmdRq({
-			sabreClient,
+			sabre,
 			stateful: session,
 			cmdRq: input['cmdRequested'],
 			useXml: true,

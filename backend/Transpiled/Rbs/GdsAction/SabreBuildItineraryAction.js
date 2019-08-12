@@ -29,10 +29,10 @@ let parseWaitlist = output => {
 };
 
 class SabreBuildItineraryAction extends AbstractGdsAction {
-	constructor({sabreClient = SabreClient}) {
+	constructor({sabre}) {
 		super();
 		this.$useXml = true;
-		this.sabreClient = sabreClient;
+		this.sabre = sabre;
 	}
 
 	useXml($flag) {
@@ -109,7 +109,7 @@ class SabreBuildItineraryAction extends AbstractGdsAction {
 			}),
 		};
 
-		const result = await this.sabreClient.processPnr(this.session.getGdsData(), params);
+		const result = await this.sabre.processPnr(this.session.getGdsData(), params);
 
 		if(result.error) {
 			return {

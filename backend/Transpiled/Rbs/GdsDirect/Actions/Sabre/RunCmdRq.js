@@ -221,7 +221,7 @@ const execute = ({
 	stateful, cmdRq,
 	PtcUtil = require('../../../../Rbs/Process/Common/PtcUtil.js'),
 	useXml = true,
-	sabreClient = require('../../../../../GdsClients/SabreClient'),
+	sabre = require('../../../../../GdsClients/SabreClient'),
 }) => {
 	const getRestrictedPccs =  () => {
 		return ['52ZG'];
@@ -617,7 +617,7 @@ const execute = ({
 		});
 
 		stateful.flushCalledCommands();
-		result = await (new SabreBuildItineraryAction({sabreClient}))
+		result = await (new SabreBuildItineraryAction({sabre}))
 			.setSession(stateful)
 			.useXml(useXml)
 			.execute($newSegments, true);
