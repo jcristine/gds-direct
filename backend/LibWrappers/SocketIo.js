@@ -16,7 +16,7 @@ let toAskClient = (socket) => {
 
 		let timeout = setTimeout(() => {
 			let error = 'Timed out while waiting for client response after ' + timeoutMs + ' ms';
-			reject(Rej.RequestTimeout.makeExc(error));
+			reject(Rej.RequestTimeout.makeExc(error, {isOk: true}));
 			rejects.delete(reject);
 		}, timeoutMs);
 
