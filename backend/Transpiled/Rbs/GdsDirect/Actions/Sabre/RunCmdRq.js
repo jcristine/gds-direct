@@ -40,35 +40,18 @@ class RunCmdRq {
 
 	/** @param $statefulSession = await require('StatefulSession.js')() */
 	constructor() {
-		this.$log = ($msg, $data) => {};
 		this.$useXml = true;
 	}
 
-	setLog($log) {
-
-		this.$log = $log;
-		return this;
-	}
-
-	log($msg, $data) {
-		let $log;
-
-		$log = this.$log;
-		$log($msg, $data);
-	}
-
 	getRestrictedPccs() {
-
 		return ['52ZG'];
 	}
 
 	isPccAllowed($pcc) {
-
 		return php.count(this.checkEmulatedPcc($pcc)) === 0;
 	}
 
 	checkEmulatedPcc($pcc) {
-
 		if (this.getAgent().canSwitchToAnyPcc()) {
 			return [];
 		} else if (!this.getAgent().canEmulateToRestrictedSabrePccs() &&
@@ -96,14 +79,6 @@ class RunCmdRq {
 		return php.in_array($parsedCmd['type'], ['openPnr', 'searchPnr', 'displayPnrFromList']);
 	}
 
-	// '¥NO ITIN¥', 'CNLD FROM  1 '
-	static isSuccessXiOutput($output) {
-
-		return php.trim($output) === '¥NO ITIN¥'
-		|| php.trim($output) === 'NO ITIN'
-		|| php.preg_match(/^\s*CNLD FROM\s*\d+\s*$/, $output);
-	}
-
 	/** @param $ranges = [['from' => 3, 'to' => 7], ['from' => 15]] */
 	static isInRanges($num, $ranges) {
 		let $range;
@@ -123,12 +98,10 @@ class RunCmdRq {
 	}
 
 	getSessionData() {
-
 		return stateful.getSessionData();
 	}
 
 	static hideSeaPassengers($gdsOutput) {
-
 		return php.str_replace('SEAMAN', 'ITSPE', $gdsOutput);
 	}
 
@@ -661,6 +634,10 @@ class RunCmdRq {
 			.catch(exc => ({errors: ['Did not SORT' + exc]}));
 
 		if (!php.empty($sortResult['errors'])) {
+			cmdRec = cmdRec || {
+				cmd: '*R',
+				output: (await this.getCurrentPnr()).getDump(),
+			};
 			return {'calledCommands': cmdRec ? [cmdRec] : []};
 		} else {
 			return {'calledCommands': $sortResult['calledCommands']};
@@ -683,7 +660,7 @@ class RunCmdRq {
 
 	getMultiPccTariffDisplay($realCmd) {
 
-		return (new GetMultiPccTariffDisplayAction()).setLog(this.$log).execute($realCmd, stateful);
+		return (new GetMultiPccTariffDisplayAction()).execute($realCmd, stateful);
 	}
 
 	/** @param $cmdRecs = TerminalCommandLog::getCurrentPnrCommands() */
