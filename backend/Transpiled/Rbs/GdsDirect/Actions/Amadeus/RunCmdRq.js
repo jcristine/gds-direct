@@ -190,7 +190,7 @@ const translateApolloPricingModifiers = ($apolloMods) => {
 let execute = ({
 	stateful, cmdRq,
 	PtcUtil = require('../../../../Rbs/Process/Common/PtcUtil.js'),
-	amadeusClient = AmadeusClient,
+	amadeus = AmadeusClient,
 }) => {
 
 	const makeCreatedForCmdIfNeeded = async () => {
@@ -342,7 +342,7 @@ let execute = ({
 		pcc = pcc || $row.pcc;
 		$row.area = area;
 		$row.pcc = pcc;
-		$row.gdsData = await amadeusClient.startSession({
+		$row.gdsData = await amadeus.startSession({
 			profileName: GdsProfiles.chooseAmaProfile($row.pcc),
 			pcc: pcc,
 		});
@@ -789,11 +789,11 @@ let execute = ({
 
 		// sometimes when you request invalid PCC, Amadeus fallbacks to
 		// SFO1S2195 - should call >JD; and check that PCC is what we requested
-		let jdCmdRec = await amadeusClient.runCmd({command: 'JD'}, areaState.gdsData);
+		let jdCmdRec = await amadeus.runCmd({command: 'JD'}, areaState.gdsData);
 		$jdDump = jdCmdRec.output;
 		$parsed = WorkAreaScreenParser.parse($jdDump);
 		if ($parsed['pcc'] !== pcc) {
-			amadeusClient.closeSession(areaState.gdsData);
+			amadeus.closeSession(areaState.gdsData);
 			return {
 				'calledCommands': [{cmd: 'JD', output: $jdDump}],
 				'errors': ['Failed to change PCC - resulting PCC ' + $parsed['pcc'] + ' does not match requested PCC ' + pcc],
@@ -802,7 +802,7 @@ let execute = ({
 
 		let oldGdsData = stateful.getGdsData();
 		await updateGdsData(areaState);
-		amadeusClient.closeSession(oldGdsData);
+		amadeus.closeSession(oldGdsData);
 
 		return {
 			'calledCommands': $calledCommands,
