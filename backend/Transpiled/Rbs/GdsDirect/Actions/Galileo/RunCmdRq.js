@@ -27,7 +27,6 @@ const php = require('klesun-node-tools/src/Transpiled/php.js');
 const GalileoRetrieveTicketsAction = require('../../../../Rbs/Process/Apollo/ImportPnr/Actions/RetrieveApolloTicketsAction.js');
 const Rej = require('klesun-node-tools/src/Rej.js');
 
-
 const doesStorePnr = ($cmd) => {
 	let $parsedCmd, $flatCmds, $cmdTypes;
 
@@ -137,6 +136,8 @@ const parseMultiPriceItineraryAlias = ($cmd) => {
 const RunCmdRq = ({
 	stateful, cmdRq,
 	PtcUtil = require('../../../../Rbs/Process/Common/PtcUtil.js'),
+	useXml = true,
+	travelport = require('../../../../../GdsClients/TravelportClient')(),
 }) => {
 	/** @param $data = Galileo\CommandParser::parseChangePnrRemarks()['data'] */
 	const checkChangeRemarks = async ($data) => {
@@ -653,7 +654,8 @@ const RunCmdRq = ({
 		// would be better to use number returned by GalileoBuildItineraryAction
 		// as it may be not in same order in case of marriages...
 			itinerary = itinerary.map((s, i) => ({...s, segmentNumber: +i + 1}));
-			let result = await (new RebuildInPccAction()).setSession(stateful)
+			let result = await (new RebuildInPccAction({useXml, travelport}))
+				.setSession(stateful)
 				.fallbackToAk(true).bookItinerary(itinerary);
 			let cmdRecs = stateful.flushCalledCommands();
 			if (php.empty(result.errors)) {
@@ -720,7 +722,7 @@ const RunCmdRq = ({
 			} || {})[$segmentStatus] || $segmentStatus;
 		}
 		stateful.flushCalledCommands();
-		$result = await (new RebuildInPccAction()).setSession(stateful)
+		$result = await (new RebuildInPccAction({useXml, travelport})).setSession(stateful)
 			.fallbackToAk($isSellStatus).execute($area, $pcc, $itinerary);
 		$calledCommands = stateful.flushCalledCommands();
 		if (php.empty($result['errors'])) {
@@ -747,8 +749,21 @@ const RunCmdRq = ({
 			$seg['segmentStatus'] = 'NN';
 			return $seg;
 		}, $akSegments);
-		$result = await (new GalileoBuildItineraryAction())
-			.setSession(stateful).execute($newSegs, true);
+
+		$result = await GalileoBuildItineraryAction({
+			session: stateful,
+			useXml,
+			travelport,
+			isParserFormat: true,
+		});
+
+		if(useXml && $result.segments.length > 0) {
+			this.session.updateAreaState({
+				type: '!xml:PNRBFManagement',
+				state: {hasPnr: true, canCreatePq: false},
+			});
+		}
+
 		if ($error = RebuildInPccAction.transformBuildError($result)) {
 			return {
 				'calledCommands': stateful.flushCalledCommands(),
