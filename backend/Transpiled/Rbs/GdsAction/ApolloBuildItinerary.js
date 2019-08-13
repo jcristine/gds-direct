@@ -8,6 +8,7 @@ const _ = require("lodash");
 const moment = require("moment");
 const php = require('klesun-node-tools/src/Transpiled/php.js');
 const TravelportClient = require("../../../GdsClients/TravelportClient");
+const TravelportBuildItineraryViaXml = require('./TravelportBuildItineraryActionViaXml');
 
 const isOutputValid = ($output) => {
 	let $line;
@@ -45,11 +46,11 @@ const ApolloBuildItinerary = ({
 	travelport = TravelportClient(),
 	useXml = false,
 }) => {
-	const executeViaTerminal = async ($itinerary) => {
+	const executeViaTerminal = async itinerary => {
 		let $segmentsSold, $i, $segment, $cmd, $output, $errorType, $tplData;
 		$segmentsSold = 0;
 
-		for ([$i, $segment] of Object.entries($itinerary)) {
+		for ([$i, $segment] of Object.entries(itinerary)) {
 			$cmd = makeDirectSellCmd($segment);
 			$output = (await fetchAll($cmd, session)).output;
 			if (php.trim($output) === 'UNA PROC') {
@@ -82,49 +83,30 @@ const ApolloBuildItinerary = ({
 		return {'success': true, 'segmentsSold': $segmentsSold};
 	};
 
-	const executeViaXml = async (itinerary) => {
-		let soldCount = 0;
+	const executeViaXml = async itinerary => {
+		const result = await TravelportBuildItineraryViaXml({
+			itinerary,
+			session,
+			baseDate,
+			travelport,
+		});
 
-		const byStatus = _.groupBy(itinerary, e => e.segmentStatus);
-		const startDate = baseDate;
-		let reservation = null;
+		const soldCount = result.segments.filter(seg => seg.success).length;
 
-		// Travelport returns SYSTEM ERROR if you book GK and SS segments at same time
-		for(const segment of Object.values(byStatus)) {
-			// Travelport returns SYSTEM ERROR if you book more than 8 segments at same time
-			for(const chunk of _.chunk(segment, 8)) {
-				const airSegments = chunk.map(segment => ({
-					airline: segment.airline,
-					flightNumber: segment.flightNumber,
-					bookingClass: segment.bookingClass,
-					departureDt: DateTime.decodeRelativeDateInFuture(segment.departureDate.parsed, startDate),
-					destinationDt: null,
-					departureAirport: segment.departureAirport,
-					destinationAirport: segment.destinationAirport,
-					segmentStatus: segment.segmentStatus,
-					seatCount: segment.seatCount,
-				}));
-
-				const params = {
-					addAirSegments: airSegments,
-				};
-
-				const result = await travelport.processPnr(session.getGdsData(), params);
-				soldCount += result.newAirSegments.filter(seg => seg.success).length;
-				if (result.error) {
-					return {
-						success: false,
-						segmentsSold: soldCount,
-						errorType: REBUILD_MULTISEGMENT,
-						errorData: {response: result.error},
-					};
-				} else {
-					reservation = result.reservation;
-				}
-			}
+		if(result.success) {
+			return {
+				success: true,
+				segmentsSold: soldCount,
+				reservation: result.reservation,
+			};
+		} else {
+			return {
+				success: false,
+				segmentsSold: soldCount,
+				errorType: result.errorType,
+				errorData: result.errorData,
+			};
 		}
-
-		return {success: true, segmentsSold: soldCount, reservation};
 	};
 
 	const execute = () => {

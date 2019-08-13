@@ -273,15 +273,17 @@ class RepriceInAnotherPccAction {
 	async repriceInGalileo(pcc, itinerary, pricingCmd) {
 		itinerary = itinerary.map(seg => ({...seg, segmentStatus: 'AK'}));
 		let profileName = GdsProfiles.TRAVELPORT.DynGalileoProd_711M;
-		return TravelportClient().withSession({profileName}, async session => {
+		let travelport = TravelportClient();
+		return travelport.withSession({profileName}, async session => {
 			session = withLog(session, this.$log);
 			let semRs = await session.runCmd('SEM/' + pcc + '/AG');
 			if (!UpdateGalileoStateAction.wasPccChangedOk(semRs.output)) {
 				return Forbidden('Could not emulate '
 					+ pcc + ' - ' + semRs.output.trim());
 			}
-			let built = await new GalileoBuildItineraryAction()
-				.setSession(session).execute(itinerary, true);
+			let built = await GalileoBuildItineraryAction({
+				travelport, session, itinerary, isParserFormat: true,
+			});
 			if (built.errorType) {
 				return UnprocessableEntity('Could not rebuild PNR in Galileo - '
 					+ built.errorType + ' ' + JSON.stringify(built.errorData));
