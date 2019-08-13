@@ -8,6 +8,7 @@
     "ecmaVersion": 2019
   },
   "rules": {
+    "keyword-spacing": ["warn", {"after":  true}],
     "indent": ["warn", "tab"],
     "for-direction": "error",
     "semi": ["error", "always"],
