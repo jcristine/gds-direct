@@ -211,7 +211,7 @@ let ProcessTerminalInput = async ({
 		} else if (gds === 'amadeus') {
 			gdsResult = await AmaRunCmdRq({...cmdRqData, amadeus});
 		} else if (gds === 'galileo') {
-			gdsResult = await GalRunCmdRq(cmdRqData);
+			gdsResult = await GalRunCmdRq({...cmdRqData, travelport});
 		} else {
 			return NotImplemented('Unsupported GDS for runCmdRq() - ' + gds);
 		}

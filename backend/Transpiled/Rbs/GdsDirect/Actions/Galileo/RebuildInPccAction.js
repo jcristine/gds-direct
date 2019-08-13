@@ -13,9 +13,14 @@ const {fetchAll} = require('../../../../../GdsHelpers/TravelportUtils.js');
 const php = require('../../../../phpDeprecated.js');
 
 class RebuildInPccAction extends AbstractGdsAction {
-	constructor() {
+	constructor({
+		travelport,
+		useXml,
+	}) {
 		super();
 		this.$fallbackToAk = false;
+		this.travelport = travelport;
+		this.useXml = useXml;
 	}
 
 	fallbackToAk($flag) {
@@ -76,11 +81,11 @@ class RebuildInPccAction extends AbstractGdsAction {
 		$itinerary = $itinerary.map((s,i) => ({
 			segmentNumber: i + 1,
 			...s,
-			segmentStatus:
-				s.segmentStatus === 'GK' ? 'AK' :
-					s.segmentStatus === 'HK' ? 'NN' :
-						s.segmentStatus === 'SS' ? 'NN' :
-							s.segmentStatus,
+			segmentStatus: {
+				'GK': 'AK',
+				'HK': 'NN',
+				'SS': 'NN',
+			}[s.segmentStatus] || s.segmentStatus,
 		}));
 
 		$errors = [];
@@ -100,8 +105,20 @@ class RebuildInPccAction extends AbstractGdsAction {
 			return $seg;
 		}, $itinerary);
 
-		$result = await (new GalileoBuildItineraryAction())
-			.setSession(this.session).execute($akItinerary, true);
+		$result = await GalileoBuildItineraryAction({
+			session: this.session,
+			itinerary: $akItinerary,
+			isParserFormat: true,
+			useXml: this.useXml,
+			travelport: this.travelport,
+		});
+
+		if(this.useXml && $result.segments.length > 0) {
+			this.session.updateAreaState({
+				type: '!xml:PNRBFManagement',
+				state: {hasPnr: true, canCreatePq: false},
+			});
+		}
 
 		$itinerary = Fp.filter($isAkRebookPossible, $itinerary);
 		if ($error = this.constructor.transformBuildError($result)) {
