@@ -9,7 +9,7 @@ const RunCmdRq = require('../../../../../../../backend/Transpiled/Rbs/GdsDirect/
 
 const php = require('../../../../php.js');
 
-class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
+class RunCmdRqXmlTest extends require('../../../../Lib/TestCase.js') {
 	static makeTableRows($keys, $valuesPerRow) {
 		let $rows, $values;
 
@@ -106,7 +106,7 @@ class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
 					'					<ns1:Token>soap-unit-test-blabla-123</ns1:Token>',
 					'					<ns1:Request>',
 					'						<PNRBFManagement_51>',
-					'							<SessionMods><AreaInfoReq/></SessionMods><PNRBFRetrieveMods><CurrentPNR/></PNRBFRetrieveMods><AirSegSellMods><AirSegSell><Vnd>UA</Vnd><FltNum>5695</FltNum><Class>Y</Class><StartDt>20190905</StartDt><StartAirp>SFO</StartAirp><EndAirp>MCI</EndAirp><Status>NN</Status><NumPsgrs>2</NumPsgrs><StartTm/><EndTm/><DtChg/><AvailDispType>G</AvailDispType></AirSegSell><AirSegSell><Vnd>CX</Vnd><FltNum>0901</FltNum><Class>Y</Class><StartDt>20200526</StartDt><StartAirp>HKG</StartAirp><EndAirp>MNL</EndAirp><Status>NN</Status><NumPsgrs>2</NumPsgrs><StartTm/><EndTm/><DtChg/><AvailDispType>G</AvailDispType></AirSegSell></AirSegSellMods>',
+					'							<SessionMods><AreaInfoReq/></SessionMods><AirSegSellMods><AirSegSell><Vnd>UA</Vnd><FltNum>5695</FltNum><Class>Y</Class><StartDt>20190905</StartDt><StartAirp>SFO</StartAirp><EndAirp>MCI</EndAirp><Status>NN</Status><NumPsgrs>2</NumPsgrs><StartTm/><EndTm/><DtChg/><AvailDispType>G</AvailDispType></AirSegSell><AirSegSell><Vnd>CX</Vnd><FltNum>0901</FltNum><Class>Y</Class><StartDt>20200526</StartDt><StartAirp>HKG</StartAirp><EndAirp>MNL</EndAirp><Status>NN</Status><NumPsgrs>2</NumPsgrs><StartTm/><EndTm/><DtChg/><AvailDispType>G</AvailDispType></AirSegSell></AirSegSellMods><PNRBFRetrieveMods><CurrentPNR/></PNRBFRetrieveMods>',
 					'						</PNRBFManagement_51>',
 					'					</ns1:Request>',
 					'					<ns1:Filter>',
@@ -126,7 +126,7 @@ class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
 					'					<ns1:Token>soap-unit-test-blabla-123</ns1:Token>',
 					'					<ns1:Request>',
 					'						<PNRBFManagement_51>',
-					'							<SessionMods><AreaInfoReq/></SessionMods><PNRBFRetrieveMods><CurrentPNR/></PNRBFRetrieveMods><AirSegSellMods><AirSegSell><Vnd>KE</Vnd><FltNum>7246</FltNum><Class>Y</Class><StartDt>20200530</StartDt><StartAirp>TPA</StartAirp><EndAirp>JFK</EndAirp><Status>AK</Status><NumPsgrs>2</NumPsgrs><StartTm/><EndTm/><DtChg/><AvailDispType>G</AvailDispType></AirSegSell></AirSegSellMods>',
+					'							<SessionMods><AreaInfoReq/></SessionMods><AirSegSellMods><AirSegSell><Vnd>KE</Vnd><FltNum>7246</FltNum><Class>Y</Class><StartDt>20200530</StartDt><StartAirp>TPA</StartAirp><EndAirp>JFK</EndAirp><Status>AK</Status><NumPsgrs>2</NumPsgrs><StartTm/><EndTm/><DtChg/><AvailDispType>G</AvailDispType></AirSegSell></AirSegSellMods><PNRBFRetrieveMods><CurrentPNR/></PNRBFRetrieveMods>',
 					'						</PNRBFManagement_51>',
 					'					</ns1:Request>',
 					'					<ns1:Filter>',
@@ -221,7 +221,7 @@ class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
 					'					<ns1:Token>soap-unit-test-blabla-123</ns1:Token>',
 					'					<ns1:Request>',
 					'						<PNRBFManagement_51>',
-					'							<SessionMods><AreaInfoReq/></SessionMods><PNRBFRetrieveMods><CurrentPNR/></PNRBFRetrieveMods><AirSegSellMods><AirSegSell><Vnd>DL</Vnd><FltNum>4400</FltNum><Class>Y</Class><StartDt>20190819</StartDt><StartAirp>MAN</StartAirp><EndAirp>LAS</EndAirp><Status>AK</Status><NumPsgrs>1</NumPsgrs><StartTm/><EndTm/><DtChg/><AvailDispType>G</AvailDispType></AirSegSell><AirSegSell><Vnd>DL</Vnd><FltNum>0951</FltNum><Class>Y</Class><StartDt>20190820</StartDt><StartAirp>LAS</StartAirp><EndAirp>LAX</EndAirp><Status>AK</Status><NumPsgrs>1</NumPsgrs><StartTm/><EndTm/><DtChg/><AvailDispType>G</AvailDispType></AirSegSell><AirSegSell><Vnd>DL</Vnd><FltNum>4357</FltNum><Class>Y</Class><StartDt>20190825</StartDt><StartAirp>LAX</StartAirp><EndAirp>MAN</EndAirp><Status>AK</Status><NumPsgrs>1</NumPsgrs><StartTm/><EndTm/><DtChg/><AvailDispType>G</AvailDispType></AirSegSell></AirSegSellMods>',
+					'							<SessionMods><AreaInfoReq/></SessionMods><AirSegSellMods><AirSegSell><Vnd>DL</Vnd><FltNum>4400</FltNum><Class>Y</Class><StartDt>20190819</StartDt><StartAirp>MAN</StartAirp><EndAirp>LAS</EndAirp><Status>AK</Status><NumPsgrs>1</NumPsgrs><StartTm/><EndTm/><DtChg/><AvailDispType>G</AvailDispType></AirSegSell><AirSegSell><Vnd>DL</Vnd><FltNum>0951</FltNum><Class>Y</Class><StartDt>20190820</StartDt><StartAirp>LAS</StartAirp><EndAirp>LAX</EndAirp><Status>AK</Status><NumPsgrs>1</NumPsgrs><StartTm/><EndTm/><DtChg/><AvailDispType>G</AvailDispType></AirSegSell><AirSegSell><Vnd>DL</Vnd><FltNum>4357</FltNum><Class>Y</Class><StartDt>20190825</StartDt><StartAirp>LAX</StartAirp><EndAirp>MAN</EndAirp><Status>AK</Status><NumPsgrs>1</NumPsgrs><StartTm/><EndTm/><DtChg/><AvailDispType>G</AvailDispType></AirSegSell></AirSegSellMods><PNRBFRetrieveMods><CurrentPNR/></PNRBFRetrieveMods>',
 					'						</PNRBFManagement_51>',
 					'					</ns1:Request>',
 					'					<ns1:Filter>',
@@ -298,5 +298,5 @@ class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
 	}
 }
 
-RunCmdRqTest.count = 0;
-module.exports = RunCmdRqTest;
+RunCmdRqXmlTest.count = 0;
+module.exports = RunCmdRqXmlTest;
