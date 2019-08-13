@@ -1,13 +1,12 @@
 
 
 const StringUtil = require('../../../../Lib/Utils/StringUtil.js');
-const Rej = require('klesun-node-tools/src/Rej.js');
 
 /**
  * parses Galileo pricing command like:
  * 'FQBBP1.2*C05.3*INF++-BUSNS'
  */
-const php = require('../../../../phpDeprecated.js');
+const php = require('klesun-node-tools/src/Transpiled/php.js');
 class FqCmdParser
 {
 
@@ -151,6 +150,16 @@ class FqCmdParser
 		return $codes[$letter];
 	}
 
+	static getCabinClassMapping() {
+		return {
+			'ECON': 'economy',
+			'PREME': 'premiumEconomy',
+			'BUSNS': 'business',
+			'FIRST': 'first',
+			'AB': 'sameAsBooked',
+		};
+	}
+
 	static parseMod($gluedModsPart)  {
 		let $matches, $raw, $type, $parsed, $mod;
 
@@ -172,7 +181,9 @@ class FqCmdParser
 		} else if (php.preg_match(/^:([A-Z])(?![A-Z0-9])/, $gluedModsPart, $matches = [])) {
 			[$raw, $type, $parsed] = [$matches[0], 'fareType', this.decodeFareType($matches[1])];
 		} else if (php.preg_match(/^[|+][|+]-([A-Z]+)(?![A-Z0-9])/, $gluedModsPart, $matches = [])) {
-			[$raw, $type, $parsed] = [$matches[0], 'cabinClass', $matches[1]];
+			let raw = $matches[1];
+			let parsed = this.getCabinClassMapping()[raw];
+			[$raw, $type, $parsed] = [$matches[0], 'cabinClass', {raw, parsed}];
 		} else if (php.preg_match(/^\.([A-Z])(?![A-Z0-9])/, $gluedModsPart, $matches = [])) {
 			[$raw, $type, $parsed] = [$matches[0], 'bookingClass', $matches[1]];
 		} else if (php.preg_match(/^\.([A-Z]{3})([A-Z]{3})(?![A-Z0-9])/, $gluedModsPart, $matches = [])) {

@@ -98,6 +98,15 @@ let parsePtcQualifier = ($token) => {
 	}
 };
 
+let cabinClassMapping = {
+	'YB': 'economy',
+	'SB': 'premiumEconomy',
+	'BB': 'business',
+	'JB': 'premiumBusiness',
+	'FB': 'first',
+	'PB': 'premiumFirst',
+};
+
 /**
  * @see https://formatfinder.sabre.com/Content/Pricing/PricingOptionalQualifiers.aspx?ItemID=7481cca11a7449a19455dc598d5e3ac9
  */
@@ -152,14 +161,9 @@ let parsePricingQualifier = ($token) => {
 	} else if (php.preg_match(/^Q([A-Z][A-Z0-9]*)$/, $token, $matches = [])) {
 		[$name, $data] = ['fareBasis', $matches[1]];
 	} else if (php.preg_match(/^TC-([A-Z]{2})$/, $token, $matches = [])) {
-		[$name, $data] = ['cabinClass', {
-			'YV': 'economy',
-			'SB': 'premiumEconomy',
-			'BB': 'business',
-			'JB': 'premiumBusiness',
-			'FB': 'first',
-			'PB': 'premiumFirst',
-		}[$matches[1]]];
+		let raw = $matches[1];
+		let parsed = cabinClassMapping[raw];
+		[$name, $data] = ['cabinClass', {raw, parsed}];
 	}
 	return {
 		raw: $token,
@@ -177,6 +181,8 @@ let parsePricingQualifiers = ($qualifiers) => {
 	}
 	return $parsedQualifiers;
 };
+
+exports.cabinClassMapping = cabinClassMapping;
 
 exports.parseModifier = (mod) => parsePricingQualifier(mod);
 

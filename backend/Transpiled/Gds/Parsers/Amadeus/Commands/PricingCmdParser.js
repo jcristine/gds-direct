@@ -9,7 +9,7 @@ const CommonParserHelpers = require('../../../../Gds/Parsers/Apollo/CommonParser
  * >FXX/P1/PAX/RADT//P1/INF/RINF//P2/RC05;
  * cmd type 'priceItinerary'
  */
-const php = require('../../../../phpDeprecated.js');
+const php = require('klesun-node-tools/src/Transpiled/php.js');
 class PricingCmdParser
 {
 	static parseDate($raw)  {

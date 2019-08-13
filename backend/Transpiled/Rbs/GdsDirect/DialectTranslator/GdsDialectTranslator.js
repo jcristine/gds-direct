@@ -1,3 +1,4 @@
+const TranslatePricingCmd = require('../../../../Actions/CmdTranslators/TranslatePricingCmd.js');
 
 
 /**
@@ -9,7 +10,7 @@
  *        'errors' => [],
  *     ];
  */
-const php = require('../../../phpDeprecated.js');
+const php = require('klesun-node-tools/src/Transpiled/php.js');
 const PatternTranslator = require("./PatternTranslator");
 const TranslateAvailabilityCmdAction = require("./TranslateAvailabilityCmdAction");
 const TranslateTariffDisplayCmdAction = require("./TranslateTariffDisplayCmdAction");
@@ -1204,28 +1205,34 @@ class GdsDialectTranslator
 		return patternList;
 	}
 
-	translateThroughSeparateFunctions($fromGds, $toGds, $userInput)  {
-		let $result, $parsed;
-
-		$result = null;
-		$parsed = CommonDataHelper.parseCmdByGds($fromGds, $userInput);
-		if (TranslateAvailabilityCmdAction.isAvailabilityCommand($userInput, $fromGds)) {
-			$result = TranslateAvailabilityCmdAction.translate($userInput, $fromGds, $toGds);
-		} else if (TranslateTariffDisplayCmdAction.isTariffDisplayCommand($userInput, $fromGds)) {
-			$result = TranslateTariffDisplayCmdAction.translate($userInput, $fromGds, $toGds);
-		} else if ($parsed.data) {
-			if ($parsed['type'] === 'addFrequentFlyerNumber') {
-				$result = TranslateAddFrequentFlyerNumber.translate($parsed['data'], $fromGds, $toGds);
-			} else if ($parsed['type'] === 'changeFrequentFlyerNumber') {
-				$result = TranslateChangeFrequentFlyerNumber.translate($parsed['data'], $fromGds, $toGds);
-			} else if (['requestSeats', 'cancelSeats'].includes($parsed['type'])) {
-				$result = TranslateAssignOrCancelSeat.translate($parsed, $fromGds, $toGds);
-			} else if (['priceItinerary', 'storePricing'].includes($parsed['type'])) {
-				$result = (new TranslatePricingCmdAction()).setBaseDate(this.$baseDate).translate($userInput, $fromGds, $toGds, $parsed);
+	translateThroughSeparateFunctions(fromGds, toGds, cmdRq)  {
+		let result = null;
+		let parsed = CommonDataHelper.parseCmdByGds(fromGds, cmdRq);
+		if (TranslateAvailabilityCmdAction.isAvailabilityCommand(cmdRq, fromGds)) {
+			result = TranslateAvailabilityCmdAction.translate(cmdRq, fromGds, toGds);
+		} else if (TranslateTariffDisplayCmdAction.isTariffDisplayCommand(cmdRq, fromGds)) {
+			result = TranslateTariffDisplayCmdAction.translate(cmdRq, fromGds, toGds);
+		} else if (parsed.data) {
+			if (parsed['type'] === 'addFrequentFlyerNumber') {
+				result = TranslateAddFrequentFlyerNumber.translate(parsed['data'], fromGds, toGds);
+			} else if (parsed['type'] === 'changeFrequentFlyerNumber') {
+				result = TranslateChangeFrequentFlyerNumber.translate(parsed['data'], fromGds, toGds);
+			} else if (['requestSeats', 'cancelSeats'].includes(parsed['type'])) {
+				result = TranslateAssignOrCancelSeat.translate(parsed, fromGds, toGds);
+			} else if (['priceItinerary', 'storePricing'].includes(parsed['type'])) {
+				try {
+					result = TranslatePricingCmd({
+						cmdRq, fromGds, toGds, parsed,
+						baseDate: this.$baseDate,
+					});
+				} catch (exc) {}
+				result = result || (new TranslatePricingCmdAction())
+					.setBaseDate(this.$baseDate)
+					.translate(cmdRq, fromGds, toGds, parsed);
 			}
 		}
-		if (!php.empty($result)) {
-			return PatternTranslator.formatOutput($result, $toGds);
+		if (!php.empty(result)) {
+			return PatternTranslator.formatOutput(result, toGds);
 		} else {
 			return null;
 		}

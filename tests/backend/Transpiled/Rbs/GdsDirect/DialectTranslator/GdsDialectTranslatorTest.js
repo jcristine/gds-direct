@@ -3,6 +3,40 @@
 const GdsDialectTranslator = require('../../../../../../backend/Transpiled/Rbs/GdsDirect/DialectTranslator/GdsDialectTranslator.js');
 
 const php = require('../../../php.js');
+
+/** $BBCUA -> $BB/CUA */
+const normCmd = (gds, cmd) => {
+    if (!cmd) {
+        return cmd;
+    }
+    if (gds === 'apollo') {
+        let match = cmd.match(/^((?:T:)?\$B(?:BQ\d+|B[AC0]?)?)(.*)$/);
+        if (match) {
+            let [_, baseCmd, modsPart] = match;
+            if (modsPart && !modsPart.startsWith('/')) {
+                cmd = baseCmd + '/' + modsPart;
+            }
+        }
+    } else if (gds === 'galileo') {
+        let match = cmd.match(/^(FQ(?:A|BB(?:K|)|BA|))(.*)$/);
+        if (match) {
+            let [_, baseCmd, modsPart] = match;
+            if (modsPart && !modsPart.startsWith('/')) {
+                cmd = baseCmd + '/' + modsPart;
+            }
+        }
+    } else if (gds === 'amadeus') {
+        let match = cmd.match(/^(FX[A-Z])(.*)$/);
+        if (match) {
+            let [_, baseCmd, modsPart] = match;
+            if (modsPart && !modsPart.startsWith('/')) {
+                cmd = baseCmd + '/' + modsPart;
+            }
+        }
+    }
+    return cmd;
+};
+
 class GdsDialectTranslatorTest extends require('../../../Lib/TestCase.js')
 {
     provideCommands()  {
@@ -3146,10 +3180,14 @@ class GdsDialectTranslatorTest extends require('../../../Lib/TestCase.js')
         $baseDate = '2018-06-12 08:09:08';
         $result = (new GdsDialectTranslator()).setBaseDate($baseDate).translate($from, $to, $cmd);
         try {
-            this.assertEquals($expectedResult || null, $result['output'], ($result['error'] || '')+' '+'forward');
+            let expected = normCmd($to, $expectedResult || null);
+            let actual = normCmd($to, $result['output']);
+            this.assertEquals(expected, actual, ($result['error'] || '')+' '+'forward');
             if ($bidirectional) {
                 $result = (new GdsDialectTranslator()).setBaseDate($baseDate).translate($to, $from, $expectedResult);
-                this.assertEquals($cmd || null, $result['output'], ($result['error'] || '')+' '+'backward');
+                let expected = normCmd($from, normCmd($cmd || null));
+                let actual = normCmd($from, normCmd($result['output']));
+                this.assertEquals(expected, actual, ($result['error'] || '')+' '+'backward');
             }
         } catch (exc) {
             let args = process.argv.slice(process.execArgv.length + 2);

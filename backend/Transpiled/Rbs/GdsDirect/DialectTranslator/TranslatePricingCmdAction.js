@@ -1,12 +1,13 @@
 
 const DateTime = require('../../../Lib/Utils/DateTime.js');
-const Fp = require('../../../Lib/Utils/Fp.js');
 const StringUtil = require('../../../Lib/Utils/StringUtil.js');
 const GalCmdParser = require('../../../Gds/Parsers/Galileo/CommandParser.js');
 
-const php = require('../../../phpDeprecated.js');
+const php = require('klesun-node-tools/src/Transpiled/php.js');
 const separateWithLex = require("./Helper").separateWithLex;
+const {translatePaxes} = require('../../../../Actions/CmdTranslators/TranslatePricingCmd.js');
 
+/** @deprecated - should drop once TranslatePricingCmd.js supports all formats */
 class TranslatePricingCmdAction {
 	constructor() {
 		this.$baseDate = null;
@@ -50,116 +51,6 @@ class TranslatePricingCmdAction {
 			$input = php.preg_replace('#^/#', '', $input);
 		}
 		return $input;
-	}
-
-	static normalizePaxes($fromGds, $mods) {
-		let $paxNums, $ptcs, $ptcGroup, $number, $ptcRec, $i, $normPtc;
-
-		$paxNums = [];
-		$ptcs = [];
-
-		if ($fromGds === 'apollo') {
-			// In Apollo you can't specify PTC without pax numbers even if there are no paxes in PNR
-			//$paxNums = array_column($mods['passengers']['passengerProperties'] ?? [], 'passengerNumber');
-			$ptcs = php.array_column(($mods['passengers'] || {})['passengerProperties'] || [], 'ptc');
-			if (php.empty($ptcs) && !php.empty($mods['accompaniedChild'])) {
-				$ptcs.push('C05');
-			}
-		} else if ($fromGds === 'galileo') {
-			for ($ptcGroup of Object.values(($mods['passengers'] || {})['ptcGroups'] || [])) {
-				if (!$mods['passengers']['appliesToAll']) {
-					for ($number of Object.values($ptcGroup['passengerNumbers'])) {
-						$ptcs.push($ptcGroup['ptc']);
-					}
-				} else {
-					$ptcs.push($ptcGroup['ptc']);
-				}
-			}
-			if (php.empty($ptcs) && !php.empty($mods['accompaniedChild'])) {
-				$ptcs.push('C05');
-			}
-		} else if ($fromGds === 'sabre') {
-			$paxNums = php.array_column($mods['names'] || [], 'fieldNumber');
-			for ($ptcRec of Object.values($mods['ptc'] || [])) {
-				for ($i = 0; $i < ($ptcRec['quantity'] || 1); ++$i) {
-					$ptcs.push($ptcRec['ptc']);
-				}
-			}
-		} else if ($fromGds === 'amadeus') {
-			$normPtc = ($ptc) => ({'IN': 'INF', 'CH': 'CNN'} || {})[$ptc] || $ptc;
-			$paxNums = $mods['names'] || [];
-			$ptcs = Fp.map($normPtc, ($mods['generic'] || {})['ptcs'] || []);
-		} else {
-			return null;
-		}
-		return {'paxNums': $paxNums, 'ptcs': $ptcs};
-	}
-
-	static translatePaxes($fromGds, $toGds, $mods) {
-		let $norm, $ptcs, $paxNums, $cnt, $ptc, $paxParts, $grouped, $addCnt, $normPtc;
-
-		if (!($norm = this.normalizePaxes($fromGds, $mods))) {
-			return null;
-		}
-		$ptcs = $norm['ptcs'];
-		$paxNums = $norm['paxNums'];
-		$cnt = php.max(php.count($paxNums), php.count($ptcs));
-		if (!$cnt || !php.empty($paxNums) && !php.empty($ptcs)
-			&& php.count($paxNums) !== php.count($ptcs)
-		) {
-			return null;
-		}
-
-		if ($toGds === 'apollo') {
-			if (php.count($ptcs) === 1 && php.empty($paxNums)) {
-				$ptc = $ptcs[0];
-				return '*' + $ptc + (php.in_array($ptc, ['CNN', 'C05']) ? '/ACC' : '');
-			} else {
-				$paxParts = Fp.map(($i) => {
-					let $paxNum, $ptc;
-
-					$paxNum = $paxNums[$i] || $i + 1;
-					$ptc = $ptcs[$i];
-					return $paxNum + ($ptc ? '*' + $ptc : '');
-				}, php.range(0, $cnt - 1));
-				return 'N' + php.implode('|', $paxParts);
-			}
-		} else if ($toGds === 'galileo') {
-			if (php.count($ptcs) === 1 && php.empty($paxNums)) {
-				$ptc = $ptcs[0];
-				return php.in_array($ptc, ['CNN', 'C05']) ? '*' + $ptc + '/ACC' : '*' + $ptc;
-			} else {
-				$paxParts = Fp.map(($i) => {
-					let $paxNum, $ptc;
-
-					$paxNum = $paxNums[$i] || $i + 1;
-					$ptc = $ptcs[$i];
-					return $paxNum + ($ptc ? '*' + $ptc : '');
-				}, php.range(0, $cnt - 1));
-				return 'P' + php.implode('.', $paxParts);
-			}
-		} else if ($toGds === 'sabre') {
-			$grouped = Fp.groupBy(($ptc) => $ptc, $ptcs);
-			$addCnt = ($ptcs) => {
-				let $cnt;
-
-				$cnt = php.count($ptcs) > 1 || php.count($grouped) > 1 ? php.count($ptcs) : '';
-				return $cnt + ($ptcs[0] || 'ADT');
-			};
-			return php.implode('¥', php.array_filter([
-				$paxNums.length > 0 ? 'N' + php.implode('/', $paxNums) : '',
-				$ptcs.length > 0 ? 'P' + php.implode('/', Fp.map($addCnt, $grouped)) : '',
-			]));
-		} else if ($toGds === 'amadeus') {
-			$normPtc = ($ptc) => $ptc || 'ADT';
-			$ptcs = php.array_values(php.array_unique($ptcs));
-			return php.implode('/', php.array_filter([
-				$paxNums.length > 0 ? 'P' + php.implode(',', $paxNums) : '',
-				$ptcs.length > 0 ? 'R' + php.implode('*', Fp.map($normPtc, $ptcs)) : '',
-			]));
-		} else {
-			return null;
-		}
 	}
 
 	static translateSegments($value, $fromGds, $toGds) {
@@ -433,9 +324,9 @@ class TranslatePricingCmdAction {
 			if (php.in_array($key, ['store', 'pricing', 'booking', 'cabin', 'fareType'])) {
 				$translated = this.constructor.translateCaseVariable($key, $value, $fromGds, $toGds);
 			} else if ($key === 'paxes') {
-				$translated = this.constructor.translatePaxes($fromGds, $toGds, $typeToModData);
+				$translated = translatePaxes($fromGds, $toGds, $typeToModData);
 			} else if ($key === 'singlePax') {
-				$translated = this.constructor.translatePaxes($fromGds, $toGds, $typeToModData);
+				$translated = translatePaxes($fromGds, $toGds, $typeToModData);
 			} else if ($key === 'segments') {
 				$translated = this.constructor.translateSegments($value, $fromGds, $toGds);
 			} else if ($key === 'currency') {

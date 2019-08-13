@@ -2,7 +2,7 @@
 const StringUtil = require('../../../../Lib/Utils/StringUtil.js');
 const Lexeme = require('../../../../Lib/Lexer/Lexeme.js');
 const Lexer = require('../../../../Lib/Lexer/Lexer.js');
-const php = require("../../../../phpDeprecated");
+const php = require("klesun-node-tools/src/Transpiled/php.js");
 const FqLineParser = require("./FqLineParser.js");
 
 const BagAllowanceParser = {
@@ -347,20 +347,25 @@ class AtfqParser {
 		};
 	}
 
+	static getCabinClassMapping() {
+		return {
+			'C': 'business',
+			'Y': 'economy',
+			'F': 'first',
+			'W': 'premiumEconomy',
+			'P': 'premiumFirst',
+			'U': 'upper',
+			'AB': 'sameAsBooked',
+		};
+	}
+
 	static parseCabinClassModifier($token) {
 		let $matches, $letter;
-		if (php.preg_match(/^\/@([A-Z])$/, $token, $matches = [])) {
+		if (php.preg_match(/^\/@([A-Z]{1,2})$/, $token, $matches = [])) {
 			$letter = $matches[1];
 			return {
 				'raw': $letter,
-				'parsed': {
-					'business': 'C',
-					'economy': 'Y',
-					'first': 'F',
-					'premiumEconomy': 'W',
-					'premiumFirst': 'P',
-					'upper': 'U',
-				}[$letter] || null,
+				'parsed': this.getCabinClassMapping()[$letter] || null,
 			};
 		} else {
 			return null;
