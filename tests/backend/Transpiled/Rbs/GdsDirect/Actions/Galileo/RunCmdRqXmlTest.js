@@ -1,8 +1,5 @@
-const PtcFareFamilies = require('../../../../../../../backend/Repositories/PtcFareFamilies.js');
-const stubPtcFareFamilies = require('../../../../../../data/stubPtcFareFamilies.js');
-const PtcUtil = require('../../../../../../../backend/Transpiled/Rbs/Process/Common/PtcUtil.js');
-const PersistentHttpRqStub = require('../../../../../../../backend/Utils/Testing/PersistentHttpRqStub.js');
-const TravelportClient = require('../../../../../../../backend/GdsClients/TravelportClient.js');
+const GdsActionTestUtil = require('../../../../../../../backend/Utils/Testing/GdsActionTestUtil.js');
+const GdsSessions = require('../../../../../../../backend/Repositories/GdsSessions.js');
 
 const GdsDirectDefaults = require('../../../../Rbs/TestUtils/GdsDirectDefaults.js');
 const RunCmdRq = require('../../../../../../../backend/Transpiled/Rbs/GdsDirect/Actions/Galileo/RunCmdRq.js');
@@ -10,23 +7,13 @@ const RunCmdRq = require('../../../../../../../backend/Transpiled/Rbs/GdsDirect/
 const php = require('../../../../php.js');
 
 class RunCmdRqXmlTest extends require('../../../../Lib/TestCase.js') {
-	static makeTableRows($keys, $valuesPerRow) {
-		let $rows, $values;
-
-		$rows = [];
-		for ($values of Object.values($valuesPerRow)) {
-			$rows.push(php.array_combine($keys, $values));
-		}
-		return $rows;
-	}
-
 	provideTestCases() {
 		const list = [];
 
 		list.push({
 			'input': {
 				'title': 'RE/ example: BK -> HS and seat count change',
-				'cmdRequested': 'RE/711M/SS2',
+				'cmdRq': 'RE/711M/SS2',
 				'baseDate': '2017-11-05',
 			},
 			'output': {
@@ -97,7 +84,7 @@ class RunCmdRqXmlTest extends require('../../../../Lib/TestCase.js') {
 					},
 				],
 			},
-			httpStubs: [{
+			httpRequests: [{
 				rq: [
 					'<?xml version="1.0" encoding="UTF-8"?>',
 					'		<SOAP-ENV:Envelope xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ns1="http://webservices.galileo.com">',
@@ -143,7 +130,7 @@ class RunCmdRqXmlTest extends require('../../../../Lib/TestCase.js') {
 		list.push({
 			'input': {
 				'title': 'itinerary dump pasted as command example - should rebuild it',
-				'cmdRequested': [
+				'cmdRq': [
 					' 1. DL 4400 V  19AUG MANLAS HS1   120P   405P O        E MO',
 					'         OPERATED BY VIRGIN ATLANTIC',
 					' 2. DL  951 V  20AUG LASLAX HS1   559P   720P O        E TU',
@@ -212,7 +199,7 @@ class RunCmdRqXmlTest extends require('../../../../Lib/TestCase.js') {
 					},
 				],
 			},
-			httpStubs: [{
+			httpRequests: [{
 				rq: [
 					'<?xml version="1.0" encoding="UTF-8"?>',
 					'		<SOAP-ENV:Envelope xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ns1="http://webservices.galileo.com">',
@@ -242,53 +229,35 @@ class RunCmdRqXmlTest extends require('../../../../Lib/TestCase.js') {
 	 * @test
 	 * @dataProvider provideTestCases
 	 */
-	async testCase({input, output, sessionInfo, httpStubs}) {
-		const PersistentHttpRq = PersistentHttpRqStub(httpStubs);
-		const travelport = TravelportClient({
-			PersistentHttpRq,
-			GdsProfiles: {
-				getTravelport: () => Promise.resolve({
-					username: 'grectUnitTest',
-					password: 'qwerty123',
-				}),
+	async testCase(testCase) {
+		let commandsLeft = (testCase.sessionInfo || {}).performedCommands || [];
+		testCase.fullState = testCase.fullState || {
+			gds: 'galileo', area: 'A', areas: {
+				'A': {...GdsSessions.makeDefaultAreaState('galileo'), area: 'A'},
 			},
-		});
-		const  gdsData = {
-			sessionToken: 'soap-unit-test-blabla-123',
 		};
-		const stateful = GdsDirectDefaults.makeStatefulSessionCustom({
-			session: {
-				context: {gds: 'galileo', travelRequestId: null},
-				gdsData: gdsData,
-			},
-			gdsSession: {
-				runCmd: cmd => {
-					const calledCmd = sessionInfo.performedCommands.shift();
-
-					if(cmd === calledCmd.cmd) {
-						return Promise.resolve(calledCmd);
-					}
-
-					throw new Error(`Unknown command ${cmd}`);
-				},
-			},
-		});
-
-		let actual = await RunCmdRq({
-			stateful,
-			travelport,
-			cmdRq: input['cmdRequested'],
-			PtcUtil: PtcUtil.makeCustom({
-				PtcFareFamilies: {
-					getAll: () => Promise.resolve(stubPtcFareFamilies),
-					getByAdultPtc: adultPtc => PtcFareFamilies.getByAdultPtcFrom(adultPtc, stubPtcFareFamilies),
-				},
-			}),
-		});
-
-		actual['sessionData'] = stateful.getSessionData();
-
-		this.assertArrayElementsSubset(output, actual);
+		let unit = this;
+		/** @param stateful = require('StatefulSession.js')() */
+		let getActual = async ({stateful, input, gdsClients}) => {
+			let runCmdXml = stateful.runCmd;
+			stateful.runCmd = cmd => {
+				const calledCmd = commandsLeft.shift();
+				if(cmd === calledCmd.cmd) {
+					stateful.getCalledCommands().push(calledCmd);
+					return Promise.resolve(calledCmd);
+				} else {
+					return runCmdXml(cmd);
+				}
+			};
+			let actual = await RunCmdRq({
+				stateful, ...input, useXml: true,
+				travelport: gdsClients.travelport,
+			});
+			actual.sessionData = stateful.getSessionData();
+			return actual;
+		};
+		await GdsActionTestUtil.testHttpGdsAction({unit, testCase, getActual});
+		this.assertEquals([], commandsLeft, 'some unused commands left');
 	}
 
 	getTestMapping() {

@@ -76,6 +76,7 @@ let StatefulSession = ({
 		getLog: () => cmdLog,
 		getStartDt: () => startDt,
 		getAreaRows: () => cmdLog.getFullState().areas,
+		getCalledCommands: () => calledCommands,
 		flushCalledCommands: () => calledCommands.splice(0),
 		addPnrSaveHandler: (action) => pnrSaveHandlers.push(action),
 		handlePnrSave: (recordLocator) => pnrSaveHandlers.forEach(h => h(recordLocator)),
