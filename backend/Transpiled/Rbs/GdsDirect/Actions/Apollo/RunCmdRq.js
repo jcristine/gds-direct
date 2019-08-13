@@ -46,6 +46,7 @@ const McoMaskParser = require("../../../../Gds/Parsers/Apollo/Mco/McoMaskParser"
 const TariffDisplayParser = require('../../../../Gds/Parsers/Apollo/TariffDisplay/TariffDisplayParser.js');
 const ParseHbFex = require('../../../../../Parsers/Apollo/ParseHbFex.js');
 const NmeMaskParser = require("../../../../../Actions/ManualPricing/NmeMaskParser");
+const FareParser = require('../../../../../Parsers/Apollo/FareParser');
 
 const TicketHistoryParser = require("../../../../Gds/Parsers/Apollo/TicketHistoryParser");
 
@@ -1062,6 +1063,22 @@ let RunCmdRq = ({
 		};
 	};
 
+	const fareSearchModification = async cmd => {
+		const previous = await runCmd('$D');
+		const parsed = FareParser.parseTariffDisplay(previous);
+
+		if(parsed.error) {
+			return {
+				calledCommands: [{cmd, output: parsed.error}],
+			};
+		}
+
+		const res = await processRealCommand(cmd + parsed.departureDate + parsed.returnDate);
+		return {
+			calledCommands: [res.cmdRec],
+		};
+	};
+
 	const processRequestedCommand = async (cmd) => {
 		let $alias, $mdaData, $limit, $cmdReal, $matches, $_, $plus, $seatAmount,
 			$segmentNumbers, $segmentStatus;
@@ -1130,6 +1147,8 @@ let RunCmdRq = ({
 			return bookPnr(reservation);
 		} else if (cmd === 'DEBUG-TRIGGER-MP-REMARK-DIALOG') {
 			return {actions: [{type: 'displayMpRemarkDialog'}]};
+		} else if ($alias.type === 'fareSearchModification') {
+			return fareSearchModification($alias.realCmd);
 		} else {
 			cmd = $alias['realCmd'];
 			let fetchAll = shouldFetchAll(cmd);

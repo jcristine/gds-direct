@@ -71,6 +71,8 @@ exports.parse = async ($cmdRequested, stateful) => {
 			}[$units],
 			'value': $value,
 		};
+	} else if(/^\$D[BD][A-Z]{3}V$/.test($realCmd)) {
+		$type = 'fareSearchModification';
 	} else if (php.preg_match(/^(\$D.*)\/MIX$/, $realCmd, $matches = [])) {
 		$type = 'fareSearchMultiPcc';
 		$realCmd = $matches[1];
