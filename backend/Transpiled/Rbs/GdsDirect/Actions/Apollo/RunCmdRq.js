@@ -1063,7 +1063,18 @@ let RunCmdRq = ({
 		};
 	};
 
-	const fareSearchModification = async cmd => {
+	/**
+	 * @param {String} cmd = '$DBWASV'
+	 * performs >$DBWASV20MAY25MAY;
+	 *
+	 * there is a >$DBWAS; format in GDS, but it does not preserve the 'V'-alidated
+	 * fare indicator, that's why we were asked to implement an alias that would not
+	 * require to retype the dates from last $D, but would still return _validated_ fares
+	 *
+	 * "validated" means that fare is allowed by our contracts, that usually define stuff
+	 * like MIN/MAX stay limitation, seasonality, advance purchase days limit, etc...
+	 */
+	const fareSearchValidatedChangeCity = async cmd => {
 		const previous = await runCmd('$D');
 		const parsed = FareParser.parseTariffDisplay(previous);
 
@@ -1145,10 +1156,8 @@ let RunCmdRq = ({
 			return {calledCommands: [cmdRec]};
 		} else if (!php.empty(reservation = await AliasParser.parseCmdAsPnr(cmd, stateful))) {
 			return bookPnr(reservation);
-		} else if (cmd === 'DEBUG-TRIGGER-MP-REMARK-DIALOG') {
-			return {actions: [{type: 'displayMpRemarkDialog'}]};
-		} else if ($alias.type === 'fareSearchModification') {
-			return fareSearchModification($alias.realCmd);
+		} else if ($alias.type === 'fareSearchValidatedChangeCity') {
+			return fareSearchValidatedChangeCity($alias.realCmd);
 		} else {
 			cmd = $alias['realCmd'];
 			let fetchAll = shouldFetchAll(cmd);
