@@ -67,6 +67,9 @@ class TerminalSettings {
 			// A is emulated to 2F3K at once, other areas need explicit emulation to not
 			// receive "AG - DUTY CODE NOT AUTH FOR CRT - APOLLO" error on every command
 			return '2F3K';
+		} else if (gds === 'apollo' && area !== 'A') {
+			// same reason as in Apollo
+			return '711M';
 		} else {
 			return null;
 		}
