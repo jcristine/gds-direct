@@ -44,7 +44,7 @@ const ApolloBuildItinerary = ({
 	session, itinerary,
 	baseDate = moment().format("YYYY-MM-DD"),
 	travelport = TravelportClient(),
-	useXml = false,
+	useXml = true,
 }) => {
 	const executeViaTerminal = async itinerary => {
 		let $segmentsSold, $i, $segment, $cmd, $output, $errorType, $tplData;
