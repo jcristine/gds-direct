@@ -57,13 +57,13 @@ const GalileoBuildItineraryAction = ({
 	const executeViaTerminal = async (itinerary, isParserFormat) => {
 		let resultItinerary, i, segment, pattern, cmd, output, segments, errorType, tplData;
 
-		itinerary = Fp.map(segment => {
+		itinerary = itinerary.map(segment => {
 			let date = isParserFormat
 				? segment['departureDate']['raw']
 				: formatGdsDate(segment['departureDate']);
 
 			return {...segment, 'departureDate': date};
-		}, itinerary);
+		});
 
 		resultItinerary = [];
 		for ([i, segment] of Object.entries(itinerary)) {

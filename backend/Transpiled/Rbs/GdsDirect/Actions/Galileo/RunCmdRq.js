@@ -754,11 +754,12 @@ const RunCmdRq = ({
 			session: stateful,
 			useXml,
 			travelport,
+			itinerary: $newSegs,
 			isParserFormat: true,
 		});
 
 		if(useXml && $result.segments.length > 0) {
-			this.session.updateAreaState({
+			stateful.updateAreaState({
 				type: '!xml:PNRBFManagement',
 				state: {hasPnr: true, canCreatePq: false},
 			});

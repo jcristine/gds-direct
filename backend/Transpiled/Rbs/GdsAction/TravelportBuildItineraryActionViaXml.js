@@ -5,7 +5,7 @@ const TravelportClient = require('../../../GdsClients/TravelportClient');
 const {REBUILD_MULTISEGMENT} = require('../GdsDirect/Errors');
 
 // Used by both Galileo and Apollo itinary build actions
-// They use same uderlaying API, the only difference is slight
+// They use same underlying API, the only difference is slight
 // changes in format data is returned
 const TravelportBuildItineraryViaXml = async ({
 	session, itinerary,
