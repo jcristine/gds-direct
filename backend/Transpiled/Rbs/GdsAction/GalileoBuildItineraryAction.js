@@ -8,7 +8,7 @@ const TravelportBuildItineraryViaXml = require('./TravelportBuildItineraryAction
  * performing a direct sell command of each segment
  * >0AC 215V 24MAR YYCYVR NN1;
  */
-const php = require('../../phpDeprecated.js');
+const php = require('klesun-node-tools/src/Transpiled/php.js');
 const fetchAll = require('../../../GdsHelpers/TravelportUtils').fetchAll;
 
 // '    EK  214 C  29JUL FLLDXB HS1   910P # 740P O       E         DEPARTS FLL TERMINAL 3  - ARRIVES DXB TERMINAL 3                *COMPLIMENTARY CHAUFFEUR DRIVE - SEE EK PAGES IN YOUR GDS*',
@@ -50,10 +50,8 @@ const GalileoBuildItineraryAction = ({
 	};
 
 	const isAvailabilityOutput = output => {
-		let clean;
-
-		clean = php.preg_replace(/></, '', output);
-		return php.trim(clean) === '*0 AVAIL\/WL CLOSED*';
+		let clean = php.preg_replace(/></, '', output);
+		return php.trim(clean) === '*0 AVAIL/WL CLOSED*';
 	};
 
 	const executeViaTerminal = async (itinerary, isParserFormat) => {
