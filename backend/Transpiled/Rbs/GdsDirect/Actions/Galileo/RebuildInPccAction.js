@@ -81,11 +81,11 @@ class RebuildInPccAction extends AbstractGdsAction {
 		$itinerary = $itinerary.map((s,i) => ({
 			segmentNumber: i + 1,
 			...s,
-			segmentStatus:
-				s.segmentStatus === 'GK' ? 'AK' :
-					s.segmentStatus === 'HK' ? 'NN' :
-						s.segmentStatus === 'SS' ? 'NN' :
-							s.segmentStatus,
+			segmentStatus: {
+				'GK': 'AK',
+				'HK': 'NN',
+				'SS': 'NN',
+			}[s.segmentStatus] || s.segmentStatus,
 		}));
 
 		$errors = [];
