@@ -190,15 +190,15 @@ const provide_call = () => {
 
 class ProcessTerminalInputTest extends require('../../../backend/Transpiled/Lib/TestCase.js') {
 	async test_call(testCase) {
+		testCase.fullState = testCase.fullState || {gds: 'apollo'};
 		let unit = this;
-		let gds = testCase.gds;
 		/** @param stateful = require('StatefulSession.js')() */
 		let getActual = async ({stateful, input, gdsClients}) => {
 			let actual = await ProcessTerminalInput({stateful, ...input, gdsClients, dialect: 'apollo'});
 			actual.fullState = stateful.getFullState();
 			return actual;
 		};
-		await GdsActionTestUtil.testHttpGdsAction({gds, unit, testCase, getActual});
+		await GdsActionTestUtil.testHttpGdsAction({unit, testCase, getActual});
 	}
 
 	getTestMapping() {

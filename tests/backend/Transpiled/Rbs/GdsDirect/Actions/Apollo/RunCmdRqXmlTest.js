@@ -1,11 +1,9 @@
-const PersistentHttpRqStub = require('../../../../../../../backend/Utils/Testing/PersistentHttpRqStub.js');
-const TravelportClient = require('../../../../../../../backend/GdsClients/TravelportClient.js');
+const GdsSessions = require('../../../../../../../backend/Repositories/GdsSessions.js');
+const GdsActionTestUtil = require('../../../../../../../backend/Utils/Testing/GdsActionTestUtil.js');
 
 const RunCmdRq = require('../../../../../../../backend/Transpiled/Rbs/GdsDirect/Actions/Apollo/RunCmdRq.js');
-const GdsDirectDefaults = require('../../../../../../../backend/Utils/Testing/GdsDirectDefaults.js');
 const Rej = require('klesun-node-tools/src/Rej.js');
 const {coverExc} = require('klesun-node-tools/src/Lang.js');
-const php = require('../../../../php.js');
 
 const provide_call = () => {
 	let testCases = [];
@@ -316,33 +314,22 @@ const provide_call = () => {
 
 class RunCmdRqXmlTest extends require('../../../../Lib/TestCase.js')
 {
-	async test_call({input, output, httpRequests}) {
-		let PersistentHttpRq = PersistentHttpRqStub(httpRequests);
-		let travelport = TravelportClient({
-			PersistentHttpRq,
-			GdsProfiles: {
-				getTravelport: (profileName) => Promise.resolve({
-					username: 'grectUnitTest',
-					password: 'qwerty123',
-				}),
+	async test_call(testCase) {
+		testCase.fullState = testCase.fullState || {
+			gds: 'apollo', area: 'A', areas: {
+				'A': {...GdsSessions.makeDefaultAreaState('apollo'), area: 'A'},
 			},
-		});
-		let gdsData = {
-			sessionToken: 'soap-unit-test-blabla-123',
 		};
-		let stateful = GdsDirectDefaults.makeStatefulSessionCustom({
-			session: {
-				context: {gds: 'apollo', travelRequestId: null},
-				gdsData: gdsData,
-			},
-			gdsSession: {runCmd: cmd => travelport.runCmd({command: cmd}, gdsData)},
-		});
-
-		let actual = await RunCmdRq({...input, stateful, travelport, useXml: true})
-			.catch(coverExc(Rej.list, exc => ({error: exc + ''})));
-
-		this.assertArrayElementsSubset(output, actual, php.implode('; ', actual['userMessages'] || []) + php.PHP_EOL);
-		this.assertEquals([], PersistentHttpRq.getHttpRequestsLeft(), 'not all HTTP requests were used');
+		let unit = this;
+		/** @param stateful = require('StatefulSession.js')() */
+		let getActual = async ({stateful, input, gdsClients}) => {
+			let actual = await RunCmdRq({
+				stateful, ...input, useXml: true,
+				travelport: gdsClients.travelport,
+			}).catch(coverExc(Rej.list, exc => ({error: exc + ''})));
+			return actual;
+		};
+		await GdsActionTestUtil.testHttpGdsAction({unit, testCase, getActual});
 	}
 
 	getTestMapping() {
