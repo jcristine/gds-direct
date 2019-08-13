@@ -29,7 +29,9 @@ let parseWaitlist = output => {
 };
 
 class SabreBuildItineraryAction extends AbstractGdsAction {
-	constructor({sabre} = {}) {
+	constructor({
+		sabre = SabreClient.makeCustom(),
+	} = {}) {
 		super();
 		this.$useXml = true;
 		this.sabre = sabre;
