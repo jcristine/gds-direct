@@ -1,3 +1,4 @@
+const DecodeTravelportError = require('./DecodeTravelportError.js');
 const {parseXml} = require("../../GdsHelpers/CommonUtils.js");
 const UnprocessableEntity = require("klesun-node-tools/src/Rej").UnprocessableEntity;
 
@@ -189,6 +190,7 @@ const collectErrors = (dom, sellSegments) => {
 	const errors = [];
 
 	const overallError = getValueOrNullFromDomElement(dom.querySelector("PNRBFRetrieve > ErrText"), "Text");
+	const transactionErrorCode = getValueOrNullFromDomElement(dom.querySelector("TransactionErrorCode"), "Code");
 
 	if(overallError) {
 		errors.push(overallError);
@@ -210,6 +212,14 @@ const collectErrors = (dom, sellSegments) => {
 			+ sell.segmentStatus
 			+ (sell.seatCount || '1')
 			+ ' - ' + sell.error));
+
+	// code 1 means something like "partial success with warnings"
+	if (transactionErrorCode && transactionErrorCode != 1) {
+		let decoded = DecodeTravelportError(transactionErrorCode);
+		let error = 'Transaction error #' + transactionErrorCode +
+			' (' + (decoded || 'unknown code') + ')';
+		errors.push(error);
+	}
 
 	return errors.length > 0 ? errors.join("; ") : null;
 };

@@ -27,7 +27,7 @@ exports.testGdsAction = async (unit, $testCase, $getActual) => {
 };
 
 exports.testHttpGdsAction = async ({unit, testCase, getActual}) => {
-	let {input, fullState, output, httpRequests} = testCase;
+	let {input, fullState, output, httpRequests, startDt = undefined} = testCase;
 	let PersistentHttpRq = PersistentHttpRqStub(httpRequests);
 	let stubGdsProfiles = {
 		getTravelport: (profileName) => Promise.resolve({
@@ -56,7 +56,7 @@ exports.testHttpGdsAction = async ({unit, testCase, getActual}) => {
 	});
 	let gdsSession = GdsSession({session, gdsClients});
 	let stateful = GdsDirectDefaults.makeStatefulSessionCustom({
-		fullState, session, gdsSession,
+		fullState, session, gdsSession, startDt: startDt || undefined,
 	});
 
 	let actual = await getActual({stateful, input, gdsClients});

@@ -309,6 +309,50 @@ const provide_call = () => {
 		],
 	});
 
+	testCases.push({
+		title: 'PNRBFManagement failed due to travelport 8222 (UNKNOWN SECURITY ERROR) - should not continue and attempt to rebook segments',
+		startDt: '2019-08-13 13:12:00',
+		input: {
+			cmdRq: [
+				" 1 AA  44I 19JUN JFKCDG SS1   610P  745A+*      FR/SA   E",
+				" 2 AA  45I 01JUL CDGJFK SS1  1150A  240P *         WE   E",
+			].join("\n"),
+		},
+		output: {
+			status: 'forbidden',
+			userMessages: ['Direct sell failed - Transaction error #8222 (UNKNOWN SECURITY ERROR)'],
+		},
+		httpRequests: [
+			{
+			   "cmd": "<PNRBFManagement_51/>",
+			   "rq": [
+					   '<?xml version="1.0" encoding="UTF-8"?>',
+					'		<SOAP-ENV:Envelope xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ns1="http://webservices.galileo.com">',
+					'			<SOAP-ENV:Body>',
+					'				<ns1:SubmitXmlOnSession>',
+					'					<ns1:Token>soap-unit-test-blabla-123</ns1:Token>',
+					'					<ns1:Request>',
+					'						<PNRBFManagement_51>',
+					'							<SessionMods><AreaInfoReq/></SessionMods><AirSegSellMods><AirSegSell><Vnd>AA</Vnd><FltNum>0044</FltNum><Class>Y</Class><StartDt>20200619</StartDt><StartAirp>JFK</StartAirp><EndAirp>CDG</EndAirp><Status>GK</Status><NumPsgrs>1</NumPsgrs><StartTm/><EndTm/><DtChg/><AvailDispType>G</AvailDispType></AirSegSell><AirSegSell><Vnd>AA</Vnd><FltNum>0045</FltNum><Class>Y</Class><StartDt>20200701</StartDt><StartAirp>CDG</StartAirp><EndAirp>JFK</EndAirp><Status>GK</Status><NumPsgrs>1</NumPsgrs><StartTm/><EndTm/><DtChg/><AvailDispType>G</AvailDispType></AirSegSell></AirSegSellMods><PNRBFRetrieveMods><CurrentPNR/></PNRBFRetrieveMods>',
+					'						</PNRBFManagement_51>',
+					'					</ns1:Request>',
+					'					<ns1:Filter>',
+					'						<_/>',
+					'					</ns1:Filter>',
+					'				</ns1:SubmitXmlOnSession>',
+					'			</SOAP-ENV:Body>',
+					'		</SOAP-ENV:Envelope>',
+			   ].join("\n"),
+			   "rs": [
+					'<?xml version="1.0" encoding="UTF-8"?>',
+					'<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">',
+					' <soapenv:Body><SubmitXmlOnSessionResponse xmlns="http://webservices.galileo.com"><SubmitXmlOnSessionResult><PNRBFManagement_51 xmlns=""><TransactionErrorCode><Domain>Procedure</Domain><Code>8222</Code></TransactionErrorCode></PNRBFManagement_51></SubmitXmlOnSessionResult></SubmitXmlOnSessionResponse> </soapenv:Body>',
+					'</soapenv:Envelope>',
+			   ].join("\n"),
+		   },
+		],
+	});
+
 	return testCases.map(c => [c]);
 };
 
