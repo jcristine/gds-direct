@@ -63,6 +63,10 @@ class TerminalSettings {
 		if (gds === 'sabre' && area === 'A') {
 			// ensure we are emulated in 6IIF on startup
 			return '6IIF';
+		} else if (gds === 'apollo' && area !== 'A') {
+			// A is emulated to 2F3K at once, other areas need explicit emulation to not
+			// receive "AG - DUTY CODE NOT AUTH FOR CRT - APOLLO" error on every command
+			return '2F3K';
 		} else {
 			return null;
 		}
