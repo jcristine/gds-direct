@@ -29,7 +29,7 @@ let parseWaitlist = output => {
 };
 
 class SabreBuildItineraryAction extends AbstractGdsAction {
-	constructor({sabre}) {
+	constructor({sabre} = {}) {
 		super();
 		this.$useXml = true;
 		this.sabre = sabre;
