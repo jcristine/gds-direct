@@ -1063,7 +1063,7 @@ let RunCmdRq = ({
 	};
 
 	// Command parser expects clean command and not
-	// output cmd that is preceeded by >
+	// output cmd that is preceded by >
 	const extractDCommandFromOutput = output => {
 		const match = output.match(/>(?<cmd>\$D[^ ]+)/m);
 		return match && match.groups.cmd || null;

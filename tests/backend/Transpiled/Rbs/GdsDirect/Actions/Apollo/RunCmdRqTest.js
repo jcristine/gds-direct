@@ -7434,8 +7434,8 @@ class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
 		const list = [];
 
 		list.push({
+			'title': 'Fare tarrif modification after another fare modification command had been previously executed',
 			'input': {
-				'title': 'Fare tarrif modification after another fare modification command had been previously executed',
 				'cmdRequested': '$DBRIXV',
 				'dbResult' : [{
 					'area': 'A',
@@ -7484,8 +7484,8 @@ class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
 		});
 
 		list.push({
+			'title': 'Fare tarrif modification when there is no fare tariff request in session',
 			'input': {
-				'title': 'Fare tarrif modification when there is no fare tariff request in session',
 				'cmdRequested': '$DBRIXV',
 				'dbResult': [{
 					'area': 'A',
@@ -7501,7 +7501,7 @@ class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
 					'output': 'NEED TARIFF DISPLAY\n><',
 					'record_locator': '',
 					'session_id': 1850,
-					'type': 'fareSearch'
+					'type': 'fareSearch',
 				}],
 			},
 			'output': {
@@ -7518,8 +7518,8 @@ class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
 		});
 
 		list.push({
+			'title': 'Fall back to $D in case if tariff data could not be obtained from DB',
 			'input': {
-				'title': 'Fall back to $D in case if tariff data could not be obtained from DB',
 				'cmdRequested': '$DBRIXV',
 				'dbResult': [{
 					'area': 'A',
@@ -7535,7 +7535,7 @@ class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
 					'output': 'NO FARES FOUND FOR INPUT REQUEST\n><',
 					'record_locator': '',
 					'session_id': 1853,
-					'type': 'fareSearch'
+					'type': 'fareSearch',
 				}],
 			},
 			'output': {
@@ -7584,8 +7584,8 @@ class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
 		});
 
 		list.push({
+			'title': 'Diplay missing tariff message if $D returns such response and there is nothing in DB',
 			'input': {
-				'title': 'Diplay missing tariff message if $D returns such response and there is nothing in DB',
 				'cmdRequested': '$DBRIXV',
 				'dbResult': [{
 					'area': 'A',
@@ -7621,8 +7621,8 @@ class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
 		});
 
 		list.push({
+			'title': 'For entry with only departure date',
 			'input': {
-				'title': 'For entry with only departure date',
 				'cmdRequested': '$DBRIXV',
 				'dbResult': [{
 					'area': 'A',
@@ -7692,19 +7692,23 @@ class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
 	}
 
 	async testTariffModification({input, output, sessionInfo}) {
-		let stateful = await GdsDirectDefaults.makeStatefulSession('apollo', input, sessionInfo);
+		const stateful = await GdsDirectDefaults.makeStatefulSession('apollo', input, sessionInfo);
 
 		sinon.stub(stateful.getLog(), 'getLikeSql')
 			.returns(Promise.resolve(input.dbResult));
 
-		let cmdRq = input['cmdRequested'];
+		const cmdRq = input['cmdRequested'];
 
-		let result = await RunCmdRq({
-			stateful, cmdRq,
-		}).catch(coverExc(Rej.list, exc => ({error: exc + ''})));
+		try {
+			const result = await RunCmdRq({
+				stateful, cmdRq,
+			}).catch(coverExc(Rej.list, exc => ({error: exc + ''})));
 
-		this.assertArrayElementsSubset(output, result, php.implode('; ', result['userMessages'] || []) + php.PHP_EOL);
-		this.assertEquals(true, stateful.getGdsSession().wereAllCommandsUsed(), 'not all session commands were used');
+			this.assertArrayElementsSubset(output, result, php.implode('; ', result['userMessages'] || []) + php.PHP_EOL);
+			this.assertEquals(true, stateful.getGdsSession().wereAllCommandsUsed(), 'not all session commands were used');
+		} finally {
+			sinon.restore();
+		}
 	}
 
 	getTestMapping() {
