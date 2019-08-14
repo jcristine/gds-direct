@@ -213,9 +213,9 @@ exports.initListeners = async ({
 		let reason = 'os_signal_received:' + signal;
 		enqueueShutdown({httpServer, socketIoInst, reason});
 	};
-	process.on('SIGINT', signalShutdown);
-	process.on('SIGTERM', signalShutdown);
-	process.on('SIGHUP', signalShutdown);
+	//process.on('SIGINT', signalShutdown);
+	//process.on('SIGTERM', signalShutdown);
+	//process.on('SIGHUP', signalShutdown);
 
 	let nginxInitMs = 15 * 1000;
 	setTimeout(async httpTag => {
