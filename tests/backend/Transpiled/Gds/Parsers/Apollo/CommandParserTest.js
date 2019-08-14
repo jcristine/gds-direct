@@ -1043,11 +1043,7 @@ class CommandParserTest extends require('../../../../../../backend/Transpiled/Li
 
 		list.push({
 			title: 'parseFareSearch with validation',
-			input: [
-				'FARES LAST UPDATED 13AUG 12:09 AM  ',
-				'>$DJFKMNLV10SEP20SEP+AA            ',
-				'NYC-MNL TUE-10SEP19 AA ',
-			].join('\n'),
+			input: '$DJFKMNLV10SEP20SEP+AA            ',
 			output: {
 				departureDate: {
 					raw: '10SEP',
@@ -1100,35 +1096,8 @@ class CommandParserTest extends require('../../../../../../backend/Transpiled/Li
 		});
 
 		list.push({
-			title: 'parseFareSearch with validation',
-			input: [
-				'FARES LAST UPDATED 13AUG 12:09 AM  ',
-				'>$DV10SEPJFKLHR20SEP+AA            ',
-				'NYC-MNL TUE-10SEP19 AA ',
-			].join('\n'),
-			output: {
-				departureDate: {
-					raw: '10SEP',
-					partial: '09-10',
-				},
-				returnDate: {
-					raw: '20SEP',
-					partial: '09-20',
-				},
-				departureAirport: 'JFK',
-				destinationAirport: 'LHR',
-				modifiers: [],
-				unparsed: '+AA            ',
-			},
-		});
-
-		list.push({
 			title: 'Parse one directional fare',
-			input: [
-				'FARES LAST UPDATED 13AUG 12:09 AM  ',
-				'>$DV10SEPJFKLHR             ',
-				'NYC-LHR TUE-10SEP19 AA ',
-			].join('\n'),
+			input: '$DV10SEPJFKLHR             ',
 			output: {
 				departureDate: {
 					raw: '10SEP',

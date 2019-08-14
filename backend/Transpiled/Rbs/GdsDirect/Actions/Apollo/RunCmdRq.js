@@ -1062,6 +1062,13 @@ let RunCmdRq = ({
 		};
 	};
 
+	// Command parser expects clean command and not
+	// output cmd that is preceeded by >
+	const extractDCommandFromOutput = output => {
+		const match = output.match(/>(?<cmd>\$D[^ ]+)/m);
+		return match && match.groups.cmd || null;
+	};
+
 	/**
 	 * @param {String} cmd = '$DBWASV'
 	 * performs >$DBWASV20MAY25MAY;
@@ -1094,7 +1101,7 @@ let RunCmdRq = ({
 		// If shorthand command such as $D is used then cmd itself is useless,
 		// but we still can extract required data from command's output and that should
 		// be present in every request response
-		parsed = CommandParser.parseFareSearch(previousDb.output);
+		parsed = CommandParser.parseFareSearch(extractDCommandFromOutput(previousDb.output));
 
 		if (!parsed) {
 			// $D is as fallback in case if last fareSearch entry in DB is invalid
@@ -1102,7 +1109,7 @@ let RunCmdRq = ({
 			// but fare search request in session is still valid
 			const dCmdOutput = await runCmd('$D');
 
-			parsed = CommandParser.parseFareSearch(dCmdOutput.output);
+			parsed = CommandParser.parseFareSearch(extractDCommandFromOutput(dCmdOutput.output));
 
 			if (!parsed) {
 				return {
