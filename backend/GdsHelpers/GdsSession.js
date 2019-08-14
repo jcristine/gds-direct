@@ -79,7 +79,10 @@ const initHttpRqFor = ({
 			return result;
 		})
 		.catch(coverExc([Rej.BadGateway], (exc) => {
-			logit('ERROR: (XML RS)', exc.data.body);
+			let body = (exc.data || {}).body;
+			if (body) {
+				logit('ERROR: (XML RS)', body);
+			}
 			return Promise.reject(exc);
 		}));
 };
