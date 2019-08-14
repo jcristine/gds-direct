@@ -1,4 +1,4 @@
-const {timeout} = require('klesun-node-tools/src/Utils/Misc.js');
+const {timeout} = require('klesun-node-tools/src/Lang.js');
 const Diag = require('../LibWrappers/Diag.js');
 const Redis = require('../LibWrappers/Redis.js');
 const PersistentHttpRq = require('klesun-node-tools/src/Utils/PersistentHttpRq.js');

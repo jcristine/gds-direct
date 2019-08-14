@@ -28,7 +28,6 @@ const {withAuth} = require("./HttpControllers/MainController");
 const GdsdLib = require('klesun-node-tools');
 const Settings = require("./Repositories/Settings");
 const SocketIo = require('./LibWrappers/SocketIo.js');
-const LibConfig = require('klesun-node-tools/src/Config.js');
 const ParsersController = require("./HttpControllers/ParsersController");
 const {readFile} = require('fs').promises;
 
@@ -453,16 +452,18 @@ app.get('/server/forceRestart', withOwnerAuth((rqBody) => Clustering.restartAll(
 	message: rqBody.message || null,
 })));
 app.get('/server/restartIfNeeded', toHandleHttp(Clustering.restartAllIfNeeded));
-app.get('/ping', toHandleHttp((rqBody) => {
+app.get('/ping', toHandleHttp(async (rqBody) => {
 	let memory = {};
 	const used2 = process.memoryUsage();
 	for (let key in used2) {
 		memory[key] = Math.round(used2[key] / 1024 / 1024 * 100) / 100;
 	}
+	let startupTag = await Clustering.whenStartupTag;
 
 	return Redis.getInfo().then(async redisLines => {
 		const data = {
 			process: descrProc(),
+			startupTag: startupTag,
 			'dbPool': await Db.getInfo(),
 			sockets: {
 				'totalConnection': socketIo.engine.clientsCount,
