@@ -197,7 +197,7 @@ exports.initListeners = async ({
 		process.exit(1);
 	});
 
-	chokidar.watch(CURRENT_PRODUCTION_TAG_PATH).on('change', async path => {
+	let checkFsTag = async path => {
 		// if this file was changed, that means
 		// production took place and rsync is done by now
 		let oldTag = await whenStartupTag;
@@ -206,7 +206,8 @@ exports.initListeners = async ({
 			let reason = 'tag_fs_change:' + oldTag + '->' + newTag;
 			enqueueShutdown({httpServer, socketIoInst, reason});
 		}
-	});
+	};
+	//chokidar.watch(CURRENT_PRODUCTION_TAG_PATH).on('change', checkFsTag);
 
 	let signalShutdown = (signal) => {
 		let reason = 'os_signal_received:' + signal;
