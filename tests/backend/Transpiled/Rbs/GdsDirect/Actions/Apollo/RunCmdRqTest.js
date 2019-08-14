@@ -7507,13 +7507,18 @@ class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
 			'output': {
 				'status': 'executed',
 				'calledCommands': [
-					{'cmd': '$DBRIXV', output: 'NEED TARIFF DISPLAY'},
+					{'cmd': '$DBRIXV', output: 'NEED TARIFF DISPLAY\n><'},
 				],
 			},
 			'sessionInfo': {
 				'initialState': GdsDirectDefaults.makeDefaultApolloState(),
 				'initialCommands': [],
-				'performedCommands': [],
+				'performedCommands': [{
+					'cmd': '$D',
+					'output': [
+						'NEED TARIFF DISPLAY\n><',
+					].join('\n'),
+				}],
 			},
 		});
 
