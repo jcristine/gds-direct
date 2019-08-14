@@ -46,7 +46,6 @@ const McoMaskParser = require("../../../../Gds/Parsers/Apollo/Mco/McoMaskParser"
 const TariffDisplayParser = require('../../../../Gds/Parsers/Apollo/TariffDisplay/TariffDisplayParser.js');
 const ParseHbFex = require('../../../../../Parsers/Apollo/ParseHbFex.js');
 const NmeMaskParser = require("../../../../../Actions/ManualPricing/NmeMaskParser");
-const FareParser = require('../../../../../Parsers/Apollo/FareParser');
 
 const TicketHistoryParser = require("../../../../Gds/Parsers/Apollo/TicketHistoryParser");
 
@@ -1075,16 +1074,48 @@ let RunCmdRq = ({
 	 * like MIN/MAX stay limitation, seasonality, advance purchase days limit, etc...
 	 */
 	const fareSearchValidatedChangeCity = async cmd => {
-		const previous = await runCmd('$D');
-		const parsed = FareParser.parseTariffDisplay(previous);
+		let parsed;
 
-		if(parsed.error) {
+		const previousDb = (await stateful.getLog().getLikeSql({
+			where: [
+				['area', '=', getSessionData().area],
+				['type', '=', 'fareSearch'],
+			],
+			limit: 1,
+		}))[0];
+
+		if (!previousDb) {
+			// emulates same message as in console
 			return {
-				calledCommands: [{cmd, output: parsed.error}],
+				calledCommands: [{cmd, output: 'NEED TARIFF DISPLAY'}],
 			};
 		}
 
-		const res = await processRealCommand(cmd + parsed.departureDate + parsed.returnDate);
+		// If shorthand command such as $D is used then cmd itself is useless,
+		// but we still can extract required data from command's output and that should
+		// be present in every request response
+		parsed = CommandParser.parseFareSearch(previousDb.output);
+
+		if (!parsed) {
+			// $D is as fallback in case if last fareSearch entry in DB is invalid
+			// (could happen if city code in last modification request is invalid)
+			// but fare search request in session is still valid
+			const dCmdOutput = await runCmd('$D');
+
+			parsed = CommandParser.parseFareSearch(dCmdOutput.output);
+
+			if (!parsed) {
+				return {
+					calledCommands: [{cmd, output: dCmdOutput.output}],
+				};
+			}
+		}
+
+		// Return date can potentially be missing if fare is only in one direction
+		const newCommand = cmd + parsed.departureDate.raw + (parsed.returnDate ? parsed.returnDate.raw : '');
+
+		const res = await processRealCommand(newCommand);
+
 		return {
 			calledCommands: [res.cmdRec],
 		};

@@ -4,7 +4,6 @@ const Pccs = require('../../../../../../../backend/Repositories/Pccs.js');
 const PtcUtil = require('../../../../../../../backend/Transpiled/Rbs/Process/Common/PtcUtil.js');
 const stubPtcFareFamilies = require('../../../../../../data/stubPtcFareFamilies.js');
 const PtcFareFamilies = require('../../../../../../../backend/Repositories/PtcFareFamilies.js');
-
 const RunCmdRq = require('../../../../../../../backend/Transpiled/Rbs/GdsDirect/Actions/Apollo/RunCmdRq.js');
 const GdsDirectDefaults = require('../../../../../../../backend/Utils/Testing/GdsDirectDefaults.js');
 const Agent = require('../../../../../../../backend/DataFormats/Wrappers/Agent.js');
@@ -12,6 +11,8 @@ const Rej = require('klesun-node-tools/src/Rej.js');
 const {coverExc} = require('klesun-node-tools/src/Lang.js');
 const php = require('../../../../php.js');
 const {nonEmpty} = require('klesun-node-tools/src/Lang.js');
+
+const sinon = require('sinon');
 
 class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
 	static makeTableRows($keys, $valuesPerRow) {
@@ -6127,131 +6128,6 @@ class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
 			},
 		});
 
-		$list.push({
-			'input': {
-				'title': 'Fare tarrif modification after fare price command has been executed',
-				'cmdRequested': '$DDRIXV',
-			},
-			'output': {
-				'status': 'executed',
-				'calledCommands': [
-					{'cmd': '$DDRIXV10SEP20SEP'},
-				],
-			},
-			'sessionInfo': {
-				'initialState': GdsDirectDefaults.makeDefaultApolloState(),
-				'initialCommands': [],
-				'performedCommands': [{
-					'cmd': '$D',
-					'output': [
-						'FARES LAST UPDATED 12AUG  5:16 AM                              ',
-						'>$DV10SEPJFKLHR20SEP|AA                                         NYC-LON TUE-10SEP19 AA                                         ',
-						'MPM 4148 AT                                                    ',
-						'TAXES/FEES NOT INCLUDED                                        ',
-						'PUBLIC/PRIVATE FARES FOR 2F3K                                  ',
-						'SEASONALITY/PROHIBITED TRAVEL DATES/DAY-OF-WEEK VALIDATED      ',
-						'     CX    FARE   FARE     C  AP  MIN/    SEASONS...... MR GI DT           USD    BASIS             MAX                        ',
-						'  1  AA     1.00R OKN2I7B5 B  21|  V/12M  06SEP9-29SEP9 M  AT  ',
-						'  2  AA    50.00R OKX8I7B5 B  28|  V/12M  06SEP9-29SEP9 R  AT D',
-						'  3  AA   101.00R OKN2I1B5 B  21|  V/12M  06SEP9-29SEP9 M  AT  ',
-						'  4 /AA   129.00R OKN2I7M5 O  21|  V/12M  06SEP9-29SEP9 M  AT  ',
-						')><',
-					].join('\n'),
-				}, {
-					'cmd': '$DDRIXV10SEP20SEP',
-					'output': [
-						'FARES LAST UPDATED 12AUG  5:16 AM                              ',
-						'>$DWASRIXV10SEP20SEP|AA                                         WAS-RIX TUE-10SEP19 AA                                         ',
-						'MPM 5288 AT                                                    ',
-						'TAXES/FEES NOT INCLUDED                                        ',
-						'PUBLIC/PRIVATE FARES FOR 2F3K                                  ',
-						'SEASONALITY/PROHIBITED TRAVEL DATES/DAY-OF-WEEK VALIDATED      ',
-						'     CX    FARE   FARE     C  AP  MIN/    SEASONS...... MR GI DT           USD    BASIS             MAX                        ',
-						'  1  AA   309.00R QKX8T7B5 B  28|  V/6M O 09SEP9-29SEP9 R  AT D',
-						'  2  AA   369.00R NKN8C1B5 B  28|  V/12M  09SEP9-29SEP9 M  AT  ',
-						'  3 /AA   394.00R QKX8T7M5 Q  28|  V/6M O 09SEP9-29SEP9 R  AT D',
-						'     TD:SPL08BAXTV                                             ',
-						')><',
-					].join('\n'),
-				}],
-			},
-		});
-
-		$list.push({
-			'input': {
-				'title': 'Fare tarrif modification after another fare modification command had been previously executed',
-				'cmdRequested': '$DBRIXV',
-			},
-			'output': {
-				'status': 'executed',
-				'calledCommands': [
-					{'cmd': '$DBRIXV10SEP20SEP'},
-				],
-			},
-			'sessionInfo': {
-				'initialState': GdsDirectDefaults.makeDefaultApolloState(),
-				'initialCommands': [],
-				'performedCommands': [{
-					'cmd': '$D',
-					'output': [
-						'FARES LAST UPDATED 12AUG  5:16 AM                              ',
-						'>$DWASMNLV10SEP20SEP|AA                                         WAS-MNL TUE-10SEP19 AA                                         ',
-						'MPM 10278 PA 13161 AT                                          ',
-						'TAXES/FEES NOT INCLUDED                                        ',
-						'PUBLIC/PRIVATE FARES FOR 2F3K                                  ',
-						'SEASONALITY/PROHIBITED TRAVEL DATES/DAY-OF-WEEK VALIDATED      ',
-						'     CX    FARE   FARE     C  AP  MIN/    SEASONS...... MR GI DT           USD    BASIS             MAX                        ',
-						'  1 /AA   677.00R QLX08CN2 Q    | ||/6M O 15AUG9-09DEC9 M  PA D',
-						'     TD:SPL053HEXV                                             ',
-						'  2 /AA   677.00R QLX08CN2 Q    | ||/6M O 15AUG9-09DEC9 M  PA D',
-						'     TD:DTU05YIYR3                                             ',
-						')><',
-					].join('\n'),
-				}, {
-					'cmd': '$DBRIXV10SEP20SEP',
-					'output': [
-						'FARES LAST UPDATED 12AUG  5:16 AM                              ',
-						'>$DWASRIXV10SEP20SEP|AA                                         WAS-RIX TUE-10SEP19 AA                                         ',
-						'MPM 5288 AT                                                    ',
-						'TAXES/FEES NOT INCLUDED                                        ',
-						'PUBLIC/PRIVATE FARES FOR 2F3K                                  ',
-						'SEASONALITY/PROHIBITED TRAVEL DATES/DAY-OF-WEEK VALIDATED      ',
-						'     CX    FARE   FARE     C  AP  MIN/    SEASONS...... MR GI DT           USD    BASIS             MAX                        ',
-						'  1  AA   309.00R QKX8T7B5 B  28|  V/6M O 09SEP9-29SEP9 R  AT D',
-						'  2  AA   369.00R NKN8C1B5 B  28|  V/12M  09SEP9-29SEP9 M  AT  ',
-						'  3 /AA   394.00R QKX8T7M5 Q  28|  V/6M O 09SEP9-29SEP9 R  AT D',
-						'     TD:SPL08BAXTV                                             ',
-						')><',
-					].join('\n'),
-				}],
-			},
-		});
-
-		$list.push({
-			'input': {
-				'title': 'Fare tarrif modification when there is no fare tariff request in session',
-				'cmdRequested': '$DBRIXV',
-			},
-			'output': {
-				'status': 'executed',
-				'calledCommands': [
-					{'cmd': '$DBRIXV', output: 'NEED TARIFF DISPLAY'},
-				],
-			},
-			'sessionInfo': {
-				'initialState': GdsDirectDefaults.makeDefaultApolloState(),
-				'initialCommands': [],
-				'performedCommands': [{
-					'cmd': '$D',
-					'output': [
-						'NEED TARIFF DISPLAY',
-						'><',
-					].join('\n'),
-				}],
-			},
-		});
-
-
 		// problematic cases follow
 		/*
 		// STORE alias, same as previous, but this time let's remove
@@ -7554,6 +7430,199 @@ class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
 		return $argumentTuples;
 	}
 
+	provideTestCasesForTariffModification() {
+		const list = [];
+
+		list.push({
+			'input': {
+				'title': 'Fare tarrif modification after another fare modification command had been previously executed',
+				'cmdRequested': '$DBRIXV',
+				'dbResult' : [{
+					'area': 'A',
+					'cmd': '$DV10SEPJFKLHR20SEP|AA',
+					'cmd_rq_id': 1,
+					'dt': '2019-08-14 08:31:35',
+					'duration': 1,
+					'gds': 'apollo',
+					'has_pnr': 0,
+					'id': 1,
+					'is_mr': 0,
+					'is_pnr_stored': 0,
+					'output': 'FARES LAST UPDATED 13AUG	1:11 AM															\n>$DV10SEPJFKLHR20SEP|AA																				 NYC-LON TUE-10SEP19 AA																				 \nMPM 4148 AT																										\nTAXES/FEES NOT INCLUDED																				\nPUBLIC/PRIVATE FARES FOR 2F3K																	\nSEASONALITY/PROHIBITED TRAVEL DATES/DAY-OF-WEEK VALIDATED			\n		 CX		FARE	 FARE		 C	AP	MIN/		SEASONS...... MR GI DT					 USD		BASIS						 MAX												\n	1	AA		 1.00R OKN2I7B5 B	21|	V/12M	06SEP9-29SEP9 M	AT	\n	2	AA	 101.00R OKN2I1B5 B	21|	V/12M	06SEP9-29SEP9 M	AT	\n	3 /AA	 129.00R OKN2I7M5 O	21|	V/12M	06SEP9-29SEP9 M	AT	\n		 TD:SPL08BAXTV																						 \n)><',
+					'record_locator': '',
+					'session_id': 1,
+					'type': 'fareSearch',
+				}],
+			},
+			'output': {
+				'status': 'executed',
+				'calledCommands': [
+					{'cmd': '$DBRIXV10SEP20SEP'},
+				],
+			},
+			'sessionInfo': {
+				'initialState': GdsDirectDefaults.makeDefaultApolloState(),
+				'initialCommands': [],
+				'performedCommands': [{
+					'cmd': '$DBRIXV10SEP20SEP',
+					'output': [
+						'FARES LAST UPDATED 12AUG  5:16 AM                              ',
+						'>$DWASRIXV10SEP20SEP|AA                                         WAS-RIX TUE-10SEP19 AA                                         ',
+						'MPM 5288 AT                                                    ',
+						'TAXES/FEES NOT INCLUDED                                        ',
+						'PUBLIC/PRIVATE FARES FOR 2F3K                                  ',
+						'SEASONALITY/PROHIBITED TRAVEL DATES/DAY-OF-WEEK VALIDATED      ',
+						'     CX    FARE   FARE     C  AP  MIN/    SEASONS...... MR GI DT           USD    BASIS             MAX                        ',
+						'  1  AA   309.00R QKX8T7B5 B  28|  V/6M O 09SEP9-29SEP9 R  AT D',
+						'  2  AA   369.00R NKN8C1B5 B  28|  V/12M  09SEP9-29SEP9 M  AT  ',
+						'  3 /AA   394.00R QKX8T7M5 Q  28|  V/6M O 09SEP9-29SEP9 R  AT D',
+						'     TD:SPL08BAXTV                                             ',
+						')><',
+					].join('\n'),
+				}],
+			},
+		});
+
+		list.push({
+			'input': {
+				'title': 'Fare tarrif modification when there is no fare tariff request in session',
+				'cmdRequested': '$DBRIXV',
+				'dbResult': [{
+					'area': 'A',
+					'cmd': '$DDLHRV10SEP',
+					'cmd_rq_id': 16426,
+					'dt': '2019-08-14 08:17:38',
+					'duration': 0.1728,
+					'gds': 'apollo',
+					'has_pnr': 0,
+					'id': 39560,
+					'is_mr': 0,
+					'is_pnr_stored': 0,
+					'output': 'NEED TARIFF DISPLAY\n><',
+					'record_locator': '',
+					'session_id': 1850,
+					'type': 'fareSearch'
+				}],
+			},
+			'output': {
+				'status': 'executed',
+				'calledCommands': [
+					{'cmd': '$DBRIXV', output: 'NEED TARIFF DISPLAY'},
+				],
+			},
+			'sessionInfo': {
+				'initialState': GdsDirectDefaults.makeDefaultApolloState(),
+				'initialCommands': [],
+				'performedCommands': [],
+			},
+		});
+
+		list.push({
+			'input': {
+				'title': 'Fall back to $D in case if tariff data could not be obtained from DB',
+				'cmdRequested': '$DBRIXV',
+				'dbResult': [{
+					'area': 'A',
+					'cmd': '$DDLLLV10SEP20SEP',
+					'cmd_rq_id': 16507,
+					'dt': '2019-08-14 10:42:29',
+					'duration': 0.2671,
+					'gds': 'apollo',
+					'has_pnr': null,
+					'id': 39701,
+					'is_mr': 0,
+					'is_pnr_stored': null,
+					'output': 'NO FARES FOUND FOR INPUT REQUEST\n><',
+					'record_locator': '',
+					'session_id': 1853,
+					'type': 'fareSearch'
+				}],
+			},
+			'output': {
+				'status': 'executed',
+				'calledCommands': [
+					{'cmd': '$DBRIXV10SEP20SEP'},
+				],
+			},
+			'sessionInfo': {
+				'initialState': GdsDirectDefaults.makeDefaultApolloState(),
+				'initialCommands': [],
+				'performedCommands': [{
+					'cmd': '$D',
+					'output': [
+						'FARES LAST UPDATED 13AUG  3:10 AM                              ',
+						'>$DV10SEPJFKLHR20SEP|AA                                         NYC-LON TUE-10SEP19 AA                                         ',
+						'MPM 4148 AT                                                    ',
+						'TAXES/FEES NOT INCLUDED                                        ',
+						'PUBLIC/PRIVATE FARES FOR 2F3K                                  ',
+						'SEASONALITY/PROHIBITED TRAVEL DATES/DAY-OF-WEEK VALIDATED      ',
+						'     CX    FARE   FARE     C  AP  MIN/    SEASONS...... MR GI DT           USD    BASIS             MAX                        ',
+						'  1  AA     1.00R OKN2I7B5 B  21|  V/12M  06SEP9-29SEP9 M  AT  ',
+						'  2  AA   101.00R OKN2I1B5 B  21|  V/12M  06SEP9-29SEP9 M  AT  ',
+						'  3 /AA   129.00R OKN2I7M5 O  21|  V/12M  06SEP9-29SEP9 M  AT  ',
+						'     TD:SPL08BAXTV                                             ',
+						')><',
+					].join('\n'),
+				}, {
+					'cmd': '$DBRIXV10SEP20SEP',
+					'output': [
+						'FARES LAST UPDATED 12AUG  5:16 AM                              ',
+						'>$DWASRIXV10SEP20SEP|AA                                         WAS-RIX TUE-10SEP19 AA                                         ',
+						'MPM 5288 AT                                                    ',
+						'TAXES/FEES NOT INCLUDED                                        ',
+						'PUBLIC/PRIVATE FARES FOR 2F3K                                  ',
+						'SEASONALITY/PROHIBITED TRAVEL DATES/DAY-OF-WEEK VALIDATED      ',
+						'     CX    FARE   FARE     C  AP  MIN/    SEASONS...... MR GI DT           USD    BASIS             MAX                        ',
+						'  1  AA   309.00R QKX8T7B5 B  28|  V/6M O 09SEP9-29SEP9 R  AT D',
+						'  2  AA   369.00R NKN8C1B5 B  28|  V/12M  09SEP9-29SEP9 M  AT  ',
+						'  3 /AA   394.00R QKX8T7M5 Q  28|  V/6M O 09SEP9-29SEP9 R  AT D',
+						'     TD:SPL08BAXTV                                             ',
+						')><',
+					].join('\n'),
+				}],
+			},
+		});
+
+		list.push({
+			'input': {
+				'title': 'Diplay missing tariff message if $D returns such response and there is nothing in DB',
+				'cmdRequested': '$DBRIXV',
+				'dbResult': [{
+					'area': 'A',
+					'cmd': '$DDLLLV10SEP20SEP',
+					'cmd_rq_id': 16507,
+					'dt': '2019-08-14 10:42:29',
+					'duration': 0.2671,
+					'gds': 'apollo',
+					'has_pnr': null,
+					'id': 39701,
+					'is_mr': 0,
+					'is_pnr_stored': null,
+					'output': 'NO FARES FOUND FOR INPUT REQUEST\n><',
+					'record_locator': '',
+					'session_id': 1853,
+					'type': 'fareSearch',
+				}],
+			},
+			'output': {
+				'status': 'executed',
+				'calledCommands': [
+					{'cmd': '$DBRIXV', output: 'NEED TARIFF DISPLAY><'},
+				],
+			},
+			'sessionInfo': {
+				'initialState': GdsDirectDefaults.makeDefaultApolloState(),
+				'initialCommands': [],
+				'performedCommands': [{
+					'cmd': '$D',
+					'output': 'NEED TARIFF DISPLAY><',
+				}],
+			},
+		});
+
+		return list.map(c => [c]);
+	}
+
 	/**
 	 * @test
 	 * @dataProvider provideTestCases
@@ -7585,9 +7654,26 @@ class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
 		this.assertEquals(true, stateful.getGdsSession().wereAllCommandsUsed(), 'not all session commands were used');
 	}
 
+	async testTariffModification({input, output, sessionInfo}) {
+		let stateful = await GdsDirectDefaults.makeStatefulSession('apollo', input, sessionInfo);
+
+		sinon.stub(stateful.getLog(), 'getLikeSql')
+			.returns(Promise.resolve(input.dbResult));
+
+		let cmdRq = input['cmdRequested'];
+
+		let result = await RunCmdRq({
+			stateful, cmdRq,
+		}).catch(coverExc(Rej.list, exc => ({error: exc + ''})));
+
+		this.assertArrayElementsSubset(output, result, php.implode('; ', result['userMessages'] || []) + php.PHP_EOL);
+		this.assertEquals(true, stateful.getGdsSession().wereAllCommandsUsed(), 'not all session commands were used');
+	}
+
 	getTestMapping() {
 		return [
 			[this.provideTestCases, this.testCase],
+			[this.provideTestCasesForTariffModification, this.testTariffModification],
 		];
 	}
 }

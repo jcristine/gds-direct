@@ -640,16 +640,22 @@ class CommandParser {
 	static parseFareSearch($cmd) {
 		let $returnDate, $matches, $_, $departureAirport, $destinationAirport, $departureDate, $modsPart, $lexed;
 		$returnDate = null;
-		if (php.preg_match(/^\$D([A-Z]{3})([A-Z]{3})(\d{1,2}[A-Z]{3}\d{0,2})(.*)$/, $cmd, $matches = [])) {
+		if (php.preg_match(/^>{0,1}\$D([A-Z]{3})([A-Z]{3})(\d{1,2}[A-Z]{3}\d{0,2})(.*)$/m, $cmd, $matches = [])) {
 			[$_, $departureAirport, $destinationAirport, $departureDate, $modsPart] = $matches;
-		} else if (php.preg_match(/^\$DV(\d{1,2}[A-Z]{3}\d{0,2})([A-Z]{3})([A-Z]{3})(\d{1,2}[A-Z]{3}\d{0,2})(.*)$/, $cmd, $matches = [])) {
+		} else if (php.preg_match(/^>{0,1}\$DV(\d{1,2}[A-Z]{3}\d{0,2})([A-Z]{3})([A-Z]{3})(\d{1,2}[A-Z]{3}\d{0,2})(.*)$/m, $cmd, $matches = [])) {
 			[$_, $departureDate, $departureAirport, $destinationAirport, $returnDate, $modsPart] = $matches;
-		} else if (php.preg_match(/^\$DV?(\d{1,2}[A-Z]{3}\d{0,2})([A-Z]{3})([A-Z]{3})(.*)$/, $cmd, $matches = [])) {
+		} else if (php.preg_match(/^>{0,1}\$DV?(\d{1,2}[A-Z]{3}\d{0,2})([A-Z]{3})([A-Z]{3})(.*)$/m, $cmd, $matches = [])) {
 			[$_, $departureDate, $departureAirport, $destinationAirport, $modsPart] = $matches;
+		} else if (php.preg_match(/^>{0,1}\$D([A-Z]{3})([A-Z]{3})V{0,1}(\d{1,2}[A-Z]{3})(\d{1,2}[A-Z]{3}){0,1}(.*)$/m, $cmd, $matches = [])) {
+			[$_, $departureAirport, $destinationAirport, $departureDate, $returnDate, $modsPart] = $matches;
+		} else if (php.preg_match(/^>{0,1}\$DV(\d{1,2}[A-Z]{3})([A-Z]{3})([A-Z]{3})(.*)$/m, $cmd, $matches = [])) {
+			[$_, $departureDate, $departureAirport, $destinationAirport, $returnDate, $modsPart] = $matches;
 		} else {
 			return null;
 		}
+
 		$lexed = this.parseTariffMods($modsPart);
+
 		return {
 			'departureDate': this.parseDate($departureDate),
 			'returnDate': this.parseDate($returnDate),
