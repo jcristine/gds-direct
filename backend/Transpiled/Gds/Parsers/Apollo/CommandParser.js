@@ -649,7 +649,7 @@ class CommandParser {
 		} else if (php.preg_match(/^>{0,1}\$D([A-Z]{3})([A-Z]{3})V{0,1}(\d{1,2}[A-Z]{3})(\d{1,2}[A-Z]{3}){0,1}(.*)$/m, $cmd, $matches = [])) {
 			[$_, $departureAirport, $destinationAirport, $departureDate, $returnDate, $modsPart] = $matches;
 		} else if (php.preg_match(/^>{0,1}\$DV(\d{1,2}[A-Z]{3})([A-Z]{3})([A-Z]{3})(.*)$/m, $cmd, $matches = [])) {
-			[$_, $departureDate, $departureAirport, $destinationAirport, $returnDate, $modsPart] = $matches;
+			[$_, $departureDate, $departureAirport, $destinationAirport, $modsPart] = $matches;
 		} else {
 			return null;
 		}

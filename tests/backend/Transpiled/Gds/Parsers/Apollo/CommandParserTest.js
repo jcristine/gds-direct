@@ -1122,6 +1122,26 @@ class CommandParserTest extends require('../../../../../../backend/Transpiled/Li
 			},
 		});
 
+		list.push({
+			title: 'Parse one directional fare',
+			input: [
+				'FARES LAST UPDATED 13AUG 12:09 AM  ',
+				'>$DV10SEPJFKLHR             ',
+				'NYC-LHR TUE-10SEP19 AA ',
+			].join('\n'),
+			output: {
+				departureDate: {
+					raw: '10SEP',
+					partial: '09-10',
+				},
+				returnDate: null,
+				departureAirport: 'JFK',
+				destinationAirport: 'LHR',
+				modifiers: [],
+				unparsed: '             ',
+			},
+		});
+
 		return list.map(a => [a]);
 	}
 

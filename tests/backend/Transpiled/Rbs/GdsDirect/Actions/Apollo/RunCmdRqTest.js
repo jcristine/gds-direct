@@ -7620,6 +7620,43 @@ class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
 			},
 		});
 
+		list.push({
+			'input': {
+				'title': 'For entry with only departure date',
+				'cmdRequested': '$DBRIXV',
+				'dbResult': [{
+					'area': 'A',
+					'cmd': '$DV10SEPJFKLHR',
+					'cmd_rq_id': 16507,
+					'dt': '2019-08-14 10:42:29',
+					'duration': 0.2671,
+					'gds': 'apollo',
+					'has_pnr': null,
+					'id': 39701,
+					'is_mr': 0,
+					'is_pnr_stored': null,
+					'output': 'FARES LAST UPDATED 13AUG  3:37 AM                              \n>$DV10SEPJFKLHR                                                 NYC-LON TUE-10SEP19                                AIRPORT FARESMPM 4148 AT                                                    \nTAXES/FEES NOT INCLUDED                                        \nPUBLIC/PRIVATE FARES FOR 2F3K                                  \nSEASONALITY/PROHIBITED TRAVEL DATES/DAY-OF-WEEK VALIDATED      \n     CX    FARE   FARE     C  AP  MIN/    SEASONS...... MR GI DT           USD    BASIS             MAX                        \nJFKLON                                                         \n  1 /BA  1273.00  HKN3C9S3 H   3|         06SEP9-29SEP9 R  AT  \n     TD:GRV1780B86                                             \n  2 /IB  1273.00  HKN3C9S3 H   3|         06SEP9-29SEP9 R  AT  \n)><',
+					'record_locator': '',
+					'session_id': 1853,
+					'type': 'fareSearch',
+				}],
+			},
+			'output': {
+				'status': 'executed',
+				'calledCommands': [
+					{'cmd': '$DBRIXV10SEP'},
+				],
+			},
+			'sessionInfo': {
+				'initialState': GdsDirectDefaults.makeDefaultApolloState(),
+				'initialCommands': [],
+				'performedCommands': [{
+					'cmd': '$DBRIXV10SEP',
+					'output': 'FARES LAST UPDATED 13AUG  3:37 AM                              \n>$DWASLHRV10SEP                                                 WAS-LON TUE-10SEP19                                AIRPORT FARESMPM 4413 AT                                                    \nTAXES/FEES NOT INCLUDED                                        \nPUBLIC/PRIVATE FARES FOR 2F3K                                  \nSEASONALITY/PROHIBITED TRAVEL DATES/DAY-OF-WEEK VALIDATED      \n     CX    FARE   FARE     C  AP  MIN/    SEASONS...... MR GI DT           USD    BASIS             MAX                        \nWASLHR                                                         \n  1  ET  1126.00  SXOWUS   S                            R  AT D\n  2  ET  1301.00  GXOWUS   G                            R  AT D\n  3  ET  1476.00  YXOWUS   Y                            R  AT D\n)><',
+				}],
+			},
+		});
+
 		return list.map(c => [c]);
 	}
 
