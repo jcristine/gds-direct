@@ -103,10 +103,18 @@ const inApollo = (parsed) => {
 	if (!action) {
 		throw Rej.NotImplemented.makeExc('Unsupported base cmd - ' + parsed.data.baseCmd);
 	}
+	let normMods = [];
+	for (let mod of mods) {
+		if (mod.type === 'passengers') {
+			normMods.push({type: 'namePosition'});
+		} else {
+			normMods.push(mod);
+		}
+	}
 	return {
 		action: action,
 		...normalizePaxes_apollo(dict(mods)),
-		pricingModifiers: mods.filter(m => m.type !== 'passengers'),
+		pricingModifiers: normMods,
 	};
 };
 
@@ -115,13 +123,38 @@ const inSabre = (parsed) => {
 	let mods = parsed.data.pricingModifiers;
 	let normMods = [];
 	let action = 'price';
+	let fareBasis = null;
+	let segMod = {
+		type: 'segments',
+		parsed: {bundles: []},
+	};
+	let segBundlesPushed = false;
+	let pushSegBundles = () => {
+		if (!segBundlesPushed) {
+			segBundlesPushed = true;
+			normMods.push(segMod);
+		}
+	};
 	for (let mod of mods) {
 		let asAction = baseCmdMapping.sabre['WP' + mod.raw];
 		if (asAction) {
 			action = asAction;
-		} else if (!['names', 'ptc'].includes(mod.type)) {
+		} else if (mod.type === 'fareBasis') {
+			fareBasis = mod.parsed;
+			pushSegBundles();
+		} else if (mod.type === 'segments') {
+			segMod.parsed.bundles.push(mod.parsed);
+			pushSegBundles();
+		} else if (['names', 'ptc'].includes(mod.type)) {
+			normMods.push({type: 'namePosition'});
+		} else {
 			normMods.push(mod);
 		}
+	}
+	if (fareBasis) {
+		segMod.parsed.bundles = segMod.parsed.bundles.length > 0
+			? segMod.parsed.bundles.map(b => ({...b, fareBasis}))
+			: [{segmentNumbers: [], fareBasis}];
 	}
 	return {
 		action: action,
@@ -138,10 +171,18 @@ const inGalileo = (parsed) => {
 	if (!action) {
 		throw Rej.NotImplemented.makeExc('Unsupported base cmd - ' + parsed.data.baseCmd);
 	}
+	let normMods = [];
+	for (let mod of mods) {
+		if (mod.type === 'passengers') {
+			normMods.push({type: 'namePosition'});
+		} else {
+			normMods.push(mod);
+		}
+	}
 	return {
 		action: action,
 		...normalizePaxes_galileo(dict(mods)),
-		pricingModifiers: mods.filter(m => m.type !== 'passengers'),
+		pricingModifiers: normMods,
 	};
 };
 
@@ -155,14 +196,39 @@ const inAmadeus = (parsed) => {
 	let action = baseCmdMapping.amadeus[parsed.data.baseCmd];
 
 	let normMods = [];
+	let fareBasis = null;
+	let segMod = {
+		type: 'segments',
+		parsed: {bundles: []},
+	};
+	let segBundlesPushed = false;
+	let pushSegBundles = () => {
+		if (!segBundlesPushed) {
+			segBundlesPushed = true;
+			normMods.push(segMod);
+		}
+	};
 	for (let mod of mods) {
 		if (mod.type === 'generic') {
-			for (let subMod of mod.rSubModifiers) {
+			normMods.push({type: 'namePosition'});
+			for (let subMod of mod.parsed.rSubModifiers) {
 				normMods.push(subMod);
 			}
+		} else if (mod.type === 'fareBasis') {
+			fareBasis = mod.parsed.fareBasis;
+			pushSegBundles();
+		} else if (mod.type === 'segments') {
+			segMod.parsed.bundles.push({segmentNumbers: mod.parsed});
+			pushSegBundles();
 		} else if (!['names', 'ownSeat'].includes(mod.type)) {
+			normMods.push({type: 'namePosition'});
 			normMods.push(mod);
 		}
+	}
+	if (fareBasis) {
+		segMod.parsed.bundles = segMod.parsed.bundles.length > 0
+			? segMod.parsed.bundles.map(b => ({...b, fareBasis}))
+			: [{segmentNumbers: [], fareBasis}];
 	}
 
 	return {

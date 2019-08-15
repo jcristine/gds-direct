@@ -144,7 +144,7 @@ let parsePricingQualifier = ($token) => {
 	} else if (php.preg_match(/^A([A-Z0-9]{2})$/, $token, $matches = [])) {
 		[$name, $data] = ['validatingCarrier', $matches[1]];
 	} else if (php.preg_match(/^C-([A-Z0-9]{2})$/, $token, $matches = [])) {
-		[$name, $data] = ['governingCarrier', $matches[1]];
+		[$name, $data] = ['overrideCarrier', $matches[1]];
 	} else if (php.preg_match(/^M([A-Z]{3})$/, $token, $matches = [])) {
 		[$name, $data] = ['currency', $matches[1]];
 	} else if (php.preg_match(/^AC\*([A-Z0-9]+)$/, $token, $matches = [])) {
@@ -161,6 +161,8 @@ let parsePricingQualifier = ($token) => {
 		[$name, $data] = ['lowestFareAndRebook', true];
 	} else if (php.preg_match(/^Q([A-Z][A-Z0-9]*)$/, $token, $matches = [])) {
 		[$name, $data] = ['fareBasis', $matches[1]];
+	} else if (php.preg_match(/^B(\d{1,2}[A-Z]{3}\d*)$/, $token, $matches = [])) {
+		[$name, $data] = ['ticketingDate', {raw: $matches[1]}];
 	} else if (php.preg_match(/^TC-([A-Z]{2})$/, $token, $matches = [])) {
 		let raw = $matches[1];
 		let parsed = cabinClassMapping[raw];

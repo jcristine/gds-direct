@@ -54,7 +54,11 @@ class PricingCmdParser
 			$parsed = true;
 		} else if ($parsed = this.parseDate($rSubMod)) {
 			$type = 'ticketingDate';
+		} else if ($matches = $rSubMod.match(/^FC-([A-Z]{3})$/)) {
+			$type = 'currency';
+			$parsed = $matches[1];
 		} else if (php.preg_match(/^-([A-Z0-9]{3})$/, $rSubMod, $matches = [])) {
+			// relevant only in tariff display I believe...
 			$type = 'ptc';
 			$parsed = $matches[1];
 		} else {
@@ -63,6 +67,16 @@ class PricingCmdParser
 		}
 		return {
 			'raw': $rSubMod, 'type': $type, 'parsed': $parsed,
+		};
+	}
+
+	static getCabinClassMapping() {
+		return {
+			'M': 'economy',
+			'W': 'premiumEconomy',
+			'C': 'business',
+			'F': 'first',
+			'': 'sameAsBooked',
 		};
 	}
 
@@ -92,6 +106,11 @@ class PricingCmdParser
 		} else if (php.preg_match(/^S(\d[-,\d]*)$/, $raw, $matches = [])) {
 			$parsed = this.parseRange($matches[1]);
 			$type = 'segments';
+		} else if ($matches = $raw.match(/^K([A-Z]?)$/)) {
+			let raw = $matches[1];
+			let parsed = this.getCabinClassMapping()[raw] || null;
+			$parsed = {raw, parsed};
+			$type = 'cabinClass';
 		} else if (php.array_key_exists($raw, $ownSeatTypes)) {
 			$parsed = $ownSeatTypes[$raw];
 			$type = 'ownSeat';

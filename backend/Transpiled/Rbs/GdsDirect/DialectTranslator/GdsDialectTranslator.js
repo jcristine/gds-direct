@@ -20,7 +20,7 @@ const TranslateAddFrequentFlyerNumber = require("./TranslateAddFrequentFlyerNumb
 const TranslateChangeFrequentFlyerNumber = require("./TranslateChangeFrequentFlyerNumber");
 const CommonDataHelper = require("../CommonDataHelper");
 
-/** RAM cache */
+/** RAM caching */
 const patternList = [
 	// Area change
 	{
@@ -1225,7 +1225,9 @@ class GdsDialectTranslator
 						cmdRq, fromGds, toGds, parsed,
 						baseDate: this.$baseDate,
 					});
-				} catch (exc) {}
+				} catch (exc) {
+					//console.debug('could not translate pricing: ' + cmdRq + '\n', exc);
+				}
 				result = result || (new TranslatePricingCmdAction())
 					.setBaseDate(this.$baseDate)
 					.translate(cmdRq, fromGds, toGds, parsed);

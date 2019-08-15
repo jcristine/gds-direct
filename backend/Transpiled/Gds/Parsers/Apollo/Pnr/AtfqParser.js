@@ -33,6 +33,14 @@ const BagAllowanceParser = {
 	},
 };
 
+const fareTypes = {
+	'N': 'public',
+	'P': 'private',
+	'G': 'agencyPrivate',
+	'A': 'airlinePrivate',
+	'C': 'netAirlinePrivate',
+};
+
 class AtfqParser {
 	static parse($dump) {
 		let $result, $atfqBlocks, $block, $lines;
@@ -139,6 +147,16 @@ class AtfqParser {
 	static parsePricingModifiers($modsPart) {
 		let $tokens, $pricingModifiers, $token;
 		$tokens = !$modsPart ? [] : ('/' + $modsPart).split(/(?<!\/)(?:\/)/);
+		$tokens = $tokens.flatMap(t => {
+			// //@AB:N/ - bug in apollo, but it works, so should be prepared
+			let match = t.match(/^(\/@[A-Z]+)([^A-Z].*)$/);
+			if (match) {
+				let [, cabin, next] = match;
+				return [cabin, next];
+			} else {
+				return [t];
+			}
+		});
 		php.array_shift($tokens);
 		$pricingModifiers = [];
 		for ($token of $tokens) {
@@ -174,6 +192,14 @@ class AtfqParser {
 			'validatingCarrier': ($token) => php.preg_match(/^C../, $token) ? php.substr($token, 1) : null,
 			'overrideCarrier': ($token) => php.preg_match(/^OC../, $token) ? php.substr($token, 2) : null,
 			'ticketingAgencyPcc': ($token) => php.preg_match(/^TA[A-Z0-9]{3,4}/, $token) ? php.substr($token, 2) : null,
+			'ticketingDate': ($token) => {
+				let match = $token.match(/^:(\d{1,2}[A-Z]{3}\d{0,4})/);
+				if (match) {
+					return {raw: match[1]};
+				} else {
+					return null;
+				}
+			},
 			'currency': ($token) => php.preg_match(/^:[A-Z]{3}$/, $token) ? php.substr($token, 1) : null,
 			'tourCode': ($token) => {
 				let $matches;
@@ -409,16 +435,12 @@ class AtfqParser {
 		}
 	}
 
+	static encodeFareType(type) {
+		return php.array_flip(fareTypes)[type] || null;
+	}
+
 	static decodeFareType($code) {
-		let $codes;
-		$codes = {
-			'N': 'public',
-			'P': 'private',
-			'G': 'agencyPrivate',
-			'A': 'airlinePrivate',
-			'C': 'netAirlinePrivate',
-		};
-		return $codes[$code] || null;
+		return fareTypes[$code] || null;
 	}
 
 	static parseFareTypeModifier($token) {
