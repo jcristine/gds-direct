@@ -758,7 +758,7 @@ const RunCmdRq = ({
 			isParserFormat: true,
 		});
 
-		if(useXml && $result.segments.length > 0) {
+		if (useXml && $result.segments.length > 0) {
 			stateful.updateAreaState({
 				type: '!xml:PNRBFManagement',
 				state: {hasPnr: true, canCreatePq: false},
