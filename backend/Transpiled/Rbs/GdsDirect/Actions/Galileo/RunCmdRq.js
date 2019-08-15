@@ -199,9 +199,8 @@ const RunCmdRq = ({
 			}
 		}
 		let {type, data} = parsed;
-
 		if (type === 'airAvailability' && data && data['isReturn']) {
-		// add mods from original availability request
+			// add mods from original availability request
 			let typeToMod = php.array_combine(
 				php.array_column(data['modifiers'] || [], 'type'),
 				php.array_column(data['modifiers'] || [], 'raw')
@@ -221,13 +220,13 @@ const RunCmdRq = ({
 				);
 				typeToMod = php.array_merge(oldTypeToMod, typeToMod);
 				if ((oldParsed['data'] || {})['destinationAirport']) {
-				// the start of current availability
+					// the start of current availability
 					break;
 				}
 			}
 			return 'AR' + (data['orderBy'] || '') + ((data['departureDate'] || {})['raw'] || '')
-			+ data['departureAirport'] + data['destinationAirport']
-			+ php.implode('', typeToMod);
+				+ data['departureAirport'] + data['destinationAirport']
+				+ php.implode('', typeToMod);
 		} else {
 			return null;
 		}

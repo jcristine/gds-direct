@@ -240,6 +240,9 @@ let CmdLog = ({
 				.then(rows => rows[0])
 				.then(Rej.nonEmpty('No commands entered'));
 		},
+		/**
+		 * get rows in descending order by params in Db.fetchAll() format
+		 */
 		getLikeSql: getLikeSql,
 		getAllCommands: getAllCommands,
 	};

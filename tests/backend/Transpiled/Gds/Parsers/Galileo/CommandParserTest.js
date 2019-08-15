@@ -1,7 +1,6 @@
 
 
 const CommandParser = require('../../../../../../backend/Transpiled/Gds/Parsers/Galileo/CommandParser.js');
-const php = require('../../../php.js');
 class CommandParserTest extends require('../../../Lib/TestCase.js')
 {
 	provideCommands()  {
@@ -603,9 +602,9 @@ class CommandParserTest extends require('../../../Lib/TestCase.js')
 		}}]);
 		// new avail with default departure and destination LOS
 		$list.push(['A15SEPLOS', {'type': 'airAvailability'}, {'data': {
-				'departureDate': {'raw': '15SEP','parsed': '09-15'},
-				'destinationAirport': 'LOS',
-			}}]);
+			'departureDate': {'raw': '15SEP','parsed': '09-15'},
+			'destinationAirport': 'LOS',
+		}}]);
 		$list.push(['ALAX', {'type': 'airAvailability', 'data': {
 			'isReturn': false,
 			'destinationAirport': 'LAX',
@@ -661,6 +660,13 @@ class CommandParserTest extends require('../../../Lib/TestCase.js')
 		$list.push(['ARJ', {'type': 'airAvailability', 'data': {
 			'isReturn': true,
 			'orderBy': 'J',
+		}}]);
+		$list.push(['AJ28SEPNYCMNL', {'type': 'airAvailability', 'data': {
+			isReturn: false,
+			orderBy: 'J',
+			departureDate: {raw: '28SEP'},
+			departureAirport: 'NYC',
+			destinationAirport: 'MNL',
 		}}]);
 		// J between date and cities
 		$list.push(['A28SEPJNYCMNL', {'type': 'airAvailability', 'data': {
@@ -873,7 +879,7 @@ class CommandParserTest extends require('../../../Lib/TestCase.js')
 			'baseCmd': 'FQBB',
 			'pricingModifiers': [
 				{'raw': '||-AB', 'type': 'cabinClass', 'parsed': 'AB'},
-			]
+			],
 		}}]);
 
 		return $list;
