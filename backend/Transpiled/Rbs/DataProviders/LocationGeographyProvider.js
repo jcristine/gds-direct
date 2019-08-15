@@ -1,4 +1,5 @@
-
+const Rej = require('klesun-node-tools/src/Rej.js');
+const {coverExc} = require('klesun-node-tools/src/Lang.js');
 const php = require('klesun-node-tools/src/Transpiled/php.js');
 
 /**
@@ -13,21 +14,8 @@ class LocationGeographyProvider
 	async getLocationData($locationCode) {
 		// TODO: cache
 		return this.Airports.findByCode($locationCode)
-			.catch(exc => this.Airports.findByCity($locationCode));
-	}
-
-	async getRegionNameById($regionId) {
-		let $regionIdToName;
-		// TODO: cache
-		$regionIdToName = await this.Airports.getRegionNames();
-		return $regionIdToName[$regionId] || null;
-	}
-
-	async getCountryNameByCode($countryCode) {
-		let $countryCodeToName;
-		// TODO: cache
-		$countryCodeToName = await this.Airports.getCountryNames();
-		return $countryCodeToName[$countryCode] || null;
+			.catch(coverExc([Rej.NotFound], exc => this.Airports.findByCity($locationCode)))
+			.catch(coverExc([Rej.NotFound], exc => null));
 	}
 
 	async getTimezone($locationCode) {
