@@ -4,7 +4,7 @@ const StringUtil = require('../../../Lib/Utils/StringUtil.js');
 const Lexeme = require('../../../Lib/Lexer/Lexeme.js');
 const Lexer = require('../../../Lib/Lexer/Lexer.js');
 const AtfqParser = require('../../../Gds/Parsers/Apollo/Pnr/AtfqParser.js');
-const php = require("../../../phpDeprecated");
+const php = require("klesun-node-tools/src/Transpiled/php.js");
 const CommonParserHelpers = require("./CommonParserHelpers");
 const {mkReg} = require('klesun-node-tools/src/Utils/Misc.js');
 
@@ -640,16 +640,21 @@ class CommandParser {
 	static parseFareSearch($cmd) {
 		let $returnDate, $matches, $_, $departureAirport, $destinationAirport, $departureDate, $modsPart, $lexed;
 		$returnDate = null;
+		// probably should parse token sequence with Lexer.js same as
+		// modifiers, as we know that they may come in nearly any order...
+		// the only rule I see here is that return date can only be specified with "V"-alidated indicator
 		if (php.preg_match(/^\$D([A-Z]{3})([A-Z]{3})(\d{1,2}[A-Z]{3}\d{0,2})(.*)$/, $cmd, $matches = [])) {
+			// $DJFKMNL25MAY
 			[$_, $departureAirport, $destinationAirport, $departureDate, $modsPart] = $matches;
 		} else if (php.preg_match(/^\$DV(\d{1,2}[A-Z]{3}\d{0,2})([A-Z]{3})([A-Z]{3})(\d{1,2}[A-Z]{3}\d{0,2})(.*)$/, $cmd, $matches = [])) {
+			// $DV25MAYJFKMNL28MAY
 			[$_, $departureDate, $departureAirport, $destinationAirport, $returnDate, $modsPart] = $matches;
 		} else if (php.preg_match(/^\$DV?(\d{1,2}[A-Z]{3}\d{0,2})([A-Z]{3})([A-Z]{3})(.*)$/, $cmd, $matches = [])) {
+			// $DV25MAYJFKMNL, $D25MAYJFKMNL
 			[$_, $departureDate, $departureAirport, $destinationAirport, $modsPart] = $matches;
-		} else if (php.preg_match(/^\$D([A-Z]{3})([A-Z]{3})V{0,1}(\d{1,2}[A-Z]{3})(\d{1,2}[A-Z]{3}){0,1}(.*)$/, $cmd, $matches = [])) {
+		} else if (php.preg_match(/^\$D([A-Z]{3})([A-Z]{3})V(\d{1,2}[A-Z]{3})(\d{1,2}[A-Z]{3}){0,1}(.*)$/, $cmd, $matches = [])) {
+			// $DJFKMNLV25MAY27MAY, $DJFKMNLV25MAY
 			[$_, $departureAirport, $destinationAirport, $departureDate, $returnDate, $modsPart] = $matches;
-		} else if (php.preg_match(/^\$DV(\d{1,2}[A-Z]{3})([A-Z]{3})([A-Z]{3})(.*)$/, $cmd, $matches = [])) {
-			[$_, $departureDate, $departureAirport, $destinationAirport, $modsPart] = $matches;
 		} else {
 			return null;
 		}
