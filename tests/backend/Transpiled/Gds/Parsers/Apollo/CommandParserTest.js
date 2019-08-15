@@ -9,7 +9,7 @@ class CommandParserTest extends require('../../../../../../backend/Transpiled/Li
 		$list = [];
 		$list.push([
 			'*R',
-			{'type': 'redisplayPnr'}
+			{'type': 'redisplayPnr'},
 		]);
 		$list.push([
 			'*P|N|I',
@@ -20,7 +20,7 @@ class CommandParserTest extends require('../../../../../../backend/Transpiled/Li
 					{'field': 'N'},
 					{'field': 'I'},
 				],
-			}
+			},
 		]);
 		$list.push([
 			'**02AUG-BRUCE|*T',
@@ -31,15 +31,15 @@ class CommandParserTest extends require('../../../../../../backend/Transpiled/Li
 						'type': 'ticketing',
 					},
 				],
-			}
+			},
 		]);
 		$list.push([
 			'A10JUNKIVRIX|LH',
-			{'type': 'airAvailability'}
+			{'type': 'airAvailability'},
 		]);
 		$list.push([
 			'@:3SSRFOIDACNN2/N1|2/CCAX370000000000028',
-			{'type': 'addSsr'}
+			{'type': 'addSsr'},
 		]);
 		$list.push([
 			'$BN1|2*C11',
@@ -71,15 +71,15 @@ class CommandParserTest extends require('../../../../../../backend/Transpiled/Li
 						},
 					],
 				},
-			}
+			},
 		]);
 		$list.push([
 			'MVT/|*JEAN',
-			{'type': 'addAgencyInfo'}
+			{'type': 'addAgencyInfo'},
 		]);
 		$list.push([
 			'X1-2|4',
-			{'type': 'deletePnrField'}
+			{'type': 'deletePnrField'},
 		]);
 		$list.push([
 			'R:SUE|QEP/43|86|CA3/4',
@@ -90,11 +90,11 @@ class CommandParserTest extends require('../../../../../../backend/Transpiled/Li
 						'type': 'movePnrToQueue',
 					},
 				],
-			}
+			},
 		]);
 		$list.push([
 			'Q/37|*N|IA/UA', //Ideal in future: parse also not only first
-			{'type': 'openQueue'}
+			{'type': 'openQueue'},
 		]);
 		$list.push([
 			'P:ORDB/312 555-5555|R:P|QEP/44|45|B7M/6',
@@ -108,7 +108,7 @@ class CommandParserTest extends require('../../../../../../backend/Transpiled/Li
 						'type': 'movePnrToQueue',
 					},
 				],
-			}
+			},
 		]);
 		$list.push([
 			'@:3SSROTHSCCNN1FQTVCC123456-LI/SUE|@:3SSROTHSCCNN1FQTVCC123456-LI/SUE|*R', //Ideal in future: parse also not only first
@@ -116,11 +116,11 @@ class CommandParserTest extends require('../../../../../../backend/Transpiled/Li
 		]);
 		$list.push([
 			'@:3OSI QOIFNQIFN|@:3OSI JKWNGJWNG', //Ideal in future: parse also not only first
-			{'type': 'addProgrammaticSsr'}
+			{'type': 'addProgrammaticSsr'},
 		]);
 		$list.push([
 			'MVT/2CV4//|10/|N:SMITH/S MR', //Ideal in future: parse also not only first
-			{'type': 'addAgencyInfo'}
+			{'type': 'addAgencyInfo'},
 		]);
 		$list.push([
 			'P:SFOAS/800-750-2238 ASAP CUSTOMER SUPPORT|T:TAU/24DEC|R:LOGIN|ER',
@@ -137,7 +137,7 @@ class CommandParserTest extends require('../../../../../../backend/Transpiled/Li
 						'type': 'storeKeepPnr',
 					},
 				],
-			}
+			},
 		]);
 		$list.push([
 			'$BB/2G2H/SS',
@@ -169,7 +169,7 @@ class CommandParserTest extends require('../../../../../../backend/Transpiled/Li
 						'type': 'storeKeepPnr',
 					},
 				],
-			}
+			},
 		]);
 		$list.push([
 			'SEM/2CV4/AG',
@@ -267,7 +267,7 @@ class CommandParserTest extends require('../../../../../../backend/Transpiled/Li
 						'ranges': [
 							{'from': '1', 'to': '1'},
 						],
-					}
+					},
 				},
 				{'type': 'redisplayPnr'},
 			],
@@ -581,10 +581,10 @@ class CommandParserTest extends require('../../../../../../backend/Transpiled/Li
 							'bundles': [
 								{'segmentNumbers': [], 'accountCode': 'NYC09'},
 							],
-						}
+						},
 					},
 				],
-			}
+			},
 		}]);
 		$list.push(['$B/-NYC09*2CV4', {
 			'type': 'priceItinerary', 'data': {
@@ -594,10 +594,10 @@ class CommandParserTest extends require('../../../../../../backend/Transpiled/Li
 							'bundles': [
 								{'segmentNumbers': [], 'accountCode': 'NYC09', 'pcc': '2CV4'},
 							],
-						}
+						},
 					},
 				],
-			}
+			},
 		}]);
 		$list.push(['$BS1@Y1N0C9M0-NYC09*2CV4|2-NYC09@Y1N0C9M0', {
 			'type': 'priceItinerary', 'data': {
@@ -609,14 +609,14 @@ class CommandParserTest extends require('../../../../../../backend/Transpiled/Li
 									'segmentNumbers': ['1'],
 									'fareBasis': 'Y1N0C9M0',
 									'accountCode': 'NYC09',
-									'pcc': '2CV4'
+									'pcc': '2CV4',
 								},
 								{'segmentNumbers': ['2'], 'fareBasis': 'Y1N0C9M0', 'accountCode': 'NYC09', 'pcc': null},
 							],
-						}
+						},
 					},
 				],
-			}
+			},
 		}]);
 		$list.push([
 			'$BBCCUA',
@@ -715,7 +715,7 @@ class CommandParserTest extends require('../../../../../../backend/Transpiled/Li
 						{'withAllPartners': false, 'airline': 'UA', 'code': '12345678910'},
 					],
 				}],
-			}
+			},
 		}]);
 		$list.push(['MP*\u00A4LH12345678910', {'type': 'addFrequentFlyerNumber'}]);
 		$list.push(['MPN1*UA12345678910', {'type': 'addFrequentFlyerNumber'}]);
@@ -727,7 +727,7 @@ class CommandParserTest extends require('../../../../../../backend/Transpiled/Li
 						{'withAllPartners': true, 'airline': 'LH', 'code': '12345678910'},
 					],
 				}],
-			}
+			},
 		}]);
 		$list.push(['MPN1-1*@AA8853315554*@BA9742123848*@DL3158746568|N2-1*@AA4346366363*@BA2315488786*@DL7845453554', {
 			'type': 'addFrequentFlyerNumber', 'data': {
@@ -749,7 +749,7 @@ class CommandParserTest extends require('../../../../../../backend/Transpiled/Li
 						],
 					},
 				],
-			}
+			},
 		}]);
 		$list.push(['*MPD', {'type': 'mcoList'}]);
 		$list.push(['*MP', {'type': 'frequentFlyerData'}]);
@@ -760,7 +760,7 @@ class CommandParserTest extends require('../../../../../../backend/Transpiled/Li
 					'majorPaxNum': '', 'minorPaxNum': '',
 					'mileagePrograms': [{'withAllPartners': false, 'airline': 'AA', 'code': ''}],
 				}],
-			}
+			},
 		}]);
 		$list.push(['MP/X/N1*LH', {'type': 'changeFrequentFlyerNumber'}]);
 		$list.push(['MP/X/N1*DL|2*AA', {
@@ -775,52 +775,52 @@ class CommandParserTest extends require('../../../../../../backend/Transpiled/Li
 						'mileagePrograms': [{'withAllPartners': false, 'airline': 'AA', 'code': ''}],
 					},
 				],
-			}
+			},
 		}]);
 		$list.push(['F:LH123/29APR', {'type': 'operationalInfo'}]);
 		$list.push(['$D19DECFSMMNL|DL', {
 			'type': 'fareSearch',
-			'data': {'departureDate': {'raw': '19DEC'}, 'departureAirport': 'FSM', 'destinationAirport': 'MNL'}
+			'data': {'departureDate': {'raw': '19DEC'}, 'departureAirport': 'FSM', 'destinationAirport': 'MNL'},
 		}]);
 		$list.push(['$D16NOVSLCTYO|UA', {
 			'type': 'fareSearch',
-			'data': {'departureDate': {'raw': '16NOV'}, 'departureAirport': 'SLC', 'destinationAirport': 'TYO'}
+			'data': {'departureDate': {'raw': '16NOV'}, 'departureAirport': 'SLC', 'destinationAirport': 'TYO'},
 		}]);
 		$list.push(['$D20DECYVRGYE|AC', {
 			'type': 'fareSearch',
-			'data': {'departureDate': {'raw': '20DEC'}, 'departureAirport': 'YVR', 'destinationAirport': 'GYE'}
+			'data': {'departureDate': {'raw': '20DEC'}, 'departureAirport': 'YVR', 'destinationAirport': 'GYE'},
 		}]);
 		$list.push(['$D10SEPNYCCNF|AA-JCB-Q:L', {
 			'type': 'fareSearch',
-			'data': {'departureDate': {'raw': '10SEP'}, 'departureAirport': 'NYC', 'destinationAirport': 'CNF'}
+			'data': {'departureDate': {'raw': '10SEP'}, 'departureAirport': 'NYC', 'destinationAirport': 'CNF'},
 		}]);
 		$list.push(['$DV6DECNYCLOS17DEC', {
 			'type': 'fareSearch',
-			'data': {'departureDate': {'raw': '6DEC'}, 'departureAirport': 'NYC', 'destinationAirport': 'LOS'}
+			'data': {'departureDate': {'raw': '6DEC'}, 'departureAirport': 'NYC', 'destinationAirport': 'LOS'},
 		}]);
 		$list.push(['$DV5SEPDTTNSI14JAN', {
 			'type': 'fareSearch',
-			'data': {'departureDate': {'raw': '5SEP'}, 'departureAirport': 'DTT', 'destinationAirport': 'NSI'}
+			'data': {'departureDate': {'raw': '5SEP'}, 'departureAirport': 'DTT', 'destinationAirport': 'NSI'},
 		}]);
 		$list.push(['$DV23OCTRDUMNL27NOV', {
 			'type': 'fareSearch',
-			'data': {'departureDate': {'raw': '23OCT'}, 'departureAirport': 'RDU', 'destinationAirport': 'MNL'}
+			'data': {'departureDate': {'raw': '23OCT'}, 'departureAirport': 'RDU', 'destinationAirport': 'MNL'},
 		}]);
 		$list.push(['$DV15SEPLAXLOS:OW', {
 			'type': 'fareSearch',
-			'data': {'departureDate': {'raw': '15SEP'}, 'departureAirport': 'LAX', 'destinationAirport': 'LOS'}
+			'data': {'departureDate': {'raw': '15SEP'}, 'departureAirport': 'LAX', 'destinationAirport': 'LOS'},
 		}]);
 		$list.push(['$DV18DECPDXLON28DEC', {
 			'type': 'fareSearch',
-			'data': {'departureDate': {'raw': '18DEC'}, 'departureAirport': 'PDX', 'destinationAirport': 'LON'}
+			'data': {'departureDate': {'raw': '18DEC'}, 'departureAirport': 'PDX', 'destinationAirport': 'LON'},
 		}]);
 		$list.push(['$DV12SEPYYZMNL10OCT|AC', {
 			'type': 'fareSearch',
-			'data': {'departureDate': {'raw': '12SEP'}, 'departureAirport': 'YYZ', 'destinationAirport': 'MNL'}
+			'data': {'departureDate': {'raw': '12SEP'}, 'departureAirport': 'YYZ', 'destinationAirport': 'MNL'},
 		}]);
 		$list.push(['$DV14AUGBOSLON24AUG', {
 			'type': 'fareSearch',
-			'data': {'departureDate': {'raw': '14AUG'}, 'departureAirport': 'BOS', 'destinationAirport': 'LON'}
+			'data': {'departureDate': {'raw': '14AUG'}, 'departureAirport': 'BOS', 'destinationAirport': 'LON'},
 		}]);
 		$list.push(['$DV20NOVWASJNB1DEC//@C', {
 			'type': 'fareSearch', 'data': {
@@ -830,19 +830,19 @@ class CommandParserTest extends require('../../../../../../backend/Transpiled/Li
 				'modifiers': [
 					{'type': 'cabinClass', 'raw': '//@C', 'parsed': 'business'},
 				],
-			}
+			},
 		}]);
 		$list.push(['$DV18AUGEWRMDE27AUG|AA', {
 			'type': 'fareSearch',
-			'data': {'departureDate': {'raw': '18AUG'}, 'departureAirport': 'EWR', 'destinationAirport': 'MDE'}
+			'data': {'departureDate': {'raw': '18AUG'}, 'departureAirport': 'EWR', 'destinationAirport': 'MDE'},
 		}]);
 		$list.push(['$DV12NOVLAXMNL3DEC|CX', {
 			'type': 'fareSearch',
-			'data': {'departureDate': {'raw': '12NOV'}, 'departureAirport': 'LAX', 'destinationAirport': 'MNL'}
+			'data': {'departureDate': {'raw': '12NOV'}, 'departureAirport': 'LAX', 'destinationAirport': 'MNL'},
 		}]);
 		$list.push(['$DV19AUGSEADKR15OCT|UA', {
 			'type': 'fareSearch',
-			'data': {'departureDate': {'raw': '19AUG'}, 'departureAirport': 'SEA', 'destinationAirport': 'DKR'}
+			'data': {'departureDate': {'raw': '19AUG'}, 'departureAirport': 'SEA', 'destinationAirport': 'DKR'},
 		}]);
 		$list.push(['$DNYCMNL28NOV17T12MAR17:RT+DL-M', {
 			'type': 'fareSearch', 'data': {
@@ -855,7 +855,7 @@ class CommandParserTest extends require('../../../../../../backend/Transpiled/Li
 					{'type': 'airlines', 'raw': '|DL', 'parsed': ['DL']},
 					{'type': 'bookingClass', 'raw': '-M', 'parsed': 'M'},
 				],
-			}
+			},
 		}]);
 		$list.push(['$D30SEPORLRUH\u00A4C+AF', {
 			'type': 'fareSearch', 'data': {
@@ -866,7 +866,7 @@ class CommandParserTest extends require('../../../../../../backend/Transpiled/Li
 					{'type': 'cabinClass', 'raw': '@C', 'parsed': 'business'},
 					{'type': 'airlines', 'raw': '|AF', 'parsed': ['AF']},
 				],
-			}
+			},
 		}]);
 		$list.push([
 			'$B/FXD',
@@ -888,12 +888,12 @@ class CommandParserTest extends require('../../../../../../backend/Transpiled/Li
 		$list.push(['9S', {
 			'type': 'requestSeats', 'data': {
 				'seatCodes': [],
-			}
+			},
 		}]);
 		$list.push(['9X', {
 			'type': 'cancelSeats', 'data': {
 				'seatCodes': [],
-			}
+			},
 		}]);
 		$list.push([
 			'PS-CREATED IN GDS DIRECT BY JAYDEN|@:5GD-JAYDEN/1092/FOR AGENT/1092/LEAD-11081962 IN 2G8P|T-CA-SFO@$0221686|P:SFOAS/800-750-2238 ASAP CUSTOMER SUPPORT|T:TAU/27MAR|R:JAYDEN|ER',
@@ -962,7 +962,7 @@ class CommandParserTest extends require('../../../../../../backend/Transpiled/Li
 								{raw: 'BG0PC', type: 'freeBaggageAmount'},
 								{raw: 'EBNONREF-0VALUAFTDPT-CHGFE', type: 'endorsementLine'},
 							],
-						}
+						},
 					},
 					{raw: '', type: null},
 				],
