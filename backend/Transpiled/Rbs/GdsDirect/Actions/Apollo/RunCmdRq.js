@@ -1062,6 +1062,72 @@ let RunCmdRq = ({
 		};
 	};
 
+	// Command parser expects clean command and not
+	// output cmd that is preceded by >
+	const extractDCommandFromOutput = output => {
+		const match = output.match(/>(?<cmd>\$D[^ ]+)/m);
+		return match && match.groups.cmd || null;
+	};
+
+	/**
+	 * @param {String} cmd = '$DBWASV'
+	 * performs >$DBWASV20MAY25MAY;
+	 *
+	 * there is a >$DBWAS; format in GDS, but it does not preserve the 'V'-alidated
+	 * fare indicator, that's why we were asked to implement an alias that would not
+	 * require to retype the dates from last $D, but would still return _validated_ fares
+	 *
+	 * "validated" means that fare is allowed by our contracts, that usually define stuff
+	 * like MIN/MAX stay limitation, seasonality, advance purchase days limit, etc...
+	 */
+	const fareSearchValidatedChangeCity = async cmd => {
+		let parsed;
+
+		const previousDb = (await stateful.getLog().getLikeSql({
+			where: [
+				['area', '=', getSessionData().area],
+				['type', '=', 'fareSearch'],
+			],
+			limit: 1,
+		}))[0];
+
+		if (!previousDb) {
+			// emulates same message as in console
+			return {
+				calledCommands: [{cmd, output: 'NEED TARIFF DISPLAY'}],
+			};
+		}
+
+		// If shorthand command such as $D is used then cmd itself is useless,
+		// but we still can extract required data from command's output and that should
+		// be present in every request response
+		parsed = CommandParser.parseFareSearch(extractDCommandFromOutput(previousDb.output));
+
+		if (!parsed) {
+			// $D is as fallback in case if last fareSearch entry in DB is invalid
+			// (could happen if city code in last modification request is invalid)
+			// but fare search request in session is still valid
+			const dCmdOutput = await runCmd('$D');
+
+			parsed = CommandParser.parseFareSearch(extractDCommandFromOutput(dCmdOutput.output));
+
+			if (!parsed) {
+				return {
+					calledCommands: [{cmd, output: dCmdOutput.output}],
+				};
+			}
+		}
+
+		// Return date can potentially be missing if fare is only in one direction
+		const newCommand = cmd + parsed.departureDate.raw + (parsed.returnDate ? parsed.returnDate.raw : '');
+
+		const res = await processRealCommand(newCommand);
+
+		return {
+			calledCommands: [res.cmdRec],
+		};
+	};
+
 	const processRequestedCommand = async (cmd) => {
 		let $alias, $mdaData, $limit, $cmdReal, $matches, $_, $plus, $seatAmount,
 			$segmentNumbers, $segmentStatus;
@@ -1128,8 +1194,8 @@ let RunCmdRq = ({
 			return {calledCommands: [cmdRec]};
 		} else if (!php.empty(reservation = await AliasParser.parseCmdAsPnr(cmd, stateful))) {
 			return bookPnr(reservation);
-		} else if (cmd === 'DEBUG-TRIGGER-MP-REMARK-DIALOG') {
-			return {actions: [{type: 'displayMpRemarkDialog'}]};
+		} else if ($alias.type === 'fareSearchValidatedChangeCity') {
+			return fareSearchValidatedChangeCity($alias.realCmd);
 		} else {
 			cmd = $alias['realCmd'];
 			let fetchAll = shouldFetchAll(cmd);
