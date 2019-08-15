@@ -2,6 +2,7 @@
 const php = require('klesun-node-tools/src/Transpiled/php.js');
 const StringUtil = require('../../../../Lib/Utils/StringUtil.js');
 const Fp = require('../../../../Lib/Utils/Fp.js');
+const {mkReg} = require('klesun-node-tools/src/Utils/Misc.js');
 
 /** @param $expr = '1/3/5-7/9' */
 let parseRanges = ($expr) => {
@@ -50,20 +51,20 @@ let parseNameQualifier = ($token) => {
 };
 
 /**
- * @param $token = 'S1/2-3*Q//DA25*PC05' || 'S1/3'
- * @return [1,2,3]
+ * @param token = 'S1/2-3*Q//DA25*PC05' || 'S1/3'
  */
-let parseSegmentQualifier = ($token) => {
-	let $regex, $matches;
-	$regex =
-		'/^S' +
-		'(?<segNums>\\d+[\\d\\\/\\-]*)' +
-		'(?<unparsed>\\*.+|)' +
-		'$/';
-	if (php.preg_match($regex, $token, $matches = [])) {
+let parseSegmentQualifier = (token) => {
+	let regex = mkReg([
+		/^S(?<segNums>\d+[\d\/\-]*)/,
+		/(\*Q(?<fareBasis>[A-Z][A-Z0-9]*)|)/,
+		/(?<unparsed>\s*.+|)/,
+	]);
+	let match;
+	if (match = token.match(regex)) {
 		return {
-			'segmentNumbers': parseRanges($matches['segNums']),
-			'unparsed': $matches['unparsed'],
+			segmentNumbers: parseRanges(match.groups['segNums']),
+			fareBasis: match.groups['fareBasis'],
+			unparsed: match.groups['unparsed'],
 		};
 	} else {
 		return null;
