@@ -4,11 +4,9 @@ const AbstractGdsAction = require('./AbstractGdsAction.js');
 
 const php = require('../../phpDeprecated.js');
 
-class AmadeusBuildItineraryAction extends AbstractGdsAction {
-	static isOutputValid($output) {
-		return PnrParser.parse($output)['success'];
-	}
+const transformToReservation = stop => ({...stop, segmentNumber: stop.lineNumber});
 
+class AmadeusBuildItineraryAction extends AbstractGdsAction {
 	static isAvailabilityOutput($output) {
 		return php.preg_match(/\*\* AMADEUS AVAILABILITY/, $output);
 	}
@@ -20,6 +18,7 @@ class AmadeusBuildItineraryAction extends AbstractGdsAction {
 	/** @param $itinerary = [AmadeusReservationParser::parseSegmentLine(), ...] */
 	async execute($itinerary, $isParserFormat) {
 		let $i, $segment, $date, $segmentStatus, $segmentStatusParam, $cmd, $output, $errorType, $tplData;
+		let parsed = null;
 
 		for ([$i, $segment] of Object.entries($itinerary)) {
 			$date = $isParserFormat
@@ -43,7 +42,9 @@ class AmadeusBuildItineraryAction extends AbstractGdsAction {
 				$segmentStatusParam,
 			]);
 			$output = (await this.runCmd($cmd)).output;
-			if (!this.constructor.isOutputValid($output)) {
+			// last command output will have full itinerary
+			parsed = PnrParser.parse($output);
+			if (!parsed.success) {
 				if (this.constructor.isAvailabilityOutput($output)) {
 					$errorType = this.constructor.ERROR_NO_AVAIL;
 				} else {
@@ -59,7 +60,10 @@ class AmadeusBuildItineraryAction extends AbstractGdsAction {
 			}
 		}
 
-		return {'success': true};
+		return {
+			success: true,
+			reservations: ((parsed.parsed || {}).itinerary || []).map(transformToReservation),
+		};
 	}
 }
 
