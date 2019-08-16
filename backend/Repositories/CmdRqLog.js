@@ -69,7 +69,7 @@ exports.logProcess = async ({params, whenCmdRqId, whenCmsResult}) => {
 	let {session, rqBody, emcUser} = params;
 	let calledDtObj = new Date();
 	let cmsResult = await whenCmsResult
-		.catch(coverExc(Rej.list, exc => Rej.NoContent('Cmd Failed', exc)));
+		.catch(coverExc(Rej.list, exc => Rej.NoContent('Cmd >' + rqBody.command +  '; Failed', exc)));
 	logOutput(rqBody, session, whenCmdRqId, cmsResult.output);
 	GdsSessions.updateUserAccessTime(session);
 	let duration = ((Date.now() - calledDtObj.getTime()) / 1000).toFixed(3);
