@@ -4,6 +4,9 @@
   "description": "An applet that allows user to enter GDS commands in a browser",
   "author": "klesun",
   "license": "proprietary",
+  "scripts": {
+    "test": "node tests/run.js"
+  },
   "dependencies": {
     "@types/express": "^4.16.1",
     "@types/http-server": "^0.10.0",
