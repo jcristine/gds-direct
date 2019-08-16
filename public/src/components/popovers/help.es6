@@ -3,6 +3,19 @@ import ButtonPopOver from '../../modules/buttonPopover.es6';
 import {CHANGE_STYLE} from "../../actions/settings";
 import Component from "../../modules/component";
 
+let makeAliases = () => {
+	let section = document.createElement('div');
+	let a = document.createElement('a');
+	a.setAttribute('target', '_blank');
+
+	a.textContent = 'aliases';
+	a.setAttribute('href', '/public/help/aliases.md');
+
+	section.appendChild(a);
+
+	return section;
+};
+
 let makeApollo = () => {
 	return Dom('p[Apollo: Enter HELP]');
 };
@@ -56,6 +69,7 @@ export default class Help extends ButtonPopOver
 	build()
 	{
 		let gdsSections = [
+			makeAliases(),
 			makeApollo(),
 			makeAmadeus(),
 			makeGalileo(),
