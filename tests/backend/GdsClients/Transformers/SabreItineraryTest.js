@@ -329,7 +329,7 @@ const provide_parseXml = () => {
 
 class SabreItineraryTest extends require('../../Transpiled/Lib/TestCase') {
 	async test_buildXml({input, output}) {
-		this.assertSame(output, SabreItinerary.buildItinaryXml(input));
+		this.assertSame(output, SabreItinerary.buildItineraryXml(input));
 	}
 
 	async test_parseXml({input, output}) {

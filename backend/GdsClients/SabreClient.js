@@ -226,7 +226,7 @@ const SabreClient = ({
 	};
 
 	const processPnr = async (gdsData, params) => {
-		const xml = SabreItinerary.buildItinaryXml(params);
+		const xml = SabreItinerary.buildItineraryXml(params);
 		const profileData = await getSabre(gdsData.profileName);
 		let soapEnvXml = makeContinueSoapEnvXml({
 			gdsData, payloadXml: xml, profileData, action: 'EnhancedAirBookRQ',
