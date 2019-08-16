@@ -62,7 +62,7 @@ class AmadeusBuildItineraryAction extends AbstractGdsAction {
 
 		return {
 			success: true,
-			reservations: ((parsed.parsed || {}).itinerary || []).map(transformToReservation),
+			itinerary: ((parsed.parsed || {}).itinerary || []).map(transformToReservation),
 		};
 	}
 }

@@ -521,13 +521,13 @@ let execute = ({
 
 			for (let [$marriage, $group] of $marriageGroups) {
 				if ($marriage > 0) {
-					$segmentNumbers = $group.map(g => findSegmentNumberInPnr(g, $result.reservations) || g.lineNumber);
+					$segmentNumbers = $group.map(g => findSegmentNumberInPnr(g, $result.itinerary) || g.lineNumber);
 					if ($error = await rebookSegment($group[0]['bookingClass'], $segmentNumbers)) {
 						$errors.push($error);
 					}
 				} else {
 					for ($segment of Object.values($group)) {
-						if ($error = await rebookSegment($segment['bookingClass'], [findSegmentNumberInPnr($segment, $result.reservations)])) {
+						if ($error = await rebookSegment($segment['bookingClass'], [findSegmentNumberInPnr($segment, $result.itinerary)])) {
 							$errors.push($error);
 						}
 					}
