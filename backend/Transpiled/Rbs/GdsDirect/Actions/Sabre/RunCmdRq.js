@@ -24,7 +24,7 @@ const getRbsPqInfo = require("../../../../../GdsHelpers/RbsUtils").getRbsPqInfo;
 const UnprocessableEntity = require("klesun-node-tools/src/Rej").UnprocessableEntity;
 const SabreTicketParser = require('../../../../Gds/Parsers/Sabre/SabreTicketParser.js');
 const Rej = require('klesun-node-tools/src/Rej.js');
-
+const {findSegmentNumberInSabrePnr} = require('../Common/ItinerarySegments');
 
 const doesStorePnr = ($cmd) => {
 	let $parsedCmd, $flatCmds, $cmdTypes;
@@ -638,7 +638,9 @@ const execute = ({
 
 		let cmdRec = result.pnrCmdRec;
 		if ($fallbackToGk) {
-			$cmd = 'WC' + php.implode('/', $newSegments.map($seg => $seg['segmentNumber'] + $seg['bookingClass']));
+			const segments = $newSegments.map(
+				seg => findSegmentNumberInSabrePnr(seg, result.reservations) + seg.bookingClass);
+			$cmd = 'WC' + segments.join('/');
 			cmdRec = await runCmd($cmd);
 		}
 		$sortResult = await processSortItinerary()
