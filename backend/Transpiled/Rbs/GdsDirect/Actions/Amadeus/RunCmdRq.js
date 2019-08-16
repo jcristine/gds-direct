@@ -811,30 +811,34 @@ let execute = ({
 	};
 
 	const _preprocessSameMonthReturnAvailability = async (day) => {
-		let lastAvail = (await stateful.getLog().getLikeSql({
+		let availsDesc = (await stateful.getLog().getLikeSql({
 			where: [
 				['area', '=', getSessionData().area],
-				['type', '=', 'airAvailability'],
+				['type', 'IN', ['airAvailability', 'changeAirAvailability']],
 				['is_mr', '=', false],
 			],
-			limit: 1,
-		}))[0];
-		if (!lastAvail) {
-			return Rej.BadRequest('No recent availability to request return date from');
+			limit: 20,
+		}));
+		for (let lastAvail of availsDesc) {
+			let {type, data} = CommandParser.parse(lastAvail.cmd);
+			let date = null;
+			if (type === 'changeAirAvailability') {
+				date = (data || {}).departureDate || (data || {}).returnDate;
+			} else if (type === 'airAvailability') {
+				let flightDetails = data.modifiers
+					.filter(m => m.type === 'flightDetails')
+					.map(m => m.parsed)[0];
+				if (!flightDetails) {
+					return Rej.BadRequest('Original availability request has no date specified >' + lastAvail.cmd + ';');
+				}
+				date = flightDetails.departureDate;
+			}
+			if (date) {
+				let month = date.raw.slice(-3);
+				return 'ACR' + day + month;
+			}
 		}
-		let {type, data} = CommandParser.parse(lastAvail.cmd);
-		if (type !== 'airAvailability' || !data) {
-			return Rej.NotImplemented('Could not parse availability cmd >' + lastAvail.cmd + ';');
-		}
-		let flightDetails = data.modifiers
-			.filter(m => m.type === 'flightDetails')
-			.map(m => m.parsed)[0];
-		if (!flightDetails) {
-			return Rej.BadRequest('Original availability request has no date specified >' + lastAvail.cmd + ';');
-		} else {
-			let month = flightDetails.departureDate.raw.slice(-3);
-			return 'ACR' + day + month;
-		}
+		return Rej.BadRequest('No recent availability to request return date from');
 	};
 
 	const preprocessCommand = async ($cmd) => {

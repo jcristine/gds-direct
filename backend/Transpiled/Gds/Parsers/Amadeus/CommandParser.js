@@ -5,7 +5,7 @@ const StringUtil = require('../../../Lib/Utils/StringUtil.js');
 const PricingCmdParser = require('../../../Gds/Parsers/Amadeus/Commands/PricingCmdParser.js');
 const TariffCmdParser = require('../../../Gds/Parsers/Amadeus/Commands/TariffCmdParser.js');
 
-const php = require('../../../phpDeprecated.js');
+const php = require('klesun-node-tools/src/Transpiled/php.js');
 const CommonParsersHelper = require("../Apollo/CommonParserHelpers");
 class CommandParser
 {
@@ -216,7 +216,7 @@ class CommandParser
 		return PricingCmdParser.parse($cmd);
 	}
 
-	static parse_ariAvailability(cmd) {
+	static parse_airAvailability(cmd) {
 		let match = cmd.match(/^AD\/?(.*)/);
 		if (match) {
 			let rawMods = match[1] ? match[1].split('/') : [];
@@ -240,6 +240,31 @@ class CommandParser
 				}),
 			};
 		} else {
+			return null;
+		}
+	}
+
+	static parse_changeAirAvailability(cmd) {
+		let match = cmd.match(/^AC(.+)/);
+		if (!match) {
+			return null;
+		}
+		let modsPart = match[1];
+		let data = null;
+		if (match = modsPart.match(/^(\d{1,2}[A-Z]{3}|)(\d{4}|)$/)) {
+			let [, date, time] = match;
+			return {
+				departureDate: !date ? undefined : {raw: date},
+				departureTime: !time ? undefined : {raw: time},
+			};
+		} else if (match = modsPart.match(/^R(\d{1,2}[A-Z]{3}|)(\d{4}|)$/)) {
+			let [, date, time] = match;
+			return {
+				returnDate: !date ? undefined : {raw: date},
+				returnTime: !time ? undefined : {raw: time},
+			};
+		} else {
+			// some unsupported modifier
 			return null;
 		}
 	}
@@ -271,6 +296,7 @@ class CommandParser
 
 		$startsWith = {
 			'AD': 'airAvailability',
+			'AC': 'changeAirAvailability',
 			'SS': 'sell',
 			'NM': 'addName',
 			'APE': 'addEmail',
@@ -356,8 +382,10 @@ class CommandParser
 			$type = 'changePnrField';
 		} else if (!php.is_null($data = TariffCmdParser.parse($cmd))) {
 			$type = 'fareSearch';
-		} else if (!php.is_null($data = this.parse_ariAvailability($cmd))) {
+		} else if (!php.is_null($data = this.parse_airAvailability($cmd))) {
 			$type = 'airAvailability';
+		} else if (!php.is_null($data = this.parse_changeAirAvailability($cmd))) {
+			$type = 'changeAirAvailability';
 		} else if (php.preg_match(/^\s*FXD(.*)$/, $cmd)) {
 			$type = 'lowFareSearch';
 		} else if (php.preg_match(/^\s*FXS(.*)$/, $cmd)) {
