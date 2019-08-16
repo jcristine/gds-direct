@@ -166,25 +166,6 @@ const RunCmdRq = ({
 		return stateful.getSessionData();
 	};
 
-	const _getLastAvail = async () => {
-		return stateful.getLog().getLikeSql({
-			where: [
-				['area', '=', getSessionData().area],
-				['type', '=', 'airAvailability'],
-			],
-			limit: 1,
-		}).then(rows => rows[0])
-			.then(Rej.nonEmpty('No recent availability'))
-			.then(row => {
-				let parsed = CommandParser.parse(row.cmd);
-				if (parsed.type === 'airAvailability' && parsed.data) {
-					return {row, data: parsed.data};
-				} else {
-					return Rej.NotImplemented('Could not parse availability cmd >' + row.cmd + ';');
-				}
-			});
-	};
-
 	/** @return string|null - null means "not changed" */
 	const preprocessAvailCmd = async (parsed) => {
 		let getRows = onDemand(() => stateful.getLog().getLikeSql({
