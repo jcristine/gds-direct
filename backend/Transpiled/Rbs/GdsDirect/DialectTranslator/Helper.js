@@ -1,10 +1,6 @@
 const Lexer = require('../../../Lib/Lexer/Lexer.js');
 const Lexeme = require('../../../Lib/Lexer/Lexeme.js');
 const php = require('../../../phpDeprecated.js');
-const ApoCmdParser = require('../../../Gds/Parsers/Apollo/CommandParser.js');
-const GalCmdParser = require('../../../Gds/Parsers/Galileo/CommandParser.js');
-const SabCmdParser = require('../../../Gds/Parsers/Sabre/CommandParser.js');
-const AmaCmdParser = require('../../../Gds/Parsers/Amadeus/CommandParser.js');
 
 // since unlike php's preg_match, js returns just one name from ((?<name1>asd)(?<name2>dsa))*
 exports.separateWithLex = ($input, nameToPattern) => {
@@ -33,7 +29,8 @@ exports.separateWithLex = ($input, nameToPattern) => {
 	});
 
 	if (lexed.text != '') {
-		//console.error('\nCould not lex >' + $input + '; - text left ' + lexed.text, lexed.lexemes);
+		console.error('\nCould not lex >' + $input + '; - text left ' + lexed.text, lexed.lexemes);
+		return {};
 	}
 
 	return lexResult;

@@ -2,6 +2,7 @@
 const php = require('klesun-node-tools/src/Transpiled/php.js');
 const StringUtil = require('../../../../Lib/Utils/StringUtil.js');
 const Fp = require('../../../../Lib/Utils/Fp.js');
+const {mkReg} = require('klesun-node-tools/src/Utils/Misc.js');
 
 /** @param $expr = '1/3/5-7/9' */
 let parseRanges = ($expr) => {
@@ -50,20 +51,20 @@ let parseNameQualifier = ($token) => {
 };
 
 /**
- * @param $token = 'S1/2-3*Q//DA25*PC05' || 'S1/3'
- * @return [1,2,3]
+ * @param token = 'S1/2-3*Q//DA25*PC05' || 'S1/3'
  */
-let parseSegmentQualifier = ($token) => {
-	let $regex, $matches;
-	$regex =
-		'/^S' +
-		'(?<segNums>\\d+[\\d\\\/\\-]*)' +
-		'(?<unparsed>\\*.+|)' +
-		'$/';
-	if (php.preg_match($regex, $token, $matches = [])) {
+let parseSegmentQualifier = (token) => {
+	let regex = mkReg([
+		/^S(?<segNums>\d+[\d\/\-]*)/,
+		/(\*Q(?<fareBasis>[A-Z][A-Z0-9]*)|)/,
+		/(?<unparsed>\s*.+|)/,
+	]);
+	let match;
+	if (match = token.match(regex)) {
 		return {
-			'segmentNumbers': parseRanges($matches['segNums']),
-			'unparsed': $matches['unparsed'],
+			segmentNumbers: parseRanges(match.groups['segNums']),
+			fareBasis: match.groups['fareBasis'],
+			unparsed: match.groups['unparsed'],
 		};
 	} else {
 		return null;
@@ -96,6 +97,15 @@ let parsePtcQualifier = ($token) => {
 	} else {
 		return $records;
 	}
+};
+
+let cabinClassMapping = {
+	'YB': 'economy',
+	'SB': 'premiumEconomy',
+	'BB': 'business',
+	'JB': 'premiumBusiness',
+	'FB': 'first',
+	'PB': 'premiumFirst',
 };
 
 /**
@@ -134,7 +144,7 @@ let parsePricingQualifier = ($token) => {
 	} else if (php.preg_match(/^A([A-Z0-9]{2})$/, $token, $matches = [])) {
 		[$name, $data] = ['validatingCarrier', $matches[1]];
 	} else if (php.preg_match(/^C-([A-Z0-9]{2})$/, $token, $matches = [])) {
-		[$name, $data] = ['governingCarrier', $matches[1]];
+		[$name, $data] = ['overrideCarrier', $matches[1]];
 	} else if (php.preg_match(/^M([A-Z]{3})$/, $token, $matches = [])) {
 		[$name, $data] = ['currency', $matches[1]];
 	} else if (php.preg_match(/^AC\*([A-Z0-9]+)$/, $token, $matches = [])) {
@@ -151,15 +161,12 @@ let parsePricingQualifier = ($token) => {
 		[$name, $data] = ['lowestFareAndRebook', true];
 	} else if (php.preg_match(/^Q([A-Z][A-Z0-9]*)$/, $token, $matches = [])) {
 		[$name, $data] = ['fareBasis', $matches[1]];
+	} else if (php.preg_match(/^B(\d{1,2}[A-Z]{3}\d*)$/, $token, $matches = [])) {
+		[$name, $data] = ['ticketingDate', {raw: $matches[1]}];
 	} else if (php.preg_match(/^TC-([A-Z]{2})$/, $token, $matches = [])) {
-		[$name, $data] = ['cabinClass', {
-			'YV': 'economy',
-			'SB': 'premiumEconomy',
-			'BB': 'business',
-			'JB': 'premiumBusiness',
-			'FB': 'first',
-			'PB': 'premiumFirst',
-		}[$matches[1]]];
+		let raw = $matches[1];
+		let parsed = cabinClassMapping[raw];
+		[$name, $data] = ['cabinClass', {raw, parsed}];
 	}
 	return {
 		raw: $token,
@@ -177,6 +184,8 @@ let parsePricingQualifiers = ($qualifiers) => {
 	}
 	return $parsedQualifiers;
 };
+
+exports.cabinClassMapping = cabinClassMapping;
 
 exports.parseModifier = (mod) => parsePricingQualifier(mod);
 

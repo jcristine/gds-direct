@@ -1,7 +1,7 @@
 
 
-const ApolloCmdParser = require('../../../../Gds/Parsers/Apollo/CommandParser.js');
-const DateTime = require('../../../../Lib/Utils/DateTime.js');
+const ApolloCmdParser = require('../../Transpiled/Gds/Parsers/Apollo/CommandParser.js');
+const DateTime = require('../../Transpiled/Lib/Utils/DateTime.js');
 
 let php = require('klesun-node-tools/src/Transpiled/php.js');
 
@@ -107,13 +107,13 @@ class NormalizeTariffCmd
 			$cmdData = ApolloCmdParser.parseFareSearch($cmd);
 			$cmdData = this.constructor.normalizeApolloCmd($cmdData);
 		} else if ($gds === 'sabre') {
-			$cmdData = require('../../../../Gds/Parsers/Sabre/Commands/TariffCmdParser.js').parse($cmd);
+			$cmdData = require('../../Transpiled/Gds/Parsers/Sabre/Commands/TariffCmdParser.js').parse($cmd);
 			$cmdData = this.constructor.normalizeSabreCmd($cmdData);
 		} else if ($gds === 'amadeus') {
-			$cmdData = require('../../../../Gds/Parsers/Amadeus/Commands/TariffCmdParser.js').parse($cmd);
+			$cmdData = require('../../Transpiled/Gds/Parsers/Amadeus/Commands/TariffCmdParser.js').parse($cmd);
 			$cmdData = this.constructor.normalizeAmadeusCmd($cmdData);
 		} else if ($gds === 'galileo') {
-			$cmdData = require('../../../../Gds/Parsers/Galileo/Commands/TariffCmdParser.js').parse($cmd);
+			$cmdData = require('../../Transpiled/Gds/Parsers/Galileo/Commands/TariffCmdParser.js').parse($cmd);
 			$cmdData = this.constructor.normalizeGalileoCmd($cmdData);
 		} else {
 			return null;

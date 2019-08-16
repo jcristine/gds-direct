@@ -3,6 +3,40 @@
 const GdsDialectTranslator = require('../../../../../../backend/Transpiled/Rbs/GdsDirect/DialectTranslator/GdsDialectTranslator.js');
 
 const php = require('../../../php.js');
+
+/** $BBCUA -> $BB/CUA */
+const normCmd = (gds, cmd) => {
+    if (!cmd) {
+        return cmd;
+    }
+    if (gds === 'apollo') {
+        let match = cmd.match(/^((?:T:)?\$B(?:BQ\d+|B[AC0]?)?)(.*)$/);
+        if (match) {
+            let [_, baseCmd, modsPart] = match;
+            if (modsPart && !modsPart.startsWith('/')) {
+                cmd = baseCmd + '/' + modsPart;
+            }
+        }
+    } else if (gds === 'galileo') {
+        let match = cmd.match(/^(FQ(?:A|BB(?:K|)|BA|))(.*)$/);
+        if (match) {
+            let [_, baseCmd, modsPart] = match;
+            if (modsPart && !modsPart.startsWith('/')) {
+                cmd = baseCmd + '/' + modsPart;
+            }
+        }
+    } else if (gds === 'amadeus') {
+        let match = cmd.match(/^(FX[A-Z])(.*)$/);
+        if (match) {
+            let [_, baseCmd, modsPart] = match;
+            if (modsPart && !modsPart.startsWith('/')) {
+                cmd = baseCmd + '/' + modsPart;
+            }
+        }
+    }
+    return cmd;
+};
+
 class GdsDialectTranslatorTest extends require('../../../Lib/TestCase.js')
 {
     provideCommands()  {
@@ -178,8 +212,8 @@ class GdsDialectTranslatorTest extends require('../../../Lib/TestCase.js')
             ['apollo', 'sabre', 'A/V/15SEPSEAMNL+DL',    '1S15SEPSEAMNL¥DL-V'],
             ['apollo', 'sabre', '$BB0S1+4',              'WPNCB¥S1/4'],
             ['apollo', 'sabre', '$BBAS1+4',              'WPNCS¥S1/4'],
-            ['apollo', 'sabre', '$BB0S1*2+3*4',          'WPNCB¥S1-2/3-4'],
-            ['apollo', 'sabre', '$BBAS1*2+3*4',          'WPNCS¥S1-2/3-4'],
+            ['apollo', 'sabre', '$BB0S1*2+3*4',          'WPNCB¥S1-4'],
+            ['apollo', 'sabre', '$BBAS1*2+3*4',          'WPNCS¥S1-4'],
             ['apollo', 'sabre', '$BB/ACC',               'WPNC¥PC05'],
             ['apollo', 'sabre', '$BB0/ACC',              'WPNCB¥PC05'],
             ['apollo', 'sabre', '$BBA/ACC',              'WPNCS¥PC05'],
@@ -194,78 +228,78 @@ class GdsDialectTranslatorTest extends require('../../../Lib/TestCase.js')
             ['apollo', 'sabre', 'A/T/20JUNLAXMNL12ASFO+DL',     '1S20JUNLAXMNL12ASFO¥DL-T'],
             ['apollo', 'sabre', 'A1MARSFOACC+/*A', '11MARSFOACC¥/*A'],
 
-            ['sabre', 'apollo', 'WPP1ADT/1C05¥S1/2/5/6', '$BS1|2|5|6/N1*ADT|2*C05'],
-            ['sabre', 'apollo', 'WPP1ADT/1C05/1INF¥S1/2/5/6', '$BS1|2|5|6/N1*ADT|2*C05|3*INF'],
-            ['sabre', 'apollo', 'WPP2ADT/1C05/1INF¥S1/2/5/6', '$BS1|2|5|6/N1*ADT|2*ADT|3*C05|4*INF'],
-            ['sabre', 'apollo', 'WPNC¥P1ADT/1C05¥S1/2/5/6', '$BBS1|2|5|6/N1*ADT|2*C05'],
-            ['sabre', 'apollo', 'WPNC¥P1ADT/1C05/1INF¥S1/2/5/6', '$BBS1|2|5|6/N1*ADT|2*C05|3*INF'],
-            ['sabre', 'apollo', 'WPNC¥P2ADT/1C05/1INF¥S1/2/5/6', '$BBS1|2|5|6/N1*ADT|2*ADT|3*C05|4*INF'],
-            ['sabre', 'apollo', 'WPNCB¥P1ADT/1C05¥S1/2/5/6', '$BB0S1|2|5|6/N1*ADT|2*C05'],
-            ['sabre', 'apollo', 'WPNCB¥P1ADT/1C05/1INF¥S1/2/5/6', '$BB0S1|2|5|6/N1*ADT|2*C05|3*INF'],
-            ['sabre', 'apollo', 'WPNCB¥P2ADT/1C05/1INF¥S1/2/5/6', '$BB0S1|2|5|6/N1*ADT|2*ADT|3*C05|4*INF'],
-            ['sabre', 'apollo', 'WPNCS¥P1ADT/1C05¥S1/2/5/6', '$BBAS1|2|5|6/N1*ADT|2*C05'],
-            ['sabre', 'apollo', 'WPNCS¥P1ADT/1C05/1INF¥S1/2/5/6', '$BBAS1|2|5|6/N1*ADT|2*C05|3*INF'],
-            ['sabre', 'apollo', 'WPNCS¥P2ADT/1C05/1INF¥S1/2/5/6', '$BBAS1|2|5|6/N1*ADT|2*ADT|3*C05|4*INF'],
-            ['sabre', 'apollo', 'WPP1ADT/1C05¥S1-2/5-6', '$BS1*2|5*6/N1*ADT|2*C05'],
-            ['sabre', 'apollo', 'WPP1ADT/1C05/1INF¥S1-2/5-6', '$BS1*2|5*6/N1*ADT|2*C05|3*INF'],
-            ['sabre', 'apollo', 'WPP2ADT/1C05/1INF¥S1-2/5-6', '$BS1*2|5*6/N1*ADT|2*ADT|3*C05|4*INF'],
-            ['sabre', 'apollo', 'WPNC¥P1ADT/1C05¥S1-2/5-6', '$BBS1*2|5*6/N1*ADT|2*C05'],
-            ['sabre', 'apollo', 'WPNC¥P1ADT/1C05/1INF¥S1-2/5-6', '$BBS1*2|5*6/N1*ADT|2*C05|3*INF'],
-            ['sabre', 'apollo', 'WPNC¥P2ADT/1C05/1INF¥S1-2/5-6', '$BBS1*2|5*6/N1*ADT|2*ADT|3*C05|4*INF'],
-            ['sabre', 'apollo', 'WPNCB¥P1ADT/1C05¥S1-2/5-6', '$BB0S1*2|5*6/N1*ADT|2*C05'],
-            ['sabre', 'apollo', 'WPNCB¥P1ADT/1C05/1INF¥S1-2/5-6', '$BB0S1*2|5*6/N1*ADT|2*C05|3*INF'],
-            ['sabre', 'apollo', 'WPNCB¥P2ADT/1C05/1INF¥S1-2/5-6', '$BB0S1*2|5*6/N1*ADT|2*ADT|3*C05|4*INF'],
-            ['sabre', 'apollo', 'WPNCS¥P1ADT/1C05¥S1-2/5-6', '$BBAS1*2|5*6/N1*ADT|2*C05'],
-            ['sabre', 'apollo', 'WPNCS¥P1ADT/1C05/1INF¥S1-2/5-6', '$BBAS1*2|5*6/N1*ADT|2*C05|3*INF'],
-            ['sabre', 'apollo', 'WPNCS¥P2ADT/1C05/1INF¥S1-2/5-6', '$BBAS1*2|5*6/N1*ADT|2*ADT|3*C05|4*INF'],
-            ['sabre', 'apollo', 'WPP1JCB/1JNS¥S1/2/5/6', '$BS1|2|5|6/N1*JCB|2*JNS'],
-            ['sabre', 'apollo', 'WPP1JCB/1JNS/1JNF¥S1/2/5/6', '$BS1|2|5|6/N1*JCB|2*JNS|3*JNF'],
-            ['sabre', 'apollo', 'WPP2JCB/1JNS/1JNF¥S1/2/5/6', '$BS1|2|5|6/N1*JCB|2*JCB|3*JNS|4*JNF'],
-            ['sabre', 'apollo', 'WPNC¥P1JCB/1JNS¥S1/2/5/6', '$BBS1|2|5|6/N1*JCB|2*JNS'],
-            ['sabre', 'apollo', 'WPNC¥P1JCB/1JNS/1JNF¥S1/2/5/6', '$BBS1|2|5|6/N1*JCB|2*JNS|3*JNF'],
-            ['sabre', 'apollo', 'WPNC¥P2JCB/1JNS/1JNF¥S1/2/5/6', '$BBS1|2|5|6/N1*JCB|2*JCB|3*JNS|4*JNF'],
-            ['sabre', 'apollo', 'WPNCB¥P1JCB/1JNS¥S1/2/5/6', '$BB0S1|2|5|6/N1*JCB|2*JNS'],
-            ['sabre', 'apollo', 'WPNCB¥P1JCB/1JNS/1JNF¥S1/2/5/6', '$BB0S1|2|5|6/N1*JCB|2*JNS|3*JNF'],
-            ['sabre', 'apollo', 'WPNCB¥P2JCB/1JNS/1JNF¥S1/2/5/6', '$BB0S1|2|5|6/N1*JCB|2*JCB|3*JNS|4*JNF'],
-            ['sabre', 'apollo', 'WPNCS¥P1JCB/1JNS¥S1/2/5/6', '$BBAS1|2|5|6/N1*JCB|2*JNS'],
-            ['sabre', 'apollo', 'WPNCS¥P1JCB/1JNS/1JNF¥S1/2/5/6', '$BBAS1|2|5|6/N1*JCB|2*JNS|3*JNF'],
-            ['sabre', 'apollo', 'WPNCS¥P2JCB/1JNS/1JNF¥S1/2/5/6', '$BBAS1|2|5|6/N1*JCB|2*JCB|3*JNS|4*JNF'],
-            ['apollo', 'sabre', '$BS1*2+5*6/N1*JCB+2*JNS', 'WPS1-2/5-6¥P1JCB/1JNS'],
-            ['apollo', 'sabre', '$BS1*2+5*6/N1*JCB+2*JNS+3*JNF', 'WPS1-2/5-6¥P1JCB/1JNS/1JNF'],
-            ['apollo', 'sabre', '$BS1*2+5*6/N1*JCB+2*JCB+3*JNS+4*JNF', 'WPS1-2/5-6¥P2JCB/1JNS/1JNF'],
-            ['apollo', 'sabre', '$BBS1*2+5*6/N1*JCB+2*JNS', 'WPNC¥S1-2/5-6¥P1JCB/1JNS'],
-            ['apollo', 'sabre', '$BBS1*2+5*6/N1*JCB+2*JNS+3*JNF', 'WPNC¥S1-2/5-6¥P1JCB/1JNS/1JNF'],
-            ['apollo', 'sabre', '$BBS1*2+5*6/N1*JCB+2*JCB+3*JNS+4*JNF', 'WPNC¥S1-2/5-6¥P2JCB/1JNS/1JNF'],
-            ['apollo', 'sabre', '$BB0S1*2+5*6/N1*JCB+2*JNS', 'WPNCB¥S1-2/5-6¥P1JCB/1JNS'],
-            ['apollo', 'sabre', '$BB0S1*2+5*6/N1*JCB+2*JNS+3*JNF', 'WPNCB¥S1-2/5-6¥P1JCB/1JNS/1JNF'],
-            ['apollo', 'sabre', '$BB0S1*2+5*6/N1*JCB+2*JCB+3*JNS+4*JNF', 'WPNCB¥S1-2/5-6¥P2JCB/1JNS/1JNF'],
-            ['apollo', 'sabre', '$BBAS1*2+5*6/N1*JCB+2*JCB', 'WPNCS¥S1-2/5-6¥P2JCB'],
-            ['apollo', 'sabre', '$BBAS1*2+5*6/N1*JCB+2*JNS+3*JNF', 'WPNCS¥S1-2/5-6¥P1JCB/1JNS/1JNF'],
-            ['apollo', 'sabre', '$BBAS1*2+5*6/N1*JCB+2*JCB+3*JNS+4*JNF', 'WPNCS¥S1-2/5-6¥P2JCB/1JNS/1JNF'],
-            ['sabre', 'apollo', 'WPP1ITX/1INN¥S1/2/5/6', '$BS1|2|5|6/N1*ITX|2*INN'],
-            ['sabre', 'apollo', 'WPP1ITX/1INN/1ITF¥S1/2/5/6', '$BS1|2|5|6/N1*ITX|2*INN|3*ITF'],
-            ['sabre', 'apollo', 'WPP2ITX/1INN/1ITF¥S1/2/5/6', '$BS1|2|5|6/N1*ITX|2*ITX|3*INN|4*ITF'],
-            ['sabre', 'apollo', 'WPNC¥P1ITX/1INN¥S1/2/5/6', '$BBS1|2|5|6/N1*ITX|2*INN'],
-            ['sabre', 'apollo', 'WPNC¥P1ITX/1INN/1ITF¥S1/2/5/6', '$BBS1|2|5|6/N1*ITX|2*INN|3*ITF'],
-            ['sabre', 'apollo', 'WPNC¥P2ITX/1INN/1ITF¥S1/2/5/6', '$BBS1|2|5|6/N1*ITX|2*ITX|3*INN|4*ITF'],
-            ['sabre', 'apollo', 'WPNCB¥P1ITX/1INN¥S1/2/5/6', '$BB0S1|2|5|6/N1*ITX|2*INN'],
-            ['sabre', 'apollo', 'WPNCB¥P1ITX/1INN/1ITF¥S1/2/5/6', '$BB0S1|2|5|6/N1*ITX|2*INN|3*ITF'],
-            ['sabre', 'apollo', 'WPNCB¥P2ITX/1INN/1ITF¥S1/2/5/6', '$BB0S1|2|5|6/N1*ITX|2*ITX|3*INN|4*ITF'],
-            ['sabre', 'apollo', 'WPNCS¥P1ITX/1INN¥S1/2/5/6', '$BBAS1|2|5|6/N1*ITX|2*INN'],
-            ['sabre', 'apollo', 'WPNCS¥P1ITX/1INN/1ITF¥S1/2/5/6', '$BBAS1|2|5|6/N1*ITX|2*INN|3*ITF'],
-            ['sabre', 'apollo', 'WPNCS¥P2ITX/1INN/1ITF¥S1/2/5/6', '$BBAS1|2|5|6/N1*ITX|2*ITX|3*INN|4*ITF'],
-            ['apollo', 'sabre', '$BS1*2+5*6/N1*ITX+2*INN', 'WPS1-2/5-6¥P1ITX/1INN'],
-            ['apollo', 'sabre', '$BS1*2+5*6/N1*ITX+2*INN+3*ITF', 'WPS1-2/5-6¥P1ITX/1INN/1ITF'],
-            ['apollo', 'sabre', '$BS1*2+5*6/N1*ITX+2*ITX+3*INN+4*ITF', 'WPS1-2/5-6¥P2ITX/1INN/1ITF'],
-            ['apollo', 'sabre', '$BBS1*2+5*6/N1*ITX+2*INN', 'WPNC¥S1-2/5-6¥P1ITX/1INN'],
-            ['apollo', 'sabre', '$BBS1*2+5*6/N1*ITX+2*INN+3*ITF', 'WPNC¥S1-2/5-6¥P1ITX/1INN/1ITF'],
-            ['apollo', 'sabre', '$BBS1*2+5*6/N1*ITX+2*ITX+3*INN+4*ITF', 'WPNC¥S1-2/5-6¥P2ITX/1INN/1ITF'],
-            ['apollo', 'sabre', '$BB0S1*2+5*6/N1*ITX+2*INN', 'WPNCB¥S1-2/5-6¥P1ITX/1INN'],
-            ['apollo', 'sabre', '$BB0S1*2+5*6/N1*ITX+2*INN+3*ITF', 'WPNCB¥S1-2/5-6¥P1ITX/1INN/1ITF'],
-            ['apollo', 'sabre', '$BB0S1*2+5*6/N1*ITX+2*ITX+3*INN+4*ITF', 'WPNCB¥S1-2/5-6¥P2ITX/1INN/1ITF'],
-            ['apollo', 'sabre', '$BBAS1*2+5*6/N1*ITX+2*INN', 'WPNCS¥S1-2/5-6¥P1ITX/1INN'],
-            ['apollo', 'sabre', '$BBAS1*2+5*6/N1*ITX+2*INN+3*ITF', 'WPNCS¥S1-2/5-6¥P1ITX/1INN/1ITF'],
-            ['apollo', 'sabre', '$BBAS1*2+5*6/N1*ITX+2*ITX+3*INN+4*ITF', 'WPNCS¥S1-2/5-6¥P2ITX/1INN/1ITF'],
+            ['sabre', 'apollo', 'WPP1ADT/1C05¥S1/2/5/6', '$BN1*ADT|2*C05/S1|2|5|6'],
+            ['sabre', 'apollo', 'WPP1ADT/1C05/1INF¥S1/2/5/6', '$BN1*ADT|2*C05|3*INF/S1|2|5|6'],
+            ['sabre', 'apollo', 'WPP2ADT/1C05/1INF¥S1/2/5/6', '$BN1*ADT|2*ADT|3*C05|4*INF/S1|2|5|6'],
+            ['sabre', 'apollo', 'WPNC¥P1ADT/1C05¥S1/2/5/6', '$BBN1*ADT|2*C05/S1|2|5|6'],
+            ['sabre', 'apollo', 'WPNC¥P1ADT/1C05/1INF¥S1/2/5/6', '$BBN1*ADT|2*C05|3*INF/S1|2|5|6'],
+            ['sabre', 'apollo', 'WPNC¥P2ADT/1C05/1INF¥S1/2/5/6', '$BBN1*ADT|2*ADT|3*C05|4*INF/S1|2|5|6'],
+            ['sabre', 'apollo', 'WPNCB¥P1ADT/1C05¥S1/2/5/6', '$BB0N1*ADT|2*C05/S1|2|5|6'],
+            ['sabre', 'apollo', 'WPNCB¥P1ADT/1C05/1INF¥S1/2/5/6', '$BB0N1*ADT|2*C05|3*INF/S1|2|5|6'],
+            ['sabre', 'apollo', 'WPNCB¥P2ADT/1C05/1INF¥S1/2/5/6', '$BB0N1*ADT|2*ADT|3*C05|4*INF/S1|2|5|6'],
+            ['sabre', 'apollo', 'WPNCS¥P1ADT/1C05¥S1/2/5/6', '$BBAN1*ADT|2*C05/S1|2|5|6'],
+            ['sabre', 'apollo', 'WPNCS¥P1ADT/1C05/1INF¥S1/2/5/6', '$BBAN1*ADT|2*C05|3*INF/S1|2|5|6'],
+            ['sabre', 'apollo', 'WPNCS¥P2ADT/1C05/1INF¥S1/2/5/6', '$BBAN1*ADT|2*ADT|3*C05|4*INF/S1|2|5|6'],
+            ['sabre', 'apollo', 'WPP1ADT/1C05¥S1/2/5/6', '$BN1*ADT|2*C05/S1|2|5|6'],
+            ['sabre', 'apollo', 'WPP1ADT/1C05/1INF¥S1/2/5/6', '$BN1*ADT|2*C05|3*INF/S1|2|5|6'],
+            ['sabre', 'apollo', 'WPP2ADT/1C05/1INF¥S1/2/5/6', '$BN1*ADT|2*ADT|3*C05|4*INF/S1|2|5|6'],
+            ['sabre', 'apollo', 'WPNC¥P1ADT/1C05¥S1/2/5/6', '$BBN1*ADT|2*C05/S1|2|5|6'],
+            ['sabre', 'apollo', 'WPNC¥P1ADT/1C05/1INF¥S1/2/5/6', '$BBN1*ADT|2*C05|3*INF/S1|2|5|6'],
+            ['sabre', 'apollo', 'WPNC¥P2ADT/1C05/1INF¥S1/2/5/6', '$BBN1*ADT|2*ADT|3*C05|4*INF/S1|2|5|6'],
+            ['sabre', 'apollo', 'WPNCB¥P1ADT/1C05¥S1/2/5/6', '$BB0N1*ADT|2*C05/S1|2|5|6'],
+            ['sabre', 'apollo', 'WPNCB¥P1ADT/1C05/1INF¥S1/2/5/6', '$BB0N1*ADT|2*C05|3*INF/S1|2|5|6'],
+            ['sabre', 'apollo', 'WPNCB¥P2ADT/1C05/1INF¥S1/2/5/6', '$BB0N1*ADT|2*ADT|3*C05|4*INF/S1|2|5|6'],
+            ['sabre', 'apollo', 'WPNCS¥P1ADT/1C05¥S1/2/5/6', '$BBAN1*ADT|2*C05/S1|2|5|6'],
+            ['sabre', 'apollo', 'WPNCS¥P1ADT/1C05/1INF¥S1/2/5/6', '$BBAN1*ADT|2*C05|3*INF/S1|2|5|6'],
+            ['sabre', 'apollo', 'WPNCS¥P2ADT/1C05/1INF¥S1/2/5/6', '$BBAN1*ADT|2*ADT|3*C05|4*INF/S1|2|5|6'],
+            ['sabre', 'apollo', 'WPP1JCB/1JNS¥S1/2/5/6', '$BN1*JCB|2*JNS/S1|2|5|6'],
+            ['sabre', 'apollo', 'WPP1JCB/1JNS/1JNF¥S1/2/5/6', '$BN1*JCB|2*JNS|3*JNF/S1|2|5|6'],
+            ['sabre', 'apollo', 'WPP2JCB/1JNS/1JNF¥S1/2/5/6', '$BN1*JCB|2*JCB|3*JNS|4*JNF/S1|2|5|6'],
+            ['sabre', 'apollo', 'WPNC¥P1JCB/1JNS¥S1/2/5/6', '$BBN1*JCB|2*JNS/S1|2|5|6'],
+            ['sabre', 'apollo', 'WPNC¥P1JCB/1JNS/1JNF¥S1/2/5/6', '$BBN1*JCB|2*JNS|3*JNF/S1|2|5|6'],
+            ['sabre', 'apollo', 'WPNC¥P2JCB/1JNS/1JNF¥S1/2/5/6', '$BBN1*JCB|2*JCB|3*JNS|4*JNF/S1|2|5|6'],
+            ['sabre', 'apollo', 'WPNCB¥P1JCB/1JNS¥S1/2/5/6', '$BB0N1*JCB|2*JNS/S1|2|5|6'],
+            ['sabre', 'apollo', 'WPNCB¥P1JCB/1JNS/1JNF¥S1/2/5/6', '$BB0N1*JCB|2*JNS|3*JNF/S1|2|5|6'],
+            ['sabre', 'apollo', 'WPNCB¥P2JCB/1JNS/1JNF¥S1/2/5/6', '$BB0N1*JCB|2*JCB|3*JNS|4*JNF/S1|2|5|6'],
+            ['sabre', 'apollo', 'WPNCS¥P1JCB/1JNS¥S1/2/5/6', '$BBAN1*JCB|2*JNS/S1|2|5|6'],
+            ['sabre', 'apollo', 'WPNCS¥P1JCB/1JNS/1JNF¥S1/2/5/6', '$BBAN1*JCB|2*JNS|3*JNF/S1|2|5|6'],
+            ['sabre', 'apollo', 'WPNCS¥P2JCB/1JNS/1JNF¥S1/2/5/6', '$BBAN1*JCB|2*JCB|3*JNS|4*JNF/S1|2|5|6'],
+            ['apollo', 'sabre', '$BS1*2+5*6/N1*JCB+2*JNS', 'WPS1/2/5/6¥P1JCB/1JNS'],
+            ['apollo', 'sabre', '$BS1*2+5*6/N1*JCB+2*JNS+3*JNF', 'WPS1/2/5/6¥P1JCB/1JNS/1JNF'],
+            ['apollo', 'sabre', '$BS1*2+5*6/N1*JCB+2*JCB+3*JNS+4*JNF', 'WPS1/2/5/6¥P2JCB/1JNS/1JNF'],
+            ['apollo', 'sabre', '$BBS1*2+5*6/N1*JCB+2*JNS', 'WPNC¥S1/2/5/6¥P1JCB/1JNS'],
+            ['apollo', 'sabre', '$BBS1*2+5*6/N1*JCB+2*JNS+3*JNF', 'WPNC¥S1/2/5/6¥P1JCB/1JNS/1JNF'],
+            ['apollo', 'sabre', '$BBS1*2+5*6/N1*JCB+2*JCB+3*JNS+4*JNF', 'WPNC¥S1/2/5/6¥P2JCB/1JNS/1JNF'],
+            ['apollo', 'sabre', '$BB0S1*2+5*6/N1*JCB+2*JNS', 'WPNCB¥S1/2/5/6¥P1JCB/1JNS'],
+            ['apollo', 'sabre', '$BB0S1*2+5*6/N1*JCB+2*JNS+3*JNF', 'WPNCB¥S1/2/5/6¥P1JCB/1JNS/1JNF'],
+            ['apollo', 'sabre', '$BB0S1*2+5*6/N1*JCB+2*JCB+3*JNS+4*JNF', 'WPNCB¥S1/2/5/6¥P2JCB/1JNS/1JNF'],
+            ['apollo', 'sabre', '$BBAS1*2+5*6/N1*JCB+2*JCB', 'WPNCS¥S1/2/5/6¥P2JCB'],
+            ['apollo', 'sabre', '$BBAS1*2+5*6/N1*JCB+2*JNS+3*JNF', 'WPNCS¥S1/2/5/6¥P1JCB/1JNS/1JNF'],
+            ['apollo', 'sabre', '$BBAS1*2+5*6/N1*JCB+2*JCB+3*JNS+4*JNF', 'WPNCS¥S1/2/5/6¥P2JCB/1JNS/1JNF'],
+            ['sabre', 'apollo', 'WPP1ITX/1INN¥S1/2/5/6', '$BN1*ITX|2*INN/S1|2|5|6'],
+            ['sabre', 'apollo', 'WPP1ITX/1INN/1ITF¥S1/2/5/6', '$BN1*ITX|2*INN|3*ITF/S1|2|5|6'],
+            ['sabre', 'apollo', 'WPP2ITX/1INN/1ITF¥S1/2/5/6', '$BN1*ITX|2*ITX|3*INN|4*ITF/S1|2|5|6'],
+            ['sabre', 'apollo', 'WPNC¥P1ITX/1INN¥S1/2/5/6', '$BBN1*ITX|2*INN/S1|2|5|6'],
+            ['sabre', 'apollo', 'WPNC¥P1ITX/1INN/1ITF¥S1/2/5/6', '$BBN1*ITX|2*INN|3*ITF/S1|2|5|6'],
+            ['sabre', 'apollo', 'WPNC¥P2ITX/1INN/1ITF¥S1/2/5/6', '$BBN1*ITX|2*ITX|3*INN|4*ITF/S1|2|5|6'],
+            ['sabre', 'apollo', 'WPNCB¥P1ITX/1INN¥S1/2/5/6', '$BB0N1*ITX|2*INN/S1|2|5|6'],
+            ['sabre', 'apollo', 'WPNCB¥P1ITX/1INN/1ITF¥S1/2/5/6', '$BB0N1*ITX|2*INN|3*ITF/S1|2|5|6'],
+            ['sabre', 'apollo', 'WPNCB¥P2ITX/1INN/1ITF¥S1/2/5/6', '$BB0N1*ITX|2*ITX|3*INN|4*ITF/S1|2|5|6'],
+            ['sabre', 'apollo', 'WPNCS¥P1ITX/1INN¥S1/2/5/6', '$BBAN1*ITX|2*INN/S1|2|5|6'],
+            ['sabre', 'apollo', 'WPNCS¥P1ITX/1INN/1ITF¥S1/2/5/6', '$BBAN1*ITX|2*INN|3*ITF/S1|2|5|6'],
+            ['sabre', 'apollo', 'WPNCS¥P2ITX/1INN/1ITF¥S1/2/5/6', '$BBAN1*ITX|2*ITX|3*INN|4*ITF/S1|2|5|6'],
+            ['apollo', 'sabre', '$BS1*2+5*6/N1*ITX+2*INN', 'WPS1/2/5/6¥P1ITX/1INN'],
+            ['apollo', 'sabre', '$BS1*2+5*6/N1*ITX+2*INN+3*ITF', 'WPS1/2/5/6¥P1ITX/1INN/1ITF'],
+            ['apollo', 'sabre', '$BS1*2+5*6/N1*ITX+2*ITX+3*INN+4*ITF', 'WPS1/2/5/6¥P2ITX/1INN/1ITF'],
+            ['apollo', 'sabre', '$BBS1*2+5*6/N1*ITX+2*INN', 'WPNC¥S1/2/5/6¥P1ITX/1INN'],
+            ['apollo', 'sabre', '$BBS1*2+5*6/N1*ITX+2*INN+3*ITF', 'WPNC¥S1/2/5/6¥P1ITX/1INN/1ITF'],
+            ['apollo', 'sabre', '$BBS1*2+5*6/N1*ITX+2*ITX+3*INN+4*ITF', 'WPNC¥S1/2/5/6¥P2ITX/1INN/1ITF'],
+            ['apollo', 'sabre', '$BB0S1*2+5*6/N1*ITX+2*INN', 'WPNCB¥S1/2/5/6¥P1ITX/1INN'],
+            ['apollo', 'sabre', '$BB0S1*2+5*6/N1*ITX+2*INN+3*ITF', 'WPNCB¥S1/2/5/6¥P1ITX/1INN/1ITF'],
+            ['apollo', 'sabre', '$BB0S1*2+5*6/N1*ITX+2*ITX+3*INN+4*ITF', 'WPNCB¥S1/2/5/6¥P2ITX/1INN/1ITF'],
+            ['apollo', 'sabre', '$BBAS1*2+5*6/N1*ITX+2*INN', 'WPNCS¥S1/2/5/6¥P1ITX/1INN'],
+            ['apollo', 'sabre', '$BBAS1*2+5*6/N1*ITX+2*INN+3*ITF', 'WPNCS¥S1/2/5/6¥P1ITX/1INN/1ITF'],
+            ['apollo', 'sabre', '$BBAS1*2+5*6/N1*ITX+2*ITX+3*INN+4*ITF', 'WPNCS¥S1/2/5/6¥P2ITX/1INN/1ITF'],
             ['apollo', 'sabre', 'A20JUNSFOACC12ANYC+/*S', '120JUNSFOACC12ANYC¥/*S'],
             ['apollo', 'sabre', 'A/K/20JUNSFOACC12ANYC+/*S', '1S20JUNSFOACC12ANYC¥/*S-K'],
             ['apollo', 'sabre', 'A/K/20JUNSFOACC12ANYC.AMS+/*S', '1S20JUNSFOACC12ANYC/AMS¥/*S-K'],
@@ -400,7 +434,7 @@ class GdsDialectTranslatorTest extends require('../../../Lib/TestCase.js')
             ['apollo', 'sabre', '$B/ACC',                        'WPPC05'],
             ['apollo', 'sabre', '$BB/ACC',                       'WPNC¥PC05'],
             ['apollo', 'sabre', '$BBAS1|2|5|6',                  'WPNCS¥S1/2/5/6'],
-            ['apollo', 'sabre', '$BBAS1*3|5*6',                  'WPNCS¥S1-3/5-6'],
+            ['apollo', 'sabre', '$BBAS1*3|5|6',                  'WPNCS¥S1-3/5/6'],
             ['apollo', 'sabre', '$BBA*JCB',                      'WPNCS¥PJCB'],
             ['apollo', 'sabre', '$BBA*ITX',                      'WPNCS¥PITX'],
             ['apollo', 'sabre', '$BBAN1*ITX|2*I05',              'WPNCS¥P1ITX/1I05'],
@@ -478,7 +512,7 @@ class GdsDialectTranslatorTest extends require('../../../Lib/TestCase.js')
             ['apollo', 'sabre', '$D20JUNKIVRIX|9U|PS@F', 'FQKIVRIX20JUNFB-9U-PS'],
             ['apollo', 'sabre', '$D20JUNKIVRIX@F|9U|PS', 'FQKIVRIX20JUNFB-9U-PS'],
             ['apollo', 'sabre', 'T:$B/Z5', 'WPRQ¥KP5'],
-            ['apollo', 'sabre', 'T:$B:N/Z5', 'WPRQ¥KP5¥PL'],
+            ['apollo', 'sabre', 'T:$B:N/Z5', 'WPRQ¥PL¥KP5'],
             ['apollo', 'sabre', 'T:$B:A', 'WPRQ¥PV'],
             ['apollo', 'sabre', 'T:$B/:A', 'WPRQ¥PV'],
             ['apollo', 'sabre', 'T:$B:N', 'WPRQ¥PL'],
@@ -614,8 +648,7 @@ class GdsDialectTranslatorTest extends require('../../../Lib/TestCase.js')
             ['sabre', 'apollo', '1S20SEPKIVMIA12AIST-960¥TK9U-V', 'A/V/20SEPKIVMIA12AIST960|TK.9U'],
             ['sabre', 'apollo', '1S20JUNSFOACC12ANYC-960¥/*S-V', 'A/V/20JUNSFOACC12ANYC960|/*S'],
             ['sabre', 'apollo', '1S14AUGKIVMOW/N¥9USU-V', 'A/V/14AUGKIVMOW/D|9U.SU'],
-            ['sabre', 'apollo', '1S20JUNLAXMNL12ASFO/SEA¥DL-8T', 'A/T8/20JUNLAXMNL12ASFO.SEA|DL'],
-            ['sabre', 'apollo', '1S20JUNLAXMNL12ASFO/SEA¥DL-8T/N¥', 'A/T8/20JUNLAXMNL12ASFO.SEA/D|DL'],
+            ['sabre', 'apollo', '1S20JUNLAXMNL12ASFO/SEA¥DL-8T'   , 'A/T8/20JUNLAXMNL12ASFO.SEA|DL'],
 
             ['apollo', 'sabre', 'X1|3|4/01Y|3J|4M', 'WC1Y/3J/4M'],
             ['apollo', 'sabre', 'X1|3|5', 'X1/3/5'],
@@ -670,11 +703,11 @@ class GdsDialectTranslatorTest extends require('../../../Lib/TestCase.js')
             ['apollo', 'sabre', '$BBAN1*ITX|2*I05/:EUR', 'WPNCS¥P1ITX/1I05¥MEUR'],
             ['apollo', 'sabre', '$BBAN1*ITX|2*I06|3*ITF/:EUR', 'WPNCS¥P1ITX/1I06/1ITF¥MEUR'],
             ['apollo', 'sabre', '$BS1|2/:EUR', 'WPS1/2¥MEUR'],
-            ['apollo', 'sabre', '$BS1*3|5*6/:EUR', 'WPS1-3/5-6¥MEUR'],
+            ['apollo', 'sabre', '$BS1*3|5|6/:EUR', 'WPS1-3/5/6¥MEUR'],
             ['apollo', 'sabre', '$BBS1|2/:EUR', 'WPNC¥S1/2¥MEUR'],
-            ['apollo', 'sabre', '$BBS1*3|5*6/:EUR', 'WPNC¥S1-3/5-6¥MEUR'],
+            ['apollo', 'sabre', '$BBS1*3|5|6/:EUR', 'WPNC¥S1-3/5/6¥MEUR'],
             ['apollo', 'sabre', '$BBAS1|2|5|6/:EUR', 'WPNCS¥S1/2/5/6¥MEUR'],
-            ['apollo', 'sabre', '$BBAS1*3|5*6/:EUR', 'WPNCS¥S1-3/5-6¥MEUR'],
+            ['apollo', 'sabre', '$BBAS1*3|5|6/:EUR', 'WPNCS¥S1-3/5/6¥MEUR'],
             ['apollo', 'sabre', '$BS1|2|5|6/N1|2*C05/:EUR', 'WPS1/2/5/6¥P1ADT/1C05¥MEUR'],
             ['apollo', 'sabre', '$BS1|2|5|6/N1|2*C05|3*INF/:EUR', 'WPS1/2/5/6¥P1ADT/1C05/1INF¥MEUR'],
             ['apollo', 'sabre', '$BS1|2|5|6/N1|2|3*C05|4*INF/:EUR', 'WPS1/2/5/6¥P2ADT/1C05/1INF¥MEUR'],
@@ -733,25 +766,25 @@ class GdsDialectTranslatorTest extends require('../../../Lib/TestCase.js')
             ['sabre', 'apollo', 'WPP1ITX/1I06¥NCS¥MEUR', '$BBAN1*ITX|2*I06/:EUR'],
             ['sabre', 'apollo', 'WPP1ITX/1I06/1ITF¥NCS¥MEUR', '$BBAN1*ITX|2*I06|3*ITF/:EUR'],
             ['sabre', 'apollo', 'WPS1/2¥MEUR', '$BS1|2/:EUR'],
-            ['sabre', 'apollo', 'WPS1-3/5-6¥MEUR', '$BS1*3|5*6/:EUR'],
+            ['sabre', 'apollo', 'WPS1-3/5/6¥MEUR', '$BS1*3|5|6/:EUR'],
             ['sabre', 'apollo', 'WPS1/2¥NC¥MEUR', '$BBS1|2/:EUR'],
-            ['sabre', 'apollo', 'WPS1-3/5-6¥NC¥MEUR', '$BBS1*3|5*6/:EUR'],
+            ['sabre', 'apollo', 'WPS1-3/5/6¥NC¥MEUR', '$BBS1*3|5|6/:EUR'],
             ['sabre', 'apollo', 'WPS1/2/5/6¥NCS¥MEUR', '$BBAS1|2|5|6/:EUR'],
-            ['sabre', 'apollo', 'WPS1-2/5-6¥NCS¥MEUR', '$BBAS1*2|5*6/:EUR'],
-            ['sabre', 'apollo', 'WPP1ADT/1C05¥S1/2/5/6¥MEUR', '$BS1|2|5|6/N1*ADT|2*C05/:EUR'],
-            ['sabre', 'apollo', 'WPP1ADT/1C05/1INF¥S1/2/5/6¥MEUR', '$BS1|2|5|6/N1*ADT|2*C05|3*INF/:EUR'],
-            ['sabre', 'apollo', 'WPP2ADT/1C05/1INF¥S1/2/5/6¥MEUR', '$BS1|2|5|6/N1*ADT|2*ADT|3*C05|4*INF/:EUR'],
-            ['sabre', 'apollo', 'WPP1ADT/1C05¥NC¥S1/2/5/6¥MEUR', '$BBS1|2|5|6/N1*ADT|2*C05/:EUR'],
-            ['sabre', 'apollo', 'WPP1ADT/1C05/1INF¥NC¥S1/2/5/6¥MEUR', '$BBS1|2|5|6/N1*ADT|2*C05|3*INF/:EUR'],
-            ['sabre', 'apollo', 'WPP2ADT/1C05/1INF¥NC¥S1/2/5/6¥MEUR', '$BBS1|2|5|6/N1*ADT|2*ADT|3*C05|4*INF/:EUR'],
-            ['sabre', 'apollo', 'WPP1ADT/1C05¥NCB¥S1/2/5/6¥MEUR', '$BB0S1|2|5|6/N1*ADT|2*C05/:EUR'],
-            ['sabre', 'apollo', 'WPP1ADT/1C05/1INF¥NCB¥S1/2/5/6¥MEUR', '$BB0S1|2|5|6/N1*ADT|2*C05|3*INF/:EUR'],
-            ['sabre', 'apollo', 'WPP2ADT/1C05/1INF¥NCB¥S1/2/5/6¥MEUR', '$BB0S1|2|5|6/N1*ADT|2*ADT|3*C05|4*INF/:EUR'],
-            ['sabre', 'apollo', 'WPP1ADT/1C05¥NCS¥S1/2/5/6¥MEUR', '$BBAS1|2|5|6/N1*ADT|2*C05/:EUR'],
-            ['sabre', 'apollo', 'WPP1ADT/1C05/1INF¥NCS¥S1/2/5/6¥MEUR', '$BBAS1|2|5|6/N1*ADT|2*C05|3*INF/:EUR'],
-            ['sabre', 'apollo', 'WPP2ADT/1C05/1INF¥NCS¥S1/2/5/6¥MEUR', '$BBAS1|2|5|6/N1*ADT|2*ADT|3*C05|4*INF/:EUR'],
-            ['sabre', 'apollo', 'WPP2JCB/1JNS/1JNF¥NC¥S1/2/5/6¥MEUR', '$BBS1|2|5|6/N1*JCB|2*JCB|3*JNS|4*JNF/:EUR'],
-            ['sabre', 'apollo', 'WPP2ITX/1INN/1ITF¥NC¥S1/2/5/6¥MEUR', '$BBS1|2|5|6/N1*ITX|2*ITX|3*INN|4*ITF/:EUR'],
+            ['sabre', 'apollo', 'WPS1/2/5/6¥NCS¥MEUR', '$BBAS1|2|5|6/:EUR'],
+            ['sabre', 'apollo', 'WPP1ADT/1C05¥S1/2/5/6¥MEUR', '$BN1*ADT|2*C05/S1|2|5|6/:EUR'],
+            ['sabre', 'apollo', 'WPP1ADT/1C05/1INF¥S1/2/5/6¥MEUR', '$B/N1*ADT|2*C05|3*INF/S1|2|5|6/:EUR'],
+            ['sabre', 'apollo', 'WPP2ADT/1C05/1INF¥S1/2/5/6¥MEUR', '$B/N1*ADT|2*ADT|3*C05|4*INF/S1|2|5|6/:EUR'],
+            ['sabre', 'apollo', 'WPP1ADT/1C05¥NC¥S1/2/5/6¥MEUR', '$BB/N1*ADT|2*C05/S1|2|5|6/:EUR'],
+            ['sabre', 'apollo', 'WPP1ADT/1C05/1INF¥NC¥S1/2/5/6¥MEUR', '$BB/N1*ADT|2*C05|3*INF/S1|2|5|6/:EUR'],
+            ['sabre', 'apollo', 'WPP2ADT/1C05/1INF¥NC¥S1/2/5/6¥MEUR', '$BB/N1*ADT|2*ADT|3*C05|4*INF/S1|2|5|6/:EUR'],
+            ['sabre', 'apollo', 'WPP1ADT/1C05¥NCB¥S1/2/5/6¥MEUR', '$BB0/N1*ADT|2*C05/S1|2|5|6/:EUR'],
+            ['sabre', 'apollo', 'WPP1ADT/1C05/1INF¥NCB¥S1/2/5/6¥MEUR', '$BB0/N1*ADT|2*C05|3*INF/S1|2|5|6/:EUR'],
+            ['sabre', 'apollo', 'WPP2ADT/1C05/1INF¥NCB¥S1/2/5/6¥MEUR', '$BB0/N1*ADT|2*ADT|3*C05|4*INF/S1|2|5|6/:EUR'],
+            ['sabre', 'apollo', 'WPP1ADT/1C05¥NCS¥S1/2/5/6¥MEUR', '$BBA/N1*ADT|2*C05/S1|2|5|6/:EUR'],
+            ['sabre', 'apollo', 'WPP1ADT/1C05/1INF¥NCS¥S1/2/5/6¥MEUR', '$BBA/N1*ADT|2*C05|3*INF/S1|2|5|6/:EUR'],
+            ['sabre', 'apollo', 'WPP2ADT/1C05/1INF¥NCS¥S1/2/5/6¥MEUR', '$BBA/N1*ADT|2*ADT|3*C05|4*INF/S1|2|5|6/:EUR'],
+            ['sabre', 'apollo', 'WPP2JCB/1JNS/1JNF¥NC¥S1/2/5/6¥MEUR', '$BB/N1*JCB|2*JCB|3*JNS|4*JNF/S1|2|5|6/:EUR'],
+            ['sabre', 'apollo', 'WPP2ITX/1INN/1ITF¥NC¥S1/2/5/6¥MEUR', '$BB/N1*ITX|2*ITX|3*INN|4*ITF/S1|2|5|6/:EUR'],
             ['sabre', 'apollo', 'FQKIVRIX20SEP¥OW', '$D20SEPKIVRIX:OW'],
             ['apollo', 'amadeus', 'A20SEPNYCSFO12AMSP|UA.AA.DL', 'AD20SEPNYCSFO12A/XMSP/AUA,AA,DL'],
             ['apollo', 'amadeus', 'A20SEPNYCSFO12AMSP.CHI|UA.AA.DL', 'AD20SEPNYCSFO12A/XMSPCHI/AUA,AA,DL'],
@@ -810,13 +843,13 @@ class GdsDialectTranslatorTest extends require('../../../Lib/TestCase.js')
             ['sabre', 'amadeus', 'WPPC05¥NCB', 'FXR/RC05'],
             ['sabre', 'amadeus', 'WPPC05¥NCS', 'FXL/RC05'],
             ['apollo', 'sabre', '$B*ITX/@VKXT5U0', 'WPPITX¥QVKXT5U0'],
-            ['sabre', 'apollo', 'WPQVKXT5U0¥PITX', '$B*ITX/@VKXT5U0'],
+            ['sabre', 'apollo', 'WPQVKXT5U0¥PITX', '$B/@VKXT5U0/*ITX'],
             ['sabre', 'amadeus', '1S20SEPSFOACC12ANYC/AMS¥/*S', 'AD20SEPSFOACC12A/XNYCAMS/A*S'],
             ['apollo', 'amadeus', 'A20SEPSFOACC12ANYC.AMS|/*S', 'AD20SEPSFOACC12A/XNYCAMS/A*S'],
-            ['apollo', 'amadeus', '$B*ITX/@VKXT5U0', 'FXX/L-VKXT5U0/RITX'],
+            ['apollo', 'amadeus', '$B*ITX/@VKXT5U0', 'FXX/RITX/L-VKXT5U0'],
             ['apollo', 'amadeus', '$BN1|2*C05', 'FXX/RADT*C05'],
             ['apollo', 'amadeus', '$BN1|2*C05|3*INF', 'FXX/RADT*C05*INF'],
-            ['sabre', 'amadeus', 'WPPITX¥QVKXT5U0', 'FXX/L-VKXT5U0/RITX'],
+            ['sabre', 'amadeus', 'WPPITX¥QVKXT5U0', 'FXX/RITX/L-VKXT5U0'],
             ['sabre', 'amadeus', 'WPP1ADT/1C05', 'FXX/RADT*C05'],
             ['sabre', 'amadeus', 'WPP1ADT/1C05/1INF', 'FXX/RADT*C05*INF'],
             ['apollo', 'amadeus', '$BN1|2*C05', 'FXX/RADT*C05'],
@@ -829,7 +862,7 @@ class GdsDialectTranslatorTest extends require('../../../Lib/TestCase.js')
             ['apollo', 'amadeus', '$B*JCB', 'FXX/RJCB'],
             ['apollo', 'amadeus', '$B*ITX', 'FXX/RITX'],
             ['apollo', 'amadeus', '$BS1|2', 'FXX/S1,2'],
-            ['apollo', 'amadeus', '$BS1*3|5*6', 'FXX/S1-3,5-6'],
+            ['apollo', 'amadeus', '$BS1*3|5|6', 'FXX/S1-3,5,6'],
             ['apollo', 'amadeus', '$BBS1|2', 'FXA/S1,2'],
             ['apollo', 'amadeus', '$BS1|2|5|6/N1|2*C05', 'FXX/S1,2,5,6/RADT*C05'],
             ['apollo', 'amadeus', '$BS1|2|5|6/N1|2*C05|3*INF', 'FXX/S1,2,5,6/RADT*C05*INF'],
@@ -845,10 +878,10 @@ class GdsDialectTranslatorTest extends require('../../../Lib/TestCase.js')
             ['sabre', 'amadeus', 'WPPJCB', 'FXX/RJCB'],
             ['sabre', 'amadeus', 'WPPITX', 'FXX/RITX'],
             ['sabre', 'amadeus', 'WPS1/2', 'FXX/S1,2'],
-            ['sabre', 'amadeus', 'WPS1-3/5-6', 'FXX/S1-3,5-6'],
+            ['sabre', 'amadeus', 'WPS1-3/5/6', 'FXX/S1-3,5,6'],
             ['sabre', 'amadeus', 'WPS1/2¥NC', 'FXA/S1,2'],
-            ['sabre', 'amadeus', 'WPP1ADT/1C05¥S1/2/5/6', 'FXX/S1,2,5,6/RADT*C05'],
-            ['sabre', 'amadeus', 'WPP1ADT/1C05/1INF¥S1/2/5/6', 'FXX/S1,2,5,6/RADT*C05*INF'],
+            ['sabre', 'amadeus', 'WPP1ADT/1C05¥S1/2/5/6', 'FXX/RADT*C05/S1,2,5,6'],
+            ['sabre', 'amadeus', 'WPP1ADT/1C05/1INF¥S1/2/5/6', 'FXX/RADT*C05*INF/S1,2,5,6'],
             ['apollo', 'sabre', 'S*AIR/ROYAL AIR MAROC', 'W/-ALROYAL AIR MAROC'],
             ['apollo', 'sabre', 'S*AIR.KENYA', 'W/-ALKENYA'],
             ['apollo', 'sabre', 'S*AIRL/XL AIRWAYS FRACE', 'W/-ALXL AIRWAYS FRACE'],
@@ -858,9 +891,9 @@ class GdsDialectTranslatorTest extends require('../../../Lib/TestCase.js')
             ['apollo', 'sabre', '$BB//@C/:N', 'WPNC¥TC-BB¥PL'],
             ['apollo', 'sabre', '$BB//@C:N', 'WPNC¥TC-BB¥PL'],
             ['apollo', 'sabre', '$BB//@W/:N', 'WPNC¥TC-SB¥PL'],
-            ['apollo', 'sabre', '$BB:A//@C', 'WPNC¥TC-BB¥PV'],
+            ['apollo', 'sabre', '$BB:A//@C', 'WPNC¥PV¥TC-BB'],
             ['apollo', 'sabre', '$BB:EUR//@C', 'WPNC¥MEUR¥TC-BB'],
-            ['apollo', 'sabre', '$BB:N//@C', 'WPNC¥TC-BB¥PL'],
+            ['apollo', 'sabre', '$BB:N//@C', 'WPNC¥PL¥TC-BB'],
             ['apollo', 'sabre', '* M9GKK4', '*M9GKK4'],
             ['apollo', 'sabre', '* MZRD31', '*MZRD31'],
             ['apollo', 'sabre', '* RGNH1G', '*RGNH1G'],
@@ -874,7 +907,7 @@ class GdsDialectTranslatorTest extends require('../../../Lib/TestCase.js')
             ['apollo', 'sabre', '$BBN1|2*C10/:N', 'WPNC¥P1ADT/1C10¥PL'],
             ['apollo', 'sabre', '$BBS1|2|5|6/:N', 'WPNC¥S1/2/5/6¥PL'],
             ['apollo', 'sabre', '$BBS1|2/:A', 'WPNC¥S1/2¥PV'],
-            ['apollo', 'sabre', '$BBS2|3|4|5/:A', 'WPNC¥S2/3/4/5¥PV'],
+            ['apollo', 'sabre', '$BBS2|3|4|5/:A', 'WPNC¥S2-5¥PV'],
             ['apollo', 'sabre', '$BBS3|4/:A', 'WPNC¥S3/4¥PV'],
             ['apollo', 'sabre', '$BN1*JCB|2*J08/:A', 'WPP1JCB/1J08¥PV'],
             ['apollo', 'sabre', '$BN1*JCB|2*JCB|3*J09/:A', 'WPP2JCB/1J09¥PV'],
@@ -979,8 +1012,8 @@ class GdsDialectTranslatorTest extends require('../../../Lib/TestCase.js')
             ['apollo', 'sabre', 'N:MEPOSSI NOUTCHA/GILLES  CONSTANT', '-MEPOSSI NOUTCHA/GILLES CONSTANT'],
             ['apollo', 'sabre', 'N:MWAMTOBE/TUMPE   ULINYELUSYA', '-MWAMTOBE/TUMPE ULINYELUSYA'],
             ['apollo', 'sabre', '$BB*ITX', 'WPNC¥PITX'],
-            ['apollo', 'sabre', '$BBA//@C/*JCB', 'WPNCS¥PJCB¥TC-BB'],
-            ['apollo', 'sabre', '$BB//@C/*JCB', 'WPNC¥PJCB¥TC-BB'],
+            ['apollo', 'sabre', '$BBA//@C/*JCB', 'WPNCS¥TC-BB¥PJCB'],
+            ['apollo', 'sabre', '$BB//@C/*JCB', 'WPNC¥TC-BB¥PJCB'],
             ['apollo', 'sabre', 'T:$B*JCB/:A', 'WPRQ¥PJCB¥PV'],
             ['apollo', 'sabre', 'A/T/EWRYYZ', '1SEWRYYZ-T'],
             ['apollo', 'sabre', 'A/L/15JULYULACC12AYYZBRU', '1S15JULYULACC12AYYZ/BRU-L'],
@@ -1230,13 +1263,13 @@ class GdsDialectTranslatorTest extends require('../../../Lib/TestCase.js')
             ['amadeus', 'apollo', 'FXR/R,U', '$BB0:A'],
             ['amadeus', 'apollo', 'FXL/R,U', '$BBA:A'],
             ['amadeus', 'apollo', 'FXX/S1,2', '$BS1|2'],
-            ['amadeus', 'apollo', 'FXX/S1-3,5-6', '$BS1*3|5*6'],
+            ['amadeus', 'apollo', 'FXX/S1-3,5,6', '$BS1*3|5|6'],
             ['amadeus', 'apollo', 'FXA/S1,2', '$BBS1|2'],
-            ['amadeus', 'apollo', 'FXA/S1-3,5-6', '$BBS1*3|5*6'],
+            ['amadeus', 'apollo', 'FXA/S1-3,5,6', '$BBS1*3|5|6'],
             ['amadeus', 'apollo', 'FXL/S1,2', '$BBAS1|2'],
-            ['amadeus', 'apollo', 'FXL/S1-3,5-6', '$BBAS1*3|5*6'],
-            ['amadeus', 'apollo', 'FXX/RADT*CH/S1,2,5,6', '$BS1|2|5|6/N1*ADT|2*CNN'],
-            ['amadeus', 'apollo', 'FXX/RADT*CH*IN/S1,2,5,6', '$BS1|2|5|6/N1*ADT|2*CNN|3*INF'],
+            ['amadeus', 'apollo', 'FXL/S1-3,5,6', '$BBAS1*3|5|6'],
+            ['amadeus', 'apollo', 'FXX/RADT*CH/S1,2,5,6', '$BN1*ADT|2*CNN/S1|2|5|6'],
+            ['amadeus', 'apollo', 'FXX/RADT*CH*IN/S1,2,5,6', '$BN1*ADT|2*CNN|3*INF/S1|2|5|6'],
             ['amadeus', 'apollo', 'SS2Y1', '02Y1*'],
             ['amadeus', 'apollo', 'SBY', 'XA/0Y'],
             ['amadeus', 'apollo', 'SBY1', 'X1/0Y'],
@@ -1369,8 +1402,8 @@ class GdsDialectTranslatorTest extends require('../../../Lib/TestCase.js')
             ['apollo', 'amadeus', '$BB0/ACC', 'FXR/RC05'],
             ['apollo', 'amadeus', '$BBA/ACC', 'FXL/RC05'],
             ['apollo', 'amadeus', '$B@VKXT5U0', 'FXX/L-VKXT5U0'],
-            ['apollo', 'amadeus', '$B*JCB/@VKXT5U0', 'FXX/L-VKXT5U0/RJCB'],
-            ['apollo', 'amadeus', '$B*ITX/@VKXT5U0', 'FXX/L-VKXT5U0/RITX'],
+            ['apollo', 'amadeus', '$B*JCB/@VKXT5U0', 'FXX/RJCB/L-VKXT5U0'],
+            ['apollo', 'amadeus', '$B*ITX/@VKXT5U0', 'FXX/RITX/L-VKXT5U0'],
             ['apollo', 'amadeus', '$B:CAD', 'FXX/R,FC-CAD'],
             ['apollo', 'amadeus', '$BB:EUR', 'FXA/R,FC-EUR'],
             ['apollo', 'amadeus', '$BBA:EUR', 'FXL/R,FC-EUR'],
@@ -1382,11 +1415,11 @@ class GdsDialectTranslatorTest extends require('../../../Lib/TestCase.js')
             ['apollo', 'amadeus', '$BN1*JCB|2*J06|3*JNF', 'FXX/RJCB*J06*JNF'],
             ['apollo', 'amadeus', '$B*ITX', 'FXX/RITX'],
             ['apollo', 'amadeus', '$BS1|2', 'FXX/S1,2'],
-            ['apollo', 'amadeus', '$BS1*3|5*6', 'FXX/S1-3,5-6'],
+            ['apollo', 'amadeus', '$BS1*3|5|6', 'FXX/S1-3,5,6'],
             ['apollo', 'amadeus', '$BBS1|2', 'FXA/S1,2'],
-            ['apollo', 'amadeus', '$BBS1*3|5*6', 'FXA/S1-3,5-6'],
+            ['apollo', 'amadeus', '$BBS1*3|5|6', 'FXA/S1-3,5,6'],
             ['apollo', 'amadeus', '$BBAS1|2|5|6', 'FXL/S1,2,5,6'],
-            ['apollo', 'amadeus', '$BBAS1*3|5*6', 'FXL/S1-3,5-6'],
+            ['apollo', 'amadeus', '$BBAS1*3|5|6', 'FXL/S1-3,5,6'],
             ['apollo', 'amadeus', '$BS1|2|5|6/N1|2*C05', 'FXX/S1,2,5,6/RADT*C05'],
             ['apollo', 'amadeus', '$BS1|2|5|6/N1|2*C05|3*INF', 'FXX/S1,2,5,6/RADT*C05*INF'],
             ['apollo', 'amadeus', '01Y1', 'SS1Y1'],
@@ -1504,7 +1537,7 @@ class GdsDialectTranslatorTest extends require('../../../Lib/TestCase.js')
             ['apollo', 'sabre', '$BOCUA', 'WPC-UA'],
             ['apollo', 'sabre', '$BOCUA', 'WPC-UA'],
             ['apollo', 'sabre', '$BB/CUA', 'WPNC¥AUA'],
-            ['apollo', 'sabre', '$BBCUA', 'WPNC¥AUA'],
+            ['apollo', 'sabre', '$BB/CUA', 'WPNC¥AUA'],
             ['apollo', 'sabre', '$BB/OCUA', 'WPNC¥C-UA'],
             ['apollo', 'sabre', '$BB0/CUA', 'WPNCB¥AUA'],
             ['apollo', 'sabre', '$BB0CUA', 'WPNCB¥AUA'],
@@ -1516,7 +1549,7 @@ class GdsDialectTranslatorTest extends require('../../../Lib/TestCase.js')
             ['apollo', 'amadeus', '$BOCUA', 'FXX/R,OCC-UA'],
             ['apollo', 'amadeus', '$B/OCUA', 'FXX/R,OCC-UA'],
             ['apollo', 'amadeus', '$BB/CUA', 'FXA/R,VC-UA'],
-            ['apollo', 'amadeus', '$BBCUA', 'FXA/R,VC-UA'],
+            ['apollo', 'amadeus', '$BB/CUA', 'FXA/R,VC-UA'],
             ['apollo', 'amadeus', '$BB/OCUA', 'FXA/R,OCC-UA'],
             ['apollo', 'amadeus', '$BB0/CUA', 'FXR/R,VC-UA'],
             ['apollo', 'amadeus', '$BB0CUA', 'FXR/R,VC-UA'],
@@ -1787,7 +1820,7 @@ class GdsDialectTranslatorTest extends require('../../../Lib/TestCase.js')
             ['amadeus', 'apollo', 'SSPS898Y20SEPKIVKBPPE2', '0PS898Y20SEPKIVKBPLL2'],
             ['amadeus', 'apollo', 'FXX/RITX*I06', '$BN1*ITX|2*I06'],
             ['amadeus', 'apollo', 'FXX/RITX*I06*ITF', '$BN1*ITX|2*I06|3*ITF'],
-            ['amadeus', 'apollo', 'FXX/RADT*CH/S1,2,5,6', '$BS1|2|5|6/N1*ADT|2*CNN'],
+            ['amadeus', 'apollo', 'FXX/RADT*CH/S1,2,5,6', '$BN1*ADT|2*CNN/S1|2|5|6'],
             ['amadeus', 'apollo', 'FXP/RITX*I06', 'T:$BN1*ITX|2*I06'],
             ['amadeus', 'apollo', 'FXP/RITX*I06*ITF', 'T:$BN1*ITX|2*I06|3*ITF'],
             ['amadeus', 'apollo', 'FQDPITMIL/10SEP/R,-JCB', '$D10SEPPITMIL-JCB'],
@@ -1995,8 +2028,8 @@ class GdsDialectTranslatorTest extends require('../../../Lib/TestCase.js')
             ['sabre', 'apollo', 'WPNI¥MCAD', 'FS:CAD'],
             ['apollo', 'sabre', '$BB:15JUN17', 'WPNC¥B15JUN17'],
             ['sabre', 'apollo', 'WPNC¥B15JUN17', '$BB:15JUN17'],
-            ['sabre', 'apollo', 'WPQWV3XPCIT¥PITX', '$B*ITX/@WV3XPCIT'],
-            ['sabre', 'apollo', 'WPQWV3XPCIT¥PJCB', '$B*JCB/@WV3XPCIT'],
+            ['sabre', 'apollo', 'WPQWV3XPCIT¥PITX', '$B@WV3XPCIT/*ITX'],
+            ['sabre', 'apollo', 'WPQWV3XPCIT¥PJCB', '$B@WV3XPCIT/*JCB'],
             ['sabre', 'apollo', 'WPPJCB¥QWV3XPCIT', '$B*JCB/@WV3XPCIT'],
             ['sabre', 'apollo', 'WPPITX¥QWV3XPCIT', '$B*ITX/@WV3XPCIT'],
 
@@ -2367,7 +2400,7 @@ class GdsDialectTranslatorTest extends require('../../../Lib/TestCase.js')
             // $BB/C{al} -> FQBBC{al}
             ['apollo', 'galileo', '$BB/CUA', 'FQBBCUA'],
             // $BBC{al} -> FQBB/C{al}
-            ['apollo', 'galileo', '$BBCUA', 'FQBBCUA'],
+            ['apollo', 'galileo', '$BB/CUA', 'FQBBCUA'],
             // $BB/OC{al} -> FQBBOC{al}
             ['apollo', 'galileo', '$BB/OCUA', 'FQBBOCUA'],
             // $BB0/C{al} -> DOES NOT EXIST
@@ -2465,15 +2498,15 @@ class GdsDialectTranslatorTest extends require('../../../Lib/TestCase.js')
             // $BS{segNum1}+{segNum2} -> FQS{segNum1}.{segNum2}
             ['apollo', 'galileo', '$BS1+2', 'FQS1.2', true],
             // $BS{segNum1}*{segNum3}+{segNum5}*{segNum6} -> FQS{segNum1}-{segNum3}.{segNum5}-{segNum6}
-            ['apollo', 'galileo', '$BS1*3+5*6', 'FQS1-3.5-6', true],
+            ['apollo', 'galileo', '$BS1*3+5*6', 'FQS1-3.5.6', true],
             // $BBS{segNum1}+{segNum2} -> FQBBS{segNum1}.{segNum2}
             ['apollo', 'galileo', '$BBS1+2', 'FQBBS1.2', true],
             // $BBS{segNum1}*{segNum3}+{segNum5}*{segNum6} -> FQBBS{segNum1}-{segNum3}.{segNum5}-{segNum6}
-            ['apollo', 'galileo', '$BBS1*3+5*6', 'FQBBS1-3.5-6', true],
+            ['apollo', 'galileo', '$BBS1*3+5*6', 'FQBBS1-3.5.6', true],
             // $BBAS{segNum1}+{segNum2}+{segNum5}+{segNum6} -> FQBAS{segNum1}.{segNum2}.{segNum5}.{segNum6}
             ['apollo', 'galileo', '$BBAS1+2+5+6', 'FQBAS1.2.5.6', true],
             // $BBAS{segNum1}*{segNum3}+{segNum5}*{segNum6} -> FQBAS{segNum1}-{segNum3}.{segNum5}-{segNum6}
-            ['apollo', 'galileo', '$BBAS1*3+5*6', 'FQBAS1-3.5-6', true],
+            ['apollo', 'galileo', '$BBAS1*3+5*6', 'FQBAS1-3.5.6', true],
             // $BS{segNum1}+{segNum2}+{segNum5}+{segNum6}/N{paxOrder}+{paxOrder}*C{paxAge} -> FQS{segNum1}.{segNum2}.{segNum5}.{segNum6}/P{paxOrder}.{paxOrder}*C{paxAge}
             ['apollo', 'galileo', '$BS1+2+5+6/N1+2*C05', 'FQS1.2.5.6/P1.2*C05', true],
             // $BS{segNum1}+{segNum2}+{segNum5}+{segNum6}/N{paxorder}+{paxOrder}*C{paxAge}+{paxOrder}*INF -> FQS{segNum1}.{segNum2}.{segNum5}.{segNum6}/P{paxOrder}.{paxOrder}*C{paxAge}.{paxOrder}*INF
@@ -2545,7 +2578,7 @@ class GdsDialectTranslatorTest extends require('../../../Lib/TestCase.js')
             ['galileo', 'sabre', 'FQBB/CUA', 'WPNC¥AUA'],
             ['galileo', 'sabre', 'FQBBOCUA', 'WPNC¥C-UA'],
             ['galileo', 'sabre', 'FQ@VKXT5U0', 'WPQVKXT5U0'],
-            ['galileo', 'sabre', 'FQ@VKXT5U0*JCB', 'WPPJCB¥QVKXT5U0'],
+            ['galileo', 'sabre', 'FQ@VKXT5U0*JCB', 'WPQVKXT5U0¥PJCB'],
             ['galileo', 'sabre', 'FQBBP1.2*C05.3*INF++-BUSNS', 'WPNC¥P1ADT/1C05/1INF¥TC-BB'],
             ['galileo', 'sabre', 'FQBBP1*JCB.2*J05.3*JNF++-BUSNS', 'WPNC¥P1JCB/1J05/1JNF¥TC-BB'],
             ['galileo', 'sabre', 'FQBBP1*JCB.2*J05:EUR', 'WPNC¥P1JCB/1J05¥MEUR'],
@@ -2564,7 +2597,7 @@ class GdsDialectTranslatorTest extends require('../../../Lib/TestCase.js')
             ['galileo', 'apollo', 'FQBB*C05/ACC', '$BB*C05/ACC'],
             ['galileo', 'apollo', 'FQBA*C05/ACC', '$BBA*C05/ACC'],
             ['galileo', 'apollo', 'FQ@VKXT5U0', '$B\u00A4VKXT5U0'],
-            ['galileo', 'apollo', 'FQ@VKXT5U0*JCB', '$B*JCB/@VKXT5U0'],
+            ['galileo', 'apollo', 'FQ@VKXT5U0*JCB', '$B@VKXT5U0/*JCB'],
             ['galileo', 'apollo', 'FQBBP1.2*C05.3*INF++-BUSNS', '$BBN1+2*C05+3*INF//\u00A4C'],
             ['galileo', 'apollo', 'FQBBP1*JCB.2*J05.3*JNF++-BUSNS', '$BBN1*JCB+2*J05+3*JNF//\u00A4C'],
 
@@ -3121,6 +3154,8 @@ class GdsDialectTranslatorTest extends require('../../../Lib/TestCase.js')
             ['apollo', 'sabre', 'HELP RD', 'RDHELP'],
             // should not cause null pointer exception
             ['apollo', 'sabre', 'X-12/0Y', null],
+            // should not translate pricing commands with unknown modifiers to FQ
+            ['apollo', 'galileo', '$B/+2CV4', null],
             ['apollo', 'sabre', 'M*FWYESB', 'W/-ATFWY¥ATESB'],
         ];
 
@@ -3146,10 +3181,14 @@ class GdsDialectTranslatorTest extends require('../../../Lib/TestCase.js')
         $baseDate = '2018-06-12 08:09:08';
         $result = (new GdsDialectTranslator()).setBaseDate($baseDate).translate($from, $to, $cmd);
         try {
-            this.assertEquals($expectedResult || null, $result['output'], ($result['error'] || '')+' '+'forward');
+            let expected = normCmd($to, $expectedResult || null);
+            let actual = normCmd($to, $result['output']);
+            this.assertEquals(expected, actual, ($result['error'] || '')+' '+'forward');
             if ($bidirectional) {
                 $result = (new GdsDialectTranslator()).setBaseDate($baseDate).translate($to, $from, $expectedResult);
-                this.assertEquals($cmd || null, $result['output'], ($result['error'] || '')+' '+'backward');
+                let expected = normCmd($from, normCmd($cmd || null));
+                let actual = normCmd($from, normCmd($result['output']));
+                this.assertEquals(expected, actual, ($result['error'] || '')+' '+'backward');
             }
         } catch (exc) {
             let args = process.argv.slice(process.execArgv.length + 2);

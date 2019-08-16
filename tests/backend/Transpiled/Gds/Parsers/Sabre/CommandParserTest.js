@@ -856,6 +856,23 @@ class CommandParserTest extends require('../../../Lib/TestCase.js') {
 			},
 		}]);
 
+		// pricing command with 2 segment selects and fare bases
+		$list.push(['WPS1/2*QVE7N¥S3/4*QY26', {
+			type: 'priceItinerary',
+			data: {
+				pricingModifiers: [
+					{type: 'segments', parsed: {
+						segmentNumbers: [1,2],
+						fareBasis: 'VE7N',
+					}},
+					{type: 'segments', parsed: {
+						segmentNumbers: [3,4],
+						fareBasis: 'Y26',
+					}},
+				],
+			},
+		}]);
+
 		$list.push(['¤E§OIATH', {
 			'type': 'changeArea',
 			'data': 'E',

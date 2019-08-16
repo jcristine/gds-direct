@@ -3,7 +3,7 @@ const ArrayUtil = require('../../../../Lib/Utils/ArrayUtil.js');
 const Fp = require('../../../../Lib/Utils/Fp.js');
 const LocationGeographyProvider = require('../../../../Rbs/DataProviders/LocationGeographyProvider.js');
 const RbsClient = require("../../../../../IqClients/RbsClient");
-const NormalizeTariffCmd = require('./NormalizeTariffCmd.js');
+const NormalizeTariffCmd = require('../../../../../Actions/CmdTranslators/NormalizeTariffCmd.js');
 const MakeMultiPccTariffDumpAction = require('./MakeMultiPccTariffDumpAction.js');
 
 let php = require('klesun-node-tools/src/Transpiled/php.js');

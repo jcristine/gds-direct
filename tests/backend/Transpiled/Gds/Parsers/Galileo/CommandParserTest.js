@@ -878,7 +878,7 @@ class CommandParserTest extends require('../../../Lib/TestCase.js')
 		$list.push(['FQBB||-AB', {'type': 'priceItinerary', 'data': {
 			'baseCmd': 'FQBB',
 			'pricingModifiers': [
-				{'raw': '||-AB', 'type': 'cabinClass', 'parsed': 'AB'},
+				{'raw': '||-AB', 'type': 'cabinClass', 'parsed': {raw: 'AB', parsed: 'sameAsBooked'}},
 			],
 		}}]);
 

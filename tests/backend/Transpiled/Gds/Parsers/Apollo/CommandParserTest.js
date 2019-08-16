@@ -997,6 +997,19 @@ class CommandParserTest extends require('../../../../../../backend/Transpiled/Li
 			},
 		}]);
 
+		// apparently you can omit slash after cabin class modifier...
+		// but it looks more like a bug in apollo, since if you use mod
+		// starting with a letter, it just ignores any text until next slash
+		$list.push(['$BB//@AB:N', {
+			type: 'priceItinerary',
+			data: {
+				pricingModifiers: [
+					{type: 'cabinClass', raw: '/@AB'},
+					{type: 'fareType', raw: ':N'},
+				],
+			},
+		}]);
+
 		$list.push(['A*|1', {type: 'moreAirAvailability'}]);
 		$list.push(['A*C2', {type: 'moreAirAvailability'}]);
 		$list.push(['A*28JUN', {type: 'moreAirAvailability'}]);
