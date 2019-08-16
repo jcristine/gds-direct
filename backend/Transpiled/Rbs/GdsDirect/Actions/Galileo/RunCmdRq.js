@@ -26,6 +26,7 @@ const RebuildInPccAction = require('./RebuildInPccAction.js');
 const php = require('klesun-node-tools/src/Transpiled/php.js');
 const GalileoRetrieveTicketsAction = require('../../../../Rbs/Process/Apollo/ImportPnr/Actions/RetrieveApolloTicketsAction.js');
 const Rej = require('klesun-node-tools/src/Rej.js');
+const {onDemand} = require('klesun-node-tools/src/Lang.js');
 
 const doesStorePnr = ($cmd) => {
 	let $parsedCmd, $flatCmds, $cmdTypes;
@@ -186,16 +187,26 @@ const RunCmdRq = ({
 
 	/** @return string|null - null means "not changed" */
 	const preprocessAvailCmd = async (parsed) => {
-		let match;
-		if (match = parsed.cmd.match(/^AR(\d+)$/)) {
+		let getRows = onDemand(() => stateful.getLog().getLikeSql({
+			where: [
+				['type', '=', 'airAvailability'],
+				['area', '=', getSessionData().area],
+			],
+			limit: 20,
+		}));
+		let match = parsed.cmd.match(/^AR(\d+)$/);
+		if (match) {
 			let day = match[1];
-			let {row, data} = await _getLastAvail();
-			if (!data.departureDate) {
-				return Rej.BadRequest('Original availability request has no date specified >' + row.cmd + ';');
-			} else {
-				let month = data.departureDate.raw.slice(-3);
-				let cmd = 'AR' + day + month;
-				parsed = CommandParser.parse(cmd);
+			let availsDesc = await getRows();
+			for (let lastAvail of availsDesc) {
+				let {type, data} = CommandParser.parse(lastAvail.cmd);
+				let date = (data || {}).departureDate || (data || {}).returnDate;
+				if (date) {
+					let month = date.raw.slice(-3);
+					let cmd = 'AR' + day + month;
+					parsed = CommandParser.parse(cmd);
+					break;
+				}
 			}
 		}
 		let {type, data} = parsed;
@@ -205,13 +216,7 @@ const RunCmdRq = ({
 				php.array_column(data['modifiers'] || [], 'type'),
 				php.array_column(data['modifiers'] || [], 'raw')
 			);
-			let cmdRows = await stateful.getLog().getLikeSql({
-				where: [
-					['type', '=', 'airAvailability'],
-					['area', '=', getSessionData().area],
-				],
-				limit: 20,
-			});
+			let cmdRows = await getRows();
 			for (let cmdRow of cmdRows) {
 				let oldParsed = CommandParser.parse(cmdRow['cmd']);
 				let oldTypeToMod = php.array_combine(
