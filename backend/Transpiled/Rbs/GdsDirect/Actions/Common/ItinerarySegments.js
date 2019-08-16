@@ -1,21 +1,26 @@
 const Rej = require('klesun-node-tools/src/Rej.js');
 
-module.exports.findSegmentNumberInSabrePnr = (gkSeg, reservation) => {
+// Segment's segmentNumber might not be correct one, it represents
+// its index in supplied itinerary not PNR(segment might have ended
+// somewhere in the middle)
+module.exports.findSegmentNumberInPnr = (seg, reservation) => {
 	if (!reservation) {
-		return gkSeg.segmentNumber;
+		return seg.segmentNumber;
 	}
 
 	const pnr = reservation.find(pnrSeg =>
-		gkSeg.airline === pnrSeg.airline &&
-		+gkSeg.flightNumber === +pnrSeg.flightNumber &&
-		gkSeg.departureAirport === pnrSeg.departureAirport &&
-		gkSeg.destinationAirport === pnrSeg.destinationAirport &&
-		gkSeg.departureDate.parsed === pnrSeg.departureDate.parsed
+		seg.airline === pnrSeg.airline &&
+		+seg.flightNumber === +pnrSeg.flightNumber &&
+		seg.departureAirport === pnrSeg.departureAirport &&
+		seg.destinationAirport === pnrSeg.destinationAirport &&
+		(seg.departureDate.parsed === pnrSeg.departureDate.parsed
+			// travelport will return dates with year in it, but itinerary in code is without
+			|| seg.departureDate.parsed === pnrSeg.departureDate.parsed.substr('2019-'.length))
 	);
 
 	if (!pnr) {
-		const msg = `Failed to match GK segment #${gkSeg.segmentNumber} to resulting PNR`;
-		throw Rej.InternalServerError.makeExc(msg, {gkSeg, itin: reservation.itinerary});
+		const msg = `Failed to match GK segment #${seg.segmentNumber} to resulting PNR`;
+		throw Rej.InternalServerError.makeExc(msg, {seg, itin: reservation.itinerary});
 	}
 
 	return pnr.segmentNumber;
