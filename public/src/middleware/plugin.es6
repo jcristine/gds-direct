@@ -248,7 +248,7 @@ export default class TerminalPlugin
 
 			keypress		: (e, terminal) => {
 				if (this._shouldIgnoreKeyPress(e)) {
-						return true;
+					return true;
 				}
 				const replacement = getReplacement( e, window.GdsDirectPlusState.isLanguageApollo(), this.gdsName );
 
@@ -518,15 +518,15 @@ export default class TerminalPlugin
 		// " /F;..............................................",
 		let fopInputCmp = Cmp('input', {type: 'text', name: 'formOfPayment'});
 		let formCmp = Cmp('div').attach([
-				Cmp('div').attach([
-					Cmp('span', {innerHTML: '>$MR       TOTAL ADD COLLECT   '}),
-					Cmp('span', {innerHTML: data.currency}),
-					Cmp('span', {innerHTML: data.amount}),
-				]),
-				Cmp('div').attach([
-					Cmp('span', {innerHTML: ' /F'}),
-					fopInputCmp,
-				]),
+			Cmp('div').attach([
+				Cmp('span', {innerHTML: '>$MR       TOTAL ADD COLLECT   '}),
+				Cmp('span', {innerHTML: data.currency}),
+				Cmp('span', {innerHTML: data.amount}),
+			]),
+			Cmp('div').attach([
+				Cmp('span', {innerHTML: ' /F'}),
+				fopInputCmp,
+			]),
 		]);
 		for (let field of data.fields) {
 			[...formCmp.context.querySelectorAll('input[name="' + field.key + '"]')]
