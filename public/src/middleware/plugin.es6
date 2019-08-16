@@ -119,9 +119,12 @@ export default class TerminalPlugin
 			|| evt.target.tagName.toLowerCase() === 'button';
 	}
 
-	/** @param {KeyboardEvent} evt */
-	_parseKeyBinds( evt, terminal )
+	/** @param {jQuery.Event} $evt */
+	_parseKeyBinds( $evt, terminal )
 	{
+		/** @type {KeyboardEvent} */
+		let evt = $evt.originalEvent || $evt;
+
 		if (this.injectedForms.length)
 		{
 			this.outputLiner.emptyLines = 0;
@@ -138,17 +141,20 @@ export default class TerminalPlugin
 			// chrome/xubuntu won't even trigger an event on Ctrl+Tab, so let's ignore it in firefox as well to stay consistent
 			return true;
 		}
-		const passFurther = pressedShortcuts( evt, terminal, this );
+		const passFurther = evt.repeat ? true :
+			pressedShortcuts( $evt, terminal, this );
 		if (!passFurther) {
 			evt.preventDefault();
 			return false;
+		} else if (evt.repeat) {
+			evt.preventDefault();
 		}
 
-		const isEnter = evt.which === 13;
+		const isEnter = $evt.which === 13;
 		this.f8Reader.replaceEmptyChar(evt);
 		this.actionReader.replaceEmptyChar(evt);
 
-		if (evt.which === 45)
+		if ($evt.which === 45)
 		{
 			this.insertKey = !this.insertKey;
 		}
