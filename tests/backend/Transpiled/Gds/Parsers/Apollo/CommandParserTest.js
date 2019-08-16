@@ -1048,6 +1048,63 @@ class CommandParserTest extends require('../../../../../../backend/Transpiled/Li
 			type: 'storeAndCopyPnr',
 		}]);
 
+		$list.push(['A*', {
+			type: 'moreAirAvailability',
+			data: {action: 'nextPage'},
+		}]);
+		$list.push(['A*C3', {
+			type: 'moreAirAvailability',
+			data: {action: 'showAllClasses', lineNumber: '3'},
+		}]);
+		$list.push(['A*J', {
+			type: 'moreAirAvailability',
+			data: {action: 'changeInput', displayType: 'J'},
+		}]);
+		$list.push(['A*14NOV', {
+			type: 'moreAirAvailability',
+			data: {action: 'changeInput', departureDate: {raw: '14NOV'}},
+		}]);
+		$list.push(['A*9P', {
+			type: 'moreAirAvailability',
+			data: {action: 'changeInput', departureTime: {raw: '9P'}},
+		}]);
+		$list.push(['A*25SEP5P', {
+			type: 'moreAirAvailability',
+			data: {action: 'changeInput', departureDate: {raw: '25SEP'}, departureTime: {raw: '5P'}},
+		}]);
+		$list.push(['A*BIAH', {
+			type: 'moreAirAvailability',
+			data: {action: 'changeInput', departureAirport: 'IAH'},
+		}]);
+		$list.push(['A*DORD', {
+			type: 'moreAirAvailability',
+			data: {action: 'changeInput', destinationAirport: 'ORD'},
+		}]);
+		$list.push(['A*O29NOV', {
+			type: 'moreAirAvailability',
+			data: {action: 'changeInput', returnDate: {raw: '29NOV'}},
+		}]);
+		$list.push(['A*|DL', {
+			type: 'moreAirAvailability',
+			data: {action: 'changeInput', airlines: ['DL']},
+		}]);
+		$list.push(['A*XNRT', {
+			type: 'moreAirAvailability',
+			data: {action: 'changeInput', connection: {raw: 'NRT'}},
+		}]);
+		$list.push(['A*|21', {
+			type: 'moreAirAvailability',
+			data: {action: 'changeInput', dayOffset: 21},
+		}]);
+		$list.push(['A*|-5', {
+			type: 'moreAirAvailability',
+			data: {action: 'changeInput', dayOffset: -5},
+		}]);
+		$list.push(['A*XORDLHR|UA.BA.AA', {
+			type: 'moreAirAvailability',
+			data: {action: 'changeInput', connection: {raw: 'ORDLHR'}, airlines: ['UA', 'BA', 'AA']},
+		}]);
+
 		return $list;
 	}
 
