@@ -4,7 +4,6 @@ const Pccs = require('../../../../../../../backend/Repositories/Pccs.js');
 const PtcUtil = require('../../../../../../../backend/Transpiled/Rbs/Process/Common/PtcUtil.js');
 const stubPtcFareFamilies = require('../../../../../../data/stubPtcFareFamilies.js');
 const PtcFareFamilies = require('../../../../../../../backend/Repositories/PtcFareFamilies.js');
-
 const RunCmdRq = require('../../../../../../../backend/Transpiled/Rbs/GdsDirect/Actions/Apollo/RunCmdRq.js');
 const GdsDirectDefaults = require('../../../../../../../backend/Utils/Testing/GdsDirectDefaults.js');
 const Agent = require('../../../../../../../backend/DataFormats/Wrappers/Agent.js');
@@ -12,6 +11,8 @@ const Rej = require('klesun-node-tools/src/Rej.js');
 const {coverExc} = require('klesun-node-tools/src/Lang.js');
 const php = require('../../../../php.js');
 const {nonEmpty} = require('klesun-node-tools/src/Lang.js');
+
+const sinon = require('sinon');
 
 class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
 	static makeTableRows($keys, $valuesPerRow) {
@@ -1397,7 +1398,6 @@ class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
 			},
 		});
 
-		//
 		$list.push({
 			'input': {'cmdRequested': 'STOREJCB', 'title': 'STORE{ptc} alias example'},
 			'output': {
@@ -1822,13 +1822,13 @@ class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
 				'initialCommands': [
 					{
 						'cmd': 'I',
-						'output': php.implode(php.PHP_EOL, ['THIS IS A NEW PNR-ALL DATA WILL BE IGNORED WITH NEXT I OR IR', '><'])
+						'output': php.implode(php.PHP_EOL, ['THIS IS A NEW PNR-ALL DATA WILL BE IGNORED WITH NEXT I OR IR', '><']),
 					},
 					{'cmd': 'I', 'output': php.implode(php.PHP_EOL, ['IGND ', '><'])},
 					{'cmd': 'SB', 'output': php.implode(php.PHP_EOL, ['A-OUT B-IN AG-NOT AUTH - APOLLO', '><'])},
 					{
 						'cmd': 'SEM/2CV4/AG',
-						'output': php.implode(php.PHP_EOL, ['PROCEED/09APR-TRAVEL SHOP              SFO - APOLLO', '><'])
+						'output': php.implode(php.PHP_EOL, ['PROCEED/09APR-TRAVEL SHOP              SFO - APOLLO', '><']),
 					},
 					{'cmd': 'N:LIBERMANE/MARINA', 'output': php.implode(php.PHP_EOL, [' *', '><'])},
 					{'cmd': 'SA', 'output': php.implode(php.PHP_EOL, ['B-OUT A-IN AG-OK - APOLLO', '><'])},
@@ -1871,7 +1871,7 @@ class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
 				'performedCommands': [
 					{
 						'cmd': 'I',
-						'output': php.implode(php.PHP_EOL, ['THIS IS A NEW PNR-ALL DATA WILL BE IGNORED WITH NEXT I OR IR', '><'])
+						'output': php.implode(php.PHP_EOL, ['THIS IS A NEW PNR-ALL DATA WILL BE IGNORED WITH NEXT I OR IR', '><']),
 					},
 					{'cmd': 'I', 'output': php.implode(php.PHP_EOL, ['IGND ', '><'])},
 					{
@@ -1919,7 +1919,7 @@ class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
 				'performedCommands': [
 					{
 						'cmd': 'PS-CREATED IN GDS DIRECT BY KUNKKA|@:5GD-KUNKKA/8050/LEAD-1 IN 2G55',
-						'output': php.implode(php.PHP_EOL, [' *', '><'])
+						'output': php.implode(php.PHP_EOL, [' *', '><']),
 					},
 					{'cmd': 'ER', 'output': php.implode(php.PHP_EOL, ['NO NAMES ', '><'])},
 				],
@@ -3268,7 +3268,7 @@ class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
 								{"enabled": false, "key": "originalTicketStarExtension", "value": ""},
 								{"enabled": false, "key": "originalInvoiceNumber", "value": ""},
 								{"enabled": true, "key": "penaltyAmount", "value": ""},
-								{"enabled": true, "key": "commOnPenaltyAmount", "value": ""}
+								{"enabled": true, "key": "commOnPenaltyAmount", "value": ""},
 							],
 							"maskOutput": [
 								">$EX NAME UZUMAKI/NARUTO                     PSGR  1/ 1",
@@ -3284,10 +3284,10 @@ class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
 								"ORIG ISS;...... ORIG DATE;....... ORIG IATA NBR;.........",
 								"ORIG TKT;..............-;...  ORIG INV NBR;.........",
 								"PENALTY USD;............  COMM ON PENALTY;...........",
-								"><"
-							].join("\n")
-						}
-					}
+								"><",
+							].join("\n"),
+						},
+					},
 				],
 			},
 			'sessionInfo': {
@@ -3315,7 +3315,7 @@ class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
 							"*** LINEAR FARE DATA EXISTS *** >*LF; ",
 							"ATFQ-TKTE/$B-*2F3K/FEX/ET/TA2F3K/CUA",
 							" FQ-USD 901.40/USD 67.60US/USD 14.30XT/USD 983.30 - 1APR YAA0AFEY",
-							")><"
+							")><",
 						].join("\n"),
 					},
 					{
@@ -3326,7 +3326,7 @@ class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
 							"   3 SSRADTK1VKK1.TICKETING MAY BE REQUIRED BY FARE RULE",
 							"RMKS-GD-AKLESUNS/6206/LEAD-8013096 IN 2F3K",
 							"ACKN-UA JSMMZL   01APR 1029                       ",
-							"><"
+							"><",
 						].join("\n"),
 					},
 					{
@@ -3345,7 +3345,7 @@ class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
 							"ORIG ISS;...... ORIG DATE;....... ORIG IATA NBR;.........",
 							"ORIG TKT;..............-;...  ORIG INV NBR;.........",
 							"PENALTY USD;............  COMM ON PENALTY;...........",
-							"><"
+							"><",
 						].join("\n"),
 					},
 				],
@@ -3438,8 +3438,8 @@ class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
 								"PENALTY USD;............  COMM ON PENALTY;...........",
 								"><",
 							].join("\n"),
-						}
-					}
+						},
+					},
 				],
 			},
 			'sessionInfo': {
@@ -3467,7 +3467,7 @@ class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
 							"*** LINEAR FARE DATA EXISTS *** >*LF; ",
 							"ATFQ-TKTE/$B-*2F3K/FEX/ET/TA2F3K/CUA",
 							" FQ-USD 901.40/USD 67.60US/USD 14.30XT/USD 983.30 - 1APR YAA0AFEY",
-							")><"
+							")><",
 						].join("\n"),
 					},
 					{
@@ -3478,7 +3478,7 @@ class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
 							"   3 SSRADTK1VKK1.TICKETING MAY BE REQUIRED BY FARE RULE",
 							"RMKS-GD-AKLESUNS/6206/LEAD-8013096 IN 2F3K",
 							"ACKN-UA JSMMZL   01APR 1029                       ",
-							"><"
+							"><",
 						].join("\n"),
 					},
 					{
@@ -3572,7 +3572,7 @@ class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
 								{"enabled": false, "key": "originalTicketStarExtension", "value": ""},
 								{"enabled": false, "key": "originalInvoiceNumber", "value": ""},
 								{"enabled": true, "key": "penaltyAmount", "value": ""},
-								{"enabled": true, "key": "commOnPenaltyAmount", "value": ""}
+								{"enabled": true, "key": "commOnPenaltyAmount", "value": ""},
 							],
 							"maskOutput": [
 								">$EX NAME UZUMAKI/NARUTO                     PSGR  1/ 1",
@@ -3588,10 +3588,10 @@ class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
 								"ORIG ISS;SFO....ORIG DATE;02APR19 ORIG IATA NBR;00000000 ",
 								"ORIG TKT;0161111111111.-;...  ORIG INV NBR;.........",
 								"PENALTY USD;............  COMM ON PENALTY;...........",
-								"><"
+								"><",
 							].join("\n"),
-						}
-					}
+						},
+					},
 				],
 			},
 			'sessionInfo': {
@@ -3617,9 +3617,9 @@ class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
 							" FQ-USD 901.40/USD 67.60US/USD 14.30XT/USD 983.30 - 2APR YAA0AFEY",
 							"GFAX-SSRDOCSUAHK1/////10MAY90/M//UZUMMAKI/NARUTO-1UZUMAKI/NARUTO",
 							"RMKS-GD-AKLESUNS/6206/LEAD-8013096 IN 2F3K",
-							"><"
+							"><",
 						].join("\n"),
-					}
+					},
 				],
 				'performedCommands': [
 					{
@@ -3638,7 +3638,7 @@ class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
 							"ORIG ISS;SFO....ORIG DATE;02APR19 ORIG IATA NBR;00000000 ",
 							"ORIG TKT;0161111111111.-;...  ORIG INV NBR;.........",
 							"PENALTY USD;............  COMM ON PENALTY;...........",
-							"><"
+							"><",
 						].join("\n"),
 					},
 				],
@@ -3668,8 +3668,8 @@ class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
 									"passengerName": "ARTUS/KL",
 									"documentNumber": "0065056180984",
 									"issueDate": {"raw": "03APR19", "parsed": "2019-04-03"},
-									"amount": "100.00"
-								}
+									"amount": "100.00",
+								},
 							],
 							"headerData": {
 								"lastName": "ARTUS",
@@ -3690,7 +3690,7 @@ class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
 								"taxCurrency3": undefined,
 								"taxAmount3": undefined,
 								"taxCode3": undefined,
-								"exchangedTicketCurrency": "USD"
+								"exchangedTicketCurrency": "USD",
 							},
 							"fields": [
 								{"key": "exchangedTicketNumber", "value": "", "enabled": true},
@@ -3718,11 +3718,11 @@ class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
 								{
 									"key": "originalTicketStarExtension",
 									"value": "",
-									"enabled": false
+									"enabled": false,
 								},
 								{"key": "originalInvoiceNumber", "value": "", "enabled": false},
 								{"key": "penaltyAmount", "value": "", "enabled": true},
-								{"key": "commOnPenaltyAmount", "value": "", "enabled": true}
+								{"key": "commOnPenaltyAmount", "value": "", "enabled": true},
 							],
 							"maskOutput": [
 								">$EX NAME ARTUS/KLESUN                       PSGR  1/ 1",
@@ -3738,10 +3738,10 @@ class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
 								"ORIG ISS;...... ORIG DATE;....... ORIG IATA NBR;.........",
 								"ORIG TKT;..............-;...  ORIG INV NBR;.........",
 								"PENALTY USD;............  COMM ON PENALTY;...........",
-								"><"
-							].join("\n")
-						}
-					}
+								"><",
+							].join("\n"),
+						},
+					},
 				],
 			},
 			'sessionInfo': {
@@ -3770,7 +3770,7 @@ class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
 							"1/ATFQ-UTCC/$BN1/:N/Z0/FEX/ET/TA2F3K/CDL",
 							" FQ-USD 617.68/USD 46.32US/USD 14.30XT/USD 678.30 - 3APR Y0",
 							"2/ATFQ-UTCC/$BN2/:N/Z0/FEX/ET/TA2F3K/CDL",
-							")><"
+							")><",
 						].join("\n"),
 					},
 					{
@@ -3783,7 +3783,7 @@ class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
 							"   4 SSRADTK1VTODL BY 26AUG FARE MAY NEED EARLIER TKT DTE",
 							"RMKS-GD-RICO/5820 IN 2F3K",
 							"ACKN-DL JLYTZO   03APR 1427",
-							"><"
+							"><",
 						].join("\n"),
 					},
 					{
@@ -3802,7 +3802,7 @@ class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
 							"ORIG ISS;...... ORIG DATE;....... ORIG IATA NBR;.........",
 							"ORIG TKT;..............-;...  ORIG INV NBR;.........",
 							"PENALTY USD;............  COMM ON PENALTY;...........",
-							"><"
+							"><",
 						].join("\n"),
 						"duration": "1.634242412",
 						"type": "issueTickets",
@@ -3816,8 +3816,8 @@ class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
 							"hasPnr": true,
 							"isPnrStored": true,
 							"cmdType": "issueTickets",
-							"scrolledCmd": "HB2:FEX"
-						}
+							"scrolledCmd": "HB2:FEX",
+						},
 					},
 					{
 						"cmd": "*MPD",
@@ -3827,21 +3827,21 @@ class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
 							">*MCO1;   BITCA/IU    0065056180983   03APR19          100.00 ",
 							">*MCO2;   ARTUS/KL    0065056180984   03APR19          100.00 ",
 							"END OF DISPLAY",
-							"><"
+							"><",
 						].join("\n"),
 					},
 					{
 						"cmd": "*MCO2",
 						"output": [
 							"ERROR: FAKE OUTPUT FOR OLD TESTS COMPATIBILITY, MCO MASK NOT AVAILABLE",
-							"><"
+							"><",
 						].join("\n"),
 					},
 					{
 						"cmd": "*HT",
 						"output": [
 							"ERROR: FAKE OUTPUT FOR OLD TESTS COMPATIBILITY",
-							"><"
+							"><",
 						].join("\n"),
 					},
 				],
@@ -3893,9 +3893,9 @@ class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
 										"remark1": "",
 										"remark2": "",
 										"validatingCarrier": "DL",
-										"issueNow": false
-									}
-								}
+										"issueNow": false,
+									},
+								},
 							],
 							"headerData": {
 								"lastName": "BITCA",
@@ -3916,7 +3916,7 @@ class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
 								"taxCurrency3": undefined,
 								"taxAmount3": undefined,
 								"taxCode3": undefined,
-								"exchangedTicketCurrency": "USD"
+								"exchangedTicketCurrency": "USD",
 							},
 							"fields": [
 								{"key": "exchangedTicketNumber", "value": "", "enabled": true},
@@ -3944,11 +3944,11 @@ class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
 								{
 									"key": "originalTicketStarExtension",
 									"value": "",
-									"enabled": false
+									"enabled": false,
 								},
 								{"key": "originalInvoiceNumber", "value": "", "enabled": false},
 								{"key": "penaltyAmount", "value": "", "enabled": true},
-								{"key": "commOnPenaltyAmount", "value": "", "enabled": true}
+								{"key": "commOnPenaltyAmount", "value": "", "enabled": true},
 							],
 							"maskOutput": [
 								">$EX NAME BITCA/IURI                         PSGR  1/ 1",
@@ -3964,10 +3964,10 @@ class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
 								"ORIG ISS;...... ORIG DATE;....... ORIG IATA NBR;.........",
 								"ORIG TKT;..............-;...  ORIG INV NBR;.........",
 								"PENALTY USD;............  COMM ON PENALTY;...........",
-								"><"
-							].join("\n")
-						}
-					}
+								"><",
+							].join("\n"),
+						},
+					},
 				],
 			},
 			'sessionInfo': {
@@ -3996,7 +3996,7 @@ class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
 							"1/ATFQ-UT/$BN1/-*2F3K/TA2F3K/CDL/ET",
 							" FQ-USD 617.68/USD 46.32US/USD 14.30XT/USD 678.30 - 4APR Y0",
 							"2/ATFQ-UT/$BN2/-*2F3K/TA2F3K/CDL/ET",
-							")><"
+							")><",
 						].join("\n"),
 					},
 					{
@@ -4010,7 +4010,7 @@ class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
 							"   5 SSRADTK1VTODL BY 25SEP FARE MAY NEED EARLIER TKT DTE",
 							"RMKS-GD-RICO/5820 IN 2F3K",
 							"ACKN-DL GP87OI   04APR 1157",
-							"><"
+							"><",
 						].join("\n"),
 					},
 					{
@@ -4029,7 +4029,7 @@ class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
 							"ORIG ISS;...... ORIG DATE;....... ORIG IATA NBR;.........",
 							"ORIG TKT;..............-;...  ORIG INV NBR;.........",
 							"PENALTY USD;............  COMM ON PENALTY;...........",
-							"><"
+							"><",
 						].join("\n"),
 					},
 					{
@@ -4041,7 +4041,7 @@ class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
 							">*MCO2;   BITCA/IU    0065056180986   04APR19          100.00 ",
 							">*MCO3;   LONGLONG    0065056180987   04APR19          100.00 ",
 							"END OF DISPLAY",
-							"><"
+							"><",
 						].join("\n"),
 					},
 					{
@@ -4059,7 +4059,7 @@ class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
 							" REMARK1;..............................................",
 							" REMARK2;......................................................",
 							" VALIDATING CARRIER;DL                  ISSUE NOW;.",
-							"><"
+							"><",
 						].join("\n"),
 					},
 					{
@@ -4077,14 +4077,14 @@ class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
 							" REMARK1;..............................................",
 							" REMARK2;......................................................",
 							" VALIDATING CARRIER;DL                  ISSUE NOW;.",
-							"><"
+							"><",
 						].join("\n"),
 					},
 					{
 						"cmd": "*HT",
 						"output": [
 							"ERROR: FAKE OUTPUT FOR OLD TESTS COMPATIBILITY",
-							"><"
+							"><",
 						].join("\n"),
 					},
 				],
@@ -4117,7 +4117,7 @@ class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
 									"documentNumber": "9885056203638",
 									"issueDate": {"raw": "04APR19"},
 									"amount": "640.73",
-								}
+								},
 							],
 							"headerData": {
 								"lastName": "MACABENTA",
@@ -4149,11 +4149,11 @@ class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
 								{
 									"key": "originalTicketStarExtension",
 									"value": "",
-									"enabled": false
+									"enabled": false,
 								},
 								{"key": "originalInvoiceNumber", "value": "", "enabled": false},
 								{"key": "penaltyAmount", "value": "", "enabled": true},
-								{"key": "commOnPenaltyAmount", "value": "", "enabled": true}
+								{"key": "commOnPenaltyAmount", "value": "", "enabled": true},
 							],
 							"maskOutput": [
 								">$EX NAME MACABENTA/ANTONIOJR INAY           PSGR  1/ 1",
@@ -4169,10 +4169,10 @@ class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
 								"ORIG ISS;...... ORIG DATE;....... ORIG IATA NBR;.........",
 								"ORIG TKT;..............-;...  ORIG INV NBR;.........",
 								"PENALTY USD;............  COMM ON PENALTY;...........",
-								"><"
-							].join("\n")
-						}
-					}
+								"><",
+							].join("\n"),
+						},
+					},
 				],
 			},
 			'sessionInfo': {
@@ -4201,7 +4201,7 @@ class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
 							"TKTG-T/QSB 04APR1818Z WS AG *",
 							"*** TIN REMARKS EXIST *** >*T; ",
 							"*** MISCELLANEOUS DOCUMENT DATA EXISTS *** >*MPD; ",
-							")><"
+							")><",
 						].join("\n"),
 					},
 					{
@@ -4217,14 +4217,14 @@ class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
 							"   5 SSRDOCSOZHK1/////18NOV59/M//MACABENTA/ANTONIOJR/INAY-1MACABENTA/ANTONIOJR INAY",
 							"RMKS-GD-GINGER/101193/FOR GINGER/101193/LEAD-11092490 IN 2G55",
 							"ACKN-1A OY4PP9   04APR 1712",
-							")><"
+							")><",
 						].join("\n"),
 					},
 					{
 						"cmd": "MR",
 						"output": [
 							"   2 1A OY4PP9   04APR 1712",
-							"><"
+							"><",
 						].join("\n"),
 					},
 					{
@@ -4243,7 +4243,7 @@ class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
 							"ORIG ISS;...... ORIG DATE;....... ORIG IATA NBR;.........",
 							"ORIG TKT;..............-;...  ORIG INV NBR;.........",
 							"PENALTY USD;............  COMM ON PENALTY;...........",
-							"><"
+							"><",
 						].join("\n"),
 					},
 					{
@@ -4253,21 +4253,21 @@ class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
 							"          NAME         DOCUMENT NBR   ISSUED       AMOUNT",
 							">*MCO1;   MACABENT    9885056203638   04APR19          640.73 ",
 							"END OF DISPLAY",
-							"><"
+							"><",
 						].join("\n"),
 					},
 					{
 						"cmd": "*MCO1",
 						"output": [
 							"ERROR: FAKE OUTPUT FOR OLD TESTS COMPATIBILITY, MCO MASK NOT AVAILABLE",
-							"><"
+							"><",
 						].join("\n"),
 					},
 					{
 						"cmd": "*HT",
 						"output": [
 							"ERROR: FAKE OUTPUT FOR OLD TESTS COMPATIBILITY",
-							"><"
+							"><",
 						].join("\n"),
 					},
 				],
@@ -4309,7 +4309,7 @@ class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
 							"FOP:-VIXXXXXXXXXXXX8932/D0122/*02273C",
 							"TKTG-T/QSB 07MAY1801Z WS AG *",
 							"*** TIN REMARKS EXIST *** >*T; ",
-							")><"
+							")><",
 						].join("\n"),
 					},
 					{
@@ -4324,7 +4324,7 @@ class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
 							"   3 SSRCTCMKQHK1/3472847139-1MCHARO/LAILA MGHOI",
 							"   4 SSRCTCMKQHK1/3475410721-1SAMB/MAMADOU ASSANE",
 							"   5 SSRDOCSKQHK1/////21JUN77/F//MCHARO/LAILA/MGHOI-1MCHARO/LAILA MGHOI",
-							"   6 SSRDOCSKQHK1/////05FEB69/M//SAMB/MAMADOU/ASSANE-1SAMB/MAMAD)><"
+							"   6 SSRDOCSKQHK1/////05FEB69/M//SAMB/MAMADOU/ASSANE-1SAMB/MAMAD)><",
 						].join("\n"),
 					},
 					{
@@ -4334,7 +4334,7 @@ class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
 							"RMKS-GD-RANGER/102053/FOR RANGER/102053/LEAD-11395374 IN 2F3K",
 							"ACKN-1A QZGQML   07MAY 1640",
 							"   2 1A QZGQML   07MAY 1640",
-							"><"
+							"><",
 						].join("\n"),
 					},
 				],
@@ -4359,7 +4359,7 @@ class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
 								"documentNumber": "0065056248761",
 								"issueDate": {"raw":"24MAY19","parsed":"2019-05-24"},
 								"amount": "1385.30",
-							}
+							},
 						],
 						"htRows": [
 							{isActive: true, ticketNumber: '0067401158461', transactionDt: {parsed: '05-24 05:31'}},
@@ -4393,12 +4393,12 @@ class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
 					        "*** PROFILE ASSOCIATIONS EXIST *** >*PA; ",
 					        "FONE-SFOAS/800-750-2238 ASAP CUSTOMER SUPPORT",
 					        "   2 ATLAS/212-481-5516-JUMER",
-					        ")><"
+					        ")><",
 					    ].join("\n"),
 					    "duration": "0.056994002",
 					    "type": "redisplayPnr",
 					    "scrolledCmd": "*R",
-					    "state": {"area":"B","cmdType":"redisplayPnr","scrolledCmd":"*R","canCreatePq":false,"pricingCmd":null,"pcc":"2G8P","cmdCnt":5,"recordLocator":"PBS98E","hasPnr":true,"isPnrStored":true}
+					    "state": {"area":"B","cmdType":"redisplayPnr","scrolledCmd":"*R","canCreatePq":false,"pricingCmd":null,"pcc":"2G8P","cmdCnt":5,"recordLocator":"PBS98E","hasPnr":true,"isPnrStored":true},
 					},
 					{
 					    "cmd": "MR",
@@ -4414,12 +4414,12 @@ class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
 					        " FQ-USD 788.00/USD 37.20US/USD 576.13XT/USD 1401.33 - 23MAY XH5L06M6.XH5L06M6.NH5L06M6.NH5L06M6.NH5L06M6",
 					        "GFAX-SSRADTK1VTOAF BY 26MAY 1700 OTHERWISE WILL BE XLD",
 					        "   2 SSRADTK1VTOKL BY 27MAY19/0600Z OTHERWISE WILL BE XXLD",
-					        ")><"
+					        ")><",
 					    ].join("\n"),
 					    "duration": "0.036795834",
 					    "type": "moveRest",
 					    "scrolledCmd": "*R",
-					    "state": {"area":"B","cmdType":"moveRest","scrolledCmd":"*R","canCreatePq":false,"pricingCmd":null,"pcc":"2G8P","cmdCnt":6,"recordLocator":"PBS98E","hasPnr":true,"isPnrStored":true}
+					    "state": {"area":"B","cmdType":"moveRest","scrolledCmd":"*R","canCreatePq":false,"pricingCmd":null,"pcc":"2G8P","cmdCnt":6,"recordLocator":"PBS98E","hasPnr":true,"isPnrStored":true},
 					},
 					{
 					    "cmd": "MR",
@@ -4432,12 +4432,12 @@ class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
 					        "   8 SSRCTCMKLHK1/15622858528-1EGBUHO/SOLOMONDAVID OGADINMA",
 					        "   9 SSRDOCSDLHK1/////06JAN53/M//EGBUHO/SOLOMONDAVID/OGADINMA-1EGBUHO/SOLOMONDAVID OGADINMA",
 					        "  10 SSRDOCSAFHK1/////06JAN53/M//EGBUHO/SOLOMONDAVID/OGADINMA-1EGBUHO/SOLOMONDAVID OGADINMA",
-					        ")><"
+					        ")><",
 					    ].join("\n"),
 					    "duration": "0.031649119",
 					    "type": "moveRest",
 					    "scrolledCmd": "*R",
-					    "state": {"area":"B","cmdType":"moveRest","scrolledCmd":"*R","canCreatePq":false,"pricingCmd":null,"pcc":"2G8P","cmdCnt":7,"recordLocator":"PBS98E","hasPnr":true,"isPnrStored":true}
+					    "state": {"area":"B","cmdType":"moveRest","scrolledCmd":"*R","canCreatePq":false,"pricingCmd":null,"pcc":"2G8P","cmdCnt":7,"recordLocator":"PBS98E","hasPnr":true,"isPnrStored":true},
 					},
 					{
 					    "cmd": "MR",
@@ -4454,23 +4454,23 @@ class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
 					        "   6 UD1 P",
 					        "ACKN-DL G5GHKW   23MAY 2342",
 					        "   2 1A KGJAON   23MAY 2342",
-					        ")><"
+					        ")><",
 					    ].join("\n"),
 					    "duration": "0.082554439",
 					    "type": "moveRest",
 					    "scrolledCmd": "*R",
-					    "state": {"area":"B","cmdType":"moveRest","scrolledCmd":"*R","canCreatePq":false,"pricingCmd":null,"pcc":"2G8P","cmdCnt":8,"recordLocator":"PBS98E","hasPnr":true,"isPnrStored":true}
+					    "state": {"area":"B","cmdType":"moveRest","scrolledCmd":"*R","canCreatePq":false,"pricingCmd":null,"pcc":"2G8P","cmdCnt":8,"recordLocator":"PBS98E","hasPnr":true,"isPnrStored":true},
 					},
 					{
 					    "cmd": "MR",
 					    "output": [
 					        "   3 1A KGJAON   23MAY 2342",
-					        "><"
+					        "><",
 					    ].join("\n"),
 					    "duration": "0.057189507",
 					    "type": "moveRest",
 					    "scrolledCmd": "*R",
-					    "state": {"area":"B","cmdType":"moveRest","scrolledCmd":"*R","canCreatePq":false,"pricingCmd":null,"pcc":"2G8P","cmdCnt":9,"recordLocator":"PBS98E","hasPnr":true,"isPnrStored":true}
+					    "state": {"area":"B","cmdType":"moveRest","scrolledCmd":"*R","canCreatePq":false,"pricingCmd":null,"pcc":"2G8P","cmdCnt":9,"recordLocator":"PBS98E","hasPnr":true,"isPnrStored":true},
 					},
 				],
 				'performedCommands': [
@@ -4490,12 +4490,12 @@ class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
 					        "ORIG ISS;...... ORIG DATE;....... ORIG IATA NBR;.........",
 					        "ORIG TKT;..............-;...  ORIG INV NBR;.........",
 					        "PENALTY USD;............  COMM ON PENALTY;...........",
-					        "><"
+					        "><",
 					    ].join("\n"),
 					    "duration": "3.222072719",
 					    "type": "issueTickets",
 					    "scrolledCmd": "HB:FEX",
-					    "state": {"area":"B","cmdType":"issueTickets","scrolledCmd":"HB:FEX","canCreatePq":false,"pricingCmd":null,"pcc":"2G8P","cmdCnt":10,"recordLocator":"PBS98E","hasPnr":true,"isPnrStored":true}
+					    "state": {"area":"B","cmdType":"issueTickets","scrolledCmd":"HB:FEX","canCreatePq":false,"pricingCmd":null,"pcc":"2G8P","cmdCnt":10,"recordLocator":"PBS98E","hasPnr":true,"isPnrStored":true},
 					},
 					{
 					    "cmd": "*MPD",
@@ -4504,12 +4504,12 @@ class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
 					        "          NAME         DOCUMENT NBR   ISSUED       AMOUNT",
 					        ">*MCO1;   EGBUHO/S    0065056248761   24MAY19         1385.30 ",
 					        "END OF DISPLAY",
-					        "><"
+					        "><",
 					    ].join("\n"),
 					    "duration": "0.042588507",
 					    "type": "mcoList",
 					    "scrolledCmd": "*MPD",
-					    "state": {"area":"B","cmdType":"mcoList","scrolledCmd":"*MPD","canCreatePq":false,"pricingCmd":null,"pcc":"2G8P","cmdCnt":11,"recordLocator":"PBS98E","hasPnr":true,"isPnrStored":true}
+					    "state": {"area":"B","cmdType":"mcoList","scrolledCmd":"*MPD","canCreatePq":false,"pricingCmd":null,"pcc":"2G8P","cmdCnt":11,"recordLocator":"PBS98E","hasPnr":true,"isPnrStored":true},
 					},
 					{
 					    "cmd": "*MCO1",
@@ -4526,12 +4526,12 @@ class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
 					        " REMARK1;..............................................",
 					        " REMARK2;......................................................",
 					        " VALIDATING CARRIER;DL                  ISSUE NOW;.",
-					        "><"
+					        "><",
 					    ].join("\n"),
 					    "duration": "0.078383694",
 					    "type": "storedMcoMask",
 					    "scrolledCmd": "*MCO1",
-					    "state": {"area":"B","cmdType":"storedMcoMask","scrolledCmd":"*MCO1","canCreatePq":false,"pricingCmd":null,"pcc":"2G8P","cmdCnt":12,"recordLocator":"PBS98E","hasPnr":true,"isPnrStored":true}
+					    "state": {"area":"B","cmdType":"storedMcoMask","scrolledCmd":"*MCO1","canCreatePq":false,"pricingCmd":null,"pcc":"2G8P","cmdCnt":12,"recordLocator":"PBS98E","hasPnr":true,"isPnrStored":true},
 					},
 					{
 					    "cmd": "*HT",
@@ -4540,12 +4540,12 @@ class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
 					        "EGBUHO/SOLOMON-00000000-01/0067401158461-462/EZ0002371-USD/1401.33/TE/24MAY0531Z",
 					        "** HISTORY TIN DATA **",
 					        "XK EGBUHO/SOLOMON-00011736-37/0065056248761/EZ0002367-USD/1385.30/24MAY0445Z",
-					        "><"
+					        "><",
 					    ].join("\n"),
 					    "duration": "0.050226535",
 					    "type": "history",
 					    "scrolledCmd": "*HT",
-					    "state": {"area":"A","pcc":"2F3K","recordLocator":"PBS98E","canCreatePq":false,"scrolledCmd":"*HT","cmdCnt":6,"pricingCmd":null,"hasPnr":true,"isPnrStored":true,"cmdType":"history"}
+					    "state": {"area":"A","pcc":"2F3K","recordLocator":"PBS98E","canCreatePq":false,"scrolledCmd":"*HT","cmdCnt":6,"pricingCmd":null,"hasPnr":true,"isPnrStored":true,"cmdType":"history"},
 					},
 				],
 			},
@@ -4572,7 +4572,7 @@ class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
 							" 2 CM 613L 30NOV PTYMDE SS1  1158A  123P *         SA   E  1",
 							" 3 CM 612L 12DEC MDEPTY SS1   417P  542P *         TH   E  2",
 							" 4 CM 434L 12DEC PTYMCO SS1   629P  954P *         TH   E  2",
-							""
+							"",
 						].join("\n"),
 					},
 				],
@@ -4590,7 +4590,7 @@ class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
 							"PERSONAL DATA WHICH IS PROVIDED TO US IN CONNECTION",
 							"WITH YOUR TRAVEL MAY BE PASSED TO GOVERNMENT AUTHORITIES",
 							"FOR BORDER CONTROL AND AVIATION SECURITY PURPOSES",
-							"><"
+							"><",
 						].join("\n"),
 						"state": {
 							"area": "A",
@@ -4601,8 +4601,8 @@ class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
 							"cmdCnt": 1,
 							"pricingCmd": null,
 							"hasPnr": true,
-							"cmdType": "sell"
-						}
+							"cmdType": "sell",
+						},
 					},
 					{
 						"cmd": "0CM613Y30NOVPTYMDEGK1",
@@ -4613,7 +4613,7 @@ class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
 							"PERSONAL DATA WHICH IS PROVIDED TO US IN CONNECTION",
 							"WITH YOUR TRAVEL MAY BE PASSED TO GOVERNMENT AUTHORITIES",
 							"FOR BORDER CONTROL AND AVIATION SECURITY PURPOSES",
-							"><"
+							"><",
 						].join("\n"),
 					},
 					{
@@ -4625,7 +4625,7 @@ class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
 							"PERSONAL DATA WHICH IS PROVIDED TO US IN CONNECTION",
 							"WITH YOUR TRAVEL MAY BE PASSED TO GOVERNMENT AUTHORITIES",
 							"FOR BORDER CONTROL AND AVIATION SECURITY PURPOSES",
-							"><"
+							"><",
 						].join("\n"),
 					},
 					{
@@ -4637,7 +4637,7 @@ class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
 							"PERSONAL DATA WHICH IS PROVIDED TO US IN CONNECTION",
 							"WITH YOUR TRAVEL MAY BE PASSED TO GOVERNMENT AUTHORITIES",
 							"FOR BORDER CONTROL AND AVIATION SECURITY PURPOSES",
-							"><"
+							"><",
 						].join("\n"),
 					},
 					{
@@ -4656,7 +4656,7 @@ class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
 							"WITH YOUR TRAVEL MAY BE PASSED TO GOVERNMENT AUTHORITIES",
 							"FOR BORDER CONTROL AND AVIATION SECURITY PURPOSES",
 							"CANCEL REQUEST COMPLETED",
-							"><"
+							"><",
 						].join("\n"),
 					},
 					{
@@ -4675,14 +4675,14 @@ class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
 							"PERSONAL DATA WHICH IS PROVIDED TO US IN CONNECTION",
 							"WITH YOUR TRAVEL MAY BE PASSED TO GOVERNMENT AUTHORITIES",
 							"FOR BORDER CONTROL AND AVIATION SECURITY PURPOSES",
-							")><"
+							")><",
 						].join("\n"),
 					},
 					{
 						"cmd": "MR",
 						"output": [
 							"CANCEL REQUEST COMPLETED",
-							"><"
+							"><",
 						].join("\n"),
 					},
 					{
@@ -4693,7 +4693,7 @@ class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
 							" 2 CM 613L 30NOV PTYMDE SS1  1158A  123P *         SA   E  1",
 							" 3 CM 612L 12DEC MDEPTY SS1   417P  542P *         TH   E  2",
 							" 4 CM 434L 12DEC PTYMCO SS1   629P  954P *         TH   E  2",
-							"><"
+							"><",
 						].join("\n"),
 					},
 				],
@@ -4831,7 +4831,7 @@ class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
 							"  3  PS   151.00R Q002LLE4 Q        /3M                 R  EH  ",
 							"  4  PS   151.00R X002SSE4 X        /3M                 R  EH  ",
 							"  5  PS   166.00R N002SSE4 N        /3M                 R  EH  ",
-							")><"
+							")><",
 						].join("\n"),
 					},
 					{
@@ -4850,7 +4850,7 @@ class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
 							" 16  PS   110.00  V001LLE4 V        /3M                 R  EH  ",
 							" 17 -PS   221.00R V002SSE4 V        /3M                 R  EH  ",
 							" 18  PS   221.00R V002SSE4 V        /3M                 R  EH  ",
-							")><"
+							")><",
 						].join("\n"),
 					},
 					{
@@ -4869,7 +4869,7 @@ class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
 							" 29  PS   276.00R O002SSE4 O        /6M                 R  EH  ",
 							" 30  PS   143.00  O001LLE4 O        /6M                 R  EH  ",
 							" 31  PS   145.00  L001SSE4 L        /6M                 R  EH  ",
-							")><"
+							")><",
 						].join("\n"),
 					},
 				],
@@ -4944,7 +4944,7 @@ class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
 						"cmd": "F",
 						"output": [
 							"INVLD ",
-							"><"
+							"><",
 						].join("\n"),
 						"type": "fileDividedBooking",
 					},
@@ -4959,7 +4959,7 @@ class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
 						"cmd": "DN1",
 						"output": [
 							"INVLD  PREV NOT FILE REC",
-							"><"
+							"><",
 						].join("\n"),
 						"type": "divideBooking",
 						"state": {
@@ -4972,14 +4972,14 @@ class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
 							"pricingCmd": null,
 							"cmdType": "divideBooking",
 							"hasPnr": true,
-							"isPnrStored": true
-						}
+							"isPnrStored": true,
+						},
 					},
 					{
 						"cmd": "R:JMY",
 						"output": [
 							" *",
-							"><"
+							"><",
 						].join("\n"),
 						"type": "addReceivedFrom",
 					},
@@ -4989,7 +4989,7 @@ class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
 						"cmd": "@:5GD-PRINCE/1588/FOR /6206/LEAD-1 IN 2G55",
 						"output": [
 							" *",
-							"><"
+							"><",
 						].join("\n"),
 						"type": "addRemark",
 					},
@@ -4997,7 +4997,7 @@ class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
 						"cmd": "F",
 						"output": [
 							"INVLD ",
-							"><"
+							"><",
 						].join("\n"),
 						"type": "fileDividedBooking",
 						"state": {
@@ -5010,8 +5010,8 @@ class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
 							"hasPnr": false,
 							"isPnrStored": false,
 							"cmdType": "fileDividedBooking",
-							"pricingCmd": null
-						}
+							"pricingCmd": null,
+						},
 					},
 				],
 			},
@@ -5047,7 +5047,7 @@ class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
 							" FQ-EUR 418.00/USD 3.90LV/USD 196.50XT/USD 670.40 - 24APR *ADT-ZCL.NCL",
 							"GFAX-SSRDOCSSUHK1/////24FEB75/M//WEINSTEIN/ALEX-1WEINSTEIN/ALEX",
 							"ACKN-SU FPSGVA   24APR 1217",
-							"><"
+							"><",
 						].join("\n"),
 						"duration": "0.057814040",
 						"type": "openPnr",
@@ -5056,7 +5056,7 @@ class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
 						"cmd": "I",
 						"output": [
 							"IGND ",
-							"><"
+							"><",
 						].join("\n"),
 						"duration": "0.051822774",
 						"type": "ignore",
@@ -5071,7 +5071,7 @@ class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
 				'cmdRequested': [
 					"1 WS 703X 30APR T YYZYVR SS1   900A 1103A /DCWS /E",
 					" 2 WS 716T 03MAY F YVRYYZ SS1   300P 1030P /DCWS /E",
-					"719.30TTL"
+					"719.30TTL",
 				].join('\n'),
 			},
 			'output': {
@@ -5083,7 +5083,7 @@ class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
 							"NO NAMES",
 							" 1 WS 703X 30APR YYZYVR SS1   900A 1103A *         TU   E",
 							" 2 WS 716T 03MAY YVRYYZ SS1   300P 1030P *         FR   E",
-							""
+							"",
 						].join("\n"),
 					},
 
@@ -5099,7 +5099,7 @@ class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
 							" 1 WS  703Y  30APR YYZYVR GK1   900A 1103A                    ",
 							"OFFER CAR/HOTEL    >CAL;     >HOA;",
 							"DEPARTS YYZ TERMINAL 3  - ARRIVES YVR TERMINAL M ",
-							"><"
+							"><",
 						].join("\n"),
 					},
 					{
@@ -5108,7 +5108,7 @@ class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
 							" 2 WS  716Y   3MAY YVRYYZ GK1   300P 1030P                    ",
 							"OFFER CAR/HOTEL    >CAL;     >HOA;",
 							"DEPARTS YVR TERMINAL M  - ARRIVES YYZ TERMINAL 3 ",
-							"><"
+							"><",
 						].join("\n"),
 					},
 					{
@@ -5124,7 +5124,7 @@ class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
 							"OFFER CAR/HOTEL    >CAL;     >HOA;",
 							"DEPARTS YVR TERMINAL M  - ARRIVES YYZ TERMINAL 3 ",
 							"CANCEL REQUEST COMPLETED",
-							"><"
+							"><",
 						].join("\n"),
 					},
 					{
@@ -5133,7 +5133,7 @@ class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
 							"NO NAMES",
 							" 1 WS 703X 30APR YYZYVR SS1   900A 1103A *         TU   E",
 							" 2 WS 716T 03MAY YVRYYZ SS1   300P 1030P *         FR   E",
-							"><"
+							"><",
 						].join("\n"),
 					},
 				],
@@ -5149,7 +5149,7 @@ class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
 					"     SEE RTSVC",
 					"  2  AC 085 P 29JUL 1 TLVYYZ HK1        3  1145A 430P   789 E0 L",
 					"     AC YYZ HUB-CONX TO MORE THAN 100 DEST IN NORTH AMERICA",
-					"     SEE RTSVC"
+					"     SEE RTSVC",
 				].join('\n'),
 			},
 			'output': {
@@ -5180,7 +5180,7 @@ class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
 							"TO REQUEST CLAIM PNR PLEASE IGNORE AND ENTER THE",
 							"AIRLINES INFORMATION IN ONE OF THE FOLLOWING FORMATS -",
 							"L@AC/*(RECORD LOCATOR)  OR  L@AC/*AC84/21JUL-(NAME)  ",
-							"><"
+							"><",
 						].join("\n"),
 					},
 					{
@@ -5197,7 +5197,7 @@ class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
 							"TO REQUEST CLAIM PNR PLEASE IGNORE AND ENTER THE",
 							"AIRLINES INFORMATION IN ONE OF THE FOLLOWING FORMATS -",
 							"L@AC/*(RECORD LOCATOR)  OR  L@AC/*AC85/29JUL-(NAME)  ",
-							"><"
+							"><",
 						].join("\n"),
 					},
 					{
@@ -5205,7 +5205,7 @@ class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
 						"output": [
 							"0 AVAIL/WL CLOSED WS703 YYZYVR *",
 							"UNABLE TO CANCEL",
-							"><"
+							"><",
 						].join("\n"),
 					},
 					{
@@ -5288,7 +5288,7 @@ class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
 								{"key": "seg1_ticketDesignator", "value": "", "enabled": true},
 								{"key": "seg2_ticketDesignator", "value": "", "enabled": true},
 								{"key": "seg3_ticketDesignator", "value": "", "enabled": true},
-								{"key": "seg4_ticketDesignator", "value": "", "enabled": true}
+								{"key": "seg4_ticketDesignator", "value": "", "enabled": true},
 							],
 							"maskOutput": [
 								">$NME LIB/MAR                                                 ",
@@ -5303,17 +5303,17 @@ class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
 								"                                                   ;PSGR 01/01",
 								"                                                   ;BOOK 01/01",
 								"DO YC/XY TAXES APPLY?",
-								"><"
-							].join("\n")
-						}
-					}
+								"><",
+							].join("\n"),
+						},
+					},
 				],
 			},
 			'sessionInfo': {
 				'initialState': {
 					...GdsDirectDefaults.makeDefaultApolloState(),
 					isPnrStored: true,
-					recordLocator: 'MZ2KVP'
+					recordLocator: 'MZ2KVP',
 				},
 				'initialCommands': [
 					{
@@ -5326,7 +5326,7 @@ class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
 							"FONE-SFOAS/800-750-2238 ASAP CUSTOMER SUPPORT",
 							"TKTG-TAU/09MAY",
 							"RMKS-GD-AKLESUNS/6206 IN 2F3K",
-							"><"
+							"><",
 						].join("\n"),
 						"duration": "0.181254743",
 						"type": "redisplayPnr",
@@ -5341,8 +5341,8 @@ class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
 							"hasPnr": true,
 							"isPnrStored": true,
 							"cmdType": "redisplayPnr",
-							"pricingCmd": null
-						}
+							"pricingCmd": null,
+						},
 					},
 				],
 				'performedCommands': [
@@ -5361,7 +5361,7 @@ class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
 							"                                                   ;PSGR 01/01",
 							"                                                   ;BOOK 01/01",
 							"DO YC/XY TAXES APPLY?",
-							"><"
+							"><",
 						].join("\n"),
 						"duration": "0.226702311",
 						"type": "priceItineraryManually",
@@ -5377,7 +5377,7 @@ class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
 							"isPnrStored": false,
 							"cmdType": "priceItineraryManually",
 							"pricingCmd": null,
-						}
+						},
 					},
 				],
 			},
@@ -5419,16 +5419,16 @@ class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
 								"",
 								";10DEC JFK PR MNL 100.00 $100.00     ",
 								"",
-							].join("\n")
-						}
-					}
+							].join("\n"),
+						},
+					},
 				],
 			},
 			'sessionInfo': {
 				'initialState': {
 					...GdsDirectDefaults.makeDefaultApolloState(),
 					isPnrStored: true,
-					recordLocator: 'SL0S6U'
+					recordLocator: 'SL0S6U',
 				},
 				'initialCommands': [
 					{
@@ -5446,14 +5446,14 @@ class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
 					        "                                                   ;PSGR 01/01",
 					        "                                                   ;BOOK 01/01",
 					        "DO YC/XY TAXES APPLY?",
-					        "><"
+					        "><",
 					    ].join("\n"),
 					},
 					{
 						"cmd": "$NME LIB/MAR                                                    X CTY CR FLT/CLS DATE  TIME  ST F/B      VALUE   NVB   NVA      . JFK PR  127 N  10DEC  145A OK;QWE123..;100.00.;10DEC;10DEC    . MNL .. .... ..  VOID ..... .. ........ ....... ..... .....    . ... .. .... ..  VOID ..... .. ........ ....... ..... .....    . ... .. .... ..  VOID ..... .. ........ ....... ..... .....    . ...  FARE;USD;100.00..  DO TAXES APPLY?;N                      EQUIV FARE;...;........             COMM;0.00/.. F CONST;Y.    TD 1/;...... 2/;...... 3/;...... 4/;......  INT X  MREC 01/01                                                     ;PSGR 01/01                                                     ;BOOK 01/01  DO YC/XY TAXES APPLY?",
 						"output": [
 							" *",
-							"><"
+							"><",
 						].join("\n"),
 					},
 				],
@@ -5469,7 +5469,7 @@ class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
 							";...................................................;",
 							"",
 							";10DEC JFK PR MNL 100.00 $100.00     ",
-							"><"
+							"><",
 						].join("\n"),
 					},
 				],
@@ -5502,7 +5502,7 @@ class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
 						"cmd": "N:SIACOTOS/MARIA|N:COLYVAS/PANTELIS STEPHANOS|N:COLYVAS/HARALAMBOS COLYVAS*02DEC08",
 						"output": [
 							"* ",
-							"><"
+							"><",
 						].join("\n"),
 					},
 					{
@@ -5517,7 +5517,7 @@ class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
 							" 3 AC1901L 26JUL ATHYYZ SS3  1255P  455P *         FR   E  1",
 							"         OPERATED BY AIR CANADA ROUGE",
 							" 4 AC 739L 26JUL YYZSFO SS3   655P  920P *         FR   E  1",
-							""
+							"",
 						].join("\n"),
 					},
 				],
@@ -5532,7 +5532,7 @@ class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
 						"cmd": "N:SIACOTOS/MARIA|N:COLYVAS/PANTELIS STEPHANOS|N:COLYVAS/HARALAMBOS COLYVAS*02DEC08",
 						"output": [
 							"* ",
-							"><"
+							"><",
 						].join("\n"),
 					},
 					{
@@ -5551,12 +5551,12 @@ class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
 					        "TO REQUEST CLAIM PNR PLEASE IGNORE AND ENTER THE",
 					        "AIRLINES INFORMATION IN ONE OF THE FOLLOWING FORMATS -",
 					        "L@UA/*(RECORD LOCATOR)  OR  L@UA/*UA8020/2JUL-(NAME) ",
-					        "><"
+					        "><",
 					    ].join("\n"),
 					    "duration": "0.168850149",
 					    "type": "sell",
 					    "scrolledCmd": "0UA8020Y02JULSFOYULGK3",
-					    "state": {"area":"A","pcc":"2F3K","recordLocator":"","canCreatePq":false,"scrolledCmd":"0UA8020Y02JULSFOYULGK3","cmdCnt":16,"pricingCmd":null,"hasPnr":true,"isPnrStored":false,"cmdType":"sell"}
+					    "state": {"area":"A","pcc":"2F3K","recordLocator":"","canCreatePq":false,"scrolledCmd":"0UA8020Y02JULSFOYULGK3","cmdCnt":16,"pricingCmd":null,"hasPnr":true,"isPnrStored":false,"cmdType":"sell"},
 					},
 					{
 					    "cmd": "0UA8673Y02JULYULATHGK3",
@@ -5574,7 +5574,7 @@ class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
 					        "TO REQUEST CLAIM PNR PLEASE IGNORE AND ENTER THE",
 					        "AIRLINES INFORMATION IN ONE OF THE FOLLOWING FORMATS -",
 					        "L@UA/*(RECORD LOCATOR)  OR  L@UA/*UA8673/2JUL-(NAME) ",
-					        "><"
+					        "><",
 					    ].join("\n"),
 					    "duration": "0.168293643",
 					},
@@ -5593,7 +5593,7 @@ class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
 					        "TO REQUEST CLAIM PNR PLEASE IGNORE AND ENTER THE",
 					        "AIRLINES INFORMATION IN ONE OF THE FOLLOWING FORMATS -",
 					        "L@AC/*(RECORD LOCATOR)  OR  L@AC/*AC1901/26JUL-(NAME)",
-					        "><"
+					        "><",
 					    ].join("\n"),
 					    "duration": "0.173780938",
 					},
@@ -5611,7 +5611,7 @@ class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
 					        "TO REQUEST CLAIM PNR PLEASE IGNORE AND ENTER THE",
 					        "AIRLINES INFORMATION IN ONE OF THE FOLLOWING FORMATS -",
 					        "L@AC/*(RECORD LOCATOR)  OR  L@AC/*AC739/26JUL-(NAME) ",
-					        "><"
+					        "><",
 					    ].join("\n"),
 					    "duration": "0.174955025",
 					},
@@ -5631,7 +5631,7 @@ class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
 					        "PERSONAL DATA WHICH IS PROVIDED TO US IN CONNECTION",
 					        "WITH YOUR TRAVEL MAY BE PASSED TO GOVERNMENT AUTHORITIES",
 					        "FOR BORDER CONTROL AND AVIATION SECURITY PURPOSES",
-					        ")><"
+					        ")><",
 					    ].join("\n"),
 					    "duration": "0.431180541",
 					},
@@ -5639,7 +5639,7 @@ class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
 					    "cmd": "MR",
 					    "output": [
 					        "CANCEL REQUEST COMPLETED",
-					        "><"
+					        "><",
 					    ].join("\n"),
 					    "duration": "0.173532689",
 					},
@@ -5659,7 +5659,7 @@ class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
 					        "ADD ADVANCE PASSENGER INFORMATION SSRS DOCA/DOCO/DOCS",
 					        "PERSONAL DATA WHICH IS PROVIDED TO US IN CONNECTION",
 					        "WITH YOUR TRAVEL MAY BE PASSED TO GOVERNMENT AUTHORITIES",
-					        ")><"
+					        ")><",
 					    ].join("\n"),
 					    "duration": "0.438913995",
 					},
@@ -5668,7 +5668,7 @@ class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
 					    "output": [
 					        "FOR BORDER CONTROL AND AVIATION SECURITY PURPOSES",
 					        "CANCEL REQUEST COMPLETED",
-					        "><"
+					        "><",
 					    ].join("\n"),
 					    "duration": "0.190420122",
 					},
@@ -5684,12 +5684,12 @@ class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
 					        " 3 AC1901L 26JUL ATHYYZ SS3  1255P  455P *         FR   E  1",
 					        "         OPERATED BY AIR CANADA ROUGE",
 					        " 4 AC 739L 26JUL YYZSFO SS3   655P  920P *         FR   E  1",
-					        "><"
+					        "><",
 					    ].join("\n"),
 					    "duration": "0.175637379",
 					    "type": "redisplayPnr",
 					    "scrolledCmd": "*R",
-					    "state": {"area":"A","pcc":"2F3K","recordLocator":"","canCreatePq":false,"scrolledCmd":"*R","cmdCnt":10,"pricingCmd":null,"hasPnr":true,"cmdType":"redisplayPnr"}
+					    "state": {"area":"A","pcc":"2F3K","recordLocator":"","canCreatePq":false,"scrolledCmd":"*R","cmdCnt":10,"pricingCmd":null,"hasPnr":true,"cmdType":"redisplayPnr"},
 					},
 				],
 			},
@@ -5710,7 +5710,7 @@ class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
 				'initialState': {
 					...GdsDirectDefaults.makeDefaultApolloState(),
 					"area":"A","pcc":"2F3K","recordLocator":"N9JQ3Z",
-					"isPnrStored":true,"cmdType":"redisplayPnr"
+					"isPnrStored":true,"cmdType":"redisplayPnr",
 				},
 				'initialCommands': [],
 				'performedCommands': [
@@ -5730,7 +5730,7 @@ class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
 					        " 3 AV 928W 24JUN LIMSAL HK1  1015A  139P *         MO   E  2",
 					        "         OPERATED BY AVIANCA PERU S.A.",
 					        " 4 AV 580W 24JUN SALIAD HK1   300P  915P *         MO   E  2",
-					        ")><"
+					        ")><",
 					    ].join("\n"),
 					},
 					{
@@ -5744,7 +5744,7 @@ class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
 					        "   3 SSRINFTAVKK01 LIMSAL 0928W 24JUN-1ZAVALETASANCHEZ/KHALESSI MASSIEL.ZAVALETASANCHEZ/VHANIA CATALINA 10FEB18",
 					        "   4 SSRINFTAVKK01 SALIAD 0580W 24JUN-1ZAVALETASANCHEZ/KHALESSI MASSIEL.ZAVALETASANCHEZ/VHANIA CATALINA 10FEB18",
 					        "   5 SSRADTK1VTOTA BY 23MAY 2300 ZZZ TIME ZONE OTHERWISE WILL BE XLD",
-					        ")><"
+					        ")><",
 					    ].join("\n"),
 					},
 					{
@@ -5759,7 +5759,7 @@ class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
 					        "ACKN-1A P6FFRC   20MAY 2205",
 					        "   2 1A P6FFRC   20MAY 2205",
 					        "   3 1A P6FFRC   20MAY 2235",
-					        "><"
+					        "><",
 					    ].join("\n"),
 					},
 					{
@@ -5778,7 +5778,7 @@ class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
 					        "FARE USD 469.00 TAX 5.60AY TAX 37.20US TAX 3.96XA TAX 4.50XF",
 					        "TAX 7.00XY TAX 5.77YC TAX 15.00DY TAX 30.43HW TOT USD 578.46 ",
 					        "S1 NVB30MAY/NVA30MAY",
-					        ")><"
+					        ")><",
 					    ].join("\n"),
 					},
 					{
@@ -5797,7 +5797,7 @@ class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
 					        "   BAG 1 -  NO FEE       UPTO50LB/23KG AND UPTO62LI/158LCM",
 					        "   BAG 2 -  60.00 USD    UPTO50LB/23KG AND UPTO62LI/158LCM",
 					        "   VIEWTRIP.TRAVELPORT.COM/BAGGAGEPOLICY/AV",
-					        ")><"
+					        ")><",
 					    ].join("\n"),
 					},
 					{
@@ -5814,7 +5814,7 @@ class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
 					        "   BAG 2 -  CHGS MAY APPLY IF BAGS EXCEED TTL WT ALLOWANCE",
 					        " AV SALLIM  10K                                             ",
 					        "   BAG 1 -  CHGS MAY APPLY IF BAGS EXCEED TTL WT ALLOWANCE",
-					        ")><"
+					        ")><",
 					    ].join("\n"),
 					},
 					{
@@ -5833,7 +5833,7 @@ class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
 					        "LAST DATE TO PURCHASE TICKET: 23MAY19 / 1504 SFO",
 					        "$B-2 C21MAY19     ",
 					        "WAS AV X/SAL AV LIM 22.50LEA00RIS/IN90 AV X/SAL AV WAS",
-					        ")><"
+					        ")><",
 					    ].join("\n"),
 					},
 					{
@@ -5852,7 +5852,7 @@ class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
 					        "E NON REFUNDABLE/",
 					        "TICKETING AGENCY 2F3K",
 					        "DEFAULT PLATING CARRIER AV",
-					        ")><"
+					        ")><",
 					    ].join("\n"),
 					},
 					{
@@ -5869,7 +5869,7 @@ class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
 					        "   BAG 2 -  CHGS MAY APPLY IF BAGS EXCEED TTL WT ALLOWANCE",
 					        "   VIEWTRIP.TRAVELPORT.COM/BAGGAGEPOLICY/AV",
 					        "                                                                CARRY ON ALLOWANCE",
-					        ")><"
+					        ")><",
 					    ].join("\n"),
 					},
 					{
@@ -5888,7 +5888,7 @@ class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
 					        " AV SALWAS  10K                                             ",
 					        "   BAG 1 -  CHGS MAY APPLY IF BAGS EXCEED TTL WT ALLOWANCE",
 					        "   BAG 2 -  CHGS MAY APPLY IF BAGS EXCEED TTL WT ALLOWANCE",
-					        ")><"
+					        ")><",
 					    ].join("\n"),
 					},
 					{
@@ -5896,7 +5896,7 @@ class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
 					    "output": [
 					        "BAGGAGE DISCOUNTS MAY APPLY BASED ON FREQUENT FLYER STATUS/",
 					        "ONLINE CHECKIN/FORM OF PAYMENT/MILITARY/ETC.",
-					        "><"
+					        "><",
 					    ].join("\n"),
 					},
 				],
@@ -5921,7 +5921,7 @@ class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
 					    "cmd": "A10JULJFKMNL|PR",
 					    "output": [
 					        "|PR       DISPLAY* WE 10JUL NYCMNL|12:00 HR                     1| PR 127 J9 C9 D9 I9 Z9 W9 N3 Y9 S9 L9|JFKMNL 145A  615A|350  0NO MORE LATER FLIGHTS 10JUL",
-					        "MEALS>A*M;  CLASSES>A*C;..  ><"
+					        "MEALS>A*M;  CLASSES>A*C;..  ><",
 					    ].join("\n"),
 					},
 				],
@@ -5930,7 +5930,7 @@ class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
 					    "cmd": "A*O15JUL",
 					    "output": [
 					        "|PR       DISPLAY* MO 15JUL MNLNYC-12:00 HR                     1| PR 126 J9 C9 D9 I8 Z8 W9 N2 Y9 S9 L9|MNLJFK 740P 1115P 350  0NO MORE LATER FLIGHTS 15JUL",
-					        "MEALS>A*M;  CLASSES>A*C;..  ><"
+					        "MEALS>A*M;  CLASSES>A*C;..  ><",
 					    ].join("\n"),
 					},
 				],
@@ -5955,14 +5955,14 @@ class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
 					    "cmd": "A10JULJFKMNL|PR",
 					    "output": [
 					        "|PR       DISPLAY* WE 10JUL NYCMNL|12:00 HR                     1| PR 127 J9 C9 D9 I9 Z9 W9 N3 Y9 S9 L9|JFKMNL 145A  615A|350  0NO MORE LATER FLIGHTS 10JUL",
-					        "MEALS>A*M;  CLASSES>A*C;..  ><"
+					        "MEALS>A*M;  CLASSES>A*C;..  ><",
 					    ].join("\n"),
 					},
 					{
 					    "cmd": "A*O15JUL",
 					    "output": [
 					        "|PR       DISPLAY* MO 15JUL MNLNYC-12:00 HR                     1| PR 126 J9 C9 D9 I8 Z8 W9 N2 Y9 S9 L9|MNLJFK 740P 1115P 350  0NO MORE LATER FLIGHTS 15JUL",
-					        "MEALS>A*M;  CLASSES>A*C;..  ><"
+					        "MEALS>A*M;  CLASSES>A*C;..  ><",
 					    ].join("\n"),
 					},
 				],
@@ -5971,7 +5971,7 @@ class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
 					    "cmd": "A*O25JUL",
 					    "output": [
 					        "|PR       DISPLAY* TH 25JUL NYCMNL|12:00 HR                     1| PR 127 J9 C9 D9 I9 Z1 W9 N9 Y9 S9 L9|JFKMNL 145A  615A|350  0NO MORE LATER FLIGHTS 25JUL",
-					        "MEALS>A*M;  CLASSES>A*C;..  ><"
+					        "MEALS>A*M;  CLASSES>A*C;..  ><",
 					    ].join("\n"),
 					},
 				],
@@ -5990,7 +5990,7 @@ class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
 					" 4 LH 599S 22JUL ADDFRA SS1  1110P  525A|*      MO/TU   E",
 					"         OPERATED BY LUFTHANSA CITYLINE GMBH",
 					" 5 UA  59S 23JUL FRASFO SS1   155P  430P *         TU   E",
-					""
+					"",
 				].join("\n"),
 			},
 			'output': {
@@ -6009,7 +6009,7 @@ class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
 					    "cmd": "N:EBRAHIM/TAJUDIN AHMED|N:ABDI/GENET",
 					    "output": [
 					        " *",
-					        "><"
+					        "><",
 					    ].join("\n"),
 					},
 					{
@@ -6022,7 +6022,7 @@ class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
 					        "TO REQUEST CLAIM PNR PLEASE IGNORE AND ENTER THE",
 					        "AIRLINES INFORMATION IN ONE OF THE FOLLOWING FORMATS -",
 					        "L@UA/*(RECORD LOCATOR)  OR  L@UA/*UA258/14JUN-(NAME) ",
-					        "><"
+					        "><",
 					    ].join("\n"),
 					},
 					{
@@ -6035,7 +6035,7 @@ class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
 					        "PERSONAL DATA WHICH IS PROVIDED TO US IN CONNECTION",
 					        "WITH YOUR TRAVEL MAY BE PASSED TO GOVERNMENT AUTHORITIES",
 					        "FOR BORDER CONTROL AND AVIATION SECURITY PURPOSES",
-					        "><"
+					        "><",
 					    ].join("\n"),
 					},
 					{
@@ -6049,7 +6049,7 @@ class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
 					        "PERSONAL DATA WHICH IS PROVIDED TO US IN CONNECTION",
 					        "WITH YOUR TRAVEL MAY BE PASSED TO GOVERNMENT AUTHORITIES",
 					        "FOR BORDER CONTROL AND AVIATION SECURITY PURPOSES",
-					        "><"
+					        "><",
 					    ].join("\n"),
 					},
 					{
@@ -6063,7 +6063,7 @@ class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
 					        "PERSONAL DATA WHICH IS PROVIDED TO US IN CONNECTION",
 					        "WITH YOUR TRAVEL MAY BE PASSED TO GOVERNMENT AUTHORITIES",
 					        "FOR BORDER CONTROL AND AVIATION SECURITY PURPOSES",
-					        "><"
+					        "><",
 					    ].join("\n"),
 					},
 					{
@@ -6080,7 +6080,7 @@ class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
 					        "TO REQUEST CLAIM PNR PLEASE IGNORE AND ENTER THE",
 					        "AIRLINES INFORMATION IN ONE OF THE FOLLOWING FORMATS -",
 					        "L@UA/*(RECORD LOCATOR)  OR  L@UA/*UA59/23JUL-(NAME)  ",
-					        "><"
+					        "><",
 					    ].join("\n"),
 					},
 					{
@@ -6088,7 +6088,7 @@ class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
 					    "output": [
 					        "0 AVAIL/WL CLOSED UA258 SFOAUS *",
 					        "UNABLE TO CANCEL",
-					        "><"
+					        "><",
 					    ].join("\n"),
 					},
 					{
@@ -6107,7 +6107,7 @@ class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
 					        "OFFER CAR/HOTEL    >CAL;     >HOA;",
 					        "OPERATED BY LUFTHANSA CITYLINE GMBH",
 					        "DEPARTS FRA TERMINAL 1  - ARRIVES ADD TERMINAL 2 ",
-					        "><"
+					        "><",
 					    ].join("\n"),
 					},
 					{
@@ -6121,7 +6121,7 @@ class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
 					        " 4 LH 599Y 22JUL ADDFRA GK1  1110P  525A|       MO/TU",
 					        "         OPERATED BY LUFTHANSA CITYLINE GMBH",
 					        " 5 UA  59Y 23JUL FRASFO GK1   155P  430P           TU",
-					        "><"
+					        "><",
 					    ].join("\n"),
 					},
 				],
@@ -7430,6 +7430,241 @@ class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
 		return $argumentTuples;
 	}
 
+	provideTestCasesForTariffModification() {
+		const list = [];
+
+		list.push({
+			'title': 'Fare tarrif modification after another fare modification command had been previously executed',
+			'input': {
+				'cmdRequested': '$DBRIXV',
+				'dbResult' : [{
+					'area': 'A',
+					'cmd': '$DV10SEPJFKLHR20SEP|AA',
+					'cmd_rq_id': 1,
+					'dt': '2019-08-14 08:31:35',
+					'duration': 1,
+					'gds': 'apollo',
+					'has_pnr': 0,
+					'id': 1,
+					'is_mr': 0,
+					'is_pnr_stored': 0,
+					'output': 'FARES LAST UPDATED 13AUG	1:11 AM															\n>$DV10SEPJFKLHR20SEP|AA																				 NYC-LON TUE-10SEP19 AA																				 \nMPM 4148 AT																										\nTAXES/FEES NOT INCLUDED																				\nPUBLIC/PRIVATE FARES FOR 2F3K																	\nSEASONALITY/PROHIBITED TRAVEL DATES/DAY-OF-WEEK VALIDATED			\n		 CX		FARE	 FARE		 C	AP	MIN/		SEASONS...... MR GI DT					 USD		BASIS						 MAX												\n	1	AA		 1.00R OKN2I7B5 B	21|	V/12M	06SEP9-29SEP9 M	AT	\n	2	AA	 101.00R OKN2I1B5 B	21|	V/12M	06SEP9-29SEP9 M	AT	\n	3 /AA	 129.00R OKN2I7M5 O	21|	V/12M	06SEP9-29SEP9 M	AT	\n		 TD:SPL08BAXTV																						 \n)><',
+					'record_locator': '',
+					'session_id': 1,
+					'type': 'fareSearch',
+				}],
+			},
+			'output': {
+				'status': 'executed',
+				'calledCommands': [
+					{'cmd': '$DBRIXV10SEP20SEP'},
+				],
+			},
+			'sessionInfo': {
+				'initialState': GdsDirectDefaults.makeDefaultApolloState(),
+				'initialCommands': [],
+				'performedCommands': [{
+					'cmd': '$DBRIXV10SEP20SEP',
+					'output': [
+						'FARES LAST UPDATED 12AUG  5:16 AM                              ',
+						'>$DWASRIXV10SEP20SEP|AA                                         WAS-RIX TUE-10SEP19 AA                                         ',
+						'MPM 5288 AT                                                    ',
+						'TAXES/FEES NOT INCLUDED                                        ',
+						'PUBLIC/PRIVATE FARES FOR 2F3K                                  ',
+						'SEASONALITY/PROHIBITED TRAVEL DATES/DAY-OF-WEEK VALIDATED      ',
+						'     CX    FARE   FARE     C  AP  MIN/    SEASONS...... MR GI DT           USD    BASIS             MAX                        ',
+						'  1  AA   309.00R QKX8T7B5 B  28|  V/6M O 09SEP9-29SEP9 R  AT D',
+						'  2  AA   369.00R NKN8C1B5 B  28|  V/12M  09SEP9-29SEP9 M  AT  ',
+						'  3 /AA   394.00R QKX8T7M5 Q  28|  V/6M O 09SEP9-29SEP9 R  AT D',
+						'     TD:SPL08BAXTV                                             ',
+						')><',
+					].join('\n'),
+				}],
+			},
+		});
+
+		list.push({
+			'title': 'Fare tarrif modification when there is no fare tariff request in session',
+			'input': {
+				'cmdRequested': '$DBRIXV',
+				'dbResult': [{
+					'area': 'A',
+					'cmd': '$DDLHRV10SEP',
+					'cmd_rq_id': 16426,
+					'dt': '2019-08-14 08:17:38',
+					'duration': 0.1728,
+					'gds': 'apollo',
+					'has_pnr': 0,
+					'id': 39560,
+					'is_mr': 0,
+					'is_pnr_stored': 0,
+					'output': 'NEED TARIFF DISPLAY\n><',
+					'record_locator': '',
+					'session_id': 1850,
+					'type': 'fareSearch',
+				}],
+			},
+			'output': {
+				'status': 'executed',
+				'calledCommands': [
+					{'cmd': '$DBRIXV', output: 'NEED TARIFF DISPLAY\n><'},
+				],
+			},
+			'sessionInfo': {
+				'initialState': GdsDirectDefaults.makeDefaultApolloState(),
+				'initialCommands': [],
+				'performedCommands': [{
+					'cmd': '$D',
+					'output': [
+						'NEED TARIFF DISPLAY\n><',
+					].join('\n'),
+				}],
+			},
+		});
+
+		list.push({
+			'title': 'Fall back to $D in case if tariff data could not be obtained from DB',
+			'input': {
+				'cmdRequested': '$DBRIXV',
+				'dbResult': [{
+					'area': 'A',
+					'cmd': '$DDLLLV10SEP20SEP',
+					'cmd_rq_id': 16507,
+					'dt': '2019-08-14 10:42:29',
+					'duration': 0.2671,
+					'gds': 'apollo',
+					'has_pnr': null,
+					'id': 39701,
+					'is_mr': 0,
+					'is_pnr_stored': null,
+					'output': 'NO FARES FOUND FOR INPUT REQUEST\n><',
+					'record_locator': '',
+					'session_id': 1853,
+					'type': 'fareSearch',
+				}],
+			},
+			'output': {
+				'status': 'executed',
+				'calledCommands': [
+					{'cmd': '$DBRIXV10SEP20SEP'},
+				],
+			},
+			'sessionInfo': {
+				'initialState': GdsDirectDefaults.makeDefaultApolloState(),
+				'initialCommands': [],
+				'performedCommands': [{
+					'cmd': '$D',
+					'output': [
+						'FARES LAST UPDATED 13AUG  3:10 AM                              ',
+						'>$DV10SEPJFKLHR20SEP|AA                                         NYC-LON TUE-10SEP19 AA                                         ',
+						'MPM 4148 AT                                                    ',
+						'TAXES/FEES NOT INCLUDED                                        ',
+						'PUBLIC/PRIVATE FARES FOR 2F3K                                  ',
+						'SEASONALITY/PROHIBITED TRAVEL DATES/DAY-OF-WEEK VALIDATED      ',
+						'     CX    FARE   FARE     C  AP  MIN/    SEASONS...... MR GI DT           USD    BASIS             MAX                        ',
+						'  1  AA     1.00R OKN2I7B5 B  21|  V/12M  06SEP9-29SEP9 M  AT  ',
+						'  2  AA   101.00R OKN2I1B5 B  21|  V/12M  06SEP9-29SEP9 M  AT  ',
+						'  3 /AA   129.00R OKN2I7M5 O  21|  V/12M  06SEP9-29SEP9 M  AT  ',
+						'     TD:SPL08BAXTV                                             ',
+						')><',
+					].join('\n'),
+				}, {
+					'cmd': '$DBRIXV10SEP20SEP',
+					'output': [
+						'FARES LAST UPDATED 12AUG  5:16 AM                              ',
+						'>$DWASRIXV10SEP20SEP|AA                                         WAS-RIX TUE-10SEP19 AA                                         ',
+						'MPM 5288 AT                                                    ',
+						'TAXES/FEES NOT INCLUDED                                        ',
+						'PUBLIC/PRIVATE FARES FOR 2F3K                                  ',
+						'SEASONALITY/PROHIBITED TRAVEL DATES/DAY-OF-WEEK VALIDATED      ',
+						'     CX    FARE   FARE     C  AP  MIN/    SEASONS...... MR GI DT           USD    BASIS             MAX                        ',
+						'  1  AA   309.00R QKX8T7B5 B  28|  V/6M O 09SEP9-29SEP9 R  AT D',
+						'  2  AA   369.00R NKN8C1B5 B  28|  V/12M  09SEP9-29SEP9 M  AT  ',
+						'  3 /AA   394.00R QKX8T7M5 Q  28|  V/6M O 09SEP9-29SEP9 R  AT D',
+						'     TD:SPL08BAXTV                                             ',
+						')><',
+					].join('\n'),
+				}],
+			},
+		});
+
+		list.push({
+			'title': 'Diplay missing tariff message if $D returns such response and there is nothing in DB',
+			'input': {
+				'cmdRequested': '$DBRIXV',
+				'dbResult': [{
+					'area': 'A',
+					'cmd': '$DDLLLV10SEP20SEP',
+					'cmd_rq_id': 16507,
+					'dt': '2019-08-14 10:42:29',
+					'duration': 0.2671,
+					'gds': 'apollo',
+					'has_pnr': null,
+					'id': 39701,
+					'is_mr': 0,
+					'is_pnr_stored': null,
+					'output': 'NO FARES FOUND FOR INPUT REQUEST\n><',
+					'record_locator': '',
+					'session_id': 1853,
+					'type': 'fareSearch',
+				}],
+			},
+			'output': {
+				'status': 'executed',
+				'calledCommands': [
+					{'cmd': '$DBRIXV', output: 'NEED TARIFF DISPLAY><'},
+				],
+			},
+			'sessionInfo': {
+				'initialState': GdsDirectDefaults.makeDefaultApolloState(),
+				'initialCommands': [],
+				'performedCommands': [{
+					'cmd': '$D',
+					'output': 'NEED TARIFF DISPLAY><',
+				}],
+			},
+		});
+
+		list.push({
+			'title': 'For entry with only departure date',
+			'input': {
+				'cmdRequested': '$DBRIXV',
+				'dbResult': [{
+					'area': 'A',
+					'cmd': '$DV10SEPJFKLHR',
+					'cmd_rq_id': 16507,
+					'dt': '2019-08-14 10:42:29',
+					'duration': 0.2671,
+					'gds': 'apollo',
+					'has_pnr': null,
+					'id': 39701,
+					'is_mr': 0,
+					'is_pnr_stored': null,
+					'output': 'FARES LAST UPDATED 13AUG  3:37 AM                              \n>$DV10SEPJFKLHR                                                 NYC-LON TUE-10SEP19                                AIRPORT FARESMPM 4148 AT                                                    \nTAXES/FEES NOT INCLUDED                                        \nPUBLIC/PRIVATE FARES FOR 2F3K                                  \nSEASONALITY/PROHIBITED TRAVEL DATES/DAY-OF-WEEK VALIDATED      \n     CX    FARE   FARE     C  AP  MIN/    SEASONS...... MR GI DT           USD    BASIS             MAX                        \nJFKLON                                                         \n  1 /BA  1273.00  HKN3C9S3 H   3|         06SEP9-29SEP9 R  AT  \n     TD:GRV1780B86                                             \n  2 /IB  1273.00  HKN3C9S3 H   3|         06SEP9-29SEP9 R  AT  \n)><',
+					'record_locator': '',
+					'session_id': 1853,
+					'type': 'fareSearch',
+				}],
+			},
+			'output': {
+				'status': 'executed',
+				'calledCommands': [
+					{'cmd': '$DBRIXV10SEP'},
+				],
+			},
+			'sessionInfo': {
+				'initialState': GdsDirectDefaults.makeDefaultApolloState(),
+				'initialCommands': [],
+				'performedCommands': [{
+					'cmd': '$DBRIXV10SEP',
+					'output': 'FARES LAST UPDATED 13AUG  3:37 AM                              \n>$DWASLHRV10SEP                                                 WAS-LON TUE-10SEP19                                AIRPORT FARESMPM 4413 AT                                                    \nTAXES/FEES NOT INCLUDED                                        \nPUBLIC/PRIVATE FARES FOR 2F3K                                  \nSEASONALITY/PROHIBITED TRAVEL DATES/DAY-OF-WEEK VALIDATED      \n     CX    FARE   FARE     C  AP  MIN/    SEASONS...... MR GI DT           USD    BASIS             MAX                        \nWASLHR                                                         \n  1  ET  1126.00  SXOWUS   S                            R  AT D\n  2  ET  1301.00  GXOWUS   G                            R  AT D\n  3  ET  1476.00  YXOWUS   Y                            R  AT D\n)><',
+				}],
+			},
+		});
+
+		return list.map(c => [c]);
+	}
+
 	/**
 	 * @test
 	 * @dataProvider provideTestCases
@@ -7461,9 +7696,30 @@ class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
 		this.assertEquals(true, stateful.getGdsSession().wereAllCommandsUsed(), 'not all session commands were used');
 	}
 
+	async testTariffModification({input, output, sessionInfo}) {
+		const stateful = await GdsDirectDefaults.makeStatefulSession('apollo', input, sessionInfo);
+
+		sinon.stub(stateful.getLog(), 'getLikeSql')
+			.returns(Promise.resolve(input.dbResult));
+
+		const cmdRq = input['cmdRequested'];
+
+		try {
+			const result = await RunCmdRq({
+				stateful, cmdRq,
+			}).catch(coverExc(Rej.list, exc => ({error: exc + ''})));
+
+			this.assertArrayElementsSubset(output, result, php.implode('; ', result['userMessages'] || []) + php.PHP_EOL);
+			this.assertEquals(true, stateful.getGdsSession().wereAllCommandsUsed(), 'not all session commands were used');
+		} finally {
+			sinon.restore();
+		}
+	}
+
 	getTestMapping() {
 		return [
 			[this.provideTestCases, this.testCase],
+			[this.provideTestCasesForTariffModification, this.testTariffModification],
 		];
 	}
 }

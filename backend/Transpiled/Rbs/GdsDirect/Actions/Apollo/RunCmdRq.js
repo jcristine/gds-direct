@@ -14,6 +14,7 @@ const {fetchUntil, fetchAll, extractPager} = TravelportUtils;
 
 const Rej = require('klesun-node-tools/src/Rej.js');
 const {ignoreExc} = require('../../../../../Utils/TmpLib.js');
+const {coverExc} = require('klesun-node-tools/src/Lang.js');
 const UnprocessableEntity = require("klesun-node-tools/src/Rej").UnprocessableEntity;
 const BadRequest = require("klesun-node-tools/src/Rej").BadRequest;
 const Errors = require('../../../../Rbs/GdsDirect/Errors.js');
@@ -273,14 +274,43 @@ let RunCmdRq = ({
 		return GetCurrentPnr.inApollo(stateful);
 	};
 
+	const findSegInPnr = (gkSeg, reservation) => {
+		return reservation.itinerary
+			.filter(pnrSeg =>
+				gkSeg.airline === pnrSeg.airline &&
+				+gkSeg.flightNumber === +pnrSeg.flightNumber &&
+				// pnr seg class will be 'Y'
+				//gkSeg.bookingClass === pnrSeg.bookingClass &&
+				gkSeg.departureAirport === pnrSeg.departureAirport &&
+				gkSeg.destinationAirport === pnrSeg.destinationAirport &&
+				gkSeg.departureDate.parsed === pnrSeg.departureDate.parsed.slice('2019-'.length)
+			)[0];
+	};
+
 	/** replace GK segments with $segments */
-	const rebookGkSegments = async ($segments) => {
+	const rebookGkSegments = async ($segments, reservation = null) => {
 		let $marriageToSegs = Fp.groupMap(($seg) => $seg['marriage'], $segments);
 		let $failedSegNums = [];
 		for (let [$marriage, $segs] of $marriageToSegs) {
+			let records = $segs.map(gkSeg => {
+				let cls = gkSeg.bookingClass;
+				let segNum = gkSeg.segmentNumber;
+				// segmentNumber field is just order, not
+				// effective segment number in current PNR
+				if (reservation) {
+					let pnrSeg = findSegInPnr(gkSeg, reservation);
+					if (!pnrSeg) {
+						let msg = 'Failed to match GK segment #' + segNum + ' to resulting PNR';
+						let errorData = {gkSeg, itin: reservation.itinerary};
+						throw Rej.InternalServerError.makeExc(msg, errorData);
+					}
+					segNum = pnrSeg.segmentNumber;
+				}
+				return {segNum, cls};
+			});
 			let $chgClsCmd =
-				'X' + php.implode('+', php.array_column($segs, 'segmentNumber')) + '/' +
-				'0' + php.implode('+', $segs.map(($seg) => $seg['segmentNumber'] + $seg['bookingClass']));
+				'X' + php.implode('+', records.map(r => r.segNum)) + '/' +
+				'0' + php.implode('+', records.map(r => r.segNum + r.cls));
 			let $chgClsOutput = (await runCmd($chgClsCmd, true)).output;
 			if (!isSuccessRebookOutput($chgClsOutput)) {
 				$failedSegNums = php.array_merge($failedSegNums, php.array_column($segs, 'segmentNumber'));
@@ -306,12 +336,11 @@ let RunCmdRq = ({
 		return built;
 	};
 
-	/** @param $noMarriage - defines whether all segments should be booked together or with a separate command
-	 *                       each+ When you book them all at once, marriages are added, if separately - not */
+	/** @param {Boolean} $fallbackToGk - defines whether all segments should be booked together or with a separate command
+	 *                       each. When you book them all at once, marriages are added, if separately - not */
 	const bookItinerary = async ($itinerary, $fallbackToGk) => {
-		let $errors, $isGkRebookPossible, $newItinerary, $gkSegments, $result, $error,
+		let $isGkRebookPossible, $newItinerary, $gkSegments, $result, $error,
 			$failedSegNums, $sortResult;
-		$errors = [];
 		stateful.flushCalledCommands();
 		$isGkRebookPossible = ($seg) => {
 			return $fallbackToGk
@@ -334,19 +363,21 @@ let RunCmdRq = ({
 				'errors': [$error],
 			};
 		} else {
-			let $gkRebook = await rebookGkSegments($gkSegments);
+			let $gkRebook = await rebookGkSegments($gkSegments, $result.reservation);
+			let errors = [];
 			if (!php.empty($failedSegNums = $gkRebook['failedSegmentNumbers'])) {
-				$errors.push(Errors.getMessage(Errors.REBUILD_FALLBACK_TO_GK, {'segNums': php.implode(',', $failedSegNums)}));
+				errors.push(Errors.getMessage(Errors.REBUILD_FALLBACK_TO_GK, {'segNums': php.implode(',', $failedSegNums)}));
 			}
 			stateful.flushCalledCommands();
 			$sortResult = await processSortItinerary()
-				.catch(exc => ({errors: ['Did not SORT' + exc]}));
+				.catch(coverExc([Rej.NoContent], exc => ({errors: ['Did not SORT - ' + exc]})));
 			if (php.empty($sortResult['errors'])) {
-				return {'calledCommands': stateful.flushCalledCommands(), 'errors': $errors};
+				let calledCommands = stateful.flushCalledCommands().slice(-1);
+				return {calledCommands, errors};
 			} else {
 				let pnrDump = (await getCurrentPnr()).getDump();
 				let cmdRec = {cmd: '*R', output: pnrDump};
-				return {'calledCommands': [cmdRec], 'errors': $errors};
+				return {'calledCommands': [cmdRec], 'errors': errors};
 			}
 		}
 	};
@@ -428,8 +459,12 @@ let RunCmdRq = ({
 		$segNums = $data['segmentNumbers'];
 		$bookingClass = $data['bookingClass'] || null;
 		$departureDate = $data['departureDate'] || null;
+		let pnr = await getCurrentPnr();
+		let itinerary = pnr.getItinerary();
+		$segNums = $segNums.length > 0 ? $segNums :
+			itinerary.map(s => s.segmentNumber);
 		$newSegments = [];
-		for ($seg of Object.values((await getCurrentPnr()).getItinerary())) {
+		for ($seg of itinerary) {
 			if (php.in_array($seg['segmentNumber'], $segNums)) {
 				if ($bookingClass) {
 					$seg['bookingClass'] = $bookingClass;
@@ -1027,6 +1062,72 @@ let RunCmdRq = ({
 		};
 	};
 
+	// Command parser expects clean command and not
+	// output cmd that is preceded by >
+	const extractDCommandFromOutput = output => {
+		const match = output.match(/>(?<cmd>\$D[^ ]+)/m);
+		return match && match.groups.cmd || null;
+	};
+
+	/**
+	 * @param {String} cmd = '$DBWASV'
+	 * performs >$DBWASV20MAY25MAY;
+	 *
+	 * there is a >$DBWAS; format in GDS, but it does not preserve the 'V'-alidated
+	 * fare indicator, that's why we were asked to implement an alias that would not
+	 * require to retype the dates from last $D, but would still return _validated_ fares
+	 *
+	 * "validated" means that fare is allowed by our contracts, that usually define stuff
+	 * like MIN/MAX stay limitation, seasonality, advance purchase days limit, etc...
+	 */
+	const fareSearchValidatedChangeCity = async cmd => {
+		let parsed;
+
+		const previousDb = (await stateful.getLog().getLikeSql({
+			where: [
+				['area', '=', getSessionData().area],
+				['type', '=', 'fareSearch'],
+			],
+			limit: 1,
+		}))[0];
+
+		if (!previousDb) {
+			// emulates same message as in console
+			return {
+				calledCommands: [{cmd, output: 'NEED TARIFF DISPLAY'}],
+			};
+		}
+
+		// If shorthand command such as $D is used then cmd itself is useless,
+		// but we still can extract required data from command's output and that should
+		// be present in every request response
+		parsed = CommandParser.parseFareSearch(extractDCommandFromOutput(previousDb.output));
+
+		if (!parsed) {
+			// $D is as fallback in case if last fareSearch entry in DB is invalid
+			// (could happen if city code in last modification request is invalid)
+			// but fare search request in session is still valid
+			const dCmdOutput = await runCmd('$D');
+
+			parsed = CommandParser.parseFareSearch(extractDCommandFromOutput(dCmdOutput.output));
+
+			if (!parsed) {
+				return {
+					calledCommands: [{cmd, output: dCmdOutput.output}],
+				};
+			}
+		}
+
+		// Return date can potentially be missing if fare is only in one direction
+		const newCommand = cmd + parsed.departureDate.raw + (parsed.returnDate ? parsed.returnDate.raw : '');
+
+		const res = await processRealCommand(newCommand);
+
+		return {
+			calledCommands: [res.cmdRec],
+		};
+	};
+
 	const processRequestedCommand = async (cmd) => {
 		let $alias, $mdaData, $limit, $cmdReal, $matches, $_, $plus, $seatAmount,
 			$segmentNumbers, $segmentStatus;
@@ -1093,8 +1194,8 @@ let RunCmdRq = ({
 			return {calledCommands: [cmdRec]};
 		} else if (!php.empty(reservation = await AliasParser.parseCmdAsPnr(cmd, stateful))) {
 			return bookPnr(reservation);
-		} else if (cmd === 'DEBUG-TRIGGER-MP-REMARK-DIALOG') {
-			return {actions: [{type: 'displayMpRemarkDialog'}]};
+		} else if ($alias.type === 'fareSearchValidatedChangeCity') {
+			return fareSearchValidatedChangeCity($alias.realCmd);
 		} else {
 			cmd = $alias['realCmd'];
 			let fetchAll = shouldFetchAll(cmd);

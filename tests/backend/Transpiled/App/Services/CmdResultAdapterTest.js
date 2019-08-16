@@ -571,8 +571,8 @@ class CmdResultAdapterTest extends require('../../../../../backend/Transpiled/Li
 					.filter(r => r.name === ruleName)[0])
 				.then(Lang.nonEmpty('Rule #' + ruleName + ' not available in stub data')),
 		};
-		let actual = await (new CmdResultAdapter(gds))
-			.formatOutput({cmdRq, calledCommands, HighlightRules});
+		let actual = await CmdResultAdapter
+			.formatOutput({gds, cmdRq, calledCommands, HighlightRules});
 		this.assertArrayElementsSubset(expected, actual);
 	}
 

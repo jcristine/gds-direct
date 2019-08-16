@@ -12,86 +12,85 @@ let makeBriefSessionInfo = (fullState) => {
 	});
 };
 
+const highlightError =  ($output) => {
+	return color($output, 'errorMessage');
+};
+
+const highlightWarning =  ($output) => {
+	return color($output, 'warningMessage');
+};
+
+const color =  ($string, $class) => {
+	$string = sprintf('[[;%s;%s;%s]%s]', '', '', $class, trim(str_replace(']', '\\]', $string)));
+	return $string;
+};
+
+const clearOutput =  ($output) => {
+	$output = rtrim(preg_replace(/(\)><|><)$/, '', $output));
+	return $output;
+};
+
+/** Append output by custom strings */
+const appendOutput = ($output, $messages) => {
+	return $output + ($messages || []).reduce((acc, message) => {
+		if(message.type === 'error') {
+			acc += PHP_EOL + highlightError(message.text);
+		}
+
+		if(message.type === 'info') {
+			acc += PHP_EOL + highlightWarning(message.text);
+		}
+
+		return acc;
+	}, '');
+};
+
+const formatOutput = async ({
+	cmdRq, calledCommands, gds,
+	HighlightRules = require('../../../Repositories/HighlightRules.js'),
+}) => {
+	let output = '';
+	let appliedRules = [];
+	for (let [$index, $row] of Object.entries(calledCommands)) {
+		let svc = new TerminalHighlightService({HighlightRules});
+		let $command;
+		if ($index > 0) {
+			let $separator = strcasecmp('*', trim($row['output'])) ? PHP_EOL : "&nbsp;";
+			$command = PHP_EOL + color("&gt;" + $row['cmd'], 'usedCommand') + $separator;
+		} else {
+			$command = '';
+			if (cmdRq.toUpperCase() !== $row['cmd'].toUpperCase()) {
+				$command += PHP_EOL + color("&gt;" + $row['cmd'], 'usedCommand') + PHP_EOL;
+			}
+		}
+		let scrolledCmd = $row.scrolledCmd || $row.cmd;
+		let highlighted = await svc.replace(scrolledCmd, gds, clearOutput($row['output']));
+		output += $command + highlighted;
+		appliedRules.push(...svc.getAppliedRules());
+	}
+	return {output, appliedRules};
+};
+
 /**
  * takes terminal command result in generic any-GDS
  * format and transforms it to the format frontend expects
+ *
+ * would be nice to move this format transformation
+ * and highlighting to frontend at some point...
+ *
+ * @param {String} cmdRq - the command entered by agent; if it matches
+ *  the actually called command, the latter won't be included in final output
+ * @param {{
+ *     calledCommands: [{cmd: '$BB0/*JCB/CUA', output: 'NO VALID FARE FOR INPUT CRITERIA\\n><'}],
+ *     actions?: [{type: 'displayMcoMask' | string, data: *}],
+ *     messages?: [{type: 'info' | 'error' | 'pop_up', text: string}],
+ * }} rbsResp
  */
-class CmdResultAdapter
-{
-	constructor(gds) {
-		this.gds = gds;
-	}
-
-	clearOutput($output) {
-		$output = rtrim(preg_replace(/(\)><|><)$/, '', $output));
-		return $output;
-	}
-
-	async formatOutput({
-		cmdRq, calledCommands,
-		HighlightRules = require('../../../Repositories/HighlightRules.js'),
-	}) {
-		let output = '';
-		let appliedRules = [];
-		for (let [$index, $row] of Object.entries(calledCommands)) {
-			let svc = new TerminalHighlightService({HighlightRules});
-			let $command;
-			if ($index > 0) {
-				let $separator = strcasecmp('*', trim($row['output'])) ? PHP_EOL : "&nbsp;";
-				$command = PHP_EOL + this.color("&gt;" + $row['cmd'], 'usedCommand') + $separator;
-			} else {
-				$command = '';
-				if (cmdRq.toUpperCase() !== $row['cmd'].toUpperCase()) {
-					$command += PHP_EOL + this.color("&gt;" + $row['cmd'], 'usedCommand') + PHP_EOL;
-				}
-			}
-			let scrolledCmd = $row.scrolledCmd || $row.cmd;
-			let highlighted = await svc.replace(scrolledCmd, this.gds, this.clearOutput($row['output']));
-			output += $command + highlighted;
-			appliedRules.push(...svc.getAppliedRules());
-		}
-		return {output, appliedRules};
-	}
-
-	/** Append output by custom strings */
-	appendOutput($output, $messages) {
-		let $errors = '';
-		if (!empty($messages['info'])) {
-			for (let $message of $messages['info']) {
-				$errors = PHP_EOL + this.highlightWarning($message);
-			}
-		}
-		if (!empty($messages['error'])) {
-			for (let $message of $messages['error']) {
-				$errors = PHP_EOL + this.highlightError($message);
-			}
-		}
-		return $output + $errors;
-	}
-
-	highlightError($output) {
-		return this.color($output, 'errorMessage');
-	}
-
-	highlightWarning($output) {
-		return this.color($output, 'warningMessage');
-	}
-
-	color($string, $class) {
-		$string = sprintf('[[;%s;%s;%s]%s]', '', '', $class, trim(str_replace(']', '\\]', $string)));
-		return $string;
-	}
-
-	/**
-	 * @param {String} cmdRq - the command entered by agent; if it matches
-	 *  the actually called command, the latter won't be included in final output
-	 * @param {{
-	 *     calledCommands: [{cmd: '$BB0/*JCB/CUA', output: 'NO VALID FARE FOR INPUT CRITERIA\\n><'}],
-	 *     actions?: [{type: 'displayMcoMask' | string, data: *}],
-	 *     messages?: [{type: 'info' | 'error' | 'pop_up', text: string}],
-	 * }} rbsResp
-	 */
-	addHighlighting(cmdRq, rbsResp, fullState = null) {
+const CmdResultAdapter = ({
+	gds, cmdRq, rbsResp, fullState = null,
+	HighlightRules = require('../../../Repositories/HighlightRules.js'),
+}) => {
+	const execute =  () => {
 		let {calledCommands, messages = []} = rbsResp;
 		let typeToMsgs = {};
 		for (let msgRec of messages) {
@@ -99,9 +98,10 @@ class CmdResultAdapter
 			typeToMsgs[msgRec.type].push(msgRec.text);
 		}
 		let sessionInfo = !fullState ? {} : makeBriefSessionInfo(fullState);
-		return this.formatOutput({cmdRq, calledCommands})
+		let whenFormatted = formatOutput({gds, cmdRq, calledCommands, HighlightRules});
+		return whenFormatted
 			.then(({output, appliedRules}) => {
-				output = this.appendOutput(output, typeToMsgs);
+				output = appendOutput(output, messages);
 				let cmdTimes = rbsResp.calledCommands.map(rec => rec.duration).filter(a => a);
 				return {
 					output: output || rbsResp.status,
@@ -122,7 +122,12 @@ class CmdResultAdapter
 					actions: rbsResp.actions || [],
 				};
 			});
-	}
-}
+	};
+
+	return execute();
+};
+
+/** exposing for tests */
+CmdResultAdapter.formatOutput = formatOutput;
 
 module.exports = CmdResultAdapter;

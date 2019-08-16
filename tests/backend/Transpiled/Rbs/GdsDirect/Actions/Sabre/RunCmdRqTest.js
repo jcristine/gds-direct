@@ -1899,6 +1899,7 @@ class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
 					getByAdultPtc: (adultPtc) => PtcFareFamilies.getByAdultPtcFrom(adultPtc, stubPtcFareFamilies),
 				},
 			}),
+			useXml: false,
 		});
 		$actual['sessionData'] = $session.getSessionData();
 

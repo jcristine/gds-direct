@@ -9,7 +9,7 @@ run-tests-dev:
     - production
   script:
     - npm ci
-    - node tests/run.js
+    - bash tests/run.sh
 
 run-tests-prod:
   tags:
@@ -19,4 +19,4 @@ run-tests-prod:
     - production
   script:
     - npm ci # install devDependencies
-    - node tests/run.js
+    - bash tests/run.sh

@@ -3,6 +3,7 @@ let {wrapExc} = require("../Utils/TmpLib.js");
 let {parseXml, escapeXml} = require('../GdsHelpers/CommonUtils.js');
 let Rej = require("klesun-node-tools/src/Rej.js");
 const LoginTimeOut = require("klesun-node-tools/src/Rej").LoginTimeOut;
+const SabreItinerary = require('./Transformers/SabreItinerary');
 
 /** @see https://sds.sabre.com/XTRANET_Access/sabre.htm */
 const decodeBinaryChars = (output) => {
@@ -224,11 +225,23 @@ const SabreClient = ({
 		});
 	};
 
+	const processPnr = async (gdsData, params) => {
+		const xml = SabreItinerary.buildItinaryXml(params);
+		const profileData = await getSabre(gdsData.profileName);
+		let soapEnvXml = makeContinueSoapEnvXml({
+			gdsData, payloadXml: xml, profileData, action: 'EnhancedAirBookRQ',
+		});
+
+		return sendRequest(soapEnvXml,
+			dom => SabreItinerary.parseItineraryXmlResponse(dom, params));
+	};
+
 	return {
 		startSession,
 		runCmd,
 		closeSession,
 		withSession,
+		processPnr,
 	};
 };
 

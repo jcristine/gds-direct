@@ -23,9 +23,6 @@ const provide_buildXml = () => {
 			'<SessionMods>',
 			"<AreaInfoReq/>",
 			'</SessionMods>',
-			'<PNRBFRetrieveMods>',
-			'<CurrentPNR/>',
-			'</PNRBFRetrieveMods>',
 			'<AirSegSellMods>',
 			'<AirSegSell>',
 			'<Vnd>AA</Vnd>',
@@ -42,6 +39,9 @@ const provide_buildXml = () => {
 			'<AvailDispType>G</AvailDispType>',
 			'</AirSegSell>',
 			'</AirSegSellMods>',
+			'<PNRBFRetrieveMods>',
+			'<CurrentPNR/>',
+			'</PNRBFRetrieveMods>',
 		].join(''),
 	});
 
@@ -74,9 +74,6 @@ const provide_buildXml = () => {
 			'<SessionMods>',
 			'<AreaInfoReq/>',
 			'</SessionMods>',
-			'<PNRBFRetrieveMods>',
-			'<CurrentPNR/>',
-			'</PNRBFRetrieveMods>',
 			'<AirSegSellMods>',
 			'<AirSegSell>',
 			'<Vnd>PR</Vnd>',
@@ -107,6 +104,9 @@ const provide_buildXml = () => {
 			'<AvailDispType>G</AvailDispType>',
 			'</AirSegSell>',
 			'</AirSegSellMods>',
+			'<PNRBFRetrieveMods>',
+			'<CurrentPNR/>',
+			'</PNRBFRetrieveMods>',
 		].join(''),
 	});
 
@@ -130,9 +130,6 @@ const provide_buildXml = () => {
 			'<SessionMods>',
 			"<AreaInfoReq/>",
 			'</SessionMods>',
-			'<PNRBFRetrieveMods>',
-			'<CurrentPNR/>',
-			'</PNRBFRetrieveMods>',
 			'<AirSegSellMods>',
 			'<AirSegSell>',
 			'<Vnd>AA</Vnd>',
@@ -149,6 +146,9 @@ const provide_buildXml = () => {
 			'<AvailDispType>G</AvailDispType>',
 			'</AirSegSell>',
 			'</AirSegSellMods>',
+			'<PNRBFRetrieveMods>',
+			'<CurrentPNR/>',
+			'</PNRBFRetrieveMods>',
 		].join(''),
 	});
 
@@ -173,11 +173,6 @@ const provide_buildXml = () => {
 			'<SessionMods>',
 			"<AreaInfoReq/>",
 			'</SessionMods>',
-			'<PNRBFRetrieveMods>',
-			'<PNRAddr>',
-			'<RecLoc>something</RecLoc>',
-			'</PNRAddr>',
-			'</PNRBFRetrieveMods>',
 			'<AirSegSellMods>',
 			'<AirSegSell>',
 			'<Vnd>AA</Vnd>',
@@ -194,6 +189,11 @@ const provide_buildXml = () => {
 			'<AvailDispType>G</AvailDispType>',
 			'</AirSegSell>',
 			'</AirSegSellMods>',
+			'<PNRBFRetrieveMods>',
+			'<PNRAddr>',
+			'<RecLoc>something</RecLoc>',
+			'</PNRAddr>',
+			'</PNRBFRetrieveMods>',
 		].join(''),
 	});
 

@@ -5,12 +5,12 @@ const StringUtil = require('../../Lib/Utils/StringUtil.js');
 const AbstractGdsAction = require('./AbstractGdsAction.js');
 const php = require('../../phpDeprecated.js');
 const AirAvailabilityParser = require('../../Gds/Parsers/Sabre/AirAvailabilityParser.js');
-const matchAll = require("../../../Utils/Str").matchAll;
-
+const matchAll = require('../../../Utils/Str').matchAll;
+const SabreClient = require('../../../GdsClients/SabreClient');
 
 // 'D7 F7 A7 J7 R7 I7 W7 P7 Y47* H47* K47* M47* L47* G47* V47* S47* N47* Q47* O47*-*WL'
 // 'D7 F7 A7 J7 R7 I7 W7 P7 Y75* H75* K75* M75* L75* G75* V75* S75* N75* Q75* O75*-*WL'
-let parseWaitlist = (output) => {
+let parseWaitlist = output => {
 	let clsReg = /([A-Z])([A-Z0-9])([A-Z0-9]|)(\*)?\s*/;
 	let fullReg = new RegExp('^((?:' + clsReg.source + ')*)-\\*WL$');
 	let match = output.match(fullReg);
@@ -29,9 +29,12 @@ let parseWaitlist = (output) => {
 };
 
 class SabreBuildItineraryAction extends AbstractGdsAction {
-	constructor() {
+	constructor({
+		sabre = SabreClient.makeCustom(),
+	} = {}) {
 		super();
-		this.$useXml = false;
+		this.$useXml = true;
+		this.sabre = sabre;
 	}
 
 	useXml($flag) {
@@ -43,7 +46,7 @@ class SabreBuildItineraryAction extends AbstractGdsAction {
 	async executeViaTerminal($itinerary, $isParserFormat) {
 		let $i, $segment, $cmd, $output, $errorType, $tplData, waitlist;
 
-		$itinerary = Fp.map(($segment) => {
+		$itinerary = Fp.map($segment => {
 			let $date = $isParserFormat
 				? $segment['departureDate']['raw']
 				: this.constructor.formatSabreDate($segment['departureDate']);
@@ -72,7 +75,11 @@ class SabreBuildItineraryAction extends AbstractGdsAction {
 					'waitlist': waitlist,
 					'response': php.trim($output),
 				};
-				return {'success': false, 'errorType': $errorType, 'errorData': $tplData};
+				return {
+					'success': false,
+					'errorType': $errorType,
+					'errorData': $tplData,
+				};
 			}
 		}
 		// a workaround for Sabre CONTINUE WITH PNR CREATION auto-claim bug
@@ -82,42 +89,42 @@ class SabreBuildItineraryAction extends AbstractGdsAction {
 		return {'success': true, pnrCmdRec};
 	}
 
-	executeViaXml($itinerary, $isParserFormat) {
-		let $startDt, $params, $gtlResult, $funcResult, $errorData;
+	async executeViaXml(itinerary, isParserFormat) {
+		const startDt = php.is_callable(this.session.getStartDt) ? this.session.getStartDt() : php.date('Y-m-d');
 
-		$startDt = php.is_callable(this.session.getStartDt) ? this.session.getStartDt() : php.date('Y-m-d');
+		const params = {
+			addAirSegments: itinerary.map(seg => {
+				const departureDt = !isParserFormat ? seg.departureDate :
+					DateTime.decodeRelativeDateInFuture(seg.departureDate.parsed, startDt);
 
-		$params = {
-			'addAirSegments': Fp.map(($seg) => {
-				let $departureDt;
-
-				$departureDt = !$isParserFormat ? $seg['departureDate'] :
-					DateTime.decodeRelativeDateInFuture($seg['departureDate']['parsed'], $startDt);
 				return {
-					'airline': $seg['airline'],
-					'flightNumber': $seg['flightNumber'],
-					'bookingClass': $seg['bookingClass'],
-					'departureDt': $departureDt,
-					'destinationDt': null, // needed if times specified
-					'departureAirport': $seg['departureAirport'],
-					'destinationAirport': $seg['destinationAirport'],
-					'segmentStatus': $seg['segmentStatus'],
-					'seatCount': $seg['seatCount'],
+					airline: seg.airline,
+					flightNumber: seg.flightNumber,
+					bookingClass: seg.bookingClass,
+					departureDt: departureDt,
+					destinationDt: null, // needed if times specified
+					departureAirport: seg.departureAirport,
+					destinationAirport: seg.destinationAirport,
+					segmentStatus: seg.segmentStatus,
+					seatCount: seg.seatCount,
 				};
-			}, $itinerary),
+			}),
 		};
-		this.log('Xml params: (addAirSegments())', $params);
-		$gtlResult = this.getSabre().addAirSegments($params);
-		$funcResult = $gtlResult.isOk() ? $gtlResult.unwrap() :
-			(($gtlResult.$error.$rpcResult || {})['result']);
-		this.log('Xml result: (addSabreAirSegments())', $funcResult);
-		if ($gtlResult.isOk()) {
-			return {'success': true};
-		} else {
-			this.log('ERROR: Failed to sell segments via XML: ' + $gtlResult.$error.getMessage());
-			$errorData = {'response': $gtlResult.$error.getMessage()};
-			return {'success': false, 'errorType': this.constructor.ERROR_MULTISEGMENT, 'errorData': $errorData};
+
+		const result = await this.sabre.processPnr(this.session.getGdsData(), params);
+
+		if(result.error) {
+			return {
+				success: false,
+				airSegmentCount: result.newAirSegments.length,
+				errorType: this.constructor.ERROR_MULTISEGMENT, 'errorData': result.error,
+			};
 		}
+
+		return {
+			success: true,
+			airSegmentCount: result.newAirSegments.length,
+		};
 	}
 
 	static isOutputValid($output) {
@@ -152,7 +159,6 @@ class SabreBuildItineraryAction extends AbstractGdsAction {
 
 	/** @param $itinerary = ItineraryParser::parse() */
 	async execute($itinerary, $isParserFormat = true) {
-
 		if (this.$useXml) {
 			return this.executeViaXml($itinerary, $isParserFormat);
 		} else {

@@ -70,118 +70,130 @@ const forgeViewAreasDump = ($sessionData, $areasFromDb) => {
 	return php.implode(php.PHP_EOL, $lines);
 };
 
+const doesStorePnr = ($cmd) => {
+	let $parsedCmd, $flatCmds, $cmdTypes;
+
+	$parsedCmd = CommandParser.parse($cmd);
+	$flatCmds = php.array_merge([$parsedCmd], $parsedCmd['followingCommands'] || []);
+	$cmdTypes = php.array_column($flatCmds, 'type');
+	return !php.empty(php.array_intersect($cmdTypes, ['storePnr', 'storeKeepPnr']));
+};
+
+const doesOpenPnr = ($cmd) => {
+	let $parsedCmd;
+
+	$parsedCmd = CommandParser.parse($cmd);
+	return php.in_array($parsedCmd['type'], ['openPnr', 'searchPnr', 'displayPnrFromList']);
+};
+
+const formatGtlPccError = ($exc, pcc) => {
+	let prefix = 'Failed to start session with PCC ' + pcc + ' - ';
+	if (php.preg_match(/\bSoapFault: *11|\Session\b/, ($exc.message || ''))) {
+		return Rej.BadRequest('Invalid PCC');
+	} else {
+		return UnprocessableEntity(prefix + 'Unexpected GTL error - ' + php.preg_replace(/\s+/, ' ', php.substr($exc.message || '', -100)));
+	}
+};
+
+const isSaveConfirmationRequired = ($output) => {
+	let $regex;
+
+	// '/',
+	// 'WARNING: CHECK TICKETING DATE',
+	// 'WARNING: PS REQUIRES TICKET ON OR BEFORE 19SEP:1900/S2-3',
+	$regex =
+		'/^' +
+		'\\s*\\/\\s*' +
+		'(\\s*WARNING: .*\\s*)+' +
+		'$/';
+	return php.preg_match($regex, $output);
+};
+
+const isOkXeOutput = ($output) => {
+	let $parsedPnr;
+
+	$parsedPnr = PnrParser.parse($output);
+	return $parsedPnr['success']
+		|| php.preg_match(/^(WARNING: .*\n)*\s*\/\s*ITINERARY CANCELLED\s*$/, $output);
+};
+
+const isOkFxdOutput = ($output) => {
+	let $pager;
+
+	$pager = AmadeusUtil.parseRtPager($output);
+	return $pager['hasPageMark']; // error responses don't have it
+};
+
+const countsAsFxd = ($cmd, $output) => {
+	let $cmdType;
+
+	$cmdType = CommandParser.parse($cmd)['type'];
+	return php.in_array($cmdType, CommonDataHelper.getCountedFsCommands())
+		&& isOkFxdOutput($output);
+};
+
+// '+4', '+4S3', '+4S1-3GK'
+const parseSeatIncreasePseudoCmd = ($cmd) => {
+	let $regex, $matches;
+
+	$regex =
+		'/^\\+' +
+		'(?<seatAmount>\\d+)' +
+		'(S' +
+		'(?<segNumStart>\\d+)' +
+		'(-(?<segNumEnd>\\d+))?' +
+		')?' +
+		'(?<segmentStatus>[A-Z]{2})?' +
+		'$/';
+	if (php.preg_match($regex, $cmd, $matches = [])) {
+		return {
+			'seatAmount': $matches['seatAmount'],
+			'segNumStart': $matches['segNumStart'] || '' || null,
+			'segNumEnd': $matches['segNumEnd'] || '' || null,
+			'segmentStatus': $matches['segmentStatus'] || '' || null,
+		};
+	} else {
+		return null;
+	}
+};
+
+const transformBuildError = ($result) => {
+	let $cmsMessageType;
+
+	if (!$result['success']) {
+		$cmsMessageType = ({
+			[AmadeusBuildItineraryAction.ERROR_GDS_ERROR]: Errors.REBUILD_GDS_ERROR,
+			[AmadeusBuildItineraryAction.ERROR_NO_AVAIL]: Errors.REBUILD_NO_AVAIL,
+		} || {})[$result['errorType']] || $result['errorType'];
+		return Errors.getMessage($cmsMessageType, $result['errorData']);
+	} else {
+		return null;
+	}
+};
+
+const translateApolloPricingModifiers = ($apolloMods) => {
+	let $mods, $rSubMods, $apolloMod;
+
+	$mods = [];
+	$rSubMods = [];
+	for ($apolloMod of Object.values($apolloMods)) {
+		if ($apolloMod['type'] === 'validatingCarrier') {
+			$rSubMods.push('VC-' + $apolloMod['parsed']);
+		} else {
+			return Rej.NotImplemented('Unsupported modifier - ' + $apolloMod.raw);
+		}
+	}
+	return {'mods': $mods, 'rSubMods': $rSubMods};
+};
+
 /** @param stateful = await require('StatefulSession.js')() */
 let execute = ({
 	stateful, cmdRq,
 	PtcUtil = require('../../../../Rbs/Process/Common/PtcUtil.js'),
-	amadeusClient = AmadeusClient,
+	amadeus = AmadeusClient,
 }) => {
 
-class RunCmdRq {
-	constructor() {
-		this.$log = ($msg, $data) => {};
-	}
-
-	setLog($log) {
-		this.$log = $log;
-		return this;
-	}
-
-	log($msg, $data) {
-		let $log;
-
-		$log = this.$log;
-		$log($msg, $data);
-	}
-
-	static doesStorePnr($cmd) {
-		let $parsedCmd, $flatCmds, $cmdTypes;
-
-		$parsedCmd = CommandParser.parse($cmd);
-		$flatCmds = php.array_merge([$parsedCmd], $parsedCmd['followingCommands'] || []);
-		$cmdTypes = php.array_column($flatCmds, 'type');
-		return !php.empty(php.array_intersect($cmdTypes, ['storePnr', 'storeKeepPnr']));
-	}
-
-	static doesOpenPnr($cmd) {
-		let $parsedCmd;
-
-		$parsedCmd = CommandParser.parse($cmd);
-		return php.in_array($parsedCmd['type'], ['openPnr', 'searchPnr', 'displayPnrFromList']);
-	}
-
-	static formatGtlPccError($exc, pcc) {
-		let prefix = 'Failed to start session with PCC ' + pcc + ' - ';
-		if (php.preg_match(/\bSoapFault: *11|\Session\b/, ($exc.message || ''))) {
-			return Rej.BadRequest('Invalid PCC');
-		} else {
-			return UnprocessableEntity(prefix + 'Unexpected GTL error - ' + php.preg_replace(/\s+/, ' ', php.substr($exc.message || '', -100)));
-		}
-	}
-
-	static isSaveConfirmationRequired($output) {
-		let $regex;
-
-		// '/',
-		// 'WARNING: CHECK TICKETING DATE',
-		// 'WARNING: PS REQUIRES TICKET ON OR BEFORE 19SEP:1900/S2-3',
-		$regex =
-			'/^' +
-			'\\s*\\/\\s*' +
-			'(\\s*WARNING: .*\\s*)+' +
-			'$/';
-		return php.preg_match($regex, $output);
-	}
-
-	static isOkXeOutput($output) {
-		let $parsedPnr;
-
-		$parsedPnr = PnrParser.parse($output);
-		return $parsedPnr['success']
-			|| php.preg_match(/^(WARNING: .*\n)*\s*\/\s*ITINERARY CANCELLED\s*$/, $output);
-	}
-
-	static isOkFxdOutput($output) {
-		let $pager;
-
-		$pager = AmadeusUtil.parseRtPager($output);
-		return $pager['hasPageMark']; // error responses don't have it
-	}
-
-	static countsAsFxd($cmd, $output) {
-		let $cmdType;
-
-		$cmdType = CommandParser.parse($cmd)['type'];
-		return php.in_array($cmdType, CommonDataHelper.getCountedFsCommands())
-			&& this.isOkFxdOutput($output);
-	}
-
-	// '+4', '+4S3', '+4S1-3GK'
-	static parseSeatIncreasePseudoCmd($cmd) {
-		let $regex, $matches;
-
-		$regex =
-			'/^\\+' +
-			'(?<seatAmount>\\d+)' +
-			'(S' +
-			'(?<segNumStart>\\d+)' +
-			'(-(?<segNumEnd>\\d+))?' +
-			')?' +
-			'(?<segmentStatus>[A-Z]{2})?' +
-			'$/';
-		if (php.preg_match($regex, $cmd, $matches = [])) {
-			return {
-				'seatAmount': $matches['seatAmount'],
-				'segNumStart': $matches['segNumStart'] || '' || null,
-				'segNumEnd': $matches['segNumEnd'] || '' || null,
-				'segmentStatus': $matches['segmentStatus'] || '' || null,
-			};
-		} else {
-			return null;
-		}
-	}
-
-	async makeCreatedForCmdIfNeeded() {
+	const makeCreatedForCmdIfNeeded = async () => {
 		let $cmdLog, $sessionData, $remarkCmd, $flattenCmd, $performedCmds, $flatPerformedCmds;
 
 		$cmdLog = stateful.getLog();
@@ -201,58 +213,58 @@ class RunCmdRq {
 			}
 		}
 		return null;
-	}
+	};
 
-	async makeTopRemarkCmdIfNeeded() {
+	const makeTopRemarkCmdIfNeeded = async () => {
 		let $cmdLog, $sessionData, $performedCmds, $msg, $cmd;
 
 		$cmdLog = stateful.getLog();
 		$sessionData = $cmdLog.getSessionData();
 		if (!$sessionData['isPnrStored']) {
 			$performedCmds = php.array_column(await $cmdLog.getCurrentPnrCommands(), 'cmd');
-			$msg = 'CREATED IN GDS DIRECT BY ' + php.strtoupper(this.getAgent().getLogin());
+			$msg = 'CREATED IN GDS DIRECT BY ' + php.strtoupper(getAgent().getLogin());
 			$cmd = 'UHP/' + $msg;
 			if (!php.in_array($cmd, $performedCmds)) {
 				return $cmd;
 			}
 		}
 		return null;
-	}
+	};
 
-	getAgent() {
+	const getAgent =  () => {
 		return stateful.getAgent();
-	}
+	};
 
 	/** @return Agent|null */
-	getLeadAgent() {
+	const getLeadAgent =  () => {
 		return stateful.getLeadAgent();
-	}
+	};
 
-	getSessionData() {
+	const getSessionData =  () => {
 		return stateful.getSessionData();
-	}
+	};
 
-	handlePnrSave($recordLocator) {
+	const handlePnrSave =  ($recordLocator) => {
 		stateful.handlePnrSave($recordLocator);
-	}
+	};
 
-	async moveDownAll($limit) {
+	const moveDownAll = async ($limit) => {
 		let $pageLimit = $limit || 100;
 		let $result = await (new MoveDownAllAction())
 			.setSession(stateful)
 			.execute(stateful.getLog(), $pageLimit);
 		$result['calledCommands'] = Fp.map(($cmdRec) => {
-			return this.modifyOutput($cmdRec);
+			return modifyOutput($cmdRec);
 		}, $result['calledCommands'] || []);
 		return $result;
-	}
+	};
 
-	async runAndMoveDownAll($cmdReal, $limit) {
+	const runAndMoveDownAll = async ($cmdReal, $limit) => {
 		let $result, $moved;
 
-		$result = await this.processRealCommand($cmdReal);
+		$result = await processRealCommand($cmdReal);
 		if (php.empty($result['errors'])) {
-			$moved = await this.moveDownAll($limit);
+			$moved = await moveDownAll($limit);
 			if (php.empty($moved['errors'])) {
 				$result['calledCommands'] = $moved['calledCommands'];
 			}
@@ -263,25 +275,25 @@ class RunCmdRq {
 			$result['errors'] = $moved['errors'] || [];
 		}
 		return $result;
-	}
+	};
 
-	async processSavePnr() {
+	const processSavePnr = async () => {
 		let $calledCommands, $pnr, $errors, $login, $cmd, $writeCommands, $output, $parsedStoredPnr, $rloc;
 
 		$calledCommands = [];
 
-		$pnr = await this.getCurrentPnr();
+		$pnr = await getCurrentPnr();
 		if (!CommonDataHelper.isValidPnr($pnr)) {
 			return {'errors': [Errors.getMessage(Errors.INVALID_PNR, {'response': php.trim($pnr.getDump())})]};
 		} else if (!php.empty($errors = CommonDataHelper.checkSeatCount($pnr))) {
 			return {'errors': $errors};
 		}
 
-		$login = this.getAgent().getLogin();
+		$login = getAgent().getLogin();
 
-		if ($cmd = await this.makeTopRemarkCmdIfNeeded()) {
+		if ($cmd = await makeTopRemarkCmdIfNeeded()) {
 			// not joinable
-			await this.runCommand($cmd);
+			await runCommand($cmd);
 		}
 		$writeCommands = [
 			// phone number will be added automatically
@@ -290,54 +302,54 @@ class RunCmdRq {
 			'RF' + php.strtoupper($login), // received from
 			'ER',
 		];
-		if ($cmd = await this.makeCreatedForCmdIfNeeded()) {
+		if ($cmd = await makeCreatedForCmdIfNeeded()) {
 			php.array_unshift($writeCommands, $cmd);
 		}
 
 		$cmd = php.implode(';', $writeCommands);
-		$output = await this.amadeusRt($cmd);
+		$output = await amadeusRt($cmd);
 
-		if (this.constructor.isSaveConfirmationRequired($output)) {
+		if (isSaveConfirmationRequired($output)) {
 			$calledCommands.push({'cmd': 'ER', 'output': $output});
-			$output = await this.amadeusRt('ER');
+			$output = await amadeusRt('ER');
 		}
 		$parsedStoredPnr = PnrParser.parse($output);
 		if ($rloc = (($parsedStoredPnr['parsed'] || {})['pnrInfo'] || {})['recordLocator']) {
-			this.handlePnrSave($rloc);
+			handlePnrSave($rloc);
 		}
 
 		$calledCommands.push({'cmd': 'PNR', 'output': $output});
 		return {'calledCommands': $calledCommands};
-	}
+	};
 
-	async processSortItinerary() {
+	const processSortItinerary = async () => {
 		let $pnr, $pnrDump,
 			$calledCommands, $cmd;
 
-		$pnr = await this.getCurrentPnr();
+		$pnr = await getCurrentPnr();
 		$pnrDump = $pnr.getDump();
 		let {itinerary} = await CommonDataHelper.sortSegmentsByUtc($pnr, stateful.getGeoProvider());
 
 		$calledCommands = [];
 		$cmd = 'RS' + itinerary.map(s => s.segmentNumber).join(',');
-		let output = await this.runCommand($cmd);
+		let output = await runCommand($cmd);
 		$calledCommands.push({cmd: $cmd, output});
 		return {'calledCommands': $calledCommands};
-	}
+	};
 
-	async startNewAreaSession(area, pcc = null) {
+	const startNewAreaSession = async (area, pcc = null) => {
 		let $row = makeDefaultAreaState('amadeus');
 		pcc = pcc || $row.pcc;
 		$row.area = area;
 		$row.pcc = pcc;
-		$row.gdsData = await amadeusClient.startSession({
+		$row.gdsData = await amadeus.startSession({
 			profileName: GdsProfiles.chooseAmaProfile($row.pcc),
 			pcc: pcc,
 		});
 		return $row;
-	}
+	};
 
-	async updateGdsData(newAreaState) {
+	const updateGdsData = async (newAreaState) => {
 		let fullState = stateful.getFullState();
 		fullState.areas[newAreaState.area] = newAreaState;
 		fullState.area = newAreaState.area;
@@ -346,9 +358,9 @@ class RunCmdRq {
 			stateful.updateGdsData(newAreaState.gdsData),
 		]);
 		return updated;
-	}
+	};
 
-	async changeArea($area) {
+	const changeArea = async ($area) => {
 		let $errorData, $areaRows, $isRequested, $row;
 
 		if (!php.in_array($area, AREA_LETTERS)) {
@@ -369,20 +381,20 @@ class RunCmdRq {
 			stateful.updateFullState(fullState);
 		}
 		if (!$row || !$row.gdsData) {
-			$row = await this.startNewAreaSession($area);
+			$row = await startNewAreaSession($area);
 		}
-		await this.updateGdsData($row);
+		await updateGdsData($row);
 
 		return {
 			'calledCommands': [],
 			'userMessages': ['Successfully changed area to ' + $area],
 		};
-	}
+	};
 
-	async deleteSegments($segNumStart, $segNumEnd) {
+	const deleteSegments = async ($segNumStart, $segNumEnd) => {
 		let $rtamDump, $itinerary, $xeCmd, $segNums, $matches, $matchedSegments, $xeOutput;
 
-		$rtamDump = await this.amadeusRt('RTAM');
+		$rtamDump = await amadeusRt('RTAM');
 		if (php.empty($itinerary = MarriageItineraryParser.parse($rtamDump))) {
 			return {'errors': [Errors.getMessage(Errors.ITINERARY_IS_EMPTY)]};
 		}
@@ -399,24 +411,24 @@ class RunCmdRq {
 			$xeCmd = 'XE' + php.implode(',', php.array_column($itinerary, 'lineNumber'));
 			$matchedSegments = $itinerary;
 		}
-		$xeOutput = await this.runCommand($xeCmd);
-		if (!this.constructor.isOkXeOutput($xeOutput)) {
+		$xeOutput = await runCommand($xeCmd);
+		if (!isOkXeOutput($xeOutput)) {
 			return {
 				'errors': ['Failed to delete segments - ' + $xeOutput],
 				'calledCommands': stateful.flushCalledCommands(),
 			};
 		}
 		return {'matchedSegments': $matchedSegments};
-	}
+	};
 
 	/** @param $params = ProcessAmadeusTerminalInputAction::parseSeatIncreasePseudoCmd() */
-	async processSeatIncrease($params) {
+	const processSeatIncrease = async ($params) => {
 		let $deleted, $matchedSegments, $i;
 
 		if ($params['seatAmount'] > 9) {
 			return {'errors': ['Seat amount must be a one-digit number']};
 		}
-		$deleted = await this.deleteSegments($params['segNumStart'], $params['segNumEnd']);
+		$deleted = await deleteSegments($params['segNumStart'], $params['segNumEnd']);
 		if (php.empty($matchedSegments = $deleted['matchedSegments'] || [])) {
 			return $deleted;
 		}
@@ -424,10 +436,10 @@ class RunCmdRq {
 			$matchedSegments[$i]['seatCount'] = $params['seatAmount'];
 			$matchedSegments[$i]['segmentStatus'] = $params['segmentStatus'];
 		}
-		return this.bookItinerary($matchedSegments, false);
-	}
+		return bookItinerary($matchedSegments, false);
+	};
 
-	async processCloneItinerary($aliasData) {
+	const processCloneItinerary = async ($aliasData) => {
 		let $pcc, $segmentStatus, $seatNumber, $pnrDump, $itinerary, $emptyAreas, $area, $result, $key, $segment;
 
 		$pcc = $aliasData['pcc'];
@@ -448,19 +460,19 @@ class RunCmdRq {
 			return {'errors': [Errors.getMessage(Errors.ITINERARY_IS_EMPTY)]};
 		}
 
-		if (php.empty($emptyAreas = this.getEmptyAreasFromDbState())) {
+		if (php.empty($emptyAreas = getEmptyAreasFromDbState())) {
 			return {'errors': [Errors.getMessage(Errors.NO_FREE_AREAS)]};
 		}
-		if (!this.getSessionData()['isPnrStored'] && !$aliasData['keepOriginal'] && $segmentStatus !== 'GK') {
-			await this.runCommand('IG'); // ignore the itinerary it initial area
+		if (!getSessionData()['isPnrStored'] && !$aliasData['keepOriginal'] && $segmentStatus !== 'GK') {
+			await runCommand('IG'); // ignore the itinerary it initial area
 		}
 		$area = $emptyAreas[0];
-		$result = await this.changeArea($area);
+		$result = await changeArea($area);
 		if (!php.empty($result['errors'])) {
 			return $result;
 		}
-		if (this.getSessionData()['pcc'] !== $pcc) {
-			$result = await this.changePcc($pcc);
+		if (getSessionData()['pcc'] !== $pcc) {
+			$result = await changePcc($pcc);
 			if (!php.empty($result['errors'])) {
 				return $result;
 			}
@@ -474,25 +486,11 @@ class RunCmdRq {
 			$itinerary[$key]['lineNumber'] = $key + 1;
 		}
 
-		return this.bookItinerary($itinerary, true);
-	}
-
-	static transformBuildError($result) {
-		let $cmsMessageType;
-
-		if (!$result['success']) {
-			$cmsMessageType = ({
-				[AmadeusBuildItineraryAction.ERROR_GDS_ERROR]: Errors.REBUILD_GDS_ERROR,
-				[AmadeusBuildItineraryAction.ERROR_NO_AVAIL]: Errors.REBUILD_NO_AVAIL,
-			} || {})[$result['errorType']] || $result['errorType'];
-			return Errors.getMessage($cmsMessageType, $result['errorData']);
-		} else {
-			return null;
-		}
-	}
+		return bookItinerary($itinerary, true);
+	};
 
 	/** @param $itinerary = MarriageItineraryParser::parse() */
-	async bookItinerary($itinerary, isNewPnr) {
+	const bookItinerary = async ($itinerary, isNewPnr) => {
 		let $errors, $i, $segment, $bookItinerary, $result, $error,
 			$segmentNumbers, $calledCommands;
 
@@ -514,7 +512,7 @@ class RunCmdRq {
 		$result = await (new AmadeusBuildItineraryAction())
 			.setSession(stateful).execute($bookItinerary, true);
 
-		if ($error = this.constructor.transformBuildError($result)) {
+		if ($error = transformBuildError($result)) {
 			$errors.push($error);
 		} else {
 			let $isActive = ($seg) => !php.in_array($seg['segmentStatus'], PASSIVE_STATUSES);
@@ -524,12 +522,12 @@ class RunCmdRq {
 			for (let [$marriage, $group] of $marriageGroups) {
 				if ($marriage > 0) {
 					$segmentNumbers = php.array_column($group, 'lineNumber');
-					if ($error = await this.rebookSegment($group[0]['bookingClass'], $segmentNumbers)) {
+					if ($error = await rebookSegment($group[0]['bookingClass'], $segmentNumbers)) {
 						$errors.push($error);
 					}
 				} else {
 					for ($segment of Object.values($group)) {
-						if ($error = await this.rebookSegment($segment['bookingClass'], [$segment['lineNumber']])) {
+						if ($error = await rebookSegment($segment['bookingClass'], [$segment['lineNumber']])) {
 							$errors.push($error);
 						}
 					}
@@ -544,9 +542,9 @@ class RunCmdRq {
 			],
 			'errors': $errors,
 		};
-	}
+	};
 
-	async bookPassengers(passengers) {
+	const bookPassengers = async (passengers) => {
 		let paxCmds = [];
 		for (let pax of passengers) {
 			let {lastName, nameNumber, firstName, ptc, dob} = pax;
@@ -565,11 +563,11 @@ class RunCmdRq {
 			}
 		}
 		let cmd = paxCmds.join(';');
-		let cmdRec = await this.runCmd(cmd);
+		let cmdRec = await runCmd(cmd);
 		return {calledCommands: [cmdRec], lastPaxNum: paxCmds.length};
-	}
+	};
 
-	async bookPnr(reservation) {
+	const bookPnr = async (reservation) => {
 		let lastPaxNum = 0;
 		let pcc = reservation.pcc || null;
 		let passengers = reservation.passengers || [];
@@ -578,33 +576,33 @@ class RunCmdRq {
 		let userMessages = [];
 		let calledCommands = [];
 
-		if (reservation.pcc && pcc !== this.getSessionData().pcc) {
-			let pccResult = await this.changePcc(pcc);
+		if (reservation.pcc && pcc !== getSessionData().pcc) {
+			let pccResult = await changePcc(pcc);
 			errors.push(...(pccResult.errors || []));
 			userMessages.push(...(pccResult.userMessages || []));
 			calledCommands.push(...(pccResult.calledCommands || []));
 		}
 		if (passengers.length > 0) {
 			itinerary = itinerary.map((s, i) => ({...s, segmentNumber: +lastPaxNum + +i + 1}));
-			let booked = await this.bookPassengers(passengers);
+			let booked = await bookPassengers(passengers);
 			lastPaxNum = booked.lastPaxNum || 0;
 			errors.push(...(booked.errors || []));
 			calledCommands.push(...(booked.calledCommands || []));
 		}
 		if (itinerary.length > 0) {
 			itinerary = itinerary.map((s, i) => ({...s, lineNumber: +lastPaxNum + +i + 1}));
-			let booked = await this.bookItinerary(itinerary, false);
+			let booked = await bookItinerary(itinerary, false);
 			errors.push(...(booked.errors || []));
 			calledCommands.push(...(booked.calledCommands || []));
 		}
 		return {errors: errors, userMessages: userMessages, calledCommands};
-	}
+	};
 
-	async rebookSegment($class, $lineNumbers) {
+	const rebookSegment = async ($class, $lineNumbers) => {
 		let $numberStr, $output, $parsed;
 
 		$numberStr = php.implode(',', $lineNumbers);
-		$output = await this.runCommand('SB' + $class + $numberStr);
+		$output = await runCommand('SB' + $class + $numberStr);
 		$parsed = PnrParser.parse($output);
 		if (!$parsed['success']) {
 			if (AmadeusBuildItineraryAction.isAvailabilityOutput($output)) {
@@ -619,18 +617,18 @@ class RunCmdRq {
 			}
 		}
 		return null;
-	}
+	};
 
-	async rebookAsSs() {
+	const rebookAsSs = async () => {
 		let $gkSegments, $newSegments, $result, $calledCommands, $error;
 
 		stateful.flushCalledCommands();
-		$gkSegments = (await this.getCurrentPnr()).getItinerary()
-			.filter(($seg) => $seg['segmentStatus'] === 'GK',);
+		$gkSegments = (await getCurrentPnr()).getItinerary()
+			.filter(($seg) => $seg['segmentStatus'] === 'GK');
 		if (php.empty($gkSegments)) {
 			return {'errors': ['No GK segments']};
 		}
-		await this.runCommand('XE' + php.implode(',', php.array_column($gkSegments, 'lineNumber')));
+		await runCommand('XE' + php.implode(',', php.array_column($gkSegments, 'lineNumber')));
 		$newSegments = Fp.map(($seg) => {
 			$seg['segmentStatus'] = '';
 			return $seg;
@@ -639,7 +637,7 @@ class RunCmdRq {
 			.setSession(stateful).execute($newSegments, true);
 
 		$calledCommands = stateful.flushCalledCommands();
-		if ($error = this.constructor.transformBuildError($result)) {
+		if ($error = transformBuildError($result)) {
 			return {
 				'calledCommands': $calledCommands,
 				'errors': [$error],
@@ -651,41 +649,26 @@ class RunCmdRq {
 				],
 			};
 		}
-	}
+	};
 
-	getMultiPccTariffDisplay($realCmd) {
+	const getMultiPccTariffDisplay =  ($realCmd) => {
 		return (new GetMultiPccTariffDisplayAction())
 			.execute($realCmd, stateful);
-	}
+	};
 
-	async needsRp($cmd, $output, $pnr) {
+	const needsRp = async ($cmd, $output, $pnr) => {
 		let $parsed = FxParser.parse($output);
 		if (($parsed['type']) === 'ptcList') {
-			$output = (await AmadeusUtil.fetchAllFx('FQQ1', this)).output;
+			$output = (await AmadeusUtil.fetchAllFx('FQQ1', stateful)).output;
 		}
 		if (php.isset($parsed['error'])) {
 			return false;
 		}
 		let rbsInfo = await getRbsPqInfo($pnr.getDump(), $output, 'amadeus').catch(exc => ({}));
 		return rbsInfo.isPrivateFare && rbsInfo.isBrokenFare;
-	}
+	};
 
-	static async translateApolloPricingModifiers($apolloMods) {
-		let $mods, $rSubMods, $apolloMod;
-
-		$mods = [];
-		$rSubMods = [];
-		for ($apolloMod of Object.values($apolloMods)) {
-			if ($apolloMod['type'] === 'validatingCarrier') {
-				$rSubMods.push('VC-' + $apolloMod['parsed']);
-			} else {
-				return Rej.NotImplemented('Unsupported modifier - ' + $apolloMod.raw);
-			}
-		}
-		return {'mods': $mods, 'rSubMods': $rSubMods};
-	}
-
-	async makeStorePricingCmd($pnr, $aliasData, $needsRp) {
+	const makeStorePricingCmd = async ($pnr, $aliasData, $needsRp) => {
 		let $adultPtc, $modRec, $tripEndDate, $tripEndDt, $paxStores, $pax, $paxMods, $error, $rMod,
 			$rSubMod, $mod;
 
@@ -693,7 +676,7 @@ class RunCmdRq {
 		if ($needsRp && $adultPtc === 'ITX') {
 			$adultPtc = 'ADT';
 		}
-		$modRec = await this.constructor.translateApolloPricingModifiers($aliasData['pricingModifiers']);
+		$modRec = await translateApolloPricingModifiers($aliasData['pricingModifiers']);
 
 		$tripEndDate = ((ArrayUtil.getLast($pnr.getItinerary()) || {})['departureDate'] || {})['parsed'];
 		$tripEndDt = $tripEndDate ? DateTime.decodeRelativeDateInFuture($tripEndDate, stateful.getStartDt()) : null;
@@ -718,12 +701,11 @@ class RunCmdRq {
 			$paxStores.push(php.implode('/', $paxMods));
 		}
 		return 'FXP/' + $paxStores.join('//');
-	}
+	};
 
-	async makePriceAllCmd(aliasData) {
+	const makePriceAllCmd = async (aliasData) => {
 		let {ptcs, pricingModifiers = []} = aliasData;
-		let {mods, rSubMods} = await this.constructor
-			.translateApolloPricingModifiers(pricingModifiers);
+		let {mods, rSubMods} = await translateApolloPricingModifiers(pricingModifiers);
 		let rawMods = [];
 		let rMod = 'R' + ptcs.join('*') +
 			rSubMods.map(s => ',' + s).join('');
@@ -732,39 +714,39 @@ class RunCmdRq {
 		// proper way would be to use >FXA; (analog of $BB), not >FXX; (analog
 		// of $B), but the former does not allow pricing multiple passengers
 		return 'FXX' + rawMods.map(m => '/' + m).join('');
-	}
+	};
 
-	async storePricing($aliasData) {
+	const storePricing = async ($aliasData) => {
 		let $pnr, $errors;
 
-		$pnr = await this.getCurrentPnr();
+		$pnr = await getCurrentPnr();
 		if (!php.empty($errors = CommonDataHelper.checkSeatCount($pnr))) {
 			return Rej.BadRequest('Invalid PNR - ' + $errors.join('; '));
 		}
-		let cmd = await this.makeStorePricingCmd($pnr, $aliasData, false);
-		let output = (await AmadeusUtil.fetchAllFx(cmd, this)).output;
+		let cmd = await makeStorePricingCmd($pnr, $aliasData, false);
+		let output = (await AmadeusUtil.fetchAllFx(cmd, stateful)).output;
 
-		if (await this.needsRp(cmd, output, $pnr)) {
+		if (await needsRp(cmd, output, $pnr)) {
 			// delete TST we just created, and re-price it with 'P'-ublished mod
-			await this.runCommand('TTE/ALL');
-			cmd = await this.makeStorePricingCmd($pnr, $aliasData, true);
-			output = await this.runCommand(cmd);
+			await runCommand('TTE/ALL');
+			cmd = await makeStorePricingCmd($pnr, $aliasData, true);
+			output = await runCommand(cmd);
 		}
 		return {calledCommands: [{cmd, output}]};
-	}
+	};
 
-	async priceAll(aliasData) {
-		let cmd = await this.makePriceAllCmd(aliasData);
+	const priceAll = async (aliasData) => {
+		let cmd = await makePriceAllCmd(aliasData);
 		let cmdData = PricingCmdParser.parse(cmd);
-		return this._fetchPricing(cmd, cmdData);
-	}
+		return _fetchPricing(cmd, cmdData);
+	};
 
-	async _fetchPricing(cmd, cmdData) {
+	const _fetchPricing = async (cmd, cmdData) => {
 		let shouldFetchAll = cmdData.baseCmd !== 'FXL'; // FXL = ignore availability
 		if (!shouldFetchAll) {
-			return this.processRealCommand(cmd);
+			return processRealCommand(cmd);
 		} else if (shouldFetchAll) {
-			let fxCmdRec = await AmadeusUtil.fetchAllFx(cmd, this);
+			let fxCmdRec = await AmadeusUtil.fetchAllFx(cmd, stateful);
 			let fxOutput = fxCmdRec.output;
 			let capturing = withCapture(stateful);
 			let pricing = await (new AmadeusGetPricingPtcBlocks())
@@ -774,64 +756,64 @@ class RunCmdRq {
 			cmdRecs = AmadeusUtil.collectFullCmdRecs(cmdRecs);
 			return {calledCommands: [fxCmdRec].concat(cmdRecs)};
 		}
-	}
+	};
 
-	getEmptyAreasFromDbState() {
+	const getEmptyAreasFromDbState =  () => {
 		let $isOccupied, $occupiedRows, $occupiedAreas;
 
 		$isOccupied = ($row) => $row['hasPnr'];
 		$occupiedRows = Fp.filter($isOccupied, stateful.getAreaRows());
 		$occupiedAreas = php.array_column($occupiedRows, 'area');
-		$occupiedAreas.push(this.getSessionData()['area']);
+		$occupiedAreas.push(getSessionData()['area']);
 		return php.array_values(php.array_diff(AREA_LETTERS, $occupiedAreas));
-	}
+	};
 
-	async changePcc($pcc) {
+	const changePcc = async (pcc) => {
 		let $calledCommands, $jdDump, $parsed;
 
 		$calledCommands = [];
 
-		if (stateful.getSessionData()['pcc'] === $pcc) {
-			return {'errors': [Errors.getMessage(Errors.ALREADY_IN_THIS_PCC, {'pcc': $pcc})]};
+		if (stateful.getSessionData()['pcc'] === pcc) {
+			return {'errors': [Errors.getMessage(Errors.ALREADY_IN_THIS_PCC, {'pcc': pcc})]};
 		}
 
 		// check that there is no PNR in session to match GDS behaviour
 		if (stateful.getSessionData().hasPnr) {
-			return {'errors': [Errors.getMessage(Errors.LEAVE_PNR_CONTEXT, {'pcc': $pcc})]};
+			return {'errors': [Errors.getMessage(Errors.LEAVE_PNR_CONTEXT, {'pcc': pcc})]};
 		}
 
-		let areaState = await this.startNewAreaSession(stateful.getSessionData().area, $pcc)
-			.catch(exc => this.constructor.formatGtlPccError(exc, $pcc));
+		let areaState = await startNewAreaSession(stateful.getSessionData().area, pcc)
+			.catch(exc => formatGtlPccError(exc, pcc));
 
 		areaState.cmdCnt = 1; // to not trigger default area PCC fallback later
 
 		// sometimes when you request invalid PCC, Amadeus fallbacks to
 		// SFO1S2195 - should call >JD; and check that PCC is what we requested
-		let jdCmdRec = await amadeusClient.runCmd({command: 'JD'}, areaState.gdsData);
+		let jdCmdRec = await amadeus.runCmd({command: 'JD'}, areaState.gdsData);
 		$jdDump = jdCmdRec.output;
 		$parsed = WorkAreaScreenParser.parse($jdDump);
-		if ($parsed['pcc'] !== $pcc) {
-			amadeusClient.closeSession(areaState.gdsData);
+		if ($parsed['pcc'] !== pcc) {
+			amadeus.closeSession(areaState.gdsData);
 			return {
 				'calledCommands': [{cmd: 'JD', output: $jdDump}],
-				'errors': ['Failed to change PCC - resulting PCC ' + $parsed['pcc'] + ' does not match requested PCC ' + $pcc],
+				'errors': ['Failed to change PCC - resulting PCC ' + $parsed['pcc'] + ' does not match requested PCC ' + pcc],
 			};
 		}
 
 		let oldGdsData = stateful.getGdsData();
-		await this.updateGdsData(areaState);
-		amadeusClient.closeSession(oldGdsData);
+		await updateGdsData(areaState);
+		amadeus.closeSession(oldGdsData);
 
 		return {
 			'calledCommands': $calledCommands,
-			'userMessages': ['Successfully changed PCC to ' + $pcc],
+			'userMessages': ['Successfully changed PCC to ' + pcc],
 		};
-	}
+	};
 
-	async _preprocessSameMonthReturnAvailability(day) {
+	const _preprocessSameMonthReturnAvailability = async (day) => {
 		let lastAvail = (await stateful.getLog().getLikeSql({
 			where: [
-				['area', '=', this.getSessionData().area],
+				['area', '=', getSessionData().area],
 				['type', '=', 'airAvailability'],
 				['is_mr', '=', false],
 			],
@@ -853,9 +835,9 @@ class RunCmdRq {
 			let month = flightDetails.departureDate.raw.slice(-3);
 			return 'ACR' + day + month;
 		}
-	}
+	};
 
-	async preprocessCommand($cmd) {
+	const preprocessCommand = async ($cmd) => {
 		let $lastCmdRec, $wasRtFormatPage, $pnr, aliasData;
 
 		if ($cmd === 'MD') {
@@ -870,56 +852,56 @@ class RunCmdRq {
 		} else if ($cmd === 'XI') {
 			// XI deletes GD- remark, so we replace it
 			// with XE2,3,4 to delete only segment lines
-			$pnr = await this.getCurrentPnr();
+			$pnr = await getCurrentPnr();
 			$cmd = 'XE' + php.implode(',', php.array_column($pnr.getItinerary(), 'lineNumber'));
 		} else if (aliasData = AliasParser.parseSameMonthReturnAvail($cmd)) {
-			$cmd = await this._preprocessSameMonthReturnAvailability(aliasData.days);
+			$cmd = await _preprocessSameMonthReturnAvailability(aliasData.days);
 		}
 		return $cmd;
-	}
+	};
 
-	async runCmd(cmd) {
+	const runCmd = async (cmd) => {
 		let cmdRec = await stateful.runCmd(cmd);
-		if (this.constructor.countsAsFxd(cmd, cmdRec.output)) {
+		if (countsAsFxd(cmd, cmdRec.output)) {
 			stateful.handleFsUsage();
 		}
 		return cmdRec;
-	}
+	};
 
 	// public for closures
-	async runCommand($cmd) {
-		return (await this.runCmd($cmd)).output;
-	}
+	const runCommand = async ($cmd) => {
+		return (await runCmd($cmd)).output;
+	};
 
-	async amadeusRt($cmd) {
+	const amadeusRt = async ($cmd) => {
 		return (await AmadeusUtil.fetchAllRt($cmd, stateful)).output;
-	}
+	};
 
-	async makeCmdMessages($cmd, $output) {
+	const makeCmdMessages = async ($cmd, $output) => {
 		let $userMessages, $type, $agent, $left, $fsLeftMsg;
 
 		$userMessages = [];
 		$type = CommandParser.parse($cmd)['type'];
 		if (php.in_array($type, CommonDataHelper.getCountedFsCommands())) {
-			$agent = this.getAgent();
+			$agent = getAgent();
 			$left = $agent.getFsLimit() - await $agent.getFsCallsUsed();
 			$fsLeftMsg = $left + ' FXD COMMANDS REMAINED';
 			$userMessages.push($fsLeftMsg);
 		}
 		return $userMessages;
-	}
+	};
 
 	/** @return string - the command we are currently scrolling
 	 * (last command that was not one of MD, MU, MT, MB */
-	getScrolledCmd() {
+	const getScrolledCmd =  () => {
 		return stateful.getSessionData().scrolledCmd;
-	}
+	};
 
-	modifyOutput($calledCommand) {
+	const modifyOutput =  ($calledCommand) => {
 		let $scrolledCmd, $type, $lines, $isSafe;
 		$calledCommand = {...$calledCommand};
 
-		$scrolledCmd = this.getScrolledCmd() || $calledCommand['cmd'];
+		$scrolledCmd = getScrolledCmd() || $calledCommand['cmd'];
 		$type = (CommandParser.parse($scrolledCmd) || {})['type'];
 		if (php.in_array($type, ['searchPnr', 'displayPnrFromList']) &&
 			!stateful.getAgent().canOpenPrivatePnr()
@@ -929,18 +911,18 @@ class RunCmdRq {
 			$calledCommand['output'] = php.implode(php.PHP_EOL, Fp.filter($isSafe, $lines));
 		}
 		return $calledCommand;
-	}
+	};
 
-	async getCurrentPnr() {
+	const getCurrentPnr = async () => {
 		return GetCurrentPnr.inAmadeus(stateful);
-	}
+	};
 
-	async areAllCouponsVoided() {
+	const areAllCouponsVoided = async () => {
 		let $faRecs, $faRec, $twdOutput, $twdParsed, $isFlight, $isVoid, $coupons;
 
-		$faRecs = (((await this.getCurrentPnr()).getParsedData() || {})['parsed'] || {})['tickets'] || [];
+		$faRecs = (((await getCurrentPnr()).getParsedData() || {})['parsed'] || {})['tickets'] || [];
 		for ($faRec of Object.values($faRecs)) {
-			$twdOutput = await this.runCommand('TWD/L' + $faRec['lineNumber']);
+			$twdOutput = await runCommand('TWD/L' + $faRec['lineNumber']);
 			$twdParsed = TicketMaskParser.parse($twdOutput);
 			$isFlight = ($seg) => $seg['type'] !== 'void';
 			$isVoid = ($seg) => StringUtil.startsWith($seg['couponStatus'], 'V');
@@ -953,20 +935,20 @@ class RunCmdRq {
 			}
 		}
 		return true;
-	}
+	};
 
-	async isGdRemarkLine($lineNum) {
+	const isGdRemarkLine = async ($lineNum) => {
 		let $remark;
 
-		for ($remark of Object.values((await this.getCurrentPnr()).getRemarks())) {
+		for ($remark of Object.values((await getCurrentPnr()).getRemarks())) {
 			if ($remark['lineNumber'] == $lineNum) {
 				return $remark['remarkType'] === GenericRemarkParser.CMS_LEAD_REMARK;
 			}
 		}
 		return false;
-	}
+	};
 
-	async checkIsForbidden($cmd) {
+	const checkIsForbidden = async ($cmd) => {
 		let $errors, $parsedCmd, $flatCmds, $type, $agent, $isQueueCmd, $totalAllowed, $pnr, $canChange, $flatCmd,
 			$numRec;
 
@@ -974,7 +956,7 @@ class RunCmdRq {
 		$parsedCmd = CommandParser.parse($cmd);
 		$flatCmds = php.array_merge([$parsedCmd], $parsedCmd['followingCommands'] || []);
 		$type = $parsedCmd['type'];
-		$agent = this.getAgent();
+		$agent = getAgent();
 		$isQueueCmd =
 			php.in_array($type, CommonDataHelper.getQueueCommands()) ||
 			StringUtil.startsWith($cmd, 'Q'); // to be extra sure
@@ -1005,24 +987,24 @@ class RunCmdRq {
 			if (stateful.getSessionData()['isPnrStored'] &&
 				!$agent.canEditTicketedPnr()
 			) {
-				$pnr = await this.getCurrentPnr();
+				$pnr = await getCurrentPnr();
 				$canChange = !$pnr.hasEtickets()
 					|| $agent.canEditVoidTicketedPnr()
-					&& await this.areAllCouponsVoided();
+					&& await areAllCouponsVoided();
 				if (!$canChange) {
 					$errors.push(Errors.getMessage(Errors.CANT_CHANGE_TICKETED_PNR));
 				}
 			}
 		}
-		if (this.getSessionData()['isPnrStored']) {
+		if (getSessionData()['isPnrStored']) {
 			for ($flatCmd of Object.values($flatCmds)) {
 				if ($flatCmd['type'] === 'changePnrField') {
-					if (await this.isGdRemarkLine($flatCmd['data']['majorNum'])) {
+					if (await isGdRemarkLine($flatCmd['data']['majorNum'])) {
 						$errors.push(Errors.getMessage(Errors.CANT_CHANGE_GDSD_REMARK, {'lineNum': $flatCmd['data']['majorNum']}));
 					}
 				} else if ($flatCmd['type'] === 'deletePnrField') {
 					for ($numRec of Object.values(($flatCmd['data'] || {})['lineNumbers'] || [])) {
-						if (await this.isGdRemarkLine($numRec['major'])) {
+						if (await isGdRemarkLine($numRec['major'])) {
 							$errors.push(Errors.getMessage(Errors.CANT_CHANGE_GDSD_REMARK, {'lineNum': $numRec['major']}));
 						}
 					}
@@ -1030,34 +1012,34 @@ class RunCmdRq {
 			}
 		}
 		return $errors;
-	}
+	};
 
-	async callImplicitCommandsBefore($cmd) {
+	const callImplicitCommandsBefore = async ($cmd) => {
 		let $calledCommands;
 
 		$calledCommands = [];
-		if (this.constructor.doesStorePnr($cmd)) {
-			if ($cmd = await this.makeCreatedForCmdIfNeeded()) {
-				await this.runCommand($cmd);
+		if (doesStorePnr($cmd)) {
+			if ($cmd = await makeCreatedForCmdIfNeeded()) {
+				await runCommand($cmd);
 			}
-			if ($cmd = await this.makeTopRemarkCmdIfNeeded()) {
-				await this.runCommand($cmd);
+			if ($cmd = await makeTopRemarkCmdIfNeeded()) {
+				await runCommand($cmd);
 			}
 		}
 		return $calledCommands;
-	}
+	};
 
-	async callImplicitCommandsAfter($cmdRecord, $calledCommands, $userMessages) {
+	const callImplicitCommandsAfter = async ($cmdRecord, $calledCommands, $userMessages) => {
 		let $recordLocator, $parsed, $isAlex;
 
-		$calledCommands.push(await this.modifyOutput($cmdRecord));
-		if (this.constructor.doesStorePnr($cmdRecord['cmd'])) {
+		$calledCommands.push(await modifyOutput($cmdRecord));
+		if (doesStorePnr($cmdRecord['cmd'])) {
 			$recordLocator = ((new CmsAmadeusTerminal()).parseSavePnr($cmdRecord['output'], true) || {})['recordLocator']
 							|| (new CmsAmadeusTerminal()).parseSavePnr($cmdRecord['output'], false)['recordLocator'];
 			if ($recordLocator) {
-				this.handlePnrSave($recordLocator);
+				handlePnrSave($recordLocator);
 			}
-		} else if (this.constructor.doesOpenPnr($cmdRecord['cmd'])) {
+		} else if (doesOpenPnr($cmdRecord['cmd'])) {
 			$parsed = PnrParser.parse($cmdRecord['output']);
 			$isAlex = ($pax) => {
 				return $pax['lastName'] === 'WEINSTEIN'
@@ -1066,37 +1048,36 @@ class RunCmdRq {
 			if (Fp.any($isAlex, ($parsed['parsed'] || {})['passengers'] || []) &&
 				!stateful.getAgent().canOpenPrivatePnr()
 			) {
-				await this.runCommand('IG');
+				await runCommand('IG');
 				return {'errors': ['Restricted PNR']};
 			}
 		}
 		return {'calledCommands': $calledCommands, 'userMessages': $userMessages};
-	}
+	};
 
-	async processRealCommand($cmd) {
+	const processRealCommand = async ($cmd) => {
 		let $errors, $calledCommands, $output, $userMessages;
 
-		$cmd = await this.preprocessCommand($cmd);
-		if (!php.empty($errors = await this.checkIsForbidden($cmd))) {
+		$cmd = await preprocessCommand($cmd);
+		if (!php.empty($errors = await checkIsForbidden($cmd))) {
 			return {'errors': $errors};
 		}
 		$calledCommands = [];
-		$calledCommands = php.array_merge($calledCommands, await this.callImplicitCommandsBefore($cmd));
-		let cmdRec = await this.runCmd($cmd);
-		$userMessages = await this.makeCmdMessages($cmd, $output);
-		return this.callImplicitCommandsAfter(cmdRec, $calledCommands, $userMessages);
-	}
+		$calledCommands = php.array_merge($calledCommands, await callImplicitCommandsBefore($cmd));
+		let cmdRec = await runCmd($cmd);
+		$userMessages = await makeCmdMessages($cmd, $output);
+		return callImplicitCommandsAfter(cmdRec, $calledCommands, $userMessages);
+	};
 
-	async priceInAnotherPcc($cmd, $target, $dialect) {
+	const priceInAnotherPcc = async ($cmd, $target, $dialect) => {
 		let $pnr;
 
-		$pnr = await this.getCurrentPnr();
+		$pnr = await getCurrentPnr();
 		return (new RepriceInAnotherPccAction())
-			.setLog(this.$log)
 			.execute($pnr, $cmd, $dialect, $target, stateful);
-	}
+	};
 
-	async processRequestedCommand($cmd) {
+	const processRequestedCommand = async ($cmd) => {
 		let $matches, $area, $pcc, $mdaData, $limit, $cmdReal, $reData,
 			$aliasData, $params, $itinerary, $result, reservation;
 
@@ -1104,64 +1085,64 @@ class RunCmdRq {
 
 		if (php.preg_match(/^JM *([A-Z])$/, $cmd, $matches = [])) {
 			$area = $matches[1];
-			return this.changeArea($area);
+			return changeArea($area);
 		} else if (php.preg_match(/^JUM\/O- *([A-Z0-9]+)$/, $cmd, $matches = [])) {
 			$pcc = $matches[1];
-			return this.changePcc($pcc);
+			return changePcc($pcc);
 		} else if (php.preg_match(/^JD$/, $cmd, $matches = [])) {
-			return {'calledCommands': [this.imitateGetAreasCmd()]};
+			return {'calledCommands': [imitateGetAreasCmd()]};
 		} else if ($mdaData = AliasParser.parseMda($cmd)) {
 			$limit = $mdaData['limit'] || null;
 			if ($cmdReal = $mdaData['realCmd']) {
-				return this.runAndMoveDownAll($cmdReal, $limit || null);
+				return runAndMoveDownAll($cmdReal, $limit || null);
 			} else {
-				return this.moveDownAll($limit);
+				return moveDownAll($limit);
 			}
 		} else if (php.preg_match(/^PNR$/, $cmd, $matches = [])) {
-			return this.processSavePnr();
+			return processSavePnr();
 		} else if (php.preg_match(/^SORT$/, $cmd, $matches = [])) {
-			return this.processSortItinerary();
+			return processSortItinerary();
 		} else if ($reData = AliasParser.parseRe($cmd)) {
-			return this.processCloneItinerary($reData);
+			return processCloneItinerary($reData);
 		} else if ($aliasData = AliasParser.parseStore($cmd)) {
-			return this.storePricing($aliasData);
+			return storePricing($aliasData);
 		} else if ($aliasData = await AliasParser.parsePrice($cmd, stateful)) {
-			return this.priceAll($aliasData);
-		} else if ($params = this.constructor.parseSeatIncreasePseudoCmd($cmd)) {
-			return this.processSeatIncrease($params);
+			return priceAll($aliasData);
+		} else if ($params = parseSeatIncreasePseudoCmd($cmd)) {
+			return processSeatIncrease($params);
 		} else if ($cmd === '/SS') {
-			return this.rebookAsSs();
+			return rebookAsSs();
 		} else if (php.preg_match(/^(FQD.*)\/MIX$/, $cmd, $matches = [])) {
-			return this.getMultiPccTariffDisplay($matches[1]);
+			return getMultiPccTariffDisplay($matches[1]);
 		} else if (!php.empty(reservation = await AliasParser.parseCmdAsPnr($cmd, stateful))) {
-			return this.bookPnr(reservation);
+			return bookPnr(reservation);
 		} else if (!php.empty($itinerary = await AliasParser.parseCmdAsItinerary($cmd, stateful))) {
-			return this.bookItinerary($itinerary, true);
+			return bookItinerary($itinerary, true);
 		} else if ($result = RepriceInAnotherPccAction.parseAlias($cmd)) {
-			return this.priceInAnotherPcc($result['cmd'], $result['target'], $result['dialect']);
+			return priceInAnotherPcc($result['cmd'], $result['target'], $result['dialect']);
 		} else if (parsed.type === 'priceItinerary') {
-			return this._fetchPricing($cmd, parsed.data);
+			return _fetchPricing($cmd, parsed.data);
 		} else {
-			return this.processRealCommand($cmd);
+			return processRealCommand($cmd);
 		}
-	}
+	};
 
-	imitateGetAreasCmd() {
+	const imitateGetAreasCmd =  () => {
 		let $sessionData, $areasFromDb;
 
-		$sessionData = this.getSessionData();
+		$sessionData = getSessionData();
 		$areasFromDb = stateful.getAreaRows();
 
 		return {
 			'cmd': 'JD',
 			'output': forgeViewAreasDump($sessionData, $areasFromDb),
 		};
-	}
+	};
 
-	async execute($cmdRequested) {
+	const execute = async ($cmdRequested) => {
 		let $callResult, $errors, $status, $calledCommands, $userMessages;
 
-		$callResult = await this.processRequestedCommand($cmdRequested);
+		$callResult = await processRequestedCommand($cmdRequested);
 
 		if (!php.empty($errors = $callResult['errors'])) {
 			$status = GdsDirect.STATUS_FORBIDDEN;
@@ -1178,11 +1159,9 @@ class RunCmdRq {
 			'calledCommands': $calledCommands,
 			'userMessages': $userMessages,
 		};
-	}
-}
+	};
 
-return new RunCmdRq().execute(cmdRq);
-
+	return execute(cmdRq);
 };
 
 /** exposing for unit tests */

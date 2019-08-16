@@ -1,7 +1,7 @@
+const crypto = require('crypto');
 const GdsSessions = require('../Repositories/GdsSessions.js');
 const GdsProfiles = require('../Repositories/GdsProfiles.js');
 let {TRAVELPORT, AMADEUS, SABRE} = GdsProfiles;
-const PersistentHttpRq = require('../../node_modules/klesun-node-tools/src/Utils/PersistentHttpRq.js');
 const MaskUtil = require('../Transpiled/Lib/Utils/MaskUtil.js');
 const FluentLogger = require('../LibWrappers/FluentLogger.js');
 
@@ -40,6 +40,8 @@ const makeHttpRqBriefing = (rqBody, gds) => {
 			return '>' + match[1] + ';';
 		} else if (match = rqBody.match(/:SessionCreateRQ>/)) {
 			return '<SessionCreateRQ/>';
+		} else if (match = rqBody.match(/:Body><\w+:(\w+)/)) {
+			return '<' + match[1] + '/>';
 		}
 	}
 	return '';
@@ -56,12 +58,15 @@ const maskRqBody = (rqBody, gds) => {
 	return rqBody;
 };
 
-const initHttpRqFor = ({logId, gds}) => (params) => {
+const initHttpRqFor = ({
+	logId, gds,
+	PersistentHttpRq = require('klesun-node-tools/src/Utils/PersistentHttpRq.js'),
+}) => (params) => {
 	let whenResult = PersistentHttpRq(params);
 	let logit = (msg, data) => {
 		let masked = MaskUtil.maskCcNumbers(data);
 		FluentLogger.logit(msg, logId, masked);
-		if (process.env.NODE_ENV !== 'production') {
+		if (process.env.NODE_ENV === 'development') {
 			console.log(logId + ': ' + msg, typeof masked === 'string' ? masked : jsExport(masked));
 		}
 	};
@@ -74,7 +79,10 @@ const initHttpRqFor = ({logId, gds}) => (params) => {
 			return result;
 		})
 		.catch(coverExc([Rej.BadGateway], (exc) => {
-			logit('ERROR: (XML RS)', exc.data.body);
+			let body = (exc.data || {}).body;
+			if (body) {
+				logit('ERROR: (XML RS)', body);
+			}
 			return Promise.reject(exc);
 		}));
 };
@@ -83,6 +91,23 @@ const initHttpRq = (session) => initHttpRqFor({
 	logId: session.logId,
 	gds: session.context.gds,
 });
+
+const makeGdsClients = ({
+	logId, gds,
+	PersistentHttpRq = require('klesun-node-tools/src/Utils/PersistentHttpRq.js'),
+	GdsProfiles = require('../Repositories/GdsProfiles.js'),
+	randomBytes = (size) => crypto.randomBytes(size),
+	now = () => Date.now(),
+}) => {
+	let loggingHttpRq = initHttpRqFor({logId, gds, PersistentHttpRq});
+	let travelport = TravelportClient({PersistentHttpRq: loggingHttpRq, GdsProfiles});
+	let sabre = SabreClient.makeCustom({PersistentHttpRq: loggingHttpRq, GdsProfiles});
+	let amadeus = AmadeusClient.makeCustom({
+		PersistentHttpRq: loggingHttpRq,
+		GdsProfiles, randomBytes, now,
+	});
+	return {travelport, amadeus, sabre};
+};
 
 /**
  * the entity which StatefulSession.js uses to invoke the commands - be careful not
@@ -93,18 +118,21 @@ const initHttpRq = (session) => initHttpRqFor({
  *
  * @param session = at('GdsSessions.js').makeSessionRecord()
  */
-const GdsSession = ({session}) => {
+const GdsSession = ({
+	session,
+	gdsClients = makeGdsClients({
+		gds: session.context.gds,
+		logId: session.logId,
+	}),
+}) => {
 	let gds = session.context.gds;
-	let httpRq = GdsSession.initHttpRq(session);
+	let {travelport, sabre, amadeus} = gdsClients;
 	let runByGds = (cmd) => {
 		if (['apollo', 'galileo'].includes(gds)) {
-			let travelport = TravelportClient({PersistentHttpRq: httpRq});
 			return travelport.runCmd({command: cmd}, session.gdsData);
 		} else if (gds === 'amadeus') {
-			let amadeus = AmadeusClient.makeCustom({PersistentHttpRq: httpRq});
 			return amadeus.runCmd({command: cmd}, session.gdsData);
 		} else if (gds === 'sabre') {
-			let sabre = SabreClient.makeCustom({PersistentHttpRq: httpRq});
 			return sabre.runCmd({command: cmd}, session.gdsData);
 		} else {
 			return Rej.NotImplemented('Unsupported stateful GDS - ' + gds);
@@ -115,14 +143,13 @@ const GdsSession = ({session}) => {
 	};
 };
 
+GdsSession.makeGdsClients = makeGdsClients;
+
 GdsSession.initHttpRq = initHttpRq;
 
 GdsSession.startByGds = async (gds) => {
 	let logId = await FluentLogger.logNewId(gds);
-	let loggingHttpRq = initHttpRqFor({logId, gds});
-	let amadeus = AmadeusClient.makeCustom({PersistentHttpRq: loggingHttpRq});
-	let travelport = TravelportClient({PersistentHttpRq: loggingHttpRq});
-	let sabre = SabreClient.makeCustom({PersistentHttpRq: loggingHttpRq});
+	let {travelport, sabre, amadeus} = makeGdsClients({logId, gds});
 	let tuples = [
 		['apollo' , travelport, TRAVELPORT.DynApolloProd_2F3K],
 		['galileo', travelport, TRAVELPORT.DynGalileoProd_711M],

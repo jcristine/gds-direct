@@ -1042,6 +1042,11 @@ const patternList = [
 		'sabre': 'W/EQ*{flt_type}',
 		'amadeus': 'DNE{flt_type}',
 	},
+	// Get distance between cities
+	{
+		'apollo': 'M*{city}{city}',
+		'sabre': 'W/-AT{city}¥AT{city}',
+	},
 	// Help Availability
 	{
 		'apollo': 'HELP $D',

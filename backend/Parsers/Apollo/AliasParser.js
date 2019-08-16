@@ -71,6 +71,8 @@ exports.parse = async ($cmdRequested, stateful) => {
 			}[$units],
 			'value': $value,
 		};
+	} else if(/^\$D[BD][A-Z]{3}V$/.test($realCmd)) {
+		$type = 'fareSearchValidatedChangeCity';
 	} else if (php.preg_match(/^(\$D.*)\/MIX$/, $realCmd, $matches = [])) {
 		$type = 'fareSearchMultiPcc';
 		$realCmd = $matches[1];
@@ -102,6 +104,13 @@ exports.parse = async ($cmdRequested, stateful) => {
 				'parsed': CommonParserHelpers.parsePartialDate($date),
 			},
 			'bookingClass': $cls || null,
+		};
+	} else if (php.preg_match(/^\/GK$/, $realCmd, $matches = [])) {
+		$type = 'rebookAsGk';
+		$data = {
+			segmentNumbers: [],
+			departureDate: null,
+			bookingClass: null,
 		};
 	} else if (php.preg_match(/^\/SS(E?)$/, $realCmd, $matches = [])) {
 		$type = 'rebookAsSs';

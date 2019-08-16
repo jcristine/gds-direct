@@ -1,9 +1,8 @@
+const LocationGeographyProvider = require('../Transpiled/Rbs/DataProviders/LocationGeographyProvider.js');
 const GdsSession = require('./GdsSession.js');
 const Rej = require('../../node_modules/klesun-node-tools/src/Rej.js');
-const GdsSessions = require("../Repositories/GdsSessions.js");
 const {NotImplemented, BadRequest, ServiceUnavailable, nonEmpty} = require("klesun-node-tools/src/Rej.js");
 const FluentLogger = require("../LibWrappers/FluentLogger.js");
-const LocationGeographyProvider = require('../Transpiled/Rbs/DataProviders/LocationGeographyProvider.js');
 const Pccs = require("../Repositories/Pccs");
 const Misc = require("../Transpiled/Lib/Utils/MaskUtil");
 const {getConfig} = require('../Config.js');
@@ -27,10 +26,11 @@ const sqlNow = require("klesun-node-tools/src/Utils/Misc.js").sqlNow;
 let StatefulSession = ({
 	session, emcUser, gdsSession, cmdLog, logit = () => {},
 	Db = require('../Utils/Db.js'),
-	CmdLogs = require('../Repositories/CmdLogs.js'),
+	GdsSessions = require("../Repositories/GdsSessions.js"),
 	leadIdToData = {},
 	askClient = null,
 	startDt = new Date().toISOString(),
+	Airports = require('../Repositories/Airports.js'),
 }) => {
 	askClient = askClient || ((msgData) => ServiceUnavailable('Client Socket not stored in GRECT session'));
 	let gds = session.context.gds;
@@ -76,6 +76,7 @@ let StatefulSession = ({
 		getLog: () => cmdLog,
 		getStartDt: () => startDt,
 		getAreaRows: () => cmdLog.getFullState().areas,
+		getCalledCommands: () => calledCommands,
 		flushCalledCommands: () => calledCommands.splice(0),
 		addPnrSaveHandler: (action) => pnrSaveHandlers.push(action),
 		handlePnrSave: (recordLocator) => pnrSaveHandlers.forEach(h => h(recordLocator)),
@@ -119,7 +120,7 @@ let StatefulSession = ({
 				return Promise.resolve(rs.value);
 			}
 		}),
-		getGeoProvider: () => new LocationGeographyProvider(),
+		getGeoProvider: () => new LocationGeographyProvider({Airports}),
 		getPccDataProvider: () => (gds, pcc) => Pccs.findByCode(gds, pcc),
 		getLeadAgent: () => null,
 		getAgent: getAgent,
@@ -132,6 +133,7 @@ let StatefulSession = ({
 StatefulSession.makeFromDb = async ({
 	session, whenCmdRqId, emcUser, askClient,
 	gdsSession = GdsSession({session}),
+	GdsSessions = require("../Repositories/GdsSessions.js"),
 }) => {
 	whenCmdRqId = whenCmdRqId || Promise.resolve(null);
 	let fullState = await GdsSessions.getFullState(session);
@@ -147,6 +149,7 @@ StatefulSession.makeFromDb = async ({
 	return StatefulSession({
 		session, emcUser, logit,
 		gdsSession, cmdLog, askClient,
+		GdsSessions,
 	});
 };
 

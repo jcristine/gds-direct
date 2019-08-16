@@ -1,66 +1,57 @@
-
-const Airports = require("../../../Repositories/Airports");
-const php = require('../../phpDeprecated.js');
+const Rej = require('klesun-node-tools/src/Rej.js');
+const {coverExc} = require('klesun-node-tools/src/Lang.js');
+const php = require('klesun-node-tools/src/Transpiled/php.js');
 
 /**
  * provides info like city/country/timezone/etc for the specified airport
  */
-class LocationGeographyProvider {
-
-	static async getLocationData($locationCode) {
-		// TODO: cache
-		return Airports.findByCode($locationCode)
-			.catch(exc => Airports.findByCity($locationCode));
+class LocationGeographyProvider
+{
+	constructor({Airports = require("../../../Repositories/Airports.js")} = {}) {
+		this.Airports = Airports;
 	}
 
-	async getRegionNameById($regionId) {
-		let $regionIdToName;
+	async getLocationData($locationCode) {
 		// TODO: cache
-		$regionIdToName = await Airports.getRegionNames();
-		return $regionIdToName[$regionId] || null;
-	}
-
-	async getCountryNameByCode($countryCode) {
-		let $countryCodeToName;
-		// TODO: cache
-		$countryCodeToName = await Airports.getCountryNames();
-		return $countryCodeToName[$countryCode] || null;
+		return this.Airports.findByCode($locationCode)
+			.catch(coverExc([Rej.NotFound], exc => this.Airports.findByCity($locationCode)))
+			.catch(coverExc([Rej.NotFound], exc => null));
 	}
 
 	async getTimezone($locationCode) {
 		let $row, $tz;
-		$row = await this.constructor.getLocationData($locationCode);
+		$row = await this.getLocationData($locationCode);
 		$tz = $row ? $row['tz'] : null;
 		return $tz;
 	}
 
 	async getRegion($locationCode) {
 		let $data;
-		$data = await this.constructor.getLocationData($locationCode);
+		$data = await this.getLocationData($locationCode);
 		return $data ? $data['region_name'] : null;
 	}
 
 	async getRegionId($locationCode) {
 		let $data;
-		$data = await this.constructor.getLocationData($locationCode);
+		$data = await this.getLocationData($locationCode);
 		return $data ? $data['region_id'] : null;
 	}
 
 	async getCityCode($airportCode) {
 		let $data;
-		$data = await this.constructor.getLocationData($airportCode);
+		$data = await this.getLocationData($airportCode);
 		return $data ? $data['city_code'] : null;
 	}
 
 	async getCountryCode($airportCode) {
 		let $data;
-		$data = await this.constructor.getLocationData($airportCode);
+		$data = await this.getLocationData($airportCode);
 		return $data ? $data['country_code'] : null;
 	}
 
 	async getAlternatives($airportCode) {
 		let $data;
-		$data = await this.constructor.getLocationData($airportCode);
+		$data = await this.getLocationData($airportCode);
 		return $data ? php.array_filter(php.explode(',', $data['alternatives'])) : [];
 	}
 

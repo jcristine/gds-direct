@@ -1051,6 +1051,82 @@ class CommandParserTest extends require('../../../../../../backend/Transpiled/Li
 		return $list;
 	}
 
+	provideParseFareSearch() {
+		let list = [];
+
+		list.push({
+			title: 'parseFareSearch with validation',
+			input: '$DJFKMNLV10SEP20SEP+AA            ',
+			output: {
+				departureDate: {
+					raw: '10SEP',
+					partial: '09-10',
+				},
+				returnDate: {
+					raw: '20SEP',
+					partial: '09-20',
+				},
+				departureAirport: 'JFK',
+				destinationAirport: 'MNL',
+				modifiers: [],
+				unparsed: '+AA            ',
+			},
+		});
+
+		list.push({
+			title: 'Direct command',
+			input: '$DV10SEPJFKLHR20SEP+AA',
+			output: {
+				departureDate: {
+					raw: '10SEP',
+					partial: '09-10',
+				},
+				returnDate: {
+					raw: '20SEP',
+					partial: '09-20',
+				},
+				departureAirport: 'JFK',
+				destinationAirport: 'LHR',
+				modifiers: [],
+				unparsed: '+AA',
+			},
+		});
+
+		list.push({
+			title: 'Only departure date is set',
+			input: '$DWASMNLV10SEP',
+			output: {
+				departureDate: {
+					raw: '10SEP',
+					partial: '09-10',
+				},
+				returnDate: null,
+				departureAirport: 'WAS',
+				destinationAirport: 'MNL',
+				modifiers: [],
+				unparsed: '',
+			},
+		});
+
+		list.push({
+			title: 'Parse one directional fare',
+			input: '$DV10SEPJFKLHR             ',
+			output: {
+				departureDate: {
+					raw: '10SEP',
+					partial: '09-10',
+				},
+				returnDate: null,
+				departureAirport: 'JFK',
+				destinationAirport: 'LHR',
+				modifiers: [],
+				unparsed: '             ',
+			},
+		});
+
+		return list.map(a => [a]);
+	}
+
 	/**
 	 * @test
 	 * @dataProvider provideTestDumpList
@@ -1061,9 +1137,15 @@ class CommandParserTest extends require('../../../../../../backend/Transpiled/Li
 		this.assertArrayElementsSubset($expected, $actual);
 	}
 
+	testParseParseFareSearch({input, output}) {
+		const result = CommandParser.parseFareSearch(input);
+		this.assertArrayElementsSubset(output, result);
+	}
+
 	getTestMapping() {
 		return [
 			[this.provideTestDumpList, this.testParserOutputAgainstTree],
+			[this.provideParseFareSearch, this.testParseParseFareSearch],
 		];
 	}
 }

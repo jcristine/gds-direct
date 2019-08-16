@@ -1,3 +1,4 @@
+const DecodeTravelportError = require('./DecodeTravelportError.js');
 const {parseXml} = require("../../GdsHelpers/CommonUtils.js");
 const UnprocessableEntity = require("klesun-node-tools/src/Rej").UnprocessableEntity;
 
@@ -11,12 +12,15 @@ module.exports.buildPnrXmlDataObject = params => js2xml([
 	{SessionMods: [
 		{AreaInfoReq: null},
 	]},
-	{PNRBFRetrieveMods: [params.recordLocator ?
-		{PNRAddr: [{RecLoc: params.recordLocator}]} : {CurrentPNR: null},
-	]},
 	{AirSegSellMods: (params.addAirSegments || [])
 		.map(transformAirSegmentForSoap)
 		.map(v => ({AirSegSell: v}))},
+	// note, position of <PNRBFRetrieveMods/> element is important: if it were placed before
+	// <AirSegSellMods/>, it would not include the newly added segments with their numbers
+	// the code outside is expecting them to be included, so let's make sure this element is always in the end
+	{PNRBFRetrieveMods: [params.recordLocator ?
+		{PNRAddr: [{RecLoc: params.recordLocator}]} : {CurrentPNR: null},
+	]},
 ]);
 
 // parses travelport soap request response body and build corresponding object
@@ -186,6 +190,7 @@ const collectErrors = (dom, sellSegments) => {
 	const errors = [];
 
 	const overallError = getValueOrNullFromDomElement(dom.querySelector("PNRBFRetrieve > ErrText"), "Text");
+	const transactionErrorCode = getValueOrNullFromDomElement(dom.querySelector("TransactionErrorCode"), "Code");
 
 	if(overallError) {
 		errors.push(overallError);
@@ -207,6 +212,14 @@ const collectErrors = (dom, sellSegments) => {
 			+ sell.segmentStatus
 			+ (sell.seatCount || '1')
 			+ ' - ' + sell.error));
+
+	// code 1 means something like "partial success with warnings"
+	if (transactionErrorCode && transactionErrorCode != 1) {
+		let decoded = DecodeTravelportError(transactionErrorCode);
+		let error = 'Transaction error #' + transactionErrorCode +
+			' (' + (decoded || 'unknown code') + ')';
+		errors.push(error);
+	}
 
 	return errors.length > 0 ? errors.join("; ") : null;
 };

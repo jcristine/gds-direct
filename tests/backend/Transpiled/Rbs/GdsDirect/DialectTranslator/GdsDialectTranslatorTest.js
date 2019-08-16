@@ -3156,6 +3156,7 @@ class GdsDialectTranslatorTest extends require('../../../Lib/TestCase.js')
             ['apollo', 'sabre', 'X-12/0Y', null],
             // should not translate pricing commands with unknown modifiers to FQ
             ['apollo', 'galileo', '$B/+2CV4', null],
+            ['apollo', 'sabre', 'M*FWYESB', 'W/-ATFWY¥ATESB'],
         ];
 
         return $tests;

@@ -1,10 +1,10 @@
 
-let php = require('../../Transpiled/phpDeprecated');
+const {nonEmpty} = require('klesun-node-tools/src/Lang.js');
+const php = require('klesun-node-tools/src/Transpiled/php.js');
 const Agent = require("../../DataFormats/Wrappers/Agent");
 const Fp = require('../../Transpiled/Lib/Utils/Fp.js');
 const AnyGdsStubSession = require('./AnyGdsStubSession.js');
 const CmdLog = require('../../GdsHelpers/CmdLog.js');
-const NotFound = require('klesun-node-tools/src/Rej.js');
 const StatefulSession = require('../../GdsHelpers/StatefulSession.js');
 
 /**
@@ -179,6 +179,7 @@ class GdsDirectDefaults {
 			areas: {'A': this.makeDefaultStateFor(gds)},
 		};
 		let cmdLog = CmdLog.noDb({gds, fullState});
+		let stubAirports = require('../../../tests/data/stubAirports.js');
 		return StatefulSession({
 			cmdLog, session, fullState,
 			startDt: startDt || '2019-03-29 23:43:05',
@@ -190,11 +191,22 @@ class GdsDirectDefaults {
 			Db: {
 				writeRows: () => Promise.resolve(),
 			},
+			GdsSessions: {
+				update: () => Promise.resolve(),
+			},
 			RbsClient: {
 				reportCreatedPnr: () => Promise.resolve(),
 			},
 			leadIdToData: leadIdToData || {},
 			...ctorArgs,
+			Airports: {
+				findByCode: code => nonEmpty
+					('Code #' + code + ' not supplied by test')
+					(stubAirports.filter(row => row.iata_code === code)[0]),
+				findByCity: code => nonEmpty
+					('Code #' + code + ' not supplied by test')
+					(stubAirports.filter(row => row.city_code === code)[0]),
+			},
 		});
 	}
 

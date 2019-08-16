@@ -1,4 +1,4 @@
-
+const Rej = require('klesun-node-tools/src/Rej.js');
 const Fp = require('../../../../Lib/Utils/Fp.js');
 const AbstractGdsAction = require('../../../../Rbs/GdsAction/AbstractGdsAction.js');
 const GalileoBuildItineraryAction = require('../../../../Rbs/GdsAction/GalileoBuildItineraryAction.js');
@@ -12,10 +12,33 @@ const {fetchAll} = require('../../../../../GdsHelpers/TravelportUtils.js');
  */
 const php = require('../../../../phpDeprecated.js');
 
+const findSegmentNumberInPnr = (gkSeg, reservation) => {
+	const pnr = reservation.itinerary
+		.find(pnrSeg =>
+			gkSeg.airline === pnrSeg.airline &&
+			+gkSeg.flightNumber === +pnrSeg.flightNumber &&
+			gkSeg.departureAirport === pnrSeg.departureAirport &&
+			gkSeg.destinationAirport === pnrSeg.destinationAirport &&
+			gkSeg.departureDate.parsed === pnrSeg.departureDate.parsed.slice('2019-'.length)
+		);
+
+	if (!pnr) {
+		const msg = `Failed to match GK segment #${gkSeg.segmentNumber} to resulting PNR`;
+		throw Rej.InternalServerError.makeExc(msg, {gkSeg, itin: reservation.itinerary});
+	}
+
+	return pnr.segmentNumber;
+};
+
 class RebuildInPccAction extends AbstractGdsAction {
-	constructor() {
+	constructor({
+		travelport,
+		useXml,
+	}) {
 		super();
 		this.$fallbackToAk = false;
+		this.travelport = travelport;
+		this.useXml = useXml;
 	}
 
 	fallbackToAk($flag) {
@@ -41,20 +64,25 @@ class RebuildInPccAction extends AbstractGdsAction {
 	}
 
 	/** replace GK segments with $segments */
-	async rebookGkSegments($segments) {
-		let $marriageToSegs = Fp.groupMap(($seg) => $seg['marriage'], $segments);
-		let $failedSegNums = [];
-		for (let [$marriage, $marriedSegs] of $marriageToSegs) {
-			let $clsToSegs = Fp.groupBy(($seg) => $seg['bookingClass'], $marriedSegs);
-			for (let [$cls, $clsSegs] of Object.entries($clsToSegs)) {
-				let $cmd = '@' + php.implode('.', php.array_column($clsSegs, 'segmentNumber')) + '/' + $cls;
-				let $output = (await this.runCmd($cmd)).output;
+	async rebookGkSegments(segments, reservation) {
+		const marriageToSegs = Fp.groupMap(seg => seg['marriage'], segments);
+		const failedSegNums = [];
+		for (const [, marriedSegs] of marriageToSegs) {
+			const clsToSegs = Fp.groupBy(seg => seg['bookingClass'], marriedSegs);
+			for (const [cls, clsSegs] of Object.entries(clsToSegs)) {
+				const segmentNumbers = clsSegs.map(seg => {
+					return reservation ? findSegmentNumberInPnr(seg, reservation) : seg.segmentNumber;
+				});
+
+				const $cmd = '@' + segmentNumbers.join('.') + '/' + cls;
+
+				const $output = (await this.runCmd($cmd)).output;
 				if (!this.constructor.isSuccessRebookOutput($output)) {
-					$failedSegNums.push(php.array_column($clsSegs, 'segmentNumber'));
+					failedSegNums.push(php.array_column(clsSegs, 'segmentNumber'));
 				}
 			}
 		}
-		return {'failedSegmentNumbers': $failedSegNums};
+		return {'failedSegmentNumbers': failedSegNums};
 	}
 
 	static transformBuildError($result) {
@@ -76,11 +104,11 @@ class RebuildInPccAction extends AbstractGdsAction {
 		$itinerary = $itinerary.map((s,i) => ({
 			segmentNumber: i + 1,
 			...s,
-			segmentStatus:
-				s.segmentStatus === 'GK' ? 'AK' :
-					s.segmentStatus === 'HK' ? 'NN' :
-						s.segmentStatus === 'SS' ? 'NN' :
-							s.segmentStatus,
+			segmentStatus: {
+				'GK': 'AK',
+				'HK': 'NN',
+				'SS': 'NN',
+			}[s.segmentStatus] || s.segmentStatus,
 		}));
 
 		$errors = [];
@@ -100,14 +128,26 @@ class RebuildInPccAction extends AbstractGdsAction {
 			return $seg;
 		}, $itinerary);
 
-		$result = await (new GalileoBuildItineraryAction())
-			.setSession(this.session).execute($akItinerary, true);
+		$result = await GalileoBuildItineraryAction({
+			session: this.session,
+			itinerary: $akItinerary,
+			isParserFormat: true,
+			useXml: this.useXml,
+			travelport: this.travelport,
+		});
+
+		if (this.useXml && $result.segments.length > 0) {
+			this.session.updateAreaState({
+				type: '!xml:PNRBFManagement',
+				state: {hasPnr: true, canCreatePq: false},
+			});
+		}
 
 		$itinerary = Fp.filter($isAkRebookPossible, $itinerary);
 		if ($error = this.constructor.transformBuildError($result)) {
 			$errors.push($error);
 		} else {
-			$gkRebook = await this.rebookGkSegments($itinerary);
+			$gkRebook = await this.rebookGkSegments($itinerary, $result.reservation);
 			if (!php.empty($failedSegNums = $gkRebook['failedSegmentNumbers'])) {
 				$errors.push(Errors.getMessage(Errors.REBUILD_FALLBACK_TO_GK, {'segNums': php.implode(',', $failedSegNums)}));
 			}
