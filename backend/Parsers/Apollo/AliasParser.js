@@ -6,7 +6,7 @@ const php = require('klesun-node-tools/src/Transpiled/php.js');
 const CommandParser = require('../../Transpiled/Gds/Parsers/Apollo/CommandParser.js');
 
 //parse: A/T/20SEPNYCSFO/CHI/ATL/CLT/SEA/MSP+DL
-const matchArtificialAvailabilityCmd = ($cmd) => {
+const matchMultipleCityAvailabilityCmd = ($cmd) => {
 	let $regex, $matches;
 	$regex =
 		'/^' +
@@ -16,7 +16,7 @@ const matchArtificialAvailabilityCmd = ($cmd) => {
 		'$/';
 	if (php.preg_match($regex, $cmd, $matches = [])) {
 		let [_, availability, cityRow, airlines] = $matches;
-		return {availability, cityRow, airlines};
+		return {availability, cities: cityRow.split('/'), airlines};
 	} else {
 		return null;
 	}
@@ -92,7 +92,7 @@ exports.parse = async ($cmdRequested, stateful) => {
 		$type = 'priceAll';
 	} else if ($data = AliasParser.parseRe($cmdRequested)) {
 		$type = 'rebookInPcc';
-	} else if ($data = matchArtificialAvailabilityCmd($realCmd)) {
+	} else if ($data = matchMultipleCityAvailabilityCmd($realCmd)) {
 		$type = 'multiDstAvail';
 	} else if (php.preg_match(/^X(\d+[\|\-\d]*)\/0(\d{1,2}[A-Z]{3}|)\/?([A-Z]|)GK$/, $realCmd, $matches = [])) {
 		$type = 'rebookAsGk';

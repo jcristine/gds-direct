@@ -802,21 +802,21 @@ let RunCmdRq = ({
 
 	/** show availability for first successful city option */
 	const makeMultipleCityAvailabilitySearch = async (aliasData) => {
-		let {availability, citiesRaw, airlines} = aliasData;
-		let $calledCommands, $cities, $city, $cmd, $output, $matches;
-		$calledCommands = [];
-		$cities = php.explode('/', php.trim(citiesRaw, '/'));
-		for ($city of Object.values($cities)) {
-			$cmd = availability + $city + airlines;
-			$output = (await stateful.runCmd($cmd)).output;
-			if (php.preg_match('/^FIRAV/', $output, $matches = [])) {
+		let {availability, cities, airlines} = aliasData;
+		let calledCommands = [];
+		// probably would make sense to do it in separate sessions simultaneously
+		for (let city of cities) {
+			let cmd = availability + city + airlines;
+			let cmdRec = await stateful.runCmd(cmd);
+			let output = cmdRec.output;
+			calledCommands.push({'cmd': cmd, 'output': output});
+			if (php.preg_match('/^FIRAV/', output)) {
 				// FIRAV means OK, got availability for a city - job's done
-				$calledCommands.push({'cmd': $cmd, 'output': $output});
 				break;
 			}
 		}
 		return {
-			'calledCommands': $calledCommands,
+			'calledCommands': calledCommands.slice(-1),
 		};
 	};
 

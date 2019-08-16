@@ -6164,6 +6164,33 @@ class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
 			},
 		});
 
+		$list.push({
+			'input': {
+				'title': 'Multi-city availability alias example',
+				'cmdRequested': 'A/T/20SEPNYCHUJ/PID/RAS/SFO/CHI/ATL/CLT/SEA/MSP|DL',
+			},
+			'output': {
+				'status': 'executed',
+				'calledCommands': [
+					{"cmd": "A/T/20SEPNYCPID|DL"},
+				],
+			},
+			'sessionInfo': {
+				'initialState': GdsDirectDefaults.makeDefaultApolloState(),
+				'initialCommands': [],
+				'performedCommands': [
+					{
+						"cmd": "A/T/20SEPNYCHUJ|DL",
+						"output": " NO DISPLAYABLE FLIGHTS\n><",
+					},
+					{
+						"cmd": "A/T/20SEPNYCPID|DL",
+						"output": "FIRAV              FR 20SEP NYCNAS| 0:00 HR                     1| DL1539 J9 C9 D4 I0 Z0 W9 S0 Y9 B9 M9 LGAATL 959A 1232P 321 80          H9 Q9 K9 L9 U9 T9 X5 V0 E9                            2| DL 918 J9 C9 D5 I1 Z1 W9 S9 Y9 B9 M9    NAS 109P  310P 738  0          H9 Q9 K9 L9 U9 T9 X9 V0 E9                            MEALS>A*M;  ><"
+					},
+				],
+			},
+		});
+
 		// problematic cases follow
 		/*
 		// STORE alias, same as previous, but this time let's remove
