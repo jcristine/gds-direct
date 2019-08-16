@@ -43,7 +43,7 @@ exports.testHttpGdsAction = async ({unit, testCase, getActual}) => {
 		getSabre: profileName => Promise.resolve({
 			password: 'somePassword',
 			username: 'someUserName',
-			default_pcc: 'somePCC',
+			default_pcc: 'somePcc',
 			profileName,
 		}),
 		chooseAmaProfile: GdsProfiles.chooseAmaProfile,
@@ -60,13 +60,28 @@ exports.testHttpGdsAction = async ({unit, testCase, getActual}) => {
 	let gdsClients = GdsSession.makeGdsClients({
 		PersistentHttpRq,
 		GdsProfiles: stubGdsProfiles,
-		randomBytes: (size) => Buffer.from('01234567890abcdef01234567890abcd', 'hex'),
+		randomBytes: size => Buffer.from('01234567890abcdef01234567890abcd', 'hex'),
 		now: () => 1565598730736,
 	});
 	let gdsSession = GdsSession({session, gdsClients});
 	let stateful = GdsDirectDefaults.makeStatefulSessionCustom({
 		fullState, session, gdsSession, startDt: startDt || undefined,
 	});
+
+	const originalRun = stateful.runCmd;
+	const commandsLeft = (testCase.sessionInfo || {}).performedCommands || [];
+
+	stateful.runCmd = async cmd => {
+		if (commandsLeft.length !== 0 && cmd === commandsLeft[0].cmd) {
+			const calledCmd = commandsLeft.shift();
+			stateful.getCalledCommands().push(calledCmd);
+			await stateful.getLog().logCommand(cmd, Promise.resolve(calledCmd));
+			return Promise.resolve(calledCmd);
+		}
+
+		return originalRun(cmd);
+	};
+
 
 	let actual = await getActual({stateful, input, gdsClients});
 	unit.assertArrayElementsSubset(output, actual);
