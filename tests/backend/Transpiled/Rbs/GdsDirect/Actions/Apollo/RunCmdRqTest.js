@@ -6128,6 +6128,42 @@ class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
 			},
 		});
 
+		$list.push({
+			'input': {
+				'title': 'Same month availability should use month from last entered command, not from search initialization',
+				'cmdRequested': 'A*O6',
+			},
+			'output': {
+				'status': 'executed',
+				'calledCommands': [
+					{"cmd": "A*O6JUN"},
+				],
+			},
+			'sessionInfo': {
+				'initialState': GdsDirectDefaults.makeDefaultApolloState(),
+				'initialCommands': [
+					{
+						"cmd": "A20MAYJFKMNL",
+						"output": "NEUTRAL DISPLAY*   WE 20MAY NYCMNL|12:00 HR                     1| PR 127 J9 C9 D9 I9 Z6 W9 N9 Y9 S9 L9|JFKMNL 145A  615A|350  02| KE  82 P0 F0 A0 J9 C9 D9 I9 R9 Z9 Y9|JFKICN 200P  520P|388  03| KE 623 F0 A0 J9 C9 D9 I9 R9 Z9 Y9 B9|   MNL 645P| 955P|773  04| NH   9 F6 A3 J9 C9 D9 Z9 P9 G9 E9 N6|JFKNRT1200N  300P|77W  05| DL 181 J9 C9 D9 I9 Z8 W9 S9 Y9 B9 M9|   MNL 400P| 755P|76W  06| UA7998 J9 C9 D9 Z9 P9 O9 A9 R6 Y9 B9|JFKNRT1200N  300P|77W* 07| DL 181 J9 C9 D9 I9 Z8 W9 S9 Y9 B9 M9|   MNL 400P| 755P|76W  0MEALS>A*M;  CLASSES>A*C;..  ><"
+					},
+					{
+						"cmd": "A*O5JUN",
+						"output": "NEUTRAL DISPLAY*   FR 05JUN MNLNYC-12:00 HR                     1| PR 126 J9 C9 D9 I9 Z8 W9 N9 Y9 S9 L9|MNLJFK 740P 1115P 350  02| NH 820 J9 C9 D9 Z9 P9 Y9 B9 M9 U9 H9|MNLNRT 930A  305P 788  03| NH  10 F7 A4 J9 C9 D9 Z9 P9 G9 E9 N6|   JFK 440P  435P 77W  04| NH 820 J9 C9 D9 Z9 P6 Y9 B9 M9 U9 H9|MNLNRT 930A  305P 788  05| UA7927 J9 C9 D9 Z9 P9 O9 A9 R6 Y9 B9|   JFK 440P  435P 77W* 06| PR 358 J9 C9 D9 I7 Z1 Y9 S9 L9 M9 H9|MNLPEK 710A 1155A 320  07| UA7610 J9 C9 D9 Z9 P9 Y9 B9 M9 H9 Q9|   JFK 100P  220P 747* 0MEALS>A*M;  CLASSES>A*C;..  ><"
+					},
+					{
+						"cmd": "A*",
+						"output": "NEUTRAL DISPLAY*   FR 05JUN MNLNYC-12:00 HR                     1| PR 358 J9 C9 D9 I7 Z1 Y9 S9 L9 M9 H9|MNLPEK 710A 1155A 320  02| CA 981 F6 A6 J9 C9 D9 Z9 R9 G9 E9 Y9|   JFK 100P  220P 747  03| KA5930 J9 C9 D9 I9 W9 R9 E9 Y9 B9 H9|MNLHKG1235P  310P 333* 04| CX 840 F6 A6 J9 C9 D9 I9 W9 R9 E9 Y9|   JFK 405P  815P 77W  05| CX 930 J9 C9 D9 I8 W9 R3 E2 Y9 B0 H0|MNLHKG1235P  310P 333  06| AA8925 F6 A6 J7 R7 D7 I7 W7 P6 Y7 H7|   JFK 405P  815P 773* 07| CX 930 J9 C9 D9 I9 W9 R9 E9 Y9 B9 H9|MNLHKG1235P  310P 333  08| CX 840 F6 A6 J9 C9 D9 I9 W9 R9 E9 Y9|   JFK 405P  815P 77W  0MEALS>A*M;  CLASSES>A*C;..  ><"
+					},
+				],
+				'performedCommands': [
+					{
+						"cmd": "A*O6JUN",
+						"output": "NEUTRAL DISPLAY*   SA 06JUN MNLNYC-12:00 HR                     1| PR 126 J9 C9 D9 I9 Z9 W9 N9 Y9 S9 L9|MNLJFK 740P 1115P 350  02| NH 820 J9 C9 D9 Z9 P7 Y9 B9 M9 U9 H9|MNLNRT 930A  305P 788  03| UA7927 J9 C9 D9 Z9 P9 O9 A9 R6 Y9 B9|   JFK 440P  435P 77W* 04| NH 820 J9 C9 D9 Z9 P9 Y9 B9 M9 U9 H9|MNLNRT 930A  305P 788  05| NH  10 F7 A4 J9 C9 D9 Z9 P9 G9 E9 N6|   JFK 440P  435P 77W  06| CX 930 J9 C9 D9 I9 W9 R9 E9 Y9 B9 H9|MNLHKG1235P  310P 333  07| CX 840 F6 A6 J9 C9 D9 I9 W9 R9 E9 Y9|   JFK 405P  815P 77W  0MEALS>A*M;  CLASSES>A*C;..  ><"
+					},
+				],
+			},
+		});
+
 		// problematic cases follow
 		/*
 		// STORE alias, same as previous, but this time let's remove

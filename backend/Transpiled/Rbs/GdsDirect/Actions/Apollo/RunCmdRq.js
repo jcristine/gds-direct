@@ -824,25 +824,25 @@ let RunCmdRq = ({
 	 * imitation of Sabre >1R20; which shows return availability for 20 day of same month
 	 */
 	const _preprocessSameMonthReturnAvailability = async (day) => {
-		let lastAvail = (await stateful.getLog().getLikeSql({
+		let availsDesc = (await stateful.getLog().getLikeSql({
 			where: [
 				['area', '=', getSessionData().area],
-				['type', '=', 'airAvailability'],
+				['type', 'IN', ['airAvailability', 'moreAirAvailability']],
 			],
-			limit: 1,
-		}))[0];
-		if (!lastAvail) {
-			return Rej.BadRequest('No recent availability to request return date from');
+			limit: 20,
+		}));
+		for (let lastAvail of availsDesc) {
+			let {type, data} = CommandParser.parse(lastAvail.cmd);
+			let date = (data || {}).departureDate || (data || {}).returnDate;
+			if (date) {
+				let month = date.raw.slice(-3);
+				return 'A*O' + day + month;
+			}
+			if (type === 'airAvailability' && !data) {
+				return Rej.NotImplemented('Could not parse availability cmd >' + lastAvail.cmd + ';');
+			}
 		}
-		let {type, data} = CommandParser.parse(lastAvail.cmd);
-		if (type !== 'airAvailability' || !data) {
-			return Rej.NotImplemented('Could not parse availability cmd >' + lastAvail.cmd + ';');
-		} else if (!data.departureDate) {
-			return Rej.BadRequest('Original availability request has no date specified >' + lastAvail.cmd + ';');
-		} else {
-			let month = data.departureDate.raw.slice(-3);
-			return 'A*O' + day + month;
-		}
+		return Rej.BadRequest('No recent availability to request return date from');
 	};
 
 	const prepareMcoMask = async () => {
