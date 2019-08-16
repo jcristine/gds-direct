@@ -1,3 +1,5 @@
+const DateTime = require('../../Transpiled/Lib/Utils/DateTime.js');
+const CommonParserHelpers = require('../../Transpiled/Gds/Parsers/Apollo/CommonParserHelpers.js');
 const FqCmdParser = require('../../Transpiled/Gds/Parsers/Galileo/Commands/FqCmdParser.js');
 const SabPricingCmdParser = require('../../Transpiled/Gds/Parsers/Sabre/Commands/PricingCmdParser.js');
 const AmaPricingCmdParser = require('../../Transpiled/Gds/Parsers/Amadeus/Commands/PricingCmdParser.js');
@@ -10,8 +12,7 @@ const php = require('klesun-node-tools/src/Transpiled/php.js');
 
 let PRIVATE_FARE_TYPES = ['private', 'agencyPrivate', 'airlinePrivate', 'netAirlinePrivate'];
 
-// 1*2*3*4*7*8*9 -> 1-4*7-9
-const shortenRanges = (numbers, coma, thru) => {
+const shortenRangesRec = (numbers) => {
 	numbers = numbers.map(n => +n);
 	let ranges = [];
 	let from = -1;
@@ -28,15 +29,23 @@ const shortenRanges = (numbers, coma, thru) => {
 		}
 	}
 	ranges.push({from, to});
-	let toStr = (range) => {
-		if (range.from == range.to) {
-			return range.from;
-		} else if (+range.from + 1 == range.to) {
-			return range.from + coma + range.to;
-		} else {
-			return range.from + thru + range.to;
-		}
-	};
+	return ranges;
+};
+
+const makeRangeStr = (range, coma, thru) => {
+	if (range.from == range.to) {
+		return range.from;
+	} else if (+range.from + 1 == range.to) {
+		return range.from + coma + range.to;
+	} else {
+		return range.from + thru + range.to;
+	}
+};
+
+// 1*2*3*4*7*8*9 -> 1-4*7-9
+const shortenRanges = (numbers, coma, thru) => {
+	let ranges = shortenRangesRec(numbers);
+	let toStr = (range) => makeRangeStr(range, coma, thru);
 	return ranges.map(toStr).join(coma);
 };
 
@@ -106,6 +115,8 @@ const translatePaxes_amadeus = ({ptcs, paxNums, pricingModifiers = []}) => {
 			subMods.push('VC-' + mod.parsed);
 		} else if (mod.type === 'overrideCarrier') {
 			subMods.push('OCC-' + mod.parsed);
+		} else if (mod.type === 'ticketingDate') {
+			subMods.push(mod.parsed.raw);
 		} else {
 			superMods.push(mod);
 		}
@@ -169,6 +180,69 @@ const init = (gds, norm) => {
 	return {effectiveBaseCmd, effectiveMods, pushPaxMod};
 };
 
+const processTravelportMod = (effectiveMods, mod, coma, thru) => {
+	if (mod.type === 'currency') {
+		effectiveMods.push(':' + mod.parsed);
+	} else if (mod.type === 'validatingCarrier') {
+		effectiveMods.push('C' + mod.parsed);
+	} else if (mod.type === 'overrideCarrier') {
+		effectiveMods.push('OC' + mod.parsed);
+	} else if (mod.type === 'commission') {
+		let {units, value} = mod.parsed;
+		let apolloMod = 'Z' + (units === 'amount' ? '$' : '') + value;
+		effectiveMods.push(apolloMod);
+	} else if (mod.type === 'fareType') {
+		let letter = AtfqParser.encodeFareType(mod.parsed);
+		if (mod.parsed === 'private') {
+			effectiveMods.push(':A'); // usually agents need this one, not :P
+		} else if (letter) {
+			effectiveMods.push(':' + letter);
+		} else {
+			throw Rej.NotImplemented.makeExc('Unsupported fare type ' + mod.parsed.parsed + ' - ' + mod.raw);
+		}
+	} else if (mod.type === 'accompaniedChild') {
+		// could have been added by `translatePaxes()`
+		if (!effectiveMods.join('/').includes('/ACC')) {
+			effectiveMods.push('ACC');
+		}
+	// following different in Apollo and galileo
+	} else if (mod.type === 'segments') {
+		let bundles = mod.parsed.bundles;
+		let grouped = {};
+		for (let bundle of bundles) {
+			let modsPart = '';
+			if (bundle.bookingClass) {
+				modsPart += '.' + bundle.bookingClass;
+			}
+			if (bundle.fareBasis) {
+				modsPart += '@' + bundle.fareBasis;
+			}
+			grouped[modsPart] = grouped[modsPart] || [];
+			grouped[modsPart].push(...bundle.segmentNumbers);
+		}
+		let entries = Object.entries(grouped);
+		if (entries.length === 1 && entries[0][1].length === 0) {
+			effectiveMods.push(entries[0][0]);
+		} else {
+			let bundleTokens = [];
+			for (let [modsPart, segNums] of Object.entries(grouped)) {
+				if (segNums.length > 0) {
+					for (let range of shortenRangesRec(segNums)) {
+						let bundleStr = makeRangeStr(range, coma, thru) + modsPart;
+						bundleTokens.push(bundleStr);
+					}
+				} else if (modsPart) {
+					bundleTokens.push(modsPart);
+				}
+			}
+			effectiveMods.push('S' + bundleTokens.join(coma));
+		}
+	} else {
+		return false;
+	}
+	return true;
+};
+
 const inApollo = (norm) => {
 	let {effectiveBaseCmd, effectiveMods, pushPaxMod} = init('apollo', norm);
 	if (!effectiveBaseCmd) {
@@ -179,52 +253,10 @@ const inApollo = (norm) => {
 		}
 	}
 	for (let mod of norm.pricingModifiers) {
-		if (mod.type === 'namePosition') {
+		if (processTravelportMod(effectiveMods, mod, '|', '*')) {
+			// following is Apollo-specific
+		} else if (mod.type === 'namePosition') {
 			pushPaxMod();
-		} else if (mod.type === 'currency') {
-			effectiveMods.push(':' + mod.parsed);
-		} else if (mod.type === 'validatingCarrier') {
-			effectiveMods.push('C' + mod.parsed);
-		} else if (mod.type === 'overrideCarrier') {
-			effectiveMods.push('OC' + mod.parsed);
-		} else if (mod.type === 'commission') {
-			let {units, value} = mod.parsed;
-			let apolloMod = 'Z' + (units === 'amount' ? '$' : '') + value;
-			effectiveMods.push(apolloMod);
-		} else if (mod.type === 'fareType') {
-			let letter = AtfqParser.encodeFareType(mod.parsed);
-			if (mod.parsed === 'private') {
-				effectiveMods.push(':A'); // usually agents need this one, not :P
-			} else if (letter) {
-				effectiveMods.push(':' + letter);
-			} else {
-				throw Rej.NotImplemented.makeExc('Unsupported fare type ' + mod.parsed.parsed + ' - ' + mod.raw);
-			}
-		} else if (
-			mod.type === 'accompaniedChild' &&
-			!effectiveMods.join('/').includes('/ACC')
-		) {
-			// could have been added by `translatePaxes()`
-			effectiveMods.push('ACC');
-		// following different in Apollo and galileo
-		} else if (mod.type === 'segments') {
-			let bundles = mod.parsed.bundles;
-			if (bundles[0].segmentNumbers.length > 0) {
-				let mod = 'S' + bundles.map(bundle => {
-					// WROONG, can't use the generic function here
-					let bundleStr = shortenRanges(bundle.segmentNumbers, '|', '*');
-					if (bundle.fareBasis) {
-						bundleStr += '@' + bundle.fareBasis;
-					}
-					return bundleStr;
-				}).join('|');
-				effectiveMods.push(mod);
-			} else {
-				let fb = bundles[0].fareBasis;
-				if (fb) {
-					effectiveMods.push('@' + fb);
-				}
-			}
 		} else if (mod.type === 'ticketingDate') {
 			effectiveMods.push(':' + mod.parsed.raw);
 		} else if (mod.type === 'cabinClass') {
@@ -235,10 +267,6 @@ const inApollo = (norm) => {
 			} else {
 				throw Rej.NotImplemented.makeExc('Unsupported cabin class ' + mod.parsed.parsed + ' - ' + mod.raw);
 			}
-		} else if (!mod.type) {
-			// considering that agent used Unsupported Apollo-
-			// specific modifier right inside the other GDS format
-			effectiveMods.push(mod.raw);
 		} else {
 			throw Rej.NotImplemented.makeExc('Unsupported modifier ' + mod.type + ' - ' + mod.raw);
 		}
@@ -257,51 +285,10 @@ const inGalileo = (norm) => {
 		}
 	}
 	for (let mod of norm.pricingModifiers) {
-		if (mod.type === 'namePosition') {
+		if (processTravelportMod(effectiveMods, mod, '.', '-')) {
+			// following is Galileo-specific
+		} else if (mod.type === 'namePosition') {
 			pushPaxMod();
-		} else if (mod.type === 'currency') {
-			effectiveMods.push(':' + mod.parsed);
-		} else if (mod.type === 'validatingCarrier') {
-			effectiveMods.push('C' + mod.parsed);
-		} else if (mod.type === 'overrideCarrier') {
-			effectiveMods.push('OC' + mod.parsed);
-		} else if (mod.type === 'commission') {
-			let {units, value} = mod.parsed;
-			let apolloMod = 'Z' + (units === 'amount' ? '$' : '') + value;
-			effectiveMods.push(apolloMod);
-		} else if (
-			mod.type === 'accompaniedChild' &&
-			!effectiveMods.join('/').includes('/ACC')
-		) {
-			// could have been added by `translatePaxes()`
-			effectiveMods.push('ACC');
-		} else if (mod.type === 'fareType') {
-			let letter = AtfqParser.encodeFareType(mod.parsed);
-			if (mod.parsed === 'private') {
-				effectiveMods.push(':A'); // usually agents need this one, not :P
-			} else if (letter) {
-				effectiveMods.push(':' + letter);
-			} else {
-				throw Rej.NotImplemented.makeExc('Unsupported fare type ' + mod.parsed.parsed + ' - ' + mod.raw);
-			}
-		} else if (mod.type === 'segments') {
-			let bundles = mod.parsed.bundles;
-			if (bundles[0].segmentNumbers.length > 0) {
-				let mod = 'S' + bundles.map(bundle => {
-					// WROONG
-					let bundleStr = shortenRanges(bundle.segmentNumbers, '.', '-');
-					if (bundle.fareBasis) {
-						bundleStr += '@' + bundle.fareBasis;
-					}
-					return bundleStr;
-				}).join('.');
-				effectiveMods.push(mod);
-			} else {
-				let fb = bundles[0].fareBasis;
-				if (fb) {
-					effectiveMods.push('@' + fb);
-				}
-			}
 		} else if (mod.type === 'ticketingDate') {
 			effectiveMods.push('.T' + mod.parsed.raw);
 		} else if (mod.type === 'cabinClass') {
@@ -312,10 +299,6 @@ const inGalileo = (norm) => {
 			} else {
 				throw Rej.NotImplemented('Unsupported cabin class ' + mod.parsed + ' - ' + mod.raw);
 			}
-		} else if (!mod.type) {
-			// considering that agent used Unsupported Galileo-
-			// specific modifier right inside the other GDS format
-			effectiveMods.push(mod.raw);
 		} else {
 			throw Rej.NotImplemented.makeExc('Unsupported modifier ' + mod.type + ' - ' + mod.raw);
 		}
@@ -390,10 +373,6 @@ const inSabre = (norm) => {
 			let {units, value} = mod.parsed;
 			let sabreMod = 'K' + (units === 'percent' ? 'P' : '') + value;
 			effectiveMods.push(sabreMod);
-		} else if (!mod.type) {
-			// considering that agent used Unsupported Sabre-
-			// specific modifier right inside the other GDS format
-			effectiveMods.push(mod.raw);
 		} else {
 			throw Rej.NotImplemented.makeExc('Unsupported modifier ' + mod.type + ' - ' + mod.raw);
 		}
@@ -451,10 +430,6 @@ const inAmadeus = (norm) => {
 					effectiveMods.push('S' + shortenRanges(segNums, ',', '-'));
 				}
 			}
-		} else if (!mod.type) {
-			// considering that agent used Unsupported Amadeus-
-			// specific modifier right inside the other GDS format
-			effectiveMods.push(mod.raw);
 		} else {
 			throw Rej.NotImplemented.makeExc('Unsupported modifier ' + mod.type + ' - ' + mod.raw);
 		}
@@ -471,6 +446,18 @@ const TranslatePricingCmd = ({
 	if (!normalized) {
 		throw Rej.NoContent.makeExc('Could not normalize pricing command');
 	}
+	normalized.pricingModifiers = normalized.pricingModifiers.map(mod => {
+		if (mod.type === 'ticketingDate' && baseDate) {
+			let partial = CommonParserHelpers.parsePartialDate(mod.parsed.raw);
+			if (partial) {
+				// Amadeus only accepts full date
+				let full = DateTime.decodeRelativeDateInFuture(partial, baseDate);
+				let gdsDate = php.strtoupper(php.date('dMy', php.strtotime(full)));
+				return {...mod, parsed: {raw: gdsDate}};
+			}
+		}
+		return mod;
+	});
 	return {
 		apollo: inApollo,
 		galileo: inGalileo,

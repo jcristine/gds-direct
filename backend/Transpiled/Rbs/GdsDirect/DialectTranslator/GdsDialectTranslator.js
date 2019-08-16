@@ -1228,9 +1228,6 @@ class GdsDialectTranslator
 				} catch (exc) {
 					//console.debug('could not translate pricing: ' + cmdRq + '\n', exc);
 				}
-				result = result || (new TranslatePricingCmdAction())
-					.setBaseDate(this.$baseDate)
-					.translate(cmdRq, fromGds, toGds, parsed);
 			}
 		}
 		if (!php.empty(result)) {

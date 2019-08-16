@@ -2498,15 +2498,15 @@ class GdsDialectTranslatorTest extends require('../../../Lib/TestCase.js')
             // $BS{segNum1}+{segNum2} -> FQS{segNum1}.{segNum2}
             ['apollo', 'galileo', '$BS1+2', 'FQS1.2', true],
             // $BS{segNum1}*{segNum3}+{segNum5}*{segNum6} -> FQS{segNum1}-{segNum3}.{segNum5}-{segNum6}
-            ['apollo', 'galileo', '$BS1*3+5*6', 'FQS1-3.5-6', true],
+            ['apollo', 'galileo', '$BS1*3+5*6', 'FQS1-3.5.6', true],
             // $BBS{segNum1}+{segNum2} -> FQBBS{segNum1}.{segNum2}
             ['apollo', 'galileo', '$BBS1+2', 'FQBBS1.2', true],
             // $BBS{segNum1}*{segNum3}+{segNum5}*{segNum6} -> FQBBS{segNum1}-{segNum3}.{segNum5}-{segNum6}
-            ['apollo', 'galileo', '$BBS1*3+5*6', 'FQBBS1-3.5-6', true],
+            ['apollo', 'galileo', '$BBS1*3+5*6', 'FQBBS1-3.5.6', true],
             // $BBAS{segNum1}+{segNum2}+{segNum5}+{segNum6} -> FQBAS{segNum1}.{segNum2}.{segNum5}.{segNum6}
             ['apollo', 'galileo', '$BBAS1+2+5+6', 'FQBAS1.2.5.6', true],
             // $BBAS{segNum1}*{segNum3}+{segNum5}*{segNum6} -> FQBAS{segNum1}-{segNum3}.{segNum5}-{segNum6}
-            ['apollo', 'galileo', '$BBAS1*3+5*6', 'FQBAS1-3.5-6', true],
+            ['apollo', 'galileo', '$BBAS1*3+5*6', 'FQBAS1-3.5.6', true],
             // $BS{segNum1}+{segNum2}+{segNum5}+{segNum6}/N{paxOrder}+{paxOrder}*C{paxAge} -> FQS{segNum1}.{segNum2}.{segNum5}.{segNum6}/P{paxOrder}.{paxOrder}*C{paxAge}
             ['apollo', 'galileo', '$BS1+2+5+6/N1+2*C05', 'FQS1.2.5.6/P1.2*C05', true],
             // $BS{segNum1}+{segNum2}+{segNum5}+{segNum6}/N{paxorder}+{paxOrder}*C{paxAge}+{paxOrder}*INF -> FQS{segNum1}.{segNum2}.{segNum5}.{segNum6}/P{paxOrder}.{paxOrder}*C{paxAge}.{paxOrder}*INF
@@ -2578,7 +2578,7 @@ class GdsDialectTranslatorTest extends require('../../../Lib/TestCase.js')
             ['galileo', 'sabre', 'FQBB/CUA', 'WPNC¥AUA'],
             ['galileo', 'sabre', 'FQBBOCUA', 'WPNC¥C-UA'],
             ['galileo', 'sabre', 'FQ@VKXT5U0', 'WPQVKXT5U0'],
-            ['galileo', 'sabre', 'FQ@VKXT5U0*JCB', 'WPPJCB¥QVKXT5U0'],
+            ['galileo', 'sabre', 'FQ@VKXT5U0*JCB', 'WPQVKXT5U0¥PJCB'],
             ['galileo', 'sabre', 'FQBBP1.2*C05.3*INF++-BUSNS', 'WPNC¥P1ADT/1C05/1INF¥TC-BB'],
             ['galileo', 'sabre', 'FQBBP1*JCB.2*J05.3*JNF++-BUSNS', 'WPNC¥P1JCB/1J05/1JNF¥TC-BB'],
             ['galileo', 'sabre', 'FQBBP1*JCB.2*J05:EUR', 'WPNC¥P1JCB/1J05¥MEUR'],
@@ -2597,7 +2597,7 @@ class GdsDialectTranslatorTest extends require('../../../Lib/TestCase.js')
             ['galileo', 'apollo', 'FQBB*C05/ACC', '$BB*C05/ACC'],
             ['galileo', 'apollo', 'FQBA*C05/ACC', '$BBA*C05/ACC'],
             ['galileo', 'apollo', 'FQ@VKXT5U0', '$B\u00A4VKXT5U0'],
-            ['galileo', 'apollo', 'FQ@VKXT5U0*JCB', '$B*JCB/@VKXT5U0'],
+            ['galileo', 'apollo', 'FQ@VKXT5U0*JCB', '$B@VKXT5U0/*JCB'],
             ['galileo', 'apollo', 'FQBBP1.2*C05.3*INF++-BUSNS', '$BBN1+2*C05+3*INF//\u00A4C'],
             ['galileo', 'apollo', 'FQBBP1*JCB.2*J05.3*JNF++-BUSNS', '$BBN1*JCB+2*J05+3*JNF//\u00A4C'],
 
