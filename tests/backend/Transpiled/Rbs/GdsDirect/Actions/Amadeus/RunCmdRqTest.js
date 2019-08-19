@@ -2256,6 +2256,126 @@ class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
 			},
 		});
 
+		$list.push({
+			title: 'Paste multiple itineraries rebook should work correctly',
+			input: {
+				cmdRequested: [
+					' 1 TK   85C  24MAY MNLIST SS1   930P  505A+*      1          E',
+					' 2 TK 1757C  25MAY ISTRIX SS1   820A 1120A *      1          E',
+				].join('\n'),
+			},
+			output: {
+				calledCommands: [{
+					cmd: 'RT',
+					output: [
+						'RP/SFO1S2195/',
+						'  1  PR 127 C 20MAY 3 JFKMNL DK1   145A 615A 21MAY  E  0 350 D',
+						'     SEE RTSVC',
+						'  2  TK 085 C 24MAY 7*MNLIST DK1   930P 505A 25MAY  E  0 77W M',
+						'     SEE RTSVC',
+						'  3  TK1757 C 25MAY 1*ISTRIX DK1   820A1120A 25MAY  E  0 73H M',
+						'     SEE RTSVC',
+						'  4  AY1072 Y 28MAY 4 RIXHEL DK1  1015A1125A 28MAY  E  0 AT7 G',
+						'     OPERATED BY NORDIC REGIONAL AIRLINES',
+						'     OPERATED BY UNDEFINED',
+						'     SEE RTSVC',
+						'  5 RM NOTIFY PASSENGER PRIOR TO TICKET PURCHASE &amp; CHECK-IN:',
+						'       FEDERAL LAWS FORBID THE CARRIAGE OF HAZARDOUS MATERIALS -',
+						'       GGAMAUSHAZ/S1',
+					].join('\n'),
+				}],
+			},
+			sessionInfo: {
+				initialState: GdsDirectDefaults.makeDefaultAmadeusState(),
+				initialCommands: [{
+					cmd: 'RT',
+					output: [
+						'RP/SFO1S2195/',
+						'  1  PR 127 C 20MAY 3 JFKMNL DK1   145A 615A 21MAY  E  0 350 D',
+						'     SEE RTSVC',
+						'  2  AY1072 Y 28MAY 4 RIXHEL DK1  1015A1125A 28MAY  E  0 AT7 G',
+						'     OPERATED BY NORDIC REGIONAL AIRLINES',
+						'     OPERATED BY UNDEFINED',
+						'     SEE RTSVC',
+						'  3 RM NOTIFY PASSENGER PRIOR TO TICKET PURCHASE &amp; CHECK-IN:',
+						'       FEDERAL LAWS FORBID THE CARRIAGE OF HAZARDOUS MATERIALS -',
+						'       GGAMAUSHAZ/S1',
+					].join('\n'),
+				}],
+				performedCommands: [{
+					cmd: 'SSTK85Y24MAYMNLIST1',
+					output: [
+						'RP/SFO1S2195/',
+						'  1  PR 127 C 20MAY 3 JFKMNL DK1   145A 615A 21MAY  E  0 350 D',
+						'     SEE RTSVC',
+						'  2  TK 085 Y 24MAY 7 MNLIST DK1   930P 505A 25MAY  E  0 77W M',
+						'     SEE RTSVC',
+						'  3  AY1072 Y 28MAY 4 RIXHEL DK1  1015A1125A 28MAY  E  0 AT7 G',
+						'     OPERATED BY NORDIC REGIONAL AIRLINES',
+						'     OPERATED BY UNDEFINED',
+						'     SEE RTSVC',
+						'  4 RM NOTIFY PASSENGER PRIOR TO TICKET PURCHASE &amp; CHECK-IN:',
+						'       FEDERAL LAWS FORBID THE CARRIAGE OF HAZARDOUS MATERIALS -',
+						'       GGAMAUSHAZ/S1',
+					].join('\n'),
+				}, {
+					cmd: 'SSTK1757Y25MAYISTRIX1',
+					output: [
+						'RP/SFO1S2195/',
+						'  1  PR 127 C 20MAY 3 JFKMNL DK1   145A 615A 21MAY  E  0 350 D',
+						'     SEE RTSVC',
+						'  2  TK 085 Y 24MAY 7*MNLIST DK1   930P 505A 25MAY  E  0 77W M',
+						'     SEE RTSVC',
+						'  3  TK1757 Y 25MAY 1*ISTRIX DK1   820A1120A 25MAY  E  0 73H M',
+						'     SEE RTSVC',
+						'  4  AY1072 Y 28MAY 4 RIXHEL DK1  1015A1125A 28MAY  E  0 AT7 G',
+						'     OPERATED BY NORDIC REGIONAL AIRLINES',
+						'     OPERATED BY UNDEFINED',
+						'     SEE RTSVC',
+						'  5 RM NOTIFY PASSENGER PRIOR TO TICKET PURCHASE &amp; CHECK-IN:',
+						'       FEDERAL LAWS FORBID THE CARRIAGE OF HAZARDOUS MATERIALS -',
+						'       GGAMAUSHAZ/S1',
+					].join('\n'),
+				}, {
+					cmd: 'SBC2',
+					output: [
+						'RP/SFO1S2195/',
+						'  1  PR 127 C 20MAY 3 JFKMNL DK1   145A 615A 21MAY  E  0 350 D',
+						'     SEE RTSVC',
+						'  2  TK 085 C 24MAY 7*MNLIST DK1   930P 505A 25MAY  E  0 77W M',
+						'     SEE RTSVC',
+						'  3  TK1757 Y 25MAY 1*ISTRIX DK1   820A1120A 25MAY  E  0 73H M',
+						'     SEE RTSVC',
+						'  4  AY1072 Y 28MAY 4 RIXHEL DK1  1015A1125A 28MAY  E  0 AT7 G',
+						'     OPERATED BY NORDIC REGIONAL AIRLINES',
+						'     OPERATED BY UNDEFINED',
+						'     SEE RTSVC',
+						'  5 RM NOTIFY PASSENGER PRIOR TO TICKET PURCHASE &amp; CHECK-IN:',
+						'       FEDERAL LAWS FORBID THE CARRIAGE OF HAZARDOUS MATERIALS -',
+						'       GGAMAUSHAZ/S1',
+					].join('\n'),
+				}, {
+					cmd: 'SBC3',
+					output: [
+						'RP/SFO1S2195/',
+						'  1  PR 127 C 20MAY 3 JFKMNL DK1   145A 615A 21MAY  E  0 350 D',
+						'     SEE RTSVC',
+						'  2  TK 085 C 24MAY 7*MNLIST DK1   930P 505A 25MAY  E  0 77W M',
+						'     SEE RTSVC',
+						'  3  TK1757 C 25MAY 1*ISTRIX DK1   820A1120A 25MAY  E  0 73H M',
+						'     SEE RTSVC',
+						'  4  AY1072 Y 28MAY 4 RIXHEL DK1  1015A1125A 28MAY  E  0 AT7 G',
+						'     OPERATED BY NORDIC REGIONAL AIRLINES',
+						'     OPERATED BY UNDEFINED',
+						'     SEE RTSVC',
+						'  5 RM NOTIFY PASSENGER PRIOR TO TICKET PURCHASE &amp; CHECK-IN:',
+						'       FEDERAL LAWS FORBID THE CARRIAGE OF HAZARDOUS MATERIALS -',
+						'       GGAMAUSHAZ/S1',
+					].join('\n'),
+				}],
+			},
+		});
+
 		// // would need to stub session creation here
 		// $list.push({
 		// 	'input': {
@@ -2570,7 +2690,7 @@ class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
 
 		const stubInstances = {};
 
-		for(const cmd of Object.keys(stubs)) {
+		for (const cmd of Object.keys(stubs)) {
 			stubInstances[cmd] = sinon.stub(amadeus, cmd);
 			stubs[cmd].forEach((fn, i) => stubInstances[cmd].onCall(i).callsFake(fn));
 		}
@@ -2583,7 +2703,7 @@ class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
 
 		this.assertArrayElementsSubset(output, actualOutput);
 
-		for(const cmd of Object.keys(stubs)) {
+		for (const cmd of Object.keys(stubs)) {
 			this.assertEquals(stubs[cmd].length, stubInstances[cmd].callCount, `${cmd} Call count not matching`);
 		}
 	}
@@ -2610,7 +2730,7 @@ class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
 			PtcUtil: PtcUtil.makeCustom({
 				PtcFareFamilies: {
 					getAll: () => Promise.resolve(stubPtcFareFamilies),
-					getByAdultPtc: (adultPtc) => PtcFareFamilies.getByAdultPtcFrom(adultPtc, stubPtcFareFamilies),
+					getByAdultPtc: adultPtc => PtcFareFamilies.getByAdultPtcFrom(adultPtc, stubPtcFareFamilies),
 				},
 			}),
 		}).catch(exc => ({error: exc + '', stack: (exc || {}).stack}));

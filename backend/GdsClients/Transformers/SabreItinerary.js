@@ -1,10 +1,9 @@
 const xml = require('xml');
 const _ = require('lodash');
 const moment = require('moment');
-const DateTime = require('../../Transpiled/Lib/Utils/DateTime');
 const {getValueOrNullFromDomElement, getValueOrNullFromDomAttribute} = require('./Utils');
 
-module.exports.buildItinaryXml = params => {
+module.exports.buildItineraryXml = params => {
 	const flightSegments = (params.addAirSegments || []).map(buildFlightSegment);
 
 	return xml([
@@ -37,7 +36,7 @@ module.exports.parseItineraryXmlResponse = (dom, params) => {
 
 	const soapError = getValueOrNullFromDomElement(dom, 'soap-env\\:Fault > detail > message');
 
-	if(soapError) {
+	if (soapError) {
 		return {
 			error: `Sabre soap error - ${soapError}`,
 			newAirSegments: [],
@@ -50,20 +49,21 @@ module.exports.parseItineraryXmlResponse = (dom, params) => {
 
 	const airSegments = _.map(body.querySelectorAll('EnhancedAirBookRS > OTA_AirBookRS > OriginDestinationOption > FlightSegment'), transformSegment);
 
-	if(airSegments.length < params.addAirSegments.length) {
+	if (airSegments.length < params.addAirSegments.length) {
 		errors.push(`Failed to add segments starting from ${airSegments.length}-th`);
 	}
 
 	return {
 		binarySecurityToken: getValueOrNullFromDomElement(header, 'wsse\\:Security > wsse\\:BinarySecurityToken'),
 		newAirSegments: airSegments,
+		reservations: parseReservations(body.querySelector('ReservationItems')),
 		error: errors.length ? errors.join('; ') : null,
 	};
 };
 
 const transformSegment = el => ({
-	departureDt: transformDate(el.getAttribute('DepartureDateTime')),
-	destinationDt: transformDate(el.getAttribute('ArrivalDateTime')),
+	departureDate: transformDate(el.getAttribute('DepartureDateTime')),
+	destinationDate: transformDate(el.getAttribute('ArrivalDateTime')),
 	airline: getValueOrNullFromDomAttribute(el, 'MarketingAirline', 'Code'),
 	flightNumber: el.getAttribute('FlightNumber'),
 	bookingClass: el.getAttribute('ResBookDesigCode'),
@@ -105,13 +105,24 @@ const buildFlightSegment = seg => ({
 });
 
 const transformDate = val => {
-	if(!val) {
+	if (!val) {
 		return null;
 	}
 
-	const [date, time] = val.split('T');
+	const [date] = val.split('T');
 
-	return `${DateTime.decodeRelativeDateInFuture(date, moment().format('YYYY-MM-DD'))} ${time}:00`;
+	// in reservation segment date is already with the year
+	if (date.length === '2019-01-01'.length) {
+		return {
+			raw: val,
+			parsed: date.substr('2019-'.length), // everywhere else parsed date is just date and month
+		};
+	}
+
+	return {
+		raw: val,
+		parsed: date,
+	};
 };
 
 const cleanUpAttrs = attributes => {
@@ -119,7 +130,7 @@ const cleanUpAttrs = attributes => {
 		// xml lib will add atributes regardless if they are set or not
 		// so if something is null or undefined it will be added in attributes
 		// with string value "null" or "undefined" respectively
-		if(keyValuePair[1] !== undefined && keyValuePair[1] !== null) {
+		if (keyValuePair[1] !== undefined && keyValuePair[1] !== null) {
 			acc[keyValuePair[0]] = keyValuePair[1];
 		}
 
@@ -135,7 +146,24 @@ const cleanUpAttrs = attributes => {
 // child elements/attributes
 const filterEmpty = properties => {
 	const r = properties
-		.filter(property => property && Object.values(property).some(v => v));
+		.filter(property => property && Object.values(property)
+			.some(v => v !== undefined && v !== null));
 
 	return r.length > 0 ? r : null;
+};
+
+const parseReservations = items => {
+	if (!items) {
+		return null;
+	}
+
+	return _.map(items.querySelectorAll('Item'), item => {
+		const segmentNumber = parseInt(item.getAttribute('RPH'), 10);
+
+		const segment = transformSegment(item.querySelector('FlightSegment'));
+
+		segment.segmentNumber = segmentNumber;
+
+		return segment;
+	});
 };

@@ -6,6 +6,7 @@ const moment = require('moment');
 const provideItineraryTestCases = () => {
 	const list = [];
 
+
 	list.push({
 		title: 'Perform request and parse response',
 		input: {
@@ -34,8 +35,14 @@ const provideItineraryTestCases = () => {
 		output: {
 			binarySecurityToken: 'Shared/IDL:IceSess/SessMgr:1.0.IDL/Common/!ICESMS/RESB!ICESMSLB/RES.LB!-1111111111111111111!2222222!0',
 			newAirSegments: [{
-				departureDt: '2020-05-20 01:45:00',
-				destinationDt: '2020-05-21 06:15:00',
+				departureDate: {
+					parsed: '05-20',
+					raw: '05-20T01:45',
+				},
+				destinationDate: {
+					parsed: '05-21',
+					raw: '05-21T06:15',
+				},
 				airline: 'PR',
 				flightNumber: '0127',
 				bookingClass: 'C',
@@ -45,8 +52,14 @@ const provideItineraryTestCases = () => {
 				seatCount: '001',
 				eticket: true,
 			}, {
-				departureDt: '2020-05-25 19:40:00',
-				destinationDt: '2020-05-25 23:15:00',
+				departureDate: {
+					parsed: '05-25',
+					raw: '05-25T19:40',
+				},
+				destinationDate: {
+					parsed: '05-25',
+					raw: '05-25T23:15',
+				},
 				airline: 'PR',
 				flightNumber: '0126',
 				bookingClass: 'C',
