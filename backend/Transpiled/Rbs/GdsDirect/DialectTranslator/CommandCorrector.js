@@ -253,6 +253,7 @@ class CommandCorrector {
 				{mistake: 'PRICEALL*JC', correct: 'PRICEJCB'},
 				{mistake: 'PRICECJB', correct: 'PRICEJCB'},
 				{mistake: 'PRICEBJC', correct: 'PRICEJCB'},
+				{mistake: 'PRICEFXD', correct: 'PRICEALL/FXD'},
 				{mistake: 'STOREALL', correct: 'STORE'},
 			],
 
