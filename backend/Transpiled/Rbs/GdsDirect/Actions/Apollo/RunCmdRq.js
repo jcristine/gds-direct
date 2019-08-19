@@ -1059,20 +1059,20 @@ let RunCmdRq = ({
 	};
 
 	const prepareHbFexMask = async (cmdStoreNumber = '', ticketNumber = '') => {
-		const pnr = await _checkPnrForExchange(cmdStoreNumber || 1);
-		const cmd = 'HB' + cmdStoreNumber + ':FEX' + (ticketNumber || '');
-		const output = (await runCmd(cmd)).output;
-		const parsed = ParseHbFex(output);
+		let pnr = await _checkPnrForExchange(cmdStoreNumber || 1);
+		let cmd = 'HB' + cmdStoreNumber + ':FEX' + (ticketNumber || '');
+		let output = (await runCmd(cmd)).output;
+		let parsed = ParseHbFex(output);
 		if (!parsed) {
 			return {calledCommands: [{cmd, output}], errors: ['Invalid HB:FEX response']};
 		}
-		const readonlyFields = new Set([
+		let readonlyFields = new Set([
 			'originalBoardPoint', 'originalOffPoint',
 			'originalAgencyIata', 'originalInvoiceNumber',
 			'originalTicketStarExtension',
 		]);
-		const pcc = getSessionData().pcc;
-		const pccRow = !pcc ? null : await Pccs.findByCode('apollo', pcc);
+		let pcc = getSessionData().pcc;
+		let pccRow = !pcc ? null : await Pccs.findByCode('apollo', pcc);
 
 		const mcoRows =ticketNumber ? [] : await getMcoRows(pnr, parsed.headerData)
 			.catch(ignoreExc([], [UnprocessableEntity]));
