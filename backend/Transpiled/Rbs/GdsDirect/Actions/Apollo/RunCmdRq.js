@@ -11,6 +11,7 @@ const Fp = require('../../../../Lib/Utils/Fp.js');
 const StringUtil = require('../../../../Lib/Utils/StringUtil.js');
 const TravelportUtils = require("../../../../../GdsHelpers/TravelportUtils.js");
 const {fetchUntil, fetchAll, extractPager} = TravelportUtils;
+const moment = require('moment');
 
 const Rej = require('klesun-node-tools/src/Rej.js');
 const {ignoreExc} = require('../../../../../Utils/TmpLib.js');
@@ -1004,22 +1005,83 @@ let RunCmdRq = ({
 		return Promise.resolve(pnr);
 	};
 
+	// mcoRows dates are in UTC, apollo dates should be in PCC's time zone
+	// this is problem only if there is large enough gap between utc and pcc
+	// where actual date value should be smaller
+	const modifyMcosAccordingToPccDates = async (mcoRows, htRows) => {
+		const htRecord = htRows.find(record => record.isActive);
+
+		if (!htRecord) {
+			return;
+		}
+
+		const history = PnrHistoryParser
+			.parse((await runCmd('*HA', true)).output);
+
+		const pccId = history && history.rcvdList && history.rcvdList[0]
+			&& history.rcvdList[0].rcvd && history.rcvdList[0].rcvd.pcc;
+
+		if (!pccId) {
+			return;
+		}
+
+		const issuingPcc = await Pccs.findByCode('apollo', pccId);
+
+		if (!issuingPcc) {
+			return;
+		}
+
+		const cityTz = await stateful.getGeoProvider()
+			.getTimezone(issuingPcc.point_of_sale_city);
+
+		if (!cityTz) {
+			return;
+		}
+
+		// needed only to get date's year
+		const pastDate = DateTime.decodeRelativeDateInPast(
+			htRecord.transactionDt.parsed.split(' ')[0], stateful.getStartDt());
+
+		if (!pastDate) {
+			return;
+		}
+
+		const year = pastDate.split('-')[0];
+
+		const finalDate = moment.utc(DateTime.fromUtc(`${year}-${htRecord.transactionDt.parsed}:00`, cityTz));
+
+		mcoRows.forEach(row => {
+			row.issueDate = {
+				raw: finalDate.format('DDMMMYY').toUpperCase(),
+				parsed: finalDate.format('YYYY-MM-DD'),
+			};
+		});
+	};
+
 	const prepareHbFexMask = async (cmdStoreNumber = '', ticketNumber = '') => {
-		let pnr = await _checkPnrForExchange(cmdStoreNumber || 1);
-		let cmd = 'HB' + cmdStoreNumber + ':FEX' + (ticketNumber || '');
-		let output = (await runCmd(cmd)).output;
-		let parsed = ParseHbFex(output);
+		const pnr = await _checkPnrForExchange(cmdStoreNumber || 1);
+		const cmd = 'HB' + cmdStoreNumber + ':FEX' + (ticketNumber || '');
+		const output = (await runCmd(cmd)).output;
+		const parsed = ParseHbFex(output);
 		if (!parsed) {
 			return {calledCommands: [{cmd, output}], errors: ['Invalid HB:FEX response']};
 		}
-		let readonlyFields = new Set([
+		const readonlyFields = new Set([
 			'originalBoardPoint', 'originalOffPoint',
 			'originalAgencyIata', 'originalInvoiceNumber',
 			'originalTicketStarExtension',
 		]);
-		let pcc = getSessionData().pcc;
-		let pccRow = !pcc ? null : await Pccs.findByCode('apollo', pcc);
-		let result = {
+		const pcc = getSessionData().pcc;
+		const pccRow = !pcc ? null : await Pccs.findByCode('apollo', pcc);
+
+		const mcoRows =ticketNumber ? [] : await getMcoRows(pnr, parsed.headerData)
+			.catch(ignoreExc([], [UnprocessableEntity]));
+		const htRows = ticketNumber ? [] : await getHtRows(pnr)
+			.catch(ignoreExc([], [UnprocessableEntity]));
+
+		await modifyMcosAccordingToPccDates(mcoRows, htRows);
+
+		return {
 			calledCommands: [{
 				cmd: cmd,
 				output: 'SEE MASK FORM BELOW',
@@ -1028,12 +1090,8 @@ let RunCmdRq = ({
 				type: 'displayExchangeMask',
 				data: {
 					currentPos: !pccRow ? null : pccRow.point_of_sale_city,
-					mcoRows: ticketNumber ? [] : await
-					getMcoRows(pnr, parsed.headerData)
-						.catch(ignoreExc([], [UnprocessableEntity])),
-					htRows: ticketNumber ? [] : await
-					getHtRows(pnr)
-						.catch(ignoreExc([], [UnprocessableEntity])),
+					mcoRows: mcoRows,
+					htRows: htRows,
 					headerData: parsed.headerData,
 					fields: parsed.fields.map(f => ({
 						key: f.key,
@@ -1044,7 +1102,6 @@ let RunCmdRq = ({
 				},
 			}],
 		};
-		return result;
 	};
 
 	const prepareHhprMask = async (cmd) => {

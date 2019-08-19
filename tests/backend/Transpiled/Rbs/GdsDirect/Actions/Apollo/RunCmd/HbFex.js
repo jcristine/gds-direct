@@ -1,23 +1,20 @@
 const stubPccs = require('../../../../../../../data/stubPccs.js');
 const SqlUtil = require('klesun-node-tools/src/Utils/SqlUtil.js');
 const Pccs = require('../../../../../../../../backend/Repositories/Pccs.js');
-const PtcUtil = require('../../../../../../../../backend/Transpiled/Rbs/Process/Common/PtcUtil.js');
-const stubPtcFareFamilies = require('../../../../../../../data/stubPtcFareFamilies.js');
-const PtcFareFamilies = require('../../../../../../../../backend/Repositories/PtcFareFamilies.js');
 const RunCmdRq = require('../../../../../../../../backend/Transpiled/Rbs/GdsDirect/Actions/Apollo/RunCmdRq.js');
 const GdsDirectDefaults = require('../../../../../../../../backend/Utils/Testing/GdsDirectDefaults.js');
 const Rej = require('klesun-node-tools/src/Rej.js');
 const {coverExc} = require('klesun-node-tools/src/Lang.js');
 const {nonEmpty} = require('klesun-node-tools/src/Lang.js');
-const php = require('../../../../../php.js');
+const _ = require('lodash');
 
 class RunCmdRqHbFexTest extends require('../../../../../Lib/TestCase.js') {
 	provideTestCases() {
 		const list = [];
 
 		list.push({
+			'title': 'HB:FEX action example',
 			'input': {
-				'title': 'HB:FEX action example',
 				'cmdRequested': 'HB:FEX',
 			},
 			'output': {
@@ -105,7 +102,7 @@ class RunCmdRqHbFexTest extends require('../../../../../Lib/TestCase.js') {
 				],
 			},
 			'sessionInfo': {
-				'initialState': php.array_merge(GdsDirectDefaults.makeDefaultApolloState(), {
+				'initialState': _.extend(GdsDirectDefaults.makeDefaultApolloState(), {
 					'agent_id': 8050,
 					'hasPnr': true,
 					'isPnrStored': true,
@@ -167,8 +164,8 @@ class RunCmdRqHbFexTest extends require('../../../../../Lib/TestCase.js') {
 		});
 
 		list.push({
+			'title': 'HB:FEX action example with ticket number (artificial, exchange of normal ticket)',
 			'input': {
-				'title': 'HB:FEX action example with ticket number (artificial, exchange of normal ticket)',
 				'cmdRequested': 'HB:FEX016 7293 600184',
 			},
 			'output': {
@@ -257,7 +254,7 @@ class RunCmdRqHbFexTest extends require('../../../../../Lib/TestCase.js') {
 				],
 			},
 			'sessionInfo': {
-				'initialState': php.array_merge(GdsDirectDefaults.makeDefaultApolloState(), {
+				'initialState': _.extend(GdsDirectDefaults.makeDefaultApolloState(), {
 					'agent_id': 8050,
 					'hasPnr': true,
 					'isPnrStored': true,
@@ -319,8 +316,8 @@ class RunCmdRqHbFexTest extends require('../../../../../Lib/TestCase.js') {
 		});
 
 		list.push({
+			'title': 'HB:FEX with ticket number (real, exchange of exchange)',
 			'input': {
-				'title': 'HB:FEX with ticket number (real, exchange of exchange)',
 				'cmdRequested': 'HB:FEX016 7289 106161',
 			},
 			'output': {
@@ -409,7 +406,7 @@ class RunCmdRqHbFexTest extends require('../../../../../Lib/TestCase.js') {
 				],
 			},
 			'sessionInfo': {
-				'initialState': php.array_merge(GdsDirectDefaults.makeDefaultApolloState(), {
+				'initialState': _.extend(GdsDirectDefaults.makeDefaultApolloState(), {
 					'agent_id': 8050,
 					'hasPnr': true,
 					'isPnrStored': true,
@@ -460,8 +457,8 @@ class RunCmdRqHbFexTest extends require('../../../../../Lib/TestCase.js') {
 		});
 
 		list.push({
+			'title': 'HB:FEX with MCO document number completion data',
 			'input': {
-				'title': 'HB:FEX with MCO document number completion data',
 				'cmdRequested': 'HB2:FEX',
 			},
 			'output': {
@@ -559,7 +556,7 @@ class RunCmdRqHbFexTest extends require('../../../../../Lib/TestCase.js') {
 				],
 			},
 			'sessionInfo': {
-				'initialState': php.array_merge(GdsDirectDefaults.makeDefaultApolloState(), {
+				'initialState': _.extend(GdsDirectDefaults.makeDefaultApolloState(), {
 					'agent_id': 8050,
 					'hasPnr': true,
 					'isPnrStored': true,
@@ -663,8 +660,8 @@ class RunCmdRqHbFexTest extends require('../../../../../Lib/TestCase.js') {
 		});
 
 		list.push({
+			'title': 'HB:FEX with MCO document number completion data, multiple paxes with same last name',
 			'input': {
-				'title': 'HB:FEX with MCO document number completion data, multiple paxes with same last name',
 				'cmdRequested': 'HB2:FEX',
 			},
 			'output': {
@@ -785,7 +782,7 @@ class RunCmdRqHbFexTest extends require('../../../../../Lib/TestCase.js') {
 				],
 			},
 			'sessionInfo': {
-				'initialState': php.array_merge(GdsDirectDefaults.makeDefaultApolloState(), {
+				'initialState': _.extend(GdsDirectDefaults.makeDefaultApolloState(), {
 					'agent_id': 8050,
 					'hasPnr': true,
 					'isPnrStored': true,
@@ -908,8 +905,8 @@ class RunCmdRqHbFexTest extends require('../../../../../Lib/TestCase.js') {
 		// note that *MCO1 would be called in real life, but test does not
 		// fail because it catches the exception thrown by AnyGdsSession.js
 		list.push({
+			'title': 'HB:FEX failed to provide *MPD data',
 			'input': {
-				'title': 'HB:FEX failed to provide *MPD data',
 				'cmdRequested': 'HB:FEX',
 			},
 			'output': {
@@ -990,7 +987,7 @@ class RunCmdRqHbFexTest extends require('../../../../../Lib/TestCase.js') {
 				],
 			},
 			'sessionInfo': {
-				'initialState': php.array_merge(GdsDirectDefaults.makeDefaultApolloState(), {
+				'initialState': _.extend(GdsDirectDefaults.makeDefaultApolloState(), {
 					'agent_id': 8050,
 					'hasPnr': true,
 					'isPnrStored': true,
@@ -1098,7 +1095,7 @@ class RunCmdRqHbFexTest extends require('../../../../../Lib/TestCase.js') {
 				'userMessages': ['Error: Multiple passengers (2) in ATFQ #1 not allowed for HB:FEX'],
 			},
 			'sessionInfo': {
-				'initialState': php.array_merge(GdsDirectDefaults.makeDefaultApolloState(), {
+				'initialState': _.extend(GdsDirectDefaults.makeDefaultApolloState(), {
 					'agent_id': 8050,
 					'hasPnr': true,
 					'isPnrStored': true,
@@ -1156,9 +1153,10 @@ class RunCmdRqHbFexTest extends require('../../../../../Lib/TestCase.js') {
 		});
 
 		list.push({
+			title: 'example of original issue in UTC is not same as in PCC timezone',
 			input: {
-				'title': 'example of original issue in UTC is not same as in PCC timezone',
-				'cmdRequested': 'HB:FEX',
+				cmdRequested: 'HB:FEX',
+				baseDate: '2019-08-29 00:00:00',
 			},
 			output: {
 				status: 'executed',
@@ -1183,7 +1181,7 @@ class RunCmdRqHbFexTest extends require('../../../../../Lib/TestCase.js') {
 				}],
 			},
 			sessionInfo: {
-				'initialState': php.array_merge(GdsDirectDefaults.makeDefaultApolloState(), {
+				'initialState': _.extend(GdsDirectDefaults.makeDefaultApolloState(), {
 					'agent_id': 8050,
 					'hasPnr': true,
 					'isPnrStored': true,
@@ -1209,10 +1207,6 @@ class RunCmdRqHbFexTest extends require('../../../../../Lib/TestCase.js') {
 							'   2 ATLAS/212-481-5516-JUMER',
 							')><',
 						].join('\n'),
-						'duration': '0.056994002',
-						'type': 'redisplayPnr',
-						'scrolledCmd': '*R',
-						'state': {'area':'B','cmdType':'redisplayPnr','scrolledCmd':'*R','canCreatePq':false,'pricingCmd':null,'pcc':'2G8P','cmdCnt':5,'recordLocator':'PBS98E','hasPnr':true,'isPnrStored':true},
 					},
 					{
 						'cmd': 'MR',
@@ -1230,10 +1224,6 @@ class RunCmdRqHbFexTest extends require('../../../../../Lib/TestCase.js') {
 							'   2 SSRADTK1VTOKL BY 27MAY19/0600Z OTHERWISE WILL BE XXLD',
 							')><',
 						].join('\n'),
-						'duration': '0.036795834',
-						'type': 'moveRest',
-						'scrolledCmd': '*R',
-						'state': {'area':'B','cmdType':'moveRest','scrolledCmd':'*R','canCreatePq':false,'pricingCmd':null,'pcc':'2G8P','cmdCnt':6,'recordLocator':'PBS98E','hasPnr':true,'isPnrStored':true},
 					},
 					{
 						'cmd': 'MR',
@@ -1248,10 +1238,6 @@ class RunCmdRqHbFexTest extends require('../../../../../Lib/TestCase.js') {
 							'  10 SSRDOCSAFHK1/////06JAN53/M//EGBUHO/SOLOMONDAVID/OGADINMA-1EGBUHO/SOLOMONDAVID OGADINMA',
 							')><',
 						].join('\n'),
-						'duration': '0.031649119',
-						'type': 'moveRest',
-						'scrolledCmd': '*R',
-						'state': {'area':'B','cmdType':'moveRest','scrolledCmd':'*R','canCreatePq':false,'pricingCmd':null,'pcc':'2G8P','cmdCnt':7,'recordLocator':'PBS98E','hasPnr':true,'isPnrStored':true},
 					},
 					{
 						'cmd': 'MR',
@@ -1270,10 +1256,6 @@ class RunCmdRqHbFexTest extends require('../../../../../Lib/TestCase.js') {
 							'   2 1A KGJAON   23MAY 2342',
 							')><',
 						].join('\n'),
-						'duration': '0.082554439',
-						'type': 'moveRest',
-						'scrolledCmd': '*R',
-						'state': {'area':'B','cmdType':'moveRest','scrolledCmd':'*R','canCreatePq':false,'pricingCmd':null,'pcc':'2G8P','cmdCnt':8,'recordLocator':'PBS98E','hasPnr':true,'isPnrStored':true},
 					},
 					{
 						'cmd': 'MR',
@@ -1281,10 +1263,6 @@ class RunCmdRqHbFexTest extends require('../../../../../Lib/TestCase.js') {
 							'   3 1A KGJAON   23MAY 2342',
 							'><',
 						].join('\n'),
-						'duration': '0.057189507',
-						'type': 'moveRest',
-						'scrolledCmd': '*R',
-						'state': {'area':'B','cmdType':'moveRest','scrolledCmd':'*R','canCreatePq':false,'pricingCmd':null,'pcc':'2G8P','cmdCnt':9,'recordLocator':'PBS98E','hasPnr':true,'isPnrStored':true},
 					},
 				],
 				'performedCommands': [
@@ -1306,10 +1284,6 @@ class RunCmdRqHbFexTest extends require('../../../../../Lib/TestCase.js') {
 							'PENALTY USD;............  COMM ON PENALTY;...........',
 							'><',
 						].join('\n'),
-						'duration': '3.222072719',
-						'type': 'issueTickets',
-						'scrolledCmd': 'HB:FEX',
-						'state': {'area':'B','cmdType':'issueTickets','scrolledCmd':'HB:FEX','canCreatePq':false,'pricingCmd':null,'pcc':'2G8P','cmdCnt':10,'recordLocator':'PBS98E','hasPnr':true,'isPnrStored':true},
 					},
 					{
 						'cmd': '*MPD',
@@ -1320,10 +1294,6 @@ class RunCmdRqHbFexTest extends require('../../../../../Lib/TestCase.js') {
 							'END OF DISPLAY',
 							'><',
 						].join('\n'),
-						'duration': '0.042588507',
-						'type': 'mcoList',
-						'scrolledCmd': '*MPD',
-						'state': {'area':'B','cmdType':'mcoList','scrolledCmd':'*MPD','canCreatePq':false,'pricingCmd':null,'pcc':'2G8P','cmdCnt':11,'recordLocator':'PBS98E','hasPnr':true,'isPnrStored':true},
 					},
 					{
 						'cmd': '*MCO1',
@@ -1342,10 +1312,6 @@ class RunCmdRqHbFexTest extends require('../../../../../Lib/TestCase.js') {
 							' VALIDATING CARRIER;DL                  ISSUE NOW;.',
 							'><',
 						].join('\n'),
-						'duration': '0.078383694',
-						'type': 'storedMcoMask',
-						'scrolledCmd': '*MCO1',
-						'state': {'area':'B','cmdType':'storedMcoMask','scrolledCmd':'*MCO1','canCreatePq':false,'pricingCmd':null,'pcc':'2G8P','cmdCnt':12,'recordLocator':'PBS98E','hasPnr':true,'isPnrStored':true},
 					},
 					{
 						'cmd': '*HT',
@@ -1356,12 +1322,192 @@ class RunCmdRqHbFexTest extends require('../../../../../Lib/TestCase.js') {
 							'XK EGBUHO/SOLOMON-00011736-37/0065056248761/EZ0002367-USD/1385.30/24MAY0445Z',
 							'><',
 						].join('\n'),
-						'duration': '0.050226535',
-						'type': 'history',
-						'scrolledCmd': '*HT',
-						'state': {'area':'A','pcc':'2F3K','recordLocator':'PBS98E','canCreatePq':false,'scrolledCmd':'*HT','cmdCnt':6,'pricingCmd':null,'hasPnr':true,'isPnrStored':true,'cmdType':'history'},
+					},
+					{
+						cmd: '*HA',
+						output: [
+							'     *****  AIR  HISTORY  *****',
+							'HS JL  66 V09JAN NRTSAN NN/HK2   505P  955A *       1',
+							'HS JL 746 V09JAN MNLNRT NN/HK2   940A  250P *       1',
+							'RCVD-NIXON/ZDPBVWS -CR- QSB/2G8P/1V AG WS 10AUG0428Z',
+							'><',
+						].join('\n'),
 					},
 				],
+			},
+		});
+
+		list.push({
+			title: 'Return correct date values in mco response in case if date in issuing pcc is different because of timezones',
+			input: {
+				cmdRequested: 'HB1:FEX',
+			},
+			output: {
+				calledCommands: [{
+					cmd: 'HB1:FEX',
+					output: 'SEE MASK FORM BELOW',
+				}],
+				actions: [{
+					type: 'displayExchangeMask',
+					data: {
+						mcoRows: [{
+							issueDate: {
+								raw: '09AUG18',
+								parsed: '2018-08-09',
+							},
+						}],
+					},
+				}],
+			},
+			sessionInfo: {
+				initialState: _.extend(GdsDirectDefaults.makeDefaultApolloState(), {
+					'agent_id': 8050,
+					'hasPnr': true,
+					'isPnrStored': true,
+					'pcc': '2G8P',
+					'recordLocator': 'NL1KSY',
+				}),
+				initialCommands: [{
+					cmd: '*NL1KSY',
+					output: [
+						'JUMER',
+						'NL1KSY/WS QSBYC DPBVWS  AG 05578602 09AUG',
+						' 1.1BOWMAN/ANA CRISTINA  2.1BOWMAN/EMILY FRANCES ',
+						' 1 JL 746V 09JAN MNLNRT HK2   940A  250P *         TH   E  1',
+						' 2 JL  66V 09JAN NRTSAN HK2   505P  955A *         TH   E  1',
+						'*** PROFILE ASSOCIATIONS EXIST *** >*PA; ',
+						'FONE-SFOAS/800-750-2238 ASAP CUSTOMER SUPPORT',
+						'   2 ATLAS/212-481-5516-JUMER',
+						'   3 SFOR/800-750-2238-ITN',
+						'ADRS-INTERNATIONAL TRAVEL NETWORK@100 PINE STREET@SUITE 1925@SAN FRANCISCO CA Z/94111',
+						'FOP:-VIXXXXXXXXXXXX0026/D1223/*01779C',
+						'TKTG-T/QSB 10AUG0502Z WS AG *',
+						')><',
+					].join('\n'),
+				}],
+				performedCommands: [{
+					cmd: '*R',
+					output: [
+						'JUMER',
+						'NL1KSY/WS QSBYC DPBVWS  AG 05578602 09AUG',
+						' 1.1BOWMAN/ANA CRISTINA  2.1BOWMAN/EMILY FRANCES ',
+						' 1 JL 746V 09JAN MNLNRT HK2   940A  250P *         TH   E  1',
+						' 2 JL  66V 09JAN NRTSAN HK2   505P  955A *         TH   E  1',
+						'*** PROFILE ASSOCIATIONS EXIST *** &gt;*PA; ',
+						'FONE-SFOAS/800-750-2238 ASAP CUSTOMER SUPPORT',
+						'   2 ATLAS/212-481-5516-JUMER',
+						'   3 SFOR/800-750-2238-ITN',
+						'ADRS-INTERNATIONAL TRAVEL NETWORK@100 PINE STREET@SUITE 1925@SAN FRANCISCO CA Z/94111',
+						'FOP:-VIXXXXXXXXXXXX0026/D1223/*01779C',
+						'TKTG-T/QSB 10AUG0502Z WS AG *',
+						')><',
+					].join('\n'),
+				}, {
+					cmd: 'MR',
+					output: [
+						'*** TIN REMARKS EXIST *** >*T; ',
+						'*** MISCELLANEOUS DOCUMENT DATA EXISTS *** >*MPD; ',
+						'*** LINEAR FARE DATA EXISTS *** >*LF; ',
+						'1/ATFQ-OK/$BN1/:N/ITPJBTL/Z4/ET/TA2G8P/CJL',
+						' FQ-USD 793.00/USD 18.60US/USD 88.53XT/USD 900.13 - 9AUG VNE00YN0.VNE00YN0',
+						'2/ATFQ-OK/$BN2/:N/ITPJBTL/Z4/ET/TA2G8P/CJL',
+						' FQ-USD 793.00/USD 18.60US/USD 88.53XT/USD 900.13 - 9AUG VNE00YN0.VNE00YN0',
+						'GFAX-SSRADTK1VTOJL BY 16AUG 2359 SFO TIME ZONE OTHERWISE WILL BE XLD',
+						'   2 SSRSFMLJLKK01 MNLNRT 0746V 09JAN-1BOWMAN/ANA CRISTINA ',
+						'   3 SSRSFMLJLKK01 NRTSAN 0066V 09JAN-1BOWMAN/ANA CRISTINA ',
+						')><',
+					].join('\n'),
+				}, {
+					cmd: 'MR',
+					output: [
+						'   4 SSRVGMLJLKK01 MNLNRT 0746V 09JAN-1BOWMAN/EMILY FRANCES ',
+						'   5 SSRVGMLJLKK01 NRTSAN 0066V 09JAN-1BOWMAN/EMILY FRANCES ',
+						'   6 SSRCTCEJLHK1/ACBOWMAN2014//GMAIL.COM-1BOWMAN/ANA CRISTINA',
+						'   7 SSRCTCEJLHK1/EBOWMAN1912//GMAIL.COM-1BOWMAN/EMILY FRANCES',
+						'   8 SSRCTCMJLHK1/0013033789870-1BOWMAN/ANA CRISTINA',
+						'   9 SSRCTCMJLHK1/0017208911557-1BOWMAN/EMILY FRANCES',
+						'  10 SSRDOCSJLHK1/////21JUN62/F//BOWMAN/ANA/CRISTINA-1BOWMAN/ANA CRISTINA',
+						'  11 SSRDOCSJLHK1/////11MAR96/F//BOWMAN/EMILY/FRANCES-1BOWMAN/EMILY FRANCES',
+						'RMKS-GD-NIXON/101608/FOR NIXON/101608/LEAD-12618152 IN 2F3K',
+						'TRMK-AN8007502041',
+						'   2 DI-UD35',
+						')><',
+					].join('\n'),
+				}, {
+					cmd: 'MR',
+					output: [
+						'   3 CA ACCT-8007502041',
+						'   4 UD8 0',
+						'   5 UD1 P',
+						'   6 UD10 SPLIT',
+						'ACKN-1A JHNVIE   10AUG 0428',
+						'   2 1A JHNVIE   10AUG 0428',
+						'><',
+					].join('\n'),
+				}, {
+					cmd: 'HB1:FEX',
+					output: [
+						'>$EX NAME BOWMAN/ANA CRISTINA                PSGR  1/ 1',
+						'FARE USD   793.00  TOTAL USD   900.13',
+						'TX1 USD   18.60 US   TX2 USD   88.53 XT   TX3               ',
+						'',
+						'EXCHANGE TKTS ;..............-;...  CPN ALL',
+						'TKT1;.............. CPN;.... TKT2;.............. CPN;....',
+						'COMM;.........  ORIG FOP;................... EVEN;.',
+						'',
+						'TTL VALUE OF EX TKTS USD;.............  ORIG BRD/OFF;...;...',
+						'TX1 USD;.......;..   TX2 USD;.......;..   TX3 USD;.......;..',
+						'ORIG ISS;...... ORIG DATE;....... ORIG IATA NBR;.........',
+						'ORIG TKT;..............-;...  ORIG INV NBR;.........',
+						'PENALTY USD;............  COMM ON PENALTY;...........',
+						'><',
+					].join('\n'),
+				}, {
+					cmd: '*MPD',
+					output: [
+						'*MPD             MISCELLANEOUS DOCUMENT LIST',
+						'          NAME         DOCUMENT NBR   ISSUED       AMOUNT',
+						'>*MCO1;   BOWMAN/A    1315056284699   10AUG19          869.03 ',
+						'>*MCO2;   BOWMAN/E    1315056284700   10AUG19          869.03 ',
+						'END OF DISPLAY',
+						'><',
+					].join('\n'),
+				}, {
+					cmd: '*MCO1',
+					output: [
+						'>HHMCU1           *** MISC CHARGE ORDER ***',
+						' PASSENGER NAME;BOWMAN/ANA CRISTINA.....................',
+						' TO;JL...................................... AT;HND............',
+						' VALID FOR;SPLIT...............................................',
+						' TOUR CODE;............... RELATED TKT NBR;.............',
+						' FOP;VIXXXXXXXXXXXX0026/OK.....................................',
+						' EXP DATE;1223 APVL CODE;01779C COMM;0.00/... TAX;........-;..',
+						' AMOUNT;869.03..-;USD EQUIV ;........-;... BSR;..........',
+						' END BOX;......................................................',
+						' REMARK1;..............................................',
+						' REMARK2;......................................................',
+						' VALIDATING CARRIER;JL                  ISSUE NOW;.',
+						'><',
+					].join('\n'),
+				}, {
+					cmd: '*HT',
+					output: [
+						'** CURRENT TIN DATA **',
+						'BOWMAN/EMILYF-00012774-75/1315056284700/EZ0102329-USD/869.03/10AUG0502Z',
+						'** HISTORY TIN DATA **',
+						'XK BOWMAN/ANACRI-00012772-73/1315056284699/EZ0102328-USD/869.03/10AUG0502Z',
+						'><',
+					].join('\n'),
+				}, {
+					cmd: '*HA',
+					output: [
+						'     *****  AIR  HISTORY  *****',
+						'HS JL  66 V09JAN NRTSAN NN/HK2   505P  955A *       1',
+						'HS JL 746 V09JAN MNLNRT NN/HK2   940A  250P *       1',
+						'RCVD-NIXON/ZDPBVWS -CR- QSB/2F3K/1V AG WS 10AUG0428Z',
+						'><',
+					].join('\n'),
+				}],
 			},
 		});
 
@@ -1369,11 +1515,10 @@ class RunCmdRqHbFexTest extends require('../../../../../Lib/TestCase.js') {
 	}
 
 	async testCase({input, output, sessionInfo}) {
-		let stateful = await GdsDirectDefaults.makeStatefulSession('apollo', input, sessionInfo);
+		const stateful = await GdsDirectDefaults.makeStatefulSession('apollo', input, sessionInfo);
+		const cmdRq = input.cmdRequested;
 
-		let cmdRq = input['cmdRequested'];
-		let actual = await RunCmdRq({
-			...input.dependencyParams || {},
+		const actual = await RunCmdRq({
 			stateful, cmdRq,
 			Pccs: {
 				findByCode: (gds, pcc) => Promise.resolve()
@@ -1381,17 +1526,11 @@ class RunCmdRqHbFexTest extends require('../../../../../Lib/TestCase.js') {
 					.then(params => SqlUtil.selectFromArray(params, stubPccs)[0])
 					.then(nonEmpty('No stubbed PCC matching ' + gds + ':' + pcc)),
 			},
-			PtcUtil: PtcUtil.makeCustom({
-				PtcFareFamilies: {
-					getAll: () => Promise.resolve(stubPtcFareFamilies),
-					getByAdultPtc: adultPtc => PtcFareFamilies.getByAdultPtcFrom(adultPtc, stubPtcFareFamilies),
-				},
-			}),
-			useXml: false,
 		}).catch(coverExc(Rej.list, exc => ({error: exc + ''})));
+
 		actual['sessionData'] = stateful.getSessionData();
 
-		this.assertArrayElementsSubset(output, actual, php.implode('; ', actual['userMessages'] || []) + php.PHP_EOL);
+		this.assertArrayElementsSubset(output, actual, (actual['userMessages'] || []).join('; ') + '\n');
 		this.assertEquals(true, stateful.getGdsSession().wereAllCommandsUsed(), 'not all session commands were used');
 	}
 
