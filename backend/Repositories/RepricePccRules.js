@@ -53,7 +53,9 @@ const getRoutePccs = async (depAirport, destAirport, rules, geo) => {
 
 /** @param cmdData = (new (require('NormalizeTariffCmd.js'))).execute() */
 exports.getMatchingPccs = async ({
-	cmdData, gds, pcc,
+	departureAirport,
+	destinationAirport,
+	gds, pcc,
 	repricePccRules = undefined,
 	geoProvider = new LocationGeographyProvider(),
 }) => {
@@ -71,8 +73,8 @@ exports.getMatchingPccs = async ({
 		}
 	}
 	let pccsFromRules = php.array_merge(
-		await getRoutePccs(cmdData.departureAirport, cmdData.destinationAirport, routeRules, geoProvider),
-		await getRoutePccs(cmdData.destinationAirport, cmdData.departureAirport, routeRules, geoProvider),
+		await getRoutePccs(departureAirport, destinationAirport, routeRules, geoProvider),
+		await getRoutePccs(destinationAirport, departureAirport, routeRules, geoProvider),
 	);
 	let pccs = pccsFromRules.length > 0 ? pccsFromRules : fallbackPccs;
 	let isCurrent = (pccRec) => {

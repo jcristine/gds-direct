@@ -52,7 +52,8 @@ class GetMultiPccTariffDisplayAction {
 
 	async getPccs(cmdData, sessionData) {
 		return RepricePccRules.getMatchingPccs({
-			cmdData,
+			departureAirport: cmdData.departureAirport,
+			destinationAirport: cmdData.destinationAirport,
 			gds: sessionData.gds,
 			pcc: sessionData.pcc,
 			repricePccRules: this.$repriceRules,
