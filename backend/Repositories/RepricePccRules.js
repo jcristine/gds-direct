@@ -51,6 +51,7 @@ const getRoutePccs = async (depAirport, destAirport, rules, geo) => {
 	return [];
 };
 
+/** @param cmdData = (new (require('NormalizeTariffCmd.js'))).execute() */
 exports.getMatchingPccs = async ({
 	cmdData, gds, pcc,
 	repricePccRules = undefined,
