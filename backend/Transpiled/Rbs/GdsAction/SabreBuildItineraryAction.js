@@ -125,7 +125,7 @@ class SabreBuildItineraryAction extends AbstractGdsAction {
 		return {
 			success: true,
 			airSegmentCount: result.newAirSegments.length,
-			reservations: result.reservations,
+			itinerary: result.reservations,
 		};
 	}
 

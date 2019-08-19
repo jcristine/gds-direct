@@ -639,7 +639,7 @@ const execute = ({
 		let cmdRec = result.pnrCmdRec;
 		if ($fallbackToGk) {
 			const segments = $newSegments.map(
-				seg => findSegmentNumberInPnr(seg, result.reservations) + seg.bookingClass);
+				seg => findSegmentNumberInPnr(seg, result.itinerary) + seg.bookingClass);
 			$cmd = 'WC' + segments.join('/');
 			cmdRec = await runCmd($cmd);
 		}
