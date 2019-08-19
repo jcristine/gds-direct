@@ -3,7 +3,7 @@ const _ = require('lodash');
 const moment = require('moment');
 const {getValueOrNullFromDomElement, getValueOrNullFromDomAttribute} = require('./Utils');
 
-module.exports.buildItinaryXml = params => {
+module.exports.buildItineraryXml = params => {
 	const flightSegments = (params.addAirSegments || []).map(buildFlightSegment);
 
 	return xml([
