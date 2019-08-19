@@ -435,7 +435,7 @@ const inAmadeus = (norm) => {
 		}
 	}
 	pushPaxMod();
-	return effectiveBaseCmd + effectiveMods.join('/');
+	return [effectiveBaseCmd, ...effectiveMods].join('/');
 };
 
 const TranslatePricingCmd = ({
