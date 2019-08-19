@@ -21,20 +21,20 @@ const isSimultaneousChangesRs = (gds, output) => {
 
 const isWarningRs = (gds, output) => {
 	let pred = {
-        // 'SEG CONT SEG 03'
-        // 'SEG CONT SEG 04'
-        // 'DTE CONT'
-        // 'SEG CONT SEG 05'
-        // 'CHECK MINIMUM CONNECT TIME SEGMENT 05/06',
+		// 'SEG CONT SEG 03'
+		// 'SEG CONT SEG 04'
+		// 'DTE CONT'
+		// 'SEG CONT SEG 05'
+		// 'CHECK MINIMUM CONNECT TIME SEGMENT 05/06',
 		apollo: rs => rs.replace(/\s*><$/, '').trim().split('\n').every(l => {
 			return l.trim() === 'DTE CONT'
 				|| l.match(/^\s*(SEG\s+CONT\s+SEG\s+\d{1,2}\s*)+\s*$/) // Open Jaw connections
 				|| l.match(/^\s*CHECK MINIMUM CONNECT TIME SEGMENT.*$/) // short time between connections
 				|| l.match(/^.*\bCONT\b.*$/);
 		}),
-        // 'VERIFY ORDER OF ITINERARY SEGMENTS - MODIFY OR END TRANSACTION',
-        // 'SEGMENTS NOT IN DATE ORDER - VERIFY AND REENTER',
-        // 'MIN CONNX TIME SEG 05 AT ORD 1.15'
+		// 'VERIFY ORDER OF ITINERARY SEGMENTS - MODIFY OR END TRANSACTION',
+		// 'SEGMENTS NOT IN DATE ORDER - VERIFY AND REENTER',
+		// 'MIN CONNX TIME SEG 05 AT ORD 1.15'
 		sabre: rs => rs.trim().split('\n').every(l => {
 			return l.trim() === 'SEGMENTS NOT IN DATE ORDER - VERIFY AND REENTER'
 				|| l.trim() === 'VERIFY ORDER OF ITINERARY SEGMENTS - MODIFY OR END TRANSACTION'
