@@ -643,8 +643,9 @@ let RunCmdRq = ({
 			$cmd;
 
 		$pnr = await getCurrentPnr();
-		$pnrDump = $pnr.getDump();
-		let {itinerary} = await CommonDataHelper.sortSegmentsByUtc($pnr, stateful.getGeoProvider());
+		let {itinerary} = await CommonDataHelper.sortSegmentsByUtc(
+			$pnr, stateful.getGeoProvider(), stateful.getStartDt()
+		);
 
 		$calledCommands = [];
 		$cmd = '/0/' + itinerary.map(s => s.segmentNumber).join('|');
