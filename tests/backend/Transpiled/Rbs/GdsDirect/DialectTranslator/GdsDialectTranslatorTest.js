@@ -25,14 +25,6 @@ const normCmd = (gds, cmd) => {
 				cmd = baseCmd + '/' + modsPart;
 			}
 		}
-	} else if (gds === 'amadeus') {
-		let match = cmd.match(/^(FX[A-Z])(.*)$/);
-		if (match) {
-			let [_, baseCmd, modsPart] = match;
-			if (modsPart && !modsPart.startsWith('/')) {
-				cmd = baseCmd + '/' + modsPart;
-			}
-		}
 	}
 	return cmd;
 };
@@ -3157,6 +3149,7 @@ class GdsDialectTranslatorTest extends require('../../../Lib/TestCase.js')
 			// should not translate pricing commands with unknown modifiers to FQ
 			['apollo', 'galileo', '$B/+2CV4', null],
 			['apollo', 'sabre', 'M*FWYESB', 'W/-ATFWY¥ATESB'],
+			['apollo', 'amadeus', '$B:A', 'FXX/R,U'],
 		];
 
 		return $tests;

@@ -31,7 +31,7 @@ const TicketMaskParser = require('../../../../Gds/Parsers/Amadeus/TicketMaskPars
 const {withCapture} = require("../../../../../GdsHelpers/CommonUtils");
 const AmadeusGetPricingPtcBlocks = require('./AmadeusGetPricingPtcBlocksAction.js');
 const PricingCmdParser = require('../../../../../Transpiled/Gds/Parsers/Amadeus/Commands/PricingCmdParser.js');
-
+const {findSegmentNumberInPnr} = require('../Common/ItinerarySegments')
 const PASSIVE_STATUSES = ['GK', 'PE'];
 // defines how much areas can agent open in single session
 const AREA_LETTERS = ['A', 'B', 'C', 'D'];
@@ -327,8 +327,9 @@ let execute = ({
 			$calledCommands, $cmd;
 
 		$pnr = await getCurrentPnr();
-		$pnrDump = $pnr.getDump();
-		let {itinerary} = await CommonDataHelper.sortSegmentsByUtc($pnr, stateful.getGeoProvider());
+		let {itinerary} = await CommonDataHelper.sortSegmentsByUtc(
+			$pnr, stateful.getGeoProvider(), stateful.getStartDt()
+		);
 
 		$calledCommands = [];
 		$cmd = 'RS' + itinerary.map(s => s.segmentNumber).join(',');
@@ -521,13 +522,13 @@ let execute = ({
 
 			for (let [$marriage, $group] of $marriageGroups) {
 				if ($marriage > 0) {
-					$segmentNumbers = php.array_column($group, 'lineNumber');
+					$segmentNumbers = $group.map(g => findSegmentNumberInPnr(g, $result.itinerary) || g.lineNumber);
 					if ($error = await rebookSegment($group[0]['bookingClass'], $segmentNumbers)) {
 						$errors.push($error);
 					}
 				} else {
 					for ($segment of Object.values($group)) {
-						if ($error = await rebookSegment($segment['bookingClass'], [$segment['lineNumber']])) {
+						if ($error = await rebookSegment($segment['bookingClass'], [findSegmentNumberInPnr($segment, $result.itinerary)])) {
 							$errors.push($error);
 						}
 					}

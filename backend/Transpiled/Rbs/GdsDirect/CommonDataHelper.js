@@ -223,10 +223,10 @@ class CommonDataHelper {
 		}
 	}
 
-	static async _getSegUtc($seg, geo) {
+	static async _getSegUtc($seg, geo, baseDate) {
 		let $geoProvider = geo;
 		let fullDt = DateTime.decodeRelativeDateInFuture(
-			$seg.departureDate.parsed, new Date().toISOString()
+			$seg.departureDate.parsed, baseDate
 		) + ' ' + $seg.departureTime.parsed + ':00';
 		let tz = await $geoProvider.getTimezone($seg.departureAirport);
 		if (tz) {
@@ -236,14 +236,14 @@ class CommonDataHelper {
 		}
 	}
 
-	static async sortSegmentsByUtc($pnr, geo) {
+	static async sortSegmentsByUtc($pnr, geo, baseDate = new Date().toISOString()) {
 		if (!CommonDataHelper.isValidPnr($pnr)) {
 			return BadRequest('No itinerary to sort');
 		}
 		let $itinerary = $pnr.getItinerary();
 
 		let promises = $itinerary.map(async seg => {
-			let utc = await this._getSegUtc(seg, geo);
+			let utc = await this._getSegUtc(seg, geo, baseDate);
 			return utc
 				? Promise.resolve({utc, seg})
 				: NotImplemented('No tz for seg ' + seg.segmentNumber + ' ' + seg.departureAirport, {isOk: true});

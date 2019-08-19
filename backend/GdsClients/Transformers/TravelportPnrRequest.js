@@ -29,7 +29,7 @@ module.exports.parsePnrXmlResponse = async response => {
 
 	const respElement = dom.querySelector("PNRBFManagement_51");
 
-	if(!respElement) {
+	if (!respElement) {
 		throw UnprocessableEntity.makeExc("Missing PNRBFManagement_51 element in response", response);
 	}
 

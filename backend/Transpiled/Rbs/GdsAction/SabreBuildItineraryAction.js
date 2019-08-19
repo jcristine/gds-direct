@@ -109,11 +109,12 @@ class SabreBuildItineraryAction extends AbstractGdsAction {
 					seatCount: seg.seatCount,
 				};
 			}),
+			redisplay: true,
 		};
 
 		const result = await this.sabre.processPnr(this.session.getGdsData(), params);
 
-		if(result.error) {
+		if (result.error) {
 			return {
 				success: false,
 				airSegmentCount: result.newAirSegments.length,
@@ -124,6 +125,7 @@ class SabreBuildItineraryAction extends AbstractGdsAction {
 		return {
 			success: true,
 			airSegmentCount: result.newAirSegments.length,
+			itinerary: result.reservations,
 		};
 	}
 

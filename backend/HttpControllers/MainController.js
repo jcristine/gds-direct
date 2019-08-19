@@ -38,12 +38,13 @@ let toHandleHttp = (httpAction) => (req, res) => {
 				stack: exc.stack,
 			});
 			if (isSystemError(exc)) {
-				if ((exc + '').match(/42\|Transport\|Temporary network error:unable to reach targeted application/)) {
+				let msg = (exc || {}).message || (exc + '');
+				if (msg.match(/42\|Transport\|Temporary network error:unable to reach targeted application/)) {
 					LocalDiag({
 						type: LocalDiag.types.AMA_TMP_NETWORK_ERROR_UNABLE_TO_REACH,
 						data: errorData,
 					});
-				} else if ((exc + '').match(/Illogical conversation/)) {
+				} else if (msg.match(/Illogical conversation/)) {
 					LocalDiag({
 						type: LocalDiag.types.AMA_ILLOGICAL_CONVERSATION,
 						data: errorData,

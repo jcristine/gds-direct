@@ -29,7 +29,7 @@ exports.separateWithLex = ($input, nameToPattern) => {
 	});
 
 	if (lexed.text != '') {
-		console.error('\nCould not lex >' + $input + '; - text left ' + lexed.text, lexed.lexemes);
+		//console.error('\nCould not lex >' + $input + '; - text left ' + lexed.text, lexed.lexemes);
 		return {};
 	}
 

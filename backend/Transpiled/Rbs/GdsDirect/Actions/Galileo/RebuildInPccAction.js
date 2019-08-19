@@ -5,30 +5,13 @@ const GalileoBuildItineraryAction = require('../../../../Rbs/GdsAction/GalileoBu
 const Errors = require('../../../../Rbs/GdsDirect/Errors.js');
 const UpdateGalileoSessionStateAction = require('../../SessionStateProcessor/UpdateGalileoState.js');
 const {fetchAll} = require('../../../../../GdsHelpers/TravelportUtils.js');
+const {findSegmentNumberInPnr} = require('../Common/ItinerarySegments');
 
 /**
  * emulate into specified PCC in specified area and rebuild the itinerary
  * fallbacks to passive (AK) segments if there is no availability
  */
 const php = require('../../../../phpDeprecated.js');
-
-const findSegmentNumberInPnr = (gkSeg, reservation) => {
-	const pnr = reservation.itinerary
-		.find(pnrSeg =>
-			gkSeg.airline === pnrSeg.airline &&
-			+gkSeg.flightNumber === +pnrSeg.flightNumber &&
-			gkSeg.departureAirport === pnrSeg.departureAirport &&
-			gkSeg.destinationAirport === pnrSeg.destinationAirport &&
-			gkSeg.departureDate.parsed === pnrSeg.departureDate.parsed.slice('2019-'.length)
-		);
-
-	if (!pnr) {
-		const msg = `Failed to match GK segment #${gkSeg.segmentNumber} to resulting PNR`;
-		throw Rej.InternalServerError.makeExc(msg, {gkSeg, itin: reservation.itinerary});
-	}
-
-	return pnr.segmentNumber;
-};
 
 class RebuildInPccAction extends AbstractGdsAction {
 	constructor({
@@ -70,9 +53,8 @@ class RebuildInPccAction extends AbstractGdsAction {
 		for (const [, marriedSegs] of marriageToSegs) {
 			const clsToSegs = Fp.groupBy(seg => seg['bookingClass'], marriedSegs);
 			for (const [cls, clsSegs] of Object.entries(clsToSegs)) {
-				const segmentNumbers = clsSegs.map(seg => {
-					return reservation ? findSegmentNumberInPnr(seg, reservation) : seg.segmentNumber;
-				});
+				const segmentNumbers = clsSegs.map(seg =>
+					findSegmentNumberInPnr(seg, reservation && reservation.itinerary));
 
 				const $cmd = '@' + segmentNumbers.join('.') + '/' + cls;
 

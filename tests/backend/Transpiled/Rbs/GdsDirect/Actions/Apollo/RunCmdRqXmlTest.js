@@ -5,6 +5,8 @@ const RunCmdRq = require('../../../../../../../backend/Transpiled/Rbs/GdsDirect/
 const Rej = require('klesun-node-tools/src/Rej.js');
 const {coverExc} = require('klesun-node-tools/src/Lang.js');
 
+const sinon = require('sinon');
+
 const provide_call = () => {
 	let testCases = [];
 
@@ -161,6 +163,7 @@ const provide_call = () => {
 
 	testCases.push({
 		title: 'Example of bug: when you paste itinerary to session that already has some segments, wrong segments gets rebooked',
+		startDt: '2019-08-13 13:12:00',
 		sessionInfo: {
 			initialCommands: [{
 				"cmd": "*R",
@@ -356,9 +359,25 @@ const provide_call = () => {
 	return testCases.map(c => [c]);
 };
 
-class RunCmdRqXmlTest extends require('../../../../Lib/TestCase.js')
-{
+class RunCmdRqXmlTest extends require('../../../../Lib/TestCase.js') {
 	async test_call(testCase) {
+		// Sets stable start date, dates are created in multiple locations deep
+		// in execution stack
+		const clock = sinon.useFakeTimers({
+			now: 1565568000000, //12th of August 2019
+			shouldAdvanceTime: true,
+		});
+
+		const dateOriginal = Date.now;
+
+		sinon.stub(Date, 'now')
+			.callsFake(() => {
+				// this is for jsdom, jsdom has loop where it waits for time
+				// to advance calling Date.now
+				clock.tick(1);
+				return dateOriginal.call(Date);
+			});
+
 		testCase.fullState = testCase.fullState || {
 			gds: 'apollo', area: 'A', areas: {
 				'A': {...GdsSessions.makeDefaultAreaState('apollo'), area: 'A'},
@@ -373,7 +392,13 @@ class RunCmdRqXmlTest extends require('../../../../Lib/TestCase.js')
 			}).catch(coverExc(Rej.list, exc => ({error: exc + ''})));
 			return actual;
 		};
-		await GdsActionTestUtil.testHttpGdsAction({unit, testCase, getActual});
+
+		try {
+			await GdsActionTestUtil.testHttpGdsAction({unit, testCase, getActual});
+		} finally {
+			sinon.restore();
+		}
+
 	}
 
 	getTestMapping() {

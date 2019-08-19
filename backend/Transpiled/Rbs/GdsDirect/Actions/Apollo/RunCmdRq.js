@@ -12,6 +12,7 @@ const StringUtil = require('../../../../Lib/Utils/StringUtil.js');
 const TravelportUtils = require("../../../../../GdsHelpers/TravelportUtils.js");
 const {fetchUntil, fetchAll, extractPager} = TravelportUtils;
 const moment = require('moment');
+const {findSegmentNumberInPnr} = require('../Common/ItinerarySegments');
 
 const Rej = require('klesun-node-tools/src/Rej.js');
 const {ignoreExc} = require('../../../../../Utils/TmpLib.js');
@@ -275,39 +276,14 @@ let RunCmdRq = ({
 		return GetCurrentPnr.inApollo(stateful);
 	};
 
-	const findSegInPnr = (gkSeg, reservation) => {
-		return reservation.itinerary
-			.filter(pnrSeg =>
-				gkSeg.airline === pnrSeg.airline &&
-				+gkSeg.flightNumber === +pnrSeg.flightNumber &&
-				// pnr seg class will be 'Y'
-				//gkSeg.bookingClass === pnrSeg.bookingClass &&
-				gkSeg.departureAirport === pnrSeg.departureAirport &&
-				gkSeg.destinationAirport === pnrSeg.destinationAirport &&
-				gkSeg.departureDate.parsed === pnrSeg.departureDate.parsed.slice('2019-'.length)
-			)[0];
-	};
-
 	/** replace GK segments with $segments */
 	const rebookGkSegments = async ($segments, reservation = null) => {
 		let $marriageToSegs = Fp.groupMap(($seg) => $seg['marriage'], $segments);
 		let $failedSegNums = [];
-		for (let [$marriage, $segs] of $marriageToSegs) {
+		for (let [, $segs] of $marriageToSegs) {
 			let records = $segs.map(gkSeg => {
-				let cls = gkSeg.bookingClass;
-				let segNum = gkSeg.segmentNumber;
-				// segmentNumber field is just order, not
-				// effective segment number in current PNR
-				if (reservation) {
-					let pnrSeg = findSegInPnr(gkSeg, reservation);
-					if (!pnrSeg) {
-						let msg = 'Failed to match GK segment #' + segNum + ' to resulting PNR';
-						let errorData = {gkSeg, itin: reservation.itinerary};
-						throw Rej.InternalServerError.makeExc(msg, errorData);
-					}
-					segNum = pnrSeg.segmentNumber;
-				}
-				return {segNum, cls};
+				const cls = gkSeg.bookingClass;
+				return {segNum: findSegmentNumberInPnr(gkSeg, reservation && reservation.itinerary), cls};
 			});
 			let $chgClsCmd =
 				'X' + php.implode('+', records.map(r => r.segNum)) + '/' +
@@ -644,8 +620,9 @@ let RunCmdRq = ({
 			$cmd;
 
 		$pnr = await getCurrentPnr();
-		$pnrDump = $pnr.getDump();
-		let {itinerary} = await CommonDataHelper.sortSegmentsByUtc($pnr, stateful.getGeoProvider());
+		let {itinerary} = await CommonDataHelper.sortSegmentsByUtc(
+			$pnr, stateful.getGeoProvider(), stateful.getStartDt()
+		);
 
 		$calledCommands = [];
 		$cmd = '/0/' + itinerary.map(s => s.segmentNumber).join('|');
