@@ -8,12 +8,12 @@
  *
  * @param {{rq: string, rs: string}[]} httpRequests
  */
-const PersistentHttpRqStub = httpRequests => {
+const PersistentHttpRqStub = (httpRequests, normalizer = normalizeXmlBody) => {
 	let PersistentHttpRq = ({url, headers, body}) => {
 		let nextResult = httpRequests.shift();
 		if (!nextResult) {
 			throw new Error('Tried to make http request when all stub values were exhausted: ' + url + '\n' + body);
-		} else if (normalizeBody(body) !== normalizeBody(nextResult.rq)) {
+		} else if (normalizer(body) !== normalizer(nextResult.rq)) {
 			throw new Error('Tried to make unexpected http request ' + url + '.\nExpected:\n' + nextResult.rq + '\nActual:\n' + body);
 		} else {
 			return Promise.resolve({
@@ -28,7 +28,7 @@ const PersistentHttpRqStub = httpRequests => {
 
 // Remove all white spaces that are in the request body without affecting structure
 // so that you don't have to construct exactly same string to match the fixture
-const normalizeBody = body => body
+const normalizeXmlBody = body => body
 	.replace(/>\s+</gm, '><')
 	.replace(/^\s+/gm, '')
 	.replace(/\s+$/gm, '')
