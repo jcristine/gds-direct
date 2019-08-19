@@ -26,6 +26,7 @@ const AmdPricingCmdParser = require("../../../../Gds/Parsers/Amadeus/Commands/Pr
 const BookingClasses = require("../../../../../Repositories/BookingClasses");
 const withLog = require("../../../../../GdsHelpers/CommonUtils").withLog;
 const {ERROR_NO_AVAIL} = require('../../../GdsAction/SabreBuildItineraryAction.js');
+const {coverExc} = require('klesun-node-tools/src/Lang.js');
 
 let extendApolloCmd = (cmd) => {
 	let data = AtfqParser.parsePricingCommand(cmd);
@@ -294,52 +295,49 @@ class RepriceInAnotherPccAction {
 		});
 	}
 
-	async repriceIn(gds, pcc, itinerary, pricingCmd, $startDt) {
+	async repriceIn({gds, pcc, itinerary, targetCmd, startDt}) {
 		if (gds === 'apollo') {
-			return this.repriceInApollo(pcc, itinerary, pricingCmd, $startDt);
+			return this.repriceInApollo(pcc, itinerary, targetCmd, startDt);
 		} else if (gds === 'sabre') {
-			return this.repriceInSabre(pcc, itinerary, pricingCmd);
+			return this.repriceInSabre(pcc, itinerary, targetCmd);
 		} else if (gds === 'amadeus') {
-			return this.repriceInAmadeus(pcc, itinerary, pricingCmd);
+			return this.repriceInAmadeus(pcc, itinerary, targetCmd);
 		} else if (gds === 'galileo') {
-			return this.repriceInGalileo(pcc, itinerary, pricingCmd);
+			return this.repriceInGalileo(pcc, itinerary, targetCmd);
 		} else {
 			return NotImplemented('Unsupported GDS ' + gds + ' for repriceIn()');
 		}
 	}
 
 	/**
-	 * @param {ApolloPnr|SabrePnr|AmadeusPnr|GalileoPnr} $pnr
-	 * @param $currentSession = await require('StatefulSession.js')()
+	 * @param {ApolloPnr|SabrePnr|AmadeusPnr|GalileoPnr} pnr
+	 * @param currentSession = await require('StatefulSession.js')()
 	 */
-	async execute($pnr, $cmd, $dialect, $targetStr, $currentSession) {
-		let $currentGds, $startDt, $log, $target, $itinerary,
-			$translatorResult, $targetCmd;
+	async execute(pnr, cmd, dialect, targetStr, currentSession) {
 		/** requested by Jayden */
-		await $currentSession.updateAreaState({
+		await currentSession.updateAreaState({
 			type: '!priceInAnotherPcc',
 			state: {canCreatePq: false},
 		});
-		$currentGds = $currentSession.getSessionData()['gds'];
-		$startDt = $currentSession.getStartDt();
-		$log = this.$log;
+		let startDt = currentSession.getStartDt();
 
-		$target = await this.constructor.getTargetGdsAndPcc($targetStr)
-			.catch(ignoreExc(null, [NotFound]));
-		if (!$target) {
-			return {'errors': ['Unknown GDS/PCC target - ' + $targetStr]};
+		let target = await this.constructor.getTargetGdsAndPcc(targetStr)
+			.catch(coverExc([NotFound], exc => null));
+		if (!target) {
+			return {'errors': ['Unknown GDS/PCC target - ' + targetStr]};
 		}
-		$itinerary = $pnr.getItinerary();
-		if (php.empty($itinerary)) {
+		let {gds, pcc} = target;
+		let itinerary = pnr.getItinerary();
+		if (php.empty(itinerary)) {
 			return BadRequest('Itinerary is empty');
 		}
 
-		$translatorResult = (new GdsDialectTranslator())
-			.setBaseDate($startDt)
-			.translate($dialect, $target['gds'], $cmd);
-		$targetCmd = $translatorResult['output'] || $cmd;
+		let translatorResult = (new GdsDialectTranslator())
+			.setBaseDate(startDt)
+			.translate(dialect, target.gds, cmd);
+		let targetCmd = translatorResult.output || cmd;
+		let result = await this.repriceIn({gds, pcc, itinerary, targetCmd, startDt});
 
-		let result = await this.repriceIn($target.gds, $target.pcc, $itinerary, $targetCmd, $startDt);
 		return {'calledCommands': result.calledCommands};
 	}
 }
