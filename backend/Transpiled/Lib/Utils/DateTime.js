@@ -6,10 +6,14 @@ const StringUtil = require('../../Lib/Utils/StringUtil.js');
 let php = require('../../phpDeprecated.js');
 
 class DateTime {
-	// $date is relative date in format 'm-d', which we'd like to make absolute
-	// $baseDate is a date strictly in the past of what $date is assumed to be
-	// I.e. if $baseDate == '2014-12-14', then '12-17' --> '2014-12-17',
-	//                                     but '01-17' --> '2015-01-17'
+	/**
+	 * @deprecated - use addYear() instead, as it's much more convenient short name
+	 *
+	 * $date is relative date in format 'm-d', which we'd like to make absolute
+	 * $baseDate is a date strictly in the past of what $date is assumed to be
+	 * I.e. if $baseDate == '2014-12-14', then '12-17' --> '2014-12-17',
+	 *                                     but '01-17' --> '2015-01-17'
+	 */
 	static decodeRelativeDateInFuture($date, $baseDate) {
 		let $assumedYear, $assumedDate;
 		if (!php.preg_match(/^\d{2}\-\d{2}$/, $date) ||
@@ -27,11 +31,15 @@ class DateTime {
 		return $assumedDate;
 	}
 
-	// $date is relative date in format 'm-d', which we'd like to make absolute
-	// $baseDate is a date strictly in the future of what $date is assumed to be
-	// I.e. if $baseDate == '2014-12-14', then '01-17' --> '2014-01-17',
-	//                                     but '12-17' --> '2013-12-17'
-	// Algorithm is essentially identical to decodeRelativeDateInFuture.
+	/**
+	 * @deprecated - use addPastYear() instead
+	 *
+	 * $date is relative date in format 'm-d', which we'd like to make absolute
+	 * $baseDate is a date strictly in the future of what $date is assumed to be
+	 * I.e. if $baseDate == '2014-12-14', then '01-17' --> '2014-01-17',
+	 *                                     but '12-17' --> '2013-12-17'
+	 * Algorithm is essentially identical to decodeRelativeDateInFuture.
+	 */
 	static decodeRelativeDateInPast($date, $baseDate) {
 		let $assumedYear, $assumedDate;
 		if (!php.preg_match(/^\d{2}\-\d{2}$/, $date) ||
@@ -47,6 +55,14 @@ class DateTime {
 			--$assumedYear;
 		} while ($assumedDate > $baseDate || php.date('m-d', php.strtotime($assumedDate)) != $date);
 		return $assumedDate;
+	}
+
+	static addYear(date, baseDate) {
+		return this.decodeRelativeDateInFuture(date, baseDate);
+	}
+
+	static addPastYear(date, baseDate) {
+		return this.decodeRelativeDateInPast(date, baseDate);
 	}
 
 	/**
