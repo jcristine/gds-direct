@@ -1,12 +1,11 @@
+const ImportSabrePnrFormatAdapter = require('../Process/Sabre/ImportPnr/ImportSabrePnrFormatAdapter.js');
 
-const DateTime = require('../../Lib/Utils/DateTime.js');
-const Fp = require('../../Lib/Utils/Fp.js');
 const PnrParser = require('../../Gds/Parsers/Sabre/Pnr/PnrParser.js');
 
 /**
  * Sabre pnr parse access implementation
  */
-const php = require('../../phpDeprecated.js');
+const php = require('klesun-node-tools/src/Transpiled/php.js');
 
 /** @implements {IPnr} */
 class SabrePnr {
@@ -27,48 +26,23 @@ class SabrePnr {
 		return $obj;
 	}
 
-	/**
-	 * also known as "TAW" (Ticket at Will) or "TAU" (Ticket Automated)
-	 * @param $baseDate = '2017-06-19 21:32:42', any date
-	 * after PNR was created, but not more than 1 year after
-	 * @return string|null like '2017-06-18'
-	 */
-	getAgencyLastTicketingDate($baseDate) {
-		let $ticketingInfo, $reservationDt;
-
-		if ($ticketingInfo = (this.$parsed['parsedData']['tktgData'] || {})['ticketingInfo']) {
-			if ($ticketingInfo['type'] === 'timeLimit') {
-				if ($reservationDt = this.getReservationDt($baseDate)) {
-					return DateTime.decodeRelativeDateInFuture($ticketingInfo['tauDate']['parsed'], $reservationDt);
-				}
-			}
-		}
-		// no TAW or reservation date in PNR
-		return null;
-	}
-
 	getDump($unwrap) {
-
 		return $unwrap ? PnrParser.cleanupHandPastedDump(this.$dump) : this.$dump;
 	}
 
 	getParsedData() {
-
 		return this.$parsed;
 	}
 
 	getRecordLocator() {
-
 		return (this.$parsed['parsedData']['pnrInfo'] || {})['recordLocator'];
 	}
 
 	getGdsName() {
-
 		return 'sabre';
 	}
 
 	getAgentInitials() {
-
 		return (this.$parsed['parsedData']['pnrInfo'] || {})['agentInitials'];
 	}
 
@@ -81,56 +55,33 @@ class SabrePnr {
 	}
 
 	getRsprTeam() {
-
 		return null;
 	}
 
 	getPassengers() {
-
 		return ((((this.$parsed || {})['parsedData'] || {})['passengers'] || {})['parsedData'] || {})['passengerList'] || [];
 	}
 
 	getRemarks() {
-
 		return ((this.$parsed || {})['parsedData'] || {})['remarks'] || [];
 	}
 
 	getItinerary() {
-
 		return this.getSegmentsWithType(['SEGMENT_TYPE_ITINERARY_SEGMENT']);
 	}
 
-	getSegmentsWithType($types) {
+	getReservation(baseDate) {
+		return ImportSabrePnrFormatAdapter.transformReservation(this.$parsed, baseDate);
+	}
 
+	getSegmentsWithType($types) {
 		return php.array_values(php.array_filter(this.$parsed['parsedData']['itinerary'], ($seg) => {
 			return php.in_array($seg['segmentType'], $types);
 		}));
 	}
 
 	hasItinerary() {
-
 		return !php.empty(this.getItinerary());
-	}
-
-	getSegmentsWithStatus($status) {
-
-		return Fp.filter(($seg) => {
-			return $seg['segmentStatus'] == $status;
-		}, this.getItinerary());
-	}
-
-	hasSegmentsWithStatus($status) {
-
-		return Fp.any(($seg) => {
-			return $seg['segmentStatus'] == $status;
-		}, this.getItinerary());
-	}
-
-	hasOnlySegmentsWithStatus($status) {
-
-		return Fp.all(($seg) => {
-			return $seg['segmentStatus'] == $status;
-		}, this.getItinerary());
 	}
 
 	hasEtickets() {
@@ -140,33 +91,27 @@ class SabrePnr {
 	}
 
 	hasFrequentFlyerInfo() {
-
 		return this.$parsed['parsedData']['misc']['ffDataExists']
 			|| php.count((((this.$parsed || {})['parsedData'] || {})['frequentTraveler'] || {})['mileagePrograms'] || []) > 0;
 	}
 
 	hasPriceQuote() {
-
 		return this.$parsed['parsedData']['misc']['priceQuoteRecordExists'] ? true : false;
 	}
 
 	hasFormOfPayment() {
-
 		return this.$parsed['parsedData']['misc']['fopDataExists'] ? true : false;
 	}
 
 	hasSecurityInfo() {
-
 		return this.$parsed['parsedData']['misc']['securityInfoExists'] ? true : false;
 	}
 
 	hasEmergencyInfo() {
-
 		return this.$parsed['parsedData']['misc']['pctcDataExists'] ? true : false;
 	}
 
 	hasEmergencyInfoAa() {
-
 		return this.$parsed['parsedData']['misc']['pctcDataExistsAa'] ? true : false;
 	}
 

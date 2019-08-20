@@ -1,9 +1,10 @@
+const AmadeusPnrCommonFormatAdapter = require('../FormatAdapters/AmadeusPnrCommonFormatAdapter.js');
 
 const Fp = require('../../Lib/Utils/Fp.js');
 const PnrParser = require('../../Gds/Parsers/Amadeus/Pnr/PnrParser.js');
 const GenericRemarkParser = require('../../Gds/Parsers/Common/GenericRemarkParser.js');
 
-const php = require('../../phpDeprecated.js');
+const php = require('klesun-node-tools/src/Transpiled/php.js');
 
 /** @implements {IPnr} */
 class AmadeusPnr {
@@ -23,32 +24,22 @@ class AmadeusPnr {
 	}
 
 	getDump() {
-
 		return this.$dump;
 	}
 
 	getParsedData() {
-
 		return this.$parsed;
 	}
 
 	getRecordLocator() {
-
 		return (((this.$parsed || {})['parsed'] || {})['pnrInfo'] || {})['recordLocator'];
 	}
 
 	getGdsName() {
-
 		return 'amadeus';
 	}
 
-	getRsprTeam() {
-
-		return null;
-	}
-
 	getItinerary() {
-
 		return this.getSegmentsWithType([PnrParser.ITINERARY_SEGMENT]);
 	}
 
@@ -62,8 +53,11 @@ class AmadeusPnr {
 		return php.array_values(Fp.filter($matches, $itinerary));
 	}
 
-	hasEtickets() {
+	getReservation(baseDate) {
+		return AmadeusPnrCommonFormatAdapter.transform(this.$parsed, baseDate);
+	}
 
+	hasEtickets() {
 		return php.count(((this.$parsed || {})['parsed'] || {})['tickets'] || []) > 0;
 	}
 

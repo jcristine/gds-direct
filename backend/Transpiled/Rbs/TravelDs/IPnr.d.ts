@@ -24,6 +24,13 @@ interface IPnr {
         departureTime: {raw: '1132P', parsed: '23:32'},
     }[];
 
+    /** get normalized reservation data in RBS importPnr format */
+    getReservation(baseDate: string): {
+        passengers: {}[],
+        pnrInfo: {},
+        itinerary: {}[],
+    },
+
     hasEtickets();
 
     /** @return null|string - mysql format date */

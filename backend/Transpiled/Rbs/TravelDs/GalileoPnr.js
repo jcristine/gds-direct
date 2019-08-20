@@ -1,17 +1,17 @@
+const GalileoPnrCommonFormatAdapter = require('../FormatAdapters/GalileoPnrCommonFormatAdapter.js');
 
 
 const DateTime = require('../../Lib/Utils/DateTime.js');
-const Fp = require('../../Lib/Utils/Fp.js');
 const StringUtil = require('../../Lib/Utils/StringUtil.js');
 const PnrParser = require('../../Gds/Parsers/Galileo/Pnr/PnrParser.js');
 const ItineraryParser = require('../../Gds/Parsers/Galileo/Pnr/ItineraryParser.js');
 
-const php = require('../../phpDeprecated.js');
+const php = require('klesun-node-tools/src/Transpiled/php.js');
 
 /** @implements {IPnr} */
 class GalileoPnr
 {
-	static makeFromDump($dump)  {
+	static makeFromDump($dump) {
 		let $obj;
 
 		$obj = new this();
@@ -20,110 +20,78 @@ class GalileoPnr
 		return $obj;
 	}
 
-	constructor()  {
+	constructor() {
 
 	}
 
-	getDump()  {
-
+	getDump() {
 		return this.$dump;
 	}
 
-	getParsedData()  {
-
+	getParsedData() {
 		return this.$parsed;
 	}
 
-	getRecordLocator()  {
-
+	getRecordLocator() {
 		return (((this.$parsed || {})['headerData'] || {})['reservationInfo'] || {})['recordLocator'];
 	}
 
-	getGdsName()  {
-
+	getGdsName() {
 		return 'galileo';
 	}
 
-	getAgentInitials()  {
-
+	getAgentInitials() {
 		return this.$parsed['headerData']['reservationInfo']['focalPointInitials'];
 	}
 
-	wasCreatedInGdsDirect()  {
+	wasCreatedInGdsDirect() {
 		let $agentSign;
 
 		$agentSign = (((this.$parsed || {})['headerData'] || {})['reservationInfo'] || {})['pnrCreatorToken'];
 		return $agentSign === 'VTL9WS';
 	}
 
-	getRsprTeam()  {
-
-		return null;
-	}
-
-	getPassengers()  {
-
+	getPassengers() {
 		return this.$parsed['passengers']['passengerList'];
 	}
 
-	getItinerary()  {
-
+	getItinerary() {
 		return php.array_values(php.array_filter(this.$parsed['itineraryData'], ($seg) => {
 
 			return $seg['segmentType'] === ItineraryParser.SEGMENT_TYPE_ITINERARY_SEGMENT;
 		}));
 	}
 
-	getRemarks()  {
+	getReservation(baseDate) {
+		return GalileoPnrCommonFormatAdapter.transform(this.$parsed, baseDate);
+	}
 
+	getRemarks() {
 		return (this.$parsed || {})['remarks'] || [];
 	}
 
-	hasItinerary()  {
-
+	hasItinerary() {
 		return !php.empty(this.getItinerary());
 	}
 
-	getSegmentsWithStatus($status)  {
-
-		return Fp.filter(($seg) => {
-			return $seg['segmentStatus'] == $status;}, this.getItinerary());
-	}
-
-	hasSegmentsWithStatus($status)  {
-
-		return Fp.any(($seg) => {
-			return $seg['segmentStatus'] == $status;}, this.getItinerary());
-	}
-
-	hasOnlySegmentsWithStatus($status)  {
-
-		return Fp.all(($seg) => {
-			return $seg['segmentStatus'] == $status;}, this.getItinerary());
-	}
-
-	hasEtickets()  {
-
+	hasEtickets() {
 		return this.$parsed['dataExistsInfo']['eTicketDataExists']
             || this.$parsed['dataExistsInfo']['tinRemarksExist'];
 	}
 
-	hasLinearFare()  {
-
+	hasLinearFare() {
 		return this.$parsed['dataExistsInfo']['filedFareDataExists'] ? true : false;
 	}
 
-	hasFrequentFlyerInfo()  {
-
+	hasFrequentFlyerInfo() {
 		return this.$parsed['dataExistsInfo']['membershipDataExists'] ? true : false;
 	}
 
-	hasSeatInfo()  {
-
+	hasSeatInfo() {
 		return this.$parsed['dataExistsInfo']['seatDataExists'] ? true : false;
 	}
 
-	belongsToItn()  {
+	belongsToItn() {
 		let $agentSign;
 
 		$agentSign = this.$parsed['headerData']['reservationInfo']['pnrCreatorToken'];
@@ -131,7 +99,7 @@ class GalileoPnr
 		return StringUtil.startsWith($agentSign, 'VTL9');
 	}
 
-	static checkDumpIsRestricted($dump)  {
+	static checkDumpIsRestricted($dump) {
 
 		// we usually remove "><" beforehand, but i'd not rely on that
 		$dump = php.preg_replace(/\s*(><)?\s*$/, '', $dump);
@@ -144,7 +112,7 @@ class GalileoPnr
             || php.preg_match(/^PROVIDER PSEUDO CITY DOES NOT HAVE AGREEMENT WITH.*$/, php.trim($dump));
 	}
 
-	static checkDumpIsNotExisting($dump)  {
+	static checkDumpIsNotExisting($dump) {
 
 		// we usually remove "><" beforehand, but i'd not rely on that
 		$dump = php.preg_replace(/\s*(><)?\s*$/, '', $dump);
@@ -153,7 +121,7 @@ class GalileoPnr
             || php.trim($dump) === 'INVALID';
 	}
 
-	getReservationDt($fetchedDt)  {
+	getReservationDt($fetchedDt) {
 		let $date;
 
 		$date = ((((this.$parsed || {})['headerData'] || {})['reservationInfo'] || {})['reservationDate'] || {})['parsed'];
