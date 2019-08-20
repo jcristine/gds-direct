@@ -3,7 +3,7 @@ const RepriceInAnotherPccAction = require('../Transpiled/Rbs/GdsDirect/Actions/C
 const DateTime = require('../Transpiled/Lib/Utils/DateTime.js');
 const RepricePccRules = require('../Repositories/RepricePccRules.js');
 const GetCurrentPnr = require('./GetCurrentPnr.js');
-
+const {coverExc} = require('klesun-node-tools/src/Lang.js');
 const Rej = require('klesun-node-tools/src/Rej.js');
 
 /**
@@ -94,16 +94,19 @@ const RepriceInPccMix = ({
 		const promises = [];
 		for (const {pcc, gds} of pccRecs) {
 			const whenPccResult = processPcc({pcc, gds, itinerary})
-				.catch(exc => {
-					const msg = 'Failed to price in ' + pcc + ' - ' + exc;
-					messages.push({type: 'error', text: msg});
-					return {pcc, gds, error: msg};
+				.catch(coverExc(Rej.list, exc => {
+					return {pcc, gds, error: exc + ''};
+				}))
+				.then(pccResult => {
+					if (pccResult.error) {
+						let msg = 'Failed to price in ' + pcc + ' - ' + pccResult.error;
+						messages.push({type: 'error', text: msg});
+					}
+					return pccResult;
 				});
 			promises.push(whenPccResult);
 		}
 		const pccResults = await Promise.all(promises);
-		const resultMsg = 'Repriced in: ' + pccResults.map(r => r.pcc + ':' + getNetPrice(r)).join(' ');
-		messages.push({type: 'info', text: resultMsg});
 		return {
 			messages: messages,
 			actions: [{

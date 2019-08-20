@@ -238,7 +238,8 @@ class RepriceInAnotherPccAction {
 
 			return {
 				calledCommands: [cmdRec],
-				pricingBlockList: pricing.store.pricingBlockList,
+				error: pricing.error || null,
+				pricingBlockList: (pricing.store || {}).pricingBlockList || [],
 			};
 		});
 	}
@@ -273,14 +274,19 @@ class RepriceInAnotherPccAction {
 			pricingCmd = await extendSabreCmd({cmd: pricingCmd, yFallback, srcItin: itinerary});
 			const cmdRec = await session.runCmd(pricingCmd);
 			const parsed = SabrePricingParser.parse(cmdRec.output);
-			const store = (new SabrePricingAdapter())
-				.setPricingCommand(pricingCmd)
-				.setReservationDate(this.baseDate)
-				.transform(parsed);
+			let error = parsed.error || null;
+			if (error) {
+				error = '>' + pricingCmd + '; - ' + error;
+			}
 
 			return {
 				calledCommands: [cmdRec],
-				pricingBlockList: store.pricingBlockList,
+				error: error,
+				pricingBlockList: error ? [] :
+					new SabrePricingAdapter()
+						.setPricingCommand(pricingCmd)
+						.setReservationDate(this.baseDate)
+						.transform(parsed).pricingBlockList,
 			};
 		});
 	}
@@ -305,7 +311,8 @@ class RepriceInAnotherPccAction {
 
 			return {
 				calledCommands: capturing.getCalledCommands(),
-				pricingBlockList: pricing.pricingList
+				error: pricing.error || null,
+				pricingBlockList: (pricing.pricingList || [])
 					.flatMap(store => store.pricingBlockList),
 			};
 		});
@@ -331,16 +338,20 @@ class RepriceInAnotherPccAction {
 			}
 			pricingCmd = extendGalileoCmd(pricingCmd);
 			const fqCmdRec = await fetchAll(pricingCmd, session);
-			const ptcList = FqParser.parse(fqCmdRec.output);
 			const lfCmdRec = await fetchAll('F*Q', session);
+			const ptcList = FqParser.parse(fqCmdRec.output);
 			const linearFare = LinearFareParser.parse(lfCmdRec.output);
-			const store = new GalileoPricingAdapter()
-				.setPricingCommand(pricingCmd)
-				.transform(ptcList, linearFare);
-
+			let error = ptcList.error || linearFare.error;
+			if (error) {
+				error = '>' + pricingCmd + '; - ' + error;
+			}
 			return {
 				calledCommands: [fqCmdRec, lfCmdRec],
-				pricingBlockList: store.pricingBlockList,
+				error: error,
+				pricingBlockList: error ? [] :
+					new GalileoPricingAdapter()
+						.setPricingCommand(pricingCmd)
+						.transform(ptcList, linearFare).pricingBlockList,
 			};
 		});
 	}
