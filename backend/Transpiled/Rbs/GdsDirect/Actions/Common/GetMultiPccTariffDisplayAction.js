@@ -7,7 +7,7 @@ const RbsClient = require("../../../../../IqClients/RbsClient");
 const NormalizeTariffCmd = require('../../../../../Actions/CmdTranslators/NormalizeTariffCmd.js');
 const MakeMultiPccTariffDumpAction = require('./MakeMultiPccTariffDumpAction.js');
 
-let php = require('klesun-node-tools/src/Transpiled/php.js');
+const php = require('klesun-node-tools/src/Transpiled/php.js');
 const {allWrap} = require('klesun-node-tools/src/Lang.js');
 const {timeout} = require("../../../../../Utils/TmpLib");
 
@@ -202,9 +202,9 @@ class GetMultiPccTariffDisplayAction {
 		if (!php.empty($rpcParamRecord['error'])) {
 			return {'errors': ['Failed to generate RPC params - ' + $rpcParamRecord['error']]};
 		}
-		let promises = [];
-		for (let $rpcParams of Object.values($rpcParamRecord['options'])) {
-			let $pccParams = this.constructor.arrayDiffTree($rpcParams, $rpcParamRecord['baseParams']);
+		const promises = [];
+		for (const $rpcParams of Object.values($rpcParamRecord['options'])) {
+			const $pccParams = this.constructor.arrayDiffTree($rpcParams, $rpcParamRecord['baseParams']);
 			let whenTariff = RbsClient.getTariffDisplay($rpcParams)
 				.then(serviceRs => ({
 					pcc: $rpcParams.pcc,
@@ -224,14 +224,14 @@ class GetMultiPccTariffDisplayAction {
 		}
 		this.log('Started ' + php.count(promises) + ' jobs: ' + php.implode(', ', php.array_column(promises, 'pcc')), promises);
 		$timeout = this.constructor.TIMEOUT;
-		let wrap = await allWrap(promises);
-		let $finishedJobs = wrap.resolved;
-		let errors = wrap.rejected.map(exc => (exc + '').slice(0, 90) + '...');
+		const wrap = await allWrap(promises);
+		const $finishedJobs = wrap.resolved;
+		const errors = wrap.rejected.map(exc => (exc + '').slice(0, 90) + '...');
 		this.logFinishedJobs($finishedJobs, promises);
 
 		$hasFares = ($job) => !php.empty($job['jobResult']['result']['fares']);
 		if (!Fp.any($hasFares, $finishedJobs)) {
-			let formatted = php.array_map(a => this.constructor.formatJobError(a), $finishedJobs);
+			const formatted = php.array_map(a => this.constructor.formatJobError(a), $finishedJobs);
 			formatted.push(...errors);
 			return {'errors': formatted.length > 0 ? formatted : ['None of PCC jobs responded']};
 		}

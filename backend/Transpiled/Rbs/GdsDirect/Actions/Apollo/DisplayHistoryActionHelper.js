@@ -1,7 +1,7 @@
 
 const StringUtil = require('../../../../Lib/Utils/StringUtil.js');
 
-let php = require('klesun-node-tools/src/Transpiled/php.js');
+const php = require('klesun-node-tools/src/Transpiled/php.js');
 
 class DisplayHistoryActionHelper {
 	static getStatusLabel($status) {

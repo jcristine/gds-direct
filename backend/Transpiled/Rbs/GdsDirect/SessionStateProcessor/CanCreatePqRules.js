@@ -127,7 +127,7 @@ class CanCreatePqRules {
 	static checkPricingCommand($gds, $cmd, $leadData) {
 		let $errors, $priced, $ptcErrors, $ageGroups, $paxNumInfants, $paxNumChildren, $ageGroupsPlural;
 		$errors = this.checkPricingCommandObviousRules($gds, $cmd);
-		let ifc = CommonDataHelper.makeIfcByGds($gds);
+		const ifc = CommonDataHelper.makeIfcByGds($gds);
 		$priced = ifc.getPricedPtcs($cmd);
 		if (!php.empty($ptcErrors = $priced['errors'] || [])) {
 			$errors = php.array_merge($errors, $ptcErrors);

@@ -2,12 +2,12 @@ const Db = require("../Utils/Db.js");
 
 /** @param {IFullCmsHighlightData} fullCmsData */
 module.exports = (fullCmsData) => {
-	let cmsData = fullCmsData.cmsData;
-	let idToGds = new Map(fullCmsData.gdses.aaData.map(l => [l.id, l.name]));
-	let idToLang = new Map(fullCmsData.langs.aaData.map(l => [l.id, l.name]));
-	let idToGroup = new Map(fullCmsData.groups.aaData.map(l => [l.id, l.name]));
-	let idToColor = new Map(fullCmsData.colors.aaData.map(l => [l.id, l.name]));
-	let idToType = new Map(fullCmsData.types.aaData.map(l => [l.id, l.name]));
+	const cmsData = fullCmsData.cmsData;
+	const idToGds = new Map(fullCmsData.gdses.aaData.map(l => [l.id, l.name]));
+	const idToLang = new Map(fullCmsData.langs.aaData.map(l => [l.id, l.name]));
+	const idToGroup = new Map(fullCmsData.groups.aaData.map(l => [l.id, l.name]));
+	const idToColor = new Map(fullCmsData.colors.aaData.map(l => [l.id, l.name]));
+	const idToType = new Map(fullCmsData.types.aaData.map(l => [l.id, l.name]));
 	return Db.with(db => Promise.all([
 		db.writeRows('highlightOutputPatterns', cmsData.aaData
 			.reduce((sum, next) => sum.concat(Object.values(next.gds)), [])

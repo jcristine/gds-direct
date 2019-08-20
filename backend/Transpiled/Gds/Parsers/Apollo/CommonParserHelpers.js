@@ -1,4 +1,4 @@
-let {
+const {
 	array_key_exists,
 	date,
 	intval,
@@ -17,7 +17,7 @@ class CommonParserHelpers
 	}
 
 	apolloMonthToNumber($str) {
-		let $monthIndex = this.getMonthIndexList();
+		const $monthIndex = this.getMonthIndexList();
 		if (array_key_exists($str, $monthIndex)) {
 			return $monthIndex[$str];
 		} else {
@@ -27,7 +27,7 @@ class CommonParserHelpers
 
 	numberToApolloDayOfWeek($index) {
 		$index = intval($index);
-		let $dayOfWeekAbbr = {[1]: 'MO',[2]: 'TU',[3]: 'WE',[4]: 'TH',[5]: 'FR',[6]: 'SA',[7]: 'SU'};
+		const $dayOfWeekAbbr = {[1]: 'MO',[2]: 'TU',[3]: 'WE',[4]: 'TH',[5]: 'FR',[6]: 'SA',[7]: 'SU'};
 		if (array_key_exists($index, $dayOfWeekAbbr)) {
 			return $dayOfWeekAbbr[$index];
 		} else {
@@ -36,7 +36,7 @@ class CommonParserHelpers
 	}
 
 	apolloDayOfWeekToNumber($str) {
-		let $dayOfWeekIndex = {'MO': 1,'TU': 2,'WE': 3,'TH': 4,'FR': 5,'SA': 6,'SU': 7};
+		const $dayOfWeekIndex = {'MO': 1,'TU': 2,'WE': 3,'TH': 4,'FR': 5,'SA': 6,'SU': 7};
 		if (array_key_exists($str, $dayOfWeekIndex)) {
         	return $dayOfWeekIndex[$str];
 		} else {
@@ -45,18 +45,18 @@ class CommonParserHelpers
 	}
 
 	parseApollo12hTime($timeStr) {
-		let $paddedTime = str_pad($timeStr.trim(), 5, '0', STR_PAD_LEFT);
-		let $timeOfDayStr = substr($paddedTime, 4);
+		const $paddedTime = str_pad($timeStr.trim(), 5, '0', STR_PAD_LEFT);
+		const $timeOfDayStr = substr($paddedTime, 4);
 		let $hours = substr($paddedTime, 0, 2);
 		$hours = $hours === '00' ? '12' : $hours;
-		let $minutes = substr($paddedTime, 2, 2);
-		let $hours12ModRes = this.convertApolloTo12hModifier($timeOfDayStr.trim());
+		const $minutes = substr($paddedTime, 2, 2);
+		const $hours12ModRes = this.convertApolloTo12hModifier($timeOfDayStr.trim());
 		if (!$hours12ModRes) {
 			return null;
 		}
-		let $hours12Mod = $hours12ModRes;
-		let $hours12 = $hours + ':' + $minutes + ' ' + $hours12Mod;
-		let $timestamp = strtotime($hours12);
+		const $hours12Mod = $hours12ModRes;
+		const $hours12 = $hours + ':' + $minutes + ' ' + $hours12Mod;
+		const $timestamp = strtotime($hours12);
 		if ($timestamp) {
 			return date('H:i', $timestamp);
 		} else if ($hours > 12 && $hours12Mod === 'AM'){
@@ -68,9 +68,9 @@ class CommonParserHelpers
 	}
 
 	parseApollo24hTime($timeStr) {
-		let $paddedTime = str_pad($timeStr.trim(), 4, '0', STR_PAD_LEFT);
-		let $hours = substr($paddedTime, 0, 2);
-		let $minutes = substr($paddedTime, 2, 2);
+		const $paddedTime = str_pad($timeStr.trim(), 4, '0', STR_PAD_LEFT);
+		const $hours = substr($paddedTime, 0, 2);
+		const $minutes = substr($paddedTime, 2, 2);
 		return $hours + ':' + $minutes;
 	}
 
@@ -105,14 +105,14 @@ class CommonParserHelpers
 		$date = str_pad($date, 5, '0', STR_PAD_LEFT);
 		let $tokens;
 		if ($tokens = preg_match(/^(?<day>[0-9]{2})(?<month>[A-Z]{3})$/, $date)) {
-			let $day = $tokens['day'];
-			let $monthRes = this.apolloMonthToNumber($tokens['month']);
+			const $day = $tokens['day'];
+			const $monthRes = this.apolloMonthToNumber($tokens['month']);
 			if ($monthRes) {
-				let $month = this.apolloMonthToNumber($tokens['month']);
+				const $month = this.apolloMonthToNumber($tokens['month']);
 				// Of course, it can be any year, but it's the easiest way to
 				// validate date: 2016 is a leap year, so if date is valid, it
 				// exists in 2016
-				let $fullDate =
+				const $fullDate =
                     '2016-' + str_pad(strval($month), 2, '0', STR_PAD_LEFT) + '-' + str_pad(strval($day), 2, '0', STR_PAD_LEFT);
 				if ($fullDate == date('Y-m-d', strtotime($fullDate))) {
 					return date('m-d', strtotime($fullDate));
@@ -129,7 +129,7 @@ class CommonParserHelpers
 	parseApolloFullDate($str) {
 		let $tokens;
 		if ($tokens = preg_match(/^(?<dateDayAndMonth>\d{1,2}[A-Z]{3})(?<dateYear>\d{2})$/, $str)) {
-			let $parsedDayAndMonth = this.parsePartialDate($tokens['dateDayAndMonth']);
+			const $parsedDayAndMonth = this.parsePartialDate($tokens['dateDayAndMonth']);
 			if ($parsedDayAndMonth){
 				return $tokens['dateYear'] + '-' + $parsedDayAndMonth;
 			}
@@ -171,7 +171,7 @@ class CommonParserHelpers
 		if ($matches = preg_match(/^(\d{1,2}[A-Z]{3})(\d{2}|)(\d{2})$/, $raw)) {
 			let [$_, $partial, $century, $year] = $matches;
 			$century = $century || ($year > date('y') ? '19' : '20');
-			let $partialParsed = this.parsePartialDate($partial);
+			const $partialParsed = this.parsePartialDate($partial);
 			$parsed = $partialParsed ? $century + $year + '-' + $partialParsed : null;
 		} else {
 			$parsed = null;

@@ -6,7 +6,7 @@ const PersistentHttpRqStub = require('./PersistentHttpRqStub.js');
 
 const AnyGdsStubSession = require('./AnyGdsStubSession.js');
 
-let php = require('klesun-node-tools/src/Transpiled/php.js');
+const php = require('klesun-node-tools/src/Transpiled/php.js');
 
 /**
  * @module - provides handy functions to not
@@ -27,9 +27,9 @@ exports.testGdsAction = async (unit, $testCase, $getActual) => {
 };
 
 exports.testHttpGdsAction = async ({unit, testCase, getActual}) => {
-	let {input, fullState, output, httpRequests, startDt = undefined} = testCase;
-	let PersistentHttpRq = PersistentHttpRqStub(httpRequests);
-	let stubGdsProfiles = {
+	const {input, fullState, output, httpRequests, startDt = undefined} = testCase;
+	const PersistentHttpRq = PersistentHttpRqStub(httpRequests);
+	const stubGdsProfiles = {
 		getTravelport: profileName => Promise.resolve({
 			username: 'grectUnitTest',
 			password: 'qwerty123',
@@ -48,7 +48,7 @@ exports.testHttpGdsAction = async ({unit, testCase, getActual}) => {
 		}),
 		chooseAmaProfile: GdsProfiles.chooseAmaProfile,
 	};
-	let session = {
+	const session = {
 		context: {gds: fullState.gds, travelRequestId: null},
 		gdsData: {
 			sessionToken: 'soap-unit-test-blabla-123',
@@ -57,14 +57,14 @@ exports.testHttpGdsAction = async ({unit, testCase, getActual}) => {
 			messageId: 666,
 		},
 	};
-	let gdsClients = GdsSession.makeGdsClients({
+	const gdsClients = GdsSession.makeGdsClients({
 		PersistentHttpRq,
 		GdsProfiles: stubGdsProfiles,
 		randomBytes: size => Buffer.from('01234567890abcdef01234567890abcd', 'hex'),
 		now: () => 1565598730736,
 	});
-	let gdsSession = GdsSession({session, gdsClients});
-	let stateful = GdsDirectDefaults.makeStatefulSessionCustom({
+	const gdsSession = GdsSession({session, gdsClients});
+	const stateful = GdsDirectDefaults.makeStatefulSessionCustom({
 		fullState, session, gdsSession, startDt: startDt || undefined,
 	});
 
@@ -83,7 +83,7 @@ exports.testHttpGdsAction = async ({unit, testCase, getActual}) => {
 	};
 
 
-	let actual = await getActual({stateful, input, gdsClients});
+	const actual = await getActual({stateful, input, gdsClients});
 	unit.assertArrayElementsSubset(output, actual);
 	unit.assertEquals([], PersistentHttpRq.getHttpRequestsLeft(), 'not all HTTP requests were used');
 };

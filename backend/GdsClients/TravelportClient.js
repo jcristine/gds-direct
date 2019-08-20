@@ -1,5 +1,5 @@
-let {LoginTimeOut, BadGateway} = require("klesun-node-tools/src/Rej");
-let {escapeXml, parseXml} = require("../GdsHelpers/CommonUtils.js");
+const {LoginTimeOut, BadGateway} = require("klesun-node-tools/src/Rej");
+const {escapeXml, parseXml} = require("../GdsHelpers/CommonUtils.js");
 const Conflict = require("klesun-node-tools/src/Rej").Conflict;
 const TravelportPnrRequestTransformer = require('./Transformers/TravelportPnrRequest');
 const TravelportFareRuleTransformer = require('./Transformers/TravelportFareRules');
@@ -14,7 +14,7 @@ const TravelportFareRuleTransformer = require('./Transformers/TravelportFareRule
  * Upd.: the travelport business guys said that they decide regional stuff depending on
  * the url, something like showing european fares on europe url more often, and such stuff...
  */
-let endpoint = 'https://americas.webservices.travelport.com/B2BGateway/service/XMLSelect';
+const endpoint = 'https://americas.webservices.travelport.com/B2BGateway/service/XMLSelect';
 //let endpoint = 'https://emea.webservices.travelport.com/B2BGateway/service/XMLSelect';
 //let endpoint = 'https://apac.webservices.travelport.com/B2BGateway/service/XMLSelect';
 
@@ -80,12 +80,12 @@ const TravelportClient = ({
 	GdsProfiles = require("../Repositories/GdsProfiles"),
 } = {}) => {
 
-	let {getTravelport} = GdsProfiles;
+	const {getTravelport} = GdsProfiles;
 
-	let sendRequest = async (requestBody, profileName) => {
-		let profileData = await getTravelport(profileName);
-		let authTokenSrc = profileData.username + ':' + profileData.password;
-		let authToken = Buffer.from(authTokenSrc).toString('base64');
+	const sendRequest = async (requestBody, profileName) => {
+		const profileData = await getTravelport(profileName);
+		const authTokenSrc = profileData.username + ':' + profileData.password;
+		const authToken = Buffer.from(authTokenSrc).toString('base64');
 		return PersistentHttpRq({
 			url: endpoint,
 			headers: {
@@ -96,11 +96,11 @@ const TravelportClient = ({
 	};
 
 	const startSession = (params) => {
-		let profileName = params.profileName;
-		let body = `<?xml version="1.0" encoding="UTF-8"?>
+		const profileName = params.profileName;
+		const body = `<?xml version="1.0" encoding="UTF-8"?>
 	<SOAP-ENV:Envelope xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ns1="http://webservices.galileo.com"><SOAP-ENV:Body><ns1:BeginSession><ns1:Profile>${profileName}</ns1:Profile></ns1:BeginSession></SOAP-ENV:Body></SOAP-ENV:Envelope>`;
 		return sendRequest(body, profileName).then(resp => {
-			let sessionToken = parseXml(resp).querySelectorAll('BeginSessionResult')[0].textContent;
+			const sessionToken = parseXml(resp).querySelectorAll('BeginSessionResult')[0].textContent;
 			if (!sessionToken) {
 				return BadGateway('Failed to extract session token from Travelport response - ' + resp);
 			} else {
@@ -113,12 +113,12 @@ const TravelportClient = ({
 		if ((exc + '').indexOf('Could not locate Session Token Information') > -1) {
 			return LoginTimeOut('Session token expired');
 		} else if ((exc + '').indexOf('Transaction already in progress') > -1) {
-			let error = 'Another command is still in progress - no action taken.\n' +
+			const error = 'Another command is still in progress - no action taken.\n' +
 				'To restart session use _⚙ (Gear) -> Default PCC_.\n' +
 				'Note, reloading page does not reduce waiting time on hanging availability (60 s.).';
 			return Conflict(error, {isOk: true});
 		} else {
-			let obj = typeof exc === 'string' ? new Error(exc) : exc;
+			const obj = typeof exc === 'string' ? new Error(exc) : exc;
 			// for debug, be careful not to include credentials here
 			obj.rqBody = body;
 			return Promise.reject(obj);
@@ -126,12 +126,12 @@ const TravelportClient = ({
 	};
 
 	const runCmd = (cmd, gdsData) => {
-		let token = gdsData.sessionToken;
-		let profileName = gdsData.profileName;
-		let body = `<?xml version="1.0" encoding="UTF-8"?>
+		const token = gdsData.sessionToken;
+		const profileName = gdsData.profileName;
+		const body = `<?xml version="1.0" encoding="UTF-8"?>
 	<SOAP-ENV:Envelope xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ns1="http://webservices.galileo.com"><SOAP-ENV:Body><ns1:SubmitTerminalTransaction><ns1:Token>` + token + `</ns1:Token><ns1:Request>` + escapeXml(cmd) + `</ns1:Request><ns1:IntermediateResponse></ns1:IntermediateResponse></ns1:SubmitTerminalTransaction></SOAP-ENV:Body></SOAP-ENV:Envelope>`;
 		return sendRequest(body, profileName).then(resp => {
-			let resultTag = parseXml(resp).querySelectorAll('SubmitTerminalTransactionResult')[0];
+			const resultTag = parseXml(resp).querySelectorAll('SubmitTerminalTransactionResult')[0];
 			if (resultTag) {
 				return {output: resultTag.textContent};
 			} else {
@@ -161,7 +161,7 @@ const TravelportClient = ({
 	};
 
 	const closeSession = (gdsData) => {
-		let body = [
+		const body = [
 			'<SOAP-ENV:Envelope xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ns1="http://webservices.galileo.com">',
 			'  <SOAP-ENV:Body>',
 			'    <ns1:EndSession>',
@@ -182,10 +182,10 @@ const TravelportClient = ({
 	});
 
 	const withSession = (params, action) => {
-		let profileName = params.profileName
+		const profileName = params.profileName
 			|| GdsProfiles.TRAVELPORT.DynApolloProd_2F3K;
 		return startSession({profileName}).then(gdsData => {
-			let session = makeSession(gdsData);
+			const session = makeSession(gdsData);
 			return Promise.resolve()
 				.then(() => action(session))
 				.finally(() => {
@@ -195,7 +195,7 @@ const TravelportClient = ({
 	};
 
 	const getFares = (params) => {
-		let soapEnv = buildFaresSoapEnv();
+		const soapEnv = buildFaresSoapEnv();
 		return sendRequest(soapEnv, 'DynApolloProd_2F3K');
 	};
 

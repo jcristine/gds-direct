@@ -1,16 +1,16 @@
-let Redis = require("./Redis.js");
-let Config = require('../Config.js');
+const Redis = require("./Redis.js");
+const Config = require('../Config.js');
 
 /**
  * @see https://auth.asaptickets.com/help/api
  */
 
 // 1 day, because it expired in EMC in past, and I'm not sure our 'doAuth' requests keep it alive for good
-let SESSION_EXPIRE = 1 * 3 * 60 * 60;
+const SESSION_EXPIRE = 1 * 3 * 60 * 60;
 
-let makeClient = cfg => {
-	let {Emc} = require('dynatech-client-component-emc');
-	let client = new Emc();
+const makeClient = cfg => {
+	const {Emc} = require('dynatech-client-component-emc');
+	const client = new Emc();
 
 	if (cfg.production) {
 		client.setLink('http://auth-asaptickets-com.lan.dyninno.net/jsonService.php');
@@ -27,7 +27,7 @@ let makeClient = cfg => {
 
 let whenClient = null;
 /** @return Promise<IEmcClient> */
-let getClient = () => {
+const getClient = () => {
 	if (whenClient === null) {
 		whenClient = Config.getConfig().then(cfg => makeClient(cfg));
 	}
@@ -53,11 +53,11 @@ exports.getCachedSessionInfo = async (sessionKey) => {
 	if (session !== null && session) {
 		sessionInfo = JSON.parse(session);
 	} else {
-		let client = await getClient();
+		const client = await getClient();
 	    sessionInfo = await client.sessionInfo(sessionKey);
 	}
 	redis.set(cacheKey, JSON.stringify(sessionInfo), 'EX', keyExpire);
-	let userId = (((sessionInfo || {}).data || {}).user || {}).id;
+	const userId = (((sessionInfo || {}).data || {}).user || {}).id;
 	if (!userId) {
 	    return Promise.reject('No user id in EMC rs - ' + JSON.stringify(sessionInfo));
 	} else {

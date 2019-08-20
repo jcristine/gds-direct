@@ -1,8 +1,8 @@
-let Redis = require("../LibWrappers/Redis.js");
-let {never, StrConsts} = require('../Utils/StrConsts.js');
-let Rej = require('klesun-node-tools/src/Rej.js');
+const Redis = require("../LibWrappers/Redis.js");
+const {never, StrConsts} = require('../Utils/StrConsts.js');
+const Rej = require('klesun-node-tools/src/Rej.js');
 const RbsClient = require("../IqClients/RbsClient");
-let {mand} = require('../Utils/TmpLib.js');
+const {mand} = require('../Utils/TmpLib.js');
 const Settings = require('./Settings.js');
 
 const TRAVELPORT = StrConsts({
@@ -32,8 +32,8 @@ const AMADEUS = StrConsts({
 });
 
 /** @return Promise<IGdsProfileMap> */
-let getAll = async () => {
-	let dataStr = await Settings.get({name: 'gdsProfiles'});
+const getAll = async () => {
+	const dataStr = await Settings.get({name: 'gdsProfiles'});
 	if (dataStr) {
 		return JSON.parse(dataStr);
 	} else {
@@ -45,13 +45,13 @@ let getAll = async () => {
  * RAM caching
  * @type IGdsProfileMap
  */
-let gdsProfileCache = {
+const gdsProfileCache = {
 	travelport: {},
 	sabre: {},
 	amadeus: {},
 };
 
-let getOne = async (service, profileName) => {
+const getOne = async (service, profileName) => {
 	if (!profileName) {
 		return Rej.BadRequest('Tried to get profile data by empty name for ' + service);
 	}
@@ -59,8 +59,8 @@ let getOne = async (service, profileName) => {
 		return gdsProfileCache[service][profileName];
 	}
 	// new profiles may be added, so we don't want to cache all of them at once
-	let gdsProfiles = await getAll();
-	let data = (gdsProfiles[service] || {})[profileName];
+	const gdsProfiles = await getAll();
+	const data = (gdsProfiles[service] || {})[profileName];
 	if (data) {
 		gdsProfiles[service] = gdsProfiles[service] || {};
 		gdsProfiles[service][profileName] = data;
@@ -71,7 +71,7 @@ let getOne = async (service, profileName) => {
 };
 
 let whenSessionLimits = null;
-let getSessionLimits = async () => {
+const getSessionLimits = async () => {
 	if (!whenSessionLimits) {
 		whenSessionLimits = RbsClient.getSessionLimits()
 			.then(rs => rs.result.result.gdsUsers['GDSD'])
@@ -85,8 +85,8 @@ let getSessionLimits = async () => {
 };
 
 exports.getLimit = async (gds, profileName) => {
-	let limitProfiles = await getSessionLimits().catch(exc => []);
-	for (let limitProfile of limitProfiles) {
+	const limitProfiles = await getSessionLimits().catch(exc => []);
+	for (const limitProfile of limitProfiles) {
 		if (limitProfile.gds === gds &&
 			limitProfile.gds_profile === profileName
 		) {
@@ -116,7 +116,7 @@ exports.getAmadeus = (profileName) =>
 	}));
 
 exports.chooseAmaProfile = (pcc) => {
-	let mainPcc = 'AMADEUS_PROD_1ASIWTUTICO';
+	const mainPcc = 'AMADEUS_PROD_1ASIWTUTICO';
 	return {
 		NYC1S2186: mainPcc,
 		SFO1S2195: mainPcc,

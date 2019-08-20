@@ -12,10 +12,10 @@
  */
 exports.parseSequence = (linesLeft, parse) => {
 	linesLeft = [...linesLeft];
-	let parsedLines = [];
+	const parsedLines = [];
 	let line;
 	while ((line = linesLeft.shift()) !== undefined) {
-		let parsedLine = parse(line);
+		const parsedLine = parse(line);
 		if (parsedLine) {
 			parsedLines.push(parsedLine);
 		} else {

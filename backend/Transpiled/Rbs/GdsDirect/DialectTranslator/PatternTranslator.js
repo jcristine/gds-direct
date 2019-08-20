@@ -16,8 +16,8 @@ class PatternTranslator {
 	static makeRegexFromPattern($pattern, $dialect) {
 		let $matches, $key, $number, $name, $dataRegex, $subMatches, $subDataRegex;
 
-		let $keyUses = {};
-		let $params = {};
+		const $keyUses = {};
+		const $params = {};
 		if (php.preg_match_all(/{(.+?)\}/, $pattern, $matches = [])) {
 			for ($key of Object.values($matches[1])) {
 				$number = ($keyUses[$key] || 0) + 1;
@@ -27,7 +27,7 @@ class PatternTranslator {
 
 					$pattern = php.preg_replace('/\\{' + $key + '\\}/', '{' + $name + '}', $pattern, 1);
 					if (php.preg_match_all(/\{(.+?)\}/, $dataRegex, $subMatches = [])) {
-						let $subParams = {};
+						const $subParams = {};
 						for ($key of Object.values($subMatches[1])) {
 							if (!php.is_integer($key) &&
 								($subDataRegex = Variables.getVariableRegex($key, $dialect))
@@ -221,8 +221,8 @@ class PatternTranslator {
 	 * Upd.: 1-2 ms with this vs 10-20 ms without it
 	 */
 	static prefixMatches(pattern, cmd) {
-		let patterns = Array.isArray(pattern) ? pattern : [pattern];
-		let prefixes = patterns.map(p => p.replace(/{.*/, ''));
+		const patterns = Array.isArray(pattern) ? pattern : [pattern];
+		const prefixes = patterns.map(p => p.replace(/{.*/, ''));
 		return prefixes.some(p => cmd.startsWith(p));
 	}
 

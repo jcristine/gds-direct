@@ -1,7 +1,7 @@
 
-let {wrapExc} = require("../Utils/TmpLib.js");
-let {parseXml, escapeXml} = require('../GdsHelpers/CommonUtils.js');
-let Rej = require("klesun-node-tools/src/Rej.js");
+const {wrapExc} = require("../Utils/TmpLib.js");
+const {parseXml, escapeXml} = require('../GdsHelpers/CommonUtils.js');
+const Rej = require("klesun-node-tools/src/Rej.js");
 const LoginTimeOut = require("klesun-node-tools/src/Rej").LoginTimeOut;
 const SabreItinerary = require('./Transformers/SabreItinerary');
 
@@ -99,9 +99,9 @@ const SabreClient = ({
 	PersistentHttpRq = require('klesun-node-tools/src/Utils/PersistentHttpRq.js'),
 	GdsProfiles = require("../Repositories/GdsProfiles"),
 } = {}) => {
-	let {getSabre} = GdsProfiles;
+	const {getSabre} = GdsProfiles;
 
-	let sendRequest = async (soapEnvXml, format) => {
+	const sendRequest = async (soapEnvXml, format) => {
 		return PersistentHttpRq({
 			url: 'https://webservices.sabre.com/websvc',
 			headers: {
@@ -110,7 +110,7 @@ const SabreClient = ({
 			},
 			body: soapEnvXml,
 		}).then(rs => rs.body).then(rsXml => {
-			let dom = parseXml(rsXml);
+			const dom = parseXml(rsXml);
 			return wrapExc(() => format(dom)).catch(exc => {
 				if (!exc.httpStatusCode) {
 					exc.httpStatusCode = Rej.BadGateway.httpStatusCode;
@@ -122,15 +122,15 @@ const SabreClient = ({
 		});
 	};
 
-	let startSession = async (params) => {
-		let profileName = params.profileName;
-		let profileData = await getSabre(profileName);
+	const startSession = async (params) => {
+		const profileName = params.profileName;
+		const profileData = await getSabre(profileName);
 
-		let baseGdsData = {
+		const baseGdsData = {
 			conversationId: '2019-02-22T19:07:04@innogateway5c7048587a71aPID4209',
 			messageId: '1876459793',
 		};
-		let soapEnvXml = makeStartSoapEnvXml({profileData, baseGdsData});
+		const soapEnvXml = makeStartSoapEnvXml({profileData, baseGdsData});
 
 		return sendRequest(soapEnvXml, dom => ({
 			...baseGdsData,
@@ -139,7 +139,7 @@ const SabreClient = ({
 		}));
 	};
 
-	let parseInSessionExc = (exc) => {
+	const parseInSessionExc = (exc) => {
 		if ((exc + '').indexOf('Invalid or Expired binary security token') > -1) {
 			return LoginTimeOut('Session token expired');
 		} else {
@@ -148,23 +148,23 @@ const SabreClient = ({
 	};
 
 	/** @param gdsData = await require('SabreClient.js').startSession() */
-	let runCmd = async (rqBody, gdsData) => {
-		let cmd = rqBody.command;
-		let profileData = await getSabre(gdsData.profileName);
-		let payloadXml = [
+	const runCmd = async (rqBody, gdsData) => {
+		const cmd = rqBody.command;
+		const profileData = await getSabre(gdsData.profileName);
+		const payloadXml = [
 			'    <ns1:SabreCommandLLSRQ xmlns:ns1="http://webservices.sabre.com/sabreXML/2003/07">',
 			'      <ns1:Request>',
 			'        <ns1:HostCommand>' + escapeXml(cmd) + '</ns1:HostCommand>',
 			'      </ns1:Request>',
 			'    </ns1:SabreCommandLLSRQ>',
 		].join('\n');
-		let soapEnvXml = await makeContinueSoapEnvXml({
+		const soapEnvXml = await makeContinueSoapEnvXml({
 			gdsData, payloadXml, profileData, action: 'SabreCommandLLSRQ',
 		});
 
 		return sendRequest(soapEnvXml, dom => {
-			let output = (dom.querySelector('SabreCommandLLSRS > Response') || {}).textContent || '';
-			let error = (dom.querySelector('SabreCommandLLSRS > ErrorRS Message') || {}).textContent || '';
+			const output = (dom.querySelector('SabreCommandLLSRS > Response') || {}).textContent || '';
+			const error = (dom.querySelector('SabreCommandLLSRS > ErrorRS Message') || {}).textContent || '';
 			if (output) {
 				return {output: decodeBinaryChars(output)};
 			} else if (error === 'Invalid Value') {
@@ -178,22 +178,22 @@ const SabreClient = ({
 	};
 
 	/** @param gdsData = await require('SabreClient.js').startSession() */
-	let closeSession = async (gdsData) => {
-		let profileName = gdsData.profileName;
-		let profileData = await getSabre(profileName);
-		let payloadXml = [
+	const closeSession = async (gdsData) => {
+		const profileName = gdsData.profileName;
+		const profileData = await getSabre(profileName);
+		const payloadXml = [
 			'    <ns1:SessionCloseRQ xmlns:ns1="http://www.opentravel.org/OTA/2002/11">',
 			'      <ns1:POS>',
 			'        <ns1:Source PseudoCityCode="' + profileData.default_pcc + '"/>',
 			'      </ns1:POS>',
 			'    </ns1:SessionCloseRQ>',
 		].join('\n');
-		let soapEnvXml = await makeContinueSoapEnvXml({
+		const soapEnvXml = await makeContinueSoapEnvXml({
 			gdsData, payloadXml, profileData, action: 'SessionCloseRQ',
 		});
 
 		return sendRequest(soapEnvXml, dom => {
-			let rsEl = dom.querySelector('SessionCloseRS');
+			const rsEl = dom.querySelector('SessionCloseRS');
 			return {
 				status: rsEl.getAttribute('status'),
 				version: rsEl.getAttribute('version'),
@@ -201,7 +201,7 @@ const SabreClient = ({
 		}).catch(parseInSessionExc);
 	};
 
-	let makeSession = (gdsData) => ({
+	const makeSession = (gdsData) => ({
 		gdsData: gdsData,
 		// TODO: refactor and leave just getGdsData()
 		getGdsData: () => gdsData,
@@ -212,11 +212,11 @@ const SabreClient = ({
 	/**
 	 * starts a session, executes the action, closes the session
 	 */
-	let withSession = (params, action) => {
-		let profileName = params.profileName
+	const withSession = (params, action) => {
+		const profileName = params.profileName
 			|| GdsProfiles.SABRE.SABRE_PROD_L3II;
 		return startSession({profileName}).then(gdsData => {
-			let session = makeSession(gdsData);
+			const session = makeSession(gdsData);
 			return Promise.resolve()
 				.then(() => action(session))
 				.finally(() => {
@@ -228,7 +228,7 @@ const SabreClient = ({
 	const processPnr = async (gdsData, params) => {
 		const xml = SabreItinerary.buildItineraryXml(params);
 		const profileData = await getSabre(gdsData.profileName);
-		let soapEnvXml = makeContinueSoapEnvXml({
+		const soapEnvXml = makeContinueSoapEnvXml({
 			gdsData, payloadXml: xml, profileData, action: 'EnhancedAirBookRQ',
 		});
 

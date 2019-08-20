@@ -199,9 +199,9 @@ class PricingStructureWriter
 	}
 
 	rebookStatementFound($res) {
-		let segments = $res.segments || [];
-		for (let ptcRecord of $res.ptcRecords || []) {
-			for (let segment of ptcRecord.segments) {
+		const segments = $res.segments || [];
+		for (const ptcRecord of $res.ptcRecords || []) {
+			for (const segment of ptcRecord.segments) {
 				segments.push({...segment, ptc: ptcRecord.ptc});
 			}
 		}

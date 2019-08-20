@@ -812,7 +812,7 @@ class ImportSabrePnrFormatAdapter {
 	// ======================
 
 	static transformBagAllowanceSegment($segment) {
-		let parsedCode = $segment['free']['amount'] || {};
+		const parsedCode = $segment['free']['amount'] || {};
 		return {
 			'segmentDetails': {
 				'airline': $segment['free']['airline'],

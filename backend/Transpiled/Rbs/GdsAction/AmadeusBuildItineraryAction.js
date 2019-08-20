@@ -26,7 +26,7 @@ class AmadeusBuildItineraryAction extends AbstractGdsAction {
 				: this.constructor.formatGdsDate($segment['departureDate']);
 			$segmentStatus = $segment['segmentStatus'] || '';
 			// I believe there was difference in format between the [GK, PE] list and the full one
-			let passiveStatuses = ['GK', 'PE'];
+			const passiveStatuses = ['GK', 'PE'];
 			$segmentStatus = php.in_array($segmentStatus, passiveStatuses) ? $segmentStatus : '';
 			$segmentStatusParam = php.in_array($segmentStatus, this.constructor.PASSIVE_SEGMENTS) ? '/A' : '';
 

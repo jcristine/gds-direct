@@ -6,7 +6,7 @@ const Lexer = require('../../../../Lib/Lexer/Lexer.js');
 const php = require('../../../../phpDeprecated.js');
 const Fp = require('../../../../Lib/Utils/Fp.js');
 
-let parseDate = ($raw) => {
+const parseDate = ($raw) => {
 	return !$raw ? null : {
 		'raw': $raw,
 		'partial': CommonParserHelpers.parsePartialDate($raw),
@@ -14,11 +14,11 @@ let parseDate = ($raw) => {
 	};
 };
 
-let $getFirst = ($matches) => $matches[1];
-let $parseDate = ($matches) => parseDate($matches[1]);
-let $end = '(?![A-Z0-9])';
+const $getFirst = ($matches) => $matches[1];
+const $parseDate = ($matches) => parseDate($matches[1]);
+const $end = '(?![A-Z0-9])';
 
-let $lexer = new Lexer([
+const $lexer = new Lexer([
 	(new Lexeme('tripType', '/^-(RT|OW)'+$end+'/')).preprocessData($getFirst),
 	(new Lexeme('bookingClass', '/^-([A-Z])'+$end+'/')).preprocessData($getFirst),
 	(new Lexeme('cabinClass', '/^@([A-Z])'+$end+'/')).preprocessData(($matches) => (ApoCmdParser.getCabinClasses() || {})[$matches[1]]),
@@ -46,14 +46,14 @@ let $lexer = new Lexer([
 exports.parse = ($cmd) => {
 	let $matches;
 	if (php.preg_match(/^FD(?<modsPart>.*)$/, $cmd, $matches = {})) {
-		let $lexed = $lexer.lex($matches['modsPart']);
-		let modifiers = Fp.map(($rec) => ({
+		const $lexed = $lexer.lex($matches['modsPart']);
+		const modifiers = Fp.map(($rec) => ({
 			'type': $rec['lexeme'], 'raw': $rec['raw'], 'parsed': $rec['data'],
 		}), $lexed['lexemes']);
 
 		// code expects them to be separate from rest modifiers
-		let baseModNames = new Set(['dates', 'airports']);
-		let baseData = {};
+		const baseModNames = new Set(['dates', 'airports']);
+		const baseData = {};
 		modifiers.filter(m => baseModNames.has(m.type))
 			.forEach(m => Object.assign(baseData, m.parsed));
 

@@ -1,10 +1,10 @@
 const Debug = require('klesun-node-tools/src/Debug.js');
 const LocalDiag = require('../Repositories/LocalDiag.js');
 
-let Emc = require('../LibWrappers/Emc.js');
-let {NoContent, Forbidden, NotAuthorized, BadRequest, TooManyRequests, LoginTimeOut, InternalServerError, NotFound} = require('klesun-node-tools/src/Rej.js');
-let Diag = require('../LibWrappers/Diag.js');
-let FluentLogger = require('../LibWrappers/FluentLogger.js');
+const Emc = require('../LibWrappers/Emc.js');
+const {NoContent, Forbidden, NotAuthorized, BadRequest, TooManyRequests, LoginTimeOut, InternalServerError, NotFound} = require('klesun-node-tools/src/Rej.js');
+const Diag = require('../LibWrappers/Diag.js');
+const FluentLogger = require('../LibWrappers/FluentLogger.js');
 const GdsSessions = require("../Repositories/GdsSessions");
 const GdsSessionsController = require("./GdsSessionController");
 const Config = require('../Config.js');
@@ -15,7 +15,7 @@ const {HttpUtil} = require('klesun-node-tools');
 const TmpLib = require('../Utils/TmpLib.js');
 const {jsExport} = require('klesun-node-tools/src/Utils/Misc.js');
 
-let isSystemError = (exc) =>
+const isSystemError = (exc) =>
 	!exc.isOk &&
 	!NoContent.matches(exc.httpStatusCode) &&
 	!BadRequest.matches(exc.httpStatusCode) &&
@@ -23,14 +23,14 @@ let isSystemError = (exc) =>
 	!Forbidden.matches(exc.httpStatusCode) &&
 	!LoginTimeOut.matches(exc.httpStatusCode);
 
-let toHandleHttp = (httpAction) => (req, res) => {
+const toHandleHttp = (httpAction) => (req, res) => {
 	return HttpUtil.toHandleHttp(({rqBody, routeParams}) => httpAction(rqBody, routeParams))(req, res)
 		.catch(exc => {
-			let rqBody = HttpUtil.getRqBody(req);
-			let maskedBody = Object.assign({}, rqBody, {
+			const rqBody = HttpUtil.getRqBody(req);
+			const maskedBody = Object.assign({}, rqBody, {
 				emcSessionId: '******' + (rqBody.emcSessionId || '').slice(-4),
 			});
-			let errorData = Debug.getExcData(exc, {
+			const errorData = Debug.getExcData(exc, {
 				requestPath: req.path,
 				message: exc.message || '' + exc,
 				httpStatusCode: exc.httpStatusCode,
@@ -38,7 +38,7 @@ let toHandleHttp = (httpAction) => (req, res) => {
 				stack: exc.stack,
 			});
 			if (isSystemError(exc)) {
-				let msg = (exc || {}).message || (exc + '');
+				const msg = (exc || {}).message || (exc + '');
 				if (msg.match(/42\|Transport\|Temporary network error:unable to reach targeted application/)) {
 					LocalDiag({
 						type: LocalDiag.types.AMA_TMP_NETWORK_ERROR_UNABLE_TO_REACH,
@@ -57,7 +57,7 @@ let toHandleHttp = (httpAction) => (req, res) => {
 };
 
 /** @param {{data: IEmcResult}} emcData */
-let normalizeRqBody = (rqBody, emcData) => {
+const normalizeRqBody = (rqBody, emcData) => {
 	return {
 		...rqBody,
 		emcUser: emcData.data.user,
@@ -69,14 +69,14 @@ let normalizeRqBody = (rqBody, emcData) => {
  * passing just their token instead of authorizing in GDSD
  * and when they do so, 'roles' contains the roles of _their_ project, not of GDSD
  */
-let normalizeForeignProjectEmcData = async (emcData) => {
-	let row = await Agents.getById(emcData.data.user.id);
-	let roles = row.roles ? row.roles.split(',') : [];
+const normalizeForeignProjectEmcData = async (emcData) => {
+	const row = await Agents.getById(emcData.data.user.id);
+	const roles = row.roles ? row.roles.split(',') : [];
 	emcData.data.user.roles = roles;
 	return emcData;
 };
 
-let withAuth = (userAction) => (req, res) => {
+const withAuth = (userAction) => (req, res) => {
 	return toHandleHttp((rqBody, routeParams) => {
 		if (typeof userAction !== 'function') {
 			return InternalServerError('Action is not a function - ' + userAction);
@@ -84,7 +84,7 @@ let withAuth = (userAction) => (req, res) => {
 		return Emc.getCachedSessionInfo(rqBody.emcSessionId)
 			.then(TmpLib.addPerformanceDebug('EMC session info'))
 			.catch(exc => {
-				let error = new Error('EMC auth error - ' + exc);
+				const error = new Error('EMC auth error - ' + exc);
 				error.httpStatusCode = (exc + '').match(/Session not found/)
 					? LoginTimeOut.httpStatusCode
 					: NotAuthorized.httpStatusCode;
@@ -98,9 +98,9 @@ let withAuth = (userAction) => (req, res) => {
 				if (rqBody.isForeignProjectEmcId) {
 					emcData = await normalizeForeignProjectEmcData(emcData).catch(exc => emcData);
 				}
-				for (let role of rqBody.disabledRoles || []) {
+				for (const role of rqBody.disabledRoles || []) {
 					// for debug
-					let i = emcData.data.user.roles.indexOf(role);
+					const i = emcData.data.user.roles.indexOf(role);
 					if (i > -1) {
 						emcData.data.user.roles.splice(i, 1);
 					}
@@ -114,13 +114,13 @@ let withAuth = (userAction) => (req, res) => {
 };
 
 /** @param {function({rqBody, session, emcUser}): Promise} sessionAction */
-let withGdsSession = (sessionAction, canStartNew = false) => (req, res, protocolSpecific = {}) => {
+const withGdsSession = (sessionAction, canStartNew = false) => (req, res, protocolSpecific = {}) => {
 	return withAuth(async (rqBody) => {
-		let askClient = protocolSpecific.askClient || null;
-		let emcUser = rqBody.emcUser;
-		let agent = Agent(emcUser);
+		const askClient = protocolSpecific.askClient || null;
+		const emcUser = rqBody.emcUser;
+		const agent = Agent(emcUser);
 		let startNewSession = false;
-		let session = await GdsSessions.getByContext(rqBody, emcUser)
+		const session = await GdsSessions.getByContext(rqBody, emcUser)
 			.catch(exc => {
 				if (NotFound.matches(exc.httpStatusCode)) {
 					if (canStartNew) {
@@ -142,9 +142,9 @@ let withGdsSession = (sessionAction, canStartNew = false) => (req, res, protocol
 		delete(rqBody.emcUser);
 		delete(rqBody.emcSessionId);
 
-		let briefing = req.path === '/terminal/command' ? ' >' + rqBody.command + ';' : '';
-		let msg = 'TODO: Processing HTTP RQ ' + req.path + briefing;
-		let startMs = Date.now();
+		const briefing = req.path === '/terminal/command' ? ' >' + rqBody.command + ';' : '';
+		const msg = 'TODO: Processing HTTP RQ ' + req.path + briefing;
+		const startMs = Date.now();
 		FluentLogger.logit(msg, session.logId, {rqBody, protocol: protocolSpecific.protocol || 'http'});
 		return Promise.resolve()
 			.then(() => sessionAction({rqBody, session, emcUser, askClient}))
@@ -161,7 +161,7 @@ let withGdsSession = (sessionAction, canStartNew = false) => (req, res, protocol
 				return Promise.resolve(result);
 			})
 			.catch(exc => {
-				let msg = 'ERROR: HTTP RQ was not satisfied ' + (exc.httpStatusCode || '(runtime error)');
+				const msg = 'ERROR: HTTP RQ was not satisfied ' + (exc.httpStatusCode || '(runtime error)');
 				FluentLogger.logExc(msg, session.logId, exc);
 				exc.session = session;
 				return Promise.reject(exc);
@@ -172,7 +172,7 @@ let withGdsSession = (sessionAction, canStartNew = false) => (req, res, protocol
 // UnhandledPromiseRejectionWarning
 process.on('unhandledRejection', (exc, promise) => {
 	exc = exc || 'Empty error ' + exc;
-	let dataStr = typeof exc === 'string' ? exc : jsExport({
+	const dataStr = typeof exc === 'string' ? exc : jsExport({
 		message: exc + ' ' + promise,
 		stack: exc.stack,
 		promise: promise,

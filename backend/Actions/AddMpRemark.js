@@ -9,7 +9,7 @@ const {safe} = require('../Utils/TmpLib.js');
 const {coverExc} = require('klesun-node-tools/src/Lang.js');
 
 const isSimultaneousChangesRs = (gds, output) => {
-	let pred = {
+	const pred = {
 		apollo: rs => rs.match(/^\s*SIMULT CHGS TO PNR\s*><$/),
 		sabre: rs => rs.trim() === 'SIMULTANEOUS CHANGES TO PNR - USE IR TO IGNORE AND RETRIEVE PNR',
 		galileo: rs => rs.match(/^\s*SIMULTANEOUS CHANGES TO BOOKING FILE - IGNORE TRANSACTION\s*><$/),
@@ -20,7 +20,7 @@ const isSimultaneousChangesRs = (gds, output) => {
 };
 
 const isWarningRs = (gds, output) => {
-	let pred = {
+	const pred = {
 		// 'SEG CONT SEG 03'
 		// 'SEG CONT SEG 04'
 		// 'DTE CONT'
@@ -62,7 +62,7 @@ const isWarningRs = (gds, output) => {
 };
 
 const isSuccessRs = (gds, output) => {
-	let pred = {
+	const pred = {
 		apollo: rs => TApolloSavePnr.parseSavePnrOutput(rs).recordLocator,
 		sabre: rs => SabrePnr.makeFromDump(rs).getRecordLocator(),
 		galileo: rs => safe(() => GalPnrParser.parse(rs).headerData.reservationInfo.recordLocator),
@@ -73,13 +73,13 @@ const isSuccessRs = (gds, output) => {
 };
 
 const runAndSaveOnce = async ({gds, gdsSession, cmds}) => {
-	let delim = {
+	const delim = {
 		apollo: '|',
 		sabre: '§',
 		galileo: '|',
 		amadeus: ';',
 	}[gds];
-	let cmd = cmds.join(delim) + delim + 'ER';
+	const cmd = cmds.join(delim) + delim + 'ER';
 	let cmdRec = await gdsSession.runCmd(cmd);
 	if (isWarningRs(gds, cmdRec.output)) {
 		cmdRec = await gdsSession.runCmd('ER');
@@ -96,7 +96,7 @@ const runAndSaveOnce = async ({gds, gdsSession, cmds}) => {
 // could parse each command and check: if it is in a
 // whitelist - glue it with ER, otherwise run separately
 const runAndSave = async ({gds, gdsSession, cmds}) => {
-	let tryOnce = () => runAndSaveOnce({gds, gdsSession, cmds});
+	const tryOnce = () => runAndSaveOnce({gds, gdsSession, cmds});
 	return tryOnce().catch(coverExc([Rej.Conflict], async (exc) => {
 		await gdsSession.runCmd('IR');
 		return tryOnce();
@@ -105,16 +105,16 @@ const runAndSave = async ({gds, gdsSession, cmds}) => {
 
 /** @param stateful = require('StatefulSession.js')() */
 module.exports = async ({stateful, airline}) => {
-	let remark = 'EXPERTS REMARK-MP-' + airline + '-' + stateful.getSessionData().pcc;
-	let gds = stateful.gds;
-	let cmds = {
+	const remark = 'EXPERTS REMARK-MP-' + airline + '-' + stateful.getSessionData().pcc;
+	const gds = stateful.gds;
+	const cmds = {
 		apollo: ['@:5' + remark],
 		sabre: ['5' + remark], // note that remarks starting with "-" are treated as FOP by Sabre
 		galileo: ['NP.' + remark, 'R.GRECT'],
 		amadeus: ['RM' + remark],
 	}[gds];
 
-	let gdsSession = CommonUtils.withCapture(stateful);
+	const gdsSession = CommonUtils.withCapture(stateful);
 	return runAndSave({gds, gdsSession, cmds})
 		.catch(exc => ({messages: [{type: 'error', text: exc + ''}]}))
 		.then(result => ({...result,

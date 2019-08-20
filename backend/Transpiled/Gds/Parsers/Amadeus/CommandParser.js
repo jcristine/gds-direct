@@ -217,14 +217,14 @@ class CommandParser
 	}
 
 	static parse_airAvailability(cmd) {
-		let match = cmd.match(/^AD\/?(.*)/);
+		const match = cmd.match(/^AD\/?(.*)/);
 		if (match) {
-			let rawMods = match[1] ? match[1].split('/') : [];
+			const rawMods = match[1] ? match[1].split('/') : [];
 			return {
 				modifiers: rawMods.map(raw => {
 					let match, type = null, parsed = null;
 					if (match = raw.match(/^(\d{1,2}[A-Z]{3})([A-Z]{3})([A-Z]{3})(\d{1,4}[APNM]|)$/)) {
-						let [, date, from, to, time] = match;
+						const [, date, from, to, time] = match;
 						type = 'flightDetails';
 						parsed = {
 							departureDate: {
@@ -249,16 +249,16 @@ class CommandParser
 		if (!match) {
 			return null;
 		}
-		let modsPart = match[1];
-		let data = null;
+		const modsPart = match[1];
+		const data = null;
 		if (match = modsPart.match(/^(\d{1,2}[A-Z]{3}|)(\d{4}|)$/)) {
-			let [, date, time] = match;
+			const [, date, time] = match;
 			return {
 				departureDate: !date ? undefined : {raw: date},
 				departureTime: !time ? undefined : {raw: time},
 			};
 		} else if (match = modsPart.match(/^R(\d{1,2}[A-Z]{3}|)(\d{4}|)$/)) {
-			let [, date, time] = match;
+			const [, date, time] = match;
 			return {
 				returnDate: !date ? undefined : {raw: date},
 				returnTime: !time ? undefined : {raw: time},
@@ -413,9 +413,9 @@ class CommandParser
 	}
 
 	static parse($cmd)  {
-		let $flatCmds = $cmd.split(';')
+		const $flatCmds = $cmd.split(';')
 			.map(c => this.parseSingleCommand(c));
-		let $result = $flatCmds.shift();
+		const $result = $flatCmds.shift();
 		$result['followingCommands'] = $flatCmds;
 		return $result;
 	}

@@ -2,8 +2,8 @@ const UnprocessableEntity = require("klesun-node-tools/src/Rej").UnprocessableEn
 const iqJson = require("../Utils/TmpLib").iqJson;
 const {getConfig} = require('../Config.js');
 
-let callCms = async ({functionName, params}) => {
-	let config = await getConfig();
+const callCms = async ({functionName, params}) => {
+	const config = await getConfig();
 	return iqJson({
 		functionName: functionName,
 		params: params,
@@ -15,7 +15,7 @@ let callCms = async ({functionName, params}) => {
 		url: config.external_service.cms.host,
 	}).then(rpcRs => {
 		if (rpcRs.result.success === 0) {
-			let error = rpcRs.result.errorMessage
+			const error = rpcRs.result.errorMessage
 				|| rpcRs.result.msg
 				|| 'CMS did not return success=true - ' + JSON.stringify(rpcRs);
 			return UnprocessableEntity(error);
@@ -25,7 +25,7 @@ let callCms = async ({functionName, params}) => {
 	});
 };
 
-let getRequestBriefData = ({requestId}) => {
+const getRequestBriefData = ({requestId}) => {
 	return callCms({
 		functionName: 'getRequestBriefData',
 		params: {requestId},
@@ -51,21 +51,21 @@ let getRequestBriefData = ({requestId}) => {
  *     },
  * }>}
  */
-let getItineraryData = ({itineraryId}) => {
+const getItineraryData = ({itineraryId}) => {
 	return callCms({
 		functionName: 'getItineraryData',
 		params: {itineraryId},
 	});
 };
 
-let getLeadData = async (travelRequestId) =>
+const getLeadData = async (travelRequestId) =>
 	!travelRequestId
 		? Promise.resolve(null)
 		: getRequestBriefData({requestId: travelRequestId})
 			.then(rpcRs => {
-				let cmsData = rpcRs.result.data;
-				let ageGroupToCnt = {};
-				for (let group of cmsData.requestedAgeGroups) {
+				const cmsData = rpcRs.result.data;
+				const ageGroupToCnt = {};
+				for (const group of cmsData.requestedAgeGroups) {
 					ageGroupToCnt[group.ageGroup] = group.quantity;
 				}
 				return {

@@ -155,11 +155,11 @@ class PnrParser
 	// "  1.W¥PQ1¥AUA¥K0.00",
 	// "  2.W¥PQ2¥AUA¥K0.00",
 	static parseTktInstruction(line) {
-		let match = line.match(/^\s*(\d+)\.(.*?)\s*$/);
+		const match = line.match(/^\s*(\d+)\.(.*?)\s*$/);
 		if (match) {
-			let [_, lineNumber, modsStr] = match;
-			let rawMods = !modsStr ? [] : modsStr.split('¥');
-			let pricingModifiers = rawMods
+			const [_, lineNumber, modsStr] = match;
+			const rawMods = !modsStr ? [] : modsStr.split('¥');
+			const pricingModifiers = rawMods
 				.map(PricingCmdParser.parseModifier);
 			return {lineNumber, pricingModifiers};
 		} else {
@@ -173,13 +173,13 @@ class PnrParser
 		$dump = this.cleanupHandPastedDump($dump);
 		$sections = this.splitToSections($dump);
 
-		let frequentTraveler = !$sections['frequentTraveler'] ? null :
+		const frequentTraveler = !$sections['frequentTraveler'] ? null :
 			FrequentFlyerParser.parse($sections['frequentTraveler']);
-		let misc = this.parseDataExistsLines($sections['misc'] || '');
+		const misc = this.parseDataExistsLines($sections['misc'] || '');
 		misc.ffDataExists = misc['ffDataExists'] ||
 			php.count((frequentTraveler || {})['mileagePrograms'] || []) > 0;
 
-		let parsedData = {
+		const parsedData = {
 			passengers: !$sections['passengers'] ? [] :
 				GdsPassengerBlockParser.parse($sections['passengers']),
 			itinerary: !$sections['itinerary'] ? [] :

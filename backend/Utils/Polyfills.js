@@ -7,9 +7,9 @@ process.env.TZ = 'UTC';
 // use some lib here if amount of these functions surpasses 1...
 
 Array.prototype.flatMap = function(flatten) {
-	let result = [];
-	for (let el of this) {
-		let chunk = flatten(el);
+	const result = [];
+	for (const el of this) {
+		const chunk = flatten(el);
 		result.push(...chunk);
 	}
 	return result;

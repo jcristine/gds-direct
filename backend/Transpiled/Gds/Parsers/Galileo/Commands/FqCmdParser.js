@@ -71,7 +71,7 @@ class FqCmdParser
 
 	// '@LHXAN', '.K', '-*711M.K', '-*711M'
 	static parseSegmentSubMods(textLeft) {
-		let subMods = [];
+		const subMods = [];
 		while (textLeft) {
 			let match;
 			if (match = textLeft.match(/^@([A-Z][A-Z0-9]*)/)) {
@@ -100,10 +100,10 @@ class FqCmdParser
 	// 'S1.3', 'S2-4.6-8', 'S1@LHXAN.2@LHWAN', 'S1.K.2.K', S1-*711M.K.2.K-*711M
 	// similar to Apollo, only with "." and "-" instead of "|" and "*"
 	static parseSegmentModifier(textLeft)  {
-		let startText = textLeft;
-		let asGlobal = this.parseSegmentSubMods(textLeft);
+		const startText = textLeft;
+		const asGlobal = this.parseSegmentSubMods(textLeft);
 		if (asGlobal.subMods.length > 0) {
-			let bundle = this.makeSegmentBundle([], asGlobal.subMods);
+			const bundle = this.makeSegmentBundle([], asGlobal.subMods);
 			return {
 				type: 'segments',
 				raw: !asGlobal.textLeft ? startText :
@@ -113,16 +113,16 @@ class FqCmdParser
 		} else if (!textLeft.startsWith('S')) {
 			return null;
 		}
-		let bundles = [];
+		const bundles = [];
 		let match;
 		while (match = textLeft.match(/^[S.](\d+)(-\d+|)/)) {
-			let from = match[1];
-			let to = !match[2] ? null : match[2].slice('-'.length);
+			const from = match[1];
+			const to = !match[2] ? null : match[2].slice('-'.length);
 			textLeft = textLeft.slice(match[0].length);
-			let segNums = !to ? [from] : php.range(from, to);
-			let subRec = this.parseSegmentSubMods(textLeft);
+			const segNums = !to ? [from] : php.range(from, to);
+			const subRec = this.parseSegmentSubMods(textLeft);
 			textLeft = subRec.textLeft;
-			let bundle = this.makeSegmentBundle(segNums, subRec.subMods);
+			const bundle = this.makeSegmentBundle(segNums, subRec.subMods);
 			bundles.push(bundle);
 		}
 		if (bundles.length > 0) {
@@ -181,8 +181,8 @@ class FqCmdParser
 		} else if (php.preg_match(/^:([A-Z])(?![A-Z0-9])/, $gluedModsPart, $matches = [])) {
 			[$raw, $type, $parsed] = [$matches[0], 'fareType', this.decodeFareType($matches[1])];
 		} else if (php.preg_match(/^[|+][|+]-([A-Z]+)(?![A-Z0-9])/, $gluedModsPart, $matches = [])) {
-			let raw = $matches[1];
-			let parsed = this.getCabinClassMapping()[raw];
+			const raw = $matches[1];
+			const parsed = this.getCabinClassMapping()[raw];
 			[$raw, $type, $parsed] = [$matches[0], 'cabinClass', {raw, parsed}];
 		} else if (php.preg_match(/^\.([A-Z])(?![A-Z0-9])/, $gluedModsPart, $matches = [])) {
 			[$raw, $type, $parsed] = [$matches[0], 'bookingClass', $matches[1]];

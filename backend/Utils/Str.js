@@ -5,7 +5,7 @@ exports.matchAll = (pattern, str) => {
 	if (!reg.flags.includes('g')) {
 		reg = new RegExp(reg.source, reg.flags + 'g');
 	}
-	let records = [];
+	const records = [];
 	let lastIndex = -1;
 	let matches;
 	while((matches = reg.exec(str)) !== null) {

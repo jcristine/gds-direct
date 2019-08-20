@@ -118,7 +118,7 @@ const RunCmdHelper = ({
 	};
 
 	const runCmd = async ($cmd, $fetchAll) => {
-		let $cmdRec = $fetchAll
+		const $cmdRec = $fetchAll
 			? await fetchAll($cmd, stateful)
 			: await stateful.runCmd($cmd);
 		if (isSuccessfulFsCommand($cmdRec.cmd, $cmdRec.output)) {

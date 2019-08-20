@@ -3,7 +3,7 @@ const Fp = require('../../../../Lib/Utils/Fp.js');
 const StringUtil = require('../../../../Lib/Utils/StringUtil.js');
 const CommonParserHelpers = require('../../../../Gds/Parsers/Apollo/CommonParserHelpers.js');
 
-let php = require('../../../../phpDeprecated.js');
+const php = require('../../../../phpDeprecated.js');
 
 /**
  * parses output of >*MPD;

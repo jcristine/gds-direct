@@ -1,8 +1,8 @@
 
-let {getClient} = require('./Redis.js');
+const {getClient} = require('./Redis.js');
 
-let getStore = (name, keys) => {
-	let hash = JSON.stringify(keys.map(k => k + ""));
+const getStore = (name, keys) => {
+	const hash = JSON.stringify(keys.map(k => k + ""));
 	return ({
 		get: () => getClient().then(redis => redis.hget('gdsDirectPlus:' + name, hash)),
 		set: (value) => getClient().then(redis => redis.hset('gdsDirectPlus:' + name, hash, value)),

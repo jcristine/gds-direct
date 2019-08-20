@@ -113,7 +113,7 @@ const findLastCommandIn = ($cmdTypes, $calledCommands) => {
 };
 
 /** @param stateful = await require('StatefulSession.js')() */
-let RunCmdRq = ({
+const RunCmdRq = ({
 	stateful, cmdRq,
 	CmdRqLog = require('../../../../../Repositories/CmdRqLog.js'),
 	PtcUtil = require('../../../../Rbs/Process/Common/PtcUtil.js'),
@@ -138,9 +138,9 @@ let RunCmdRq = ({
 	};
 
 	const getLastTariffDisplay = async () => {
-		let $cmds = await stateful.getLog().getAllCommands();
-		let $tariffTypes = ['fareSearch', 'redisplayFareSearch'];
-		let $cmdRecord = findLastCommandIn($tariffTypes, $cmds);
+		const $cmds = await stateful.getLog().getAllCommands();
+		const $tariffTypes = ['fareSearch', 'redisplayFareSearch'];
+		const $cmdRecord = findLastCommandIn($tariffTypes, $cmds);
 		if (!$cmdRecord) {
 			return Promise.reject('No recent $D');
 		} else {
@@ -152,9 +152,9 @@ let RunCmdRq = ({
 		if (lineNumber < 1 || lineNumber > 250) {
 			return BadRequest('Invalid fare number - ' + lineNumber + ', out of range');
 		}
-		let parsed = await getLastTariffDisplay().catch(exc => null);
+		const parsed = await getLastTariffDisplay().catch(exc => null);
 		if (parsed) {
-			for (let fare of parsed.result || []) {
+			for (const fare of parsed.result || []) {
 				if (fare.lineNumber == lineNumber) {
 					return fare;
 				}
@@ -165,17 +165,17 @@ let RunCmdRq = ({
 		// could not find $D in command log - try redisplaying it in GDS
 
 		let requestedFare = null;
-		let pages = [];
+		const pages = [];
 		await fetchUntil('*$D', stateful, ({output}) => {
 			pages.push(output);
-			let parsed = TariffDisplayParser.parse(pages.join('\n'));
+			const parsed = TariffDisplayParser.parse(pages.join('\n'));
 			if (parsed.errorType === 'needTariffDisplay') {
 				return BadRequest('Need Tariff Display');
 			} else if (parsed.error) {
 				return UnprocessableEntity('Failed to parse tariff display - ' + parsed.error + ' - ' + output);
 			}
-			let fares = parsed.result || [];
-			for (let fare of fares) {
+			const fares = parsed.result || [];
+			for (const fare of fares) {
 				if (fare['lineNumber'] == lineNumber) {
 					requestedFare = fare;
 					return true;
@@ -209,10 +209,10 @@ let RunCmdRq = ({
 	/** maybe should move this to ApoAliasParser ? */
 	const preprocessCommand = async ($cmd) => {
 		let aliasData;
-		let $parsed = CommandParser.parse($cmd);
+		const $parsed = CommandParser.parse($cmd);
 		if ($cmd === 'MD') {
-			let scrolledCmd = await getScrolledCmd();
-			let scrolledType = !scrolledCmd ? null : CommandParser.parse(scrolledCmd).type;
+			const scrolledCmd = await getScrolledCmd();
+			const scrolledType = !scrolledCmd ? null : CommandParser.parse(scrolledCmd).type;
 			if (scrolledType === 'operationalInfo') {
 				// "F:" shows output from airline's GDS and MR does not work there
 				$cmd = 'MD';
@@ -222,7 +222,7 @@ let RunCmdRq = ({
 			} else if (scrolledCmd && scrolledCmd.startsWith('A')) {
 				$cmd = 'A*';
 			} else if (scrolledCmd && scrolledCmd.startsWith('FS')) {
-				let lastCmdRec = await stateful.getLog().getLastCalledCommand();
+				const lastCmdRec = await stateful.getLog().getLastCalledCommand();
 				if (extractPager(lastCmdRec.output)[1] === '><') {
 					$cmd = 'FSMORE';
 				} else {
@@ -232,7 +232,7 @@ let RunCmdRq = ({
 				$cmd = 'MR';
 			}
 		} else if ($cmd === 'MU') {
-			let scrolledCmd = await getScrolledCmd();
+			const scrolledCmd = await getScrolledCmd();
 			if (scrolledCmd && scrolledCmd.startsWith('A')) {
 				$cmd = 'A-';
 			}
@@ -277,17 +277,17 @@ let RunCmdRq = ({
 
 	/** replace GK segments with $segments */
 	const rebookGkSegments = async ($segments, reservation = null) => {
-		let $marriageToSegs = Fp.groupMap(($seg) => $seg['marriage'], $segments);
+		const $marriageToSegs = Fp.groupMap(($seg) => $seg['marriage'], $segments);
 		let $failedSegNums = [];
-		for (let [, $segs] of $marriageToSegs) {
-			let records = $segs.map(gkSeg => {
+		for (const [, $segs] of $marriageToSegs) {
+			const records = $segs.map(gkSeg => {
 				const cls = gkSeg.bookingClass;
 				return {segNum: findSegmentNumberInPnr(gkSeg, reservation && reservation.itinerary), cls};
 			});
-			let $chgClsCmd =
+			const $chgClsCmd =
 				'X' + php.implode('+', records.map(r => r.segNum)) + '/' +
 				'0' + php.implode('+', records.map(r => r.segNum + r.cls));
-			let $chgClsOutput = (await runCmd($chgClsCmd, true)).output;
+			const $chgClsOutput = (await runCmd($chgClsCmd, true)).output;
 			if (!isSuccessRebookOutput($chgClsOutput)) {
 				$failedSegNums = php.array_merge($failedSegNums, php.array_column($segs, 'segmentNumber'));
 			}
@@ -296,7 +296,7 @@ let RunCmdRq = ({
 	};
 
 	const buildItinerary = async ({itinerary}) => {
-		let built = await ApolloBuildItineraryAction({
+		const built = await ApolloBuildItineraryAction({
 			travelport: travelport,
 			itinerary: itinerary,
 			baseDate: stateful.getStartDt(),
@@ -339,8 +339,8 @@ let RunCmdRq = ({
 				'errors': [$error],
 			};
 		} else {
-			let $gkRebook = await rebookGkSegments($gkSegments, $result.reservation);
-			let errors = [];
+			const $gkRebook = await rebookGkSegments($gkSegments, $result.reservation);
+			const errors = [];
 			if (!php.empty($failedSegNums = $gkRebook['failedSegmentNumbers'])) {
 				errors.push(Errors.getMessage(Errors.REBUILD_FALLBACK_TO_GK, {'segNums': php.implode(',', $failedSegNums)}));
 			}
@@ -348,11 +348,11 @@ let RunCmdRq = ({
 			$sortResult = await processSortItinerary()
 				.catch(coverExc([Rej.NoContent], exc => ({errors: ['Did not SORT - ' + exc]})));
 			if (php.empty($sortResult['errors'])) {
-				let calledCommands = stateful.flushCalledCommands().slice(-1);
+				const calledCommands = stateful.flushCalledCommands().slice(-1);
 				return {calledCommands, errors};
 			} else {
-				let pnrDump = (await getCurrentPnr()).getDump();
-				let cmdRec = {cmd: '*R', output: pnrDump};
+				const pnrDump = (await getCurrentPnr()).getDump();
+				const cmdRec = {cmd: '*R', output: pnrDump};
 				return {'calledCommands': [cmdRec], 'errors': errors};
 			}
 		}
@@ -361,28 +361,28 @@ let RunCmdRq = ({
 	const bookPassengers = async (passengers) => {
 		// note that Amadeus has different format instead of this 'remark', so a
 		// better approach would be to generate command for pure parsed dob/ptc
-		let cmd = passengers
+		const cmd = passengers
 			.map(pax => 'N:' + pax.lastName + '/' + pax.firstName +
 				(!pax.remark ? '' : '*' + pax.remark))
 			.join('|');
-		let cmdRec = await runCmd(cmd);
+		const cmdRec = await runCmd(cmd);
 		return {calledCommands: [cmdRec]};
 	};
 
 	const bookPnr = async (reservation) => {
-		let passengers = reservation.passengers || [];
+		const passengers = reservation.passengers || [];
 		let itinerary = reservation.itinerary || [];
-		let errors = [];
-		let allUserMessages = [];
-		let calledCommands = [];
+		const errors = [];
+		const allUserMessages = [];
+		const calledCommands = [];
 		if (reservation.pcc && reservation.pcc !== getSessionData().pcc) {
-			let cmd = 'SEM/' + reservation.pcc + '/AG';
-			let {cmdRec, userMessages} = await processRealCommand(cmd);
+			const cmd = 'SEM/' + reservation.pcc + '/AG';
+			const {cmdRec, userMessages} = await processRealCommand(cmd);
 			allUserMessages.push(...userMessages);
 			calledCommands.push(cmdRec);
 		}
 		if (passengers.length > 0) {
-			let booked = await bookPassengers(passengers);
+			const booked = await bookPassengers(passengers);
 			errors.push(...(booked.errors || []));
 			calledCommands.push(...(booked.calledCommands || []));
 		}
@@ -390,7 +390,7 @@ let RunCmdRq = ({
 			// would be better to use number returned by ApolloBuildItineraryAction
 			// as it may be not in same order in case of marriages...
 			itinerary = itinerary.map((s, i) => ({...s, segmentNumber: +i + 1}));
-			let booked = await bookItinerary(itinerary, true);
+			const booked = await bookItinerary(itinerary, true);
 			errors.push(...(booked.errors || []));
 			calledCommands.push(...(booked.calledCommands || []));
 		}
@@ -435,8 +435,8 @@ let RunCmdRq = ({
 		$segNums = $data['segmentNumbers'];
 		$bookingClass = $data['bookingClass'] || null;
 		$departureDate = $data['departureDate'] || null;
-		let pnr = await getCurrentPnr();
-		let itinerary = pnr.getItinerary();
+		const pnr = await getCurrentPnr();
+		const itinerary = pnr.getItinerary();
 		$segNums = $segNums.length > 0 ? $segNums :
 			itinerary.map(s => s.segmentNumber);
 		$newSegments = [];
@@ -486,7 +486,7 @@ let RunCmdRq = ({
 		let $allowCutting, $gkSegments, $xCmd, $newSegs;
 		$allowCutting = $data['allowCutting'] || false;
 		stateful.flushCalledCommands();
-		let pnr = await getCurrentPnr();
+		const pnr = await getCurrentPnr();
 		$gkSegments = pnr.getItinerary().filter(($seg) => $seg['segmentStatus'] === 'GK');
 		if (php.empty($gkSegments)) {
 			return {'errors': ['No GK segments']};
@@ -549,7 +549,7 @@ let RunCmdRq = ({
 			});
 			return {'errors': [$error]};
 		}
-		let {cmdRec} = await emulatePcc($pcc, $recoveryPcc);
+		const {cmdRec} = await emulatePcc($pcc, $recoveryPcc);
 		if (getSessionData()['pcc'] !== $pcc) {
 			$error = cmdRec.output.startsWith('ERR: INVALID - NOT ' + $pcc + ' - APOLLO')
 				? Errors.getMessage(Errors.PCC_NOT_ALLOWED_BY_GDS, {'pcc': $pcc, 'gds': 'apollo'})
@@ -619,7 +619,7 @@ let RunCmdRq = ({
 			$cmd;
 
 		$pnr = await getCurrentPnr();
-		let {itinerary} = await CommonDataHelper.sortSegmentsByUtc(
+		const {itinerary} = await CommonDataHelper.sortSegmentsByUtc(
 			$pnr, stateful.getGeoProvider(), stateful.getStartDt()
 		);
 
@@ -640,7 +640,7 @@ let RunCmdRq = ({
 	};
 
 	const needsColonN = async ($pricingDump, $pnr) => {
-		let rbsInfo = await getRbsPqInfo($pnr.getDump(), $pricingDump, 'apollo').catch(exc => ({}));
+		const rbsInfo = await getRbsPqInfo($pnr.getDump(), $pricingDump, 'apollo').catch(exc => ({}));
 		return rbsInfo.isPrivateFare && rbsInfo.isBrokenFare;
 	};
 
@@ -655,14 +655,14 @@ let RunCmdRq = ({
 		if (!php.empty($errors = CommonDataHelper.checkSeatCount($pnr))) {
 			return Rej.BadRequest('Invalid PNR - ' + $errors.join('; '));
 		}
-		let lastSeg = ArrayUtil.getLast($pnr.getItinerary());
+		const lastSeg = ArrayUtil.getLast($pnr.getItinerary());
 		$tripEndDate = !lastSeg ? null : lastSeg['departureDate']['parsed'];
 		$tripEndDt = $tripEndDate ? DateTime.decodeRelativeDateInFuture($tripEndDate, stateful.getStartDt()) : null;
 		$paxCmdParts = [];
 		for ($pax of Object.values($pnr.getPassengers())) {
 			$nameNumFormat = $pax['nameNumber']['fieldNumber'] +
 				'-' + $pax['nameNumber']['firstNameNumber'];
-			let ptc = await PtcUtil.convertPtcAgeGroup($adultPtc, $pax, $tripEndDt);
+			const ptc = await PtcUtil.convertPtcAgeGroup($adultPtc, $pax, $tripEndDt);
 			$paxCmdParts.push($nameNumFormat + '*' + ptc);
 		}
 		$cmd = 'T:$BN' + php.implode('|', $paxCmdParts);
@@ -685,8 +685,8 @@ let RunCmdRq = ({
 	};
 
 	const makePriceAllCmd = async (aliasData) => {
-		let {requestedAgeGroups, ptcs, pricingModifiers = []} = aliasData;
-		let rawMods = [];
+		const {requestedAgeGroups, ptcs, pricingModifiers = []} = aliasData;
+		const rawMods = [];
 		rawMods.push('N' + ptcs
 			.map((ptc,i) => (i + 1) + '*' + ptc)
 			.join('|'));
@@ -694,17 +694,17 @@ let RunCmdRq = ({
 			rawMods.push('/ACC');
 		}
 		rawMods.push(...pricingModifiers.map(m => m.raw));
-		let cmd = '$B' + rawMods.map(m => '/' + m).join('');
+		const cmd = '$B' + rawMods.map(m => '/' + m).join('');
 		return Promise.resolve(cmd);
 	};
 
 	const storePricing = async ($aliasData) => {
 		let $pnr, $prevAtfqNum, $newAtfqNum;
 		$pnr = await getCurrentPnr();
-		let lastStore = ArrayUtil.getLast($pnr.getStoredPricingList());
+		const lastStore = ArrayUtil.getLast($pnr.getStoredPricingList());
 		$prevAtfqNum = lastStore ? lastStore['lineNumber'] : 0;
 		let cmd = await makeStorePricingCmd($pnr, $aliasData, false);
-		let cmdRec = await runCmd(cmd);
+		const cmdRec = await runCmd(cmd);
 		let output = cmdRec.output;
 		if (StringUtil.contains(output, '** PRIVATE FARES SELECTED **')) {
 			output = (await moveDownAll(null, [cmdRec]))[0]['output'] || output;
@@ -720,8 +720,8 @@ let RunCmdRq = ({
 	};
 
 	const priceAll = async (aliasData) => {
-		let cmd = await makePriceAllCmd(aliasData);
-		let {cmdRec, userMessages} = await processRealCommand(cmd, true);
+		const cmd = await makePriceAllCmd(aliasData);
+		const {cmdRec, userMessages} = await processRealCommand(cmd, true);
 		return {calledCommands: [cmdRec], userMessages};
 	};
 
@@ -755,7 +755,7 @@ let RunCmdRq = ({
 				if ($lastCommandArray[$iteration]) {
 					$nextPage = $lastCommandArray[$iteration]['output'];
 				} else {
-					let {cmdRec} = await processRealCommand('MR');
+					const {cmdRec} = await processRealCommand('MR');
 					$nextPage = cmdRec['output'];
 				}
 
@@ -779,13 +779,13 @@ let RunCmdRq = ({
 
 	/** show availability for first successful city option */
 	const makeMultipleCityAvailabilitySearch = async (aliasData) => {
-		let {availability, cities, airlines} = aliasData;
-		let calledCommands = [];
+		const {availability, cities, airlines} = aliasData;
+		const calledCommands = [];
 		// probably would make sense to do it in separate sessions simultaneously
-		for (let city of cities) {
-			let cmd = availability + city + airlines;
-			let cmdRec = await stateful.runCmd(cmd);
-			let output = cmdRec.output;
+		for (const city of cities) {
+			const cmd = availability + city + airlines;
+			const cmdRec = await stateful.runCmd(cmd);
+			const output = cmdRec.output;
 			calledCommands.push({'cmd': cmd, 'output': output});
 			if (php.preg_match('/^FIRAV/', output)) {
 				// FIRAV means OK, got availability for a city - job's done
@@ -801,18 +801,18 @@ let RunCmdRq = ({
 	 * imitation of Sabre >1R20; which shows return availability for 20 day of same month
 	 */
 	const _preprocessSameMonthReturnAvailability = async (day) => {
-		let availsDesc = (await stateful.getLog().getLikeSql({
+		const availsDesc = (await stateful.getLog().getLikeSql({
 			where: [
 				['area', '=', getSessionData().area],
 				['type', 'IN', ['airAvailability', 'moreAirAvailability']],
 			],
 			limit: 20,
 		}));
-		for (let lastAvail of availsDesc) {
-			let {type, data} = CommandParser.parse(lastAvail.cmd);
-			let date = (data || {}).departureDate || (data || {}).returnDate;
+		for (const lastAvail of availsDesc) {
+			const {type, data} = CommandParser.parse(lastAvail.cmd);
+			const date = (data || {}).departureDate || (data || {}).returnDate;
 			if (date) {
-				let month = date.raw.slice(-3);
+				const month = date.raw.slice(-3);
 				return 'A*O' + day + month;
 			}
 			if (type === 'airAvailability' && !data) {
@@ -892,18 +892,18 @@ let RunCmdRq = ({
 
 	/** @param {string} passengerName = 'LONGLONG' || 'BITCA/IU' || 'BITCA/IURI' */
 	const matchesMcoName = (passengerName, headerData) => {
-		let [lnme, fnme] = passengerName.split('/');
+		const [lnme, fnme] = passengerName.split('/');
 		return headerData.lastName.startsWith(lnme || '')
 			&& headerData.firstName.startsWith(fnme || '');
 	};
 
 	const filterMcoRowsByMask = async (matchingPartial, headerData) => {
-		let matchingFull = [];
-		for (let mcoRow of matchingPartial) {
+		const matchingFull = [];
+		for (const mcoRow of matchingPartial) {
 			if (mcoRow.command) {
-				let cmd = mcoRow.command;
-				let mcoDump = (await fetchAll(cmd, stateful)).output;
-				let parsed = McoMaskParser.parse(mcoDump);
+				const cmd = mcoRow.command;
+				const mcoDump = (await fetchAll(cmd, stateful)).output;
+				const parsed = McoMaskParser.parse(mcoDump);
 				if (parsed.error) {
 					return UnprocessableEntity('Bad ' + cmd + ' reply - ' + parsed.error);
 				} else if (matchesMcoName(parsed.passengerName, headerData)) {
@@ -920,12 +920,12 @@ let RunCmdRq = ({
 		if (!pnr.hasMcoInfo()) {
 			return [];
 		}
-		let cmdRec = await fetchAll('*MPD', stateful);
-		let parsed = McoListParser.parse(cmdRec.output);
+		const cmdRec = await fetchAll('*MPD', stateful);
+		const parsed = McoListParser.parse(cmdRec.output);
 		if (parsed.error) {
 			return UnprocessableEntity('Bad *MPD reply - ' + parsed.error);
 		}
-		let matchingPartial = parsed.mcoRows.filter(mcoRow => {
+		const matchingPartial = parsed.mcoRows.filter(mcoRow => {
 			return matchesMcoName(mcoRow.passengerName, headerData);
 		});
 		return filterMcoRowsByMask(matchingPartial, headerData)
@@ -937,9 +937,9 @@ let RunCmdRq = ({
 		if (!pnr.hasEtickets()) {
 			return [];
 		}
-		let cmdRec = await fetchAll('*HT', stateful);
-		let parsed = TicketHistoryParser.parse(cmdRec.output);
-		let tickets = []
+		const cmdRec = await fetchAll('*HT', stateful);
+		const parsed = TicketHistoryParser.parse(cmdRec.output);
+		const tickets = []
 			.concat(parsed.currentTickets.map(r => ({...r, isActive: true})))
 			.concat(parsed.deletedTickets.map(r => ({...r, isActive: false})));
 		if (tickets.length === 0) {
@@ -950,30 +950,30 @@ let RunCmdRq = ({
 	};
 
 	const _checkPnrForExchange = async (storeNum) => {
-		let agent = stateful.getAgent();
+		const agent = stateful.getAgent();
 		if (!agent.canIssueTickets()) {
 			return Rej.Forbidden('You have no ticketing rights');
 		}
-		let pnr = await getCurrentPnr();
+		const pnr = await getCurrentPnr();
 		if (!pnr.getRecordLocator()) {
 			return Rej.BadRequest('Must be in a PNR');
 		}
-		let store = pnr.getStoredPricingList()[storeNum - 1];
+		const store = pnr.getStoredPricingList()[storeNum - 1];
 		if (!store) {
 			return Rej.BadRequest('There is no ATFQ #' + storeNum + ' in PNR');
 		}
 		if (pnr.getPassengers().length > 1) {
-			let nData = store.pricingModifiers
+			const nData = store.pricingModifiers
 				.filter(mod => mod.type === 'passengers')
 				.map(mod => mod.parsed)[0];
 
-			let paxCnt = !nData || !nData.passengersSpecified
+			const paxCnt = !nData || !nData.passengersSpecified
 				? pnr.getPassengers().length
 				: nData.passengerProperties.length;
 			// Rico says there is a risk of losing a ticket if issuing multiple paxes
 			// at once with HB:FEX, so ticketing agents are not allowed to do so
 			if (paxCnt > 1) {
-				let error = 'Multiple passengers (' + paxCnt +
+				const error = 'Multiple passengers (' + paxCnt +
 					') in ATFQ #' + storeNum + ' not allowed for HB:FEX';
 				return Rej.BadRequest(error);
 			}
@@ -982,21 +982,21 @@ let RunCmdRq = ({
 	};
 
 	const prepareHbFexMask = async (cmdStoreNumber = '', ticketNumber = '') => {
-		let pnr = await _checkPnrForExchange(cmdStoreNumber || 1);
-		let cmd = 'HB' + cmdStoreNumber + ':FEX' + (ticketNumber || '');
-		let output = (await runCmd(cmd)).output;
-		let parsed = ParseHbFex(output);
+		const pnr = await _checkPnrForExchange(cmdStoreNumber || 1);
+		const cmd = 'HB' + cmdStoreNumber + ':FEX' + (ticketNumber || '');
+		const output = (await runCmd(cmd)).output;
+		const parsed = ParseHbFex(output);
 		if (!parsed) {
 			return {calledCommands: [{cmd, output}], errors: ['Invalid HB:FEX response']};
 		}
-		let readonlyFields = new Set([
+		const readonlyFields = new Set([
 			'originalBoardPoint', 'originalOffPoint',
 			'originalAgencyIata', 'originalInvoiceNumber',
 			'originalTicketStarExtension',
 		]);
-		let pcc = getSessionData().pcc;
-		let pccRow = !pcc ? null : await Pccs.findByCode('apollo', pcc);
-		let result = {
+		const pcc = getSessionData().pcc;
+		const pccRow = !pcc ? null : await Pccs.findByCode('apollo', pcc);
+		const result = {
 			calledCommands: [{
 				cmd: cmd,
 				output: 'SEE MASK FORM BELOW',
@@ -1025,8 +1025,8 @@ let RunCmdRq = ({
 	};
 
 	const prepareHhprMask = async (cmd) => {
-		let output = (await runCmd(cmd)).output;
-		let data = await NmeMaskParser.parse(output);
+		const output = (await runCmd(cmd)).output;
+		const data = await NmeMaskParser.parse(output);
 		return {
 			calledCommands: [{
 				cmd: cmd,
@@ -1110,16 +1110,16 @@ let RunCmdRq = ({
 			$segmentNumbers, $segmentStatus;
 		let reservation;
 		$alias = await ApoAliasParser.parse(cmd, stateful);
-		let parsed = CommandParser.parse(cmd);
+		const parsed = CommandParser.parse(cmd);
 		if ($mdaData = $alias['moveDownAll'] || null) {
 			$limit = $mdaData['limit'] || null;
 			if ($cmdReal = $alias['realCmd']) {
-				let {cmdRec} = await processRealCommand($cmdReal, false);
+				const {cmdRec} = await processRealCommand($cmdReal, false);
 				return {calledCommands: await moveDownAll($limit, [cmdRec])};
 			} else {
 				let mdCmdRows = await stateful.getLog().getScrolledCmdMrs();
 				mdCmdRows = await Promise.all(mdCmdRows.map(cmdRec => modifyOutput(cmdRec)));
-				let calledCommands = await moveDownAll($limit, mdCmdRows);
+				const calledCommands = await moveDownAll($limit, mdCmdRows);
 				return {calledCommands};
 			}
 		} else if (php.preg_match(/^PNR$/, cmd, $matches = [])) {
@@ -1127,7 +1127,7 @@ let RunCmdRq = ({
 		} else if (php.preg_match(/^HHMCO$/, cmd, $matches = [])) {
 			return prepareMcoMask();
 		} else if (php.preg_match(/^HB(\d*):FEX\s*([\d\s]{13,}|)$/, cmd, $matches = [])) {
-			let [_, storeNumber, ticketNumber] = $matches;
+			const [_, storeNumber, ticketNumber] = $matches;
 			return prepareHbFexMask(storeNumber, ticketNumber || '');
 		} else if (['priceItineraryManually', 'manualStoreItinerary'].includes(parsed.type)) {
 			return prepareHhprMask(cmd);
@@ -1167,7 +1167,7 @@ let RunCmdRq = ({
 		} else if ($alias['type'] === 'multiDstAvail') {
 			return makeMultipleCityAvailabilitySearch($alias['data']);
 		} else if (php.preg_match(/^SEM\/([\w\d]{3,4})\/AG$/, cmd, $matches = [])) {
-			let {cmdRec} = await emulatePcc($matches[1]);
+			const {cmdRec} = await emulatePcc($matches[1]);
 			return {calledCommands: [cmdRec]};
 		} else if (!php.empty(reservation = await AliasParser.parseCmdAsPnr(cmd, stateful))) {
 			return bookPnr(reservation);
@@ -1175,16 +1175,16 @@ let RunCmdRq = ({
 			return fareSearchValidatedChangeCity($alias.realCmd);
 		} else {
 			cmd = $alias['realCmd'];
-			let fetchAll = shouldFetchAll(cmd);
+			const fetchAll = shouldFetchAll(cmd);
 			cmd = await preprocessCommand(cmd);
-			let {cmdRec, userMessages, performanceDebug} = await processRealCommand(cmd, fetchAll);
+			const {cmdRec, userMessages, performanceDebug} = await processRealCommand(cmd, fetchAll);
 			return {calledCommands: [cmdRec], userMessages, performanceDebug};
 		}
 	};
 
 	const execute = async () => {
 		let $callResult, $errors, $status, $calledCommands, $userMessages, $actions;
-		let $cmdRequested = cmdRq;
+		const $cmdRequested = cmdRq;
 		$callResult = await processRequestedCommand($cmdRequested)
 			.catch(exc =>
 				Rej.BadRequest.matches(exc.httpStatusCode) ||
@@ -1194,8 +1194,8 @@ let RunCmdRq = ({
 
 		if ($callResult.then) {
 			// way too often I accidentally pass Promise here...
-			let unwrapped = await $callResult.catch(exc => ({error: exc + ''}));
-			let msg = 'Code mistake, call result was a promise inside another promise';
+			const unwrapped = await $callResult.catch(exc => ({error: exc + ''}));
+			const msg = 'Code mistake, call result was a promise inside another promise';
 			return Rej.InternalServerError(msg, unwrapped);
 		}
 

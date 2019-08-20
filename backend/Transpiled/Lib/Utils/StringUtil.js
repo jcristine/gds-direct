@@ -14,7 +14,7 @@ class StringUtil
 	static splitByPosition($str, $pattern, $names = null, $trim = false)  {
 		let $letters, $position, $markerChar, $result, $name;
 		if (!$names) {
-			let symbols = php.str_split($pattern, 1);
+			const symbols = php.str_split($pattern, 1);
 			$names = php.array_combine(symbols, symbols);
 		}
 		$letters = [];

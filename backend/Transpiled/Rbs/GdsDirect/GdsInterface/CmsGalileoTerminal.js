@@ -53,11 +53,11 @@ class CmsGalileoTerminal {
 		} else if ($cmdData.baseCmd === 'FQBBK') {
 			$errors.push('PQ from >FQBBK; not allowed, please run clean >FQ;');
 		}
-		let fareBases = [];
-		let bookingClasses = [];
-		for (let mod of $cmdData['pricingModifiers']) {
+		const fareBases = [];
+		const bookingClasses = [];
+		for (const mod of $cmdData['pricingModifiers']) {
 			if (mod.type === 'segments') {
-				for (let bundle of mod['parsed']['bundles']) {
+				for (const bundle of mod['parsed']['bundles']) {
 					if (bundle.bookingClass) {
 						bookingClasses.push(bundle.bookingClass);
 					}

@@ -5,11 +5,11 @@ const GalPnrParser = require("../../Gds/Parsers/Galileo/Pnr/PnrParser");
 const AmaPnrParser = require('../../Gds/Parsers/Amadeus/Pnr/PnrParser.js');
 const FormatAdapter = require("./FormatAdapter");
 
-let php = require('../../phpDeprecated.js');
+const php = require('../../phpDeprecated.js');
 const GalileoPnrCommonFormatAdapter = require("../FormatAdapters/GalileoPnrCommonFormatAdapter");
 const AmadeusPnrCommonFormatAdapter = require("../FormatAdapters/AmadeusPnrCommonFormatAdapter");
 
-let PNR_DUMP_TYPES = [
+const PNR_DUMP_TYPES = [
 	'apollo_pnr',
 	'galileo_pnr',
 	'sabre_pnr',
@@ -18,23 +18,23 @@ let PNR_DUMP_TYPES = [
 
 class ParsersController {
 	tryParseAs($dump, $baseDate) {
-		let asApollo = ApoPnrParser.parse($dump);
-		let asGalileo = GalPnrParser.parse($dump);
-		let asSabre = SabPnrParser.parse($dump);
-		let asAmadeus = AmaPnrParser.parse($dump);
+		const asApollo = ApoPnrParser.parse($dump);
+		const asGalileo = GalPnrParser.parse($dump);
+		const asSabre = SabPnrParser.parse($dump);
+		const asAmadeus = AmaPnrParser.parse($dump);
 		// make sure first line trimmed space is restored,
 		// since Amadeus parser is strict about indentation
-		let normAma = $dump.replace(/^\s*/, '  ');
-		let asAmaItin = AmaPnrParser.parse(normAma);
+		const normAma = $dump.replace(/^\s*/, '  ');
+		const asAmaItin = AmaPnrParser.parse(normAma);
 
 		if (asApollo.itineraryData.length > 0) {
-			let data = FormatAdapter.adaptApolloPnrParseForClient(asApollo, $baseDate);
+			const data = FormatAdapter.adaptApolloPnrParseForClient(asApollo, $baseDate);
 			return {type: 'apollo_pnr', data: data};
 		} else if (
 			asGalileo.itineraryData.length > 0 ||
 			asGalileo.passengers.passengerList.length > 0
 		) {
-			let data = GalileoPnrCommonFormatAdapter.transform(asGalileo, $baseDate);
+			const data = GalileoPnrCommonFormatAdapter.transform(asGalileo, $baseDate);
 			return {type: 'galileo_pnr', data: data};
 		} else if (
 			asAmadeus.parsed.itinerary.length > 0 &&
@@ -42,20 +42,20 @@ class ParsersController {
 			asAmadeus.parsed.passengers.length > 0 ||
 			asAmadeus.parsed.pnrInfo.recordLocator
 		) {
-			let data = AmadeusPnrCommonFormatAdapter.transform(asAmadeus, $baseDate);
+			const data = AmadeusPnrCommonFormatAdapter.transform(asAmadeus, $baseDate);
 			return {type: 'amadeus_pnr', data: data};
 		} else if (asAmaItin.parsed.itinerary.length > 0) {
-			let data = AmadeusPnrCommonFormatAdapter.transform(asAmaItin, $baseDate);
+			const data = AmadeusPnrCommonFormatAdapter.transform(asAmaItin, $baseDate);
 			return {type: 'amadeus_pnr', data: data};
 		} else if (
 			asSabre.parsedData.itinerary.length > 0 ||
 			(asSabre.parsedData.pnrInfo || {}).pcc
 		) {
-			let data = FormatAdapter.adaptSabrePnrParseForClient(asSabre, $baseDate);
+			const data = FormatAdapter.adaptSabrePnrParseForClient(asSabre, $baseDate);
 			return {type: 'sabre_pnr', data: data};
 		// no itinerary (ambiguous) dumps follow, usually pax list - treat as apollo
 		} else if (asApollo.passengers.passengerList.length > 0) {
-			let data = FormatAdapter.adaptApolloPnrParseForClient(asApollo, $baseDate);
+			const data = FormatAdapter.adaptApolloPnrParseForClient(asApollo, $baseDate);
 			return {type: 'apollo_pnr', data: data};
 		} else {
 			return null;

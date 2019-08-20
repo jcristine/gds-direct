@@ -1,7 +1,7 @@
 const Pccs = require("../Repositories/Pccs");
 
 exports.getPccList = async () => {
-    let pccs = await Pccs.getAll();
+    const pccs = await Pccs.getAll();
     return pccs.map(row => ({
         "id": 0,
         "label": row.gds + ' ' + row.pcc + ' - ' + row.consolidator,

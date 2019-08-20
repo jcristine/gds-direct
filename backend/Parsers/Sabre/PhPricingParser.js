@@ -9,18 +9,18 @@ const FareConstructionParser = require("../../Transpiled/Gds/Parsers/Common/Fare
 const StringUtil = require('../../Transpiled/Lib/Utils/StringUtil.js');
 const Fp = require('../../Transpiled/Lib/Utils/Fp.js');
 
-let parseFlightSegmentLine = (line) => {
+const parseFlightSegmentLine = (line) => {
 	//            'XTPE BR  V   02SEP VLXU            02SEP 02SEP 02P',
 	//            " BOM LH  G   11DEC G1                    10DEC 02P",
-	let pattern = 'XAAA CC  L   WWWWW IIIIIIIIIIIIIIIIOOOOO EEEEEBBBBB';
-	let split = StringUtil.splitByPosition(line, pattern, null, true);
+	const pattern = 'XAAA CC  L   WWWWW IIIIIIIIIIIIIIIIOOOOO EEEEEBBBBB';
+	const split = StringUtil.splitByPosition(line, pattern, null, true);
 
-	let date = CommonParserHelpers.parsePartialDate(split['W']);
-	let nvbDate = CommonParserHelpers.parsePartialDate(split['O']);
-	let nvaDate = CommonParserHelpers.parsePartialDate(split['E']);
+	const date = CommonParserHelpers.parsePartialDate(split['W']);
+	const nvbDate = CommonParserHelpers.parsePartialDate(split['O']);
+	const nvaDate = CommonParserHelpers.parsePartialDate(split['E']);
 
-	let [fareBasis, ticketDesignator] = split['I'].split('/');
-	let result = {
+	const [fareBasis, ticketDesignator] = split['I'].split('/');
+	const result = {
 		type: 'flight',
 		stopoverIndicator: split['X'] || null, // 'O' = stopover, 'X' = connection
 		airport: split['A'],
@@ -43,10 +43,10 @@ let parseFlightSegmentLine = (line) => {
 	}
 };
 
-let parseSegmentLine = (line) => {
-	let voidMatch = line.trim().match(/^\s*([OX]|)([A-Z]{3})\s*(S U R F A C E|)\s*$/);
+const parseSegmentLine = (line) => {
+	const voidMatch = line.trim().match(/^\s*([OX]|)([A-Z]{3})\s*(S U R F A C E|)\s*$/);
 	if (voidMatch) {
-		let [, stopoverIndicator, airport, surfaceLabel] = voidMatch;
+		const [, stopoverIndicator, airport, surfaceLabel] = voidMatch;
 		return {
 			type: 'void',
 			stopoverIndicator: stopoverIndicator || null,
@@ -58,12 +58,12 @@ let parseSegmentLine = (line) => {
 };
 
 // "FARE  USD   4570.00 EQUIV PHP    239331",
-let parseFareLine = (line) => {
-	let [, baseCurrency, baseAmount, eqStr] = line
+const parseFareLine = (line) => {
+	const [, baseCurrency, baseAmount, eqStr] = line
 		.match(/^FARE\s+([A-Z]{3})\s*(\d*\.?\d+)\s*(.*)/);
 	let fareEquivalent = null;
 	if (eqStr) {
-		let [, currency, amount] = eqStr.match(/^EQUIV\s+([A-Z]{3})\s*(\d*\.?\d+)/);
+		const [, currency, amount] = eqStr.match(/^EQUIV\s+([A-Z]{3})\s*(\d*\.?\d+)/);
 		fareEquivalent = {currency, amount};
 	}
 	return {
@@ -73,9 +73,9 @@ let parseFareLine = (line) => {
 };
 
 // "TAX   PHP       974US PHP       294AY PHP     17094XT",
-let parseMainTaxes = (linesLeft) => {
-	let mainTaxLine = linesLeft.shift().replace(/^TAX/, '');
-	let mainTaxes = matchAll(/\s*([A-Z]{3})\s*(\d*\.?\d+)([A-Z0-9]{2})/, mainTaxLine)
+const parseMainTaxes = (linesLeft) => {
+	const mainTaxLine = linesLeft.shift().replace(/^TAX/, '');
+	const mainTaxes = matchAll(/\s*([A-Z]{3})\s*(\d*\.?\d+)([A-Z0-9]{2})/, mainTaxLine)
 		.map(([, currency, amount, taxCode]) => ({taxCode, currency, amount}));
 	if (mainTaxes.length === 0) {
 		// no taxes line, possible for infant
@@ -85,15 +85,15 @@ let parseMainTaxes = (linesLeft) => {
 };
 
 // " LAX LH X/FRA LH BOM M4570.00NUC4570.00END ROE1.00",
-let parseFc = (linesLeft) => {
+const parseFc = (linesLeft) => {
 	let fcLines;
 	[fcLines, linesLeft] = parseSequence(linesLeft, (l) => {
-		let match = l.match(/^ (.*)$/);
+		const match = l.match(/^ (.*)$/);
 		return match ? match[1] : null;
 	});
-	let fcLine = fcLines.join('\n');
-	let fcRecord = FareConstructionParser.parse(fcLine);
-	let sabreFcRecord = {
+	const fcLine = fcLines.join('\n');
+	const fcRecord = FareConstructionParser.parse(fcLine);
+	const sabreFcRecord = {
 		line: fcLine,
 		error: fcRecord.error,
 		data: fcRecord.parsed,
@@ -104,17 +104,17 @@ let parseFc = (linesLeft) => {
 };
 
 // "XT PHP555DE PHP1246RA PHP917YR PHP14140YQ PHP236XFLAX4.5",
-let parseXtTaxes = (linesLeft) => {
+const parseXtTaxes = (linesLeft) => {
 	let xtLines;
 	[xtLines, linesLeft] = parseSequence(linesLeft, (l) => {
-		let match = l.match(/^XT\s+(.*)$/);
+		const match = l.match(/^XT\s+(.*)$/);
 		return match ? match[1] : null;
 	});
-	let xtTaxes = xtLines
+	const xtTaxes = xtLines
 		.flatMap(xtLine => {
-			let matches = matchAll(/\s*([A-Z]{3})(\d*\.?\d+)([A-Z0-9]{2})((?:[A-Z]{3}\d*\.?\d+)*)\s*/, xtLine);
+			const matches = matchAll(/\s*([A-Z]{3})(\d*\.?\d+)([A-Z0-9]{2})((?:[A-Z]{3}\d*\.?\d+)*)\s*/, xtLine);
 			return matches.map(([, currency, amount, taxCode, facilityStr]) => {
-				let record = {taxCode, currency, amount};
+				const record = {taxCode, currency, amount};
 				if (facilityStr) {
 					record.facilityCharges = matchAll(/([A-Z]{3})(\d*\.?\d+)/, facilityStr)
 						.map(([, airport, amount]) => ({airport, amount}));
@@ -129,11 +129,11 @@ let parseXtTaxes = (linesLeft) => {
 // "RATE USED 1USD-52.37PHP",
 // "ATTN*VALIDATING CARRIER - LH",
 // "ATTN*BAG ALLOWANCE     -LAXBOM-02P/LH/EACH PIECE UP TO 50 POUND",
-let parseAttn = (linesLeft) => {
+const parseAttn = (linesLeft) => {
 	let attnBlockStarted = false;
 	let bagBlockStarted = false;
-	let infoLines = [];
-	let bagLines = [];
+	const infoLines = [];
+	const bagLines = [];
 	let line;
 	while ((line = linesLeft.shift()) !== undefined) {
 		if (!line.startsWith('ATTN*')) {
@@ -145,7 +145,7 @@ let parseAttn = (linesLeft) => {
 			}
 		} else {
 			attnBlockStarted = true;
-			let content = line.slice('ATTN*'.length);
+			const content = line.slice('ATTN*'.length);
 			bagBlockStarted |= content.startsWith('BAG ALLOWANCE');
 			if (!bagBlockStarted) {
 				infoLines.push(content);
@@ -163,7 +163,7 @@ let parseAttn = (linesLeft) => {
 
 // "PSGR TYPE  ADT - 01",
 // ...
-let parseSingleBlock = (linesLeft) => {
+const parseSingleBlock = (linesLeft) => {
 	let line, match;
 
 	line = linesLeft.shift() || '';
@@ -171,21 +171,21 @@ let parseSingleBlock = (linesLeft) => {
 	if (!match) {
 		return null;
 	}
-	let [, ptc, ptcNumber] = match;
+	const [, ptc, ptcNumber] = match;
 	linesLeft.shift(); // '     CXR RES DATE  FARE BASIS      NVB   NVA    BG'
 
 	let segments;
 	[segments, linesLeft] = parseSequence(linesLeft, parseSegmentLine);
 
-	let {baseFare, inDefaultCurrency} = parseFareLine(linesLeft.shift());
+	const {baseFare, inDefaultCurrency} = parseFareLine(linesLeft.shift());
 	let mainTaxes;
 	[mainTaxes, linesLeft] = parseMainTaxes(linesLeft);
 
-	let [, totalCurrency, totalAmount] = linesLeft.shift()
+	const [, totalCurrency, totalAmount] = linesLeft.shift()
 		.match(/^TOTAL\s+([A-Z]{3})\s*(\d*\.?\d+)\s*(.*)/);
 
-	let fbLine = linesLeft.shift() || '';
-	let fareBasisInfo = PricingCommonHelper.parseFareBasisSummary(fbLine);
+	const fbLine = linesLeft.shift() || '';
+	const fareBasisInfo = PricingCommonHelper.parseFareBasisSummary(fbLine);
 	if (!fareBasisInfo) {
 		return null;
 	}
@@ -221,10 +221,10 @@ let parseSingleBlock = (linesLeft) => {
 };
 
 /** see also SabrePricingParser.parseTotalFareLine */
-let parseTotalsLine = (totalsLine) => {
+const parseTotalsLine = (totalsLine) => {
 	//            "           10232         196.00      52.80            248.80TTL",
-	let pattern = 'BBBBBBBBBBBBBBBB EEEEEEEEEEEEEE TTTTTTTTTT NNNNNNNNNNNNNNNNNLLL';
-	let split = StringUtil.splitByPosition(totalsLine, pattern, null, true);
+	const pattern = 'BBBBBBBBBBBBBBBB EEEEEEEEEEEEEE TTTTTTTTTT NNNNNNNNNNNNNNNNNLLL';
+	const split = StringUtil.splitByPosition(totalsLine, pattern, null, true);
 	if (split['L'] === 'TTL') {
 		return {
 			baseFare: split['B'],
@@ -237,14 +237,14 @@ let parseTotalsLine = (totalsLine) => {
 	}
 };
 
-let parseFooter = (linesLeft) => {
+const parseFooter = (linesLeft) => {
 	linesLeft = [...linesLeft];
 
-	let totalsLine = linesLeft.shift() || '';
+	const totalsLine = linesLeft.shift() || '';
 	if (totalsLine.startsWith('PSGR TYPE')) {
 		return null;
 	}
-	let faresSum = parseTotalsLine(totalsLine);
+	const faresSum = parseTotalsLine(totalsLine);
 	if (!faresSum) {
 		// present only in multi-PTC pricing
 		linesLeft.unshift(totalsLine);
@@ -252,9 +252,9 @@ let parseFooter = (linesLeft) => {
 	[, linesLeft] = parseSequence(linesLeft, l => l.trim() === '');
 
 	let attnLines = [];
-	let unparsedLines = [];
-	for (let line of linesLeft) {
-		let attnMatch = line.match(/^ATTN\*(.*)$/);
+	const unparsedLines = [];
+	for (const line of linesLeft) {
+		const attnMatch = line.match(/^ATTN\*(.*)$/);
 		if (attnMatch) {
 			attnLines.push(attnMatch[1]);
 		} else if (!['', '.'].includes(line)) {
@@ -300,11 +300,11 @@ let parseFooter = (linesLeft) => {
  */
 exports.parse = (output) => {
 	let linesLeft = output.split('\n');
-	let pqList = [];
+	const pqList = [];
 	let footer = null;
 	do {
 		let ptcBlock;
-		let tuple = parseSingleBlock(linesLeft);
+		const tuple = parseSingleBlock(linesLeft);
 		if (!tuple) {
 			return {error: 'Failed to parse PTC block - ' + linesLeft[0]};
 		}

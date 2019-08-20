@@ -215,8 +215,8 @@ const collectErrors = (dom, sellSegments) => {
 
 	// code 1 means something like "partial success with warnings"
 	if (transactionErrorCode && transactionErrorCode != 1) {
-		let decoded = DecodeTravelportError(transactionErrorCode);
-		let error = 'Transaction error #' + transactionErrorCode +
+		const decoded = DecodeTravelportError(transactionErrorCode);
+		const error = 'Transaction error #' + transactionErrorCode +
 			' (' + (decoded || 'unknown code') + ')';
 		errors.push(error);
 	}

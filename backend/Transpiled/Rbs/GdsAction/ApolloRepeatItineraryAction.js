@@ -1,6 +1,6 @@
 
 
-let php = require('../../phpDeprecated');
+const php = require('../../phpDeprecated');
 
 /**
  * initializes new PNR with data from the existing PNR in session

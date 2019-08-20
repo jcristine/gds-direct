@@ -1,10 +1,10 @@
 const Db = require("../Utils/Db");
 
-let AREA_TABLE = 'terminalAreaSettings';
+const AREA_TABLE = 'terminalAreaSettings';
 
 /** @return Promise<terminalAreaSettings[]> */
 exports.getByAgent = (agentId, db = null) => {
-	let withDb = db => db.fetchAll({
+	const withDb = db => db.fetchAll({
 		table: AREA_TABLE,
 		where: [['agentId', '=', agentId]],
 	});

@@ -76,7 +76,7 @@ class ImportPqAmadeusAction extends AbstractGdsAction {
 				},
 			},
 		});
-		for (let cmdRec of $commands) {
+		for (const cmdRec of $commands) {
 			this.$cmdLog.logCommand(cmdRec.cmd, Promise.resolve(cmdRec));
 		}
 		return this;
@@ -198,7 +198,7 @@ class ImportPqAmadeusAction extends AbstractGdsAction {
 		$result = {};
 
 		for ($pricing of Object.values($pricingList)) {
-			let modifiedModifiers = JSON.parse(JSON.stringify($pricing['pricingModifiers']));
+			const modifiedModifiers = JSON.parse(JSON.stringify($pricing['pricingModifiers']));
 			$modParts = Fp.map(($mod) => {
 				if ($mod['type'] !== 'generic') {
 					return $mod['raw'];
@@ -238,14 +238,14 @@ class ImportPqAmadeusAction extends AbstractGdsAction {
 	 * @return Promise
 	 */
 	static subtractPricedSegments(segmentsLeft, parsedCmd, followingCommands) {
-		let numToSeg = php.array_combine(
+		const numToSeg = php.array_combine(
 			segmentsLeft.map(s => s.segmentNumber),
 			segmentsLeft
 		);
 		// /S/ modifier is unique for whole command, even if there are more //P/ stores
 		let segNums = [];
-		for (let store of parsedCmd.data.pricingStores) {
-			for (let mod of store) {
+		for (const store of parsedCmd.data.pricingStores) {
+			for (const mod of store) {
 				if (mod.type === 'segments') {
 					segNums = mod.parsed;
 				}
@@ -254,7 +254,7 @@ class ImportPqAmadeusAction extends AbstractGdsAction {
 		if (segNums.length === 0) {
 			// applies to all segments
 			if (followingCommands.length > 0) {
-				let error = 'Last pricing command ' + followingCommands.map(r => r.cmd).join(' & ') +
+				const error = 'Last pricing command ' + followingCommands.map(r => r.cmd).join(' & ') +
 					' does not cover some itinerary segments: ' +
 					segmentsLeft.map(s => s.segmentNumber).join(',');
 				return Rej.BadRequest(error);
@@ -262,7 +262,7 @@ class ImportPqAmadeusAction extends AbstractGdsAction {
 				return Promise.resolve([]);
 			}
 		} else {
-			for (let segNum of segNums) {
+			for (const segNum of segNums) {
 				if (!numToSeg[segNum]) {
 					return Rej.BadRequest('Repeating segment number ' + segNum + ' covered by >' + parsedCmd.cmd + ';');
 				} else {
@@ -274,16 +274,16 @@ class ImportPqAmadeusAction extends AbstractGdsAction {
 	}
 
 	async collectPricingCmds(segmentsLeft) {
-		let cmdRecords = [];
+		const cmdRecords = [];
 		let fqqCmdRecs = [];
 		let mrPages = [];
-		let allCmds = await this.getCmdLog().getAllCommands();
-		for (let cmdRec of [...allCmds].reverse()) {
-			let pager = parseFxPager(cmdRec.output);
+		const allCmds = await this.getCmdLog().getAllCommands();
+		for (const cmdRec of [...allCmds].reverse()) {
+			const pager = parseFxPager(cmdRec.output);
 			if (!pager.hasMore || mrPages.length > 0) {
 				mrPages.unshift({...pager, ...cmdRec});
 			}
-			let parsed = CommandParser.parse(cmdRec.cmd);
+			const parsed = CommandParser.parse(cmdRec.cmd);
 			if (parsed.type === 'priceItinerary') {
 				if (mrPages.length === 0) {
 					return Rej.BadRequest('Pricing >' + cmdRec.cmd + '; was not fetched completely');
@@ -316,8 +316,8 @@ class ImportPqAmadeusAction extends AbstractGdsAction {
 	}
 
 	async getPricing(reservation) {
-		let cmdRecords = await this.collectPricingCmds(reservation.itinerary);
-		let result = {
+		const cmdRecords = await this.collectPricingCmds(reservation.itinerary);
+		const result = {
 			currentPricing: {
 				cmd: cmdRecords.map(r => r.cmd).join('&'),
 				raw: cmdRecords.map(r => r.output).join('\n&\n'),
@@ -328,19 +328,19 @@ class ImportPqAmadeusAction extends AbstractGdsAction {
 			// pricing FQQn to PQT, not just the last one...
 			pqtPricingInfo: null,
 		};
-		for (let [i, cmdRec] of Object.entries(cmdRecords)) {
-			let {cmd, output, fqqCmdRecs} = cmdRec;
+		for (const [i, cmdRec] of Object.entries(cmdRecords)) {
+			const {cmd, output, fqqCmdRecs} = cmdRec;
 			this.$allCommands.push({cmd, output});
-			let errors = php.array_merge(
+			const errors = php.array_merge(
 				GetPqItineraryAction.checkPricingCommand('amadeus', cmd, this.$leadData),
 				GetPqItineraryAction.checkPricingOutput('amadeus', output, this.$leadData)
 			);
 			if (!php.empty(errors)) {
 				return Rej.BadRequest('Invalid pricing - ' + cmd + ' - ' + php.implode(';', errors));
 			}
-			let stub = new AnyGdsStubSession(fqqCmdRecs);
-			let capturing = withCapture(stub);
-			let fullData = await (new AmadeusGetPricingPtcBlocksAction())
+			const stub = new AnyGdsStubSession(fqqCmdRecs);
+			const capturing = withCapture(stub);
+			const fullData = await (new AmadeusGetPricingPtcBlocksAction())
 				.setSession(capturing)
 				.execute(cmd, output, reservation.passengers);
 			if (fullData.error) {
@@ -348,7 +348,7 @@ class ImportPqAmadeusAction extends AbstractGdsAction {
 			}
 			this.$allCommands.push(...capturing.getCalledCommands());
 
-			let pqtPricingInfo = this.constructor.makePricingInfoForPqt(output, cmd, fullData.pricingList);
+			const pqtPricingInfo = this.constructor.makePricingInfoForPqt(output, cmd, fullData.pricingList);
 			if (result['error'] = fullData['error']) return result;
 
 			result.currentPricing.parsed.pricingList.push(...fullData.pricingList);
@@ -401,7 +401,7 @@ class ImportPqAmadeusAction extends AbstractGdsAction {
 
 		for ([$i, $ptcBlock] of Object.entries($pricing['pricingBlockList'])) {
 			$fxPaxNum = $ptcBlock['ptcInfo']['pricingPaxNums'][0];
-			let capturing = withCapture(this.session);
+			const capturing = withCapture(this.session);
 			$common = await (new AmadeusGetFareRulesAction())
 				.setTzProvider(this.getGeoProvider())
 				.setSession(capturing)

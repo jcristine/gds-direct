@@ -6,7 +6,7 @@ const php = require('../../phpDeprecated.js');
 
 class MaskUtil {
 	static maskCcNumbers($data, $showDigits = 4) {
-		let internal = ($data) => {
+		const internal = ($data) => {
 			if (php.is_array($data)) {
 				return Fp.map(($sub) => internal($sub), $data);
 			} else if (php.is_string($data)) {

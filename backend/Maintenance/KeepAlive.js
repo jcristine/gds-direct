@@ -1,35 +1,35 @@
 
-let GdsSessionController = require('../HttpControllers/GdsSessionController.js');
-let GdsSessions = require('./../Repositories/GdsSessions.js');
-let FluentLogger = require('./../LibWrappers/FluentLogger.js');
-let {NoContent, LoginTimeOut, Conflict} = require('klesun-node-tools/src/Rej.js');
+const GdsSessionController = require('../HttpControllers/GdsSessionController.js');
+const GdsSessions = require('./../Repositories/GdsSessions.js');
+const FluentLogger = require('./../LibWrappers/FluentLogger.js');
+const {NoContent, LoginTimeOut, Conflict} = require('klesun-node-tools/src/Rej.js');
 
-let KeepAlive = async () => {
+const KeepAlive = async () => {
 	let workerLogId = await FluentLogger.logNewId('keepAlive');
 	let logsWritten = 0;
-	let incrementLogsWritten = async () => {
+	const incrementLogsWritten = async () => {
 		++logsWritten;
 		// since KeepAlive process is supposed to run infinitely, should
 		// occasionally renew log id, or we'll have a log with 100k+ entries
 		if (logsWritten > 4000) {
-			let newLogId = await FluentLogger.logNewId('keepAlive_continuation');
+			const newLogId = await FluentLogger.logNewId('keepAlive_continuation');
 			FluentLogger.logit('Continuation in @' + newLogId, workerLogId);
 			workerLogId = newLogId;
 			logsWritten = 0;
 		}
 	};
-	let log = (msg, ...data) => {
+	const log = (msg, ...data) => {
 		FluentLogger.logit(msg, workerLogId, ...data);
 		incrementLogsWritten();
 	};
-	let logExc = (msg, exc) => {
+	const logExc = (msg, exc) => {
 		FluentLogger.logExc(msg, workerLogId, exc);
 		incrementLogsWritten();
 	};
 
-	let processSession = async (accessedMs, session) => {
-		let idleSeconds = ((Date.now() - accessedMs) / 1000).toFixed(3);
-		let msg = 'TODO: Processing session: #' + session.id +
+	const processSession = async (accessedMs, session) => {
+		const idleSeconds = ((Date.now() - accessedMs) / 1000).toFixed(3);
+		const msg = 'TODO: Processing session: #' + session.id +
 			' accessed ' + idleSeconds + ' s. ago - ' + ' ' + session.logId;
 		log(msg, session);
 		FluentLogger.logit('Processing in bg worker as the idlest session: ' + workerLogId, session.logId);
@@ -41,7 +41,7 @@ let KeepAlive = async () => {
 			processing = GdsSessions.remove(session);
 		} else {
 			processing = GdsSessions.getUserAccessMs(session).then(userAccessMs => {
-				let userIdleSeconds = ((Date.now() - userAccessMs) / 1000).toFixed(3);
+				const userIdleSeconds = ((Date.now() - userAccessMs) / 1000).toFixed(3);
 				log('INFO: Last _user_ access was ' + userIdleSeconds + ' s. ago');
 				if (GdsSessions.shouldClose(userAccessMs)) {
 					action = 'closeLongUnused';
@@ -71,10 +71,10 @@ let KeepAlive = async () => {
 		});
 	};
 
-	let onIdles = [];
+	const onIdles = [];
 	let waiting = null;
 	let resolveTerminated = null;
-	let terminate = (resolve) => {
+	const terminate = (resolve) => {
 		resolveTerminated = resolve;
 		if (waiting) {
 			clearTimeout(waiting);
@@ -83,7 +83,7 @@ let KeepAlive = async () => {
 		}
 	};
 
-	let processNextSession = () => {
+	const processNextSession = () => {
 		if (resolveTerminated) {
 			log('Exiting gracefully after clearing last session');
 			resolveTerminated();
@@ -96,9 +96,9 @@ let KeepAlive = async () => {
 			})
 			.catch(exc => {
 				// 10..11 seconds
-				let salt = (Math.random() * 1000);
+				const salt = (Math.random() * 1000);
 				let delay = 10 * 1000 + salt;
-				let rsCode = !exc ? 0 : exc.httpStatusCode;
+				const rsCode = !exc ? 0 : exc.httpStatusCode;
 				let msg;
 				if (waiting) {
 					msg = '...:';

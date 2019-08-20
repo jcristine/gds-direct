@@ -13,7 +13,7 @@ class ImportPnrCommonFormatAdapter
 	/** @param $reservation = IGdsPnrFieldsProvider::getReservation() */
 	static addContextDataToPaxes($reservation)  {
 		let $tripEndDt;
-		let lastSeg = ($reservation['itinerary'] || []).slice(-1)[0];
+		const lastSeg = ($reservation['itinerary'] || []).slice(-1)[0];
 		$tripEndDt = lastSeg ? lastSeg['departureDt']['full'] : null;
 		$reservation['passengers'] = Fp.map(($pax) => {
 			let $first, $middle;

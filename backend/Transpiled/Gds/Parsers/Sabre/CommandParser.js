@@ -114,7 +114,7 @@ class CommandParser {
 				return $type;
 			}
 		}
-		let startTuples = Object.entries($startsWith)
+		const startTuples = Object.entries($startsWith)
 			// put longest start patterns first
 			.sort((a,b) => b[0].length - a[0].length);
 		for ([$pattern, $type] of startTuples) {
@@ -428,10 +428,10 @@ class CommandParser {
 		if (!cmd.startsWith('WC')) {
 			return null;
 		}
-		let selection = cmd.slice('WC'.length);
-		let segments = [];
-		for (let rangeStr of selection.split('/')) {
-			let matches = rangeStr.match(/^(\d+)(-\d+|)([A-Z])$/);
+		const selection = cmd.slice('WC'.length);
+		const segments = [];
+		for (const rangeStr of selection.split('/')) {
+			const matches = rangeStr.match(/^(\d+)(-\d+|)([A-Z])$/);
 			if (!matches) {
 				return null;
 			}

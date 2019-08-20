@@ -1,5 +1,5 @@
 
-let php = require('../../phpDeprecated.js');
+const php = require('../../phpDeprecated.js');
 
 class ArrayUtil {
 	static overwrite($originalArray, $newArray) {

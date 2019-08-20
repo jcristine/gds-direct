@@ -1211,7 +1211,7 @@ class GdsDialectTranslator
 
 	translateThroughSeparateFunctions(fromGds, toGds, cmdRq)  {
 		let result = null;
-		let parsed = CommonDataHelper.parseCmdByGds(fromGds, cmdRq);
+		const parsed = CommonDataHelper.parseCmdByGds(fromGds, cmdRq);
 		if (TranslateAvailabilityCmdAction.isAvailabilityCommand(cmdRq, fromGds)) {
 			result = TranslateAvailabilityCmdAction.translate(cmdRq, fromGds, toGds);
 		} else if (TranslateTariffDisplayCmdAction.isTariffDisplayCommand(cmdRq, fromGds)) {

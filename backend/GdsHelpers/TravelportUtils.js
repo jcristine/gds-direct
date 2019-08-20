@@ -9,8 +9,8 @@ const matchAll = require("../Utils/Str").matchAll;
  * with Travelport (Apollo/Galileo) format data
  */
 
-let extractPager = (text) => {
-	let [_, clean, pager] =
+const extractPager = (text) => {
+	const [_, clean, pager] =
 		text.match(/([\s\S]*)(\)><)$/) ||
 		text.match(/([\s\S]*)(><)$/) ||
 		[null, text, null];
@@ -24,13 +24,13 @@ let extractPager = (text) => {
  * note that if shouldStop returns Promise.reject(), then
  * fetchUntil() will be interrupted with this rejection
  */
-let fetchUntil = async (nextCmd, session, shouldStop) => {
+const fetchUntil = async (nextCmd, session, shouldStop) => {
 	let finalResult = null;
 	while (nextCmd) {
 		let cmdRec = (await session.runCmd(nextCmd));
-		let [page, pager] = extractPager(cmdRec.output);
+		const [page, pager] = extractPager(cmdRec.output);
 		cmdRec = {...cmdRec, output: page};
-		let result = await shouldStop(cmdRec);
+		const result = await shouldStop(cmdRec);
 		if (result) {
 			finalResult = result;
 			break;
@@ -40,7 +40,7 @@ let fetchUntil = async (nextCmd, session, shouldStop) => {
 	return finalResult;
 };
 
-let shouldKeepFullLine = (line) => {
+const shouldKeepFullLine = (line) => {
 	return line.match(/^ATFQ-/)
 		|| line.match(/^GFAX-/)
 		|| line.match(/^\sF[QM]-/)
@@ -53,16 +53,16 @@ let shouldKeepFullLine = (line) => {
 			.some(code => line.slice(64).startsWith(code + ' '));
 };
 
-let extractTpTabCmds = (output) => {
-	let tabCommands = matchAll(/>([^>\n]+?)(?:·|;)/g, output).map(m => m[1]);
+const extractTpTabCmds = (output) => {
+	const tabCommands = matchAll(/>([^>\n]+?)(?:·|;)/g, output).map(m => m[1]);
 	return [...new Set(tabCommands)];
 };
 
 /** @param {{runCmd: function(string): Promise<{output: string}>}} session */
 const fetchAll = async (nextCmd, session) => {
-	let pages = [];
+	const pages = [];
 	let fullCmdRec = null;
-	let hrtimeStart = process.hrtime();
+	const hrtimeStart = process.hrtime();
 	await fetchUntil(nextCmd, session, (cmdRec) => {
 		fullCmdRec = fullCmdRec || cmdRec;
 		if (pages.length > 0 && pages.slice(-1)[0].output === fullCmdRec.output) {
@@ -72,16 +72,16 @@ const fetchAll = async (nextCmd, session) => {
 		}
 		pages.push(cmdRec.output);
 	});
-	let hrtimeDiff = process.hrtime(hrtimeStart);
+	const hrtimeDiff = process.hrtime(hrtimeStart);
 	fullCmdRec.output = pages.join('');
 	fullCmdRec.duration = hrtimeToDecimal(hrtimeDiff);
 	return fullCmdRec;
 };
 
 // this is not complete list
-let shouldWrap = (cmd) => {
-	let wrappedCmds = ['FS', 'MORE*', 'QC', '*HTE', 'HOA', 'HOC', 'FQN', 'A', '$D'];
-	let alwaysWrap = false;
+const shouldWrap = (cmd) => {
+	const wrappedCmds = ['FS', 'MORE*', 'QC', '*HTE', 'HOA', 'HOC', 'FQN', 'A', '$D'];
+	const alwaysWrap = false;
 	return alwaysWrap
 		|| wrappedCmds.some(wCmd => cmd.startsWith(wCmd));
 };
@@ -91,12 +91,12 @@ let shouldWrap = (cmd) => {
  * loos rules that do not take type of command into account for example
  */
 const wrap = (text, gds) => {
-	let result = [];
-	for (let line of text.split('\n')) {
+	const result = [];
+	for (const line of text.split('\n')) {
 		if (gds === 'apollo' && shouldKeepFullLine(line)) {
 			result.push(line);
 		} else {
-			for (let chunk of (line.match(/.{1,64}/g) || [''])) {
+			for (const chunk of (line.match(/.{1,64}/g) || [''])) {
 				result.push(chunk);
 			}
 		}
@@ -132,7 +132,7 @@ const collectFullCmdRecs = ($calledCommands) => {
 	let $cachedCommands, $mrs, $cmdRecord;
 	$cachedCommands = [];
 	$mrs = [];
-	let fullCmdRecs = [];
+	const fullCmdRecs = [];
 	for ($cmdRecord of php.array_reverse($calledCommands)) {
 		php.array_unshift($mrs, $cmdRecord['output']);
 		if ($cmdRecord.cmd !== 'MR') {
@@ -147,9 +147,9 @@ const collectFullCmdRecs = ($calledCommands) => {
 };
 
 const collectCmdToFullOutput = ($calledCommands) => {
-	let fullCmdRecs = collectFullCmdRecs($calledCommands);
-	let $cachedCommands = {};
-	for (let {cmd, output} of fullCmdRecs) {
+	const fullCmdRecs = collectFullCmdRecs($calledCommands);
+	const $cachedCommands = {};
+	for (const {cmd, output} of fullCmdRecs) {
 		$cachedCommands[cmd] = output;
 	}
 	return $cachedCommands;

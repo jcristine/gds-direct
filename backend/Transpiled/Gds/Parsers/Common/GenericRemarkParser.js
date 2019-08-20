@@ -1,6 +1,6 @@
 
 
-let php = require('../../../phpDeprecated');
+const php = require('../../../phpDeprecated');
 
 /**
  * parses remarks in our format, that we leave in all GDS-es

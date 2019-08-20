@@ -112,7 +112,7 @@ class ImportApolloPnrFormatAdapter
 						? DateTime.decodeRelativeDateInFuture($legData['departureDate'], $baseDate)
 						: null;
 					let $fullDestinationDate = null;
-					let $firstLegDepartureDate = $legs.length > 0
+					const $firstLegDepartureDate = $legs.length > 0
 						? $legs[0]['departureDt']['full']
 						: $fullDepartureDate;
 

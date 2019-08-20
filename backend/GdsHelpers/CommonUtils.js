@@ -5,8 +5,8 @@ const Rej = require('klesun-node-tools/src/Rej.js');
 exports.withLog = (session, log) => {
 	return {
 		...session, runCmd: async (cmd) => {
-			let cmdRec = await session.runCmd(cmd);
-			let masked = MaskUtil.maskCcNumbers(cmdRec);
+			const cmdRec = await session.runCmd(cmd);
+			const masked = MaskUtil.maskCcNumbers(cmdRec);
 			log('GDS result: ' + cmd, masked);
 			return cmdRec;
 		},
@@ -14,10 +14,10 @@ exports.withLog = (session, log) => {
 };
 
 exports.withCapture = (session) => {
-	let calledCommands = [];
+	const calledCommands = [];
 	return {
 		runCmd: async (cmd) => {
-			let cmdRec = await session.runCmd(cmd);
+			const cmdRec = await session.runCmd(cmd);
 			calledCommands.push(cmdRec);
 			return cmdRec;
 		},
@@ -27,12 +27,12 @@ exports.withCapture = (session) => {
 
 /** @return {Document} */
 exports.parseXml = (xml) => {
-	let jsdom = require('jsdom');
+	const jsdom = require('jsdom');
 	try {
-		let jsdomObj = new jsdom.JSDOM(xml, {contentType: 'text/xml'});
+		const jsdomObj = new jsdom.JSDOM(xml, {contentType: 'text/xml'});
 		return jsdomObj.window.document;
 	} catch (exc) {
-		let msg = 'Failed to parse XML - ' + exc + ' - ' + xml;
+		const msg = 'Failed to parse XML - ' + exc + ' - ' + xml;
 		throw Rej.UnprocessableEntity.makeExc(msg);
 	}
 };

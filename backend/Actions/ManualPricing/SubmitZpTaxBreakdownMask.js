@@ -4,7 +4,7 @@ const {fetchAll} = require('../../GdsHelpers/TravelportUtils.js');
 const Rej = require('klesun-node-tools/src/Rej.js');
 const {makeMaskRs} = require('./TpMaskUtils.js');
 
-let POSITIONS = AbstractMaskParser.getPositionsBy('_', [
+const POSITIONS = AbstractMaskParser.getPositionsBy('_', [
 	"$ZP U.S. FLIGHT SEGMENT TAX BREAKDOWN SCREEN                   ",
 	"                                                                ",
 	"  TOTAL USD     4.10 ZP                                         ",
@@ -18,7 +18,7 @@ let POSITIONS = AbstractMaskParser.getPositionsBy('_', [
 	"  ARPT19;___;_____  ARPT20;___;_____                            ",
 ].join(''));
 
-let FIELDS = [
+const FIELDS = [
 	'airport1_code', 'airport1_amount',
 	'airport2_code', 'airport2_amount',
 	'airport3_code', 'airport3_amount',
@@ -41,9 +41,9 @@ let FIELDS = [
 	'airport20_code', 'airport20_amount',
 ];
 
-let parseOutput = (output) => {
+const parseOutput = (output) => {
 	if (output.startsWith('>$ZP')) {
-		let message = output.trim().split('\n').slice(-1)[0] || '';
+		const message = output.trim().split('\n').slice(-1)[0] || '';
 		if (message.trim() === '*') {
 			return {status: 'success'};
 		} else {
@@ -54,24 +54,24 @@ let parseOutput = (output) => {
 	}
 };
 
-let SubmitTaxBreakdownMask = async ({rqBody, gdsSession}) => {
-	let maskOutput = rqBody.maskOutput;
-	let values = {};
-	for (let {key, value} of rqBody.fields) {
+const SubmitTaxBreakdownMask = async ({rqBody, gdsSession}) => {
+	const maskOutput = rqBody.maskOutput;
+	const values = {};
+	for (const {key, value} of rqBody.fields) {
 		values[key] = value.toUpperCase();
 	}
 
-	let destinationMask = AbstractMaskParser.normalizeMask(maskOutput);
-	let cmd = await AbstractMaskParser.makeCmd({
+	const destinationMask = AbstractMaskParser.normalizeMask(maskOutput);
+	const cmd = await AbstractMaskParser.makeCmd({
 		positions: POSITIONS,
 		destinationMask: destinationMask,
 		fields: FIELDS, values,
 	});
-	let cmdRec = await fetchAll(cmd, gdsSession);
-	let result = parseOutput(cmdRec.output);
+	const cmdRec = await fetchAll(cmd, gdsSession);
+	const result = parseOutput(cmdRec.output);
 
 	if (result.status === 'success') {
-		let calledCommands = [{cmd: '$ZP...', output: cmdRec.output}];
+		const calledCommands = [{cmd: '$ZP...', output: cmdRec.output}];
 		return makeMaskRs(calledCommands);
 	} else if (result.status === 'invalidData') {
 		return Rej.UnprocessableEntity('GDS rejects input - ' + result.error);
@@ -81,16 +81,16 @@ let SubmitTaxBreakdownMask = async ({rqBody, gdsSession}) => {
 };
 
 SubmitTaxBreakdownMask.parse = async (mask) => {
-	let fields = await AbstractMaskParser.getPositionValues({
+	const fields = await AbstractMaskParser.getPositionValues({
 		mask: mask,
 		positions: POSITIONS,
 		fields: FIELDS,
 	});
-	let match = mask.match(/TOTAL\s+([A-Z]{3})\s*(\d*\.?\d+)\s+([A-Z0-9]{2})/);
+	const match = mask.match(/TOTAL\s+([A-Z]{3})\s*(\d*\.?\d+)\s+([A-Z0-9]{2})/);
 	if (!match) {
 		return Rej.UnprocessableEntity('Invalid $ZP screen, no TOTAL - ' + mask);
 	}
-	let [_, currency, amount, taxCode] = match;
+	const [_, currency, amount, taxCode] = match;
 	return {
 		parsed: {currency, amount, taxCode},
 		fields: fields,

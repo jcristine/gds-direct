@@ -67,7 +67,7 @@ class ApolloVitParser {
 
 		$airline = $result['airline'];
 		$flightNumber = $result['flightNumber'].trim();
-		let result = {
+		const result = {
 			'airline': $airline ? $airline : null,
 			'flightNumber': $flightNumber ? +$flightNumber : null,
 			'date': {

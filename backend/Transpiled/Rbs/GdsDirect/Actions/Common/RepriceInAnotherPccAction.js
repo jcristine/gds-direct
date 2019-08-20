@@ -12,7 +12,7 @@ const {ignoreExc} = require('../../../../../Utils/TmpLib.js');
 const TravelportClient = require("../../../../../GdsClients/TravelportClient");
 const UpdateGalileoStateAction = require("../../SessionStateProcessor/UpdateGalileoState");
 const CmsApolloTerminal = require("../../GdsInterface/CmsApolloTerminal");
-let php = require('klesun-node-tools/src/Transpiled/php.js');
+const php = require('klesun-node-tools/src/Transpiled/php.js');
 const GdsProfiles = require("../../../../../Repositories/GdsProfiles");
 const AmadeusClient = require("../../../../../GdsClients/AmadeusClient");
 const fetchAll = require("../../../../../GdsHelpers/TravelportUtils").fetchAll;
@@ -28,14 +28,14 @@ const withLog = require("../../../../../GdsHelpers/CommonUtils").withLog;
 const {ERROR_NO_AVAIL} = require('../../../GdsAction/SabreBuildItineraryAction.js');
 const {coverExc} = require('klesun-node-tools/src/Lang.js');
 
-let extendApolloCmd = (cmd) => {
-	let data = AtfqParser.parsePricingCommand(cmd);
+const extendApolloCmd = (cmd) => {
+	const data = AtfqParser.parsePricingCommand(cmd);
 	if (!data) {
 		return cmd; // don't modify if could not parse
 	} else {
-		let baseCmd = data.baseCmd;
-		let mods = data.pricingModifiers;
-		let rawMods = mods.map(m => m.raw);
+		const baseCmd = data.baseCmd;
+		const mods = data.pricingModifiers;
+		const rawMods = mods.map(m => m.raw);
 		if (!mods.some(m => m.type === 'passengers')) {
 			// JWZ is a magical PTC, that results in
 			// the cheapest of JCB, ITX, ADT, etc...
@@ -45,14 +45,14 @@ let extendApolloCmd = (cmd) => {
 	}
 };
 
-let extendGalileoCmd = (cmd) => {
-	let data = FqCmdParser.parse(cmd);
+const extendGalileoCmd = (cmd) => {
+	const data = FqCmdParser.parse(cmd);
 	if (!data) {
 		return cmd; // don't modify if could not parse
 	} else {
-		let baseCmd = data.baseCmd;
-		let mods = data.pricingModifiers;
-		let rawMods = mods.map(m => m.raw);
+		const baseCmd = data.baseCmd;
+		const mods = data.pricingModifiers;
+		const rawMods = mods.map(m => m.raw);
 		if (!mods.some(m => m.type === 'passengers')) {
 			// it is a coincidence that code here is similar to extendApolloCmd(),
 			// most other formats are actually different in apollo and galileo
@@ -62,20 +62,20 @@ let extendGalileoCmd = (cmd) => {
 	}
 };
 
-let extendAmadeusCmd = (cmd) => {
-	let data = AmdPricingCmdParser.parse(cmd);
+const extendAmadeusCmd = (cmd) => {
+	const data = AmdPricingCmdParser.parse(cmd);
 	if (!data) {
 		return cmd; // don't modify if could not parse
 	} else {
-		let baseCmd = data.baseCmd;
-		let mods = php.array_combine(
+		const baseCmd = data.baseCmd;
+		const mods = php.array_combine(
 			(data.pricingStores[0] || []).map(m => m.type),
 			(data.pricingStores[0] || []),
 		);
 
-		let generic = mods['generic'] || null;
-		let ptcs = generic ? generic.parsed.ptcs : [];
-		let rSubMods = php.array_combine(
+		const generic = mods['generic'] || null;
+		const ptcs = generic ? generic.parsed.ptcs : [];
+		const rSubMods = php.array_combine(
 			(generic ? generic.parsed.rSubModifiers : []).map(m => m.type),
 			(generic ? generic.parsed.rSubModifiers : [])
 		);
@@ -86,15 +86,15 @@ let extendAmadeusCmd = (cmd) => {
 				.values(rSubMods).map(m => m.raw).join(','),
 		};
 
-		let rawMods = Object.values(mods).map(m => m.raw);
+		const rawMods = Object.values(mods).map(m => m.raw);
 		return [baseCmd].concat(rawMods).join('/');
 	}
 };
 
-let getItinCabinClass = async (itinerary) => {
-	let cabinClasses = new Set();
-	for (let seg of itinerary) {
-		let cabinClass = await BookingClasses.find(seg)
+const getItinCabinClass = async (itinerary) => {
+	const cabinClasses = new Set();
+	for (const seg of itinerary) {
+		const cabinClass = await BookingClasses.find(seg)
 			.then(r => r.cabin_class).catch(exc => null);
 		cabinClasses.add(cabinClass);
 	}
@@ -105,20 +105,20 @@ let getItinCabinClass = async (itinerary) => {
 	}
 };
 
-let extendSabreCmd = async ({cmd, yFallback, srcItin}) => {
-	let data = SabPricingCmdParser.parse(cmd);
+const extendSabreCmd = async ({cmd, yFallback, srcItin}) => {
+	const data = SabPricingCmdParser.parse(cmd);
 	if (!data) {
 		return cmd; // don't modify if could not parse
 	} else {
-		let baseCmd = data.baseCmd;
-		let mods = php.array_combine(
+		const baseCmd = data.baseCmd;
+		const mods = php.array_combine(
 			data.pricingModifiers.map(m => m.type),
 			data.pricingModifiers,
 		);
 		if (yFallback) {
-			let cabinClass = await getItinCabinClass(srcItin);
+			const cabinClass = await getItinCabinClass(srcItin);
 			mods['lowestFare'] = {raw: 'NC'};
-			let cabinCode = {
+			const cabinCode = {
 				'economy': 'YV',
 				'premium_economy': 'SB',
 				'business': 'BB',
@@ -127,7 +127,7 @@ let extendSabreCmd = async ({cmd, yFallback, srcItin}) => {
 			mods['cabinClass'] = {raw: 'TC-' + cabinCode};
 		}
 
-		let rawMods = Object.values(mods).map(m => m.raw);
+		const rawMods = Object.values(mods).map(m => m.raw);
 		return baseCmd + rawMods.join('¥');
 	}
 };
@@ -198,15 +198,15 @@ class RepriceInAnotherPccAction {
 
 	async repriceInApollo(pcc, itinerary, pricingCmd, $startDt) {
 		itinerary = itinerary.map(seg => ({...seg, segmentStatus: 'GK'}));
-		let profileName = GdsProfiles.TRAVELPORT.DynApolloProd_2F3K;
+		const profileName = GdsProfiles.TRAVELPORT.DynApolloProd_2F3K;
 		return TravelportClient().withSession({profileName}, async session => {
 			session = withLog(session, this.$log);
-			let semRs = await session.runCmd('SEM/' + pcc + '/AG');
+			const semRs = await session.runCmd('SEM/' + pcc + '/AG');
 			if (!CmsApolloTerminal.isSuccessChangePccOutput(semRs.output)) {
 				return Forbidden('Could not emulate '
 					+ pcc + ' - ' + semRs.output.trim());
 			}
-			let built = await ApolloBuildItineraryAction({
+			const built = await ApolloBuildItineraryAction({
 				baseDate: $startDt,
 				session, itinerary,
 				isParserFormat: true,
@@ -216,7 +216,7 @@ class RepriceInAnotherPccAction {
 					+ built.errorType + ' ' + JSON.stringify(built.errorData));
 			}
 			pricingCmd = extendApolloCmd(pricingCmd);
-			let cmdRec = await fetchAll(pricingCmd, session);
+			const cmdRec = await fetchAll(pricingCmd, session);
 			return {calledCommands: [cmdRec]};
 		});
 	}
@@ -230,18 +230,18 @@ class RepriceInAnotherPccAction {
 		});
 		return SabreClient.withSession({}, async session => {
 			session = withLog(session, this.$log);
-			let aaaRs = await session.runCmd('AAA' + pcc);
+			const aaaRs = await session.runCmd('AAA' + pcc);
 			if (!CmsSabreTerminal.isSuccessChangePccOutput(aaaRs.output, pcc)) {
 				return Forbidden('Could not emulate '
 					+ pcc + ' - ' + aaaRs.output.trim());
 			}
-			let build = await new SabreBuildItineraryAction().setSession(session);
+			const build = await new SabreBuildItineraryAction().setSession(session);
 			let built = await build.execute(itinerary, true);
 			let yFallback = false;
 			if (built.errorType === ERROR_NO_AVAIL) {
 				yFallback = true;
 				await session.runCmd('XI');
-				let yItin = itinerary.map(seg => ({...seg, bookingClass: 'Y'}));
+				const yItin = itinerary.map(seg => ({...seg, bookingClass: 'Y'}));
 				built = await build.execute(yItin, true);
 			}
 			if (built.errorType) {
@@ -249,40 +249,40 @@ class RepriceInAnotherPccAction {
 					+ built.errorType + ' ' + JSON.stringify(built.errorData));
 			}
 			pricingCmd = await extendSabreCmd({cmd: pricingCmd, yFallback, srcItin: itinerary});
-			let cmdRec = await session.runCmd(pricingCmd);
+			const cmdRec = await session.runCmd(pricingCmd);
 			return {calledCommands: [cmdRec]};
 		});
 	}
 
 	async repriceInAmadeus(pcc, itinerary, pricingCmd) {
 		itinerary = itinerary.map(seg => ({...seg, segmentStatus: 'GK'}));
-		let profileName = GdsProfiles.chooseAmaProfile(pcc);
+		const profileName = GdsProfiles.chooseAmaProfile(pcc);
 		return AmadeusClient.withSession({profileName, pcc}, async session => {
 			session = withLog(session, this.$log);
-			let built = await new AmadeusBuildItineraryAction()
+			const built = await new AmadeusBuildItineraryAction()
 				.setSession(session).execute(itinerary, true);
 			if (built.errorType) {
 				return UnprocessableEntity('Could not rebuild PNR in Amadeus - '
 					+ built.errorType + ' ' + JSON.stringify(built.errorData));
 			}
 			pricingCmd = extendAmadeusCmd(pricingCmd);
-			let cmdRec = await fetchAllFx(pricingCmd, session);
+			const cmdRec = await fetchAllFx(pricingCmd, session);
 			return {calledCommands: [cmdRec]};
 		});
 	}
 
 	async repriceInGalileo(pcc, itinerary, pricingCmd) {
 		itinerary = itinerary.map(seg => ({...seg, segmentStatus: 'AK'}));
-		let profileName = GdsProfiles.TRAVELPORT.DynGalileoProd_711M;
-		let travelport = TravelportClient();
+		const profileName = GdsProfiles.TRAVELPORT.DynGalileoProd_711M;
+		const travelport = TravelportClient();
 		return travelport.withSession({profileName}, async session => {
 			session = withLog(session, this.$log);
-			let semRs = await session.runCmd('SEM/' + pcc + '/AG');
+			const semRs = await session.runCmd('SEM/' + pcc + '/AG');
 			if (!UpdateGalileoStateAction.wasPccChangedOk(semRs.output)) {
 				return Forbidden('Could not emulate '
 					+ pcc + ' - ' + semRs.output.trim());
 			}
-			let built = await GalileoBuildItineraryAction({
+			const built = await GalileoBuildItineraryAction({
 				travelport, session, itinerary, isParserFormat: true,
 			});
 			if (built.errorType) {
@@ -290,7 +290,7 @@ class RepriceInAnotherPccAction {
 					+ built.errorType + ' ' + JSON.stringify(built.errorData));
 			}
 			pricingCmd = extendGalileoCmd(pricingCmd);
-			let cmdRec = await fetchAll(pricingCmd, session);
+			const cmdRec = await fetchAll(pricingCmd, session);
 			return {calledCommands: [cmdRec]};
 		});
 	}
@@ -319,24 +319,24 @@ class RepriceInAnotherPccAction {
 			type: '!priceInAnotherPcc',
 			state: {canCreatePq: false},
 		});
-		let startDt = currentSession.getStartDt();
+		const startDt = currentSession.getStartDt();
 
-		let target = await this.constructor.getTargetGdsAndPcc(targetStr)
+		const target = await this.constructor.getTargetGdsAndPcc(targetStr)
 			.catch(coverExc([NotFound], exc => null));
 		if (!target) {
 			return {'errors': ['Unknown GDS/PCC target - ' + targetStr]};
 		}
-		let {gds, pcc} = target;
-		let itinerary = pnr.getItinerary();
+		const {gds, pcc} = target;
+		const itinerary = pnr.getItinerary();
 		if (php.empty(itinerary)) {
 			return BadRequest('Itinerary is empty');
 		}
 
-		let translatorResult = (new GdsDialectTranslator())
+		const translatorResult = (new GdsDialectTranslator())
 			.setBaseDate(startDt)
 			.translate(dialect, target.gds, cmd);
-		let targetCmd = translatorResult.output || cmd;
-		let result = await this.repriceIn({gds, pcc, itinerary, targetCmd, startDt});
+		const targetCmd = translatorResult.output || cmd;
+		const result = await this.repriceIn({gds, pcc, itinerary, targetCmd, startDt});
 
 		return {'calledCommands': result.calledCommands};
 	}

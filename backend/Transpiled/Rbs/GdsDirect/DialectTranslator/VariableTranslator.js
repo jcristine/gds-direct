@@ -549,8 +549,8 @@ class VariableTranslator
 		$numbers = ($matches['numbers'] || {})[0] || '';
 		$class = ($matches['class'] || {})[0] || '';
 		if ($fromGds === 'sabre') {
-			let parsed = SabCmdParser.parseChangeBookingClasses('WC' + $numbers);
-			let clses = ((parsed || {}).segments || []).map(s => s.bookingClass);
+			const parsed = SabCmdParser.parseChangeBookingClasses('WC' + $numbers);
+			const clses = ((parsed || {}).segments || []).map(s => s.bookingClass);
 			if (php.array_unique(clses).length > 1) {
 				// check if there were different classes. Could not match
 				// with regex since js does not support (?p=letter)
@@ -754,7 +754,7 @@ class VariableTranslator
 
 		$variable = $variableMatches[0] || '';
 		$key = this.cleanNumberInVariableName($keyName);
-		let varData = this.specialVariableData($fromGds, $key);
+		const varData = this.specialVariableData($fromGds, $key);
 		if (!varData) {
 			// no such format
 			return {'variable': $variable, 'status': 'OK'};
@@ -813,9 +813,9 @@ class VariableTranslator
 	}
 
 	static combineListVariable($variableArray, $varName, $dialect)  {
-		let $listDataType = this.getListDataType($dialect, $varName);
-		let $start = !$listDataType ? '' : $listDataType['start'];
-		let $between = !$listDataType ? '' : $listDataType['between'];
+		const $listDataType = this.getListDataType($dialect, $varName);
+		const $start = !$listDataType ? '' : $listDataType['start'];
+		const $between = !$listDataType ? '' : $listDataType['between'];
 
 		return $start+php.implode($between, $variableArray);
 	}

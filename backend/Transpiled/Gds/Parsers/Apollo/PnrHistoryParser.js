@@ -4,14 +4,14 @@ const Fp = require('../../../Lib/Utils/Fp.js');
 const StringUtil = require('../../../Lib/Utils/StringUtil.js');
 const CommonParserHelpers = require('./CommonParserHelpers.js');
 
-let php = require('../../../phpDeprecated.js');
+const php = require('../../../phpDeprecated.js');
 
 /**
  * parse >*H command and all it's derivatives: *HA, *H$, *HQ, ...
  */
 class PnrHistoryParser {
 	static postProcessGroupMatches($dict) {
-		for (let k in $dict) {
+		for (const k in $dict) {
 			if (php.is_numeric(k)) {
 				delete ($dict[k]);
 			} else {

@@ -1,17 +1,17 @@
 const Diag = require('../LibWrappers/Diag.js');
 const Rej = require('../../node_modules/klesun-node-tools/src/Rej.js');
 
-let Db = require('../Utils/Db.js');
+const Db = require('../Utils/Db.js');
 const CommonDataHelper = require("../Transpiled/Rbs/GdsDirect/CommonDataHelper");
 const sqlNow = require("../Utils/TmpLib").sqlNow;
 const nonEmpty = require("klesun-node-tools/src/Rej").nonEmpty;
 const {coverExc} = require('klesun-node-tools/src/Lang.js');
 
-let TABLE = 'terminal_command_log';
+const TABLE = 'terminal_command_log';
 
-let isInvalidFormat = (cmdRec, gds) => {
+const isInvalidFormat = (cmdRec, gds) => {
 	if (gds === 'apollo') {
-		let matches = cmdRec.output.match(/^INVLD\s*><$/)
+		const matches = cmdRec.output.match(/^INVLD\s*><$/)
 			|| cmdRec.output.match(/^INVLD ACT\/NOT ENT\/.*\s*><$/)
 			|| cmdRec.output.match(/^INVLD DATA\/FORMAT\s*><$/)
 			|| cmdRec.output.match(/^INVLD FORMAT\/DATA\s*><$/)
@@ -45,10 +45,10 @@ let isInvalidFormat = (cmdRec, gds) => {
 	}
 };
 
-let isContextError = (cmdRec, gds) => {
+const isContextError = (cmdRec, gds) => {
 	if (gds === 'apollo') {
 		// when you try to open another PNR when there are unsaved changes in current one
-		let matches = cmdRec.output.match(/^FIN OR IGN\s*><$/)
+		const matches = cmdRec.output.match(/^FIN OR IGN\s*><$/)
 			|| cmdRec.output.match(/^NO TRANS AAA\s*><$/) // no PNR
 			|| cmdRec.output.match(/^RETRIEVE PNR\s*><$/)
 			|| cmdRec.output.match(/^NO MSG\s*><$/) // when agent accidentally types >UI; instead of >I;
@@ -61,10 +61,10 @@ let isContextError = (cmdRec, gds) => {
 	}
 };
 
-let makeRow = (cmdRec, session, cmdRqId, prevState) => {
-	let gds = session.context.gds;
-	let scrolledCmd = (cmdRec.state || {}).scrolledCmd;
-	let scrolledType = !scrolledCmd ? null :
+const makeRow = (cmdRec, session, cmdRqId, prevState) => {
+	const gds = session.context.gds;
+	const scrolledCmd = (cmdRec.state || {}).scrolledCmd;
+	const scrolledType = !scrolledCmd ? null :
 		CommonDataHelper.parseCmdByGds(gds, scrolledCmd).type;
 	let type = scrolledType || cmdRec.type;
 	if (!type) {
@@ -92,10 +92,10 @@ let makeRow = (cmdRec, session, cmdRqId, prevState) => {
 };
 
 /** RAM caching */
-let sessionToLastInsertion = new Map();
-let queued = (key, action) => {
-	let lastInsertion = sessionToLastInsertion.get(key) || Promise.resolve();
-	let whenDone = lastInsertion
+const sessionToLastInsertion = new Map();
+const queued = (key, action) => {
+	const lastInsertion = sessionToLastInsertion.get(key) || Promise.resolve();
+	const whenDone = lastInsertion
 		.catch(() => {})
 		.then(() => action());
 	sessionToLastInsertion.set(key, whenDone);
@@ -108,7 +108,7 @@ let queued = (key, action) => {
 	return whenDone;
 };
 
-let areValuesSame = (rowFromDb, rowForDb) => {
+const areValuesSame = (rowFromDb, rowForDb) => {
 	return rowFromDb.session_id == rowForDb.session_id
 		&& rowFromDb.gds === rowForDb.gds
 		&& rowFromDb.type === rowForDb.type
@@ -122,7 +122,7 @@ let areValuesSame = (rowFromDb, rowForDb) => {
 		;
 };
 
-let tryInsert = row => Db.with(db => db.writeRows(TABLE, [row]));
+const tryInsert = row => Db.with(db => db.writeRows(TABLE, [row]));
 
 /**
  * commands in the log are extremely important
@@ -133,17 +133,17 @@ let tryInsert = row => Db.with(db => db.writeRows(TABLE, [row]));
  * possibly there is some "ensureDelivered" option in
  * mysqljs, if so, should use it instead of this
  */
-let retryInsert = async (row) => {
+const retryInsert = async (row) => {
 	// '2019-07-19 02:00:33.320' -> '2019-07-19 02:00:33'
-	let normDt = row.dt.slice(0, '2019-07-19 02:00:33'.length);
-	let dtRows = await Db.with(db => db.fetchAll({
+	const normDt = row.dt.slice(0, '2019-07-19 02:00:33'.length);
+	const dtRows = await Db.with(db => db.fetchAll({
 		table: TABLE,
 		where: [
 			['session_id', '=', row.session_id],
 			['dt', '=', normDt],
 		],
 	}));
-	let alreadyInserted = dtRows
+	const alreadyInserted = dtRows
 		.filter(dtRow => areValuesSame(dtRow, row))
 		.slice(-1)[0];
 	if (alreadyInserted) {
@@ -159,12 +159,12 @@ let retryInsert = async (row) => {
 	}
 };
 
-let storeNew = async (row) => {
+const storeNew = async (row) => {
 	// to ensure their order, see cmd RQ #12114
 	return queued(row.session_id, () => {
-		let writing = tryInsert(row)
+		const writing = tryInsert(row)
 			.catch(coverExc([Rej.ServiceUnavailable], async exc => {
-				let inserted = await retryInsert(row);
+				const inserted = await retryInsert(row);
 				exc.retryResult = inserted;
 				// just to check for starters that everything works as expected
 				Diag.logExc('terminalCommandLog insert failed and retried', exc);
@@ -187,14 +187,14 @@ exports.storeNew = storeNew;
 
 /** latest first */
 exports.getAll = async (sessionId) => {
-	let rows = await Db.with(db => db.fetchAll({
+	const rows = await Db.with(db => db.fetchAll({
 		table: TABLE,
 		where: [['session_id', '=', sessionId]],
 		orderBy: 'id DESC',
 	}));
 	return rows.map(r => {
         /** @var typed = makeRow() */
-        let typed = r;
+        const typed = r;
 		return typed;
 	});
 };
@@ -206,7 +206,7 @@ exports.getBy = (params) => {
 
 exports.getLast = async (sessionId) => {
     /** @var r = makeRow() */
-	let r = await Db.with(db => db.fetchOne({
+	const r = await Db.with(db => db.fetchOne({
 		table: TABLE,
 		where: [['session_id', '=', sessionId]],
 		orderBy: 'id DESC',

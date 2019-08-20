@@ -13,14 +13,14 @@ exports.get = (agentId, name) => {
 };
 
 exports.getMapping = async (agentId) => {
-	let rows = await Db.fetchAll({
+	const rows = await Db.fetchAll({
 		table: TABLE,
 		where: [
 			['agentId', '=', agentId],
 		],
 	});
-	let mapping = {};
-	for (let row of rows) {
+	const mapping = {};
+	for (const row of rows) {
 		mapping[row.name] = JSON.parse(row.data);
 	}
 	return mapping;

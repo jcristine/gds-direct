@@ -3,7 +3,7 @@ const PtcUtil = require('../Process/Common/PtcUtil.js');
 const AtfqParser = require('../../Gds/Parsers/Apollo/Pnr/AtfqParser.js');
 const ParsersController = require('../../Rbs/IqControllers/ParsersController.js');
 
-let php = require('klesun-node-tools/src/Transpiled/php.js');
+const php = require('klesun-node-tools/src/Transpiled/php.js');
 const CmsClient = require("../../../IqClients/CmsClient");
 
 /**
@@ -39,13 +39,13 @@ class AliasParser {
 	 *                                 to retrieve data, null if it is not REBUILD command
 	 */
 	static async parseCmsRebuild(cmd) {
-		let asRebuild = cmd.match(/^REBUILD\/(\d+)\/([A-Z]{2})\/(\d+)$/);
+		const asRebuild = cmd.match(/^REBUILD\/(\d+)\/([A-Z]{2})\/(\d+)$/);
 		if (asRebuild) {
-			let [_, itineraryId, segmentStatus, seatCount] = asRebuild;
-			let cmsData = await CmsClient.getItineraryData({itineraryId});
-			let pcc = cmsData.result.data.pcc;
-			let segments = cmsData.result.data.segments.map(s => {
-				let gdsDate = php.strtoupper(php.date('dM', php.strtotime(s.departureDate)));
+			const [_, itineraryId, segmentStatus, seatCount] = asRebuild;
+			const cmsData = await CmsClient.getItineraryData({itineraryId});
+			const pcc = cmsData.result.data.pcc;
+			const segments = cmsData.result.data.segments.map(s => {
+				const gdsDate = php.strtoupper(php.date('dM', php.strtotime(s.departureDate)));
 				return ({
 					...s, segmentStatus, seatCount,
 					departureDate: {raw: gdsDate, parsed: s.departureDate.slice('2019-'.length), full: s.departureDate},
@@ -108,9 +108,9 @@ class AliasParser {
 		if (!$ptc || $ptc === 'ALL') {
 			$ptc = 'ADT';
 		}
-		let ptcs = [];
-		for (let group of requestedAgeGroups) {
-			let ptc = await PtcUtil.convertPtcByAgeGroup($ptc, group.ageGroup, 7);
+		const ptcs = [];
+		for (const group of requestedAgeGroups) {
+			const ptc = await PtcUtil.convertPtcByAgeGroup($ptc, group.ageGroup, 7);
 			for (let i = 0; i < (group.quantity || 1); ++i) {
 				ptcs.push(ptc);
 			}
@@ -124,7 +124,7 @@ class AliasParser {
 	}
 
 	static parseSameMonthReturnAvail(cmd) {
-		let matches = cmd.match(/^A\*O(\d+)$/);
+		const matches = cmd.match(/^A\*O(\d+)$/);
 		if (matches) {
 			return {days: matches[1]};
 		} else {
@@ -134,7 +134,7 @@ class AliasParser {
 
 	static async parseCmdAsPnr($cmd, $session) {
 		let $guess;
-		let fromCms = await this.parseCmsRebuild($cmd);
+		const fromCms = await this.parseCmsRebuild($cmd);
 		if (fromCms) {
 			return {
 				pcc: fromCms.pcc,
@@ -150,8 +150,8 @@ class AliasParser {
 			'creationDate': $session.getStartDt(),
 		})['result'] || null;
 
-		let passengers = ($guess.data || {}).passengers || [];
-		let itinerary = ($guess.data || {}).itinerary || [];
+		const passengers = ($guess.data || {}).passengers || [];
+		const itinerary = ($guess.data || {}).itinerary || [];
 
 		if (ParsersController.PNR_DUMP_TYPES.includes($guess['type']) &&
 			itinerary.length > 0 || passengers.length > 0
@@ -163,7 +163,7 @@ class AliasParser {
 	}
 
 	static async parseCmdAsItinerary($cmd, $session) {
-		let asPnr = await this.parseCmdAsPnr($cmd, $session);
+		const asPnr = await this.parseCmdAsPnr($cmd, $session);
 		return !asPnr ? [] : asPnr.itinerary;
 	}
 
@@ -171,7 +171,7 @@ class AliasParser {
 		cmdRq = cmdRq.replace(/\s+$/, '');
 		// for when you copy itinerary from logs
 		cmdRq = cmdRq.replace(/(^|\n)\s*"(.+?)",/g, '$1$2');
-		let bulkCmds = cmdRq.split('\n');
+		const bulkCmds = cmdRq.split('\n');
 		let type, data, matches;
 		if (data = await AliasParser.parseCmdAsPnr(cmdRq, stateful)) {
 			type = 'pnrDump';

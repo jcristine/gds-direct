@@ -42,8 +42,8 @@ class SessionStateHelper
 	static async getPricedAgeGroups($cmdLog)  {
 		let $cmdRow, $priced;
 		if ($cmdRow = await this.getPricingCmdRow($cmdLog)) {
-        	let gds = $cmdLog.getSessionData()['gds'];
-        	let ifc = CommonDataHelper.makeIfcByGds(gds);
+        	const gds = $cmdLog.getSessionData()['gds'];
+        	const ifc = CommonDataHelper.makeIfcByGds(gds);
 			$priced = ifc.getPricedPtcs($cmdRow['cmd']);
 			return CanCreatePqRules.ptcsToAgeGroups($priced['ptcs'] || []);
 		} else {
@@ -72,7 +72,7 @@ class SessionStateHelper
 			$errors = php.array_values(php.array_unique($errors));
 		}
 		if ($cmdItinerary) {
-			let reservation = CommonDataHelper.parsePnrByGds($gds, $cmdItinerary['output']);
+			const reservation = CommonDataHelper.parsePnrByGds($gds, $cmdItinerary['output']);
 			$errors = php.array_merge($errors, CanCreatePqRules.checkPnrData(reservation));
 		}
 		return $errors;

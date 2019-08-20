@@ -15,7 +15,7 @@ const matchMultipleCityAvailabilityCmd = ($cmd) => {
 		'(\\|[A-Z\\d]{2}(?:\\.[A-Z\\d]{2})*)' +
 		'$/';
 	if (php.preg_match($regex, $cmd, $matches = [])) {
-		let [_, availability, cityRow, airlines] = $matches;
+		const [_, availability, cityRow, airlines] = $matches;
 		return {availability, cities: cityRow.split('/'), airlines};
 	} else {
 		return null;

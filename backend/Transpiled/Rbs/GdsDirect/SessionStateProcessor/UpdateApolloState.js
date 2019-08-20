@@ -193,7 +193,7 @@ class UpdateApolloState {
 	static execute($cmd, $output, $sessionData, $getAreaData) {
 		let $self, $cmdParsed, $flatCmds, $cmdRec;
 		$sessionData = {...$sessionData};
-		let $getAreaDataNorm = (letter) => ({...$getAreaData(letter)});
+		const $getAreaDataNorm = (letter) => ({...$getAreaData(letter)});
 		$self = new this($getAreaDataNorm);
 		$cmdParsed = CommandParser.parse($cmd);
 		$flatCmds = php.array_merge([$cmdParsed], $cmdParsed['followingCommands'] || []);

@@ -1,9 +1,9 @@
 
-let moment = require('moment-timezone');
-let Diag = require('../../../LibWrappers/Diag.js');
+const moment = require('moment-timezone');
+const Diag = require('../../../LibWrappers/Diag.js');
 
 const StringUtil = require('../../Lib/Utils/StringUtil.js');
-let php = require('../../phpDeprecated.js');
+const php = require('../../phpDeprecated.js');
 
 class DateTime {
 	/**
@@ -72,7 +72,7 @@ class DateTime {
 	 */
 	static toUtc(localDt, localTimeZone) {
 		if (localTimeZone) {
-			let momented = moment.tz(localDt, localTimeZone);
+			const momented = moment.tz(localDt, localTimeZone);
 			if (momented.tz() === undefined) {
 				Diag.error('moment-timezone could not resolve tz ' + localTimeZone + ' for dt ' + localDt, new Error().stack);
 				// there will also be cases when info in db is wrong: when
@@ -93,8 +93,8 @@ class DateTime {
 	 */
 	static fromUtc(utcDt, localTimeZone) {
 		if (localTimeZone) {
-			let utcCutoff = moment.utc(utcDt, 'YYY-MM-DD HH:mm:ss');
-			let momented = utcCutoff.clone().tz(localTimeZone);
+			const utcCutoff = moment.utc(utcDt, 'YYY-MM-DD HH:mm:ss');
+			const momented = utcCutoff.clone().tz(localTimeZone);
 			if (momented.tz() === undefined) {
 				Diag.error('moment-timezone could not resolve tz ' + localTimeZone + ' for dt ' + utcDt, new Error().stack);
 				// there will also be cases when info in db is wrong: when

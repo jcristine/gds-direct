@@ -9,8 +9,8 @@
  * @param {{rq: string, rs: string}[]} httpRequests
  */
 const PersistentHttpRqStub = (httpRequests, normalizer = normalizeXmlBody) => {
-	let PersistentHttpRq = ({url, headers, body}) => {
-		let nextResult = httpRequests.shift();
+	const PersistentHttpRq = ({url, headers, body}) => {
+		const nextResult = httpRequests.shift();
 		if (!nextResult) {
 			throw new Error('Tried to make http request when all stub values were exhausted: ' + url + '\n' + body);
 		} else if (normalizer(body) !== normalizer(nextResult.rq)) {

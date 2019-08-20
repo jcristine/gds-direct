@@ -1,11 +1,11 @@
 
 const RbsClientLib = require('dynatech-client-component-rbs');
 
-let {getConfig} = require("../Config.js");
+const {getConfig} = require("../Config.js");
 
-let callRbs = async (functionName, params) => {
-	let config = await getConfig();
-	let rbs = RbsClientLib({
+const callRbs = async (functionName, params) => {
+	const config = await getConfig();
+	const rbs = RbsClientLib({
 		login: 'CMS',
 		RBS_PASSWORD: config.RBS_PASSWORD,
 		RANDOM_KEY: process.env.RANDOM_KEY,
@@ -13,7 +13,7 @@ let callRbs = async (functionName, params) => {
 	return rbs.callRbs(functionName, params);
 };
 
-let RbsClient = {};
+const RbsClient = {};
 
 RbsClient.startSession = ({gds, agentId}) => {
 	return callRbs('terminal.startSession', {

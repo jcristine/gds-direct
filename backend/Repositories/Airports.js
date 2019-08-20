@@ -1,13 +1,13 @@
 
-let {getConfig} = require('../Config.js');
-let Db = require('../Utils/Db.js');
+const {getConfig} = require('../Config.js');
+const Db = require('../Utils/Db.js');
 const sqlNow = require("../Utils/TmpLib").sqlNow;
 const iqJson = require("../Utils/TmpLib").iqJson;
-let {strval, implode, array_column, array_combine} = require('../Transpiled/phpDeprecated.js');
+const {strval, implode, array_column, array_combine} = require('../Transpiled/phpDeprecated.js');
 
-let TABLE = 'airports';
+const TABLE = 'airports';
 
-let normalizeRow = ($row) => ({
+const normalizeRow = ($row) => ({
 	iata_code: $row['airport_code_en'],
 	name: $row['airport_title_en'],
 	country_code: strval($row['country_code']),
@@ -26,9 +26,9 @@ let normalizeRow = ($row) => ({
 });
 
 exports.updateFromService = async () => {
-	let config = await getConfig();
+	const config = await getConfig();
 	/** @type IGetAirportsRs */
-	let serviceResult = await iqJson({
+	const serviceResult = await iqJson({
 		url: config.external_service.infocenter.host,
 		credentials: {
 			login: config.external_service.infocenter.login,
@@ -39,11 +39,11 @@ exports.updateFromService = async () => {
 		params: {folder: 'arc'},
 	});
 
-	let rows = Object
+	const rows = Object
 		.values(serviceResult.result.data)
 		.map(normalizeRow);
 
-	let written = await Db.with(db => db.writeRows(TABLE, rows));
+	const written = await Db.with(db => db.writeRows(TABLE, rows));
 	return {
 		message: 'written ' + rows.length + ' rows to db',
 		sqlResult: written,
@@ -63,7 +63,7 @@ exports.findByCity = (code) =>
 	}));
 
 exports.getRegionNames = () => {
-	let sql = 'SELECT DISTINCT region_id, region_name FROM airports';
+	const sql = 'SELECT DISTINCT region_id, region_name FROM airports';
 	return Db.with(db => db.query(sql))
 		.then($rows => array_combine(
 			$rows.map(r => r.region_id),
@@ -72,7 +72,7 @@ exports.getRegionNames = () => {
 };
 
 exports.getCountryNames = () => {
-	let sql = 'SELECT DISTINCT country_code, country_name FROM airports';
+	const sql = 'SELECT DISTINCT country_code, country_name FROM airports';
 	return Db.with(db => db.query(sql))
 		.then($rows => array_combine(
 			$rows.map(r => r.country_code),

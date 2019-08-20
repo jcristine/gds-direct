@@ -1,8 +1,8 @@
 
 
-let php = require('../../../../phpDeprecated');
-let ArrayUtil = require('../../../../Lib/Utils/ArrayUtil.js');
-let Fp = require('../../../../Lib/Utils/Fp.js');
+const php = require('../../../../phpDeprecated');
+const ArrayUtil = require('../../../../Lib/Utils/ArrayUtil.js');
+const Fp = require('../../../../Lib/Utils/Fp.js');
 
 /**
  * this action unites the Apollo and Sabre PNR import processes
@@ -109,7 +109,7 @@ class ImportPnrAction
 
 		$segments = null;
 		for ($pricingBlock of Object.values($pricingBlockList)) {
-			let $fcSegments = (($pricingBlock['fareInfo'] || {})['fareConstruction'] || {})['segments'];
+			const $fcSegments = (($pricingBlock['fareInfo'] || {})['fareConstruction'] || {})['segments'];
 			if (!php.empty($fcSegments)) {
 				if (!php.isset($segments)) {
 					$segments = $fcSegments;

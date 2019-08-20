@@ -1,8 +1,8 @@
 
-let ioredis = require("ioredis");
-let {getRedisConfig} = require('klesun-node-tools/src/Config.js');
+const ioredis = require("ioredis");
+const {getRedisConfig} = require('klesun-node-tools/src/Config.js');
 const Conflict = require("klesun-node-tools/src/Rej").Conflict;
-let {never, StrConsts} = require('../Utils/StrConsts.js');
+const {never, StrConsts} = require('../Utils/StrConsts.js');
 const {nonEmpty, onDemand} = require("klesun-node-tools/src/Lang.js");
 const Rej = require("klesun-node-tools/src/Rej.js");
 
@@ -25,8 +25,8 @@ exports.events = StrConsts({
 }, 'GRECT_EVENT_');
 
 /** @type {function(): Promise<IORedis.Redis>} */
-let getClient = onDemand(async () => {
-	let cfg = await getRedisConfig();
+const getClient = onDemand(async () => {
+	const cfg = await getRedisConfig();
 	if (!cfg || !cfg.REDIS_HOST) {
 		return Rej.BadRequest('Redis address not supplied');
 	}
@@ -37,7 +37,7 @@ let getClient = onDemand(async () => {
  * @type {function(): Promise<IORedis.Redis>}
  */
 exports.getSubscriber = onDemand(async () => {
-	let cfg = await getRedisConfig();
+	const cfg = await getRedisConfig();
 	if (!cfg || !cfg.REDIS_HOST) {
 		return Rej.BadRequest('Redis address not supplied');
 	}
@@ -53,8 +53,8 @@ exports.getClient = getClient;
  * @return Promise<T>
  */
 exports.withNewConnection = async (process) => {
-	let cfg = await getRedisConfig();
-	let client = new ioredis(cfg.REDIS_PORT, cfg.REDIS_HOST);
+	const cfg = await getRedisConfig();
+	const client = new ioredis(cfg.REDIS_PORT, cfg.REDIS_HOST);
 	return process(client).then(result => {
 		client.quit();
 		return result;
@@ -65,10 +65,10 @@ exports.withNewConnection = async (process) => {
 };
 
 exports.withLock = async ({lockKey, action, lockSeconds = 15, lockValue = 'lockedForReal'}) => {
-	let redis = await getClient();
-	let didAcquire = await redis.set(lockKey, lockValue, 'NX', 'EX', lockSeconds);
+	const redis = await getClient();
+	const didAcquire = await redis.set(lockKey, lockValue, 'NX', 'EX', lockSeconds);
 	if (!didAcquire) {
-		let lastValue = await redis.get(lockKey);
+		const lastValue = await redis.get(lockKey);
 		return Conflict('Process ' + lockKey + ' is locked. Last Value - ' + lastValue);
 	} else {
 		return Promise.resolve()
@@ -85,26 +85,26 @@ exports.withLock = async ({lockKey, action, lockSeconds = 15, lockValue = 'locke
  * @return Promise<T>
  */
 exports.withCache = async ({cacheKey, expireSeconds, action}) => {
-	let redis = await getClient();
-	let jsonFromCache = await redis.get(cacheKey).catch(exc => null);
+	const redis = await getClient();
+	const jsonFromCache = await redis.get(cacheKey).catch(exc => null);
 	if (jsonFromCache) {
 		return JSON.parse(jsonFromCache);
 	} else {
-		let result = await action();
+		const result = await action();
 		redis.set(cacheKey, JSON.stringify(result), 'EX', expireSeconds);
 		return result;
 	}
 };
 
 exports.getInfo = async () => {
-	let client = await getClient();
+	const client = await getClient();
 	return client.info().then(text => {
-		let kvPairs = text.split(/[\n\r]+/)
+		const kvPairs = text.split(/[\n\r]+/)
 			.filter(l => !l.startsWith('#'))
 			.map(l => l.split(':'));
 		/** @type IRedisInfo */
-		let parsed = {};
-		for (let [k,v] of kvPairs) {
+		const parsed = {};
+		for (const [k,v] of kvPairs) {
 			parsed[k] = v;
 		}
 		return parsed;

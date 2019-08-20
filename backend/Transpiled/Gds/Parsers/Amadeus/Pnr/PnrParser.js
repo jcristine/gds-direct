@@ -444,7 +444,7 @@ class PnrParser
      * "EAS EXTENDED AIR SEG DISP" flag is configured as "NO"
      */
 	static parseDayOffsetSegmentLine($line)  {
-		let patterns = [
+		const patterns = [
 			//  '  2  AY 099 Y 10APR 2 HELHKG HK1  1050P 2  1150P 230P+1 359 E0 H',
 			//  '  1  AY1074 Y 10APR 2 RIXHEL HK1   135P     220P 330P   AT7 E0 G',
 			//  '  1  SU1845 Y 10DEC 7 KIVSVO HK1            140A 535A   32A E0 S'
@@ -455,8 +455,8 @@ class PnrParser
 			//  "  2  BR 271 C 11DEC 3 TPEMNL HK1       2  0910 1145   77W E 0 M",
 			'#### AAFFFF B DDDDD W RRRNNN SSQQ UUUU GG tttt TTTTOO MMMMMMMMMMMMMMMM ', // MNLPH28FP
 		];
-		for (let pattern of patterns) {
-			let parsed = this.parseDayOffsetSegmentLineByPattern($line, pattern);
+		for (const pattern of patterns) {
+			const parsed = this.parseDayOffsetSegmentLineByPattern($line, pattern);
 			if (parsed) {
 				return parsed;
 			}

@@ -2,7 +2,7 @@
 
 const fetchAll = require("../../GdsHelpers/TravelportUtils").fetchAll;
 
-let php = require('../../Transpiled/phpDeprecated.js');
+const php = require('../../Transpiled/phpDeprecated.js');
 
 /**
  * this is a helper class for tests

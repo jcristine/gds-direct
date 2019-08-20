@@ -1,5 +1,5 @@
 
-let Emc = require('../LibWrappers/Emc.js');
+const Emc = require('../LibWrappers/Emc.js');
 const Redis = require("../LibWrappers/Redis");
 
 module.exports.migrations = [
@@ -149,7 +149,7 @@ module.exports.migrations = [
 	{
 		name: 'GRECT/2019.02.26005-create-roles-amr',
 		perform: async (db) => {
-			let emc = await Emc.getClient();
+			const emc = await Emc.getClient();
 			return emc.addRole([
 				{"name": "NEW_GDS_DIRECT_ACCESS", "project": "GDSD", "description": "Same as in RBS"},
 				{"name": "NEW_GDS_DIRECT_TICKETING", "project": "GDSD", "description": "Same as in RBS"},
@@ -439,7 +439,7 @@ module.exports.migrations = [
 	{
 		name: 'GRECT/2019.04.02006-create-role-NEW_GDS_DIRECT_DEV_ACCESS',
 		perform: async (db) => {
-			let emc = await Emc.getClient();
+			const emc = await Emc.getClient();
 			return emc.addRole([
 				{"name": "NEW_GDS_DIRECT_DEV_ACCESS", "project": "GDSD", "description": "Allows seeing session log and other utility actions like running maintenance scripts, getting request debug info, etc..."},
 			]);
@@ -479,7 +479,7 @@ module.exports.migrations = [
 	{
 		name: 'GRECT/2019.05.21003-remove-unused-redis-keys',
 		perform: async (db) => {
-			let redis = await Redis.getClient();
+			const redis = await Redis.getClient();
 			return Promise.all([
 				redis.del('GRECT_CMD_RQ_LAST_INSERT_ID'),
 				redis.del('GRECT_SESSION_LAST_INSERT_ID'),
@@ -524,7 +524,7 @@ module.exports.migrations = [
 	{
 		name: 'GRECT/2019.04.02006-create-role-VIEW_GDS_SESSION_LOG',
 		perform: async (db) => {
-			let emc = await Emc.getClient();
+			const emc = await Emc.getClient();
 			return emc.addRole([
 				{"name": "VIEW_GDS_SESSION_LOG", "project": "GDSD", "description": "Allows seeing list of active and historical sessions as well as opening the page listing commands and their outputs"},
 			]);
@@ -533,7 +533,7 @@ module.exports.migrations = [
 	{
 		name: 'GRECT/2019.08.06015-create-role-can_add_pqs',
 		perform: async (db) => {
-			let emc = await Emc.getClient();
+			const emc = await Emc.getClient();
 			return emc.addRole([
 				{"name": "can_add_pqs", "project": "GDSD", "description": "Grants users an option to see/use \"Add PQ\" button"},
 			]);

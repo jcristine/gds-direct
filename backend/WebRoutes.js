@@ -3,20 +3,20 @@ const AgentCustomSettings = require('./Repositories/AgentCustomSettings.js');
 const Clustering = require('./Utils/Clustering.js');
 const {descrProc} = Clustering;
 
-let express = require('express');
-let UserController = require('./HttpControllers/UserController.js');
-let CompletionData = require('./HttpControllers/CompletionData.js');
-let Emc = require('./LibWrappers/Emc.js');
-let GdsSessionController = require('./HttpControllers/GdsSessionController.js');
-let TerminalBaseController = require('./Transpiled/App/Controllers/TerminalBaseController.js');
-let {Forbidden, BadReqeust, LoginTimeOut} = require('klesun-node-tools/src/Rej.js');
-let UpdateHighlightRulesFromProd = require('./Actions/UpdateHighlightRulesFromProd.js');
-let Db = require('./Utils/Db.js');
-let Diag = require('./LibWrappers/Diag.js');
-let HighlightRulesRepository = require('./Repositories/HighlightRules.js');
-let Redis = require('./LibWrappers/Redis.js');
-let {getConfig} = require('./Config.js');
-let GdsSessions = require('./Repositories/GdsSessions.js');
+const express = require('express');
+const UserController = require('./HttpControllers/UserController.js');
+const CompletionData = require('./HttpControllers/CompletionData.js');
+const Emc = require('./LibWrappers/Emc.js');
+const GdsSessionController = require('./HttpControllers/GdsSessionController.js');
+const TerminalBaseController = require('./Transpiled/App/Controllers/TerminalBaseController.js');
+const {Forbidden, BadReqeust, LoginTimeOut} = require('klesun-node-tools/src/Rej.js');
+const UpdateHighlightRulesFromProd = require('./Actions/UpdateHighlightRulesFromProd.js');
+const Db = require('./Utils/Db.js');
+const Diag = require('./LibWrappers/Diag.js');
+const HighlightRulesRepository = require('./Repositories/HighlightRules.js');
+const Redis = require('./LibWrappers/Redis.js');
+const {getConfig} = require('./Config.js');
+const GdsSessions = require('./Repositories/GdsSessions.js');
 const PersistentHttpRq = require('klesun-node-tools/src/Utils/PersistentHttpRq.js');
 const Misc = require("./Transpiled/Lib/Utils/MaskUtil");
 const CmdLogs = require("./Repositories/CmdLogs");
@@ -31,7 +31,7 @@ const SocketIo = require('./LibWrappers/SocketIo.js');
 const ParsersController = require("./HttpControllers/ParsersController");
 const {readFile} = require('fs').promises;
 
-let app = express();
+const app = express();
 
 app.use(express.json({limit: '1mb'}));
 app.use(express.urlencoded({extended: true}));
@@ -44,7 +44,7 @@ app.use((req, res, next) => {
 	next();
 });
 app.get('/', (req, res) => {
-	let queryStr = req.url.split('?')[1] || '';
+	const queryStr = req.url.split('?')[1] || '';
 	let newUrl = '/public';
 	if (queryStr) {
 		newUrl += '?' + queryStr;
@@ -72,14 +72,14 @@ app.use('/public', express.static(__dirname + '/../public'));
 
 app.get('/gdsDirect/view', withAuth(UserController.getView));
 app.get('/data/getPccList', toHandleHttp(async (rqBody) => {
-	let records = await CompletionData.getPccList();
+	const records = await CompletionData.getPccList();
 	return {records};
 }));
 app.get('/data/getAgentList', toHandleHttp(async (rqBody) => {
-	let rows = await Agents.getAll();
+	const rows = await Agents.getAll();
 	// since we are not checking roles for this API, it's
 	// better to not include agent's real name and emails
-	let records = rows.map(row => ({
+	const records = rows.map(row => ({
 		id: row.id,
 		displayName: row.login, // RBS legacy
 		isActive: row.is_active,
@@ -95,10 +95,10 @@ app.get('/data/getAgentList', toHandleHttp(async (rqBody) => {
  * Function separates font color from background color so we can apply
  * two different classes in frontend for highlighting
  */
-let separateBgColors = (nameToStyles) => {
-	let $colorsParsed = {};
-	for (let [$class, $style] of Object.entries(nameToStyles)) {
-		let $hex = $style['background-color'] || $style['color'] || '';
+const separateBgColors = (nameToStyles) => {
+	const $colorsParsed = {};
+	for (const [$class, $style] of Object.entries(nameToStyles)) {
+		const $hex = $style['background-color'] || $style['color'] || '';
 		$colorsParsed[$class + '-color'] = {
 			'color': $hex,
 		};
@@ -122,23 +122,23 @@ app.get('/gdsDirect/themes', toHandleHttp(() =>
 		}))
 ));
 app.get('/emcLoginUrl', toHandleHttp(async rqBody => {
-	let returnUrl = rqBody.returnUrl;
-	let config = await getConfig();
-	let emc = await Emc.getClient();
-	let result = await emc.getLoginPage(config.external_service.emc.projectName, returnUrl);
+	const returnUrl = rqBody.returnUrl;
+	const config = await getConfig();
+	const emc = await Emc.getClient();
+	const result = await emc.getLoginPage(config.external_service.emc.projectName, returnUrl);
 	return {emcLoginUrl: result.data.data};
 }));
 app.get('/authorizeEmcToken', toHandleHttp(async rqBody => {
-	let token = rqBody.token;
-	let emc = await Emc.getClient();
-	let result = await emc.authorizeToken(token)
+	const token = rqBody.token;
+	const emc = await Emc.getClient();
+	const result = await emc.authorizeToken(token)
 		.catch(exc => (exc + '').match(/Token not found/)
 			? LoginTimeOut('Session key expired')
 			: Promise.reject(exc));
 	return {emcSessionId: result.data.sessionKey};
 }));
 app.get('/checkEmcSessionId', toHandleHttp(async rqBody => {
-	let sessionInfo = await Emc.getClient()
+	const sessionInfo = await Emc.getClient()
 		.then(emc => emc.sessionInfo(rqBody.emcSessionId))
 		.catch(exc => null);
 	return {
@@ -151,7 +151,7 @@ app.post('/keepAliveEmc', toHandleHttp(async (rqBody) => {
 	} else if (rqBody.isForeignProjectEmcId) {
 		return Promise.resolve({message: 'Foreign Project EMC id - success by default'});
 	} else {
-		let emc = await Emc.getClient();
+		const emc = await Emc.getClient();
 		return Promise.resolve()
 			.then(() => emc.doAuth(rqBody.emcSessionId))
 			.catch(exc => (exc + '').match(/session key is invalid/)
@@ -166,7 +166,7 @@ app.post('/keepAliveEmc', toHandleHttp(async (rqBody) => {
 }));
 app.post('/system/reportJsError', withAuth((rqBody, emcResult) => {
 	delete(rqBody.emcUser);
-	let user = {
+	const user = {
 		id: emcResult.user.id,
 		login: emcResult.user.login,
 		displayName: emcResult.user.displayName,
@@ -179,16 +179,16 @@ app.post('/system/reportJsError', withAuth((rqBody, emcResult) => {
 //==========================
 
 app.get('/terminal/saveSetting/:name/:currentGds/:value', withAuth((reqBody, emcResult, routeParams) => {
-	let {name, currentGds, value} = routeParams;
+	const {name, currentGds, value} = routeParams;
 	return new TerminalBaseController(emcResult).saveSettingAction(name, currentGds, value);
 }));
 app.post('/terminal/saveSetting/:name/:currentGds', withAuth((reqBody, emcResult, routeParams) => {
-	let {name, currentGds} = routeParams;
+	const {name, currentGds} = routeParams;
 	return new TerminalBaseController(emcResult).postSaveSettingAction(reqBody, name, currentGds);
 }));
 app.post('/terminal/saveSetting/:name', withAuth((reqBody, emcResult, routeParams) => {
-	let agentId = emcResult.user.id;
-	let value = reqBody.value;
+	const agentId = emcResult.user.id;
+	const value = reqBody.value;
 	return AgentCustomSettings.set(agentId, routeParams.name, value);
 }));
 app.post('/terminal/resetToDefaultPcc', withGdsSession(GdsSessionController.resetToDefaultPcc));
@@ -208,7 +208,7 @@ app.get('/terminal/clearBuffer', withAuth(GdsSessionController.clearBuffer));
 // /admin/* routes follow
 //=====================
 
-let withOwnerAuth = (ownerAction) => withAuth((rqBody, emcResult) => {
+const withOwnerAuth = (ownerAction) => withAuth((rqBody, emcResult) => {
 	if (emcResult.user.id == 6206) {
 		return ownerAction(rqBody, emcResult);
 	} else {
@@ -216,9 +216,9 @@ let withOwnerAuth = (ownerAction) => withAuth((rqBody, emcResult) => {
 	}
 });
 
-let withRoleAuth = (roles, roleAction) => withAuth((rqBody, emcResult) => {
-	let userRoles = emcResult.user.roles;
-	let matchingRoles = userRoles.filter(r => roles.includes(r));
+const withRoleAuth = (roles, roleAction) => withAuth((rqBody, emcResult) => {
+	const userRoles = emcResult.user.roles;
+	const matchingRoles = userRoles.filter(r => roles.includes(r));
 	if (matchingRoles.length > 0) {
 		return roleAction(rqBody, emcResult);
 	} else {
@@ -226,7 +226,7 @@ let withRoleAuth = (roles, roleAction) => withAuth((rqBody, emcResult) => {
 	}
 });
 
-let withDevAuth = (devAction) => withRoleAuth(['NEW_GDS_DIRECT_DEV_ACCESS'], devAction);
+const withDevAuth = (devAction) => withRoleAuth(['NEW_GDS_DIRECT_DEV_ACCESS'], devAction);
 
 //app.use('/admin/updateHighlightRules', express.bodyParser({limit: '10mb'}));
 app.post('/admin/updateHighlightRules', withDevAuth((reqBody, emcResult) => {
@@ -243,14 +243,14 @@ app.post('/admin/terminal/themes/save', withAuth(rqBody => {
 	}]));
 }));
 app.post('/admin/terminal/themes/delete', withAuth(rqBody => {
-	let sql = 'DELETE FROM terminalThemes WHERE id = ?';
+	const sql = 'DELETE FROM terminalThemes WHERE id = ?';
 	return Db.with(db => db.query(sql, [rqBody.id]));
 }));
 
 app.post('/admin/terminal/sessionsGet', withRoleAuth([
 	'NEW_GDS_DIRECT_DEV_ACCESS', 'VIEW_GDS_SESSION_LOG',
 ], async (rqBody, emcResult) => {
-	let sessions = await GdsSessions.getHist(rqBody);
+	const sessions = await GdsSessions.getHist(rqBody);
 	return {
 		aaData: sessions,
 	};
@@ -262,7 +262,7 @@ app.get('/terminal/getCmdRqList', withRoleAuth([
 app.get('/api/js/terminal-log/commands', withRoleAuth([
 	'NEW_GDS_DIRECT_DEV_ACCESS', 'VIEW_GDS_SESSION_LOG',
 ], async (rqBody, emcResult) => {
-	let [sessionRow, cmdRows] = await Promise.all([
+	const [sessionRow, cmdRows] = await Promise.all([
 		GdsSessions.getHist({sessionId: rqBody.sessionId})
 			.then(rows => rows[0])
 			.then(Rej.nonEmpty('No such session id DB: #' + rqBody.sessionId)),
@@ -307,25 +307,25 @@ app.post('/admin/getModel', withOwnerAuth(async (reqBody, emcResult) => {
 }));
 
 app.get('/admin/showTables', withOwnerAuth(async (rqBody) => {
-    let rows = await Db.with(async db => db.query('SHOW TABLES'));
-    let records = rows.map(row => ({name: Object.values(row)[0]}));
+    const rows = await Db.with(async db => db.query('SHOW TABLES'));
+    const records = rows.map(row => ({name: Object.values(row)[0]}));
     return {records};
 }));
 app.post('/admin/getAllRedisKeys', withOwnerAuth(async (reqBody, emcResult) => {
-	let redis = await Redis.getClient();
-	let keys = await redis.keys('*');
+	const redis = await Redis.getClient();
+	const keys = await redis.keys('*');
 	return {keys};
 }));
 app.post('/admin/operateRedisKey', withOwnerAuth(async (reqBody, emcResult) => {
-	let {key, operation} = reqBody;
-	let redis = await Redis.getClient();
-	let redisData = await redis[operation.toLowerCase()](key);
+	const {key, operation} = reqBody;
+	const redis = await Redis.getClient();
+	const redisData = await redis[operation.toLowerCase()](key);
 	return {redisData};
 }));
 app.get('/admin/getShortcutActions', toHandleHttp(async (rqBody) => {
-	let rows = await Db.with(db => db
+	const rows = await Db.with(db => db
 		.fetchAll({table: 'shortcut_actions'}));
-	let records = rows
+	const records = rows
 		.map(row => ({
 			...JSON.parse(row.data),
 			id: row.id,
@@ -335,16 +335,16 @@ app.get('/admin/getShortcutActions', toHandleHttp(async (rqBody) => {
 	return {records};
 }));
 app.post('/admin/setShortcutActions', withDevAuth(async (rqBody, emcResult) => {
-	let records = rqBody.records;
+	const records = rqBody.records;
 	return Db.with(async db => {
-		let rows = records.map(rec => ({
+		const rows = records.map(rec => ({
 			...(rec.id ? {id: rec.id} : {}),
 			gds: rec.gds,
 			name: rec.name,
 			data: JSON.stringify(rec),
 		}));
-		let oldRows = rows.filter(r => r.id);
-		let newRows = rows.filter(r => !r.id);
+		const oldRows = rows.filter(r => r.id);
+		const newRows = rows.filter(r => !r.id);
 
 		if (oldRows.length > 0) {
 			await db.query([
@@ -367,10 +367,10 @@ app.get('/admin/getSettings', withOwnerAuth(async (rqBody, emcResult) => {
 app.post('/admin/setSetting', withOwnerAuth(Settings.set));
 app.post('/admin/deleteSetting', withOwnerAuth(Settings.delete));
 app.get('/admin/status', withDevAuth(async (reqBody, emcResult) => {
-	let v8 = require('v8');
-	let PersistentHttpRq = require('klesun-node-tools/src/Utils/PersistentHttpRq.js');
-	let startupTag = await Clustering.whenStartupTag;
-	let fsTag = await readFile(__dirname + '/../public/CURRENT_PRODUCTION_TAG', 'utf8').catch(exc => 'FS error - ' + exc);
+	const v8 = require('v8');
+	const PersistentHttpRq = require('klesun-node-tools/src/Utils/PersistentHttpRq.js');
+	const startupTag = await Clustering.whenStartupTag;
+	const fsTag = await readFile(__dirname + '/../public/CURRENT_PRODUCTION_TAG', 'utf8').catch(exc => 'FS error - ' + exc);
 	return {
 		dt: new Date().toISOString(),
 		message: 'testing no watch:true in config, take 1',
@@ -391,18 +391,18 @@ app.get('/parser/test', toHandleHttp(ParsersController.parseAnything));
 //===============================
 
 app.get('/testHttpRq', withOwnerAuth((reqBody, emcResult) => {
-	let rqParams = JSON.parse(reqBody.rqParams);
+	const rqParams = JSON.parse(reqBody.rqParams);
 	rqParams.dropConnection = true;
 	return PersistentHttpRq(rqParams);
 }));
 app.get('/testMemoryLimit', withOwnerAuth(async (rqBody, emcResult) => {
 	// 1200000 ~ 350 MiB
-	let dummyDataLength = rqBody.dummyDataLength || 100;
-	let arr = [];
+	const dummyDataLength = rqBody.dummyDataLength || 100;
+	const arr = [];
 	for (let i = 0; i < dummyDataLength; ++i) {
 		arr.push(i + '-' + i + '-' + Math.random());
 	}
-	let index = Math.floor(Math.random() * dummyDataLength);
+	const index = Math.floor(Math.random() * dummyDataLength);
 	return {
 		index: index,
 		dummyDataLength: dummyDataLength,
@@ -410,14 +410,14 @@ app.get('/testMemoryLimit', withOwnerAuth(async (rqBody, emcResult) => {
 	};
 }));
 app.get('/getAgentList', withOwnerAuth(async (reqBody, emcResult) => {
-	let emc = await Emc.getClient();
+	const emc = await Emc.getClient();
 	// keeping useCache false will cause "Not ready yet. Project: 178, Company:" error
 	emc.setMethod('getUsers');
-	let users = await emc.call();
+	const users = await emc.call();
 	return users;
 }));
 app.get('/getAsapLocations', withOwnerAuth(async (reqBody, emcResult) => {
-	let config = await getConfig();
+	const config = await getConfig();
 	/** @type IGetAirportsRs */
 	return GdsdLib.Misc.iqJson({
 		url: config.external_service.infocenter.host,
@@ -435,14 +435,14 @@ app.get('/getAsapLocations', withOwnerAuth(async (reqBody, emcResult) => {
 // socket listener initialization follows
 //============================
 
-let routes = {
+const routes = {
 	'/terminal/command': withGdsSession(GdsSessionController.runInputCmd, true),
 	'/gdsDirect/keepAlive': withGdsSession(GdsSessionController.keepAliveCurrent),
 	'/terminal/addMpRemark': withGdsSession(GdsSessionController.addMpRemark),
 };
 
-let socketIo = SocketIo.init(routes);
-for (let [route, expressAction] of Object.entries(routes)) {
+const socketIo = SocketIo.init(routes);
+for (const [route, expressAction] of Object.entries(routes)) {
 	app.get(route, expressAction);
 	app.post(route, expressAction);
 }
@@ -453,12 +453,12 @@ app.get('/server/forceRestart', withOwnerAuth((rqBody) => Clustering.restartAll(
 })));
 app.get('/server/restartIfNeeded', toHandleHttp(Clustering.restartAllIfNeeded));
 app.get('/ping', toHandleHttp(async (rqBody) => {
-	let memory = {};
+	const memory = {};
 	const used2 = process.memoryUsage();
-	for (let key in used2) {
+	for (const key in used2) {
 		memory[key] = Math.round(used2[key] / 1024 / 1024 * 100) / 100;
 	}
-	let startupTag = await Clustering.whenStartupTag;
+	const startupTag = await Clustering.whenStartupTag;
 
 	return Redis.getInfo().then(async redisLines => {
 		const data = {

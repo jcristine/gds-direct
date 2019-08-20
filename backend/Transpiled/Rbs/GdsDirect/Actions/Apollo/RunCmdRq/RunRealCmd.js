@@ -172,11 +172,11 @@ const RunRealCmd = ({
 				$errors.push(Errors.getMessage(Errors.CMD_FORBIDDEN, {'cmd': $cmd, 'type': $type}));
 			}
 		} else if (php.in_array($type, CommonDataHelper.getCountedFsCommands())) {
-			let totalAllowed = $agent.getFsLimit();
+			const totalAllowed = $agent.getFsLimit();
 			if (!totalAllowed) {
 				$errors.push(Errors.getMessage(Errors.CMD_FORBIDDEN, {'cmd': $cmd, 'type': $type}));
 			} else {
-				let {cnt, minDt} = await $agent.getFsCallsUsedRec();
+				const {cnt, minDt} = await $agent.getFsCallsUsedRec();
 				if (cnt >= totalAllowed) {
 					$errors.push(Errors.getMessage(Errors.FS_LIMIT_EXHAUSTED, {totalAllowed, callsUsed: cnt, minDt}));
 				}

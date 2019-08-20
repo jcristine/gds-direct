@@ -5,7 +5,7 @@ const {fetchAll} = require('../../GdsHelpers/TravelportUtils.js');
 const StringUtil = require('../../Transpiled/Lib/Utils/StringUtil.js');
 const Rej = require('klesun-node-tools/src/Rej.js');
 
-let parseOutput = (output) => {
+const parseOutput = (output) => {
 	if (output.trim() === 'PRICING RECORD ADDED') {
 		return {status: 'success'};
 	} else if (output.startsWith('>$NME')) {
@@ -15,17 +15,17 @@ let parseOutput = (output) => {
 	}
 };
 
-let handleEnd = async (hbtCmdRec, stateful) => {
-	let calledCommands = [];
-	let actions = [];
-	let result = parseOutput(hbtCmdRec.output);
+const handleEnd = async (hbtCmdRec, stateful) => {
+	const calledCommands = [];
+	const actions = [];
+	const result = parseOutput(hbtCmdRec.output);
 	if (result.status === 'success') {
 		calledCommands.push({...hbtCmdRec, cmd: 'HBTA'});
 		calledCommands.push(await stateful.runCmd('T:OK'));
-		let erCmd = 'R:' + stateful.getAgent().getLogin() + '|ER';
+		const erCmd = 'R:' + stateful.getAgent().getLogin() + '|ER';
 		calledCommands.push(await stateful.runCmd(erCmd));
 	} else if (result.status === 'nextHhprPax') {
-		let maskCmd = StringUtil.wrapLinesAt('>' + hbtCmdRec.cmd, 64);
+		const maskCmd = StringUtil.wrapLinesAt('>' + hbtCmdRec.cmd, 64);
 		calledCommands.push({cmd: 'HBTA', output: maskCmd});
 		actions.push({
 			type: 'displayHhprMask',
@@ -44,12 +44,12 @@ let handleEnd = async (hbtCmdRec, stateful) => {
  *
  * @param stateful = require('StatefulSession.js')()
  */
-let EndManualPricing = async ({cmd = 'HBTA', stateful}) => {
-	let cmdRec = await fetchAll(cmd, stateful);
-	let output = cmdRec.output;
+const EndManualPricing = async ({cmd = 'HBTA', stateful}) => {
+	const cmdRec = await fetchAll(cmd, stateful);
+	const output = cmdRec.output;
 	if (output.startsWith('>$FC')) {
 		// GDS invited us to enter $FC mask for HHPR if "F CONST" was set to "Y"
-		let record = await FcMaskParser.parse(output);
+		const record = await FcMaskParser.parse(output);
 		return {
 			calledCommands: [{
 				cmd: cmd,

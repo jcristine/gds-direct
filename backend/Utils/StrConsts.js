@@ -8,7 +8,7 @@ exports.never = () => { throw new Error('Should never happen'); };
 exports.StrConsts = (nameToNever, valPrefix = '') => {
 	// to avoid explicitly setting value for
 	// each constant risking getting a typo
-	for (let key in nameToNever) {
+	for (const key in nameToNever) {
 		delete nameToNever[key];
 		nameToNever[key] = valPrefix + key;
 	}

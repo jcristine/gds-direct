@@ -50,7 +50,7 @@ const GalileoBuildItineraryAction = ({
 	};
 
 	const isAvailabilityOutput = output => {
-		let clean = php.preg_replace(/></, '', output);
+		const clean = php.preg_replace(/></, '', output);
 		return php.trim(clean) === '*0 AVAIL/WL CLOSED*';
 	};
 
@@ -58,7 +58,7 @@ const GalileoBuildItineraryAction = ({
 		let resultItinerary, i, segment, pattern, cmd, output, segments, errorType, tplData;
 
 		itinerary = itinerary.map(segment => {
-			let date = isParserFormat
+			const date = isParserFormat
 				? segment['departureDate']['raw']
 				: formatGdsDate(segment['departureDate']);
 

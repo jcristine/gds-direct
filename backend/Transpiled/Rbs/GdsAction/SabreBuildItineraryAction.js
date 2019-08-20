@@ -10,12 +10,12 @@ const SabreClient = require('../../../GdsClients/SabreClient');
 
 // 'D7 F7 A7 J7 R7 I7 W7 P7 Y47* H47* K47* M47* L47* G47* V47* S47* N47* Q47* O47*-*WL'
 // 'D7 F7 A7 J7 R7 I7 W7 P7 Y75* H75* K75* M75* L75* G75* V75* S75* N75* Q75* O75*-*WL'
-let parseWaitlist = output => {
-	let clsReg = /([A-Z])([A-Z0-9])([A-Z0-9]|)(\*)?\s*/;
-	let fullReg = new RegExp('^((?:' + clsReg.source + ')*)-\\*WL$');
-	let match = output.match(fullReg);
+const parseWaitlist = output => {
+	const clsReg = /([A-Z])([A-Z0-9])([A-Z0-9]|)(\*)?\s*/;
+	const fullReg = new RegExp('^((?:' + clsReg.source + ')*)-\\*WL$');
+	const match = output.match(fullReg);
 	if (match) {
-		let classes = matchAll(clsReg, match[1])
+		const classes = matchAll(clsReg, match[1])
 			.map((_,cls,num,wlNum,wlMark) => ({
 				bookingClass: cls,
 				seatCount: num,
@@ -47,7 +47,7 @@ class SabreBuildItineraryAction extends AbstractGdsAction {
 		let $i, $segment, $cmd, $output, $errorType, $tplData, waitlist;
 
 		$itinerary = Fp.map($segment => {
-			let $date = $isParserFormat
+			const $date = $isParserFormat
 				? $segment['departureDate']['raw']
 				: this.constructor.formatSabreDate($segment['departureDate']);
 
@@ -85,7 +85,7 @@ class SabreBuildItineraryAction extends AbstractGdsAction {
 		// a workaround for Sabre CONTINUE WITH PNR CREATION auto-claim bug
 		// happening on the next command after passive segment sell of some
 		// airlines, for example: >0DY7088C20APRLAXARNGK1;
-		let pnrCmdRec = await this.runCmd('*R');
+		const pnrCmdRec = await this.runCmd('*R');
 		return {'success': true, pnrCmdRec};
 	}
 

@@ -249,8 +249,8 @@ class Fp {
 			// v8 does not seem to keep order of same values
 			.map((data, idx) => ({data, idx}))
 			.sort((a,b) => {
-				let aval = getValue(a.data);
-				let bval = getValue(b.data);
+				const aval = getValue(a.data);
+				const bval = getValue(b.data);
 				if (aval > bval) {
 					return 1;
 				} else if (bval > aval) {

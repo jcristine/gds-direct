@@ -235,7 +235,7 @@ const mapping = {
 /** @see https://support.travelport.com/webhelp/GWS/GWS.htm#XML_Select_Web_Service/Codes/process-level_return_codes.htm?Highlight=8222 */
 module.exports = code => {
 	code = +code;
-	let exactMeaning = mapping[code] || null;
+	const exactMeaning = mapping[code] || null;
 	if (exactMeaning) {
 		return exactMeaning;
 	} else if (code >= 60 && code <= 99) {

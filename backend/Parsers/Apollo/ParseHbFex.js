@@ -31,11 +31,11 @@ const FIELDS = [
 ];
 
 /** @return {IExchangeApolloTicketParsedMask} */
-let ParseHbFex = (output) => {
+const ParseHbFex = (output) => {
 	//"$EX NAME ARTURS/KLESUNS                     PSGR  1/ 1         ",
 	//"FARE USD   903.40  TOTAL USD   983.30                           ",
 	//"TX1 USD   69.60 US   TX2 USD   14.30 XT   TX3                   ",
-	let regex = mkReg([
+	const regex = mkReg([
 		/^>\$EX NAME\s+/,
 		/(?<lastName>[A-Z][^\/]*)\//,
 		/(?<firstName>[A-Z].*?)\s+/,
@@ -71,12 +71,12 @@ let ParseHbFex = (output) => {
 		/TTL VALUE OF EX TKTS\s+/,
 		/(?<exchangedTicketCurrency>[A-Z]{3})/,
 	]);
-	let match = output.match(regex);
+	const match = output.match(regex);
 	if (!match) {
 		return null;
 	} else {
-		let normalized = AbstractMaskParser.normalizeMask(output);
-		let parsed = AbstractMaskParser.parseMask(
+		const normalized = AbstractMaskParser.normalizeMask(output);
+		const parsed = AbstractMaskParser.parseMask(
 			EMPTY_MASK_EXAMPLE, FIELDS, normalized
 		);
 		return {

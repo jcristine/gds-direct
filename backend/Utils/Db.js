@@ -1,15 +1,15 @@
 const Rej = require('../../node_modules/klesun-node-tools/src/Rej.js');
 
-let mysql = require('promise-mysql');
-let {getDbConfig} = require('klesun-node-tools/src/Config.js');
+const mysql = require('promise-mysql');
+const {getDbConfig} = require('klesun-node-tools/src/Config.js');
 const NotFound = require("klesun-node-tools/src/Rej").NotFound;
 const Diag = require('../LibWrappers/Diag.js');
 const {SqlUtil} = require('klesun-node-tools');
 const {jsExport} = require('klesun-node-tools/src/Utils/Misc.js');
 const {coverExc, onDemand} = require('klesun-node-tools/src/Lang.js');
 
-let getPool = onDemand(async () => {
-	let cfg = await getDbConfig();
+const getPool = onDemand(async () => {
+	const cfg = await getDbConfig();
 	if (!cfg || !cfg.DB_HOST) {
 		return Rej.BadRequest('DB credentials not supplied');
 	}
@@ -30,8 +30,8 @@ let getPool = onDemand(async () => {
  * provides handy methods to make inserts/selects/etc...
  * @param {PoolConnection} dbConn
  */
-let Db = (dbConn) => {
-	let query = (sql, ...restArgs) => Promise.resolve()
+const Db = (dbConn) => {
+	const query = (sql, ...restArgs) => Promise.resolve()
 		.then(() => dbConn.query(sql, ...restArgs))
 		.catch(exc => {
 			exc = exc || new Error('empty mysqljs error');
@@ -46,7 +46,7 @@ let Db = (dbConn) => {
 	/**
 	 * @return {Promise<IPromiseMysqlQueryResult>}
 	 */
-	let writeRows = (table, rows) => {
+	const writeRows = (table, rows) => {
 		if (rows.length === 0) {
 			return Promise.resolve();
 		}
@@ -56,17 +56,17 @@ let Db = (dbConn) => {
 		} catch (exc) {
 			return Promise.reject(exc);
 		}
-		let {sql, placedValues} = record;
+		const {sql, placedValues} = record;
 		return query(sql, placedValues);
 	};
 
-	let update = ({table, set, where}) => {
-		let {sql, placedValues} = SqlUtil.makeUpdateQuery({table, set, where});
+	const update = ({table, set, where}) => {
+		const {sql, placedValues} = SqlUtil.makeUpdateQuery({table, set, where});
 		return query(sql, placedValues);
 	};
 
-	let deleteVar = ({table, where}) => {
-		let {sql, placedValues} = SqlUtil.makeDeleteQuery({table, where});
+	const deleteVar = ({table, where}) => {
+		const {sql, placedValues} = SqlUtil.makeDeleteQuery({table, where});
 		return query(sql, placedValues);
 	};
 
@@ -75,8 +75,8 @@ let Db = (dbConn) => {
 	 * Db(conn).fetchAll(params).then(rows => console.log(rows));
 	 * @return Promise
 	 */
-	let fetchAll = (params) => {
-		let {sql, placedValues} = SqlUtil.makeSelectQuery(params);
+	const fetchAll = (params) => {
+		const {sql, placedValues} = SqlUtil.makeSelectQuery(params);
 		return query(sql, placedValues);
 	};
 
@@ -95,8 +95,8 @@ let Db = (dbConn) => {
 	};
 };
 Db.with = async (process) => {
-	let dbPool = await getPool();
-	let dbConn = await dbPool.getConnection();
+	const dbPool = await getPool();
+	const dbConn = await dbPool.getConnection();
 	return Promise.resolve()
 		.then(() => process(Db(dbConn)))
 		.catch(exc => {
@@ -113,7 +113,7 @@ Db.with = async (process) => {
 };
 
 Db.getInfo = async () => {
-	let dbPool = await getPool();
+	const dbPool = await getPool();
 	return {
 		acquiringConnections: dbPool.pool._acquiringConnections.length,
 		allConnections: dbPool.pool._allConnections.length,
@@ -124,7 +124,7 @@ Db.getInfo = async () => {
 
 const withRetry = (dbAction) => {
 	// retry once, as DB connection pretty often gets closed by server
-	let perform = () => Db.with(db => dbAction(db));
+	const perform = () => Db.with(db => dbAction(db));
 	return perform()
 		.catch(coverExc([Rej.ServiceUnavailable], perform));
 };

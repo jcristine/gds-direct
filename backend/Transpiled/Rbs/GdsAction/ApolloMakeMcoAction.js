@@ -6,7 +6,7 @@ const Fp = require('../../Lib/Utils/Fp.js');
 const AbstractGdsAction = require('./AbstractGdsAction.js');
 const fetchAll = require("../../../GdsHelpers/TravelportUtils").fetchAll;
 
-let php = require('../../phpDeprecated.js');
+const php = require('../../phpDeprecated.js');
 
 // Assumes PNR is already open
 class ApolloMakeMcoAction extends AbstractGdsAction

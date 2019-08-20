@@ -1,12 +1,12 @@
 
-let {getConfig} = require('../Config.js');
-let Db = require('../Utils/Db.js');
+const {getConfig} = require('../Config.js');
+const Db = require('../Utils/Db.js');
 const sqlNow = require("../Utils/TmpLib").sqlNow;
 const iqJson = require("../Utils/TmpLib").iqJson;
 
-let TABLE = 'airlines';
+const TABLE = 'airlines';
 
-let normalizeRow = ($row) => {
+const normalizeRow = ($row) => {
 	return {
 		iata_code: $row['code_en'],
 		name: $row['name_en'],
@@ -16,9 +16,9 @@ let normalizeRow = ($row) => {
 };
 
 exports.updateFromService = async () => {
-	let config = await getConfig();
+	const config = await getConfig();
 	/** @type {IGetAirlinesRs} */
-	let serviceResult = await iqJson({
+	const serviceResult = await iqJson({
 		url: config.external_service.infocenter.host,
 		credentials: {
 			login: config.external_service.infocenter.login,
@@ -29,11 +29,11 @@ exports.updateFromService = async () => {
 		params: {}, // service demands it to be set
 	});
 
-	let rows = Object
+	const rows = Object
 		.values(serviceResult.result.result)
 		.map(normalizeRow);
 
-	let written = await Db.with(db => db.writeRows(TABLE, rows));
+	const written = await Db.with(db => db.writeRows(TABLE, rows));
 	return {
 		message: 'written ' + rows.length + ' rows to db',
 		sqlResult: written,
@@ -42,7 +42,7 @@ exports.updateFromService = async () => {
 
 exports.findByCode = async (iataCode) => {
 	/** @var row = normalizeRow() */
-	let row = await Db.with(db => db.fetchOne({
+	const row = await Db.with(db => db.fetchOne({
 		table: TABLE,
 		where: [
 			['iata_code', '=', iataCode],

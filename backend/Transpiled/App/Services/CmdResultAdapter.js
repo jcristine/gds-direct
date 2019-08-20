@@ -1,10 +1,10 @@
 
 const {sprintf, preg_match, preg_replace, preg_replace_callback, rtrim, str_replace, strcasecmp, boolval, empty, intval, isset, strtoupper, trim, PHP_EOL, json_encode} = require('../../phpDeprecated.js');
 
-let TerminalHighlightService = require('./TerminalHighlightService.js');
+const TerminalHighlightService = require('./TerminalHighlightService.js');
 
-let makeBriefSessionInfo = (fullState) => {
-	let areaState = fullState.areas[fullState.area] || {};
+const makeBriefSessionInfo = (fullState) => {
+	const areaState = fullState.areas[fullState.area] || {};
 	return ({
 		...areaState,
 		canCreatePqErrors: areaState.canCreatePq
@@ -50,12 +50,12 @@ const formatOutput = async ({
 	HighlightRules = require('../../../Repositories/HighlightRules.js'),
 }) => {
 	let output = '';
-	let appliedRules = [];
-	for (let [$index, $row] of Object.entries(calledCommands)) {
-		let svc = new TerminalHighlightService({HighlightRules});
+	const appliedRules = [];
+	for (const [$index, $row] of Object.entries(calledCommands)) {
+		const svc = new TerminalHighlightService({HighlightRules});
 		let $command;
 		if ($index > 0) {
-			let $separator = strcasecmp('*', trim($row['output'])) ? PHP_EOL : "&nbsp;";
+			const $separator = strcasecmp('*', trim($row['output'])) ? PHP_EOL : "&nbsp;";
 			$command = PHP_EOL + color("&gt;" + $row['cmd'], 'usedCommand') + $separator;
 		} else {
 			$command = '';
@@ -63,8 +63,8 @@ const formatOutput = async ({
 				$command += PHP_EOL + color("&gt;" + $row['cmd'], 'usedCommand') + PHP_EOL;
 			}
 		}
-		let scrolledCmd = $row.scrolledCmd || $row.cmd;
-		let highlighted = await svc.replace(scrolledCmd, gds, clearOutput($row['output']));
+		const scrolledCmd = $row.scrolledCmd || $row.cmd;
+		const highlighted = await svc.replace(scrolledCmd, gds, clearOutput($row['output']));
 		output += $command + highlighted;
 		appliedRules.push(...svc.getAppliedRules());
 	}
@@ -91,18 +91,18 @@ const CmdResultAdapter = ({
 	HighlightRules = require('../../../Repositories/HighlightRules.js'),
 }) => {
 	const execute =  () => {
-		let {calledCommands, messages = []} = rbsResp;
-		let typeToMsgs = {};
-		for (let msgRec of messages) {
+		const {calledCommands, messages = []} = rbsResp;
+		const typeToMsgs = {};
+		for (const msgRec of messages) {
 			typeToMsgs[msgRec.type] = typeToMsgs[msgRec.type] || [];
 			typeToMsgs[msgRec.type].push(msgRec.text);
 		}
-		let sessionInfo = !fullState ? {} : makeBriefSessionInfo(fullState);
-		let whenFormatted = formatOutput({gds, cmdRq, calledCommands, HighlightRules});
+		const sessionInfo = !fullState ? {} : makeBriefSessionInfo(fullState);
+		const whenFormatted = formatOutput({gds, cmdRq, calledCommands, HighlightRules});
 		return whenFormatted
 			.then(({output, appliedRules}) => {
 				output = appendOutput(output, messages);
-				let cmdTimes = rbsResp.calledCommands.map(rec => rec.duration).filter(a => a);
+				const cmdTimes = rbsResp.calledCommands.map(rec => rec.duration).filter(a => a);
 				return {
 					output: output || rbsResp.status,
 					appliedRules: appliedRules,

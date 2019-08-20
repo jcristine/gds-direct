@@ -21,7 +21,7 @@ const matchesLocation = async ($airport, $locationItems, $geo) => {
 	if (php.empty($locationItems)) {
 		return true;
 	}
-	for (let $item of $locationItems) {
+	for (const $item of $locationItems) {
 		if (await _matchesLocationItem($airport, $item, $geo)) {
 			return true;
 		}
@@ -41,7 +41,7 @@ const transformPccRecordFromDb = (pccRec) => {
 
 /** @param rules = [MultiPccTariffRuleJsApiController::normalizeRule()] */
 const getRoutePccs = async (depAirport, destAirport, rules, geo) => {
-	for (let rule of Object.values(rules)) {
+	for (const rule of Object.values(rules)) {
 		if (await matchesLocation(depAirport, rule.departure_items, geo) &&
 			await matchesLocation(destAirport, rule.destination_items, geo)
 		) {
@@ -59,10 +59,10 @@ exports.getMatchingPccs = async ({
 	repricePccRules = undefined,
 	geoProvider = new LocationGeographyProvider(),
 }) => {
-	let routeRules = [];
+	const routeRules = [];
 	let fallbackPccs = [];
-	let rules = repricePccRules || (await RbsClient.getMultiPccTariffRules()).result.result.records;
-	for (let rule of Object.values(rules)) {
+	const rules = repricePccRules || (await RbsClient.getMultiPccTariffRules()).result.result.records;
+	for (const rule of Object.values(rules)) {
 		if (!php.empty(rule.departure_items) ||
 			!php.empty(rule.destination_items)
 		) {
@@ -72,12 +72,12 @@ exports.getMatchingPccs = async ({
 				.map(r => transformPccRecordFromDb(r));
 		}
 	}
-	let pccsFromRules = php.array_merge(
+	const pccsFromRules = php.array_merge(
 		await getRoutePccs(departureAirport, destinationAirport, routeRules, geoProvider),
 		await getRoutePccs(destinationAirport, departureAirport, routeRules, geoProvider),
 	);
-	let pccs = pccsFromRules.length > 0 ? pccsFromRules : fallbackPccs;
-	let isCurrent = (pccRec) => {
+	const pccs = pccsFromRules.length > 0 ? pccsFromRules : fallbackPccs;
+	const isCurrent = (pccRec) => {
 		return pccRec.gds === gds
 			&& pccRec.pcc === pcc;
 	};

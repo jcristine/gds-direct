@@ -218,7 +218,7 @@ class SabrePricingParser {
 		}
 		$totals = this.parseTotalFareLine($totalsLine, $headersLine);
 
-		let pqBlocks = this.splitLinesByPattern($lines, '^([A-Z0-9]{3})-(\\d{2})  (.*)$', true);
+		const pqBlocks = this.splitLinesByPattern($lines, '^([A-Z0-9]{3})-(\\d{2})  (.*)$', true);
 		$pqList = pqBlocks.map(b => this.parsePriceQuote(b));
 
 		return {
@@ -232,7 +232,7 @@ class SabrePricingParser {
 	static parse($dump) {
 		let $error, $lines, $dataExistsInfo, $sections, $firstSection, $wasPqRetained, $continuation, $mainSection;
 
-		let asPh = PhilippinePricingParser.parse($dump);
+		const asPh = PhilippinePricingParser.parse($dump);
 		if (!asPh.error) {
 			return PhToNormalPricing(asPh);
 		}

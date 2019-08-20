@@ -173,13 +173,13 @@ class GdsDirectDefaults {
 
 	static makeStatefulSessionCustom(params) {
 		let {session, fullState, startDt, emcUser, leadIdToData, ...ctorArgs} = params;
-		let gds = session.context.gds;
+		const gds = session.context.gds;
 		fullState = fullState || {
 			area: 'A',
 			areas: {'A': this.makeDefaultStateFor(gds)},
 		};
-		let cmdLog = CmdLog.noDb({gds, fullState});
-		let stubAirports = require('../../../tests/data/stubAirports.js');
+		const cmdLog = CmdLog.noDb({gds, fullState});
+		const stubAirports = require('../../../tests/data/stubAirports.js');
 		return StatefulSession({
 			cmdLog, session, fullState,
 			startDt: startDt || '2019-03-29 23:43:05',
@@ -211,9 +211,9 @@ class GdsDirectDefaults {
 	}
 
 	static makeStatefulSession(gds, $input, $sessionInfo) {
-		let {initialState, initialCommands = [], performedCommands} = $sessionInfo;
-		let gdsSession = (new AnyGdsStubSession(performedCommands)).setGds(gds);
-		let session = {
+		const {initialState, initialCommands = [], performedCommands} = $sessionInfo;
+		const gdsSession = (new AnyGdsStubSession(performedCommands)).setGds(gds);
+		const session = {
 			context: {
 				gds: gds,
 				travelRequestId: initialState.lead_id || 1,
@@ -222,20 +222,20 @@ class GdsDirectDefaults {
 				someGdsSpecificField: 'fake12345',
 			},
 		};
-		let fullState = {
+		const fullState = {
 			area: 'A',
 			areas: {'A': initialState},
 		};
-		let makeAgent = (id) => {
+		const makeAgent = (id) => {
 			return ($input.stubAgents || []).filter(a => a.getId() == id)[0]
 				|| GdsDirectDefaults.makeStubAgentById(id);
 		};
 		// GdsDirectDefaults.makeStatefulSession($input, $sessionInfo);
-		let agentId = initialState.agent_id || 6206322;
-		let agent = makeAgent(agentId);
-		let leadOwnerId = initialState.lead_creator_id || 6206;
-		let leadOwner = makeAgent(leadOwnerId);
-		let stateful = this.makeStatefulSessionCustom({
+		const agentId = initialState.agent_id || 6206322;
+		const agent = makeAgent(agentId);
+		const leadOwnerId = initialState.lead_creator_id || 6206;
+		const leadOwner = makeAgent(leadOwnerId);
+		const stateful = this.makeStatefulSessionCustom({
 			gdsSession, session, fullState,
 			startDt: $input.baseDate || '2019-03-29 23:43:05',
 			emcUser: {
@@ -252,7 +252,7 @@ class GdsDirectDefaults {
 			},
 			...($sessionInfo.ctorArgs || {}),
 		});
-		for (let cmdRec of initialCommands) {
+		for (const cmdRec of initialCommands) {
 			stateful.getLog().logCommand(cmdRec.cmd, Promise.resolve(cmdRec));
 		}
 		return stateful;

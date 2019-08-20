@@ -16,14 +16,14 @@ const LocationGeographyProvider = require('../Transpiled/Rbs/DataProviders/Locat
 const GdsDirect = require("../Transpiled/Rbs/GdsDirect/GdsDirect");
 const ImportPqGalileoAction = require('../Transpiled/Rbs/GdsDirect/Actions/Galileo/ImportPqGalileoAction.js');
 
-let ImportPq = async ({
+const ImportPq = async ({
 	stateful, leadData, fetchOptionalFields = true,
 	PersistentHttpRq = require('klesun-node-tools/src/Utils/PersistentHttpRq.js'),
 }) => {
-	let gds = stateful.gds;
-	let geo = new LocationGeographyProvider();
+	const gds = stateful.gds;
+	const geo = new LocationGeographyProvider();
 
-	let getCurrentStateCommands = async () => {
+	const getCurrentStateCommands = async () => {
 		let $cmdTypes, $mixed, $priorPricingCommands, $lastStateSafeCommands, $isPricingMd, $cmdRow, $belongsToPricing;
 
 		$cmdTypes = SessionStateHelper.getCanCreatePqSafeTypes();
@@ -59,15 +59,15 @@ let ImportPq = async ({
 		return php.array_merge($priorPricingCommands, $lastStateSafeCommands);
 	};
 
-	let extendPricingStore = async (store) => {
-		let correctCmds = new Set();
-		let pcc = store.pricingPcc || stateful.getSessionData()['pcc'];
-		for (let ptcBlock of store.pricingBlockList) {
+	const extendPricingStore = async (store) => {
+		const correctCmds = new Set();
+		const pcc = store.pricingPcc || stateful.getSessionData()['pcc'];
+		for (const ptcBlock of store.pricingBlockList) {
 			ptcBlock.fareType = await RbsUtils.getFareTypeV2(gds, pcc, ptcBlock);
-			for (let fcSeg of ptcBlock.fareInfo.fareConstruction.segments) {
+			for (const fcSeg of ptcBlock.fareInfo.fareConstruction.segments) {
 				if (fcSeg.fare) {
-					let td = fcSeg.ticketDesignator;
-					let tdInfo = td && ['apollo', 'galileo'].includes(gds)
+					const td = fcSeg.ticketDesignator;
+					const tdInfo = td && ['apollo', 'galileo'].includes(gds)
 						? await TicketDesignators.findByCode(gds, td).catch(exc => null)
 						: null;
 					if (tdInfo) {
@@ -88,24 +88,24 @@ let ImportPq = async ({
 		return store;
 	};
 
-	let postProcessPricing = async ($currentPricing) => {
-		for (let store of $currentPricing['parsed']['pricingList']) {
+	const postProcessPricing = async ($currentPricing) => {
+		for (const store of $currentPricing['parsed']['pricingList']) {
 			await extendPricingStore(store);
 		}
 		return $currentPricing;
 	};
 
-	let makeUtcDtRec = async (localDtRec, airportCode) => {
+	const makeUtcDtRec = async (localDtRec, airportCode) => {
 		if (localDtRec) {
-			let tz = await geo.getTimezone(airportCode).catch(exc => null);
-			let utc = !tz ? null : await DateTime.toUtc(localDtRec.full, tz);
+			const tz = await geo.getTimezone(airportCode).catch(exc => null);
+			const utc = !tz ? null : await DateTime.toUtc(localDtRec.full, tz);
 			return {...localDtRec, tz, utc};
 		} else {
 			return null;
 		}
 	};
 
-	let addUtcTimes = async (segment) => {
+	const addUtcTimes = async (segment) => {
 		segment.departureDt = await makeUtcDtRec(segment.departureDt, segment.departureAirport);
 		segment.destinationDt = await makeUtcDtRec(segment.destinationDt, segment.destinationAirport);
 	};
@@ -113,18 +113,18 @@ let ImportPq = async ({
 	/**
 	 * add fields that do not require GDS-specific logic
 	 */
-	let postprocessPnrData = async ($pnrData) => {
+	const postprocessPnrData = async ($pnrData) => {
 		$pnrData['currentPricing'] = await postProcessPricing($pnrData['currentPricing']);
 
-		let pricingList = $pnrData['currentPricing'].parsed.pricingList;
+		const pricingList = $pnrData['currentPricing'].parsed.pricingList;
 		$pnrData['contractInfo'] = await RbsUtils.makeContractInfo(gds, pricingList);
 
 		let itinerary = $pnrData['reservation']['parsed']['itinerary'];
-		for (let segment of itinerary) {
+		for (const segment of itinerary) {
 			await addUtcTimes(segment);
 		}
 
-		let svcSegments = (($pnrData['flightServiceInfo'] || {})['parsed'] || {})['segments'] || [];
+		const svcSegments = (($pnrData['flightServiceInfo'] || {})['parsed'] || {})['segments'] || [];
 		if (svcSegments.length > 0) {
 			itinerary = ImportPnrAction.combineItineraryAndSvc(itinerary, svcSegments);
 		}
@@ -133,24 +133,24 @@ let ImportPq = async ({
 		return $pnrData;
 	};
 
-	let checkCurrency = ($pnrData) => {
-		let $currencies = [];
-		for (let $store of Object.values($pnrData['currentPricing']['parsed']['pricingList'])) {
-			for (let $ptcBlock of Object.values($store['pricingBlockList'])) {
+	const checkCurrency = ($pnrData) => {
+		const $currencies = [];
+		for (const $store of Object.values($pnrData['currentPricing']['parsed']['pricingList'])) {
+			for (const $ptcBlock of Object.values($store['pricingBlockList'])) {
 				$currencies.push($ptcBlock['fareInfo']['totalFare']['currency']);
 			}
 		}
-		let unique = php.array_unique($currencies);
+		const unique = php.array_unique($currencies);
 		if (php.count(unique) > 1) {
 			return Rej.BadRequest('Pricing has conflicting currencies - ' + $currencies.join(', '));
 		}
-		for (let store of $pnrData.currentPricing.parsed.pricingList) {
-			let pcc = store.pricingPcc;
-			let isDv2Travel =
+		for (const store of $pnrData.currentPricing.parsed.pricingList) {
+			const pcc = store.pricingPcc;
+			const isDv2Travel =
 				gds === 'sabre' && pcc === 'C5VD' ||
 				gds === 'amadeus' && pcc === 'MNLPH28FP';
-			for (let ptcBlock of store.pricingBlockList) {
-				let currency = ptcBlock.fareInfo.totalFare.currency;
+			for (const ptcBlock of store.pricingBlockList) {
+				const currency = ptcBlock.fareInfo.totalFare.currency;
 				if (isDv2Travel && currency === 'PHP') {
 					return Rej.BadRequest('PHP currency is not allowed, please price in /:USD/ or /:CAD/');
 				}
@@ -159,9 +159,9 @@ let ImportPq = async ({
 		return Promise.resolve('Currency is OK');
 	};
 
-	let execute = async () => {
+	const execute = async () => {
 		let importAct;
-		let travelport = TravelportClient({PersistentHttpRq});
+		const travelport = TravelportClient({PersistentHttpRq});
 		if (gds === 'apollo') {
 			importAct = new ImportPqApolloAction({travelport});
 		} else if (gds === 'sabre') {
@@ -169,23 +169,23 @@ let ImportPq = async ({
 		} else if (gds === 'galileo') {
 			importAct = new ImportPqGalileoAction({travelport});
 		} else if (gds === 'amadeus') {
-			let amadeus = AmadeusClient.makeCustom({PersistentHttpRq});
+			const amadeus = AmadeusClient.makeCustom({PersistentHttpRq});
 			importAct = new ImportPqAmadeusAction({amadeus});
 		} else {
 			return Rej.NotImplemented('Unsupported GDS for importPq - ' + gds);
 		}
-		let stateErrors = await SessionStateHelper.checkCanCreatePq(stateful.getLog(), leadData);
+		const stateErrors = await SessionStateHelper.checkCanCreatePq(stateful.getLog(), leadData);
 		if (stateErrors.length > 0) {
 			return {userMessages: ['Invalid PQ state'].concat(stateErrors)};
 		}
-		let cmdRecs = await getCurrentStateCommands();
-		let imported = await importAct
+		const cmdRecs = await getCurrentStateCommands();
+		const imported = await importAct
 			.setPreCalledCommandsFromDb(cmdRecs, stateful.getSessionData())
 			.setLeadData(leadData)
 			.setSession(stateful)
 			.fetchOptionalFields(fetchOptionalFields)
 			.execute();
-		let userMessages = [];
+		const userMessages = [];
 		let status = GdsDirect.STATUS_EXECUTED;
 		if (imported.error) {
 			userMessages.push(imported.error);
