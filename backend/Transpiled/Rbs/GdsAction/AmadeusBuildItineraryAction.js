@@ -1,8 +1,8 @@
 
 const PnrParser = require('../../Gds/Parsers/Amadeus/Pnr/PnrParser.js');
 const AbstractGdsAction = require('./AbstractGdsAction.js');
-
-const php = require('../../phpDeprecated.js');
+const AmadeusUtils = require('../../../GdsHelpers/AmadeusUtils.js');
+const php = require('klesun-node-tools/src/Transpiled/php.js');
 
 const transformToReservation = stop => ({...stop, segmentNumber: stop.lineNumber});
 
@@ -41,7 +41,11 @@ class AmadeusBuildItineraryAction extends AbstractGdsAction {
 				$segment['seatCount'],
 				$segmentStatusParam,
 			]);
-			$output = (await this.runCmd($cmd)).output;
+			if ($i == $itinerary.length - 1) {
+				$output = (await AmadeusUtils.fetchAllRt($cmd, this)).output;
+			} else {
+				$output = (await this.runCmd($cmd)).output;
+			}
 			// last command output will have full itinerary
 			parsed = PnrParser.parse($output);
 			if (!parsed.success) {

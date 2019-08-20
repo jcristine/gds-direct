@@ -516,6 +516,7 @@ const execute = ({
 		if ($error = transformBuildError($result)) {
 			$errors.push($error);
 		} else {
+			stateful.flushCalledCommands();
 			const $isActive = ($seg) => !php.in_array($seg['segmentStatus'], PASSIVE_STATUSES);
 			const $activeSegments = Fp.filter($isActive, $itinerary);
 			const $marriageGroups = Fp.groupMap(($seg) => $seg['marriage'], $activeSegments);
