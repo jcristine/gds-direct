@@ -6,6 +6,7 @@ const CmsGalileoTerminal = require("../../GdsInterface/CmsApolloTerminal");
 const ArrayUtil = require('../../../../Lib/Utils/ArrayUtil.js');
 const getRbsPqInfo = require("../../../../../GdsHelpers/RbsUtils").getRbsPqInfo;
 const fetchAll = require("../../../../../GdsHelpers/TravelportUtils").fetchAll;
+const {withFakeNames} = require("../../../../../GdsHelpers/GalileoUtils.js");
 const DateTime = require('../../../../Lib/Utils/DateTime.js');
 const Fp = require('../../../../Lib/Utils/Fp.js');
 const StringUtil = require('../../../../Lib/Utils/StringUtil.js');
@@ -788,11 +789,6 @@ const RunCmdRq = ({
 	};
 
 	const priceItinerary = async ($cmd, $cmdData) => {
-		let result;
-
-		const mods = php.array_combine(php.array_column($cmdData['pricingModifiers'] || [], 'type'),
-			$cmdData['pricingModifiers'] || []);
-
 		const addedRealName = ($cmdRec) => {
 			return $cmdRec['type'] === 'addName'
 				&& !StringUtil.startsWith($cmdRec['cmd'], 'N.FAKE/');
@@ -801,20 +797,16 @@ const RunCmdRq = ({
 		const hasNamesInPnr = getSessionData()['isPnrStored']
 			|| Fp.any(addedRealName, flatUsedCmds);
 
-		const ptcGroups = ((mods['passengers'] || {})['parsed'] || {})['ptcGroups'] || [];
-		const paxNums = Fp.flatten(php.array_column(ptcGroups, 'passengerNumbers'));
-		if (!php.empty(paxNums) && !hasNamesInPnr) {
-		// Galileo does not allow pricing multiple PTC-s
-		// at same time when there are no names in PNR. Fix.
-			let names = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P'];
-			names = php.array_slice(names, 0, php.count(paxNums));
-			const addCmd = php.implode('|', names.map(($name) => 'N.FAKE/' + $name));
-			await runCommand(addCmd, false); // add fake names
-			result = await _fetchPricing($cmd);
-			const removeCmd = php.count(paxNums) > 1 ? 'N.P1-' + php.count(names) + '@' : 'N.P1@';
-			await runCommand(removeCmd, false); // remove fake names
+		const price = () => _fetchPricing($cmd);
+		let result;
+		if (!hasNamesInPnr) {
+			result = await withFakeNames({
+				session: stateful,
+				pricingModifiers: $cmdData.pricingModifiers || [],
+				action: price,
+			});
 		} else {
-			result = await _fetchPricing($cmd);
+			result = await price();
 		}
 		return result;
 	};
