@@ -3,6 +3,7 @@
 const php = require('../../../../phpDeprecated');
 const ArrayUtil = require('../../../../Lib/Utils/ArrayUtil.js');
 const Fp = require('../../../../Lib/Utils/Fp.js');
+const SabreUtils = require('../../../../../GdsHelpers/SabreUtils.js');
 
 /**
  * this action unites the Apollo and Sabre PNR import processes
@@ -79,9 +80,9 @@ class ImportPnrAction
 				$status = 'available';
 			}
 		} else if ($gds === 'sabre') {
-			if (require('../../../../Rbs/TravelDs/SabrePnr.js').checkDumpIsNotExisting($dump)) {
+			if (SabreUtils.checkDumpIsNotExisting($dump)) {
 				$status = 'notExisting';
-			} else if (require('../../../../Rbs/TravelDs/SabrePnr.js').checkDumpIsRestricted($dump)) {
+			} else if (SabreUtils.checkDumpIsRestricted($dump)) {
 				$status = 'isRestricted';
 			} else if (php.trim($dump) === '¥FIN OR IG¥') {
 				$status = 'finishOrIgnore';

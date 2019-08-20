@@ -1,3 +1,4 @@
+const SabreUtils = require('../../../GdsHelpers/SabreUtils.js');
 const ImportSabrePnrFormatAdapter = require('../Process/Sabre/ImportPnr/ImportSabrePnrFormatAdapter.js');
 
 const PnrParser = require('../../Gds/Parsers/Sabre/Pnr/PnrParser.js');
@@ -131,15 +132,14 @@ class SabrePnr {
 		return $date && $time ? $date + ' ' + $time : null;
 	}
 
+	/** @deprecated - use SabreUtils directly */
 	static checkDumpIsNotExisting($dump) {
-
-		return php.preg_match(/^.{1,2}RESTRICTED.{1,2} \*NOT AA PNR\*\s*$/, php.trim($dump))
-			|| php.preg_match(/^.{1,2}ADDR.{1,2}\s*$/, php.trim($dump));
+		return SabreUtils.checkDumpIsNotExisting($dump);
 	}
 
+	/** @deprecated - use SabreUtils directly */
 	static checkDumpIsRestricted($dump) {
-
-		return php.preg_match(/^\s*SECURED PNR\s*$/, php.trim($dump));
+		return SabreUtils.checkDumpIsRestricted($dump);
 	}
 
 	isNotExisting() {
