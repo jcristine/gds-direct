@@ -14,21 +14,15 @@ const Rej = require('klesun-node-tools/src/Rej.js');
  */
 const RepriceInPccMix = ({
 	stateful, aliasData, gdsClients,
-	startDt = new Date().toISOString(),
 	RbsClient = require('../IqClients/RbsClient.js'),
 }) => {
+	const startDt = stateful.getStartDt();
 	const pricingModifiers = aliasData.pricingModifiers || [];
 	const cmdRq = ['$BB', ...pricingModifiers.map(mod => mod.raw)].join('/');
 
-	const getEpoch = (date, time) => {
-		const fullDate = DateTime.addYear(date.parsed, startDt);
-		const fullDt = fullDate + 'T' + time.parsed + ':00.000Z';
-		return new Date(fullDt).getTime();
-	};
-
 	const dtDiff = (next, curr) => {
-		const nextEpoch = getEpoch(next.departureDate, next.departureTime);
-		const currEpoch = getEpoch(curr.destinationDate, curr.destinationTime);
+		const nextEpoch = new Date(next.departureDt.full).getTime();
+		const currEpoch = new Date(next.destinationDt.full).getTime();
 		return nextEpoch - currEpoch;
 	};
 
@@ -82,7 +76,8 @@ const RepriceInPccMix = ({
 
 	const main = async () => {
 		const pnr = await GetCurrentPnr(stateful);
-		const itinerary = pnr.getItinerary();
+		const reservation = pnr.getReservation(startDt);
+		const itinerary = reservation.itinerary;
 		if (itinerary.length === 0) {
 			return Rej.BadRequest('Itinerary is empty');
 		}
