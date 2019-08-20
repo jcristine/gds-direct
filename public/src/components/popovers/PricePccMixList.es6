@@ -3,16 +3,18 @@ import Component from '../../modules/component.es6';
 const Cmp = (...args) => new Component(...args);
 
 const PricePccMixList = () => {
-	const tbodyCmp = Cmp('tbody');
-	const tableCmp = Cmp('table').attach(tbodyCmp);
-	tableCmp.attach(Cmp('thead').attach([Cmp('tr').attach([
+	const theadCmp = Cmp('thead').attach([Cmp('tr').attach([
 		Cmp('th', {textContent: 'PCC'}),
 		Cmp('th', {textContent: 'PTC'}),
 		Cmp('th', {textContent: 'Fare Type'}),
 		Cmp('th', {textContent: 'ADT'}),
 		Cmp('th', {textContent: 'CHD'}),
 		Cmp('th', {textContent: 'INF'}),
-	])]));
+	])]);
+	const tbodyCmp = Cmp('tbody');
+	const rootCmp = Cmp('div.price-pcc-mix-list').attach([
+		Cmp('table').attach([theadCmp, tbodyCmp]),
+	]);
 
 	/** @param {{gds, pcc}} pccResult = (new (require('RepriceInAnotherPccAction.js'))).repriceIn() */
 	const addRow = ({pccResult}) => {
@@ -25,23 +27,23 @@ const PricePccMixList = () => {
 		const ptc = mainPtcBlock.ptcInfo.ptcRequested || mainPtcBlock.ptcInfo.ptc;
 		const fareType = 'TODO';
 		const netPrice = mainPtcBlock.fareInfo.totalFare;
-		const sign = netPrice.currency === 'USD' ? '$' : netPrice.currency;
+		const sign = netPrice.currency === 'USD' ? '$' : netPrice.currency + ' ';
 		const netFormatted = sign + netPrice.amount;
 
 		tbodyCmp.attach([Cmp('tr').attach([
 			Cmp('td', {textContent: pccResult.pcc}),
 			Cmp('td', {textContent: ptc}),
 			Cmp('td', {textContent: fareType}),
-			Cmp('td', {textContent: netFormatted}),
+			Cmp('td.net-price', {textContent: netFormatted}),
 			// TODO:
-			Cmp('td', {textContent: ''}),
-			Cmp('td', {textContent: ''}),
+			Cmp('td.net-price', {textContent: ''}),
+			Cmp('td.net-price', {textContent: ''}),
 		])]);
 	};
 
 	const main = () => {
 		return {
-			dom: tableCmp.context,
+			dom: rootCmp.context,
 			addRow: addRow,
 		};
 	};

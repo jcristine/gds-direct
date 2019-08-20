@@ -32,6 +32,7 @@ let displayPriceMixPccRow = (plugin, pccResult) => new Promise((resolve) => {
 	if (!priceMixList) {
 		priceMixList = PriceMixList();
 		const {remove} = plugin.injectDom({
+			cls: 'price-mix-pcc-holder',
 			dom: priceMixList.dom,
 			onCancel: () => {
 				remove();

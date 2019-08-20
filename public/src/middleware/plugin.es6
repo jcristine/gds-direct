@@ -362,7 +362,7 @@ export default class TerminalPlugin
 	/**
 	 * show cancelable dialog inside the terminal window
 	 */
-	injectDom({dom, onCancel = null})
+	injectDom({dom, onCancel = null, cls = null})
 	{
 		let formCmp;
 		let remove = () => {
@@ -371,12 +371,13 @@ export default class TerminalPlugin
 			// love jquery terminal - needed to return focus
 			setTimeout(() => this.terminal.enable(), 4);
 		};
+		const holderCmp = Cmp('div.injected-dom-holder').attach([
+			Cmp({context: dom}),
+		]);
 		formCmp = Cmp('div.injected-in-terminal').attach([
 			Cmp('br'),
 			Cmp('div').attach([
-				Cmp('div.injected-dom-holder').attach([
-					Cmp({context: dom}),
-				]),
+				holderCmp,
 				...(!onCancel ? [] : [Cmp('div.float-right').attach([
 					Cmp('button[Cancel]', {type: 'button', onclick: () => {
 						onCancel();
@@ -386,6 +387,9 @@ export default class TerminalPlugin
 			]),
 			Cmp('br', {clear: 'all'}),
 		]);
+		if (cls) {
+			holderCmp.context.classList.toggle(cls, true);
+		}
 		this._injectForm(formCmp);
 		let inp = formCmp.context.querySelector('input:not(:disabled)');
 		if (inp) {
