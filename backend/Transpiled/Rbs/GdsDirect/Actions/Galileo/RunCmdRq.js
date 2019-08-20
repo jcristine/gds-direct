@@ -788,35 +788,35 @@ const RunCmdRq = ({
 	};
 
 	const priceItinerary = async ($cmd, $cmdData) => {
-		let $mods, $addedRealName, $hasNamesInPnr, $ptcGroups, $paxNums, $names, $addCmd, $result, $removeCmd;
+		let result;
 
-		$mods = php.array_combine(php.array_column($cmdData['pricingModifiers'] || [], 'type'),
+		const mods = php.array_combine(php.array_column($cmdData['pricingModifiers'] || [], 'type'),
 			$cmdData['pricingModifiers'] || []);
 
-		$addedRealName = ($cmdRec) => {
+		const addedRealName = ($cmdRec) => {
 			return $cmdRec['type'] === 'addName'
-			&& !StringUtil.startsWith($cmdRec['cmd'], 'N.FAKE/');
+				&& !StringUtil.startsWith($cmdRec['cmd'], 'N.FAKE/');
 		};
 		const flatUsedCmds = await getFlatUsedCmds();
-		$hasNamesInPnr = getSessionData()['isPnrStored']
-		|| Fp.any($addedRealName, flatUsedCmds);
+		const hasNamesInPnr = getSessionData()['isPnrStored']
+			|| Fp.any(addedRealName, flatUsedCmds);
 
-		$ptcGroups = (($mods['passengers'] || {})['parsed'] || {})['ptcGroups'] || [];
-		$paxNums = Fp.flatten(php.array_column($ptcGroups, 'passengerNumbers'));
-		if (!php.empty($paxNums) && !$hasNamesInPnr) {
+		const ptcGroups = ((mods['passengers'] || {})['parsed'] || {})['ptcGroups'] || [];
+		const paxNums = Fp.flatten(php.array_column(ptcGroups, 'passengerNumbers'));
+		if (!php.empty(paxNums) && !hasNamesInPnr) {
 		// Galileo does not allow pricing multiple PTC-s
 		// at same time when there are no names in PNR. Fix.
-			$names = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P'];
-			$names = php.array_slice($names, 0, php.count($paxNums));
-			$addCmd = php.implode('|', $names.map(($name) => 'N.FAKE/' + $name));
-			await runCommand($addCmd, false); // add fake names
-			$result = await _fetchPricing($cmd);
-			$removeCmd = php.count($paxNums) > 1 ? 'N.P1-' + php.count($names) + '@' : 'N.P1@';
-			await runCommand($removeCmd, false); // remove fake names
+			let names = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P'];
+			names = php.array_slice(names, 0, php.count(paxNums));
+			const addCmd = php.implode('|', names.map(($name) => 'N.FAKE/' + $name));
+			await runCommand(addCmd, false); // add fake names
+			result = await _fetchPricing($cmd);
+			const removeCmd = php.count(paxNums) > 1 ? 'N.P1-' + php.count(names) + '@' : 'N.P1@';
+			await runCommand(removeCmd, false); // remove fake names
 		} else {
-			$result = await _fetchPricing($cmd);
+			result = await _fetchPricing($cmd);
 		}
-		return $result;
+		return result;
 	};
 
 	const needsColonN = async ($fqDump, $pnr) => {
