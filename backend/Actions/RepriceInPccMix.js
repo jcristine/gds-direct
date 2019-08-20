@@ -65,7 +65,7 @@ const RepriceInPccMix = ({
 			return Rej.NotImplemented(msg);
 		}
 		return new RepriceInAnotherPccAction({gdsClients}).repriceIn({
-			gds, pcc, itinerary, targetCmd, startDt,
+			gds, pcc, itinerary, targetCmd, startDt, baseDate: startDt,
 		}).then(pccResult => {
 			pccResult = {pcc, gds, ...pccResult};
 			stateful.askClient({
@@ -74,6 +74,13 @@ const RepriceInPccMix = ({
 			});
 			return pccResult;
 		});
+	};
+
+	/** get the NET price of the most expensive PTC in pricing */
+	const getNetPrice = (store) => {
+		return (store.pricingBlockList || [])
+			.map(ptcBlock => ptcBlock.fareInfo.totalFare.amount)
+			.sort((a,b) => b - a)[0] || store.error;
 	};
 
 	const main = async () => {
@@ -95,7 +102,7 @@ const RepriceInPccMix = ({
 			promises.push(whenPccResult);
 		}
 		const pccResults = await Promise.all(promises);
-		const resultMsg = 'Repriced in: ' + pccRecs.map(r => r.pcc).join(' ');
+		const resultMsg = 'Repriced in: ' + pccResults.map(r => r.pcc + ':' + getNetPrice(r)).join(' ');
 		messages.push({type: 'info', text: resultMsg});
 		return {
 			messages: messages,

@@ -89,10 +89,10 @@ class AliasParser {
 
 	static async parsePrice($cmd, stateful) {
 		let $matches;
-		if (!php.preg_match(/^PRICE([A-Z0-9]{3}|)\/?(.*)$/, $cmd, $matches = [])) {
+		if (!php.preg_match(/^PRICE(MIX|)([A-Z0-9]{3}|)\/?(.*)$/, $cmd, $matches = [])) {
 			return Promise.resolve(null);
 		}
-		let [$_, $ptc, $modsPart] = $matches;
+		let [$_, mix, $ptc, $modsPart] = $matches;
 		let leadData = null;
 		if (stateful.getLeadId()) {
 			leadData = await stateful.getGdRemarkData();
@@ -117,6 +117,8 @@ class AliasParser {
 		}
 		return {
 			ptc: $ptc,
+			isMix: mix ? true : false,
+			isAll: $ptc === 'ALL',
 			requestedAgeGroups: requestedAgeGroups,
 			ptcs: ptcs,
 			pricingModifiers: AtfqParser.parsePricingModifiers($modsPart),
@@ -185,6 +187,8 @@ class AliasParser {
 		} else if (matches = cmdRq.match(/^MP([A-Z0-9]{2})$/)) {
 			type = 'addMpRemark';
 			data = {airline: matches[1]};
+		} else if (data = await this.parsePrice(cmdRq, stateful)) {
+			type = 'priceAll';
 		} else {
 			type = 'regularCmd';
 			data = null;

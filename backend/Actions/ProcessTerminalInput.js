@@ -1,3 +1,4 @@
+const RepriceInPccMix = require('./RepriceInPccMix.js');
 const GdsSession = require('../GdsHelpers/GdsSession.js');
 const AddMpRemark = require('./AddMpRemark.js');
 const GetCurrentPnr = require('./GetCurrentPnr.js');
@@ -227,6 +228,8 @@ const ProcessTerminalInput = async ({
 		const parsedAlias = await AliasParser.parse(cmdRq, stateful);
 		if (parsedAlias.type === 'addMpRemark') {
 			return AddMpRemark({stateful, airline: parsedAlias.data.airline});
+		} else if (parsedAlias.type === 'priceAll' && parsedAlias.data.isMix) {
+			return RepriceInPccMix({stateful, aliasData: parsedAlias.data, gdsClients});
 		}
 
 		const bulkCmdRecs = parsedAlias.type !== 'bulkCmds'
