@@ -330,12 +330,13 @@ export default class TerminalPlugin
 			.perform( before )
 			.finally(() => this.spinner.end())
 			.then( response => {
-				if (command)
-				{
-					if (response && response.output)
+				if (command) {
+					const actions = (response || {}).actions || [];
+					if (response && response.output) {
 						this.parseBackEnd( response, command );
-					else
+					} else if (actions.length === 0) {
 						this.print(`[[;;;errorMessage;]EMPTY SERVER RESPONSE]`);
+					}
 				}
 				this.actionReader.handleNewLine();
 			})

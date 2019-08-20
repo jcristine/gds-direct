@@ -1,3 +1,4 @@
+const RbsUtils = require('../GdsHelpers/RbsUtils.js');
 const GdsDialectTranslator = require('../Transpiled/Rbs/GdsDirect/DialectTranslator/GdsDialectTranslator.js');
 const RepriceInAnotherPccAction = require('../Transpiled/Rbs/GdsDirect/Actions/Common/RepriceInAnotherPccAction.js');
 const DateTime = require('../Transpiled/Lib/Utils/DateTime.js');
@@ -66,8 +67,11 @@ const RepriceInPccMix = ({
 		}
 		return new RepriceInAnotherPccAction({gdsClients}).repriceIn({
 			gds, pcc, itinerary, targetCmd, startDt, baseDate: startDt,
-		}).then(pccResult => {
+		}).then(async pccResult => {
 			pccResult = {pcc, gds, ...pccResult};
+			for (const ptcBlock of pccResult.pricingBlockList || []) {
+				ptcBlock.fareType = await RbsUtils.getFareTypeV2(gds, pcc, ptcBlock);
+			}
 			stateful.askClient({
 				messageType: 'displayPriceMixPccRow',
 				pccResult: pccResult,
@@ -92,7 +96,7 @@ const RepriceInPccMix = ({
 				}))
 				.then(pccResult => {
 					if (pccResult.error) {
-						let msg = 'Failed to price in ' + pcc + ' - ' + pccResult.error;
+						const msg = 'Failed to price in ' + pcc + ' - ' + pccResult.error;
 						messages.push({type: 'error', text: msg});
 					}
 					return pccResult;

@@ -280,6 +280,9 @@ class RepriceInAnotherPccAction {
 			const cmdRec = await session.runCmd(pricingCmd);
 			const parsed = SabrePricingParser.parse(cmdRec.output);
 			let error = parsed.error || null;
+			if (error === 'customGdsError') {
+				error = cmdRec.output.trim();
+			}
 			if (error) {
 				error = '>' + pricingCmd + '; - ' + error;
 			}
