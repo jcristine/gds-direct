@@ -10,7 +10,7 @@ const {REBUILD_MULTISEGMENT} = require('../GdsDirect/Errors');
 const TravelportBuildItineraryViaXml = async ({
 	session, itinerary,
 	baseDate = moment().format('YYYY-MM-DD'),
-	travelport = TravelportClient()
+	travelport = TravelportClient(),
 }) => {
 	const segments = [];
 	const byStatus = _.groupBy(itinerary, e => e.segmentStatus);
@@ -25,7 +25,7 @@ const TravelportBuildItineraryViaXml = async ({
 				airline: segment.airline,
 				flightNumber: segment.flightNumber,
 				bookingClass: segment.bookingClass,
-				departureDt: DateTime.decodeRelativeDateInFuture(segment.departureDate.parsed, startDate),
+				departureDt: DateTime.addYear(segment.departureDate.parsed, startDate),
 				destinationDt: null,
 				departureAirport: segment.departureAirport,
 				destinationAirport: segment.destinationAirport,

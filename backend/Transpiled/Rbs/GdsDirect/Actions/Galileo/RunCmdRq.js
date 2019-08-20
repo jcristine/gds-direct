@@ -134,6 +134,7 @@ const parseMultiPriceItineraryAlias = ($cmd) => {
 	return null;
 };
 
+/** @param stateful = require('StatefulSession.js')() */
 const RunCmdRq = ({
 	stateful, cmdRq,
 	PtcUtil = require('../../../../Rbs/Process/Common/PtcUtil.js'),
@@ -639,8 +640,9 @@ const RunCmdRq = ({
 		// would be better to use number returned by GalileoBuildItineraryAction
 		// as it may be not in same order in case of marriages...
 			itinerary = itinerary.map((s, i) => ({...s, segmentNumber: +i + 1}));
-			const result = await (new RebuildInPccAction({useXml, travelport}))
-				.setSession(stateful)
+			const result = await (new RebuildInPccAction({
+				useXml, travelport, baseDate: stateful.getStartDt(),
+			})).setSession(stateful)
 				.fallbackToAk(true).bookItinerary(itinerary);
 			let cmdRecs = stateful.flushCalledCommands();
 			if (php.empty(result.errors)) {
@@ -708,7 +710,9 @@ const RunCmdRq = ({
 			} || {})[$segmentStatus] || $segmentStatus;
 		}
 		stateful.flushCalledCommands();
-		$result = await (new RebuildInPccAction({useXml, travelport})).setSession(stateful)
+		$result = await (new RebuildInPccAction({
+			useXml, travelport, baseDate: stateful.getStartDt(),
+		})).setSession(stateful)
 			.fallbackToAk($isSellStatus).execute($area, $pcc, $itinerary);
 		$calledCommands = stateful.flushCalledCommands();
 		if (php.empty($result['errors'])) {
@@ -738,6 +742,7 @@ const RunCmdRq = ({
 
 		$result = await GalileoBuildItineraryAction({
 			session: stateful,
+			baseDate: stateful.getStartDt(),
 			useXml,
 			travelport,
 			itinerary: $newSegs,

@@ -17,11 +17,13 @@ class RebuildInPccAction extends AbstractGdsAction {
 	constructor({
 		travelport,
 		useXml,
+		baseDate,
 	}) {
 		super();
 		this.$fallbackToAk = false;
 		this.travelport = travelport;
 		this.useXml = useXml;
+		this.baseDate = baseDate;
 	}
 
 	fallbackToAk($flag) {
@@ -116,6 +118,7 @@ class RebuildInPccAction extends AbstractGdsAction {
 			isParserFormat: true,
 			useXml: this.useXml,
 			travelport: this.travelport,
+			baseDate: this.baseDate,
 		});
 
 		if (this.useXml && $result.segments.length > 0) {
