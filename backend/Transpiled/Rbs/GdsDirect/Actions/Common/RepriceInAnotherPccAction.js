@@ -1,3 +1,4 @@
+const GalileoUtils = require('../../../../../GdsHelpers/GalileoUtils.js');
 const AmadeusGetPricingPtcBlocksAction = require('../Amadeus/AmadeusGetPricingPtcBlocksAction.js');
 const LinearFareParser = require('../../../../Gds/Parsers/Galileo/Pricing/LinearFareParser.js');
 const FqParser = require('../../../../Gds/Parsers/Galileo/Pricing/FqParser.js');
@@ -341,7 +342,11 @@ class RepriceInAnotherPccAction {
 					+ built.errorType + ' ' + JSON.stringify(built.errorData));
 			}
 			pricingCmd = extendGalileoCmd(pricingCmd);
-			const fqCmdRec = await fetchAll(pricingCmd, session);
+			const pricingModifiers = (FqCmdParser.parse(pricingCmd) || {}).pricingModifiers || [];
+			const fqCmdRec = await GalileoUtils.withFakeNames({
+				pricingModifiers, session,
+				action: () => fetchAll(pricingCmd, session),
+			});
 			const lfCmdRec = await fetchAll('F*Q', session);
 			const ptcList = FqParser.parse(fqCmdRec.output);
 			const linearFare = LinearFareParser.parse(lfCmdRec.output);
