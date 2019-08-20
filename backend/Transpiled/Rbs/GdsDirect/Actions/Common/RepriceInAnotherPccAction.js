@@ -5,16 +5,13 @@ const GalileoBuildItineraryAction = require('../../../../Rbs/GdsAction/GalileoBu
 const SabreBuildItineraryAction = require('../../../../Rbs/GdsAction/SabreBuildItineraryAction.js');
 const GdsDialectTranslator = require('../../../../Rbs/GdsDirect/DialectTranslator/GdsDialectTranslator.js');
 const Pccs = require("../../../../../Repositories/Pccs");
-const SabreClient = require("../../../../../GdsClients/SabreClient");
 const CmsSabreTerminal = require("../../GdsInterface/CmsSabreTerminal");
 const {BadRequest, NotImplemented, Forbidden, UnprocessableEntity, NotFound} = require("klesun-node-tools/src/Rej");
 const {ignoreExc} = require('../../../../../Utils/TmpLib.js');
-const TravelportClient = require("../../../../../GdsClients/TravelportClient");
 const UpdateGalileoStateAction = require("../../SessionStateProcessor/UpdateGalileoState");
 const CmsApolloTerminal = require("../../GdsInterface/CmsApolloTerminal");
 const php = require('klesun-node-tools/src/Transpiled/php.js');
 const GdsProfiles = require("../../../../../Repositories/GdsProfiles");
-const AmadeusClient = require("../../../../../GdsClients/AmadeusClient");
 const fetchAll = require("../../../../../GdsHelpers/TravelportUtils").fetchAll;
 const {fetchAllFx} = require('../../../../../GdsHelpers/AmadeusUtils.js');
 const AmadeusBuildItineraryAction = require('../../../GdsAction/AmadeusBuildItineraryAction.js');
@@ -132,31 +129,42 @@ const extendSabreCmd = async ({cmd, yFallback, srcItin}) => {
 	}
 };
 
+const parseAlias = $cmd => {
+	let $matches, $dialects;
+	if (php.preg_match(/^(?<cmdPrefix>\$B|WP|FQ|FX)(?<realCmd>.*)\/(\||\+|¥)(?<targetGdsPcc>[0-9A-Z]{2,})$/, $cmd, $matches = [])) {
+		$dialects = {
+			'$B': 'apollo',
+			'WP': 'sabre',
+			'FX': 'amadeus',
+			'FQ': 'galileo',
+		};
+		return {
+			'target': $matches['targetGdsPcc'],
+			'dialect': $dialects[$matches['cmdPrefix']] || null,
+			'cmd': $matches['cmdPrefix'] + $matches['realCmd'],
+		};
+	} else {
+		return null;
+	}
+};
+
 /**
  * Open a separate session, rebuild itinerary and price with given cmd
  */
 class RepriceInAnotherPccAction {
 	static parseAlias($cmd) {
-		let $matches, $dialects;
-		if (php.preg_match(/^(?<cmdPrefix>\$B|WP|FQ|FX)(?<realCmd>.*)\/(\||\+|¥)(?<targetGdsPcc>[0-9A-Z]{2,})$/, $cmd, $matches = [])) {
-			$dialects = {
-				'$B': 'apollo',
-				'WP': 'sabre',
-				'FX': 'amadeus',
-				'FQ': 'galileo',
-			};
-			return {
-				'target': $matches['targetGdsPcc'],
-				'dialect': $dialects[$matches['cmdPrefix']] || null,
-				'cmd': $matches['cmdPrefix'] + $matches['realCmd'],
-			};
-		} else {
-			return null;
-		}
+		return parseAlias($cmd);
 	}
 
-	constructor() {
+	constructor({
+		gdsClients = {
+			travelport: require("../../../../../GdsClients/TravelportClient.js")(),
+			sabre: require("../../../../../GdsClients/SabreClient.js").makeCustom(),
+			amadeus: require("../../../../../GdsClients/AmadeusClient.js").makeCustom(),
+		}} = {},
+	) {
 		this.$log = ($msg, $data) => {};
+		this.gdsClients = gdsClients;
 	}
 
 	setLog($log) {
@@ -199,7 +207,7 @@ class RepriceInAnotherPccAction {
 	async repriceInApollo(pcc, itinerary, pricingCmd, $startDt) {
 		itinerary = itinerary.map(seg => ({...seg, segmentStatus: 'GK'}));
 		const profileName = GdsProfiles.TRAVELPORT.DynApolloProd_2F3K;
-		return TravelportClient().withSession({profileName}, async session => {
+		return this.gdsClients.travelport.withSession({profileName}, async session => {
 			session = withLog(session, this.$log);
 			const semRs = await session.runCmd('SEM/' + pcc + '/AG');
 			if (!CmsApolloTerminal.isSuccessChangePccOutput(semRs.output)) {
@@ -228,7 +236,7 @@ class RepriceInAnotherPccAction {
 				? {...seg, segmentStatus: 'LL'}
 				: {...seg, segmentStatus: 'GK'};
 		});
-		return SabreClient.withSession({}, async session => {
+		return this.gdsClients.sabre.withSession({}, async session => {
 			session = withLog(session, this.$log);
 			const aaaRs = await session.runCmd('AAA' + pcc);
 			if (!CmsSabreTerminal.isSuccessChangePccOutput(aaaRs.output, pcc)) {
@@ -257,7 +265,7 @@ class RepriceInAnotherPccAction {
 	async repriceInAmadeus(pcc, itinerary, pricingCmd) {
 		itinerary = itinerary.map(seg => ({...seg, segmentStatus: 'GK'}));
 		const profileName = GdsProfiles.chooseAmaProfile(pcc);
-		return AmadeusClient.withSession({profileName, pcc}, async session => {
+		return this.gdsClients.amadeus.withSession({profileName, pcc}, async session => {
 			session = withLog(session, this.$log);
 			const built = await new AmadeusBuildItineraryAction()
 				.setSession(session).execute(itinerary, true);
@@ -274,7 +282,7 @@ class RepriceInAnotherPccAction {
 	async repriceInGalileo(pcc, itinerary, pricingCmd) {
 		itinerary = itinerary.map(seg => ({...seg, segmentStatus: 'AK'}));
 		const profileName = GdsProfiles.TRAVELPORT.DynGalileoProd_711M;
-		const travelport = TravelportClient();
+		const travelport = this.gdsClients.travelport;
 		return travelport.withSession({profileName}, async session => {
 			session = withLog(session, this.$log);
 			const semRs = await session.runCmd('SEM/' + pcc + '/AG');
