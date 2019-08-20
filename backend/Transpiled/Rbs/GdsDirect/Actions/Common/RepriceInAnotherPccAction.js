@@ -1,3 +1,10 @@
+const AmadeusGetPricingPtcBlocksAction = require('../Amadeus/AmadeusGetPricingPtcBlocksAction.js');
+const LinearFareParser = require('../../../../Gds/Parsers/Galileo/Pricing/LinearFareParser.js');
+const FqParser = require('../../../../Gds/Parsers/Galileo/Pricing/FqParser.js');
+const GalileoPricingAdapter = require('../../../FormatAdapters/GalileoPricingAdapter.js');
+const SabrePricingAdapter = require('../../../FormatAdapters/SabrePricingAdapter.js');
+const SabrePricingParser = require('../../../../Gds/Parsers/Sabre/Pricing/SabrePricingParser.js');
+const ImportPqApolloAction = require('../Apollo/ImportPqApolloAction.js');
 
 const SabPricingCmdParser = require("../../../../Gds/Parsers/Sabre/Commands/PricingCmdParser");
 const ApolloBuildItineraryAction = require('../../../GdsAction/ApolloBuildItinerary.js');
@@ -21,7 +28,7 @@ const AtfqParser = require("../../../../Gds/Parsers/Apollo/Pnr/AtfqParser");
 const FqCmdParser = require("../../../../Gds/Parsers/Galileo/Commands/FqCmdParser");
 const AmdPricingCmdParser = require("../../../../Gds/Parsers/Amadeus/Commands/PricingCmdParser");
 const BookingClasses = require("../../../../../Repositories/BookingClasses");
-const withLog = require("../../../../../GdsHelpers/CommonUtils").withLog;
+const {withLog, withCapture} = require("../../../../../GdsHelpers/CommonUtils.js");
 const {ERROR_NO_AVAIL} = require('../../../GdsAction/SabreBuildItineraryAction.js');
 const {coverExc} = require('klesun-node-tools/src/Lang.js');
 
@@ -157,6 +164,7 @@ class RepriceInAnotherPccAction {
 	}
 
 	constructor({
+		baseDate = new Date().toISOString(),
 		gdsClients = {
 			travelport: require("../../../../../GdsClients/TravelportClient.js")(),
 			sabre: require("../../../../../GdsClients/SabreClient.js").makeCustom(),
@@ -165,6 +173,7 @@ class RepriceInAnotherPccAction {
 	) {
 		this.$log = ($msg, $data) => {};
 		this.gdsClients = gdsClients;
+		this.baseDate = baseDate;
 	}
 
 	setLog($log) {
@@ -225,7 +234,12 @@ class RepriceInAnotherPccAction {
 			}
 			pricingCmd = extendApolloCmd(pricingCmd);
 			const cmdRec = await fetchAll(pricingCmd, session);
-			return {calledCommands: [cmdRec]};
+			const pricing = ImportPqApolloAction.parsePricing(cmdRec.output, [], pricingCmd);
+
+			return {
+				calledCommands: [cmdRec],
+				pricingBlockList: pricing.store.pricingBlockList,
+			};
 		});
 	}
 
@@ -258,7 +272,16 @@ class RepriceInAnotherPccAction {
 			}
 			pricingCmd = await extendSabreCmd({cmd: pricingCmd, yFallback, srcItin: itinerary});
 			const cmdRec = await session.runCmd(pricingCmd);
-			return {calledCommands: [cmdRec]};
+			const parsed = SabrePricingParser.parse(cmdRec.output);
+			const store = (new SabrePricingAdapter())
+				.setPricingCommand(pricingCmd)
+				.setReservationDate(this.baseDate)
+				.transform(parsed);
+
+			return {
+				calledCommands: [cmdRec],
+				pricingBlockList: store.pricingBlockList,
+			};
 		});
 	}
 
@@ -274,8 +297,17 @@ class RepriceInAnotherPccAction {
 					+ built.errorType + ' ' + JSON.stringify(built.errorData));
 			}
 			pricingCmd = extendAmadeusCmd(pricingCmd);
-			const cmdRec = await fetchAllFx(pricingCmd, session);
-			return {calledCommands: [cmdRec]};
+			const capturing = withCapture(session);
+			const cmdRec = await fetchAllFx(pricingCmd, capturing);
+			const pricing = await new AmadeusGetPricingPtcBlocksAction({
+				session: capturing,
+			}).execute(pricingCmd, cmdRec.output);
+
+			return {
+				calledCommands: capturing.getCalledCommands(),
+				pricingBlockList: pricing.pricingList
+					.flatMap(store => store.pricingBlockList),
+			};
 		});
 	}
 
@@ -298,8 +330,18 @@ class RepriceInAnotherPccAction {
 					+ built.errorType + ' ' + JSON.stringify(built.errorData));
 			}
 			pricingCmd = extendGalileoCmd(pricingCmd);
-			const cmdRec = await fetchAll(pricingCmd, session);
-			return {calledCommands: [cmdRec]};
+			const fqCmdRec = await fetchAll(pricingCmd, session);
+			const ptcList = FqParser.parse(fqCmdRec.output);
+			const lfCmdRec = await fetchAll('F*Q', session);
+			const linearFare = LinearFareParser.parse(lfCmdRec.output);
+			const store = new GalileoPricingAdapter()
+				.setPricingCommand(pricingCmd)
+				.transform(ptcList, linearFare);
+
+			return {
+				calledCommands: [fqCmdRec, lfCmdRec],
+				pricingBlockList: store.pricingBlockList,
+			};
 		});
 	}
 

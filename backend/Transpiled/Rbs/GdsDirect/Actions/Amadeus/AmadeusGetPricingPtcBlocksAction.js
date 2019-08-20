@@ -13,8 +13,9 @@ const AmadeusUtil = require("../../../../../GdsHelpers/AmadeusUtils");
  */
 class AmadeusGetPricingPtcBlocksAction extends AbstractGdsAction
 {
-	constructor() {
+	constructor({session = null} = {}) {
 		super();
+		this.session = session;
 		this.$cmdCmdToFullDump = {};
 	}
 
