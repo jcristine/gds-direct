@@ -61,6 +61,8 @@ app.use('/public', (rq, rs, next) => {
 		rs.setHeader('Content-Type', 'text/css');
 	} else if (rq.path.endsWith('CURRENT_PRODUCTION_TAG')) {
 		rs.setHeader('Content-Type', 'text/plain');
+	} else if (rq.path.endsWith('.md')) {
+		rs.setHeader('Content-Type', 'text/plain');
 	}
 	next();
 });
