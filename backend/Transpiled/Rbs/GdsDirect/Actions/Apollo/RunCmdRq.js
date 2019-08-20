@@ -987,7 +987,8 @@ const RunCmdRq = ({
 		return Promise.resolve(pnr);
 	};
 
-	// mcoRows dates are in UTC, apollo dates should be in PCC's time zone
+	// mcoRows dates are in _ticketing_ PCC timezone, but date passed to HB:FEX should
+	// be in timezone of PCC in which PNR was _originally created_, not ticketed
 	// this is problem only if there is large enough gap between utc and pcc
 	// where actual date value should be smaller
 	const modifyMcosAccordingToPccDates = async (mcoRows, htRows) => {
