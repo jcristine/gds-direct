@@ -188,22 +188,27 @@ const RunCmdRq = ({
 	};
 
 	/** @return string|null - null means "not changed" */
-	const preprocessPricingCommand = async ($data) => {
-		let $rawMods, $mod, $matches, $fare;
-		if (!$data) return null;
-		$rawMods = [];
-		for ($mod of Object.values($data['pricingModifiers'])) {
-			if (php.preg_match(/^@(\d+)$/, $mod['raw'], $matches = [])) {
-				if ($fare = await findOnLastTariffDisplay($matches[1])) {
-					$rawMods.push('@' + $fare['fareBasis']);
+	const preprocessPricingCommand = async (cmd, data) => {
+		if (!data) {
+			return null;
+		}
+		const {baseCmd, pricingModifiers} = data;
+		const rawMods = [];
+		for (const mod of pricingModifiers) {
+			let matches;
+			if (php.preg_match(/^@(\d+)$/, mod['raw'], matches = [])) {
+				const fare = await findOnLastTariffDisplay(matches[1]);
+				if (fare) {
+					rawMods.push('@' + fare.fareBasis);
 				} else {
-					$rawMods.push($mod['raw']);
+					rawMods.push(mod.raw);
 				}
 			} else {
-				$rawMods.push($mod['raw']);
+				rawMods.push(mod.raw);
 			}
 		}
-		return $data['baseCmd'] + ($rawMods.length ? '/' + php.implode('/', $rawMods) : '');
+		const leadingSlash = cmd.startsWith(baseCmd + '/') || baseCmd === '$BBC';
+		return baseCmd + (!leadingSlash ? '' : '/') + rawMods.join('/');
 	};
 
 	/** maybe should move this to ApoAliasParser ? */
@@ -237,7 +242,7 @@ const RunCmdRq = ({
 				$cmd = 'A-';
 			}
 		} else if ($parsed['type'] === 'priceItinerary') {
-			$cmd = await preprocessPricingCommand($parsed['data']) || $cmd;
+			$cmd = await preprocessPricingCommand($cmd, $parsed['data']) || $cmd;
 		} else if (aliasData = AliasParser.parseSameMonthReturnAvail($cmd)) {
 			$cmd = await _preprocessSameMonthReturnAvailability(aliasData.days);
 		}
