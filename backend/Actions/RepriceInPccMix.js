@@ -1,10 +1,9 @@
 const RbsUtils = require('../GdsHelpers/RbsUtils.js');
 const GdsDialectTranslator = require('../Transpiled/Rbs/GdsDirect/DialectTranslator/GdsDialectTranslator.js');
 const RepriceInAnotherPccAction = require('../Transpiled/Rbs/GdsDirect/Actions/Common/RepriceInAnotherPccAction.js');
-const DateTime = require('../Transpiled/Lib/Utils/DateTime.js');
 const RepricePccRules = require('../Repositories/RepricePccRules.js');
 const GetCurrentPnr = require('./GetCurrentPnr.js');
-const {coverExc} = require('klesun-node-tools/src/Lang.js');
+const {coverExc, timeout} = require('klesun-node-tools/src/Lang.js');
 const Rej = require('klesun-node-tools/src/Rej.js');
 
 /**
@@ -75,6 +74,9 @@ const RepriceInPccMix = ({
 	};
 
 	const main = async () => {
+		if (!stateful.getAgent().getRoles().includes('NEW_GDS_DIRECT_DEV_ACCESS')) {
+			return Rej.Forbidden('This feature is currently only enabled for testers');
+		}
 		const pnr = await GetCurrentPnr(stateful);
 		const reservation = pnr.getReservation(startDt);
 		const itinerary = reservation.itinerary;
@@ -85,7 +87,9 @@ const RepriceInPccMix = ({
 		const messages = [];
 		const promises = [];
 		for (const {pcc, gds} of pccRecs) {
-			const whenPccResult = processPcc({pcc, gds, itinerary})
+			let whenPccResult = processPcc({pcc, gds, itinerary});
+			whenPccResult = timeout(61, whenPccResult);
+			whenPccResult = whenPccResult
 				.catch(coverExc(Rej.list, exc => {
 					return {pcc, gds, error: exc + ''};
 				}))
