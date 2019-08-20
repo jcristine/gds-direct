@@ -1,3 +1,4 @@
+const AmadeusUtils = require('../../../../../GdsHelpers/AmadeusUtils.js');
 const GalileoUtils = require('../../../../../GdsHelpers/GalileoUtils.js');
 const AmadeusGetPricingPtcBlocksAction = require('../Amadeus/AmadeusGetPricingPtcBlocksAction.js');
 const LinearFareParser = require('../../../../Gds/Parsers/Galileo/Pricing/LinearFareParser.js');
@@ -313,9 +314,11 @@ class RepriceInAnotherPccAction {
 			if (error) {
 				error = pricingCmd + ' - ' + error;
 			}
+			let cmdRecs = capturing.getCalledCommands();
+			cmdRecs = AmadeusUtils.collectFullCmdRecs(cmdRecs);
 
 			return {
-				calledCommands: capturing.getCalledCommands(),
+				calledCommands: cmdRecs,
 				error: error,
 				pricingBlockList: (pricing.pricingList || [])
 					.flatMap(store => store.pricingBlockList),

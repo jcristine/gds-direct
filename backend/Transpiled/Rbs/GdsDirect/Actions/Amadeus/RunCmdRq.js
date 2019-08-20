@@ -15,7 +15,7 @@ const GenericRemarkParser = require('../../../../Gds/Parsers/Common/GenericRemar
 const CommonDataHelper = require('../../../../Rbs/GdsDirect/CommonDataHelper.js');
 const CommandParser = require('../../../../Gds/Parsers/Amadeus/CommandParser.js');
 const CmsAmadeusTerminal = require('../../../../Rbs/GdsDirect/GdsInterface/CmsAmadeusTerminal.js');
-const AmadeusUtil = require("../../../../../GdsHelpers/AmadeusUtils");
+const AmadeusUtils = require("../../../../../GdsHelpers/AmadeusUtils");
 const GdsProfiles = require("../../../../../Repositories/GdsProfiles");
 const getRbsPqInfo = require("../../../../../GdsHelpers/RbsUtils").getRbsPqInfo;
 const MoveDownAllAction = require('./MoveDownAllAction.js');
@@ -120,7 +120,7 @@ const isOkXeOutput = ($output) => {
 const isOkFxdOutput = ($output) => {
 	let $pager;
 
-	$pager = AmadeusUtil.parseRtPager($output);
+	$pager = AmadeusUtils.parseRtPager($output);
 	return $pager['hasPageMark']; // error responses don't have it
 };
 
@@ -447,12 +447,12 @@ const execute = ({
 		$segmentStatus = $aliasData['segmentStatus'] || 'GK';
 		$seatNumber = $aliasData['seatCount'] || 0;
 
-		$pnrDump = (await AmadeusUtil.fetchAllRt('RTAM', stateful)).output;
+		$pnrDump = (await AmadeusUtils.fetchAllRt('RTAM', stateful)).output;
 
 		$itinerary = MarriageItineraryParser.parse($pnrDump);
 
 		if(php.empty($itinerary)) {
-			$pnrDump = (await AmadeusUtil.fetchAllRt('RT', stateful)).output;
+			$pnrDump = (await AmadeusUtils.fetchAllRt('RT', stateful)).output;
 
 			$itinerary = PnrParser.parse($pnrDump).parsed.itinerary;
 		}
@@ -660,7 +660,7 @@ const execute = ({
 	const needsRp = async ($cmd, $output, $pnr) => {
 		const $parsed = FxParser.parse($output);
 		if (($parsed['type']) === 'ptcList') {
-			$output = (await AmadeusUtil.fetchAllFx('FQQ1', stateful)).output;
+			$output = (await AmadeusUtils.fetchAllFx('FQQ1', stateful)).output;
 		}
 		if (php.isset($parsed['error'])) {
 			return false;
@@ -725,7 +725,7 @@ const execute = ({
 			return Rej.BadRequest('Invalid PNR - ' + $errors.join('; '));
 		}
 		let cmd = await makeStorePricingCmd($pnr, $aliasData, false);
-		let output = (await AmadeusUtil.fetchAllFx(cmd, stateful)).output;
+		let output = (await AmadeusUtils.fetchAllFx(cmd, stateful)).output;
 
 		if (await needsRp(cmd, output, $pnr)) {
 			// delete TST we just created, and re-price it with 'P'-ublished mod
@@ -747,14 +747,14 @@ const execute = ({
 		if (!shouldFetchAll) {
 			return processRealCommand(cmd);
 		} else if (shouldFetchAll) {
-			const fxCmdRec = await AmadeusUtil.fetchAllFx(cmd, stateful);
+			const fxCmdRec = await AmadeusUtils.fetchAllFx(cmd, stateful);
 			const fxOutput = fxCmdRec.output;
 			const capturing = withCapture(stateful);
 			const pricing = await (new AmadeusGetPricingPtcBlocks())
 				.setSession(capturing)
 				.execute(cmd, fxOutput);
 			let cmdRecs = capturing.getCalledCommands();
-			cmdRecs = AmadeusUtil.collectFullCmdRecs(cmdRecs);
+			cmdRecs = AmadeusUtils.collectFullCmdRecs(cmdRecs);
 			return {calledCommands: [fxCmdRec].concat(cmdRecs)};
 		}
 	};
@@ -879,7 +879,7 @@ const execute = ({
 	};
 
 	const amadeusRt = async ($cmd) => {
-		return (await AmadeusUtil.fetchAllRt($cmd, stateful)).output;
+		return (await AmadeusUtils.fetchAllRt($cmd, stateful)).output;
 	};
 
 	const makeCmdMessages = async ($cmd, $output) => {
