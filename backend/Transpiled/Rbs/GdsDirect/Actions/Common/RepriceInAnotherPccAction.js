@@ -1,3 +1,4 @@
+const TravelportUtils = require('../../../../../GdsHelpers/TravelportUtils.js');
 const AmadeusUtils = require('../../../../../GdsHelpers/AmadeusUtils.js');
 const GalileoUtils = require('../../../../../GdsHelpers/GalileoUtils.js');
 const AmadeusGetPricingPtcBlocksAction = require('../Amadeus/AmadeusGetPricingPtcBlocksAction.js');
@@ -239,7 +240,9 @@ class RepriceInAnotherPccAction {
 			const pricing = ImportPqApolloAction.parsePricing(cmdRec.output, [], pricingCmd);
 
 			return {
-				calledCommands: [cmdRec],
+				calledCommands: [cmdRec].map(cmdRec => ({...cmdRec,
+					output: TravelportUtils.wrap(cmdRec.output, 'galileo'),
+				})),
 				error: pricing.error || null,
 				pricingBlockList: (pricing.store || {}).pricingBlockList || [],
 			};
@@ -358,7 +361,9 @@ class RepriceInAnotherPccAction {
 				error = '>' + pricingCmd + '; - ' + error;
 			}
 			return {
-				calledCommands: [fqCmdRec, lfCmdRec],
+				calledCommands: [fqCmdRec, lfCmdRec].map(cmdRec => ({...cmdRec,
+					output: TravelportUtils.wrap(cmdRec.output, 'galileo'),
+				})),
 				error: error,
 				pricingBlockList: error ? [] :
 					new GalileoPricingAdapter()

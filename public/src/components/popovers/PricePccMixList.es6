@@ -44,14 +44,17 @@ const PricePccMixList = () => {
 		}
 		const ptc = mainPtcBlock.ptcInfo.ptcRequested || mainPtcBlock.ptcInfo.ptc;
 		const fareType = 'TODO';
+		const pricingDump = (pccResult.calledCommands || [])
+			.map(({cmd, output}) => '>' + cmd + ';\n' + output)
+			.join('\n');
 
 		tbodyCmp.attach([Cmp('tr').attach([
 			Cmp('td', {textContent: pccResult.pcc}),
 			Cmp('td', {textContent: ptc}),
 			Cmp('td', {textContent: fareType}),
-			Cmp('td.net-price', {textContent: formatNet(ageGroupToBlock.adult)}),
-			Cmp('td.net-price', {textContent: formatNet(ageGroupToBlock.child)}),
-			Cmp('td.net-price', {textContent: formatNet(ageGroupToBlock.infant)}),
+			Cmp('td.net-price', {textContent: formatNet(ageGroupToBlock.adult), title: pricingDump}),
+			Cmp('td.net-price', {textContent: formatNet(ageGroupToBlock.child), title: pricingDump}),
+			Cmp('td.net-price', {textContent: formatNet(ageGroupToBlock.infant), title: pricingDump}),
 		])]);
 	};
 
