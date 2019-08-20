@@ -20,6 +20,8 @@ const makeHttpRqBriefing = (rqBody, gds) => {
 			return '<' + match[1] + '/>';
 		} else if (match = rqBody.match(/:BeginSession>/)) {
 			return '<BeginSession/>';
+		} else if (match = rqBody.match(/:EndSession>/)) {
+			return '<EndSession/>';
 		} else if (match = rqBody.match(/:Request>\s*(.+?)\s*<\//)) {
 			return '>' + match[1] + ';';
 		}
@@ -40,6 +42,8 @@ const makeHttpRqBriefing = (rqBody, gds) => {
 			return '>' + match[1] + ';';
 		} else if (match = rqBody.match(/:SessionCreateRQ>/)) {
 			return '<SessionCreateRQ/>';
+		} else if (match = rqBody.match(/:SessionCloseRQ>/)) {
+			return '<SessionCloseRQ/>';
 		} else if (match = rqBody.match(/:Body><\w+:(\w+)/)) {
 			return '<' + match[1] + '/>';
 		}
