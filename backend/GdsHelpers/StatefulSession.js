@@ -113,9 +113,9 @@ const StatefulSession = ({
 			messageType: messageType, ...params,
 		}).then(rs => {
 			if (rs.error) {
-				return Rej.FailedDependency('Client returned error - ' + rs.error, rs);
+				return Rej.FailedDependency('Client returned error - ' + rs.error + ' - in session #' + session.id, rs);
 			} else if (!rs.value) {
-				return Rej.FailedDependency('Client failed to provide value', rs);
+				return Rej.FailedDependency('Client failed to provide value in session #' + session.id, rs);
 			} else {
 				return Promise.resolve(rs.value);
 			}
