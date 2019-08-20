@@ -25,6 +25,18 @@ const PricePccMixList = () => {
 		return sign + netPrice.amount;
 	};
 
+	const findFirstHigherThan = (newTr) => {
+		const newPrice = newTr.getAttribute('data-net-price');
+		const trs = [...tbodyCmp.context.querySelectorAll(':scope > tr[data-net-price]')];
+		for (const tr of trs) {
+			const oldPrice = tr.getAttribute('data-net-price');
+			if (+oldPrice > +newPrice) {
+				return tr;
+			}
+		}
+		return null;
+	};
+
 	/** @param {{gds, pcc}} pccResult = (new (require('RepriceInAnotherPccAction.js'))).repriceIn() */
 	const addRow = ({pccResult}) => {
 		const ageGroupToBlock = {};
@@ -47,14 +59,22 @@ const PricePccMixList = () => {
 			.map(({cmd, output}) => '>' + cmd + ';\n' + output)
 			.join('\n');
 
-		tbodyCmp.attach([Cmp('tr').attach([
+		const trCmp = Cmp('tr').attach([
 			Cmp('td', {textContent: pccResult.pcc}),
 			Cmp('td', {textContent: ptc}),
 			Cmp('td', {textContent: mainPtcBlock.fareType}),
 			Cmp('td.net-price', {textContent: formatNet(ageGroupToBlock.adult), title: pricingDump}),
 			Cmp('td.net-price', {textContent: formatNet(ageGroupToBlock.child), title: pricingDump}),
 			Cmp('td.net-price', {textContent: formatNet(ageGroupToBlock.infant), title: pricingDump}),
-		])]);
+		]);
+		trCmp.context.setAttribute('data-net-price', mainPtcBlock.fareInfo.totalFare.amount);
+
+		const firstHigher = findFirstHigherThan(trCmp.context);
+		if (firstHigher) {
+			firstHigher.parentNode.insertBefore(trCmp.context, firstHigher);
+		} else {
+			tbodyCmp.attach([trCmp]);
+		}
 	};
 
 	const finalize = (data) => {
@@ -75,7 +95,6 @@ const PricePccMixList = () => {
 let priceMixList = null;
 
 PricePccMixList.finalize = (data) => {
-	console.debug('ololo finalize', {data, priceMixList});
 	if (priceMixList) {
 		priceMixList.finalize(data);
 	}
