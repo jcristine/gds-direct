@@ -9,7 +9,7 @@ let makeAliases = () => {
 	a.setAttribute('target', '_blank');
 
 	a.textContent = 'aliases';
-	a.setAttribute('href', '/public/help/aliases.md');
+	a.setAttribute('href', window.GdsDirectPlusParams.rootUrl + '/public/help/aliases.md');
 
 	section.appendChild(a);
 
@@ -48,7 +48,7 @@ let makeSabre = () => {
 	a.setAttribute('target', '_blank');
 
 	a.textContent = 'formats';
-	a.setAttribute('href', GdsDirectPlusParams.rootUrl + '/public/help/sabre.html');
+	a.setAttribute('href', window.GdsDirectPlusParams.rootUrl + '/public/help/sabre.html');
 
 	label.textContent = 'Sabre: ';
 

@@ -34,12 +34,12 @@ class ImportFareComponentsAction extends AbstractGdsAction {
 	async getRulesViaCli({fareComponentNumber, paragraphs}) {
 		paragraphs = paragraphs || [];
 		paragraphs = paragraphs.length > 0 ? paragraphs : ['ALL'];
-		let cmd = 'FN' + fareComponentNumber + '/' + paragraphs.join('/');
-		let cmdRec = await fetchAll(cmd, this);
-		let lines = cmdRec.output.split('\n');
+		const cmd = 'FN' + fareComponentNumber + '/' + paragraphs.join('/');
+		const cmdRec = await fetchAll(cmd, this);
+		const lines = cmdRec.output.split('\n');
 		// "  QUOTE\t1" is present only in terminal response
 		lines.shift();
-		let output = lines.join('\n');
+		const output = lines.join('\n');
 		return {cmd, output};
 	}
 
@@ -48,7 +48,7 @@ class ImportFareComponentsAction extends AbstractGdsAction {
 			$sectionRecord;
 
 		$sections = [];
-		let params = {
+		const params = {
 			'fareComponentNumber': $fareNumber,
 			'paragraphs': $paragraphs,
 		};
@@ -88,7 +88,7 @@ class ImportFareComponentsAction extends AbstractGdsAction {
 		let $cmd, $dump, $fqn, $error, $i, $comp, $num, $paragraphs, $rules;
 
 		$cmd = 'FQN' + $subPricingNumber;
-		let cmdRec = await this.runCmd($cmd);
+		const cmdRec = await this.runCmd($cmd);
 		$dump = cmdRec.output;
 		$fqn = FqnParser.parse($dump);
 		if ($error = $fqn['error']) {
@@ -96,7 +96,7 @@ class ImportFareComponentsAction extends AbstractGdsAction {
 			return {'error': $error};
 		}
 
-		let $comps = $fqn['components'];
+		const $comps = $fqn['components'];
 		for ([$i, $comp] of Object.entries($comps)) {
 			$num = $comp['componentNumber'];
 			$paragraphs = Fp.filter('is_numeric', $sectionCodes);

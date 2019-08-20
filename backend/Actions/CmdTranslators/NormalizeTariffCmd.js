@@ -3,7 +3,7 @@
 const ApolloCmdParser = require('../../Transpiled/Gds/Parsers/Apollo/CommandParser.js');
 const DateTime = require('../../Transpiled/Lib/Utils/DateTime.js');
 
-let php = require('klesun-node-tools/src/Transpiled/php.js');
+const php = require('klesun-node-tools/src/Transpiled/php.js');
 
 /** takes gds and tariff cmd like $D10DECKIVRIX and parses it into a structure common to all GDS-es */
 class NormalizeTariffCmd

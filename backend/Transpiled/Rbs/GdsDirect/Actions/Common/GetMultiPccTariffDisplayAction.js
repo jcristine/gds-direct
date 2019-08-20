@@ -1,3 +1,4 @@
+const RepricePccRules = require('../../../../../Repositories/RepricePccRules.js');
 
 const ArrayUtil = require('../../../../Lib/Utils/ArrayUtil.js');
 const Fp = require('../../../../Lib/Utils/Fp.js');
@@ -6,7 +7,7 @@ const RbsClient = require("../../../../../IqClients/RbsClient");
 const NormalizeTariffCmd = require('../../../../../Actions/CmdTranslators/NormalizeTariffCmd.js');
 const MakeMultiPccTariffDumpAction = require('./MakeMultiPccTariffDumpAction.js');
 
-let php = require('klesun-node-tools/src/Transpiled/php.js');
+const php = require('klesun-node-tools/src/Transpiled/php.js');
 const {allWrap} = require('klesun-node-tools/src/Lang.js');
 const {timeout} = require("../../../../../Utils/TmpLib");
 
@@ -49,93 +50,15 @@ class GetMultiPccTariffDisplayAction {
 		return this;
 	}
 
-	async getRepriceRules() {
-		if (!this.$repriceRules) {
-			let serviceRs = await RbsClient.getMultiPccTariffRules();
-			let apiData = serviceRs.result.result;
-			this.$repriceRules = apiData.records;
-		}
-		return Promise.resolve(this.$repriceRules);
-	}
-
-	static async _matchesLocationItem($airport, $item, $geo) {
-		if ($item['type'] === 'airport') {
-			return $item['value'] === $airport;
-		} else if ($item['type'] === 'city') {
-			return $geo.doesBelongToCity($airport, $item['value']);
-		} else if ($item['type'] === 'country') {
-			return $item['value'] === await $geo.getCountryCode($airport);
-		} else if ($item['type'] === 'region') {
-			return $item['value'] == await $geo.getRegionId($airport);
-		} else {
-			return false;
-		}
-	}
-
-	static async matchesLocation($airport, $locationItems, $geo) {
-		if (php.empty($locationItems)) {
-			return true;
-		}
-		for (let $item of $locationItems) {
-			if (await this._matchesLocationItem($airport, $item, $geo)) {
-				return true;
-			}
-		}
-		return false;
-	}
-
-	static transformPccRecordFromDb($pccRec) {
-		return php.array_filter({
-			'gds': $pccRec['gds'],
-			'pcc': $pccRec['pcc'],
-			'ptc': $pccRec['ptc'] || null,
-			'accountCode': $pccRec['account_code'] || null,
-			'fareType': $pccRec['fare_type'] || null,
+	async getPccs(cmdData, sessionData) {
+		return RepricePccRules.getMatchingPccs({
+			departureAirport: cmdData.departureAirport,
+			destinationAirport: cmdData.destinationAirport,
+			gds: sessionData.gds,
+			pcc: sessionData.pcc,
+			repricePccRules: this.$repriceRules,
+			geoProvider: this.$geoProvider,
 		});
-	}
-
-	/** @param $rules = [MultiPccTariffRuleJsApiController::normalizeRule()] */
-	async getRoutePccs($depAirport, $destAirport, $rules) {
-		let $rule, $geo;
-		for ($rule of Object.values($rules)) {
-			$geo = this.$geoProvider;
-			if (await this.constructor.matchesLocation($depAirport, $rule['departure_items'], $geo) &&
-				await this.constructor.matchesLocation($destAirport, $rule['destination_items'], $geo)
-			) {
-				return php.array_map(a => this.constructor.transformPccRecordFromDb(a), $rule['reprice_pcc_records']);
-			}
-		}
-		return [];
-	}
-
-	async getPccs($cmdData, $sessionData) {
-		let $routeRules, $fallbackPccs, $rules, $rule, $pccs, $isCurrent;
-		$routeRules = [];
-		$fallbackPccs = [];
-		$rules = await this.getRepriceRules();
-		for ($rule of Object.values($rules)) {
-			if (!php.empty($rule['departure_items']) ||
-				!php.empty($rule['destination_items'])
-			) {
-				$routeRules.push($rule);
-			} else {
-				$fallbackPccs = $rule['reprice_pcc_records']
-					.map(r => this.constructor.transformPccRecordFromDb(r));
-			}
-		}
-		let pccsFromRules = php.array_merge(
-			await this.getRoutePccs($cmdData['departureAirport'], $cmdData['destinationAirport'], $routeRules),
-			await this.getRoutePccs($cmdData['destinationAirport'], $cmdData['departureAirport'], $routeRules),
-		);
-		$pccs = pccsFromRules.length > 0 ? pccsFromRules : $fallbackPccs;
-		$isCurrent = ($pccRec) => {
-			return $pccRec['gds'] === $sessionData['gds']
-				&& $pccRec['pcc'] === $sessionData['pcc'];
-		};
-		if (!Fp.any($isCurrent, $pccs)) {
-			$pccs.push({'gds': $sessionData['gds'], 'pcc': $sessionData['pcc']});
-		}
-		return $pccs;
 	}
 
 	static extendFromPccRecord($rpcParams, $pccRec, $sessionData) {
@@ -279,9 +202,9 @@ class GetMultiPccTariffDisplayAction {
 		if (!php.empty($rpcParamRecord['error'])) {
 			return {'errors': ['Failed to generate RPC params - ' + $rpcParamRecord['error']]};
 		}
-		let promises = [];
-		for (let $rpcParams of Object.values($rpcParamRecord['options'])) {
-			let $pccParams = this.constructor.arrayDiffTree($rpcParams, $rpcParamRecord['baseParams']);
+		const promises = [];
+		for (const $rpcParams of Object.values($rpcParamRecord['options'])) {
+			const $pccParams = this.constructor.arrayDiffTree($rpcParams, $rpcParamRecord['baseParams']);
 			let whenTariff = RbsClient.getTariffDisplay($rpcParams)
 				.then(serviceRs => ({
 					pcc: $rpcParams.pcc,
@@ -301,14 +224,14 @@ class GetMultiPccTariffDisplayAction {
 		}
 		this.log('Started ' + php.count(promises) + ' jobs: ' + php.implode(', ', php.array_column(promises, 'pcc')), promises);
 		$timeout = this.constructor.TIMEOUT;
-		let wrap = await allWrap(promises);
-		let $finishedJobs = wrap.resolved;
-		let errors = wrap.rejected.map(exc => (exc + '').slice(0, 90) + '...');
+		const wrap = await allWrap(promises);
+		const $finishedJobs = wrap.resolved;
+		const errors = wrap.rejected.map(exc => (exc + '').slice(0, 90) + '...');
 		this.logFinishedJobs($finishedJobs, promises);
 
 		$hasFares = ($job) => !php.empty($job['jobResult']['result']['fares']);
 		if (!Fp.any($hasFares, $finishedJobs)) {
-			let formatted = php.array_map(a => this.constructor.formatJobError(a), $finishedJobs);
+			const formatted = php.array_map(a => this.constructor.formatJobError(a), $finishedJobs);
 			formatted.push(...errors);
 			return {'errors': formatted.length > 0 ? formatted : ['None of PCC jobs responded']};
 		}

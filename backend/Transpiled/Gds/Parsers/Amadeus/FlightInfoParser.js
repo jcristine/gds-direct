@@ -233,7 +233,7 @@ class FlightInfoParser {
 		$legs = [];
 		$i = 0;
 		for ($location of Object.values($locations)) {
-			let keys = php.array_keys(php.array_filter($location));
+			const keys = php.array_keys(php.array_filter($location));
 			if (php.equals(keys, ['meals'])) {
 				// line with only meals - continuation of last line
 				$legs[$i - 1]['meals'] = php.array_merge($legs[$i - 1]['meals'], $location['meals']);
@@ -270,7 +270,7 @@ class FlightInfoParser {
 
 		$legs = [];
 		$departureStarted = true;
-		let initLeg = () => ({
+		const initLeg = () => ({
 			departureOperations: [],
 			destinationOperations: [],
 		});
@@ -325,7 +325,7 @@ class FlightInfoParser {
 		}
 
 		for ($i = php.count($comments) - 1; $i > 0; --$i) {
-			let keys = php.array_keys(php.array_filter($comments[$i]));
+			const keys = php.array_keys(php.array_filter($comments[$i]));
 			if (php.equals(keys, ['raw'])) {
 				// unwrap wrapped comment
 				$comments[$i - 1]['raw'] += php.PHP_EOL + $comments[$i]['raw'];
@@ -358,7 +358,7 @@ class FlightInfoParser {
 
 		$additionalInfo = this.parseAdditionalInfo($lines);
 
-		let legs = this.locationsToLegs($locations);
+		const legs = this.locationsToLegs($locations);
 		return {
 			'type': 'planned',
 			'airline': $headerData['airline'],
@@ -447,7 +447,7 @@ class FlightInfoParser {
 			'(?<departureDate>\\d{1,2}[A-Z]{3}\\d{2,4})\\s+' +
 			'FLIGHT NOT OPERATIONAL/';
 
-		let line = php.array_shift($lines);
+		const line = php.array_shift($lines);
 		if (php.preg_match($regex, line, $matches = [])) {
 			[$_, $lines] = this.parseSequence($lines, (...args) => this.isEmptyLine(...args));
 			return {

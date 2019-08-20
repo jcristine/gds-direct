@@ -19,7 +19,7 @@ class ImportSabrePnrFormatAdapter {
 
 	/** @param $parsedData = SabreReservationParser::parse() */
 	static transformReservation($parsedData, $creationDate) {
-		let $nameRecords, $reservation, $pnrInfo, $baseDate;
+		let $nameRecords, $reservation, $pnrInfo;
 
 		if (php.isset($parsedData['error'])) {
 			return $parsedData;
@@ -29,10 +29,10 @@ class ImportSabrePnrFormatAdapter {
 		$reservation = {};
 
 		$pnrInfo = php.isset($parsedData['parsedData']['pnrInfo']) ? this.transformPnrInfo($parsedData['parsedData']['pnrInfo']) : null;
-		$baseDate = ($pnrInfo['reservationDate'] || {})['full'] || $creationDate;
+		const baseDate = !$pnrInfo ? $creationDate : $pnrInfo.reservationDate.full;
 		$reservation['pnrInfo'] = $pnrInfo;
 		$reservation['passengers'] = $nameRecords;
-		$reservation['itinerary'] = FormatAdapter.adaptSabreItineraryParseForClient(($parsedData['parsedData'] || {})['itinerary'] || [], $baseDate);
+		$reservation['itinerary'] = FormatAdapter.adaptSabreItineraryParseForClient(($parsedData['parsedData'] || {})['itinerary'] || [], baseDate);
 
 		// commenting til we really need these fields
 
@@ -812,7 +812,7 @@ class ImportSabrePnrFormatAdapter {
 	// ======================
 
 	static transformBagAllowanceSegment($segment) {
-		let parsedCode = $segment['free']['amount'] || {};
+		const parsedCode = $segment['free']['amount'] || {};
 		return {
 			'segmentDetails': {
 				'airline': $segment['free']['airline'],

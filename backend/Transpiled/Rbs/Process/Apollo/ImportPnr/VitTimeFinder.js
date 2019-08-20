@@ -34,7 +34,7 @@ class VitTimeFinder {
 	async findPairDt($departure, $destination) {
 		let $tuples, $tuple, $vitDprt, $vitDst, $dprtDt, $dstDt;
 
-		for (let promise of this.getFetchedDataOnDemand()) {
+		for (const promise of this.getFetchedDataOnDemand()) {
 			$tuples = await promise;
 			for ($tuple of $tuples) {
 				[$vitDprt, $vitDst, $dprtDt, $dstDt] = $tuple;
@@ -78,7 +78,7 @@ class VitTimeFinder {
 		let $fullDate, $apolloDate, $vitCmd, $vitDump, $vitData;
 
 		// 2016 - a leap year
-		let baseSec = php.strtotime('2016-' + this.$departureDate);
+		const baseSec = php.strtotime('2016-' + this.$departureDate);
 		$fullDate = +$dayOffset
 			? php.strtotime('+' + $dayOffset + ' days', baseSec)
 			: baseSec;

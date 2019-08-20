@@ -1,3 +1,4 @@
+const ImportApolloPnrFormatAdapter = require('../Process/Apollo/ImportPnr/ImportApolloPnrFormatAdapter.js');
 
 const Fp = require('../../Lib/Utils/Fp.js');
 const PnrParser = require('../../Gds/Parsers/Apollo/Pnr/PnrParser.js');
@@ -92,6 +93,10 @@ class ApolloPnr {
 	 */
 	getItinerary() {
 		return this.getSegmentsWithType(['SEGMENT_TYPE_ITINERARY_SEGMENT']);
+	}
+
+	getReservation(baseDate) {
+		return ImportApolloPnrFormatAdapter.transformReservation(this.$parsed, baseDate);
 	}
 
 	getSegmentsWithType($types) {

@@ -4,7 +4,7 @@ const Db = require('../Utils/Db.js');
 const TABLE = 'custom_data';
 
 exports.set = (name, value) => {
-	let serialized = JSON.stringify(value);
+	const serialized = JSON.stringify(value);
 	return Db.with(db => db.writeRows(TABLE, [{name, value: serialized}]));
 };
 

@@ -3,8 +3,8 @@ const php = require('klesun-node-tools/src/Transpiled/php.js');
 const Rej = require('klesun-node-tools/src/Rej.js');
 
 const dict = items => {
-	let result = {};
-	for (let item of items) {
+	const result = {};
+	for (const item of items) {
 		result[item.type] = item.parsed;
 	}
 	return result;
@@ -13,8 +13,8 @@ const dict = items => {
 const normalizePaxes_apollo = (mods) => {
 	// In Apollo you can't specify PTC without pax numbers even if there are no paxes in PNR
 	//$paxNums = array_column($mods['passengers']['passengerProperties'] ?? [], 'passengerNumber');
-	let paxNums = [];
-	let ptcs = php.array_column((mods['passengers'] || {})['passengerProperties'] || [], 'ptc');
+	const paxNums = [];
+	const ptcs = php.array_column((mods['passengers'] || {})['passengerProperties'] || [], 'ptc');
 	if (php.empty(ptcs) && !php.empty(mods['accompaniedChild'])) {
 		ptcs.push('C05');
 	}
@@ -22,11 +22,11 @@ const normalizePaxes_apollo = (mods) => {
 };
 
 const normalizePaxes_galileo = (mods) => {
-	let paxNums = [];
-	let ptcs = [];
-	for (let ptcGroup of Object.values((mods['passengers'] || {})['ptcGroups'] || [])) {
+	const paxNums = [];
+	const ptcs = [];
+	for (const ptcGroup of Object.values((mods['passengers'] || {})['ptcGroups'] || [])) {
 		if (!mods['passengers']['appliesToAll']) {
-			for (let number of Object.values(ptcGroup['passengerNumbers'])) {
+			for (const number of Object.values(ptcGroup['passengerNumbers'])) {
 				ptcs.push(ptcGroup['ptc']);
 			}
 		} else {
@@ -40,9 +40,9 @@ const normalizePaxes_galileo = (mods) => {
 };
 
 const normalizePaxes_sabre = (mods) => {
-	let paxNums = php.array_column(mods['names'] || [], 'fieldNumber');
-	let ptcs = [];
-	for (let ptcRec of Object.values(mods['ptc'] || [])) {
+	const paxNums = php.array_column(mods['names'] || [], 'fieldNumber');
+	const ptcs = [];
+	for (const ptcRec of Object.values(mods['ptc'] || [])) {
 		for (let i = 0; i < (ptcRec['quantity'] || 1); ++i) {
 			ptcs.push(ptcRec['ptc']);
 		}
@@ -51,9 +51,9 @@ const normalizePaxes_sabre = (mods) => {
 };
 
 const normalizePaxes_amadeus = (mods) => {
-	let normPtc = ($ptc) => ({'IN': 'INF', 'CH': 'CNN'} || {})[$ptc] || $ptc;
-	let paxNums = mods['names'] || [];
-	let ptcs = Fp.map(normPtc, (mods['generic'] || {})['ptcs'] || []);
+	const normPtc = ($ptc) => ({'IN': 'INF', 'CH': 'CNN'} || {})[$ptc] || $ptc;
+	const paxNums = mods['names'] || [];
+	const ptcs = Fp.map(normPtc, (mods['generic'] || {})['ptcs'] || []);
 	return {paxNums, ptcs};
 };
 
@@ -97,14 +97,14 @@ const baseCmdMapping = {
 
 /** @param parsed = require('CommandParser.js').parse() */
 const inApollo = (parsed) => {
-	let mods = parsed.data.pricingModifiers;
-	let action = parsed.type === 'storePricing' ? 'storePricing' :
+	const mods = parsed.data.pricingModifiers;
+	const action = parsed.type === 'storePricing' ? 'storePricing' :
 		baseCmdMapping.apollo[parsed.data.baseCmd];
 	if (!action) {
 		throw Rej.NotImplemented.makeExc('Unsupported base cmd - ' + parsed.data.baseCmd);
 	}
-	let normMods = [];
-	for (let mod of mods) {
+	const normMods = [];
+	for (const mod of mods) {
 		if (mod.type === 'passengers') {
 			normMods.push({type: 'namePosition'});
 		} else {
@@ -120,23 +120,23 @@ const inApollo = (parsed) => {
 
 /** @param parsed = require('CommandParser.js').parse() */
 const inSabre = (parsed) => {
-	let mods = parsed.data.pricingModifiers;
-	let normMods = [];
+	const mods = parsed.data.pricingModifiers;
+	const normMods = [];
 	let action = 'price';
 	let fareBasis = null;
-	let segMod = {
+	const segMod = {
 		type: 'segments',
 		parsed: {bundles: []},
 	};
 	let segBundlesPushed = false;
-	let pushSegBundles = () => {
+	const pushSegBundles = () => {
 		if (!segBundlesPushed) {
 			segBundlesPushed = true;
 			normMods.push(segMod);
 		}
 	};
-	for (let mod of mods) {
-		let asAction = baseCmdMapping.sabre['WP' + mod.raw];
+	for (const mod of mods) {
+		const asAction = baseCmdMapping.sabre['WP' + mod.raw];
 		if (asAction) {
 			action = asAction;
 		} else if (mod.type === 'fareBasis') {
@@ -165,14 +165,14 @@ const inSabre = (parsed) => {
 
 /** @param parsed = require('CommandParser.js').parse() */
 const inGalileo = (parsed) => {
-	let mods = parsed.data.pricingModifiers;
-	let action = parsed.type === 'storePricing' ? 'storePricing' :
+	const mods = parsed.data.pricingModifiers;
+	const action = parsed.type === 'storePricing' ? 'storePricing' :
 		baseCmdMapping.galileo[parsed.data.baseCmd];
 	if (!action) {
 		throw Rej.NotImplemented.makeExc('Unsupported base cmd - ' + parsed.data.baseCmd);
 	}
-	let normMods = [];
-	for (let mod of mods) {
+	const normMods = [];
+	for (const mod of mods) {
 		if (mod.type === 'passengers') {
 			normMods.push({type: 'namePosition'});
 		} else {
@@ -188,30 +188,30 @@ const inGalileo = (parsed) => {
 
 /** @param parsed = require('CommandParser.js').parse() */
 const inAmadeus = (parsed) => {
-	let stores = parsed.data.pricingStores;
+	const stores = parsed.data.pricingStores;
 	if (stores.length > 1) {
 		throw Rej.NotImplemented.makeExc('Multiple stores (' + stores.length + ') in one format is not supported');
 	}
-	let mods = stores[0] || [];
-	let action = baseCmdMapping.amadeus[parsed.data.baseCmd];
+	const mods = stores[0] || [];
+	const action = baseCmdMapping.amadeus[parsed.data.baseCmd];
 
-	let normMods = [];
+	const normMods = [];
 	let fareBasis = null;
-	let segMod = {
+	const segMod = {
 		type: 'segments',
 		parsed: {bundles: []},
 	};
 	let segBundlesPushed = false;
-	let pushSegBundles = () => {
+	const pushSegBundles = () => {
 		if (!segBundlesPushed) {
 			segBundlesPushed = true;
 			normMods.push(segMod);
 		}
 	};
-	for (let mod of mods) {
+	for (const mod of mods) {
 		if (mod.type === 'generic') {
 			normMods.push({type: 'namePosition'});
-			for (let subMod of mod.parsed.rSubModifiers) {
+			for (const subMod of mod.parsed.rSubModifiers) {
 				normMods.push(subMod);
 			}
 		} else if (mod.type === 'fareBasis') {

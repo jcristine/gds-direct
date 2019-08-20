@@ -4,7 +4,7 @@ const Fp = require('../../../../Lib/Utils/Fp.js');
 const StringUtil = require('../../../../Lib/Utils/StringUtil.js');
 const LocationGeographyProvider = require('../../../../Rbs/DataProviders/LocationGeographyProvider.js');
 
-let php = require('../../../../phpDeprecated.js');
+const php = require('../../../../phpDeprecated.js');
 
 class MakeMultiPccTariffDumpAction {
 	static makeHeaderDump($finishedJobs, $currentPcc) {
@@ -79,7 +79,7 @@ class MakeMultiPccTariffDumpAction {
 	static chooseFareToShow($sameFares, $sessionData, $cmdData) {
 		let $gdsToPccToFare, $firstGds, $geo, $departureCountry, $notChosen, $otherFares;
 		$gdsToPccToFare = {};
-		for (let $fare of Object.values($sameFares)) {
+		for (const $fare of Object.values($sameFares)) {
 			$gdsToPccToFare[$fare['gds']] = $gdsToPccToFare[$fare['gds']] || {};
 			$gdsToPccToFare[$fare['gds']][$fare['pcc']] = $fare;
 		}
@@ -193,7 +193,7 @@ class MakeMultiPccTariffDumpAction {
 				}
 			}
 		}
-		let getValue = ($fare) => php.floatval($fare['fare']) * ($fare['isRoundTrip'] ? 1 : 2);
+		const getValue = ($fare) => php.floatval($fare['fare']) * ($fare['isRoundTrip'] ? 1 : 2);
 		$fares = Fp.sortBy(getValue, $fares);
 		return Fp.groupBy(($fare) => {
 			return php.json_encode([

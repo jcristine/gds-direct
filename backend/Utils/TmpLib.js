@@ -45,14 +45,14 @@ exports.wrapExc = async getter => getter();
 exports.ignoreExc = (defaultValue, allowedKinds) => Lang.coverExc(allowedKinds, () => defaultValue);
 
 exports.addPerformanceDebug = (label, prevResult = null) => {
-	let startMs = Date.now();
-	let startMem = process.memoryUsage();
-	let prevDebug = !prevResult ? [] : prevResult.performanceDebug || [];
+	const startMs = Date.now();
+	const startMem = process.memoryUsage();
+	const prevDebug = !prevResult ? [] : prevResult.performanceDebug || [];
 	return (result) => {
 		return result;
 		// remove performance logging for now
 		if (typeof result === 'object' && result !== null) {
-			let endMs = Date.now();
+			const endMs = Date.now();
 			result.performanceDebug = result.performanceDebug || [];
 			result.performanceDebug = prevDebug.concat([{
 				label: label,

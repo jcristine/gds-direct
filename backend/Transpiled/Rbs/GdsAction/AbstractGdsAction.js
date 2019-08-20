@@ -11,7 +11,7 @@ class AbstractGdsAction {
 
 	async runCmd($cmd) {
 		$cmd = $cmd.toUpperCase();
-		let $cmdRec = await this.session.runCmd($cmd);
+		const $cmdRec = await this.session.runCmd($cmd);
 		return $cmdRec;
 	}
 }

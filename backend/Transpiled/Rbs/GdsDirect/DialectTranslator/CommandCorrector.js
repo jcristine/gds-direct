@@ -283,8 +283,8 @@ class CommandCorrector {
 					correct: '1{date}{city_pair}{free_text}',
 					message: 'CORRECTED! USE 1 INSTEAD OF A IN SABRE',
 					condition: ({output}) => {
-						let norm = output.replace('‡', '¥');
-						let parsed = AvailCmdParser.parse(norm);
+						const norm = output.replace('‡', '¥');
+						const parsed = AvailCmdParser.parse(norm);
 						return parsed && !parsed.unparsed;
 					},
 				},
@@ -525,13 +525,13 @@ class CommandCorrector {
 	}
 
 	convertFromCyrillic(cmd) {
-		let cyrillicToLatin = {
+		const cyrillicToLatin = {
 			"Ё":"`","Й":
 			"Q","Ц":"W","У":"E","К":"R","Е":"T","Н":"Y","Г":"U","Ш":"I","Щ":"O","З":"P","Х":"[","Ъ":"]",
 			"Ф":"A","Ы":"S","В":"D","А":"F","П":"G","Р":"H","О":"J","Л":"K","Д":"L","Ж":";","Э":"'",
 			"Я":"Z","Ч":"X","С":"C","М":"V","И":"B","Т":"N","Ь":"M","Б":",","Ю":".",
 		};
-		let converted = cmd
+		const converted = cmd
 			.split('')
 			.map(ch => cyrillicToLatin[ch] || ch)
 			.join('');
@@ -574,10 +574,10 @@ class CommandCorrector {
 			) {
 				continue;
 			}
-			let condition = $patternData.condition || (() => true);
+			const condition = $patternData.condition || (() => true);
 			$mistake = $patternData['mistake'];
 			$correct = $patternData['correct'] || '';
-			let {translated, output} = SimplePatternTranslator.translatePattern($output, $mistake, $correct, $legend);
+			const {translated, output} = SimplePatternTranslator.translatePattern($output, $mistake, $correct, $legend);
 			if (translated && condition({output})) {
 				$output = this.constructor.cleanPatternPlaceholders(output);
 				if (php.isset($patternData['correct'])) {

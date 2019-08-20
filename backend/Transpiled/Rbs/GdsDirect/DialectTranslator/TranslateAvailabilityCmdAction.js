@@ -125,10 +125,10 @@ class TranslateAvailabilityCmdAction {
 			// each ¥ before airline marks the next connection up to 4 of them
 			// I guess we'll just merge them as I believe not all GDS-es support
 			// specifying an airline for each connection, though I may be wrong...
-			let $filters = $value.split(/(?:¥)+/).filter(s => s);
-			let $inclusive = ($flt) => !StringUtil.startsWith($flt, '*');
-			let $exclusive = ($flt) => StringUtil.startsWith($flt, '*');
-			let trimStar = ($flt) => $flt.replace(/^\*/, '');
+			const $filters = $value.split(/(?:¥)+/).filter(s => s);
+			const $inclusive = ($flt) => !StringUtil.startsWith($flt, '*');
+			const $exclusive = ($flt) => StringUtil.startsWith($flt, '*');
+			const trimStar = ($flt) => $flt.replace(/^\*/, '');
 			if (Fp.all($inclusive, $filters)) {
 				$filterType = 'include';
 			} else if (Fp.all($exclusive, $filters)) {
@@ -381,7 +381,7 @@ class TranslateAvailabilityCmdAction {
 				$translated = this.translateCaseVariable($key, $value, $fromGds, $toGds);
 			} else if ($key === 'flightType') {
 				if ($fromGds == 'sabre') {
-					let numOfFlights = ($data['airlines'] || '').split('').filter(c => c === '¥').length;
+					const numOfFlights = ($data['airlines'] || '').split('').filter(c => c === '¥').length;
 					$value += '¥'.repeat(numOfFlights);
 				}
 				$translated = this.translateCaseVariable($key, $value, $fromGds, $toGds);
@@ -413,21 +413,21 @@ class TranslateAvailabilityCmdAction {
 	}
 
 	static normalizeGalileoParts($cmd) {
-		let parsed = require('../../../Gds/Parsers/Galileo/CommandParser.js').parse($cmd);
+		const parsed = require('../../../Gds/Parsers/Galileo/CommandParser.js').parse($cmd);
 		if (parsed['type'] !== 'airAvailability' ||
 			!php.empty(parsed.data.unparsed) ||
 			!php.empty(parsed.followingCommands)
 		) {
 			return []; // failed to parse cmd
 		}
-		let data = parsed.data;
-		let parts = php.array_filter({
+		const data = parsed.data;
+		const parts = php.array_filter({
 			availability: 'A' + (data.orderBy || ''),
 			date: ((data.departureDate || {}).raw || ''),
 			cityPair: (data.departureAirport || '')
 					+ (data.destinationAirport || ''),
 		});
-		let modPartNames = {
+		const modPartNames = {
 			connection: 'connection',
 			airlines: 'airlines',
 			numberOfStops: 'flightType',
@@ -435,8 +435,8 @@ class TranslateAvailabilityCmdAction {
 			bookingClass: 'class',
 			allianceCode: 'allianceCode',
 		};
-		for (let mod of data.modifiers || []) {
-			let partName = modPartNames[mod.type];
+		for (const mod of data.modifiers || []) {
+			const partName = modPartNames[mod.type];
 			if (partName) {
 				parts[partName] = mod['raw'];
 			} else {
@@ -453,7 +453,7 @@ class TranslateAvailabilityCmdAction {
 			// reuse existing parser
 			return this.normalizeGalileoParts($input);
 		}
-		let toBeFirst = (lexeme) => lexeme.hasConstraint(ctx => ctx && ctx.lexemes.length === 0);
+		const toBeFirst = (lexeme) => lexeme.hasConstraint(ctx => ctx && ctx.lexemes.length === 0);
 		$parts = {
 			'apollo': {
 				'directLink': '^L@[A-Z\\d]{2}/(?=A\\/?)',

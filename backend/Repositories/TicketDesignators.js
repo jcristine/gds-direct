@@ -1,13 +1,13 @@
 const iqJson = require("../Utils/TmpLib").iqJson;
 const {getConfig} = require('../Config.js');
 
-let Db = require('../Utils/Db.js');
-let php = require('../Transpiled/phpDeprecated.js');
+const Db = require('../Utils/Db.js');
+const php = require('../Transpiled/phpDeprecated.js');
 const NotFound = require("klesun-node-tools/src/Rej").NotFound;
 
 const TABLE = 'ticket_designators';
 
-let normalizeRow = ($designator) => {
+const normalizeRow = ($designator) => {
 	return {
 		'code': $designator['title'],
 		'ticketing_correct_pricing_command':  $designator['ticketing_pricing_command'] || $designator['ticketing_correct_pricing_command'],
@@ -26,8 +26,8 @@ let normalizeRow = ($designator) => {
 	};
 };
 
-let fetchChunk = async (minUpdateDt) => {
-	let config = await getConfig();
+const fetchChunk = async (minUpdateDt) => {
+	const config = await getConfig();
 	return iqJson({
 		url: config.external_service.act.host,
 		credentials: {
@@ -54,7 +54,7 @@ exports.updateFromService = async () => {
 		$lastRow = $rows.slice(-1)[0];
 		$cols = php.array_keys($lastRow || []);
 		await Db.with(db => db.writeRows(TABLE, $rows));
-		let hasMore = $response.result_count < $response.filter_count;
+		const hasMore = $response.result_count < $response.filter_count;
 		if (hasMore && $lastRow &&
 			$lastRow['updated_in_act_dt'] > $lastDt
 		) {
@@ -74,7 +74,7 @@ exports.findByCode = async (gds, code) => {
 		return NotFound('Not an ITN ticket designator');
 	}
 	/** @var row = normalizeRow() */
-	let row = await Db.with(db => db.fetchOne({
+	const row = await Db.with(db => db.fetchOne({
 		table: TABLE,
 		where: [
 			['code', '=', code],

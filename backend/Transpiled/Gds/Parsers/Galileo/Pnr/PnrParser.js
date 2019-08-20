@@ -69,7 +69,7 @@ class PnrParser {
 	static splitToSections($dump) {
 		let $sections, $currentSectionName, $line, $sectionName;
 
-		let dataExistsLines = [];
+		const dataExistsLines = [];
 		$sections = {'HEAD': ''};
 
 		$currentSectionName = 'HEAD';
@@ -81,8 +81,8 @@ class PnrParser {
 			if ($sections[$currentSectionName]) {
 				$sections[$currentSectionName] += '\n';
 			}
-			let wrappedParts = $line.match(/.{1,64}/g) || [''];
-			for (let wrappedLine of wrappedParts) {
+			const wrappedParts = $line.match(/.{1,64}/g) || [''];
+			for (const wrappedLine of wrappedParts) {
 				if ($sectionName = this.detectSectionHeader(wrappedLine)) {
 					$currentSectionName = $sectionName;
 					$sections[$currentSectionName] = $sections[$currentSectionName] || '';

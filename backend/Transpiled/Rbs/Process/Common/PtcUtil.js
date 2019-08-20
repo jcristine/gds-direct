@@ -1,7 +1,7 @@
 const Rej = require('klesun-node-tools/src/Rej.js');
 
 
-let php = require('klesun-node-tools/src/Transpiled/php.js');
+const php = require('klesun-node-tools/src/Transpiled/php.js');
 
 const CHILD_MAX_AGE = 11;
 
@@ -10,16 +10,16 @@ const PtcUtil = ({
 	PtcFareFamilies = require('../../../../Repositories/PtcFareFamilies.js'),
 }) => {
 	const getFareType = async (ptc) => {
-		let families = await PtcFareFamilies.getAll();
-		for (let family of families) {
+		const families = await PtcFareFamilies.getAll();
+		for (const family of families) {
 			let matches;
 			if (php.preg_match(/^([A-Z])(\d{2})$/, ptc, matches = [])) {
-				let [$_, $letter, $age] = matches;
+				const [$_, $letter, $age] = matches;
 				if ($letter === family.childLetter) {
 					return family.name;
 				}
 			} else {
-				for (let [ageGroup, groupPtc] of Object.entries(family.groups)) {
+				for (const [ageGroup, groupPtc] of Object.entries(family.groups)) {
 					if (groupPtc === ptc) {
 						return family.name;
 					}
@@ -88,8 +88,8 @@ const PtcUtil = ({
 	 * @param $nameRecord = GdsPassengerBlockParser::flattenPassengers()[0]
 	 */
 	const convertPtcAgeGroup = async ($adultPtc, $nameRecord, $tripEndDt = null) => {
-		let ageGroup = getPaxAgeGroup($nameRecord, $tripEndDt);
-		let age = !php.empty($nameRecord['age'])
+		const ageGroup = getPaxAgeGroup($nameRecord, $tripEndDt);
+		const age = !php.empty($nameRecord['age'])
 			? php.str_pad($nameRecord['age'], 2, '0', php.STR_PAD_LEFT)
 			: null;
 		if ($nameRecord['ptc'] === 'YTH') {
@@ -97,9 +97,9 @@ const PtcUtil = ({
 		} else if (ageGroup === 'adult') {
 			return $adultPtc;
 		}
-		let fareFamily = await PtcFareFamilies.getByAdultPtc($adultPtc);
+		const fareFamily = await PtcFareFamilies.getByAdultPtc($adultPtc);
 		if ($nameRecord['ptc'] === 'INS') {
-			let ptc = fareFamily.groups.infantWithSeat;
+			const ptc = fareFamily.groups.infantWithSeat;
 			return ptc ? ptc : Rej.NotImplemented(
 				'No infant with a seat PTC matching ' + $adultPtc);
 		} else {
@@ -112,10 +112,10 @@ const PtcUtil = ({
 		if ($ageGroup === 'adult') {
 			return $adultPtc;
 		}
-		let fareFamily = await PtcFareFamilies.getByAdultPtc($adultPtc);
+		const fareFamily = await PtcFareFamilies.getByAdultPtc($adultPtc);
 		if ($ageGroup === 'child') {
 			if ($letter = fareFamily.childLetter) {
-				let age = !$age ? 'NN' : ('0' + $age).slice(-2);
+				const age = !$age ? 'NN' : ('0' + $age).slice(-2);
 				$pricingPtc = $letter + age;
 			} else if (fareFamily.groups.child) {
 				$pricingPtc = fareFamily.groups.child;
@@ -133,10 +133,10 @@ const PtcUtil = ({
 	};
 
 	const _getFullYearsBetween = (tripEndDt, dateOfBirth) => {
-		let dobObj = new Date(dateOfBirth);
-		let baseDtObj = new Date(tripEndDt);
-		let ageDifMs = baseDtObj.getTime() - dobObj.getTime();
-		let ageDate = new Date(ageDifMs); // milliseconds from epoch
+		const dobObj = new Date(dateOfBirth);
+		const baseDtObj = new Date(tripEndDt);
+		const ageDifMs = baseDtObj.getTime() - dobObj.getTime();
+		const ageDate = new Date(ageDifMs); // milliseconds from epoch
 		return Math.abs(ageDate.getUTCFullYear() - 1970);
 	};
 

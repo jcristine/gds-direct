@@ -129,7 +129,7 @@ class ImportPqGalileoAction extends AbstractGdsAction {
 	}
 
 	async fetchPricingFcData($raw, $cmd) {
-		let linearRec = await fetchAll('F*Q', this);
+		const linearRec = await fetchAll('F*Q', this);
 		this.$allCommands.push(linearRec);
 		return this.processPricingOutput({
 			cmd: $cmd,
@@ -142,20 +142,20 @@ class ImportPqGalileoAction extends AbstractGdsAction {
 	 * @return Promise
 	 */
 	static subtractPricedSegments(segmentsLeft, parsedCmd, followingCommands) {
-		let numToSeg = php.array_combine(
+		const numToSeg = php.array_combine(
 			segmentsLeft.map(s => s.segmentNumber),
 			segmentsLeft,
 		);
-		let modItems = parsedCmd.data.pricingModifiers;
-		let modDict = php.array_combine(
+		const modItems = parsedCmd.data.pricingModifiers;
+		const modDict = php.array_combine(
 			modItems.map(i => i.type),
 			modItems.map(i => i.parsed),
 		);
-		let bundles = (modDict.segments || {}).bundles || [];
+		const bundles = (modDict.segments || {}).bundles || [];
 		if (bundles.length === 0 || bundles[0].segmentNumbers.length === 0) {
 			// applies to all segments
 			if (followingCommands.length > 0) {
-				let error = 'Last pricing command ' + followingCommands.map(r => r.cmd).join(' & ') +
+				const error = 'Last pricing command ' + followingCommands.map(r => r.cmd).join(' & ') +
 					' does not cover some itinerary segments: ' +
 					segmentsLeft.map(s => s.segmentNumber).join(',');
 				return Rej.BadRequest(error);
@@ -163,8 +163,8 @@ class ImportPqGalileoAction extends AbstractGdsAction {
 				return Promise.resolve([]);
 			}
 		} else {
-			for (let bundle of bundles) {
-				for (let segNum of bundle.segmentNumbers) {
+			for (const bundle of bundles) {
+				for (const segNum of bundle.segmentNumbers) {
 					if (!numToSeg[segNum]) {
 						return Rej.BadRequest('Repeating segment number ' + segNum + ' covered by >' + parsedCmd.cmd + ';');
 					} else {
@@ -177,13 +177,13 @@ class ImportPqGalileoAction extends AbstractGdsAction {
 	}
 
 	async collectPricingCmds(segmentsLeft) {
-		let cmdRecords = [];
+		const cmdRecords = [];
 		let linearOutput = null;
 		let mrs = [];
-		for (let cmdRec of [...this.$preCalledCommands].reverse()) {
+		for (const cmdRec of [...this.$preCalledCommands].reverse()) {
 			mrs.unshift(cmdRec.output);
-			let parsed = CommandParser.parse(cmdRec.cmd);
-			let output = joinFullOutput(mrs);
+			const parsed = CommandParser.parse(cmdRec.cmd);
+			const output = joinFullOutput(mrs);
 			if (parsed.type !== 'moveRest') {
 				mrs = [];
 			}
@@ -218,8 +218,8 @@ class ImportPqGalileoAction extends AbstractGdsAction {
 	}
 
 	async getPricing(reservation) {
-		let cmdRecords = await this.collectPricingCmds(reservation.itinerary);
-		let result = {
+		const cmdRecords = await this.collectPricingCmds(reservation.itinerary);
+		const result = {
 			currentPricing: {
 				cmd: cmdRecords.map(r => r.cmd).join('&'),
 				raw: cmdRecords.map(r => r.output).join('\n&\n'),
@@ -230,24 +230,24 @@ class ImportPqGalileoAction extends AbstractGdsAction {
 			// pricing F*Q to PQT, not just the last one...
 			linearFare: null,
 		};
-		for (let [i, cmdRec] of Object.entries(cmdRecords)) {
-			let {cmd, output, linearOutput} = cmdRec;
+		for (const [i, cmdRec] of Object.entries(cmdRecords)) {
+			const {cmd, output, linearOutput} = cmdRec;
 			this.$allCommands.push({cmd, output});
 			this.$allCommands.push({cmd: 'F*Q', output: linearOutput});
 
-			let errors = GetPqItineraryAction.checkPricingCommand('galileo', cmd, this.$leadData);
+			const errors = GetPqItineraryAction.checkPricingCommand('galileo', cmd, this.$leadData);
 			if (errors.length > 0) {
 				result.error = 'Invalid pricing command - ' + cmd + ' - ' + php.implode(';', errors);
 				return result;
 			}
-			let processed = this.processPricingOutput(cmdRec);
+			const processed = this.processPricingOutput(cmdRec);
 			if (processed.error) {
 				result.error = processed.error;
 				return result;
 			}
-			let store = processed.currentPricing.parsed.pricingList[0];
+			const store = processed.currentPricing.parsed.pricingList[0];
 			store.pricingNumber = +i + 1;
-			let bagBocks = processed.bagPtcPricingBlocks
+			const bagBocks = processed.bagPtcPricingBlocks
 				.map(bagBlock => ({...bagBlock, pricingNumber: +i+1}));
 			result.currentPricing.parsed.pricingList.push(store);
 			result.bagPtcPricingBlocks.push(...bagBocks);
@@ -295,7 +295,7 @@ class ImportPqGalileoAction extends AbstractGdsAction {
 		if ($error = $result['error']) return {'error': $error};
 
 		this.$allCommands.push($result.cmdRec);
-		for (let $fareData of Object.values($result['fareList'])) {
+		for (const $fareData of Object.values($result['fareList'])) {
 			this.$allCommands.push($fareData.cmdRec);
 		}
 		return {
@@ -363,7 +363,7 @@ class ImportPqGalileoAction extends AbstractGdsAction {
 			if ($result['error'] = $flightServiceRecord['error']) return $result;
 			$result['pnrData']['flightServiceInfo'] = $flightServiceRecord;
 
-			let pricingList = $pricingRecord['currentPricing']['parsed']['pricingList'];
+			const pricingList = $pricingRecord['currentPricing']['parsed']['pricingList'];
 			$fareRuleData = await this.getFareRules(pricingList, $reservationRecord['parsed']['itinerary'])
 				.catch(exc => ({error: exc + ''}));
 			if ($result['error'] = $fareRuleData['error']) return $result;

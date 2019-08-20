@@ -4,7 +4,7 @@ const StringUtil = require('../../../Lib/Utils/StringUtil.js');
 const ApolloReservationItineraryParser = require('../../../Gds/Parsers/Apollo/Pnr/ItineraryParser.js');
 const CommonParserHelpers = require('./CommonParserHelpers.js');
 
-let php = require('../../../phpDeprecated.js');
+const php = require('../../../phpDeprecated.js');
 
 /**
  * See https://eportal.travelport.com/sites/GSWS/SiteCollectionDocuments/SGC/Portal/Documents/TrainingDocs/CourseBooks/CBPart1G360.pdf for field description

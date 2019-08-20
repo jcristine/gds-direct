@@ -709,8 +709,8 @@ class CommandParser {
 	static parsePriceItineraryManually($cmd) {
 		let matches;
 		if (php.preg_match(/^(HH\$?PR)(.*?)\s*$/, $cmd, matches = [])) {
-			let [_, baseCmd, modsStr] = matches;
-			let mods = AtfqParser.parsePricingModifiers(modsStr);
+			const [_, baseCmd, modsStr] = matches;
+			const mods = AtfqParser.parsePricingModifiers(modsStr);
 			return {
 				baseCmd: baseCmd,
 				pricingModifiers: mods,
@@ -731,7 +731,7 @@ class CommandParser {
 	}
 
 	static parse_airAvailability(cmd) {
-		let match = cmd.match(mkReg([
+		const match = cmd.match(mkReg([
 			/^A/,
 			/(?:\/(?<sameCabin>\*)?(?<bookingClass>[A-Z])(?<seatCount>\d+)?\/)?/,
 			/(?<departureDate>\d{1,2}[A-Z]{3})/,
@@ -740,7 +740,7 @@ class CommandParser {
 			/(?<unparsed>.*)/,
 		]));
 		if (match) {
-			let groups = match.groups;
+			const groups = match.groups;
 			return {
 				similarClass: groups.sameCabin === '*',
 				bookingClass: groups.bookingClass,
@@ -769,7 +769,7 @@ class CommandParser {
 		} else if (match = modsPart.match(/^C(\d+)$/)) {
 			return {action: 'showAllClasses', lineNumber: match[1]};
 		} else {
-			let data = {action: 'changeInput'};
+			const data = {action: 'changeInput'};
 			if (match = modsPart.match(/^(.*?)\|((?:[A-Z]{2}|[A-Z][0-9]|[0-9][A-Z])(?:\.[A-Z0-9]{2})*)$/)) {
 				modsPart = match[1];
 				data.airlines = match[2].split('.');
@@ -777,11 +777,11 @@ class CommandParser {
 			if (modsPart === 'J') {
 				data.displayType = 'J';
 			} else if (match = modsPart.match(/^(\d{1,2}[A-Z]{3}|)(\d{1,2}[APMN]|)$/)) {
-				let [, date, time] = match;
+				const [, date, time] = match;
 				data.departureDate = !date ? undefined : {raw: date};
 				data.departureTime = !time ? undefined : {raw: time};
 			} else if (match = modsPart.match(/^O(\d{1,2}[A-Z]{3}|)(\d{1,2}[APMN]|)$/)) {
-				let [, date, time] = match;
+				const [, date, time] = match;
 				data.returnDate = !date ? undefined : {raw: date};
 				data.returnTime = !time ? undefined : {raw: time};
 			} else if (match = modsPart.match(/^B([A-Z]{3})$/)) {

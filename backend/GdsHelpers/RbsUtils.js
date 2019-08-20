@@ -10,13 +10,13 @@ const UnprocessableEntity = require("klesun-node-tools/src/Rej").UnprocessableEn
 const {coverExc} = require('klesun-node-tools/src/Lang.js');
 const Rej = require('klesun-node-tools/src/Rej.js');
 
-let isPublishedAirTd = td => !td || td.match(/^(CH|IN)(\d{0,2}|100)$/);
+const isPublishedAirTd = td => !td || td.match(/^(CH|IN)(\d{0,2}|100)$/);
 
-let isSameSet = (a, b) => {
+const isSameSet = (a, b) => {
 	if (a.size !== b.size) {
 		return false;
 	}
-	for (let suba of a) {
+	for (const suba of a) {
 		if (!b.has(suba)) {
 			return false;
 		}
@@ -24,13 +24,13 @@ let isSameSet = (a, b) => {
 	return true;
 };
 
-let getTdFareTypeV2 = async (gds, ptcBlock) => {
-	let tdTypes = new Set();
-	let hasPrivateMsg = ptcBlock.hasPrivateFaresSelectedMessage;
-	for (let seg of ptcBlock.fareInfo.fareConstruction.segments) {
+const getTdFareTypeV2 = async (gds, ptcBlock) => {
+	const tdTypes = new Set();
+	const hasPrivateMsg = ptcBlock.hasPrivateFaresSelectedMessage;
+	for (const seg of ptcBlock.fareInfo.fareConstruction.segments) {
 		if (seg.fare) {
-			let td = seg.ticketDesignator || '';
-			let tdRow = await TicketDesignators.findByCode(gds, td).catch(exc => null);
+			const td = seg.ticketDesignator || '';
+			const tdRow = await TicketDesignators.findByCode(gds, td).catch(exc => null);
 			if (isPublishedAirTd(td)) {
 				tdTypes.add('no_td');
 			} else if (tdRow) {
@@ -46,7 +46,7 @@ let getTdFareTypeV2 = async (gds, ptcBlock) => {
 	}
 	let fareType = 'error';
 	if (tdTypes.size <= 2) {
-		let mapping = hasPrivateMsg
+		const mapping = hasPrivateMsg
 			? [
 				[['no_td']                              , 'private'],
 				[['no_td', 'itn_td_private']            , 'private'],
@@ -70,7 +70,7 @@ let getTdFareTypeV2 = async (gds, ptcBlock) => {
 				[['itn_td_published', 'airline_td']     , 'error'],
 				[['airline_td']                         , 'error'],
 			];
-		for (let [entryTdTypes, entryFareType] of mapping) {
+		for (const [entryTdTypes, entryFareType] of mapping) {
 			if (isSameSet(tdTypes, new Set(entryTdTypes))) {
 				fareType = entryFareType;
 			}
@@ -79,22 +79,22 @@ let getTdFareTypeV2 = async (gds, ptcBlock) => {
 	return fareType;
 };
 
-let isPrivateFare = async (gds, ptcBlocks) => {
+const isPrivateFare = async (gds, ptcBlocks) => {
 	let hasPrivateMsg = false;
-	let tds = [];
-	for (let ptcBlock of ptcBlocks) {
+	const tds = [];
+	for (const ptcBlock of ptcBlocks) {
 		hasPrivateMsg = hasPrivateMsg || ptcBlock.hasPrivateFaresSelectedMessage;
-		for (let fcSeg of ptcBlock.fareInfo.fareConstruction.segments) {
+		for (const fcSeg of ptcBlock.fareInfo.fareConstruction.segments) {
 			if (fcSeg.ticketDesignator) {
 				tds.push(fcSeg.ticketDesignator);
 			}
 		}
 	}
-	let tdPromises = tds.map(td => TicketDesignators.findByCode(gds, td));
-	let {resolved} = await allWrap(tdPromises);
+	const tdPromises = tds.map(td => TicketDesignators.findByCode(gds, td));
+	const {resolved} = await allWrap(tdPromises);
 	if (resolved.length > 0) {
-		let isPrivate = tdRow => !tdRow.is_published;
-		let isPublished = tdRow => tdRow.is_published;
+		const isPrivate = tdRow => !tdRow.is_published;
+		const isPublished = tdRow => tdRow.is_published;
 		if (resolved.every(isPrivate)) {
 			return true;
 		} else if (resolved.every(isPublished)) {
@@ -113,13 +113,13 @@ let isPrivateFare = async (gds, ptcBlocks) => {
 	}
 };
 
-let isTourPcc = async (gds, pcc) => {
-	let pccRow = await Pccs.findByCode(gds, pcc).catch(exc => null);
+const isTourPcc = async (gds, pcc) => {
+	const pccRow = await Pccs.findByCode(gds, pcc).catch(exc => null);
 	return pccRow && pccRow.content_type === 'Tour';
 };
 
-let isPrivateFareTour = async (gds, store) => {
-	let pricingPcc = store.pricingPcc;
+const isPrivateFareTour = async (gds, store) => {
+	const pricingPcc = store.pricingPcc;
 	if (!pricingPcc) {
 		return false;
 	} else if (
@@ -127,7 +127,7 @@ let isPrivateFareTour = async (gds, store) => {
 		gds === 'sabre' && ['0BWH', '0EKH'].includes(pricingPcc) ||
 		gds === 'apollo' && ['2E1I'].includes(pricingPcc)
 	) {
-		let ptcFareTypes = await Promise.all(store.pricingBlockList
+		const ptcFareTypes = await Promise.all(store.pricingBlockList
 			.map(ptcBlock => PtcUtil.getFareType(ptcBlock.ptcInfo.ptc)
 				.catch(coverExc(Rej.list, () => null))));
 		return ptcFareTypes.includes('inclusiveTour');
@@ -136,18 +136,18 @@ let isPrivateFareTour = async (gds, store) => {
 	}
 };
 
-let getStoreFareType = async (gds, store) => {
-	let isTourOrPrivate = await isPrivateFare(gds, store.pricingBlockList);
+const getStoreFareType = async (gds, store) => {
+	const isTourOrPrivate = await isPrivateFare(gds, store.pricingBlockList);
 	if (isTourOrPrivate) {
-		let isTour = await isPrivateFareTour(gds, store);
+		const isTour = await isPrivateFareTour(gds, store);
 		return isTour ? 'tour' : 'private';
 	} else {
 		return 'published';
 	}
 };
 
-let isBasicEconomyFareBasis = (validatingCarrier, fareBasis) => {
-	let bAirlines = ['DL', 'AA', 'UA'];
+const isBasicEconomyFareBasis = (validatingCarrier, fareBasis) => {
+	const bAirlines = ['DL', 'AA', 'UA'];
 	return bAirlines.includes(validatingCarrier)
 		&& fareBasis && fareBasis.match('/B.$/');
 };
@@ -156,17 +156,17 @@ let isBasicEconomyFareBasis = (validatingCarrier, fareBasis) => {
  * would be nice to have an API in RBS for that
  */
 exports.makeContractInfo = async (gds, pricingList) => {
-	let fareTypes = new Set();
-	for (let store of pricingList) {
-		let fareType = await getStoreFareType(gds, store);
+	const fareTypes = new Set();
+	for (const store of pricingList) {
+		const fareType = await getStoreFareType(gds, store);
 		fareTypes.add(fareType);
 	}
-	let fareType = fareTypes.size === 1 ? [...fareTypes][0] : null;
+	const fareType = fareTypes.size === 1 ? [...fareTypes][0] : null;
 
 	let isStoredInConsolidatorCurrency = true;
-	for (let store of pricingList) {
-		let ptcCurrency = store.pricingBlockList[0].fareInfo.totalFare.currency;
-		let pccRow = await Pccs.findByCode(gds, store.pricingPcc).catch(exc => null);
+	for (const store of pricingList) {
+		const ptcCurrency = store.pricingBlockList[0].fareInfo.totalFare.currency;
+		const pccRow = await Pccs.findByCode(gds, store.pricingPcc).catch(exc => null);
 		if (pccRow && pccRow.default_currency && pccRow.default_currency !== ptcCurrency) {
 			isStoredInConsolidatorCurrency = false;
 		}
@@ -178,8 +178,8 @@ exports.makeContractInfo = async (gds, pricingList) => {
 			.some(store => store.pricingBlockList
 				.some(ptcBlock => ptcBlock.fareInfo.fareConstruction.segments
 					.some(fcSeg => {
-						let vc = store.validatingCarrier;
-						let fb = fcSeg.fareBasis;
+						const vc = store.validatingCarrier;
+						const fb = fcSeg.fareBasis;
 						return isBasicEconomyFareBasis(vc, fb);
 					}))),
 		fareType: fareType,
@@ -190,7 +190,7 @@ exports.makeContractInfo = async (gds, pricingList) => {
 exports.getFareTypeV2 = async (gds, pcc, ptcBlock) => {
 	let fareType = await getTdFareTypeV2(gds, ptcBlock);
 	if (fareType === 'private') {
-		let isTour = await isPrivateFareTour(gds, {
+		const isTour = await isPrivateFareTour(gds, {
 			pricingPcc: pcc,
 			pricingBlockList: [ptcBlock],
 		});
@@ -210,7 +210,7 @@ exports.getRbsPqInfo = async (pnrDump, pricingDump, gds) => {
 	} else if (gds === 'amadeus') {
 		pnrDump = 'RP/SFO1S2195/SFO1S2195            WS/SU   1JAN19/0000Z   QWE123\n' + pnrDump;
 	}
-	let rbsRs = await RbsClient.importPnrFromDumps({
+	const rbsRs = await RbsClient.importPnrFromDumps({
 		gds: gds,
 		creationDate: new Date().toISOString()
 			.slice(0, '2018-10-10T00:00:00'.length)
@@ -229,16 +229,16 @@ exports.getRbsPqInfo = async (pnrDump, pricingDump, gds) => {
 		storedPricingDump: pricingDump,
 	});
 	/** @type {IRbsPnrData} */
-	let pnrFields = rbsRs.result.result.pnrFields;
+	const pnrFields = rbsRs.result.result.pnrFields;
 	if (!pnrFields.fareQuoteInfo || !pnrFields.contractInfo) {
-		let msg = 'RBS could not process pricing - ' +
+		const msg = 'RBS could not process pricing - ' +
 			(rbsRs.result.errors || ['(no explanation)']).join('; ');
 		return UnprocessableEntity(msg);
 	}
 
-	let fareTypes = [];
-	for (let store of (pnrFields.fareQuoteInfo || {}).pricingList || []) {
-		for (let ptcBlock of store.pricingBlockList || []) {
+	const fareTypes = [];
+	for (const store of (pnrFields.fareQuoteInfo || {}).pricingList || []) {
+		for (const ptcBlock of store.pricingBlockList || []) {
 			fareTypes.push(ptcBlock.fareType);
 		}
 	}

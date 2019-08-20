@@ -24,6 +24,7 @@ import {ManualPricingForm} from "../components/popovers/maskForms/manualPricingF
 import {TaxBreakdownForm} from "../components/popovers/maskForms/taxBreakdownForm.es6";
 import {ZpTaxBreakdownForm} from "../components/popovers/maskForms/zpTaxBreakdownForm.es6";
 import {FareCalculationForm} from "../components/popovers/maskForms/fareCalculationForm.es6";
+import PricePccMixList from "../components/popovers/PricePccMixList.es6";
 
 let Component = require('../modules/component.es6').default;
 let Cmp = (...args) => new Component(...args);
@@ -329,12 +330,13 @@ export default class TerminalPlugin
 			.perform( before )
 			.finally(() => this.spinner.end())
 			.then( response => {
-				if (command)
-				{
-					if (response && response.output)
+				if (command) {
+					const actions = (response || {}).actions || [];
+					if (response && response.output) {
 						this.parseBackEnd( response, command );
-					else
+					} else if (actions.length === 0) {
 						this.print(`[[;;;errorMessage;]EMPTY SERVER RESPONSE]`);
+					}
 				}
 				this.actionReader.handleNewLine();
 			})
@@ -362,7 +364,7 @@ export default class TerminalPlugin
 	/**
 	 * show cancelable dialog inside the terminal window
 	 */
-	injectDom({dom, onCancel = null})
+	injectDom({dom, onCancel = null, cls = null})
 	{
 		let formCmp;
 		let remove = () => {
@@ -371,12 +373,13 @@ export default class TerminalPlugin
 			// love jquery terminal - needed to return focus
 			setTimeout(() => this.terminal.enable(), 4);
 		};
+		const holderCmp = Cmp('div.injected-dom-holder').attach([
+			Cmp({context: dom}),
+		]);
 		formCmp = Cmp('div.injected-in-terminal').attach([
 			Cmp('br'),
 			Cmp('div').attach([
-				Cmp('div.injected-dom-holder').attach([
-					Cmp({context: dom}),
-				]),
+				holderCmp,
 				...(!onCancel ? [] : [Cmp('div.float-right').attach([
 					Cmp('button[Cancel]', {type: 'button', onclick: () => {
 						onCancel();
@@ -386,6 +389,9 @@ export default class TerminalPlugin
 			]),
 			Cmp('br', {clear: 'all'}),
 		]);
+		if (cls) {
+			holderCmp.context.classList.toggle(cls, true);
+		}
 		this._injectForm(formCmp);
 		let inp = formCmp.context.querySelector('input:not(:disabled)');
 		if (inp) {
@@ -632,6 +638,8 @@ export default class TerminalPlugin
 				this._displayFcMask(action.data);
 			} else if (action.type === 'displayMpRemarkDialog') {
 				this._displayMpRemarkDialog(action.data);
+			} else if (action.type === 'finalizePriceMix') {
+				PricePccMixList.finalize(action.data);
 			} else {
 				let msg = '[[;;;error]Unsupported action - ' + action.type + ']';
 				this.outputLiner.printOutput(msg, false, []);

@@ -27,7 +27,7 @@ const baseRegex = mkReg([
 ]);
 
 const makeLexer = () => {
-	let legRegex = /¥(?<excludeMark>\*?)(?<airlines>([A-Z0-9]{2})*)/;
+	const legRegex = /¥(?<excludeMark>\*?)(?<airlines>([A-Z0-9]{2})*)/;
 	return new Lexer([
 		new Lexeme('bookingClass', /^-([A-Z])(?![A-Z0-9])/)
 			.map((matches) => ({bookingClass: matches[1]})),
@@ -51,13 +51,13 @@ exports.parse = (cmd) => {
 	// this implementation still does not parse a lot of stuff,
 	// for example cabin classes - add them if you need them
 
-	let match = cmd.match(baseRegex);
+	const match = cmd.match(baseRegex);
 	if (!match) {
 		return null;
 	} else {
-		let groups = match.groups;
-		let connectionPart = groups.connectionPart || '';
-		let lexed = makeLexer().lex(groups.modsPart);
+		const groups = match.groups;
+		const connectionPart = groups.connectionPart || '';
+		const lexed = makeLexer().lex(groups.modsPart);
 		return {
 			scan: match.groups.scanMark === 'S',
 			departureDate: {

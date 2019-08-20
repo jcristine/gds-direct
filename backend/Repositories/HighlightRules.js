@@ -1,14 +1,14 @@
 
-let Db = require("../Utils/Db.js");
-let Redis = require('../LibWrappers/Redis.js');
-let MultiLevelMap = require('../Utils/MultiLevelMap.js');
-let Rej = require('klesun-node-tools/src/Lang.js');
+const Db = require("../Utils/Db.js");
+const Redis = require('../LibWrappers/Redis.js');
+const MultiLevelMap = require('../Utils/MultiLevelMap.js');
+const Rej = require('klesun-node-tools/src/Lang.js');
 
 const TABLE = 'highlightRules';
 const TABLE_CMD = 'highlightCmdPatterns';
 const TABLE_OUTPUT = 'highlightOutputPatterns';
 
-let fetchFromDb = () => Db.with((db) => Promise.all([
+const fetchFromDb = () => Db.with((db) => Promise.all([
 	db.fetchAll({table: TABLE}),
 	db.fetchAll({table: TABLE_CMD}),
 	db.fetchAll({table: TABLE_OUTPUT}),
@@ -31,7 +31,7 @@ let fetchFromDb = () => Db.with((db) => Promise.all([
  * @param string $value
  * @return string
  */
-let toCamelCase = ($value) => {
+const toCamelCase = ($value) => {
 	return $value.replace(/[^a-z0-9]+/gi, ' ')
 		.trim().split(' ')
 		.map(word => word.slice(0, 1).toUpperCase() + word.slice(1))
@@ -39,20 +39,20 @@ let toCamelCase = ($value) => {
 };
 
 /** @return {IFullHighlightData} */
-let getFullDataForAdminPage = () => fetchFromDb().then(({
+const getFullDataForAdminPage = () => fetchFromDb().then(({
 	highlightRules,
 	highlightOutputPatterns,
 	highlightCmdPatterns,
 }) => {
-	let ruleToGdsToCmdRow = MultiLevelMap();
-	for (let cmdRow of highlightCmdPatterns) {
+	const ruleToGdsToCmdRow = MultiLevelMap();
+	for (const cmdRow of highlightCmdPatterns) {
 		ruleToGdsToCmdRow.set([cmdRow.ruleId, cmdRow.dialect], cmdRow);
 	}
-	let ruleToGdsToOutRow = MultiLevelMap();
-	for (let cmdRow of highlightOutputPatterns) {
+	const ruleToGdsToOutRow = MultiLevelMap();
+	for (const cmdRow of highlightOutputPatterns) {
 		ruleToGdsToOutRow.set([cmdRow.ruleId, cmdRow.gds], cmdRow);
 	}
-	let aaData = highlightRules.map(rule => {
+	const aaData = highlightRules.map(rule => {
 		rule.decoration = JSON.parse(rule.decoration);
 		rule.languages = ruleToGdsToCmdRow.root[rule.id] || {};
 		rule.gds = ruleToGdsToOutRow.root[rule.id] || {};
@@ -62,26 +62,26 @@ let getFullDataForAdminPage = () => fetchFromDb().then(({
 });
 
 // TODO: merge with getFullDataForAdminPage() somehow if possible
-let fetchFullDataForService = async () => {
-	let record = await fetchFromDb();
-	let byId = {};
-	for (let rule of record.highlightRules) {
+const fetchFullDataForService = async () => {
+	const record = await fetchFromDb();
+	const byId = {};
+	for (const rule of record.highlightRules) {
 		byId[rule.id] = rule;
 	}
-	for (let cmdPattern of record.highlightCmdPatterns) {
+	for (const cmdPattern of record.highlightCmdPatterns) {
 		if (byId[cmdPattern.ruleId]) {
 			byId[cmdPattern.ruleId].cmdPatterns = byId[cmdPattern.ruleId].cmdPatterns || [];
 			byId[cmdPattern.ruleId].cmdPatterns.push(cmdPattern);
 		}
 	}
-	for (let pattern of record.highlightOutputPatterns) {
+	for (const pattern of record.highlightOutputPatterns) {
 		if (byId[pattern.ruleId]) {
 			byId[pattern.ruleId].patterns = byId[pattern.ruleId].patterns || [];
 			byId[pattern.ruleId].patterns.push(pattern);
 		}
 	}
-	let byName = {};
-	for (let rule of Object.values(byId)) {
+	const byName = {};
+	for (const rule of Object.values(byId)) {
 		byName[rule.name] = rule;
 	}
 	return {byId, byName};
@@ -91,7 +91,7 @@ let fetchFullDataForService = async () => {
 let lastUpdateMs = null;
 let whenRuleMapping = null;
 
-let didCacheExpire = async (lastUpdateMs) => {
+const didCacheExpire = async (lastUpdateMs) => {
 	if (!lastUpdateMs) {
 		return true;
 	} else if (Date.now() - lastUpdateMs < 10 * 1000) {
@@ -101,16 +101,16 @@ let didCacheExpire = async (lastUpdateMs) => {
 		// because user would want to see changes ~instantly while editing
 		return false;
 	} else {
-		let redis = await Redis.getClient();
-		let key = Redis.keys.HIGHLIGHT_RULES_UPDATE_MS;
-		let updateMs = await redis.get(key).catch(exc => null);
+		const redis = await Redis.getClient();
+		const key = Redis.keys.HIGHLIGHT_RULES_UPDATE_MS;
+		const updateMs = await redis.get(key).catch(exc => null);
 		return updateMs && lastUpdateMs < updateMs;
 	}
 };
 
-let invalidateCache = async () => {
-	let key = Redis.keys.HIGHLIGHT_RULES_UPDATE_MS;
-	let redis = await Redis.getClient();
+const invalidateCache = async () => {
+	const key = Redis.keys.HIGHLIGHT_RULES_UPDATE_MS;
+	const redis = await Redis.getClient();
 	lastUpdateMs = null;
 	return redis.set(key, Date.now());
 };
@@ -119,9 +119,9 @@ let invalidateCache = async () => {
  * @param {ISaveHighlightRuleParams} rqBody
  * @param {IEmcResult} emcResult
  */
-let saveRule = (rqBody, emcResult) => Db.with(db => {
-	let decoration = [];
-	for (let [key, value] of Object.entries(rqBody.decorationFlags || {})) {
+const saveRule = (rqBody, emcResult) => Db.with(db => {
+	const decoration = [];
+	for (const [key, value] of Object.entries(rqBody.decorationFlags || {})) {
 		if (+value) {
 			decoration.push(key);
 		}
@@ -145,10 +145,10 @@ let saveRule = (rqBody, emcResult) => Db.with(db => {
 		isInSameWindow: +rqBody.isInSameWindow ? true : false,
 		decoration: JSON.stringify(decoration),
 	}]).then(inserted => {
-		let ruleId = rqBody.id || inserted.insertId;
-		let promises = [];
-		for (let gds in rqBody.languages) {
-			let rec = rqBody.languages[gds];
+		const ruleId = rqBody.id || inserted.insertId;
+		const promises = [];
+		for (const gds in rqBody.languages) {
+			const rec = rqBody.languages[gds];
 			promises.push(db.writeRows(TABLE_CMD, [{
 				ruleId: ruleId,
 				dialect: gds,
@@ -156,8 +156,8 @@ let saveRule = (rqBody, emcResult) => Db.with(db => {
 				onClickCommand: rec.onClickCommand,
 			}]));
 		}
-		for (let gds in rqBody.gds) {
-			let rec = rqBody.gds[gds];
+		for (const gds in rqBody.gds) {
+			const rec = rqBody.gds[gds];
 			promises.push(db.writeRows(TABLE_OUTPUT, [{
 				ruleId: ruleId,
 				gds: gds,
@@ -176,7 +176,7 @@ let saveRule = (rqBody, emcResult) => Db.with(db => {
 exports.getFullDataForAdminPage = getFullDataForAdminPage;
 exports.saveRule = saveRule;
 
-let getFullDataForServiceMulti = async () => {
+const getFullDataForServiceMulti = async () => {
 	if (await didCacheExpire(lastUpdateMs)) {
 		whenRuleMapping = fetchFullDataForService();
 		lastUpdateMs = Date.now();

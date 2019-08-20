@@ -3,19 +3,19 @@ const CmdRqLog = require('../Repositories/CmdRqLog.js');
 const RbsClient = require('../IqClients/RbsClient.js');
 const GdsSession = require('../GdsHelpers/GdsSession.js');
 const AddMpRemark = require('../Actions/AddMpRemark.js');
-let AmadeusClient = require("../GdsClients/AmadeusClient.js");
-let SabreClient = require("../GdsClients/SabreClient.js");
-let TravelportClient = require('../GdsClients/TravelportClient.js');
-let Db = require('../Utils/Db.js');
-let GdsSessions = require('../Repositories/GdsSessions.js');
-let {logit, logExc} = require('../LibWrappers/FluentLogger.js');
-let {Forbidden, NotImplemented, LoginTimeOut, NotFound, ServiceUnavailable} = require('klesun-node-tools/src/Rej.js');
-let StatefulSession = require('../GdsHelpers/StatefulSession.js');
-let ProcessTerminalInput = require('../Actions/ProcessTerminalInput.js');
+const AmadeusClient = require("../GdsClients/AmadeusClient.js");
+const SabreClient = require("../GdsClients/SabreClient.js");
+const TravelportClient = require('../GdsClients/TravelportClient.js');
+const Db = require('../Utils/Db.js');
+const GdsSessions = require('../Repositories/GdsSessions.js');
+const {logit, logExc} = require('../LibWrappers/FluentLogger.js');
+const {Forbidden, NotImplemented, LoginTimeOut, NotFound, ServiceUnavailable} = require('klesun-node-tools/src/Rej.js');
+const StatefulSession = require('../GdsHelpers/StatefulSession.js');
+const ProcessTerminalInput = require('../Actions/ProcessTerminalInput.js');
 const MakeMcoApolloAction = require('../Transpiled/Rbs/GdsDirect/Actions/Apollo/MakeMcoApolloAction.js');
 const CmdResultAdapter = require('../Transpiled/App/Services/CmdResultAdapter.js');
 
-let php = require('../Transpiled/phpDeprecated.js');
+const php = require('../Transpiled/phpDeprecated.js');
 const CmsClient = require("../IqClients/CmsClient");
 const ImportPq = require('../Actions/ImportPq.js');
 const FluentLogger = require("../LibWrappers/FluentLogger");
@@ -31,13 +31,13 @@ const SubmitZpTaxBreakdownMask = require('../Actions/ManualPricing/SubmitZpTaxBr
 const SubmitFcMask = require('../Actions/ManualPricing/FcMaskSubmit.js');
 const {startByGds} = require('../GdsHelpers/GdsSession.js');
 
-let startNewSession = async (rqBody, emcUser) => {
-	let starting = startByGds(rqBody.gds);
+const startNewSession = async (rqBody, emcUser) => {
+	const starting = startByGds(rqBody.gds);
 	return starting.then(({gdsData, logId}) =>
 		GdsSessions.storeNew({context: rqBody, gdsData, emcUser, logId}));
 };
 
-let closeByGds = (gds, gdsData) => {
+const closeByGds = (gds, gdsData) => {
 	if (['apollo', 'galileo'].includes(gds)) {
 		return TravelportClient().closeSession(gdsData);
 	} else if ('sabre' === gds) {
@@ -50,16 +50,16 @@ let closeByGds = (gds, gdsData) => {
 };
 
 /** @param session = at('GdsSessions.js').makeSessionRecord() */
-let closeSession = async (session) => {
-	let gdsDataStrSet = new Set([JSON.stringify(session.gdsData)]);
-	let fullState = await GdsSessions.getFullState(session);
-	for (let [area, data] of Object.entries(fullState.areas)) {
+const closeSession = async (session) => {
+	const gdsDataStrSet = new Set([JSON.stringify(session.gdsData)]);
+	const fullState = await GdsSessions.getFullState(session);
+	for (const [area, data] of Object.entries(fullState.areas)) {
 		// Amadeus fake areas, maybe also Sabre
 		if (data.gdsData) {
 			gdsDataStrSet.add(JSON.stringify(data.gdsData));
 		}
 	}
-	let closePromises = [...gdsDataStrSet]
+	const closePromises = [...gdsDataStrSet]
 		.map(str => JSON.parse(str))
 		.map(gdsData => closeByGds(session.context.gds, gdsData));
 
@@ -69,10 +69,10 @@ let closeSession = async (session) => {
 	return GdsSessions.remove(session);
 };
 
-let shouldRestart = (exc, session) => {
-	let lifetimeMs = Date.now() - session.createdMs;
-	let clsName = ((exc || {}).constructor || {}).name;
-	let isTypeError = clsName === 'TypeError';
+const shouldRestart = (exc, session) => {
+	const lifetimeMs = Date.now() - session.createdMs;
+	const clsName = ((exc || {}).constructor || {}).name;
+	const isTypeError = clsName === 'TypeError';
 	return LoginTimeOut.matches(exc.httpStatusCode)
 		//|| isTypeError
 		//|| !exc.httpStatusCode // runtime errors, like null-pointer exceptions
@@ -80,8 +80,8 @@ let shouldRestart = (exc, session) => {
 		|| lifetimeMs > 60 * 60 * 1000;
 };
 
-let initStateful = async (params) => {
-	let stateful = await StatefulSession.makeFromDb(params);
+const initStateful = async (params) => {
+	const stateful = await StatefulSession.makeFromDb(params);
 	stateful.addPnrSaveHandler(recordLocator => RbsClient.reportCreatedPnr({
 		recordLocator: recordLocator,
 		gds: params.session.context.gds,
@@ -91,12 +91,12 @@ let initStateful = async (params) => {
 	return stateful;
 };
 
-let runInSession = async (params) => {
-	let {session, rqBody} = params;
-	let whenCmdRqId = CmdRqLog.storeNew(rqBody, session);
-	let stateful = await initStateful({...params, whenCmdRqId});
-	let cmdRq = rqBody.command;
-	let whenCmsResult = ProcessTerminalInput({
+const runInSession = async (params) => {
+	const {session, rqBody} = params;
+	const whenCmdRqId = CmdRqLog.storeNew(rqBody, session);
+	const stateful = await initStateful({...params, whenCmdRqId});
+	const cmdRq = rqBody.command;
+	const whenCmsResult = ProcessTerminalInput({
 		stateful, cmdRq, dialect: rqBody.language,
 	}).then((rbsResult) => CmdResultAdapter({
 		cmdRq, gds: stateful.gds,
@@ -109,7 +109,7 @@ let runInSession = async (params) => {
 
 /** @param rqBody = at('WebRoutes.js').normalizeRqBody() */
 exports.runInputCmd = async (params) => {
-	let {rqBody, session, emcUser} = params;
+	const {rqBody, session, emcUser} = params;
 	rqBody.command = rqBody.command.trim();
 	return Promise.resolve()
 		.then(() => runInSession(params))
@@ -117,10 +117,10 @@ exports.runInputCmd = async (params) => {
 			if (shouldRestart(exc, session)) {
 				FluentLogger.logExc('INFO: Session expired', session.logId, exc);
 				await GdsSessions.remove(session).catch(exc => {});
-				let newSession = await startNewSession(rqBody, emcUser);
+				const newSession = await startNewSession(rqBody, emcUser);
 				FluentLogger.logit('INFO: New session in ' + newSession.logId, session.logId, newSession);
 				FluentLogger.logit('INFO: Old session in ' + session.logId, newSession.logId, session);
-				let runt = await runInSession({...params, session: newSession});
+				const runt = await runInSession({...params, session: newSession});
 				runt.startNewSession = true;
 				runt.userMessages = ['New session started, reason: ' + (exc + '').slice(0, 800) + '...\n'];
 				return runt;
@@ -130,18 +130,18 @@ exports.runInputCmd = async (params) => {
 		});
 };
 
-let sendPqToPqt = async ({stateful, leadData, imported}) => {
-	let $sessionData = stateful.getSessionData();
-	let logId = stateful.logId;
+const sendPqToPqt = async ({stateful, leadData, imported}) => {
+	const $sessionData = stateful.getSessionData();
+	const logId = stateful.logId;
 
-	let $pnrDump = imported['pnrData']['reservation']['raw'];
-	let $pricingDump = (imported['adultPricingInfoForPqt'] || {})['pricingDump']
+	const $pnrDump = imported['pnrData']['reservation']['raw'];
+	const $pricingDump = (imported['adultPricingInfoForPqt'] || {})['pricingDump']
 		|| imported['pnrData']['currentPricing']['raw'];
-	let $pricingCommand = (imported['adultPricingInfoForPqt'] || {})['pricingCmd']
+	const $pricingCommand = (imported['adultPricingInfoForPqt'] || {})['pricingCmd']
 		|| imported['pnrData']['currentPricing']['cmd'];
-	let $linearFareDump = (imported['adultPricingInfoForPqt'] || {})['linearFareDump'];
+	const $linearFareDump = (imported['adultPricingInfoForPqt'] || {})['linearFareDump'];
 
-	let params = {
+	const params = {
 		'gds': $sessionData['gds'],
 		'pcc': $sessionData['pcc'],
 		'agentId': stateful.getAgent().getId(),
@@ -155,16 +155,16 @@ let sendPqToPqt = async ({stateful, leadData, imported}) => {
 		'leadUrl': !leadData ? null : leadData.leadUrl,
 		'linearFareDump': $linearFareDump,
 	};
-	let config = await getConfig();
-	let Crypt = require("../../node_modules/dynatech-client-component/lib/Crypt.js").default;
-	let pqtPassword = config.external_service.pqt.password;
+	const config = await getConfig();
+	const Crypt = require("../../node_modules/dynatech-client-component/lib/Crypt.js").default;
+	const pqtPassword = config.external_service.pqt.password;
 	if (!pqtPassword) {
-		let rej = NotImplemented('PQT password not defined in config');
+		const rej = NotImplemented('PQT password not defined in config');
 		stateful.logExc('ERROR: Failed to send PQ to PQT', rej.exc);
 		return rej;
 	}
-	let ec = new Crypt(process.env.RANDOM_KEY, 'des-ede3');
-	let credentials = {login: config.external_service.pqt.login, password: ec.encryptToken(pqtPassword)};
+	const ec = new Crypt(process.env.RANDOM_KEY, 'des-ede3');
+	const credentials = {login: config.external_service.pqt.login, password: ec.encryptToken(pqtPassword)};
 
 	return Misc.iqJson({
 		functionName: 'dataInput.addPriceQuoteFromDumps',
@@ -180,10 +180,10 @@ let sendPqToPqt = async ({stateful, leadData, imported}) => {
 
 exports.getPqItinerary = async ({rqBody, session, emcUser}) => {
 	// could Promise.all to save some time...
-	let leadData = await CmsClient.getLeadData(rqBody.pqTravelRequestId);
-	let stateful = await StatefulSession.makeFromDb({session, emcUser});
-	let PersistentHttpRq = GdsSession.initHttpRq(session);
-	let imported = await ImportPq({stateful, leadData, fetchOptionalFields: false, PersistentHttpRq});
+	const leadData = await CmsClient.getLeadData(rqBody.pqTravelRequestId);
+	const stateful = await StatefulSession.makeFromDb({session, emcUser});
+	const PersistentHttpRq = GdsSession.initHttpRq(session);
+	const imported = await ImportPq({stateful, leadData, fetchOptionalFields: false, PersistentHttpRq});
 	if (imported.status === GdsDirect.STATUS_EXECUTED) {
 		sendPqToPqt({stateful, leadData, imported});
 	}
@@ -192,15 +192,15 @@ exports.getPqItinerary = async ({rqBody, session, emcUser}) => {
 
 exports.importPq = async ({rqBody, session, emcUser}) => {
 	// could Promise.all to save some time...
-	let leadData = await CmsClient.getLeadData(rqBody.pqTravelRequestId);
-	let stateful = await StatefulSession.makeFromDb({session, emcUser});
-	let PersistentHttpRq = GdsSession.initHttpRq(session);
+	const leadData = await CmsClient.getLeadData(rqBody.pqTravelRequestId);
+	const stateful = await StatefulSession.makeFromDb({session, emcUser});
+	const PersistentHttpRq = GdsSession.initHttpRq(session);
 	return ImportPq({stateful, leadData, fetchOptionalFields: true, PersistentHttpRq});
 };
 
 exports.addMpRemark = async ({rqBody, ...params}) => {
-	let {airline, gds} = rqBody;
-	let stateful = await StatefulSession.makeFromDb(params);
+	const {airline, gds} = rqBody;
+	const stateful = await StatefulSession.makeFromDb(params);
 	return AddMpRemark({stateful, airline})
 		.then(result => CmdResultAdapter({
 			cmdRq: 'MP', gds,
@@ -213,25 +213,25 @@ exports.addMpRemark = async ({rqBody, ...params}) => {
  * @param {IEmcUser} emcUser
  */
 exports.resetToDefaultPcc = async ({rqBody, session, emcUser}) => {
-	let {gdsData, logId} = await startByGds(rqBody.gds);
+	const {gdsData, logId} = await startByGds(rqBody.gds);
 	await closeSession(session);
-	let newSession = await GdsSessions.storeNew({context: session.context, gdsData, emcUser, logId});
+	const newSession = await GdsSessions.storeNew({context: session.context, gdsData, emcUser, logId});
 	FluentLogger.logit('INFO: New session in ' + newSession.logId, session.logId, newSession);
 	FluentLogger.logit('INFO: Old session in ' + session.logId, newSession.logId, session);
-	let fullState = GdsSessions.makeDefaultState(newSession);
+	const fullState = GdsSessions.makeDefaultState(newSession);
 	return {fullState};
 };
 
 exports.makeMco = async ({rqBody, session, emcUser}) => {
-	let mcoData = {};
-	for (let {key, value} of rqBody.fields) {
+	const mcoData = {};
+	for (const {key, value} of rqBody.fields) {
 		mcoData[key] = value.toUpperCase();
 	}
 	if (session.context.gds !== 'apollo') {
 		return NotImplemented('Unsupported GDS for makeMco - ' + session.context.gds);
 	}
-	let stateful = await StatefulSession.makeFromDb({session, emcUser});
-	let mcoResult = await (new MakeMcoApolloAction())
+	const stateful = await StatefulSession.makeFromDb({session, emcUser});
+	const mcoResult = await (new MakeMcoApolloAction())
 		.setSession(stateful).execute(mcoData);
 
 	return MaskFormUtils.makeMaskRs(mcoResult.calledCommands);
@@ -241,7 +241,7 @@ exports.exchangeTicket = async ({rqBody, session, emcUser}) => {
 	if (session.context.gds !== 'apollo') {
 		return NotImplemented('Unsupported GDS for exchangeTicket - ' + session.context.gds);
 	} else {
-		let gdsSession = await StatefulSession.makeFromDb({session, emcUser});
+		const gdsSession = await StatefulSession.makeFromDb({session, emcUser});
 		return ExchangeApolloTicket.inputHbFexMask({rqBody, gdsSession});
 	}
 };
@@ -250,7 +250,7 @@ exports.confirmExchangeFareDifference = async ({rqBody, session, emcUser}) => {
 	if (session.context.gds !== 'apollo') {
 		return NotImplemented('Unsupported GDS for confirmExchangeFareDifference - ' + session.context.gds);
 	} else {
-		let gdsSession = await StatefulSession.makeFromDb({session, emcUser});
+		const gdsSession = await StatefulSession.makeFromDb({session, emcUser});
 		return ExchangeApolloTicket.confirmFareDifference({rqBody, gdsSession});
 	}
 };
@@ -259,7 +259,7 @@ exports.submitHhprMask = async ({rqBody, session, emcUser}) => {
 	if (session.context.gds !== 'apollo') {
 		return NotImplemented('Unsupported GDS for submitHhprMask - ' + session.context.gds);
 	} else {
-		let gdsSession = await StatefulSession.makeFromDb({session, emcUser});
+		const gdsSession = await StatefulSession.makeFromDb({session, emcUser});
 		return PriceItineraryManually.inputHhprMask({rqBody, gdsSession});
 	}
 };
@@ -268,7 +268,7 @@ exports.submitTaxBreakdownMask = async ({rqBody, session, emcUser}) => {
 	if (session.context.gds !== 'apollo') {
 		return NotImplemented('Unsupported GDS for submitTaxBreakdownMask - ' + session.context.gds);
 	} else {
-		let gdsSession = await StatefulSession.makeFromDb({session, emcUser});
+		const gdsSession = await StatefulSession.makeFromDb({session, emcUser});
 		return SubmitTaxBreakdownMask({rqBody, gdsSession});
 	}
 };
@@ -277,7 +277,7 @@ exports.submitZpTaxBreakdownMask = async ({rqBody, session, emcUser}) => {
 	if (session.context.gds !== 'apollo') {
 		return NotImplemented('Unsupported GDS for submitZpTaxBreakdownMask - ' + session.context.gds);
 	} else {
-		let gdsSession = await StatefulSession.makeFromDb({session, emcUser});
+		const gdsSession = await StatefulSession.makeFromDb({session, emcUser});
 		return SubmitZpTaxBreakdownMask({rqBody, gdsSession});
 	}
 };
@@ -286,12 +286,12 @@ exports.submitFcMask = async ({rqBody, session, emcUser}) => {
 	if (session.context.gds !== 'apollo') {
 		return NotImplemented('Unsupported GDS for exchangeTicket - ' + session.context.gds);
 	} else {
-		let gdsSession = await StatefulSession.makeFromDb({session, emcUser});
+		const gdsSession = await StatefulSession.makeFromDb({session, emcUser});
 		return SubmitFcMask({rqBody, gdsSession});
 	}
 };
 
-let keepAliveByGds = (gds, gdsData) => {
+const keepAliveByGds = (gds, gdsData) => {
 	if (['galileo', 'apollo'].includes(gds)) {
 		return TravelportClient().runCmd({command: 'MD0'}, gdsData)
 			.then(result => ({message: 'Success - ' + result.output}));
@@ -302,8 +302,8 @@ let keepAliveByGds = (gds, gdsData) => {
 	}
 };
 
-let keepAliveSession = async (session) => {
-	let keeping = keepAliveByGds(session.context.gds, session.gdsData);
+const keepAliveSession = async (session) => {
+	const keeping = keepAliveByGds(session.context.gds, session.gdsData);
 	return keeping.then(result => {
 		GdsSessions.updateAccessTime(session);
 		logit('INFO: keepAlive result:', session.logId, result);
@@ -312,8 +312,8 @@ let keepAliveSession = async (session) => {
 };
 
 exports.keepAliveCurrent = async ({session}) => {
-	let userAccessMs = GdsSessions.getUserAccessMs(session);
-	let userIdleMs = Date.now() - userAccessMs;
+	const userAccessMs = GdsSessions.getUserAccessMs(session);
+	const userIdleMs = Date.now() - userAccessMs;
 	if (userIdleMs < 30 * 1000) {
 		return Rej.TooEarly('Tried to keepAlive too early, session was accessed just ' + userIdleMs + ' ms ago');
 	} else if (!GdsSessions.shouldClose(userAccessMs)) {
@@ -322,7 +322,7 @@ exports.keepAliveCurrent = async ({session}) => {
 				? Promise.resolve({message: 'Another action in progress - session is alive'})
 				: Promise.reject(exc));
 	} else {
-		let msg = 'Session was inactive for too long - ' +
+		const msg = 'Session was inactive for too long - ' +
 			((Date.now() - userAccessMs) / 1000).toFixed(3) + ' s.';
 		return LoginTimeOut(msg);
 	}
@@ -335,9 +335,9 @@ exports.startNewSession = startNewSession;
 exports.closeSession = closeSession;
 
 exports.getLastCommands = (reqBody, emcResult) => {
-	let agentId = emcResult.user.id;
-	let gds = reqBody.gds;
-	let requestId = reqBody.travelRequestId || 0;
+	const agentId = emcResult.user.id;
+	const gds = reqBody.gds;
+	const requestId = reqBody.travelRequestId || 0;
 	return Db.with(db => db.fetchAll({
 		// TODO: move to CmdRqLog.js
 		table: 'cmd_rs_log',
@@ -349,13 +349,13 @@ exports.getLastCommands = (reqBody, emcResult) => {
 		orderBy: 'id DESC',
 		limit: 100,
 	})).then(rows => {
-		let cmds = rows.map(row => row.command);
-		let usedSet = new Set();
+		const cmds = rows.map(row => row.command);
+		const usedSet = new Set();
 		return {
 			success: true,
 			data: cmds.filter(cmd => {
 				// remove dupes
-				let used = usedSet.has(cmd);
+				const used = usedSet.has(cmd);
 				usedSet.add(cmd);
 				return !used;
 			}).reverse(),
@@ -368,8 +368,8 @@ exports.getCmdRqList = (reqBody, emcResult) => {
 };
 
 exports.clearBuffer = (rqBody, emcResult) => {
-	let agentId = emcResult.user.id;
-	let requestId = rqBody.travelRequestId || 0;
+	const agentId = emcResult.user.id;
+	const requestId = rqBody.travelRequestId || 0;
 	return Db.with(db => db.query([
 		// TODO: move to CmdRqLog.js
 		'DELETE FROM cmd_rs_log',

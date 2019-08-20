@@ -1,8 +1,9 @@
+const RepriceInPccMix = require('./RepriceInPccMix.js');
 const GdsSession = require('../GdsHelpers/GdsSession.js');
 const AddMpRemark = require('./AddMpRemark.js');
 const GetCurrentPnr = require('./GetCurrentPnr.js');
 
-let {fetchAll, wrap, extractTpTabCmds} = require('../GdsHelpers/TravelportUtils.js');
+const {fetchAll, wrap, extractTpTabCmds} = require('../GdsHelpers/TravelportUtils.js');
 const ApoRunCmdRq = require("../Transpiled/Rbs/GdsDirect/Actions/Apollo/RunCmdRq.js");
 const SabRunCmdRq = require("../Transpiled/Rbs/GdsDirect/Actions/Sabre/RunCmdRq.js");
 const GalRunCmdRq = require("../Transpiled/Rbs/GdsDirect/Actions/Galileo/RunCmdRq.js");
@@ -30,10 +31,10 @@ const {coverExc} = require('klesun-node-tools/src/Lang.js');
  * @param '$BN1|2*INF'
  * @return '$BN1+2*INF'
  */
-let encodeTpCmdForCms = ($cmd) =>
+const encodeTpCmdForCms = ($cmd) =>
 	$cmd.replace(/\|/g, '+').replace(/@/g, '¤');
 
-let decodeCmsInput = ($cmd, gds) => {
+const decodeCmsInput = ($cmd, gds) => {
 	if (['apollo', 'galileo'].includes(gds)) {
 		$cmd = new CmsApolloTerminal().decodeCmsInput($cmd);
 	} else if (gds === 'sabre') {
@@ -42,16 +43,16 @@ let decodeCmsInput = ($cmd, gds) => {
 	return $cmd;
 };
 
-let encodeTpOutputForCms = ($dump) => {
+const encodeTpOutputForCms = ($dump) => {
 	$dump = $dump.replace(/\|/g, '+').replace(/;/g, '·');
 	$dump = $dump.replace(/\n?\)><$/, '\n└─>');
 	$dump = $dump.replace(/><$/, '');
 	return $dump;
 };
 
-let isScreenCleaningCommand = (rec, gds) => {
+const isScreenCleaningCommand = (rec, gds) => {
 	if (gds === 'apollo') {
-		let type = rec.type || ApoCommandParser.parse(rec.cmd);
+		const type = rec.type || ApoCommandParser.parse(rec.cmd);
 		return ['seatMap', 'changeArea', 'ignoreKeepPnr', 'reorderSegments'].includes(type)
 			|| rec.cmd.startsWith('A')
 			|| rec.cmd.startsWith('*')
@@ -59,8 +60,8 @@ let isScreenCleaningCommand = (rec, gds) => {
 			|| rec.cmd.startsWith('MDA')
 			|| rec.cmd.startsWith('MT');
 	} else if (gds === 'galileo') {
-		let type = rec.type || GalCommandParser.parse(rec.cmd);
-		let clearScreenTypes = [
+		const type = rec.type || GalCommandParser.parse(rec.cmd);
+		const clearScreenTypes = [
 			'seatMap', 'changeArea', 'ignoreKeepPnr', 'reorderSegments', 'airAvailability',
 			// Apollo $... command analogs follow...
 			'priceItinerary', 'fareRulesFromMenu', 'fareRulesMenuFromTariff', 'fareSearch',
@@ -70,30 +71,30 @@ let isScreenCleaningCommand = (rec, gds) => {
 			|| rec.cmd.startsWith('*')
 			|| rec.cmd.startsWith('MDA');
 	} else if (gds === 'sabre') {
-		let type = rec.type || SabCommandParser.parse(rec.cmd);
+		const type = rec.type || SabCommandParser.parse(rec.cmd);
 		return ['seatMap', 'changeArea', 'ignoreKeepPnr', 'reorderSegments'].includes(type);
 	} else {
 		return false;
 	}
 };
 
-let encodeCmdForCms = (gds, cmd) => {
+const encodeCmdForCms = (gds, cmd) => {
 	if (['galileo', 'apollo'].includes(gds)) {
 		cmd = encodeTpCmdForCms(cmd);
 	}
 	return cmd;
 };
 
-let transformCalledCommand = (rec, stateful) => {
+const transformCalledCommand = (rec, stateful) => {
 	if (!rec.cmd || !rec.output) {
 		// mostly cases when Promise accidentally returned instead of cmd object
-		let cls = ((rec || {}).constructor || {}).name;
+		const cls = ((rec || {}).constructor || {}).name;
 		throw new Error('Invalid cmdRec format - ' + cls + ' - ' + JSON.stringify(rec));
 	}
-	let gds = stateful.gds;
-	let agent = stateful.getAgent();
+	const gds = stateful.gds;
+	const agent = stateful.getAgent();
 	let output = rec.output;
-	let type = rec.type;
+	const type = rec.type;
 	let tabCommands = [];
 	if (['galileo', 'apollo'].includes(gds)) {
 		if (!rec.noWrap) {
@@ -122,13 +123,13 @@ let transformCalledCommand = (rec, stateful) => {
 	};
 };
 
-let translateCmd = (fromGds, toGds, inputCmd) => {
-	let errors = [];
-	let messages = [];
-	let startHr = process.hrtime();
+const translateCmd = (fromGds, toGds, inputCmd) => {
+	const errors = [];
+	const messages = [];
+	const startHr = process.hrtime();
 	let forTranslation = decodeCmsInput(inputCmd, fromGds);
 
-	let corrected = CommandCorrector.correct(forTranslation, fromGds);
+	const corrected = CommandCorrector.correct(forTranslation, fromGds);
 	errors.push(...(corrected.errors || []));
 	messages.push(...(corrected.messages || []));
 	if (corrected.output &&
@@ -138,7 +139,7 @@ let translateCmd = (fromGds, toGds, inputCmd) => {
 		forTranslation = corrected.output;
 	}
 
-	let translated = (new GdsDialectTranslator())
+	const translated = (new GdsDialectTranslator())
 		.translate(fromGds, toGds, forTranslation);
 	errors.push(...(translated.errors || []));
 	messages.push(...(translated.messages || []));
@@ -158,25 +159,25 @@ let translateCmd = (fromGds, toGds, inputCmd) => {
 	};
 };
 
-let extendActions = async ({whenCmsResult, stateful}) => {
-	let agent = stateful.getAgent();
+const extendActions = async ({whenCmsResult, stateful}) => {
+	const agent = stateful.getAgent();
 	let didSavePnr = false;
-	let prevState = stateful.getSessionData();
+	const prevState = stateful.getSessionData();
 	stateful.addPnrSaveHandler(() => didSavePnr = true);
-	let result = await whenCmsResult;
-	let state = stateful.getSessionData();
-	let isExpert = agent.hasGroup('Experts');
-	let isNewPnr =
+	const result = await whenCmsResult;
+	const state = stateful.getSessionData();
+	const isExpert = agent.hasGroup('Experts');
+	const isNewPnr =
 		!prevState.isPnrStored ||
 		prevState.recordLocator &&
 		prevState.recordLocator !== state.recordLocator;
 
 	if (didSavePnr && state.isPnrStored && isNewPnr && isExpert) {
-		let pnr = await GetCurrentPnr(stateful);
-		let airlines = [...new Set(pnr.getItinerary().map(s => s.airline))];
+		const pnr = await GetCurrentPnr(stateful);
+		const airlines = [...new Set(pnr.getItinerary().map(s => s.airline))];
 		// there are some actions expert has to quickly perform right after PNR was created on
 		// these airlines, that's why we were asked to disable the popup - to not slow them down
-		let noPopupAirlines = _.intersection(airlines, ['MU', 'CA', 'SQ']);
+		const noPopupAirlines = _.intersection(airlines, ['MU', 'CA', 'SQ']);
 		if (noPopupAirlines.length === 0 && airlines.length > 0) {
 			result.actions.push({type: 'displayMpRemarkDialog', data: {airlines: airlines}});
 		}
@@ -191,7 +192,7 @@ let extendActions = async ({whenCmsResult, stateful}) => {
  * @param stateful = require('StatefulSession.js')()
  * @param {{command: '*R'}} rqBody = at('MainController.js').normalizeRqBody()
  */
-let ProcessTerminalInput = async ({
+const ProcessTerminalInput = async ({
 	stateful, cmdRq, dialect = null,
 	AreaSettings = require("../Repositories/AreaSettings.js"),
 	gdsClients = GdsSession.makeGdsClients({
@@ -199,11 +200,11 @@ let ProcessTerminalInput = async ({
 		logId: stateful.getSessionRecord().logId,
 	}),
 }) => {
-	let runByGds = async (cmdRqData) => {
+	const runByGds = async (cmdRqData) => {
 		cmdRqData = {...cmdRqData, stateful, AreaSettings};
 		let gdsResult;
-		let gds = cmdRqData.stateful.gds;
-		let {travelport, sabre, amadeus} = gdsClients;
+		const gds = cmdRqData.stateful.gds;
+		const {travelport, sabre, amadeus} = gdsClients;
 		if (gds === 'apollo') {
 			gdsResult = await ApoRunCmdRq({...cmdRqData, travelport});
 		} else if (gds === 'sabre') {
@@ -218,21 +219,23 @@ let ProcessTerminalInput = async ({
 		return gdsResult;
 	};
 
-	let runCmdRq =  async ({cmdRq}) => {
+	const runCmdRq =  async ({cmdRq}) => {
 		let status = 'success';
-		let messages = [];
-		let actions = [];
-		let calledCommands = [];
+		const messages = [];
+		const actions = [];
+		const calledCommands = [];
 
-		let parsedAlias = await AliasParser.parse(cmdRq, stateful);
+		const parsedAlias = await AliasParser.parse(cmdRq, stateful);
 		if (parsedAlias.type === 'addMpRemark') {
 			return AddMpRemark({stateful, airline: parsedAlias.data.airline});
+		} else if (parsedAlias.type === 'priceAll' && parsedAlias.data.isMix) {
+			return RepriceInPccMix({stateful, aliasData: parsedAlias.data, gdsClients});
 		}
 
-		let bulkCmdRecs = parsedAlias.type !== 'bulkCmds'
+		const bulkCmdRecs = parsedAlias.type !== 'bulkCmds'
 			? [parsedAlias] : parsedAlias.data.bulkCmdRecs;
 
-		for (let cmdRec of bulkCmdRecs) {
+		for (const cmdRec of bulkCmdRecs) {
 			cmdRec.cmdRq = cmdRec.cmdRq.trim();
 			let running = runByGds({stateful, ...cmdRec})
 				.catch(exc => Rej.NoContent.matches(exc.httpStatusCode)
@@ -246,8 +249,8 @@ let ProcessTerminalInput = async ({
 					calledCommands: stateful.flushCalledCommands(),
 				}));
 			}
-			let gdsResult = await running;
-			let isSuccess = gdsResult.status === GdsDirect.STATUS_EXECUTED;
+			const gdsResult = await running;
+			const isSuccess = gdsResult.status === GdsDirect.STATUS_EXECUTED;
 			messages.push(...(gdsResult.userMessages || [])
 				.map(msg => ({type: isSuccess ? 'info' : 'error', text: msg})));
 			actions.push(...(gdsResult.actions || []));
@@ -266,10 +269,10 @@ let ProcessTerminalInput = async ({
 		};
 	};
 
-	let getDefaultPcc = async (area, stateful) => {
-		let gds = stateful.gds;
-		let agentId = stateful.getAgent().getId();
-		let areaSettings = await AreaSettings.getByAgent(agentId);
+	const getDefaultPcc = async (area, stateful) => {
+		const gds = stateful.gds;
+		const agentId = stateful.getAgent().getId();
+		const areaSettings = await AreaSettings.getByAgent(agentId);
 		let configPcc = areaSettings
 			.filter(r => r.area === area && r.gds === stateful.gds)
 			.map(r => r.defaultPcc)[0];
@@ -282,12 +285,12 @@ let ProcessTerminalInput = async ({
 	 * if no PCC is currently active - emulate into the
 	 * one specified in user config for this work area
 	 */
-	let ensureFittingPcc = async (stateful) => {
-		let areaState = stateful.getSessionData();
+	const ensureFittingPcc = async (stateful) => {
+		const areaState = stateful.getSessionData();
 		if (!areaState.cmdCnt || !areaState.pcc) {
-			let defaultPcc = await getDefaultPcc(areaState.area, stateful);
+			const defaultPcc = await getDefaultPcc(areaState.area, stateful);
 			if (defaultPcc && defaultPcc !== areaState.pcc) {
-				let cmdRq = translateCmd('apollo', stateful.gds, 'SEM/' + defaultPcc + '/AG').cmd;
+				const cmdRq = translateCmd('apollo', stateful.gds, 'SEM/' + defaultPcc + '/AG').cmd;
 				return runCmdRq({cmdRq}).catch(coverExc(Rej.list, exc => ({
 					// show the PCC emulation error, but still continue
 					// with normal flow to not hang in "Invalid PCC" state
@@ -298,10 +301,10 @@ let ProcessTerminalInput = async ({
 		return {calledCommands: [], messages: []};
 	};
 
-	let processNormalized = async ({stateful, cmdRq}) => {
-		let prePccResult = await ensureFittingPcc(stateful);
-		let rbsResult = await runCmdRq({cmdRq, stateful});
-		let postPccResult = await ensureFittingPcc(stateful); // if this command changed area
+	const processNormalized = async ({stateful, cmdRq}) => {
+		const prePccResult = await ensureFittingPcc(stateful);
+		const rbsResult = await runCmdRq({cmdRq, stateful});
+		const postPccResult = await ensureFittingPcc(stateful); // if this command changed area
 
 		return {...rbsResult,
 			calledCommands: []
@@ -317,13 +320,13 @@ let ProcessTerminalInput = async ({
 	};
 
 	const execute = async () => {
-		let gds = stateful.gds;
-		let translated = translateCmd(dialect || gds, gds, cmdRq);
-		let cmdRqNorm = translated.cmd;
+		const gds = stateful.gds;
+		const translated = translateCmd(dialect || gds, gds, cmdRq);
+		const cmdRqNorm = translated.cmd;
 
-		let callsLimit = stateful.getAgent().getUsageLimit();
+		const callsLimit = stateful.getAgent().getUsageLimit();
 		if (callsLimit) {
-			let callsUsed = await Agents.getGdsDirectCallsUsed(stateful.getAgent().getId());
+			const callsUsed = await Agents.getGdsDirectCallsUsed(stateful.getAgent().getId());
 			if (+callsUsed >= +callsLimit) {
 				return TooManyRequests('You exhausted your GDS Direct usage limit for today (' + callsUsed + ' >= ' + callsLimit + ')');
 			}

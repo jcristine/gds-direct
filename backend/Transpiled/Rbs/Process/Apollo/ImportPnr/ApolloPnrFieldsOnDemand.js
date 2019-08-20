@@ -5,7 +5,7 @@ const php = require('../../../../phpDeprecated.js');
 class ApolloPnrFieldsOnDemand
 {
 	static detectPricingErrorResponse($dump)  {
-		let errorData = this.detectPricingErrorResponseType($dump);
+		const errorData = this.detectPricingErrorResponseType($dump);
 		return errorData ? errorData['error'] : null;
 	}
 

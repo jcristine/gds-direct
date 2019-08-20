@@ -1,16 +1,16 @@
 
-let {getClient, keys, withNewConnection} = require('./../LibWrappers/Redis.js');
-let FluentLogger = require('./../LibWrappers/FluentLogger.js');
-let {NoContent, Conflict, NotFound} = require('klesun-node-tools/src/Rej.js');
-let Misc = require('../Utils/TmpLib.js');
-let {chunk} = Misc;
-let Db = require('../Utils/Db.js');
+const {getClient, keys, withNewConnection} = require('./../LibWrappers/Redis.js');
+const FluentLogger = require('./../LibWrappers/FluentLogger.js');
+const {NoContent, Conflict, NotFound} = require('klesun-node-tools/src/Rej.js');
+const Misc = require('../Utils/TmpLib.js');
+const {chunk} = Misc;
+const Db = require('../Utils/Db.js');
 const {sqlNow} = require("klesun-node-tools/src/Utils/Misc.js");
 const {nonEmpty} = require('klesun-node-tools/src/Lang.js');
 
-let TABLE = 'terminal_sessions';
+const TABLE = 'terminal_sessions';
 
-let normalizeContext = (reqBody) => {
+const normalizeContext = (reqBody) => {
 	return {
 		agentId: +reqBody.agentId,
 		gds: reqBody.gds,
@@ -18,9 +18,9 @@ let normalizeContext = (reqBody) => {
 	};
 };
 
-let makeSessionRecord = ({id, context, gdsData, logId}) => {
-	let createdMs = Date.now();
-	let session = {
+const makeSessionRecord = ({id, context, gdsData, logId}) => {
+	const createdMs = Date.now();
+	const session = {
 		id: id,
 		logId: logId,
 		createdMs: createdMs,
@@ -31,8 +31,8 @@ let makeSessionRecord = ({id, context, gdsData, logId}) => {
 	return session;
 };
 
-let expired = (session, accessedMs) => {
-	let idleSeconds = (Date.now() - accessedMs) / 1000;
+const expired = (session, accessedMs) => {
+	const idleSeconds = (Date.now() - accessedMs) / 1000;
 	if (session.context.gds === 'sabre') {
 		return idleSeconds > 30 * 60; // 30 minutes
 	} else if (session.context.gds === 'amadeus') {
@@ -43,13 +43,13 @@ let expired = (session, accessedMs) => {
 	}
 };
 
-let shouldClose = (userAccessMs) => {
-	let aliveSeconds = (Date.now() - userAccessMs) / 1000;
+const shouldClose = (userAccessMs) => {
+	const aliveSeconds = (Date.now() - userAccessMs) / 1000;
 	return aliveSeconds > 30 * 60; // 30 minutes
 };
 
 /** @return {Promise} makeSessionRecord() */
-let getById = (id) => {
+const getById = (id) => {
 	return getClient()
 		.then(redis => redis.hget(keys.SESSION_TO_RECORD, id))
 		.then(nonEmpty('Session #' + id, NotFound))
@@ -60,14 +60,14 @@ let getById = (id) => {
 /** @param context = normalizeContext() */
 exports.storeNew = async ({context, gdsData, emcUser, logId = null}) => {
 	context = {...context, agentId: emcUser.id};
-	let normalized = normalizeContext(context);
-	let contextStr = JSON.stringify(normalized);
-	let prefix = context.gds + '_' + context.agentId;
+	const normalized = normalizeContext(context);
+	const contextStr = JSON.stringify(normalized);
+	const prefix = context.gds + '_' + context.agentId;
 	if (!logId) {
 		logId = await FluentLogger.logNewId(prefix);
 	}
 
-	let id = await Db.with(db => db.writeRows(TABLE, [{
+	const id = await Db.with(db => db.writeRows(TABLE, [{
 		gds: context.gds,
 		created_dt: sqlNow(),
 		agent_id: context.agentId,
@@ -76,8 +76,8 @@ exports.storeNew = async ({context, gdsData, emcUser, logId = null}) => {
 	}])).then(inserted => inserted.insertId)
 		.then(nonEmpty('Could not get session id from DB'));
 
-	let session = makeSessionRecord({id, context: normalized, gdsData, logId});
-	let client = await getClient();
+	const session = makeSessionRecord({id, context: normalized, gdsData, logId});
+	const client = await getClient();
 	client.zadd(keys.SESSION_ACTIVES, Date.now(), id);
 	client.hset(keys.SESSION_BY_CONTEXT, contextStr, id);
 	client.hset(keys.SESSION_TO_RECORD, id, JSON.stringify(session));
@@ -86,14 +86,14 @@ exports.storeNew = async ({context, gdsData, emcUser, logId = null}) => {
 
 /** @param session = makeSessionRecord() */
 exports.update = async (session) => {
-	let client = await getClient();
+	const client = await getClient();
 	return client.hset(keys.SESSION_TO_RECORD, session.id, JSON.stringify(session));
 };
 
 exports.getByContext = async (rqBody, emcUser) => {
-	let context = {...rqBody, agentId: emcUser.id};
-	let contextStr = JSON.stringify(normalizeContext(context));
-	let client = await getClient();
+	const context = {...rqBody, agentId: emcUser.id};
+	const contextStr = JSON.stringify(normalizeContext(context));
+	const client = await getClient();
 	return client.hget(keys.SESSION_BY_CONTEXT, contextStr)
 		.then(nonEmpty('Session of ' + contextStr, NotFound))
 		.then(getById);
@@ -101,26 +101,26 @@ exports.getByContext = async (rqBody, emcUser) => {
 
 /** @param session = makeSessionRecord() */
 exports.updateAccessTime = async (session) => {
-	let client = await getClient();
+	const client = await getClient();
 	return client.zadd(keys.SESSION_ACTIVES, Date.now(), session.id);
 };
 
 /** @param session = makeSessionRecord() */
 exports.updateUserAccessTime = async (session) => {
-	let client = await getClient();
+	const client = await getClient();
 	return client.hset(keys.SESSION_TO_USER_ACCESS_MS, session.id, Date.now());
 };
 
 /** @param {IFullSessionState} state */
 exports.updateFullState = async (session, state) => {
-	let client = await getClient();
+	const client = await getClient();
 	return Promise.all([
 		exports.updateAccessTime(session),
 		client.hset(keys.SESSION_TO_STATE, session.id, JSON.stringify(state)),
 	]);
 };
 
-let makeDefaultAreaState = (gds) => ({
+const makeDefaultAreaState = (gds) => ({
 	area: 'A',
 	pcc: {
 		apollo: '2F3K',
@@ -134,7 +134,7 @@ let makeDefaultAreaState = (gds) => ({
 	cmdCnt: 0,
 });
 
-let makeDefaultState = (session) => ({
+const makeDefaultState = (session) => ({
 	area: 'A',
 	areas: {
 		A: makeDefaultAreaState(session.context.gds),
@@ -143,7 +143,7 @@ let makeDefaultState = (session) => ({
 
 /** @return Promise<IFullSessionState> */
 exports.getFullState = async (session) => {
-	let client = await getClient();
+	const client = await getClient();
 	return client.hget(keys.SESSION_TO_STATE, session.id)
 		.then(nonEmpty('State of #' + session.id, NotFound))
 		.then(stateStr => JSON.parse(stateStr))
@@ -156,12 +156,12 @@ exports.makeDefaultState = makeDefaultState;
 exports.makeDefaultAreaState = makeDefaultAreaState;
 
 exports.getAccessMs = async (session) => {
-	let client = await getClient();
+	const client = await getClient();
 	return client.zscore(keys.SESSION_ACTIVES, session.id);
 };
 
 exports.getUserAccessMs = async (session) => {
-	let client = await getClient();
+	const client = await getClient();
 	return client.hget(keys.SESSION_TO_USER_ACCESS_MS, session.id);
 };
 
@@ -169,20 +169,20 @@ exports.getUserAccessMs = async (session) => {
 exports.takeIdlest = () => {
 	return withNewConnection(async (client) => {
 		client.watch(keys.SESSION_ACTIVES);
-		let [sessionId, accessedMs] = await client.zrange(keys.SESSION_ACTIVES, 0, 0, 'WITHSCORES');
+		const [sessionId, accessedMs] = await client.zrange(keys.SESSION_ACTIVES, 0, 0, 'WITHSCORES');
 		client.multi({pipeline: false});
 		client.zrem(keys.SESSION_ACTIVES, sessionId);
 		return client.exec()
 			.then(nonEmpty('Transaction aborted because session #' + sessionId + ' was locked by another process', Conflict))
 			.then((bulkRs) => [accessedMs, sessionId]);
 	}).then(async ([accessedMs, sessionId]) => {
-		let maxIdleMs = Date.now() - 70 * 1000;
+		const maxIdleMs = Date.now() - 70 * 1000;
 		if (!sessionId) {
 			return NoContent('No sessions left');
 		} else if (accessedMs < maxIdleMs) {
 			return getById(sessionId).then(session => [accessedMs, session]);
 		} else {
-			let client = await getClient();
+			const client = await getClient();
 			client.zadd(keys.SESSION_ACTIVES, accessedMs, sessionId); // return it back to the queue
 			return NoContent('The idlest session #' + sessionId + ' was accessed too recently - ' + ((Date.now() - accessedMs) / 1000).toFixed(3) + ' seconds ago');
 		}
@@ -191,10 +191,10 @@ exports.takeIdlest = () => {
 
 /** @param session = makeSessionRecord() */
 exports.remove = async (session) => {
-	let normalized = normalizeContext(session.context);
-	let contextStr = JSON.stringify(normalized);
+	const normalized = normalizeContext(session.context);
+	const contextStr = JSON.stringify(normalized);
 	FluentLogger.logit('TODO: Removing session data', session.logId);
-	let client = await getClient();
+	const client = await getClient();
 	return Promise.all([
 		client.hdel(keys.SESSION_BY_CONTEXT, contextStr),
 		client.hdel(keys.SESSION_TO_RECORD, session.id),
@@ -210,20 +210,20 @@ exports.remove = async (session) => {
 };
 
 exports.countActive = async (gds, profileName) => {
-	let client = await getClient();
+	const client = await getClient();
 	return Promise.all([
 		// could add an index by GDS, but nah for now
 		client.hgetall(keys.SESSION_TO_RECORD),
 		// should not be needed if crons work properly I guess...
 		client.zrange(keys.SESSION_ACTIVES, 0, -1, 'WITHSCORES'),
 	]).then(([idToSession, allActivities]) => {
-		let accessPairs = chunk(allActivities, 2);
+		const accessPairs = chunk(allActivities, 2);
 		return accessPairs.filter(([id, accessMs]) => {
-			let sessionStr = idToSession[id];
+			const sessionStr = idToSession[id];
 			if (!sessionStr) {
 				return false;
 			} else {
-				let session = JSON.parse(sessionStr);
+				const session = JSON.parse(sessionStr);
 				return session.context.gds === gds
 					&& session.gdsData.profileName === profileName
 					&& !expired(session, accessMs);
@@ -233,7 +233,7 @@ exports.countActive = async (gds, profileName) => {
 };
 
 exports.getHist = async (params) => {
-	let where = []
+	const where = []
 		.concat(!params.agentId ? [] : [['ts.agent_id', '=', params.agentId]])
 		.concat(!params.gds ? [] : [['ts.gds', '=', params.gds]])
 		.concat(!params.sessionId ? [] : [['ts.id', '=', params.sessionId]])
@@ -241,7 +241,7 @@ exports.getHist = async (params) => {
 		.concat(!params.minCreatedDt ? [] : [['ts.created_dt', '>=', params.minCreatedDt]])
 		.concat(!params.maxCreatedDt ? [] : [['ts.created_dt', '<=', params.maxCreatedDt]])
 		;
-	let join = [];
+	const join = [];
 	if (params.recordLocator) {
 		join.push({
 			table: 'mentioned_pnrs',
@@ -250,7 +250,7 @@ exports.getHist = async (params) => {
 		});
 		where.push(['mp.recordLocator', '=', params.recordLocator]);
 	}
-	let rows = await Db.with(db => db.fetchAll({
+	const rows = await Db.with(db => db.fetchAll({
 		fields: ['ts.*'],
 		table: TABLE,
 		as: 'ts',

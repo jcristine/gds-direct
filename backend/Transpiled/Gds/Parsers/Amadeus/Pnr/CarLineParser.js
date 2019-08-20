@@ -33,7 +33,7 @@ class CarLineParser
 
 	static parseContext($context)  {
 		let $data, $carTypeCode, $key, $value;
-		let $parsedData = {};
+		const $parsedData = {};
 
 		$data = php.explode('/', $context);
 		$carTypeCode = php.array_shift($data);

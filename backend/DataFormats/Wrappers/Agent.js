@@ -3,11 +3,11 @@ const Agents = require("../../Repositories/Agents");
 /**
  * @param {IEmcUser} emcUser
  */
-let Agent = (emcUser) => {
+const Agent = (emcUser) => {
 	//let roles = testRoles;
-	let roles = emcUser.roles || [];
+	const roles = emcUser.roles || [];
 	// 6206 - aklesuns
-	let hasRole = (role) => roles.includes(role);
+	const hasRole = (role) => roles.includes(role);
 	return {
 		getId: () => emcUser.id,
 		getLogin: () => emcUser.displayName,
@@ -34,14 +34,14 @@ let Agent = (emcUser) => {
 
 		getRoles: () => roles,
 		hasGroup: (groupName) => {
-			let groups = (emcUser.groups || []);
+			const groups = (emcUser.groups || []);
 			return groups.some(g => g.name === groupName);
 		},
 	};
 };
 
 Agent.makeStub = (params) => {
-	let row = params.row;
+	const row = params.row;
 	return Agent({
 		id: row.id,
 		displayName: row.login,

@@ -107,8 +107,8 @@ class PricingCmdParser
 			$parsed = this.parseRange($matches[1]);
 			$type = 'segments';
 		} else if ($matches = $raw.match(/^K([A-Z]?)$/)) {
-			let raw = $matches[1];
-			let parsed = this.getCabinClassMapping()[raw] || null;
+			const raw = $matches[1];
+			const parsed = this.getCabinClassMapping()[raw] || null;
 			$parsed = {raw, parsed};
 			$type = 'cabinClass';
 		} else if (php.array_key_exists($raw, $ownSeatTypes)) {

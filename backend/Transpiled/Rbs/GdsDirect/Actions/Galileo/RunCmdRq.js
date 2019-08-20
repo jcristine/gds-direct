@@ -6,6 +6,7 @@ const CmsGalileoTerminal = require("../../GdsInterface/CmsApolloTerminal");
 const ArrayUtil = require('../../../../Lib/Utils/ArrayUtil.js');
 const getRbsPqInfo = require("../../../../../GdsHelpers/RbsUtils").getRbsPqInfo;
 const fetchAll = require("../../../../../GdsHelpers/TravelportUtils").fetchAll;
+const {withFakeNames} = require("../../../../../GdsHelpers/GalileoUtils.js");
 const DateTime = require('../../../../Lib/Utils/DateTime.js');
 const Fp = require('../../../../Lib/Utils/Fp.js');
 const StringUtil = require('../../../../Lib/Utils/StringUtil.js');
@@ -134,6 +135,7 @@ const parseMultiPriceItineraryAlias = ($cmd) => {
 	return null;
 };
 
+/** @param stateful = require('StatefulSession.js')() */
 const RunCmdRq = ({
 	stateful, cmdRq,
 	PtcUtil = require('../../../../Rbs/Process/Common/PtcUtil.js'),
@@ -168,39 +170,39 @@ const RunCmdRq = ({
 
 	/** @return string|null - null means "not changed" */
 	const preprocessAvailCmd = async (parsed) => {
-		let getRows = onDemand(() => stateful.getLog().getLikeSql({
+		const getRows = onDemand(() => stateful.getLog().getLikeSql({
 			where: [
 				['type', '=', 'airAvailability'],
 				['area', '=', getSessionData().area],
 			],
 			limit: 20,
 		}));
-		let match = parsed.cmd.match(/^AR(\d+)$/);
+		const match = parsed.cmd.match(/^AR(\d+)$/);
 		if (match) {
-			let day = match[1];
-			let availsDesc = await getRows();
-			for (let lastAvail of availsDesc) {
-				let {type, data} = CommandParser.parse(lastAvail.cmd);
-				let date = (data || {}).departureDate || (data || {}).returnDate;
+			const day = match[1];
+			const availsDesc = await getRows();
+			for (const lastAvail of availsDesc) {
+				const {type, data} = CommandParser.parse(lastAvail.cmd);
+				const date = (data || {}).departureDate || (data || {}).returnDate;
 				if (date) {
-					let month = date.raw.slice(-3);
-					let cmd = 'AR' + day + month;
+					const month = date.raw.slice(-3);
+					const cmd = 'AR' + day + month;
 					parsed = CommandParser.parse(cmd);
 					break;
 				}
 			}
 		}
-		let {type, data} = parsed;
+		const {type, data} = parsed;
 		if (type === 'airAvailability' && data && data['isReturn']) {
 			// add mods from original availability request
 			let typeToMod = php.array_combine(
 				php.array_column(data['modifiers'] || [], 'type'),
 				php.array_column(data['modifiers'] || [], 'raw')
 			);
-			let cmdRows = await getRows();
-			for (let cmdRow of cmdRows) {
-				let oldParsed = CommandParser.parse(cmdRow['cmd']);
-				let oldTypeToMod = php.array_combine(
+			const cmdRows = await getRows();
+			for (const cmdRow of cmdRows) {
+				const oldParsed = CommandParser.parse(cmdRow['cmd']);
+				const oldTypeToMod = php.array_combine(
 					php.array_column((oldParsed['data'] || {})['modifiers'] || [], 'type'),
 					php.array_column((oldParsed['data'] || {})['modifiers'] || [], 'raw')
 				);
@@ -322,7 +324,7 @@ const RunCmdRq = ({
 		$sessionData = $cmdLog.getSessionData();
 		if (!$sessionData['isPnrStored']) {
 			$agent = stateful.getAgent();
-			let msg = await CommonDataHelper.createCredentialMessage(stateful);
+			const msg = await CommonDataHelper.createCredentialMessage(stateful);
 			$remarkCmd = 'NP.' + msg;
 			$flatPerformedCmds = php.array_column(await getFlatUsedCmds(), 'cmd');
 
@@ -353,7 +355,7 @@ const RunCmdRq = ({
 	};
 
 	const runCmd = async ($cmd, $fetchAll) => {
-		let cmdRec = $fetchAll
+		const cmdRec = $fetchAll
 			? await fetchAll($cmd, stateful)
 			: await stateful.runCmd($cmd);
 		if (isSuccessfulFsCommand($cmd, cmdRec.output)) {
@@ -508,7 +510,7 @@ const RunCmdRq = ({
 			return {'errors': $errors};
 		}
 		$calledCommands = php.array_merge($calledCommands, await callImplicitCommandsBefore($cmd));
-		let cmdRec = await runCmd($cmd, shouldFetchAll);
+		const cmdRec = await runCmd($cmd, shouldFetchAll);
 		$userMessages = await makeCmdMessages(cmdRec.cmd, cmdRec.output);
 		return callImplicitCommandsAfter(cmdRec, $calledCommands, $userMessages);
 	};
@@ -607,31 +609,31 @@ const RunCmdRq = ({
 	const bookPassengers = async (passengers) => {
 	// note that Amadeus has different format instead of 'remark', so a
 	// better approach would be to generate command for pure parsed dob/ptc
-		let cmd = passengers
+		const cmd = passengers
 			.map(pax => 'N.' + pax.lastName + '/' + pax.firstName +
 			(!pax.remark ? '' : '*' + pax.remark))
 			.join('|');
-		let cmdRec = await runCmd(cmd);
+		const cmdRec = await runCmd(cmd);
 		return {calledCommands: [cmdRec]};
 	};
 
 	const bookPnr = async (reservation) => {
-		let pcc = reservation.pcc || null;
-		let passengers = reservation.passengers || [];
+		const pcc = reservation.pcc || null;
+		const passengers = reservation.passengers || [];
 		let itinerary = reservation.itinerary || [];
-		let errors = [];
-		let allUserMessages = [];
-		let calledCommands = [];
+		const errors = [];
+		const allUserMessages = [];
+		const calledCommands = [];
 
 		if (reservation.pcc && pcc !== getSessionData().pcc) {
 		// probably it would make more sense to pass the PCC to the RebuildInPccAction...
-			let cmd = 'SEM/' + pcc + '/AG';
-			let {calledCommands, userMessages} = await processRealCommand(cmd);
+			const cmd = 'SEM/' + pcc + '/AG';
+			const {calledCommands, userMessages} = await processRealCommand(cmd);
 			allUserMessages.push(...userMessages);
 			calledCommands.push(...calledCommands);
 		}
 		if (passengers.length > 0) {
-			let booked = await bookPassengers(passengers);
+			const booked = await bookPassengers(passengers);
 			errors.push(...(booked.errors || []));
 			calledCommands.push(...(booked.calledCommands || []));
 		}
@@ -639,8 +641,9 @@ const RunCmdRq = ({
 		// would be better to use number returned by GalileoBuildItineraryAction
 		// as it may be not in same order in case of marriages...
 			itinerary = itinerary.map((s, i) => ({...s, segmentNumber: +i + 1}));
-			let result = await (new RebuildInPccAction({useXml, travelport}))
-				.setSession(stateful)
+			const result = await (new RebuildInPccAction({
+				useXml, travelport, baseDate: stateful.getStartDt(),
+			})).setSession(stateful)
 				.fallbackToAk(true).bookItinerary(itinerary);
 			let cmdRecs = stateful.flushCalledCommands();
 			if (php.empty(result.errors)) {
@@ -657,7 +660,7 @@ const RunCmdRq = ({
 			$calledCommands, $cmd;
 
 		$pnr = await getCurrentPnr();
-		let {itinerary} = await CommonDataHelper.sortSegmentsByUtc(
+		const {itinerary} = await CommonDataHelper.sortSegmentsByUtc(
 			$pnr, stateful.getGeoProvider(), stateful.getStartDt()
 		);
 
@@ -708,7 +711,9 @@ const RunCmdRq = ({
 			} || {})[$segmentStatus] || $segmentStatus;
 		}
 		stateful.flushCalledCommands();
-		$result = await (new RebuildInPccAction({useXml, travelport})).setSession(stateful)
+		$result = await (new RebuildInPccAction({
+			useXml, travelport, baseDate: stateful.getStartDt(),
+		})).setSession(stateful)
 			.fallbackToAk($isSellStatus).execute($area, $pcc, $itinerary);
 		$calledCommands = stateful.flushCalledCommands();
 		if (php.empty($result['errors'])) {
@@ -738,6 +743,7 @@ const RunCmdRq = ({
 
 		$result = await GalileoBuildItineraryAction({
 			session: stateful,
+			baseDate: stateful.getStartDt(),
 			useXml,
 			travelport,
 			itinerary: $newSegs,
@@ -770,12 +776,12 @@ const RunCmdRq = ({
 	};
 
 	const _fetchPricing = async (cmd) => {
-		let shouldFetchAll = !cmd.startsWith('FQBA') && !cmd.startsWith('FQBBK');
-		let result = await processRealCommand(cmd, shouldFetchAll);
+		const shouldFetchAll = !cmd.startsWith('FQBA') && !cmd.startsWith('FQBBK');
+		const result = await processRealCommand(cmd, shouldFetchAll);
 		if (shouldFetchAll && !php.empty(result.calledCommands)) {
-			let fqOutput = result.calledCommands[0].output;
+			const fqOutput = result.calledCommands[0].output;
 			if (!UpdateGalileoSessionStateAction.isErrorPricingRs(fqOutput)) {
-				let linearCmdRec = await runCmd('F*Q', true);
+				const linearCmdRec = await runCmd('F*Q', true);
 				result.calledCommands.push(linearCmdRec);
 			}
 		}
@@ -783,50 +789,41 @@ const RunCmdRq = ({
 	};
 
 	const priceItinerary = async ($cmd, $cmdData) => {
-		let $mods, $addedRealName, $hasNamesInPnr, $ptcGroups, $paxNums, $names, $addCmd, $result, $removeCmd;
-
-		$mods = php.array_combine(php.array_column($cmdData['pricingModifiers'] || [], 'type'),
-			$cmdData['pricingModifiers'] || []);
-
-		$addedRealName = ($cmdRec) => {
+		const addedRealName = ($cmdRec) => {
 			return $cmdRec['type'] === 'addName'
-			&& !StringUtil.startsWith($cmdRec['cmd'], 'N.FAKE/');
+				&& !StringUtil.startsWith($cmdRec['cmd'], 'N.FAKE/');
 		};
-		let flatUsedCmds = await getFlatUsedCmds();
-		$hasNamesInPnr = getSessionData()['isPnrStored']
-		|| Fp.any($addedRealName, flatUsedCmds);
+		const flatUsedCmds = await getFlatUsedCmds();
+		const hasNamesInPnr = getSessionData()['isPnrStored']
+			|| Fp.any(addedRealName, flatUsedCmds);
 
-		$ptcGroups = (($mods['passengers'] || {})['parsed'] || {})['ptcGroups'] || [];
-		$paxNums = Fp.flatten(php.array_column($ptcGroups, 'passengerNumbers'));
-		if (!php.empty($paxNums) && !$hasNamesInPnr) {
-		// Galileo does not allow pricing multiple PTC-s
-		// at same time when there are no names in PNR. Fix.
-			$names = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P'];
-			$names = php.array_slice($names, 0, php.count($paxNums));
-			$addCmd = php.implode('|', $names.map(($name) => 'N.FAKE/' + $name));
-			await runCommand($addCmd, false); // add fake names
-			$result = await _fetchPricing($cmd);
-			$removeCmd = php.count($paxNums) > 1 ? 'N.P1-' + php.count($names) + '@' : 'N.P1@';
-			await runCommand($removeCmd, false); // remove fake names
+		const price = () => _fetchPricing($cmd);
+		let result;
+		if (!hasNamesInPnr) {
+			result = await withFakeNames({
+				session: stateful,
+				pricingModifiers: $cmdData.pricingModifiers || [],
+				action: price,
+			});
 		} else {
-			$result = await _fetchPricing($cmd);
+			result = await price();
 		}
-		return $result;
+		return result;
 	};
 
 	const needsColonN = async ($fqDump, $pnr) => {
 		let $linearDump;
 
 		$linearDump = await runCommand('F*Q', true);
-		let joined = $fqDump + '\n' + $linearDump;
-		let rbsInfo = await getRbsPqInfo($pnr.getDump(), joined, 'galileo').catch(exc => ({}));
+		const joined = $fqDump + '\n' + $linearDump;
+		const rbsInfo = await getRbsPqInfo($pnr.getDump(), joined, 'galileo').catch(exc => ({}));
 		return rbsInfo.isPrivateFare && rbsInfo.isBrokenFare;
 	};
 
 	const translateMods = async (pricingModifiers) => {
-		let galileoRawMods = [];
-		for (let apolloMod of pricingModifiers) {
-			let translated = translateApolloPricingModifier(apolloMod);
+		const galileoRawMods = [];
+		for (const apolloMod of pricingModifiers) {
+			const translated = translateApolloPricingModifier(apolloMod);
 			if (translated) {
 				galileoRawMods.push(translated);
 			} else {
@@ -852,7 +849,7 @@ const RunCmdRq = ({
 
 		$paxCmdParts = [];
 		for ([$i, $pax] of Object.entries($pnr.getPassengers())) {
-			let ptc = await PtcUtil.convertPtcAgeGroup($adultPtc, $pax, $tripEndDt);
+			const ptc = await PtcUtil.convertPtcAgeGroup($adultPtc, $pax, $tripEndDt);
 			$paxCmdParts.push($pax['nameNumber']['absolute'] + '*' + ptc);
 		}
 
@@ -860,24 +857,24 @@ const RunCmdRq = ({
 		if ($needsColonN) {
 			$cmd += '/:N';
 		}
-		let customMods = await translateMods($aliasData.pricingModifiers);
+		const customMods = await translateMods($aliasData.pricingModifiers);
 		$cmd += customMods.map(m => '/' + m).join('');
 
 		return {'cmd': $cmd, 'paxCmdParts': $paxCmdParts};
 	};
 
 	const makePriceAllCmd = async (aliasData) => {
-		let {requestedAgeGroups, ptcs, pricingModifiers = []} = aliasData;
-		let rawMods = [];
+		const {requestedAgeGroups, ptcs, pricingModifiers = []} = aliasData;
+		const rawMods = [];
 		rawMods.push('P' + ptcs
 			.map((ptc,i) => (i + 1) + '*' + ptc)
 			.join('.'));
 		if (requestedAgeGroups.every(g => ['child', 'infant'].includes(g.ageGroup))) {
 			rawMods.push('/ACC');
 		}
-		let customMods = await translateMods(pricingModifiers);
+		const customMods = await translateMods(pricingModifiers);
 		rawMods.push(...customMods);
-		let cmd = 'FQ' + rawMods.map(m => '/' + m).join('');
+		const cmd = 'FQ' + rawMods.map(m => '/' + m).join('');
 		return Promise.resolve(cmd);
 	};
 
@@ -912,8 +909,8 @@ const RunCmdRq = ({
 	};
 
 	const priceAll = async (aliasData) => {
-		let cmd = await makePriceAllCmd(aliasData);
-		let cmdData = FqCmdParser.parse(cmd);
+		const cmd = await makePriceAllCmd(aliasData);
+		const cmdData = FqCmdParser.parse(cmd);
 		return priceItinerary(cmd, cmdData);
 	};
 
@@ -929,7 +926,7 @@ const RunCmdRq = ({
 	};
 
 	const priceInAnotherPcc = async ($cmd, $target, $dialect) => {
-		let $pnr = await getCurrentPnr();
+		const $pnr = await getCurrentPnr();
 		return (new RepriceInAnotherPccAction())
 			.execute($pnr, $cmd, $dialect, $target, stateful);
 	};

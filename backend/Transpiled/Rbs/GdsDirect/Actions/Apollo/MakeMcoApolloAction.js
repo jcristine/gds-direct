@@ -10,7 +10,7 @@ const McoListParser = require('../../../../Gds/Parsers/Apollo/Mco/McoListParser.
 const McoMaskParser = require('../../../../Gds/Parsers/Apollo/Mco/McoMaskParser.js');
 const Rej = require('klesun-node-tools/src/Rej.js');
 
-let php = require('../../../../phpDeprecated.js');
+const php = require('../../../../phpDeprecated.js');
 
 /**
  * get current PNR data, ApolloMakeMcoAction and format output
@@ -26,7 +26,7 @@ class MakeMcoApolloAction extends AbstractGdsAction
 		if (!$validatingCarrier) {
 			return Rej.BadRequest('Validating carrier must be present in ATFQ');
 		}
-		let $storedParams = McoMaskParser.parse($mcoMask);
+		const $storedParams = McoMaskParser.parse($mcoMask);
 		if ($storedParams.error) {
 			return Rej.UnprocessableEntity('Failed to parse MCO mask - ' + $storedParams.error);
 		}
@@ -51,7 +51,7 @@ class MakeMcoApolloAction extends AbstractGdsAction
 
 	async getPnrMcoData()  {
 		let $pnr, $mcoMask;
-		let pnrDump = (await fetchAll('*R', this)).output;
+		const pnrDump = (await fetchAll('*R', this)).output;
 		$pnr = ApolloPnr.makeFromDump(pnrDump);
 		if (!$pnr.getRecordLocator()) {
 			return Rej.BadRequest('Must be in a PNR');
@@ -106,8 +106,8 @@ class MakeMcoApolloAction extends AbstractGdsAction
 				}],
 			};
 		} else {
-			let lastLine = $mcoResult['response'].trimEnd().replace(/[\s\S]*\n/, '');
-			let msg = 'Failed to issue MCO: ' + lastLine;
+			const lastLine = $mcoResult['response'].trimEnd().replace(/[\s\S]*\n/, '');
+			const msg = 'Failed to issue MCO: ' + lastLine;
 			if (lastLine.trim().startsWith('MISSING - ') ||
                 lastLine.trim().startsWith('INVALID FORMAT -')
 			) {

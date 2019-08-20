@@ -9,7 +9,7 @@ const SessionStateHelper = require('../Transpiled/Rbs/GdsDirect/SessionStateProc
 const Rej = require("klesun-node-tools/src/Rej");
 const {makeMaskRs} = require('./ManualPricing/TpMaskUtils.js');
 
-let parseOutput = (output) => {
+const parseOutput = (output) => {
 	let match;
 	if (output.match(/ELECTRONIC MESSAGE DELIVERED/)) {
 		// "ELECTRONIC MESSAGE DELIVERED",
@@ -24,7 +24,7 @@ let parseOutput = (output) => {
 	} else if (match = output.match(/TOTAL ADD COLLECT\s+([A-Z]{3})\s*(\d*\.?\d+)/)) {
 		// ">$MR       TOTAL ADD COLLECT   USD   783.30",
 		// " /F;..............................................",
-		let [currency, amount] = match;
+		const [currency, amount] = match;
 		return {
 			status: 'fareDifference',
 			currency: currency,
@@ -49,31 +49,31 @@ let parseOutput = (output) => {
  * performs HB:FEX mask action which issues a new ticket from existing ticket or MCO
  * used to partially or fully pay for a new ticket with the old one
  */
-let submitMask = async ({emptyMask, maskOutput, values, gdsSession, maskFields = null}) => {
-	let destinationMask = AbstractMaskParser.normalizeMask(maskOutput);
-	let fields = maskFields || ParseHbFex.FIELDS;
-	let cmd = await AbstractMaskParser.makeCmdFromEmptyMask({
+const submitMask = async ({emptyMask, maskOutput, values, gdsSession, maskFields = null}) => {
+	const destinationMask = AbstractMaskParser.normalizeMask(maskOutput);
+	const fields = maskFields || ParseHbFex.FIELDS;
+	const cmd = await AbstractMaskParser.makeCmdFromEmptyMask({
 		emptyMask: emptyMask,
 		destinationMask: destinationMask,
 		fields, values,
 	});
-	let cmdRec = await fetchAll(cmd, gdsSession);
-	let result = parseOutput(cmdRec.output);
+	const cmdRec = await fetchAll(cmd, gdsSession);
+	const result = parseOutput(cmdRec.output);
 	result.cmd = cmdRec.cmd;
 	result.output = cmdRec.output;
 
 	return result;
 };
 
-let getMcoFop = async (documentNumber, gdsSession) => {
-	let cmdRec = await fetchAll('*MPD', gdsSession);
-	let mcoRow = (McoListParser.parse(cmdRec.output).mcoRows || [])
+const getMcoFop = async (documentNumber, gdsSession) => {
+	const cmdRec = await fetchAll('*MPD', gdsSession);
+	const mcoRow = (McoListParser.parse(cmdRec.output).mcoRows || [])
 		.filter(mcoRow => mcoRow.documentNumber == documentNumber)[0];
 	if (!mcoRow) {
 		return BadRequest('Could not unmask FOP: no MCO #' + documentNumber);
 	}
-	let mcoDump = (await fetchAll(mcoRow.command, gdsSession)).output;
-	let parsed = McoMaskParser.parse(mcoDump);
+	const mcoDump = (await fetchAll(mcoRow.command, gdsSession)).output;
+	const parsed = McoMaskParser.parse(mcoDump);
 	if (parsed.error) {
 		return BadRequest('Could not unmask FOP: invalid MCO mask - ' + parsed.error);
 	} else {
@@ -82,20 +82,20 @@ let getMcoFop = async (documentNumber, gdsSession) => {
 };
 
 /** @param stateful = require('StatefulSession.js')() */
-let getPrefilledFop = async (stateful) => {
-	let contextTypes = SessionStateHelper.$nonAffectingTypes
+const getPrefilledFop = async (stateful) => {
+	const contextTypes = SessionStateHelper.$nonAffectingTypes
 		.concat(['exchangeTicketMask', 'mcoList', 'storedMcoMask']);
-	let cmdRecs = await stateful.getLog().getLastCommandsOfTypes(contextTypes);
-	let isHbFex = cmdRec => cmdRec.type === 'issueTickets';
-	let lastHbFex = cmdRecs.filter(isHbFex).slice(-1)[0];
+	const cmdRecs = await stateful.getLog().getLastCommandsOfTypes(contextTypes);
+	const isHbFex = cmdRec => cmdRec.type === 'issueTickets';
+	const lastHbFex = cmdRecs.filter(isHbFex).slice(-1)[0];
 	if (!lastHbFex) {
 		return Rej.NotFound('Could not find HB:FEX in last ' + cmdRecs.length + ' context commands');
 	}
-	let parsed = ParseHbFex(lastHbFex.output);
+	const parsed = ParseHbFex(lastHbFex.output);
 	if (!parsed) {
 		return Rej.UnprocessableEntity('Invalid HB:FEX response');
 	}
-	let fop = parsed.fields
+	const fop = parsed.fields
 		.filter(f => f.key === 'originalFormOfPayment')
 		.map(f => f.value)[0];
 	if (!fop) {
@@ -106,9 +106,9 @@ let getPrefilledFop = async (stateful) => {
 };
 
 const inputHbFexMask = async ({rqBody, gdsSession}) => {
-	let maskOutput = rqBody.maskOutput;
-	let values = {};
-	for (let {key, value} of rqBody.fields) {
+	const maskOutput = rqBody.maskOutput;
+	const values = {};
+	for (const {key, value} of rqBody.fields) {
 		values[key] = value.toUpperCase();
 	}
 	if (values.originalFormOfPayment && values.originalFormOfPayment.match(/XXXXX/)) {
@@ -116,11 +116,11 @@ const inputHbFexMask = async ({rqBody, gdsSession}) => {
 			.catch(exc => getMcoFop(values.ticketNumber1, gdsSession))
 			.catch(exc => values.originalFormOfPayment);
 	}
-	let result = await submitMask({
+	const result = await submitMask({
 		emptyMask: ParseHbFex.EMPTY_MASK_EXAMPLE,
 		maskOutput, values, gdsSession,
 	});
-	let maskCmd = StringUtil.wrapLinesAt('>' + result.cmd, 64);
+	const maskCmd = StringUtil.wrapLinesAt('>' + result.cmd, 64);
 	if (result.status === 'success') {
 		return makeMaskRs([
 			{cmd: 'HB:FEX', output: maskCmd},
@@ -143,30 +143,30 @@ const inputHbFexMask = async ({rqBody, gdsSession}) => {
 			},
 		}]);
 	} else {
-		let rejection = result.rejection || UnprocessableEntity;
+		const rejection = result.rejection || UnprocessableEntity;
 		return rejection('GDS gave ' + result.status + ' - \n' + result.output);
 	}
 };
 
 const confirmFareDifference = async ({rqBody, gdsSession}) => {
-	let maskOutput = rqBody.maskOutput;
-	let values = {};
-	for (let {key, value} of rqBody.fields) {
+	const maskOutput = rqBody.maskOutput;
+	const values = {};
+	for (const {key, value} of rqBody.fields) {
 		values[key] = value.toUpperCase();
 	}
-	let result = await submitMask({
+	const result = await submitMask({
 		emptyMask: AbstractMaskParser.normalizeMask(maskOutput),
 		maskOutput, values, gdsSession,
 		maskFields: rqBody.fields.map(f => f.key),
 	});
 	if (result.status === 'success') {
-		let maskCmd = StringUtil.wrapLinesAt('>' + result.cmd, 64);
+		const maskCmd = StringUtil.wrapLinesAt('>' + result.cmd, 64);
 		return makeMaskRs([
 			{cmd: '$EX...', output: maskCmd},
 			{cmd: '$MR...', output: result.output},
 		]);
 	} else {
-		let rejection = result.rejection || UnprocessableEntity;
+		const rejection = result.rejection || UnprocessableEntity;
 		return rejection('GDS gave ' + result.status + ' - ' + result.output);
 	}
 };

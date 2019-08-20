@@ -1,7 +1,7 @@
-const Fp = require('../../Lib/Utils/Fp.js');
 const StringUtil = require('../../Lib/Utils/StringUtil.js');
 const ItineraryParser = require('../../Gds/Parsers/Galileo/Pnr/ItineraryParser.js');
 const TravelportBuildItineraryViaXml = require('./TravelportBuildItineraryActionViaXml');
+const moment = require('moment');
 
 /**
  * takes itinerary data and adds it to current PNR by
@@ -44,13 +44,14 @@ const GalileoBuildItineraryAction = ({
 	isParserFormat,
 	useXml = true,
 	travelport,
+	baseDate = moment().format("YYYY-MM-DD"),
 }) => {
 	const formatGdsDate = dt => {
 		return php.strtoupper(php.date('dM', php.strtotime(dt)));
 	};
 
 	const isAvailabilityOutput = output => {
-		let clean = php.preg_replace(/></, '', output);
+		const clean = php.preg_replace(/></, '', output);
 		return php.trim(clean) === '*0 AVAIL/WL CLOSED*';
 	};
 
@@ -58,7 +59,7 @@ const GalileoBuildItineraryAction = ({
 		let resultItinerary, i, segment, pattern, cmd, output, segments, errorType, tplData;
 
 		itinerary = itinerary.map(segment => {
-			let date = isParserFormat
+			const date = isParserFormat
 				? segment['departureDate']['raw']
 				: formatGdsDate(segment['departureDate']);
 
@@ -95,6 +96,7 @@ const GalileoBuildItineraryAction = ({
 				itinerary,
 				session,
 				travelport,
+				baseDate,
 			});
 		} else {
 			return executeViaTerminal(itinerary, isParserFormat);

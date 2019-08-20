@@ -8,7 +8,7 @@ const SubmitZpTaxBreakdownMask = require('./SubmitZpTaxBreakdownMask.js');
 const EndManualPricing = require('./EndManualPricing.js');
 const {makeMaskRs} = require('./TpMaskUtils.js');
 
-let POSITIONS = AbstractMaskParser.getPositionsBy('_', [
+const POSITIONS = AbstractMaskParser.getPositionsBy('_', [
 	"$TA                TAX BREAKDOWN SCREEN                        ",
 	" FARE  USD  100.00 TTL USD ;________          ROE ;____________ ",
 	"T1 ;________;__ T2 ;________;__ T3 ;________;__ T4 ;________;__ ",
@@ -22,7 +22,7 @@ let POSITIONS = AbstractMaskParser.getPositionsBy('_', [
 	" AIRPORT 3 ;___  AMT ;_____   AIRPORT 4 ;___  AMT ;_____        ",
 ].join(''));
 
-let FIELDS = [
+const FIELDS = [
 	'netPrice', 'rateOfExchange',
 	'tax1_amount', 'tax1_code',
 	'tax2_amount', 'tax2_code',
@@ -50,9 +50,9 @@ let FIELDS = [
 	'facilityCharge4_airport', 'facilityCharge4_amount',
 ];
 
-let parseOutput = (output) => {
+const parseOutput = (output) => {
 	if (output.startsWith('>$TA')) {
-		let message = output.trim().split('\n').slice(-1)[0] || '';
+		const message = output.trim().split('\n').slice(-1)[0] || '';
 		if (message.trim() === '*' || message.trim() === '* BULK TICKET') {
 			return {status: 'success'};
 		} else {
@@ -65,31 +65,31 @@ let parseOutput = (output) => {
 	}
 };
 
-let SubmitTaxBreakdownMask = async ({rqBody, gdsSession}) => {
-	let maskOutput = rqBody.maskOutput;
-	let values = {};
-	for (let {key, value} of rqBody.fields) {
+const SubmitTaxBreakdownMask = async ({rqBody, gdsSession}) => {
+	const maskOutput = rqBody.maskOutput;
+	const values = {};
+	for (const {key, value} of rqBody.fields) {
 		values[key] = value.toUpperCase();
 	}
 
-	let destinationMask = AbstractMaskParser.normalizeMask(maskOutput);
-	let cmd = await AbstractMaskParser.makeCmd({
+	const destinationMask = AbstractMaskParser.normalizeMask(maskOutput);
+	const cmd = await AbstractMaskParser.makeCmd({
 		positions: POSITIONS,
 		destinationMask: destinationMask,
 		fields: FIELDS, values,
 	});
-	let cmdRec = await fetchAll(cmd, gdsSession);
-	let result = parseOutput(cmdRec.output);
+	const cmdRec = await fetchAll(cmd, gdsSession);
+	const result = parseOutput(cmdRec.output);
 
-	let calledCommands = [];
-	let actions = [];
+	const calledCommands = [];
+	const actions = [];
 	if (result.status === 'success') {
 		calledCommands.push({cmd: '$TA...', output: cmdRec.output});
-		let ended = await EndManualPricing({stateful: gdsSession});
+		const ended = await EndManualPricing({stateful: gdsSession});
 		calledCommands.push(...(ended.calledCommands || []));
 		actions.push(...(ended.actions || []));
 	} else if (result.status === 'zpTaxBreakdown') {
-		let maskCmd = StringUtil.wrapLinesAt('>' + cmdRec.cmd, 64);
+		const maskCmd = StringUtil.wrapLinesAt('>' + cmdRec.cmd, 64);
 		calledCommands.push({cmd: '$TA...', output: maskCmd});
 		actions.push({
 			type: 'displayZpTaxBreakdownMask',
@@ -104,12 +104,12 @@ let SubmitTaxBreakdownMask = async ({rqBody, gdsSession}) => {
 };
 
 SubmitTaxBreakdownMask.parse = async (mask) => {
-	let fields = await AbstractMaskParser.getPositionValues({
+	const fields = await AbstractMaskParser.getPositionValues({
 		mask: mask,
 		positions: POSITIONS,
 		fields: FIELDS,
 	});
-	let parsed = TaScreenParser.parse(mask);
+	const parsed = TaScreenParser.parse(mask);
 	if (parsed.error) {
 		return Rej.UnprocessableEntity('Invalid $TA screen - ' + parsed.error + ' - ' + mask);
 	}

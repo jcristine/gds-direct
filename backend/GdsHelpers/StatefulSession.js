@@ -23,7 +23,7 @@ const sqlNow = require("klesun-node-tools/src/Utils/Misc.js").sqlNow;
  * @param {IEmcUser} emcUser
  * @param {function(*): Promise} askClient
  */
-let StatefulSession = ({
+const StatefulSession = ({
 	session, emcUser, gdsSession, cmdLog, logit = () => {},
 	Db = require('../Utils/Db.js'),
 	GdsSessions = require("../Repositories/GdsSessions.js"),
@@ -33,26 +33,26 @@ let StatefulSession = ({
 	Airports = require('../Repositories/Airports.js'),
 }) => {
 	askClient = askClient || ((msgData) => ServiceUnavailable('Client Socket not stored in GRECT session'));
-	let gds = session.context.gds;
-	let calledCommands = [];
-	let pnrSaveHandlers = [];
-	let getSessionData = () => cmdLog.getSessionData();
+	const gds = session.context.gds;
+	const calledCommands = [];
+	const pnrSaveHandlers = [];
+	const getSessionData = () => cmdLog.getSessionData();
 
-	let runCmd = async (cmd) => {
+	const runCmd = async (cmd) => {
 		if (!cmd) {
 			return BadRequest('An empty string was passed instead of command to call in GDS');
 		} else {
-			let running = gdsSession.runCmd(cmd);
-			let cmdRec = await cmdLog.logCommand(cmd, running);
+			const running = gdsSession.runCmd(cmd);
+			const cmdRec = await cmdLog.logCommand(cmd, running);
 			calledCommands.push(cmdRec);
 			return cmdRec;
 		}
 	};
 
-	let getAgent = () => Agent(emcUser);
+	const getAgent = () => Agent(emcUser);
 
 	/** @return Promise<number> */
-	let promptForLeadId = async () => askClient({messageType: 'promptForLeadId'})
+	const promptForLeadId = async () => askClient({messageType: 'promptForLeadId'})
 		.then(rsData => rsData.leadId)
 		.then(nonEmpty('User not supplied valid lead ID'));
 
@@ -91,7 +91,7 @@ let StatefulSession = ({
 				leadId = await promptForLeadId();
 			}
 			// TODO: separate parameter!
-			let isScheduleChangeId = leadId && leadId < 1000000;
+			const isScheduleChangeId = leadId && leadId < 1000000;
 			let leadData = leadIdToData[leadId];
 			if (!leadData && leadId && !isScheduleChangeId) {
 				leadData = await CmsClient.getLeadData(leadId);
@@ -113,9 +113,9 @@ let StatefulSession = ({
 			messageType: messageType, ...params,
 		}).then(rs => {
 			if (rs.error) {
-				return Rej.FailedDependency('Client returned error - ' + rs.error, rs);
+				return Rej.FailedDependency('Client returned error - ' + rs.error + ' - in session #' + session.id, rs);
 			} else if (!rs.value) {
-				return Rej.FailedDependency('Client failed to provide value', rs);
+				return Rej.FailedDependency('Client failed to provide value in session #' + session.id, rs);
 			} else {
 				return Promise.resolve(rs.value);
 			}
@@ -136,14 +136,14 @@ StatefulSession.makeFromDb = async ({
 	GdsSessions = require("../Repositories/GdsSessions.js"),
 }) => {
 	whenCmdRqId = whenCmdRqId || Promise.resolve(null);
-	let fullState = await GdsSessions.getFullState(session);
-	let cmdLog = CmdLog({session, fullState, whenCmdRqId});
-	let logit = async (msg, data) => {
-		let config = await getConfig();
+	const fullState = await GdsSessions.getFullState(session);
+	const cmdLog = CmdLog({session, fullState, whenCmdRqId});
+	const logit = async (msg, data) => {
+		const config = await getConfig();
 		if (!config.production) {
 			console.log(msg, typeof data === 'string' ? data : jsExport(data));
 		}
-		let masked = !data ? data : Misc.maskCcNumbers(data);
+		const masked = !data ? data : Misc.maskCcNumbers(data);
 		return FluentLogger.logit(msg, session.logId, masked);
 	};
 	return StatefulSession({

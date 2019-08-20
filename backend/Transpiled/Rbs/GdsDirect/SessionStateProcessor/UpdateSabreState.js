@@ -24,12 +24,12 @@ class UpdateSabreState
 		let $type, $tooShortToBeValid;
 		$type = CommandParser.parse($cmd)['type'];
 		$tooShortToBeValid = !php.preg_match(/\n.*\n/, $output);
-		let isError = $tooShortToBeValid ||
+		const isError = $tooShortToBeValid ||
             $output.match(/^PSGR TYPE  ADT.*\nATTN\*VERIFY BOOKING CLASS/);
 		if ($type !== 'priceItinerary' || isError) {
 			return false;
 		} else {
-			let errors = CmsSabreTerminal.checkPricingCmdObviousPqRules(data);
+			const errors = CmsSabreTerminal.checkPricingCmdObviousPqRules(data);
 			return php.count(errors) === 0;
 		}
 	}
@@ -182,7 +182,7 @@ class UpdateSabreState
 	/** @param $getAreaData = function($letter){return DbSessionState::getAreaData();} */
 	static execute($cmd, $output, $sessionData, $getAreaData)  {
 		let $self, $cmdParsed, $flatCmds, $cmdRec;
-		let $getAreaDataNorm = (letter) => ({...$getAreaData(letter)});
+		const $getAreaDataNorm = (letter) => ({...$getAreaData(letter)});
 		$self = new this($getAreaDataNorm);
 		$cmdParsed = CommandParser.parse($cmd);
 		$flatCmds = php.array_merge([$cmdParsed], $cmdParsed['followingCommands'] || []);

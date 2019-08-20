@@ -6,7 +6,7 @@ const StringUtil = require('../Transpiled/Lib/Utils/StringUtil.js');
  */
 const php = require('../Transpiled/phpDeprecated.js');
 
-let parseRtPager = ($page) => {
+const parseRtPager = ($page) => {
 	let $matches, $_, $content, $hasMoreMark;
 
 	if (php.preg_match(/^(?:\/\$)?(.+?)(\n\)\s*|)$/s, $page, $matches = [])) {
@@ -26,7 +26,7 @@ let parseRtPager = ($page) => {
 	}
 };
 
-let parseFxPager = ($page) => {
+const parseFxPager = ($page) => {
 	let $matches, $_, $content, $current, $last;
 
 	if (php.preg_match(/^(.*)\n\s*PAGE\s+(\d+)\s*\/\s*(\d+)\s*$/s, $page, $matches = [])) {
@@ -48,7 +48,7 @@ let parseFxPager = ($page) => {
 	}
 };
 
-let parseHePager = ($page) => {
+const parseHePager = ($page) => {
 	let $matches, $content, $hasPageMark, $hasMore;
 
 	if (php.preg_match(/^\/\$(.+?\s+?)(\n\s*|)MD\n\s*$/s, $page, $matches = [])) {
@@ -79,9 +79,9 @@ let parseHePager = ($page) => {
  *     'hasMore' => false,
  * ];}
  */
-let getCleanPages = async function($runCmd, $cmd, $mrCmd, $parsePager) {
+const getCleanPages = async function($runCmd, $cmd, $mrCmd, $parsePager) {
 	let $dumpWithPager, $pager, $cleanPage;
-	let cleanPages = [];
+	const cleanPages = [];
 	do {
 		$dumpWithPager = (await $runCmd($cmd)).output;
 		$pager = $parsePager($dumpWithPager);
@@ -97,12 +97,12 @@ let getCleanPages = async function($runCmd, $cmd, $mrCmd, $parsePager) {
 	return cleanPages;
 };
 
-let fetchAllWith = async ($runCmd, $cmd, $mrCmd, $parsePager) => {
-	let $cleanPages = await getCleanPages($runCmd, $cmd, $mrCmd, $parsePager);
+const fetchAllWith = async ($runCmd, $cmd, $mrCmd, $parsePager) => {
+	const $cleanPages = await getCleanPages($runCmd, $cmd, $mrCmd, $parsePager);
 	return php.implode(php.PHP_EOL, $cleanPages);
 };
 
-let guessFormatFromCmd = ($cmd) => {
+const guessFormatFromCmd = ($cmd) => {
 	let $formats, $format, $prefix;
 
 	// some frequent commands off the top of my head
@@ -151,7 +151,7 @@ class AmadeusUtils {
 	 * probably also works in >RT; and other commands that use ")" and "/$" to separate pages
 	 */
 	static async fetchAllRt(cmd, session) {
-		let output = await fetchAllWith(cmd => session.runCmd(cmd), cmd,
+		const output = await fetchAllWith(cmd => session.runCmd(cmd), cmd,
 			'MDR', (...args) => parseRtPager(...args));
 		return {cmd, output};
 	}
@@ -161,7 +161,7 @@ class AmadeusUtils {
 	 * each page ends with a "PAGE 19/19"-like line
 	 */
 	static async fetchAllFx(cmd, session) {
-		let output = await fetchAllWith(cmd => session.runCmd(cmd), cmd,
+		const output = await fetchAllWith(cmd => session.runCmd(cmd), cmd,
 			'MD', (...args) => parseFxPager(...args));
 		return {cmd, output};
 	}
@@ -171,7 +171,7 @@ class AmadeusUtils {
 	 * each page starts with "/$" ends with a " MD" or "*** END OF DISPLAY ***"
 	 */
 	static async fetchAllHe(cmd, session) {
-		let output = await fetchAllWith(cmd => session.runCmd(cmd), cmd,
+		const output = await fetchAllWith(cmd => session.runCmd(cmd), cmd,
 			'MD', (...args) => parseHePager(...args));
 		return {cmd, output};
 	}
@@ -197,11 +197,11 @@ class AmadeusUtils {
 	static collectFullCmdRecs($cmdRows) {
 		let $scrolledCmd = null;
 		let $mdrs = [];
-		let fullCmdRecs = [];
-		for (let $cmdRow of Object.values($cmdRows)) {
-			let $scrolledFormat = $scrolledCmd ? guessFormatFromCmd($scrolledCmd) : null;
-			let $cmd = $cmdRow['cmd'];
-			let $output = $cmdRow['output'];
+		const fullCmdRecs = [];
+		for (const $cmdRow of Object.values($cmdRows)) {
+			const $scrolledFormat = $scrolledCmd ? guessFormatFromCmd($scrolledCmd) : null;
+			const $cmd = $cmdRow['cmd'];
+			const $output = $cmdRow['output'];
 			let $pager;
 			if ($scrolledFormat && $scrolledFormat['moveRestCmd'] === $cmd) {
 				$pager = $scrolledFormat['parsePager']($output);
@@ -209,7 +209,7 @@ class AmadeusUtils {
 			} else {
 				$scrolledCmd = $cmd;
 				$mdrs = [];
-				let $format = guessFormatFromCmd($cmd);
+				const $format = guessFormatFromCmd($cmd);
 				if ($format) {
 					$pager = $format['parsePager']($output);
 					$mdrs = [$pager['content']];

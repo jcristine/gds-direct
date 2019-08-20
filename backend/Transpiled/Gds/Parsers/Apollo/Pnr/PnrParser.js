@@ -154,7 +154,7 @@ class PnrParser {
 		};
 		for ($line of $lines) {
 			$parsedLine = StringUtil.splitByPosition($line, $splitStr, $names, true);
-			let matchesExpectations = true
+			const matchesExpectations = true
 				&& ('' + $parsedLine['number']).match(/^\s*(ACKN-|\d+)\s*$/)
 				&& ('' + $parsedLine['airline']).match(/^[A-Z0-9]{2}$/)
 				&& ('' + $parsedLine['confirmationNumber']).match(/^[A-Z0-9]+$/)
@@ -238,7 +238,7 @@ class PnrParser {
 		$result['formOfPaymentData'] = FopParser.parse($sections['FOP:']);
 		$result['tktgData'] = TktgParser.parse($sections['TKTG']);
 
-		let ticketLines = !php.empty($sections['TI']) ? StringUtil.lines($sections['TI']) : [];
+		const ticketLines = !php.empty($sections['TI']) ? StringUtil.lines($sections['TI']) : [];
 		$result['ticketListData'] = ticketLines.map(a => TicketHistoryParser.parseTicketLine(a));
 
 		$result['atfqData'] = $sections['ATFQ'] ? AtfqParser.parse($sections['ATFQ']) : null;

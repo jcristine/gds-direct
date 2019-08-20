@@ -25,7 +25,7 @@ class TerminalBaseController {
 	 */
 	saveSettingAction($name, $currentGds, $value) {
 		let saving;
-		let agentSettings = new TerminalSettings(this.emcResult);
+		const agentSettings = new TerminalSettings(this.emcResult);
 		switch ($name) {
 		case 'gds':
 			saving = agentSettings.setCurrentGds($value);
@@ -57,12 +57,12 @@ class TerminalBaseController {
 	 * @param string $currentGds
 	 */
 	postSaveSettingAction($value, $name, $currentGds) {
-		let agentSettings = new TerminalSettings(this.emcResult);
+		const agentSettings = new TerminalSettings(this.emcResult);
 		let saving;
 		switch ($name) {
 		case 'settings':
-			let promises = [];
-			for (let [$gds, $data] of Object.entries($value)) {
+			const promises = [];
+			for (const [$gds, $data] of Object.entries($value)) {
 				// initial code did not consider that $_POST may have other fields...
 				if (!['apollo', 'sabre', 'amadeus', 'galileo'].includes($gds)) {
 					continue;
@@ -71,7 +71,7 @@ class TerminalBaseController {
 					'keyBindings': $data['keyBindings'] == '' ? ''
 						: json_encode($data['keyBindings']),
 				}));
-				let $areaSettings = $data['areaSettings'] || [];
+				const $areaSettings = $data['areaSettings'] || [];
 				promises.push(agentSettings.setAreaSettings($gds, $areaSettings));
 			}
 			saving = Promise.all(promises);
@@ -86,7 +86,7 @@ class TerminalBaseController {
 					list: $value.matrix.list.map(num => +num),
 				},
 			};
-			let $configuration = json_encode($value);
+			const $configuration = json_encode($value);
 			saving = agentSettings.setSetting($currentGds, 'matrixConfiguration', $configuration);
 			break;
 		default:

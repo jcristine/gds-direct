@@ -1,15 +1,15 @@
 const iqJson = require("../Utils/TmpLib").iqJson;
 const {getConfig} = require('../Config.js');
 
-let Db = require('../Utils/Db.js');
-let php = require('../Transpiled/phpDeprecated.js');
+const Db = require('../Utils/Db.js');
+const php = require('../Transpiled/phpDeprecated.js');
 const sqlNow = require("../Utils/TmpLib").sqlNow;
 const Conflict = require("klesun-node-tools/src/Rej").Conflict;
 const NotFound = require("klesun-node-tools/src/Rej").NotFound;
 
 const TABLE = 'pccs';
 
-let normalizeRow = ($pcc) => {
+const normalizeRow = ($pcc) => {
 	return {
 		'gds': php.strtolower($pcc['gds']),
 		'pcc': $pcc['pcc'],
@@ -29,9 +29,9 @@ let normalizeRow = ($pcc) => {
 };
 
 exports.updateFromService = async () => {
-	let config = await getConfig();
+	const config = await getConfig();
 	/** @type {IGetPccsAllRs} */
-	let serviceResult = await iqJson({
+	const serviceResult = await iqJson({
 		url: config.external_service.act.host,
 		credentials: {
 			login: config.external_service.act.login,
@@ -41,11 +41,11 @@ exports.updateFromService = async () => {
 		serviceName: 'rbs',
 	});
 
-	let rows = Object
+	const rows = Object
 		.values(serviceResult.result.content)
 		.map($pcc => normalizeRow($pcc));
 
-	let written = await Db.with(db => db.writeRows(TABLE, rows));
+	const written = await Db.with(db => db.writeRows(TABLE, rows));
 	return {
 		message: 'written ' + rows.length + ' rows to db',
 		sqlResult: written,
@@ -61,17 +61,17 @@ exports.findByCodeParams = (gds, pcc) => ({
 });
 exports.findByCode = async (gds, pcc) => {
 	/** @var row = normalizeRow() */
-	let params = exports.findByCodeParams(gds, pcc);
-	let row = await Db.with(db => db.fetchOne(params));
+	const params = exports.findByCodeParams(gds, pcc);
+	const row = await Db.with(db => db.fetchOne(params));
 	return row;
 };
 
 exports.getGdsByPcc = async (pcc) => {
-	let rows = await Db.with(db => db.fetchAll({
+	const rows = await Db.with(db => db.fetchAll({
 		table: TABLE,
 		where: [['pcc', '=', pcc]],
 	}));
-	let gdses = new Set(rows.map(r => r.gds));
+	const gdses = new Set(rows.map(r => r.gds));
 	if (gdses.size === 0) {
 		return NotFound('No such PCC in DB - ' + pcc);
 	} else if (gdses.size === 1) {
@@ -82,12 +82,12 @@ exports.getGdsByPcc = async (pcc) => {
 };
 
 exports.getAll = async () => {
-	let rows = await Db.with(db => db.fetchAll({
+	const rows = await Db.with(db => db.fetchAll({
 		table: TABLE,
 	}));
 	return rows.map(r => {
 		/** @var typed = normalizeRow() */
-		let typed = r;
+		const typed = r;
 		return typed;
 	});
 };

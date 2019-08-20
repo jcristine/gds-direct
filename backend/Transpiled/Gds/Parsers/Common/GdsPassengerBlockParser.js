@@ -7,13 +7,13 @@ const php = require('../../../phpDeprecated.js');
 class GdsPassengerBlockParser
 {
 	static parse($dump)  {
-		let $parsedData = {
+		const $parsedData = {
 			'passengerList': [],
 		};
-		let $lines = require('../../../Lib/Utils/StringUtil.js').lines($dump);
+		const $lines = require('../../../Lib/Utils/StringUtil.js').lines($dump);
 		while ($lines.length > 0) {
-			let $line = php.array_shift($lines);
-			let $result = this.parsePassengerLine($line);
+			const $line = php.array_shift($lines);
+			const $result = this.parsePassengerLine($line);
 
 			if ($result['success']) {
 				$parsedData['passengerList'] = php.array_merge(
@@ -94,7 +94,7 @@ class GdsPassengerBlockParser
 			$age = null;
 			$dob = null;
 			$ptc = null;
-			let remark = $matches['childToken'] || null;
+			const remark = $matches['childToken'] || null;
 			if (remark) {
 				$parsedChildToken = this.parsePaxDetailsToken(remark);
 				$age = $parsedChildToken['age'];

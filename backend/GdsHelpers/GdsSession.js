@@ -1,7 +1,7 @@
 const crypto = require('crypto');
 const GdsSessions = require('../Repositories/GdsSessions.js');
 const GdsProfiles = require('../Repositories/GdsProfiles.js');
-let {TRAVELPORT, AMADEUS, SABRE} = GdsProfiles;
+const {TRAVELPORT, AMADEUS, SABRE} = GdsProfiles;
 const MaskUtil = require('../Transpiled/Lib/Utils/MaskUtil.js');
 const FluentLogger = require('../LibWrappers/FluentLogger.js');
 
@@ -20,6 +20,8 @@ const makeHttpRqBriefing = (rqBody, gds) => {
 			return '<' + match[1] + '/>';
 		} else if (match = rqBody.match(/:BeginSession>/)) {
 			return '<BeginSession/>';
+		} else if (match = rqBody.match(/:EndSession>/)) {
+			return '<EndSession/>';
 		} else if (match = rqBody.match(/:Request>\s*(.+?)\s*<\//)) {
 			return '>' + match[1] + ';';
 		}
@@ -40,6 +42,8 @@ const makeHttpRqBriefing = (rqBody, gds) => {
 			return '>' + match[1] + ';';
 		} else if (match = rqBody.match(/:SessionCreateRQ>/)) {
 			return '<SessionCreateRQ/>';
+		} else if (match = rqBody.match(/:SessionCloseRQ>/)) {
+			return '<SessionCloseRQ/>';
 		} else if (match = rqBody.match(/:Body><\w+:(\w+)/)) {
 			return '<' + match[1] + '/>';
 		}
@@ -62,24 +66,29 @@ const initHttpRqFor = ({
 	logId, gds,
 	PersistentHttpRq = require('klesun-node-tools/src/Utils/PersistentHttpRq.js'),
 }) => (params) => {
-	let whenResult = PersistentHttpRq(params);
-	let logit = (msg, data) => {
-		let masked = MaskUtil.maskCcNumbers(data);
+	const whenResult = PersistentHttpRq(params);
+	const logit = (msg, data) => {
+		const masked = MaskUtil.maskCcNumbers(data);
 		FluentLogger.logit(msg, logId, masked);
 		if (process.env.NODE_ENV === 'development') {
 			console.log(logId + ': ' + msg, typeof masked === 'string' ? masked : jsExport(masked));
 		}
 	};
-	let briefing = makeHttpRqBriefing(params.body, gds);
-	let masked = maskRqBody(params.body, gds);
-	logit('XML RQ: ' + briefing, masked);
+	const briefing = makeHttpRqBriefing(params.body, gds);
+	const masked = maskRqBody(params.body, gds);
+	// for multi-session logging
+	const refNum = crypto.createHash('md5')
+		.update(Math.random() + '')
+		.digest('hex')
+		.slice(0, 6);
+	logit('XML RQ: ' + briefing + ' ' + refNum, masked);
 	return whenResult
 		.then(result => {
-			logit('XML RS:', result.body);
+			logit('XML RS:' + ' ' + refNum, result.body);
 			return result;
 		})
 		.catch(coverExc([Rej.BadGateway], (exc) => {
-			let body = (exc.data || {}).body;
+			const body = (exc.data || {}).body;
 			if (body) {
 				logit('ERROR: (XML RS)', body);
 			}
@@ -99,10 +108,10 @@ const makeGdsClients = ({
 	randomBytes = (size) => crypto.randomBytes(size),
 	now = () => Date.now(),
 }) => {
-	let loggingHttpRq = initHttpRqFor({logId, gds, PersistentHttpRq});
-	let travelport = TravelportClient({PersistentHttpRq: loggingHttpRq, GdsProfiles});
-	let sabre = SabreClient.makeCustom({PersistentHttpRq: loggingHttpRq, GdsProfiles});
-	let amadeus = AmadeusClient.makeCustom({
+	const loggingHttpRq = initHttpRqFor({logId, gds, PersistentHttpRq});
+	const travelport = TravelportClient({PersistentHttpRq: loggingHttpRq, GdsProfiles});
+	const sabre = SabreClient.makeCustom({PersistentHttpRq: loggingHttpRq, GdsProfiles});
+	const amadeus = AmadeusClient.makeCustom({
 		PersistentHttpRq: loggingHttpRq,
 		GdsProfiles, randomBytes, now,
 	});
@@ -125,9 +134,9 @@ const GdsSession = ({
 		logId: session.logId,
 	}),
 }) => {
-	let gds = session.context.gds;
-	let {travelport, sabre, amadeus} = gdsClients;
-	let runByGds = (cmd) => {
+	const gds = session.context.gds;
+	const {travelport, sabre, amadeus} = gdsClients;
+	const runByGds = (cmd) => {
 		if (['apollo', 'galileo'].includes(gds)) {
 			return travelport.runCmd({command: cmd}, session.gdsData);
 		} else if (gds === 'amadeus') {
@@ -148,22 +157,22 @@ GdsSession.makeGdsClients = makeGdsClients;
 GdsSession.initHttpRq = initHttpRq;
 
 GdsSession.startByGds = async (gds) => {
-	let logId = await FluentLogger.logNewId(gds);
-	let {travelport, sabre, amadeus} = makeGdsClients({logId, gds});
-	let tuples = [
+	const logId = await FluentLogger.logNewId(gds);
+	const {travelport, sabre, amadeus} = makeGdsClients({logId, gds});
+	const tuples = [
 		['apollo' , travelport, TRAVELPORT.DynApolloProd_2F3K],
 		['galileo', travelport, TRAVELPORT.DynGalileoProd_711M],
 		['amadeus', amadeus   , AMADEUS.AMADEUS_PROD_1ASIWTUTICO],
 		['sabre'  , sabre     , SABRE.SABRE_PROD_L3II],
 	];
-	for (let [clientGds, client, profileName] of tuples) {
+	for (const [clientGds, client, profileName] of tuples) {
 		if (gds === clientGds) {
-			let limit = await GdsProfiles.getLimit(gds, profileName);
-			let taken = await GdsSessions.countActive(gds, profileName);
+			const limit = await GdsProfiles.getLimit(gds, profileName);
+			const taken = await GdsSessions.countActive(gds, profileName);
 			if (limit !== null && taken >= limit) {
 				// actually, instead of returning error, we could close the most
 				// inactive session of another agent (idle for at least 10 minutes)
-				let msg = 'Too many sessions, ' + taken + ' (>= ' + limit + ') opened ' +
+				const msg = 'Too many sessions, ' + taken + ' (>= ' + limit + ') opened ' +
 					'for this GDS profile ATM. Wait for few minutes and try again.';
 				return Rej.ServiceUnavailable(msg);
 			} else {

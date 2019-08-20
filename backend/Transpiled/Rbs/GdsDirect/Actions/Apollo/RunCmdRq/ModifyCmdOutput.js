@@ -87,18 +87,18 @@ const ModifyCmdOutput = ({
 		}
 		if ((stateful.getSessionData().scrolledCmd || '').startsWith('$D')) {
 			let alias;
-			let scrolledCmdRow = (await stateful.getLog().getScrolledCmdMrs())[0];
+			const scrolledCmdRow = (await stateful.getLog().getScrolledCmdMrs())[0];
 			if (cmdRq.startsWith('$D')) {
 				// initial $D display command
 				alias = await ApoAliasParser.parse(cmdRq, stateful);
 			} else {
 				// MD on $D display
-				let cmdRqId = !scrolledCmdRow ? null : scrolledCmdRow.cmd_rq_id;
-				let cmdRqRow = !cmdRqId ? null : await CmdRqLog.getById(cmdRqId);
+				const cmdRqId = !scrolledCmdRow ? null : scrolledCmdRow.cmd_rq_id;
+				const cmdRqRow = !cmdRqId ? null : await CmdRqLog.getById(cmdRqId);
 				alias = !cmdRqRow ? null : (await ApoAliasParser.parse(cmdRqRow.command || '', stateful));
 			}
 			if (alias && alias['type'] === 'fareSearchWithDecrease') {
-				let decrease = alias['data'] || null;
+				const decrease = alias['data'] || null;
 				calledCommand['output'] = modifyTariffDisplay(
 					calledCommand['output'], decrease, scrolledCmdRow
 				);

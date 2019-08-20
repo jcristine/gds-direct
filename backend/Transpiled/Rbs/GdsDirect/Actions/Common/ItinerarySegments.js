@@ -3,12 +3,12 @@ const Rej = require('klesun-node-tools/src/Rej.js');
 // Segment's segmentNumber might not be correct one, it represents
 // its index in supplied itinerary not PNR(segment might have ended
 // somewhere in the middle)
-module.exports.findSegmentNumberInPnr = (seg, reservation) => {
-	if (!reservation) {
+module.exports.findSegmentNumberInPnr = (seg, itinerary) => {
+	if (!itinerary || itinerary.length === 0) {
 		return seg.segmentNumber;
 	}
 
-	const pnr = reservation.find(pnrSeg =>
+	const pnr = itinerary.find(pnrSeg =>
 		seg.airline === pnrSeg.airline &&
 		+seg.flightNumber === +pnrSeg.flightNumber &&
 		seg.departureAirport === pnrSeg.departureAirport &&
@@ -20,7 +20,7 @@ module.exports.findSegmentNumberInPnr = (seg, reservation) => {
 
 	if (!pnr) {
 		const msg = `Failed to match GK segment #${seg.segmentNumber} to resulting PNR`;
-		throw Rej.InternalServerError.makeExc(msg, {seg, itin: reservation.itinerary});
+		throw Rej.InternalServerError.makeExc(msg, {seg, itin: itinerary});
 	}
 
 	return pnr.segmentNumber;

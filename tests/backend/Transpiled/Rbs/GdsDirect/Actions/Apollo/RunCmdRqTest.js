@@ -333,7 +333,7 @@ class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
 					'canCreatePq': false,
 				},
 				'calledCommands': [
-					{'cmd': '$B/@TVO'},
+					{'cmd': '$B@TVO'},
 				],
 			},
 			'sessionInfo': {
@@ -342,7 +342,7 @@ class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
 				'initialCommands': [],
 				'performedCommands': [
 					{
-						'cmd': '$B/@TVO',
+						'cmd': '$B@TVO',
 						'output': php.implode(php.PHP_EOL, [
 							'>$B-*2G55@TVO',
 							'          **AGENT SELECTED FARE USED**',
@@ -2116,7 +2116,7 @@ class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
 			'output': {
 				'status': 'executed',
 				'calledCommands': [
-					{'cmd': '$B/@K13LGTE4'},
+					{'cmd': '$B@K13LGTE4'},
 				],
 			},
 			'sessionInfo': {
@@ -2163,7 +2163,7 @@ class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
 				],
 				'performedCommands': [
 					{
-						'cmd': '$B/@K13LGTE4',
+						'cmd': '$B@K13LGTE4',
 						'output': php.implode(php.PHP_EOL, [
 							'>$B-*2G55/@K13LGTE4',
 							'          **AGENT SELECTED FARE USED**',
@@ -4836,6 +4836,94 @@ class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
 					{
 						"cmd": "A/T/20SEPNYCPID|DL",
 						"output": "FIRAV              FR 20SEP NYCNAS| 0:00 HR                     1| DL1539 J9 C9 D4 I0 Z0 W9 S0 Y9 B9 M9 LGAATL 959A 1232P 321 80          H9 Q9 K9 L9 U9 T9 X5 V0 E9                            2| DL 918 J9 C9 D5 I1 Z1 W9 S9 Y9 B9 M9    NAS 109P  310P 738  0          H9 Q9 K9 L9 U9 T9 X9 V0 E9                            MEALS>A*M;  ><"
+					},
+				],
+			},
+		});
+
+		$list.push({
+			'input': {
+				'title': 'Should not add "/" before ".V", as it is apparently invalid format for Travelport',
+				'cmdRequested': '$B.V/:N',
+			},
+			'output': {
+				'status': 'executed',
+				'calledCommands': [
+					{"cmd": "$B.V/:N"},
+				],
+			},
+			'sessionInfo': {
+				'initialState': GdsDirectDefaults.makeDefaultApolloState(),
+				'initialCommands': [],
+				'performedCommands': [
+					{
+						"cmd": "$B.V/:N",
+						"output": [
+							">$BV/:N",
+							"*FARE GUARANTEED AT TICKET ISSUANCE*",
+							"",
+							"E-TKT REQUIRED",
+							"*PENALTY APPLIES*",
+							"TICKETING WITHIN 72 HOURS AFTER RESERVATION",
+							"LAST DATE TO PURCHASE TICKET: 23AUG19 / 1029 SFO",
+							"$B-1 C20AUG19     ",
+							"NYC DL X/AMS DL IST Q NYCIST7.45 140.00VL2X56M2 DL X/PAR DL NYC",
+							"140.00VL2X56M2 NUC287.45END ROE1.0",
+							"FARE USD 287.00 TAX 5.60AY TAX 37.20US TAX 3.96XA TAX 4.50XF",
+							"TAX 7.00XY TAX 5.77YC TAX 7.20CJ TAX 7.10RN TAX 3.30M6 TAX",
+							"22.20TR TAX 5.20FR TAX 21.50QX TAX 350.00YR TOT USD 767.53  ",
+							")><",
+						].join("\n"),
+					},
+					{
+						"cmd": "MR",
+						"output": [
+							"S1 NVB04NOV/NVA04NOV",
+							"S2 NVB05NOV/NVA05NOV",
+							"S3 NVB12NOV/NVA12NOV",
+							"S4 NVB12NOV/NVA12NOV",
+							"E NONREF/PENALTY APPLIES",
+							"TICKETING AGENCY 2F3K",
+							"DEFAULT PLATING CARRIER DL",
+							"US PFC: XF JFK4.5 ",
+							"BAGGAGE ALLOWANCE",
+							"ADT                                                         ",
+							" DL NYCIST  1PC                                             ",
+							"   BAG 1 -  NO FEE       UPTO50LB/23KG AND UPTO62LI/158LCM",
+							"   BAG 2 -  100.00 USD   UPTO50LB/23KG AND UPTO62LI/158LCM",
+							")><",
+						].join("\n"),
+					},
+					{
+						"cmd": "MR",
+						"output": [
+							"   VIEWTRIP.TRAVELPORT.COM/BAGGAGEPOLICY/DL",
+							"                                                                 DL ISTNYC  1PC                                             ",
+							"   BAG 1 -  NO FEE       UPTO50LB/23KG AND UPTO62LI/158LCM",
+							"   BAG 2 -  100.00 USD   UPTO50LB/23KG AND UPTO62LI/158LCM",
+							"   VIEWTRIP.TRAVELPORT.COM/BAGGAGEPOLICY/DL",
+							"                                                                CARRY ON ALLOWANCE",
+							" DL NYCAMS  1PC                                             ",
+							"   BAG 1 -  NO FEE       PERSONAL ITEM                    ",
+							" KL AMSIST  1PC                                             ",
+							"   BAG 1 -  NO FEE       UPTO26LB/12KG AND UPTO45LI/115LCM",
+							" AF ISTPAR  1PC                                             ",
+							")><",
+						].join("\n"),
+					},
+					{
+						"cmd": "MR",
+						"output": [
+							"   BAG 1 -  NO FEE       UPTO26LB/12KG AND UPTO45LI/115LCM",
+							" DL PARNYC  1PC                                             ",
+							"   BAG 1 -  NO FEE       PERSONAL ITEM                    ",
+							"                                                                EMBARGO - FOR BAGGAGE LIMITATIONS SEE ",
+							" DL NYCAMS  VIEWTRIP.TRAVELPORT.COM/BAGGAGEPOLICY/DL        ",
+							" DL PARNYC  VIEWTRIP.TRAVELPORT.COM/BAGGAGEPOLICY/DL        ",
+							"                                                                BAGGAGE DISCOUNTS MAY APPLY BASED ON FREQUENT FLYER STATUS/",
+							"ONLINE CHECKIN/FORM OF PAYMENT/MILITARY/ETC.",
+							"><",
+						].join("\n"),
 					},
 				],
 			},

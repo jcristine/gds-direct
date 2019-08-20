@@ -1,6 +1,6 @@
 
 // /asd\Kdsa/ should be manually converted to /(?<=asd)dsa/, since js does not support \K
-let manual = {
+const manual = {
 	// apollo availability airline
 	"^\\d(\\*|\\+|\\s)\\s\\K([A-Z0-9]{2})":
 	/(?<=^\d(\*|\+|\s)\s)([A-Z0-9]{2})/
@@ -213,7 +213,7 @@ let manual = {
 	,
 };
 
-let generated = {
+const generated = {
 	"^\\$B.*|\\*LF|T\\:\\$B|FS\\*\\d{1,2}": /^\$B.*|\*LF|T:\$B|FS\*\d{1,2}/,
 	"^WP.*|\\*PQ": /^WP.*|\*PQ/,
 	"^FX.*": /^FX.*/,

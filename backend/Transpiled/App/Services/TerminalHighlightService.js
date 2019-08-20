@@ -9,11 +9,11 @@ const FareConstructionParser = require('../../Gds/Parsers/Common/FareConstructio
 const {coverExc} = require('klesun-node-tools/src/Lang.js');
 const Rej = require('klesun-node-tools/src/Rej.js');
 
-let getCmdPatterns = (HighlightRules) =>
+const getCmdPatterns = (HighlightRules) =>
 	HighlightRules.getFullDataForService()
 		.then((rules) => {
-			let cmdPatterns = [];
-			for (let rule of Object.values(rules)) {
+			const cmdPatterns = [];
+			for (const rule of Object.values(rules)) {
 				cmdPatterns.push(...rule.cmdPatterns);
 			}
 			return cmdPatterns;
@@ -21,12 +21,12 @@ let getCmdPatterns = (HighlightRules) =>
 		// DB not available in tests
 		.catch(coverExc([Rej.BadRequest], exc => []));
 
-let getRules = (HighlightRules, cmdPatterns) =>
+const getRules = (HighlightRules, cmdPatterns) =>
 	HighlightRules.getFullDataForService()
 		.then(ruleMapping => {
-			let result = [];
-			for (let cmdPattern of cmdPatterns) {
-				let rule = ruleMapping[cmdPattern.ruleId];
+			const result = [];
+			for (const cmdPattern of cmdPatterns) {
+				const rule = ruleMapping[cmdPattern.ruleId];
 				if (rule) {
 					result.push({...rule, cmdPattern});
 				}
@@ -37,7 +37,7 @@ let getRules = (HighlightRules, cmdPatterns) =>
 		// DB not available in tests
 		.catch(coverExc([Rej.BadRequest], exc => []));
 
-let setCmdRegexError = (ruleId, cmdPattern, dialect) =>
+const setCmdRegexError = (ruleId, cmdPattern, dialect) =>
 	Db.with(db => db.writeRows('highlightCmdPatterns', [{
 		cmdPattern: cmdPattern,
 		// there is actually an unique index on these two, so cmdPattern is probably
@@ -47,13 +47,13 @@ let setCmdRegexError = (ruleId, cmdPattern, dialect) =>
 		regexError: true,
 	}]));
 
-let setOutputRegexError = (patternId) =>
+const setOutputRegexError = (patternId) =>
 	Db.with(db => db.writeRows('highlightOutputPatterns', [{
 		id: patternId,
 		regexError: true,
 	}]));
 
-let areNamedCapturesSupported = () => {
+const areNamedCapturesSupported = () => {
 	// supported in node v10.0.0+
 	let majorVersion = process.version.split('.')[0];
 	majorVersion = majorVersion.replace(/^v/, '');
@@ -64,7 +64,7 @@ let areNamedCapturesSupported = () => {
  * @param {string} content = '/^.{43}()/mi' // php regex
  * @retunr {string} = ''
  */
-let makeRegex = (content, flags = undefined) => {
+const makeRegex = (content, flags = undefined) => {
 	if (!content) {
 		return null;
 	} if (!areNamedCapturesSupported()) {
@@ -74,7 +74,7 @@ let makeRegex = (content, flags = undefined) => {
 		|| RegexTranspiler.transpileUnsafe(content, flags);
 };
 
-let normalizeRuleForFrontend = (rule) => {
+const normalizeRuleForFrontend = (rule) => {
 	return {
 		id: rule.id,
 		value: rule.value,
@@ -100,20 +100,20 @@ let normalizeRuleForFrontend = (rule) => {
 // 154	0	Pricing Screen	--- MUST PRICE AS B ---
 // 168	9	Pricing Screen	Fare Amount in Fare Construction
 // 224	0	Pricing Screen	Exceeding maximum permitted Mileage on Pricing screen
-let matchApolloPricingRules = (output) => {
-	let records = [];
-	let fcMatches = Str.matchAll(/(?<=\n(?:\$B[A-Z]*|TKT \d+)-\d+.*\n)([\s\S]+)\nFARE/g, output);
-	for (let fcMatch of fcMatches) {
+const matchApolloPricingRules = (output) => {
+	const records = [];
+	const fcMatches = Str.matchAll(/(?<=\n(?:\$B[A-Z]*|TKT \d+)-\d+.*\n)([\s\S]+)\nFARE/g, output);
+	for (const fcMatch of fcMatches) {
 		let offset = fcMatch.index;
-		let fcText = fcMatch[1];
-		let parsed = FareConstructionParser.parse(fcText);
+		const fcText = fcMatch[1];
+		const parsed = FareConstructionParser.parse(fcText);
 
-		for (let token of parsed.tokens) {
-			let {lexeme, raw, data} = token;
-			let addRecord = (matchedText, ruleName) => {
+		for (const token of parsed.tokens) {
+			const {lexeme, raw, data} = token;
+			const addRecord = (matchedText, ruleName) => {
 				if (matchedText) {
-					let index = offset + raw.indexOf(matchedText);
-					let end = index + matchedText.length;
+					const index = offset + raw.indexOf(matchedText);
+					const end = index + matchedText.length;
 					records.push({ruleName, index, end});
 				}
 			};
@@ -123,7 +123,7 @@ let matchApolloPricingRules = (output) => {
 					addRecord(data.mileagePrinciple, 'ExceedingMaximumPermittedMileageOnPricingScreen');
 				}
 			} else if (lexeme === 'fareBasis') {
-				let [fb, td] = data;
+				const [fb, td] = data;
 				addRecord(fb, 'FareConstruction');
 				if (td && td.length === 10) {
 					// ITN ticket designator
@@ -142,7 +142,7 @@ let matchApolloPricingRules = (output) => {
 			} else if (lexeme === 'nextDeparture') {
 				addRecord(raw, 'xXXInFareConstruction');
 			} else if (lexeme === 'end') {
-				let infoMsg = (data.infoMessage || '').trim();
+				const infoMsg = (data.infoMessage || '').trim();
 				if (infoMsg.match(/^M\s*U\s*S\s*T\s*P\s*R\s*I\s*C\s*E\s*A\s*S\s*B$/)) {
 					addRecord(infoMsg, 'mUSTPRICEASB');
 				} else if (infoMsg.match(/^M\s*U\s*S\s*T\s*P\s*R\s*I\s*C\s*E\s*A\s*S\s*B\s*\/\s*A$/)) {
@@ -155,9 +155,9 @@ let matchApolloPricingRules = (output) => {
 	return records;
 };
 
-let matchCodedRules = (cmd, gds, output) => {
+const matchCodedRules = (cmd, gds, output) => {
 	if (gds === 'apollo') {
-		let parsed = ApoCmdParser.parse(cmd);
+		const parsed = ApoCmdParser.parse(cmd);
 		if (['priceItinerary', 'storePricing', 'storedPricing'].includes(parsed.type)) {
 			return matchApolloPricingRules(output);
 		}
@@ -193,9 +193,9 @@ class TerminalHighlightService {
 				if (row.regexError || !row.cmdPattern) {
 					return false;
 				}
-				let $command = row.cmdPattern;
+				const $command = row.cmdPattern;
 				try {
-					let regex = makeRegex('^' + $command);
+					const regex = makeRegex('^' + $command);
 					return preg_match(regex, $enteredCommand);
 				} catch ($e) {
 					setCmdRegexError(row.ruleId, $command, $language);
@@ -206,9 +206,9 @@ class TerminalHighlightService {
 	}
 
 	removeCrossMatches(matches) {
-		let response = [];
+		const response = [];
 		let lastPosition = -1;
-		for (let row of matches) {
+		for (const row of matches) {
 			if (row.index >= lastPosition) {
 				response.push(row);
 			} else {
@@ -220,38 +220,38 @@ class TerminalHighlightService {
 	}
 
 	async match(cmd, gds, output) {
-		let cmdPatterns = await this.getMatchingCmdPatterns(gds, cmd);
-		let rules = await getRules(this.HighlightRules, cmdPatterns);
-		for (let rule of rules) {
+		const cmdPatterns = await this.getMatchingCmdPatterns(gds, cmd);
+		const rules = await getRules(this.HighlightRules, cmdPatterns);
+		for (const rule of rules) {
 			rule.patterns
 				.filter(row => row.gds === gds && !empty(row.pattern))
 				.forEach(gdsRow => {
 					let matches = [];
-					let regex = makeRegex(gdsRow.pattern, 'm');
+					const regex = makeRegex(gdsRow.pattern, 'm');
 					try {
 						matches = Str.matchAll(regex, output);
 					} catch ($e) {
 						matches = [];
 						setOutputRegexError(gdsRow.id);
 					}
-					for (let match of matches) {
-						let whole = match.shift();
-						let index = match.index;
+					for (const match of matches) {
+						const whole = match.shift();
+						const index = match.index;
 						switch (rule.highlightType) {
 						case 'patternOnly':
 							this.matchPattern(whole, index, rule);
 							break;
 						case 'customValue':
-							let captures = [];
+							const captures = [];
 							if (match.groups) {
 								captures.push(...Object.values(match.groups));
 							} else {
 								captures.push(...match);
 							}
-							for (let captured of captures) {
+							for (const captured of captures) {
 								// javascript does not seem to return capture indexes unlike php...
 								// this is a stupid hack, but we'll have to use it till I find a lib
-								let relIndex = whole.indexOf(captured);
+								const relIndex = whole.indexOf(captured);
 								if (relIndex > -1) {
 									this.matchPattern(captured, index + relIndex, rule);
 								}
@@ -283,7 +283,7 @@ class TerminalHighlightService {
 				rule: rule.id,
 			});
 			this.appliedRules[rule.value] = {...rule};
-			let offsets = this.appliedRules[rule.value].offsets || [];
+			const offsets = this.appliedRules[rule.value].offsets || [];
 			offsets.push({'index': index, 'end': index + strlen(matchedText)});
 			this.appliedRules[rule.value].offsets = offsets;
 		}
@@ -298,8 +298,8 @@ class TerminalHighlightService {
 	async applyCodedRule(record, output) {
 		let {ruleName, index, end} = record;
 		index += this.shift;
-		let matchedText = output.slice(index, end);
-		let rule = await this.HighlightRules.getByName(ruleName);
+		const matchedText = output.slice(index, end);
+		const rule = await this.HighlightRules.getByName(ruleName);
 		return {
 			match: {
 				matchedText: matchedText,
@@ -319,7 +319,7 @@ class TerminalHighlightService {
 	}
 
 	getAppliedRules() {
-		for (let [k,v] of Object.entries(this.appliedRules)) {
+		for (const [k,v] of Object.entries(this.appliedRules)) {
 			this.appliedRules[k] = normalizeRuleForFrontend(v);
 		}
 		return array_values(this.appliedRules);
@@ -334,12 +334,12 @@ class TerminalHighlightService {
 	 */
 	async replace(cmd, gds, output) {
 		let matches = [];
-		let records = matchCodedRules(cmd, gds, output);
-		for (let record of records) {
-			let coded = await this.applyCodedRule(record, output)
+		const records = matchCodedRules(cmd, gds, output);
+		for (const record of records) {
+			const coded = await this.applyCodedRule(record, output)
 				.catch(exc => null);
 			if (coded) {
-				let {match, appliedRule} = coded;
+				const {match, appliedRule} = coded;
 				matches.push(match);
 				this.appliedRules[match.matchedText] = appliedRule;
 			}
@@ -347,7 +347,7 @@ class TerminalHighlightService {
 		matches.push(...(await this.match(cmd, gds, output)));
 		matches = matches.sort((a,b) => a.index - b.index);
 		matches = this.removeCrossMatches(matches);
-		for (let $match of matches) {
+		for (const $match of matches) {
 			output = this.doReplace($match, output);
 		}
 		return output;

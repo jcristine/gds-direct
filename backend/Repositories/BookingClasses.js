@@ -1,12 +1,12 @@
 
-let {getConfig} = require('../Config.js');
-let Db = require('../Utils/Db.js');
+const {getConfig} = require('../Config.js');
+const Db = require('../Utils/Db.js');
 const BadGateway = require("klesun-node-tools/src/Rej").BadGateway;
 const iqJson = require("../Utils/TmpLib").iqJson;
 
-let TABLE = 'airline_booking_classes';
+const TABLE = 'airline_booking_classes';
 
-let normalizeRow = (airline, bookingClass, cabinClass) => {
+const normalizeRow = (airline, bookingClass, cabinClass) => {
 	return {
 		airline: airline,
 		booking_class: bookingClass,
@@ -15,9 +15,9 @@ let normalizeRow = (airline, bookingClass, cabinClass) => {
 };
 
 exports.updateFromService = async () => {
-	let config = await getConfig();
+	const config = await getConfig();
 	/** @type {IGetAirlineBookingClassesRs} */
-	let serviceResult = await iqJson({
+	const serviceResult = await iqJson({
 		url: config.external_service.act.host,
 		credentials: {
 			login: config.external_service.act.login,
@@ -27,11 +27,11 @@ exports.updateFromService = async () => {
 		serviceName: 'rbs',
 	});
 
-	let rows = [];
-	for (let [airline, cabinClasses] of Object.entries(serviceResult.result.content)) {
-		for (let [cabinClass, bookingClasses] of Object.entries(cabinClasses)) {
-			for (let [bookingClass, exists] of Object.entries(bookingClasses)) {
-				let row = normalizeRow(airline, bookingClass, cabinClass);
+	const rows = [];
+	for (const [airline, cabinClasses] of Object.entries(serviceResult.result.content)) {
+		for (const [cabinClass, bookingClasses] of Object.entries(cabinClasses)) {
+			for (const [bookingClass, exists] of Object.entries(bookingClasses)) {
+				const row = normalizeRow(airline, bookingClass, cabinClass);
 				rows.push(row);
 			}
 		}
@@ -40,7 +40,7 @@ exports.updateFromService = async () => {
 		return BadGateway('Unexpected ACT response format - ' + JSON.stringify(serviceResult));
 	}
 
-	let written = await Db.with(db => db.writeRows(TABLE, rows));
+	const written = await Db.with(db => db.writeRows(TABLE, rows));
 	return {
 		message: 'written ' + rows.length + ' rows to db',
 		sqlResult: written,
@@ -49,7 +49,7 @@ exports.updateFromService = async () => {
 
 exports.find = async ({airline, bookingClass}) => {
 	/** @var row = normalizeRow() */
-	let row = await Db.with(db => db.fetchOne({
+	const row = await Db.with(db => db.fetchOne({
 		table: TABLE,
 		where: [
 			['airline', '=', airline],

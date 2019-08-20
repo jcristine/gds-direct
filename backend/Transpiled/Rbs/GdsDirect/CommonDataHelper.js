@@ -2,7 +2,7 @@
 const StringUtil = require('../../Lib/Utils/StringUtil.js');
 const Errors = require("./Errors");
 
-let php = require('klesun-node-tools/src/Transpiled/php.js');
+const php = require('klesun-node-tools/src/Transpiled/php.js');
 
 const ApoCmdParser = require('../../Gds/Parsers/Apollo/CommandParser.js');
 const GalCmdParser = require('../../Gds/Parsers/Galileo/CommandParser.js');
@@ -77,9 +77,9 @@ class CommonDataHelper {
 
 	/** @param stateful = await require('StatefulSession.js')() */
 	static async createCredentialMessage(stateful) {
-		let $leadData = await stateful.getGdRemarkData();
+		const $leadData = await stateful.getGdRemarkData();
 
-		let $agent = stateful.getAgent();
+		const $agent = stateful.getAgent();
 		let $maxLen, $leadPart, $pattern, $minLen;
 		$maxLen = {
 			'apollo': 87 - php.strlen('@:5'),
@@ -191,18 +191,18 @@ class CommonDataHelper {
 	}
 
 	static parsePnrByGds($gds, $pnrDump) {
-		let baseDt = php.date('Y-m-d H:i:s');
+		const baseDt = php.date('Y-m-d H:i:s');
 		if ($gds === 'apollo') {
-			let $pnr = ApolloPnr.makeFromDump($pnrDump);
+			const $pnr = ApolloPnr.makeFromDump($pnrDump);
 			return ImportApolloPnrFormatAdapter.transformReservation($pnr.getParsedData(), baseDt);
 		} else if ($gds === 'galileo') {
-			let $parsed = GalPnrParser.parse($pnrDump);
+			const $parsed = GalPnrParser.parse($pnrDump);
 			return GalileoPnrCommonFormatAdapter.transform($parsed, baseDt);
 		} else if ($gds === 'sabre') {
-			let $pnr = SabrePnr.makeFromDump($pnrDump);
+			const $pnr = SabrePnr.makeFromDump($pnrDump);
 			return FormatAdapter.adaptSabrePnrParseForClient($pnr.getParsedData(), baseDt);
 		} else if ($gds === 'amadeus') {
-			let $pnr = AmadeusPnr.makeFromDump($pnrDump);
+			const $pnr = AmadeusPnr.makeFromDump($pnrDump);
 			return AmadeusPnrCommonFormatAdapter.transform($pnr.getParsedData(), baseDt);
 		} else {
 			return null;
@@ -224,11 +224,11 @@ class CommonDataHelper {
 	}
 
 	static async _getSegUtc($seg, geo, baseDate) {
-		let $geoProvider = geo;
-		let fullDt = DateTime.decodeRelativeDateInFuture(
+		const $geoProvider = geo;
+		const fullDt = DateTime.decodeRelativeDateInFuture(
 			$seg.departureDate.parsed, baseDate
 		) + ' ' + $seg.departureTime.parsed + ':00';
-		let tz = await $geoProvider.getTimezone($seg.departureAirport);
+		const tz = await $geoProvider.getTimezone($seg.departureAirport);
 		if (tz) {
 			return DateTime.toUtc(fullDt, tz);
 		} else {
@@ -240,16 +240,16 @@ class CommonDataHelper {
 		if (!CommonDataHelper.isValidPnr($pnr)) {
 			return BadRequest('No itinerary to sort');
 		}
-		let $itinerary = $pnr.getItinerary();
+		const $itinerary = $pnr.getItinerary();
 
-		let promises = $itinerary.map(async seg => {
-			let utc = await this._getSegUtc(seg, geo, baseDate);
+		const promises = $itinerary.map(async seg => {
+			const utc = await this._getSegUtc(seg, geo, baseDate);
 			return utc
 				? Promise.resolve({utc, seg})
 				: NotImplemented('No tz for seg ' + seg.segmentNumber + ' ' + seg.departureAirport, {isOk: true});
 		});
-		let utcRecords = await Promise.all(promises);
-		let $sorted = Fp.sortBy(r => r.utc, utcRecords).map(r => r.seg);
+		const utcRecords = await Promise.all(promises);
+		const $sorted = Fp.sortBy(r => r.utc, utcRecords).map(r => r.seg);
 		if (php.equals($sorted, $itinerary)) {
 			return NoContent('Itinerary is already SORT-ed');
 		} else {

@@ -16,7 +16,7 @@ const RetrieveFlightServiceInfoAction = require('../../../../Rbs/Process/Apollo/
 const ImportFareComponentsAction = require('../../../../Rbs/Process/Apollo/ImportPnr/Actions/ImportFareComponentsAction.js');
 const TravelportClient = require('../../../../../GdsClients/TravelportClient');
 
-let php = require('klesun-node-tools/src/Transpiled/php.js');
+const php = require('klesun-node-tools/src/Transpiled/php.js');
 const Rej = require("klesun-node-tools/src/Rej");
 const withCapture = require("../../../../../GdsHelpers/CommonUtils").withCapture;
 
@@ -92,7 +92,7 @@ class ImportPqApolloAction extends AbstractGdsAction {
 	async getFlightService($itinerary) {
 		let $actionResult, $common, $result = {};
 
-		let capturing = withCapture(this.session);
+		const capturing = withCapture(this.session);
 		$actionResult = await (new RetrieveFlightServiceInfoAction())
 			.setSession(capturing).execute($itinerary);
 		$common = ImportApolloPnrFormatAdapter.transformFlightServiceInfo($actionResult, this.getBaseDate());
@@ -107,7 +107,7 @@ class ImportPqApolloAction extends AbstractGdsAction {
 
 	static parsePricing($dump, $nameRecords, $cmd) {
 		let $parsed, $exc, $common, $ptcBagRecords;
-		let $result = {};
+		const $result = {};
 		if ($result['error'] = ApolloPnrFieldsOnDemand.detectPricingErrorResponse($dump)) return $result;
 
 		try {
@@ -116,11 +116,11 @@ class ImportPqApolloAction extends AbstractGdsAction {
 			if (($exc + '').match(/TypeError/)) {
 				throw $exc;
 			}
-			let msg = 'Failed to parse pricing - ' + php.get_class($exc) + ' ' + $exc.message + ' - ' + $dump;
+			const msg = 'Failed to parse pricing - ' + php.get_class($exc) + ' ' + $exc.message + ' - ' + $dump;
 			throw Rej.NotImplemented.makeExc(msg);
 		}
 		if (!$parsed) return {'error': 'Gds returned error - ' + php.trim($dump)};
-		let pricingAdapter = (new ApolloPricingAdapter())
+		const pricingAdapter = (new ApolloPricingAdapter())
 			.setPricingCommand($cmd)
 			.setNameRecords($nameRecords);
 		$common = pricingAdapter.transform($parsed);
@@ -141,11 +141,11 @@ class ImportPqApolloAction extends AbstractGdsAction {
 			$result = this.constructor.parsePricing($output, $nameRecords, $cmd);
 		}
 		if (!$result.error && $cmd === '$BBQ01') {
-			for (let mod of $result.store.pricingModifiers) {
+			for (const mod of $result.store.pricingModifiers) {
 				// note that $BBQ01 command copy has "*" characters cut out, so some
 				// modifiers, like /*JCB/ or /-*2CV4/ would not be parsed correctly...
 				if (mod.type === 'segments') {
-					for (let bundle of mod.parsed.bundles) {
+					for (const bundle of mod.parsed.bundles) {
 						if (!php.empty(bundle.segmentNumbers)) {
 							$result.error = 'Can not create PQ from $BBQ01 with segment select - /' + mod.raw + '/, please run clean $B';
 						}
@@ -196,7 +196,7 @@ class ImportPqApolloAction extends AbstractGdsAction {
 			php.array_unshift($mrs, $cmdRecord['output']);
 			$parsed = CommandParser.parse($cmdRecord['cmd']);
 			$logCmdType = $parsed['type'];
-			let output = joinFullOutput($mrs);
+			const output = joinFullOutput($mrs);
 			if ($logCmdType !== 'moveRest') {
 				$mrs = [];
 			}
@@ -238,7 +238,7 @@ class ImportPqApolloAction extends AbstractGdsAction {
 			$pricingCommand = $cmdRecord['cmd'];
 			$errors = CanCreatePqRules.checkPricingCommand('apollo', $pricingCommand, this.$leadData);
 			if (!php.empty($errors)) {
-				let error = 'Invalid pricing command - ' +
+				const error = 'Invalid pricing command - ' +
 					$pricingCommand + ' - ' + php.implode(';', $errors);
 				return Rej.BadRequest(error);
 			}
@@ -247,7 +247,7 @@ class ImportPqApolloAction extends AbstractGdsAction {
 					$cmd = StringUtil.startsWith($pricingCommand, '$BB') ? '*$BB' : '*$B';
 					$raw = await this.runOrReuse($cmd);
 				} else {
-					let error = 'Some unscrolled output left in the >' + $cmdRecord['cmd'] + ';';
+					const error = 'Some unscrolled output left in the >' + $cmdRecord['cmd'] + ';';
 					return Rej.InternalServerError(error); // should not happen, PQ button would be disabled
 				}
 			} else {
@@ -259,7 +259,7 @@ class ImportPqApolloAction extends AbstractGdsAction {
 				return Rej.BadRequest($processed['error']);
 			}
 			$processed['store']['pricingNumber'] = $i + 1;
-			let $bagBlocks = $processed['bagPtcPricingBlocks']
+			const $bagBlocks = $processed['bagPtcPricingBlocks']
 				.map(($bagBlock) => ({...$bagBlock, pricingNumber: $i + 1}));
 			$result['pricingPart']['parsed']['pricingList'].push($processed['store']);
 			$result['bagPtcPricingBlocks'] = php.array_merge($result['bagPtcPricingBlocks'], $bagBlocks);
@@ -304,7 +304,7 @@ class ImportPqApolloAction extends AbstractGdsAction {
 		if ($error = $result['error'] || null) return {'error': $error};
 
 		this.$allCommands.push($result.cmdRec);
-		for (let $fareData of Object.values($result['fareList'])) {
+		for (const $fareData of Object.values($result['fareList'])) {
 			this.$allCommands.push($fareData.cmdRec);
 		}
 		return {

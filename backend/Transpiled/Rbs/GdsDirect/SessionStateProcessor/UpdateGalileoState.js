@@ -44,7 +44,7 @@ class UpdateGalileoSessionStateAction
 		// '>FQ',
 		// 'NO ITINERARY EXISTS FOR FARE QUOTATION',
 		// '><',
-		let wrapped = StringUtil.wrapLinesAt(output, 64);
+		const wrapped = StringUtil.wrapLinesAt(output, 64);
 		return php.count(StringUtil.lines(php.trim(wrapped))) < 4;
 	}
 

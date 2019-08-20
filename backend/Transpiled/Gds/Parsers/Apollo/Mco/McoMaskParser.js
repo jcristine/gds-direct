@@ -3,7 +3,7 @@
 const AbstractMaskParser = require('../../../../Gds/Parsers/Apollo/AbstractMaskParser.js');
 const StringUtil = require('../../../../Lib/Utils/StringUtil.js');
 
-let php = require('../../../../phpDeprecated.js');
+const php = require('../../../../phpDeprecated.js');
 
 /**
  * parses output of >*MCO{lineNumber};
@@ -89,7 +89,7 @@ class McoMaskParser extends AbstractMaskParser
 			'validatingCarrier', 'issueNow',
 		];
 		$dump = StringUtil.padLines($dump, 63, ' ');
-		let error = this.checkDumpMatchesMask($dump, $mask);
+		const error = this.checkDumpMatchesMask($dump, $mask);
 		if (error) {
 			return {'error': 'Bad MCO mask output: ' + error + php.PHP_EOL + $dump+php.PHP_EOL};
 		}

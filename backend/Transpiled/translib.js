@@ -1,7 +1,7 @@
 
 
 exports.stubRequire = (path) => {
-	let reportError = (name) => {
+	const reportError = (name) => {
 		throw new Error('Tried to use ' + name + ' of untranspilled module - ' + path);
 	};
 	return new Proxy({}, {

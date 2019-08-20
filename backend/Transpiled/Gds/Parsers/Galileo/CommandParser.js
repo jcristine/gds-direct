@@ -490,7 +490,7 @@ class CommandParser
 
 		// 'T.TAU/19APR|R.KINGSLEY|ER' -> ['T.TAU/19APR', 'R.KINGSLEY', 'ER']
 		// 'FQBB||-AB' -> ['FQBB||-AB']
-		let subCmds = $cmd.split(/(?<!\|)\|(?!\|)/g);
+		const subCmds = $cmd.split(/(?<!\|)\|(?!\|)/g);
 		$flatCmds = subCmds.map(subCmd => this.parseSingleCommand(subCmd));
 		$parsed = $flatCmds.shift();
 		$parsed['followingCommands'] = $flatCmds;

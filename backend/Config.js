@@ -1,17 +1,17 @@
 
 const GrectLib = require('klesun-node-tools');
 
-let env = process.env || {};
+const env = process.env || {};
 
-let isProd = env.NODE_ENV === 'production';
+const isProd = env.NODE_ENV === 'production';
 
-let StaticConfig = {
+const StaticConfig = {
 	mantisId: 677,
 	production: isProd,
 	RBS_PASSWORD: env.RBS_PASSWORD,
 };
 
-let getExternalServices = () => ({
+const getExternalServices = () => ({
 		// TODO: move to admin page like in CMS
 		emc: {
 			projectName: 'GDSD',
@@ -54,7 +54,7 @@ let getExternalServices = () => ({
 		},
 });
 
-let hardcodedConfig = {
+const hardcodedConfig = {
 	external_service: getExternalServices(),
 };
 

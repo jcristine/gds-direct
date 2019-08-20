@@ -10,14 +10,14 @@ const Fp = require('../../Transpiled/Lib/Utils/Fp.js');
 const NormalizePricingCmd = require('./NormalizePricingCmd.js');
 const php = require('klesun-node-tools/src/Transpiled/php.js');
 
-let PRIVATE_FARE_TYPES = ['private', 'agencyPrivate', 'airlinePrivate', 'netAirlinePrivate'];
+const PRIVATE_FARE_TYPES = ['private', 'agencyPrivate', 'airlinePrivate', 'netAirlinePrivate'];
 
 const shortenRangesRec = (numbers) => {
 	numbers = numbers.map(n => +n);
-	let ranges = [];
+	const ranges = [];
 	let from = -1;
 	let to = -1;
-	for (let num of Object.values(numbers)) {
+	for (const num of Object.values(numbers)) {
 		if (from > -1 && num == +to + 1) {
 			to = num;
 		} else {
@@ -44,18 +44,18 @@ const makeRangeStr = (range, coma, thru) => {
 
 // 1*2*3*4*7*8*9 -> 1-4*7-9
 const shortenRanges = (numbers, coma, thru) => {
-	let ranges = shortenRangesRec(numbers);
-	let toStr = (range) => makeRangeStr(range, coma, thru);
+	const ranges = shortenRangesRec(numbers);
+	const toStr = (range) => makeRangeStr(range, coma, thru);
 	return ranges.map(toStr).join(coma);
 };
 
 const translatePaxes_apollo = ({ptcs, paxNums}) => {
-	let cnt = php.max(php.count(paxNums), php.count(ptcs));
+	const cnt = php.max(php.count(paxNums), php.count(ptcs));
 	if (php.count(ptcs) === 1 && php.empty(paxNums)) {
-		let ptc = ptcs[0];
+		const ptc = ptcs[0];
 		return '*' + ptc + (php.in_array(ptc, ['CNN', 'C05']) ? '/ACC' : '');
 	} else {
-		let paxParts = Fp.map(($i) => {
+		const paxParts = Fp.map(($i) => {
 			let $paxNum, $ptc;
 
 			$paxNum = paxNums[$i] || $i + 1;
@@ -67,12 +67,12 @@ const translatePaxes_apollo = ({ptcs, paxNums}) => {
 };
 
 const translatePaxes_galileo = ({ptcs, paxNums}) => {
-	let cnt = php.max(php.count(paxNums), php.count(ptcs));
+	const cnt = php.max(php.count(paxNums), php.count(ptcs));
 	if (php.count(ptcs) === 1 && php.empty(paxNums)) {
-		let ptc = ptcs[0];
+		const ptc = ptcs[0];
 		return php.in_array(ptc, ['CNN', 'C05']) ? '*' + ptc + '/ACC' : '*' + ptc;
 	} else {
-		let paxParts = Fp.map(($i) => {
+		const paxParts = Fp.map(($i) => {
 			let $paxNum, $ptc;
 
 			$paxNum = paxNums[$i] || $i + 1;
@@ -84,9 +84,9 @@ const translatePaxes_galileo = ({ptcs, paxNums}) => {
 };
 
 const translatePaxes_sabre = ({ptcs, paxNums}) => {
-	let grouped = Fp.groupBy(($ptc) => $ptc, ptcs);
-	let addCnt = ($ptcs) => {
-		let cnt = php.count($ptcs) > 1 || php.count(grouped) > 1 ? php.count($ptcs) : '';
+	const grouped = Fp.groupBy(($ptc) => $ptc, ptcs);
+	const addCnt = ($ptcs) => {
+		const cnt = php.count($ptcs) > 1 || php.count(grouped) > 1 ? php.count($ptcs) : '';
 		return cnt + ($ptcs[0] || 'ADT');
 	};
 	return php.implode('¥', php.array_filter([
@@ -96,11 +96,11 @@ const translatePaxes_sabre = ({ptcs, paxNums}) => {
 };
 
 const translatePaxes_amadeus = ({ptcs, paxNums, pricingModifiers = []}) => {
-	let normPtc = ($ptc) => $ptc || 'ADT';
+	const normPtc = ($ptc) => $ptc || 'ADT';
 	ptcs = php.array_values(php.array_unique(ptcs));
-	let subMods = [];
-	let superMods = [];
-	for (let mod of pricingModifiers) {
+	const subMods = [];
+	const superMods = [];
+	for (const mod of pricingModifiers) {
 		if (mod.type === 'currency') {
 			subMods.push('FC-' + mod.parsed);
 		} else if (mod.type === 'fareType') {
@@ -124,12 +124,12 @@ const translatePaxes_amadeus = ({ptcs, paxNums, pricingModifiers = []}) => {
 	pricingModifiers.splice(0);
 	pricingModifiers.push(...superMods);
 
-	let paxMods = [];
+	const paxMods = [];
 	if (paxNums.length) {
 		paxMods.push('P' + php.implode(',', paxNums));
 	}
 	if (ptcs.length > 0 || subMods.length > 0) {
-		let rMod = 'R' + [ptcs.map(normPtc).join('*')]
+		const rMod = 'R' + [ptcs.map(normPtc).join('*')]
 			.concat(subMods).join(',');
 		paxMods.push(rMod);
 	}
@@ -138,7 +138,7 @@ const translatePaxes_amadeus = ({ptcs, paxNums, pricingModifiers = []}) => {
 };
 
 const translateNormPaxes = (toGds, norm) => {
-	let cnt = php.max(php.count(norm.paxNums), php.count(norm.ptcs));
+	const cnt = php.max(php.count(norm.paxNums), php.count(norm.ptcs));
 	if (!cnt || !php.empty(norm.paxNums) && !php.empty(norm.ptcs)
 		&& php.count(norm.paxNums) !== php.count(norm.ptcs)
 	) {
@@ -161,17 +161,17 @@ const translatePaxes = (fromGds, toGds, mods) => {
 };
 
 const init = (gds, norm) => {
-	let baseCmdMapping = NormalizePricingCmd.baseCmdMapping[gds];
+	const baseCmdMapping = NormalizePricingCmd.baseCmdMapping[gds];
 	let effectiveBaseCmd = null;
-	for (let [baseCmd, action] of Object.entries(baseCmdMapping)) {
+	for (const [baseCmd, action] of Object.entries(baseCmdMapping)) {
 		if (action === norm.action) {
 			effectiveBaseCmd = baseCmd;
 		}
 	}
-	let effectiveMods = [];
-	let paxMod = translateNormPaxes(gds, norm);
+	const effectiveMods = [];
+	const paxMod = translateNormPaxes(gds, norm);
 	let paxModPushed = false;
-	let pushPaxMod = () => {
+	const pushPaxMod = () => {
 		if (!paxModPushed && paxMod) {
 			paxModPushed = true;
 			effectiveMods.push(paxMod);
@@ -188,11 +188,11 @@ const processTravelportMod = (effectiveMods, mod, coma, thru) => {
 	} else if (mod.type === 'overrideCarrier') {
 		effectiveMods.push('OC' + mod.parsed);
 	} else if (mod.type === 'commission') {
-		let {units, value} = mod.parsed;
-		let apolloMod = 'Z' + (units === 'amount' ? '$' : '') + value;
+		const {units, value} = mod.parsed;
+		const apolloMod = 'Z' + (units === 'amount' ? '$' : '') + value;
 		effectiveMods.push(apolloMod);
 	} else if (mod.type === 'fareType') {
-		let letter = AtfqParser.encodeFareType(mod.parsed);
+		const letter = AtfqParser.encodeFareType(mod.parsed);
 		if (mod.parsed === 'private') {
 			effectiveMods.push(':A'); // usually agents need this one, not :P
 		} else if (letter) {
@@ -207,9 +207,9 @@ const processTravelportMod = (effectiveMods, mod, coma, thru) => {
 		}
 	// following different in Apollo and galileo
 	} else if (mod.type === 'segments') {
-		let bundles = mod.parsed.bundles;
-		let grouped = {};
-		for (let bundle of bundles) {
+		const bundles = mod.parsed.bundles;
+		const grouped = {};
+		for (const bundle of bundles) {
 			let modsPart = '';
 			if (bundle.bookingClass) {
 				modsPart += '.' + bundle.bookingClass;
@@ -220,15 +220,15 @@ const processTravelportMod = (effectiveMods, mod, coma, thru) => {
 			grouped[modsPart] = grouped[modsPart] || [];
 			grouped[modsPart].push(...bundle.segmentNumbers);
 		}
-		let entries = Object.entries(grouped);
+		const entries = Object.entries(grouped);
 		if (entries.length === 1 && entries[0][1].length === 0) {
 			effectiveMods.push(entries[0][0]);
 		} else {
-			let bundleTokens = [];
-			for (let [modsPart, segNums] of Object.entries(grouped)) {
+			const bundleTokens = [];
+			for (const [modsPart, segNums] of Object.entries(grouped)) {
 				if (segNums.length > 0) {
-					for (let range of shortenRangesRec(segNums)) {
-						let bundleStr = makeRangeStr(range, coma, thru) + modsPart;
+					for (const range of shortenRangesRec(segNums)) {
+						const bundleStr = makeRangeStr(range, coma, thru) + modsPart;
 						bundleTokens.push(bundleStr);
 					}
 				} else if (modsPart) {
@@ -252,7 +252,7 @@ const inApollo = (norm) => {
 			throw Rej.NotImplemented.makeExc('Unsupported action - ' + norm.action);
 		}
 	}
-	for (let mod of norm.pricingModifiers) {
+	for (const mod of norm.pricingModifiers) {
 		if (processTravelportMod(effectiveMods, mod, '|', '*')) {
 			// following is Apollo-specific
 		} else if (mod.type === 'namePosition') {
@@ -260,8 +260,8 @@ const inApollo = (norm) => {
 		} else if (mod.type === 'ticketingDate') {
 			effectiveMods.push(':' + mod.parsed.raw);
 		} else if (mod.type === 'cabinClass') {
-			let typeToLetter = php.array_flip(AtfqParser.getCabinClassMapping());
-			let letter = typeToLetter[mod.parsed.parsed];
+			const typeToLetter = php.array_flip(AtfqParser.getCabinClassMapping());
+			const letter = typeToLetter[mod.parsed.parsed];
 			if (letter) {
 				effectiveMods.push('/@' + letter);
 			} else {
@@ -284,7 +284,7 @@ const inGalileo = (norm) => {
 			throw Rej.NotImplemented.makeExc('Unsupported action - ' + norm.action);
 		}
 	}
-	for (let mod of norm.pricingModifiers) {
+	for (const mod of norm.pricingModifiers) {
 		if (processTravelportMod(effectiveMods, mod, '.', '-')) {
 			// following is Galileo-specific
 		} else if (mod.type === 'namePosition') {
@@ -292,8 +292,8 @@ const inGalileo = (norm) => {
 		} else if (mod.type === 'ticketingDate') {
 			effectiveMods.push('.T' + mod.parsed.raw);
 		} else if (mod.type === 'cabinClass') {
-			let typeToLetter = php.array_flip(FqCmdParser.getCabinClassMapping());
-			let letter = typeToLetter[mod.parsed.parsed];
+			const typeToLetter = php.array_flip(FqCmdParser.getCabinClassMapping());
+			const letter = typeToLetter[mod.parsed.parsed];
 			if (letter) {
 				effectiveMods.push('++-' + letter);
 			} else {
@@ -308,14 +308,14 @@ const inGalileo = (norm) => {
 };
 
 const inSabre = (norm) => {
-	let {effectiveBaseCmd, effectiveMods, pushPaxMod} = init('sabre', norm);
+	const {effectiveBaseCmd, effectiveMods, pushPaxMod} = init('sabre', norm);
 	if (!effectiveBaseCmd) {
 		throw Rej.NotImplemented.makeExc('Unsupported action - ' + norm.action);
 	}
 	if (effectiveBaseCmd !== 'WP') {
 		effectiveMods.unshift(effectiveBaseCmd.slice('WP'.length));
 	}
-	for (let mod of norm.pricingModifiers) {
+	for (const mod of norm.pricingModifiers) {
 		if (mod.type === 'namePosition') {
 			pushPaxMod();
 		} else if (mod.type === 'currency') {
@@ -327,8 +327,8 @@ const inSabre = (norm) => {
 		} else if (mod.type === 'ticketingDate') {
 			effectiveMods.push('B' + mod.parsed.raw);
 		} else if (mod.type === 'cabinClass') {
-			let typeToLetter = php.array_flip(SabPricingCmdParser.cabinClassMapping);
-			let letter = typeToLetter[mod.parsed.parsed];
+			const typeToLetter = php.array_flip(SabPricingCmdParser.cabinClassMapping);
+			const letter = typeToLetter[mod.parsed.parsed];
 			if (letter) {
 				effectiveMods.push('TC-' + letter);
 			} else if (mod.parsed.parsed === 'sameAsBooked') {
@@ -339,22 +339,22 @@ const inSabre = (norm) => {
 		} else if (mod.type === 'accompaniedChild') {
 			// skip - Sabre does not require it if I remember right
 		} else if (mod.type === 'segments') {
-			let bundles = mod.parsed.bundles;
-			let fareBases = bundles
+			const bundles = mod.parsed.bundles;
+			const fareBases = bundles
 				.map(b => b.fareBasis)
 				.filter(fb => fb);
-			let singleFb = fareBases.length !== 1 ? null : fareBases[0];
+			const singleFb = fareBases.length !== 1 ? null : fareBases[0];
 			if (singleFb) {
 				effectiveMods.push('Q' + singleFb);
 			}
-			let selects = bundles.filter(b => b.fareBasis && b.segmentNumbers.length > 0);
-			let justNums = bundles.flatMap(b => b.fareBasis ? [] : b.segmentNumbers);
+			const selects = bundles.filter(b => b.fareBasis && b.segmentNumbers.length > 0);
+			const justNums = bundles.flatMap(b => b.fareBasis ? [] : b.segmentNumbers);
 			if (justNums.length > 0) {
 				// simplify: S1/2¥S5/6 -> S1/2/5/6
 				selects.push({segmentNumbers: justNums});
 			}
-			for (let bundle of selects) {
-				let segNums = bundle.segmentNumbers;
+			for (const bundle of selects) {
+				const segNums = bundle.segmentNumbers;
 				let mod = 'S' + shortenRanges(segNums, '/', '-');
 				if (!singleFb && bundle.fareBasis) {
 					mod += '*' + bundle.fareBasis;
@@ -370,8 +370,8 @@ const inSabre = (norm) => {
 				throw Rej.NotImplemented.makeExc('Unsupported fare type ' + mod.parsed.parsed + ' - ' + mod.raw);
 			}
 		} else if (mod.type === 'commission') {
-			let {units, value} = mod.parsed;
-			let sabreMod = 'K' + (units === 'percent' ? 'P' : '') + value;
+			const {units, value} = mod.parsed;
+			const sabreMod = 'K' + (units === 'percent' ? 'P' : '') + value;
 			effectiveMods.push(sabreMod);
 		} else {
 			throw Rej.NotImplemented.makeExc('Unsupported modifier ' + mod.type + ' - ' + mod.raw);
@@ -382,17 +382,17 @@ const inSabre = (norm) => {
 };
 
 const inAmadeus = (norm) => {
-	let baseCmdMapping = NormalizePricingCmd.baseCmdMapping.amadeus;
+	const baseCmdMapping = NormalizePricingCmd.baseCmdMapping.amadeus;
 	let effectiveBaseCmd = null;
-	for (let [baseCmd, action] of Object.entries(baseCmdMapping)) {
+	for (const [baseCmd, action] of Object.entries(baseCmdMapping)) {
 		if (action === norm.action) {
 			effectiveBaseCmd = baseCmd;
 		}
 	}
-	let effectiveMods = [];
-	let paxMod = translatePaxes_amadeus(norm);
+	const effectiveMods = [];
+	const paxMod = translatePaxes_amadeus(norm);
 	let paxModPushed = false;
-	let pushPaxMod = () => {
+	const pushPaxMod = () => {
 		if (!paxModPushed && paxMod) {
 			paxModPushed = true;
 			effectiveMods.push(paxMod);
@@ -401,12 +401,12 @@ const inAmadeus = (norm) => {
 	if (!effectiveBaseCmd) {
 		throw Rej.NotImplemented.makeExc('Unsupported action - ' + norm.action);
 	}
-	for (let mod of norm.pricingModifiers) {
+	for (const mod of norm.pricingModifiers) {
 		if (mod.type === 'namePosition') {
 			pushPaxMod();
 		} else if (mod.type === 'cabinClass') {
-			let typeToLetter = php.array_flip(AmaPricingCmdParser.getCabinClassMapping());
-			let letter = typeToLetter[mod.parsed.parsed];
+			const typeToLetter = php.array_flip(AmaPricingCmdParser.getCabinClassMapping());
+			const letter = typeToLetter[mod.parsed.parsed];
 			if (letter || letter === '') {
 				effectiveMods.push('K' + letter);
 			} else {
@@ -416,8 +416,8 @@ const inAmadeus = (norm) => {
 		} else if (mod.type === 'accompaniedChild') {
 			// not needed in Amadeus I guess
 		} else if (mod.type === 'segments') {
-			let bundles = mod.parsed.bundles;
-			let fareBases = bundles
+			const bundles = mod.parsed.bundles;
+			const fareBases = bundles
 				.map(b => b.fareBasis)
 				.filter(fb => fb);
 			if (fareBases.length > 1) {
@@ -425,7 +425,7 @@ const inAmadeus = (norm) => {
 			} else if (fareBases.length === 1) {
 				effectiveMods.push('L-' + fareBases[0]);
 			} else {
-				let segNums = bundles.flatMap(b => b.segmentNumbers);
+				const segNums = bundles.flatMap(b => b.segmentNumbers);
 				if (segNums.length > 0) {
 					effectiveMods.push('S' + shortenRanges(segNums, ',', '-'));
 				}
@@ -442,17 +442,17 @@ const TranslatePricingCmd = ({
 	cmdRq, fromGds, toGds, parsed,
 	baseDate = null,
 }) => {
-	let normalized = NormalizePricingCmd(parsed, fromGds);
+	const normalized = NormalizePricingCmd(parsed, fromGds);
 	if (!normalized) {
 		throw Rej.NoContent.makeExc('Could not normalize pricing command');
 	}
 	normalized.pricingModifiers = normalized.pricingModifiers.map(mod => {
 		if (mod.type === 'ticketingDate' && baseDate) {
-			let partial = CommonParserHelpers.parsePartialDate(mod.parsed.raw);
+			const partial = CommonParserHelpers.parsePartialDate(mod.parsed.raw);
 			if (partial) {
 				// Amadeus only accepts full date
-				let full = DateTime.decodeRelativeDateInFuture(partial, baseDate);
-				let gdsDate = php.strtoupper(php.date('dMy', php.strtotime(full)));
+				const full = DateTime.decodeRelativeDateInFuture(partial, baseDate);
+				const gdsDate = php.strtoupper(php.date('dMy', php.strtotime(full)));
 				return {...mod, parsed: {raw: gdsDate}};
 			}
 		}

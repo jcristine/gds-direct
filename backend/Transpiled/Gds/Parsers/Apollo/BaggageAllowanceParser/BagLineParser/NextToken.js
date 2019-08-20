@@ -1,6 +1,6 @@
 
 
-let php = require('../../../../../phpDeprecated');
+const php = require('../../../../../phpDeprecated');
 
 class NextToken
 {

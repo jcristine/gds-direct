@@ -86,14 +86,14 @@ class NextToken
 
 	// '  PIC CNN             1P/2O',
 	static _parsePtcRebookEntry(line) {
-		let match = line.match(/^\s*PIC ([A-Z0-9]{2,3})\s*((?:\/?\d+[A-Z])+)\s*$/);
+		const match = line.match(/^\s*PIC ([A-Z0-9]{2,3})\s*((?:\/?\d+[A-Z])+)\s*$/);
 		if (match) {
-			let [_, ptc, segListStr] = match;
+			const [_, ptc, segListStr] = match;
 			return {
 				ptc: ptc,
 				segments: segListStr.split('/').map(token => {
-					let segmentNumber = token.slice(0, -1);
-					let bookingClass = token.slice(-1);
+					const segmentNumber = token.slice(0, -1);
+					const bookingClass = token.slice(-1);
 					return {segmentNumber, bookingClass};
 				}),
 			};
@@ -106,14 +106,14 @@ class NextToken
 	// ' BOOK PNR SEGMENTS ',
 	// '  PIC CNN             1P/2O',
 	static _parsePtcRebookStatement(textLeft) {
-		let match = textLeft.match(/^\s*MULTIPLE BOOKING CODES APPLY\s+BOOK PNR SEGMENTS\s*?\n/);
+		const match = textLeft.match(/^\s*MULTIPLE BOOKING CODES APPLY\s+BOOK PNR SEGMENTS\s*?\n/);
 		if (match) {
 			textLeft = textLeft.slice(match[0].length);
-			let linesLeft = textLeft.split('\n');
+			const linesLeft = textLeft.split('\n');
 			let line;
-			let ptcRecords = [];
+			const ptcRecords = [];
 			while (line = linesLeft.shift(linesLeft)) {
-				let parsed = this._parsePtcRebookEntry(line);
+				const parsed = this._parsePtcRebookEntry(line);
 				if (parsed) {
 					ptcRecords.push(parsed);
 				} else {

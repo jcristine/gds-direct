@@ -5,7 +5,7 @@ const Fp = require('../../../../Lib/Utils/Fp.js');
 const {mkReg} = require('klesun-node-tools/src/Utils/Misc.js');
 
 /** @param $expr = '1/3/5-7/9' */
-let parseRanges = ($expr) => {
+const parseRanges = ($expr) => {
 	let $parseRange;
 	$parseRange = ($text) => {
 		let $pair;
@@ -19,7 +19,7 @@ let parseRanges = ($expr) => {
 // 'N1.1-2.1'
 // 'N1.1-2.1/4.1-5.1/6.0'
 // 'N1¥N2'
-let parseNameQualifier = ($token) => {
+const parseNameQualifier = ($token) => {
 	let $content, $records;
 	if (!StringUtil.startsWith($token, 'N')) {
 		return null;
@@ -53,8 +53,8 @@ let parseNameQualifier = ($token) => {
 /**
  * @param token = 'S1/2-3*Q//DA25*PC05' || 'S1/3'
  */
-let parseSegmentQualifier = (token) => {
-	let regex = mkReg([
+const parseSegmentQualifier = (token) => {
+	const regex = mkReg([
 		/^S(?<segNums>\d+[\d\/\-]*)/,
 		/(\*Q(?<fareBasis>[A-Z][A-Z0-9]*)|)/,
 		/(?<unparsed>\s*.+|)/,
@@ -75,7 +75,7 @@ let parseSegmentQualifier = (token) => {
 // 'PADT/CMP' // companion
 // 'PJCB/2JNF' // 1 JCB (adult) and 2 JNF (infants)
 // 'P1ADT/2C11/1ADT'
-let parsePtcQualifier = ($token) => {
+const parsePtcQualifier = ($token) => {
 	let $content, $records;
 	if (!StringUtil.startsWith($token, 'P')) {
 		return null;
@@ -99,7 +99,7 @@ let parsePtcQualifier = ($token) => {
 	}
 };
 
-let cabinClassMapping = {
+const cabinClassMapping = {
 	'YB': 'economy',
 	'SB': 'premiumEconomy',
 	'BB': 'business',
@@ -111,7 +111,7 @@ let cabinClassMapping = {
 /**
  * @see https://formatfinder.sabre.com/Content/Pricing/PricingOptionalQualifiers.aspx?ItemID=7481cca11a7449a19455dc598d5e3ac9
  */
-let parsePricingQualifier = ($token) => {
+const parsePricingQualifier = ($token) => {
 	let $name, $data, $matches, $_, $percentMarker, $region, $amount;
 	[$name, $data] = [null, null];
 	if ($token === 'RQ') {
@@ -164,8 +164,8 @@ let parsePricingQualifier = ($token) => {
 	} else if (php.preg_match(/^B(\d{1,2}[A-Z]{3}\d*)$/, $token, $matches = [])) {
 		[$name, $data] = ['ticketingDate', {raw: $matches[1]}];
 	} else if (php.preg_match(/^TC-([A-Z]{2})$/, $token, $matches = [])) {
-		let raw = $matches[1];
-		let parsed = cabinClassMapping[raw];
+		const raw = $matches[1];
+		const parsed = cabinClassMapping[raw];
 		[$name, $data] = ['cabinClass', {raw, parsed}];
 	}
 	return {
@@ -175,11 +175,11 @@ let parsePricingQualifier = ($token) => {
 	};
 };
 
-let parsePricingQualifiers = ($qualifiers) => {
+const parsePricingQualifiers = ($qualifiers) => {
 	let $parsedQualifiers, $qualifier;
 	$parsedQualifiers = [];
 	for ($qualifier of Object.values($qualifiers ? php.explode('¥', $qualifiers) : [])) {
-		let mod = parsePricingQualifier($qualifier);
+		const mod = parsePricingQualifier($qualifier);
 		$parsedQualifiers.push(mod);
 	}
 	return $parsedQualifiers;

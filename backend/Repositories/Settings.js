@@ -15,7 +15,7 @@ exports.set = ({name, value}) => {
 };
 
 exports.delete = ({name}) => {
-	let sql = 'DELETE FROM admin_settings WHERE name = ?';
+	const sql = 'DELETE FROM admin_settings WHERE name = ?';
 	return Db.with(db => db.query(sql, [name]));
 };
 

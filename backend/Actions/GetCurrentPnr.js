@@ -8,42 +8,42 @@ const TravelportUtils = require('../GdsHelpers/TravelportUtils.js');
 const Rej = require('klesun-node-tools/src/Rej.js');
 
 const inApollo = async (stateful) => {
-	let cmdRows = await stateful.getLog().getLastStateSafeCommands();
-	let cmdToFullOutput = TravelportUtils.collectCmdToFullOutput(cmdRows);
-	for (let [cmd, output] of Object.entries(cmdToFullOutput).reverse()) {
-		let showsFullPnr = cmd === '*R' || cmd === 'IR'
+	const cmdRows = await stateful.getLog().getLastStateSafeCommands();
+	const cmdToFullOutput = TravelportUtils.collectCmdToFullOutput(cmdRows);
+	for (const [cmd, output] of Object.entries(cmdToFullOutput).reverse()) {
+		const showsFullPnr = cmd === '*R' || cmd === 'IR'
 			|| cmd.match(/^\*[A-Z]{6}$/);
 		if (showsFullPnr) {
 			return ApolloPnr.makeFromDump(output);
 		}
 	}
-	let cmdRec = await TravelportUtils.fetchAll('*R', stateful);
+	const cmdRec = await TravelportUtils.fetchAll('*R', stateful);
 	return ApolloPnr.makeFromDump(cmdRec.output);
 };
 
 const inSabre = async (stateful) => {
-	let showsFullPnr = ($cmdRow) => {
+	const showsFullPnr = ($cmdRow) => {
 		return $cmdRow['cmd'] === '*R'
 			|| $cmdRow['cmd'] === 'IR'
 			|| $cmdRow['cmd'].match(/^\*[A-Z]{6}$/);
 	};
-	let lastCmds = await stateful.getLog().getLastStateSafeCommands();
-	let cmdRec = lastCmds.filter(showsFullPnr).slice(-1)[0]
+	const lastCmds = await stateful.getLog().getLastStateSafeCommands();
+	const cmdRec = lastCmds.filter(showsFullPnr).slice(-1)[0]
 		|| await stateful.runCmd('*R');
 	return SabrePnr.makeFromDump(cmdRec.output);
 };
 
 const inGalileo = async (stateful) => {
-	let cmds = await stateful.getLog().getLastStateSafeCommands();
-	let cmdToFullOutput = TravelportUtils.collectCmdToFullOutput(cmds);
-	for (let [cmd, output] of Object.entries(cmdToFullOutput).reverse()) {
-		let showsFullPnr = cmd === '*R' || cmd === 'IR'
+	const cmds = await stateful.getLog().getLastStateSafeCommands();
+	const cmdToFullOutput = TravelportUtils.collectCmdToFullOutput(cmds);
+	for (const [cmd, output] of Object.entries(cmdToFullOutput).reverse()) {
+		const showsFullPnr = cmd === '*R' || cmd === 'IR'
 			|| cmd.match(/^\*[A-Z]{6}$/);
 		if (showsFullPnr) {
 			return GalileoPnr.makeFromDump(output);
 		}
 	}
-	let cmdRec = await TravelportUtils.fetchAll('*R', stateful);
+	const cmdRec = await TravelportUtils.fetchAll('*R', stateful);
 	return GalileoPnr.makeFromDump(cmdRec.output);
 };
 
@@ -61,7 +61,7 @@ const inAmadeus = async (stateful) => {
  * @return {Promise<IPnr>}
  */
 const GetCurrentPnr = async (stateful) => {
-	let gds = stateful.gds;
+	const gds = stateful.gds;
 	if (gds === 'apollo') {
 		return inApollo(stateful);
 	} else if (gds === 'sabre') {

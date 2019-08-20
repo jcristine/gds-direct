@@ -1,9 +1,9 @@
-let MultiLevelMap = require('../Utils/MultiLevelMap.js');
-let Db = require('../Utils/Db.js');
-let TerminalSettings = require('../Transpiled/App/Models/Terminal/TerminalSettings.js');
+const MultiLevelMap = require('../Utils/MultiLevelMap.js');
+const Db = require('../Utils/Db.js');
+const TerminalSettings = require('../Transpiled/App/Models/Terminal/TerminalSettings.js');
 const GdsSessions = require("../Repositories/GdsSessions");
 
-let getCommandBufferRows = (reqBody, emcResult) =>
+const getCommandBufferRows = (reqBody, emcResult) =>
     Db.with(db => db.fetchAll({
         table: 'cmd_rs_log',
         where: [
@@ -17,9 +17,9 @@ let getCommandBufferRows = (reqBody, emcResult) =>
 exports.getView = (reqBody, emcResult) => {
     return getCommandBufferRows(reqBody, emcResult).then(rows =>
         new TerminalSettings(emcResult).getSettings().then(async settings => {
-            let bufferMap = MultiLevelMap();
+            const bufferMap = MultiLevelMap();
             rows = rows.reverse();
-            for (let row of rows) {
+            for (const row of rows) {
                 bufferMap.push(['gds', row.gds, 'terminals', row.terminalNumber, 'buffering'], {
                     area: row.area,
                     language: row.dialect,
@@ -28,9 +28,9 @@ exports.getView = (reqBody, emcResult) => {
                 });
             }
 
-            for (let gds in settings.gds) {
-                let rqPart = {gds: gds, travelRequestId: +reqBody.travelRequestId};
-                let state = await GdsSessions.getByContext(rqPart, emcResult.user)
+            for (const gds in settings.gds) {
+                const rqPart = {gds: gds, travelRequestId: +reqBody.travelRequestId};
+                const state = await GdsSessions.getByContext(rqPart, emcResult.user)
                     .then(GdsSessions.getFullState)
                     .catch(exc => ({}));
 

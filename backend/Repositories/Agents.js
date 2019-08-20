@@ -1,13 +1,13 @@
 
-let Db = require('./../Utils/Db.js');
-let php = require('../Transpiled/phpDeprecated.js');
+const Db = require('./../Utils/Db.js');
+const php = require('../Transpiled/phpDeprecated.js');
 const Emc = require("../LibWrappers/Emc");
-let {getClient, keys} = require('../LibWrappers/Redis.js');
+const {getClient, keys} = require('../LibWrappers/Redis.js');
 
 const TABLE = 'agents';
 
 /** @param {getUsers_rs_el} $row */
-let normalizeRow = ($row) => {
+const normalizeRow = ($row) => {
 	let $sabreLniata, $emails, $companyName, $companyData;
 
 	$sabreLniata = ($row['settings'] || {})['Sabre LNIATA'] || [];
@@ -38,7 +38,7 @@ let normalizeRow = ($row) => {
 };
 
 exports.getFsCallsUsed = async (agentId) => {
-	let rows = await Db.with(db => db.query([
+	const rows = await Db.with(db => db.query([
 		'SELECT COUNT(*) AS cnt,',
 		'       MIN(dt) AS minDt',
 		'FROM counted_fs_usages ',
@@ -52,14 +52,14 @@ exports.getFsCallsUsed = async (agentId) => {
 };
 
 exports.getGdsDirectCallsUsed = async (agentId) => {
-	let cacheKey = keys.AGENT_CMD_COUNTER + ':' + agentId;
-	let client = await getClient();
-	let cached = await client.get(cacheKey).catch(exc => null);
+	const cacheKey = keys.AGENT_CMD_COUNTER + ':' + agentId;
+	const client = await getClient();
+	const cached = await client.get(cacheKey).catch(exc => null);
 	if (cached !== null) {
 		return cached;
 	}
 
-	let sql = [
+	const sql = [
 		'SELECT COUNT(*) as cnt FROM terminal_command_log tcl',
 		'JOIN terminal_sessions ts ON ts.id = tcl.session_id',
 		'WHERE TRUE',
@@ -67,14 +67,14 @@ exports.getGdsDirectCallsUsed = async (agentId) => {
 		'    AND (ts.closed_dt IS NULL OR ts.closed_dt >= ?)',
 		'    AND tcl.dt >= ?',
 	].join('\n');
-	let values = [
+	const values = [
 		agentId,
 		php.date('Y-m-d H:i:s', php.strtotime('-1 day')),
 		php.date('Y-m-d H:i:s', php.strtotime('-1 day')),
 	];
 
-	let rows = await Db.with(db => db.query(sql, values));
-	let cnt = rows[0].cnt;
+	const rows = await Db.with(db => db.query(sql, values));
+	const cnt = rows[0].cnt;
 
 	client.set(cacheKey, cnt, 'EX', 5 * 60);
 
@@ -82,19 +82,19 @@ exports.getGdsDirectCallsUsed = async (agentId) => {
 };
 
 exports.updateFromService = async () => {
-	let emc = await Emc.getClient();
+	const emc = await Emc.getClient();
 	// keeping useCache false will cause "Not ready yet. Project: 178,
 	// Company:" error, so the only choice is to make a low-level request
 	emc.setMethod('getUsers');
 	/** @type {getUsers_rs} */
-	let serviceResult = await emc.call();
+	const serviceResult = await emc.call();
 
-	let rows = Object
+	const rows = Object
 		.values(serviceResult.data.users)
 		.filter(u => u.id) // older versions of EMC may return empty rows
 		.map(normalizeRow);
 
-	let written = await Db.with(db => db.writeRows(TABLE, rows));
+	const written = await Db.with(db => db.writeRows(TABLE, rows));
 	return {
 		message: 'written ' + rows.length + ' rows to db',
 		sqlResult: written,
@@ -103,7 +103,7 @@ exports.updateFromService = async () => {
 
 exports.getById = async (id) => {
 	/** @var row = normalizeRow() */
-	let row = await Db.with(db => db.fetchOne({
+	const row = await Db.with(db => db.fetchOne({
 		table: TABLE,
 		where: [['id', '=', id]],
 	}));
@@ -111,13 +111,13 @@ exports.getById = async (id) => {
 };
 
 exports.getAll = async () => {
-	let rows = await Db.with(db => db.fetchAll({
+	const rows = await Db.with(db => db.fetchAll({
 		table: TABLE,
 		orderBy: 'id ASC',
 	}));
 	return rows.map(r => {
         /** @var typed = normalizeRow() */
-        let typed = r;
+        const typed = r;
 		return typed;
 	});
 };

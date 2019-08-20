@@ -1,5 +1,5 @@
 
-let schedule = require('node-schedule');
+const schedule = require('node-schedule');
 const TicketDesignators = require("../Repositories/TicketDesignators");
 const BookingClasses = require("../Repositories/BookingClasses");
 const Airlines = require("../Repositories/Airlines");
@@ -18,14 +18,14 @@ const Rej = require('klesun-node-tools/src/Rej.js');
  * fetch external data like airports, ticket designators, etc... hourly
  * also will manage cleanup of tables like terminal log
  */
-let UpdateData = async () => {
-	let workerLogId = await FluentLogger.logNewId('updateData');
-	let logit = (msg, data) => FluentLogger.logit(msg, workerLogId, data);
-	let logExc = (msg, exc) => FluentLogger.logExc(msg, workerLogId, exc);
+const UpdateData = async () => {
+	const workerLogId = await FluentLogger.logNewId('updateData');
+	const logit = (msg, data) => FluentLogger.logit(msg, workerLogId, data);
+	const logExc = (msg, exc) => FluentLogger.logExc(msg, workerLogId, exc);
 
 	// putting longest jobs first should make sense as the sooner
 	// some worker takes it, the faster all updates will be done
-	let hourlyJobs = [
+	const hourlyJobs = [
 		TicketDesignators.updateFromService,
 		Agents.updateFromService,
 		BookingClasses.updateFromService,
@@ -36,13 +36,13 @@ let UpdateData = async () => {
 		CmdRsLog.cleanupOutdated,
 	];
 
-	let withLock = async (job, i) => {
-		let lockSeconds = 5 * 60; // 5 minutes - make sure it's lower than cron interval
-		let lockKey = Redis.keys.UPDATE_DATA_LOCK + ':' + i;
-		let lockValue = descrProc();
-		let action = async () => {
+	const withLock = async (job, i) => {
+		const lockSeconds = 5 * 60; // 5 minutes - make sure it's lower than cron interval
+		const lockKey = Redis.keys.UPDATE_DATA_LOCK + ':' + i;
+		const lockValue = descrProc();
+		const action = async () => {
 			logit('Processing job #' + i + ' ' + job.name);
-			let redis = await Redis.getClient();
+			const redis = await Redis.getClient();
 			return Promise.resolve()
 				.then(() => job())
 				.then(result => ({...result, status: 'executed'}))
@@ -52,9 +52,9 @@ let UpdateData = async () => {
 			.catch(coverExc([Rej.Conflict], exc => ({status: 'alreadyHandled', exc: exc})));
 	};
 
-	let runHourlyWorker = async () => {
+	const runHourlyWorker = async () => {
 		for (let i = 0; i < hourlyJobs.length; ++i) {
-			let job = hourlyJobs[i];
+			const job = hourlyJobs[i];
 			await withLock(job, i)
 				.then(result => {
 					if (result.status === 'executed') {
@@ -68,7 +68,7 @@ let UpdateData = async () => {
 	};
 
 	// run every hour at :41 minute
-	let timeMask = '41 * * * *';
+	const timeMask = '41 * * * *';
 	schedule.scheduleJob(timeMask, runHourlyWorker);
 
 	logit('Scheduled ' + hourlyJobs.length + ' to be executed at ' + timeMask);

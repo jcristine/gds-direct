@@ -6,11 +6,11 @@
  * keys are added recursively if not present
  */
 module.exports = () => {
-    let root = {};
-    let get = (keys) => {
+    const root = {};
+    const get = (keys) => {
         let current = root;
         for (let i = 0; i < keys.length; ++i) {
-            let key = keys[i];
+            const key = keys[i];
             if (key in current) {
                 current = current[key];
             } else {
@@ -19,11 +19,11 @@ module.exports = () => {
         }
         return current;
     };
-    let set = (keys, value) => {
+    const set = (keys, value) => {
         let current = root;
         for (let i = 0; i < keys.length; ++i) {
-            let key = keys[i];
-            let isLast = i === keys.length - 1;
+            const key = keys[i];
+            const isLast = i === keys.length - 1;
             if (isLast) {
                 current[key] = value;
             } else if (!(key in current)) {

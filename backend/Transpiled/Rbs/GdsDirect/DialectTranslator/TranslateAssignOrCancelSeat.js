@@ -44,7 +44,7 @@ class TranslateAssignOrCancelSeat {
 		if (!php.empty($seatCodes = $data['seatCodes'] || [])) {
 			$cmd += '/' + php.implode('', $seatCodes);
 		}
-		let locType = ($data['location'] || {})['parsed'];
+		const locType = ($data['location'] || {})['parsed'];
 		if (locType === 'aisle') {
 			$cmd += '/A';
 		} else if (locType === 'bulkhead') {

@@ -13,6 +13,7 @@ import {CHANGE_INPUT_LANGUAGE} from "../actions/settings";
 import {setMessageFromServerHandler} from './../helpers/socketIoWrapper.js';
 import {notify} from './../helpers/debug.es6';
 import {LeadList} from '../components/reusable/LeadList.js';
+import PricePccMixList from '../components/popovers/PricePccMixList.es6';
 
 const BORDER_SIZE = 2;
 
@@ -43,6 +44,14 @@ let toHandleMessageFromServer = (gdsSwitch) => {
 				}
 				reply({leadId: leadId});
 			}
+		} else if (data.messageType === 'displayPriceMixPccRow') {
+			let plugin = gdsSwitch.getActivePlugin();
+			if (!plugin) {
+				reply({error: 'No GDS terminal is currently active'});
+				return;
+			}
+			PricePccMixList.displayPriceMixPccRow(plugin, data);
+			reply({status: 'done'});
 		} else {
 			console.error('could not interpret message triggered by server', data);
 			reply({status: 'unknownMessageType', error: 'I do not confirm your message'});

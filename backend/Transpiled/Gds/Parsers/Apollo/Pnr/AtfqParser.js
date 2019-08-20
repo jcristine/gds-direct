@@ -149,9 +149,9 @@ class AtfqParser {
 		$tokens = !$modsPart ? [] : ('/' + $modsPart).split(/(?<!\/)(?:\/)/);
 		$tokens = $tokens.flatMap(t => {
 			// //@AB:N/ - bug in apollo, but it works, so should be prepared
-			let match = t.match(/^(\/@[A-Z]+)([^A-Z].*)$/);
+			const match = t.match(/^(\/@[A-Z]+)([^A-Z].*)$/);
 			if (match) {
-				let [, cabin, next] = match;
+				const [, cabin, next] = match;
 				return [cabin, next];
 			} else {
 				return [t];
@@ -193,7 +193,7 @@ class AtfqParser {
 			'overrideCarrier': ($token) => php.preg_match(/^OC../, $token) ? php.substr($token, 2) : null,
 			'ticketingAgencyPcc': ($token) => php.preg_match(/^TA[A-Z0-9]{3,4}/, $token) ? php.substr($token, 2) : null,
 			'ticketingDate': ($token) => {
-				let match = $token.match(/^:(\d{1,2}[A-Z]{3}\d{0,4})/);
+				const match = $token.match(/^:(\d{1,2}[A-Z]{3}\d{0,4})/);
 				if (match) {
 					return {raw: match[1]};
 				} else {

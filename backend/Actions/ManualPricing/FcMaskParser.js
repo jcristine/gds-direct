@@ -3,7 +3,7 @@ const AbstractMaskParser = require("../../Transpiled/Gds/Parsers/Apollo/Abstract
 const Rej = require('klesun-node-tools/src/Rej.js');
 const FcScreenParser = require("../../Transpiled/Gds/Parsers/Apollo/ManualPricing/FcScreenParser");
 
-let POSITIONS = AbstractMaskParser.getPositionsBy('_', [
+const POSITIONS = AbstractMaskParser.getPositionsBy('_', [
 	"$FC/ATB FARE CONSTRUCTION                                      ",
 	" FP NO FOP FC;______________________________________            ",
 	";___________________________________________________            ",
@@ -14,7 +14,7 @@ let POSITIONS = AbstractMaskParser.getPositionsBy('_', [
 	";10DEC JFK PR MNL 100.00 $100.00                                ",
 ].join(''));
 
-let FIELDS = [
+const FIELDS = [
 	'fcLine1',
 	'fcLine2',
 	'fcLine3',
@@ -25,12 +25,12 @@ let FIELDS = [
 exports.POSITIONS = POSITIONS;
 exports.FIELDS = FIELDS;
 exports.parse = async (mask) => {
-	let fields = await AbstractMaskParser.getPositionValues({
+	const fields = await AbstractMaskParser.getPositionValues({
 		mask: mask,
 		positions: POSITIONS,
 		fields: FIELDS,
 	});
-	let parsed = FcScreenParser.parse(mask);
+	const parsed = FcScreenParser.parse(mask);
 	if (parsed.error) {
 		return Rej.UnprocessableEntity('Invalid $FC screen - ' + parsed.error + ' - ' + mask);
 	}

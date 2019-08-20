@@ -25,7 +25,7 @@ class GalileoPricingAdapter {
 	}
 
 	static getFirst($predicate, $iterable, $fallback) {
-		for (let $element of Object.values($iterable)) {
+		for (const $element of Object.values($iterable)) {
 			if ($predicate($element)) {
 				return $element;
 			}

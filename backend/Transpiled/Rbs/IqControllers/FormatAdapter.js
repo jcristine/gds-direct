@@ -6,7 +6,7 @@ const SsrBlockParser = require('../../Gds/Parsers/Apollo/Pnr/SsrBlockParser.js')
 const ImportPnrCommonFormatAdapter = require('../../Rbs/Process/Common/ImportPnr/ImportPnrCommonFormatAdapter.js');
 const ItineraryParser = require('../../Gds/Parsers/Sabre/Pnr/ItineraryParser.js');
 
-let php = require('../../phpDeprecated.js');
+const php = require('../../phpDeprecated.js');
 
 /**
  * converts data from our internal structure
@@ -43,7 +43,7 @@ class FormatAdapter
 		$baseDate = $baseDate
 			? php.date('Y-m-d', php.strtotime('-2 day', php.strtotime($baseDate)))
 			: null;
-		let pnrInfo = $parse['parsedData']['pnrInfo'];
+		const pnrInfo = $parse['parsedData']['pnrInfo'];
 		$common = {
 			'passengers': ($parse['parsedData']['passengers']['parsedData'] || {})['passengerList'] || [],
 			'itinerary': this.adaptSabreItineraryParseForClient($parse['parsedData']['itinerary'] || [], $baseDate),

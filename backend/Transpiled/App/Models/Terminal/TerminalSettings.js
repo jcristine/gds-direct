@@ -5,9 +5,9 @@ const RedisData = require("../../../../LibWrappers/RedisData.js");
 const AreaSettings = require("../../../../Repositories/AreaSettings");
 const GdsSessions = require("../../../../Repositories/GdsSessions");
 
-let TABLE = 'terminalSettings';
+const TABLE = 'terminalSettings';
 
-let self = {
+const self = {
 	TABLE: TABLE,
 	CACHE_KEY_SETTINGS: 'cmsTerminalAgentSettings_',
 	CACHE_KEY_CURRENT_GDS_ID: 'cmsTerminalAgentCurrentGdsId_',
@@ -43,7 +43,7 @@ class TerminalSettings {
 	}
 
 	getCurrentGds() {
-		let fallback = this.getDefault('currentGds');
+		const fallback = this.getDefault('currentGds');
 		return this.currentGdsStore.get()
 			.then(gds => gds || fallback);
 	}
@@ -85,7 +85,7 @@ class TerminalSettings {
 			'areaSettings': areaRows
 				.filter(areaRow => areaRow.gds === $row['gds'])
 				.map(areaRow => {
-					let defaultPcc = areaRow.defaultPcc ||
+					const defaultPcc = areaRow.defaultPcc ||
 						this.constructor.getForcedStartPcc(areaRow.gds, areaRow.area) ||
 						GdsSessions.makeDefaultAreaState(areaRow.gds).pcc;
 					return {...areaRow, defaultPcc};
@@ -100,15 +100,15 @@ class TerminalSettings {
 	 * @param int $agentId
 	 */
 	async getSettings() {
-		let $agentId = this.agentId;
-		let agentCustomSettings = await AgentCustomSettings
+		const $agentId = this.agentId;
+		const agentCustomSettings = await AgentCustomSettings
 			.getMapping($agentId).catch(exc => ({}));
-		let $settings = {
+		const $settings = {
 			agentCustomSettings: agentCustomSettings,
 			common: {currentGds: await this.getCurrentGds()},
 			gds: {},
 		};
-		for (let $gds of ['apollo', 'sabre', 'galileo', 'amadeus']) {
+		for (const $gds of ['apollo', 'sabre', 'galileo', 'amadeus']) {
 			$settings['gds'][$gds] = this.getDefault();
 		}
 		return Db.with(
@@ -117,7 +117,7 @@ class TerminalSettings {
 				where: [['agentId', '=', $agentId]],
 			}).then($result => AreaSettings.getByAgent($agentId, db)
 				.then(areaRows => {
-					for (let $row of $result) {
+					for (const $row of $result) {
 						if (isset($settings['gds'][$row['gds']])) {
 							$settings['gds'][$row['gds']] = this._transformRowFromDb($row, areaRows);
 						}
@@ -135,7 +135,7 @@ class TerminalSettings {
 	 * @throws \Psr\SimpleCache\InvalidArgumentException
 	 */
 	addGds($gds) {
-		let agentId = this.agentId;
+		const agentId = this.agentId;
 		// just to be safe, it's how it worked in CMS
 		this.currentGdsStore.get().then(current =>
 			this.currentGdsStore.set(current || $gds));
@@ -175,8 +175,8 @@ class TerminalSettings {
 	 * @param array $data
 	 */
 	setSettings($gds, $data) {
-		let agentId = this.agentId;
-		let filtered = array_intersect_key($data, array_flip(self.$fields));
+		const agentId = this.agentId;
+		const filtered = array_intersect_key($data, array_flip(self.$fields));
 		return empty(filtered)
 			? Promise.reject('Empty/unknown setting values - ' + Object.keys($data).join(', '))
 			: Db.with(db => db.writeRows(TABLE, [Object.assign({}, filtered, {

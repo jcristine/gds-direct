@@ -9,32 +9,32 @@ const makeRow = require("../Repositories/CmdLogs").makeRow;
 const hrtimeToDecimal = require("klesun-node-tools/src/Utils/Misc.js").hrtimeToDecimal;
 const {ignoreExc} = require('../Utils/TmpLib.js');
 
-let CmdLog = ({
+const CmdLog = ({
 	session, whenCmdRqId, fullState,
 	CmdLogs = require("../Repositories/CmdLogs"),
 	GdsSessions = require("../Repositories/GdsSessions"),
 	Db = require('../Utils/Db.js'),
 }) => {
 	whenCmdRqId = whenCmdRqId || Promise.resolve(null);
-	let gds = session.context.gds;
-	let getSessionData = () => ({...fullState.areas[fullState.area] || {}, gds: gds});
-	let selectRowsFromDb = (params) => {
+	const gds = session.context.gds;
+	const getSessionData = () => ({...fullState.areas[fullState.area] || {}, gds: gds});
+	const selectRowsFromDb = (params) => {
 		params.where = params.where || [];
 		params.where.push(['session_id', '=', session.id]);
 		return CmdLogs.getBy(params);
 	};
-	let calledPromises = [];
+	const calledPromises = [];
 
-	let logCommand = (cmd, running) => {
-		let hrtimeStart = process.hrtime();
+	const logCommand = (cmd, running) => {
+		const hrtimeStart = process.hrtime();
 		return running.then(gdsResult => {
-			let prevState = fullState.areas[fullState.area];
+			const prevState = fullState.areas[fullState.area];
 
 			fullState = SessionStateProcessor
 				.updateFullState(cmd, gdsResult.output, gds, fullState);
 			GdsSessions.updateFullState(session, fullState);
 
-			let state = fullState.areas[fullState.area];
+			const state = fullState.areas[fullState.area];
 			if (state.recordLocator && state.recordLocator !== prevState.recordLocator) {
 				Db.with(db => db.writeRows('mentioned_pnrs', [{
 					recordLocator: state.recordLocator,
@@ -42,9 +42,9 @@ let CmdLog = ({
 					gds: gds,
 				}]));
 			}
-			let type = state.cmdType;
-			let hrtimeDiff = process.hrtime(hrtimeStart);
-			let cmdRec = {
+			const type = state.cmdType;
+			const hrtimeDiff = process.hrtime(hrtimeStart);
+			const cmdRec = {
 				cmd: cmd,
 				output: gdsResult.output,
 				duration: hrtimeToDecimal(hrtimeDiff),
@@ -53,8 +53,8 @@ let CmdLog = ({
 				state: state,
 			};
 
-			let storing = whenCmdRqId.then(cmdRqId => {
-				let row = makeRow(cmdRec, session, cmdRqId, prevState);
+			const storing = whenCmdRqId.then(cmdRqId => {
+				const row = makeRow(cmdRec, session, cmdRqId, prevState);
 				return CmdLogs.storeNew(row);
 			});
 			calledPromises.push(storing);
@@ -63,17 +63,17 @@ let CmdLog = ({
 		});
 	};
 
-	let selectLastCmdOf = async (params) => {
+	const selectLastCmdOf = async (params) => {
 		params.orderBy = [['id', 'DESC']];
 		params.limit = 1;
-		let called = await Promise.all(calledPromises);
-		let row = selectFromArray(params, called)[0];
+		const called = await Promise.all(calledPromises);
+		const row = selectFromArray(params, called)[0];
 		if (row) {
 			// found in commands called in this process
 			return row;
 		} else {
 			// need to look in DB
-			let fromDb = await selectRowsFromDb(params);
+			const fromDb = await selectRowsFromDb(params);
 			if (fromDb.length > 0) {
 				return fromDb[0];
 			} else {
@@ -82,29 +82,29 @@ let CmdLog = ({
 		}
 	};
 
-	let getCommandsAfter = async (id, params) => {
+	const getCommandsAfter = async (id, params) => {
 		params.where = params.where || [];
 		if (id) {
 			params.where.push(['id', '>', id]);
 		}
 		params.orderBy = [['id', 'ASC']];
-		let called = await Promise.all(calledPromises);
-		let earliestCalledId = called.length > 0 ? called[0].id : 0;
-		let filtered = selectFromArray(params, called);
+		const called = await Promise.all(calledPromises);
+		const earliestCalledId = called.length > 0 ? called[0].id : 0;
+		const filtered = selectFromArray(params, called);
 		if (id && earliestCalledId && earliestCalledId <= id) {
 			return filtered;
 		} else {
-			let fromDb = await selectRowsFromDb(params);
-			let joined = fromDb
+			const fromDb = await selectRowsFromDb(params);
+			const joined = fromDb
 				.filter(row => !earliestCalledId || row.id < earliestCalledId)
 				.concat(filtered);
 			return joined;
 		}
 	};
 
-	let getCommandsStartingFrom = async (startCmdRec, params = {}) => {
-		let startId = !startCmdRec ? 0 : startCmdRec.id;
-		let matched = await getCommandsAfter(startId, params);
+	const getCommandsStartingFrom = async (startCmdRec, params = {}) => {
+		const startId = !startCmdRec ? 0 : startCmdRec.id;
+		const matched = await getCommandsAfter(startId, params);
 		if (startCmdRec) {
 			matched.unshift(startCmdRec);
 		}
@@ -112,29 +112,29 @@ let CmdLog = ({
 	};
 
 	/** @param {makeSelectQuery_rq} params */
-	let getLikeSql = async (params) => {
+	const getLikeSql = async (params) => {
 		params.orderBy = [['id', 'DESC']];
-		let called = await Promise.all(calledPromises);
-		let earliestCalledId = called.map(row => row.id).slice(-1)[0];
-		let filtered = selectFromArray(params, called);
+		const called = await Promise.all(calledPromises);
+		const earliestCalledId = called.map(row => row.id).slice(-1)[0];
+		const filtered = selectFromArray(params, called);
 		if (params.limit && filtered.length == params.limit) {
 			return filtered;
 		} else {
-			let fromDb = await selectRowsFromDb(params);
-			let fromDbExclusively = fromDb
+			const fromDb = await selectRowsFromDb(params);
+			const fromDbExclusively = fromDb
 				.filter(row => !earliestCalledId || row.id < earliestCalledId)
 				.concat(filtered);
-			let joined = filtered.concat(fromDbExclusively);
+			const joined = filtered.concat(fromDbExclusively);
 			return joined;
 		}
 	};
 
-	let getAllCommands = async () => {
-		let fromDb = await CmdLogs.getAll(session.id)
+	const getAllCommands = async () => {
+		const fromDb = await CmdLogs.getAll(session.id)
 			.then(desc => [...desc].reverse());
-		let called = await Promise.all(calledPromises);
-		let startId = called.length > 0 ? called[0].id : null;
-		let joined = fromDb
+		const called = await Promise.all(calledPromises);
+		const startId = called.length > 0 ? called[0].id : null;
+		const joined = fromDb
 			.filter(row => !startId || row.id < startId)
 			.concat(called);
 		return joined;
@@ -150,12 +150,12 @@ let CmdLog = ({
 		},
 		/** for custom state manipulations, like XML function calls */
 		updateAreaState: ({type, state}) => {
-			let prevState = fullState.areas[fullState.area];
-			let cmdRec = {
+			const prevState = fullState.areas[fullState.area];
+			const cmdRec = {
 				type, cmd: '', output: '', duration: '0.000000000',
 			};
 			whenCmdRqId.then(cmdRqId => {
-				let row = makeRow(cmdRec, session, cmdRqId, prevState);
+				const row = makeRow(cmdRec, session, cmdRqId, prevState);
 				return CmdLogs.storeNew(row);
 			});
 			fullState.areas[fullState.area] = {...fullState.areas[fullState.area], ...state};
@@ -166,7 +166,7 @@ let CmdLog = ({
 			if (!getSessionData().hasPnr) {
 				return [];
 			}
-			let pnrStarter = await selectLastCmdOf({
+			const pnrStarter = await selectLastCmdOf({
 				where: [['area', '=', fullState.area]],
 				whereOr: [
 					[['has_pnr', '=', false]],
@@ -180,7 +180,7 @@ let CmdLog = ({
 		},
 		/** get all commands starting from last not in the provided type list including it */
 		getLastCommandsOfTypes: async (types) => {
-			let stateStarter = await selectLastCmdOf({
+			const stateStarter = await selectLastCmdOf({
 				where: [
 					['area', '=', fullState.area],
 					['type', 'NOT IN', types],
@@ -188,16 +188,16 @@ let CmdLog = ({
 				],
 			}).catch(ignoreExc(null, [Rej.NoContent]));
 
-			let matched = await getCommandsStartingFrom(stateStarter, {
+			const matched = await getCommandsStartingFrom(stateStarter, {
 				where: [['area', '=', fullState.area]],
 			});
 			let startPos = 0;
 			for (let i = 0; i < matched.length; ++i) {
 				// additional filtering with command parsing is needed for
 				// MR commands as we don't store their actual type in DB
-				let cmdRec = matched[i];
+				const cmdRec = matched[i];
 				if (cmdRec.is_mr) {
-					let type = CommonDataHelper.parseCmdByGds(gds, cmdRec.cmd).type;
+					const type = CommonDataHelper.parseCmdByGds(gds, cmdRec.cmd).type;
 					if (!types.includes(type)) {
 						startPos = i;
 					}
@@ -210,7 +210,7 @@ let CmdLog = ({
 		 * command when it is the last entered command (it displays PNR if any)
 		 */
 		getScrolledCmdMrs: async () => {
-			let mrStarter = await selectLastCmdOf({
+			const mrStarter = await selectLastCmdOf({
 				where: [['is_mr', '=', false]],
 			}).catch(ignoreExc(null, [Rej.NoContent]));
 
@@ -223,7 +223,7 @@ let CmdLog = ({
 		 * will be returned:              >01y2; >*I; >*SVC;
 		 */
 		getLastStateSafeCommands: async () => {
-			let stateStarter = await selectLastCmdOf({
+			const stateStarter = await selectLastCmdOf({
 				where: [
 					['area', '=', fullState.area],
 					['type', 'NOT IN', SessionStateHelper.$nonAffectingTypes],

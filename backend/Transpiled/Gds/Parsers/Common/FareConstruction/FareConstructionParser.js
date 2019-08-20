@@ -248,7 +248,7 @@ class FareConstructionParser {
 		$split = new FareConstructionTokenizer();
 		for ($lexed of $split.tryTokenCombinations($dump)) {
 			$tokens = $lexed['lexemes'];
-			let filtered = php.array_values(Fp.filter($isNotWhitespace, $lexed['lexemes']));
+			const filtered = php.array_values(Fp.filter($isNotWhitespace, $lexed['lexemes']));
 			$textLeft = $lexed['text'];
 			$maybeParsed = this.collectStructure(filtered);
 			if ($maybeParsed && php.strlen($textLeft) < php.strlen($result['textLeft'])) {

@@ -46,16 +46,16 @@ let onNextInstanceStartup = [];
 const shutdownGracefully = async ({
 	httpServer, socketIoInst, reason, message,
 }) => {
-	let msg = 'Instance #' + descrProc() + ' is gracefully shutting down';
-	let writingToDiag = Diag.log(msg, {reason, message}).catch(exc => null);
+	const msg = 'Instance #' + descrProc() + ' is gracefully shutting down';
+	const writingToDiag = Diag.log(msg, {reason, message}).catch(exc => null);
 
-	let closingHttp = new Promise((resolve) =>
+	const closingHttp = new Promise((resolve) =>
 		httpServer.close((err) => {
 			//console.debug('closed all HTTP connections', err || '(no errors)');
 			resolve();
 		}));
 
-	let closingSocketIo = new Promise((resolve) =>
+	const closingSocketIo = new Promise((resolve) =>
 		socketIoInst.close((err) => {
 			//console.debug('closed all socket.io connections', err || '(no errors)');
 			resolve();
@@ -77,30 +77,30 @@ let shuttingDown = null;
 const enqueueShutdown = async ({
 	httpServer, socketIoInst, reason, message = null,
 }) => {
-	let params = {process: descrProc(), reason, message, shuttingDown};
+	const params = {process: descrProc(), reason, message, shuttingDown};
 	if (shuttingDown) {
-		let msg = 'Tried to shut down instance that is already shutting down...';
+		const msg = 'Tried to shut down instance that is already shutting down...';
 		return Rej.Conflict(msg, params);
 	}
 	shuttingDown = params;
-	let startMs = Date.now();
-	let redis = await Redis.getClient();
-	let lockKey = Redis.keys.RESTART_INSTANCE_LOCK;
-	let lockValue = descrProc();
+	const startMs = Date.now();
+	const redis = await Redis.getClient();
+	const lockKey = Redis.keys.RESTART_INSTANCE_LOCK;
+	const lockValue = descrProc();
 	// usually 16 seconds is enough ATM
-	let lockSeconds = 30;
+	const lockSeconds = 30;
 	// not supposed to change in near future
-	let totalInstances = 4;
+	const totalInstances = 4;
 	for (let i = 0; i < totalInstances; ++i) {
 		// making sure just one instance restarts at a time so that
 		// others still could handle requests - 0 downtime 4 life
-		let didAcquire = await redis.set(lockKey, lockValue, 'NX', 'EX', lockSeconds).catch(exc => {});
+		const didAcquire = await redis.set(lockKey, lockValue, 'NX', 'EX', lockSeconds).catch(exc => {});
 		if (didAcquire) {
-			let waitMs = Date.now() - startMs;
+			const waitMs = Date.now() - startMs;
 			reason += ':queue:' + i + ':wait-ms:' + waitMs;
 			await shutdownGracefully({httpServer, socketIoInst, reason, message}).catch(exc => {});
 		} else {
-			let whenOtherRestarted = new Promise(resolve => {
+			const whenOtherRestarted = new Promise(resolve => {
 				return onNextInstanceStartup.push(resolve);
 			});
 			await timeout(lockSeconds + 1, whenOtherRestarted).catch(() => {});
@@ -112,7 +112,7 @@ const enqueueShutdown = async ({
 
 /** restart all instances, normally after a production rsync */
 const restartAll = async ({reason, message = null}) => {
-	let redis = await Redis.getClient();
+	const redis = await Redis.getClient();
 	return redis.publish(Redis.events.RESTART_SERVER, JSON.stringify({
 		reason: reason,
 		message: message,
@@ -126,12 +126,12 @@ exports.fetchTagFromFs = fetchTagFromFs;
 exports.restartAll = restartAll;
 exports.restartAllIfNeeded = async (rqBody) => {
 	// not so important as long as we check whether tag in fs changed
-	let password = rqBody.password;
+	const password = rqBody.password;
 	if (password !== '28145f8f7e54a60d2c3905edcce2dabb') {
 		return Rej.Forbidden('GRECT Access Denied');
 	}
-	let startupTag = await whenStartupTag.catch(exc => null);
-	let currentTag = await fetchTagFromFs().catch(exc => null);
+	const startupTag = await whenStartupTag.catch(exc => null);
+	const currentTag = await fetchTagFromFs().catch(exc => null);
 
 	if (!currentTag) {
 		return Rej.NotImplemented('CURRENT_PRODUCTION_TAG is absent in FS, please supply it before requesting server restart');
@@ -155,10 +155,10 @@ exports.restartAllIfNeeded = async (rqBody) => {
 exports.initListeners = async ({
 	expressInst, socketIoInst,
 }) => {
-	let envConfig = getEnvConfig();
-	let redis = await Redis.getClient();
+	const envConfig = getEnvConfig();
+	const redis = await Redis.getClient();
 
-	let httpServer = expressInst.listen(+envConfig.HTTP_PORT, envConfig.HOST, () => {
+	const httpServer = expressInst.listen(+envConfig.HTTP_PORT, envConfig.HOST, () => {
 		if (envConfig.NODE_ENV !== 'production') {
 			console.log('listening on *:' + envConfig.HTTP_PORT + ' - for standard http request handling');
 		}
@@ -172,14 +172,14 @@ exports.initListeners = async ({
 	}
 
 	Redis.getSubscriber().then(async sub => {
-		let subscribes = {
+		const subscribes = {
 			[Redis.events.RESTART_SERVER]: (msgData) => {
-				let reason = msgData.reason + ':redis_restart_event';
-				let message = msgData.message;
+				const reason = msgData.reason + ':redis_restart_event';
+				const message = msgData.message;
 				enqueueShutdown({httpServer, socketIoInst, reason, message});
 			},
 			[Redis.events.CLUSTER_INSTANCE_INITIALIZED]: async (msgData) => {
-				let redis = await Redis.getClient();
+				const redis = await Redis.getClient();
 				redis.del(Redis.keys.RESTART_INSTANCE_LOCK);
 				onNextInstanceStartup.forEach(h => h(msgData));
 				onNextInstanceStartup = [];
@@ -187,7 +187,7 @@ exports.initListeners = async ({
 		};
 		await sub.subscribe(...Object.keys(subscribes));
 		sub.on('message', async (channel, message) => {
-			let handler = subscribes[channel];
+			const handler = subscribes[channel];
 			if (handler) {
 				handler(JSON.parse(message));
 			}
@@ -197,30 +197,30 @@ exports.initListeners = async ({
 		process.exit(1);
 	});
 
-	let checkFsTag = async path => {
+	const checkFsTag = async path => {
 		// if this file was changed, that means
 		// production took place and rsync is done by now
-		let oldTag = await whenStartupTag;
-		let newTag = await fetchTagFromFs();
+		const oldTag = await whenStartupTag;
+		const newTag = await fetchTagFromFs();
 		if (newTag !== oldTag) {
-			let reason = 'tag_fs_change:' + oldTag + '->' + newTag;
+			const reason = 'tag_fs_change:' + oldTag + '->' + newTag;
 			enqueueShutdown({httpServer, socketIoInst, reason});
 		}
 	};
 	chokidar.watch(CURRENT_PRODUCTION_TAG_PATH).on('change', checkFsTag);
 
-	let signalShutdown = (signal) => {
-		let reason = 'os_signal_received:' + signal;
+	const signalShutdown = (signal) => {
+		const reason = 'os_signal_received:' + signal;
 		enqueueShutdown({httpServer, socketIoInst, reason});
 	};
 	process.on('SIGINT', signalShutdown);
 	process.on('SIGTERM', signalShutdown);
 	process.on('SIGHUP', signalShutdown);
 
-	let nginxInitMs = 15 * 1000;
+	const nginxInitMs = 15 * 1000;
 	setTimeout(async httpTag => {
-		let channel = Redis.events.CLUSTER_INSTANCE_INITIALIZED;
-		let msgData = {instance: descrProc(), httpTag};
+		const channel = Redis.events.CLUSTER_INSTANCE_INITIALIZED;
+		const msgData = {instance: descrProc(), httpTag};
 		redis.publish(channel, JSON.stringify(msgData));
 	}, nginxInitMs);
 };

@@ -11,6 +11,7 @@ class RunCmdRqXmlTest extends require('../../../../Lib/TestCase.js') {
 		const list = [];
 
 		list.push({
+			startDt: '2019-08-19 00:00:00',
 			'title': 'itinerary dump pasted as command example - should rebuild it',
 			'input': {
 				'cmdRq': [
@@ -199,6 +200,7 @@ class RunCmdRqXmlTest extends require('../../../../Lib/TestCase.js') {
 	 * @dataProvider provideTestCases
 	 */
 	async testCase(testCase) {
+		testCase.startDt = testCase.startDt || '2019-08-19 00:00:00';
 		let commandsLeft = (testCase.sessionInfo || {}).performedCommands || [];
 		testCase.fullState = testCase.fullState || {
 			gds: 'galileo', area: 'A', areas: {

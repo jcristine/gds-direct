@@ -14,7 +14,7 @@ class FqnParser
 		$quoteNumberLine = php.array_shift($lines);
 		if (php.preg_match(/^\s+QUOTE\s+(\d)\s*$/, $quoteNumberLine, $matches = [])) {
 			[$_, $quoteNumber] = $matches;
-			let headersLine = php.array_shift($lines);
+			const headersLine = php.array_shift($lines);
 			$pattern =
                 '\/^\\s+(?<componentNumber>\\d{1,2})'+
                 '\\s+(?<departureAirport>[A-Z]{3})'+

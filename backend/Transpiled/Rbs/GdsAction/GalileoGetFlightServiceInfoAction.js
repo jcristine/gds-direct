@@ -24,7 +24,7 @@ class GalileoGetFlightServiceInfoAction extends AbstractGdsAction {
 
 	/** get full output of a state-safe command like *SVC or TT */
 	async runOrReuse($cmd) {
-		let $output = (this.$cmdCmdToFullDump || {})[$cmd]
+		const $output = (this.$cmdCmdToFullDump || {})[$cmd]
 			|| (this.$cmdCmdToFullDump[$cmd] = (await fetchAll($cmd, this)).output);
 		this.$allCommands.push({'cmd': $cmd, 'output': $output});
 		return $output;
@@ -70,8 +70,8 @@ class GalileoGetFlightServiceInfoAction extends AbstractGdsAction {
 			}
 			$startDate = $ttParsed['departureDate']['parsed'];
 			for ([$i, $ttLeg] of Object.entries($ttParsed['legs'])) {
-				let dprtDayStartTime = php.strtotime('+' + $ttLeg['departureDayOffset'] + ' days', php.strtotime($startDate));
-				let dstnDayStartTime = php.strtotime('+' + $ttLeg['destinationDayOffset'] + ' days', php.strtotime($startDate));
+				const dprtDayStartTime = php.strtotime('+' + $ttLeg['departureDayOffset'] + ' days', php.strtotime($startDate));
+				const dstnDayStartTime = php.strtotime('+' + $ttLeg['destinationDayOffset'] + ' days', php.strtotime($startDate));
 				$svcSeg['legs'][$i]['departureDt'] = {
 					'full': php.date('Y-m-d', dprtDayStartTime) +
 						' ' + $ttLeg['departureTime']['parsed'] + ':00',

@@ -1,30 +1,30 @@
 
-let crypto = require('crypto');
-let util = require('util');
-let {wrapExc} = require("../Utils/TmpLib.js");
-let {parseXml, escapeXml} = require('../GdsHelpers/CommonUtils.js');
-let Rej = require("klesun-node-tools/src/Rej.js");
+const crypto = require('crypto');
+const util = require('util');
+const {wrapExc} = require("../Utils/TmpLib.js");
+const {parseXml, escapeXml} = require('../GdsHelpers/CommonUtils.js');
+const Rej = require("klesun-node-tools/src/Rej.js");
 const LoginTimeOut = require("klesun-node-tools/src/Rej").LoginTimeOut;
 const AmadeusFareRules = require('./Transformers/AmadeusFareRules');
 
-let chr = (charCode) => String.fromCharCode(charCode);
+const chr = (charCode) => String.fromCharCode(charCode);
 
-let sha1 = (str) => {
-	let shasum = crypto.createHash('sha1');
+const sha1 = (str) => {
+	const shasum = crypto.createHash('sha1');
 	shasum.update(str);
 	return shasum;
 };
 
-let makePasswordHash = (nonce, timestamp, password) => {
-	let passwordSha1 = sha1(password).digest();
-	let resultSrc = Buffer.concat([Buffer.from(nonce + timestamp), passwordSha1]);
+const makePasswordHash = (nonce, timestamp, password) => {
+	const passwordSha1 = sha1(password).digest();
+	const resultSrc = Buffer.concat([Buffer.from(nonce + timestamp), passwordSha1]);
 	return sha1(resultSrc).digest('base64');
 };
 
 const makeSoapEnvForActionWithLogin = ({
 	profileData, payloadXml, action, passwordRec, status = null,
 }) => {
-	let sessionEl = !status ? `` : `\n<awsse:Session xmlns:awsse="http://xml.amadeus.com/2010/06/Session_v3" TransactionStatusCode="${status}"/>`;
+	const sessionEl = !status ? `` : `\n<awsse:Session xmlns:awsse="http://xml.amadeus.com/2010/06/Session_v3" TransactionStatusCode="${status}"/>`;
 
 	return `<?xml version="1.0" encoding="UTF-8"?>
 		<SOAP-ENV:Envelope
@@ -53,7 +53,7 @@ const makeSoapEnvForActionWithLogin = ({
 };
 
 /** @param gdsData = parseCmdRs().gdsData */
-let makeContinueSoapEnvXml = ({gdsData, payloadXml, status, action, profileData, messageId}) => [
+const makeContinueSoapEnvXml = ({gdsData, payloadXml, status, action, profileData, messageId}) => [
 	'<?xml version="1.0" encoding="UTF-8"?>',
 	'<SOAP-ENV:Envelope ',
 	'    xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/" ',
@@ -72,7 +72,7 @@ let makeContinueSoapEnvXml = ({gdsData, payloadXml, status, action, profileData,
 	'</SOAP-ENV:Envelope>',
 ].join('\n');
 
-let makeCmdPayloadXml = (cmd) =>[
+const makeCmdPayloadXml = (cmd) =>[
 	'    <ns1:Command_Cryptic xmlns:ns1="http://xml.amadeus.com/HSFREQ_07_3_1A">',
 	'      <ns1:messageAction>',
 	'        <ns1:messageFunctionDetails>',
@@ -86,7 +86,7 @@ let makeCmdPayloadXml = (cmd) =>[
 ].join('\n');
 
 /** @throws TypeError */
-let parseCmdRs = (dom, profileName) => ({
+const parseCmdRs = (dom, profileName) => ({
 	gdsData: {
 		sessionId: dom.querySelector('awsse\\:SessionId').textContent,
 		seqNumber: dom.querySelector('awsse\\:SequenceNumber').textContent,
@@ -97,29 +97,29 @@ let parseCmdRs = (dom, profileName) => ({
 	output: dom.querySelector('Command_CrypticReply > longTextString > textStringDetails').textContent.replace(/\r/g, '\n'),
 });
 
-let AmadeusClient = ({
+const AmadeusClient = ({
 	PersistentHttpRq = require('klesun-node-tools/src/Utils/PersistentHttpRq.js'),
 	GdsProfiles = require("../Repositories/GdsProfiles"),
 	randomBytes = (size) => crypto.randomBytes(size),
 	now = () => Date.now(),
 } = {}) => {
-	let {getAmadeus} = GdsProfiles;
+	const {getAmadeus} = GdsProfiles;
 
-	let uuidv4 = () => {
-		let $data = randomBytes(16);
+	const uuidv4 = () => {
+		const $data = randomBytes(16);
 
 		$data[6] = chr($data[6] & 0x0f | 0x40); // set version to 0100
 		$data[8] = chr($data[8] & 0x3f | 0x80); // set bits 6-7 to 10
 
 		return util.format('%s%s-%s-%s-%s-%s%s%s', ...$data.toString('hex').match(/.{1,4}/g));
 	};
-	let makeMessageId = uuidv4;
+	const makeMessageId = uuidv4;
 
-	let makePasswordRec = (profileData) => {
-		let nonceBytes = randomBytes(16);
-		let nonce = nonceBytes.toString('base64');
-		let timestamp = new Date(now()).toISOString(); // '2019-02-21T19:37:28.361Z'
-		let passwordDigest = makePasswordHash(nonce, timestamp, profileData.password); // 'LjWB9HZPLHIuWPa9FyzIl8n1NzU=';
+	const makePasswordRec = (profileData) => {
+		const nonceBytes = randomBytes(16);
+		const nonce = nonceBytes.toString('base64');
+		const timestamp = new Date(now()).toISOString(); // '2019-02-21T19:37:28.361Z'
+		const passwordDigest = makePasswordHash(nonce, timestamp, profileData.password); // 'LjWB9HZPLHIuWPa9FyzIl8n1NzU=';
 		return {
 			timestamp: timestamp,
 			nonceB64: Buffer.from(nonce).toString('base64'),
@@ -128,14 +128,14 @@ let AmadeusClient = ({
 		};
 	};
 
-	let startSession = async (params) => {
-		let profileName = params.profileName;
+	const startSession = async (params) => {
+		const profileName = params.profileName;
 		let profileData = await getAmadeus(profileName);
-		let pcc = params.pcc || profileData.default_pcc;
+		const pcc = params.pcc || profileData.default_pcc;
 		profileData = {...profileData, pcc};
 
-		let payloadXml = makeCmdPayloadXml('MD0');
-		let soapEnvXml = makeSoapEnvForActionWithLogin({
+		const payloadXml = makeCmdPayloadXml('MD0');
+		const soapEnvXml = makeSoapEnvForActionWithLogin({
 			profileData, payloadXml,
 			passwordRec: makePasswordRec(profileData),
 			action: 'HSFREQ_07_3_1A',
@@ -153,7 +153,7 @@ let AmadeusClient = ({
 			},
 			body: soapEnvXml,
 		}).then(rs => rs.body).then(rsXml => {
-			let dom = parseXml(rsXml);
+			const dom = parseXml(rsXml);
 			return wrapExc(() => parseCmdRs(dom, profileName)).catch(exc => {
 				exc.httpStatusCode = Rej.BadGateway.httpStatusCode;
 				exc.message = 'Invalid Amadeus cmd response - ' + exc.message;
@@ -163,12 +163,12 @@ let AmadeusClient = ({
 	};
 
 	/** @param gdsData = parseCmdRs().gdsData */
-	let runCmd = async (rqBody, gdsData) => {
-		let cmd = rqBody.command;
-		let profileName = gdsData.profileName;
-		let profileData = await getAmadeus(profileName);
+	const runCmd = async (rqBody, gdsData) => {
+		const cmd = rqBody.command;
+		const profileName = gdsData.profileName;
+		const profileData = await getAmadeus(profileName);
 
-		let soapEnvXml = makeContinueSoapEnvXml({
+		const soapEnvXml = makeContinueSoapEnvXml({
 			messageId: makeMessageId(),
 			gdsData, profileData, payloadXml: makeCmdPayloadXml(cmd),
 			status: 'InSeries', action: 'HSFREQ_07_3_1A',
@@ -182,7 +182,7 @@ let AmadeusClient = ({
 			},
 			body: soapEnvXml,
 		}).then(rs => rs.body).then(rsXml => {
-			let dom = parseXml(rsXml);
+			const dom = parseXml(rsXml);
 			return wrapExc(() => parseCmdRs(dom, profileName)).catch(exc => {
 				exc.httpStatusCode = Rej.BadGateway.httpStatusCode;
 				exc.message = 'Invalid Amadeus cmd response - ' + exc.message;
@@ -197,12 +197,12 @@ let AmadeusClient = ({
 		});
 	};
 
-	let closeSession = async (gdsData) => {
-		let profileName = gdsData.profileName;
-		let profileData = await getAmadeus(profileName);
+	const closeSession = async (gdsData) => {
+		const profileName = gdsData.profileName;
+		const profileData = await getAmadeus(profileName);
 
-		let payloadXml = '<ns1:Security_SignOut xmlns:ns1="http://xml.amadeus.com/VLSSOQ_04_1_1A"/>';
-		let soapEnvXml = makeContinueSoapEnvXml({
+		const payloadXml = '<ns1:Security_SignOut xmlns:ns1="http://xml.amadeus.com/VLSSOQ_04_1_1A"/>';
+		const soapEnvXml = makeContinueSoapEnvXml({
 			messageId: makeMessageId(),
 			gdsData, profileData, payloadXml,
 			status: 'InSeries',
@@ -217,14 +217,14 @@ let AmadeusClient = ({
 			},
 			body: soapEnvXml,
 		}).then(rs => rs.body).then(rsXml => {
-			let dom = parseXml(rsXml);
+			const dom = parseXml(rsXml);
 			return {
 				status: dom.querySelector('Security_SignOutReply > processStatus > statusCode').textContent,
 			};
 		});
 	};
 
-	let makeSession = (gdsData) => ({
+	const makeSession = (gdsData) => ({
 		gdsData: gdsData,
 		// TODO: refactor and leave just getGdsData()
 		getGdsData: () => gdsData,
@@ -232,12 +232,12 @@ let AmadeusClient = ({
 			.then(result => ({cmd, ...result})),
 	});
 
-	let withSession = async (params, action) => {
-		let pcc = params.pcc || null;
-		let profileName = params.profileName
+	const withSession = async (params, action) => {
+		const pcc = params.pcc || null;
+		const profileName = params.profileName
 			|| GdsProfiles.AMADEUS.AMADEUS_PROD_1ASIWTUTICO;
 		return startSession({profileName, pcc}).then(gdsData => {
-			let session = makeSession(gdsData);
+			const session = makeSession(gdsData);
 			return Promise.resolve()
 				.then(() => action(session))
 				.finally(() => {
