@@ -13,7 +13,7 @@ import {CHANGE_INPUT_LANGUAGE} from "../actions/settings";
 import {setMessageFromServerHandler} from './../helpers/socketIoWrapper.js';
 import {notify} from './../helpers/debug.es6';
 import {LeadList} from '../components/reusable/LeadList.js';
-import PriceMixList from '../components/popovers/PricePccMixList.es6';
+import PricePccMixList from '../components/popovers/PricePccMixList.es6';
 
 const BORDER_SIZE = 2;
 
@@ -25,23 +25,6 @@ let chooseLeadFromList = (plugin) => new Promise((resolve, reject) => {
 		}).context,
 		onCancel: reject,
 	});
-});
-
-let priceMixList = null;
-let displayPriceMixPccRow = (plugin, pccResult) => new Promise((resolve) => {
-	if (!priceMixList) {
-		priceMixList = PriceMixList();
-		const {remove} = plugin.injectDom({
-			cls: 'price-mix-pcc-holder',
-			dom: priceMixList.dom,
-			onCancel: () => {
-				remove();
-				priceMixList = null;
-				resolve();
-			},
-		});
-	}
-	priceMixList.addRow(pccResult);
 });
 
 let toHandleMessageFromServer = (gdsSwitch) => {
@@ -67,9 +50,8 @@ let toHandleMessageFromServer = (gdsSwitch) => {
 				reply({error: 'No GDS terminal is currently active'});
 				return;
 			}
-			displayPriceMixPccRow(plugin, data)
-				.then(() => reply({status: 'popupClosed'}))
-				.catch(exc => reply({error: exc + ''}));
+			PricePccMixList.displayPriceMixPccRow(plugin, data);
+			reply({status: 'done'});
 		} else {
 			console.error('could not interpret message triggered by server', data);
 			reply({status: 'unknownMessageType', error: 'I do not confirm your message'});

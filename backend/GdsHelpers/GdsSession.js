@@ -72,10 +72,15 @@ const initHttpRqFor = ({
 	};
 	const briefing = makeHttpRqBriefing(params.body, gds);
 	const masked = maskRqBody(params.body, gds);
-	logit('XML RQ: ' + briefing, masked);
+	// for multi-session logging
+	const refNum = crypto.createHash('md5')
+		.update(Math.random() + '')
+		.digest('hex')
+		.slice(0, 6);
+	logit('XML RQ: ' + briefing + ' ' + refNum, masked);
 	return whenResult
 		.then(result => {
-			logit('XML RS:', result.body);
+			logit('XML RS:' + ' ' + refNum, result.body);
 			return result;
 		})
 		.catch(coverExc([Rej.BadGateway], (exc) => {

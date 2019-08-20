@@ -76,13 +76,6 @@ const RepriceInPccMix = ({
 		});
 	};
 
-	/** get the NET price of the most expensive PTC in pricing */
-	const getNetPrice = (store) => {
-		return (store.pricingBlockList || [])
-			.map(ptcBlock => ptcBlock.fareInfo.totalFare.amount)
-			.sort((a,b) => b - a)[0] || store.error;
-	};
-
 	const main = async () => {
 		const pnr = await GetCurrentPnr(stateful);
 		const itinerary = pnr.getItinerary();

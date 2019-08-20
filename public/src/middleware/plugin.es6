@@ -24,6 +24,7 @@ import {ManualPricingForm} from "../components/popovers/maskForms/manualPricingF
 import {TaxBreakdownForm} from "../components/popovers/maskForms/taxBreakdownForm.es6";
 import {ZpTaxBreakdownForm} from "../components/popovers/maskForms/zpTaxBreakdownForm.es6";
 import {FareCalculationForm} from "../components/popovers/maskForms/fareCalculationForm.es6";
+import PricePccMixList from "../components/popovers/PricePccMixList.es6";
 
 let Component = require('../modules/component.es6').default;
 let Cmp = (...args) => new Component(...args);
@@ -636,6 +637,8 @@ export default class TerminalPlugin
 				this._displayFcMask(action.data);
 			} else if (action.type === 'displayMpRemarkDialog') {
 				this._displayMpRemarkDialog(action.data);
+			} else if (action.type === 'finalizePriceMix') {
+				PricePccMixList.finalize(action.data);
 			} else {
 				let msg = '[[;;;error]Unsupported action - ' + action.type + ']';
 				this.outputLiner.printOutput(msg, false, []);

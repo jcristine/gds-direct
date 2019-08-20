@@ -16,39 +16,83 @@ const PricePccMixList = () => {
 		Cmp('table').attach([theadCmp, tbodyCmp]),
 	]);
 
+	const formatNet = (ptcBlock) => {
+		if (!ptcBlock) {
+			return '';
+		}
+		const netPrice = ptcBlock.fareInfo.totalFare;
+		const sign = netPrice.currency === 'USD' ? '$' : netPrice.currency + ' ';
+		return sign + netPrice.amount;
+	};
+
 	/** @param {{gds, pcc}} pccResult = (new (require('RepriceInAnotherPccAction.js'))).repriceIn() */
 	const addRow = ({pccResult}) => {
-		// TODO: ensure adult > child > infant
-		const mainPtcBlock = (pccResult.pricingBlockList || [])[0];
+		const ageGroupToBlock = {};
+		for (const ptcBlock of pccResult.pricingBlockList || []) {
+			const ageGroup = ptcBlock.ptcInfo.ageGroupRequested || ptcBlock.ptcInfo.ageGroup;
+			ageGroupToBlock[ageGroup] = ptcBlock;
+		}
+		const mainPtcBlock =
+			ageGroupToBlock.adult ||
+			ageGroupToBlock.child ||
+			ageGroupToBlock.infant ||
+			null;
+
 		if (!mainPtcBlock) {
 			// an error, could show it somewhere probably...
 			return;
 		}
 		const ptc = mainPtcBlock.ptcInfo.ptcRequested || mainPtcBlock.ptcInfo.ptc;
 		const fareType = 'TODO';
-		const netPrice = mainPtcBlock.fareInfo.totalFare;
-		const sign = netPrice.currency === 'USD' ? '$' : netPrice.currency + ' ';
-		const netFormatted = sign + netPrice.amount;
 
 		tbodyCmp.attach([Cmp('tr').attach([
 			Cmp('td', {textContent: pccResult.pcc}),
 			Cmp('td', {textContent: ptc}),
 			Cmp('td', {textContent: fareType}),
-			Cmp('td.net-price', {textContent: netFormatted}),
-			// TODO:
-			Cmp('td.net-price', {textContent: ''}),
-			Cmp('td.net-price', {textContent: ''}),
+			Cmp('td.net-price', {textContent: formatNet(ageGroupToBlock.adult)}),
+			Cmp('td.net-price', {textContent: formatNet(ageGroupToBlock.child)}),
+			Cmp('td.net-price', {textContent: formatNet(ageGroupToBlock.infant)}),
 		])]);
+	};
+
+	const finalize = (data) => {
+		rootCmp.attach([Cmp('div', {style: 'color: green', textContent: 'Done'})]);
 	};
 
 	const main = () => {
 		return {
 			dom: rootCmp.context,
 			addRow: addRow,
+			finalize: finalize,
 		};
 	};
 
 	return main();
+};
+
+let priceMixList = null;
+
+PricePccMixList.finalize = (data) => {
+	console.debug('ololo finalize', {data, priceMixList});
+	if (priceMixList) {
+		priceMixList.finalize(data);
+	}
+	return priceMixList = null;
+};
+
+PricePccMixList.displayPriceMixPccRow = (plugin, pccResult) => {
+	if (!priceMixList) {
+		priceMixList = PricePccMixList();
+		const {remove} = plugin.injectDom({
+			cls: 'price-mix-pcc-holder',
+			dom: priceMixList.dom,
+			onCancel: () => {
+				remove();
+				priceMixList = null;
+			},
+		});
+	}
+	priceMixList.addRow(pccResult);
 };
 
 export default PricePccMixList;

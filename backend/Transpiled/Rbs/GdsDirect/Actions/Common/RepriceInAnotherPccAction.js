@@ -308,10 +308,14 @@ class RepriceInAnotherPccAction {
 			const pricing = await new AmadeusGetPricingPtcBlocksAction({
 				session: capturing,
 			}).execute(pricingCmd, cmdRec.output);
+			let error = pricing.error || null;
+			if (error) {
+				error = pricingCmd + ' - ' + error;
+			}
 
 			return {
 				calledCommands: capturing.getCalledCommands(),
-				error: pricing.error || null,
+				error: error,
 				pricingBlockList: (pricing.pricingList || [])
 					.flatMap(store => store.pricingBlockList),
 			};
