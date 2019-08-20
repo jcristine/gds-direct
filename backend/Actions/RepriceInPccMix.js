@@ -88,7 +88,7 @@ const RepriceInPccMix = ({
 		const promises = [];
 		for (const {pcc, gds} of pccRecs) {
 			let whenPccResult = processPcc({pcc, gds, itinerary});
-			whenPccResult = timeout(61, whenPccResult);
+			whenPccResult = timeout(121, whenPccResult);
 			whenPccResult = whenPccResult
 				.catch(coverExc(Rej.list, exc => {
 					return {pcc, gds, error: exc + ''};
