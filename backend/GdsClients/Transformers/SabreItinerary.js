@@ -160,10 +160,16 @@ const parseReservations = items => {
 	return _.map(items.querySelectorAll('Item'), item => {
 		const segmentNumber = parseInt(item.getAttribute('RPH'), 10);
 
-		const segment = transformSegment(item.querySelector('FlightSegment'));
+		const flightSegmentElement = item.querySelector('FlightSegment');
+
+		if (!flightSegmentElement) {
+			return;
+		}
+
+		const segment = transformSegment(flightSegmentElement);
 
 		segment.segmentNumber = segmentNumber;
 
 		return segment;
-	});
+	}).filter(seg => seg);
 };
