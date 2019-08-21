@@ -928,7 +928,6 @@ const execute = ({
 	const priceInAnotherPcc = async  ($cmd, $target, $dialect) => {
 		const $pnr = await getCurrentPnr();
 		return (new RepriceInAnotherPccAction())
-			.setLog((msg, data) => stateful.logit(msg, data))
 			.execute($pnr, $cmd, $dialect, $target, stateful);
 	};
 

@@ -23,11 +23,6 @@ class GetMultiPccTariffDisplayAction {
 		this.$baseDate = php.date('Y-m-d H:i:s');
 	}
 
-	setLog($log) {
-		this.$log = $log;
-		return this;
-	}
-
 	log($msg, $data) {
 		let $log;
 		$log = this.$log;
