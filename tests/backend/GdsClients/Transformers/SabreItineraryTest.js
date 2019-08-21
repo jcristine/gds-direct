@@ -371,6 +371,75 @@ const provide_parseXml = () => {
 		},
 	});
 
+	list.push({
+		title: 'Hidden stops in reservation output',
+		input: {
+			xml: parseXml('<?xml version="1.0" encoding="UTF-8"?><soap-env:Envelope xmlns:soap-env="http://schemas.xmlsoap.org/soap/envelope/"><soap-env:Header><eb:MessageHeader eb:version="1.0" soap-env:mustUnderstand="1" xmlns:eb="http://www.ebxml.org/namespaces/messageHeader"><eb:From><eb:PartyId eb:type="urn:x12.org:IO5:01">webservices.sabre.com/websvc</eb:PartyId></eb:From><eb:To><eb:PartyId eb:type="urn:x12.org:IO5:01">innogw.dyninno.net</eb:PartyId></eb:To><eb:CPAId>L3II</eb:CPAId><eb:ConversationId>2019-02-22T19:07:04@innogateway5c7048587a71aPID4209</eb:ConversationId><eb:Service eb:type="OTA">EnhancedAirBookRQ</eb:Service><eb:Action>EnhancedAirBookRS</eb:Action><eb:MessageData><eb:MessageId>e3ipppq56</eb:MessageId><eb:Timestamp>2019-08-20T13:58:47</eb:Timestamp><eb:RefToMessageId>1876459793</eb:RefToMessageId></eb:MessageData></eb:MessageHeader><wsse:Security xmlns:wsse="http://schemas.xmlsoap.org/ws/2002/12/secext"><wsse:BinarySecurityToken EncodingType="wsse:Base64Binary" valueType="String">Shared/IDL:IceSess\/SessMgr:1\.0.IDL/Common/!ICESMS\/RESC!ICESMSLB\/RES.LB!-2983122460280249461!772698!0</wsse:BinarySecurityToken></wsse:Security></soap-env:Header><soap-env:Body><EnhancedAirBookRS xmlns="http://services.sabre.com/sp/eab/v3_9"><ApplicationResults status="Complete" xmlns="http://services.sabre.com/STL_Payload/v02_01"><Success timeStamp="2019-08-20T08:58:47.673-05:00"/></ApplicationResults><OTA_AirBookRS><OriginDestinationOption><FlightSegment ArrivalDateTime="02-29T12:05" DepartureDateTime="02-28T21:20" FlightNumber="0509" NumberInParty="001" ResBookDesigCode="E" Status="GK" eTicket="true"><DestinationLocation LocationCode="LFW"/><MarketingAirline Code="ET" FlightNumber="0509"/><OriginLocation LocationCode="EWR"/></FlightSegment><FlightSegment ArrivalDateTime="02-29T16:10" DepartureDateTime="02-29T12:50" FlightNumber="1005" NumberInParty="001" ResBookDesigCode="E" Status="GK" eTicket="true"><DestinationLocation LocationCode="ROB"/><MarketingAirline Code="ET" FlightNumber="1005"/><OriginLocation LocationCode="LFW"/></FlightSegment></OriginDestinationOption></OTA_AirBookRS><TravelItineraryReadRS><TravelItinerary><CustomerInfo/><ItineraryInfo><ReservationItems><Item RPH="1"><FlightSegment AirMilesFlown="5182" ArrivalDateTime="02-29T12:05" CodeShare="false" DayOfWeekInd="5" DepartureDateTime="2020-02-28T21:20" ElapsedTime="09.45" FlightNumber="0509" IsPast="false" NumberInParty="01" ResBookDesigCode="E" SegmentNumber="0001" SmokingAllowed="false" SpecialMeal="false" Status="GK" StopQuantity="00" eTicket="true"><DestinationLocation LocationCode="LFW"/><Equipment AirEquipType="787"/><MarketingAirline Code="ET" FlightNumber="0509"><Banner>MARKETED BY ETHIOPIAN AIRLINES</Banner></MarketingAirline><Meal Code="B"/><OperatingAirline Code="ET" FlightNumber="0509" ResBookDesigCode="E"><Banner>OPERATED BY ETHIOPIAN AIRLINES</Banner></OperatingAirline><OperatingAirlinePricing Code="ET"/><DisclosureCarrier Code="ET"><Banner>ETHIOPIAN AIRLINES</Banner></DisclosureCarrier><OriginLocation LocationCode="EWR" Terminal="TERMINAL B" TerminalCode="B"/><UpdatedArrivalTime>02-29T12:05</UpdatedArrivalTime><UpdatedDepartureTime>02-28T21:20</UpdatedDepartureTime></FlightSegment></Item><Item RPH="2"><FlightSegment AirMilesFlown="0106" ArrivalDateTime="02-29T13:30" CodeShare="true" DayOfWeekInd="6" DepartureDateTime="2020-02-29T12:50" ElapsedTime="00.40" FlightNumber="1005" IsPast="false" NumberInParty="01" ResBookDesigCode="E" SegmentNumber="0002" SmokingAllowed="false" SpecialMeal="false" Status="GK" StopQuantity="01" eTicket="true"><DestinationLocation LocationCode="ACC" TerminalCode="3"/><Equipment AirEquipType="737"/><MarketingAirline Code="ET" FlightNumber="1005"><Banner>MARKETED BY ETHIOPIAN AIRLINES</Banner></MarketingAirline><Meal Code="M"/><OperatingAirline Code="KP" FlightNumber="0020" ResBookDesigCode="E"><Banner>OPERATED BY ASKY</Banner></OperatingAirline><OperatingAirlinePricing Code="KP"/><DisclosureCarrier Code="KP"><Banner>ASKY</Banner></DisclosureCarrier><OriginLocation LocationCode="LFW"/><UpdatedDepartureTime>02-29T12:50</UpdatedDepartureTime></FlightSegment><FlightSegment AirMilesFlown="0702" ArrivalDateTime="02-29T16:10" CodeShare="true" DayOfWeekInd="6" DepartureDateTime="2020-02-29T14:10" ElapsedTime="02.00" FlightNumber="1005" IsPast="false" NumberInParty="01" ResBookDesigCode="E" SegmentNumber="0002" SmokingAllowed="false" SpecialMeal="false" Status="GK" StopQuantity="01" eTicket="true"><DestinationLocation LocationCode="ROB"/><Equipment AirEquipType="737"/><MarketingAirline Code="ET" FlightNumber="1005"><Banner>MARKETED BY ETHIOPIAN AIRLINES</Banner></MarketingAirline><Meal Code="M"/><OperatingAirline Code="KP" FlightNumber="0020" ResBookDesigCode="E"><Banner>OPERATED BY ASKY</Banner></OperatingAirline><OperatingAirlinePricing Code="KP"/><DisclosureCarrier Code="KP"><Banner>ASKY</Banner></DisclosureCarrier><OriginLocation LocationCode="ACC" TerminalCode="3"/><UpdatedArrivalTime>02-29T16:10</UpdatedArrivalTime></FlightSegment></Item></ReservationItems></ItineraryInfo><ItineraryRef AirExtras="false" InhibitCode="U" PartitionID="AA" PrimeHostID="1S"><Source PseudoCityCode="6IIF"/></ItineraryRef></TravelItinerary></TravelItineraryReadRS></EnhancedAirBookRS></soap-env:Body></soap-env:Envelope>'),
+			params: {
+				addAirSegments: [{
+					airline: 'ET',
+					flightNumber: '0509',
+					bookingClass: 'E',
+					destinationAirport: 'LFW',
+					departureAirport: 'EWR',
+					departureDt: '2020-02-28',
+					segmentStatus: 'GK',
+					seatCount: 1,
+					isMarried: false,
+				}, {
+					airline: 'ET',
+					flightNumber: '1005',
+					bookingClass: 'E',
+					destinationAirport: 'ROB',
+					departureAirport: 'LWF',
+					departureDt: '2020-02-29',
+					segmentStatus: 'GK',
+					seatCount: 1,
+					isMarried: false,
+				}],
+			},
+		},
+		output: {
+			reservations: [{
+				segmentNumber: 1,
+				departureDate: {
+					raw: '2020-02-28T21:20',
+					parsed: '02-28',
+				},
+				destinationDate: {
+					raw: '02-29T12:05',
+					parsed: '02-29',
+				},
+				airline: 'ET',
+				flightNumber: '0509',
+				bookingClass: 'E',
+				destinationAirport: 'LFW',
+				departureAirport: 'EWR',
+				segmentStatus: 'GK',
+				seatCount: '01',
+				eticket: true,
+			}, {
+				segmentNumber: 2,
+				departureDate: {
+					raw: '2020-02-29T12:50',
+					parsed: '02-29',
+				},
+				destinationDate: {
+					raw: '02-29T16:10',
+					parsed: '02-29',
+				},
+				airline: 'ET',
+				flightNumber: '1005',
+				bookingClass: 'E',
+				destinationAirport: 'ROB',
+				departureAirport: 'LFW',
+				segmentStatus: 'GK',
+				seatCount: '01',
+				eticket: true,
+			}],
+		},
+	});
+
 	return list.map(a => [a]);
 };
 
