@@ -1,3 +1,4 @@
+const GdsSessionManager = require('../GdsHelpers/GdsSessionManager.js');
 const Debug = require('klesun-node-tools/src/Debug.js');
 const LocalDiag = require('../Repositories/LocalDiag.js');
 
@@ -12,8 +13,8 @@ const Agents = require("../Repositories/Agents");
 const Agent = require('../DataFormats/Wrappers/Agent.js');
 const MaskUtil = require("../Transpiled/Lib/Utils/MaskUtil");
 const {HttpUtil} = require('klesun-node-tools');
-const TmpLib = require('../Utils/TmpLib.js');
 const {jsExport} = require('klesun-node-tools/src/Utils/Misc.js');
+const {coverExc} = require('klesun-node-tools/src/Lang.js');
 
 const isSystemError = (exc) =>
 	!exc.isOk &&
@@ -50,7 +51,11 @@ const toHandleHttp = (httpAction) => (req, res) => {
 						data: errorData,
 					});
 				} else {
-					Diag.logExc('HTTP request failed', errorData);
+					const msg = 'HTTP request failed';
+					if (process.env.NODE_ENV === 'development') {
+						console.error(msg, errorData);
+					}
+					Diag.logExc(msg, errorData);
 				}
 			}
 		});
@@ -82,7 +87,6 @@ const withAuth = (userAction) => (req, res) => {
 			return InternalServerError('Action is not a function - ' + userAction);
 		}
 		return Emc.getCachedSessionInfo(rqBody.emcSessionId)
-			.then(TmpLib.addPerformanceDebug('EMC session info'))
 			.catch(exc => {
 				const error = new Error('EMC auth error - ' + exc);
 				error.httpStatusCode = (exc + '').match(/Session not found/)
@@ -107,8 +111,7 @@ const withAuth = (userAction) => (req, res) => {
 				}
 				rqBody = normalizeRqBody(rqBody, emcData);
 				return Promise.resolve()
-					.then(() => userAction(rqBody, emcData.data, routeParams))
-					.then(TmpLib.addPerformanceDebug('Route action', emcData));
+					.then(() => userAction(rqBody, emcData.data, routeParams));
 			});
 	})(req, res);
 };
@@ -119,26 +122,7 @@ const withGdsSession = (sessionAction, canStartNew = false) => (req, res, protoc
 		const askClient = protocolSpecific.askClient || null;
 		const emcUser = rqBody.emcUser;
 		const agent = Agent(emcUser);
-		let startNewSession = false;
-		const session = await GdsSessions.getByContext(rqBody, emcUser)
-			.catch(exc => {
-				if (NotFound.matches(exc.httpStatusCode)) {
-					if (canStartNew) {
-						startNewSession = true;
-						return GdsSessionsController.startNewSession(rqBody, emcUser)
-							.then(session => {
-								FluentLogger.logit('INFO: emcUser', session.logId, emcUser);
-								return session;
-							});
-					} else {
-						exc.httpStatusCode = LoginTimeOut.httpStatusCode;
-						return Promise.reject(exc);
-					}
-				} else {
-					return Promise.reject(exc);
-				}
-			})
-			.then(TmpLib.addPerformanceDebug('GDS Session'));
+		const {startedNew, session} = await GdsSessionManager.getSession({rqBody, emcUser, canStartNew});
 		delete(rqBody.emcUser);
 		delete(rqBody.emcSessionId);
 
@@ -148,9 +132,8 @@ const withGdsSession = (sessionAction, canStartNew = false) => (req, res, protoc
 		FluentLogger.logit(msg, session.logId, {rqBody, protocol: protocolSpecific.protocol || 'http'});
 		return Promise.resolve()
 			.then(() => sessionAction({rqBody, session, emcUser, askClient}))
-			.then(TmpLib.addPerformanceDebug('Session action', session))
 			.then(result => {
-				if (startNewSession) {
+				if (startedNew) {
 					result.startNewSession = true;
 				}
 				if (!agent.canSeeCcNumbers()) {

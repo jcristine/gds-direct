@@ -90,6 +90,7 @@ exports.update = async (session) => {
 	return client.hset(keys.SESSION_TO_RECORD, session.id, JSON.stringify(session));
 };
 
+/** @param {{gds: string, travelRequestId: number|null}} rqBody */
 exports.getByContext = async (rqBody, emcUser) => {
 	const context = {...rqBody, agentId: emcUser.id};
 	const contextStr = JSON.stringify(normalizeContext(context));

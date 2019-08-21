@@ -4,12 +4,7 @@ const CmdRqLog = require('../Repositories/CmdRqLog.js');
 const RbsClient = require('../IqClients/RbsClient.js');
 const GdsSession = require('../GdsHelpers/GdsSession.js');
 const AddMpRemark = require('../Actions/AddMpRemark.js');
-const AmadeusClient = require("../GdsClients/AmadeusClient.js");
-const SabreClient = require("../GdsClients/SabreClient.js");
-const TravelportClient = require('../GdsClients/TravelportClient.js');
 const Db = require('../Utils/Db.js');
-const GdsSessions = require('../Repositories/GdsSessions.js');
-const {logit, logExc} = require('../LibWrappers/FluentLogger.js');
 const {Forbidden, NotImplemented, LoginTimeOut, NotFound, ServiceUnavailable} = require('klesun-node-tools/src/Rej.js');
 const StatefulSession = require('../GdsHelpers/StatefulSession.js');
 const ProcessTerminalInput = require('../Actions/ProcessTerminalInput.js');
@@ -19,67 +14,15 @@ const CmdResultAdapter = require('../Transpiled/App/Services/CmdResultAdapter.js
 const php = require('../Transpiled/phpDeprecated.js');
 const CmsClient = require("../IqClients/CmsClient");
 const ImportPq = require('../Actions/ImportPq.js');
-const FluentLogger = require("../LibWrappers/FluentLogger");
 const GdsDirect = require("../Transpiled/Rbs/GdsDirect/GdsDirect");
-const Misc = require("../Utils/TmpLib");
-const {allWrap} = require('klesun-node-tools/src/Lang.js');
+const DynUtils = require("klesun-node-tools/src/Dyn/DynUtils.js");
 const {getConfig} = require('../Config.js');
 const ExchangeApolloTicket = require('../Actions/ExchangeApolloTicket.js');
 const PriceItineraryManually = require('../Actions/ManualPricing/NmeMaskSubmit.js');
-const Rej = require("klesun-node-tools/src/Rej");
 const SubmitTaxBreakdownMask = require('../Actions/ManualPricing/SubmitTaxBreakdownMask.js');
 const SubmitZpTaxBreakdownMask = require('../Actions/ManualPricing/SubmitZpTaxBreakdownMask.js');
 const SubmitFcMask = require('../Actions/ManualPricing/FcMaskSubmit.js');
-const {startByGds} = require('../GdsHelpers/GdsSession.js');
-
-const startNewSession = async (rqBody, emcUser) => {
-	const starting = startByGds(rqBody.gds);
-	return starting.then(({gdsData, logId}) =>
-		GdsSessions.storeNew({context: rqBody, gdsData, emcUser, logId}));
-};
-
-const closeByGds = (gds, gdsData) => {
-	if (['apollo', 'galileo'].includes(gds)) {
-		return TravelportClient().closeSession(gdsData);
-	} else if ('sabre' === gds) {
-		return SabreClient.closeSession(gdsData);
-	} else if ('amadeus' === gds) {
-		return AmadeusClient.closeSession(gdsData);
-	} else {
-		return NotImplemented('closeSession() not implemented for GDS - ' + gds);
-	}
-};
-
-/** @param session = at('GdsSessions.js').makeSessionRecord() */
-const closeSession = async (session) => {
-	const gdsDataStrSet = new Set([JSON.stringify(session.gdsData)]);
-	const fullState = await GdsSessions.getFullState(session);
-	for (const [area, data] of Object.entries(fullState.areas)) {
-		// Amadeus fake areas, maybe also Sabre
-		if (data.gdsData) {
-			gdsDataStrSet.add(JSON.stringify(data.gdsData));
-		}
-	}
-	const closePromises = [...gdsDataStrSet]
-		.map(str => JSON.parse(str))
-		.map(gdsData => closeByGds(session.context.gds, gdsData));
-
-	allWrap(closePromises).then(result =>
-		logit('NOTICE: close result:', session.logId, result));
-
-	return GdsSessions.remove(session);
-};
-
-const shouldRestart = (exc, session) => {
-	const lifetimeMs = Date.now() - session.createdMs;
-	const clsName = ((exc || {}).constructor || {}).name;
-	const isTypeError = clsName === 'TypeError';
-	return LoginTimeOut.matches(exc.httpStatusCode)
-		//|| isTypeError
-		//|| !exc.httpStatusCode // runtime errors, like null-pointer exceptions
-		// 1 hour, to exclude cases like outdated format of gdsData
-		|| lifetimeMs > 60 * 60 * 1000;
-};
+const GdsSessionManager = require('../GdsHelpers/GdsSessionManager.js');
 
 const initStateful = async (params) => {
 	const stateful = await StatefulSession.makeFromDb(params);
@@ -110,25 +53,16 @@ const runInSession = async (params) => {
 
 /** @param rqBody = at('WebRoutes.js').normalizeRqBody() */
 exports.runInputCmd = async (params) => {
-	const {rqBody, session, emcUser} = params;
+	const {rqBody} = params;
 	rqBody.command = rqBody.command.trim();
 	return Promise.resolve()
 		.then(() => runInSession(params))
-		.catch(async exc => {
-			if (shouldRestart(exc, session)) {
-				FluentLogger.logExc('INFO: Session expired', session.logId, exc);
-				await GdsSessions.remove(session).catch(exc => {});
-				const newSession = await startNewSession(rqBody, emcUser);
-				FluentLogger.logit('INFO: New session in ' + newSession.logId, session.logId, newSession);
-				FluentLogger.logit('INFO: Old session in ' + session.logId, newSession.logId, session);
-				const runt = await runInSession({...params, session: newSession});
-				runt.startNewSession = true;
-				runt.userMessages = ['New session started, reason: ' + (exc + '').slice(0, 800) + '...\n'];
-				return runt;
-			} else {
-				return Promise.reject(exc);
-			}
-		});
+		.catch(async exc => GdsSessionManager.restartIfNeeded(exc, params, async (newSession) => {
+			const runt = await runInSession({...params, session: newSession});
+			runt.startNewSession = true;
+			runt.userMessages = ['New session started, reason: ' + (exc + '').slice(0, 800) + '...\n'];
+			return runt;
+		}));
 };
 
 const sendPqToPqt = async ({stateful, leadData, imported}) => {
@@ -167,7 +101,7 @@ const sendPqToPqt = async ({stateful, leadData, imported}) => {
 	const ec = new Crypt(process.env.RANDOM_KEY, 'des-ede3');
 	const credentials = {login: config.external_service.pqt.login, password: ec.encryptToken(pqtPassword)};
 
-	return Misc.iqJson({
+	return DynUtils.iqJson({
 		functionName: 'dataInput.addPriceQuoteFromDumps',
 		params: params,
 		url: config.external_service.pqt.host + '?log_id=' + logId,
@@ -217,20 +151,6 @@ exports.goToPricing = async ({rqBody, ...params}) => {
 			gds: rqBody.pricingGds,
 			rbsResp: result,
 		}));
-};
-
-/**
- * @param session = require('GdsSessions.js').makeSessionRecord()
- * @param {IEmcUser} emcUser
- */
-exports.resetToDefaultPcc = async ({rqBody, session, emcUser}) => {
-	const {gdsData, logId} = await startByGds(rqBody.gds);
-	await closeSession(session);
-	const newSession = await GdsSessions.storeNew({context: session.context, gdsData, emcUser, logId});
-	FluentLogger.logit('INFO: New session in ' + newSession.logId, session.logId, newSession);
-	FluentLogger.logit('INFO: Old session in ' + session.logId, newSession.logId, session);
-	const fullState = GdsSessions.makeDefaultState(newSession);
-	return {fullState};
 };
 
 exports.makeMco = async ({rqBody, session, emcUser}) => {
@@ -302,48 +222,9 @@ exports.submitFcMask = async ({rqBody, session, emcUser}) => {
 	}
 };
 
-const keepAliveByGds = (gds, gdsData) => {
-	if (['galileo', 'apollo'].includes(gds)) {
-		return TravelportClient().runCmd({command: 'MD0'}, gdsData)
-			.then(result => ({message: 'Success - ' + result.output}));
-	} else {
-		// no keepAlive is needed in other GDS, since their
-		// sessions live for 15-30 minutes themselves
-		return Promise.resolve({message: 'Success by default'});
-	}
-};
-
-const keepAliveSession = async (session) => {
-	const keeping = keepAliveByGds(session.context.gds, session.gdsData);
-	return keeping.then(result => {
-		GdsSessions.updateAccessTime(session);
-		logit('INFO: keepAlive result:', session.logId, result);
-		return result;
-	});
-};
-
-exports.keepAliveCurrent = async ({session}) => {
-	const userAccessMs = GdsSessions.getUserAccessMs(session);
-	const userIdleMs = Date.now() - userAccessMs;
-	if (userIdleMs < 30 * 1000) {
-		return Rej.TooEarly('Tried to keepAlive too early, session was accessed just ' + userIdleMs + ' ms ago');
-	} else if (!GdsSessions.shouldClose(userAccessMs)) {
-		return keepAliveSession(session)
-			.catch(exc => Rej.Conflict.matches(exc.httpStatusCode)
-				? Promise.resolve({message: 'Another action in progress - session is alive'})
-				: Promise.reject(exc));
-	} else {
-		const msg = 'Session was inactive for too long - ' +
-			((Date.now() - userAccessMs) / 1000).toFixed(3) + ' s.';
-		return LoginTimeOut(msg);
-	}
-};
-
-// should not restart session
-exports.keepAliveSession = keepAliveSession;
-
-exports.startNewSession = startNewSession;
-exports.closeSession = closeSession;
+exports.resetToDefaultPcc = GdsSessionManager.resetToDefaultPcc;
+exports.keepAliveCurrent = GdsSessionManager.keepAliveByUser;
+exports.startNewSession = GdsSessionManager.startNewSession;
 
 exports.getLastCommands = (reqBody, emcResult) => {
 	const agentId = emcResult.user.id;

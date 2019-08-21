@@ -1,5 +1,5 @@
+const GdsSessionManager = require('../GdsHelpers/GdsSessionManager.js');
 
-const GdsSessionController = require('../HttpControllers/GdsSessionController.js');
 const GdsSessions = require('./../Repositories/GdsSessions.js');
 const FluentLogger = require('./../LibWrappers/FluentLogger.js');
 const {NoContent, LoginTimeOut, Conflict} = require('klesun-node-tools/src/Rej.js');
@@ -45,13 +45,13 @@ const KeepAlive = async () => {
 				log('INFO: Last _user_ access was ' + userIdleSeconds + ' s. ago');
 				if (GdsSessions.shouldClose(userAccessMs)) {
 					action = 'closeLongUnused';
-					return GdsSessionController.closeSession(session).catch(exc => {
+					return GdsSessionManager.closeSession(session).catch(exc => {
 						FluentLogger.logExc('ERROR: Failed to close session', session.logId, exc);
 						return GdsSessions.remove(session);
 					});
 				} else {
 					action = 'keepAlive';
-					return GdsSessionController.keepAliveSession(session).catch(exc => {
+					return GdsSessionManager.keepAliveSession(session).catch(exc => {
 						FluentLogger.logExc('ERROR: Failed to keepAlive:', session.logId, exc);
 						if (LoginTimeOut.matches(exc.httpStatusCode)) {
 							GdsSessions.remove(session);
