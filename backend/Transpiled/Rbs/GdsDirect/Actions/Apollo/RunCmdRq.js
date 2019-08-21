@@ -991,13 +991,7 @@ const RunCmdRq = ({
 	// be in timezone of PCC in which PNR was _originally created_, not ticketed
 	// this is problem only if there is large enough gap between utc and pcc
 	// where actual date value should be smaller
-	const modifyMcosAccordingToPccDates = async (mcoRows, htRows) => {
-		const htRecord = htRows.find(record => record.isActive);
-
-		if (!htRecord) {
-			return;
-		}
-
+	const modifyMcosAccordingToPccDate = async (mcoRows, htRows) => {
 		const history = PnrHistoryParser
 			.parse((await runCmd('*HA', true)).output);
 
@@ -1021,20 +1015,27 @@ const RunCmdRq = ({
 			return;
 		}
 
-		// needed only to get date's year
-		const pastDate = DateTime.decodeRelativeDateInPast(
-			htRecord.transactionDt.parsed.split(' ')[0], stateful.getStartDt());
+		mcoRows.forEach(mcoRow => {
+			const htRecord = htRows
+				.find(record => record.ticketNumber === mcoRow.documentNumber);
 
-		if (!pastDate) {
-			return;
-		}
+			if (!htRecord) {
+				return;
+			}
 
-		const year = pastDate.split('-')[0];
+			// needed only to get date's year
+			const pastDate = DateTime.decodeRelativeDateInPast(
+				htRecord.transactionDt.parsed.split(' ')[0], stateful.getStartDt());
 
-		const finalDate = moment.utc(DateTime.fromUtc(`${year}-${htRecord.transactionDt.parsed}:00`, cityTz));
+			if (!pastDate) {
+				return;
+			}
 
-		mcoRows.forEach(row => {
-			row.issueDate = {
+			const year = pastDate.split('-')[0];
+
+			const finalDate = moment.utc(DateTime.fromUtc(`${year}-${htRecord.transactionDt.parsed}:00`, cityTz));
+
+			mcoRow.issueDate = {
 				raw: finalDate.format('DDMMMYY').toUpperCase(),
 				parsed: finalDate.format('YYYY-MM-DD'),
 			};
@@ -1062,7 +1063,7 @@ const RunCmdRq = ({
 		const htRows = ticketNumber ? [] : await getHtRows(pnr)
 			.catch(ignoreExc([], [UnprocessableEntity]));
 
-		await modifyMcosAccordingToPccDates(mcoRows, htRows);
+		await modifyMcosAccordingToPccDate(mcoRows, htRows);
 
 		return {
 			calledCommands: [{

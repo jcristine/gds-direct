@@ -159,6 +159,13 @@ class RunCmdRqHbFexTest extends require('../../../../../Lib/TestCase.js') {
 							'><',
 						].join('\n'),
 					},
+					{
+						cmd: '*HA',
+						output: [
+							'INVLD',
+							'><',
+						].join('\n'),
+					},
 				],
 			},
 		});
@@ -311,6 +318,13 @@ class RunCmdRqHbFexTest extends require('../../../../../Lib/TestCase.js') {
 							'><',
 						].join('\n'),
 					},
+					{
+						cmd: '*HA',
+						output: [
+							'INVLD',
+							'><',
+						].join('\n'),
+					},
 				],
 			},
 		});
@@ -449,6 +463,13 @@ class RunCmdRqHbFexTest extends require('../../../../../Lib/TestCase.js') {
 							'ORIG ISS;SFO....ORIG DATE;02APR19 ORIG IATA NBR;00000000 ',
 							'ORIG TKT;0161111111111.-;...  ORIG INV NBR;.........',
 							'PENALTY USD;............  COMM ON PENALTY;...........',
+							'><',
+						].join('\n'),
+					},
+					{
+						cmd: '*HA',
+						output: [
+							'INVLD',
 							'><',
 						].join('\n'),
 					},
@@ -652,6 +673,13 @@ class RunCmdRqHbFexTest extends require('../../../../../Lib/TestCase.js') {
 						'cmd': '*HT',
 						'output': [
 							'ERROR: FAKE OUTPUT FOR OLD TESTS COMPATIBILITY',
+							'><',
+						].join('\n'),
+					},
+					{
+						cmd: '*HA',
+						output: [
+							'INVLD',
 							'><',
 						].join('\n'),
 					},
@@ -898,6 +926,13 @@ class RunCmdRqHbFexTest extends require('../../../../../Lib/TestCase.js') {
 							'><',
 						].join('\n'),
 					},
+					{
+						cmd: '*HA',
+						output: [
+							'INVLD',
+							'><',
+						].join('\n'),
+					},
 				],
 			},
 		});
@@ -1078,6 +1113,13 @@ class RunCmdRqHbFexTest extends require('../../../../../Lib/TestCase.js') {
 						'cmd': '*HT',
 						'output': [
 							'ERROR: FAKE OUTPUT FOR OLD TESTS COMPATIBILITY',
+							'><',
+						].join('\n'),
+					},
+					{
+						cmd: '*HA',
+						output: [
+							'INVLD',
 							'><',
 						].join('\n'),
 					},
@@ -1493,7 +1535,7 @@ class RunCmdRqHbFexTest extends require('../../../../../Lib/TestCase.js') {
 					cmd: '*HT',
 					output: [
 						'** CURRENT TIN DATA **',
-						'BOWMAN/EMILYF-00012774-75/1315056284700/EZ0102329-USD/869.03/10AUG0502Z',
+						'BOWMAN/EMILYF-00012774-75/1315056284700/EZ0102329-USD/869.03/10AUG0902Z',
 						'** HISTORY TIN DATA **',
 						'XK BOWMAN/ANACRI-00012772-73/1315056284699/EZ0102328-USD/869.03/10AUG0502Z',
 						'><',
