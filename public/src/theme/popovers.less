@@ -281,9 +281,6 @@
       }
     }
   }
-  .price-mix-pcc-holder {
-    background-color: transparent;
-  }
   .injected-dom-holder .choose-str-from-list {
     background-color: #a51c1c;
     color: white;
@@ -303,6 +300,12 @@
       background-color: blue;
     }
   }
+}
+.price-mix-pcc-holder {
+  max-width: 700px;
+}
+.price-mix-pcc-holder .injected-dom-holder {
+  background-color: transparent;
 }
 
 .mask-form {
@@ -423,17 +426,24 @@
 }
 
 .price-pcc-mix-list {
+  > table {
+    width: 100%;
+  }
   tbody {
     background-color: white;
   }
   thead {
-    background-color: yellow;
+    color: yellow;
   }
   th, td {
     padding-left: 4px;
     padding-right: 4px;
   }
+  td.pcc {
+    color: red;
+  }
   td.net-price {
     text-align: right;
+    color: #00ff00;
   }
 }
