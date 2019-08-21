@@ -9,7 +9,7 @@ let makeAliases = () => {
 	a.setAttribute('target', '_blank');
 
 	a.textContent = 'aliases';
-	a.setAttribute('href', window.GdsDirectPlusParams.rootUrl + '/public/help/aliases.md');
+	a.setAttribute('href', window.GdsDirectPlusParams.rootUrl + '/public/help/aliases.md.txt');
 
 	section.appendChild(a);
 
