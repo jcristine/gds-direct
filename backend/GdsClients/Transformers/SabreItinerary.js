@@ -152,6 +152,23 @@ const filterEmpty = properties => {
 	return r.length > 0 ? r : null;
 };
 
+// Reservation might have multiple flight segment in one item in case of
+// hidden stop, departure data is from first segment and destination data
+// is from last one
+const combineReservation = segments => {
+	if (segments.length < 2) {
+		return segments[0];
+	}
+
+	const departure = segments[0];
+	const arrival = _.last(segments);
+
+	return _.extend(departure, {
+		destinationDate: arrival.destinationDate,
+		destinationAirport: arrival.destinationAirport,
+	});
+};
+
 const parseReservations = items => {
 	if (!items) {
 		return null;
@@ -160,13 +177,13 @@ const parseReservations = items => {
 	return _.map(items.querySelectorAll('Item'), item => {
 		const segmentNumber = parseInt(item.getAttribute('RPH'), 10);
 
-		const flightSegmentElement = item.querySelector('FlightSegment');
+		const segments = _.map(item.querySelectorAll('FlightSegment'), transformSegment);
 
-		if (!flightSegmentElement) {
+		const segment = combineReservation(segments);
+
+		if (!segment) {
 			return;
 		}
-
-		const segment = transformSegment(flightSegmentElement);
 
 		segment.segmentNumber = segmentNumber;
 
