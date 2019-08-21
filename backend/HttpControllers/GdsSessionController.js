@@ -1,3 +1,4 @@
+const GoToPricing = require('../Actions/GoToPricing.js');
 const MaskFormUtils = require('../Actions/ManualPricing/TpMaskUtils.js');
 const CmdRqLog = require('../Repositories/CmdRqLog.js');
 const RbsClient = require('../IqClients/RbsClient.js');
@@ -208,6 +209,16 @@ exports.addMpRemark = async ({rqBody, ...params}) => {
 		}));
 };
 
+exports.goToPricing = async ({rqBody, ...params}) => {
+	const stateful = await StatefulSession.makeFromDb(params);
+	return GoToPricing({stateful, ...rqBody})
+		.then(result => CmdResultAdapter({
+			cmdRq: 'GOTOPRICEMIX',
+			gds: rqBody.pricingGds,
+			rbsResp: result,
+		}));
+};
+
 /**
  * @param session = require('GdsSessions.js').makeSessionRecord()
  * @param {IEmcUser} emcUser
@@ -363,8 +374,9 @@ exports.getLastCommands = (reqBody, emcResult) => {
 	});
 };
 
-exports.getCmdRqList = (reqBody, emcResult) => {
-	return CmdRqLog.getBySession(reqBody.sessionId);
+exports.getCmdRqList = async (reqBody, emcResult) => {
+	const records = await CmdRqLog.getBySession(reqBody.sessionId);
+	return {records};
 };
 
 exports.clearBuffer = (rqBody, emcResult) => {

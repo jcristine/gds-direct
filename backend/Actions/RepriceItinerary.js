@@ -1,3 +1,4 @@
+const GdsSession = require('../GdsHelpers/GdsSession.js');
 const AmadeusGetPricingPtcBlocksAction = require('../Transpiled/Rbs/GdsDirect/Actions/Amadeus/AmadeusGetPricingPtcBlocksAction.js');
 const SabreBuildItineraryAction = require('../Transpiled/Rbs/GdsAction/SabreBuildItineraryAction.js');
 const GalileoPricingAdapter = require('../Transpiled/Rbs/FormatAdapters/GalileoPricingAdapter.js');
@@ -128,11 +129,12 @@ const extendSabreCmd = async ({cmd, yFallback, srcItin}) => {
 
 /**
  * build the passed itinerary in passed session
- * and prices it with the passed command
+ * and price it with the passed command
  */
 const RepriceItinerary = ({
-	gdsClients, gds, itinerary,
+	gds, itinerary,
 	pricingCmd, session, startDt,
+	gdsClients = GdsSession.makeGdsClients(),
 }) => {
 	const inApollo = async () => {
 		itinerary = itinerary.map(seg => ({...seg, segmentStatus: 'GK'}));
