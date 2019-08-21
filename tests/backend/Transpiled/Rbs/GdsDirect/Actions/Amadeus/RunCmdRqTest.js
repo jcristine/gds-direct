@@ -2378,8 +2378,8 @@ class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
 		});
 
 		$list.push({
-			title: 'Should fetch full output in last segment, since it is used for rebook segment number determination',
 			input: {
+				title: 'Should fetch full output in last segment, since it is used for rebook segment number determination',
 				cmdRequested: [
 					"1 QF  50Q 08FEB SFOMEL HK2   815P  645A2*      SA/MO   E  1    ",
 					"2 QF 675Q 10FEB MELADL HK2   835A  925A *         MO   E  1    ",
@@ -2710,6 +2710,111 @@ class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
 							"     ADV PAX WWW.SMARTRAVELLER.GOV.AU AND REF GG APIS",
 							"     SEE RTSVC",
 							") ",
+						].join("\n"),
+					},
+				],
+			},
+		});
+
+		$list.push({
+			input: {
+				title: 'GK segments from dump example - no rebook',
+				cmdRequested: [
+					"1 NK 610Y 29AUG TPAFLL GK1   620A  722A           TH",
+					" 2 NK 833Y 29AUG FLLMBJ GK1   139P  232P           TH",
+					" 3 NK 270Y 03SEP MBJFLL GK1   322P  610P           TU",
+					" 4 NK 615Y 03SEP FLLTPA GK1  1054P 1159P           TU",
+				].join('\n'),
+			},
+			output: {
+				calledCommands: [
+					{
+						"cmd": "RT",
+						"output": [
+							"/$--- SFP ---",
+							"RP/SFO1S2195/",
+							"  1  NK 610 Y 29AUG 4 TPAFLL GK1   620A 722A 29AUG  A",
+							"     SEE RTSVC",
+							"  2  NK 833 Y 29AUG 4 FLLMBJ GK1   139P 232P 29AUG  A",
+							"     SEE RTSVC",
+							"  3  NK 270 Y 03SEP 2 MBJFLL GK1   322P 610P 03SEP  A",
+							"     SEE RTSVC",
+							"  4  NK 615 Y 03SEP 2 FLLTPA GK1  1054P1159P 03SEP  A",
+							"     SEE RTSVC",
+							"  5 RM NOTIFY PASSENGER PRIOR TO TICKET PURCHASE & CHECK-IN:",
+							"       FEDERAL LAWS FORBID THE CARRIAGE OF HAZARDOUS MATERIALS -",
+							"       GGAMAUSHAZ/S1-4",
+							" ",
+						].join("\n"),
+					},
+				],
+			},
+			sessionInfo: {
+				initialState: GdsDirectDefaults.makeDefaultAmadeusState(),
+				initialCommands: [],
+				performedCommands: [
+					{
+						"cmd": "SSNK610Y29AUGTPAFLLGK1/A",
+						"output": [
+							"/$--- SFP ---",
+							"RP/SFO1S2195/",
+							"  1  NK 610 Y 29AUG 4 TPAFLL GK1   620A 722A 29AUG  A",
+							"     SEE RTSVC",
+							"  2 RM NOTIFY PASSENGER PRIOR TO TICKET PURCHASE & CHECK-IN:",
+							"       FEDERAL LAWS FORBID THE CARRIAGE OF HAZARDOUS MATERIALS -",
+							"       GGAMAUSHAZ/S1",
+							" ",
+						].join("\n"),
+					},
+					{
+						"cmd": "SSNK833Y29AUGFLLMBJGK1/A",
+						"output": [
+							"/$--- SFP ---",
+							"RP/SFO1S2195/",
+							"  1  NK 610 Y 29AUG 4 TPAFLL GK1   620A 722A 29AUG  A",
+							"     SEE RTSVC",
+							"  2  NK 833 Y 29AUG 4 FLLMBJ GK1   139P 232P 29AUG  A",
+							"     SEE RTSVC",
+							"  3 RM NOTIFY PASSENGER PRIOR TO TICKET PURCHASE & CHECK-IN:",
+							"       FEDERAL LAWS FORBID THE CARRIAGE OF HAZARDOUS MATERIALS -",
+							"       GGAMAUSHAZ/S1-2",
+							" ",
+						].join("\n"),
+					},
+					{
+						"cmd": "SSNK270Y03SEPMBJFLLGK1/A",
+						"output": [
+							"/$--- SFP ---",
+							"RP/SFO1S2195/",
+							"  1  NK 610 Y 29AUG 4 TPAFLL GK1   620A 722A 29AUG  A",
+							"     SEE RTSVC",
+							"  2  NK 833 Y 29AUG 4 FLLMBJ GK1   139P 232P 29AUG  A",
+							"     SEE RTSVC",
+							"  3  NK 270 Y 03SEP 2 MBJFLL GK1   322P 610P 03SEP  A",
+							"     SEE RTSVC",
+							"  4 RM NOTIFY PASSENGER PRIOR TO TICKET PURCHASE & CHECK-IN:",
+							"       FEDERAL LAWS FORBID THE CARRIAGE OF HAZARDOUS MATERIALS -",
+							"       GGAMAUSHAZ/S1-3",
+							" ",
+						].join("\n"),
+					},
+					{
+						"cmd": "SSNK615Y03SEPFLLTPAGK1/A",
+						"output": [
+							"/$--- SFP ---",
+							"RP/SFO1S2195/",
+							"  1  NK 610 Y 29AUG 4 TPAFLL GK1   620A 722A 29AUG  A",
+							"     SEE RTSVC",
+							"  2  NK 833 Y 29AUG 4 FLLMBJ GK1   139P 232P 29AUG  A",
+							"     SEE RTSVC",
+							"  3  NK 270 Y 03SEP 2 MBJFLL GK1   322P 610P 03SEP  A",
+							"     SEE RTSVC",
+							"  4  NK 615 Y 03SEP 2 FLLTPA GK1  1054P1159P 03SEP  A",
+							"     SEE RTSVC",
+							"  5 RM NOTIFY PASSENGER PRIOR TO TICKET PURCHASE & CHECK-IN:",
+							"       FEDERAL LAWS FORBID THE CARRIAGE OF HAZARDOUS MATERIALS -",
+							"       GGAMAUSHAZ/S1-4",
+							" ",
 						].join("\n"),
 					},
 				],

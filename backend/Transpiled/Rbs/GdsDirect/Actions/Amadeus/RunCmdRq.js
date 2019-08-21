@@ -493,7 +493,7 @@ const execute = ({
 	/** @param $itinerary = MarriageItineraryParser::parse() */
 	const bookItinerary = async ($itinerary, isNewPnr) => {
 		let $errors, $i, $segment, $bookItinerary, $result, $error,
-			$segmentNumbers, $calledCommands;
+			$segmentNumbers;
 
 		$errors = [];
 		stateful.flushCalledCommands();
@@ -513,10 +513,11 @@ const execute = ({
 		$result = await (new AmadeusBuildItineraryAction())
 			.setSession(stateful).execute($bookItinerary, true);
 
+		const buildCmdRecs = stateful.flushCalledCommands();
+		let rebookCmdRecs = [];
 		if ($error = transformBuildError($result)) {
 			$errors.push($error);
 		} else {
-			stateful.flushCalledCommands();
 			const $isActive = ($seg) => !php.in_array($seg['segmentStatus'], PASSIVE_STATUSES);
 			const $activeSegments = Fp.filter($isActive, $itinerary);
 			const $marriageGroups = Fp.groupMap(($seg) => $seg['marriage'], $activeSegments);
@@ -535,12 +536,13 @@ const execute = ({
 					}
 				}
 			}
+			rebookCmdRecs = stateful.flushCalledCommands();
 		}
-		$calledCommands = stateful.flushCalledCommands();
+		const calledCommands = rebookCmdRecs.length > 0 ? rebookCmdRecs : buildCmdRecs;
 		return {
-			'calledCommands': !php.empty($errors) ? $calledCommands : [
+			'calledCommands': !php.empty($errors) ? calledCommands : [
 				// last command should have resulting PNR dump
-				{'cmd': 'RT', 'output': ArrayUtil.getLast($calledCommands)['output']},
+				{'cmd': 'RT', 'output': ArrayUtil.getLast(calledCommands)['output']},
 			],
 			'errors': $errors,
 		};
