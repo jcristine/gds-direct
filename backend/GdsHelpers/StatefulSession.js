@@ -131,7 +131,8 @@ const StatefulSession = ({
 };
 
 StatefulSession.makeFromDb = async ({
-	session, whenCmdRqId, emcUser, askClient,
+	session, emcUser, askClient,
+	whenCmdRqId = null,
 	gdsSession = GdsSession({session}),
 	GdsSessions = require("../Repositories/GdsSessions.js"),
 }) => {

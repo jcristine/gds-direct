@@ -150,6 +150,9 @@ const SabreClient = ({
 	/** @param gdsData = await require('SabreClient.js').startSession() */
 	const runCmd = async (rqBody, gdsData) => {
 		const cmd = rqBody.command;
+		if (!cmd) {
+			return Rej.BadRequest('Tried to invoke empty Sabre command');
+		}
 		const profileData = await getSabre(gdsData.profileName);
 		const payloadXml = [
 			'    <ns1:SabreCommandLLSRQ xmlns:ns1="http://webservices.sabre.com/sabreXML/2003/07">',
