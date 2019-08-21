@@ -1,16 +1,22 @@
 
+import {post} from "../../helpers/requests.es6";
 import Component from '../../modules/component.es6';
+
 const Cmp = (...args) => new Component(...args);
 
-const PricePccMixList = () => {
-	const theadCmp = Cmp('thead').attach([Cmp('tr').attach([
-		Cmp('th', {textContent: 'PCC'}),
-		Cmp('th', {textContent: 'PTC'}),
-		Cmp('th', {textContent: 'Fare Type'}),
-		Cmp('th', {textContent: 'ADT'}),
-		Cmp('th', {textContent: 'CHD'}),
-		Cmp('th', {textContent: 'INF'}),
-	])]);
+/** @param {TerminalPlugin} plugin */
+const PricePccMixList = ({plugin}) => {
+	const theadCmp = Cmp('thead.usedCommand').attach([
+		Cmp('tr').attach([
+			Cmp('th', {textContent: 'GDS'}),
+			Cmp('th', {textContent: 'PCC'}),
+			Cmp('th', {textContent: 'PTC'}),
+			Cmp('th', {textContent: 'Fare Type'}),
+			Cmp('th', {textContent: 'ADT'}),
+			Cmp('th', {textContent: 'CHD'}),
+			Cmp('th', {textContent: 'INF'}),
+		]),
+	]);
 	const tbodyCmp = Cmp('tbody');
 	const rootCmp = Cmp('div.price-pcc-mix-list').attach([
 		Cmp('table').attach([theadCmp, tbodyCmp]),
@@ -39,6 +45,8 @@ const PricePccMixList = () => {
 
 	/** @param {{gds, pcc}} pccResult = (new (require('RepriceInAnotherPccAction.js'))).repriceIn() */
 	const addRow = ({pccResult}) => {
+		console.debug('pccResult', pccResult);
+
 		const ageGroupToBlock = {};
 		for (const ptcBlock of pccResult.pricingBlockList || []) {
 			const ageGroup = ptcBlock.ptcInfo.ageGroupRequested || ptcBlock.ptcInfo.ageGroup;
@@ -59,13 +67,41 @@ const PricePccMixList = () => {
 			.map(({cmd, output}) => '>' + cmd + ';\n' + output)
 			.join('\n');
 
+		const goToPricing = () => {
+			alert('GoTo pricing is not implemented yet');
+			//plugin._withSpinner(() => post('terminal/goToPricing', {
+			//	gds: plugin.gdsName, useSocket: true,
+			//	pricingGds: pccResult.gds,
+			//	pricingPcc: pccResult.pcc,
+			//	pricingCmd: pccResult.pricingCmd,
+			//})).then(({fullState}) => {
+			//	switchToGdsWindow(pccResult.gds, fullState);
+			//});
+		};
+		const makeNetCell = ptcBlock => Cmp('td.net-price').attach([
+			Cmp('span', {
+				textContent: formatNet(ptcBlock),
+				title: pricingDump,
+				onclick: goToPricing,
+			}),
+		]);
+
 		const trCmp = Cmp('tr').attach([
-			Cmp('td', {textContent: pccResult.pcc}),
-			Cmp('td', {textContent: ptc}),
-			Cmp('td', {textContent: mainPtcBlock.fareType}),
-			Cmp('td.net-price', {textContent: formatNet(ageGroupToBlock.adult), title: pricingDump}),
-			Cmp('td.net-price', {textContent: formatNet(ageGroupToBlock.child), title: pricingDump}),
-			Cmp('td.net-price', {textContent: formatNet(ageGroupToBlock.infant), title: pricingDump}),
+			Cmp('td').attach([
+				Cmp('span', {textContent: pccResult.gds}),
+			]),
+			Cmp('td.pcc').attach([
+				Cmp('span', {textContent: pccResult.pcc}),
+			]),
+			Cmp('td').attach([
+				Cmp('span', {textContent: ptc, title: pccResult.pricingCmd}),
+			]),
+			Cmp('td').attach([
+				Cmp('span', {textContent: mainPtcBlock.fareType}),
+			]),
+			makeNetCell(ageGroupToBlock.adult),
+			makeNetCell(ageGroupToBlock.child),
+			makeNetCell(ageGroupToBlock.infant),
 		]);
 		trCmp.context.setAttribute('data-net-price', mainPtcBlock.fareInfo.totalFare.amount);
 
@@ -103,7 +139,7 @@ PricePccMixList.finalize = (data) => {
 
 PricePccMixList.displayPriceMixPccRow = (plugin, pccResult) => {
 	if (!priceMixList) {
-		priceMixList = PricePccMixList();
+		priceMixList = PricePccMixList({plugin});
 		const {remove} = plugin.injectDom({
 			cls: 'price-mix-pcc-holder',
 			dom: priceMixList.dom,

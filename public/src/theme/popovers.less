@@ -430,10 +430,7 @@
     width: 100%;
   }
   tbody {
-    background-color: white;
-  }
-  thead {
-    color: yellow;
+    color: white;
   }
   th, td {
     padding-left: 4px;
@@ -442,8 +439,17 @@
   td.pcc {
     color: red;
   }
+  td {
+    border: none;
+    text-align: center;
+  }
   td.net-price {
-    text-align: right;
     color: #00ff00;
+  }
+  td.net-price span {
+    cursor: pointer;
+  }
+  td.net-price span:hover {
+      background-color: #bcffbc;
   }
 }

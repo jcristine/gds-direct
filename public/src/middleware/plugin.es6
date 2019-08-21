@@ -390,7 +390,7 @@ export default class TerminalPlugin
 			Cmp('br', {clear: 'all'}),
 		]);
 		if (cls) {
-			holderCmp.context.classList.toggle(cls, true);
+			formCmp.context.classList.toggle(cls, true);
 		}
 		this._injectForm(formCmp);
 		let inp = formCmp.context.querySelector('input:not(:disabled)');
