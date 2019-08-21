@@ -16,59 +16,20 @@ const CommonDataHelper = require('../../../../Rbs/GdsDirect/CommonDataHelper.js'
 const CommandParser = require('../../../../Gds/Parsers/Amadeus/CommandParser.js');
 const CmsAmadeusTerminal = require('../../../../Rbs/GdsDirect/GdsInterface/CmsAmadeusTerminal.js');
 const AmadeusUtils = require("../../../../../GdsHelpers/AmadeusUtils");
-const GdsProfiles = require("../../../../../Repositories/GdsProfiles");
 const getRbsPqInfo = require("../../../../../GdsHelpers/RbsUtils").getRbsPqInfo;
 const MoveDownAllAction = require('./MoveDownAllAction.js');
 const AmadeusBuildItineraryAction = require('../../../../Rbs/GdsAction/AmadeusBuildItineraryAction.js');
 const MarriageItineraryParser = require('../../../../Gds/Parsers/Amadeus/MarriageItineraryParser.js');
 const AmadeusClient = require("../../../../../GdsClients/AmadeusClient");
-const makeDefaultAreaState = require("../../../../../Repositories/GdsSessions").makeDefaultAreaState;
-const WorkAreaScreenParser = require("../../../../Gds/Parsers/Amadeus/WorkAreaScreenParser");
-const UnprocessableEntity = require("klesun-node-tools/src/Rej").UnprocessableEntity;
 const Rej = require("klesun-node-tools/src/Rej");
 const FxParser = require('../../../../Gds/Parsers/Amadeus/Pricing/FxParser.js');
 const TicketMaskParser = require('../../../../Gds/Parsers/Amadeus/TicketMaskParser.js');
 const {withCapture} = require("../../../../../GdsHelpers/CommonUtils");
 const AmadeusGetPricingPtcBlocks = require('./AmadeusGetPricingPtcBlocksAction.js');
 const PricingCmdParser = require('../../../../../Transpiled/Gds/Parsers/Amadeus/Commands/PricingCmdParser.js');
-const {findSegmentNumberInPnr} = require('../Common/ItinerarySegments')
+const {findSegmentNumberInPnr} = require('../Common/ItinerarySegments');
+const FakeAreaUtil = require('../../../../../GdsHelpers/Amadeus/FakeAreaUtil.js');
 const PASSIVE_STATUSES = ['GK', 'PE'];
-// defines how much areas can agent open in single session
-const AREA_LETTERS = ['A', 'B', 'C', 'D'];
-
-const forgeViewAreasDump = ($sessionData, $areasFromDb) => {
-	let $areas, $area, $lines, $letter, $status, $data;
-
-	$areas = [];
-	for ($area of Object.values($areasFromDb)) {
-		$areas[$area['area']] = $area;
-	}
-	$lines = [
-		'00000000         ' + $sessionData['pcc'],
-		'',
-		'AREA  TM  MOD SG/DT.LG TIME      ACT.Q   STATUS     NAME',
-	];
-	for ($letter of Object.values(AREA_LETTERS)) {
-		if (php.isset($areas[$letter])) {
-			if ($areas[$letter]['isPnrStored']) {
-				$status = 'PNR MODIFY';
-			} else if ($areas[$letter]['hasPnr']) {
-				$status = 'PNR CREATE';
-			} else {
-				$status = 'SIGNED';
-			}
-			$data = {
-				'letter': $letter,
-				'signed': ($letter == $sessionData['area']) ? '-IN' : '   ',
-				'status': $status,
-			};
-			$lines.push(StringUtil.format('{letter}{signed}      PRD WS/SU.EN  24             {status}', $data));
-		} else {
-			$lines.push($letter + '                                      NOT SIGNED');
-		}
-	}
-	return php.implode(php.PHP_EOL, $lines);
-};
 
 const doesStorePnr = ($cmd) => {
 	let $parsedCmd, $flatCmds, $cmdTypes;
@@ -84,15 +45,6 @@ const doesOpenPnr = ($cmd) => {
 
 	$parsedCmd = CommandParser.parse($cmd);
 	return php.in_array($parsedCmd['type'], ['openPnr', 'searchPnr', 'displayPnrFromList']);
-};
-
-const formatGtlPccError = ($exc, pcc) => {
-	const prefix = 'Failed to start session with PCC ' + pcc + ' - ';
-	if (php.preg_match(/\bSoapFault: *11|\Session\b/, ($exc.message || ''))) {
-		return Rej.BadRequest('Invalid PCC');
-	} else {
-		return UnprocessableEntity(prefix + 'Unexpected GTL error - ' + php.preg_replace(/\s+/, ' ', php.substr($exc.message || '', -100)));
-	}
 };
 
 const isSaveConfirmationRequired = ($output) => {
@@ -192,6 +144,9 @@ const execute = ({
 	PtcUtil = require('../../../../Rbs/Process/Common/PtcUtil.js'),
 	amadeus = AmadeusClient,
 }) => {
+	const fakeAreaUtil = FakeAreaUtil({
+		stateful, amadeus,
+	});
 
 	const makeCreatedForCmdIfNeeded = async () => {
 		let $cmdLog, $sessionData, $remarkCmd, $flattenCmd, $performedCmds, $flatPerformedCmds;
@@ -338,60 +293,6 @@ const execute = ({
 		return {'calledCommands': $calledCommands};
 	};
 
-	const startNewAreaSession = async (area, pcc = null) => {
-		const $row = makeDefaultAreaState('amadeus');
-		pcc = pcc || $row.pcc;
-		$row.area = area;
-		$row.pcc = pcc;
-		$row.gdsData = await amadeus.startSession({
-			profileName: GdsProfiles.chooseAmaProfile($row.pcc),
-			pcc: pcc,
-		});
-		return $row;
-	};
-
-	const updateGdsData = async (newAreaState) => {
-		const fullState = stateful.getFullState();
-		fullState.areas[newAreaState.area] = newAreaState;
-		fullState.area = newAreaState.area;
-		const updated = await Promise.all([
-			stateful.updateFullState(fullState),
-			stateful.updateGdsData(newAreaState.gdsData),
-		]);
-		return updated;
-	};
-
-	const changeArea = async ($area) => {
-		let $errorData, $areaRows, $isRequested, $row;
-
-		if (!php.in_array($area, AREA_LETTERS)) {
-			$errorData = {'area': $area, 'options': php.implode(', ', AREA_LETTERS)};
-			return {'errors': [Errors.getMessage(Errors.INVALID_AREA_LETTER, $errorData)]};
-		}
-		if (stateful.getSessionData()['area'] === $area) {
-			return {'errors': [Errors.getMessage(Errors.ALREADY_IN_THIS_AREA, {'area': $area})]};
-		}
-		$areaRows = stateful.getAreaRows();
-		$isRequested = ($row) => $row['area'] === $area;
-		$row = ArrayUtil.getFirst(Fp.filter($isRequested, $areaRows));
-
-		const fullState = stateful.getFullState();
-		if (!fullState.areas[fullState.area].gdsData) {
-			// preserve area A session token
-			fullState.areas[fullState.area].gdsData = stateful.getGdsData();
-			stateful.updateFullState(fullState);
-		}
-		if (!$row || !$row.gdsData) {
-			$row = await startNewAreaSession($area);
-		}
-		await updateGdsData($row);
-
-		return {
-			'calledCommands': [],
-			'userMessages': ['Successfully changed area to ' + $area],
-		};
-	};
-
 	const deleteSegments = async ($segNumStart, $segNumEnd) => {
 		let $rtamDump, $itinerary, $xeCmd, $segNums, $matches, $matchedSegments, $xeOutput;
 
@@ -468,12 +369,12 @@ const execute = ({
 			await runCommand('IG'); // ignore the itinerary it initial area
 		}
 		$area = $emptyAreas[0];
-		$result = await changeArea($area);
+		$result = await fakeAreaUtil.changeArea($area);
 		if (!php.empty($result['errors'])) {
 			return $result;
 		}
 		if (getSessionData()['pcc'] !== $pcc) {
-			$result = await changePcc($pcc);
+			$result = await fakeAreaUtil.changePcc($pcc);
 			if (!php.empty($result['errors'])) {
 				return $result;
 			}
@@ -581,7 +482,7 @@ const execute = ({
 		const calledCommands = [];
 
 		if (reservation.pcc && pcc !== getSessionData().pcc) {
-			const pccResult = await changePcc(pcc);
+			const pccResult = await fakeAreaUtil.changePcc(pcc);
 			errors.push(...(pccResult.errors || []));
 			userMessages.push(...(pccResult.userMessages || []));
 			calledCommands.push(...(pccResult.calledCommands || []));
@@ -769,49 +670,7 @@ const execute = ({
 		$occupiedRows = Fp.filter($isOccupied, stateful.getAreaRows());
 		$occupiedAreas = php.array_column($occupiedRows, 'area');
 		$occupiedAreas.push(getSessionData()['area']);
-		return php.array_values(php.array_diff(AREA_LETTERS, $occupiedAreas));
-	};
-
-	const changePcc = async (pcc) => {
-		let $calledCommands, $jdDump, $parsed;
-
-		$calledCommands = [];
-
-		if (stateful.getSessionData()['pcc'] === pcc) {
-			return {'errors': [Errors.getMessage(Errors.ALREADY_IN_THIS_PCC, {'pcc': pcc})]};
-		}
-
-		// check that there is no PNR in session to match GDS behaviour
-		if (stateful.getSessionData().hasPnr) {
-			return {'errors': [Errors.getMessage(Errors.LEAVE_PNR_CONTEXT, {'pcc': pcc})]};
-		}
-
-		const areaState = await startNewAreaSession(stateful.getSessionData().area, pcc)
-			.catch(exc => formatGtlPccError(exc, pcc));
-
-		areaState.cmdCnt = 1; // to not trigger default area PCC fallback later
-
-		// sometimes when you request invalid PCC, Amadeus fallbacks to
-		// SFO1S2195 - should call >JD; and check that PCC is what we requested
-		const jdCmdRec = await amadeus.runCmd({command: 'JD'}, areaState.gdsData);
-		$jdDump = jdCmdRec.output;
-		$parsed = WorkAreaScreenParser.parse($jdDump);
-		if ($parsed['pcc'] !== pcc) {
-			amadeus.closeSession(areaState.gdsData);
-			return {
-				'calledCommands': [{cmd: 'JD', output: $jdDump}],
-				'errors': ['Failed to change PCC - resulting PCC ' + $parsed['pcc'] + ' does not match requested PCC ' + pcc],
-			};
-		}
-
-		const oldGdsData = stateful.getGdsData();
-		await updateGdsData(areaState);
-		amadeus.closeSession(oldGdsData);
-
-		return {
-			'calledCommands': $calledCommands,
-			'userMessages': ['Successfully changed PCC to ' + pcc],
-		};
+		return php.array_values(php.array_diff(FakeAreaUtil.AREA_LETTERS, $occupiedAreas));
 	};
 
 	const _preprocessSameMonthReturnAvailability = async (day) => {
@@ -1093,10 +952,10 @@ const execute = ({
 
 		if (php.preg_match(/^JM *([A-Z])$/, $cmd, $matches = [])) {
 			$area = $matches[1];
-			return changeArea($area);
+			return fakeAreaUtil.changeArea($area);
 		} else if (php.preg_match(/^JUM\/O- *([A-Z0-9]+)$/, $cmd, $matches = [])) {
 			$pcc = $matches[1];
-			return changePcc($pcc);
+			return fakeAreaUtil.changePcc($pcc);
 		} else if (php.preg_match(/^JD$/, $cmd, $matches = [])) {
 			return {'calledCommands': [imitateGetAreasCmd()]};
 		} else if ($mdaData = AliasParser.parseMda($cmd)) {
@@ -1143,7 +1002,7 @@ const execute = ({
 
 		return {
 			'cmd': 'JD',
-			'output': forgeViewAreasDump($sessionData, $areasFromDb),
+			'output': fakeAreaUtil.forgeViewAreasDump($sessionData, $areasFromDb),
 		};
 	};
 
@@ -1173,6 +1032,6 @@ const execute = ({
 };
 
 /** exposing for unit tests */
-execute.forgeViewAreasDump = forgeViewAreasDump;
+execute.forgeViewAreasDump = FakeAreaUtil.forgeViewAreasDump;
 
 module.exports = execute;
