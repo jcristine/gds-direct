@@ -394,7 +394,7 @@ whenEmcSessionId.then(function(emcSessionId){
                     $trCollapse = $trToggle.next(),
                     $output = $trCollapse.find('.js-output-content'),
                     id = '' + $trCollapse.data('record-id'),
-                    record = _.find(self.records, ['id', id]);
+                    record = self.records.filter(r => r.id == id)[0];
 
                 $btn.toggleClass('fa-arrows-h fa-exchange');
 
@@ -425,7 +425,7 @@ whenEmcSessionId.then(function(emcSessionId){
 
                 if ($target.closest('.js-item-log').length) {
                     id = '' + $trCollapse.data('record-id');
-                    record = _.find(self.records, ['id', id]);
+                    record = self.records.filter(r => r.id == id)[0];
                     if (record) {
                         if (!record.isLogVisited) {
                             $trToggle.addClass('is-log-visited');
@@ -450,7 +450,7 @@ whenEmcSessionId.then(function(emcSessionId){
             .on('click', '.js-copy-output', function () {
                 var $tr = $(this).closest('tr').next(),
                     id = '' + $tr.data('record-id'),
-                    outputHtml = _.find(self.records, ['id', id]).output;
+                    outputHtml = self.records.filter(r => r.id == id)[0].output;
 
                 copyToClipboard(outputHtml);
             });
