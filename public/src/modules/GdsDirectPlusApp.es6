@@ -51,10 +51,10 @@ let toHandleMessageFromServer = (gdsSwitch) => {
 				return;
 			}
 			PricePccMixList.displayPriceMixPccRow(plugin, data);
-			reply({status: 'done'});
+			reply({value: {status: 'done'}});
 		} else {
 			console.error('could not interpret message triggered by server', data);
-			reply({status: 'unknownMessageType', error: 'I do not confirm your message'});
+			reply({error: 'I do not confirm your message', value: {status: 'unknownMessageType'}});
 		}
 	};
 };
