@@ -61,7 +61,9 @@ const RepriceInPccMix = ({
 		return new RepriceInAnotherPccAction({gdsClients}).repriceInNewSession({
 			gds, pcc, itinerary, pricingCmd, startDt, baseDate: startDt,
 		}).then(async pccResult => {
-			pccResult = {pcc, gds, ...pccResult};
+			// itinerary could be passed just once with a
+			// separate initialization message I guess...
+			pccResult = {pcc, gds, ...pccResult, itinerary};
 			for (const ptcBlock of pccResult.pricingBlockList || []) {
 				ptcBlock.fareType = await RbsUtils.getFareTypeV2(gds, pcc, ptcBlock);
 			}

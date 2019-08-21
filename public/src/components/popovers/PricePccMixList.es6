@@ -1,11 +1,15 @@
 
 import {post} from "../../helpers/requests.es6";
 import Component from '../../modules/component.es6';
+import {CHANGE_GDS} from '../../actions/gdsActions.es6';
 
 const Cmp = (...args) => new Component(...args);
 
-/** @param {TerminalPlugin} plugin */
-const PricePccMixList = ({plugin}) => {
+/**
+ * @param {GdsSwitch} gdsSwitch
+ * @param {TerminalPlugin} plugin
+ */
+const PricePccMixList = ({gdsSwitch, plugin}) => {
 	const theadCmp = Cmp('thead.usedCommand').attach([
 		Cmp('tr').attach([
 			Cmp('th', {textContent: 'GDS'}),
@@ -68,15 +72,17 @@ const PricePccMixList = ({plugin}) => {
 			.join('\n');
 
 		const goToPricing = () => {
-			alert('GoTo pricing is not implemented yet');
-			//plugin._withSpinner(() => post('terminal/goToPricing', {
-			//	gds: plugin.gdsName, useSocket: true,
-			//	pricingGds: pccResult.gds,
-			//	pricingPcc: pccResult.pcc,
-			//	pricingCmd: pccResult.pricingCmd,
-			//})).then(({fullState}) => {
-			//	switchToGdsWindow(pccResult.gds, fullState);
-			//});
+			plugin._withSpinner(() => post('terminal/goToPricing', {
+				gds: plugin.gdsName, useSocket: true,
+				pricingGds: pccResult.gds,
+				pricingPcc: pccResult.pcc,
+				pricingCmd: pccResult.pricingCmd,
+				itinerary: pccResult.itinerary,
+			})).then((cmdResult) => {
+				CHANGE_GDS(pccResult.gds);
+				gdsSwitch.getGds(pccResult.gds).getActiveTerminal()
+					.plugin.parseBackEnd(cmdResult, 'GOTOPRICEMIX');
+			});
 		};
 		const makeNetCell = ptcBlock => Cmp('td.net-price').attach([
 			Cmp('span', {
@@ -137,9 +143,9 @@ PricePccMixList.finalize = (data) => {
 	return priceMixList = null;
 };
 
-PricePccMixList.displayPriceMixPccRow = (plugin, pccResult) => {
+PricePccMixList.displayPriceMixPccRow = (gdsSwitch, plugin, pccResult) => {
 	if (!priceMixList) {
-		priceMixList = PricePccMixList({plugin});
+		priceMixList = PricePccMixList({gdsSwitch, plugin});
 		const {remove} = plugin.injectDom({
 			cls: 'price-mix-pcc-holder',
 			dom: priceMixList.dom,

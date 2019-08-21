@@ -91,6 +91,7 @@ export class GDS_UNIT
 		return Object.values(this.get('terminals'));
 	}
 
+	/** @return {Terminal} */
 	getActiveTerminal()
 	{
 		return this.get('terminals')[ this.get('curTerminalId') ];

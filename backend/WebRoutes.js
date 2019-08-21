@@ -22,8 +22,8 @@ const Misc = require("./Transpiled/Lib/Utils/MaskUtil");
 const CmdLogs = require("./Repositories/CmdLogs");
 const Rej = require("klesun-node-tools/src/Rej");
 const Agents = require("./Repositories/Agents");
-const withGdsSession = require("./HttpControllers/MainController").withGdsSession;
-const toHandleHttp = require("./HttpControllers/MainController").toHandleHttp;
+const {withGdsSession} = require("./HttpControllers/MainController");
+const {toHandleHttp} = require("./HttpControllers/MainController");
 const {withAuth} = require("./HttpControllers/MainController");
 const GdsdLib = require('klesun-node-tools');
 const Settings = require("./Repositories/Settings");
@@ -441,6 +441,7 @@ const routes = {
 	'/terminal/command': withGdsSession(GdsSessionController.runInputCmd, true),
 	'/gdsDirect/keepAlive': withGdsSession(GdsSessionController.keepAliveCurrent),
 	'/terminal/addMpRemark': withGdsSession(GdsSessionController.addMpRemark),
+	'/terminal/goToPricing': withGdsSession(GdsSessionController.goToPricing),
 };
 
 const socketIo = SocketIo.init(routes);

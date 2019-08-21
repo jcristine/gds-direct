@@ -1,8 +1,13 @@
+const FakeAreaUtil = require('../GdsHelpers/Amadeus/FakeAreaUtil.js');
+const StatefulSession = require('../GdsHelpers/StatefulSession.js');
+const GdsSessionManager = require('../GdsHelpers/GdsSessionManager.js');
 const RepriceItinerary = require('./RepriceItinerary.js');
 const GetCurrentPnr = require('./GetCurrentPnr.js');
-const Rej = require('klesun-node-tools/src/Rej.js');
 
 const ignorePnr = async (stateful) => {
+	if (!stateful.getSessionData().hasPnr) {
+		return;
+	}
 	const ignoreCmds = {
 		apollo: ['I', 'I'],
 		sabre: ['I'],
@@ -15,8 +20,45 @@ const ignorePnr = async (stateful) => {
 	}
 };
 
-const getTargetSession = ({pricingGds, pricingPcc, stateful}) => {
-	return Rej.NotImplemented('TODO: implement getTargetSession()');
+const ensurePcc = async (stateful, pricingPcc) => {
+	if (stateful.getSessionData().pcc === pricingPcc) {
+		return;
+	}
+	const gds = stateful.gds;
+	if (gds === 'amadeus') {
+		await FakeAreaUtil({stateful}).changePcc(pricingPcc);
+	} else {
+		const cmd = {
+			apollo: 'SEM/' + pricingPcc + '/AG',
+			galileo: 'SEM/' + pricingPcc + '/AG',
+			sabre: 'AAA' + pricingPcc,
+		}[gds];
+
+		await stateful.runCmd(cmd);
+	}
+};
+
+const getTargetSession = async ({
+	pricingGds, pricingPcc, oldStateful,
+	travelRequestId, controllerData,
+}) => {
+	const {emcUser, askClient} = controllerData;
+	let targetStateful;
+	if (pricingGds === oldStateful.gds) {
+		targetStateful = oldStateful;
+	} else {
+		const {startedNew, session} = await GdsSessionManager.getSession({
+			rqBody: {travelRequestId, gds: pricingGds},
+			canStartNew: true, emcUser,
+		});
+		targetStateful = await StatefulSession.makeFromDb({
+			session, emcUser, askClient,
+		});
+		await ignorePnr(targetStateful);
+	}
+	await ensurePcc(targetStateful, pricingPcc);
+
+	return targetStateful;
 };
 
 /**
@@ -25,16 +67,24 @@ const getTargetSession = ({pricingGds, pricingPcc, stateful}) => {
  * @param stateful = require('StatefulSession.js')()
  */
 const GoToPricing = ({
-	stateful, pricingGds, pricingPcc,
-	pricingCmd, emcUser, askClient = null,
+	stateful, controllerData, rqBody,
 }) => {
-	const main = async () => {
-		const pnr = await GetCurrentPnr(stateful);
-		const reservation = pnr.getReservation(stateful.getStartDt());
-		const itinerary = reservation.itinerary;
-		await ignorePnr(stateful);
-		const targetSession = await getTargetSession({pricingGds, pricingPcc, stateful});
+	const {
+		pricingGds, itinerary,
+		pricingPcc, pricingCmd,
+		travelRequestId,
+	} = rqBody;
 
+	const main = async () => {
+		await ignorePnr(stateful);
+		const targetSession = await getTargetSession({
+			pricingGds, pricingPcc, controllerData,
+			oldStateful: stateful, travelRequestId,
+		});
+		await targetSession.updateAreaState({
+			type: '!goToPricing',
+			state: {hasPnr: true, canCreatePq: false},
+		});
 		return RepriceItinerary({
 			gds: pricingGds,
 			session: targetSession,

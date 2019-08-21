@@ -143,9 +143,9 @@ exports.addMpRemark = async ({rqBody, ...params}) => {
 		}));
 };
 
-exports.goToPricing = async ({rqBody, ...params}) => {
-	const stateful = await StatefulSession.makeFromDb(params);
-	return GoToPricing({stateful, ...rqBody})
+exports.goToPricing = async ({rqBody, ...controllerData}) => {
+	const stateful = await StatefulSession.makeFromDb(controllerData);
+	return GoToPricing({stateful, rqBody, controllerData})
 		.then(result => CmdResultAdapter({
 			cmdRq: 'GOTOPRICEMIX',
 			gds: rqBody.pricingGds,

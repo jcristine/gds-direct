@@ -50,7 +50,7 @@ let toHandleMessageFromServer = (gdsSwitch) => {
 				reply({error: 'No GDS terminal is currently active'});
 				return;
 			}
-			PricePccMixList.displayPriceMixPccRow(plugin, data);
+			PricePccMixList.displayPriceMixPccRow(gdsSwitch, plugin, data);
 			reply({value: {status: 'done'}});
 		} else {
 			console.error('could not interpret message triggered by server', data);

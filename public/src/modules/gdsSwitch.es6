@@ -78,6 +78,7 @@ export class GdsSwitch
 		this.getCurrent().updateMatrix(dimensions);
 	}
 
+	/** @return {GDS_UNIT} */
 	getGds(gdsName)
 	{
 		return this.gdsSet.filter( gds => gds.get('name') === gdsName )[0];
