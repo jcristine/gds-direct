@@ -51,15 +51,15 @@ const RepriceInPccMix = ({
 
 	/** @return Promise */
 	const processPcc = ({pcc, gds, itinerary}) => {
-		const targetCmd = new GdsDialectTranslator()
+		const pricingCmd = new GdsDialectTranslator()
 			.setBaseDate(startDt)
 			.translate('apollo', gds, cmdRq).output;
-		if (!targetCmd) {
+		if (!pricingCmd) {
 			const msg = 'Failed to translate >' + cmdRq + '; to ' + gds;
 			return Rej.NotImplemented(msg);
 		}
-		return new RepriceInAnotherPccAction({gdsClients}).repriceIn({
-			gds, pcc, itinerary, targetCmd, startDt, baseDate: startDt,
+		return new RepriceInAnotherPccAction({gdsClients}).repriceInNewSession({
+			gds, pcc, itinerary, pricingCmd, startDt, baseDate: startDt,
 		}).then(async pccResult => {
 			pccResult = {pcc, gds, ...pccResult};
 			for (const ptcBlock of pccResult.pricingBlockList || []) {

@@ -16,13 +16,9 @@ const GalileoBuildItineraryAction = require('../../../../Rbs/GdsAction/GalileoBu
 const SabreBuildItineraryAction = require('../../../../Rbs/GdsAction/SabreBuildItineraryAction.js');
 const GdsDialectTranslator = require('../../../../Rbs/GdsDirect/DialectTranslator/GdsDialectTranslator.js');
 const Pccs = require("../../../../../Repositories/Pccs");
-const CmsSabreTerminal = require("../../GdsInterface/CmsSabreTerminal");
 const {BadRequest, NotImplemented, Forbidden, UnprocessableEntity, NotFound} = require("klesun-node-tools/src/Rej");
 const {ignoreExc} = require('../../../../../Utils/TmpLib.js');
-const UpdateGalileoStateAction = require("../../SessionStateProcessor/UpdateGalileoState");
-const CmsApolloTerminal = require("../../GdsInterface/CmsApolloTerminal");
 const php = require('klesun-node-tools/src/Transpiled/php.js');
-const GdsProfiles = require("../../../../../Repositories/GdsProfiles");
 const fetchAll = require("../../../../../GdsHelpers/TravelportUtils").fetchAll;
 const {fetchAllFx} = require('../../../../../GdsHelpers/AmadeusUtils.js');
 const AmadeusBuildItineraryAction = require('../../../GdsAction/AmadeusBuildItineraryAction.js');
@@ -159,6 +155,140 @@ const parseAlias = $cmd => {
 	}
 };
 
+const repriceInApollo = async ({session, itinerary, pricingCmd, startDt}) => {
+	itinerary = itinerary.map(seg => ({...seg, segmentStatus: 'GK'}));
+	const built = await ApolloBuildItineraryAction({
+		baseDate: startDt,
+		session, itinerary,
+		isParserFormat: true,
+	});
+	if (built.errorType) {
+		return UnprocessableEntity('Could not rebuild PNR in Apollo - '
+			+ built.errorType + ' ' + JSON.stringify(built.errorData));
+	}
+	pricingCmd = extendApolloCmd(pricingCmd);
+	const cmdRec = await fetchAll(pricingCmd, session);
+	const pricing = ImportPqApolloAction.parsePricing(cmdRec.output, [], pricingCmd);
+
+	return {
+		calledCommands: [cmdRec].map(cmdRec => ({...cmdRec,
+			output: TravelportUtils.wrap(cmdRec.output, 'galileo'),
+		})),
+		pricingCmd: pricingCmd,
+		error: pricing.error || null,
+		pricingBlockList: (pricing.store || {}).pricingBlockList || [],
+	};
+};
+
+const repriceInSabre = async ({session, itinerary, pricingCmd, startDt}) => {
+	itinerary = itinerary.map(seg => {
+		// AA does not allow GK status on AA segments
+		return seg.airline === 'AA'
+			? {...seg, segmentStatus: 'LL'}
+			: {...seg, segmentStatus: 'GK'};
+	});
+	const build = await new SabreBuildItineraryAction().setSession(session);
+	let built = await build.execute(itinerary, true);
+	let yFallback = false;
+	if (built.errorType === ERROR_NO_AVAIL) {
+		yFallback = true;
+		await session.runCmd('XI');
+		const yItin = itinerary.map(seg => ({...seg, bookingClass: 'Y'}));
+		built = await build.execute(yItin, true);
+	}
+	if (built.errorType) {
+		return UnprocessableEntity('Could not rebuild PNR in Sabre - '
+			+ built.errorType + ' ' + JSON.stringify(built.errorData));
+	}
+	pricingCmd = await extendSabreCmd({cmd: pricingCmd, yFallback, srcItin: itinerary});
+	const cmdRec = await session.runCmd(pricingCmd);
+	const parsed = SabrePricingParser.parse(cmdRec.output);
+	let error = parsed.error || null;
+	if (error === 'customGdsError') {
+		error = cmdRec.output.trim();
+	}
+	if (error) {
+		error = '>' + pricingCmd + '; - ' + error;
+	}
+
+	return {
+		calledCommands: [cmdRec],
+		pricingCmd: pricingCmd,
+		error: error,
+		pricingBlockList: error ? [] :
+			new SabrePricingAdapter()
+				.setPricingCommand(pricingCmd)
+				.setReservationDate(startDt)
+				.transform(parsed).pricingBlockList,
+	};
+};
+
+const repriceInAmadeus = async ({session, itinerary, pricingCmd}) => {
+	itinerary = itinerary.map(seg => ({...seg, segmentStatus: 'GK'}));
+	const built = await new AmadeusBuildItineraryAction()
+		.setSession(session).execute(itinerary, true);
+	if (built.errorType) {
+		return UnprocessableEntity('Could not rebuild PNR in Amadeus - '
+			+ built.errorType + ' ' + JSON.stringify(built.errorData));
+	}
+	pricingCmd = extendAmadeusCmd(pricingCmd);
+	const capturing = withCapture(session);
+	const cmdRec = await fetchAllFx(pricingCmd, capturing);
+	const pricing = await new AmadeusGetPricingPtcBlocksAction({
+		session: capturing,
+	}).execute(pricingCmd, cmdRec.output);
+	let error = pricing.error || null;
+	if (error) {
+		error = pricingCmd + ' - ' + error;
+	}
+	let cmdRecs = capturing.getCalledCommands();
+	cmdRecs = AmadeusUtils.collectFullCmdRecs(cmdRecs);
+
+	return {
+		calledCommands: cmdRecs,
+		error: error,
+		pricingCmd: pricingCmd,
+		pricingBlockList: (pricing.pricingList || [])
+			.flatMap(store => store.pricingBlockList),
+	};
+};
+
+const repriceInGalileo = async ({session, itinerary, pricingCmd, gdsClients = GdsSession.makeGdsClients()}) => {
+	const travelport = gdsClients.travelport;
+	itinerary = itinerary.map(seg => ({...seg, segmentStatus: 'AK'}));
+	const built = await GalileoBuildItineraryAction({
+		travelport, session, itinerary, isParserFormat: true,
+	});
+	if (built.errorType) {
+		return UnprocessableEntity('Could not rebuild PNR in Galileo - '
+			+ built.errorType + ' ' + JSON.stringify(built.errorData));
+	}
+	pricingCmd = extendGalileoCmd(pricingCmd);
+	const pricingModifiers = (FqCmdParser.parse(pricingCmd) || {}).pricingModifiers || [];
+	const fqCmdRec = await GalileoUtils.withFakeNames({
+		pricingModifiers, session,
+		action: () => fetchAll(pricingCmd, session),
+	});
+	const lfCmdRec = await fetchAll('F*Q', session);
+	const ptcList = FqParser.parse(fqCmdRec.output);
+	const linearFare = LinearFareParser.parse(lfCmdRec.output);
+	let error = ptcList.error || linearFare.error;
+	if (error) {
+		error = '>' + pricingCmd + '; - ' + error;
+	}
+	return {
+		calledCommands: [fqCmdRec, lfCmdRec].map(cmdRec => ({...cmdRec,
+			output: TravelportUtils.wrap(cmdRec.output, 'galileo'),
+		})),
+		error: error,
+		pricingCmd: pricingCmd,
+		pricingBlockList: error ? [] :
+			new GalileoPricingAdapter()
+				.setPricingCommand(pricingCmd)
+				.transform(ptcList, linearFare).pricingBlockList,
+	};
+};
+
 /**
  * Open a separate session, rebuild itinerary and price with given cmd
  */
@@ -213,156 +343,21 @@ class RepriceInAnotherPccAction {
 		}
 	}
 
-	async repriceInApollo({session, pcc, itinerary, pricingCmd, $startDt}) {
-		itinerary = itinerary.map(seg => ({...seg, segmentStatus: 'GK'}));
-		const built = await ApolloBuildItineraryAction({
-			baseDate: $startDt,
-			session, itinerary,
-			isParserFormat: true,
-		});
-		if (built.errorType) {
-			return UnprocessableEntity('Could not rebuild PNR in Apollo - '
-				+ built.errorType + ' ' + JSON.stringify(built.errorData));
-		}
-		pricingCmd = extendApolloCmd(pricingCmd);
-		const cmdRec = await fetchAll(pricingCmd, session);
-		const pricing = ImportPqApolloAction.parsePricing(cmdRec.output, [], pricingCmd);
-
-		return {
-			calledCommands: [cmdRec].map(cmdRec => ({...cmdRec,
-				output: TravelportUtils.wrap(cmdRec.output, 'galileo'),
-			})),
-			pricingCmd: pricingCmd,
-			error: pricing.error || null,
-			pricingBlockList: (pricing.store || {}).pricingBlockList || [],
-		};
-	}
-
-	async repriceInSabre({session, pcc, itinerary, pricingCmd}) {
-		itinerary = itinerary.map(seg => {
-			// AA does not allow GK status on AA segments
-			return seg.airline === 'AA'
-				? {...seg, segmentStatus: 'LL'}
-				: {...seg, segmentStatus: 'GK'};
-		});
-		const build = await new SabreBuildItineraryAction().setSession(session);
-		let built = await build.execute(itinerary, true);
-		let yFallback = false;
-		if (built.errorType === ERROR_NO_AVAIL) {
-			yFallback = true;
-			await session.runCmd('XI');
-			const yItin = itinerary.map(seg => ({...seg, bookingClass: 'Y'}));
-			built = await build.execute(yItin, true);
-		}
-		if (built.errorType) {
-			return UnprocessableEntity('Could not rebuild PNR in Sabre - '
-				+ built.errorType + ' ' + JSON.stringify(built.errorData));
-		}
-		pricingCmd = await extendSabreCmd({cmd: pricingCmd, yFallback, srcItin: itinerary});
-		const cmdRec = await session.runCmd(pricingCmd);
-		const parsed = SabrePricingParser.parse(cmdRec.output);
-		let error = parsed.error || null;
-		if (error === 'customGdsError') {
-			error = cmdRec.output.trim();
-		}
-		if (error) {
-			error = '>' + pricingCmd + '; - ' + error;
-		}
-
-		return {
-			calledCommands: [cmdRec],
-			pricingCmd: pricingCmd,
-			error: error,
-			pricingBlockList: error ? [] :
-				new SabrePricingAdapter()
-					.setPricingCommand(pricingCmd)
-					.setReservationDate(this.baseDate)
-					.transform(parsed).pricingBlockList,
-		};
-	}
-
-	async repriceInAmadeus({session, pcc, itinerary, pricingCmd}) {
-		itinerary = itinerary.map(seg => ({...seg, segmentStatus: 'GK'}));
-		const built = await new AmadeusBuildItineraryAction()
-			.setSession(session).execute(itinerary, true);
-		if (built.errorType) {
-			return UnprocessableEntity('Could not rebuild PNR in Amadeus - '
-				+ built.errorType + ' ' + JSON.stringify(built.errorData));
-		}
-		pricingCmd = extendAmadeusCmd(pricingCmd);
-		const capturing = withCapture(session);
-		const cmdRec = await fetchAllFx(pricingCmd, capturing);
-		const pricing = await new AmadeusGetPricingPtcBlocksAction({
-			session: capturing,
-		}).execute(pricingCmd, cmdRec.output);
-		let error = pricing.error || null;
-		if (error) {
-			error = pricingCmd + ' - ' + error;
-		}
-		let cmdRecs = capturing.getCalledCommands();
-		cmdRecs = AmadeusUtils.collectFullCmdRecs(cmdRecs);
-
-		return {
-			calledCommands: cmdRecs,
-			error: error,
-			pricingCmd: pricingCmd,
-			pricingBlockList: (pricing.pricingList || [])
-				.flatMap(store => store.pricingBlockList),
-		};
-	}
-
-	async repriceInGalileo({session, pcc, itinerary, pricingCmd}) {
-		const travelport = this.gdsClients.travelport;
-		itinerary = itinerary.map(seg => ({...seg, segmentStatus: 'AK'}));
-		const built = await GalileoBuildItineraryAction({
-			travelport, session, itinerary, isParserFormat: true,
-		});
-		if (built.errorType) {
-			return UnprocessableEntity('Could not rebuild PNR in Galileo - '
-				+ built.errorType + ' ' + JSON.stringify(built.errorData));
-		}
-		pricingCmd = extendGalileoCmd(pricingCmd);
-		const pricingModifiers = (FqCmdParser.parse(pricingCmd) || {}).pricingModifiers || [];
-		const fqCmdRec = await GalileoUtils.withFakeNames({
-			pricingModifiers, session,
-			action: () => fetchAll(pricingCmd, session),
-		});
-		const lfCmdRec = await fetchAll('F*Q', session);
-		const ptcList = FqParser.parse(fqCmdRec.output);
-		const linearFare = LinearFareParser.parse(lfCmdRec.output);
-		let error = ptcList.error || linearFare.error;
-		if (error) {
-			error = '>' + pricingCmd + '; - ' + error;
-		}
-		return {
-			calledCommands: [fqCmdRec, lfCmdRec].map(cmdRec => ({...cmdRec,
-				output: TravelportUtils.wrap(cmdRec.output, 'galileo'),
-			})),
-			error: error,
-			pricingCmd: pricingCmd,
-			pricingBlockList: error ? [] :
-				new GalileoPricingAdapter()
-					.setPricingCommand(pricingCmd)
-					.transform(ptcList, linearFare).pricingBlockList,
-		};
-	}
-
-	async repriceIn({gds, pcc, itinerary, targetCmd, startDt}) {
+	async repriceIn({gds, ...params}) {
 		const gdsClients = this.gdsClients;
-		const pricingCmd = targetCmd;
-		const action = (session) => {
-			if (gds === 'apollo') {
-				return this.repriceInApollo({session, pcc, itinerary, pricingCmd, startDt});
-			} else if (gds === 'sabre') {
-				return this.repriceInSabre({session, pcc, itinerary, pricingCmd});
-			} else if (gds === 'amadeus') {
-				return this.repriceInAmadeus({session, pcc, itinerary, pricingCmd});
-			} else if (gds === 'galileo') {
-				return this.repriceInGalileo({session, pcc, itinerary, pricingCmd});
-			} else {
-				return NotImplemented('Unsupported GDS ' + gds + ' for repriceIn()');
-			}
-		};
+		return {
+			apollo: repriceInApollo,
+			galileo: repriceInGalileo,
+			sabre: repriceInSabre,
+			amadeus: repriceInAmadeus,
+		}[gds]({...params, gdsClients});
+	}
+
+	async repriceInNewSession({gds, pcc, itinerary, pricingCmd, startDt}) {
+		const gdsClients = this.gdsClients;
+		const action = (session) => this.repriceIn({
+			gds, itinerary, pricingCmd, session, startDt,
+		});
 		return GdsSession.withSession({gds, pcc, gdsClients, action});
 	}
 
@@ -370,7 +365,7 @@ class RepriceInAnotherPccAction {
 	 * @param {ApolloPnr|SabrePnr|AmadeusPnr|GalileoPnr} pnr
 	 * @param currentSession = await require('StatefulSession.js')()
 	 */
-	async execute(pnr, cmd, dialect, targetStr, currentSession) {
+	async execute(pnr, cmdRq, dialect, targetStr, currentSession) {
 		/** requested by Jayden */
 		await currentSession.updateAreaState({
 			type: '!priceInAnotherPcc',
@@ -391,9 +386,11 @@ class RepriceInAnotherPccAction {
 
 		const translatorResult = (new GdsDialectTranslator())
 			.setBaseDate(startDt)
-			.translate(dialect, target.gds, cmd);
-		const targetCmd = translatorResult.output || cmd;
-		const result = await this.repriceIn({gds, pcc, itinerary, targetCmd, startDt});
+			.translate(dialect, target.gds, cmdRq);
+		const pricingCmd = translatorResult.output || cmdRq;
+		const result = await this.repriceInNewSession({
+			gds, pcc, itinerary, pricingCmd, startDt,
+		});
 
 		return {'calledCommands': result.calledCommands};
 	}
