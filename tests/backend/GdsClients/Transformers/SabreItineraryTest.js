@@ -371,6 +371,14 @@ const provide_parseXml = () => {
 		},
 	});
 
+	// 1 ET 509E 28FEB EWRLFW SS1   920P 1205P+*      FR/SA   E  1
+	// 2 ET1005E 29FEB LFWROB SS1  1250P  410P *         SA   E  1
+	//         OPERATED BY ASKY  LFW-ACC
+	//         OPERATED BY ASKY  ACC-ROB
+	// 3 ET1006E 24MAR ROBLFW SS1   810A 1140A *         TU   E  2
+	//         OPERATED BY ASKY  ROB-ACC
+	//         OPERATED BY ASKY  ACC-LFW
+	// 4 ET 508E 24MAR LFWEWR SS1  1235P  820P *         TU   E  2
 	list.push({
 		title: 'Hidden stops in reservation output',
 		input: {
