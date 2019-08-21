@@ -25,6 +25,7 @@ const UnprocessableEntity = require("klesun-node-tools/src/Rej").UnprocessableEn
 const SabreTicketParser = require('../../../../Gds/Parsers/Sabre/SabreTicketParser.js');
 const Rej = require('klesun-node-tools/src/Rej.js');
 const {findSegmentNumberInPnr} = require('../Common/ItinerarySegments');
+const _ = require('lodash');
 
 const doesStorePnr = ($cmd) => {
 	let $parsedCmd, $flatCmds, $cmdTypes;
@@ -640,10 +641,15 @@ const execute = ({
 
 		let cmdRec = result.pnrCmdRec;
 		if ($fallbackToGk) {
-			const segments = $newSegments.map(
-				seg => findSegmentNumberInPnr(seg, result.itinerary) + seg.bookingClass);
-			$cmd = 'WC' + segments.join('/');
-			cmdRec = await runCmd($cmd);
+			// order is important, so can't store in a {} as it sorts integers
+			const byMarriage = Fp.groupMap(s => s.marriage, $newSegments);
+			for (const [marriage, segments] of byMarriage) {
+				const segmentTokens = segments.map(
+					seg => findSegmentNumberInPnr(seg, result.itinerary) + seg.bookingClass);
+
+				const cmd = 'WC' + segmentTokens.join('/');
+				cmdRec = await runCmd(cmd);
+			}
 		}
 		$sortResult = await processSortItinerary()
 			.catch(exc => ({errors: ['Did not SORT' + exc]}));
