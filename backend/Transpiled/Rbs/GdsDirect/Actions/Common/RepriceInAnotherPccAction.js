@@ -1,3 +1,4 @@
+const GdsSession = require('../../../../../GdsHelpers/GdsSession.js');
 const TravelportUtils = require('../../../../../GdsHelpers/TravelportUtils.js');
 const AmadeusUtils = require('../../../../../GdsHelpers/AmadeusUtils.js');
 const GalileoUtils = require('../../../../../GdsHelpers/GalileoUtils.js');
@@ -168,12 +169,8 @@ class RepriceInAnotherPccAction {
 
 	constructor({
 		baseDate = new Date().toISOString(),
-		gdsClients = {
-			travelport: require("../../../../../GdsClients/TravelportClient.js")(),
-			sabre: require("../../../../../GdsClients/SabreClient.js").makeCustom(),
-			amadeus: require("../../../../../GdsClients/AmadeusClient.js").makeCustom(),
-		}} = {},
-	) {
+		gdsClients = GdsSession.makeGdsClients(),
+	} = {}) {
 		this.$log = ($msg, $data) => {};
 		this.gdsClients = gdsClients;
 		this.baseDate = baseDate;
@@ -216,16 +213,9 @@ class RepriceInAnotherPccAction {
 		}
 	}
 
-	async repriceInApollo(pcc, itinerary, pricingCmd, $startDt) {
-		itinerary = itinerary.map(seg => ({...seg, segmentStatus: 'GK'}));
-		const profileName = GdsProfiles.TRAVELPORT.DynApolloProd_2F3K;
-		return this.gdsClients.travelport.withSession({profileName}, async session => {
-			session = withLog(session, this.$log);
-			const semRs = await session.runCmd('SEM/' + pcc + '/AG');
-			if (!CmsApolloTerminal.isSuccessChangePccOutput(semRs.output)) {
-				return Forbidden('Could not emulate '
-					+ pcc + ' - ' + semRs.output.trim());
-			}
+	async repriceInApollo({session, pcc, itinerary, pricingCmd, $startDt}) {
+			// TODO: indent
+			itinerary = itinerary.map(seg => ({...seg, segmentStatus: 'GK'}));
 			const built = await ApolloBuildItineraryAction({
 				baseDate: $startDt,
 				session, itinerary,
@@ -243,26 +233,20 @@ class RepriceInAnotherPccAction {
 				calledCommands: [cmdRec].map(cmdRec => ({...cmdRec,
 					output: TravelportUtils.wrap(cmdRec.output, 'galileo'),
 				})),
+				pricingCmd: pricingCmd,
 				error: pricing.error || null,
 				pricingBlockList: (pricing.store || {}).pricingBlockList || [],
 			};
-		});
 	}
 
-	async repriceInSabre(pcc, itinerary, pricingCmd) {
-		itinerary = itinerary.map(seg => {
-			// AA does not allow GK status on AA segments
-			return seg.airline === 'AA'
-				? {...seg, segmentStatus: 'LL'}
-				: {...seg, segmentStatus: 'GK'};
-		});
-		return this.gdsClients.sabre.withSession({}, async session => {
-			session = withLog(session, this.$log);
-			const aaaRs = await session.runCmd('AAA' + pcc);
-			if (!CmsSabreTerminal.isSuccessChangePccOutput(aaaRs.output, pcc)) {
-				return Forbidden('Could not emulate '
-					+ pcc + ' - ' + aaaRs.output.trim());
-			}
+	async repriceInSabre({session, pcc, itinerary, pricingCmd}) {
+			// TODO: indent
+			itinerary = itinerary.map(seg => {
+				// AA does not allow GK status on AA segments
+				return seg.airline === 'AA'
+					? {...seg, segmentStatus: 'LL'}
+					: {...seg, segmentStatus: 'GK'};
+			});
 			const build = await new SabreBuildItineraryAction().setSession(session);
 			let built = await build.execute(itinerary, true);
 			let yFallback = false;
@@ -289,6 +273,7 @@ class RepriceInAnotherPccAction {
 
 			return {
 				calledCommands: [cmdRec],
+				pricingCmd: pricingCmd,
 				error: error,
 				pricingBlockList: error ? [] :
 					new SabrePricingAdapter()
@@ -296,14 +281,11 @@ class RepriceInAnotherPccAction {
 						.setReservationDate(this.baseDate)
 						.transform(parsed).pricingBlockList,
 			};
-		});
 	}
 
-	async repriceInAmadeus(pcc, itinerary, pricingCmd) {
-		itinerary = itinerary.map(seg => ({...seg, segmentStatus: 'GK'}));
-		const profileName = GdsProfiles.chooseAmaProfile(pcc);
-		return this.gdsClients.amadeus.withSession({profileName, pcc}, async session => {
-			session = withLog(session, this.$log);
+	async repriceInAmadeus({session, pcc, itinerary, pricingCmd}) {
+			// TODO: indent
+			itinerary = itinerary.map(seg => ({...seg, segmentStatus: 'GK'}));
 			const built = await new AmadeusBuildItineraryAction()
 				.setSession(session).execute(itinerary, true);
 			if (built.errorType) {
@@ -326,23 +308,16 @@ class RepriceInAnotherPccAction {
 			return {
 				calledCommands: cmdRecs,
 				error: error,
+				pricingCmd: pricingCmd,
 				pricingBlockList: (pricing.pricingList || [])
 					.flatMap(store => store.pricingBlockList),
 			};
-		});
 	}
 
-	async repriceInGalileo(pcc, itinerary, pricingCmd) {
-		itinerary = itinerary.map(seg => ({...seg, segmentStatus: 'AK'}));
-		const profileName = GdsProfiles.TRAVELPORT.DynGalileoProd_711M;
-		const travelport = this.gdsClients.travelport;
-		return travelport.withSession({profileName}, async session => {
-			session = withLog(session, this.$log);
-			const semRs = await session.runCmd('SEM/' + pcc + '/AG');
-			if (!UpdateGalileoStateAction.wasPccChangedOk(semRs.output)) {
-				return Forbidden('Could not emulate '
-					+ pcc + ' - ' + semRs.output.trim());
-			}
+	async repriceInGalileo({session, pcc, itinerary, pricingCmd}) {
+			// TODO: indent
+			const travelport = this.gdsClients.travelport;
+			itinerary = itinerary.map(seg => ({...seg, segmentStatus: 'AK'}));
 			const built = await GalileoBuildItineraryAction({
 				travelport, session, itinerary, isParserFormat: true,
 			});
@@ -368,26 +343,31 @@ class RepriceInAnotherPccAction {
 					output: TravelportUtils.wrap(cmdRec.output, 'galileo'),
 				})),
 				error: error,
+				pricingCmd: pricingCmd,
 				pricingBlockList: error ? [] :
 					new GalileoPricingAdapter()
 						.setPricingCommand(pricingCmd)
 						.transform(ptcList, linearFare).pricingBlockList,
 			};
-		});
 	}
 
 	async repriceIn({gds, pcc, itinerary, targetCmd, startDt}) {
-		if (gds === 'apollo') {
-			return this.repriceInApollo(pcc, itinerary, targetCmd, startDt);
-		} else if (gds === 'sabre') {
-			return this.repriceInSabre(pcc, itinerary, targetCmd);
-		} else if (gds === 'amadeus') {
-			return this.repriceInAmadeus(pcc, itinerary, targetCmd);
-		} else if (gds === 'galileo') {
-			return this.repriceInGalileo(pcc, itinerary, targetCmd);
-		} else {
-			return NotImplemented('Unsupported GDS ' + gds + ' for repriceIn()');
-		}
+		const gdsClients = this.gdsClients;
+		const pricingCmd = targetCmd;
+		const action = (session) => {
+			if (gds === 'apollo') {
+				return this.repriceInApollo({session, pcc, itinerary, pricingCmd, startDt});
+			} else if (gds === 'sabre') {
+				return this.repriceInSabre({session, pcc, itinerary, pricingCmd});
+			} else if (gds === 'amadeus') {
+				return this.repriceInAmadeus({session, pcc, itinerary, pricingCmd});
+			} else if (gds === 'galileo') {
+				return this.repriceInGalileo({session, pcc, itinerary, pricingCmd});
+			} else {
+				return NotImplemented('Unsupported GDS ' + gds + ' for repriceIn()');
+			}
+		};
+		return GdsSession.withSession({gds, pcc, gdsClients, action});
 	}
 
 	/**

@@ -1,3 +1,6 @@
+const CmsSabreTerminal = require('../Transpiled/Rbs/GdsDirect/GdsInterface/CmsSabreTerminal.js');
+const UpdateGalileoState = require('../Transpiled/Rbs/GdsDirect/SessionStateProcessor/UpdateGalileoState.js');
+const CmsApolloTerminal = require('../Transpiled/Rbs/GdsDirect/GdsInterface/CmsApolloTerminal.js');
 const crypto = require('crypto');
 const GdsSessions = require('../Repositories/GdsSessions.js');
 const GdsProfiles = require('../Repositories/GdsProfiles.js');
@@ -102,6 +105,21 @@ const initHttpRq = (session) => initHttpRqFor({
 });
 
 const makeGdsClients = ({
+	PersistentHttpRq = require('klesun-node-tools/src/Utils/PersistentHttpRq.js'),
+	GdsProfiles = require('../Repositories/GdsProfiles.js'),
+	randomBytes = (size) => crypto.randomBytes(size),
+	now = () => Date.now(),
+} = {}) => {
+	const travelport = TravelportClient({PersistentHttpRq, GdsProfiles});
+	const sabre = SabreClient.makeCustom({PersistentHttpRq, GdsProfiles});
+	const amadeus = AmadeusClient.makeCustom({
+		PersistentHttpRq,
+		GdsProfiles, randomBytes, now,
+	});
+	return {travelport, amadeus, sabre};
+};
+
+const makeLoggingGdsClients = ({
 	logId, gds,
 	PersistentHttpRq = require('klesun-node-tools/src/Utils/PersistentHttpRq.js'),
 	GdsProfiles = require('../Repositories/GdsProfiles.js'),
@@ -109,13 +127,54 @@ const makeGdsClients = ({
 	now = () => Date.now(),
 }) => {
 	const loggingHttpRq = initHttpRqFor({logId, gds, PersistentHttpRq});
-	const travelport = TravelportClient({PersistentHttpRq: loggingHttpRq, GdsProfiles});
-	const sabre = SabreClient.makeCustom({PersistentHttpRq: loggingHttpRq, GdsProfiles});
-	const amadeus = AmadeusClient.makeCustom({
+	return makeGdsClients({
 		PersistentHttpRq: loggingHttpRq,
 		GdsProfiles, randomBytes, now,
 	});
-	return {travelport, amadeus, sabre};
+};
+
+const withSession = ({
+	gds, pcc, action,
+	gdsClients = GdsSession.makeGdsClients(),
+}) => {
+	if (gds === 'apollo') {
+		const profileName = GdsProfiles.TRAVELPORT.DynApolloProd_2F3K;
+		return gdsClients.travelport.withSession({profileName}, async gdsSession => {
+			const semRs = await gdsSession.runCmd('SEM/' + pcc + '/AG');
+			if (!CmsApolloTerminal.isSuccessChangePccOutput(semRs.output)) {
+				const msg = 'Could not emulate ' + pcc + ' - ' + semRs.output.trim();
+				return Rej.Forbidden(msg);
+			} else {
+				return action(gdsSession);
+			}
+		});
+	} else if (gds === 'galileo') {
+		const profileName = GdsProfiles.TRAVELPORT.DynGalileoProd_711M;
+		return gdsClients.travelport.withSession({profileName}, async gdsSession => {
+			const semRs = await gdsSession.runCmd('SEM/' + pcc + '/AG');
+			if (!UpdateGalileoState.wasPccChangedOk(semRs.output)) {
+				const msg = 'Could not emulate ' + pcc + ' - ' + semRs.output.trim();
+				return Rej.Forbidden(msg);
+			} else {
+				return action(gdsSession);
+			}
+		});
+	} else if (gds === 'sabre') {
+		return gdsClients.sabre.withSession({}, async gdsSession => {
+			const aaaRs = await gdsSession.runCmd('AAA' + pcc);
+			if (!CmsSabreTerminal.isSuccessChangePccOutput(aaaRs.output, pcc)) {
+				const msg = 'Could not emulate ' + pcc + ' - ' + aaaRs.output.trim();
+				return Rej.Forbidden(msg);
+			} else {
+				return action(gdsSession);
+			}
+		});
+	} else if (gds === 'amadeus') {
+		const profileName = GdsProfiles.chooseAmaProfile(pcc);
+		return gdsClients.amadeus.withSession({profileName, pcc}, action);
+	} else {
+		return Rej.NotImplemented('Unsupported GDS - ' + gds);
+	}
 };
 
 /**
@@ -129,7 +188,7 @@ const makeGdsClients = ({
  */
 const GdsSession = ({
 	session,
-	gdsClients = makeGdsClients({
+	gdsClients = makeLoggingGdsClients({
 		gds: session.context.gds,
 		logId: session.logId,
 	}),
@@ -152,13 +211,14 @@ const GdsSession = ({
 	};
 };
 
+GdsSession.makeLoggingGdsClients = makeLoggingGdsClients;
 GdsSession.makeGdsClients = makeGdsClients;
-
 GdsSession.initHttpRq = initHttpRq;
+GdsSession.withSession = withSession;
 
 GdsSession.startByGds = async (gds) => {
 	const logId = await FluentLogger.logNewId(gds);
-	const {travelport, sabre, amadeus} = makeGdsClients({logId, gds});
+	const {travelport, sabre, amadeus} = makeLoggingGdsClients({logId, gds});
 	const tuples = [
 		['apollo' , travelport, TRAVELPORT.DynApolloProd_2F3K],
 		['galileo', travelport, TRAVELPORT.DynGalileoProd_711M],
@@ -184,5 +244,6 @@ GdsSession.startByGds = async (gds) => {
 	}
 	return Rej.NotImplemented('Unsupported GDS ' + gds + ' for session creation');
 };
+
 
 module.exports = GdsSession;

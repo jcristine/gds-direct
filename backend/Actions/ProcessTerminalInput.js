@@ -195,7 +195,7 @@ const extendActions = async ({whenCmsResult, stateful}) => {
 const ProcessTerminalInput = async ({
 	stateful, cmdRq, dialect = null,
 	AreaSettings = require("../Repositories/AreaSettings.js"),
-	gdsClients = GdsSession.makeGdsClients({
+	gdsClients = GdsSession.makeLoggingGdsClients({
 		gds: stateful.getSessionRecord().context.gds,
 		logId: stateful.getSessionRecord().logId,
 	}),
