@@ -3,6 +3,7 @@ const PnrParser = require('../../Gds/Parsers/Amadeus/Pnr/PnrParser.js');
 const AbstractGdsAction = require('./AbstractGdsAction.js');
 const AmadeusUtils = require('../../../GdsHelpers/AmadeusUtils.js');
 const php = require('klesun-node-tools/src/Transpiled/php.js');
+const Rej = require('klesun-node-tools/src/Rej.js');
 
 const transformToReservation = stop => ({...stop, segmentNumber: stop.lineNumber});
 
@@ -16,14 +17,21 @@ class AmadeusBuildItineraryAction extends AbstractGdsAction {
 	}
 
 	/** @param $itinerary = [AmadeusReservationParser::parseSegmentLine(), ...] */
-	async execute($itinerary, $isParserFormat) {
+	async execute($itinerary) {
 		let $i, $segment, $date, $segmentStatus, $segmentStatusParam, $cmd, $output, $errorType, $tplData;
 		let parsed = null;
+		if (php.empty($itinerary)) {
+			// maybe it would make sense to return success, but way too often
+			// empty itinerary passed here is a result of some code mistake
+			return Rej.BadRequest('Can not rebuild empty itinerary');
+		}
 
 		for ([$i, $segment] of Object.entries($itinerary)) {
-			$date = $isParserFormat
+			// if passed itinerary is GDS-agnostic
+			const fullDt = ($segment.departureDt || {}).full || null;
+			$date = !fullDt
 				? $segment['departureDate']['raw']
-				: this.constructor.formatGdsDate($segment['departureDate']);
+				: this.constructor.formatGdsDate(fullDt);
 			$segmentStatus = $segment['segmentStatus'] || '';
 			// I believe there was difference in format between the [GK, PE] list and the full one
 			const passiveStatuses = ['GK', 'PE'];
@@ -66,7 +74,7 @@ class AmadeusBuildItineraryAction extends AbstractGdsAction {
 
 		return {
 			success: true,
-			itinerary: ((parsed.parsed || {}).itinerary || []).map(transformToReservation),
+			itinerary: (((parsed || {}).parsed || {}).itinerary || []).map(transformToReservation),
 		};
 	}
 }
