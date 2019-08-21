@@ -412,7 +412,7 @@ const execute = ({
 		});
 
 		$result = await (new AmadeusBuildItineraryAction())
-			.setSession(stateful).execute($bookItinerary, true);
+			.setSession(stateful).execute($bookItinerary);
 
 		const buildCmdRecs = stateful.flushCalledCommands();
 		let rebookCmdRecs = [];
@@ -539,7 +539,7 @@ const execute = ({
 			return $seg;
 		}, $gkSegments);
 		$result = await (new AmadeusBuildItineraryAction())
-			.setSession(stateful).execute($newSegments, true);
+			.setSession(stateful).execute($newSegments);
 
 		$calledCommands = stateful.flushCalledCommands();
 		if ($error = transformBuildError($result)) {

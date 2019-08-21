@@ -243,7 +243,7 @@ const RepriceItinerary = ({
 	const inAmadeus = async () => {
 		itinerary = itinerary.map(seg => ({...seg, segmentStatus: 'GK'}));
 		const built = await new AmadeusBuildItineraryAction()
-			.setSession(session).execute(itinerary, true);
+			.setSession(session).execute(itinerary);
 		if (built.errorType) {
 			return Rej.UnprocessableEntity('Could not rebuild PNR in Amadeus - '
 				+ built.errorType + ' ' + JSON.stringify(built.errorData));
