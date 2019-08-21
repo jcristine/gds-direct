@@ -234,8 +234,10 @@ const execute = ({
 	const checkEmulatedPcc =  ($pcc) => {
 		if (getAgent().canSwitchToAnyPcc()) {
 			return [];
-		} else if (!getAgent().canEmulateToRestrictedSabrePccs() &&
-		php.in_array($pcc, getRestrictedPccs())) {
+		} else if (
+			!getAgent().canEmulateToRestrictedSabrePccs() &&
+			php.in_array($pcc, getRestrictedPccs())
+		) {
 			return ['This PCC is restricted.'];
 		} else {
 			return [];
