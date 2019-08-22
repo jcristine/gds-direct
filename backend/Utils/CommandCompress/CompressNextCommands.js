@@ -52,15 +52,16 @@ class CommandCompressor {
 
 		const result = zipIsBigger ? {
 			...command,
+			output_compressed: command.output,
 			dictionary: null,
 		}: {
 			...command,
-			output: compressed,
+			output_compressed: compressed,
 			dictionary: dictionary.id,
 		};
 
 		return _.pick(result, ['id', 'session_id', 'cmd', 'type', 'is_mr', 'dt', 'cmd_rq_id',
-			'compression_type', 'output', 'dictionary']);
+			'output_compressed', 'dictionary']);
 	}
 
 	async processCommands(commands) {

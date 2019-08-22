@@ -10,7 +10,7 @@ module.exports.migrations = [
 			"  `dt` datetime NOT NULL,",
 			"  `cmd` text,",
 			"  `cmd_rq_id` bigint(20) DEFAULT NULL,",
-			"  `output` blob NOT NULL,",
+			"  `output_compressed` blob NOT NULL,",
 			// this doesn't point to exact row in dictionary table,
 			// to retrieve dictionary first session needs to be located
 			// and then using gds from session and type from this entry
