@@ -27,12 +27,14 @@ const RepriceInPccMix = async ({
 				.join('|'));
 			const ageGroups = aliasData.requestedAgeGroups;
 			if (ageGroups.every(g => ['child', 'infant'].includes(g.ageGroup))) {
-				rawMods.push('/ACC');
+				rawMods.push('ACC');
 			}
 		}
-		console.debug('ololo getPricingCmd', {rawMods, aliasData});
+		if (!pricingModifiers.some(mod => mod.type === 'cabinClass')) {
+			rawMods.push('/@AB'); // to preserve original cabin classes
+		}
 		rawMods.push(...pricingModifiers.map(m => m.raw));
-		return '$BB' + rawMods.join('/');
+		return ['$BB', ...rawMods].join('/');
 	};
 
 	const dtDiff = (next, curr) => {
