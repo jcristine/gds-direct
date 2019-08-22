@@ -96,9 +96,6 @@ const RepriceInPccMix = async ({
 	};
 
 	const main = async () => {
-		if (!stateful.getAgent().getRoles().includes('NEW_GDS_DIRECT_DEV_ACCESS')) {
-			return Rej.Forbidden('This feature is currently only enabled for testers');
-		}
 		const pnr = await GetCurrentPnr(stateful);
 		const reservation = pnr.getReservation(startDt);
 		const itinerary = reservation.itinerary;
