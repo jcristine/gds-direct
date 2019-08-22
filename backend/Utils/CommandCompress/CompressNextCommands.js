@@ -78,14 +78,21 @@ class CommandCompressor {
 		if (results.length > 0) {
 			try {
 				await CmdLogsHist.storeArchive(results);
-				await CmdLogs.removeLogs(results.map(c => c.id));
+				// @TODO
+				// Temporarly commented out while it is being tested in prod to
+				// see if it works as expected
+				// await CmdLogs.removeLogs(results.map(c => c.id));
 			} catch (e) {
 				this.log('Store and remove failed, retrying in sequence', e);
 				// just in case something fails in DB,
 				// this way it will at least move forward
 				for (const result of results) {
 					await CmdLogsHist.storeArchive([result]);
-					await CmdLogs.removeLogs([result.id]);
+
+					// @TODO
+					// Temporarly commented out while it is being tested in prod to
+					// see if it works as expected
+					// await CmdLogs.removeLogs([result.id]);
 				}
 			}
 		}

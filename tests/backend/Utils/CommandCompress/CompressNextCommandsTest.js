@@ -99,8 +99,8 @@ class CompressNextCommandsTest extends require('../../Transpiled/Lib/TestCase') 
 		try {
 			await compressor.next();
 
-			this.assertArrayElementsSubset(removeStub.firstCall.args, [[1, 2]]);
-			this.assertSame(removeStub.callCount, 1);
+			// this.assertArrayElementsSubset(removeStub.firstCall.args, [[1, 2]]);
+			this.assertSame(removeStub.callCount, 0);
 
 			this.assertArrayElementsSubset([[
 				{"id":1,"session_id":1,"type":"command1","dt":"2019-08-20 09:13:19","cmd":"cmd1","cmd_rq_id":182573686,"output":"compressed text 1", "dictionary": 1, "compression_type": 1},
@@ -120,9 +120,9 @@ class CompressNextCommandsTest extends require('../../Transpiled/Lib/TestCase') 
 		try {
 			await compressor.next();
 
-			this.assertArrayElementsSubset(removeStub.firstCall.args, [[3]]);
+			// this.assertArrayElementsSubset(removeStub.firstCall.args, [[3]]);
 
-			this.assertSame(1, removeStub.callCount);
+			this.assertSame(0, removeStub.callCount);
 
 			this.assertArrayElementsSubset([[
 				{"id":3,"session_id":3,"type":"command1","dt":"2019-08-20 09:12:59","cmd":"cmd2","cmd_rq_id":182573620,"output":"SHORTY", "dictionary": null, "compression_type": 0},
