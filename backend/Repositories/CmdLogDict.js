@@ -18,13 +18,26 @@ module.exports.getForCommand = async ({gds, type}) => {
 
 };
 
-module.exports.storeForCommand = async ({gds, type, dictionary}) => {
-	const query = `
-		INSERT INTO ${TABLE} (gds, type, dictionary, created)
-		VALUES (?, ?, BINARY(?), ?)`;
+module.exports.storeForCommand = async ({gds, type, dictionary, compressionType}) => {
+	return Db.with(async db => {
+		const maxResult = await db.query(
+			`SELECT MAX(id) as max from ${TABLE} WHERE gds=? and type=?`,
+			[gds, type],
+		);
 
-	return Db.with(db =>
-		db.query(query, [gds, type, dictionary, new Date().toISOString()])
-	);
+		const maxId = maxResult && maxResult[0] && maxResult[0].max || 0;
+
+		const query = `
+			INSERT INTO ${TABLE} (id, gds, type, dictionary, compression_type, created)
+			VALUES (?, ?, ?, BINARY(?), ?, NOW())`;
+
+		await db.query(query, [maxId + 1, gds, type, dictionary, compressionType]);
+
+		return {
+			id: maxId + 1,
+			gds,
+			type,
+		};
+	});
 };
 

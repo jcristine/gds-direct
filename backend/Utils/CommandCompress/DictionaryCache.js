@@ -1,6 +1,7 @@
 const DictionaryBuilder = require('./DictionaryBuilder');
 const CmdLogs = require('../../Repositories/CmdLogs');
 const CmdLogDict = require('../../Repositories/CmdLogDict');
+const {COMPRESSION_TYPE_DEFLATE} = require('./Consts');
 
 // Ensures that there aren't multiple competing requests for same gds and
 // type pair
@@ -43,10 +44,15 @@ class DictionaryCache {
 			return null;
 		}
 
-		const result = await CmdLogDict.storeForCommand({gds, type, dictionary});
+		const result = await CmdLogDict.storeForCommand({
+			gds,
+			type,
+			dictionary,
+			compressionType: COMPRESSION_TYPE_DEFLATE,
+		});
 
 		return {
-			id: result.insertId,
+			id: result.id,
 			dictionary,
 		};
 	}

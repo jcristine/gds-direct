@@ -1,0 +1,1 @@
+module.exports.COMPRESSION_TYPE_DEFLATE = 1;

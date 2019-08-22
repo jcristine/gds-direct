@@ -29,7 +29,7 @@ class DictionaryCacheTest extends require('../../Transpiled/Lib/TestCase') {
 			.returns(Promise.resolve(apollo));
 
 		const create = sinon.stub(CmdLogDict, 'storeForCommand')
-			.returns(Promise.resolve({insertId: 2}));
+			.returns(Promise.resolve({id: 2}));
 
 		sinon.stub(CmdLogDict, 'getForCommand')
 			.withArgs({gds: 'apollo', type: 'command'})

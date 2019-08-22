@@ -4,9 +4,6 @@ const CmdLogsHist = require('../../Repositories/CmdLogHist');
 const plimit = require('p-limit');
 const _ = require('lodash');
 
-const COMPRESSION_TYPE_NONE = 0;
-const COMPRESSION_TYPE_DEFLATE = 1;
-
 // Has ability to compress commands in a loop
 class CommandCompressor {
 	constructor({dictionaryCache, concurrency, limit, olderThanDays, log}) {
@@ -55,11 +52,9 @@ class CommandCompressor {
 
 		const result = zipIsBigger ? {
 			...command,
-			compression_type: COMPRESSION_TYPE_NONE,
 			dictionary: null,
 		}: {
 			...command,
-			compression_type: COMPRESSION_TYPE_DEFLATE,
 			output: compressed,
 			dictionary: dictionary.id,
 		};
