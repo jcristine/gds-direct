@@ -136,7 +136,7 @@ const PricePccMixList = ({
 		const {gds, pcc, pricingBlockList = []} = pccResult;
 		const error = pccResult.error || (pricingBlockList.length ? null : 'No pricing returned');
 
-		const selector = ':scope > tr[data-gds="' + gds + '"][data-pcc="' + pcc + '"]';
+		const selector = ':scope > tr[data-gds="' + gds + '"][data-pcc="' + pcc + '"]:not(.filled)';
 		const tr = tbodyCmp.context.querySelector(selector);
 		const trCmp = Cmp({context: tr});
 
@@ -147,6 +147,7 @@ const PricePccMixList = ({
 		} else {
 			populateRow(pccResult, trCmp);
 		}
+		trCmp.context.classList.toggle('filled', true);
 
 		if (--pendingLeft <= 0) {
 			finalize();
