@@ -211,8 +211,7 @@ const RunCmdRq = ({
 		const modsPart = rawMods.join('/');
 		const leadingSlash =
 			cmd.startsWith(baseCmd + '/') ||
-			baseCmd === '$BBC' ||
-			modsPart.startsWith('/');
+			baseCmd === '$BBC';
 
 		return baseCmd + (!leadingSlash ? '' : '/') + modsPart;
 	};
