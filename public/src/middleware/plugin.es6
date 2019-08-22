@@ -349,7 +349,7 @@ export default class TerminalPlugin
 			.then( response => {
 				if (command) {
 					const actions = (response || {}).actions || [];
-					if (response && response.output) {
+					if (response && (response.output || actions.length > 0)) {
 						this.parseBackEnd( response, command );
 					} else if (actions.length === 0) {
 						this.print(`[[;;;errorMessage;]EMPTY SERVER RESPONSE]`);
@@ -647,8 +647,8 @@ export default class TerminalPlugin
 				this._displayFcMask(action.data);
 			} else if (action.type === 'displayMpRemarkDialog') {
 				this._displayMpRemarkDialog(action.data);
-			} else if (action.type === 'finalizePriceMix') {
-				PricePccMixList.finalize(action.data);
+			} else if (action.type === 'initializePriceMix') {
+				PricePccMixList.initialize(this, action.data);
 			} else {
 				let msg = '[[;;;error]Unsupported action - ' + action.type + ']';
 				this._printOutput(msg, false);

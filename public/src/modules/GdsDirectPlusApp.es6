@@ -45,12 +45,7 @@ let toHandleMessageFromServer = (gdsSwitch) => {
 				reply({leadId: leadId});
 			}
 		} else if (data.messageType === 'displayPriceMixPccRow') {
-			let plugin = gdsSwitch.getActivePlugin();
-			if (!plugin) {
-				reply({error: 'No GDS terminal is currently active'});
-				return;
-			}
-			PricePccMixList.displayPriceMixPccRow(gdsSwitch, plugin, data);
+			PricePccMixList.displayPriceMixPccRow(data);
 			reply({value: {status: 'done'}});
 		} else {
 			console.error('could not interpret message triggered by server', data);

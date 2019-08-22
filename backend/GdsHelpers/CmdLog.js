@@ -8,6 +8,7 @@ const NotFound = require("klesun-node-tools/src/Rej").NotFound;
 const makeRow = require("../Repositories/CmdLogs").makeRow;
 const hrtimeToDecimal = require("klesun-node-tools/src/Utils/Misc.js").hrtimeToDecimal;
 const {ignoreExc} = require('../Utils/TmpLib.js');
+const {nonEmpty} = require('klesun-node-tools/src/Lang.js');
 
 const CmdLog = ({
 	session, whenCmdRqId, fullState,
@@ -142,6 +143,7 @@ const CmdLog = ({
 
 	return {
 		gds: gds,
+		getCmdRqId: () => whenCmdRqId.then(nonEmpty),
 		logCommand: logCommand,
 		getFullState: () => fullState,
 		updateFullState: (newFullState) => {

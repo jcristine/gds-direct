@@ -9,7 +9,9 @@ const Cmp = (...args) => new Component(...args);
  * @param {GdsSwitch} gdsSwitch
  * @param {TerminalPlugin} plugin
  */
-const PricePccMixList = ({gdsSwitch, plugin}) => {
+const PricePccMixList = ({
+	plugin, itinerary, processes, cmdRqId,
+}) => {
 	const theadCmp = Cmp('thead.usedCommand').attach([
 		Cmp('tr').attach([
 			Cmp('th', {textContent: 'GDS'}),
@@ -21,10 +23,20 @@ const PricePccMixList = ({gdsSwitch, plugin}) => {
 			Cmp('th', {textContent: 'INF'}),
 		]),
 	]);
-	const tbodyCmp = Cmp('tbody');
+	const tbodyCmp = Cmp('tbody').attach(processes
+		.map(({gds, pcc}) => {
+			const trCmp = Cmp('tr').attach([
+				Cmp('td.gds', {textContent: gds}),
+				Cmp('td.pcc', {textContent: pcc}),
+			]);
+			trCmp.context.setAttribute('data-gds', gds);
+			trCmp.context.setAttribute('data-pcc', pcc);
+			return trCmp;
+		}));
 	const rootCmp = Cmp('div.price-pcc-mix-list').attach([
 		Cmp('table').attach([theadCmp, tbodyCmp]),
 	]);
+	let pendingLeft = processes.length;
 
 	const formatNet = (ptcBlock) => {
 		if (!ptcBlock) {
@@ -47,12 +59,19 @@ const PricePccMixList = ({gdsSwitch, plugin}) => {
 		return null;
 	};
 
+	const finalize = () => {
+		delete cmdRqToList[cmdRqId];
+		rootCmp.attach([Cmp('div', {style: 'color: green', textContent: 'Done'})]);
+	};
+
 	/** @param {{gds, pcc}} pccResult = (new (require('RepriceInAnotherPccAction.js'))).repriceIn() */
 	const addRow = ({pccResult}) => {
 		console.debug('pccResult', pccResult);
 
+		const {gds, pcc, pricingCmd, pricingBlockList = [], calledCommands = [], error = null} = pccResult;
+
 		const ageGroupToBlock = {};
-		for (const ptcBlock of pccResult.pricingBlockList || []) {
+		for (const ptcBlock of pricingBlockList) {
 			const ageGroup = ptcBlock.ptcInfo.ageGroupRequested || ptcBlock.ptcInfo.ageGroup;
 			ageGroupToBlock[ageGroup] = ptcBlock;
 		}
@@ -67,23 +86,24 @@ const PricePccMixList = ({gdsSwitch, plugin}) => {
 			return;
 		}
 		const ptc = mainPtcBlock.ptcInfo.ptcRequested || mainPtcBlock.ptcInfo.ptc;
-		const pricingDump = (pccResult.calledCommands || [])
+		const pricingDump = calledCommands
 			.map(({cmd, output}) => '>' + cmd + ';\n' + output)
 			.join('\n');
 
 		const goToPricing = () => {
 			plugin._withSpinner(() => post('terminal/goToPricing', {
 				gds: plugin.gdsName, useSocket: true,
-				pricingGds: pccResult.gds,
-				pricingPcc: pccResult.pcc,
-				pricingCmd: pccResult.pricingCmd,
-				itinerary: pccResult.itinerary,
+				pricingGds: gds,
+				pricingPcc: pcc,
+				pricingCmd: pricingCmd,
+				itinerary: itinerary,
 			})).then((cmdResult) => {
-				CHANGE_GDS(pccResult.gds);
-				gdsSwitch.getGds(pccResult.gds).getActiveTerminal()
+				const gdsUnit = CHANGE_GDS(gds);
+				gdsUnit.getActiveTerminal()
 					.plugin.parseBackEnd(cmdResult, 'GOTOPRICEMIX');
 			});
 		};
+
 		const makeNetCell = ptcBlock => Cmp('td.net-price').attach([
 			Cmp('span', {
 				textContent: formatNet(ptcBlock),
@@ -92,15 +112,13 @@ const PricePccMixList = ({gdsSwitch, plugin}) => {
 			}),
 		]);
 
-		const trCmp = Cmp('tr').attach([
-			Cmp('td.gds').attach([
-				Cmp('span', {textContent: pccResult.gds}),
-			]),
-			Cmp('td.pcc').attach([
-				Cmp('span', {textContent: pccResult.pcc}),
-			]),
+		const selector = ':scope > tr[data-gds="' + gds + '"][data-pcc="' + pcc + '"]';
+		const tr = tbodyCmp.context.querySelector(selector);
+		tr.remove();
+
+		const trCmp = Cmp({context: tr}).attach([
 			Cmp('td').attach([
-				Cmp('span', {textContent: ptc, title: pccResult.pricingCmd}),
+				Cmp('span', {textContent: ptc, title: pricingCmd}),
 			]),
 			Cmp('td').attach([
 				Cmp('span', {textContent: mainPtcBlock.fareType}),
@@ -108,6 +126,7 @@ const PricePccMixList = ({gdsSwitch, plugin}) => {
 			makeNetCell(ageGroupToBlock.adult),
 			makeNetCell(ageGroupToBlock.child),
 			makeNetCell(ageGroupToBlock.infant),
+			...(!error ? [] : Cmp('td', {textContent: error})),
 		]);
 		trCmp.context.setAttribute('data-net-price', mainPtcBlock.fareInfo.totalFare.amount);
 
@@ -117,10 +136,9 @@ const PricePccMixList = ({gdsSwitch, plugin}) => {
 		} else {
 			tbodyCmp.attach([trCmp]);
 		}
-	};
-
-	const finalize = (data) => {
-		rootCmp.attach([Cmp('div', {style: 'color: green', textContent: 'Done'})]);
+		if (--pendingLeft <= 0) {
+			finalize();
+		}
 	};
 
 	const main = () => {
@@ -134,28 +152,23 @@ const PricePccMixList = ({gdsSwitch, plugin}) => {
 	return main();
 };
 
-let priceMixList = null;
+const cmdRqToList = {};
 
-PricePccMixList.finalize = (data) => {
-	if (priceMixList) {
-		priceMixList.finalize(data);
-	}
-	return priceMixList = null;
+PricePccMixList.initialize = (plugin, data) => {
+	const {itinerary, cmdRqId, processes} = data;
+	const priceMixList = PricePccMixList({
+		plugin, itinerary, processes, cmdRqId,
+	});
+	cmdRqToList[cmdRqId] = priceMixList;
+	const {remove} = plugin.injectDom({
+		cls: 'price-mix-pcc-holder',
+		dom: priceMixList.dom,
+		onCancel: () => remove(),
+	});
 };
 
-PricePccMixList.displayPriceMixPccRow = (gdsSwitch, plugin, pccResult) => {
-	if (!priceMixList) {
-		priceMixList = PricePccMixList({gdsSwitch, plugin});
-		const {remove} = plugin.injectDom({
-			cls: 'price-mix-pcc-holder',
-			dom: priceMixList.dom,
-			onCancel: () => {
-				remove();
-				priceMixList = null;
-			},
-		});
-	}
-	priceMixList.addRow(pccResult);
+PricePccMixList.displayPriceMixPccRow = (pccResult) => {
+	cmdRqToList[pccResult.cmdRqId].addRow(pccResult);
 };
 
 export default PricePccMixList;

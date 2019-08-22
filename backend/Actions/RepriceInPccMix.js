@@ -11,13 +11,14 @@ const Rej = require('klesun-node-tools/src/Rej.js');
  * @param aliasData = require('AliasParser.js').parsePrice()
  * @param gdsClients = require('GdsSession.js').makeGdsClients()
  */
-const RepriceInPccMix = ({
+const RepriceInPccMix = async ({
 	stateful, aliasData, gdsClients,
 	RbsClient = require('../IqClients/RbsClient.js'),
 }) => {
 	const startDt = stateful.getStartDt();
 	const pricingModifiers = aliasData.pricingModifiers || [];
 	const cmdRq = ['$BB', ...pricingModifiers.map(mod => mod.raw)].join('/');
+	const cmdRqId = await stateful.getLog().getCmdRqId();
 
 	const dtDiff = (next, curr) => {
 		const nextEpoch = new Date(next.departureDt.full).getTime();
@@ -61,12 +62,13 @@ const RepriceInPccMix = ({
 		return new RepriceInAnotherPccAction({gdsClients}).repriceInNewSession({
 			gds, pcc, itinerary, pricingCmd, startDt, baseDate: startDt,
 		}).then(async pccResult => {
-			// itinerary could be passed just once with a
-			// separate initialization message I guess...
-			pccResult = {pcc, gds, ...pccResult, itinerary};
 			for (const ptcBlock of pccResult.pricingBlockList || []) {
 				ptcBlock.fareType = await RbsUtils.getFareTypeV2(gds, pcc, ptcBlock);
 			}
+			return {cmdRqId, pcc, gds, ...pccResult};
+		}).catch(coverExc(Rej.list, exc => {
+			return {cmdRqId, pcc, gds, error: exc + ''};
+		})).then(async pccResult => {
 			stateful.askClient({
 				messageType: 'displayPriceMixPccRow',
 				pccResult: pccResult,
@@ -87,14 +89,11 @@ const RepriceInPccMix = ({
 		}
 		const pccRecs = await getPccRecs(itinerary);
 		const messages = [];
-		const promises = [];
+		const processes = [];
 		for (const {pcc, gds} of pccRecs) {
 			let whenPccResult = processPcc({pcc, gds, itinerary});
 			whenPccResult = timeout(121, whenPccResult);
 			whenPccResult = whenPccResult
-				.catch(coverExc(Rej.list, exc => {
-					return {pcc, gds, error: exc + ''};
-				}))
 				.then(pccResult => {
 					if (pccResult.error) {
 						const msg = 'Failed to price in ' + pcc + ' - ' + pccResult.error;
@@ -102,14 +101,13 @@ const RepriceInPccMix = ({
 					}
 					return pccResult;
 				});
-			promises.push(whenPccResult);
+			processes.push({pcc, gds, cmdRqId});
 		}
-		const pccResults = await Promise.all(promises);
 		return {
 			messages: messages,
 			actions: [{
-				type: 'finalizePriceMix',
-				data: {pccResults},
+				type: 'initializePriceMix',
+				data: {cmdRqId, processes, itinerary},
 			}],
 		};
 	};
