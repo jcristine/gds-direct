@@ -69,6 +69,11 @@ export default class Output
 
 	_printOutput(appliedRules = '', output, injectedForms = [])
 	{
+		for (const dom of injectedForms) {
+			this.terminal.echo('FORM', {
+				finalize: ($div) => $div[0].appendChild(dom),
+			});
+		}
 		if (appliedRules && appliedRules.length)
 		{
 			const {tips, outputText} = seedOutputString(output, appliedRules);
@@ -78,9 +83,6 @@ export default class Output
 			this.terminal.echo(outputText, {
 				finalize 	: ($div) => {
 					cleanupLast();
-					for (const dom of injectedForms) {
-						$div[0].prepend(dom);
-					}
 					cleanupLast = replaceInTerminal($div, tips);
 				},
 				// raw 		: true
