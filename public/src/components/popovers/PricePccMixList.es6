@@ -93,7 +93,7 @@ const PricePccMixList = ({gdsSwitch, plugin}) => {
 		]);
 
 		const trCmp = Cmp('tr').attach([
-			Cmp('td').attach([
+			Cmp('td.gds').attach([
 				Cmp('span', {textContent: pccResult.gds}),
 			]),
 			Cmp('td.pcc').attach([
