@@ -93,7 +93,7 @@ class DateTime {
 	 */
 	static fromUtc(utcDt, localTimeZone) {
 		if (localTimeZone) {
-			const utcCutoff = moment.utc(utcDt, 'YYY-MM-DD HH:mm:ss');
+			const utcCutoff = moment.utc(utcDt, 'YYYY-MM-DD HH:mm:ss');
 			const momented = utcCutoff.clone().tz(localTimeZone);
 			if (momented.tz() === undefined) {
 				Diag.error('moment-timezone could not resolve tz ' + localTimeZone + ' for dt ' + utcDt, new Error().stack);
@@ -101,7 +101,7 @@ class DateTime {
 				// some country will decide to drop daylight-saving for example
 				return null;
 			} else {
-				return momented.format('YYY-MM-DD HH:mm:ss');
+				return momented.format('YYYY-MM-DD HH:mm:ss');
 			}
 		} else {
 			return null;
