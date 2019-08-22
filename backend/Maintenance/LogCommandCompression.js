@@ -29,6 +29,7 @@ const CommandLogArchiver = async () => {
 	});
 
 	const run = async () => {
+		cache.clear();
 		try {
 			await cProcess.next();
 		} catch (e) {

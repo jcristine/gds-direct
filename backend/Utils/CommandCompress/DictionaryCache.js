@@ -50,6 +50,10 @@ class DictionaryCache {
 			dictionary,
 		};
 	}
+
+	clear() {
+		this.cache = new Map();
+	}
 }
 
 module.exports = DictionaryCache;
