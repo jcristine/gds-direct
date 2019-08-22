@@ -57,7 +57,7 @@ exports.runInputCmd = async (params) => {
 	rqBody.command = rqBody.command.trim();
 	return Promise.resolve()
 		.then(() => runInSession(params))
-		.catch(async exc => GdsSessionManager.restartIfNeeded(exc, params, async (newSession) => {
+		.catch(exc => GdsSessionManager.restartIfNeeded(exc, params, async (newSession) => {
 			const runt = await runInSession({...params, session: newSession});
 			runt.startNewSession = true;
 			runt.userMessages = ['New session started, reason: ' + (exc + '').slice(0, 800) + '...\n'];

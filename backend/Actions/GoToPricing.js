@@ -2,10 +2,9 @@ const FakeAreaUtil = require('../GdsHelpers/Amadeus/FakeAreaUtil.js');
 const StatefulSession = require('../GdsHelpers/StatefulSession.js');
 const GdsSessionManager = require('../GdsHelpers/GdsSessionManager.js');
 const RepriceItinerary = require('./RepriceItinerary.js');
-const GetCurrentPnr = require('./GetCurrentPnr.js');
 
-const ignorePnr = async (stateful) => {
-	if (!stateful.getSessionData().hasPnr) {
+const ignorePnr = async (stateful, force = false) => {
+	if (!stateful.getSessionData().hasPnr && !force) {
 		return;
 	}
 	const ignoreCmds = {
@@ -47,14 +46,23 @@ const getTargetSession = async ({
 	if (pricingGds === oldStateful.gds) {
 		targetStateful = oldStateful;
 	} else {
-		const {startedNew, session} = await GdsSessionManager.getSession({
+		const params = {
 			rqBody: {travelRequestId, gds: pricingGds},
 			canStartNew: true, emcUser,
-		});
-		targetStateful = await StatefulSession.makeFromDb({
+		};
+		const makeStateful = session => StatefulSession.makeFromDb({
 			session, emcUser, askClient,
 		});
-		await ignorePnr(targetStateful);
+		targetStateful = await GdsSessionManager.getSession(params)
+			.then(async ({startedNew, session}) => makeStateful(session)
+				.then(async stateful => {
+					await ignorePnr(stateful, !startedNew);
+					return stateful;
+				})
+				// restart if session expired on GDS side when we called the >I;
+				.catch(exc => GdsSessionManager.restartIfNeeded(
+					exc, params, newSession => makeStateful(newSession))
+				));
 	}
 	await ensurePcc(targetStateful, pricingPcc);
 
