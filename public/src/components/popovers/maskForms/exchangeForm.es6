@@ -69,92 +69,92 @@ let dataToDom = (data) => {
 	};
 
 	let formCmp = Cmp('div.exchange-mask').attach([
-			Cmp('div.align-caption').attach([
-				Cmp('div.new-ticket-info-line').attach([ // "$EX NAME ARTURS/KLESUNS                     PSGR  1/ 1         ",
-					Cmp('span', {textContent: '>$EX NAME ' + head.lastName + '/' + head.firstName}),
-					Cmp('span', {
-						textContent: 'PSGR ' +
-							('  ' + head.majorNumber).slice(-2) + '/' +
-							('  ' + head.minorNumber).slice(-2)}),
-				]),
-				Cmp('div.new-ticket-info-line').attach([ // "FARE USD   903.40  TOTAL USD   983.30                           ",
-					HeadVal('FARE ' + head.baseFareCurrency, head.baseFareAmount, 9),
-					HeadVal('TOTAL ' + head.netPriceCurrency, head.netPriceAmount, 9),
-				].concat(!(head.equivalentPart || '').trim() ? [] : [
-					// may appear if base currency is different from PCC
-					Cmp('span', {textContent: head.equivalentPart}),
-				])),
-				Cmp('div.new-ticket-info-line').attach([ // "TX1 USD   69.60 US   TX2 USD   14.30 XT   TX3                   ",
-					HeadVal('TX1 ' + (head.taxCurrency1 || ''), (head.taxAmount1 || '') + ' ' + (head.taxCode1 || ''), 11),
-					HeadVal('TX2 ' + (head.taxCurrency2 || ''), (head.taxAmount2 || '') + ' ' + (head.taxCode2 || ''), 11),
-					HeadVal('TX3 ' + (head.taxCurrency3 || ''), (head.taxAmount3 || '') + ' ' + (head.taxCode3 || ''), 11),
-				]),
-				Cmp('div').attach([ // "                                                                ",
-					Cmp('span', {innerHTML: '&nbsp;'}),
-				]),
-				Cmp('div').attach([ // "EXCHANGE TKTS ;..............-;...  CPN ALL                     ",
-					Cmp('span').attach([
-						Fld('EXCHANGE TKTS', 'exchangedTicketNumber', 14),
-						Fld('-', 'exchangedTicketExtension', 3),
-					]),
-				]),
-				Cmp('div').attach([ // "TKT1;.............. CPN;.... TKT2;.............. CPN;....       ",
-					Cmp('span').attach([
-						Cmp({context: datalistDom}),
-						Fld('TKT1', 'ticketNumber1', 14),
-						Fld('CPN', 'couponNumber1', 4),
-					]),
-					Cmp('span').attach([
-						Fld('TKT2', 'ticketNumber2', 14),
-						Fld('CPN', 'couponNumber2', 4),
-					]),
-				]),
-				Cmp('div').attach([ // "COMM;.........  ORIG FOP;................... EVEN;.             ",
-					Fld('COMM', 'commission', 9),
-					Fld('ORIG FOP', 'originalFormOfPayment', 19),
-					Fld('EVEN', 'evenIndicator', 1),
-				]),
-				Cmp('div').attach([ // "                                                                ",
-					Cmp('span', {innerHTML: '&nbsp;'}),
-				]),
-				Cmp('div').attach([ // "TTL VALUE OF EX TKTS USD;.............  ORIG BRD/OFF;...;...    ",
-					Fld('TTL VALUE OF EX TKTS ' + currency, 'exchangedTicketTotalValue', 13),
-					Cmp('span').attach([
-						Fld('ORIG BRD/OFF', 'originalBoardPoint', 3),
-						Fld('', 'originalOffPoint', 3),
-					]),
-				]),
-				Cmp('div').attach([ // "TX1 USD;.......;..   TX2 USD;.......;..   TX3 USD;.......;..    ",
-					Cmp('span').attach([
-						Fld('TX1 ' + currency, 'taxAmount1', 7),
-						Fld('', 'taxCode1', 2),
-					]),
-					Cmp('span').attach([
-						Fld('TX2 ' + currency, 'taxAmount2', 7),
-						Fld('', 'taxCode2', 2),
-					]),
-					Cmp('span').attach([
-						Fld('TX3 ' + currency, 'taxAmount3', 7),
-						Fld('', 'taxCode3', 2),
-					]),
-				]),
-				Cmp('div').attach([ // "ORIG ISS;...... ORIG DATE;....... ORIG IATA NBR;.........       ",
-					Fld('ORIG ISS', 'originalIssuePoint', 6),
-					Fld('ORIG DATE', 'originalIssueDate', 7),
-					Fld('ORIG IATA NBR', 'originalAgencyIata', 9),
-				]),
-				Cmp('div').attach([ // "ORIG TKT;..............-;...  ORIG INV NBR;.........            ",
-					Cmp('span').attach([
-						Fld('ORIG TKT', 'originalTicketStar', 14),
-						Fld('-', 'originalTicketStarExtension', 3),
-					]),
-					Fld('ORIG INV NBR', 'originalInvoiceNumber', 9),
-				]),
-				Cmp('div').attach([ // "PENALTY USD;............  COMM ON PENALTY;...........",
-					Fld('PENALTY ' + currency, 'penaltyAmount', 12),
-					Fld('COMM ON PENALTY', 'commOnPenaltyAmount', 11),
+		Cmp('div.align-caption').attach([
+			Cmp('div.new-ticket-info-line').attach([ // "$EX NAME ARTURS/KLESUNS                     PSGR  1/ 1         ",
+				Cmp('span', {textContent: '>$EX NAME ' + head.lastName + '/' + head.firstName}),
+				Cmp('span', {
+					textContent: 'PSGR ' +
+						('  ' + head.majorNumber).slice(-2) + '/' +
+						('  ' + head.minorNumber).slice(-2)}),
+			]),
+			Cmp('div.new-ticket-info-line').attach([ // "FARE USD   903.40  TOTAL USD   983.30                           ",
+				HeadVal('FARE ' + head.baseFareCurrency, head.baseFareAmount, 9),
+				HeadVal('TOTAL ' + head.netPriceCurrency, head.netPriceAmount, 9),
+			].concat(!(head.equivalentPart || '').trim() ? [] : [
+				// may appear if base currency is different from PCC
+				Cmp('span', {textContent: head.equivalentPart}),
+			])),
+			Cmp('div.new-ticket-info-line').attach([ // "TX1 USD   69.60 US   TX2 USD   14.30 XT   TX3                   ",
+				HeadVal('TX1 ' + (head.taxCurrency1 || ''), (head.taxAmount1 || '') + ' ' + (head.taxCode1 || ''), 11),
+				HeadVal('TX2 ' + (head.taxCurrency2 || ''), (head.taxAmount2 || '') + ' ' + (head.taxCode2 || ''), 11),
+				HeadVal('TX3 ' + (head.taxCurrency3 || ''), (head.taxAmount3 || '') + ' ' + (head.taxCode3 || ''), 11),
+			]),
+			Cmp('div').attach([ // "                                                                ",
+				Cmp('span', {innerHTML: '&nbsp;'}),
+			]),
+			Cmp('div').attach([ // "EXCHANGE TKTS ;..............-;...  CPN ALL                     ",
+				Cmp('span').attach([
+					Fld('EXCHANGE TKTS', 'exchangedTicketNumber', 14),
+					Fld('-', 'exchangedTicketExtension', 3),
 				]),
 			]),
+			Cmp('div').attach([ // "TKT1;.............. CPN;.... TKT2;.............. CPN;....       ",
+				Cmp('span').attach([
+					Cmp({context: datalistDom}),
+					Fld('TKT1', 'ticketNumber1', 14),
+					Fld('CPN', 'couponNumber1', 4),
+				]),
+				Cmp('span').attach([
+					Fld('TKT2', 'ticketNumber2', 14),
+					Fld('CPN', 'couponNumber2', 4),
+				]),
+			]),
+			Cmp('div').attach([ // "COMM;.........  ORIG FOP;................... EVEN;.             ",
+				Fld('COMM', 'commission', 9),
+				Fld('ORIG FOP', 'originalFormOfPayment', 19),
+				Fld('EVEN', 'evenIndicator', 1),
+			]),
+			Cmp('div').attach([ // "                                                                ",
+				Cmp('span', {innerHTML: '&nbsp;'}),
+			]),
+			Cmp('div').attach([ // "TTL VALUE OF EX TKTS USD;.............  ORIG BRD/OFF;...;...    ",
+				Fld('TTL VALUE OF EX TKTS ' + currency, 'exchangedTicketTotalValue', 13),
+				Cmp('span').attach([
+					Fld('ORIG BRD/OFF', 'originalBoardPoint', 3),
+					Fld('', 'originalOffPoint', 3),
+				]),
+			]),
+			Cmp('div').attach([ // "TX1 USD;.......;..   TX2 USD;.......;..   TX3 USD;.......;..    ",
+				Cmp('span').attach([
+					Fld('TX1 ' + currency, 'taxAmount1', 7),
+					Fld('', 'taxCode1', 2),
+				]),
+				Cmp('span').attach([
+					Fld('TX2 ' + currency, 'taxAmount2', 7),
+					Fld('', 'taxCode2', 2),
+				]),
+				Cmp('span').attach([
+					Fld('TX3 ' + currency, 'taxAmount3', 7),
+					Fld('', 'taxCode3', 2),
+				]),
+			]),
+			Cmp('div').attach([ // "ORIG ISS;...... ORIG DATE;....... ORIG IATA NBR;.........       ",
+				Fld('ORIG ISS', 'originalIssuePoint', 6),
+				Fld('ORIG DATE', 'originalIssueDate', 7),
+				Fld('ORIG IATA NBR', 'originalAgencyIata', 9),
+			]),
+			Cmp('div').attach([ // "ORIG TKT;..............-;...  ORIG INV NBR;.........            ",
+				Cmp('span').attach([
+					Fld('ORIG TKT', 'originalTicketStar', 14),
+					Fld('-', 'originalTicketStarExtension', 3),
+				]),
+				Fld('ORIG INV NBR', 'originalInvoiceNumber', 9),
+			]),
+			Cmp('div').attach([ // "PENALTY USD;............  COMM ON PENALTY;...........",
+				Fld('PENALTY ' + currency, 'penaltyAmount', 12),
+				Fld('COMM ON PENALTY', 'commOnPenaltyAmount', 11),
+			]),
+		]),
 	]);
 
 	onTickNum = (ticketNumber) => data.mcoRows
