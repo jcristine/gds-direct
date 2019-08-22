@@ -21,7 +21,7 @@ const RepriceInPccMix = ({
 
 	const dtDiff = (next, curr) => {
 		const nextEpoch = new Date(next.departureDt.full).getTime();
-		const currEpoch = new Date(next.destinationDt.full).getTime();
+		const currEpoch = new Date(curr.destinationDt.full).getTime();
 		return nextEpoch - currEpoch;
 	};
 
