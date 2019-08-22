@@ -247,6 +247,7 @@ const NormalizePricingCmd = (parsed, gds) => {
 	}[gds](parsed);
 };
 
+NormalizePricingCmd.inApollo = inApollo;
 NormalizePricingCmd.normalizePaxes = normalizePaxes;
 NormalizePricingCmd.baseCmdMapping = baseCmdMapping;
 

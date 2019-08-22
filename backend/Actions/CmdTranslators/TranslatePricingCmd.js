@@ -438,6 +438,15 @@ const inAmadeus = (norm) => {
 	return [effectiveBaseCmd, ...effectiveMods].join('/');
 };
 
+const fromData = (toGds, normalized) => {
+	return {
+		apollo: inApollo,
+		galileo: inGalileo,
+		sabre: inSabre,
+		amadeus: inAmadeus,
+	}[toGds](normalized);
+};
+
 const TranslatePricingCmd = ({
 	cmdRq, fromGds, toGds, parsed,
 	baseDate = null,
@@ -458,14 +467,10 @@ const TranslatePricingCmd = ({
 		}
 		return mod;
 	});
-	return {
-		apollo: inApollo,
-		galileo: inGalileo,
-		sabre: inSabre,
-		amadeus: inAmadeus,
-	}[toGds](normalized);
+	return fromData(toGds, normalized);
 };
 
+TranslatePricingCmd.fromData = fromData;
 TranslatePricingCmd.translatePaxes = translatePaxes;
 
 module.exports = TranslatePricingCmd;

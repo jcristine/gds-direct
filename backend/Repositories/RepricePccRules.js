@@ -1,5 +1,6 @@
 const LocationGeographyProvider = require('../Transpiled/Rbs/DataProviders/LocationGeographyProvider.js');
 const RbsClient = require('../IqClients/RbsClient.js');
+const _ = require('lodash');
 
 const php = require('klesun-node-tools/src/Transpiled/php.js');
 
@@ -51,7 +52,16 @@ const getRoutePccs = async (depAirport, destAirport, rules, geo) => {
 	return [];
 };
 
-/** @param cmdData = (new (require('NormalizeTariffCmd.js'))).execute() */
+/**
+ * @param cmdData = (new (require('NormalizeTariffCmd.js'))).execute()
+ * @return {{
+ *     gds: 'apollo' | 'sabre' | 'galileo' | 'amadeus',
+ *     pcc: '2CV4' | 'SFO123456' | string,
+ *     ?ptc: 'JCB',
+ *     ?fareType: 'private',
+ *     ?accountCode: 'BSAG',
+ * }[]}
+ */
 exports.getMatchingPccs = async ({
 	departureAirport,
 	destinationAirport,
@@ -84,5 +94,5 @@ exports.getMatchingPccs = async ({
 	if (!pccs.some(isCurrent)) {
 		pccs.push({gds, pcc});
 	}
-	return pccs;
+	return _.uniq(pccs);
 };
