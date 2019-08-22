@@ -24,13 +24,14 @@ const PricePccMixList = ({
 		]),
 	]);
 	const tbodyCmp = Cmp('tbody').attach(processes
-		.map(({gds, pcc}) => {
+		.map(({gds, pcc, pricingCmd}) => {
 			const trCmp = Cmp('tr').attach([
 				Cmp('td.gds', {textContent: gds}),
-				Cmp('td.pcc', {textContent: pcc}),
+				Cmp('td.pcc', {textContent: pcc, title: pricingCmd}),
 			]);
 			trCmp.context.setAttribute('data-gds', gds);
 			trCmp.context.setAttribute('data-pcc', pcc);
+			trCmp.context.setAttribute('data-cmd', pricingCmd);
 			return trCmp;
 		}));
 	const rootCmp = Cmp('div.price-pcc-mix-list').attach([
@@ -133,11 +134,12 @@ const PricePccMixList = ({
 	const addRow = ({pccResult}) => {
 		console.debug('pccResult', pccResult);
 
-		const {gds, pcc, pricingBlockList = []} = pccResult;
+		const {gds, pcc, rulePricingCmd, pricingBlockList = []} = pccResult;
 		const error = pccResult.error || (pricingBlockList.length ? null : 'No pricing returned');
 
 		const selector = ':scope > tr[data-gds="' + gds + '"][data-pcc="' + pcc + '"]:not(.filled)';
-		const tr = tbodyCmp.context.querySelector(selector);
+		const tr = [...tbodyCmp.context.querySelectorAll(selector)]
+			.filter(tr => tr.getAttribute('data-cmd') === rulePricingCmd)[0];
 		const trCmp = Cmp({context: tr});
 
 		if (error) {

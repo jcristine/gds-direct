@@ -1,10 +1,58 @@
+const PtcUtil = require('../Transpiled/Rbs/Process/Common/PtcUtil.js');
+const TranslatePricingCmd = require('./CmdTranslators/TranslatePricingCmd.js');
+const NormalizePricingCmd = require('./CmdTranslators/NormalizePricingCmd.js');
 const RbsUtils = require('../GdsHelpers/RbsUtils.js');
-const GdsDialectTranslator = require('../Transpiled/Rbs/GdsDirect/DialectTranslator/GdsDialectTranslator.js');
 const RepriceInAnotherPccAction = require('../Transpiled/Rbs/GdsDirect/Actions/Common/RepriceInAnotherPccAction.js');
 const RepricePccRules = require('../Repositories/RepricePccRules.js');
 const GetCurrentPnr = require('./GetCurrentPnr.js');
 const {coverExc, timeout} = require('klesun-node-tools/src/Lang.js');
 const Rej = require('klesun-node-tools/src/Rej.js');
+
+
+const makePricingCmd = async (aliasData, pccRec) => {
+	const normalized = NormalizePricingCmd.inApollo({
+		type: 'priceItinerary',
+		data: {
+			baseCmd: '$BB',
+			pricingModifiers: aliasData.pricingModifiers || [],
+		},
+	});
+	if (aliasData.isAll && normalized.ptcs.length === 0) {
+		normalized.paxNums = [];
+		normalized.ptcs = aliasData.ptcs;
+	}
+	if (!normalized.pricingModifiers.some(mod => mod.type === 'cabinClass')) {
+		normalized.pricingModifiers.push({type: 'cabinClass', parsed: {parsed: 'sameAsBooked'}});
+	}
+	if (pccRec.ptc) {
+		if (normalized.ptcs.length === 0) {
+			normalized.paxNums = [];
+			normalized.ptcs.push(pccRec.ptc);
+		} else {
+			const converted = [];
+			for (const srcPtc of normalized.ptcs) {
+				const {ageGroup, age} = PtcUtil.parsePtc(srcPtc);
+				const ptc = await PtcUtil.convertPtcByAgeGroup(pccRec.ptc, ageGroup, age || 7);
+				converted.push(ptc);
+			}
+			normalized.ptcs = converted;
+		}
+	}
+	if (pccRec.accountCode) {
+		let segMod = normalized.pricingModifiers
+			.filter(m => m.type === 'segments')[0];
+		if (!segMod) {
+			segMod = {type: 'segments', parsed: {bundles: [{segmentNumbers: []}]}};
+			normalized.pricingModifiers.push(segMod);
+		}
+		segMod.parsed.bundles.forEach(b => b.accountCode = pccRec.accountCode);
+	}
+	if (pccRec.fareType && !normalized.pricingModifiers.some(m => m.type === 'fareType')) {
+		normalized.pricingModifiers.push({type: 'fareType', parsed: pccRec.fareType});
+	}
+
+	return TranslatePricingCmd.fromData(pccRec.gds, normalized);
+};
 
 /**
  * @param stateful = require('StatefulSession.js')()
@@ -17,25 +65,6 @@ const RepriceInPccMix = async ({
 }) => {
 	const startDt = stateful.getStartDt();
 	const cmdRqId = await stateful.getLog().getCmdRqId();
-
-	const getPricingCmd = () => {
-		const pricingModifiers = aliasData.pricingModifiers || [];
-		const rawMods = [];
-		if (aliasData.isAll) {
-			rawMods.push('N' + aliasData.ptcs
-				.map((ptc,i) => (i + 1) + '*' + ptc)
-				.join('|'));
-			const ageGroups = aliasData.requestedAgeGroups;
-			if (ageGroups.every(g => ['child', 'infant'].includes(g.ageGroup))) {
-				rawMods.push('ACC');
-			}
-		}
-		if (!pricingModifiers.some(mod => mod.type === 'cabinClass')) {
-			rawMods.push('/@AB'); // to preserve original cabin classes
-		}
-		rawMods.push(...pricingModifiers.map(m => m.raw));
-		return ['$BB', ...rawMods].join('/');
-	};
 
 	const dtDiff = (next, curr) => {
 		const nextEpoch = new Date(next.departureDt.full).getTime();
@@ -68,24 +97,16 @@ const RepriceInPccMix = async ({
 	};
 
 	/** @return Promise */
-	const processPcc = ({pcc, gds, itinerary}) => {
-		const cmdRq = getPricingCmd();
-		const pricingCmd = new GdsDialectTranslator()
-			.setBaseDate(startDt)
-			.translate('apollo', gds, cmdRq).output;
-		if (!pricingCmd) {
-			const msg = 'Failed to translate >' + cmdRq + '; to ' + gds;
-			return Rej.NotImplemented(msg);
-		}
+	const processPcc = async ({itinerary, pricingCmd, gds, pcc}) => {
 		return new RepriceInAnotherPccAction({gdsClients}).repriceInNewSession({
 			gds, pcc, itinerary, pricingCmd, startDt, baseDate: startDt,
 		}).then(async pccResult => {
 			for (const ptcBlock of pccResult.pricingBlockList || []) {
 				ptcBlock.fareType = await RbsUtils.getFareTypeV2(gds, pcc, ptcBlock);
 			}
-			return {cmdRqId, pcc, gds, ...pccResult};
+			return {cmdRqId, rulePricingCmd: pricingCmd, gds, pcc, ...pccResult};
 		}).catch(coverExc(Rej.list, exc => {
-			return {cmdRqId, pcc, gds, error: exc + ''};
+			return {cmdRqId, rulePricingCmd: pricingCmd, gds, pcc, error: exc + ''};
 		})).then(async pccResult => {
 			stateful.askClient({
 				messageType: 'displayPriceMixPccRow',
@@ -105,18 +126,14 @@ const RepriceInPccMix = async ({
 		const pccRecs = await getPccRecs(itinerary);
 		const messages = [];
 		const processes = [];
-		for (const {pcc, gds} of pccRecs) {
-			let whenPccResult = processPcc({pcc, gds, itinerary});
+		for (const pccRec of pccRecs) {
+			const pricingCmd = await makePricingCmd(aliasData, pccRec);
+
+
+			const {gds, pcc} = pccRec;
+			let whenPccResult = processPcc({gds, pcc, pricingCmd, itinerary});
 			whenPccResult = timeout(121, whenPccResult);
-			whenPccResult = whenPccResult
-				.then(pccResult => {
-					if (pccResult.error) {
-						const msg = 'Failed to price in ' + pcc + ' - ' + pccResult.error;
-						messages.push({type: 'error', text: msg});
-					}
-					return pccResult;
-				});
-			processes.push({pcc, gds, cmdRqId});
+			processes.push({gds, pcc, pricingCmd, cmdRqId});
 		}
 		return {
 			messages: messages,

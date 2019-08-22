@@ -100,6 +100,11 @@ const translatePaxes_amadeus = ({ptcs, paxNums, pricingModifiers = []}) => {
 	ptcs = php.array_values(php.array_unique(ptcs));
 	const subMods = [];
 	const superMods = [];
+	const accountCodes = pricingModifiers
+		.filter(m => m.type === 'segments')
+		.flatMap(m => m.parsed.bundles)
+		.flatMap(b => b.accountCode)
+		.filter(c => c);
 	for (const mod of pricingModifiers) {
 		if (mod.type === 'currency') {
 			subMods.push('FC-' + mod.parsed);
@@ -120,6 +125,9 @@ const translatePaxes_amadeus = ({ptcs, paxNums, pricingModifiers = []}) => {
 		} else {
 			superMods.push(mod);
 		}
+	}
+	if (accountCodes.length > 0) {
+		throw Rej.NotImplemented.makeExc('Account codes not supported in Amadeus');
 	}
 	pricingModifiers.splice(0);
 	pricingModifiers.push(...superMods);
@@ -211,6 +219,9 @@ const processTravelportMod = (effectiveMods, mod, coma, thru) => {
 		const grouped = {};
 		for (const bundle of bundles) {
 			let modsPart = '';
+			if (bundle.accountCode) {
+				modsPart += '-' + bundle.accountCode;
+			}
 			if (bundle.bookingClass) {
 				modsPart += '.' + bundle.bookingClass;
 			}
@@ -340,9 +351,15 @@ const inSabre = (norm) => {
 			// skip - Sabre does not require it if I remember right
 		} else if (mod.type === 'segments') {
 			const bundles = mod.parsed.bundles;
-			const fareBases = bundles
-				.map(b => b.fareBasis)
-				.filter(fb => fb);
+			const accountCodes = bundles.map(b => b.accountCode).filter(fb => fb);
+			if (accountCodes.length > 1) {
+				throw Rej.NotImplemented.makeExc('Account code can not be specified per segment in Sabre');
+			} else if (accountCodes.length === 1) {
+				// agent usually use RR*, though there is also AC*
+				// format, not sure which of them is the correct one...
+				effectiveMods.push('RR*' + accountCodes[0]);
+			}
+			const fareBases = bundles.map(b => b.fareBasis).filter(fb => fb);
 			const singleFb = fareBases.length !== 1 ? null : fareBases[0];
 			if (singleFb) {
 				effectiveMods.push('Q' + singleFb);

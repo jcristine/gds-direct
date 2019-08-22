@@ -94,5 +94,5 @@ exports.getMatchingPccs = async ({
 	if (!pccs.some(isCurrent)) {
 		pccs.push({gds, pcc});
 	}
-	return _.uniq(pccs);
+	return _.uniqBy(pccs, r => JSON.stringify(r));
 };
