@@ -67,7 +67,7 @@ export default class Output
 		return this;
 	}
 
-	_printOutput(appliedRules = '', output)
+	_printOutput(appliedRules = '', output, injectedForms = [])
 	{
 		if (appliedRules && appliedRules.length)
 		{
@@ -76,9 +76,12 @@ export default class Output
 
 			let cleanupLast = () => {};
 			this.terminal.echo(outputText, {
-				finalize 	: (div) => {
+				finalize 	: ($div) => {
 					cleanupLast();
-					cleanupLast = replaceInTerminal(div, tips);
+					for (const dom of injectedForms) {
+						$div[0].prepend(dom);
+					}
+					cleanupLast = replaceInTerminal($div, tips);
 				},
 				// raw 		: true
 			});
@@ -118,13 +121,18 @@ export default class Output
 		}
 	}
 
-	printOutput(output, isClearScreen = false, appliedRules = '', clearEmptyLines)
-	{
+	printOutput({
+		output, isClearScreen = false,
+		appliedRules = '', injectedForms = [],
+	}) {
+		const clearEmptyLines = injectedForms.length > 0;
 		this.outputStrings 	= appliedRules ? replaceChar(output, '%') : output;
 		this.clearScreen	= isClearScreen;
 		this.cmdLineOffset 	= this.terminal.cmd()[0].offsetTop; // - this.charHeight; // remember scrollTop height before the command so when clear flag screen is set scroll to this mark
 
-		this._countEmpty(clearEmptyLines)._printOutput(appliedRules, output)._attachEmpty()._scroll();
+		this._countEmpty(clearEmptyLines)
+			._printOutput(appliedRules, output, injectedForms)
+			._attachEmpty()._scroll();
 
 		return this.outputStrings;
 	}

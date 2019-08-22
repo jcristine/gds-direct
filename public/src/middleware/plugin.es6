@@ -67,6 +67,11 @@ let chooseStrFromList = (plugin, options, caption = 'Choose One Of The Following
 
 export default class TerminalPlugin
 {
+	/**
+	 * @param {{
+	 *     context: HTMLDocument,
+	 * }} params
+	 */
 	constructor( params )
 	{
 		this.settings 	= params;
@@ -84,7 +89,7 @@ export default class TerminalPlugin
 			gds				: params.gds,
 			onExpired		: (msg) => {
 				msg = '[[;;;startSession]/SESSION EXPIRED]';
-				this.outputLiner.printOutput(msg, false, []);
+				this._printOutput(msg, false);
 			},
 		});
 
@@ -274,6 +279,18 @@ export default class TerminalPlugin
 		});
 	}
 
+	_printOutput(output, isClearScreen = false) {
+		const injectedForms = [...this.injectedForms];
+		for (const dom of injectedForms) {
+			this._ejectForm({context: dom});
+		}
+		const appliedRules = this.appliedRules;
+		return this.outputLiner.printOutput({
+			output, isClearScreen,
+			appliedRules, injectedForms,
+		});
+	}
+
 	_checkSabreCommand( command, terminal )
 	{
 		if ( this.allowManualPaging )
@@ -281,17 +298,17 @@ export default class TerminalPlugin
 			switch (command.toUpperCase())
 			{
 				case 'MD' :
-					this.outputLiner.printOutput(this.pagination.next().print(), false, this.appliedRules);
+					this._printOutput(this.pagination.next().print(), false);
 					// this.print( this.pagination.next().print() );
 				return true;
 
 				case 'MU' :
-					this.outputLiner.printOutput(this.pagination.prev().print(), false, this.appliedRules);
+					this._printOutput(this.pagination.prev().print(), false);
 					// this.print( this.pagination.prev().print() );
 				return true;
 
 				case 'MDA' :
-					this.outputLiner.printOutput(this.pagination.printAll(), false, this.appliedRules);
+					this._printOutput(this.pagination.printAll(), false);
 					// this.print( this.pagination.printAll() );
 				return true;
 
@@ -315,7 +332,7 @@ export default class TerminalPlugin
 
 		const before = () => {
 			/** spinner is also new line  **/
-			this.outputLiner.printOutput('');
+			this.outputLiner.printOutput({output: ''});
 			this.spinner.start();
 
 			// split needed for multiline commands, since jquery
@@ -368,7 +385,6 @@ export default class TerminalPlugin
 	{
 		let formCmp;
 		let remove = () => {
-			formCmp.context.remove();
 			this._ejectForm(formCmp);
 			// love jquery terminal - needed to return focus
 			setTimeout(() => this.terminal.enable(), 4);
@@ -461,9 +477,10 @@ export default class TerminalPlugin
 		this.outputLiner.removeEmpty();
 	}
 
-	_ejectForm( form ) {
-		const el = form.context;
+	_ejectForm( formCmp ) {
+		const el = formCmp.context;
 
+		formCmp.context.remove();
 		if (this.injectedForms.indexOf( el ) > -1)
 		{
 			this.injectedForms.splice(this.injectedForms.indexOf( el ), 1);
@@ -474,7 +491,6 @@ export default class TerminalPlugin
 	_displayGenericForm(formInst)
 	{
 		let close = () => {
-			finalForm.context.remove();
 			this._ejectForm(finalForm);
 		};
 		let submitCmp = Cmp('button[Submit]');
@@ -591,25 +607,18 @@ export default class TerminalPlugin
 
 		if (data.startNewSession) {
 			let msg = '[[;;;startSession]/NEW SESSION STARTED]';
-			this.outputLiner.printOutput(msg, false, []);
+			this._printOutput(msg, false);
 		}
 
 		if (output)
 		{
-			let clearLines = false;
-
 			if ( this.allowManualPaging ) // sabre
 			{
 				const {numOfRows, numOfChars} 	= this.settings;
 				output = this.pagination.bindOutput(output, numOfRows - 1, numOfChars).print();
 			}
 
-			if (this.injectedForms.length)
-			{
-				clearLines = true;
-			}
-
-			output = this.outputLiner.printOutput(output, clearScreen, appliedRules, clearLines);
+			output = this._printOutput(output, clearScreen);
 		}
 
 		this.tabCommands.reset( tabCommands, output );
@@ -642,7 +651,7 @@ export default class TerminalPlugin
 				PricePccMixList.finalize(action.data);
 			} else {
 				let msg = '[[;;;error]Unsupported action - ' + action.type + ']';
-				this.outputLiner.printOutput(msg, false, []);
+				this._printOutput(msg, false);
 			}
 		}
 	}
