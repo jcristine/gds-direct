@@ -208,8 +208,13 @@ const RunCmdRq = ({
 				rawMods.push(mod.raw);
 			}
 		}
-		const leadingSlash = cmd.startsWith(baseCmd + '/') || baseCmd === '$BBC';
-		return baseCmd + (!leadingSlash ? '' : '/') + rawMods.join('/');
+		const modsPart = rawMods.join('/');
+		const leadingSlash =
+			cmd.startsWith(baseCmd + '/') ||
+			baseCmd === '$BBC' ||
+			modsPart.startsWith('/');
+
+		return baseCmd + (!leadingSlash ? '' : '/') + modsPart;
 	};
 
 	/** maybe should move this to ApoAliasParser ? */
@@ -696,10 +701,10 @@ const RunCmdRq = ({
 			.map((ptc,i) => (i + 1) + '*' + ptc)
 			.join('|'));
 		if (requestedAgeGroups.every(g => ['child', 'infant'].includes(g.ageGroup))) {
-			rawMods.push('/ACC');
+			rawMods.push('ACC');
 		}
 		rawMods.push(...pricingModifiers.map(m => m.raw));
-		return '$B' + rawMods.join('/');
+		return ['$B', ...rawMods].join('/');
 	};
 
 	const storePricing = async ($aliasData) => {
