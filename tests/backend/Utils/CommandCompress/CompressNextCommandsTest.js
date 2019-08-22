@@ -102,10 +102,10 @@ class CompressNextCommandsTest extends require('../../Transpiled/Lib/TestCase') 
 			this.assertArrayElementsSubset(removeStub.firstCall.args, [[1, 2]]);
 			this.assertSame(removeStub.callCount, 1);
 
-			this.assertArrayElementsSubset(store.firstCall.args, [[
-				{"id":1,"session_id":1,"gds":"apollo","type":"command1","is_mr":0,"dt":"2019-08-20 09:13:19","cmd":"cmd1","duration":1,"cmd_rq_id":182573686,"area":"A","record_locator":"","has_pnr":0,"is_pnr_stored":0,"output":"compressed text 1", "dictionary": 1, "compression_type": 1},
-				{"id":2,"session_id":2,"gds":"apollo","type":"command2","is_mr":0,"dt":"2019-08-20 09:12:59","cmd":"cmd2","duration":2,"cmd_rq_id":182573620,"area":"A","record_locator":"","has_pnr":1,"is_pnr_stored":0,"output":"compressed text 2", "dictionary": 2, "compression_type": 1},
-			]]);
+			this.assertArrayElementsSubset([[
+				{"id":1,"session_id":1,"type":"command1","dt":"2019-08-20 09:13:19","cmd":"cmd1","cmd_rq_id":182573686,"output":"compressed text 1", "dictionary": 1, "compression_type": 1},
+				{"id":2,"session_id":2,"type":"command2","dt":"2019-08-20 09:12:59","cmd":"cmd2","cmd_rq_id":182573620,"output":"compressed text 2", "dictionary": 2, "compression_type": 1},
+			]], store.firstCall.args);
 		} finally {
 			sinon.restore();
 		}
@@ -124,9 +124,9 @@ class CompressNextCommandsTest extends require('../../Transpiled/Lib/TestCase') 
 
 			this.assertSame(1, removeStub.callCount);
 
-			this.assertArrayElementsSubset(store.firstCall.args, [[
-				{"id":3,"session_id":3,"gds":"apollo","type":"command1","is_mr":0,"dt":"2019-08-20 09:12:59","cmd":"cmd2","duration":2,"cmd_rq_id":182573620,"area":"A","record_locator":"","has_pnr":1,"is_pnr_stored":0,"output":"SHORTY", "dictionary": null, "compression_type": 0},
-			]]);
+			this.assertArrayElementsSubset([[
+				{"id":3,"session_id":3,"type":"command1","dt":"2019-08-20 09:12:59","cmd":"cmd2","cmd_rq_id":182573620,"output":"SHORTY", "dictionary": null, "compression_type": 0},
+			]], store.firstCall.args);
 		} finally {
 			sinon.restore();
 		}

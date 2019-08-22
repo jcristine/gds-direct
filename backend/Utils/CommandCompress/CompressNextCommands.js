@@ -2,6 +2,7 @@ const Compressor = require('./Compression');
 const CmdLogs = require('../../Repositories/CmdLogs');
 const CmdLogsHist = require('../../Repositories/CmdLogHist');
 const plimit = require('p-limit');
+const _ = require('lodash');
 
 const COMPRESSION_TYPE_NONE = 0;
 const COMPRESSION_TYPE_DEFLATE = 1;
@@ -33,41 +34,44 @@ class CommandCompressor {
 		});
 	}
 
+	async compressCommand(command) {
+		const dictionary = await this.dictionaryCache.get(command);
+
+		// it will get no dictionary output if there isn't enough data to
+		// build generic enough dictionary
+		if (!dictionary) {
+			this.log('No dictionary could be built for', {
+				type: command.type,
+				gds: command.gds,
+			});
+
+			return null;
+		}
+
+		const compressed = await Compressor.compress(command.output, dictionary.dictionary);
+
+		// output can potentially be bigger with zip header if output was small to start with
+		const zipIsBigger = compressed.length >= Buffer.byteLength(command.output);
+
+		const result = zipIsBigger ? {
+			...command,
+			compression_type: COMPRESSION_TYPE_NONE,
+			dictionary: null,
+		}: {
+			...command,
+			compression_type: COMPRESSION_TYPE_DEFLATE,
+			output: compressed,
+			dictionary: dictionary.id,
+		};
+
+		return _.pick(result, ['id', 'session_id', 'cmd', 'type', 'is_mr', 'dt', 'cmd_rq_id',
+			'compression_type', 'output', 'dictionary']);
+	}
+
 	async processCommands(commands) {
 		const limit = plimit(this.concurrency);
 
-		const promises = commands.map(async command => limit(async () => {
-			const dictionary = await this.dictionaryCache.get(command);
-
-			// it will get no dictionary output if there isn't enough data to
-			// build generic enough dictionary
-			if (!dictionary) {
-				this.log('No dictionary could be built for', {
-					type: command.type,
-					gds: command.gds,
-				});
-
-				return null;
-			}
-
-			const compressed = await Compressor.compress(command.output, dictionary.dictionary);
-
-			// output can potentially be bigger with zip header if output was small to start with
-			if (compressed.length >= Buffer.byteLength(command.output)) {
-				return {
-					...command,
-					compression_type: COMPRESSION_TYPE_NONE,
-					dictionary: null,
-				};
-			}
-
-			return {
-				...command,
-				compression_type: COMPRESSION_TYPE_DEFLATE,
-				output: compressed,
-				dictionary: dictionary.id,
-			};
-		}));
+		const promises = commands.map(async command => limit(async () => this.compressCommand(command)));
 
 		const results = (await Promise.all(promises)).filter(output => output);
 
