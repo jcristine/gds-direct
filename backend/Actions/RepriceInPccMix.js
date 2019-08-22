@@ -16,9 +16,24 @@ const RepriceInPccMix = async ({
 	RbsClient = require('../IqClients/RbsClient.js'),
 }) => {
 	const startDt = stateful.getStartDt();
-	const pricingModifiers = aliasData.pricingModifiers || [];
-	const cmdRq = ['$BB', ...pricingModifiers.map(mod => mod.raw)].join('/');
 	const cmdRqId = await stateful.getLog().getCmdRqId();
+
+	const getPricingCmd = () => {
+		const pricingModifiers = aliasData.pricingModifiers || [];
+		const rawMods = [];
+		if (aliasData.isAll) {
+			rawMods.push('N' + aliasData.ptcs
+				.map((ptc,i) => (i + 1) + '*' + ptc)
+				.join('|'));
+			const ageGroups = aliasData.requestedAgeGroups;
+			if (ageGroups.every(g => ['child', 'infant'].includes(g.ageGroup))) {
+				rawMods.push('/ACC');
+			}
+		}
+		console.debug('ololo getPricingCmd', {rawMods, aliasData});
+		rawMods.push(...pricingModifiers.map(m => m.raw));
+		return '$BB' + rawMods.join('/');
+	};
 
 	const dtDiff = (next, curr) => {
 		const nextEpoch = new Date(next.departureDt.full).getTime();
@@ -52,6 +67,7 @@ const RepriceInPccMix = async ({
 
 	/** @return Promise */
 	const processPcc = ({pcc, gds, itinerary}) => {
+		const cmdRq = getPricingCmd();
 		const pricingCmd = new GdsDialectTranslator()
 			.setBaseDate(startDt)
 			.translate('apollo', gds, cmdRq).output;

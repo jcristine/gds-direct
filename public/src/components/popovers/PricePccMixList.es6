@@ -49,10 +49,12 @@ const PricePccMixList = ({
 
 	const findFirstHigherThan = (newTr) => {
 		const newPrice = newTr.getAttribute('data-net-price');
-		const trs = [...tbodyCmp.context.querySelectorAll(':scope > tr[data-net-price]')];
+		const trs = [...tbodyCmp.context.querySelectorAll(':scope > tr')];
 		for (const tr of trs) {
 			const oldPrice = tr.getAttribute('data-net-price');
-			if (+oldPrice > +newPrice) {
+			if (!oldPrice) {
+				return tr;
+			} else if (+oldPrice > +newPrice) {
 				return tr;
 			}
 		}
@@ -64,11 +66,8 @@ const PricePccMixList = ({
 		rootCmp.attach([Cmp('div', {style: 'color: green', textContent: 'Done'})]);
 	};
 
-	/** @param {{gds, pcc}} pccResult = (new (require('RepriceInAnotherPccAction.js'))).repriceIn() */
-	const addRow = ({pccResult}) => {
-		console.debug('pccResult', pccResult);
-
-		const {gds, pcc, pricingCmd, pricingBlockList = [], calledCommands = [], error = null} = pccResult;
+	const populateRow = (pccResult, trCmp) => {
+		const {gds, pcc, pricingCmd, pricingBlockList = [], calledCommands = []} = pccResult;
 
 		const ageGroupToBlock = {};
 		for (const ptcBlock of pricingBlockList) {
@@ -81,10 +80,6 @@ const PricePccMixList = ({
 			ageGroupToBlock.infant ||
 			null;
 
-		if (!mainPtcBlock) {
-			// an error, could show it somewhere probably...
-			return;
-		}
 		const ptc = mainPtcBlock.ptcInfo.ptcRequested || mainPtcBlock.ptcInfo.ptc;
 		const pricingDump = calledCommands
 			.map(({cmd, output}) => '>' + cmd + ';\n' + output)
@@ -112,11 +107,7 @@ const PricePccMixList = ({
 			}),
 		]);
 
-		const selector = ':scope > tr[data-gds="' + gds + '"][data-pcc="' + pcc + '"]';
-		const tr = tbodyCmp.context.querySelector(selector);
-		tr.remove();
-
-		const trCmp = Cmp({context: tr}).attach([
+		trCmp.attach([
 			Cmp('td').attach([
 				Cmp('span', {textContent: ptc, title: pricingCmd}),
 			]),
@@ -126,16 +117,37 @@ const PricePccMixList = ({
 			makeNetCell(ageGroupToBlock.adult),
 			makeNetCell(ageGroupToBlock.child),
 			makeNetCell(ageGroupToBlock.infant),
-			...(!error ? [] : Cmp('td', {textContent: error})),
 		]);
 		trCmp.context.setAttribute('data-net-price', mainPtcBlock.fareInfo.totalFare.amount);
 
+		trCmp.context.remove();
 		const firstHigher = findFirstHigherThan(trCmp.context);
 		if (firstHigher) {
 			firstHigher.parentNode.insertBefore(trCmp.context, firstHigher);
 		} else {
 			tbodyCmp.attach([trCmp]);
 		}
+	};
+
+	/** @param {{gds, pcc}} pccResult = (new (require('RepriceInAnotherPccAction.js'))).repriceIn() */
+	const addRow = ({pccResult}) => {
+		console.debug('pccResult', pccResult);
+
+		const {gds, pcc, pricingBlockList = []} = pccResult;
+		const error = pccResult.error || (pricingBlockList.length ? null : 'No pricing returned');
+
+		const selector = ':scope > tr[data-gds="' + gds + '"][data-pcc="' + pcc + '"]';
+		const tr = tbodyCmp.context.querySelector(selector);
+		const trCmp = Cmp({context: tr});
+
+		if (error) {
+			trCmp.attach([
+				Cmp('td.error', {colSpan: 5, textContent: error}),
+			]);
+		} else {
+			populateRow(pccResult, trCmp);
+		}
+
 		if (--pendingLeft <= 0) {
 			finalize();
 		}

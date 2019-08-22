@@ -689,7 +689,7 @@ const RunCmdRq = ({
 		return $cmd;
 	};
 
-	const makePriceAllCmd = async (aliasData) => {
+	const makePriceAllCmd = (aliasData) => {
 		const {requestedAgeGroups, ptcs, pricingModifiers = []} = aliasData;
 		const rawMods = [];
 		rawMods.push('N' + ptcs
@@ -699,8 +699,7 @@ const RunCmdRq = ({
 			rawMods.push('/ACC');
 		}
 		rawMods.push(...pricingModifiers.map(m => m.raw));
-		const cmd = '$B' + rawMods.map(m => '/' + m).join('');
-		return Promise.resolve(cmd);
+		return '$B' + rawMods.join('/');
 	};
 
 	const storePricing = async ($aliasData) => {
@@ -725,7 +724,7 @@ const RunCmdRq = ({
 	};
 
 	const priceAll = async (aliasData) => {
-		const cmd = await makePriceAllCmd(aliasData);
+		const cmd = makePriceAllCmd(aliasData);
 		const {cmdRec, userMessages} = await processRealCommand(cmd, true);
 		return {calledCommands: [cmdRec], userMessages};
 	};

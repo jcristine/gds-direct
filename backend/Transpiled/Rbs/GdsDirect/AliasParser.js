@@ -105,7 +105,8 @@ class AliasParser {
 				{ageGroup: 'infant', quantity: 1},
 			];
 		}
-		if (!$ptc || $ptc === 'ALL') {
+		const isAll = $ptc === 'ALL';
+		if (!$ptc || isAll) {
 			$ptc = 'ADT';
 		}
 		const ptcs = [];
@@ -118,7 +119,7 @@ class AliasParser {
 		return {
 			ptc: $ptc,
 			isMix: mix ? true : false,
-			isAll: $ptc === 'ALL',
+			isAll: isAll,
 			requestedAgeGroups: requestedAgeGroups,
 			ptcs: ptcs,
 			pricingModifiers: AtfqParser.parsePricingModifiers($modsPart),
