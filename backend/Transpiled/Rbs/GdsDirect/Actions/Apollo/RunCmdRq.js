@@ -1002,16 +1002,16 @@ const RunCmdRq = ({
 			return;
 		}
 
-		const issuingPcc = await Pccs.findByCode('apollo', pccId);
+		const pnrCreationPcc = await Pccs.findByCode('apollo', pccId);
 
-		if (!issuingPcc) {
+		if (!pnrCreationPcc) {
 			return;
 		}
 
-		const cityTz = await stateful.getGeoProvider()
-			.getTimezone(issuingPcc.point_of_sale_city);
+		const pnrCreationTz = await stateful.getGeoProvider()
+			.getTimezone(pnrCreationPcc.point_of_sale_city);
 
-		if (!cityTz) {
+		if (!pnrCreationTz) {
 			return;
 		}
 
@@ -1033,7 +1033,7 @@ const RunCmdRq = ({
 
 			const year = pastDate.split('-')[0];
 
-			const finalDate = moment.utc(DateTime.fromUtc(`${year}-${htRecord.transactionDt.parsed}:00`, cityTz));
+			const finalDate = moment.utc(DateTime.fromUtc(`${year}-${htRecord.transactionDt.parsed}:00`, pnrCreationTz));
 
 			mcoRow.issueDate = {
 				raw: finalDate.format('DDMMMYY').toUpperCase(),
