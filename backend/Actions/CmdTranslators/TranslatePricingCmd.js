@@ -100,11 +100,12 @@ const translatePaxes_amadeus = ({ptcs, paxNums, pricingModifiers = []}) => {
 	ptcs = php.array_values(php.array_unique(ptcs));
 	const subMods = [];
 	const superMods = [];
-	const accountCodes = pricingModifiers
+	let accountCodes = pricingModifiers
 		.filter(m => m.type === 'segments')
 		.flatMap(m => m.parsed.bundles)
-		.flatMap(b => b.accountCode)
+		.map(b => b.accountCode)
 		.filter(c => c);
+	accountCodes = [...new Set(accountCodes)];
 	for (const mod of pricingModifiers) {
 		if (mod.type === 'currency') {
 			subMods.push('FC-' + mod.parsed);
@@ -351,7 +352,8 @@ const inSabre = (norm) => {
 			// skip - Sabre does not require it if I remember right
 		} else if (mod.type === 'segments') {
 			const bundles = mod.parsed.bundles;
-			const accountCodes = bundles.map(b => b.accountCode).filter(fb => fb);
+			let accountCodes = bundles.map(b => b.accountCode).filter(fb => fb);
+			accountCodes = [...new Set(accountCodes)];
 			if (accountCodes.length > 1) {
 				throw Rej.NotImplemented.makeExc('Account code can not be specified per segment in Sabre');
 			} else if (accountCodes.length === 1) {
@@ -359,7 +361,8 @@ const inSabre = (norm) => {
 				// format, not sure which of them is the correct one...
 				effectiveMods.push('RR*' + accountCodes[0]);
 			}
-			const fareBases = bundles.map(b => b.fareBasis).filter(fb => fb);
+			let fareBases = bundles.map(b => b.fareBasis).filter(fb => fb);
+			fareBases = [...new Set(fareBases)];
 			const singleFb = fareBases.length !== 1 ? null : fareBases[0];
 			if (singleFb) {
 				effectiveMods.push('Q' + singleFb);
@@ -434,9 +437,8 @@ const inAmadeus = (norm) => {
 			// not needed in Amadeus I guess
 		} else if (mod.type === 'segments') {
 			const bundles = mod.parsed.bundles;
-			const fareBases = bundles
-				.map(b => b.fareBasis)
-				.filter(fb => fb);
+			let fareBases = bundles.map(b => b.fareBasis).filter(fb => fb);
+			fareBases = [...new Set(fareBases)];
 			if (fareBases.length > 1) {
 				throw Rej.NotImplemented.makeExc('Amadeus can only have one fare basis per store');
 			} else if (fareBases.length === 1) {
