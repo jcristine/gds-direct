@@ -102,8 +102,8 @@ class CompressNextCommandsTest extends require('../../Transpiled/Lib/TestCase') 
 			this.assertSame(removeStub.callCount, 0);
 
 			this.assertArrayElementsSubset([[
-				{"id":1,"session_id":1,"type":"command1","dt":"2019-08-20 09:13:19","cmd":"cmd1","cmd_rq_id":182573686,"output_compressed":"compressed text 1", "dictionary": 1},
-				{"id":2,"session_id":2,"type":"command2","dt":"2019-08-20 09:12:59","cmd":"cmd2","cmd_rq_id":182573620,"output_compressed":"compressed text 2", "dictionary": 2},
+				{"id":1,"session_id":1,"type":"command1","dt":"2019-08-20 09:13:19","cmd":"cmd1","cmd_rq_id":182573686,"output_compressed":"compressed text 1", "dictionary_id": 1},
+				{"id":2,"session_id":2,"type":"command2","dt":"2019-08-20 09:12:59","cmd":"cmd2","cmd_rq_id":182573620,"output_compressed":"compressed text 2", "dictionary_id": 2},
 			]], store.firstCall.args);
 		} finally {
 			sinon.restore();
@@ -124,7 +124,7 @@ class CompressNextCommandsTest extends require('../../Transpiled/Lib/TestCase') 
 			this.assertSame(0, removeStub.callCount);
 
 			this.assertArrayElementsSubset([[
-				{"id":3,"session_id":3,"type":"command1","dt":"2019-08-20 09:12:59","cmd":"cmd2","cmd_rq_id":182573620,"output_compressed":"SHORTY", "dictionary": null},
+				{"id":3,"session_id":3,"type":"command1","dt":"2019-08-20 09:12:59","cmd":"cmd2","cmd_rq_id":182573620,"output_compressed":"SHORTY", "dictionary_id": null},
 			]], store.firstCall.args);
 		} finally {
 			sinon.restore();

@@ -15,7 +15,7 @@ module.exports.migrations = [
 			// to retrieve dictionary first session needs to be located
 			// and then using gds from session and type from this entry
 			// it is possible to locate required dictionary
-			"  `dictionary` tinyint(3) UNSIGNED NOT NULL,",
+			"  `dictionary_id` tinyint(3) UNSIGNED,",
 			"  PRIMARY KEY (`id`),",
 			"  KEY `session_id` (`session_id`),",
 			"  KEY `type` (`type`)",
