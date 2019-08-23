@@ -23,6 +23,24 @@ let HtmlEl = (html) => {
 	return template.content.firstChild;
 };
 
+const matchAll = (pattern, str) => {
+	let reg = new RegExp(pattern);
+	if (!reg.flags.includes('g')) {
+		reg = new RegExp(reg.source, reg.flags + 'g');
+	}
+	const records = [];
+	let lastIndex = -1;
+	let matches;
+	while((matches = reg.exec(str)) !== null) {
+		if (lastIndex === reg.lastIndex) {
+			throw new Error('Infinite regex due to empty string match at ' + lastIndex + ' - ' + reg + ' - ' + str);
+		}
+		lastIndex = reg.lastIndex;
+		records.push(matches);
+	}
+	return records;
+};
+
 const msgLang = {
 	id                      : 'Id',
 	priority                : 'Priority',
@@ -350,11 +368,11 @@ const addSampleControl = (patternRec, input, span) => {
 				id = result.id; // if new record
 			});
 			const checkRegex = () => {
-				let error = null, match = null;
+				let error = null, matches = [];
 				try {
 					const regex = new RegExp(normReg(input.value), 'm');
-					match = textarea.value.match(regex);
-					if (!match) {
+					matches = matchAll(regex, textarea.value);
+					if (matches.length === 0) {
 						error = 'Pattern did not match';
 					}
 				} catch (exc) {
@@ -365,10 +383,9 @@ const addSampleControl = (patternRec, input, span) => {
 					resultDiv.textContent = error;
 				} else {
 					resultDiv.classList.toggle('error', false);
-					const result = match.groups
-						? JSON.stringify(match.groups)
-						: JSON.stringify(match.slice(1));
-					resultDiv.textContent = result;
+					resultDiv.textContent = JSON.stringify(matches.map(match => {
+						return match.groups ? match.groups : match.slice(1);
+					}));
 				}
 			};
 			input.addEventListener('input', checkRegex);
