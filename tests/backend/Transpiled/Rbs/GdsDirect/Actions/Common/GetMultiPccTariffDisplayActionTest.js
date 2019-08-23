@@ -223,24 +223,25 @@ class GetMultiPccTariffDisplayActionTest extends require('../../../../../../../b
         ]);
 
         // Apollo US -> US with airline select
-        $list.push([
-            {
-                'gds': 'apollo', 'pcc': '2CV4',
-                'cmd': '$D24NOVLOSNYC|KQ',
-            },
-            ArrayUtil.makeTableRows([
-                ['pcc'  , 'gds'    , 'ptc' , 'airlines' , 'departureDate' , 'returnDate' , 'departureAirport' , 'destinationAirport'],
-                ['1O3K' , 'apollo' , 'JWZ' , ['KQ']     , '2018-11-24'    , null         , 'LOS'              , 'NYC'               ],
-                ['13NM' , 'apollo' , 'JWZ' , ['KQ']     , '2018-11-24'    , null         , 'LOS'              , 'NYC'               ],
-                ['2G2H' , 'apollo' , 'JWZ' , ['KQ']     , '2018-11-24'    , null         , 'LOS'              , 'NYC'               ],
-                ['2G52' , 'apollo' , 'JWZ' , ['KQ']     , '2018-11-24'    , null         , 'LOS'              , 'NYC'               ],
-                ['2F9B' , 'apollo' , 'JWZ' , ['KQ']     , '2018-11-24'    , null         , 'LOS'              , 'NYC'               ],
-                ['U2E5' , 'sabre'  , 'JCB' , ['KQ']     , '2018-11-24'    , null         , 'LOS'              , 'NYC'               ],
-                ['DK8H' , 'sabre'  , 'JCB' , ['KQ']     , '2018-11-24'    , null         , 'LOS'              , 'NYC'               ],
-                ['5E9H' , 'sabre'  , 'JCB' , ['KQ']     , '2018-11-24'    , null         , 'LOS'              , 'NYC'               ],
-                ['2CV4' , 'apollo' ,  null , ['KQ']     , '2018-11-24'    , null         , 'LOS'              , 'NYC'               ],
-            ]),
-        ]);
+        // does not work anymore as we do not try looking by destination used as departure
+        // $list.push([
+        //     {
+        //         'gds': 'apollo', 'pcc': '2CV4',
+        //         'cmd': '$D24NOVLOSNYC|KQ',
+        //     },
+        //     ArrayUtil.makeTableRows([
+        //         ['pcc'  , 'gds'    , 'ptc' , 'airlines' , 'departureDate' , 'returnDate' , 'departureAirport' , 'destinationAirport'],
+        //         ['1O3K' , 'apollo' , 'JWZ' , ['KQ']     , '2018-11-24'    , null         , 'LOS'              , 'NYC'               ],
+        //         ['13NM' , 'apollo' , 'JWZ' , ['KQ']     , '2018-11-24'    , null         , 'LOS'              , 'NYC'               ],
+        //         ['2G2H' , 'apollo' , 'JWZ' , ['KQ']     , '2018-11-24'    , null         , 'LOS'              , 'NYC'               ],
+        //         ['2G52' , 'apollo' , 'JWZ' , ['KQ']     , '2018-11-24'    , null         , 'LOS'              , 'NYC'               ],
+        //         ['2F9B' , 'apollo' , 'JWZ' , ['KQ']     , '2018-11-24'    , null         , 'LOS'              , 'NYC'               ],
+        //         ['U2E5' , 'sabre'  , 'JCB' , ['KQ']     , '2018-11-24'    , null         , 'LOS'              , 'NYC'               ],
+        //         ['DK8H' , 'sabre'  , 'JCB' , ['KQ']     , '2018-11-24'    , null         , 'LOS'              , 'NYC'               ],
+        //         ['5E9H' , 'sabre'  , 'JCB' , ['KQ']     , '2018-11-24'    , null         , 'LOS'              , 'NYC'               ],
+        //         ['2CV4' , 'apollo' ,  null , ['KQ']     , '2018-11-24'    , null         , 'LOS'              , 'NYC'               ],
+        //     ]),
+        // ]);
 
         // from anywhere else to anywhere else
         $list.push([
@@ -272,32 +273,34 @@ class GetMultiPccTariffDisplayActionTest extends require('../../../../../../../b
         // should use agent's mods in Sabre and mods from rules everywhere else
         // should not repeat same PCC-s from GB -> anywhere and US -> Europe (33)
         // rules, but should include all of them from both rules (G8T, U2E5, etc...)
-        $list.push([
-            {
-                'gds': 'sabre', 'pcc': '0EKH',
-                'cmd': 'FQABZMSP18MAR¥RR*BSAG¥PITX',
-            },
-            ArrayUtil.makeTableRows([
-                ['pcc'       , 'gds'     , 'ptc' , 'departureDate' , 'returnDate' , 'departureAirport' , 'destinationAirport' , 'accountCode' , 'fareType'],
-                ['13NM'      , 'apollo'  , 'JWZ' , '2019-03-18'    , null         , 'ABZ'              , 'MSP'                , null          , null      ],
-                ['0EKH'      , 'sabre'   , 'ITX' , '2019-03-18'    , null         , 'ABZ'              , 'MSP'                , 'BSAG'        , null      ],
-                ['5E9H'      , 'sabre'   , 'ITX' , '2019-03-18'    , null         , 'ABZ'              , 'MSP'                , 'BSAG'        , null      ],
-                ['K2MI'      , 'sabre'   , 'ITX' , '2019-03-18'    , null         , 'ABZ'              , 'MSP'                , 'BSAG'        , null      ],
-                ['DK8H'      , 'sabre'   , 'ITX' , '2019-03-18'    , null         , 'ABZ'              , 'MSP'                , 'BSAG'        , null      ],
-                ['K9P'       , 'galileo' , 'ITX' , '2019-03-18'    , null         , 'ABZ'              , 'MSP'                , 'TPACK'       , 'private' ],
-                ['K9P'       , 'galileo' , null  , '2019-03-18'    , null         , 'ABZ'              , 'MSP'                , 'TPACK'       , 'private' ],
-                ['G8T'       , 'galileo' , 'ITX' , '2019-03-18'    , null         , 'ABZ'              , 'MSP'                , 'TPACK'       , 'private' ],
-                ['G8T'       , 'galileo' , null  , '2019-03-18'    , null         , 'ABZ'              , 'MSP'                , 'TPACK'       , 'private' ],
-                ['3ZV4'      , 'galileo' , 'ITX' , '2019-03-18'    , null         , 'ABZ'              , 'MSP'                , 'BSAG'        , 'private' ],
-                ['3ZV4'      , 'galileo' , null  , '2019-03-18'    , null         , 'ABZ'              , 'MSP'                , 'BSAG'        , 'private' ],
-        
-                ['1O3K'      , 'apollo'  , 'JWZ' , '2019-03-18'    , null         , 'ABZ'              , 'MSP'                , null          , null      ],
-                ['2G2H'      , 'apollo'  , 'JWZ' , '2019-03-18'    , null         , 'ABZ'              , 'MSP'                , null          , null      ],
-                ['2G52'      , 'apollo'  , 'JWZ' , '2019-03-18'    , null         , 'ABZ'              , 'MSP'                , null          , null      ],
-                ['U2E5'      , 'sabre'   , 'ITX' , '2019-03-18'    , null         , 'ABZ'              , 'MSP'                , 'BSAG'        , null      ],
-                ['LAXGO3106' , 'amadeus' , null  , '2019-03-18'    , null         , 'ABZ'              , 'MSP'                , null          , 'private' ],
-            ]),
-        ]);
+        //
+        // does not work anymore as we do not try looking by destination used as departure
+        //$list.push([
+        //    {
+        //        'gds': 'sabre', 'pcc': '0EKH',
+        //        'cmd': 'FQABZMSP18MAR¥RR*BSAG¥PITX',
+        //    },
+        //    ArrayUtil.makeTableRows([
+        //        ['pcc'       , 'gds'     , 'ptc' , 'departureDate' , 'returnDate' , 'departureAirport' , 'destinationAirport' , 'accountCode' , 'fareType'],
+        //        ['13NM'      , 'apollo'  , 'JWZ' , '2019-03-18'    , null         , 'ABZ'              , 'MSP'                , null          , null      ],
+        //        ['0EKH'      , 'sabre'   , 'ITX' , '2019-03-18'    , null         , 'ABZ'              , 'MSP'                , 'BSAG'        , null      ],
+        //        ['5E9H'      , 'sabre'   , 'ITX' , '2019-03-18'    , null         , 'ABZ'              , 'MSP'                , 'BSAG'        , null      ],
+        //        ['K2MI'      , 'sabre'   , 'ITX' , '2019-03-18'    , null         , 'ABZ'              , 'MSP'                , 'BSAG'        , null      ],
+        //        ['DK8H'      , 'sabre'   , 'ITX' , '2019-03-18'    , null         , 'ABZ'              , 'MSP'                , 'BSAG'        , null      ],
+        //        ['K9P'       , 'galileo' , 'ITX' , '2019-03-18'    , null         , 'ABZ'              , 'MSP'                , 'TPACK'       , 'private' ],
+        //        ['K9P'       , 'galileo' , null  , '2019-03-18'    , null         , 'ABZ'              , 'MSP'                , 'TPACK'       , 'private' ],
+        //        ['G8T'       , 'galileo' , 'ITX' , '2019-03-18'    , null         , 'ABZ'              , 'MSP'                , 'TPACK'       , 'private' ],
+        //        ['G8T'       , 'galileo' , null  , '2019-03-18'    , null         , 'ABZ'              , 'MSP'                , 'TPACK'       , 'private' ],
+        //        ['3ZV4'      , 'galileo' , 'ITX' , '2019-03-18'    , null         , 'ABZ'              , 'MSP'                , 'BSAG'        , 'private' ],
+        //        ['3ZV4'      , 'galileo' , null  , '2019-03-18'    , null         , 'ABZ'              , 'MSP'                , 'BSAG'        , 'private' ],
+        //
+        //        ['1O3K'      , 'apollo'  , 'JWZ' , '2019-03-18'    , null         , 'ABZ'              , 'MSP'                , null          , null      ],
+        //        ['2G2H'      , 'apollo'  , 'JWZ' , '2019-03-18'    , null         , 'ABZ'              , 'MSP'                , null          , null      ],
+        //        ['2G52'      , 'apollo'  , 'JWZ' , '2019-03-18'    , null         , 'ABZ'              , 'MSP'                , null          , null      ],
+        //        ['U2E5'      , 'sabre'   , 'ITX' , '2019-03-18'    , null         , 'ABZ'              , 'MSP'                , 'BSAG'        , null      ],
+        //        ['LAXGO3106' , 'amadeus' , null  , '2019-03-18'    , null         , 'ABZ'              , 'MSP'                , null          , 'private' ],
+        //    ]),
+        //]);
         return $list;
     }
 
