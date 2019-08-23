@@ -1211,6 +1211,7 @@ class GdsDialectTranslator
 
 	translateThroughSeparateFunctions(fromGds, toGds, cmdRq)  {
 		let result = null;
+		const messages = [];
 		const parsed = CommonDataHelper.parseCmdByGds(fromGds, cmdRq);
 		if (TranslateAvailabilityCmdAction.isAvailabilityCommand(cmdRq, fromGds)) {
 			result = TranslateAvailabilityCmdAction.translate(cmdRq, fromGds, toGds);
@@ -1230,15 +1231,14 @@ class GdsDialectTranslator
 						baseDate: this.$baseDate,
 					});
 				} catch (exc) {
-					//console.debug('could not translate pricing: ' + cmdRq + '\n', exc);
+					messages.push('Could not translate pricing: ' + cmdRq + ' - ' + exc);
 				}
 			}
 		}
-		if (!php.empty(result)) {
-			return PatternTranslator.formatOutput(result, toGds);
-		} else {
-			return null;
-		}
+		result = php.empty(result) ? null :
+			PatternTranslator.formatOutput(result, toGds);
+
+		return {result, messages};
 	}
 
 	static translateThroughPatterns($fromGds, $toGds, $userInput)  {
@@ -1312,7 +1312,9 @@ class GdsDialectTranslator
 			$messages.push('ERROR! COMMAND IS EMPTY');
 		} else {
 			[$userInput, $aliasMods] = this.constructor.removeAliasModifiers($userInput);
-			$output = this.translateThroughSeparateFunctions($fromGds, $toGds, $userInput);
+			const throughParse = this.translateThroughSeparateFunctions($fromGds, $toGds, $userInput);
+			$output = throughParse.result;
+			$messages.push(...throughParse.messages);
 			if (php.empty($output)) {
 				$result = this.constructor.translateThroughPatterns($fromGds, $toGds, $userInput);
 				$output = $result['output'];
