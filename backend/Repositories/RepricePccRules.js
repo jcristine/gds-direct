@@ -82,10 +82,7 @@ exports.getMatchingPccs = async ({
 				.map(r => transformPccRecordFromDb(r));
 		}
 	}
-	const pccsFromRules = php.array_merge(
-		await getRoutePccs(departureAirport, destinationAirport, routeRules, geoProvider),
-		await getRoutePccs(destinationAirport, departureAirport, routeRules, geoProvider),
-	);
+	const pccsFromRules = await getRoutePccs(departureAirport, destinationAirport, routeRules, geoProvider);
 	const pccs = pccsFromRules.length > 0 ? pccsFromRules : fallbackPccs;
 	const isCurrent = (pccRec) => {
 		return pccRec.gds === gds
