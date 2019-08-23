@@ -144,7 +144,7 @@ const PricePccMixList = ({
 
 		if (error) {
 			trCmp.attach([
-				Cmp('td.error', {colSpan: 5, textContent: error}),
+				Cmp('td.error', {colSpan: 5, textContent: error.slice(0, 300).replace('\n', ' - ')}),
 			]);
 		} else {
 			populateRow(pccResult, trCmp);

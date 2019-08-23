@@ -17,12 +17,10 @@ const makePricingCmd = async (aliasData, pccRec) => {
 			pricingModifiers: aliasData.pricingModifiers || [],
 		},
 	});
+	normalized.pricingModifiers.push({type: 'namePosition'});
 	if (aliasData.isAll && normalized.ptcs.length === 0) {
 		normalized.paxNums = [];
 		normalized.ptcs = aliasData.ptcs;
-	}
-	if (!normalized.pricingModifiers.some(mod => mod.type === 'cabinClass')) {
-		normalized.pricingModifiers.push({type: 'cabinClass', parsed: {parsed: 'sameAsBooked'}});
 	}
 	if (pccRec.ptc) {
 		if (normalized.ptcs.length === 0) {
@@ -49,6 +47,10 @@ const makePricingCmd = async (aliasData, pccRec) => {
 	}
 	if (pccRec.fareType && !normalized.pricingModifiers.some(m => m.type === 'fareType')) {
 		normalized.pricingModifiers.push({type: 'fareType', parsed: pccRec.fareType});
+	}
+	// it's important that it was in the end apparently
+	if (!normalized.pricingModifiers.some(mod => mod.type === 'cabinClass')) {
+		normalized.pricingModifiers.push({type: 'cabinClass', parsed: {parsed: 'sameAsBooked'}});
 	}
 
 	return TranslatePricingCmd.fromData(pccRec.gds, normalized);
