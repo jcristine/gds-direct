@@ -65,6 +65,7 @@ let chooseStrFromList = (plugin, options, caption = 'Choose One Of The Following
 		}
 	});
 
+/** element of Terminal class */
 export default class TerminalPlugin
 {
 	/**
@@ -107,9 +108,8 @@ export default class TerminalPlugin
 			plugin: this,
 			terminal: this.terminal,
 			gds: params.gds,
-			getSessionInfo: params.getSessionInfo,
 		});
-
+		this.getSessionInfo = params.getSessionInfo;
 		this.history 		= new History( params.gds );
 
 		this.insertKey	= false;

@@ -10,14 +10,14 @@ import {getDate} from './../helpers/helpers.es6';
 export default class ActionReader
 {
 	/**
+	 * @param {TerminalPlugin} plugin
 	 * @param terminal = $().terminal();
 	 */
-	constructor({plugin, terminal, gds, getSessionInfo})
+	constructor({plugin, terminal, gds})
 	{
 		this.plugin = plugin;
 		this.gds = gds;
 		this.terminal = terminal;
-		this.getSessionInfo = getSessionInfo;
 		this.whenActionList = getShortcutActionList();
 		// following field are mutable
 		this.isActive = false;
@@ -50,7 +50,7 @@ export default class ActionReader
 
 	initAction(actionName) {
 		this.whenActionList.then(({records}) => {
-			let pcc = this.getSessionInfo().pcc;
+			let pcc = this.plugin.getSessionInfo().pcc;
 			let byGds = records.filter(rec =>
 				rec.name === actionName &&
 				rec.gds === this.gds);

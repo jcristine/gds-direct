@@ -12,6 +12,33 @@ const Cmp = (...args) => new Component(...args);
 const PricePccMixList = ({
 	plugin, itinerary, processes, cmdRqId,
 }) => {
+	const comparePccRecs = (neo, old) => {
+		const gds = plugin.gdsName;
+		const pcc = plugin.getSessionInfo().pcc;
+		const gdsOrdering = [gds, 'apollo', 'sabre', 'amadeus', 'galileo'];
+		const newGdsOrder = gdsOrdering.indexOf(neo.gds);
+		const oldGdsOrder = gdsOrdering.indexOf(old.gds);
+
+		if (neo.pcc === pcc && old.pcc !== pcc) {
+			return -1;
+		} else if (neo.pcc !== pcc && old.pcc === pcc) {
+			return 1;
+		} else {
+		} if (neo.gds === gds && old.gds !== gds) {
+			return -1;
+		} else if (neo.gds !== gds && old.gds === gds) {
+			return 1;
+		} else if (newGdsOrder === oldGdsOrder) {
+			return 0;
+		} else if (newGdsOrder === -1) {
+			return 1;
+		} else if (oldGdsOrder === -1) {
+			return -1;
+		} else {
+			return newGdsOrder - oldGdsOrder;
+		}
+	};
+
 	const theadCmp = Cmp('thead.usedCommand').attach([
 		Cmp('tr').attach([
 			Cmp('th', {textContent: 'GDS'}),
@@ -24,6 +51,7 @@ const PricePccMixList = ({
 		]),
 	]);
 	const tbodyCmp = Cmp('tbody').attach(processes
+		.sort(comparePccRecs)
 		.map(({gds, pcc, pricingCmd}) => {
 			const trCmp = Cmp('tr').attach([
 				Cmp('td.gds', {textContent: gds}),
@@ -48,14 +76,30 @@ const PricePccMixList = ({
 		return sign + netPrice.amount;
 	};
 
-	const findFirstHigherThan = (newTr) => {
-		const newPrice = newTr.getAttribute('data-net-price');
+	const trToData = (tr) => ({
+		price: tr.getAttribute('data-net-price'),
+		gds: tr.getAttribute('data-gds'),
+		pcc: tr.getAttribute('data-pcc'),
+	});
+
+	const compareRows = (newTr, oldTr) => {
+		const neo = trToData(newTr);
+		const old = trToData(oldTr);
+
+		if (!old.price) {
+			return -1;
+		} else if (neo.price != old.price) {
+			return neo.price - old.price;
+		} else {
+			return comparePccRecs(neo, old);
+		}
+	};
+
+	const findFirstWorseThan = (newTr) => {
 		const trs = [...tbodyCmp.context.querySelectorAll(':scope > tr')];
 		for (const tr of trs) {
-			const oldPrice = tr.getAttribute('data-net-price');
-			if (!oldPrice) {
-				return tr;
-			} else if (+oldPrice > +newPrice) {
+			const sign = compareRows(newTr, tr);
+			if (sign <= 0) {
 				return tr;
 			}
 		}
@@ -122,7 +166,7 @@ const PricePccMixList = ({
 		trCmp.context.setAttribute('data-net-price', mainPtcBlock.fareInfo.totalFare.amount);
 
 		trCmp.context.remove();
-		const firstHigher = findFirstHigherThan(trCmp.context);
+		const firstHigher = findFirstWorseThan(trCmp.context);
 		if (firstHigher) {
 			firstHigher.parentNode.insertBefore(trCmp.context, firstHigher);
 		} else {

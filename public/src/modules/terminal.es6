@@ -4,6 +4,7 @@ import {CHANGE_ACTIVE_TERMINAL} from "../actions/settings";
 
 require('../../node_modules/jquery.terminal/js/unix_formatting');
 
+/** element of GDS_UNIT class */
 export default class Terminal
 {
 	constructor( params )
