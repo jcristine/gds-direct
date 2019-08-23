@@ -248,11 +248,15 @@ class TerminalHighlightService {
 							} else {
 								captures.push(...match);
 							}
+							let fromIndex = 0;
 							for (const captured of captures) {
 								// javascript does not seem to return capture indexes unlike php...
 								// this is a stupid hack, but we'll have to use it till I find a lib
-								const relIndex = whole.indexOf(captured);
+								// Upd.: there is no lib. 'xregexp' uses built-in regex for execution,
+								// 'regex-tree' does not have anything useful regarding execution either
+								const relIndex = whole.indexOf(captured, fromIndex);
 								if (relIndex > -1) {
+									fromIndex = relIndex + captured.length;
 									this.matchPattern(captured, index + relIndex, rule);
 								}
 							}

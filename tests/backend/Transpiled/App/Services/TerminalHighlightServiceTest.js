@@ -261,6 +261,52 @@ const provide_replace = () => {
 		},
 	}]);
 
+	// javascript regex sucks
+	//list.push([{
+	//	title: 'Since built-in javascript regex does not provide ability to find out the index of each matched capture group, for compatibility I just used first text occurrence of the group in the full match, but that proved troublesome in regexes like /^(.{50,65})(?<value1>\\bR\\b)/',
+	//	input: {
+	//		cmd: '$D10SEPPHLMNL+QR',
+	//		gds: 'apollo',
+	//		output: [
+	//			'FARES LAST UPDATED 23AUG  9:15 AM                              ',
+	//			'>$D10SEPPHLMNL+QR                                               ',
+	//			'PHL-MNL TUE-10SEP19 QR                                         ',
+	//			'MPM 13009 AT                                                   ',
+	//			'TAXES/FEES NOT INCLUDED                                        ',
+	//			'PUBLIC/PRIVATE FARES FOR 2F3K                                  ',
+	//			'     CX    FARE   FARE     C  AP  MIN/    SEASONS...... MR GI DT',
+	//			'           USD    BASIS             MAX                        ',
+	//			'  1 -QR   236.00R OLUSNAZX O  10  14/4M   11AUG -27NOV  R  AT D',
+	//			'  2 /QR   262.00R OLUSP1ZX O  10   7/4M   11AUG -27NOV  R  AT D',
+	//			'     TD:SPL05NTYD7                                             ',
+	//			'  3 /QR   268.00R OLUSP1ZX O  10   7/4M   11AUG -27NOV  R  AT D',
+	//			'     TD:SPL03F0NUL                                             ',
+	//		].join("\n"),
+	//	},
+	//	expected: {
+	//		"appliedRules": [
+	//			{"id":12,"value":"%R%","onMouseOver":"Click to see the Routing Rules","onClickCommand":"$LR{lnNumber}/MDA","color":"startSession","offsets":[{"index":712,"end":713}]},
+	//			{"id":4,"value":"%OLUSNAZX%","onMouseOver":"Click to view Exchange/Refund rules","onClickCommand":"$V{lnNumber}/16/MDA","color":"startSession","offsets":[{"index":532,"end":540}]},
+	//			{"id":4,"value":"%OLUSP1ZX%","onMouseOver":"Click to view Exchange/Refund rules","onClickCommand":"$V{lnNumber}/16/MDA","color":"startSession","offsets":[{"index":724,"end":732}]},
+	//		],
+	//		output: [
+	//			'FARES LAST UPDATED 23AUG  9:15 AM                              ',
+	//			'>$D10SEPPHLMNL+QR                                               ',
+	//			'PHL-MNL TUE-10SEP19 QR                                         ',
+	//			'MPM 13009 AT                                                   ',
+	//			'TAXES/FEES NOT INCLUDED                                        ',
+	//			'PUBLIC/PRIVATE FARES FOR 2F3K                                  ',
+	//			'     CX    FARE   FARE     C  AP  MIN/    SEASONS...... MR GI DT',
+	//			'           USD    BASIS             MAX                        ',
+	//			'  1 -QR   236.00R %OLUSNAZX% O  10  14/4M   11AUG -27NOV  %R%  AT D',
+	//			'  2 /QR   262.00R %OLUSP1ZX% O  10   7/4M   11AUG -27NOV  %R%  AT D',
+	//			'     TD:SPL05NTYD7                                             ',
+	//			'  3 /QR   268.00R %OLUSP1ZX% O  10   7/4M   11AUG -27NOV  %R%  AT D',
+	//			'     TD:SPL03F0NUL                                             ',
+	//		].join("\n"),
+	//	},
+	//}]);
+
 	return list;
 };
 
